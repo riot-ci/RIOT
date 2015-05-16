@@ -796,6 +796,7 @@ typedef enum {
  */
 json_result_t json_number_type(const char *str, size_t len, json_number_t *type);
 
+#ifndef MODULE_ATMEGA_COMMON
 /**
  * @brief   Convert a string read with json_read_number() into an int64_t.
  *
@@ -829,6 +830,7 @@ int64_t json_number_to_int(const char *str, size_t len);
  * @returns The number represented by @p str.
  */
 float json_number_to_float(const char *str, size_t len);
+#endif /*ifndef MODULE_ATMEGA_COMMON*/
 
 /**
  * @brief   Encode a Unicode codepoint to a UTF-8 sequence.
