@@ -11,7 +11,6 @@ RIOTBASE ?= $(CURDIR)/../..
 
 # add directory of generated *.py.h files to include path
 CFLAGS += -I$(BINDIR)$(MODULE)py_h/
-CFLAGS += -Wno-error=shift-negative-value -Wno-error=sign-compare -Wno-error=type-limits
 
 #
 include $(RIOTBASE)/Makefile.include
