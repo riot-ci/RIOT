@@ -1,7 +1,7 @@
-From 2b877e2d3314662252f1859f418364fded4c4d55 Mon Sep 17 00:00:00 2001
+From e2714ba60060e790da527f06cb54a23b17d384f2 Mon Sep 17 00:00:00 2001
 From: Kaspar Schleiser <kaspar@schleiser.de>
 Date: Sun, 10 May 2015 20:01:16 +0200
-Subject: [PATCH] WIP: initial RIOT port
+Subject: [PATCH 1/4] WIP: initial RIOT port
 
 ---
  riot/Makefile       | 54 ++++++++++++++++++++++++++++++

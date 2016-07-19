@@ -3,9 +3,3 @@ MPSRC = $(BINDIRBASE)/pkg/$(BOARD)/micropython
 INCLUDES += -I$(RIOTBASE)/pkg/micropython/include
 INCLUDES += -I$(MPSRC)
 INCLUDES += -I$(MPSRC)/riot
-
-ifeq ($(CPU_ARCH),cortex-m0)
-export CFLAGS += -DMICROPY_NLR_SETJMP
-else ifeq ($(CPU_ARCH),cortex-m0plus)
-export CFLAGS += -DMICROPY_NLR_SETJMP
-endif

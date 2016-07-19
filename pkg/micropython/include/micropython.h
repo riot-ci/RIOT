@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 
-#define MP_RIOT_HEAPSIZE (8*1024)
+#ifndef MP_RIOT_HEAPSIZE
+#define MP_RIOT_HEAPSIZE (8U*1024)
+#endif
 
-void mp_riot_init(char* stack_start, int stack_size, char* heap, int heap_size);
+void mp_riot_init(char* heap, size_t heap_size);
 //static inline mp_riot_deinit(void) { mp_deinit(); }
 void mp_do_str(const char *src, int len);
 

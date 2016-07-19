@@ -1,0 +1,97 @@
+From 3b6f5475befc5e9bddf92b1ffe02ac8401241a79 Mon Sep 17 00:00:00 2001
+From: Kaspar Schleiser <kaspar@schleiser.de>
+Date: Tue, 19 Jul 2016 13:35:41 +0200
+Subject: [PATCH 2/4] riot: re-use unix gccollect code
+
+---
+ riot/Makefile    |  3 ++-
+ riot/mp_riot.c   | 21 ++++-----------------
+ unix/gccollect.c |  2 ++
+ 3 files changed, 8 insertions(+), 18 deletions(-)
+
+diff --git a/riot/Makefile b/riot/Makefile
+index 6cafb7b..87d4652 100644
+--- a/riot/Makefile
++++ b/riot/Makefile
+@@ -42,7 +42,8 @@ CFLAGS += -DNDEBUG $(INC) $(Wno)
+ 
+ SRC_C = $(wildcard *.c) \
+ 	stmhal/pyexec.c \
+-	lib/mp-readline/readline.c
++	lib/mp-readline/readline.c \
++	unix/gccollect.c
+ 
+ OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
+ 
+diff --git a/riot/mp_riot.c b/riot/mp_riot.c
+index 8e254e6..049b531 100644
+--- a/riot/mp_riot.c
++++ b/riot/mp_riot.c
+@@ -32,44 +32,31 @@ void mp_do_str(const char *src, int len)
+     }
+ }
+ 
+-#if MICROPY_ENABLE_GC
+-static char *_stack_start;
+-static int _stack_size;
+-#endif
+-
+ void mp_riot_init(char* stack_start, int stack_size, char* heap, int heap_size)
+ {
+     #if MICROPY_ENABLE_GC
+-    _stack_start = stack_start;
+-    _stack_size = stack_size;
+-
+     gc_init(heap, heap + heap_size);
+     #endif
+ 
+     mp_init();
+ }
+ 
+-void gc_collect(void) {
+-    gc_collect_start();
+-    /* TODO: fix register selection */
+-    void *dummy;
+-    gc_collect_root(&dummy, 0);
+-    gc_collect_end();
+-    gc_dump_info();
+-}
+-
+ mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
++    puts("mp_lexer_new_from_file() stub");
+     return NULL;
+ }
+ 
+ mp_import_stat_t mp_import_stat(const char *path) {
++    puts("mp_import_stat() stub");
+     return MP_IMPORT_STAT_NO_EXIST;
+ }
+ 
+ mp_obj_t mp_builtin_open(uint n_args, const mp_obj_t *args, mp_map_t *kwargs) {
++    puts("mp_builtin_open() stub");
+     return mp_const_none;
+ }
+ MP_DEFINE_CONST_FUN_OBJ_KW(mp_builtin_open_obj, 1, mp_builtin_open);
+ 
+ void nlr_jump_fail(void *val) {
++    puts("nlr_jump_fail() stub");
+ }
+diff --git a/unix/gccollect.c b/unix/gccollect.c
+index 397c4ff..6073ed8 100644
+--- a/unix/gccollect.c
++++ b/unix/gccollect.c
+@@ -155,9 +155,11 @@ void gc_collect(void) {
+     #if MICROPY_PY_THREAD
+     mp_thread_gc_others();
+     #endif
++    #ifdef UNIX
+     #if MICROPY_EMIT_NATIVE
+     mp_unix_mark_exec();
+     #endif
++    #endif
+     gc_collect_end();
+ 
+     //printf("-----\n");
+-- 
+2.9.0
+
