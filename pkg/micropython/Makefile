@@ -2,8 +2,6 @@ PKG_NAME=micropython
 PKG_URL=https://github.com/micropython/micropython
 PKG_VERSION=c3f519adfe1faf7808fa49fdb6006040317279ca
 
-PKG_SOURCE_OVERRIDE=/home/kaspar/src/micropython
-
 .PHONY: all
 
 all: git-download
