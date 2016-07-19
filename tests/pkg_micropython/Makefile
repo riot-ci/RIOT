@@ -24,6 +24,7 @@ $(BINDIR)$(MODULE)py_h/:
 
 $(PY_H): $(BINDIR)$(MODULE)py_h/
 $(PY_H): $(BINDIR)$(MODULE)py_h/%.py.h: %.py
+	rm -f $(BINDIR)/$(APPLICATION)/main.o
 	xxd -i $< > $@
 
 all: $(PY_H)

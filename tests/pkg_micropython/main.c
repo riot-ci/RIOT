@@ -29,16 +29,19 @@
 #include "py/runtime.h"
 #include "py/repl.h"
 #include "py/gc.h"
-#include "stmhal/pyexec.h"
+#include "lib/utils/pyexec.h"
 
 #include "boot.py.h"
 
-static char mp_heap[8192];
+static char mp_heap[MP_RIOT_HEAPSIZE];
 
 int main(void)
 {
-    mp_riot_init(sched_active_thread->sp, THREAD_STACKSIZE_MAIN,
-            mp_heap, sizeof(mp_heap));
+    /* let micropython know the top of this thread's stack */
+    uint32_t stack_dummy;
+    MP_STATE_THREAD(stack_top) = (char*)&stack_dummy;
+
+    mp_riot_init(mp_heap, sizeof(mp_heap));
 
     printf("-- Executing boot.py\n");
     mp_do_str((const char *)boot_py, boot_py_len);
