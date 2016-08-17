@@ -84,12 +84,6 @@ export CFLAGS += -DARM_MATH_CM7
 endif
 endif
 
-# Explicitly tell the linker to link the startup code.
-#   Without this the interrupt vectors will not be linked correctly!
-ifeq ($(COMMON_STARTUP),)
-export UNDEF += $(BINDIR)/cpu/vectors.o
-endif
-
 # CPU depends on the cortex-m common module, so include it:
 include $(RIOTCPU)/cortexm_common/Makefile.include
 
