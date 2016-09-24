@@ -56,9 +56,7 @@
 
 static gnrc_ipv6_netif_t ipv6_ifs[GNRC_NETIF_NUMOF];
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 static ipv6_addr_t *_add_addr_to_entry(gnrc_ipv6_netif_t *entry, const ipv6_addr_t *addr,
                                        uint8_t prefix_len, uint8_t flags)
