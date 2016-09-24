@@ -102,7 +102,7 @@ extern "C" {
  *
  * @brief Extra stacksize needed when ENABLE_DEBUG==1
  */
-#if ENABLE_DEBUG==1
+#if ENABLE_DEBUG
 #define DEBUG_EXTRA_STACKSIZE THREAD_EXTRA_STACKSIZE_PRINTF
 #else
 #define DEBUG_EXTRA_STACKSIZE (0)
