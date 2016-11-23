@@ -6,4 +6,8 @@ ifneq (,$(filter conn_can,$(USEMODULE)))
     DIRS += conn
 endif
 
+ifneq (,$(filter can_isotp,$(USEMODULE)))
+    DIRS += isotp
+endif
+
 include $(RIOTBASE)/Makefile.base
