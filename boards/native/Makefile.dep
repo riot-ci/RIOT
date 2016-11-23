@@ -5,3 +5,10 @@ endif
 ifneq (,$(filter mtd,$(USEMODULE)))
     USEMODULE += mtd_native
 endif
+
+ifneq (,$(filter can,$(USEMODULE)))
+    CAN_DLL_NUMOF = 2
+    ifeq ($(shell uname -s),Linux)
+        USEMODULE += can_linux
+    endif
+endif
