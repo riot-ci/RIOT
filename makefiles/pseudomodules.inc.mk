@@ -3,6 +3,7 @@ PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
 PSEUDOMODULES += can_raw
 PSEUDOMODULES += conn
+PSEUDOMODULES += conn_can_isotp_multi
 PSEUDOMODULES += conn_ip
 PSEUDOMODULES += conn_tcp
 PSEUDOMODULES += conn_udp
