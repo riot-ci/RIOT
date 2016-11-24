@@ -57,5 +57,9 @@ void auto_init_candev(void)
 #ifdef MODULE_ESP_CAN
     extern void auto_init_esp_can(void);
     auto_init_esp_can();
+
+#ifdef MODULE_CAN_STM32
+    extern void auto_init_can_stm32(void);
+    auto_init_can_stm32();
 #endif
 }
