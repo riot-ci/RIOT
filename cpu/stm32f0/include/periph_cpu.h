@@ -26,6 +26,13 @@ extern "C" {
 #endif
 
 /**
+ * @name    Available number of ADC devices
+ * @{
+ */
+#define ADC_DEV_NUMOF       (1U)
+/** @} */
+
+/**
  * @brief   Available ports on the STM32F0 family
  */
 enum {
@@ -36,31 +43,6 @@ enum {
     PORT_E = 4,             /**< port E */
     PORT_F = 5,             /**< port F */
 };
-
-#ifndef DOXYGEN
-/**
- * @brief   Override ADC resolution values
- * @{
- */
-#define HAVE_ADC_RES_T
-typedef enum {
-    ADC_RES_6BIT  = (0x3 << 3),     /**< ADC resolution: 6 bit */
-    ADC_RES_8BIT  = (0x2 << 3),     /**< ADC resolution: 8 bit */
-    ADC_RES_10BIT = (0x1 << 3),     /**< ADC resolution: 10 bit */
-    ADC_RES_12BIT = (0x0 << 3),     /**< ADC resolution: 12 bit */
-    ADC_RES_14BIT = (0xfe),         /**< not applicable */
-    ADC_RES_16BIT = (0xff)          /**< not applicable */
-} adc_res_t;
-/** @} */
-#endif /* ndef DOXYGEN */
-
-/**
- * @brief   ADC line configuration values
- */
-typedef struct {
-    gpio_t pin;             /**< pin to use */
-    uint8_t chan;           /**< internal channel the pin is connected to */
-} adc_conf_t;
 
 #ifdef __cplusplus
 }
