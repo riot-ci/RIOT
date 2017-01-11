@@ -31,6 +31,9 @@ endif
 ifneq (,$(filter gnrc_ipv6_netif,$(USEMODULE)))
     DIRS += network_layer/ipv6/netif
 endif
+ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
+    DIRS += network_layer/ipv6/nib
+endif
 ifneq (,$(filter gnrc_ipv6_whitelist,$(USEMODULE)))
     DIRS += network_layer/ipv6/whitelist
 endif
