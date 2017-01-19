@@ -21,12 +21,11 @@
 
 #ifdef MODULE_ADCXX1C
 
+#include "log.h"
+
 #include "saul_reg.h"
 #include "adcxx1c.h"
 #include "adcxx1c_params.h"
-
-#define ENABLE_DEBUG (0)
-#include "debug.h"
 
 /**
  * @brief   Define the number of configured sensors
@@ -55,10 +54,10 @@ void auto_init_adcxx1c(void)
         const adcxx1c_params_t *p = &adcxx1c_params[i];
         int res;
 
-        DEBUG("[auto_init_saul] initializing adcxx1c adc\n");
+        LOG_DEBUG("[auto_init_saul] initializing adcxx1c #%d\n", i);
         res = adcxx1c_init(&adcxx1c_devs[i], p);
         if (res < 0) {
-            DEBUG("[auto_init_saul] error during adcxx1c_init\n");
+            LOG_ERROR("[auto_init_saul] error initializing adcxx1c #%d\n", i);
             continue;
         }
 
