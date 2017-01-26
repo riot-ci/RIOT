@@ -456,6 +456,42 @@ void auto_init(void)
     extern void auto_init_veml6070(void);
     auto_init_veml6070();
 #endif
+#ifdef MODULE_DS18
+    extern void auto_init_ds18(void);
+    auto_init_ds18();
+#endif
+#ifdef MODULE_IO1_XPLAINED
+    extern void auto_init_io1_xplained(void);
+    auto_init_io1_xplained();
+#endif
+#ifdef MODULE_ADXL345
+    extern void auto_init_adxl345(void);
+    auto_init_adxl345();
+#endif
+#ifdef MODULE_LSM6DSL
+    extern void auto_init_lsm6dsl(void);
+    auto_init_lsm6dsl();
+#endif
+#ifdef MODULE_ADCXX1C
+    extern void auto_init_adcxx1c(void);
+    auto_init_adcxx1c();
+#endif
+#ifdef MODULE_ADS101X
+    extern void auto_init_ads101x(void);
+    auto_init_ads101x();
+#endif
+#ifdef MODULE_LIS2DH12
+    extern void auto_init_lis2dh12(void);
+    auto_init_lis2dh12();
+#endif
+#ifdef MODULE_SI114X
+    extern void auto_init_si114x(void);
+    auto_init_si114x();
+#endif
+#ifdef MODULE_MMA7660
+    extern void auto_init_mma7660(void);
+    auto_init_mma7660();
+#endif
 
 #endif /* MODULE_AUTO_INIT_SAUL */
 
