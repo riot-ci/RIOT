@@ -6,6 +6,8 @@ PKG_LICENSE=LGPL-2.1
 .PHONY: all
 
 all: $(PKG_BUILDDIR)/Makefile
+	echo QENV: && . $(RIOTBASE)/dist/tools/functions.sh ; QUIET=0 quiet env
+	echo ENV: && env
 	$(QQ) . $(RIOTBASE)/dist/tools/functions.sh ; \
 		quiet "$(MAKE)" -C $(PKG_BUILDDIR)
 	$(Q)cp $(PKG_BUILDDIR)/lib/librelic_s.a $(BINDIR)/$(PKG_NAME).a
