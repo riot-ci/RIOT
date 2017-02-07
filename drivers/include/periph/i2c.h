@@ -11,10 +11,6 @@
  * @ingroup     drivers_periph
  * @brief       Low-level I2C peripheral driver
  *
- * @{
- * @file
- * @brief       Low-level I2C peripheral driver interface definition
- *
  * The I2C signal lines SDA/SCL need external pull-up resistors which connect
  * the lines to the positive voltage supply Vcc. The I2C driver implementation
  * should enable the pin's internal pull-up resistors. There are however some
@@ -45,7 +41,32 @@
  * http://www.nxp.com/documents/user_manual/UM10204.pdf
  *
  * @note        The current version of this interface only supports the
-                7-bit addressing mode.
+ *              7-bit addressing mode.
+ *
+ *
+ * @section     sec_pm (Low-) power implications
+ *
+ * The I2C interface realizes a transaction-based access scheme to the bus. From
+ * a power management perspective, we can leverage this by only powering on the
+ * I2C peripheral while it is actually used, that is inside an i2c_acquire() -
+ * i2c_release() block.
+ *
+ * After initialization, the I2C peripheral **should** be powered off (e.g.
+ * through peripheral clock gating). It should only be powered on once a
+ * transaction on the I2C bus starts, namely in the i2c_acquire() function. Once
+ * the transaction is finished, the corresponding I2C peripheral **should** be
+ * powered off again in the i2c_release() function.
+ *
+ * If the implementation puts the active thread to sleep while a transfer is in
+ * progress (e.g. when using DMA), the implementation might need to block
+ * certain power states.
+ *
+ * @todo        The i2c_poweron() and i2c_poweroff() functions will be removed
+ *              with the upcoming I2C driver remodeling.
+ *
+ * @{
+ * @file
+ * @brief       Low-level I2C peripheral driver interface definition
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
