@@ -29,6 +29,7 @@ void test_func(void)
     char buf[16];
 
     /* deliberately overflowing stack here !! */
+    /* cppcheck-suppress bufferAccessOutOfBounds */
     memset(buf, 0, 32);
 }
 
