@@ -58,13 +58,20 @@ export CFLAGS += -DCPU_ARCH_$(ARCH)
 
 # set the compiler specific CPU and FPU options
 ifeq ($(CPU_ARCH),cortex-m4f)
-# TODO: enable hard floating points for the M4F once the context save/restore
-#       code is adjusted to take care of FPU registers
-#export CFLAGS_FPU += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-export MCPU := cortex-m4
-endif
+    USEMODULE += cortexm_fpu
+    ifneq (,$(filter cortexm_fpu,$(DISABLE_MODULE)))
+        export CFLAGS_FPU ?= -mfloat-abi=soft
+    else
+        # clang assumes there is an FPU
+        ifneq (llvm,$(TOOLCHAIN))
+            export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
+        endif
+    endif
+    export MCPU := cortex-m4
+else
 CFLAGS_FPU ?= -mfloat-abi=soft
 export MCPU ?= $(CPU_ARCH)
+endif
 
 # CMSIS DSP needs to know about the CPU core
 ifneq (,$(filter cmsis-dsp,$(USEPKG)))
