@@ -58,13 +58,13 @@ int main(void)
                   3, THREAD_CREATE_STACKTEST,
                   timer_func, &sleep_timer2, "timer2");
 
-    uint32_t ticks_now = 0;
-    uint32_t ticks_start = _xtimer_now();
-    uint32_t ticks_until = ticks_start + _xtimer_ticks_from_usec(TEST_TIME);
-
+    uint64_t ticks_now = 0;
+    uint64_t ticks_start = xtimer_now64().ticks64;
+    uint64_t ticks_until = ticks_start + xtimer_ticks_from_usec64(TEST_TIME).ticks64;
+    uint32_t interval = ticks_until - ticks_start;
     puts("[START]");
-    while((ticks_now = _xtimer_now()) < ticks_until) {
-        uint8_t percent = 100*(ticks_now - ticks_start)/(ticks_until - ticks_start);
+    while((ticks_now = xtimer_now64().ticks64) < ticks_until) {
+        unsigned percent = (100*(ticks_now - ticks_start))/interval;
         xtimer_usleep(TEST_INTERVAL * US_PER_MS);
         printf("Testing... (%u%%)\n", percent);
     }
