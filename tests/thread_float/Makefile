@@ -8,8 +8,6 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon calliope-mini cc2650stk chronos maple-
                              nucleo-f334 opencm9-04 pca10000 pca10005 spark-core \
                              stm32f0discovery weio yunjia-nrf51822
 
-DISABLE_MODULE += auto_init
-
 USEMODULE += printf_float
 USEMODULE += xtimer
 
