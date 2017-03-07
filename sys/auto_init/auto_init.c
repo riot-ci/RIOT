@@ -323,6 +323,10 @@ void auto_init(void)
     extern void auto_init_tcs37727(void);
     auto_init_tcs37727();
 #endif
+#ifdef MODULE_VCNL40X0
+    extern void auto_init_vcnl40x0(void);
+    auto_init_vcnl40x0();
+#endif
 #ifdef MODULE_VEML6070
     extern void auto_init_veml6070(void);
     auto_init_veml6070();
