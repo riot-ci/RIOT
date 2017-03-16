@@ -54,6 +54,8 @@ typedef enum {
     _STDIOTYPE_FILE,        /**< redirect to file */
 } _stdiotype_t;
 
+extern int native_timer_scale;
+
 int _native_null_in_pipe[2];
 int _native_null_out_file;
 const char *_progname;
@@ -83,7 +85,7 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 socket_zep_params_t socket_zep_params[SOCKET_ZEP_MAX];
 #endif
 
-static const char short_opts[] = ":hi:s:deEoc:"
+static const char short_opts[] = ":hi:s:t:deEoc:"
 #ifdef MODULE_MTD_NATIVE
     "m:"
 #endif
@@ -99,6 +101,7 @@ static const struct option long_opts[] = {
     { "help", no_argument, NULL, 'h' },
     { "id", required_argument, NULL, 'i' },
     { "seed", required_argument, NULL, 's' },
+    { "timer-scale", required_argument, NULL, 't' },
     { "daemonize", no_argument, NULL, 'd' },
     { "stderr-pipe", no_argument, NULL, 'e' },
     { "stderr-noredirect", no_argument, NULL, 'E' },
@@ -262,6 +265,8 @@ void usage_exit(int status)
 "    -s <seed>, --seed=<seed>\n"
 "        specify srandom(3) seed (/dev/random is used instead of random(3) if\n"
 "        the option is omitted)\n"
+"    -t <x>, --timer-scale=<x>\n"
+"        Scaling (speed-up or slow-down) of the timers by factor 2^x (default = 0)\n"
 "    -d, --daemonize\n"
 "        daemonize native instance\n"
 "    -e, --stderr-pipe\n"
@@ -403,6 +408,9 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
             case 's':
                 _native_rng_seed = atol(optarg);
                 _native_rng_mode = 1;
+                break;
+            case 't':
+                native_timer_scale = atoi(optarg);
                 break;
             case 'd':
                 dmn = true;
