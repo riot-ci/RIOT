@@ -7,7 +7,8 @@
  */
 
 /**
- * @ingroup     drivers_adcxx1x
+ * @defgroup   drivers_adcxx1x ADCXX1C ADC device driver
+ * @ingroup    drivers_sensors
  * @{
  *
  * @file
@@ -19,9 +20,15 @@
 #ifndef ADCXX1C_H
 #define ADCXX1C_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "periph/i2c.h"
+#include "periph/gpio.h"
 
 #ifndef ADCXX1C_I2C_ADDRESS
+/** ADCxx1C default address (ADCxx1C021 address) */
 #define ADCXX1C_I2C_ADDRESS  (0x54)
 #endif
 
@@ -29,9 +36,9 @@
  * @brief   ADC resolution
  */
 enum {
-    ADCXX1C_RES_8BITS  = 8,
-    ADCXX1C_RES_10BITS = 10,
-    ADCXX1C_RES_12BITS = 12,
+    ADCXX1C_RES_8BITS  = 8,  /**< 8 bits resolution (ADC081C family) */
+    ADCXX1C_RES_10BITS = 10, /**< 10 bits resolution (ADC101C family) */
+    ADCXX1C_RES_12BITS = 12, /**< 12 bits resolution (ADC121C family) */
 };
 
 /**
@@ -62,14 +69,14 @@ enum {
  * @brief   ADCxx1C params
  */
 typedef struct adcxx1c_params {
-    i2c_t i2c;
-    uint8_t addr;
-    uint8_t bits;
-    uint8_t cycle;
-    gpio_t alert_pin;
-    int16_t low_limit;
-    int16_t high_limit;
-    int16_t hysteresis;
+    i2c_t i2c;            /**< i2c device */
+    uint8_t addr;         /**< i2c address */
+    uint8_t bits;         /**< resolution */
+    uint8_t cycle;        /**< conversion interval */
+    gpio_t alert_pin;     /**< alert pin (GPIO_UNDEF if not connected) */
+    int16_t low_limit;    /**< alert low value */
+    int16_t high_limit;   /**< alert high value */
+    int16_t hysteresis;   /**< alert hysteresis */
 } adcxx1c_params_t;
 
 /**
@@ -81,9 +88,9 @@ typedef void (*adcxx1c_cb_t)(void *);
  * @brief   ADCxx1C device descriptor
  */
 typedef struct adcxx1c {
-    adcxx1c_params_t params;
-    adcxx1c_cb_t cb;
-    void *arg;
+    adcxx1c_params_t params; /**< device driver configuration */
+    adcxx1c_cb_t cb;         /**< alert callback */
+    void *arg;               /**< alert callback param */
 } adcxx1c_t;
 
 /**
@@ -129,6 +136,10 @@ int adcxx1c_enable_alert(adcxx1c_t *dev, adcxx1c_cb_t cb, void *arg);
  */
 int adcxx1c_set_alert_parameters(adcxx1c_t *dev, int16_t low_limit,
                                  int16_t high_limit, int16_t hysteresis);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ADCXX1C_H */
 /** @} */

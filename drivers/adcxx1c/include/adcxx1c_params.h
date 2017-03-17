@@ -56,8 +56,7 @@ extern "C" {
 #define ADCXX1C_PARAM_HYSTERESIS (0)
 #endif
 
-#ifndef ADCXX1C_PARAMS
-#define ADCXX1C_PARAMS          { .i2c        = ADCXX1C_PARAM_I2C, \
+#define ADCXX1C_PARAMS_DEFAULT  { .i2c        = ADCXX1C_PARAM_I2C, \
                                   .addr       = ADCXX1C_PARAM_ADDR, \
                                   .bits       = ADCXX1C_PARAM_BITS, \
                                   .cycle      = ADCXX1C_PARAM_CYCLE, \
@@ -65,15 +64,19 @@ extern "C" {
                                   .low_limit  = ADCXX1C_PARAM_LOW_LIMIT, \
                                   .high_limit = ADCXX1C_PARAM_HIGH_LIMIT, \
                                   .hysteresis = ADCXX1C_PARAM_HYSTERESIS }
-#endif
-/**@}*/
+
+/** @} */
 
 /**
  * @brief   ADCXX1C configuration
  */
 static const adcxx1c_params_t adcxx1c_params[] =
 {
-    ADCXX1C_PARAMS,
+#ifdef ADCXX1C_PARAMS_BOARD
+    ADCXX1C_PARAMS_BOARD,
+#else
+    ADCXX1C_PARAMS_DEFAULT,
+#endif
 };
 
 
