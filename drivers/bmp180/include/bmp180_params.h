@@ -36,12 +36,12 @@ extern "C" {
 #ifndef BMP180_PARAM_I2C_DEV
 #define BMP180_PARAM_I2C_DEV         I2C_DEV(0)
 #endif
-#ifndef BMP180_PARAM_MODE
-#define BMP180_PARAM_MODE            BMP180_ULTRALOWPOWER
+#ifndef BMP180_PARAM_OVERSAMPLING
+#define BMP180_PARAM_OVERSAMPLING    BMP180_ULTRALOWPOWER
 #endif
 
-#define BMP180_PARAMS_DEFAULT        { .i2c_dev = BMP180_PARAM_I2C_DEV,  \
-                                       .mode    = BMP180_PARAM_MODE }
+#define BMP180_PARAMS_DEFAULT        { .i2c_dev      = BMP180_PARAM_I2C_DEV,  \
+                                       .oversampling = BMP180_PARAM_OVERSAMPLING }
 /**@}*/
 
 /**
