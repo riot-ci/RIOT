@@ -181,10 +181,6 @@ static void _evtimer_handler(void *arg)
     }
 
     _update_timer(evtimer);
-
-    if (!irq_is_in()) {
-        thread_yield_higher();
-    }
 }
 
 void evtimer_init(evtimer_t *evtimer, evtimer_callback_t handler)
