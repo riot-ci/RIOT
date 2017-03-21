@@ -29,7 +29,9 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-static void _add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
+/* XXX this function is intentionally non-static, since the optimizer can't
+ * handle the pointer hack in this function */
+void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
 {
     uint32_t delta_sum = 0;
 
@@ -129,11 +131,8 @@ void evtimer_add(evtimer_t *evtimer, evtimer_event_t *event)
     DEBUG("evtimer_add(): adding event with offset %" PRIu32 "\n", event->offset);
 
     _update_head_offset(evtimer);
-    _add_event_to_list(evtimer, event);
+    evtimer_add_event_to_list(evtimer, event);
 
-    /* XXX: next two lines fix known race condition on Cortex-M0 boards */
-    volatile int i = 1;
-    while (i--);
     if (evtimer->events == event) {
         _set_timer(&evtimer->timer, event->offset);
     }
