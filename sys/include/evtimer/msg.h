@@ -32,6 +32,7 @@ extern "C" {
  * @extends evtimer_t
  */
 typedef evtimer_t evtimer_msg_t;
+
 /**
  * @brief   IPC-message event
  * @extends evtimer_event_t
