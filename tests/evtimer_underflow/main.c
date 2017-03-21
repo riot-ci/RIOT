@@ -24,6 +24,9 @@
 #include "thread.h"
 #include "msg.h"
 
+#define WORKER_MSG_QUEUE_SIZE   (8)
+
+msg_t worker_msg_queue[WORKER_MSG_QUEUE_SIZE];
 static char worker_stack[THREAD_STACKSIZE_MAIN];
 static evtimer_t evtimer;
 static evtimer_msg_event_t events[] = {
@@ -44,6 +47,7 @@ void *worker_thread(void *arg)
 {
     (void) arg;
 
+    msg_init_queue(worker_msg_queue, WORKER_MSG_QUEUE_SIZE);
     while (1) {
         char *ctx;
         msg_t m;
