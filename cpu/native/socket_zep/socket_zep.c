@@ -113,10 +113,11 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned n)
 {
     socket_zep_t *dev = (socket_zep_t *)netdev;
     struct iovec v[n + 2];
-    size_t bytes = _prep_vector(dev, vector, n, v);
+    size_t bytes;
     int res;
 
-    assert((netdev != NULL) && (dev->sock_fd != 0));
+    assert((dev != NULL) && (dev->sock_fd != 0));
+    bytes = _prep_vector(dev, vector, n, v);
     DEBUG("socket_zep::send(%p, %p, %u)\n", (void *)netdev, (void *)vector, n);
     /* simulate TX_STARTED interrupt */
     if (netdev->event_callback) {
@@ -191,7 +192,7 @@ static inline bool _dst_not_me(socket_zep_t *dev, const void *buf)
 static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 {
     socket_zep_t *dev = (socket_zep_t *)netdev;
-    int size;
+    int size = 0;
 
     DEBUG("socket_zep::recv(%p, %p, %u, %p)\n", (void *)netdev, buf,
           (unsigned)len, (void *)info);
