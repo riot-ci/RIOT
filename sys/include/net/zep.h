@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#define ZEP_PORT_DEFAULT        (17754)
+#define ZEP_PORT_DEFAULT        (17754) /**< default ZEP port */
 
 /**
  * @brief   Type == Data for ZEPv2 header
