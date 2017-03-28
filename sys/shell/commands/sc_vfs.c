@@ -279,6 +279,8 @@ static int _write_handler(int argc, char **argv)
     w_buf = argv[4];
     nbytes = strlen(w_buf);
     if (!ascii) {
+        /* in hex string mode, bytes may be seperated by spaces */
+        /* we need the total number of strings to go through */
         nb_str = argc - 4;
     }
 
@@ -295,16 +297,6 @@ static int _write_handler(int argc, char **argv)
         _errno_string(fd, (char *)buf, sizeof(buf));
         printf("Error opening file \"%s\": %s\n", path, buf);
         return 3;
-    }
-
-    if (flag & O_APPEND) {
-        res = vfs_lseek(fd, 0, SEEK_END);
-        if (res < 0) {
-            _errno_string(res, (char *)buf, sizeof(buf));
-            printf("Seek error: %s\n", buf);
-            vfs_close(fd);
-            return 4;
-        }
     }
 
     if (ascii) {
