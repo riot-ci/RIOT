@@ -58,10 +58,10 @@ export CFLAGS += -DCPU_ARCH_$(ARCH)
 
 # set the compiler specific CPU and FPU options
 ifeq ($(CPU_ARCH),cortex-m4f)
-    USEMODULE += cortexm_fpu
     ifneq (,$(filter cortexm_fpu,$(DISABLE_MODULE)))
         export CFLAGS_FPU ?= -mfloat-abi=soft
     else
+        USEMODULE += cortexm_fpu
         # clang assumes there is an FPU
         ifneq (llvm,$(TOOLCHAIN))
             export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
