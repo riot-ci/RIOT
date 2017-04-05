@@ -288,7 +288,6 @@ static int _write_handler(int argc, char **argv)
             char c;
             size_t j = 0;
             do {
-                puts(argv[argc - nb_str + i]);
                 c = argv[argc - nb_str + i][j];
                 j++;
                 if (c != '\0' && !isxdigit(c)) {
