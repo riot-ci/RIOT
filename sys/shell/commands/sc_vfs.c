@@ -278,10 +278,30 @@ static int _write_handler(int argc, char **argv)
     }
     w_buf = argv[4];
     nbytes = strlen(w_buf);
+    /* in hex string mode, bytes may be seperated by spaces */
+    /* in ascii mode, there could be spaces */
+    /* we need the total number of strings to go through */
+    nb_str = argc - 4;
     if (!ascii) {
-        /* in hex string mode, bytes may be seperated by spaces */
-        /* we need the total number of strings to go through */
-        nb_str = argc - 4;
+        /* sanity check: only hex digit and hex strings length must be even */
+        for (size_t i = 0; i < nb_str; i++) {
+            char c;
+            size_t j = 0;
+            do {
+                puts(argv[argc - nb_str + i]);
+                c = argv[argc - nb_str + i][j];
+                j++;
+                if (c != '\0' && !isxdigit(c)) {
+                    printf("Non-hex character: %c\n", c);
+                    return 6;
+                }
+            } while (c != '\0');
+            j--;
+            if (j % 2 != 0) {
+                puts("Invalid string length");
+                return 6;
+            }
+        }
     }
 
     int res;
@@ -300,12 +320,19 @@ static int _write_handler(int argc, char **argv)
     }
 
     if (ascii) {
-        res = vfs_write(fd, w_buf, nbytes);
-        if (res < 0) {
-            _errno_string(res, (char *)buf, sizeof(buf));
-            printf("Write error: %s\n", buf);
-            vfs_close(fd);
-            return 4;
+        while (nb_str > 0) {
+            res = vfs_write(fd, w_buf, nbytes);
+            if (res < 0) {
+                _errno_string(res, (char *)buf, sizeof(buf));
+                printf("Write error: %s\n", buf);
+                vfs_close(fd);
+                return 4;
+            }
+            nb_str--;
+            if (nb_str) {
+                vfs_write(fd, " ", 1);
+                w_buf = argv[argc - nb_str];
+            }
         }
     }
     else {
