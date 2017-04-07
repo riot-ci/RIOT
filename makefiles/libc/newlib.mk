@@ -13,8 +13,13 @@ ifeq (1,$(USE_NEWLIB_NANO))
   export LINKFLAGS += -specs=nano.specs
 endif
 
-export LINKFLAGS += -lc -lnosys
 
+ifeq ($(TARGET_ARCH),mips-mti-elf)
+  export LINKFLAGS += -lc
+else
+  export LINKFLAGS += -lc -lnosys
+endif
+ 
 # Search for Newlib include directories
 
 # Since Clang is not installed as a separate instance for each crossdev target
