@@ -7,11 +7,13 @@ include $(RIOTMAKE)/arch/mips.inc.mk
 export USEMODULE += periph
 export USEMODULE += newlib
 
-#To use UHI to handle syscall (default)
-export LINKFLAGS += -luhi -Tuhi32.ld
-export USEMODULE += newlib_syscalls_mips_uhi
-
-#To Use RIOT to handle syscalls (VFS)
-#export LINKFLAGS += -Tuhi32.ld
-#export USEMODULE += vfs
-#export USEMODULE += newlib_syscalls_default
+ifeq ($(USE_UHI_SYSCALLS),1)
+  #Use UHI to handle syscall (default)
+  export LINKFLAGS += -luhi -Tuhi32.ld
+  export USEMODULE += newlib_syscalls_mips_uhi
+else
+  #Use RIOT to handle syscalls (VFS)
+  export LINKFLAGS += -Tuhi32.ld
+  export USEMODULE += vfs
+  export USEMODULE += newlib_syscalls_default
+endif

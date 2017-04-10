@@ -42,7 +42,7 @@ export CFLAGS_OPT   = -Os
 export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_OPT) $(CFLAGS_DBG)
 
 ifeq ($(USE_HARD_FLOAT),1)
-    export CFLAGS += -mhard-float
+    export CFLAGS += -mhard-float -DMIPS_HARD_FLOAT
 else
     #hard-float is the default so we must set soft-float
     export CFLAGS += -msoft-float
@@ -50,7 +50,7 @@ else
 endif
 
 ifeq ($(USE_DSP),1)
-    export CFLAGS += -mdsp
+    export CFLAGS += -mdsp -DMIPS_DSP
 endif
 
 ifeq ($(TOOLCHAIN),llvm)

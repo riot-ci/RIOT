@@ -19,7 +19,7 @@ ifeq ($(TARGET_ARCH),mips-mti-elf)
 else
   export LINKFLAGS += -lc -lnosys
 endif
- 
+
 # Search for Newlib include directories
 
 # Since Clang is not installed as a separate instance for each crossdev target
