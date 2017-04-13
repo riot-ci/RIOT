@@ -19,6 +19,7 @@
  */
 
 #include "periph/spi.h"
+#include "periph/rtc.h"
 
 void periph_init(void)
 {
@@ -27,5 +28,10 @@ void periph_init(void)
     for (unsigned i = 0; i < SPI_NUMOF; i++) {
         spi_init(SPI_DEV(i));
     }
+#endif
+
+    /* Initialize RTC */
+#if RTC_NUMOF
+    rtc_init();
 #endif
 }
