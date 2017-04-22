@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 PHYTEC Messtechnik GmbH
+ *               2017 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -24,6 +25,7 @@
  * @brief       Interface definition for the MPL3115A2 sensor driver.
  *
  * @author      Johann Fischer <j.fischer@phytec.de>
+ * @author      Sebastian Meiling <s@mlng.net>
  */
 
 #ifndef MPL3115A2_H
@@ -37,6 +39,16 @@
 extern "C"
 {
 #endif
+
+/**
+ * @brief   Named return values
+ */
+enum {
+    MPL3115A2_OK,                 /**< all good */
+    MPL3115A2_ERROR_I2C,          /**< I2C communication failed */
+    MPL3115A2_ERROR_DEV,          /**< Device MAG3110 not found */
+    MPL3115A2_ERROR_CNF,          /**< Device configuration failed */
+};
 
 #ifndef MPL3115A2_I2C_ADDRESS
 #define MPL3115A2_I2C_ADDRESS           0x60 /**< Pressure Sensor Default Address */
@@ -56,26 +68,21 @@ extern "C"
 #define MPL3115A2_CONVERSION_TIME       512000 /**< Maximum Conversion Time in us */
 #endif
 
+/**
+ * @brief   Configuration parameters
+ */
+typedef struct {
+    i2c_t i2c;                  /**< I2C bus the device is connected to */
+    uint8_t addr;               /**< I2C bus address of the device */
+    uint8_t rate;               /**< sampling rate */
+} mpl3115a2_params_t;
 
 /**
  * @brief Device descriptor for MPL3115A2 sensors.
  */
 typedef struct {
-    i2c_t i2c;              /**< I2C device, the sensor is connected to */
-    uint8_t addr;           /**< the sensor's slave address on the I2C bus */
-    bool initialized;       /**< sensor status, true if sensor is initialized */
+    mpl3115a2_params_t params;  /**< device configuration parameters */
 } mpl3115a2_t;
-
-/**
- * @brief MPL3115A2 sensor test.
- * This function looks for Device ID of the MPL3115A2 sensor.
- *
- * @param[in]  dev          device descriptor of sensor
- *
- * @return                  0 on success
- * @return                  -1 on error
- */
-int mpl3115a2_test(mpl3115a2_t *dev);
 
 /**
  * @brief Initialize the MPL3115A2 sensor driver.
@@ -91,7 +98,7 @@ int mpl3115a2_test(mpl3115a2_t *dev);
  * @return                  -3 if sensor test failed
  * @return                  -4 if sensor configuration failed
  */
-int mpl3115a2_init(mpl3115a2_t *dev, i2c_t i2c, uint8_t address, uint8_t os_ratio);
+int mpl3115a2_init(mpl3115a2_t *dev, const mpl3115a2_params_t *params);
 
 /**
  * @brief Reset the MPL3115A2 sensor. After that, the sensor should be reinitialized.
