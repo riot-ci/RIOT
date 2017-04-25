@@ -1,6 +1,6 @@
 PKG_NAME=relic
-PKG_URL=https://github.com/tfar/relic.git
-PKG_VERSION=c5e7c5ede236f8cbec6053e1b4ada0a023ca46dd
+PKG_URL=https://github.com/relic-toolkit/relic.git
+PKG_VERSION=8781f938ff2e0be6a3df024e174212bbabd9b965
 PKG_LICENSE=LGPL-2.1
 
 .PHONY: all
