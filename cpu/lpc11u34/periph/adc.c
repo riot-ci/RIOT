@@ -80,7 +80,7 @@ int adc_sample(adc_t line, adc_res_t res)
     int sample;
 
     /* check if resolution is valid */
-    if (res < 0xff) {
+    if (res & ~(0x7 << 17)) {
         return -1;
     }
 
