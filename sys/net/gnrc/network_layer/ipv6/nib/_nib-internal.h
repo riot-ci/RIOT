@@ -140,7 +140,7 @@ typedef struct {
     uint32_t reach_time_base;           /**< base for random reachable time calculation */
     uint32_t reach_time;                /**< reachable time (in usec) */
     uint32_t retrans_time;              /**< retransmission time (in usec) */
-#if GNRC_IPV6_NIB_CONF_ROUTER
+#if GNRC_IPV6_NIB_CONF_ROUTER || defined(DOXYGEN)
     /**
      * @brief   timestamp in milliseconds of last unsolicited router advertisement
      *
@@ -149,6 +149,7 @@ typedef struct {
     uint32_t last_ra;
 #endif
     kernel_pid_t pid;                   /**< identifier of the interface */
+#if GNRC_IPV6_NIB_CONF_ROUTER || defined(DOXYGEN)
     /**
      * @brief   number of unsolicited router advertisements sent
      *
@@ -161,7 +162,10 @@ typedef struct {
     uint8_t ra_sent;
 #endif
     uint8_t rs_sent;                    /**< number of unsolicited router solicitations scheduled */
-    uint8_t na_sent;                    /**< number of unsolicited neighbor advertisements scheduled */
+    /**
+     * @brief   number of unsolicited neighbor advertisements scheduled
+     */
+    uint8_t na_sent;
 } _nib_iface_t;
 
 /**
