@@ -93,17 +93,16 @@ extern "C" {
  * @see [RFC 6775, section 3.5](https://tools.ietf.org/html/rfc6775#section-3.5)
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK             (0x0600)
-#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_NONE             (0x0000)    /**< not managed by 6Lo-AR */
 
 /**
- * @brief   address can be removed when memory is low
+ * @brief   not managed by 6Lo-AR (address can be removed when memory is low
  */
-#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC               (0x0200)
+#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC               (0x0000)
 
 /**
- * @brief   address registration still pending
+ * @brief   address registration still pending at upstream router
  */
-#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE        (0x0400)
+#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE        (0x0200)
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED       (0x0600)    /**< address is registered */
 /** @} */
 
