@@ -32,12 +32,12 @@
  *
  * @section     sec_pm (Low-) power implications
  *
- * The ADC peripheral(s) **should** only be powered on while adc_read() is
- * active. For implementing adc_read() this means, that the peripheral should be
- * powered on (i.e. through peripheral clock gating) at the beginning of the
+ * The ADC peripheral(s) **should** only be powered on while adc_sample() is
+ * active. For implementing adc_sample() this means, that the peripheral should
+ * be powered on (i.e. through peripheral clock gating) at the beginning of the
  * function and it should be powered back off at the end of the function.
  *
- * If the adc_read() function is implemented in a way, that it will put the
+ * If the adc_sample() function is implemented in a way, that it will put the
  * active thread to sleep for a certain amount of time, the implementation
  * might need to block certain power states.
  *

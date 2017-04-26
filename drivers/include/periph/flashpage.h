@@ -26,7 +26,7 @@
  * @section     sec_pm (Low-) power implications
  *
  * The flashpage driver implementation **should** make sure, that the CPU uses
- * no additional energy while the flashpage driver is active. This means, that
+ * no additional energy while the flashpage driver is inactive. This means, that
  * any particular CPU peripherals used for reading and writing flash pages
  * **should** be disabled before the read and write functions return.
  *
