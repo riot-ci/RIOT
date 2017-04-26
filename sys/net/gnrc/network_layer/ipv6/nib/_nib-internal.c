@@ -42,6 +42,7 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #endif
 
 mutex_t _nib_mutex = MUTEX_INIT;
+evtimer_msg_t _nib_evtimer;
 
 static void _override_node(const ipv6_addr_t *addr, unsigned iface,
                            _nib_t *node);
@@ -55,6 +56,7 @@ void _nib_init(void)
     memset(_nodes, 0, sizeof(_nodes));
     memset(_def_routers, 0, sizeof(_def_routers));
     memset(_nis, 0, sizeof(_nis));
+    evtimer_init_msg(&_nib_evtimer);
     /* TODO: load ABR information from persistent memory */
 }
 
@@ -203,14 +205,18 @@ _nib_t *_nib_get(const ipv6_addr_t *addr, unsigned iface)
 
 void _nib_nc_set_reachable(_nib_t *nib)
 {
+#if GNRC_IPV6_NIB_CONF_ARSM
     _nib_iface_t *iface = _nib_iface_get(_nib_get_if(nib));
     DEBUG("nib: set %s%%%u reachable (reachable time = %u)\n",
           ipv6_addr_to_str(addr_str, &nib->ipv6, sizeof(addr_str)),
           _nib_get_if(nib), iface->reach_time);
     nib->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
     nib->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE;
-    /* TODO add event for state change to STALE to event timer*/
-    (void)iface;
+    _evtimer_add(nib, GNRC_IPV6_NIB_REACH_TIMEOUT, &nib->reach_timeout,
+                 iface->reach_time);
+#else
+    (void)nib;
+#endif
 }
 
 void _nib_nc_remove(_nib_t *nib)
@@ -221,6 +227,38 @@ void _nib_nc_remove(_nib_t *nib)
     nib->mode &= ~(_NC);
     /* TODO: remove NC related timers */
     _nib_clear(nib);
+}
+
+static inline void _get_l2addr_from_ipv6(uint8_t *l2addr,
+                                         const ipv6_addr_t *ipv6)
+{
+    memcpy(l2addr, &ipv6->u64[1], sizeof(uint64_t));
+    l2addr[0] ^= 0x02;
+}
+
+void _nib_nc_get(const _nib_t *nib, gnrc_ipv6_nib_nc_t *nce)
+{
+    assert((nib != NULL) && (nce != NULL));
+    memcpy(&nce->ipv6, &nib->ipv6, sizeof(nce->ipv6));
+    nce->info = nib->info;
+#if GNRC_IPV6_NIB_CONF_ARSM
+    if (ipv6_addr_is_link_local(&nce->ipv6)) {
+        gnrc_ipv6_netif_t *netif = gnrc_ipv6_netif_get(_nib_get_if(nib));
+        assert(netif != NULL);
+        if ((netif->flags & GNRC_IPV6_NETIF_FLAGS_SIXLOWPAN) &&
+            !(netif->flags & GNRC_IPV6_NETIF_FLAGS_ROUTER)) {
+            _get_l2addr_from_ipv6(nce->l2addr, &nib->ipv6);
+            nce->l2addr_len = sizeof(uint64_t);
+            return;
+        }
+    }
+    nce->l2addr_len = nib->l2addr_len;
+    memcpy(&nce->l2addr, &nib->l2addr, nib->l2addr_len);
+#else
+    assert(ipv6_addr_is_link_local(nce->ipv6));
+    _get_l2addr_from_ipv6(nce->l2addr, &nib->ipv6);
+    nce->l2addr_len = sizeof(uint64_t);
+#endif
 }
 
 _nib_dr_t *_nib_drl_add(const ipv6_addr_t *router_addr, unsigned iface)
@@ -405,6 +443,26 @@ static inline bool _node_unreachable(_nib_t *node)
         default:
             return false;
     }
+}
+
+uint32_t _evtimer_lookup(void *ctx, uint16_t type)
+{
+    evtimer_msg_event_t *event = (evtimer_msg_event_t *)_nib_evtimer.events;
+    uint32_t offset = 0;
+
+    mutex_lock(&_nib_mutex);
+    DEBUG("nib: lookup ctx = %p, type = %u\n", (void *)ctx, type);
+    while (event != NULL) {
+        offset += event->event.offset;
+        if ((event->msg.type == type) &&
+            ((ctx == NULL) || (event->msg.content.ptr == ctx))) {
+            mutex_unlock(&_nib_mutex);
+            return offset;
+        }
+        event = (evtimer_msg_event_t *)event->event.next;
+    }
+    mutex_unlock(&_nib_mutex);
+    return UINT32_MAX;
 }
 
 /** @} */
