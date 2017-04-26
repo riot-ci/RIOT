@@ -47,7 +47,6 @@ extern "C" {
 #define _DRL    (0x08)      /**< default router list */
 #define _FT     (0x10)      /**< forwarding table */
 #define _DAD    (0x20)      /**< 6LoWPAN duplicate address detection table */
-#define _PERS   (0x40)      /**< entry is persistent (isn't swapped out by caching strategies) */
 #define _REM    (0x80)      /**< entry is marked for removal in cache */
 /** @} */
 
@@ -267,14 +266,7 @@ _nib_t *_nib_get(const ipv6_addr_t *addr, unsigned iface);
  * @return  The NIB entry for the new neighbor cache on success.
  * @return  NULL, if there is no space left.
  */
-static inline _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
-{
-    _nib_t *nib = _nib_alloc(addr, iface);
-    if (nib != NULL) {
-        nib->mode |= (_NC);
-    }
-    return nib;
-}
+_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface);
 
 /**
  * @brief   Removes a node from the neighbor cache
@@ -389,15 +381,8 @@ void _nib_dst_clear(_nib_dst_t *dst);
  */
 _nib_dst_t *_nib_dst_iter(const _nib_dst_t *last);
 
-static inline _nib_dst_t *_nib_dc_add(const ipv6_addr_t *next_hop, unsigned iface,
-                                      const ipv6_addr_t *dst)
-{
-    _nib_dst_t *nib_dst = _nib_dst_alloc(next_hop, iface, dst, IPV6_ADDR_BIT_LEN);
-    if (nib_dst != NULL) {
-        nib_dst->next_hop->mode |= (_DC);
-    }
-    return nib_dst;
-}
+_nib_dst_t *_nib_dc_add(const ipv6_addr_t *next_hop, unsigned iface,
+                        const ipv6_addr_t *dst);
 
 static inline void _nib_dc_remove(_nib_dst_t *nib_dst)
 {

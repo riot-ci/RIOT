@@ -88,6 +88,16 @@ _nib_t *_nib_alloc(const ipv6_addr_t *addr, unsigned iface)
     return node;
 }
 
+_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
+{
+    _nib_t *nib = _nib_alloc(addr, iface);
+    /* implement caching mechanism */
+    if (nib != NULL) {
+        nib->mode |= (_NC);
+    }
+    return nib;
+}
+
 _nib_t *_nib_iter(const _nib_t *last)
 {
     bool found = false;
@@ -278,6 +288,16 @@ _nib_dr_t *_nib_drl_get_dr(void)
         return res;
     }
     return _prime_def_router;
+}
+
+_nib_dst_t *_nib_dc_add(const ipv6_addr_t *next_hop, unsigned iface,
+                        const ipv6_addr_t *dst)
+{
+    _nib_dst_t *nib_dst = _nib_dst_alloc(next_hop, iface, dst, IPV6_ADDR_BIT_LEN);
+    if (nib_dst != NULL) {
+        nib_dst->next_hop->mode |= (_DC);
+    }
+    return nib_dst;
 }
 
 _nib_iface_t *_nib_iface_get(unsigned iface)
