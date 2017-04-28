@@ -50,7 +50,7 @@ static void test_nib_alloc__no_space_left_diff_addr(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, IFACE)));
-        nib->mode |= _PERS;
+        nib->mode |= _DRL;
         addr.u64[1].u64++;
     }
     TEST_ASSERT_NULL(_nib_alloc(&addr, IFACE));
@@ -71,7 +71,7 @@ static void test_nib_alloc__no_space_left_diff_iface(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, iface)));
-        nib->mode |= _PERS;
+        nib->mode |= _DAD;
         iface++;
     }
     TEST_ASSERT_NULL(_nib_alloc(&addr, iface));
@@ -92,7 +92,7 @@ static void test_nib_alloc__no_space_left_diff_addr_iface(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, iface)));
-        nib->mode |= _PERS;
+        nib->mode |= _DC;
         addr.u64[1].u64++;
         iface++;
     }
@@ -116,7 +116,7 @@ static void test_nib_alloc__success_duplicate(void)
         addr.u64[1].u64++;
         iface++;
         TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, iface)));
-        nib->mode |= _PERS;
+        nib->mode |= _PL;
     }
     TEST_ASSERT(nib == _nib_alloc(&addr, iface));
 }
@@ -147,7 +147,7 @@ static void test_nib_clear__persistent(void)
                                              { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, IFACE)));
-    nib->mode |= _PERS;
+    nib->mode |= _DRL;
     TEST_ASSERT(!_nib_clear(nib));
     TEST_ASSERT(nib == _nib_iter(NULL));
 }
@@ -163,7 +163,7 @@ static void test_nib_clear__non_persistent_but_content(void)
                                              { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, IFACE)));
-    nib->mode |= ~_PERS;
+    nib->mode |= ~(_FT);
     TEST_ASSERT(!_nib_clear(nib));
     TEST_ASSERT(nib == _nib_iter(NULL));
 }
@@ -211,7 +211,7 @@ static void test_nib_iter__one_elem(void)
                                              { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, IFACE)));
-    nib->mode = _PERS;
+    nib->mode = _FT;
     TEST_ASSERT_NOT_NULL((res = _nib_iter(NULL)));
     TEST_ASSERT(res == nib);
     TEST_ASSERT_NULL(_nib_iter(res));
@@ -229,10 +229,10 @@ static void test_nib_iter__two_elem(void)
                                 { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib1 = _nib_alloc(&addr, IFACE)));
-    nib1->mode = _PERS;
+    nib1->mode = _DC;
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((nib2 = _nib_alloc(&addr, IFACE)));
-    nib2->mode = _PERS;
+    nib2->mode = _PL;
     TEST_ASSERT_NOT_NULL((res = _nib_iter(NULL)));
     TEST_ASSERT(res == nib1);
     TEST_ASSERT_NOT_NULL((res = _nib_iter(res)));
@@ -252,13 +252,13 @@ static void test_nib_iter__three_elem(void)
                                 { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib1 = _nib_alloc(&addr, IFACE)));
-    nib1->mode = _PERS;
+    nib1->mode = _DAD;
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((nib2 = _nib_alloc(&addr, IFACE)));
-    nib2->mode = _PERS;
+    nib2->mode = _DRL;
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((nib3 = _nib_alloc(&addr, IFACE)));
-    nib3->mode = _PERS;
+    nib3->mode = _FT;
     TEST_ASSERT_NOT_NULL((res = _nib_iter(NULL)));
     TEST_ASSERT(res == nib1);
     TEST_ASSERT_NOT_NULL((res = _nib_iter(res)));
@@ -280,13 +280,13 @@ static void test_nib_iter__three_elem_middle_removed(void)
                                 { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib1 = _nib_alloc(&addr, IFACE)));
-    nib1->mode = _PERS;
+    nib1->mode = _PL;
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((nib2 = _nib_alloc(&addr, IFACE)));
-    nib2->mode = _PERS;
+    nib2->mode = _FT;
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((nib3 = _nib_alloc(&addr, IFACE)));
-    nib3->mode = _PERS;
+    nib3->mode = _DRL;
     nib2->mode = _EMPTY;
     TEST_ASSERT(_nib_clear(nib2));
     TEST_ASSERT_NOT_NULL((res = _nib_iter(NULL)));
@@ -307,7 +307,7 @@ static void test_nib_get__not_in_nib(void)
                                 { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib_alloced = _nib_alloc(&addr, IFACE)));
-    nib_alloced->mode = _PERS;
+    nib_alloced->mode = _FT;
     addr.u64[1].u64++;
     TEST_ASSERT_NULL(_nib_get(&addr, IFACE));
 }
@@ -323,7 +323,7 @@ static void test_nib_get__success(void)
                                 { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib_alloced = _nib_alloc(&addr, IFACE)));
-    nib_alloced->mode = _PERS;
+    nib_alloced->mode = _NC;
     TEST_ASSERT_NOT_NULL((nib_got = _nib_get(&addr, IFACE)));
     TEST_ASSERT(nib_alloced == nib_got);
 }
@@ -342,7 +342,8 @@ static void test_nib_get__empty(void)
 
 /*
  * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with different IP
- * addresses and then tries to add another.
+ * addresses and a non-garbage-collectible AR state and then tries to add
+ * another.
  * Expected result: should return NULL
  */
 static void test_nib_nc_add__no_space_left_diff_addr(void)
@@ -354,6 +355,7 @@ static void test_nib_nc_add__no_space_left_diff_addr(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
+        nib->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED;
         addr.u64[1].u64++;
     }
     TEST_ASSERT_NULL(_nib_nc_add(&addr, IFACE));
@@ -361,7 +363,8 @@ static void test_nib_nc_add__no_space_left_diff_addr(void)
 
 /*
  * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with different interface
- * identifiers and then tries to add another.
+ * identifiers and a non-garbage-collectible AR state and then tries to add
+ * another.
  * Expected result: should return NULL
  */
 static void test_nib_nc_add__no_space_left_diff_iface(void)
@@ -374,6 +377,7 @@ static void test_nib_nc_add__no_space_left_diff_iface(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, iface)));
+        nib->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE;
         iface++;
     }
     TEST_ASSERT_NULL(_nib_nc_add(&addr, iface));
@@ -381,7 +385,8 @@ static void test_nib_nc_add__no_space_left_diff_iface(void)
 
 /*
  * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with different IP
- * addresses and interface identifiers and then tries to add another.
+ * addresses and interface identifiers and a non-garbage-collectible AR state
+ * and then tries to add another.
  * Expected result: should return NULL
  */
 static void test_nib_nc_add__no_space_left_diff_addr_iface(void)
@@ -394,6 +399,7 @@ static void test_nib_nc_add__no_space_left_diff_addr_iface(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, iface)));
+        nib->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED;
         addr.u64[1].u64++;
         iface++;
     }
@@ -402,8 +408,8 @@ static void test_nib_nc_add__no_space_left_diff_addr_iface(void)
 
 /*
  * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with different IP
- * addresses and interface identifiers and then tries to add another that is
- * equal to the last.
+ * addresses and interface identifiers and a non-garbage-collectible AR state
+ * and then tries to add another that is equal to the last.
  * Expected result: should return not NULL (the last)
  */
 static void test_nib_nc_add__success_duplicate(void)
@@ -411,12 +417,13 @@ static void test_nib_nc_add__success_duplicate(void)
     _nib_t *nib;
     ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
                                   { .u64 = TEST_UINT64 } } };
-    unsigned iface = 1;
+    unsigned iface = 0;
 
     for (int i = 0; i < GNRC_IPV6_NIB_NUMOF; i++) {
         addr.u64[1].u64++;
         iface++;
         TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, iface)));
+        nib->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED;
     }
     TEST_ASSERT(nib == _nib_nc_add(&addr, iface));
 }
@@ -432,9 +439,35 @@ static void test_nib_nc_add__success(void)
                                              { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
-    TEST_ASSERT(nib->mode & (_NC));
+    TEST_ASSERT(nib->mode & _NC);
     TEST_ASSERT(ipv6_addr_equal(&addr, &nib->ipv6));
     TEST_ASSERT_EQUAL_INT(IFACE, _nib_get_if(nib));
+}
+
+/*
+ * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with differnt IP address.
+ * Expected result: new entries should still be able to be created and further
+ * should be different than the previous created ones
+ */
+static void test_nib_nc_add__success_full_but_not_garbage_collectible(void)
+{
+    _nib_t *last, *nib;
+    ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
+                                  { .u64 = TEST_UINT64 } } };
+
+    for (int i = 0; i < GNRC_IPV6_NIB_NUMOF; i++) {
+        TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
+        TEST_ASSERT(last != nib);
+        addr.u64[1].u64++;
+        last = nib;
+    }
+    TEST_ASSERT_NOT_NULL((last = _nib_nc_add(&addr, IFACE)));
+    addr.u64[1].u64++;
+    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
+    TEST_ASSERT(last != nib);
+    addr.u64[1].u64++;
+    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
+    TEST_ASSERT(last != nib);
 }
 
 /*
@@ -467,7 +500,7 @@ static void test_nib_nc_remove__uncleared(void)
                                              { .u64 = TEST_UINT64 } } };
 
     TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
-    nib->mode |= _PERS;
+    nib->mode |= _DC;
     _nib_nc_remove(nib);
     TEST_ASSERT(nib == _nib_iter(NULL));
 }
@@ -521,7 +554,7 @@ static void test_nib_drl_add__no_space_left_nib_full(void)
         _nib_t *nib;
 
         TEST_ASSERT_NOT_NULL((nib = _nib_alloc(&addr, IFACE)));
-        nib->mode |= _PERS;
+        nib->mode |= _PL;
         addr.u64[1].u64++;
     }
     TEST_ASSERT_NULL(_nib_drl_add(&addr, IFACE));
@@ -622,7 +655,7 @@ static void test_nib_drl_remove__uncleared(void)
 
     TEST_ASSERT_NOT_NULL((nib_dr = _nib_drl_add(&addr, IFACE)));
     nib = nib_dr->next_hop;
-    nib->mode |= _PERS;
+    nib->mode |= _NC;
     _nib_drl_remove(nib_dr);
     TEST_ASSERT_NULL(_nib_drl_iter(NULL));
     TEST_ASSERT(nib == _nib_iter(NULL));
@@ -1008,6 +1041,7 @@ Test *tests_gnrc_ipv6_nib_internal_tests(void)
         new_TestFixture(test_nib_nc_add__no_space_left_diff_addr_iface),
         new_TestFixture(test_nib_nc_add__success_duplicate),
         new_TestFixture(test_nib_nc_add__success),
+        new_TestFixture(test_nib_nc_add__success_full_but_not_garbage_collectible),
         new_TestFixture(test_nib_nc_remove__uncleared),
         new_TestFixture(test_nib_nc_remove__cleared),
         new_TestFixture(test_nib_nc_set_reachable__success),
