@@ -101,8 +101,12 @@ _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
 {
     _nib_t *nib = _nib_alloc(addr, iface);
     if (nib != NULL) {
+        DEBUG("nib: Adding to neighbor cache (addr = %s, iface = %u)\n",
+              ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
         nib->mode |= _NC;
         if (nib->next == NULL) {
+            DEBUG("nib: queueing (addr = %s, iface = %u) for potential removal\n",
+                  ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
             /* add to next removable list, if not already in it */
             clist_rpush(&_next_removable, (clist_node_t *)nib);
         }
@@ -110,19 +114,34 @@ _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
     else {
         _nib_t *first = (_nib_t *)clist_lpop(&_next_removable);
         _nib_t *tmp = first;
+
+        DEBUG("nib: Searching for replaceable entries (addr = %s, iface = %u)\n",
+              ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
         if (tmp != NULL) {
             do {
                 if (_is_gc(tmp)) {
+                    DEBUG("nib: Removing neighbor cache entry (addr = %s, "
+                          "iface = %u) ",
+                          ipv6_addr_to_str(addr_str, &tmp->ipv6,
+                                           sizeof(addr_str)),
+                          _nib_get_if(tmp));
+                    DEBUG("for (addr = %s, iface = %u)\n",
+                          ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
+                          iface);
                     nib = tmp;
+                    _nib_nc_remove(nib);
                     break;
                 }
                 else {
                     /* requeue if not garbage collectible at the moment */
+                    DEBUG("nib: Requeing (addr = %s, iface = %u)\n",
+                          ipv6_addr_to_str(addr_str, &tmp->ipv6,
+                                           sizeof(addr_str)),
+                          _nib_get_if(tmp));
                     clist_rpush(&_next_removable, (clist_node_t *)tmp);
                 }
                 tmp = (_nib_t *)clist_lpop(&_next_removable);
             } while (tmp != first);
-
         }
     }
     return nib;
@@ -163,7 +182,7 @@ _nib_t *_nib_get(const ipv6_addr_t *addr, unsigned iface)
             ((_nib_get_if(node) == 0) || (iface == 0) ||
              (_nib_get_if(node) == iface)) &&
             ipv6_addr_equal(&node->ipv6, addr)) {
-            DEBUG("  Found %p\n", node);
+            DEBUG("  Found %p\n", (void *)node);
             return node;
         }
     }
@@ -173,16 +192,21 @@ _nib_t *_nib_get(const ipv6_addr_t *addr, unsigned iface)
 
 void _nib_nc_set_reachable(_nib_t *nib)
 {
+    _nib_iface_t *iface = _nib_iface_get(_nib_get_if(nib));
     DEBUG("nib: set %s%%%u reachable (reachable time = %u)\n",
-          ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface,
-          nib->reach_time);
+          ipv6_addr_to_str(addr_str, &nib->ipv6, sizeof(addr_str)),
+          _nib_get_if(nib), iface->reach_time);
     nib->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
     nib->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE;
     /* TODO add event for state change to STALE to event timer*/
+    (void)iface;
 }
 
 void _nib_nc_remove(_nib_t *nib)
 {
+    DEBUG("nib: remove from neighbor cache (addr = %s, iface = %u)\n",
+          ipv6_addr_to_str(addr_str, &nib->ipv6, sizeof(addr_str)),
+          _nib_get_if(nib));
     nib->mode &= ~(_NC);
     /* TODO: remove NC related timers */
     _nib_clear(nib);
@@ -194,7 +218,7 @@ _nib_dr_t *_nib_drl_add(const ipv6_addr_t *router_addr, unsigned iface)
 
     DEBUG("nib: Allocating default router list entry entry "
           "(router_addr = %s, iface = %u)\n",
-          ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
+          ipv6_addr_to_str(addr_str, router_addr, sizeof(addr_str)), iface);
     for (unsigned i = 0; i < GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF; i++) {
         _nib_dr_t *tmp = &_def_routers[i];
         _nib_t *tmp_node = tmp->next_hop;
