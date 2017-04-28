@@ -47,7 +47,6 @@ extern "C" {
 #define _DRL    (0x08)      /**< default router list */
 #define _FT     (0x10)      /**< forwarding table */
 #define _DAD    (0x20)      /**< 6LoWPAN duplicate address detection table */
-#define _REM    (0x80)      /**< entry is marked for removal in cache */
 /** @} */
 
 /**
@@ -63,7 +62,8 @@ extern "C" {
 /**
  * @brief   On-link NIB entry
  */
-typedef struct {
+typedef struct _nib {
+    struct _nib *next;                  /**< next removable entry */
 #if GNRC_IPV6_NIB_CONF_QUEUE_PKT || defined(DOXYGEN)
     /**
      * @brief   queue for packets currently in address resolution

@@ -31,6 +31,7 @@
 /* pointers for default router selection */
 static _nib_dr_t *_prime_def_router = NULL;
 static _nib_dr_t *_last_def_router = NULL;
+static clist_node_t _next_removable = { NULL };
 
 static _nib_t _nodes[GNRC_IPV6_NIB_NUMOF];
 static _nib_dr_t _def_routers[GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF];
@@ -50,6 +51,7 @@ void _nib_init(void)
 {
     _prime_def_router = NULL;
     _last_def_router = NULL;
+    _next_removable.next = NULL;
     memset(_nodes, 0, sizeof(_nodes));
     memset(_def_routers, 0, sizeof(_def_routers));
     memset(_nis, 0, sizeof(_nis));
@@ -88,12 +90,40 @@ _nib_t *_nib_alloc(const ipv6_addr_t *addr, unsigned iface)
     return node;
 }
 
+static inline bool _is_gc(_nib_t *nib)
+{
+    return ((nib->mode & ~(_NC)) == 0) &&
+            ((nib->info & GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK) ==
+              GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC);
+}
+
 _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
 {
     _nib_t *nib = _nib_alloc(addr, iface);
-    /* implement caching mechanism */
     if (nib != NULL) {
-        nib->mode |= (_NC);
+        nib->mode |= _NC;
+        if (nib->next == NULL) {
+            /* add to next removable list, if not already in it */
+            clist_rpush(&_next_removable, (clist_node_t *)nib);
+        }
+    }
+    else {
+        _nib_t *first = (_nib_t *)clist_lpop(&_next_removable);
+        _nib_t *tmp = first;
+        if (tmp != NULL) {
+            do {
+                if (_is_gc(tmp)) {
+                    nib = tmp;
+                    break;
+                }
+                else {
+                    /* requeue if not garbage collectible at the moment */
+                    clist_rpush(&_next_removable, (clist_node_t *)tmp);
+                }
+                tmp = (_nib_t *)clist_lpop(&_next_removable);
+            } while (tmp != first);
+
+        }
     }
     return nib;
 }
