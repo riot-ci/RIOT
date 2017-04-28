@@ -129,7 +129,8 @@ _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
                           ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
                           iface);
                     nib = tmp;
-                    _nib_nc_remove(nib);
+                    nib->info = _EMPTY;
+                    _override_node(addr, iface, nib);
                     break;
                 }
                 else {
