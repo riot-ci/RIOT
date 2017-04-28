@@ -431,7 +431,7 @@ static void test_nib_nc_add__success_duplicate(void)
         node->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED;
     }
     TEST_ASSERT(node == _nib_nc_add(&addr, iface,
-                                   GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE));
+                                    GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE));
 }
 
 /*
@@ -479,7 +479,7 @@ static void test_nib_nc_add__success_full_but_garbage_collectible(void)
     TEST_ASSERT(last != node);
     addr.u64[1].u64++;
     TEST_ASSERT_NOT_NULL((node = _nib_nc_add(&addr, IFACE,
-                                            GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE)));
+                                             GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE)));
     TEST_ASSERT(last != node);
 }
 
