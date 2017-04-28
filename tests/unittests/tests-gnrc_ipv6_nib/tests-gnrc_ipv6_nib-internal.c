@@ -449,7 +449,7 @@ static void test_nib_nc_add__success(void)
  * Expected result: new entries should still be able to be created and further
  * should be different than the previous created ones
  */
-static void test_nib_nc_add__success_full_but_not_garbage_collectible(void)
+static void test_nib_nc_add__success_full_but_garbage_collectible(void)
 {
     _nib_t *last, *nib;
     ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
@@ -1041,7 +1041,7 @@ Test *tests_gnrc_ipv6_nib_internal_tests(void)
         new_TestFixture(test_nib_nc_add__no_space_left_diff_addr_iface),
         new_TestFixture(test_nib_nc_add__success_duplicate),
         new_TestFixture(test_nib_nc_add__success),
-        new_TestFixture(test_nib_nc_add__success_full_but_not_garbage_collectible),
+        new_TestFixture(test_nib_nc_add__success_full_but_garbage_collectible),
         new_TestFixture(test_nib_nc_remove__uncleared),
         new_TestFixture(test_nib_nc_remove__cleared),
         new_TestFixture(test_nib_nc_set_reachable__success),
