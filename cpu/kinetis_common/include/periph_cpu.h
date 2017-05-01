@@ -316,10 +316,18 @@ enum {
 /** @} */
 
 /**
+ * @brief UART hardware module types
+ */
+enum {
+    KINETIS_UART,   /**< Kinetis UART module type */
+    KINETIS_LPUART, /**< Kinetis Low-power UART (LPUART) module type */
+};
+
+/**
  * @brief UART module configuration options
  */
 typedef struct {
-    UART_Type *dev;               /**< Pointer to module hardware registers */
+    void *dev;                    /**< Pointer to module hardware registers */
     uint32_t freq;                /**< Module clock frequency, usually CLOCK_CORECLOCK or CLOCK_BUSCLOCK */
     gpio_t pin_rx;                /**< RX pin, GPIO_UNDEF disables RX */
     gpio_t pin_tx;                /**< TX pin */
@@ -329,6 +337,7 @@ typedef struct {
     volatile uint32_t *scgc_addr; /**< Clock enable register, in SIM module */
     uint8_t scgc_bit;             /**< Clock enable bit, within the register */
     uint8_t mode;                 /**< UART mode: data bits, parity, stop bits */
+    uint8_t type;                 /**< Hardware module type (KINETIS_UART or KINETIS_LPUART)*/
 } uart_conf_t;
 
 #if !defined(KINETIS_HAVE_PLL)
