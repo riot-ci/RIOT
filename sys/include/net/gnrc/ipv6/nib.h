@@ -41,7 +41,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
-#define GNRC_IPV6_NIB_SND_UC_NC             (0x4fc0)
+#define GNRC_IPV6_NIB_SND_UC_NC             (0x4fc0U)
 
 /**
  * @brief   (Re-)transmit multicast Neighbor Solicitation event.
@@ -53,7 +53,7 @@ extern "C" {
  * Solicitation is supposed to be sent.
  *
  */
-#define GNRC_IPV6_NIB_SND_MC_NS             (0x4fc1)
+#define GNRC_IPV6_NIB_SND_MC_NS             (0x4fc1U)
 
 /**
  * @brief   Send delayed Neighbor Advertisement event.
@@ -63,7 +63,7 @@ extern "C" {
  * [packet snip](@ref gnrc_pktsnip_t) in *sending order*, representing the
  * Neighbor Advertisement.
  */
-#define GNRC_IPV6_NIB_SND_NA                (0x4fc2)
+#define GNRC_IPV6_NIB_SND_NA                (0x4fc2U)
 
 /**
  * @brief   Search router event.
@@ -73,7 +73,7 @@ extern "C" {
  * context is a pointer to a valid [interface](@ref _nib_iface_t) behind
  * which the router is searched.
  */
-#define GNRC_IPV6_NIB_SEARCH_RTR            (0x4fc3)
+#define GNRC_IPV6_NIB_SEARCH_RTR            (0x4fc3U)
 
 /**
  * @brief   Reconfirm router event.
@@ -83,7 +83,7 @@ extern "C" {
  * is a pointer to a valid [on-link entry](@ref _nib_t) representing the router
  * that is to be confirmed.
  */
-#define GNRC_IPV6_NIB_RECONFIRM_RTR         (0x4fc4)
+#define GNRC_IPV6_NIB_RECONFIRM_RTR         (0x4fc4U)
 
 /**
  * @brief   Reply Router Solicitation event.
@@ -95,7 +95,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ROUTER != 0
  */
-#define GNRC_IPV6_NIB_REPLY_RS              (0x4fc5)
+#define GNRC_IPV6_NIB_REPLY_RS              (0x4fc5U)
 
 /**
  * @brief   (Re-)transmit multicast Router Advertisement event.
@@ -107,7 +107,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ROUTER != 0
  */
-#define GNRC_IPV6_NIB_SND_MC_RA             (0x4fc6)
+#define GNRC_IPV6_NIB_SND_MC_RA             (0x4fc6U)
 
 /**
  * @brief   Reachability timeout event.
@@ -119,7 +119,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
-#define GNRC_IPV6_NIB_REACH_TIMEOUT         (0x4fc7)
+#define GNRC_IPV6_NIB_REACH_TIMEOUT         (0x4fc7U)
 
 /**
  * @brief   Delay timeout event.
@@ -131,7 +131,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
-#define GNRC_IPV6_NIB_DELAY_TIMEOUT         (0x4fc8)
+#define GNRC_IPV6_NIB_DELAY_TIMEOUT         (0x4fc8U)
 
 /**
  * @brief   Address registration timeout event.
@@ -143,7 +143,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_6LR != 0
  */
-#define GNRC_IPV6_NIB_ADDR_REG_TIMEOUT      (0x4fc9)
+#define GNRC_IPV6_NIB_ADDR_REG_TIMEOUT      (0x4fc9U)
 
 /**
  * @brief   6LoWPAN context timeout event.
@@ -154,7 +154,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_6LN != 0
  */
-#define GNRC_IPV6_NIB_6LO_CTX_TIMEOUT       (0x4fca)
+#define GNRC_IPV6_NIB_6LO_CTX_TIMEOUT       (0x4fcaU)
 
 /**
  * @brief   Authoritative border router timeout event.
@@ -165,7 +165,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_MULTIHOP_P6C != 0
  */
-#define GNRC_IPV6_NIB_ABR_TIMEOUT           (0x4fcb)
+#define GNRC_IPV6_NIB_ABR_TIMEOUT           (0x4fcbU)
 
 /**
  * @brief   Prefix timeout event.
@@ -173,7 +173,7 @@ extern "C" {
  * This message type is for the event of a prefix timeout. The expected message
  * context is a valid [off-link entry](_nib_dst_t) representing the prefix.
  */
-#define GNRC_IPV6_NIB_PFX_TIMEOUT           (0x4fcc)
+#define GNRC_IPV6_NIB_PFX_TIMEOUT           (0x4fccU)
 
 /**
  * @brief   Router timeout event.
@@ -181,7 +181,7 @@ extern "C" {
  * This message type is for the event of a router timeout. The expected message
  * context is a valid [default router entry](_nib_dr_t) representing the router.
  */
-#define GNRC_IPV6_NIB_RTR_TIMEOUT           (0x4fcd)
+#define GNRC_IPV6_NIB_RTR_TIMEOUT           (0x4fcdU)
 /** @} */
 
 #ifdef __cplusplus
