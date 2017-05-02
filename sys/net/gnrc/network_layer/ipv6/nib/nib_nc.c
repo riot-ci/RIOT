@@ -33,7 +33,7 @@ int gnrc_ipv6_nib_nc_set(const ipv6_addr_t *ipv6, unsigned iface,
     assert(l2addr < GNRC_IPV6_NIB_L2ADDR_MAX_LEN);
     assert(iface <= KERNEL_PID_LAST);
     mutex_lock(&_nib_mutex);
-    nib = _nib_nc_add(ipv6, iface);
+    nib = _nib_nc_add(ipv6, iface, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
     if (nib == NULL) {
         mutex_unlock(&_nib_mutex);
         return -ENOMEM;
@@ -45,7 +45,10 @@ int gnrc_ipv6_nib_nc_set(const ipv6_addr_t *ipv6, unsigned iface,
     (void)l2addr;
     (void)l2addr_len;
 #endif
-    nib->info |= GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL;
+    nib->info &= ~(GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK |
+                   GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
+    nib->info |= (GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL |
+                  GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
     mutex_unlock(&_nib_mutex);
     return 0;
 }
