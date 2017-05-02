@@ -115,6 +115,15 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief   Reset time in milliseconds for the reachability time
+ *
+ * @see [RFC 4861, section 6.3.4](https://tools.ietf.org/html/rfc4861#section-6.3.4)
+ */
+#ifndef GNRC_IPV6_NIB_CONF_REACH_TIME_RESET
+#define GNRC_IPV6_NIB_CONF_REACH_TIME_RESET (7200000U)
+#endif
+
+/**
  * @brief   Maximum link-layer address length (aligned)
  */
 #if (GNRC_NETIF_HDR_L2ADDR_MAX_LEN % 8)

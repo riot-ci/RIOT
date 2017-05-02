@@ -41,7 +41,7 @@ extern "C" {
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
-#define GNRC_IPV6_NIB_SND_UC_NC             (0x4fc0U)
+#define GNRC_IPV6_NIB_SND_UC_NS             (0x4fc0U)
 
 /**
  * @brief   (Re-)transmit multicast Neighbor Solicitation event.
