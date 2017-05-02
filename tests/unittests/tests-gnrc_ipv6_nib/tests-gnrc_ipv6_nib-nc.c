@@ -220,8 +220,8 @@ static void test_nib_nc_mark_reachable__not_in_neighbor_cache(void)
                                   { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
-    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
-    nib->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE;
+    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE,
+                                            GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE)));
 
     /* check pre-state */
     TEST_ASSERT(gnrc_ipv6_nib_nc_iter(0, &iter_state, &nce));
@@ -292,8 +292,8 @@ static void test_nib_nc_mark_reachable__success(void)
                                   { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
-    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE)));
-    nib->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE;
+    TEST_ASSERT_NOT_NULL((nib = _nib_nc_add(&addr, IFACE,
+                                            GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE)));
     /* set an "infinite" reachability time */
     iface = _nib_iface_get(_nib_get_if(nib));
     iface->reach_time = UINT32_MAX;
