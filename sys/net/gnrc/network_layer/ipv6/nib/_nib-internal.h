@@ -259,14 +259,18 @@ _nib_t *_nib_get(const ipv6_addr_t *addr, unsigned iface);
  * @brief   Adds a node to the neighbor cache
  *
  * @pre     `(addr != NULL)`
+ * @pre     `(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_DELAY)`
+ * @pre     `(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_PROBE)`
+ * @pre     `(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE)`
  *
- * @param[in] addr  The address of a node. May not be NULL.
- * @param[in] iface The interface to the node.
- *
+ * @param[in] addr      The address of a node. May not be NULL.
+ * @param[in] iface     The interface to the node.
+ * @param[in] cstate    Creation state. State of the entry *if* the entry is
+ *                      newly created.
  * @return  The NIB entry for the new neighbor cache on success.
  * @return  NULL, if there is no space left.
  */
-_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface);
+_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface, uint16_t cstate);
 
 /**
  * @brief   Removes a node from the neighbor cache

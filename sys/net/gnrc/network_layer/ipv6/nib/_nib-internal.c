@@ -97,13 +97,20 @@ static inline bool _is_gc(_nib_t *nib)
               GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC);
 }
 
-_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
+_nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface, uint16_t cstate)
 {
+    assert(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_DELAY);
+    assert(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_PROBE);
+    assert(cstate != GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE);
     _nib_t *nib = _nib_alloc(addr, iface);
     if (nib != NULL) {
         DEBUG("nib: Adding to neighbor cache (addr = %s, iface = %u)\n",
               ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
-        nib->mode |= _NC;
+        if (!(nib->mode & _NC)) {
+            nib->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
+            nib->info |= (cstate & GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
+            nib->mode |= _NC;
+        }
         if (nib->next == NULL) {
             DEBUG("nib: queueing (addr = %s, iface = %u) for potential removal\n",
                   ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)), iface);
@@ -129,8 +136,11 @@ _nib_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface)
                           ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
                           iface);
                     nib = tmp;
-                    nib->info = _EMPTY;
+                    nib->info = 0;
+                    nib->mode = _EMPTY;
                     _override_node(addr, iface, nib);
+                    nib->info |= (cstate & GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
+                    nib->mode |= _NC;
                     break;
                 }
                 else {
