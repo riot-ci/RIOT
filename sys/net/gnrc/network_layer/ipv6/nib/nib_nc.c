@@ -94,11 +94,8 @@ bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
         if ((nib->mode & _NC) &&
             ((iface == 0) || (_nib_get_if(nib) == iface))) {
             memcpy(&entry->ipv6, &nib->ipv6, sizeof(entry->ipv6));
-#if gnrc_ipv6_nib_has_unique_id
-            memcpy(&entry->unique_id, &nib->eui64, sizeof(entry->unique_id));
-#endif
             entry->info = nib->info;
-#if !gnrc_ipv6_nib_always_rev_trans
+#if GNRC_IPV6_NIB_CONF_ARSM
             memcpy(entry->l2addr, nib->l2addr, nib->l2addr_len);
             entry->l2addr_len = nib->l2addr_len;
 #endif
