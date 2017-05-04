@@ -136,9 +136,11 @@ typedef struct {
  * @brief   Interface specific information for Neighbor Discovery
  */
 typedef struct {
+#if GNRC_IPV6_NIB_CONF_ARSM
     uint32_t reach_time_base;           /**< base for random reachable time calculation */
-    uint32_t reach_time;                /**< reachable time (in usec) */
-    uint32_t retrans_time;              /**< retransmission time (in usec) */
+    uint32_t reach_time;                /**< reachable time (in ms) */
+    uint32_t retrans_time;              /**< retransmission time (in ms) */
+#endif
 #if GNRC_IPV6_NIB_CONF_ROUTER || defined(DOXYGEN)
     /**
      * @brief   timestamp in milliseconds of last unsolicited router advertisement

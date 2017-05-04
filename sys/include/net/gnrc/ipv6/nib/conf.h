@@ -30,33 +30,55 @@ extern "C" {
  * @{
  */
 /**
+ * @brief   enable features for 6Lo border router
+ */
+#ifndef GNRC_IPV6_NIB_CONF_6LBR
+#define GNRC_IPV6_NIB_CONF_6LBR         (0)
+#endif
+
+/**
+ * @brief    enable features for 6Lo router
+ */
+#ifndef GNRC_IPV6_NIB_CONF_6LR
+#if GNRC_IPV6_NIB_CONF_6LBR
+#define GNRC_IPV6_NIB_CONF_6LR          (1)
+#else
+#define GNRC_IPV6_NIB_CONF_6LR          (0)
+#endif
+#endif
+
+/**
+ * @brief    enable features for 6Lo node
+ */
+#ifndef GNRC_IPV6_NIB_CONF_6LN
+#if GNRC_IPV6_NIB_CONF_6LR
+#define GNRC_IPV6_NIB_CONF_6LN          (1)
+#else
+#define GNRC_IPV6_NIB_CONF_6LN          (0)
+#endif
+#endif
+
+/**
  * @brief   enable features for IPv6 routers
  */
 #ifndef GNRC_IPV6_NIB_CONF_ROUTER
-#define GNRC_IPV6_NIB_CONF_ROUTER       (0) /**< features for IPv6 routers */
+#if GNRC_IPV6_NIB_CONF_6LR
+#define GNRC_IPV6_NIB_CONF_ROUTER       (1)
+#else
+#define GNRC_IPV6_NIB_CONF_ROUTER       (0)
+#endif
 #endif
 
 /**
  * @brief    (de-)activate router advertising at interface start-up
  */
 #ifndef GNRC_IPV6_NIB_CONF_ADV_ROUTER
-#if GNRC_IPV6_NIB_CONF_ROUTER
+#if GNRC_IPV6_NIB_CONF_ROUTER && \
+    (!GNRC_IPV6_NIB_CONF_6LR || GNRC_IPV6_NIB_CONF_6LBR)
 #define GNRC_IPV6_NIB_CONF_ADV_ROUTER   (1)
 #else
 #define GNRC_IPV6_NIB_CONF_ADV_ROUTER   (0)
 #endif
-#endif
-
-#ifndef GNRC_IPV6_NIB_CONF_6LN
-#define GNRC_IPV6_NIB_CONF_6LN          (0) /**< features for 6LN */
-#endif
-
-#ifndef GNRC_IPV6_NIB_CONF_6LR
-#define GNRC_IPV6_NIB_CONF_6LR          (0) /**< features for 6LR */
-#endif
-
-#ifndef GNRC_IPV6_NIB_CONF_6LBR
-#define GNRC_IPV6_NIB_CONF_6LBR         (0) /**< features for 6LBR */
 #endif
 
 /**
@@ -66,8 +88,15 @@ extern "C" {
 #define GNRC_IPV6_NIB_CONF_ARSM         (1)
 #endif
 
+/**
+ * @brief    queue packets for address resolution
+ */
 #ifndef GNRC_IPV6_NIB_CONF_QUEUE_PKT
-#define GNRC_IPV6_NIB_CONF_QUEUE_PKT    (1) /**< queue packets for address resolution */
+#if GNRC_IPV6_NIB_CONF_6LN
+#define GNRC_IPV6_NIB_CONF_QUEUE_PKT    (0)
+#else
+#define GNRC_IPV6_NIB_CONF_QUEUE_PKT    (1)
+#endif
 #endif
 
 /**
@@ -80,8 +109,11 @@ extern "C" {
 #define GNRC_IPV6_NIB_CONF_SLAAC        (1)
 #endif
 
+/**
+ * @brief    handle Redirect Messages
+ */
 #ifndef GNRC_IPV6_NIB_CONF_REDIRECT
-#define GNRC_IPV6_NIB_CONF_REDIRECT     (0) /**< handle Redirect Messages */
+#define GNRC_IPV6_NIB_CONF_REDIRECT     (0)
 #endif
 
 /**
