@@ -38,8 +38,6 @@ extern "C" {
  * Solicitation. The expected message context is a pointer to a valid
  * [on-link entry](@ref _nib_t) representing the neighbor to which the Neighbor
  * Solicitation is supposed to be sent.
- *
- * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
 #define GNRC_IPV6_NIB_SND_UC_NS             (0x4fc0U)
 
@@ -51,7 +49,6 @@ extern "C" {
  * [on-link entry](@ref _nib_t) representing the neighbor to which [solicited
  * nodes](https://tools.ietf.org/html/rfc4291#section-2.7.1) group the Neighbor
  * Solicitation is supposed to be sent.
- *
  */
 #define GNRC_IPV6_NIB_SND_MC_NS             (0x4fc1U)
 
