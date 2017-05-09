@@ -509,9 +509,9 @@ static inline void _evtimer_add(void *ctx, int16_t type,
                                 evtimer_msg_event_t *event, uint32_t offset)
 {
 #ifdef MODULE_GNRC_IPV6
-    static const kernel_pid_t target_pid = gnrc_ipv6_pid;
+    kernel_pid_t target_pid = gnrc_ipv6_pid;
 #else
-    static const kernel_pid_t target_pid = KERNEL_PID_LAST;  /* just for testing */
+    kernel_pid_t target_pid = KERNEL_PID_LAST;  /* just for testing */
 #endif
     evtimer_del((evtimer_t *)(&_nib_evtimer), (evtimer_event_t *)event);
     assert(event->event.next == NULL);
