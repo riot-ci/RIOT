@@ -31,10 +31,10 @@
 
 #define I2C_SPEED           I2C_SPEED_NORMAL
 
-#define BUS                 (dev->i2c)
-#define ADDR                (dev->addr)
+#define BUS                 (dev->params->i2c)
+#define ADDR                (dev->params->addr)
 
-int adxl345_init(adxl345_t *dev, adxl345_params_t* params)
+int adxl345_init(adxl345_t *dev, const adxl345_params_t* params)
 {
     uint8_t reg;
 
