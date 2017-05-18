@@ -248,7 +248,7 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *     gnrc_ipv6_nib_nc_t entry;
  *
  *     puts("My neighbors:");
- *     while (gnrc_ipv6_nib_nc_iter(&state, &entry)) {
+ *     while (gnrc_ipv6_nib_nc_iter(0, &state, &entry)) {
  *         gnrc_ipv6_nib_nc_print(&entry);
  *     }
  *     return 0;
