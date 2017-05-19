@@ -31,6 +31,9 @@ extern "C" {
 #ifdef MODULE_CAN_PM
 #include "xtimer.h"
 #endif
+#ifdef MODULE_TRX
+#include "can/trx.h"
+#endif
 
 #ifndef CAN_MAX_RATE_ERROR
 /**
@@ -45,6 +48,9 @@ extern "C" {
  */
 typedef struct candev_params {
     const char *name;                /**< candev name to set */
+#if defined(MODULE_TRX) || defined(DOXYGEN)
+    trx_t *trx;                      /**< transceiver to set */
+#endif
 #if defined(MODULE_CAN_PM) || defined(DOXYGEN)
     uint32_t rx_inactivity_timeout;  /**< power management rx timeout value */
     uint32_t tx_wakeup_timeout;      /**< power management tx wake up value */
@@ -59,6 +65,9 @@ typedef struct candev_dev {
     int ifnum;        /**< interface number */
     kernel_pid_t pid; /**< pid */
     const char *name; /**< device name */
+#if defined(MODULE_TRX) || defined(DOXYGEN)
+    trx_t *trx;       /**< transceiver attached to the device */
+#endif
 #if defined(MODULE_CAN_PM) || defined(DOXYGEN)
     uint32_t rx_inactivity_timeout; /**< Min timeout loaded when a frame is received */
     uint32_t tx_wakeup_timeout;     /**< Min timeout loaded when a frame is sent */
