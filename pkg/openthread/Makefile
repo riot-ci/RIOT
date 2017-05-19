@@ -22,7 +22,7 @@ $(info $$OPENTHREAD_ARGS is [${OPENTHREAD_ARGS}])
 all: git-download
 	cd $(PKG_BUILDDIR) && PREFIX="/" ./bootstrap
 	cd $(PKG_BUILDDIR) && ./configure \
-		--enable-application-coap INSTALL="/usr/bin/install -p" CPP="$(CPP)" \
+		--enable-application-coap CPP="$(CPP)" \
 		CC="$(CC)" CXX="$(CXX)" OBJC="" OBJCXX="" AR="$(AR)" RANLIB="$(RANLIB)" NM="$(NM)" \
 		STRIP="$(STRIP)" \
 		CPPFLAGS="-fdata-sections -ffunction-sections -Os -g  $(CFLAGS_CPU) " \
@@ -37,18 +37,18 @@ all: git-download
 		${OPENTHREAD_ARGS}
 	cd $(PKG_BUILDDIR) && make -j4 --no-print-directory DESTDIR=$(PKG_BUILDDIR)/output install PREFIX=/
 
-    cp $(PKG_BUILDDIR)/output/lib/libmbedcrypto.a ${BINDIR}/libmbedcrypto.a
+	cp $(PKG_BUILDDIR)/output/lib/libmbedcrypto.a ${BINDIR}/libmbedcrypto.a
 ifneq (,$(filter libopenthread-ftd,$(USEMODULE)))
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-ftd.a ${BINDIR}/libopenthread-cli-ftd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-ftd.a ${BINDIR}/libopenthread-cli-ftd.a
 endif
 ifneq (,$(filter libopenthread-mtd,$(USEMODULE)))
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/libopenthread-mtd.a
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/libopenthread-cli-mtd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/libopenthread-mtd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/libopenthread-cli-mtd.a
 endif
 ifneq (,$(filter libopenthread-ncp-ftd,$(USEMODULE)))
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
-    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ncp-ftd.a ${BINDIR}/libopenthread-ncp-ftd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
+	cp $(PKG_BUILDDIR)/output/lib/libopenthread-ncp-ftd.a ${BINDIR}/libopenthread-ncp-ftd.a
 endif
-    sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
+	sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
 include $(RIOTBASE)/pkg/pkg.mk
