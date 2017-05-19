@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Fundación Inria Chile
+ * Copyright (C) 2017 Fundacion Inria Chile
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -17,7 +17,7 @@
  *
  * @file
  *
- * @author  JosÃ© Ignacio Alamos <jialamos@uc.cl>
+ * @author  José Ignacio Alamos <jialamos@uc.cl>
  */
 
 #ifndef OT_H
@@ -34,17 +34,16 @@ extern "C" {
 #include "thread.h"
 #include "openthread/types.h"
 
-#define OPENTHREAD_XTIMER_MSG_TYPE_EVENT (0x2235)   /**< xtimer message receiver event*/
-#define OPENTHREAD_NETDEV_MSG_TYPE_EVENT (0x2236)   /**< message received from driver */
-#define OPENTHREAD_SERIAL_MSG_TYPE_EVENT (0x2237)   /**< event indicating a serial (UART) message was sent to OpenThread */
-#define OPENTHREAD_MSG_TYPE_RECV (0x2238)           /**< event for frame reception */
-#define OPENTHREAD_JOB_MSG_TYPE_EVENT (0x2240)      /**< event indicating an OT_JOB message */
+#define OPENTHREAD_XTIMER_MSG_TYPE_EVENT (0x2235)        /**< xtimer message receiver event*/
+#define OPENTHREAD_NETDEV_MSG_TYPE_EVENT (0x2236)        /**< message received from driver */
+#define OPENTHREAD_SERIAL_MSG_TYPE_EVENT (0x2237)        /**< event indicating a serial (UART) message was sent to OpenThread */
+#define OPENTHREAD_MSG_TYPE_RECV         (0x2238)        /**< event for frame reception */
+#define OPENTHREAD_JOB_MSG_TYPE_EVENT    (0x2240)        /**< event indicating an OT_JOB message */
 
 typedef void OT_JOB;
 
 /**
  * @brief   Struct containing a serial message
- *
  */
 typedef struct {
     void *buf;  /**< buffer containing the message */
@@ -65,12 +64,6 @@ typedef struct {
  * @param[in]  aInstance          pointer to an OpenThread instance
  */
 void recv_pkt(otInstance *aInstance, netdev_t *dev);
-
-/**
- * @brief Gets packet from driver and tells OpenThread about the reception.
- *
- * @param[in]  aInstance          pointer to an OpenThread instance
- */
 
 /**
  * @brief   Inform OpenThread when tx is finished
@@ -131,7 +124,7 @@ void openthread_uart_run(void);
 #endif
 
 /**
- * @brief   Execute OpenThread job in same thread as OT core (dute to concurrency).
+ * @brief   Execute OpenThread job in same thread as OT core (due to concurrency).
  *
  * @note    An OpenThread job allows direct calls to OpenThread API (otXXX functions) without worrying about concurrency
  * issues. All API calls should be made in OT_JOB type functions.

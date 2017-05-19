@@ -12,8 +12,8 @@ ifneq (,$(filter libopenthread-mtd,$(USEMODULE)))
     OPENTHREAD_ARGS+= --enable-cli-app=mtd
 endif
 ifneq (,$(filter libopenthread-ncp-ftd,$(USEMODULE)))
-      $(info Compile OpenThread with NCP)
-      OPENTHREAD_ARGS += --enable-ncp-app=ftd --with-ncp-bus=uart
+    $(info Compile OpenThread with NCP)
+    OPENTHREAD_ARGS += --enable-ncp-app=ftd --with-ncp-bus=uart
 endif
 $(info $$OPENTHREAD_ARGS is [${OPENTHREAD_ARGS}])
 
@@ -35,20 +35,20 @@ all: git-download
 		--prefix=/ \
 		--enable-default-logging \
 		${OPENTHREAD_ARGS}
-	cd $(PKG_BUILDDIR) && make -j99 --no-print-directory DESTDIR=$(PKG_BUILDDIR)/output install PREFIX=/
+	cd $(PKG_BUILDDIR) && make -j4 --no-print-directory DESTDIR=$(PKG_BUILDDIR)/output install PREFIX=/
 
-		cp $(PKG_BUILDDIR)/output/lib/libmbedcrypto.a ${BINDIR}/libmbedcrypto.a
+    cp $(PKG_BUILDDIR)/output/lib/libmbedcrypto.a ${BINDIR}/libmbedcrypto.a
 ifneq (,$(filter libopenthread-ftd,$(USEMODULE)))
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-ftd.a ${BINDIR}/libopenthread-cli-ftd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-ftd.a ${BINDIR}/libopenthread-cli-ftd.a
 endif
 ifneq (,$(filter libopenthread-mtd,$(USEMODULE)))
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/libopenthread-mtd.a
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/libopenthread-cli-mtd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/libopenthread-mtd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/libopenthread-cli-mtd.a
 endif
 ifneq (,$(filter libopenthread-ncp-ftd,$(USEMODULE)))
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
-		cp $(PKG_BUILDDIR)/output/lib/libopenthread-ncp-ftd.a ${BINDIR}/libopenthread-ncp-ftd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/libopenthread-ftd.a
+    cp $(PKG_BUILDDIR)/output/lib/libopenthread-ncp-ftd.a ${BINDIR}/libopenthread-ncp-ftd.a
 endif
-		sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
+    sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
 include $(RIOTBASE)/pkg/pkg.mk

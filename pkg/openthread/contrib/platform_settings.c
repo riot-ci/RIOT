@@ -17,7 +17,7 @@
 #include "openthread/types.h"
 
 #include "debug.h"
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 
 void otPlatSettingsInit(otInstance *aInstance)
 {

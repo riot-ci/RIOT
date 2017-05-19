@@ -54,7 +54,6 @@ void otTaskletsSignalPending(otInstance *aInstance)
 void openthread_uart_run(void)
 {
     char buf[256];
-    // uint8_t index=0;
     char c;
     msg_t msg;
 

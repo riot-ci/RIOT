@@ -115,10 +115,10 @@ static OT_JOB _send_udp_pkt(otInstance *ot_instance, void *context)
 
     otMessageInfo mPeer;
 
-    //Set dest address
+    /* Set dest address */
     memcpy(&mPeer.mPeerAddr.mFields, &(pkt->ip_addr), sizeof(ipv6_addr_t));
 
-    //Set dest port
+    /* Set dest port */
     mPeer.mPeerPort = pkt->port;
 
     otUdpSend(&socket, message, &mPeer);
@@ -128,6 +128,8 @@ static OT_JOB _send_udp_pkt(otInstance *ot_instance, void *context)
 int _udp(int argc, char **argv)
 {
     if (argc < 3) {
+        printf("Usage: udp server <port>\n");
+        printf("       udp send <ip_addr> <port> <message>\n");
         return 1;
     }
     else if (strcmp(argv[1], "server") == 0) {
@@ -193,22 +195,16 @@ int _ifconfig(int argc, char **argv)
     return 0;
 }
 
-#if !defined(MODULE_OPENTHREAD_CLI) && !defined(MODULE_OPENTHREAD_NCP)
 static const shell_command_t shell_commands[] = {
     { "ifconfig", "Get or set panid", _ifconfig },
     { "udp", "Test udp", _udp },
     { NULL, NULL, NULL }
 };
-#endif
 
 int main(void)
 {
-#if defined(MODULE_OPENTHREAD_CLI) || defined(MODULE_OPENTHREAD_NCP)
-    openthread_uart_run();
-#else
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
-#endif
 
     return 0;
 }

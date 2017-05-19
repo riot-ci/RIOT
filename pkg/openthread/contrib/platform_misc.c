@@ -28,6 +28,6 @@ void otPlatReset(otInstance *aInstance)
 otPlatResetReason otPlatGetResetReason(otInstance *aInstance)
 {
     (void)aInstance;
-    // TODO: Write me!
+    /* TODO: Write me! */
     return kPlatResetReason_PowerOn;
 }

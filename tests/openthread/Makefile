@@ -1,4 +1,4 @@
-APPLICATION = openthread_test
+APPLICATION = openthread
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
@@ -9,11 +9,7 @@ RIOTBASE ?= $(CURDIR)/../..
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
-
 CFLAGS += -DDEVELHELP -Wall
-
-#Uncomment the following line for running OpenThread CLI
-#CFLAGS += -DMODULE_OPENTHREAD_CLI
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
@@ -33,7 +29,8 @@ ifneq (,$(filter iotlab-m3 fox,$(BOARD)))
 endif
 
 ifneq (,$(filter at86rf2%,$(DRIVER)))
-  FEATURES_REQUIRED = periph_spi periph_gpio
+  FEATURES_REQUIRED = periph_spi
+  FEATURES_REQUIRED = periph_gpio
 endif
 
 USEMODULE += $(DRIVER)
