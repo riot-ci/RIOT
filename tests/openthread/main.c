@@ -110,7 +110,7 @@ static OT_JOB _send_udp_pkt(otInstance *ot_instance, void *context)
     otUdpOpen(ot_instance, &socket, _handle_receive, NULL);
 
     message = otUdpNewMessage(ot_instance, true);
-     otMessageSetLength(message, pkt->len);
+    otMessageSetLength(message, pkt->len);
     otMessageWrite(message, 0, pkt->payload, pkt->len);
 
     otMessageInfo mPeer;
