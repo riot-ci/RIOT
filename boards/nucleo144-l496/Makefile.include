@@ -1,0 +1,6 @@
+## the cpu to build for
+export CPU = stm32l4
+export CPU_MODEL = stm32l496zg
+
+# load the common Makefile.include for Nucleo boards
+include $(RIOTBOARD)/nucleo144-common/Makefile.include
