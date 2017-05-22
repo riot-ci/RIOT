@@ -30,7 +30,7 @@ int gnrc_ipv6_nib_nc_set(const ipv6_addr_t *ipv6, unsigned iface,
     _nib_t *nib;
 
     assert((ipv6 != NULL) && (l2addr != NULL));
-    assert(l2addr_len < GNRC_IPV6_NIB_L2ADDR_MAX_LEN);
+    assert(l2addr_len <= GNRC_IPV6_NIB_L2ADDR_MAX_LEN);
     assert(iface <= KERNEL_PID_LAST);
     mutex_lock(&_nib_mutex);
     nib = _nib_nc_add(ipv6, iface, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
