@@ -16,6 +16,9 @@
 #include "net/gnrc/icmpv6.h"
 #include "net/gnrc/ipv6.h"
 #include "net/gnrc/netif.h"
+#ifdef MODULE_GNRC_SIXLOWPAN_ND
+#include "net/gnrc/sixlowpan/nd.h"
+#endif
 #include "net/ndp.h"
 
 #include "net/gnrc/ndp2.h"
