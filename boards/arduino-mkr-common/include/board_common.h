@@ -24,7 +24,6 @@
 
 #include "cpu.h"
 #include "periph_conf.h"
-#include "periph_conf_common.h"
 #include "arduino_pinmap.h"
 
 #ifdef __cplusplus
