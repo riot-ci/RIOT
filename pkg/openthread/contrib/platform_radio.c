@@ -29,6 +29,8 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+#define RADIO_IEEE802154_FCS_LEN    2
+
 static bool sDisabled;
 
 static RadioPacket sTransmitFrame;
@@ -135,7 +137,9 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
     }
 
     /* Fill OpenThread receive frame */
-    sReceiveFrame.mLength = len;
+    /* Openthread needs a packet length with FCS included,
+     * OpenThread do not use the data so we don't need to calculate FCS */
+    sReceiveFrame.mLength = len + RADIO_IEEE802154_FCS_LEN;
     sReceiveFrame.mPower = _get_power();
 
     /* Read received frame */
@@ -284,12 +288,15 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
     (void) aInstance;
     struct iovec pkt;
 
-    /* Populate iovec with transmit data */
+    /* Populate iovec with transmit data
+     * Unlike RIOT, OpenThread includes two bytes FCS (0x00 0x00) so
+     * these bytes are removed
+     */
     pkt.iov_base = aPacket->mPsdu;
-    pkt.iov_len = aPacket->mLength;
+    pkt.iov_len = aPacket->mLength - RADIO_IEEE802154_FCS_LEN;
 
     /*Set channel and power based on transmit frame */
-    DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, aPacket->mLength);
+    DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, (int)pkt.iov_len);
     _set_channel(aPacket->mChannel);
     _set_power(aPacket->mPower);
 
