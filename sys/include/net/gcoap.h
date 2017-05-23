@@ -422,11 +422,11 @@ void gcoap_register_listener(gcoap_listener_t *listener);
 /**
  * @brief  Initializes a CoAP request PDU on a buffer.
  *
- * @param[in] pdu Request metadata
- * @param[in] buf Buffer containing the PDU
- * @param[in] len Length of the buffer
- * @param[in] code Request code
- * @param[in] path Resource path
+ * @param[in] pdu   Request metadata
+ * @param[in] buf   Buffer containing the PDU
+ * @param[in] len   Length of the buffer
+ * @param[in] code  Request code: GCOAP_[GET|POST|PUT|DELETE]
+ * @param[in] path  Resource path, *must* start with '/'
  *
  * @return 0 on success
  * @return < 0 on error
@@ -440,10 +440,10 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code,
  * Assumes the PDU has been initialized with gcoap_req_init() or
  * gcoap_resp_init().
  *
- * @param[in] pdu Request metadata
- * @param[in] payload_len Length of the payload, or 0 if none
- * @param[in] format Format code for the payload; use COAP_FORMAT_NONE if not
- *                   specified
+ * @param[in] pdu           Request metadata
+ * @param[in] payload_len   Length of the payload, or 0 if none
+ * @param[in] format        Format code for the payload; use COAP_FORMAT_NONE if
+ *                          not specified
  *
  * @return size of the PDU
  * @return < 0 on error
@@ -453,11 +453,11 @@ ssize_t gcoap_finish(coap_pkt_t *pdu, size_t payload_len, unsigned format);
 /**
  *  @brief Writes a complete CoAP request PDU when there is not a payload.
  *
- * @param[in] pdu Request metadata
- * @param[in] buf Buffer containing the PDU
- * @param[in] len Length of the buffer
- * @param[in] code Request code
- * @param[in] path Resource path
+ * @param[in] pdu   Request metadata
+ * @param[in] buf   Buffer containing the PDU
+ * @param[in] len   Length of the buffer
+ * @param[in] code  Request code: GCOAP_[GET|POST|PUT|DELETE]
+ * @param[in] path  Resource path, *must* start with '/'
  *
  * @return size of the PDU within the buffer
  * @return < 0 on error
