@@ -1,5 +1,6 @@
 /*
  * Copyright (C)  2017 Inria
+ *                2017 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,7 +14,7 @@
  * @brief       Board common implementations for the Arduino MKR boards
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
- *
+  *@author      Hauke Pertersen  <hauke.pertersen@fu-berlin.de>
  * @}
  */
 
