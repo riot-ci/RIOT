@@ -241,6 +241,16 @@ extern "C" {
 #define GCOAP_PAYLOAD_MARKER    (0xFF)
 
 /**
+ * @name    Possible request codes
+ * @{
+ */
+#define GCOAP_GET               (1) /**< GET request */
+#define GCOAP_POST              (2) /**< POST request */
+#define GCOAP_PUT               (3) /**< PUT request */
+#define GCOAP_DELETE            (4) /**< DELETE request */
+/** @} */
+
+/**
  * @name States for the memo used to track waiting for a response
  * @{
  */
