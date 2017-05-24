@@ -57,7 +57,7 @@ ARCH = $(shell echo $(CPU_ARCH) | tr 'a-z-' 'A-Z_')
 export CFLAGS += -DCPU_ARCH_$(ARCH)
 
 # set the compiler specific CPU and FPU options
-ifeq ($(CPU_ARCH),cortex-m4f)
+ifneq (,$(filter $(CPU_ARCH),cortex-m4f cortex-m7))
     ifneq (,$(filter cortexm_fpu,$(DISABLE_MODULE)))
         export CFLAGS_FPU ?= -mfloat-abi=soft
     else
@@ -67,7 +67,11 @@ ifeq ($(CPU_ARCH),cortex-m4f)
             export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
         endif
     endif
-    export MCPU := cortex-m4
+    ifeq ($(CPU_ARCH),cortex-m4f)
+        export MCPU := cortex-m4
+    else
+        export MCPU ?= $(CPU_ARCH)
+    endif
 else
 CFLAGS_FPU ?= -mfloat-abi=soft
 export MCPU ?= $(CPU_ARCH)
