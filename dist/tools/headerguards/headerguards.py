@@ -11,7 +11,10 @@ _out = "___"
 transtab = str.maketrans(_in, _out)
 
 def path_to_guardname(filepath):
-    return filepath.upper().translate(transtab)
+    res = filepath.upper().translate(transtab)
+    if res.startswith("_"):
+        res = "PRIV" + res
+    return res
 
 def get_guard_name(filepath):
     parts = filepath.split(os.sep)
@@ -69,7 +72,13 @@ def fix_headerguard(filename):
             sys.stdout.write(line)
     else:
         print("%s: no / broken header guard" % filename, file=sys.stderr)
+        return False
 
 if __name__=="__main__":
+    error = False
     for filename in sys.argv[1:]:
-        fix_headerguard(filename)
+        if fix_headerguard(filename) == False:
+            error = True
+
+    if error:
+        sys.exit(1)
