@@ -149,22 +149,6 @@ char *thread_arch_stack_init(thread_task_func_t task_func,
         *stk = ~((uint32_t)STACK_MARKER);
     }
 
-#if defined(CPU_ARCH_CORTEX_M4F) || (CPU_ARCH_CORTEX_M7)
-    /* TODO: fix FPU handling for Cortex-M4f */
-    /*
-    stk--;
-    *stk = (unsigned int) 0;
-    */
-
-    /* S0 - S15 */
-    /*
-    for (int i = 15; i >= 0; i--) {
-        stk--;
-        *stk = i;
-    }
-    */
-#endif
-
     /* ****************************** */
     /* Automatically popped registers */
     /* ****************************** */
@@ -300,7 +284,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     __asm__ volatile (
     /* PendSV handler entry point */
     /* save context by pushing unsaved registers to the stack */
-    /* {r0-r3,r12,LR,PC,xPSR} are saved automatically on exception entry */
+    /* {r0-r3,r12,LR,PC,xPSR,s0-s15,FPSCR} are saved automatically on exception entry */
     ".thumb_func                      \n"
     "mrs    r0, psp                   \n" /* get stack pointer from user mode */
 #if defined(CPU_ARCH_CORTEX_M0) || defined(CPU_ARCH_CORTEX_M0PLUS)
@@ -318,11 +302,13 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "mov    r0, sp                    \n" /* switch back to the exception SP */
     "mov    sp, r12                   \n"
 #else
+#if (defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
+    "tst    lr, #0x10                 \n"
+    "it     eq                        \n"
+    "vstmdbeq r0!, {s16-s31}          \n" /* save FPU registers if FPU is used */
+#endif
     "stmdb  r0!,{r4-r11}              \n" /* save regs */
     "stmdb  r0!,{lr}                  \n" /* exception return value */
-#if defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)
-/*  "vstmdb sp!, {s16-s31}            \n" */ /* TODO save FPU registers */
-#endif
 #endif
     "ldr    r1, =sched_active_thread  \n" /* load address of current tcb */
     "ldr    r1, [r1]                  \n" /* dereference pdc */
@@ -365,14 +351,16 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void) {
     "ldr    r0, [r0]                  \n" /* dereference TCB */
     "ldr    r1, [r0]                  \n" /* load tcb->sp to register 1 */
     "ldmia  r1!, {r0}                 \n" /* restore exception return value */
-#if defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)
-/*  "pop    {s16-s31}                 \n" */ /* TODO load FPU registers */
-#endif
     "ldmia  r1!, {r4-r11}             \n" /* restore other registers */
+#if (defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
+    "tst    r0, #0x10                 \n"
+    "it     eq                        \n"
+    "vldmiaeq r1!, {s16-s31}          \n" /* load FPU registers if saved */
+#endif
     "msr    psp, r1                   \n" /* restore user mode SP to PSP reg */
     "bx     r0                        \n" /* load exception return value to PC,
                                            * causes end of exception*/
 #endif
-    /* {r0-r3,r12,LR,PC,xPSR} are restored automatically on exception return */
+    /* {r0-r3,r12,LR,PC,xPSR,s0-s15,FPSCR} are restored automatically on exception return */
     );
 }
