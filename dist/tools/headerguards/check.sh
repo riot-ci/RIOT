@@ -24,12 +24,8 @@ _headercheck() {
     OUT="$(${RIOTBASE}/dist/tools/headerguards/headerguards.py ${FILES} | filter)"
 
     if [ -n "$OUT" ]; then
-        if [ $QUIET -eq 1 ]; then
-            echo "$OUT"
-            EXIT_CODE=1
-        else
-            echo "$OUT"
-        fi
+        EXIT_CODE=1
+        echo "$OUT"
     fi
 }
 
