@@ -73,4 +73,3 @@ def fix_headerguard(filename):
 if __name__=="__main__":
     for filename in sys.argv[1:]:
         fix_headerguard(filename)
-
