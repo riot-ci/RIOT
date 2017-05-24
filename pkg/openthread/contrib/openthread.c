@@ -44,11 +44,6 @@ static uint8_t rx_buf[OPENTHREAD_NETDEV2_BUFLEN];
 static uint8_t tx_buf[OPENTHREAD_NETDEV2_BUFLEN];
 static char ot_thread_stack[2 * THREAD_STACKSIZE_MAIN];
 
-void otTaskletsSignalPending(otInstance *aInstance)
-{
-    (void)aInstance;
-}
-
 #if defined(MODULE_OPENTHREAD_CLI) || defined(MODULE_OPENTHREAD_NCP)
 /* init and run OpeanThread's UART simulation (stdio) */
 void openthread_uart_run(void)

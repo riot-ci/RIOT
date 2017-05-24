@@ -132,6 +132,7 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
 
     /* very unlikely */
     if ((len > (unsigned) UINT16_MAX)) {
+        DEBUG("Len too high: %d\n", len);
         otPlatRadioReceiveDone(aInstance, NULL, kThreadError_Abort);
         return;
     }
@@ -144,6 +145,13 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
 
     /* Read received frame */
     int res = dev->driver->recv(dev, (char *) sReceiveFrame.mPsdu, len, NULL);
+
+   DEBUG("Received message: len %d\n", (int) sReceiveFrame.mLength);
+    for (int i = 0; i < sReceiveFrame.mLength; ++i)
+    {
+        DEBUG("%x ", sReceiveFrame.mPsdu[i]);
+    }
+    DEBUG("\n");
 
     /* Tell OpenThread that receive has finished */
     otPlatRadioReceiveDone(aInstance, res > 0 ? &sReceiveFrame : NULL, res > 0 ? kThreadError_None : kThreadError_Abort);
@@ -296,7 +304,12 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
     pkt.iov_len = aPacket->mLength - RADIO_IEEE802154_FCS_LEN;
 
     /*Set channel and power based on transmit frame */
-    DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, (int)pkt.iov_len);
+    DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, (int)aPacket->mLength);
+    for (int i = 0; i < aPacket->mLength; ++i)
+    {
+        DEBUG("%x ", aPacket->mPsdu[i]);
+    }
+    DEBUG("\n");
     _set_channel(aPacket->mChannel);
     _set_power(aPacket->mPower);
 
