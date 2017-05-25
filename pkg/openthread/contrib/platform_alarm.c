@@ -28,10 +28,16 @@
 static xtimer_t ot_timer;
 static msg_t ot_alarm_msg;
 
-/* OpenThread will call this for starting an aDt millisecs alarm when current time is aT0 millisecs */
+/**
+ * Set the alarm to fire at @p aDt milliseconds after @p aT0.
+ *
+ * @param[in] aInstance  The OpenThread instance structure.
+ * @param[in] aT0        The reference time.
+ * @param[in] aDt        The time delay in milliseconds from @p aT0.
+ */
 void otPlatAlarmStartAt(otInstance *aInstance, uint32_t aT0, uint32_t aDt)
 {
-    DEBUG("openthread: otPlatAlarmStartAt: aT0: %i, aDT: %i\n", (int) aT0, (int) aDt);
+    DEBUG("openthread: otPlatAlarmStartAt: aT0: %" PRIu32 ", aDT: %" PRIu32 "\n", aT0, aDt);
     ot_alarm_msg.type = OPENTHREAD_XTIMER_MSG_TYPE_EVENT;
 
     int dt;
@@ -55,8 +61,7 @@ void otPlatAlarmStop(otInstance *aInstance)
 uint32_t otPlatAlarmGetNow(void)
 {
     uint32_t now = xtimer_now_usec() / US_PER_MS;
-
-    DEBUG("openthread: otPlatAlarmGetNow: %i\n", (int) now);
+    DEBUG("openthread: otPlatAlarmGetNow: %" PRIu32 "\n", now);
     return now;
 }
 /** @} */
