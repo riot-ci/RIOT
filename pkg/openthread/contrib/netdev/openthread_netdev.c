@@ -93,7 +93,7 @@ static void *_openthread_event_loop(void *arg)
                 dev->driver->isr(dev);
                 break;
             case OPENTHREAD_SERIAL_MSG_TYPE_EVENT:
-                /* Tell OpenThread about the receotion of a CLI command */
+                /* Tell OpenThread about the reception of a CLI command */
                 buf = msg.content.ptr;
                 otPlatUartReceived(buf, strlen((char *) buf));
                 break;
