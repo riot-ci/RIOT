@@ -30,10 +30,6 @@
 #include "random.h"
 #include "ot.h"
 
-#ifdef MODULE_OPENTHREAD_NCP
-#include "openthread/ncp.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -76,22 +72,13 @@ static void *_openthread_event_loop(void *arg)
     netdev_t *dev;
     msg_t msg, reply;
 
-#ifdef MODULE_OPENTHREAD_CLI
     otCliUartInit(sInstance);
-#else
-
-#ifdef MODULE_OPENTHREAD_NCP
-    otNcpInit(sInstance);
-#endif
-
-#endif
 
 #if OPENTHREAD_ENABLE_DIAG
     diagInit(sInstance);
 #endif
 
     uint8_t *buf;
-    (void) buf;
     ot_job_t *job;
     while (1) {
         msg_receive(&msg);
@@ -105,13 +92,11 @@ static void *_openthread_event_loop(void *arg)
                 dev = msg.content.ptr;
                 dev->driver->isr(dev);
                 break;
-#if defined(MODULE_OPENTHREAD_CLI) || defined(MODULE_OPENTHREAD_NCP)
             case OPENTHREAD_SERIAL_MSG_TYPE_EVENT:
                 /* Tell OpenThread about the receotion of a CLI command */
                 buf = msg.content.ptr;
                 otPlatUartReceived(buf, strlen((char *) buf));
                 break;
-#endif
             case OPENTHREAD_JOB_MSG_TYPE_EVENT:
                 job = msg.content.ptr;
                 job->function(sInstance, job->context);
