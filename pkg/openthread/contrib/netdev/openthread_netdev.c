@@ -8,9 +8,12 @@
 
 /**
  * @{
- *
+ * @ingroup     net
  * @file
- * @author  Jose Ignacio Alamos <jialamos@uc.cl>
+ * @brief       Netdev adoption for OpenThread
+ *
+ * @author      Jose Ignacio Alamos <jialamos@uc.cl>
+ * @}
  */
 
 #include <assert.h>
@@ -177,4 +180,3 @@ int openthread_netdev_init(char *stack, int stacksize, char priority,
 
     return _pid;
 }
-/** @} */

@@ -8,9 +8,12 @@
 
 /**
  * @{
- *
+ * @ingroup     net
  * @file
- * @author  Jose Ignacio Alamos <jialamos@uc.cl>
+ * @brief       Implementation of OpenThread alarm platform abstraction
+ *
+ * @author      Jose Ignacio Alamos <jialamos@uc.cl>
+ * @}
  */
 
 #include <stdint.h>
@@ -64,4 +67,3 @@ uint32_t otPlatAlarmGetNow(void)
     DEBUG("openthread: otPlatAlarmGetNow: %" PRIu32 "\n", now);
     return now;
 }
-/** @} */

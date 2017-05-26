@@ -8,9 +8,12 @@
 
 /**
  * @{
- *
+ * @ingroup     net
  * @file
- * @author  Jose Ignacio Alamos <jialamos@uc.cl>
+ * @brief       Implementation of OpenThread radio platform abstraction
+ *
+ * @author      Jose Ignacio Alamos <jialamos@uc.cl>
+ * @}
  */
 
 #include <assert.h>
@@ -417,4 +420,3 @@ int8_t otPlatRadioGetReceiveSensitivity(otInstance *aInstance)
 {
     return -100;
 }
-/** @} */

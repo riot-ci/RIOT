@@ -25,7 +25,7 @@ static OT_JOB _get_panid(otInstance *ot_instance, void *context)
 
 static OT_JOB _thread_start(otInstance *ot_instance, void *context)
 {
-    printf("Starting OpenThread\n");
+    puts("Starting OpenThread");
     otIp6SetEnabled(ot_instance, true);
     otThreadSetEnabled(ot_instance, true);
 }
@@ -73,7 +73,7 @@ void _handle_receive(void *aContext, otMessage *aMessage, const otMessageInfo *a
 
     otMessageRead(aMessage, otMessageGetOffset(aMessage), buf, payload_len);
 
-    printf("Message: ");
+    puts("Message: ");
     for (int i = 0; i < payload_len; i++) {
         printf("%02x ", buf[i]);
     }
@@ -129,7 +129,7 @@ int _udp(int argc, char **argv)
 {
     if (argc < 3) {
         printf("Usage: udp server <port>\n");
-        printf("       udp send <ip_addr> <port> <message>\n");
+        puts("       udp send <ip_addr> <port> <message>");
         return 1;
     }
     else if (strcmp(argv[1], "server") == 0) {
