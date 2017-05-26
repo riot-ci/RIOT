@@ -17,8 +17,8 @@ QUIET ?= 1
 USEPKG += openthread
 USEMODULE += openthread_contrib
 USEMODULE += libmbedcrypto
-USEMODULE += libopenthread-ftd
-USEMODULE += libopenthread-cli-ftd
+USEMODULE += libopenthread
+USEMODULE += libopenthread-cli
 USEMODULE += xtimer
 
 ifneq (,$(filter samr21-xpro,$(BOARD)))
