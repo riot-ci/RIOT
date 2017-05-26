@@ -7,8 +7,6 @@ it will initialize the OpenThread Command Line Interface for interacting with th
 
 To test OpenThread on RIOT, you can do the following:
 
-To test OpenThread in RIOT, you can do the following:
-
 1. Flash nodes with `make BOARD=<target> clean all flash`
 2. Write `panid 0x1234`, `ifconfig up` then `thread start` on one node.
 3. Check the state of the node with `state`. In the beggining should be `detached`, but after some seconds it should
