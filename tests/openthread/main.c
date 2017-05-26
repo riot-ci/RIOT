@@ -10,6 +10,6 @@
 
 int main(void)
 {
-	openthread_uart_run();
+    openthread_uart_run();
     return 0;
 }
