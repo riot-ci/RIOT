@@ -217,17 +217,11 @@ ThreadError otPlatRadioEnable(otInstance *aInstance)
     DEBUG("openthread: otPlatRadioEnable\n");
     (void) aInstance;
 
-    ThreadError error;
-
     if (sDisabled) {
         sDisabled = false;
-        error = kThreadError_None;
+		_set_idle();
     }
-    else {
-        error = kThreadError_InvalidState;
-    }
-
-    return error;
+	return kThreadError_None;
 }
 
 /* OpenThread will call this for disabling the radio */
@@ -236,17 +230,12 @@ ThreadError otPlatRadioDisable(otInstance *aInstance)
     DEBUG("openthread: otPlatRadioDisable\n");
     (void) aInstance;
 
-    ThreadError error;
-
     if (!sDisabled) {
         sDisabled = true;
-        error = kThreadError_None;
-    }
-    else {
-        error = kThreadError_InvalidState;
+		_set_sleep();
     }
 
-    return error;
+    return kThreadError_None;
 }
 
 bool otPlatRadioIsEnabled(otInstance *aInstance)
