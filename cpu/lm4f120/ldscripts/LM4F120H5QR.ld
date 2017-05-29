@@ -10,7 +10,7 @@
  * @ingroup     cpu_lm4f120
  * @{
  *
- * @file		lm4f120_linkerscript.ld
+ * @file        lm4f120_linkerscript.ld
  * @brief       Linker description file for LM4FXXX microcontrollers.
  *
  * @author      Rakendra Thapa <rakendrathapa@gmail.com>
@@ -21,6 +21,9 @@ MEMORY
 {
     rom (rx)    : ORIGIN = 0x00000000, LENGTH = 256K
     ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 32K
+    cpuid (r)   : ORIGIN = 0x410FC241, LENGTH = 12
 }
+
+_cpuid_address = ORIGIN(cpuid);
 
 INCLUDE cortexm_base.ld
