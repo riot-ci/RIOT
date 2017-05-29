@@ -559,7 +559,20 @@ ifneq (,$(filter random,$(USEMODULE)))
   endif
 
   ifneq (,$(filter prng_tinymt32,$(USEMODULE)))
-    USEMODULE += tinymt32
+      USEMODULE += tinymt32
+  endif
+
+  USEMODULE += random_seed
+
+  ifneq (,$(filter periph_hwrng,$(FEATURES_PROVIDED)))
+    FEATURES_REQUIRED += periph_hwrng
+  else
+    USEMODULE += luid
+    ifneq (,$(filter periph_adc,$(FEATURES_PROVIDED)))
+      FEATURES_REQUIRED += periph_adc
+    else
+      USEMODULE += xtimer
+    endif
   endif
 endif
 
