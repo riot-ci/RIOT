@@ -30,7 +30,6 @@
 
 uint16_t _seed_by_adc(void)
 {
-    int sample;
     uint16_t val = 0;
 
     /* init ADC */
@@ -45,7 +44,7 @@ uint16_t _seed_by_adc(void)
     for (int iter = 0; iter < 16; iter ++) {
         /* TODO check if samples are not equal, e.g.
            pulled to high or low voltage */
-        sample = adc_sample(ADC_LINE(RANDOM_SEED_ADC_LINE), RANDOM_SEED_ADC_RES);
+        int sample = adc_sample(ADC_LINE(RANDOM_SEED_ADC_LINE), RANDOM_SEED_ADC_RES);
         val |= (sample & 0x01) << (iter);
     }
 
