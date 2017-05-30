@@ -89,7 +89,7 @@ int main(void)
 
 #if defined(MODULE_BME280)
         /* Get pressure in %rH */
-        humidity = bmx280_read_humidity(&dev);
+        humidity = bme280_read_humidity(&dev);
 #endif
 
         printf("Temperature [°C]: %d.%d\n"
