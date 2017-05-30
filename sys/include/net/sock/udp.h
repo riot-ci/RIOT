@@ -313,7 +313,7 @@ typedef struct sock_udp sock_udp_t;
  *                      @ref SOCK_ADDR_ANY_NETIF or equal to sock_udp_ep_t::netif
  *                      of @p local if `local != NULL`.
  * @param[in] flags     Flags for the sock object. See also
- *                      @ref net_sock_flags.
+ *                      [sock flags](@ref net_sock_flags).
  *                      May be 0.
  *
  * @return  0 on success.
