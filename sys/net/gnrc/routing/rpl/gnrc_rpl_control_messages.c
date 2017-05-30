@@ -537,12 +537,12 @@ void gnrc_rpl_recv_DIS(gnrc_rpl_dis_t *dis, kernel_pid_t iface, ipv6_addr_t *src
         for (uint8_t i = 0; i < GNRC_RPL_INSTANCES_NUMOF; ++i) {
             if (gnrc_rpl_instances[i].state != 0) {
 
-            uint32_t included_opts = 0;
-            if(!_parse_options(GNRC_RPL_ICMPV6_CODE_DIS, &gnrc_rpl_instances[i],
-                               (gnrc_rpl_opt_t *)(dis + 1), len, src, &included_opts)) {
-                DEBUG("RPL: DIS option parsing error - skip prcessing the DIS\n");
-                continue;
-            }
+                uint32_t included_opts = 0;
+                if(!_parse_options(GNRC_RPL_ICMPV6_CODE_DIS, &gnrc_rpl_instances[i],
+                                   (gnrc_rpl_opt_t *)(dis + 1), len, src, &included_opts)) {
+                    DEBUG("RPL: DIS option parsing error - skip prcessing the DIS\n");
+                    continue;
+                }
                 gnrc_rpl_instances[i].dodag.dio_opts |= GNRC_RPL_REQ_DIO_OPT_DODAG_CONF;
                 gnrc_rpl_send_DIO(&gnrc_rpl_instances[i], src);
             }
