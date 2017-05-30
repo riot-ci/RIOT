@@ -51,7 +51,7 @@ static int read_relative_humidity(void *dev, phydat_t *res)
 {
     bmx280_t *d = (bmx280_t *)dev;
 
-    res->val[0] = bmx280_read_humidity(d);
+    res->val[0] = bme280_read_humidity(d);
     res->unit = UNIT_PERCENT;
     res->scale = -2;
 
@@ -72,7 +72,7 @@ const saul_driver_t bmx280_pressure_saul_driver = {
 };
 
 #ifdef MODULE_BME280
-const saul_driver_t bmx280_relative_humidity_saul_driver = {
+const saul_driver_t bme280_relative_humidity_saul_driver = {
     .read = read_relative_humidity,
     .write = saul_notsup,
     .type = SAUL_SENSE_HUM,

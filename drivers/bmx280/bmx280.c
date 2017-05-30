@@ -172,9 +172,9 @@ uint32_t bmx280_read_pressure(bmx280_t *dev)
     return p_acc >> 8;
 }
 
-uint16_t bmx280_read_humidity(bmx280_t *dev)
-{
 #if defined(MODULE_BME280)
+uint16_t bme280_read_humidity(bmx280_t *dev)
+{
     bmx280_calibration_t *cal = &dev->calibration;      /* helper variable */
 
     /* Read the uncompensated pressure */
@@ -204,10 +204,8 @@ uint16_t bmx280_read_humidity(bmx280_t *dev)
     var1 = (var1 > 419430400 ? 419430400 : var1);
     /* First multiply to avoid losing the accuracy after the shift by ten */
     return (100 * ((uint32_t)var1 >> 12)) >> 10;
-#else
-    return UINT16_MAX;
-#endif
 }
+#endif
 
 /**
  * Read compensation data, 0x88..0x9F, 0xA1, 0xE1..0xE7
@@ -250,7 +248,7 @@ static int read_calibration_data(bmx280_t* dev)
     dev->calibration.dig_P8 = get_int16_le(buffer, BMX280_DIG_P8_LSB_REG - offset);
     dev->calibration.dig_P9 = get_int16_le(buffer, BMX280_DIG_P9_LSB_REG - offset);
 
-#ifdef MODULE_BME280
+#if defined(MODULE_BME280)
     dev->calibration.dig_H1 = buffer[BME280_DIG_H1_REG - offset];
     dev->calibration.dig_H2 = get_int16_le(buffer, BME280_DIG_H2_LSB_REG - offset);
     dev->calibration.dig_H3 = buffer[BME280_DIG_H3_REG - offset];
@@ -274,7 +272,7 @@ static int read_calibration_data(bmx280_t* dev)
     b = ((dev->params.t_sb & 7) << 5) | ((dev->params.filter & 7) << 2);
     write_u8_reg(dev, BMX280_CONFIG_REG, b);
 
-#ifdef MODULE_BME280
+#if defined(MODULE_BME280)
     /*
      * Note from the datasheet about ctrl_hum: "Changes to this register only become effective
      * after a write operation to "ctrl_meas".

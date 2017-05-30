@@ -32,6 +32,7 @@
 #ifndef BMX280_H
 #define BMX280_H
 
+#include <inttypes.h>
 #include "saul.h"
 #include "periph/i2c.h"
 
@@ -162,15 +163,6 @@ enum {
 };
 
 /**
- * @brief export SAUL endpoints
- * @{
- */
-extern const saul_driver_t bmx280_temperature_saul_driver;
-extern const saul_driver_t bmx280_relative_humidity_saul_driver;
-extern const saul_driver_t bmx280_pressure_saul_driver;
-/** @} */
-
-/**
  * @brief Initialize the given BMX280 device
  *
  * @param[out] dev          Initialized device descriptor of BMX280 device
@@ -205,17 +197,19 @@ int16_t bmx280_read_temperature(bmx280_t* dev);
  */
 uint32_t bmx280_read_pressure(bmx280_t *dev);
 
+#if defined(MODULE_BME280)
 /**
- * @brief Read humidity value from the given BMX280 device, returned in centi %RH
+ * @brief Read humidity value from the given BME280 device, returned in centi %RH
  *
  * @details This function should only be called after doing bmx280_read_temperature
  *          first. It's only available with BME280 sensor.
  *
- * @param[in]  dev          Device descriptor of BMX280 device to read from
+ * @param[in]  dev          Device descriptor of BME280 device to read from
  *
  * @returns                 Humidity in centi %RH (i.e. the percentage times 100)
  */
-uint16_t bmx280_read_humidity(bmx280_t *dev);
+uint16_t bme280_read_humidity(bmx280_t *dev);
+#endif
 
 #ifdef __cplusplus
 }

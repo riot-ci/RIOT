@@ -61,7 +61,7 @@ static const bmx280_params_t bmx280_params[] =
 #ifdef BMX280_PARAMS_BOARD
     BMX280_PARAMS_BOARD,
 #else
-    BMX280_PARAMS_DEFAULT,
+    BMX280_PARAMS_DEFAULT
 #endif
 };
 
