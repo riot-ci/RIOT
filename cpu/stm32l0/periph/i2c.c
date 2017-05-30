@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 FU Berlin
+ * Copyright (C) 2017 we-sens.com
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,11 +13,9 @@
  * @file
  * @brief       Low-level I2C driver implementation
  *
- * @note This implementation only implements the 7-bit addressing mode.
+ * @note This implementation only implements the 7-bit addressing polling mode.
  *
- * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
+ * @author      Aurélien Fillau <aurelien.fillau@we-sens.com>
  *
  * @}
  */
