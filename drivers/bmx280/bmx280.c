@@ -113,7 +113,7 @@ int16_t bmx280_read_temperature(bmx280_t* dev)
 
     /*
      * Compensate the temperature value.
-     * The following is code from Bosch's BME280_driver bmx280_compensate_temperature_int32()
+     * The following is code from Bosch's BME280_driver bme280_compensate_temperature_int32()
      * The variable names and the many defines have been modified to make the code
      * more readable.
      */
@@ -183,7 +183,7 @@ uint16_t bme280_read_humidity(bmx280_t *dev)
 
     /*
      * Compensate the humidity value.
-     * The following is code from Bosch's BME280_driver bmx280_compensate_humidity_int32()
+     * The following is code from Bosch's BME280_driver bme280_compensate_humidity_int32()
      * The variable names and the many defines have been modified to make the code
      * more readable.
      * The value is first computed as a value in %rH as unsigned 32bit integer
