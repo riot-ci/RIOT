@@ -51,6 +51,11 @@
  *   CFLAGS += -DGNRC_RPL_WITHOUT_PIO
  *   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
+ * - Exclude Solicitation Information Options from DIS (adds PadN of 2 bytes)
+ *   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
+ *   CFLAGS += -DGNRC_RPL_DIS_WITHOUT_SOL
+ *   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
  * - Modify trickle parameters
  *   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
  *   CFLAGS += -DGNRC_RPL_DEFAULT_DIO_INTERVAL_DOUBLINGS=20

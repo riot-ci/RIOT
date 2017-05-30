@@ -53,6 +53,17 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #define GNRC_RPL_PRF_MASK                   (0x7)
 #define GNRC_RPL_PREFIX_AUTO_ADDRESS_BIT    (1 << 6)
 
+/**
+ * @brief DIS Solicited Information option (numbers)
+ * @see <a href="https://tools.ietf.org/html/rfc6550#section-6.7.9">
+ *          RFC6550, section 6.7.9, Solicited Information
+ *      </a>
+ */
+#define GNRC_RPL_DIS_SOLICITED_INFO_LENGTH  (19)
+#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_V  (1)
+#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_I  (1 << 1)
+#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_D  (1 << 2)
+
 void gnrc_rpl_send(gnrc_pktsnip_t *pkt, kernel_pid_t iface, ipv6_addr_t *src, ipv6_addr_t *dst,
                    ipv6_addr_t *dodag_id)
 {
@@ -124,6 +135,54 @@ gnrc_pktsnip_t *_dio_dodag_conf_build(gnrc_pktsnip_t *pkt, gnrc_rpl_dodag_t *dod
     dodag_conf->reserved = 0;
     dodag_conf->default_lifetime = dodag->default_lifetime;
     dodag_conf->lifetime_unit = byteorder_htons(dodag->lifetime_unit);
+    return opt_snip;
+}
+
+gnrc_pktsnip_t *_dis_solicited_opt_build(gnrc_pktsnip_t *pkt, gnrc_rpl_instance_t *inst)
+{
+    gnrc_pktsnip_t *opt_snip;
+    size_t snip_size = 0;
+#ifndef GNRC_RPL_DIS_WITHOUT_SOL
+    snip_size = sizeof(gnrc_rpl_opt_dis_solicited_t);
+#else
+    /* The DIS is too small so that wireshark complains about an incorrect
+     * ethernet frame check sequence.
+     * To trick it we PadN 2 additional bytes, i.e. 4 bytes in sum. */
+    uint8_t padding[] = {
+            GNRC_RPL_OPT_PADN,  /* Option Type */
+            0x02,               /* Number of extra padding bytes */
+            0x00, 0x00
+    };
+
+    snip_size = sizeof(padding);
+#endif
+
+    if ((opt_snip = gnrc_pktbuf_add(pkt, NULL, snip_size,
+                                    GNRC_NETTYPE_UNDEF)) == NULL) {
+        DEBUG("RPL: BUILD SOLICITED OPT - no space left in packet buffer\n");
+        gnrc_pktbuf_release(pkt);
+        return NULL;
+    }
+#ifndef GNRC_RPL_DIS_WITHOUT_SOL
+    gnrc_rpl_opt_dis_solicited_t* solicited_information;
+    solicited_information = opt_snip->data;
+
+    solicited_information->type = GNRC_RPL_OPT_SOLICITED_INFO;
+    solicited_information->length = GNRC_RPL_DIS_SOLICITED_INFO_LENGTH;
+    solicited_information->instance_id = inst->id;
+
+    /* For now we set all predicates as required, i.e. V|I|D flags to 1 */
+    uint8_t flags = 0;
+    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_V;
+    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_I;
+    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_D;
+
+    solicited_information->VID_flags = flags;
+    solicited_information->dodag_id = inst->dodag.dodag_id;
+    solicited_information->version_number = inst->dodag.version;
+#else
+    memcpy(opt_snip->data, padding, snip_size);
+#endif
     return opt_snip;
 }
 
@@ -229,31 +288,33 @@ void gnrc_rpl_send_DIO(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination)
 
 void gnrc_rpl_send_DIS(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination)
 {
-    gnrc_pktsnip_t *pkt;
+    gnrc_pktsnip_t *pkt = NULL, *tmp;
     icmpv6_hdr_t *icmp;
     gnrc_rpl_dis_t *dis;
 
-    /* TODO: Currently the DIS is too small so that wireshark complains about an incorrect
-     * ethernet frame check sequence. In order to prevent this, 4 PAD1 options are added.
-     * This will be addressed in follow-up PRs */
-    uint8_t padding[] = {
-            0x01, 0x02, 0x00, 0x00
-    };
-
-    int size = sizeof(icmpv6_hdr_t) + sizeof(gnrc_rpl_dis_t) + sizeof(padding);
-
-    if ((pkt = gnrc_icmpv6_build(NULL, ICMPV6_RPL_CTRL, GNRC_RPL_ICMPV6_CODE_DIS, size)) == NULL) {
-        DEBUG("RPL: Send DIS - no space left in packet buffer\n");
+    if ((pkt = _dis_solicited_opt_build(pkt, inst)) == NULL) {
         return;
     }
+
+    if ((tmp = gnrc_pktbuf_add(pkt, NULL, sizeof(gnrc_rpl_dis_t), GNRC_NETTYPE_UNDEF)) == NULL) {
+        DEBUG("RPL: Send DIS - no space left in packet buffer\n");
+        gnrc_pktbuf_release(pkt);
+        return;
+    }
+    pkt = tmp;
+
+    if ((tmp = gnrc_icmpv6_build(pkt, ICMPV6_RPL_CTRL, GNRC_RPL_ICMPV6_CODE_DIS,
+                                 sizeof(icmpv6_hdr_t))) == NULL) {
+        DEBUG("RPL: Send DIS - no space left in packet buffer\n");
+        gnrc_pktbuf_release(pkt);
+        return;
+    }
+    pkt = tmp;
 
     icmp = (icmpv6_hdr_t *)pkt->data;
     dis = (gnrc_rpl_dis_t *)(icmp + 1);
     dis->flags = 0;
     dis->reserved = 0;
-
-    /* TODO add padding may be removed if packet size grows */
-    memcpy((dis + 1), padding, sizeof(padding));
 
 #ifdef MODULE_NETSTATS_RPL
     gnrc_rpl_netstats_tx_DIS(&gnrc_rpl_netstats, gnrc_pkt_len(pkt),
@@ -261,49 +322,6 @@ void gnrc_rpl_send_DIS(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination)
 #endif
 
     gnrc_rpl_send(pkt, KERNEL_PID_UNDEF, NULL, destination, (inst? &(inst->dodag.dodag_id) : NULL));
-}
-
-void gnrc_rpl_recv_DIS(gnrc_rpl_dis_t *dis, kernel_pid_t iface, ipv6_addr_t *src,
-                       ipv6_addr_t *dst, uint16_t len)
-{
-    /* TODO handle Solicited Information Option */
-    (void)iface;
-    (void)dis;
-    (void)len;
-
-#ifdef MODULE_NETSTATS_RPL
-    gnrc_rpl_netstats_rx_DIS(&gnrc_rpl_netstats, len, (dst && !ipv6_addr_is_multicast(dst)));
-#endif
-
-#ifndef GNRC_RPL_WITHOUT_VALIDATION
-    if (!gnrc_rpl_validation_DIS(dis, len)) {
-        return;
-    }
-#endif
-
-    if (ipv6_addr_is_multicast(dst)) {
-        for (uint8_t i = 0; i < GNRC_RPL_INSTANCES_NUMOF; ++i) {
-            if ((gnrc_rpl_instances[i].state != 0)
-                /* a leaf node should only react to unicast DIS */
-                 && (gnrc_rpl_instances[i].dodag.node_status != GNRC_RPL_LEAF_NODE)) {
-#ifdef MODULE_GNRC_RPL_P2P
-                if (gnrc_rpl_instances[i].mop == GNRC_RPL_P2P_MOP) {
-                    DEBUG("RPL: Not responding to DIS for P2P-RPL DODAG\n");
-                    continue;
-                }
-#endif
-                trickle_reset_timer(&(gnrc_rpl_instances[i].dodag.trickle));
-            }
-        }
-    }
-    else {
-        for (uint8_t i = 0; i < GNRC_RPL_INSTANCES_NUMOF; ++i) {
-            if (gnrc_rpl_instances[i].state != 0) {
-                gnrc_rpl_instances[i].dodag.dio_opts |= GNRC_RPL_REQ_DIO_OPT_DODAG_CONF;
-                gnrc_rpl_send_DIO(&gnrc_rpl_instances[i], src);
-            }
-        }
-    }
 }
 
 /** @todo allow target prefixes in target options to be of variable length */
@@ -383,7 +401,38 @@ bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt
                 }
 
                 break;
+            case (GNRC_RPL_OPT_SOLICITED_INFO):
+                DEBUG("RPL: RPL SOLICITED INFO option parsed\n");
+                gnrc_rpl_opt_dis_solicited_t* sol = (gnrc_rpl_opt_dis_solicited_t *) opt;
 
+                /* check expected length */
+                if (sol->length != GNRC_RPL_DIS_SOLICITED_INFO_LENGTH) {
+                    DEBUG("RPL: RPL SOLICITED INFO option, unexpected length: %d\n", sol->length);
+                    return false;
+                }
+
+                /* check the DODAG Version */
+                if ((sol->VID_flags & GNRC_RPL_DIS_SOLICITED_INFO_FLAG_V)
+                    && (sol->version_number != inst->dodag.version)) {
+                    DEBUG("RPL: RPL SOLICITED INFO option, ignore DIS cause: DODAG Version mismatch\n");
+                    return false;
+                }
+
+                /* check the Instance ID */
+                if ((sol->VID_flags & GNRC_RPL_DIS_SOLICITED_INFO_FLAG_I)
+                    && (sol->instance_id != inst->id)) {
+                    DEBUG("RPL: RPL SOLICITED INFO option, ignore DIS cause: InstanceID mismatch\n");
+                    return false;
+                }
+
+                /* check the DODAG ID */
+                if (sol->VID_flags & GNRC_RPL_DIS_SOLICITED_INFO_FLAG_D) {
+                    if (memcmp(&sol->dodag_id, &inst->dodag.dodag_id, sizeof(ipv6_addr_t)) != 0) {
+                        DEBUG("RPL: RPL SOLICITED INFO option, ignore DIS cause: DODAGID mismatch\n");
+                        return false;
+                    }
+                }
+                break;
             case (GNRC_RPL_OPT_TARGET):
                 DEBUG("RPL: RPL TARGET DAO option parsed\n");
                 *included_opts |= ((uint32_t) 1) << GNRC_RPL_OPT_TARGET;
@@ -452,6 +501,53 @@ bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt
         opt = (gnrc_rpl_opt_t *) (((uint8_t *) (opt + 1)) + opt->length);
     }
     return true;
+}
+
+void gnrc_rpl_recv_DIS(gnrc_rpl_dis_t *dis, kernel_pid_t iface, ipv6_addr_t *src,
+                       ipv6_addr_t *dst, uint16_t len)
+{
+    (void)iface;
+
+#ifdef MODULE_NETSTATS_RPL
+    gnrc_rpl_netstats_rx_DIS(&gnrc_rpl_netstats, len, (dst && !ipv6_addr_is_multicast(dst)));
+#endif
+
+#ifndef GNRC_RPL_WITHOUT_VALIDATION
+    if (!gnrc_rpl_validation_DIS(dis, len)) {
+        return;
+    }
+#endif
+
+    if (ipv6_addr_is_multicast(dst)) {
+        for (uint8_t i = 0; i < GNRC_RPL_INSTANCES_NUMOF; ++i) {
+            if ((gnrc_rpl_instances[i].state != 0)
+                /* a leaf node should only react to unicast DIS */
+                 && (gnrc_rpl_instances[i].dodag.node_status != GNRC_RPL_LEAF_NODE)) {
+#ifdef MODULE_GNRC_RPL_P2P
+                if (gnrc_rpl_instances[i].mop == GNRC_RPL_P2P_MOP) {
+                    DEBUG("RPL: Not responding to DIS for P2P-RPL DODAG\n");
+                    continue;
+                }
+#endif
+                trickle_reset_timer(&(gnrc_rpl_instances[i].dodag.trickle));
+            }
+        }
+    }
+    else {
+        for (uint8_t i = 0; i < GNRC_RPL_INSTANCES_NUMOF; ++i) {
+            if (gnrc_rpl_instances[i].state != 0) {
+
+                uint32_t included_opts = 0;
+                if(!_parse_options(GNRC_RPL_ICMPV6_CODE_DIS, &gnrc_rpl_instances[i],
+                                   (gnrc_rpl_opt_t *)(dis + 1), len, src, &included_opts)) {
+                    DEBUG("RPL: DIS option parsing error - skip prcessing the DIS\n");
+                    continue;
+                }
+                gnrc_rpl_instances[i].dodag.dio_opts |= GNRC_RPL_REQ_DIO_OPT_DODAG_CONF;
+                gnrc_rpl_send_DIO(&gnrc_rpl_instances[i], src);
+            }
+        }
+    }
 }
 
 void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src, ipv6_addr_t *dst,
