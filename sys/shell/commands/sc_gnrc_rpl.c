@@ -174,7 +174,7 @@ int _gnrc_rpl_trickle_start(char *arg1)
 
 int _gnrc_rpl_send_dis(void)
 {
-    gnrc_rpl_send_DIS(NULL, (ipv6_addr_t *) &ipv6_addr_all_rpl_nodes);
+    gnrc_rpl_send_DIS(NULL, (ipv6_addr_t *) &ipv6_addr_all_rpl_nodes, NULL, 0);
 
     puts("success: send a DIS\n");
     return 0;

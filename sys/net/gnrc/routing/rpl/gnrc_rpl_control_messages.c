@@ -53,17 +53,6 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #define GNRC_RPL_PRF_MASK                   (0x7)
 #define GNRC_RPL_PREFIX_AUTO_ADDRESS_BIT    (1 << 6)
 
-/**
- * @brief DIS Solicited Information option (numbers)
- * @see <a href="https://tools.ietf.org/html/rfc6550#section-6.7.9">
- *          RFC6550, section 6.7.9, Solicited Information
- *      </a>
- */
-#define GNRC_RPL_DIS_SOLICITED_INFO_LENGTH  (19)
-#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_V  (1)
-#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_I  (1 << 1)
-#define GNRC_RPL_DIS_SOLICITED_INFO_FLAG_D  (1 << 2)
-
 void gnrc_rpl_send(gnrc_pktsnip_t *pkt, kernel_pid_t iface, ipv6_addr_t *src, ipv6_addr_t *dst,
                    ipv6_addr_t *dodag_id)
 {
@@ -138,24 +127,10 @@ gnrc_pktsnip_t *_dio_dodag_conf_build(gnrc_pktsnip_t *pkt, gnrc_rpl_dodag_t *dod
     return opt_snip;
 }
 
-gnrc_pktsnip_t *_dis_solicited_opt_build(gnrc_pktsnip_t *pkt, gnrc_rpl_instance_t *inst)
+gnrc_pktsnip_t *_dis_solicited_opt_build(gnrc_pktsnip_t *pkt, gnrc_rpl_internal_opt_dis_solicited_t *opt)
 {
     gnrc_pktsnip_t *opt_snip;
-    size_t snip_size = 0;
-#ifndef GNRC_RPL_DIS_WITHOUT_SOL
-    snip_size = sizeof(gnrc_rpl_opt_dis_solicited_t);
-#else
-    /* The DIS is too small so that wireshark complains about an incorrect
-     * ethernet frame check sequence.
-     * To trick it we PadN 2 additional bytes, i.e. 4 bytes in sum. */
-    uint8_t padding[] = {
-            GNRC_RPL_OPT_PADN,  /* Option Type */
-            0x02,               /* Number of extra padding bytes */
-            0x00, 0x00
-    };
-
-    snip_size = sizeof(padding);
-#endif
+    size_t snip_size = sizeof(gnrc_rpl_opt_dis_solicited_t);
 
     if ((opt_snip = gnrc_pktbuf_add(pkt, NULL, snip_size,
                                     GNRC_NETTYPE_UNDEF)) == NULL) {
@@ -163,26 +138,18 @@ gnrc_pktsnip_t *_dis_solicited_opt_build(gnrc_pktsnip_t *pkt, gnrc_rpl_instance_
         gnrc_pktbuf_release(pkt);
         return NULL;
     }
-#ifndef GNRC_RPL_DIS_WITHOUT_SOL
+
     gnrc_rpl_opt_dis_solicited_t* solicited_information;
     solicited_information = opt_snip->data;
 
     solicited_information->type = GNRC_RPL_OPT_SOLICITED_INFO;
     solicited_information->length = GNRC_RPL_DIS_SOLICITED_INFO_LENGTH;
-    solicited_information->instance_id = inst->id;
+    solicited_information->instance_id = opt->instance_id;
 
-    /* For now we set all predicates as required, i.e. V|I|D flags to 1 */
-    uint8_t flags = 0;
-    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_V;
-    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_I;
-    flags |= GNRC_RPL_DIS_SOLICITED_INFO_FLAG_D;
+    solicited_information->VID_flags = opt->VID_flags;
+    solicited_information->dodag_id = opt->dodag_id;
+    solicited_information->version_number = opt->version_number;
 
-    solicited_information->VID_flags = flags;
-    solicited_information->dodag_id = inst->dodag.dodag_id;
-    solicited_information->version_number = inst->dodag.version;
-#else
-    memcpy(opt_snip->data, padding, snip_size);
-#endif
     return opt_snip;
 }
 
@@ -286,16 +253,54 @@ void gnrc_rpl_send_DIO(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination)
     gnrc_rpl_send(pkt, dodag->iface, NULL, destination, &dodag->dodag_id);
 }
 
-void gnrc_rpl_send_DIS(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination)
+void gnrc_rpl_send_DIS(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination,
+                       gnrc_rpl_internal_opt_t **options, size_t num_opts)
 {
     gnrc_pktsnip_t *pkt = NULL, *tmp;
     icmpv6_hdr_t *icmp;
     gnrc_rpl_dis_t *dis;
 
-    if ((pkt = _dis_solicited_opt_build(pkt, inst)) == NULL) {
-        return;
-    }
+    /* No options provided to be attached to the DIS, so we PadN 2 bytes */
+    if (options == NULL || num_opts == 0) {
+        assert(!options);
+        gnrc_pktsnip_t *opt_snip;
+        size_t snip_size = 0;
+        /* The DIS is too small so that wireshark complains about an incorrect
+         * ethernet frame check sequence.
+         * To trick it we PadN 2 additional bytes, i.e. 4 bytes in sum. */
+        uint8_t padding[] = {
+            GNRC_RPL_OPT_PADN,  /* Option Type */
+            0x02,               /* Number of extra padding bytes */
+            0x00, 0x00
+        };
 
+        snip_size = sizeof(padding);
+        if ((opt_snip = gnrc_pktbuf_add(pkt, NULL, snip_size,
+                                    GNRC_NETTYPE_UNDEF)) == NULL) {
+            DEBUG("RPL: BUILD PadN OPT - no space left in packet buffer\n");
+            gnrc_pktbuf_release(pkt);
+            return;
+        }
+        memcpy(opt_snip->data, padding, snip_size);
+        pkt = opt_snip;
+    }
+    else {
+        assert(options);
+        for (size_t i = 0; i < num_opts; ++i) {
+            switch(options[i]->type) {
+                case GNRC_RPL_OPT_SOLICITED_INFO: {
+                    if ((pkt = _dis_solicited_opt_build(pkt,
+                        (gnrc_rpl_internal_opt_dis_solicited_t*)options[i])) == NULL) {
+                        return;
+                    }
+                    break;
+                }
+                default:
+                    /* we didn't recognized the given option */
+                    break;
+            }
+        }
+    }
     if ((tmp = gnrc_pktbuf_add(pkt, NULL, sizeof(gnrc_rpl_dis_t), GNRC_NETTYPE_UNDEF)) == NULL) {
         DEBUG("RPL: Send DIS - no space left in packet buffer\n");
         gnrc_pktbuf_release(pkt);
@@ -619,11 +624,11 @@ void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src
 #ifndef GNRC_RPL_DODAG_CONF_OPTIONAL_ON_JOIN
             DEBUG("RPL: DIO without DODAG_CONF option - remove DODAG and request new DIO\n");
             gnrc_rpl_instance_remove(inst);
-            gnrc_rpl_send_DIS(NULL, src);
+            gnrc_rpl_send_DIS(NULL, src, NULL, 0);
             return;
 #else
             DEBUG("RPL: DIO without DODAG_CONF option - use default trickle parameters\n");
-            gnrc_rpl_send_DIS(NULL, src);
+            gnrc_rpl_send_DIS(NULL, src, NULL, 0);
 #endif
         }
 

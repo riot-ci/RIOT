@@ -304,6 +304,26 @@ struct gnrc_rpl_instance {
  * @endcond
  */
 
+/**
+ * @brief internal unpacked struct type for option insertion
+ */
+typedef struct {
+    uint8_t type;       /**< Option Type */
+    uint8_t length;     /**< Option Length, does not include the first two byte */
+} gnrc_rpl_internal_opt_t;
+
+/**
+ * @brief internal unpacked struct type for DIS solicited option insertion
+ */
+typedef struct  {
+    uint8_t type;                /**< Option Type: 0x07 */
+    uint8_t length;              /**< Option Length: 19 bytes*/
+    uint8_t instance_id;         /**< id of the instance */
+    uint8_t VID_flags;           /**< V|I|D predicate options followed by 5 bit unused flags */
+    ipv6_addr_t dodag_id;        /**< DODAG ID predicate */
+    uint8_t version_number;      /**< version number of the DODAG */
+} gnrc_rpl_internal_opt_dis_solicited_t;
+
 #ifdef __cplusplus
 }
 #endif
