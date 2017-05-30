@@ -148,7 +148,7 @@ uint32_t bmx280_read_pressure(bmx280_t *dev)
 
     /*
      * Compensate the pressure value.
-     * The following is code from Bosch's BME280_driver bmx280_compensate_pressure_int64()
+     * The following is code from Bosch's BME280_driver bme280_compensate_pressure_int64()
      * The variable names and the many defines have been modified to make the code
      * more readable.
      */
