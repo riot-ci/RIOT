@@ -444,17 +444,12 @@ static inline void _set_state(at86rf2xx_t *dev, uint8_t state, uint8_t cmd)
     dev->state = state;
 }
 
-void at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
+uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
 {
     uint8_t old_state = at86rf2xx_get_status(dev);
 
     if (state == old_state) {
-        return;
-    }
-
-    if (state == AT86RF2XX_STATE_FORCE_TRX_OFF) {
-        _set_state(dev, AT86RF2XX_STATE_TRX_OFF, state);
-        return;
+        return old_state;
     }
 
     /* make sure there is no ongoing transmission, or state transition already
@@ -465,8 +460,13 @@ void at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
         old_state = at86rf2xx_get_status(dev);
     }
 
+    if (state == AT86RF2XX_STATE_FORCE_TRX_OFF) {
+        _set_state(dev, AT86RF2XX_STATE_TRX_OFF, state);
+        return old_state;
+    }
+
     if (state == old_state) {
-        return;
+        return old_state;
     }
 
     /* we need to go via PLL_ON if we are moving between RX_AACK_ON <-> TX_ARET_ON */
@@ -493,6 +493,8 @@ void at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
     } else {
         _set_state(dev, state, state);
     }
+
+    return old_state;
 }
 
 void at86rf2xx_reset_state_machine(at86rf2xx_t *dev)
