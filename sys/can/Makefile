@@ -6,8 +6,4 @@ ifneq (,$(filter conn_can,$(USEMODULE)))
     DIRS += conn
 endif
 
-ifneq (,$(filter conn_can,$(USEMODULE)))
-    DIRS += conn
-endif
-
 include $(RIOTBASE)/Makefile.base
