@@ -70,4 +70,3 @@ ThreadError otPlatSettingsDelete(otInstance *aInstance, uint16_t aKey, int aInde
 void otPlatSettingsWipe(otInstance *aInstance)
 {
 }
-
