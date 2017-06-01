@@ -75,7 +75,7 @@ uint8_t _tcb_name_offset = offsetof(thread_t, name);
 #endif
 
 #ifdef MODULE_SCHEDSTATISTICS
-static void (*sched_cb) (uint64_t timestamp, uint32_t value) = NULL;
+static void (*sched_cb) (uint32_t timestamp, uint32_t value) = NULL;
 schedstat sched_pidlist[KERNEL_PID_LAST + 1];
 #endif
 
@@ -159,7 +159,7 @@ int __attribute__((used)) sched_run(void)
 }
 
 #ifdef MODULE_SCHEDSTATISTICS
-void sched_register_cb(void (*callback)(uint64_t, uint32_t))
+void sched_register_cb(void (*callback)(uint32_t, uint32_t))
 {
     sched_cb = callback;
 }
