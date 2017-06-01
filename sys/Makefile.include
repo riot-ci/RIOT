@@ -79,9 +79,4 @@ ifneq (,$(filter printf_float,$(USEMODULE)))
     endif
 endif
 
-ifneq (,$(filter can,$(USEMODULE)))
-    CAN_DLL_NUMOF ?= 1
-    CFLAGS += -DCAN_DLL_NUMOF=$(CAN_DLL_NUMOF)
-endif
-
 INCLUDES += -I$(RIOTBASE)/sys/libc/include

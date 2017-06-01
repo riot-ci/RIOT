@@ -43,6 +43,13 @@ extern "C" {
 #define CAN_MAX_RATE_ERROR  (50) /* 5 % */
 #endif
 
+#ifndef CAN_DLL_NUMOF
+/**
+ * Maximum number of interfaces which can be registered on DLL
+ */
+#define CAN_DLL_NUMOF       (1U)
+#endif
+
 /**
  * @brief Parameters to initialize a candev
  */
