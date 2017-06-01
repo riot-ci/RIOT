@@ -12,7 +12,7 @@
  * @file
  * @brief       Implementation of OpenThread functions wrapper. They are used to call OT functions from OT thread
  *
- * @author      Jose Ignacio Alamos <jialamos@uc.cl>
+ * @author      Jose Ignacio Alamos <jialamos@inria.cl>
  * @author      Baptiste CLENET <bapclenet@gmail.com>
  * @}
  */
@@ -175,7 +175,7 @@ OT_COMMAND ot_mode(otInstance* ot_instance, void* arg, void* answer) {
     if (arg != NULL) {
         otLinkModeConfig link_mode;
         memset(&link_mode, 0, sizeof(otLinkModeConfig));
-        char mode[6] = "";
+        char mode[6];
         memcpy(mode, (char*)arg, 5);
         mode[5] = '\0';
         for (char *arg = &mode[0]; *arg != '\0'; arg++) {
