@@ -11,7 +11,7 @@ int main(void)
 {
     printf("Get PANID\n");
     uint16_t panid = 0;
-    uint8_t res = ot_call_job("panid", NULL, (void*)&panid);
+    uint8_t res = ot_call_command("panid", NULL, (void*)&panid);
     printf("Current panid: 0x%x (res:%x)\n", panid, res);
 
     openthread_uart_run();
