@@ -197,11 +197,23 @@ static const spi_conf_t spi_config[] = {
 //AFU #define I2C_1_ERR_ISR       isr_i2c2_er
 
 static const i2c_conf_t i2c_config[] = {
-    /* device, port, scl-, sda-pin-number, I2C-AF, ER-IRQn, EV-IRQn */
-    {I2C1, GPIO_PIN(PORT_B,  8), GPIO_PIN(PORT_B,  9), GPIO_OD_PU,
-     GPIO_AF4, I2C1_IRQn},
-    {I2C2, GPIO_PIN(PORT_B, 10), GPIO_PIN(PORT_B, 11), GPIO_OD_PU,
-     GPIO_AF4, I2C2_IRQn},
+    /* device, port, scl-, sda-pin-number, pin_mode, I2C-AF, EV-IRQn */
+    {
+		.dev = I2C1,
+		.scl = GPIO_PIN(PORT_B, 8),
+		.sda = GPIO_PIN(PORT_B, 9),
+		.pin_mode = GPIO_OD_PU,
+		.af = GPIO_AF4,
+		.ev_irqn = I2C1_IRQn
+	},
+	{
+		.dev = I2C2,
+		.scl = GPIO_PIN(PORT_B, 10),
+		.sda = GPIO_PIN(PORT_B, 11),
+		.pin_mode = GPIO_OD_PU,
+		.af = GPIO_AF4,
+		.ev_irqn = I2C2_IRQn
+    },
 };
 /** @} */
 
