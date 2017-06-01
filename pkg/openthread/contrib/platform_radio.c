@@ -32,15 +32,15 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define RADIO_IEEE802154_FCS_LEN    2
-
-static bool sDisabled;
+#define RADIO_IEEE802154_FCS_LEN    (2U)
 
 static RadioPacket sTransmitFrame;
 static RadioPacket sReceiveFrame;
 static int8_t Rssi;
 
 static netdev_t *_dev;
+
+static bool sDisabled;
 
 /* set 15.4 channel */
 static int _set_channel(uint16_t channel)
@@ -102,6 +102,14 @@ static void _set_state(netopt_state_t state)
     _dev->driver->set(_dev, NETOPT_STATE, &state, sizeof(netopt_state_t));
 }
 
+/* wrapper for getting device state */
+static netopt_state_t _get_state(void)
+{
+    netopt_state_t state;
+    _dev->driver->get(_dev, NETOPT_STATE, &state, sizeof(netopt_state_t));
+    return state;
+}
+
 /* sets device state to SLEEP */
 static void _set_sleep(void)
 {
@@ -150,8 +158,7 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
     int res = dev->driver->recv(dev, (char *) sReceiveFrame.mPsdu, len, NULL);
 
    DEBUG("Received message: len %d\n", (int) sReceiveFrame.mLength);
-    for (int i = 0; i < sReceiveFrame.mLength; ++i)
-    {
+    for (int i = 0; i < sReceiveFrame.mLength; ++i) {
         DEBUG("%x ", sReceiveFrame.mPsdu[i]);
     }
     DEBUG("\n");
@@ -216,12 +223,11 @@ ThreadError otPlatRadioEnable(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioEnable\n");
     (void) aInstance;
-
     if (sDisabled) {
         sDisabled = false;
-		_set_idle();
+        _set_idle();
     }
-	return kThreadError_None;
+    return kThreadError_None;
 }
 
 /* OpenThread will call this for disabling the radio */
@@ -229,12 +235,10 @@ ThreadError otPlatRadioDisable(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioDisable\n");
     (void) aInstance;
-
     if (!sDisabled) {
         sDisabled = true;
-		_set_sleep();
+        _set_sleep();
     }
-
     return kThreadError_None;
 }
 
@@ -242,8 +246,12 @@ bool otPlatRadioIsEnabled(otInstance *aInstance)
 {
     DEBUG("otPlatRadioIsEnabled\n");
     (void) aInstance;
-
-    return !sDisabled;
+    netopt_state_t state = _get_state();
+    if (state == NETOPT_STATE_OFF || state == NETOPT_STATE_SLEEP) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 /* OpenThread will call this for setting device state to SLEEP */
@@ -297,8 +305,7 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
 
     /*Set channel and power based on transmit frame */
     DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, (int)aPacket->mLength);
-    for (int i = 0; i < aPacket->mLength; ++i)
-    {
+    for (int i = 0; i < aPacket->mLength; ++i) {
         DEBUG("%x ", aPacket->mPsdu[i]);
     }
     DEBUG("\n");

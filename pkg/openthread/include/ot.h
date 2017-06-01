@@ -40,8 +40,6 @@ extern "C" {
 #define OPENTHREAD_MSG_TYPE_RECV         (0x2238)        /**< event for frame reception */
 #define OPENTHREAD_JOB_MSG_TYPE_EVENT    (0x2240)        /**< event indicating an OT_JOB message */
 
-typedef void OT_JOB;
-
 /**
  * @brief   Struct containing a serial message
  */
@@ -54,8 +52,9 @@ typedef struct {
  * @brief   Struct containing an OpenThread job
  */
 typedef struct {
-    void (*function)(otInstance*, void*);   /**< function to be called when executing job */
-    void *context;                          /**< context for the job **/
+    const char *command;                      /**< A pointer to the job name string. */
+    void *arg;                              /**< arg for the job **/
+    void *answer;                           /**< answer from the job **/
 } ot_job_t;
 
 /**
@@ -121,15 +120,30 @@ void ot_random_init(void);
 void openthread_uart_run(void);
 
 /**
- * @brief   Execute OpenThread job in same thread as OT core (due to concurrency).
+ * @brief   Execute OpenThread command. Call this function only in OpenThread thread
  *
- * @note    An OpenThread job allows direct calls to OpenThread API (otXXX functions) without worrying about concurrency
+ * @param[in]   ot_instance     OpenThread instance
+ * @param[in]   command         OpenThread command name
+ * @param[in]   arg             arg for the command
+ * @param[out]  answer          answer for the command
+ *
+ * @return  0 on success, 1 on error
+ */
+uint8_t ot_exec_command(otInstance *ot_instance, const char* command, void *arg, void* answer);
+
+/**
+ * @brief   Call OpenThread command in same thread as OT core (due to concurrency).
+ *
+ * @note    An OpenThread command allows direct calls to OpenThread API (otXXX functions) without worrying about concurrency
  * issues. All API calls should be made in OT_JOB type functions.
  *
- * @param[in]   job      callback pointer to an OpenThread job function
- * @param[in]   context     context for the job
+ * @param[in]   command         name of the command to call
+ * @param[in]   arg             arg for the command
+ * @param[out]  answer          answer for the command
+ *
+ * @return  0 on success, 1 on error
  */
-void ot_exec_job(OT_JOB (*job)(otInstance*, void*), void *context);
+uint8_t ot_call_command(char* command, void *arg, void* answer);
 
 #ifdef __cplusplus
 }
