@@ -195,7 +195,7 @@ extern schedstat sched_pidlist[KERNEL_PID_LAST + 1];
  *
  *  @param[in] callback The callback functions the will be called
  */
-void sched_register_cb(void (*callback)(uint64_t, uint32_t));
+void sched_register_cb(void (*callback)(uint32_t, uint32_t));
 #endif /* MODULE_SCHEDSTATISTICS */
 
 #ifdef __cplusplus
