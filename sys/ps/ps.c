@@ -98,7 +98,7 @@ void ps(void)
             overall_used += stacksz;
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-            uint64_t now = _xtimer_now64();
+            uint32_t now = xtimer_now().ticks32;
             uint64_t runtime_ticks = sched_pidlist[i].runtime_ticks;
             /* add ticks since laststart not accounted for yet */
             if (thread_getpid() == i) {
