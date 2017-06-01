@@ -14,7 +14,7 @@
  * Provides access the CPU's serial number.
  *
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The implementation **should** make sure, that calling cpuid_get() does not
  * introduce any long-term power usage penalties. If e.g. some peripheral has to

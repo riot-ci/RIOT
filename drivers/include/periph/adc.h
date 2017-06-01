@@ -30,7 +30,7 @@
  * waiting for the result of a conversion (e.g. through putting the calling
  * thread to sleep while waiting for the conversion results).
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The ADC peripheral(s) **should** only be powered on while adc_sample() is
  * active. For implementing adc_sample() this means, that the peripheral should

@@ -16,7 +16,7 @@
  * conform to the `struct tm` specification.
  * Compare: http://pubs.opengroup.org/onlinepubs/7908799/xsh/time.h.html
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * After the RTC has been initialized (i.e. after calling rtc_init()), the RTC
  * should be powered on and running. The RTC can then be powered off manually

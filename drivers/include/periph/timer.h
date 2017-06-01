@@ -11,7 +11,7 @@
  * @ingroup     drivers_periph
  * @brief       Low-level timer peripheral driver
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * After calling timer_init(), the underlying hardware timer **should** be
  * powered on and running. When a timer is explicitly stopped by calling

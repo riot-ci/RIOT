@@ -37,7 +37,7 @@
  * to STDIO in RIOT which is used for standard input/output functions like
  * `printf()` or `puts()`.
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * After initialization, the UART peripheral **should** be powered on and
  * active. The UART can later be explicitly put to sleep and woken up by calling

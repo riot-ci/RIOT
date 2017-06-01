@@ -44,7 +44,7 @@
  *              7-bit addressing mode.
  *
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The I2C interface realizes a transaction-based access scheme to the bus. From
  * a power management perspective, we can leverage this by only powering on the

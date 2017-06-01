@@ -11,7 +11,7 @@
  * @ingroup     drivers_periph
  * @brief       Low-level RTT (Real Time Timer) peripheral driver
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * After the RTT has been initialized (i.e. after calling rtt_init()), the RTT
  * should be powered on and running. The RTT can then be powered off manually

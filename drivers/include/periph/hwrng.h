@@ -20,7 +20,7 @@
  * @note    Refer to your platforms MCU reference manual for information on the
  *          quality of the used (pseudo) random number generator!
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The HWRNG implementation **should** consume no additional power while no read
  * operation is in progress. This means, that the HWRNG peripheral should be

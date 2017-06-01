@@ -43,7 +43,7 @@
  *    configures the bus with specific parameters (clock, mode) for the duration
  *    of that transaction.
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * As SPI buses are shared peripherals and the interfaces implements a
  * transaction based paradigm, we leverage this for the SPI peripherals power

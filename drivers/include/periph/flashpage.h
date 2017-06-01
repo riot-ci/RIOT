@@ -23,7 +23,7 @@
  *              around 10K times), so using this interface in some kind of loops
  *              can damage you MCU!
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The flashpage driver implementation **should** make sure, that the CPU uses
  * no additional energy while the flashpage driver is inactive. This means, that

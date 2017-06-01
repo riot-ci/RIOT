@@ -27,7 +27,7 @@
  * so that any particular bit-width configuration on this driver level would not
  * have much effect...
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * The configured DAC peripherals are active (and consume power) from the point
  * of initialization. When calling dac_poweroff(), the implementation **should**

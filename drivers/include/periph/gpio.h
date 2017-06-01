@@ -43,7 +43,7 @@
  * definitions in `RIOT/boards/ * /include/periph_conf.h` will define the selected
  * GPIO pin.
  *
- * @section     sec_pm (Low-) power implications
+ * # (Low-) Power Implications
  *
  * On almost all platforms, we can only control the peripheral power state of
  * full ports (i.e. groups of pins), but not for single GPIO pins. Together with
