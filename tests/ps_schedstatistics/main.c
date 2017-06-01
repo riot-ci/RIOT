@@ -34,7 +34,7 @@ static kernel_pid_t pids[NB_THREADS];
 
 static void *_thread_fn(void *arg)
 {
-    int next = ((int)arg +1) % NB_THREADS;
+    int next = ((int)arg + 1) % NB_THREADS;
 
     printf("Creating thread #%d, next=%d\n", (int)arg, next);
 
@@ -42,10 +42,10 @@ static void *_thread_fn(void *arg)
         msg_t m1, m2;
         msg_receive(&m1);
         /* generate differents loads per thead */
-        for (int i = 0; i < 10*(next+1); ++i) {
+        for (int i = 0; i < (10 * (next + 1)); ++i) {
             _xtimer_now64();
         }
-        xtimer_usleep(XTIMER_BACKOFF*3);
+        xtimer_usleep(XTIMER_BACKOFF * 3);
         msg_send(&m2, pids[next]);
     }
 
