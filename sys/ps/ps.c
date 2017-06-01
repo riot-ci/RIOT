@@ -98,7 +98,7 @@ void ps(void)
             overall_used += stacksz;
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-            uint64_t now = _xtimer_now64();
+            uint32_t now = xtimer_now().ticks32;
             uint64_t runtime_ticks = sched_pidlist[i].runtime_ticks;
             /* add ticks since laststart not accounted for yet */
             if (thread_getpid() == i) {
@@ -106,6 +106,10 @@ void ps(void)
             }
             unsigned runtime_major = (runtime_ticks * 100) / now;
             unsigned runtime_minor = ((runtime_ticks % now) * 10000) / now;
+            /* add trailing zeros */
+            while(runtime_minor < 1000) {
+                runtime_minor *= 10;
+            }
             unsigned switches = sched_pidlist[i].schedules;
 #endif
             printf("\t%3" PRIkernel_pid
@@ -117,7 +121,7 @@ void ps(void)
                    " | %5i (%5i) | %10p | %10p "
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-                   " | %2d.%04d%% |  %8u"
+                   " | %2d.%4d%% |  %8u"
 #endif
                    "\n",
                    p->pid,
