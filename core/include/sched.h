@@ -179,7 +179,7 @@ NORETURN void sched_task_exit(void);
  *  Scheduler statistics
  */
 typedef struct {
-    uint64_t laststart;      /**< Time stamp of the last time this thread was
+    uint32_t laststart;      /**< Time stamp of the last time this thread was
                                   scheduled to run */
     unsigned int schedules;  /**< How often the thread was scheduled to run */
     uint64_t runtime_ticks;  /**< The total runtime of this thread in ticks */
@@ -195,7 +195,7 @@ extern schedstat sched_pidlist[KERNEL_PID_LAST + 1];
  *
  *  @param[in] callback The callback functions the will be called
  */
-void sched_register_cb(void (*callback)(uint32_t, uint32_t));
+void sched_register_cb(void (*callback)(uint64_t, uint32_t));
 #endif /* MODULE_SCHEDSTATISTICS */
 
 #ifdef __cplusplus
