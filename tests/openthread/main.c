@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2017 Baptiste CLENET
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @file
+ * @brief       OpenThread test application
+ *
+ * @author      Baptiste Clenet <baptiste.clenet@xsoen.com>
+ */
+
 #include <stdio.h>
 
 #include "net/ipv6/addr.h"
