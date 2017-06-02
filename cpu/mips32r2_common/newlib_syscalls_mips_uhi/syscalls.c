@@ -68,6 +68,7 @@ __attribute__((used)) void _fini(void)
 void _exit(int n)
 {
     exit(n);
+    /* cppcheck-suppress unreachableCode */
     pm_off();
 }
 
