@@ -450,7 +450,6 @@ uint32_t _evtimer_lookup(void *ctx, uint16_t type)
     evtimer_msg_event_t *event = (evtimer_msg_event_t *)_nib_evtimer.events;
     uint32_t offset = 0;
 
-    mutex_lock(&_nib_mutex);
     DEBUG("nib: lookup ctx = %p, type = %u\n", (void *)ctx, type);
     while (event != NULL) {
         offset += event->event.offset;
@@ -461,7 +460,6 @@ uint32_t _evtimer_lookup(void *ctx, uint16_t type)
         }
         event = (evtimer_msg_event_t *)event->event.next;
     }
-    mutex_unlock(&_nib_mutex);
     return UINT32_MAX;
 }
 
