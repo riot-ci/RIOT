@@ -38,7 +38,7 @@ extern "C" {
 #endif
 
 #ifdef MODULE_TRX
-#include "can/trx.h"
+#include "can/can_trx.h"
 #endif
 
 /**
@@ -256,7 +256,7 @@ candev_dev_t *raw_can_get_dev_by_ifnum(int ifnum);
  */
 int raw_can_set_bitrate(int ifnum, uint32_t bitrate, uint32_t sample_point);
 
-#if defined(MODULE_TRX) || defined(DOXYGEN)
+#if defined(MODULE_CAN_TRX) || defined(DOXYGEN)
 /**
  * @brief Set a transceiver for a given interface
  *
@@ -268,7 +268,7 @@ int raw_can_set_bitrate(int ifnum, uint32_t bitrate, uint32_t sample_point);
  * @return 0 on success
  * @return < 0 on error (-EBUSY if device is not powered down)
  */
-int raw_can_set_trx(int ifnum, trx_t *trx);
+int raw_can_set_trx(int ifnum, can_trx_t *trx);
 #endif
 
 #ifdef __cplusplus

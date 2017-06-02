@@ -469,8 +469,8 @@ int raw_can_set_bitrate(int ifnum, uint32_t bitrate, uint32_t sample_point)
     return res;
 }
 
-#ifdef MODULE_TRX
-int raw_can_set_trx(int ifnum, trx_t *trx)
+#ifdef MODULE_CAN_TRX
+int raw_can_set_trx(int ifnum, can_trx_t *trx)
 {
     msg_t msg, reply;
 

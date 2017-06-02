@@ -23,8 +23,8 @@
 #include "can/pkt.h"
 #include "can/dll.h"
 
-#ifdef MODULE_TRX
-#include "can/trx.h"
+#ifdef MODULE_CAN_TRX
+#include "can/can_trx.h"
 #endif
 
 #define ENABLE_DEBUG    (0)
@@ -135,8 +135,8 @@ static int power_up(candev_dev_t *candev_dev)
 
     DEBUG("candev: power up\n");
 
-#ifdef MODULE_TRX
-    trx_set_mode(candev_dev->trx, TRX_NORMAL_MODE);
+#ifdef MODULE_CAN_TRX
+    can_trx_set_mode(candev_dev->trx, TRX_NORMAL_MODE);
 #endif
     int res = dev->driver->power_up(dev);
     dev->state = CAN_STATE_ERROR_ACTIVE;
@@ -150,8 +150,8 @@ static int power_down(candev_dev_t *candev_dev)
 
     DEBUG("candev: power down\n");
 
-#ifdef MODULE_TRX
-    trx_set_mode(candev_dev->trx, TRX_SLEEP_MODE);
+#ifdef MODULE_CAN_TRX
+    can_trx_set_mode(candev_dev->trx, TRX_SLEEP_MODE);
 #endif
     int res = dev->driver->power_down(dev);
     dev->state = CAN_STATE_SLEEPING;
@@ -217,8 +217,8 @@ static void *_can_device_thread(void *args)
     candev_dev->pm_timer.arg = candev_dev;
     pm_reset(candev_dev, candev_dev->rx_inactivity_timeout);
 #endif
-#ifdef MODULE_TRX
-    trx_init(candev_dev->trx);
+#ifdef MODULE_CAN_TRX
+    can_trx_init(candev_dev->trx);
 #endif
 
     int res;
@@ -323,7 +323,7 @@ static void *_can_device_thread(void *args)
             reply.content.value = (uint32_t)res;
             msg_reply(&msg, &reply);
             break;
-#ifdef MODULE_TRX
+#ifdef MODULE_CAN_TRX
         case CAN_MSG_SET_TRX:
             DEBUG("can device: CAN_MSG_SET_TRX received\n");
             reply.type = CAN_MSG_ACK;

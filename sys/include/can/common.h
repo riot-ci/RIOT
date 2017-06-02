@@ -78,7 +78,7 @@ enum can_msg {
     CAN_MSG_REMOVE_FILTER,    /**< remove a filter */
     CAN_MSG_POWER_UP,         /**< power up */
     CAN_MSG_POWER_DOWN,       /**< power down */
-#if defined(MODULE_TRX) || defined(DOXYGEN)
+#if defined(MODULE_CAN_TRX) || defined(DOXYGEN)
     CAN_MSG_SET_TRX,          /**< set a transceiver */
 #endif
     /* candev internal messages */
