@@ -101,7 +101,7 @@ int __attribute__((used)) sched_run(void)
     }
 
 #ifdef MODULE_SCHEDSTATISTICS
-    uint64_t now = _xtimer_now64();
+    uint32_t now = xtimer_now().ticks32;
 #endif
 
     if (active_thread) {
@@ -118,7 +118,14 @@ int __attribute__((used)) sched_run(void)
 #ifdef MODULE_SCHEDSTATISTICS
         schedstat *active_stat = &sched_pidlist[active_thread->pid];
         if (active_stat->laststart) {
-            active_stat->runtime_ticks += now - active_stat->laststart;
+            /* ensure now > laststart, to avoid flawed sum of runtime ticks
+             * due to timer overflow */
+            if (now > active_stat->laststart) {
+                active_stat->runtime_ticks += now - active_stat->laststart;
+            }
+            else {
+                LOG_DEBUG("sched_run: timer overflow detected!\n");
+            }
         }
 #endif
     }
