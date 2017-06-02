@@ -76,7 +76,8 @@ static void _adc_poweroff(void)
 
 static int _adc_configure(adc_res_t res)
 {
-    assert(res >= ADC_RES_8BIT && res <= ADC_RES_12BIT);
+    assert((res == ADC_RES_8BIT) || (res == ADC_RES_10BIT) ||
+           (res == ADC_RES_12BIT));
     _adc_poweroff();
     if (ADC_0_DEV->CTRLA.reg & ADC_CTRLA_SWRST ||
         ADC_0_DEV->CTRLA.reg & ADC_CTRLA_ENABLE ) {
