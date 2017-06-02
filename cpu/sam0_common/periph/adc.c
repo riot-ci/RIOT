@@ -76,6 +76,9 @@ static void _adc_poweroff(void)
 
 static int _adc_configure(adc_res_t res)
 {
+    /* Individual comparison necessary because ADC Resoltion Bits are not 
+     * numerically in order and 16Bit (averaging - not currently supported)
+     * falls between 12bit and 10bit.  See datasheet for details */
     assert((res == ADC_RES_8BIT) || (res == ADC_RES_10BIT) ||
            (res == ADC_RES_12BIT));
     _adc_poweroff();
