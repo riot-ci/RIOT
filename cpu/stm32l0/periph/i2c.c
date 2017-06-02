@@ -13,7 +13,8 @@
  * @file
  * @brief       Low-level I2C driver implementation
  *
- * @note This implementation only implements the 7-bit addressing polling mode.
+ * @note This implementation only implements the 7-bit addressing polling mode (for now
+ * interrupt mode is not available)
  *
  * @author      Aurélien Fillau <aurelien.fillau@we-sens.com>
  *
@@ -30,12 +31,21 @@
 #include "periph_conf.h"
 
 
-#define ENABLE_DEBUG    (1)
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 
 /* guard file in case no I2C device is defined */
 #if I2C_NUMOF
+
+/* static function definitions */
+static void _i2c_init(I2C_TypeDef *i2c, uint32_t presc, uint32_t scll,
+                      uint32_t sclh, uint32_t sdadel, uint32_t scldel,
+                      uint32_t timing);
+static void _start(I2C_TypeDef *dev, uint8_t address, uint8_t length, uint8_t rw_flag);
+static inline void _read(I2C_TypeDef *dev, uint8_t *data, int length);
+static inline void _write(I2C_TypeDef *i2c, const uint8_t *data, int length);
+static inline void _stop(I2C_TypeDef *i2c);
 
 /**
  * @brief Array holding one pre-initialized mutex for each I2C device
@@ -55,97 +65,119 @@ static mutex_t locks[] =  {
 #endif
 };
 
-//#define I2C_TIMING    0x10A13E56 /* 100 kHz with analog Filter ON, Rise Time 400ns, Fall Time 100ns */
-#define I2C_TIMING      0x00B1112E /* 400 kHz with analog Filter ON, Rise Time 250ns, Fall Time 100ns */
-#define TIMING_CLEAR_MASK   (0xF0FFFFFFU)  /*!< I2C TIMING clear register Mask */
-
-/* static function definitions */
-static void _i2c_init(I2C_TypeDef *i2c, i2c_speed_t speed);
-static void _start(I2C_TypeDef *i2c, uint8_t address, uint8_t nbyte, uint8_t mode, uint8_t rw_flag);
-static inline void _write(I2C_TypeDef *i2c, const uint8_t *data, int length);
-static inline void _stop(I2C_TypeDef *i2c);
-static inline uint32_t _setupTiming(i2c_speed_t spd, uint32_t clockFreq);
-
 int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 {
-    if ((unsigned int)dev >= I2C_NUMOF) {
-        return -1;
+    I2C_TypeDef *i2c;
+    gpio_t scl;
+    gpio_t sda;
+	uint32_t presc, scll, sclh, sdadel, scldel, timing;
+
+	/*
+	 * Speed configuration:
+	 * Example values can be found in the STM32L0xx Reference manual RM0367
+	 * Chapter 28.4.9: Table 148 Examples of timings settings for f_I2CCLK = 16MHz
+	 * t_SCLL: SCL low level counter
+	 * t_SCLH: SCL high level counter
+	 * t_SDADEL: Delay before sending SDA output
+	 * t_SCLDEL: SCL low level during setup-time
+	 */
+	switch (speed) {
+		case I2C_SPEED_NORMAL:
+			presc = 1;
+			scll = 0x56;  /* t_SCLL   = 5.0us */
+			sclh = 0x3E;   /* t_SCLH   = 4.0us */
+			sdadel = 0x1; /* t_SDADEL = 500ns */
+			scldel = 0xA; /* t_SCLDEL = 1250ns */
+			break;
+
+		case I2C_SPEED_FAST:
+			presc = 0;
+			scll = 0x2E;   /* t_SCLL   = 1250ns */
+			sclh = 0x11;   /* t_SCLH   = 500ns */
+			sdadel = 0x1; /* t_SDADEL = 125ns */
+			scldel = 0xB; /* t_SCLDEL = 500ns */
+			break;
+
+		case I2C_SPEED_FAST_PLUS:
+			presc = 0;
+			scll = 0x6;   /* t_SCLL   = 875ns */
+			sclh = 0x3;   /* t_SCLH   = 500ns */
+			sdadel = 0x0; /* t_SDADEL = 0ns */
+			scldel = 0x1; /* t_SCLDEL = 250ns */
+			break;
+
+		default:
+			return -2;
+	}
+
+	/* prepare the timing register value */
+	timing = ((presc << 28) | (scldel << 20) | (sdadel << 16) | (sclh << 8) | scll);
+
+    /* read static device configuration */
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            i2c = I2C_0_DEV;
+        	scl = GPIO_PIN(I2C_0_SCL_PORT, I2C_0_SCL_PIN);     /**< scl pin number */
+            sda = GPIO_PIN(I2C_0_SDA_PORT, I2C_0_SDA_PIN);     /**< sda pin number */
+            I2C_0_CLKEN();
+            I2C_0_SCL_CLKEN();
+            I2C_0_SDA_CLKEN();
+//            NVIC_SetPriority(I2C_0_EVT_IRQ, I2C_IRQ_PRIO);
+//            NVIC_EnableIRQ(I2C_0_EVT_IRQ);
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            i2c = I2C_1_DEV;
+        	scl = GPIO_PIN(I2C_1_SCL_PORT, I2C_1_SCL_PIN);     /**< scl pin number */
+            sda = GPIO_PIN(I2C_1_SDA_PORT, I2C_1_SDA_PIN);     /**< sda pin number */
+            I2C_1_CLKEN();
+            I2C_1_SCL_CLKEN();
+            I2C_1_SDA_CLKEN();
+//            NVIC_SetPriority(I2C_1_EVT_IRQ, I2C_IRQ_PRIO);
+//            NVIC_EnableIRQ(I2C_1_EVT_IRQ);
+            break;
+#endif
+
+        default:
+            return -1;
     }
 
-    /* read speed configuration */
-//    switch (speed) {
-//        case I2C_SPEED_NORMAL:
-//            ccr = I2C_APBCLK / 200000;
-//            break;
-//
-//        case I2C_SPEED_FAST:
-//            ccr = I2C_APBCLK / 800000;
-//            break;
-//
-//        default:
-//            return -2;
-//    }
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
+	/* configure pins */
+    gpio_init(scl, GPIO_OD_PU);
+    gpio_init_af(scl, GPIO_AF4);
+    gpio_init(sda, GPIO_OD_PU);
+    gpio_init_af(sda, GPIO_AF4);
 
-    /* enable I2C clock */
-    i2c_poweron(dev);
-
-    RCC->IOPENR |= RCC_IOPENR_GPIOBEN;
-
-    /*Enable Clock for I2C*/
-    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
-
-    /* Enable GPIO Clock */
-    RCC->IOPENR |=  (1UL << 1);
-
-    /* configure pins */
-    gpio_init(i2c_config[dev].scl, i2c_config[dev].pin_mode);
-    gpio_init_af(i2c_config[dev].scl, i2c_config[dev].af);
-    gpio_init(i2c_config[dev].sda, i2c_config[dev].pin_mode);
-    gpio_init_af(i2c_config[dev].sda, i2c_config[dev].af);
-
-    i2c->CR1 &= ~I2C_CR1_PE;
-
-    /* Disable device */
-    i2c->CR1 = 0;
-    i2c->CR2 = 0;
-    /* Configure I2Cx: Frequency range */
-    i2c->TIMINGR = _setupTiming(I2C_SPEED_LOW,32000000);
-    i2c->TIMINGR = 0x10A13E56;
-    /* Disable Own Address1 before set the Own Address1 configuration */
-    i2c->OAR1 &= ~I2C_OAR1_OA1EN;
-    /* Configure I2Cx: Own Address1 and ack own address1 mode */
-    i2c->OAR1 = (I2C_OAR1_OA1EN | 0);
-
-//
-//    /* Enable the AUTOEND by default, and enable NACK (should be disable only during Slave process */
-//    i2c->CR2 |= (I2C_CR2_AUTOEND | I2C_CR2_NACK);
-    /*---------------------------- I2Cx OAR2 Configuration ---------------------*/
-//    /* Disable Own Address2 before set the Own Address2 configuration */
-//    i2c->OAR2 &= ~I2C_DUALADDRESS_ENABLE;
-
-    /* Configure device */
-    i2c->OAR1 = 0;              /* makes sure we are in 7-bit address mode */
-    /* Enable device */
-    i2c->CR1 |= I2C_CR1_PE;
+	/* configure device */
+	_i2c_init(i2c, presc, scll, sclh, sdadel, scldel, timing);
 
     return 0;
 }
 
-static inline uint32_t _setupTiming(i2c_speed_t spd, uint32_t clockFreq) {
-    (void) spd;
-    (void) clockFreq;
-    uint32_t presc = 0;
-    uint32_t sdadel = 2;
-    uint32_t scldel = 2;
-    uint32_t scll = 6;
-    uint32_t sclh = 7;
+static void _i2c_init(I2C_TypeDef *i2c, uint32_t presc, uint32_t scll,
+                      uint32_t sclh, uint32_t sdadel, uint32_t scldel,
+                      uint32_t timing)
+{
+    /* disable device */
+    i2c->CR1 &= ~(I2C_CR1_PE);
 
-    return  presc << 28 |
-            scldel << 20 |
-            sdadel << 16 |
-            sclh << 8 |
-            scll;
+    /* configure analog noise f
+     * ilter */
+    i2c->CR1 |= I2C_CR1_ANFOFF;
+
+    /* configure digital noise filter */
+    i2c->CR1 |= I2C_CR1_DNF;
+
+    /* set timing registers */
+    i2c->TIMINGR = timing;
+
+    /* configure clock stretching */
+    i2c->CR1 &= ~(I2C_CR1_NOSTRETCH);
+
+    /* enable device */
+    i2c->CR1 |= I2C_CR1_PE;
 }
 
 int i2c_acquire(i2c_t dev)
@@ -173,24 +205,32 @@ int i2c_read_byte(i2c_t dev, uint8_t address, void *data)
 
 int i2c_read_bytes(i2c_t dev, uint8_t address, void *data, int length)
 {
-	if ((unsigned int)dev >= I2C_NUMOF) {
-		return -1;
-	}
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
+    I2C_TypeDef *i2c;
 
-	_start(i2c, address<<1, length, 1, I2C_FLAG_READ);
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            i2c = I2C_0_DEV;
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            i2c = I2C_1_DEV;
+            break;
+#endif
 
-	while (length) {
-		while (!(i2c->ISR & I2C_ISR_RXNE)) {} //AFU timeout ?
+        default:
+            return -1;
+    }
 
-		*(uint8_t*)data++ = i2c->RXDR;
-		length--;
-	}
+    /* start reception and send slave address */
+    _start(i2c, address, length, I2C_FLAG_READ);
 
-	/* Wait until STOP is cleared by hardware */
-	while (i2c->ISR & I2C_ISR_TCR) {}
+    /* read the data bytes */
+    _read(i2c, data, length);
 
-	_stop(i2c);
+    /* end transmission */
+    _stop(i2c);
 
     return length;
 }
@@ -202,23 +242,40 @@ int i2c_read_reg(i2c_t dev, uint8_t address, uint8_t reg, void *data)
 
 int i2c_read_regs(i2c_t dev, uint8_t address, uint8_t reg, void *data, int length)
 {
-    if ((unsigned int)dev >= I2C_NUMOF) {
-        return -1;
+    I2C_TypeDef *i2c;
+
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            i2c = I2C_0_DEV;
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            i2c = I2C_1_DEV;
+            break;
+#endif
+
+        default:
+            return -1;
     }
 
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
+    /* Check to see if the bus is busy */
+    while((i2c->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY) {}
 
-	/* Check to see if the bus is busy */
-	while((i2c->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY);
+    /* send start sequence and slave address */
+    _start(i2c, address, 1, I2C_FLAG_WRITE);
 
-	_start(i2c, address<<1, 1, 0, I2C_FLAG_WRITE);
+    /* wait for ack */
+    DEBUG("Waiting for ACK\n");
+    while (!(i2c->ISR & I2C_ISR_TXIS)) {}
 
+    DEBUG("Write register to read\n");
     i2c->TXDR = reg;
 
-	/* Wait for transfer to be completed */
-	while((I2C1->ISR & I2C_ISR_TC) == 0);
-
-	return i2c_read_bytes(dev, address, data, length);
+    /* send repeated start sequence, read registers and end transmission */
+    DEBUG("ACK received, send repeated start sequence\n");
+    return i2c_read_bytes(dev, address, data, length);
 }
 
 int i2c_write_byte(i2c_t dev, uint8_t address, uint8_t data)
@@ -228,18 +285,33 @@ int i2c_write_byte(i2c_t dev, uint8_t address, uint8_t data)
 
 int i2c_write_bytes(i2c_t dev, uint8_t address, const void *data, int length)
 {
-    if ((unsigned int)dev >= I2C_NUMOF) {
-        return -1;
+    I2C_TypeDef *i2c;
+
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            i2c = I2C_0_DEV;
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            i2c = I2C_1_DEV;
+            break;
+#endif
+
+        default:
+            return -1;
     }
 
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
+    /* start transmission and send slave address */
+    _start(i2c, address, length, I2C_FLAG_WRITE);
 
-    /* Start transmission and send slave address */
-    _start(i2c, address, 1, 0, I2C_FLAG_WRITE);
-    /* Send out data bytes */
+    /* send out data bytes */
     _write(i2c, data, length);
-    /* End transmission */
+
+    /* end transmission */
     _stop(i2c);
+
     return length;
 }
 
@@ -250,144 +322,146 @@ int i2c_write_reg(i2c_t dev, uint8_t address, uint8_t reg, uint8_t data)
 
 int i2c_write_regs(i2c_t dev, uint8_t address, uint8_t reg, const void *data, int length)
 {
-    if ((unsigned int)dev >= I2C_NUMOF) {
-        return -1;
+    I2C_TypeDef *i2c;
+
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            i2c = I2C_0_DEV;
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            i2c = I2C_1_DEV;
+            break;
+#endif
+
+        default:
+            return -1;
     }
 
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
+    /* Check to see if the bus is busy */
+    while((i2c->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY);
 
-	/* Check to see if the bus is busy */
-	while((i2c->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY);
+    /* start transmission and send slave address */
+    /* increase length because our data is register+data */
+    _start(i2c, address, length+1, I2C_FLAG_WRITE);
 
-    /* Start transmission and send slave address */
-	_start(i2c, address<<1, 1+length, 0, I2C_FLAG_WRITE);
+    /* send register number */
+    DEBUG("ACK received, write reg into DR\n");
+    i2c->TXDR = reg;
 
-    /* Send register address and wait for complete transfer to be finished*/
-    _write(i2c, &reg, 1);
-    /* Write data to register */
+    /* write out data bytes */
     _write(i2c, data, length);
-    /* Finish transfer */
+
+    /* end transmission */
     _stop(i2c);
-    /* Return number of bytes send */
+
     return length;
 }
 
 void i2c_poweron(i2c_t dev)
 {
-	if ((unsigned int)dev < I2C_NUMOF) {
-        periph_clk_en(APB1, (RCC_APB1ENR_I2C1EN << dev));
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            I2C_0_CLKEN();
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            I2C_1_CLKEN();
+            break;
+#endif
     }
 }
 
 void i2c_poweroff(i2c_t dev)
 {
-    if ((unsigned int)dev < I2C_NUMOF) {
-        while (i2c_config[dev].dev->ISR & I2C_ISR_BUSY) {}
-        periph_clk_dis(APB1, (RCC_APB1ENR_I2C1EN << dev));
+    switch (dev) {
+#if I2C_0_EN
+        case I2C_0:
+            while (I2C_0_DEV->ISR & I2C_ISR_BUSY) {}
+
+            I2C_0_CLKDIS();
+            break;
+#endif
+#if I2C_1_EN
+        case I2C_1:
+            while (I2C_1_DEV->ISR & I2C_ISR_BUSY) {}
+
+            I2C_0_CLKDIS();
+            break;
+#endif
     }
 }
 
-static void _start(I2C_TypeDef *i2c, uint8_t address, uint8_t nbyte, uint8_t mode, uint8_t rw_flag)
+static void _start(I2C_TypeDef *dev, uint8_t address, uint8_t length, uint8_t rw_flag)
 {
-	gpio_toggle(GPIO_PIN(PORT_C, 9));
-	gpio_toggle(GPIO_PIN(PORT_C, 9));
+    dev->CR2 = 0;
+    /* set address mode to 7-bit */
+    dev->CR2 &= ~(I2C_CR2_ADD10);
 
-	uint32_t tmpreg= 0;
-	/* Get the CR2 register value */
-	tmpreg = i2c->CR2;
+    /* set slave address */
+    dev->CR2 &= ~(I2C_CR2_SADD);
+    dev->CR2 |= (address << 1);
 
-	/* Clear tmpreg specific bits */
-	tmpreg &= (uint32_t)~((uint32_t)(I2C_CR2_SADD | I2C_CR2_NBYTES | I2C_CR2_RELOAD | I2C_CR2_AUTOEND | I2C_CR2_RD_WRN | I2C_CR2_START | I2C_CR2_STOP));
+    /* set transfer direction */
+    dev->CR2 &= ~(I2C_CR2_RD_WRN);
+    dev->CR2 |= (rw_flag << I2C_CR2_RD_WRN_Pos);
 
-	/* Update tmpreg */
-	tmpreg |= (uint32_t)(((uint32_t)address & I2C_CR2_SADD) | (((uint32_t)nbyte << 16 ) & I2C_CR2_NBYTES) | (uint32_t)(mode << I2C_CR2_RD_WRN_Pos) | (uint32_t)(I2C_CR2_START | (rw_flag << I2C_CR2_RD_WRN_Pos)));
-	/* Update CR2 register */
-	i2c->CR2 = tmpreg;
+    /* set number of bytes */
+    dev->CR2 &= ~(I2C_CR2_NBYTES);
+    dev->CR2 |= (length << I2C_CR2_NBYTES_Pos);
 
-	/* Wait for the start followed by the address to be sent */
-    while (!(i2c->CR2 & I2C_CR2_START)) {}
+    /* configure autoend configuration */
+    dev->CR2 &= ~(I2C_CR2_AUTOEND);
+
+    /* generate start condition */
+    DEBUG("Generate start condition\n");
+    dev->CR2 |= I2C_CR2_START;
+
+    /* Wait for the start followed by the address to be sent */
+    while (!(dev->CR2 & I2C_CR2_START)) {}
 }
 
-static inline void _write(I2C_TypeDef *i2c, const uint8_t *data, int length)
+static inline void _read(I2C_TypeDef *dev, uint8_t *data, int length)
 {
     for (int i = 0; i < length; i++) {
-        /* Write data to data register */
-        i2c->TXDR = data[i];
+        /* wait for transfer to finish */
+        DEBUG("Waiting for DR to be full\n");
+        while (!(dev->ISR & I2C_ISR_RXNE)) {}
+        DEBUG("DR is now full\n");
 
-        /* Wait for transfer to finish */
-        while (!(i2c->ISR & I2C_ISR_TXE)) {}
+        /* read data from data register */
+        data[i] = dev->RXDR;
+        DEBUG("Read byte %i from DR\n", i);
     }
 }
 
-static inline void _stop(I2C_TypeDef *i2c)
+static inline void _write(I2C_TypeDef *dev, const uint8_t *data, int length)
 {
-    /* Make sure last byte was send */
-    while (!(i2c->ISR & I2C_ISR_TXE)) {}
+    for (int i = 0; i < length; i++) {
+        /* wait for ack */
+        DEBUG("Waiting for ACK\n");
+        while (!(dev->ISR & I2C_ISR_TXIS)) {}
 
-    /* Send STOP condition */
-    i2c->CR2 |= I2C_CR2_STOP;
+        /* write data to data register */
+        DEBUG("Write byte %i to DR\n", i);
+        dev->TXDR = data[i];
+        DEBUG("Sending data\n");
+    }
 }
 
-//#if I2C_0_EN
-//void I2C_0_ERR_ISR(void)
-//{
-//    unsigned state = I2C1->SR1;
-//    DEBUG("\n\n### I2C1 ERROR OCCURED ###\n");
-//    DEBUG("status: %08x\n", state);
-//    if (state & I2C_SR1_OVR) {
-//        DEBUG("OVR\n");
-//    }
-//    if (state & I2C_SR1_AF) {
-//        DEBUG("AF\n");
-//    }
-//    if (state & I2C_SR1_ARLO) {
-//        DEBUG("ARLO\n");
-//    }
-//    if (state & I2C_SR1_BERR) {
-//        DEBUG("BERR\n");
-//    }
-//    if (state & I2C_SR1_PECERR) {
-//        DEBUG("PECERR\n");
-//    }
-//    if (state & I2C_SR1_TIMEOUT) {
-//        DEBUG("TIMEOUT\n");
-//    }
-//    if (state & I2C_SR1_SMBALERT) {
-//        DEBUG("SMBALERT\n");
-//    }
-//    while (1) {}
-//}
-//#endif /* I2C_0_EN */
+static inline void _stop(I2C_TypeDef *dev)
+{
+    /* make sure transfer is complete */
+    DEBUG("Wait for transfer to be complete\n");
+    while (!(dev->ISR & I2C_ISR_TC)) {}
 
-//#if I2C_1_EN
-//void I2C_1_ERR_ISR(void)
-//{
-//    unsigned state = I2C2->SR1;
-//    DEBUG("\n\n### I2C2 ERROR OCCURED ###\n");
-//    DEBUG("status: %08x\n", state);
-//    if (state & I2C_SR1_OVR) {
-//        DEBUG("OVR\n");
-//    }
-//    if (state & I2C_SR1_AF) {
-//        DEBUG("AF\n");
-//    }
-//    if (state & I2C_SR1_ARLO) {
-//        DEBUG("ARLO\n");
-//    }
-//    if (state & I2C_SR1_BERR) {
-//        DEBUG("BERR\n");
-//    }
-//    if (state & I2C_SR1_PECERR) {
-//        DEBUG("PECERR\n");
-//    }
-//    if (state & I2C_SR1_TIMEOUT) {
-//        DEBUG("TIMEOUT\n");
-//    }
-//    if (state & I2C_SR1_SMBALERT) {
-//        DEBUG("SMBALERT\n");
-//    }
-//    while (1) {}
-//}
-//#endif /* I2C_1_EN */
+    /* send STOP condition */
+    DEBUG("Generate stop condition\n");
+    dev->CR2 |= I2C_CR2_STOP;
+}
 
 #endif /* I2C_NUMOF */
