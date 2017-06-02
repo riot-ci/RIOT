@@ -70,55 +70,55 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
     I2C_TypeDef *i2c;
     gpio_t scl;
     gpio_t sda;
-	uint32_t presc, scll, sclh, sdadel, scldel, timing;
+    uint32_t presc, scll, sclh, sdadel, scldel, timing;
 
-	/*
-	 * Speed configuration:
-	 * Example values can be found in the STM32L0xx Reference manual RM0367
-	 * Chapter 28.4.9: Table 148 Examples of timings settings for f_I2CCLK = 16MHz
-	 * t_SCLL: SCL low level counter
-	 * t_SCLH: SCL high level counter
-	 * t_SDADEL: Delay before sending SDA output
-	 * t_SCLDEL: SCL low level during setup-time
-	 */
-	switch (speed) {
-		case I2C_SPEED_NORMAL:
-			presc = 1;
-			scll = 0x56;  /* t_SCLL   = 5.0us */
-			sclh = 0x3E;   /* t_SCLH   = 4.0us */
-			sdadel = 0x1; /* t_SDADEL = 500ns */
-			scldel = 0xA; /* t_SCLDEL = 1250ns */
-			break;
+    /*
+     * Speed configuration:
+     * Example values can be found in the STM32L0xx Reference manual RM0367
+     * with f_I2CCLK = 16MHz
+     * t_SCLL: SCL low level counter
+     * t_SCLH: SCL high level counter
+     * t_SDADEL: Delay before sending SDA output
+     * t_SCLDEL: SCL low level during setup-time
+     */
+    switch (speed) {
+        case I2C_SPEED_NORMAL:
+            presc = 1;
+            scll = 0x56;  /* t_SCLL   = 5.0us */
+            sclh = 0x3E;   /* t_SCLH   = 4.0us */
+            sdadel = 0x1; /* t_SDADEL = 500ns */
+            scldel = 0xA; /* t_SCLDEL = 1250ns */
+            break;
 
-		case I2C_SPEED_FAST:
-			presc = 0;
-			scll = 0x2E;   /* t_SCLL   = 1250ns */
-			sclh = 0x11;   /* t_SCLH   = 500ns */
-			sdadel = 0x1; /* t_SDADEL = 125ns */
-			scldel = 0xB; /* t_SCLDEL = 500ns */
-			break;
+        case I2C_SPEED_FAST:
+            presc = 0;
+            scll = 0x2E;   /* t_SCLL   = 1250ns */
+            sclh = 0x11;   /* t_SCLH   = 500ns */
+            sdadel = 0x1; /* t_SDADEL = 125ns */
+            scldel = 0xB; /* t_SCLDEL = 500ns */
+            break;
 
-		case I2C_SPEED_FAST_PLUS:
-			presc = 0;
-			scll = 0x6;   /* t_SCLL   = 875ns */
-			sclh = 0x3;   /* t_SCLH   = 500ns */
-			sdadel = 0x0; /* t_SDADEL = 0ns */
-			scldel = 0x1; /* t_SCLDEL = 250ns */
-			break;
+        case I2C_SPEED_FAST_PLUS:
+            presc = 0;
+            scll = 0x6;   /* t_SCLL   = 875ns */
+            sclh = 0x3;   /* t_SCLH   = 500ns */
+            sdadel = 0x0; /* t_SDADEL = 0ns */
+            scldel = 0x1; /* t_SCLDEL = 250ns */
+            break;
 
-		default:
-			return -2;
-	}
+        default:
+            return -2;
+    }
 
-	/* prepare the timing register value */
-	timing = ((presc << 28) | (scldel << 20) | (sdadel << 16) | (sclh << 8) | scll);
+    /* prepare the timing register value */
+    timing = ((presc << 28) | (scldel << 20) | (sdadel << 16) | (sclh << 8) | scll);
 
     /* read static device configuration */
     switch (dev) {
 #if I2C_0_EN
         case I2C_0:
             i2c = I2C_0_DEV;
-        	scl = GPIO_PIN(I2C_0_SCL_PORT, I2C_0_SCL_PIN);     /**< scl pin number */
+            scl = GPIO_PIN(I2C_0_SCL_PORT, I2C_0_SCL_PIN);     /**< scl pin number */
             sda = GPIO_PIN(I2C_0_SDA_PORT, I2C_0_SDA_PIN);     /**< sda pin number */
             I2C_0_CLKEN();
             I2C_0_SCL_CLKEN();
@@ -130,7 +130,7 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 #if I2C_1_EN
         case I2C_1:
             i2c = I2C_1_DEV;
-        	scl = GPIO_PIN(I2C_1_SCL_PORT, I2C_1_SCL_PIN);     /**< scl pin number */
+            scl = GPIO_PIN(I2C_1_SCL_PORT, I2C_1_SCL_PIN);     /**< scl pin number */
             sda = GPIO_PIN(I2C_1_SDA_PORT, I2C_1_SDA_PIN);     /**< sda pin number */
             I2C_1_CLKEN();
             I2C_1_SCL_CLKEN();
@@ -144,14 +144,14 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
             return -1;
     }
 
-	/* configure pins */
+    /* configure pins */
     gpio_init(scl, GPIO_OD_PU);
     gpio_init_af(scl, GPIO_AF4);
     gpio_init(sda, GPIO_OD_PU);
     gpio_init_af(sda, GPIO_AF4);
 
-	/* configure device */
-	_i2c_init(i2c, presc, scll, sclh, sdadel, scldel, timing);
+    /* configure device */
+    _i2c_init(i2c, presc, scll, sclh, sdadel, scldel, timing);
 
     return 0;
 }
