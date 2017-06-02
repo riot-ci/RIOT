@@ -210,6 +210,7 @@
 #define NET_GCOAP_H
 
 #include "net/sock/udp.h"
+#include "mutex.h"
 #include "nanocoap.h"
 #include "xtimer.h"
 
@@ -430,6 +431,7 @@ typedef struct {
  * @brief   Container for the state of gcoap itself
  */
 typedef struct {
+    mutex_t lock;                       /**< Shares state attributes safely */
     gcoap_listener_t *listeners;        /**< List of registered listeners */
     gcoap_request_memo_t open_reqs[GCOAP_REQ_WAITING_MAX];
                                         /**< Storage for open requests; if first

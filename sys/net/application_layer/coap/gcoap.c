@@ -588,6 +588,7 @@ kernel_pid_t gcoap_init(void)
     _pid = thread_create(_msg_stack, sizeof(_msg_stack), THREAD_PRIORITY_MAIN - 1,
                             THREAD_CREATE_STACKTEST, _event_loop, NULL, "coap");
 
+    mutex_init(&_coap_state.lock);
     /* Blank lists so we know if an entry is available. */
     memset(&_coap_state.open_reqs[0], 0, sizeof(_coap_state.open_reqs));
     memset(&_coap_state.observers[0], 0, sizeof(_coap_state.observers));
@@ -627,11 +628,15 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code,
                &rand,
                (GCOAP_TOKENLEN - i >= 4) ? 4 : GCOAP_TOKENLEN - i);
     }
+    mutex_lock(&_coap_state.lock);      /* protect last_message_id */
     hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &token[0], GCOAP_TOKENLEN,
                             code, ++_coap_state.last_message_id);
+    mutex_unlock(&_coap_state.lock);
 #else
+    mutex_lock(&_coap_state.lock);      /* protect last_message_id */
     hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, NULL, GCOAP_TOKENLEN,
                             code, ++_coap_state.last_message_id);
+    mutex_unlock(&_coap_state.lock);
 #endif
 
     if (hdrlen > 0) {
@@ -685,6 +690,7 @@ size_t gcoap_req_send2(const uint8_t *buf, size_t len,
     assert(resp_handler != NULL);
 
     /* Find empty slot in list of open requests. */
+    mutex_lock(&_coap_state.lock);
     for (int i = 0; i < GCOAP_REQ_WAITING_MAX; i++) {
         if (_coap_state.open_reqs[i].state == GCOAP_MEMO_UNUSED) {
             memo = &_coap_state.open_reqs[i];
@@ -692,6 +698,8 @@ size_t gcoap_req_send2(const uint8_t *buf, size_t len,
             break;
         }
     }
+    mutex_unlock(&_coap_state.lock);
+
     if (memo) {
         memcpy(&memo->hdr_buf[0], buf, GCOAP_HEADER_MAXLEN);
         memo->resp_handler = resp_handler;
@@ -755,9 +763,12 @@ int gcoap_obs_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
     }
 
     pdu->hdr = (coap_hdr_t *)buf;
+    mutex_lock(&_coap_state.lock);      /* protect last_message_id */
     hdrlen   = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &memo->token[0],
                               memo->token_len, COAP_CODE_CONTENT,
                               ++_coap_state.last_message_id);
+    mutex_unlock(&_coap_state.lock);
+
     if (hdrlen > 0) {
         uint32_t now       = xtimer_now_usec();
         pdu->observe_value = (now >> GCOAP_OBS_TICK_EXPONENT) & 0xFFFFFF;
