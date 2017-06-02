@@ -22,9 +22,9 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "can/trx.h"
+#include "can/can_trx.h"
 
-int trx_init(trx_t *dev)
+int can_trx_init(can_trx_t *dev)
 {
     if (dev == NULL) {
         return -ENODEV;
@@ -38,7 +38,7 @@ int trx_init(trx_t *dev)
     }
 }
 
-int trx_set_mode(trx_t *dev, trx_mode_t mode)
+int can_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode)
 {
     if (dev == NULL) {
         return -ENODEV;

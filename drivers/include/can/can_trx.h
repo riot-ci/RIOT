@@ -37,7 +37,7 @@ typedef enum {
     /* single wire can modes */
     TRX_HIGH_SPEED_MODE,
     TRX_HIGH_VOLTAGE_WAKE_UP_MODE
-} trx_mode_t;
+} can_trx_mode_t;
 
 /**
  * @brief forward declaration of trx_driver
@@ -47,10 +47,10 @@ typedef struct trx_driver trx_driver_t;
 /**
  * @brief Generic transceiver descriptor
  */
-typedef struct trx {
+typedef struct can_trx {
     const trx_driver_t *driver; /**< driver */
-    trx_mode_t mode;            /**< current mode */
-} trx_t;
+    can_trx_mode_t mode;            /**< current mode */
+} can_trx_t;
 
 /**
  * @brief Generic transceiver driver
@@ -64,7 +64,7 @@ struct trx_driver {
      * @return 0 on success
      * @return < 0 on error
      */
-    int (*init)(trx_t *dev);
+    int (*init)(can_trx_t *dev);
 
     /**
      * @brief set mode interface
@@ -75,7 +75,7 @@ struct trx_driver {
      * @return  0 on success
      * @return  < 0 on error
      */
-    int (*set_mode)(trx_t *dev, trx_mode_t mode);
+    int (*set_mode)(can_trx_t *dev, can_trx_mode_t mode);
 };
 
 /**
@@ -86,7 +86,7 @@ struct trx_driver {
  * @return  0 on success
  * @return  < 0 on error
  */
-int trx_init(trx_t *dev);
+int can_trx_init(can_trx_t *dev);
 
 /**
  * @brief transceiver set mode
@@ -97,7 +97,7 @@ int trx_init(trx_t *dev);
  * @return  0 on success
  * @return  < 0 on error
  */
-int trx_set_mode(trx_t *dev, trx_mode_t mode);
+int can_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 
 
 #ifdef __cplusplus
