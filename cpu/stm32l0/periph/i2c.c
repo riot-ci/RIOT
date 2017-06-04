@@ -23,17 +23,14 @@
 
 #include <stdint.h>
 
-
 #include "cpu.h"
 #include "mutex.h"
 #include "periph/i2c.h"
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
-
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
-
 
 /* guard file in case no I2C device is defined */
 #if I2C_NUMOF
@@ -85,15 +82,15 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
         case I2C_SPEED_NORMAL:
             presc = 1;
             scll = 0x56;  /* t_SCLL   = 5.0us */
-            sclh = 0x3E;   /* t_SCLH   = 4.0us */
+            sclh = 0x3E;  /* t_SCLH   = 4.0us */
             sdadel = 0x1; /* t_SDADEL = 500ns */
             scldel = 0xA; /* t_SCLDEL = 1250ns */
             break;
 
         case I2C_SPEED_FAST:
             presc = 0;
-            scll = 0x2E;   /* t_SCLL   = 1250ns */
-            sclh = 0x11;   /* t_SCLH   = 500ns */
+            scll = 0x2E;  /* t_SCLL   = 1250ns */
+            sclh = 0x11;  /* t_SCLH   = 500ns */
             sdadel = 0x1; /* t_SDADEL = 125ns */
             scldel = 0xB; /* t_SCLDEL = 500ns */
             break;
@@ -118,25 +115,21 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 #if I2C_0_EN
         case I2C_0:
             i2c = I2C_0_DEV;
-            scl = GPIO_PIN(I2C_0_SCL_PORT, I2C_0_SCL_PIN);     /**< scl pin number */
-            sda = GPIO_PIN(I2C_0_SDA_PORT, I2C_0_SDA_PIN);     /**< sda pin number */
+            scl = GPIO_PIN(I2C_0_SCL_PORT, I2C_0_SCL_PIN);     /* scl pin number */
+            sda = GPIO_PIN(I2C_0_SDA_PORT, I2C_0_SDA_PIN);     /* sda pin number */
             I2C_0_CLKEN();
             I2C_0_SCL_CLKEN();
             I2C_0_SDA_CLKEN();
-//            NVIC_SetPriority(I2C_0_EVT_IRQ, I2C_IRQ_PRIO);
-//            NVIC_EnableIRQ(I2C_0_EVT_IRQ);
             break;
 #endif
 #if I2C_1_EN
         case I2C_1:
             i2c = I2C_1_DEV;
-            scl = GPIO_PIN(I2C_1_SCL_PORT, I2C_1_SCL_PIN);     /**< scl pin number */
-            sda = GPIO_PIN(I2C_1_SDA_PORT, I2C_1_SDA_PIN);     /**< sda pin number */
+            scl = GPIO_PIN(I2C_1_SCL_PORT, I2C_1_SCL_PIN);     /* scl pin number */
+            sda = GPIO_PIN(I2C_1_SDA_PORT, I2C_1_SDA_PIN);     /* sda pin number */
             I2C_1_CLKEN();
             I2C_1_SCL_CLKEN();
             I2C_1_SDA_CLKEN();
-//            NVIC_SetPriority(I2C_1_EVT_IRQ, I2C_IRQ_PRIO);
-//            NVIC_EnableIRQ(I2C_1_EVT_IRQ);
             break;
 #endif
 
@@ -163,8 +156,7 @@ static void _i2c_init(I2C_TypeDef *i2c, uint32_t presc, uint32_t scll,
     /* disable device */
     i2c->CR1 &= ~(I2C_CR1_PE);
 
-    /* configure analog noise f
-     * ilter */
+    /* configure analog noise filter */
     i2c->CR1 |= I2C_CR1_ANFOFF;
 
     /* configure digital noise filter */
