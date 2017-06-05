@@ -180,7 +180,7 @@ static const spi_conf_t spi_config[] = {
 
 /**
  * @name I2C configuration
-  * @{
+ * @{
  */
 #define I2C_0_EN            1
 #define I2C_1_EN            1
