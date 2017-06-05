@@ -16,8 +16,8 @@
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
-#ifndef BITBAND_H
-#define BITBAND_H
+#ifndef BIT_H
+#define BIT_H
 
 #include <stdint.h>
 #include "cpu.h"
@@ -227,5 +227,5 @@ static inline void bit_clear8(volatile uint8_t *ptr, uint8_t bit)
 }
 #endif
 
-#endif /* BITBAND_H */
+#endif /* BIT_H */
 /** @} */
