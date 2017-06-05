@@ -26,6 +26,7 @@
 #include <stdlib.h>
 
 #include "cpu.h"
+#include "bit.h"
 #include "board.h"
 #include "periph_conf.h"
 #include "periph/timer.h"

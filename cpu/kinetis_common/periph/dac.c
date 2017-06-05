@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 #include "cpu.h"
+#include "bit.h"
 #include "periph/dac.h"
 #include "periph_conf.h"
 

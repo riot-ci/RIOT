@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "cpu.h"
+#include "bit.h"
 #include "periph/gpio.h"
 
 /**

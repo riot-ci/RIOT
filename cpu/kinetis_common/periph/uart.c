@@ -26,6 +26,7 @@
 #include <math.h>
 
 #include "cpu.h"
+#include "bit.h"
 #include "periph_conf.h"
 #include "periph/uart.h"
 

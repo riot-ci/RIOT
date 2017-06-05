@@ -36,7 +36,6 @@
 #include "sched.h"
 #include "thread.h"
 #include "cpu_conf.h"
-#include "bitband.h"
 
 #ifdef __cplusplus
 extern "C" {

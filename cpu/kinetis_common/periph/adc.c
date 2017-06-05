@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 #include "cpu.h"
+#include "bit.h"
 #include "mutex.h"
 #include "periph/adc.h"
 
