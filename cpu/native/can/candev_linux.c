@@ -64,8 +64,6 @@ static const candev_driver_t candev_linux_driver = {
     .abort = _abort,
     .set_filter = _set_filter,
     .remove_filter = _remove_filter,
-    .power_down = _power_down,
-    .power_up = _power_up,
 };
 
 static candev_event_t _can_error_to_can_evt(struct can_frame can_frame_err);
@@ -320,7 +318,17 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
         res = _set_bittiming(dev, value);
 
         break;
-
+    case CANOPT_STATE:
+        switch (*((canopt_state_t *)value)) {
+            case CANOPT_STATE_SLEEP:
+            case CANOPT_STATE_OFF:
+                _power_down(candev);
+                break;
+            default:
+                _power_up(candev);
+                break;
+        }
+        break;
     default:
         DEBUG("CAN set, not supported opt\n");
         res = -ENOTSUP;
