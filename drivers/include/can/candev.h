@@ -172,26 +172,6 @@ typedef struct candev_driver {
      * @return              <0 on error
      */
     int (*remove_filter)(candev_t *dev, const struct can_filter *filter);
-
-    /**
-     * @brief  Power up the given CAN device
-     *
-     * @param[in] dev       CAN device descriptor
-     *
-     * @return              0 on success
-     * @return              <0 on error
-     */
-    int (*power_up)(candev_t *dev);
-
-    /**
-     * @brief  Power down the given CAN device
-     *
-     * @param[in] dev       CAN device descriptor
-     *
-     * @return              0 on success
-     * @return              <0 on error
-     */
-    int (*power_down)(candev_t *dev);
 } candev_driver_t;
 
 #ifdef __cplusplus

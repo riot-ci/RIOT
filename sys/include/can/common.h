@@ -43,16 +43,29 @@ extern "C" {
 /**
  * @brief CAN options
  */
-typedef enum canopt {
+typedef enum {
     CANOPT_BITTIMING,       /**< bit timing parameter */
     CANOPT_RX_FILTERS,      /**< rx filters */
     CANOPT_TEC,             /**< Transmit Error Counter */
     CANOPT_REC,             /**< Receive Error Counter*/
     CANOPT_LEC,             /**< Last Error Code */
-    CANOPT_LISTEN_ONLY,     /**< listen only mode */
     CANOPT_CLOCK,           /**< controller main clock */
     CANOPT_BITTIMING_CONST, /**< controller bittiming parameters */
+    CANOPT_STATE,           /**< set controller state @ref canopt_state_t */
 } canopt_t;
+
+/**
+ * @brief CAN state options
+ *
+ * CAN state options to be used with @p CANOPT_STATE
+ */
+typedef enum {
+    CANOPT_STATE_OFF,             /**< powered off */
+    CANOPT_STATE_SLEEP,           /**< sleep mode */
+    CANOPT_STATE_LISTEN_ONLY,     /**< listen only mode */
+    CANOPT_STATE_ON,              /**< power on, rx / tx mode */
+} canopt_state_t;
+
 
 /**
  * @brief Structure to pass a CAN option

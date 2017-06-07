@@ -138,7 +138,8 @@ static int power_up(candev_dev_t *candev_dev)
 #ifdef MODULE_CAN_TRX
     can_trx_set_mode(candev_dev->trx, TRX_NORMAL_MODE);
 #endif
-    int res = dev->driver->power_up(dev);
+    canopt_state_t state = CANOPT_STATE_ON;
+    int res = dev->driver->set(dev, CANOPT_STATE, &state, sizeof(state));
     dev->state = CAN_STATE_ERROR_ACTIVE;
 
     return res;
@@ -153,7 +154,8 @@ static int power_down(candev_dev_t *candev_dev)
 #ifdef MODULE_CAN_TRX
     can_trx_set_mode(candev_dev->trx, TRX_SLEEP_MODE);
 #endif
-    int res = dev->driver->power_down(dev);
+    canopt_state_t state = CANOPT_STATE_SLEEP;
+    int res = dev->driver->set(dev, CANOPT_STATE, &state, sizeof(state));
     dev->state = CAN_STATE_SLEEPING;
 
 #ifdef MODULE_CAN_PM
