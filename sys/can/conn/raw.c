@@ -50,9 +50,10 @@ int conn_can_raw_create(conn_can_raw_t *conn, struct can_filter *filter, size_t 
 
     if (flags & CONN_CAN_RECVONLY) {
         can_opt_t opt;
-        opt.opt = CANOPT_LISTEN_ONLY;
-        opt.data = NULL;
-        opt.data_len = 0;
+        opt.opt = CANOPT_STATE;
+        canopt_state_t state = CANOPT_STATE_LISTEN_ONLY;
+        opt.data = &state;
+        opt.data_len = sizeof(state);
         int ret = raw_can_set_can_opt(ifnum, &opt);
         if (ret < 0) {
             return ret;
