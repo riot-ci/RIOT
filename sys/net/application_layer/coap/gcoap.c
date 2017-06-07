@@ -593,7 +593,7 @@ kernel_pid_t gcoap_init(void)
     memset(&_coap_state.observers[0], 0, sizeof(_coap_state.observers));
     memset(&_coap_state.observe_memos[0], 0, sizeof(_coap_state.observe_memos));
     /* randomize initial value */
-    _coap_state.next_message_id = random_uint32() & 0xFFFF;
+    atomic_init(&_coap_state.next_message_id, (uint16_t)random_uint32());
 
     return _pid;
 }
