@@ -182,6 +182,7 @@
 #ifndef NET_GCOAP_H
 #define NET_GCOAP_H
 
+#include <stdint.h>
 #include <stdatomic.h>
 #include "net/sock/udp.h"
 #include "mutex.h"
