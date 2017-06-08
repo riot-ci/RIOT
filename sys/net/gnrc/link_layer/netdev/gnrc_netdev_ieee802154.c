@@ -21,9 +21,6 @@
 #include "net/ieee802154.h"
 
 #include "net/gnrc/netdev/ieee802154.h"
-#ifdef MODULE_GNRC_MAC
-#include "net/csma_sender.h"
-#endif
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
@@ -226,8 +223,8 @@ static int _send(gnrc_netdev_t *gnrc_netdev, gnrc_pktsnip_t *pkt)
 #endif
 #ifdef MODULE_GNRC_MAC
         if ((!(gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_ONCHIP_CSMA)) &&
-            (gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_CSMA_enabled)) {
-            res = csma_sender_csma_ca_send(netdev, vector, n, NULL);
+            (gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED)) {
+            res = csma_sender_csma_ca_send(netdev, vector, n, &gnrc_netdev->csma_conf);
         }
         else {
             res = netdev->driver->send(netdev, vector, n);
