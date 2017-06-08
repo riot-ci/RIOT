@@ -264,6 +264,10 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_spdif_rx,
 #if defined(CPU_MODEL_STM32F769NI)
     (void*) isr_dsi,
+#elif defined(CPU_MODEL_STM32F767ZI)
+    (void*) (0UL),
+#endif
+#if defined(CPU_MODEL_STM32F769NI) || defined(CPU_MODEL_STM32F767ZI)
     (void*) isr_dfsdm1_flt0,
     (void*) isr_dfsdm1_flt1,
     (void*) isr_dfsdm1_flt2,
