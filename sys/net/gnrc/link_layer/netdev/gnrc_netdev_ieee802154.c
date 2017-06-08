@@ -222,8 +222,7 @@ static int _send(gnrc_netdev_t *gnrc_netdev, gnrc_pktsnip_t *pkt)
         }
 #endif
 #ifdef MODULE_GNRC_MAC
-        if ((!(gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_ONCHIP_CSMA)) &&
-            (gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED)) {
+        if (gnrc_netdev->mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED) {
             res = csma_sender_csma_ca_send(netdev, vector, n, &gnrc_netdev->csma_conf);
         }
         else {
