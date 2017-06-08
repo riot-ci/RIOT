@@ -66,6 +66,27 @@ extern "C" {
  */
 #define GNRC_NETDEV_MAC_INFO_RX_STARTED         (0x0004U)
 
+#ifdef MODULE_GNRC_MAC
+/**
+ * @brief   Flag to track if a device supports on-chip CSMA functionality
+ *
+ * This flag should be (is expected) set only once at the initialization of the
+ * device, or at the initialization of the MAC protocol, according to the fact that
+ * whether the device supports on-chip CSMA. If yes, the related flag bit should
+ * be set, otherwise, should be cleared.
+ */
+#define GNRC_NETDEV_MAC_INFO_ONCHIP_CSMA        (0x0100U)
+
+/**
+ * @brief   Flag to track if a device has enabled CSMA for transmissions
+ *
+ * If the device doesn't support on-chip CSMA and this flag is set for requiring
+ * CSMA for transmission, then, the device will (should) run software CSMA using
+ * `csma_sender` APIs.
+ */
+#define GNRC_NETDEV_MAC_INFO_CSMA_enabled       (0x0200U)
+#endif
+
 /**
  * @brief Structure holding GNRC netdev adapter state
  *
