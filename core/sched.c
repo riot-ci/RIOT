@@ -117,9 +117,9 @@ int __attribute__((used)) sched_run(void)
 
 #ifdef MODULE_SCHEDSTATISTICS
         schedstat *active_stat = &sched_pidlist[active_thread->pid];
-        if (active_stat->laststart) {
-            active_stat->runtime_ticks += now - active_stat->laststart;
-        }
+        /* add up runtime, overflow compatible */
+        active_stat->runtime_ticks += (((uint64_t)now + UINT32_MAX) -
+                                       active_stat->laststart) % UINT32_MAX;
 #endif
     }
 
