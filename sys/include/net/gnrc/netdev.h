@@ -72,10 +72,12 @@ extern "C" {
 #ifdef MODULE_GNRC_MAC
 /**
  * @brief   Flag to track if a device has enabled CSMA for transmissions
- *
- * If the device doesn't support on-chip CSMA and this flag is set for requiring
- * CSMA for transmission, then, the device will (should) run software CSMA using
- * `csma_sender` APIs.
+ * 
+ * If `gnrc_mac` is used, the user should be noticed that the `send()`
+ * fucntion of gnrc_netdev will be affected with the state of this flag, since
+ * `gnrc_mac` accordingly adapts the `send()` function. If the device doesn't
+ * support on-chip CSMA and this flag is set for requiring CSMA transmission,
+ * then, the device will run software CSMA using `csma_sender` APIs.
  */
 #define GNRC_NETDEV_MAC_INFO_CSMA_ENABLED       (0x0100U)
 #endif
