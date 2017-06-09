@@ -71,5 +71,6 @@ int main(void)
         for (unsigned i = 0; i < NEVENTS; i++) {
             evtimer_add_msg(&evtimer, &events[i], pid);
         }
+        thread_yield();
     }
 }
