@@ -62,6 +62,7 @@ typedef struct {
  */
 typedef struct {
     i2c_t i2c_dev;                              /**< I2C device which is used */
+    uint8_t i2c_addr;                           /**< I2C address */
     bmp180_oversampling_mode_t oversampling;    /**< Oversampling mode */
 } bmp180_params_t;
 
