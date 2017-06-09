@@ -315,6 +315,12 @@ ifneq (,$(filter gnrc_ipv6_nc,$(USEMODULE)))
   USEMODULE += ipv6_addr
 endif
 
+ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
+  USEMODULE += evtimer
+  USEMODULE += ipv6_addr
+  USEMODULE += random
+endif
+
 ifneq (,$(filter gnrc_ipv6_netif,$(USEMODULE)))
   USEMODULE += ipv6_addr
   USEMODULE += gnrc_netif
@@ -555,6 +561,10 @@ endif
 
 ifneq (,$(filter phydat,$(USEMODULE)))
   USEMODULE += fmt
+endif
+
+ifneq (,$(filter evtimer,$(USEMODULE)))
+  USEMODULE += xtimer
 endif
 
 ifneq (,$(filter random,$(USEMODULE)))
