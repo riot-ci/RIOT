@@ -1,5 +1,6 @@
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += core_%
+PSEUDOMODULES += cortexm_fpu
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += gnrc_ipv6_default
 PSEUDOMODULES += gnrc_ipv6_router
