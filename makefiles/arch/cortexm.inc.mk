@@ -64,7 +64,11 @@ ifneq (,$(filter $(CPU_ARCH),cortex-m4f cortex-m7))
         USEMODULE += cortexm_fpu
         # clang assumes there is an FPU
         ifneq (llvm,$(TOOLCHAIN))
-            export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
+            ifeq ($(CPU_ARCH),cortex-m7)
+                export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv5-d16
+            else
+                export CFLAGS_FPU ?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
+            endif
         endif
     endif
     ifeq ($(CPU_ARCH),cortex-m4f)
