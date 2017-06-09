@@ -66,6 +66,8 @@ void trickle_reset_timer(trickle_t *trickle);
 /**
  * @brief start the trickle timer
  *
+ * @pre `(Imin << Imax) < UINT32_MAX / 2` to avoid overflow of uint32_t
+ *
  * @param[in] pid                   target thread
  * @param[in] trickle               trickle timer
  * @param[in] msg_type              msg_t.type for messages
@@ -92,6 +94,8 @@ void trickle_increment_counter(trickle_t *trickle);
 
 /**
  * @brief is called after the interval is over and calculates the next interval
+ *
+ * @pre `(trickle->I > 0)` required for trickle algorithm to work
  *
  * @param[in] trickle   trickle timer
  */
