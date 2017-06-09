@@ -13,6 +13,8 @@
  * @brief       Provides timers for events up to @$2^{32}@$ milliseconds in the
  *              future
  *
+ * @note    Experimental and likely to replaced with unified timer API
+ *
  * RIOT's main timer subsystem is @ref sys_xtimer "xtimer", but for many
  * applications @ref sys_xtimer "xtimer's" 64-bit absolute time values are
  * wasteful or clumsy to use.
