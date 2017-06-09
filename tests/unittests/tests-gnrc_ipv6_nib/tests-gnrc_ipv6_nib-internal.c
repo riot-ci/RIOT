@@ -547,9 +547,7 @@ static void test_nib_drl_add__no_space_left_diff_addr(void)
                                   { .u64 = TEST_UINT64 } } };
 
     for (int i = 0; i < GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF; i++) {
-        _nib_dr_entry_t *nib_dr;
-
-        TEST_ASSERT_NOT_NULL((nib_dr = _nib_drl_add(&addr, IFACE)));
+        TEST_ASSERT_NOT_NULL(_nib_drl_add(&addr, IFACE));
         addr.u64[1].u64++;
     }
     TEST_ASSERT_NULL(_nib_drl_add(&addr, IFACE));
@@ -588,9 +586,7 @@ static void test_nib_drl_add__no_space_left_diff_iface(void)
     unsigned iface = 1;
 
     for (int i = 0; i < GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF; i++) {
-        _nib_dr_entry_t *nib_dr;
-
-        TEST_ASSERT_NOT_NULL((nib_dr = _nib_drl_add(&addr, iface)));
+        TEST_ASSERT_NOT_NULL(_nib_drl_add(&addr, iface));
         iface++;
     }
     TEST_ASSERT_NULL(_nib_drl_add(&addr, iface));
@@ -609,9 +605,7 @@ static void test_nib_drl_add__no_space_left_diff_addr_iface(void)
     unsigned iface = 1;
 
     for (int i = 0; i < GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF; i++) {
-        _nib_dr_entry_t *nib_dr;
-
-        TEST_ASSERT_NOT_NULL((nib_dr = _nib_drl_add(&addr, iface)));
+        TEST_ASSERT_NOT_NULL(_nib_drl_add(&addr, iface));
         addr.u64[1].u64++;
         iface++;
     }
@@ -797,11 +791,10 @@ static void test_nib_drl_iter__three_elem_middle_removed(void)
  */
 static void test_nib_drl_get__not_in_nib(void)
 {
-    _nib_dr_entry_t *nib_alloced;
     ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
                                   { .u64 = TEST_UINT64 } } };
 
-    TEST_ASSERT_NOT_NULL((nib_alloced = _nib_drl_add(&addr, IFACE)));
+    TEST_ASSERT_NOT_NULL(_nib_drl_add(&addr, IFACE));
     addr.u64[1].u64++;
     TEST_ASSERT_NULL(_nib_drl_get(&addr, IFACE));
 }
@@ -988,8 +981,7 @@ static void test_nib_iface_get__no_space_left(void)
     unsigned iface = 1;
 
     for (int i = 0; i < GNRC_NETIF_NUMOF; i++) {
-        _nib_iface_t *ni;
-        TEST_ASSERT_NOT_NULL((ni = _nib_iface_get(iface++)));
+        TEST_ASSERT_NOT_NULL(_nib_iface_get(iface++));
     }
     TEST_ASSERT_NULL(_nib_iface_get(iface));
 }

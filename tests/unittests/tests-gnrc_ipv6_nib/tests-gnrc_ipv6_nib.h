@@ -15,8 +15,8 @@
  *
  * @author      Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef TESTS_GNRC_IPV6_NIB_H_
-#define TESTS_GNRC_IPV6_NIB_H_
+#ifndef TESTS_GNRC_IPV6_NIB_H
+#define TESTS_GNRC_IPV6_NIB_H
 
 #include "embUnit.h"
 
@@ -40,5 +40,5 @@ Test *tests_gnrc_ipv6_nib_internal_tests(void);
 }
 #endif
 
-#endif /* TESTS_GNRC_IPV6_NIB_H_ */
+#endif /* TESTS_GNRC_IPV6_NIB_H */
 /** @} */
