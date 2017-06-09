@@ -19,8 +19,8 @@
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef GNRC_IPV6_NIB_H_
-#define GNRC_IPV6_NIB_H_
+#ifndef NET_GNRC_IPV6_NIB_H
+#define NET_GNRC_IPV6_NIB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,9 +35,9 @@ extern "C" {
  * @brief   (Re-)transmit unicast Neighbor Solicitation event.
  *
  * This message type is for the event of (re-)transmitting of unicast Neighbor
- * Solicitation. The expected message context is a pointer to a valid
- * [on-link entry](@ref _nib_onl_entry_t) representing the neighbor to which the
- * Neighbor Solicitation is supposed to be sent.
+ * Solicitation. The expected message context is a pointer to a valid on-link
+ * entry representing the neighbor to which the Neighbor Solicitation is
+ * supposed to be sent.
  */
 #define GNRC_IPV6_NIB_SND_UC_NS             (0x4fc0U)
 
@@ -45,9 +45,9 @@ extern "C" {
  * @brief   (Re-)transmit multicast Neighbor Solicitation event.
  *
  * This message type is for the event of (re-)transmitting of multicast Neighbor
- * Solicitation. The expected message context is a pointer to a valid
- * [on-link entry](@ref _nib_onl_entry_t) representing the neighbor to which
- * [solicited nodes](https://tools.ietf.org/html/rfc4291#section-2.7.1) group
+ * Solicitation. The expected message context is a pointer to a valid on-link
+ * entry representing the neighbor to which [solicited
+ * nodes](https://tools.ietf.org/html/rfc4291#section-2.7.1) group
  * the Neighbor Solicitation is supposed to be sent.
  */
 #define GNRC_IPV6_NIB_SND_MC_NS             (0x4fc1U)
@@ -67,8 +67,8 @@ extern "C" {
  *
  * This message type is for the event of searching a (new) router (which
  * implies sending a multicast Router Solicitation). The expected message
- * context is a pointer to a valid [interface](@ref _nib_iface_t) behind
- * which the router is searched.
+ * context is a pointer to a valid interface behind which the router is
+ * searched.
  */
 #define GNRC_IPV6_NIB_SEARCH_RTR            (0x4fc3U)
 
@@ -77,8 +77,8 @@ extern "C" {
  *
  * This message type is for the event the reconfirmation of a router (which
  * implies sending a unicast Router Solicitation). The expected message context
- * is a pointer to a valid [on-link entry](@ref _nib_onl_entry_t) representing
- * the router that is to be confirmed.
+ * is a pointer to a valid on-link entry representing the router that is to be
+ * confirmed.
  */
 #define GNRC_IPV6_NIB_RECONFIRM_RTR         (0x4fc4U)
 
@@ -87,8 +87,8 @@ extern "C" {
  *
  * This message type is for the event of the delayed reply to a Router
  * Solicitaion with a Router Advertisement. The expected message context is a
- * pointer to a valid [on-link entry](@ref _nib_onl_entry_t) representing the
- * neighbor that sent the Router Solicitation.
+ * pointer to a valid on-link entry representing the neighbor that sent the
+ * Router Solicitation.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ROUTER != 0
  */
@@ -98,9 +98,9 @@ extern "C" {
  * @brief   (Re-)transmit multicast Router Advertisement event.
  *
  * This message type is for the event of (Re)transmit Advertisements
- * event. The expected message context is a pointer to a valid
- * [interface](@ref _nib_iface_t) over which the Router Advertisement will
- * be sent and by which parameters it will be configured.
+ * event. The expected message context is a pointer to a valid interface over
+ * which the Router Advertisement will be sent and by which parameters it will
+ * be configured.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ROUTER != 0
  */
@@ -110,9 +110,8 @@ extern "C" {
  * @brief   Reachability timeout event.
  *
  * This message type is for the event of a REACHABLE state timeout.
- * The expected message context is a pointer to a valid
- * [on-link entry](@ref _nib_onl_entry_t) representing the neighbor cache entry
- * that faces a state change.
+ * The expected message context is a pointer to a valid on-link entry
+ * representing the neighbor cache entry that faces a state change.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
@@ -122,9 +121,8 @@ extern "C" {
  * @brief   Delay timeout event.
  *
  * This message type is for the event of the DELAY state timeout.
- * The expected message context is a pointer to a valid
- * [on-link entry](@ref _nib_onl_entry_t) representing the neighbor cache entry
- * that faces a state change.
+ * The expected message context is a pointer to a valid on-link entry
+ * representing the neighbor cache entry that faces a state change.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
@@ -134,9 +132,8 @@ extern "C" {
  * @brief   Address registration timeout event.
  *
  * This message type is for the event of a 6LoWPAN address registration state
- * timeout. The expected message context is a pointer to a valid
- * [on-link entry](@ref _nib_onl_entry_t) representing the neighbor which faces
- * a timeout of its address registration.
+ * timeout. The expected message context is a pointer to a valid on-link entry
+ * representing the neighbor which faces a timeout of its address registration.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_6LR != 0
  */
@@ -168,7 +165,7 @@ extern "C" {
  * @brief   Prefix timeout event.
  *
  * This message type is for the event of a prefix timeout. The expected message
- * context is a valid [off-link entry](_nib_offl_entry_t) representing the prefix.
+ * context is a valid off-link entry representing the prefix.
  */
 #define GNRC_IPV6_NIB_PFX_TIMEOUT           (0x4fccU)
 
@@ -176,7 +173,7 @@ extern "C" {
  * @brief   Router timeout event.
  *
  * This message type is for the event of a router timeout. The expected message
- * context is a valid [default router entry](_nib_dr_entry_t) representing the router.
+ * context is a valid default router entry representing the router.
  */
 #define GNRC_IPV6_NIB_RTR_TIMEOUT           (0x4fcdU)
 /** @} */
@@ -185,5 +182,5 @@ extern "C" {
 }
 #endif
 
-#endif /* GNRC_IPV6_NIB_H_ */
+#endif /* NET_GNRC_IPV6_NIB_H */
 /** @} */

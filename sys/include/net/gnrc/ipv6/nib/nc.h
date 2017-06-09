@@ -17,8 +17,8 @@
  *
  * @author      Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef GNRC_IPV6_NIB_NC_H_
-#define GNRC_IPV6_NIB_NC_H_
+#ifndef NET_GNRC_IPV6_NIB_NC_H
+#define NET_GNRC_IPV6_NIB_NC_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -130,5 +130,5 @@ extern "C" {
 }
 #endif
 
-#endif /* GNRC_IPV6_NIB_NC_H_ */
+#endif /* NET_GNRC_IPV6_NIB_NC_H */
 /** @} */

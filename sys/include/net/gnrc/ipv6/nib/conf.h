@@ -17,8 +17,8 @@
  *
  * @author      Martine Lenders <mlenders@inf.fu-berlin.de>
  */
-#ifndef GNRC_IPV6_NIB_CONF_H_
-#define GNRC_IPV6_NIB_CONF_H_
+#ifndef NET_GNRC_IPV6_NIB_CONF_H
+#define NET_GNRC_IPV6_NIB_CONF_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -188,5 +188,5 @@ extern "C" {
 }
 #endif
 
-#endif /* GNRC_IPV6_NIB_CONF_H_ */
+#endif /* NET_GNRC_IPV6_NIB_CONF_H */
 /** @} */

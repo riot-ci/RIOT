@@ -16,8 +16,8 @@
  *
  * @author      Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef PRIV_NIB_INTERNAL_H_
-#define PRIV_NIB_INTERNAL_H_
+#ifndef PRIV_NIB_INTERNAL_H
+#define PRIV_NIB_INTERNAL_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -67,6 +67,7 @@ extern "C" {
 
 /**
  * @brief   On-link NIB entry
+ * @anchor  _nib_onl_entry_t
  */
 typedef struct _nib_onl_entry {
     struct _nib_onl_entry *next;        /**< next removable entry */
@@ -628,5 +629,5 @@ _nib_iface_t *_nib_iface_get(unsigned iface);
 }
 #endif
 
-#endif /* PRIV_NIB_INTERNAL_H_ */
+#endif /* PRIV_NIB_INTERNAL_H */
 /** @} */
