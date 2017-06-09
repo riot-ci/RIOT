@@ -72,7 +72,7 @@ extern "C" {
 #ifdef MODULE_GNRC_MAC
 /**
  * @brief   Flag to track if a device has enabled CSMA for transmissions
- * 
+ *
  * If `gnrc_mac` is used, the user should be noticed that the `send()`
  * fucntion of gnrc_netdev will be affected with the state of this flag, since
  * `gnrc_mac` accordingly adapts the `send()` function. If the device doesn't
