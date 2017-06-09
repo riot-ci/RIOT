@@ -69,7 +69,7 @@ int main(void)
     for (unsigned i = 0; i < NEVENTS; i++) {
         evtimer_add_msg(&evtimer, &events[i], pid);
     }
-    printf("Are the reception times of all %i msgs close to the supposed values?\n",
+    printf("Are the reception times of all %u msgs close to the supposed values?\n",
            NEVENTS);
     puts("If yes, the tests were successful");
 }
