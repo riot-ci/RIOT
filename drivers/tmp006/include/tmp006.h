@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 PHYTEC Messtechnik GmbH
+ *               2017 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -10,6 +11,7 @@
  * @defgroup    drivers_tmp006 TMP006 Infrared Thermopile Sensor
  * @ingroup     drivers_sensors
  * @brief       Driver for the Texas Instruments TMP006 sensor.
+ *
  *              The sensor measures the temperature of an object
  *              without the need of direct contact with the object.
  *              After initialization and set active the sensor
@@ -70,6 +72,7 @@
  * @brief       Interface definition for the TMP006 sensor driver.
  *
  * @author      Johann Fischer <j.fischer@phytec.de>
+ * @author      Sebastian Meiling <s@mlng.net>
  */
 
 #ifndef TMP006_H
@@ -113,32 +116,37 @@ extern "C"
 #define TMP006_CCONST_LSB_SIZE     156.25E-9  /**< Sensor Voltage Register LSB Size */
 
 /**
+ * @brief   Parameters needed for device initialization
+ */
+typedef struct {
+    i2c_t   i2c;        /**< I2C device, the sensor is connected to */
+    uint8_t addr;       /**< the sensor's slave address on the I2C bus */
+    uint8_t rate;       /**< number of averaged samples */
+} tmp006_params_t;
+
+/**
  * @brief Device descriptor for TMP006 sensors.
  */
 typedef struct {
-    i2c_t i2c;              /**< I2C device, the sensor is connected to */
-    uint8_t addr;           /**< the sensor's slave address on the I2C bus */
-    bool initialized;       /**< sensor status, true if sensor is initialized */
+    tmp006_params_t p;  /**< Configuration parameters */
 } tmp006_t;
 
 /**
- * @brief TMP006 sensor test.
- * This function looks for Device ID of the TMP006 sensor.
- *
- * @param[in]  dev          device descriptor of sensor
- *
- * @return                  0 on success
- * @return                  -1 on error
+ * @brief   TMP006 specific return values
  */
-int tmp006_test(tmp006_t *dev);
+enum {
+    TMP006_OK,
+    TMP006_ERROR_BUS,
+    TMP006_ERROR_DEV,
+    TMP006_ERROR_CONF,
+    TMP006_ERROR,
+};
 
 /**
  * @brief Initialize the TMP006 sensor driver.
  *
  * @param[out] dev          device descriptor of sensor to initialize
- * @param[in]  i2c          I2C bus the sensor is connected to
- * @param[in]  address      sensor's I2C slave address
- * @param[in]  conv_rate    number of averaged samples
+ * @param[in]  params       configuration parameters
  *
  * @return                  0 on success
  * @return                  -1 if conv_rate is wrong
@@ -146,7 +154,7 @@ int tmp006_test(tmp006_t *dev);
  * @return                  -3 if sensor test failed
  * @return                  -4 if sensor configuration failed
  */
-int tmp006_init(tmp006_t *dev, i2c_t i2c, uint8_t address, uint8_t conv_rate);
+int tmp006_init(tmp006_t *dev, const tmp006_params_t *params);
 
 /**
  * @brief Reset the TMP006 sensor. After that, the sensor should be reinitialized.
@@ -200,6 +208,17 @@ int tmp006_read(tmp006_t *dev, int16_t *rawv, int16_t *rawt, uint8_t *drdy);
  * @param[out] tobj         converted object temperature
  */
 void tmp006_convert(int16_t rawv, int16_t rawt,  float *tamb, float *tobj);
+
+/**
+ * @brief Convenience function to get ambient and object temperatures in [°C]
+ *
+ * @note Temperature scaled by x100 for accuracy and avoid floats
+ *
+ * @param[in]  dev          device descriptor of sensor
+ * @param[out] ta           converted ambient temperature
+ * @param[out] to           converted object temperature
+ */
+int tmp006_read_temperature(tmp006_t *dev, int16_t *ta, int16_t *to);
 
 #ifdef __cplusplus
 }
