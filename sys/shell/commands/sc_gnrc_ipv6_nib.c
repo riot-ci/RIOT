@@ -72,7 +72,7 @@ static int _nib_neigh(int argc, char **argv)
     else if ((argc > 4) && (strcmp(argv[2], "add") == 0)) {
         ipv6_addr_t ipv6_addr;
         uint8_t l2addr[GNRC_IPV6_NIB_L2ADDR_MAX_LEN];
-        size_t l2addr_len;
+        size_t l2addr_len = 0;
         unsigned iface = atoi(argv[3]);
 
         if (ipv6_addr_from_str(&ipv6_addr, argv[4]) == NULL) {
@@ -83,6 +83,7 @@ static int _nib_neigh(int argc, char **argv)
             (l2addr_len = gnrc_netif_addr_from_str(l2addr, sizeof(l2addr),
                                                    argv[5])) == 0) {
             _usage_nib_neigh(argv);
+            return 1;
         }
         gnrc_ipv6_nib_nc_set(&ipv6_addr, iface, l2addr, l2addr_len);
     }
