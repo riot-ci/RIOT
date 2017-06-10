@@ -27,40 +27,40 @@
 int gnrc_ipv6_nib_nc_set(const ipv6_addr_t *ipv6, unsigned iface,
                          const uint8_t *l2addr, size_t l2addr_len)
 {
-    _nib_onl_entry_t *nib;
+    _nib_onl_entry_t *node;
 
     assert((ipv6 != NULL) && (l2addr != NULL));
     assert(l2addr_len <= GNRC_IPV6_NIB_L2ADDR_MAX_LEN);
     assert(iface <= KERNEL_PID_LAST);
     mutex_lock(&_nib_mutex);
-    nib = _nib_nc_add(ipv6, iface, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
-    if (nib == NULL) {
+    node = _nib_nc_add(ipv6, iface, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
+    if (node == NULL) {
         mutex_unlock(&_nib_mutex);
         return -ENOMEM;
     }
 #if GNRC_IPV6_NIB_CONF_ARSM
-    memcpy(nib->l2addr, l2addr, l2addr_len);
-    nib->l2addr_len = l2addr_len;
+    memcpy(node->l2addr, l2addr, l2addr_len);
+    node->l2addr_len = l2addr_len;
 #else
     (void)l2addr;
     (void)l2addr_len;
 #endif
-    nib->info &= ~(GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK |
-                   GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
-    nib->info |= (GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL |
-                  GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
+    node->info &= ~(GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK |
+                    GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
+    node->info |= (GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL |
+                   GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED);
     mutex_unlock(&_nib_mutex);
     return 0;
 }
 
 void gnrc_ipv6_nib_nc_del(const ipv6_addr_t *ipv6)
 {
-    _nib_onl_entry_t *nib = NULL;
+    _nib_onl_entry_t *node = NULL;
 
     mutex_lock(&_nib_mutex);
-    while ((nib = _nib_onl_iter(nib)) != NULL) {
-        if (ipv6_addr_equal(ipv6, &nib->ipv6)) {
-            _nib_nc_remove(nib);
+    while ((node = _nib_onl_iter(node)) != NULL) {
+        if (ipv6_addr_equal(ipv6, &node->ipv6)) {
+            _nib_nc_remove(node);
             break;
         }
     }
@@ -69,14 +69,14 @@ void gnrc_ipv6_nib_nc_del(const ipv6_addr_t *ipv6)
 
 void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6)
 {
-    _nib_onl_entry_t *nib = NULL;
+    _nib_onl_entry_t *node = NULL;
 
     mutex_lock(&_nib_mutex);
-    while ((nib = _nib_onl_iter(nib)) != NULL) {
-        if ((nib->mode & _NC) && ipv6_addr_equal(ipv6, &nib->ipv6)) {
+    while ((node = _nib_onl_iter(node)) != NULL) {
+        if ((node->mode & _NC) && ipv6_addr_equal(ipv6, &node->ipv6)) {
             /* only set reachable if not unmanaged */
-            if ((nib->info & GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK)) {
-                _nib_nc_set_reachable(nib);
+            if ((node->info & GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK)) {
+                _nib_nc_set_reachable(node);
             }
             break;
         }
@@ -87,19 +87,14 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6)
 bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
                            gnrc_ipv6_nib_nc_t *entry)
 {
-    _nib_onl_entry_t *nib = *state;
+    _nib_onl_entry_t *node = *state;
 
     mutex_lock(&_nib_mutex);
-    while ((nib = _nib_onl_iter(nib)) != NULL) {
-        if ((nib->mode & _NC) &&
-            ((iface == 0) || (_nib_onl_get_if(nib) == iface))) {
-            memcpy(&entry->ipv6, &nib->ipv6, sizeof(entry->ipv6));
-            entry->info = nib->info;
-#if GNRC_IPV6_NIB_CONF_ARSM
-            memcpy(entry->l2addr, nib->l2addr, nib->l2addr_len);
-            entry->l2addr_len = nib->l2addr_len;
-#endif
-            *state = nib;
+    while ((node = _nib_onl_iter(node)) != NULL) {
+        if ((node->mode & _NC) &&
+            ((iface == 0) || (_nib_onl_get_if(node) == iface))) {
+            _nib_nc_get(node, entry);
+            *state = node;
             mutex_unlock(&_nib_mutex);
             return true;
         }
