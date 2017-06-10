@@ -257,7 +257,7 @@ void _nib_nc_get(const _nib_onl_entry_t *node, gnrc_ipv6_nib_nc_t *nce)
     nce->l2addr_len = node->l2addr_len;
     memcpy(&nce->l2addr, &node->l2addr, node->l2addr_len);
 #else
-    assert(ipv6_addr_is_link_local(nce->ipv6));
+    assert(ipv6_addr_is_link_local(&nce->ipv6));
     _get_l2addr_from_ipv6(nce->l2addr, &node->ipv6);
     nce->l2addr_len = sizeof(uint64_t);
 #endif
