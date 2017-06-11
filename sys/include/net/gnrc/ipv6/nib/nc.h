@@ -149,7 +149,7 @@ typedef struct {
 } gnrc_ipv6_nib_nc_t;
 
 /**
- * @brief   Get state of neighbor unreachability state from entry
+ * @brief   Gets state of neighbor unreachability state from entry
  *
  * @param[in] entry     A neighbor cache entry.
  *
@@ -161,7 +161,7 @@ static inline unsigned gnrc_ipv6_nib_nc_get_nud_state(const gnrc_ipv6_nib_nc_t *
 }
 
 /**
- * @brief   Get state of neighbor unreachability state of an entry
+ * @brief   Gets state of neighbor unreachability state of an entry
  *
  * @param[in] entry     A neighbor cache entry.
  *
@@ -174,7 +174,7 @@ static inline bool gnrc_ipv6_nib_nc_is_router(const gnrc_ipv6_nib_nc_t *entry)
 }
 
 /**
- * @brief   Get interface from entry
+ * @brief   Gets interface from entry
  *
  * @param[in] entry     A neighbor cache entry
  *
@@ -188,7 +188,7 @@ static inline unsigned gnrc_ipv6_nib_nc_get_iface(const gnrc_ipv6_nib_nc_t *entr
 }
 
 /**
- * @brief   Get address registration state of an entry
+ * @brief   Gets address registration state of an entry
  *
  * @param[in] entry     A neighbor cache entry
  *

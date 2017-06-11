@@ -322,7 +322,7 @@ _nib_onl_entry_t *_nib_nc_add(const ipv6_addr_t *addr, unsigned iface,
 void _nib_nc_remove(_nib_onl_entry_t *node);
 
 /**
- * @brief   Get external neighbor cache entry representation from on-link entry
+ * @brief   Gets external neighbor cache entry representation from on-link entry
  *
  * @param[in] node  On-link entry.
  * @param[out] nce  External representation of the neighbor cache
@@ -652,7 +652,7 @@ _nib_iface_t *_nib_iface_get(unsigned iface);
  * @return  Milliseconds to the event, if event in queue.
  * @return  UINT32_MAX, event is not in queue.
  */
-uint32_t _evtimer_lookup(void *ctx, uint16_t type);
+uint32_t _evtimer_lookup(const void *ctx, uint16_t type);
 
 /**
  * @brief   Adds an event to the event timer
