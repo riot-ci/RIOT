@@ -421,7 +421,7 @@ static inline bool _node_unreachable(_nib_onl_entry_t *node)
     }
 }
 
-uint32_t _evtimer_lookup(void *ctx, uint16_t type)
+uint32_t _evtimer_lookup(const void *ctx, uint16_t type)
 {
     evtimer_msg_event_t *event = (evtimer_msg_event_t *)_nib_evtimer.events;
     uint32_t offset = 0;
