@@ -34,7 +34,7 @@ static evtimer_msg_event_t events[] = {
     { .event = { .offset = 3954 }, .msg = { .content = { .ptr = "supposed to be 3954" } } },
 };
 
-#define NEVENTS (sizeof(events) / sizeof(evtimer_msg_event_t))
+#define NEVENTS ((unsigned)(sizeof(events) / sizeof(evtimer_msg_event_t)))
 
 /* This thread will print the drift to stdout once per second */
 void *worker_thread(void *arg)
