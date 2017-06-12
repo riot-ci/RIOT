@@ -143,7 +143,6 @@ int _parse_packet(gnrc_pktsnip_t *pkt, lwmac_packet_info_t *info)
     }
 
     info->header = lwmac_hdr;
-
     return 0;
 }
 
