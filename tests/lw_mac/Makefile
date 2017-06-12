@@ -65,4 +65,3 @@ include $(RIOTBASE)/Makefile.include
 # Set a custom channel if needed
 DEFAULT_CHANNEL ?= 26
 CFLAGS += -DIEEE802154_DEFAULT_CHANNEL=$(DEFAULT_CHANNEL)
-
