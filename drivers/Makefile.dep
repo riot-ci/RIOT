@@ -159,6 +159,15 @@ ifneq (,$(filter mpu9150,$(USEMODULE)))
     USEMODULE += xtimer
 endif
 
+ifneq (,$(filter grove_ledbar,$(USEMODULE)))
+    USEMODULE += my9221
+endif
+
+ifneq (,$(filter my9221,$(USEMODULE)))
+    FEATURES_REQUIRED += periph_gpio
+    USEMODULE += xtimer
+endif
+
 ifneq (,$(filter nrfmin,$(USEMODULE)))
     FEATURES_REQUIRED += radio_nrfmin
     FEATURES_REQUIRED += periph_cpuid
