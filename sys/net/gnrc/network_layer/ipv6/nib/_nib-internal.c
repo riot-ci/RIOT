@@ -432,7 +432,6 @@ uint32_t _evtimer_lookup(const void *ctx, uint16_t type)
         offset += event->event.offset;
         if ((event->msg.type == type) &&
             ((ctx == NULL) || (event->msg.content.ptr == ctx))) {
-            mutex_unlock(&_nib_mutex);
             return offset;
         }
         event = (evtimer_msg_event_t *)event->event.next;
