@@ -82,11 +82,6 @@ static uint8_t _packet_process_in_wait_for_wr(gnrc_netdev_t *gnrc_netdev)
             break;
         }
 
-        /* TODO:
-         * If we see a WA here we have a rough clue about the wakeup phase
-         * of this node. But there is no timestamping of incoming frames yet
-         * so maybe add a timestamp to every frame in event callback. */
-
         if (info.header->type != FRAMETYPE_WR) {
             LOG(LOG_DEBUG, "[lwmac-rx] Packet is not WR: 0x%02x\n", info.header->type);
             gnrc_pktbuf_release(pkt);
@@ -100,7 +95,7 @@ static uint8_t _packet_process_in_wait_for_wr(gnrc_netdev_t *gnrc_netdev)
                      gnrc_netdev->l2_addr_len) == 0)) {
             LOG(LOG_DEBUG, "[lwmac-rx] Packet is WR but not for us\n");
             /* quit TX in this cycle to avoid collisions with other senders, since
-             * found ongoing WR (preamble) stream*/
+             * found ongoing WR (preamble) stream */
             gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev, true);
             continue;
         }
@@ -347,7 +342,6 @@ static bool _lwmac_rx_update(gnrc_netdev_t *gnrc_netdev)
                 break;
             }
 
-            /* TODO: don't flush queue */
             gnrc_priority_pktqueue_flush(&gnrc_netdev->rx.queue);
             /* Found WR packet (preamble), goto next state to send WA (preamble-ACK) */
             gnrc_netdev->rx.state = RX_STATE_SEND_WA;
@@ -389,11 +383,7 @@ static bool _lwmac_rx_update(gnrc_netdev_t *gnrc_netdev)
             uint8_t rx_info = _packet_process_in_wait_for_data(gnrc_netdev);
 
             /* If WA got lost we wait for data but we will be hammered with WR
-             * packets. So a WR indicates a lost WA => reset RX state machine.
-             *
-             * TODO: Destination may assume a wrong wakeup phase then. Maybe send a
-             *       delta time to get the timing right again.
-             */
+             * packets. So a WR indicates a lost WA => reset RX state machine. */
             if (rx_info & GNRC_LWMAC_RX_FOUND_WR) {
                 LOG(LOG_INFO, "[lwmac-rx] WA probably got lost, reset RX state machine\n");
                 /* Start over again */
@@ -405,16 +395,18 @@ static bool _lwmac_rx_update(gnrc_netdev_t *gnrc_netdev)
             /* Only timeout if no packet (presumably the expected data) is being
              * received. This won't be blocked by WRs as they restart the state
              * machine (see above).
-             *
-             * TODO: Checking for expiration only works once and clears the timeout.
-             *       If this is a false positive (other packet than DATA), we're
-             *       stuck. */
-            if ((lwmac_timeout_is_expired(gnrc_netdev, TIMEOUT_DATA)) &&
-                (!gnrc_netdev_get_rx_started(gnrc_netdev))) {
-                LOG(LOG_INFO, "[lwmac-rx] DATA timed out\n");
-                gnrc_netdev->rx.rx_bad_exten_count++;
-                gnrc_netdev->rx.state = RX_STATE_FAILED;
-                reschedule = true;
+             */
+            if (lwmac_timeout_is_expired(gnrc_netdev, TIMEOUT_DATA)) {
+                if (!gnrc_netdev_get_rx_started(gnrc_netdev)) {
+                    LOG(LOG_INFO, "[lwmac-rx] DATA timed out\n");
+                    gnrc_netdev->rx.rx_bad_exten_count++;
+                    gnrc_netdev->rx.state = RX_STATE_FAILED;
+                    reschedule = true;
+                }
+                else {
+                    /* If radio is receiving packet, reset wait data timeout */
+                    lwmac_set_timeout(gnrc_netdev, TIMEOUT_DATA, LWMAC_DATA_DELAY_US);
+                }
                 break;
             }
 

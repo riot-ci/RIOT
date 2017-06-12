@@ -224,9 +224,7 @@ static uint8_t _send_wr(gnrc_netdev_t *gnrc_netdev)
         return tx_info;
     }
 
-    /* Flush RX queue, TODO: maybe find a way without loosing RX packets */
     gnrc_priority_pktqueue_flush(&gnrc_netdev->rx.queue);
-
     return tx_info;
 }
 
