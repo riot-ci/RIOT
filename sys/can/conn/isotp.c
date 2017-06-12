@@ -19,6 +19,7 @@
 
 #include "can/conn/isotp.h"
 #include "can/isotp.h"
+#include "can/device.h"
 
 #ifdef MODULE_CONN_CAN_ISOTP_MULTI
 #include "utlist.h"
