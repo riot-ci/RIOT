@@ -659,7 +659,7 @@ uint32_t _evtimer_lookup(const void *ctx, uint16_t type);
  *
  * @param[in] ctx       The context of the event
  * @param[in] type      [Type of the event](@ref net_gnrc_ipv6_nib_msg).
- * @param[in] event     Representation of the event.
+ * @param[in,out] event Representation of the event.
  * @param[in] offset    Offset in milliseconds to the event.
  */
 static inline void _evtimer_add(void *ctx, int16_t type,

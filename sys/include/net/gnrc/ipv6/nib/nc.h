@@ -179,7 +179,7 @@ static inline bool gnrc_ipv6_nib_nc_is_router(const gnrc_ipv6_nib_nc_t *entry)
  * @param[in] entry     A neighbor cache entry
  *
  * @return  The interface identifier of @p entry.
- * @return  0 if no interface is identify for @p entry.
+ * @return  0 if no interface is identified for @p entry.
  */
 static inline unsigned gnrc_ipv6_nib_nc_get_iface(const gnrc_ipv6_nib_nc_t *entry)
 {
