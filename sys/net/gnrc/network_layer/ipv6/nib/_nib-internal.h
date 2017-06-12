@@ -27,7 +27,9 @@
 #include "mutex.h"
 #include "net/eui64.h"
 #include "net/ipv6/addr.h"
+#ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"
+#endif
 #include "net/gnrc/ipv6/nib/nc.h"
 #include "net/gnrc/ipv6/nib/conf.h"
 #include "net/gnrc/pktqueue.h"
