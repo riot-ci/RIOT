@@ -58,9 +58,11 @@ void trickle_interval(trickle_t *trickle)
 
 void trickle_reset_timer(trickle_t *trickle)
 {
-    trickle_stop(trickle);
-    trickle_start(trickle->pid, trickle, trickle->msg.type, trickle->Imin,
-                  trickle->Imax, trickle->k);
+    if (trickle->I > trickle->Imin) {
+        trickle_stop(trickle);
+        trickle->I = trickle->Imin;
+        trickle_interval(trickle);
+    }
 }
 
 void trickle_start(kernel_pid_t pid, trickle_t *trickle, uint16_t msg_type,
