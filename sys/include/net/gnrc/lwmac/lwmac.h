@@ -30,7 +30,9 @@
 extern "C" {
 #endif
 
-/* Foward declaration */
+/**
+ * @brief Forward declaration for gnrc_netdev_t, defined in netdev.h
+ */
 typedef struct gnrc_netdev gnrc_netdev_t;
 
 /**

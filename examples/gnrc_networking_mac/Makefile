@@ -5,7 +5,7 @@ APPLICATION = gnrc_networking_mac
 BOARD ?= samr21-xpro
 
 # Currently, Lw-MAC is only tested and evaluated through on samr21-xpro.
-# Once Lw-MAC has also been tested through on other boards, the whitelist should be 
+# Once Lw-MAC has also been tested through on other boards, the whitelist should be
 # then accordingly extended.
 BOARD_WHITELIST := samr21-xpro
 
@@ -59,4 +59,3 @@ include $(RIOTBASE)/Makefile.include
 # Set a custom channel
 DEFAULT_CHANNEL ?= 26
 CFLAGS += -DIEEE802154_DEFAULT_CHANNEL=$(DEFAULT_CHANNEL)
-

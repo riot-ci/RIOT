@@ -654,7 +654,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
 
             if (gnrc_netdev->tx.wr_sent == 0) {
                 /* Only the first WR use CSMA */
-            	gnrc_netdev->mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+                gnrc_netdev->mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_DISABLE;
                 gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA,
                                               &csma_disable, sizeof(csma_disable));

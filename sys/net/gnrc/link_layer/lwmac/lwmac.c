@@ -395,7 +395,7 @@ static void _tx_management(gnrc_netdev_t *gnrc_netdev)
             }
             else {
                 LOG(LOG_INFO, "[lwmac] Transmission was %ssuccessful (%" PRIu32 " WRs sent)\n",
-                		      tx_success, gnrc_netdev->tx.wr_sent);
+                              tx_success, gnrc_netdev->tx.wr_sent);
             }
             lwmac_tx_stop(gnrc_netdev);
 
