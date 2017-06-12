@@ -60,7 +60,7 @@ void trickle_reset_timer(trickle_t *trickle)
 {
     if (trickle->I > trickle->Imin) {
         trickle_stop(trickle);
-        tickle->I = tickle->Imin;
+        trickle->I = trickle->Imin;
         trickle_interval(trickle);
     }
 }
