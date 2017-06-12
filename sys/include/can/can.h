@@ -24,8 +24,8 @@
  * @author      Toon Stegen <toon.stegen@altran.com>
  */
 
-#ifndef CAN_H
-#define CAN_H
+#ifndef CAN_CAN_H
+#define CAN_CAN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -144,6 +144,6 @@ struct can_bittiming_const {
 }
 #endif
 
-#endif /* CAN_H */
+#endif /* CAN_CAN_H */
 
 /** @} */

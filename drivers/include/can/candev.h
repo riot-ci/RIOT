@@ -21,8 +21,8 @@
  * @author      Toon Stegen <toon.stegen@altran.com>
  */
 
-#ifndef CANDEV_H
-#define CANDEV_H
+#ifndef CAN_CANDEV_H
+#define CAN_CANDEV_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -178,6 +178,5 @@ typedef struct candev_driver {
 }
 #endif
 
-#endif /* CANDEV_H */
-
+#endif /* CAN_CANDEV_H */
 /** @} */
