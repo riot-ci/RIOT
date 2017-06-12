@@ -19,8 +19,8 @@
  * @author      Vincent Dupont <vincent@otakeys.com>
  */
 
-#ifndef ISOTP_H
-#define ISOTP_H
+#ifndef CAN_ISOTP_H
+#define CAN_ISOTP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -192,6 +192,5 @@ void isotp_free_rx(can_rx_data_t *rx);
 }
 #endif
 
-#endif /* ISOTP_H */
-
+#endif /* CAN_ISOTP_H */
 /** @} */
