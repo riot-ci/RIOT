@@ -79,8 +79,6 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     else {
         gpio(pin)->DIR &= ~pin_mask(pin);
     }
-    /* clear pin */
-    gpio(pin)->DATA &= ~pin_mask(pin);
 
     return 0;
 }
