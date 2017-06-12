@@ -292,6 +292,7 @@ void lwmac_rx_start(gnrc_netdev_t *gnrc_netdev)
     assert(gnrc_netdev->rx.l2_addr.len == 0);
 
     /* Don't attempt to send a WA if channel is busy to get timings right */
+    gnrc_netdev->mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_disable = NETOPT_DISABLE;
     gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA, &csma_disable,
                                   sizeof(csma_disable));
