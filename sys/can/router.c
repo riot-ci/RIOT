@@ -24,6 +24,7 @@
 
 #include "can/router.h"
 #include "can/pkt.h"
+#include "can/device.h"
 #include "utlist.h"
 #include "mutex.h"
 #include "assert.h"
