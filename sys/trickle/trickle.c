@@ -34,7 +34,7 @@ void trickle_callback(trickle_t *trickle)
 void trickle_interval(trickle_t *trickle)
 {
     assert(trickle->I > 0);
-    
+
     uint32_t old_interval = trickle->I;
     uint32_t max_interval = trickle->Imin << trickle->Imax;
     uint32_t diff = old_interval - trickle->t;
