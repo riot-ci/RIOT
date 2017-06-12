@@ -391,6 +391,7 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
     gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA_RETRIES,
                                   &csma_retries, sizeof(csma_retries));
 
+    gnrc_netdev->mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_enable = NETOPT_ENABLE;
     gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA,
                                   &csma_enable, sizeof(csma_enable));
@@ -561,6 +562,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
                 uint8_t csma_retries = LWMAC_BROADCAST_CSMA_RETRIES;
                 gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA_RETRIES,
                                               &csma_retries, sizeof(csma_retries));
+                gnrc_netdev->mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_enable = NETOPT_ENABLE;
                 gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA,
                                               &csma_enable, sizeof(csma_enable));
@@ -571,6 +573,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             }
             else {
                 /* Use CSMA for the first WR */
+                gnrc_netdev->mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_ENABLE;
                 gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA,
                                               &csma_disable, sizeof(csma_disable));
@@ -653,6 +656,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
 
             if (gnrc_netdev->tx.wr_sent == 0) {
                 /* Only the first WR use CSMA */
+            	gnrc_netdev->mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_DISABLE;
                 gnrc_netdev->dev->driver->set(gnrc_netdev->dev, NETOPT_CSMA,
                                               &csma_disable, sizeof(csma_disable));
