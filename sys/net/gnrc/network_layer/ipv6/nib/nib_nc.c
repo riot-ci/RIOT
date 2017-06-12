@@ -94,14 +94,12 @@ bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
         if ((node->mode & _NC) &&
             ((iface == 0) || (_nib_onl_get_if(node) == iface))) {
             _nib_nc_get(node, entry);
-            *state = node;
-            mutex_unlock(&_nib_mutex);
-            return true;
+            break;
         }
     }
-    *state = NULL;
+    *state = node;
     mutex_unlock(&_nib_mutex);
-    return false;
+    return (*state != NULL);
 }
 
 static const char *_nud_str[] = {
