@@ -20,8 +20,8 @@
  * @author      Aurelien Gonce <aurelien.gonce@altran.com>
  * @author      Vincent Dupont <vincent@otakeys.com>
  */
-#ifndef CAN_TRX_H
-#define CAN_TRX_H
+#ifndef CAN_CAN_TRX_H
+#define CAN_CAN_TRX_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -104,5 +104,5 @@ int can_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 }
 #endif
 
-#endif /* CAN_TRX_H */
+#endif /* CAN_CAN_TRX_H */
 /** @} */
