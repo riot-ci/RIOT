@@ -334,7 +334,8 @@ void gnrc_ndp2_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
         }
     }
     /* TODO: also check if the node provides proxy servies for tgt */
-    if ((pkt != NULL) && !gnrc_ipv6_netif_addr_is_non_unicast(tgt)) {
+    if ((pkt != NULL) &&
+        (!gnrc_ipv6_netif_addr_is_non_unicast(tgt) || supply_tl2a)) {
         /* TL2A is not supplied and tgt is not anycast */
         adv_flags |= NDP_NBR_ADV_FLAGS_O;
     }
