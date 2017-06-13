@@ -19,7 +19,7 @@ how_many = 16
 def testfunc(child):
     for i in range(how_many):
         for j in range(8):
-            child.expect(r'received msg: "%i"' % (i + 1))
+            child.expect(r'received msg "%i"' % (j + 1))
         print(".", end="", flush=True)
     print("")
     print("Stopped after %i iterations, but should run forever." % 16)
