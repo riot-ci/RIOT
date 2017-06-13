@@ -123,9 +123,10 @@ static inline _nib_onl_entry_t *_cache_out_onl_entry(const ipv6_addr_t *addr,
             res = tmp;
             res->mode = _EMPTY;
             _override_node(addr, iface, res);
-            /* cstate masked above already */
-            res->info = cstate;
+            /* cstate masked in _nib_nc_add() already */
+            res->info |= cstate;
             res->mode = _NC;
+            clist_rpush(&_next_removable, (clist_node_t *)res);
             break;
         }
         /* requeue if not garbage collectible at the moment */
