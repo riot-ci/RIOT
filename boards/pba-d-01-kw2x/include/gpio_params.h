@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief    GPIO pin configuration
  */
-static const  saul_gpio_params_t saul_gpio_params[] =
+static const saul_gpio_params_t saul_gpio_params[] =
 {
     {
         .name = "LED(red)",
