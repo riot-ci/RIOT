@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 
-#include "evtimer/msg.h"
+#include "evtimer_msg.h"
 #include "thread.h"
 #include "msg.h"
 
