@@ -127,6 +127,7 @@ static void _update_head_offset(evtimer_t *evtimer)
 void evtimer_add(evtimer_t *evtimer, evtimer_event_t *event)
 {
     unsigned state = irq_disable();
+    unsigned int context_switch_request;
 
     DEBUG("evtimer_add(): adding event with offset %" PRIu32 "\n", event->offset);
 
@@ -136,7 +137,11 @@ void evtimer_add(evtimer_t *evtimer, evtimer_event_t *event)
     if (evtimer->events == event) {
         _set_timer(&evtimer->timer, event->offset);
     }
+    context_switch_request = sched_context_switch_request;
     irq_restore(state);
+    if (context_switch_request) {
+        thread_yield_higher();
+    }
 }
 
 void evtimer_del(evtimer_t *evtimer, evtimer_event_t *event)
