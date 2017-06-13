@@ -62,7 +62,7 @@ static inline void evtimer_add_msg(evtimer_msg_t *evtimer,
 /**
  * @brief   Event handler for IPC messages
  *
- * @param[in] arg   The argument for the event handler
+ * @param[in] event     The event to handle
  */
 static inline void _evtimer_msg_handler(evtimer_event_t *event)
 {
