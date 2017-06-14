@@ -40,14 +40,6 @@ bool sx127x_test(sx127x_t *dev)
     /* Read version number and compare with sx127x assigned revision */
     uint8_t version = sx127x_reg_read(dev, SX127X_REG_VERSION);
 
-#if defined(MODULE_SX1276)
-    if (version != VERSION_SX1276) {
-        DEBUG("[Error] sx1276 test failed, invalid version number: %d\n",
-              version);
-        return false;
-    }
-    DEBUG("SX1276 transceiver detected.\n");
-#endif
 #if defined(MODULE_SX1272)
     if (version != VERSION_SX1272) {
         DEBUG("[Error] sx1272 test failed, invalid version number: %d\n",
@@ -55,6 +47,13 @@ bool sx127x_test(sx127x_t *dev)
         return false;
     }
     DEBUG("SX1272 transceiver detected.\n");
+#else /* MODULE_SX1276) */
+    if (version != VERSION_SX1276) {
+        DEBUG("[Error] sx1276 test failed, invalid version number: %d\n",
+              version);
+        return false;
+    }
+    DEBUG("SX1276 transceiver detected.\n");
 #endif
 
     return true;
