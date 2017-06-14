@@ -12,7 +12,7 @@
  * @{
  *
  * @file
- * @brief       Auto initialization of TMP006 magnetometers
+ * @brief       Auto initialization of TMP006 temperature sensor
  *
  * @author      Sebastian Meiling <s@mlng.net>
  *
@@ -44,10 +44,8 @@ static saul_reg_t saul_entries[TMP006_NUM];
 
 /**
  * @brief   Reference the driver struct
- * @{
  */
 extern const saul_driver_t tmp006_saul_driver;
-/** @} */
 
 void auto_init_tmp006(void)
 {
