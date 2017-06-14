@@ -1,6 +1,6 @@
 PKG_NAME     = bossa
 PKG_URL      = https://github.com/shumatech/BOSSA
-PKG_VERSION  = 26154375695f345491bba158d57177aa231d6765
+PKG_VERSION  = 3be622ca0aa6214a2fc51c1ec682c4a58a423d62
 PKG_LICENSE  = BSD-3-Clause
 PKG_BUILDDIR = $(CURDIR)/bin
 
