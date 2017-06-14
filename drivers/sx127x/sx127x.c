@@ -116,7 +116,6 @@ int sx127x_init(sx127x_t *dev)
 
 void sx127x_init_lora_settings(sx127x_t *dev)
 {
-    sx127x_lora_settings_t lora_settings;
     netdev_t *netdev = (netdev_t*) dev;
 
     bool freq_hop_on = SX127X_FREQUENCY_HOPPING;
@@ -138,18 +137,15 @@ void sx127x_init_lora_settings(sx127x_t *dev)
     sx127x_set_bandwidth(dev, SX127X_BW_DEFAULT);
     sx127x_set_spreading_factor(dev, SX127X_SF_DEFAULT);
     sx127x_set_coding_rate(dev, SX127X_CR_DEFAULT);
-    
+
     sx127x_set_implicit_header_mode(dev, SX127X_IMPLICIT_HEADER_MODE);
     sx127x_set_crc(dev, SX127X_PAYLOAD_CRC_ON);
     sx127x_set_symbol_timeout(dev, SX127X_SYMBOL_TIMEOUT);
     sx127x_set_preamble_length(dev, SX127X_PREAMBLE_LENGTH);
     sx127x_set_payload_length(dev, SX127X_PAYLOAD_LENGTH);
     sx127x_set_hop_period(dev, SX127X_FREQUENCY_HOPPING_PERIOD);
-    
-    sx127x_set_tx_power(dev, SX127X_RADIO_TX_POWER);
 
-    /* Copy LoRa configuration into device structure */
-    memcpy(&dev->settings.lora, &lora_settings, sizeof(sx127x_lora_settings_t));
+    sx127x_set_tx_power(dev, SX127X_RADIO_TX_POWER);
 }
 
 uint32_t sx127x_random(sx127x_t *dev)
