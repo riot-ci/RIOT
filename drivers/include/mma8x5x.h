@@ -195,7 +195,10 @@ void mma8x5x_set_motiondetect(mma8x5x_t *dev, uint8_t int_pin, uint8_t threshold
  * @brief   Acknowledge motion detection interrupt
  *
  * Acknowledges (clears) a motion detection interrupt.
- * See @mma8x5x_set_motiondetect().
+ * See @r mma8x5x_set_motiondetect().
+ *
+ * @warning: this does incur an I2C write, thus should not be done from within
+ *           the ISR.
  *
  * @param[in]   dev         device descriptor of accelerometer
  */
