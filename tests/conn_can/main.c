@@ -65,22 +65,22 @@ static int thread_busy[RCV_THREAD_NUMOF];
 
 static void print_usage(void)
 {
-    puts("can list");
-    puts("can send ifnum can_id [B1 [B2 [B3 [B4 [B5 [B6 [B7 [B8]]]]]]]]");
-    printf("can recv ifnum user_id timeout can_id1 [can_id2..can_id%d]\n", MAX_FILTER);
-    puts("can close user_id");
+    puts("test_can list");
+    puts("test_can send ifnum can_id [B1 [B2 [B3 [B4 [B5 [B6 [B7 [B8]]]]]]]]");
+    printf("test_can recv ifnum user_id timeout can_id1 [can_id2..can_id%d]\n", MAX_FILTER);
+    puts("test_can close user_id");
 #ifdef MODULE_CAN_ISOTP
-    puts("can bind_isotp ifnum user_id source_id dest_id");
-    puts("can send_isotp user_id [B1 [.. [ Bn ]]]");
-    puts("can recv_isotp user_id timeout");
-    puts("can close_isotp user_id");
+    puts("test_can bind_isotp ifnum user_id source_id dest_id");
+    puts("test_can send_isotp user_id [B1 [.. [ Bn ]]]");
+    puts("test_can recv_isotp user_id timeout");
+    puts("test_can close_isotp user_id");
 #endif
-    puts("can get_filter ifnum");
-    puts("can set_bitrate ifnum bitrate [sample_point]");
-    puts("can get_bitrate ifnum");
-    puts("can get_counter ifnum");
-    puts("can power_up ifnum");
-    puts("can power_down ifnum");
+    puts("test_can get_filter ifnum");
+    puts("test_can set_bitrate ifnum bitrate [sample_point]");
+    puts("test_can get_bitrate ifnum");
+    puts("test_can get_counter ifnum");
+    puts("test_can power_up ifnum");
+    puts("test_can power_down ifnum");
 }
 
 static int _list(int argc, char **argv) {
@@ -614,7 +614,7 @@ static void *_receive_thread(void *args)
 }
 
 static const shell_command_t _commands[] = {
-    {"can", "CAN functions", _can_handler},
+    {"test_can", "Test CAN functions", _can_handler},
     { NULL, NULL, NULL},
 };
 
