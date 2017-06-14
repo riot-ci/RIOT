@@ -64,5 +64,9 @@ PSEUDOMODULES += at86rf21%
 PSEUDOMODULES += bmp280
 PSEUDOMODULES += bme280
 
+# include variants of SX127X drivers as pseudo modules
+PSEUDOMODULES += sx1272
+PSEUDOMODULES += sx1276
+
 # add all pseudo random number generator variants as pseudomodules
 PSEUDOMODULES += prng_%
