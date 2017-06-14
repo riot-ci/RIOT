@@ -87,7 +87,7 @@ int lora_setup_cmd(int argc, char **argv) {
     }
 
     /* Check spreading factor value */
-    uint8_t lora_sf = (uint8_t)atoi(argv[2]);
+    uint8_t lora_sf = atoi(argv[2]);
     if (lora_sf < 7 || lora_sf > 12) {
         puts("[Error] setup: invalid spreading factor value given");
         return -1;
