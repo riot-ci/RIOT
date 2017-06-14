@@ -81,6 +81,11 @@ extern "C" {
 #define GNRC_NETDEV_MAC_INFO_CSMA_ENABLED       (0x0100U)
 
 /**
+ * @brief gnrc_netdev representation
+ */
+typedef struct gnrc_netdev gnrc_netdev_t;
+
+/**
  * @brief Structure holding GNRC netdev adapter state
  *
  * This structure is supposed to hold any state parameters needed
@@ -88,7 +93,7 @@ extern "C" {
  *
  * It can be extended
  */
-typedef struct gnrc_netdev {
+struct gnrc_netdev {
     /**
      * @brief Send a pktsnip using this device
      *
@@ -152,8 +157,16 @@ typedef struct gnrc_netdev {
      */
     gnrc_mac_tx_t tx;
 #endif /* ((GNRC_MAC_TX_QUEUE_SIZE != 0) || (GNRC_MAC_NEIGHBOR_COUNT == 0)) || defined(DOXYGEN) */
+
+#ifdef MODULE_GNRC_LWMAC
+    /**
+     * @brief Lwmac specific structure object for storing Lwmac internal states.
+     */
+    lwmac_t lwmac;
+#endif
+
 #endif /* MODULE_GNRC_MAC */
-} gnrc_netdev_t;
+};
 
 #ifdef MODULE_GNRC_MAC
 
