@@ -269,6 +269,28 @@ typedef enum {
      */
     NETOPT_LAST_ED_LEVEL,
 
+    /**
+     * @brief LoRA options.
+     */
+    NETOPT_LORA_BANDWIDTH,                        /**< bandwidth of LoRa */
+    NETOPT_LORA_SPREADING_FACTOR,                 /**< spreading factor of LoRa */
+    NETOPT_LORA_CODING_RATE,                      /**< coding rate of LoRa */
+    NETOPT_LORA_SINGLE_RECEIVE,                   /**< when enabled, RX is turned off upon reception of a packet */
+    NETOPT_LORA_RX_TIMEOUT,                       /**< Reception timeout of LoRa packet */
+    NETOPT_LORA_TX_TIMEOUT,                       /**< Reception timeout of LoRa packet */
+    NETOPT_LORA_SYMBOL_TIMEOUT,                   /**< Symbol timeout */
+    NETOPT_LORA_SYNCWORD,                         /**< Syncword */
+    NETOPT_LORA_HOP,                              /**< Frequency hopping enabled */
+    NETOPT_LORA_HOP_PERIOD,                       /**< Frequency hopping period */
+    NETOPT_CRC,                                   /**< CRC check enabled */
+    NETOPT_LORA_IMPLICIT,                         /**< Implicit mode enabled */
+    NETOPT_LORA_IQ_INVERT,                        /**< IQ inverted enabled */
+    NETOPT_LORA_PAYLOAD_LENGTH,                   /**< Payload length */
+    NETOPT_LORA_PREAMBLE_LENGTH,                  /**< Preamble length */
+    NETOPT_LORA_MODE,                             /**< LoRa mode */
+    NETOPT_LORA_MAX_PAYLOAD,                      /**< Maximum payload size */
+    NETOPT_LORA_RANDOM,                           /**< Random value */
+    NETOPT_LORA_TIME_ON_AIR,                      /**< Time on air */
     /* add more options if needed */
 
     /**
@@ -306,6 +328,8 @@ typedef enum {
                                  *   transmitting a packet */
     NETOPT_STATE_RESET,         /**< triggers a hardware reset. The resulting
                                  *   state of the network device is @ref NETOPT_STATE_IDLE */
+    NETOPT_STATE_STANDBY,       /**< standby mode. The devices is awake but
+                                 *   not listening to packets. */
     /* add other states if needed */
 } netopt_state_t;
 
