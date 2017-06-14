@@ -93,5 +93,5 @@ static const sx127x_params_t sx127x_params[] =
 }
 #endif
 
-#endif
+#endif /* SX127X_NETDEV_H */
 /** @} */
