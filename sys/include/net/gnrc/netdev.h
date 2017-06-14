@@ -81,6 +81,11 @@ extern "C" {
 #define GNRC_NETDEV_MAC_INFO_CSMA_ENABLED       (0x0100U)
 
 /**
+ * @brief gnrc_netdev representation
+ */
+typedef struct gnrc_netdev gnrc_netdev_t;
+
+/**
  * @brief Structure holding GNRC netdev adapter state
  *
  * This structure is supposed to hold any state parameters needed
@@ -88,7 +93,7 @@ extern "C" {
  *
  * It can be extended
  */
-typedef struct gnrc_netdev {
+struct gnrc_netdev {
     /**
      * @brief Send a pktsnip using this device
      *
@@ -161,7 +166,7 @@ typedef struct gnrc_netdev {
 #endif
 
 #endif /* MODULE_GNRC_MAC */
-} gnrc_netdev_t;
+};
 
 #ifdef MODULE_GNRC_MAC
 
