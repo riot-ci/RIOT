@@ -2,7 +2,7 @@
 
 This example shows you how to try out communications between RIOT instances with Lw-MAC as the MAC layer ptotocol for IEEE 802.15.4 devices.
 This example is generally based on `gnrc_networking` but embeds Lw-MAC to support low duty-cycle operation to conserve power. Also, it intends to show that the duty-cycled Lw-MAC can support popular upper layer protocols like UDP and RPL.
-Currently, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform. Also, the current implementation of Lw-MAC uses RTT as the underlying timer source. So, currently, Lw-MAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API as the underlying timer to make Lw-MAC available for more devices, when the related implementations are ready. 
+Currently, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform. Also, the current implementation of Lw-MAC uses RTT as the underlying timer source. So, currently, Lw-MAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API as the underlying timer to make Lw-MAC available for more devices, when the related implementations are ready.
 
 
 ## Usage
