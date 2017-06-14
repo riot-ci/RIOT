@@ -46,8 +46,8 @@ int gnrc_netreg_register(gnrc_nettype_t type, gnrc_netreg_entry_t *entry)
 #endif
     /* only threads with a message queue are allowed to register at gnrc */
     if (!has_msg_q) {
-        LOG_INFO("\n!!!! gnrc_netreg: initialize message queue of thread %u "
-                 "using msg_init_queue() !!!!\n\n", entry->target.pid);
+        LOG_ERROR("\n!!!! gnrc_netreg: initialize message queue of thread %u "
+                  "using msg_init_queue() !!!!\n\n", entry->target.pid);
     }
     assert(has_msg_q);
 #endif
