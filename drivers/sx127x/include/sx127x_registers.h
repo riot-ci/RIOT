@@ -705,7 +705,7 @@ extern "C" {
 #define SX127X_REG_PLLHOP                                            0x44
 #define SX127X_REG_TCXO                                              0x4B
 #define SX1276_REG_PADAC                                             0x4D
-#define SX1272_REG_PADAC                                             0x5A 
+#define SX1272_REG_PADAC                                             0x5A
 #define SX127X_REG_FORMERTEMP                                        0x5B
 #define SX127X_REG_BITRATEFRAC                                       0x5D
 #define SX127X_REG_AGCREF                                            0x61

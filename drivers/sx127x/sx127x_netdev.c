@@ -221,7 +221,7 @@ static int _init(netdev_t *netdev)
     sx127x_t *sx127x = (sx127x_t*) netdev;
 
     sx127x->irq = 0;
-    sx127x_settings_t settings;
+    sx127x_radio_settings_t settings;
     settings.channel = LORA_DEFAULT_CHANNEL;
     settings.modem = SX127X_MODEM_LORA;
     settings.state = SX127X_RF_IDLE;
