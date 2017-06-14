@@ -32,28 +32,28 @@
 #include "tmp006.h"
 #include "tmp006_regs.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG                (0)
 #include "debug.h"
 
-#define TMP006_CONFIG_RST          (1 << 15)
+#define TMP006_CONFIG_RST           (1 << 15)
 
-#define TMP006_CONFIG_MOD_SHIFT    (12U)
-#define TMP006_CONFIG_MOD_MASK     0x7000
-#define TMP006_CONFIG_MOD(x)       (((uint16_t)(((uint16_t)(x))<<TMP006_CONFIG_MOD_SHIFT))\
-                                   &TMP006_CONFIG_MOD_MASK)
-#define TMP006_CONFIG_MOD_CC       0x07
-#define TMP006_CONFIG_MOD_OFF      0x00
+#define TMP006_CONFIG_MOD_SHIFT     (12U)
+#define TMP006_CONFIG_MOD_MASK      (0x7000)
+#define TMP006_CONFIG_MOD(x)        (((uint16_t)(((uint16_t)(x)) << TMP006_CONFIG_MOD_SHIFT))\
+                                     & TMP006_CONFIG_MOD_MASK)
+#define TMP006_CONFIG_MOD_CC        (0x07)
+#define TMP006_CONFIG_MOD_OFF       (0x00)
 
-#define TMP006_CONFIG_CR_SHIFT     (9U)
-#define TMP006_CONFIG_CR_MASK      0x0E00
-#define TMP006_CONFIG_CR(x)        (((uint16_t)(((uint16_t)(x))<<TMP006_CONFIG_CR_SHIFT))\
-                                   &TMP006_CONFIG_CR_MASK)
+#define TMP006_CONFIG_CR_SHIFT      (9U)
+#define TMP006_CONFIG_CR_MASK       (0x0E00)
+#define TMP006_CONFIG_CR(x)         (((uint16_t)(((uint16_t)(x)) << TMP006_CONFIG_CR_SHIFT))\
+                                     & TMP006_CONFIG_CR_MASK)
 
-#define TMP006_CONFIG_DRDY_PIN_EN  (1 << 8)
-#define TMP006_CONFIG_DRDY         (1 << 7)
+#define TMP006_CONFIG_DRDY_PIN_EN   (1 << 8)
+#define TMP006_CONFIG_DRDY          (1 << 7)
 
-#define TMP006_MID_VALUE           0x5449 /**< Manufacturer ID */
-#define TMP006_DID_VALUE           0x0067 /**< Device ID */
+#define TMP006_MID_VALUE            (0x5449) /**< Manufacturer ID */
+#define TMP006_DID_VALUE            (0x0067) /**< Device ID */
 
 #define I2C_SPEED                   I2C_SPEED_FAST
 #define BUS                         (dev->p.i2c)
@@ -83,23 +83,19 @@ int tmp006_init(tmp006_t *dev, const tmp006_params_t *params)
         return -TMP006_ERROR_BUS;
     }
     /* test device id */
-
     if (i2c_read_regs(BUS, ADDR, TMP006_REGS_DEVICE_ID, reg, 2) != 2) {
         i2c_release(BUS);
         LOG_ERROR("tmp006_init: error reading device ID!\n");
         return -TMP006_ERROR_BUS;
     }
-
     tmp = ((uint16_t)reg[0] << 8) | reg[1];
     if (tmp != TMP006_DID_VALUE) {
         return -TMP006_ERROR_DEV;
     }
-
     /* set conversion rate */
     tmp = TMP006_CONFIG_CR(dev->p.rate);
     reg[0] = (tmp >> 8);
     reg[1] = tmp;
-
     if (i2c_write_regs(BUS, ADDR, TMP006_REGS_CONFIG, reg, 2) != 2) {
         i2c_release(BUS);
         LOG_ERROR("tmp006_init: error setting conversion rate!\n");
