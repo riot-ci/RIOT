@@ -168,7 +168,7 @@ void mma8x5x_set_standby(mma8x5x_t *dev)
 void mma8x5x_set_motiondetect(mma8x5x_t *dev, uint8_t int_pin, uint8_t threshold)
 {
     DEBUG("[mma8x5x] put device to motion detect mode (ELE=1, OAE=1)\n");
-    assert(pin < 3);
+    assert(int_pin < 3);
 
     mma8x5x_set_standby(dev);
 
