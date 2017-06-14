@@ -10,16 +10,16 @@
 /**
  * @defgroup    drivers_sx127x SX127X
  * @ingroup     drivers_netdev
- * @brief       Semtech SX127X driver
+ * @brief       Semtech SX127X driver (SX1272 and SX1276)
  *
  * This module contains the driver for radio devices oh the Semtech SX127x
  * series (SX1272 and SX1276).
  * Only LoRa long range modem is supported for the moment.
  *
- * SX127x modules are designed to used in the ISM RF band that depends on
- * different regional regulatory worldwide. Be careful to set an authorized
- * ISM RF frequency in your region when setting up the modules. Here is the 
- * list of allowed frequency (see
+ * SX127x modules are designed to be used in the ISM RF band. This RF band
+ * depends on the different regional regulatory worldwide. Be careful to
+ * configure the device to use a RF frequency allowed in your region. Here is
+ * the list of allowed frequencies for your region (see
  * [LoRaWAN regional parameters document available online](https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx)
  * * Europe has 2 allowed bands (ETSI):
  *   * EU863-870
@@ -222,7 +222,7 @@ typedef struct {
     uint8_t modem;                                              /**< Driver model (FSK or LoRa) */
     uint32_t window_timeout;                                    /**< Timeout window */
     uint8_t time_on_air_pkt_len;                                /**< Time on air */
-} sx127x_settings_t;
+} sx127x_radio_settings_t;
 
 /**
  * @brief   SX127X internal data.
@@ -260,7 +260,7 @@ typedef uint8_t sx127x_flags_t;
  */
 typedef struct sx127x_s {
     netdev_t netdev;                                            /**< Netdev parent struct */
-    sx127x_settings_t settings;                                 /**< Transceiver settings */
+    sx127x_radio_settings_t settings;                           /**< Radio settings */
     sx127x_params_t params;                                     /**< Device driver parameters */
     sx127x_flags_t irq;                                         /**< Device IRQ flags */
     sx127x_internal_t _internal;                                /**< Internal sx127x data used within the driver */
