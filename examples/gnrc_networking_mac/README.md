@@ -1,8 +1,8 @@
 # gnrc_networking_mac example
 
 This example shows you how to try out communications between RIOT instances with Lw-MAC as the MAC layer ptotocol for IEEE 802.15.4 devices.
-This example is based on `gnrc_networking` but embeds Lw-MAC to support low duty-cycle operation to conserve power. Also, it intends to show that the duty-cycled Lw-MAC can support popular upper layer protocols like UDP and RPL.
-Notably, the current implementation of Lw-MAC uses RTT as the underlying timer source. So, currently, Lw-MAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API (like evtimer) as the underlying timer to make Lw-MAC suitable for a larger scale of devices, when the related implementations are ready. Also, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform.
+This example is generally based on `gnrc_networking` but embeds Lw-MAC to support low duty-cycle operation to conserve power. Also, it intends to show that the duty-cycled Lw-MAC can support popular upper layer protocols like UDP and RPL.
+Currently, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform. Also, the current implementation of Lw-MAC uses RTT as the underlying timer source. So, currently, Lw-MAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API as the underlying timer to make Lw-MAC available for more devices, when the related implementations are ready. 
 
 
 ## Usage
@@ -17,7 +17,7 @@ make term
 
 ## Print out the achieved duty-cyle of Lw-MAC
 
-You can print out the achieved radio duty-cyle (a roughly one) of Lw-MAC by setting the `LWMAC_ENABLE_DUTYCYLE_RECORD` flag in `sys/include/net/gnrc/lwmac/types.h` to "1". By doing so, each time when a device sends or receives a packet, it will print out its achieved duty-cycle (started from power-up or reboot).
+You can print out the radio duty-cyle (a roughly one) of Lw-MAC by setting the `LWMAC_ENABLE_DUTYCYLE_RECORD` flag in `sys/include/net/gnrc/lwmac/types.h` to "1". By doing so, each time when a device sends or receives a packet, it will print out its radio duty-cycle value.
 Also, by further enabling the debug flag in `sys/net/gnrc/link_layer/lwmac/tx_state_machine.c`, you will get the printout of how many preamble (WR) and time (sending delay) cost for sending this packet in the TX procedure of Lw-MAC.
 
 

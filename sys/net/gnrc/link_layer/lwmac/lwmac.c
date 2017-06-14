@@ -612,15 +612,6 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                     break;
                 }
 
-                /*
-                   if (!gnrc_netdev_get_rx_started(gnrc_netdev)) {
-                    LOG_WARNING("Maybe sending kicked in and frame buffer is now corrupted\n");
-                    gnrc_pktbuf_release(pkt);
-                    gnrc_netdev_set_rx_started(gnrc_netdev,false);
-                    break;
-                   }
-                 */
-
                 gnrc_netdev_set_rx_started(gnrc_netdev, false);
 
                 if (!gnrc_mac_queue_rx_packet(&gnrc_netdev->rx, 0, pkt)) {
