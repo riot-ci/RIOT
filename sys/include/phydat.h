@@ -98,7 +98,6 @@ enum {
     /* pressure */
     UNIT_BAR,       /**< Beer? */
     UNIT_PA,        /**< Pascal */
-    UNIT_HPA,       /**< hectoPascal */
     /* light */
     UNIT_CD,        /**< Candela */
     /* logical */
