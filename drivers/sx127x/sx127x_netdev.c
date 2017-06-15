@@ -197,8 +197,8 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
             else {
                 rx_info->rssi = SX127X_RSSI_OFFSET_LF + rssi + (rssi >> 4);
             }
-        }
 #endif
+        }
     }
 
     uint8_t size = sx127x_reg_read(dev, SX127X_REG_LR_RXNBBYTES);
@@ -230,8 +230,8 @@ static int _init(netdev_t *netdev)
 
     sx127x->irq = 0;
     sx127x_radio_settings_t settings;
-    settings.channel = SX127X_DEFAULT_CHANNEL;
-    settings.modem = SX127X_MODEM_LORA;
+    settings.channel = SX127X_CHANNEL_DEFAULT;
+    settings.modem = SX127X_MODEM_DEFAULT;
     settings.state = SX127X_RF_IDLE;
 
     sx127x->settings = settings;
@@ -240,7 +240,7 @@ static int _init(netdev_t *netdev)
     DEBUG("init_radio: initializing driver...\n");
     sx127x_init(sx127x);
 
-    sx127x_init_lora_settings(sx127x);
+    sx127x_init_radio_settings(sx127x);
     /* Put chip into sleep */
     sx127x_set_sleep(sx127x);
 
@@ -288,6 +288,10 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_STATE:
             return _get_state((sx127x_t*) netdev, val);
 
+        case NETOPT_CHANNEL:
+            *((uint32_t*) val) = sx127x_get_channel((sx127x_t*) netdev);
+            return sizeof(uint32_t);
+
         case NETOPT_LORA_BANDWIDTH:
             *((uint8_t*) val) = sx127x_get_bandwidth((sx127x_t*) netdev);
             return sizeof(uint8_t);
@@ -299,10 +303,6 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_LORA_CODING_RATE:
             *((uint8_t*) val) = sx127x_get_coding_rate((sx127x_t*) netdev);
             return sizeof(uint8_t);
-
-        case NETOPT_CHANNEL:
-            *((uint32_t*) val) = sx127x_get_channel((sx127x_t*) netdev);
-            return sizeof(uint32_t);
 
         case NETOPT_LORA_SINGLE_RECEIVE:
             *((uint8_t*) val) = sx127x_get_rx_single((sx127x_t*) netdev);
@@ -346,6 +346,10 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
         case NETOPT_STATE:
             return _set_state((sx127x_t*) netdev, *((netopt_state_t*) val));
 
+        case NETOPT_CHANNEL:
+            sx127x_set_channel((sx127x_t*) netdev, *((uint32_t*) val));
+            return sizeof(uint32_t);
+
         case NETOPT_LORA_BANDWIDTH:
             sx127x_set_bandwidth((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
@@ -361,10 +365,6 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
         case NETOPT_LORA_SINGLE_RECEIVE:
             sx127x_set_rx_single((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
-
-        case NETOPT_CHANNEL:
-            sx127x_set_channel((sx127x_t*) netdev, *((uint32_t*) val));
-            return sizeof(uint32_t);
 
         case NETOPT_LORA_SYNCWORD:
             sx127x_set_syncword((sx127x_t*) netdev, *((uint8_t*) val));
@@ -382,8 +382,8 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_hop_period(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_IMPLICIT:
-            sx127x_set_implicit_header_mode(dev, *((netopt_enable_t*) val) ? true : false);
+        case NETOPT_LORA_FIXED_HEADER:
+            sx127x_set_fixed_header_len_mode(dev, *((netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
 
         case NETOPT_LORA_PAYLOAD_LENGTH:
