@@ -143,7 +143,7 @@ void sx127x_rx_chain_calibration(sx127x_t *dev)
     }
 
     /* Set a frequency in HF band */
-    sx127x_set_channel(dev, SX127X_DEFAULT_CHANNEL);
+    sx127x_set_channel(dev, SX127X_HF_CHANNEL_DEFAULT);
 
     /* Launch Rx chain calibration for HF band */
     sx127x_reg_write(dev,
