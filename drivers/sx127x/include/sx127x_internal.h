@@ -30,10 +30,16 @@ extern "C" {
 #endif
 
 /**
- * Constant values needed to compute the RSSI value
+ * @brief Constant values used to compute RSSI
+ * @{
  */
-#define RSSI_OFFSET_LF                              (-164)
-#define RSSI_OFFSET_HF                              (-157)
+#if defined(MODULE_SX1272)
+#define SX127X_RSSI_OFFSET                                 (-139)
+#else /* MODULE_SX1276 */
+#define SX127X_RSSI_OFFSET_LF                              (-164)
+#define SX127X_RSSI_OFFSET_HF                              (-157)
+#endif
+/** @} */
 
 /**
  * @brief   Tests the transceiver version type.
