@@ -126,17 +126,15 @@ static inline _nib_onl_entry_t *_cache_out_onl_entry(const ipv6_addr_t *addr,
             /* cstate masked in _nib_nc_add() already */
             res->info |= cstate;
             res->mode = _NC;
-            clist_rpush(&_next_removable, (clist_node_t *)res);
-            break;
         }
-        /* requeue if not garbage collectible at the moment */
-        DEBUG("nib: Requeing (addr = %s, iface = %u)\n",
-              ipv6_addr_to_str(addr_str, &tmp->ipv6,
-                               sizeof(addr_str)),
-              _nib_onl_get_if(tmp));
+        /* requeue if not garbage collectible at the moment or queueing
+         * newly created NCE */
         clist_rpush(&_next_removable, (clist_node_t *)tmp);
-        tmp = (_nib_onl_entry_t *)clist_lpop(&_next_removable);
-    } while (tmp != first);
+        if (res == NULL) {
+            /* no new entry created yet, get next entry in FIFO */
+            tmp = (_nib_onl_entry_t *)clist_lpop(&_next_removable);
+        }
+    } while ((tmp != first) && (res != NULL));
     return res;
 }
 
