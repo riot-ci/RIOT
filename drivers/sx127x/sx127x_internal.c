@@ -35,6 +35,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+
 bool sx127x_test(sx127x_t *dev)
 {
     /* Read version number and compare with sx127x assigned revision */
@@ -142,7 +143,7 @@ void sx127x_rx_chain_calibration(sx127x_t *dev)
     }
 
     /* Set a frequency in HF band */
-    sx127x_set_channel(dev, LORA_DEFAULT_CHANNEL);
+    sx127x_set_channel(dev, SX127X_DEFAULT_CHANNEL);
 
     /* Launch Rx chain calibration for HF band */
     sx127x_reg_write(dev,
@@ -167,12 +168,16 @@ int16_t sx127x_read_rssi(sx127x_t *dev)
             rssi = -(sx127x_reg_read(dev, SX127X_REG_RSSIVALUE) >> 1);
             break;
         case SX127X_MODEM_LORA:
-            if (dev->settings.channel > LORA_RF_MID_BAND_THRESH) {
-                rssi = RSSI_OFFSET_HF + sx127x_reg_read(dev, SX127X_REG_LR_RSSIVALUE);
+#if defined(MODULE_SX1272)
+            rssi = SX127X_RSSI_OFFSET + sx127x_reg_read(dev, SX127X_REG_LR_RSSIVALUE);
+#else /* MODULE_SX1276 */
+            if (dev->settings.channel > SX127X_RF_MID_BAND_THRESH) {
+                rssi = SX127X_RSSI_OFFSET_HF + sx127x_reg_read(dev, SX127X_REG_LR_RSSIVALUE);
             }
             else {
-                rssi = RSSI_OFFSET_LF + sx127x_reg_read(dev, SX127X_REG_LR_RSSIVALUE);
+                rssi = SX127X_RSSI_OFFSET_LF + sx127x_reg_read(dev, SX127X_REG_LR_RSSIVALUE);
             }
+#endif
             break;
         default:
             rssi = -1;
