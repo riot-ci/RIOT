@@ -133,7 +133,7 @@ void sx127x_init_lora_settings(sx127x_t *dev)
                         &tx_timeout, sizeof(uint32_t));
 
     sx127x_set_modem(dev, SX127X_MODEM_LORA);
-    sx127x_set_channel(dev, LORA_DEFAULT_CHANNEL);
+    sx127x_set_channel(dev, SX127X_DEFAULT_CHANNEL);
     sx127x_set_bandwidth(dev, SX127X_BW_DEFAULT);
     sx127x_set_spreading_factor(dev, SX127X_SF_DEFAULT);
     sx127x_set_coding_rate(dev, SX127X_CR_DEFAULT);
@@ -177,25 +177,6 @@ uint32_t sx127x_random(sx127x_t *dev)
     sx127x_set_sleep(dev);
 
     return rnd;
-}
-
-bool sx127x_is_channel_free(sx127x_t *dev, uint32_t freq, int16_t rssi_thresh)
-{
-    int16_t rssi = 0;
-
-    sx127x_set_channel(dev, freq);
-    sx127x_set_op_mode(dev, SX127X_RF_OPMODE_RECEIVER);
-
-    xtimer_usleep(1000); /* wait 1 millisecond */
-
-    rssi = sx127x_read_rssi(dev);
-    sx127x_set_sleep(dev);
-
-    if (rssi > rssi_thresh) {
-        return false;
-    }
-
-    return true;
 }
 
 /**
