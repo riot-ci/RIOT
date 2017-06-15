@@ -60,6 +60,8 @@ void gnrc_ipv6_nib_nc_del(const ipv6_addr_t *ipv6)
     mutex_lock(&_nib_mutex);
     while ((node = _nib_onl_iter(node)) != NULL) {
         if (ipv6_addr_equal(ipv6, &node->ipv6)) {
+            /* _nib_nc_remove() clears the node if and only if _NC (and no other
+             * flag is set, so we do not need to check if _NC is set here) */
             _nib_nc_remove(node);
             break;
         }
