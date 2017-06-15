@@ -64,17 +64,11 @@ extern "C" {
 #endif
 
 /**
- * @name    LoRa default configuration
- * @{
- */
-#define LORA_DEFAULT_CHANNEL             (868300000UL)          /**< Default channel frequency, 868.3MHz (Europe)*/
-#define LORA_RF_MID_BAND_THRESH          (525000000UL)          /**< Mid-band threshold */
-/** @} */
-
-/**
  * @name    SX127X device default configuration
  * @{
  */
+#define SX127X_DEFAULT_CHANNEL           (868300000UL)          /**< Default channel frequency, 868.3MHz (Europe)*/
+#define SX127X_RF_MID_BAND_THRESH        (525000000UL)          /**< Mid-band threshold */
 #define SX127X_FREQUENCY_RESOLUTION      (61.03515625)          /**< Frequency resolution in Hz */
 #define SX127X_XTAL_FREQ                 (32000000UL)           /**< Internal oscillator frequency, 32MHz */
 #define SX127X_RADIO_WAKEUP_TIME         (1000U)                /**< [us] */
@@ -417,17 +411,6 @@ uint32_t sx127x_get_channel(sx127x_t *dev);
  * @param[in] freq                     Channel RF frequency
  */
 void sx127x_set_channel(sx127x_t *dev, uint32_t freq);
-
-/**
- * @brief   Checks that channel is free with specified RSSI threshold.
- *
- * @param[in] dev                      The sx127x device descriptor
- * @param[in] freq                     Channel RF frequency
- * @param[in] rssi_thresh              RSSI threshold
- *
- * @return channel is free or not [true: channel is free, false: channel is not free]
- */
-bool sx127x_is_channel_free(sx127x_t *dev, uint32_t freq, int16_t rssi_thresh);
 
 /**
  * @brief   Computes the packet time on air in us for the given payload.
