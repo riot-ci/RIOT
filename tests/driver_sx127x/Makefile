@@ -11,8 +11,10 @@ USEMODULE += shell_commands
 USEMODULE += ps
 USEMODULE += xtimer
 
+DRIVER ?= sx1276
+
 # use SX1276 by default
-USEMODULE += sx1276
+USEMODULE += ${DRIVER}
 
 FEATURES_REQUIRED ?= periph_spi
 FEATURES_REQUIRED ?= periph_gpio

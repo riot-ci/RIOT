@@ -14,15 +14,19 @@ the configuration to your needs by updating the
 `drivers/sx127x/include/sx127x_params.h` file.
 
 By default the application builds the SX1276 version of the driver. If you
-want to use this application with a SX1272 module, use:
+want to use this application with a SX1272 module, set the variable `DRIVER` in
+the application [Makefile](Makefile):
 ```
-USEMODULE += sx1272
+DRIVER = sx1272
 ```
 instead of
 ```
-USEMODULE += sx1276
+DRIVER = sx1276
 ```
-in the application [Makefile](Makefile).
+You can also pass `DRIVER` when building the application:
+```
+$ make BOARD=nucleo-l073 DRIVER=sx1272 -C tests/drivers_sx127x flash term
+```
 
 ## Usage
 
