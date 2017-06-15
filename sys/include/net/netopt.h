@@ -283,7 +283,7 @@ typedef enum {
     NETOPT_LORA_HOP,                              /**< Frequency hopping enabled */
     NETOPT_LORA_HOP_PERIOD,                       /**< Frequency hopping period */
     NETOPT_CRC,                                   /**< CRC check enabled */
-    NETOPT_LORA_IMPLICIT,                         /**< Implicit mode enabled */
+    NETOPT_LORA_FIXED_HEADER,                     /**< Fixed header mode enabled */
     NETOPT_LORA_IQ_INVERT,                        /**< IQ inverted enabled */
     NETOPT_LORA_PAYLOAD_LENGTH,                   /**< Payload length */
     NETOPT_LORA_PREAMBLE_LENGTH,                  /**< Preamble length */
