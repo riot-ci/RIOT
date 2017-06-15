@@ -176,21 +176,29 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         int16_t rssi = sx127x_reg_read(dev, SX127X_REG_LR_PKTRSSIVALUE);
 
         if (rx_info->snr < 0) {
-            if (dev->settings.channel > LORA_RF_MID_BAND_THRESH) {
-                rx_info->rssi = RSSI_OFFSET_HF + rssi + (rssi >> 4) + rx_info->snr;
+#if defined(MODULE_SX1272)
+            rx_info->rssi = SX127X_RSSI_OFFSET + rssi + (rssi >> 4) + rx_info->snr;
+#else /* MODULE_SX1276 */
+            if (dev->settings.channel > SX127X_RF_MID_BAND_THRESH) {
+                rx_info->rssi = SX127X_RSSI_OFFSET_HF + rssi + (rssi >> 4) + rx_info->snr;
             }
             else {
-                rx_info->rssi = RSSI_OFFSET_LF + rssi + (rssi >> 4) + rx_info->snr;
+                rx_info->rssi = SX127X_RSSI_OFFSET_LF + rssi + (rssi >> 4) + rx_info->snr;
             }
+#endif
         }
         else {
-            if (dev->settings.channel > LORA_RF_MID_BAND_THRESH) {
-                rx_info->rssi = RSSI_OFFSET_HF + rssi + (rssi >> 4);
+#if defined(MODULE_SX1272)
+            rx_info->rssi = SX127X_RSSI_OFFSET + rssi + (rssi >> 4);
+#else /* MODULE_SX1276 */
+            if (dev->settings.channel > SX127X_RF_MID_BAND_THRESH) {
+                rx_info->rssi = SX127X_RSSI_OFFSET_HF + rssi + (rssi >> 4);
             }
             else {
-                rx_info->rssi = RSSI_OFFSET_LF + rssi + (rssi >> 4);
+                rx_info->rssi = SX127X_RSSI_OFFSET_LF + rssi + (rssi >> 4);
             }
         }
+#endif
     }
 
     uint8_t size = sx127x_reg_read(dev, SX127X_REG_LR_RXNBBYTES);
@@ -222,7 +230,7 @@ static int _init(netdev_t *netdev)
 
     sx127x->irq = 0;
     sx127x_radio_settings_t settings;
-    settings.channel = LORA_DEFAULT_CHANNEL;
+    settings.channel = SX127X_DEFAULT_CHANNEL;
     settings.modem = SX127X_MODEM_LORA;
     settings.state = SX127X_RF_IDLE;
 
