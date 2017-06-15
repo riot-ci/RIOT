@@ -53,17 +53,6 @@ void sx127x_set_modem(sx127x_t *dev, uint8_t modem)
     dev->settings.modem = modem;
 
     switch (dev->settings.modem) {
-        case SX127X_MODEM_LORA:
-            sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
-            sx127x_reg_write(dev, SX127X_REG_OPMODE,
-                             (sx127x_reg_read(dev, SX127X_REG_OPMODE) &
-                              SX127X_RF_LORA_OPMODE_LONGRANGEMODE_MASK) |
-                             SX127X_RF_LORA_OPMODE_LONGRANGEMODE_ON);
-
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1, 0x00);
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2, 0x00);
-            break;
-
         case SX127X_MODEM_FSK:
             sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
             sx127x_reg_write(dev, SX127X_REG_OPMODE,
@@ -73,6 +62,16 @@ void sx127x_set_modem(sx127x_t *dev, uint8_t modem)
 
             sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1, 0x00);
             sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1, 0x30);
+            break;
+        case SX127X_MODEM_LORA:
+            sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
+            sx127x_reg_write(dev, SX127X_REG_OPMODE,
+                             (sx127x_reg_read(dev, SX127X_REG_OPMODE) &
+                              SX127X_RF_LORA_OPMODE_LONGRANGEMODE_MASK) |
+                             SX127X_RF_LORA_OPMODE_LONGRANGEMODE_ON);
+
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1, 0x00);
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2, 0x00);
             break;
         default:
             break;
@@ -126,8 +125,17 @@ uint32_t sx127x_get_time_on_air(sx127x_t *dev)
     uint8_t pkt_len = dev->settings.time_on_air_pkt_len;
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
+            air_time = round(
+                            (8 * (dev->settings.fsk.preamble_len +
+                                  ((sx127x_reg_read(dev, SX127X_REG_SYNCCONFIG) &
+                                    ~SX127X_RF_SYNCCONFIG_SYNCSIZE_MASK) + 1) +
+                                  ((dev->settings.fsk.fix_len == 0x01) ? 0.0 : 1.0 ) +
+                                  (((sx127x_reg_read(dev, SX127X_REG_PACKETCONFIG1) &
+                                     ~SX127X_RF_PACKETCONFIG1_ADDRSFILTERING_MASK )
+                                    != 0x00 ) ? 1.0 : 0 ) + pkt_len +
+                                  ((dev->settings.fsk.crc_on == 0x01) ? 2.0 : 0)
+                                 ) / dev->settings.fsk.datarate) * 1e3);
             break;
-
         case SX127X_MODEM_LORA:
         {
             double bw = 0.0;
@@ -149,7 +157,7 @@ uint32_t sx127x_get_time_on_air(sx127x_t *dev)
             }
 
             /* Symbol rate : time for one symbol [secs] */
-            double rs = bw / (1 << dev->settings.lora.sf);
+            double rs = bw / (1 << dev->settings.lora.datarate);
             double ts = 1 / rs;
 
             /* time of preamble */
@@ -158,13 +166,13 @@ uint32_t sx127x_get_time_on_air(sx127x_t *dev)
             /* Symbol length of payload and time */
             double tmp =
                 ceil(
-                    (8 * pkt_len - 4 * dev->settings.lora.sf + 28
+                    (8 * pkt_len - 4 * dev->settings.lora.datarate + 28
                      + 16 * dev->settings.lora.crc_on
-                     - (!dev->settings.lora.implicit_header_mode ? 20 : 0))
-                    / (double) (4 * dev->settings.lora.sf
+                     - (!dev->settings.lora.use_fix_len ? 20 : 0))
+                    / (double) (4 * dev->settings.lora.datarate
                                 - ((dev->settings.lora.low_datarate_optimize
                                     > 0) ? 2 : 0)))
-                * (dev->settings.lora.cr + 4);
+                * (dev->settings.lora.coderate + 4);
             double n_payload = 8 + ((tmp > 0) ? tmp : 0);
             double t_payload = n_payload * ts;
 
@@ -211,7 +219,33 @@ void sx127x_set_rx(sx127x_t *dev)
 
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-            /* FSK not supported yet */
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
+                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1 ) &
+                              SX127X_RF_DIOMAPPING1_DIO0_MASK &
+                              SX127X_RF_DIOMAPPING1_DIO1_MASK &
+                              SX127X_RF_DIOMAPPING1_DIO2_MASK ) |
+                             SX127X_RF_DIOMAPPING1_DIO0_00 |
+                             SX127X_RF_DIOMAPPING1_DIO1_00 |
+                             SX127X_RF_DIOMAPPING1_DIO2_11);
+
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2,
+                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING2 ) &
+                              SX127X_RF_DIOMAPPING2_DIO4_MASK &
+                              SX127X_RF_DIOMAPPING2_MAP_MASK ) |
+                             SX127X_RF_DIOMAPPING2_DIO4_11 |
+                             SX127X_RF_DIOMAPPING2_MAP_PREAMBLEDETECT );
+
+            dev->settings.fsk_packet_handler.fifo_threshold = sx127x_reg_read(dev, SX127X_REG_FIFOTHRESH) & 0x3F;
+
+            sx127x_reg_write(dev, SX127X_REG_RXCONFIG,
+                             SX127X_RF_RXCONFIG_AFCAUTO_ON |
+                             SX127X_RF_RXCONFIG_AGCAUTO_ON |
+                             SX127X_RF_RXCONFIG_RXTRIGER_PREAMBLEDETECT);
+
+            dev->settings.fsk_packet_handler.preamble_detected = false;
+            dev->settings.fsk_packet_handler.sync_word_detected = false;
+            dev->settings.fsk_packet_handler.nb_bytes = 0;
+            dev->settings.fsk_packet_handler.size = 0;
             return;
 
         case SX127X_MODEM_LORA:
@@ -320,6 +354,7 @@ void sx127x_set_max_payload_len(sx127x_t *dev, uint8_t maxlen)
 
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
+            sx127x_reg_write(dev, SX127X_REG_PAYLOADLENGTH, maxlen);
             break;
 
         case SX127X_MODEM_LORA:
@@ -350,10 +385,10 @@ uint8_t sx127x_get_bandwidth(sx127x_t *dev)
 inline void _low_datarate_optimize(sx127x_t *dev)
 {
     if ( ((dev->settings.lora.bandwidth == SX127X_BW_125_KHZ) &&
-          ((dev->settings.lora.sf == SX127X_SF11) ||
-           (dev->settings.lora.sf == SX127X_SF12))) ||
+          ((dev->settings.lora.datarate == SX127X_SF11) ||
+           (dev->settings.lora.datarate == SX127X_SF12))) ||
          ((dev->settings.lora.bandwidth == SX127X_BW_250_KHZ) &&
-          (dev->settings.lora.sf == SX127X_SF12))) {
+          (dev->settings.lora.datarate == SX127X_SF12))) {
         dev->settings.lora.low_datarate_optimize = 0x01;
     } else {
         dev->settings.lora.low_datarate_optimize = 0x00;
@@ -442,14 +477,14 @@ void sx127x_set_bandwidth(sx127x_t *dev, uint8_t bandwidth)
 
 uint8_t sx127x_get_spreading_factor(sx127x_t *dev)
 {
-    return dev->settings.lora.sf;
+    return dev->settings.lora.datarate;
 }
 
-void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t sf)
+void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t datarate)
 {
     DEBUG("[DEBUG] Set spreading factor: %d\n", sf);
 
-    if (sf == SX127X_SF6 && !dev->settings.lora.implicit_header_mode) {
+    if (datarate == SX127X_SF6 && !dev->settings.lora.use_fix_len) {
         /* SF 6 is only valid when using explicit header mode */
         DEBUG("Spreading Factor 6 can only be used when explicit header "
               "mode is set, this mode is not supported by this driver."
@@ -457,16 +492,16 @@ void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t sf)
         return;
     }
 
-    dev->settings.lora.sf = sf;
+    dev->settings.lora.datarate = datarate;
 
     uint8_t config2_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG2);
     config2_reg &= SX127X_RF_LORA_MODEMCONFIG2_SF_MASK;
-    config2_reg |= sf << 4;
+    config2_reg |= datarate << 4;
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG2, config2_reg);
 
     _low_datarate_optimize(dev);
 
-    switch(dev->settings.lora.sf) {
+    switch(dev->settings.lora.datarate) {
     case SX127X_SF6:
         sx127x_reg_write(dev, SX127X_REG_LR_DETECTOPTIMIZE,
                          SX127X_RF_LORA_DETECTIONOPTIMIZE_SF6);
@@ -484,14 +519,14 @@ void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t sf)
 
 uint8_t sx127x_get_coding_rate(sx127x_t *dev)
 {
-    return dev->settings.lora.cr;
+    return dev->settings.lora.coderate;
 }
 
 void sx127x_set_coding_rate(sx127x_t *dev, uint8_t coderate)
 {
     DEBUG("[DEBUG] Set coding rate: %d\n", coderate);
 
-    dev->settings.lora.cr = coderate;
+    dev->settings.lora.coderate = coderate;
     uint8_t config1_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1);
 
 #if defined(MODULE_SX1276)
@@ -568,25 +603,25 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period)
     }
 }
 
-bool  sx127x_get_implicit_header_mode(sx127x_t *dev)
+bool  sx127x_get_fixed_header_len_mode(sx127x_t *dev)
 {
-    return dev->settings.lora.implicit_header_mode;
+    return dev->settings.lora.use_fix_len;
 }
 
-void sx127x_set_implicit_header_mode(sx127x_t *dev, bool implicit)
+void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool fixed_len)
 {
-    DEBUG("[DEBUG] Set implicit header mode: %d\n", implicit);
+    DEBUG("[DEBUG] Set fixed header length: %d\n", fixed_len);
 
-    dev->settings.lora.implicit_header_mode = implicit;
+    dev->settings.lora.use_fix_len = fixed_len;
 
     uint8_t config1_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1);
 #if defined(MODULE_SX1276)
     config1_reg &= SX1276_RF_LORA_MODEMCONFIG1_IMPLICITHEADER_MASK;
-    config1_reg |= implicit;
+    config1_reg |= fixed_len;
 #endif
 #if defined(MODULE_SX1272)
     config1_reg &= SX1272_RF_LORA_MODEMCONFIG1_IMPLICITHEADER_MASK;
-    config1_reg |= implicit << 2;
+    config1_reg |= fixed_len << 2;
 #endif
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG1, config1_reg);
 }
@@ -600,7 +635,7 @@ void sx127x_set_payload_length(sx127x_t *dev, uint8_t len)
 {
     DEBUG("[DEBUG] Set payload len: %d\n", len);
 
-    if (dev->settings.lora.implicit_header_mode) {
+    if (dev->settings.lora.use_fix_len) {
         dev->settings.lora.payload_len = len;
         sx127x_reg_write(dev, SX127X_REG_LR_PAYLOADLENGTH, len);
     }
