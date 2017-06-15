@@ -123,10 +123,9 @@ static inline _nib_onl_entry_t *_cache_out_onl_entry(const ipv6_addr_t *addr,
             res = tmp;
             res->mode = _EMPTY;
             _override_node(addr, iface, res);
-            /* cstate masked above already */
-            res->info = cstate;
+            /* cstate masked in _nib_nc_add() already */
+            res->info |= cstate;
             res->mode = _NC;
-            break;
         }
         /* requeue if not garbage collectible at the moment */
         DEBUG("nib: Requeing (addr = %s, iface = %u)\n",
@@ -134,8 +133,10 @@ static inline _nib_onl_entry_t *_cache_out_onl_entry(const ipv6_addr_t *addr,
                                sizeof(addr_str)),
               _nib_onl_get_if(tmp));
         clist_rpush(&_next_removable, (clist_node_t *)tmp);
-        tmp = (_nib_onl_entry_t *)clist_lpop(&_next_removable);
-    } while (tmp != first);
+        if (res == NULL) {
+            tmp = (_nib_onl_entry_t *)clist_lpop(&_next_removable);
+        }
+    } while ((tmp != first) && (res != NULL));
     return res;
 }
 
