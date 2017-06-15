@@ -114,14 +114,14 @@ int sx127x_init(sx127x_t *dev)
     return SX127X_INIT_OK;
 }
 
-void sx127x_init_lora_settings(sx127x_t *dev)
+void sx127x_init_radio_settings(sx127x_t *dev)
 {
     netdev_t *netdev = (netdev_t*) dev;
 
     bool freq_hop_on = SX127X_FREQUENCY_HOPPING;
     bool iq_invert = SX127X_IQ_INVERSION;
     uint8_t rx_single = SX127X_RX_SINGLE;
-    uint32_t tx_timeout = SX127X_TX_DEFAULT_TIMEOUT;
+    uint32_t tx_timeout = SX127X_TX_TIMEOUT_DEFAULT;
 
     netdev->driver->set(netdev, NETOPT_LORA_HOP,
                         &freq_hop_on, sizeof(bool));
@@ -132,13 +132,13 @@ void sx127x_init_lora_settings(sx127x_t *dev)
     netdev->driver->set(netdev, NETOPT_LORA_TX_TIMEOUT,
                         &tx_timeout, sizeof(uint32_t));
 
-    sx127x_set_modem(dev, SX127X_MODEM_LORA);
-    sx127x_set_channel(dev, SX127X_DEFAULT_CHANNEL);
+    sx127x_set_modem(dev, SX127X_MODEM_DEFAULT);
+    sx127x_set_channel(dev, SX127X_CHANNEL_DEFAULT);
     sx127x_set_bandwidth(dev, SX127X_BW_DEFAULT);
     sx127x_set_spreading_factor(dev, SX127X_SF_DEFAULT);
     sx127x_set_coding_rate(dev, SX127X_CR_DEFAULT);
 
-    sx127x_set_implicit_header_mode(dev, SX127X_IMPLICIT_HEADER_MODE);
+    sx127x_set_fixed_header_len_mode(dev, SX127X_FIXED_HEADER_LEN_MODE);
     sx127x_set_crc(dev, SX127X_PAYLOAD_CRC_ON);
     sx127x_set_symbol_timeout(dev, SX127X_SYMBOL_TIMEOUT);
     sx127x_set_preamble_length(dev, SX127X_PREAMBLE_LENGTH);
