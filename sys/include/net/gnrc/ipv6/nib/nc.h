@@ -123,8 +123,178 @@ extern "C" {
 /**
  * @brief   address is registered
  */
-#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED       (0x0600)
+#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED       (0x0400)
+
+/**
+ * @brief   address was added manually
+ */
+#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL           (0x0600)
 /** @} */
+
+/**
+ * @brief   Neighbor cache entry view on NIB
+ */
+typedef struct {
+    ipv6_addr_t ipv6;       /**< neighbor's IPv6 address */
+    /**
+     * @brief   neighbor's link-local address
+     */
+    uint8_t l2addr[GNRC_IPV6_NIB_L2ADDR_MAX_LEN];
+    /**
+     * @brief   neighbor information as defined in
+     *          @ref net_gnrc_ipv6_nib_nc_info "info values"
+     */
+    uint16_t info;
+    uint8_t l2addr_len;     /**< length of gnrc_ipv6_nib_nc_t::l2addr */
+} gnrc_ipv6_nib_nc_t;
+
+/**
+ * @brief   Gets state of neighbor unreachability state from entry
+ *
+ * @param[in] entry     A neighbor cache entry.
+ *
+ * @return  The neighbor unreachability state of @p entry.
+ */
+static inline unsigned gnrc_ipv6_nib_nc_get_nud_state(const gnrc_ipv6_nib_nc_t *entry)
+{
+    return (entry->info & GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK);
+}
+
+/**
+ * @brief   Gets state of neighbor unreachability state of an entry
+ *
+ * @param[in] entry     A neighbor cache entry.
+ *
+ * @return  true, if @p entry is a router.
+ * @return  false, if @p entry is not a router.
+ */
+static inline bool gnrc_ipv6_nib_nc_is_router(const gnrc_ipv6_nib_nc_t *entry)
+{
+    return (entry->info & GNRC_IPV6_NIB_NC_INFO_IS_ROUTER);
+}
+
+/**
+ * @brief   Gets interface from entry
+ *
+ * @param[in] entry     A neighbor cache entry
+ *
+ * @return  The interface identifier of @p entry.
+ * @return  0 if no interface is identified for @p entry.
+ */
+static inline unsigned gnrc_ipv6_nib_nc_get_iface(const gnrc_ipv6_nib_nc_t *entry)
+{
+    return (entry->info & GNRC_IPV6_NIB_NC_INFO_IFACE_MASK) >>
+           GNRC_IPV6_NIB_NC_INFO_IFACE_POS;
+}
+
+/**
+ * @brief   Gets address registration state of an entry
+ *
+ * @param[in] entry     A neighbor cache entry
+ *
+ * @return  The address registration state of @p entry.
+ */
+static inline unsigned gnrc_ipv6_nib_nc_get_ar_state(const gnrc_ipv6_nib_nc_t *entry)
+{
+    return (entry->info & GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK);
+}
+
+/**
+ * @brief   Adds an unmanaged neighbor entry to NIB
+ *
+ * @pre `(ipv6 != NULL) && (l2addr != NULL)`
+ * @pre `l2addr_len <= GNRC_IPV6_NIB_L2ADDR_MAX_LEN`
+ * @pre `iface > KERNEL_PID_LAST`
+ *
+ * @param[in] ipv6          The neighbor's IPv6 address.
+ * @param[in] iface         The interface to the neighbor.
+ * @param[in] l2addr        The neighbor's L2 address.
+ * @param[in] l2addr_len    Length of @p l2addr.
+ *
+ * A neighbor cache entry created this way is marked as persistent.
+ * Also, a non-persistent neighbor or destination cache entry already in the
+ * NIB might be removed to make room for the new entry.
+ * If an entry pointing to the same IPv6 address as @p ipv6 exists already it
+ * will be overwritten and marked as unmanaged.
+ *
+ * If @ref GNRC_IPV6_NIB_CONF_ARSM != 0 @p l2addr and @p l2addr_len won't be set.
+ *
+ * @return  0 on success.
+ * @return  -ENOMEM, if no space is left in neighbor cache.
+ */
+int gnrc_ipv6_nib_nc_set(const ipv6_addr_t *ipv6, unsigned iface,
+                         const uint8_t *l2addr, size_t l2addr_len);
+
+/**
+ * @brief   Deletes neighbor with address @p ipv6 from NIB
+ *
+ * @pre `ipv6 != NULL`
+ *
+ * @param[in] ipv6 The neighbor's IPv6 address.
+ *
+ * If the @p ipv6 can't be found for a neighbor in the NIB nothing happens.
+ */
+void gnrc_ipv6_nib_nc_del(const ipv6_addr_t *ipv6);
+
+/**
+ * @brief   Mark neighbor with address @p ipv6 as reachable
+ *
+ * @pre `ipv6 != NULL`
+ *
+ * @param[in] ipv6 A neighbor's IPv6 address. May not be NULL.
+ *
+ * This function shall be called if an upper layer gets reachability
+ * confirmation via its own means (e.g. a TCP connection build-up or
+ * confirmation). Unmanaged neighbor cache entries (i.e. entries created using
+ * @ref gnrc_ipv6_nib_nc_set()) or entries which next-hop are not in the
+ * neighbor cache yet are ignored.
+ *
+ * Entries in state @ref GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED are not
+ * affected by this, since they are assumed to always be reachable and kept out
+ * of the NUD state-machine
+ */
+void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
+
+/**
+ * @brief   Iterates over all neighbor cache entries in the NIB
+ *
+ * @pre (state != NULL) && (entry != NULL)
+ *
+ * @param[in] iface     Restrict iteration to entries on this interface.
+ *                      0 for any interface.
+ * @param[in,out] state Iteration state of the neighbor cache. Must point to
+ *                      a NULL pointer to start iteration.
+ * @param[out] entry    The next neighbor cache entry
+ *
+ * Usage example:
+ *
+ * ```C
+ * #include "net/gnrc/ipv6/nib/nc.h"
+ *
+ * int main(void) {
+ *     void *state = NULL;
+ *     gnrc_ipv6_nib_nc_t entry;
+ *
+ *     puts("My neighbors:");
+ *     while (gnrc_ipv6_nib_nc_iter(0, &state, &entry)) {
+ *         gnrc_ipv6_nib_nc_print(&entry);
+ *     }
+ *     return 0;
+ * }
+ * ```
+ *
+ * @return  true, if iteration can be continued.
+ * @return  false, if @p entry is the last neighbor cache entry in the NIB.
+ */
+bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
+                           gnrc_ipv6_nib_nc_t *entry);
+
+/**
+ * @brief   Prints a neighbor cache entry
+ *
+ * @param[in] entry A neighbor cache entry
+ */
+void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry);
 
 #ifdef __cplusplus
 }
