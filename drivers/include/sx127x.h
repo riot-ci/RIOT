@@ -67,7 +67,9 @@ extern "C" {
  * @name    SX127X device default configuration
  * @{
  */
-#define SX127X_DEFAULT_CHANNEL           (868300000UL)          /**< Default channel frequency, 868.3MHz (Europe)*/
+#define SX127X_MODEM_DEFAULT             (SX127X_MODEM_LORA)    /**< Use LoRa as default modem */
+#define SX127X_CHANNEL_DEFAULT           (868300000UL)          /**< Default channel frequency, 868.3MHz (Europe) */
+#define SX127X_HF_CHANNEL_DEFAULT        (868000000UL)          /**< Use to calibrate RX chain for LF and HF bands */
 #define SX127X_RF_MID_BAND_THRESH        (525000000UL)          /**< Mid-band threshold */
 #define SX127X_FREQUENCY_RESOLUTION      (61.03515625)          /**< Frequency resolution in Hz */
 #define SX127X_XTAL_FREQ                 (32000000UL)           /**< Internal oscillator frequency, 32MHz */
@@ -83,11 +85,11 @@ extern "C" {
 #define SX127X_IQ_INVERSION              (false)                /**< Set inverted IQ on */
 #define SX127X_FREQUENCY_HOPPING         (false)                /**< Frequency hopping on */
 #define SX127X_FREQUENCY_HOPPING_PERIOD  (0U)                   /**< Frequency hopping period */
-#define SX127X_IMPLICIT_HEADER_MODE      (false)                /**< Set implicit header mode */
+#define SX127X_FIXED_HEADER_LEN_MODE     (false)                /**< Set fixed header length mode (implicit header) */
 #define SX127X_PAYLOAD_CRC_ON            (true)                 /**< Enable payload CRC, optional */
 #define SX127X_PAYLOAD_LENGTH            (0U)                   /**< Set payload length, unused with implicit header */
 
-#define SX127X_TX_DEFAULT_TIMEOUT        (1000U * 1000U * 30UL) /**< TX timeout, 30s */
+#define SX127X_TX_TIMEOUT_DEFAULT        (1000U * 1000U * 30UL) /**< TX timeout, 30s */
 #define SX127X_RX_SINGLE                 (false)                /**< Single byte receive mode => continuous by default */
 #define SX127X_RX_BUFFER_SIZE            (256)                  /**< RX buffer size */
 
@@ -181,11 +183,11 @@ enum {
 typedef struct {
     uint8_t power;                                              /**< Signal power */
     uint8_t bandwidth;                                          /**< Signal bandwidth */
-    uint8_t sf;                                                 /**< Spreading factor rate */
-    uint8_t cr;                                                 /**< Error coding rate */
+    uint8_t datarate;                                           /**< Spreading factor rate, e.g datarate */
     bool low_datarate_optimize;                                 /**< Optimize for low data rate */
+    uint8_t coderate;                                           /**< Error coding rate */
     uint16_t preamble_len;                                      /**< Length of preamble header */
-    bool implicit_header_mode;                                  /**< Enable implicit header mode */
+    bool use_fix_len;                                           /**< Use fixed header len, (enable implicit header mode) */
     uint8_t payload_len;                                        /**< Payload length */
     bool crc_on;                                                /**< Enable payload CRC */
     bool freq_hop_on;                                           /**< Enable frequency hopping */
@@ -195,6 +197,40 @@ typedef struct {
     uint32_t tx_timeout;                                        /**< TX timeout in symbols */
     uint32_t rx_timeout;                                        /**< RX timeout in symbols */
 } sx127x_lora_settings_t;
+
+/**
+ * @brief   FSK configuration structure.
+ */
+typedef struct {
+    int8_t power;                                               /**< Signal power */
+    uint32_t freq_deviation;                                    /**< Frequency deviation */
+    uint32_t bandwidth;                                         /**< Signal bandwidth */
+    uint32_t bandwidth_afc;                                     /**< Bandwidth automatic frequency control */
+    uint32_t datarate;                                          /**< Spreading factor rate, e.g datarate */
+    uint16_t preamble_len;                                      /**< Length of preamble header */
+    bool use_fix_len;                                           /**< Use fixed header length */
+    uint8_t payload_len;                                        /**< Payload length */
+    bool crc_on;                                                /**< Enable payload CRC */
+    bool iq_inverted;                                           /**< Set inverted IQ */
+    bool rx_continuous;                                         /**< Use continuous reception */
+    uint32_t tx_timeout;                                        /**< TX timeout in symbols */
+    uint32_t rx_single_timeout;                                 /**< RX timeout in symbols */
+} sx127x_fsk_settings_t;
+
+/**
+ * @brief   FSK packet handler structure
+ */
+typedef struct {
+    uint8_t preamble_detected;
+    uint8_t sync_word_detected;
+    int8_t rssi_value;
+    int32_t afc_value;
+    uint8_t rx_gain;
+    uint16_t size;
+    uint16_t nb_bytes;
+    uint8_t fifo_threshold;
+    uint8_t chunk_size;
+} sx127x_fsk_packet_t;
 
 /**
  * @brief   LoRa received packet.
@@ -211,11 +247,13 @@ typedef struct {
  */
 typedef struct {
     uint8_t state;                                              /**< Radio state */
+    uint8_t modem;                                              /**< Driver model (FSK or LoRa) */
     uint32_t channel;                                           /**< Radio channel */
     sx127x_lora_settings_t lora;                                /**< LoRa settings */
-    uint8_t modem;                                              /**< Driver model (FSK or LoRa) */
+    sx127x_fsk_settings_t fsk;                                  /**< FSK settings */
+    sx127x_fsk_packet_t fsk_packet_handler;                     /**< FSK packet handler */
     uint32_t window_timeout;                                    /**< Timeout window */
-    uint8_t time_on_air_pkt_len;                                /**< Time on air */
+    uint8_t time_on_air_pkt_len;                                /**< To get time on air from packet len*/
 } sx127x_radio_settings_t;
 
 /**
@@ -290,11 +328,11 @@ void sx127x_reset(sx127x_t *dev);
 int sx127x_init(sx127x_t *dev);
 
 /**
- * @brief   Initialize LoRa settings with default values
+ * @brief   Initialize radio settings with default values
  *
  * @param[in] dev                      The sx127x device pointer
  */
-void sx127x_init_lora_settings(sx127x_t *dev);
+void sx127x_init_radio_settings(sx127x_t *dev);
 
 /**
  * @brief   Generate a random number using the device.
@@ -571,15 +609,15 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period);
  * @param[in] dev                      The sx127x device descriptor
  * @return the LoRa implicit mode
  */
-bool sx127x_get_implicit_header_mode(sx127x_t *dev);
+bool sx127x_get_fixed_header_len_mode(sx127x_t *dev);
 
 /**
  * @brief   Sets the SX127X spreading factor
  *
  * @param[in] dev                      The sx127x device descriptor
- * @param[in] implicit                 The spreading factor
+ * @param[in] mode                     The header mode
  */
-void sx127x_set_implicit_header_mode(sx127x_t *dev, bool implicit);
+void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool mode);
 
 /**
  * @brief   Gets the SX127X payload length
@@ -593,7 +631,7 @@ uint8_t sx127x_get_payload_length(sx127x_t *dev);
  * @brief   Sets the SX127X spreading factor
  *
  * @param[in] dev                      The sx127x device descriptor
- * @param[in] len                      The spreading factor
+ * @param[in] len                      The payload len
  */
 void sx127x_set_payload_length(sx127x_t *dev, uint8_t len);
 
