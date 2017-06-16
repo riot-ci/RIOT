@@ -298,13 +298,14 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     }
     else {
         size_t len;
-        struct netdev_radio_rx_info rx_info;
+        netdev_sx127x_lora_packet_info_t packet_info;
         switch (event) {
             case NETDEV_EVENT_RX_COMPLETE:
-                len = dev->driver->recv(dev, NULL, 5, &rx_info);
+                len = dev->driver->recv(dev, NULL, 5, &packet_info);
                 dev->driver->recv(dev, message, len, NULL);
                 printf("{Payload: \"%s\" (%d bytes), RSSI: %i, SNR: %i}\n",
-                       message, (int)len, rx_info.rssi, (int) rx_info.snr);
+                       message, (int)len,
+                       packet_info.rssi, (int)packet_info.snr);
                 break;
             case NETDEV_EVENT_TX_COMPLETE:
                 puts("Transmission completed");

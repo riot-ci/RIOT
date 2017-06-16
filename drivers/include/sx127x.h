@@ -218,29 +218,19 @@ typedef struct {
 } sx127x_fsk_settings_t;
 
 /**
- * @brief   FSK packet handler structure
+ * @brief   FSK packet handler.
  */
 typedef struct {
     uint8_t preamble_detected;
     uint8_t sync_word_detected;
-    int8_t rssi_value;
+    uint8_t rssi_value;
     int32_t afc_value;
     uint8_t rx_gain;
     uint16_t size;
     uint16_t nb_bytes;
     uint8_t fifo_threshold;
     uint8_t chunk_size;
-} sx127x_fsk_packet_t;
-
-/**
- * @brief   LoRa received packet.
- */
-typedef struct {
-    uint8_t snr_value;                                          /**< Packet's signal-to-noise rate (SNR) */
-    int16_t rssi_value;                                         /**< Packet's RSSI */
-    uint8_t size;                                               /**< Packet's actual size in bytes */
-    uint8_t content[256];                                       /**< Packet's content */
-} sx127x_rx_packet_t;
+} sx127x_fsk_packet_handler_t;
 
 /**
  * @brief   Radio settings.
@@ -251,7 +241,7 @@ typedef struct {
     uint32_t channel;                                           /**< Radio channel */
     sx127x_lora_settings_t lora;                                /**< LoRa settings */
     sx127x_fsk_settings_t fsk;                                  /**< FSK settings */
-    sx127x_fsk_packet_t fsk_packet_handler;                     /**< FSK packet handler */
+    sx127x_fsk_packet_handler_t fsk_packet_handler;             /**< FSK packet handler */
     uint32_t window_timeout;                                    /**< Timeout window */
     uint8_t time_on_air_pkt_len;                                /**< To get time on air from packet len*/
 } sx127x_radio_settings_t;
@@ -265,6 +255,7 @@ typedef struct {
     bool is_last_cad_success;                                   /**< Sign of success of last CAD operation (activity detected) */
     xtimer_t tx_timeout_timer;                                  /**< TX operation timeout timer */
     xtimer_t rx_timeout_timer;                                  /**< RX operation timeout timer */
+    xtimer_t rx_timeout_syncword_timer;                         /**< RX syncword timeout timer */
 } sx127x_internal_t;
 
 /**
@@ -481,6 +472,13 @@ void sx127x_set_standby(sx127x_t *dev);
  * @param[in] dev                      The sx127x device descriptor
  */
 void sx127x_set_rx(sx127x_t *dev);
+
+/**
+ * @brief   Sets the radio in transmission mode.
+ *
+ * @param[in] dev                      The sx127x device descriptor
+ */
+void sx127x_set_tx(sx127x_t *dev);
 
 /**
  * @brief   Sets the maximum payload length.
