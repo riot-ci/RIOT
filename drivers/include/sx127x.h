@@ -199,40 +199,6 @@ typedef struct {
 } sx127x_lora_settings_t;
 
 /**
- * @brief   FSK configuration structure.
- */
-typedef struct {
-    int8_t power;                                               /**< Signal power */
-    uint32_t freq_deviation;                                    /**< Frequency deviation */
-    uint32_t bandwidth;                                         /**< Signal bandwidth */
-    uint32_t bandwidth_afc;                                     /**< Bandwidth automatic frequency control */
-    uint32_t datarate;                                          /**< Spreading factor rate, e.g datarate */
-    uint16_t preamble_len;                                      /**< Length of preamble header */
-    bool use_fix_len;                                           /**< Use fixed header length */
-    uint8_t payload_len;                                        /**< Payload length */
-    bool crc_on;                                                /**< Enable payload CRC */
-    bool iq_inverted;                                           /**< Set inverted IQ */
-    bool rx_continuous;                                         /**< Use continuous reception */
-    uint32_t tx_timeout;                                        /**< TX timeout in symbols */
-    uint32_t rx_single_timeout;                                 /**< RX timeout in symbols */
-} sx127x_fsk_settings_t;
-
-/**
- * @brief   FSK packet handler.
- */
-typedef struct {
-    uint8_t preamble_detected;
-    uint8_t sync_word_detected;
-    uint8_t rssi_value;
-    int32_t afc_value;
-    uint8_t rx_gain;
-    uint16_t size;
-    uint16_t nb_bytes;
-    uint8_t fifo_threshold;
-    uint8_t chunk_size;
-} sx127x_fsk_packet_handler_t;
-
-/**
  * @brief   Radio settings.
  */
 typedef struct {
@@ -240,8 +206,6 @@ typedef struct {
     uint8_t modem;                                              /**< Driver model (FSK or LoRa) */
     uint32_t channel;                                           /**< Radio channel */
     sx127x_lora_settings_t lora;                                /**< LoRa settings */
-    sx127x_fsk_settings_t fsk;                                  /**< FSK settings */
-    sx127x_fsk_packet_handler_t fsk_packet_handler;             /**< FSK packet handler */
     uint32_t window_timeout;                                    /**< Timeout window */
     uint8_t time_on_air_pkt_len;                                /**< To get time on air from packet len*/
 } sx127x_radio_settings_t;
