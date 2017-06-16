@@ -59,6 +59,7 @@ typedef struct {
 /**
  * @brief resets the trickle timer
  *
+ * @pre `trickle->I > trickle->Imin`
  * @see https://tools.ietf.org/html/rfc6206#section-4.2, number 6
  *
  * @param[in] trickle   the trickle timer
