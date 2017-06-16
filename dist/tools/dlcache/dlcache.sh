@@ -29,13 +29,30 @@ else
     }
 fi
 
+if [ "$(uname)" = Darwin ]; then
+    MD5="md5 -r"
+else
+    MD5=md5sum
+fi
+
 md5() {
     local file="$1"
     local md5="$2"
 
-    local file_md5=$(md5sum "$file" | cut -d\  -f1)
+    local file_md5=$(${MD5} "$file" | cut -d\  -f1)
 
     test "$md5" = "$file_md5"
+}
+
+downloader() {
+    if [ -n "$(command -v wget)" ]; then
+        wget -nv "$1" -O $2
+    elif [ -n "$(command -v curl)" ]; then
+        curl -L $1 -o $2
+    else
+        echo "$0: neither wget nor curl available!"
+        return 1
+    fi
 }
 
 download() {
@@ -65,7 +82,7 @@ download() {
 
     [ ! -f "$DLCACHE/$filename" ] && {
         echo "$0: downloading \"$url\""
-        wget -nv "$url" -O "$DLCACHE/$filename" || {
+        downloader "$url" "$DLCACHE/$filename" || {
             echo "$0: error downloading $url to $DLCACHE/$filename!"
             exit 1
         }
