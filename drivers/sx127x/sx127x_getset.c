@@ -506,7 +506,7 @@ uint8_t sx127x_get_spreading_factor(sx127x_t *dev)
 
 void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t datarate)
 {
-    DEBUG("[DEBUG] Set spreading factor: %d\n", sf);
+    DEBUG("[DEBUG] Set spreading factor: %d\n", datarate);
 
     if (datarate == SX127X_SF6 && !dev->settings.lora.use_fix_len) {
         /* SF 6 is only valid when using explicit header mode */
