@@ -60,26 +60,8 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
     size = _get_tx_len(vector, count);
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-            dev->settings.fsk_packet_handler.nb_bytes = 0;
-            dev->settings.fsk_packet_handler.size = size;
-            if( dev->settings.fsk.use_fix_len == false ) {
-                sx127x_write_fifo(dev, &size, 1);
-            }
-            else {
-                sx127x_reg_write(dev, SX127X_REG_PAYLOADLENGTH, size);
-            }
-            if(size > 0 && size <= 64 ) {
-                dev->settings.fsk_packet_handler.chunk_size = size;
-            }
-            else {
-                dev->settings.fsk_packet_handler.chunk_size = 32;
-            }
-
-            for (size_t i = 0 ; i < count ; i++) {
-                sx127x_write_fifo(dev, vector[i].iov_base, vector[i].iov_len);
-            }
+            /* todo */
             break;
-
         case SX127X_MODEM_LORA:
             if (dev->settings.lora.iq_inverted) {
                 sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ,
@@ -156,71 +138,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     uint8_t size = 0;
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-        {
-            if (dev->settings.fsk.crc_on == true) {
-                irq_flags = sx127x_reg_read(dev, SX127X_REG_IRQFLAGS2);
-                   if ((irq_flags & SX127X_RF_IRQFLAGS2_CRCOK ) != SX127X_RF_IRQFLAGS2_CRCOK) {
-                        /* Clear Irqs */
-                        sx127x_reg_write(dev, SX127X_REG_IRQFLAGS1,
-                                         SX127X_RF_IRQFLAGS1_RSSI |
-                                         SX127X_RF_IRQFLAGS1_PREAMBLEDETECT |
-                                         SX127X_RF_IRQFLAGS1_SYNCADDRESSMATCH );
-                        sx127x_reg_write(dev, SX127X_REG_IRQFLAGS2,
-                                         SX127X_RF_IRQFLAGS2_FIFOOVERRUN);
-
-                        xtimer_remove(&dev->_internal.rx_timeout_timer);
-
-                        if (dev->settings.fsk.rx_continuous == false) {
-                            dev->settings.state = SX127X_RF_IDLE;
-                            xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
-                        }
-                        else {
-                            /* Continuous mode restart Rx chain */
-                            sx127x_reg_write(dev, SX127X_REG_RXCONFIG,
-                                             sx127x_reg_read(dev, SX127X_REG_RXCONFIG) |
-                                             SX127X_RF_RXCONFIG_RESTARTRXWITHOUTPLLLOCK);
-                        }
-
-                        dev->settings.fsk_packet_handler.preamble_detected = false;
-                        dev->settings.fsk_packet_handler.sync_word_detected = false;
-                        dev->settings.fsk_packet_handler.nb_bytes = 0;
-                        dev->settings.fsk_packet_handler.size = 0;
-                        break;
-                    }
-                }
-
-                /* Read received packet size */
-                if (dev->settings.fsk_packet_handler.size == 0 && dev->settings.fsk_packet_handler.nb_bytes == 0) {
-                    if ( dev->settings.fsk.use_fix_len == false ) {
-                        sx127x_read_fifo(dev, (uint8_t*)&dev->settings.fsk_packet_handler.size, 1);
-                    }
-                    else {
-                        dev->settings.fsk_packet_handler.size = sx127x_reg_read(dev, SX127X_REG_PAYLOADLENGTH);
-                    }
-                    sx127x_read_fifo(dev, (uint8_t*)buf + dev->settings.fsk_packet_handler.nb_bytes,
-                                     dev->settings.fsk_packet_handler.size - dev->settings.fsk_packet_handler.nb_bytes);
-                    dev->settings.fsk_packet_handler.nb_bytes += (dev->settings.fsk_packet_handler.size - dev->settings.fsk_packet_handler.nb_bytes);
-                }
-                else {
-                    sx127x_read_fifo(dev, (uint8_t*)buf + dev->settings.fsk_packet_handler.nb_bytes,
-                                     dev->settings.fsk_packet_handler.size - dev->settings.fsk_packet_handler.nb_bytes);
-                    dev->settings.fsk_packet_handler.nb_bytes += (dev->settings.fsk_packet_handler.size - dev->settings.fsk_packet_handler.nb_bytes);
-                }
-
-                size = dev->settings.fsk_packet_handler.nb_bytes;
-
-                xtimer_remove(&dev->_internal.rx_timeout_timer);
-
-                if (dev->settings.fsk.rx_continuous == false) {
-                    dev->settings.state = SX127X_RF_IDLE;
-                    xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
-                }
-
-                dev->settings.fsk_packet_handler.preamble_detected = false;
-                dev->settings.fsk_packet_handler.sync_word_detected = false;
-                dev->settings.fsk_packet_handler.nb_bytes = 0;
-                dev->settings.fsk_packet_handler.size = 0;
-        }
+            /* todo */
             break;
         case SX127X_MODEM_LORA:
             /* Clear IRQ */
