@@ -42,7 +42,7 @@ $(PKG_SRCDIR)/.extracted: $(PKG_BUILDDIR)/$(PKG_FILE)
 
 $(PKG_BUILDDIR)/$(PKG_FILE):
 	@mkdir -p $(@D)
-	$(Q)$(RIOTBASE)/dist/tools/dlcache.sh $(PKG_URL) $(PKG_MD5) $@
+	$(Q)$(RIOTBASE)/dist/tools/dlcache/dlcache.sh $(PKG_URL) $(PKG_MD5) $@
 
 clean::
 	rm -rf $(PKG_SRCDIR)/
