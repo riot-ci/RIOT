@@ -125,16 +125,7 @@ uint32_t sx127x_get_time_on_air(sx127x_t *dev)
     uint8_t pkt_len = dev->settings.time_on_air_pkt_len;
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-            air_time = round(
-                            (8 * (dev->settings.fsk.preamble_len +
-                                  ((sx127x_reg_read(dev, SX127X_REG_SYNCCONFIG) &
-                                    ~SX127X_RF_SYNCCONFIG_SYNCSIZE_MASK) + 1) +
-                                  ((dev->settings.fsk.use_fix_len == 0x01) ? 0.0 : 1.0 ) +
-                                  (((sx127x_reg_read(dev, SX127X_REG_PACKETCONFIG1) &
-                                     ~SX127X_RF_PACKETCONFIG1_ADDRSFILTERING_MASK )
-                                    != 0x00 ) ? 1.0 : 0 ) + pkt_len +
-                                  ((dev->settings.fsk.crc_on == 0x01) ? 2.0 : 0)
-                                 ) / dev->settings.fsk.datarate) * 1e3);
+            /* todo */
             break;
         case SX127X_MODEM_LORA:
         {
@@ -221,33 +212,7 @@ void sx127x_set_rx(sx127x_t *dev)
 
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
-                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1 ) &
-                              SX127X_RF_DIOMAPPING1_DIO0_MASK &
-                              SX127X_RF_DIOMAPPING1_DIO1_MASK &
-                              SX127X_RF_DIOMAPPING1_DIO2_MASK ) |
-                             SX127X_RF_DIOMAPPING1_DIO0_00 |
-                             SX127X_RF_DIOMAPPING1_DIO1_00 |
-                             SX127X_RF_DIOMAPPING1_DIO2_11);
-
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2,
-                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING2 ) &
-                              SX127X_RF_DIOMAPPING2_DIO4_MASK &
-                              SX127X_RF_DIOMAPPING2_MAP_MASK ) |
-                             SX127X_RF_DIOMAPPING2_DIO4_11 |
-                             SX127X_RF_DIOMAPPING2_MAP_PREAMBLEDETECT);
-
-            dev->settings.fsk_packet_handler.fifo_threshold = sx127x_reg_read(dev, SX127X_REG_FIFOTHRESH) & 0x3F;
-
-            sx127x_reg_write(dev, SX127X_REG_RXCONFIG,
-                             SX127X_RF_RXCONFIG_AFCAUTO_ON |
-                             SX127X_RF_RXCONFIG_AGCAUTO_ON |
-                             SX127X_RF_RXCONFIG_RXTRIGER_PREAMBLEDETECT);
-
-            dev->settings.fsk_packet_handler.preamble_detected = false;
-            dev->settings.fsk_packet_handler.sync_word_detected = false;
-            dev->settings.fsk_packet_handler.nb_bytes = 0;
-            dev->settings.fsk_packet_handler.size = 0;
+            /* todo */
             break;
         case SX127X_MODEM_LORA:
         {
@@ -353,28 +318,9 @@ void sx127x_set_tx(sx127x_t *dev)
 {
      switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
-        {
-            /* DIO0=PacketSent
-               DIO1=FifoEmpty
-               DIO2=FifoFull
-               DIO3=FifoEmpty
-               DIO4=LowBat
-               DIO5=ModeReady */
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
-                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1) &
-                              SX127X_RF_DIOMAPPING1_DIO0_MASK &
-                              SX127X_RF_DIOMAPPING1_DIO1_MASK &
-                              SX127X_RF_DIOMAPPING1_DIO2_MASK) |
-                             SX127X_RF_DIOMAPPING1_DIO1_01);
-
-            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2,
-                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING2) &
-                              SX127X_RF_DIOMAPPING2_DIO4_MASK &
-                              SX127X_RF_DIOMAPPING2_MAP_MASK));
-            dev->settings.fsk_packet_handler.fifo_threshold = sx127x_reg_read(dev, SX127X_REG_FIFOTHRESH) & 0x3F;
-        }
-        break;
-    case SX127X_MODEM_LORA:
+            /* todo */
+            break;
+        case SX127X_MODEM_LORA:
         {
             if (dev->settings.lora.freq_hop_on == true) {
                 sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGSMASK,

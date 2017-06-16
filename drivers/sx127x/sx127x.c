@@ -278,6 +278,7 @@ void sx127x_on_dio1(void *arg)
         case SX127X_RF_RX_RUNNING:
             switch (dev->settings.modem) {
                 case SX127X_MODEM_FSK:
+                    /* todo */
                     break;
                 case SX127X_MODEM_LORA:
                     xtimer_remove(&dev->_internal.rx_timeout_timer);
@@ -291,6 +292,15 @@ void sx127x_on_dio1(void *arg)
             }
             break;
         case SX127X_RF_TX_RUNNING:
+            switch (dev->settings.modem) {
+                case SX127X_MODEM_FSK:
+                    /* todo */
+                    break;
+                case SX127X_MODEM_LORA:
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             puts("sx127x_on_dio1: Unknown state");
@@ -307,6 +317,9 @@ void sx127x_on_dio2(void *arg)
     switch (dev->settings.state) {
         case SX127X_RF_RX_RUNNING:
             switch (dev->settings.modem) {
+                case SX127X_MODEM_FSK:
+                    /* todo */
+                    break;
                 case SX127X_MODEM_LORA:
                     if (dev->settings.lora.freq_hop_on) {
                         /* Clear IRQ */
@@ -377,7 +390,17 @@ void sx127x_on_dio3(void *arg)
 /* Following interrupt lines are not used */
 void sx127x_on_dio4(void *arg)
 {
-    (void) arg;
+    /* Get interrupt context */
+    sx127x_t *dev = (sx127x_t *) arg;
+    switch (dev->settings.modem) {
+        case SX127X_MODEM_FSK:
+            /* todo */
+            break;
+        case SX127X_MODEM_LORA:
+            break;
+        default:
+            break;
+    }
 }
 
 void sx127x_on_dio5(void *arg)
