@@ -129,7 +129,7 @@ uint32_t sx127x_get_time_on_air(sx127x_t *dev)
                             (8 * (dev->settings.fsk.preamble_len +
                                   ((sx127x_reg_read(dev, SX127X_REG_SYNCCONFIG) &
                                     ~SX127X_RF_SYNCCONFIG_SYNCSIZE_MASK) + 1) +
-                                  ((dev->settings.fsk.fix_len == 0x01) ? 0.0 : 1.0 ) +
+                                  ((dev->settings.fsk.use_fix_len == 0x01) ? 0.0 : 1.0 ) +
                                   (((sx127x_reg_read(dev, SX127X_REG_PACKETCONFIG1) &
                                      ~SX127X_RF_PACKETCONFIG1_ADDRSFILTERING_MASK )
                                     != 0x00 ) ? 1.0 : 0 ) + pkt_len +
@@ -195,6 +195,7 @@ void sx127x_set_sleep(sx127x_t *dev)
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
     xtimer_remove(&dev->_internal.rx_timeout_timer);
+    xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
 
     /* Put chip into sleep */
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
@@ -208,6 +209,7 @@ void sx127x_set_standby(sx127x_t *dev)
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
     xtimer_remove(&dev->_internal.rx_timeout_timer);
+    xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
 
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_STANDBY);
     sx127x_set_state(dev,  SX127X_RF_IDLE);
@@ -233,7 +235,7 @@ void sx127x_set_rx(sx127x_t *dev)
                               SX127X_RF_DIOMAPPING2_DIO4_MASK &
                               SX127X_RF_DIOMAPPING2_MAP_MASK ) |
                              SX127X_RF_DIOMAPPING2_DIO4_11 |
-                             SX127X_RF_DIOMAPPING2_MAP_PREAMBLEDETECT );
+                             SX127X_RF_DIOMAPPING2_MAP_PREAMBLEDETECT);
 
             dev->settings.fsk_packet_handler.fifo_threshold = sx127x_reg_read(dev, SX127X_REG_FIFOTHRESH) & 0x3F;
 
@@ -246,8 +248,7 @@ void sx127x_set_rx(sx127x_t *dev)
             dev->settings.fsk_packet_handler.sync_word_detected = false;
             dev->settings.fsk_packet_handler.nb_bytes = 0;
             dev->settings.fsk_packet_handler.size = 0;
-            return;
-
+            break;
         case SX127X_MODEM_LORA:
         {
             if (dev->settings.lora.iq_inverted) {
@@ -347,6 +348,83 @@ void sx127x_set_rx(sx127x_t *dev)
         sx127x_set_op_mode(dev, SX127X_RF_LORA_OPMODE_RECEIVER_SINGLE);
     }
 }
+
+void sx127x_set_tx(sx127x_t *dev)
+{
+     switch (dev->settings.modem) {
+        case SX127X_MODEM_FSK:
+        {
+            /* DIO0=PacketSent
+               DIO1=FifoEmpty
+               DIO2=FifoFull
+               DIO3=FifoEmpty
+               DIO4=LowBat
+               DIO5=ModeReady */
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
+                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1) &
+                              SX127X_RF_DIOMAPPING1_DIO0_MASK &
+                              SX127X_RF_DIOMAPPING1_DIO1_MASK &
+                              SX127X_RF_DIOMAPPING1_DIO2_MASK) |
+                             SX127X_RF_DIOMAPPING1_DIO1_01);
+
+            sx127x_reg_write(dev, SX127X_REG_DIOMAPPING2,
+                             (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING2) &
+                              SX127X_RF_DIOMAPPING2_DIO4_MASK &
+                              SX127X_RF_DIOMAPPING2_MAP_MASK));
+            dev->settings.fsk_packet_handler.fifo_threshold = sx127x_reg_read(dev, SX127X_REG_FIFOTHRESH) & 0x3F;
+        }
+        break;
+    case SX127X_MODEM_LORA:
+        {
+            if (dev->settings.lora.freq_hop_on == true) {
+                sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGSMASK,
+                                 SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT |
+                                 SX127X_RF_LORA_IRQFLAGS_RXDONE |
+                                 SX127X_RF_LORA_IRQFLAGS_PAYLOADCRCERROR |
+                                 SX127X_RF_LORA_IRQFLAGS_VALIDHEADER |
+                                 /* RFLR_IRQFLAGS_TXDONE | */
+                                 SX127X_RF_LORA_IRQFLAGS_CADDONE |
+                                 /* RFLR_IRQFLAGS_FHSSCHANGEDCHANNEL | */
+                                 SX127X_RF_LORA_IRQFLAGS_CADDETECTED);
+
+                /* DIO0=TxDone, DIO2=FhssChangeChannel */
+                sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
+                                 (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1 ) &
+                                  SX127X_RF_LORA_DIOMAPPING1_DIO0_MASK &
+                                  SX127X_RF_LORA_DIOMAPPING1_DIO2_MASK) |
+                                 SX127X_RF_LORA_DIOMAPPING1_DIO0_01 |
+                                 SX127X_RF_LORA_DIOMAPPING1_DIO2_00);
+            }
+            else
+            {
+                sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGSMASK,
+                                 SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT |
+                                 SX127X_RF_LORA_IRQFLAGS_RXDONE |
+                                 SX127X_RF_LORA_IRQFLAGS_PAYLOADCRCERROR |
+                                 SX127X_RF_LORA_IRQFLAGS_VALIDHEADER |
+                                 /* RFLR_IRQFLAGS_TXDONE | */
+                                 SX127X_RF_LORA_IRQFLAGS_CADDONE |
+                                 SX127X_RF_LORA_IRQFLAGS_FHSSCHANGEDCHANNEL |
+                                 SX127X_RF_LORA_IRQFLAGS_CADDETECTED);
+
+                /* DIO0=TxDone */
+                sx127x_reg_write(dev, SX127X_REG_DIOMAPPING1,
+                                 (sx127x_reg_read(dev, SX127X_REG_DIOMAPPING1) &
+                                  SX127X_RF_LORA_DIOMAPPING1_DIO0_MASK) |
+                                  SX127X_RF_LORA_DIOMAPPING1_DIO0_01);
+            }
+        }
+        break;
+    }
+
+    sx127x_set_state(dev, SX127X_RF_RX_RUNNING);
+    if (dev->settings.window_timeout != 0) {
+        xtimer_set(&(dev->_internal.tx_timeout_timer),
+                   dev->settings.window_timeout);
+    }
+    sx127x_set_op_mode(dev, SX127X_RF_OPMODE_TRANSMITTER );
+}
+
 
 void sx127x_set_max_payload_len(sx127x_t *dev, uint8_t maxlen)
 {
