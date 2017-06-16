@@ -387,8 +387,7 @@ typedef struct {
                                         /**< Storage for open requests; if first
                                              byte of an entry is zero, the entry
                                              is available */
-    atomic_uint_least16_t next_message_id;
-                                        /**< Next message ID to use */
+    atomic_uint next_message_id;        /**< Next message ID to use */
     sock_udp_ep_t observers[GCOAP_OBS_CLIENTS_MAX];
                                         /**< Observe clients; allows reuse for
                                              observe memos */

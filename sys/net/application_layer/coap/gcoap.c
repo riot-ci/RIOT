@@ -593,7 +593,7 @@ kernel_pid_t gcoap_init(void)
     memset(&_coap_state.observers[0], 0, sizeof(_coap_state.observers));
     memset(&_coap_state.observe_memos[0], 0, sizeof(_coap_state.observe_memos));
     /* randomize initial value */
-    atomic_init(&_coap_state.next_message_id, (uint16_t)random_uint32());
+    atomic_init(&_coap_state.next_message_id, (unsigned)random_uint32());
 
     return _pid;
 }
@@ -612,7 +612,6 @@ void gcoap_register_listener(gcoap_listener_t *listener)
 
 int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code,
                                                               char *path) {
-    ssize_t hdrlen;
     (void)len;
 
     pdu->hdr = (coap_hdr_t *)buf;
@@ -627,11 +626,13 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code,
                &rand,
                (GCOAP_TOKENLEN - i >= 4) ? 4 : GCOAP_TOKENLEN - i);
     }
-    hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &token[0], GCOAP_TOKENLEN,
-                            code, atomic_fetch_add(&_coap_state.next_message_id, 1));
+    uint16_t msgid = (uint16_t)atomic_fetch_add(&_coap_state.next_message_id, 1);
+    ssize_t hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &token[0], GCOAP_TOKENLEN,
+                                    code, msgid);
 #else
-    hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, NULL, GCOAP_TOKENLEN,
-                            code, atomic_fetch_add(&_coap_state.next_message_id, 1));
+    uint16_t msgid = (uint16_t)atomic_fetch_add(&_coap_state.next_message_id, 1);
+    ssize_t hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, NULL, GCOAP_TOKENLEN,
+                                    code, msgid);
 #endif
 
     if (hdrlen > 0) {
@@ -748,7 +749,6 @@ int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
 int gcoap_obs_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
                                                   const coap_resource_t *resource)
 {
-    ssize_t hdrlen;
     gcoap_observe_memo_t *memo = NULL;
 
     _find_obs_memo_resource(&memo, resource);
@@ -757,10 +757,10 @@ int gcoap_obs_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
         return GCOAP_OBS_INIT_UNUSED;
     }
 
-    pdu->hdr = (coap_hdr_t *)buf;
-    hdrlen   = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &memo->token[0],
-                              memo->token_len, COAP_CODE_CONTENT,
-                              atomic_fetch_add(&_coap_state.next_message_id, 1));
+    pdu->hdr       = (coap_hdr_t *)buf;
+    uint16_t msgid = (uint16_t)atomic_fetch_add(&_coap_state.next_message_id, 1);
+    ssize_t hdrlen = coap_build_hdr(pdu->hdr, COAP_TYPE_NON, &memo->token[0],
+                                    memo->token_len, COAP_CODE_CONTENT, msgid);
 
     if (hdrlen > 0) {
         uint32_t now       = xtimer_now_usec();
