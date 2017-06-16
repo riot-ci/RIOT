@@ -245,22 +245,22 @@ void sx127x_on_dio0(void *arg)
 
     switch (dev->settings.state) {
         case SX127X_RF_RX_RUNNING:
-            switch (dev->settings.modem) {
-                case SX127X_MODEM_LORA:
-                    netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
-                break;
-                default:
-                    break;
-            }
+            netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
             break;
         case SX127X_RF_TX_RUNNING:
             xtimer_remove(&dev->_internal.tx_timeout_timer);
-            /* Clear IRQ */
-            sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
-                             SX127X_RF_LORA_IRQFLAGS_TXDONE);
-            sx127x_set_state(dev,  SX127X_RF_IDLE);
-
-            netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
+            switch (dev->settings.modem) {
+                case SX127X_MODEM_LORA:
+                    /* Clear IRQ */
+                    sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
+                                     SX127X_RF_LORA_IRQFLAGS_TXDONE);
+                /* Intentional fall-through */
+                case SX127X_MODEM_FSK:
+                default:
+                    sx127x_set_state(dev, SX127X_RF_IDLE);
+                    netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
+                    break;
+            }
             break;
         default:
             puts("sx127x_on_dio0: Unknown state");
@@ -277,9 +277,13 @@ void sx127x_on_dio1(void *arg)
     switch (dev->settings.state) {
         case SX127X_RF_RX_RUNNING:
             switch (dev->settings.modem) {
+                case SX127X_MODEM_FSK:
+                    break;
                 case SX127X_MODEM_LORA:
                     xtimer_remove(&dev->_internal.rx_timeout_timer);
-                    sx127x_set_state(dev,  SX127X_RF_IDLE);
+                    /*  Clear Irq */
+                    sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS, SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT);
+                    sx127x_set_state(dev, SX127X_RF_IDLE);
                     netdev->event_callback(netdev, NETDEV_EVENT_RX_TIMEOUT);
                     break;
                 default:
