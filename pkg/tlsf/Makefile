@@ -23,7 +23,7 @@ $(PKG_SRCDIR)/Makefile: $(PKG_BUILDDIR)/$(PKG_FILE) $(CURDIR)/patch.txt
 
 $(PKG_BUILDDIR)/$(PKG_FILE):
 	@mkdir -p $(@D)
-	$(Q)$(RIOTBASE)/dist/tools/dlcache/dlcache.sh $(PKG_URL) $(PKG_MD5) $@
+	$(Q)$(DLCACHE) $(PKG_URL) $(PKG_MD5) $@
 
 clean::
 	rm -rf $(PKG_SRCDIR)/
