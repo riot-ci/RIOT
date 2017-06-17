@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "evtimer/msg.h"
+#include "evtimer_msg.h"
 #include "kernel_types.h"
 #include "mutex.h"
 #include "net/eui64.h"
