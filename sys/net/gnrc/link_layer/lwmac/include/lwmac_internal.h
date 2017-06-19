@@ -85,7 +85,7 @@ extern "C" {
  * @brief Type to pass information about parsing.
  */
 typedef struct {
-    lwmac_hdr_t *header;    /**< Lwmac header of packet */
+    lwmac_hdr_t *header;    /**< LWMAC header of packet */
     l2_addr_t src_addr;     /**< copied source address of packet  */
     l2_addr_t dst_addr;     /**< copied destination address of packet */
 } lwmac_packet_info_t;
@@ -103,7 +103,7 @@ typedef struct {
  * @brief set the TX-continue flag of the device
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] tx_continue  value for Lwmac tx-continue flag
+ * @param[in] tx_continue  value for LWMAC tx-continue flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev_t *dev, bool tx_continue)
@@ -133,7 +133,7 @@ static inline bool gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev_t *dev)
  * @brief set the quit-TX flag of the device
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] quit_tx      value for Lwmac quit-TX flag
+ * @param[in] quit_tx      value for LWMAC quit-TX flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev_t *dev, bool quit_tx)
@@ -163,7 +163,7 @@ static inline bool gnrc_netdev_lwmac_get_quit_tx(gnrc_netdev_t *dev)
  * @brief set the phase-backoff flag of the device
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] backoff      value for Lwmac phase-backoff flag
+ * @param[in] backoff      value for LWMAC phase-backoff flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_phase_backoff(gnrc_netdev_t *dev, bool backoff)
@@ -193,7 +193,7 @@ static inline bool gnrc_netdev_lwmac_get_phase_backoff(gnrc_netdev_t *dev)
  * @brief set the quit-RX flag of the device
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] quit_rx      value for Lwmac quit-Rx flag
+ * @param[in] quit_rx      value for LWMAC quit-Rx flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev_t *dev, bool quit_rx)
@@ -220,10 +220,10 @@ static inline bool gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev_t *dev)
 }
 
 /**
- * @brief set the duty-cycle-active flag of Lwmac
+ * @brief set the duty-cycle-active flag of LWMAC
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] active       value for Lwmac duty-cycle-active flag
+ * @param[in] active       value for LWMAC duty-cycle-active flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bool active)
@@ -237,7 +237,7 @@ static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bo
 }
 
 /**
- * @brief get the duty-cycle-active flag of Lwmac
+ * @brief get the duty-cycle-active flag of LWMAC
  *
  * @param[in] dev          ptr to netdev device
  *
@@ -250,10 +250,10 @@ static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netdev_t *dev)
 }
 
 /**
- * @brief set the needs-rescheduling flag of Lwmac
+ * @brief set the needs-rescheduling flag of LWMAC
  *
  * @param[in] dev          ptr to netdev device
- * @param[in] reschedule   value for Lwmac needs-rescheduling flag
+ * @param[in] reschedule   value for LWMAC needs-rescheduling flag
  *
  */
 static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool reschedule)
@@ -267,7 +267,7 @@ static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool res
 }
 
 /**
- * @brief get the needs-rescheduling flag of Lwmac
+ * @brief get the needs-rescheduling flag of LWMAC
  *
  * @param[in] dev          ptr to netdev device
  *
@@ -394,9 +394,9 @@ uint32_t _next_inphase_event(uint32_t last, uint32_t interval);
 int _dispatch_defer(gnrc_pktsnip_t * buffer[], gnrc_pktsnip_t * pkt);
 
 /**
- * @brief Print out the Lwmac header information.
+ * @brief Print out the LWMAC header information.
  *
- * @param[in] hdr  lwmac header
+ * @param[in] hdr  LWMAC header
  */
 void lwmac_print_hdr(lwmac_hdr_t *hdr);
 

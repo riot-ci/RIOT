@@ -1,8 +1,8 @@
 examples/default
 ================
-This application is a showcase for testing Lw-MAC communications. Using it
+This application is a showcase for testing LWMAC communications. Using it
 for your board, you should be able to interactively use any hardware
-that is supported for communications among devices based on Lw-MAC.
+that is supported for communications among devices based on LWMAC.
 
 Usage
 =====
@@ -35,7 +35,7 @@ interfaces. On an samr21 board it will print something like:
 ```
 
 The `txtsnd` command allows you to send a simple string directly over the link
-layer (here, it is Lw-MAC) using unicast or broadcast. The application will also automatically print
+layer (here, it is LWMAC) using unicast or broadcast. The application will also automatically print
 information about any received packet over the serial. This will look like:
 ```
 2015-09-16 16:59:29,187 - INFO # PKTDUMP: data received:

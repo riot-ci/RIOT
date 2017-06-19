@@ -119,7 +119,7 @@ void lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type, ui
 
     lwmac_timeout_t *timeout;
     if ((timeout = _lwmac_acquire_timeout(gnrc_netdev, type))) {
-        DEBUG("[lwmac] Set timeout %s in %" PRIu32 " us\n",
+        DEBUG("[LWMAC] Set timeout %s in %" PRIu32 " us\n",
               lwmac_timeout_names[type], offset);
         timeout->expired = false;
         timeout->msg.type = LWMAC_EVENT_TIMEOUT_TYPE;
@@ -128,7 +128,7 @@ void lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type, ui
                        &(timeout->msg), gnrc_netdev->pid);
     }
     else {
-        DEBUG("[lwmac] Cannot set timeout %s, too many concurrent timeouts\n",
+        DEBUG("[LWMAC] Cannot set timeout %s, too many concurrent timeouts\n",
               lwmac_timeout_names[type]);
     }
 }

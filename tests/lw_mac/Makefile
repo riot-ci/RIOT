@@ -4,8 +4,8 @@ APPLICATION = lw_mac
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
 
-# Currently, Lw-MAC is only tested and evaluated through on samr21-xpro.
-# Once Lw-MAC has also been tested through on other boards, the whitelist should be
+# Currently, LWMAC is only tested and evaluated through on samr21-xpro.
+# Once LWMAC has also been tested through on other boards, the whitelist should be
 # then accordingly extended.
 BOARD_WHITELIST := samr21-xpro
 
@@ -55,7 +55,7 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_txtsnd
 # the application dumps received packets to stdout
 USEMODULE += gnrc_pktdump
-# Use lw_mac
+# Use LWMAC
 USEMODULE += gnrc_lwmac
 # We use only the lower layers of the GNRC network stack, hence, we can
 # reduce the size of the packet buffer a bit
