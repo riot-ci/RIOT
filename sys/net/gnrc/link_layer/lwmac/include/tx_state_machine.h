@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Start Lwmac TX procedure to transmit packet @p pkt to @p neighbor
+ * @brief Start LWMAC TX procedure to transmit packet @p pkt to @p neighbor
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  * @param[in]       pkt           packet to transmit
@@ -41,7 +41,7 @@ void lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
                     gnrc_pktsnip_t *pkt, gnrc_mac_tx_neighbor_t *neighbor);
 
 /**
- * @brief Stop Lwmac TX procedure
+ * @brief Stop LWMAC TX procedure
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
@@ -49,7 +49,7 @@ void lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
 void lwmac_tx_stop(gnrc_netdev_t *gnrc_netdev);
 
 /**
- * @brief Update Lwmac TX procedure for transmission
+ * @brief Update LWMAC TX procedure for transmission
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *

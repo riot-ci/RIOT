@@ -67,13 +67,13 @@ static uint8_t _send_bcast(gnrc_netdev_t *gnrc_netdev)
         }
     }
     else {
-        LOG(LOG_INFO, "[lwmac-tx] Initialize broadcasting\n");
+        LOG(LOG_INFO, "[LWMAC-tx] Initialize broadcasting\n");
         lwmac_set_timeout(gnrc_netdev, TIMEOUT_BROADCAST_END,
                           LWMAC_BROADCAST_DURATION_US);
 
         gnrc_pktsnip_t *pkt_payload;
 
-        /* Prepare packet with LwMAC header*/
+        /* Prepare packet with LWMAC header*/
         lwmac_frame_broadcast_t hdr = {};
         hdr.header.type = FRAMETYPE_BROADCAST;
         hdr.seq_nr = gnrc_netdev->tx.bcast_seqnr++;
@@ -81,10 +81,10 @@ static uint8_t _send_bcast(gnrc_netdev_t *gnrc_netdev)
         pkt_payload = pkt->next;
         pkt->next = gnrc_pktbuf_add(pkt->next, &hdr, sizeof(hdr), GNRC_NETTYPE_LWMAC);
         if (pkt->next == NULL) {
-            LOG(LOG_ERROR, "ERROR: [lwmac-tx] Cannot allocate pktbuf of type FRAMETYPE_BROADCAST\n");
+            LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Cannot allocate pktbuf of type FRAMETYPE_BROADCAST\n");
             gnrc_netdev->tx.packet->next = pkt_payload;
             /* Drop the broadcast packet */
-            LOG(LOG_ERROR, "ERROR: [lwmac-tx] Memory maybe full, drop the broadcast packet\n");
+            LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Memory maybe full, drop the broadcast packet\n");
             gnrc_pktbuf_release(gnrc_netdev->tx.packet);
             /* clear packet point to avoid TX retry */
             gnrc_netdev->tx.packet = NULL;
@@ -107,7 +107,7 @@ static uint8_t _send_bcast(gnrc_netdev_t *gnrc_netdev)
             /* save pointer to netif header */
             gnrc_pktsnip_t *netif = pkt->next->next;
 
-            /* remove lwmac header */
+            /* remove LWMAC header */
             pkt->next->next = NULL;
             gnrc_pktbuf_release(pkt->next);
 
@@ -116,7 +116,7 @@ static uint8_t _send_bcast(gnrc_netdev_t *gnrc_netdev)
 
             if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                 gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
             }
             /* drop pointer so it wont be free'd */
             gnrc_netdev->tx.packet = NULL;
@@ -129,14 +129,14 @@ static uint8_t _send_bcast(gnrc_netdev_t *gnrc_netdev)
 
         int res = gnrc_netdev->send(gnrc_netdev, pkt);
         if (res < 0) {
-            LOG(LOG_ERROR, "ERROR: [lwmac-tx] Send broadcast pkt failed.");
+            LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Send broadcast pkt failed.");
             tx_info |= GNRC_LWMAC_TX_FAIL;
             return tx_info;
         }
 
         lwmac_set_timeout(gnrc_netdev, TIMEOUT_NEXT_BROADCAST,
                           LWMAC_TIME_BETWEEN_BROADCAST_US);
-        LOG(LOG_INFO, "[lwmac-tx] Broadcast sent\n");
+        LOG(LOG_INFO, "[LWMAC-tx] Broadcast sent\n");
     }
 
     return tx_info;
@@ -156,7 +156,7 @@ static uint8_t _send_wr(gnrc_netdev_t *gnrc_netdev)
     if (_get_netdev_state(gnrc_netdev) == NETOPT_STATE_RX) {
         if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
             gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-            LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+            LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
         }
         /* drop pointer so it wont be free'd */
         gnrc_netdev->tx.packet = NULL;
@@ -173,9 +173,9 @@ static uint8_t _send_wr(gnrc_netdev_t *gnrc_netdev)
 
     pkt = gnrc_pktbuf_add(NULL, &wr_hdr, sizeof(wr_hdr), GNRC_NETTYPE_LWMAC);
     if (pkt == NULL) {
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_LWMAC\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_LWMAC\n");
         gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Memory maybe full, drop the data packet\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Memory maybe full, drop the data packet\n");
         /* clear packet point to avoid TX retry */
         gnrc_netdev->tx.packet = NULL;
         tx_info |= GNRC_LWMAC_TX_FAIL;
@@ -187,9 +187,9 @@ static uint8_t _send_wr(gnrc_netdev_t *gnrc_netdev)
 
     pkt = gnrc_pktbuf_add(pkt, NULL, sizeof(gnrc_netif_hdr_t), GNRC_NETTYPE_NETIF);
     if (pkt == NULL) {
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_NETIF\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_NETIF\n");
         gnrc_pktbuf_release(pkt_lwmac);
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Memory maybe full, drop the data packet\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Memory maybe full, drop the data packet\n");
         gnrc_pktbuf_release(gnrc_netdev->tx.packet);
         /* clear packet point to avoid TX retry */
         gnrc_netdev->tx.packet = NULL;
@@ -216,7 +216,7 @@ static uint8_t _send_wr(gnrc_netdev_t *gnrc_netdev)
      * possibly arrived in the meantime but we don't care at this point. */
     int res = gnrc_netdev->send(gnrc_netdev, pkt);
     if (res < 0) {
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Send WR failed.");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Send WR failed.");
         if (pkt != NULL) {
             gnrc_pktbuf_release(pkt);
         }
@@ -239,14 +239,14 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
     bool from_expected_destination = false;
 
     while ((pkt = gnrc_priority_pktqueue_pop(&gnrc_netdev->rx.queue)) != NULL) {
-        LOG(LOG_DEBUG, "[lwmac-tx] Inspecting pkt @ %p\n", pkt);
+        LOG(LOG_DEBUG, "[LWMAC-tx] Inspecting pkt @ %p\n", pkt);
 
         /* Parse packet */
         lwmac_packet_info_t info;
         int ret = _parse_packet(pkt, &info);
 
         if (ret != 0) {
-            LOG(LOG_DEBUG, "[lwmac-tx] Packet could not be parsed: %i\n", ret);
+            LOG(LOG_DEBUG, "[LWMAC-tx] Packet could not be parsed: %i\n", ret);
             gnrc_pktbuf_release(pkt);
             continue;
         }
@@ -271,7 +271,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
                      gnrc_netdev->l2_addr_len) == 0) && from_expected_destination) {
             if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                 gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
             }
             /* drop pointer so it wont be free'd */
             gnrc_netdev->tx.packet = NULL;
@@ -285,7 +285,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
         if (info.header->type == FRAMETYPE_WR) {
             if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                 gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
             }
             /* drop pointer so it wont be free'd */
             gnrc_netdev->tx.packet = NULL;
@@ -295,7 +295,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
         }
 
         if (info.header->type != FRAMETYPE_WA) {
-            LOG(LOG_DEBUG, "[lwmac-tx] Packet is not WA: 0x%02x\n", info.header->type);
+            LOG(LOG_DEBUG, "[LWMAC-tx] Packet is not WA: 0x%02x\n", info.header->type);
             gnrc_pktbuf_release(pkt);
             continue;
         }
@@ -329,7 +329,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
                 (own_phase > RTT_US_TO_TICKS(LWMAC_WAKEUP_INTERVAL_US -
                                              (3 * LWMAC_WAKEUP_DURATION_US / 2)))) {
                 gnrc_netdev_lwmac_set_phase_backoff(gnrc_netdev, true);
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] phase close\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] phase close\n");
             }
         }
 
@@ -337,7 +337,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
         gnrc_pktbuf_release(pkt);
 
         if (!from_expected_destination) {
-            LOG(LOG_DEBUG, "[lwmac-tx] Packet is not from expected destination\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] Packet is not from expected destination\n");
             break;
         }
 
@@ -349,19 +349,19 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netdev_t *gnrc_netdev)
     }
 
     if (postponed) {
-        LOG(LOG_INFO, "[lwmac-tx] Destination is talking to another node, postpone\n");
+        LOG(LOG_INFO, "[LWMAC-tx] Destination is talking to another node, postpone\n");
         tx_info |= GNRC_LWMAC_TX_FAIL;
         return tx_info;
     }
 
     if (!found_wa) {
-        LOG(LOG_DEBUG, "[lwmac-tx] No WA yet\n");
+        LOG(LOG_DEBUG, "[LWMAC-tx] No WA yet\n");
         return tx_info;
     }
 
     /* Save newly calculated phase for destination */
     gnrc_netdev->tx.current_neighbor->phase = gnrc_netdev->tx.timestamp;
-    LOG(LOG_INFO, "[lwmac-tx] New phase: %" PRIu32 "\n", gnrc_netdev->tx.timestamp);
+    LOG(LOG_INFO, "[LWMAC-tx] New phase: %" PRIu32 "\n", gnrc_netdev->tx.timestamp);
 
     /* We've got our WA, so discard the rest, TODO: no flushing */
     gnrc_priority_pktqueue_flush(&gnrc_netdev->rx.queue);
@@ -396,7 +396,7 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
 
     pkt_payload = pkt->next;
 
-    /* Insert lwMAC header above NETIF header. The burst (consecutive) transmission
+    /* Insert LWMAC header above NETIF header. The burst (consecutive) transmission
      * scheme works here (sender side). If the sender finds it has pending packets
      * for the receiver (and under burst limit), it sets the packet type to
      * FRAMETYPE_DATA_PENDING, to notice the receiver for next incoming packet.
@@ -416,8 +416,8 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
 
     pkt->next = gnrc_pktbuf_add(pkt->next, &hdr, sizeof(hdr), GNRC_NETTYPE_LWMAC);
     if (pkt->next == NULL) {
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_LWMAC\n");
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Memory maybe full, drop the data packet\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Cannot allocate pktbuf of type GNRC_NETTYPE_LWMAC\n");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Memory maybe full, drop the data packet\n");
         gnrc_netdev->tx.packet->next = pkt_payload;
         gnrc_pktbuf_release(gnrc_netdev->tx.packet);
         /* clear packet point to avoid TX retry */
@@ -431,7 +431,7 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
         /* save pointer to netif header */
         gnrc_pktsnip_t *netif = pkt->next->next;
 
-        /* remove lwmac header */
+        /* remove LWMAC header */
         pkt->next->next = NULL;
         gnrc_pktbuf_release(pkt->next);
 
@@ -440,7 +440,7 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
 
         if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
             gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-            LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+            LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
         }
         /* drop pointer so it wont be free'd */
         gnrc_netdev->tx.packet = NULL;
@@ -450,7 +450,7 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
     /* Send data */
     int res = gnrc_netdev->send(gnrc_netdev, pkt);
     if (res < 0) {
-        LOG(LOG_ERROR, "ERROR: [lwmac-tx] Send data failed.");
+        LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Send data failed.");
         if (pkt != NULL) {
             gnrc_pktbuf_release(pkt);
         }
@@ -462,12 +462,12 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
     /* Packet has been released by netdev, so drop pointer */
     gnrc_netdev->tx.packet = NULL;
 
-    DEBUG("[lwmac-tx]: spent %lu WR in TX\n", gnrc_netdev->tx.wr_sent);
+    DEBUG("[LWMAC-tx]: spent %lu WR in TX\n", gnrc_netdev->tx.wr_sent);
 
 #if (LWMAC_ENABLE_DUTYCYLE_RECORD == 1)
     gnrc_netdev->lwmac.pkt_start_sending_time_ticks =
         rtt_get_counter() - gnrc_netdev->lwmac.pkt_start_sending_time_ticks;
-    DEBUG("[lwmac-tx]: pkt sending delay in TX: %lu us\n",
+    DEBUG("[LWMAC-tx]: pkt sending delay in TX: %lu us\n",
           RTT_TICKS_TO_US(gnrc_netdev->lwmac.pkt_start_sending_time_ticks));
 #endif
 
@@ -482,7 +482,7 @@ void lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
     assert(neighbor != NULL);
 
     if (gnrc_netdev->tx.packet) {
-        LOG(LOG_WARNING, "WARNING: [lwmac-tx] Starting but tx.packet is still set\n");
+        LOG(LOG_WARNING, "WARNING: [LWMAC-tx] Starting but tx.packet is still set\n");
         gnrc_pktbuf_release(gnrc_netdev->tx.packet);
     }
 
@@ -512,7 +512,7 @@ void lwmac_tx_stop(gnrc_netdev_t *gnrc_netdev)
             gnrc_netdev->tx.tx_retry_count = 0;
             gnrc_pktbuf_release(gnrc_netdev->tx.packet);
             gnrc_netdev->tx.packet = NULL;
-            LOG(LOG_WARNING, "WARNING: [lwmac-tx] Drop TX packet\n");
+            LOG(LOG_WARNING, "WARNING: [LWMAC-tx] Drop TX packet\n");
         }
         else {
             gnrc_netdev->tx.tx_retry_count++;
@@ -544,7 +544,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             if (_get_netdev_state(gnrc_netdev) == NETOPT_STATE_RX) {
                 if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                     gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                    LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                    LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
                 }
                 /* drop pointer so it wont be free'd */
                 gnrc_netdev->tx.packet = NULL;
@@ -603,13 +603,13 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
         case TX_STATE_SEND_WR: {
             /* In case of no Tx-isr error (e.g., no Tx-isr), goto TX failure. */
             if (lwmac_timeout_is_expired(gnrc_netdev, TIMEOUT_NO_RESPONSE)) {
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] No response from destination, "
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] No response from destination, "
                                  "probably no TX-ISR\n");
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
                 reschedule = true;
                 break;
             }
-            LOG(LOG_DEBUG, "[lwmac-tx] TX_STATE_SEND_WR\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] TX_STATE_SEND_WR\n");
             uint8_t tx_info = _send_wr(gnrc_netdev);
 
             if (tx_info & GNRC_LWMAC_TX_FAIL) {
@@ -623,18 +623,18 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         case TX_STATE_WAIT_WR_SENT: {
-            LOG(LOG_DEBUG, "[lwmac-tx] TX_STATE_WAIT_WR_SENT\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] TX_STATE_WAIT_WR_SENT\n");
 
             /* In case of no Tx-isr error (e.g., no Tx-isr), goto TX failure. */
             if (lwmac_timeout_is_expired(gnrc_netdev, TIMEOUT_NO_RESPONSE)) {
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] No response from destination\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] No response from destination\n");
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
                 reschedule = true;
                 break;
             }
 
             if (gnrc_netdev_get_tx_feedback(gnrc_netdev) == TX_FEEDBACK_UNDEF) {
-                LOG(LOG_DEBUG, "[lwmac-tx] WR not yet completely sent\n");
+                LOG(LOG_DEBUG, "[LWMAC-tx] WR not yet completely sent\n");
                 break;
             }
 
@@ -643,7 +643,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             if (gnrc_netdev_get_tx_feedback(gnrc_netdev) == TX_FEEDBACK_BUSY) {
                 if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                     gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                    LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                    LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
                 }
                 /* clear packet point to avoid TX retry */
                 gnrc_netdev->tx.packet = NULL;
@@ -666,11 +666,11 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             lwmac_set_timeout(gnrc_netdev, TIMEOUT_WR, LWMAC_TIME_BETWEEN_WR_US);
 
             /* Debug WR timing */
-            LOG(LOG_DEBUG, "[lwmac-tx] Destination phase was: %" PRIu32 "\n",
+            LOG(LOG_DEBUG, "[LWMAC-tx] Destination phase was: %" PRIu32 "\n",
                            gnrc_netdev->tx.current_neighbor->phase);
-            LOG(LOG_DEBUG, "[lwmac-tx] Phase when sent was:   %" PRIu32 "\n",
+            LOG(LOG_DEBUG, "[LWMAC-tx] Phase when sent was:   %" PRIu32 "\n",
                            _ticks_to_phase(gnrc_netdev->tx.timestamp));
-            LOG(LOG_DEBUG, "[lwmac-tx] Ticks when sent was:   %" PRIu32 "\n",
+            LOG(LOG_DEBUG, "[LWMAC-tx] Ticks when sent was:   %" PRIu32 "\n",
                            gnrc_netdev->tx.timestamp);
             _set_netdev_state(gnrc_netdev, NETOPT_STATE_IDLE);
             gnrc_netdev->tx.state = TX_STATE_WAIT_FOR_WA;
@@ -678,10 +678,10 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         case TX_STATE_WAIT_FOR_WA: {
-            LOG(LOG_DEBUG, "[lwmac-tx] TX_STATE_WAIT_FOR_WA\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] TX_STATE_WAIT_FOR_WA\n");
 
             if (lwmac_timeout_is_expired(gnrc_netdev, TIMEOUT_NO_RESPONSE)) {
-                LOG(LOG_WARNING, "WARNING: [lwmac-tx] No response from destination\n");
+                LOG(LOG_WARNING, "WARNING: [LWMAC-tx] No response from destination\n");
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
                 reschedule = true;
                 break;
@@ -695,10 +695,10 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
                  * sender regards consecutive transmission failed.
                  */
                 if (gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev)) {
-                    LOG(LOG_DEBUG, "[lwmac-tx] Tx burst fail\n");
+                    LOG(LOG_DEBUG, "[LWMAC-tx] Tx burst fail\n");
                     if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, gnrc_netdev->tx.packet)) {
                         gnrc_pktbuf_release(gnrc_netdev->tx.packet);
-                        LOG(LOG_WARNING, "WARNING: [lwmac-tx] TX queue full, drop packet\n");
+                        LOG(LOG_WARNING, "WARNING: [LWMAC-tx] TX queue full, drop packet\n");
                     }
                     /* drop pointer so it wont be free'd */
                     gnrc_netdev->tx.packet = NULL;
@@ -742,7 +742,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             }
         }
         case TX_STATE_SEND_DATA: {
-            LOG(LOG_DEBUG, "[lwmac-tx] TX_STATE_SEND_DATA\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] TX_STATE_SEND_DATA\n");
 
             if (!_send_data(gnrc_netdev)) {
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
@@ -762,7 +762,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
                 break;
             }
 
-            LOG(LOG_DEBUG, "[lwmac-tx] TX_STATE_WAIT_FEEDBACK\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] TX_STATE_WAIT_FEEDBACK\n");
             if (gnrc_netdev_get_tx_feedback(gnrc_netdev) == TX_FEEDBACK_UNDEF) {
                 break;
             }
@@ -772,19 +772,19 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
                 break;
             }
             else if (gnrc_netdev_get_tx_feedback(gnrc_netdev) == TX_FEEDBACK_NOACK) {
-                LOG(LOG_ERROR, "ERROR: [lwmac-tx] Not ACKED\n");
+                LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Not ACKED\n");
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
                 reschedule = true;
                 break;
             }
             else if (gnrc_netdev_get_tx_feedback(gnrc_netdev) == TX_FEEDBACK_BUSY) {
-                LOG(LOG_ERROR, "ERROR: [lwmac-tx] Channel busy \n");
+                LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Channel busy \n");
                 gnrc_netdev->tx.state = TX_STATE_FAILED;
                 reschedule = true;
                 break;
             }
 
-            LOG(LOG_ERROR, "ERROR: [lwmac-tx] Tx feedback unhandled: %i\n",
+            LOG(LOG_ERROR, "ERROR: [LWMAC-tx] Tx feedback unhandled: %i\n",
                            gnrc_netdev_get_tx_feedback(gnrc_netdev));
             gnrc_netdev->tx.state = TX_STATE_FAILED;
             reschedule = true;
@@ -795,7 +795,7 @@ static bool _lwmac_tx_update(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         case TX_STATE_STOPPED: {
-            LOG(LOG_DEBUG, "[lwmac-tx] Transmission state machine is stopped\n");
+            LOG(LOG_DEBUG, "[LWMAC-tx] Transmission state machine is stopped\n");
         }
     }
 

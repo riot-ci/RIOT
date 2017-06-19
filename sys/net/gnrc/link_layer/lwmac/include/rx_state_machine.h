@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Start Lwmac RX procedure to receive packet
+ * @brief Start LWMAC RX procedure to receive packet
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
@@ -37,7 +37,7 @@ extern "C" {
 void lwmac_rx_start(gnrc_netdev_t *gnrc_netdev);
 
 /**
- * @brief Stop Lwmac RX procedure
+ * @brief Stop LWMAC RX procedure
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
@@ -45,7 +45,7 @@ void lwmac_rx_start(gnrc_netdev_t *gnrc_netdev);
 void lwmac_rx_stop(gnrc_netdev_t *gnrc_netdev);
 
 /**
- * @brief Update Lwmac RX procedure for packet reception
+ * @brief Update LWMAC RX procedure for packet reception
  *
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *

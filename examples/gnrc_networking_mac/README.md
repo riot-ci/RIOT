@@ -1,8 +1,8 @@
 # gnrc_networking_mac example
 
-This example shows you how to try out communications between RIOT instances with Lw-MAC as the MAC layer ptotocol for IEEE 802.15.4 devices.
-This example is generally based on `gnrc_networking` but embeds Lw-MAC to support low duty-cycle operation to conserve power. Also, it intends to show that the duty-cycled Lw-MAC can support popular upper layer protocols like UDP and RPL.
-Currently, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform. Also, the current implementation of Lw-MAC uses RTT as the underlying timer source. So, currently, Lw-MAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API as the underlying timer to make Lw-MAC available for more devices, when the related implementations are ready.
+This example shows you how to try out communications between RIOT instances with LWMAC as the MAC layer ptotocol for IEEE 802.15.4 devices.
+This example is generally based on `gnrc_networking` but embeds LWMAC to support low duty-cycle operation to conserve power. Also, it intends to show that the duty-cycled LWMAC can support popular upper layer protocols like UDP and RPL.
+Currently, it seems that you can only use the samr21-xpro board to test this MAC, since some certain features of the protocol are only available on that platform. Also, the current implementation of LWMAC uses RTT as the underlying timer source. So, currently, LWMAC cannot run on nodes that don't have RTT. But, as a long-term plan, we will replace RTT by a general timer API as the underlying timer to make LWMAC available for more devices, when the related implementations are ready.
 
 
 ## Usage
@@ -15,13 +15,13 @@ make flash
 make term
 ```
 
-## Print out the achieved duty-cyle of Lw-MAC
+## Print out the achieved duty-cyle of LWMAC
 
-You can print out the radio duty-cyle (a roughly one) of Lw-MAC by setting the `LWMAC_ENABLE_DUTYCYLE_RECORD` flag in `sys/include/net/gnrc/lwmac/types.h` to "1". By doing so, each time when a device sends or receives a packet, it will print out its radio duty-cycle value.
-Also, by further enabling the debug flag in `sys/net/gnrc/link_layer/lwmac/tx_state_machine.c`, you will get the printout of how many preamble (WR) and time (sending delay) cost for sending this packet in the TX procedure of Lw-MAC.
+You can print out the radio duty-cyle (a roughly one) of LWMAC by setting the `LWMAC_ENABLE_DUTYCYLE_RECORD` flag in `sys/include/net/gnrc/lwmac/types.h` to "1". By doing so, each time when a device sends or receives a packet, it will print out its radio duty-cycle value.
+Also, by further enabling the debug flag in `sys/net/gnrc/link_layer/lwmac/tx_state_machine.c`, you will get the printout of how many preamble (WR) and time (sending delay) cost for sending this packet in the TX procedure of LWMAC.
 
 
-## Try UDP transmissions with Lw-MAC
+## Try UDP transmissions with LWMAC
 
 In the RIOT shell, get to know the IP address of one node:
 
@@ -49,7 +49,7 @@ In a second terminal, start a second RIOT instance, in the RIOT shell, you can n
 
 In your first terminal (the receiver side), you should now see output that looks like this:
 
-2017-06-06 15:00:06,894 - INFO # [lwmac]: achieved duty-cycle: 10 %
+2017-06-06 15:00:06,894 - INFO # [LWMAC]: achieved duty-cycle: 10 %
 2017-06-06 15:00:06,896 - INFO # PKTDUMP: data received:
 2017-06-06 15:00:06,901 - INFO # ~~ SNIP  0 - size:  11 byte, type: NETTYPE_UNDEF (0)
 2017-06-06 15:00:06,907 - INFO # 00000000  74  65  73  74  6D  65  73  73  61  67  65
@@ -74,6 +74,6 @@ In your second terminal (the sender side), you should now see output that looks 
 
 2017-06-06 15:00:06,871 - INFO # udp send fe80::7b67:357e:543a:79f6 8808 testmessage
 2017-06-06 15:00:06,877 - INFO # Success: sent 11 byte(s) to [fe80::7b67:357e:543a:79f6]:8808
-2017-06-06 15:00:06,890 - INFO # [lwmac-tx]: spent 1 WR in TX
-2017-06-06 15:00:06,894 - INFO # [lwmac-tx]: pkt sending delay in TX: 8422 us
-2017-06-06 15:00:06,898 - INFO # [lwmac]: achieved duty-cycle: 10 %
+2017-06-06 15:00:06,890 - INFO # [LWMAC-tx]: spent 1 WR in TX
+2017-06-06 15:00:06,894 - INFO # [LWMAC-tx]: pkt sending delay in TX: 8422 us
+2017-06-06 15:00:06,898 - INFO # [LWMAC]: achieved duty-cycle: 10 %

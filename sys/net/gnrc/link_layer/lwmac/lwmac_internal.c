@@ -64,7 +64,7 @@ gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
             if (phase_check <= phase_nearest) {
                 next = i;
                 phase_nearest = phase_check;
-                DEBUG("[lwmac-int] Advancing queue #%d\n", i);
+                DEBUG("[LWMAC-int] Advancing queue #%d\n", i);
             }
         }
     }
@@ -86,7 +86,7 @@ int _parse_packet(gnrc_pktsnip_t *pkt, lwmac_packet_info_t *info)
         return -1;
     }
 
-    /* Dissect lwMAC header, Every frame has header as first member */
+    /* Dissect LWMAC header, Every frame has header as first member */
     lwmac_hdr = (lwmac_hdr_t *) pkt->data;
     switch (lwmac_hdr->type) {
         case FRAMETYPE_WR: {
@@ -211,7 +211,7 @@ void lwmac_print_hdr(lwmac_hdr_t *hdr)
 {
     assert(hdr != NULL);
 
-    printf("LwMAC header:\n  Type: ");
+    printf("LWMAC header:\n  Type: ");
     switch (hdr->type) {
         case FRAMETYPE_WR: {
             puts("Wakeup request (WR)");
@@ -279,14 +279,14 @@ int _dispatch_defer(gnrc_pktsnip_t *buffer[], gnrc_pktsnip_t *pkt)
                             gnrc_netif_hdr_get_src_addr(hdr_queued),
                             hdr_new->src_l2addr_len) == 0)) {
                     /* Source addresses match, same packet */
-                    DEBUG("[lwmac] Found duplicate broadcast packet, dropping\n");
+                    DEBUG("[LWMAC] Found duplicate broadcast packet, dropping\n");
                     gnrc_pktbuf_release(pkt);
                     return -2;
                 }
         }
     }
 
-    DEBUG("[lwmac] Dispatch buffer full, dropping packet\n");
+    DEBUG("[LWMAC] Dispatch buffer full, dropping packet\n");
     gnrc_pktbuf_release(pkt);
 
     return -1;

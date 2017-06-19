@@ -32,54 +32,54 @@ extern "C" {
 #endif
 
 /**
- * @brief   Lwmac RTT event type.
+ * @brief   LWMAC RTT event type.
  */
 #define LWMAC_EVENT_RTT_TYPE            (0x4300)
 
 /**
- * @brief   Lwmac RTT start event type.
+ * @brief   LWMAC RTT start event type.
  */
 #define LWMAC_EVENT_RTT_START           (0x4301)
 
 /**
- * @brief   Lwmac RTT stop event type.
+ * @brief   LWMAC RTT stop event type.
  */
 #define LWMAC_EVENT_RTT_STOP            (0x4302)
 
 /**
- * @brief   Lwmac RTT pause event type.
+ * @brief   LWMAC RTT pause event type.
  */
 #define LWMAC_EVENT_RTT_PAUSE           (0x4303)
 
 /**
- * @brief   Lwmac RTT resume event type.
+ * @brief   LWMAC RTT resume event type.
  */
 #define LWMAC_EVENT_RTT_RESUME          (0x4304)
 
 /**
- * @brief   Lwmac RTT wakeup pending event type.
+ * @brief   LWMAC RTT wakeup pending event type.
  */
 #define LWMAC_EVENT_RTT_WAKEUP_PENDING  (0x4305)
 
 /**
- * @brief   Lwmac RTT sleep pending event type.
+ * @brief   LWMAC RTT sleep pending event type.
  */
 #define LWMAC_EVENT_RTT_SLEEP_PENDING   (0x4306)
 
 /**
- * @brief   Lwmac timeout event type.
+ * @brief   LWMAC timeout event type.
  */
 #define LWMAC_EVENT_TIMEOUT_TYPE        (0x4400)
 
 /**
- * @brief   Lwmac duty-cycle active flag.
+ * @brief   LWMAC duty-cycle active flag.
  *
  * Keep track of duty cycling to avoid late RTT events after stopping.
  */
 #define LWMAC_DUTYCYCLE_ACTIVE          (0x01)
 
 /**
- * @brief   Lwmac needs reschedule flag.
+ * @brief   LWMAC needs reschedule flag.
  *
  * Used internally for rescheduling state machine update, e.g. after state
  * transition caused in update.
@@ -87,7 +87,7 @@ extern "C" {
 #define LWMAC_NEEDS_RESCHEDULE          (0x02)
 
 /**
- * @brief   Lwmac check radio's on/off state flag.
+ * @brief   LWMAC check radio's on/off state flag.
  */
 #define LWMAC_RADIO_IS_ON               (0x04)
 
@@ -100,7 +100,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Internal states of Lwmac
+ * @brief   Internal states of LWMAC
  */
 typedef enum {
     LWMAC_UNDEF = -1,     /**< Undefined state of LWMAC */
@@ -116,7 +116,7 @@ typedef enum {
 } lwmac_state_t;
 
 /**
- * @brief   TX states of Lwmac
+ * @brief   TX states of LWMAC
  */
 typedef enum {
     TX_STATE_STOPPED,           /**< Tx schedule stopped, stop sending packet */
@@ -137,7 +137,7 @@ typedef enum {
 #define LWMAC_TX_STATE_INIT TX_STATE_STOPPED
 
 /**
- * @brief   RX states of Lwmac
+ * @brief   RX states of LWMAC
  */
 typedef enum {
     RX_STATE_STOPPED,       /**< Rx schedule stopped */
@@ -156,17 +156,17 @@ typedef enum {
 #define LWMAC_RX_STATE_INIT RX_STATE_STOPPED
 
 /**
- * @brief   Lwmac uninitialized phase value
+ * @brief   LWMAC uninitialized phase value
  */
 #define LWMAC_PHASE_UNINITIALIZED   (0)
 
 /**
- * @brief   Lwmac max phase value
+ * @brief   LWMAC max phase value
  */
 #define LWMAC_PHASE_MAX             (-1)
 
 /**
- * @brief   Lwmac timeout types
+ * @brief   LWMAC timeout types
  */
 typedef enum {
     TIMEOUT_DISABLED,              /**< Timeout is diabled */
@@ -180,7 +180,7 @@ typedef enum {
 } lwmac_timeout_type_t;
 
 /**
- * @brief   Lwmac timeout structure
+ * @brief   LWMAC timeout structure
  */
 typedef struct {
     xtimer_t timer;            /**< xtimer entity */
@@ -190,7 +190,7 @@ typedef struct {
 } lwmac_timeout_t;
 
 /**
- * @brief   Lwmac specific structure for storing internal states.
+ * @brief   LWMAC specific structure for storing internal states.
  */
 typedef struct lwmac {
     lwmac_state_t state;                            /**< Internal state of MAC layer */

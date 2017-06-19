@@ -4,8 +4,8 @@ APPLICATION = gnrc_networking_mac
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
 
-# Currently, Lw-MAC is only tested and evaluated through on samr21-xpro.
-# Once Lw-MAC has also been tested through on other boards, the whitelist should be
+# Currently, LWMAC is only tested and evaluated through on samr21-xpro.
+# Once LWMAC has also been tested through on other boards, the whitelist should be
 # then accordingly extended.
 BOARD_WHITELIST := samr21-xpro
 
@@ -33,7 +33,7 @@ USEMODULE += ps
 USEMODULE += netstats_l2
 USEMODULE += netstats_ipv6
 USEMODULE += netstats_rpl
-# Use Lw-MAC as the MAC layer protocol
+# Use LWMAC as the MAC layer protocol
 USEMODULE += gnrc_lwmac
 
 # Comment this out to disable code in RIOT that does safety checking

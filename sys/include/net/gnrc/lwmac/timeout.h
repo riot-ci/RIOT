@@ -38,27 +38,27 @@ extern "C" {
 #define LWMAC_TIMEOUT_INIT  { {}, {}, false, TIMEOUT_DISABLED }
 
 /**
- * @brief   Set Lwmac timeout of type @p type of offset @p offset.
+ * @brief   Set LWMAC timeout of type @p type of offset @p offset.
  *
  * @param[in,out] gnrc_netdev  gnrc_netdev structure
- * @param[in]     type         Lwmac timeout type
+ * @param[in]     type         LWMAC timeout type
  * @param[in]     offset       timeout offset
  */
 void lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type, uint32_t offset);
 
 /**
- * @brief   Clear Lwmac timeout of type @p type.
+ * @brief   Clear LWMAC timeout of type @p type.
  *
  * @param[in,out] gnrc_netdev  gnrc_netdev structure
- * @param[in]     type         Lwmac timeout type
+ * @param[in]     type         LWMAC timeout type
  */
 void lwmac_clear_timeout(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type);
 
 /**
- * @brief   Check whether Lwmac timeout of type @p type is running.
+ * @brief   Check whether LWMAC timeout of type @p type is running.
  *
  * @param[in]     gnrc_netdev  gnrc_netdev structure
- * @param[in]     type         Lwmac timeout type
+ * @param[in]     type         LWMAC timeout type
  *
  * @return        true, if timeout of type @p type is running.
  * @return        false, if timeout of type @p type is not running.
@@ -66,11 +66,11 @@ void lwmac_clear_timeout(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type);
 bool lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type);
 
 /**
- * @brief   Check whether Lwmac timeout of type @p type is expired. It will clear
+ * @brief   Check whether LWMAC timeout of type @p type is expired. It will clear
  *          the timeout once it is found expired.
  *
  * @param[in,out] gnrc_netdev  gnrc_netdev structure
- * @param[in]     type         Lwmac timeout type
+ * @param[in]     type         LWMAC timeout type
  *
  * @return        true, if timeout of type @p type is expired.
  * @return        false, if timeout of type @p type is not expired, or not exist.
@@ -78,16 +78,16 @@ bool lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t t
 bool lwmac_timeout_is_expired(gnrc_netdev_t *gnrc_netdev, lwmac_timeout_type_t type);
 
 /**
- * @brief   Reset all Lwmac timeouts.
+ * @brief   Reset all LWMAC timeouts.
  *
  * @param[in,out] gnrc_netdev  gnrc_netdev structure
  */
 void lwmac_reset_timeouts(gnrc_netdev_t *gnrc_netdev);
 
 /**
- * @brief   Make a specific Lwmac timeout expired.
+ * @brief   Make a specific LWMAC timeout expired.
  *
- * @param[in,out] timeout   Lwmac tiemout
+ * @param[in,out] timeout   LWMAC tiemout
  */
 void lwmac_timeout_make_expire(lwmac_timeout_t *timeout);
 
