@@ -24,7 +24,6 @@
 
 #include "msg.h"
 #include "xtimer.h"
-#include "net/gnrc/lwmac/lwmac.h"
 #include "net/gnrc/lwmac/hdr.h"
 
 #ifdef __cplusplus
@@ -97,6 +96,13 @@ extern "C" {
  */
 #ifndef LWMAC_ENABLE_DUTYCYLE_RECORD
 #define LWMAC_ENABLE_DUTYCYLE_RECORD    (0U)
+#endif
+
+/**
+ * @brief The default largest number of parallel timeouts in LWMAC
+ */
+#ifndef LWMAC_TIMEOUT_COUNT
+#define LWMAC_TIMEOUT_COUNT             (3U)
 #endif
 
 /**
