@@ -575,8 +575,9 @@ int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t us);
  * For a 1 MHz hardware timer, set XTIMER_SHIFT to 0.
  * For a 2 MHz or 500 kHz, set XTIMER_SHIFT to 1.
  * For a 4 MHz or 250 kHz, set XTIMER_SHIFT to 2.
- * For a 16 MHz or 125 kHz, set XTIMER_SHIFT to 4.
- * and for 32 MHz or 62.5 kHz, set XTIMER_SHIFT to 5.
+ * For a 8 MHz or 125 kHz, set XTIMER_SHIFT to 3.
+ * For a 16 MHz or 62.5 kHz, set XTIMER_SHIFT to 4.
+ * and for 32 MHz, set XTIMER_SHIFT to 5.
  *
  * The direction of the shift is handled by the macros in tick_conversion.h
  */
