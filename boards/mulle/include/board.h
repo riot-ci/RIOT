@@ -54,7 +54,6 @@
 #define XTIMER_ISR_BACKOFF          (4)
 #define XTIMER_OVERHEAD             (3)
 #define XTIMER_HZ                   (32768ul)
-#define XTIMER_SHIFT                (0)
 #else
 /* PIT xtimer configuration */
 #define XTIMER_DEV                  (TIMER_PIT_DEV(0))
@@ -64,7 +63,6 @@
 #define XTIMER_ISR_BACKOFF          (40)
 #define XTIMER_OVERHEAD             (30)
 #define XTIMER_HZ                   (1000000ul)
-#define XTIMER_SHIFT                (0)
 #endif
 /** @} */
 
