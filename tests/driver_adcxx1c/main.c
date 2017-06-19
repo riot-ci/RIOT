@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Test application for the ADCXXC ADC driver
+ * @brief       Test application for the ADCXX1C ADC driver
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
  * @}
@@ -20,10 +20,11 @@
 #include <stdio.h>
 
 #include "xtimer.h"
+#include "timex.h"
 #include "adcxx1c.h"
 #include "adcxx1c_params.h"
 
-#define SLEEP       (100 * 1000U)
+#define SLEEP       (100 * US_PER_MS)
 
 static adcxx1c_t dev;
 
@@ -36,8 +37,8 @@ int main(void)
 {
     int16_t data;
 
-    puts("ADCXX1C accelerometer driver test application\n");
-    printf("Initializing ADCXX1C accelerometer at I2C_DEV(%i)... ",
+    puts("ADCXX1C analog to digital driver test application\n");
+    printf("Initializing ADCXX1C analog to digital at I2C_DEV(%i)... ",
            adcxx1c_params->i2c);
 
     if (adcxx1c_init(&dev, adcxx1c_params) == ADCXX1C_OK) {

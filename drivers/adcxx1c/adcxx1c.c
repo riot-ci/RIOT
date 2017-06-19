@@ -8,15 +8,18 @@
 
 /**
  * @ingroup     drivers_adcxx1x
+ * @{
  *
  * @file
  * @brief       ADCXX1C ADC device driver
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @}
  */
 
 #include "adcxx1c.h"
 #include "adcxx1c_params.h"
+#include "adcxx1c_regs.h"
 
 #include "periph/i2c.h"
 #include "periph/gpio.h"
@@ -29,17 +32,9 @@
 #define I2C (dev->params.i2c)
 #define ADDR (dev->params.addr)
 
-#define ADCXX1C_CONV_RES_ADDR      (0)
-#define ADCXX1C_ALERT_STATUS_ADDR  (1)
-#define ADCXX1C_CONF_ADDR          (2)
-#define ADCXX1C_LOW_LIMIT_ADDR     (3)
-#define ADCXX1C_HIGH_LIMIT_ADDR    (4)
-#define ADCXX1C_HYSTERESIS_ADDR    (5)
-#define ADCXX1C_LOWEST_CONV_ADDR   (6)
-#define ADCXX1C_HIGHEST_CONV_ADDR  (7)
-
-#define ADCXX1C_CONF_ALERT_PIN_EN   (1 << 2)
-#define ADCXX1C_CONF_ALERT_FLAG_EN  (1 << 3)
+/* Configuration register test value
+ * value 0x20: cycle time = Tconvert x 64 */
+#define CONF_TEST_VALUE (0x20)
 
 int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
 {
@@ -58,11 +53,10 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
     uint8_t reg = 0;
 
     /* Test communication write and read configuration register */
-    /* value 0x20: cycle time = Tconvert x 64 */
-    i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, 0x20);
+    i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, CONF_TEST_VALUE);
     i2c_read_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, &reg);
 
-    if (reg != 0x20) {
+    if (reg != CONF_TEST_VALUE) {
         i2c_release(I2C);
         DEBUG("[adcxx1c] init - error: unable to communicate with the device (reg=%x)\n", reg);
         return ADCXX1C_NODEV;
