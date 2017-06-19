@@ -555,6 +555,9 @@ int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t us);
 #define XTIMER_MASK (0)
 #endif
 
+/**
+ * @brief  Base frequency of xtimer is 1 MHz
+ */
 #define XTIMER_HZ_BASE (1000000ul)
 
 #ifndef XTIMER_HZ
