@@ -140,7 +140,7 @@ typedef enum {
 /**
  * @brief   Static initializer for gnrc_lwmac_tx_state_t.
  */
-#define GNRC_LWMAC_TX_STATE_INITIA GNRC_LWMAC_TX_STATE_STOPPED
+#define GNRC_LWMAC_TX_STATE_INITIAL GNRC_LWMAC_TX_STATE_STOPPED
 
 /**
  * @brief   RX states of LWMAC
@@ -159,7 +159,7 @@ typedef enum {
 /**
  * @brief   Static initializer for gnrc_lwmac_rx_state_t.
  */
-#define GNRC_LWMAC_RX_STATE_INITIA GNRC_LWMAC_RX_STATE_STOPPED
+#define GNRC_LWMAC_RX_STATE_INITIAL GNRC_LWMAC_RX_STATE_STOPPED
 
 /**
  * @brief   LWMAC uninitialized phase value

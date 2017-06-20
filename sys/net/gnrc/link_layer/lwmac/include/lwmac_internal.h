@@ -352,26 +352,6 @@ static inline uint32_t _gnrc_lwmac_ticks_until_phase(uint32_t phase)
 }
 
 /**
- * @brief Find the Tx neighbor that has a packet queued and is next for sending
- *
- * @param[in]   gnrc_netdev    gnrc_netdev structure
- *
- * @return                     tx neighbor
- * @return                     NULL, if there is no neighbor for transmission.
- */
-gnrc_mac_tx_neighbor_t *_gnrc_lwmac_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev);
-
-/**
- * @brief Calculate the next event's timing in rtt timer ticks
- *
- * @param[in]   last        gnrc_netdev structure
- * @param[in]   interval    device's wake up interval
- *
- * @return                  RTT ticks
- */
-uint32_t _gnrc_lwmac_next_inphase_event(uint32_t last, uint32_t interval);
-
-/**
  * @brief Store the received packet to the dispatch buffer and remove possible
  *        duplicate packets.
  *

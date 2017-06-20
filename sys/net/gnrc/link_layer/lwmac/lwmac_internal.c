@@ -31,30 +31,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-gnrc_mac_tx_neighbor_t *_gnrc_lwmac_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
-{
-    int next = -1;
-
-    uint32_t phase_nearest = GNRC_LWMAC_PHASE_MAX;
-
-    for (int i = 0; i < GNRC_MAC_NEIGHBOR_COUNT; i++) {
-        if (gnrc_priority_pktqueue_length(&gnrc_netdev->tx.neighbors[i].queue) > 0) {
-            /* Unknown destinations are initialized with their phase at the end
-             * of the local interval, so known destinations that still wakeup
-             * in this interval will be preferred. */
-            uint32_t phase_check = _gnrc_lwmac_ticks_until_phase(gnrc_netdev->tx.neighbors[i].phase);
-
-            if (phase_check <= phase_nearest) {
-                next = i;
-                phase_nearest = phase_check;
-                DEBUG("[LWMAC-int] Advancing queue #%d\n", i);
-            }
-        }
-    }
-
-    return (next < 0) ? NULL : &(gnrc_netdev->tx.neighbors[next]);
-}
-
 int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info)
 {
     gnrc_netif_hdr_t *netif_hdr;
@@ -169,25 +145,6 @@ netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netdev_t *gnrc_netdev)
         return state;
     }
     return -1;
-}
-
-uint32_t _gnrc_lwmac_next_inphase_event(uint32_t last, uint32_t interval)
-{
-    /* Counter did overflow since last wakeup */
-    if (rtt_get_counter() < last) {
-        /* TODO: Not sure if this was tested :) */
-        uint32_t tmp = -last;
-        tmp /= interval;
-        tmp++;
-        last += tmp * interval;
-    }
-
-    /* Add margin to next wakeup so that it will be at least 2ms in the future */
-    while (last < (rtt_get_counter() + GNRC_LWMAC_RTT_EVENT_MARGIN_TICKS)) {
-        last += interval;
-    }
-
-    return last;
 }
 
 int _gnrc_lwmac_dispatch_defer(gnrc_pktsnip_t *buffer[], gnrc_pktsnip_t *pkt)
