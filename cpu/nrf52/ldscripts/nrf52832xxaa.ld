@@ -18,10 +18,23 @@
  * @}
  */
 
+rom_length = 512K;
+
+INCLUDE multislot.ld
+
 MEMORY
 {
-    rom (rx)    : ORIGIN = 0x00000000, LENGTH = 512K
-    ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 64K
+    rom (rx)    : ORIGIN = 0x00000000 + boot_offset, LENGTH = rom_length
+    ram (rwx)   : ORIGIN = 0x20000000,               LENGTH = 64K
+}
+
+SECTIONS
+{
+    /* Image headers for MCUBoot */
+    .imghdr (NOLOAD):
+    {
+      . = . + img_hdr;
+    } > rom
 }
 
 INCLUDE cortexm_base.ld
