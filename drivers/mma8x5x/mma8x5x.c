@@ -87,7 +87,7 @@ int mma8x5x_init(mma8x5x_t *dev, const mma8x5x_params_t *params)
     return MMA8X5X_OK;
 }
 
-void mma8x5x_set_user_offset(mma8x5x_t *dev, int8_t x, int8_t y, int8_t z)
+void mma8x5x_set_user_offset(const mma8x5x_t *dev, int8_t x, int8_t y, int8_t z)
 {
     uint8_t buf[3];
 
@@ -105,7 +105,7 @@ void mma8x5x_set_user_offset(mma8x5x_t *dev, int8_t x, int8_t y, int8_t z)
     i2c_release(BUS);
 }
 
-void mma8x5x_set_active(mma8x5x_t *dev)
+void mma8x5x_set_active(const mma8x5x_t *dev)
 {
     uint8_t reg;
 
@@ -120,7 +120,7 @@ void mma8x5x_set_active(mma8x5x_t *dev)
     i2c_release(BUS);
 }
 
-void mma8x5x_set_standby(mma8x5x_t *dev)
+void mma8x5x_set_standby(const mma8x5x_t *dev)
 {
     uint8_t reg;
 
@@ -135,7 +135,7 @@ void mma8x5x_set_standby(mma8x5x_t *dev)
     i2c_release(BUS);
 }
 
-int mma8x5x_is_ready(mma8x5x_t *dev)
+int mma8x5x_is_ready(const mma8x5x_t *dev)
 {
     uint8_t reg;
 
@@ -155,7 +155,7 @@ int mma8x5x_is_ready(mma8x5x_t *dev)
     }
 }
 
-void mma8x5x_read(mma8x5x_t *dev, mma8x5x_data_t *data)
+void mma8x5x_read(const mma8x5x_t *dev, mma8x5x_data_t *data)
 {
     uint8_t buf[7];
 

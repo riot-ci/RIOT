@@ -174,7 +174,7 @@ int mtd_init(mtd_dev_t *mtd);
  * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
  * @return -EIO if I/O error occured
  */
-int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
+int mtd_read(const mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
 
 /**
  * @brief mtd_read write data to a MTD device
@@ -195,7 +195,7 @@ int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
  * or overlapping two pages
  * @return -EIO if I/O error occured
  */
-int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
+int mtd_write(const mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
 
 /**
  * @brief mtd_erase Erase sectors of a MTD device
@@ -213,7 +213,7 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
  * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
  * @return -EIO if I/O error occured
  */
-int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
+int mtd_erase(const mtd_dev_t *mtd, uint32_t addr, uint32_t count);
 
 /**
  * @brief mtd_power Set power mode on a MTD device
@@ -227,7 +227,7 @@ int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
  * @return -ENOTSUP if operation or @p power state is not supported on @p mtd
  * @return -EIO if I/O error occured
  */
-int mtd_power(mtd_dev_t *mtd, enum mtd_power_state power);
+int mtd_power(const mtd_dev_t *mtd, enum mtd_power_state power);
 
 #if defined(MODULE_VFS) || defined(DOXYGEN)
 /**
