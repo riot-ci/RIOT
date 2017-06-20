@@ -75,6 +75,7 @@ enum {
     /* generic values */
     UNIT_UNDEF,     /**< unit undefined */
     UNIT_NONE,      /**< data has no physical unit */
+    UNIT_CTS,       /**< counts */
     /* temperature */
     UNIT_TEMP_C,    /**< degree Celsius */
     UNIT_TEMP_F,    /**< degree Fahrenheit */
