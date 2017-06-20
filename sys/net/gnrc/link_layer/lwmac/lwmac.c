@@ -263,6 +263,71 @@ static void _sleep_management(gnrc_netdev_t *gnrc_netdev)
     }
 }
 
+static void _rx_management_failed(gnrc_netdev_t *gnrc_netdev)
+{
+    /* This may happen frequently because we'll receive WA from
+     * every node in range. */
+    LOG(LOG_DEBUG, "[LWMAC] Reception was NOT successful\n");
+    gnrc_lwmac_rx_stop(gnrc_netdev);
+
+    if (gnrc_netdev->rx.rx_bad_exten_count >= GNRC_LWMAC_MAX_RX_EXTENSION_NUM) {
+        gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
+    }
+
+    /* Here we check if we are close to the end of the cycle. If yes,
+     * go to sleep. Firstly, get the relative phase. */
+    uint32_t phase = rtt_get_counter();
+    if (phase < gnrc_netdev->lwmac.last_wakeup) {
+        phase = (RTT_US_TO_TICKS(GNRC_LWMAC_PHASE_MAX) - gnrc_netdev->lwmac.last_wakeup) +
+                 phase;
+    }
+    else {
+        phase = phase - gnrc_netdev->lwmac.last_wakeup;
+    }
+    /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
+    if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
+        gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
+    }
+
+    if (gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev)) {
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
+    }
+    else {
+        /* Go back to LISTENING for keep hearing on the channel */
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_LISTENING);
+    }
+}
+
+static void _rx_management_success(gnrc_netdev_t *gnrc_netdev)
+{
+    LOG(LOG_DEBUG, "[LWMAC] Reception was successful\n");
+    gnrc_lwmac_rx_stop(gnrc_netdev);
+    /* Dispatch received packets, timing is not critical anymore */
+    gnrc_mac_dispatch(&gnrc_netdev->rx);
+
+    /* Here we check if we are close to the end of the cycle. If yes,
+     * go to sleep. Firstly, get the relative phase. */
+    uint32_t phase = rtt_get_counter();
+    if (phase < gnrc_netdev->lwmac.last_wakeup) {
+        phase = (RTT_US_TO_TICKS(GNRC_LWMAC_PHASE_MAX) - gnrc_netdev->lwmac.last_wakeup) +
+                 phase;
+    }
+    else {
+        phase = phase - gnrc_netdev->lwmac.last_wakeup;
+    }
+    /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
+    if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
+        gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
+    }
+
+    if (gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev)) {
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
+    }
+    else {
+        /* Go back to LISTENING after successful reception */
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_LISTENING);
+    }
+}
 static void _rx_management(gnrc_netdev_t *gnrc_netdev)
 {
     gnrc_lwmac_rx_state_t state_rx = gnrc_netdev->rx.state;
@@ -274,67 +339,11 @@ static void _rx_management(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         case GNRC_LWMAC_RX_STATE_FAILED: {
-            /* This may happen frequently because we'll receive WA from
-             * every node in range. */
-            LOG(LOG_DEBUG, "[LWMAC] Reception was NOT successful\n");
-            gnrc_lwmac_rx_stop(gnrc_netdev);
-
-            if (gnrc_netdev->rx.rx_bad_exten_count >= GNRC_LWMAC_MAX_RX_EXTENSION_NUM) {
-                gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
-            }
-
-            /* Here we check if we are close to the end of the cycle. If yes,
-             * go to sleep. Firstly, get the relative phase. */
-            uint32_t phase = rtt_get_counter();
-            if (phase < gnrc_netdev->lwmac.last_wakeup) {
-                phase = (RTT_US_TO_TICKS(GNRC_LWMAC_PHASE_MAX) - gnrc_netdev->lwmac.last_wakeup) +
-                         phase;
-            }
-            else {
-                phase = phase - gnrc_netdev->lwmac.last_wakeup;
-            }
-            /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
-            if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
-                gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
-            }
-
-            if (gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev)) {
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
-            }
-            else {
-                /* Go back to LISTENING for keep hearing on the channel */
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_LISTENING);
-            }
+            _rx_management_failed(gnrc_netdev);
             break;
         }
         case GNRC_LWMAC_RX_STATE_SUCCESSFUL: {
-            LOG(LOG_DEBUG, "[LWMAC] Reception was successful\n");
-            gnrc_lwmac_rx_stop(gnrc_netdev);
-            /* Dispatch received packets, timing is not critical anymore */
-            gnrc_mac_dispatch(&gnrc_netdev->rx);
-
-            /* Here we check if we are close to the end of the cycle. If yes,
-             * go to sleep. Firstly, get the relative phase. */
-            uint32_t phase = rtt_get_counter();
-            if (phase < gnrc_netdev->lwmac.last_wakeup) {
-                phase = (RTT_US_TO_TICKS(GNRC_LWMAC_PHASE_MAX) - gnrc_netdev->lwmac.last_wakeup) +
-                         phase;
-            }
-            else {
-                phase = phase - gnrc_netdev->lwmac.last_wakeup;
-            }
-            /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
-            if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
-                gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev, true);
-            }
-
-            if (gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev)) {
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
-            }
-            else {
-                /* Go back to LISTENING after successful reception */
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_LISTENING);
-            }
+            _rx_management_success(gnrc_netdev);
             break;
         }
         default:
@@ -347,36 +356,59 @@ static void _rx_management(gnrc_netdev_t *gnrc_netdev)
     }
 }
 
+static void _tx_management_stopped(gnrc_netdev_t *gnrc_netdev)
+{
+    gnrc_pktsnip_t *pkt;
+
+    /* If there is packet remaining for retransmission,
+     * retransmit it (i.e., the retransmission scheme of LWMAC). */
+    if (gnrc_netdev->tx.packet != NULL) {
+        LOG(LOG_WARNING, "WARNING: [LWMAC] TX %d times retry\n",
+                         gnrc_netdev->tx.tx_retry_count);
+        gnrc_netdev->tx.state = GNRC_LWMAC_TX_STATE_INIT;
+        gnrc_netdev->tx.wr_sent = 0;
+        gnrc_lwmac_tx_update(gnrc_netdev);
+    }
+    else {
+        if ((pkt = gnrc_priority_pktqueue_pop(
+                 &gnrc_netdev->tx.current_neighbor->queue))) {
+            gnrc_netdev->tx.tx_retry_count = 0;
+            gnrc_lwmac_tx_start(gnrc_netdev, pkt, gnrc_netdev->tx.current_neighbor);
+            gnrc_lwmac_tx_update(gnrc_netdev);
+        }
+        else {
+            /* Shouldn't happen, but never observed this case */
+            lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
+        }
+    }
+}
+
+static void _tx_management_success(gnrc_netdev_t *gnrc_netdev)
+{
+    if (gnrc_netdev->tx.current_neighbor == &(gnrc_netdev->tx.neighbors[0])) {
+        LOG(LOG_INFO, "[LWMAC] Broadcast transmission done\n");
+    }
+
+    gnrc_lwmac_tx_stop(gnrc_netdev);
+
+    /* In case have pending packets for the same receiver, continue to
+     * send immediately, before the maximum transmit-limit */
+    if ((gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev)) &&
+        (gnrc_netdev->tx.tx_burst_count < GNRC_LWMAC_MAX_TX_BURST_PKT_NUM)) {
+        lwmac_schedule_update(gnrc_netdev);
+    }
+    else {
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
+    }
+}
+
 static void _tx_management(gnrc_netdev_t *gnrc_netdev)
 {
-    char *tx_success = "";
     gnrc_lwmac_tx_state_t state_tx = gnrc_netdev->tx.state;
 
     switch (state_tx) {
         case GNRC_LWMAC_TX_STATE_STOPPED: {
-            gnrc_pktsnip_t *pkt;
-
-            /* If there is packet remaining for retransmission,
-             * retransmit it (i.e., the retransmission scheme of LWMAC). */
-            if (gnrc_netdev->tx.packet != NULL) {
-                LOG(LOG_WARNING, "WARNING: [LWMAC] TX %d times retry\n",
-                                 gnrc_netdev->tx.tx_retry_count);
-                gnrc_netdev->tx.state = GNRC_LWMAC_TX_STATE_INIT;
-                gnrc_netdev->tx.wr_sent = 0;
-                gnrc_lwmac_tx_update(gnrc_netdev);
-            }
-            else {
-                if ((pkt = gnrc_priority_pktqueue_pop(
-                         &gnrc_netdev->tx.current_neighbor->queue))) {
-                    gnrc_netdev->tx.tx_retry_count = 0;
-                    gnrc_lwmac_tx_start(gnrc_netdev, pkt, gnrc_netdev->tx.current_neighbor);
-                    gnrc_lwmac_tx_update(gnrc_netdev);
-                }
-                else {
-                    /* Shouldn't happen, but never observed this case */
-                    lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
-                }
-            }
+            _tx_management_stopped(gnrc_netdev);
             break;
         }
         case GNRC_LWMAC_TX_STATE_FAILED: {
@@ -384,30 +416,12 @@ static void _tx_management(gnrc_netdev_t *gnrc_netdev)
              * transmission attempts in this cycle for collision avoidance */
             gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev, false);
             gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev, true);
-            tx_success = "NOT ";
             /* Intended fall-through, TX packet will therefore be dropped. No
              * automatic resending here, we did our best.
              */
         }
         case GNRC_LWMAC_TX_STATE_SUCCESSFUL: {
-            if (gnrc_netdev->tx.current_neighbor == &(gnrc_netdev->tx.neighbors[0])) {
-                LOG(LOG_INFO, "[LWMAC] Broadcast transmission done\n");
-            }
-            else {
-                LOG(LOG_INFO, "[LWMAC] Transmission was %ssuccessful (%" PRIu32 " WRs sent)\n",
-                              tx_success, gnrc_netdev->tx.wr_sent);
-            }
-            gnrc_lwmac_tx_stop(gnrc_netdev);
-
-            /* In case have pending packets for the same receiver, continue to
-             * send immediately, before the maximum transmit-limit */
-            if ((gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev)) &&
-                (gnrc_netdev->tx.tx_burst_count < GNRC_LWMAC_MAX_TX_BURST_PKT_NUM)) {
-                lwmac_schedule_update(gnrc_netdev);
-            }
-            else {
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
-            }
+            _tx_management_success(gnrc_netdev);
             break;
         }
         default:
@@ -417,6 +431,49 @@ static void _tx_management(gnrc_netdev_t *gnrc_netdev)
     /* If state has changed, reschedule main state machine */
     if (state_tx != gnrc_netdev->tx.state) {
         lwmac_schedule_update(gnrc_netdev);
+    }
+}
+
+static void _lwmac_update_listening(gnrc_netdev_t *gnrc_netdev)
+{
+    /* In case has pending packet to send, clear rtt alarm thus to goto
+     * transmission initialization (in SLEEPING management) right after the
+     * listening period */
+    if ((_gnrc_lwmac_next_tx_neighbor(gnrc_netdev) != NULL) ||
+        (gnrc_netdev->tx.current_neighbor != NULL)) {
+        rtt_handler(GNRC_LWMAC_EVENT_RTT_PAUSE, gnrc_netdev);
+    }
+
+    /* Set timeout for if there's no successful rx transaction that will
+     * change state to SLEEPING. */
+    if (!gnrc_lwmac_timeout_is_running(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD)) {
+        gnrc_lwmac_set_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD, GNRC_LWMAC_WAKEUP_DURATION_US);
+    }
+    else if (gnrc_lwmac_timeout_is_expired(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD)) {
+        /* Dispatch first as there still may be broadcast packets. */
+        gnrc_mac_dispatch(&gnrc_netdev->rx);
+
+        gnrc_netdev->lwmac.state = GNRC_LWMAC_SLEEPING;
+        /* Enable duty cycling again */
+        rtt_handler(GNRC_LWMAC_EVENT_RTT_RESUME, gnrc_netdev);
+
+        _gnrc_lwmac_set_netdev_state(gnrc_netdev, NETOPT_STATE_SLEEP);
+        gnrc_lwmac_clear_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD);
+
+        /* if there is a packet for transmission, schedule update to start
+         * transmission initialization immediately. */
+        gnrc_mac_tx_neighbor_t *neighbour = _gnrc_lwmac_next_tx_neighbor(gnrc_netdev);
+        if ((neighbour != NULL) || (gnrc_netdev->tx.current_neighbor != NULL)) {
+            /* This triggers packet sending procedure in sleeping immediately. */
+            lwmac_schedule_update(gnrc_netdev);
+            return;
+        }
+    }
+
+    if (gnrc_priority_pktqueue_length(&gnrc_netdev->rx.queue) > 0) {
+        /* Do wake-up extension in each packet reception. */
+        gnrc_lwmac_clear_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD);
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_RECEIVING);
     }
 }
 
@@ -438,45 +495,7 @@ bool lwmac_update(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         case GNRC_LWMAC_LISTENING: {
-            /* In case has pending packet to send, clear rtt alarm thus to goto
-             * transmission initialization (in SLEEPING management) right after the
-             * listening period */
-            if ((_gnrc_lwmac_next_tx_neighbor(gnrc_netdev) != NULL) ||
-                (gnrc_netdev->tx.current_neighbor != NULL)) {
-                rtt_handler(GNRC_LWMAC_EVENT_RTT_PAUSE, gnrc_netdev);
-            }
-
-            /* Set timeout for if there's no successful rx transaction that will
-             * change state to SLEEPING. */
-            if (!gnrc_lwmac_timeout_is_running(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD)) {
-                gnrc_lwmac_set_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD, GNRC_LWMAC_WAKEUP_DURATION_US);
-            }
-            else if (gnrc_lwmac_timeout_is_expired(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD)) {
-                /* Dispatch first as there still may be broadcast packets. */
-                gnrc_mac_dispatch(&gnrc_netdev->rx);
-
-                gnrc_netdev->lwmac.state = GNRC_LWMAC_SLEEPING;
-                /* Enable duty cycling again */
-                rtt_handler(GNRC_LWMAC_EVENT_RTT_RESUME, gnrc_netdev);
-
-                _gnrc_lwmac_set_netdev_state(gnrc_netdev, NETOPT_STATE_SLEEP);
-                gnrc_lwmac_clear_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD);
-
-                /* if there is a packet for transmission, schedule update to start
-                 * transmission initialization immediately. */
-                gnrc_mac_tx_neighbor_t *neighbour = _gnrc_lwmac_next_tx_neighbor(gnrc_netdev);
-                if ((neighbour != NULL) || (gnrc_netdev->tx.current_neighbor != NULL)) {
-                    /* This triggers packet sending procedure in sleeping immediately. */
-                    lwmac_schedule_update(gnrc_netdev);
-                    break;
-                }
-            }
-
-            if (gnrc_priority_pktqueue_length(&gnrc_netdev->rx.queue) > 0) {
-                /* Do wake-up extension in each packet reception. */
-                gnrc_lwmac_clear_timeout(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD);
-                lwmac_set_state(gnrc_netdev, GNRC_LWMAC_RECEIVING);
-            }
+            _lwmac_update_listening(gnrc_netdev);
             break;
         }
         case GNRC_LWMAC_RECEIVING: {
