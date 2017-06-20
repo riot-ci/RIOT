@@ -66,6 +66,49 @@ static void lwmac_schedule_update(gnrc_netdev_t *gnrc_netdev);
 static bool lwmac_needs_update(gnrc_netdev_t *gnrc_netdev);
 static void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev);
 
+static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
+{
+    int next = -1;
+
+    uint32_t phase_nearest = GNRC_LWMAC_PHASE_MAX;
+
+    for (int i = 0; i < GNRC_MAC_NEIGHBOR_COUNT; i++) {
+        if (gnrc_priority_pktqueue_length(&gnrc_netdev->tx.neighbors[i].queue) > 0) {
+            /* Unknown destinations are initialized with their phase at the end
+             * of the local interval, so known destinations that still wakeup
+             * in this interval will be preferred. */
+            uint32_t phase_check = _gnrc_lwmac_ticks_until_phase(gnrc_netdev->tx.neighbors[i].phase);
+
+            if (phase_check <= phase_nearest) {
+                next = i;
+                phase_nearest = phase_check;
+                DEBUG("[LWMAC-int] Advancing queue #%d\n", i);
+            }
+        }
+    }
+
+    return (next < 0) ? NULL : &(gnrc_netdev->tx.neighbors[next]);
+}
+
+static uint32_t _next_inphase_event(uint32_t last, uint32_t interval)
+{
+    /* Counter did overflow since last wakeup */
+    if (rtt_get_counter() < last) {
+        /* TODO: Not sure if this was tested :) */
+        uint32_t tmp = -last;
+        tmp /= interval;
+        tmp++;
+        last += tmp * interval;
+    }
+
+    /* Add margin to next wakeup so that it will be at least 2ms in the future */
+    while (last < (rtt_get_counter() + GNRC_LWMAC_RTT_EVENT_MARGIN_TICKS)) {
+        last += interval;
+    }
+
+    return last;
+}
+
 inline void lwmac_schedule_update(gnrc_netdev_t *gnrc_netdev)
 {
     gnrc_netdev_lwmac_set_reschedule(gnrc_netdev, true);
@@ -85,7 +128,7 @@ void lwmac_set_state(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_state_t newstate)
     }
 
     if (newstate >= GNRC_LWMAC_STATE_COUNT) {
-        LOG(LOG_ERROR, "ERROR: [LWMAC] Trying to set invalid state %u\n", newstate);
+        LOG_ERROR("ERROR: [LWMAC] Trying to set invalid state %u\n", newstate);
         return;
     }
 
@@ -137,9 +180,9 @@ void lwmac_set_state(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_state_t newstate)
                 alarm = random_uint32_range(RTT_US_TO_TICKS((3 * GNRC_LWMAC_WAKEUP_DURATION_US / 2)),
                                             RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US -
                                                             (3 * GNRC_LWMAC_WAKEUP_DURATION_US / 2)));
-                LOG(LOG_WARNING, "WARNING: [LWMAC] phase backoffed: %lu us\n", RTT_TICKS_TO_US(alarm));
+                LOG_WARNING("WARNING: [LWMAC] phase backoffed: %lu us\n", RTT_TICKS_TO_US(alarm));
                 gnrc_netdev->lwmac.last_wakeup = gnrc_netdev->lwmac.last_wakeup + alarm;
-                alarm = _gnrc_lwmac_next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
+                alarm = _next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
                                             RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US));
                 rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_WAKEUP_PENDING);
             }
@@ -175,14 +218,14 @@ void lwmac_set_state(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_state_t newstate)
             break;
         }
         case GNRC_LWMAC_RESET: {
-            LOG(LOG_WARNING, "WARNING: [LWMAC] Reset not yet implemented\n");
+            LOG_WARNING("WARNING: [LWMAC] Reset not yet implemented\n");
             lwmac_set_state(gnrc_netdev, GNRC_LWMAC_STOP);
             lwmac_set_state(gnrc_netdev, GNRC_LWMAC_START);
             break;
         }
         /**************************************************************************/
         default: {
-            LOG(LOG_DEBUG, "[LWMAC] No actions for entering state %u\n", newstate);
+            LOG_DEBUG("[LWMAC] No actions for entering state %u\n", newstate);
             return;
         }
     }
@@ -209,7 +252,7 @@ static void _sleep_management(gnrc_netdev_t *gnrc_netdev)
                 lwmac_set_state(gnrc_netdev, GNRC_LWMAC_TRANSMITTING);
                 return;
             }
-            neighbour = _gnrc_lwmac_next_tx_neighbor(gnrc_netdev);
+            neighbour = _next_tx_neighbor(gnrc_netdev);
         }
 
         if (neighbour != NULL) {
@@ -254,7 +297,7 @@ static void _sleep_management(gnrc_netdev_t *gnrc_netdev)
     }
     else {
         if (gnrc_lwmac_timeout_is_expired(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAIT_DEST_WAKEUP)) {
-            LOG(LOG_DEBUG, "[LWMAC] Got timeout for dest wakeup, ticks: %" PRIu32 "\n",
+            LOG_DEBUG("[LWMAC] Got timeout for dest wakeup, ticks: %" PRIu32 "\n",
                            rtt_get_counter());
             gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev, false);
             gnrc_netdev->tx.tx_burst_count = 0;
@@ -267,7 +310,7 @@ static void _rx_management_failed(gnrc_netdev_t *gnrc_netdev)
 {
     /* This may happen frequently because we'll receive WA from
      * every node in range. */
-    LOG(LOG_DEBUG, "[LWMAC] Reception was NOT successful\n");
+    LOG_DEBUG("[LWMAC] Reception was NOT successful\n");
     gnrc_lwmac_rx_stop(gnrc_netdev);
 
     if (gnrc_netdev->rx.rx_bad_exten_count >= GNRC_LWMAC_MAX_RX_EXTENSION_NUM) {
@@ -300,7 +343,7 @@ static void _rx_management_failed(gnrc_netdev_t *gnrc_netdev)
 
 static void _rx_management_success(gnrc_netdev_t *gnrc_netdev)
 {
-    LOG(LOG_DEBUG, "[LWMAC] Reception was successful\n");
+    LOG_DEBUG("[LWMAC] Reception was successful\n");
     gnrc_lwmac_rx_stop(gnrc_netdev);
     /* Dispatch received packets, timing is not critical anymore */
     gnrc_mac_dispatch(&gnrc_netdev->rx);
@@ -363,7 +406,7 @@ static void _tx_management_stopped(gnrc_netdev_t *gnrc_netdev)
     /* If there is packet remaining for retransmission,
      * retransmit it (i.e., the retransmission scheme of LWMAC). */
     if (gnrc_netdev->tx.packet != NULL) {
-        LOG(LOG_WARNING, "WARNING: [LWMAC] TX %d times retry\n",
+        LOG_WARNING("WARNING: [LWMAC] TX %d times retry\n",
                          gnrc_netdev->tx.tx_retry_count);
         gnrc_netdev->tx.state = GNRC_LWMAC_TX_STATE_INIT;
         gnrc_netdev->tx.wr_sent = 0;
@@ -386,7 +429,7 @@ static void _tx_management_stopped(gnrc_netdev_t *gnrc_netdev)
 static void _tx_management_success(gnrc_netdev_t *gnrc_netdev)
 {
     if (gnrc_netdev->tx.current_neighbor == &(gnrc_netdev->tx.neighbors[0])) {
-        LOG(LOG_INFO, "[LWMAC] Broadcast transmission done\n");
+        LOG_INFO("[LWMAC] Broadcast transmission done\n");
     }
 
     gnrc_lwmac_tx_stop(gnrc_netdev);
@@ -439,7 +482,7 @@ static void _lwmac_update_listening(gnrc_netdev_t *gnrc_netdev)
     /* In case has pending packet to send, clear rtt alarm thus to goto
      * transmission initialization (in SLEEPING management) right after the
      * listening period */
-    if ((_gnrc_lwmac_next_tx_neighbor(gnrc_netdev) != NULL) ||
+    if ((_next_tx_neighbor(gnrc_netdev) != NULL) ||
         (gnrc_netdev->tx.current_neighbor != NULL)) {
         rtt_handler(GNRC_LWMAC_EVENT_RTT_PAUSE, gnrc_netdev);
     }
@@ -462,7 +505,7 @@ static void _lwmac_update_listening(gnrc_netdev_t *gnrc_netdev)
 
         /* if there is a packet for transmission, schedule update to start
          * transmission initialization immediately. */
-        gnrc_mac_tx_neighbor_t *neighbour = _gnrc_lwmac_next_tx_neighbor(gnrc_netdev);
+        gnrc_mac_tx_neighbor_t *neighbour = _next_tx_neighbor(gnrc_netdev);
         if ((neighbour != NULL) || (gnrc_netdev->tx.current_neighbor != NULL)) {
             /* This triggers packet sending procedure in sleeping immediately. */
             lwmac_schedule_update(gnrc_netdev);
@@ -507,7 +550,7 @@ bool lwmac_update(gnrc_netdev_t *gnrc_netdev)
             break;
         }
         default:
-            LOG(LOG_DEBUG, "[LWMAC] No actions in state %u\n", gnrc_netdev->lwmac.state);
+            LOG_DEBUG("[LWMAC] No actions in state %u\n", gnrc_netdev->lwmac.state);
     }
 
     return gnrc_netdev_lwmac_get_reschedule(gnrc_netdev);
@@ -534,7 +577,7 @@ void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev)
         case GNRC_LWMAC_EVENT_RTT_WAKEUP_PENDING: {
             /* A new cycle starts, set sleep timing and initialize related MAC-info flags. */
             gnrc_netdev->lwmac.last_wakeup = rtt_get_alarm();
-            alarm = _gnrc_lwmac_next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
+            alarm = _next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
                                         RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_DURATION_US));
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING);
             gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev, false);
@@ -546,7 +589,7 @@ void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev)
         }
         case GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING: {
             /* Set next wake-up timing. */
-            alarm = _gnrc_lwmac_next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
+            alarm = _next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
                                         RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US));
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_WAKEUP_PENDING);
             lwmac_set_state(gnrc_netdev, GNRC_LWMAC_SLEEPING);
@@ -554,7 +597,7 @@ void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev)
         }
         /* Set initial wake-up alarm that starts the cycle */
         case GNRC_LWMAC_EVENT_RTT_START: {
-            LOG(LOG_DEBUG, "[LWMAC] RTT: Initialize duty cycling\n");
+            LOG_DEBUG("[LWMAC] RTT: Initialize duty cycling\n");
             alarm = rtt_get_counter() + RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_DURATION_US);
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING);
             gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev, true);
@@ -563,15 +606,15 @@ void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev)
         case GNRC_LWMAC_EVENT_RTT_STOP:
         case GNRC_LWMAC_EVENT_RTT_PAUSE: {
             rtt_clear_alarm();
-            LOG(LOG_DEBUG, "[LWMAC] RTT: Stop duty cycling, now in state %u\n",
+            LOG_DEBUG("[LWMAC] RTT: Stop duty cycling, now in state %u\n",
                            gnrc_netdev->lwmac.state);
             gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev, false);
             break;
         }
         case GNRC_LWMAC_EVENT_RTT_RESUME: {
-            LOG(LOG_DEBUG, "[LWMAC] RTT: Resume duty cycling\n");
+            LOG_DEBUG("[LWMAC] RTT: Resume duty cycling\n");
             rtt_clear_alarm();
-            alarm = _gnrc_lwmac_next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
+            alarm = _next_inphase_event(gnrc_netdev->lwmac.last_wakeup,
                                         RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US));
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_WAKEUP_PENDING);
             gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev, true);
@@ -599,19 +642,19 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
         msg.content.ptr = (void *) gnrc_netdev;
 
         if (msg_send(&msg, gnrc_netdev->pid) <= 0) {
-            LOG(LOG_WARNING, "WARNING: [LWMAC] gnrc_netdev: possibly lost interrupt.\n");
+            LOG_WARNING("WARNING: [LWMAC] gnrc_netdev: possibly lost interrupt.\n");
         }
     }
     else {
         DEBUG("gnrc_netdev: event triggered -> %i\n", event);
         switch (event) {
             case NETDEV_EVENT_RX_STARTED: {
-                LOG(LOG_DEBUG, "[LWMAC] NETDEV_EVENT_RX_STARTED\n");
+                LOG_DEBUG("[LWMAC] NETDEV_EVENT_RX_STARTED\n");
                 gnrc_netdev_set_rx_started(gnrc_netdev, true);
                 break;
             }
             case NETDEV_EVENT_RX_COMPLETE: {
-                LOG(LOG_DEBUG, "[LWMAC] NETDEV_EVENT_RX_COMPLETE\n");
+                LOG_DEBUG("[LWMAC] NETDEV_EVENT_RX_COMPLETE\n");
 
                 gnrc_pktsnip_t *pkt = gnrc_netdev->recv(gnrc_netdev);
 
@@ -634,7 +677,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 gnrc_netdev_set_rx_started(gnrc_netdev, false);
 
                 if (!gnrc_mac_queue_rx_packet(&gnrc_netdev->rx, 0, pkt)) {
-                    LOG(LOG_ERROR, "ERROR: [LWMAC] Can't push RX packet @ %p, memory full?\n", pkt);
+                    LOG_ERROR("ERROR: [LWMAC] Can't push RX packet @ %p, memory full?\n", pkt);
                     gnrc_pktbuf_release(pkt);
                     break;
                 }
@@ -665,7 +708,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 break;
             }
             default:
-                LOG(LOG_WARNING, "WARNING: [LWMAC] Unhandled netdev event: %u\n", event);
+                LOG_WARNING("WARNING: [LWMAC] Unhandled netdev event: %u\n", event);
         }
     }
 }
@@ -688,7 +731,7 @@ static void *_lwmac_thread(void *args)
     int res;
     msg_t msg, reply, msg_queue[GNRC_LWMAC_IPC_MSG_QUEUE_SIZE];
 
-    LOG(LOG_INFO, "[LWMAC] Starting LWMAC\n");
+    LOG_INFO("[LWMAC] Starting LWMAC\n");
 
     /* RTT is used for scheduling wakeup */
     rtt_init();
@@ -755,7 +798,7 @@ static void *_lwmac_thread(void *args)
                     lwmac_schedule_update(gnrc_netdev);
                 }
                 else {
-                    LOG(LOG_DEBUG, "[LWMAC] Ignoring late RTT event while dutycycling is off\n");
+                    LOG_DEBUG("[LWMAC] Ignoring late RTT event while dutycycling is off\n");
                 }
                 break;
             }
@@ -767,7 +810,7 @@ static void *_lwmac_thread(void *args)
             }
             /* Transceiver raised an interrupt */
             case NETDEV_MSG_TYPE_EVENT: {
-                LOG(LOG_DEBUG, "[LWMAC] GNRC_NETDEV_MSG_TYPE_EVENT received\n");
+                LOG_DEBUG("[LWMAC] GNRC_NETDEV_MSG_TYPE_EVENT received\n");
                 /* Forward event back to driver */
                 dev->driver->isr(dev);
                 break;
@@ -775,12 +818,12 @@ static void *_lwmac_thread(void *args)
             /* TX: Queue for sending */
             case GNRC_NETAPI_MSG_TYPE_SND: {
                 /* TODO: how to announce failure to upper layers? */
-                LOG(LOG_DEBUG, "[LWMAC] GNRC_NETAPI_MSG_TYPE_SND received\n");
+                LOG_DEBUG("[LWMAC] GNRC_NETAPI_MSG_TYPE_SND received\n");
                 gnrc_pktsnip_t *pkt = (gnrc_pktsnip_t *) msg.content.ptr;
 
                 if (!gnrc_mac_queue_tx_packet(&gnrc_netdev->tx, 0, pkt)) {
                     gnrc_pktbuf_release(pkt);
-                    LOG(LOG_WARNING, "WARNING: [LWMAC] TX queue full, drop packet\n");
+                    LOG_WARNING("WARNING: [LWMAC] TX queue full, drop packet\n");
                 }
 
                 lwmac_schedule_update(gnrc_netdev);
@@ -788,7 +831,7 @@ static void *_lwmac_thread(void *args)
             }
             /* NETAPI set/get. Can't this be refactored away from here? */
             case GNRC_NETAPI_MSG_TYPE_SET: {
-                LOG(LOG_DEBUG, "[LWMAC] GNRC_NETAPI_MSG_TYPE_SET received\n");
+                LOG_DEBUG("[LWMAC] GNRC_NETAPI_MSG_TYPE_SET received\n");
                 opt = (gnrc_netapi_opt_t *)msg.content.ptr;
 
                 /* Depending on option forward to NETDEV or handle here */
@@ -812,7 +855,7 @@ static void *_lwmac_thread(void *args)
                             }
                             default:
                                 res = -EINVAL;
-                                LOG(LOG_ERROR, "ERROR: [LWMAC] NETAPI tries to set unsupported"
+                                LOG_ERROR("ERROR: [LWMAC] NETAPI tries to set unsupported"
                                                " state %u\n",*state);
                         }
                         lwmac_schedule_update(gnrc_netdev);
@@ -822,7 +865,7 @@ static void *_lwmac_thread(void *args)
                     default:
                         /* set option for device driver */
                         res = dev->driver->set(dev, opt->opt, opt->data, opt->data_len);
-                        LOG(LOG_DEBUG, "[LWMAC] Response of netdev->set: %i\n", res);
+                        LOG_DEBUG("[LWMAC] Response of netdev->set: %i\n", res);
                 }
 
                 /* send reply to calling thread */
@@ -834,12 +877,12 @@ static void *_lwmac_thread(void *args)
             case GNRC_NETAPI_MSG_TYPE_GET: {
                 /* TODO: filter out MAC layer options -> for now forward
                          everything to the device driver */
-                LOG(LOG_DEBUG, "[LWMAC] GNRC_NETAPI_MSG_TYPE_GET received\n");
+                LOG_DEBUG("[LWMAC] GNRC_NETAPI_MSG_TYPE_GET received\n");
                 /* read incoming options */
                 opt = (gnrc_netapi_opt_t *)msg.content.ptr;
                 /* get option from device driver */
                 res = dev->driver->get(dev, opt->opt, opt->data, opt->data_len);
-                LOG(LOG_DEBUG, "[LWMAC] Response of netdev->get: %i\n", res);
+                LOG_DEBUG("[LWMAC] Response of netdev->get: %i\n", res);
                 /* send reply to calling thread */
                 reply.type = GNRC_NETAPI_MSG_TYPE_ACK;
                 reply.content.value = (uint32_t)res;
@@ -847,7 +890,7 @@ static void *_lwmac_thread(void *args)
                 break;
             }
             default:
-                LOG(LOG_ERROR, "ERROR: [LWMAC] Unknown command %" PRIu16 "\n", msg.type);
+                LOG_ERROR("ERROR: [LWMAC] Unknown command %" PRIu16 "\n", msg.type);
                 break;
         }
 
@@ -857,7 +900,7 @@ static void *_lwmac_thread(void *args)
         }
     }
 
-    LOG(LOG_ERROR, "ERROR: [LWMAC] terminated\n");
+    LOG_ERROR("ERROR: [LWMAC] terminated\n");
 
     /* never reached */
     return NULL;
@@ -870,7 +913,7 @@ kernel_pid_t gnrc_lwmac_init(char *stack, int stacksize, char priority,
 
     /* check if given netdev device is defined and the driver is set */
     if (dev == NULL || dev->dev == NULL) {
-        LOG(LOG_ERROR, "ERROR: [LWMAC] No netdev supplied or driver not set\n");
+        LOG_ERROR("ERROR: [LWMAC] No netdev supplied or driver not set\n");
         return -ENODEV;
     }
 
@@ -878,7 +921,7 @@ kernel_pid_t gnrc_lwmac_init(char *stack, int stacksize, char priority,
     res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
                         _lwmac_thread, (void *)dev, name);
     if (res <= 0) {
-        LOG(LOG_ERROR, "ERROR: [LWMAC] Couldn't create thread\n");
+        LOG_ERROR("ERROR: [LWMAC] Couldn't create thread\n");
         return -EINVAL;
     }
 

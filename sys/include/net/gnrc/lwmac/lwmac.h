@@ -13,17 +13,16 @@
  * @brief       Lightweight MAC protocol that allows for duty cycling to save
  *              energy.
  *
- * LWMAC implementation
- * ====================
+ * ## LWMAC implementation
  *
- * # Radio duty cycling
+ * ## Radio duty cycling
  * LWMAC adopts the radio duty-cycle scheme to conserve power. Namely, in each
  * cycle period (MAC superframe), a node device wakes up for a short period of
  * time (called listen period or wake-up period) for receiving possible incoming
  * packets from other devices. Outside the listen period, the node device turns
  * off its radio to conserve power.
  *
- * # Phase-lock scheme
+ * ## Phase-lock scheme
  * LWMAC adopts the phase-lock scheme to further reduce power consumption. Each
  * node device in LWMAC will try to record/track its Tx-neighbor's wake-up phase.
  * This is called phase-lock. After phase-locking, the sender node will (likely)
@@ -31,26 +30,26 @@
  * LWMAC) for initiating a hand-shaking procedure for transmitting a data packet,
  * compared to the first time it talks to the receiver.
  *
- * # Burst transmission
+ * ## Burst transmission
  * LWMAC adopts pending-bit technique to enhance its throughput. Namely, in case
  * of having multi packets for the receiver, a sender uses the pending-bit flag
  * embedded in the MAC header to instruct this situation, and the buffered packets
  * will be transmitted in a continuous sequence, back to back, to the receiver in
  * one shot.
  *
- * # Auto wake-up extension
+ * ## Auto wake-up extension
  * LWMAC adopts auto wake-up extension scheme based on timeout (like T-MAC). In short,
  * when a packet is successfully received at the receiver side, the receiver will
  * reset the wake-up timeout to extend its wake-up period for receiving more potential
  * incoming packets. This is to be compatible with the pending-bit technique to allow
  * the receiver to absorb more packets when needed, thus boosts the throughput.
  *
- * # Simple retransmission scheme
+ * ## Simple retransmission scheme
  * LWMAC adopts a simple retransmission scheme to enhance link reliability. The data
  * packet will only be dropped in case the retransmission counter gets larger than
  * @ref GNRC_LWMAC_MAX_DATA_TX_RETRIES.
  *
- * # Automatic phase backoff scheme
+ * ## Automatic phase backoff scheme
  * LWMAC adopts an automatic phase backoff scheme to reduce WR (preamble) collision
  * probability. In multi-hop scenarios, let's say, nodes A <---B <----C (which is
  * common in multi-hop data collection networks), in which B has packets for A, and
@@ -244,16 +243,16 @@ extern "C" {
  * here defines the largest number of packets allowed to be sent in one consecutive
  * sequence. In case a sender has multi packets for one receiver,the burst transmission
  * procedure is as follow:
- * (1) the sender first uses WR stream to locate the receiver's wake-up period (if the
+ * 1. The sender first uses WR stream to locate the receiver's wake-up period (if the
  * sender has already phase-locked the receiver's phase, normally the sender only cost
  * one WR to get the first WA from the receiver) and then sends its first data.
- * (2) After the transmission of the first data, the sender immediately sends a WR to
+ * 2. After the transmission of the first data, the sender immediately sends a WR to
  * the receiver for starting the second round of transmission of the second data. The
  * receiver should also immediately reply WA for continue receiving data packets. In
  * case the sender doesn't receive WA during @ref GNRC_LWMAC_TIME_BETWEEN_WR_US, it regards the
  * consecutive (burst) transmission failed and quits TX procedure (the data will be queued
  * back to the transmission queue for normal transmission attempt in following cycles).
- * (3) In case the second transmission succeeds, the sender repeats step (2) to send all the
+ * 3. In case the second transmission succeeds, the sender repeats step (2) to send all the
  * following pending packets.
  * In short, in burst transmission mode, the sender doesn't tolerate no-WA event. ALl the
  * pending data packets should be sent with only one WR cost for leading the transmission.
