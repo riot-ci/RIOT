@@ -84,19 +84,19 @@ extern "C" {
  * @brief Type to pass information about parsing.
  */
 typedef struct {
-    lwmac_hdr_t *header;    /**< LWMAC header of packet */
-    l2_addr_t src_addr;     /**< copied source address of packet  */
-    l2_addr_t dst_addr;     /**< copied destination address of packet */
-} lwmac_packet_info_t;
+    gnrc_lwmac_hdr_t *header;      /**< LWMAC header of packet */
+    gnrc_lwmac_l2_addr_t src_addr; /**< copied source address of packet  */
+    gnrc_lwmac_l2_addr_t dst_addr; /**< copied destination address of packet */
+} gnrc_lwmac_packet_info_t;
 
 /**
  * @brief Next RTT event must be at least this far in the future.
  *
  * When setting an RTT alarm to short in the future it could be possible that
  * the counter already passed the calculated alarm before it could be set. This
- * margin will be applied when using `_next_inphase_event()`.
+ * margin will be applied when using @ref _gnrc_lwmac_next_inphase_event().
  */
-#define LWMAC_RTT_EVENT_MARGIN_TICKS    (RTT_MS_TO_TICKS(2))
+#define GNRC_LWMAC_RTT_EVENT_MARGIN_TICKS    (RTT_MS_TO_TICKS(2))
 
 /**
  * @brief set the TX-continue flag of the device
@@ -228,10 +228,10 @@ static inline bool gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev_t *dev)
 static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bool active)
 {
     if (active) {
-        dev->lwmac.lwmac_info |= LWMAC_DUTYCYCLE_ACTIVE;
+        dev->lwmac.lwmac_info |= GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
     else {
-        dev->lwmac.lwmac_info &= ~LWMAC_DUTYCYCLE_ACTIVE;
+        dev->lwmac.lwmac_info &= ~GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
 }
 
@@ -245,7 +245,7 @@ static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bo
  */
 static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netdev_t *dev)
 {
-    return (dev->lwmac.lwmac_info & LWMAC_DUTYCYCLE_ACTIVE);
+    return (dev->lwmac.lwmac_info & GNRC_LWMAC_DUTYCYCLE_ACTIVE);
 }
 
 /**
@@ -258,10 +258,10 @@ static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netdev_t *dev)
 static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool reschedule)
 {
     if (reschedule) {
-        dev->lwmac.lwmac_info |= LWMAC_NEEDS_RESCHEDULE;
+        dev->lwmac.lwmac_info |= GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
     else {
-        dev->lwmac.lwmac_info &= ~LWMAC_NEEDS_RESCHEDULE;
+        dev->lwmac.lwmac_info &= ~GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
 }
 
@@ -275,7 +275,7 @@ static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool res
  */
 static inline bool gnrc_netdev_lwmac_get_reschedule(gnrc_netdev_t *dev)
 {
-    return (dev->lwmac.lwmac_info & LWMAC_NEEDS_RESCHEDULE);
+    return (dev->lwmac.lwmac_info & GNRC_LWMAC_NEEDS_RESCHEDULE);
 }
 
 /**
@@ -289,7 +289,7 @@ static inline bool gnrc_netdev_lwmac_get_reschedule(gnrc_netdev_t *dev)
  * @return                      0 if correctly parsed
  * @return                      <0 on error
  */
-int _parse_packet(gnrc_pktsnip_t *pkt, lwmac_packet_info_t *info);
+int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info);
 
 /**
  * @brief Shortcut to get the state of netdev.
@@ -298,7 +298,7 @@ int _parse_packet(gnrc_pktsnip_t *pkt, lwmac_packet_info_t *info);
  *
  * @return                     state of netdev
  */
-netopt_state_t _get_netdev_state(gnrc_netdev_t *gnrc_netdev);
+netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netdev_t *gnrc_netdev);
 
 /**
  * @brief Shortcut to set the state of netdev
@@ -306,7 +306,7 @@ netopt_state_t _get_netdev_state(gnrc_netdev_t *gnrc_netdev);
  * @param[in]   gnrc_netdev    gnrc_netdev structure
  * @param[in]   devstate       new state for netdev
  */
-void _set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t devstate);
+void _gnrc_lwmac_set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t devstate);
 
 /**
  * @brief Convert RTT ticks to device phase
@@ -315,11 +315,11 @@ void _set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t devstate);
  *
  * @return               device phase
  */
-static inline uint32_t _ticks_to_phase(uint32_t ticks)
+static inline uint32_t _gnrc_lwmac_ticks_to_phase(uint32_t ticks)
 {
-    assert(LWMAC_WAKEUP_INTERVAL_US != 0);
+    assert(GNRC_LWMAC_WAKEUP_INTERVAL_US != 0);
 
-    return (ticks % RTT_US_TO_TICKS(LWMAC_WAKEUP_INTERVAL_US));
+    return (ticks % RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US));
 }
 
 /**
@@ -327,9 +327,9 @@ static inline uint32_t _ticks_to_phase(uint32_t ticks)
  *
  * @return               device phase
  */
-static inline uint32_t _phase_now(void)
+static inline uint32_t _gnrc_lwmac_phase_now(void)
 {
-    return _ticks_to_phase(rtt_get_counter());
+    return _gnrc_lwmac_ticks_to_phase(rtt_get_counter());
 }
 
 /**
@@ -339,26 +339,17 @@ static inline uint32_t _phase_now(void)
  *
  * @return               RTT ticks
  */
-static inline uint32_t _ticks_until_phase(uint32_t phase)
+static inline uint32_t _gnrc_lwmac_ticks_until_phase(uint32_t phase)
 {
-    long int tmp = phase - _phase_now();
+    long int tmp = phase - _gnrc_lwmac_phase_now();
 
     if (tmp < 0) {
         /* Phase in next interval */
-        tmp += RTT_US_TO_TICKS(LWMAC_WAKEUP_INTERVAL_US);
+        tmp += RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US);
     }
 
     return (uint32_t)tmp;
 }
-
-/**
- * @brief Convert device phase to RTT ticks
- *
- * @param[in]   phase    device phase
- *
- * @return               RTT ticks
- */
-uint32_t _phase_to_ticks(uint32_t phase);
 
 /**
  * @brief Find the Tx neighbor that has a packet queued and is next for sending
@@ -368,7 +359,7 @@ uint32_t _phase_to_ticks(uint32_t phase);
  * @return                     tx neighbor
  * @return                     NULL, if there is no neighbor for transmission.
  */
-gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev);
+gnrc_mac_tx_neighbor_t *_gnrc_lwmac_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev);
 
 /**
  * @brief Calculate the next event's timing in rtt timer ticks
@@ -378,7 +369,7 @@ gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev);
  *
  * @return                  RTT ticks
  */
-uint32_t _next_inphase_event(uint32_t last, uint32_t interval);
+uint32_t _gnrc_lwmac_next_inphase_event(uint32_t last, uint32_t interval);
 
 /**
  * @brief Store the received packet to the dispatch buffer and remove possible
@@ -390,14 +381,7 @@ uint32_t _next_inphase_event(uint32_t last, uint32_t interval);
  * @return                      0 if correctly stored
  * @return                      <0 on error
  */
-int _dispatch_defer(gnrc_pktsnip_t * buffer[], gnrc_pktsnip_t * pkt);
-
-/**
- * @brief Print out the LWMAC header information.
- *
- * @param[in] hdr  LWMAC header
- */
-void lwmac_print_hdr(lwmac_hdr_t *hdr);
+int _gnrc_lwmac_dispatch_defer(gnrc_pktsnip_t * buffer[], gnrc_pktsnip_t * pkt);
 
 #ifdef __cplusplus
 }
