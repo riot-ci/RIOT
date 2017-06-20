@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup net_lwmac
+ * @ingroup     net_gnrc_lwmac
  * @{
  *
  * @file
