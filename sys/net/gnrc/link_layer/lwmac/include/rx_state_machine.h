@@ -35,7 +35,7 @@ extern "C" {
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
  */
-void lwmac_rx_start(gnrc_netdev_t *gnrc_netdev);
+void gnrc_lwmac_rx_start(gnrc_netdev_t *gnrc_netdev);
 
 /**
  * @brief Stop LWMAC RX procedure
@@ -43,7 +43,7 @@ void lwmac_rx_start(gnrc_netdev_t *gnrc_netdev);
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
  */
-void lwmac_rx_stop(gnrc_netdev_t *gnrc_netdev);
+void gnrc_lwmac_rx_stop(gnrc_netdev_t *gnrc_netdev);
 
 /**
  * @brief Update LWMAC RX procedure for packet reception
@@ -51,7 +51,7 @@ void lwmac_rx_stop(gnrc_netdev_t *gnrc_netdev);
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
  */
-void lwmac_rx_update(gnrc_netdev_t *gnrc_netdev);
+void gnrc_lwmac_rx_update(gnrc_netdev_t *gnrc_netdev);
 
 #ifdef __cplusplus
 }

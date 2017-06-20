@@ -69,9 +69,9 @@ typedef struct {
 #endif /* (GNRC_MAC_DISPATCH_BUFFER_SIZE != 0) || defined(DOXYGEN) */
 
 #ifdef MODULE_GNRC_LWMAC
-    l2_addr_t l2_addr;          /**< Records the sender's address */
-    lwmac_rx_state_t state;     /**< Lwmac specific internal reception state */
-    uint8_t rx_bad_exten_count; /**< Count how many unnecessary RX extensions have been executed */
+    gnrc_lwmac_l2_addr_t l2_addr; /**< Records the sender's address */
+    gnrc_lwmac_rx_state_t state;  /**< LWMAC specific internal reception state */
+    uint8_t rx_bad_exten_count;   /**< Count how many unnecessary RX extensions have been executed */
 #endif
 } gnrc_mac_rx_t;
 
@@ -166,7 +166,7 @@ typedef struct {
 #endif /* (GNRC_MAC_TX_QUEUE_SIZE != 0) || defined(DOXYGEN) */
 
 #ifdef MODULE_GNRC_LWMAC
-    lwmac_tx_state_t state;            /**< Lwmac specific internal transmission state */
+    gnrc_lwmac_tx_state_t state;       /**< LWMAC specific internal transmission state */
     uint32_t wr_sent;                  /**< Count how many WRs were sent until WA received */
     uint32_t timestamp;                /**< Records the receiver's current phase */
     uint8_t bcast_seqnr;               /**< Sequence number for broadcast data to filter at receiver */

@@ -38,8 +38,8 @@ extern "C" {
  * @param[in]       neighbor      Tx neighbor
  *
  */
-void lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
-                    gnrc_pktsnip_t *pkt, gnrc_mac_tx_neighbor_t *neighbor);
+void gnrc_lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
+                         gnrc_pktsnip_t *pkt, gnrc_mac_tx_neighbor_t *neighbor);
 
 /**
  * @brief Stop LWMAC TX procedure
@@ -47,7 +47,7 @@ void lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
  */
-void lwmac_tx_stop(gnrc_netdev_t *gnrc_netdev);
+void gnrc_lwmac_tx_stop(gnrc_netdev_t *gnrc_netdev);
 
 /**
  * @brief Update LWMAC TX procedure for transmission
@@ -55,7 +55,7 @@ void lwmac_tx_stop(gnrc_netdev_t *gnrc_netdev);
  * @param[in,out]   gnrc_netdev   gnrc_netdev structure
  *
  */
-void lwmac_tx_update(gnrc_netdev_t *gnrc_netdev);
+void gnrc_lwmac_tx_update(gnrc_netdev_t *gnrc_netdev);
 
 #ifdef __cplusplus
 }
