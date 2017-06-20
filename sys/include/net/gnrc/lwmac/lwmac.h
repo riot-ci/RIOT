@@ -12,6 +12,56 @@
  * @ingroup     net_gnrc
  * @brief       Lightweight MAC protocol that allows for duty cycling to save
  *              energy.
+ *
+ * LWMAC implementation
+ * ====================
+ *
+ * # Radio duty cycling
+ * LWMAC adopts the radio duty-cycle scheme to conserve power. Namely, in each
+ * cycle period (MAC superframe), a node device wakes up for a short period of
+ * time (called listen period or wake-up period) for receiving possible incoming
+ * packets from other devices. Outside the listen period, the node device turns
+ * off its radio to conserve power.
+ *
+ * # Phase-lock scheme
+ * LWMAC adopts the phase-lock scheme to further reduce power consumption. Each
+ * node device in LWMAC will try to record/track its Tx-neighbor's wake-up phase.
+ * This is called phase-lock. After phase-locking, the sender node will (likely)
+ * spend less preamble packets (also called WR packet, i.e., wake-up-request, in
+ * LWMAC) for initiating a hand-shaking procedure for transmitting a data packet,
+ * compared to the first time it talks to the receiver.
+ *
+ * # Burst transmission
+ * LWMAC adopts pending-bit technique to enhance its throughput. Namely, in case
+ * of having multi packets for the receiver, a sender uses the pending-bit flag
+ * embedded in the MAC header to instruct this situation, and the buffered packets
+ * will be transmitted in a continuous sequence, back to back, to the receiver in
+ * one shot.
+ *
+ * # Auto wake-up extension
+ * LWMAC adopts auto wake-up extension scheme based on timeout (like T-MAC). In short,
+ * when a packet is successfully received at the receiver side, the receiver will
+ * reset the wake-up timeout to extend its wake-up period for receiving more potential
+ * incoming packets. This is to be compatible with the pending-bit technique to allow
+ * the receiver to absorb more packets when needed, thus boosts the throughput.
+ *
+ * # Simple retransmission scheme
+ * LWMAC adopts a simple retransmission scheme to enhance link reliability. The data
+ * packet will only be dropped in case the retransmission counter gets larger than
+ * LWMAC_MAX_DATA_TX_RETRIES.
+ *
+ * # Automatic phase backoff scheme
+ * LWMAC adopts an automatic phase backoff scheme to reduce WR (preamble) collision
+ * probability. In multi-hop scenarios, let's say, nodes A <---B <----C (which is
+ * common in multi-hop data collection networks), in which B has packets for A, and
+ * C has packets for B. In case A and B's wake-up phases are too close (overlapping).
+ * Then, especially in high traffic conditions, B and C may initiate transmissions
+ * at the same time (B sends to A, and C sends to B), a link of either will be
+ * definitely interfered, leading to collisions and link throughput reduction. To
+ * this end, by using the automatic phase backoff scheme, if a sender finds its
+ * receiver's phase is too close to its own phase, it will run a backoff scheme to
+ * randomly reselect a new wake-up phase for itself.
+ *
  * @{
  *
  * @file

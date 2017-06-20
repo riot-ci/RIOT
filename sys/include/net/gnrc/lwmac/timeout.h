@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Static initializer for lwmac_timeout_t.
+ * @brief   Static initializer for @ref lwmac_timeout_t.
  */
 #define LWMAC_TIMEOUT_INIT  { {}, {}, false, TIMEOUT_DISABLED }
 
