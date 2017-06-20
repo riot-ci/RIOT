@@ -18,8 +18,8 @@
  * @author      Shuguo Zhuo  <shuguo.zhuo@inria.fr>
  */
 
-#ifndef GNRC_LWMAC_HDR_H_
-#define GNRC_LWMAC_HDR_H_
+#ifndef NET_GNRC_LWMAC_HDR_H
+#define NET_GNRC_LWMAC_HDR_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -111,5 +111,5 @@ typedef struct __attribute__((packed)) {
 }
 #endif
 
-#endif /* GNRC_LWMAC_HDR_H_ */
+#endif /* NET_GNRC_LWMAC_HDR_H */
 /** @} */

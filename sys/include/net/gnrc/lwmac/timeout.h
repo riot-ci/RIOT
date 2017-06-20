@@ -19,8 +19,8 @@
  * @author      Shuguo Zhuo  <shuguo.zhuo@inria.fr>
  */
 
-#ifndef GNRC_LWMAC_TIMEOUT_H
-#define GNRC_LWMAC_TIMEOUT_H
+#ifndef NET_GNRC_LWMAC_TIMEOUT_H
+#define NET_GNRC_LWMAC_TIMEOUT_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -95,5 +95,5 @@ void lwmac_timeout_make_expire(lwmac_timeout_t *timeout);
 }
 #endif
 
-#endif /* GNRC_LWMAC_TIMEOUT_H */
+#endif /* NET_GNRC_LWMAC_TIMEOUT_H */
 /** @} */

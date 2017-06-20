@@ -19,8 +19,8 @@
  * @author      Shuguo Zhuo  <shuguo.zhuo@inria.fr>
  */
 
-#ifndef GNRC_LWMAC_TYPES_H
-#define GNRC_LWMAC_TYPES_H
+#ifndef NET_GNRC_LWMAC_TYPES_H
+#define NET_GNRC_LWMAC_TYPES_H
 
 #include "msg.h"
 #include "xtimer.h"
@@ -219,5 +219,5 @@ typedef struct lwmac {
 }
 #endif
 
-#endif /* GNRC_LWMAC_TYPES_H */
+#endif /* NET_GNRC_LWMAC_TYPES_H */
 /** @} */
