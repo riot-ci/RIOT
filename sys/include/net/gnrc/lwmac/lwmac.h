@@ -21,8 +21,8 @@
  * @author      Shuguo Zhuo  <shuguo.zhuo@inria.fr>
  */
 
-#ifndef GNRC_LWMAC_H
-#define GNRC_LWMAC_H
+#ifndef NET_GNRC_LWMAC_LWMAC_H
+#define NET_GNRC_LWMAC_LWMAC_H
 
 #include "kernel_types.h"
 #include "net/gnrc/netdev.h"
@@ -290,5 +290,5 @@ kernel_pid_t gnrc_lwmac_init(char *stack, int stacksize, char priority,
 }
 #endif
 
-#endif /* GNRC_LWMAC_H */
+#endif /* NET_GNRC_LWMAC_LWMAC_H */
 /** @} */

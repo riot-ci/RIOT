@@ -19,8 +19,8 @@
  * @author      Shuguo Zhuo  <shuguo.zhuo@inria.fr>
  */
 
-#ifndef GNRC_LWMAC_INTERNAL_H_
-#define GNRC_LWMAC_INTERNAL_H_
+#ifndef LWMAC_INTERNAL_H
+#define LWMAC_INTERNAL_H
 
 #include <stdint.h>
 
@@ -404,5 +404,5 @@ void lwmac_print_hdr(lwmac_hdr_t *hdr);
 }
 #endif
 
-#endif /* GNRC_LWMAC_INTERNAL_H_ */
+#endif /* LWMAC_INTERNAL_H */
 /** @} */

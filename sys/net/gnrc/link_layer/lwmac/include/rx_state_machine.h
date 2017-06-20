@@ -18,8 +18,8 @@
  * @}
  */
 
-#ifndef LWMAC_RX_STATE_MACHINE_H_
-#define LWMAC_RX_STATE_MACHINE_H_
+#ifndef RX_STATE_MACHINE_H
+#define RX_STATE_MACHINE_H
 
 #include "net/gnrc/pkt.h"
 #include "net/gnrc/netdev.h"
@@ -56,4 +56,4 @@ void lwmac_rx_update(gnrc_netdev_t *gnrc_netdev);
 }
 #endif
 
-#endif /* LWMAC_RX_STATE_MACHINE_H_ */
+#endif /* RX_STATE_MACHINE_H */
