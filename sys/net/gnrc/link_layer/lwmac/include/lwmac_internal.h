@@ -8,8 +8,7 @@
  */
 
 /**
- * @ingroup     net_lwmac
- * @brief       Internal functions of LWMAC
+ * @ingroup     net_gnrc_lwmac
  * @{
  *
  * @file

@@ -8,8 +8,9 @@
  */
 
 /**
+ * @ingroup     net_gnrc_lwmac
  * @{
- * @ingroup     net_lwmac
+ *
  * @file
  * @brief       Implementation of TX state machine
  *

@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    net_lwmac Simplest possible MAC layer
+ * @defgroup    net_gnrc_lwmac Simplest possible MAC layer
  * @ingroup     net_gnrc
  * @brief       Lightweight MAC protocol that allows for duty cycling to save
  *              energy.
