@@ -527,6 +527,7 @@ endif
 ifneq (,$(filter gnrc_lwmac,$(USEMODULE)))
   USEMODULE += gnrc_mac
   USEMODULE += gnrc_netdev
+  FEATURES_REQUIRED += periph_rtt
 endif
 
 ifneq (,$(filter pthread,$(USEMODULE)))
