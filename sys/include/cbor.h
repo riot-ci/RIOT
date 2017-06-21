@@ -120,9 +120,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
 #include <time.h>
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
 #ifdef __cplusplus
 extern "C" {
@@ -581,7 +581,7 @@ size_t cbor_serialize_map_indefinite(cbor_stream_t *stream);
 size_t cbor_deserialize_map_indefinite(const cbor_stream_t *stream, size_t offset);
 
 #ifdef MODULE_CBOR_SEMANTIC_TAGGING
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
 /**
  * @brief Serialize date and time
  *
@@ -643,7 +643,7 @@ size_t cbor_serialize_date_time_epoch(cbor_stream_t *stream, time_t val);
  */
 size_t cbor_deserialize_date_time_epoch(const cbor_stream_t *stream, size_t offset, time_t *val);
 
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
 /**
  * @brief Write a tag to give the next CBOR item additional semantics

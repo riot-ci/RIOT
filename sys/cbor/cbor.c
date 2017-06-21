@@ -758,7 +758,7 @@ size_t cbor_serialize_map(cbor_stream_t *s, size_t map_length)
 }
 
 #ifdef MODULE_CBOR_SEMANTIC_TAGGING
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
 size_t cbor_deserialize_date_time(const cbor_stream_t *stream, size_t offset, struct tm *val)
 {
     if ((CBOR_TYPE(stream, offset) != CBOR_TAG)
@@ -840,7 +840,7 @@ size_t cbor_serialize_date_time_epoch(cbor_stream_t *stream, time_t val)
     size_t written_bytes = encode_int(CBOR_UINT, stream, time);
     return written_bytes + 1; /* + 1 tag byte */
 }
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
 
 size_t cbor_write_tag(cbor_stream_t *s, unsigned char tag)
@@ -1015,7 +1015,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
             switch (tag) {
                     /* Non-native builds likely don't have support for ctime (hence disable it there)
                      * TODO: Better check for availability of ctime functions? */
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
                 case CBOR_DATETIME_STRING_FOLLOWS: {
                     char buf[64];
                     struct tm timeinfo;
@@ -1032,7 +1032,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
                     return read_bytes;
                 }
 
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
                 default:
                     break;

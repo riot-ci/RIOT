@@ -25,9 +25,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
 #include <time.h>
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
 static void my_cbor_print(const cbor_stream_t *stream)
 {
@@ -592,7 +592,7 @@ static void test_semantic_tagging(void)
     CBOR_CHECK_DESERIALIZED(input, buffer, EQUAL_STRING);
 }
 
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
 static void test_date_time(void)
 {
     /* CBOR: UTF-8 string marked with a tag 0 to indicate it is a standard date/time string */
@@ -634,7 +634,7 @@ static void test_date_time_epoch(void)
     TEST_ASSERT(cbor_deserialize_date_time_epoch(&stream, 0, &val2));
     CBOR_CHECK_DESERIALIZED(val, val2, EQUAL_INT);
 }
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 #endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
 static void test_bool(void)
@@ -797,13 +797,13 @@ void test_stream_decode(void)
     cbor_write_break(&stream);
 
 #ifdef MODULE_CBOR_SEMANTIC_TAGGING
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
     time_t rawtime;
     time(&rawtime);
     struct tm *timeinfo = localtime(&rawtime);
     cbor_serialize_date_time(&stream, timeinfo);
     cbor_serialize_date_time_epoch(&stream, rawtime);
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 
     /* decoder should skip the tag and print 'unsupported' here */
     cbor_write_tag(&stream, 2);
@@ -840,10 +840,10 @@ TestRef tests_cbor_all(void)
                         new_TestFixture(test_map_invalid),
 #ifdef MODULE_CBOR_SEMANTIC_TAGGING
                         new_TestFixture(test_semantic_tagging),
-#ifndef CBOR_NO_CTIME
+#ifdef MODULE_CBOR_CTIME
                         new_TestFixture(test_date_time),
                         new_TestFixture(test_date_time_epoch),
-#endif /* CBOR_NO_CTIME */
+#endif /* MODULE_CBOR_CTIME */
 #endif /* MODULE_CBOR_SEMANTIC_TAGGING */
                         new_TestFixture(test_bool),
                         new_TestFixture(test_bool_invalid),
