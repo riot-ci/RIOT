@@ -9,7 +9,7 @@
 /**
  * @defgroup    drivers_vcnl40x0 VCNL40X0
  * @ingroup     drivers_sensors
- * @brief       Device driver interface for the VCNL40X0 sensors family.
+ * @brief       Device driver interface for the VCNL40X0 Proximity and Ambient Light Sensors.
  * @{
  *
  * @file
@@ -91,8 +91,8 @@ typedef struct {
     uint8_t i2c_addr;                            /**< Address on I2C bus */
     uint8_t led_current;                         /**< LED current */
     uint8_t proximity_rate;                      /**< Proximity rate */
-    uint8_t ambient_avg;                         /**< Ambient light average*/
-    uint8_t ambient_rate;                        /**< Ambient light average*/
+    uint8_t ambient_avg;                         /**< Ambient light average */
+    uint8_t ambient_rate;                        /**< Ambient light rate */
 } vcnl40x0_params_t;
 
 /**
@@ -119,7 +119,7 @@ int vcnl40x0_init(vcnl40x0_t *dev, const vcnl40x0_params_t *params);
  *
  * @param[in] dev           Device descriptor of VCNL40X0 device to read from
  *
- * @return                  Proximity
+ * @return                  Proximity in counts
  */
 uint16_t vcnl40x0_read_proximity(const vcnl40x0_t *dev);
 
@@ -128,16 +128,16 @@ uint16_t vcnl40x0_read_proximity(const vcnl40x0_t *dev);
  *
  * @param[in] dev           Device descriptor of VCNL40X0 device to read from
  *
- * @return                  Ambient light
+ * @return                  Ambient light in counts
  */
-uint16_t vcnl40x0_read_ambient_light(const vcnl40x0_t *devconst );
+uint16_t vcnl40x0_read_ambient_light(const vcnl40x0_t *dev);
 
 /**
  * @brief Read illuminance value from the vcnl40X0 device
  *
  * @param[in] dev           Device descriptor of VCNL40X0 device to read from
  *
- * @return                  Illuminance
+ * @return                  Illuminance in lux
  */
 uint16_t vcnl40x0_read_illuminance(const vcnl40x0_t *dev);
 

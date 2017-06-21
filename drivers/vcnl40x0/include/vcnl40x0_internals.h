@@ -25,12 +25,14 @@ extern "C" {
 #endif
 
 /**
- * @name VCNL40X0 I2C address
- * @{
+ * @brief VCNL40X0 I2C address
  */
 #define VCNL40X0_ADDR                                (0x13)
+
+/**
+ * @brief VCNL40X0 product ID
+ */
 #define VCNL40X0_PRODUCT_ID                          (0x20)
-/** @} */
 
 /**
  * @name VCNL40X0 registers
