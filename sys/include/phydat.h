@@ -74,7 +74,7 @@ extern "C" {
 enum {
     /* generic values */
     UNIT_UNDEF,     /**< unit undefined */
-    UNIT_NONE,      /**< data has no physical unit */
+    UNIT_NONE,      /**< data has no physical unit */    
     /* temperature */
     UNIT_TEMP_C,    /**< degree Celsius */
     UNIT_TEMP_F,    /**< degree Fahrenheit */
@@ -102,6 +102,7 @@ enum {
     UNIT_CD,        /**< Candela */
     /* logical */
     UNIT_BOOL,      /**< boolean value [0|1] */
+    UNIT_CTS,       /**< counts */
     UNIT_PERCENT,   /**< out of 100 */
     UNIT_PERMILL,   /**< out of 1000 */
     UNIT_PPM,       /**< part per million */
