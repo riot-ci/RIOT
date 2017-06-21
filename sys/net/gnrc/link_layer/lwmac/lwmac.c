@@ -295,14 +295,11 @@ static void _sleep_management(gnrc_netdev_t *gnrc_netdev)
             rtt_handler(GNRC_LWMAC_EVENT_RTT_PAUSE, gnrc_netdev);
         }
     }
-    else {
-        if (gnrc_lwmac_timeout_is_expired(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAIT_DEST_WAKEUP)) {
-            LOG_DEBUG("[LWMAC] Got timeout for dest wakeup, ticks: %" PRIu32 "\n",
-                           rtt_get_counter());
-            gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev, false);
-            gnrc_netdev->tx.tx_burst_count = 0;
-            lwmac_set_state(gnrc_netdev, GNRC_LWMAC_TRANSMITTING);
-        }
+    else if (gnrc_lwmac_timeout_is_expired(gnrc_netdev, GNRC_LWMAC_TIMEOUT_WAIT_DEST_WAKEUP)) {
+        LOG_DEBUG("[LWMAC] Got timeout for dest wakeup, ticks: %" PRIu32 "\n", rtt_get_counter());
+        gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev, false);
+        gnrc_netdev->tx.tx_burst_count = 0;
+        lwmac_set_state(gnrc_netdev, GNRC_LWMAC_TRANSMITTING);
     }
 }
 

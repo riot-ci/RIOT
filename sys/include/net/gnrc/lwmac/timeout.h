@@ -35,7 +35,7 @@ extern "C" {
 /**
  * @brief   Static initializer for @ref gnrc_lwmac_timeout_t.
  */
-#define GNRC_LWMAC_TIMEOUT_INIT  { {}, {}, false, TIMEOUT_DISABLED }
+#define GNRC_LWMAC_TIMEOUT_INITIAL  { {}, {}, false, TIMEOUT_DISABLED }
 
 /**
  * @brief   Set LWMAC timeout of type @p type of offset @p offset.
@@ -44,7 +44,9 @@ extern "C" {
  * @param[in]     type         LWMAC timeout type
  * @param[in]     offset       timeout offset
  */
-void gnrc_lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_type_t type, uint32_t offset);
+void gnrc_lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev,
+                            gnrc_lwmac_timeout_type_t type,
+                            uint32_t offset);
 
 /**
  * @brief   Clear LWMAC timeout of type @p type.
@@ -63,7 +65,8 @@ void gnrc_lwmac_clear_timeout(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_typ
  * @return        true, if timeout of type @p type is running.
  * @return        false, if timeout of type @p type is not running.
  */
-bool gnrc_lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_type_t type);
+bool gnrc_lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev,
+                                   gnrc_lwmac_timeout_type_t type);
 
 /**
  * @brief   Check whether LWMAC timeout of type @p type is expired. It will clear

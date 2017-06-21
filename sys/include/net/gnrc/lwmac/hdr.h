@@ -66,7 +66,7 @@ typedef struct {
 /**
  * @brief Static initializer for l2_addr_t.
  */
-#define GNRC_LWMAC_L2_ADDR_INIT      { { 0 }, 0 }
+#define GNRC_LWMAC_L2_ADDR_INITIAL      { { 0 }, 0 }
 
 /**
  * @brief   LWMAC header
@@ -76,7 +76,7 @@ typedef struct {
 } gnrc_lwmac_hdr_t;
 
 /**
- * @brief   LWMAC WR frame
+ * @brief   LWMAC WR (wake-up request packet, i.e., preamble packet) frame
  */
 typedef struct __attribute__((packed)) {
     gnrc_lwmac_hdr_t header;       /**< WR packet header type */
@@ -84,7 +84,7 @@ typedef struct __attribute__((packed)) {
 } gnrc_lwmac_frame_wr_t;
 
 /**
- * @brief   LWMAC WA frame
+ * @brief   LWMAC WA (wake-up answer packet, i.e., preamble-ACK packet) frame
  */
 typedef struct __attribute__((packed)) {
     gnrc_lwmac_hdr_t header;       /**< WA packet header type */

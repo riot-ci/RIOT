@@ -58,7 +58,8 @@ static int _lwmac_find_timeout(gnrc_lwmac_t *lwmac, gnrc_lwmac_timeout_type_t ty
     return -ENOENT;
 }
 
-inline bool gnrc_lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_type_t type)
+inline bool gnrc_lwmac_timeout_is_running(gnrc_netdev_t *gnrc_netdev,
+                                          gnrc_lwmac_timeout_type_t type)
 {
     assert(gnrc_netdev);
     return (_lwmac_find_timeout(&gnrc_netdev->lwmac, type) >= 0);
@@ -78,7 +79,8 @@ bool gnrc_lwmac_timeout_is_expired(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeou
     return false;
 }
 
-gnrc_lwmac_timeout_t *_lwmac_acquire_timeout(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_type_t type)
+gnrc_lwmac_timeout_t *_lwmac_acquire_timeout(gnrc_netdev_t *gnrc_netdev,
+                                             gnrc_lwmac_timeout_type_t type)
 {
     assert(gnrc_netdev);
 
@@ -112,7 +114,9 @@ void gnrc_lwmac_clear_timeout(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_typ
     }
 }
 
-void gnrc_lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_timeout_type_t type, uint32_t offset)
+void gnrc_lwmac_set_timeout(gnrc_netdev_t *gnrc_netdev,
+                            gnrc_lwmac_timeout_type_t type,
+                            uint32_t offset)
 {
     assert(gnrc_netdev);
 

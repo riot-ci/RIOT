@@ -95,7 +95,7 @@ extern "C" {
  *          Set "1" to enable, set "0" to disable.
  */
 #ifndef GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD
-#define GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD    (1U)
+#define GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD    (0U)
 #endif
 
 /**
@@ -206,12 +206,12 @@ typedef struct lwmac {
 
 #if (GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD == 1)
     /* Parameters for recording duty-cycle */
-    uint32_t last_radio_on_time_ticks;              /**< The last time in ticks when radio is on */
-    uint32_t radio_off_time_ticks;                  /**< The time in ticks when radio is off */
-    uint32_t system_start_time_ticks;               /**< The time in ticks when chip is started */
-    uint32_t awake_duration_sum_ticks;              /**< The sum of time in ticks when radio is on */
-    uint32_t pkt_start_sending_time_ticks;          /**< The time in ticks when the packet is started
-                                                         to be sent */
+    uint32_t last_radio_on_time_ticks;                       /**< The last time in ticks when radio is on */
+    uint32_t radio_off_time_ticks;                           /**< The time in ticks when radio is off */
+    uint32_t system_start_time_ticks;                        /**< The time in ticks when chip is started */
+    uint32_t awake_duration_sum_ticks;                       /**< The sum of time in ticks when radio is on */
+    uint32_t pkt_start_sending_time_ticks;                   /**< The time in ticks when the packet is started
+                                                                  to be sent */
 #endif
 } gnrc_lwmac_t;
 

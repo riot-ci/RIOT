@@ -475,7 +475,8 @@ static bool _send_data(gnrc_netdev_t *gnrc_netdev)
 }
 
 void gnrc_lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
-                         gnrc_pktsnip_t *pkt, gnrc_mac_tx_neighbor_t *neighbor)
+                         gnrc_pktsnip_t *pkt,
+                         gnrc_mac_tx_neighbor_t *neighbor)
 {
     assert(gnrc_netdev != NULL);
     assert(pkt != NULL);
