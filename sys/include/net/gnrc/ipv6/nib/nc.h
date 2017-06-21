@@ -264,7 +264,7 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *                      0 for any interface.
  * @param[in,out] state Iteration state of the neighbor cache. Must point to
  *                      a NULL pointer to start iteration.
- * @param[out] entry    The next neighbor cache entry
+ * @param[out] entry    The next neighbor cache entry.
  *
  * Usage example:
  *
@@ -294,7 +294,7 @@ bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
  *
  * @pre `entry != NULL`
  *
- * @param[in] entry A neighbor cache entry
+ * @param[in] entry A neighbor cache entry.
  */
 void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry);
 
