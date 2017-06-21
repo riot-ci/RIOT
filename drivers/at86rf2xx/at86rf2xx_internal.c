@@ -150,7 +150,7 @@ void at86rf2xx_configure_phy(at86rf2xx_t *dev)
     uint8_t state = at86rf2xx_get_status(dev);
 
     /* we must be in TRX_OFF before changing the PHY configuration */
-    at86rf2xx_set_state(dev, AT86RF2XX_STATE_TRX_OFF);
+    state = at86rf2xx_set_state(dev, AT86RF2XX_STATE_TRX_OFF);
 
 #ifdef MODULE_AT86RF212B
     /* The TX power register must be updated after changing the channel if
