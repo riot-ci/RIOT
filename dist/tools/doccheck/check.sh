@@ -8,7 +8,7 @@
 
 RIOTBASE=$(readlink -f "$(dirname $(realpath $0))/../../..")
 
-ERRORS=$(make -C ${RIOTBASE} doc 2>&1 | grep '.*warning' | sed "s#${PWD}/\([^:]*\)#\1#g")
+ERRORS=$(make doc 2>&1 | grep '.*warning' | sed "s#${PWD}/\([^:]*\)#\1#g")
 
 if [ -n "${ERRORS}" ]
 then

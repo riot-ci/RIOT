@@ -168,7 +168,7 @@ extern "C" {
  * @brief   Number of default routers in the default router list.
  *
  * @attention   This number has direct influence on the maximum number of
- *              default routers**
+ *              default routers
  */
 #ifndef GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF
 #define GNRC_IPV6_NIB_DEFAULT_ROUTER_NUMOF  (1)
