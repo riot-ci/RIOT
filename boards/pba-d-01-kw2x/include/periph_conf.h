@@ -91,7 +91,8 @@ static const uart_conf_t uart_config[] = {
         .irqn   = UART2_RX_TX_IRQn,
         .scgc_addr = &SIM->SCGC4,
         .scgc_bit = SIM_SCGC4_UART2_SHIFT,
-        .mode   = UART_MODE_8N1
+        .mode   = UART_MODE_8N1,
+        .type   = KINETIS_UART,
     },
     {
         .dev    = UART0,
@@ -103,7 +104,8 @@ static const uart_conf_t uart_config[] = {
         .irqn   = UART0_RX_TX_IRQn,
         .scgc_addr = &SIM->SCGC4,
         .scgc_bit = SIM_SCGC4_UART0_SHIFT,
-        .mode   = UART_MODE_8N1
+        .mode   = UART_MODE_8N1,
+        .type   = KINETIS_UART,
     }
 };
 
