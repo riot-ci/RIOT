@@ -116,7 +116,6 @@ void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
 {
     char addr_str[IPV6_ADDR_MAX_STR_LEN];
 
-    mutex_lock(&_nib_mutex);
     printf("%s ", ipv6_addr_to_str(addr_str, &entry->ipv6, sizeof(addr_str)));
     if (gnrc_ipv6_nib_nc_get_iface(entry) != KERNEL_PID_UNDEF) {
         printf("dev #%u ", gnrc_ipv6_nib_nc_get_iface(entry));
@@ -128,7 +127,6 @@ void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
         printf("router ");
     }
     puts(_nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
-    mutex_unlock(&_nib_mutex);
 }
 
 /** @} */
