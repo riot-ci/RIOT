@@ -60,10 +60,8 @@
 kernel_pid_t lwmac_pid;
 
 static void rtt_cb(void *arg);
-static bool lwmac_update(gnrc_netdev_t *gnrc_netdev);
 static void lwmac_set_state(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_state_t newstate);
 static void lwmac_schedule_update(gnrc_netdev_t *gnrc_netdev);
-static bool lwmac_needs_update(gnrc_netdev_t *gnrc_netdev);
 static void rtt_handler(uint32_t event, gnrc_netdev_t *gnrc_netdev);
 
 static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
@@ -112,11 +110,6 @@ static uint32_t _next_inphase_event(uint32_t last, uint32_t interval)
 inline void lwmac_schedule_update(gnrc_netdev_t *gnrc_netdev)
 {
     gnrc_netdev_lwmac_set_reschedule(gnrc_netdev, true);
-}
-
-inline bool lwmac_needs_update(gnrc_netdev_t *gnrc_netdev)
-{
-    return gnrc_netdev_lwmac_get_reschedule(gnrc_netdev);
 }
 
 void lwmac_set_state(gnrc_netdev_t *gnrc_netdev, gnrc_lwmac_state_t newstate)
@@ -456,8 +449,9 @@ static void _tx_management(gnrc_netdev_t *gnrc_netdev)
              * transmission attempts in this cycle for collision avoidance */
             gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev, false);
             gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev, true);
-            /* Intended fall-through, TX packet will therefore be dropped. No
-             * automatic resending here, we did our best.
+            /* falls through */
+            /* TX packet will therefore be dropped. No automatic resending here,
+             * we did our best.
              */
         }
         case GNRC_LWMAC_TX_STATE_SUCCESSFUL: {
@@ -518,7 +512,7 @@ static void _lwmac_update_listening(gnrc_netdev_t *gnrc_netdev)
 }
 
 /* Main state machine. Call whenever something happens */
-bool lwmac_update(gnrc_netdev_t *gnrc_netdev)
+static bool lwmac_update(gnrc_netdev_t *gnrc_netdev)
 {
     gnrc_netdev_lwmac_set_reschedule(gnrc_netdev, false);
 
@@ -892,7 +886,7 @@ static void *_lwmac_thread(void *args)
         }
 
         /* Execute main state machine because something just happend*/
-        while (lwmac_needs_update(gnrc_netdev)) {
+        while (gnrc_netdev_lwmac_get_reschedule(gnrc_netdev)) {
             lwmac_update(gnrc_netdev);
         }
     }

@@ -93,8 +93,7 @@ typedef struct {
  * @brief Next RTT event must be at least this far in the future.
  *
  * When setting an RTT alarm to short in the future it could be possible that
- * the counter already passed the calculated alarm before it could be set. This
- * margin will be applied when using _next_inphase_event().
+ * the counter already passed the calculated alarm before it could be set.
  */
 #define GNRC_LWMAC_RTT_EVENT_MARGIN_TICKS    (RTT_MS_TO_TICKS(2))
 

@@ -1,5 +1,5 @@
 # name of your application
-APPLICATION = tests/lwmac
+APPLICATION = lwmac
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
