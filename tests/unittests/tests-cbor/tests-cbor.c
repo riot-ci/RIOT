@@ -31,7 +31,7 @@
 
 static void my_cbor_print(const cbor_stream_t *stream)
 {
-#ifndef CBOR_NO_PRINT
+#ifdef MODULE_CBOR_PRINT
     cbor_stream_print(stream);
 #else
     (void)stream;
@@ -753,7 +753,7 @@ static void test_double_invalid(void)
 }
 #endif /* CBOR_NO_FLOAT */
 
-#ifndef CBOR_NO_PRINT
+#ifdef MODULE_CBOR_PRINT
 /**
  * Manual test for testing the cbor_stream_decode function
  */
@@ -812,7 +812,7 @@ void test_stream_decode(void)
 
     cbor_stream_decode(&stream);
 }
-#endif /* CBOR_NO_PRINT */
+#endif /* MODULE_CBOR_PRINT */
 
 /**
  * See examples from CBOR RFC (cf. Appendix A. Examples)
@@ -863,9 +863,9 @@ TestRef tests_cbor_all(void)
 
 void tests_cbor(void)
 {
-#ifndef CBOR_NO_PRINT
+#ifdef MODULE_CBOR_PRINT
     test_stream_decode();
-#endif /* CBOR_NO_PRINT */
+#endif /* MODULE_CBOR_PRINT */
 
     TESTS_RUN(tests_cbor_all());
 }

@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Automatically enable/disable ENABLE_DEBUG based on CBOR_NO_PRINT */
-#ifndef CBOR_NO_PRINT
+/* Automatically enable/disable ENABLE_DEBUG based on MODULE_CBOR_PRINT */
+#ifdef MODULE_CBOR_PRINT
 #define ENABLE_DEBUG (1)
 #include "debug.h"
 #endif
@@ -226,7 +226,7 @@ static uint16_t encode_float_half(float x)
 }
 #endif /* CBOR_NO_FLOAT */
 
-#ifndef CBOR_NO_PRINT
+#ifdef MODULE_CBOR_PRINT
 /**
  * Print @p size bytes at @p data in hexadecimal display format
  */
@@ -243,7 +243,7 @@ void dump_memory(const unsigned char *data, size_t size)
     }
     DEBUG("\n");
 }
-#endif /* CBOR_NO_PRINT */
+#endif /* MODULE_CBOR_PRINT */
 
 void cbor_init(cbor_stream_t *stream, unsigned char *buffer, size_t size)
 {
@@ -874,7 +874,7 @@ bool cbor_at_end(const cbor_stream_t *s, size_t offset)
     return s ? offset >= s->pos - 1 : true;
 }
 
-#ifndef CBOR_NO_PRINT
+#ifdef MODULE_CBOR_PRINT
 /* BEGIN: Printers */
 void cbor_stream_print(const cbor_stream_t *stream)
 {
@@ -1037,6 +1037,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
                 default:
                     break;
             }
+            break;
         }
 
         case CBOR_7: {
@@ -1085,6 +1086,6 @@ void cbor_stream_decode(cbor_stream_t *stream)
     DEBUG("\n");
 }
 
-#endif /* CBOR_NO_PRINT */
+#endif /* MODULE_CBOR_PRINT */
 
 /* END: Printers */

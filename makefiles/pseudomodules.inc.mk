@@ -2,6 +2,7 @@ PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
 PSEUDOMODULES += can_raw
+PSEUDOMODULES += cbor_print
 PSEUDOMODULES += conn_can_isotp_multi
 PSEUDOMODULES += core_%
 PSEUDOMODULES += emb6_router
