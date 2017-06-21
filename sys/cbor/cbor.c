@@ -107,7 +107,7 @@ typedef struct __attribute__((packed)) {
     } u;
 } cast_align_u8_t;
 
-#ifndef CBOR_NO_FLOAT
+#ifdef MODULE_CBOR_FLOAT
 
 /**
  * Convert float @p x to network format
@@ -224,7 +224,7 @@ static uint16_t encode_float_half(float x)
     bits += m & 1;
     return bits;
 }
-#endif /* CBOR_NO_FLOAT */
+#endif /* MODULE_CBOR_FLOAT */
 
 #ifdef MODULE_CBOR_PRINT
 /**
@@ -542,7 +542,7 @@ size_t cbor_serialize_bool(cbor_stream_t *s, bool val)
     return 1;
 }
 
-#ifndef CBOR_NO_FLOAT
+#ifdef MODULE_CBOR_FLOAT
 size_t cbor_deserialize_float_half(const cbor_stream_t *stream, size_t offset, float *val)
 {
     if (CBOR_TYPE(stream, offset) != CBOR_7 || !val) {
@@ -623,7 +623,7 @@ size_t cbor_serialize_double(cbor_stream_t *s, double val)
     s->pos += 8;
     return 9;
 }
-#endif /* CBOR_NO_FLOAT */
+#endif /* MODULE_CBOR_FLOAT */
 
 size_t cbor_deserialize_byte_string(const cbor_stream_t *stream, size_t offset, char *val,
                                     size_t length)
@@ -1045,14 +1045,14 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
                 case CBOR_FALSE:
                 case CBOR_TRUE:
                     DESERIALIZE_AND_PRINT(bool, bool, "%d")
-#ifndef CBOR_NO_FLOAT
+#ifdef MODULE_CBOR_FLOAT
                 case CBOR_FLOAT16:
                     DESERIALIZE_AND_PRINT(float, float_half, "%f")
                 case CBOR_FLOAT32:
                     DESERIALIZE_AND_PRINT(float, float, "%f")
                 case CBOR_FLOAT64:
                     DESERIALIZE_AND_PRINT(double, double, "%lf")
-#endif /* CBOR_NO_FLOAT */
+#endif /* MODULE_CBOR_FLOAT */
                 default:
                     break;
             }

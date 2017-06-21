@@ -1,5 +1,5 @@
 ifeq (,$(filter native,$(BOARD)))
-	CFLAGS += -DCBOR_NO_FLOAT -DCBOR_NO_SEMANTIC_TAGGING
+	CFLAGS += -DCBOR_NO_SEMANTIC_TAGGING
 endif
 
 include $(RIOTBASE)/Makefile.base

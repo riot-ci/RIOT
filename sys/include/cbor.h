@@ -300,7 +300,7 @@ size_t cbor_serialize_bool(cbor_stream_t *stream, bool val);
 size_t cbor_deserialize_bool(const cbor_stream_t *stream, size_t offset,
                              bool *val);
 
-#ifndef CBOR_NO_FLOAT
+#ifdef MODULE_CBOR_FLOAT
 /**
  * @brief Serializes a half-width floating point value
  *
@@ -366,7 +366,7 @@ size_t cbor_serialize_double(cbor_stream_t *stream, double val);
  */
 size_t cbor_deserialize_double(const cbor_stream_t *stream, size_t offset,
                                double *val);
-#endif /* CBOR_NO_FLOAT */
+#endif /* MODULE_CBOR_FLOAT */
 
 /**
  * @brief Serializes a signed 64 bit value
