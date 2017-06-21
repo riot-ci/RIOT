@@ -573,7 +573,7 @@ static void test_map_invalid(void)
     }
 }
 
-#ifndef CBOR_NO_SEMANTIC_TAGGING
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
 static void test_semantic_tagging(void)
 {
     char buffer[128];
@@ -635,7 +635,7 @@ static void test_date_time_epoch(void)
     CBOR_CHECK_DESERIALIZED(val, val2, EQUAL_INT);
 }
 #endif /* CBOR_NO_CTIME */
-#endif /* CBOR_NO_SEMANTIC_TAGGING */
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
 static void test_bool(void)
 {
@@ -796,7 +796,7 @@ void test_stream_decode(void)
     cbor_serialize_byte_string(&stream, "11");
     cbor_write_break(&stream);
 
-#ifndef CBOR_NO_SEMANTIC_TAGGING
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
 #ifndef CBOR_NO_CTIME
     time_t rawtime;
     time(&rawtime);
@@ -808,7 +808,7 @@ void test_stream_decode(void)
     /* decoder should skip the tag and print 'unsupported' here */
     cbor_write_tag(&stream, 2);
     cbor_serialize_byte_string(&stream, "1");
-#endif /* CBOR_NO_SEMANTIC_TAGGING */
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
     cbor_stream_decode(&stream);
 }
@@ -838,13 +838,13 @@ TestRef tests_cbor_all(void)
                         new_TestFixture(test_map),
                         new_TestFixture(test_map_indefinite),
                         new_TestFixture(test_map_invalid),
-#ifndef CBOR_NO_SEMANTIC_TAGGING
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
                         new_TestFixture(test_semantic_tagging),
 #ifndef CBOR_NO_CTIME
                         new_TestFixture(test_date_time),
                         new_TestFixture(test_date_time_epoch),
 #endif /* CBOR_NO_CTIME */
-#endif /* CBOR_NO_SEMANTIC_TAGGING */
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
                         new_TestFixture(test_bool),
                         new_TestFixture(test_bool_invalid),
 #ifdef MODULE_CBOR_FLOAT

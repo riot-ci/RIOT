@@ -757,7 +757,7 @@ size_t cbor_serialize_map(cbor_stream_t *s, size_t map_length)
     return encode_int(CBOR_MAP, s, map_length);
 }
 
-#ifndef CBOR_NO_SEMANTIC_TAGGING
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
 #ifndef CBOR_NO_CTIME
 size_t cbor_deserialize_date_time(const cbor_stream_t *stream, size_t offset, struct tm *val)
 {
@@ -854,7 +854,7 @@ bool cbor_at_tag(const cbor_stream_t *s, size_t offset)
 {
     return cbor_at_end(s, offset) || CBOR_TYPE(s, offset) == CBOR_TAG;
 }
-#endif /* CBOR_NO_SEMANTIC_TAGGING */
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
 size_t cbor_write_break(cbor_stream_t *s)
 {
@@ -1008,7 +1008,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
             read_bytes += cbor_at_break(stream, offset);
             return read_bytes;
         }
-
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
         case CBOR_TAG: {
             unsigned char tag = CBOR_ADDITIONAL_INFO(stream, offset);
 
@@ -1039,6 +1039,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
             }
             break;
         }
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
         case CBOR_7: {
             switch (stream->data[offset]) {

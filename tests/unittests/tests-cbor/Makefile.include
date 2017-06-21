@@ -1,3 +1,4 @@
 USEMODULE += cbor
 USEMODULE += cbor_print
 USEMODULE += cbor_float
+USEMODULE += cbor_semantic_tagging

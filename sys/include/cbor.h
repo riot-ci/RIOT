@@ -580,7 +580,7 @@ size_t cbor_serialize_map_indefinite(cbor_stream_t *stream);
  */
 size_t cbor_deserialize_map_indefinite(const cbor_stream_t *stream, size_t offset);
 
-#ifndef CBOR_NO_SEMANTIC_TAGGING
+#ifdef MODULE_CBOR_SEMANTIC_TAGGING
 #ifndef CBOR_NO_CTIME
 /**
  * @brief Serialize date and time
@@ -667,7 +667,7 @@ size_t cbor_write_tag(cbor_stream_t *stream, unsigned char tag);
  */
 bool cbor_at_tag(const cbor_stream_t *stream, size_t offset);
 
-#endif /* CBOR_NO_SEMANTIC_TAGGING */
+#endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
 /**
  * @brief Write a break symbol at the current offset in stream @p stream
