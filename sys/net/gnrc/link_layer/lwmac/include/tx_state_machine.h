@@ -39,7 +39,8 @@ extern "C" {
  *
  */
 void gnrc_lwmac_tx_start(gnrc_netdev_t *gnrc_netdev,
-                         gnrc_pktsnip_t *pkt, gnrc_mac_tx_neighbor_t *neighbor);
+                         gnrc_pktsnip_t *pkt,
+                         gnrc_mac_tx_neighbor_t *neighbor);
 
 /**
  * @brief Stop LWMAC TX procedure

@@ -297,7 +297,6 @@ extern "C" {
 #define GNRC_LWMAC_IPC_MSG_QUEUE_SIZE        (8U)
 #endif
 
-
 /**
  * @brief Initialize an instance of the LWMAC layer
  *

@@ -85,13 +85,11 @@ int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info
         /* WR is broadcast, so get dst address out of header instead of netif */
         info->dst_addr = ((gnrc_lwmac_frame_wr_t *)lwmac_hdr)->dst_addr;
     }
-    else {
-        if (netif_hdr->dst_l2addr_len) {
-            info->dst_addr.len = netif_hdr->dst_l2addr_len;
-            memcpy(info->dst_addr.addr,
-                   gnrc_netif_hdr_get_dst_addr(netif_hdr),
-                   netif_hdr->dst_l2addr_len);
-        }
+    else if (netif_hdr->dst_l2addr_len) {
+        info->dst_addr.len = netif_hdr->dst_l2addr_len;
+        memcpy(info->dst_addr.addr,
+               gnrc_netif_hdr_get_dst_addr(netif_hdr),
+               netif_hdr->dst_l2addr_len);
     }
 
     if (netif_hdr->src_l2addr_len) {
@@ -120,16 +118,15 @@ void _gnrc_lwmac_set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t dev
         }
         return;
     }
-    else if (devstate == NETOPT_STATE_SLEEP) {
-        if (gnrc_netdev->lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON) {
-            gnrc_netdev->lwmac.radio_off_time_ticks = rtt_get_counter();
+    else if ((devstate == NETOPT_STATE_SLEEP) &&
+             (gnrc_netdev->lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
+        gnrc_netdev->lwmac.radio_off_time_ticks = rtt_get_counter();
 
-            gnrc_netdev->lwmac.awake_duration_sum_ticks +=
-                (gnrc_netdev->lwmac.radio_off_time_ticks -
-                 gnrc_netdev->lwmac.last_radio_on_time_ticks);
+        gnrc_netdev->lwmac.awake_duration_sum_ticks +=
+            (gnrc_netdev->lwmac.radio_off_time_ticks -
+             gnrc_netdev->lwmac.last_radio_on_time_ticks);
 
-            gnrc_netdev->lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
-        }
+        gnrc_netdev->lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
     }
 #endif
 }
