@@ -69,16 +69,15 @@ static void test_nib_nc_set__ENOMEM_diff_addr(void)
  */
 static void test_nib_nc_set__ENOMEM_diff_iface(void)
 {
-    ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
-    uint8_t l2addr[] = L2ADDR;
+    static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
+                                             { .u64 = TEST_UINT64 } } };
+    static const uint8_t l2addr[] = L2ADDR;
     unsigned iface = IFACE;
 
     for (unsigned i = 0; i < GNRC_IPV6_NIB_NUMOF; i++) {
         TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&addr, iface, l2addr,
                                                       sizeof(l2addr)));
         iface++;
-        l2addr[7]++;
     }
     TEST_ASSERT_EQUAL_INT(-ENOMEM, gnrc_ipv6_nib_nc_set(&addr, iface, l2addr,
                                                         sizeof(l2addr)));
@@ -168,11 +167,10 @@ static void test_nib_nc_del__unknown(void)
 {
     void *iter_state = NULL;
     ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
+                                { .u64 = TEST_UINT64 } } };
     uint8_t l2addr[] = L2ADDR;
     gnrc_ipv6_nib_nc_t nce;
-    unsigned iface = IFACE;
-    unsigned count = 0;
+    unsigned iface = IFACE, count = 0;
 
     for (unsigned i = 0; i < GNRC_IPV6_NIB_NUMOF; i++) {
         TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&addr, iface, l2addr,
@@ -195,8 +193,8 @@ static void test_nib_nc_del__unknown(void)
 static void test_nib_nc_del__success(void)
 {
     void *iter_state = NULL;
-    ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
+    static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
+                                             { .u64 = TEST_UINT64 } } };
     uint8_t l2addr[] = L2ADDR;
     gnrc_ipv6_nib_nc_t nce;
 
@@ -217,7 +215,7 @@ static void test_nib_nc_mark_reachable__not_in_neighbor_cache(void)
 {
     void *iter_state = NULL;
     ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
+                                { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
     TEST_ASSERT_NOT_NULL(_nib_nc_add(&addr, IFACE,
@@ -252,8 +250,8 @@ static void test_nib_nc_mark_reachable__not_in_neighbor_cache(void)
 static void test_nib_nc_mark_reachable__unmanaged(void)
 {
     void *iter_state = NULL;
-    ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
+    static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
+                                             { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
     TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&addr, IFACE, NULL, 0));
@@ -290,8 +288,8 @@ static void test_nib_nc_mark_reachable__success(void)
     evtimer_msg_event_t *event;
 #endif
     _nib_iface_t *iface;
-    ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
-                                  { .u64 = TEST_UINT64 } } };
+    static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
+                                             { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
     TEST_ASSERT_NOT_NULL((node = _nib_nc_add(&addr, IFACE,
