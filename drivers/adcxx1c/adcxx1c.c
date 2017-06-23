@@ -73,7 +73,7 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
     return ADCXX1C_OK;
 }
 
-int adcxx1c_read_raw(adcxx1c_t *dev, int16_t *raw)
+int adcxx1c_read_raw(const adcxx1c_t *dev, int16_t *raw)
 {
     uint8_t buf[2];
     int status;
@@ -120,7 +120,7 @@ int adcxx1c_enable_alert(adcxx1c_t *dev, adcxx1c_cb_t cb, void *arg)
     return ADCXX1C_OK;
 }
 
-int adcxx1c_set_alert_parameters(adcxx1c_t *dev, int16_t low_limit,
+int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
                                  int16_t high_limit, int16_t hysteresis)
 {
     uint8_t buf[2];

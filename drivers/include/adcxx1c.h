@@ -110,8 +110,8 @@ typedef struct adcxx1c {
 /**
  * @brief Initialize an ADCxx1C ADC device
  *
- * @param dev     device descriptor
- * @param params  device configuration
+ * @param[in,out] dev  device descriptor
+ * @param[in] params   device configuration
  *
  * @return zero on successful initialization, non zero on error
  */
@@ -125,7 +125,7 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params);
  *
  * @return zero on successful read, non zero on error
  */
-int adcxx1c_read_raw(adcxx1c_t *dev, int16_t *raw);
+int adcxx1c_read_raw(const adcxx1c_t *dev, int16_t *raw);
 
 /**
  * @brief Enable alert interrupt
@@ -141,14 +141,14 @@ int adcxx1c_enable_alert(adcxx1c_t *dev, adcxx1c_cb_t cb, void *arg);
 /**
  * @brief Set the alert parameters
  *
- * @param[in] dev          device descriptor
+ * @param[in,out] dev      device descriptor
  * @param[in] low_limit    alert low limit
  * @param[in] high_limit   alert high limit
  * @param[in] hysteresis   alert hysteresis
  *
  * @return zero on success, non zero on error
  */
-int adcxx1c_set_alert_parameters(adcxx1c_t *dev, int16_t low_limit,
+int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
                                  int16_t high_limit, int16_t hysteresis);
 
 #ifdef __cplusplus
