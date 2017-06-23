@@ -94,7 +94,6 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     else {
         port->DIR &= ~(_pin(pin));
     }
-    port->OD &= ~(_pin(pin));
 
     return 0;
 }
