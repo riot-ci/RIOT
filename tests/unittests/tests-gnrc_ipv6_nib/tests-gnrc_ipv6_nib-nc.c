@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Freie Universität Berlin
+ * Copyright (C) 2017 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -135,7 +135,7 @@ static void test_nib_nc_set__success(void)
 
 /*
  * Creates GNRC_IPV6_NIB_NUMOF neighbor cache entries with different IP
- * addresses and interface identifiers and then tries to add another that i
+ * addresses and interface identifiers and then tries to add another that is
  * equal to the last.
  * Expected result: gnrc_ipv6_nib_nc_set() returns 0
  */
