@@ -329,8 +329,7 @@ void _nib_nc_remove(_nib_onl_entry_t *node);
  * @pre `(node != NULL) && (nce != NULL)`
  *
  * @param[in] node  On-link entry.
- * @param[out] nce  External representation of the neighbor cache
- *                  representation.
+ * @param[out] nce  External representation of the neighbor cache entry.
  */
 void _nib_nc_get(const _nib_onl_entry_t *node, gnrc_ipv6_nib_nc_t *nce);
 
