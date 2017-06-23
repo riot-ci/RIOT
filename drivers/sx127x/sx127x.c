@@ -94,44 +94,31 @@ int sx127x_init(sx127x_t *dev)
         return -SX127X_ERR_SPI;
     }
 
-    _init_isrs(dev);
-    _init_timers(dev);
-
-    xtimer_usleep(1000); /* wait 1 millisecond */
-
     /* Check presence of SX127X */
     if (!sx127x_test(dev)) {
         DEBUG("[Error] init : sx127x test failed\n");
         return -SX127X_ERR_TEST_FAILED;
     }
 
-    sx127x_rx_chain_calibration(dev);
+    _init_timers(dev);
+    xtimer_usleep(1000); /* wait 1 millisecond */
 
-    /* Set RegOpMode value to the datasheet's default.
-       Actual default after POR is 0x09 */
-    sx127x_reg_write(dev, SX127X_REG_OPMODE, 0x00);
+    sx127x_reset(dev);
+
+    sx127x_rx_chain_calibration(dev);
+    sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
+
+    _init_isrs(dev);
 
     return SX127X_INIT_OK;
 }
 
 void sx127x_init_radio_settings(sx127x_t *dev)
 {
-    netdev_t *netdev = (netdev_t*) dev;
-
-    bool freq_hop_on = SX127X_FREQUENCY_HOPPING;
-    bool iq_invert = SX127X_IQ_INVERSION;
-    uint8_t rx_single = SX127X_RX_SINGLE;
-    uint32_t tx_timeout = SX127X_TX_TIMEOUT_DEFAULT;
-
-    netdev->driver->set(netdev, NETOPT_LORA_HOP,
-                        &freq_hop_on, sizeof(bool));
-    netdev->driver->set(netdev, NETOPT_LORA_IQ_INVERT,
-                        &iq_invert, sizeof(bool));
-    netdev->driver->set(netdev, NETOPT_LORA_SINGLE_RECEIVE,
-                        &rx_single, sizeof(uint8_t));
-    netdev->driver->set(netdev, NETOPT_LORA_TX_TIMEOUT,
-                        &tx_timeout, sizeof(uint32_t));
-
+    sx127x_set_freq_hop(dev, SX127X_FREQUENCY_HOPPING);
+    sx127x_set_iq_invert(dev, SX127X_IQ_INVERSION);
+    sx127x_set_rx_single(dev, NETOPT_LORA_SINGLE_RECEIVE);
+    sx127x_set_tx_timeout(dev, SX127X_TX_TIMEOUT_DEFAULT);
     sx127x_set_modem(dev, SX127X_MODEM_DEFAULT);
     sx127x_set_channel(dev, SX127X_CHANNEL_DEFAULT);
     sx127x_set_bandwidth(dev, SX127X_BW_DEFAULT);
