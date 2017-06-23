@@ -326,6 +326,8 @@ void _nib_nc_remove(_nib_onl_entry_t *node);
 /**
  * @brief   Gets external neighbor cache entry representation from on-link entry
  *
+ * @pre `(node != NULL) && (nce != NULL)`
+ *
  * @param[in] node  On-link entry.
  * @param[out] nce  External representation of the neighbor cache
  *                  representation.

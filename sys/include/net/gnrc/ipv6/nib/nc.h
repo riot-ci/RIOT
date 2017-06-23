@@ -47,22 +47,22 @@ extern "C" {
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK            (0x0007)
 
 /**
- * @brief   not managed by NUD
+ * @brief   Not managed by NUD
  */
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED       (0x0000)
 
 /**
- * @brief   entry is not reachable
+ * @brief   Entry is not reachable
  */
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE     (0x0001)
 
 /**
- * @brief   address resolution is currently performed
+ * @brief   Address resolution is currently performed
  */
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_INCOMPLETE      (0x0002)
 
 /**
- * @brief   address might not be reachable
+ * @brief   Address might not be reachable
  */
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE           (0x0003)
 
@@ -77,7 +77,7 @@ extern "C" {
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_PROBE           (0x0005)
 
 /**
- * @brief   entry is reachable
+ * @brief   Entry is reachable
  */
 #define GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE       (0x0006)
 
@@ -111,22 +111,22 @@ extern "C" {
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK             (0x0600)
 
 /**
- * @brief   not managed by 6Lo-AR (address can be removed when memory is low
+ * @brief   Not managed by 6Lo-AR (address can be removed when memory is low
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC               (0x0000)
 
 /**
- * @brief   address registration still pending at upstream router
+ * @brief   Address registration still pending at upstream router
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE        (0x0200)
 
 /**
- * @brief   address is registered
+ * @brief   Address is registered
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED       (0x0400)
 
 /**
- * @brief   address was added manually
+ * @brief   Address was added manually
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL           (0x0600)
 /** @} */
@@ -135,21 +135,21 @@ extern "C" {
  * @brief   Neighbor cache entry view on NIB
  */
 typedef struct {
-    ipv6_addr_t ipv6;       /**< neighbor's IPv6 address */
+    ipv6_addr_t ipv6;       /**< Neighbor's IPv6 address */
     /**
-     * @brief   neighbor's link-local address
+     * @brief   Neighbor's link-layer address
      */
     uint8_t l2addr[GNRC_IPV6_NIB_L2ADDR_MAX_LEN];
     /**
-     * @brief   neighbor information as defined in
+     * @brief   Neighbor information as defined in
      *          @ref net_gnrc_ipv6_nib_nc_info "info values"
      */
     uint16_t info;
-    uint8_t l2addr_len;     /**< length of gnrc_ipv6_nib_nc_t::l2addr */
+    uint8_t l2addr_len;     /**< Length of gnrc_ipv6_nib_nc_t::l2addr in bytes */
 } gnrc_ipv6_nib_nc_t;
 
 /**
- * @brief   Gets state of neighbor unreachability state from entry
+ * @brief   Gets neighbor unreachability state from entry
  *
  * @param[in] entry     A neighbor cache entry.
  *
@@ -161,7 +161,7 @@ static inline unsigned gnrc_ipv6_nib_nc_get_nud_state(const gnrc_ipv6_nib_nc_t *
 }
 
 /**
- * @brief   Gets state of neighbor unreachability state of an entry
+ * @brief   Gets router flag of a neighbor.
  *
  * @param[in] entry     A neighbor cache entry.
  *
@@ -246,8 +246,8 @@ void gnrc_ipv6_nib_nc_del(const ipv6_addr_t *ipv6);
  * This function shall be called if an upper layer gets reachability
  * confirmation via its own means (e.g. a TCP connection build-up or
  * confirmation). Unmanaged neighbor cache entries (i.e. entries created using
- * @ref gnrc_ipv6_nib_nc_set()) or entries which next-hop are not in the
- * neighbor cache yet are ignored.
+ * @ref gnrc_ipv6_nib_nc_set()) or entries whose next-hop are not yet in the
+ * neighbor cache are ignored.
  *
  * Entries in state @ref GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED are not
  * affected by this, since they are assumed to always be reachable and kept out
@@ -282,6 +282,9 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *     return 0;
  * }
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * @note    The list may change during iteration, but no duplicate of already
+ *          traversed entries must be returned.
  *
  * @return  true, if iteration can be continued.
  * @return  false, if @p entry is the last neighbor cache entry in the NIB.
