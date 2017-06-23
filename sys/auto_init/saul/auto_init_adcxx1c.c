@@ -50,13 +50,11 @@ extern saul_driver_t adcxx1c_saul_driver;
 
 void auto_init_adcxx1c(void)
 {
-    for (int i = 0; i < ADCXX1C_NUM; i++) {
+    for (unsigned i = 0; i < ADCXX1C_NUM; i++) {
         const adcxx1c_params_t *p = &adcxx1c_params[i];
-        int res;
 
         LOG_DEBUG("[auto_init_saul] initializing adcxx1c #%d\n", i);
-        res = adcxx1c_init(&adcxx1c_devs[i], p);
-        if (res < 0) {
+        if (adcxx1c_init(&adcxx1c_devs[i], p) < 0) {
             LOG_ERROR("[auto_init_saul] error initializing adcxx1c #%d\n", i);
             continue;
         }

@@ -64,7 +64,6 @@ extern "C" {
                                   .low_limit  = ADCXX1C_PARAM_LOW_LIMIT, \
                                   .high_limit = ADCXX1C_PARAM_HIGH_LIMIT, \
                                   .hysteresis = ADCXX1C_PARAM_HYSTERESIS }
-
 /** @} */
 
 /**
