@@ -219,7 +219,6 @@ typedef struct {
     bool is_last_cad_success;                                   /**< Sign of success of last CAD operation (activity detected) */
     xtimer_t tx_timeout_timer;                                  /**< TX operation timeout timer */
     xtimer_t rx_timeout_timer;                                  /**< RX operation timeout timer */
-    xtimer_t rx_timeout_syncword_timer;                         /**< RX syncword timeout timer */
 } sx127x_internal_t;
 
 /**
