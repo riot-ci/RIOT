@@ -264,7 +264,7 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *                      0 for any interface.
  * @param[in,out] state Iteration state of the neighbor cache. Must point to
  *                      a NULL pointer to start iteration.
- * @param[out] entry    The next neighbor cache entry.
+ * @param[out] nce      The next neighbor cache entry.
  *
  * Usage example:
  *
@@ -273,11 +273,11 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *
  * int main(void) {
  *     void *state = NULL;
- *     gnrc_ipv6_nib_nc_t entry;
+ *     gnrc_ipv6_nib_nc_t nce;
  *
  *     puts("My neighbors:");
- *     while (gnrc_ipv6_nib_nc_iter(0, &state, &entry)) {
- *         gnrc_ipv6_nib_nc_print(&entry);
+ *     while (gnrc_ipv6_nib_nc_iter(0, &state, &nce)) {
+ *         gnrc_ipv6_nib_nc_print(&nce);
  *     }
  *     return 0;
  * }
@@ -287,19 +287,19 @@ void gnrc_ipv6_nib_nc_mark_reachable(const ipv6_addr_t *ipv6);
  *          traversed entries must be returned.
  *
  * @return  true, if iteration can be continued.
- * @return  false, if @p entry is the last neighbor cache entry in the NIB.
+ * @return  false, if @p nce is the last neighbor cache entry in the NIB.
  */
 bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
-                           gnrc_ipv6_nib_nc_t *entry);
+                           gnrc_ipv6_nib_nc_t *nce);
 
 /**
  * @brief   Prints a neighbor cache entry
  *
- * @pre `entry != NULL`
+ * @pre `nce != NULL`
  *
- * @param[in] entry A neighbor cache entry.
+ * @param[in] nce   A neighbor cache entry.
  */
-void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry);
+void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *nce);
 
 #ifdef __cplusplus
 }
