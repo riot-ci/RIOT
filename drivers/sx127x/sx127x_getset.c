@@ -103,9 +103,6 @@ void sx127x_set_channel(sx127x_t *dev, uint32_t channel)
 
     /* Save current operating mode */
     dev->settings.channel = channel;
-    uint8_t prev_mode = sx127x_reg_read(dev, SX127X_REG_OPMODE);
-
-    sx127x_set_op_mode(dev, SX127X_RF_OPMODE_STANDBY);
 
     channel = (uint32_t)((double) channel / (double) SX127X_FREQUENCY_RESOLUTION);
 
@@ -113,9 +110,6 @@ void sx127x_set_channel(sx127x_t *dev, uint32_t channel)
     sx127x_reg_write(dev, SX127X_REG_FRFMSB, (uint8_t)((channel >> 16) & 0xFF));
     sx127x_reg_write(dev, SX127X_REG_FRFMID, (uint8_t)((channel >> 8) & 0xFF));
     sx127x_reg_write(dev, SX127X_REG_FRFLSB, (uint8_t)(channel & 0xFF));
-
-    /* Restore previous operating mode */
-    sx127x_reg_write(dev, SX127X_REG_OPMODE, prev_mode);
 }
 
 uint32_t sx127x_get_time_on_air(sx127x_t *dev)
@@ -186,7 +180,6 @@ void sx127x_set_sleep(sx127x_t *dev)
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
     xtimer_remove(&dev->_internal.rx_timeout_timer);
-    xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
 
     /* Put chip into sleep */
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
@@ -200,7 +193,6 @@ void sx127x_set_standby(sx127x_t *dev)
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
     xtimer_remove(&dev->_internal.rx_timeout_timer);
-    xtimer_remove(&dev->_internal.rx_timeout_syncword_timer);
 
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_STANDBY);
     sx127x_set_state(dev,  SX127X_RF_IDLE);
@@ -483,7 +475,8 @@ void sx127x_set_bandwidth(sx127x_t *dev, uint8_t bandwidth)
     _low_datarate_optimize(dev);
 
     /* ERRATA sensitivity tweaks */
-    if ((dev->settings.lora.bandwidth == SX127X_BW_500_KHZ) && (SX127X_RF_MID_BAND_THRESH)) {
+    if ((dev->settings.lora.bandwidth == SX127X_BW_500_KHZ) &&
+        (dev->settings.channel > SX127X_RF_MID_BAND_THRESH)) {
         /* ERRATA 2.1 - Sensitivity Optimization with a 500 kHz Bandwidth */
         sx127x_reg_write(dev, SX127X_REG_LR_TEST36, 0x02);
         sx127x_reg_write(dev, SX127X_REG_LR_TEST3A, 0x64);
