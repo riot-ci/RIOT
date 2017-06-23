@@ -261,28 +261,27 @@ static void _isr(netdev_t *netdev)
     uint8_t irq = dev->irq;
     dev->irq = 0;
 
-    if (irq & SX127X_IRQ_DIO0) {
+    switch (irq) {
+    case SX127X_IRQ_DIO0:
         sx127x_on_dio0(dev);
-    }
-
-    if (irq & SX127X_IRQ_DIO1) {
+        break;
+    case SX127X_IRQ_DIO1:
         sx127x_on_dio1(dev);
-    }
-
-    if (irq & SX127X_IRQ_DIO2) {
+        break;
+    case SX127X_IRQ_DIO2:
         sx127x_on_dio2(dev);
-    }
-
-    if (irq & SX127X_IRQ_DIO3) {
+        break;
+    case SX127X_IRQ_DIO3:
         sx127x_on_dio3(dev);
-    }
-
-    if (irq & SX127X_IRQ_DIO4) {
+        break;
+    case SX127X_IRQ_DIO4:
         sx127x_on_dio4(dev);
-    }
-
-    if (irq & SX127X_IRQ_DIO5) {
+        break;
+    case SX127X_IRQ_DIO5:
         sx127x_on_dio5(dev);
+        break;
+    default:
+        break;
     }
 }
 
