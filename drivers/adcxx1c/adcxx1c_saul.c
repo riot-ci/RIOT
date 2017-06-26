@@ -24,7 +24,7 @@
 #include "saul.h"
 #include "adcxx1c.h"
 
-static int read_adc(void *dev, phydat_t *res)
+static int read_adc(const void *dev, phydat_t *res)
 {
     adcxx1c_read_raw((adcxx1c_t *)dev, res->val);
 

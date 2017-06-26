@@ -24,7 +24,7 @@
 #include "saul.h"
 #include "lis3dh.h"
 
-static int read_acc(void *dev, phydat_t *res)
+static int read_acc(const void *dev, phydat_t *res)
 {
     lis3dh_data_t xyz;
 

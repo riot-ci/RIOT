@@ -23,7 +23,7 @@
 #include "saul.h"
 #include "lps331ap.h"
 
-static int read(void *dev, phydat_t *res)
+static int read(const void *dev, phydat_t *res)
 {
     lps331ap_t *d = (lps331ap_t *)dev;
     res->val[0] = (int16_t)lps331ap_read_pres(d);

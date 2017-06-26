@@ -25,7 +25,7 @@
 #include "saul.h"
 #include "mma8x5x.h"
 
-static int read_acc(void *dev, phydat_t *res)
+static int read_acc(const void *dev, phydat_t *res)
 {
     mma8x5x_read((mma8x5x_t *)dev, (mma8x5x_data_t *)res);
 

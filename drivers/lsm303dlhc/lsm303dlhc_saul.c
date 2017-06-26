@@ -23,7 +23,7 @@
 #include "saul.h"
 #include "lsm303dlhc.h"
 
-static int read_acc(void *dev, phydat_t *res)
+static int read_acc(const void *dev, phydat_t *res)
 {
     lsm303dlhc_t *d = (lsm303dlhc_t *)dev;
     lsm303dlhc_read_acc(d, (lsm303dlhc_3d_data_t *)res);
@@ -39,7 +39,7 @@ static int read_acc(void *dev, phydat_t *res)
     return 3;
 }
 
-static int read_mag(void *dev, phydat_t *res)
+static int read_mag(const void *dev, phydat_t *res)
 {
     lsm303dlhc_t *d = (lsm303dlhc_t *)dev;
     lsm303dlhc_read_mag(d, (lsm303dlhc_3d_data_t *)res);

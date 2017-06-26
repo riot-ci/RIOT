@@ -24,7 +24,7 @@
 
 #include "bmx280.h"
 
-static int read_temperature(void *dev, phydat_t *res)
+static int read_temperature(const void *dev, phydat_t *res)
 {
     bmx280_t *d = (bmx280_t *)dev;
 
@@ -35,7 +35,7 @@ static int read_temperature(void *dev, phydat_t *res)
     return 1;
 }
 
-static int read_pressure(void *dev, phydat_t *res)
+static int read_pressure(const void *dev, phydat_t *res)
 {
     bmx280_t *d = (bmx280_t *)dev;
 
@@ -47,7 +47,7 @@ static int read_pressure(void *dev, phydat_t *res)
 }
 
 #ifdef MODULE_BME280
-static int read_relative_humidity(void *dev, phydat_t *res)
+static int read_relative_humidity(const void *dev, phydat_t *res)
 {
     bmx280_t *d = (bmx280_t *)dev;
 

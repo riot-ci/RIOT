@@ -23,7 +23,7 @@
 #include "saul.h"
 #include "l3g4200d.h"
 
-static int read(void *dev, phydat_t *res)
+static int read(const void *dev, phydat_t *res)
 {
     l3g4200d_t *d = (l3g4200d_t *)dev;
     l3g4200d_read(d, (l3g4200d_data_t *)res);
