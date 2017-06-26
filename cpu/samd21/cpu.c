@@ -114,7 +114,7 @@ static void clk_init(void)
     /* reset the GCLK module so it is in a known state */
     GCLK->CTRL.reg = GCLK_CTRL_SWRST;
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
-    
+
     /* setup generic clock 1 as 1MHz for timer.c */
     GCLK->GENDIV.reg = (GCLK_GENDIV_DIV(8) |
                         GCLK_GENDIV_ID(1));

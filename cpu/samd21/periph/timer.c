@@ -48,7 +48,6 @@ int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
     if (freq != 1000000ul) {
         return -1;
     }
-    
 
 /* select the clock generator depending on the main clock source:
  * GCLK0 (1MHz) if we use the internal 8MHz oscillator
