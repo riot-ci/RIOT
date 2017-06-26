@@ -27,9 +27,7 @@
 
 static int read_temperature(const void *dev, phydat_t *res)
 {
-    bmp180_t *d = (bmp180_t *)dev;
-
-    res->val[0] = bmp180_read_temperature(d);
+    res->val[0] = bmp180_read_temperature((const bmp180_t *)dev);
     res->unit = UNIT_TEMP_C;
     res->scale = -1;
     return 1;
@@ -37,9 +35,7 @@ static int read_temperature(const void *dev, phydat_t *res)
 
 static int read_pressure(const void *dev, phydat_t *res)
 {
-    bmp180_t *d = (bmp180_t *)dev;
-
-    res->val[0] = bmp180_read_pressure(d) / 100;
+    res->val[0] = bmp180_read_pressure((const bmp180_t *)dev) / 100;
     res->unit = UNIT_PA;
     res->scale = 2;
     return 1;

@@ -25,9 +25,9 @@
 
 static int read_illuminance(const void *dev, phydat_t *res)
 {
-    tsl2561_t *d = (tsl2561_t *)dev;
+    tsl2561_t *d = ;
 
-    res->val[0] = tsl2561_read_illuminance(d);
+    res->val[0] = tsl2561_read_illuminance((const tsl2561_t *)dev);
     res->unit = UNIT_LUX;
     res->scale = 0;
     return 1;

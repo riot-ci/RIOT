@@ -26,9 +26,7 @@
 
 static int read_uv(const void *dev, phydat_t *res)
 {
-    veml6070_t *d = (veml6070_t *)dev;
-
-    res->val[0] = veml6070_read_uv(d);
+    res->val[0] = veml6070_read_uv((const veml6070_t *)dev);
     res->unit = UNIT_NONE;
     res->scale = -1;
     return 1;

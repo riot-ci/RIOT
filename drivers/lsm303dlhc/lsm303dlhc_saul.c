@@ -25,8 +25,7 @@
 
 static int read_acc(const void *dev, phydat_t *res)
 {
-    lsm303dlhc_t *d = (lsm303dlhc_t *)dev;
-    lsm303dlhc_read_acc(d, (lsm303dlhc_3d_data_t *)res);
+    lsm303dlhc_read_acc((const lsm303dlhc_t *)dev, (lsm303dlhc_3d_data_t *)res);
 
     /* normalize result */
     int fac = (1 << (d->acc_scale >> 4));
@@ -41,8 +40,7 @@ static int read_acc(const void *dev, phydat_t *res)
 
 static int read_mag(const void *dev, phydat_t *res)
 {
-    lsm303dlhc_t *d = (lsm303dlhc_t *)dev;
-    lsm303dlhc_read_mag(d, (lsm303dlhc_3d_data_t *)res);
+    lsm303dlhc_read_mag((const lsm303dlhc_t *)dev, (lsm303dlhc_3d_data_t *)res);
 
     /* normalize results */
     int gain;
