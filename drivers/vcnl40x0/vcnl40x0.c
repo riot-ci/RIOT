@@ -105,7 +105,7 @@ uint16_t vcnl40x0_read_proximity(const vcnl40x0_t *dev)
             i2c_release(dev->params.i2c_dev);
             return res;
         }
-        xtimer_usleep(1 * US_PER_MS);
+        xtimer_usleep(1);
     }
 
     i2c_release(dev->params.i2c_dev);
@@ -130,7 +130,7 @@ uint16_t vcnl40x0_read_ambient_light(const vcnl40x0_t *dev)
             i2c_release(dev->params.i2c_dev);
             return res;
         }
-        xtimer_usleep(1 * US_PER_MS);
+        xtimer_usleep(1);
     }
 
     i2c_release(dev->params.i2c_dev);
