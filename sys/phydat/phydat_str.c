@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     driver_sensif
+ * @ingroup     sys_phydat
  * @{
  *
  * @file
- * @brief       Generic sensor/actuator data handling
+ * @brief       String helper functions for formatting and dumping phydat data
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
@@ -76,6 +76,8 @@ const char *phydat_unit_to_str(uint8_t unit)
         case UNIT_PA:       return "Pa";
         case UNIT_CD:       return "cd";
         case UNIT_PERCENT:  return "%";
+        case UNIT_PERMILL:  return "per mil";
+        case UNIT_PPM:      return "ppm";
         default:            return "";
     }
 }
