@@ -42,33 +42,41 @@ extern "C"
  * @brief   Named return values
  */
 enum {
-    MPL3115A2_OK,                 /**< all good */
-    MPL3115A2_ERROR_I2C,          /**< I2C communication failed */
-    MPL3115A2_ERROR_DEV,          /**< Device MPL3115A2 not found */
-    MPL3115A2_ERROR_CNF,          /**< Device configuration failed */
+    MPL3115A2_OK,               /**< all good */
+    MPL3115A2_ERROR_I2C,        /**< I2C communication failed */
+    MPL3115A2_ERROR_DEV,        /**< Device MPL3115A2 not found */
+    MPL3115A2_ERROR_CNF,        /**< Device configuration failed */
 };
 
 #ifndef MPL3115A2_I2C_ADDRESS
-#define MPL3115A2_I2C_ADDRESS       (0x60) /**< Pressure Sensor Default Address */
+/**
+ * @brief   MPL3115A2 Default Address
+ */
+#define MPL3115A2_I2C_ADDRESS   (0x60)
 #endif
 
 /**
  * @name    Oversample Ratio configuration
  * @{
  */
-#define MPL3115A2_OS_RATIO_1        (0x00) /**< Oversample Ratio 1, conversion time 6 ms */
-#define MPL3115A2_OS_RATIO_2        (0x01) /**< Oversample Ratio 2, conversion time 10 ms */
-#define MPL3115A2_OS_RATIO_4        (0x02) /**< Oversample Ratio 4, conversion time 18 ms */
-#define MPL3115A2_OS_RATIO_8        (0x03) /**< Oversample Ratio 8, conversion time 34 ms */
-#define MPL3115A2_OS_RATIO_16       (0x04) /**< Oversample Ratio 16, conversion time 66 ms */
-#define MPL3115A2_OS_RATIO_32       (0x05) /**< Oversample Ratio 32, conversion time 130 ms */
-#define MPL3115A2_OS_RATIO_64       (0x06) /**< Oversample Ratio 64, conversion time 258 ms */
-#define MPL3115A2_OS_RATIO_128      (0x07) /**< Oversample Ratio 128, conversion time 512 ms */
-#define MPL3115A2_OS_RATIO_DEFAULT  MPL3115A2_OS_RATIO_16 /**< Default Ratio for testing */
+enum {
+    MPL3115A2_OS_RATIO_1 = 0,   /**< Oversample Ratio 1, conversion 6ms */
+    MPL3115A2_OS_RATIO_2,       /**< Oversample Ratio 2, conversion 10ms */
+    MPL3115A2_OS_RATIO_4,       /**< Oversample Ratio 4, conversion 18ms */
+    MPL3115A2_OS_RATIO_8,       /**< Oversample Ratio 8, conversion 34ms */
+    MPL3115A2_OS_RATIO_16,      /**< Oversample Ratio 16, conversion 66ms */
+    MPL3115A2_OS_RATIO_32,      /**< Oversample Ratio 32, conversion 130ms */
+    MPL3115A2_OS_RATIO_64,      /**< Oversample Ratio 64, conversion 258ms */
+    MPL3115A2_OS_RATIO_128,     /**< Oversample Ratio 128, conversion 512ms */
+};
+#define MPL3115A2_OS_RATIO_DEFAULT  MPL3115A2_OS_RATIO_16 /**< Default Ratio */
 /** @} */
 
 #ifndef MPL3115A2_CONVERSION_TIME
-#define MPL3115A2_CONVERSION_TIME   (66000) /**< Maximum Conversion Time in us */
+/**
+ * @brief Maximum Conversion Time in us
+ */
+#define MPL3115A2_CONVERSION_TIME   (66000UL)
 #endif
 
 /**
@@ -77,7 +85,7 @@ enum {
 typedef struct {
     i2c_t i2c;                  /**< I2C bus the device is connected to */
     uint8_t addr;               /**< I2C bus address of the device */
-    uint8_t rate;               /**< sampling rate */
+    uint8_t ratio;              /**< MPL3115A2 oversampling ratio */
 } mpl3115a2_params_t;
 
 /**

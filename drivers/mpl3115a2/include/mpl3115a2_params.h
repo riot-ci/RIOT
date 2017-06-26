@@ -40,14 +40,14 @@ extern "C" {
 #define MPL3115A2_PARAM_ADDR        MPL3115A2_I2C_ADDRESS
 #endif
 
-#ifndef MPL3115A2_PARAM_RATE
-#define MPL3115A2_PARAM_RATE        MPL3115A2_OS_RATIO_DEFAULT
+#ifndef MPL3115A2_PARAM_RATIO
+#define MPL3115A2_PARAM_RATIO       MPL3115A2_OS_RATIO_DEFAULT
 #endif
 
 #ifndef MPL3115A2_PARAMS_DEFAULT
-#define MPL3115A2_PARAMS_DEFAULT    { .i2c  = MPL3115A2_PARAM_I2C, \
-                                      .addr = MPL3115A2_PARAM_ADDR, \
-                                      .rate = MPL3115A2_PARAM_RATE }
+#define MPL3115A2_PARAMS_DEFAULT    { .i2c   = MPL3115A2_PARAM_I2C, \
+                                      .addr  = MPL3115A2_PARAM_ADDR, \
+                                      .ratio = MPL3115A2_PARAM_RATIO }
 #endif
 /**@}*/
 

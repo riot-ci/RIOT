@@ -69,7 +69,7 @@ int mpl3115a2_init(mpl3115a2_t *dev, const mpl3115a2_params_t *params)
         return -MPL3115A2_ERROR_DEV;
     }
     /* set sample rate */
-    reg = MPL3115A2_CTRL_REG1_OS(dev->params.rate);
+    reg = MPL3115A2_CTRL_REG1_OS(dev->params.ratio);
     if (i2c_write_regs(BUS, ADDR, MPL3115A2_CTRL_REG1, &reg, 1) != 1) {
         i2c_release(BUS);
         LOG_ERROR("mpl3115a2_init: failed to set sample rate!\n");
