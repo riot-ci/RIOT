@@ -25,7 +25,7 @@
 
 
 
-static int read_temperature(void *dev, phydat_t *res)
+static int read_temperature(const void *dev, phydat_t *res)
 {
     int16_t temperature;
     jc42_t *d = (jc42_t *)dev;

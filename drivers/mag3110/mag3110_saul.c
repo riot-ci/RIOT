@@ -24,7 +24,7 @@
 #include "saul.h"
 #include "mag3110.h"
 
-static int read_mag(void *dev, phydat_t *res)
+static int read_mag(const void *dev, phydat_t *res)
 {
     mag3110_read((mag3110_t *)dev, (mag3110_data_t *)res);
 

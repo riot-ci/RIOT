@@ -21,7 +21,7 @@
 #include "saul.h"
 #include "adxl345.h"
 
-static int read_acc(void *dev, phydat_t *res)
+static int read_acc(const void *dev, phydat_t *res)
 {
     adxl345_t *d = (adxl345_t *)dev;
     adxl345_read(d, (adxl345_data_t *)res->val);

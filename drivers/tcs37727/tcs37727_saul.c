@@ -23,7 +23,7 @@
 #include "saul.h"
 #include "tcs37727.h"
 
-static int read(void *dev, phydat_t *res)
+static int read(const void *dev, phydat_t *res)
 {
     tcs37727_t *d = (tcs37727_t *)dev;
     tcs37727_data_t val;

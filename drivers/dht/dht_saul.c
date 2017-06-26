@@ -37,7 +37,7 @@
 static int16_t temp, hum;
 static uint32_t last = 0;
 
-static int check_and_read(void *dev, phydat_t *res, int16_t *val, uint8_t unit)
+static int check_and_read(const void *dev, phydat_t *res, int16_t *val, uint8_t unit)
 {
     dht_t *d = (dht_t *)dev;
     uint32_t now = xtimer_now_usec();
@@ -57,12 +57,12 @@ static int check_and_read(void *dev, phydat_t *res, int16_t *val, uint8_t unit)
     return 1;
 }
 
-static int read_temp(void *dev, phydat_t *res)
+static int read_temp(const void *dev, phydat_t *res)
 {
     return check_and_read(dev, res, &temp, UNIT_TEMP_C);
 }
 
-static int read_hum(void *dev, phydat_t *res)
+static int read_hum(const void *dev, phydat_t *res)
 {
     return check_and_read(dev, res, &hum, UNIT_PERCENT);
 }

@@ -24,7 +24,7 @@
 #include "veml6070.h"
 #include "xtimer.h"
 
-static int read_uv(void *dev, phydat_t *res)
+static int read_uv(const void *dev, phydat_t *res)
 {
     veml6070_t *d = (veml6070_t *)dev;
 

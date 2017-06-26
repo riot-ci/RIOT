@@ -25,7 +25,7 @@
 #include "periph/gpio.h"
 
 
-static int read(void *dev, phydat_t *res)
+static int read(const void *dev, phydat_t *res)
 {
     gpio_t pin = *((gpio_t *)dev);
     res->val[0] = (gpio_read(pin)) ? 1 : 0;
@@ -35,7 +35,7 @@ static int read(void *dev, phydat_t *res)
     return 1;
 }
 
-static int write(void *dev, phydat_t *state)
+static int write(const void *dev, phydat_t *state)
 {
     gpio_t pin = *((gpio_t *)dev);
     gpio_write(pin, state->val[0]);

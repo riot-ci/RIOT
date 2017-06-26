@@ -25,7 +25,7 @@
 #include "bmp180.h"
 #include "xtimer.h"
 
-static int read_temperature(void *dev, phydat_t *res)
+static int read_temperature(const void *dev, phydat_t *res)
 {
     bmp180_t *d = (bmp180_t *)dev;
 
@@ -35,7 +35,7 @@ static int read_temperature(void *dev, phydat_t *res)
     return 1;
 }
 
-static int read_pressure(void *dev, phydat_t *res)
+static int read_pressure(const void *dev, phydat_t *res)
 {
     bmp180_t *d = (bmp180_t *)dev;
 

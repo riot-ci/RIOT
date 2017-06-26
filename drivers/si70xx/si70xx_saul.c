@@ -22,7 +22,7 @@
 
 #include "si70xx.h"
 
-static int read_temperature(void *dev, phydat_t *res)
+static int read_temperature(const void *dev, phydat_t *res)
 {
     si70xx_t *d = (si70xx_t *)dev;
 
@@ -33,7 +33,7 @@ static int read_temperature(void *dev, phydat_t *res)
     return 1;
 }
 
-static int read_relative_humidity(void *dev, phydat_t *res)
+static int read_relative_humidity(const void *dev, phydat_t *res)
 {
     si70xx_t *d = (si70xx_t *)dev;
 
