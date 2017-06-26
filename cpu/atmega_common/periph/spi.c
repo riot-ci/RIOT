@@ -48,29 +48,13 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
-
-    /* The pin configuration for atmega2560 and atmega1281 is:
-     * - PB3: MISO (configure as input - done automatically)
-     * - PB2: MOSI (configure as output)
-     * - PB1: SCK  (configure as output)
-     * - PB0: SS   (configure as output, but unused)
-     *
-     * The pin configuration for atmega328p is:
-     * - PB4: MISO (configure as input - done automatically)
-     * - PB3: MOSI (configure as output)
-     * - PB5: SCK  (configure as output)
-     * - PB2: SS   (configure as output, but unused)
-     *
-     * The SS pin must be configured as output for the SPI device to work as
-     * master correctly, though we do not use it for now (as we handle the chip
-     * select externally for now)
-     */
-     #if defined (CPU_ATMEGA2560) || defined (CPU_ATMEGA1281)
-     DDRB |= ((1 << DDB2) | (1 << DDB1) | (1 << DDB0));
-     #endif
-     #ifdef CPU_ATMEGA328P
-     DDRB |= ((1 << DDB2) | (1 << DDB3) | (1 << DDB5));
-     #endif
+    /* set SPI pins as output */
+    #if defined (CPU_ATMEGA2560) || defined (CPU_ATMEGA1281)
+    DDRB |= ((1 << DDB2) | (1 << DDB1) | (1 << DDB0));
+    #endif
+    #ifdef CPU_ATMEGA328P
+    DDRB |= ((1 << DDB2) | (1 << DDB3) | (1 << DDB5));
+    #endif
 }
 
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
