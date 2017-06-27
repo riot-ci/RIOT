@@ -102,8 +102,16 @@ typedef struct _nib_onl_entry {
      * @note    Only available if @ref GNRC_IPV6_NIB_CONF_ARSM != 0.
      */
     uint8_t l2addr[GNRC_IPV6_NIB_L2ADDR_MAX_LEN];
-    evtimer_msg_event_t reach_timeout;  /**< Event for @ref GNRC_IPV6_NIB_REACH_TIMEOUT */
-    evtimer_msg_event_t delay_timeout;  /**< Event for @ref GNRC_IPV6_NIB_DELAY_TIMEOUT */
+    /**
+     * @brief Event for @ref GNRC_IPV6_NIB_REACH_TIMEOUT and
+     *        @ref GNRC_IPV6_NIB_DELAY_TIMEOUT
+     *
+     * @note    Events of these types can't be in the event queue at the same
+     *          time (since they only have one NUD state at a time). Because of
+     *          this we can use one event for both of them (but need the
+     *          different types, since the events are handled differently)
+     */
+    evtimer_msg_event_t nud_timeout;
 #endif
 
     /**
@@ -674,7 +682,7 @@ static inline void _evtimer_add(void *ctx, int16_t type,
     kernel_pid_t target_pid = KERNEL_PID_LAST;  /* just for testing */
 #endif
     evtimer_del((evtimer_t *)(&_nib_evtimer), (evtimer_event_t *)event);
-    assert(event->event.next == NULL);
+    event->event.next = NULL;
     event->event.offset = offset;
     event->msg.type = type;
     event->msg.content.ptr = ctx;

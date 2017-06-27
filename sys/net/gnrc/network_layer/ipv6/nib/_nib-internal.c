@@ -214,7 +214,7 @@ void _nib_nc_set_reachable(_nib_onl_entry_t *node)
           _nib_onl_get_if(node), iface->reach_time);
     node->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
     node->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE;
-    _evtimer_add(node, GNRC_IPV6_NIB_REACH_TIMEOUT, &node->reach_timeout,
+    _evtimer_add(node, GNRC_IPV6_NIB_REACH_TIMEOUT, &node->nud_timeout,
                  iface->reach_time);
 #else
     (void)node;
@@ -227,7 +227,9 @@ void _nib_nc_remove(_nib_onl_entry_t *node)
           ipv6_addr_to_str(addr_str, &node->ipv6, sizeof(addr_str)),
           _nib_onl_get_if(node));
     node->mode &= ~(_NC);
-    /* TODO: remove NC related timers */
+#if GNRC_IPV6_NIB_CONF_ARSM
+    evtimer_del((evtimer_t *)&_nib_evtimer, &node->nud_timeout.event);
+#endif
     _nib_onl_clear(node);
 }
 
