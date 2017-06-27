@@ -237,8 +237,8 @@ static const i2c_conf_t i2c_config[] = {
  * @{
  */
 static const dac_conf_t dac_config[] = {
-    [0] = { .pin = GPIO_PIN(PORT_A,  4), .chan = 0 },
-    [1] = { .pin = GPIO_PIN(PORT_A,  5), .chan = 1 }
+    { .pin = GPIO_PIN(PORT_A,  4), .chan = 0 },
+    { .pin = GPIO_PIN(PORT_A,  5), .chan = 1 }
 };
 
 #define DAC_NUMOF           (sizeof(dac_config) / sizeof(dac_config[0]))
