@@ -35,6 +35,13 @@
 #define EN_MASK             (DAC_CR_EN1)
 #endif
 
+/* get RCC bit */
+#ifdef RCC_APB1ENR_DAC1EN
+#define RCC_BIT             (RCC_APB1ENR_DAC1EN)
+#else
+#define RCC_BIT             (RCC_APB1ENR_DACEN)
+#endif
+
 /* deduct DAC device from given line channel */
 static inline DAC_TypeDef *dev(dac_t line)
 {
@@ -90,10 +97,8 @@ void dac_poweron(dac_t line)
 #if defined(DAC2)
     periph_clk_en(APB1, (dac_config[line].chan > 1) ?
                   RCC_APB1ENR_DAC2EN : RCC_APB1ENR_DAC1EN);
-#elif defined(DAC1)
-    periph_clk_en(APB1, RCC_APB1ENR_DAC1EN);
 #else
-    periph_clk_en(APB1, RCC_APB1ENR_DACEN);
+    periph_clk_en(APB1, RCC_BIT);
 #endif
 
     /* enable corresponding DAC channel */
@@ -112,10 +117,8 @@ void dac_poweroff(dac_t line)
 #if defined(DAC2)
         periph_clk_dis(APB1, (dac_config[line].chan > 1) ?
                       RCC_APB1ENR_DAC2EN : RCC_APB1ENR_DAC1EN);
-#elif defined(DAC1)
-        periph_clk_dis(APB1, RCC_APB1ENR_DAC1EN);
 #else
-        periph_clk_dis(APB1, RCC_APB1ENR_DACEN);
+        periph_clk_dis(APB1, RCC_BIT);
 #endif
     }
 }
