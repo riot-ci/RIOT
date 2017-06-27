@@ -32,7 +32,7 @@ void phydat_dump(phydat_t *data, uint8_t dim)
     }
     printf("Data:");
     for (uint8_t i = 0; i < dim; i++) {
-        char scale_str = phydat_scale_to_str(data->scale);
+        char scale_str = phydat_scale_to_str(data->scale, data->unit);
 
         printf("\t[%i] ", (int)i);
 
@@ -64,6 +64,8 @@ const char *phydat_unit_to_str(uint8_t unit)
         case UNIT_TEMP_K:   return "K";
         case UNIT_LUX:      return "lx";
         case UNIT_M:        return "m";
+        case UNIT_M2:       return "m^2";
+        case UNIT_M3:       return "m^3";
         case UNIT_G:        return "g";
         case UNIT_DPS:      return "dps";
         case UNIT_GR:       return "G";
@@ -78,14 +80,35 @@ const char *phydat_unit_to_str(uint8_t unit)
     }
 }
 
-char phydat_scale_to_str(int8_t scale)
+char phydat_scale_to_str(int8_t scale, uint8_t unit)
 {
+    /* extra handling for multi and non dimensional units */
+    switch (unit) {
+        case UNIT_M2:       /* rescale for 2d unit */
+            if (scale % 2 != 0) {
+                return '\0';
+            }
+            scale /= 2;
+            break;
+        case UNIT_M3:       /* rescale for 3d unit */
+            if (scale % 3 != 0) {
+                return '\0';
+            }
+            scale /= 3;
+            break;
+        case UNIT_UNDEF:
+        case UNIT_NONE:
+        case UNIT_PERCENT:
+            return '\0';    /* no scaling */
+    }
+
     switch (scale) {
         case -3:    return 'm';
         case -6:    return 'u';
         case -9:    return 'n';
         case -12:   return 'p';
         case -15:   return 'f';
+        case 2:     return 'h';
         case 3:     return 'k';
         case 6:     return 'M';
         case 9:     return 'G';
