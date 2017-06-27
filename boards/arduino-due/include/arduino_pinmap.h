@@ -113,6 +113,14 @@ extern "C" {
 #define ARDUINO_PIN_78          GPIO_PIN(PB, 23)
 /** @ */
 
+/**
+ * @name    Mapping of Ardunino DAC pins to RIOT DAC lines
+ * @{
+ */
+#define ARDUINO_DAC0            DAC_LINE(0)
+#define ARDUINO_DAC1            DAC_LINE(1)
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
