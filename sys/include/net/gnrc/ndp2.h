@@ -282,7 +282,7 @@ void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
  * on @p netif the @ref NDP_NBR_ADV_FLAGS_O flag will be set.
  *
  * The source address of the IPv6 packet will be left unspecified, so the
- * @ref gnrc_ipv6 "IPv6 module" selects a fitting IPv6 address.
+ * @ref net_gnrc_ipv6 "IPv6 module" selects a fitting IPv6 address.
  *
  * @param[in] tgt           Target address for the neighbor advertisement. May
  *                          not be NULL and **MUST NOT** be multicast.
