@@ -1,4 +1,4 @@
-APPLICATION = test_ssp
+APPLICATION = ssp
 include ../Makefile.tests_common
 
 # avr8 and msp430 don't support ssp
