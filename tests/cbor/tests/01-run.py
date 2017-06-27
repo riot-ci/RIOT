@@ -15,38 +15,38 @@ import testrunner
 ACCEPTED_ERROR = 20
 
 def testfunc(child):
-    child.expect(r'''Data:\r
-\(uint64_t, 1\)\r
-\(uint64_t, 2\)\r
-\(uint64_t, 3\)\r
-\(int64_t, -5\)\r
-\(bool, 1\)\r
-\(float, 1\.099609\)\r
-\(float, 1\.500000\)\r
-\(double, 2\.000000\)\r
-\(byte string, "abc"\)\r
-\(unicode string, "def"\)\r
-\(array, length: 2\)\r
-  \(uint64_t, 0\)\r
-  \(uint64_t, 1\)\r
-\(array, length: \[indefinite\]\)\r
-  \(uint64_t, 10\)\r
-  \(uint64_t, 11\)\r
-\(map, length: 2\)\r
- \(uint64_t, 1\)\r
-  \(byte string, "1"\)\r
- \(uint64_t, 2\)\r
-  \(byte string, "2"\)\r
-\(map, length: \[indefinite\]\)\r
- \(uint64_t, 10\)\r
-  \(byte string, "10"\)\r
- \(uint64_t, 11\)\r
-  \(byte string, "11"\)\r
-\(tag: 0, date/time string: "[\w :]+"\)\r
-\(tag: 1, date/time epoch: \d+\)\r
-\(unsupported, 0xC2\r
-\)\r
-\(byte string, \"1\"\)''')
+    child.expect_exact('Data:')
+    child.expect_exact('(uint64_t, 1)')
+    child.expect_exact('(uint64_t, 2)')
+    child.expect_exact('(uint64_t, 3)')
+    child.expect_exact('(int64_t, -5)')
+    child.expect_exact('(bool, 1)')
+    child.expect_exact('(float, 1.099609)')
+    child.expect_exact('(float, 1.500000)')
+    child.expect_exact('(double, 2.000000)')
+    child.expect_exact('(byte string, "abc")')
+    child.expect_exact('(unicode string, "def")')
+    child.expect_exact('(array, length: 2)')
+    child.expect_exact('  (uint64_t, 0)')
+    child.expect_exact('  (uint64_t, 1)')
+    child.expect_exact('(array, length: [indefinite])')
+    child.expect_exact('  (uint64_t, 10)')
+    child.expect_exact('  (uint64_t, 11)')
+    child.expect_exact('(map, length: 2)')
+    child.expect_exact(' (uint64_t, 1)')
+    child.expect_exact('  (byte string, "1")')
+    child.expect_exact(' (uint64_t, 2)')
+    child.expect_exact('  (byte string, "2")')
+    child.expect_exact('(map, length: [indefinite])')
+    child.expect_exact(' (uint64_t, 10)')
+    child.expect_exact('  (byte string, "10")')
+    child.expect_exact(' (uint64_t, 11)')
+    child.expect_exact('  (byte string, "11")')
+    child.expect(r'\(tag: 0, date/time string: "[\w :]+"\)')
+    child.expect(r'\(tag: 1, date/time epoch: \d+\)')
+    child.expect_exact('(unsupported, 0xC2')
+    child.expect_exact(')')
+    child.expect_exact('(byte string, "1")')
 
     print("All tests successful")
 
