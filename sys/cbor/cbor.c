@@ -938,7 +938,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
 
         case CBOR_ARRAY: {
             const bool is_indefinite = (stream->data[offset] == (CBOR_ARRAY | CBOR_VAR_FOLLOWS));
-            uint64_t array_length;
+            uint64_t array_length = 0;
             size_t read_bytes;
 
             if (is_indefinite) {
@@ -971,7 +971,7 @@ static size_t cbor_stream_decode_at(cbor_stream_t *stream, size_t offset, int in
 
         case CBOR_MAP: {
             const bool is_indefinite = (stream->data[offset] == (CBOR_MAP | CBOR_VAR_FOLLOWS));
-            uint64_t map_length;
+            uint64_t map_length = 0;
             size_t read_bytes;
 
             if (is_indefinite) {
