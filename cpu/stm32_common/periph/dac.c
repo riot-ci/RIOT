@@ -9,7 +9,7 @@
 
 /**
  * @ingroup     cpu_cortexm_common
- * @ingroup     drivers_periph_adc
+ * @ingroup     drivers_periph_dac
  * @{
  *
  * @file
