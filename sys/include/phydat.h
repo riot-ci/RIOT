@@ -165,7 +165,7 @@ const char *phydat_unit_to_str(uint8_t unit);
  *
  * @param[in] scale     scale factor to convert
  */
-char phydat_scale_to_str(int8_t scale);
+char phydat_scale_to_str(int8_t scale, uint8_t unit);
 
 #ifdef __cplusplus
 }
