@@ -31,12 +31,7 @@
 
 static void my_cbor_print(const cbor_stream_t *stream)
 {
-#ifdef MODULE_CBOR_PRINT
     cbor_stream_print(stream);
-#else
-    (void)stream;
-    printf("<no print support>");
-#endif
 }
 
 #define CBOR_CHECK_SERIALIZED(stream, expected_value, expected_value_size) do { \
@@ -810,7 +805,7 @@ void test_stream_decode(void)
     cbor_serialize_byte_string(&stream, "1");
 #endif /* MODULE_CBOR_SEMANTIC_TAGGING */
 
-    cbor_stream_decode(&stream);
+    //cbor_stream_decode(&stream);
 }
 #endif /* MODULE_CBOR_PRINT */
 

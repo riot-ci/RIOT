@@ -183,7 +183,6 @@ void cbor_clear(cbor_stream_t *stream);
  */
 void cbor_destroy(cbor_stream_t *stream);
 
-#ifdef MODULE_CBOR_PRINT
 /**
  * @brief Print @p stream in hex representation
  *
@@ -210,7 +209,6 @@ void cbor_stream_print(const cbor_stream_t *stream);
  * @param[in] stream Pointer to the cbor struct
  */
 void cbor_stream_decode(cbor_stream_t *stream);
-#endif /* MODULE_CBOR_PRINT */
 
 /**
  * @brief Serializes an integer

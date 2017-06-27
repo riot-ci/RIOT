@@ -223,7 +223,6 @@ static uint16_t encode_float_half(float x)
 }
 #endif /* MODULE_CBOR_FLOAT */
 
-#ifdef MODULE_CBOR_PRINT
 /**
  * Print @p size bytes at @p data in hexadecimal display format
  */
@@ -240,7 +239,6 @@ void dump_memory(const unsigned char *data, size_t size)
     }
     puts("");
 }
-#endif /* MODULE_CBOR_PRINT */
 
 void cbor_init(cbor_stream_t *stream, unsigned char *buffer, size_t size)
 {
@@ -871,7 +869,6 @@ bool cbor_at_end(const cbor_stream_t *s, size_t offset)
     return s ? offset >= s->pos - 1 : true;
 }
 
-#ifdef MODULE_CBOR_PRINT
 /* BEGIN: Printers */
 void cbor_stream_print(const cbor_stream_t *stream)
 {
@@ -1083,7 +1080,4 @@ void cbor_stream_decode(cbor_stream_t *stream)
 
     puts("");
 }
-
-#endif /* MODULE_CBOR_PRINT */
-
 /* END: Printers */
