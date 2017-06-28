@@ -179,29 +179,31 @@ size_t fmt_s16_dec(char *out, int16_t val);
  * @brief Convert 16-bit fixed point number to a decimal string
  *
  * The input for this function is a signed 16-bit integer holding the fixed
- * point value as well as an unsigned integer defining the position of the
- * decimal point, so this value defines the number of decimal digits after the
- * decimal point.
- *
- * The resulting string will always be patted with zeros after the decimal point.
- *
- * For example: if @p val is -3548 and @p fp_digits is 2, the resulting string
- * will be "-35.48". For @p val := 12010 and @p fp_digits := 3 the result will
- * be "12.010".
+ * point value as well as an integer defining the position of the decimal point.
+ * This function can be used both to express fixed point numbers that have
+ * digits after the decimal point (negative @p fp_digits value), as well as
+ * numbers that have additional zeros before the decimal points (positive
+ * @p fp_digits value).
  *
  * Will add a leading "-" if @p val is negative.
  *
  * If @p out is NULL, will only return the number of bytes that would have
  * been written.
  *
- * @param[out] out          Pointer to the output buffer, or NULL
- * @param[in]  val          Fixed point value, MUST be <= 4
- * @param[in]  fp_digits    Number of digits after the decimal point
+ * For example: if @p val is -3548 and @p fp_digits is -2, the resulting string
+ * will be "-35.48". For @p val := 12010 and @p fp_digits := -3 the result will
+ * be "12.010". Passing @p val := 12345 and @p fp_digits := 3 will result in
+ * "12345000".
  *
- * @return      Length of the resulting string
- * @return      0 if @p fp_digits is > 4
+ * @param[out] out          Pointer to the output buffer, or NULL
+ * @param[in]  val          Fixed point value, MUST be >-32768
+ * @param[in]  fp_digits    Number of digits after the decimal point, MUST be
+ *                          >= -4 and <= 6
+ *
+ * @return      Number of characters (bytes) written to @p out
+ * @return      0 on invalid parameters
  */
-size_t fmt_s16_dfp(char *out, int16_t val, unsigned fp_digits);
+size_t fmt_s16_dfp(char *out, int16_t val, int fp_digits);
 
 /**
  * @brief Format float to string
