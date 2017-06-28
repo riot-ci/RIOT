@@ -326,7 +326,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             *((uint8_t*) val) = sx127x_get_hop_period(dev);
             break;
 
-        case NETOPT_LORA_SINGLE_RECEIVE:
+        case NETOPT_SINGLE_RECEIVE:
             *((uint8_t*) val) = sx127x_get_rx_single((sx127x_t*) netdev);
             return sizeof(uint8_t);
 
@@ -384,21 +384,21 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_hop_period(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_TX_POWER:
-            sx127x_set_tx_power(dev, *((uint8_t*) val));
-            return sizeof(uint16_t);
-
-        case NETOPT_TX_TIMEOUT:
-            sx127x_set_tx_timeout(dev, *((uint32_t*) val));
-            return sizeof(uint32_t);
+        case NETOPT_SINGLE_RECEIVE:
+            sx127x_set_rx_single((sx127x_t*) netdev, *((uint8_t*) val));
+            return sizeof(uint8_t);
 
         case NETOPT_RX_TIMEOUT:
             sx127x_set_rx_timeout(dev, *((uint32_t*) val));
             return sizeof(uint32_t);
 
-        case NETOPT_LORA_SINGLE_RECEIVE:
-            sx127x_set_rx_single((sx127x_t*) netdev, *((uint8_t*) val));
-            return sizeof(uint8_t);
+        case NETOPT_TX_TIMEOUT:
+            sx127x_set_tx_timeout(dev, *((uint32_t*) val));
+            return sizeof(uint32_t);
+
+        case NETOPT_TX_POWER:
+            sx127x_set_tx_power(dev, *((uint8_t*) val));
+            return sizeof(uint16_t);
 
         case NETOPT_LORA_FIXED_HEADER:
             sx127x_set_fixed_header_len_mode(dev, *((netopt_enable_t*) val) ? true : false);
