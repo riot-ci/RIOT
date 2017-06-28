@@ -235,7 +235,7 @@ int send_cmd(int argc, char **argv)
 int listen_cmd(int argc, char **argv)
 {
     /* Switch to continuous listen mode */
-    netdev->driver->set(netdev, NETOPT_LORA_SINGLE_RECEIVE, false, sizeof(uint8_t));
+    netdev->driver->set(netdev, NETOPT_SINGLE_RECEIVE, false, sizeof(uint8_t));
     sx127x_set_rx(&sx127x);
 
     printf("Listen mode set\n");
