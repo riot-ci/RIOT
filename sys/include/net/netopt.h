@@ -297,6 +297,13 @@ typedef enum {
     NETOPT_FREQUENCY_HOP_PERIOD,
 
     /**
+      * @brief   Enable/disable single packet reception.
+      * 
+      * If enabled, RX is turned off upon reception of a packet
+      */
+    NETOPT_SINGLE_RECEIVE,
+
+    /**
      * @brief   Get/Set the reception timeout of a packet
      * 
      * Values are retrieved/passed as uint32_t in host byte order.
@@ -373,12 +380,6 @@ typedef enum {
      * @name LoRA specific options.
      * @{
      */
-    /**
-      * @brief   Enable/disable single packet reception.
-      * 
-      * If enabled, RX is turned off upon reception of a packet
-      */
-    NETOPT_LORA_SINGLE_RECEIVE,
     /**
      * @brief   Enable/disable fixed header mode (implicit header mode)
      *
