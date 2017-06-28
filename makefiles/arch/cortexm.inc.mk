@@ -11,8 +11,9 @@ endif
 export CFLAGS_LINK  = -ffunction-sections -fdata-sections -fno-builtin -fshort-enums
 export CFLAGS_DBG  ?= -ggdb -g3
 export CFLAGS_OPT  ?= -Os
+export CFLAGS_UTIL ?= -fdiagnostics-color
 
-export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
+export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT) $(CFLAGS_UTIL)
 
 export ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
 export LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts -L$(RIOTCPU)/cortexm_common/ldscripts
