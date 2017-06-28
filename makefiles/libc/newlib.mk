@@ -13,7 +13,8 @@ ifeq (1,$(USE_NEWLIB_NANO))
   export LINKFLAGS += -specs=nano.specs
 endif
 
-export LINKFLAGS += -lc -lnosys
+
+export LINKFLAGS += -lc
 
 # Search for Newlib include directories
 
