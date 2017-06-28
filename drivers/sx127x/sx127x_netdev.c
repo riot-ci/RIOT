@@ -292,19 +292,23 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_STATE:
             return _get_state((sx127x_t*) netdev, val);
 
+        case NETOPT_MODEM_TYPE:
+            *((uint8_t*) val) = dev->settings.modem;
+            return sizeof(uint8_t);
+
         case NETOPT_CHANNEL:
             *((uint32_t*) val) = sx127x_get_channel((sx127x_t*) netdev);
             return sizeof(uint32_t);
 
-        case NETOPT_LORA_BANDWIDTH:
+        case NETOPT_BANDWIDTH:
             *((uint8_t*) val) = sx127x_get_bandwidth((sx127x_t*) netdev);
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_SPREADING_FACTOR:
+        case NETOPT_SPREADING_FACTOR:
             *((uint8_t*) val) = sx127x_get_spreading_factor((sx127x_t*) netdev);
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_CODING_RATE:
+        case NETOPT_CODING_RATE:
             *((uint8_t*) val) = sx127x_get_coding_rate((sx127x_t*) netdev);
             return sizeof(uint8_t);
 
@@ -350,19 +354,23 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
         case NETOPT_STATE:
             return _set_state((sx127x_t*) netdev, *((netopt_state_t*) val));
 
+        case NETOPT_MODEM_TYPE:
+            sx127x_set_modem(dev, *((uint8_t*) val));
+            return sizeof(netopt_enable_t);
+
         case NETOPT_CHANNEL:
             sx127x_set_channel((sx127x_t*) netdev, *((uint32_t*) val));
             return sizeof(uint32_t);
 
-        case NETOPT_LORA_BANDWIDTH:
+        case NETOPT_BANDWIDTH:
             sx127x_set_bandwidth((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_SPREADING_FACTOR:
+        case NETOPT_SPREADING_FACTOR:
             sx127x_set_spreading_factor((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_CODING_RATE:
+        case NETOPT_CODING_RATE:
             sx127x_set_coding_rate((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
@@ -418,11 +426,7 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_rx_timeout(dev, *((uint32_t*) val));
             return sizeof(uint32_t);
 
-        case NETOPT_LORA_MODE:
-            sx127x_set_modem(dev, *((netopt_enable_t*) val) ? SX127X_MODEM_LORA : SX127X_MODEM_FSK);
-            return sizeof(netopt_enable_t);
-
-        case NETOPT_LORA_MAX_PAYLOAD:
+        case NETOPT_MAX_PACKET_SIZE:
             sx127x_set_max_payload_len(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
