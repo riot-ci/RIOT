@@ -120,11 +120,12 @@ pid_t _getpid_r(struct _reent *ptr)
 /**
 * @brief Send a signal to a given thread
 *
-* @param r TODO
-* @param pid TODO
-* @param sig TODO
+* @param r pointer to reent structure
+* @param pid process ID to kill
+* @param sig signal number to pass to process
 *
-* @return TODO
+* @return -1 on error
+* @return 0 on sucess
 */
 __attribute__ ((weak))
 int _kill_r(struct _reent *r, pid_t pid, int sig)
@@ -291,10 +292,12 @@ int _unlink_r(struct _reent *r, const char *path)
 /**
 * @brief Query whether output stream is a terminal
 *
-* @param r TODO
-* @param fd TODO
+* @param r pointer to reent structure
+* @param fd descriptor of stream to query
 *
-* @return TODO
+* @return 0 for none tty
+* @return 1 for tty
+*
 */
 int _isatty_r(struct _reent *r, int fd)
 {
@@ -311,7 +314,9 @@ int _isatty_r(struct _reent *r, int fd)
 * @param[in] pid the pid to send to
 * @param[in] sig the signal to send
 *
-* @return TODO
+* @return 0 on success
+* @return -1 on error
+*
 */
 __attribute__ ((weak))
 int _kill(pid_t pid, int sig)
