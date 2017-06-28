@@ -303,9 +303,10 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             case NETDEV_EVENT_RX_COMPLETE:
                 len = dev->driver->recv(dev, NULL, 5, &packet_info);
                 dev->driver->recv(dev, message, len, NULL);
-                printf("{Payload: \"%s\" (%d bytes), RSSI: %i, SNR: %i}\n",
+                printf("{Payload: \"%s\" (%d bytes), RSSI: %i, SNR: %i, TOA: %i}\n",
                        message, (int)len,
-                       packet_info.rssi, (int)packet_info.snr);
+                       packet_info.rssi, (int)packet_info.snr,
+                       (int)packet_info.time_on_air);
                 break;
             case NETDEV_EVENT_TX_COMPLETE:
                 puts("Transmission completed");
