@@ -202,6 +202,8 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 }
             }
 
+            packet_info->time_on_air = sx127x_get_time_on_air(dev);
+
             size = sx127x_reg_read(dev, SX127X_REG_LR_RXNBBYTES);
             if (buf == NULL) {
                 return size;
@@ -312,31 +314,23 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             *((uint8_t*) val) = sx127x_get_coding_rate((sx127x_t*) netdev);
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_SINGLE_RECEIVE:
-            *((uint8_t*) val) = sx127x_get_rx_single((sx127x_t*) netdev);
-            return sizeof(uint8_t);
-
-        case NETOPT_LORA_SYNCWORD:
-            *((uint8_t*) val) = sx127x_get_syncword((sx127x_t*) netdev);
-            return sizeof(uint8_t);
-
         case NETOPT_CRC:
             *((netopt_enable_t*) val) = sx127x_get_crc((sx127x_t*) netdev) ? NETOPT_ENABLE : NETOPT_DISABLE;
             break;
 
-        case NETOPT_LORA_HOP:
+        case NETOPT_FREQUENCY_HOP:
             *((netopt_enable_t*) val) = dev->settings.lora.freq_hop_on ? NETOPT_ENABLE : NETOPT_DISABLE;
             break;
 
-        case NETOPT_LORA_HOP_PERIOD:
+        case NETOPT_FREQUENCY_HOP_PERIOD:
             *((uint8_t*) val) = sx127x_get_hop_period(dev);
             break;
 
-        case NETOPT_LORA_TIME_ON_AIR:
-            *((uint32_t*) val) = sx127x_get_time_on_air(dev);
-            break;
+        case NETOPT_LORA_SINGLE_RECEIVE:
+            *((uint8_t*) val) = sx127x_get_rx_single((sx127x_t*) netdev);
+            return sizeof(uint8_t);
 
-        case NETOPT_LORA_RANDOM:
+        case NETOPT_RANDOM:
             *((uint32_t*) val) = sx127x_random(dev);
             break;
 
@@ -374,24 +368,36 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_coding_rate((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_LORA_SINGLE_RECEIVE:
-            sx127x_set_rx_single((sx127x_t*) netdev, *((uint8_t*) val));
-            return sizeof(uint8_t);
-
-        case NETOPT_LORA_SYNCWORD:
-            sx127x_set_syncword((sx127x_t*) netdev, *((uint8_t*) val));
+        case NETOPT_MAX_PACKET_SIZE:
+            sx127x_set_max_payload_len(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
         case NETOPT_CRC:
             sx127x_set_crc((sx127x_t*) netdev, *((netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
 
-        case NETOPT_LORA_HOP:
+        case NETOPT_FREQUENCY_HOP:
             sx127x_set_freq_hop(dev, *((netopt_enable_t*) val) ? true : false);
            return sizeof(netopt_enable_t);
 
-        case NETOPT_LORA_HOP_PERIOD:
+        case NETOPT_FREQUENCY_HOP_PERIOD:
             sx127x_set_hop_period(dev, *((uint8_t*) val));
+            return sizeof(uint8_t);
+
+        case NETOPT_TX_POWER:
+            sx127x_set_tx_power(dev, *((uint8_t*) val));
+            return sizeof(uint16_t);
+
+        case NETOPT_TX_TIMEOUT:
+            sx127x_set_tx_timeout(dev, *((uint32_t*) val));
+            return sizeof(uint32_t);
+
+        case NETOPT_RX_TIMEOUT:
+            sx127x_set_rx_timeout(dev, *((uint32_t*) val));
+            return sizeof(uint32_t);
+
+        case NETOPT_LORA_SINGLE_RECEIVE:
+            sx127x_set_rx_single((sx127x_t*) netdev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
         case NETOPT_LORA_FIXED_HEADER:
@@ -402,37 +408,13 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_payload_length(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
-        case NETOPT_TX_POWER:
-            sx127x_set_tx_power(dev, *((uint8_t*) val));
-            return sizeof(uint16_t);
-
-        case NETOPT_LORA_PREAMBLE_LENGTH:
+        case NETOPT_PREAMBLE_LENGTH:
             sx127x_set_preamble_length(dev, *((uint16_t*) val));
-            return sizeof(uint16_t);
-
-        case NETOPT_LORA_SYMBOL_TIMEOUT:
-            sx127x_set_symbol_timeout(dev, *((uint16_t*) val));
             return sizeof(uint16_t);
 
         case NETOPT_LORA_IQ_INVERT:
             sx127x_set_iq_invert(dev, *((bool*) val));
             return sizeof(bool);
-
-        case NETOPT_LORA_TX_TIMEOUT:
-            sx127x_set_tx_timeout(dev, *((uint32_t*) val));
-            return sizeof(uint32_t);
-
-        case NETOPT_LORA_RX_TIMEOUT:
-            sx127x_set_rx_timeout(dev, *((uint32_t*) val));
-            return sizeof(uint32_t);
-
-        case NETOPT_MAX_PACKET_SIZE:
-            sx127x_set_max_payload_len(dev, *((uint8_t*) val));
-            return sizeof(uint8_t);
-
-        case NETOPT_LORA_TIME_ON_AIR:
-            dev->settings.time_on_air_pkt_len = *((uint8_t*) val);
-            break;
 
         default:
             break;
