@@ -80,7 +80,7 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
             }
 
             /* Initializes the payload size */
-            sx127x_reg_write(dev, SX127X_REG_LR_PAYLOADLENGTH, size);
+            sx127x_set_payload_length(dev, size);
 
             /* Full buffer used for Tx */
             sx127x_reg_write(dev, SX127X_REG_LR_FIFOTXBASEADDR, 0x00);
