@@ -400,11 +400,11 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_tx_power(dev, *((uint8_t*) val));
             return sizeof(uint16_t);
 
-        case NETOPT_LORA_FIXED_HEADER:
+        case NETOPT_FIXED_HEADER:
             sx127x_set_fixed_header_len_mode(dev, *((netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
 
-        case NETOPT_LORA_PAYLOAD_LENGTH:
+        case NETOPT_PAYLOAD_LENGTH:
             sx127x_set_payload_length(dev, *((uint8_t*) val));
             return sizeof(uint8_t);
 
@@ -412,7 +412,7 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             sx127x_set_preamble_length(dev, *((uint16_t*) val));
             return sizeof(uint16_t);
 
-        case NETOPT_LORA_IQ_INVERT:
+        case NETOPT_IQ_INVERT:
             sx127x_set_iq_invert(dev, *((bool*) val));
             return sizeof(bool);
 
