@@ -33,6 +33,7 @@ void phydat_dump(phydat_t *data, uint8_t dim)
     printf("Data:");
     for (uint8_t i = 0; i < dim; i++) {
         char scale_str;
+        
         switch (data->unit) {
             case UNIT_UNDEF:
             case UNIT_NONE:
@@ -41,13 +42,13 @@ void phydat_dump(phydat_t *data, uint8_t dim)
             case UNIT_PERCENT:
             case UNIT_TEMP_C:
             case UNIT_TEMP_F:
-            case UNIT_TEMP_K:
                 /* no string conversion */
                 scale_str = '\0';
                 break;
             default:
                 scale_str = phydat_scale_to_str(data->scale);
         }
+
         printf("\t[%i] ", (int)i);
 
         if (scale_str) {
