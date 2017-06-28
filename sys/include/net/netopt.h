@@ -269,54 +269,126 @@ typedef enum {
      */
     NETOPT_LAST_ED_LEVEL,
 
-    /** @brief   Radio modulation bandwidth
+    /**
+     * @brief   Get/Set preamble length as uint16_t in host byte order.
+     */
+    NETOPT_PREAMBLE_LENGTH,
+
+    /**
+     * @brief   Enable/disable CRC check
+     */
+    NETOPT_CRC,
+
+    /**
+     * @brief   Get random value
      *
-     * Depends on the type of radio used and the regional regulatory and is
-     * used with LoRa/FSK modems.
+     * Value is returned as uint32_t in host byte order.
+     */
+    NETOPT_RANDOM,
+
+    /**
+     * @brief   Enable/disable frequency hopping
+     */
+    NETOPT_FREQUENCY_HOP,
+
+    /**
+     * @brief   Get/Set frequency hopping period as uint8_t in host byte order.
+     */
+    NETOPT_FREQUENCY_HOP_PERIOD,
+
+    /**
+     * @brief   Get/Set the reception timeout of a packet
+     * 
+     * Values are retrieved/passed as uint32_t in host byte order.
+     */
+    NETOPT_RX_TIMEOUT,
+
+    /**
+     * @brief   Get/Set the transmission timeout of a packet
+     * 
+     * Values are retrieved/passed as uint32_t in host byte order.
+     */
+    NETOPT_TX_TIMEOUT,
+
+    /** @brief   Get/Set the radio modem type.
      *
-     * Actual implementations support 125kHz, 250kHz and 500kHz.
+     * Used with LoRa radio types that support both LoRa and FSK modulations.
+     * Values are passed as uint8_t and allowed values are:
+     * * 0: FSK modem
+     * * 1: LoRa modem (default)
+     *
+     * FSK is not supported for the moment.
+     *
+     * @see drivers_sx127x
+     */
+    NETOPT_MODEM_TYPE,
+
+    /** @brief   Get/Set the radio modulation bandwidth
+     *
+     * For the moment, only LoRa/FSK modems support this.
+     *
+     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
+     * regional parameters</a> for more information.
+     * 
+     * Values are passed as uint8_t and allowed values are:
+     * * 0: 125kHz
+     * * 1: 250kHz
+     * * 2: 500kHz
      *
      * @see drivers_sx127x
      */
     NETOPT_BANDWIDTH,
 
-    /** @brief   Radio spreading factor
+    /** @brief   Get/Set the radio spreading factor
      *
-     * For LoRa/FSK modems, allowed values are in the range 7..12.
+     * For the moment, only LoRa/FSK modems support this.
+     *
+     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
+     * regional parameters</a> for more information.
+     * 
+     * Values are passed as uint8_t and allowed values are in the range 6..12.
+     *
+     * @see drivers_sx127x
      */
     NETOPT_SPREADING_FACTOR,
 
-    /** @brief   Radio coding rate
+    /** @brief   Get/Set the radio coding rate
      *
-     * For LoRa/FSK modems, allowed values are in the range 5..8.
+     * For the moment, only LoRa/FSK modems support this.
+     *
+     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
+     * regional parameters</a> for more information.
+     * 
+     * Values are passed as uint8_t and allowed values are: 
+     * * 1: 4/5
+     * * 2: 4/6
+     * * 3: 4/7
+     * * 4: 4/8
+     *
+     * @see drivers_sx127x
      */
     NETOPT_CODING_RATE,
 
-    /** @brief   Semtech module modem type.
-     *
-     * Allowed values are LoRa and FSK.
-     *
-     * FSK is not supported for the moment.
-     */
-    NETOPT_MODEM_TYPE,
-
     /**
-     * @brief LoRA specific options.
+     * @name LoRA specific options.
+     * @{
      */
-    NETOPT_LORA_SINGLE_RECEIVE,      /**< When enabled, RX is turned off upon reception of a packet */
-    NETOPT_LORA_RX_TIMEOUT,          /**< Reception timeout of a LoRa packet */
-    NETOPT_LORA_TX_TIMEOUT,          /**< Transmission timeout of a LoRa packet */
-    NETOPT_LORA_SYMBOL_TIMEOUT,      /**< Symbol timeout */
-    NETOPT_LORA_SYNCWORD,            /**< Syncword */
-    NETOPT_LORA_HOP,                 /**< Enable/disable frequency hopping */
-    NETOPT_LORA_HOP_PERIOD,          /**< Frequency hopping period */
-    NETOPT_CRC,                      /**< Enable/disable CRC check */
-    NETOPT_LORA_FIXED_HEADER,        /**< Enable/disable fixed header mode */
+    /**
+      * @brief   Enable/disable single packet reception.
+      * 
+      * If enabled, RX is turned off upon reception of a packet
+      */
+    NETOPT_LORA_SINGLE_RECEIVE,
+    /**
+     * @brief   Enable/disable fixed header mode (implicit header mode)
+     *
+     * Default is False (Explicit header mode).
+     */
+    NETOPT_LORA_FIXED_HEADER,
     NETOPT_LORA_IQ_INVERT,           /**< Enable/disable IQ inverted */
-    NETOPT_LORA_PAYLOAD_LENGTH,      /**< Payload length */
-    NETOPT_LORA_PREAMBLE_LENGTH,     /**< Preamble length */
-    NETOPT_LORA_RANDOM,              /**< Random value */
-    NETOPT_LORA_TIME_ON_AIR,         /**< Time on air */
+    NETOPT_LORA_PAYLOAD_LENGTH,      /**< Set payload length */
+    /** @{ */
+
     /* add more options if needed */
 
     /**
