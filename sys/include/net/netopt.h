@@ -269,28 +269,54 @@ typedef enum {
      */
     NETOPT_LAST_ED_LEVEL,
 
-    /**
-     * @brief LoRA options.
+    /** @brief   Radio modulation bandwidth
+     *
+     * Depends on the type of radio used and the regional regulatory and is
+     * used with LoRa/FSK modems.
+     *
+     * Actual implementations support 125kHz, 250kHz and 500kHz.
+     *
+     * @see drivers_sx127x
      */
-    NETOPT_LORA_BANDWIDTH,                        /**< bandwidth of LoRa */
-    NETOPT_LORA_SPREADING_FACTOR,                 /**< spreading factor of LoRa */
-    NETOPT_LORA_CODING_RATE,                      /**< coding rate of LoRa */
-    NETOPT_LORA_SINGLE_RECEIVE,                   /**< when enabled, RX is turned off upon reception of a packet */
-    NETOPT_LORA_RX_TIMEOUT,                       /**< Reception timeout of LoRa packet */
-    NETOPT_LORA_TX_TIMEOUT,                       /**< Reception timeout of LoRa packet */
-    NETOPT_LORA_SYMBOL_TIMEOUT,                   /**< Symbol timeout */
-    NETOPT_LORA_SYNCWORD,                         /**< Syncword */
-    NETOPT_LORA_HOP,                              /**< Frequency hopping enabled */
-    NETOPT_LORA_HOP_PERIOD,                       /**< Frequency hopping period */
-    NETOPT_CRC,                                   /**< CRC check enabled */
-    NETOPT_LORA_FIXED_HEADER,                     /**< Fixed header mode enabled */
-    NETOPT_LORA_IQ_INVERT,                        /**< IQ inverted enabled */
-    NETOPT_LORA_PAYLOAD_LENGTH,                   /**< Payload length */
-    NETOPT_LORA_PREAMBLE_LENGTH,                  /**< Preamble length */
-    NETOPT_LORA_MODE,                             /**< LoRa mode */
-    NETOPT_LORA_MAX_PAYLOAD,                      /**< Maximum payload size */
-    NETOPT_LORA_RANDOM,                           /**< Random value */
-    NETOPT_LORA_TIME_ON_AIR,                      /**< Time on air */
+    NETOPT_BANDWIDTH,
+
+    /** @brief   Radio spreading factor
+     *
+     * For LoRa/FSK modems, allowed values are in the range 7..12.
+     */
+    NETOPT_SPREADING_FACTOR,
+
+    /** @brief   Radio coding rate
+     *
+     * For LoRa/FSK modems, allowed values are in the range 5..8.
+     */
+    NETOPT_CODING_RATE,
+
+    /** @brief   Semtech module modem type.
+     *
+     * Allowed values are LoRa and FSK.
+     *
+     * FSK is not supported for the moment.
+     */
+    NETOPT_MODEM_TYPE,
+
+    /**
+     * @brief LoRA specific options.
+     */
+    NETOPT_LORA_SINGLE_RECEIVE,      /**< When enabled, RX is turned off upon reception of a packet */
+    NETOPT_LORA_RX_TIMEOUT,          /**< Reception timeout of a LoRa packet */
+    NETOPT_LORA_TX_TIMEOUT,          /**< Transmission timeout of a LoRa packet */
+    NETOPT_LORA_SYMBOL_TIMEOUT,      /**< Symbol timeout */
+    NETOPT_LORA_SYNCWORD,            /**< Syncword */
+    NETOPT_LORA_HOP,                 /**< Enable/disable frequency hopping */
+    NETOPT_LORA_HOP_PERIOD,          /**< Frequency hopping period */
+    NETOPT_CRC,                      /**< Enable/disable CRC check */
+    NETOPT_LORA_FIXED_HEADER,        /**< Enable/disable fixed header mode */
+    NETOPT_LORA_IQ_INVERT,           /**< Enable/disable IQ inverted */
+    NETOPT_LORA_PAYLOAD_LENGTH,      /**< Payload length */
+    NETOPT_LORA_PREAMBLE_LENGTH,     /**< Preamble length */
+    NETOPT_LORA_RANDOM,              /**< Random value */
+    NETOPT_LORA_TIME_ON_AIR,         /**< Time on air */
     /* add more options if needed */
 
     /**
