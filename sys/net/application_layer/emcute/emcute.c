@@ -165,10 +165,10 @@ static void on_ack(uint8_t type, int id_pos, int ret_pos, int res_pos)
     }
 }
 
-static void on_publish(uint16_t len, size_t pos)
+static void on_publish(size_t len, size_t pos)
 {
     /* make sure packet length is valid - if not, drop packet silently */
-    if ((size_t)len < (pos + 6)) {
+    if (len < (pos + 6)) {
         return;
     }
 
@@ -551,19 +551,19 @@ void emcute_run(uint16_t port, const char *id)
             uint8_t type = rbuf[pos];
 
             switch (type) {
-                case CONNACK:       on_ack(type, 0, 2, 0);  break;
-                case WILLTOPICREQ:  on_ack(type, 0, 0, 0);  break;
-                case WILLMSGREQ:    on_ack(type, 0, 0, 0);  break;
-                case REGACK:        on_ack(type, 4, 6, 2);  break;
-                case PUBLISH:       on_publish(len, pos);   break;
-                case PUBACK:        on_ack(type, 4, 6, 0);  break;
-                case SUBACK:        on_ack(type, 5, 7, 3);  break;
-                case UNSUBACK:      on_ack(type, 2, 0, 0);  break;
-                case PINGREQ:       on_pingreq(&remote);    break;
-                case PINGRESP:      on_pingresp();          break;
-                case DISCONNECT:    on_disconnect();        break;
-                case WILLTOPICRESP: on_ack(type, 0, 0, 0);  break;
-                case WILLMSGRESP:   on_ack(type, 0, 0, 0);  break;
+                case CONNACK:       on_ack(type, 0, 2, 0);              break;
+                case WILLTOPICREQ:  on_ack(type, 0, 0, 0);              break;
+                case WILLMSGREQ:    on_ack(type, 0, 0, 0);              break;
+                case REGACK:        on_ack(type, 4, 6, 2);              break;
+                case PUBLISH:       on_publish((size_t)pkt_len, pos);   break;
+                case PUBACK:        on_ack(type, 4, 6, 0);              break;
+                case SUBACK:        on_ack(type, 5, 7, 3);              break;
+                case UNSUBACK:      on_ack(type, 2, 0, 0);              break;
+                case PINGREQ:       on_pingreq(&remote);                break;
+                case PINGRESP:      on_pingresp();                      break;
+                case DISCONNECT:    on_disconnect();                    break;
+                case WILLTOPICRESP: on_ack(type, 0, 0, 0);              break;
+                case WILLMSGRESP:   on_ack(type, 0, 0, 0);              break;
                 default:
                     LOG_DEBUG("[emcute] received unexpected type [%s]\n",
                               emcute_type_str(type));
