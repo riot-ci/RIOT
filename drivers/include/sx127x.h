@@ -577,7 +577,7 @@ uint8_t sx127x_get_hop_period(sx127x_t *dev);
 void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period);
 
 /**
- * @brief   Gets the SX127X LoRa implicit mode
+ * @brief   Gets the SX127X LoRa fixed header length mode
  *
  * @param[in] dev                      The sx127x device descriptor
  * @return the LoRa implicit mode
@@ -585,7 +585,7 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period);
 bool sx127x_get_fixed_header_len_mode(sx127x_t *dev);
 
 /**
- * @brief   Sets the SX127X spreading factor
+ * @brief   Sets the SX127X to fixed header length mode (explicit mode)
  *
  * @param[in] dev                      The sx127x device descriptor
  * @param[in] mode                     The header mode
@@ -601,7 +601,7 @@ void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool mode);
 uint8_t sx127x_get_payload_length(sx127x_t *dev);
 
 /**
- * @brief   Sets the SX127X spreading factor
+ * @brief   Sets the SX127X payload length
  *
  * @param[in] dev                      The sx127x device descriptor
  * @param[in] len                      The payload len
@@ -617,10 +617,10 @@ void sx127x_set_payload_length(sx127x_t *dev, uint8_t len);
 uint8_t sx127x_get_tx_power(sx127x_t *dev);
 
 /**
- * @brief   Sets the SX127X spreading factor
+ * @brief   Sets the SX127X transmission power
  *
  * @param[in] dev                      The sx127x device descriptor
- * @param[in] power                    The power
+ * @param[in] power                    The TX power
  */
 void sx127x_set_tx_power(sx127x_t *dev, uint8_t power);
 
