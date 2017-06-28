@@ -319,23 +319,15 @@ typedef enum {
 
     /** @brief   Get/Set the radio modem type.
      *
-     * Used with LoRa radio types that support both LoRa and FSK modulations.
      * Values are passed as uint8_t and allowed values are:
      * * 0: FSK modem
      * * 1: LoRa modem (default)
-     *
-     * FSK is not supported for the moment.
      *
      * @see drivers_sx127x
      */
     NETOPT_MODEM_TYPE,
 
     /** @brief   Get/Set the radio modulation bandwidth
-     *
-     * For the moment, only LoRa/FSK modems support this.
-     *
-     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
-     * regional parameters</a> for more information.
      * 
      * Values are passed as uint8_t and allowed values are:
      * * 0: 125kHz
@@ -347,11 +339,6 @@ typedef enum {
     NETOPT_BANDWIDTH,
 
     /** @brief   Get/Set the radio spreading factor
-     *
-     * For the moment, only LoRa/FSK modems support this.
-     *
-     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
-     * regional parameters</a> for more information.
      * 
      * Values are passed as uint8_t and allowed values are in the range 6..12.
      *
@@ -360,11 +347,6 @@ typedef enum {
     NETOPT_SPREADING_FACTOR,
 
     /** @brief   Get/Set the radio coding rate
-     *
-     * For the moment, only LoRa/FSK modems support this.
-     *
-     * @see <a href="https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx">LoRaWAN
-     * regional parameters</a> for more information.
      * 
      * Values are passed as uint8_t and allowed values are: 
      * * 1: 4/5
@@ -377,18 +359,23 @@ typedef enum {
     NETOPT_CODING_RATE,
 
     /**
-     * @name LoRA specific options.
-     * @{
-     */
-    /**
      * @brief   Enable/disable fixed header mode (implicit header mode)
      *
      * Default is False (Explicit header mode).
      */
-    NETOPT_LORA_FIXED_HEADER,
-    NETOPT_LORA_IQ_INVERT,           /**< Enable/disable IQ inverted */
-    NETOPT_LORA_PAYLOAD_LENGTH,      /**< Set payload length */
-    /** @{ */
+    NETOPT_FIXED_HEADER,
+
+    /**
+     * @brief   Enable/disable IQ inverted
+     *
+     * Default is False.
+     */
+    NETOPT_IQ_INVERT,
+
+    /**
+     * @brief   Set payload length as uint8_t in host byte order
+     */
+    NETOPT_PAYLOAD_LENGTH,
 
     /* add more options if needed */
 
