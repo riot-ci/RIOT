@@ -682,7 +682,7 @@ static inline uint8_t sx127x_get_pa_select(uint32_t channel)
 {
 #if defined(MODULE_SX1272)
     (void) channel;
-#if SX1272_DEFAULT_PASELECT_RFO
+#if SX1272_DEFAULT_PASELECT
     return SX127X_RF_PACONFIG_PASELECT_RFO;
 #else
     return SX127X_RF_PACONFIG_PASELECT_PABOOST;
