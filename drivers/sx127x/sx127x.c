@@ -117,7 +117,7 @@ void sx127x_init_radio_settings(sx127x_t *dev)
 {
     sx127x_set_freq_hop(dev, SX127X_FREQUENCY_HOPPING);
     sx127x_set_iq_invert(dev, SX127X_IQ_INVERSION);
-    sx127x_set_rx_single(dev, NETOPT_LORA_SINGLE_RECEIVE);
+    sx127x_set_rx_single(dev, SX127X_RX_SINGLE);
     sx127x_set_tx_timeout(dev, SX127X_TX_TIMEOUT_DEFAULT);
     sx127x_set_modem(dev, SX127X_MODEM_DEFAULT);
     sx127x_set_channel(dev, SX127X_CHANNEL_DEFAULT);
