@@ -95,8 +95,12 @@ extern "C" {
 
 #define SX127X_RADIO_TX_POWER            (14U)                  /**< Radio power in dBm */
 
-#ifndef SX1272_DEFAULT_PASELECT_RFO
-#define SX1272_DEFAULT_PASELECT_RFO      (1U)                   /**< Default PA selection config, default is RFO*/
+#ifndef SX1272_DEFAULT_PASELECT
+/** @brief   Default PA selection config (1: RFO, 0: PABOOST)
+ *
+ * This depends on the module configuration.
+ */
+#define SX1272_DEFAULT_PASELECT          (1U)
 #endif
 
 #define SX127X_EVENT_HANDLER_STACK_SIZE  (2048U)                /**< Stack size event handler */
