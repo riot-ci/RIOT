@@ -43,6 +43,10 @@
  *   * Vietnam [920-925 MHz]
  * * South Korea: KR920-923 (from 920.9MHz to 923.3MHz exactly)
  *
+ * For more information on Semtech SX1272 and SX1276 modules see:
+ * * [SX1272/73 datasheet](http://www.semtech.com/images/datasheet/sx1272.pdf)
+ * * [SX1276/77/78/79 datasheet](http://www.semtech.com/images/datasheet/sx1276_77_78_79.pdf)
+ *
  * @{
  *
  * @file
@@ -134,7 +138,7 @@ enum {
  * @brief   LoRa signal bandwidth.
  */
 enum {
-    SX127X_BW_125_KHZ,                                          /**< 125 kHz bandwidth */
+    SX127X_BW_125_KHZ = 0,                                      /**< 125 kHz bandwidth */
     SX127X_BW_250_KHZ,                                          /**< 250 kHz bandwidth */
     SX127X_BW_500_KHZ                                           /**< 500 kHz bandwidth */
 };
