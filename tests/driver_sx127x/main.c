@@ -103,11 +103,11 @@ int lora_setup_cmd(int argc, char **argv) {
 
     /* Configure radio device */
     netdev_t *netdev = (netdev_t*) &sx127x;
-    netdev->driver->set(netdev, NETOPT_LORA_BANDWIDTH,
+    netdev->driver->set(netdev, NETOPT_BANDWIDTH,
                         &lora_bw, sizeof(uint8_t));
-    netdev->driver->set(netdev, NETOPT_LORA_SPREADING_FACTOR,
+    netdev->driver->set(netdev, NETOPT_SPREADING_FACTOR,
                         &lora_sf, 1);
-    netdev->driver->set(netdev, NETOPT_LORA_CODING_RATE,
+    netdev->driver->set(netdev, NETOPT_CODING_RATE,
                         &lora_cr, sizeof(uint8_t));
 
     puts("[Info] setup: configuration set with success");
