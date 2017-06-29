@@ -275,26 +275,19 @@ typedef enum {
     NETOPT_PREAMBLE_LENGTH,
 
     /**
-     * @brief   Enable/disable CRC check
+     * @brief   Enable/disable integrity check (e.g CRC).
      */
-    NETOPT_CRC,
+    NETOPT_INTEGRITY_CHECK,
 
     /**
-     * @brief   Get random value
-     *
-     * Value is returned as uint32_t in host byte order.
+     * @brief   Enable/disable channel hopping.
      */
-    NETOPT_RANDOM,
+    NETOPT_CHANNEL_HOP,
 
     /**
-     * @brief   Enable/disable frequency hopping
+     * @brief   Get/Set channel hopping period as uint8_t.
      */
-    NETOPT_FREQUENCY_HOP,
-
-    /**
-     * @brief   Get/Set frequency hopping period as uint8_t in host byte order.
-     */
-    NETOPT_FREQUENCY_HOP_PERIOD,
+    NETOPT_CHANNEL_HOP_PERIOD,
 
     /**
       * @brief   Enable/disable single packet reception.
@@ -304,83 +297,57 @@ typedef enum {
     NETOPT_SINGLE_RECEIVE,
 
     /**
-     * @brief   Get/Set the reception timeout of a packet
+     * @brief   Get/Set the reception timeout of a packet.
      * 
      * Values are retrieved/passed as uint32_t in host byte order.
      */
     NETOPT_RX_TIMEOUT,
 
     /**
-     * @brief   Get/Set the transmission timeout of a packet
+     * @brief   Get/Set the transmission timeout of a packet.
      * 
      * Values are retrieved/passed as uint32_t in host byte order.
      */
     NETOPT_TX_TIMEOUT,
 
-    /** @brief   Get/Set the radio modem type.
-     *
-     * Values are passed as uint8_t and allowed values are:
-     * * 0: FSK modem
-     * * 1: LoRa modem (default)
-     *
-     * @see drivers_sx127x
+    /**
+     * @brief   Get/Set the radio modem type as uint8_t.
      */
-    NETOPT_MODEM_TYPE,
+    NETOPT_DEVICE_MODE,
 
-    /** @brief   Get/Set the radio modulation bandwidth
-     * 
-     * Values are passed as uint8_t and allowed values are:
-     * * 0: 125kHz
-     * * 1: 250kHz
-     * * 2: 500kHz
-     *
-     * @see drivers_sx127x
+    /**
+     * @brief   Get/Set the radio modulation bandwidth as uint8_t.
      */
     NETOPT_BANDWIDTH,
 
-    /** @brief   Get/Set the radio spreading factor
-     * 
-     * Values are passed as uint8_t and allowed values are in the range 6..12.
-     *
-     * @see drivers_sx127x
+    /**
+     * @brief   Get/Set the radio spreading factor as uint8_t.
      */
     NETOPT_SPREADING_FACTOR,
 
-    /** @brief   Get/Set the radio coding rate
-     * 
-     * Values are passed as uint8_t and allowed values are: 
-     * * 1: 4/5
-     * * 2: 4/6
-     * * 3: 4/7
-     * * 4: 4/8
-     *
-     * @see drivers_sx127x
+    /** @brief   Get/Set the radio coding rate as uint8_t.
      */
     NETOPT_CODING_RATE,
 
     /**
-     * @brief   Enable/disable fixed header mode (implicit header mode)
-     *
-     * Default is False (Explicit header mode).
+     * @brief   Enable/disable fixed header mode.
      */
     NETOPT_FIXED_HEADER,
 
     /**
-     * @brief   Enable/disable IQ inverted
-     *
-     * Default is False.
+     * @brief   Enable/disable IQ inverted.
      */
     NETOPT_IQ_INVERT,
 
     /**
-     * @brief   Set payload length as uint8_t in host byte order
+     * @brief   Set payload length as uint8_t.
      */
     NETOPT_PAYLOAD_LENGTH,
 
     /* add more options if needed */
 
     /**
-     * @brief   maximum number of options defined here
+     * @brief   maximum number of options defined here.
      *
      * @note    Interfaces are not meant to respond to that.
      */
