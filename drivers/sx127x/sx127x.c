@@ -59,7 +59,7 @@ void sx127x_setup(sx127x_t *dev, const sx127x_params_t *params)
     memcpy(&dev->params, params, sizeof(sx127x_params_t));
 }
 
-void sx127x_reset(sx127x_t *dev)
+void sx127x_reset(const sx127x_t *dev)
 {
     /*
      * This reset scheme complies with 7.2 chapter of the SX1272/1276 datasheet
@@ -87,8 +87,6 @@ void sx127x_reset(sx127x_t *dev)
 
 int sx127x_init(sx127x_t *dev)
 {
-    sx127x_reset(dev);
-
     /* Do internal initialization routines */
     if (!_init_peripherals(dev)) {
         return -SX127X_ERR_SPI;
@@ -129,7 +127,7 @@ void sx127x_init_radio_settings(sx127x_t *dev)
     sx127x_set_crc(dev, SX127X_PAYLOAD_CRC_ON);
     sx127x_set_symbol_timeout(dev, SX127X_SYMBOL_TIMEOUT);
     sx127x_set_preamble_length(dev, SX127X_PREAMBLE_LENGTH);
-    sx127x_set_payload_length(dev, SX127X_PAYLOAD_LENGTH);
+    // sx127x_set_payload_length(dev, SX127X_PAYLOAD_LENGTH);
     sx127x_set_hop_period(dev, SX127X_FREQUENCY_HOPPING_PERIOD);
 
     sx127x_set_tx_power(dev, SX127X_RADIO_TX_POWER);
@@ -176,52 +174,30 @@ void sx127x_isr(netdev_t *dev)
     }
 }
 
-void sx127x_on_dio0_isr(void *arg)
+static void sx127x_on_dio_isr(sx127x_t *dev, sx127x_flags_t flag)
 {
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO0;
-    sx127x_isr((netdev_t*) dev);
+    dev->irq |= flag;
+    sx127x_isr((netdev_t *)dev);
 }
 
-void sx127x_on_dio1_isr(void *arg)
+static void sx127x_on_dio0_isr(void *arg)
 {
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO1;
-    sx127x_isr((netdev_t*) dev);
+    sx127x_on_dio_isr((sx127x_t*) arg, SX127X_IRQ_DIO0);
 }
 
-void sx127x_on_dio2_isr(void *arg)
+static void sx127x_on_dio1_isr(void *arg)
 {
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO2;
-    sx127x_isr((netdev_t*) dev);
+    sx127x_on_dio_isr((sx127x_t*) arg, SX127X_IRQ_DIO1);
 }
 
-void sx127x_on_dio3_isr(void *arg)
+static void sx127x_on_dio2_isr(void *arg)
 {
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO3;
-    sx127x_isr((netdev_t*) dev);
+    sx127x_on_dio_isr((sx127x_t*) arg, SX127X_IRQ_DIO2);
 }
 
-void sx127x_on_dio4_isr(void *arg)
+static void sx127x_on_dio3_isr(void *arg)
 {
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO4;
-    sx127x_isr((netdev_t*) dev);
-}
-
-void sx127x_on_dio5_isr(void *arg)
-{
-    sx127x_t *dev = (sx127x_t*) arg;
-
-    dev->irq |= SX127X_IRQ_DIO5;
-    sx127x_isr((netdev_t*) dev);
+    sx127x_on_dio_isr((sx127x_t*) arg, SX127X_IRQ_DIO3);
 }
 
 /* Internal event handlers */
@@ -372,27 +348,6 @@ void sx127x_on_dio3(void *arg)
             puts("sx127x_on_dio3: Unknown modem");
             break;
     }
-}
-
-/* Following interrupt lines are not used */
-void sx127x_on_dio4(void *arg)
-{
-    /* Get interrupt context */
-    sx127x_t *dev = (sx127x_t *) arg;
-    switch (dev->settings.modem) {
-        case SX127X_MODEM_FSK:
-            /* todo */
-            break;
-        case SX127X_MODEM_LORA:
-            break;
-        default:
-            break;
-    }
-}
-
-void sx127x_on_dio5(void *arg)
-{
-    (void) arg;
 }
 
 static void _init_isrs(sx127x_t *dev)

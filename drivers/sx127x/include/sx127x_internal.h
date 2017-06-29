@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Constant values used to compute RSSI
+ * @name   Constant values used to compute RSSI
  * @{
  */
 #if defined(MODULE_SX1272)
@@ -47,21 +47,7 @@ extern "C" {
  * @param[in] dev                      The sx127x device descriptor
  * @return true if test passed, false otherwise
  */
-bool sx127x_test(sx127x_t *dev);
-
-/**
- * @brief   Generates 32 bits random value based on the RSSI readings
- *
- *          This function sets the radio in LoRa mode and disables all
- *          interrupts from it. After calling this function either
- *          sx127x_set_rx_config or sx127x_set_tx_config functions must
- *          be called.
- *
- * @param[in] dev                      The sx127x device structure pointer
- *
- * @return random 32 bits value
- */
-uint32_t sx127x_random(sx127x_t *dev);
+bool sx127x_test(const sx127x_t *dev);
 
 /**
  * @brief   Writes the radio register at specified address.
@@ -70,7 +56,7 @@ uint32_t sx127x_random(sx127x_t *dev);
  * @param[in] addr                     Register address
  * @param[in] data                     New register value
  */
-void sx127x_reg_write(sx127x_t *dev, uint8_t addr, uint8_t data);
+void sx127x_reg_write(const sx127x_t *dev, uint8_t addr, uint8_t data);
 
 /**
  * @brief   Reads the radio register at specified address.
@@ -80,7 +66,7 @@ void sx127x_reg_write(sx127x_t *dev, uint8_t addr, uint8_t data);
  *
  * @return	Register value
  */
-uint8_t sx127x_reg_read(sx127x_t *dev, uint8_t addr);
+uint8_t sx127x_reg_read(const sx127x_t *dev, uint8_t addr);
 
 /**
  * @brief   Writes multiple radio registers starting at address (burst-mode).
@@ -90,7 +76,7 @@ uint8_t sx127x_reg_read(sx127x_t *dev, uint8_t addr);
  * @param[in] buffer                   Buffer containing the new register's values
  * @param[in] size                     Number of registers to be written
  */
-void sx127x_reg_write_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
+void sx127x_reg_write_burst(const sx127x_t *dev, uint8_t addr, uint8_t *buffer,
                             uint8_t size);
 
 /**
@@ -101,7 +87,7 @@ void sx127x_reg_write_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
  * @param[in]  size                    Number of registers to be read
  * @param[out] buffer                  Buffer where to copy registers data
  */
-void sx127x_reg_read_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
+void sx127x_reg_read_burst(const sx127x_t *dev, uint8_t addr, uint8_t *buffer,
                            uint8_t size);
 
 /**
@@ -111,7 +97,7 @@ void sx127x_reg_read_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
  * @param[in] buffer                   Buffer Buffer containing data to be put on the FIFO.
  * @param[in] size                     Size Number of bytes to be written to the FIFO
  */
-void sx127x_write_fifo(sx127x_t *dev, uint8_t *buffer, uint8_t size);
+void sx127x_write_fifo(const sx127x_t *dev, uint8_t *buffer, uint8_t size);
 
 /**
  * @brief   Reads the contents of the SX1276 FIFO
@@ -120,7 +106,7 @@ void sx127x_write_fifo(sx127x_t *dev, uint8_t *buffer, uint8_t size);
  * @param[in] size                     Size Number of bytes to be read from the FIFO
  * @param[out] buffer                  Buffer Buffer where to copy the FIFO read data.
  */
-void sx127x_read_fifo(sx127x_t *dev, uint8_t *buffer, uint8_t size);
+void sx127x_read_fifo(const sx127x_t *dev, uint8_t *buffer, uint8_t size);
 
 /**
  * @brief   Performs the Rx chain calibration for LF and HF bands
@@ -139,7 +125,7 @@ void sx127x_rx_chain_calibration(sx127x_t *dev);
  *
  * @return current value of RSSI in [dBm]
  */
-int16_t sx127x_read_rssi(sx127x_t *dev);
+int16_t sx127x_read_rssi(const sx127x_t *dev);
 
 #ifdef __cplusplus
 }
