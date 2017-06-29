@@ -10,8 +10,8 @@ with nucleo boards or the all-in-one
 [ST P-NUCLEO-LRWAN1 LoRa kit](http://www.st.com/en/evaluation-tools/p-nucleo-lrwan1.html).
 
 If you have other hardware (boards, Semtech based LoRa module), you can adapt
-the configuration to your needs by updating the
-`drivers/sx127x/include/sx127x_params.h` file.
+the configuration to your needs by copying an adapted version of
+`drivers/sx127x/include/sx127x_params.h` file to you application directory.
 
 By default the application builds the SX1276 version of the driver. If you
 want to use this application with a SX1272 module, set the variable `DRIVER` in
