@@ -151,8 +151,8 @@ void spi_release(spi_t bus)
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
                         const void *out, void *in, size_t len)
 {
+    const uint8_t *out_buf = (const uint8_t *)out;
     uint8_t *inbuf = (uint8_t *)in;
-    uint8_t *outbuf = (uint8_t *)out;
 
     /* make sure at least one input or one output buffer is given */
     assert(outbuf || inbuf);
