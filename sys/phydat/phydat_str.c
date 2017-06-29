@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     driver_sensif
+ * @ingroup     sys_phydat
  * @{
  *
  * @file
- * @brief       Generic sensor/actuator data handling
+ * @brief       String helper functions for formatting and dumping phydat data
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
@@ -44,7 +44,7 @@ void phydat_dump(phydat_t *data, uint8_t dim)
         }
         else if ((data->scale > -5) && (data->scale < 0)) {
             char num[8];
-            size_t len = fmt_s16_dfp(num, data->val[i], data->scale * -1);
+            size_t len = fmt_s16_dfp(num, data->val[i], data->scale);
             num[len] = '\0';
             printf("%s", num);
         }
@@ -76,7 +76,21 @@ const char *phydat_unit_to_str(uint8_t unit)
         case UNIT_PA:       return "Pa";
         case UNIT_CD:       return "cd";
         case UNIT_PERCENT:  return "%";
+        case UNIT_PERMILL:  return "per mil";
+        case UNIT_PPM:      return "ppm";
         default:            return "";
+    }
+}
+
+const char *phydat_unit_to_str_verbose(uint8_t unit)
+{
+    switch (unit) {
+        case UNIT_UNDEF:    return "undefined";
+        case UNIT_NONE:     return "none";
+        case UNIT_BOOL:     return "bool";
+        case UNIT_TIME:     return "time";
+        case UNIT_DATE:     return "date";
+        default:            return phydat_unit_to_str(unit);
     }
 }
 
