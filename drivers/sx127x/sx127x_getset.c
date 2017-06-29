@@ -34,7 +34,7 @@
 #include "debug.h"
 
 
-uint8_t sx127x_get_state(sx127x_t *dev)
+uint8_t sx127x_get_state(const sx127x_t *dev)
 {
     return dev->settings.state;
 }
@@ -86,7 +86,7 @@ void sx127x_set_modem(sx127x_t *dev, uint8_t modem)
     }
 }
 
-uint8_t sx127x_get_syncword(sx127x_t *dev)
+uint8_t sx127x_get_syncword(const sx127x_t *dev)
 {
     return sx127x_reg_read(dev, SX127X_REG_LR_SYNCWORD);
 }
@@ -98,7 +98,7 @@ void sx127x_set_syncword(sx127x_t *dev, uint8_t syncword)
     sx127x_reg_write(dev, SX127X_REG_LR_SYNCWORD, syncword);
 }
 
-uint32_t sx127x_get_channel(sx127x_t *dev)
+uint32_t sx127x_get_channel(const sx127x_t *dev)
 {
     return (((uint32_t)sx127x_reg_read(dev, SX127X_REG_FRFMSB) << 16) |
             (sx127x_reg_read(dev, SX127X_REG_FRFMID) << 8) |
@@ -120,7 +120,7 @@ void sx127x_set_channel(sx127x_t *dev, uint32_t channel)
     sx127x_reg_write(dev, SX127X_REG_FRFLSB, (uint8_t)(channel & 0xFF));
 }
 
-uint32_t sx127x_get_time_on_air(sx127x_t *dev)
+uint32_t sx127x_get_time_on_air(const sx127x_t *dev)
 {
     uint32_t air_time = 0;
 
@@ -371,8 +371,21 @@ void sx127x_set_tx(sx127x_t *dev)
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_TRANSMITTER );
 }
 
+uint8_t sx127x_get_max_payload_len(const sx127x_t *dev)
+{
+    switch (dev->settings.modem) {
+        case SX127X_MODEM_FSK:
+            return sx127x_reg_read(dev, SX127X_REG_PAYLOADLENGTH);
 
-void sx127x_set_max_payload_len(sx127x_t *dev, uint8_t maxlen)
+        case SX127X_MODEM_LORA:
+            return sx127x_reg_read(dev, SX127X_REG_LR_PAYLOADMAXLENGTH);
+    }
+
+    /* should never be reached */
+    return 0;
+}
+
+void sx127x_set_max_payload_len(const sx127x_t *dev, uint8_t maxlen)
 {
     DEBUG("[DEBUG] Set max payload len: %d\n", maxlen);
 
@@ -387,12 +400,12 @@ void sx127x_set_max_payload_len(sx127x_t *dev, uint8_t maxlen)
     }
 }
 
-uint8_t sx127x_get_op_mode(sx127x_t *dev)
+uint8_t sx127x_get_op_mode(const sx127x_t *dev)
 {
     return sx127x_reg_read(dev, SX127X_REG_OPMODE) & ~SX127X_RF_OPMODE_MASK;
 }
 
-void sx127x_set_op_mode(sx127x_t *dev, uint8_t op_mode)
+void sx127x_set_op_mode(const sx127x_t *dev, uint8_t op_mode)
 {
 #if ENABLE_DEBUG
     switch(op_mode) {
@@ -419,7 +432,7 @@ void sx127x_set_op_mode(sx127x_t *dev, uint8_t op_mode)
                      (sx127x_reg_read(dev, SX127X_REG_OPMODE) & SX127X_RF_OPMODE_MASK) | op_mode);
 }
 
-uint8_t sx127x_get_bandwidth(sx127x_t *dev)
+uint8_t sx127x_get_bandwidth(const sx127x_t *dev)
 {
     return dev->settings.lora.bandwidth;
 }
@@ -449,7 +462,7 @@ inline void _low_datarate_optimize(sx127x_t *dev)
 #endif
 }
 
-inline void _update_bandwidth(sx127x_t *dev)
+inline void _update_bandwidth(const sx127x_t *dev)
 {
     uint8_t config1_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1);
 #if defined(MODULE_SX1272)
@@ -494,7 +507,7 @@ void sx127x_set_bandwidth(sx127x_t *dev, uint8_t bandwidth)
 
     dev->settings.lora.bandwidth = bandwidth;
 
-    _update_bandwidth(dev);
+    _update_bandwidth((const sx127x_t *)dev);
 
     _low_datarate_optimize(dev);
 
@@ -516,7 +529,7 @@ void sx127x_set_bandwidth(sx127x_t *dev, uint8_t bandwidth)
     }
 }
 
-uint8_t sx127x_get_spreading_factor(sx127x_t *dev)
+uint8_t sx127x_get_spreading_factor(const sx127x_t *dev)
 {
     return dev->settings.lora.datarate;
 }
@@ -558,7 +571,7 @@ void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t datarate)
     }
 }
 
-uint8_t sx127x_get_coding_rate(sx127x_t *dev)
+uint8_t sx127x_get_coding_rate(const sx127x_t *dev)
 {
     return dev->settings.lora.coderate;
 }
@@ -581,7 +594,7 @@ void sx127x_set_coding_rate(sx127x_t *dev, uint8_t coderate)
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG1, config1_reg);
 }
 
-uint8_t sx127x_get_rx_single(sx127x_t *dev)
+uint8_t sx127x_get_rx_single(const sx127x_t *dev)
 {
     return dev->settings.lora.rx_continuous ? false : true;
 }
@@ -593,7 +606,7 @@ void sx127x_set_rx_single(sx127x_t *dev, uint8_t single)
     dev->settings.lora.rx_continuous = single ? false : true;
 }
 
-bool sx127x_get_crc(sx127x_t *dev)
+bool sx127x_get_crc(const sx127x_t *dev)
 {
 #if defined(MODULE_SX1272)
     return (sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1) &
@@ -622,7 +635,7 @@ void sx127x_set_crc(sx127x_t *dev, bool crc)
 #endif
 }
 
-uint8_t sx127x_get_hop_period(sx127x_t *dev)
+uint8_t sx127x_get_hop_period(const sx127x_t *dev)
 {
     return sx127x_reg_read(dev, SX127X_REG_LR_HOPPERIOD);
 }
@@ -641,7 +654,7 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period)
     }
 }
 
-bool  sx127x_get_fixed_header_len_mode(sx127x_t *dev)
+bool  sx127x_get_fixed_header_len_mode(const sx127x_t *dev)
 {
     return dev->settings.lora.use_fix_len;
 }
@@ -663,7 +676,7 @@ void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool fixed_len)
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG1, config1_reg);
 }
 
-uint8_t sx127x_get_payload_length(sx127x_t *dev)
+uint8_t sx127x_get_payload_length(const sx127x_t *dev)
 {
     return dev->settings.lora.payload_len;
 }
@@ -697,7 +710,7 @@ static inline uint8_t sx127x_get_pa_select(uint32_t channel)
 #endif
 }
 
-uint8_t sx127x_get_power(sx127x_t *dev)
+uint8_t sx127x_get_tx_power(const sx127x_t *dev)
 {
     return dev->settings.lora.power;
 }
@@ -775,7 +788,7 @@ void sx127x_set_tx_power(sx127x_t *dev, uint8_t power)
 #endif
 }
 
-uint16_t sx127x_get_preamble_length(sx127x_t *dev)
+uint16_t sx127x_get_preamble_length(const sx127x_t *dev)
 {
     return dev->settings.lora.preamble_len;
 }

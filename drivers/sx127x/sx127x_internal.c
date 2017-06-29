@@ -36,7 +36,7 @@
 #include "debug.h"
 
 
-bool sx127x_test(sx127x_t *dev)
+bool sx127x_test(const sx127x_t *dev)
 {
     /* Read version number and compare with sx127x assigned revision */
     uint8_t version = sx127x_reg_read(dev, SX127X_REG_VERSION);
@@ -60,12 +60,12 @@ bool sx127x_test(sx127x_t *dev)
     return true;
 }
 
-void sx127x_reg_write(sx127x_t *dev, uint8_t addr, uint8_t data)
+void sx127x_reg_write(const sx127x_t *dev, uint8_t addr, uint8_t data)
 {
     sx127x_reg_write_burst(dev, addr, &data, 1);
 }
 
-uint8_t sx127x_reg_read(sx127x_t *dev, uint8_t addr)
+uint8_t sx127x_reg_read(const sx127x_t *dev, uint8_t addr)
 {
     uint8_t data;
 
@@ -74,7 +74,7 @@ uint8_t sx127x_reg_read(sx127x_t *dev, uint8_t addr)
     return data;
 }
 
-void sx127x_reg_write_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
+void sx127x_reg_write_burst(const sx127x_t *dev, uint8_t addr, uint8_t *buffer,
                             uint8_t size)
 {
     unsigned int cpsr;
@@ -90,7 +90,7 @@ void sx127x_reg_write_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
     spi_release(dev->params.spi);
 }
 
-void sx127x_reg_read_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
+void sx127x_reg_read_burst(const sx127x_t *dev, uint8_t addr, uint8_t *buffer,
                            uint8_t size)
 {
     unsigned int cpsr;
@@ -108,12 +108,12 @@ void sx127x_reg_read_burst(sx127x_t *dev, uint8_t addr, uint8_t *buffer,
     irq_restore(cpsr);
 }
 
-void sx127x_write_fifo(sx127x_t *dev, uint8_t *buffer, uint8_t size)
+void sx127x_write_fifo(const sx127x_t *dev, uint8_t *buffer, uint8_t size)
 {
     sx127x_reg_write_burst(dev, 0, buffer, size);
 }
 
-void sx127x_read_fifo(sx127x_t *dev, uint8_t *buffer, uint8_t size)
+void sx127x_read_fifo(const sx127x_t *dev, uint8_t *buffer, uint8_t size)
 {
     sx127x_reg_read_burst(dev, 0, buffer, size);
 }
@@ -159,7 +159,7 @@ void sx127x_rx_chain_calibration(sx127x_t *dev)
     sx127x_set_channel(dev, initial_freq);
 }
 
-int16_t sx127x_read_rssi(sx127x_t *dev)
+int16_t sx127x_read_rssi(const sx127x_t *dev)
 {
     int16_t rssi = 0;
 
