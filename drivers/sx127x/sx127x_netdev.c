@@ -326,7 +326,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_CHANNEL_HOP_PERIOD:
             assert(max_len >= sizeof(uint8_t));
             *((uint8_t*) val) = sx127x_get_hop_period(dev);
-            break;
+            return sizeof(uint8_t);
 
         case NETOPT_SINGLE_RECEIVE:
             assert(max_len >= sizeof(uint8_t));
@@ -336,6 +336,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         default:
             break;
     }
+
     return 0;
 }
 
