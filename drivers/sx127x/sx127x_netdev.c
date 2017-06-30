@@ -63,7 +63,9 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
             /* todo */
             break;
         case SX127X_MODEM_LORA:
-            sx127x_set_iq_invert(dev, dev->settings.lora.iq_inverted);
+            // sx127x_set_iq_invert(dev, dev->settings.lora.iq_inverted);
+            sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
+                             (dev->settings.lora.iq_inverted ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
 
             /* Initializes the payload size */
             sx127x_set_payload_length(dev, size);
