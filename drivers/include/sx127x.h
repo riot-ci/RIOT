@@ -12,14 +12,15 @@
  * @ingroup     drivers_netdev
  * @brief       Semtech SX127X driver (SX1272 and SX1276)
  *
- * This module contains the driver for radio devices oh the Semtech SX127x
+ * This module contains the driver for radio devices of the Semtech SX127x
  * series (SX1272 and SX1276).
  * Only LoRa long range modem is supported at the moment.
  *
  * SX127x modules are designed to be used in the ISM RF band. This RF band
- * depends on the different regional regulatory worldwide. Be careful to
- * configure the device to use a RF frequency allowed in your region. Here is
- * the list of allowed frequencies for your region (see
+ * depends on different regional regulatory worldwide.
+ * Be careful to configure the device to use a RF frequency allowed in your
+ * region.
+ * sHere is the list of allowed frequencies for your region (see
  * [LoRaWAN regional parameters document available online]
  * (https://www.lora-alliance.org/Contact/RequestSpecificationForm.aspx))
  * - Europe has 2 allowed bands (ETSI):
@@ -303,7 +304,7 @@ void sx127x_init_radio_settings(sx127x_t *dev);
 /**
  * @brief   Generates 32 bits random value based on the RSSI readings
  *
- *          This function sets the radio in LoRa mode and disables all
+ * @pre     This function sets the radio in LoRa mode and disables all
  *          interrupts from it. After calling this function either
  *          sx127x_set_rx_config or sx127x_set_tx_config functions must
  *          be called.
