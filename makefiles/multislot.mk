@@ -4,10 +4,8 @@ override IMGTOOL := $(abspath $(IMGTOOL))
 
 ifndef SLOT0_SIZE
 $(error Board $(BOARD) does not define multislot parameters!)
-endif
-
-ifeq (nrf52dk, $(BOARD))
-export JLINK_FLASH_ADDR := $(SLOT0_SIZE)
+else
+export FLASH_OFFSET := $(SLOT0_SIZE)
 endif
 
 export BINFILE ?= $(BINDIR)/$(APPLICATION).bin
