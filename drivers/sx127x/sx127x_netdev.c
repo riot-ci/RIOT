@@ -63,10 +63,6 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
             /* todo */
             break;
         case SX127X_MODEM_LORA:
-            // sx127x_set_iq_invert(dev, dev->settings.lora.iq_inverted);
-            sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
-                             (dev->settings.lora.iq_inverted ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
-
             /* Initializes the payload size */
             sx127x_set_payload_length(dev, size);
 
@@ -189,7 +185,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 }
             }
 
-            packet_info->time_on_air = sx127x_get_time_on_air(dev);
+            packet_info->time_on_air = sx127x_get_time_on_air(dev, len);
 
             size = sx127x_reg_read(dev, SX127X_REG_LR_RXNBBYTES);
             if (buf == NULL) {
@@ -443,11 +439,6 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             assert(len <= sizeof(netopt_enable_t));
             sx127x_set_fixed_header_len_mode(dev, *((netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
-
-        case NETOPT_PAYLOAD_LENGTH:
-            assert(len <= sizeof(uint8_t));
-            sx127x_set_payload_length(dev, *((uint8_t*) val));
-            return sizeof(uint8_t);
 
         case NETOPT_PREAMBLE_LENGTH:
             assert(len <= sizeof(uint16_t));

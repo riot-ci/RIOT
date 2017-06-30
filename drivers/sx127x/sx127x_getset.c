@@ -120,11 +120,10 @@ void sx127x_set_channel(sx127x_t *dev, uint32_t channel)
     sx127x_reg_write(dev, SX127X_REG_FRFLSB, (uint8_t)(channel & 0xFF));
 }
 
-uint32_t sx127x_get_time_on_air(const sx127x_t *dev)
+uint32_t sx127x_get_time_on_air(const sx127x_t *dev, uint8_t pkt_len)
 {
     uint32_t air_time = 0;
 
-    uint8_t pkt_len = dev->settings.time_on_air_pkt_len;
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
             /* todo */
@@ -172,7 +171,7 @@ uint32_t sx127x_get_time_on_air(const sx127x_t *dev)
             /* Time on air */
             double t_on_air = t_preamble + t_payload;
 
-            /* return seconds */
+            /* return milli seconds */
             air_time = floor(t_on_air * 1e3 + 0.999);
         }
         break;
@@ -665,17 +664,14 @@ void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool fixed_len)
 
 uint8_t sx127x_get_payload_length(const sx127x_t *dev)
 {
-    return dev->settings.lora.payload_len;
+    return sx127x_reg_read(dev, SX127X_REG_LR_PAYLOADLENGTH);;
 }
 
 void sx127x_set_payload_length(sx127x_t *dev, uint8_t len)
 {
     DEBUG("[DEBUG] Set payload len: %d\n", len);
 
-    if (dev->settings.lora.use_fix_len) {
-        dev->settings.lora.payload_len = len;
-        sx127x_reg_write(dev, SX127X_REG_LR_PAYLOADLENGTH, len);
-    }
+    sx127x_reg_write(dev, SX127X_REG_LR_PAYLOADLENGTH, len);
 }
 
 static inline uint8_t sx127x_get_pa_select(uint32_t channel)
@@ -831,6 +827,9 @@ void sx127x_set_iq_invert(sx127x_t *dev, bool iq_invert)
                       SX127X_RF_LORA_INVERTIQ_TX_MASK) |
                       SX127X_RF_LORA_INVERTIQ_RX_OFF |
                      (iq_invert ? SX127X_RF_LORA_INVERTIQ_TX_ON : SX127X_RF_LORA_INVERTIQ_TX_OFF));
+
+    sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
+                     (iq_invert ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
 }
 
 void sx127x_set_freq_hop(sx127x_t *dev, bool freq_hop_on)
