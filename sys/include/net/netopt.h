@@ -291,21 +291,21 @@ typedef enum {
 
     /**
       * @brief   Enable/disable single packet reception.
-      * 
+      *
       * If enabled, RX is turned off upon reception of a packet
       */
     NETOPT_SINGLE_RECEIVE,
 
     /**
      * @brief   Get/Set the reception timeout of a packet.
-     * 
+     *
      * Values are retrieved/passed as uint32_t in host byte order.
      */
     NETOPT_RX_TIMEOUT,
 
     /**
      * @brief   Get/Set the transmission timeout of a packet.
-     * 
+     *
      * Values are retrieved/passed as uint32_t in host byte order.
      */
     NETOPT_TX_TIMEOUT,
@@ -325,7 +325,8 @@ typedef enum {
      */
     NETOPT_SPREADING_FACTOR,
 
-    /** @brief   Get/Set the radio coding rate as uint8_t.
+    /**
+     * @brief   Get/Set the radio coding rate as uint8_t.
      */
     NETOPT_CODING_RATE,
 
