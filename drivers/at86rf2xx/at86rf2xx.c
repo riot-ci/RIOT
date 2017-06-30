@@ -121,7 +121,7 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
     DEBUG("at86rf2xx_reset(): reset complete.\n");
 }
 
-size_t at86rf2xx_send(at86rf2xx_t *dev, uint8_t *data, size_t len)
+size_t at86rf2xx_send(at86rf2xx_t *dev, const uint8_t *data, const size_t len)
 {
     /* check data length */
     if (len > AT86RF2XX_MAX_PKT_LENGTH) {
@@ -146,15 +146,15 @@ void at86rf2xx_tx_prepare(at86rf2xx_t *dev)
     dev->tx_frame_len = IEEE802154_FCS_LEN;
 }
 
-size_t at86rf2xx_tx_load(at86rf2xx_t *dev, uint8_t *data,
-                         size_t len, size_t offset)
+size_t at86rf2xx_tx_load(at86rf2xx_t *dev, const uint8_t *data,
+                         const size_t len, const size_t offset)
 {
     dev->tx_frame_len += (uint8_t)len;
     at86rf2xx_sram_write(dev, offset + 1, data, len);
     return offset + len;
 }
 
-void at86rf2xx_tx_exec(at86rf2xx_t *dev)
+void at86rf2xx_tx_exec(const at86rf2xx_t *dev)
 {
     netdev_t *netdev = (netdev_t *)dev;
 

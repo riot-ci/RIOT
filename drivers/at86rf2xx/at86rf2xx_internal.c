@@ -36,8 +36,7 @@ static inline void getbus(const at86rf2xx_t *dev)
     spi_acquire(SPIDEV, CSPIN, SPI_MODE_0, dev->params.spi_clk);
 }
 
-void at86rf2xx_reg_write(const at86rf2xx_t *dev,
-                         const uint8_t addr,
+void at86rf2xx_reg_write(const at86rf2xx_t *dev, const uint8_t addr,
                          const uint8_t value)
 {
     uint8_t reg = (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_WRITE | addr);
@@ -196,7 +195,7 @@ void at86rf2xx_configure_phy(at86rf2xx_t *dev)
 }
 
 #if defined(MODULE_AT86RF233) || defined(MODULE_AT86RF231)
-void at86rf2xx_get_random(at86rf2xx_t *dev,
+void at86rf2xx_get_random(const at86rf2xx_t *dev,
                           uint8_t *data, const size_t len)
 {
     for (size_t byteCount = 0; byteCount < len; ++byteCount) {

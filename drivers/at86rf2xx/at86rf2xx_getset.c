@@ -49,7 +49,9 @@ static const uint8_t dbm_to_tx_pow_915[] = {0x1d, 0x1c, 0x1b, 0x1a, 0x19, 0x17,
                                             0x40, 0x84, 0x83, 0x82, 0x80, 0xc1,
                                             0xc0};
 
-static int16_t _tx_pow_to_dbm_212b(uint8_t channel, uint8_t page, uint8_t reg)
+static int16_t _tx_pow_to_dbm_212b(const uint8_t channel,
+                                   const uint8_t page,
+                                   const uint8_t reg)
 {
     if (page == 0 || page == 2) {
         const uint8_t *dbm_to_tx_pow;
@@ -92,12 +94,12 @@ static const uint8_t dbm_to_tx_pow[] = {0x0f, 0x0f, 0x0f, 0x0e, 0x0e, 0x0e,
                                         0x05, 0x03, 0x00};
 #endif
 
-uint16_t at86rf2xx_get_addr_short(at86rf2xx_t *dev)
+uint16_t at86rf2xx_get_addr_short(const at86rf2xx_t *dev)
 {
     return (dev->netdev.short_addr[0] << 8) | dev->netdev.short_addr[1];
 }
 
-void at86rf2xx_set_addr_short(at86rf2xx_t *dev, uint16_t addr)
+void at86rf2xx_set_addr_short(at86rf2xx_t *dev, const uint16_t addr)
 {
     dev->netdev.short_addr[0] = (uint8_t)(addr);
     dev->netdev.short_addr[1] = (uint8_t)(addr >> 8);
@@ -112,7 +114,7 @@ void at86rf2xx_set_addr_short(at86rf2xx_t *dev, uint16_t addr)
                         dev->netdev.short_addr[0]);
 }
 
-uint64_t at86rf2xx_get_addr_long(at86rf2xx_t *dev)
+uint64_t at86rf2xx_get_addr_long(const at86rf2xx_t *dev)
 {
     uint64_t addr;
     uint8_t *ap = (uint8_t *)(&addr);
@@ -122,7 +124,7 @@ uint64_t at86rf2xx_get_addr_long(at86rf2xx_t *dev)
     return addr;
 }
 
-void at86rf2xx_set_addr_long(at86rf2xx_t *dev, uint64_t addr)
+void at86rf2xx_set_addr_long(at86rf2xx_t *dev, const uint64_t addr)
 {
     for (int i = 0; i < 8; i++) {
         dev->netdev.long_addr[i] = (uint8_t)(addr >> (i * 8));
@@ -131,12 +133,12 @@ void at86rf2xx_set_addr_long(at86rf2xx_t *dev, uint64_t addr)
     }
 }
 
-uint8_t at86rf2xx_get_chan(at86rf2xx_t *dev)
+uint8_t at86rf2xx_get_chan(const at86rf2xx_t *dev)
 {
     return dev->netdev.chan;
 }
 
-void at86rf2xx_set_chan(at86rf2xx_t *dev, uint8_t channel)
+void at86rf2xx_set_chan(at86rf2xx_t *dev, const uint8_t channel)
 {
     if ((channel < AT86RF2XX_MIN_CHANNEL) ||
         (channel > AT86RF2XX_MAX_CHANNEL) ||
@@ -149,7 +151,7 @@ void at86rf2xx_set_chan(at86rf2xx_t *dev, uint8_t channel)
     at86rf2xx_configure_phy(dev);
 }
 
-uint8_t at86rf2xx_get_page(at86rf2xx_t *dev)
+uint8_t at86rf2xx_get_page(const at86rf2xx_t *dev)
 {
 #ifdef MODULE_AT86RF212B
     return dev->page;
@@ -159,7 +161,7 @@ uint8_t at86rf2xx_get_page(at86rf2xx_t *dev)
 #endif
 }
 
-void at86rf2xx_set_page(at86rf2xx_t *dev, uint8_t page)
+void at86rf2xx_set_page(at86rf2xx_t *dev, const uint8_t page)
 {
 #ifdef MODULE_AT86RF212B
     if ((page != 0) && (page != 2)) {
@@ -174,12 +176,12 @@ void at86rf2xx_set_page(at86rf2xx_t *dev, uint8_t page)
 #endif
 }
 
-uint16_t at86rf2xx_get_pan(at86rf2xx_t *dev)
+uint16_t at86rf2xx_get_pan(const at86rf2xx_t *dev)
 {
     return dev->netdev.pan;
 }
 
-void at86rf2xx_set_pan(at86rf2xx_t *dev, uint16_t pan)
+void at86rf2xx_set_pan(at86rf2xx_t *dev, const uint16_t pan)
 {
     le_uint16_t le_pan = byteorder_btols(byteorder_htons(pan));
     dev->netdev.pan = pan;
@@ -188,7 +190,7 @@ void at86rf2xx_set_pan(at86rf2xx_t *dev, uint16_t pan)
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__PAN_ID_1, le_pan.u8[1]);
 }
 
-int16_t at86rf2xx_get_txpower(at86rf2xx_t *dev)
+int16_t at86rf2xx_get_txpower(const at86rf2xx_t *dev)
 {
 #ifdef MODULE_AT86RF212B
     uint8_t txpower = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_TX_PWR);
@@ -201,7 +203,7 @@ int16_t at86rf2xx_get_txpower(at86rf2xx_t *dev)
 #endif
 }
 
-void at86rf2xx_set_txpower(at86rf2xx_t *dev, int16_t txpower)
+void at86rf2xx_set_txpower(const at86rf2xx_t *dev, int16_t txpower)
 {
 #ifdef MODULE_AT86RF212B
     txpower += 25;
@@ -239,21 +241,20 @@ void at86rf2xx_set_txpower(at86rf2xx_t *dev, int16_t txpower)
 #endif
 }
 
-uint8_t at86rf2xx_get_max_retries(at86rf2xx_t *dev)
+uint8_t at86rf2xx_get_max_retries(const at86rf2xx_t *dev)
 {
     return (at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_0) >> 4);
 }
 
-void at86rf2xx_set_max_retries(at86rf2xx_t *dev, uint8_t max)
+void at86rf2xx_set_max_retries(const at86rf2xx_t *dev, const uint8_t max)
 {
-    max = (max > 7) ? 7 : max;
     uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_0);
     tmp &= ~(AT86RF2XX_XAH_CTRL_0__MAX_FRAME_RETRIES);
-    tmp |= (max << 4);
+    tmp |= ((max > 7) ? 7 : max) << 4;
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-uint8_t at86rf2xx_get_csma_max_retries(at86rf2xx_t *dev)
+uint8_t at86rf2xx_get_csma_max_retries(const at86rf2xx_t *dev)
 {
     uint8_t tmp;
     tmp  = at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_0);
@@ -262,7 +263,7 @@ uint8_t at86rf2xx_get_csma_max_retries(at86rf2xx_t *dev)
     return tmp;
 }
 
-void at86rf2xx_set_csma_max_retries(at86rf2xx_t *dev, int8_t retries)
+void at86rf2xx_set_csma_max_retries(const at86rf2xx_t *dev, int8_t retries)
 {
     retries = (retries > 5) ? 5 : retries; /* valid values: 0-5 */
     retries = (retries < 0) ? 7 : retries; /* max < 0 => disable CSMA (set to 7) */
@@ -274,7 +275,8 @@ void at86rf2xx_set_csma_max_retries(at86rf2xx_t *dev, int8_t retries)
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-void at86rf2xx_set_csma_backoff_exp(at86rf2xx_t *dev, uint8_t min, uint8_t max)
+void at86rf2xx_set_csma_backoff_exp(const at86rf2xx_t *dev,
+                                    uint8_t min, uint8_t max)
 {
     max = (max > 8) ? 8 : max;
     min = (min > max) ? max : min;
@@ -283,7 +285,7 @@ void at86rf2xx_set_csma_backoff_exp(at86rf2xx_t *dev, uint8_t min, uint8_t max)
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_BE, (max << 4) | (min));
 }
 
-void at86rf2xx_set_csma_seed(at86rf2xx_t *dev, uint8_t entropy[2])
+void at86rf2xx_set_csma_seed(const at86rf2xx_t *dev, const uint8_t entropy[2])
 {
     if(entropy == NULL) {
         DEBUG("[at86rf2xx] opt: CSMA seed entropy is nullpointer\n");
@@ -299,7 +301,7 @@ void at86rf2xx_set_csma_seed(at86rf2xx_t *dev, uint8_t entropy[2])
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_SEED_1, tmp);
 }
 
-int8_t at86rf2xx_get_cca_threshold(at86rf2xx_t *dev)
+int8_t at86rf2xx_get_cca_threshold(const at86rf2xx_t *dev)
 {
     int8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
     tmp &= AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
@@ -307,7 +309,7 @@ int8_t at86rf2xx_get_cca_threshold(at86rf2xx_t *dev)
     return (RSSI_BASE_VAL + tmp);
 }
 
-void at86rf2xx_set_cca_threshold(at86rf2xx_t *dev, int8_t value)
+void at86rf2xx_set_cca_threshold(const at86rf2xx_t *dev, int8_t value)
 {
     /* ensure the given value is negative, since a CCA threshold > 0 is
        just impossible: thus, any positive value given is considered
@@ -324,7 +326,8 @@ void at86rf2xx_set_cca_threshold(at86rf2xx_t *dev, int8_t value)
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__CCA_THRES, value);
 }
 
-void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
+void at86rf2xx_set_option(at86rf2xx_t *dev,
+                          const uint16_t option, const bool state)
 {
     uint8_t tmp;
 
@@ -393,7 +396,8 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
  * @param cmd       command to initiate state transition
  */
 
-static inline void _set_state(at86rf2xx_t *dev, uint8_t state, uint8_t cmd)
+static inline void _set_state(at86rf2xx_t *dev,
+                              const uint8_t state, const uint8_t cmd)
 {
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_STATE, cmd);
 
@@ -409,7 +413,7 @@ static inline void _set_state(at86rf2xx_t *dev, uint8_t state, uint8_t cmd)
     dev->state = state;
 }
 
-uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
+uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, const uint8_t state)
 {
     uint8_t old_state;
 
