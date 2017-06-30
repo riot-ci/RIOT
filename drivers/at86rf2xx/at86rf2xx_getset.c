@@ -48,13 +48,15 @@ static const uint8_t dbm_to_tx_pow_915[] = {0x1d, 0x1c, 0x1b, 0x1a, 0x19, 0x17,
                                             0x04, 0x03, 0x02, 0x01, 0x00, 0x86,
                                             0x40, 0x84, 0x83, 0x82, 0x80, 0xc1,
                                             0xc0};
-static int16_t _tx_pow_to_dbm_212b(uint8_t channel, uint8_t page, uint8_t reg) {
-    const uint8_t *dbm_to_tx_pow;
-    size_t nelem;
 
+static int16_t _tx_pow_to_dbm_212b(uint8_t channel, uint8_t page, uint8_t reg)
+{
     if (page == 0 || page == 2) {
-        /* Channel 0 is 868.3 MHz */
+        const uint8_t *dbm_to_tx_pow;
+        size_t nelem;
+
         if (channel == 0) {
+            /* Channel 0 is 868.3 MHz */
             dbm_to_tx_pow = &dbm_to_tx_pow_868[0];
             nelem = sizeof(dbm_to_tx_pow_868) / sizeof(dbm_to_tx_pow_868[0]);
         }
@@ -63,16 +65,14 @@ static int16_t _tx_pow_to_dbm_212b(uint8_t channel, uint8_t page, uint8_t reg) {
             dbm_to_tx_pow = &dbm_to_tx_pow_915[0];
             nelem = sizeof(dbm_to_tx_pow_915) / sizeof(dbm_to_tx_pow_915[0]);
         }
-    }
-    else {
-        return 0;
-    }
 
-    for(size_t i = 0; i < nelem; i++){
-        if (dbm_to_tx_pow[i] == reg) {
-            return i - 25;
+        for(size_t i = 0; i < nelem; i++){
+            if (dbm_to_tx_pow[i] == reg) {
+                return i - 25;
+            }
         }
     }
+
     return 0;
 }
 
@@ -293,9 +293,7 @@ void at86rf2xx_set_csma_seed(at86rf2xx_t *dev, uint8_t entropy[2])
     }
     DEBUG("[at86rf2xx] opt: Set CSMA seed to 0x%x 0x%x\n", entropy[0], entropy[1]);
 
-    at86rf2xx_reg_write(dev,
-                           AT86RF2XX_REG__CSMA_SEED_0,
-                           entropy[0]);
+    at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_SEED_0, entropy[0]);
 
     uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CSMA_SEED_1);
     tmp &= ~(AT86RF2XX_CSMA_SEED_1__CSMA_SEED_1);
