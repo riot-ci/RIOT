@@ -122,8 +122,9 @@ static inline _nib_onl_entry_t *_cache_out_onl_entry(const ipv6_addr_t *addr,
             DEBUG("for (addr = %s, iface = %u)\n",
                   ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
                   iface);
+            /* call _nib_nc_remove to remove timers from _evtimer */
+            _nib_nc_remove(tmp);
             res = tmp;
-            res->mode = _EMPTY;
             _override_node(addr, iface, res);
             /* cstate masked in _nib_nc_add() already */
             res->info |= cstate;
