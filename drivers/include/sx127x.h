@@ -201,14 +201,13 @@ typedef struct {
     uint8_t coderate;                  /**< Error coding rate */
     uint16_t preamble_len;             /**< Length of preamble header */
     bool use_fix_len;                  /**< Use fixed header len, (enable implicit header mode) */
-    uint8_t payload_len;               /**< Payload length */
     bool crc_on;                       /**< Enable payload CRC */
     bool freq_hop_on;                  /**< Enable frequency hopping */
     uint8_t freq_hop_period;           /**< Frequency hop period */
     bool iq_inverted;                  /**< Set inverted IQ */
     bool rx_continuous;                /**< Use continuous reception */
-    uint32_t tx_timeout;               /**< TX timeout in symbols */
     uint32_t rx_timeout;               /**< RX timeout in symbols */
+    uint32_t tx_timeout;               /**< TX timeout in symbols */
 } sx127x_lora_settings_t;
 
 /**
@@ -220,7 +219,6 @@ typedef struct {
     uint32_t channel;                  /**< Radio channel */
     sx127x_lora_settings_t lora;       /**< LoRa settings */
     uint32_t window_timeout;           /**< Timeout window */
-    uint8_t time_on_air_pkt_len;       /**< To get time on air from packet len*/
 } sx127x_radio_settings_t;
 
 /**
@@ -413,16 +411,17 @@ uint32_t sx127x_get_channel(const sx127x_t *dev);
 void sx127x_set_channel(sx127x_t *dev, uint32_t freq);
 
 /**
- * @brief   Computes the packet time on air in microseconds.
+ * @brief   Computes the packet time on air in milliseconds.
  *
  * @pre     Can only be called once sx127x_init_radio_settings have already
  *          been called.
  *
  * @param[in] dev                      The sx127x device descriptor
+ * @param[in] pkt_len                  The received packet payload length
  *
- * @return computed air time (us) for the given packet payload length
+ * @return computed air time (ms) for the given packet payload length
  */
-uint32_t sx127x_get_time_on_air(const sx127x_t *dev);
+uint32_t sx127x_get_time_on_air(const sx127x_t *dev, uint8_t pkt_len);
 
 /**
  * @brief   Sets the radio in sleep mode
