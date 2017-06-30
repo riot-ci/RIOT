@@ -224,10 +224,9 @@ int send_cmd(int argc, char **argv)
     struct iovec vec[1];
     vec[0].iov_base = argv[1];
     vec[0].iov_len = strlen(argv[1]) + 1;
-    netdev->driver->send(netdev, vec, 1);
-
-    /* wait for the chip */
-    xtimer_usleep(10000);
+    if (netdev->driver->send(netdev, vec, 1) == -ENOTSUP) {
+        puts("Cannot send: radio is still transmitting");
+    }
 
     return 0;
 }
