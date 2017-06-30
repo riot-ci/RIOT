@@ -284,7 +284,7 @@ void sx127x_on_dio2(void *arg)
                     /* todo */
                     break;
                 case SX127X_MODEM_LORA:
-                    if (dev->settings.lora.freq_hop_on) {
+                    if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) {
                         /* Clear IRQ */
                         sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
                                          SX127X_RF_LORA_IRQFLAGS_FHSSCHANGEDCHANNEL);
@@ -304,7 +304,7 @@ void sx127x_on_dio2(void *arg)
                 case SX127X_MODEM_FSK:
                     break;
                 case SX127X_MODEM_LORA:
-                    if (dev->settings.lora.freq_hop_on) {
+                    if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) {
                         /* Clear IRQ */
                         sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
                                          SX127X_RF_LORA_IRQFLAGS_FHSSCHANGEDCHANNEL);

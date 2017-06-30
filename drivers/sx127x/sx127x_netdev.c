@@ -134,7 +134,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
                                  SX127X_RF_LORA_IRQFLAGS_PAYLOADCRCERROR);
 
-                if (!dev->settings.lora.rx_continuous) {
+                if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK)) {
                     sx127x_set_state(dev, SX127X_RF_IDLE);
                 }
 
@@ -195,7 +195,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 return -ENOBUFS;
             }
 
-            if (!dev->settings.lora.rx_continuous) {
+            if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK)) {
                 sx127x_set_state(dev, SX127X_RF_IDLE);
             }
 
@@ -317,7 +317,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_CHANNEL_HOP:
             assert(max_len >= sizeof(netopt_enable_t));
-            *((netopt_enable_t*) val) = dev->settings.lora.freq_hop_on ? NETOPT_ENABLE : NETOPT_DISABLE;
+            *((netopt_enable_t*) val) = (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) ? NETOPT_ENABLE : NETOPT_DISABLE;
             break;
 
         case NETOPT_CHANNEL_HOP_PERIOD:
@@ -327,8 +327,8 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_SINGLE_RECEIVE:
             assert(max_len >= sizeof(uint8_t));
-            *((uint8_t*) val) = sx127x_get_rx_single(dev);
-            return sizeof(uint8_t);
+            *((netopt_enable_t*) val) = sx127x_get_rx_single(dev) ? NETOPT_ENABLE : NETOPT_DISABLE;
+            break;
 
         default:
             break;
@@ -416,8 +416,8 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
 
         case NETOPT_SINGLE_RECEIVE:
             assert(len <= sizeof(uint8_t));
-            sx127x_set_rx_single(dev, *((uint8_t*) val));
-            return sizeof(uint8_t);
+            sx127x_set_rx_single(dev, *((netopt_enable_t*) val) ? true : false);
+            return sizeof(netopt_enable_t);
 
         case NETOPT_RX_TIMEOUT:
             assert(len <= sizeof(uint32_t));

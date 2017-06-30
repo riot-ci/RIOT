@@ -192,21 +192,28 @@ enum {
 };
 
 /**
+ * @name    SX127X device descriptor boolean masks
+ * @{
+ */
+#define SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK       (1 << 0)
+#define SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK  (1 << 1)
+#define SX127X_ENABLE_CRC_FLAG_MASK                  (1 << 2)
+#define SX127X_CHANNEL_HOPPING_FLAG_MASK             (1 << 3)
+#define SX127X_IQ_INVERTED_FLAG_MASK                 (1 << 4)
+#define SX127X_RX_CONTINUOUS_FLAG_MASK               (1 << 5)
+/** @} */
+
+/**
  * @brief   LoRa configuration structure.
  */
 typedef struct {
+    uint16_t preamble_len;             /**< Length of preamble header */
     uint8_t power;                     /**< Signal power */
     uint8_t bandwidth;                 /**< Signal bandwidth */
     uint8_t datarate;                  /**< Spreading factor rate, e.g datarate */
-    bool low_datarate_optimize;        /**< Optimize for low data rate */
     uint8_t coderate;                  /**< Error coding rate */
-    uint16_t preamble_len;             /**< Length of preamble header */
-    bool use_fix_len;                  /**< Use fixed header len, (enable implicit header mode) */
-    bool crc_on;                       /**< Enable payload CRC */
-    bool freq_hop_on;                  /**< Enable frequency hopping */
     uint8_t freq_hop_period;           /**< Frequency hop period */
-    bool iq_inverted;                  /**< Set inverted IQ */
-    bool rx_continuous;                /**< Use continuous reception */
+    uint8_t flags;                     /**< Boolean flags */
     uint32_t rx_timeout;               /**< RX timeout in symbols */
     uint32_t tx_timeout;               /**< TX timeout in symbols */
 } sx127x_lora_settings_t;
@@ -215,11 +222,11 @@ typedef struct {
  * @brief   Radio settings.
  */
 typedef struct {
+    uint32_t channel;                  /**< Radio channel */
+    uint32_t window_timeout;           /**< Timeout window */
     uint8_t state;                     /**< Radio state */
     uint8_t modem;                     /**< Driver model (FSK or LoRa) */
-    uint32_t channel;                  /**< Radio channel */
     sx127x_lora_settings_t lora;       /**< LoRa settings */
-    uint32_t window_timeout;           /**< Timeout window */
 } sx127x_radio_settings_t;
 
 /**
@@ -227,10 +234,10 @@ typedef struct {
  */
 typedef struct {
     /* Data that will be passed to events handler in application */
-    uint32_t last_channel;             /**< Last channel in frequency hopping sequence */
-    bool is_last_cad_success;          /**< Sign of success of last CAD operation (activity detected) */
     xtimer_t tx_timeout_timer;         /**< TX operation timeout timer */
     xtimer_t rx_timeout_timer;         /**< RX operation timeout timer */
+    uint32_t last_channel;             /**< Last channel in frequency hopping sequence */
+    bool is_last_cad_success;          /**< Sign of success of last CAD operation (activity detected) */
 } sx127x_internal_t;
 
 /**
@@ -261,8 +268,8 @@ typedef struct sx127x_s {
     netdev_t netdev;                   /**< Netdev parent struct */
     sx127x_radio_settings_t settings;  /**< Radio settings */
     sx127x_params_t params;            /**< Device driver parameters */
-    sx127x_flags_t irq;                /**< Device IRQ flags */
     sx127x_internal_t _internal;       /**< Internal sx127x data used within the driver */
+    sx127x_flags_t irq;                /**< Device IRQ flags */
 } sx127x_t;
 
 /**
@@ -304,10 +311,10 @@ void sx127x_init_radio_settings(sx127x_t *dev);
 /**
  * @brief   Generates 32 bits random value based on the RSSI readings
  *
- * @pre     This function sets the radio in LoRa mode and disables all
- *          interrupts from it. After calling this function either
- *          sx127x_set_rx_config or sx127x_set_tx_config functions must
- *          be called.
+ * @attention This function sets the radio in LoRa mode and disables all
+ *            interrupts from it. After calling this function either
+ *            sx127x_set_rx_config or sx127x_set_tx_config functions must
+ *            be called.
  *
  * @param[in] dev                      The sx127x device structure pointer
  *
@@ -538,21 +545,21 @@ uint8_t sx127x_get_coding_rate(const sx127x_t *dev);
 void sx127x_set_coding_rate(sx127x_t *dev, uint8_t coderate);
 
 /**
- * @brief   Gets the SX127X LoRa RX single mode
+ * @brief   Check is the SX127X LoRa RX single mode is enabled/disabled
  *
  * @param[in] dev                      The sx127x device descriptor
  *
  * @return the LoRa single mode
  */
-uint8_t sx127x_get_rx_single(const sx127x_t *dev);
+bool sx127x_get_rx_single(const sx127x_t *dev);
 
 /**
- * @brief   Sets the SX127X LoRa RX single mode
+ * @brief   Enable/disable the SX127X LoRa RX single mode
  *
  * @param[in] dev                      The sx127x device descriptor
  * @param[in] single                   The LoRa RX single mode
  */
-void sx127x_set_rx_single(sx127x_t *dev, uint8_t single);
+void sx127x_set_rx_single(sx127x_t *dev, bool single);
 
 /**
  * @brief   Checks if the SX127X CRC verification mode is enabled
