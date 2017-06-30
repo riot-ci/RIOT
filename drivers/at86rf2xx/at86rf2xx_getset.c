@@ -495,14 +495,7 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
 
 void at86rf2xx_reset_state_machine(at86rf2xx_t *dev)
 {
-    uint8_t old_state;
-
     at86rf2xx_assert_awake(dev);
-
-    /* Wait for any state transitions to complete before forcing TRX_OFF */
-    do {
-        old_state = at86rf2xx_get_status(dev);
-    } while (old_state == AT86RF2XX_STATE_IN_PROGRESS);
 
     at86rf2xx_set_state(dev, AT86RF2XX_STATE_FORCE_TRX_OFF);
 }
