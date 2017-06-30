@@ -545,7 +545,7 @@ uint8_t sx127x_get_coding_rate(const sx127x_t *dev);
 void sx127x_set_coding_rate(sx127x_t *dev, uint8_t coderate);
 
 /**
- * @brief   Check if the SX127X LoRa RX single mode is enabled/disabled
+ * @brief   Checks if the SX127X LoRa RX single mode is enabled/disabled
  *
  * @param[in] dev                      The sx127x device descriptor
  *
