@@ -339,11 +339,6 @@ typedef enum {
      */
     NETOPT_IQ_INVERT,
 
-    /**
-     * @brief   Set payload length as uint8_t.
-     */
-    NETOPT_PAYLOAD_LENGTH,
-
     /* add more options if needed */
 
     /**
