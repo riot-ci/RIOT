@@ -10,7 +10,7 @@ the imgtool.py application, which is executed automatically by the build
 system.
 
 This test should be called using `make mcuboot` to produce such ELF file,
-which can also be flashed using `make mcuboot flash-mcuboot`.
+which can also be flashed using `make flash-mcuboot`.
 
 In order to get the program to run, it is necessary to have MCUBoot flashed
 into the device. This can be achieved by following the instructions on the
