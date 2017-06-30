@@ -192,15 +192,15 @@ enum {
 };
 
 /**
- * @name    SX127X device descriptor boolean masks
+ * @name    SX127X device descriptor boolean flags
  * @{
  */
-#define SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK       (1 << 0)
-#define SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK  (1 << 1)
-#define SX127X_ENABLE_CRC_FLAG_MASK                  (1 << 2)
-#define SX127X_CHANNEL_HOPPING_FLAG_MASK             (1 << 3)
-#define SX127X_IQ_INVERTED_FLAG_MASK                 (1 << 4)
-#define SX127X_RX_CONTINUOUS_FLAG_MASK               (1 << 5)
+#define SX127X_LOW_DATARATE_OPTIMIZE_FLAG       (1 << 0)
+#define SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG  (1 << 1)
+#define SX127X_ENABLE_CRC_FLAG                  (1 << 2)
+#define SX127X_CHANNEL_HOPPING_FLAG             (1 << 3)
+#define SX127X_IQ_INVERTED_FLAG                 (1 << 4)
+#define SX127X_RX_CONTINUOUS_FLAG               (1 << 5)
 /** @} */
 
 /**
@@ -545,7 +545,7 @@ uint8_t sx127x_get_coding_rate(const sx127x_t *dev);
 void sx127x_set_coding_rate(sx127x_t *dev, uint8_t coderate);
 
 /**
- * @brief   Check is the SX127X LoRa RX single mode is enabled/disabled
+ * @brief   Check if the SX127X LoRa RX single mode is enabled/disabled
  *
  * @param[in] dev                      The sx127x device descriptor
  *

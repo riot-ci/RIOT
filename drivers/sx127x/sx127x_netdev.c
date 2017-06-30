@@ -56,6 +56,13 @@ const netdev_driver_t sx127x_driver = {
 static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
 {
     sx127x_t *dev = (sx127x_t*) netdev;
+
+    if (sx127x_get_state(dev) == SX127X_RF_TX_RUNNING) {
+        DEBUG("[WARNING] Cannot send packet: radio alredy in transmitting "
+              "state.\n");
+        return -ENOTSUP;
+    }
+
     uint8_t size;
     size = _get_tx_len(vector, count);
     switch (dev->settings.modem) {
@@ -134,7 +141,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS,
                                  SX127X_RF_LORA_IRQFLAGS_PAYLOADCRCERROR);
 
-                if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK)) {
+                if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG)) {
                     sx127x_set_state(dev, SX127X_RF_IDLE);
                 }
 
@@ -195,7 +202,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 return -ENOBUFS;
             }
 
-            if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK)) {
+            if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG)) {
                 sx127x_set_state(dev, SX127X_RF_IDLE);
             }
 
@@ -317,7 +324,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_CHANNEL_HOP:
             assert(max_len >= sizeof(netopt_enable_t));
-            *((netopt_enable_t*) val) = (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) ? NETOPT_ENABLE : NETOPT_DISABLE;
+            *((netopt_enable_t*) val) = (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG) ? NETOPT_ENABLE : NETOPT_DISABLE;
             break;
 
         case NETOPT_CHANNEL_HOP_PERIOD:

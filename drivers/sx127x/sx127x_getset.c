@@ -159,10 +159,10 @@ uint32_t sx127x_get_time_on_air(const sx127x_t *dev, uint8_t pkt_len)
             double tmp =
                 ceil(
                     (8 * pkt_len - 4 * dev->settings.lora.datarate + 28
-                     + 16 * (dev->settings.lora.flags & SX127X_ENABLE_CRC_FLAG_MASK)
-                     - (!(dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK) ? 20 : 0))
+                     + 16 * (dev->settings.lora.flags & SX127X_ENABLE_CRC_FLAG)
+                     - (!(dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG) ? 20 : 0))
                     / (double) (4 * dev->settings.lora.datarate
-                                - (((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK)
+                                - (((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG)
                                     > 0) ? 2 : 0)))
                 * (dev->settings.lora.coderate + 4);
             double n_payload = 8 + ((tmp > 0) ? tmp : 0);
@@ -216,7 +216,7 @@ void sx127x_set_rx(sx127x_t *dev)
         case SX127X_MODEM_LORA:
         {
             sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
-                             ((dev->settings.lora.flags & SX127X_IQ_INVERTED_FLAG_MASK) ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
+                             ((dev->settings.lora.flags & SX127X_IQ_INVERTED_FLAG) ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
 
 #if defined(MODULE_SX1276)
             /* ERRATA 2.3 - Receiver Spurious Reception of a LoRa Signal */
@@ -243,7 +243,7 @@ void sx127x_set_rx(sx127x_t *dev)
 #endif
 
             /* Setup interrupts */
-            if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) {
+            if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG) {
                 sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGSMASK,
                                  /* SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT |
                                     SX127X_RF_LORA_IRQFLAGS_RXDONE |
@@ -292,7 +292,7 @@ void sx127x_set_rx(sx127x_t *dev)
                    dev->settings.window_timeout);
     }
 
-    if (dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK) {
+    if (dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG) {
         sx127x_set_op_mode(dev, SX127X_RF_LORA_OPMODE_RECEIVER);
     }
     else {
@@ -308,7 +308,7 @@ void sx127x_set_tx(sx127x_t *dev)
             break;
         case SX127X_MODEM_LORA:
         {
-            if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) {
+            if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG) {
                 sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGSMASK,
                                  SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT |
                                  SX127X_RF_LORA_IRQFLAGS_RXDONE |
@@ -430,21 +430,21 @@ inline void _low_datarate_optimize(sx127x_t *dev)
            (dev->settings.lora.datarate == SX127X_SF12))) ||
          ((dev->settings.lora.bandwidth == SX127X_BW_250_KHZ) &&
           (dev->settings.lora.datarate == SX127X_SF12))) {
-        dev->settings.lora.flags |= SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK;
+        dev->settings.lora.flags |= SX127X_LOW_DATARATE_OPTIMIZE_FLAG;
     } else {
-        dev->settings.lora.flags &= ~SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK;
+        dev->settings.lora.flags &= ~SX127X_LOW_DATARATE_OPTIMIZE_FLAG;
     }
 
 #if defined(MODULE_SX1272)
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG1,
                      (sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1) &
                       SX127X_RF_LORA_MODEMCONFIG1_LOWDATARATEOPTIMIZE_MASK) |
-                     ((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK)));
+                     ((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG)));
 #else /* MODULE_SX1276 */
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG3,
                      (sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG3) &
                       SX127X_RF_LORA_MODEMCONFIG3_LOWDATARATEOPTIMIZE_MASK) |
-                     ((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG_MASK) << 3));
+                     ((dev->settings.lora.flags & SX127X_LOW_DATARATE_OPTIMIZE_FLAG) << 3));
 #endif
 }
 
@@ -525,7 +525,7 @@ void sx127x_set_spreading_factor(sx127x_t *dev, uint8_t datarate)
     DEBUG("[DEBUG] Set spreading factor: %d\n", datarate);
 
     if (datarate == SX127X_SF6 &&
-        !(dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK)) {
+        !(dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG)) {
         /* SF 6 is only valid when using explicit header mode */
         DEBUG("Spreading Factor 6 can only be used when explicit header "
               "mode is set, this mode is not supported by this driver."
@@ -593,13 +593,13 @@ static inline void _set_flag(sx127x_t *dev, uint8_t flag, bool value)
 
 bool sx127x_get_rx_single(const sx127x_t *dev)
 {
-    return !(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG_MASK);
+    return !(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG);
 }
 
 void sx127x_set_rx_single(sx127x_t *dev, bool single)
 {
     DEBUG("[DEBUG] Set RX single: %d\n", single);
-    _set_flag(dev, SX127X_RX_CONTINUOUS_FLAG_MASK, !single);
+    _set_flag(dev, SX127X_RX_CONTINUOUS_FLAG, !single);
 }
 
 bool sx127x_get_crc(const sx127x_t *dev)
@@ -616,7 +616,7 @@ bool sx127x_get_crc(const sx127x_t *dev)
 void sx127x_set_crc(sx127x_t *dev, bool crc)
 {
     DEBUG("[DEBUG] Set CRC: %d\n", crc);
-    _set_flag(dev, SX127X_ENABLE_CRC_FLAG_MASK, crc);
+    _set_flag(dev, SX127X_ENABLE_CRC_FLAG, crc);
 
 #if defined(MODULE_SX1272)
     uint8_t config2_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1);
@@ -643,7 +643,7 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period)
     dev->settings.lora.freq_hop_period = hop_period;
 
     uint8_t tmp = sx127x_reg_read(dev, SX127X_REG_LR_PLLHOP);
-    if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG_MASK) {
+    if (dev->settings.lora.flags & SX127X_CHANNEL_HOPPING_FLAG) {
         tmp |= SX127X_RF_LORA_PLLHOP_FASTHOP_ON;
         sx127x_reg_write(dev, SX127X_REG_LR_PLLHOP, tmp);
         sx127x_reg_write(dev, SX127X_REG_LR_HOPPERIOD, hop_period);
@@ -652,14 +652,14 @@ void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period)
 
 bool  sx127x_get_fixed_header_len_mode(const sx127x_t *dev)
 {
-    return dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK;
+    return dev->settings.lora.flags & SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG;
 }
 
 void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool fixed_len)
 {
     DEBUG("[DEBUG] Set fixed header length: %d\n", fixed_len);
 
-    _set_flag(dev, SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG_MASK, fixed_len);
+    _set_flag(dev, SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG, fixed_len);
 
     uint8_t config1_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG1);
 #if defined(MODULE_SX1272)
@@ -829,7 +829,7 @@ void sx127x_set_iq_invert(sx127x_t *dev, bool iq_invert)
 {
     DEBUG("[DEBUG] Set IQ invert: %d\n", iq_invert);
 
-    _set_flag(dev, SX127X_IQ_INVERTED_FLAG_MASK, iq_invert);
+    _set_flag(dev, SX127X_IQ_INVERTED_FLAG, iq_invert);
 
     sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ,
                      (sx127x_reg_read(dev, SX127X_REG_LR_INVERTIQ) &
@@ -846,5 +846,5 @@ void sx127x_set_freq_hop(sx127x_t *dev, bool freq_hop_on)
 {
     DEBUG("[DEBUG] Set freq hop: %d\n", freq_hop_on);
 
-     _set_flag(dev, SX127X_CHANNEL_HOPPING_FLAG_MASK, freq_hop_on);
+     _set_flag(dev, SX127X_CHANNEL_HOPPING_FLAG, freq_hop_on);
 }
