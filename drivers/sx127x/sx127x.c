@@ -127,7 +127,7 @@ void sx127x_init_radio_settings(sx127x_t *dev)
     sx127x_set_crc(dev, SX127X_PAYLOAD_CRC_ON);
     sx127x_set_symbol_timeout(dev, SX127X_SYMBOL_TIMEOUT);
     sx127x_set_preamble_length(dev, SX127X_PREAMBLE_LENGTH);
-    // sx127x_set_payload_length(dev, SX127X_PAYLOAD_LENGTH);
+    sx127x_set_payload_length(dev, SX127X_PAYLOAD_LENGTH);
     sx127x_set_hop_period(dev, SX127X_FREQUENCY_HOPPING_PERIOD);
 
     sx127x_set_tx_power(dev, SX127X_RADIO_TX_POWER);

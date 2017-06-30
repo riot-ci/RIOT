@@ -216,21 +216,8 @@ void sx127x_set_rx(sx127x_t *dev)
             break;
         case SX127X_MODEM_LORA:
         {
-            if (dev->settings.lora.iq_inverted) {
-                sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ,
-                                 ((sx127x_reg_read(dev, SX127X_REG_LR_INVERTIQ)
-                                   & SX127X_RF_LORA_INVERTIQ_TX_MASK & SX127X_RF_LORA_INVERTIQ_RX_MASK)
-                                  | SX127X_RF_LORA_INVERTIQ_RX_ON | SX127X_RF_LORA_INVERTIQ_TX_OFF));
-                sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2, SX127X_RF_LORA_INVERTIQ2_ON);
-            }
-            else {
-                sx127x_reg_write(dev,
-                                 SX127X_REG_LR_INVERTIQ,
-                                 ((sx127x_reg_read(dev, SX127X_REG_LR_INVERTIQ)
-                                   & SX127X_RF_LORA_INVERTIQ_TX_MASK & SX127X_RF_LORA_INVERTIQ_RX_MASK)
-                                  | SX127X_RF_LORA_INVERTIQ_RX_OFF | SX127X_RF_LORA_INVERTIQ_TX_OFF));
-                sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2, SX127X_RF_LORA_INVERTIQ2_OFF);
-            }
+            sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
+                             (dev->settings.lora.iq_inverted ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
 
 #if defined(MODULE_SX1276)
             /* ERRATA 2.3 - Receiver Spurious Reception of a LoRa Signal */
@@ -844,8 +831,6 @@ void sx127x_set_iq_invert(sx127x_t *dev, bool iq_invert)
                       SX127X_RF_LORA_INVERTIQ_TX_MASK) |
                       SX127X_RF_LORA_INVERTIQ_RX_OFF |
                      (iq_invert ? SX127X_RF_LORA_INVERTIQ_TX_ON : SX127X_RF_LORA_INVERTIQ_TX_OFF));
-    sx127x_reg_write(dev, SX127X_REG_LR_INVERTIQ2,
-                     (iq_invert ? SX127X_RF_LORA_INVERTIQ2_ON : SX127X_RF_LORA_INVERTIQ2_OFF));
 }
 
 void sx127x_set_freq_hop(sx127x_t *dev, bool freq_hop_on)
