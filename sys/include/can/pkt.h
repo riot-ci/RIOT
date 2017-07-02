@@ -148,5 +148,4 @@ void can_pkt_buf_free(void *data, size_t size);
 #endif
 
 #endif /* CAN_PKT_H */
-
 /** @} */

@@ -7,10 +7,13 @@
  */
 
 /**
+ * @ingroup     can_isotp
+ * @{
  * @file
  * @brief       ISO TP high level interface
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @}
  */
 
 #include <errno.h>

@@ -1,5 +1,5 @@
 /**
- * @defgroup can CAN
+ * @defgroup can CAN (Controller Area Network)
  * @brief RIOT CAN stack
  *
  * This module is a full CAN stack integrated to RIOT.

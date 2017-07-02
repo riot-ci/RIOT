@@ -7,12 +7,14 @@
  */
 
 /**
- *
+ * @ingroup     can_dll
+ * @{
  * @file
  * @brief       Functions for routing RX can frames
  *
  * @author      Toon Stegen <toon.stegen@altran.com>
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @}
  */
 
 #include <stdint.h>
