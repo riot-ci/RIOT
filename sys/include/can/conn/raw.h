@@ -7,8 +7,8 @@
  */
 
 /**
- * @ingroup     can
  * @defgroup    conn_can Connection
+ * @ingroup     can
  * @brief       conn interface for CAN stack
  *
  * This is the user interface to send and receive raw CAN frames or ISO-TP datagrams

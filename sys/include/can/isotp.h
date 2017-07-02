@@ -7,11 +7,10 @@
  */
 
 /**
+ * @defgroup    can_isotp ISOTP
  * @ingroup     can
- * @defgroup    isotp ISOTP
  * @brief       ISO transport protocol over CAN (ISO15765)
  * @{
- *
  *
  * @file
  * @brief       ISO TP high level interface

@@ -10,7 +10,6 @@
  * @ingroup    can_dll
  * @{
  *
- *
  * @file
  * @brief       Definitions high-level RAW CAN interface
  *

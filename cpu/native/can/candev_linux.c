@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     native_cpu
+ * @ingroup     candev_linux
  * @{
  *
  * @file
