@@ -9,12 +9,14 @@
 
 /**
  * @ingroup     drivers_lsm6dsl
- *
  * @{
+ *
  * @file
  * @brief       Internal configuration for LSM6DSL devices
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @author      Sebastian Meiling <s@mlng.net>
+ *
  */
 
 #ifndef LSM6DSL_INTERNAL_H
@@ -148,6 +150,16 @@ extern "C" {
 
 #define LSM6DSL_FIFO_CTRL3_GYRO_DEC_SHIFT  (3)
 /** @} */
+
+/**
+ * @brief	Offset for temperature calculation
+ */
+#define LSM6DSL_TEMP_OFFSET					(0x1900)
+
+/**
+ * @brief 	Reboot wait interval in us (15ms)
+ */
+#define LSM6DSL_BOOT_WAIT					(15000)
 
 #ifdef __cplusplus
 }
