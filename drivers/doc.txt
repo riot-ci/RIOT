@@ -43,10 +43,3 @@
  * @ingroup     drivers
  * @brief       Drivers for storage devices
  */
-
-/**
- * @defgroup    drivers_can CAN Drivers
- * @ingroup     drivers
- * @ingroup     can
- * @brief       Drivers for CAN devices
- */

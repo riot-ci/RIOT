@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    can_dll Data Link Layer
- * @ingroup     can
+ * @defgroup    sys_can_dll Data Link Layer
+ * @ingroup     sys_can
  * @brief       CAN Data Link Layer
  *
  * The Data Link Layer is composed of the device, router, pkt and dll files.

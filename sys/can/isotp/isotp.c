@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     can_isotp
+ * @ingroup     sys_can_isotp
  * @{
  * @file
  * @brief       ISO TP high level interface

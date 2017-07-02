@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    candev_linux SocketCAN driver
+ * @defgroup    drivers_candev_linux SocketCAN driver
  * @ingroup     drivers_can
  * @brief       Implementation of simulated CAN controller driver using SocketCAN on Linux
  * @{

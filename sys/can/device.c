@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     can_dll
+ * @ingroup     sys_can_dll
  * @{
  * @file
  * @brief       CAN device interface

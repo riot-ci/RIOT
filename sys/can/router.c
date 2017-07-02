@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     can_dll
+ * @ingroup     sys_can_dll
  * @{
  * @file
  * @brief       Functions for routing RX can frames

@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup   can_common  Common
- * @ingroup    can
+ * @defgroup   sys_can_common  Common
+ * @ingroup    sys_can
  * @brief      CAN stack common definitions
  *
  * This module defines the common part of the CAN stack, including structures
