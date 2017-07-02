@@ -7,7 +7,6 @@
  */
 
 /**
- * @defgroup    drivers_bmp180 BMP180
  * @ingroup     drivers_sensors
  * @brief       Internal addresses, registers, constants for the BMP180 sensor.
  * @{
