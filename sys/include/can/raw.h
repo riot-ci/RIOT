@@ -7,9 +7,8 @@
  */
 
 /**
- * @ingroup    can_dll
+ * @ingroup    sys_can_dll
  * @{
- *
  *
  * @file
  * @brief       Definitions high-level RAW CAN interface

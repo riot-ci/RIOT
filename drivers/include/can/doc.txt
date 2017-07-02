@@ -1,0 +1,6 @@
+/**
+ * @defgroup    drivers_can CAN Drivers
+ * @ingroup     drivers_netdev
+ * @brief       Drivers for CAN devices
+ * @see         sys_can
+ */
