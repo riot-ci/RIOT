@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup   sys_can_common  Common
+ * @defgroup   sys_can_common  Common definitions
  * @ingroup    sys_can
  * @brief      CAN stack common definitions
  *
