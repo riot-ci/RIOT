@@ -10,7 +10,6 @@
  * @ingroup    can_dll
  * @{
  *
- *
  * @file
  * @brief       Definitions of low-level CAN DLL interface
  *

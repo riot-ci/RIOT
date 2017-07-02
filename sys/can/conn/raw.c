@@ -7,10 +7,13 @@
  */
 
 /**
+ * @ingroup     conn_can
+ * @{
  * @file
  * @brief       Implementation of raw CAN connection
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @}
  */
 
 #include <errno.h>

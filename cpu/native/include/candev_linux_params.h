@@ -14,7 +14,6 @@
  * @brief       Default linux can config
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
- * @}
  */
 
 #ifndef CANDEV_LINUX_PARAMS_H
