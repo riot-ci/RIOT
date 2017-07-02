@@ -53,10 +53,7 @@ void auto_init_si70xx(void)
     for (unsigned i = 0; i < SI70XX_NUMOF; i++) {
         LOG_DEBUG("[auto_init_saul] initializing SI70xx #%u\n", i);
 
-        int res = si70xx_init(&si70xx_devs[i],
-                              si70xx_params[i].i2c_dev,
-                              si70xx_params[i].address);
-        if (res < 0) {
+        if (si70xx_init(&si70xx_devs[i], &si70xx_params[i]) != SI70XX_OK) {
             LOG_ERROR("[auto_init_saul] error initializing SI70xx #%i\n", i);
             continue;
         }
