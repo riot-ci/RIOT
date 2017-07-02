@@ -72,20 +72,19 @@ extern "C" {
 /** @} */
 
 /**
- * @brief Si70xx device descriptor.
- */
-typedef struct {
-    i2c_t i2c_dev;              /**< I2C bus the sensors is connected to */
-    uint8_t address;            /**< sensor address */
-} si70xx_t;
-
-/**
  * @brief Device initialization parameters.
  */
 typedef struct {
     i2c_t i2c_dev;              /**< I2C bus the sensor is connected to */
     uint8_t address;            /**< sensor address */
 } si70xx_params_t;
+
+/**
+ * @brief Si70xx device descriptor.
+ */
+typedef struct {
+    si70xx_params_t params;     /**< Device parameters */
+} si70xx_t;
 
 /**
  * @brief   Test if the device id and revision number are as expected.
@@ -100,12 +99,12 @@ int si70xx_test(const si70xx_t *dev);
  * @brief   Initialize and reset the sensor.
  *
  * @param[in] dev           device descriptor
- * @param[in] i2c_dev       i2c device to use
- * @param[in] address       device address (depends on the chip)
+ * @param[in] params        initialization parameters
+ *
  * @return                  zero on succesful initialization.
  * @return                  non-zero on error
  */
-int si70xx_init(si70xx_t *dev, i2c_t i2c_dev, uint8_t address);
+int si70xx_init(si70xx_t *dev, const si70xx_params_t *params);
 
 /**
  * @brief   Read the relative humidity from the sensor. Uses clock streching.
