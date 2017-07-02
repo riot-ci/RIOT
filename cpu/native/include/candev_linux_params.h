@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     candev_linux
+ * @ingroup     drivers_candev_linux
  * @{
  *
  * @file

@@ -7,14 +7,13 @@
  */
 
 /**
- * @defgroup    conn_can Connection
- * @ingroup     can
+ * @defgroup    sys_conn_can Connection
+ * @ingroup     sys_can
  * @brief       conn interface for CAN stack
  *
  * This is the user interface to send and receive raw CAN frames or ISO-TP datagrams
  *
  * @{
- *
  *
  * @file
  * @brief       Definitions of generic CAN interface

@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    can_isotp ISOTP
- * @ingroup     can
+ * @defgroup    sys_can_isotp ISOTP
+ * @ingroup     sys_can
  * @brief       ISO transport protocol over CAN (ISO15765)
  * @{
  *

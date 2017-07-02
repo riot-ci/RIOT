@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     conn_can
+ * @ingroup     sys_conn_can
  * @{
  * @file
  * @brief       Implementation of isotp CAN connection
