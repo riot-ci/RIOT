@@ -72,6 +72,16 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief Driver return codes
+ */
+enum {
+    SI70XX_OK,                 /**< All OK */
+    SI70XX_ERR_NOI2C,          /**< An error occurred when initializing I2C bus */
+    SI70XX_ERR_NODEV,          /**< No valid device found on I2C bus */
+    SI70XX_ERR_I2C,            /**< An error occured when reading/writing on I2C bus */
+};
+
+/**
  * @brief Device initialization parameters.
  */
 typedef struct {
@@ -90,8 +100,8 @@ typedef struct {
  * @brief   Test if the device id and revision number are as expected.
  *
  * @param[in] dev           device descriptor
- * @return                  zero on succesful test
- * @return                  non-zero on unsuccesfull test.
+ * @return                  SI70XX_OK on successful test
+ * @return                  -SI70XX_ERR_NODEV on unsuccessfull test.
  */
 int si70xx_test(const si70xx_t *dev);
 
@@ -101,8 +111,10 @@ int si70xx_test(const si70xx_t *dev);
  * @param[in] dev           device descriptor
  * @param[in] params        initialization parameters
  *
- * @return                  zero on succesful initialization.
- * @return                  non-zero on error
+ * @return                  SI70XX_OK on successful initialization
+ * @return                  -SI70XX_ERR_NOI2C on I2C initialization error
+ * @return                  -SI70XX_ERR_NODEV on device test error
+ * @return                  -SI70XX_ERR_I2C on I2C bus error
  */
 int si70xx_init(si70xx_t *dev, const si70xx_params_t *params);
 

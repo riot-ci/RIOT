@@ -23,6 +23,9 @@
 
 #include "si70xx.h"
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 #define SI70XX_I2C     (dev->params.i2c_dev)
 #define SI70XX_ADDR    (dev->params.address)
 
@@ -47,17 +50,34 @@ int si70xx_test(const si70xx_t *dev)
     uint8_t revision = si70xx_get_revision(dev);
 
     if (revision != SI70XX_REVISION_1 && revision != SI70XX_REVISION_2) {
-        return -1;
+        DEBUG("[ERROR] Bad device revision (%d).\n", revision);
+        return -SI70XX_ERR_NODEV;
     }
 
     uint8_t id = si70xx_get_id(dev);
 
-    if (id != SI70XX_ID_SI7006 && id != SI70XX_ID_SI7013 &&
-        id != SI70XX_ID_SI7020 && id != SI70XX_ID_SI7021) {
-        return -2;
+#if defined(MODULE_SI70XX_ID_SI7006)
+    if (id != SI70XX_ID_SI7006) {
+        DEBUG("[ERROR] Not a Si7006 device\n");
+        return -SI70XX_ERR_NODEV;;
     }
-
-    return 0;
+#elif defined(MODULE_SI70XX_ID_SI7013)
+    if (id != SI70XX_ID_SI7013) {
+        DEBUG("[ERROR] Not a Si7013 device\n");
+        return -SI70XX_ERR_NODEV;;
+    }
+#elif defined(MODULE_SI70XX_ID_SI7020)
+    if (id != SI70XX_ID_SI7020) {
+        DEBUG("[ERROR] Not a Si7020 device\n");
+        return -SI70XX_ERR_NODEV;;
+    }
+#else /* MODULE_SI70XX_ID_SI7021 */
+    if (id != SI70XX_ID_SI7021) {
+        DEBUG("[ERROR] Not a Si7021 device\n");
+        return -SI70XX_ERR_NODEV;;
+    }
+#endif
+    return SI70XX_OK;
 }
 
 int si70xx_init(si70xx_t *dev, const si70xx_params_t *params)
@@ -67,27 +87,33 @@ int si70xx_init(si70xx_t *dev, const si70xx_params_t *params)
 
     /* setup the i2c bus */
     i2c_acquire(SI70XX_I2C);
-    int result = i2c_init_master(SI70XX_I2C, I2C_SPEED_NORMAL);
-    i2c_release(SI70XX_I2C);
 
-    if (result != 0) {
-        return result;
+    if (i2c_init_master(SI70XX_I2C, I2C_SPEED_NORMAL) != 0) {
+        DEBUG("[ERROR] Cannot initialize I2C bus.\n");
+        i2c_release(SI70XX_I2C);
+        return -SI70XX_ERR_NOI2C;
     }
 
-    result = si70xx_test(dev);
-    if (result < 0) {
-        return result;
+    if (si70xx_test(dev) != SI70XX_OK) {
+        DEBUG("[ERROR] No valid device found.\n");
+        i2c_release(SI70XX_I2C);
+        return SI70XX_ERR_NODEV;
     }
 
     /* initialize the peripheral */
-    i2c_acquire(SI70XX_I2C);
-    i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, SI70XX_RESET);
+    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, SI70XX_RESET) < 0) {
+        DEBUG("[ERROR] Cannot reset device.\n");
+        i2c_release(SI70XX_I2C);
+        return SI70XX_ERR_I2C;
+    }
+
     i2c_release(SI70XX_I2C);
 
     /* sensor is ready after at most 25 ms */
     xtimer_usleep(25 * US_PER_MS);
 
-    return 0;
+    DEBUG("[DEBUG] Device initialized with success.\n");
+    return SI70XX_OK;
 }
 
 uint16_t si70xx_get_relative_humidity(const si70xx_t *dev)
@@ -145,7 +171,6 @@ uint64_t si70xx_get_serial(const si70xx_t *dev)
     out[0] = SI70XX_READ_ID_FIRST_A;
     out[1] = SI70XX_READ_ID_FIRST_B;
 
-    i2c_acquire(SI70XX_I2C);
     i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
     i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_first, 8);
 
@@ -155,7 +180,6 @@ uint64_t si70xx_get_serial(const si70xx_t *dev)
 
     i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
     i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_second, 8);
-    i2c_release(SI70XX_I2C);
 
     /* calculate the ID */
     uint32_t id_first = ((uint32_t)in_first[0] << 24) + ((uint32_t)in_first[2] << 16) +
@@ -180,10 +204,8 @@ uint8_t si70xx_get_revision(const si70xx_t *dev)
     out[0] = SI70XX_READ_REVISION_A;
     out[1] = SI70XX_READ_REVISION_B;
 
-    i2c_acquire(SI70XX_I2C);
     i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
     i2c_read_byte(SI70XX_I2C, SI70XX_ADDR, &in);
-    i2c_release(SI70XX_I2C);
 
     return in;
 }
