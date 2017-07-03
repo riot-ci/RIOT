@@ -37,7 +37,7 @@ extern "C" {
 #define SI70XX_PARAM_I2C_DEV         I2C_DEV(0)
 #endif
 #ifndef SI70XX_PARAM_ADDR
-#define SI70XX_PARAM_ADDR            (SI70XX_I2C_ADDRESS)
+#define SI70XX_PARAM_ADDR            SI70XX_I2C_ADDRESS
 #endif
 
 #define SI70XX_PARAMS_DEFAULT        { .i2c_dev = SI70XX_PARAM_I2C_DEV,  \

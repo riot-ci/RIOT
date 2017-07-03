@@ -61,8 +61,10 @@ extern "C" {
 #define SI70XX_ID                   (0x0D)
 #elif defined(MODULE_SI7020)
 #define SI70XX_ID                   (0x14)
-#else /* MODULE__SI7021 */
+#elif defined(MODULE_SI7021)
 #define SI70XX_ID                   (0x15)
+#else
+#error "Please provide a valid Si70xx variant (Si7006/13/20/21)"
 #endif
 
 #define SI70XX_REVISION_1           (0xFF)
