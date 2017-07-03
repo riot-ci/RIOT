@@ -9,9 +9,9 @@
 /**
  * @defgroup unittests Unittests
  * @ingroup  sys
+ * @brief RIOT Unittest Framework
  *
- * @note
- * Please refer to https://github.com/RIOT-OS/RIOT/wiki/Testing-RIOT
+ * @note Please refer to https://github.com/RIOT-OS/RIOT/wiki/Testing-RIOT
  *
  * @author Martine Lenders <mlenders@inf.fu-berlin.de>
  */
