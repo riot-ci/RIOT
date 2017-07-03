@@ -57,27 +57,10 @@ int si70xx_test(const si70xx_t *dev)
 
     uint8_t id = si70xx_get_id(dev);
 
-#if defined(MODULE_SI7006)
-    if (id != SI70XX_ID_SI7006) {
-        DEBUG("[ERROR] Not a Si7006 device\n");
+    if (id != SI70XX_ID) {
+        DEBUG("[ERROR] Not a valid Si7006/13/20/21 device\n");
         return -SI70XX_ERR_NODEV;;
     }
-#elif defined(MODULE_SI7013)
-    if (id != SI70XX_ID_SI7013) {
-        DEBUG("[ERROR] Not a Si7013 device\n");
-        return -SI70XX_ERR_NODEV;;
-    }
-#elif defined(MODULE_SI7020)
-    if (id != SI70XX_ID_SI7020) {
-        DEBUG("[ERROR] Not a Si7020 device\n");
-        return -SI70XX_ERR_NODEV;;
-    }
-#else /* MODULE__SI7021 */
-    if (id != SI70XX_ID_SI7021) {
-        DEBUG("[ERROR] Not a Si7021 device\n");
-        return -SI70XX_ERR_NODEV;;
-    }
-#endif
     return SI70XX_OK;
 }
 

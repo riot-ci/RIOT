@@ -26,11 +26,8 @@ extern "C" {
 /**
  * @name Si70xx chip addresses.
  */
-#define SI70XX_ADDRESS_SI7006       (0x80)
-#define SI70XX_ADDRESS_SI7013       (0x80)
-#define SI70XX_ADDRESS_SI7013_ALT   (0x81)
-#define SI70XX_ADDRESS_SI7020       (0x80)
-#define SI70XX_ADDRESS_SI7021       (0x80)
+#define SI70XX_I2C_ADDRESS          (0x80)
+#define SI70XX_I2C_ADDRESS_ALT      (0x81)
 
 /**
  * @name Si70xx device commands.
@@ -58,10 +55,15 @@ extern "C" {
  * @name Si70xx register values.
  * @{
  */
-#define SI70XX_ID_SI7006            (0x06)
-#define SI70XX_ID_SI7013            (0x0D)
-#define SI70XX_ID_SI7020            (0x14)
-#define SI70XX_ID_SI7021            (0x15)
+#if defined(MODULE_SI7006)
+#define SI70XX_ID                   (0x06)
+#elif defined(MODULE_SI7013)
+#define SI70XX_ID                   (0x0D)
+#elif defined(MODULE_SI7020)
+#define SI70XX_ID                   (0x14)
+#else /* MODULE__SI7021 */
+#define SI70XX_ID                   (0x15)
+#endif
 
 #define SI70XX_REVISION_1           (0xFF)
 #define SI70XX_REVISION_2           (0x20)
