@@ -76,6 +76,15 @@ typedef struct {
 int hts221_init(hts221_t *dev, const hts221_params_t *params);
 
 /**
+ * @brief   Reboot device and reload base configuration
+ *
+ * @param[in]  dev          device descriptor of sensor
+ *
+ * @return                  0 on success, or error otherwise
+ */
+int hts221_reboot(const hts221_t *dev);
+
+/**
  * @brief   Set device to continues measurements
  *
  * @param[in]  dev          device descriptor of sensor

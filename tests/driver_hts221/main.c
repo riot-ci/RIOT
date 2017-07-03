@@ -45,20 +45,28 @@ int main(void)
         puts("[FAILED] to set power on!");
         return 2;
     }
+    /*
+    if (hts221_reboot(&dev) != HTS221_OK) {
+        puts("[FAILED] reboot!");
+        return 2;
+    }
+    */
+    /*
+    if (hts221_one_shot(&dev) != HTS221_OK) {
+        puts("[FAILED] one shot!");
+        return 3;
+    }
+    puts("[OK] one shot.");
+    */
+    if (hts221_set_rate(&dev, dev.p.rate) != HTS221_OK) {
+        puts("[FAILED] set rate for continuous mode!");
+        return 3;
+    }
+    puts("[OK] set continuous.");
+
     while(1) {
         int state = 0;
-        /*
-        if (hts221_one_shot(&dev) != HTS221_OK) {
-            puts("[FAILED] one shot!");
-            return 3;
-        }
-        puts("[OK] one shot.");
-        */
-        if (hts221_set_rate(&dev, dev.p.rate) != HTS221_OK) {
-            puts("[FAILED] set rate for continuous mode!");
-            return 3;
-        }
-        puts("[OK] set continuous.");
+
         do {
             state = hts221_get_state(&dev);
             xtimer_usleep(WAIT);
