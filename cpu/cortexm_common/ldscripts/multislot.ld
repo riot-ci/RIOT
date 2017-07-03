@@ -20,4 +20,3 @@
 
 boot_offset = DEFINED( offset ) ? offset : 0x0 ;
 rom_length = DEFINED( length ) ? length : rom_length ;
-img_hdr = DEFINED( image_header ) ? image_header : 0x0 ;
