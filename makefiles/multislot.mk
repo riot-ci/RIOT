@@ -20,8 +20,8 @@ mcuboot: create-key all
 	@$(COLOR_ECHO)
 	@$(COLOR_ECHO) '${COLOR_PURPLE}Re-linking for MCUBoot at $(SLOT0_SIZE)...${COLOR_RESET}'
 	@$(COLOR_ECHO)
-	$(Q)$(_LINK) $(LINKFLAGPREFIX)--defsym=offset="$(SLOT0_SIZE)" \
-	$(LINKFLAGPREFIX)--defsym=length="$(SLOT1_SIZE)" \
+	$(Q)$(_LINK) $(LINKFLAGPREFIX)--defsym=offset="$$(($(SLOT0_SIZE) + $(IMAGE_HDR_SIZE)))" \
+	$(LINKFLAGPREFIX)--defsym=length="$$(($(SLOT1_SIZE) - $(IMAGE_HDR_SIZE)))" \
 	$(LINKFLAGPREFIX)--defsym=image_header="$(IMAGE_HDR_SIZE)" -o $(ELFFILE) && \
 	$(OBJCOPY) $(OFLAGS) $(ELFFILE) $(BINFILE) && \
 	$(IMGTOOL) sign --key key.pem --version $(IMAGE_VERSION) --align \
