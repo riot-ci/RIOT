@@ -21,6 +21,7 @@
 #include <string.h>
 #include "xtimer.h"
 
+#include "si70xx_internals.h"
 #include "si70xx.h"
 
 #define ENABLE_DEBUG (0)
@@ -56,22 +57,22 @@ int si70xx_test(const si70xx_t *dev)
 
     uint8_t id = si70xx_get_id(dev);
 
-#if defined(MODULE_SI70XX_ID_SI7006)
+#if defined(MODULE_SI7006)
     if (id != SI70XX_ID_SI7006) {
         DEBUG("[ERROR] Not a Si7006 device\n");
         return -SI70XX_ERR_NODEV;;
     }
-#elif defined(MODULE_SI70XX_ID_SI7013)
+#elif defined(MODULE_SI7013)
     if (id != SI70XX_ID_SI7013) {
         DEBUG("[ERROR] Not a Si7013 device\n");
         return -SI70XX_ERR_NODEV;;
     }
-#elif defined(MODULE_SI70XX_ID_SI7020)
+#elif defined(MODULE_SI7020)
     if (id != SI70XX_ID_SI7020) {
         DEBUG("[ERROR] Not a Si7020 device\n");
         return -SI70XX_ERR_NODEV;;
     }
-#else /* MODULE_SI70XX_ID_SI7021 */
+#else /* MODULE__SI7021 */
     if (id != SI70XX_ID_SI7021) {
         DEBUG("[ERROR] Not a Si7021 device\n");
         return -SI70XX_ERR_NODEV;;
