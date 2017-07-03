@@ -27,6 +27,10 @@ void board_init(void)
     /* initialize the CPU */
     cpu_init();
 
+    /* Enable TCXO */
+    gpio_init(RADIO_TCXO_VCC_PIN, GPIO_OUT);
+    gpio_set(RADIO_TCXO_VCC_PIN);
+
 #ifdef AUTO_INIT_LED0
     /* The LED pin is also used for SPI, so we enable it
        only if explicitly wanted by the user */
