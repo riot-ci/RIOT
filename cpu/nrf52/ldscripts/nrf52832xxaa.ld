@@ -28,13 +28,4 @@ MEMORY
     ram (rwx)   : ORIGIN = 0x20000000,               LENGTH = 64K
 }
 
-SECTIONS
-{
-    /* Image headers for MCUBoot */
-    .imghdr (NOLOAD):
-    {
-      . = . + img_hdr;
-    } > rom
-}
-
 INCLUDE cortexm_base.ld
