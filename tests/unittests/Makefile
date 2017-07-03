@@ -8,6 +8,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-mkrfox1200 \
                              arduino-mkrzero \
                              arduino-uno \
+                             arduino-leonardo \
                              arduino-zero \
                              avsextrem \
                              b-l072z-lrwan1 \
@@ -197,10 +198,12 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
 DISABLE_TEST_FOR_ARM_CORTEX_M :=
 
 AVR_BOARDS := arduino-duemilanove \
+              arduino-leonardo \
               arduino-mega2560 \
               arduino-uno \
               waspmote-pro \
               #
+
 DISABLE_TEST_FOR_AVR := tests-cpp_%
 
 MSP430_BOARDS := chronos \
