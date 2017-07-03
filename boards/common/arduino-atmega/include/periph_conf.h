@@ -117,8 +117,9 @@ extern "C" {
 /**
  * @name    SPI configuration
  *
- * The atmega2560/atmega1281/atmega328p has only one hardware SPI with fixed pin
- * configuration, so all we can do here, is to enable or disable it...
+ * The atmega32u4/atmega2560/atmega1281/atmega328p has only one hardware SPI
+ * with fixed pin configuration, so all we can do here, is to enable or
+ * disable it...
  *
  * The fixed pins for arduino uno and duemilanove (atmega328p) are:
  * MOSI - PB3 (Arduino pin 11)
@@ -164,6 +165,18 @@ extern "C" {
 #define ADC_NUMOF       (8U)
 #elif defined (CPU_ATMEGA2560)
 #define ADC_NUMOF       (16U)
+/** @} */
+
+/**
+ * @name    PRR configuration
+ *
+ * The Power Reduction configuration
+ * @{
+ */
+#ifdef CPU_ATMEGA32U4
+#define MEGA_PRR            SMCR        /* Power Reduction Register is SMCR */
+#elif defined (CPU_ATMEGA2560)
+#define MEGA_PRR            PRR0        /* Power Reduction Register is PRR0 */
 #endif
 /** @} */
 
@@ -212,3 +225,4 @@ static const pwm_conf_t pwm_conf[] = {
 #endif
 
 #endif /* PERIPH_CONF_H */
+/** @} */
