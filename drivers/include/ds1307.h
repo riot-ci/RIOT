@@ -48,7 +48,7 @@ extern "C" {
 /**
  * @brief   Maximum size in byte of on-chip NVRAM
  */
-#define DS1307_NVRAM_MAX_SIZE   (56)
+#define DS1307_NVRAM_MAX_SIZE   (56U)
 
 /**
  * @brief   Device descriptor for DS1307 devices
