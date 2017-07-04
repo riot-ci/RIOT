@@ -32,7 +32,7 @@
 static ds1307_t dev;
 
 static struct tm init = {  /* Wed Sep 22 15:10:42 2010 is the author date of
-                         * RIOT's initial commit ;-) */
+                            * RIOT's initial commit ;-) */
     .tm_sec = 42,
     .tm_min = 10,
     .tm_hour = 15,
@@ -133,8 +133,6 @@ static Test *tests_ds1307(void)
 
 int main(void)
 {
-    int res;
-
     puts("DS1307 RTC test\n");
 
     /* initialize the device */
