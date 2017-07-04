@@ -87,7 +87,7 @@ typedef enum {
  * @param[in] params    device configuration (i2c bus, address and bus clock)
  *
  * @return      0 on success
- * @return      -1 if unable to speak to the device
+ * @return      < 0 if unable to speak to the device
  */
 int ds1307_init(ds1307_t *dev, const ds1307_params_t *params);
 
@@ -98,7 +98,7 @@ int ds1307_init(ds1307_t *dev, const ds1307_params_t *params);
  * @param[in] time      pointer to the struct holding the time to set.
  *
  * @return      0 on success
- * @return      -1 if unable to speak to the device
+ * @return      < 0 if unable to speak to the device
  */
 int ds1307_set_time(const ds1307_t *dev, const struct tm *time);
 
@@ -109,7 +109,7 @@ int ds1307_set_time(const ds1307_t *dev, const struct tm *time);
  * @param[out] time     pointer to the struct to write the time to.
  *
  * @return      0 on success
- * @return      -1 if unable to speak to the device
+ * @return      < 0 if unable to speak to the device
  */
 int ds1307_get_time(const ds1307_t *dev, struct tm *time);
 
@@ -121,7 +121,7 @@ int ds1307_get_time(const ds1307_t *dev, struct tm *time);
  * @param[in] dev       device descriptor of the targeted device
  *
  * @return      0 on success
- * @return      -1 if unable to speak to the device
+ * @return      < 0 if unable to speak to the device
  */
 int ds1307_halt(const ds1307_t *dev);
 
@@ -134,7 +134,7 @@ int ds1307_halt(const ds1307_t *dev);
  * @param[in] mode      mode for the square wave / output driver
  *
  * @return      0 on success
- * @return      -1 if unable to speak to the device
+ * @return      < 0 if unable to speak to the device
  */
 int ds1307_set_sqw_mode(const ds1307_t *dev, ds1307_sqw_mode_t mode);
 
@@ -147,7 +147,7 @@ int ds1307_set_sqw_mode(const ds1307_t *dev, ds1307_sqw_mode_t mode);
  *
  * @return  current mode of the square wave / output driver
  *          (see ds1307_sqw_mode_t)
- * @return  -1 if unable to speak to the device
+ * @return  < 0 if unable to speak to the device
  */
 int ds1307_get_sqw_mode(const ds1307_t *dev);
 
