@@ -46,7 +46,6 @@ static void test_bcd_to_byte__zero(void)
 static void test_bcd_to_byte__greater_0x99(void)
 {
     TEST_ASSERT_EQUAL_INT(100, bcd_to_byte(0xa0));
-    TEST_ASSERT_EQUAL_INT(100, bcd_to_byte(0xa0));
     TEST_ASSERT_EQUAL_INT(110, bcd_to_byte(0xaa));
     TEST_ASSERT_EQUAL_INT(165, bcd_to_byte(0xff));
 }
