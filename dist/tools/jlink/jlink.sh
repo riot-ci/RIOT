@@ -58,7 +58,12 @@ _JLINK_SERVER=JLinkGDBServer
 _JLINK_IF=SWD
 _JLINK_SPEED=2000
 # default starting address of the devices flash memory
-_FLASH_ADDR=0
+if [ -n "${FLASH_OFFSET}" ]; then
+    _FLASH_ADDR=${FLASH_OFFSET}
+    echo "Flashing at offset ${FLASH_OFFSET}"
+else
+    _FLASH_ADDR=0
+fi
 
 #
 # a couple of tests for certain configuration options
