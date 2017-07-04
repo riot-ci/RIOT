@@ -19,14 +19,12 @@
 #ifndef DS1307_INTERNAL_H
 #define DS1307_INTERNAL_H
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief   Registers
+ * @name    Registers
  * @{
  */
 #define DS1307_REG_SEC              (0x00)  /**< seconds */
@@ -42,7 +40,7 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   Register bits
+ * @name    Register bits
  * @{
  */
 #define DS1307_REG_SEC_CH           (0x80)  /**< clock halt bit */
@@ -58,7 +56,7 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   Custom offsets (to DS1307 registers to struct tm)
+ * @name    Custom offsets (to DS1307 registers to struct tm)
  * @{
  */
 #define DS1307_DOW_OFFSET           (1)     /**< offset in days from sunday */

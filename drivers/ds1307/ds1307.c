@@ -176,7 +176,7 @@ int ds1307_get_sqw_mode(const ds1307_t *dev)
 static int _nvram_read(struct nvram *nvram, uint8_t *dst, uint32_t src,
                        size_t size)
 {
-    ds1307_t *dev = nvram->extra;
+    const ds1307_t *dev = nvram->extra;
     int res;
 
     if ((src + size) > nvram->size) {
@@ -192,7 +192,7 @@ static int _nvram_read(struct nvram *nvram, uint8_t *dst, uint32_t src,
 static int _nvram_write(struct nvram *nvram, const uint8_t *src, uint32_t dst,
                         size_t size)
 {
-    ds1307_t *dev = nvram->extra;
+    const ds1307_t *dev = nvram->extra;
     int res;
 
     if ((dst + size) > nvram->size) {

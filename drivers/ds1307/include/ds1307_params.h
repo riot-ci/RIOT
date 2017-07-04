@@ -7,13 +7,11 @@
  */
 
 /**
- * @defgroup
- * @ingroup
- * @brief
+ * @ingroup drivers_ds1307
  * @{
  *
  * @file
- * @brief
+ * @brief   Default configuration for DS1307 devices
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
