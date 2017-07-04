@@ -17,8 +17,8 @@
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef BCD_H_
-#define BCD_H_
+#ifndef BCD_H
+#define BCD_H
 
 #include <stdint.h>
 
@@ -41,7 +41,7 @@ static inline uint8_t bcd_from_byte(uint8_t byte)
 /**
  * @brief   Converts a binary coded decimal to a byte
  *
- * @param[in] byte  A binary coded decimal (4 MSB = 10, 4 LSB = 1s)
+ * @param[in] bcd   A binary coded decimal (4 MSB = 10, 4 LSB = 1s)
  *
  * @return  A byte
  */
@@ -54,5 +54,5 @@ static inline uint8_t bcd_to_byte(uint8_t bcd)
 }
 #endif
 
-#endif /* BCD_H_ */
+#endif /* BCD_H */
 /** @} */
