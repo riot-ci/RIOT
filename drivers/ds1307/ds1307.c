@@ -56,7 +56,12 @@ int ds1307_init(ds1307_t *dev, const ds1307_params_t *params)
     dev->addr = params->addr;
 
     i2c_acquire(dev->i2c);
-    i2c_init_master(dev->i2c, params->clk);
+    res = i2c_init_master(dev->i2c, params->clk);
+    if (res < 0) {
+        i2c_release(dev->i2c);
+        DEBUG("ds1307: Error initializing I2C: %i\n", res);
+        return -1;
+    }
     /* normalize hour format */
     res = i2c_read_reg(dev->i2c, dev->addr, DS1307_REG_HOUR, &hour);
     if (res < 0) {
