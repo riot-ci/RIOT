@@ -73,11 +73,11 @@ typedef struct {
  */
 typedef enum {
     DS1307_SQW_MODE_0 = 0x00,       /**< OUT: 0 */
-    DS1307_SQW_MODE_1 = 0x00,       /**< OUT: 1 */
-    DS1307_SQW_MODE_1000HZ = 0x00,  /**< SQW: 1kHz */
-    DS1307_SQW_MODE_4096HZ = 0x00,  /**< SQW: 4.096 kHz */
-    DS1307_SQW_MODE_8192HZ = 0x00,  /**< SQW: 8.192 kHz */
-    DS1307_SQW_MODE_32768HZ = 0x00, /**< SQW: 32.768 kHz */
+    DS1307_SQW_MODE_1000HZ = 0x10,  /**< SQW: 1kHz */
+    DS1307_SQW_MODE_4096HZ = 0x11,  /**< SQW: 4.096 kHz */
+    DS1307_SQW_MODE_8192HZ = 0x12,  /**< SQW: 8.192 kHz */
+    DS1307_SQW_MODE_32768HZ = 0x13, /**< SQW: 32.768 kHz */
+    DS1307_SQW_MODE_1 = 0x80,       /**< OUT: 1 */
 } ds1307_sqw_mode_t;
 
 /**
