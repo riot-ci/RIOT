@@ -44,13 +44,54 @@ extern "C" {
 typedef uint32_t gpio_t;
 /** @} */
 
+#define PORTNUM_MASK        (0x00007000)
+#define PORTNUM_SHIFT       (12U)
+#define PIN_MASK            (0x00000007)
+#define GPIO_MASK           (0xfffff000)
+
 /**
  * @brief   Define a custom GPIO_PIN macro
  *
  * For the CC2538, we use OR the gpio ports base register address with the
  * actual pin number.
  */
-#define GPIO_PIN(port, pin) (gpio_t)(((uint32_t)GPIO_A + (port << 12)) | pin)
+#define GPIO_PIN(port, pin) (gpio_t)(((uint32_t)GPIO_A + \
+                                      (port << PORTNUM_SHIFT)) | pin)
+
+static inline cc2538_gpio_t *cc2538_gpio(gpio_t pin)
+{
+  return (cc2538_gpio_t *)(pin & GPIO_MASK);
+}
+
+static inline int cc2538_gpio_port_num(gpio_t pin)
+{
+    return (int)((pin & PORTNUM_MASK) >> PORTNUM_SHIFT) - 1;
+}
+
+static inline int cc2538_gpio_pin_num(gpio_t pin)
+{
+    return (int)(pin & PIN_MASK);
+}
+
+static inline uint32_t cc2538_gpio_pin_mask(gpio_t pin)
+{
+    return (1 << (pin & PIN_MASK));
+}
+
+static inline int cc2538_gpio_pp_num(gpio_t pin)
+{
+    return (cc2538_gpio_port_num(pin) * 8) + cc2538_gpio_pin_num(pin);
+}
+
+static inline void cc2538_gpio_hw_ctrl(gpio_t pin)
+{
+    cc2538_gpio(pin)->AFSEL |= cc2538_gpio_pin_mask(pin);
+}
+
+static inline void cc2538_gpio_sw_ctrl(gpio_t pin)
+{
+    cc2538_gpio(pin)->AFSEL &= ~cc2538_gpio_pin_mask(pin);
+}
 
 /**
  * @brief   Define a custom GPIO_UNDEF value
