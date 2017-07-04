@@ -38,7 +38,22 @@ extern "C" {
 #ifndef DS1307_PARAM_I2C_CLK
 #define DS1307_PARAM_I2C_CLK    (DS1307_I2C_MAX_CLK)
 
-#define DS1307_PARAMS_DEFAULT   {
+#define DS1307_PARAMS_DEFAULT   {   .i2c = DS1307_PARAM_I2C, \
+                                    .addr = DS1307_PARAM_ADDR, \
+                                    .clk = DS1307_PARAM_I2C_CLK }
+
+#endif
+/** @} */
+
+/**
+ * @brief   DS1307 configuration
+ */
+static const ds1307_params_t ds1307_params[] =
+{
+#ifdef DS1307_PARAMS_BOARD
+    DS1307_PARAMS_BOARD,
+#else
+    DS1307_PARAMS_DEFAULT,
 #endif
 };
 
