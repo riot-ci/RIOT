@@ -87,12 +87,12 @@ int ds1307_set_time(const ds1307_t *dev, const struct tm *time)
     regs[DS1307_REG_SEC] = (bcd_from_byte(time->tm_sec) & DS1307_REG_SEC_MASK);
     regs[DS1307_REG_MIN] = (bcd_from_byte(time->tm_min) & DS1307_REG_MIN_MASK);
     regs[DS1307_REG_HOUR] = (bcd_from_byte(time->tm_hour) &
-                                DS1307_REG_HOUR_24H_MASK);
+                             DS1307_REG_HOUR_24H_MASK);
     regs[DS1307_REG_DOW] = (bcd_from_byte(time->tm_wday + DS1307_DOW_OFFSET) &
-                                DS1307_REG_DOW_MASK);
+                            DS1307_REG_DOW_MASK);
     regs[DS1307_REG_DOM] = (bcd_from_byte(time->tm_mday) & DS1307_REG_DOM_MASK);
     regs[DS1307_REG_MON] = (bcd_from_byte(time->tm_mon + DS1307_MON_OFFSET) &
-                                DS1307_REG_MON_MASK);
+                            DS1307_REG_MON_MASK);
     regs[DS1307_REG_YEAR] = bcd_from_byte(time->tm_year + DS1307_YEAR_OFFSET);
     i2c_acquire(dev->i2c);
     res = i2c_write_regs(dev->i2c, dev->addr, DS1307_REG_SEC, regs,
@@ -126,10 +126,10 @@ int ds1307_get_time(const ds1307_t *dev, struct tm *time)
     time->tm_hour = bcd_to_byte(regs[DS1307_REG_HOUR] &
                                 DS1307_REG_HOUR_24H_MASK);
     time->tm_wday = (bcd_to_byte(regs[DS1307_REG_DOW] & DS1307_REG_DOW_MASK) -
-                            DS1307_DOW_OFFSET);
+                     DS1307_DOW_OFFSET);
     time->tm_mday = bcd_to_byte(regs[DS1307_REG_DOM] & DS1307_REG_DOM_MASK);
     time->tm_mon = bcd_to_byte(regs[DS1307_REG_MON] & DS1307_REG_MON_MASK) -
-                            DS1307_MON_OFFSET;
+                     DS1307_MON_OFFSET;
     time->tm_year = (bcd_to_byte(regs[DS1307_REG_YEAR]) - DS1307_YEAR_OFFSET);
     return 0;
 }
