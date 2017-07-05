@@ -24,14 +24,6 @@
 extern "C" {
 #endif
 
-#ifndef VFS_DIR_BUFFER_SIZE
-#define VFS_DIR_BUFFER_SIZE (44)
-#endif
-
-#ifndef VFS_FILE_BUFFER_SIZE
-#define VFS_FILE_BUFFER_SIZE (72)
-#endif
-
 #include "fatfs/ff.h"
 #include "vfs.h"
 
@@ -43,13 +35,20 @@ extern "C" {
 
 /** Size of the buffer needed for directory -> should be: sizeof(DIR)*/
 #define FATFS_DIR_SIZE (44)
-/** the problem with the above is: it's not possible to use sizeof(DIR) as this is later usen in #if (see below) */
+/** the problem with the above is: it's not possible to use sizeof(DIR) as
+    this is later used in #if (see below) */
 
-/** Size of the buffer needed for directory -> should be: sizeof(fatfs_file_desc_t)*/
+/** Size of the buffer needed for directory
+    -> should be: sizeof(fatfs_file_desc_t)*/
 #define FATFS_FILE_SIZE (72)
 
-#define FATFS_MAX_VOL_STR_LEN (4)   /**< size needed for volume strings like "n:/" where n is the volume id */
-#define FATFS_MOUNT_OPT       (1)   /**< 0:mount on first file access, 1 mount in f_mount() call */
+/** size needed for volume strings like "n:/" where n is the volume id */
+#define FATFS_MAX_VOL_STR_LEN (4)
+
+/** 0:mount on first file access, 1 mount in f_mount() call */
+#define FATFS_MOUNT_OPT       (1)
+
+#define FATFS_MAX_ABS_PATH_SIZE (FATFS_MAX_VOL_STR_LEN + VFS_NAME_MAX + 1)
 
 #if (VFS_DIR_BUFFER_SIZE < FATFS_DIR_SIZE)
 #error "VFS_DIR_BUFFER_SIZE too small"
@@ -65,17 +64,23 @@ extern "C" {
 typedef struct fatfs_desc {
     FATFS fat_fs;       /**< FatFs work area needed for each volume */
     uint8_t vol_idx;    /**< low level device that is used by FatFs */
+
+    /** most FatFs file operations need an absolute path. This buffer provides
+        static memory to circumvent stack allocation within vfs-wrappers */
+    char abs_path_str_buff[FATFS_MAX_ABS_PATH_SIZE];
 } fatfs_desc_t;
 
 /**
  * info of a single opened file
  */
 typedef struct fatfs_file_desc {
-    FIL file;                       /**< FatFs work area for a single file */
-    char fname[VFS_NAME_MAX + 1]; /**< name of the file (some FatFs functions e.g. f_stat use filename instead of FIL) */
+    FIL file;                     /**< FatFs work area for a single file */
+    char fname[VFS_NAME_MAX + 1]; /**< name of the file (e.g. f_stat uses
+                                       filename instead of FIL) */
 } fatfs_file_desc_t;
 
-/** The FatFs vfs driver, a pointer to a fatfs_desc_t must be provided as vfs_mountp::private_data */
+/** The FatFs vfs driver, a pointer to a fatfs_desc_t must be
+    provided as vfs_mountp::private_data */
 extern const vfs_file_system_t fatfs_file_system;
 
 #ifdef __cplusplus
