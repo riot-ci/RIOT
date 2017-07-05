@@ -155,15 +155,25 @@ uint64_t si70xx_get_serial(const si70xx_t *dev)
     out[0] = SI70XX_READ_ID_FIRST_A;
     out[1] = SI70XX_READ_ID_FIRST_B;
 
-    i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
-    i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_first, 8);
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) < 0) {
+        DEBUG("[ERROR] Cannot write command 'READ_ID_FIRST' to I2C.\n");
+    }
+
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_first, 8)) {
+        DEBUG("[ERROR] Cannot read device first ID from I2C.\n");
+    }
 
     /* read the higher bytes */
     out[0] = SI70XX_READ_ID_SECOND_A;
     out[1] = SI70XX_READ_ID_SECOND_B;
 
-    i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
-    i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_second, 8);
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) < 0) {
+        DEBUG("[ERROR] Cannot write command 'READ_ID_SECOND' to I2C.\n");
+    }
+
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_second, 8)) {
+        DEBUG("[ERROR] Cannot read device second ID from I2C.\n");
+    }
 
     /* calculate the ID */
     uint32_t id_first = ((uint32_t)in_first[0] << 24) + ((uint32_t)in_first[2] << 16) +
@@ -188,8 +198,13 @@ uint8_t si70xx_get_revision(const si70xx_t *dev)
     out[0] = SI70XX_READ_REVISION_A;
     out[1] = SI70XX_READ_REVISION_B;
 
-    i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2);
-    i2c_read_byte(SI70XX_I2C, SI70XX_ADDR, &in);
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2)) {
+        DEBUG("[ERROR] Cannot write command 'READ_REVISION' to I2C.\n");
+    }
+
+    if (i2c_read_byte(SI70XX_I2C, SI70XX_ADDR, &in)) {
+        DEBUG("[ERROR] Cannot read device revision from I2C.\n");
+    }
 
     return in;
 }
