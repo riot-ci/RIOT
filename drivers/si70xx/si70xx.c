@@ -39,11 +39,11 @@ static uint32_t si70xx_measure(const si70xx_t *dev, uint8_t command)
 
     i2c_acquire(SI70XX_I2C);
     
-    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, command)) {
+    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, command) != 1) {
         DEBUG("[ERROR] Cannot write command '%d' to I2C.\n", command);
     }
 
-    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, result, 2)) {
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, result, 2) != 2) {
         DEBUG("[ERROR] Cannot read command '%d' result from I2C.\n", command);
     }
 
@@ -91,7 +91,7 @@ int si70xx_init(si70xx_t *dev, const si70xx_params_t *params)
     }
 
     /* initialize the peripheral */
-    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, SI70XX_RESET) < 0) {
+    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, SI70XX_RESET) != 1) {
         DEBUG("[ERROR] Cannot reset device.\n");
         i2c_release(SI70XX_I2C);
         return SI70XX_ERR_I2C;
@@ -161,11 +161,11 @@ uint64_t si70xx_get_serial(const si70xx_t *dev)
     out[0] = SI70XX_READ_ID_FIRST_A;
     out[1] = SI70XX_READ_ID_FIRST_B;
 
-    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) < 0) {
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) != 2) {
         DEBUG("[ERROR] Cannot write command 'READ_ID_FIRST' to I2C.\n");
     }
 
-    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_first, 8)) {
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_first, 8) != 8) {
         DEBUG("[ERROR] Cannot read device first ID from I2C.\n");
     }
 
@@ -173,11 +173,11 @@ uint64_t si70xx_get_serial(const si70xx_t *dev)
     out[0] = SI70XX_READ_ID_SECOND_A;
     out[1] = SI70XX_READ_ID_SECOND_B;
 
-    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) < 0) {
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) != 2) {
         DEBUG("[ERROR] Cannot write command 'READ_ID_SECOND' to I2C.\n");
     }
 
-    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_second, 8)) {
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, in_second, 8) != 8) {
         DEBUG("[ERROR] Cannot read device second ID from I2C.\n");
     }
 
@@ -204,11 +204,11 @@ uint8_t si70xx_get_revision(const si70xx_t *dev)
     out[0] = SI70XX_READ_REVISION_A;
     out[1] = SI70XX_READ_REVISION_B;
 
-    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2)) {
+    if (i2c_write_bytes(SI70XX_I2C, SI70XX_ADDR, out, 2) != 2) {
         DEBUG("[ERROR] Cannot write command 'READ_REVISION' to I2C.\n");
     }
 
-    if (i2c_read_byte(SI70XX_I2C, SI70XX_ADDR, &in)) {
+    if (i2c_read_byte(SI70XX_I2C, SI70XX_ADDR, &in) != 1) {
         DEBUG("[ERROR] Cannot read device revision from I2C.\n");
     }
 
