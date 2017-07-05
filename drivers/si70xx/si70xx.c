@@ -38,9 +38,14 @@ static uint32_t si70xx_measure(const si70xx_t *dev, uint8_t command)
     uint8_t result[2];
 
     i2c_acquire(SI70XX_I2C);
-    i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, command);
-    i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, result, 2);
-    i2c_release(SI70XX_I2C);
+    
+    if (i2c_write_byte(SI70XX_I2C, SI70XX_ADDR, command)) {
+        DEBUG("[ERROR] Cannot write command '%d' to I2C.\n", command);
+    }
+
+    if (i2c_read_bytes(SI70XX_I2C, SI70XX_ADDR, result, 2)) {
+        DEBUG("[ERROR] Cannot read command '%d' result from I2C.\n", command);
+    }
 
     /* reconstruct raw result */
     return ((uint32_t)result[0] << 8) + (result[1] & 0xfc);
@@ -61,6 +66,7 @@ int si70xx_test(const si70xx_t *dev)
         DEBUG("[ERROR] Not a valid Si7006/13/20/21 device\n");
         return -SI70XX_ERR_NODEV;;
     }
+
     return SI70XX_OK;
 }
 
