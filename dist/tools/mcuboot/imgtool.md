@@ -53,11 +53,11 @@ header and trailer that the bootloader is expecting:
     usage: imgtool.py sign [-h] -k filename --align ALIGN -v VERSION -H
                            HEADER_SIZE [--pad PAD] [--rsa-pkcs1-15]
                            infile outfile
-    
+
     positional arguments:
       infile
       outfile
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -k filename, --key filename
