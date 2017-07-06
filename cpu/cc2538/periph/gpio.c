@@ -26,6 +26,9 @@
 #include "cpu.h"
 #include "periph/gpio.h"
 
+#define ENABLE_DEBUG (1)
+#include "debug.h"
+
 #define MODE_NOTSUP         (0xff)
 
 static gpio_isr_ctx_t isr_ctx[4][8];
@@ -36,6 +39,8 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     if (mode == MODE_NOTSUP) {
         return -1;
     }
+
+    DEBUG("GPIO %"PRIu32", PORT: %u, PIN: %u\n", (uint32_t)pin, gpio_port_num(pin), gpio_pin_num(pin));
 
     /* disable any alternate function and any eventual interrupts */
     gpio(pin)->IE &= ~gpio_pin_mask(pin);

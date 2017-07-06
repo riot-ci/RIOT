@@ -22,6 +22,7 @@
 #define PERIPH_CPU_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "cpu.h"
 
@@ -84,9 +85,9 @@ static inline cc2538_gpio_t *gpio(gpio_t pin)
  *
  * @return          port number of gpio pin, [0=A - 3=D]
  */
-static inline int gpio_port_num(gpio_t pin)
+static inline uint8_t gpio_port_num(gpio_t pin)
 {
-    return (int)((pin & PORTNUM_MASK) >> PORTNUM_SHIFT) - 1;
+    return (uint8_t)((pin & PORTNUM_MASK) >> PORTNUM_SHIFT) - 1;
 }
 
 /**
@@ -96,7 +97,7 @@ static inline int gpio_port_num(gpio_t pin)
  *
  * @return          pin number of gpio pin, [0 - 7]
  */
-static inline int gpio_pin_num(gpio_t pin)
+static inline uint8_t gpio_pin_num(gpio_t pin)
 {
     return (int)(pin & PIN_MASK);
 }
@@ -119,7 +120,7 @@ static inline uint32_t gpio_pin_mask(gpio_t pin)
  *
  * @return          number of gpio pin, [0 - 31]
  */
-static inline int gpio_pp_num(gpio_t pin)
+static inline uint8_t gpio_pp_num(gpio_t pin)
 {
     return (gpio_port_num(pin) * 8) + gpio_pin_num(pin);
 }
