@@ -101,6 +101,7 @@ static inline uint8_t gpio_pin_num(gpio_t pin)
 {
     return (int)(pin & PIN_MASK);
 }
+
 /**
  * @brief   Helper function to get bit mask for gpio pin number
  *
