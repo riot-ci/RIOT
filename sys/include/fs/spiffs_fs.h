@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    sys_spiffs  SPIFFS integration
- * @ingroup     sys_fs
+ * @ingroup     pkg_spiffs
  * @brief       RIOT integration of SPIFFS
  *
  * The RIOT integration of SPIFFS follows the SPIFFS wiki:
