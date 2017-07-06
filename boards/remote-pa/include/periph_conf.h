@@ -16,6 +16,7 @@
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Antonio Lignan <alinan@zolertia.com>
+ * @author      Sebastian Meiling <s@mlng.net>
  */
 
 #ifndef PERIPH_CONF_H
@@ -86,6 +87,21 @@ static const spi_conf_t spi_config[] = {
 };
 
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+/** @} */
+
+/**
+ * @name ADC configuration
+ * @{
+ */
+#undef SOC_ADC_ADCCON_REF
+#define SOC_ADC_ADCCON_REF  SOC_ADC_ADCCON_REF_INT
+
+static const adc_conf_t adc_config[] = {
+    GPIO_PIN(0, 6), /**< GPIO_PA6 = ADC2_PIN */
+    GPIO_PIN(0, 7), /**< GPIO_PA7 = ADC3_PIN */
+};
+
+#define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
 /** @} */
 
 #ifdef __cplusplus
