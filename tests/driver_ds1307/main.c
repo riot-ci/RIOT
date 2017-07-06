@@ -133,6 +133,8 @@ static Test *tests_ds1307(void)
 
 int main(void)
 {
+    int res;
+
     puts("DS1307 RTC test\n");
 
     /* initialize the device */
