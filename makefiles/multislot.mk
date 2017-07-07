@@ -43,9 +43,10 @@ flash-bootloader: HEXFILE = $(MCUBOOT_BIN)
 flash-bootloader: $(MCUBOOT_BIN) $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
 
+flash-mcuboot: flash-bootloader
 flash-mcuboot: HEXFILE = $(SIGN_BINFILE)
-flash-mcuboot: export FLASH_OFFSET := $(SLOT0_SIZE)
-flash-mcuboot: mcuboot $(FLASHDEPS) flash-bootloader
+flash-mcuboot: export FLASH_OFFSET = $(SLOT0_SIZE)
+flash-mcuboot: mcuboot $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
 
 else
