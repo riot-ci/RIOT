@@ -368,11 +368,6 @@ void auto_init(void)
     auto_init_sdcard_spi();
 #endif
 
-#ifdef MODULE_MTD_SDCARD
-    extern void auto_init_mtd_sdcard(void);
-    auto_init_mtd_sdcard();
-#endif
-
 #endif /* MODULE_AUTO_INIT_STORAGE */
 
 #ifdef MODULE_AUTO_INIT_CAN
