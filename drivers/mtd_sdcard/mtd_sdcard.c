@@ -95,19 +95,19 @@ static int mtd_sdcard_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
 }
 
 static int mtd_sdcard_erase(mtd_dev_t *dev,
-                 uint32_t addr,
-                 uint32_t size)
+                            uint32_t addr,
+                            uint32_t size)
 {
     DEBUG("mtd_sdcard_erase: addr:%lu size:%lu\n", addr, size);
     (void)dev;
     (void)addr;
     (void)size;
 
-    #ifdef MTD_SDCARD_SKIP_ERASE
+#ifdef MTD_SDCARD_SKIP_ERASE
     return 0;
-    #else
+#else
     return -ENOTSUP; /* explicit erase currently not supported */
-    #endif
+#endif
 }
 
 static int mtd_sdcard_power(mtd_dev_t *dev, enum mtd_power_state power)
