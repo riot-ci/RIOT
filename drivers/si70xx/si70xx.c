@@ -47,6 +47,8 @@ static uint32_t si70xx_measure(const si70xx_t *dev, uint8_t command)
         DEBUG("[ERROR] Cannot read command '%d' result from I2C.\n", command);
     }
 
+    i2c_release(SI70XX_I2C);
+
     /* reconstruct raw result */
     return ((uint32_t)result[0] << 8) + (result[1] & 0xfc);
 }
