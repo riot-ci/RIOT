@@ -10,7 +10,6 @@ OFLAGS = -O binary
 MCUBOOT_BIN ?= $(BINDIR)/mcuboot.bin
 MCUBOOT_BIN_URL ?= http://download.riot-os.org/mynewt.mcuboot.bin
 MCUBOOT_BIN_MD5 ?= 0c71a0589bd3709fc2d90f07a0035ce7
-export FLASH_OFFSET = 0
 
 create-key: $(MCUBOOT_KEYFILE)
 
@@ -31,7 +30,7 @@ mcuboot: create-key link
 	$(IMGTOOL) sign --key $(MCUBOOT_KEYFILE) --version $(IMAGE_VERSION) --align \
 	$(IMAGE_ALIGN) -H $(IMAGE_HDR_SIZE) $(BINFILE) $(SIGN_BINFILE)
 	@$(COLOR_ECHO)
-	@$(COLOR_ECHO) '${COLOR_PURPLE}Signed with key.pem for version $(IMAGE_VERSION)\
+	@$(COLOR_ECHO) '${COLOR_PURPLE}Signed with $(MCUBOOT_KEYFILE) for version $(IMAGE_VERSION)\
 	${COLOR_RESET}'
 	@$(COLOR_ECHO)
 
@@ -42,7 +41,7 @@ $(MCUBOOT_BIN):
 
 flash-bootloader: HEXFILE = $(MCUBOOT_BIN)
 flash-bootloader: $(MCUBOOT_BIN) $(FLASHDEPS)
-	$(FLASHER) $(FFLAGS)
+	FLASH_OFFSET=0 $(FLASHER) $(FFLAGS)
 
 flash-mcuboot: HEXFILE = $(SIGN_BINFILE)
 flash-mcuboot: mcuboot $(FLASHDEPS) flash-bootloader
