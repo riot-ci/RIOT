@@ -3,7 +3,6 @@ ifdef SLOT0_SIZE
 IMGTOOL ?= $(RIOTBASE)/dist/tools/mcuboot/imgtool.py
 override IMGTOOL := $(abspath $(IMGTOOL))
 
-FLASH_OFFSET := $(SLOT0_SIZE)
 BINFILE ?= $(BINDIR)/$(APPLICATION).bin
 SIGN_BINFILE = $(BINDIR)/signed-$(APPLICATION).bin
 MCUBOOT_KEYFILE ?= $(BINDIR)/key.pem
@@ -45,6 +44,7 @@ flash-bootloader: $(MCUBOOT_BIN) $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
 
 flash-mcuboot: HEXFILE = $(SIGN_BINFILE)
+flash-mcuboot: export FLASH_OFFSET := $(SLOT0_SIZE)
 flash-mcuboot: mcuboot $(FLASHDEPS) flash-bootloader
 	$(FLASHER) $(FFLAGS)
 
