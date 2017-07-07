@@ -60,8 +60,6 @@ typedef struct {
  */
 extern const mtd_desc_t mtd_sdcard_driver;
 
-extern mtd_sdcard_t mtd_sdcard_devs[SDCARD_SPI_NUM];
-
 #ifdef __cplusplus
 }
 #endif
