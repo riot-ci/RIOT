@@ -27,7 +27,7 @@ mcuboot: create-key link
 	$(LINKFLAGPREFIX)--defsym=length="$$(($(SLOT1_SIZE) - $(IMAGE_HDR_SIZE)))" \
 	$(LINKFLAGPREFIX)--defsym=image_header="$(IMAGE_HDR_SIZE)" -o $(ELFFILE) && \
 	$(OBJCOPY) $(OFLAGS) $(ELFFILE) $(BINFILE) && \
-	$(IMGTOOL) sign --key key.pem --version $(IMAGE_VERSION) --align \
+	$(IMGTOOL) sign --key $(MCUBOOT_KEYFILE) --version $(IMAGE_VERSION) --align \
 	$(IMAGE_ALIGN) -H $(IMAGE_HDR_SIZE) $(BINFILE) $(SIGN_BINFILE)
 	@$(COLOR_ECHO)
 	@$(COLOR_ECHO) '${COLOR_PURPLE}Signed with key.pem for version $(IMAGE_VERSION)\
