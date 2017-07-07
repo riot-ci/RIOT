@@ -59,7 +59,7 @@ static int mtd_sdcard_init(mtd_dev_t *dev)
         dev->page_size        = SD_HC_BLOCK_SIZE;
         return 0;
     }
-    return -1;
+    return -EIO;
 }
 
 static int mtd_sdcard_read(mtd_dev_t *dev, void *buff, uint32_t addr,
@@ -75,7 +75,7 @@ static int mtd_sdcard_read(mtd_dev_t *dev, void *buff, uint32_t addr,
     if (err == SD_RW_OK) {
         return res * SD_HC_BLOCK_SIZE;
     }
-    return -err;
+    return -EIO;
 }
 
 static int mtd_sdcard_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
@@ -91,7 +91,7 @@ static int mtd_sdcard_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
     if (err == SD_RW_OK) {
         return res * SD_HC_BLOCK_SIZE;
     }
-    return -err;
+    return -EIO;
 }
 
 static int mtd_sdcard_erase(mtd_dev_t *dev,
@@ -106,7 +106,7 @@ static int mtd_sdcard_erase(mtd_dev_t *dev,
     #ifdef MTD_SDCARD_SKIP_ERASE
     return 0;
     #else
-    return -1; /* explicit erase currently not supported */
+    return -ENOTSUP; /* explicit erase currently not supported */
     #endif
 }
 
@@ -117,5 +117,5 @@ static int mtd_sdcard_power(mtd_dev_t *dev, enum mtd_power_state power)
 
     /* TODO: implement power down of sdcard in sdcard_spi
     (make use of sdcard_spi_params_t.power pin) */
-    return -1; /**< currently not supported */
+    return -ENOTSUP; /**< currently not supported */
 }
