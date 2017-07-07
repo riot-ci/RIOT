@@ -42,20 +42,6 @@ int main(void)
         return 1;
     }
 
-    /* run sensor test */
-    printf("Testing sensor communication...");
-
-    if (si70xx_test(&dev) == 0) {
-        puts("[OK]\n");
-    }
-    else {
-        puts("[Failed]");
-        return 1;
-    }
-
-    /* print device id */
-    printf("Identified sensor as the Si70%02i\n", si70xx_get_id(&dev));
-
     /* read temperature and humidity every 1 seconds */
     bool both = false;
 

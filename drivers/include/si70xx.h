@@ -55,15 +55,6 @@ typedef struct {
 } si70xx_t;
 
 /**
- * @brief   Test if the device id and revision number are as expected.
- *
- * @param[in] dev           device descriptor
- * @return                  SI70XX_OK on successful test
- * @return                  -SI70XX_ERR_NODEV on unsuccessfull test.
- */
-int si70xx_test(const si70xx_t *dev);
-
-/**
  * @brief   Initialize and reset the sensor.
  *
  * @param[in] dev           device descriptor
@@ -102,30 +93,6 @@ int16_t si70xx_get_temperature(const si70xx_t *dev);
  * @param[out] temperature  pointer to temperature (in centi-degrees Celsius)
  */
 void si70xx_get_both(const si70xx_t *dev, uint16_t *humidity, int16_t *temperature);
-
-/**
- * @brief   Read the sensor serial number.
- *
- * @param[in] dev           device descriptor
- * @return                  sensor serial number
- */
-uint64_t si70xx_get_serial(const si70xx_t *dev);
-
-/**
- * @brief   Read the sensor id, to identifier the sensor variant.
- *
- * @param[in] dev           device descriptor
- * @return                  device id
- */
-uint8_t si70xx_get_id(const si70xx_t *dev);
-
-/**
- * @brief   Read the firmware revision of the sensor.
- *
- * @param[in] dev           device descriptor
- * @return                  sensor firmware revision number
- */
-uint8_t si70xx_get_revision(const si70xx_t *dev);
 
 #ifdef __cplusplus
 }
