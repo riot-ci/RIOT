@@ -10,6 +10,7 @@ OFLAGS = -O binary
 MCUBOOT_BIN ?= $(BINDIR)/mcuboot.bin
 MCUBOOT_BIN_URL ?= http://download.riot-os.org/mynewt.mcuboot.bin
 MCUBOOT_BIN_MD5 ?= 0c71a0589bd3709fc2d90f07a0035ce7
+export FLASH_OFFSET = 0
 
 create-key: $(MCUBOOT_KEYFILE)
 
@@ -44,9 +45,8 @@ flash-bootloader: $(MCUBOOT_BIN) $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
 
 flash-mcuboot: HEXFILE = $(SIGN_BINFILE)
-flash-mcuboot: export FLASH_OFFSET := $(SLOT0_SIZE)
 flash-mcuboot: mcuboot $(FLASHDEPS) flash-bootloader
-	$(FLASHER) $(FFLAGS)
+	FLASH_OFFSET=$(SLOT0_SIZE) $(FLASHER) $(FFLAGS)
 
 else
 mcuboot:
