@@ -33,7 +33,7 @@
 /**
  * @brief   Internal helper function to perform and reconstruct a measurement.
  */
-static uint32_t _do_measure(const si70xx_t *dev, uint8_t command)
+static uint16_t _do_measure(const si70xx_t *dev, uint8_t command)
 {
     uint8_t result[2];
 
@@ -50,7 +50,7 @@ static uint32_t _do_measure(const si70xx_t *dev, uint8_t command)
     i2c_release(SI70XX_I2C);
 
     /* reconstruct raw result */
-    return ((uint32_t)result[0] << 8) + (result[1] & 0xfc);
+    return ((uint16_t)result[0] << 8) + (result[1] & 0xfc);
 }
 
 /**
@@ -183,7 +183,7 @@ int si70xx_init(si70xx_t *dev, const si70xx_params_t *params)
 
 uint16_t si70xx_get_relative_humidity(const si70xx_t *dev)
 {
-    uint32_t raw;
+    uint16_t raw;
     int32_t humidity;
 
     /* perform measurement */
@@ -205,7 +205,7 @@ uint16_t si70xx_get_relative_humidity(const si70xx_t *dev)
 
 int16_t si70xx_get_temperature(const si70xx_t *dev)
 {
-    uint32_t raw;
+    uint16_t raw;
 
     /* perform measurement */
     raw = _do_measure(dev, SI70XX_MEASURE_TEMP_HOLD);
@@ -215,7 +215,7 @@ int16_t si70xx_get_temperature(const si70xx_t *dev)
 
 void si70xx_get_both(const si70xx_t *dev, uint16_t *humidity, int16_t *temperature)
 {
-    uint32_t raw;
+    uint16_t raw;
 
     /* read the humidity the normal way */
     *humidity = si70xx_get_relative_humidity(dev);
