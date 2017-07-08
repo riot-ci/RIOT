@@ -39,17 +39,26 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
-        .dev  = GPT0,
-        .num  = 0
+        .dev = GPT0,
+        .chn = 2,
+        .cfg = GPT_CFG_16T,
     },
     {
-        .dev  = GPT1,
-        .num  = 1
+        .dev = GPT1,
+        .chn = 1,
+        .cfg = GPT_CFG_32T,
+    },
+    {
+        .dev = GPT2,
+        .chn = 2,
+        .cfg = GPT_CFG_16T,
+    },
+    {
+        .dev = GPT3,
+        .chn = 1,
+        .cfg = GPT_CFG_32T,
     }
 };
-
-#define TIMER_0_ISR         isr_timer0_chan0
-#define TIMER_1_ISR         isr_timer1_chan0
 
 #define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
