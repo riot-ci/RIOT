@@ -124,32 +124,23 @@ static const uart_conf_t uart_config[] = {
  * @{
  */
 #define PWM_0_EN            1
-#define PWM_1_EN            1
-#define PWM_MAX_CHANNELS    2
+#define PWM_MAX_CHANNELS    (2U)
 /* for compatibility with test application */
 #define PWM_0_CHANNELS      PWM_MAX_CHANNELS
-#define PWM_1_CHANNELS      PWM_MAX_CHANNELS
 
 /* PWM device configuration */
 static const pwm_conf_t pwm_config[] = {
 #if PWM_0_EN
     {TCC0, {
         /* GPIO pin, MUX value, TCC channel */
-        { GPIO_PIN(PA, 8), GPIO_MUX_E,  0 },
-        { GPIO_PIN(PA, 9), GPIO_MUX_E,  1 },
-    }},
-#endif
-#if PWM_1_EN
-    {TCC1, {
-        /* GPIO pin, MUX value, TCC channel */
-        { GPIO_PIN(PA, 6), GPIO_MUX_E, 0 },
-        { GPIO_PIN(PA, 7), GPIO_MUX_E, 1 },
-    }},
+        { GPIO_PIN(PA, 10), GPIO_MUX_F, 2 },    /* ~2 */
+        { GPIO_PIN(PA, 11), GPIO_MUX_F, 3 },    /* ~3 */
+    }}
 #endif
 };
 
 /* number of devices that are actually defined */
-#define PWM_NUMOF           (2U)
+#define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
 /** @} */
 
 /**
