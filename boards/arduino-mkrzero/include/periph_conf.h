@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     boards_arduino-mkr1000
+ * @ingroup     boards_arduino-mkrzero
  * @{
  *
  * @file
- * @brief       Configuration of CPU peripherals for Arduino MKR1000 board
+ * @brief       Configuration of CPU peripherals for Arduino MKRZERO board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
@@ -45,8 +45,8 @@ static const spi_conf_t spi_config[] = {
     {
         .dev      = &SERCOM2->SPI,
         .miso_pin = GPIO_PIN(PA, 15),
-        .mosi_pin = GPIO_PIN(PA, 12),
-        .clk_pin  = GPIO_PIN(PA, 13),
+        .mosi_pin = GPIO_PIN(PA, 13),
+        .clk_pin  = GPIO_PIN(PA, 12),
         .miso_mux = GPIO_MUX_C,
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,

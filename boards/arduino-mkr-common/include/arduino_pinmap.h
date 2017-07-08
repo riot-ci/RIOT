@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2016 Inria
+ * Copyright (C)  2017 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_arduino-mkr1000
+ * @ingroup     boards_arduino-mkr-common
  * @{
  *
  * @file
@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 /**
- * @name    Mapping of MCU pins to Arduino pins
+ * @name   Mapping of MCU pins to Arduino pins
  * @{
  */
 #define ARDUINO_PIN_0           GPIO_PIN(PA, 22) /* TC4-W0 */
@@ -56,7 +56,7 @@ extern "C" {
 #define ARDUINO_PIN_A4          GPIO_PIN(PA, 5)  /* AIN5 */
 #define ARDUINO_PIN_A5          GPIO_PIN(PA, 6)  /* AIN6 */
 #define ARDUINO_PIN_A6          GPIO_PIN(PA, 7)  /* AIN7 */
-/** @} */
+/** @ */
 
 #ifdef __cplusplus
 }
