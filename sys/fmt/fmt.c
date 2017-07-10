@@ -35,20 +35,20 @@ ssize_t write(int fildes, const void *buf, size_t nbyte);
 
 static const char _hex_chars[16] = "0123456789ABCDEF";
 
+static const uint32_t _tenmap[] = {
+    0,
+    10LU,
+    100LU,
+    1000LU,
+    10000LU,
+    100000LU,
+    1000000LU,
+    10000000LU,
+};
+
 static inline int _is_digit(char c)
 {
     return (c >= '0' && c <= '9');
-}
-
-static inline unsigned pwr(unsigned val, unsigned exp)
-{
-    unsigned res = 1;
-
-    for (unsigned i = 0; i < exp; i++) {
-        res *= val;
-    }
-
-    return res;
 }
 
 size_t fmt_byte_hex(char *out, uint8_t byte)
@@ -198,15 +198,13 @@ size_t fmt_s16_dec(char *out, int16_t val)
     return fmt_s32_dec(out, val);
 }
 
-size_t fmt_s16_dfp(char *out, int16_t val, unsigned fp_digits)
+size_t fmt_s16_dfp(char *out, int16_t val, int fp_digits)
 {
-    int16_t absolute, divider;
     size_t pos = 0;
-    size_t div_len, len;
-    unsigned e;
     char tmp[4];
 
-    if (fp_digits > 4) {
+    /* make sure inputs are valid */
+    if ((fp_digits > 6) || (fp_digits < -4) || (val == -32768)) {
         return 0;
     }
     if (fp_digits == 0) {
@@ -214,45 +212,50 @@ size_t fmt_s16_dfp(char *out, int16_t val, unsigned fp_digits)
     }
     if (val < 0) {
         if (out) {
-            out[pos++] = '-';
+            out[pos] = '-';
         }
+        ++pos;
         val *= -1;
     }
 
-    e = pwr(10, fp_digits);
-    absolute = (val / (int)e);
-    divider = val - (absolute * e);
+    if (fp_digits < 0) {
+        fp_digits *= -1;
+        int e = (int)_tenmap[fp_digits];
+        int16_t absolute = (val / e);
+        int16_t divider = val - (absolute * e);
 
-    pos += fmt_s16_dec(&out[pos], absolute);
+        if (!out) {
+            /* abs len + decimal point + divider */
+            pos += (fmt_s16_dec(NULL, absolute) + 1 + fp_digits);
+        }
+        else {
+            pos += fmt_s16_dec(&out[pos], absolute);
+            out[pos++] = '.';
+            size_t len = (pos + fp_digits);
+            size_t div_len = fmt_s16_dec(tmp, divider);
 
-    if (!out) {
-        return pos + 1 + fp_digits;     /* abs len + decimal point + divider */
+            while (pos < (len - div_len)) {
+                out[pos++] = '0';
+            }
+            for (size_t i = 0; i < div_len; i++) {
+                out[pos++] = tmp[i];
+            }
+        }
     }
-
-    out[pos++] = '.';
-    len = pos + fp_digits;
-    div_len = fmt_s16_dec(tmp, divider);
-
-    while (pos < (len - div_len)) {
-        out[pos++] = '0';
-    }
-    for (size_t i = 0; i < div_len; i++) {
-        out[pos++] = tmp[i];
+    else {
+        if (!out) {
+            pos += (fmt_s16_dec(NULL, val) + fp_digits);
+        }
+        else {
+            pos += fmt_s16_dec(&out[pos], val);
+            for (int i = 0; i < fp_digits; i++) {
+                out[pos++] = '0';
+            }
+        }
     }
 
     return pos;
 }
-
-static const uint32_t _tenmap[] = {
-    0,
-    10LU,
-    100LU,
-    1000LU,
-    10000LU,
-    100000LU,
-    1000000LU,
-    10000000LU,
-};
 
 /* this is very probably not the most efficient implementation, as it at least
  * pulls in floating point math.  But it works, and it's always nice to have
