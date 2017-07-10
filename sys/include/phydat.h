@@ -158,13 +158,13 @@ void phydat_dump(phydat_t *data, uint8_t dim);
 const char *phydat_unit_to_str(uint8_t unit);
 
 /**
- * @brief   Return a string representation for every unit, including none
- *          physical units like 'bool' or 'time'
+ * @brief   Return a string representation for every unit, including
+ *          non-physical units like 'bool' or 'time'
  *
- * This function is useful when converting phydat_t structures to none-binary
+ * This function is useful when converting phydat_t structures to non-binary
  * representations like JSON or XML.
  *
- * In practice, this function augments phydat_unit_to_str() with additional
+ * In practice, this function extends phydat_unit_to_str() with additional
  * identifiers for non physical units.
  *
  * @param[in] unit      unit to convert
