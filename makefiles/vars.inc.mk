@@ -49,6 +49,7 @@ export OBJDUMPFLAGS          # The parameter for OBJDUMP.
 export SIZE                  # The command to read to size of the ELF sections.
 export UNDEF                 # Set by the BOARD's and CPU's Makefile.include, this contains object files with must not be used in the ELFFILE even if the if no call to the functions.
 export WERROR                # Treat all compiler warnings as errors if set to 1 (see -Werror flag in GCC manual)
+export FLASH_OFFSET          # Define an offset to flash code into ROM memory.
 
 export GITCACHE              # path to git-cache executable
 export FLASHER               # The command to call on "make flash".
