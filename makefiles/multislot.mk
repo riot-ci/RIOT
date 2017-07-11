@@ -51,4 +51,4 @@ else
 mcuboot:
 	$(Q)echo "error: mcuboot not supported on board $(BOARD)!"
 	$(Q)false
-endif # mcuboot
+endif # SLOT0_SIZE
