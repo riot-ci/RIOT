@@ -33,6 +33,34 @@ extern "C" {
 #define SDCARD_SPI_PARAM_SPI         (SPI_DEV(0))
 #endif
 #ifndef SDCARD_SPI_PARAM_CS
+#define SDCARD_SPI_PARAM_CS          (GPIO_PIN(3,14))
+#endif
+#ifndef SDCARD_SPI_PARAM_CLK
+#define SDCARD_SPI_PARAM_CLK         (GPIO_PIN(0,5))
+#endif
+#ifndef SDCARD_SPI_PARAM_MOSI
+#define SDCARD_SPI_PARAM_MOSI        (GPIO_PIN(0,7))
+#endif
+#ifndef SDCARD_SPI_PARAM_MISO
+#define SDCARD_SPI_PARAM_MISO        (GPIO_PIN(0,6))
+#endif
+#ifndef SDCARD_SPI_PARAM_POWER
+#define SDCARD_SPI_PARAM_POWER       (GPIO_UNDEF)
+#endif
+#ifndef SDCARD_SPI_PARAM_POWER_AH
+/** treated as 'don't care' if SDCARD_SPI_PARAM_POWER is GPIO_UNDEF */
+#define SDCARD_SPI_PARAM_POWER_AH    (true)
+#endif
+/** @} */
+
+/**
+ * @brief   Set default configuration parameters for the sdcard_spi driver
+ * @{
+ */
+#ifndef SDCARD_SPI_PARAM_SPI
+#define SDCARD_SPI_PARAM_SPI         (SPI_DEV(0))
+#endif
+#ifndef SDCARD_SPI_PARAM_CS
 #define SDCARD_SPI_PARAM_CS          (GPIO_PIN(2,4))
 #endif
 #ifndef SDCARD_SPI_PARAM_CLK

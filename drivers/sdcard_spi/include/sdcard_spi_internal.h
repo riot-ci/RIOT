@@ -128,10 +128,10 @@ extern "C" {
 /* the retry counters below are used as timeouts for specific actions.
    The values may need some adjustments to either give the card more time to respond
    to commands or to achieve a lower delay / avoid infinite blocking. */
-#define R1_POLLING_RETRY_CNT       1000000
+#define R1_POLLING_RETRY_CNT       100000
 #define SD_DATA_TOKEN_RETRY_CNT    1000000
 #define INIT_CMD_RETRY_CNT         1000000
-#define INIT_CMD0_RETRY_CNT        3
+#define INIT_CMD0_RETRY_CNT        10
 #define SD_WAIT_FOR_NOT_BUSY_CNT   1000000 /* use -1 for full blocking till the card isn't busy */
 #define SD_BLOCK_READ_CMD_RETRIES  10     /* only affects sending of cmd not whole transaction! */
 #define SD_BLOCK_WRITE_CMD_RETRIES 10    /* only affects sending of cmd not whole transaction! */
@@ -142,7 +142,7 @@ extern "C" {
 #define SD_CARD_SPI_MODE SPI_MODE_0
 
 /* this speed setting is only used while the init procedure is performed */
-#define SD_CARD_SPI_SPEED_PREINIT SPI_CLK_400KHZ
+#define SD_CARD_SPI_SPEED_PREINIT SPI_CLK_10MHZ
 
 /* after init procedure is finished the driver auto sets the card to this speed */
 #define SD_CARD_SPI_SPEED_POSTINIT SPI_CLK_10MHZ
