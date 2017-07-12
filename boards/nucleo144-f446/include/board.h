@@ -34,7 +34,7 @@ extern "C" {
 #define XTIMER_DEV          TIMER_DEV(0)
 #define XTIMER_CHAN         (0)
 #define XTIMER_OVERHEAD     (6)
-#define XTIMER_BACKOFF      (5)
+#define XTIMER_BACKOFF      (30)
 /** @} */
 
 #ifdef __cplusplus
