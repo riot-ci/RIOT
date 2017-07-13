@@ -32,24 +32,24 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
-        .dev      = GPTIMER0,
-        .channels = 2,
-        .cfg      = GPTMCFG_16_BIT_TIMER, /* required for XTIMER */
+        .num = 0,
+        .chn = 2,
+        .cfg = GPTMCFG_16_BIT_TIMER, /* required for XTIMER */
     },
     {
-        .dev      = GPTIMER1,
-        .channels = 1,
-        .cfg      = GPTMCFG_32_BIT_TIMER,
+        .num = 1,
+        .chn = 1,
+        .cfg = GPTMCFG_32_BIT_TIMER,
     },
     {
-        .dev      = GPTIMER2,
-        .channels = 1,
-        .cfg      = GPTMCFG_32_BIT_TIMER,
+        .num = 2,
+        .chn = 1,
+        .cfg = GPTMCFG_32_BIT_TIMER,
     },
     {
-        .dev      = GPTIMER3,
-        .channels = 1,
-        .cfg      = GPTMCFG_32_BIT_TIMER,
+        .num = 3,
+        .chn = 1,
+        .cfg = GPTMCFG_32_BIT_TIMER,
     },
 };
 
