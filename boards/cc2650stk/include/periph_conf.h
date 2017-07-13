@@ -39,22 +39,22 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
-        .dev = GPT0,
+        .num = 0,
         .chn = 2,
         .cfg = GPT_CFG_16T,
     },
     {
-        .dev = GPT1,
+        .num = 1,
         .chn = 1,
         .cfg = GPT_CFG_32T,
     },
     {
-        .dev = GPT2,
+        .num = 2,
         .chn = 2,
         .cfg = GPT_CFG_16T,
     },
     {
-        .dev = GPT3,
+        .num = 3,
         .chn = 1,
         .cfg = GPT_CFG_32T,
     }
