@@ -50,10 +50,31 @@ static void irq_handler_b(tim_t tim);
 /**
  * @brief   Allocate memory for the interrupt context
  */
-static timer_isr_ctx_t ctx[TIMER_NUMOF];
+static timer_isr_ctx_t isr_ctx[TIMER_NUMOF];
 
 /**
- * @brief           Get the GPT register base for a timer
+ * @brief   Enable global interrupts for timer channels
+ *
+ * @param[in] tim   index of the timer
+ */
+static void _irq_enable(tim_t tim)
+{
+    assert(tim < TIMER_NUMOF);
+
+    /* enable global timer interrupt for channel A */
+    IRQn_Type irqn = GPTIMER_0A_IRQN + (2 * timer_config[tim].num);
+    NVIC_SetPriority(irqn, TIMER_IRQ_PRIO);
+    NVIC_EnableIRQ(irqn);
+    /* and channel B, if enabled */
+    if(timer_config[tim].chn == 2) {
+        irqn++;
+        NVIC_SetPriority(irqn, TIMER_IRQ_PRIO);
+        NVIC_EnableIRQ(irqn);
+    }
+}
+
+/**
+ * @brief   Get the GPT register base for a timer
  *
  * @param[in] tim   index of the timer
  *
@@ -61,9 +82,9 @@ static timer_isr_ctx_t ctx[TIMER_NUMOF];
  */
 static inline gpt_reg_t *dev(tim_t tim)
 {
-    uint32_t addr = GPT0_BASE | (((uint32_t)timer_config[tim].num) << 12);
-    DEBUG("dev: addr 0x%"PRIx32"\n", addr);
-    return ((gpt_reg_t *)(addr));
+    assert(tim < TIMER_NUMOF);
+
+    return ((gpt_reg_t *)(GPT0_BASE | (((uint32_t)timer_config[tim].num) << 12)));
 }
 
 int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
@@ -83,8 +104,8 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     dev(tim)->CTL = 0;
 
     /* save context */
-    ctx[tim].cb = cb;
-    ctx[tim].arg = arg;
+    isr_ctx[tim].cb = cb;
+    isr_ctx[tim].arg = arg;
 
     uint32_t chan_mode = (GPT_TXMR_TXMR_PERIODIC | GPT_TXMR_TXMIE);
     uint32_t prescaler = 0;
@@ -117,24 +138,21 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
         DEBUG("timer_init: invalid timer config must be 16 or 32Bit mode!\n");
         return -1;
     }
-    /* configure timer to 16-bit, periodic, up-counting */
+    /* configure channels and start timer */
     dev(tim)->CFG  = timer_config[tim].cfg;
     dev(tim)->CTL = GPT_CTL_TAEN;
     dev(tim)->TAMR = chan_mode;
-    /* enable global timer interrupt and start the timer */
-    IRQn_Type irqn = GPTIMER_0A_IRQN + (2 * timer_config[tim].num);
-    NVIC_SetPriority(irqn, TIMER_IRQ_PRIO);
-    NVIC_EnableIRQ(irqn);
+
     if (timer_config[tim].chn == 2) {
         /* set the timer speed */
         dev(tim)->TBPR = prescaler;
         dev(tim)->TBMR = chan_mode;
         dev(tim)->TBILR = LOAD_VALUE;
         dev(tim)->CTL = GPT_CTL_TAEN | GPT_CTL_TBEN;
-        irqn++;
-        NVIC_SetPriority(irqn, TIMER_IRQ_PRIO);
-        NVIC_EnableIRQ(irqn);
     }
+    /* enable timer IRQs */
+    _irq_enable(tim);
+
     return 0;
 }
 
@@ -150,19 +168,17 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     if ((tim >= TIMER_NUMOF) || (channel >= timer_config[tim].chn)) {
         return -1;
     }
-    switch (channel) {
-        case 0:
-            dev(tim)->ICLR = GPT_IMR_TAMIM;
-            dev(tim)->TAMATCHR = (timer_config[tim].cfg == GPT_CFG_32T) ?
-                                 value : (LOAD_VALUE - value);
-            dev(tim)->IMR |= GPT_IMR_TAMIM;
-            break;
-        case 1:
-            dev(tim)->ICLR = GPT_IMR_TBMIM;
-            dev(tim)->TBMATCHR = (timer_config[tim].cfg == GPT_CFG_32T) ?
-                                 value : (LOAD_VALUE - value);
-            dev(tim)->IMR |= GPT_IMR_TBMIM;
-            break;
+    if (channel == 0) {
+        dev(tim)->ICLR = GPT_IMR_TAMIM;
+        dev(tim)->TAMATCHR = (timer_config[tim].cfg == GPT_CFG_32T) ?
+                             value : (LOAD_VALUE - value);
+        dev(tim)->IMR |= GPT_IMR_TAMIM;
+    }
+    else if (channel == 1) {
+        dev(tim)->ICLR = GPT_IMR_TBMIM;
+        dev(tim)->TBMATCHR = (timer_config[tim].cfg == GPT_CFG_32T) ?
+                             value : (LOAD_VALUE - value);
+        dev(tim)->IMR |= GPT_IMR_TBMIM;
     }
     return 1;
 }
@@ -202,14 +218,13 @@ void timer_stop(tim_t tim)
 void timer_start(tim_t tim)
 {
     DEBUG("timer_start(%u)\n", tim);
+
     if (tim < TIMER_NUMOF) {
-        switch (timer_config[tim].chn) {
-            case 1:
-                dev(tim)->CTL = GPT_CTL_TAEN;
-                break;
-            case 2:
-                dev(tim)->CTL = GPT_CTL_TAEN | GPT_CTL_TBEN;
-                break;
+        if (timer_config[tim].chn == 1) {
+            dev(tim)->CTL = GPT_CTL_TAEN;
+        }
+        else if (timer_config[tim].chn == 2) {
+            dev(tim)->CTL = GPT_CTL_TAEN | GPT_CTL_TBEN;
         }
     }
 }
@@ -231,10 +246,8 @@ static void irq_handler_a(tim_t tim)
         /* Disable further match interrupts for this timer/channel */
         dev(tim)->IMR &= ~GPT_IMR_TAMIM;
         /* Invoke the callback function */
-        ctx[tim].cb(ctx[tim].arg, 0);
+        isr_ctx[tim].cb(isr_ctx[tim].arg, 0);
     }
-
-    //cortexm_isr_end();
 }
 
 /**
@@ -254,10 +267,8 @@ static void irq_handler_b(tim_t tim)
         /* Disable further match interrupts for this timer/channel */
         dev(tim)->IMR &= ~GPT_IMR_TBMIM;
         /* Invoke the callback function */
-        ctx[tim].cb(ctx[tim].arg, 1);
+        isr_ctx[tim].cb(isr_ctx[tim].arg, 1);
     }
-
-    //cortexm_isr_end();
 }
 
 /**
