@@ -37,6 +37,16 @@
 #define TIMER_B_IRQ_MASK        (0x0000ff00)
 
 #define TIMER_IRQ_PRIO          (1U)
+
+/**
+ * @name function prototypes
+ * @{
+ */
+static void irq_handler(uint8_t num, uint8_t chn);
+static void irq_handler_a(tim_t tim);
+static void irq_handler_b(tim_t tim);
+/** @} */
+
 /**
  * @brief   Allocate memory for the interrupt context
  */
@@ -51,7 +61,9 @@ static timer_isr_ctx_t ctx[TIMER_NUMOF];
  */
 static inline gpt_reg_t *dev(tim_t tim)
 {
-    return timer_config[tim].dev;
+    uint32_t addr = GPT0_BASE | (((uint32_t)timer_config[tim].num) << 12);
+    DEBUG("dev: addr 0x%"PRIx32"\n", addr);
+    return ((gpt_reg_t *)(addr));
 }
 
 int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
@@ -63,7 +75,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     }
 
     /* enable the timer clock */
-    PRCM->GPTCLKGR |= (1 << tim);
+    PRCM->GPTCLKGR |= (1 << timer_config[tim].num);
     PRCM->CLKLOADCTL = CLKLOADCTL_LOAD;
     while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {}
 
@@ -110,7 +122,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     dev(tim)->CTL = GPT_CTL_TAEN;
     dev(tim)->TAMR = chan_mode;
     /* enable global timer interrupt and start the timer */
-    IRQn_Type irqn = GPTIMER_0A_IRQN + (2 * tim);
+    IRQn_Type irqn = GPTIMER_0A_IRQN + (2 * timer_config[tim].num);
     NVIC_SetPriority(irqn, TIMER_IRQ_PRIO);
     NVIC_EnableIRQ(irqn);
     if (timer_config[tim].chn == 2) {
@@ -157,6 +169,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 
 int timer_clear(tim_t tim, int channel)
 {
+    DEBUG("timer_clear(%u, %d)\n", tim, channel);
     if ((tim >= TIMER_NUMOF) || (channel >= timer_config[tim].chn)) {
         return -1;
     }
@@ -168,6 +181,7 @@ int timer_clear(tim_t tim, int channel)
 
 unsigned int timer_read(tim_t tim)
 {
+    DEBUG("timer_read(%u)\n", tim);
     if (tim >= TIMER_NUMOF) {
         return 0;
     }
@@ -179,6 +193,7 @@ unsigned int timer_read(tim_t tim)
 
 void timer_stop(tim_t tim)
 {
+    DEBUG("timer_stop(%u)\n", tim);
     if (tim < TIMER_NUMOF) {
         dev(tim)->CTL = 0;
     }
@@ -186,6 +201,7 @@ void timer_stop(tim_t tim)
 
 void timer_start(tim_t tim)
 {
+    DEBUG("timer_start(%u)\n", tim);
     if (tim < TIMER_NUMOF) {
         switch (timer_config[tim].chn) {
             case 1:
@@ -203,7 +219,8 @@ void timer_start(tim_t tim)
  *
  * @param[in] tim   index of the timer
  */
-static void irq_handler_a(tim_t tim) {
+static void irq_handler_a(tim_t tim)
+{
     uint32_t mis;
     /* Latch the active interrupt flags */
     mis = dev(tim)->MIS & TIMER_A_IRQ_MASK;
@@ -217,7 +234,7 @@ static void irq_handler_a(tim_t tim) {
         ctx[tim].cb(ctx[tim].arg, 0);
     }
 
-    cortexm_isr_end();
+    //cortexm_isr_end();
 }
 
 /**
@@ -225,7 +242,8 @@ static void irq_handler_a(tim_t tim) {
  *
  * @param[in] tim   index of the timer
  */
-static void irq_handler_b(tim_t tim) {
+static void irq_handler_b(tim_t tim)
+{
     uint32_t mis;
     /* Latch the active interrupt flags */
     mis = dev(tim)->MIS & TIMER_B_IRQ_MASK;
@@ -239,14 +257,30 @@ static void irq_handler_b(tim_t tim) {
         ctx[tim].cb(ctx[tim].arg, 1);
     }
 
+    //cortexm_isr_end();
+}
+
+/**
+ * @brief   timer interrupt handler
+ *
+ * @param[in] num   GPT instance number
+ * @param[in] chn   channel number (0=A, 1=B)
+ */
+static void irq_handler(uint8_t num, uint8_t chn)
+{
+    for (unsigned i = 0; i < TIMER_NUMOF; i++) {
+        if (timer_config[i].num == num) {
+            (chn) ? irq_handler_b(i) : irq_handler_a(i);
+        }
+    }
     cortexm_isr_end();
 }
 
-void isr_timer0_chan0(void) {irq_handler_a(0);}
-void isr_timer0_chan1(void) {irq_handler_b(0);}
-void isr_timer1_chan0(void) {irq_handler_a(1);}
-void isr_timer1_chan1(void) {irq_handler_b(1);}
-void isr_timer2_chan0(void) {irq_handler_a(2);}
-void isr_timer2_chan1(void) {irq_handler_b(2);}
-void isr_timer3_chan0(void) {irq_handler_a(3);}
-void isr_timer3_chan1(void) {irq_handler_b(3);}
+void isr_timer0_chan0(void) {irq_handler(0, 0);}
+void isr_timer0_chan1(void) {irq_handler(0, 1);}
+void isr_timer1_chan0(void) {irq_handler(1, 0);}
+void isr_timer1_chan1(void) {irq_handler(1, 1);}
+void isr_timer2_chan0(void) {irq_handler(2, 0);}
+void isr_timer2_chan1(void) {irq_handler(2, 1);}
+void isr_timer3_chan0(void) {irq_handler(3, 0);}
+void isr_timer3_chan1(void) {irq_handler(3, 1);}

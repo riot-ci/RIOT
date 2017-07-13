@@ -63,7 +63,7 @@ typedef enum {
  * @brief   Timer configuration options
  */
 typedef struct {
-    gpt_reg_t  *dev;    /**< the GPT base address */
+    uint8_t     num;    /**< GPT instance number */
     uint8_t     chn;    /**< number of channels */
     uint8_t     cfg;    /**< timer config word */
 } timer_conf_t;
