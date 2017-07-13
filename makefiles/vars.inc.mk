@@ -1,3 +1,6 @@
+# set default values for selected global variables
+FLASH_ADDR ?= 0x0
+
 export Q                     # Used in front of Makefile lines to suppress the printing of the command if user did not opt-in to see them.
 export QQ                    # as Q, but be more quiet
 export QUIET                 # The parameter to use whether to show verbose makefile commands or not.
@@ -49,11 +52,11 @@ export OBJDUMPFLAGS          # The parameter for OBJDUMP.
 export SIZE                  # The command to read to size of the ELF sections.
 export UNDEF                 # Set by the BOARD's and CPU's Makefile.include, this contains object files with must not be used in the ELFFILE even if the if no call to the functions.
 export WERROR                # Treat all compiler warnings as errors if set to 1 (see -Werror flag in GCC manual)
-export FLASH_OFFSET          # Define an offset to flash code into ROM memory.
 
 export GITCACHE              # path to git-cache executable
 export FLASHER               # The command to call on "make flash".
 export FFLAGS                # The parameters to supply to FLASHER.
+export FLASH_ADDR          # Define an offset to flash code into ROM memory.
 export TERMPROG              # The command to call on "make term".
 export TERMFLAGS             # Additional parameters to supply to TERMPROG.
 export PORT                  # The port to connect the TERMPROG to.
