@@ -38,10 +38,10 @@ extern "C"
 #define KINETIS_MCG_ERC_OSCILLATOR   1
 #define KINETIS_MCG_ERC_FRDIV        3           /* ERC divider = 256 */
 #define KINETIS_MCG_ERC_RANGE        1
-#define KINETIS_MCG_ERC_FREQ         40000000u
+#define KINETIS_MCG_ERC_FREQ         (40000000u)
 #define KINETIS_MCG_PLL_PRDIV        3           /* divide factor = 4 */
 #define KINETIS_MCG_PLL_VDIV0        0           /* multiply factor = 24 */
-#define KINETIS_MCG_PLL_FREQ         48000000u
+#define KINETIS_MCG_PLL_FREQ         (48000000u)
 
 #define CLOCK_CORECLOCK              KINETIS_MCG_PLL_FREQ
 #define CLOCK_BUSCLOCK               (CLOCK_CORECLOCK / 2)
@@ -52,22 +52,22 @@ extern "C"
  * @{
  */
 #define PIT_NUMOF               (2U)
-#define PIT_CONFIG {                 \
-{                            \
-    .prescaler_ch = 0,       \
-    .count_ch = 1,           \
-},                           \
-{                            \
-    .prescaler_ch = 2,       \
-    .count_ch = 3,           \
-},                           \
+#define PIT_CONFIG {             \
+    {                            \
+        .prescaler_ch = 0,       \
+        .count_ch = 1,           \
+    },                           \
+    {                            \
+        .prescaler_ch = 2,       \
+        .count_ch = 3,           \
+    },                           \
 }
 #define LPTMR_NUMOF             (1U)
-#define LPTMR_CONFIG { \
-{ \
-    .dev = LPTMR0, \
-    .irqn = LPTMR0_IRQn, \
-} \
+#define LPTMR_CONFIG {           \
+    {                            \
+        .dev = LPTMR0,           \
+        .irqn = LPTMR0_IRQn,     \
+    }                            \
 }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
 
@@ -108,14 +108,14 @@ static const uart_conf_t uart_config[] = {
  */
 static const adc_conf_t adc_config[] = {
     /* dev, pin, channel */
-    { ADC0, GPIO_UNDEF          ,  0 },
-    { ADC0, GPIO_UNDEF          ,  1 },
-    { ADC1, GPIO_UNDEF          ,  0 },
-    { ADC1, GPIO_UNDEF          ,  1 },
-    { ADC0, GPIO_PIN(PORT_B,  0),  8 },
-    { ADC0, GPIO_PIN(PORT_B,  1),  9 },
-    { ADC0, GPIO_PIN(PORT_C,  1), 15 },
-    { ADC0, GPIO_PIN(PORT_C,  2),  4 },
+    { .dev = ADC0, .pin = GPIO_UNDEF          , .chan =  0 }, /* ADC0_DP0 */
+    { .dev = ADC0, .pin = GPIO_UNDEF          , .chan = 19 }, /* ADC0_DM0 */
+    { .dev = ADC1, .pin = GPIO_UNDEF          , .chan =  0 }, /* ADC1_DP0 */
+    { .dev = ADC1, .pin = GPIO_UNDEF          , .chan = 19 }, /* ADC1_DM0 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  0), .chan =  8 }, /* PTB0 (Arduino A0) */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  1), .chan =  9 }, /* PTB1 (Arduino A1) */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  1), .chan = 15 }, /* PTC1 (Arduino A2) */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  2), .chan =  4 }, /* PTC2 (Arduino A3) */
 };
 
 #define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))

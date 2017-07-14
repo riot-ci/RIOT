@@ -9,11 +9,11 @@
  */
 
 /**
- * @ingroup     boards_frdm-k22f
+ * @ingroup     boards_frdm-k64f
  * @{
  *
  * @file
- * @brief       Board specific implementations for the FRDM-K64F
+ * @brief       Board specific implementations for the FRDM-K22F
  *
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  *

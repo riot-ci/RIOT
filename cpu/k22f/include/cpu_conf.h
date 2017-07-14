@@ -7,17 +7,16 @@
  */
 
 /**
- * @defgroup        cpu_k64f Freescale K64F MCU
+ * @defgroup        cpu_k22f NXP Kinetis K22F MCU
  * @ingroup         cpu
- * @brief           CPU specific implementations for the Freescale K64F
- *                  Kinetis Cortex-M4 MCU.
+ * @brief           CPU specific implementations for the NXP Kinetis K22F
+ *                  Cortex-M4 MCU.
  * @{
  *
  * @file
  * @brief           Implementation specific CPU configuration options
  *
- * @author          Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author          Johann Fischer <j.fischer@phytec.de>
+ * @author          Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
 #ifndef CPU_CONF_H
@@ -37,7 +36,7 @@ extern "C"
 #endif
 
 /**
- * @brief   ARM Cortex-M specific CPU configuration
+ * @name   ARM Cortex-M specific CPU configuration
  * @{
  */
 #define CPU_DEFAULT_IRQ_PRIO            (1U)
@@ -47,15 +46,15 @@ extern "C"
 
 /**
  * @name GPIO pin mux function numbers
+ * @{
  */
-/** @{ */
 #define PIN_MUX_FUNCTION_ANALOG 0
 #define PIN_MUX_FUNCTION_GPIO 1
 /** @} */
 /**
  * @name GPIO interrupt flank settings
+ * @{
  */
-/** @{ */
 #define PIN_INTERRUPT_RISING 0b1001
 #define PIN_INTERRUPT_FALLING 0b1010
 #define PIN_INTERRUPT_EDGE 0b1011
@@ -63,8 +62,8 @@ extern "C"
 
 /**
  * @name Timer hardware information
+ * @{
  */
-/** @{ */
 #define LPTMR_CLKEN()  (bit_set32(&SIM->SCGC5, SIM_SCGC5_LPTMR_SHIFT)) /**< Enable LPTMR0 clock gate */
 #define PIT_CLKEN()    (bit_set32(&SIM->SCGC6, SIM_SCGC6_PIT_SHIFT)) /**< Enable PIT clock gate */
 /** @} */
