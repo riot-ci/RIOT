@@ -365,6 +365,7 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
 
         case NETOPT_CHANNEL:
             assert(len <= sizeof(uint32_t));
+            sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
             sx127x_set_channel(dev, *((uint32_t*) val));
             return sizeof(uint32_t);
 
