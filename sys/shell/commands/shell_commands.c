@@ -136,6 +136,11 @@ extern int _ls_handler(int argc, char **argv);
 extern int _can_handler(int argc, char **argv);
 #endif
 
+#ifdef MODULE_SX127X
+extern int _sx127x_config(int argc, char** argv);
+extern int _sx127x_lora(int argc, char** argv);
+#endif
+
 const shell_command_t _shell_command_list[] = {
     {"reboot", "Reboot the node", _reboot_handler},
 #ifdef MODULE_CONFIG
@@ -183,11 +188,16 @@ const shell_command_t _shell_command_list[] = {
     {"lspci", "Lists PCI devices", _x86_lspci},
 #endif
 #ifdef MODULE_GNRC_NETIF
+#ifdef MODULE_SX127X
+    {"ifconfig", "Configure SX1272/SX1276 interfaces", _sx127x_config },
+    {"lora", "Send/receive messages from LoRa radio", _sx127x_lora },
+#else
     {"ifconfig", "Configure network interfaces", _netif_config},
 #ifdef MODULE_GNRC_TXTSND
     {"txtsnd", "Sends a custom string as is over the link layer", _netif_send },
-#endif
-#endif
+#endif /* MODULE_GNRC_TXTSND */
+#endif /* MODULE_SX127X */
+#endif /* MODULE_GNRC_NETIF */
 #ifdef MODULE_FIB
     {"fibroute", "Manipulate the FIB (info: 'fibroute [add|del]')", _fib_route_handler},
 #endif
