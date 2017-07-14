@@ -1,7 +1,6 @@
 # define the cpu used by the FRDM-K64F board
 export CPU = k64f
 export CPU_MODEL = mk64fn1m0vll12
-export CPU_FAMILY = kx
 
 # Include default FRDM board config
 include $(RIOTBOARD)/frdm-common/Makefile.include
