@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Fundacion Inria Chile
+ * Copyright (C) 2017 Inria Chile
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -89,4 +89,9 @@
  #endif
  };
 
+ #ifdef __cplusplus
+ }
  #endif
+
+ #endif /* SX127X_PARAMS_H */
+ /** @} */
