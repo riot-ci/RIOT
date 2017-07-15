@@ -230,7 +230,7 @@ size_t fmt_s16_dfp(char *out, int16_t val, unsigned fp_digits)
         val = -val;
     }
 
-    e = pwr(10, fp_digits);
+    e = _tenmap[fp_digits];
     absolute = (val / (int)e);
     divider = val - (absolute * e);
 
