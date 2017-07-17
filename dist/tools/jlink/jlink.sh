@@ -84,6 +84,10 @@ test_config() {
         echo "Error: No target device defined in JLINK_DEVICE env var"
         exit 1
     fi
+    if [ -z "${FLASH_ADDR}" ]; then
+        echo "Error: No flash address defined in FLASH_ADDR env var"
+        exit 1
+    fi
 }
 
 test_hexfile() {
