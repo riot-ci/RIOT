@@ -68,7 +68,7 @@ ifneq (,$(filter conn_can,$(USEMODULE)))
   SRC += sc_can.c
 endif
 ifneq (,$(filter sx127x,$(USEMODULE)))
-  SRC += sc_sx127x.c
+  SRC += sc_lora.c
 endif
 
 # TODO
