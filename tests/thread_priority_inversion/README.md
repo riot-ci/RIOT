@@ -5,10 +5,8 @@ priority inversion problem. In theory, the highest priority thread (**t_high**)
 should periodically and produce some output:
 ```
 2017-07-17 17:00:29,337 - INFO # t_high: got resource.
-2017-07-17 17:00:29,337 - INFO #
 ...
 2017-07-17 17:00:30,343 - INFO # t_high: freeing resource...
-2017-07-17 17:00:30,343 - INFO #
 ```
 During this phase of 1s, **t_high** lockes the mutex **res_mtx** which
 represents a shared ressource. After unlocking the mutex, **t_high** waits 1s
@@ -21,23 +19,14 @@ is unlocked. On startup, **t_low** starts immediately, while **t_high** waits
 looks like this:
 ```
 2017-07-17 17:00:28,339 - INFO # t_low: allocating resource...
-2017-07-17 17:00:28,339 - INFO #
 2017-07-17 17:00:28,339 - INFO # t_low: got resource.
-2017-07-17 17:00:28,340 - INFO #
 2017-07-17 17:00:28,340 - INFO # t_high: allocating resource...
-2017-07-17 17:00:28,341 - INFO #
 2017-07-17 17:00:29,337 - INFO # t_low: freeing resource...
-2017-07-17 17:00:29,337 - INFO #
 2017-07-17 17:00:29,337 - INFO # t_high: got resource.
-2017-07-17 17:00:29,337 - INFO #
 2017-07-17 17:00:29,338 - INFO # t_low: freed resource.
-2017-07-17 17:00:29,338 - INFO #
 2017-07-17 17:00:30,343 - INFO # t_high: freeing resource...
-2017-07-17 17:00:30,343 - INFO #
 2017-07-17 17:00:30,344 - INFO # t_high: freed resource.
-2017-07-17 17:00:30,344 - INFO #
 2017-07-17 17:00:30,345 - INFO # t_low: allocating resource...
-2017-07-17 17:00:30,345 - INFO #
 2017-07-17 17:00:30,346 - INFO # t_low: got resource.
 ...
 ```
@@ -49,9 +38,7 @@ resource and thus, **t_high** from running (**Priority Inversion**). In this
 situation, the test program output stops with the following lines:
 ```
 2017-07-17 17:00:31,335 - INFO # t_mid: doing some stupid stuff...
-2017-07-17 17:00:31,335 - INFO #
 2017-07-17 17:00:31,340 - INFO # t_high: allocating resource...
-2017-07-17 17:00:31,341 - INFO #
 ```
 
 If the scheduler contains a mechanism for handling this problem, the program

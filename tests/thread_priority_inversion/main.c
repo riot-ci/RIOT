@@ -37,14 +37,14 @@ void *t_low_handler(void *arg)
 {
     /* starting working loop immediately */
 	while(1){
-		puts("t_low: allocating resource...\n");
+		puts("t_low: allocating resource...");
 		mutex_lock(&res_mtx);
-		puts("t_low: got resource.\n");
+		puts("t_low: got resource.");
 		xtimer_sleep(1);
 
-		puts("t_low: freeing resource...\n");
+		puts("t_low: freeing resource...");
 		mutex_unlock(&res_mtx);
-		puts("t_low: freed resource.\n");
+		puts("t_low: freed resource.");
 		xtimer_sleep(1);
 	}
 	return NULL;
@@ -55,7 +55,7 @@ void *t_mid_handler(void *arg)
     /* starting working loop after 3s */
 	xtimer_sleep(3);
 
-	puts("t_mid: doing some stupid stuff...\n");
+	puts("t_mid: doing some stupid stuff...");
 	while(1){
 		thread_yield_higher();
 	}
@@ -66,14 +66,14 @@ void *t_high_handler(void *arg)
     /* starting working loop after 500 ms */
 	xtimer_usleep(500);
 	while(1){
-		puts("t_high: allocating resource...\n");
+		puts("t_high: allocating resource...");
 		mutex_lock(&res_mtx);
-		puts("t_high: got resource.\n");
+		puts("t_high: got resource.");
 		xtimer_sleep(1);
 
-		puts("t_high: freeing resource...\n");
+		puts("t_high: freeing resource...");
 		mutex_unlock(&res_mtx);
-		puts("t_high: freed resource.\n");
+		puts("t_high: freed resource.");
 		xtimer_sleep(1);
 	}
 	return NULL;
