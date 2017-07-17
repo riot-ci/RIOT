@@ -21,7 +21,7 @@
 
 #include "log.h"
 #include "board.h"
-#include "net/gnrc/netdev/sx127x_adpt.h"
+#include "net/gnrc/netdev/lora_adpt.h"
 #include "sx127x_params.h"
 
 /**
@@ -54,7 +54,7 @@ void auto_init_sx127x(void)
 #endif
 
         sx127x_setup(&sx127x_devs[i], &sx127x_params[i]);
-        gnrc_netdev_sx127x_init(&gnrc_adpt[i], &sx127x_devs[i]);
+        gnrc_netdev_lora_init(&gnrc_adpt[i], (netdev_t *)&sx127x_devs[i]);
         gnrc_netdev_init(stacks[i], SX127X_STACKSIZE, SX127X_PRIO, "sx127x",
                          &gnrc_adpt[i]);
     }
