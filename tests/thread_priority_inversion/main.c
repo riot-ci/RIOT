@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief Thread test application for priority inversion problem
+ * @brief       Thread test application for priority inversion problem
  *
  * @author      Thomas Geithner <thomas.geithner@dai-labor.de>
  *
@@ -37,14 +37,14 @@ void *t_low_handler(void *arg)
 {
     /* starting working loop immediately */
 	while(1){
-		printf("t_low: allocating resource...\n");
+		puts("t_low: allocating resource...\n");
 		mutex_lock(&res_mtx);
-		printf("t_low: got resource.\n");
+		puts("t_low: got resource.\n");
 		xtimer_sleep(1);
 
-		printf("t_low: freeing resource...\n");
+		puts("t_low: freeing resource...\n");
 		mutex_unlock(&res_mtx);
-		printf("t_low: freed resource.\n");
+		puts("t_low: freed resource.\n");
 		xtimer_sleep(1);
 	}
 	return NULL;
@@ -55,7 +55,7 @@ void *t_mid_handler(void *arg)
     /* starting working loop after 3s */
 	xtimer_sleep(3);
 
-	printf("t_mid: doing some stupid stuff...\n");
+	puts("t_mid: doing some stupid stuff...\n");
 	while(1){
 		thread_yield_higher();
 	}
@@ -66,14 +66,14 @@ void *t_high_handler(void *arg)
     /* starting working loop after 500 ms */
 	xtimer_usleep(500);
 	while(1){
-		printf("t_high: allocating resource...\n");
+		puts("t_high: allocating resource...\n");
 		mutex_lock(&res_mtx);
-		printf("t_high: got resource.\n");
+		puts("t_high: got resource.\n");
 		xtimer_sleep(1);
 
-		printf("t_high: freeing resource...\n");
+		puts("t_high: freeing resource...\n");
 		mutex_unlock(&res_mtx);
-		printf("t_high: freed resource.\n");
+		puts("t_high: freed resource.\n");
 		xtimer_sleep(1);
 	}
 	return NULL;
