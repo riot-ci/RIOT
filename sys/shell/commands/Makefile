@@ -67,6 +67,9 @@ endif
 ifneq (,$(filter conn_can,$(USEMODULE)))
   SRC += sc_can.c
 endif
+ifneq (,$(filter sx127x,$(USEMODULE)))
+  SRC += sc_lora.c
+endif
 
 # TODO
 # Conditional building not possible at the moment due to
