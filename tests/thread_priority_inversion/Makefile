@@ -1,5 +1,5 @@
 # name of your application
-APPLICATION = Scheduling-Test
+APPLICATION = thread_priority_inversion
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
@@ -16,9 +16,6 @@ CFLAGS += -DDEVELHELP
 QUIET ?= 1
 
 # Modules to include:
-USEMODULE += shell
-USEMODULE += shell_commands
-USEMODULE += ps
 USEMODULE += xtimer
 
 include $(RIOTBASE)/Makefile.include
