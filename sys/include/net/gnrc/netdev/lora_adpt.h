@@ -11,15 +11,14 @@
  * @{
  *
  * @file
- * @brief       GNRC to SX1272/SX1276 netdev glue code interface
+ * @brief       GNRC to LoRa netdev glue code interface
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef NET_GNRC_NETDEV_SX127X_ADPT_H
-#define NET_GNRC_NETDEV_SX127X_ADPT_H
+#ifndef NET_GNRC_NETDEV_LORA_ADPT_H
+#define NET_GNRC_NETDEV_LORA_ADPT_H
 
-#include "sx127x.h"
 #include "net/gnrc/netdev.h"
 
 
@@ -28,16 +27,16 @@ extern "C" {
 #endif
 
 /**
- * @brief   Initialize GNRC handler for netdev SX1272/SX1276 devices
+ * @brief   Initialize GNRC handler for netdev LoRa devices
  *
  * @param[out] gnrc_netdev     gnrc_netdev struct to initialize
- * @param[in]  dev             SX1272/SX1276 device to handle
+ * @param[in]  dev             netdev device to handle
  */
-void gnrc_netdev_sx127x_init(gnrc_netdev_t *gnrc_netdev, sx127x_t *dev);
+void gnrc_netdev_lora_init(gnrc_netdev_t *gnrc_netdev, netdev_t *dev);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* NET_GNRC_NETDEV_SX127X_ADPT_H */
+#endif /* NET_GNRC_NETDEV_LORA_ADPT_H */
 /** @} */
