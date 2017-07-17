@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       GNRC to netdev adapter for SX1276/SX1272 LoRa devices
+ * @brief       GNRC to netdev adapter for LoRa devices
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
@@ -20,12 +20,12 @@
 
 #include "assert.h"
 #include "net/gnrc.h"
-#include "net/gnrc/netdev/sx127x_adpt.h"
+#include "net/gnrc/netdev/lora_adpt.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-static gnrc_pktsnip_t *sx127x_adpt_recv(gnrc_netdev_t *gnrc_netdev)
+static gnrc_pktsnip_t *lora_adpt_recv(gnrc_netdev_t *gnrc_netdev)
 {
     netdev_t *dev = gnrc_netdev->dev;
     int pktlen;
@@ -55,7 +55,7 @@ static gnrc_pktsnip_t *sx127x_adpt_recv(gnrc_netdev_t *gnrc_netdev)
     return payload;
 }
 
-static int sx127x_adpt_send(gnrc_netdev_t *dev, gnrc_pktsnip_t *pkt)
+static int lora_adpt_send(gnrc_netdev_t *dev, gnrc_pktsnip_t *pkt)
 {
     int res = 0;
     size_t size;
@@ -91,11 +91,11 @@ static int sx127x_adpt_send(gnrc_netdev_t *dev, gnrc_pktsnip_t *pkt)
     return res;
 }
 
-void gnrc_netdev_sx127x_init(gnrc_netdev_t *gnrc_netdev, sx127x_t *dev)
+void gnrc_netdev_lora_init(gnrc_netdev_t *gnrc_netdev, netdev_t *dev)
 {
     assert(gnrc_netdev && dev);
 
-    gnrc_netdev->send = sx127x_adpt_send;
-    gnrc_netdev->recv = sx127x_adpt_recv;
-    gnrc_netdev->dev = (netdev_t *)dev;
+    gnrc_netdev->send = lora_adpt_send;
+    gnrc_netdev->recv = lora_adpt_recv;
+    gnrc_netdev->dev = dev;
 }
