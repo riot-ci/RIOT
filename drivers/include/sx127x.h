@@ -119,6 +119,19 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    SX127X SPI bus default configuration
+ * @{
+ */
+#ifndef SX127X_PARAM_SPI_SPEED
+#define SX127X_PARAM_SPI_SPEED              (SPI_CLK_1MHZ)
+#endif
+
+#ifndef SX127X_PARAM_SPI_MODE
+#define SX127X_PARAM_SPI_MODE               (SPI_MODE_0)
+#endif
+/** @} */
+
+/**
  * @brief   SX127X initialization result.
  */
 enum {
