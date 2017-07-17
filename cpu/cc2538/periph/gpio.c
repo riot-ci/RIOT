@@ -184,3 +184,36 @@ void isr_gpiod(void)
 {
     handle_isr(GPIO_D, 3);
 }
+
+/* CC2538 specific add-on GPIO functions */
+
+uint8_t gpio_init_af(gpio_t pin, int sel, int over)
+{
+    uint8_t pp = gpio_pp_num(pin);
+
+    if (over >= 0) {
+        IOC_PXX_OVER[pp] = over;
+    }
+    if(sel >= 0) {
+        IOC_PXX_SEL[pp] = sel;
+    }
+    /* enable alternative function mode */
+    gpio(pin)->AFSEL |= gpio_pin_mask(pin);
+
+    return pp;
+}
+
+void gpio_assert(gpio_t pin)
+{
+    gpio_clear(pin);
+    IOC_PXX_OVER[gpio_pp_num(pin)] |= IOC_OVERRIDE_OE;
+    gpio_init(pin, GPIO_OUT);
+    gpio_sw_ctrl(pin);
+}
+
+void gpio_release(gpio_t pin)
+{
+    IOC_PXX_OVER[gpio_pp_num(pin)] &= ~(IOC_OVERRIDE_OE | IOC_OVERRIDE_PDE);
+    gpio_init(pin, GPIO_IN);
+    gpio_sw_ctrl(pin);
+}
