@@ -10,7 +10,8 @@ BOARD_BLACKLIST += mips-malta
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc
 USEMODULE += gnrc_pktdump
-USEMODULE += gnrc_slip
+USEMODULE += gnrc_netdev
+USEMODULE += slipdev
 USEMODULE += shell
 USEMODULE += shell_commands
 
