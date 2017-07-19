@@ -184,8 +184,10 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
 static void _isr(netdev_t *netdev)
 {
+    DEBUG("slipdev: handling ISR event\n");
     if (netdev->event_callback != NULL) {
-        netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
+        DEBUG("slipdev: event handler set, issuing RX_COMPLETE event\n");
+        netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
     }
 }
 
