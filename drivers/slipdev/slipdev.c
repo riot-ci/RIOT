@@ -161,7 +161,15 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         return -EFAULT;
     }
     if (buf == NULL) {
-        res = dev->pktfifo[idx];
+        if (len > 0) {
+            /* drop packet */
+            cib_get(&dev->pktfifo_idx);
+            /* and remove data */
+            res = ringbuffer_remove(&dev->inbuf, len);
+        }
+        else {
+            res = dev->pktfifo[idx];
+        }
     }
     else if (len < dev->pktfifo[idx]) {
         res = -ENOBUFS;
