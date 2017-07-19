@@ -58,9 +58,8 @@ static gnrc_pktsnip_t *_recv(gnrc_netdev_t *gnrc_netdev)
                 break;
 #endif
             default:
-                DEBUG("gnrc_netdev_raw: unknown packet type");
-                gnrc_pktbuf_release(pkt);
-                return NULL;
+                /* leave UNDEF */
+                break;
         }
     }
     return pkt;
@@ -74,7 +73,7 @@ static int _send(gnrc_netdev_t *gnrc_netdev, gnrc_pktsnip_t *pkt)
 
     if (pkt->type == GNRC_NETTYPE_NETIF) {
         /* we don't need the netif snip: remove it */
-        gnrc_pktbuf_remove_snip(pkt, pkt);
+        pkt = gnrc_pktbuf_remove_snip(pkt, pkt);
     }
     vector = gnrc_pktbuf_get_iovec(pkt, &n);
     if (vector != NULL) {

@@ -17,11 +17,12 @@
  * @author  Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifdef MODULE_GNRC_SLIP
+#ifdef MODULE_SLIPDEV
 
 #include "log.h"
 #include "board.h"
 #include "net/gnrc/netdev.h"
+#include "net/gnrc/netdev/raw.h"
 #include "net/gnrc.h"
 
 #include "slipdev.h"
@@ -39,7 +40,7 @@
 #endif
 
 static slipdev_t slipdevs[SLIPDEV_NUM];
-static gnrc_netdev_t gnrc_adpt[AT86RF2XX_NUM];
+static gnrc_netdev_t gnrc_adpt[SLIPDEV_NUM];
 static char _slipdev_stacks[SLIPDEV_NUM][SLIPDEV_STACKSIZE];
 
 void auto_init_slipdev(void)
@@ -50,7 +51,8 @@ void auto_init_slipdev(void)
         LOG_DEBUG("[auto_init_netif] initializing slip #%u\n", i);
 
         slipdev_setup(&slipdevs[i], p);
-        kernel_pid_t res = gnrc_netdev_raw_init(&gnrc_adpt[i], (netdev_t *)&slipdevs[i])
+        kernel_pid_t res = gnrc_netdev_raw_init(&gnrc_adpt[i],
+                                                (netdev_t *)&slipdevs[i]);
 
         if (res < 0) {
             LOG_ERROR("[auto_init_netif] error initializing slipdev #%u\n", i);
@@ -63,5 +65,5 @@ void auto_init_slipdev(void)
 }
 #else
 typedef int dont_be_pedantic;
-#endif /* MODULE_GNRC_SLIP */
+#endif /* MODULE_SLIPDEV */
 /** @} */

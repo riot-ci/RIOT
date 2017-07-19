@@ -11,6 +11,7 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc
 USEMODULE += gnrc_pktdump
 USEMODULE += gnrc_netdev
+USEMODULE += gnrc_txtsnd
 USEMODULE += slipdev
 USEMODULE += shell
 USEMODULE += shell_commands
