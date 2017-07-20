@@ -179,10 +179,9 @@ static const shell_command_t shell_commands[] = {
 
 void setup(void)
 {
-    puts("Arduino GPIO peripheral driver test\n");
-    puts("In this test, pins are specified by integer port and pin numbers.\n"
-         "So if your platform has a pin PA01, it will be port=0 and pin=1,\n"
-         "PC14 would be port=2 and pin=14 etc.\n\n"
+    puts("Arduino GPIO peripheral driver test\n"
+         "In this test, pins are specified by integer pin numbers.\n"
+         "It uses a single integer to indicate the arduino digital pin.\n"
          "NOTE: make sure the values you use exist on your platform! The\n"
          "      behavior for not existing ports/pins is not defined!");
 
