@@ -43,28 +43,35 @@
  */
 static mutex_t locks[SPI_NUMOF];
 
+/**
+ * @brief   Return pointer to SPI device (SSI0|1)
+ *
+ * @param[in] bus   SPI bus
+ */
 static inline cc2538_ssi_t *dev(spi_t bus)
 {
-    return spi_config[bus].dev;
+    assert(spi_config[bus].num < SPI_NUMOF);
+
+    return ((spi_config[bus].num) ? SSI1 : SSI0);
 }
 
 static inline void poweron(spi_t bus)
 {
-    SYS_CTRL_RCGCSSI |= (1 << bus);
-    SYS_CTRL_SCGCSSI |= (1 << bus);
-    SYS_CTRL_DCGCSSI |= (1 << bus);
+    SYS_CTRL_RCGCSSI |= (1 << spi_config[bus].num);
+    SYS_CTRL_SCGCSSI |= (1 << spi_config[bus].num);
+    SYS_CTRL_DCGCSSI |= (1 << spi_config[bus].num);
 }
 
 static inline void poweroff(spi_t bus)
 {
-    SYS_CTRL_RCGCSSI &= ~(1 << bus);
-    SYS_CTRL_SCGCSSI &= ~(1 << bus);
-    SYS_CTRL_DCGCSSI &= ~(1 << bus);
+    SYS_CTRL_RCGCSSI &= ~(1 << spi_config[bus].num);
+    SYS_CTRL_SCGCSSI &= ~(1 << spi_config[bus].num);
+    SYS_CTRL_DCGCSSI &= ~(1 << spi_config[bus].num);
 }
 
 void spi_init(spi_t bus)
 {
-    assert(bus <= SPI_NUMOF);
+    assert(bus < SPI_NUMOF);
 
     /* temporarily power on the device */
     poweron(bus);
@@ -81,21 +88,36 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
-    switch ((uintptr_t)spi_config[bus].dev) {
-        case (uintptr_t)SSI0:
-            gpio_init_af(SPI_MOSI, SSI0_TXD, IOC_OVERRIDE_OE);
-            gpio_init_af(SPI_SCK, SSI0_CLKOUT, IOC_OVERRIDE_OE);
-            gpio_init_af(SPI_CS, SSI0_FSSOUT, IOC_OVERRIDE_OE);
-            IOC_SSIRXD_SSI0 = gpio_init_af(SPI_MISO, 0, IOC_OVERRIDE_DIS);
-            break;
+    assert(bus < SPI_NUMOF);
 
-        case (uintptr_t)SSI1:
-            gpio_init_af(SPI_MOSI, SSI1_TXD, IOC_OVERRIDE_OE);
-            gpio_init_af(SPI_SCK, SSI1_CLKOUT, IOC_OVERRIDE_OE);
-            gpio_init_af(SPI_CS, SSI1_FSSOUT, IOC_OVERRIDE_OE);
-            IOC_SSIRXD_SSI1 = gpio_init_af(SPI_MISO, 0, IOC_OVERRIDE_DIS);
-            break;
+    if (spi_config[bus].num == 0) {
+        gpio_init_af(SPI_MOSI, SSI0_TXD, IOC_OVERRIDE_OE);
+        gpio_init_af(SPI_SCK, SSI0_CLKOUT, IOC_OVERRIDE_OE);
+        gpio_init_af(SPI_MISO, -1, IOC_OVERRIDE_DIS);
+        IOC_SSIRXD_SSI0 = gpio_pp_num(SPI_MISO);
     }
+    else {
+        gpio_init_af(SPI_MOSI, SSI1_TXD, IOC_OVERRIDE_OE);
+        gpio_init_af(SPI_SCK, SSI1_CLKOUT, IOC_OVERRIDE_OE);
+        gpio_init_af(SPI_MISO, -1, IOC_OVERRIDE_DIS);
+        IOC_SSIRXD_SSI1 = gpio_pp_num(SPI_MISO);
+    }
+}
+
+int spi_init_cs(spi_t bus, spi_cs_t cs)
+{
+    if (bus >= SPI_NUMOF) {
+        return SPI_NODEV;
+    }
+    if ((cs == SPI_CS_UNDEF) || (cs == GPIO_UNDEF)) {
+        return SPI_NOCS;
+    }
+
+    int fssout = (spi_config[bus].num) ? SSI1_FSSOUT: SSI0_FSSOUT;
+
+    gpio_init_af(cs, fssout, IOC_OVERRIDE_OE);
+
+    return SPI_OK;
 }
 
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)

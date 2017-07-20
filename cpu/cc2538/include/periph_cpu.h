@@ -168,7 +168,6 @@ typedef struct {
  * @brief declare needed generic SPI functions
  * @{
  */
-#define PERIPH_SPI_NEEDS_INIT_CS
 #define PERIPH_SPI_NEEDS_TRANSFER_BYTE
 #define PERIPH_SPI_NEEDS_TRANSFER_REG
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
@@ -229,7 +228,7 @@ typedef struct {
  * @{
  */
 typedef struct {
-    cc2538_ssi_t *dev;      /**< SSI device */
+    uint8_t num;            /**< SSI device number [0,1] */
     gpio_t mosi_pin;        /**< pin used for MOSI */
     gpio_t miso_pin;        /**< pin used for MISO */
     gpio_t sck_pin;         /**< pin used for SCK */
