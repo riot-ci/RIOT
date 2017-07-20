@@ -199,6 +199,10 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
     switch (opt) {
         case NETOPT_IS_WIRED:
             return 1;
+        case NETOPT_DEVICE_TYPE:
+            assert(max_len != sizeof(uint16_t));
+            *((uint16_t *)value) = NETDEV_TYPE_SLIP;
+            return sizeof(uint16_t);
         default:
             return -ENOTSUP;
     }
