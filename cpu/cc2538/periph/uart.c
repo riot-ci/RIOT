@@ -194,7 +194,7 @@ static int init_base(uart_t uart, uint32_t baudrate)
         case UART_0:
             u = UART_0_DEV;
 
-            IOC_UARTRXD_UART0 = gpio_init_af(UART_0_RX_PIN, 0, 0);
+            IOC_UARTRXD_UART0 = gpio_pp_num(UART_0_RX_PIN);
             gpio_init_af(UART_0_TX_PIN, UART0_TXD, IOC_OVERRIDE_OE);
             break;
 #endif
@@ -202,7 +202,7 @@ static int init_base(uart_t uart, uint32_t baudrate)
         case UART_1:
             u = UART_1_DEV;
 
-            IOC_UARTRXD_UART1 = gpio_init_af(UART_1_RX_PIN, 0, 0);
+            IOC_UARTRXD_UART1 = gpio_pp_num(UART_1_RX_PIN);
             gpio_init_af(UART_1_TX_PIN, UART1_TXD, IOC_OVERRIDE_OE);
             break;
 #endif
@@ -233,7 +233,8 @@ static int init_base(uart_t uart, uint32_t baudrate)
 #endif
 
 #ifdef UART_1_CTS_PIN
-        IOC_UARTCTS_UART1 = gpio_init_af(UART_1_CTS_PIN, 0, IOC_OVERRIDE_DIS);
+        gpio_init_af(UART_1_CTS_PIN, -1, IOC_OVERRIDE_DIS);
+        IOC_UARTCTS_UART1 = gpio_pp_num(UART_1_CTS_PIN);
         u->cc2538_uart_ctl.CTLbits.CTSEN = 1;
 #endif
     }
