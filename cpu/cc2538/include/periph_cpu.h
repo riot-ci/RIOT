@@ -127,35 +127,15 @@ static inline uint8_t gpio_pp_num(gpio_t pin)
 }
 
 /**
- * @brief   Helper function to enable gpio hardware control
- *
- * @param[in] pin   gpio pin
- */
-static inline void gpio_hw_ctrl(gpio_t pin)
-{
-    gpio(pin)->AFSEL |= gpio_pin_mask(pin);
-}
-
-/**
- * @brief   Helper function to enable gpio software control
- *
- * @param[in] pin   gpio pin
- */
-static inline void gpio_sw_ctrl(gpio_t pin)
-{
-    gpio(pin)->AFSEL &= ~gpio_pin_mask(pin);
-}
-
-/**
  * @brief Alternative GPIO init function
  *
  * @param[in] pin   gpio pin
  * @param[in] sel   Setting for IOC select register, (-1) to ignore
  * @param[in] over  Setting for IOC override register, (-1) to ignore
  *
- * @return          Internal port-pin number of given GPIO
+ * @return          0 on success, otherwise error
  */
-uint8_t gpio_init_af(gpio_t pin, int sel, int over);
+int gpio_init_af(gpio_t pin, int sel, int over);
 
 /**
  * @brief   Assert GPIO
