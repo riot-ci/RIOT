@@ -89,14 +89,14 @@ static const spi_clk_conf_t spi_clk_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev      = SSI0,
+        .num      = 0,
         .mosi_pin = GPIO_PIN(1, 1),     /**< GPIO_PB1 */
         .miso_pin = GPIO_PIN(1, 3),     /**< GPIO_PB3 */
         .sck_pin  = GPIO_PIN(1, 2),     /**< GPIO_PB2 */
         .cs_pin   = GPIO_PIN(1, 5)      /**< GPIO_PB5 */
     },
     {
-        .dev      = SSI1,
+        .num      = 1,
         .mosi_pin = GPIO_PIN(2, 5),     /**< GPIO_PC5 */
         .miso_pin = GPIO_PIN(2, 6),     /**< GPIO_PC6 */
         .sck_pin  = GPIO_PIN(2, 4),     /**< GPIO_PC4 */
