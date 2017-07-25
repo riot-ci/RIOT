@@ -635,6 +635,7 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code,
 
     pdu->hdr = (coap_hdr_t *)buf;
     memset(pdu->url, 0, NANOCOAP_URL_MAX);
+    memset(pdu->qs, 0, NANOCOAP_QS_MAX);
 
     /* generate token */
 #if GCOAP_TOKENLEN
