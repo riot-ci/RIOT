@@ -86,6 +86,9 @@ ssize_t gnrc_sock_recv(gnrc_sock_reg_t *reg, gnrc_pktsnip_t **pkt_out,
             if (msg.content.value == _TIMEOUT_MAGIC) {
                 return -ETIMEDOUT;
             }
+            /* Attribute instead of "Falls Through.", because 
+             * comments don't work in #ifdef */
+            __attribute__((fallthrough));
 #endif
         default:
             return -EINTR;
