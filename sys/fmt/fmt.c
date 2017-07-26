@@ -243,6 +243,51 @@ size_t fmt_s16_dfp(char *out, int16_t val, unsigned fp_digits)
     return pos;
 }
 
+size_t fmt_s32_dfp(char *out, int32_t val, unsigned fp_digits)
+{
+    int32_t absolute, divider;
+    size_t pos = 0;
+    size_t div_len, len;
+    unsigned e;
+    char tmp[9];
+
+    if (fp_digits > 9) {
+        return 0;
+    }
+    if (fp_digits == 0) {
+        return fmt_s32_dec(out, val);
+    }
+    if (val < 0) {
+        if (out) {
+            out[pos++] = '-';
+        }
+        val *= -1;
+    }
+
+    e = pwr(10, fp_digits);
+    absolute = (val / (int)e);
+    divider = val - (absolute * e);
+
+    pos += fmt_s32_dec(&out[pos], absolute);
+
+    if (!out) {
+        return pos + 1 + fp_digits;     /* abs len + decimal point + divider */
+    }
+
+    out[pos++] = '.';
+    len = pos + fp_digits;
+    div_len = fmt_s32_dec(tmp, divider);
+
+    while (pos < (len - div_len)) {
+        out[pos++] = '0';
+    }
+    for (size_t i = 0; i < div_len; i++) {
+        out[pos++] = tmp[i];
+    }
+
+    return pos;
+}
+
 static const uint32_t _tenmap[] = {
     0,
     10LU,
