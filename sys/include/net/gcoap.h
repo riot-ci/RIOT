@@ -242,9 +242,9 @@ extern "C" {
  * @brief   Size of the buffer used to write options, other than Uri-Path, in a
  *          request
  *
- * Accommodates Content-Format.
+ * Accommodates Content-Format and Uri-Queries
  */
-#define GCOAP_REQ_OPTIONS_BUF   (8)
+#define GCOAP_REQ_OPTIONS_BUF   (48)
 
 /**
  * @brief   Size of the buffer used to write options in a response
