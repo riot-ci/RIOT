@@ -826,6 +826,7 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
                 out += (i) ? 3 : 2;
                 out += path_len;
             }
+            ++resource;
         }
 
         listener = listener->next;
