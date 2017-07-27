@@ -88,11 +88,18 @@
 #include "net/gcoap.h"
 #endif
 
+#ifdef FEATURE_PERIPH_HWRNG
+#include "periph/hwrng.h"
+#endif
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
 void auto_init(void)
 {
+#ifdef FEATURE_PERIPH_HWRNG
+    hwrng_init();
+#endif
 #ifdef MODULE_TINYMT32
     random_init(0);
 #endif

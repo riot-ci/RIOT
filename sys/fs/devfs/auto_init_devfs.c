@@ -30,8 +30,21 @@ static vfs_mount_t _devfs_auto_init_mount = {
     .mount_point = "/dev",
 };
 
+#ifdef FEATURE_PERIPH_HWRNG
+#include "periph/hwrng.h"
+
+static devfs_t random_devfs = {
+    .path = "/urandom",
+    .f_op = &hwrng_vfs_ops,
+};
+#endif
+
 void auto_init_devfs(void)
 {
     DEBUG("auto_init_devfs: mounting /dev\n");
     vfs_mount(&_devfs_auto_init_mount);
+
+#ifdef FEATURE_PERIPH_HWRNG
+    devfs_register(&random_devfs);
+#endif
 }

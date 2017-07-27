@@ -32,6 +32,9 @@
 #define PERIPH_HWRNG_H
 
 #include <stdint.h>
+#if MODULE_VFS
+#include "vfs.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,6 +61,13 @@ void hwrng_init(void);
  * @param[in] num   number of bytes to get from device
  */
 void hwrng_read(void *buf, unsigned int num);
+
+#if defined(MODULE_VFS) || defined(DOXYGEN)
+/**
+ * @brief urandom driver for vfs
+ */
+extern const vfs_file_ops_t hwrng_vfs_ops;
+#endif
 
 #ifdef __cplusplus
 }
