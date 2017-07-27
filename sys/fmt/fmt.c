@@ -35,6 +35,17 @@ ssize_t write(int fildes, const void *buf, size_t nbyte);
 
 static const char _hex_chars[16] = "0123456789ABCDEF";
 
+static const uint32_t _tenmap[] = {
+    0,
+    10LU,
+    100LU,
+    1000LU,
+    10000LU,
+    100000LU,
+    1000000LU,
+    10000000LU,
+};
+
 static inline int _is_digit(char c)
 {
     return (c >= '0' && c <= '9');
@@ -261,11 +272,11 @@ size_t fmt_s32_dfp(char *out, int32_t val, unsigned fp_digits)
         if (out) {
             out[pos++] = '-';
         }
-        val *= -1;
+        val = -val;
     }
 
-    e = pwr(10, fp_digits);
-    absolute = (val / (int)e);
+    e = _tenmap[fp_digits];
+    absolute = (val / e);
     divider = val - (absolute * e);
 
     pos += fmt_s32_dec(&out[pos], absolute);
@@ -287,17 +298,6 @@ size_t fmt_s32_dfp(char *out, int32_t val, unsigned fp_digits)
 
     return pos;
 }
-
-static const uint32_t _tenmap[] = {
-    0,
-    10LU,
-    100LU,
-    1000LU,
-    10000LU,
-    100000LU,
-    1000000LU,
-    10000000LU,
-};
 
 /* this is very probably not the most efficient implementation, as it at least
  * pulls in floating point math.  But it works, and it's always nice to have
