@@ -15,7 +15,11 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+#ifdef MODULE_GNRC_NETIF2
+#include "net/gnrc/netif2.h"
+#else
 #include "net/gnrc/netif.h"
+#endif
 #include "net/gnrc/netif/hdr.h"
 
 void gnrc_netif_hdr_print(gnrc_netif_hdr_t *hdr)
@@ -43,20 +47,32 @@ void gnrc_netif_hdr_print(gnrc_netif_hdr_t *hdr)
 
 
     if (hdr->src_l2addr_len > 0) {
+#ifdef MODULE_GNRC_NETIF2
+        printf("src_l2addr: %s\n",
+               gnrc_netif2_addr_to_str(gnrc_netif_hdr_get_src_addr(hdr),
+                                       hdr->src_l2addr_len, addr_str));
+#else
         printf("src_l2addr: %s\n",
                gnrc_netif_addr_to_str(addr_str, sizeof(addr_str),
                                       gnrc_netif_hdr_get_src_addr(hdr),
                                       (size_t)hdr->src_l2addr_len));
+#endif
     }
     else {
         puts("src_l2addr: (nil)");
     }
 
     if (hdr->dst_l2addr_len > 0) {
+#ifdef MODULE_GNRC_NETIF2
+        printf("dst_l2addr: %s\n",
+               gnrc_netif2_addr_to_str(gnrc_netif_hdr_get_dst_addr(hdr),
+                                       hdr->dst_l2addr_len, addr_str));
+#else
         printf("dst_l2addr: %s\n",
                gnrc_netif_addr_to_str(addr_str, sizeof(addr_str),
                                       gnrc_netif_hdr_get_dst_addr(hdr),
                                       (size_t)hdr->dst_l2addr_len));
+#endif
     }
     else {
         puts("dst_l2addr: (nil)");

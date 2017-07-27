@@ -21,7 +21,11 @@
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/netif/hdr.h"
 #include "net/gnrc/sixlowpan/frag.h"
+#ifdef MODULE_GNRC_NETIF2
+#include "net/gnrc/netif2.h"
+#else
 #include "net/gnrc/sixlowpan/netif.h"
+#endif
 #include "net/sixlowpan.h"
 #include "utlist.h"
 
@@ -81,8 +85,13 @@ static gnrc_pktsnip_t *_build_frag_pkt(gnrc_pktsnip_t *pkt, size_t payload_len,
     return frag;
 }
 
+#ifdef MODULE_GNRC_NETIF2
+static uint16_t _send_1st_fragment(gnrc_netif2_t *iface, gnrc_pktsnip_t *pkt,
+                                   size_t payload_len, size_t datagram_size)
+#else
 static uint16_t _send_1st_fragment(gnrc_sixlowpan_netif_t *iface, gnrc_pktsnip_t *pkt,
                                    size_t payload_len, size_t datagram_size)
+#endif
 {
     gnrc_pktsnip_t *frag;
     uint16_t local_offset = 0;
@@ -91,8 +100,13 @@ static uint16_t _send_1st_fragment(gnrc_sixlowpan_netif_t *iface, gnrc_pktsnip_t
     int payload_diff = (datagram_size - payload_len);
     /* virtually add payload_diff to flooring to account for offset (must be divisable by 8)
      * in uncompressed datagram */
+#ifdef MODULE_GNRC_NETIF2
+    uint16_t max_frag_size = _floor8(iface->sixlo.max_frag_size + payload_diff -
+                                     sizeof(sixlowpan_frag_t)) - payload_diff;
+#else
     uint16_t max_frag_size = _floor8(iface->max_frag_size + payload_diff -
                                      sizeof(sixlowpan_frag_t)) - payload_diff;
+#endif
     sixlowpan_frag_t *hdr;
     uint8_t *data;
 
@@ -138,14 +152,24 @@ static uint16_t _send_1st_fragment(gnrc_sixlowpan_netif_t *iface, gnrc_pktsnip_t
     return local_offset;
 }
 
+#ifdef MODULE_GNRC_NETIF2
+static uint16_t _send_nth_fragment(gnrc_netif2_t *iface, gnrc_pktsnip_t *pkt,
+                                   size_t payload_len, size_t datagram_size,
+                                   uint16_t offset)
+#else
 static uint16_t _send_nth_fragment(gnrc_sixlowpan_netif_t *iface, gnrc_pktsnip_t *pkt,
                                    size_t payload_len, size_t datagram_size,
                                    uint16_t offset)
+#endif
 {
     gnrc_pktsnip_t *frag;
     /* since dispatches aren't supposed to go into subsequent fragments, we need not account
      * for payload difference as for the first fragment */
+#ifdef MODULE_GNRC_NETIF2
+    uint16_t max_frag_size = _floor8(iface->sixlo.max_frag_size - sizeof(sixlowpan_frag_n_t));
+#else
     uint16_t max_frag_size = _floor8(iface->max_frag_size - sizeof(sixlowpan_frag_n_t));
+#endif
     uint16_t local_offset = 0, offset_count = 0;
     sixlowpan_frag_n_t *hdr;
     uint8_t *data;
@@ -218,7 +242,11 @@ static uint16_t _send_nth_fragment(gnrc_sixlowpan_netif_t *iface, gnrc_pktsnip_t
 
 void gnrc_sixlowpan_frag_send(gnrc_sixlowpan_msg_frag_t *fragment_msg)
 {
+#ifdef MODULE_GNRC_NETIF2
+    gnrc_netif2_t *iface = gnrc_netif2_get_by_pid(fragment_msg->pid);
+#else
     gnrc_sixlowpan_netif_t *iface = gnrc_sixlowpan_netif_get(fragment_msg->pid);
+#endif
     uint16_t res;
     /* payload_len: actual size of the packet vs
      * datagram_size: size of the uncompressed IPv6 packet */
