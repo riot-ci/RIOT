@@ -8,11 +8,11 @@
  */
 
 /**
- * @ingroup     drivers_periph_hwrng
+ * @ingroup     sys_fs_devfs
  * @{
  *
  * @file
- * @brief       HW RNG backend for devfs
+ * @brief       Random backends for devfs implementation
  *
  * @author      Vincent Dupont <vincent@otakeys.com>
  *
@@ -26,10 +26,25 @@
 #include "periph/hwrng.h"
 
 static ssize_t hwrng_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes);
+static int hwrng_vfs_open(vfs_file_t *filp, const char *name, int flags, mode_t mode, const char *abs_path);
 
 const vfs_file_ops_t hwrng_vfs_ops = {
+    .open = hwrng_vfs_open,
     .read  = hwrng_vfs_read,
 };
+
+static int hwrng_vfs_open(vfs_file_t *filp, const char *name, int flags, mode_t mode, const char *abs_path)
+{
+    (void)filp;
+    (void)name;
+    (void)flags;
+    (void)mode;
+    (void)abs_path;
+
+    hwrng_init();
+
+    return 0;
+}
 
 static ssize_t hwrng_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes)
 {
@@ -39,7 +54,7 @@ static ssize_t hwrng_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes)
 
     return nbytes;
 }
-#endif
+#endif /* FEATURE_PERIPH_HWRNG */
 
 #ifdef MODULE_RANDOM
 
@@ -70,4 +85,4 @@ static ssize_t random_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes)
 
     return nbytes;
 }
-#endif
+#endif /* MODULE_RANDOM */
