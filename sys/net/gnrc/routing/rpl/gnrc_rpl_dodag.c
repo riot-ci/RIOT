@@ -18,7 +18,11 @@
 #include <stdbool.h>
 #include "net/af.h"
 #include "net/gnrc/ipv6.h"
+#ifdef MODULE_GNRC_NETIF2
+#include "net/gnrc/netif2/internal.h"
+#else
 #include "net/gnrc/ipv6/netif.h"
+#endif
 #include "net/gnrc/rpl/dodag.h"
 #include "net/gnrc/rpl/structs.h"
 #include "utlist.h"
@@ -129,8 +133,12 @@ gnrc_rpl_instance_t *gnrc_rpl_instance_get(uint8_t instance_id)
     return NULL;
 }
 
+#ifdef MODULE_GNRC_NETIF2
+bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, kernel_pid_t iface)
+#else
 bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, kernel_pid_t iface,
                          gnrc_ipv6_netif_addr_t *netif_addr)
+#endif
 {
     /* TODO: check if netif_addr belongs to iface */
 
@@ -154,7 +162,9 @@ bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, k
     dodag->dao_counter = 0;
     dodag->instance = instance;
     dodag->iface = iface;
+#ifndef MODULE_GNRC_NETIF2
     dodag->netif_addr = netif_addr;
+#endif
 
 #ifdef MODULE_GNRC_RPL_P2P
     if ((instance->mop == GNRC_RPL_P2P_MOP) && (gnrc_rpl_p2p_ext_new(dodag) == NULL)) {
@@ -365,8 +375,12 @@ gnrc_rpl_instance_t *gnrc_rpl_root_instance_init(uint8_t instance_id, ipv6_addr_
         return NULL;
     }
 
+#ifdef MODULE_GNRC_NETIF2
+    gnrc_netif2_t *netif;
+#else
     ipv6_addr_t *configured_addr;
     gnrc_ipv6_netif_addr_t *netif_addr = NULL;
+#endif
     gnrc_rpl_instance_t *inst = NULL;
     gnrc_rpl_dodag_t *dodag = NULL;
     kernel_pid_t iface;
@@ -377,6 +391,14 @@ gnrc_rpl_instance_t *gnrc_rpl_root_instance_init(uint8_t instance_id, ipv6_addr_
         return NULL;
     }
 
+#ifdef MODULE_GNRC_NETIF2
+    if ((netif = gnrc_netif2_get_by_ipv6_addr(dodag_id)) == NULL) {
+        DEBUG("RPL: no IPv6 address configured to match the given dodag id: %s\n",
+              ipv6_addr_to_str(addr_str, dodag_id, sizeof(addr_str)));
+        return NULL;
+    }
+    iface = netif->pid;
+#else
     if ((iface = gnrc_ipv6_netif_find_by_addr(&configured_addr, dodag_id)) == KERNEL_PID_UNDEF) {
         DEBUG("RPL: no IPv6 address configured to match the given dodag id: %s\n",
               ipv6_addr_to_str(addr_str, dodag_id, sizeof(addr_str)));
@@ -388,6 +410,7 @@ gnrc_rpl_instance_t *gnrc_rpl_root_instance_init(uint8_t instance_id, ipv6_addr_
               ipv6_addr_to_str(addr_str, configured_addr, sizeof(addr_str)));
         return NULL;
     }
+#endif
 
     if (gnrc_rpl_instance_add(instance_id, &inst)) {
         inst->of = (gnrc_rpl_of_t *) gnrc_rpl_get_of_for_ocp(GNRC_RPL_DEFAULT_OCP);
@@ -404,11 +427,19 @@ gnrc_rpl_instance_t *gnrc_rpl_root_instance_init(uint8_t instance_id, ipv6_addr_
         return NULL;
     }
 
+#ifdef MODULE_GNRC_NETIF2
+    if (!gnrc_rpl_dodag_init(inst, dodag_id, iface)) {
+        DEBUG("RPL: could not initialize DODAG\n");
+        gnrc_rpl_instance_remove(inst);
+        return NULL;
+    }
+#else
     if (!gnrc_rpl_dodag_init(inst, dodag_id, iface, netif_addr)) {
         DEBUG("RPL: could not initialize DODAG\n");
         gnrc_rpl_instance_remove(inst);
         return NULL;
     }
+#endif
 
     dodag = &inst->dodag;
     dodag->instance = inst;
