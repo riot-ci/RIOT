@@ -287,9 +287,7 @@
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/netreg.h"
 #include "net/gnrc/nettype.h"
-#ifdef MODULE_GNRC_NETIF2
-#include "net/gnrc/netif2.h"
-#else
+#ifndef MODULE_GNRC_NETIF2
 #include "net/gnrc/netif.h"
 #endif
 #include "net/gnrc/netif/hdr.h"
