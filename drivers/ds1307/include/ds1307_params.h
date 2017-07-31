@@ -32,14 +32,10 @@ extern "C" {
 #ifndef DS1307_PARAM_I2C
 #define DS1307_PARAM_I2C        (I2C_DEV(0))
 #endif
-#ifndef DS1307_PARAM_ADDR
-#define DS1307_PARAM_ADDR       (DS1307_I2C_ADDRESS)
-#endif
 #ifndef DS1307_PARAM_I2C_CLK
 #define DS1307_PARAM_I2C_CLK    (DS1307_I2C_MAX_CLK)
 
 #define DS1307_PARAMS_DEFAULT   {   .i2c = DS1307_PARAM_I2C, \
-                                    .addr = DS1307_PARAM_ADDR, \
                                     .clk = DS1307_PARAM_I2C_CLK }
 
 #endif
