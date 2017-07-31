@@ -795,8 +795,9 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
         _send_unicast(netif, l2addr, l2addr_len, pkt);
 #else   /* MODULE_GNRC_IPV6_NIB */
         gnrc_ipv6_nib_nc_t nce;
+        gnrc_netif2_t *netif = gnrc_netif2_get_by_pid(iface);
 
-        if (gnrc_ipv6_nib_get_next_hop_l2addr(&hdr->dst, iface, pkt,
+        if (gnrc_ipv6_nib_get_next_hop_l2addr(&hdr->dst, netif, pkt,
                                               &nce) < 0) {
             /* packet is released by NIB */
             return;

@@ -298,7 +298,7 @@ ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
   USEMODULE += inet_csum
   USEMODULE += ipv6_addr
   USEMODULE += gnrc_ipv6_hdr
-  USEMODULE += gnrc_ipv6_nc
+  USEMODULE += gnrc_ipv6_nib
   USEMODULE += gnrc_netif2
 endif
 
