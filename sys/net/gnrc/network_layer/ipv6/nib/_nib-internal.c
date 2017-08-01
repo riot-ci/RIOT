@@ -247,6 +247,7 @@ void _nib_nc_get(const _nib_onl_entry_t *node, gnrc_ipv6_nib_nc_t *nce)
     memcpy(&nce->ipv6, &node->ipv6, sizeof(nce->ipv6));
     nce->info = node->info;
 #if GNRC_IPV6_NIB_CONF_ARSM
+#if GNRC_IPV6_NIB_CONF_6LN
     if (ipv6_addr_is_link_local(&nce->ipv6)) {
         gnrc_ipv6_netif_t *netif = gnrc_ipv6_netif_get(_nib_onl_get_if(node));
         assert(netif != NULL);
@@ -257,6 +258,7 @@ void _nib_nc_get(const _nib_onl_entry_t *node, gnrc_ipv6_nib_nc_t *nce)
             return;
         }
     }
+#endif
     nce->l2addr_len = node->l2addr_len;
     memcpy(&nce->l2addr, &node->l2addr, node->l2addr_len);
 #else
