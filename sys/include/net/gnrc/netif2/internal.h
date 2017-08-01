@@ -124,6 +124,20 @@ int gnrc_netif2_ipv6_addr_idx(gnrc_netif2_t *netif,
                               const ipv6_addr_t *addr);
 
 /**
+ * @brief   Get state from address flags
+ *
+ * @param[in] netif the network interface
+ * @param[in] idx   index of the address flags
+ *
+ * @return  the state of the address at @p idx
+ */
+static inline uint8_t gnrc_netif2_ipv6_addr_get_state(gnrc_netif2_t *netif,
+                                                      int idx)
+{
+    return netif->ipv6.addrs_flags[i] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
+}
+
+/**
  * @brief   Returns the index of an address in gnrc_netif2_t::ipv6_addrs of @p
  *          netif that matches @p addr best
  *

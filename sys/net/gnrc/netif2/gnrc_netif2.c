@@ -871,7 +871,9 @@ static int _create_candidate_set(const gnrc_netif2_t *netif,
         /* "In any case, multicast addresses and the unspecified address MUST NOT
          *  be included in a candidate set."
          */
-        if (netif->ipv6.addrs_flags[i] == 0) {
+        if ((netif->ipv6.addrs_flags[i] == 0) ||
+            (gnrc_netif2_ipv6_addr_get_state(netif) ==
+             GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE)) {
             continue;
         }
         /* Check if we only want link local addresses */
