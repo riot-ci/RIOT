@@ -206,9 +206,7 @@ static const spi_conf_t spi_config[] = {
 * @{
 */
 #define I2C_NUMOF                    (1U)
-#define I2C_CLK                      CLOCK_CORECLOCK
 #define I2C_0_EN                     1
-#define I2C_IRQ_PRIO                 1
 /* Low (10 kHz): MUL = 4, SCL divider = 2560, total: 10240 */
 #define KINETIS_I2C_F_ICR_LOW        (0x3D)
 #define KINETIS_I2C_F_MULT_LOW       (2)
@@ -235,13 +233,6 @@ static const spi_conf_t spi_config[] = {
 #define I2C_0_SDA_PIN                25
 #define I2C_0_SCL_PIN                24
 #define I2C_0_PORT_CFG               (PORT_PCR_MUX(I2C_0_PIN_AF) | PORT_PCR_ODE_MASK)
-/** @} */
-
-/**
- * @name GPIO configuration
- * @{
- */
-#define GPIO_IRQ_PRIO                CPU_DEFAULT_IRQ_PRIO
 /** @} */
 
 /**
