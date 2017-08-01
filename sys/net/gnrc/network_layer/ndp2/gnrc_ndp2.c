@@ -408,22 +408,11 @@ void gnrc_ndp2_rtr_sol_send(gnrc_ipv6_netif_t *netif, const ipv6_addr_t *dst)
     }
 }
 
-/* interface supports multihop prefix and 6LoWPAN context distribution */
-static inline bool _multihop_6lp(gnrc_ipv6_netif_t *netif)
-{
-#if defined(MODULE_GNRC_SIXLOWPAN_ND) && defined(MODULE_GNRC_IPV6_ROUTER)
-    return (netif->flags & GNRC_IPV6_NETIF_FLAGS_SIXLOWPAN) &&
-           (netif->flags & GNRC_IPV6_NETIF_FLAGS_ROUTER);
-#else
-    (void)netif;
-    return false;
-#endif
-}
-
 void gnrc_ndp2_rtr_adv_send(gnrc_ipv6_netif_t *netif, const ipv6_addr_t *src,
                             const ipv6_addr_t *dst, bool fin,
                             gnrc_pktsnip_t *ext_opts)
 {
+#if GNRC_IPV6_NIB_CONF_ROUTER
     gnrc_pktsnip_t *hdr = NULL, *pkt = ext_opts;
     uint32_t reach_time = 0, retrans_timer = 0;
     uint16_t adv_ltime = 0;
@@ -507,6 +496,14 @@ void gnrc_ndp2_rtr_adv_send(gnrc_ipv6_netif_t *netif, const ipv6_addr_t *src,
         DEBUG("ndp2: unable to send router solicitation\n");
         gnrc_pktbuf_release(hdr);
     }
+#else
+    (void)netif;
+    (void)src;
+    (void)dst;
+    (void)fin;
+    DEBUG("ndp2: not a router, dropping ext_opts\n");
+    gnrc_pktbuf_release(ext_opts);
+#endif  /* GNRC_IPV6_NIB_CONF_ROUTER */
 }
 
 static gnrc_pktsnip_t *_build_headers(gnrc_ipv6_netif_t *netif,
