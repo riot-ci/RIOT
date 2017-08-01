@@ -84,7 +84,7 @@ extern int _random_init(int argc, char **argv);
 extern int _random_get(int argc, char **argv);
 #endif
 
-#ifdef MODULE_GNRC_NETIF
+#ifdef MODULE_GNRC_IPV6_NIB
 extern int _gnrc_ipv6_nib(int argc, char **argv);
 #endif
 
