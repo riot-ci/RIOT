@@ -228,6 +228,22 @@ static int _read_handler(int argc, char **argv)
     return 0;
 }
 
+static inline int _dehex(char c)
+{
+    if ('0' <= c && c <= '9') {
+        return c - '0';
+    }
+    else if ('A' <= c && c <= 'F') {
+        return c - 'A' + 10;
+    }
+    else if ('a' <= c && c <= 'f') {
+        return c - 'a' + 10;
+    }
+    else {
+        return 0;
+    }
+}
+
 static int _write_handler(int argc, char **argv)
 {
     char *w_buf;
@@ -290,7 +306,7 @@ static int _write_handler(int argc, char **argv)
             do {
                 c = argv[argc - nb_str + i][j];
                 j++;
-                if (c != '\0' && !isxdigit(c)) {
+                if (c != '\0' && !isxdigit((int)c)) {
                     printf("Non-hex character: %c\n", c);
                     return 6;
                 }
@@ -339,10 +355,7 @@ static int _write_handler(int argc, char **argv)
             w_buf = argv[argc - nb_str];
             nbytes = strlen(w_buf);
             while (nbytes > 0) {
-                unsigned tmp;
-                uint8_t byte;
-                sscanf(w_buf, "%2x", &tmp);
-                byte = tmp;
+                uint8_t byte = _dehex(*w_buf) << 4 | _dehex(*(w_buf + 1));
                 res = vfs_write(fd, &byte, 1);
                 if (res < 0) {
                     _errno_string(res, (char *)buf, sizeof(buf));
