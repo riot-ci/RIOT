@@ -696,6 +696,7 @@ static void test_rtr_sol_send__dst_global(void)
     test_rtr_sol_send(&test_dst);
 }
 
+#if GNRC_IPV6_NIB_CONF_ROUTER
 static void test_rtr_adv_send(const ipv6_addr_t *src, const ipv6_addr_t *dst,
                               bool fin, gnrc_pktsnip_t *exp_ext_opts)
 {
@@ -832,6 +833,7 @@ static void test_rtr_adv_send__src_dst_fin_ext_opts(void)
     gnrc_pktsnip_t *ext_opts = gnrc_pktbuf_add(NULL, NULL, 8U, GNRC_NETTYPE_UNDEF);
     test_rtr_adv_send(&test_src, &test_dst, true, ext_opts);
 }
+#endif
 
 static Test *tests_gnrc_ndp2_build(void)
 {
@@ -889,6 +891,7 @@ static Test *tests_gnrc_ndp2_send(void)
         new_TestFixture(test_rtr_sol_send__dst_NULL),
         new_TestFixture(test_rtr_sol_send__dst_local),
         new_TestFixture(test_rtr_sol_send__dst_global),
+#if GNRC_IPV6_NIB_CONF_ROUTER
         new_TestFixture(test_rtr_adv_send__src_NULL_dst_NULL_no_fin_no_ext_opts),
         new_TestFixture(test_rtr_adv_send__src_NULL_dst_NULL_no_fin_ext_opts),
         new_TestFixture(test_rtr_adv_send__src_NULL_dst_NULL_fin_no_ext_opts),
@@ -905,6 +908,7 @@ static Test *tests_gnrc_ndp2_send(void)
         new_TestFixture(test_rtr_adv_send__src_dst_no_fin_ext_opts),
         new_TestFixture(test_rtr_adv_send__src_dst_fin_no_ext_opts),
         new_TestFixture(test_rtr_adv_send__src_dst_fin_ext_opts),
+#endif
     };
 
     EMB_UNIT_TESTCALLER(tests, set_up, NULL, fixtures);
