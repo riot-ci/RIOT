@@ -297,9 +297,10 @@ static inline void gnrc_netreg_entry_init_cb(gnrc_netreg_entry_t *entry,
  * @param[in] type      Type of the protocol. Must not be < GNRC_NETTYPE_UNDEF or
  *                      >= GNRC_NETTYPE_NUMOF.
  * @param[in] entry     An entry you want to add to the registry. This needs to
- *                      be initialized before hand using the [static](@ref
- *                      net_gnrc_netreg_init_static) or [dynamic](@ref
- *                      net_gnrc_netreg_init_dyn) initialization helpers.
+ *                      be initialized before hand using the @ref
+ *                      net_gnrc_netreg_init_static "static" or @ref
+ *                      net_gnrc_netreg_init_dyn "dynamic" initialization
+ *                      helpers.
  *
  * @warning Call gnrc_netreg_unregister() *before* you leave the context you
  *          allocated @p entry in. Otherwise it might get overwritten.
