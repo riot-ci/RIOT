@@ -47,7 +47,7 @@ extern "C" {
  *
  * @pre `(tgt != NULL) && !ipv6_addr_is_multicast(tgt)`
  *
- * @see [RFC 4861, section 4.3](https://tools.ietf.org/html/rfc4861#section-4.3")
+ * @see [RFC 4861, section 4.3](https://tools.ietf.org/html/rfc4861#section-4.3)
  *
  * @param[in] tgt       The target address of the neighbor solicitation.
  *                      May not be NULL and **MUST NOT** be multicast.
@@ -276,10 +276,11 @@ void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
  *
  * If @p netif is a forwarding interface and router advertisements are
  * activated the @ref NDP_NBR_ADV_FLAGS_R is set in the neighbor advertisement.
- * If @p dst is the unspecified address it will be replaced with ff02::1 and
- * @p supply_tl2a is set to true implicitly. Otherwise, the
- * @ref NDP_NBR_ADV_FLAGS_S will be set. If @p tgt is an anycast address
- * on @p netif the @ref NDP_NBR_ADV_FLAGS_O flag will be set.
+ * If @p dst is @ref IPV6_ADDR_UNSPECIFIED it will be replaced with
+ * @ref IPV6_ADDR_ALL_NODES_LINK_LOCAL and* @p supply_tl2a is set to true
+ * implicitly. Otherwise, the @ref NDP_NBR_ADV_FLAGS_S will be set. If @p tgt
+ * is an anycast address on @p netif the @ref NDP_NBR_ADV_FLAGS_O flag will be
+ * set.
  *
  * The source address of the IPv6 packet will be left unspecified, so the
  * @ref net_gnrc_ipv6 "IPv6 module" selects a fitting IPv6 address.
@@ -288,14 +289,19 @@ void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
  *                          not be NULL and **MUST NOT** be multicast.
  * @param[in] netif         Interface to send over. May not be NULL.
  * @param[in] dst           Destination address for neighbor advertisement. May
- *                          not be NULL. Is set to ff02::1 when equal to ::
- *                          (to allow for simple reply mechanisms to neighbor
- *                          solicitations). This also implies that
- *                          @p supply_tl2a **must** be true and the parameter
- *                          will be reset accordingly. If @p dst is not ::, the
- *                          @ref NDP_NBR_ADV_FLAGS_S flag will be set.
+ *                          not be NULL. Is set to
+ *                          @ref IPV6_ADDR_ALL_NODES_LINK_LOCAL when equal to
+ *                          @ref IPV6_ADDR_UNSPECIFIED (to allow for simple
+ *                          reply mechanisms to neighbor solicitations). This
+ *                          also implies that @p supply_tl2a **must** be true
+ *                          and the parameter will be reset accordingly. If
+ *                          @p dst is not @ref IPV6_ADDR_UNSPECIFIED, the
+ *                          @ref NDP_NBR_ADV_FLAGS_S flag will be set
+ *                          implicitly.
  * @param[in] supply_tl2a   Add target link-layer address option to neighbor
  *                          advertisement if link-layer has addresses.
+ *                          If @p dst is @ref IPV6_ADDR_UNSPECIFIED, it will be
+ *                          set to true.
  * @param[in] ext_opts      External options for the neighbor advertisement.
  *                          Leave NULL for none.
  *                          **Warning:** these are not tested if they are

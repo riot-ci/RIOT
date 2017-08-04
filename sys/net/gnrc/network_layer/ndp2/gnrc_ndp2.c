@@ -103,17 +103,14 @@ static inline size_t _ceil8(uint8_t length)
 gnrc_pktsnip_t *gnrc_ndp2_opt_build(uint8_t type, size_t size,
                                     gnrc_pktsnip_t *next)
 {
-    ndp_opt_t *opt;
     gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(next, NULL, _ceil8(size),
                                           GNRC_NETTYPE_UNDEF);
 
-    if (pkt == NULL) {
-        DEBUG("ndp2: no space left in packet buffer\n");
-        return NULL;
+    if (pkt != NULL) {
+        ndp_opt_t *opt = pkt->data;
+        opt->type = type;
+        opt->len = (uint8_t)(pkt->size / 8);
     }
-    opt = pkt->data;
-    opt->type = type;
-    opt->len = (uint8_t)(pkt->size / 8);
     return pkt;
 }
 
@@ -158,9 +155,9 @@ gnrc_pktsnip_t *gnrc_ndp2_opt_tl2a_build(const uint8_t *l2addr,
 }
 
 gnrc_pktsnip_t *gnrc_ndp2_opt_pi_build(const ipv6_addr_t *prefix,
-                                      uint8_t prefix_len,
-                                      uint32_t valid_ltime, uint32_t pref_ltime,
-                                      uint8_t flags, gnrc_pktsnip_t *next)
+                                       uint8_t prefix_len,
+                                       uint32_t valid_ltime, uint32_t pref_ltime,
+                                       uint8_t flags, gnrc_pktsnip_t *next)
 {
     assert(prefix != NULL);
     assert(!ipv6_addr_is_link_local(prefix) && !ipv6_addr_is_multicast(prefix));
@@ -333,7 +330,7 @@ void gnrc_ndp2_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
             pkt = hdr;
         }
     }
-    /* TODO: also check if the node provides proxy servies for tgt */
+    /* TODO: also check if the node provides proxy services for tgt */
     if ((pkt != NULL) &&
         (!gnrc_ipv6_netif_addr_is_non_unicast(tgt) || supply_tl2a)) {
         /* TL2A is not supplied and tgt is not anycast */
@@ -372,7 +369,7 @@ void gnrc_ndp2_rtr_sol_send(gnrc_ipv6_netif_t *netif, const ipv6_addr_t *dst)
     DEBUG("ndp2: send router solicitation (iface: %" PRIkernel_pid
           ", dst: %s)\n", netif->pid,
           ipv6_addr_to_str(addr_str, dst, sizeof(addr_str)));
-    /* add SLLAO => check if there is a fitting source address to target */
+    /* add SL2AO => check if there is a fitting source address to target */
     if ((src = gnrc_ipv6_netif_find_best_src_addr(netif->pid, dst,
                                                   false)) != NULL) {
         uint8_t l2src[8];
