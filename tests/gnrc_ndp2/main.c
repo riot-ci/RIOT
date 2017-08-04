@@ -47,6 +47,12 @@
 #define TEST_NDP_OPT_TYPE       (142U)
 #define TEST_MTU                (669256124U)
 
+#define TEST_ASSERT_ALLOCATION(pkt, s, t) \
+    TEST_ASSERT_NULL((pkt)->next); \
+    TEST_ASSERT_NOT_NULL((pkt)->data); \
+    TEST_ASSERT_EQUAL_INT((s), (pkt)->size); \
+    TEST_ASSERT_EQUAL_INT((t), (pkt)->type)
+
 static const ipv6_addr_t test_dst = { { 0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                         0x73, 0x25, 0x22, 0xc6, 0xdf, 0x05, 0xf2, 0x6b } };
 static const ipv6_addr_t test_src = { { 0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -91,10 +97,7 @@ static void test_nbr_sol_build__success(void)
     TEST_ASSERT_NOT_NULL((pkt = gnrc_ndp2_nbr_sol_build(&test_tgt, NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(sizeof(ndp_nbr_sol_t), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_ICMPV6, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, sizeof(ndp_nbr_sol_t), GNRC_NETTYPE_ICMPV6);
     /* check packet content */
     nbr_sol = pkt->data;
     TEST_ASSERT_EQUAL_INT(ICMPV6_NBR_SOL, nbr_sol->type);
@@ -122,10 +125,7 @@ static void test_nbr_adv_build__success(uint8_t flags)
                                                         NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(sizeof(ndp_nbr_adv_t), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_ICMPV6, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, sizeof(ndp_nbr_adv_t), GNRC_NETTYPE_ICMPV6);
     /* check packet content */
     nbr_adv = pkt->data;
     TEST_ASSERT_EQUAL_INT(ICMPV6_NBR_ADV, nbr_adv->type);
@@ -165,10 +165,7 @@ static void test_rtr_sol_build__success(void)
     TEST_ASSERT_NOT_NULL((pkt = gnrc_ndp2_rtr_sol_build(NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(sizeof(ndp_rtr_sol_t), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_ICMPV6, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, sizeof(ndp_rtr_sol_t), GNRC_NETTYPE_ICMPV6);
     /* check packet content */
     rtr_sol = pkt->data;
     TEST_ASSERT_EQUAL_INT(ICMPV6_RTR_SOL, rtr_sol->type);
@@ -199,10 +196,7 @@ static void test_rtr_adv_build__success(uint8_t flags)
                                                         NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(sizeof(ndp_rtr_adv_t), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_ICMPV6, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, sizeof(ndp_rtr_adv_t), GNRC_NETTYPE_ICMPV6);
     /* check packet content */
     rtr_adv = pkt->data;
     TEST_ASSERT_EQUAL_INT(ICMPV6_RTR_ADV, rtr_adv->type);
@@ -246,10 +240,7 @@ static void test_opt_build__success(void)
                                                     NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(ceil8(TEST_NDP_OPT_SIZE), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_UNDEF, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, ceil8(TEST_NDP_OPT_SIZE), GNRC_NETTYPE_UNDEF);
     /* check packet content */
     opt = pkt->data;
     TEST_ASSERT_EQUAL_INT(TEST_NDP_OPT_TYPE, opt->type);
@@ -276,11 +267,8 @@ static void test_opt_sl2a_build__success(void)
                                                          NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(ceil8(sizeof(ndp_opt_t) + sizeof(test_src_l2)),
-                          pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_UNDEF, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, ceil8(sizeof(ndp_opt_t) + sizeof(test_src_l2)),
+                           GNRC_NETTYPE_UNDEF);
     /* check packet content */
     opt = pkt->data;
     TEST_ASSERT_EQUAL_INT(NDP_OPT_SL2A, opt->type);
@@ -310,11 +298,8 @@ static void test_opt_tl2a_build__success(void)
                                                          NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(ceil8(sizeof(ndp_opt_t) + sizeof(test_src_l2)),
-                          pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_UNDEF, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, ceil8(sizeof(ndp_opt_t) + sizeof(test_src_l2)),
+                           GNRC_NETTYPE_UNDEF);
     /* check packet content */
     opt = pkt->data;
     TEST_ASSERT_EQUAL_INT(NDP_OPT_TL2A, opt->type);
@@ -347,11 +332,8 @@ static void test_opt_pi_build__success(uint8_t flags)
                                                        NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(ceil8(sizeof(ndp_opt_pi_t)),
-                          pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_UNDEF, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, ceil8(sizeof(ndp_opt_pi_t)),
+                           GNRC_NETTYPE_UNDEF);
     /* check packet content */
     /* prepare expected prefix (the function MUST remove all the garbage after
      * the prefix) */
@@ -397,10 +379,7 @@ static void test_opt_mtu_build__success(void)
     TEST_ASSERT_NOT_NULL((pkt = gnrc_ndp2_opt_mtu_build(TEST_MTU, NULL)));
     TEST_ASSERT(gnrc_pktbuf_is_sane());
     /* check packet meta-data */
-    TEST_ASSERT_NULL(pkt->next);
-    TEST_ASSERT_NOT_NULL(pkt->data);
-    TEST_ASSERT_EQUAL_INT(ceil8(sizeof(ndp_opt_mtu_t)), pkt->size);
-    TEST_ASSERT_EQUAL_INT(GNRC_NETTYPE_UNDEF, pkt->type);
+    TEST_ASSERT_ALLOCATION(pkt, ceil8(sizeof(ndp_opt_mtu_t)), GNRC_NETTYPE_UNDEF);
     /* check packet content */
     opt = pkt->data;
     TEST_ASSERT_EQUAL_INT(NDP_OPT_MTU, opt->type);
