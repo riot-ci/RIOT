@@ -162,7 +162,7 @@ static inline void uart_init_uart(uart_t uart, uint32_t baudrate)
     /* disable transmitter and receiver */
     dev->C2 &= ~(UART_C2_TE_MASK | UART_C2_RE_MASK);
 
-    /* set defaults, 8-bit mode, no parity */
+    /* Select mode */
     dev->C1 = uart_config[uart].mode;
 
     /* calculate baudrate */
@@ -295,9 +295,9 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 
     /* Remember to select a module clock in board_init! (SIM->SOPT2[LPUART0SRC]) */
 
-    /* set defaults, 8-bit mode, no parity */
+    /* Select mode */
     /* transmitter and receiver disabled */
-    dev->CTRL = 0;
+    dev->CTRL = uart_config[uart].mode;
 
     /* calculate baud rate divisor */
     uint32_t div = clk / (baudrate * LPUART_OVERSAMPLING_RATE);
@@ -306,7 +306,8 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
     dev->BAUD = LPUART_BAUD_OSR(LPUART_OVERSAMPLING_RATE - 1) | LPUART_BAUD_SBR(div);
 
     /* enable transmitter and receiver + RX interrupt */
-    dev->CTRL = LPUART_CTRL_TE_MASK | LPUART_CTRL_RE_MASK | LPUART_CTRL_RIE_MASK;
+    dev->CTRL |= LPUART_CTRL_TE_MASK | LPUART_CTRL_RE_MASK | LPUART_CTRL_RIE_MASK;
+
     /* enable receive interrupt */
     NVIC_EnableIRQ(uart_config[uart].irqn);
 }
