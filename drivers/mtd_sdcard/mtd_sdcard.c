@@ -103,7 +103,7 @@ static int mtd_sdcard_erase(mtd_dev_t *dev,
     (void)addr;
     (void)size;
 
-#ifdef MTD_SDCARD_SKIP_ERASE
+#if MTD_SDCARD_SKIP_ERASE == 1
     return 0;
 #else
     return -ENOTSUP; /* explicit erase currently not supported */

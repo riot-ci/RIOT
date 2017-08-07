@@ -25,7 +25,6 @@
 #include <stdint.h>
 
 #include "sdcard_spi.h"
-#include "sdcard_spi_params.h"
 #include "mtd.h"
 
 #ifdef __cplusplus
@@ -52,7 +51,7 @@ typedef struct {
  *                   so disable this feature to ensure overriding the data.
  */
 #ifndef MTD_SDCARD_SKIP_ERASE
-#define MTD_SDCARD_SKIP_ERASE
+#define MTD_SDCARD_SKIP_ERASE (1)
 #endif
 
 /**
