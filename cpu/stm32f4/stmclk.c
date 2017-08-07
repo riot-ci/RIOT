@@ -131,9 +131,13 @@ void stmclk_enable_hsi(void)
 
 void stmclk_disable_hsi(void)
 {
+    /* we only disable the HSI clock if not used as input for the PLL and if
+     * not used directly as system clock */
+#if (CLOCK_HSE)
     if ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_HSI) {
         RCC->CR &= ~(RCC_CR_HSION);
     }
+#endif
 }
 
 void stmclk_enable_lfclk(void)
