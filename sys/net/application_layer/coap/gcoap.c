@@ -809,11 +809,11 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
 
         for (unsigned i = 0; i < listener->resources_len; i++) {
             size_t path_len = strlen(resource->path);
-            /* only add new resources if there is space in the buffer */
-            if ((pos + path_len + 3) > maxlen) {
-                break;
-            }
             if (out) {
+                /* only add new resources if there is space in the buffer */
+                if ((pos + path_len + 3) > maxlen) {
+                    break;
+                }
                 if (i) {
                     out[pos++] = ',';
                 }
@@ -823,8 +823,8 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
                 out[pos++] = '>';
             }
             else {
-                out += (i) ? 3 : 2;
-                out += path_len;
+                pos += (i) ? 3 : 2;
+                pos += path_len;
             }
             ++resource;
         }
