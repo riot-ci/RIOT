@@ -142,7 +142,7 @@ int rtc_set_time(struct tm *time)
 
 int rtc_get_time(struct tm *time)
 {
-    /**< reading TR locks the content in DR till DR is read to ensure consistency between both */
+    /* reading TR locks the content in DR till DR is read to ensure consistency between both */
     uint32_t tr = RTC->TR;
     uint32_t dr = RTC->DR;
 
