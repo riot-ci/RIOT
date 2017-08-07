@@ -635,18 +635,21 @@ size_t gcoap_obs_send(const uint8_t *buf, size_t len,
 uint8_t gcoap_op_state(void);
 
 /**
- * @brief   Add Uri-Query options to a CoAP request
+ * @brief   Adds a single Uri-Query option to a CoAP request
  *
- * @param[out] pkt      The package that is being build
+ * To add multiple Uri-Query options, simply call this function multiple times.
+ * The Uri-Query options will be added in the order those calls.
+ *
+ * @param[out] pdu      The package that is being build
  * @param[in]  key      Key to add to the query string
  * @param[in]  val      Value to assign to @p key (may be NULL)
  *
- * @pre     ((pkt != NULL) && (key != NULL))
+ * @pre     ((pdu != NULL) && (key != NULL))
  *
  * @return  overall length of new query string
  * @return  -1 on error
  */
-int gcoap_add_qstring(coap_pkt_t *pkt, const char *key, const char *val);
+int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val);
 
 #ifdef __cplusplus
 }

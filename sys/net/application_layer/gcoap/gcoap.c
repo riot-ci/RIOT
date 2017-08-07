@@ -474,7 +474,6 @@ static ssize_t _write_options(coap_pkt_t *pdu, uint8_t *buf, size_t len)
     /* Content-Format */
     if (pdu->content_type != COAP_FORMAT_NONE) {
         bufpos += coap_put_option_ct(bufpos, last_optnum, pdu->content_type);
-        /* uncomment when add an option after Content-Format */
         last_optnum = COAP_OPT_CONTENT_FORMAT;
     }
 
@@ -828,9 +827,9 @@ uint8_t gcoap_op_state(void)
     return count;
 }
 
-int gcoap_add_qstring(coap_pkt_t *pkt, const char *key, const char *val)
+int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val)
 {
-    size_t qs_len = strlen((char *)pkt->qs);
+    size_t qs_len = strlen((char *)pdu->qs);
     size_t key_len = strlen(key);
     size_t val_len = (val) ? (strlen(val) + 1) : 0;
 
@@ -839,15 +838,15 @@ int gcoap_add_qstring(coap_pkt_t *pkt, const char *key, const char *val)
         return -1;
     }
 
-    pkt->qs[qs_len++] = '&';
-    memcpy(&pkt->qs[qs_len], key, key_len);
+    pdu->qs[qs_len++] = '&';
+    memcpy(&pdu->qs[qs_len], key, key_len);
     qs_len += key_len;
     if (val) {
-        pkt->qs[qs_len++] = '=';
-        memcpy(&pkt->qs[qs_len], val, val_len);
+        pdu->qs[qs_len++] = '=';
+        memcpy(&pdu->qs[qs_len], val, val_len);
         qs_len += val_len;
     }
-    pkt->qs[qs_len] = '\0';
+    pdu->qs[qs_len] = '\0';
 
     return (int)qs_len;
 }
