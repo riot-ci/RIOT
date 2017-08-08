@@ -36,9 +36,9 @@ extern "C" {
  */
 #ifndef GNRC_NETTYPE_NDP2
 # if    defined(MODULE_GNRC_IPV6) || DOXYGEN
-#  define GNRC_NETTYPE_NDP2 (GNRC_NETTYPE_IPV6)
+#  define GNRC_NETTYPE_NDP2 (GNRC_NETTYPE_IPV6)     /* usual configuration */
 # else
-#  define GNRC_NETTYPE_NDP2 (GNRC_NETTYPE_UNDEF)
+#  define GNRC_NETTYPE_NDP2 (GNRC_NETTYPE_UNDEF)    /* for testing */
 # endif
 #endif  /* GNRC_NETTYPE_NDP2 */
 
@@ -73,13 +73,13 @@ gnrc_pktsnip_t *gnrc_ndp2_nbr_sol_build(const ipv6_addr_t *tgt,
  *                      link-layer address has changed.
  *                      May not be NULL and **MUST NOT** be multicast.
  * @param[in] flags     Neighbor advertisement flags:
- *                      @ref NDP_NBR_ADV_FLAGS_R == 1 indicates, that the
- *                      sender is a router,
- *                      @ref NDP_NBR_ADV_FLAGS_S == 1 indicates that the
- *                      advertisement was sent in response to a neighbor
- *                      solicitation,
- *                      @ref NDP_NBR_ADV_FLAGS_O == 1 indicates that the
- *                      advertisement should override an existing cache entry
+ *                      - @ref NDP_NBR_ADV_FLAGS_R == 1 indicates, that the
+ *                        sender is a router,
+ *                      - @ref NDP_NBR_ADV_FLAGS_S == 1 indicates that the
+ *                        advertisement was sent in response to a neighbor
+ *                        solicitation,
+ *                      - @ref NDP_NBR_ADV_FLAGS_O == 1 indicates that the
+ *                        advertisement should override an existing cache entry
  *                      and update the cached link-layer address.
  * @param[in] options   Options to append to the neighbor advertisement.
  *                      May be NULL for none.
@@ -113,11 +113,11 @@ gnrc_pktsnip_t *gnrc_ndp2_rtr_sol_build(gnrc_pktsnip_t *options);
  *
  * @param[in] cur_hl        Default hop limit for outgoing IP packets, 0 if
  *                          unspecified by this router.
- * @param[in] flags         Flags as defined above.
- *                          @ref NDP_RTR_ADV_FLAGS_M == 1 indicates, that the
- *                          addresses are managed by DHCPv6,
- *                          @ref NDP_RTR_ADV_FLAGS_O == 1 indicates that other
- *                          configuration information is available via DHCPv6.
+ * @param[in] flags         Flags as defined in net/ndp.h.
+ *                          - @ref NDP_RTR_ADV_FLAGS_M == 1 indicates, that the
+ *                            addresses are managed by DHCPv6,
+ *                          - @ref NDP_RTR_ADV_FLAGS_O == 1 indicates that other
+ *                            configuration information is available via DHCPv6.
  * @param[in] ltime         Lifetime of the default router in seconds.
  * @param[in] reach_time    Time in milliseconds a node should assume a neighbor
  *                          reachable. 0 means unspecified by the router.
@@ -217,11 +217,11 @@ gnrc_pktsnip_t *gnrc_ndp2_opt_tl2a_build(const uint8_t *l2addr,
  * @param[in] pref_ltime    Length of time in seconds that addresses using
  *                          @p prefix remain prefered. UINT32_MAX represents
  *                          infinity.
- * @param[in] flags         Flags as defined above.
- *                          @ref NDP_OPT_PI_FLAGS_L == 1 indicates, that
- *                          @p prefix can be used for on-link determination,
- *                          @ref NDP_OPT_PI_FLAGS_A == 1 indicates, that
- *                          @p prefix can be used for stateless address
+ * @param[in] flags         Flags as defined in net/ndp.h.
+ *                          - @ref NDP_OPT_PI_FLAGS_L == 1 indicates, that
+ *                            @p prefix can be used for on-link determination,
+ *                          - @ref NDP_OPT_PI_FLAGS_A == 1 indicates, that
+ *                            @p prefix can be used for stateless address
  *                          configuration.
  * @param[in] next          More options in the packet. NULL, if there are none.
  *
