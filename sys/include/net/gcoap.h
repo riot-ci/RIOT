@@ -244,7 +244,7 @@ extern "C" {
  *
  * Accommodates Content-Format and Uri-Queries
  */
-#define GCOAP_REQ_OPTIONS_BUF   (48)
+#define GCOAP_REQ_OPTIONS_BUF   (40)
 
 /**
  * @brief   Size of the buffer used to write options in a response
