@@ -22,8 +22,8 @@ BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker# No full UART available
 # UART, but not on native, as native has a tap interface towards the host.
 ifeq (,$(filter native,$(BOARD)))
   GNRC_NETIF_NUMOF := 2
-  USEMODULE += ethos gnrc_netdev
-  ifeq (,$(filter gnrc_netif2,$(USEMODULE)))
+  USEMODULE += ethos
+  ifeq (,$(filter gnrc_netif2 gnrc_ipv6_nib%,$(USEMODULE)))
     USEMODULE += gnrc_netdev
   endif
 

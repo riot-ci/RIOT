@@ -375,17 +375,16 @@ static void *_event_loop(void *args)
             case GNRC_IPV6_NIB_SND_MC_NS:
             case GNRC_IPV6_NIB_SND_NA:
             case GNRC_IPV6_NIB_SEARCH_RTR:
-            case GNRC_IPV6_NIB_RECONFIRM_RTR:
             case GNRC_IPV6_NIB_REPLY_RS:
             case GNRC_IPV6_NIB_SND_MC_RA:
             case GNRC_IPV6_NIB_REACH_TIMEOUT:
             case GNRC_IPV6_NIB_DELAY_TIMEOUT:
             case GNRC_IPV6_NIB_ADDR_REG_TIMEOUT:
-            case GNRC_IPV6_NIB_6LO_CTX_TIMEOUT:
             case GNRC_IPV6_NIB_ABR_TIMEOUT:
             case GNRC_IPV6_NIB_PFX_TIMEOUT:
             case GNRC_IPV6_NIB_RTR_TIMEOUT:
             case GNRC_IPV6_NIB_RECALC_REACH_TIME:
+            case GNRC_IPV6_NIB_REREG_ADDRESS:
                 DEBUG("ipv6: NIB timer event received\n");
                 gnrc_ipv6_nib_handle_timer_event(msg.content.ptr, msg.type);
                 break;
@@ -895,7 +894,8 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
         }
 
         if (prep_hdr) {
-            if (_fill_ipv6_hdr(iface, ipv6, payload) < 0) {
+            if (_fill_ipv6_hdr(gnrc_ipv6_nib_nc_get_iface(&nce), ipv6,
+                               payload) < 0) {
                 /* error on filling up header */
                 gnrc_pktbuf_release(pkt);
                 return;
