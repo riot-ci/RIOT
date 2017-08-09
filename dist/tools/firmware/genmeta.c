@@ -48,7 +48,7 @@
 #include "firmware.h"
 #include "common.h"
 
-const char genmeta_usage[] = "genmeta <BINFILE> <VERSION> <APPID> <START-ADDR> <seckey> <outfile>";
+const char genmeta_usage[] = "firmware genmeta <BINFILE> <VERSION> <APPID> <START-ADDR> <seckey> <outfile>";
 
 int genmeta(int argc, char *argv[])
 {
