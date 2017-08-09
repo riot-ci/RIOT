@@ -1,5 +1,5 @@
 Hello Bootloader!
-============
+=================
 
 This is a basic example which shows a good working bootloader.
 
