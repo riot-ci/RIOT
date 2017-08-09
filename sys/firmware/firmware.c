@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Kaspar Schleiser
+ * Copyright (C) 2017 Kaspar Schleiser <kaspar@schleiser.de>
  *                    Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -105,8 +105,8 @@ int firmware_sign_metadata(firmware_metadata_t *metadata, unsigned char *sk)
 #ifndef BOARD_NATIVE
 static const unsigned _firmware_slot_start[] = {
     CPU_FLASH_BASE,
-    CPU_FLASH_BASE + FIRMWARE_SLOT0_SIZE,
-    CPU_FLASH_BASE + FIRMWARE_SLOT0_SIZE + FIRMWARE_SLOT1_SIZE
+    CPU_FLASH_BASE + SLOT0_SIZE,
+    CPU_FLASH_BASE + SLOT0_SIZE + SLOT1_SIZE
 };
 
 const unsigned firmware_num_slots = sizeof(_firmware_slot_start)/sizeof(unsigned);
