@@ -133,7 +133,7 @@ firmware-tools-clean:
 bootloader-clean:
 	@env -i PATH=$(PATH) BOARD=$(BOARD) make -C $(RIOTBASE)/bootloader clean
 
-multislot-clean: firmware-tools-clean bootloader-clean
+clean-multislot: firmware-tools-clean bootloader-clean
 
 else
 mcuboot:
