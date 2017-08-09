@@ -22,6 +22,7 @@
 #endif
 
 #include "_nib-arsm.h"
+#include "_nib-router.h"
 #include "_nib-6lr.h"
 
 #define ENABLE_DEBUG    (0)
@@ -483,9 +484,9 @@ void _set_nud_state(gnrc_netif2_t *netif, _nib_onl_entry_t *nce,
 
 #if GNRC_IPV6_NIB_CONF_ROUTER
     gnrc_netif2_acquire(netif);
-    if ((netif != NULL) && (netif->ipv6.route_info_cb)) {
-        netif->ipv6.route_info_cb(GNRC_IPV6_NIB_ROUTE_INFO_TYPE_NSC,
-                                  &nce->ipv6, (void *)((intptr_t)state));
+    if (netif != NULL) {
+        _call_route_info_cb(netif, GNRC_IPV6_NIB_ROUTE_INFO_TYPE_NSC,
+                            &nce->ipv6, (void *)((intptr_t)state));
     }
     gnrc_netif2_release(netif);
 #else

@@ -25,6 +25,7 @@
 #include "random.h"
 
 #include "_nib-internal.h"
+#include "_nib-router.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
@@ -253,6 +254,9 @@ void _nib_nc_remove(_nib_onl_entry_t *node)
     evtimer_del((evtimer_t *)&_nib_evtimer, &node->snd_na.event);
 #if GNRC_IPV6_NIB_CONF_ARSM
     evtimer_del((evtimer_t *)&_nib_evtimer, &node->nud_timeout.event);
+#endif
+#if GNRC_IPV6_NIB_CONF_ROUTER
+    evtimer_del((evtimer_t *)&_nib_evtimer, &node->reply_rs.event);
 #endif
 #if GNRC_IPV6_NIB_CONF_6LR
     evtimer_del((evtimer_t *)&_nib_evtimer, &node->addr_reg_timeout.event);
@@ -585,14 +589,22 @@ int _nib_get_route(const ipv6_addr_t *dst, gnrc_pktsnip_t *pkt,
           (void *)pkt);
     _nib_offl_entry_t *offl = _nib_offl_get_match(dst);
 
-    assert((dst != NULL) && (fte != NULL));
     if ((offl == NULL) || (offl->mode == _PL)) {
         /* give default router precedence over PLE */
         _nib_dr_entry_t *router = _nib_drl_get_dr();
 
         if ((router == NULL) && (offl == NULL)) {
+#if GNRC_IPV6_NIB_CONF_ROUTER
+            gnrc_netif2_t *ptr = NULL;
+
+            while ((ptr = gnrc_netif2_iter(ptr))) {
+                _call_route_info_cb(ptr,
+                                    GNRC_IPV6_NIB_ROUTE_INFO_TYPE_RRQ,
+                                    dst, pkt);
+            }
+#else
             (void)pkt;
-            /* TODO: ask RRP to search for route (using pkt) */
+#endif
             return -ENETUNREACH;
         }
         else if (router != NULL) {
