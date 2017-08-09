@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Kaspar Schleiser
+ * Copyright (C) 2017 Kaspar Schleiser <kaspar@schleiser.de>
  *                    Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
