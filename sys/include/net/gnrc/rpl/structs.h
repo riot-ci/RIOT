@@ -238,7 +238,7 @@ struct gnrc_rpl_parent {
 typedef struct {
     uint16_t ocp;   /**< objective code point */
     uint16_t (*calc_rank)(gnrc_rpl_parent_t *parent, uint16_t base_rank); /**< calculate the rank */
-    gnrc_rpl_parent_t *(*which_parent)(gnrc_rpl_parent_t *, gnrc_rpl_parent_t *); /**< compare for parents */
+    int (*which_parent)(gnrc_rpl_parent_t *, gnrc_rpl_parent_t *); /**< compare for parents */
     gnrc_rpl_dodag_t *(*which_dodag)(gnrc_rpl_dodag_t *, gnrc_rpl_dodag_t *); /**< compare for dodags */
     void (*reset)(gnrc_rpl_dodag_t *);    /**< resets the OF */
     void (*parent_state_callback)(gnrc_rpl_parent_t *, int, int); /**< retrieves the state of a parent*/
