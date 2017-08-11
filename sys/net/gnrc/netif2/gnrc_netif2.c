@@ -63,6 +63,7 @@ gnrc_netif2_t *gnrc_netif2_create(char *stack, int stacksize, char priority,
     netif->dev = netdev;
     res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
                         _gnrc_netif2_thread, (void *)netif, name);
+    (void)res;
     assert(res > 0);
     return netif;
 }
@@ -513,7 +514,7 @@ int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
              ipv6_addr_is_loopback(addr)));
     assert((pfx_len > 0) && (pfx_len <= 128));
     gnrc_netif2_acquire(netif);
-    if ((flags & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK) == 0) {
+    if (_get_state(netif) == 0) {
         flags |= GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE;
     }
     for (unsigned i = 0; i < GNRC_NETIF2_IPV6_ADDRS_NUMOF; i++) {
@@ -1061,6 +1062,7 @@ static void _init_from_device(gnrc_netif2_t *netif)
     uint16_t tmp;
 
     res = dev->driver->get(dev, NETOPT_DEVICE_TYPE, &tmp, sizeof(tmp));
+    (void)res;
     assert(res == sizeof(tmp));
     netif->device_type = (uint8_t)tmp;
     switch (netif->device_type) {
