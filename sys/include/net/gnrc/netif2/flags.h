@@ -82,22 +82,31 @@ enum {
 #define GNRC_NETIF2_FLAGS_IPV6_ADV_RETRANS_TIMER    (0x00000040U)
 
 /**
+ * @brief   If gnrc_netif2_t::ipv6::aac_mode == GNRC_NETIF2_AAC_DHCP then this
+ *          flag indicates that other configuration information is available via
+ *          DHCPv6 (e.g. DNS-related information)
+ *
+ * @see [RFC 4861, section 4.2](https://tools.ietf.org/html/rfc4861#section-4.2)
+ */
+#define GNRC_NETIF2_FLAGS_IPV6_ADV_O_FLAG           (0x00000080U)
+
+/**
  * @brief   This interface uses 6Lo header compression
  *
  * @see [RFC 6282](https://tools.ietf.org/html/rfc6282)
  */
-#define GNRC_NETIF2_FLAGS_6LO_HC                    (0x00000080U)
+#define GNRC_NETIF2_FLAGS_6LO_HC                    (0x00000100U)
 
 /**
  * @brief   This interface acts as a 6Lo border router to the LLN
  */
-#define GNRC_NETIF2_FLAGS_6LO_ABR                   (0x00000100U)
+#define GNRC_NETIF2_FLAGS_6LO_ABR                   (0x00000200U)
 
 /**
  * @brief   This interface acts as a mesh-under node (route-over topology when
  *          unset)
  */
-#define GNRC_NETIF2_FLAGS_6LO_MESH                  (0x00000200U)
+#define GNRC_NETIF2_FLAGS_6LO_MESH                  (0x00000400U)
 
 /**
  * @brief   Interface supports 6LoWPAN general header compression
@@ -105,7 +114,7 @@ enum {
  * @attention   GHC not implemented yet
  * @see [RFC 7400, section 3.3](https://tools.ietf.org/html/rfc7400#section-3.3)
  */
-#define GNRC_NETIF2_FLAGS_6LO_BACKBONE              (0x00000400U)
+#define GNRC_NETIF2_FLAGS_6LO_BACKBONE              (0x00000800U)
 
 /**
  * @brief   Mask for @ref gnrc_mac_tx_feedback_t
