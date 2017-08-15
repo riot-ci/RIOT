@@ -194,7 +194,7 @@ size_t fmt_u16_dec(char *out, uint16_t val)
 
 size_t fmt_s32_dec(char *out, int32_t val)
 {
-    size_t negative = (val < 0 ? 1 : 0);
+    unsigned negative = (val < 0) ? 1 : 0;
     if (negative) {
         if (out) {
             *out++ = '-';
@@ -305,7 +305,7 @@ size_t fmt_float(char *out, float f, unsigned precision)
 {
     assert (precision <= 7);
 
-    unsigned negative = ((f < 0) ? 1 : 0);
+    unsigned negative = (f < 0) ? 1 : 0;
     uint32_t integer;
 
     if (negative) {
