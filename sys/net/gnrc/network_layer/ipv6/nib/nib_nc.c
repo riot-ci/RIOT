@@ -112,6 +112,15 @@ static const char *_nud_str[] = {
     [GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE]     = "REACHABLE",
 };
 
+#if GNRC_IPV6_NIB_CONF_6LR
+static const char *_ar_str[] = {
+    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC]         = "GC",
+    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE]  = "TENTATIVE",
+    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED] = "REGISTERED",
+    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL]     = "MANUAL",
+};
+#endif
+
 void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
 {
     char addr_str[IPV6_ADDR_MAX_STR_LEN];
@@ -126,7 +135,12 @@ void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
     if (gnrc_ipv6_nib_nc_is_router(entry)) {
         printf("router ");
     }
-    puts(_nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
+    printf(_nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
+#if GNRC_IPV6_NIB_CONF_6LR
+        printf(" ");
+        printf(_ar_str[gnrc_ipv6_nib_nc_get_ar_state(entry)]);
+#endif
+    puts("");
 }
 
 /** @} */
