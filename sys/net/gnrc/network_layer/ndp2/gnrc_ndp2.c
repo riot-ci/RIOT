@@ -26,6 +26,10 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+#if ENABLE_DEBUG
+static char addr_str[IPV6_ADDR_MAX_STR_LEN];
+#endif
+
 gnrc_pktsnip_t *gnrc_ndp2_nbr_sol_build(const ipv6_addr_t *tgt,
                                         gnrc_pktsnip_t *options)
 {
