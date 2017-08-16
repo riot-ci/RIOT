@@ -32,6 +32,11 @@
 #ifndef CLOCK_LSE
 #error "Please provide CLOCK_LSE in your board's periph_conf.h"
 #endif
+#ifndef CLOCK_CORECLOCK
+#error "Please provide desired CLOCK_CORECLOCK in your board's periph_conf.h"
+#elif CLOCK_CORECLOCK > RCC_MAX_FREQUENCY
+#error "Invalid CLOCK_CORECLOCK value"
+#endif
 
 /**
  * @name    PLL configuration
@@ -42,7 +47,7 @@
 #define PLL_IN                      CLOCK_HSE
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSE
 #else
-#define PLL_IN                      (25000000U)         /* HSI fixed @ 16MHz */
+#define PLL_IN                      (16000000U)         /* HSI fixed @ 16MHz */
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSI
 #endif
 #if (CLOCK_ENABLE_PLLI2S)
@@ -109,7 +114,6 @@
 #define PLLI2S_IN               PLL_IN
 #define PLLI2S_SRC              0
 #endif
-
 
 #define M_I2S                   (PLLI2S_IN / PLL_IN_FREQ)
 #if ((M_I2S < 2) || (M_I2S > 63))
@@ -320,7 +324,7 @@ void stmclk_init_sysclk(void)
     RCC->CFGR |= CLOCK_MCO1_SRC | CLOCK_MCO1_PRE;
 #endif
 #if (CLOCK_MCO2_SRC)
-#ifndef RCC_CFGR_MCO1
+#ifndef RCC_CFGR_MCO2
 #error "stmclk: no MCO2 on this device"
 #endif
     RCC->CFGR |= CLOCK_MCO2_SRC | CLOCK_MCO2_PRE;
