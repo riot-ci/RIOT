@@ -341,7 +341,11 @@ typedef enum {
     NETOPT_IQ_INVERT,
 
     /**
-     * @brief   Get the retries needed for the last transmission
+     * @brief   Get retry amount from missing ACKs of the last transmission
+     *
+     * This retrieves the number of retries needed for the last transmissions.
+     * Only retries due to missing ACK packets are considered. Retries due to
+     * CCA failures are not counted.
      */
     NETOPT_TX_RETRIES_NEEDED,
 
