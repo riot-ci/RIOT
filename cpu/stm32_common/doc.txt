@@ -1,0 +1,46 @@
+/**
+ * @ingroup cpu
+ * @defgroup cpu_stm32_common STM32 common
+ * @{
+ * @brief STM32 common configurations
+ *
+ * STM32F[2|4|7] Clock configuration
+ * =================================
+ *
+ * stm32f2, stm32f4 and stm32f7 cpus share clock configuration code and macro.
+ * It can be configured as described here.
+ *
+ * The following macro must be defined in the board's periph_conf.h:
+ *  - CLOCK_HSE: 0 if HSI must be used as PLL source, frequency in Hz otherwise,
+ *  - CLOCK_LSE: 0 if LSI must be used as low speed clock, 1 otherwise
+ * (the LSE is a 32.78kHz crytal)
+ *  - CLOCK_CORECLOCK: desired main clock frequency
+ *  - CLOCK_AHB_DIV, CLOCK_AHB: AHB prescaler in register value and AHB frequecny in Hz
+ *  - CLOCK_APB1_DIV, CLOCK_APB1: APB1 prescaler in register value and APB1 frequecny in Hz
+ *  - CLOCK_APB2_DIV, CLOCK_APB2: APB2 prescaler in register value and APB2 frequecny in Hz
+ *
+ * The following macro are optional and can be defined depending on board config
+ * and application needs:
+ *  - P: P is the PLL output divider. The default value is 2, but depending on
+ * board configuration, it can be overriden. (Possible values: 2,4,6,8)
+ *  - PLL_IN_FREQ: PLL input frequency, this value must be between 1 and 2 MHz.
+ * The default value is 2MHz.
+ *  - CLOCK_ENABLE_PLLI2S: if a second PLL (PLL I2S) is available on the cpu, it
+ * can be activated with this macro.
+ * @note the PLL I2S may be automatically activated if the 48MHz output cannot be
+ * genrated by the main PLL with the given CLOCK_CORECLOCK, P and CLOCK_HSE values
+ * (i.e. Q cannot be calculated), and if the cpu supports using the PLL I2S as 48MHz source
+ *  - CLOCK_I2S: if the PLL I2S is used, this is the PLL output frequency (default: 48MHz)
+ *  - Q_I2S: PLL I2S output divider. If not defined, the value is automatically
+ * calculated.
+ *
+ * Clock outputs can also be setup with macro:
+ *  - CLOCK_MCOx_SRC, CLOCK_MCOx_PRE, with x=1,2: MCO1 and MCO2 output configuration
+ * macros. CLOCK_MCOx_SRC defines the MCOx source, as a register value (see vendor header),
+ * CLOCK_MCOx_PRE defines the MCOx prescaler, as a register value.
+ *
+ * Others PLL values (M, N, Q) are calculated automatically from output clock
+ * (CLOCK_CORECLOCK for main PLL, CLOCK_I2S for PLL I2S), PLL input clock (PLL_IN_FREQ,
+ * used for both PLLs) and P (only for main PLL).
+ * @}
+ */
