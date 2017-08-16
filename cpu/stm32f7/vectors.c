@@ -132,13 +132,16 @@ WEAK_DEFAULT void isr_dfsdm1_flt0(void);
 WEAK_DEFAULT void isr_dfsdm1_flt1(void);
 WEAK_DEFAULT void isr_dfsdm1_flt2(void);
 WEAK_DEFAULT void isr_dfsdm1_flt3(void);
-WEAK_DEFAULT void isr_sdmmc2(void);
 WEAK_DEFAULT void isr_can3_tx(void);
 WEAK_DEFAULT void isr_can3_rx0(void);
 WEAK_DEFAULT void isr_can3_rx1(void);
 WEAK_DEFAULT void isr_can3_sce(void);
 WEAK_DEFAULT void isr_jpeg(void);
 WEAK_DEFAULT void isr_mdios(void);
+#endif
+#if defined(CPU_MODEL_STM32F769NI) || defined(CPU_MODEL_STM32F767ZI) \
+    || defined(CPU_MODEL_STM32F722ZE)
+WEAK_DEFAULT void isr_sdmmc2(void);
 #endif
 
 /* interrupt vector table */
@@ -242,7 +245,11 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_otg_hs_ep1_in,
     (void*) isr_otg_hs_wkup,
     (void*) isr_otg_hs,
+#if defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),
+#else
     (void*) isr_dcmi,
+#endif
     (void*) (0UL),
     (void*) isr_rng,
     (void*) isr_fpu,
@@ -250,18 +257,35 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_uart8,
     (void*) isr_spi4,
     (void*) isr_spi5,
+#if defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),
+#else
     (void*) isr_spi6,
+#endif
     (void*) isr_sai1,
+#if defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),
+    (void*) (0UL),
+    (void*) (0UL),
+#else
     (void*) isr_ltdc,
     (void*) isr_ltdc_er,
     (void*) isr_dma2d,
+#endif
     (void*) isr_sai2,
     (void*) isr_quadspi,
     (void*) isr_lptim1,
+#if defined(CPU_MODEL_STM32F769NI) || defined(CPU_MODEL_STM32F767ZI)
     (void*) isr_cec,
     (void*) isr_i2c4_ev,
     (void*) isr_i2c4_er,
     (void*) isr_spdif_rx,
+#elif defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),
+    (void*) (0UL),
+    (void*) (0UL),
+    (void*) (0UL),
+#endif
 #if defined(CPU_MODEL_STM32F769NI)
     (void*) isr_dsi,
 #elif defined(CPU_MODEL_STM32F767ZI)
@@ -272,7 +296,17 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_dfsdm1_flt1,
     (void*) isr_dfsdm1_flt2,
     (void*) isr_dfsdm1_flt3,
+#elif defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),
+    (void*) (0UL),
+    (void*) (0UL),
+    (void*) (0UL),
+#endif
+#if defined(CPU_MODEL_STM32F769NI) || defined(CPU_MODEL_STM32F767ZI) \
+    || defined(CPU_MODEL_STM32F722ZE)
     (void*) isr_sdmmc2,
+#endif
+#if defined(CPU_MODEL_STM32F769NI) || defined(CPU_MODEL_STM32F767ZI)
     (void*) isr_can3_tx,
     (void*) isr_can3_rx0,
     (void*) isr_can3_rx1,
