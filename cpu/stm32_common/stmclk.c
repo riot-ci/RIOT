@@ -34,8 +34,6 @@
 #endif
 #ifndef CLOCK_CORECLOCK
 #error "Please provide desired CLOCK_CORECLOCK in your board's periph_conf.h"
-#elif CLOCK_CORECLOCK > RCC_MAX_FREQUENCY
-#error "Invalid CLOCK_CORECLOCK value"
 #endif
 
 /**
