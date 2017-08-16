@@ -55,19 +55,15 @@ static void checked_write(int handle, void *buffer, int nbyte)
     ssize_t res;
     while (nbyte > 0) {
         res = write(handle, buffer, nbyte);
-        if (res < 0) {
+        if (res <= 0) {
             fprintf(stderr, "write to fd %i failed: %s\n", handle, strerror(errno));
-            return;
-        }
-        else if (res == 0) {
-            fprintf(stderr, "write to fd %i failed: ret=0, %s\n", handle, strerror(errno));
             return;
         }
         nbyte -= res;
     }
 }
 
-int set_serial_attribs (int fd, int speed, int parity)
+int set_serial_attribs(int fd, int speed, int parity)
 {
     struct termios tty;
     memset (&tty, 0, sizeof tty);
@@ -110,7 +106,7 @@ int set_serial_attribs (int fd, int speed, int parity)
     return 0;
 }
 
-void set_blocking (int fd, int should_block)
+void set_blocking(int fd, int should_block)
 {
     struct termios tty;
     memset (&tty, 0, sizeof tty);
