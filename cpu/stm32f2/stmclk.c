@@ -47,10 +47,10 @@
 #ifndef P
 /* we fix P to 2 (so the PLL output equals 2 * CLOCK_CORECLOCK) */
 #define P                       (2U)
+#endif /* P */
 #if ((P != 2) && (P != 4) && (P != 6) && (P != 8))
 #error "PLL configuration: PLL P value is invalid"
 #endif
-#endif /* P */
 /* the recommended input clock for the PLL should be 2MHz */
 #ifndef PLL_IN_FREQ
 #define PLL_IN_FREQ             (2000000U)
