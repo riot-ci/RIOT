@@ -52,14 +52,23 @@
 #endif
 #endif /* P */
 /* the recommended input clock for the PLL should be 2MHz */
-#define M                       (PLL_IN / 2000000U)
+#ifndef PLL_IN_FREQ
+#define PLL_IN_FREQ             (2000000U)
+#endif
+#define M                       (PLL_IN / PLL_IN_FREQ)
 #if ((M < 2) || (M > 63))
 #error "PLL configuration: PLL M value is out of range"
 #endif
-/* next we multiply the input freq to 2 * CORECLOCK */
-#define N                       (P * CLOCK_CORECLOCK / 2000000U)
+#if (PLL_IN_FREQ * M) != PLL_IN
+#error "PLL configuration: PLL input frequency is invalid (M)"
+#endif
+/* next we multiply the input freq to P * CORECLOCK */
+#define N                       (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
 #if ((N < 50) || (N > 432))
 #error "PLL configuration: PLL N value is out of range"
+#endif
+#if (PLL_IN_FREQ * N / P) != CLOCK_CORECLOCK
+#error "PLL configuration: PLL input frequency is invalid (N)"
 #endif
 /* finally we need to set Q, so that the USB clock is 48MHz */
 #define Q                       ((P * CLOCK_CORECLOCK) / 48000000U)
