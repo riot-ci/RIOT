@@ -20,7 +20,7 @@
 
 #include "assert.h"
 #include "net/gnrc.h"
-#include "net/gnrc/netdev/lora_adpt.h"
+#include "net/gnrc/netdev/lora.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
