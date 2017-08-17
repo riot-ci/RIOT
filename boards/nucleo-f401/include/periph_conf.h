@@ -38,8 +38,6 @@ extern "C" {
 /* give the target core clock (HCLK) frequency [in Hz],
  * maximum: 84MHz */
 #define CLOCK_CORECLOCK     (84000000U)
-/* PLL Output divisor */
-#define P                   (4U)
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1      /* min 25MHz */
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)

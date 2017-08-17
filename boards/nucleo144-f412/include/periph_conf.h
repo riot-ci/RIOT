@@ -39,7 +39,7 @@ extern "C" {
 #define CLOCK_LSE           (1)
 /* give the target core clock (HCLK) frequency [in Hz],
  * maximum: 100MHz */
-#define CLOCK_CORECLOCK     (96000000U)
+#define CLOCK_CORECLOCK     (100000000U)
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1      /* min 25MHz */
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
