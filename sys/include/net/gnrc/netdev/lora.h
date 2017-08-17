@@ -16,8 +16,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef NET_GNRC_NETDEV_LORA_ADPT_H
-#define NET_GNRC_NETDEV_LORA_ADPT_H
+#ifndef NET_GNRC_NETDEV_LORA_H
+#define NET_GNRC_NETDEV_LORA_H
 
 #include "net/gnrc/netdev.h"
 
@@ -38,5 +38,5 @@ void gnrc_netdev_lora_init(gnrc_netdev_t *gnrc_netdev, netdev_t *dev);
 }
 #endif
 
-#endif /* NET_GNRC_NETDEV_LORA_ADPT_H */
+#endif /* NET_GNRC_NETDEV_LORA_H */
 /** @} */
