@@ -32,7 +32,6 @@ extern "C" {
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
 #define CLOCK_HSE           (25000000U)
-#define PLL_IN_FREQ         (1000000U)
 /* 0: no external low speed crystal available,
  * 1: external crystal available (always 32.768kHz) */
 #define CLOCK_LSE           (1)
