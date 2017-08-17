@@ -267,6 +267,7 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_i2c4_ev,               /* [95] I2C4 Event Interrupt */
     (void*) isr_i2c4_er,               /* [96] I2C4 Error Interrupt */
     (void*) isr_spdif_rx,              /* [97] SPDIF-RX global Interrupt */
+#endif
 #if defined(CPU_MODEL_STM32F769NI)
     (void*) isr_dsi,                   /* [98] DSI global Interrupt */
 #elif defined(CPU_MODEL_STM32F767ZI)
