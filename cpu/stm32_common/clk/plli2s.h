@@ -22,6 +22,10 @@
 #ifndef PLLI2S_H
 #define PLLI2S_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if (CLOCK_ENABLE_PLLI2S)
 #ifndef RCC_CR_PLLI2SRDY
 #error "No PLL I2S on this device"
@@ -185,6 +189,10 @@
 #undef _PLL_I2S_FINISHED
 #endif /* Q_I2S */
 #endif /* CLOCK_ENABLE_PLLI2S */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PLLI2S_H */
 /** @} */
