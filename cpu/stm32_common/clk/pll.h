@@ -28,7 +28,7 @@ extern "C" {
 
 /* the recommended input clock for the PLL should be 2MHz */
 #ifndef PLL_IN_FREQ
-#if ((PLL_IN / 2) * 2 == PLL_IN)
+#if ((PLL_IN / 2000000U) * 2000000U == PLL_IN)
 #define PLL_IN_FREQ              (2000000U)
 #else
 #define PLL_IN_FREQ              (1000000U)
@@ -41,6 +41,8 @@ extern "C" {
 #if (PLL_IN_FREQ * M) != PLL_IN
 #error "PLL configuration: PLL input frequency is invalid (M)"
 #endif
+
+#define N_PQR_COND(N, PQR, IN, OUT) (N >= 50) && (N <= 432) && ((IN * N / PQR) == OUT)
 
 /* Use user-provided P if existing, otherwise try possible values */
 #ifdef P
@@ -55,9 +57,12 @@ extern "C" {
 #error "PLL configuration: PLL input frequency is invalid (N)"
 #endif
 #else
+/* N/P pair condition */
+#define N_P_COND N_PQR_COND(N, P, PLL_IN_FREQ, CLOCK_CORECLOCK)
+/* Try for P=2,4,6,8 */
 #define P  (2U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if (N >= 50) && (N <= 432) && ((PLL_IN_FREQ * N / P) == CLOCK_CORECLOCK)
+#if N_P_COND
 #define _PLL_N_FINISHED 1
 #endif
 #if !_PLL_N_FINISHED
@@ -65,21 +70,25 @@ extern "C" {
 #undef N
 #define P  (4U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if (N >= 50) && (N <= 432) && ((PLL_IN_FREQ * N / P) == CLOCK_CORECLOCK)
+#if N_P_COND
 #define _PLL_N_FINISHED 1
 #endif
 #endif /* !_PLL_N_FINISHED */
 #if !_PLL_N_FINISHED
+#undef P
+#undef N
 #define P  (6U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if (N >= 50) && (N <= 432) && ((PLL_IN_FREQ * N / P) == CLOCK_CORECLOCK)
+#if N_P_COND
 #define _PLL_N_FINISHED 1
 #endif
 #endif /* !_PLL_N_FINISHED */
 #if !_PLL_N_FINISHED
+#undef P
+#undef N
 #define P  (8U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if (N >= 50) && (N <= 432) && ((PLL_IN_FREQ * N / P) == CLOCK_CORECLOCK)
+#if N_P_COND
 #define _PLL_N_FINISHED 1
 #endif
 #endif /* !_PLL_N_FINISHED */
@@ -87,7 +96,9 @@ extern "C" {
 #error "PLL configuration: no valid N/P pair found for PLL configuration"
 #endif /* !_PLL_N_FINISHED */
 #undef _PLL_N_FINISHED
+#undef N_P_COND
 #endif /* P */
+
 
 /* finally we need to set Q, so that the USB clock is 48MHz */
 #define Q                        ((P * CLOCK_CORECLOCK) / 48000000U)

@@ -42,10 +42,12 @@ extern "C" {
 #error "PLL configuration: PLL SAI N value is invalid (try with another Q_SAI)"
 #endif
 #else
-
+/* N/Q pair condition */
+#define Q_N_COND N_PQR_COND(N_SAI, Q_SAI, PLL_IN_FREQ, CLOCK_SAI)
+/* Try for valid Q values (3,..,15) */
 #define Q_SAI  (2U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #if !_PLL_SAI_FINISHED
@@ -53,7 +55,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (3U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -62,7 +64,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (4U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -71,7 +73,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (5U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -80,7 +82,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (6U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -89,7 +91,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (7U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -98,7 +100,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (8U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -107,7 +109,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (9U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -116,7 +118,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (10U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -125,7 +127,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (11U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -134,7 +136,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (12U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -143,7 +145,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (13U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -152,7 +154,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (14U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #endif /* _PLL_SAI_FINISHED */
@@ -161,7 +163,7 @@ extern "C" {
 #undef N_SAI
 #define Q_SAI  (15U)
 #define N_SAI  (Q_SAI * CLOCK_SAI / PLL_IN_FREQ)
-#if (N_SAI >= 50) && (N_SAI <= 432) && ((PLL_IN_FREQ * N_SAI / Q_SAI) == CLOCK_SAI)
+#if Q_N_COND
 #define _PLL_SAI_FINISHED 1
 #endif
 #if !_PLL_SAI_FINISHED
@@ -169,6 +171,7 @@ extern "C" {
 #endif
 #endif /* _PLL_SAI_FINISHED */
 #undef _PLL_SAI_FINISHED
+#undef Q_N_COND
 #endif /* Q_SAI */
 #endif /* CLOCK_ENABLE_PLLSAI */
 
