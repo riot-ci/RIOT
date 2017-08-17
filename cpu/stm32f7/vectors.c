@@ -245,8 +245,34 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_otg_hs_ep1_in,         /* [75] USB OTG HS End Point 1 In global interrupt */
     (void*) isr_otg_hs_wkup,           /* [76] USB OTG HS Wakeup through EXTI interrupt */
     (void*) isr_otg_hs,                /* [77] USB OTG HS global interrupt */
-#if defined(CPU_MODEL_STM32F746ZG) || defined(CPU_MODEL_STM32F769NI) \
-    || defined(CPU_MODEL_STM32F767ZI)
+#if defined(CPU_MODEL_STM32F722ZE)
+    (void*) (0UL),                     /* [78] Reserved */
+    (void*) (0UL),                     /* [79] Reserved */
+    (void*) isr_rng,                   /* [80] RNG global interrupt */
+    (void*) isr_fpu,                   /* [81] FPU global interrupt */
+    (void*) isr_uart7,                 /* [82] UART7 global interrupt */
+    (void*) isr_uart8,                 /* [83] UART8 global interrupt */
+    (void*) isr_spi4,                  /* [84] SPI4 global Interrupt */
+    (void*) isr_spi5,                  /* [85] SPI5 global Interrupt */
+    (void*) (0UL),                     /* [86] Reserved */
+    (void*) isr_sai1,                  /* [87] SAI1 global Interrupt */
+    (void*) (0UL),                     /* [88] Reserved */
+    (void*) (0UL),                     /* [89] Reserved */
+    (void*) (0UL),                     /* [90] Reserved */
+    (void*) isr_sai2,                  /* [91] SAI2 global Interrupt */
+    (void*) isr_quadspi,               /* [92] Quad SPI global interrupt */
+    (void*) isr_lptim1,                /* [93] LP TIM1 interrupt */
+    (void*) (0UL),                     /* [94] Reserved */
+    (void*) (0UL),                     /* [95] Reserved */
+    (void*) (0UL),                     /* [96] Reserved */
+    (void*) (0UL),                     /* [97] Reserved */
+    (void*) (0UL),                     /* [98] Reserved */
+    (void*) (0UL),                     /* [99] Reserved */
+    (void*) (0UL),                     /* [100] Reserved */
+    (void*) (0UL),                     /* [101] Reserved */
+    (void*) (0UL),                     /* [102] Reserved */
+    (void*) isr_sdmmc2,                /* [103] SDMMC2 global Interrup */
+#else
     (void*) isr_dcmi,                  /* [78] DCMI global interrupt */
     (void*) (0UL),                     /* [79] Reserved */
     (void*) isr_rng,                   /* [80] RNG global interrupt */
@@ -285,32 +311,5 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_jpeg,                  /* [108] JPEG global Interrupt */
     (void*) isr_mdios,                 /* [109] MDIO Slave global Interrupt */
 #endif
-#if defined(CPU_MODEL_STM32F722ZE)
-    (void*) (0UL),                     /* [78] Reserved */
-    (void*) (0UL),                     /* [79] Reserved */
-    (void*) isr_rng,                   /* [80] RNG global interrupt */
-    (void*) isr_fpu,                   /* [81] FPU global interrupt */
-    (void*) isr_uart7,                 /* [82] UART7 global interrupt */
-    (void*) isr_uart8,                 /* [83] UART8 global interrupt */
-    (void*) isr_spi4,                  /* [84] SPI4 global Interrupt */
-    (void*) isr_spi5,                  /* [85] SPI5 global Interrupt */
-    (void*) (0UL),                     /* [86] Reserved */
-    (void*) isr_sai1,                  /* [87] SAI1 global Interrupt */
-    (void*) (0UL),                     /* [88] Reserved */
-    (void*) (0UL),                     /* [89] Reserved */
-    (void*) (0UL),                     /* [90] Reserved */
-    (void*) isr_sai2,                  /* [91] SAI2 global Interrupt */
-    (void*) isr_quadspi,               /* [92] Quad SPI global interrupt */
-    (void*) isr_lptim1,                /* [93] LP TIM1 interrupt */
-    (void*) (0UL),                     /* [94] Reserved */
-    (void*) (0UL),                     /* [95] Reserved */
-    (void*) (0UL),                     /* [96] Reserved */
-    (void*) (0UL),                     /* [97] Reserved */
-    (void*) (0UL),                     /* [98] Reserved */
-    (void*) (0UL),                     /* [99] Reserved */
-    (void*) (0UL),                     /* [100] Reserved */
-    (void*) (0UL),                     /* [101] Reserved */
-    (void*) (0UL),                     /* [102] Reserved */
-    (void*) isr_sdmmc2,                /* [103] SDMMC2 global Interrup */
 #endif
 };
