@@ -26,6 +26,10 @@
 extern "C" {
 #endif
 
+/**
+ * @name PLL SAI configuration
+ * @{
+ */
 #if (CLOCK_ENABLE_PLLSAI)
 #ifndef RCC_CR_PLLSAIRDY
 #error "No PLL SAI on this device"
@@ -174,6 +178,7 @@ extern "C" {
 #undef Q_N_COND
 #endif /* Q_SAI */
 #endif /* CLOCK_ENABLE_PLLSAI */
+/** @} */
 
 #ifdef __cplusplus
 }

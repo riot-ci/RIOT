@@ -26,6 +26,10 @@
 extern "C" {
 #endif
 
+/**
+ * @name Main PLL configuration
+ * @{
+ */
 /* the recommended input clock for the PLL should be 2MHz */
 #ifndef PLL_IN_FREQ
 #if ((PLL_IN / 2000000U) * 2000000U == PLL_IN)
@@ -34,6 +38,7 @@ extern "C" {
 #define PLL_IN_FREQ              (1000000U)
 #endif
 #endif
+/** PLL input divider */
 #define M                        (PLL_IN / PLL_IN_FREQ)
 #if ((M < 2) || (M > 63))
 #error "PLL configuration: PLL M value is out of range"
@@ -136,6 +141,7 @@ extern "C" {
 #error "PLL configuration: USB frequency is not 48MHz"
 #endif
 #endif /* ((Q * 48000000U) != (P * CLOCK_CORECLOCK)) */
+/** @} */
 
 #ifdef __cplusplus
 }
