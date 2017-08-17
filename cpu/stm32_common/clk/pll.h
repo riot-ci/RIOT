@@ -60,20 +60,11 @@ extern "C" {
 /* N/P pair condition */
 #define N_P_COND N_PQR_COND(N, P, PLL_IN_FREQ, CLOCK_CORECLOCK)
 /* Try for P=2,4,6,8 */
-#define P  (2U)
+#define P  (8U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
 #if N_P_COND
 #define _PLL_N_FINISHED 1
 #endif
-#if !_PLL_N_FINISHED
-#undef P
-#undef N
-#define P  (4U)
-#define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if N_P_COND
-#define _PLL_N_FINISHED 1
-#endif
-#endif /* !_PLL_N_FINISHED */
 #if !_PLL_N_FINISHED
 #undef P
 #undef N
@@ -86,7 +77,16 @@ extern "C" {
 #if !_PLL_N_FINISHED
 #undef P
 #undef N
-#define P  (8U)
+#define P  (4U)
+#define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
+#if N_P_COND
+#define _PLL_N_FINISHED 1
+#endif
+#endif /* !_PLL_N_FINISHED */
+#if !_PLL_N_FINISHED
+#undef P
+#undef N
+#define P  (2U)
 #define N  (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
 #if N_P_COND
 #define _PLL_N_FINISHED 1
