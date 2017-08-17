@@ -112,6 +112,14 @@ WEAK_DEFAULT void isr_0(void);
 WEAK_DEFAULT void isr_rng(void);
 WEAK_DEFAULT void isr_fpu(void);
 WEAK_DEFAULT void isr_crs(void);
+WEAK_DEFAULT void isr_i2c4_ev(void);
+WEAK_DEFAULT void isr_i2c4_er(void);
+WEAK_DEFAULT void isr_dcmi(void);
+WEAK_DEFAULT void isr_can2_tx(void);
+WEAK_DEFAULT void isr_can2_rx0(void);
+WEAK_DEFAULT void isr_can2_rx1(void);
+WEAK_DEFAULT void isr_can2_sce(void);
+WEAK_DEFAULT void isr_dma2d(void);
 
 /* interrupt vector table */
 ISR_VECTORS const void *interrupt_vector[] = {
@@ -218,7 +226,17 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) (0UL),
     (void*) isr_rng,
     (void*) isr_fpu,
-#if defined(STM32L432KC)
+#if defined(STM32L432KC) || defined(STM32L496ZG)
     (void*) isr_crs
+#endif
+#if defined(STM32L496ZG)
+    (void*) isr_i2c4_ev,
+    (void*) isr_i2c4_er,
+    (void*) isr_dcmi,
+    (void*) isr_can2_tx,
+    (void*) isr_can2_rx0,
+    (void*) isr_can2_rx1,
+    (void*) isr_can2_sce,
+    (void*) isr_dma2d,
 #endif
 };
