@@ -21,7 +21,7 @@
 
 #include "log.h"
 #include "board.h"
-#include "net/gnrc/netdev/lora_adpt.h"
+#include "net/gnrc/netdev/lora.h"
 #include "sx127x_params.h"
 
 /**
