@@ -37,17 +37,19 @@ extern "C" {
  * @{
  */
 #if defined(STM32L496ZG)
-#define LED0_PORT           GPIOC
+#define LED0_PORT           PORT_C
+#define LED0_GPIO           GPIOC
 #define LED0_PIN_NUM        7
 #else
-#define LED0_PORT           GPIOB
+#define LED0_PORT           PORT_B
+#define LED0_GPIO           GPIOB
 #define LED0_PIN_NUM        0
 #endif
 #define LED0_PIN            GPIO_PIN(LED0_PORT, LED0_PIN_NUM)
 #define LED0_MASK           (1 << LED0_PIN_NUM)
-#define LED0_ON             (LED0_PORT->BSRR = LED0_MASK)
-#define LED0_OFF            (LED0_PORT->BSRR = (LED0_MASK << 16))
-#define LED0_TOGGLE         (LED0_PORT->ODR  ^= LED0_MASK)
+#define LED0_ON             (LED0_GPIO->BSRR = LED0_MASK)
+#define LED0_OFF            (LED0_GPIO->BSRR = (LED0_MASK << 16))
+#define LED0_TOGGLE         (LED0_GPIO->ODR  ^= LED0_MASK)
 
 #define LED1_PIN            GPIO_PIN(PORT_B, 7)
 #define LED1_MASK           (1 << 7)
