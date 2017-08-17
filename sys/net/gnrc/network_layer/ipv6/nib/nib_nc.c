@@ -135,10 +135,10 @@ void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
     if (gnrc_ipv6_nib_nc_is_router(entry)) {
         printf("router ");
     }
-    printf(_nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
+    printf("%s", _nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
 #if GNRC_IPV6_NIB_CONF_6LR
         printf(" ");
-        printf(_ar_str[gnrc_ipv6_nib_nc_get_ar_state(entry)]);
+        printf("%s",_ar_str[gnrc_ipv6_nib_nc_get_ar_state(entry)]);
 #endif
     puts("");
 }
