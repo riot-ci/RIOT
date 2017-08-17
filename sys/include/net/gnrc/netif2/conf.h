@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Number of multicast addressed needed for @ref net_gnrc_rpl "RPL".
+ * @brief   Number of multicast addresses needed for @ref net_gnrc_rpl "RPL".
  *
  * @note    Used for calculation of @ref GNRC_NETIF2_IPV6_GROUPS_NUMOF
  */

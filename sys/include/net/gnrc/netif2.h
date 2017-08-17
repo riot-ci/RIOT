@@ -131,7 +131,7 @@ struct gnrc_netif2_ops {
      *
      * @return  The number of bytes actually sent on success
      * @return  -EBADMSG, if the @ref net_gnrc_netif_hdr in @p pkt is missing
-     *          or of an unexpected format.
+     *          or is in an unexpected format.
      * @return  -ENOTSUP, if sending @p pkt in the given format isn't supported
      *          (e.g. empty payload with Ethernet).
      * @return  Any negative error code reported by gnrc_netif2_t::dev.
@@ -143,9 +143,9 @@ struct gnrc_netif2_ops {
      *
      * @pre `netif != NULL`
      *
-     * @note The function takes the bytes received from via
-     *       netdev_driver_t::recv() from gnrc_netif_t::dev and re-formats it to
-     *       a @ref net_gnrc_pkt "packet" containing a @ref net_gnrc_netif_hdr
+     * @note The function takes the bytes received via netdev_driver_t::recv()
+     *       from gnrc_netif_t::dev and re-formats it to a
+     *       @ref net_gnrc_pkt "packet" containing a @ref net_gnrc_netif_hdr
      *       and a payload header in receive order.
      *
      * @param[in] netif The network interface.
@@ -157,7 +157,7 @@ struct gnrc_netif2_ops {
     gnrc_pktsnip_t *(*recv)(gnrc_netif2_t *netif);
 
     /**
-     * @brief   Get an option from the network interface
+     * @brief   Gets an option from the network interface
      *
      * Use gnrc_netif2_get_from_netdev() to just get options from
      * gnrc_netif2_t::dev.
@@ -173,9 +173,9 @@ struct gnrc_netif2_ops {
     int (*get)(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt);
 
     /**
-     * @brief   Get an option from the network interface
+     * @brief  Sets an option from the network interface
      *
-     * Use gnrc_netif2_set_from_netdev() to just get options from
+     * Use gnrc_netif2_set_from_netdev() to just set options from
      * gnrc_netif2_t::dev.
      *
      * @param[in] netif     The network interface.

@@ -33,7 +33,7 @@ extern "C" {
 #define NETDEV_MSG_TYPE_EVENT   (0x1234)
 
 /**
- * @brief   Acquire exclusive access to the interface
+ * @brief   Acquires exclusive access to the interface
  *
  * @param[in] netif the network interface
  *
@@ -47,7 +47,7 @@ static inline void gnrc_netif2_acquire(gnrc_netif2_t *netif)
 }
 
 /**
- * @brief   Release exclusive access to the interface
+ * @brief   Releases exclusive access to the interface
  *
  * @param[in] netif the network interface
  *
@@ -124,7 +124,7 @@ int gnrc_netif2_ipv6_addr_idx(gnrc_netif2_t *netif,
                               const ipv6_addr_t *addr);
 
 /**
- * @brief   Get state from address flags
+ * @brief   Gets state from address flags
  *
  * @param[in] netif the network interface
  * @param[in] idx   index of the address flags
@@ -262,7 +262,7 @@ int gnrc_netif2_ipv6_group_idx(gnrc_netif2_t *netif,
                                const ipv6_addr_t *addr);
 
 /**
- * @brief   Get interface identifier (IID) of an interface's link-layer address
+ * @brief   Gets interface identifier (IID) of an interface's link-layer address
  *
  * @param[in] netif     the network interface
  * @param[out] eui64    the IID
