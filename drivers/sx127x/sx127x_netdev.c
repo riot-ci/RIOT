@@ -85,7 +85,7 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
             }
 
             /* Write payload buffer */
-            for (size_t i = 0;i < count ; i++) {
+            for (size_t i = 0; i < count; i++) {
                 sx127x_write_fifo(dev, vector[i].iov_base, vector[i].iov_len);
             }
             break;
@@ -190,7 +190,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                     }
 #endif
                 }
-                packet_info->time_on_air = sx127x_get_time_on_air(dev, len);
             }
 
             size = sx127x_reg_read(dev, SX127X_REG_LR_RXNBBYTES);
@@ -337,6 +336,16 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             *((netopt_enable_t*) val) = sx127x_get_rx_single(dev) ? NETOPT_ENABLE : NETOPT_DISABLE;
             break;
 
+        case NETOPT_TX_POWER:
+            assert(max_len >= sizeof(uint8_t));
+            *((uint8_t*) val) = sx127x_get_tx_power(dev);
+            return sizeof(uint8_t);
+
+        case NETOPT_IQ_INVERT:
+            assert(max_len >= sizeof(uint8_t));
+            *((netopt_enable_t*) val) = sx127x_get_iq_invert(dev) ? NETOPT_ENABLE : NETOPT_DISABLE;
+            break;
+
         default:
             break;
     }
@@ -365,6 +374,7 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
 
         case NETOPT_CHANNEL:
             assert(len <= sizeof(uint32_t));
+            sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
             sx127x_set_channel(dev, *((uint32_t*) val));
             return sizeof(uint32_t);
 
@@ -422,7 +432,7 @@ static int _set(netdev_t *netdev, netopt_t opt, void *val, size_t len)
             return sizeof(uint8_t);
 
         case NETOPT_SINGLE_RECEIVE:
-            assert(len <= sizeof(uint8_t));
+            assert(len <= sizeof(netopt_enable_t));
             sx127x_set_rx_single(dev, *((netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
 
