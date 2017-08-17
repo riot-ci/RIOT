@@ -37,10 +37,10 @@ extern "C" {
  * @{
  */
 #if defined(STM32L496ZG)
-#define LED0_PORT           PORT_C
+#define LED0_PORT           GPIOC
 #define LED0_PIN_NUM        7
 #else
-#define LED0_PORT           PORT_B
+#define LED0_PORT           GPIOB
 #define LED0_PIN_NUM        0
 #endif
 #define LED0_PIN            GPIO_PIN(LED0_PORT, LED0_PIN_NUM)
