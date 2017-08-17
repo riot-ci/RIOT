@@ -1,7 +1,6 @@
 /**
  * @ingroup cpu
  * @defgroup cpu_stm32_common STM32 common
- * @{
  * @brief STM32 common configurations
  *
  * STM32F[2|4|7] Clock configuration
@@ -51,5 +50,4 @@
  * Others PLL values (M, N, Q) are calculated automatically from output clock
  * (CLOCK_CORECLOCK for main PLL, CLOCK_I2S for PLL I2S), PLL input clock (PLL_IN_FREQ,
  * used for both PLLs) and P (only for main PLL).
- * @}
  */
