@@ -36,7 +36,7 @@ extern "C" {
 #define PLLI2S_SRC              RCC_PLLI2SCFGR_PLLI2SSRC
 #else
 #define PLLI2S_IN               PLL_IN
-#define PLLI2S_SRC              0
+#define PLLI2S_SRC              (0)
 #endif
 
 #ifdef RCC_PLLI2SCFGR_PLLI2SM
@@ -60,10 +60,12 @@ extern "C" {
 #error "PLL configuration: PLL I2S N value is invalid (try with another Q_I2S)"
 #endif
 #else
-
+/* N/Q pair condition */
+#define Q_N_COND N_PQR_COND(N_I2S, Q_I2S, PLL_IN_FREQ, CLOCK_I2S)
+/* Try for valid Q values (3,..,15) */
 #define Q_I2S  (2U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #if !_PLL_I2S_FINISHED
@@ -71,7 +73,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (3U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -80,7 +82,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (4U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -89,7 +91,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (5U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -98,7 +100,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (6U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -107,7 +109,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (7U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -116,7 +118,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (8U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -125,7 +127,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (9U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -134,7 +136,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (10U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -143,7 +145,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (11U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -152,7 +154,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (12U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -161,7 +163,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (13U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -170,7 +172,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (14U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #endif /* _PLL_I2S_FINISHED */
@@ -179,7 +181,7 @@ extern "C" {
 #undef N_I2S
 #define Q_I2S  (15U)
 #define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
+#if Q_N_COND
 #define _PLL_I2S_FINISHED 1
 #endif
 #if !_PLL_I2S_FINISHED
@@ -187,6 +189,7 @@ extern "C" {
 #endif
 #endif /* _PLL_I2S_FINISHED */
 #undef _PLL_I2S_FINISHED
+#undef Q_N_COND
 #endif /* Q_I2S */
 #endif /* CLOCK_ENABLE_PLLI2S */
 
