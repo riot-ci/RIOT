@@ -26,6 +26,10 @@
 extern "C" {
 #endif
 
+/**
+ * @name PLL I2S configuration
+ * @{
+ */
 #if (CLOCK_ENABLE_PLLI2S)
 #ifndef RCC_CR_PLLI2SRDY
 #error "No PLL I2S on this device"
@@ -192,6 +196,7 @@ extern "C" {
 #undef Q_N_COND
 #endif /* Q_I2S */
 #endif /* CLOCK_ENABLE_PLLI2S */
+/** @} */
 
 #ifdef __cplusplus
 }
