@@ -110,7 +110,7 @@ struct gnrc_netif2_ops {
      * @param[in] netif The network interface.
      *
      * This is called after the default settings were set, right before the
-     * interface's thread starts receiving messages. It is not necessary lock
+     * interface's thread starts receiving messages. It is not necessary to lock
      * the interface's mutex gnrc_netif_t::mutex, since the thread will already
      * lock it. Leave NULL if you do not need any special initialization.
      */
