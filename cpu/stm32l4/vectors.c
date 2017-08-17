@@ -226,7 +226,7 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) (0UL),
     (void*) isr_rng,
     (void*) isr_fpu,
-#if defined(STM32L432KC)
+#if defined(STM32L432KC) || defined(STM32L496ZG)
     (void*) isr_crs
 #endif
 #if defined(STM32L496ZG)

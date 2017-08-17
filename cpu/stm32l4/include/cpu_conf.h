@@ -45,7 +45,7 @@ extern "C" {
 #if defined(STM32L432KC)
 #define CPU_IRQ_NUMOF                   (82U)
 #elif defined(STM32L496ZG)
-#define CPU_IRQ_NUMOF                   (91U)
+#define CPU_IRQ_NUMOF                   (90U)
 #else
 #define CPU_IRQ_NUMOF                   (81U)
 
