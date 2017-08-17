@@ -53,217 +53,30 @@
 #define CLOCK_I2S                   (48000000U)         /* Default value 48MHz */
 #endif
 #endif
+#if (CLOCK_ENABLE_PLLSAI)
+#ifndef CLOCK_SAI
+#define CLOCK_SAI                   (48000000U)         /* Default value 48MHz */
+#endif
+#endif
 
-#ifndef P
-/* we fix P to 2 (so the PLL output equals 2 * CLOCK_CORECLOCK) */
-#define P                       (2U)
-#endif /* P */
-#if ((P != 2) && (P != 4) && (P != 6) && (P != 8))
-#error "PLL configuration: PLL P value is invalid"
-#endif
-/* the recommended input clock for the PLL should be 2MHz */
-#ifndef PLL_IN_FREQ
-#define PLL_IN_FREQ             (2000000U)
-#endif
-#define M                       (PLL_IN / PLL_IN_FREQ)
-#if ((M < 2) || (M > 63))
-#error "PLL configuration: PLL M value is out of range"
-#endif
-#if (PLL_IN_FREQ * M) != PLL_IN
-#error "PLL configuration: PLL input frequency is invalid (M)"
-#endif
-/* next we multiply the input freq to P * CORECLOCK */
-#define N                       (P * CLOCK_CORECLOCK / PLL_IN_FREQ)
-#if ((N < 50) || (N > 432))
-#error "PLL configuration: PLL N value is out of range"
-#endif
-#if (PLL_IN_FREQ * N / P) != CLOCK_CORECLOCK
-#error "PLL configuration: PLL input frequency is invalid (N)"
-#endif
-/* finally we need to set Q, so that the USB clock is 48MHz */
-#define Q                       ((P * CLOCK_CORECLOCK) / 48000000U)
-#if ((Q * 48000000U) != (P * CLOCK_CORECLOCK))
-#ifdef RCC_DCKCFGR2_CK48MSEL           /* cpu support 48MHz clock from PLL I2S */
-#if ((CLOCK_ENABLE_PLLI2S) && (CLOCK_I2S != 48000000U))
-#error "PLL configuration: PLL I2S should be used for USB, but frequency is not 48MHz"
-#else
-/* Use PLL I2S @ 48MHz */
-#ifndef CLOCK_ENABLE_PLLI2S
-#define CLOCK_ENABLE_PLLI2S      (1)
-#endif
-#ifndef CLOCK_I2S
-#define CLOCK_I2S                (48000000U)
-#endif
-#endif /* ((CLOCK_ENABLE_PLLI2S) && (CLOCK_I2S != 48000000U)) */
-#else
-#error "PLL configuration: USB frequency is not 48MHz"
-#endif /* RCC_DCKCFGR2_CK48MSEL */
-#endif
+#include "clk/pll.h"
+#include "clk/plli2s.h"
+#include "clk/pllsai.h"
 
 #if (CLOCK_ENABLE_PLLI2S)
-#ifndef RCC_CR_PLLI2SRDY
-#error "No PLL I2S on this device"
-#endif
-/* Define CLOCK_I2S_CKIN to use external AFI clock, otherwise, use PLL_IN */
-#if (CLOCK_I2S_CKIN)
-#define PLLI2S_IN               CLOCK_I2S_CKIN
-#define PLLI2S_SRC              RCC_PLLI2SCFGR_PLLI2SSRC
-#else
-#define PLLI2S_IN               PLL_IN
-#define PLLI2S_SRC              0
-#endif
-
-#define M_I2S                   (PLLI2S_IN / PLL_IN_FREQ)
-#if ((M_I2S < 2) || (M_I2S > 63))
-#error "PLL configuration: PLL I2S M value is out of range"
-#endif
-#if (PLL_IN_FREQ * M_I2S) != PLLI2S_IN
-#error "PLL configuration: PLL I2S input frequency is invalid (M)"
-#endif
-
-#if Q_I2S
-#define N_I2S                   (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if ((N_I2S < 50) || (N_I2S > 432))
-#error "PLL configuration: PLL I2S N value is out of range"
-#endif
-#if (PLL_IN_FREQ * N_I2S / Q_I2S) != CLOCK_I2S
-#error "PLL configuration: PLL I2S N value is invalid (try with another Q_I2S)"
-#endif
-#else
-
-#define Q_I2S  (2U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (3U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (4U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (5U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (6U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (7U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (8U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (9U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (10U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (11U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (12U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (13U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (14U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#endif /* _PLL_I2S_FINISHED */
-#if !_PLL_I2S_FINISHED
-#undef Q_I2S
-#undef N_I2S
-#define Q_I2S  (15U)
-#define N_I2S  (Q_I2S * CLOCK_I2S / PLL_IN_FREQ)
-#if (N_I2S >= 50) && (N_I2S <= 432) && ((PLL_IN_FREQ * N_I2S / Q_I2S) == CLOCK_I2S)
-#define _PLL_I2S_FINISHED 1
-#endif
-#if !_PLL_I2S_FINISHED
-#error "PLL configuration: no valid N/Q couple found for PLL I2S configuration"
-#endif
-#endif /* _PLL_I2S_FINISHED */
-
-#endif /* Q_I2S */
-
+#ifdef RCC_PLLI2SCFGR_PLLI2SM_Pos
 #define PLLI2S_M                 (M_I2S << RCC_PLLI2SCFGR_PLLI2SM_Pos)
+#else
+#define PLLI2S_M                 (0)
+#endif
 #define PLLI2S_N                 (N_I2S << RCC_PLLI2SCFGR_PLLI2SN_Pos)
 #define PLLI2S_Q                 (Q_I2S << RCC_PLLI2SCFGR_PLLI2SQ_Pos)
-
 #endif /* CLOCK_ENABLE_PLLI2S */
+
+#if (CLOCK_ENABLE_PLLSAI)
+#define PLLSAI_N                 (N_SAI << RCC_PLLSAICFGR_PLLSAIN_Pos)
+#define PLLSAI_Q                 (Q_SAI << RCC_PLLSAICFGR_PLLSAIQ_Pos)
+#endif
 
 #if defined(CPU_FAM_STM32F2)
 #define RCC_PLLCFGR_PLLP_Pos    (16U)
@@ -334,6 +147,9 @@ void stmclk_init_sysclk(void)
     while (!(RCC->CR & RCC_CR_HSERDY)) {}
 #endif
 
+#if CLOCK_48MHZ_2ND_PLL
+    RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
+#endif
     /* now we can safely configure and start the PLL */
     RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q);
     RCC->CR |= (RCC_CR_PLLON);
@@ -350,6 +166,12 @@ void stmclk_init_sysclk(void)
     RCC->CR |= (RCC_CR_PLLI2SON);
     while (!(RCC->CR & RCC_CR_PLLI2SRDY)) {}
 #endif /* CLOCK_ENABLE_PLLI2S */
+
+#if (CLOCK_ENABLE_PLLSAI)
+    RCC->PLLSAICFGR = (PLLSAI_N | PLLSAI_Q);
+    RCC->CR |= (RCC_CR_PLLSAION);
+    while (!(RCC->CR & RCC_CR_PLLSAIRDY)) {}
+#endif
 
     irq_restore(is);
 }
