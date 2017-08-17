@@ -47,7 +47,21 @@ extern "C" {
 #error "PLL configuration: PLL input frequency is invalid (M)"
 #endif
 
-#define N_PQR_COND(N, PQR, IN, OUT) (N >= 50) && (N <= 432) && ((IN * N / PQR) == OUT)
+#ifndef RCC_PLLVCO_OUTPUT_MIN
+#ifdef CPU_FAM_STM32F2
+#define RCC_PLLVCO_OUTPUT_MIN     (192000000U)
+#else
+#define RCC_PLLVCO_OUTPUT_MIN     (100000000U)
+#endif
+#endif
+
+#ifndef RCC_PLLVCO_OUTPUT_MAX
+#define RCC_PLLVCO_OUTPUT_MAX     (432000000U)
+#endif
+
+#define N_PQR_COND(N, PQR, IN, OUT) ((N >= 50) && (N <= 432) && ((IN * N / PQR) == OUT)   \
+                                      && ((IN * N) >= RCC_PLLVCO_OUTPUT_MIN) \
+                                      && ((IN * N) <= RCC_PLLVCO_OUTPUT_MAX))
 
 /* Use user-provided P if existing, otherwise try possible values */
 #ifdef P
