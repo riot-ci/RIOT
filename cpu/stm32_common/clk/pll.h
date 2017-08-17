@@ -22,6 +22,10 @@
 #ifndef PLL_H
 #define PLL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* the recommended input clock for the PLL should be 2MHz */
 #ifndef PLL_IN_FREQ
 #if ((PLL_IN / 2) * 2 == PLL_IN)
@@ -121,6 +125,10 @@
 #error "PLL configuration: USB frequency is not 48MHz"
 #endif
 #endif /* ((Q * 48000000U) != (P * CLOCK_CORECLOCK)) */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PLL_H */
 /** @} */

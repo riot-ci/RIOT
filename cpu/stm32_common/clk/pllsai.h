@@ -22,6 +22,10 @@
 #ifndef PLLSAI_H
 #define PLLSAI_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if (CLOCK_ENABLE_PLLSAI)
 #ifndef RCC_CR_PLLSAIRDY
 #error "No PLL SAI on this device"
@@ -167,6 +171,10 @@
 #undef _PLL_SAI_FINISHED
 #endif /* Q_SAI */
 #endif /* CLOCK_ENABLE_PLLSAI */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PLLSAI_H */
 /** @} */
