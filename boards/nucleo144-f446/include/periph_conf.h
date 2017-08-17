@@ -36,8 +36,8 @@ extern "C" {
  * 1: external crystal available (always 32.768kHz) */
 #define CLOCK_LSE           (1)
 /* give the target core clock (HCLK) frequency [in Hz],
- * maximum: 100MHz */
-#define CLOCK_CORECLOCK     (168000000U)
+ * maximum: 180MHz */
+#define CLOCK_CORECLOCK     (180000000U)
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1      /* min 25MHz */
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
