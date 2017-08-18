@@ -882,7 +882,7 @@ static int _create_candidate_set(const gnrc_netif2_t *netif,
          *  be included in a candidate set."
          */
         if ((netif->ipv6.addrs_flags[i] == 0) ||
-            (gnrc_netif2_ipv6_addr_get_state(netif) ==
+            (gnrc_netif2_ipv6_addr_get_state(netif, i) ==
              GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE)) {
             continue;
         }

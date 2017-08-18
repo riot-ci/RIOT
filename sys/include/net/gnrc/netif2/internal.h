@@ -131,10 +131,10 @@ int gnrc_netif2_ipv6_addr_idx(gnrc_netif2_t *netif,
  *
  * @return  the state of the address at @p idx
  */
-static inline uint8_t gnrc_netif2_ipv6_addr_get_state(gnrc_netif2_t *netif,
+static inline uint8_t gnrc_netif2_ipv6_addr_get_state(const gnrc_netif2_t *netif,
                                                       int idx)
 {
-    return netif->ipv6.addrs_flags[i] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
+    return netif->ipv6.addrs_flags[idx] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
 }
 
 /**
