@@ -256,16 +256,22 @@ gnrc_pktsnip_t *gnrc_ndp2_opt_mtu_build(uint32_t mtu, gnrc_pktsnip_t *next);
  * @pre `(tgt != NULL) && !ipv6_addr_is_multicast(tgt)`
  * @pre `(netif != NULL) && (dst != NULL)`
  *
- * @param[in] tgt   The target address of the neighbor solicitation.
- *                  May not be NULL and **MUST NOT** be multicast.
- * @param[in] netif Interface to send over. May not be NULL.
- * @param[in] src   Source address for the neighbor solicitation. Will be chosen
- *                  from the interface according to @p dst, if NULL.
- * @param[in] dst   Destination address for neighbor solicitation. May not be
- *                  NULL.
+ * @param[in] tgt       The target address of the neighbor solicitation.
+ *                      May not be NULL and **MUST NOT** be multicast.
+ * @param[in] netif     Interface to send over. May not be NULL.
+ * @param[in] src       Source address for the neighbor solicitation. Will be
+ *                      chosen from the interface according to @p dst, if NULL.
+ * @param[in] dst       Destination address for neighbor solicitation. May not
+ *                      be NULL.
+ * @param[in] ext_opts  External options for the neighbor advertisement.
+ *                      Leave NULL for none.
+ *                      **Warning:** these are not tested if they are suitable
+ *                      for a neighbor solicitation so be sure to check that.
+ *                      **Will be released** in an error case.
  */
 void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
-                            const ipv6_addr_t *src, const ipv6_addr_t *dst);
+                            const ipv6_addr_t *src, const ipv6_addr_t *dst,
+                            gnrc_pktsnip_t *ext_opts);
 
 /**
  * @brief   Send pre-compiled neighbor advertisement depending on a given

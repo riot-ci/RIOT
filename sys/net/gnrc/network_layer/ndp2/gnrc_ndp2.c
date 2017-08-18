@@ -206,11 +206,12 @@ static size_t _get_l2src(gnrc_ipv6_netif_t *netif, uint8_t *l2src,
                          size_t l2src_maxlen);
 
 void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
-                            const ipv6_addr_t *src, const ipv6_addr_t *dst)
+                            const ipv6_addr_t *src, const ipv6_addr_t *dst,
+                            gnrc_pktsnip_t *ext_opts)
 {
     assert((tgt != NULL) && !ipv6_addr_is_multicast(tgt));
     assert((netif != NULL) && (dst != NULL));
-    gnrc_pktsnip_t *hdr, *pkt = NULL;
+    gnrc_pktsnip_t *hdr, *pkt = ext_opts;
     /* cppcheck-suppress variableScope
      * (reason: also used in MODULE_GNRC_SIXLOWPAN_ND compile path) */
     uint8_t l2src[8];
@@ -235,38 +236,16 @@ void gnrc_ndp2_nbr_sol_send(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
 
         if (l2src_len > 0) {
             /* add source address link-layer address option */
-            pkt = gnrc_ndp2_opt_sl2a_build(l2src, l2src_len, NULL);
+            hdr = gnrc_ndp2_opt_sl2a_build(l2src, l2src_len, pkt);
 
-            if (pkt == NULL) {
+            if (hdr == NULL) {
                 DEBUG("ndp2: error allocating SL2AO.\n");
                 gnrc_pktbuf_release(pkt);
                 return;
             }
+            pkt = hdr;
         }
     }
-#ifdef MODULE_GNRC_SIXLOWPAN_ND
-    /* add ARO based on interface */
-    if (netif->flags & GNRC_IPV6_NETIF_FLAGS_SIXLOWPAN) {
-        if (l2src_len != sizeof(eui64_t)) {
-            l2src_len = (uint16_t)gnrc_netapi_get(netif->pid,
-                                                  NETOPT_ADDRESS_LONG, 0,
-                                                  l2src, sizeof(l2src));
-            if (l2src_len != sizeof(eui64_t)) {
-                DEBUG("ndp2: can't get EUI-64 of the interface\n");
-                gnrc_pktbuf_release(pkt);
-                return;
-            }
-        }
-        hdr = gnrc_sixlowpan_nd_opt_ar_build(0, GNRC_SIXLOWPAN_ND_AR_LTIME,
-                                             (eui64_t *)l2src, pkt);
-        if (hdr == NULL) {
-            DEBUG("ndp2: error allocating ARO.\n");
-            gnrc_pktbuf_release(pkt);
-            return;
-        }
-        pkt = hdr;
-    }
-#endif  /* MODULE_GNRC_SIXLOWPAN_ND */
     /* add neighbor solicitation header */
     hdr = gnrc_ndp2_nbr_sol_build(tgt, pkt);
     if (hdr == NULL) {
