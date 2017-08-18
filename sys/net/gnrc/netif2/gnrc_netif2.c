@@ -1162,10 +1162,11 @@ static void *_gnrc_netif2_thread(void *args)
                 break;
             case GNRC_NETAPI_MSG_TYPE_SET:
                 opt = msg.content.ptr;
+#ifdef MODULE_NETOPT
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%s\n",
-#if MODULE_NETOPT
                       netopt2str(opt->opt));
 #else
+                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%s\n",
                       opt->opt);
 #endif
                 /* set option for device driver */
@@ -1176,10 +1177,11 @@ static void *_gnrc_netif2_thread(void *args)
                 break;
             case GNRC_NETAPI_MSG_TYPE_GET:
                 opt = msg.content.ptr;
+#ifdef MODULE_NETOPT
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
-#if MODULE_NETOPT
                       netopt2str(opt->opt));
 #else
+                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
                       opt->opt);
 #endif
                 /* get option from device driver */
