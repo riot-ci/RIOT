@@ -81,7 +81,7 @@ uint16_t calc_rank(gnrc_rpl_parent_t *parent, uint16_t base_rank)
 /* We simply return the Parent with lower rank */
 gnrc_rpl_parent_t *which_parent(gnrc_rpl_parent_t *p1, gnrc_rpl_parent_t *p2)
 {
-    if(parent_cmp(p1, p2) == 1) {
+    if (parent_cmp(p1, p2)) {
         return p2;
     }
     return p1;
