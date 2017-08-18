@@ -433,7 +433,7 @@ static void test_nbr_sol_send(const ipv6_addr_t *src)
     ndp_nbr_sol_t *nbr_sol;
 
     TEST_ASSERT_NOT_NULL(test_netif);
-    gnrc_ndp2_nbr_sol_send(&test_tgt, test_netif, src, &test_dst);
+    gnrc_ndp2_nbr_sol_send(&test_tgt, test_netif, src, &test_dst, NULL);
     msg_receive(&msg);
     TEST_ASSERT_EQUAL_INT(GNRC_NETAPI_MSG_TYPE_SND, msg.type);
     pkt = msg.content.ptr;
