@@ -102,6 +102,7 @@ bool gnrc_ipv6_nib_nc_iter(unsigned iface, void **state,
     return (*state != NULL);
 }
 
+#if GNRC_IPV6_NIB_CONF_ARSM
 static const char *_nud_str[] = {
     [GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED]     = "-",
     [GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE]   = "UNREACHABLE",
@@ -111,13 +112,16 @@ static const char *_nud_str[] = {
     [GNRC_IPV6_NIB_NC_INFO_NUD_STATE_PROBE]         = "PROBE",
     [GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE]     = "REACHABLE",
 };
+#endif
 
 #if GNRC_IPV6_NIB_CONF_6LR
+#define _AR_STR_IDX(state)      ((state) >> GNRC_IPV6_NIB_NC_INFO_AR_STATE_POS)
+
 static const char *_ar_str[] = {
-    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC]         = "GC",
-    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE]  = "TENTATIVE",
-    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED] = "REGISTERED",
-    [GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL]     = "MANUAL",
+    [_AR_STR_IDX(GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC)]            = "GC",
+    [_AR_STR_IDX(GNRC_IPV6_NIB_NC_INFO_AR_STATE_TENTATIVE)]     = "TENTATIVE",
+    [_AR_STR_IDX(GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED)]    = "REGISTERED",
+    [_AR_STR_IDX(GNRC_IPV6_NIB_NC_INFO_AR_STATE_MANUAL)]        = "MANUAL",
 };
 #endif
 
@@ -133,12 +137,13 @@ void gnrc_ipv6_nib_nc_print(gnrc_ipv6_nib_nc_t *entry)
                                                 entry->l2addr,
                                                 entry->l2addr_len));
     if (gnrc_ipv6_nib_nc_is_router(entry)) {
-        printf("router ");
+        printf("router");
     }
-    printf("%s", _nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
+#if GNRC_IPV6_NIB_CONF_ARSM
+    printf(" %s", _nud_str[gnrc_ipv6_nib_nc_get_nud_state(entry)]);
+#endif
 #if GNRC_IPV6_NIB_CONF_6LR
-        printf(" ");
-        printf("%s",_ar_str[gnrc_ipv6_nib_nc_get_ar_state(entry)]);
+    printf(" %s",_ar_str[_AR_STR_IDX(gnrc_ipv6_nib_nc_get_ar_state(entry))]);
 #endif
     puts("");
 }

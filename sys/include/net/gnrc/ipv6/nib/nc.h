@@ -111,6 +111,11 @@ extern "C" {
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_MASK             (0x0600)
 
 /**
+ * @brief   Shift position of address registration states
+ */
+#define GNRC_IPV6_NIB_NC_INFO_AR_STATE_POS              (9)
+
+/**
  * @brief   Not managed by 6Lo-AR (address can be removed when memory is low
  */
 #define GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC               (0x0000)
