@@ -31,6 +31,10 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+#if ENABLE_DEBUG
+static char addr_str[IPV6_ADDR_MAX_STR_LEN];
+#endif
+
 #define _NETIF_NETAPI_MSG_QUEUE_SIZE    (8)
 
 static gnrc_netif2_t _netifs[GNRC_NETIF_NUMOF];
@@ -563,6 +567,9 @@ int gnrc_netif2_ipv6_addr_idx(gnrc_netif2_t *netif,
     int idx;
 
     assert((netif != NULL) && (addr != NULL));
+    DEBUG("gnrc_netif2: get index of %s from inteface %i\n",
+          ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
+          netif->pid);
     gnrc_netif2_acquire(netif);
     idx = _addr_idx(netif, addr);
     gnrc_netif2_release(netif);
@@ -607,6 +614,8 @@ gnrc_netif2_t *gnrc_netif2_get_by_ipv6_addr(const ipv6_addr_t *addr)
 {
     gnrc_netif2_t *netif = NULL;
 
+    DEBUG("gnrc_netif2: get interface by IPv6 address %s\n",
+          ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)));
     while ((netif = gnrc_netif2_iter(netif))) {
         if (_addr_idx(netif, addr) >= 0) {
             break;
@@ -1154,7 +1163,11 @@ static void *_gnrc_netif2_thread(void *args)
             case GNRC_NETAPI_MSG_TYPE_SET:
                 opt = msg.content.ptr;
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%s\n",
+#if MODULE_NETOPT
                       netopt2str(opt->opt));
+#else
+                      opt->opt);
+#endif
                 /* set option for device driver */
                 res = netif->ops->set(netif, opt);
                 DEBUG("gnrc_netif2: response of netif->ops->set(): %i\n", res);
@@ -1164,7 +1177,11 @@ static void *_gnrc_netif2_thread(void *args)
             case GNRC_NETAPI_MSG_TYPE_GET:
                 opt = msg.content.ptr;
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
+#if MODULE_NETOPT
                       netopt2str(opt->opt));
+#else
+                      opt->opt);
+#endif
                 /* get option from device driver */
                 res = netif->ops->get(netif, opt);
                 DEBUG("gnrc_netif2: response of netif->ops->get(): %i\n", res);
