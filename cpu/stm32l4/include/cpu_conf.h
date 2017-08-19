@@ -41,9 +41,9 @@ extern "C" {
  */
 #define CPU_DEFAULT_IRQ_PRIO            (1U)
 #if defined(STM32L432KC)
-#define CPU_IRQ_NUMOF                   (82U)
+#define CPU_IRQ_NUMOF                   (83U)
 #else
-#define CPU_IRQ_NUMOF                   (81U)
+#define CPU_IRQ_NUMOF                   (82U)
 #endif
 /** @} */
 
