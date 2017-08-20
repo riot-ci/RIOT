@@ -23,6 +23,13 @@
 
 #include "cpu_conf_common.h"
 
+#if defined(CPU_MODEL_STM32L151RBA)
+#define STM32L1XX_MD (1U)
+#elif defined(CPU_MODEL_STM32L151RC)
+#define STM32L1XX_MDP (1U)
+#else
+#define STM32L1XX_XL (1U)
+#endif
 #include "vendor/stm32l1xx.h"
 
 #ifdef __cplusplus
@@ -34,7 +41,11 @@ extern "C" {
  * @{
  */
 #define CPU_DEFAULT_IRQ_PRIO            (1U)
+#if defined(CPU_MODEL_STM32L151RBA)
+#define CPU_IRQ_NUMOF                   (45U)
+#else
 #define CPU_IRQ_NUMOF                   (57U)
+#endif
 #define CPU_FLASH_BASE                  FLASH_BASE
 /** @} */
 
