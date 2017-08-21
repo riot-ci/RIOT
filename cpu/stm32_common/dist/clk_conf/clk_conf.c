@@ -29,10 +29,11 @@
 #define DEBUG(...)
 #endif
 
-/** Ma coreclock frequency */
+/** Max coreclock frequency */
 static unsigned max_coreclock = 0;
-
+/** Max APB1 frequency */
 static unsigned max_apb1 = 0;
+/** Max APB2 frequency */
 static unsigned max_apb2 = 0;
 
 /** Min VCO input (default: 1MHz) */
@@ -54,6 +55,9 @@ static bool has_pll_i2s_m = false;
 /** PLL SAI has a M factor */
 static bool has_pll_sai_m = false;
 
+/** PLL I2S alternate input */
+static bool has_pll_i2s_alt_input = false;
+
 /**
  * @name Alternative 48MHz sources
  * @{
@@ -61,6 +65,9 @@ static bool has_pll_sai_m = false;
 #define ALT_48MHZ_NO  0
 #define ALT_48MHZ_I2S 1
 #define ALT_48MHZ_SAI 2
+
+#define ALT_48MHZ_Q   0
+#define ALT_48MHZ_P   4
 /** @} */
 
 /** CPU supports alternative 48MHz source */
@@ -202,14 +209,16 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
 int main(int argc, char **argv)
 {
     if (argc < 4) {
-        printf("usage: %s <cpu_model> <coreclock> <hse_freq> [pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
+        printf("usage: %s <cpu_model> <coreclock> <hse_freq> [pll_i2s_src] [pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
         return 1;
     }
 
+    /* parse command line arguments */
     unsigned coreclock = atoi(argv[2]);
     unsigned pll_in = atoi(argv[3]);
     int pll_src;
     if (pll_in == 0) {
+        /* Fixed HSI value 16MHz */
         pll_in = 16000000U;
         pll_src = HSI;
     }
@@ -217,14 +226,21 @@ int main(int argc, char **argv)
         pll_src = HSE;
     }
 
-    unsigned pll_i2s_q_out = 0;
+    unsigned pll_i2s_input = 0;
     if (argc > 4) {
-        pll_i2s_q_out = atoi(argv[4]);
+        pll_i2s_input = atoi(argv[4]);
     }
 
-    unsigned pll_sai_q_out = 0;
+    unsigned pll_i2s_p_out = 0;
+    unsigned pll_i2s_q_out = 0;
     if (argc > 5) {
-        pll_sai_q_out = atoi(argv[5]);
+        pll_i2s_q_out = atoi(argv[5]);
+    }
+
+    unsigned pll_sai_p_out = 0;
+    unsigned pll_sai_q_out = 0;
+    if (argc > 6) {
+        pll_sai_q_out = atoi(argv[6]);
     }
 
     if (strlen(argv[1]) < 9 || !isdigit(argv[1][6])
@@ -234,13 +250,24 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    /* load value for given model and check inputs */
+
     int model = atoi(argv[1] + 6);
     if (strncmp(argv[1], "stm32f2", 7) == 0) {
         /* set frequencies boundaries */
-        max_coreclock = 120000000U;
-        max_apb1 = max_coreclock / 4;
-        max_apb2 = max_coreclock / 2;
-        min_vco_output = 192000000U;
+        switch (model) {
+        case 205:
+        case 207:
+        case 215:
+        case 217:
+            max_coreclock = 120000000U;
+            max_apb1 = max_coreclock / 4;
+            max_apb2 = max_coreclock / 2;
+            min_vco_output = 192000000U;
+        default:
+            printf("Unsuported cpu model: %s\n", argv[1]);
+            return 1;
+        }
         /* set PLL I2S */
         switch (model) {
         case 205:
@@ -249,7 +276,6 @@ int main(int argc, char **argv)
         case 217:
             has_pll_i2s = true;
             break;
-
         }
         /* No PLL SAI for f2 family */
     }
@@ -262,8 +288,10 @@ int main(int argc, char **argv)
             max_apb2 = max_coreclock;
             min_vco_output = 192000000U;
             break;
+        case 405:
         case 407:
         case 415:
+        case 417:
             max_coreclock = 168000000U;
             max_apb1 = max_coreclock / 4;
             max_apb2 = max_coreclock / 2;
@@ -272,57 +300,119 @@ int main(int argc, char **argv)
         case 411:
         case 412:
         case 413:
+        case 423:
             max_coreclock = 100000000U;
             max_apb1 = max_coreclock / 2;
             max_apb2 = max_coreclock;
             break;
+        case 427:
         case 429:
-        case 449:
+        case 437:
+        case 439:
+        case 446:
+        case 469:
+        case 479:
             max_coreclock = 180000000U;
             max_apb1 = max_coreclock / 4;
             max_apb2 = max_coreclock / 2;
             break;
+        default:
+            printf("Unsuported cpu model: %s\n", argv[1]);
+            return 1;
         }
         /* set PLL I2S */
         switch (model) {
-        case 401:
-        case 407:
-        case 411:
         case 412:
         case 413:
+        case 423:
+            has_alt_48MHz |= ALT_48MHZ_I2S;
+            has_pll_i2s_alt_input = true;
+        case 401:
+        case 405:
+        case 407:
+        case 411:
         case 415:
+        case 417:
+        case 427:
         case 429:
-            has_alt_48MHz = ALT_48MHZ_I2S;
+        case 437:
+        case 439:
         case 446:
+        case 469:
+        case 479:
             has_pll_i2s = true;
             break;
 
         }
+        switch (model) {
+        case 411:
+        case 412:
+        case 413:
+        case 423:
+        case 446:
+            has_pll_i2s_m = true;
+            break;
+        }
+
         /* set PLL SAI */
         switch (model) {
         case 446:
-            has_alt_48MHz = ALT_48MHZ_SAI;
+        case 469:
+        case 479:
+            has_alt_48MHz |= ALT_48MHZ_P;
+            has_alt_48MHz |= ALT_48MHZ_SAI;
+        case 427:
         case 429:
+        case 437:
+        case 439:
             has_pll_sai = true;
             break;
         }
     }
     else if (strncmp(argv[1], "stm32f7", 7) == 0) {
-        /* set PLL I2S */
         switch (model) {
+        case 722:
+        case 732:
         case 746:
+        case 756:
         case 767:
         case 769:
+        case 777:
+        case 779:
+            max_coreclock = 216000000U;
+            max_apb1 = max_coreclock / 4;
+            max_apb2 = max_coreclock / 2;
+            break;
+        default:
+            printf("Unsuported cpu model: %s\n", argv[1]);
+            return 1;
+        }
+        /* set PLL I2S */
+        switch (model) {
+        case 722:
+        case 732:
+        case 746:
+        case 756:
+        case 767:
+        case 769:
+        case 777:
+        case 779:
             has_pll_i2s = true;
             break;
 
         }
         /* set PLL SAI */
         switch (model) {
+        case 722:
+        case 732:
         case 746:
+        case 756:
         case 767:
         case 769:
-            has_alt_48MHz = ALT_48MHZ_SAI;
+        case 777:
+        case 779:
+            has_alt_48MHz |= ALT_48MHZ_P;
+            has_alt_48MHz |= ALT_48MHZ_SAI;
             has_pll_sai = true;
             break;
         }
@@ -338,8 +428,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    printf("Computing factors for stm32f%d CPU\n", model);
-
+    printf("Computing settings for stm32f%d CPU...\n", model);
 
     unsigned m = 0;
     unsigned n = 0;
@@ -370,7 +459,7 @@ int main(int argc, char **argv)
         return 1;
     case 1:
         /* Q not OK */
-        printf("Need to you an alternate 48MHz src...");
+        printf("Need to use an alternate 48MHz src...");
         if (has_pll_i2s && (has_alt_48MHz & ALT_48MHZ_I2S) == ALT_48MHZ_I2S) {
             puts("PLL I2S");
             use_alt_48MHz = true;
@@ -381,13 +470,24 @@ int main(int argc, char **argv)
             pll_i2s_q_out = 48000000U;
         }
         else if (has_pll_sai && (has_alt_48MHz & ALT_48MHZ_SAI)) {
-            puts("PLL SAI");
+            printf("PLL SAI...");
             use_alt_48MHz = true;
-            if (pll_sai_q_out != 0 && pll_sai_q_out != 48000000U) {
-                printf("Invalid PLL SAI Q output freq: %u\n", pll_sai_q_out);
+            if ((has_alt_48MHz & ALT_48MHZ_P) && (pll_sai_p_out == 0 || pll_sai_p_out == 48000000U)) {
+                puts("P");
+                pll_sai_p_out = 48000000U;
+            }
+            else if (!(has_alt_48MHz & ALT_48MHZ_P) && (pll_sai_q_out == 0 || pll_sai_q_out == 48000000U)) {
+                puts("Q");
+                pll_sai_q_out = 48000000U;
+            }
+            else {
+                if (has_alt_48MHz & ALT_48MHZ_P) {
+                    printf("Invalid PLL SAI P output freq: %u\n", pll_sai_p_out);
+                } else {
+                    printf("Invalid PLL SAI Q output freq: %u\n", pll_sai_q_out);
+                }
                 return 1;
             }
-            pll_sai_q_out = 48000000U;
         }
         else {
             puts("No other source available");
@@ -398,21 +498,30 @@ int main(int argc, char **argv)
         break;
     }
 
-    if (pll_i2s_q_out) {
+    /* PLL I2S */
+    if (pll_i2s_p_out || pll_i2s_q_out) {
         unsigned *_m;
+        unsigned _in;
         if (has_pll_i2s_m) {
             _m = &m_i2s;
         }
         else {
             _m = &m;
         }
-        if (compute_pll(pll_in, 0, pll_i2s_q_out, 0, _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
+        if (has_pll_i2s_alt_input && pll_i2s_input) {
+            _in = pll_i2s_input;
+        }
+        else {
+            _in = pll_in;
+        }
+        if (compute_pll(_in, pll_i2s_p_out, pll_i2s_q_out, 0, _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
         }
     }
 
-    if (pll_sai_q_out) {
+    /* PLL SAI */
+    if (pll_sai_p_out || pll_sai_q_out) {
         unsigned *_m;
         if (has_pll_sai_m) {
             _m = &m_sai;
@@ -420,12 +529,13 @@ int main(int argc, char **argv)
         else {
             _m = &m;
         }
-        if (compute_pll(pll_in, 0, pll_sai_q_out, 0, _m, &n_sai, &p_sai, &q_sai, &r_sai) != 0) {
+        if (compute_pll(pll_in, pll_sai_p_out, pll_sai_q_out, 0, _m, &n_sai, &p_sai, &q_sai, &r_sai) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
         }
     }
 
+    /* APB prescalers */
     unsigned apb1_pre;
     unsigned apb2_pre;
 
@@ -441,65 +551,73 @@ int main(int argc, char **argv)
     }
 
 
+    /* Print constants */
+    puts("==============================================================");
+    puts("Please copy the following code into your board's periph_conf.h");
+    puts("");
+
     printf("/**\n"
            " * @name Clock settings\n"
+           " *\n"
+           " * @note This is auto-generated from\n"
+           " *       `cpu/stm32_common/dist/clk_conf/clk_conf.c`\n"
            " * @{\n"
            " */\n");
     printf("/* give the target core clock (HCLK) frequency [in Hz],\n"
            " * maximum: %dMHz */\n", max_coreclock / 1000000U);
-    printf("#define CLOCK_CORECLOCK      (%u)\n", coreclock);
+    printf("#define CLOCK_CORECLOCK      (%uU)\n", coreclock);
     printf("/* 0: no external high speed crystal available\n"
            " * 1: use external high speed crystal */\n");
     printf("#define CLOCK_HSE            (%u)\n", pll_src);
-    printf("/* periphral clock setup */\n");
-    printf("#define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1      /* min 25MHz */\n"
-           "#define CLOCK_AHB           (CLOCK_CORECLOCK / 1)\n");
-    printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
-           "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n", apb1_pre, max_apb1 / 1000000U, apb1_pre);
-    printf("#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
-           "#define CLOCK_APB2          (CLOCK_CORECLOCK / %u\n)", apb2_pre, max_apb2 / 1000000U, apb2_pre);
-    printf("/** @} */\n\n");
-    printf("/**\n"
-           " * @name Main PLL factors\n"
-           " * @{\n"
-           " */\n");
+    printf("/* peripheral clock setup */\n");
+    printf("#define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1      /* min 25MHz */\n"
+           "#define CLOCK_AHB            (CLOCK_CORECLOCK / 1)\n");
+    printf("#define CLOCK_APB1_DIV       RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
+           "#define CLOCK_APB1           (CLOCK_CORECLOCK / %u)\n",
+           apb1_pre, max_apb1 / 1000000U, apb1_pre);
+    printf("#define CLOCK_APB2_DIV       RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
+           "#define CLOCK_APB2           (CLOCK_CORECLOCK / %u)\n",
+           apb2_pre, max_apb2 / 1000000U, apb2_pre);
+
+    printf("\n/* Main PLL factors */\n");
     printf("#define CLOCK_PLL_M          (%u)\n", m);
     printf("#define CLOCK_PLL_N          (%u)\n", n);
     printf("#define CLOCK_PLL_P          (%u)\n", p);
     printf("#define CLOCK_PLL_Q          (%u)\n", q);
-    printf("/** @} */\n\n");
-    if (pll_i2s_q_out) {
-        printf("/**\n"
-               " * @name PLL I2S configuration\n"
-               " * @{\n"
-               " */\n");
+
+    if (pll_i2s_p_out || pll_i2s_q_out) {
+        printf("\n/* PLL I2S configuration */\n");
         printf("#define CLOCK_ENABLE_PLL_I2S (1)\n");
+        if (has_pll_i2s_alt_input && pll_i2s_input) {
+            printf("#define CLOCK_PLL_I2S_SRC    (RCC_PLLI2SCFGR_PLLI2SSRC)\n");
+        }
+        else {
+            printf("#define CLOCK_PLL_I2S_SRC    (0)\n");
+        }
         if (has_pll_i2s_m) {
             printf("#define CLOCK_PLL_I2S_M      (%u)\n", m_i2s);
         }
         printf("#define CLOCK_PLL_I2S_N      (%u)\n", n_i2s);
         printf("#define CLOCK_PLL_I2S_P      (%u)\n", p_i2s);
         printf("#define CLOCK_PLL_I2S_Q      (%u)\n", q_i2s);
-        printf("/** @} */\n\n");
     }
-    if (pll_sai_q_out) {
-        printf("/**\n"
-               " * @name PLL SAI configuration\n"
-               " * @{\n"
-               " */\n");
+
+    if (pll_sai_p_out || pll_sai_q_out) {
+        printf("\n/* PLL SAI configuration */\n");
         printf("#define CLOCK_ENABLE_PLL_SAI (1)\n");
         if (has_pll_sai_m) {
             printf("#define CLOCK_PLL_SAI_M      (%u)\n", m_sai);
         }
-        printf("#define CLOCK_PLL_SAI_N      (%u)\n", n_i2s);
-        printf("#define CLOCK_PLL_SAI_P      (%u)\n", p_i2s);
-        printf("#define CLOCK_PLL_SAI_Q      (%u)\n", q_i2s);
-        printf("/** @} */\n\n");
+        printf("#define CLOCK_PLL_SAI_N      (%u)\n", n_sai);
+        printf("#define CLOCK_PLL_SAI_P      (%u)\n", p_sai);
+        printf("#define CLOCK_PLL_SAI_Q      (%u)\n", q_sai);
     }
+
     if (use_alt_48MHz) {
-        printf("/** @brief Use alternative source for 48MHz clock */\n");
+        printf("\n/* Use alternative source for 48MHz clock */\n");
         printf("#define CLOCK_USE_ALT_48MHZ  (1)\n");
     }
+    printf("/** @} */\n");
 
     return 0;
 }
