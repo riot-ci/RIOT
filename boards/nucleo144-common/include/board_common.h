@@ -36,7 +36,7 @@ extern "C" {
  * @name    LED pin definitions and handlers
  * @{
  */
-#if defined(STM32L496ZG)
+#if defined(CPU_MODEL_STM32L496ZG)
 #define LED0_PORT           PORT_C
 #define LED0_GPIO           GPIOC
 #define LED0_PIN_NUM        7
