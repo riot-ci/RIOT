@@ -42,41 +42,31 @@
  */
 /* figure out which input to use */
 #if (CLOCK_HSE)
-#define PLL_IN                      CLOCK_HSE
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSE
 #else
-#define PLL_IN                      (16000000U)         /* HSI fixed @ 16MHz */
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSI
 #endif
-#if (CLOCK_ENABLE_PLLI2S)
-#ifndef CLOCK_I2S
-#define CLOCK_I2S                   (48000000U)         /* Default value 48MHz */
-#endif
-#endif
-#if (CLOCK_ENABLE_PLLSAI)
-#ifndef CLOCK_SAI
-#define CLOCK_SAI                   (48000000U)         /* Default value 48MHz */
-#endif
-#endif
 
-#include "clk/pll.h"
-#include "clk/plli2s.h"
-#include "clk/pllsai.h"
-
-#if (CLOCK_ENABLE_PLLI2S)
+#if (CLOCK_ENABLE_PLL_I2S)
 #ifdef RCC_PLLI2SCFGR_PLLI2SM_Pos
-#define PLLI2S_M                 (M_I2S << RCC_PLLI2SCFGR_PLLI2SM_Pos)
+#define PLLI2S_M                 (CLOCK_PLL_I2S_M << RCC_PLLI2SCFGR_PLLI2SM_Pos)
 #else
 #define PLLI2S_M                 (0)
 #endif
-#define PLLI2S_N                 (N_I2S << RCC_PLLI2SCFGR_PLLI2SN_Pos)
-#define PLLI2S_Q                 (Q_I2S << RCC_PLLI2SCFGR_PLLI2SQ_Pos)
-#endif /* CLOCK_ENABLE_PLLI2S */
+#define PLLI2S_N                 (CLOCK_PLL_I2S_N << RCC_PLLI2SCFGR_PLLI2SN_Pos)
+#define PLLI2S_Q                 (CLOCK_PLL_I2S_Q << RCC_PLLI2SCFGR_PLLI2SQ_Pos)
+#endif /* CLOCK_ENABLE_PLLI_2S */
 
-#if (CLOCK_ENABLE_PLLSAI)
-#define PLLSAI_N                 (N_SAI << RCC_PLLSAICFGR_PLLSAIN_Pos)
-#define PLLSAI_Q                 (Q_SAI << RCC_PLLSAICFGR_PLLSAIQ_Pos)
+#if (CLOCK_ENABLE_PLL_SAI)
+#ifdef RCC_PLLSAICFGR_PLLSAIN_Pos
+#define PLLSAI_M                 (CLOCK_PLL_SAI_M << RCC_PLLSAICFGR_PLLSAIN_Pos)
+#else
+#define PLLSAI_M                 (0)
 #endif
+#define PLLSAI_N                 (CLOCK_PLL_SAI_N << RCC_PLLSAICFGR_PLLSAIN_Pos)
+#define PLLSAI_P                 (CLOCK_PLL_SAI_P << RCC_PLLSAICFGR_PLLSAIP_Pos)
+#define PLLSAI_Q                 (CLOCK_PLL_SAI_Q << RCC_PLLSAICFGR_PLLSAIQ_Pos)
+#endif /* CLOCK_ENABLE_PLL_SAI */
 
 #if defined(CPU_FAM_STM32F2)
 #define RCC_PLLCFGR_PLLP_Pos    (16U)
@@ -86,10 +76,10 @@
 #endif
 
 /* now we get the actual bitfields */
-#define PLL_P                   (((P / 2) - 1) << RCC_PLLCFGR_PLLP_Pos)
-#define PLL_M                   (M << RCC_PLLCFGR_PLLM_Pos)
-#define PLL_N                   (N << RCC_PLLCFGR_PLLN_Pos)
-#define PLL_Q                   (Q << RCC_PLLCFGR_PLLQ_Pos)
+#define PLL_P                   (((CLOCK_PLL_P / 2) - 1) << RCC_PLLCFGR_PLLP_Pos)
+#define PLL_M                   (CLOCK_PLL_M << RCC_PLLCFGR_PLLM_Pos)
+#define PLL_N                   (CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
+#define PLL_Q                   (CLOCK_PLL_Q << RCC_PLLCFGR_PLLQ_Pos)
 /** @} */
 
 /**
@@ -147,7 +137,7 @@ void stmclk_init_sysclk(void)
     while (!(RCC->CR & RCC_CR_HSERDY)) {}
 #endif
 
-#if CLOCK_48MHZ_2ND_PLL
+#if CLOCK_USE_ALT_48MHZ
     RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
 #endif
     /* now we can safely configure and start the PLL */
@@ -162,13 +152,13 @@ void stmclk_init_sysclk(void)
     stmclk_disable_hsi();
 
 #if (CLOCK_ENABLE_PLLI2S)
-    RCC->PLLI2SCFGR = (PLLI2S_SRC | PLLI2S_M | PLLI2S_N | PLLI2S_Q);
+    RCC->PLLI2SCFGR = (PLLI2S_SRC | PLLI2S_M | PLLI2S_N | PLLI2s_P | PLLI2S_Q);
     RCC->CR |= (RCC_CR_PLLI2SON);
     while (!(RCC->CR & RCC_CR_PLLI2SRDY)) {}
 #endif /* CLOCK_ENABLE_PLLI2S */
 
 #if (CLOCK_ENABLE_PLLSAI)
-    RCC->PLLSAICFGR = (PLLSAI_N | PLLSAI_Q);
+    RCC->PLLSAICFGR = (PLLSAI_M | PLLSAI_N | PLLSAI_P | PLLSAI_Q);
     RCC->CR |= (RCC_CR_PLLSAION);
     while (!(RCC->CR & RCC_CR_PLLSAIRDY)) {}
 #endif
