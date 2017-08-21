@@ -18,7 +18,7 @@
 #ifndef NET_GNRC_NETIF2_MAC_H
 #define NET_GNRC_NETIF2_MAC_H
 
-#include "net/gnrc/mac/mac.h"
+#include "net/gnrc/mac/types.h"
 
 #ifdef __cplusplus
 extern "C" {
