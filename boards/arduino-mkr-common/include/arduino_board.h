@@ -28,11 +28,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   The on-board LED is connected to pin 6 on this board
- */
-#define ARDUINO_LED         (6)
-
-/**
  * @brief   Look-up table for the Arduino's digital pins
  */
 static const gpio_t arduino_pinmap[] = {
