@@ -42,9 +42,9 @@
  */
 /* figure out which input to use */
 #if (CLOCK_HSE)
-#define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSE
+#define PLL_SRC                  RCC_PLLCFGR_PLLSRC_HSE
 #else
-#define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSI
+#define PLL_SRC                  RCC_PLLCFGR_PLLSRC_HSI
 #endif
 
 #if (CLOCK_ENABLE_PLL_I2S)
@@ -54,6 +54,11 @@
 #define PLLI2S_M                 (0)
 #endif
 #define PLLI2S_N                 (CLOCK_PLL_I2S_N << RCC_PLLI2SCFGR_PLLI2SN_Pos)
+#ifdef RCC_PLLI2SCFGR_PLLI2SP_Pos
+#define PLLI2S_P                 (((CLOCK_PLL_I2S_P / 2) - 1) << RCC_PLLI2SCFGR_PLLI2SP_Pos)
+#else
+#define PLLI2S_P                 (0)
+#endif
 #define PLLI2S_Q                 (CLOCK_PLL_I2S_Q << RCC_PLLI2SCFGR_PLLI2SQ_Pos)
 #endif /* CLOCK_ENABLE_PLLI_2S */
 
@@ -64,7 +69,11 @@
 #define PLLSAI_M                 (0)
 #endif
 #define PLLSAI_N                 (CLOCK_PLL_SAI_N << RCC_PLLSAICFGR_PLLSAIN_Pos)
-#define PLLSAI_P                 (CLOCK_PLL_SAI_P << RCC_PLLSAICFGR_PLLSAIP_Pos)
+#ifdef RCC_PLLSAICFGR_PLLSAIP_Pos
+#define PLLSAI_P                 (((CLOCK_PLL_SAI_P / 2) - 1) << RCC_PLLSAICFGR_PLLSAIP_Pos)
+#else
+#define PLLSAI_P                 (0)
+#endif
 #define PLLSAI_Q                 (CLOCK_PLL_SAI_Q << RCC_PLLSAICFGR_PLLSAIQ_Pos)
 #endif /* CLOCK_ENABLE_PLL_SAI */
 
