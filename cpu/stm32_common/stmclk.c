@@ -174,67 +174,6 @@ void stmclk_init_sysclk(void)
 
     irq_restore(is);
 }
-
-void stmclk_enable_hsi(void)
-{
-    RCC->CR |= (RCC_CR_HSION);
-    while (!(RCC->CR & RCC_CR_HSIRDY)) {}
-}
-
-void stmclk_disable_hsi(void)
-{
-    if ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI) {
-        RCC->CR &= ~(RCC_CR_HSION);
-    }
-}
-
-void stmclk_enable_lfclk(void)
-{
-    /* configure the low speed clock domain (LSE vs LSI) */
-#if CLOCK_LSE
-    /* allow write access to backup domain */
-    stmclk_bdp_unlock();
-    /* enable LSE */
-    RCC->BDCR |= RCC_BDCR_LSEON;
-    while (!(RCC->BDCR & RCC_BDCR_LSERDY)) {}
-    /* disable write access to back domain when done */
-    stmclk_bdp_lock();
-#else
-    RCC->CSR |= RCC_CSR_LSION;
-    while (!(RCC->CSR & RCC_CSR_LSIRDY)) {}
-#endif
-}
-
-void stmclk_disable_lfclk(void)
-{
-#if CLOCK_LSE
-    stmclk_bdp_unlock();
-    RCC->BDCR &= ~(RCC_BDCR_LSEON);
-    stmclk_bdp_lock();
-#else
-    RCC->CSR &= ~(RCC_CSR_LSION);
-#endif
-}
-
-void stmclk_bdp_unlock(void)
-{
-    periph_clk_en(APB1, RCC_APB1ENR_PWREN);
-#if defined(CPU_FAM_STM32F7)
-    PWR->CR1 |= PWR_CR1_DBP;
-#else
-    PWR->CR |= PWR_CR_DBP;
-#endif
-}
-
-void stmclk_bdp_lock(void)
-{
-#if defined(CPU_FAM_STM32F7)
-    PWR->CR1 &= ~(PWR_CR1_DBP);
-#else
-    PWR->CR &= ~(PWR_CR_DBP);
-#endif
-    periph_clk_dis(APB1, RCC_APB1ENR_PWREN);
-}
 #else
 typedef int dont_be_pedantic;
 #endif /* defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7) */
