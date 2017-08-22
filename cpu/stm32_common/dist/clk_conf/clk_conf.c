@@ -425,7 +425,7 @@ int main(int argc, char **argv)
         pll_src = HSE;
     }
 
-    unsigned is_lse = atoi(argv[4]) ? 1 : 0;
+    int is_lse = atoi(argv[4]) ? 1 : 0;
 
     unsigned pll_i2s_input = 0;
     if (argc > 5) {
@@ -596,7 +596,7 @@ int main(int argc, char **argv)
            " * @{\n"
            " */\n");
     printf("/* give the target core clock (HCLK) frequency [in Hz],\n"
-           " * maximum: %dMHz */\n", max_coreclock / 1000000U);
+           " * maximum: %uMHz */\n", max_coreclock / 1000000U);
     printf("#define CLOCK_CORECLOCK      (%uU)\n", coreclock);
     printf("/* 0: no external high speed crystal available\n"
            " * else: actual crystal frequency [in Hz] */\n"
