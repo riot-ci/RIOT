@@ -10,7 +10,7 @@
  * @brief       Compute clock constants for STM32F[2|4|7] CPUs
  *
  *
- * @author      Vincent Dupont
+ * @author      Vincent Dupont <vincent@otakeys.com>
  *
  * @}
  */
@@ -205,7 +205,8 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
 
 static void usage(char **argv)
 {
-    printf("usage: %s <cpu_model> <coreclock> <hse_freq> <lse> [pll_i2s_src] [pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
+    printf("usage: %s <cpu_model> <coreclock> <hse_freq> <lse> [pll_i2s_src] "
+           "[pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
 }
 
 #define HSI 0
@@ -311,7 +312,6 @@ int main(int argc, char **argv)
         case 479:
             has_pll_i2s = true;
             break;
-
         }
         switch (model) {
         case 411:
@@ -322,7 +322,6 @@ int main(int argc, char **argv)
             has_pll_i2s_m = true;
             break;
         }
-
         /* set PLL SAI */
         switch (model) {
         case 446:
@@ -368,7 +367,6 @@ int main(int argc, char **argv)
         case 779:
             has_pll_i2s = true;
             break;
-
         }
         /* set PLL SAI */
         switch (model) {
@@ -385,7 +383,6 @@ int main(int argc, char **argv)
             has_pll_sai = true;
             break;
         }
-
     }
     else {
         printf("Unsupported CPU model %s\n", argv[1]);
@@ -503,11 +500,13 @@ int main(int argc, char **argv)
         else if (has_pll_sai && (has_alt_48MHz & ALT_48MHZ_SAI)) {
             printf("PLL SAI...");
             use_alt_48MHz = true;
-            if ((has_alt_48MHz & ALT_48MHZ_P) && (pll_sai_p_out == 0 || pll_sai_p_out == 48000000U)) {
+            if ((has_alt_48MHz & ALT_48MHZ_P) &&
+                    (pll_sai_p_out == 0 || pll_sai_p_out == 48000000U)) {
                 puts("P");
                 pll_sai_p_out = 48000000U;
             }
-            else if (!(has_alt_48MHz & ALT_48MHZ_P) && (pll_sai_q_out == 0 || pll_sai_q_out == 48000000U)) {
+            else if (!(has_alt_48MHz & ALT_48MHZ_P) &&
+                     (pll_sai_q_out == 0 || pll_sai_q_out == 48000000U)) {
                 puts("Q");
                 pll_sai_q_out = 48000000U;
             }
@@ -545,7 +544,8 @@ int main(int argc, char **argv)
         else {
             _in = pll_in;
         }
-        if (compute_pll(_in, pll_i2s_p_out, pll_i2s_q_out, 0, _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
+        if (compute_pll(_in, pll_i2s_p_out, pll_i2s_q_out, 0,
+                        _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
         }
@@ -560,7 +560,8 @@ int main(int argc, char **argv)
         else {
             _m = &m;
         }
-        if (compute_pll(pll_in, pll_sai_p_out, pll_sai_q_out, 0, _m, &n_sai, &p_sai, &q_sai, &r_sai) != 0) {
+        if (compute_pll(pll_in, pll_sai_p_out, pll_sai_q_out, 0,
+                        _m, &n_sai, &p_sai, &q_sai, &r_sai) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
         }
