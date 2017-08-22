@@ -45,6 +45,34 @@ static unsigned min_vco_output = 100000000U;
 /** Max VCO output freq (default: 432MHz) */
 static unsigned max_vco_outut  = 432000000U;
 
+/** Min PLL N value */
+static unsigned min_n = 50;
+/** Max PLL N value */
+static unsigned max_n = 432;
+/** PLL N increment */
+static unsigned inc_n = 1;
+
+/** Min PLL M value */
+static unsigned min_m = 2;
+/** Max PLL M value */
+static unsigned max_m = 63;
+/** PLL M increment */
+static unsigned inc_m = 1;
+
+/** Min PLL P value */
+static unsigned min_p = 2;
+/** Max PLL P value */
+static unsigned max_p = 8;
+/** PLL P increment */
+static unsigned inc_p = 2;
+
+/** Min PLL Q value */
+static unsigned min_q = 2;
+/** Max PLL Q value */
+static unsigned max_q = 15;
+/** PLL Q increment */
+static unsigned inc_q = 1;
+
 /** CPU has a PLL I2S */
 static bool has_pll_i2s = false;
 /** CPU has a PLL SAI */
@@ -88,7 +116,7 @@ static int has_alt_48MHz = ALT_48MHZ_NO;
  */
 static int is_n_ok(unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
 {
-    if (n >= 50 && n <= 432 &&
+    if (n >= min_n && n <= max_n &&
             vco_in * n >= min_vco_output && vco_in * n <= max_vco_outut &&
             vco_in * n / p == pll_out) {
         return 1;
@@ -144,6 +172,11 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
                        unsigned pll_r_out, unsigned *m, unsigned *n, unsigned *p,
                        unsigned *q, unsigned *r)
 {
+    (void)pll_r_out;
+    (void)r;
+
+    (void)inc_n;
+    (void)inc_m;
     int res = 0;
     unsigned vco_in;
 
@@ -160,14 +193,15 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
         vco_in = pll_in / *m;
     }
 
-    if (vco_in < min_vco_input || vco_in > max_vco_input) {
+    if (*m < min_m || *m > max_m ||
+            vco_in < min_vco_input || vco_in > max_vco_input) {
         DEBUG("Invalid M=%u\n", *m);
         return -1;
     }
 
     if (pll_p_out) {
         DEBUG("Computing P for freq=%u\n", pll_p_out);
-        for (*p = 8; *p >= 2; *p -= 2) {
+        for (*p = max_p; *p >= min_p; *p -= inc_p) {
             *n = *p * pll_p_out / vco_in;
             DEBUG("Trying P=%u: N=%u\n", *p, *n);
             if (is_n_ok(*n, *p, vco_in, pll_p_out)) {
@@ -182,7 +216,7 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
 
     if (pll_q_out) {
         DEBUG("Computing Q for freq=%u\n", pll_q_out);
-        for (*q = 15; *q >= 3; (*q)--) {
+        for (*q = max_q; *q >= min_q; *q -= inc_q) {
             if (!pll_p_out) {
                 *n = *q * pll_q_out / vco_in;
             }
