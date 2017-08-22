@@ -238,7 +238,24 @@ struct gnrc_rpl_parent {
 typedef struct {
     uint16_t ocp;   /**< objective code point */
     uint16_t (*calc_rank)(gnrc_rpl_parent_t *parent, uint16_t base_rank); /**< calculate the rank */
-    gnrc_rpl_parent_t *(*which_parent)(gnrc_rpl_parent_t *, gnrc_rpl_parent_t *); /**< compare for parents */
+    gnrc_rpl_parent_t *(*which_parent)(gnrc_rpl_parent_t *, gnrc_rpl_parent_t *); /**< retrieve the better parent */
+
+    /**
+     * @brief   Compare two @ref gnrc_rpl_parent_t.
+     *
+     * This function is used to determine the parent list order. The parents
+     * are ordered from the preferred parent to the least preferred parent.
+     * This function should compare two parents based on the criteria of the
+     * objective function.
+     *
+     * @param[in] p1 First parent to compare.
+     * @param[in] p2 Second parent to compare.
+     *
+     * @return      Zero if the parents are of equal preference,
+     *              positive result if the second parent is prefered,
+     *              negative result if the first parent is prefered.
+     */
+    int (*parent_cmp)(gnrc_rpl_parent_t *p1, gnrc_rpl_parent_t *p2);
     gnrc_rpl_dodag_t *(*which_dodag)(gnrc_rpl_dodag_t *, gnrc_rpl_dodag_t *); /**< compare for dodags */
     void (*reset)(gnrc_rpl_dodag_t *);    /**< resets the OF */
     void (*parent_state_callback)(gnrc_rpl_parent_t *, int, int); /**< retrieves the state of a parent*/
