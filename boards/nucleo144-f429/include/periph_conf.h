@@ -34,7 +34,7 @@ extern "C" {
  */
 /* give the target core clock (HCLK) frequency [in Hz],
  * maximum: 180MHz */
-#define CLOCK_CORECLOCK      (120000000U)
+#define CLOCK_CORECLOCK      (168000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
 #define CLOCK_HSE            (8000000U)
@@ -51,9 +51,9 @@ extern "C" {
 
 /* Main PLL factors */
 #define CLOCK_PLL_M          (4)
-#define CLOCK_PLL_N          (120)
+#define CLOCK_PLL_N          (168)
 #define CLOCK_PLL_P          (2)
-#define CLOCK_PLL_Q          (5)
+#define CLOCK_PLL_Q          (7)
 /** @} */
 
 /**
