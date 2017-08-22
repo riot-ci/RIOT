@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #if ENABLE_DEBUG
 #define DEBUG(...) printf(__VA_ARGS__)
 #else
@@ -203,54 +203,22 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
     return res;
 }
 
+static void usage(char **argv)
+{
+    printf("usage: %s <cpu_model> <coreclock> <hse_freq> <lse> [pll_i2s_src] [pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
+}
+
 #define HSI 0
 #define HSE 1
 
 int main(int argc, char **argv)
 {
-    if (argc < 4) {
-        printf("usage: %s <cpu_model> <coreclock> <hse_freq> [pll_i2s_src] [pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
+    if (argc < 2) {
+        usage(argv);
         return 1;
     }
 
-    /* parse command line arguments */
-    unsigned coreclock = atoi(argv[2]);
-    unsigned pll_in = atoi(argv[3]);
-    int pll_src;
-    if (pll_in == 0) {
-        /* Fixed HSI value 16MHz */
-        pll_in = 16000000U;
-        pll_src = HSI;
-    }
-    else {
-        pll_src = HSE;
-    }
-
-    unsigned pll_i2s_input = 0;
-    if (argc > 4) {
-        pll_i2s_input = atoi(argv[4]);
-    }
-
-    unsigned pll_i2s_p_out = 0;
-    unsigned pll_i2s_q_out = 0;
-    if (argc > 5) {
-        pll_i2s_q_out = atoi(argv[5]);
-    }
-
-    unsigned pll_sai_p_out = 0;
-    unsigned pll_sai_q_out = 0;
-    if (argc > 6) {
-        pll_sai_q_out = atoi(argv[6]);
-    }
-
-    if (strlen(argv[1]) < 9 || !isdigit(argv[1][6])
-            || !isdigit(argv[1][7])
-            || !isdigit(argv[1][8])) {
-        printf("Invalid model : %s\n", argv[1]);
-        return 1;
-    }
-
-    /* load value for given model and check inputs */
+    /* load value for given model */
 
     int model = atoi(argv[1] + 6);
     if (strncmp(argv[1], "stm32f2", 7) == 0) {
@@ -264,6 +232,7 @@ int main(int argc, char **argv)
             max_apb1 = max_coreclock / 4;
             max_apb2 = max_coreclock / 2;
             min_vco_output = 192000000U;
+            break;
         default:
             printf("Unsuported cpu model: %s\n", argv[1]);
             return 1;
@@ -423,6 +392,68 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    /* print help for given cpu */
+    if (argc < 5) {
+        usage(argv);
+        printf("Max values for stm32f%d:\n", model);
+        printf("  Max coreclock: %u Hz\n"
+               "  Max APB1:      %u Hz\n"
+               "  Max APB2:      %u Hz\n", max_coreclock, max_apb1, max_apb2);
+        printf("Additional PLLs:\n"
+               "  PLL I2S: %d\n"
+               "  PLL SAI: %d\n"
+               "  Alternate 48MHz source: ", has_pll_i2s, has_pll_sai);
+        if (has_alt_48MHz & ALT_48MHZ_I2S) {
+            puts("PLL I2S");
+        }
+        else if (has_alt_48MHz & ALT_48MHZ_SAI) {
+            puts("PLL SAI");
+        }
+        else {
+            puts("None");
+        }
+        return 0;
+    }
+
+    /* parse command line arguments */
+    unsigned coreclock = atoi(argv[2]);
+    unsigned pll_in = atoi(argv[3]);
+    int pll_src;
+    if (pll_in == 0) {
+        /* Fixed HSI value 16MHz */
+        pll_in = 16000000U;
+        pll_src = HSI;
+    }
+    else {
+        pll_src = HSE;
+    }
+
+    unsigned is_lse = atoi(argv[4]) ? 1 : 0;
+
+    unsigned pll_i2s_input = 0;
+    if (argc > 5) {
+        pll_i2s_input = atoi(argv[5]);
+    }
+
+    unsigned pll_i2s_p_out = 0;
+    unsigned pll_i2s_q_out = 0;
+    if (argc > 6) {
+        pll_i2s_q_out = atoi(argv[6]);
+    }
+
+    unsigned pll_sai_p_out = 0;
+    unsigned pll_sai_q_out = 0;
+    if (argc > 7) {
+        pll_sai_q_out = atoi(argv[7]);
+    }
+
+    if (strlen(argv[1]) < 9 || !isdigit(argv[1][6])
+            || !isdigit(argv[1][7])
+            || !isdigit(argv[1][8])) {
+        printf("Invalid model : %s\n", argv[1]);
+        return 1;
+    }
+
     if (max_coreclock && coreclock > max_coreclock) {
         printf("Invalid coreclock (max=%u)\n", max_coreclock);
         return 1;
@@ -567,8 +598,11 @@ int main(int argc, char **argv)
            " * maximum: %dMHz */\n", max_coreclock / 1000000U);
     printf("#define CLOCK_CORECLOCK      (%uU)\n", coreclock);
     printf("/* 0: no external high speed crystal available\n"
-           " * 1: use external high speed crystal */\n");
-    printf("#define CLOCK_HSE            (%u)\n", pll_src);
+           " * else: actual crystal frequency [in Hz] */\n"
+           "#define CLOCK_HSE            (%uU)\n", pll_src ? pll_in : 0);
+    printf("/* 0: no external low speed crystal available,\n"
+           " * 1: external crystal available (always 32.768kHz) */\n"
+           "#define CLOCK_LSE            (%d)\n", is_lse);
     printf("/* peripheral clock setup */\n");
     printf("#define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1      /* min 25MHz */\n"
            "#define CLOCK_AHB            (CLOCK_CORECLOCK / 1)\n");
