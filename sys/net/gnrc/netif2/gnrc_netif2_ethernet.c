@@ -15,6 +15,7 @@
  * @author  Kaspar Schleiser <kaspar@schleiser.de>
  */
 
+#ifdef MODULE_NETDEV_ETH
 #include "net/ethernet/hdr.h"
 #include "net/gnrc.h"
 #include "net/gnrc/netif2/ethernet.h"
@@ -245,5 +246,8 @@ safe_out:
     gnrc_pktbuf_release(pkt);
     return NULL;
 }
+#else   /* MODULE_NETDEV_ETH */
+typedef int dont_be_pedantic;
+#endif  /* MODULE_NETDEV_ETH */
 
 /** @} */
