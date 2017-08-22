@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
- * Copyright (C) 2016 Eistec AB
+ * Copyright (C) 2016-2017 Eistec AB
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -64,13 +64,8 @@ void _xtimer_tsleep(uint32_t offset, uint32_t long_offset)
     mutex_lock(&mutex);
 }
 
-void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
-    xtimer_t timer;
-    mutex_t mutex = MUTEX_INIT_LOCKED;
-
-    timer.callback = _callback_unlock_mutex;
-    timer.arg = (void*) &mutex;
-
+void _xtimer_periodic(xtimer_t *timer, uint32_t *last_wakeup, uint32_t period)
+{
     uint32_t target = (*last_wakeup) + period;
     uint32_t now = _xtimer_now();
     do {
@@ -79,6 +74,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
             /* base timer overflowed between last_wakeup and now */
             if (!((now < target) && (target < (*last_wakeup)))) {
                 /* target time has already passed */
+                timer->callback(timer->arg);
                 break;
             }
         }
@@ -86,6 +82,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
             /* base timer did not overflow */
             if ((((*last_wakeup) <= target) && (target <= now))) {
                 /* target time has already passed */
+                timer->callback(timer->arg);
                 break;
             }
         }
@@ -111,6 +108,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
         DEBUG("xps, now: %9" PRIu32 ", tgt: %9" PRIu32 ", off: %9" PRIu32 "\n", now, target, offset);
         if (offset < XTIMER_PERIODIC_SPIN) {
             _xtimer_spin(offset);
+            timer->callback(timer->arg);
         }
         else {
             if (offset < XTIMER_PERIODIC_RELATIVE) {
@@ -122,11 +120,20 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
                 target = _xtimer_now() + offset;
             }
             DEBUG("xps, abs: %" PRIu32 "\n", target);
-            _xtimer_set_absolute(&timer, target);
-            mutex_lock(&mutex);
+            _xtimer_set_absolute(timer, target);
         }
     } while (0);
     *last_wakeup = target;
+}
+
+void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
+    xtimer_t timer;
+    mutex_t mutex = MUTEX_INIT_LOCKED;
+
+    timer.callback = _callback_unlock_mutex;
+    timer.arg = (void*) &mutex;
+    _xtimer_periodic(&timer, last_wakeup, period);
+    mutex_lock(&mutex);
 }
 
 static void _callback_msg(void* arg)
