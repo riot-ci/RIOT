@@ -39,7 +39,7 @@ extern "C" {
 #define CLOCK_CORECLOCK      (168000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
-#define CLOCK_HSE            (8000000U)
+#define CLOCK_HSE            (16000000U)
 /* 0: no external low speed crystal available,
  * 1: external crystal available (always 32.768kHz) */
 #define CLOCK_LSE            (0)
@@ -52,7 +52,7 @@ extern "C" {
 #define CLOCK_APB2           (CLOCK_CORECLOCK / 2)
 
 /* Main PLL factors */
-#define CLOCK_PLL_M          (4)
+#define CLOCK_PLL_M          (8)
 #define CLOCK_PLL_N          (168)
 #define CLOCK_PLL_P          (2)
 #define CLOCK_PLL_Q          (7)
