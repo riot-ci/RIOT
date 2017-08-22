@@ -36,8 +36,11 @@ extern "C" {
  * maximum: 84MHz */
 #define CLOCK_CORECLOCK      (84000000U)
 /* 0: no external high speed crystal available
- * 1: use external high speed crystal */
-#define CLOCK_HSE            (1)
+ * else: actual crystal frequency [in Hz] */
+#define CLOCK_HSE            (8000000U)
+/* 0: no external low speed crystal available,
+ * 1: external crystal available (always 32.768kHz) */
+#define CLOCK_LSE            (1)
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1      /* min 25MHz */
 #define CLOCK_AHB            (CLOCK_CORECLOCK / 1)
@@ -51,10 +54,7 @@ extern "C" {
 #define CLOCK_PLL_N          (168)
 #define CLOCK_PLL_P          (4)
 #define CLOCK_PLL_Q          (7)
-
-#define CLOCK_LSE            (1)
 /** @} */
-
 
 /**
  * @name   Timer configuration
