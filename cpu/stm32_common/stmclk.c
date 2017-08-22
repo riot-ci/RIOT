@@ -33,7 +33,7 @@
 #error "Please provide CLOCK_LSE in your board's periph_conf.h"
 #endif
 #ifndef CLOCK_CORECLOCK
-#error "Please provide desired CLOCK_CORECLOCK in your board's periph_conf.h"
+#error "Please provide CLOCK_CORECLOCK in your board's periph_conf.h"
 #endif
 
 /**
