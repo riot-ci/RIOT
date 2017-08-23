@@ -295,8 +295,8 @@ int main(int argc, char **argv)
     bool use_alt_48MHz = false;
     unsigned clock_48MHz = cfg->need_48MHz ? 48000000U : 0;
     if ((cfg->family == 0 || cfg->family == 1) && pll_src == HSI) {
-        /* Do not use prediv (m) */
-        m = 1;
+        /* HSI / 2 is used as source */
+        m = 2;
     }
 
     /* main PLL */
