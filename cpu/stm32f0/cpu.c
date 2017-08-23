@@ -18,9 +18,9 @@
  */
 
 #include "cpu.h"
-#include "periph_conf.h"
+#include "stmclk.h"
 #include "periph/init.h"
-
+#if 0
 /* Check the source to be used for the PLL */
 #if defined(CLOCK_HSI) && defined(CLOCK_HSE)
 #error "Only provide one of two CLOCK_HSI/CLOCK_HSE"
@@ -45,7 +45,7 @@
 #endif
 
 static void clock_init(void);
-
+#endif
 /**
  * @brief Initialize the CPU, set IRQ priorities
  */
@@ -54,11 +54,11 @@ void cpu_init(void)
     /* initialize the Cortex-M core */
     cortexm_init();
     /* initialize the clock system */
-    clock_init();
+    stmclk_init_sysclk();
     /* trigger static peripheral initialization */
     periph_init();
 }
-
+#if 0
 /**
  * @brief Configure the controllers clock system
  *
@@ -133,3 +133,4 @@ static void clock_init(void)
     while (RCC->CR & RCC_CR_HSIRDY) {}
 #endif
 }
+#endif
