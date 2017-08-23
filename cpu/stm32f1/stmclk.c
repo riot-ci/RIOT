@@ -27,7 +27,7 @@
 #include "cpu.h"
 #include "stmclk.h"
 #include "periph_conf.h"
-
+#if 0
 /* make sure we have all needed information about the clock configuration */
 #ifndef CLOCK_HSE
 #error "Please provide CLOCK_HSE in your board's perhip_conf.h"
@@ -154,3 +154,6 @@ void stmclk_init_sysclk(void)
     /* re-enable IRQs */
     irq_restore(is);
 }
+#else
+typedef int dont_be_pedantic;
+#endif
