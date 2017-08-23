@@ -105,10 +105,10 @@ void stmclk_init_sysclk(void)
     RCC->CR = (RCC_CR_HSION | RCC_CR_HSITRIM_4);
 
     /* if configured, we need to enable the HSE clock now */
-#if (CLOCK_HSE)
-    RCC->CR |= (RCC_CR_HSEON);
-    while (!(RCC->CR & RCC_CR_HSERDY)) {}
-#endif
+    if (CLOCK_HSE) {
+        RCC->CR |= (RCC_CR_HSEON);
+        while (!(RCC->CR & RCC_CR_HSERDY)) {}
+    }
 
     /* now we can safely configure and start the PLL */
     RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q);
