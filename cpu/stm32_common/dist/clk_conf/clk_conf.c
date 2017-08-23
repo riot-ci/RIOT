@@ -300,6 +300,10 @@ int main(int argc, char **argv)
 
     bool use_alt_48MHz = false;
     unsigned clock_48MHz = cfg->need_48MHz ? 48000000U : 0;
+    if ((cfg->family == 0 || cfg->family == 1) && pll_src == HSI) {
+        /* HSI / 2 is used as source */
+        m = 2;
+    }
 
     /* main PLL */
     /* try to match coreclock with P output and 48MHz for Q output (USB) */
