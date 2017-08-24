@@ -26,7 +26,6 @@
 static int read_pres(const void *dev, phydat_t *res)
 {
     res->val[0] = (int16_t)lps331ap_read_pres((const lps331ap_t *)dev);
-    memset(&(res->val[1]), 0, 2 * sizeof(int16_t));
     res->unit = UNIT_BAR;
     res->scale = -3;
     return 1;
@@ -35,7 +34,6 @@ static int read_pres(const void *dev, phydat_t *res)
 static int read_temp(const void *dev, phydat_t *res)
 {
     res->val[0] = (int16_t)(lps331ap_read_temp((const lps331ap_t *)dev) / 10);
-    memset(&(res->val[1]), 0, 2 * sizeof(int16_t));
     res->unit = UNIT_TEMP_C;
     /* above division by ten leads to °C * 10^-2*/
     res->scale = -2;
