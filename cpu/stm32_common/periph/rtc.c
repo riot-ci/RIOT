@@ -198,11 +198,10 @@ void rtc_init(void)
     EN_REG |= (CLKSEL_LSI | EN_BIT);
 #endif
 
+    rtc_unlock();
     /* reset configuration */
     RTC->CR = 0;
-    RTC->ISR = 0;
-
-    rtc_unlock();
+    RTC->ISR = RTC_ISR_INIT;
     /* configure prescaler (RTC PRER) */
     RTC->PRER = (PRE_SYNC | (PRE_ASYNC << 16));
     rtc_lock();
