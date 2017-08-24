@@ -9,8 +9,7 @@
  */
 
 /**
- * @defgroup    cpu_mips_pic32mx MIPS PIC32MX
- * @ingroup     cpu
+ * @ingroup     cpu_mips_pic32mx
  * @{
  *
  * @file

@@ -9,7 +9,7 @@
  */
 
 /**
- * @defgroup    cpu_mips_pic32mz MIPS PIC32MZ
+ * @defgroup    cpu_mips_pic32mz Microchip MIPS PIC32MZ
  * @ingroup     cpu
  * @brief       CPU definitions for pic32mz devices.
  * @{
