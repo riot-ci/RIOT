@@ -40,27 +40,31 @@ extern "C" {
 /**
  * @brief   Mask for the address' state
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK         (0x03U)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK             (0x0fU)
 
 /**
- * @brief   Tentative address state
+ * @brief   Tentative states (with encoded DAD retransmissions)
+ *
+ * The retransmissions of DAD transmits can be decoded from this state by
+ * applying it as a mask to the [flags](gnrc_netif2_ipv6_t::addrs_flags) of the
+ * address.
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE    (0x01U)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE        (0x07U)
 
 /**
  * @brief   Deprecated address state (still valid, but not preferred)
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_DEPRECATED   (0x02U)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_DEPRECATED       (0x08U)
 
 /**
  * @brief   Valid address state
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID        (0x03U)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID            (0x10U)
 
 /**
  * @brief   Address is an anycast address
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_ANYCAST            (0x04U)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_ANYCAST                (0x20U)
 /** @} */
 
 /**

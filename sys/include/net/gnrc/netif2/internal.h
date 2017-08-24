@@ -75,12 +75,19 @@ static inline void gnrc_netif2_release(gnrc_netif2_t *netif)
  *                      will be ignored. May not be NULL and may not be
  *                      link-local or multicast
  * @param[in] pfx_len   length in bits of the prefix of @p addr
- * @param[in] flags     initial flags for the address. Setting the address'
- *                      state to @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID
- *                      means that state-less auto-address configuration is
- *                      skipped and the address is considered to be manually
- *                      configured. If the state in the flgas is unset,
- *                      GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE is assumed.
+ * @param[in] flags     initial flags for the address.
+ *                      - Setting the address' state to
+ *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE
+ *                        means that state-less auto-address configuration is
+ *                        performed.
+ *                      - Setting the address' state to
+ *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID means
+ *                        that the address is assumed to be manually configured
+ *                        and its prefix will be added to the node's prefix
+ *                        list (valid and preferred lifetime will be set to
+ *                        infinite, but can be changed using
+ *                        @ref gnrc_ipv6_nib_pl_set()).
+ *
  *
  * @note    Only available with @ref net_gnrc_ipv6 "gnrc_ipv6".
  *
@@ -135,6 +142,12 @@ static inline uint8_t gnrc_netif2_ipv6_addr_get_state(const gnrc_netif2_t *netif
                                                       int idx)
 {
     return netif->ipv6.addrs_flags[idx] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
+}
+
+static inline uint8_t gnrc_netif2_ipv6_addr_dad_trans(const gnrc_netif2_t *netif,
+                                                      int idx)
+{
+    return netif->ipv6.addrs_flags[idx] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE;
 }
 
 /**

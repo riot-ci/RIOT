@@ -518,8 +518,11 @@ int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
              ipv6_addr_is_loopback(addr)));
     assert((pfx_len > 0) && (pfx_len <= 128));
     gnrc_netif2_acquire(netif);
-    if ((flags & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK) == 0) {
-        flags |= GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE;
+    if ((flags & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK) ==
+        GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE) {
+        /* set to first retransmission */
+        flags &= ~GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE;
+        flags |= 0x1;
     }
     for (unsigned i = 0; i < GNRC_NETIF2_IPV6_ADDRS_NUMOF; i++) {
         if (ipv6_addr_equal(&netif->ipv6.addrs[i], addr)) {
