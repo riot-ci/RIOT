@@ -144,6 +144,16 @@ static inline uint8_t gnrc_netif2_ipv6_addr_get_state(const gnrc_netif2_t *netif
     return netif->ipv6.addrs_flags[idx] & GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
 }
 
+/**
+ * @brief   Gets number of duplicate address detection transmissions already
+ *          performed for an address
+ *
+ * @param[in] netif the network interface
+ * @param[in] idx   index of the address (and its flags)
+ *
+ * @return  the number of duplicate address detection transmissions already
+ *          performed
+ */
 static inline uint8_t gnrc_netif2_ipv6_addr_dad_trans(const gnrc_netif2_t *netif,
                                                       int idx)
 {
