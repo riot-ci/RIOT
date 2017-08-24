@@ -57,14 +57,16 @@
 /* EXTI bitfield mapping */
 #if defined(CPU_FAM_STM32L4)
 #define EXTI_IMR_BIT        (EXTI_IMR1_IM18)
+#define EXTI_FTSR_BIT       (EXTI_FTSR1_FT18)
 #define EXTI_RTSR_BIT       (EXTI_RTSR1_RT18)
 #define EXTI_PR_BIT         (EXTI_PR1_PIF18)
-#elif defined(CPU_FAM_STM32L0)
+#else
+#if defined(CPU_FAM_STM32L0)
 #define EXTI_IMR_BIT        (EXTI_IMR_IM17)
-#define EXTI_RTSR_BIT       (EXTI_RTSR_TR17)
-#define EXTI_PR_BIT         (EXTI_PR_PR17)
 #else
 #define EXTI_IMR_BIT        (EXTI_IMR_MR17)
+#endif
+#define EXTI_FTSR_BIT       (EXTI_FTSR_TR17)
 #define EXTI_RTSR_BIT       (EXTI_RTSR_TR17)
 #define EXTI_PR_BIT         (EXTI_PR_PR17)
 #endif
@@ -168,13 +170,14 @@ static inline void rtc_unlock(void)
     RTC->WPR = WPK2;
     /* enter RTC init mode */
     RTC->ISR |= RTC_ISR_INIT;
-    while ((RTC->ISR & RTC_ISR_INITF) == 0) {}
+    while (!(RTC->ISR & RTC_ISR_INITF)) {}
 }
 
 static inline void rtc_lock(void)
 {
     /* exit RTC init mode */
     RTC->ISR &= ~RTC_ISR_INIT;
+    while (RTC->ISR & RTC_ISR_INITF) {}
     /* lock RTC device */
     RTC->WPR = 0xff;
     /* disable backup clock domain */
@@ -195,35 +198,36 @@ void rtc_init(void)
     EN_REG |= (CLKSEL_LSI | EN_BIT);
 #endif
 
+    /* reset configuration */
+    RTC->CR = 0;
+    RTC->ISR = 0;
+
     rtc_unlock();
-
-    /* configure the RTC PRER */
+    /* configure prescaler (RTC PRER) */
     RTC->PRER = (PRE_SYNC | (PRE_ASYNC << 16));
-    /* set clock to 24-h mode and enable timestamps */
-    RTC->CR = RTC_CR_TSE;
-    /* configure EXTI line so that the RTC can wakeup the CPU from deep sleep */
-    EXTI->IMR  |= EXTI_IMR_BIT;
-    EXTI->RTSR |= EXTI_RTSR_BIT;
+    rtc_lock();
 
+    /* configure the EXTI channel, as RTC interrupts are routed through it.
+     * Needs to be configured to trigger on rising edges. */
+    EXTI->FTSR &= ~(EXTI_FTSR_BIT);
+    EXTI->RTSR |= EXTI_RTSR_BIT;
+    EXTI->IMR  |= EXTI_IMR_BIT;
+    EXTI->PR   |= EXTI_PR_BIT;
     /* enable global RTC interrupt */
     NVIC_EnableIRQ(IRQN);
-
-    rtc_lock();
 }
 
 int rtc_set_time(struct tm *time)
 {
     rtc_unlock();
-    RTC->ISR |= RTC_ISR_INIT;
     RTC->DR = (val2bcd((time->tm_year % 100), RTC_DR_YU_Pos, DR_Y_MASK) |
                val2bcd(time->tm_mon,  RTC_DR_MU_Pos, DR_M_MASK) |
                val2bcd(time->tm_mday, RTC_DR_DU_Pos, DR_D_MASK));
     RTC->TR = (val2bcd(time->tm_hour, RTC_TR_HU_Pos, TR_H_MASK) |
                val2bcd(time->tm_min,  RTC_TR_MNU_Pos, TR_M_MASK) |
                val2bcd(time->tm_sec,  RTC_TR_SU_Pos, TR_S_MASK));
-    RTC->ISR &= ~(RTC_ISR_INIT);
-    while (!(RTC->ISR & RTC_ISR_RSF)) {}
     rtc_lock();
+    while (!(RTC->ISR & RTC_ISR_RSF)) {}
 
     return 0;
 }
