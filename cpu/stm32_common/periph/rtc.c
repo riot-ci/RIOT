@@ -197,10 +197,10 @@ void rtc_init(void)
 
     rtc_unlock();
 
-    /* set clock to 24-h mode and enable timestamps */
-    RTC->CR = RTC_CR_TSE;
     /* configure the RTC PRER */
     RTC->PRER = (PRE_SYNC | (PRE_ASYNC << 16));
+    /* set clock to 24-h mode and enable timestamps */
+    RTC->CR = RTC_CR_TSE;
     /* configure EXTI line so that the RTC can wakeup the CPU from deep sleep */
     EXTI->IMR  |= EXTI_IMR_BIT;
     EXTI->RTSR |= EXTI_RTSR_BIT;
