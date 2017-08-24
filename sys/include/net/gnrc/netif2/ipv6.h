@@ -40,7 +40,7 @@ extern "C" {
 /**
  * @brief   Mask for the address' state
  */
-#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK             (0x0fU)
+#define GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK             (0x1fU)
 
 /**
  * @brief   Tentative states (with encoded DAD retransmissions)
