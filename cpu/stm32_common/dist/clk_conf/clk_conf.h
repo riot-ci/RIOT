@@ -400,7 +400,7 @@ static const clk_cfg_t stm32_clk_cfg[] = {
         .need_48MHz = true,
     },
     [STM32F722 ... STM32F779] = {
-        .family = STM32F4,
+        .family = STM32F7,
         .max_coreclock = 216000000U,
         .max_apb1 = 54000000U,
         .max_apb2 = 108000000U,

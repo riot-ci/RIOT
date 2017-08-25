@@ -43,7 +43,8 @@
  *
  * @return 1 if pair is valid, 0 otherwise
  */
-static int is_n_ok(const pll_cfg_t *cfg, unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
+static int is_n_ok(const pll_cfg_t *cfg, unsigned n, unsigned p,
+                   unsigned vco_in, unsigned pll_out)
 {
     if (n >= cfg->min_n && n <= cfg->max_n &&
             vco_in * n >= cfg->min_vco_output && vco_in * n <= cfg->max_vco_output &&
@@ -74,9 +75,10 @@ static int is_n_ok(const pll_cfg_t *cfg, unsigned n, unsigned p, unsigned vco_in
  * @return 3 if no Q nor R can be computed, M, M and P are valid
  * @return 0 if M, N, P, Q, R are valid
  */
-static int compute_pll(const pll_cfg_t *cfg, unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
-                       unsigned pll_r_out, unsigned *m, unsigned *n, unsigned *p,
-                       unsigned *q, unsigned *r)
+static int compute_pll(const pll_cfg_t *cfg, unsigned pll_in,
+                       unsigned pll_p_out, unsigned pll_q_out, unsigned pll_r_out,
+                       unsigned *m, unsigned *n,
+                       unsigned *p, unsigned *q, unsigned *r)
 {
     (void)pll_r_out;
     (void)r;
@@ -92,7 +94,9 @@ static int compute_pll(const pll_cfg_t *cfg, unsigned pll_in, unsigned pll_p_out
         unsigned found_r;
         unsigned found_res;
         *m = cfg->min_m;
-        while (*m <= cfg->max_m && (res = compute_pll(cfg, pll_in, pll_p_out, pll_q_out, pll_r_out, m, n, p, q, r)) != 0) {
+        while (*m <= cfg->max_m && (res = compute_pll(cfg, pll_in, pll_p_out,
+                                                      pll_q_out, pll_r_out,
+                                                      m, n, p, q, r)) != 0) {
             if (res > 0 && !found_m) {
                 found_m = *m;
                 found_n = *n;
@@ -219,7 +223,8 @@ int main(int argc, char **argv)
         printf("Max values for stm32f%03d:\n", model);
         printf("  Max coreclock: %u Hz\n"
                "  Max APB1:      %u Hz\n"
-               "  Max APB2:      %u Hz\n", cfg->max_coreclock, cfg->max_apb1, cfg->max_apb2);
+               "  Max APB2:      %u Hz\n",
+               cfg->max_coreclock, cfg->max_apb1, cfg->max_apb2);
         printf("Additional PLLs:\n"
                "  PLL I2S: %d\n"
                "  PLL SAI: %d\n"
@@ -301,7 +306,8 @@ int main(int argc, char **argv)
 
     /* main PLL */
     /* try to match coreclock with P output and 48MHz for Q output (USB) */
-    switch (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r)) {
+    switch (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0,
+                        &m, &n, &p, &q, &r)) {
     case -1:
         /* no config available */
         puts("Unable to compute main PLL factors");
@@ -382,7 +388,8 @@ int main(int argc, char **argv)
         if (!cfg->has_pll_sai_m && m != m_sai) {
             m = m_sai;
             DEBUG("Retry to compute main PLL with M=%u\n", m);
-            if (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r) < 0) {
+            if (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0,
+                            &m, &n, &p, &q, &r) < 0) {
                 puts("Unable to compute 48MHz output using PLL I2S");
                 return 1;
             }
