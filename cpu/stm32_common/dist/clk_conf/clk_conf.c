@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include "clk_conf.h"
 
 #define ENABLE_DEBUG (0)
 #if ENABLE_DEBUG
@@ -28,82 +29,6 @@
 #else
 #define DEBUG(...)
 #endif
-
-/** Max coreclock frequency */
-static unsigned max_coreclock = 0;
-/** Max APB1 frequency */
-static unsigned max_apb1 = 0;
-/** Max APB2 frequency */
-static unsigned max_apb2 = 0;
-
-static unsigned hsi = 16000000U;
-
-/** Min VCO input (default: 1MHz) */
-static unsigned min_vco_input  = 1000000U;
-/** Max VCO input freq (default: 2MHz) */
-static unsigned max_vco_input  = 2000000U;
-/** Min VCO output freq (default: 100MHz) */
-static unsigned min_vco_output = 100000000U;
-/** Max VCO output freq (default: 432MHz) */
-static unsigned max_vco_outut  = 432000000U;
-
-/** Min PLL N value */
-static unsigned min_n = 50;
-/** Max PLL N value */
-static unsigned max_n = 432;
-/** PLL N increment */
-static unsigned inc_n = 1;
-
-/** Min PLL M value */
-static unsigned min_m = 2;
-/** Max PLL M value */
-static unsigned max_m = 63;
-/** PLL M increment */
-static unsigned inc_m = 1;
-
-/** Min PLL P value */
-static unsigned min_p = 2;
-/** Max PLL P value */
-static unsigned max_p = 8;
-/** PLL P increment */
-static unsigned inc_p = 2;
-
-/** Min PLL Q value */
-static unsigned min_q = 2;
-/** Max PLL Q value */
-static unsigned max_q = 15;
-/** PLL Q increment */
-static unsigned inc_q = 1;
-
-/** CPU has a PLL I2S */
-static bool has_pll_i2s = false;
-/** CPU has a PLL SAI */
-static bool has_pll_sai = false;
-
-/** PLL I2S has a M factor */
-static bool has_pll_i2s_m = false;
-/** PLL SAI has a M factor */
-static bool has_pll_sai_m = false;
-
-/** PLL I2S alternate input */
-static bool has_pll_i2s_alt_input = false;
-
-static bool need_48MHz = true;
-
-/**
- * @name Alternative 48MHz sources
- * @{
- */
-#define ALT_48MHZ_NO  0
-#define ALT_48MHZ_I2S 1
-#define ALT_48MHZ_SAI 2
-
-#define ALT_48MHZ_Q   0
-#define ALT_48MHZ_P   4
-/** @} */
-
-/** CPU supports alternative 48MHz source */
-static int has_alt_48MHz = ALT_48MHZ_NO;
 
 /**
  * @brief Check if N/P pair is valid
@@ -118,10 +43,10 @@ static int has_alt_48MHz = ALT_48MHZ_NO;
  *
  * @return 1 if pair is valid, 0 otherwise
  */
-static int is_n_ok(unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
+static int is_n_ok(const pll_cfg_t *cfg, unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
 {
-    if (n >= min_n && n <= max_n &&
-            vco_in * n >= min_vco_output && vco_in * n <= max_vco_outut &&
+    if (n >= cfg->min_n && n <= cfg->max_n &&
+            vco_in * n >= cfg->min_vco_output && vco_in * n <= cfg->max_vco_output &&
             vco_in * n / p == pll_out) {
         return 1;
     }
@@ -132,29 +57,6 @@ static int is_n_ok(unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
 
 /**
  * @brief Compute PLL factors
- *
- *
- * Compute PLL factors with the following model:
- *
- *
- * pll_in  +----+  vco_in  +------------------------------+
- * --------| /M |----------|\  +----+ vco_out     +----+  |
- *         +----+          | --| xN |-------------| /P |--|-- pll_p_out
- *                         |   +----+         \   +----+  |
- *                         |                   |  +----+  |
- *                         |                   ---| /Q |--|-- pll_q_out
- *                         |                   |  +----+  |
- *                         |                   |  +----+  |
- *                         |                   ---| /R |--|-- pll_r_out
- *                         |                      +----+  |
- *                         +------------------------------+
- *
- *
- * vco_in = pll_in / M;
- * vco_out = vco_in * N;
- * pll_p_out = vco_out / P;
- * pll_q_out = vco_out / Q;
- * pll_r_out = vco_out / R;
  *
  * @param[in] pll_in      PLL input frequency
  * @param[in] pll_p_out   PLL P output frequency (0 if P is not needed)
@@ -172,15 +74,13 @@ static int is_n_ok(unsigned n, unsigned p, unsigned vco_in, unsigned pll_out)
  * @return 3 if no Q nor R can be computed, M, M and P are valid
  * @return 0 if M, N, P, Q, R are valid
  */
-static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
+static int compute_pll(const pll_cfg_t *cfg, unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
                        unsigned pll_r_out, unsigned *m, unsigned *n, unsigned *p,
                        unsigned *q, unsigned *r)
 {
     (void)pll_r_out;
     (void)r;
 
-    (void)inc_n;
-    (void)inc_m;
     int res = 0;
     unsigned vco_in;
 
@@ -191,8 +91,8 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
         unsigned found_q;
         unsigned found_r;
         unsigned found_res;
-        *m = min_m;
-        while (*m <= max_m && (res = compute_pll(pll_in, pll_p_out, pll_q_out, pll_r_out, m, n, p, q, r)) != 0) {
+        *m = cfg->min_m;
+        while (*m <= cfg->max_m && (res = compute_pll(cfg, pll_in, pll_p_out, pll_q_out, pll_r_out, m, n, p, q, r)) != 0) {
             if (res > 0 && !found_m) {
                 found_m = *m;
                 found_n = *n;
@@ -201,7 +101,7 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
                 found_r = *r;
                 found_res = res;
             }
-            *m += inc_m;
+            *m += cfg->inc_m;
         }
         if (res == 0) {
             return 0;
@@ -223,46 +123,46 @@ static int compute_pll(unsigned pll_in, unsigned pll_p_out, unsigned pll_q_out,
         DEBUG("M=%u, vco_in=%u\n", *m, vco_in);
     }
 
-    if (*m < min_m || *m > max_m ||
-            vco_in < min_vco_input || vco_in > max_vco_input) {
+    if (*m < cfg->min_m || *m > cfg->max_m ||
+            vco_in < cfg->min_vco_input || vco_in > cfg->max_vco_input) {
         DEBUG("Invalid M=%u\n", *m);
         return -1;
     }
 
     if (pll_p_out) {
         DEBUG("Computing P for freq=%u\n", pll_p_out);
-        for (*p = max_p; *p >= min_p; *p -= inc_p) {
+        for (*p = cfg->max_p; *p >= cfg->min_p; *p -= cfg->inc_p) {
             *n = *p * pll_p_out / vco_in;
             DEBUG("Trying P=%u: N=%u\n", *p, *n);
-            if (is_n_ok(*n, *p, vco_in, pll_p_out)) {
+            if (is_n_ok(cfg, *n, *p, vco_in, pll_p_out)) {
                 DEBUG("Found M=%u, N=%u, P=%u\n", *m, *n, *p);
                 break;
             }
         }
-        if (*p < min_p) {
-            *p += inc_p;
+        if (*p < cfg->min_p) {
+            *p += cfg->inc_p;
         }
-        if (!is_n_ok(*n, *p, vco_in, pll_p_out)) {
+        if (!is_n_ok(cfg, *n, *p, vco_in, pll_p_out)) {
             return -1;
         }
     }
 
     if (pll_q_out) {
         DEBUG("Computing Q for freq=%u\n", pll_q_out);
-        for (*q = max_q; *q >= min_q; *q -= inc_q) {
+        for (*q = cfg->max_q; *q >= cfg->min_q; *q -= cfg->inc_q) {
             if (!pll_p_out) {
                 *n = *q * pll_q_out / vco_in;
             }
             DEBUG("Trying Q=%u: N=%u\n", *q, *n);
-            if (is_n_ok(*n, *q, vco_in, pll_q_out)) {
+            if (is_n_ok(cfg, *n, *q, vco_in, pll_q_out)) {
                 DEBUG("Found M=%u, N=%u, Q=%u\n", *m, *n, *q);
                 break;
             }
         }
-        if (*q < min_q) {
-            *q += inc_q;
+        if (*q < cfg->min_q) {
+            *q += cfg->inc_q;
         }
-        if (!is_n_ok(*n, *q, vco_in, pll_q_out)) {
+        if (!is_n_ok(cfg, *n, *q, vco_in, pll_q_out)) {
             *q = 0;
             res |= 1;
         }
@@ -289,261 +189,29 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /* load value for given model */
-    int family = -1;
+    if (strlen(argv[1]) < 9
+            || !isdigit(argv[1][6])
+            || !isdigit(argv[1][7])
+            || !isdigit(argv[1][8])
+            || ((argv[1][5] != 'f') && (argv[1][5] != 'F')
+                /* && (argv[1][5] != 'l') && (argv[1][5] != 'L') */)) {
+        printf("Invalid model : %s\n", argv[1]);
+        return 1;
+    }
+
     int model = atoi(argv[1] + 6);
-    if (strncmp(argv[1], "stm32f0", 7) == 0) {
-        family = 0;
-        need_48MHz = false;
-        switch (model) {
-        case 30:
-        case 70:
-        case 31:
-        case 51:
-        case 71:
-        case 91:
-        case 42:
-        case 72:
-        case 38:
-        case 48:
-        case 58:
-        case 78:
-        case 98:
-            hsi = 4000000; /* Prediv forced to 2 with HSI */
-            max_coreclock = 48000000U;
-            max_apb1 = 48000000U;
-            max_apb2 = 0;
-            min_vco_input = 1000000U;
-            max_vco_input = 24000000U;
-            min_vco_output = 16000000U;
-            max_vco_outut = 48000000U;
-            min_m = 1;
-            max_m = 16;
-            inc_m = 1;
-            min_n = 2;
-            max_n = 16;
-            inc_n = 1;
-            min_p = 1;
-            max_p = 1;
-            inc_p = 1;
-            break;
-        default:
-            printf("Unsuported cpu model: %s\n", argv[1]);
-            return 1;
-        }
-    }
-    else if (strncmp(argv[1], "stm32f1", 7) == 0) {
-        family = 1;
-
-        min_m = 1;
-        max_m = 16;
-        inc_m = 1;
-        min_n = 2;
-        max_n = 16;
-        inc_n = 1;
-        min_p = 1;
-        max_p = 1;
-        inc_p = 1;
-        hsi = 4000000; /* Prediv forced to 2 with HSI */
-
-        switch (model) {
-        case 100:
-            need_48MHz = false;
-            max_coreclock = 24000000U;
-            max_apb1 = 24000000U;
-            max_apb2 = 24000000U;
-            min_vco_input = 1000000U;
-            max_vco_input = 24000000U;
-            min_vco_output = 16000000U;
-            max_vco_outut = 24000000U;
-            break;
-        case 101:
-        case 102:
-        case 103:
-            need_48MHz = false;
-            max_m = 2;
-            max_coreclock = 72000000U;
-            max_apb1 = 36000000U;
-            max_apb2 = 72000000U;
-            min_vco_input = 1000000U;
-            max_vco_input = 25000000U;
-            min_vco_output = 1000000U;
-            max_vco_outut = 72000000U;
-            break;
-        default:
-            printf("Unsuported cpu model: %s\n", argv[1]);
+    int i;
+    for (i = 0; i < MODEL_MAX; i++) {
+        if (stm32_model[i] == model) {
             break;
         }
     }
-    else if (strncmp(argv[1], "stm32f2", 7) == 0) {
-        family = 2;
-        /* set frequencies boundaries */
-        switch (model) {
-        case 205:
-        case 207:
-        case 215:
-        case 217:
-            max_coreclock = 120000000U;
-            max_apb1 = max_coreclock / 4;
-            max_apb2 = max_coreclock / 2;
-            min_vco_output = 192000000U;
-            break;
-        default:
-            printf("Unsuported cpu model: %s\n", argv[1]);
-            return 1;
-        }
-        /* set PLL I2S */
-        switch (model) {
-        case 205:
-        case 207:
-        case 215:
-        case 217:
-            has_pll_i2s = true;
-            break;
-        }
-        /* No PLL SAI for f2 family */
-    }
-    else if (strncmp(argv[1], "stm32f4", 7) == 0) {
-        family = 4;
-        /* set frequencies boundaries */
-        switch (model) {
-        case 401:
-            max_coreclock = 84000000U;
-            max_apb1 = max_coreclock / 2;
-            max_apb2 = max_coreclock;
-            min_vco_output = 192000000U;
-            break;
-        case 405:
-        case 407:
-        case 415:
-        case 417:
-            max_coreclock = 168000000U;
-            max_apb1 = max_coreclock / 4;
-            max_apb2 = max_coreclock / 2;
-            break;
-        case 410:
-        case 411:
-        case 412:
-        case 413:
-        case 423:
-            max_coreclock = 100000000U;
-            max_apb1 = max_coreclock / 2;
-            max_apb2 = max_coreclock;
-            break;
-        case 427:
-        case 429:
-        case 437:
-        case 439:
-        case 446:
-        case 469:
-        case 479:
-            max_coreclock = 180000000U;
-            max_apb1 = max_coreclock / 4;
-            max_apb2 = max_coreclock / 2;
-            break;
-        default:
-            printf("Unsuported cpu model: %s\n", argv[1]);
-            return 1;
-        }
-        /* set PLL I2S */
-        switch (model) {
-        case 412:
-        case 413:
-        case 423:
-            has_alt_48MHz |= ALT_48MHZ_I2S;
-            has_pll_i2s_alt_input = true;
-        case 401:
-        case 405:
-        case 407:
-        case 411:
-        case 415:
-        case 417:
-        case 427:
-        case 429:
-        case 437:
-        case 439:
-        case 446:
-        case 469:
-        case 479:
-            has_pll_i2s = true;
-            break;
-        }
-        switch (model) {
-        case 411:
-        case 412:
-        case 413:
-        case 423:
-        case 446:
-            has_pll_i2s_m = true;
-            break;
-        }
-        /* set PLL SAI */
-        switch (model) {
-        case 446:
-        case 469:
-        case 479:
-            has_alt_48MHz |= ALT_48MHZ_P;
-            has_alt_48MHz |= ALT_48MHZ_SAI;
-        case 427:
-        case 429:
-        case 437:
-        case 439:
-            has_pll_sai = true;
-            break;
-        }
-    }
-    else if (strncmp(argv[1], "stm32f7", 7) == 0) {
-        family = 7;
-        switch (model) {
-        case 722:
-        case 732:
-        case 746:
-        case 756:
-        case 767:
-        case 769:
-        case 777:
-        case 779:
-            max_coreclock = 216000000U;
-            max_apb1 = max_coreclock / 4;
-            max_apb2 = max_coreclock / 2;
-            break;
-        default:
-            printf("Unsuported cpu model: %s\n", argv[1]);
-            return 1;
-        }
-        /* set PLL I2S */
-        switch (model) {
-        case 722:
-        case 732:
-        case 746:
-        case 756:
-        case 767:
-        case 769:
-        case 777:
-        case 779:
-            has_pll_i2s = true;
-            break;
-        }
-        /* set PLL SAI */
-        switch (model) {
-        case 722:
-        case 732:
-        case 746:
-        case 756:
-        case 767:
-        case 769:
-        case 777:
-        case 779:
-            has_alt_48MHz |= ALT_48MHZ_P;
-            has_alt_48MHz |= ALT_48MHZ_SAI;
-            has_pll_sai = true;
-            break;
-        }
-    }
-    else {
+    if (i == MODEL_MAX) {
         printf("Unsupported CPU model %s\n", argv[1]);
         return 1;
     }
+
+    const clk_cfg_t *cfg = &stm32_clk_cfg[i];
 
     /* print help for given cpu */
     if (argc < 5) {
@@ -551,15 +219,15 @@ int main(int argc, char **argv)
         printf("Max values for stm32f%03d:\n", model);
         printf("  Max coreclock: %u Hz\n"
                "  Max APB1:      %u Hz\n"
-               "  Max APB2:      %u Hz\n", max_coreclock, max_apb1, max_apb2);
+               "  Max APB2:      %u Hz\n", cfg->max_coreclock, cfg->max_apb1, cfg->max_apb2);
         printf("Additional PLLs:\n"
                "  PLL I2S: %d\n"
                "  PLL SAI: %d\n"
-               "  Alternate 48MHz source: ", has_pll_i2s, has_pll_sai);
-        if (has_alt_48MHz & ALT_48MHZ_I2S) {
+               "  Alternate 48MHz source: ", cfg->has_pll_i2s, cfg->has_pll_sai);
+        if (cfg->has_alt_48MHz & ALT_48MHZ_I2S) {
             puts("PLL I2S");
         }
-        else if (has_alt_48MHz & ALT_48MHZ_SAI) {
+        else if (cfg->has_alt_48MHz & ALT_48MHZ_SAI) {
             puts("PLL SAI");
         }
         else {
@@ -573,7 +241,7 @@ int main(int argc, char **argv)
     unsigned pll_in = atoi(argv[3]);
     int pll_src;
     if (pll_in == 0) {
-        pll_in = hsi;
+        pll_in = cfg->hsi;
         pll_src = HSI;
     }
     else {
@@ -599,15 +267,8 @@ int main(int argc, char **argv)
         pll_sai_q_out = atoi(argv[7]);
     }
 
-    if (strlen(argv[1]) < 9 || !isdigit(argv[1][6])
-            || !isdigit(argv[1][7])
-            || !isdigit(argv[1][8])) {
-        printf("Invalid model : %s\n", argv[1]);
-        return 1;
-    }
-
-    if (max_coreclock && coreclock > max_coreclock) {
-        printf("Invalid coreclock (max=%u)\n", max_coreclock);
+    if (cfg->max_coreclock && coreclock > cfg->max_coreclock) {
+        printf("Invalid coreclock (max=%u)\n", cfg->max_coreclock);
         return 1;
     }
 
@@ -632,15 +293,15 @@ int main(int argc, char **argv)
     unsigned r_sai = 0;
 
     bool use_alt_48MHz = false;
-    unsigned clock_48MHz = need_48MHz ? 48000000U : 0;
-    if ((family == 0 || family == 1) && pll_src == HSI) {
+    unsigned clock_48MHz = cfg->need_48MHz ? 48000000U : 0;
+    if ((cfg->family == 0 || cfg->family == 1) && pll_src == HSI) {
         /* Do not use prediv (m) */
         m = 1;
     }
 
     /* main PLL */
     /* try to match coreclock with P output and 48MHz for Q output (USB) */
-    switch (compute_pll(pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r)) {
+    switch (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r)) {
     case -1:
         /* no config available */
         puts("Unable to compute main PLL factors");
@@ -648,7 +309,7 @@ int main(int argc, char **argv)
     case 1:
         /* Q not OK */
         printf("Need to use an alternate 48MHz src...");
-        if (has_pll_i2s && (has_alt_48MHz & ALT_48MHZ_I2S) == ALT_48MHZ_I2S) {
+        if (cfg->has_pll_i2s && (cfg->has_alt_48MHz & ALT_48MHZ_I2S) == ALT_48MHZ_I2S) {
             puts("PLL I2S");
             use_alt_48MHz = true;
             if (pll_i2s_q_out != 0 && pll_i2s_q_out != 48000000U) {
@@ -657,21 +318,21 @@ int main(int argc, char **argv)
             }
             pll_i2s_q_out = 48000000U;
         }
-        else if (has_pll_sai && (has_alt_48MHz & ALT_48MHZ_SAI)) {
+        else if (cfg->has_pll_sai && (cfg->has_alt_48MHz & ALT_48MHZ_SAI)) {
             printf("PLL SAI...");
             use_alt_48MHz = true;
-            if ((has_alt_48MHz & ALT_48MHZ_P) &&
+            if ((cfg->has_alt_48MHz & ALT_48MHZ_P) &&
                     (pll_sai_p_out == 0 || pll_sai_p_out == 48000000U)) {
                 puts("P");
                 pll_sai_p_out = 48000000U;
             }
-            else if (!(has_alt_48MHz & ALT_48MHZ_P) &&
+            else if (!(cfg->has_alt_48MHz & ALT_48MHZ_P) &&
                      (pll_sai_q_out == 0 || pll_sai_q_out == 48000000U)) {
                 puts("Q");
                 pll_sai_q_out = 48000000U;
             }
             else {
-                if (has_alt_48MHz & ALT_48MHZ_P) {
+                if (cfg->has_alt_48MHz & ALT_48MHZ_P) {
                     printf("Invalid PLL SAI P output freq: %u\n", pll_sai_p_out);
                 } else {
                     printf("Invalid PLL SAI Q output freq: %u\n", pll_sai_q_out);
@@ -692,19 +353,19 @@ int main(int argc, char **argv)
     if (pll_i2s_p_out || pll_i2s_q_out) {
         unsigned *_m;
         unsigned _in;
-        if (has_pll_i2s_m) {
+        if (cfg->has_pll_i2s_m) {
             _m = &m_i2s;
         }
         else {
             _m = &m;
         }
-        if (has_pll_i2s_alt_input && pll_i2s_input) {
+        if (cfg->has_pll_i2s_alt_input && pll_i2s_input) {
             _in = pll_i2s_input;
         }
         else {
             _in = pll_in;
         }
-        if (compute_pll(_in, pll_i2s_p_out, pll_i2s_q_out, 0,
+        if (compute_pll(&cfg->pll, _in, pll_i2s_p_out, pll_i2s_q_out, 0,
                         _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
@@ -713,15 +374,15 @@ int main(int argc, char **argv)
 
     /* PLL SAI */
     if (pll_sai_p_out || pll_sai_q_out) {
-        if (compute_pll(pll_in, pll_sai_p_out, pll_sai_q_out, 0,
+        if (compute_pll(&cfg->pll, pll_in, pll_sai_p_out, pll_sai_q_out, 0,
                         &m_sai, &n_sai, &p_sai, &q_sai, &r_sai) != 0) {
             puts("Unable to compute 48MHz output using PLL I2S");
             return 1;
         }
-        if (!has_pll_sai_m && m != m_sai) {
+        if (!cfg->has_pll_sai_m && m != m_sai) {
             m = m_sai;
             DEBUG("Retry to compute main PLL with M=%u\n", m);
-            if (compute_pll(pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r) < 0) {
+            if (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0, &m, &n, &p, &q, &r) < 0) {
                 puts("Unable to compute 48MHz output using PLL I2S");
                 return 1;
             }
@@ -733,13 +394,13 @@ int main(int argc, char **argv)
     unsigned apb2_pre;
 
     for (apb1_pre = 1; apb1_pre <= 16; apb1_pre <<= 1) {
-        if (coreclock / apb1_pre <= max_apb1) {
+        if (coreclock / apb1_pre <= cfg->max_apb1) {
             break;
         }
     }
-    if (family != 0) {
+    if (cfg->family != STM32F0) {
         for (apb2_pre = 1; apb2_pre <= 16; apb2_pre <<= 1) {
-            if (coreclock / apb2_pre <= max_apb2) {
+            if (coreclock / apb2_pre <= cfg->max_apb2) {
                 break;
             }
         }
@@ -759,7 +420,7 @@ int main(int argc, char **argv)
            " * @{\n"
            " */\n");
     printf("/* give the target core clock (HCLK) frequency [in Hz],\n"
-           " * maximum: %uMHz */\n", max_coreclock / 1000000U);
+           " * maximum: %uMHz */\n", cfg->max_coreclock / 1000000U);
     printf("#define CLOCK_CORECLOCK      (%uU)\n", coreclock);
     printf("/* 0: no external high speed crystal available\n"
            " * else: actual crystal frequency [in Hz] */\n"
@@ -770,21 +431,21 @@ int main(int argc, char **argv)
     printf("/* peripheral clock setup */\n");
     printf("#define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1\n"
            "#define CLOCK_AHB            (CLOCK_CORECLOCK / 1)\n");
-    if (family == 0) {
+    if (cfg->family == STM32F0) {
         printf("#define CLOCK_APB1_DIV       RCC_CFGR_PPRE_DIV%u      /* max %uMHz */\n"
                "#define CLOCK_APB1           (CLOCK_CORECLOCK / %u)\n",
-               apb1_pre, max_apb1 / 1000000U, apb1_pre);
+               apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
         printf("#define CLOCK_APB2           (CLOCK_APB1)\n");
     }
     else {
         printf("#define CLOCK_APB1_DIV       RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
                "#define CLOCK_APB1           (CLOCK_CORECLOCK / %u)\n",
-               apb1_pre, max_apb1 / 1000000U, apb1_pre);
+               apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
         printf("#define CLOCK_APB2_DIV       RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
                "#define CLOCK_APB2           (CLOCK_CORECLOCK / %u)\n",
-               apb2_pre, max_apb2 / 1000000U, apb2_pre);
+               apb2_pre, cfg->max_apb2 / 1000000U, apb2_pre);
     }
-    if (family == 0 || family == 1) {
+    if (cfg->family == STM32F0 || cfg->family == STM32F1) {
         printf("\n/* PLL factors */\n");
         printf("#define CLOCK_PLL_PREDIV     (%u)\n", m);
         printf("#define CLOCK_PLL_MUL        (%u)\n", n);
@@ -801,13 +462,13 @@ int main(int argc, char **argv)
     if (pll_i2s_p_out || pll_i2s_q_out) {
         printf("\n/* PLL I2S configuration */\n");
         printf("#define CLOCK_ENABLE_PLL_I2S (1)\n");
-        if (has_pll_i2s_alt_input && pll_i2s_input) {
+        if (cfg->has_pll_i2s_alt_input && pll_i2s_input) {
             printf("#define CLOCK_PLL_I2S_SRC    (RCC_PLLI2SCFGR_PLLI2SSRC)\n");
         }
         else {
             printf("#define CLOCK_PLL_I2S_SRC    (0)\n");
         }
-        if (has_pll_i2s_m) {
+        if (cfg->has_pll_i2s_m) {
             printf("#define CLOCK_PLL_I2S_M      (%u)\n", m_i2s);
         }
         printf("#define CLOCK_PLL_I2S_N      (%u)\n", n_i2s);
@@ -818,7 +479,7 @@ int main(int argc, char **argv)
     if (pll_sai_p_out || pll_sai_q_out) {
         printf("\n/* PLL SAI configuration */\n");
         printf("#define CLOCK_ENABLE_PLL_SAI (1)\n");
-        if (has_pll_sai_m) {
+        if (cfg->has_pll_sai_m) {
             printf("#define CLOCK_PLL_SAI_M      (%u)\n", m_sai);
         }
         printf("#define CLOCK_PLL_SAI_N      (%u)\n", n_sai);
