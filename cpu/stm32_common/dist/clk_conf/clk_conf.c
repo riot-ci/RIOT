@@ -421,28 +421,28 @@ int main(int argc, char **argv)
            " */\n");
     printf("/* give the target core clock (HCLK) frequency [in Hz],\n"
            " * maximum: %uMHz */\n", cfg->max_coreclock / 1000000U);
-    printf("#define CLOCK_CORECLOCK      (%uU)\n", coreclock);
+    printf("#define CLOCK_CORECLOCK     (%uU)\n", coreclock);
     printf("/* 0: no external high speed crystal available\n"
            " * else: actual crystal frequency [in Hz] */\n"
-           "#define CLOCK_HSE            (%uU)\n", pll_src ? pll_in : 0);
+           "#define CLOCK_HSE           (%uU)\n", pll_src ? pll_in : 0);
     printf("/* 0: no external low speed crystal available,\n"
            " * 1: external crystal available (always 32.768kHz) */\n"
-           "#define CLOCK_LSE            (%d)\n", is_lse);
+           "#define CLOCK_LSE           (%d)\n", is_lse);
     printf("/* peripheral clock setup */\n");
-    printf("#define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1\n"
-           "#define CLOCK_AHB            (CLOCK_CORECLOCK / 1)\n");
+    printf("#define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1\n"
+           "#define CLOCK_AHB           (CLOCK_CORECLOCK / 1)\n");
     if (cfg->family == STM32F0) {
-        printf("#define CLOCK_APB1_DIV       RCC_CFGR_PPRE_DIV%u      /* max %uMHz */\n"
-               "#define CLOCK_APB1           (CLOCK_CORECLOCK / %u)\n",
+        printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE_DIV%u      /* max %uMHz */\n"
+               "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n",
                apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
-        printf("#define CLOCK_APB2           (CLOCK_APB1)\n");
+        printf("#define CLOCK_APB2          (CLOCK_APB1)\n");
     }
     else {
-        printf("#define CLOCK_APB1_DIV       RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
-               "#define CLOCK_APB1           (CLOCK_CORECLOCK / %u)\n",
+        printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
+               "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n",
                apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
-        printf("#define CLOCK_APB2_DIV       RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
-               "#define CLOCK_APB2           (CLOCK_CORECLOCK / %u)\n",
+        printf("#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
+               "#define CLOCK_APB2          (CLOCK_CORECLOCK / %u)\n",
                apb2_pre, cfg->max_apb2 / 1000000U, apb2_pre);
     }
     if (cfg->family == STM32F0 || cfg->family == STM32F1) {
