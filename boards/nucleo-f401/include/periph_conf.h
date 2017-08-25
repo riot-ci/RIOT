@@ -44,7 +44,7 @@ extern "C" {
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV2     /* max 48MHz */
+#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV2     /* max 42MHz */
 #define CLOCK_APB1          (CLOCK_CORECLOCK / 2)
 #define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV1     /* max 84MHz */
 #define CLOCK_APB2          (CLOCK_CORECLOCK / 1)
