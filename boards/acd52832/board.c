@@ -18,14 +18,14 @@
  * @}
  */
 
-#include "cpu.h"
 #include "board.h"
+#include "periph/gpio.h"
 
 void board_init(void)
 {
     /* initialize the boards LEDs */
-    NRF_P0->DIRSET = (LED0_MASK);
-    NRF_P0->OUTSET = (LED0_MASK);
+    gpio_init(LED0_PIN, GPIO_OUT);
+    gpio_set(LED0_PIN);
 
     /* initialize the CPU */
     cpu_init();
