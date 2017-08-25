@@ -73,7 +73,7 @@ static inline void _get_mac_addr(netdev_t *netdev, uint8_t *dst)
     memcpy(dst, dev->addr, ETHERNET_ADDR_LEN);
 }
 
-static inline void _set_mac_addr(netdev_t *netdev, uint8_t *src)
+static inline void _set_mac_addr(netdev_t *netdev, const uint8_t *src)
 {
     netdev_tap_t *dev = (netdev_tap_t*)netdev;
     memcpy(dev->addr, src, ETHERNET_ADDR_LEN);
