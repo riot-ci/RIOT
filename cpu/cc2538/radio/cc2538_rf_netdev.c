@@ -34,7 +34,7 @@
 #define _MAX_MHR_OVERHEAD   (25)
 
 static int  _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len);
-static int  _set(netdev_t *dev, netopt_t opt, void *value, size_t value_len);
+static int  _set(netdev_t *dev, netopt_t opt, const void *value, size_t value_len);
 static int  _send(netdev_t *netdev, const struct iovec *vector, unsigned count);
 static int  _recv(netdev_t *netdev, void *buf, size_t len, void *info);
 static void _isr(netdev_t *netdev);
@@ -148,7 +148,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
     return -ENOTSUP;
 }
 
-static int _set(netdev_t *netdev, netopt_t opt, void *value, size_t value_len)
+static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_len)
 {
     cc2538_rf_t *dev = (cc2538_rf_t *)netdev;
     int res = -ENOTSUP;
