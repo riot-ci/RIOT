@@ -785,7 +785,7 @@ static int xbee_get(netdev_t *ndev, netopt_t opt, void *value, size_t max_len)
     }
 }
 
-static int xbee_set(netdev_t *ndev, netopt_t opt, void *value, size_t len)
+static int xbee_set(netdev_t *ndev, netopt_t opt, const void *value, size_t len)
 {
     xbee_t *dev = (xbee_t *)ndev;
     assert(dev);
