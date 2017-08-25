@@ -130,7 +130,7 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
     return res;
 }
 
-static int _set(netdev_t *dev, netopt_t opt, void *value, size_t value_len)
+static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t value_len)
 {
     (void)value_len;
     int res = 0;
