@@ -193,18 +193,14 @@ static int init_base(uart_t uart, uint32_t baudrate)
 #if UART_0_EN
         case UART_0:
             u = UART_0_DEV;
-
-            IOC_UARTRXD_UART0 = gpio_pp_num(UART_0_RX_PIN);
-            gpio_init_af(UART_0_RX_PIN, -1, GPIO_IN);
+            gpio_init_af(UART_0_RX_PIN, UART0_RXD, GPIO_IN);
             gpio_init_af(UART_0_TX_PIN, UART0_TXD, GPIO_OUT);
             break;
 #endif
 #if UART_1_EN
         case UART_1:
             u = UART_1_DEV;
-
-            IOC_UARTRXD_UART1 = gpio_pp_num(UART_1_RX_PIN);
-            gpio_init_af(UART_1_RX_PIN, -1, GPIO_IN);
+            gpio_init_af(UART_1_RX_PIN, UART1_RXD, GPIO_IN);
             gpio_init_af(UART_1_TX_PIN, UART1_TXD, GPIO_OUT);
             break;
 #endif
@@ -230,13 +226,12 @@ static int init_base(uart_t uart, uint32_t baudrate)
     /* On the CC2538, hardware flow control is supported only on UART1 */
     if (u == UART1) {
 #ifdef UART_1_RTS_PIN
-        gpio_init_af(UART_1_RTS_PIN, UART1_RTS, IOC_OVERRIDE_OE);
+        gpio_init_af(UART_1_RTS_PIN, UART1_RTS, GPIO_OUT);
         u->cc2538_uart_ctl.CTLbits.RTSEN = 1;
 #endif
 
 #ifdef UART_1_CTS_PIN
-        gpio_init_af(UART_1_CTS_PIN, -1, IOC_OVERRIDE_DIS);
-        IOC_UARTCTS_UART1 = gpio_pp_num(UART_1_CTS_PIN);
+        gpio_init_af(UART_1_CTS_PIN, UART1_CTS, GPIO_IN);
         u->cc2538_uart_ctl.CTLbits.CTSEN = 1;
 #endif
     }
