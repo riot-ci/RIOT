@@ -249,12 +249,12 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t val_len)
     switch (opt) {
         case NETOPT_ADDRESS:
             assert(val_len == 2);
-            cc2420_set_addr_short(dev, (uint8_t *)val);
+            cc2420_set_addr_short(dev, val);
             return 2;
 
         case NETOPT_ADDRESS_LONG:
             assert(val_len == 8);
-            cc2420_set_addr_long(dev, (uint8_t *)val);
+            cc2420_set_addr_long(dev, val);
             return 8;
 
         case NETOPT_NID:
