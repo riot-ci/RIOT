@@ -121,7 +121,7 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t value_len)
     return -ENOTSUP;
 }
 
-static int _set(netdev_t *dev, netopt_t opt, void *value, size_t value_len)
+static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t value_len)
 {
     cc110x_t *cc110x = &((netdev_cc110x_t*) dev)->cc110x;
 
