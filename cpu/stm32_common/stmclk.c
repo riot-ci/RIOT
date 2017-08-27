@@ -126,7 +126,7 @@
  * @name    Deduct the needed flash wait states from the core clock frequency
  * @{
  */
-#if defined(CPU_FAM_STM32F1)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || defined(STM32F3)
 #define FLASH_WAITSTATES        ((CLOCK_CORECLOCK - 1) / 24000000U)
 #else
 #define FLASH_WAITSTATES        (CLOCK_CORECLOCK / 30000000U)
@@ -137,9 +137,7 @@
 #define FLASH_ACR_CONFIG        (FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_PRFTEN | FLASH_WAITSTATES)
 #elif defined(CPU_FAM_STM32F7)
 #define FLASH_ACR_CONFIG        (FLASH_ACR_ARTEN | FLASH_ACR_PRFTEN | FLASH_WAITSTATES)
-#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
-#define FLASH_ACR_CONFIG        (FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY)
-#elif defined(CPU_FAM_STM32F1)
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F3)
 #define FLASH_ACR_CONFIG        (FLASH_ACR_PRFTBE | FLASH_WAITSTATES)
 #endif
 /** @} */
