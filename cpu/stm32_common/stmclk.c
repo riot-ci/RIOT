@@ -20,7 +20,7 @@
  */
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) \
-    || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
+    || defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
 
 #include "cpu.h"
 #include "stmclk.h"
@@ -92,7 +92,7 @@
 #define PLL_N                   (CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
 #define PLL_Q                   (CLOCK_PLL_Q << RCC_PLLCFGR_PLLQ_Pos)
 
-#elif defined(CPU_FAM_STM32F0)
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
 #if (CLOCK_HSE)
 #define PLL_SRC                 (RCC_CFGR_PLLSRC_HSE_PREDIV | RCC_CFGR_PLLXTPRE_HSE_PREDIV_DIV1)
 #else
@@ -101,7 +101,10 @@
 
 #define PLL_MUL                 ((CLOCK_PLL_MUL - 2) << 18)
 #define PLL_PREDIV              (CLOCK_PLL_PREDIV - 1)
+
+#if defined(CPU_FAM_STM32F0)
 #define CLOCK_APB2_DIV          (0)
+#endif
 
 #elif defined(CPU_FAM_STM32F1)
 #if CLOCK_HSE
@@ -134,7 +137,7 @@
 #define FLASH_ACR_CONFIG        (FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_PRFTEN | FLASH_WAITSTATES)
 #elif defined(CPU_FAM_STM32F7)
 #define FLASH_ACR_CONFIG        (FLASH_ACR_ARTEN | FLASH_ACR_PRFTEN | FLASH_WAITSTATES)
-#elif defined(CPU_FAM_STM32F0)
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
 #define FLASH_ACR_CONFIG        (FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY)
 #elif defined(CPU_FAM_STM32F1)
 #define FLASH_ACR_CONFIG        (FLASH_ACR_PRFTBE | FLASH_WAITSTATES)
@@ -188,7 +191,7 @@ void stmclk_init_sysclk(void)
     /* now we can safely configure and start the PLL */
 #if defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
     RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q);
-#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1)
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F3)
     /* reset PLL configuration bits */
     RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
     /* set PLL configuration */

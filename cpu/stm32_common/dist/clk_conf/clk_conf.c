@@ -299,9 +299,8 @@ int main(int argc, char **argv)
 
     bool use_alt_48MHz = false;
     unsigned clock_48MHz = cfg->need_48MHz ? 48000000U : 0;
-    if ((cfg->family == 0 || cfg->family == 1) && pll_src == HSI) {
-        /* HSI / 2 is used as source */
-        m = 2;
+    if ((cfg->hsi_prediv) && (pll_src == HSI)) {
+        m = cfg->hsi_prediv;
     }
 
     /* main PLL */
@@ -436,18 +435,31 @@ int main(int argc, char **argv)
     printf("/* peripheral clock setup */\n");
     printf("#define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1\n"
            "#define CLOCK_AHB           (CLOCK_CORECLOCK / 1)\n");
-    printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
-           "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n",
-           apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
-    printf("#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
-           "#define CLOCK_APB2          (CLOCK_CORECLOCK / %u)\n",
-           apb2_pre, cfg->max_apb2 / 1000000U, apb2_pre);
-    printf("\n/* Main PLL factors */\n");
-    printf("#define CLOCK_PLL_M          (%u)\n", m);
-    printf("#define CLOCK_PLL_N          (%u)\n", n);
-    printf("#define CLOCK_PLL_P          (%u)\n", p);
-    printf("#define CLOCK_PLL_Q          (%u)\n", q);
-
+    if (cfg->family == STM32F0) {
+        printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE_DIV%u      /* max %uMHz */\n"
+               "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n",
+               apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
+        printf("#define CLOCK_APB2          (CLOCK_APB1)\n");
+    }
+    else {
+        printf("#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV%u     /* max %uMHz */\n"
+               "#define CLOCK_APB1          (CLOCK_CORECLOCK / %u)\n",
+               apb1_pre, cfg->max_apb1 / 1000000U, apb1_pre);
+        printf("#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV%u     /* max %uMHz */\n"
+               "#define CLOCK_APB2          (CLOCK_CORECLOCK / %u)\n",
+               apb2_pre, cfg->max_apb2 / 1000000U, apb2_pre);
+    }
+    if (cfg->family == STM32F0 || cfg->family == STM32F1 || cfg->family == STM32F3) {
+        printf("\n/* PLL factors */\n");
+        printf("#define CLOCK_PLL_PREDIV     (%u)\n", m);
+        printf("#define CLOCK_PLL_MUL        (%u)\n", n);
+    }
+    else {
+        printf("\n/* Main PLL factors */\n");
+        printf("#define CLOCK_PLL_M          (%u)\n", m);
+        printf("#define CLOCK_PLL_N          (%u)\n", n);
+        printf("#define CLOCK_PLL_P          (%u)\n", p);
+        printf("#define CLOCK_PLL_Q          (%u)\n", q);
 
     if (pll_i2s_p_out || pll_i2s_q_out) {
         printf("\n/* PLL I2S configuration */\n");
