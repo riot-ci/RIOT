@@ -226,5 +226,5 @@ void stmclk_init_sysclk(void)
 #else
 typedef int dont_be_pedantic;
 #endif /* defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) ||
-        * defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) ||
-        * defined(CPU_FAM_STM32F7) */
+        * defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F3) ||
+        * defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7) */
