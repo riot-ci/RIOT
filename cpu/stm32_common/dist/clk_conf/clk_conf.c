@@ -299,9 +299,8 @@ int main(int argc, char **argv)
 
     bool use_alt_48MHz = false;
     unsigned clock_48MHz = cfg->need_48MHz ? 48000000U : 0;
-    if ((cfg->family == 0 || cfg->family == 1) && pll_src == HSI) {
-        /* HSI / 2 is used as source */
-        m = 2;
+    if ((cfg->hsi_prediv) && (pll_src == HSI)) {
+        m = cfg->hsi_prediv;
     }
 
     /* main PLL */
@@ -452,7 +451,7 @@ int main(int argc, char **argv)
                "#define CLOCK_APB2          (CLOCK_CORECLOCK / %u)\n",
                apb2_pre, cfg->max_apb2 / 1000000U, apb2_pre);
     }
-    if (cfg->family == STM32F0 || cfg->family == STM32F1) {
+    if (cfg->family == STM32F0 || cfg->family == STM32F1 || cfg->family == STM32F3) {
         printf("\n/* PLL factors */\n");
         printf("#define CLOCK_PLL_PREDIV     (%u)\n", m);
         printf("#define CLOCK_PLL_MUL        (%u)\n", n);
