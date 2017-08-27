@@ -50,7 +50,7 @@ extern "C" {
 #define CLOCK_APB2           (CLOCK_APB1)
 
 /* PLL factors */
-#define CLOCK_PLL_PREDIV     (1)
+#define CLOCK_PLL_PREDIV     (2)
 #define CLOCK_PLL_MUL        (12)
 /** @} */
 
