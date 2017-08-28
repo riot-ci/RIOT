@@ -225,9 +225,9 @@ typedef struct {
  * @brief   Timer configuration data
  */
 typedef struct {
-    cc2538_gptimer_t *dev;  /**< timer device */
-    uint_fast8_t channels;  /**< number of channels */
-    uint_fast8_t cfg;       /**< timer config word */
+    uint_fast8_t num;   /**< GPT instance number */
+    uint_fast8_t chn;   /**< number of channels */
+    uint_fast8_t cfg;   /**< timer config word */
 } timer_conf_t;
 
 /**
