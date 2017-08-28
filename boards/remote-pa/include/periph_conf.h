@@ -23,6 +23,7 @@
 #define PERIPH_CONF_H
 
 #include "periph_common.h"
+#include "periph/gpio.h"
 
 #ifdef __cplusplus
  extern "C" {
