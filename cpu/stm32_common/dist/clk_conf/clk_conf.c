@@ -414,10 +414,10 @@ int main(int argc, char **argv)
     puts("");
 
     printf("/**\n"
-           " * @name Clock settings\n"
+           " * @name   Clock settings\n"
            " *\n"
-           " * @note This is auto-generated from\n"
-           " *       `cpu/stm32_common/dist/clk_conf/clk_conf.c`\n"
+           " * @note   This is auto-generated from\n"
+           " *         `cpu/stm32_common/dist/clk_conf/clk_conf.c`\n"
            " * @{\n"
            " */\n");
     printf("/* give the target core clock (HCLK) frequency [in Hz],\n"
