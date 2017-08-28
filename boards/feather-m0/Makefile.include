@@ -15,9 +15,9 @@ ifeq ($(PROGRAMMER),jlink)
     export JLINK_DEVICE := atsamw25
     include $(RIOTMAKE)/tools/jlink.inc.mk
 else
-    # on default, we use BOSSA to flash this board
-    # the booloader is the same for arduino mkr and adafruit feather boards
-    export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_mkr.ld
+    # by default, we use BOSSA to flash this board to take into account the
+    # pre-flashed bootloader
+    export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_bootloader.ld
     include $(RIOTMAKE)/tools/bossa.inc.mk
 endif
 
