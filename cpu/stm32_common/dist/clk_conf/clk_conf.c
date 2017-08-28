@@ -253,7 +253,7 @@ int main(int argc, char **argv)
         pll_src = HSE;
     }
 
-    int is_lse = atoi(argv[4]) ? 1 : 0;
+    unsigned is_lse = atoi(argv[4]) ? 1 : 0;
 
     unsigned pll_i2s_input = 0;
     if (argc > 5) {
@@ -428,7 +428,7 @@ int main(int argc, char **argv)
            "#define CLOCK_HSE           (%uU)\n", pll_src ? pll_in : 0);
     printf("/* 0: no external low speed crystal available,\n"
            " * 1: external crystal available (always 32.768kHz) */\n"
-           "#define CLOCK_LSE           (%d)\n", is_lse);
+           "#define CLOCK_LSE           (%uU)\n", is_lse);
     printf("/* peripheral clock setup */\n");
     printf("#define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1\n"
            "#define CLOCK_AHB           (CLOCK_CORECLOCK / 1)\n");
