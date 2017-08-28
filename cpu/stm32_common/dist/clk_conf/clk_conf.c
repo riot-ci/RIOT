@@ -25,7 +25,7 @@
 
 #define ENABLE_DEBUG (0)
 #if ENABLE_DEBUG
-#define DEBUG(...) printf(__VA_ARGS__)
+#define DEBUG(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define DEBUG(...)
 #endif
@@ -179,8 +179,8 @@ static int compute_pll(const pll_cfg_t *cfg, unsigned pll_in,
 
 static void usage(char **argv)
 {
-    printf("usage: %s <cpu_model> <coreclock> <hse_freq> <lse> [pll_i2s_src] "
-           "[pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
+    fprintf(stderr, "usage: %s <cpu_model> <coreclock> <hse_freq> <lse> [pll_i2s_src] "
+                    "[pll_i2s_q_out] [pll_sai_q_out]\n", argv[0]);
 }
 
 #define HSI 0
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
             || !isdigit(argv[1][8])
             || ((argv[1][5] != 'f') && (argv[1][5] != 'F')
                 /* && (argv[1][5] != 'l') && (argv[1][5] != 'L') */)) {
-        printf("Invalid model : %s\n", argv[1]);
+        fprintf(stderr, "Invalid model : %s\n", argv[1]);
         return 1;
     }
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
         }
     }
     if (i == MODEL_MAX) {
-        printf("Unsupported CPU model %s\n", argv[1]);
+        fprintf(stderr, "Unsupported CPU model %s\n", argv[1]);
         return 1;
     }
 
@@ -220,23 +220,24 @@ int main(int argc, char **argv)
     /* print help for given cpu */
     if (argc < 5) {
         usage(argv);
-        printf("Max values for stm32f%03d:\n", model);
-        printf("  Max coreclock: %u Hz\n"
-               "  Max APB1:      %u Hz\n"
-               "  Max APB2:      %u Hz\n",
-               cfg->max_coreclock, cfg->max_apb1, cfg->max_apb2);
-        printf("Additional PLLs:\n"
-               "  PLL I2S: %d\n"
-               "  PLL SAI: %d\n"
-               "  Alternate 48MHz source: ", cfg->has_pll_i2s, cfg->has_pll_sai);
+        fprintf(stderr, "Max values for stm32f%03d:\n", model);
+        fprintf(stderr, "  Max coreclock: %u Hz\n"
+                        "  Max APB1:      %u Hz\n"
+                        "  Max APB2:      %u Hz\n",
+                cfg->max_coreclock, cfg->max_apb1, cfg->max_apb2);
+        fprintf(stderr, "Additional PLLs:\n"
+                        "  PLL I2S: %d\n"
+                        "  PLL SAI: %d\n"
+                        "  Alternate 48MHz source: ",
+                cfg->has_pll_i2s, cfg->has_pll_sai);
         if (cfg->has_alt_48MHz & ALT_48MHZ_I2S) {
-            puts("PLL I2S");
+            fprintf(stderr, "PLL I2S\n");
         }
         else if (cfg->has_alt_48MHz & ALT_48MHZ_SAI) {
-            puts("PLL SAI");
+            fprintf(stderr, "PLL SAI\n");
         }
         else {
-            puts("None");
+            fprintf(stderr, "None\n");
         }
         return 0;
     }
@@ -273,11 +274,11 @@ int main(int argc, char **argv)
     }
 
     if (cfg->max_coreclock && coreclock > cfg->max_coreclock) {
-        printf("Invalid coreclock (max=%u)\n", cfg->max_coreclock);
+        fprintf(stderr, "Invalid coreclock (max=%u)\n", cfg->max_coreclock);
         return 1;
     }
 
-    printf("Computing settings for stm32f%03d CPU...\n", model);
+    fprintf(stderr, "Computing settings for stm32f%03d CPU...\n", model);
 
     unsigned m = 0;
     unsigned n = 0;
@@ -306,44 +307,44 @@ int main(int argc, char **argv)
                         &m, &n, &p, &q, &r)) {
     case -1:
         /* no config available */
-        puts("Unable to compute main PLL factors");
+        fprintf(stderr, "Unable to compute main PLL factors\n");
         return 1;
     case 1:
         /* Q not OK */
-        printf("Need to use an alternate 48MHz src...");
+        fprintf(stderr, "Need to use an alternate 48MHz src...");
         if (cfg->has_pll_i2s && (cfg->has_alt_48MHz & ALT_48MHZ_I2S) == ALT_48MHZ_I2S) {
             puts("PLL I2S");
             use_alt_48MHz = true;
             if (pll_i2s_q_out != 0 && pll_i2s_q_out != 48000000U) {
-                printf("Invalid PLL I2S Q output freq: %u\n", pll_i2s_q_out);
+                fprintf(stderr, "Invalid PLL I2S Q output freq: %u\n", pll_i2s_q_out);
                 return 1;
             }
             pll_i2s_q_out = 48000000U;
         }
         else if (cfg->has_pll_sai && (cfg->has_alt_48MHz & ALT_48MHZ_SAI)) {
-            printf("PLL SAI...");
+            fprintf(stderr, "PLL SAI...");
             use_alt_48MHz = true;
             if ((cfg->has_alt_48MHz & ALT_48MHZ_P) &&
                     (pll_sai_p_out == 0 || pll_sai_p_out == 48000000U)) {
-                puts("P");
+                fprintf(stderr, "P\n");
                 pll_sai_p_out = 48000000U;
             }
             else if (!(cfg->has_alt_48MHz & ALT_48MHZ_P) &&
                      (pll_sai_q_out == 0 || pll_sai_q_out == 48000000U)) {
-                puts("Q");
+                fprintf(stderr, "Q\n");
                 pll_sai_q_out = 48000000U;
             }
             else {
                 if (cfg->has_alt_48MHz & ALT_48MHZ_P) {
-                    printf("Invalid PLL SAI P output freq: %u\n", pll_sai_p_out);
+                    fprintf(stderr, "Invalid PLL SAI P output freq: %u\n", pll_sai_p_out);
                 } else {
-                    printf("Invalid PLL SAI Q output freq: %u\n", pll_sai_q_out);
+                    fprintf(stderr, "Invalid PLL SAI Q output freq: %u\n", pll_sai_q_out);
                 }
                 return 1;
             }
         }
         else {
-            puts("No other source available");
+            fprintf(stderr, "No other source available\n");
             return 1;
         }
         break;
@@ -369,7 +370,7 @@ int main(int argc, char **argv)
         }
         if (compute_pll(&cfg->pll, _in, pll_i2s_p_out, pll_i2s_q_out, 0,
                         _m, &n_i2s, &p_i2s, &q_i2s, &r_i2s) != 0) {
-            puts("Unable to compute 48MHz output using PLL I2S");
+            fprintf(stderr, "Unable to compute 48MHz output using PLL I2S\n");
             return 1;
         }
     }
@@ -386,7 +387,7 @@ int main(int argc, char **argv)
             DEBUG("Retry to compute main PLL with M=%u\n", m);
             if (compute_pll(&cfg->pll, pll_in, coreclock, clock_48MHz, 0,
                             &m, &n, &p, &q, &r) < 0) {
-                puts("Unable to compute 48MHz output using PLL I2S");
+                fprintf(stderr, "Unable to compute 48MHz output using PLL I2S\n");
                 return 1;
             }
         }
@@ -409,9 +410,8 @@ int main(int argc, char **argv)
 
 
     /* Print constants */
-    puts("==============================================================");
-    puts("Please copy the following code into your board's periph_conf.h");
-    puts("");
+    fprintf(stderr, "==============================================================\n");
+    fprintf(stderr, "Please copy the following code into your board's periph_conf.h\n\n");
 
     printf("/**\n"
            " * @name    Clock settings\n"
