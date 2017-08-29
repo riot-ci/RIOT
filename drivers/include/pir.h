@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    driver_pir PIR Motion Sensor
+ * @defgroup    drivers_pir PIR Motion Sensor
  * @ingroup     drivers_sensors
  * @brief       Device driver interface for the PIR motion sensor
  * @{
