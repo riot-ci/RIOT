@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 /**
- * @name jc42 status return codes
+ * @name    jc42 status return codes
  * @{
  */
 #define JC42_OK                       (0)
@@ -121,5 +121,5 @@ int jc42_get_temperature(const jc42_t* dev, int16_t* temperature);
 }
 #endif
 
-/** @} */
 #endif /* JC42_H */
+/** @} */

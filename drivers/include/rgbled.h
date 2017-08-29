@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    driver_rgbled RGB-LED driver
+ * @defgroup    drivers_rgbled RGB-LED driver
  * @ingroup     drivers_actuators
  * @brief       High-level driver for RGB-LEDs
  * @{
