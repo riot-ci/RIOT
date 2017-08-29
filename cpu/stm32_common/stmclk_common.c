@@ -47,6 +47,13 @@
 #define BIT_LSERDY          RCC_BDCR_LSERDY
 #endif
 
+#ifndef CLOCK_HSE
+#define CLOCK_HSE   (0U)
+#endif
+#ifndef CLOCK_LSE
+#define CLOCK_LSE   (0U)
+#endif
+
 void stmclk_enable_hsi(void)
 {
     RCC->CR |= RCC_CR_HSION;
