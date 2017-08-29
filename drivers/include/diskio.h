@@ -59,15 +59,13 @@ typedef enum {
 } diskio_result_t;
 
 /**
- * @name Disk Status Bits
- * @{
+ * @brief Disk Status Bits
  */
 typedef enum {
     DISKIO_STA_NOINIT  = 0x01, /**< Drive not initialized */
     DISKIO_STA_NODISK  = 0x02, /**< No medium in the drive */
     DISKIO_STA_PROTECT = 0x04  /**< Write protected */
 } diskio_sta_t;
-/** @} */
 
 /**
  * @name Command code for disk_ioctrl fucntion
@@ -162,5 +160,5 @@ diskio_result_t mci_ioctl(unsigned char ctrl, void *buff);
 }
 #endif
 
-/** @} */
 #endif /* DISKIO_H */
+/** @} */

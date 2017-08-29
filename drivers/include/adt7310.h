@@ -71,8 +71,10 @@ typedef struct {
     bool high_res;          /**< Sensor resolution, true if configured to 16 bit resolution */
 } adt7310_t;
 
-/** @name ADT7310 configuration bits */
-/** @{ */
+/**
+ * @name ADT7310 configuration bits
+ * @{
+ */
 #define ADT7310_CONF_FAULT_QUEUE_MASK  (0x03)
 #define ADT7310_CONF_FAULT_QUEUE_SHIFT (0)
 #define ADT7310_CONF_FAULT_QUEUE(x) (((x) << ADT7310_CONF_FAULT_QUEUE_SHIFT) & ADT7310_CONF_FAULT_QUEUE_MASK)

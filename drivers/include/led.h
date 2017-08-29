@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   LED fallback macros
+ * @name    LED fallback macros
  * @{
  */
 #ifndef LED0_ON
@@ -92,7 +92,7 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   Convenience LED control macros
+ * @name    Convenience LED control macros
  * @{
  */
 #define LED_ON(x)           LED ## x ##_ON

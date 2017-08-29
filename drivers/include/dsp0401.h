@@ -31,8 +31,7 @@ extern "C" {
 #endif
 
 /**
- * @name Return codes
- * @{
+ * @brief Return codes
  */
 enum {
     DSP0401_OK = 0,       /**< All ok */
@@ -41,7 +40,6 @@ enum {
     DSP0401_ERR_LAT_GPIO, /**< Something went wrong with LAT GPIO */
     DSP0401_ERR_PWM,      /**< Something went wrong with PWM */
 };
-/** @} */
 
 /**
  * @brief Device initialization parameters
