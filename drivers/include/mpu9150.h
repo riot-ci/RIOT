@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @name Sample rate macro definitions
+ * @name    Sample rate macro definitions
  * @{
  */
 #define MPU9150_MIN_SAMPLE_RATE     (4)
@@ -39,7 +39,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name Power Management 1 register macros
+ * @name    Power Management 1 register macros
  * @{
  */
 #define MPU9150_PWR_WAKEUP          (0x00)
@@ -48,7 +48,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name Power Management 2 register macros
+ * @name    Power Management 2 register macros
  * @{
  */
 #define MPU9150_PWR_GYRO            (0x07)
@@ -56,7 +56,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name Sleep times in microseconds
+ * @name    Sleep times in microseconds
  * @{
  */
 #define MPU9150_COMP_MODE_SLEEP_US  (1000)
@@ -66,7 +66,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name MPU-9150 compass operating modes and reg values
+ * @name    MPU-9150 compass operating modes and reg values
  * @{
  */
 #define MPU9150_COMP_POWER_DOWN     (0x00)
