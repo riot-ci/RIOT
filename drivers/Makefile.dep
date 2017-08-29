@@ -23,6 +23,12 @@ ifneq (,$(filter at86rf2%,$(USEMODULE)))
   endif
 endif
 
+ifneq (,$(filter ata8520,$(USEMODULE)))
+  USEMODULE += xtimer
+  FEATURES_REQUIRED += periph_gpio
+  FEATURES_REQUIRED += periph_spi
+endif
+
 ifneq (,$(filter mrf24j40,$(USEMODULE)))
   USEMODULE += xtimer
   USEMODULE += luid
