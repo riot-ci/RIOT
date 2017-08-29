@@ -7,6 +7,7 @@ PSEUDOMODULES += cbor_float
 PSEUDOMODULES += cbor_semantic_tagging
 PSEUDOMODULES += conn_can_isotp_multi
 PSEUDOMODULES += core_%
+PSEUDOMODULES += cortexm_fpu
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += gnrc_ipv6_default
 PSEUDOMODULES += gnrc_ipv6_router
