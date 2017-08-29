@@ -462,6 +462,7 @@ int main(int argc, char **argv)
         printf("#define CLOCK_PLL_N          (%u)\n", n);
         printf("#define CLOCK_PLL_P          (%u)\n", p);
         printf("#define CLOCK_PLL_Q          (%u)\n", q);
+    }
 
     if (pll_i2s_p_out || pll_i2s_q_out) {
         printf("\n/* PLL I2S configuration */\n");
