@@ -22,6 +22,10 @@
 
 #include "vfs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(FEATURE_PERIPH_HWRNG) || defined(DOXYGEN)
 /**
  * @brief hwrng driver for vfs
@@ -34,6 +38,10 @@ extern const vfs_file_ops_t hwrng_vfs_ops;
  * @brief urandom driver for vfs
  */
 extern const vfs_file_ops_t random_vfs_ops;
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* RANDOM_VFS_H */
