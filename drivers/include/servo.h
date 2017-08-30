@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    driver_servo Servo Motor Driver
+ * @defgroup    drivers_servo Servo Motor Driver
  * @ingroup     drivers_actuators
  * @brief       High-level driver for servo motors
  * @{

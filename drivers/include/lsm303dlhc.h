@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief The sensors default I2C address
+ * @name    The sensors default I2C address
  * @{
  */
 #define LSM303DLHC_ACC_DEFAULT_ADDRESS        (0x19)
