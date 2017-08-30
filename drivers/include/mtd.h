@@ -240,5 +240,5 @@ extern const vfs_file_ops_t mtd_vfs_ops;
 }
 #endif
 
-/** @} */
 #endif /* MTD_H */
+/** @} */
