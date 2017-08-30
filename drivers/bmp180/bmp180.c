@@ -234,7 +234,7 @@ static int _read_up(const bmp180_t *dev, int32_t *output)
         return -1;
     }
 
-    *output = ((up[0] << 16) | (up[1] << 8) | up[2]) >> (8 - OVERSAMPLING);
+    *output = (((uint32_t)up[0] << 16) | ((uint16_t)up[1] << 8) | up[2]) >> (8 - OVERSAMPLING);
 
     DEBUG("UP: %i\n", (int)*output);
 
