@@ -54,6 +54,10 @@
 #ifndef THREAD_FLAGS_H
 #define THREAD_FLAGS_H
 
+#ifndef MODULE_CORE_THREAD_FLAGS
+#error Missing USEMODULE += core_thread_flags
+#endif
+
 #include "kernel_types.h"
 #include "sched.h"  /* for thread_t typedef */
 
@@ -66,7 +70,6 @@
  * @{
  */
 
-#if defined(MODULE_CORE_THREAD_FLAGS) || defined(DOXYGEN)
 /**
  * @brief Set when a message becomes available
  *
@@ -75,9 +78,12 @@
  * send-blocked.
  *
  * It is only reset through thread_flags_wait_*(), not by msg_receive().
- * Care must be taken to a) not lose message notifications and b) not block for
- * messages but not thread flags.
- * Use e.g., the following pattern when waiting for both thread flags and messages:
+ *
+ * One thread flag event might point to one, many or no messages ready to be
+ * received.  It is advisable to use the non-blocking @ref msg_try_receive() in
+ * a loop to retrieve the messages.
+ * Use e.g., the following pattern when waiting for both thread flags and
+ * messages:
  *
  *      while(1) {
  *          thread_flags_t flags = thread_flags_wait_any(0xFFFF);
@@ -91,7 +97,6 @@
  *      }
  */
 #define THREAD_FLAG_MSG_WAITING      (0x1<<15)
-#endif
 
 #define THREAD_FLAG_MUTEX_UNLOCKED   (0x1<<14)
 #define THREAD_FLAG_TIMEOUT          (0x1<<13)
