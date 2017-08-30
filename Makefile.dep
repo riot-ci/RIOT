@@ -652,6 +652,10 @@ USEPKG += nanocoap
 USEMODULE += gnrc_sock_udp
 endif
 
+ifneq (,$(filter luid,$(USEMODULE)))
+  FEATURES_OPTIONAL += periph_cpuid
+endif
+
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
