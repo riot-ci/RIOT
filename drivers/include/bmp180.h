@@ -29,8 +29,7 @@ extern "C" {
 #endif
 
 /**
- * @name Oversampling modes
- * @{
+ * @brief Oversampling modes
  */
 typedef enum {
     BMP180_ULTRALOWPOWER = 0,
@@ -38,7 +37,6 @@ typedef enum {
     BMP180_HIGHRES,
     BMP180_ULTRAHIGHRES
 } bmp180_oversampling_mode_t;
-/** @} */
 
 /**
  * @brief Calibration struct for the BMP180 sensor

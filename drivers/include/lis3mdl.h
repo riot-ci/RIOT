@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    driver_LIS3MDL LIS3MDL 3-axis magnetometer
+ * @defgroup    drivers_lis3mdl LIS3MDL 3-axis magnetometer
  * @ingroup     drivers_sensors
  * @brief       Device driver for the LIS3MDL 3-axis magnetometer
  * @{

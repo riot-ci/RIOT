@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    driver_si70xx Si7006/13/20/21 temperature and humidity sensors
+ * @defgroup    drivers_si70xx Si7006/13/20/21 temperature and humidity sensors
  * @ingroup     drivers_sensors
  * @brief       Driver for the Si7006/13/20/21 temperature and humidity sensor.
  * @{
@@ -29,12 +29,14 @@ extern "C" {
 
 /**
  * @name Si70xx chip addresses.
+ * @{
  */
 #define SI70XX_ADDRESS_SI7006       (0x80)
 #define SI70XX_ADDRESS_SI7013       (0x80)
 #define SI70XX_ADDRESS_SI7013_ALT   (0x81)
 #define SI70XX_ADDRESS_SI7020       (0x80)
 #define SI70XX_ADDRESS_SI7021       (0x80)
+/** @} */
 
 /**
  * @name Si70xx device commands.
