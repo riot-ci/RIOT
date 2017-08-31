@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2014-2015 Freie Universität Berlin
+ *               2015 Kaspar Schleiser <kaspar@schleiser.de>
+ *               2015 FreshTemp, LLC.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,15 +9,16 @@
  */
 
 /**
- * @ingroup     cpu_samd21
+ * @ingroup     cpu_sam0_common
  * @ingroup     drivers_periph_gpio
  * @{
  *
- * @file
+ * @file        gpio.c
  * @brief       Low-level GPIO driver implementation
  *
  * @author      Troels Hoffmeyer <troels.d.hoffmeyer@gmail.com>
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
  * @}
@@ -38,38 +41,6 @@
  */
 #define MODE_PINCFG_MASK            (0x06)
 
-/**
- * @brief   Mapping of pins to EXTI lines, -1 means not EXTI possible
- */
-static const int8_t exti_config[2][32] = {
-#ifdef CPU_MODEL_SAMD21J18A
-    { 0,  1,  2,  3,  4,  5,  6,  7, -1,  9, 10, 11, 12, 13, 14, 15,
-      0,  1,  2,  3,  4,  5,  6,  7, 12, 13, -1, 15,  8, -1, 10, 11},
-    { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
-      0,  1, -1, -1, -1, -1,  6,  7, -1, -1, -1, -1, -1, -1, 14, 15},
-#elif CPU_MODEL_SAMD21G18A
-    { 0,  1,  2,  3,  4,  5,  6,  7, -1,  9, 10, 11, 12, 13, 14, 15,
-      0,  1,  2,  3,  4,  5,  6,  7, 12, 13, -1, 15,  8, -1, 10, 11},
-    {-1, -1,  2,  3, -1, -1, -1, -1,  8,  9, 10, 11, -1, -1, -1, -1,
-     -1, -1, -1, -1, -1, -1,  6,  7, -1, -1, -1, -1, -1, -1, -1, -1},
-#elif CPU_MODEL_SAMR21G18A
-    {-1,  1, -1, -1,  4,  5,  6,  7, -1,  9, 10, 11, 12, 13, 14, 15,
-     -1,  1,  2,  3, -1, -1,  6,  7, 12, 13, -1, 15,  8, -1, 10, 11},
-    { 0, -1,  2,  3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      0,  1, -1, -1, -1, -1,  6,  7, -1, -1, -1, -1,  8, -1, -1, -1},
-#elif CPU_MODEL_SAMR21E18A
-    {-1, -1, -1, -1, -1, -1,  6,  7, -1,  9, 10, 11, -1, -1, 14, 15,
-     -1,  1,  2,  3, -1, -1, -1, -1, 12, 13, -1, 15,  8, -1, 10, 11},
-    { 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      0,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-#else
-    #error Please define a proper CPU_MODEL.
-#endif
-};
-
-/**
- * @brief   Hold one interrupt context per interrupt line
- */
 static gpio_isr_ctx_t gpio_config[NUMOF_IRQS];
 
 static inline PortGroup *_port(gpio_t pin)
@@ -139,7 +110,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 }
 
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
-                    gpio_cb_t cb, void *arg)
+                  gpio_cb_t cb, void *arg)
 {
     int exti = _exti(pin);
 
@@ -147,19 +118,17 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     if (exti == -1) {
         return -1;
     }
-
+#if CPU_FAM_SAML21
+    /* disable the EIC module*/
+    EIC->CTRLA.reg = 0;
+    while (EIC->SYNCBUSY.reg & EIC_SYNCBUSY_ENABLE) {}
+#endif
     /* save callback */
     gpio_config[exti].cb = cb;
     gpio_config[exti].arg = arg;
     /* configure pin as input and set MUX to peripheral function A */
     gpio_init(pin, mode);
     gpio_init_mux(pin, GPIO_MUX_A);
-    /* enable clocks for the EIC module */
-    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
-    GCLK->CLKCTRL.reg = (EIC_GCLK_ID |
-                         GCLK_CLKCTRL_CLKEN |
-                         GCLK_CLKCTRL_GEN_GCLK2);
-    while (GCLK->STATUS.bit.SYNCBUSY) {}
     /* configure the active flank */
     EIC->CONFIG[exti >> 3].reg &= ~(0xf << ((exti & 0x7) * 4));
     EIC->CONFIG[exti >> 3].reg |=  (flank << ((exti & 0x7) * 4));
@@ -167,11 +136,26 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     NVIC_EnableIRQ(EIC_IRQn);
     /* clear interrupt flag and enable the interrupt line and line wakeup */
     EIC->INTFLAG.reg = (1 << exti);
-    EIC->WAKEUP.reg |= (1 << exti);
     EIC->INTENSET.reg = (1 << exti);
+#if CPU_FAM_SAMD21
+    EIC->WAKEUP.reg |= (1 << exti);
+    /* enable clocks for the EIC module */
+    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
+    GCLK->CLKCTRL.reg = (EIC_GCLK_ID |
+                         GCLK_CLKCTRL_CLKEN |
+                         GCLK_CLKCTRL_GEN_GCLK2);
+    while (GCLK->STATUS.bit.SYNCBUSY) {}
     /* enable the EIC module*/
     EIC->CTRL.reg = EIC_CTRL_ENABLE;
     while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY) {}
+#else /* cpu_saml21 */
+    /* enable clocks for the EIC module */
+    MCLK->APBAMASK.reg |= MCLK_APBAMASK_EIC;
+    GCLK->PCHCTRL[EIC_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
+    /* enable the EIC module*/
+    EIC->CTRLA.reg = EIC_CTRLA_ENABLE;
+    while (EIC->SYNCBUSY.reg & EIC_SYNCBUSY_ENABLE) {}
+#endif
     return 0;
 }
 
@@ -232,12 +216,10 @@ void gpio_write(gpio_t pin, int value)
 
 void isr_eic(void)
 {
-    for (unsigned i = 0; i < NUMOF_IRQS; i++) {
+    for (int i = 0; i < NUMOF_IRQS; i++) {
         if (EIC->INTFLAG.reg & (1 << i)) {
             EIC->INTFLAG.reg = (1 << i);
-            if(EIC->INTENSET.reg & (1 << i)) {
-                gpio_config[i].cb(gpio_config[i].arg);
-            }
+            gpio_config[i].cb(gpio_config[i].arg);
         }
     }
     cortexm_isr_end();
