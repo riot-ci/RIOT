@@ -375,8 +375,8 @@ int mpu9150_read_temperature(const mpu9150_t *dev, int32_t *output)
     /* Release the bus */
     i2c_release(dev->i2c_dev);
 
-    temp = ((int16_t)data[0] << 8) | data[1];
-    *output = ((((int32_t)temp) * 1000LU) / 340) + (35 * 1000LU);
+    temp = ((uint16_t)data[0] << 8) | data[1];
+    *output = (((int32_t)temp * 1000LU) / 340) + (35 * 1000LU);
 
     return 0;
 }
