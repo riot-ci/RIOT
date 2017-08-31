@@ -191,6 +191,14 @@ enum {
 /** @} */
 
 /**
+ * @brief  CRC/Correlation bit masks
+ * @{
+ */
+#define CC2420_CRCCOR_CRC_MASK      (0x80)
+#define CC2420_CRCCOR_COR_MASK      (0x7F)
+/** @} */
+
+/**
  * @brief   Transmit control register bitfields
  * @{
  */
