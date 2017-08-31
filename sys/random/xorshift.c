@@ -38,7 +38,7 @@ uint32_t xorshift32(uint32_t *state)
 }
 
 /* The state array must be initialized to not be all zero */
-uint32_t xorshift128(uint32_t state[static 4])
+uint32_t xorshift128(uint32_t *state)
 {
     uint32_t t = state[3];
 
