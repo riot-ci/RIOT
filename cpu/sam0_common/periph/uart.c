@@ -52,9 +52,6 @@ static inline SercomUsart *_uart(uart_t dev)
 }
 
 #ifdef CPU_FAM_SAML21
-
-static uint64_t _long_division(uint64_t n, uint64_t d);
-
 static uint8_t sercom_gclk_id[] =
         {
             SERCOM0_GCLK_ID_CORE,
@@ -64,8 +61,6 @@ static uint8_t sercom_gclk_id[] =
             SERCOM4_GCLK_ID_CORE,
             SERCOM5_GCLK_ID_CORE
         };
-
-
 #endif
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
@@ -78,74 +73,50 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     gpio_init(uart_config[uart].rx_pin, GPIO_IN);
     gpio_init_mux(uart_config[uart].rx_pin, uart_config[uart].mux);
     gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
+    gpio_set(uart_config[uart].tx_pin);
     gpio_init_mux(uart_config[uart].tx_pin, uart_config[uart].mux);
 
 #ifdef CPU_FAM_SAMD21
-    /* calculate baudrate */
-    uint32_t baud = ((((uint32_t)CLOCK_CORECLOCK * 10) / baudrate) / 16);
-    /* enable sync and async clocks */
     uart_poweron(uart);
+#endif
+
     /* reset the UART device */
     _uart(uart)->CTRLA.reg = SERCOM_USART_CTRLA_SWRST;
     while (_uart(uart)->SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_SWRST) {}
+
     /* set asynchronous mode w/o parity, LSB first, TX and RX pad as specified
      * by the board in the periph_conf.h, x16 sampling and use internal clock */
     _uart(uart)->CTRLA.reg = (SERCOM_USART_CTRLA_DORD |
                       SERCOM_USART_CTRLA_SAMPR(0x1) |
                       SERCOM_USART_CTRLA_TXPO(uart_config[uart].tx_pad) |
                       SERCOM_USART_CTRLA_RXPO(uart_config[uart].rx_pad) |
-                      SERCOM_USART_CTRLA_MODE_USART_INT_CLK             |
+                      SERCOM_USART_CTRLA_MODE(0x1) |
                       (uart_config[uart].runstdby ?
                               SERCOM_USART_CTRLA_RUNSTDBY : 0));
 
-    /* set baudrate */
+    /* calculate and set baudrate */
+    uint32_t baud = ((((uint32_t)CLOCK_CORECLOCK * 10) / baudrate) / 16);
     _uart(uart)->BAUD.FRAC.FP = (baud % 10);
     _uart(uart)->BAUD.FRAC.BAUD = (baud / 10);
-    /* enable receiver and transmitter, use 1 stop bit */
-    _uart(uart)->CTRLB.reg = (SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN);
-    while (_uart(uart)->SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_CTRLB) {}
-#elif CPU_FAM_SAML21
-    /* Calculate the BAUD value */
-    uint64_t temp1 = ((16 * ((uint64_t)baudrate)) << 32);
-    uint64_t ratio = _long_division(temp1 , CLOCK_CORECLOCK);
-    uint64_t scale = ((uint64_t)1 << 32) - ratio;
-    uint64_t baud_calculated = (65536 * scale) >> 32;
 
-    _uart(uart)->CTRLA.bit.ENABLE = 0; /* Disable to write, need to sync tho */
-    while(_uart(uart)->SYNCBUSY.bit.ENABLE) {}
-
-    /* set to LSB, asynchronous mode without parity, PAD0 Tx, PAD1 Rx,
-     * 16x over-sampling, internal clk */
-    _uart(uart)->CTRLA.reg = SERCOM_USART_CTRLA_DORD \
-                    | SERCOM_USART_CTRLA_FORM(0x0) \
-                    | SERCOM_USART_CTRLA_SAMPA(0x0) \
-                    | SERCOM_USART_CTRLA_TXPO(uart_config[uart].tx_pad) \
-                    | SERCOM_USART_CTRLA_RXPO(uart_config[uart].rx_pad) \
-                    | SERCOM_USART_CTRLA_SAMPR(0x0) \
-                    | SERCOM_USART_CTRLA_MODE(0x1) \
-                    | (uart_config[uart].runstdby ?
-                            SERCOM_USART_CTRLA_RUNSTDBY : 0);
-
-    /* Set baud rate */
-    _uart(uart)->BAUD.bit.BAUD = baud_calculated;
-
-    /* enable receiver and transmitter, one stop bit*/
-    _uart(uart)->CTRLB.reg = (SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN);
-    while(_uart(uart)->SYNCBUSY.bit.CTRLB) {}
-    uart_poweron(uart);
-#endif
-
-    /* finally, enable the device */
-    _uart(uart)->CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
-
-    /* register callbacks */
+    /* enable transmitter, and configure 8N1 mode */
+    _uart(uart)->CTRLB.reg = (SERCOM_USART_CTRLB_TXEN);
+    /* enable receiver and RX interrupt if configured */
     if (rx_cb) {
         uart_ctx[uart].rx_cb = rx_cb;
         uart_ctx[uart].arg = arg;
-        /* configure interrupts and enable RX interrupt */
         NVIC_EnableIRQ(SERCOM0_IRQn + sercom_id(_uart(uart)));
+        _uart(uart)->CTRLB.reg |= SERCOM_USART_CTRLB_RXEN;
         _uart(uart)->INTENSET.reg |= SERCOM_USART_INTENSET_RXC;
     }
+    while (_uart(uart)->SYNCBUSY.reg & SERCOM_USART_SYNCBUSY_CTRLB) {}
+
+    /* and finally enable the device */
+#ifdef CPU_FAM_SAML21
+    uart_poweron(uart);
+#else
+    _uart(uart)->CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+#endif
 
     return UART_OK;
 }
@@ -168,6 +139,7 @@ void uart_poweron(uart_t uart)
                          (SERCOM0_GCLK_ID_CORE + sercom_id(_uart(uart))) <<
                           GCLK_CLKCTRL_ID_Pos);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
+
 #elif CPU_FAM_SAML21
     /* Enable the peripheral channel */
     GCLK->PCHCTRL[sercom_gclk_id[sercom_id(_uart(uart))]].reg |=
@@ -183,17 +155,22 @@ void uart_poweron(uart_t uart)
     }
     while (_uart(uart)->SYNCBUSY.reg) {}
 #endif
+
     /* finally, enable the device */
     _uart(uart)->CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
 }
 
 void uart_poweroff(uart_t uart)
 {
+    /* disable device */
+    _uart(uart)->CTRLA.reg &= ~(SERCOM_USART_CTRLA_ENABLE);
+
 #ifdef CPU_FAM_SAMD21
     PM->APBCMASK.reg &= ~(PM_APBCMASK_SERCOM0 << sercom_id(_uart(uart)));
     GCLK->CLKCTRL.reg = ((SERCOM0_GCLK_ID_CORE + sercom_id(_uart(uart))) <<
                           GCLK_CLKCTRL_ID_Pos);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
+
 #elif CPU_FAM_SAML21
     /* Enable the peripheral channel */
     GCLK->PCHCTRL[sercom_gclk_id[sercom_id(_uart(uart))]].reg &= ~GCLK_PCHCTRL_CHEN;
@@ -205,13 +182,11 @@ void uart_poweroff(uart_t uart)
         MCLK->APBDMASK.reg &= ~MCLK_APBDMASK_SERCOM5;
     }
     while (_uart(uart)->SYNCBUSY.reg) {}
-
 #endif
 }
 
 static inline void irq_handler(uint8_t uartnum)
 {
-#ifdef CPU_FAM_SAMD21
     if (_uart(uartnum)->INTFLAG.reg & SERCOM_USART_INTFLAG_RXC) {
         /* interrupt flag is cleared by reading the data register */
         uart_ctx[uartnum].rx_cb(uart_ctx[uartnum].arg,
@@ -221,17 +196,7 @@ static inline void irq_handler(uint8_t uartnum)
         /* clear error flag */
         _uart(uartnum)->INTFLAG.reg = SERCOM_USART_INTFLAG_ERROR;
     }
-#elif CPU_FAM_SAML21
-    if (_uart(uartnum)->INTFLAG.bit.RXC) {
-        /* cleared by reading DATA regiser */
-        uint8_t data = (uint8_t)_uart(uartnum)->DATA.reg;
-        uart_ctx[uartnum].rx_cb(uart_ctx[uartnum].arg, data);
-    }
-    else if (_uart(uartnum)->INTFLAG.bit.ERROR) {
-        /* clear error flag */
-        _uart(uartnum)->INTFLAG.reg |= SERCOM_USART_INTFLAG_ERROR;
-    }
-#endif
+
     cortexm_isr_end();
 }
 
@@ -274,30 +239,6 @@ void UART_4_ISR(void)
 void UART_5_ISR(void)
 {
     irq_handler(5);
-}
-#endif
-
-#ifdef CPU_FAM_SAML21
-static uint64_t _long_division(uint64_t n, uint64_t d)
-{
-    int32_t i;
-    uint64_t q = 0, r = 0, bit_shift;
-    for (i = 63; i >= 0; i--) {
-        bit_shift = (uint64_t)1 << i;
-
-        r = r << 1;
-
-        if (n & bit_shift) {
-            r |= 0x01;
-        }
-
-        if (r >= d) {
-            r = r - d;
-            q |= bit_shift;
-        }
-    }
-
-    return q;
 }
 #endif
 
