@@ -24,7 +24,7 @@
 
 #include "cpu_conf_common.h"
 
-#if defined(CPU_MODEL_STM32F303VC)
+#if defined(CPU_MODEL_STM32F303VC) || defined(CPU_MODEL_STM32F303CC)
 #include "vendor/stm32f303xc.h"
 #elif defined(CPU_MODEL_STM32F334R8)
 #include "vendor/stm32f334x8.h"
