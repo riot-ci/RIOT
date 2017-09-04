@@ -118,17 +118,28 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     if (exti == -1) {
         return -1;
     }
-#if CPU_FAM_SAML21
-    /* disable the EIC module*/
-    EIC->CTRLA.reg = 0;
-    while (EIC->SYNCBUSY.reg & EIC_SYNCBUSY_ENABLE) {}
-#endif
+
     /* save callback */
     gpio_config[exti].cb = cb;
     gpio_config[exti].arg = arg;
     /* configure pin as input and set MUX to peripheral function A */
     gpio_init(pin, mode);
     gpio_init_mux(pin, GPIO_MUX_A);
+#ifdef CPU_FAM_SAMD21
+    /* enable clocks for the EIC module */
+    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
+    GCLK->CLKCTRL.reg = (EIC_GCLK_ID |
+                         GCLK_CLKCTRL_CLKEN |
+                         GCLK_CLKCTRL_GEN_GCLK2);
+    while (GCLK->STATUS.bit.SYNCBUSY) {}
+#else /* CPU_FAM_SAML21 */
+    /* enable clocks for the EIC module */
+    MCLK->APBAMASK.reg |= MCLK_APBAMASK_EIC;
+    GCLK->PCHCTRL[EIC_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
+    /* disable the EIC module*/
+    EIC->CTRLA.reg = 0;
+    while (EIC->SYNCBUSY.reg & EIC_SYNCBUSY_ENABLE) {}
+#endif
     /* configure the active flank */
     EIC->CONFIG[exti >> 3].reg &= ~(0xf << ((exti & 0x7) * 4));
     EIC->CONFIG[exti >> 3].reg |=  (flank << ((exti & 0x7) * 4));
@@ -137,21 +148,12 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     /* clear interrupt flag and enable the interrupt line and line wakeup */
     EIC->INTFLAG.reg = (1 << exti);
     EIC->INTENSET.reg = (1 << exti);
-#if CPU_FAM_SAMD21
+#ifdef CPU_FAM_SAMD21
     EIC->WAKEUP.reg |= (1 << exti);
-    /* enable clocks for the EIC module */
-    PM->APBAMASK.reg |= PM_APBAMASK_EIC;
-    GCLK->CLKCTRL.reg = (EIC_GCLK_ID |
-                         GCLK_CLKCTRL_CLKEN |
-                         GCLK_CLKCTRL_GEN_GCLK2);
-    while (GCLK->STATUS.bit.SYNCBUSY) {}
     /* enable the EIC module*/
     EIC->CTRL.reg = EIC_CTRL_ENABLE;
     while (EIC->STATUS.reg & EIC_STATUS_SYNCBUSY) {}
-#else /* cpu_saml21 */
-    /* enable clocks for the EIC module */
-    MCLK->APBAMASK.reg |= MCLK_APBAMASK_EIC;
-    GCLK->PCHCTRL[EIC_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
+#else /* CPU_FAM_SAML21 */
     /* enable the EIC module*/
     EIC->CTRLA.reg = EIC_CTRLA_ENABLE;
     while (EIC->SYNCBUSY.reg & EIC_SYNCBUSY_ENABLE) {}
