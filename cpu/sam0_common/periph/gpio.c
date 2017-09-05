@@ -128,6 +128,8 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 #ifdef CPU_FAM_SAMD21
     /* enable clocks for the EIC module */
     PM->APBAMASK.reg |= PM_APBAMASK_EIC;
+    /* SAMD21 used GCLK2 which is supplied by either the ultra low power
+       internal or external 32 kHz */
     GCLK->CLKCTRL.reg = (EIC_GCLK_ID |
                          GCLK_CLKCTRL_CLKEN |
                          GCLK_CLKCTRL_GEN_GCLK2);
