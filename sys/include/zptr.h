@@ -22,6 +22,26 @@
  * In order to use pointer compression, ZPTR_BASE needs to be defined to a (4
  * byte aligned) base address.
  *
+ * A printf format macro (PRIzptr) is provided.
+ *
+ * You can then use zptr_t instead of a pointer type, using the supplied functions to compress / decompress,
+ * e.g.,
+ *
+ *     void func(void *ptr) {
+ *         printf("%"PRIzptr"\n", ptr);
+ *         ...
+ *         free(ptr);
+ * }
+ *
+ * ... would become
+ *
+ *     void func(zptr_t zptr);
+ *         printf("%"PRIzptr"\n", zptr);
+ *         ...
+ *         free(zptrd(zptr));
+ *     }
+ *
+ *
  * If ZPTR_BASE is unset, @ref zptr_t / @ref zptrc() / @ref zptrd() will
  * transparently and without overhead compile to normal (uncompressed) pointer
  * operations.
@@ -34,8 +54,8 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifndef ZPTR_H_
-#define ZPTR_H_
+#ifndef ZPTR_H
+#define ZPTR_H
 
 #include <assert.h>
 #include <stdint.h>
@@ -48,12 +68,12 @@ extern "C" {
 #if ZPTR_BASE || defined(DOXYGEN)
 
 /**
- * @name zptr type definition
+ * @brief zptr type definition
  */
 typedef uint16_t zptr_t;
 
 /**
- * @name zptr printf format definition
+ * @brief zptr printf format definition
  */
 #define PRIzptr PRIu16
 
@@ -96,5 +116,5 @@ static inline void *zptrd(zptr_t zptr) { return (void *)zptr; }
 }
 #endif
 
+#endif /* ZPTR_H */
 /** @} */
-#endif /* ZPTR_H_ */
