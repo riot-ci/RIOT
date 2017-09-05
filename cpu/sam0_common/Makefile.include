@@ -7,6 +7,9 @@ export CFLAGS += -DDONT_USE_CMSIS_INIT
 # for the sam[drl] CPUs we hold all linkerscripts in the sam0 common folder
 export LINKFLAGS += -L$(RIOTCPU)/sam0_common/ldscripts
 
+# set zptr pointer compression base address (same for all CortexM)
+CFLAGS += -DZPTR_BASE=0x20000000
+
 # use common periph functions
 USEMODULE += periph_common
 
