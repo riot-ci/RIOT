@@ -36,13 +36,15 @@ static const  saul_gpio_params_t saul_gpio_params[] =
     {
         .name = "LED(green)",
         .pin = LED0_PIN,
-        .mode = GPIO_OUT
+        .mode = GPIO_OUT,
+        .flags = 0,
     },
 #endif
     {
         .name = "Button(B1 User)",
         .pin  = BTN0_PIN,
-        .mode = BTN0_MODE
+        .mode = BTN0_MODE,
+        .flags = 0,
     },
 };
 

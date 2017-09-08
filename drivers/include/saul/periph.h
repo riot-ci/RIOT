@@ -32,13 +32,18 @@ extern "C" {
 #endif
 
 #ifdef MODULE_SAUL_GPIO
+typedef enum {
+    SAUL_GPIO_INVERTED = 1 << 0,  /**< pin is used as inverted */
+} saul_gpio_flags_t;
+
 /**
  * @brief   Direct mapped GPIO configuration values
  */
 typedef struct {
-    const char *name;       /**< name of the device connected to this pin */
-    gpio_t pin;             /**< GPIO pin to initialize and expose */
-    gpio_mode_t mode;       /**< pin mode to use */
+    const char *name;        /**< name of the device connected to this pin */
+    gpio_t pin;              /**< GPIO pin to initialize and expose */
+    gpio_mode_t mode;        /**< pin mode to use */
+    saul_gpio_flags_t flags; /**< Configuration flags */
 } saul_gpio_params_t;
 #endif /* MODULE_SAUL_GPIO */
 
