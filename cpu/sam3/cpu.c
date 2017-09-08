@@ -30,6 +30,11 @@
 /** @} */
 
 /**
+ * @brief   Key for writing the SUPC control register
+ */
+#define SUPCKEY             (0xa5)
+
+/**
  * @brief   Start-up time for external crystal (will be multiplied by 8)
  */
 #define XTAL_STARTUP        (8U)
@@ -89,6 +94,14 @@ void cpu_init(void)
     PMC->PMC_MCKR = PMC_MCKR_CSS_PLLA_CLK;
     /* wait for master clock to be ready */
     while (!(PMC->PMC_SR & PMC_SR_MCKRDY));
+
+    /* setup the SCLK: switch to external oscillator if enabled */
+#if CLOCK_SCSLK_XTAL
+    /* enable external oscillator */
+    SUPC->SUPC_CR = (SUPC_CR_KEY(SUPCKEY) | SUPC_CR_XTALSEL);
+    while (!(SUPC->SUPC_OSCSEL & SUPC_SR_OSCSEL)) {}
+
+#endif
 
     /* trigger static peripheral initialization */
     periph_init();

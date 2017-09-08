@@ -29,6 +29,11 @@ extern "C" {
 #endif
 
 /**
+ * @brief   The low frequency (slow) clock is always running with 32.768kHz
+ */
+#define CLOCK_SCLK          (32768U)
+
+/**
  * @brief Overwrite the default gpio_t type definition
  */
 #define HAVE_GPIO_T
@@ -69,6 +74,11 @@ typedef uint32_t gpio_t;
  * @brief   We use 3 channels for each defined timer
  */
 #define TIMER_CHANNELS      (3)
+
+/**
+ * @brief   The RTT width is fixed to 32-bit
+ */
+#define RTT_MAX_VALUE       (0xffffffff)
 
 /**
  * @brief   Generate GPIO mode bitfields
