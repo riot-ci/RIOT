@@ -218,6 +218,10 @@ ifneq ($(GNRC_NETIF_NUMOF),1)
   CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
 endif
 
+# process provided features
+include $(RIOTMAKE)/features.inc.mk
+
+# process dependencies
 include $(RIOTBASE)/Makefile.dep
 
 USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
@@ -426,12 +430,6 @@ eclipsesym.xml: $(CURDIR)/eclipsesym.xml
 $(CURDIR)/eclipsesym.xml:
 	$(Q)printf "%s\n" $(CC) $(CFLAGS_WITH_MACROS) $(INCLUDES) | \
 		$(RIOTBASE)/dist/tools/eclipsesym/cmdline2xml.sh > $@
-
-# Extra make goals for testing and comparing changes.
-include $(RIOTMAKE)/buildtests.inc.mk
-
-# process provided features
-include $(RIOTMAKE)/features.inc.mk
 
 # Export variables used throughout the whole make system:
 include $(RIOTMAKE)/vars.inc.mk
