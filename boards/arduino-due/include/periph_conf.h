@@ -35,6 +35,9 @@ extern "C" {
 #define CLOCK_CORECLOCK     (84000000UL)
 /* external oscillator clock */
 #define CLOCK_EXT_OSC       (12000000UL)
+/* enable external low-speed oscillator */
+#define CLOCK_SCLK_XTAL     (1)
+
 /* define PLL configuration
  *
  * The values must fulfill this equation:
@@ -60,6 +63,14 @@ static const timer_conf_t timer_config[] = {
 #define TIMER_1_ISR         isr_tc3
 
 #define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
+/** @} */
+
+/**
+ * @name    RTT configuration
+ * @{
+ */
+#define RTT_NUMOF           (1)
+#define RTT_FREQUENCY       (1U)        /* configured to 1Hz */
 /** @} */
 
 /**
