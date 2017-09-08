@@ -220,7 +220,7 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_rng,                /* [80] RNG global interrupt */
     (void*) isr_fpu,                /* [81] FPU global interrupt */
     (void*) isr_crs                 /* [82] CRS global interrupt */
-#else /* CPU_MODEL_STM32L476RG */
+#else /* CPU_MODEL_STM32L476RG, CPU_MODEL_STM32L475ZG */
     (void*) isr_tim3,               /* [29] TIM3 global Interrupt */
     (void*) isr_tim4,               /* [30] TIM4 global Interrupt */
     (void*) isr_i2c1_ev,            /* [31] I2C1 Event Interrupt */
@@ -270,9 +270,16 @@ ISR_VECTORS const void *interrupt_vector[] = {
     (void*) isr_sai2,               /* [75] Serial Audio Interface 2 global interrupt */
     (void*) isr_swpmi1,             /* [76] Serial Wire Interface 1 global interrupt */
     (void*) isr_tsc,                /* [77] Touch Sense Controller global interrupt */
+#if defined(CPU_MODEL_STM32L475VG)
+    (void*) (0UL),                  /* [78] Reserved*/
+    (void*) (0UL),                  /* [79] Reserved*/
+    (void*) isr_rng,                /* [80] RNG global interrupt */
+    (void*) isr_fpu                 /* [81] FPU global interrupt */
+#else /* CPU_MODEL_STM32L476RG */
     (void*) isr_lcd,                /* [78] LCD global interrupt */
     (void*) (0UL),                  /* [79] Reserved*/
     (void*) isr_rng,                /* [80] RNG global interrupt */
     (void*) isr_fpu                 /* [81] FPU global interrupt */
+#endif
 #endif
 };
