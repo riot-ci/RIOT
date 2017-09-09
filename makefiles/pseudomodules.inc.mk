@@ -84,6 +84,6 @@ PSEUDOMODULES += sx1276
 # add all pseudo random number generator variants as pseudomodules
 PSEUDOMODULES += prng_%
 
-#
+# declare periph submodules as pseudomodules, but exclude periph_common
 PSEUDOMODULES += periph_%
 NO_PSEUDOMODULES += periph_common
