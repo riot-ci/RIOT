@@ -24,7 +24,7 @@
 #include "cpu.h"
 #include "periph/pm.h"
 
-#if  ! (defined(FEATURE_PERIPH_PM) || defined (MODULE_PM_LAYERED))
+#if  ! (defined(FEATURE_PERIPH_PM) || defined(MODULE_PM_LAYERED))
 void pm_set_lowest(void)
 {
     cortexm_sleep(0);
@@ -41,7 +41,7 @@ void pm_off(void)
 {
     irq_disable();
     while(1) {
-        cortexm_sleep(0)
+        cortexm_sleep(0);
     };
 }
 #endif
