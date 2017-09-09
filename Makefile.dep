@@ -2,6 +2,13 @@
 OLD_USEMODULE := $(sort $(USEMODULE))
 OLD_USEPKG := $(sort $(USEPKG))
 
+ifneq (1,$(ONCE))
+  # process default modules
+  include $(RIOTMAKE)/defaultmodules.inc.mk
+endif
+
+ONCE ?= 1
+
 # include board dependencies
 -include $(RIOTBOARD)/$(BOARD)/Makefile.dep
 
@@ -353,6 +360,10 @@ ifneq (,$(filter gnrc_pktdump,$(USEMODULE)))
   USEMODULE += od
 endif
 
+ifneq (,$(filter gnrc_slip,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_uart
+endif
+
 ifneq (,$(filter od,$(USEMODULE)))
   USEMODULE += fmt
 endif
@@ -384,6 +395,7 @@ endif
 
 ifneq (,$(filter uart_stdio,$(USEMODULE)))
   USEMODULE += isrpipe
+  FEATURES_REQUIRED += periph_uart
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
@@ -470,6 +482,10 @@ endif
 ifneq (,$(filter libfixmath-unittests,$(USEMODULE)))
   USEPKG += libfixmath
   USEMODULE += libfixmath
+endif
+
+ifneq (,$(filter luid,$(USEMODULE)))
+  FEATURES_OPTIONAL += periph_cpuid
 endif
 
 ifneq (,$(filter fib,$(USEMODULE)))
@@ -654,6 +670,12 @@ endif
 
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
+
+# add all optional but provided features to the list of used features
+FEATURES_REQUIRED := $(sort $(FEATURES_REQUIRED) $(filter $(FEATURES_OPTIONAL),$(FEATURES_PROVIDED)))
+
+# all periph features correspond to a periph submodule
+USEMODULE += $(filter periph_%,$(FEATURES_REQUIRED))
 
 # recursively catch transitive dependencies
 USEMODULE := $(sort $(USEMODULE))
