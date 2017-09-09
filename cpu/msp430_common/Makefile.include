@@ -5,7 +5,9 @@ MODEL = $(shell echo $(CPU_MODEL) | tr 'a-z' 'A-Z')
 export CFLAGS += -DCPU_MODEL_$(MODEL)
 
 export UNDEF += $(BINDIR)/msp430_common/startup.o
-export USEMODULE += msp430_common msp430_common_periph periph_common
+
+USEMODULE += msp430_common msp430_common_periph periph_common
+USEMODULE += periph_common_pm_fallback
 
 DEFAULT_MODULE += oneway_malloc
 
