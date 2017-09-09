@@ -17,7 +17,6 @@ USEMODULE += periph_common
 # select kinetis periph drivers
 USEMODULE += periph_mcg
 USEMODULE += periph_wdog
-USEMODULE += periph_pm_cortexm
 
 # Define a recipe to build the watchdog disable binary, used when flashing
 $(RIOTCPU)/kinetis_common/dist/wdog-disable.bin: $(RIOTCPU)/kinetis_common/dist/wdog-disable.s
