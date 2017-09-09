@@ -661,6 +661,11 @@ USEPKG += nanocoap
 USEMODULE += gnrc_sock_udp
 endif
 
+# all boards use gpio for leds
+ifneq (,$(filter periph_gpio,$(FEATURES_PROVIDED)))
+  USEMODULE += periph_gpio
+endif
+
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
