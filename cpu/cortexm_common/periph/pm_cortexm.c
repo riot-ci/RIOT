@@ -24,7 +24,7 @@
 #include "cpu.h"
 #include "periph/pm.h"
 
-#ifndef FEATURE_PERIPH_PM
+#if  ! (defined(FEATURE_PERIPH_PM) || defined(MODULE_PM_LAYERED))
 void pm_set_lowest(void)
 {
     cortexm_sleep(0);
@@ -35,3 +35,13 @@ void pm_reboot(void)
 {
     NVIC_SystemReset();
 }
+
+#ifndef MODULE_PM_LAYERED
+void pm_off(void)
+{
+    irq_disable();
+    while(1) {
+        cortexm_sleep(0);
+    };
+}
+#endif
