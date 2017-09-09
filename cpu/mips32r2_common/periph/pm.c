@@ -31,8 +31,3 @@ void pm_set_lowest(void)
     }
 }
 #endif
-
-void pm_off(void)
-{
-   /* No Generic Power off Mechanism */
-}
