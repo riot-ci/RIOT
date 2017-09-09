@@ -35,3 +35,13 @@ void pm_reboot(void)
 {
     NVIC_SystemReset();
 }
+
+#ifndef MODULE_PM_LAYERED
+void pm_off(void)
+{
+    irq_disable();
+    while(1) {
+        cortexm_sleep(0)
+    };
+}
+#endif
