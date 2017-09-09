@@ -204,7 +204,6 @@ INCLUDES += -I$(RIOTBOARD)/$(BOARD)/include
 
 # mandatory includes!
 include $(RIOTMAKE)/pseudomodules.inc.mk
-include $(RIOTMAKE)/defaultmodules.inc.mk
 include $(RIOTBOARD)/$(BOARD)/Makefile.include
 include $(RIOTCPU)/$(CPU)/Makefile.include
 
@@ -219,12 +218,10 @@ ifneq ($(GNRC_NETIF_NUMOF),1)
 endif
 
 # process provided features
-include $(RIOTMAKE)/features.inc.mk
+-include $(RIOTBOARD)/$(BOARD)/Makefile.features
 
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
-
-USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
 ifeq ($(strip $(MCU)),)
 	MCU = $(CPU)
