@@ -574,6 +574,85 @@ typedef enum {
      */
     NETOPT_PHY_BUSY,
 
+    /**
+     * @brief   (uint8_t*) device EUI (8 bytes length)
+     */
+    NETOPT_DEVEUI,
+
+    /**
+     * @brief   (uint8_t*) device EUI (4 bytes length)
+     */
+    NETOPT_DEVADDR,
+
+    /**
+     * @brief   (uint8_t*) application EUI (8 bytes length)
+     */
+    NETOPT_APPEUI,
+
+    /**
+     * @brief   (uint8_t*) application key (16 bytes length)
+     */
+    NETOPT_APPKEY,
+
+    /**
+     * @brief   (uint8_t*) application session key (16 bytes length)
+     */
+    NETOPT_APPSKEY,
+
+    /**
+     * @brief   (uint8_t*) network session key (16 bytes length)
+     */
+    NETOPT_NWKSKEY,
+
+     /**
+     * @brief   (loramac_class_t) device class
+     * - LoRaWAN: @ref loramac_class_t
+     */
+    NETOPT_DEVICE_CLASS,
+
+    /**
+     * @brief   (loramac_dr_idx_t) radio communication datarate
+     * - LoRaWAN: @ref loramac_dr_idx_t
+     */
+    NETOPT_DATARATE,
+
+    /**
+     * @brief   (@ref netopt_enable_t) adaptive datarate
+     */
+    NETOPT_ADAPTIVE_DATARATE,
+
+    /**
+     * @brief   (@ref netopt_enable_t) public network
+     */
+    NETOPT_PUBLIC_NETWORK,
+
+    /**
+     * @brief   (uint8_t) network id
+     */
+    NETOPT_NETID,
+
+    /**
+     * @brief   (uint8_t) TX port
+     * - LoRaWAN: between 1 and 223 (included)
+     */
+    NETOPT_TX_PORT,
+
+    /**
+     * @brief   (@ref netopt_enable_t) use confirmable TX
+     */
+    NETOPT_TX_CONFIRMABLE,
+
+    /**
+     * @brief   (loramac_dr_idx_t) datarate for second RX window
+     * - LoRaWAN: @ref loramac_dr_idx_t
+     */
+    NETOPT_RX2_DATARATE,
+
+    /**
+     * @brief   (uint32_t) frequency used for second RX window
+     */
+    NETOPT_RX2_FREQ,
+
     /* add more options if needed */
 
     /**
