@@ -74,8 +74,8 @@ ifneq (, $(filter $(GLOBAL_GOALS), $(MAKECMDGOALS)))
 endif
 
 ifeq (none,$(BOARD))
-include $(RIOTMAKE)/info-global.inc.mk
-include $(RIOTMAKE)/buildtests.inc.mk
+  include $(RIOTMAKE)/info-global.inc.mk
+  include $(RIOTMAKE)/buildtests.inc.mk
 else
 
 all: link
