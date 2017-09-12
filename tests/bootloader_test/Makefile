@@ -4,6 +4,8 @@ APPLICATION = bootloader_test
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
 
+include ../Makefile.tests_common
+
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
@@ -19,8 +21,6 @@ USEMODULE += firmware
 
 APP_ID = 0xBB8
 APP_VERSION = 0x1
-
-BOARD_WHITELIST := samr21-xpro iotlab-m3 fox iotlab-a8-m3
 
 # this test is supposed to always build an slotted image
 all: combined
