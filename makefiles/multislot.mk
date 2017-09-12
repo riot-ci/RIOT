@@ -70,6 +70,8 @@ VERIFY         = $(FIRMWARE) verify
 SECKEY ?= $(RIOTBASE)/key.sec
 PUBKEY ?= $(RIOTBASE)/key.pub
 
+MAKETARGETS += combined flash-multislot
+
 $(BOOTLOADER_BIN):
 	@env -i PATH=$(PATH) BOARD=$(BOARD) make -C $(RIOTBASE)/bootloader bootloader
 
