@@ -54,19 +54,9 @@ info-buildsizes:
 info-buildsizes-diff: SHELL=bash
 info-buildsizes-diff:
 	@echo -e "text\tdata\tbss\tdec\tBOARD/BINDIRBASE\n"; \
-	for BOARD in ${BOARDS}; do \
+	for board in ${BOARDS}; do \
 	  for BINDIRBASE in $${OLDBIN} $${NEWBIN}; do \
-	    env -i \
-	      HOME=$${HOME} \
-	      PATH=$${PATH} \
-	      BOARD=$${BOARD} \
-	      RIOTBASE=$${RIOTBASE} \
-	      RIOTBOARD=$${RIOTBOARD} \
-	      RIOTCPU=$${RIOTCPU} \
-	      RIOTPKG=$${RIOTPKG} \
-	      BINDIRBASE=$${BINDIRBASE} \
-	      MIPS_ELF_ROOT=$${MIPS_ELF_ROOT} \
-	      $(MAKE) info-buildsize 2>/dev/null | tail -n-1 | cut -f-4; \
+	      BOARD=$${board} $(MAKE) info-buildsize --no-print-directory 2>/dev/null | tail -n-1 | cut -f-4; \
 	  done | \
 	  while read -a OLD && read -a NEW; do \
 	    for I in 0 1 2 3; do \
@@ -79,7 +69,7 @@ info-buildsizes-diff:
 	      fi; \
 	      echo -ne "$${DIFF}\t${COLOR_RESET}"; \
 	    done; \
-	    echo "$${BOARD}"; \
+	    echo "$${board}"; \
 	    for I in 0 1 2 3; do echo -ne "$${OLD[I]-${COLOR_RED}ERR${COLOR_RESET}}\t"; done; echo -e "$${OLDBIN}"; \
 	    for I in 0 1 2 3; do echo -ne "$${NEW[I]-${COLOR_RED}ERR${COLOR_RESET}}\t"; done; echo -e "$${NEWBIN}\n"; \
 	  done; \
