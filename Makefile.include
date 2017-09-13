@@ -61,11 +61,15 @@ MAKEOVERRIDES += $(foreach v,${__DIRECTORY_VARIABLES},${v}=${${v}})
 # Path to the current directory relative to RIOTPROJECT
 BUILDRELPATH ?= ${PWD:${RIOTPROJECT}/%=%}/
 
+# get host operating system
+OS := $(shell uname)
+
 # Include Docker settings near the top because we need to build the environment
 # command line before some of the variable origins are overwritten below when
 # using abspath, strip etc.
 include $(RIOTMAKE)/docker.inc.mk
 
+# include color echo macros
 include $(RIOTMAKE)/color.inc.mk
 
 GLOBAL_GOALS := buildtest info-boards-supported info-boards-features-missing info-buildsizes info-buildsizes-diff
@@ -86,8 +90,6 @@ include $(RIOTMAKE)/info.inc.mk
 include $(RIOTMAKE)/scan-build.inc.mk
 
 export RIOTBUILD_CONFIG_HEADER_C = $(BINDIR)/riotbuild/riotbuild.h
-
-OS := $(shell uname)
 
 ifeq ($(OS),Darwin)
   OPEN   := open
