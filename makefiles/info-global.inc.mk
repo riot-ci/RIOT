@@ -47,18 +47,8 @@ BOARDS := $(filter-out $(BOARDS_WITH_MISSING_FEATURES), $(BOARDS))
 info-buildsizes: SHELL=bash
 info-buildsizes:
 	@echo -e "   text\t   data\t    bss\t    dec\tboard"; \
-	for BOARD in ${BOARDS}; do \
-	  echo "$$(env -i \
-	    HOME=$${HOME} \
-	    PATH=$${PATH} \
-	    BOARD=$${BOARD} \
-	    RIOTBASE=$${RIOTBASE} \
-	    RIOTBOARD=$${RIOTBOARD} \
-	    RIOTCPU=$${RIOTCPU} \
-	    RIOTPKG=$${RIOTPKG} \
-	    BINDIRBASE=$${BINDIRBASE} \
-	    MIPS_ELF_ROOT=$${MIPS_ELF_ROOT} \
-	    $(MAKE) info-buildsize 2>/dev/null | tail -n-1 | cut -f-4)" "$${BOARD}"; \
+	for board in ${BOARDS}; do \
+	    echo "$$(BOARD=$${board} $(MAKE) --no-print-directory info-buildsize 2>/dev/null | tail -n-1 | cut -f-4)" "$${board}"; \
 	done;
 
 info-buildsizes-diff: SHELL=bash
