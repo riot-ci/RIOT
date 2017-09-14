@@ -32,11 +32,14 @@
 static void _resp_handler(unsigned req_state, coap_pkt_t* pdu,
                           sock_udp_ep_t *remote);
 static ssize_t _stats_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len);
+static ssize_t _riot_board_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len);
 
 /* CoAP resources */
 static const coap_resource_t _resources[] = {
-    { "/cli/stats", COAP_GET, _stats_handler },
+    { "/cli/stats", COAP_GET | COAP_PUT | COAP_POST, _stats_handler },
+    { "/riot/board", COAP_GET, _riot_board_handler },
 };
+
 static gcoap_listener_t _listener = {
     (coap_resource_t *)&_resources[0],
     sizeof(_resources) / sizeof(_resources[0]),
@@ -93,11 +96,38 @@ static void _resp_handler(unsigned req_state, coap_pkt_t* pdu,
  */
 static ssize_t _stats_handler(coap_pkt_t* pdu, uint8_t *buf, size_t len)
 {
-    gcoap_resp_init(pdu, buf, len, COAP_CODE_CONTENT);
+    /* read coap method type in packet */
+    unsigned method_flag = coap_method2flag(coap_get_code_detail(pdu));
 
-    size_t payload_len = fmt_u16_dec((char *)pdu->payload, req_count);
+    switch(method_flag) {
+        case COAP_GET:
+            gcoap_resp_init(pdu, buf, len, COAP_CODE_CONTENT);
 
-    return gcoap_finish(pdu, payload_len, COAP_FORMAT_TEXT);
+            /* write the response buffer with the request count value */
+            size_t payload_len = fmt_u16_dec((char *)pdu->payload, req_count);
+
+            return gcoap_finish(pdu, payload_len, COAP_FORMAT_TEXT);
+        case COAP_PUT:
+        case COAP_POST:
+        {
+            gcoap_resp_init(pdu, buf, len, COAP_CODE_CHANGED);
+
+            /* convert the payload to an integer and update the request count value */
+            char payload[16] = { 0 };
+            memcpy(payload, (char*)pdu->payload, pdu->payload_len);
+            req_count = strtol(payload, NULL, 10);
+
+            return gcoap_finish(pdu, pdu->payload_len, COAP_FORMAT_TEXT);
+        }
+    }
+
+    return 0;
+}
+
+static ssize_t _riot_board_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len)
+{
+    return coap_reply_simple(pkt, COAP_CODE_205, buf, len,
+            COAP_FORMAT_TEXT, (uint8_t*)RIOT_BOARD, strlen(RIOT_BOARD));
 }
 
 static size_t _send(uint8_t *buf, size_t len, char *addr_str, char *port_str)
