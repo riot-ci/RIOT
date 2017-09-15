@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2017 Tom Keddie
- * Copyright (C) 2014 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -12,7 +11,8 @@
  * @{
  *
  * @file
- * @brief       Manual test application for GPIO peripheral drivers using Arduino pin numbering
+ * @brief       Manual test application for GPIO peripheral drivers using
+ *              Arduino pin numbering
  *
  * @author      Tom Keddie <github@bronwenandtom.com>
  *
