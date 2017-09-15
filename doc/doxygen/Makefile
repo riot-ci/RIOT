@@ -28,15 +28,15 @@ man: src/changelog.md
 
 ifneq (,$(LESSC))
 src/css/riot.css: src/css/riot.less src/css/variables.less
-	@$(LESSC) $< $@
+	$(LESSC) $< $@
 
 src/css/variables.less: src/config.json
-	@grep "^\s*\"@" $< | sed -e 's/^\s*"//g' -e 's/":\s*"/: /g' \
+	grep "^\s*\"@" $< | sed -e 's/^\s*"//g' -e 's/":\s*"/: /g' \
 	  -e 's/",\?$$/;/g' -e 's/\\"/"/g' > $@
 endif
 
 src/changelog.md: src/changelog.md.tmp ../../release-notes.txt
-	@./generate-changelog.py $+ $@
+	./generate-changelog.py $+ $@
 
 .PHONY:
 latex: src/changelog.md
