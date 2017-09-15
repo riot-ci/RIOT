@@ -37,32 +37,27 @@ static const  saul_gpio_params_t saul_gpio_params[] =
     {
         .name = "LD3",
         .pin = LED0_PIN,
-        .mode = GPIO_OUT,
-        .flags = 0,
+        .mode = GPIO_OUT
     },
     {
         .name = "LD4",
         .pin = LED1_PIN,
-        .mode = GPIO_OUT,
-        .flags = 0,
+        .mode = GPIO_OUT
     },
     {
         .name = "LD5",
         .pin = LED2_PIN,
-        .mode = GPIO_OUT,
-        .flags = 0,
+        .mode = GPIO_OUT
     },
     {
         .name = "LD6",
         .pin = LED3_PIN,
-        .mode = GPIO_OUT,
-        .flags = 0,
+        .mode = GPIO_OUT
     },
     {
         .name = "BTN USER",
         .pin  = BTN0_PIN,
-        .mode = BTN0_MODE,
-        .flags = 0,
+        .mode = BTN0_MODE
     },
 };
 
