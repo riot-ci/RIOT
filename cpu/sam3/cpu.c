@@ -56,9 +56,6 @@ void cpu_init(void)
     /* unlock write protect register for PMC module */
     PMC->PMC_WPMR = PMC_WPMR_WPKEY(WPKEY);
 
-    /* enable Synchronous Data Output for PIOB */
-    PIOB->PIO_OWER = ~0l;
-
     /* activate the external crystal */
     PMC->CKGR_MOR = (CKGR_MOR_KEY(MORKEY) |
                      CKGR_MOR_MOSCXTST(XTAL_STARTUP) |
