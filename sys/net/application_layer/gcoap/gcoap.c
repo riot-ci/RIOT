@@ -836,7 +836,7 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
                 out[pos++] = '>';
             }
             else {
-                pos += (i) ? 3 : 2;
+                pos += (pos) ? 3 : 2;
                 pos += path_len;
             }
             ++resource;
