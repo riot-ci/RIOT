@@ -11,7 +11,12 @@
  * @{
  *
  * @file
+<<<<<<< HEAD
  * @brief           Wrapper include file for specific SAM vendor headers
+=======
+ * @brief           Wrapper include file for including the specific SAM0 vendor
+ *                  header
+>>>>>>> cpu, sam_common: add basic common files
  *
  * @author          Sebastian Meiling <s@mlng.net>
  */
