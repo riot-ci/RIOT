@@ -425,6 +425,13 @@ static void _netif_list(kernel_pid_t dev)
         linebreak = true;
     }
 
+    res = gnrc_netapi_get(dev, NETOPT_MAC_NO_SLEEP, 0, &enable, sizeof(enable));
+
+    if ((res >= 0) && (enable == NETOPT_ENABLE)) {
+        printf("MAC_NO_SLEEP  ");
+        linebreak = true;
+    }
+
 #ifdef MODULE_GNRC_IPV6_NETIF
     if (entry != NULL) {
         printf("MTU:%" PRIu16 "  ", entry->mtu);
@@ -911,6 +918,9 @@ static int _netif_flag(char *cmd, kernel_pid_t dev, char *flag)
     }
     else if (strcmp(flag, "autocca") == 0) {
         return _netif_set_flag(dev, NETOPT_AUTOCCA, set);
+    }
+    else if (strcmp(flag, "mac_no_sleep") == 0) {
+        return _netif_set_flag(dev, NETOPT_MAC_NO_SLEEP, set);
     }
     else if (strcmp(flag, "iphc") == 0) {
 #if defined(MODULE_GNRC_SIXLOWPAN_NETIF) && defined(MODULE_GNRC_SIXLOWPAN_IPHC)
