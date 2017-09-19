@@ -1,4 +1,4 @@
-APPLICATION = xtimer_periodic_wakeup
+APPLICATION = xtimer_periodic_msg
 include ../Makefile.tests_common
 
 USEMODULE += xtimer
