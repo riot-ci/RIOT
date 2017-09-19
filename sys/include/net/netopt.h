@@ -194,6 +194,16 @@ typedef enum {
     NETOPT_CSMA_MINBE,
 
     /**
+     * @brief Tell a duty cycling MAC layer to remain always on
+     *
+     * This option tells the MAC layer to never put the radio to sleep. Useful
+     * in gateways and routers not running on batteries to improve
+     * responsiveness and allow battery powered nodes on the same network to
+     * sleep more often.
+     */
+    NETOPT_MAC_NO_SLEEP,
+
+    /**
      * @brief read-only check for a wired interface.
      *
      * If the interface is wireless this function will return -ENOTSUP, a
