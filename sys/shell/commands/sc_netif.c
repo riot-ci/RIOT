@@ -175,7 +175,7 @@ static void _hl_usage(char *cmd_name)
 
 static void _flag_usage(char *cmd_name)
 {
-    printf("usage: %s <if_id> [-]{promisc|autoack|ack_req|csma|autocca|cca_threshold|preload|iphc|rtr_adv}\n", cmd_name);
+    printf("usage: %s <if_id> [-]{promisc|autoack|ack_req|csma|autocca|cca_threshold|preload|mac_no_sleep|iphc|rtr_adv}\n", cmd_name);
 }
 
 static void _add_usage(char *cmd_name)
