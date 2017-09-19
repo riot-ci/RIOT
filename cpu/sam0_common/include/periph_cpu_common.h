@@ -125,7 +125,7 @@ typedef enum {
     UART_RUN_STANDBY     = (0x1 << 0),    /**< run SERCOM in standby mode */
     UART_WAKEUP          = (0x1 << 1),    /**< wake from sleep on receive */
 } uart_flag_t;
-    
+
 /**
  * @brief   UART device configuration
  */
