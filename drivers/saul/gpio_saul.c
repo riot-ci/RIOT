@@ -29,7 +29,7 @@
 static int read(const void *dev, phydat_t *res)
 {
     const saul_gpio_params_t *p = (const saul_gpio_params_t *)dev;
-    int inverted = (p->flags | SAUL_GPIO_INVERTED);
+    int inverted = (p->flags & SAUL_GPIO_INVERTED);
 
     res->val[0] = (gpio_read(p->pin)) ? !inverted : inverted;
 
@@ -42,7 +42,7 @@ static int read(const void *dev, phydat_t *res)
 static int write(const void *dev, phydat_t *state)
 {
     const saul_gpio_params_t *p = (const saul_gpio_params_t *)dev;
-    int inverted = (p->flags | SAUL_GPIO_INVERTED);
+    int inverted = (p->flags & SAUL_GPIO_INVERTED);
     int value = (state->val[0] ? !inverted : inverted);
 
     gpio_write(p->pin, value);
