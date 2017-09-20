@@ -37,7 +37,7 @@ RESULT=$?
 # Git regards any trailing white space except `\n` as an error so `\r` is
 # checked here, too
 git -c core.whitespace="trailing-space" \
-    diff --check $(git merge-base ${BRANCH} HEAD) -- ${NOVENDOR}
+    diff --check $(git merge-base ${BRANCH} HEAD) -- . ${NOVENDOR}
 if [ $? -ne 0 ] || [ $RESULT -ne 0 ]
 then
     echo "ERROR: This change introduces new whitespace errors"
