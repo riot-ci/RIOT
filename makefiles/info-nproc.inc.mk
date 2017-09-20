@@ -27,5 +27,7 @@ ifneq (, $(filter buildtest info-concurrency, $(MAKECMDGOALS)))
   endif
 endif
 
+.PHONY: info-concurrency
+
 info-concurrency:
 	@echo "$(NPROC)"
