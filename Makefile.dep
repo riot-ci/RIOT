@@ -395,6 +395,12 @@ ifneq (,$(filter isrpipe,$(USEMODULE)))
   USEMODULE += tsrb
 endif
 
+ifneq (,$(filter shell_commands,$(USEMODULE)))
+  ifneq (,$(filter fib,$(USEMODULE)))
+    USEMODULE += posix
+  endif
+endif
+
 ifneq (,$(filter posix,$(USEMODULE)))
   USEMODULE += xtimer
 endif
