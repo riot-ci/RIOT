@@ -36,7 +36,7 @@ static void test_fmt_byte_hex(void)
 
 static void test_fmt_bytes_hex_reverse(void)
 {
-    char out[10];
+    char out[9] = "--------";
     uint8_t val[4] = { 9, 8, 7, 6 };
     uint8_t bytes = 0;
 
@@ -105,7 +105,7 @@ static void test_fmt_u16_dec(void)
 
 static void test_fmt_s32_dec(void)
 {
-    char out[8] = "--------";
+    char out[6] = "-----";
     int32_t val = 9876;
     uint8_t chars = 0;
 
@@ -123,7 +123,7 @@ static void test_fmt_s32_dec(void)
 
 static void test_fmt_u64_dec_a(void)
 {
-    char out[21] = "------------------";
+    char out[21] = "--------------------";
     uint64_t val = 0;
     uint8_t chars = 0;
 
@@ -159,7 +159,7 @@ static void test_fmt_u64_dec_c(void)
 
 static void test_fmt_s16_dec(void)
 {
-    char out[7] = "-------";
+    char out[7] = "------";
     int16_t val;
     size_t len;
 
@@ -184,7 +184,7 @@ static void test_fmt_s16_dec(void)
 
 static void test_fmt_s16_dfp(void)
 {
-    char out[13] = "-------------";
+    char out[9] = "--------";
     int16_t val;
     unsigned fpp;
     size_t len;
