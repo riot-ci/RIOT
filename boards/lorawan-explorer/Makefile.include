@@ -1,0 +1,20 @@
+# define the cpu used by Arduino/Genuino MKR1000 board
+export CPU = samd21
+export CPU_MODEL = samd21j18a
+
+#export needed for flash rule
+export PORT_LINUX ?= /dev/ttyACM0
+export PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+
+# setup serial terminal
+include $(RIOTMAKE)/tools/serial.inc.mk
+
+# setup the flash tool used
+# we use BOSSA to flash this board
+export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_arduino_bootloader.ld
+include $(RIOTMAKE)/tools/bossa.inc.mk
+
+INCLUDES += -I$(RIOTBOARD)/lorawan-explorer/include
+
+# setup the boards dependencies
+include $(RIOTBOARD)/$(BOARD)/Makefile.dep
