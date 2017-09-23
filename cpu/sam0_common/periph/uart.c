@@ -112,8 +112,8 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     for (size_t i = 0; i < len; i++) {
         while (!dev(uart)->INTFLAG.bit.DRE) {}
         dev(uart)->DATA.reg = data[i];
-        while (!dev(uart)->INTFLAG.bit.TXC) {}
     }
+    while (!dev(uart)->INTFLAG.bit.TXC) {}
 }
 
 void uart_poweron(uart_t uart)
