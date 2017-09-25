@@ -121,9 +121,9 @@ typedef enum {
  * @brief   Available SERCOM UART flag selections
  */
 typedef enum {
-    UART_NONE            = (0x0),         /**< No flags set */
-    UART_RUN_STANDBY     = (0x1 << 0),    /**< run SERCOM in standby mode */
-    UART_WAKEUP          = (0x1 << 1),    /**< wake from sleep on receive */
+    UART_FLAG_NONE            = 0x0,    /**< No flags set */
+    UART_FLAG_RUN_STANDBY     = 0x1,    /**< run SERCOM in standby mode */
+    UART_FLAG_WAKEUP          = 0x2,    /**< wake from sleep on receive */
 } uart_flag_t;
 
 /**

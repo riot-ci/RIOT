@@ -82,7 +82,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
                       SERCOM_USART_CTRLA_RXPO(uart_config[uart].rx_pad) |
                       SERCOM_USART_CTRLA_MODE(0x1));
     /* Set run in standby mode if enabled */
-    if ((uart_config[uart].flags & UART_RUN_STANDBY) == UART_RUN_STANDBY) {
+    if (uart_config[uart].flags & UART_RUN_STANDBY) {
         dev(uart)->CTRLA.reg |= SERCOM_USART_CTRLA_RUNSTDBY;
     }
 
@@ -101,7 +101,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         dev(uart)->CTRLB.reg |= SERCOM_USART_CTRLB_RXEN;
         dev(uart)->INTENSET.reg |= SERCOM_USART_INTENSET_RXC;
         /* set wakeup receive from sleep if enabled */
-        if ((uart_config[uart].flags & UART_WAKEUP) == UART_WAKEUP) {
+        if (uart_config[uart].flags & UART_WAKEUP) {
             dev(uart)->CTRLB.reg |= SERCOM_USART_CTRLB_SFDE;
         }
     }
