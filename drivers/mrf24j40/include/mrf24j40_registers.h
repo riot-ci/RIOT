@@ -271,8 +271,8 @@ extern "C" {
  * @name    Shift offsets for TXSTAT register (0x24)
  * @{
  */
-#define MRF24J40_TXSTAT_MAX_FRAME_RETRIES_SHIFT 6
-#define MRF24J40_TXSTAT_CCAFAIL_SHIFT           5
+#define MRF24J40_TXSTAT_MAX_FRAME_RETRIES_SHIFT (6U)
+#define MRF24J40_TXSTAT_CCAFAIL_SHIFT           (5U)
 /** @} */
 
 /**
