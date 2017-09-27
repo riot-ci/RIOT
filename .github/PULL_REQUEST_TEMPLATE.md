@@ -21,4 +21,4 @@ _Put the description of your contribution here._
 
 ### Issues/PRs references
 
-_If any put the list of related issues and PRs here._
+_If any, put the list of related issues and PRs here._
