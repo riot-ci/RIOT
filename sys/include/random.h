@@ -68,6 +68,11 @@ void random_init_by_array(uint32_t init_key[], int key_length);
 uint32_t random_uint32(void);
 
 /**
+ * @brief writes random bytes in the [0,0xff]-interval to memory
+ */
+void random_bytes(uint8_t *buf, size_t size);
+
+/**
  * @brief   generates a random number r with a <= r < b.
  *
  * @param[in] a minimum for random number
