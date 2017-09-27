@@ -1,7 +1,9 @@
-nanocoap server example
-========================
+nanocoap package test application
+=================================
 
-This application is meant to get you started with implementing a CoAP server on RIOT.
+This application is meant to show how to implemement a very lightweight CoAP
+server with the nanocoap package on RIOT.
+
 It uses the GNRC network stack through RIOT's
 [sock API](http://doc.riot-os.org/group__net__sock.html).
 
