@@ -29,6 +29,9 @@
 #include "periph_conf.h"
 #include "periph/uart.h"
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 #ifndef KINETIS_HAVE_LPUART
 #ifdef LPUART0
 #define KINETIS_HAVE_LPUART      1
@@ -325,14 +328,35 @@ KINETIS_UART_WRITE_INLINE void uart_write_lpuart(uart_t uart, const uint8_t *dat
 static inline void irq_handler_lpuart(uart_t uart)
 {
     LPUART_Type *dev = uart_config[uart].dev;
+    uint32_t stat = dev->STAT;
+    /* Clear all IRQ flags */
+    dev->STAT = stat;
 
-    if (dev->STAT & LPUART_STAT_RDRF_MASK) {
+    if (stat & LPUART_STAT_RDRF_MASK) {
         /* RDRF flag will be cleared when LPUART_DATA is read */
         uint8_t data = dev->DATA;
-
-        if (config[uart].rx_cb != NULL) {
+        if (stat & (LPUART_STAT_FE_MASK | LPUART_STAT_PF_MASK)) {
+            if (stat & LPUART_STAT_FE_MASK) {
+                DEBUG("LPUART framing error %08" PRIx32 "\n", stat);
+            }
+            if (stat & LPUART_STAT_PF_MASK) {
+                DEBUG("LPUART parity error %08" PRIx32 "\n", stat);
+            }
+            /* FE is set whenever the next character to be read from LPUART_DATA
+             * was received with logic 0 detected where a stop bit was expected. */
+            /* PF is set whenever the next character to be read from LPUART_DATA
+             * was received when parity is enabled (PE = 1) and the parity bit in
+             * the received character does not agree with the expected parity value. */
+        }
+        /* Only run callback if no error occurred */
+        else if (config[uart].rx_cb != NULL) {
             config[uart].rx_cb(config[uart].arg, data);
         }
+    }
+    if (stat & LPUART_STAT_OR_MASK) {
+        /* Input buffer overflow, means that the software was too slow to
+         * receive the data */
+        DEBUG("LPUART overrun %08" PRIx32 "\n", stat);
     }
 
     cortexm_isr_end();
