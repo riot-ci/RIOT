@@ -10,6 +10,8 @@ verify the following checklist:
 of RIOT ?
 - [ ] Have you checked that your modifications are compliant with RIOT coding
 conventions ?
+- [ ] Have you rebased your branch against latest RIOT `master` branch (
+`git pull --rebase upstream master`)
 - [ ] Have you run `make static-test` from the root of repository and verified
 that it doesn't raise any error ?
 
