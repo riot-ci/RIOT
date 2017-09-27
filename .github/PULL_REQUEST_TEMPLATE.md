@@ -2,12 +2,12 @@ Thanks for contributing to RIOT !
 
 ### Preliminary checks
 
-The RIOT community takes a lot of care to contributions quality.
-Thus before describing what your contribution is about, we would like you to
-verify the following checklist:
-- [ ] Have you read once the
+The RIOT community cares a lot about code quality..
+Therefore before describing what your contribution is about, we would like you
+to check the following checklist:
+- [ ] Have you read the
 [coding conventions](https://github.com/RIOT-OS/RIOT/wiki/Coding-conventions)
-of RIOT ?
+of RIOT at least once ?
 - [ ] Have you checked that your modifications are compliant with RIOT coding
 conventions ?
 - [ ] Have you rebased your branch against latest RIOT `master` branch (
