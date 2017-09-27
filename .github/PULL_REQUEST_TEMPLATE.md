@@ -1,0 +1,22 @@
+Thanks for contributing to RIOT !
+
+### Preliminary checks
+
+The RIOT community takes a lot of care to contributions quality.
+Thus before describing what your contribution is about, we would like you to
+verify the following checklist:
+- [ ] Have you read once the
+[coding conventions](https://github.com/RIOT-OS/RIOT/wiki/Coding-conventions)
+of RIOT ?
+- [ ] Have you checked that your modifications are compliant with RIOT coding
+conventions ?
+- [ ] Have you run `make static-test` from the root of repository and verified
+that it doesn't raise any error ?
+
+### Contribution description
+
+_Put here the description of your contibution_
+
+### Issue references
+
+_Put here the list of related issues or PRs (if any)_
