@@ -66,8 +66,15 @@ extern "C" {
  */
 
 static const spi_conf_t spi_config[] = {
-    {}, /* No SPI0 on PIC32 */
-
+    {
+        /* No SPI0 on PIC32 */
+        .mosi_pin = 0,
+        .mosi_reg = (volatile uint32_t*)0,
+        .mosi_af  = 0,
+        .miso_pin = 0,
+        .miso_reg = (volatile uint32_t*)0,
+        .miso_af  = 0,
+    },
     {   /*
          * SPI 1 (J10 connector)
          *      MOSI -> RE5
@@ -125,7 +132,7 @@ static const spi_conf_t spi_config[] = {
     },
 };
 
-#define SPI_NUMOF           (2)
+#define SPI_NUMOF           (4)
 /** @} */
 
 #ifdef __cplusplus
