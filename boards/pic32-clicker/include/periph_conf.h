@@ -70,7 +70,15 @@ extern "C" {
  */
 
 static const spi_conf_t spi_config[] = {
-    {}, /* No SPI0 on PIC32 */
+    {
+        /* No SPI0 on PIC32 */
+        .mosi_pin = 0,
+        .mosi_reg = (volatile uint32_t*)0,
+        .mosi_af  = 0,
+        .miso_pin = 0,
+        .miso_reg = (volatile uint32_t*)0,
+        .miso_af  = 0,
+    },
 
     {   /*
          * SPI 1 (Mikrobus)

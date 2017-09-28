@@ -90,6 +90,8 @@ typedef enum {
 /**
  * @brief   SPI device configuration
  */
+typedef unsigned int gpio_t;
+
 typedef struct {
     volatile uint32_t *mosi_reg;    /**< Output pin mux register address */
     volatile uint32_t *miso_reg;    /**< MISO pin mux register address */
