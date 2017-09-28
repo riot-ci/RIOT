@@ -1,9 +1,16 @@
-# compile together the Arduino sketches of the application
-SKETCHES = $(wildcard $(APPDIR)/*.sketch)
-SRCDIR = $(RIOTBASE)/sys/arduino
+# Add Arduino sketches to the application as a module
 
-# run the Arduino pre-build script
-$(shell $(RIOTTOOLS)/arduino/pre_build.sh $(SRCDIR) $(APPDIR) $(SKETCHES))
+# Define application sketches module, it will be generated into $(BINDIR)
+SKETCH_MODULE     ?= arduino_sketches
+SKETCH_MODULE_DIR ?= $(BINDIR)/$(SKETCH_MODULE)
+SKETCHES           = $(wildcard $(APPDIR)/*.sketch)
+include $(RIOTBASE)/sys/arduino/arduino_sketches.inc.mk
+
+# Depends on module
+USEMODULE += $(SKETCH_MODULE)
+DIRS      += $(SKETCH_MODULE_DIR)
+# Use `link` target to create it before application makefile
+link: $(SKETCH_MODULE_DIR)/Makefile
 
 # include the Arduino headers
 INCLUDES += -I$(RIOTBASE)/sys/arduino/include
