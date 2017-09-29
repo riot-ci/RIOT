@@ -289,7 +289,8 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
                 !!(dev->netdev.flags & AT86RF2XX_OPT_CSMA);
             return sizeof(netopt_enable_t);
 
-#if defined(MODULE_AT86RF232) || defined(MODULE_AT86RF233)
+/* Only radios with the XAH_CTRL_2 register support frame retry reporting */
+#ifdef AT86RF2XX_XAH_CTRL_2__ARET_FRAME_RETRIES_OFFSET
         case NETOPT_TX_RETRIES_NEEDED:
             assert(max_len >= sizeof(uint8_t));
             *((uint8_t *)val) = dev->tx_retries;

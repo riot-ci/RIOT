@@ -336,10 +336,12 @@ extern "C" {
  * @name    Bitfield definitions for the XAH_CTRL_1 register
  * @{
  */
+#if defined(MODULE_AT86RF232) || defined(MODULE_AT86RF233)
 #define AT86RF2XX_XAH_CTRL_2__ARET_FRAME_RETRIES_MASK           (0xF0)
 #define AT86RF2XX_XAH_CTRL_2__ARET_FRAME_RETRIES_OFFSET         (4)
 #define AT86RF2XX_XAH_CTRL_2__ARET_CSMA_RETRIES_MASK            (0x0E)
 #define AT86RF2XX_XAH_CTRL_2__ARET_CSMA_RETRIES_OFFSET          (1)
+#endif
 /** @} */
 
 
