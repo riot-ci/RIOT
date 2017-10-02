@@ -74,21 +74,11 @@ extern "C" {
  * @{
  */
 static const dma_conf_t dma_config[] = {
-    {
-        .stream = 4,
-    },
-    {
-        .stream = 14,
-    },
-    {
-        .stream = 6,
-    },
-    {
-        .stream = 10,
-    },
-    {
-        .stream = 8,
-    },
+    { .stream = 4  },
+    { .stream = 14 },
+    { .stream = 6  },
+    { .stream = 10 },
+    { .stream = 8  },
 };
 
 #define DMA_0_ISR  isr_dma1_stream4
