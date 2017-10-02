@@ -70,6 +70,27 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    DMA streams configuration
+ * @{
+ */
+static const dma_conf_t dma_config[] = {
+    { .stream = 4  },
+    { .stream = 14 },
+    { .stream = 6  },
+    { .stream = 10 },
+    { .stream = 8  },
+};
+
+#define DMA_0_ISR  isr_dma1_stream4
+#define DMA_1_ISR  isr_dma2_stream6
+#define DMA_2_ISR  isr_dma1_stream6
+#define DMA_3_ISR  isr_dma2_stream2
+#define DMA_4_ISR  isr_dma1_stream8
+
+#define DMA_NUMOF           (sizeof(dma_config) / sizeof(dma_config[0]))
+/** @} */
+
+/**
  * @name    Timer configuration
  * @{
  */
@@ -102,10 +123,8 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB1,
         .irqn       = USART3_IRQn,
-#ifdef UART_USE_DMA
-        .dma_stream = 6,
-        .dma_chan   = 4
-#endif
+        .dma        = 0,
+        .dma_chan   = 7,
     },
     {
         .dev        = USART6,
@@ -116,10 +135,8 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF8,
         .bus        = APB2,
         .irqn       = USART6_IRQn,
-#ifdef UART_USE_DMA
-        .dma_stream = 5,
-        .dma_chan   = 4
-#endif
+        .dma        = 1,
+        .dma_chan   = 5,
     },
     {
         .dev        = USART2,
@@ -130,10 +147,8 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB1,
         .irqn       = USART2_IRQn,
-#ifdef UART_USE_DMA
-        .dma_stream = 4,
-        .dma_chan   = 4
-#endif
+        .dma        = 3,
+        .dma_chan   = 4,
     },
 };
 
@@ -210,7 +225,11 @@ static const spi_conf_t spi_config[] = {
         .cs_pin   = GPIO_PIN(PORT_A, 4),
         .af       = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
-        .apbbus   = APB2
+        .apbbus   = APB2,
+        .tx_dma   = 3,
+        .tx_dma_chan = 2,
+        .rx_dma   = 4,
+        .rx_dma_chan = 3,
     }
 };
 
