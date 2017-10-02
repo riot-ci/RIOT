@@ -167,6 +167,11 @@ typedef struct {
     uint8_t pending_tx;                 /**< keep track of pending TX calls
                                              this is required to know when to
                                              return to @ref at86rf2xx_t::idle_state */
+/* Only radios with the XAH_CTRL_2 register support frame retry reporting */
+#ifdef AT86RF2XX_XAH_CTRL_2__ARET_FRAME_RETRIES_OFFSET
+    uint8_t tx_retries;                 /**< Number of NOACK retransmissions */
+#endif
+    /** @} */
 } at86rf2xx_t;
 
 /**
