@@ -56,10 +56,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     dev->UART_IDR = 0x0000ffff;
 
     /* configure pins */
-    gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
     gpio_init_mux(uart_config[uart].tx_pin, uart_config[uart].mux);
     if (rx_cb) {
-        gpio_init(uart_config[uart].rx_pin, GPIO_IN);
         gpio_init_mux(uart_config[uart].rx_pin, uart_config[uart].mux);
     }
 
