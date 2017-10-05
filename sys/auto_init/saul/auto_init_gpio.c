@@ -69,7 +69,7 @@ void auto_init_gpio(void)
         /* set initial pin state if configured */
         if (p->flags & (SAUL_GPIO_INIT_CLEAR | SAUL_GPIO_INIT_SET)) {
             phydat_t s;
-            s.val[0] = p->flags & SAUL_GPIO_INIT_SET;
+            s.val[0] = (p->flags & SAUL_GPIO_INIT_SET);
             saul_reg_entries[i].driver->write(p, &s);
         }
         /* add to registry */
