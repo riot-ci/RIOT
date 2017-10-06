@@ -2,7 +2,7 @@
 APPLICATION = gnrc_ndp2
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY :=
+BOARD_INSUFFICIENT_MEMORY := nuclo32-f031
 
 USEMODULE += gnrc_ndp2
 USEMODULE += embunit
