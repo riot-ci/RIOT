@@ -1811,7 +1811,8 @@ static void test_nib_abr_add_pfx__pfx_in_nib(void)
 
 
     TEST_ASSERT_NOT_NULL((abr = _nib_abr_add(&addr)));
-    TEST_ASSERT_NOT_NULL((dst = _nib_pl_add(IFACE, &pfx, GLOBAL_PREFIX_LEN)));
+    TEST_ASSERT_NOT_NULL((dst = _nib_pl_add(IFACE, &pfx, GLOBAL_PREFIX_LEN,
+                                            UINT32_MAX, UINT32_MAX)));
     TEST_ASSERT_NULL(_nib_abr_iter_pfx(abr, NULL));
     _nib_abr_add_pfx(abr, dst);
     TEST_ASSERT_NOT_NULL(_nib_abr_iter_pfx(abr, NULL));
