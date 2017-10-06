@@ -237,7 +237,7 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
                                   ~GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK) |
                                  GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID);
                 uint8_t pfx_len = (uint8_t)(opt->context >> 8U);
-                /* acquire locks a recursive mutex so we are save calling this
+                /* acquire locks a recursive mutex so we are safe calling this
                  * public function */
                 gnrc_netif2_ipv6_addr_add(netif, opt->data, pfx_len, flags);
                 res = sizeof(ipv6_addr_t);
@@ -245,21 +245,21 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
             break;
         case NETOPT_IPV6_ADDR_REMOVE:
             assert(opt->data_len == sizeof(ipv6_addr_t));
-            /* acquire locks a recursive mutex so we are save calling this
+            /* acquire locks a recursive mutex so we are safe calling this
              * public function */
             gnrc_netif2_ipv6_addr_remove(netif, opt->data);
             res = sizeof(ipv6_addr_t);
             break;
         case NETOPT_IPV6_GROUP:
             assert(opt->data_len == sizeof(ipv6_addr_t));
-            /* acquire locks a recursive mutex so we are save calling this
+            /* acquire locks a recursive mutex so we are safe calling this
              * public function */
             gnrc_netif2_ipv6_group_join(netif, opt->data);
             res = sizeof(ipv6_addr_t);
             break;
         case NETOPT_IPV6_GROUP_LEAVE:
             assert(opt->data_len == sizeof(ipv6_addr_t));
-            /* acquire locks a recursive mutex so we are save calling this
+            /* acquire locks a recursive mutex so we are safe calling this
              * public function */
             gnrc_netif2_ipv6_group_leave(netif, opt->data);
             res = sizeof(ipv6_addr_t);

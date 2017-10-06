@@ -111,8 +111,10 @@ enum {
 /**
  * @brief   Interface supports 6LoWPAN general header compression
  *
- * @attention   GHC not implemented yet
+ * @attention   6CIO (which propagates this flag throughout) not implemented yet
  * @see [RFC 7400, section 3.3](https://tools.ietf.org/html/rfc7400#section-3.3)
+ * @see [draft-ietf-6lo-rfc6775-update-09, section 6.3]
+ *      (https://tools.ietf.org/html/draft-ietf-6lo-rfc6775-update-09#section-6.3)
  */
 #define GNRC_NETIF2_FLAGS_6LO_BACKBONE              (0x00000800U)
 

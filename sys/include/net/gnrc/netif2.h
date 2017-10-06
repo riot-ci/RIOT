@@ -123,8 +123,8 @@ struct gnrc_netif2_ops {
      *
      * @note The function re-formats the content of @p pkt to a format expected
      *       by the netdev_driver_t::send() method of gnrc_netif_t::dev and
-     *       releases the it before returning (so no additional release should
-     *       be required after calling this method).
+     *       releases the packet before returning (so no additional release
+     *       should be required after calling this method).
      *
      * @param[in] netif The network interface.
      * @param[in] pkt   A packet to send.

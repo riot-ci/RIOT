@@ -10,7 +10,8 @@
  * @ingroup net_gnrc_netif2
  * @{
  *
- * @file    6LoWPAN definitions for @ref net_gnrc_netif2
+ * @file
+ * @brief   6LoWPAN definitions for @ref net_gnrc_netif2
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */

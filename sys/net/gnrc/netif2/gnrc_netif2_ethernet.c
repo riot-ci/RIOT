@@ -184,7 +184,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif2_t *netif)
         }
 
         if (nread < bytes_expected) {
-            /* we've got less then the expected packet size,
+            /* we've got less than the expected packet size,
              * so free the unused space.*/
 
             DEBUG("gnrc_netif2_ethernet: reallocating.\n");

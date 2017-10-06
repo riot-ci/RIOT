@@ -78,8 +78,9 @@ static inline void gnrc_netif2_release(gnrc_netif2_t *netif)
  * @param[in] flags     initial flags for the address.
  *                      - Setting the address' state to
  *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE
- *                        means that state-less auto-address configuration is
- *                        performed.
+ *                        means thata this address is assumed to be added due to
+ *                        state-less auto-address configuration and actions
+ *                        related to that may be performed in the background.
  *                      - Setting the address' state to
  *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID means
  *                        that the address is assumed to be manually configured
@@ -317,12 +318,13 @@ static inline bool gnrc_netif2_is_rtr(const gnrc_netif2_t *netif)
 /**
  * @brief   Checks if the interface is allowed to send out router advertisements
  *
- * @attention   Requiors prior locking
+ * @attention   Requires prior locking
  *
  * @param[in] netif the network interface
  *
- * @return  true, if the interface is allowed to send out router adverisements
- * @return  false, if the interface is allowed to send out router adverisements
+ * @return  true, if the interface is allowed to send out router advertisements
+ * @return  false, if the interface is not allowed to send out router
+ *          advertisements
  */
 static inline bool gnrc_netif2_is_rtr_adv(const gnrc_netif2_t *netif)
 {
@@ -337,7 +339,7 @@ static inline bool gnrc_netif2_is_rtr_adv(const gnrc_netif2_t *netif)
  *
  * @param[in] netif the network interface
  *
- * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6776#section-2)
+ * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6775#section-2)
  *
  * @return  true, if the interface represents a 6LN
  * @return  false, if the interface does not represent a 6LN
@@ -362,7 +364,7 @@ static inline bool gnrc_netif2_is_6ln(const gnrc_netif2_t *netif)
  *
  * @param[in] netif the network interface
  *
- * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6776#section-2)
+ * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6775#section-2)
  *
  * @return  true, if the interface represents a 6LR
  * @return  false, if the interface does not represent a 6LR
@@ -380,7 +382,7 @@ static inline bool gnrc_netif2_is_6lr(const gnrc_netif2_t *netif)
  *
  * @param[in] netif the network interface
  *
- * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6776#section-2)
+ * @see [RFC 6775, section 2](https://tools.ietf.org/html/rfc6775#section-2)
  *
  * @return  true, if the interface represents a 6LBR
  * @return  false, if the interface does not represent a 6LBR

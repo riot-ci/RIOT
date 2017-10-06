@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief   Maximum number of network interfaces
  *
- * @note    Intentially not calling it `GNRC_NETIF2_NUMOF` to not require
+ * @note    Intentionally not calling it `GNRC_NETIF2_NUMOF` to not require
  *          rewrites throughout the stack.
  */
 #ifndef GNRC_NETIF_NUMOF

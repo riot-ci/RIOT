@@ -112,14 +112,17 @@ typedef struct {
      * the routing protocol about state changes, route usages, missing routes
      * etc.
      *
+     * The callback may be `NULL` if no such behavior is required by the routing
+     * protocol (or no routing protocol is present).
+     *
      * @todo    Define types (RRQ, RRN, NSC) in NIB
      *
      * @param[in] type      Type of the route info.
      * @param[in] ctx_addr  Context address of the route info.
      * @param[in] ctx       Further context of the route info.
      */
-    int (*route_info_cb)(unsigned type, const ipv6_addr_t *ctx_addr,
-                         const void *ctx);
+    void (*route_info_cb)(unsigned type, const ipv6_addr_t *ctx_addr,
+                          const void *ctx);
     /**
      * @brief   Event for @ref GNRC_IPV6_NIB_SND_MC_RA
      *
@@ -235,7 +238,7 @@ typedef struct {
     uint8_t aac_mode;
 
     /**
-     * @brief   Maximum transition unit (MTU) for IPv6 packets
+     * @brief   Maximum transmission unit (MTU) for IPv6 packets
      *
      * @note    Only available with module @ref net_gnrc_ipv6 "gnrc_ipv6".
      */
