@@ -85,7 +85,7 @@ static const dma_conf_t dma_config[] = {
 #define DMA_1_ISR  isr_dma2_stream6
 #define DMA_2_ISR  isr_dma1_stream6
 #define DMA_3_ISR  isr_dma2_stream2
-#define DMA_4_ISR  isr_dma1_stream8
+#define DMA_4_ISR  isr_dma2_stream0
 
 #define DMA_NUMOF           (sizeof(dma_config) / sizeof(dma_config[0]))
 /** @} */
