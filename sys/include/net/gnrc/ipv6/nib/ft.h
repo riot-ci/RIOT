@@ -122,8 +122,7 @@ void gnrc_ipv6_nib_ft_del(const ipv6_addr_t *dst, unsigned dst_len);
  * }
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * @note    The list may change during iteration, but no duplication of already
- *          traversed entries must be returned.
+ * @note    The list may change during iteration.
  *
  * @return  true, if iteration can be continued.
  * @return  false, if @p fte is the last neighbor cache entry in the NIB.
