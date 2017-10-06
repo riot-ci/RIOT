@@ -95,9 +95,9 @@ static inline bool _rtr_sol_on_6lr(const gnrc_ipv6_netif_t *netif,
  * @param[in] ipv6      The IPv6 header of the message carrying the ARO.
  * @param[in] icmpv6    The neighbor solicitation carrying the ARO
  *                      (handed over as @ref icmpv6_hdr_t, since it is just
- *                      handed to @ref _handle_sl2ao).
+ *                      handed to the SL2AO handler function).
  * @param[in] aro       ARO that carries the address registration information.
- * @param[in] sllao     SL2AO associated with the ARO.
+ * @param[in] sl2ao     SL2AO associated with the ARO.
  *
  * @return  registration status of the address (including
  *          @ref _ADDR_REG_STATUS_TENTATIVE and @ref _ADDR_REG_STATUS_IGNORE).
@@ -118,7 +118,7 @@ uint8_t _reg_addr_upstream(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
  *                      (handed over as @ref icmpv6_hdr_t, since it is just
  *                      handed to @ref _handle_aro()).
  * @param[in] aro       The original riginal ARO
- * @param[in] sllao     SL2AO associated with the ARO.
+ * @param[in] sl2ao     SL2AO associated with the ARO.
  *
  * @return  registration status of the address (including
  *          @ref _ADDR_REG_STATUS_TENTATIVE and @ref _ADDR_REG_STATUS_IGNORE).

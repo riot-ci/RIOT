@@ -189,7 +189,7 @@ extern "C" {
  * @brief   Recalculate reachability timeout time.
  *
  * This message type is for the event of recalculating the reachability timeout
- * time. The expected message context is a valid [interface](_nib_iface_t).
+ * time. The expected message context is a valid interface.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_ARSM != 0
  */
@@ -211,7 +211,7 @@ void gnrc_ipv6_nib_init(void);
 void gnrc_ipv6_nib_init_iface(kernel_pid_t iface);
 
 /**
- * @brief   Get link-layer address of next hop to a destination address
+ * @brief   Gets link-layer address of next hop to a destination address
  *
  * @pre `(dst != NULL) && (nce != NULL)`
  *
@@ -236,7 +236,7 @@ int gnrc_ipv6_nib_get_next_hop_l2addr(const ipv6_addr_t *dst,
                                       gnrc_ipv6_nib_nc_t *nce);
 
 /**
- * @brief   Handle a received ICMPv6 packet
+ * @brief   Handles a received ICMPv6 packet
  *
  * @pre `iface != KERNEL_PID_UNDEF`
  * @pre `ipv6 != NULL`
@@ -279,7 +279,7 @@ void gnrc_ipv6_nib_handle_pkt(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
                               const icmpv6_hdr_t *icmpv6, size_t icmpv6_len);
 
 /**
- * @brief   Handle a timer event
+ * @brief   Handles a timer event
  *
  * @param[in] ctx   Context of the timer event.
  * @param[in] type  Type of the timer event (see [timer event
