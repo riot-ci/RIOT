@@ -7,13 +7,14 @@
  */
 
 /**
- * @defgroup
- * @ingroup
- * @brief
+ * @defgroup    net_gnrc_ipv6_nib_abr   Authoritative border router list
+ * @ingroup     net_gnrc_ipv6_nib
+ * @brief       Authoritative border router list component of neighbor
+ *              information base
  * @{
  *
  * @file
- * @brief
+ * @brief   Authoritative border router list definitions
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
@@ -27,9 +28,23 @@
 extern "C" {
 #endif
 
-#if     (GNRC_IPV6_NIB_CONF_6LBR && GNRC_IPV6_NIB_CONF_MULTIHOP_P6C) || defined(DOXYGEN)
-int gnrc_ipv6_nib_abr_add(ipv6_addr_t *addr);
-void gnrc_ipv6_nib_abr_del(ipv6_addr_t *addr);
+#if (GNRC_IPV6_NIB_CONF_6LBR && GNRC_IPV6_NIB_CONF_MULTIHOP_P6C) || defined(DOXYGEN)
+/**
+ * @brief   Adds the address of an authoritative border router to the NIB
+ *
+ * @param[in] addr  The address of an authoritative border router.
+ *
+ * @return  0 on success.
+ * @return  -ENOMEM, if no space is left in the neighbor cache.
+ */
+int gnrc_ipv6_nib_abr_add(const ipv6_addr_t *addr);
+
+/**
+ * @brief   Removes an authoritative border router from the NIB
+ *
+ * @param[in] addr  The address of an authoritative border router.
+ */
+void gnrc_ipv6_nib_abr_del(const ipv6_addr_t *addr);
 #endif  /* (GNRC_IPV6_NIB_CONF_6LBR && GNRC_IPV6_NIB_CONF_MULTIHOP_P6C) || defined(DOXYGEN) */
 
 #ifdef __cplusplus

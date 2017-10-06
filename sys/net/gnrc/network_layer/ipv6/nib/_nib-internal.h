@@ -698,7 +698,7 @@ void _nib_abr_remove(const ipv6_addr_t *addr);
  * @param[in] abr   The border router.
  * @param[in] offl  The prefix to add.
  */
-void _nib_abr_add_pfx(_nib_abr_entry_t *abr, _nib_offl_entry_t *offl);
+void _nib_abr_add_pfx(_nib_abr_entry_t *abr, const _nib_offl_entry_t *offl);
 
 /**
  * @brief   Iterates over an authoritative border router's prefixes
@@ -712,8 +712,8 @@ void _nib_abr_add_pfx(_nib_abr_entry_t *abr, _nib_offl_entry_t *offl);
  * @return  NULL, if @p last is the last prefix of @p abr or if @p last
  *          wasn't in NIB (and != NULL).
  */
-_nib_offl_entry_t *_nib_abr_iter_pfx(_nib_abr_entry_t *abr,
-                                     _nib_offl_entry_t *last);
+_nib_offl_entry_t *_nib_abr_iter_pfx(const _nib_abr_entry_t *abr,
+                                     const _nib_offl_entry_t *last);
 
 /**
  * @brief   Iterates over authoritative border router entries

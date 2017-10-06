@@ -571,7 +571,7 @@ void _nib_abr_remove(const ipv6_addr_t *addr)
     }
 }
 
-void _nib_abr_add_pfx(_nib_abr_entry_t *abr, _nib_offl_entry_t *offl)
+void _nib_abr_add_pfx(_nib_abr_entry_t *abr, const _nib_offl_entry_t *offl)
 {
     unsigned idx = (unsigned)(_dsts - offl);
 
@@ -586,15 +586,18 @@ void _nib_abr_add_pfx(_nib_abr_entry_t *abr, _nib_offl_entry_t *offl)
     }
 }
 
-_nib_offl_entry_t *_nib_abr_iter_pfx(_nib_abr_entry_t *abr,
-                                     _nib_offl_entry_t *last)
+_nib_offl_entry_t *_nib_abr_iter_pfx(const _nib_abr_entry_t *abr,
+                                     const _nib_offl_entry_t *last)
 {
     if ((last == NULL) ||
         (((unsigned)(_dsts - last)) < GNRC_IPV6_NIB_OFFL_NUMOF)) {
-        _nib_offl_entry_t *ptr = last;
+        /* we don't change `ptr`, so dropping const qualifier for now is okay */
+        _nib_offl_entry_t *ptr = (_nib_offl_entry_t *)last;
 
         while ((ptr = _nib_offl_iter(ptr))) {
-            if ((ptr->mode & _PL) && (bf_isset(abr->pfxs, ptr - _dsts))) {
+            /* bf_isset() discards const, but doesn't change the array, so
+             * discarding it on purpose */
+            if ((ptr->mode & _PL) && (bf_isset((uint8_t *)abr->pfxs, ptr - _dsts))) {
                 return ptr;
             }
         }
