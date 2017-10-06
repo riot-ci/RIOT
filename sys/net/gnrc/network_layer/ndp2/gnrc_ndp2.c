@@ -44,6 +44,11 @@ gnrc_pktsnip_t *gnrc_ndp2_nbr_sol_build(const ipv6_addr_t *tgt,
         nbr_sol->tgt.u64[0].u64 = tgt->u64[0].u64;
         nbr_sol->tgt.u64[1].u64 = tgt->u64[1].u64;
     }
+#if ENABLE_DEBUG
+    else {
+        DEBUG("ndp2: NS not created due to no space in packet buffer\n");
+    }
+#endif
     return pkt;
 }
 
@@ -62,6 +67,11 @@ gnrc_pktsnip_t *gnrc_ndp2_nbr_adv_build(const ipv6_addr_t *tgt, uint8_t flags,
         nbr_adv->tgt.u64[0].u64 = tgt->u64[0].u64;
         nbr_adv->tgt.u64[1].u64 = tgt->u64[1].u64;
     }
+#if ENABLE_DEBUG
+    else {
+        DEBUG("ndp2: NA not created due to no space in packet buffer\n");
+    }
+#endif
     return pkt;
 }
 
@@ -75,6 +85,11 @@ gnrc_pktsnip_t *gnrc_ndp2_rtr_sol_build(gnrc_pktsnip_t *options)
         ndp_rtr_sol_t *rtr_sol = pkt->data;
         rtr_sol->resv.u32 = 0;
     }
+#if ENABLE_DEBUG
+    else {
+        DEBUG("ndp2: RS not created due to no space in packet buffer\n");
+    }
+#endif
     return pkt;
 }
 
@@ -95,12 +110,17 @@ gnrc_pktsnip_t *gnrc_ndp2_rtr_adv_build(uint8_t cur_hl, uint8_t flags,
         rtr_adv->reach_time = byteorder_htonl(reach_time);
         rtr_adv->retrans_timer = byteorder_htonl(retrans_timer);
     }
+#if ENABLE_DEBUG
+    else {
+        DEBUG("ndp2: RA not created due to no space in packet buffer\n");
+    }
+#endif
     return pkt;
 }
 
 static inline size_t _ceil8(uint8_t length)
 {
-    /* NDP options use units of 8 byte for there length field, so round up */
+    /* NDP options use units of 8 byte for their length field, so round up */
     return (length + 7U) & 0xf8U;
 }
 
@@ -115,6 +135,11 @@ gnrc_pktsnip_t *gnrc_ndp2_opt_build(uint8_t type, size_t size,
         opt->type = type;
         opt->len = (uint8_t)(pkt->size / 8);
     }
+#if ENABLE_DEBUG
+    else {
+        DEBUG("ndp2: option not created due to no space in packet buffer\n");
+    }
+#endif
     return pkt;
 }
 
