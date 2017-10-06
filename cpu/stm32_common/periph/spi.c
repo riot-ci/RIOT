@@ -221,8 +221,8 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     dma_start(spi_config[bus].rx_dma);
     dma_start(spi_config[bus].tx_dma);
 
-    dma_wait_for_end(spi_config[bus].rx_dma);
-    dma_wait_for_end(spi_config[bus].tx_dma);
+    dma_wait(spi_config[bus].rx_dma);
+    dma_wait(spi_config[bus].tx_dma);
 
     dev(bus)->CR2 &= ~(SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
 
