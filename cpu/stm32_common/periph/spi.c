@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2014 Hamburg University of Applied Sciences
  *               2014-2017 Freie Universität Berlin
- *               2016 OTA keys S.A.
+ *               2016-2017 OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -166,6 +166,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
         gpio_clear((gpio_t)cs);
     }
 
+#ifndef DMA_NUMOF
     /* transfer data, use shortpath if only sending data */
     if (!inbuf) {
         for (size_t i = 0; i < len; i++) {
@@ -195,6 +196,42 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
             inbuf[i] = *DR;
         }
     }
+#else
+    uint8_t tmp = 0;
+    dma_acquire(spi_config[bus].tx_dma);
+    dma_acquire(spi_config[bus].rx_dma);
+    if (!outbuf) {
+        dma_configure(spi_config[bus].tx_dma, spi_config[bus].tx_dma_chan, &tmp,
+                      (void *)DR, len, DMA_MEM_TO_PERIPH, 0);
+    }
+    else {
+        dma_configure(spi_config[bus].tx_dma, spi_config[bus].tx_dma_chan, out,
+                      (void *)DR, len, DMA_MEM_TO_PERIPH, DMA_INC_SRC_ADDR);
+    }
+    if (!inbuf) {
+        dma_configure(spi_config[bus].rx_dma, spi_config[bus].rx_dma_chan, (void *)DR,
+                      &tmp, len, DMA_PERIPH_TO_MEM, 0);
+    }
+    else {
+        dma_configure(spi_config[bus].rx_dma, spi_config[bus].rx_dma_chan, (void *)DR,
+                      in, len, DMA_PERIPH_TO_MEM, DMA_INC_DST_ADDR);
+    }
+    dev(bus)->CR2 |= SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN;
+
+    dma_start(spi_config[bus].rx_dma);
+    dma_start(spi_config[bus].tx_dma);
+
+    dma_wait(spi_config[bus].rx_dma);
+    dma_wait(spi_config[bus].tx_dma);
+
+    dev(bus)->CR2 &= ~(SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
+
+    dma_stop(spi_config[bus].tx_dma);
+    dma_stop(spi_config[bus].rx_dma);
+
+    dma_release(spi_config[bus].tx_dma);
+    dma_release(spi_config[bus].rx_dma);
+#endif
 
     /* make sure the transfer is completed before continuing, see reference
      * manual(s) -> section 'Disabling the SPI' */
