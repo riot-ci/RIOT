@@ -583,14 +583,10 @@ int _nib_get_route(const ipv6_addr_t *dst, gnrc_pktsnip_t *pkt,
                                    sizeof(addr_str)),
                   _nib_onl_get_if(router->next_hop));
             _nib_drl_ft_get(router, fte);
-        }
-        else {
-            _nib_ft_get(offl, fte);
+            return 0;
         }
     }
-    else {
-        _nib_ft_get(offl, fte);
-    }
+    _nib_ft_get(offl, fte);
     return 0;
 }
 
