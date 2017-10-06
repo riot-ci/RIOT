@@ -438,10 +438,10 @@ uint16_t dma_suspend(dma_t dma);
 /**
  * @brief   Resume a suspended DMA transfer on a stream
  *
- * @param[in] dma     logical DMA stream
- * @param[in] todo    the remaining number of bytes to transfer
+ * @param[in] dma         logical DMA stream
+ * @param[in] reamaining  the remaining number of bytes to transfer
  */
-void dma_resume(dma_t dma, uint16_t todo);
+void dma_resume(dma_t dma, uint16_t reamaining);
 
 /**
  * @brief   Stop a DMA transfer on a stream
@@ -455,7 +455,7 @@ void dma_stop(dma_t dma);
  *
  * @param[in] dma     logical DMA stream
  */
-void dma_wait_for_end(dma_t dma);
+void dma_wait(dma_t dma);
 
 /**
  * @brief   Configure a DMA stream for a new transfer

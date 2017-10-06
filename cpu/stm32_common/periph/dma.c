@@ -44,16 +44,16 @@ static inline uint32_t dma_all_flags(dma_t dma)
     assert(dma < DMA_NUMOF);
 
     switch (dma_config[dma].stream & 0x3) {
-    case 0: /* 0 and 4 */
-        return (DMA_STREAM_IT_MASK);
-    case 1: /* 1 and 5 */
-        return (DMA_STREAM_IT_MASK << 6);
-    case 2: /* 2 and 6 */
-        return (DMA_STREAM_IT_MASK << 16);
-    case 3: /* 3 and 7 */
-        return (DMA_STREAM_IT_MASK << 22);
-    default:
-        return 0;
+        case 0: /* 0 and 4 */
+            return (DMA_STREAM_IT_MASK);
+        case 1: /* 1 and 5 */
+            return (DMA_STREAM_IT_MASK << 6);
+        case 2: /* 2 and 6 */
+            return (DMA_STREAM_IT_MASK << 16);
+        case 3: /* 3 and 7 */
+            return (DMA_STREAM_IT_MASK << 22);
+        default:
+            return 0;
     }
 }
 
@@ -82,7 +82,8 @@ void dma_init(void)
     }
 }
 
-int dma_transfer(dma_t dma, int chan, const void *src, void *dst, size_t len, dma_mode_t mode, uint8_t flags)
+int dma_transfer(dma_t dma, int chan, const void *src, void *dst, size_t len,
+                 dma_mode_t mode, uint8_t flags)
 {
     dma_acquire(dma);
     int ret = dma_configure(dma, chan, src, dst, len, mode, flags);
@@ -90,7 +91,7 @@ int dma_transfer(dma_t dma, int chan, const void *src, void *dst, size_t len, dm
         return ret;
     }
     dma_start(dma);
-    dma_wait_for_end(dma);
+    dma_wait(dma);
     dma_stop(dma);
     dma_release(dma);
 
@@ -111,7 +112,8 @@ void dma_release(dma_t dma)
     mutex_unlock(&dma_ctx[dma].conf_lock);
 }
 
-int dma_configure(dma_t dma, int chan, const void *src, void *dst, size_t len, dma_mode_t mode, uint8_t flags)
+int dma_configure(dma_t dma, int chan, const void *src, void *dst, size_t len,
+                  dma_mode_t mode, uint8_t flags)
 {
     assert(src != NULL);
     assert(dst != NULL);
@@ -126,21 +128,21 @@ int dma_configure(dma_t dma, int chan, const void *src, void *dst, size_t len, d
     dma_clear_all_flags(dma);
 
     switch (mode) {
-    case DMA_MEM_TO_MEM:
-    case DMA_PERIPH_TO_MEM:
-        stream->PAR = (uint32_t)src;
-        stream->M0AR = (uint32_t)dst;
-        inc_periph = (flags & DMA_INC_SRC_ADDR);
-        inc_mem = (flags & DMA_INC_DST_ADDR) >> 1;
-        break;
-    case DMA_MEM_TO_PERIPH:
-        stream->PAR = (uint32_t)dst;
-        stream->M0AR = (uint32_t)src;
-        inc_periph = (flags & DMA_INC_DST_ADDR) >> 1;
-        inc_mem = (flags & DMA_INC_SRC_ADDR);
-        break;
-    default:
-        return -1;
+        case DMA_MEM_TO_MEM:
+        case DMA_PERIPH_TO_MEM:
+            stream->PAR = (uint32_t)src;
+            stream->M0AR = (uint32_t)dst;
+            inc_periph = (flags & DMA_INC_SRC_ADDR);
+            inc_mem = (flags & DMA_INC_DST_ADDR) >> 1;
+            break;
+        case DMA_MEM_TO_PERIPH:
+            stream->PAR = (uint32_t)dst;
+            stream->M0AR = (uint32_t)src;
+            inc_periph = (flags & DMA_INC_DST_ADDR) >> 1;
+            inc_mem = (flags & DMA_INC_SRC_ADDR);
+            break;
+        default:
+            return -1;
     }
 
     uint32_t width = (flags & DMA_DATA_WIDTH_MASK) >> DMA_DATA_WIDTH_SHIFT;
@@ -192,18 +194,18 @@ uint16_t dma_suspend(dma_t dma)
 
 }
 
-void dma_resume(dma_t dma, uint16_t todo)
+void dma_resume(dma_t dma, uint16_t remaining)
 {
     assert(dma < DMA_NUMOF);
 
     int stream_n = dma_config[dma].stream;
     DMA_Stream_TypeDef *stream = dma_stream(stream_n);
 
-    if (todo > 0) {
+    if (remaining > 0) {
         dma_isr_enable(stream_n);
-        stream->NDTR = todo;
-        stream->M0AR += dma_ctx[dma].len - todo;
-        dma_ctx[dma].len = todo;
+        stream->NDTR = remaining;
+        stream->M0AR += dma_ctx[dma].len - remaining;
+        dma_ctx[dma].len = remaining;
         stream->CR |= (uint32_t)DMA_SxCR_EN;
     }
 }
@@ -217,7 +219,7 @@ void dma_stop(dma_t dma)
     stream->CR &= ~(uint32_t)DMA_SxCR_EN;
 }
 
-void dma_wait_for_end(dma_t dma)
+void dma_wait(dma_t dma)
 {
     assert(dma < DMA_NUMOF);
 
