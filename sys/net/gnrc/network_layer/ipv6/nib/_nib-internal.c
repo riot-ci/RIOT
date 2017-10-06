@@ -457,6 +457,13 @@ static inline bool _in_dsts(const _nib_offl_entry_t *dst)
     return (dst < (_dsts + GNRC_IPV6_NIB_OFFL_NUMOF));
 }
 
+#if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
+static inline bool _in_abrs(const _nib_abr_entry_t *abr)
+{
+    return (abr < (_abrs + GNRC_IPV6_NIB_ABR_NUMOF));
+}
+#endif
+
 void _nib_offl_clear(_nib_offl_entry_t *dst)
 {
     if (dst->next_hop != NULL) {
@@ -495,10 +502,8 @@ void _nib_pl_remove(_nib_offl_entry_t *nib_offl)
     _nib_offl_remove(nib_offl, _PL);
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
     unsigned idx = nib_offl - _dsts;
-    if (idx < GNRC_IPV6_NIB_CONF_MULTIHOP_P6C) {
-        for (_nib_abr_entry_t *abr = _abrs;
-             abr < (_abrs + GNRC_IPV6_NIB_ABR_NUMOF);
-             abr++) {
+    if (idx < GNRC_IPV6_NIB_OFFL_NUMOF) {
+        for (_nib_abr_entry_t *abr = _abrs; _in_abrs(abr); abr++) {
             if (bf_isset(abr->pfxs, idx)) {
                 DEBUG("nib: Removing prefix %s/%u ",
                       ipv6_addr_to_str(addr_str, &nib_offl->pfx,
@@ -550,9 +555,7 @@ void _nib_abr_remove(const ipv6_addr_t *addr)
     assert(addr != NULL);
     DEBUG("nib: Removing border router %s\n", ipv6_addr_to_str(addr_str, addr,
                                                                sizeof(addr_str)));
-    for (_nib_abr_entry_t *abr = _abrs;
-         abr < (_abrs + GNRC_IPV6_NIB_ABR_NUMOF);
-         abr++) {
+    for (_nib_abr_entry_t *abr = _abrs; _in_abrs(abr); abr++) {
         if (ipv6_addr_equal(addr, &abr->addr)) {
             for (int i = 0; i < GNRC_IPV6_NIB_OFFL_NUMOF; i++) {
                 if (bf_isset(abr->pfxs, i)) {
@@ -608,8 +611,7 @@ _nib_offl_entry_t *_nib_abr_iter_pfx(const _nib_abr_entry_t *abr,
 _nib_abr_entry_t *_nib_abr_iter(const _nib_abr_entry_t *last)
 {
     for (const _nib_abr_entry_t *abr = (last) ? (last + 1) : _abrs;
-         abr < (_abrs + GNRC_IPV6_NIB_ABR_NUMOF);
-         abr++) {
+         _in_abrs(abr); abr++) {
         if (!ipv6_addr_is_unspecified(&abr->addr)) {
             /* const modifier provided to assure internal consistency.
              * Can now be discarded. */
