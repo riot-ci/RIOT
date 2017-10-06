@@ -57,7 +57,7 @@ void gnrc_ipv6_nib_pl_del(unsigned iface,
 {
     _nib_offl_entry_t *dst = NULL;
 
-    assert(pfx != 0);
+    assert(pfx != NULL);
     mutex_lock(&_nib_mutex);
     while ((dst = _nib_offl_iter(dst)) != NULL) {
         assert(dst->next_hop != NULL);

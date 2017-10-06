@@ -33,7 +33,7 @@ extern "C" {
  */
 typedef struct {
     ipv6_addr_t pfx;        /**< prefix */
-    uint16_t pfx_len;       /**< length of gnrc_ipv6_nib_pl_t::pfx in bits */
+    uint8_t pfx_len;        /**< length of gnrc_ipv6_nib_pl_t::pfx in bits */
     uint16_t iface;         /**< interface gnrc_ipv6_nib_pl_t::pfx is assigned
                              *   to */
     uint32_t valid_until;   /**< timestamp (in ms) until which the prefix is
@@ -52,7 +52,7 @@ typedef struct {
  *                          multicast address and its first @p pfx_len bits
  *                          may not be 0.
  * @param[in] pfx_len       Length of @p pfx in bits.
- *                          Condition 0 < @p pfx_len > 0 must hold.
+ *                          Condition @p pfx_len > 0 must hold.
  * @param[in] valid_ltime   Lifetime (in ms) until prefix expires from now.
  *                          UINT32_MAX for infinite lifetime. Addresses with
  *                          expired prefixes are removed from @p iface.
