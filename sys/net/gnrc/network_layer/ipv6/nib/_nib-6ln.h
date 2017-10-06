@@ -60,7 +60,7 @@ static inline bool _is_6ln(const gnrc_ipv6_netif_t *netif)
 }
 
 /**
- * @brief   Resolve address statically from destination address using reverse
+ * @brief   Resolves address statically from destination address using reverse
  *          translation of the IID
  *
  * @param[in] dst   A destination address.
@@ -73,7 +73,7 @@ bool _resolve_addr_from_ipv6(const ipv6_addr_t *dst, kernel_pid_t iface,
                              gnrc_ipv6_nib_nc_t *nce);
 
 /**
- * @brief   Handle ARO
+ * @brief   Handles ARO
  *
  * @param[in] iface     The interface the ARO-carrying message came over.
  * @param[in] ipv6      The IPv6 header of the message carrying the ARO.

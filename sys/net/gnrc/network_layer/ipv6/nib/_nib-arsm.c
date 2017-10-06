@@ -28,7 +28,7 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #endif
 
 /**
- * @brief   Determine supposed link-layer address from interface and option
+ * @brief   Determines supposed link-layer address from interface and option
  *          length
  *
  * @param[in] netif A network interface.
@@ -171,7 +171,7 @@ static inline unsigned _get_l2addr_len(gnrc_ipv6_netif_t *netif,
 
 #if GNRC_IPV6_NIB_CONF_ARSM
 /**
- * @brief   Calculate exponential back-off for retransmission timer for
+ * @brief   Calculates exponential back-off for retransmission timer for
  *          neighbor solicitations
  *
  * @param[in] ns_sent       Neighbor solicitations sent up until now.

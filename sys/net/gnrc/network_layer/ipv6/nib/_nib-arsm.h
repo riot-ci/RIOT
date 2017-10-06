@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Send neighbor solicitation (including ARO if required)
+ * @brief   Sends neighbor solicitation (including ARO if required)
  *
  * @pre `(tgt != NULL) && !ipv6_addr_is_multicast(tgt)`
  * @pre `(netif != NULL) && (dst != NULL)`
@@ -51,7 +51,7 @@ void _snd_ns(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
              const ipv6_addr_t *src, const ipv6_addr_t *dst);
 
 /**
- * @brief   Send unicast neighbor solicitation and reset corresponding timer
+ * @brief   Sends unicast neighbor solicitation and reset corresponding timer
  *          event
  *
  * @note    Neighbor solicitations are used *by* the ARSM, but also by other
@@ -65,7 +65,7 @@ void _snd_ns(const ipv6_addr_t *tgt, gnrc_ipv6_netif_t *netif,
 void _snd_uc_ns(_nib_onl_entry_t *nbr, bool reset);
 
 /**
- * @brief   Handle SL2AO
+ * @brief   Handles SL2AO
  *
  * @note    This is here (but not only available with
  *          @ref GNRC_IPV6_NIB_CONF_ARSM set) since it is closely related
@@ -98,7 +98,7 @@ void _handle_snd_ns(_nib_onl_entry_t *nbr);
 void _handle_state_timeout(_nib_onl_entry_t *nbr);
 
 /**
- * @brief   Probe neighbor with neighbor solicitations
+ * @brief   Probes neighbor with neighbor solicitations
  *
  * @param[in] nbr   Neighbor to probe.
  * @param[in] reset Reset probe counter.
@@ -106,7 +106,7 @@ void _handle_state_timeout(_nib_onl_entry_t *nbr);
 void _probe_nbr(_nib_onl_entry_t *nbr, bool reset);
 
 /**
- * @brief   Handle advertised link-layer information
+ * @brief   Handles advertised link-layer information
  *
  * This can either be an TL2AO or for a link-layer without addresses just a
  * neighbor advertisement.
@@ -132,6 +132,11 @@ void _handle_adv_l2(kernel_pid_t iface, _nib_onl_entry_t *nce,
  */
 void _set_reachable(unsigned iface, _nib_onl_entry_t *nce);
 
+/**
+ * @brief   Initializes interface for address registration state machine
+ *
+ * @param[in] nib_iface An interface
+ */
 static inline void _init_iface_arsm(_nib_iface_t *nib_iface)
 {
     nib_iface->reach_time_base = NDP_REACH_MS;
@@ -143,7 +148,7 @@ static inline void _init_iface_arsm(_nib_iface_t *nib_iface)
 }
 
 /**
- * @brief   Get neighbor unreachability state of a neighbor
+ * @brief   Gets neighbor unreachability state of a neighbor
  *
  * @param[in] entry Neighbor cache entry representing the neighbor.
  *
@@ -155,7 +160,7 @@ static inline uint16_t _get_nud_state(_nib_onl_entry_t *entry)
 }
 
 /**
- * @brief   Set neighbor unreachablility state of a neighbor
+ * @brief   Sets neighbor unreachablility state of a neighbor
  *
  * @param[in] entry Neighbor cache entry representing the neighbor.
  * @param[in] state Neighbor unreachability state for the neighbor.

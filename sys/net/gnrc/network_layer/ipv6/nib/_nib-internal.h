@@ -809,7 +809,7 @@ int _nib_get_route(const ipv6_addr_t *dst, gnrc_pktsnip_t *ctx,
 _nib_iface_t *_nib_iface_get(unsigned iface);
 
 /**
- * @brief   Recalculate randomized reachable time of an interface.
+ * @brief   Recalculates randomized reachable time of an interface.
  *
  * @param[in] iface An interface.
  */

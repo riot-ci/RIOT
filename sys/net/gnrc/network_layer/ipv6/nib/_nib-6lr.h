@@ -49,7 +49,7 @@ static inline bool _is_6lr(const gnrc_ipv6_netif_t *netif)
 }
 
 /**
- * @brief   Get address registration state of a neighbor
+ * @brief   Gets address registration state of a neighbor
  *
  * @param[in] entry Neighbor cache entry representing the neighbor.
  *
@@ -61,7 +61,7 @@ static inline uint16_t _get_ar_state(const _nib_onl_entry_t *entry)
 }
 
 /**
- * @brief   Set address registration state of a neighbor
+ * @brief   Sets address registration state of a neighbor
  *
  * @param[in] entry Neighbor cache entry representing the neighbor.
  * @param[in] state Address registration state for the neighbor.
