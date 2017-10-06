@@ -14,6 +14,7 @@
  */
 
 #include <errno.h>
+#include <stdio.h>
 
 #include "_nib-internal.h"
 
