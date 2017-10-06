@@ -497,8 +497,7 @@ _nib_offl_entry_t *_nib_offl_iter(const _nib_offl_entry_t *last)
 
 bool _nib_offl_is_entry(const _nib_offl_entry_t *entry)
 {
-    return (entry >= _dsts) &&
-           (entry < (_dsts + GNRC_IPV6_NIB_OFFL_NUMOF));
+    return (entry >= _dsts) && _in_dsts(entry);
 }
 
 static _nib_offl_entry_t *_nib_offl_get_match(const ipv6_addr_t *dst)
@@ -508,9 +507,7 @@ static _nib_offl_entry_t *_nib_offl_get_match(const ipv6_addr_t *dst)
 
     DEBUG("nib: get match for destination %s from NIB\n",
           ipv6_addr_to_str(addr_str, dst, sizeof(addr_str)));
-    for (_nib_offl_entry_t *entry = _dsts;
-         entry < (_dsts + GNRC_IPV6_NIB_OFFL_NUMOF);
-         entry++) {
+    for (_nib_offl_entry_t *entry = _dsts; _in_dsts(entry); entry++) {
         if (entry->mode != _EMPTY) {
             uint8_t match = ipv6_addr_match_prefix(&entry->pfx, dst);
 
@@ -547,44 +544,40 @@ void _nib_ft_get(const _nib_offl_entry_t *dst, gnrc_ipv6_nib_ft_t *fte)
     }
 }
 
-int _nib_get_route(const ipv6_addr_t *dst, gnrc_pktsnip_t *ctx,
+int _nib_get_route(const ipv6_addr_t *dst, gnrc_pktsnip_t *pkt,
                    gnrc_ipv6_nib_ft_t *fte)
 {
     assert((dst != NULL) && (fte != NULL));
     DEBUG("nib: get route %s for packet %p\n",
           ipv6_addr_to_str(addr_str, dst, sizeof(addr_str)),
-          (void *)ctx);
+          (void *)pkt);
     _nib_offl_entry_t *offl = _nib_offl_get_match(dst);
-    int res = 0;
 
     assert((dst != NULL) && (fte != NULL));
-    do {    /* goto, but cleaner ;-) */
-        if ((offl == NULL) || (offl->mode == _PL)) {
-            /* give default router precedence over PLE */
-            _nib_dr_entry_t *router = _nib_drl_get_dr();
+    if ((offl == NULL) || (offl->mode == _PL)) {
+        /* give default router precedence over PLE */
+        _nib_dr_entry_t *router = _nib_drl_get_dr();
 
-            if ((router == NULL) && (offl == NULL)) {
-                (void)ctx;
-                res = -ENETUNREACH;
-                /* TODO: ask RRP to search for route (using ctx) */
-                break;
-            }
-            else if (router != NULL) {
-                DEBUG("nib: prefer default router %s%%%u over prefix list entry\n",
-                      ipv6_addr_to_str(addr_str, &router->next_hop->ipv6,
-                                       sizeof(addr_str)),
-                      _nib_onl_get_if(router->next_hop));
-                _nib_drl_ft_get(router, fte);
-            }
-            else {
-                _nib_ft_get(offl, fte);
-            }
+        if ((router == NULL) && (offl == NULL)) {
+            (void)pkt;
+            /* TODO: ask RRP to search for route (using pkt) */
+            return -ENETUNREACH;
+        }
+        else if (router != NULL) {
+            DEBUG("nib: prefer default router %s%%%u over prefix list entry\n",
+                  ipv6_addr_to_str(addr_str, &router->next_hop->ipv6,
+                                   sizeof(addr_str)),
+                  _nib_onl_get_if(router->next_hop));
+            _nib_drl_ft_get(router, fte);
         }
         else {
             _nib_ft_get(offl, fte);
         }
-    } while (0);
-    return res;
+    }
+    else {
+        _nib_ft_get(offl, fte);
+    }
+    return 0;
 }
 
 _nib_offl_entry_t *_nib_pl_add(unsigned iface,

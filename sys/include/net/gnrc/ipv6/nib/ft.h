@@ -48,15 +48,15 @@ typedef struct {
  * @pre `(dst != NULL) && (fte != NULL)`
  *
  * @param[in] dst   The destination.
- * @param[in] ctx   Packet that is supposed to go to that destination
- *                  (is handed over to a reactive routing protocol if one exist
+ * @param[in] pkt   Packet that is supposed to go to that destination
+ *                  (is handed over to a reactive routing protocol if one exists
  *                  on the interface found and no route is found)
  * @param[out] fte  The resulting forwarding table entry.
  *
  * @return  0, on success.
  * @return  -ENETUNREACH, if no route was found.
  */
-int gnrc_ipv6_nib_ft_get(const ipv6_addr_t *dst, gnrc_pktsnip_t *ctx,
+int gnrc_ipv6_nib_ft_get(const ipv6_addr_t *dst, gnrc_pktsnip_t *pkt,
                          gnrc_ipv6_nib_ft_t *fte);
 
 /**

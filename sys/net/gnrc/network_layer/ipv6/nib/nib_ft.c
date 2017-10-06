@@ -20,14 +20,14 @@
 
 #include "net/gnrc/ipv6/nib/ft.h"
 
-int gnrc_ipv6_nib_ft_get(const ipv6_addr_t *dst, gnrc_pktsnip_t *ctx,
+int gnrc_ipv6_nib_ft_get(const ipv6_addr_t *dst, gnrc_pktsnip_t *pkt,
                          gnrc_ipv6_nib_ft_t *fte)
 {
     int res;
 
     assert((dst != NULL) && (fte != NULL));
     mutex_lock(&_nib_mutex);
-    res = _nib_get_route(dst, ctx, fte);
+    res = _nib_get_route(dst, pkt, fte);
     mutex_unlock(&_nib_mutex);
     return res;
 }
