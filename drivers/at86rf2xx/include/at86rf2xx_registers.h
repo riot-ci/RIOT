@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Alaeddine Weslati <alaeddine.weslati@inria.fr>
  * Copyright (C) 2015 Freie Universität Berlin
+ *               2017 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,6 +20,7 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Kévin Roussel <Kevin.Roussel@inria.fr>
+ * @author      Sebastian Meiling <s@mlng.net>
  */
 
 #ifndef AT86RF2XX_REGISTERS_H
