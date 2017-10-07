@@ -48,7 +48,7 @@ static inline void _test_init(gnrc_netif2_t *netif);
 static inline int _mock_netif_send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt);
 static inline gnrc_pktsnip_t *_mock_netif_recv(gnrc_netif2_t * netif);
 static int _get_netdev_address(netdev_t *dev, void *value, size_t max_len);
-static int _set_netdev_address(netdev_t *dev, void *value, size_t value_len);
+static int _set_netdev_address(netdev_t *dev, const void *value, size_t value_len);
 
 static const gnrc_netif2_ops_t default_ops = {
     .init = _test_init,
@@ -1027,7 +1027,7 @@ static int _get_netdev_address(netdev_t *dev, void *value, size_t max_len)
     return -ENOTSUP;
 }
 
-static int _set_netdev_address(netdev_t *dev, void *value, size_t value_len)
+static int _set_netdev_address(netdev_t *dev, const void *value, size_t value_len)
 {
     if (dev == ethernet_dev) {
         assert(value_len <= sizeof(ethernet_l2addr));
