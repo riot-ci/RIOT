@@ -1,0 +1,57 @@
+From d45cbc53687d090a69cf669e8e8a9fb5460db943 Mon Sep 17 00:00:00 2001
+From: Alexandre Abadie <alexandre.abadie@inria.fr>
+Date: Wed, 13 Dec 2017 17:36:08 +0100
+Subject: [PATCH] add RIOT makefiles
+
+---
+ Makefile                   | 5 +++++
+ src/mac/Makefile           | 3 +++
+ src/mac/region/Makefile    | 3 +++
+ src/system/crypto/Makefile | 3 +++
+ 4 files changed, 14 insertions(+)
+ create mode 100644 Makefile
+ create mode 100644 src/mac/Makefile
+ create mode 100644 src/mac/region/Makefile
+ create mode 100644 src/system/crypto/Makefile
+
+diff --git a/Makefile b/Makefile
+new file mode 100644
+index 0000000..1191dc9
+--- /dev/null
++++ b/Makefile
+@@ -0,0 +1,5 @@
++DIRS += src/mac
++DIRS += src/mac/region
++DIRS += src/system/crypto
++
++include $(RIOTBASE)/Makefile.base
+diff --git a/src/mac/Makefile b/src/mac/Makefile
+new file mode 100644
+index 0000000..38f8c11
+--- /dev/null
++++ b/src/mac/Makefile
+@@ -0,0 +1,3 @@
++MODULE := semtech_loramac_mac
++
++include $(RIOTBASE)/Makefile.base
+diff --git a/src/mac/region/Makefile b/src/mac/region/Makefile
+new file mode 100644
+index 0000000..f63df20
+--- /dev/null
++++ b/src/mac/region/Makefile
+@@ -0,0 +1,3 @@
++MODULE := semtech_loramac_mac_region
++
++include $(RIOTBASE)/Makefile.base
+diff --git a/src/system/crypto/Makefile b/src/system/crypto/Makefile
+new file mode 100644
+index 0000000..57f8f7e
+--- /dev/null
++++ b/src/system/crypto/Makefile
+@@ -0,0 +1,3 @@
++MODULE := semtech_loramac_crypto
++
++include $(RIOTBASE)/Makefile.base
+-- 
+2.11.0
+
