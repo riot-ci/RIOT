@@ -7,12 +7,6 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 # The SERIAL setting is only available for backwards compatibility with older
 # settings.
 ifneq (,$(SERIAL))
-    EDBG_ARGS += --serial $(SERIAL)
-    SERIAL_TTY = $(firstword $(shell $(RIOTBASE)/dist/tools/usb-serial/find-tty.sh $(SERIAL)))
-    ifeq (,$(SERIAL_TTY))
-        $(error Did not find a device with serial $(SERIAL))
-    endif
-    PORT_LINUX := $(SERIAL_TTY)
   export DEBUG_ADAPTER_ID ?= $(SERIAL)
 endif
 
