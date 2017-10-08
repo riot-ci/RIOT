@@ -140,7 +140,6 @@ do_flash() {
             -c 'reset halt' \
             ${OPENOCD_PRE_FLASH_CMDS} \
             -c 'flash write_image erase \"${ELFFILE}\"' \
-            -c 'reset halt' \
             ${OPENOCD_PRE_VERIFY_CMDS} \
             -c 'verify_image \"${ELFFILE}\"' \
             -c 'reset run' \
