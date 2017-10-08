@@ -81,14 +81,14 @@ void _handle_sl2ao(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
     assert(netif != NULL);
     l2addr_len = _get_l2addr_len(netif, sl2ao);
     if (l2addr_len == 0U) {
-        DEBUG("nib: Unexpected SLLAO length. Ignoring SLLAO\n");
+        DEBUG("nib: Unexpected SL2AO length. Ignoring SL2AO\n");
         return;
     }
 #if GNRC_IPV6_NIB_CONF_ARSM
     if ((nce != NULL) && (nce->mode & _NC) &&
         ((nce->l2addr_len != l2addr_len) ||
          (memcmp(nce->l2addr, sl2ao + 1, nce->l2addr_len) != 0)) &&
-        /* a 6LR MUST NOT modify an existing NCE based on an SLLAO in an RS
+        /* a 6LR MUST NOT modify an existing NCE based on an SL2AO in an RS
          * see https://tools.ietf.org/html/rfc6775#section-6.3 */
          !_rtr_sol_on_6lr(netif, icmpv6)) {
         DEBUG("nib: L2 address differs. Setting STALE\n");
@@ -136,7 +136,7 @@ void _handle_sl2ao(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
             nce->info &= ~GNRC_IPV6_NIB_NC_INFO_IS_ROUTER;
         }
 #if GNRC_IPV6_NIB_CONF_ARSM
-        /* a 6LR MUST NOT modify an existing NCE based on an SLLAO in an RS
+        /* a 6LR MUST NOT modify an existing NCE based on an SL2AO in an RS
          * see https://tools.ietf.org/html/rfc6775#section-6.3 */
         if (!_rtr_sol_on_6lr(netif, icmpv6)) {
             nce->l2addr_len = l2addr_len;
@@ -335,7 +335,7 @@ void _handle_adv_l2(kernel_pid_t iface, _nib_onl_entry_t *nce,
     if (tl2ao != NULL) {
         l2addr_len = _get_l2addr_len(netif, tl2ao);
         if (l2addr_len == 0U) {
-            DEBUG("nib: Unexpected TLLAO length. Ignoring TLLAO\n");
+            DEBUG("nib: Unexpected TL2AO length. Ignoring TL2AO\n");
             return;
         }
     }

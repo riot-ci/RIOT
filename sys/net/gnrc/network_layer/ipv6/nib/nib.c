@@ -307,7 +307,6 @@ static void _send_delayed_nbr_adv(const gnrc_ipv6_netif_t *netif,
     else {
         reply_flags |= NDP_NBR_ADV_FLAGS_O;
     }
-    /* discard const qualifier */
     nbr_adv = gnrc_ndp2_nbr_adv_build(tgt, reply_flags, extra_opts);
     if (nbr_adv == NULL) {
         DEBUG("nib: No space left in packet buffer. Not replying NS");

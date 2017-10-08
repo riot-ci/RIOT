@@ -12,6 +12,8 @@
  * @brief       Neighbor Information Base (NIB) for IPv6
  *
  * @todo    Add detailed description
+ * @todo    Implement multihop DAD
+ * @todo    Implement classic SLAAC
  * @{
  *
  * @file

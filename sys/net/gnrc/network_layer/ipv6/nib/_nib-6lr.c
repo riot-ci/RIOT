@@ -26,6 +26,27 @@
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #endif
 
+static uint8_t _update_nce_ar_state(const sixlowpan_nd_opt_ar_t *aro,
+                                    _nib_onl_entry_t *nce)
+{
+    if (nce != NULL) {
+        memcpy(&nce->eui64, &aro->eui64, sizeof(aro->eui64));
+        _evtimer_add(nce, GNRC_IPV6_NIB_ADDR_REG_TIMEOUT,
+                     &nce->addr_reg_timeout,
+                     byteorder_ntohs(aro->ltime) * SEC_PER_MIN * MS_PER_SEC);
+        _set_ar_state(nce,
+                      GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED);
+        DEBUG("nib: Successfully registered %s\n",
+              ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
+        return SIXLOWPAN_ND_STATUS_SUCCESS;
+    }
+    else {
+        DEBUG("nib: Could not register %s, neighbor cache was full\n",
+              ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
+        return SIXLOWPAN_ND_STATUS_NC_FULL;
+    }
+}
+
 uint8_t _reg_addr_upstream(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
                            const icmpv6_hdr_t *icmpv6,
                            const sixlowpan_nd_opt_ar_t *aro,
@@ -47,25 +68,7 @@ uint8_t _reg_addr_upstream(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
 #endif
             if (byteorder_ntohs(aro->ltime) != 0) {
                 _handle_sl2ao(iface, ipv6, icmpv6, sl2ao);
-                if (nce == NULL) {
-                    nce = _nib_onl_get(&ipv6->src, iface);
-                }
-                if (nce != NULL) {
-                    memcpy(&nce->eui64, &aro->eui64, sizeof(aro->eui64));
-                    _evtimer_add(nce, GNRC_IPV6_NIB_ADDR_REG_TIMEOUT,
-                                 &nce->addr_reg_timeout,
-                                 byteorder_ntohs(aro->ltime) * SEC_PER_MIN * MS_PER_SEC);
-                    _set_ar_state(nce,
-                                  GNRC_IPV6_NIB_NC_INFO_AR_STATE_REGISTERED);
-                    DEBUG("nib: Successfully registered %s\n",
-                          ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
-                    return SIXLOWPAN_ND_STATUS_SUCCESS;
-                }
-                else {
-                    DEBUG("nib: Could not register %s, neighbor cache was full\n",
-                          ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
-                    return SIXLOWPAN_ND_STATUS_NC_FULL;
-                }
+                _update_nce_ar_state(aro, nce);
             }
             else if (nce != NULL) {
                 _nib_nc_remove(nce);
