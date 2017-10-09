@@ -926,7 +926,7 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif2_t *netif,
                                         const ipv6_addr_t *dst,
                                         uint8_t *candidate_set)
 {
-    /* create temporary set for assigning "points" to candidates wining in the
+    /* create temporary set for assigning "points" to candidates winning in the
      * corresponding rules.
      */
     uint8_t winner_set[GNRC_NETIF2_IPV6_ADDRS_NUMOF];

@@ -78,8 +78,8 @@ static inline void gnrc_netif2_release(gnrc_netif2_t *netif)
  * @param[in] flags     initial flags for the address.
  *                      - Setting the address' state to
  *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_TENTATIVE
- *                        means thata this address is assumed to be added due to
- *                        state-less auto-address configuration and actions
+ *                        means that this address is assumed to be added due to
+ *                        stateless auto-address configuration and actions
  *                        related to that may be performed in the background.
  *                      - Setting the address' state to
  *                        @ref GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID means
