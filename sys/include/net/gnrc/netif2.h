@@ -21,8 +21,8 @@
  *
  * @author  Martine Lenders <mlenders@inf.fu-berlin.de>
  */
-#ifndef GNRC_NETIF2_H
-#define GNRC_NETIF2_H
+#ifndef NET_GNRC_NETIF2_H
+#define NET_GNRC_NETIF2_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -66,7 +66,7 @@ typedef struct {
     gnrc_netif2_ipv6_t ipv6;                /**< IPv6 component */
 #endif
 #if defined(MODULE_GNRC_MAC) || DOXYGEN
-    gnrc_netif2_mac_t mac;                  /**< @ref gnrc_mac component */
+    gnrc_netif2_mac_t mac;                  /**< @ref net_gnrc_mac component */
 #endif  /* MODULE_GNRC_MAC */
     /**
      * @brief   Flags for the interface
@@ -318,5 +318,5 @@ size_t gnrc_netif2_addr_from_str(const char *str, uint8_t *out);
 }
 #endif
 
-#endif /* GNRC_NETIF2_H */
+#endif /* NET_GNRC_NETIF2_H */
 /** @} */
