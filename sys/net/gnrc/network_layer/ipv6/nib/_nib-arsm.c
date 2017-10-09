@@ -409,16 +409,6 @@ void _set_reachable(unsigned iface, _nib_onl_entry_t *nce)
 {
     _nib_iface_t *nib_netif = _nib_iface_get(iface);
 
-    /* reachable timeout wasn't initialized yet */
-    if (nib_netif->reach_time == 0) {
-        /* (re-)initialize PNRG with current system time as seed to get
-         * better randomization in reachable time */
-        random_init(xtimer_now_usec());
-        _nib_iface_recalc_reach_time(nib_netif);
-        _evtimer_add(nib_netif, GNRC_IPV6_NIB_RECALC_REACH_TIME,
-                     &nib_netif->recalc_reach_time,
-                     GNRC_IPV6_NIB_CONF_REACH_TIME_RESET);
-    }
     DEBUG("nib: Set %s%%%u to REACHABLE for %ums\n",
           ipv6_addr_to_str(addr_str, &nce->ipv6, sizeof(addr_str)),
           iface, (unsigned)nib_netif->reach_time);

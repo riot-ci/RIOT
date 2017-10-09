@@ -795,6 +795,9 @@ void _nib_iface_recalc_reach_time(_nib_iface_t *iface)
 
     /* random factor was times 1000 so we need to divide it again */
     iface->reach_time = (iface->reach_time_base * factor) / 1000;
+    _evtimer_add(iface, GNRC_IPV6_NIB_RECALC_REACH_TIME,
+                 &iface->recalc_reach_time,
+                 GNRC_IPV6_NIB_CONF_REACH_TIME_RESET);
 }
 #endif
 

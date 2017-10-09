@@ -141,10 +141,7 @@ static inline void _init_iface_arsm(_nib_iface_t *nib_iface)
 {
     nib_iface->reach_time_base = NDP_REACH_MS;
     nib_iface->retrans_time = NDP_RETRANS_TIMER_MS;
-    /* set to 0 to get better randomization for the reachable time, by
-     * (re-)seeding PRNG with the system time of the first instance of setting
-     * a neighbor via this interface reachable, thanks to Pekka for the hint */
-    nib_iface->reach_time = 0U;
+    _nib_iface_recalc_reach_time(nib_iface);
 }
 
 /**
