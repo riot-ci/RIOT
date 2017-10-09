@@ -21,6 +21,8 @@
 #ifndef BITARITHM_H
 #define BITARITHM_H
 
+#include <stdint.h>
+
 #include "cpu_conf.h"
 
 #ifdef __cplusplus
