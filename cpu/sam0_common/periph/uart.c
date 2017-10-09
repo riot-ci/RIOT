@@ -58,7 +58,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     }
 
     /* must disable here first to ensure idempotency */
-    uart_poweroff(uart);
+    dev(uart)->CTRLA.reg &= ~(SERCOM_USART_CTRLA_ENABLE);
 
     /* configure pins */
     gpio_init(uart_config[uart].rx_pin, GPIO_IN);
