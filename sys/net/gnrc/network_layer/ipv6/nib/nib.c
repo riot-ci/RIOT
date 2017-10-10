@@ -91,7 +91,19 @@ void gnrc_ipv6_nib_init_iface(kernel_pid_t iface)
     DEBUG("nib: Initialize interface %u\n", (unsigned)iface);
     mutex_lock(&_nib_mutex);
     nib_iface = _nib_iface_get(iface);
+#ifdef TEST_SUITES
+    if (nib_iface == NULL) {
+        /* in the unittests old NC and NIB are mixed, so this function leads to
+         * crashes. To prevent this we early exit here, if the interface was
+         * not found
+         * TODO: remove when gnrc_ipv6_nc is removed.
+         */
+        mutex_unlock(&_nib_mutex);
+        return;
+    }
+#else
     assert(nib_iface != NULL);
+#endif
     /* TODO:
      * - set link-local address here for stateless address auto-configuration
      *   and 6LN
