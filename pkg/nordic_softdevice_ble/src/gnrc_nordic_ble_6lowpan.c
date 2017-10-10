@@ -35,6 +35,7 @@
  * @brief       Glue for Nordic's SoftDevice BLE 6lowpan blob to netapi
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Martine Lenders <m.lenders@fu-berlin.de>
  * @}
  */
 
@@ -45,6 +46,9 @@
 #include "thread.h"
 
 #include "net/gnrc.h"
+#ifdef MODULE_GNRC_NETIF2
+#include "net/gnrc/netif2.h"
+#endif
 #include "net/gnrc/nettype.h"
 
 #include "ble-core.h"
@@ -59,23 +63,36 @@
 #include "od.h"
 #endif
 
+#ifdef MODULE_GNRC_NETIF2
+#define BLE_PRIO                    (GNRC_NETIF2_PRIO)
+#else
 #define BLE_NETAPI_MSG_QUEUE_SIZE   (8U)
 #define BLE_PRIO                    (THREAD_PRIORITY_MAIN - 1)
+#endif
 
-kernel_pid_t gnrc_nordic_ble_6lowpan_pid;
 static char _stack[(THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE)];
 
+#ifdef MODULE_GNRC_NETIF2
+static gnrc_netif2_t *_ble_netif = NULL;
+#else
 static uint8_t _own_mac_addr[BLE_SIXLOWPAN_L2_ADDR_LEN];
 
 static uint8_t _sendbuf[BLE_SIXLOWPAN_MTU];
+#endif
 
 static void _ble_mac_callback(ble_mac_event_enum_t event, void* arg)
 {
     msg_t m = { .type=event, .content.ptr=arg };
 
+#ifdef MODULE_GNRC_NETIF2
+    if ((_ble_netif != NULL) || !msg_send_int(&m, _ble_netif->pid)) {
+        puts("_ble_mac_callback(): possibly lost interrupt");
+    }
+#else
     if (!msg_send_int(&m, gnrc_nordic_ble_6lowpan_pid)) {
         puts("_ble_mac_callback(): possibly lost interrupt");
     }
+#endif
 }
 
 static void _handle_raw_sixlowpan(ble_mac_inbuf_t *inbuf)
@@ -221,6 +238,74 @@ static int _handle_get(gnrc_netapi_opt_t *_opt)
     return res;
 }
 
+#ifdef MODULE_GNRC_NETIF2
+static void _netif_init(gnrc_netif2_t *netif)
+{
+    ble_stack_init();
+    ble_mac_init(_ble_mac_callback);
+    netif->l2addr_len = BLE_SIXLOWPAN_L2_ADDR_LEN;
+    ble_get_mac(&netif->l2addr);
+    ble_advertising_init("RIOT BLE");
+    ble_advertising_start();
+}
+
+static int _netif_send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
+{
+    (void)netif;
+    assert(netif != _ble_netif);
+    return _send(pkt);
+}
+
+static gnrc_pktsnip_t *_netif_recv(gnrc_netif2_t *netif)
+{
+    (void)netif;
+    /* not supported */
+    return NULL;
+}
+
+static int _netif_get(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt)
+{
+    (void)netif;
+    assert(netif != _ble_netif);
+    return _handle_get(opt);
+}
+
+static int _netif_set(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt)
+{
+    (void)netif;
+    (void)opt;
+    /* not supported */
+    return -ENOTSUP;
+}
+
+static void _netif_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
+{
+    switch (msg.type) {
+        case BLE_EVENT_RX_DONE:
+            {
+                DEBUG("ble rx:\n");
+                _handle_raw_sixlowpan(msg.content.ptr);
+                ble_mac_busy_rx = 0;
+                break;
+            }
+    }
+}
+
+static const gnrc_netif2_ops_t _ble_ops = {
+    .init = _init;
+    .send = _netif_send,
+    .recv = _netif_recv,
+    .get = _netif_get,
+    .set = _netif_set,
+    .msg_handler = _netif_msg_handler,
+}
+
+void gnrc_nordic_ble_6lowpan_init(void)
+{
+    _ble_netif = gnrc_netif2_create(_stack, sizeof(_stack), BLE_PRIO,
+                                    "ble", NULL, &_ble_ops);
+}
+#else  /* MODULE_GNRC_NETIF2 */
 /**
  * @brief   Startup code and event loop of the gnrc_nordic_ble_6lowpan layer
  *
@@ -315,3 +400,4 @@ void gnrc_nordic_ble_6lowpan_init(void)
     assert(res > 0);
     (void)res;
 }
+#endif  /* MODULE_GNRC_NETIF2 */
