@@ -180,7 +180,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
     }
     netif_hdr = pkt->data;
     /* prepare destination address */
-    if (netif_hdr->flags & /* If any of these flags is set so this is correct */
+    if (netif_hdr->flags & /* If any of these flags is set assume broadcast */
         (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
         dst = ieee802154_addr_bcast;
         dst_len = IEEE802154_ADDR_BCAST_LEN;
