@@ -80,10 +80,10 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* set asynchronous mode w/o parity, LSB first, TX and RX pad as specified
      * by the board in the periph_conf.h, x16 sampling and use internal clock */
     dev(uart)->CTRLA.reg = (SERCOM_USART_CTRLA_DORD |
-                      SERCOM_USART_CTRLA_SAMPR(0x1) |
-                      SERCOM_USART_CTRLA_TXPO(uart_config[uart].tx_pad) |
-                      SERCOM_USART_CTRLA_RXPO(uart_config[uart].rx_pad) |
-                      SERCOM_USART_CTRLA_MODE(0x1));
+                            SERCOM_USART_CTRLA_SAMPR(0x1) |
+                            SERCOM_USART_CTRLA_TXPO(uart_config[uart].tx_pad) |
+                            SERCOM_USART_CTRLA_RXPO(uart_config[uart].rx_pad) |
+                            SERCOM_USART_CTRLA_MODE(0x1));
     /* Set run in standby mode if enabled */
     if (uart_config[uart].flags & UART_FLAG_RUN_STANDBY) {
         dev(uart)->CTRLA.reg |= SERCOM_USART_CTRLA_RUNSTDBY;
@@ -146,7 +146,7 @@ static inline void irq_handler(unsigned uartnum)
     }
     else if (dev(uartnum)->INTFLAG.bit.ERROR) {
         /* clear error flag */
-        dev(uartnum)->INTFLAG.reg |= SERCOM_USART_INTFLAG_ERROR;
+        dev(uartnum)->INTFLAG.reg = SERCOM_USART_INTFLAG_ERROR;
     }
 
     cortexm_isr_end();
