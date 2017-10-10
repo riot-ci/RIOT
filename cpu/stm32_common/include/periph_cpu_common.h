@@ -332,7 +332,7 @@ typedef struct {
 #endif
     uint32_t rccmask;       /**< bit in the RCC peripheral enable register */
     uint8_t apbbus;         /**< APBx bus the device is connected to */
-#if defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
+#ifdef MODULE_STM32_PERIPH_DMA
     dma_t tx_dma;           /**< Logical DMA stream used for TX */
     uint8_t tx_dma_chan;    /**< DMA channel used for TX */
     dma_t rx_dma;           /**< Logical DMA stream used for RX */
