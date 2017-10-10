@@ -170,7 +170,7 @@ static void _flag_usage(char *cmd_name)
             printf("|");
         }
     }
-    puts("");
+    puts("}");
 }
 
 static void _add_usage(char *cmd_name)
@@ -760,6 +760,21 @@ static void _l2filter_usage(const char *cmd)
 }
 #endif
 
+static void _usage(char *cmd)
+{
+    printf("usage: %s\n", cmd);
+    _set_usage(cmd);
+    _flag_usage(cmd);
+    _add_usage(cmd);
+    _del_usage(cmd);
+#ifdef MODULE_L2FILTER
+    _l2filter_usage(cmd);
+#endif
+#ifdef MODULE_NETSTATS
+    _stats_usage(cmd);
+#endif
+}
+
 static int _netif_set(char *cmd_name, kernel_pid_t iface, char *key, char *value)
 {
     if ((strcmp("addr", key) == 0) || (strcmp("addr_short", key) == 0)) {
@@ -1106,6 +1121,10 @@ int _gnrc_netif2_config(int argc, char **argv)
                 return 1;
             }
 #endif
+            else if (strcmp(argv[2], "help") == 0) {
+                _usage(argv[0]);
+                return 0;
+            }
             else {
                 return _netif_flag(argv[0], iface, argv[2]);
             }
@@ -1116,16 +1135,6 @@ int _gnrc_netif2_config(int argc, char **argv)
         }
     }
 
-    printf("usage: %s [<if_id>]\n", argv[0]);
-    _set_usage(argv[0]);
-    _flag_usage(argv[0]);
-    _add_usage(argv[0]);
-    _del_usage(argv[0]);
-#ifdef MODULE_L2FILTER
-    _l2filter_usage(argv[0]);
-#endif
-#ifdef MODULE_NETSTATS
-    _stats_usage(argv[0]);
-#endif
+    _usage(argv[0]);
     return 1;
 }
