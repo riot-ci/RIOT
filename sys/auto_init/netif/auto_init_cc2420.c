@@ -71,12 +71,9 @@ void auto_init_cc2420(void)
 
         cc2420_setup(&cc2420_devs[i], &cc2420_params[i]);
 #ifdef MODULE_GNRC_NETIF2
-        if (!gnrc_netif2_ieee802154_create(_cc2420_stacks[i],
-                                           CC2420_MAC_STACKSIZE,
-                                           CC2420_MAC_PRIO, "cc2420",
-                                           (netdev_t *)&cc2420_devs[i])) {
-            LOG_ERROR("[auto_init_netif] error initializing cc2420 #%u\n", i);
-        }
+        gnrc_netif2_ieee802154_create(_cc2420_stacks[i], CC2420_MAC_STACKSIZE,
+                                      CC2420_MAC_PRIO, "cc2420",
+                                      (netdev_t *)&cc2420_devs[i]);
 #else
         int res = gnrc_netdev_ieee802154_init(&gnrc_adpt[i],
                                               (netdev_ieee802154_t *)&cc2420_devs[i]);

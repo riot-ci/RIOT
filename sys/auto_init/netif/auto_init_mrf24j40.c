@@ -60,12 +60,10 @@ void auto_init_mrf24j40(void)
 
         mrf24j40_setup(&mrf24j40_devs[i], &mrf24j40_params[i]);
 #ifdef MODULE_GNRC_NETIF2
-        if (!gnrc_netif2_ieee802154_create(_mrf24j40_stacks[i],
-                                           MRF24J40_MAC_STACKSIZE,
-                                           MRF24J40_MAC_PRIO, "mrf24j40",
-                                           (netdev_t *)&mrf24j40_devs[i])) {
-            LOG_ERROR("[auto_init_netif] error initializing mrf24j40 #%u\n", i);
-        }
+        gnrc_netif2_ieee802154_create(_mrf24j40_stacks[i],
+                                      MRF24J40_MAC_STACKSIZE, MRF24J40_MAC_PRIO,
+                                      "mrf24j40",
+                                      (netdev_t *)&mrf24j40_devs[i]);
 #else
         int res = gnrc_netdev_ieee802154_init(&gnrc_adpt[i],
                                               (netdev_ieee802154_t *)&mrf24j40_devs[i]);
