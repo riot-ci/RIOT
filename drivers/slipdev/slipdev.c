@@ -32,7 +32,8 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info);
 static int _init(netdev_t *dev);
 static void _isr(netdev_t *dev);
 static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len);
-static int _set(netdev_t *dev, netopt_t opt, void *value, size_t value_len);
+static int _set(netdev_t *dev, netopt_t opt, const void *value,
+                size_t value_len);
 
 static const netdev_driver_t slip_driver = {
     .send = _send,
