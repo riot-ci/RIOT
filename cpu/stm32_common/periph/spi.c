@@ -244,7 +244,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
                         const void *out, void *in, size_t len)
 {
     /* make sure at least one input or one output buffer is given */
-    assert(outbuf || inbuf);
+    assert(out || in);
 
     /* active the given chip select line */
     dev(bus)->CR1 |= (SPI_CR1_SPE);     /* this pulls the HW CS line low */
