@@ -70,9 +70,9 @@ static void test_get_next_hop_l2addr__link_local_EHOSTUNREACH(void)
 {
     gnrc_ipv6_nib_nc_t nce;
 
-    TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_get_next_hop_l2addr(&_rem_ll,
-                                                               _mock_netif,
-                                                               NULL, &nce));
+    TEST_ASSERT_EQUAL_INT(-EHOSTUNREACH,
+                          gnrc_ipv6_nib_get_next_hop_l2addr(&_rem_ll, NULL,
+                                                            NULL, &nce));
     TEST_ASSERT_EQUAL_INT(0, msg_avail());
     TEST_ASSERT(gnrc_pktbuf_is_empty());
 }
