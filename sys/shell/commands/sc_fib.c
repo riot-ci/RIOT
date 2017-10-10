@@ -27,6 +27,8 @@
 #include "net/af.h"
 #ifdef MODULE_GNRC_NETIF
 #include "net/gnrc/netif.h"
+#elif defined(MODULE_GNRC_NETIF2)
+#include "net/gnrc/netif2.h"
 #endif
 #include "net/fib.h"
 #include "net/gnrc/ipv6.h"
@@ -167,7 +169,11 @@ int _fib_route_handler(int argc, char **argv)
     if (argc == 3) {
         if ((strcmp("flush", argv[1]) == 0)) {
             kernel_pid_t iface = atoi(argv[2]);
+#ifdef MODULE_GNRC_NETIF2
+            if (gnrc_netif2_get_by_pid(iface) != NULL) {
+#else
             if (gnrc_netif_exist(iface)) {
+#endif
                 fib_flush(&gnrc_ipv6_fib_table, iface);
                 printf("successfully flushed all entries for interface %" PRIu16"\n", iface);
             }
@@ -212,6 +218,39 @@ int _fib_route_handler(int argc, char **argv)
         size_t ifnum = gnrc_netif_get(ifs);
         if (ifnum == 1) {
             _fib_add(argv[2], argv[4], ifs[0], (uint32_t)atoi(argv[6]));
+        }
+        else {
+            _fib_usage(1);
+            return 1;
+        }
+
+        return 0;
+    }
+#elif defined(MODULE_GNRC_NETIF2)
+    /* e.g. fibroute add <destination> via <next hop> */
+    if ((argc == 5) && (strcmp("add", argv[1]) == 0) && (strcmp("via", argv[3]) == 0)) {
+        size_t ifnum = gnrc_netif2_numof();
+        if (ifnum == 1) {
+            gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
+            _fib_add(argv[2], argv[4], netif->pid,
+                     (uint32_t)FIB_LIFETIME_NO_EXPIRE);
+        }
+        else {
+            _fib_usage(1);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /* e.g. fibroute add <destination> via <next hop> lifetime <lifetime> */
+    if ((argc == 7) && (strcmp("add", argv[1]) == 0) && (strcmp("via", argv[3]) == 0)
+            && (strcmp("lifetime", argv[5]) == 0)) {
+                size_t ifnum = gnrc_netif2_numof();
+        if (ifnum == 1) {
+            gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
+            _fib_add(argv[2], argv[4], netif->pid,
+                     (uint32_t)atoi(argv[6]));
         }
         else {
             _fib_usage(1);
