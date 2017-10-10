@@ -83,3 +83,6 @@ PSEUDOMODULES += sx1276
 
 # add all pseudo random number generator variants as pseudomodules
 PSEUDOMODULES += prng_%
+
+# STM32 periph pseudomodules
+PSEUDOMODULES += stm32_periph_%

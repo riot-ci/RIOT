@@ -25,7 +25,10 @@
 #include "mutex.h"
 #include "assert.h"
 
-#if defined(DMA_NUMOF) && (defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7))
+#ifdef MODULE_STM32_PERIPH_DMA
+#if !(defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7))
+#error "DMA is not supported for target CPU"
+#endif
 
 #define DMA_STREAM_IT_MASK   (DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | \
                               DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | \
@@ -305,4 +308,4 @@ void DMA_9_ISR(void)
 }
 #endif
 
-#endif /* DMA_NUMOF && (defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)) */
+#endif /* MODULE_STM32_PERIPH_DMA */
