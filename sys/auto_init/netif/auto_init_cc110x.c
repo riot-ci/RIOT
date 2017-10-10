@@ -69,12 +69,9 @@ void auto_init_cc110x(void)
         }
         else {
 #ifdef MODULE_GNRC_NETIF2
-            if (!gnrc_netif2_cc110x_create(_stacks[i], CC110X_MAC_STACKSIZE,
-                                           CC110X_MAC_PRIO, "cc110x",
-                                           (netdev_t *)&cc110x_devs[i])) {
-                LOG_ERROR("[auto_init_netif] error starting GNRC interface for "
-                          "cc110x #%u\n", i);
-            }
+            gnrc_netif2_cc110x_create(_stacks[i], CC110X_MAC_STACKSIZE,
+                                      CC110X_MAC_PRIO, "cc110x",
+                                      (netdev_t *)&cc110x_devs[i]);
 #else
             gnrc_netdev_cc110x_init(&_gnrc_netdev_devs[i], &cc110x_devs[i]);
             res = gnrc_netdev_init(_stacks[i], CC110X_MAC_STACKSIZE,
