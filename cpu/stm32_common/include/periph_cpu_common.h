@@ -304,7 +304,7 @@ typedef struct {
 #endif
     uint8_t bus;            /**< APB bus */
     uint8_t irqn;           /**< IRQ channel */
-#if defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
+#ifdef MODULE_STM32_PERIPH_DMA
     dma_t dma;              /**< Logical DMA stream used for TX */
     uint8_t dma_chan;       /**< DMA channel used for TX */
 #endif

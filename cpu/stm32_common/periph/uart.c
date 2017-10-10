@@ -147,38 +147,41 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     assert(uart < UART_NUMOF);
 
-#ifndef DMA_NUMOF
+#ifdef MODULE_STM32_PERIPH_DMA
+    if (uart_config[uart].dma != DMA_STREAM_UNDEF) {
+        if (irq_is_in()) {
+            uint16_t todo = dma_suspend(uart_config[uart].dma);
+            if (todo) {
+                dma_stop(uart_config[uart].dma);
+            }
+            for (int i = 0; i < len; i++) {
+                send_byte(uart, data[i]);
+            }
+            if (todo > 0) {
+                wait_for_tx_complete(uart);
+                dma_resume(uart_config[uart].dma, todo);
+            }
+
+        }
+        else {
+            dev(uart)->CR3 |= USART_CR3_DMAT;
+            dma_transfer(uart_config[uart].dma, uart_config[uart].dma_chan, data,
+                         (void *)&dev(uart)->DR, len, DMA_MEM_TO_PERIPH, DMA_INC_SRC_ADDR);
+
+            /* make sure the function is synchronous by waiting for the transfer to
+             * finish */
+            wait_for_tx_complete(uart);
+        }
+        return;
+    }
+#endif
     for (size_t i = 0; i < len; i++) {
         send_byte(uart, data[i]);
     }
     /* make sure the function is synchronous by waiting for the transfer to
      * finish */
     wait_for_tx_complete(uart);
-#else
-    if (irq_is_in()) {
-        uint16_t todo = dma_suspend(uart_config[uart].dma);
-        if (todo) {
-            dma_stop(uart_config[uart].dma);
-        }
-        for (int i = 0; i < len; i++) {
-            send_byte(uart, data[i]);
-        }
-        if (todo > 0) {
-            wait_for_tx_complete(uart);
-            dma_resume(uart_config[uart].dma, todo);
-        }
 
-    }
-    else {
-        dev(uart)->CR3 |= USART_CR3_DMAT;
-        dma_transfer(uart_config[uart].dma, uart_config[uart].dma_chan, data,
-                     (void *)&dev(uart)->DR, len, DMA_MEM_TO_PERIPH, DMA_INC_SRC_ADDR);
-
-        /* make sure the function is synchronous by waiting for the transfer to
-         * finish */
-        wait_for_tx_complete(uart);
-    }
-#endif
 }
 
 void uart_poweron(uart_t uart)
