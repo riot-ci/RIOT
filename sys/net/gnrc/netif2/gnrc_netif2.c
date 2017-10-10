@@ -387,15 +387,15 @@ size_t gnrc_netif2_addr_from_str(const char *str, uint8_t *out)
     /* Leading zeros can be omitted. */
     /* Every non-hexadimal character is a delimiter. */
     /* Leading, tailing and adjacent delimiters are forbidden. */
+    const char *end_str = str;
     uint8_t *out_end = out;
     size_t count = 0;
     int assert_cell = 1;
 
     assert(out != NULL);
-    if ((str == NULL) && (str[0] == 0)) {
+    if ((str == NULL) || (str[0] == '\0')) {
         return 0;
     }
-    const char *end_str = str;
     /* find end of string */
     while (end_str[1]) {
         ++end_str;

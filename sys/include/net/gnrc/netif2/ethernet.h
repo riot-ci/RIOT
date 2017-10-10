@@ -15,8 +15,8 @@
  *
  * @author  Martine Lenders <mlenders@inf.fu-berlin.de>
  */
-#ifndef NET_GNRC_NETIF2_ETH_H
-#define NET_GNRC_NETIF2_ETH_H
+#ifndef NET_GNRC_NETIF2_ETHERNET_H
+#define NET_GNRC_NETIF2_ETHERNET_H
 
 #include "net/gnrc/netif2.h"
 
@@ -45,5 +45,5 @@ gnrc_netif2_t *gnrc_netif2_ethernet_create(char *stack, int stacksize, char prio
 }
 #endif
 
-#endif /* NET_GNRC_NETIF2_ETH_H */
+#endif /* NET_GNRC_NETIF2_ETHERNET_H */
 /** @} */
