@@ -43,8 +43,7 @@ int main(void)
         int res = gnrc_netapi_get(netif->pid, NETOPT_IPV6_ADDR, 0, ipv6_addrs,
                                   sizeof(ipv6_addrs));
 
-        /* res / 16 (res / sizeof(ipv6_addr_t)) */
-        for (int i = 0; i < (res >> 4); i++) {
+        for (int i = 0; i < (res / sizeof(ipv6_addr_t)); i++) {
             char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
 
             ipv6_addr_to_str(ipv6_addr, &ipv6_addrs[i], IPV6_ADDR_MAX_STR_LEN);
