@@ -28,7 +28,7 @@ void cpu_init(void)
     cortexm_init();
     /* initialize system clocks */
     stmclk_init_sysclk();
-#ifdef DMA_NUMOF
+#if defined(MODULE_STM32_PERIPH_DMA) && defined(DMA_NUMOF)
     /* initialize DMA streams */
     dma_init();
 #endif
