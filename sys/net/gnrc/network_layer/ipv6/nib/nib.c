@@ -1154,17 +1154,19 @@ void _handle_search_rtr(gnrc_netif2_t *netif)
         uint32_t interval = _get_next_rs_interval(netif);
 
         if (next_rs > interval) {
-            _evtimer_add(netif, GNRC_IPV6_NIB_SEARCH_RTR,
-                         &netif->ipv6.search_rtr, interval);
             gnrc_ndp2_rtr_sol_send(netif, &ipv6_addr_all_routers_link_local);
-#if GNRC_IPV6_NIB_CONF_6LN
             if (netif->ipv6.rs_sent < 10U) {
-                /* with more the backoff is truncated anyway and this way we
-                 * prevent overflows. 10 is arbitrary, so we do not need a
-                 * define here */
+                /* with more the backoff (required in RFC 6775) is truncated
+                 * anyway and this way we prevent overflows. 10 is arbitrary, so
+                 * we do not need a define here */
                 netif->ipv6.rs_sent++;
             }
-#endif
+            if ((netif->ipv6.rs_sent < NDP_MAX_RS_NUMOF) ||
+                gnrc_netif2_is_6ln(netif)) {
+                /* 6LN will solicitate indefinitely */
+                _evtimer_add(netif, GNRC_IPV6_NIB_SEARCH_RTR,
+                             &netif->ipv6.search_rtr, interval);
+            }
         }
     }
     gnrc_netif2_release(netif);

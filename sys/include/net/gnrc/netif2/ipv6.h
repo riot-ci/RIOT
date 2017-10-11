@@ -222,16 +222,13 @@ typedef struct {
      */
     uint8_t ra_sent;
 #endif
-#if GNRC_IPV6_NIB_CONF_6LN || DOXYGEN
     /**
      * @brief   number of unsolicited router solicitations scheduled
      *
      * @note    Only available with module @ref net_gnrc_ipv6 "gnrc_ipv6" and
-     *          @ref net_gnrc_ipv6_nib "NIB" and if
-     *          @ref GNRC_IPV6_NIB_CONF_6LN != 0
+     *          @ref net_gnrc_ipv6_nib "NIB"
      */
     uint8_t rs_sent;
-#endif
     /**
      * @brief   number of unsolicited neighbor advertisements scheduled
      *
