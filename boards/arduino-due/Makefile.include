@@ -2,10 +2,6 @@
 export CPU = sam3
 export CPU_MODEL = sam3x8e
 
-# define the default port depending on the host OS
-PORT_LINUX ?= /dev/ttyACM0
-PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
-
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
