@@ -22,6 +22,7 @@
 
 #include "net/gnrc/tftp.h"
 #include "net/gnrc/netapi.h"
+#include "net/gnrc/netif2.h"
 #include "net/gnrc/netreg.h"
 #include "net/gnrc/udp.h"
 #include "net/gnrc/ipv6.h"
