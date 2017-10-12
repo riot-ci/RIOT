@@ -44,6 +44,15 @@ extern "C" {
 #endif
 
 /**
+ * @name    Power management configuration
+ * @{
+ */
+#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)
+#define PROVIDES_PM_LAYERED_OFF
+#endif
+/** @} */
+
+/**
  * @brief   Linker script provided symbol for CPUID location
  */
 extern uint32_t _cpuid_address;
