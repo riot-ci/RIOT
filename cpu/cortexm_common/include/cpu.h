@@ -52,6 +52,9 @@ extern "C" {
 
 /**
  * @brief   All Cortex-m-based CPUs provide pm_set_lowest
+ *
+ * The pm_set_lowest is provided either the pm_layered module if used, or
+ * alternatively as fallback by the cortexm's own implementation.
  */
 #define PROVIDES_PM_SET_LOWEST
 
