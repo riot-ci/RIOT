@@ -20,6 +20,13 @@
 extern "C" {
 #endif
 
+/**
+ * @name    Power management configuration
+ * @{
+ */
+#define PROVIDES_PM_SET_LOWEST
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
