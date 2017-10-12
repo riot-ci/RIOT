@@ -247,7 +247,7 @@ void auto_init(void)
 
 #endif /* MODULE_AUTO_INIT_GNRC_NETIF */
 
-#ifdef MODULE_GNRC_IPV6_NETIF
+#if defined(MODULE_GNRC_IPV6_NETIF) && !defined(MODULE_GNRC_NETIF2)
     gnrc_ipv6_netif_init_by_dev();
 #endif
 

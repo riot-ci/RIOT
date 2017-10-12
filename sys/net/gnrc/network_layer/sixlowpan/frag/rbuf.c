@@ -236,12 +236,22 @@ static bool _rbuf_update_ints(rbuf_t *entry, uint16_t offset, size_t frag_size)
     new->start = offset;
     new->end = end;
 
+#ifdef MODULE_GNRC_NETIF2
+    DEBUG("6lo rfrag: add interval (%" PRIu16 ", %" PRIu16 ") to entry (%s, ",
+          new->start, new->end, gnrc_netif2_addr_to_str(entry->src,
+                                                        entry->src_len,
+                                                        l2addr_str));
+    DEBUG("%s, %u, %u)\n", gnrc_netif2_addr_to_str(entry->dst, entry->dst_len,
+                                                   l2addr_str),
+          (unsigned)entry->pkt->size, entry->tag);
+#else
     DEBUG("6lo rfrag: add interval (%" PRIu16 ", %" PRIu16 ") to entry (%s, ",
           new->start, new->end, gnrc_netif_addr_to_str(l2addr_str,
                   sizeof(l2addr_str), entry->src, entry->src_len));
     DEBUG("%s, %u, %u)\n", gnrc_netif_addr_to_str(l2addr_str,
             sizeof(l2addr_str), entry->dst, entry->dst_len),
           (unsigned)entry->pkt->size, entry->tag);
+#endif
 
     LL_PREPEND(entry->ints, new);
 
@@ -257,12 +267,22 @@ static void _rbuf_gc(void)
         /* since pkt occupies pktbuf, aggressivly collect garbage */
         if ((rbuf[i].pkt != NULL) &&
               ((now_usec - rbuf[i].arrival) > RBUF_TIMEOUT)) {
+#ifdef MODULE_GNRC_NETIF2
+            DEBUG("6lo rfrag: entry (%s, ",
+                  gnrc_netif2_addr_to_str(rbuf[i].src, rbuf[i].src_len,
+                                          l2addr_str));
+            DEBUG("%s, %u, %u) timed out\n",
+                  gnrc_netif2_addr_to_str(rbuf[i].dst, rbuf[i].dst_len,
+                                          l2addr_str),
+                  (unsigned)rbuf[i].pkt->size, rbuf[i].tag);
+#else
             DEBUG("6lo rfrag: entry (%s, ", gnrc_netif_addr_to_str(l2addr_str,
                     sizeof(l2addr_str), rbuf[i].src, rbuf[i].src_len));
             DEBUG("%s, %u, %u) timed out\n",
                   gnrc_netif_addr_to_str(l2addr_str, sizeof(l2addr_str), rbuf[i].dst,
                                          rbuf[i].dst_len),
                   (unsigned)rbuf[i].pkt->size, rbuf[i].tag);
+#endif
 
             gnrc_pktbuf_release(rbuf[i].pkt);
             _rbuf_rem(&(rbuf[i]));
@@ -284,6 +304,15 @@ static rbuf_t *_rbuf_get(const void *src, size_t src_len,
             (rbuf[i].dst_len == dst_len) &&
             (memcmp(rbuf[i].src, src, src_len) == 0) &&
             (memcmp(rbuf[i].dst, dst, dst_len) == 0)) {
+#ifdef MODULE_GNRC_NETIF2
+            DEBUG("6lo rfrag: entry %p (%s, ", (void *)(&rbuf[i]),
+                  gnrc_netif2_addr_to_str(rbuf[i].src, rbuf[i].src_len,
+                                          l2addr_str));
+            DEBUG("%s, %u, %u) found\n",
+                  gnrc_netif2_addr_to_str(rbuf[i].dst, rbuf[i].dst_len,
+                                          l2addr_str),
+                  (unsigned)rbuf[i].pkt->size, rbuf[i].tag);
+#else
             DEBUG("6lo rfrag: entry %p (%s, ", (void *)(&rbuf[i]),
                   gnrc_netif_addr_to_str(l2addr_str, sizeof(l2addr_str),
                                          rbuf[i].src, rbuf[i].src_len));
@@ -291,6 +320,7 @@ static rbuf_t *_rbuf_get(const void *src, size_t src_len,
                   gnrc_netif_addr_to_str(l2addr_str, sizeof(l2addr_str),
                                          rbuf[i].dst, rbuf[i].dst_len),
                   (unsigned)rbuf[i].pkt->size, rbuf[i].tag);
+#endif
             rbuf[i].arrival = now_usec;
             return &(rbuf[i]);
         }
@@ -335,6 +365,13 @@ static rbuf_t *_rbuf_get(const void *src, size_t src_len,
     res->tag = tag;
     res->cur_size = 0;
 
+#ifdef MODULE_GNRC_NETIF2
+    DEBUG("6lo rfrag: entry %p (%s, ", (void *)res,
+          gnrc_netif2_addr_to_str(res->src, res->src_len, l2addr_str));
+    DEBUG("%s, %u, %u) created\n",
+          gnrc_netif2_addr_to_str(res->dst, res->dst_len, l2addr_str), (unsigned)res->pkt->size,
+          res->tag);
+#else
     DEBUG("6lo rfrag: entry %p (%s, ", (void *)res,
           gnrc_netif_addr_to_str(l2addr_str, sizeof(l2addr_str), res->src,
                                  res->src_len));
@@ -342,6 +379,7 @@ static rbuf_t *_rbuf_get(const void *src, size_t src_len,
           gnrc_netif_addr_to_str(l2addr_str, sizeof(l2addr_str), res->dst,
                                  res->dst_len), (unsigned)res->pkt->size,
           res->tag);
+#endif
 
     return res;
 }
