@@ -37,7 +37,7 @@ extern "C" {
  * @{
  */
 #define PROVIDES_PM_OFF
-#endif
+/** @} */
 
 #ifdef __cplusplus
 }
