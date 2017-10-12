@@ -51,6 +51,11 @@ extern "C" {
 #define STACK_CANARY_WORD   (0xE7FEE7FEu)
 
 /**
+ * @brief   All Cortex-m-based CPUs provide pm_set_lowest
+ */
+#define PROVIDES_PM_SET_LOWEST
+
+/**
  * @brief   Initialization of the CPU
  */
 void cpu_init(void);
