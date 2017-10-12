@@ -27,6 +27,28 @@
 
 void auto_init_gnrc_rpl(void)
 {
+#ifdef MODULE_GNRC_NETIF2
+#if (GNRC_NETIF_NUMOF == 1)
+    gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
+    assert(netif != NULL);
+    DEBUG("auto_init_gnrc_rpl: initializing RPL on interface %" PRIkernel_pid "\n",
+          netif->pid);
+    gnrc_rpl_init(netif->pid);
+    return;
+#elif defined(GNRC_RPL_DEFAULT_NETIF)
+    if (gnrc_netif2_get_by_pid(GNRC_RPL_DEFAULT_NETIF) != NULL) {
+        DEBUG("auto_init_gnrc_rpl: initializing RPL on interface %" PRIkernel_pid "\n",
+              GNRC_RPL_DEFAULT_NETIF);
+        gnrc_rpl_init(GNRC_RPL_DEFAULT_NETIF);
+        return;
+    }
+    DEBUG("auto_init_gnrc_rpl: could not initialize RPL on interface %" PRIkernel_pid" - "
+          "interface does not exist\n", GNRC_RPL_DEFAULT_NETIF);
+    return;
+#else
+    DEBUG("auto_init_gnrc_rpl: please specify an interface by setting GNRC_RPL_DEFAULT_NETIF\n");
+#endif
+#else
 #if (GNRC_NETIF_NUMOF == 1)
     kernel_pid_t ifs[GNRC_NETIF_NUMOF];
     gnrc_netif_get(ifs);
@@ -45,6 +67,7 @@ void auto_init_gnrc_rpl(void)
     return;
 #else
     DEBUG("auto_init_gnrc_rpl: please specify an interface by setting GNRC_RPL_DEFAULT_NETIF\n");
+#endif
 #endif
 }
 #else
