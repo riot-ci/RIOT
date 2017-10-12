@@ -7,10 +7,10 @@
  */
 
 /**
- * @ingroup     boards_lorawan-explorer
+ * @ingroup     boards_sodaq-explorer
  *
  * @file
- * @brief       Board common implementations for the Sodaq LoRaWAN Explorer board
+ * @brief       Board common implementations for the SODAQ ExpLoRer board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @}

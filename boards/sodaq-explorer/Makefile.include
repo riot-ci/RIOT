@@ -1,4 +1,4 @@
-# define the cpu used by Arduino/Genuino MKR1000 board
+# define the cpu used by the SODAQ ExpLoRer board
 export CPU = samd21
 export CPU_MODEL = samd21j18a
 
@@ -10,7 +10,8 @@ export PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 # setup the flash tool used
-# we use BOSSA to flash this board
+# we use BOSSA to flash this board since there's an Arduino bootloader
+# preflashed on it
 export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_arduino_bootloader.ld
 include $(RIOTMAKE)/tools/bossa.inc.mk
 

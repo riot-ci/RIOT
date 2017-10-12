@@ -7,13 +7,12 @@
  */
 
 /**
- * @defgroup    boards_lorwan-explorer Sodaq LoRaWAN Explorer
- * @ingroup     boards
- * @brief       Support for the Sodaq LoRaWAN Explorer board.
+ * @ingroup     boards_sodaq-explorer
+ * @brief       Board specific definitions for the SODAQ ExpLoRer board
  * @{
  *
  * @file
- * @brief       Board specific definitions for the Sodaq LoRaWAN Explorer board
+ * @brief       Board specific definitions for the SODAQ ExpLoRer board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
@@ -27,11 +26,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief   The on-board LED is connected to pin 6 on this board
- */
-#define ARDUINO_LED         (13U)
 
 /**
  * @name    LED pin definitions and handlers

@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_lorwan-explorer
+ * @ingroup     boards_sodaq-explorer
  * @{
  *
  * @file
