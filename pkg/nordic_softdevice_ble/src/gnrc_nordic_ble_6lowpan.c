@@ -76,9 +76,9 @@ static char _stack[(THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE)];
 static gnrc_netif2_t *_ble_netif = NULL;
 #else
 static uint8_t _own_mac_addr[BLE_SIXLOWPAN_L2_ADDR_LEN];
+#endif
 
 static uint8_t _sendbuf[BLE_SIXLOWPAN_MTU];
-#endif
 
 static void _ble_mac_callback(ble_mac_event_enum_t event, void* arg)
 {
@@ -120,8 +120,8 @@ static void _handle_raw_sixlowpan(ble_mac_inbuf_t *inbuf)
 
     gnrc_netif_hdr_init(netif_hdr->data, BLE_SIXLOWPAN_L2_ADDR_LEN, BLE_SIXLOWPAN_L2_ADDR_LEN);
     gnrc_netif_hdr_set_src_addr(netif_hdr->data, inbuf->src, BLE_SIXLOWPAN_L2_ADDR_LEN);
-    gnrc_netif_hdr_set_dst_addr(netif_hdr->data, _own_mac_addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
-    ((gnrc_netif_hdr_t *)netif_hdr->data)->if_pid = gnrc_nordic_ble_6lowpan_pid;
+    gnrc_netif_hdr_set_dst_addr(netif_hdr->data, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
+    ((gnrc_netif_hdr_t *)netif_hdr->data)->if_pid = _ble_netif->pid;
 
     DEBUG("_handle_raw_sixlowpan(): received packet from %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x "
             "of length %d\n",
@@ -205,7 +205,7 @@ static int _handle_get(gnrc_netapi_opt_t *_opt)
             break;
         case NETOPT_ADDRESS_LONG:
             assert(_opt->data_len >= BLE_SIXLOWPAN_L2_ADDR_LEN);
-            memcpy(value, _own_mac_addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
+            memcpy(value, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
             value[0] = IPV6_IID_FLIP_VALUE;
             res = BLE_SIXLOWPAN_L2_ADDR_LEN;
             break;
@@ -228,7 +228,7 @@ static int _handle_get(gnrc_netapi_opt_t *_opt)
             res = sizeof(uint16_t);
             break;*/
         case NETOPT_IPV6_IID:
-            memcpy(value, _own_mac_addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
+            memcpy(value, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
             value[0] = IPV6_IID_FLIP_VALUE;
             res = BLE_SIXLOWPAN_L2_ADDR_LEN;
             break;
@@ -244,7 +244,7 @@ static void _netif_init(gnrc_netif2_t *netif)
     ble_stack_init();
     ble_mac_init(_ble_mac_callback);
     netif->l2addr_len = BLE_SIXLOWPAN_L2_ADDR_LEN;
-    ble_get_mac(&netif->l2addr);
+    ble_get_mac(netif->l2addr);
     ble_advertising_init("RIOT BLE");
     ble_advertising_start();
 }
@@ -270,7 +270,7 @@ static int _netif_get(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt)
     return _handle_get(opt);
 }
 
-static int _netif_set(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt)
+static int _netif_set(gnrc_netif2_t *netif, const gnrc_netapi_opt_t *opt)
 {
     (void)netif;
     (void)opt;
@@ -280,11 +280,11 @@ static int _netif_set(gnrc_netif2_t *netif, gnrc_netapi_opt_t *opt)
 
 static void _netif_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
 {
-    switch (msg.type) {
+    switch (msg->type) {
         case BLE_EVENT_RX_DONE:
             {
                 DEBUG("ble rx:\n");
-                _handle_raw_sixlowpan(msg.content.ptr);
+                _handle_raw_sixlowpan(msg->content.ptr);
                 ble_mac_busy_rx = 0;
                 break;
             }
@@ -292,13 +292,13 @@ static void _netif_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
 }
 
 static const gnrc_netif2_ops_t _ble_ops = {
-    .init = _init;
+    .init = _netif_init,
     .send = _netif_send,
     .recv = _netif_recv,
     .get = _netif_get,
     .set = _netif_set,
     .msg_handler = _netif_msg_handler,
-}
+};
 
 void gnrc_nordic_ble_6lowpan_init(void)
 {
