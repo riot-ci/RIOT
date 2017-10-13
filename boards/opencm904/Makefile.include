@@ -3,7 +3,7 @@ export CPU = stm32f1
 export CPU_MODEL = stm32f103cb
 
 # custom linkerscript
-export LINKER_SCRIPT = stm32f103cb_opencm904.ld
+#export LINKER_SCRIPT = stm32f103cb_opencm904.ld
 
 # custom flasher to use with the bootloader
 export FLASHER = $(RIOTBOARD)/$(BOARD)/dist/robotis-loader.py
@@ -18,6 +18,11 @@ export DEBUGGER_FLAGS =
 # define the default port depending on the host OS
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=0x3000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x1D000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x5000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ffff7e8
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
