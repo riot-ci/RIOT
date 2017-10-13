@@ -6,6 +6,10 @@ export CPU_MODEL = stm32f103cb
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x20000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x5000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ffff7e8
+
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
