@@ -25,7 +25,7 @@ boot_offset = DEFINED( offset ) ? offset : 0x0 ;
 
 MEMORY
 {
-    rom (rx)    : ORIGIN = 0x00000000 + boot_offset, LENGTH = rom_length
+    rom (rx)    : ORIGIN = 0x00000000 + boot_offset, LENGTH = rom_length - boot_offset
     ram (rwx)   : ORIGIN = 0x20000000,               LENGTH = ram_length
 }
 
