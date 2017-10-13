@@ -39,9 +39,6 @@
 #ifndef MODULE_GNRC_IPV6_NIB
 #include "net/gnrc/ipv6/nc.h"
 #endif
-#ifndef MODULE_GNRC_NETIF2
-#include "net/gnrc/ipv6/netif.h"
-#endif
 
 #ifdef MODULE_FIB
 #include "net/fib.h"
