@@ -23,7 +23,7 @@ ccmram_length = DEFINED( ccmram_len ) ? ccmram_len : 0x0 ;
 
 MEMORY
 {
-    rom (rx)    : ORIGIN = 0x08000000 + boot_offset, LENGTH = rom_length
+    rom (rx)    : ORIGIN = 0x08000000 + boot_offset, LENGTH = rom_length - boot_offset
     ram (rwx)   : ORIGIN = 0x20000000,               LENGTH = ram_length
     ccmram (rwx): ORIGIN = 0x10000000,               LENGTH = ccmram_length
 }
