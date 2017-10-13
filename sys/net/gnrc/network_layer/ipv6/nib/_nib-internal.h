@@ -606,11 +606,15 @@ static inline void _nib_dc_remove(_nib_offl_entry_t *nib_offl)
  * @pre     `(pfx != NULL) && (pfx != "::") && (pfx_len != 0) && (pfx_len <= 128)`
  * @pre     `(pref_ltime <= valid_ltime)`
  *
- * @param[in] iface     The interface to the prefix is added to.
- * @param[in] pfx       The IPv6 prefix or address of the destination.
- *                      May not be NULL or unspecified address. Use
- *                      @ref _nib_drl_add() for default route destinations.
- * @param[in] pfx_len   The length in bits of @p pfx in bits.
+ * @param[in] iface         The interface to the prefix is added to.
+ * @param[in] pfx           The IPv6 prefix or address of the destination.
+ *                          May not be NULL or unspecified address. Use
+ *                          @ref _nib_drl_add() for default route destinations.
+ * @param[in] pfx_len       The length in bits of @p pfx in bits.
+ * @param[in] valid_ltime   Valid lifetime in microseconds. `UINT32_MAX` for
+ *                          infinite.
+ * @param[in] pref_ltime    Preferred lifetime in microseconds. `UINT32_MAX` for
+ *                          infinite.
  *
  * @return  A new or existing off-link entry with _nib_offl_entry_t::pfx set to
  *          @p pfx.
