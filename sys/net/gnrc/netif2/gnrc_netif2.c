@@ -19,6 +19,9 @@
 #include "net/ethernet.h"
 #include "net/ipv6.h"
 #include "net/gnrc.h"
+#ifdef MODULE_GNRC_IPV6_NIB
+#include "net/gnrc/ipv6/nib.h"
+#endif /* MODULE_GNRC_IPV6_NIB */
 #ifdef MODULE_NETSTATS_IPV6
 #include "net/netstats.h"
 #endif
@@ -278,7 +281,7 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
             }
             else {
                 if (gnrc_netif2_is_rtr_adv(netif)) {
-                    gnrc_ipv6_nib_iface_cease_rtr_adv(netif);
+                    gnrc_ipv6_nib_change_rtr_adv_iface(netif, false);
                 }
                 netif->flags &= ~GNRC_NETIF2_FLAGS_IPV6_FORWARDING;
             }
@@ -286,12 +289,8 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
             break;
         case NETOPT_IPV6_SND_RTR_ADV:
             assert(opt->data_len == sizeof(netopt_enable_t));
-            if (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE) {
-                gnrc_ipv6_nib_iface_start_rtr_adv(netif);
-            }
-            else {
-                gnrc_ipv6_nib_iface_cease_rtr_adv(netif);
-            }
+            gnrc_ipv6_nib_change_rtr_adv_iface(netif,
+                    (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE));
             res = sizeof(netopt_enable_t);
             break;
 #endif  /* GNRC_IPV6_NIB_CONF_ROUTER */
@@ -537,10 +536,29 @@ int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
     }
     netif->ipv6.addrs_flags[idx] = flags;
     memcpy(&netif->ipv6.addrs[idx], addr, sizeof(netif->ipv6.addrs[idx]));
-    /* TODO:
-     *  - update prefix list, if flags == VALID
-     *  - with SLAAC, send out NS otherwise for DAD probing */
+#ifdef MODULE_GNRC_IPV6_NIB
+    if (_get_state(netif, idx) == GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID) {
+        void *state;
+        gnrc_ipv6_nib_pl_t ple;
+        bool in_pl = false;
+
+        while (gnrc_ipv6_nib_pl_iter(netif->pid, &state, &ple)) {
+            if (ipv6_addr_match(&ple->pfx, addr) >= pfx_len) {
+                in_pl = true;
+            }
+        }
+        if (!in_pl) {
+        gnrc_ipv6_nib_pl_set(netif->pid, addr, pfx_len, UINT32_MAX, UINT32_MAX);
+        }
+    }
+#if GNRC_IPV6_NIB_CONF_SLAAC
+    else {
+        /* TODO: send out NS to solicited nodes for DAD probing */
+    }
+#endif
+#else
     (void)pfx_len;
+#endif
     gnrc_netif2_release(netif);
     return idx;
 }
@@ -556,8 +574,6 @@ void gnrc_netif2_ipv6_addr_remove(gnrc_netif2_t *netif,
     if (idx >= 0) {
         netif->ipv6.addrs_flags[idx] = 0;
         ipv6_addr_set_unspecified(&netif->ipv6.addrs[idx]);
-        /* TODO:
-         *  - update prefix list, if necessary */
     }
     gnrc_netif2_release(netif);
 }
