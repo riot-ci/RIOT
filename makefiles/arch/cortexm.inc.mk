@@ -17,10 +17,6 @@ export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
 export ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
 export LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts -L$(RIOTCPU)/cortexm_common/ldscripts
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=$(RAM_SIZE)
-
 export LINKER_SCRIPT ?= $(CPU_MODEL).ld
 
 export LINKFLAGS += -T$(LINKER_SCRIPT) -Wl,--fatal-warnings
