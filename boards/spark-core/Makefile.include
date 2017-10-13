@@ -22,7 +22,7 @@ export FFLAGS = -d 1d50:607f -a 0 -s 0x08005000:leave -D "$(HEXFILE)"
 export INCLUDES += -I$(RIOTCPU)/$(CPU)/include/ -I$(RIOTBOARD)/$(BOARD)/include/
 
 export ROM_OFFSET = 0x5000
-export ROM_SIZE = 0x1B000
+export ROM_SIZE = 0x20000
 export RAM_SIZE = 0x5000
 
 # this board uses openocd
