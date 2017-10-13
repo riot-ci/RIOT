@@ -16,7 +16,16 @@ export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
 
 export ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
 export LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts -L$(RIOTCPU)/cortexm_common/ldscripts
-export LINKER_SCRIPT ?= $(CPU_MODEL).ld
+
+ifneq (,$(filter stm32%,$(CPU_FAM)))
+  export LINKFLAGS += -L$(RIOTCPU)/stm32_common/ldscripts
+  export LINKER_SCRIPT ?= stm32_common.ld
+else ifneq (,$(filter saml21 samd21,$(CPU_FAM)))
+  export LINKER_SCRIPT ?= sam0_common.ld
+else
+  export LINKER_SCRIPT ?= $(CPU_MODEL).ld
+endif
+
 export LINKFLAGS += -T$(LINKER_SCRIPT) -Wl,--fatal-warnings
 
 export LINKFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG) $(CFLAGS_OPT) -static -lgcc -nostartfiles
