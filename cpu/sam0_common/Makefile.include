@@ -6,6 +6,7 @@ export CFLAGS += -DDONT_USE_CMSIS_INIT
 
 # for the sam[drl] CPUs we hold all linkerscripts in the sam0 common folder
 export LINKFLAGS += -L$(RIOTCPU)/sam0_common/ldscripts
+LINKER_SCRIPT ?= sam0_common.ld
 
 # use common periph functions
 USEMODULE += periph_common
