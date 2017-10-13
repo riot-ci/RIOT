@@ -115,9 +115,8 @@ typedef struct {
      * The callback may be `NULL` if no such behavior is required by the routing
      * protocol (or no routing protocol is present).
      *
-     * @todo    Define types (RRQ, RRN, NSC) in NIB
-     *
-     * @param[in] type      Type of the route info.
+     * @param[in] type      [Type](@reg net_gnrc_ipv6_nib_route_info_type) of
+     *                      the route info.
      * @param[in] ctx_addr  Context address of the route info.
      * @param[in] ctx       Further context of the route info.
      */
@@ -149,6 +148,18 @@ typedef struct {
      *          and @ref net_gnrc_ipv6_nib "NIB"
      */
     evtimer_msg_event_t search_rtr;
+#if GNRC_IPV6_NIB_CONF_6LN || DOXYGEN
+    /**
+     * @brief   Timers for address re-registration
+     *
+     * @note    Only available with module @ref net_gnrc_ipv6 "gnrc_ipv6" and
+     *          @ref net_gnrc_ipv6_nib "NIB" and if
+     *          @ref GNRC_IPV6_NIB_CONF_6LN != 0
+     * @note    Might also be usable in the later default SLAAC implementation
+     *          for NS retransmission timers.
+     */
+    evtimer_msg_event_t addrs_timers[GNRC_NETIF2_IPV6_ADDRS_NUMOF];
+#endif
 
 #if GNRC_IPV6_NIB_CONF_ROUTER || DOXYGEN
     /**
@@ -211,16 +222,13 @@ typedef struct {
      */
     uint8_t ra_sent;
 #endif
-#if GNRC_IPV6_NIB_CONF_6LN || DOXYGEN
     /**
      * @brief   number of unsolicited router solicitations scheduled
      *
      * @note    Only available with module @ref net_gnrc_ipv6 "gnrc_ipv6" and
-     *          @ref net_gnrc_ipv6_nib "NIB" and if
-     *          @ref GNRC_IPV6_NIB_CONF_6LN != 0
+     *          @ref net_gnrc_ipv6_nib "NIB"
      */
     uint8_t rs_sent;
-#endif
     /**
      * @brief   number of unsolicited neighbor advertisements scheduled
      *
