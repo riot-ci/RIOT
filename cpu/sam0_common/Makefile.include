@@ -8,7 +8,7 @@ export CFLAGS += -DDONT_USE_CMSIS_INIT
 export LINKFLAGS += -L$(RIOTCPU)/sam0_common/ldscripts
 
 ifdef ROM_OFFSET
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
+  LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
 endif
 
 LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
