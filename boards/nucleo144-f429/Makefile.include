@@ -2,5 +2,9 @@
 export CPU = stm32f4
 export CPU_MODEL = stm32f429zi
 
+export ROM_SIZE = 0x200000
+export RAM_SIZE = 0x40000
+export CCMRAM_SIZE = 0x10000
+
 # load the common Makefile.include for Nucleo-144 boards
 include $(RIOTBOARD)/nucleo144-common/Makefile.include

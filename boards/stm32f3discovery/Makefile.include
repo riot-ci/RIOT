@@ -6,6 +6,10 @@ export CPU_MODEL = stm32f303vc
 PORT_LINUX ?= /dev/ttyUSB0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
+export ROM_SIZE = 0x40000
+export RAM_SIZE = 0xA000
+export CCMRAM_SIZE = 0x2000
+
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
