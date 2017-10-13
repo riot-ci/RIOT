@@ -6,10 +6,9 @@ export CPU_MODEL = stm32f415rg
 PORT_LINUX ?= /dev/ttyUSB0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x100000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x20000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ccmram_len=0x10000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1fff7a10
+export ROM_SIZE = 0x100000
+export RAM_SIZE = 0x20000
+export CCMRAM_SIZE = 0x10000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk

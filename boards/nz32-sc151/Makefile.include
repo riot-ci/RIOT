@@ -21,9 +21,8 @@ export TERMFLAGS = -p $(PORT)
 
 export INCLUDES += -I$(RIOTCPU)/$(CPU)/include/ -I$(RIOTBOARD)/$(BOARD)/include/
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x40000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x8000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ff800d0
+export ROM_SIZE = 0x40000
+export RAM_SIZE = 0x8000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk

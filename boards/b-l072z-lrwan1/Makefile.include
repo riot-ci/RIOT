@@ -6,9 +6,8 @@ export CPU_MODEL = stm32l072cz
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x30000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x5000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ff80050
+export ROM_SIZE = 0x30000
+export RAM_SIZE = 0x5000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk

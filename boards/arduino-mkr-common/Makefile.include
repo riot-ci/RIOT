@@ -6,9 +6,9 @@ export CPU_MODEL = samd21g18a
 export PORT_LINUX ?= /dev/ttyACM0
 export PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=0x2000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x3e000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x8000
+export ROM_OFFSET = 0x2000
+export ROM_SIZE = 0x3e000
+export RAM_SIZE = 0x8000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk

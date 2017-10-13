@@ -2,9 +2,8 @@
 export CPU = stm32f2
 export CPU_MODEL = stm32f207zg
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x100000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x20000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1fff7a10
+export ROM_SIZE = 0x100000
+export RAM_SIZE = 0x20000
 
 # load the common Makefile.include for Nucleo-144 boards
 include $(RIOTBOARD)/nucleo144-common/Makefile.include

@@ -2,10 +2,9 @@
 export CPU = stm32f3
 export CPU_MODEL = stm32f334r8
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x10000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x3000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ccmram_len=0x1000
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ffff7ac
+export ROM_SIZE = 0x10000
+export RAM_SIZE = 0x3000
+export CCMRAM_SIZE = 0x1000
 
 # load the common Makefile.include for Nucleo boards
 include $(RIOTBOARD)/nucleo-common/Makefile.include
