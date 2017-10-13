@@ -543,7 +543,7 @@ int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
         bool in_pl = false;
 
         while (gnrc_ipv6_nib_pl_iter(netif->pid, &state, &ple)) {
-            if (ipv6_addr_match(&ple->pfx, addr) >= pfx_len) {
+            if (ipv6_addr_match_prefix(&ple.pfx, addr) >= pfx_len) {
                 in_pl = true;
             }
         }
