@@ -1255,12 +1255,12 @@ static uint32_t _handle_pio(gnrc_netif2_t *netif, const icmpv6_hdr_t *icmpv6,
              * value (UINT32_MAX). This is however alright since we ask for a
              * new router advertisement before this timeout expires */
             valid_ltime = (valid_ltime > (UINT32_MAX / MS_PER_SEC)) ?
-                          UINT32_MAX : valid_ltime / MS_PER_SEC;
+                          UINT32_MAX : valid_ltime * MS_PER_SEC;
         }
         if (pref_ltime < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
             /* same treatment for pref_ltime */
             pref_ltime = (pref_ltime > (UINT32_MAX / MS_PER_SEC)) ?
-                          UINT32_MAX : pref_ltime / MS_PER_SEC;
+                          UINT32_MAX : pref_ltime * MS_PER_SEC;
         }
         if ((pfx = _nib_pl_add(netif->pid, &pio->prefix, pio->prefix_len,
                                valid_ltime, pref_ltime))) {
