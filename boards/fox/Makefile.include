@@ -6,6 +6,9 @@ export CPU_MODEL = stm32f103re
 PORT_LINUX ?= /dev/ttyUSB1
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
 
+export ROM_SIZE = 0x80000
+export RAM_SIZE = 0x10000
+
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 

@@ -8,5 +8,14 @@ USEMODULE += periph_common
 # include stm32 common functions and stm32 common periph drivers
 USEMODULE += stm32_common stm32_common_periph
 
+ifdef ROM_OFFSET
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
+endif
+
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=$(RAM_SIZE)
+LINKFLAGS += -L$(RIOTCPU)/stm32_common/ldscripts
+LINKER_SCRIPT ?= stm32_common.ld
+
 # export the common include directory
 export INCLUDES += -I$(RIOTCPU)/stm32_common/include

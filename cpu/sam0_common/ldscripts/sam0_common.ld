@@ -21,10 +21,12 @@
  * @}
  */
 
+boot_offset = DEFINED( offset ) ? offset : 0x0 ;
+
 MEMORY
 {
-    rom (rx)    : ORIGIN = 0x00002000, LENGTH = 256K-0x2000
-    ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 32K
+    rom (rx)    : ORIGIN = 0x00000000 + boot_offset, LENGTH = rom_length
+    ram (rwx)   : ORIGIN = 0x20000000,               LENGTH = ram_length
 }
 
 INCLUDE cortexm_base.ld
