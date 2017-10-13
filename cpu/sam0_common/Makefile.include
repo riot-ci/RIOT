@@ -6,6 +6,13 @@ export CFLAGS += -DDONT_USE_CMSIS_INIT
 
 # for the sam[drl] CPUs we hold all linkerscripts in the sam0 common folder
 export LINKFLAGS += -L$(RIOTCPU)/sam0_common/ldscripts
+
+ifdef ROM_OFFSET
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
+endif
+
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=$(RAM_SIZE)
 LINKER_SCRIPT ?= sam0_common.ld
 
 # use common periph functions
