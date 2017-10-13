@@ -2,5 +2,8 @@
 export CPU = stm32l4
 export CPU_MODEL = stm32l432kc
 
+export ROM_SIZE = 0x40000
+export RAM_SIZE = 0x10000
+
 # load the common Makefile.include for Nucleo-32 boards
 include $(RIOTBOARD)/nucleo32-common/Makefile.include
