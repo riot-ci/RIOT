@@ -2,5 +2,9 @@
 export CPU = stm32f4
 export CPU_MODEL = stm32f401re
 
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x80000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x18000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1fff7a10
+
 # load the common Makefile.include for Nucleo boards
 include $(RIOTBOARD)/nucleo-common/Makefile.include

@@ -6,6 +6,10 @@ export CPU_MODEL = samd21g18a
 export PORT_LINUX ?= /dev/ttyACM0
 export PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=0x2000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x3e000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x8000
+
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
@@ -17,7 +21,7 @@ ifeq ($(PROGRAMMER),jlink)
 else
   # by default, we use BOSSA to flash this board and take into account the
   # preinstalled Arduino bootloader.
-  export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_arduino_bootloader.ld
+  #export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_arduino_bootloader.ld
   include $(RIOTMAKE)/tools/bossa.inc.mk
 endif
 
