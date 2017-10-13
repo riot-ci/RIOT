@@ -6,6 +6,10 @@ export CPU_MODEL = stm32f103re
 PORT_LINUX ?= /dev/ttyUSB1
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*B)))
 
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=0x80000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=0x10000
+LINKFLAGS += $(LINKFLAGPREFIX)--defsym=cpu_id_address=0x1ffff7e8
+
 # setup serial terminal
 export BAUD = 500000
 include $(RIOTMAKE)/tools/serial.inc.mk
