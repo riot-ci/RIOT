@@ -108,12 +108,7 @@ gnrc_rpl_instance_t *gnrc_rpl_instance_get(uint8_t instance_id);
  * @return  true, if DODAG could be created.
  * @return  false, if DODAG could not be created or exists already.
  */
-#ifdef MODULE_GNRC_NETIF2
 bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, kernel_pid_t iface);
-#else
-bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, kernel_pid_t iface,
-                         gnrc_ipv6_netif_addr_t *netif_addr);
-#endif
 
 /**
  * @brief   Remove all parents from the @p dodag.

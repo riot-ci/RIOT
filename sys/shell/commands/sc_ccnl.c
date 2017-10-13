@@ -20,21 +20,13 @@
 
 #include "random.h"
 #include "sched.h"
-#ifdef MODULE_GNRC_NETIF2
 #include "net/gnrc/netif2.h"
-#else
-#include "net/gnrc/netif.h"
-#endif
 #include "ccn-lite-riot.h"
 #include "ccnl-pkt-ndntlv.h"
 
 #define BUF_SIZE (64)
 
-#ifdef MODULE_GNRC_NETIF2
 #define MAX_ADDR_LEN            (GNRC_NETIF2_L2ADDR_MAXLEN)
-#else
-#define MAX_ADDR_LEN            (8U)
-#endif
 
 static unsigned char _int_buf[BUF_SIZE];
 static unsigned char _cont_buf[BUF_SIZE];
@@ -64,11 +56,7 @@ int _ccnl_open(int argc, char **argv)
 
     /* check if given number is a valid netif PID */
     int pid = atoi(argv[1]);
-#ifdef MODULE_GNRC_NETIF2
     if (gnrc_netif2_get_by_pid(pid) == NULL) {
-#else
-    if (!gnrc_netif_exist(pid)) {
-#endif
         printf("%i is not a valid interface!\n", pid);
         return -1;
     }
@@ -154,11 +142,7 @@ static struct ccnl_face_s *_intern_face_get(char *addr_str)
     /* initialize address with 0xFF for broadcast */
     uint8_t relay_addr[MAX_ADDR_LEN];
     memset(relay_addr, UINT8_MAX, MAX_ADDR_LEN);
-#ifdef MODULE_GNRC_NETIF2
     size_t addr_len = gnrc_netif2_addr_from_str(addr_str, relay_addr);
-#else
-    size_t addr_len = gnrc_netif_addr_from_str(relay_addr, sizeof(relay_addr), addr_str);
-#endif
 
     if (addr_len == 0) {
         printf("Error: %s is not a valid link layer address\n", addr_str);

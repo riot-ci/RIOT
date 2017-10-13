@@ -201,7 +201,6 @@ int _icmpv6_ping(int argc, char **argv)
     }
 
     if (ipv6_addr_is_link_local(&addr) || (src_iface != KERNEL_PID_UNDEF)) {
-#ifdef MODULE_GNRC_NETIF2
         size_t ifnum = gnrc_netif2_numof();
 
         if (src_iface == KERNEL_PID_UNDEF) {
@@ -219,32 +218,6 @@ int _icmpv6_ping(int argc, char **argv)
                 return 1;
             }
         }
-#else
-        kernel_pid_t ifs[GNRC_NETIF_NUMOF];
-        size_t ifnum = gnrc_netif_get(ifs);
-        if (src_iface == KERNEL_PID_UNDEF) {
-            if (ifnum == 1) {
-                src_iface = ifs[0];
-            }
-            else {
-                puts("error: link local target needs interface parameter (use \"<address>%<ifnum>\")\n");
-                return 1;
-            }
-        }
-        else {
-            int valid = 0;
-            for (size_t i = 0; i < ifnum && i < GNRC_NETIF_NUMOF; i++) {
-                if (ifs[i] == src_iface) {
-                    valid = 1;
-                    break;
-                }
-            }
-            if (!valid) {
-                printf("error: %"PRIkernel_pid" is not a valid interface.\n", src_iface);
-                return 1;
-            }
-        }
-#endif
     }
 
     if (gnrc_netreg_register(GNRC_NETTYPE_ICMPV6, &my_entry) < 0) {

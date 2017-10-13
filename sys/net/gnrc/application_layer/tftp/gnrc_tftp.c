@@ -254,7 +254,6 @@ static int _tftp_server(tftp_context_t *ctxt);
 static uint16_t _tftp_get_maximum_block_size(void)
 {
     uint16_t tmp;
-#ifdef MODULE_GNRC_NETIF2
     gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
 
     if ((netif != NULL) && gnrc_netapi_get(netif->pid, NETOPT_MAX_PACKET_SIZE,
@@ -262,16 +261,6 @@ static uint16_t _tftp_get_maximum_block_size(void)
         /* TODO calculate proper block size */
         return tmp - sizeof(udp_hdr_t) - sizeof(ipv6_hdr_t) - 10;
     }
-#else
-    kernel_pid_t ifs[GNRC_NETIF_NUMOF];
-    size_t ifnum = gnrc_netif_get(ifs);
-
-    if (ifnum > 0 && gnrc_netapi_get(ifs[0], NETOPT_MAX_PACKET_SIZE, 0, &tmp, sizeof(uint16_t)) >= 0) {
-        /* TODO calculate proper block size */
-        return tmp - sizeof(udp_hdr_t) - sizeof(ipv6_hdr_t) - 10;
-    }
-#endif
-
     return GNRC_TFTP_MAX_TRANSFER_UNIT;
 }
 

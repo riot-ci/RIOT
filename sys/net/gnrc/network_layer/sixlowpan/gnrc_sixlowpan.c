@@ -21,11 +21,7 @@
 #include "net/gnrc/sixlowpan.h"
 #include "net/gnrc/sixlowpan/frag.h"
 #include "net/gnrc/sixlowpan/iphc.h"
-#ifdef MODULE_GNRC_NETIF2
 #include "net/gnrc/netif2.h"
-#else
-#include "net/gnrc/sixlowpan/netif.h"
-#endif
 #include "net/sixlowpan.h"
 
 #define ENABLE_DEBUG    (0)
@@ -196,11 +192,7 @@ static void _send(gnrc_pktsnip_t *pkt)
 {
     gnrc_netif_hdr_t *hdr;
     gnrc_pktsnip_t *pkt2;
-#ifdef MODULE_GNRC_NETIF2
     gnrc_netif2_t *iface;
-#else
-    gnrc_sixlowpan_netif_t *iface;
-#endif
     /* datagram_size: pure IPv6 packet without 6LoWPAN dispatches or compression */
     size_t datagram_size;
 
@@ -225,11 +217,7 @@ static void _send(gnrc_pktsnip_t *pkt)
     }
 
     hdr = pkt2->data;
-#ifdef MODULE_GNRC_NETIF2
     iface = gnrc_netif2_get_by_pid(hdr->if_pid);
-#else
-    iface = gnrc_sixlowpan_netif_get(hdr->if_pid);
-#endif
     datagram_size = gnrc_pkt_len(pkt2->next);
 
     if (iface == NULL) {
@@ -239,11 +227,7 @@ static void _send(gnrc_pktsnip_t *pkt)
     }
 
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC
-#ifdef MODULE_GNRC_NETIF2
     if (iface->flags & GNRC_NETIF2_FLAGS_6LO_HC) {
-#else
-    if (iface->iphc_enabled) {
-#endif
         if (!gnrc_sixlowpan_iphc_encode(pkt2)) {
             DEBUG("6lo: error on IPHC encoding\n");
             gnrc_pktbuf_release(pkt2);
@@ -270,7 +254,6 @@ static void _send(gnrc_pktsnip_t *pkt)
         return;
     }
 #endif
-#ifdef MODULE_GNRC_NETIF2
     DEBUG("6lo: iface->sixlo.max_frag_size = %" PRIu16 " for interface %"
           PRIkernel_pid "\n", iface->sixlo.max_frag_size, hdr->if_pid);
 
@@ -288,25 +271,6 @@ static void _send(gnrc_pktsnip_t *pkt)
 
         return;
     }
-#else
-    DEBUG("6lo: iface->max_frag_size = %" PRIu16 " for interface %"
-          PRIkernel_pid "\n", iface->max_frag_size, hdr->if_pid);
-
-    /* IP should not send anything here if it is not a 6LoWPAN interface,
-     * so we don't need to check for NULL pointers.
-     * Note, that datagram_size cannot be used here, because the header size
-     * might be changed by IPHC. */
-    if (gnrc_pkt_len(pkt2->next) <= iface->max_frag_size) {
-        DEBUG("6lo: Send SND command for %p to %" PRIu16 "\n",
-              (void *)pkt2, hdr->if_pid);
-        if (gnrc_netapi_send(hdr->if_pid, pkt2) < 1) {
-            DEBUG("6lo: unable to send %p over %" PRIu16 "\n", (void *)pkt, hdr->if_pid);
-            gnrc_pktbuf_release(pkt2);
-        }
-
-        return;
-    }
-#endif
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG
     else if (fragment_msg.pkt != NULL) {
         DEBUG("6lo: Fragmentation already ongoing. Dropping packet\n");
