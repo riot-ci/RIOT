@@ -9,7 +9,7 @@ USEMODULE += periph_common
 USEMODULE += stm32_common stm32_common_periph
 
 ifdef ROM_OFFSET
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
+  LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
 endif
 
 LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
