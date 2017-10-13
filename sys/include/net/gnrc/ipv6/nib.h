@@ -14,6 +14,7 @@
  * @todo    Add detailed description
  * @todo    Implement multihop DAD
  * @todo    Implement classic SLAAC
+ * @todo    Implement MLD
  * @{
  *
  * @file
