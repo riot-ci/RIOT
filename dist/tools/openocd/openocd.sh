@@ -79,6 +79,20 @@
 # Debugger flags, will be passed to sh -c, remember to escape any quotation signs.
 # Use ${DBG_DEFAULT_FLAGS} to insert the default flags anywhere in the string
 : ${DBG_FLAGS:=${DBG_DEFAULT_FLAGS} ${DBG_EXTRA_FLAGS}}
+# This is an optional offset to the base address that can be used to flash an
+# image in a different location than it is linked at. This feature can be useful
+# when flashing images for firmware swapping/remapping boot loaders.
+# Default offset is 0, meaning the image will be flashed at the address that it
+# was linked at.
+: ${IMAGE_OFFSET:=0}
+# Image file used for flashing. Must be in a format that OpenOCD can handle (ELF,
+# Intel hex, S19, or raw binary)
+# Default is to use $ELFFILE
+: ${IMAGE_FILE:=${ELFFILE}}
+# Type of image, leave empty to let OpenOCD automatically detect the type from
+# the file (default).
+# Valid values: elf, hex, s19, bin (see OpenOCD manual for more information)
+: ${IMAGE_TYPE:=}
 
 #
 # Examples of alternative debugger configurations
@@ -115,14 +129,22 @@ test_elffile() {
     fi
 }
 
+test_imagefile() {
+    if [ ! -f "${IMAGE_FILE}" ]; then
+        echo "Error: Unable to locate IMAGE_FILE"
+        echo "       (${IMAGE_FILE})"
+        exit 1
+    fi
+}
+
 #
 # now comes the actual actions
 #
 do_flash() {
     test_config
-    test_elffile
+    test_imagefile
     if [ -n "${PRE_FLASH_CHECK_SCRIPT}" ]; then
-        sh -c "${PRE_FLASH_CHECK_SCRIPT} '${ELFFILE}'"
+        sh -c "${PRE_FLASH_CHECK_SCRIPT} '${IMAGE_FILE}'"
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
             echo "pre-flash checks failed, status=$RETVAL"
@@ -139,9 +161,9 @@ do_flash() {
             -c 'targets' \
             -c 'reset halt' \
             ${OPENOCD_PRE_FLASH_CMDS} \
-            -c 'flash write_image erase \"${ELFFILE}\"' \
+            -c 'flash write_image erase \"${IMAGE_FILE}\" ${IMAGE_OFFSET} ${IMAGE_TYPE}' \
             ${OPENOCD_PRE_VERIFY_CMDS} \
-            -c 'verify_image \"${ELFFILE}\"' \
+            -c 'verify_image \"${IMAGE_FILE}\"' \
             -c 'reset run' \
             -c 'shutdown'" &&
     echo 'Done flashing'
