@@ -164,8 +164,6 @@ void flashpage_write(int page, void *data)
     }
 
     DEBUG("flashpage] now locking the flash module again\n");
-    /* clear program bit again */
-    FLASH->PECR &= (uint32_t)(~FLASH_PECR_PROG);
     /* Set the PRGLOCK and PELOCK Bit to lock the program memory access */
     FLASH->PECR |= FLASH_PECR_PRGLOCK;
     FLASH->PECR |= FLASH_PECR_PELOCK;
