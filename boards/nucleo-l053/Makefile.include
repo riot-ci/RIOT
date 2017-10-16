@@ -2,8 +2,5 @@
 export CPU = stm32l0
 export CPU_MODEL = stm32l053r8
 
-export ROM_SIZE = 0x10000
-export RAM_SIZE = 0x2000
-
 # load the common Makefile.include for Nucleo boards
 include $(RIOTBOARD)/nucleo-common/Makefile.include

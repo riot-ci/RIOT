@@ -17,8 +17,6 @@ PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
 export ROM_OFFSET = 0x3000
-export ROM_SIZE = 0x20000
-export RAM_SIZE = 0x5000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk

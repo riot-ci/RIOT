@@ -6,10 +6,6 @@ export CPU_MODEL = stm32f407vg
 PORT_LINUX ?= /dev/ttyUSB0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
-export ROM_SIZE = 0x100000
-export RAM_SIZE = 0x20000
-export CCMRAM_SIZE = 0x10000
-
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 

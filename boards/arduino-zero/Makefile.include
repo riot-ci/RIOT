@@ -2,9 +2,6 @@
 export CPU = samd21
 export CPU_MODEL = samd21g18a
 
-export ROM_SIZE = 0x40000
-export RAM_SIZE = 0x8000
-
 # set edbg device type
 EDBG_DEVICE_TYPE = atmel_cm0p
 

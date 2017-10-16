@@ -6,9 +6,6 @@ export CPU_MODEL = stm32f769ni
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
-export ROM_SIZE = 0x200000
-export RAM_SIZE = 0x80000
-
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
