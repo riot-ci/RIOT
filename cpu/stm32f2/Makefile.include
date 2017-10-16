@@ -5,3 +5,8 @@ USEMODULE += pm_layered
 
 include $(RIOTCPU)/stm32_common/Makefile.include
 include $(RIOTMAKE)/arch/cortexm.inc.mk
+
+ifneq (,$(filter stm32f207zg,$(CPU_MODEL)))
+  export ROM_SIZE = 0x100000
+  export RAM_SIZE = 0x20000
+endif
