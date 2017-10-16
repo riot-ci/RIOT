@@ -7,9 +7,12 @@ include $(RIOTMAKE)/arch/cortexm.inc.mk
 ifneq (,$(filter stm32f030r8 stm32f051r8,$(CPU_MODEL)))
   export ROM_SIZE = 0x10000
   export RAM_SIZE = 0x2000
-else ifneq (,$(filter stm32f031k6 stm32f042k6,$(CPU_MODEL)))
+else ifneq (,$(filter stm32f031k6,$(CPU_MODEL)))
   export ROM_SIZE = 0x8000
   export RAM_SIZE = 0x1000
+else ifneq (,$(filter stm32f042k6,$(CPU_MODEL)))
+  export ROM_SIZE = 0x8000
+  export RAM_SIZE = 0x1800
 else ifneq (,$(filter stm32f070rb stm32f072rb,$(CPU_MODEL)))
   export ROM_SIZE = 0x20000
   export RAM_SIZE = 0x4000
