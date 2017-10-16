@@ -76,8 +76,10 @@ extern "C" {
  * @brief   Flash page configuration
  * @{
  */
+#if defined(CPU_MODEL_STM32L152RET6)
 #define FLASHPAGE_SIZE      (256U)
 #define FLASHPAGE_NUMOF     (2048U)
+#endif
 
 #ifdef __cplusplus
 }
