@@ -61,6 +61,7 @@ extern "C" {
  */
 #define PM_NUM_MODES    (2U)
 
+<<<<<<< HEAD
 /**
  * @brief   Override the default initial PM blocker
  * @todo   we block all modes per default, until PM is cleanly implemented
@@ -72,6 +73,8 @@ extern "C" {
  */
 #define PM_STOP_CONFIG  (PWR_CR_LPDS)
 
+=======
+>>>>>>> pm: unify and set safe default pm_blocker
 #ifndef DOXYGEN
 /**
  * @brief   Override GPIO mode options
