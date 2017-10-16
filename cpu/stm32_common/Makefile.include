@@ -8,14 +8,12 @@ USEMODULE += periph_common
 # include stm32 common functions and stm32 common periph drivers
 USEMODULE += stm32_common stm32_common_periph
 
-ifdef ROM_OFFSET
-  LINKFLAGS += $(LINKFLAGPREFIX)--defsym=offset=$(ROM_OFFSET)
-endif
+ROM_START_ADDR ?= 0x08000000
+RAM_START_ADDR ?= 0x20000000
+CCM_RAM_ADDR   ?= 0x10000000
 
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=rom_length=$(ROM_SIZE)
-LINKFLAGS += $(LINKFLAGPREFIX)--defsym=ram_length=$(RAM_SIZE)
-LINKFLAGS += -L$(RIOTCPU)/stm32_common/ldscripts
-LINKER_SCRIPT ?= stm32_common.ld
+# For Cortex-M cpu we use the cortexm.ld linker script
+LINKER_SCRIPT ?= cortexm.ld
 
 # export the common include directory
 export INCLUDES += -I$(RIOTCPU)/stm32_common/include
