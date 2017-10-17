@@ -21,6 +21,7 @@
 
 #include "log.h"
 #include "luid.h"
+#include "periph/cpuid.h"
 #include "random.h"
 
 #define ENABLE_DEBUG (0)
@@ -29,11 +30,11 @@
 void auto_init_random(void)
 {
     uint32_t seed;
-#ifdef FEATURE_PERIPH_CPUID
+#ifdef CPUID_LEN
     luid_get(&seed, 4);
 #else
     LOG_WARNING("random: NO SEED AVAILABLE!\n");
-    seed = 0;
+    seed = 1;
 #endif
     DEBUG("random: using seed value %u\n", (unsigned)seed);
     random_init(seed);
