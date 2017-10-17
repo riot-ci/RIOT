@@ -189,7 +189,7 @@ uint16_t dma_suspend(dma_t dma)
         dma_isr_disable(stream_n);
         stream->CR &= ~(uint32_t)DMA_SxCR_EN;
         while ((stream->CR & DMA_SxCR_EN) == DMA_SxCR_EN) {}
-        dma_clear_all_flags(stream_n);
+        dma_clear_all_flags(dma);
         left = stream->NDTR;
         dma_isr_clear(stream_n);
     }
