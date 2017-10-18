@@ -12,3 +12,8 @@ USEMODULE += xtimer
 DISABLE_MODULE += auto_init
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+# `testrunner` calls `make term` recursively, results in duplicated `TERMFLAGS`.
+# So clears `TERMFLAGS` before run.
+	TERMFLAGS= tests/01-run.py
