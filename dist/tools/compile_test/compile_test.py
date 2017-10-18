@@ -110,6 +110,7 @@ def build_all():
                 results_with_output = list(filter(lambda res: res[2].getvalue(), results_with_output))
                 failed_with_output = list(filter(lambda res: 'failed' in res[0], results_with_output))
                 success_with_output = list(filter(lambda res: 'success' in res[0], results_with_output))
+                check_call(["rm", "-rf", join(riotbase, folder, application, "bin")])
                 print()
                 for group, result in results:
                     print('\t\t{}: {}'.format(group, ', '.join(sorted(board for outcome, board, output in result))))
