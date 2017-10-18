@@ -111,6 +111,8 @@ def build_all():
                 results_with_output = list(filter(lambda res: res[2].getvalue(), results_with_output))
                 failed_with_output = list(filter(lambda res: 'failed' in res[0], results_with_output))
                 success_with_output = list(filter(lambda res: 'success' in res[0], results_with_output))
+                # check if bin-directory isn't in system's PATH to not accidentally
+                # delete some valuable system executable ;-)
                 if join(app_dir, "bin") not in environ.get("PATH", "/bin:/usr/bin:/usr/local/bin:"):
                     check_call(["rm", "-rf", join(app_dir, "bin")])
                 print()
