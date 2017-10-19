@@ -14,10 +14,13 @@ import testrunner
 
 def testfunc(child):
     child.expect_exact("On-board button test")
-    child.expect([
+    index = child.expect([
         r"\[FAILED\] no buttons available!",
         r" -- Available buttons: \d+"
     ])
+
+    if index == 1:
+        child.expect_exact("[SUCCESS]")
 
 if __name__ == "__main__":
     sys.exit(testrunner.run(testfunc))
