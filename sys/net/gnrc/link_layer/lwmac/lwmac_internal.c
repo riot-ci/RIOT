@@ -103,39 +103,39 @@ int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info
     return 0;
 }
 
-void _gnrc_lwmac_set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t devstate)
+void _gnrc_lwmac_set_netdev_state(gnrc_netif2_t *netif, netopt_state_t devstate)
 {
-    gnrc_netdev->dev->driver->set(gnrc_netdev->dev,
+	netif->dev->driver->set(netif->dev,
                                   NETOPT_STATE,
                                   &devstate,
                                   sizeof(devstate));
 
 #if (GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD == 1)
     if (devstate == NETOPT_STATE_IDLE) {
-        if (!(gnrc_netdev->lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
-            gnrc_netdev->lwmac.last_radio_on_time_ticks = rtt_get_counter();
-            gnrc_netdev->lwmac.lwmac_info |= GNRC_LWMAC_RADIO_IS_ON;
+        if (!(netif->mac.lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
+        	netif->mac.lwmac.last_radio_on_time_ticks = rtt_get_counter();
+        	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_RADIO_IS_ON;
         }
         return;
     }
     else if ((devstate == NETOPT_STATE_SLEEP) &&
-             (gnrc_netdev->lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
-        gnrc_netdev->lwmac.radio_off_time_ticks = rtt_get_counter();
+             (netif->mac.lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
+    	netif->mac.lwmac.radio_off_time_ticks = rtt_get_counter();
 
-        gnrc_netdev->lwmac.awake_duration_sum_ticks +=
-            (gnrc_netdev->lwmac.radio_off_time_ticks -
-             gnrc_netdev->lwmac.last_radio_on_time_ticks);
+    	netif->mac.lwmac.awake_duration_sum_ticks +=
+            (netif->mac.lwmac.radio_off_time_ticks -
+            		netif->mac.lwmac.last_radio_on_time_ticks);
 
-        gnrc_netdev->lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
+    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
     }
 #endif
 }
 
-netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netdev_t *gnrc_netdev)
+netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netif2_t *netif)
 {
     netopt_state_t state;
 
-    if (0 < gnrc_netdev->dev->driver->get(gnrc_netdev->dev,
+    if (0 < netif->dev->driver->get(netif->dev,
                                           NETOPT_STATE,
                                           &state,
                                           sizeof(state))) {

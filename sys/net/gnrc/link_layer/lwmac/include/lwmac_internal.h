@@ -24,7 +24,8 @@
 #include <stdint.h>
 
 #include "periph/rtt.h"
-#include "net/gnrc/netdev.h"
+//#include "net/gnrc/netdev.h"
+#include "net/gnrc/netif2.h"
 #include "net/gnrc/mac/types.h"
 #include "net/gnrc/lwmac/types.h"
 
@@ -104,13 +105,13 @@ typedef struct {
  * @param[in] tx_continue  value for LWMAC tx-continue flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev_t *dev, bool tx_continue)
+static inline void gnrc_netdev_lwmac_set_tx_continue(gnrc_netif2_t *netif, bool tx_continue)
 {
     if (tx_continue) {
-        dev->mac_info |= GNRC_NETDEV_LWMAC_TX_CONTINUE;
+    	netif->mac.mac_info |= GNRC_NETDEV_LWMAC_TX_CONTINUE;
     }
     else {
-        dev->mac_info &= ~GNRC_NETDEV_LWMAC_TX_CONTINUE;
+    	netif->mac.mac_info &= ~GNRC_NETDEV_LWMAC_TX_CONTINUE;
     }
 }
 
@@ -122,9 +123,9 @@ static inline void gnrc_netdev_lwmac_set_tx_continue(gnrc_netdev_t *dev, bool tx
  * @return                 true if tx continue
  * @return                 false if tx will continue
  */
-static inline bool gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_tx_continue(gnrc_netif2_t *netif)
 {
-    return (dev->mac_info & GNRC_NETDEV_LWMAC_TX_CONTINUE);
+    return (netif->mac.mac_info & GNRC_NETDEV_LWMAC_TX_CONTINUE);
 }
 
 /**
@@ -134,13 +135,13 @@ static inline bool gnrc_netdev_lwmac_get_tx_continue(gnrc_netdev_t *dev)
  * @param[in] quit_tx      value for LWMAC quit-TX flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev_t *dev, bool quit_tx)
+static inline void gnrc_netdev_lwmac_set_quit_tx(gnrc_netif2_t *netif, bool quit_tx)
 {
     if (quit_tx) {
-        dev->mac_info |= GNRC_NETDEV_LWMAC_QUIT_TX;
+    	netif->mac.mac_info |= GNRC_NETDEV_LWMAC_QUIT_TX;
     }
     else {
-        dev->mac_info &= ~GNRC_NETDEV_LWMAC_QUIT_TX;
+    	netif->mac.mac_info &= ~GNRC_NETDEV_LWMAC_QUIT_TX;
     }
 }
 
@@ -152,9 +153,9 @@ static inline void gnrc_netdev_lwmac_set_quit_tx(gnrc_netdev_t *dev, bool quit_t
  * @return                 true if quit tx
  * @return                 false if will not quit tx
  */
-static inline bool gnrc_netdev_lwmac_get_quit_tx(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_quit_tx(gnrc_netif2_t *netif)
 {
-    return (dev->mac_info & GNRC_NETDEV_LWMAC_QUIT_TX);
+    return (netif->mac.mac_info & GNRC_NETDEV_LWMAC_QUIT_TX);
 }
 
 /**
@@ -164,13 +165,13 @@ static inline bool gnrc_netdev_lwmac_get_quit_tx(gnrc_netdev_t *dev)
  * @param[in] backoff      value for LWMAC phase-backoff flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_phase_backoff(gnrc_netdev_t *dev, bool backoff)
+static inline void gnrc_netdev_lwmac_set_phase_backoff(gnrc_netif2_t *netif, bool backoff)
 {
     if (backoff) {
-        dev->mac_info |= GNRC_NETDEV_LWMAC_PHASE_BACKOFF;
+    	netif->mac.mac_info |= GNRC_NETDEV_LWMAC_PHASE_BACKOFF;
     }
     else {
-        dev->mac_info &= ~GNRC_NETDEV_LWMAC_PHASE_BACKOFF;
+    	netif->mac.mac_info &= ~GNRC_NETDEV_LWMAC_PHASE_BACKOFF;
     }
 }
 
@@ -182,9 +183,9 @@ static inline void gnrc_netdev_lwmac_set_phase_backoff(gnrc_netdev_t *dev, bool 
  * @return                 true if will run phase-backoff
  * @return                 false if will not run phase-backoff
  */
-static inline bool gnrc_netdev_lwmac_get_phase_backoff(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_phase_backoff(gnrc_netif2_t *netif)
 {
-    return (dev->mac_info & GNRC_NETDEV_LWMAC_PHASE_BACKOFF);
+    return (netif->mac.mac_info & GNRC_NETDEV_LWMAC_PHASE_BACKOFF);
 }
 
 /**
@@ -194,13 +195,13 @@ static inline bool gnrc_netdev_lwmac_get_phase_backoff(gnrc_netdev_t *dev)
  * @param[in] quit_rx      value for LWMAC quit-Rx flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev_t *dev, bool quit_rx)
+static inline void gnrc_netdev_lwmac_set_quit_rx(gnrc_netif2_t *netif, bool quit_rx)
 {
     if (quit_rx) {
-        dev->mac_info |= GNRC_NETDEV_LWMAC_QUIT_RX;
+    	netif->mac.mac_info |= GNRC_NETDEV_LWMAC_QUIT_RX;
     }
     else {
-        dev->mac_info &= ~GNRC_NETDEV_LWMAC_QUIT_RX;
+    	netif->mac.mac_info &= ~GNRC_NETDEV_LWMAC_QUIT_RX;
     }
 }
 
@@ -212,9 +213,9 @@ static inline void gnrc_netdev_lwmac_set_quit_rx(gnrc_netdev_t *dev, bool quit_r
  * @return                 true if will quit rx
  * @return                 false if will not quit rx
  */
-static inline bool gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_quit_rx(gnrc_netif2_t *netif)
 {
-    return (dev->mac_info & GNRC_NETDEV_LWMAC_QUIT_RX);
+    return (netif->mac.mac_info & GNRC_NETDEV_LWMAC_QUIT_RX);
 }
 
 /**
@@ -224,13 +225,13 @@ static inline bool gnrc_netdev_lwmac_get_quit_rx(gnrc_netdev_t *dev)
  * @param[in] active       value for LWMAC duty-cycle-active flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bool active)
+static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netif2_t *netif, bool active)
 {
     if (active) {
-        dev->lwmac.lwmac_info |= GNRC_LWMAC_DUTYCYCLE_ACTIVE;
+    	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
     else {
-        dev->lwmac.lwmac_info &= ~GNRC_LWMAC_DUTYCYCLE_ACTIVE;
+    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
 }
 
@@ -242,9 +243,9 @@ static inline void gnrc_netdev_lwmac_set_dutycycle_active(gnrc_netdev_t *dev, bo
  * @return                 true if active
  * @return                 false if not active
  */
-static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netif2_t *netif)
 {
-    return (dev->lwmac.lwmac_info & GNRC_LWMAC_DUTYCYCLE_ACTIVE);
+    return (netif->mac.lwmac.lwmac_info & GNRC_LWMAC_DUTYCYCLE_ACTIVE);
 }
 
 /**
@@ -254,13 +255,13 @@ static inline bool gnrc_netdev_lwmac_get_dutycycle_active(gnrc_netdev_t *dev)
  * @param[in] reschedule   value for LWMAC needs-rescheduling flag
  *
  */
-static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool reschedule)
+static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netif2_t *netif, bool reschedule)
 {
     if (reschedule) {
-        dev->lwmac.lwmac_info |= GNRC_LWMAC_NEEDS_RESCHEDULE;
+    	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
     else {
-        dev->lwmac.lwmac_info &= ~GNRC_LWMAC_NEEDS_RESCHEDULE;
+    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
 }
 
@@ -272,9 +273,9 @@ static inline void gnrc_netdev_lwmac_set_reschedule(gnrc_netdev_t *dev, bool res
  * @return                 true if needs rescheduling
  * @return                 false if no need for rescheduling
  */
-static inline bool gnrc_netdev_lwmac_get_reschedule(gnrc_netdev_t *dev)
+static inline bool gnrc_netdev_lwmac_get_reschedule(gnrc_netif2_t *netif)
 {
-    return (dev->lwmac.lwmac_info & GNRC_LWMAC_NEEDS_RESCHEDULE);
+    return (netif->mac.lwmac.lwmac_info & GNRC_LWMAC_NEEDS_RESCHEDULE);
 }
 
 /**
@@ -297,7 +298,7 @@ int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info
  *
  * @return                     state of netdev
  */
-netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netdev_t *gnrc_netdev);
+netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netif2_t *netif);
 
 /**
  * @brief Shortcut to set the state of netdev
@@ -305,7 +306,7 @@ netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netdev_t *gnrc_netdev);
  * @param[in]   gnrc_netdev    gnrc_netdev structure
  * @param[in]   devstate       new state for netdev
  */
-void _gnrc_lwmac_set_netdev_state(gnrc_netdev_t *gnrc_netdev, netopt_state_t devstate);
+void _gnrc_lwmac_set_netdev_state(gnrc_netif2_t *netif, netopt_state_t devstate);
 
 /**
  * @brief Convert RTT ticks to device phase

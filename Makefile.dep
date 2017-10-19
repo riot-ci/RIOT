@@ -550,7 +550,7 @@ endif
 
 ifneq (,$(filter gnrc_lwmac,$(USEMODULE)))
   USEMODULE += gnrc_mac
-  USEMODULE += gnrc_netdev
+  USEMODULE += gnrc_netif2
   FEATURES_REQUIRED += periph_rtt
 endif
 
