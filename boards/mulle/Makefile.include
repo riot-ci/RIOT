@@ -1,5 +1,5 @@
 # define the cpu used by the Mulle board
-export CPU = k60
+export CPU = kinetis
 
 # Default GDB port
 export GDBPORT ?= 3333
