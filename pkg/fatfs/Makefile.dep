@@ -12,5 +12,5 @@ include $(RIOTBASE)/boards/$(BOARD)/Makefile.features
 ifneq (, $(filter periph_rtc, $(FEATURES_PROVIDED)))
   CFLAGS += -DFATFS_FFCONF_OPT_FS_NORTC=0
 else
-   CFLAGS += -DFATFS_FFCONF_OPT_FS_NORTC=1
+  CFLAGS += -DFATFS_FFCONF_OPT_FS_NORTC=1
 endif
