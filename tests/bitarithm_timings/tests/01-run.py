@@ -14,10 +14,10 @@ import testrunner
 
 def testfunc(child):
     child.expect_exact("Start.")
-    child.expect('\+ bitarithm_msb: \d+ iterations per second', timeout=20)
-    child.expect('\+ bitarithm_lsb: \d+ iterations per second', timeout=20)
-    child.expect('\+ bitarithm_bits_set: \d+ iterations per second', timeout=20)
+    child.expect('\+ bitarithm_msb: \d+ iterations per second')
+    child.expect('\+ bitarithm_lsb: \d+ iterations per second')
+    child.expect('\+ bitarithm_bits_set: \d+ iterations per second')
     child.expect_exact("Done.")
 
 if __name__ == "__main__":
-    sys.exit(testrunner.run(testfunc))
+    sys.exit(testrunner.run(testfunc, timeout=30))
