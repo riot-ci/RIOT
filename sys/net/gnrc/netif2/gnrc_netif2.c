@@ -31,9 +31,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 #define _NETIF_NETAPI_MSG_QUEUE_SIZE    (8)
 
@@ -1167,7 +1165,7 @@ static void *_gnrc_netif2_thread(void *args)
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%s\n",
                       netopt2str(opt->opt));
 #else
-                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%s\n",
+                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_SET received. opt=%u\n",
                       opt->opt);
 #endif
                 /* set option for device driver */
@@ -1182,7 +1180,7 @@ static void *_gnrc_netif2_thread(void *args)
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
                       netopt2str(opt->opt));
 #else
-                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
+                DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%u\n",
                       opt->opt);
 #endif
                 /* get option from device driver */
