@@ -240,7 +240,7 @@ void test4(void)
 {
     char uint64_str[20];
     struct timespec abs;
-    uint64_t start, stop;
+    uint64_t start, elapsed;
     const uint64_t exp = 1000000;
 
     puts("first: sem_init s1");
@@ -255,7 +255,7 @@ void test4(void)
     abs.tv_nsec = (long)((start % US_PER_SEC) * 1000);
 
     int ret = sem_timedwait(&s1, &abs);
-    stop = xtimer_now_usec64() - start;
+    elapsed = xtimer_now_usec64() - start;
 
     if (ret != 0) {
         if (errno != ETIMEDOUT) {
@@ -267,15 +267,15 @@ void test4(void)
         }
     }
 
-    fmt_u64_dec(uint64_str, stop);
-    if (stop < (exp - 100)) {
+    fmt_u64_dec(uint64_str, elapsed);
+    if (elapsed < (exp - 100)) {
         printf("first: waited only %s usec => FAILED\n", uint64_str);
     }
 #ifdef BOARD_NATIVE
     /* native can sometime take more time to respond as it is not real time */
-    else if (stop > (exp + 300)) {
+    else if (elapsed > (exp + 300)) {
 #else
-    else if (stop > (exp + 100)) {
+    else if (elapsed > (exp + 100)) {
 #endif /* BOARD_NATIVE */
         printf("first: waited too long %s usec => FAILED\n", uint64_str);
     }
