@@ -271,7 +271,12 @@ void test4(void)
     if (stop < (exp - 100)) {
         printf("first: waited only %s usec => FAILED\n", uint64_str);
     }
+#ifdef BOARD_NATIVE
+    /* native can sometime take more time to respond as it is not real time */
+    else if (stop > (exp + 300)) {
+#else
     else if (stop > (exp + 100)) {
+#endif /* BOARD_NATIVE */
         printf("first: waited too long %s usec => FAILED\n", uint64_str);
     }
     else {
