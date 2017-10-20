@@ -56,9 +56,7 @@
 
 static gnrc_ipv6_netif_t ipv6_ifs[GNRC_NETIF_NUMOF];
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 static ipv6_addr_t *_add_addr_to_entry(gnrc_ipv6_netif_t *entry, const ipv6_addr_t *addr,
                                        uint8_t prefix_len, uint8_t flags)
@@ -228,8 +226,8 @@ void gnrc_ipv6_netif_add(kernel_pid_t pid)
 
     mutex_lock(&free_entry->mutex);
 
-    DEBUG("ipv6 netif: Add IPv6 interface %" PRIkernel_pid " (i = %d)\n", pid,
-          free_entry - ipv6_ifs);
+    DEBUG("ipv6 netif: Add IPv6 interface %" PRIkernel_pid "\n", pid);
+
     free_entry->pid = pid;
     free_entry->mtu = GNRC_IPV6_NETIF_DEFAULT_MTU;
     free_entry->cur_hl = GNRC_IPV6_NETIF_DEFAULT_HL;
