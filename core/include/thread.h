@@ -467,6 +467,26 @@ uintptr_t thread_measure_stack_free(char *stack);
 #endif /* DEVELHELP */
 
 /**
+ * @brief   Get the number of bytes used on the ISR stack
+ */
+int thread_isr_stack_usage(void);
+
+/**
+ * @brief   Get the current ISR stack pointer
+ */
+void *thread_isr_stack_pointer(void);
+
+/**
+ * @brief   Get the start of the ISR stack
+ */
+void *thread_isr_stack_start(void);
+
+/**
+ * @brief Print the current stack to stdout
+ */
+void thread_stack_print(void);
+
+/**
  * @brief   Prints human readable, ps-like thread information for debugging purposes
  */
 void thread_print_stack(void);
