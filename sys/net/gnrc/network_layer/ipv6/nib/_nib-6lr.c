@@ -22,9 +22,8 @@
 #include "debug.h"
 
 #if GNRC_IPV6_NIB_CONF_6LR
-#if ENABLE_DEBUG
+
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 static uint8_t _update_nce_ar_state(const sixlowpan_nd_opt_ar_t *aro,
                                     _nib_onl_entry_t *nce)
