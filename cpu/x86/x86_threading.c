@@ -90,7 +90,7 @@ static void __attribute__((noreturn)) isr_thread_yield(void)
 {
     sched_run();
     ucontext_t *ctx = (ucontext_t *) sched_active_thread->sp;
-    DEBUG("isr_thread_yield(): switching to (%s, %p)\n\n", sched_active_thread->name, ctx->uc_context.ip);
+    DEBUG("isr_thread_yield(): switching to (%s, %p)\n\n", thread_getname(sched_active_pid), ctx->uc_context.ip);
 
     uint32_t cr0 = cr0_read();
     cr0 |= CR0_TS;
@@ -142,7 +142,7 @@ void isr_cpu_switch_context_exit(void)
     }
 
     ucontext_t *ctx = (ucontext_t *)(sched_active_thread->sp);
-    DEBUG("XXX: cpu_switch_context_exit(): calling setcontext(%s, %p)\n\n", sched_active_thread->name, ctx->uc_context.ip);
+    DEBUG("XXX: cpu_switch_context_exit(): calling setcontext(%s, %p)\n\n", thread_getname(sched_active_pid), ctx->uc_context.ip);
 
     x86_in_isr = false;
 
