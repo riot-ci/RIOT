@@ -91,7 +91,7 @@ uint8_t _handle_aro(kernel_pid_t iface, const ipv6_hdr_t *ipv6,
                                 (byteorder_ntohs(aro->ltime) - 1U) *
                                 SEC_PER_MIN * MS_PER_SEC;
                     DEBUG("nib: Address registration successful. "
-                               "Scheduling re-registration in %ums\n",
+                               "Scheduling re-registration in %" PRIu32 "ms\n",
                           next_ns);
                     assert(nce != NULL);
                     _evtimer_add(nce, GNRC_IPV6_NIB_SND_UC_NS, &nce->nud_timeout,
