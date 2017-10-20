@@ -42,9 +42,9 @@
 #if ENABLE_DEBUG
 /* For PRIu8 etc. */
 #include <inttypes.h>
+#endif
 
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 /* sets an entry to stale if its l2addr differs from the given one or creates it stale if it
  * does not exist */

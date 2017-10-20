@@ -31,9 +31,9 @@
 #if ENABLE_DEBUG
 /* For PRIu8 etc. */
 #include <inttypes.h>
+#endif
 
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 static gnrc_ipv6_nc_t ncache[GNRC_IPV6_NC_SIZE];
 
