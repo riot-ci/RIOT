@@ -100,7 +100,7 @@ static void _update_l2addr_from_dev(gnrc_netif2_t *netif)
 #ifdef MODULE_NETDEV_IEEE802154
         case NETDEV_TYPE_IEEE802154: {
                 uint16_t tmp;
-
+                puts("get address");
                 res = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
                 assert(res == sizeof(tmp));
                 netif->l2addr_len = (uint8_t)tmp;
@@ -682,6 +682,7 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             gnrc_netdev_lwmac_set_phase_backoff(netif, false);
             netif->mac.rx.rx_bad_exten_count = 0;
             lwmac_set_state(netif, GNRC_LWMAC_LISTENING);
+            puts("C");
             break;
         }
         case GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING: {
@@ -825,7 +826,7 @@ static void *_lwmac_thread(void *args)
     msg_t reply = { .type = GNRC_NETAPI_MSG_TYPE_ACK };
     msg_t msg, msg_queue[GNRC_LWMAC_IPC_MSG_QUEUE_SIZE];
 
-    DEBUG("lwmac: starting thread %i\n", sched_active_pid);
+    printf("lwmac: starting thread %i\n", sched_active_pid);
     netif = args;
     gnrc_netif2_acquire(netif);
     dev = netif->dev;
@@ -923,7 +924,7 @@ static void *_lwmac_thread(void *args)
     /* start the event loop */
     while (1) {
         msg_receive(&msg);
-
+        printf("gnrc_netif2: get incoming messages\n");
         switch (msg.type) {
             /* Transceiver raised an interrupt */
             case NETDEV_MSG_TYPE_EVENT: {
@@ -996,7 +997,7 @@ static void *_lwmac_thread(void *args)
             case GNRC_NETAPI_MSG_TYPE_GET: {
                 /* TODO: filter out MAC layer options -> for now forward
                          everything to the device driver */
-                LOG_DEBUG("[LWMAC] GNRC_NETAPI_MSG_TYPE_GET received\n");
+                puts(" GNRC_NETAPI_MSG_TYPE_GET received.");
                 /* read incoming options */
                 opt = (gnrc_netapi_opt_t *)msg.content.ptr;
                 /* get option from device driver */

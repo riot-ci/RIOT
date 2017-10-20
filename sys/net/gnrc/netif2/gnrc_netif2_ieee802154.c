@@ -44,6 +44,7 @@ gnrc_netif2_t *gnrc_netif2_ieee802154_create(char *stack, int stacksize,
                                              netdev_t *dev)
 {
 #ifdef MODULE_GNRC_LWMAC
+    puts("init lwmac");
     return gnrc_lwmac_init(stack, stacksize, priority, "at86rf2xx-lwmac", dev,
                               &ieee802154_ops);
 #else
@@ -233,7 +234,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
 #endif
 #ifdef MODULE_GNRC_MAC
         if (netif->mac.mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED) {
-            res = csma_sender_csma_ca_send(dev, vector, n, &netif->csma_conf);
+            res = csma_sender_csma_ca_send(dev, vector, n, &netif->mac.csma_conf);
         }
         else {
             res = dev->driver->send(dev, vector, n);

@@ -1119,7 +1119,7 @@ static void *_gnrc_netif2_thread(void *args)
     msg_t reply = { .type = GNRC_NETAPI_MSG_TYPE_ACK };
     msg_t msg, msg_queue[_NETIF_NETAPI_MSG_QUEUE_SIZE];
 
-    DEBUG("gnrc_netif2: starting thread %i\n", sched_active_pid);
+    printf("gnrc_netif2: starting thread %i\n", sched_active_pid);
     netif = args;
     gnrc_netif2_acquire(netif);
     dev = netif->dev;
@@ -1130,6 +1130,7 @@ static void *_gnrc_netif2_thread(void *args)
     dev->event_callback = _event_cb;
     dev->context = netif;
     /* initialize low-level driver */
+
     dev->driver->init(dev);
     _init_from_device(netif);
     netif->cur_hl = GNRC_NETIF2_DEFAULT_HL;
@@ -1138,6 +1139,7 @@ static void *_gnrc_netif2_thread(void *args)
 #endif
     if (netif->ops->init) {
         netif->ops->init(netif);
+        puts("inti device");
     }
     /* now let rest of GNRC use the interface */
     gnrc_netif2_release(netif);
@@ -1185,6 +1187,7 @@ static void *_gnrc_netif2_thread(void *args)
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
                       opt->opt);
 #endif
+                puts("get!!");
                 /* get option from device driver */
                 res = netif->ops->get(netif, opt);
                 DEBUG("gnrc_netif2: response of netif->ops->get(): %i\n", res);

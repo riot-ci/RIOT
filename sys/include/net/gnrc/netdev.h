@@ -38,9 +38,9 @@
 #include "net/gnrc/mac/types.h"
 #include "net/ieee802154.h"
 #include "net/gnrc/mac/mac.h"
-#ifdef MODULE_GNRC_MAC
+
 #include "net/csma_sender.h"
-#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +52,17 @@ extern "C" {
 #ifndef GNRC_NETDEV_MAC_PRIO
 #define GNRC_NETDEV_MAC_PRIO    (THREAD_PRIORITY_MAIN - 5)
 #endif
+
+/**
+ * @brief   Flag to track if a device has enabled CSMA for transmissions
+ *
+ * If `gnrc_mac` is used, the user should be noticed that the `send()`
+ * function of gnrc_netdev will be affected with the state of this flag, since
+ * `gnrc_mac` accordingly adapts the `send()` function. If the device doesn't
+ * support on-chip CSMA and this flag is set for requiring CSMA transmission,
+ * then, the device will run software CSMA using `csma_sender` APIs.
+ */
+#define GNRC_NETDEV_MAC_INFO_CSMA_ENABLED       (0x0100U)
 
 /**
  * @brief   Type for @ref msg_t if device fired an event
@@ -94,6 +105,15 @@ typedef struct gnrc_netdev {
      */
     kernel_pid_t pid;
 
+    /**
+     * @brief device's software CSMA configuration
+     */
+    csma_sender_conf_t csma_conf;
+
+    /**
+     * @brief general information for the MAC protocol
+     */
+    uint16_t mac_info;
 } gnrc_netdev_t;
 
 /**

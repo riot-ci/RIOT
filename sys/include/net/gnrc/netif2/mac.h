@@ -51,12 +51,15 @@ extern "C" {
  * @brief   @ref net_gnrc_mac component of @ref gnrc_netif2_mac_t
  */
 typedef struct {
-#ifdef MODULE_GNRC_MAC
     /**
      * @brief general information for the MAC protocol
      */
     uint16_t mac_info;
-#endif
+
+    /**
+     * @brief device's software CSMA configuration
+     */
+    csma_sender_conf_t csma_conf;
 
 #if ((GNRC_MAC_RX_QUEUE_SIZE != 0) || (GNRC_MAC_DISPATCH_BUFFER_SIZE != 0)) || DOXYGEN
     /**
