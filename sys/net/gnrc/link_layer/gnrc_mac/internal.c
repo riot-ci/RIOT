@@ -255,7 +255,7 @@ void gnrc_mac_dispatch(gnrc_mac_rx_t *rx)
             if (!gnrc_netapi_dispatch_receive(rx->dispatch_buffer[i]->type,
                                               GNRC_NETREG_DEMUX_CTX_ALL,
                                               rx->dispatch_buffer[i])) {
-                DEBUG("Unable to forward packet of type %i\n", buffer[i]->type);
+                DEBUG("Unable to forward packet of type %i\n", rx->dispatch_buffer[i]->type);
                 gnrc_pktbuf_release(rx->dispatch_buffer[i]);
             }
             rx->dispatch_buffer[i] = NULL;
