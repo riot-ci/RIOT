@@ -27,9 +27,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 static gnrc_ipv6_nc_t *_last_router = NULL; /* last router chosen as default
                                              * router. Only used if reachability
@@ -134,7 +132,7 @@ void gnrc_ndp_internal_set_state(gnrc_ipv6_nc_t *nc_entry, uint8_t state)
             mutex_unlock(&ipv6_iface->mutex);
             break;
 
-#ifdef ENABLE_DEBUG
+#if ENABLE_DEBUG
         case GNRC_IPV6_NC_STATE_STALE:
             DEBUG("STALE (go into DELAY on next packet)\n");
             break;
