@@ -226,7 +226,7 @@ void gnrc_ipv6_netif_add(kernel_pid_t pid)
 
     mutex_lock(&free_entry->mutex);
 
-    DEBUG("ipv6 netif: Add IPv6 interface %" PRIkernel_pid " (i = %d)\n", pid,
+    DEBUG("ipv6 netif: Add IPv6 interface %" PRIkernel_pid " (i = %li)\n", pid,
           free_entry - ipv6_ifs);
     free_entry->pid = pid;
     free_entry->mtu = GNRC_IPV6_NETIF_DEFAULT_MTU;
