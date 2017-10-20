@@ -37,9 +37,7 @@
 #include "xtimer.h"
 #endif
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 #if GNRC_IPV6_NIB_CONF_QUEUE_PKT
 static gnrc_pktqueue_t _queue_pool[GNRC_IPV6_NIB_NUMOF];
