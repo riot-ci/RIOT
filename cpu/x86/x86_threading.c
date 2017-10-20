@@ -117,12 +117,12 @@ void thread_yield_higher(void)
     irq_restore(old_intr);
 }
 
-void *thread_arch_isr_stack_pointer(void)
+void *thread_isr_stack_pointer(void)
 {
     return isr_context.uc_stack.ss_sp;
 }
 
-void *thread_arch_isr_stack_start(void)
+void *thread_isr_stack_start(void)
 {
     return isr_stack;
 }

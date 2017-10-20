@@ -122,7 +122,6 @@
 #include "clist.h"
 #include "cib.h"
 #include "msg.h"
-#include "arch/thread_arch.h"
 #include "cpu_conf.h"
 #include "sched.h"
 
@@ -166,6 +165,11 @@
 #define STATUS_RUNNING          9               /**< currently running                  */
 #define STATUS_PENDING         10               /**< waiting to be scheduled to run     */
 /** @} */
+
+/**
+ * @brief Prototype for a thread entry function
+ */
+typedef void *(*thread_task_func_t)(void *arg);
 
 /**
  * @brief @c thread_t holds thread's context data.
@@ -466,6 +470,11 @@ uintptr_t thread_measure_stack_free(char *stack);
  * @brief   Prints human readable, ps-like thread information for debugging purposes
  */
 void thread_print_stack(void);
+
+/**
+ * @brief Start threading by loading a threads initial information from the stack
+ */
+void thread_start_threading(void) NORETURN;
 
 #ifdef __cplusplus
 }
