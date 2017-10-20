@@ -471,11 +471,6 @@ uintptr_t thread_measure_stack_free(char *stack);
  */
 void thread_print_stack(void);
 
-/**
- * @brief Start threading by loading a threads initial information from the stack
- */
-void thread_start_threading(void) NORETURN;
-
 #ifdef __cplusplus
 }
 #endif
