@@ -132,11 +132,9 @@ void gnrc_ndp_internal_set_state(gnrc_ipv6_nc_t *nc_entry, uint8_t state)
             mutex_unlock(&ipv6_iface->mutex);
             break;
 
-#if ENABLE_DEBUG
         case GNRC_IPV6_NC_STATE_STALE:
             DEBUG("STALE (go into DELAY on next packet)\n");
             break;
-#endif
 
         default:
             DEBUG("errorneous or unknown\n");
