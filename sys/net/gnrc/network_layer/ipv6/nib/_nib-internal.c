@@ -42,9 +42,7 @@ static _nib_iface_t _nis[GNRC_NETIF_NUMOF];
 static _nib_abr_entry_t _abrs[GNRC_IPV6_NIB_ABR_NUMOF];
 #endif
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 mutex_t _nib_mutex = MUTEX_INIT;
 evtimer_msg_t _nib_evtimer;
@@ -228,7 +226,7 @@ void _nib_nc_set_reachable(_nib_onl_entry_t *node)
 #if GNRC_IPV6_NIB_CONF_ARSM
     _nib_iface_t *iface = _nib_iface_get(_nib_onl_get_if(node));
 
-    DEBUG("nib: set %s%%%u reachable (reachable time = %u)\n",
+    DEBUG("nib: set %s%%%u reachable (reachable time = %" PRIu32 ")\n",
           ipv6_addr_to_str(addr_str, &node->ipv6, sizeof(addr_str)),
           _nib_onl_get_if(node), iface->reach_time);
     node->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
