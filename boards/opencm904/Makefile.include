@@ -16,7 +16,8 @@ export DEBUGGER_FLAGS =
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
-export ROM_OFFSET = 0x3000
+# Skip the space needed by the embedded bootloader
+export ROM_OFFSET ?= 0x3000
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
