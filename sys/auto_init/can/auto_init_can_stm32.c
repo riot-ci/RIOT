@@ -40,7 +40,7 @@ void auto_init_can_stm32(void) {
         candev_stm32_init(&candev_stm32[i], &candev_stm32_conf[i]);
         candev_dev_stm32[i].dev = (candev_t *)&candev_stm32[i];
         candev_dev_stm32[i].name = candev_stm32_params[i].name;
-#ifdef MODULE_TRX
+#ifdef MODULE_CAN_TRX
         candev_dev_stm32[i].trx = candev_stm32_params[i].trx;
 #endif
 #ifdef MODULE_CAN_PM
