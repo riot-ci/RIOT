@@ -30,6 +30,7 @@
 #include "assert.h"
 #include "periph/uart.h"
 #include "periph/gpio.h"
+#include "pm_layered.h"
 
 #ifdef UART_NUMOF
 
@@ -87,7 +88,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 #endif
 
     /* enable the clock */
-    periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
+    uart_poweron(uart);
 
     /* reset UART configuration -> defaults to 8N1 mode */
     dev(uart)->CR1 = 0;
@@ -149,13 +150,20 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 void uart_poweron(uart_t uart)
 {
     assert(uart < UART_NUMOF);
+#ifdef PM_STOP
+    pm_block(PM_STOP);
+#endif
     periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
 }
 
 void uart_poweroff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
-    periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
+
+    periph_clk_dis(uart_config[uart].bus, uart_config[uart].rcc_mask);
+#ifdef PM_STOP
+    pm_unblock(PM_STOP);
+#endif
 }
 
 static inline void irq_handler(uart_t uart)
