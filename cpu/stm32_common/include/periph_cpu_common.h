@@ -75,6 +75,14 @@ extern "C" {
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) \
     || defined(CPU_FAM_STM32F4) || defined(DOXYGEN)
 #define PM_NUM_MODES    (2U)
+
+/**
+ * @name    Power modes
+ * @{
+ */
+#define PM_STOP         (1U)
+#define PM_STANDBY      (0U)
+/** @} */
 #endif
 
 /**
