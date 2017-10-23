@@ -38,32 +38,32 @@ extern "C" {
 #include "mutex.h"
 #include "xtimer.h"
 
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(DOXYGEN)
-/** The maximum number of filters: 28 for dual channel, 14 for single channel */
-#define CAN_STM32_NB_FILTER 28
-#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
-#define CAN_STM32_NB_FILTER 14
-#else
-#error "CAN STM32: CPU not supported"
-#endif
-
-#ifndef CANDEV_STM32_DEFAULT_BITRATE
-/** Default bitrate */
-#define CANDEV_STM32_DEFAULT_BITRATE 500000
-#endif
-
-#ifndef CANDEV_STM32_DEFAULT_SPT
-/** Default sampling-point */
-#define CANDEV_STM32_DEFAULT_SPT 875
-#endif
-
 #if defined(CPU_MODEL_STM32F413ZH) || defined(CPU_MODEL_STM32F413VG)
 #define CANDEV_STM32_CHAN_NUMOF 3
 #elif defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)
 #define CANDEV_STM32_CHAN_NUMOF 2
-#else
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3) || DOXYGEN
 /** Number of channels in the device (up to 3) */
 #define CANDEV_STM32_CHAN_NUMOF 1
+#else
+#error "CAN STM32: CPU not supported"
+#endif
+
+#if CANDEV_STM32_CHAN_NUMOF > 1
+/** The maximum number of filters: 28 for dual channel, 14 for single channel */
+#define CAN_STM32_NB_FILTER     28
+#else
+#define CAN_STM32_NB_FILTER     14
+#endif
+
+#ifndef CANDEV_STM32_DEFAULT_BITRATE
+/** Default bitrate */
+#define CANDEV_STM32_DEFAULT_BITRATE 500000U
+#endif
+
+#ifndef CANDEV_STM32_DEFAULT_SPT
+/** Default sampling-point */
+#define CANDEV_STM32_DEFAULT_SPT     875
 #endif
 
 /** bxCAN device configuration */
@@ -72,7 +72,9 @@ typedef struct candev_stm32_conf {
     uint32_t rcc_mask;        /**< RCC mask to enable clock */
     gpio_t rx_pin;            /**< RX pin */
     gpio_t tx_pin;            /**< TX pin */
+#ifndef CPU_FAM_STM32F1
     gpio_af_t af;             /**< Alternate pin function to use */
+#endif
 #if CANDEV_STM32_CHAN_NUMOF > 1 || defined(DOXYGEN)
     CAN_TypeDef *can_master;  /**< Master CAN device */
     uint32_t master_rcc_mask; /**< Master device RCC mask */
@@ -126,8 +128,9 @@ typedef struct candev_stm32_rx_fifo {
 
 /** Internal interrupt flags */
 typedef struct candev_stm32_isr {
-    int isr_tx:3; /**< Tx mailboxes interrupt */
-    int isr_rx:2; /**< Rx FIFO interrupt */
+    int isr_tx:3;   /**< Tx mailboxes interrupt */
+    int isr_rx:2;   /**< Rx FIFO interrupt */
+    int isr_wkup:1; /**< Wake up interrupt */
 } candev_stm32_isr_t;
 
 /** STM32 CAN device descriptor */
@@ -153,17 +156,27 @@ struct candev_stm32 {
  */
 int candev_stm32_init(candev_stm32_t *dev, const candev_stm32_conf_t *conf);
 
+#ifndef CPU_FAM_STM32F1
 /**
  * @brief Set the pins of an stm32 CAN device
  *
- * @param[in] dev
- * @param[in] tx_pin
- * @param[in] rx_pin
- * @param[in] tx_af
- * @param[in] rx_af
+ * @param[in,out] dev     the device to set pins
+ * @param[in] tx_pin      tx pin
+ * @param[in] rx_pin      rx pin
+ * @param[in] af          alternate function
  */
 void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
                            gpio_af_t af);
+#else
+/**
+ * @brief Set the pins of an stm32 CAN device
+ *
+ * @param[in,out] dev     the device to set pins
+ * @param[in] tx_pin      tx pin
+ * @param[in] rx_pin      rx pin
+ */
+void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin);
+#endif
 
 #ifdef __cplusplus
 }

@@ -102,7 +102,7 @@ static candev_stm32_t *_can[CANDEV_STM32_CHAN_NUMOF];
 
 static inline int get_channel(CAN_TypeDef *can)
 {
-#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
+#if CANDEV_STM32_CHAN_NUMOF == 1
     (void)can;
     return 0;
 #else
@@ -237,8 +237,12 @@ static inline void unset_filter(CAN_TypeDef *can, uint8_t filter)
     can->FA1R &= ~(1 << filter);
 }
 
+#ifndef CPU_FAM_STM32F1
 void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
                            gpio_af_t af)
+#else
+void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin)
+#endif
 {
     if (dev->tx_pin != GPIO_UNDEF) {
         gpio_init(dev->tx_pin, GPIO_IN);
@@ -250,13 +254,16 @@ void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
     }
     dev->tx_pin = tx_pin;
     dev->rx_pin = rx_pin;
-    dev->af = af;
     /* configure pins */
     gpio_init(rx_pin, GPIO_IN);
     gpio_init(tx_pin, GPIO_OUT);
-    /* TODO: fix gpio init on STM32F3 */
+#ifndef CPU_FAM_STM32F1
+    dev->af = af;
     gpio_init_af(rx_pin, af);
     gpio_init_af(tx_pin, af);
+#else
+    gpio_init_af(tx_pin, GPIO_AF_OUT_PP);
+#endif
 }
 
 static int _init(candev_t *candev)
@@ -282,7 +289,11 @@ static int _init(candev_t *candev)
     _status[get_channel(dev->conf->can)] = STATUS_ON;
 
     /* configure pins */
+#ifndef CPU_FAM_STM32F1
     candev_stm32_set_pins(dev, dev->conf->tx_pin, dev->conf->rx_pin, dev->conf->af);
+#else
+    candev_stm32_set_pins(dev, dev->conf->tx_pin, dev->conf->rx_pin);
+#endif
 
     set_mode(dev->conf->can, MODE_INIT);
 
@@ -358,7 +369,9 @@ static int _init(candev_t *candev)
 #endif
 
     res = set_mode(dev->conf->can, MODE_NORMAL);
+#ifdef PM_STOP
     pm_block(PM_STOP);
+#endif
 
     return res;
 }
@@ -546,7 +559,7 @@ static inline CAN_TypeDef *get_master(candev_stm32_t *dev)
 #endif
 }
 
-static int is_master(candev_stm32_t *dev)
+static inline int is_master(candev_stm32_t *dev)
 {
 #if CANDEV_STM32_CHAN_NUMOF == 1
     return 1;
@@ -569,6 +582,7 @@ static void _wkup_cb(void *arg)
     }
 }
 
+#if CANDEV_STM32_CHAN_NUMOF > 1
 static void enable_int(candev_stm32_t *dev, int master_from_slave)
 {
     DEBUG("EN int (%d) (%p)\n", master_from_slave, (void *)dev);
@@ -581,26 +595,37 @@ static void enable_int(candev_stm32_t *dev, int master_from_slave)
         gpio_init_int(dev->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, dev);
     }
 }
+#endif
 
 static void disable_int(candev_stm32_t *dev, int master_from_slave)
 {
     DEBUG("DIS int (%d) (%p)\n", master_from_slave, (void *)dev);
 
     if (master_from_slave) {
+#if CANDEV_STM32_CHAN_NUMOF > 1
         candev_stm32_t *master = _can[get_channel(get_master(dev))];
         gpio_irq_disable(master->rx_pin);
+#ifndef CPU_FAM_STM32F1
         candev_stm32_set_pins(master, master->tx_pin, master->rx_pin, master->af);
+#else
+        candev_stm32_set_pins(master, master->tx_pin, master->rx_pin);
+#endif
+#endif
     }
     else {
         gpio_irq_disable(dev->rx_pin);
+#ifndef CPU_FAM_STM32F1
         candev_stm32_set_pins(dev, dev->tx_pin, dev->rx_pin, dev->af);
+#else
+        candev_stm32_set_pins(dev, dev->tx_pin, dev->rx_pin);
+#endif
     }
 }
 
 static void turn_off(candev_stm32_t *dev)
 {
     DEBUG("turn off (%p)\n", (void *)dev);
-
+#if CANDEV_STM32_CHAN_NUMOF > 1
     if (is_master(dev)) {
         int chan = get_channel(dev->conf->can);
         if (chan < CANDEV_STM32_CHAN_NUMOF - 1 && _status[chan + 1] != STATUS_SLEEP) {
@@ -610,7 +635,9 @@ static void turn_off(candev_stm32_t *dev)
         else {
             /* no slave or slave already sleeping */
             if (_status[get_channel(dev->conf->can)] != STATUS_SLEEP) {
+#ifdef PM_STOP
                 pm_unblock(PM_STOP);
+#endif
             }
             _status[chan] = STATUS_SLEEP;
             periph_clk_dis(APB1, dev->conf->rcc_mask);
@@ -622,7 +649,9 @@ static void turn_off(candev_stm32_t *dev)
         switch (_status[master_chan]) {
         case STATUS_READY_FOR_SLEEP:
             _status[master_chan] = STATUS_SLEEP;
+#ifdef PM_STOP
             pm_unblock(PM_STOP);
+#endif
             /* Fall through */
         case STATUS_NOT_USED:
             periph_clk_dis(APB1, dev->conf->master_rcc_mask);
@@ -630,7 +659,9 @@ static void turn_off(candev_stm32_t *dev)
         }
         periph_clk_dis(APB1, dev->conf->rcc_mask);
         if (_status[get_channel(dev->conf->can)] != STATUS_SLEEP) {
+#ifdef PM_STOP
             pm_unblock(PM_STOP);
+#endif
         }
         _status[get_channel(dev->conf->can)] = STATUS_SLEEP;
         if (_status[master_chan] == STATUS_SLEEP) {
@@ -638,27 +669,42 @@ static void turn_off(candev_stm32_t *dev)
         }
         enable_int(dev, 0);
     }
+#else
+    if (_status[get_channel(dev->conf->can)] != STATUS_SLEEP) {
+#ifdef PM_STOP
+        pm_unblock(PM_STOP);
+#endif
+    }
+    _status[get_channel(dev->conf->can)] = STATUS_SLEEP;
+    periph_clk_dis(APB1, dev->conf->rcc_mask);
+    gpio_init_int(dev->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, dev);
+#endif
 }
 
 static void turn_on(candev_stm32_t *dev)
 {
     DEBUG("turn on (%p)\n", (void *)dev);
-
+#if CANDEV_STM32_CHAN_NUMOF > 1
     if (!is_master(dev)) {
         int master_chan = get_channel(get_master(dev));
         switch (_status[master_chan]) {
         case STATUS_SLEEP:
             _status[master_chan] = STATUS_READY_FOR_SLEEP;
             disable_int(dev, 1);
+#ifdef PM_STOP
             pm_block(PM_STOP);
+#endif
             /* Fall through */
         case STATUS_NOT_USED:
             periph_clk_en(APB1, dev->conf->master_rcc_mask);
             break;
         }
     }
+#endif
     if (_status[get_channel(dev->conf->can)] == STATUS_SLEEP) {
+#ifdef PM_STOP
         pm_block(PM_STOP);
+#endif
         disable_int(dev, 0);
         periph_clk_en(APB1, dev->conf->rcc_mask);
     }
@@ -1065,7 +1111,7 @@ static void sce_irq_handler(candev_stm32_t *dev)
 #define CAN_RFxR_INT_MASK 0x0000001B
 #define CAN_ESR_INT_MASK  0x00000077
 
-void isr_cec(void)
+void isr_cec_can(void)
 {
     DEBUG("bxCAN irq\n");
 
@@ -1113,7 +1159,7 @@ void isr_can1_sce(void)
     cortexm_isr_end();
 }
 
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)
+#if CANDEV_STM32_CHAN_NUMOF > 1
 void isr_can2_tx(void)
 {
     tx_irq_handler(_can[1]);
@@ -1143,7 +1189,7 @@ void isr_can2_sce(void)
 }
 #endif
 
-#if defined(CPU_MODEL_STM32F413ZH) || defined(CPU_MODEL_STM32F413VG)
+#if CANDEV_STM32_CHAN_NUMOF > 2
 void isr_can3_tx(void)
 {
     tx_irq_handler(_can[2]);

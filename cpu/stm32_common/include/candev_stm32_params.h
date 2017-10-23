@@ -42,7 +42,9 @@ const static candev_stm32_conf_t candev_stm32_conf[] = {
         .nb_filters = 14,
         .rx_pin = GPIO_PIN(PORT_D, 0),
         .tx_pin = GPIO_PIN(PORT_D, 1),
+#ifndef CPU_FAM_STM32F1
         .af = GPIO_AF9,
+#endif
         .tx_irqn = CAN1_TX_IRQn,
         .rx0_irqn = CAN1_RX0_IRQn,
         .rx1_irqn = CAN1_RX1_IRQn,
@@ -55,8 +57,7 @@ const static candev_stm32_conf_t candev_stm32_conf[] = {
         .rflm = 0,
         .txfp = 0,
     },
-#if (defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)) \
-        && (CAN_DLL_NUMOF >= 2)
+#if (CANDEV_STM32_CHAN_NUMOF >= 2) && (CAN_DLL_NUMOF >= 2)
     {
         .can = CAN2,
         .rcc_mask = RCC_APB1ENR_CAN2EN,
@@ -66,7 +67,9 @@ const static candev_stm32_conf_t candev_stm32_conf[] = {
         .nb_filters = 14,
         .rx_pin = GPIO_PIN(PORT_B, 5),
         .tx_pin = GPIO_PIN(PORT_B, 6),
+#ifndef CPU_FAM_STM32F1
         .af = GPIO_AF9,
+#endif
         .tx_irqn = CAN2_TX_IRQn,
         .rx0_irqn = CAN2_RX0_IRQn,
         .rx1_irqn = CAN2_RX1_IRQn,
@@ -79,7 +82,7 @@ const static candev_stm32_conf_t candev_stm32_conf[] = {
         .txfp = 0,
     },
 #endif
-#if (defined(CPU_MODEL_STM32F413ZH) && (CAN_DLL_NUMOF >= 3))
+#if (CANDEV_STM32_CHAN_NUMOF >= 3) && (CAN_DLL_NUMOF >= 3)
     {
         .can = CAN3,
         .rcc_mask = RCC_APB1ENR_CAN3EN,
@@ -109,13 +112,12 @@ const static candev_params_t candev_stm32_params[] = {
     {
         .name = "can_stm32_0",
     },
-#if (defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)) \
-        && (CAN_DLL_NUMOF >= 2)
+#if (CANDEV_STM32_CHAN_NUMOF >= 2) && (CAN_DLL_NUMOF >= 2)
     {
         .name = "can_stm32_1",
     },
 #endif
-#if (defined(CPU_MODEL_STM32F413ZH) && (CAN_DLL_NUMOF >= 3))
+#if (CANDEV_STM32_CHAN_NUMOF >= 3) && (CAN_DLL_NUMOF >= 3)
     {
         .name = "can_stm32_2",
     },
