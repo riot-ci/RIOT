@@ -26,6 +26,7 @@
 #include "can/device.h"
 #include "can/common.h"
 #include "periph_conf.h"
+#include "pm_layered.h"
 #include "thread.h"
 #include "sched.h"
 #include "mutex.h"
@@ -61,7 +62,7 @@ static void rx_irq_handler(candev_stm32_t *dev, int mailbox);
 static void rx_isr(candev_stm32_t *dev);
 static void sce_irq_handler(candev_stm32_t *dev);
 
-static void set_bit_timing(candev_stm32_t *dev);
+static inline void set_bit_timing(candev_stm32_t *dev);
 
 static inline can_mode_t get_mode(CAN_TypeDef *can);
 static int set_mode(CAN_TypeDef *can, can_mode_t mode);
@@ -87,6 +88,15 @@ static const struct can_bittiming_const bittiming_const = {
     .brp_max = 1024,
     .brp_inc = 1,
 };
+
+enum {
+    STATUS_NOT_USED,
+    STATUS_ON,
+    STATUS_READY_FOR_SLEEP,
+    STATUS_SLEEP,
+};
+
+static uint8_t _status[CANDEV_STM32_CHAN_NUMOF];
 
 static candev_stm32_t *_can[CANDEV_STM32_CHAN_NUMOF];
 
@@ -127,6 +137,7 @@ static int set_mode(CAN_TypeDef *can, can_mode_t mode)
         }
         break;
     case MODE_SLEEP:
+        /* set sleep mode */
         can->MCR &= ~CAN_MCR_INRQ;
         can->MCR |= CAN_MCR_SLEEP;
         while (((can->MSR & CAN_MSR_INAK) || !(can->MSR & CAN_MSR_SLAK)) && max_loop != 0) {
@@ -230,10 +241,12 @@ void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
                            gpio_af_t af)
 {
     if (dev->tx_pin != GPIO_UNDEF) {
-        gpio_init(dev->tx_pin, GPIO_OUT);
+        gpio_init(dev->tx_pin, GPIO_IN);
+        gpio_init_analog(dev->tx_pin);
     }
     if (dev->rx_pin != GPIO_UNDEF) {
-        gpio_init(dev->rx_pin, GPIO_OUT);
+        gpio_init(dev->rx_pin, GPIO_IN);
+        gpio_init_analog(dev->rx_pin);
     }
     dev->tx_pin = tx_pin;
     dev->rx_pin = rx_pin;
@@ -261,10 +274,12 @@ static int _init(candev_t *candev)
 
 #if CANDEV_STM32_CHAN_NUMOF > 1
     /* Enable master clock */
-    RCC->APB1ENR |= dev->conf->master_rcc_mask;
+    periph_clk_en(APB1, dev->conf->master_rcc_mask);
 #endif
     /* Enable device clock */
-    RCC->APB1ENR |= dev->conf->rcc_mask;
+    periph_clk_en(APB1, dev->conf->rcc_mask);
+
+    _status[get_channel(dev->conf->can)] = STATUS_ON;
 
     /* configure pins */
     candev_stm32_set_pins(dev, dev->conf->tx_pin, dev->conf->rx_pin, dev->conf->af);
@@ -343,11 +358,12 @@ static int _init(candev_t *candev)
 #endif
 
     res = set_mode(dev->conf->can, MODE_NORMAL);
+    pm_block(PM_STOP);
 
     return res;
 }
 
-static void set_bit_timing(candev_stm32_t *dev)
+static inline void set_bit_timing(candev_stm32_t *dev)
 {
     /* Set bit timing */
     dev->conf->can->BTR = (((uint32_t)(dev->candev.bittiming.sjw - 1) << 24) & CAN_BTR_SJW) |
@@ -413,8 +429,8 @@ static int _abort(candev_t *candev, const struct can_frame *frame)
         return -EOVERFLOW;
     }
 
-    dev->tx_mailbox[mailbox] = NULL;
     can->TSR |= CAN_TSR_ABRQ0 << (8 * mailbox);
+    dev->tx_mailbox[mailbox] = NULL;
 
     return 0;
 }
@@ -472,6 +488,12 @@ static void _isr(candev_t *candev)
         tx_isr(dev);
     }
 
+    if (dev->isr_flags.isr_wkup) {
+        if (dev->candev.event_callback) {
+            dev->candev.event_callback(&dev->candev, CANDEV_EVENT_WAKE_UP, NULL);
+        }
+    }
+
     unsigned int irq;
 
     irq = irq_disable();
@@ -524,6 +546,125 @@ static inline CAN_TypeDef *get_master(candev_stm32_t *dev)
 #endif
 }
 
+static int is_master(candev_stm32_t *dev)
+{
+#if CANDEV_STM32_CHAN_NUMOF == 1
+    return 1;
+#else
+    return dev->conf->can_master == dev->conf->can;
+#endif
+}
+
+static void _wkup_cb(void *arg)
+{
+    candev_stm32_t *dev = arg;
+
+    DEBUG("int wkup: %p\n", arg);
+
+    gpio_irq_disable(dev->rx_pin);
+    dev->isr_flags.isr_wkup = 1;
+
+    if (dev->candev.event_callback) {
+        dev->candev.event_callback(&dev->candev, CANDEV_EVENT_ISR, NULL);
+    }
+}
+
+static void enable_int(candev_stm32_t *dev, int master_from_slave)
+{
+    DEBUG("EN int (%d) (%p)\n", master_from_slave, (void *)dev);
+
+    if (master_from_slave) {
+        candev_stm32_t *master = _can[get_channel(get_master(dev))];
+        gpio_init_int(master->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, master);
+    }
+    else {
+        gpio_init_int(dev->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, dev);
+    }
+}
+
+static void disable_int(candev_stm32_t *dev, int master_from_slave)
+{
+    DEBUG("DIS int (%d) (%p)\n", master_from_slave, (void *)dev);
+
+    if (master_from_slave) {
+        candev_stm32_t *master = _can[get_channel(get_master(dev))];
+        gpio_irq_disable(master->rx_pin);
+        candev_stm32_set_pins(master, master->tx_pin, master->rx_pin, master->af);
+    }
+    else {
+        gpio_irq_disable(dev->rx_pin);
+        candev_stm32_set_pins(dev, dev->tx_pin, dev->rx_pin, dev->af);
+    }
+}
+
+static void turn_off(candev_stm32_t *dev)
+{
+    DEBUG("turn off (%p)\n", (void *)dev);
+
+    if (is_master(dev)) {
+        int chan = get_channel(dev->conf->can);
+        if (chan < CANDEV_STM32_CHAN_NUMOF - 1 && _status[chan + 1] != STATUS_SLEEP) {
+            /* a slave exists and is not sleeping */
+            _status[chan] = STATUS_READY_FOR_SLEEP;
+        }
+        else {
+            /* no slave or slave already sleeping */
+            if (_status[get_channel(dev->conf->can)] != STATUS_SLEEP) {
+                pm_unblock(PM_STOP);
+            }
+            _status[chan] = STATUS_SLEEP;
+            periph_clk_dis(APB1, dev->conf->rcc_mask);
+            enable_int(dev, 0);
+        }
+    }
+    else {
+        int master_chan = get_channel(get_master(dev));
+        switch (_status[master_chan]) {
+        case STATUS_READY_FOR_SLEEP:
+            _status[master_chan] = STATUS_SLEEP;
+            pm_unblock(PM_STOP);
+            /* Fall through */
+        case STATUS_NOT_USED:
+            periph_clk_dis(APB1, dev->conf->master_rcc_mask);
+            break;
+        }
+        periph_clk_dis(APB1, dev->conf->rcc_mask);
+        if (_status[get_channel(dev->conf->can)] != STATUS_SLEEP) {
+            pm_unblock(PM_STOP);
+        }
+        _status[get_channel(dev->conf->can)] = STATUS_SLEEP;
+        if (_status[master_chan] == STATUS_SLEEP) {
+            enable_int(dev, 1);
+        }
+        enable_int(dev, 0);
+    }
+}
+
+static void turn_on(candev_stm32_t *dev)
+{
+    DEBUG("turn on (%p)\n", (void *)dev);
+
+    if (!is_master(dev)) {
+        int master_chan = get_channel(get_master(dev));
+        switch (_status[master_chan]) {
+        case STATUS_SLEEP:
+            _status[master_chan] = STATUS_READY_FOR_SLEEP;
+            disable_int(dev, 1);
+            pm_block(PM_STOP);
+            /* Fall through */
+        case STATUS_NOT_USED:
+            periph_clk_en(APB1, dev->conf->master_rcc_mask);
+            break;
+        }
+    }
+    if (_status[get_channel(dev->conf->can)] == STATUS_SLEEP) {
+        pm_block(PM_STOP);
+        disable_int(dev, 0);
+        periph_clk_en(APB1, dev->conf->rcc_mask);
+    }
+    _status[get_channel(dev->conf->can)] = STATUS_ON;
+}
+
 static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
 {
     candev_stm32_t *dev = (candev_stm32_t *)candev;
@@ -532,50 +673,52 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
     can_mode_t mode;
 
     switch (opt) {
-        case CANOPT_BITTIMING:
-            if (value_len < sizeof(dev->candev.bittiming)) {
-                res = -EOVERFLOW;
+    case CANOPT_BITTIMING:
+        if (value_len < sizeof(dev->candev.bittiming)) {
+            res = -EOVERFLOW;
+        }
+        else {
+            memcpy(&dev->candev.bittiming, value, sizeof(dev->candev.bittiming));
+            mode = get_mode(can);
+            res = set_mode(can, MODE_INIT);
+            if (res == 0) {
+                set_bit_timing(dev);
+                res = sizeof(dev->candev.bittiming);
             }
-            else {
-                memcpy(&dev->candev.bittiming, value, sizeof(dev->candev.bittiming));
-                mode = get_mode(can);
-                res = set_mode(can, MODE_INIT);
-                if (res == 0) {
-                    set_bit_timing(dev);
-                    res = sizeof(dev->candev.bittiming);
-                }
-                if (set_mode(can, mode) < 0) {
-                    res = -EBUSY;
-                }
+            if (set_mode(can, mode) < 0) {
+                res = -EBUSY;
             }
-            break;
-        case CANOPT_STATE:
-            if (value_len < sizeof(canopt_state_t)) {
-                res = -EOVERFLOW;
+        }
+        break;
+    case CANOPT_STATE:
+        if (value_len < sizeof(canopt_state_t)) {
+            res = -EOVERFLOW;
+        }
+        else {
+            switch (*((canopt_state_t *)value)) {
+                case CANOPT_STATE_OFF:
+                case CANOPT_STATE_SLEEP:
+                    DEBUG("candev_stm32 %p: power down\n", (void*)dev);
+                    res = set_mode(dev->conf->can, MODE_SLEEP);
+                    turn_off(dev);
+                    break;
+                case CANOPT_STATE_ON:
+                    DEBUG("candev_stm32 %p: power up\n", (void*)dev);
+                    turn_on(dev);
+                    res = set_mode(dev->conf->can, MODE_NORMAL);
+                    break;
+                case CANOPT_STATE_LISTEN_ONLY:
+                    mode = get_mode(can);
+                    res = set_mode(can, MODE_INIT);
+                    can->BTR |= CAN_BTR_SILM;
+                    res += set_mode(can, mode);
+                    break;
             }
-            else {
-                switch (*((canopt_state_t *)value)) {
-                    case CANOPT_STATE_SLEEP:
-                    case CANOPT_STATE_OFF:
-                        DEBUG("candev_stm32 %p: power down\n", (void*)dev);
-                        res = set_mode(dev->conf->can, MODE_SLEEP);
-                        break;
-                    case CANOPT_STATE_ON:
-                        DEBUG("candev_stm32 %p: power up\n", (void*)dev);
-                        res = set_mode(dev->conf->can, MODE_NORMAL);
-                        break;
-                    case CANOPT_STATE_LISTEN_ONLY:
-                        mode = get_mode(can);
-                        res = set_mode(can, MODE_INIT);
-                        can->BTR |= CAN_BTR_SILM;
-                        res += set_mode(can, mode);
-                        break;
-                }
-            }
-            break;
-        default:
-            res = -ENOTSUP;
-            break;
+        }
+        break;
+    default:
+        res = -ENOTSUP;
+        break;
     }
 
     return res;
@@ -736,7 +879,7 @@ static void tx_conf(candev_stm32_t *dev, int mailbox)
 
     DEBUG("_tx_conf: device=%p, mb=%d\n", (void*)dev, mailbox);
 
-    if (dev->candev.event_callback) {
+    if (frame && dev->candev.event_callback) {
         dev->candev.event_callback(candev, CANDEV_EVENT_TX_CONFIRMATION,
                                    (void *) frame);
     }
@@ -881,21 +1024,27 @@ static void sce_irq_handler(candev_stm32_t *dev)
     CAN_TypeDef *can = dev->conf->can;
     candev_t *candev = (candev_t *) dev;
 
-    DEBUG("sce irq\n");
+    DEBUG("sce irq: ");
 
     if ((can->MSR & CAN_MSR_ERRI) == CAN_MSR_ERRI) {
         can->MSR = CAN_MSR_ERRI;
         if ((can->ESR & CAN_ESR_BOFF) == CAN_ESR_BOFF) {
+            DEBUG("bus-off\n");
+            if (!dev->conf->abom) {
+                set_mode(can, MODE_INIT);
+            }
             if (dev->candev.event_callback) {
                 dev->candev.event_callback(candev, CANDEV_EVENT_BUS_OFF, NULL);
             }
         }
-        if ((can->ESR & CAN_ESR_EPVF) == CAN_ESR_EPVF) {
+        else if ((can->ESR & CAN_ESR_EPVF) == CAN_ESR_EPVF) {
+            DEBUG("error passive\n");
             if (dev->candev.event_callback) {
                 dev->candev.event_callback(candev, CANDEV_EVENT_ERROR_PASSIVE, NULL);
             }
         }
-        if ((can->ESR & CAN_ESR_EWGF) == CAN_ESR_EWGF) {
+        else if ((can->ESR & CAN_ESR_EWGF) == CAN_ESR_EWGF) {
+            DEBUG("error warning\n");
             if (dev->candev.event_callback) {
                 dev->candev.event_callback(candev, CANDEV_EVENT_ERROR_WARNING, NULL);
             }
@@ -903,6 +1052,7 @@ static void sce_irq_handler(candev_stm32_t *dev)
     }
     else if ((can->MSR & CAN_MSR_WKUI) == CAN_MSR_WKUI) {
         can->MSR = CAN_MSR_WKUI;
+        DEBUG("wakeup\n");
         if (dev->candev.event_callback) {
             dev->candev.event_callback(candev, CANDEV_EVENT_WAKE_UP, NULL);
         }
