@@ -30,6 +30,7 @@
 #include "mutex.h"
 #include "assert.h"
 #include "periph/spi.h"
+#include "pm_layered.h"
 
 /* Remove this ugly guard once we selectively build the periph drivers */
 #ifdef SPI_NUMOF
@@ -124,6 +125,8 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
     /* lock bus */
     mutex_lock(&locks[bus]);
+    /* block STOP mode */
+    pm_block(PM_STOP);
     /* enable SPI device clock */
     periph_clk_en(spi_config[bus].apbbus, spi_config[bus].rccmask);
     /* enable device */
@@ -145,6 +148,8 @@ void spi_release(spi_t bus)
     dev(bus)->CR1 = 0;
     dev(bus)->CR2 &= ~(SPI_CR2_SSOE);
     periph_clk_dis(spi_config[bus].apbbus, spi_config[bus].rccmask);
+    /* unblock STOP mode */
+    pm_unblock(PM_STOP);
     mutex_unlock(&locks[bus]);
 }
 
