@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief           Memory definitions for the cortexm family
+ * @brief           Memory definitions for the Cortex-M family
  *
  * @author          Francisco Acosta <francisco.acosta@inria.fr>
  *
