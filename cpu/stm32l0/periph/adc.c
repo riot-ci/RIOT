@@ -54,6 +54,41 @@ static inline void done(void)
     mutex_unlock(&lock);
 }
 
+static void _enable_adc(void)
+{
+	if ((ADC1->CR & ADC_CR_ADEN) != 0) {
+		ADC1->CR |= ADC_CR_ADDIS;
+		while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
+	}
+
+	if ((ADC1->CR & ADC_CR_ADEN) == 0) {
+		/* Then, start a calibration */
+		ADC1->CR |= ADC_CR_ADCAL;
+		while(ADC1->CR & ADC_CR_ADCAL) {} /* Wait for the end of calibration */
+	}
+
+	/* Clear flag */
+	ADC1->ISR |= ADC_ISR_ADRDY;
+
+	/* enable device */
+	ADC1->CR = ADC_CR_ADVREGEN | ADC_CR_ADEN;
+
+	/* Wait for ADC to be ready */
+	while (!(ADC1->ISR & ADC_ISR_ADRDY)) {}
+}
+
+static void _disable_adc(void)
+{
+    /* Disable ADC */
+    if ((ADC1->CR & ADC_CR_ADEN) != 0) {
+        ADC1->CR |= ADC_CR_ADDIS;
+        while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
+        /* Disable Voltage regulator */
+        ADC1->CR = 0;
+        ADC1->ISR = 0;
+    }
+}
+
 int adc_init(adc_t line)
 {
     /* make sure the given line is valid */
@@ -68,28 +103,6 @@ int adc_init(adc_t line)
         /*configure the pin */
         gpio_init_analog(adc_config[line].pin);
     }
-
-    if ((ADC1->CR & ADC_CR_ADEN) != 0) /* (1) */
-    {
-        ADC1->CR |= ADC_CR_ADDIS;
-        while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
-    }
-
-    if ((ADC1->CR & ADC_CR_ADEN) == 0)
-    {
-        /* Then, start a calibration */
-        ADC1->CR |= ADC_CR_ADCAL;
-        while(ADC1->CR & ADC_CR_ADCAL) {} /* Wait for the end of calibration */
-    }
-
-    /* Clear flag */
-    ADC1->ISR |= ADC_ISR_ADRDY;
-
-    /* enable device */
-    ADC1->CR = ADC_CR_ADVREGEN | ADC_CR_ADEN;
-
-    /* Wait for ADC to be ready */
-    while (!(ADC1->ISR & ADC_ISR_ADRDY)) {}
 
     ADC1->CFGR1 = 0; //no watchdog, no discontinuous mode, no auto off, single conv, no trigger, right align, 12bits, no dma, no wait
     ADC1->CFGR2 = 0; //no oversampling: Watch out, MSB (CKMODE) MUST not be changed while on (it is zero by default)
@@ -121,46 +134,27 @@ int adc_sample(adc_t line,  adc_res_t res)
     prep();
 
     switch (res) {
-    case ADC_RES_6BIT:
-        _res = 0x11;
-        break;
-    case ADC_RES_8BIT:
-        _res = 0x10;
-        break;
-    case ADC_RES_10BIT:
-        _res = 0x01;
-        break;
-    case ADC_RES_12BIT:
-        _res = 0x00;
-        break;
-    default:
-        return -1;
-        break;
+        case ADC_RES_6BIT:
+            _res = 0x11;
+            break;
+        case ADC_RES_8BIT:
+            _res = 0x10;
+            break;
+        case ADC_RES_10BIT:
+            _res = 0x01;
+            break;
+        case ADC_RES_12BIT:
+            _res = 0x00;
+            break;
+        default:
+            return -1;
+            break;
     }
 
-    /* Disable ADC before renenabling it */
-    if ((ADC1->CR & ADC_CR_ADEN) != 0) /* (1) */
-    {
-        ADC1->CR |= ADC_CR_ADDIS;
-        while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
-    }
+    /* Enable ADC */
+    _enable_adc();
 
-    if ((ADC1->CR & ADC_CR_ADEN) == 0)
-    {
-        /* Then, start a calibration */
-        ADC1->CR |= ADC_CR_ADCAL;
-        while(ADC1->CR & ADC_CR_ADCAL) {} /* Wait for the end of calibration */
-    }
-
-    /* Clear flag */
-    ADC1->ISR |= ADC_ISR_ADRDY;
-
-    /* enable device */
-    ADC1->CR = ADC_CR_ADVREGEN | ADC_CR_ADEN;
-
-    /* Wait for ADC to be ready */
-    while (!(ADC1->ISR & ADC_ISR_ADRDY)) {}
-
+    /* Reactivate VREFINT and temperature sensor if necessary */
     if (adc_config[line].chan == 17) {
         ADC->CCR |= ADC_CCR_VREFEN;
     }
@@ -186,14 +180,7 @@ int adc_sample(adc_t line,  adc_res_t res)
     sample = (int)ADC1->DR;
 
     /* Disable ADC */
-    if ((ADC1->CR & ADC_CR_ADEN) != 0) /* (1) */
-    {
-        ADC1->CR |= ADC_CR_ADDIS;
-        while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
-        /* Disable Voltage regulator */
-        ADC1->CR = 0;
-        ADC1->ISR = 0;
-    }
+    _disable_adc();
 
     /* Deactivate VREFINT and temperature sensor to save power */
     ADC->CCR &= ~(ADC_CCR_VREFEN | ADC_CCR_TSEN);

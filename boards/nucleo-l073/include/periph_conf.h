@@ -175,16 +175,16 @@ static const spi_conf_t spi_config[] = {
 /** @} */
 
 /**
- * @name   ADC configuration
+ * @name    ADC configuration
  * @{
  */
 #define ADC_CONFIG {             \
-    { GPIO_PIN(PORT_A, 0), 17 },  \
-    { GPIO_PIN(PORT_A, 1), 18 },  \
+    { GPIO_PIN(PORT_A, 0), 17 }, \
+    { GPIO_PIN(PORT_A, 1), 18 }, \
     { GPIO_PIN(PORT_A, 6), 6 },  \
 }
 
-#define ADC_NUMOF           (1U)
+#define ADC_NUMOF           (3U)
 /** @} */
 
 /**
