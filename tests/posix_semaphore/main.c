@@ -278,7 +278,7 @@ void test4(void)
     if (elapsed < (exp - 100)) {
         printf("first: waited only %s usec => FAILED\n", uint64_str);
     }
-    else if (elapsed > (exp + TEST4_TIMEOUT_EXCEEDED_MARGIN))
+    else if (elapsed > (exp + TEST4_TIMEOUT_EXCEEDED_MARGIN)) {
         printf("first: waited too long %s usec => FAILED\n", uint64_str);
     }
     else {
