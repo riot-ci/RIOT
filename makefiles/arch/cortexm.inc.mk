@@ -15,7 +15,7 @@ export CFLAGS_OPT  ?= -Os
 export CFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
 
 export ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
-export LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts -L$(RIOTCPU)/cortexm_common/ldscripts
+export LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts -L$(RIOTCPU)/cortexm_common/ldscripts -L$(RIOTCPU)/stm32_common/ldscripts
 export LINKER_SCRIPT ?= $(CPU_MODEL).ld
 export LINKFLAGS += -T$(LINKER_SCRIPT) -Wl,--fatal-warnings
 
