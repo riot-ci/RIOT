@@ -267,7 +267,7 @@ void test4(void)
         }
     }
 
-    fmt_u64_dec(uint64_str, elapsed);
+    uint64_str[fmt_u64_dec(uint64_str, elapsed)] = '\0';
     if (elapsed < (exp - 100)) {
         printf("first: waited only %s usec => FAILED\n", uint64_str);
     }
