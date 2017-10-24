@@ -12,6 +12,21 @@ information, and TLVs with hash and signing information. This is done through
 the imgtool.py application, which is executed automatically by the build
 system.
 
+Before running the test, be sure that you meet the following Python3
+dependencies:
+
+  - pycrypto
+  - ecdsa
+  - pyasn1
+
+If you don't have one of those, you can install them with the commands:
+
+```console
+pip3 install —user pycrypto
+pip3 install —user ecdsa
+pip3 install —user pyasn1
+```
+
 This test can be called using `make mcuboot` to produce such ELF file,
 which can also be flashed using `make flash-mcuboot`.This command also flashes
 the pre-compiled bootloader.
