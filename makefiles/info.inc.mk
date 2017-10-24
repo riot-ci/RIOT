@@ -114,5 +114,11 @@ info-modules:
 info-cpu:
 	@echo $(CPU)
 
+info-features-provided:
+	@for i in $(sort $(FEATURES_PROVIDED)); do echo $$i; done
+
+info-features-required:
+	@for i in $(sort $(FEATURES_REQUIRED)); do echo $$i; done
+
 info-features-missing:
 	@for i in $(sort $(filter-out $(FEATURES_PROVIDED), $(FEATURES_REQUIRED))); do echo $$i; done
