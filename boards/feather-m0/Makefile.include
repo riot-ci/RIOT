@@ -17,7 +17,7 @@ ifeq ($(PROGRAMMER),jlink)
 else
   # by default, we use BOSSA to flash this board to take into account the
   # pre-flashed Arduino bootloader
-  export LINKER_SCRIPT ?= $(RIOTCPU)/sam0_common/ldscripts/$(CPU_MODEL)_arduino_bootloader.ld
+  ROM_OFFSET ?= 0x2000
   include $(RIOTMAKE)/tools/bossa.inc.mk
 endif
 
