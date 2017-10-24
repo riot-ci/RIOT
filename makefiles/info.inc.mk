@@ -1,5 +1,5 @@
 .PHONY: info-objsize info-buildsizes info-build info-boards-supported \
-        info-features-missing info-modules info-cpu
+        info-features-missing info-modules info-cpu info-features-provided
 
 info-objsize:
 	@case "${SORTROW}" in \
@@ -115,4 +115,4 @@ info-cpu:
 	@echo $(CPU)
 
 info-features-missing:
-	@echo $(filter-out $(FEATURES_PROVIDED), $(FEATURES_REQUIRED))
+	@for i in $(sort $(filter-out $(FEATURES_PROVIDED), $(FEATURES_REQUIRED))); do echo $$i; done
