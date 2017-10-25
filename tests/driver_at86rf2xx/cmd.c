@@ -133,7 +133,7 @@ int ifconfig(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-    for (int i = 0; i < AT86RF2XX_NUM; i++) {
+    for (unsigned int i = 0; i < AT86RF2XX_NUM; i++) {
         ifconfig_list(i);
     }
     return 0;
@@ -148,7 +148,8 @@ int txtsnd(int argc, char **argv)
 {
     char *text;
     uint8_t addr[_MAX_ADDR_LEN];
-    int iface, idx = 2, res;
+    int iface, idx = 2;
+    size_t res;
     le_uint16_t pan = { 0 };
 
     switch (argc) {
@@ -174,7 +175,7 @@ int txtsnd(int argc, char **argv)
         return 1;
     }
     text = argv[idx++];
-    return send(iface, pan, addr, (size_t)res, text);
+    return send(iface, pan, addr, res, text);
 }
 
 static inline int _dehex(char c, int default_)
@@ -248,7 +249,7 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
 {
     int res;
     netdev_ieee802154_t *dev;
-    const size_t count = 2;         /* mhr + payload */
+    size_t count = 2;         /* mhr + payload */
     struct iovec vector[count];
     uint8_t *src;
     size_t src_len;
