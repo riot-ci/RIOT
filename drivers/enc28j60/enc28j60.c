@@ -256,7 +256,7 @@ static int nd_send(netdev_t *netdev, const struct iovec *data, unsigned count)
     cmd_w_addr(dev, ADDR_WRITE_PTR, BUF_TX_START);
     /* write control byte and the actual data into the buffer */
     cmd_wbm(dev, &ctrl, 1);
-    for (int i = 0; i < count; i++) {
+    for (unsigned i = 0; i < count; i++) {
         c += data[i].iov_len;
         cmd_wbm(dev, (uint8_t *)data[i].iov_base, data[i].iov_len);
     }
@@ -311,7 +311,7 @@ static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 static int nd_init(netdev_t *netdev)
 {
     enc28j60_t *dev = (enc28j60_t *)netdev;
-    int res;
+    unsigned res;
     uint8_t tmp;
 
     /* get exclusive access of the device */
