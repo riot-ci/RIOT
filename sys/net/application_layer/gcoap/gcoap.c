@@ -354,15 +354,8 @@ static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *src_pdu)
         }
 
         if (coap_get_token_len(memo_pdu) == cmplen) {
-            if (cmplen) {
-                memo_pdu->token = &memo_pdu->hdr->data[0];
-                if (memcmp(src_pdu->token, memo_pdu->token, cmplen) == 0) {
-                    *memo_ptr = memo;
-                    break;
-                }
-            }
-            /* if no token, just match the first memo */
-            else {
+            memo_pdu->token = &memo_pdu->hdr->data[0];
+            if (memcmp(src_pdu->token, memo_pdu->token, cmplen) == 0) {
                 *memo_ptr = memo;
                 break;
             }
