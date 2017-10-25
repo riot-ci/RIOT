@@ -53,7 +53,7 @@ void *thread1(void *arg)
 void *thread2(void *arg)
 {
     (void) arg;
-    puts("THREAD 2\n");
+    puts("THREAD 2 start\n");
 
     for (int i = 0;; ++i) {
         msg_t msg, reply;
@@ -70,7 +70,7 @@ void *thread2(void *arg)
 void *thread3(void *arg)
 {
     (void) arg;
-    puts("THREAD 3\n");
+    puts("THREAD 3 start\n");
 
     for (int i = 0;; ++i) {
         msg_t msg;
