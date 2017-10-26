@@ -1,13 +1,13 @@
 /**
- * @defgroup    cpu_kinetis_common NXP Kinetis MCU
+ * @defgroup    cpu_kinetis NXP Kinetis MCU
  * @ingroup     cpu
- * @brief       NXP Kinetis CPU peripheral drivers
+ * @brief       NXP Kinetis Cortex-M MCU specific implementation
  */
 
 /**
- * @defgroup    cpu_kinetis_common_adc Kinetis ADC
- * @ingroup     cpu_kinetis_common
- * @brief       ADC driver
+ * @defgroup    cpu_kinetis_adc Kinetis ADC
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis ADC driver
  *
  *              ### ADC configuration example (for periph_conf.h) ###
  *
@@ -25,17 +25,17 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_cpuid Kinetis CPUID
- * @ingroup     cpu_kinetis_common
- * @brief       CPUID driver
+ * @defgroup    cpu_kinetis_cpuid Kinetis CPUID
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis CPUID driver
  *
  *              No configuration is necessary.
  */
 
 /**
- * @defgroup    cpu_kinetis_common_gpio Kinetis GPIO
- * @ingroup     cpu_kinetis_common
- * @brief       GPIO driver
+ * @defgroup    cpu_kinetis_gpio Kinetis GPIO
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis GPIO driver
  *
  *              The GPIO driver uses the @ref GPIO_PIN(port, pin) macro to declare pins.
  *
@@ -43,9 +43,9 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_i2c Kinetis I2C
- * @ingroup     cpu_kinetis_common
- * @brief       I2C driver
+ * @defgroup    cpu_kinetis_i2c Kinetis I2C
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis I2C driver
  *
  *              ### I2C configuration example (for periph_conf.h) ###
  *
@@ -81,9 +81,9 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_pwm Kinetis PWM
- * @ingroup     cpu_kinetis_common
- * @brief       PWM driver
+ * @defgroup    cpu_kinetis_pwm Kinetis PWM
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis PWM driver
  *
  *              ### PWM configuration example (for periph_conf.h) ###
  *
@@ -112,9 +112,9 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_rnga Kinetis RNGA
- * @ingroup     cpu_kinetis_common
- * @brief       Driver for Freescale's RNGA module. RNGA generates data that
+ * @defgroup    cpu_kinetis_rnga Kinetis RNGA
+ * @ingroup     cpu_kinetis
+ * @brief       Driver for NXP Kinetis RNGA module. RNGA generates data that
  *              looks random. Reference Manual recommends to use the RNGA as entropy
  *              source.
  *
@@ -127,10 +127,10 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_rngb Kinetis RNGB
- * @ingroup     cpu_kinetis_common
+ * @defgroup    cpu_kinetis_rngb Kinetis RNGB
+ * @ingroup     cpu_kinetis
  * @brief       Low-level random number generator driver implementation.
- *              Driver for Freescale's RNGB module. RNGB generates data that
+ *              Driver for NXP Kinetis RNGB module. RNGB generates data that
  *              looks random. Reference Manual recommends to use the RNGB as entropy
  *              source.
  *
@@ -143,9 +143,12 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_rtc Kinetis RTC
- * @ingroup     cpu_kinetis_common
- * @brief       RTC is clocked by a 32.768 kHz clock.
+ * @defgroup    cpu_kinetis_rtc Kinetis RTC
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis RTC driver
+ *
+ *              RTC is clocked by a 32.768 kHz clock.
+ *
  *              Please note the manual of your MCU or SiP for the
  *              clock setting for the RTC module. After initialization
  *              Time Seconds Register (TSR) increments once a second.
@@ -168,9 +171,9 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_spi Kinetis SPI
- * @ingroup     cpu_kinetis_common
- * @brief       Kinetis SPI driver for MCUs with Cortex-M4 core.
+ * @defgroup    cpu_kinetis_spi Kinetis SPI
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis SPI driver
  *
  *              The SPI baud rate and other timings are generated from the bus
  *              clock via prescalers, the hardware module allows for very
@@ -244,8 +247,8 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_timer Kinetis Timer
- * @ingroup     cpu_kinetis_common
+ * @defgroup    cpu_kinetis_timer Kinetis Timer
+ * @ingroup     cpu_kinetis
  * @brief       Periodic Interrupt Timer (PIT) and Low-Power Timer (LPTMR) driver.
  *
  *              The PIT is a count down timer, in order to use it with riot-os
@@ -289,9 +292,10 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_uart Kinetis UART
- * @ingroup     cpu_kinetis_common
- * @brief       Kinetis UART driver.
+ * @defgroup    cpu_kinetis_uart Kinetis UART
+ * @ingroup     cpu_kinetis
+ * @brief       Kinetis UART driver
+ *
  *              There are different implementations of the UART interface.
  *              The treatment of interrupts is also slightly different.
  *              The register UARTx_BDH to UARTx_C4 look almost the same.

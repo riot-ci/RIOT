@@ -7,10 +7,9 @@
  */
 
 /**
- * @defgroup        cpu_k22f NXP Kinetis K22F
- * @ingroup         cpu
- * @brief           CPU specific implementations for the NXP Kinetis K22F
- *                  Cortex-M4 MCU
+ * @ingroup         cpu_kinetis
+ * @brief           CPU specific implementations for the NXP Kinetis V series of
+ *                  Cortex-M MCUs
  * @{
  *
  * @file
@@ -19,16 +18,14 @@
  * @author          Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
-#ifndef CPU_CONF_H
-#define CPU_CONF_H
+#ifndef CPU_CONF_KINETIS_V_H
+#define CPU_CONF_KINETIS_V_H
 
-#ifdef CPU_MODEL_MK22FN512VLH12
-#include "vendor/MK22F51212.h"
-#else
-#error "undefined CPU_MODEL"
-#endif
-
-#include "cpu_conf_kinetis.h"
+#if (KINETIS_FAMILY == 2)
+#if (KINETIS_SUBFAMILY == 2)
+/* Put your vendor includes here */
+#endif /* (KINETIS_SUBFAMILY == y) */
+#endif /* (KINETIS_FAMILY == x) */
 
 #ifdef __cplusplus
 extern "C"
@@ -39,5 +36,5 @@ extern "C"
 }
 #endif
 
-#endif /* CPU_CONF_H */
+#endif /* CPU_CONF_KINETIS_K_H */
 /** @} */
