@@ -441,9 +441,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
             return sizeof(uint32_t);
 
         case NETOPT_TX_POWER:
-            assert(len <= sizeof(uint8_t));
-            sx127x_set_tx_power(dev, *((const uint8_t*) val));
-            return sizeof(uint16_t);
+            assert(len <= sizeof(int8_t));
+            sx127x_set_tx_power(dev, *((const int8_t*) val));
+            return sizeof(int8_t);
 
         case NETOPT_FIXED_HEADER:
             assert(len <= sizeof(netopt_enable_t));
