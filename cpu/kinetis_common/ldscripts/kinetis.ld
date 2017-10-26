@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 PHYTEC Messtechnik GmbH
- * Copyright (C) 2015 Eistec AB
+ * Copyright (C) 2015-2017 Eistec AB
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,6 +19,16 @@
  *
  * @}
  */
+OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
+OUTPUT_ARCH(arm)
+
+MEMORY
+{
+    vectors (rx)   : ORIGIN = _rom_start_addr,          LENGTH = 0x400
+    flashsec (rx)  : ORIGIN = _rom_start_addr + 0x400,  LENGTH = 0x10
+    rom (rx)       : ORIGIN = _rom_start_addr + 0x410,  LENGTH = _rom_length - 0x410
+    ram (rwx)      : ORIGIN = _ram_start_addr, LENGTH = _ram_length
+}
 
 SECTIONS
 {
