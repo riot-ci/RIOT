@@ -34,7 +34,8 @@
  *    one thread, e.g., in order to create a state-machine like process flow.
  *    This is not (easily) possible using msg queues, as they might fill up.
  * 4. an event can only be queued in one event queue at the same time.
- *    Notifying many queues using only one event object is impossible.
+ *    Notifying many queues using only one event object is not possible with
+ *    this imlementation.
  *
  * At the core, event_wait() uses thread flags to implement waiting for events
  * to be queued. Thus event queues can be used safely and efficiently in combination
@@ -42,6 +43,7 @@
  *
  * Examples:
  *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
  *     // simple event handler
  *     static void handler(event_t *event)
  *     {
@@ -70,11 +72,11 @@
  *         custom_event_t *custom_event = (custom_event_t *)event;
  *         printf("triggered custom event with text: \"%s\"\n", custom_event->text);
  *     }
- *         static custom_event_t custom_event = { .super.callback=custom_handler, .text="CUSTOM EVENT" };
+ *
+ *     static custom_event_t custom_event = { .super.callback=custom_handler, .text="CUSTOM EVENT" };
  *
  *     [...] event_post(&queue, &custom_event)
- *
- *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * @{
  *
@@ -140,7 +142,7 @@ typedef struct {
  *
  * This will set the calling thread as owner of @p queue.
  *
- * @param[in,out]   queue   event queue object to initialize
+ * @param[out]  queue   event queue object to initialize
  */
 void event_queue_init(event_queue_t *queue);
 
@@ -199,9 +201,11 @@ event_t *event_wait(event_queue_t *queue);
  *
  * It is pretty much defined as:
  *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
  *     while((event = event_wait(queue))) {
  *         event->handler(event);
  *     }
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * @param[in]   queue   event queue to process
  */
