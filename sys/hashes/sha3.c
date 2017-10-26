@@ -52,7 +52,7 @@ This file uses UTF-8 encoding, as some comments use Greek letters.
 ================================================================
 */
 
-#include "sha3.h"
+#include <hashes/sha3.h>
 
 /**
   * Function to compute the Keccak[r, c] sponge function over a given input.
@@ -102,12 +102,17 @@ void FIPS202_SHA3_224(const unsigned char *input, unsigned int inputByteLen, uns
     Keccak(1152, 448, input, inputByteLen, 0x06, output, 28);
 }
 
+
 /**
   *  Function to compute SHA3-256 on the input message. The output length is fixed to 32 bytes.
   */
 void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
     Keccak(1088, 512, input, inputByteLen, 0x06, output, 32);
+}
+
+void sha3_256(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_256(data, len, digest);
 }
 
 /**
@@ -118,6 +123,10 @@ void FIPS202_SHA3_384(const unsigned char *input, unsigned int inputByteLen, uns
     Keccak(832, 768, input, inputByteLen, 0x06, output, 48);
 }
 
+void sha3_384(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_384(data, len, digest);
+}
+
 /**
   *  Function to compute SHA3-512 on the input message. The output length is fixed to 64 bytes.
   */
@@ -125,6 +134,11 @@ void FIPS202_SHA3_512(const unsigned char *input, unsigned int inputByteLen, uns
 {
     Keccak(576, 1024, input, inputByteLen, 0x06, output, 64);
 }
+
+void sha3_512(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_512(data, len, digest);
+}
+
 
 /*
 ================================================================
