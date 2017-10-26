@@ -115,16 +115,16 @@ void sha3_256(void *digest, const void *data, size_t len) {
   FIPS202_SHA3_256(data, len, digest);
 }
 
-void sha3_256_init(keccak_state_t *state) {
-  Keccak_init(state, 1088, 512, 0x06);
+void sha3_256_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 1088, 512, 0x06);
 }
 
-void sha3_update(keccak_state_t *state, const void *data, size_t len) {
-  Keccak_update(state, data, len);
+void sha3_update(keccak_state_t *ctx, const void *data, size_t len) {
+  Keccak_update(ctx, data, len);
 }
 
-void sha3_256_final(keccak_state_t *state, void *digest) {
-  Keccak_final(state, digest, SHA3_256_DIGEST_LENGTH);
+void sha3_256_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_256_DIGEST_LENGTH);
 }
 
 
@@ -140,6 +140,14 @@ void sha3_384(void *digest, const void *data, size_t len) {
   FIPS202_SHA3_384(data, len, digest);
 }
 
+void sha3_384_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 832, 768, 0x06);
+}
+
+void sha3_384_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_384_DIGEST_LENGTH);
+}
+
 /**
   *  Function to compute SHA3-512 on the input message. The output length is fixed to 64 bytes.
   */
@@ -152,6 +160,13 @@ void sha3_512(void *digest, const void *data, size_t len) {
   FIPS202_SHA3_512(data, len, digest);
 }
 
+void sha3_512_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 576, 1024, 0x06);
+}
+
+void sha3_512_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_512_DIGEST_LENGTH);
+}
 
 /*
 ================================================================
@@ -382,21 +397,20 @@ void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, 
 }
 
 void Keccak_update(keccak_state_t *ctx, const unsigned char* input, unsigned long long int inputByteLen) {
-  
     /* === Absorb all the input blocks === */
     while(inputByteLen > 0) {
-        ctx->blockSize = MIN(inputByteLen, ctx->rateInBytes);
+        ctx->blockSize = MIN(inputByteLen+ctx->i, ctx->rateInBytes);
 	while(ctx->i < ctx->blockSize) {
             ctx->state[ctx->i] ^= *input;
 	    ++(ctx->i);
 	    input++;
 	    --inputByteLen;
 	}
-	ctx->i = 0;
 
         if (ctx->blockSize == ctx->rateInBytes) {
             KeccakF1600_StatePermute(ctx->state);
             ctx->blockSize = 0;
+	    ctx->i = 0;
         }
     }
 }

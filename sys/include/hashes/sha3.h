@@ -25,6 +25,12 @@ void sha3_256_init(keccak_state_t *ctx);
 void sha3_update(keccak_state_t *ctx, const void *data, size_t len);
 void sha3_256_final(keccak_state_t *ctx, void *digest);
 
+void sha3_384_init(keccak_state_t *ctx);
+void sha3_384_final(keccak_state_t *ctx, void *digest);
+
+void sha3_512_init(keccak_state_t *ctx);
+void sha3_512_final(keccak_state_t *ctx, void *digest);
+
 void sha3_256(void *digest, const void *data, size_t len);
 void sha3_384(void *digest, const void *data, size_t len);
 void sha3_512(void *digest, const void *data, size_t len);
