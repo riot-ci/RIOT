@@ -471,7 +471,7 @@ static uint8_t _get_tx_len(const struct iovec *vector, unsigned count)
 {
     uint8_t len = 0;
 
-    for (int i=0 ; i < count ; i++) {
+    for (unsigned i = 0 ; i < count ; i++) {
         len += vector[i].iov_len;
     }
 
