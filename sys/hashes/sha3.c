@@ -108,12 +108,25 @@ void FIPS202_SHA3_224(const unsigned char *input, unsigned int inputByteLen, uns
   */
 void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
-    Keccak(1088, 512, input, inputByteLen, 0x06, output, 32);
+    Keccak(1088, 512, input, inputByteLen, 0x06, output, SHA3_256_DIGEST_LENGTH);
 }
 
 void sha3_256(void *digest, const void *data, size_t len) {
   FIPS202_SHA3_256(data, len, digest);
 }
+
+void sha3_256_init(keccak_state_t *state) {
+  Keccak_init(state, 1088, 512, 0x06);
+}
+
+void sha3_update(keccak_state_t *state, const void *data, size_t len) {
+  Keccak_update(state, data, len);
+}
+
+void sha3_256_final(keccak_state_t *state, void *digest) {
+  Keccak_final(state, digest, SHA3_256_DIGEST_LENGTH);
+}
+
 
 /**
   *  Function to compute SHA3-384 on the input message. The output length is fixed to 48 bytes.
@@ -351,64 +364,64 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
     }
 }
 
-void Keccak_init(keccak_state_t *state, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
+void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
 {
-    state->rateInBytes = rate/8;
-    state->blockSize = 0;
+    ctx->rateInBytes = rate/8;
+    ctx->blockSize = 0;
 
     if (((rate + capacity) != 1600) || ((rate % 8) != 0))
         return;
 
     /* === Initialize the state === */
-    memset(state->state, 0, sizeof(state->state));
-    state->i = 0;
+    memset(ctx->state, 0, sizeof(ctx->state));
+    ctx->i = 0;
 
-    state->rate = rate;
-    state->capacity = capacity;
-    state->delimitedSuffix = delimitedSuffix;
+    ctx->rate = rate;
+    ctx->capacity = capacity;
+    ctx->delimitedSuffix = delimitedSuffix;
 }
 
-void Keccak_update(keccak_state_t *state, const unsigned char* input, unsigned long long int inputByteLen) {
+void Keccak_update(keccak_state_t *ctx, const unsigned char* input, unsigned long long int inputByteLen) {
   
     /* === Absorb all the input blocks === */
     while(inputByteLen > 0) {
-        state->blockSize = MIN(inputByteLen, state->rateInBytes);
-	while(state->i < state->blockSize) {
-            state->state[state->i] ^= *input;
-	    ++(state->i);
+        ctx->blockSize = MIN(inputByteLen, ctx->rateInBytes);
+	while(ctx->i < ctx->blockSize) {
+            ctx->state[ctx->i] ^= *input;
+	    ++(ctx->i);
 	    input++;
 	    --inputByteLen;
 	}
-	state->i = 0;
+	ctx->i = 0;
 
-        if (state->blockSize == state->rateInBytes) {
-            KeccakF1600_StatePermute(state->state);
-            state->blockSize = 0;
+        if (ctx->blockSize == ctx->rateInBytes) {
+            KeccakF1600_StatePermute(ctx->state);
+            ctx->blockSize = 0;
         }
     }
 }
 
-void Keccak_final(keccak_state_t *state, unsigned char *output, unsigned long long int outputByteLen) {
+void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long int outputByteLen) {
 
     /* === Do the padding and switch to the squeezing phase === */
     /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
-    state->state[state->blockSize] ^= state->delimitedSuffix;
+    ctx->state[ctx->blockSize] ^= ctx->delimitedSuffix;
     /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
-    if (((state->delimitedSuffix & 0x80) != 0) && (state->blockSize == (state->rateInBytes-1)))
-        KeccakF1600_StatePermute(state->state);
+    if (((ctx->delimitedSuffix & 0x80) != 0) && (ctx->blockSize == (ctx->rateInBytes-1)))
+        KeccakF1600_StatePermute(ctx->state);
     /* Add the second bit of padding */
-    state->state[state->rateInBytes-1] ^= 0x80;
+    ctx->state[ctx->rateInBytes-1] ^= 0x80;
     /* Switch to the squeezing phase */
-    KeccakF1600_StatePermute(state->state);
+    KeccakF1600_StatePermute(ctx->state);
 
     /* === Squeeze out all the output blocks === */
     while(outputByteLen > 0) {
-        state->blockSize = MIN(outputByteLen, state->rateInBytes);
-        memcpy(output, state->state, state->blockSize);
-        output += state->blockSize;
-        outputByteLen -= state->blockSize;
+        ctx->blockSize = MIN(outputByteLen, ctx->rateInBytes);
+        memcpy(output, ctx->state, ctx->blockSize);
+        output += ctx->blockSize;
+        outputByteLen -= ctx->blockSize;
 
         if (outputByteLen > 0)
-            KeccakF1600_StatePermute(state->state);
+            KeccakF1600_StatePermute(ctx->state);
     }
 }
