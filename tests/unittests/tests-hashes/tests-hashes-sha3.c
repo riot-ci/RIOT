@@ -129,7 +129,6 @@ static int calc_steps_and_compare_hash_256(const uint8_t *msg1, size_t msg1_len,
 {
     static unsigned char hash[SHA3_256_DIGEST_LENGTH];
     keccak_state_t state;
-
     sha3_256_init(&state);
     sha3_update(&state, msg1, msg1_len);
     sha3_update(&state, msg2, msg2_len);
@@ -151,7 +150,6 @@ static int calc_steps_and_compare_hash_384(const uint8_t *msg1, size_t msg1_len,
 {
     static unsigned char hash[SHA3_384_DIGEST_LENGTH];
     keccak_state_t state;
-
     sha3_384_init(&state);
     sha3_update(&state, msg1, msg1_len);
     sha3_update(&state, msg2, msg2_len);
@@ -173,7 +171,6 @@ static int calc_steps_and_compare_hash_512(const uint8_t *msg1, size_t msg1_len,
 {
     static unsigned char hash[SHA3_512_DIGEST_LENGTH];
     keccak_state_t state;
-
     sha3_512_init(&state);
     sha3_update(&state, msg1, msg1_len);
     sha3_update(&state, msg2, msg2_len);
