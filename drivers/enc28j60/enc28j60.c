@@ -320,7 +320,8 @@ static int nd_init(netdev_t *netdev)
     /* setup the low-level interfaces */
     gpio_init(dev->reset_pin, GPIO_OUT);
     gpio_clear(dev->reset_pin);     /* this puts the device into reset state */
-    if (spi_init_cs(dev->spi, dev->cs_pin) != SPI_OK) {
+    res = spi_init_cs(dev->spi, dev->cs_pin);
+    if (res != SPI_OK) {
         DEBUG("[enc28j60] init: error initializing the CS pin [%i]\n", res);
         return -1;
     }
