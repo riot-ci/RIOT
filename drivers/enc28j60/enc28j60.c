@@ -256,7 +256,7 @@ static int nd_send(netdev_t *netdev, const struct iovec *data, unsigned count)
     cmd_w_addr(dev, ADDR_WRITE_PTR, BUF_TX_START);
     /* write control byte and the actual data into the buffer */
     cmd_wbm(dev, &ctrl, 1);
-    for (int i = 0; i < count; i++) {
+    for (unsigned i = 0; i < count; i++) {
         c += data[i].iov_len;
         cmd_wbm(dev, (uint8_t *)data[i].iov_base, data[i].iov_len);
     }
@@ -311,7 +311,7 @@ static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 static int nd_init(netdev_t *netdev)
 {
     enc28j60_t *dev = (enc28j60_t *)netdev;
-    int res;
+    unsigned res;
     uint8_t tmp;
 
     /* get exclusive access of the device */
@@ -320,7 +320,8 @@ static int nd_init(netdev_t *netdev)
     /* setup the low-level interfaces */
     gpio_init(dev->reset_pin, GPIO_OUT);
     gpio_clear(dev->reset_pin);     /* this puts the device into reset state */
-    if (spi_init_cs(dev->spi, dev->cs_pin) != SPI_OK) {
+    res = spi_init_cs(dev->spi, dev->cs_pin);
+    if (res != SPI_OK) {
         DEBUG("[enc28j60] init: error initializing the CS pin [%i]\n", res);
         return -1;
     }
