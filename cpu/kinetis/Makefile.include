@@ -4,11 +4,8 @@ ifeq (,$(KINETIS_SERIES))
   include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/kinetis-info.mk
 endif
 
-# include module specific includes
-export INCLUDES += -I$(RIOTCPU)/kinetis_common/include
-
 # Add search path for linker scripts
-export LINKFLAGS += -L$(RIOTCPU)/kinetis_common/ldscripts
+LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts
 
 # Use generic linker script for all Kinetis based CPUs
 LINKER_SCRIPT = kinetis.ld
@@ -33,14 +30,10 @@ LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_ram_start_addr=$(RAM_START_ADDR)
 LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_rom_length=$(ROM_LEN)
 LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_ram_length=$(RAM_LEN)
 
-# add the CPU specific code for the linker
-export UNDEF += $(BINDIR)/kinetis_common/fcfield.o
+# add the CPU specific flash configuration field for the linker
+export UNDEF += $(BINDIR)/cpu/fcfield.o
 
-# add the CPU specific interrupt vector table definition for the linker
-export UNDEF += $(BINDIR)/kinetis_common/vectors.o
-
-# include kinetis common periph drivers
-export USEMODULE += kinetis_common_periph
+# include common periph drivers
 export USEMODULE += periph_common
 
 #include layered power mode module
@@ -52,3 +45,5 @@ $(RIOTCPU)/kinetis_common/dist/wdog-disable.bin: $(RIOTCPU)/kinetis_common/dist/
 
 # Reset the default goal to not make wdog-disable.bin the default target.
 .DEFAULT_GOAL :=
+
+include $(RIOTMAKE)/arch/cortexm.inc.mk
