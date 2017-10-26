@@ -102,6 +102,7 @@ endif
 
 ifneq (,$(filter hdc1000,$(USEMODULE)))
   USEMODULE += xtimer
+  FEATURES_REQUIRED += periph_i2c
 endif
 
 ifneq (,$(filter hih6130,$(USEMODULE)))
@@ -122,6 +123,7 @@ ifneq (,$(filter kw2xrf,$(USEMODULE)))
   USEMODULE += netif
   USEMODULE += ieee802154
   USEMODULE += netdev_ieee802154
+  FEATURES_REQUIRED += periph_spi
 endif
 
 ifneq (,$(filter hd44780,$(USEMODULE)))
@@ -145,6 +147,18 @@ endif
 ifneq (,$(filter lpd8808,$(USEMODULE)))
   USEMODULE += color
   FEATURES_REQUIRED += periph_gpio
+endif
+
+ifneq (,$(filter mag3110,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+endif
+
+ifneq (,$(filter mma8x5x,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+endif
+
+ifneq (,$(filter mpl3115a2,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
 endif
 
 ifneq (,$(filter mpu9150,$(USEMODULE)))
@@ -212,6 +226,14 @@ ifneq (,$(filter sx127%,$(USEMODULE)))
   FEATURES_REQUIRED += periph_spi
   USEMODULE += xtimer
   USEMODULE += sx127x
+endif
+
+ifneq (,$(filter tcs37727,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+endif
+
+ifneq (,$(filter tmp006,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
 endif
 
 ifneq (,$(filter veml6070,$(USEMODULE)))
