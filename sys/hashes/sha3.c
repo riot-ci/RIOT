@@ -11,6 +11,9 @@ http://ketje.noekeon.org/
 To the extent possible under law, the implementer has waived all copyright
 and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
+
+RIOT OS adaptations (c) Mathias Tausig
+
 */
 
 /*
@@ -48,6 +51,8 @@ For more information, please refer to:
 This file uses UTF-8 encoding, as some comments use Greek letters.
 ================================================================
 */
+
+#include "sha3.h"
 
 /**
   * Function to compute the Keccak[r, c] sponge function over a given input.
@@ -329,5 +334,67 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
 
         if (outputByteLen > 0)
             KeccakF1600_StatePermute(state);
+    }
+}
+
+void Keccak_init(keccak_state_t *state, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
+{
+    state->rateInBytes = rate/8;
+    state->blockSize = 0;
+
+    if (((rate + capacity) != 1600) || ((rate % 8) != 0))
+        return;
+
+    /* === Initialize the state === */
+    memset(state->state, 0, sizeof(state->state));
+    state->i = 0;
+
+    state->rate = rate;
+    state->capacity = capacity;
+    state->delimitedSuffix = delimitedSuffix;
+}
+
+void Keccak_update(keccak_state_t *state, const unsigned char* input, unsigned long long int inputByteLen) {
+  
+    /* === Absorb all the input blocks === */
+    while(inputByteLen > 0) {
+        state->blockSize = MIN(inputByteLen, state->rateInBytes);
+	while(state->i < state->blockSize) {
+            state->state[state->i] ^= *input;
+	    ++(state->i);
+	    input++;
+	    --inputByteLen;
+	}
+	state->i = 0;
+
+        if (state->blockSize == state->rateInBytes) {
+            KeccakF1600_StatePermute(state->state);
+            state->blockSize = 0;
+        }
+    }
+}
+
+void Keccak_final(keccak_state_t *state, unsigned char *output, unsigned long long int outputByteLen) {
+
+    /* === Do the padding and switch to the squeezing phase === */
+    /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
+    state->state[state->blockSize] ^= state->delimitedSuffix;
+    /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
+    if (((state->delimitedSuffix & 0x80) != 0) && (state->blockSize == (state->rateInBytes-1)))
+        KeccakF1600_StatePermute(state->state);
+    /* Add the second bit of padding */
+    state->state[state->rateInBytes-1] ^= 0x80;
+    /* Switch to the squeezing phase */
+    KeccakF1600_StatePermute(state->state);
+
+    /* === Squeeze out all the output blocks === */
+    while(outputByteLen > 0) {
+        state->blockSize = MIN(outputByteLen, state->rateInBytes);
+        memcpy(output, state->state, state->blockSize);
+        output += state->blockSize;
+        outputByteLen -= state->blockSize;
+
+        if (outputByteLen > 0)
+            KeccakF1600_StatePermute(state->state);
     }
 }
