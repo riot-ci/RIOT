@@ -11,6 +11,9 @@ http://ketje.noekeon.org/
 To the extent possible under law, the implementer has waived all copyright
 and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
+
+RIOT OS adaptations (c) Mathias Tausig
+
 */
 
 /*
@@ -48,6 +51,8 @@ For more information, please refer to:
 This file uses UTF-8 encoding, as some comments use Greek letters.
 ================================================================
 */
+
+#include <hashes/sha3.h>
 
 /**
   * Function to compute the Keccak[r, c] sponge function over a given input.
@@ -97,13 +102,31 @@ void FIPS202_SHA3_224(const unsigned char *input, unsigned int inputByteLen, uns
     Keccak(1152, 448, input, inputByteLen, 0x06, output, 28);
 }
 
+
 /**
   *  Function to compute SHA3-256 on the input message. The output length is fixed to 32 bytes.
   */
 void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
-    Keccak(1088, 512, input, inputByteLen, 0x06, output, 32);
+    Keccak(1088, 512, input, inputByteLen, 0x06, output, SHA3_256_DIGEST_LENGTH);
 }
+
+void sha3_256(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_256(data, len, digest);
+}
+
+void sha3_256_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 1088, 512, 0x06);
+}
+
+void sha3_update(keccak_state_t *ctx, const void *data, size_t len) {
+  Keccak_update(ctx, data, len);
+}
+
+void sha3_256_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_256_DIGEST_LENGTH);
+}
+
 
 /**
   *  Function to compute SHA3-384 on the input message. The output length is fixed to 48 bytes.
@@ -113,12 +136,36 @@ void FIPS202_SHA3_384(const unsigned char *input, unsigned int inputByteLen, uns
     Keccak(832, 768, input, inputByteLen, 0x06, output, 48);
 }
 
+void sha3_384(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_384(data, len, digest);
+}
+
+void sha3_384_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 832, 768, 0x06);
+}
+
+void sha3_384_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_384_DIGEST_LENGTH);
+}
+
 /**
   *  Function to compute SHA3-512 on the input message. The output length is fixed to 64 bytes.
   */
 void FIPS202_SHA3_512(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
     Keccak(576, 1024, input, inputByteLen, 0x06, output, 64);
+}
+
+void sha3_512(void *digest, const void *data, size_t len) {
+  FIPS202_SHA3_512(data, len, digest);
+}
+
+void sha3_512_init(keccak_state_t *ctx) {
+  Keccak_init(ctx, 576, 1024, 0x06);
+}
+
+void sha3_512_final(keccak_state_t *ctx, void *digest) {
+  Keccak_final(ctx, digest, SHA3_512_DIGEST_LENGTH);
 }
 
 /*
@@ -329,5 +376,66 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
 
         if (outputByteLen > 0)
             KeccakF1600_StatePermute(state);
+    }
+}
+
+void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
+{
+    ctx->rateInBytes = rate/8;
+    ctx->blockSize = 0;
+
+    if (((rate + capacity) != 1600) || ((rate % 8) != 0))
+        return;
+
+    /* === Initialize the state === */
+    memset(ctx->state, 0, sizeof(ctx->state));
+    ctx->i = 0;
+
+    ctx->rate = rate;
+    ctx->capacity = capacity;
+    ctx->delimitedSuffix = delimitedSuffix;
+}
+
+void Keccak_update(keccak_state_t *ctx, const unsigned char* input, unsigned long long int inputByteLen) {
+    /* === Absorb all the input blocks === */
+    while(inputByteLen > 0) {
+        ctx->blockSize = MIN(inputByteLen+ctx->i, ctx->rateInBytes);
+	while(ctx->i < ctx->blockSize) {
+            ctx->state[ctx->i] ^= *input;
+	    ++(ctx->i);
+	    input++;
+	    --inputByteLen;
+	}
+
+        if (ctx->blockSize == ctx->rateInBytes) {
+            KeccakF1600_StatePermute(ctx->state);
+            ctx->blockSize = 0;
+	    ctx->i = 0;
+        }
+    }
+}
+
+void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long int outputByteLen) {
+
+    /* === Do the padding and switch to the squeezing phase === */
+    /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
+    ctx->state[ctx->blockSize] ^= ctx->delimitedSuffix;
+    /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
+    if (((ctx->delimitedSuffix & 0x80) != 0) && (ctx->blockSize == (ctx->rateInBytes-1)))
+        KeccakF1600_StatePermute(ctx->state);
+    /* Add the second bit of padding */
+    ctx->state[ctx->rateInBytes-1] ^= 0x80;
+    /* Switch to the squeezing phase */
+    KeccakF1600_StatePermute(ctx->state);
+
+    /* === Squeeze out all the output blocks === */
+    while(outputByteLen > 0) {
+        ctx->blockSize = MIN(outputByteLen, ctx->rateInBytes);
+        memcpy(output, ctx->state, ctx->blockSize);
+        output += ctx->blockSize;
+        outputByteLen -= ctx->blockSize;
+
+        if (outputByteLen > 0)
+            KeccakF1600_StatePermute(ctx->state);
     }
 }
