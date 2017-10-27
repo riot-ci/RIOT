@@ -46,306 +46,306 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
 #ifdef DMA0
 /* Devices with >16 DMA channels combine two channels per IRQ number */
 #if defined(DMA_INT_INT16_MASK)
-    [DMA0_DMA16_IRQn ] = isr_DMA0_DMA16,      /* DMA Channel 0, 16 Transfer Complete */
+    [DMA0_DMA16_IRQn ] = isr_dma0_dma16,      /* DMA Channel 0, 16 Transfer Complete */
 #elif defined(DMA_INT_INT0_MASK)
-    [DMA0_IRQn       ] = isr_DMA0,            /* DMA Channel 0 Transfer Complete */
+    [DMA0_IRQn       ] = isr_dma0,            /* DMA Channel 0 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT17_MASK)
-    [DMA1_DMA17_IRQn ] = isr_DMA1_DMA17,      /* DMA Channel 1, 17 Transfer Complete */
+    [DMA1_DMA17_IRQn ] = isr_dma1_dma17,      /* DMA Channel 1, 17 Transfer Complete */
 #elif defined(DMA_INT_INT1_MASK)
-    [DMA1_IRQn       ] = isr_DMA1,            /* DMA Channel 1 Transfer Complete */
+    [DMA1_IRQn       ] = isr_dma1,            /* DMA Channel 1 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT18_MASK)
-    [DMA2_DMA18_IRQn ] = isr_DMA2_DMA18,      /* DMA Channel 2, 18 Transfer Complete */
+    [DMA2_DMA18_IRQn ] = isr_dma2_dma18,      /* DMA Channel 2, 18 Transfer Complete */
 #elif defined(DMA_INT_INT2_MASK)
-    [DMA2_IRQn       ] = isr_DMA2,            /* DMA Channel 2 Transfer Complete */
+    [DMA2_IRQn       ] = isr_dma2,            /* DMA Channel 2 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT19_MASK)
-    [DMA3_DMA19_IRQn ] = isr_DMA3_DMA19,      /* DMA Channel 3, 19 Transfer Complete */
+    [DMA3_DMA19_IRQn ] = isr_dma3_dma19,      /* DMA Channel 3, 19 Transfer Complete */
 #elif defined(DMA_INT_INT3_MASK)
-    [DMA3_IRQn       ] = isr_DMA3,            /* DMA Channel 3 Transfer Complete */
+    [DMA3_IRQn       ] = isr_dma3,            /* DMA Channel 3 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT20_MASK)
-    [DMA4_DMA20_IRQn ] = isr_DMA4_DMA20,      /* DMA Channel 4, 20 Transfer Complete */
+    [DMA4_DMA20_IRQn ] = isr_dma4_dma20,      /* DMA Channel 4, 20 Transfer Complete */
 #elif defined(DMA_INT_INT4_MASK)
-    [DMA4_IRQn       ] = isr_DMA4,            /* DMA Channel 4 Transfer Complete */
+    [DMA4_IRQn       ] = isr_dma4,            /* DMA Channel 4 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT21_MASK)
-    [DMA5_DMA21_IRQn ] = isr_DMA5_DMA21,      /* DMA Channel 5, 21 Transfer Complete */
+    [DMA5_DMA21_IRQn ] = isr_dma5_dma21,      /* DMA Channel 5, 21 Transfer Complete */
 #elif defined(DMA_INT_INT5_MASK)
-    [DMA5_IRQn       ] = isr_DMA5,            /* DMA Channel 5 Transfer Complete */
+    [DMA5_IRQn       ] = isr_dma5,            /* DMA Channel 5 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT22_MASK)
-    [DMA6_DMA22_IRQn ] = isr_DMA6_DMA22,      /* DMA Channel 6, 22 Transfer Complete */
+    [DMA6_DMA22_IRQn ] = isr_dma6_dma22,      /* DMA Channel 6, 22 Transfer Complete */
 #elif defined(DMA_INT_INT6_MASK)
-    [DMA6_IRQn       ] = isr_DMA6,            /* DMA Channel 6 Transfer Complete */
+    [DMA6_IRQn       ] = isr_dma6,            /* DMA Channel 6 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT23_MASK)
-    [DMA7_DMA23_IRQn ] = isr_DMA7_DMA23,      /* DMA Channel 7, 23 Transfer Complete */
+    [DMA7_DMA23_IRQn ] = isr_dma7_dma23,      /* DMA Channel 7, 23 Transfer Complete */
 #elif defined(DMA_INT_INT7_MASK)
-    [DMA7_IRQn       ] = isr_DMA7,            /* DMA Channel 7 Transfer Complete */
+    [DMA7_IRQn       ] = isr_dma7,            /* DMA Channel 7 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT24_MASK)
-    [DMA8_DMA24_IRQn ] = isr_DMA8_DMA24,      /* DMA Channel 8, 24 Transfer Complete */
+    [DMA8_DMA24_IRQn ] = isr_dma8_dma24,      /* DMA Channel 8, 24 Transfer Complete */
 #elif defined(DMA_INT_INT8_MASK)
-    [DMA8_IRQn       ] = isr_DMA8,            /* DMA Channel 8 Transfer Complete */
+    [DMA8_IRQn       ] = isr_dma8,            /* DMA Channel 8 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT25_MASK)
-    [DMA9_DMA25_IRQn ] = isr_DMA9_DMA25,      /* DMA Channel 9, 25 Transfer Complete */
+    [DMA9_DMA25_IRQn ] = isr_dma9_dma25,      /* DMA Channel 9, 25 Transfer Complete */
 #elif defined(DMA_INT_INT9_MASK)
-    [DMA9_IRQn       ] = isr_DMA9,            /* DMA Channel 9 Transfer Complete */
+    [DMA9_IRQn       ] = isr_dma9,            /* DMA Channel 9 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT26_MASK)
-    [DMA10_DMA26_IRQn] = isr_DMA10_DMA26,     /* DMA Channel 10, 26 Transfer Complete */
+    [DMA10_DMA26_IRQn] = isr_dma10_dma26,     /* DMA Channel 10, 26 Transfer Complete */
 #elif defined(DMA_INT_INT10_MASK)
-    [DMA10_IRQn      ] = isr_DMA10,           /* DMA Channel 10 Transfer Complete */
+    [DMA10_IRQn      ] = isr_dma10,           /* DMA Channel 10 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT27_MASK)
-    [DMA11_DMA27_IRQn] = isr_DMA11_DMA27,     /* DMA Channel 11, 27 Transfer Complete */
+    [DMA11_DMA27_IRQn] = isr_dma11_dma27,     /* DMA Channel 11, 27 Transfer Complete */
 #elif defined(DMA_INT_INT11_MASK)
-    [DMA11_IRQn      ] = isr_DMA11,           /* DMA Channel 11 Transfer Complete */
+    [DMA11_IRQn      ] = isr_dma11,           /* DMA Channel 11 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT28_MASK)
-    [DMA12_DMA28_IRQn] = isr_DMA12_DMA28,     /* DMA Channel 12, 28 Transfer Complete */
+    [DMA12_DMA28_IRQn] = isr_dma12_dma28,     /* DMA Channel 12, 28 Transfer Complete */
 #elif defined(DMA_INT_INT12_MASK)
-    [DMA12_IRQn      ] = isr_DMA12,           /* DMA Channel 12 Transfer Complete */
+    [DMA12_IRQn      ] = isr_dma12,           /* DMA Channel 12 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT29_MASK)
-    [DMA13_DMA29_IRQn] = isr_DMA13_DMA29,     /* DMA Channel 13, 29 Transfer Complete */
+    [DMA13_DMA29_IRQn] = isr_dma13_dma29,     /* DMA Channel 13, 29 Transfer Complete */
 #elif defined(DMA_INT_INT13_MASK)
-    [DMA13_IRQn      ] = isr_DMA13,           /* DMA Channel 13 Transfer Complete */
+    [DMA13_IRQn      ] = isr_dma13,           /* DMA Channel 13 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT30_MASK)
-    [DMA14_DMA30_IRQn] = isr_DMA14_DMA30,     /* DMA Channel 14, 30 Transfer Complete */
+    [DMA14_DMA30_IRQn] = isr_dma14_dma30,     /* DMA Channel 14, 30 Transfer Complete */
 #elif defined(DMA_INT_INT14_MASK)
-    [DMA14_IRQn      ] = isr_DMA14,           /* DMA Channel 14 Transfer Complete */
+    [DMA14_IRQn      ] = isr_dma14,           /* DMA Channel 14 Transfer Complete */
 #endif
 #if defined(DMA_INT_INT31_MASK)
-    [DMA15_DMA31_IRQn] = isr_DMA15_DMA31,     /* DMA Channel 15, 31 Transfer Complete */
+    [DMA15_DMA31_IRQn] = isr_dma15_dma31,     /* DMA Channel 15, 31 Transfer Complete */
 #elif defined(DMA_INT_INT15_MASK)
-    [DMA15_IRQn      ] = isr_DMA15,           /* DMA Channel 15 Transfer Complete */
+    [DMA15_IRQn      ] = isr_dma15,           /* DMA Channel 15 Transfer Complete */
 #endif
-    [DMA_Error_IRQn  ] = isr_DMA_Error,       /* DMA Error Interrupt */
+    [DMA_Error_IRQn  ] = isr_dma_error,       /* DMA Error Interrupt */
 #endif /* defined(DMA0) */
 #ifdef MCM
-    [MCM_IRQn        ] = isr_MCM,             /* Normal Interrupt */
+    [MCM_IRQn        ] = isr_mcm,             /* Normal Interrupt */
 #endif
 #if defined(FTFA)
-    [FTFA_IRQn       ] = isr_FTFA,            /* FTFA command complete */
-    [FTFA_Collision_IRQn] = isr_FTFA_Collision, /* FTFA read collision */
+    [FTFA_IRQn       ] = isr_ftfa,            /* FTFA command complete */
+    [FTFA_Collision_IRQn] = isr_ftfa_collision, /* FTFA read collision */
 #elif defined(FTFE)
-    [FTFE_IRQn       ] = isr_FTFE,            /* FTFE command complete */
-    [FTFE_Collision_IRQn] = isr_FTFE_Collision, /* FTFE read collision */
+    [FTFE_IRQn       ] = isr_ftfe,            /* FTFE command complete */
+    [FTFE_Collision_IRQn] = isr_ftfe_collision, /* FTFE read collision */
 #elif defined(FTFL)
-    [FTFL_IRQn       ] = isr_FTFL,            /* FTFL command complete */
-    [FTFL_Collision_IRQn] = isr_FTFL_Collision, /* FTFL read collision */
+    [FTFL_IRQn       ] = isr_ftfl,            /* FTFL command complete */
+    [FTFL_Collision_IRQn] = isr_ftfl_collision, /* FTFL read collision */
 #endif
 #ifdef PMC
-    [LVD_LVW_IRQn    ] = isr_LVD_LVW,         /* Low Voltage Detect, Low Voltage Warning */
+    [LVD_LVW_IRQn    ] = isr_lvd_lvw,         /* Low Voltage Detect, Low Voltage Warning */
 #endif
 #ifdef LLWU
-    [LLWU_IRQn       ] = isr_LLWU,            /* Low Leakage Wakeup Unit */
+    [LLWU_IRQn       ] = isr_llwu,            /* Low Leakage Wakeup Unit */
 #endif
 #ifdef WDOG
-    [WDOG_EWM_IRQn   ] = isr_WDOG_EWM,        /* WDOG/EWM Interrupt */
+    [WDOG_EWM_IRQn   ] = isr_wdog_ewm,        /* WDOG/EWM Interrupt */
 #endif
 #ifdef RNG
-    [RNG_IRQn        ] = isr_RNG,             /* RNG Interrupt */
+    [RNG_IRQn        ] = isr_rng,             /* RNG Interrupt */
 #endif
 #ifdef I2C0
-    [I2C0_IRQn       ] = isr_I2C0,            /* I2C0 interrupt */
+    [I2C0_IRQn       ] = isr_i2c0,            /* I2C0 interrupt */
 #endif
 #ifdef I2C1
-    [I2C1_IRQn       ] = isr_I2C1,            /* I2C1 interrupt */
+    [I2C1_IRQn       ] = isr_i2c1,            /* I2C1 interrupt */
 #endif
 #ifdef I2C2
-    [I2C2_IRQn       ] = isr_I2C2,            /* I2C2 interrupt */
+    [I2C2_IRQn       ] = isr_i2c2,            /* I2C2 interrupt */
 #endif
 #ifdef I2C3
-    [I2C3_IRQn       ] = isr_I2C3,            /* I2C3 interrupt */
+    [I2C3_IRQn       ] = isr_i2c3,            /* I2C3 interrupt */
 #endif
 #ifdef SPI0
-    [SPI0_IRQn       ] = isr_SPI0,            /* SPI0 Interrupt */
+    [SPI0_IRQn       ] = isr_spi0,            /* SPI0 Interrupt */
 #endif
 #ifdef SPI1
-    [SPI1_IRQn       ] = isr_SPI1,            /* SPI1 Interrupt */
+    [SPI1_IRQn       ] = isr_spi1,            /* SPI1 Interrupt */
 #endif
 #ifdef SPI2
-    [SPI2_IRQn       ] = isr_SPI2,            /* SPI2 Interrupt */
+    [SPI2_IRQn       ] = isr_spi2,            /* SPI2 Interrupt */
 #endif
 #ifdef I2S0
-    [I2S0_Tx_IRQn    ] = isr_I2S0_Tx,         /* I2S0 transmit interrupt */
-    [I2S0_Rx_IRQn    ] = isr_I2S0_Rx,         /* I2S0 receive interrupt */
+    [I2S0_Tx_IRQn    ] = isr_i2s0_tx,         /* I2S0 transmit interrupt */
+    [I2S0_Rx_IRQn    ] = isr_i2s0_rx,         /* I2S0 receive interrupt */
 #endif
 #ifdef UART0
-    [UART0_RX_TX_IRQn] = isr_UART0_RX_TX,     /* UART0 Receive/Transmit interrupt */
-    [UART0_ERR_IRQn  ] = isr_UART0_ERR,       /* UART0 Error interrupt */
+    [UART0_RX_TX_IRQn] = isr_uart0_rx_tx,     /* UART0 Receive/Transmit interrupt */
+    [UART0_ERR_IRQn  ] = isr_uart0_err,       /* UART0 Error interrupt */
 #endif
 #ifdef UART1
-    [UART1_RX_TX_IRQn] = isr_UART1_RX_TX,     /* UART1 Receive/Transmit interrupt */
-    [UART1_ERR_IRQn  ] = isr_UART1_ERR,       /* UART1 Error interrupt */
+    [UART1_RX_TX_IRQn] = isr_uart1_rx_tx,     /* UART1 Receive/Transmit interrupt */
+    [UART1_ERR_IRQn  ] = isr_uart1_err,       /* UART1 Error interrupt */
 #endif
 #ifdef UART2
-    [UART2_RX_TX_IRQn] = isr_UART2_RX_TX,     /* UART2 Receive/Transmit interrupt */
-    [UART2_ERR_IRQn  ] = isr_UART2_ERR,       /* UART2 Error interrupt */
+    [UART2_RX_TX_IRQn] = isr_uart2_rx_tx,     /* UART2 Receive/Transmit interrupt */
+    [UART2_ERR_IRQn  ] = isr_uart2_err,       /* UART2 Error interrupt */
 #endif
 #ifdef UART3
-    [UART3_RX_TX_IRQn] = isr_UART3_RX_TX,     /* UART3 Receive/Transmit interrupt */
-    [UART3_ERR_IRQn  ] = isr_UART3_ERR,       /* UART3 Error interrupt */
+    [UART3_RX_TX_IRQn] = isr_uart3_rx_tx,     /* UART3 Receive/Transmit interrupt */
+    [UART3_ERR_IRQn  ] = isr_uart3_err,       /* UART3 Error interrupt */
 #endif
 #ifdef UART4
-    [UART4_RX_TX_IRQn] = isr_UART4_RX_TX,     /* UART4 Receive/Transmit interrupt */
-    [UART4_ERR_IRQn  ] = isr_UART4_ERR,       /* UART4 Error interrupt */
+    [UART4_RX_TX_IRQn] = isr_uart4_rx_tx,     /* UART4 Receive/Transmit interrupt */
+    [UART4_ERR_IRQn  ] = isr_uart4_err,       /* UART4 Error interrupt */
 #endif
 #ifdef UART5
-    [UART5_RX_TX_IRQn] = isr_UART5_RX_TX,     /* UART5 Receive/Transmit interrupt */
-    [UART5_ERR_IRQn  ] = isr_UART5_ERR,       /* UART5 Error interrupt */
+    [UART5_RX_TX_IRQn] = isr_uart5_rx_tx,     /* UART5 Receive/Transmit interrupt */
+    [UART5_ERR_IRQn  ] = isr_uart5_err,       /* UART5 Error interrupt */
 #endif
 #ifdef ADC0
-    [ADC0_IRQn       ] = isr_ADC0,            /* ADC0 interrupt */
+    [ADC0_IRQn       ] = isr_adc0,            /* ADC0 interrupt */
 #endif
 #ifdef ADC1
-    [ADC1_IRQn       ] = isr_ADC1,            /* ADC1 interrupt */
+    [ADC1_IRQn       ] = isr_adc1,            /* ADC1 interrupt */
 #endif
 #ifdef ADC2
-    [ADC2_IRQn       ] = isr_ADC2,            /* ADC2 interrupt */
+    [ADC2_IRQn       ] = isr_adc2,            /* ADC2 interrupt */
 #endif
 #ifdef CMP0
-    [CMP0_IRQn       ] = isr_CMP0,            /* CMP0 interrupt */
+    [CMP0_IRQn       ] = isr_cmp0,            /* CMP0 interrupt */
 #endif
 #ifdef CMP1
-    [CMP1_IRQn       ] = isr_CMP1,            /* CMP1 interrupt */
+    [CMP1_IRQn       ] = isr_cmp1,            /* CMP1 interrupt */
 #endif
 #ifdef CMP2
-    [CMP2_IRQn       ] = isr_CMP2,            /* CMP2 interrupt */
+    [CMP2_IRQn       ] = isr_cmp2,            /* CMP2 interrupt */
 #endif
 #ifdef CMP3
-    [CMP3_IRQn       ] = isr_CMP3,            /* CMP3 interrupt */
+    [CMP3_IRQn       ] = isr_cmp3,            /* CMP3 interrupt */
 #endif
 #ifdef FTM0
-    [FTM0_IRQn       ] = isr_FTM0,            /* FTM0 fault, overflow and channels interrupt */
+    [FTM0_IRQn       ] = isr_ftm0,            /* FTM0 fault, overflow and channels interrupt */
 #endif
 #ifdef FTM1
-    [FTM1_IRQn       ] = isr_FTM1,            /* FTM1 fault, overflow and channels interrupt */
+    [FTM1_IRQn       ] = isr_ftm1,            /* FTM1 fault, overflow and channels interrupt */
 #endif
 #ifdef FTM2
-    [FTM2_IRQn       ] = isr_FTM2,            /* FTM2 fault, overflow and channels interrupt */
+    [FTM2_IRQn       ] = isr_ftm2,            /* FTM2 fault, overflow and channels interrupt */
 #endif
 #ifdef FTM3
-    [FTM3_IRQn       ] = isr_FTM3,            /* FTM3 fault, overflow and channels interrupt */
+    [FTM3_IRQn       ] = isr_ftm3,            /* FTM3 fault, overflow and channels interrupt */
 #endif
 #ifdef CMT
-    [CMT_IRQn        ] = isr_CMT,             /* CMT interrupt */
+    [CMT_IRQn        ] = isr_cmt,             /* CMT interrupt */
 #endif
 #ifdef RTC
-    [RTC_IRQn        ] = isr_RTC,             /* RTC interrupt */
-    [RTC_Seconds_IRQn] = isr_RTC_Seconds,     /* RTC seconds interrupt */
+    [RTC_IRQn        ] = isr_rtc,             /* RTC interrupt */
+    [RTC_Seconds_IRQn] = isr_rtc_seconds,     /* RTC seconds interrupt */
 #endif
 #ifdef PIT
-    [PIT0_IRQn       ] = isr_PIT0,            /* PIT timer channel 0 interrupt */
-    [PIT1_IRQn       ] = isr_PIT1,            /* PIT timer channel 1 interrupt */
-    [PIT2_IRQn       ] = isr_PIT2,            /* PIT timer channel 2 interrupt */
-    [PIT3_IRQn       ] = isr_PIT3,            /* PIT timer channel 3 interrupt */
+    [PIT0_IRQn       ] = isr_pit0,            /* PIT timer channel 0 interrupt */
+    [PIT1_IRQn       ] = isr_pit1,            /* PIT timer channel 1 interrupt */
+    [PIT2_IRQn       ] = isr_pit2,            /* PIT timer channel 2 interrupt */
+    [PIT3_IRQn       ] = isr_pit3,            /* PIT timer channel 3 interrupt */
 #endif
 #ifdef PDB0
-    [PDB0_IRQn       ] = isr_PDB0,            /* PDB0 Interrupt */
+    [PDB0_IRQn       ] = isr_pdb0,            /* PDB0 Interrupt */
 #endif
 #ifdef USB0
-    [USB0_IRQn       ] = isr_USB0,            /* USB0 interrupt */
+    [USB0_IRQn       ] = isr_usb0,            /* USB0 interrupt */
 #endif
 #ifdef USBDCD
-    [USBDCD_IRQn     ] = isr_USBDCD,          /* USBDCD Interrupt */
+    [USBDCD_IRQn     ] = isr_usbdcd,          /* USBDCD Interrupt */
 #endif
 #if DAC0_BASE /* Not #ifdef because of error in MKW2xD.h files */
-    [DAC0_IRQn       ] = isr_DAC0,            /* DAC0 interrupt */
+    [DAC0_IRQn       ] = isr_dac0,            /* DAC0 interrupt */
 #endif
 #ifdef DAC1
-    [DAC1_IRQn       ] = isr_DAC1,            /* DAC1 interrupt */
+    [DAC1_IRQn       ] = isr_dac1,            /* DAC1 interrupt */
 #endif
 #ifdef MCG
-    [MCG_IRQn        ] = isr_MCG,             /* MCG Interrupt */
+    [MCG_IRQn        ] = isr_mcg,             /* MCG Interrupt */
 #endif
 #ifdef LPTMR0
-    [LPTMR0_IRQn     ] = isr_LPTMR0,          /* LPTimer interrupt */
+    [LPTMR0_IRQn     ] = isr_lptmr0,          /* LPTimer interrupt */
 #endif
 #ifdef PORTA
-    [PORTA_IRQn      ] = isr_PORTA,           /* Port A interrupt */
+    [PORTA_IRQn      ] = isr_porta,           /* Port A interrupt */
 #endif
 #ifdef PORTB
-    [PORTB_IRQn      ] = isr_PORTB,           /* Port B interrupt */
+    [PORTB_IRQn      ] = isr_portb,           /* Port B interrupt */
 #endif
 #ifdef PORTC
-    [PORTC_IRQn      ] = isr_PORTC,           /* Port C interrupt */
+    [PORTC_IRQn      ] = isr_portc,           /* Port C interrupt */
 #endif
 #ifdef PORTD
-    [PORTD_IRQn      ] = isr_PORTD,           /* Port D interrupt */
+    [PORTD_IRQn      ] = isr_portd,           /* Port D interrupt */
 #endif
 #ifdef PORTE
-    [PORTE_IRQn      ] = isr_PORTE,           /* Port E interrupt */
+    [PORTE_IRQn      ] = isr_porte,           /* Port E interrupt */
 #endif
 #if __CORTEX_M >= 3
-    [SWI_IRQn        ] = isr_SWI,             /* Software interrupt */
+    [SWI_IRQn        ] = isr_swi,             /* Software interrupt */
 #endif
 #ifdef CAN0
-    [CAN0_ORed_Message_buffer_IRQn] = isr_CAN0_ORed_Message_buffer, /* CAN0 OR'd message buffers interrupt */
-    [CAN0_Bus_Off_IRQn] = isr_CAN0_Bus_Off,    /* CAN0 bus off interrupt */
-    [CAN0_Error_IRQn ] = isr_CAN0_Error,      /* CAN0 error interrupt */
-    [CAN0_Tx_Warning_IRQn] = isr_CAN0_Tx_Warning, /* CAN0 Tx warning interrupt */
-    [CAN0_Rx_Warning_IRQn] = isr_CAN0_Rx_Warning, /* CAN0 Rx warning interrupt */
-    [CAN0_Wake_Up_IRQn] = isr_CAN0_Wake_Up,    /* CAN0 wake up interrupt */
+    [CAN0_ORed_Message_buffer_IRQn] = isr_can0_ored_message_buffer, /* CAN0 OR'd message buffers interrupt */
+    [CAN0_Bus_Off_IRQn] = isr_can0_bus_off,    /* CAN0 bus off interrupt */
+    [CAN0_Error_IRQn ] = isr_can0_error,      /* CAN0 error interrupt */
+    [CAN0_Tx_Warning_IRQn] = isr_can0_tx_warning, /* CAN0 Tx warning interrupt */
+    [CAN0_Rx_Warning_IRQn] = isr_can0_rx_warning, /* CAN0 Rx warning interrupt */
+    [CAN0_Wake_Up_IRQn] = isr_can0_wake_up,    /* CAN0 wake up interrupt */
 #endif
 #ifdef CAN1
-    [CAN1_ORed_Message_buffer_IRQn] = isr_CAN1_ORed_Message_buffer, /* CAN1 OR'd message buffers interrupt */
-    [CAN1_Bus_Off_IRQn] = isr_CAN1_Bus_Off,    /* CAN1 bus off interrupt */
-    [CAN1_Error_IRQn ] = isr_CAN1_Error,      /* CAN1 error interrupt */
-    [CAN1_Tx_Warning_IRQn] = isr_CAN1_Tx_Warning, /* CAN1 Tx warning interrupt */
-    [CAN1_Rx_Warning_IRQn] = isr_CAN1_Rx_Warning, /* CAN1 Rx warning interrupt */
-    [CAN1_Wake_Up_IRQn] = isr_CAN1_Wake_Up,    /* CAN1 wake up interrupt */
+    [CAN1_ORed_Message_buffer_IRQn] = isr_can1_ored_message_buffer, /* CAN1 OR'd message buffers interrupt */
+    [CAN1_Bus_Off_IRQn] = isr_can1_bus_off,    /* CAN1 bus off interrupt */
+    [CAN1_Error_IRQn ] = isr_can1_error,      /* CAN1 error interrupt */
+    [CAN1_Tx_Warning_IRQn] = isr_can1_tx_warning, /* CAN1 Tx warning interrupt */
+    [CAN1_Rx_Warning_IRQn] = isr_can1_rx_warning, /* CAN1 Rx warning interrupt */
+    [CAN1_Wake_Up_IRQn] = isr_can1_wake_up,    /* CAN1 wake up interrupt */
 #endif
 #ifdef SDHC
-    [SDHC_IRQn       ] = isr_SDHC,            /* SDHC interrupt */
+    [SDHC_IRQn       ] = isr_sdhc,            /* SDHC interrupt */
 #endif
 #ifdef ENET
-    [ENET_1588_Timer_IRQn] = isr_ENET_1588_Timer, /* Ethernet MAC IEEE 1588 Timer Interrupt */
-    [ENET_Transmit_IRQn] = isr_ENET_Transmit,   /* Ethernet MAC Transmit Interrupt */
-    [ENET_Receive_IRQn] = isr_ENET_Receive,    /* Ethernet MAC Receive Interrupt */
-    [ENET_Error_IRQn ] = isr_ENET_Error,      /* Ethernet MAC Error and miscelaneous Interrupt */
+    [ENET_1588_Timer_IRQn] = isr_enet_1588_timer, /* Ethernet MAC IEEE 1588 Timer Interrupt */
+    [ENET_Transmit_IRQn] = isr_enet_transmit,   /* Ethernet MAC Transmit Interrupt */
+    [ENET_Receive_IRQn] = isr_enet_receive,    /* Ethernet MAC Receive Interrupt */
+    [ENET_Error_IRQn ] = isr_enet_error,      /* Ethernet MAC Error and miscelaneous Interrupt */
 #endif
 #ifdef LPUART0
-    [LPUART0_IRQn    ] = isr_LPUART0,         /* LPUART0 status/error interrupt */
+    [LPUART0_IRQn    ] = isr_lpuart0,         /* LPUART0 status/error interrupt */
 #endif
 #ifdef LPUART1
-    [LPUART1_IRQn    ] = isr_LPUART1,         /* LPUART1 status/error interrupt */
+    [LPUART1_IRQn    ] = isr_lpuart1,         /* LPUART1 status/error interrupt */
 #endif
 #ifdef LPUART2
-    [LPUART2_IRQn    ] = isr_LPUART2,         /* LPUART2 status/error interrupt */
+    [LPUART2_IRQn    ] = isr_lpuart2,         /* LPUART2 status/error interrupt */
 #endif
 #ifdef LPUART3
-    [LPUART3_IRQn    ] = isr_LPUART3,         /* LPUART3 status/error interrupt */
+    [LPUART3_IRQn    ] = isr_lpuart3,         /* LPUART3 status/error interrupt */
 #endif
 #ifdef LPUART4
-    [LPUART4_IRQn    ] = isr_LPUART4,         /* LPUART4 status/error interrupt */
+    [LPUART4_IRQn    ] = isr_lpuart4,         /* LPUART4 status/error interrupt */
 #endif
 #ifdef LPUART5
-    [LPUART5_IRQn    ] = isr_LPUART5,         /* LPUART5 status/error interrupt */
+    [LPUART5_IRQn    ] = isr_lpuart5,         /* LPUART5 status/error interrupt */
 #endif
 #ifdef TSI0
-    [TSI0_IRQn       ] = isr_TSI0,            /* TSI0 interrupt */
+    [TSI0_IRQn       ] = isr_tsi0,            /* TSI0 interrupt */
 #endif
 #ifdef TPM0
-    [TPM0_IRQn       ] = isr_TPM0,            /* TPM1 fault, overflow and channels interrupt */
+    [TPM0_IRQn       ] = isr_tpm0,            /* TPM1 fault, overflow and channels interrupt */
 #endif
 #ifdef TPM1
-    [TPM1_IRQn       ] = isr_TPM1,            /* TPM1 fault, overflow and channels interrupt */
+    [TPM1_IRQn       ] = isr_tpm1,            /* TPM1 fault, overflow and channels interrupt */
 #endif
 #ifdef TPM2
-    [TPM2_IRQn       ] = isr_TPM2,            /* TPM2 fault, overflow and channels interrupt */
+    [TPM2_IRQn       ] = isr_tpm2,            /* TPM2 fault, overflow and channels interrupt */
 #endif
 #ifdef USBHSDCD
-    [USBHSDCD_IRQn   ] = isr_USBHSDCD,        /* USBHSDCD, USBHS Phy Interrupt */
+    [USBHSDCD_IRQn   ] = isr_usbhsdcd,        /* USBHSDCD, USBHS Phy Interrupt */
 #endif
 #ifdef USBHS
-    [USBHS_IRQn      ] = isr_USBHS,           /* USB high speed OTG interrupt */
+    [USBHS_IRQn      ] = isr_usbhs,           /* USB high speed OTG interrupt */
 #endif
 };
 
