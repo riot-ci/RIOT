@@ -178,6 +178,9 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [I2S0_Rx_IRQn    ] = isr_i2s0_rx,         /* I2S0 receive interrupt */
 #endif
 #ifdef UART0
+#ifdef UART_RPL_RPL_MASK
+    [UART0_LON_IRQn  ] = isr_uart0_lon,       /* UART0 LON interrupt */
+#endif
     [UART0_RX_TX_IRQn] = isr_uart0_rx_tx,     /* UART0 Receive/Transmit interrupt */
     [UART0_ERR_IRQn  ] = isr_uart0_err,       /* UART0 Error interrupt */
 #endif
