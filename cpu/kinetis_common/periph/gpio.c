@@ -300,49 +300,49 @@ static inline void irq_handler(PORT_Type *port, int port_num)
 }
 
 #ifdef PORTA_BASE
-void isr_PORTA(void)
+void isr_porta(void)
 {
     irq_handler(PORTA, 0);
 }
 #endif /* PORTA_BASE */
 
 #ifdef PORTB_BASE
-void isr_PORTB(void)
+void isr_portb(void)
 {
     irq_handler(PORTB, 1);
 }
 #endif /* ISR_PORT_B */
 
 #ifdef PORTC_BASE
-void isr_PORTC(void)
+void isr_portc(void)
 {
     irq_handler(PORTC, 2);
 }
 #endif /* ISR_PORT_C */
 
 #ifdef PORTD_BASE
-void isr_PORTD(void)
+void isr_portd(void)
 {
     irq_handler(PORTD, 3);
 }
 #endif /* ISR_PORT_D */
 
 #ifdef PORTE_BASE
-void isr_PORTE(void)
+void isr_porte(void)
 {
     irq_handler(PORTE, 4);
 }
 #endif /* ISR_PORT_E */
 
 #ifdef PORTF_BASE
-void isr_PORTF(void)
+void isr_portf(void)
 {
     irq_handler(PORTF, 5);
 }
 #endif /* ISR_PORT_F */
 
 #ifdef PORTG_BASE
-void isr_PORTG(void)
+void isr_portg(void)
 {
     irq_handler(PORTG, 6);
 }
