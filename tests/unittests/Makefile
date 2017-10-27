@@ -15,6 +15,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              cc2650stk \
                              chronos \
                              ek-lm4f120xl \
+                             f3-femto \
                              limifrog-v1 maple-mini \
                              mbed_lpc1768 \
                              microbit \
@@ -84,6 +85,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        b-l072z-lrwan1 \
                        cc2538dk \
                        ek-lm4f120xl \
+                       f3-femto \
                        f4vi1 \
                        fox \
                        frdm-k64f \
