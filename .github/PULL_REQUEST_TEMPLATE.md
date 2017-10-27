@@ -1,11 +1,15 @@
+<!--
 Thanks for contributing to RIOT!
+-->
 
 
 ### Preliminary checks
 
+<!--
 The RIOT community cares a lot about code quality.
 Therefore, before describing what your contribution is about, we would like you
 to answer the following questions:
+-->
 
 * Have you read the [contributing guide](../CONTRIBUTING.md) (and related wiki
 pages) of RIOT at least once?
@@ -27,16 +31,24 @@ _Your answer (y/N):_
 that it doesn't raise any error?
 _Your answer (y/N):_
 
-
+<!--
 Please make sure you answered 'y' to all those questions before going any
 further.
+-->
 
 
 ### Contribution description
 
+<!--
 _Put the description of your contribution here._
+-->
 
 
 ### Issues/PRs references
 
-_If any, put the list of related issues and PRs here._
+<!--
+Example: Fixes #1234. See also #5678.
+Please use keywords (e.g., Fixes) to create link to the issues or pull requests
+you resolved, so that they will automatically be closed when your pull request
+is merged. See https://github.com/blog/1506-closing-issues-via-pull-requests
+-->
