@@ -44,7 +44,7 @@ void auto_init_cc2538_rf(void)
     gnrc_netif2_ieee802154_create(_cc2538_rf_stack,
                                   CC2538_MAC_STACKSIZE,
                                   CC2538_MAC_PRIO, "cc2538_rf",
-                                  (netdev_t *)&cc2538_rf_dev)) {
+                                  (netdev_t *)&cc2538_rf_dev);
 }
 
 #else

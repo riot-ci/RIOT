@@ -103,7 +103,6 @@ gnrc_rpl_instance_t *gnrc_rpl_instance_get(uint8_t instance_id);
  * @param[in]   instance        Pointer to the instance to add the DODAG to
  * @param[in]   dodag_id        The DODAG-ID of the new DODAG
  * @param[in]   iface           Interface PID where the DODAG operates
- * @param[in]   netif_addr      netif address for this DODAG
  *
  * @return  true, if DODAG could be created.
  * @return  false, if DODAG could not be created or exists already.

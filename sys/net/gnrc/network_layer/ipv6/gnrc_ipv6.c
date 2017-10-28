@@ -396,9 +396,8 @@ static void *_event_loop(void *args)
 
 static void _send_to_iface(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
 {
-    ((gnrc_netif_hdr_t *)pkt->data)->if_pid = netif->pid;
-
     assert(netif != NULL);
+    ((gnrc_netif_hdr_t *)pkt->data)->if_pid = netif->pid;
     if (gnrc_pkt_len(pkt->next) > netif->ipv6.mtu) {
         DEBUG("ipv6: packet too big\n");
         gnrc_pktbuf_release(pkt);
