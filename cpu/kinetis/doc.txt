@@ -1,5 +1,5 @@
 /**
- * @defgroup    cpu_kinetis NXP Kinetis MCU
+ * @defgroup    cpu_kinetis NXP Kinetis
  * @ingroup     cpu
  * @brief       NXP Kinetis Cortex-M MCU specific implementation
  */
