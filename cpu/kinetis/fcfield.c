@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     cpu_kinetis_common
+ * @ingroup     cpu_kinetis
  * @{
  *
  * @file

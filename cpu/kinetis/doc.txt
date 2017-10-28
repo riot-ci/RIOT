@@ -180,7 +180,7 @@
  *              detailed timing configuration, but a tool exists to generate a
  *              standard timing configuration for any given module clock frequency.
  *              The timing configuration tool is found in
- *              cpu/kinetis_common/dist/calc_spi_scalers
+ *              cpu/kinetis/dist/calc_spi_scalers
  *
  *              Finer tuning of timings than the RIOT SPI API is capable of is
  *              supported by modifying the generated configuration. See the
@@ -206,7 +206,7 @@
  *              ### SPI configuration example (for periph_conf.h): ###
  *
  *                  static const uint32_t spi_clk_config[] = {
- *                      // Use cpu/kinetis_common/dist/calc_spi_scalers to
+ *                      // Use cpu/kinetis/dist/calc_spi_scalers to
  *                      // generate the timing configuration
  *                  };
  *
