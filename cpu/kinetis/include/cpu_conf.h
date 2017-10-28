@@ -7,10 +7,7 @@
  */
 
 /**
- * @defgroup        cpu_kinetis NXP Kinetis MCUs
- * @ingroup         cpu
- * @brief           CPU specific implementations for the NXP Kinetis series of
- *                  Cortex-M MCUs
+ * @ingroup         cpu_kinetis
  * @{
  *
  * @file
