@@ -8,8 +8,8 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_wdog Kinetis WDOG
- * @ingroup     cpu_kinetis_common
+ * @defgroup    cpu_kinetis_wdog Kinetis WDOG
+ * @ingroup     cpu_kinetis
  * @brief       Driver for Freescale WDOG device.
  *              There are different implementations of the Watchdog devices.
  *              Currently, it is only possible to turn the Watchdog off.
