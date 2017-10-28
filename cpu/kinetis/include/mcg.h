@@ -8,8 +8,8 @@
  */
 
 /**
- * @defgroup    cpu_kinetis_common_mcg Kinetis MCG
- * @ingroup     cpu_kinetis_common
+ * @defgroup    cpu_kinetis_mcg Kinetis MCG
+ * @ingroup     cpu_kinetis
  * @brief       Implementation of the Kinetis Multipurpose Clock Generator
  *              (MCG) driver
  *
