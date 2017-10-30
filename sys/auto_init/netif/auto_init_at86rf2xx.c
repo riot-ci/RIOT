@@ -61,25 +61,29 @@ void auto_init_at86rf2xx(void)
 
         at86rf2xx_setup(&at86rf2xx_devs[i], &at86rf2xx_params[i]);
 #ifdef MODULE_GNRC_NETIF2
+        gnrc_netif2_lwmac_create(_at86rf2xx_stacks[i],
+                                      AT86RF2XX_MAC_STACKSIZE,
+                                      AT86RF2XX_MAC_PRIO, "at86rf2xx-lwmac",
+                                      (netdev_t *)&at86rf2xx_devs[i]);
+           /*
         gnrc_netif2_ieee802154_create(_at86rf2xx_stacks[i],
                                       AT86RF2XX_MAC_STACKSIZE,
                                       AT86RF2XX_MAC_PRIO, "at86rf2xx",
+                                      (netdev_t *)&at86rf2xx_devs[i]); */
+#else
+#ifdef MODULE_GNRC_LWMAC
+        gnrc_netif2_lwmac_create(_at86rf2xx_stacks[i],
+                                      AT86RF2XX_MAC_STACKSIZE,
+                                      AT86RF2XX_MAC_PRIO, "at86rf2xx-lwmac",
                                       (netdev_t *)&at86rf2xx_devs[i]);
 #else
         int res = gnrc_netdev_ieee802154_init(&gnrc_adpt[i],
                                               (netdev_ieee802154_t *)&at86rf2xx_devs[i]);
-
         if (res < 0) {
             LOG_ERROR("[auto_init_netif] error initializing at86rf2xx radio #%u\n", i);
         }
         else {
-#ifdef MODULE_GNRC_LWMAC
-            gnrc_lwmac_init(_at86rf2xx_stacks[i],
-                            AT86RF2XX_MAC_STACKSIZE,
-                            AT86RF2XX_MAC_PRIO,
-                            "at86rf2xx-lwmac",
-                            &gnrc_adpt[i]);
-#else
+
             gnrc_netdev_init(_at86rf2xx_stacks[i],
                              AT86RF2XX_MAC_STACKSIZE,
                              AT86RF2XX_MAC_PRIO,

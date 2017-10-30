@@ -317,7 +317,6 @@ char *gnrc_netif2_addr_to_str(const uint8_t *addr, size_t addr_len, char *out);
  */
 size_t gnrc_netif2_addr_from_str(const char *str, uint8_t *out);
 
-
 #ifdef MODULE_GNRC_MAC
 /**
  * @brief get the 'rx_started' state of the device
@@ -382,7 +381,7 @@ static inline void gnrc_netdev_set_tx_feedback(gnrc_netif2_t *netif,
     netif->mac.mac_info &= ~GNRC_NETDEV_MAC_INFO_TX_FEEDBACK_MASK;
     netif->mac.mac_info |= (uint16_t)(txf & GNRC_NETDEV_MAC_INFO_TX_FEEDBACK_MASK);
 }
-#endif
+#endif  /* MODULE_GNRC_MAC */
 
 #ifdef __cplusplus
 }

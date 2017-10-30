@@ -1139,7 +1139,6 @@ static void *_gnrc_netif2_thread(void *args)
 #endif
     if (netif->ops->init) {
         netif->ops->init(netif);
-        puts("inti device");
     }
     /* now let rest of GNRC use the interface */
     gnrc_netif2_release(netif);
@@ -1187,7 +1186,6 @@ static void *_gnrc_netif2_thread(void *args)
                 DEBUG("gnrc_netif2: GNRC_NETAPI_MSG_TYPE_GET received. opt=%s\n",
                       opt->opt);
 #endif
-                puts("get!!");
                 /* get option from device driver */
                 res = netif->ops->get(netif, opt);
                 DEBUG("gnrc_netif2: response of netif->ops->get(): %i\n", res);

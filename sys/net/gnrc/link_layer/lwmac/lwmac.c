@@ -25,14 +25,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "kernel_types.h"
-#include "msg.h"
-#include "thread.h"
+//#include "kernel_types.h"
+//#include "msg.h"
+//#include "thread.h"
 #include "timex.h"
 #include "random.h"
 #include "periph/rtt.h"
-#include "net/gnrc.h"
-#include "net/netdev.h"
+//#include "net/gnrc.h"
+//#include "net/netdev.h"
 //#include "net/gnrc/netdev.h"
 #include "net/gnrc/lwmac/types.h"
 #include "net/gnrc/lwmac/lwmac.h"
@@ -56,6 +56,10 @@
 #include "net/gnrc/netif2.h"
 #include "net/gnrc/netif2/internal.h"
 
+#include "net/gnrc.h"
+#include "net/gnrc/netif2/ieee802154.h"
+#include "net/netdev/ieee802154.h"
+
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
@@ -78,97 +82,141 @@ static void lwmac_set_state(gnrc_netif2_t *netif, gnrc_lwmac_state_t newstate);
 static void lwmac_schedule_update(gnrc_netif2_t *netif);
 static void rtt_handler(uint32_t event, gnrc_netif2_t *netif);
 
-//////////////////// netif2
+static void _lwmac_init(gnrc_netif2_t *netif);
+static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt);
+static gnrc_pktsnip_t *_recv(gnrc_netif2_t *netif);
+static void _lwmac_msg_handler(gnrc_netif2_t *netif, msg_t *msg);
 
+static const gnrc_netif2_ops_t lwmac_ops = {
+    .init = _lwmac_init,
+    .send = _send,
+    .recv = _recv,
+    .get = gnrc_netif2_get_from_netdev,
+    .set = gnrc_netif2_set_from_netdev,
+    .msg_handler = _lwmac_msg_handler,
+};
+
+gnrc_netif2_t *gnrc_netif2_lwmac_create(char *stack, int stacksize,
+                                             char priority, char *name,
+                                             netdev_t *dev)
+{
+    return gnrc_netif2_create(stack, stacksize, priority, name, dev,
+                              &lwmac_ops);
+}
+
+
+static gnrc_pktsnip_t *_make_netif_hdr(uint8_t *mhr)
+{
+    gnrc_pktsnip_t *snip;
+    uint8_t src[IEEE802154_LONG_ADDRESS_LEN], dst[IEEE802154_LONG_ADDRESS_LEN];
+    int src_len, dst_len;
+    le_uint16_t _pan_tmp;   /* TODO: hand-up PAN IDs to GNRC? */
+
+    dst_len = ieee802154_get_dst(mhr, dst, &_pan_tmp);
+    src_len = ieee802154_get_src(mhr, src, &_pan_tmp);
+    if ((dst_len < 0) || (src_len < 0)) {
+        DEBUG("_make_netif_hdr: unable to get addresses\n");
+        return NULL;
+    }
+    /* allocate space for header */
+    snip = gnrc_netif_hdr_build(src, (size_t)src_len, dst, (size_t)dst_len);
+    if (snip == NULL) {
+        DEBUG("_make_netif_hdr: no space left in packet buffer\n");
+        return NULL;
+    }
+    /* set broadcast flag for broadcast destination */
+    if ((dst_len == 2) && (dst[0] == 0xff) && (dst[1] == 0xff)) {
+        gnrc_netif_hdr_t *hdr = snip->data;
+        hdr->flags |= GNRC_NETIF_HDR_FLAGS_BROADCAST;
+    }
+    return snip;
+}
+
+static gnrc_pktsnip_t *_recv(gnrc_netif2_t *netif)
+{
+    netdev_t *dev = netif->dev;
+    netdev_ieee802154_rx_info_t rx_info;
+    netdev_ieee802154_t *state = (netdev_ieee802154_t *)netif->dev;
+    gnrc_pktsnip_t *pkt = NULL;
+    int bytes_expected = dev->driver->recv(dev, NULL, 0, NULL);
+
+    if (bytes_expected > 0) {
+        int nread;
+
+        pkt = gnrc_pktbuf_add(NULL, NULL, bytes_expected, GNRC_NETTYPE_UNDEF);
+        if (pkt == NULL) {
+            DEBUG("_recv_ieee802154: cannot allocate pktsnip.\n");
+            return NULL;
+        }
+        nread = dev->driver->recv(dev, pkt->data, bytes_expected, &rx_info);
+        if (nread <= 0) {
+            gnrc_pktbuf_release(pkt);
+            return NULL;
+        }
+        if (!(state->flags & NETDEV_IEEE802154_RAW)) {
+            gnrc_pktsnip_t *ieee802154_hdr, *netif_hdr;
+            gnrc_netif_hdr_t *hdr;
 #if ENABLE_DEBUG
-static char addr_str[IPV6_ADDR_MAX_STR_LEN];
+            char src_str[GNRC_NETIF_HDR_L2ADDR_PRINT_LEN];
 #endif
+            size_t mhr_len = ieee802154_get_frame_hdr_len(pkt->data);
 
-static gnrc_netif2_t _netifs[GNRC_NETIF_NUMOF];
-
-static void _update_l2addr_from_dev(gnrc_netif2_t *netif);
-static void *_lwmac_thread(void *args);
-static void _event_cb(netdev_t *dev, netdev_event_t event);
-
-static void _update_l2addr_from_dev(gnrc_netif2_t *netif)
-{
-    netdev_t *dev = netif->dev;
-    int res;
-    netopt_t opt = NETOPT_ADDRESS;
-
-    switch (netif->device_type) {
-#ifdef MODULE_NETDEV_IEEE802154
-        case NETDEV_TYPE_IEEE802154: {
-                uint16_t tmp;
-                puts("get address");
-                res = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
-                assert(res == sizeof(tmp));
-                netif->l2addr_len = (uint8_t)tmp;
-                if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
-                    opt = NETOPT_ADDRESS_LONG;
-                }
+            if (mhr_len == 0) {
+                DEBUG("_recv_ieee802154: illegally formatted frame received\n");
+                gnrc_pktbuf_release(pkt);
+                return NULL;
             }
-            break;
+            nread -= mhr_len;
+            /* mark IEEE 802.15.4 header */
+            ieee802154_hdr = gnrc_pktbuf_mark(pkt, mhr_len, GNRC_NETTYPE_UNDEF);
+            if (ieee802154_hdr == NULL) {
+                DEBUG("_recv_ieee802154: no space left in packet buffer\n");
+                gnrc_pktbuf_release(pkt);
+                return NULL;
+            }
+            netif_hdr = _make_netif_hdr(ieee802154_hdr->data);
+            if (netif_hdr == NULL) {
+                DEBUG("_recv_ieee802154: no space left in packet buffer\n");
+                gnrc_pktbuf_release(pkt);
+                return NULL;
+            }
+
+            hdr = netif_hdr->data;
+
+#ifdef MODULE_L2FILTER
+            if (!l2filter_pass(dev->filter, gnrc_netif_hdr_get_src_addr(hdr),
+                               hdr->src_l2addr_len)) {
+                gnrc_pktbuf_release(pkt);
+                gnrc_pktbuf_release(netif_hdr);
+                DEBUG("_recv_ieee802154: packet dropped by l2filter\n");
+                return NULL;
+            }
 #endif
-        default:
-            break;
+
+            hdr->lqi = rx_info.lqi;
+            hdr->rssi = rx_info.rssi;
+            hdr->if_pid = thread_getpid();
+            pkt->type = state->proto;
+#if ENABLE_DEBUG
+            DEBUG("_recv_ieee802154: received packet from %s of length %u\n",
+                  gnrc_netif_addr_to_str(src_str, sizeof(src_str),
+                                         gnrc_netif_hdr_get_src_addr(hdr),
+                                         hdr->src_l2addr_len),
+                  nread);
+#if defined(MODULE_OD)
+            od_hex_dump(pkt->data, nread, OD_WIDTH_DEFAULT);
+#endif
+#endif
+            gnrc_pktbuf_remove_snip(pkt, ieee802154_hdr);
+            LL_APPEND(pkt, netif_hdr);
+        }
+
+        DEBUG("_recv_ieee802154: reallocating.\n");
+        gnrc_pktbuf_realloc_data(pkt, nread);
     }
-    res = dev->driver->get(dev, opt, netif->l2addr,
-                           sizeof(netif->l2addr));
-    if (res != -ENOTSUP) {
-        netif->flags |= GNRC_NETIF2_FLAGS_HAS_L2ADDR;
-    }
-    if (res > 0) {
-        netif->l2addr_len = res;
-    }
+
+    return pkt;
 }
-
-static void _init_from_device(gnrc_netif2_t *netif)
-{
-    int res;
-    netdev_t *dev = netif->dev;
-    uint16_t tmp;
-
-    res = dev->driver->get(dev, NETOPT_DEVICE_TYPE, &tmp, sizeof(tmp));
-    (void)res;
-    assert(res == sizeof(tmp));
-    netif->device_type = (uint8_t)tmp;
-    switch (netif->device_type) {
-#ifdef MODULE_NETDEV_IEEE802154
-        case NETDEV_TYPE_IEEE802154:
-#ifdef MODULE_GNRC_SIXLOWPAN_IPHC
-            netif->flags |= GNRC_NETIF2_FLAGS_6LO_HC;
-#endif
-#ifdef MODULE_GNRC_IPV6
-            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE, &tmp, sizeof(tmp));
-            assert(res == sizeof(tmp));
-#ifdef MODULE_GNRC_SIXLOWPAN
-            netif->ipv6.mtu = IPV6_MIN_MTU;
-            netif->sixlo.max_frag_size = tmp;
-#else
-            netif->ipv6.mtu = tmp;
-#endif
-#endif
-            break;
-#endif  /* MODULE_NETDEV_IEEE802154 */
-#ifdef MODULE_NETDEV_ETH
-        case NETDEV_TYPE_ETHERNET:
-#ifdef MODULE_GNRC_IPV6
-            netif->ipv6.mtu = ETHERNET_DATA_LEN;
-#endif
-            break;
-#endif
-        default:
-            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE, &tmp, sizeof(tmp));
-            assert(res == sizeof(tmp));
-#ifdef MODULE_GNRC_IPV6
-            netif->ipv6.mtu = tmp;
-#endif
-    }
-    _update_l2addr_from_dev(netif);
-}
-
-////////netif2
 
 static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netif2_t *netif)
 {
@@ -729,7 +777,7 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
  * @param[in] event         type of event
  * @param[in] data          optional parameter
  */
-static void _event_cb(netdev_t *dev, netdev_event_t event)
+static void _lwmac_event_cb(netdev_t *dev, netdev_event_t event)
 {
     gnrc_netif2_t *netif = (gnrc_netif2_t *) dev->context;
 
@@ -808,8 +856,108 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 LOG_WARNING("WARNING: [LWMAC] Unhandled netdev event: %u\n", event);
         }
     }
+
+    /* Execute main state machine because something just happend*/
+    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+        lwmac_update(netif);
+    }
 }
 
+static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
+{
+    if (!gnrc_mac_queue_tx_packet(&netif->mac.tx, 0, pkt)) {
+        gnrc_pktbuf_release(pkt);
+        LOG_WARNING("WARNING: [LWMAC] TX queue full, drop packet\n");
+        return -ENOBUFS;
+    }
+
+    lwmac_schedule_update(netif);
+
+    /* Execute main state machine because something just happend*/
+    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+        lwmac_update(netif);
+    }
+
+    return 0;
+}
+
+static void _lwmac_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
+{
+    switch (msg->type) {
+        /* RTT raised an interrupt */
+        case GNRC_LWMAC_EVENT_RTT_TYPE: {
+            if (gnrc_netdev_lwmac_get_dutycycle_active(netif)) {
+                rtt_handler(msg->content.value, netif);
+                lwmac_schedule_update(netif);
+            }
+            else {
+                LOG_DEBUG("[LWMAC] Ignoring late RTT event while duty-cycling is off\n");
+            }
+            break;
+        }
+
+        /* An LWMAC timeout occurred */
+        case GNRC_LWMAC_EVENT_TIMEOUT_TYPE: {
+            gnrc_lwmac_timeout_make_expire((gnrc_lwmac_timeout_t *) msg->content.ptr);
+            lwmac_schedule_update(netif);
+            break;
+        }
+
+        default: {
+#if ENABLE_DEBUG
+            DEBUG("LWMAC: unknown message type 0x%04x"
+                  "(no message handler defined)\n", msg->type);
+#endif
+            break;
+        }
+    }
+
+    /* Execute main state machine because something just happend*/
+    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+        lwmac_update(netif);
+    }
+}
+
+static void _lwmac_init(gnrc_netif2_t *netif)
+{
+	netdev_t *dev;
+
+	dev = netif->dev;
+	dev->event_callback = _lwmac_event_cb;
+
+    /* RTT is used for scheduling wakeup */
+    rtt_init();
+
+    /* Store pid globally, so that IRQ can use it to send msg */
+    lwmac_pid = netif->pid;
+
+    /* Enable RX- and TX-started interrupts  */
+    netopt_enable_t enable = NETOPT_ENABLE;
+    netif->dev->driver->set(netif->dev, NETOPT_RX_START_IRQ, &enable, sizeof(enable));
+    netif->dev->driver->set(netif->dev, NETOPT_TX_START_IRQ, &enable, sizeof(enable));
+    netif->dev->driver->set(netif->dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
+
+    uint16_t src_len = IEEE802154_LONG_ADDRESS_LEN;
+    netif->dev->driver->set(netif->dev, NETOPT_SRC_LEN, &src_len, sizeof(src_len));
+
+    /* Initialize broadcast sequence number. This at least differs from board
+     * to board */
+    netif->mac.tx.bcast_seqnr = netif->l2addr[0];
+
+    /* Reset all timeouts just to be sure */
+    gnrc_lwmac_reset_timeouts(netif);
+
+    /* Start duty cycling */
+    lwmac_set_state(netif, GNRC_LWMAC_START);
+
+#if (GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD == 1)
+    /* Start duty cycle recording */
+    netif->mac.lwmac.system_start_time_ticks = rtt_get_counter();
+    netif->mac.lwmac.last_radio_on_time_ticks = netif->mac.lwmac.system_start_time_ticks;
+    netif->mac.lwmac.awake_duration_sum_ticks = 0;
+    netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_RADIO_IS_ON;
+#endif
+}
 /**
  * @brief   Startup code and event loop of the LWMAC layer
  *
@@ -817,6 +965,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
  *
  * @return                  never returns
  */
+#if 0
 static void *_lwmac_thread(void *args)
 {
     gnrc_netapi_opt_t *opt;
@@ -850,7 +999,7 @@ static void *_lwmac_thread(void *args)
     gnrc_netif2_release(netif);
 
     ///////////////// end of netif2
-#if 0
+
     gnrc_netdev_t *gnrc_netdev = (gnrc_netdev_t *)args;
     netdev_t *dev = gnrc_netdev->dev;
 
@@ -886,7 +1035,7 @@ static void *_lwmac_thread(void *args)
     assert(gnrc_netdev->l2_addr_len > 0);
 
     netif->mac.tx.bcast_seqnr = gnrc_netdev->l2_addr[0];
-#endif
+
 
     /* RTT is used for scheduling wakeup */
     rtt_init();
@@ -928,24 +1077,10 @@ static void *_lwmac_thread(void *args)
         switch (msg.type) {
             /* Transceiver raised an interrupt */
             case NETDEV_MSG_TYPE_EVENT: {
-                DEBUG("[LWMAC] GNRC_NETDEV_MSG_TYPE_EVENT received\n");
-                dev->driver->isr(dev);
-                break;
             }
 
             /* TX: Queue for sending */
             case GNRC_NETAPI_MSG_TYPE_SND: {
-                /* TODO: how to announce failure to upper layers? */
-                LOG_DEBUG("[LWMAC] GNRC_NETAPI_MSG_TYPE_SND received\n");
-                gnrc_pktsnip_t *pkt = (gnrc_pktsnip_t *) msg.content.ptr;
-
-                if (!gnrc_mac_queue_tx_packet(&netif->mac.tx, 0, pkt)) {
-                    gnrc_pktbuf_release(pkt);
-                    LOG_WARNING("WARNING: [LWMAC] TX queue full, drop packet\n");
-                }
-
-                lwmac_schedule_update(netif);
-                break;
             }
 
             /* NETAPI set/get. Can't this be refactored away from here? */
@@ -1056,6 +1191,7 @@ static void *_lwmac_thread(void *args)
     /* never reached */
     return NULL;
 }
+#endif
 
 #if 0
 kernel_pid_t gnrc_lwmac_init(char *stack, int stacksize, char priority,
@@ -1080,30 +1216,3 @@ kernel_pid_t gnrc_lwmac_init(char *stack, int stacksize, char priority,
     return res;
 }
 #endif
-
-gnrc_netif2_t *gnrc_lwmac_init(char *stack, int stacksize, char priority,
-                                  const char *name, netdev_t *netdev,
-                                  const gnrc_netif2_ops_t *ops)
-{
-    gnrc_netif2_t *netif = NULL;
-    int res;
-
-    for (int i = 0; i < GNRC_NETIF_NUMOF; i++) {
-        if (_netifs[i].dev == netdev) {
-            return &_netifs[i];
-        }
-        if ((netif == NULL) && (_netifs[i].ops == NULL)) {
-            netif = &_netifs[i];
-        }
-    }
-    assert(netif != NULL);
-    rmutex_init(&netif->mutex);
-    netif->ops = ops;
-    assert(netif->dev == NULL);
-    netif->dev = netdev;
-    res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
-    		            _lwmac_thread, (void *)netif, name);
-    (void)res;
-    assert(res > 0);
-    return netif;
-}

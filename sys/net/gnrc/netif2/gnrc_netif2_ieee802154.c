@@ -21,10 +21,6 @@
 #include "net/ipv6/hdr.h"
 #endif
 
-#ifdef MODULE_GNRC_LWMAC
-#include "net/gnrc/lwmac/lwmac.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -43,14 +39,8 @@ gnrc_netif2_t *gnrc_netif2_ieee802154_create(char *stack, int stacksize,
                                              char priority, char *name,
                                              netdev_t *dev)
 {
-#ifdef MODULE_GNRC_LWMAC
-    puts("init lwmac");
-    return gnrc_lwmac_init(stack, stacksize, priority, "at86rf2xx-lwmac", dev,
-                              &ieee802154_ops);
-#else
     return gnrc_netif2_create(stack, stacksize, priority, name, dev,
                               &ieee802154_ops);
-#endif
 }
 
 static gnrc_pktsnip_t *_make_netif_hdr(uint8_t *mhr)
