@@ -27,9 +27,97 @@
 #include "net/gnrc/netdev.h"
 #include "net/gnrc/lwmac/lwmac.h"
 #include "include/lwmac_internal.h"
+#include "net/gnrc/netif2/ieee802154.h"
+#include "net/netdev/ieee802154.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
+
+
+int lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
+{
+    netdev_t *dev = netif->dev;
+    netdev_ieee802154_t *state = (netdev_ieee802154_t *)netif->dev;
+    gnrc_netif_hdr_t *netif_hdr;
+    gnrc_pktsnip_t *vec_snip;
+    const uint8_t *src, *dst = NULL;
+    int res = 0;
+    size_t n, src_len, dst_len;
+    uint8_t mhr[IEEE802154_MAX_HDR_LEN];
+    uint8_t flags = (uint8_t)(state->flags & NETDEV_IEEE802154_SEND_MASK);
+    le_uint16_t dev_pan = byteorder_btols(byteorder_htons(state->pan));
+
+    flags |= IEEE802154_FCF_TYPE_DATA;
+    if (pkt == NULL) {
+        DEBUG("_send_ieee802154: pkt was NULL\n");
+        return -EINVAL;
+    }
+    if (pkt->type != GNRC_NETTYPE_NETIF) {
+        DEBUG("_send_ieee802154: first header is not generic netif header\n");
+        return -EBADMSG;
+    }
+    netif_hdr = pkt->data;
+    /* prepare destination address */
+    if (netif_hdr->flags & /* If any of these flags is set assume broadcast */
+        (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
+        dst = ieee802154_addr_bcast;
+        dst_len = IEEE802154_ADDR_BCAST_LEN;
+    }
+    else {
+        dst = gnrc_netif_hdr_get_dst_addr(netif_hdr);
+        dst_len = netif_hdr->dst_l2addr_len;
+    }
+    src_len = netif_hdr->src_l2addr_len;
+    if (src_len > 0) {
+        src = gnrc_netif_hdr_get_src_addr(netif_hdr);
+    }
+    else {
+        src_len = netif->l2addr_len;
+        src = netif->l2addr;
+    }
+    /* fill MAC header, seq should be set by device */
+    if ((res = ieee802154_set_frame_hdr(mhr, src, src_len,
+                                        dst, dst_len, dev_pan,
+                                        dev_pan, flags, state->seq++)) == 0) {
+        DEBUG("_send_ieee802154: Error preperaring frame\n");
+        return -EINVAL;
+    }
+    /* prepare packet for sending */
+    vec_snip = gnrc_pktbuf_get_iovec(pkt, &n);
+    if (vec_snip != NULL) {
+        struct iovec *vector;
+
+        pkt = vec_snip;     /* reassign for later release; vec_snip is prepended to pkt */
+        vector = (struct iovec *)pkt->data;
+        vector[0].iov_base = mhr;
+        vector[0].iov_len = (size_t)res;
+#ifdef MODULE_NETSTATS_L2
+    if (netif_hdr->flags &
+        (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
+            netif->dev->stats.tx_mcast_count++;
+        }
+        else {
+            netif->dev->stats.tx_unicast_count++;
+        }
+#endif
+#ifdef MODULE_GNRC_MAC
+        if (netif->mac.mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED) {
+            res = csma_sender_csma_ca_send(dev, vector, n, &netif->mac.csma_conf);
+        }
+        else {
+            res = dev->driver->send(dev, vector, n);
+        }
+#else
+        res = dev->driver->send(dev, vector, n);
+#endif
+    }
+    else {
+        return -ENOBUFS;
+    }
+    /* release old data */
+    gnrc_pktbuf_release(pkt);
+    return res;
+}
 
 int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info)
 {

@@ -127,7 +127,7 @@ static uint8_t _send_bcast(gnrc_netif2_t *netif)
         /* Don't let the packet be released yet, we want to send it again */
         gnrc_pktbuf_hold(pkt, 1);
 
-        int res = netif->ops->send(netif, pkt);
+        int res = lwmac_transmit(netif, pkt);
         if (res < 0) {
             LOG_ERROR("ERROR: [LWMAC-tx] Send broadcast pkt failed.");
             tx_info |= GNRC_LWMAC_TX_FAIL;
@@ -214,7 +214,7 @@ static uint8_t _send_wr(gnrc_netif2_t *netif)
 
     /* Prepare WR, this will discard any frame in the transceiver that has
      * possibly arrived in the meantime but we don't care at this point. */
-    int res = netif->ops->send(netif, pkt);
+    int res = lwmac_transmit(netif, pkt);
     if (res < 0) {
         LOG_ERROR("ERROR: [LWMAC-tx] Send WR failed.");
         if (pkt != NULL) {
@@ -448,7 +448,7 @@ static bool _send_data(gnrc_netif2_t *netif)
     }
 
     /* Send data */
-    int res = netif->ops->send(netif, pkt);
+    int res = lwmac_transmit(netif, pkt);
     if (res < 0) {
         LOG_ERROR("ERROR: [LWMAC-tx] Send data failed.");
         if (pkt != NULL) {

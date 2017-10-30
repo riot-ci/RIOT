@@ -104,7 +104,6 @@ gnrc_netif2_t *gnrc_netif2_lwmac_create(char *stack, int stacksize,
                               &lwmac_ops);
 }
 
-
 static gnrc_pktsnip_t *_make_netif_hdr(uint8_t *mhr)
 {
     gnrc_pktsnip_t *snip;
@@ -730,7 +729,6 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             gnrc_netdev_lwmac_set_phase_backoff(netif, false);
             netif->mac.rx.rx_bad_exten_count = 0;
             lwmac_set_state(netif, GNRC_LWMAC_LISTENING);
-            puts("C");
             break;
         }
         case GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING: {
@@ -938,7 +936,12 @@ static void _lwmac_init(gnrc_netif2_t *netif)
     netif->dev->driver->set(netif->dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
 
     uint16_t src_len = IEEE802154_LONG_ADDRESS_LEN;
-    netif->dev->driver->set(netif->dev, NETOPT_SRC_LEN, &src_len, sizeof(src_len));
+    dev->driver->set(netif->dev, NETOPT_SRC_LEN, &src_len, sizeof(src_len));
+
+    /* Get own address from netdev */
+    netif->l2addr_len = dev->driver->get(dev, NETOPT_ADDRESS_LONG,
+                                                &netif->l2addr,
+                                                IEEE802154_LONG_ADDRESS_LEN);
 
     /* Initialize broadcast sequence number. This at least differs from board
      * to board */

@@ -95,7 +95,7 @@ extern "C" {
  * In LWMAC, by default, we regard the wake-up period as the beginning of a cycle.
  */
 #ifndef GNRC_LWMAC_WAKEUP_INTERVAL_US
-#define GNRC_LWMAC_WAKEUP_INTERVAL_US        (5000LU * US_PER_MS)
+#define GNRC_LWMAC_WAKEUP_INTERVAL_US        (1000LU * US_PER_MS)
 #endif
 
 /**

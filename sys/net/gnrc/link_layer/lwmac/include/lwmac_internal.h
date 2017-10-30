@@ -278,6 +278,9 @@ static inline bool gnrc_netdev_lwmac_get_reschedule(gnrc_netif2_t *netif)
     return (netif->mac.lwmac.lwmac_info & GNRC_LWMAC_NEEDS_RESCHEDULE);
 }
 
+
+int lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt);
+
 /**
  * @brief Parse an incoming packet and extract important information.
  *

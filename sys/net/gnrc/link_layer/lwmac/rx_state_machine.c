@@ -181,7 +181,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
                                   sizeof(autoack));
 
     /* Send WA */
-    if (netif->ops->send(netif, pkt) < 0) {
+    if (lwmac_transmit(netif, pkt) < 0) {
         LOG_ERROR("ERROR: [LWMAC-rx] Send WA failed.");
         if (pkt != NULL) {
             gnrc_pktbuf_release(pkt);
