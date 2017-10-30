@@ -25,6 +25,9 @@
 #include "periph_conf.h"
 #include "periph/hwrng.h"
 
+/* only build if the CPU actually provides a RNG peripheral */
+#ifdef RNG
+
 void hwrng_init(void)
 {
     /* no need for initialization */
@@ -68,3 +71,5 @@ void hwrng_read(void *buf, unsigned int num)
     periph_clk_dis(AHB2, RCC_AHB2ENR_RNGEN);
 #endif
 }
+
+#endif /* RNG */
