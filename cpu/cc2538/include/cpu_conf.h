@@ -20,6 +20,9 @@
 #define CPU_CONF_H
 
 #include "cpu_conf_common.h"
+/* store compiler switches */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include "cc2538.h"
 #include "cc2538_gpio.h"
 #include "cc2538_uart.h"
@@ -29,6 +32,8 @@
 #include "cc2538_ssi.h"
 #include "cc2538_rfcore.h"
 #include "cc2538_sys_ctrl.h"
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #ifdef __cplusplus
 extern "C" {

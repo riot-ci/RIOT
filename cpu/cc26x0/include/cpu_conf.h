@@ -22,8 +22,10 @@
 
 #include "cpu_conf_common.h"
 
+/* store compiler switches */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include "cc26x0.h"
-
 #include "cc26x0_aux.h"
 #include "cc26x0_ccfg.h"
 #include "cc26x0_fcfg.h"
@@ -35,6 +37,8 @@
 #include "cc26x0_uart.h"
 #include "cc26x0_vims.h"
 #include "cc26x0_wdt.h"
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #ifdef __cplusplus
 extern "C" {

@@ -29,6 +29,9 @@
 #ifndef CPU_CONF_H
 #define CPU_CONF_H
 
+/* store compiler switches */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #ifdef CPU_MODEL_KW21D256
 #include "vendor/MKW22D5.h"
 #elif CPU_MODEL_KW21D512
@@ -38,6 +41,8 @@
 #else
 #error "undefined CPU_MODEL"
 #endif
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #include "cpu_conf_kinetis.h"
 
