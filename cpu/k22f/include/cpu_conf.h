@@ -22,11 +22,16 @@
 #ifndef CPU_CONF_H
 #define CPU_CONF_H
 
+/* disable -Wpedantic for vendor header */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #ifdef CPU_MODEL_MK22FN512VLH12
 #include "vendor/MK22F51212.h"
 #else
 #error "undefined CPU_MODEL"
 #endif
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #include "cpu_conf_kinetis.h"
 
