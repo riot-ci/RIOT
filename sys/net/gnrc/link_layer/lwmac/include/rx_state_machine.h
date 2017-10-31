@@ -32,7 +32,7 @@ extern "C" {
 /**
  * @brief Start LWMAC RX procedure to receive packet
  *
- * @param[in,out]   gnrc_netdev   gnrc_netdev structure
+ * @param[in,out]   netif    ptr to the network interface
  *
  */
 void gnrc_lwmac_rx_start(gnrc_netif2_t *netif);
@@ -40,7 +40,7 @@ void gnrc_lwmac_rx_start(gnrc_netif2_t *netif);
 /**
  * @brief Stop LWMAC RX procedure
  *
- * @param[in,out]   gnrc_netdev   gnrc_netdev structure
+ * @param[in,out]   netif    ptr to the network interface
  *
  */
 void gnrc_lwmac_rx_stop(gnrc_netif2_t *netif);
@@ -48,7 +48,7 @@ void gnrc_lwmac_rx_stop(gnrc_netif2_t *netif);
 /**
  * @brief Update LWMAC RX procedure for packet reception
  *
- * @param[in,out]   gnrc_netdev   gnrc_netdev structure
+ * @param[in,out]   netif    ptr to the network interface
  *
  */
 void gnrc_lwmac_rx_update(gnrc_netif2_t *netif);
