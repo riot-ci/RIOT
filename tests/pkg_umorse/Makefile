@@ -11,3 +11,6 @@ CFLAGS += -DUMORSE_DELAY_DIT=$(UMORSE_DELAY_DIT)
 FEATURES_REQUIRED += periph_gpio
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py
