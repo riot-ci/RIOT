@@ -5,6 +5,9 @@ USEMODULE += xtimer
 
 USEPKG += umorse
 
-CFLAGS += -DUMORSE_DELAY_DIT=240
+CFLAGS += -DUMORSE_DELAY_DIT=120
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py
