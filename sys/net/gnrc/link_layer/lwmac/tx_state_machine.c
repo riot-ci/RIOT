@@ -127,7 +127,7 @@ static uint8_t _send_bcast(gnrc_netif2_t *netif)
         /* Don't let the packet be released yet, we want to send it again */
         gnrc_pktbuf_hold(pkt, 1);
 
-        int res = lwmac_transmit(netif, pkt);
+        int res = _gnrc_lwmac_transmit(netif, pkt);
         if (res < 0) {
             LOG_ERROR("ERROR: [LWMAC-tx] Send broadcast pkt failed.");
             tx_info |= GNRC_LWMAC_TX_FAIL;
@@ -214,7 +214,7 @@ static uint8_t _send_wr(gnrc_netif2_t *netif)
 
     /* Prepare WR, this will discard any frame in the transceiver that has
      * possibly arrived in the meantime but we don't care at this point. */
-    int res = lwmac_transmit(netif, pkt);
+    int res = _gnrc_lwmac_transmit(netif, pkt);
     if (res < 0) {
         LOG_ERROR("ERROR: [LWMAC-tx] Send WR failed.");
         if (pkt != NULL) {
@@ -328,7 +328,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netif2_t *netif)
             if ((own_phase < RTT_US_TO_TICKS((3 * GNRC_LWMAC_WAKEUP_DURATION_US / 2))) ||
                 (own_phase > RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US -
                                              (3 * GNRC_LWMAC_WAKEUP_DURATION_US / 2)))) {
-                gnrc_netdev_lwmac_set_phase_backoff(netif, true);
+                gnrc_lwmac_set_phase_backoff(netif, true);
                 LOG_WARNING("WARNING: [LWMAC-tx] phase close\n");
             }
         }
@@ -406,12 +406,12 @@ static bool _send_data(gnrc_netif2_t *netif)
     if ((gnrc_priority_pktqueue_length(&netif->mac.tx.current_neighbor->queue) > 0) &&
         (netif->mac.tx.tx_burst_count < GNRC_LWMAC_MAX_TX_BURST_PKT_NUM)) {
         hdr.type = GNRC_LWMAC_FRAMETYPE_DATA_PENDING;
-        gnrc_netdev_lwmac_set_tx_continue(netif, true);
+        gnrc_lwmac_set_tx_continue(netif, true);
         netif->mac.tx.tx_burst_count++;
     }
     else {
         hdr.type = GNRC_LWMAC_FRAMETYPE_DATA;
-        gnrc_netdev_lwmac_set_tx_continue(netif, false);
+        gnrc_lwmac_set_tx_continue(netif, false);
     }
 
     pkt->next = gnrc_pktbuf_add(pkt->next, &hdr, sizeof(hdr), GNRC_NETTYPE_LWMAC);
@@ -448,7 +448,7 @@ static bool _send_data(gnrc_netif2_t *netif)
     }
 
     /* Send data */
-    int res = lwmac_transmit(netif, pkt);
+    int res = _gnrc_lwmac_transmit(netif, pkt);
     if (res < 0) {
         LOG_ERROR("ERROR: [LWMAC-tx] Send data failed.");
         if (pkt != NULL) {
@@ -521,7 +521,7 @@ void gnrc_lwmac_tx_stop(gnrc_netif2_t *netif)
         }
     }
 
-    if (!gnrc_netdev_lwmac_get_tx_continue(netif)) {
+    if (!gnrc_lwmac_get_tx_continue(netif)) {
     	netif->mac.tx.current_neighbor = NULL;
     }
 }
@@ -695,7 +695,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
                  * transmission procedure. And, if this WR doesn't work (no WA replied), the
                  * sender regards consecutive transmission failed.
                  */
-                if (gnrc_netdev_lwmac_get_tx_continue(netif)) {
+                if (gnrc_lwmac_get_tx_continue(netif)) {
                     LOG_DEBUG("[LWMAC-tx] Tx burst fail\n");
                     if (!gnrc_mac_queue_tx_packet(&netif->mac.tx, 0, netif->mac.tx.packet)) {
                         gnrc_pktbuf_release(netif->mac.tx.packet);

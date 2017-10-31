@@ -34,7 +34,7 @@
 #include "debug.h"
 
 
-int lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
+int _gnrc_lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
 {
     netdev_t *dev = netif->dev;
     netdev_ieee802154_t *state = (netdev_ieee802154_t *)netif->dev;

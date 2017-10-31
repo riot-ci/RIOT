@@ -242,7 +242,7 @@ static uint32_t _next_inphase_event(uint32_t last, uint32_t interval)
 
 inline void lwmac_schedule_update(gnrc_netif2_t *netif)
 {
-    gnrc_netdev_lwmac_set_reschedule(netif, true);
+    gnrc_lwmac_set_reschedule(netif, true);
 }
 
 void lwmac_set_state(gnrc_netif2_t *netif, gnrc_lwmac_state_t newstate)
@@ -298,8 +298,8 @@ void lwmac_set_state(gnrc_netif2_t *netif, gnrc_lwmac_state_t newstate)
             /* We may have come here through RTT handler, so timeout may still be active */
             gnrc_lwmac_clear_timeout(netif, GNRC_LWMAC_TIMEOUT_WAKEUP_PERIOD);
 
-            if (gnrc_netdev_lwmac_get_phase_backoff(netif)) {
-                gnrc_netdev_lwmac_set_phase_backoff(netif, false);
+            if (gnrc_lwmac_get_phase_backoff(netif)) {
+                gnrc_lwmac_set_phase_backoff(netif, false);
                 uint32_t alarm;
 
                 rtt_clear_alarm();
@@ -385,7 +385,7 @@ static void _sleep_management(gnrc_netif2_t *netif)
             /* if phase is unknown, send immediately. */
             if (neighbour->phase > RTT_TICKS_TO_US(GNRC_LWMAC_WAKEUP_INTERVAL_US)) {
             	netif->mac.tx.current_neighbor = neighbour;
-                gnrc_netdev_lwmac_set_tx_continue(netif, false);
+                gnrc_lwmac_set_tx_continue(netif, false);
                 netif->mac.tx.tx_burst_count = 0;
                 lwmac_set_state(netif, GNRC_LWMAC_TRANSMITTING);
                 return;
@@ -423,7 +423,7 @@ static void _sleep_management(gnrc_netif2_t *netif)
     }
     else if (gnrc_lwmac_timeout_is_expired(netif, GNRC_LWMAC_TIMEOUT_WAIT_DEST_WAKEUP)) {
         LOG_DEBUG("[LWMAC] Got timeout for dest wakeup, ticks: %" PRIu32 "\n", rtt_get_counter());
-        gnrc_netdev_lwmac_set_tx_continue(netif, false);
+        gnrc_lwmac_set_tx_continue(netif, false);
         netif->mac.tx.tx_burst_count = 0;
         lwmac_set_state(netif, GNRC_LWMAC_TRANSMITTING);
     }
@@ -437,7 +437,7 @@ static void _rx_management_failed(gnrc_netif2_t *netif)
     gnrc_lwmac_rx_stop(netif);
 
     if (netif->mac.rx.rx_bad_exten_count >= GNRC_LWMAC_MAX_RX_EXTENSION_NUM) {
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
     }
 
     /* Here we check if we are close to the end of the cycle. If yes,
@@ -452,10 +452,10 @@ static void _rx_management_failed(gnrc_netif2_t *netif)
     }
     /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
     if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
     }
 
-    if (gnrc_netdev_lwmac_get_quit_rx(netif)) {
+    if (gnrc_lwmac_get_quit_rx(netif)) {
         lwmac_set_state(netif, GNRC_LWMAC_SLEEPING);
     }
     else {
@@ -483,10 +483,10 @@ static void _rx_management_success(gnrc_netif2_t *netif)
     }
     /* If the relative phase is beyond 4/5 cycle time, go to sleep. */
     if (phase > (4*RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US)/5)) {
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
     }
 
-    if (gnrc_netdev_lwmac_get_quit_rx(netif)) {
+    if (gnrc_lwmac_get_quit_rx(netif)) {
         lwmac_set_state(netif, GNRC_LWMAC_SLEEPING);
     }
     else {
@@ -494,6 +494,7 @@ static void _rx_management_success(gnrc_netif2_t *netif)
         lwmac_set_state(netif, GNRC_LWMAC_LISTENING);
     }
 }
+
 static void _rx_management(gnrc_netif2_t *netif)
 {
     gnrc_lwmac_rx_state_t state_rx = netif->mac.rx.state;
@@ -559,7 +560,7 @@ static void _tx_management_success(gnrc_netif2_t *netif)
 
     /* In case have pending packets for the same receiver, continue to
      * send immediately, before the maximum transmit-limit */
-    if ((gnrc_netdev_lwmac_get_tx_continue(netif)) &&
+    if ((gnrc_lwmac_get_tx_continue(netif)) &&
         (netif->mac.tx.tx_burst_count < GNRC_LWMAC_MAX_TX_BURST_PKT_NUM)) {
         lwmac_schedule_update(netif);
     }
@@ -580,8 +581,8 @@ static void _tx_management(gnrc_netif2_t *netif)
         case GNRC_LWMAC_TX_STATE_FAILED: {
             /* If transmission failure, do not try burst transmissions and quit other
              * transmission attempts in this cycle for collision avoidance */
-            gnrc_netdev_lwmac_set_tx_continue(netif, false);
-            gnrc_netdev_lwmac_set_quit_tx(netif, true);
+            gnrc_lwmac_set_tx_continue(netif, false);
+            gnrc_lwmac_set_quit_tx(netif, true);
             /* falls through */
             /* TX packet will therefore be dropped. No automatic resending here,
              * we did our best.
@@ -647,14 +648,14 @@ static void _lwmac_update_listening(gnrc_netif2_t *netif)
 /* Main state machine. Call whenever something happens */
 static bool lwmac_update(gnrc_netif2_t *netif)
 {
-    gnrc_netdev_lwmac_set_reschedule(netif, false);
+    gnrc_lwmac_set_reschedule(netif, false);
 
     switch (netif->mac.lwmac.state) {
         case GNRC_LWMAC_SLEEPING: {
             /* Quit scheduling transmission if 'quit-tx' flag is found set, thus
              * to avoid potential collisions with ongoing transmissions of other
              * neighbor nodes */
-            if (gnrc_netdev_lwmac_get_quit_tx(netif)) {
+            if (gnrc_lwmac_get_quit_tx(netif)) {
                 return false;
             }
 
@@ -677,7 +678,7 @@ static bool lwmac_update(gnrc_netif2_t *netif)
             LOG_DEBUG("[LWMAC] No actions in state %u\n", netif->mac.lwmac.state);
     }
 
-    return gnrc_netdev_lwmac_get_reschedule(netif);
+    return gnrc_lwmac_get_reschedule(netif);
 }
 
 static void rtt_cb(void *arg)
@@ -704,9 +705,9 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             alarm = _next_inphase_event(netif->mac.lwmac.last_wakeup,
                                         RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_DURATION_US));
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING);
-            gnrc_netdev_lwmac_set_quit_tx(netif, false);
-            gnrc_netdev_lwmac_set_quit_rx(netif, false);
-            gnrc_netdev_lwmac_set_phase_backoff(netif, false);
+            gnrc_lwmac_set_quit_tx(netif, false);
+            gnrc_lwmac_set_quit_rx(netif, false);
+            gnrc_lwmac_set_phase_backoff(netif, false);
             netif->mac.rx.rx_bad_exten_count = 0;
             lwmac_set_state(netif, GNRC_LWMAC_LISTENING);
             break;
@@ -724,7 +725,7 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             LOG_DEBUG("[LWMAC] RTT: Initialize duty cycling\n");
             alarm = rtt_get_counter() + RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_DURATION_US);
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_SLEEP_PENDING);
-            gnrc_netdev_lwmac_set_dutycycle_active(netif, true);
+            gnrc_lwmac_set_dutycycle_active(netif, true);
             break;
         }
         case GNRC_LWMAC_EVENT_RTT_STOP:
@@ -732,7 +733,7 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             rtt_clear_alarm();
             LOG_DEBUG("[LWMAC] RTT: Stop duty cycling, now in state %u\n",
                       netif->mac.lwmac.state);
-            gnrc_netdev_lwmac_set_dutycycle_active(netif, false);
+            gnrc_lwmac_set_dutycycle_active(netif, false);
             break;
         }
         case GNRC_LWMAC_EVENT_RTT_RESUME: {
@@ -741,7 +742,7 @@ void rtt_handler(uint32_t event, gnrc_netif2_t *netif)
             alarm = _next_inphase_event(netif->mac.lwmac.last_wakeup,
                                         RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US));
             rtt_set_alarm(alarm, rtt_cb, (void *) GNRC_LWMAC_EVENT_RTT_WAKEUP_PENDING);
-            gnrc_netdev_lwmac_set_dutycycle_active(netif, true);
+            gnrc_lwmac_set_dutycycle_active(netif, true);
             break;
         }
         default:
@@ -836,7 +837,7 @@ static void _lwmac_event_cb(netdev_t *dev, netdev_event_t event)
     }
 
     /* Execute main state machine because something just happend*/
-    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+    while (gnrc_lwmac_get_reschedule(netif)) {
         lwmac_update(netif);
     }
 }
@@ -852,7 +853,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
     lwmac_schedule_update(netif);
 
     /* Execute main state machine because something just happend*/
-    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+    while (gnrc_lwmac_get_reschedule(netif)) {
         lwmac_update(netif);
     }
 
@@ -864,7 +865,7 @@ static void _lwmac_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
     switch (msg->type) {
         /* RTT raised an interrupt */
         case GNRC_LWMAC_EVENT_RTT_TYPE: {
-            if (gnrc_netdev_lwmac_get_dutycycle_active(netif)) {
+            if (gnrc_lwmac_get_dutycycle_active(netif)) {
                 rtt_handler(msg->content.value, netif);
                 lwmac_schedule_update(netif);
             }
@@ -891,7 +892,7 @@ static void _lwmac_msg_handler(gnrc_netif2_t *netif, msg_t *msg)
     }
 
     /* Execute main state machine because something just happend*/
-    while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+    while (gnrc_lwmac_get_reschedule(netif)) {
         lwmac_update(netif);
     }
 }
@@ -1130,7 +1131,7 @@ static void *_lwmac_thread(void *args)
 
             /* RTT raised an interrupt */
             case GNRC_LWMAC_EVENT_RTT_TYPE: {
-                if (gnrc_netdev_lwmac_get_dutycycle_active(netif)) {
+                if (gnrc_lwmac_get_dutycycle_active(netif)) {
                     rtt_handler(msg.content.value, netif);
                     lwmac_schedule_update(netif);
                 }
@@ -1164,7 +1165,7 @@ static void *_lwmac_thread(void *args)
         }
 
         /* Execute main state machine because something just happend*/
-        while (gnrc_netdev_lwmac_get_reschedule(netif)) {
+        while (gnrc_lwmac_get_reschedule(netif)) {
             lwmac_update(netif);
         }
     }

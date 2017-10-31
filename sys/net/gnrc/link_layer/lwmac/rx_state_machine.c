@@ -76,9 +76,9 @@ static uint8_t _packet_process_in_wait_for_wr(gnrc_netif2_t *netif)
             gnrc_mac_dispatch(&netif->mac.rx);
             rx_info |= GNRC_LWMAC_RX_FOUND_BROADCAST;
             /* quit listening period to avoid receiving duplicate broadcast packets */
-            gnrc_netdev_lwmac_set_quit_rx(netif, true);
+            gnrc_lwmac_set_quit_rx(netif, true);
             /* quit TX in this cycle to avoid collisions with broadcast packets */
-            gnrc_netdev_lwmac_set_quit_tx(netif, true);
+            gnrc_lwmac_set_quit_tx(netif, true);
             break;
         }
 
@@ -96,7 +96,7 @@ static uint8_t _packet_process_in_wait_for_wr(gnrc_netif2_t *netif)
             LOG_DEBUG("[LWMAC-rx] Packet is WR but not for us\n");
             /* quit TX in this cycle to avoid collisions with other senders, since
              * found ongoing WR (preamble) stream */
-            gnrc_netdev_lwmac_set_quit_tx(netif, true);
+            gnrc_lwmac_set_quit_tx(netif, true);
             continue;
         }
 
@@ -150,7 +150,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
     pkt = gnrc_pktbuf_add(NULL, &lwmac_hdr, sizeof(lwmac_hdr), GNRC_NETTYPE_LWMAC);
     if (pkt == NULL) {
         LOG_ERROR("ERROR: [LWMAC-rx] Cannot allocate pktbuf of type GNRC_NETTYPE_LWMAC\n");
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
         return false;
     }
     pkt_lwmac = pkt;
@@ -161,7 +161,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
     if (pkt == NULL) {
         LOG_ERROR("ERROR: [LWMAC-rx] Cannot allocate pktbuf of type GNRC_NETTYPE_NETIF\n");
         gnrc_pktbuf_release(pkt_lwmac);
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
         return false;
     }
 
@@ -181,12 +181,12 @@ static bool _send_wa(gnrc_netif2_t *netif)
                                   sizeof(autoack));
 
     /* Send WA */
-    if (lwmac_transmit(netif, pkt) < 0) {
+    if (_gnrc_lwmac_transmit(netif, pkt) < 0) {
         LOG_ERROR("ERROR: [LWMAC-rx] Send WA failed.");
         if (pkt != NULL) {
             gnrc_pktbuf_release(pkt);
         }
-        gnrc_netdev_lwmac_set_quit_rx(netif, true);
+        gnrc_lwmac_set_quit_rx(netif, true);
         return false;
     }
 
@@ -223,7 +223,7 @@ static uint8_t _packet_process_in_wait_for_data(gnrc_netif2_t *netif)
             _gnrc_lwmac_dispatch_defer(netif->mac.rx.dispatch_buffer, pkt);
             gnrc_mac_dispatch(&netif->mac.rx);
             /* quit listening period to avoid receiving duplicate broadcast packets */
-            gnrc_netdev_lwmac_set_quit_rx(netif, true);
+            gnrc_lwmac_set_quit_rx(netif, true);
             continue;
         }
 
