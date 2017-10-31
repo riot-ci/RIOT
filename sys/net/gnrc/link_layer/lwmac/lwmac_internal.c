@@ -33,7 +33,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-
 int _gnrc_lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
 {
     netdev_t *dev = netif->dev;

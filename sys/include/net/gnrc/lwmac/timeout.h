@@ -40,7 +40,7 @@ extern "C" {
 /**
  * @brief   Set LWMAC timeout of type @p type of offset @p offset.
  *
- * @param[in,out] gnrc_netdev  gnrc_netdev structure
+ * @param[in,out] netif        the network interface
  * @param[in]     type         LWMAC timeout type
  * @param[in]     offset       timeout offset
  */
@@ -51,7 +51,7 @@ void gnrc_lwmac_set_timeout(gnrc_netif2_t *netif,
 /**
  * @brief   Clear LWMAC timeout of type @p type.
  *
- * @param[in,out] gnrc_netdev  gnrc_netdev structure
+ * @param[in,out] netif        the network interface
  * @param[in]     type         LWMAC timeout type
  */
 void gnrc_lwmac_clear_timeout(gnrc_netif2_t *netif, gnrc_lwmac_timeout_type_t type);
@@ -59,7 +59,7 @@ void gnrc_lwmac_clear_timeout(gnrc_netif2_t *netif, gnrc_lwmac_timeout_type_t ty
 /**
  * @brief   Check whether LWMAC timeout of type @p type is running.
  *
- * @param[in]     gnrc_netdev  gnrc_netdev structure
+ * @param[in]     netif        the network interface
  * @param[in]     type         LWMAC timeout type
  *
  * @return        true, if timeout of type @p type is running.
@@ -72,7 +72,7 @@ bool gnrc_lwmac_timeout_is_running(gnrc_netif2_t *netif,
  * @brief   Check whether LWMAC timeout of type @p type is expired. It will clear
  *          the timeout once it is found expired.
  *
- * @param[in,out] gnrc_netdev  gnrc_netdev structure
+ * @param[in,out] netif        the network interface
  * @param[in]     type         LWMAC timeout type
  *
  * @return        true, if timeout of type @p type is expired.
@@ -83,7 +83,7 @@ bool gnrc_lwmac_timeout_is_expired(gnrc_netif2_t *netif, gnrc_lwmac_timeout_type
 /**
  * @brief   Reset all LWMAC timeouts.
  *
- * @param[in,out] gnrc_netdev  gnrc_netdev structure
+ * @param[in,out] netif        the network interface
  */
 void gnrc_lwmac_reset_timeouts(gnrc_netif2_t *netif);
 
