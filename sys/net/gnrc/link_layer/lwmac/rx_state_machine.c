@@ -287,7 +287,7 @@ void gnrc_lwmac_rx_start(gnrc_netif2_t *netif)
     assert(netif->mac.rx.l2_addr.len == 0);
 
     /* Don't attempt to send a WA if channel is busy to get timings right */
-    netif->mac.mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+    netif->mac.mac_info &= ~GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_disable = NETOPT_DISABLE;
     netif->dev->driver->set(netif->dev, NETOPT_CSMA, &csma_disable,
                                   sizeof(csma_disable));
@@ -364,7 +364,7 @@ static bool _lwmac_rx_update(gnrc_netif2_t *netif)
         case GNRC_LWMAC_RX_STATE_WAIT_WA_SENT: {
             LOG_DEBUG("[LWMAC-rx] GNRC_LWMAC_RX_STATE_WAIT_WA_SENT\n");
 
-            if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
+            if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
                 LOG_DEBUG("[LWMAC-rx] WA not yet completely sent\n");
                 break;
             }
@@ -397,7 +397,7 @@ static bool _lwmac_rx_update(gnrc_netif2_t *netif)
              * machine (see above).
              */
             if (gnrc_lwmac_timeout_is_expired(netif, GNRC_LWMAC_TIMEOUT_DATA)) {
-                if (!gnrc_netdev_get_rx_started(netif)) {
+                if (!gnrc_netif2_get_rx_started(netif)) {
                     LOG_INFO("[LWMAC-rx] DATA timed out\n");
                     netif->mac.rx.rx_bad_exten_count++;
                     netif->mac.rx.state = GNRC_LWMAC_RX_STATE_FAILED;

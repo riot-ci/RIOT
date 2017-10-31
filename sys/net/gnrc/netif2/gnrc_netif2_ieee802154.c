@@ -223,7 +223,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
         }
 #endif
 #ifdef MODULE_GNRC_MAC
-        if (netif->mac.mac_info & GNRC_NETDEV_MAC_INFO_CSMA_ENABLED) {
+        if (netif->mac.mac_info & GNRC_NETIF2_MAC_INFO_CSMA_ENABLED) {
             res = csma_sender_csma_ca_send(dev, vector, n, &netif->mac.csma_conf);
         }
         else {

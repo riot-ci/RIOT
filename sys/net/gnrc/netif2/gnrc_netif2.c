@@ -1119,7 +1119,7 @@ static void *_gnrc_netif2_thread(void *args)
     msg_t reply = { .type = GNRC_NETAPI_MSG_TYPE_ACK };
     msg_t msg, msg_queue[_NETIF_NETAPI_MSG_QUEUE_SIZE];
 
-    printf("gnrc_netif2: starting thread %i\n", sched_active_pid);
+    DEBUG("gnrc_netif2: starting thread %i\n", sched_active_pid);
     netif = args;
     gnrc_netif2_acquire(netif);
     dev = netif->dev;
@@ -1130,7 +1130,6 @@ static void *_gnrc_netif2_thread(void *args)
     dev->event_callback = _event_cb;
     dev->context = netif;
     /* initialize low-level driver */
-
     dev->driver->init(dev);
     _init_from_device(netif);
     netif->cur_hl = GNRC_NETIF2_DEFAULT_HL;

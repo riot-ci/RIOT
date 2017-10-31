@@ -23,7 +23,6 @@
 #define RX_STATE_MACHINE_H
 
 #include "net/gnrc/pkt.h"
-//#include "net/gnrc/netdev.h"
 #include "net/gnrc/netif2.h"
 
 #ifdef __cplusplus

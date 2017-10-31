@@ -24,7 +24,6 @@
 #include <stdint.h>
 
 #include "periph/rtt.h"
-//#include "net/gnrc/netdev.h"
 #include "net/gnrc/netif2.h"
 #include "net/gnrc/mac/types.h"
 #include "net/gnrc/lwmac/types.h"

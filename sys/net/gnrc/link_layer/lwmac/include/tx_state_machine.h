@@ -23,7 +23,6 @@
 #define TX_STATE_MACHINE_H
 
 #include "net/gnrc/pkt.h"
-//#include "net/gnrc/netdev.h"
 #include "net/gnrc/netif2.h"
 #include "net/gnrc/mac/types.h"
 

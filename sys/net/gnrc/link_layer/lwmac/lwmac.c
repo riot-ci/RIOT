@@ -774,7 +774,7 @@ static void _lwmac_event_cb(netdev_t *dev, netdev_event_t event)
         switch (event) {
             case NETDEV_EVENT_RX_STARTED: {
                 LOG_DEBUG("[LWMAC] NETDEV_EVENT_RX_STARTED\n");
-                gnrc_netdev_set_rx_started(netif, true);
+                gnrc_netif2_set_rx_started(netif, true);
                 break;
             }
             case NETDEV_EVENT_RX_COMPLETE: {
@@ -793,11 +793,11 @@ static void _lwmac_event_cb(netdev_t *dev, netdev_event_t event)
                  * TODO: transceivers might have 2 frame buffers, so make this optional
                  */
                 if (pkt == NULL) {
-                    gnrc_netdev_set_rx_started(netif, false);
+                    gnrc_netif2_set_rx_started(netif, false);
                     break;
                 }
 
-                gnrc_netdev_set_rx_started(netif, false);
+                gnrc_netif2_set_rx_started(netif, false);
 
                 if (!gnrc_mac_queue_rx_packet(&netif->mac.rx, 0, pkt)) {
                     LOG_ERROR("ERROR: [LWMAC] Can't push RX packet @ %p, memory full?\n", pkt);
@@ -808,25 +808,25 @@ static void _lwmac_event_cb(netdev_t *dev, netdev_event_t event)
                 break;
             }
             case NETDEV_EVENT_TX_STARTED: {
-                gnrc_netdev_set_tx_feedback(netif, TX_FEEDBACK_UNDEF);
-                gnrc_netdev_set_rx_started(netif, false);
+                gnrc_netif2_set_tx_feedback(netif, TX_FEEDBACK_UNDEF);
+                gnrc_netif2_set_rx_started(netif, false);
                 break;
             }
             case NETDEV_EVENT_TX_COMPLETE: {
-                gnrc_netdev_set_tx_feedback(netif, TX_FEEDBACK_SUCCESS);
-                gnrc_netdev_set_rx_started(netif, false);
+                gnrc_netif2_set_tx_feedback(netif, TX_FEEDBACK_SUCCESS);
+                gnrc_netif2_set_rx_started(netif, false);
                 lwmac_schedule_update(netif);
                 break;
             }
             case NETDEV_EVENT_TX_NOACK: {
-                gnrc_netdev_set_tx_feedback(netif, TX_FEEDBACK_NOACK);
-                gnrc_netdev_set_rx_started(netif, false);
+                gnrc_netif2_set_tx_feedback(netif, TX_FEEDBACK_NOACK);
+                gnrc_netif2_set_rx_started(netif, false);
                 lwmac_schedule_update(netif);
                 break;
             }
             case NETDEV_EVENT_TX_MEDIUM_BUSY: {
-                gnrc_netdev_set_tx_feedback(netif, TX_FEEDBACK_BUSY);
-                gnrc_netdev_set_rx_started(netif, false);
+                gnrc_netif2_set_tx_feedback(netif, TX_FEEDBACK_BUSY);
+                gnrc_netif2_set_rx_started(netif, false);
                 lwmac_schedule_update(netif);
                 break;
             }
@@ -911,12 +911,12 @@ static void _lwmac_init(gnrc_netif2_t *netif)
 
     /* Enable RX- and TX-started interrupts  */
     netopt_enable_t enable = NETOPT_ENABLE;
-    netif->dev->driver->set(netif->dev, NETOPT_RX_START_IRQ, &enable, sizeof(enable));
-    netif->dev->driver->set(netif->dev, NETOPT_TX_START_IRQ, &enable, sizeof(enable));
-    netif->dev->driver->set(netif->dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
+    dev->driver->set(dev, NETOPT_RX_START_IRQ, &enable, sizeof(enable));
+    dev->driver->set(dev, NETOPT_TX_START_IRQ, &enable, sizeof(enable));
+    dev->driver->set(dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
 
     uint16_t src_len = IEEE802154_LONG_ADDRESS_LEN;
-    dev->driver->set(netif->dev, NETOPT_SRC_LEN, &src_len, sizeof(src_len));
+    dev->driver->set(dev, NETOPT_SRC_LEN, &src_len, sizeof(src_len));
 
     /* Get own address from netdev */
     netif->l2addr_len = dev->driver->get(dev, NETOPT_ADDRESS_LONG,

@@ -28,13 +28,13 @@ extern "C" {
 /**
  * @brief   Mask for @ref gnrc_mac_tx_feedback_t
  */
-#define GNRC_NETDEV_MAC_INFO_TX_FEEDBACK_MASK   (0x0003U)
+#define GNRC_NETIF2_MAC_INFO_TX_FEEDBACK_MASK   (0x0003U)
 
 /**
  * @brief   Flag to track if a transmission might have corrupted a received
  *          packet
  */
-#define GNRC_NETDEV_MAC_INFO_RX_STARTED         (0x0004U)
+#define GNRC_NETIF2_MAC_INFO_RX_STARTED         (0x0004U)
 
 /**
  * @brief   Flag to track if a device has enabled CSMA for transmissions
@@ -45,7 +45,7 @@ extern "C" {
  * support on-chip CSMA and this flag is set for requiring CSMA transmission,
  * then, the device will run software CSMA using `csma_sender` APIs.
  */
-#define GNRC_NETDEV_MAC_INFO_CSMA_ENABLED       (0x0100U)
+#define GNRC_NETIF2_MAC_INFO_CSMA_ENABLED       (0x0100U)
 
 /**
  * @brief   @ref net_gnrc_mac component of @ref gnrc_netif2_mac_t

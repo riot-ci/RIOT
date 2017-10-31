@@ -389,7 +389,7 @@ static bool _send_data(gnrc_netif2_t *netif)
     netif->dev->driver->set(netif->dev, NETOPT_CSMA_RETRIES,
                                   &csma_retries, sizeof(csma_retries));
 
-    netif->mac.mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+    netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_enable = NETOPT_ENABLE;
     netif->dev->driver->set(netif->dev, NETOPT_CSMA,
                                   &csma_enable, sizeof(csma_enable));
@@ -561,7 +561,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
                 uint8_t csma_retries = GNRC_LWMAC_BROADCAST_CSMA_RETRIES;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA_RETRIES,
                                               &csma_retries, sizeof(csma_retries));
-                netif->mac.mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+                netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_enable = NETOPT_ENABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
                                               &csma_enable, sizeof(csma_enable));
@@ -572,7 +572,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             }
             else {
                 /* Use CSMA for the first WR */
-            	netif->mac.mac_info |= GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+            	netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_ENABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
                                               &csma_disable, sizeof(csma_disable));
@@ -634,14 +634,14 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
                 break;
             }
 
-            if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
+            if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
                 LOG_DEBUG("[LWMAC-tx] WR not yet completely sent\n");
                 break;
             }
 
             /* If found ongoing transmission, goto TX failure, i.e., postpone transmission to
              * next cycle. This is mainly for collision avoidance. */
-            if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_BUSY) {
+            if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_BUSY) {
                 if (!gnrc_mac_queue_tx_packet(&netif->mac.tx, 0, netif->mac.tx.packet)) {
                     gnrc_pktbuf_release(netif->mac.tx.packet);
                     LOG_WARNING("WARNING: [LWMAC-tx] TX queue full, drop packet\n");
@@ -655,7 +655,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
 
             if (netif->mac.tx.wr_sent == 0) {
                 /* Only the first WR use CSMA */
-            	netif->mac.mac_info &= ~GNRC_NETDEV_MAC_INFO_CSMA_ENABLED;
+            	netif->mac.mac_info &= ~GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_DISABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
                                               &csma_disable, sizeof(csma_disable));
@@ -764,21 +764,21 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             }
 
             LOG_DEBUG("[LWMAC-tx] GNRC_LWMAC_TX_STATE_WAIT_FEEDBACK\n");
-            if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
+            if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_UNDEF) {
                 break;
             }
-            else if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_SUCCESS) {
+            else if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_SUCCESS) {
                 netif->mac.tx.state = GNRC_LWMAC_TX_STATE_SUCCESSFUL;
                 reschedule = true;
                 break;
             }
-            else if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_NOACK) {
+            else if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_NOACK) {
                 LOG_ERROR("ERROR: [LWMAC-tx] Not ACKED\n");
                 netif->mac.tx.state = GNRC_LWMAC_TX_STATE_FAILED;
                 reschedule = true;
                 break;
             }
-            else if (gnrc_netdev_get_tx_feedback(netif) == TX_FEEDBACK_BUSY) {
+            else if (gnrc_netif2_get_tx_feedback(netif) == TX_FEEDBACK_BUSY) {
                 LOG_ERROR("ERROR: [LWMAC-tx] Channel busy \n");
                 netif->mac.tx.state = GNRC_LWMAC_TX_STATE_FAILED;
                 reschedule = true;
@@ -786,7 +786,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             }
 
             LOG_ERROR("ERROR: [LWMAC-tx] Tx feedback unhandled: %i\n",
-                           gnrc_netdev_get_tx_feedback(netif));
+                           gnrc_netif2_get_tx_feedback(netif));
             netif->mac.tx.state = GNRC_LWMAC_TX_STATE_FAILED;
             reschedule = true;
             break;
