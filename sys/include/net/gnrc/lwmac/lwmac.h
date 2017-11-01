@@ -298,23 +298,18 @@ extern "C" {
 #endif
 
 /**
- * @brief   Creates a LWMAC network interface
+ * @brief   Creates an IEEE 802.15.4 LWMAC network interface
  *
- * @param[in] stack     The stack for the network interface's thread.
+ * @param[in] stack     The stack for the LWMAC network interface's thread.
  * @param[in] stacksize Size of @p stack.
- * @param[in] priority  Priority for the network interface's thread.
- * @param[in] name      Name for the network interface. May be NULL.
- * @param[in] dev       Device for the interface.
- * @param[in] ops       Operations for the LWMAC network interface.
+ * @param[in] priority  Priority for the LWMAC network interface's thread.
+ * @param[in] name      Name for the LWMAC network interface. May be NULL.
+ * @param[in] dev       Device for the interface
  *
- * @note If @ref DEVELHELP is defined netif_params_t::name is used as the
- *       name of the network interface's thread.
+ * @see @ref gnrc_netif2_create()
  *
- * @attention   Fails and crashes (assertion error with @ref DEVELHELP or
- *              segmentation fault without) if `GNRC_NETIF_NUMOF` is lower than
- *              the number of calls to this function.
- *
- * @return  The LWMAC network interface on success.
+ * @return  The network interface on success.
+ * @return  NULL, on error.
  */
 gnrc_netif2_t *gnrc_netif2_lwmac_create(char *stack, int stacksize,
                                         char priority, char *name,

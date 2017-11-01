@@ -61,7 +61,6 @@ static void rtt_cb(void *arg);
 static void lwmac_set_state(gnrc_netif2_t *netif, gnrc_lwmac_state_t newstate);
 static void lwmac_schedule_update(gnrc_netif2_t *netif);
 static void rtt_handler(uint32_t event, gnrc_netif2_t *netif);
-
 static void _lwmac_init(gnrc_netif2_t *netif);
 static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt);
 static gnrc_pktsnip_t *_recv(gnrc_netif2_t *netif);

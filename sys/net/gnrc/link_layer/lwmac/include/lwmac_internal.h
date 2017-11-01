@@ -280,6 +280,8 @@ static inline bool gnrc_lwmac_get_reschedule(gnrc_netif2_t *netif)
 /**
  * @brief send a @ref net_gnrc_pkt "packet" over the network interface in LWMAC
  *
+ * @internal
+ *
  * @pre `netif != NULL && pkt != NULL`
  *
  * @note The function re-formats the content of @p pkt to a format expected
