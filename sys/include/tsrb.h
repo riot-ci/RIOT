@@ -151,4 +151,3 @@ int tsrb_add(tsrb_t *rb, const char *src, size_t n);
 
 #endif /* TSRB_H */
 /** @} */
-
