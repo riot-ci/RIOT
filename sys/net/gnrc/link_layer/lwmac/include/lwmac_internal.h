@@ -84,9 +84,9 @@ extern "C" {
  * @brief Type to pass information about parsing.
  */
 typedef struct {
-    gnrc_lwmac_hdr_t *header;      /**< LWMAC header of packet */
-    gnrc_lwmac_l2_addr_t src_addr; /**< copied source address of packet  */
-    gnrc_lwmac_l2_addr_t dst_addr; /**< copied destination address of packet */
+    gnrc_lwmac_hdr_t *header;       /**< LWMAC header of packet */
+    gnrc_lwmac_l2_addr_t src_addr;  /**< copied source address of packet  */
+    gnrc_lwmac_l2_addr_t dst_addr;  /**< copied destination address of packet */
 } gnrc_lwmac_packet_info_t;
 
 /**
@@ -107,10 +107,10 @@ typedef struct {
 static inline void gnrc_lwmac_set_tx_continue(gnrc_netif2_t *netif, bool tx_continue)
 {
     if (tx_continue) {
-    	netif->mac.mac_info |= GNRC_LWMAC_TX_CONTINUE;
+        netif->mac.mac_info |= GNRC_LWMAC_TX_CONTINUE;
     }
     else {
-    	netif->mac.mac_info &= ~GNRC_LWMAC_TX_CONTINUE;
+        netif->mac.mac_info &= ~GNRC_LWMAC_TX_CONTINUE;
     }
 }
 
@@ -137,10 +137,10 @@ static inline bool gnrc_lwmac_get_tx_continue(gnrc_netif2_t *netif)
 static inline void gnrc_lwmac_set_quit_tx(gnrc_netif2_t *netif, bool quit_tx)
 {
     if (quit_tx) {
-    	netif->mac.mac_info |= GNRC_LWMAC_QUIT_TX;
+        netif->mac.mac_info |= GNRC_LWMAC_QUIT_TX;
     }
     else {
-    	netif->mac.mac_info &= ~GNRC_LWMAC_QUIT_TX;
+        netif->mac.mac_info &= ~GNRC_LWMAC_QUIT_TX;
     }
 }
 
@@ -167,10 +167,10 @@ static inline bool gnrc_lwmac_get_quit_tx(gnrc_netif2_t *netif)
 static inline void gnrc_lwmac_set_phase_backoff(gnrc_netif2_t *netif, bool backoff)
 {
     if (backoff) {
-    	netif->mac.mac_info |= GNRC_LWMAC_PHASE_BACKOFF;
+        netif->mac.mac_info |= GNRC_LWMAC_PHASE_BACKOFF;
     }
     else {
-    	netif->mac.mac_info &= ~GNRC_LWMAC_PHASE_BACKOFF;
+        netif->mac.mac_info &= ~GNRC_LWMAC_PHASE_BACKOFF;
     }
 }
 
@@ -197,10 +197,10 @@ static inline bool gnrc_lwmac_get_phase_backoff(gnrc_netif2_t *netif)
 static inline void gnrc_lwmac_set_quit_rx(gnrc_netif2_t *netif, bool quit_rx)
 {
     if (quit_rx) {
-    	netif->mac.mac_info |= GNRC_LWMAC_QUIT_RX;
+        netif->mac.mac_info |= GNRC_LWMAC_QUIT_RX;
     }
     else {
-    	netif->mac.mac_info &= ~GNRC_LWMAC_QUIT_RX;
+        netif->mac.mac_info &= ~GNRC_LWMAC_QUIT_RX;
     }
 }
 
@@ -227,10 +227,10 @@ static inline bool gnrc_lwmac_get_quit_rx(gnrc_netif2_t *netif)
 static inline void gnrc_lwmac_set_dutycycle_active(gnrc_netif2_t *netif, bool active)
 {
     if (active) {
-    	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_DUTYCYCLE_ACTIVE;
+        netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
     else {
-    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_DUTYCYCLE_ACTIVE;
+        netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_DUTYCYCLE_ACTIVE;
     }
 }
 
@@ -257,10 +257,10 @@ static inline bool gnrc_lwmac_get_dutycycle_active(gnrc_netif2_t *netif)
 static inline void gnrc_lwmac_set_reschedule(gnrc_netif2_t *netif, bool reschedule)
 {
     if (reschedule) {
-    	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_NEEDS_RESCHEDULE;
+        netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
     else {
-    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_NEEDS_RESCHEDULE;
+        netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_NEEDS_RESCHEDULE;
     }
 }
 

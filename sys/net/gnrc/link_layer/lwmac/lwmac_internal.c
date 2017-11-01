@@ -91,8 +91,8 @@ int _gnrc_lwmac_transmit(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
         vector[0].iov_base = mhr;
         vector[0].iov_len = (size_t)res;
 #ifdef MODULE_NETSTATS_L2
-    if (netif_hdr->flags &
-        (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
+        if (netif_hdr->flags &
+            (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
             netif->dev->stats.tx_mcast_count++;
         }
         else {
@@ -192,28 +192,28 @@ int _gnrc_lwmac_parse_packet(gnrc_pktsnip_t *pkt, gnrc_lwmac_packet_info_t *info
 
 void _gnrc_lwmac_set_netdev_state(gnrc_netif2_t *netif, netopt_state_t devstate)
 {
-	netif->dev->driver->set(netif->dev,
-                                  NETOPT_STATE,
-                                  &devstate,
-                                  sizeof(devstate));
+    netif->dev->driver->set(netif->dev,
+                            NETOPT_STATE,
+                            &devstate,
+                            sizeof(devstate));
 
 #if (GNRC_LWMAC_ENABLE_DUTYCYLE_RECORD == 1)
     if (devstate == NETOPT_STATE_IDLE) {
         if (!(netif->mac.lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
-        	netif->mac.lwmac.last_radio_on_time_ticks = rtt_get_counter();
-        	netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_RADIO_IS_ON;
+            netif->mac.lwmac.last_radio_on_time_ticks = rtt_get_counter();
+            netif->mac.lwmac.lwmac_info |= GNRC_LWMAC_RADIO_IS_ON;
         }
         return;
     }
     else if ((devstate == NETOPT_STATE_SLEEP) &&
              (netif->mac.lwmac.lwmac_info & GNRC_LWMAC_RADIO_IS_ON)) {
-    	netif->mac.lwmac.radio_off_time_ticks = rtt_get_counter();
+        netif->mac.lwmac.radio_off_time_ticks = rtt_get_counter();
 
-    	netif->mac.lwmac.awake_duration_sum_ticks +=
+        netif->mac.lwmac.awake_duration_sum_ticks +=
             (netif->mac.lwmac.radio_off_time_ticks -
-            		netif->mac.lwmac.last_radio_on_time_ticks);
+             netif->mac.lwmac.last_radio_on_time_ticks);
 
-    	netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
+        netif->mac.lwmac.lwmac_info &= ~GNRC_LWMAC_RADIO_IS_ON;
     }
 #endif
 }
@@ -223,9 +223,9 @@ netopt_state_t _gnrc_lwmac_get_netdev_state(gnrc_netif2_t *netif)
     netopt_state_t state;
 
     if (0 < netif->dev->driver->get(netif->dev,
-                                          NETOPT_STATE,
-                                          &state,
-                                          sizeof(state))) {
+                                    NETOPT_STATE,
+                                    &state,
+                                    sizeof(state))) {
         return state;
     }
     return -1;
@@ -252,23 +252,23 @@ int _gnrc_lwmac_dispatch_defer(gnrc_pktsnip_t *buffer[], gnrc_pktsnip_t *pkt)
             return 0;
         }
         else if (bcast &&
-                (((gnrc_lwmac_hdr_t *)buffer[i]->next->data)->type == GNRC_LWMAC_FRAMETYPE_BROADCAST) &&
-                (bcast->seq_nr == ((gnrc_lwmac_frame_broadcast_t *)buffer[i]->next->data)->seq_nr)) {
-                /* Filter same broadcasts, compare sequence number */
-                gnrc_netif_hdr_t *hdr_queued, *hdr_new;
-                hdr_new = pkt->next->next->data;
-                hdr_queued = buffer[i]->next->next->data;
+                 (((gnrc_lwmac_hdr_t *)buffer[i]->next->data)->type == GNRC_LWMAC_FRAMETYPE_BROADCAST) &&
+                 (bcast->seq_nr == ((gnrc_lwmac_frame_broadcast_t *)buffer[i]->next->data)->seq_nr)) {
+            /* Filter same broadcasts, compare sequence number */
+            gnrc_netif_hdr_t *hdr_queued, *hdr_new;
+            hdr_new = pkt->next->next->data;
+            hdr_queued = buffer[i]->next->next->data;
 
-                /* Sequence numbers match, compare source addresses */
-                if ((hdr_new->src_l2addr_len == hdr_queued->src_l2addr_len) &&
-                    (memcmp(gnrc_netif_hdr_get_src_addr(hdr_new),
-                            gnrc_netif_hdr_get_src_addr(hdr_queued),
-                            hdr_new->src_l2addr_len) == 0)) {
-                    /* Source addresses match, same packet */
-                    DEBUG("[LWMAC] Found duplicate broadcast packet, dropping\n");
-                    gnrc_pktbuf_release(pkt);
-                    return -2;
-                }
+            /* Sequence numbers match, compare source addresses */
+            if ((hdr_new->src_l2addr_len == hdr_queued->src_l2addr_len) &&
+                (memcmp(gnrc_netif_hdr_get_src_addr(hdr_new),
+                        gnrc_netif_hdr_get_src_addr(hdr_queued),
+                        hdr_new->src_l2addr_len) == 0)) {
+                /* Source addresses match, same packet */
+                DEBUG("[LWMAC] Found duplicate broadcast packet, dropping\n");
+                gnrc_pktbuf_release(pkt);
+                return -2;
+            }
         }
     }
 

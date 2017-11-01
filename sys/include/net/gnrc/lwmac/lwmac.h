@@ -95,7 +95,7 @@ extern "C" {
  * In LWMAC, by default, we regard the wake-up period as the beginning of a cycle.
  */
 #ifndef GNRC_LWMAC_WAKEUP_INTERVAL_US
-#define GNRC_LWMAC_WAKEUP_INTERVAL_US        (200LU * US_PER_MS)
+#define GNRC_LWMAC_WAKEUP_INTERVAL_US        (200LU *US_PER_MS)
 #endif
 
 /**
@@ -110,7 +110,7 @@ extern "C" {
  * @ref GNRC_LWMAC_WAKEUP_INTERVAL_US.
  */
 #ifndef GNRC_LWMAC_PREAMBLE_DURATION_US
-#define GNRC_LWMAC_PREAMBLE_DURATION_US      ((13LU * GNRC_LWMAC_WAKEUP_INTERVAL_US) / 10)
+#define GNRC_LWMAC_PREAMBLE_DURATION_US      ((13LU *GNRC_LWMAC_WAKEUP_INTERVAL_US) / 10)
 #endif
 
 /**
@@ -129,7 +129,7 @@ extern "C" {
  * send a WR with the given hardware (including processor) and data rate.
  */
 #ifndef GNRC_LWMAC_TIME_BETWEEN_WR_US
-#define GNRC_LWMAC_TIME_BETWEEN_WR_US        (5U * US_PER_MS)
+#define GNRC_LWMAC_TIME_BETWEEN_WR_US        (5U *US_PER_MS)
 #endif
 
 /**
@@ -187,7 +187,7 @@ extern "C" {
  * period of the receiver, otherwise will lead to a long WR procedure.
  */
 #ifndef GNRC_LWMAC_WR_PREPARATION_US
-#define GNRC_LWMAC_WR_PREPARATION_US         ((3U * US_PER_MS))
+#define GNRC_LWMAC_WR_PREPARATION_US         ((3U *US_PER_MS))
 #endif
 
 /**
@@ -207,7 +207,7 @@ extern "C" {
  * supports @ref NETDEV_EVENT_RX_STARTED event (this can be important for big packets).
  */
 #ifndef GNRC_LWMAC_DATA_DELAY_US
-#define GNRC_LWMAC_DATA_DELAY_US             (10U * US_PER_MS)
+#define GNRC_LWMAC_DATA_DELAY_US             (10U *US_PER_MS)
 #endif
 
 /**

@@ -92,7 +92,7 @@ static uint8_t _packet_process_in_wait_for_wr(gnrc_netif2_t *netif)
         gnrc_pktbuf_release(pkt);
 
         if (!(memcmp(&info.dst_addr.addr, &netif->l2addr,
-        		netif->l2addr_len) == 0)) {
+                     netif->l2addr_len) == 0)) {
             LOG_DEBUG("[LWMAC-rx] Packet is WR but not for us\n");
             /* quit TX in this cycle to avoid collisions with other senders, since
              * found ongoing WR (preamble) stream */
@@ -124,7 +124,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
     /* if found ongoing transmission,
      * quit sending WA for collision avoidance. */
     if (_gnrc_lwmac_get_netdev_state(netif) == NETOPT_STATE_RX) {
-    	netif->mac.rx.rx_bad_exten_count ++;
+        netif->mac.rx.rx_bad_exten_count++;
         return false;
     }
 
@@ -178,7 +178,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
     /* Disable Auto ACK */
     netopt_enable_t autoack = NETOPT_DISABLE;
     netif->dev->driver->set(netif->dev, NETOPT_AUTOACK, &autoack,
-                                  sizeof(autoack));
+                            sizeof(autoack));
 
     /* Send WA */
     if (_gnrc_lwmac_transmit(netif, pkt) < 0) {
@@ -193,7 +193,7 @@ static bool _send_wa(gnrc_netif2_t *netif)
     /* Enable Auto ACK again for data reception */
     autoack = NETOPT_ENABLE;
     netif->dev->driver->set(netif->dev, NETOPT_AUTOACK, &autoack,
-                                  sizeof(autoack));
+                            sizeof(autoack));
 
     return true;
 }
@@ -228,7 +228,7 @@ static uint8_t _packet_process_in_wait_for_data(gnrc_netif2_t *netif)
         }
 
         if (!(memcmp(&info.src_addr.addr, &netif->mac.rx.l2_addr.addr,
-        		netif->mac.rx.l2_addr.len) == 0)) {
+                     netif->mac.rx.l2_addr.len) == 0)) {
             LOG_DEBUG("[LWMAC-rx] Packet is not from destination\n");
             gnrc_pktbuf_release(pkt);
             /* Reset timeout to wait for the data packet */
@@ -238,7 +238,7 @@ static uint8_t _packet_process_in_wait_for_data(gnrc_netif2_t *netif)
         }
 
         if (!(memcmp(&info.dst_addr.addr, &netif->l2addr,
-        		netif->l2addr_len) == 0)) {
+                     netif->l2addr_len) == 0)) {
             LOG_DEBUG("[LWMAC-rx] Packet is not for us\n");
             gnrc_pktbuf_release(pkt);
             /* Reset timeout to wait for the data packet */
@@ -290,7 +290,7 @@ void gnrc_lwmac_rx_start(gnrc_netif2_t *netif)
     netif->mac.mac_info &= ~GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_disable = NETOPT_DISABLE;
     netif->dev->driver->set(netif->dev, NETOPT_CSMA, &csma_disable,
-                                  sizeof(csma_disable));
+                            sizeof(csma_disable));
 
     netif->mac.rx.state = GNRC_LWMAC_RX_STATE_INIT;
 }
@@ -329,7 +329,7 @@ static bool _lwmac_rx_update(gnrc_netif2_t *netif)
 
             /* if found broadcast packet, goto rx successful */
             if (rx_info & GNRC_LWMAC_RX_FOUND_BROADCAST) {
-            	netif->mac.rx.state = GNRC_LWMAC_RX_STATE_SUCCESSFUL;
+                netif->mac.rx.state = GNRC_LWMAC_RX_STATE_SUCCESSFUL;
                 reschedule = true;
                 break;
             }
@@ -352,7 +352,7 @@ static bool _lwmac_rx_update(gnrc_netif2_t *netif)
             LOG_DEBUG("[LWMAC-rx] GNRC_LWMAC_RX_STATE_SEND_WA\n");
 
             if (!_send_wa(netif)) {
-            	netif->mac.rx.state = GNRC_LWMAC_RX_STATE_FAILED;
+                netif->mac.rx.state = GNRC_LWMAC_RX_STATE_FAILED;
                 reschedule = true;
                 break;
             }

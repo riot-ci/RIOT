@@ -90,7 +90,7 @@ gnrc_lwmac_timeout_t *_lwmac_acquire_timeout(gnrc_netif2_t *netif,
 
     for (unsigned i = 0; i < GNRC_LWMAC_TIMEOUT_COUNT; i++) {
         if (netif->mac.lwmac.timeouts[i].type == GNRC_LWMAC_TIMEOUT_DISABLED) {
-        	netif->mac.lwmac.timeouts[i].type = type;
+            netif->mac.lwmac.timeouts[i].type = type;
             return &netif->mac.lwmac.timeouts[i];
         }
     }

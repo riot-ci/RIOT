@@ -69,7 +69,7 @@ static uint8_t _send_bcast(gnrc_netif2_t *netif)
     else {
         LOG_INFO("[LWMAC-tx] Initialize broadcasting\n");
         gnrc_lwmac_set_timeout(netif, GNRC_LWMAC_TIMEOUT_BROADCAST_END,
-                          GNRC_LWMAC_BROADCAST_DURATION_US);
+                               GNRC_LWMAC_BROADCAST_DURATION_US);
 
         gnrc_pktsnip_t *pkt_payload;
 
@@ -95,14 +95,14 @@ static uint8_t _send_bcast(gnrc_netif2_t *netif)
         /* No Auto-ACK for broadcast packets */
         netopt_enable_t autoack = NETOPT_DISABLE;
         netif->dev->driver->set(netif->dev, NETOPT_AUTOACK, &autoack,
-                                      sizeof(autoack));
+                                sizeof(autoack));
         first = true;
     }
 
     if (gnrc_lwmac_timeout_is_expired(netif, GNRC_LWMAC_TIMEOUT_NEXT_BROADCAST) ||
         first) {
         /* if found ongoing transmission, quit this cycle for collision avoidance.
-         * Broadcast packet will be re-queued and try to send in the next cycle. */
+        * Broadcast packet will be re-queued and try to send in the next cycle. */
         if (_gnrc_lwmac_get_netdev_state(netif) == NETOPT_STATE_RX) {
             /* save pointer to netif header */
             gnrc_pktsnip_t *netif_snip = pkt->next->next;
@@ -135,7 +135,7 @@ static uint8_t _send_bcast(gnrc_netif2_t *netif)
         }
 
         gnrc_lwmac_set_timeout(netif, GNRC_LWMAC_TIMEOUT_NEXT_BROADCAST,
-                          GNRC_LWMAC_TIME_BETWEEN_BROADCAST_US);
+                               GNRC_LWMAC_TIME_BETWEEN_BROADCAST_US);
         LOG_INFO("[LWMAC-tx] Broadcast sent\n");
     }
 
@@ -210,10 +210,10 @@ static uint8_t _send_wr(gnrc_netif2_t *netif)
     /* Disable Auto ACK */
     netopt_enable_t autoack = NETOPT_DISABLE;
     netif->dev->driver->set(netif->dev, NETOPT_AUTOACK, &autoack,
-                                  sizeof(autoack));
+                            sizeof(autoack));
 
     /* Prepare WR, this will discard any frame in the transceiver that has
-     * possibly arrived in the meantime but we don't care at this point. */
+    * possibly arrived in the meantime but we don't care at this point. */
     int res = _gnrc_lwmac_transmit(netif, pkt);
     if (res < 0) {
         LOG_ERROR("ERROR: [LWMAC-tx] Send WR failed.");
@@ -268,7 +268,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netif2_t *netif)
          * after a finished transaction so there's no point in trying any
          * further now. */
         if (!(memcmp(&info.dst_addr.addr, &netif->l2addr,
-        		netif->l2addr_len) == 0) && from_expected_destination) {
+                     netif->l2addr_len) == 0) && from_expected_destination) {
             if (!gnrc_mac_queue_tx_packet(&netif->mac.tx, 0, netif->mac.tx.packet)) {
                 gnrc_pktbuf_release(netif->mac.tx.packet);
                 LOG_WARNING("WARNING: [LWMAC-tx] TX queue full, drop packet\n");
@@ -308,7 +308,7 @@ static uint8_t _packet_process_in_wait_for_wa(gnrc_netif2_t *netif)
 
             if (netif->mac.tx.timestamp >= wa_hdr->current_phase) {
                 netif->mac.tx.timestamp = netif->mac.tx.timestamp -
-                                            wa_hdr->current_phase;
+                                          wa_hdr->current_phase;
             }
             else {
                 netif->mac.tx.timestamp += RTT_US_TO_TICKS(GNRC_LWMAC_WAKEUP_INTERVAL_US);
@@ -381,18 +381,18 @@ static bool _send_data(gnrc_netif2_t *netif)
     /* Enable Auto ACK again */
     netopt_enable_t autoack = NETOPT_ENABLE;
     netif->dev->driver->set(netif->dev, NETOPT_AUTOACK,
-                                  &autoack, sizeof(autoack));
+                            &autoack, sizeof(autoack));
 
     /* It's okay to retry sending DATA. Timing doesn't matter anymore and
      * destination is waiting for a certain amount of time. */
     uint8_t csma_retries = GNRC_LWMAC_DATA_CSMA_RETRIES;
     netif->dev->driver->set(netif->dev, NETOPT_CSMA_RETRIES,
-                                  &csma_retries, sizeof(csma_retries));
+                            &csma_retries, sizeof(csma_retries));
 
     netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
     netopt_enable_t csma_enable = NETOPT_ENABLE;
     netif->dev->driver->set(netif->dev, NETOPT_CSMA,
-                                  &csma_enable, sizeof(csma_enable));
+                            &csma_enable, sizeof(csma_enable));
 
     pkt_payload = pkt->next;
 
@@ -510,19 +510,19 @@ void gnrc_lwmac_tx_stop(gnrc_netif2_t *netif)
     /* Release packet in case of failure */
     if (netif->mac.tx.packet) {
         if (netif->mac.tx.tx_retry_count >= GNRC_LWMAC_MAX_DATA_TX_RETRIES) {
-        	netif->mac.tx.tx_retry_count = 0;
+            netif->mac.tx.tx_retry_count = 0;
             gnrc_pktbuf_release(netif->mac.tx.packet);
             netif->mac.tx.packet = NULL;
             LOG_WARNING("WARNING: [LWMAC-tx] Drop TX packet\n");
         }
         else {
-        	netif->mac.tx.tx_retry_count++;
+            netif->mac.tx.tx_retry_count++;
             return;
         }
     }
 
     if (!gnrc_lwmac_get_tx_continue(netif)) {
-    	netif->mac.tx.current_neighbor = NULL;
+        netif->mac.tx.current_neighbor = NULL;
     }
 }
 
@@ -560,11 +560,11 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
                 /* Set CSMA retries as configured and enable */
                 uint8_t csma_retries = GNRC_LWMAC_BROADCAST_CSMA_RETRIES;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA_RETRIES,
-                                              &csma_retries, sizeof(csma_retries));
+                                        &csma_retries, sizeof(csma_retries));
                 netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_enable = NETOPT_ENABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
-                                              &csma_enable, sizeof(csma_enable));
+                                        &csma_enable, sizeof(csma_enable));
 
                 netif->mac.tx.state = GNRC_LWMAC_TX_STATE_SEND_BROADCAST;
                 reschedule = true;
@@ -572,10 +572,10 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             }
             else {
                 /* Use CSMA for the first WR */
-            	netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
+                netif->mac.mac_info |= GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_ENABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
-                                              &csma_disable, sizeof(csma_disable));
+                                        &csma_disable, sizeof(csma_disable));
                 /* Set a timeout for the maximum transmission procedure */
                 gnrc_lwmac_set_timeout(netif, GNRC_LWMAC_TIMEOUT_NO_RESPONSE, GNRC_LWMAC_PREAMBLE_DURATION_US);
 
@@ -605,7 +605,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             /* In case of no Tx-isr error (e.g., no Tx-isr), goto TX failure. */
             if (gnrc_lwmac_timeout_is_expired(netif, GNRC_LWMAC_TIMEOUT_NO_RESPONSE)) {
                 LOG_WARNING("WARNING: [LWMAC-tx] No response from destination, "
-                                 "probably no TX-ISR\n");
+                            "probably no TX-ISR\n");
                 netif->mac.tx.state = GNRC_LWMAC_TX_STATE_FAILED;
                 reschedule = true;
                 break;
@@ -655,10 +655,10 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
 
             if (netif->mac.tx.wr_sent == 0) {
                 /* Only the first WR use CSMA */
-            	netif->mac.mac_info &= ~GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
+                netif->mac.mac_info &= ~GNRC_NETIF2_MAC_INFO_CSMA_ENABLED;
                 netopt_enable_t csma_disable = NETOPT_DISABLE;
                 netif->dev->driver->set(netif->dev, NETOPT_CSMA,
-                                              &csma_disable, sizeof(csma_disable));
+                                        &csma_disable, sizeof(csma_disable));
             }
 
             netif->mac.tx.wr_sent++;
@@ -668,11 +668,11 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
 
             /* Debug WR timing */
             LOG_DEBUG("[LWMAC-tx] Destination phase was: %" PRIu32 "\n",
-                           netif->mac.tx.current_neighbor->phase);
+                      netif->mac.tx.current_neighbor->phase);
             LOG_DEBUG("[LWMAC-tx] Phase when sent was:   %" PRIu32 "\n",
-                           _gnrc_lwmac_ticks_to_phase(netif->mac.tx.timestamp));
+                      _gnrc_lwmac_ticks_to_phase(netif->mac.tx.timestamp));
             LOG_DEBUG("[LWMAC-tx] Ticks when sent was:   %" PRIu32 "\n",
-                           netif->mac.tx.timestamp);
+                      netif->mac.tx.timestamp);
             _gnrc_lwmac_set_netdev_state(netif, NETOPT_STATE_IDLE);
             netif->mac.tx.state = GNRC_LWMAC_TX_STATE_WAIT_FOR_WA;
             reschedule = false;
@@ -786,7 +786,7 @@ static bool _lwmac_tx_update(gnrc_netif2_t *netif)
             }
 
             LOG_ERROR("ERROR: [LWMAC-tx] Tx feedback unhandled: %i\n",
-                           gnrc_netif2_get_tx_feedback(netif));
+                      gnrc_netif2_get_tx_feedback(netif));
             netif->mac.tx.state = GNRC_LWMAC_TX_STATE_FAILED;
             reschedule = true;
             break;
