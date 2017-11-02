@@ -150,8 +150,8 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 void uart_poweron(uart_t uart)
 {
     assert(uart < UART_NUMOF);
-#ifdef PM_STOP
-    pm_block(PM_STOP);
+#ifdef STM32_PM_STOP
+    pm_block(STM32_PM_STOP);
 #endif
     periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
 }
@@ -161,8 +161,8 @@ void uart_poweroff(uart_t uart)
     assert(uart < UART_NUMOF);
 
     periph_clk_dis(uart_config[uart].bus, uart_config[uart].rcc_mask);
-#ifdef PM_STOP
-    pm_unblock(PM_STOP);
+#ifdef STM32_PM_STOP
+    pm_unblock(STM32_PM_STOP);
 #endif
 }
 
