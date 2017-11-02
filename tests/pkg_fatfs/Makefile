@@ -5,7 +5,7 @@ USEMODULE += shell
 
 BOARD ?= native
 
-FEATURES_REQUIRED += periph_rtc
+FEATURES_OPTIONAL += periph_rtc
 
 # whitelist can be removed when the problem described in #6063 was resolved
 # this list is composed of boards that support spi + native
