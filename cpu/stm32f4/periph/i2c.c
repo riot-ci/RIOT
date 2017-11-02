@@ -232,7 +232,7 @@ int i2c_acquire(i2c_t dev)
     }
     mutex_lock(&locks[dev]);
     /* block STOP mode */
-    pm_block(PM_STOP);
+    pm_block(STM32_PM_STOP);
     return 0;
 }
 
@@ -242,7 +242,7 @@ int i2c_release(i2c_t dev)
         return -1;
     }
     /* unblock STOP mode */
-    pm_unblock(PM_STOP);
+    pm_unblock(STM32_PM_STOP);
     mutex_unlock(&locks[dev]);
     return 0;
 }
