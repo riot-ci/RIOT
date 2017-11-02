@@ -80,8 +80,8 @@ extern "C" {
  * @name    Power modes
  * @{
  */
-#define PM_STOP         (1U)
-#define PM_STANDBY      (0U)
+#define STM32_PM_STOP         (1U)
+#define STM32_PM_STANDBY      (0U)
 /** @} */
 #endif
 
