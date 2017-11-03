@@ -43,7 +43,7 @@
  * @brief   If the clock is not stable after these amount of tries we abort the
  *          initialization
  */
-#define STARTUP_TIMEOUT             (1000U)
+#define STARTUP_TIMEOUT             (1000)
 
 /**
  * @brief   Set SPI speed fixed to 10MHz
@@ -311,7 +311,7 @@ static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 static int nd_init(netdev_t *netdev)
 {
     enc28j60_t *dev = (enc28j60_t *)netdev;
-    unsigned res;
+    int res;
     uint8_t tmp;
 
     /* get exclusive access of the device */
