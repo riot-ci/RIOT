@@ -18,24 +18,11 @@
  * @}
  */
 
-#ifndef TEST_I2C
-#error "TEST_I2C not defined"
-#endif
-
-#ifndef TEST_I2C_ADDR
-#error "TEST_I2C_ADDR not defined"
-#endif
-
-#ifndef TEST_PIN_EN
-#error "TEST_PIN_EN not defined"
-#endif
-
 #include <stdio.h>
-
-#include "periph/gpio.h"
 
 #include "xtimer.h"
 
+#include "si70xx_params.h"
 #include "si70xx.h"
 
 int main(void)
@@ -44,45 +31,16 @@ int main(void)
 
     puts("SI7021 temperature and humidity sensor test application\n");
 
-    /* enable the sensor if test pin given */
-    if (TEST_PIN_EN != GPIO_UNDEF) {
-        printf("Toggling enable pin...");
-
-        if (gpio_init(TEST_PIN_EN, GPIO_OUT) == 0) {
-            puts("[OK]\n");
-        }
-        else {
-            puts("[Failed]\n");
-            return 1;
-        }
-
-        gpio_set(TEST_PIN_EN);
-    }
-
     /* initialize the sensor */
     printf("Initializing sensor...");
 
-    if (si70xx_init(&dev, TEST_I2C, TEST_I2C_ADDR) == 0) {
+    if (si70xx_init(&dev, &si70xx_params[0]) == 0) {
         puts("[OK]\n");
     }
     else {
         puts("[Failed]");
         return 1;
     }
-
-    /* run sensor test */
-    printf("Testing sensor communication...");
-
-    if (si70xx_test(&dev) == 0) {
-        puts("[OK]\n");
-    }
-    else {
-        puts("[Failed]");
-        return 1;
-    }
-
-    /* print device id */
-    printf("Identified sensor as the Si70%02i\n", si70xx_get_id(&dev));
 
     /* read temperature and humidity every 1 seconds */
     bool both = false;
