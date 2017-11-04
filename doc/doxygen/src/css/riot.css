@@ -79,7 +79,7 @@ dl {
   color: #555555;
 }
 #MSearchSelectWindow {
-  background-color: #000000;
+  background-color: #000;
 }
 a.SelectItem,
 a.SelectItem:focus,
@@ -288,7 +288,7 @@ table.directory {
 }
 .memitem {
   margin-bottom: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid transparent;
   border-radius: 4px;
 }
@@ -299,11 +299,11 @@ table.directory {
 .memdoc,
 dl.reflist > dd {
   border: none;
-  background: #ffffff;
+  background: #fff;
   padding: 15px;
-  border-bottom: 1px solid #dddddd;
-  border-left: 1px solid #dddddd;
-  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
 }
 .memname {
   font-weight: normal;
@@ -317,9 +317,9 @@ dl.reflist > dd {
 dl.reflist > dt {
   padding: 10px 15px;
   border-bottom: 1px solid transparent;
-  border-top: 1px solid #dddddd;
-  border-left: 1px solid #dddddd;
-  border-right: 1px solid #dddddd;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
   color: #333333;
@@ -368,7 +368,7 @@ dl.warning {
   margin-left: 3px;
   margin-bottom: 20px;
   padding-left: 0px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-left: 0px;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -448,7 +448,7 @@ dl.see {
 }
 dl.note > dt,
 dl.see > dt {
-  color: #ffffff;
+  color: #fff;
   background-color: #3fa687;
   border-color: #3fa687;
 }
