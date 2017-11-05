@@ -42,6 +42,11 @@ static lsm303dlhc_t lsm303dlhc_devs[LSM303DLHC_NUM];
 static saul_reg_t saul_entries[LSM303DLHC_NUM * 2];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define LSM303DLHC_INFO_NUM    (sizeof(lsm303dlhc_saul_info)/sizeof(lsm303dlhc_saul_info[0]))
+
+/**
  * @brief   Reference the driver structs
  * @{
  */
@@ -51,6 +56,8 @@ extern saul_driver_t lsm303dlhc_saul_mag_driver;
 
 void auto_init_lsm303dlhc(void)
 {
+    assert(LSM303DLHC_NUM == LSM303DLHC_INFO_NUM);
+
     for (unsigned int i = 0; i < LSM303DLHC_NUM; i++) {
         const lsm303dlhc_params_t *p = &lsm303dlhc_params[i];
 

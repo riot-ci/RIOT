@@ -28,17 +28,22 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define IO1_XPLAINED_NUMOF    (sizeof(io1_xplained_params) / sizeof(io1_xplained_params[0]))
+#define IO1_XPLAINED_NUM    (sizeof(io1_xplained_params) / sizeof(io1_xplained_params[0]))
 
 /**
  * @brief   Allocation of memory for device descriptors
  */
-static io1_xplained_t io1_xplained_devs[IO1_XPLAINED_NUMOF];
+static io1_xplained_t io1_xplained_devs[IO1_XPLAINED_NUM];
 
 /**
  * @brief   Memory for the SAUL registry entries
  */
-static saul_reg_t saul_entries[IO1_XPLAINED_NUMOF * 4];
+static saul_reg_t saul_entries[IO1_XPLAINED_NUM * 4];
+
+/**
+ * @brief   Define the number of saul info
+ */
+#define IO1_XPLAINED_INFO_NUM    (sizeof(io1_xplained_saul_reg_info)/sizeof(io1_xplained_saul_reg_info[0]))
 
 /**
  * @brief   Reference the driver structs.
@@ -50,7 +55,10 @@ extern const saul_driver_t io1_xplained_temperature_saul_driver;
 
 void auto_init_io1_xplained(void)
 {
-    for (unsigned i = 0; i < IO1_XPLAINED_NUMOF; i++) {
+    /* There are 4 saul reg info for each configured device */
+    assert(IO1_XPLAINED_NUM == (IO1_XPLAINED_INFO_NUM >> 2));
+
+    for (unsigned i = 0; i < IO1_XPLAINED_NUM; i++) {
         if (io1_xplained_init(&io1_xplained_devs[i],
                               &io1_xplained_params[i]) != IO1_XPLAINED_OK) {
             LOG_ERROR("Unable to initialize IO1 Xplained #%i\n", i);
