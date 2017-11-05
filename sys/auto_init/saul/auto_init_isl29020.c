@@ -42,6 +42,11 @@ static isl29020_t isl29020_devs[ISL29020_NUM];
 static saul_reg_t saul_entries[ISL29020_NUM];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define ISL29020_INFO_NUM    (sizeof(isl29020_saul_info)/sizeof(isl29020_saul_info[0]))
+
+/**
  * @brief   Reference the driver struct
  */
 extern saul_driver_t isl29020_saul_driver;
@@ -49,6 +54,8 @@ extern saul_driver_t isl29020_saul_driver;
 
 void auto_init_isl29020(void)
 {
+    assert(ISL29020_NUM == ISL29020_INFO_NUM);
+
     for (unsigned int i = 0; i < ISL29020_NUM; i++) {
         const isl29020_params_t *p = &isl29020_params[i];
 
