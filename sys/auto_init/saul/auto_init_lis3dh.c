@@ -42,6 +42,11 @@ static lis3dh_t lis3dh_devs[LIS3DH_NUM];
 static saul_reg_t saul_entries[LIS3DH_NUM];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define LIS3DH_INFO_NUM    (sizeof(lis3dh_saul_reg_info)/sizeof(lis3dh_saul_reg_info[0]))
+
+/**
  * @brief   Reference the driver struct
  */
 extern saul_driver_t lis3dh_saul_driver;
@@ -49,6 +54,8 @@ extern saul_driver_t lis3dh_saul_driver;
 
 void auto_init_lis3dh(void)
 {
+    assert(LIS3DH_NUM == LIS3DH_INFO_NUM);
+
     for (unsigned int i = 0; i < LIS3DH_NUM; i++) {
         int res;
 
