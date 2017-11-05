@@ -54,8 +54,8 @@ extern "C" {
 #define DSP0401_PARAM_MODULE_COUNT    (1U)
 #endif
 
-
-#define DSP0401_PARAMS_DEFAULT     {          \
+#ifndef DSP0401_PARAMS
+#define DSP0401_PARAMS                {       \
     .sdi          = DSP0401_PARAM_SDI_PIN,    \
     .clk          = DSP0401_PARAM_CLK_PIN,    \
     .lat          = DSP0401_PARAM_LAT_PIN,    \
@@ -63,6 +63,7 @@ extern "C" {
     .pwm_channel  = DSP0401_PARAM_PWM_CHAN,   \
     .brightness   = DSP0401_PARAM_BRIGHTNESS, \
     .module_count = DSP0401_PARAM_MODULE_COUNT }
+#endif
 /**@}*/
 
 /**
@@ -70,7 +71,7 @@ extern "C" {
  */
 static const dsp0401_params_t dsp0401_params[] =
 {
-    DSP0401_PARAMS_DEFAULT,
+    DSP0401_PARAMS,
 };
 
 #ifdef __cplusplus
