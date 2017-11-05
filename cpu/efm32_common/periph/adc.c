@@ -8,6 +8,7 @@
 
 /**
  * @ingroup     cpu_efm32_common
+ * @ingroup     drivers_periph_adc
  * @{
  *
  * @file
@@ -27,14 +28,7 @@
 #include "em_cmu.h"
 #include "em_adc.h"
 
-static mutex_t adc_lock[ADC_NUMOF] = {
-#if ADC_0_EN
-    [0] = MUTEX_INIT,
-#endif
-#if ADC_1_EN
-    [1] = MUTEX_INIT,
-#endif
-};
+static mutex_t adc_lock[ADC_DEV_NUMOF];
 
 int adc_init(adc_t line)
 {
@@ -44,6 +38,10 @@ int adc_init(adc_t line)
     }
 
     uint8_t dev = adc_channel_config[line].dev;
+    assert(dev < ADC_DEV_NUMOF);
+
+    /* initialize lock */
+    mutex_init(&adc_lock[dev]);
 
     /* enable clock */
     CMU_ClockEnable(cmuClock_HFPER, true);
@@ -63,6 +61,11 @@ int adc_init(adc_t line)
 
 int adc_sample(adc_t line, adc_res_t res)
 {
+    /* resolutions larger than 12 bits are not supported */
+    if (res == ADC_MODE_UNDEF) {
+        return -1;
+    }
+
     uint8_t dev = adc_channel_config[line].dev;
 
     /* lock device */
@@ -74,7 +77,7 @@ int adc_sample(adc_t line, adc_res_t res)
     init.acqTime = adc_channel_config[line].acq_time;
     init.reference = adc_channel_config[line].reference;
     init.resolution = (ADC_Res_TypeDef) (res & 0xFF);
-#ifdef _SILICON_LABS_32B_PLATFORM_1
+#ifdef _SILICON_LABS_32B_SERIES_0
     init.input = adc_channel_config[line].input;
 #else
     init.posSel = adc_channel_config[line].input;
