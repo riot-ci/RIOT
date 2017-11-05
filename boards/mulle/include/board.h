@@ -109,12 +109,12 @@ void board_init(void);
  *
  * {spi bus, spi speed, cs pin, int pin, reset pin, sleep pin}
  */
-#define AT86RF2XX_PARAMS_BOARD      {.spi = SPI_DEV(0), \
-                                     .spi_clk = SPI_CLK_5MHZ, \
-                                     .cs_pin = SPI_HWCS(1), \
-                                     .int_pin = GPIO_PIN(PORT_B, 9), \
-                                     .sleep_pin = GPIO_PIN(PORT_E, 6), \
-                                     .reset_pin = GPIO_PIN(PORT_C, 12)}
+#define AT86RF2XX_PARAMS            { .spi = SPI_DEV(0),                \
+                                      .spi_clk = SPI_CLK_5MHZ,          \
+                                      .cs_pin = SPI_HWCS(1),            \
+                                      .int_pin = GPIO_PIN(PORT_B, 9),   \
+                                      .sleep_pin = GPIO_PIN(PORT_E, 6), \
+                                      .reset_pin = GPIO_PIN(PORT_C, 12) }
 
 
 /**

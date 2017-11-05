@@ -42,6 +42,11 @@ static lps331ap_t lps331ap_devs[LPS331AP_NUM];
 static saul_reg_t saul_entries[LPS331AP_NUM * 2];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define LPS331AP_INFO_NUM    (sizeof(lps331ap_saul_reg_info)/sizeof(lps331ap_saul_reg_info[0]))
+
+/**
  * @brief   Reference the driver struct
  */
 extern saul_driver_t lps331ap_saul_pres_driver;
@@ -50,6 +55,8 @@ extern saul_driver_t lps331ap_saul_temp_driver;
 
 void auto_init_lps331ap(void)
 {
+    assert(LPS331AP_NUM == LPS331AP_INFO_NUM)
+
     for (unsigned int i = 0; i < LPS331AP_NUM; i++) {
         const lps331ap_params_t *p = &lps331ap_params[i];
 
