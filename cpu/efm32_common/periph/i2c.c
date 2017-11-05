@@ -8,13 +8,13 @@
 
 /**
  * @ingroup     cpu_efm32_common
+ * @ingroup     drivers_periph_i2c
  * @{
  *
  * @file
  * @brief       Low-level I2C driver implementation
  *
  * @author      Bas Stottelaar <basstottelaar@gmail.com>
- *
  * @}
  */
 
@@ -33,18 +33,11 @@
 #include "em_i2c.h"
 
 /* guard file in case no I2C device is defined */
-#if I2C_NUMOF
+#ifdef I2C_NUMOF
 
 static volatile I2C_TransferReturn_TypeDef i2c_progress[I2C_NUMOF];
 
-static mutex_t i2c_lock[I2C_NUMOF] = {
-#if I2C_0_EN
-    [0] = MUTEX_INIT,
-#endif
-#if I2C_1_EN
-    [1] = MUTEX_INIT,
-#endif
-};
+static mutex_t i2c_lock[I2C_NUMOF];
 
 /**
  * @brief   Start and track an I2C transfer.
@@ -79,6 +72,9 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
         return -1;
     }
 
+    /* initialize lock */
+    mutex_init(&i2c_lock[dev]);
+
     /* enable clocks */
     CMU_ClockEnable(cmuClock_HFPER, true);
     CMU_ClockEnable(i2c_config[dev].cmu, true);
@@ -103,7 +99,7 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
     I2C_Init(i2c_config[dev].dev, &init);
 
     /* configure pin functions */
-#ifdef _SILICON_LABS_32B_PLATFORM_1
+#ifdef _SILICON_LABS_32B_SERIES_0
     i2c_config[dev].dev->ROUTE = (i2c_config[dev].loc |
                                   I2C_ROUTE_SDAPEN | I2C_ROUTE_SCLPEN);
 #else
@@ -123,14 +119,14 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 
 int i2c_acquire(i2c_t dev)
 {
-    mutex_lock((mutex_t *) &i2c_lock[dev]);
+    mutex_lock(&i2c_lock[dev]);
 
     return 0;
 }
 
 int i2c_release(i2c_t dev)
 {
-    mutex_unlock((mutex_t *) &i2c_lock[dev]);
+    mutex_unlock(&i2c_lock[dev]);
 
     return 0;
 }
