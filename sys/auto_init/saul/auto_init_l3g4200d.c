@@ -42,6 +42,11 @@ static l3g4200d_t l3g4200d_devs[L3G4200D_NUM];
 static saul_reg_t saul_entries[L3G4200D_NUM];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define L3G4200D_INFO_NUM    (sizeof(l3g4200d_saul_reg_info)/sizeof(l3g4200d_saul_reg_info[0]))
+
+/**
  * @brief   Reference the driver struct
  */
 extern saul_driver_t l3g4200d_saul_driver;
@@ -49,6 +54,8 @@ extern saul_driver_t l3g4200d_saul_driver;
 
 void auto_init_l3g4200d(void)
 {
+    assert(L3G4200D_NUM == L3G4200D_INFO_NUM)
+
     for (unsigned int i = 0; i < L3G4200D_NUM; i++) {
         const l3g4200d_params_t *p = &l3g4200d_params[i];
 

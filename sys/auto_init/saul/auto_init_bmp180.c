@@ -28,17 +28,22 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define BMP180_NUMOF    (sizeof(bmp180_params) / sizeof(bmp180_params[0]))
+#define BMP180_NUM      (sizeof(bmp180_params) / sizeof(bmp180_params[0]))
 
 /**
  * @brief   Allocation of memory for device descriptors
  */
-static bmp180_t bmp180_devs[BMP180_NUMOF];
+static bmp180_t bmp180_devs[BMP180_NUM];
 
 /**
  * @brief   Memory for the SAUL registry entries
  */
-static saul_reg_t saul_entries[BMP180_NUMOF * 2];
+static saul_reg_t saul_entries[BMP180_NUM * 2];
+
+/**
+ * @brief   Define the number of saul info
+ */
+#define BMP180_INFO_NUM (sizeof(bmp180_saul_reg_info) / sizeof(bmp180_saul_reg_info[0]))
 
 /**
  * @brief   Reference the driver structs.
@@ -50,7 +55,9 @@ extern const saul_driver_t bmp180_pressure_saul_driver;
 
 void auto_init_bmp180(void)
 {
-    for (unsigned i = 0; i < BMP180_NUMOF; i++) {
+    assert(BMP180_INFO_NUM == BMP180_NUM)
+
+    for (unsigned i = 0; i < BMP180_NUM; i++) {
         LOG_DEBUG("[auto_init_saul] initializing bmp180 #%u\n", i);
 
         if (bmp180_init(&bmp180_devs[i],

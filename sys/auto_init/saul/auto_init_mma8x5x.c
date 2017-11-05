@@ -43,6 +43,11 @@ static mma8x5x_t mma8x5x_devs[MMA8X5X_NUM];
 static saul_reg_t saul_entries[MMA8X5X_NUM];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define MMA8X5X_INFO_NUM    (sizeof(mma8x5x_saul_reg_info)/sizeof(mma8x5x_saul_reg_info[0]))
+
+/**
  * @brief   Reference the driver struct
  * @{
  */
@@ -51,6 +56,8 @@ extern saul_driver_t mma8x5x_saul_driver;
 
 void auto_init_mma8x5x(void)
 {
+    assert(MMA8X5X_NUM == MMA8X5X_INFO_NUM)
+
     for (unsigned i = 0; i < MMA8X5X_NUM; i++) {
         LOG_DEBUG("[auto_init_saul] initializing mma8x5x #%u\n", i);
 

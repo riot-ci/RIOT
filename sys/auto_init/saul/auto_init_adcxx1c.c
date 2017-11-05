@@ -30,7 +30,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define ADCXX1C_NUM    (sizeof(adcxx1c_params)/sizeof(adcxx1c_params[0]))
+#define ADCXX1C_NUM   (sizeof(adcxx1c_params)/sizeof(adcxx1c_params[0]))
 
 /**
  * @brief   Allocate memory for the device descriptors
@@ -47,9 +47,16 @@ static saul_reg_t saul_entries[ADCXX1C_NUM];
  */
 extern saul_driver_t adcxx1c_saul_driver;
 
+/**
+ * @brief   Define the number of saul info
+ */
+#define ADCXX1C_INFO_NUM (sizeof(adcxx1c_saul_reg_info) / sizeof(adcxx1c_saul_reg_info[0]))
+
 
 void auto_init_adcxx1c(void)
 {
+    assert(ADCXX1C_INFO_NUM == ADCXX1C_NUM)
+
     for (unsigned i = 0; i < ADCXX1C_NUM; i++) {
         const adcxx1c_params_t *p = &adcxx1c_params[i];
 
