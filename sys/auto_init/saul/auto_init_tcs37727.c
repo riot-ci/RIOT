@@ -41,8 +41,20 @@ static tcs37727_t tcs37727_devs[TCS37727_NUM];
  */
 static saul_reg_t saul_entries[TCS37727_NUM];
 
+/**
+ * @brief   Define the number of saul info
+ */
+#define TCS37727_INFO_NUM    (sizeof(tcs37727_saul_reg_info) / sizeof(tcs37727_saul_reg_info[0]))
+
+/**
+ * @brief   Export the sensor's SAUL interface
+ */
+extern const saul_driver_t tcs37727_saul_driver;
+
 void auto_init_tcs37727(void)
 {
+    assert(TCS37727_NUM == TCS37727_INFO_NUM);
+
     for (unsigned i = 0; i < TCS37727_NUM; i++) {
         LOG_DEBUG("[auto_init_saul] initializing tcs29020 #%u\n", i);
 
