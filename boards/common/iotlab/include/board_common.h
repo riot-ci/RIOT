@@ -39,7 +39,7 @@ extern "C" {
  * @{
  */
 #ifndef UART_STDIO_BAUDRATE
-#   define UART_STDIO_BAUDRATE (500000U)
+#   define UART_STDIO_BAUDRATE    (500000U)
 #endif
 /** @} */
 
@@ -49,46 +49,46 @@ extern "C" {
  * Tell the xtimer that we use a 16-bit peripheral timer
  * @{
  */
-#define XTIMER_WIDTH        (16U)
-#define XTIMER_OVERHEAD     (6U)
-#define XTIMER_SHOOT_EARLY  (3U)
+#define XTIMER_WIDTH              (16)
+#define XTIMER_OVERHEAD           (6)
+#define XTIMER_SHOOT_EARLY        (3)
 /** @} */
 
 /**
- * @brief   Define the interface to the AT86RF231 radio
+ * @name    Define the interface to the AT86RF231 radio
  *
  * {spi bus, spi speed, cs pin, int pin, reset pin, sleep pin}
+ * @{
  */
-#define AT86RF2XX_PARAMS    {.spi       = SPI_DEV(0),          \
-                             .spi_clk   = SPI_CLK_5MHZ,        \
-                             .cs_pin    = GPIO_PIN(PORT_A, 4), \
-                             .int_pin   = GPIO_PIN(PORT_C, 4), \
-                             .sleep_pin = GPIO_PIN(PORT_A, 2), \
-                             .reset_pin = GPIO_PIN(PORT_C, 1)}
+#define AT86RF2XX_PARAM_CS        GPIO_PIN(PORT_A, 4)
+#define AT86RF2XX_PARAM_INT       GPIO_PIN(PORT_C, 4)
+#define AT86RF2XX_PARAM_SLEEP     GPIO_PIN(PORT_A, 2)
+#define AT86RF2XX_PARAM_RESET     GPIO_PIN(PORT_C, 1)
+/** @} */
 
 /**
  * @name    LED pin definitions and handlers
  * @{
  */
-#define LED0_PIN            GPIO_PIN(PORT_D, 2)
-#define LED1_PIN            GPIO_PIN(PORT_B, 5)
-#define LED2_PIN            GPIO_PIN(PORT_C, 10)
+#define LED0_PIN                  GPIO_PIN(PORT_D, 2)
+#define LED1_PIN                  GPIO_PIN(PORT_B, 5)
+#define LED2_PIN                  GPIO_PIN(PORT_C, 10)
 
-#define LED0_MASK           (1 << 2)
-#define LED1_MASK           (1 << 5)
-#define LED2_MASK           (1 << 10)
+#define LED0_MASK                 (1 << 2)
+#define LED1_MASK                 (1 << 5)
+#define LED2_MASK                 (1 << 10)
 
-#define LED0_ON             (GPIOD->ODR &= ~LED0_MASK)
-#define LED0_OFF            (GPIOD->ODR |=  LED0_MASK)
-#define LED0_TOGGLE         (GPIOD->ODR ^=  LED0_MASK)
+#define LED0_ON                   (GPIOD->ODR &= ~LED0_MASK)
+#define LED0_OFF                  (GPIOD->ODR |=  LED0_MASK)
+#define LED0_TOGGLE               (GPIOD->ODR ^=  LED0_MASK)
 
-#define LED1_ON             (GPIOB->ODR &= ~LED1_MASK)
-#define LED1_OFF            (GPIOB->ODR |=  LED1_MASK)
-#define LED1_TOGGLE         (GPIOB->ODR ^=  LED1_MASK)
+#define LED1_ON                   (GPIOB->ODR &= ~LED1_MASK)
+#define LED1_OFF                  (GPIOB->ODR |=  LED1_MASK)
+#define LED1_TOGGLE               (GPIOB->ODR ^=  LED1_MASK)
 
-#define LED2_ON             (GPIOC->ODR &= ~LED2_MASK)
-#define LED2_OFF            (GPIOC->ODR |=  LED2_MASK)
-#define LED2_TOGGLE         (GPIOC->ODR ^=  LED2_MASK)
+#define LED2_ON                   (GPIOC->ODR &= ~LED2_MASK)
+#define LED2_OFF                  (GPIOC->ODR |=  LED2_MASK)
+#define LED2_TOGGLE               (GPIOC->ODR ^=  LED2_MASK)
 /** @} */
 
 /**
