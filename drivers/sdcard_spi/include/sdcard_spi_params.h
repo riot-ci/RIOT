@@ -51,21 +51,23 @@ extern "C" {
 /** treated as 'don't care' if SDCARD_SPI_PARAM_POWER is GPIO_UNDEF */
 #define SDCARD_SPI_PARAM_POWER_AH    (true)
 #endif
+
+#ifndef SDCARD_SPI_PARAMS
+#define SDCARD_SPI_PARAMS            { .spi_dev   = SDCARD_SPI_PARAM_SPI, \
+                                       .cs    = SDCARD_SPI_PARAM_CS,      \
+                                       .clk   = SDCARD_SPI_PARAM_CLK,     \
+                                       .mosi  = SDCARD_SPI_PARAM_MOSI,    \
+                                       .miso  = SDCARD_SPI_PARAM_MISO,    \
+                                       .power = SDCARD_SPI_PARAM_POWER,   \
+                                       .power_act_high = SDCARD_SPI_PARAM_POWER_AH }
+#endif
 /** @} */
 
 /**
  * @brief   sdcard_spi configuration
  */
 static const  sdcard_spi_params_t sdcard_spi_params[] = {
-    {
-        .spi_dev   = SDCARD_SPI_PARAM_SPI,
-        .cs    = SDCARD_SPI_PARAM_CS,
-        .clk   = SDCARD_SPI_PARAM_CLK,
-        .mosi  = SDCARD_SPI_PARAM_MOSI,
-        .miso  = SDCARD_SPI_PARAM_MISO,
-        .power = SDCARD_SPI_PARAM_POWER,
-        .power_act_high = SDCARD_SPI_PARAM_POWER_AH
-    },
+    SDCARD_SPI_PARAMS
 };
 
 #ifdef __cplusplus
