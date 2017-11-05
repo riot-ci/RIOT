@@ -38,8 +38,13 @@ extern "C" {
 #define VEML6070_PARAM_ITIME            VEML6070_1_T
 #endif
 
-#define VEML6070_PARAMS_DEFAULT        { .i2c_dev = VEML6070_PARAM_I2C_DEV,  \
+#ifndef VEML6070_PARAMS
+#define VEML6070_PARAMS                { .i2c_dev = VEML6070_PARAM_I2C_DEV, \
                                          .itime   = VEML6070_PARAM_ITIME }
+#endif
+#ifndef VEML6070_SAUL_INFO
+#define VEML6070_SAUL_INFO             { .name = "veml6070" }
+#endif
 /**@}*/
 
 /**
@@ -47,11 +52,7 @@ extern "C" {
  */
 static const veml6070_params_t veml6070_params[] =
 {
-#ifdef VEML6070_PARAMS_BOARD
-    VEML6070_PARAMS_BOARD,
-#else
-    VEML6070_PARAMS_DEFAULT,
-#endif
+    VEML6070_PARAMS
 };
 
 /**
@@ -59,7 +60,7 @@ static const veml6070_params_t veml6070_params[] =
  */
 static const saul_reg_info_t veml6070_saul_reg_info[] =
 {
-    { .name = "veml6070" }
+    VEML6070_SAUL_INFO
 };
 
 #ifdef __cplusplus

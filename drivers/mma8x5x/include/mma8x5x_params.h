@@ -58,6 +58,9 @@ extern "C" {
                                   .range  = MMA8X5X_PARAM_RANGE, \
                                   .offset = MMA8X5X_PARAM_OFFSET }
 #endif
+#ifndef MMA8X5X_SAUL_INFO
+#define MMA8X5X_SAUL_INFO       { .name = "mma8652" }
+#endif
 /**@}*/
 
 /**
@@ -73,9 +76,7 @@ static const mma8x5x_params_t mma8x5x_params[] =
  */
 static const saul_reg_info_t mma8x5x_saul_info[] =
 {
-    {
-        .name = "mma8652"
-    }
+    MMA8X5X_SAUL_INFO
 };
 
 #ifdef __cplusplus
