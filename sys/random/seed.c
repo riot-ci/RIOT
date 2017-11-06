@@ -30,7 +30,7 @@
 void auto_init_random(void)
 {
     uint32_t seed;
-#ifdef CPUID_LEN
+#ifdef MODULE_PERIPH_CPUID
     luid_get(&seed, 4);
 #else
     LOG_WARNING("random: NO SEED AVAILABLE!\n");
