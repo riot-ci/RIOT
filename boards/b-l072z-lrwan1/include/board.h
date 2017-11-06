@@ -33,9 +33,23 @@ extern "C" {
  * @name    xtimer configuration
  * @{
  */
-#define XTIMER_DEV          TIMER_DEV(0)
-#define XTIMER_CHAN         (0)
 #define XTIMER_WIDTH        (16)
+/** @} */
+
+/**
+ * @name    sx1276 configuration
+ * @{
+ */
+#define SX127X_PARAM_SPI                    (SPI_DEV(1))
+#define SX127X_PARAM_SPI_NSS                GPIO_PIN(PORT_A, 15)
+
+#define SX127X_PARAM_RESET                  GPIO_PIN(PORT_C, 0)
+#define SX127X_PARAM_DIO0                   GPIO_PIN(PORT_B, 4)
+#define SX127X_PARAM_DIO1                   GPIO_PIN(PORT_B, 1)
+#define SX127X_PARAM_DIO2                   GPIO_PIN(PORT_B, 0)
+#define SX127X_PARAM_DIO3                   GPIO_PIN(PORT_C, 13)
+
+#define RADIO_TCXO_VCC_PIN                  GPIO_PIN(PORT_A, 12)
 /** @} */
 
 /**

@@ -11,11 +11,14 @@ PSEUDOMODULES += emb6_router
 PSEUDOMODULES += gnrc_ipv6_default
 PSEUDOMODULES += gnrc_ipv6_router
 PSEUDOMODULES += gnrc_ipv6_router_default
+PSEUDOMODULES += gnrc_ipv6_nib_6lbr
+PSEUDOMODULES += gnrc_ipv6_nib_6ln
+PSEUDOMODULES += gnrc_ipv6_nib_6lr
+PSEUDOMODULES += gnrc_ipv6_nib_router
 PSEUDOMODULES += gnrc_netdev_default
 PSEUDOMODULES += gnrc_neterr
 PSEUDOMODULES += gnrc_netapi_callbacks
 PSEUDOMODULES += gnrc_netapi_mbox
-PSEUDOMODULES += gnrc_pktbuf
 PSEUDOMODULES += gnrc_sixlowpan_border_router_default
 PSEUDOMODULES += gnrc_sixlowpan_default
 PSEUDOMODULES += gnrc_sixlowpan_iphc_nhc
@@ -49,11 +52,14 @@ PSEUDOMODULES += netstats_l2
 PSEUDOMODULES += netstats_ipv6
 PSEUDOMODULES += netstats_rpl
 PSEUDOMODULES += newlib
+PSEUDOMODULES += newlib_gnu_source
 PSEUDOMODULES += newlib_nano
 PSEUDOMODULES += openthread
 PSEUDOMODULES += pktqueue
 PSEUDOMODULES += posix
 PSEUDOMODULES += printf_float
+PSEUDOMODULES += prng
+PSEUDOMODULES += prng_%
 PSEUDOMODULES += saul_adc
 PSEUDOMODULES += saul_default
 PSEUDOMODULES += saul_gpio
@@ -80,5 +86,14 @@ PSEUDOMODULES += adc121c
 PSEUDOMODULES += sx1272
 PSEUDOMODULES += sx1276
 
+# include variants of Si70xx drivers as pseudo modules
+PSEUDOMODULES += si7006
+PSEUDOMODULES += si7013
+PSEUDOMODULES += si7020
+PSEUDOMODULES += si7021
+
 # add all pseudo random number generator variants as pseudomodules
 PSEUDOMODULES += prng_%
+
+# STM32 periph pseudomodules
+PSEUDOMODULES += stm32_periph_%

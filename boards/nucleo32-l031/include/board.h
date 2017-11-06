@@ -9,7 +9,7 @@
 
 /**
  * @defgroup    boards_nucleo32-l031 Nucleo32-L031
- * @ingroup     boards
+ * @ingroup     boards_nucleo
  * @brief       Board specific files for the nucleo32-l031 board
  * @{
  *
@@ -24,6 +24,13 @@
 #define BOARD_H
 
 #include "board_common.h"
+
+/**
+ * @name    xtimer configuration
+ * @{
+ */
+#define XTIMER_WIDTH        (16U)
+/** @} */
 
 #ifdef __cplusplus
 extern "C" {}

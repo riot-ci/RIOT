@@ -9,17 +9,16 @@
 /**
  * @defgroup    sys_tsrb Thread safe ringbuffer
  * @ingroup     sys
- * @{
- */
-
-/**
- * @file
  * @brief       Thread-safe ringbuffer implementation
+ * @{
  *
- * This ringbuffer implementation can be used without locking if
- * there's only one producer and one consumer.
+ * @note        This ringbuffer implementation can be used without locking if
+ *              there's only one producer and one consumer.
  *
- * @note Buffer size must be a power of two!
+ * @attention   Buffer size must be a power of two!
+ *
+ * @file
+ * @brief       Thread-safe ringbuffer interface definition
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
@@ -39,7 +38,7 @@ extern "C" {
  */
 typedef struct tsrb {
     char *buf;                  /**< Buffer to operate on. */
-    unsigned int size;          /**< Size of buf. */
+    unsigned int size;          /**< Size of buffer, must be power of 2. */
     volatile unsigned reads;    /**< total number of reads */
     volatile unsigned writes;   /**< total number of writes */
 } tsrb_t;
@@ -53,7 +52,7 @@ typedef struct tsrb {
  * @brief        Initialize a tsrb.
  * @param[out]   rb        Datum to initialize.
  * @param[in]    buffer    Buffer to use by tsrb.
- * @param[in]    bufsize   `sizeof (buffer)`
+ * @param[in]    bufsize   `sizeof (buffer)`, must be power of 2.
  */
 static inline void tsrb_init(tsrb_t *rb, char *buffer, unsigned bufsize)
 {
@@ -150,5 +149,5 @@ int tsrb_add(tsrb_t *rb, const char *src, size_t n);
 }
 #endif
 
-/** @} */
 #endif /* TSRB_H */
+/** @} */
