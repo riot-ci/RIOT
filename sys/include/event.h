@@ -43,40 +43,40 @@
  *
  * Examples:
  *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
- *     // simple event handler
- *     static void handler(event_t *event)
- *     {
- *        printf("triggered 0x%08x\n", (unsigned)event);
- *     }
+ * ~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * // simple event handler
+ * static void handler(event_t *event)
+ * {
+ *    printf("triggered 0x%08x\n", (unsigned)event);
+ * }
  *
- *     static event_t event = { .handler=handler };
- *     static event_queue_t queue;
+ * static event_t event = { .handler=handler };
+ * static event_queue_t queue;
  *
- *     int main(void)
- *     {
- *         event_queue_init(&queue);
- *         event_loop(&queue);
- *     }
+ * int main(void)
+ * {
+ *     event_queue_init(&queue);
+ *     event_loop(&queue);
+ * }
  *
- *     [...] event_post(&queue, &event);
+ * [...] event_post(&queue, &event);
  *
- *     // example for event extended event struct
- *     typedef struct {
- *         event_t super;
- *         const char *text;
- *     } custom_event_t;
+ * // example for event extended event struct
+ * typedef struct {
+ *     event_t super;
+ *     const char *text;
+ * } custom_event_t;
  *
- *     static void custom_handler(event_t *event)
- *     {
- *         custom_event_t *custom_event = (custom_event_t *)event;
- *         printf("triggered custom event with text: \"%s\"\n", custom_event->text);
- *     }
+ * static void custom_handler(event_t *event)
+ * {
+ *     custom_event_t *custom_event = (custom_event_t *)event;
+ *     printf("triggered custom event with text: \"%s\"\n", custom_event->text);
+ * }
  *
- *     static custom_event_t custom_event = { .super.callback=custom_handler, .text="CUSTOM EVENT" };
+ * static custom_event_t custom_event = { .super.callback=custom_handler, .text="CUSTOM EVENT" };
  *
- *     [...] event_post(&queue, &custom_event)
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * [...] event_post(&queue, &custom_event)
+ * ~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * @{
  *
