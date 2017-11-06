@@ -12,14 +12,18 @@
  *
  * event_timeout intentionally does't extend event structures in order to
  * support events that are integrated in larger structs intrusively.
+ *
  * Example:
  *
- *     event_timeout_t event_timeout;
+ * ~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * event_timeout_t event_timeout;
  *
- *     printf("posting timed callback with timeout 1sec\n");
- *     event_timeout_init(&event_timeout, &queue, (event_t*)&event);
- *     event_timeout_set(&event_timeout, 1000000);
- *     [...]
+ * printf("posting timed callback with timeout 1sec\n");
+ * event_timeout_init(&event_timeout, &queue, (event_t*)&event);
+ * event_timeout_set(&event_timeout, 1000000);
+ * [...]
+ * ~~~~~~~~~~~~~~~~~~~~~~~~
+ *
  * @{
  *
  * @file
