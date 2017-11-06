@@ -50,7 +50,7 @@
  *    printf("triggered 0x%08x\n", (unsigned)event);
  * }
  *
- * static event_t event = { .handler=handler };
+ * static event_t event = { .handler = handler };
  * static event_queue_t queue;
  *
  * int main(void)
@@ -73,7 +73,7 @@
  *     printf("triggered custom event with text: \"%s\"\n", custom_event->text);
  * }
  *
- * static custom_event_t custom_event = { .super.callback=custom_handler, .text="CUSTOM EVENT" };
+ * static custom_event_t custom_event = { .super.callback = custom_handler, .text = "CUSTOM EVENT" };
  *
  * [...] event_post(&queue, &custom_event)
  * ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,7 +202,7 @@ event_t *event_wait(event_queue_t *queue);
  * It is pretty much defined as:
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
- *     while((event = event_wait(queue))) {
+ *     while ((event = event_wait(queue))) {
  *         event->handler(event);
  *     }
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~
