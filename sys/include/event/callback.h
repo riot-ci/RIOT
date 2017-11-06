@@ -56,7 +56,7 @@ typedef struct {
  * @param[in]   callback        callback to set up
  * @param[in]   arg             callback argument to set up
  */
-void event_callback_init(event_callback_t *event_callback, void (*callback)(void*),  void *arg);
+void event_callback_init(event_callback_t *event_callback, void (*callback)(void *), void *arg);
 
 /**
  * @brief   event callback handler function (used internally)
@@ -75,9 +75,9 @@ void _event_callback_handler(event_t *event);
  */
 #define EVENT_CALLBACK_INIT(_cb, _arg) \
     { \
-        .super.handler=_event_callback_handler, \
-        .callback=_cb, \
-        .arg=(void*)_arg \
+        .super.handler = _event_callback_handler, \
+        .callback = _cb, \
+        .arg = (void *)_arg \
     }
 
 #ifdef __cplusplus
