@@ -27,16 +27,15 @@ int main(void)
     puts("Please hit any key and then ENTER to continue");
     getchar();
     puts("5 x usleep(i++ * 500000)");
-    for (int i = 0; i < 5; i++) {
-        useconds_t us = i*500000u;
+    for (unsigned i = 0; i < 5; i++) {
+        useconds_t us = i * 500000u;
         usleep(us);
         puts("wake up");
     }
 
     puts("5 x sleep(i++)");
-    for (int i = 0; i < 5; i++) {
-        unsigned int s = i;
-        sleep(s);
+    for (unsigned i = 0; i < 5; i++) {
+        sleep(i);
         puts("wake up");
     }
 
