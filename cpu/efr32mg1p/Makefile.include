@@ -1,8 +1,6 @@
 export CPU_ARCH = cortex-m4
 export CPU_FAM = efr32mg1p
 
-# enable memory protection unit
-USEMODULE += mpu_stack_guard
 USEMODULE += pm_layered
 
 # include vendor device headers
