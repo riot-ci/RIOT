@@ -8,7 +8,7 @@
 
 #include "event/timeout.h"
 
-static void _event_timeout_callback(void* arg)
+static void _event_timeout_callback(void *arg)
 {
     event_timeout_t *event_timeout = (event_timeout_t *)arg;
     event_post(event_timeout->queue, event_timeout->event);
