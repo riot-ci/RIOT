@@ -699,7 +699,7 @@ USEPKG += nanocoap
 USEMODULE += gnrc_sock_udp
 endif
 
-# all boards use gpio for leds
+# always select gpio (until explicit dependencies are sorted out)
 FEATURES_OPTIONAL += periph_gpio
 
 # always select power management if available
