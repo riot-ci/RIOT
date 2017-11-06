@@ -11,14 +11,17 @@
  * @brief       Provides a callback-with-argument event type
  *
  * Example:
- *     void callback(void *arg)
- *     {
- *         printf("%s called with arg %p\n", __func__, arg);
- *     }
  *
- *     [...]
- *     event_callback_t event_callback = EVENT_CALLBACK_INIT(callback, 0x12345678);
- *     event_post(&queue, &event_callback);
+ * ~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * void callback(void *arg)
+ * {
+ *     printf("%s called with arg %p\n", __func__, arg);
+ * }
+ *
+ * [...]
+ * event_callback_t event_callback = EVENT_CALLBACK_INIT(callback, 0x12345678);
+ * event_post(&queue, &event_callback);
+ * ~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * @{
  *
