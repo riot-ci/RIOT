@@ -103,7 +103,7 @@ extern "C" {
 /**
  * @brief   Thread flag use to notify available events in an event queue
  */
-#define THREAD_FLAG_EVENT   0x1
+#define THREAD_FLAG_EVENT   (0x1)
 #endif
 
 /**
