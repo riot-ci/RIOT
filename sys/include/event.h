@@ -159,7 +159,7 @@ void event_post(event_queue_t *queue, event_t *event);
  *
  * This will remove a queued event from an event queue.
  *
- * @note: due to the underlying list implementation, this will run in O(n).
+ * @note    Due to the underlying list implementation, this will run in O(n).
  *
  * @param[in]   queue   event queue to remove event from
  * @param[in]   event   event to remove from queue
