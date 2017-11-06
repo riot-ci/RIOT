@@ -11,7 +11,7 @@
  * @ingroup     sys
  * @brief       Provides an Event loop
  *
- * This module offers an event queue framework not unlike libevent or libuev.
+ * This module offers an event queue framework like libevent or libuev.
  *
  * An event queue is basically a FIFO queue of events, with some functions to
  * efficiently and safely handle adding and getting events to / from such a
@@ -109,7 +109,7 @@ extern "C" {
 /**
  * @brief   event_queue_t static initializer
  */
-#define EVENT_QUEUE_INIT    { .waiter=(thread_t *)sched_active_thread }
+#define EVENT_QUEUE_INIT    { .waiter = (thread_t *)sched_active_thread }
 
 /**
  * @brief   event structure forward declaration
@@ -119,7 +119,7 @@ typedef struct event event_t;
 /**
  * @brief   event handler type definition
  */
-typedef void(*event_handler_t)(event_t*);
+typedef void (*event_handler_t)(event_t *);
 
 /**
  * @brief   event structure
