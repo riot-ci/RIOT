@@ -289,3 +289,8 @@ ifneq (,$(filter adc%1c,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
   USEMODULE += adcxx1c
 endif
+
+ifneq (,$(filter lis3mdl,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += xtimer
+endif
