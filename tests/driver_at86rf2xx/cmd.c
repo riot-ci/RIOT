@@ -158,7 +158,7 @@ int txtsnd(int argc, char **argv)
             break;
         case 5:
             res = _parse_addr((uint8_t *)&pan, sizeof(pan), argv[idx++]);
-            if ((res <= 0) || (res > sizeof(pan))) {
+            if ((res == 0) || (res > sizeof(pan))) {
                 txtsnd_usage(argv[0]);
                 return 1;
             }
@@ -171,7 +171,7 @@ int txtsnd(int argc, char **argv)
 
     iface = atoi(argv[1]);
     res = _parse_addr(addr, sizeof(addr), argv[idx++]);
-    if (res <= 0) {
+    if (res == 0) {
         txtsnd_usage(argv[0]);
         return 1;
     }
