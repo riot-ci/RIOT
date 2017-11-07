@@ -16,7 +16,7 @@
  *
  * @author      Laurent Navet <laurent.navet@gmail.com>
  * @author      Dimitri Nahm <dimitri.nahm@haw-hamburg.de>
- *
+ * @author      Sebastian Meiling <s@mlng.net>
  * @}
  */
 
@@ -30,14 +30,14 @@
 
 static mutex_t lock = MUTEX_INIT;
 
-static inline void prep(void)
+static inline void _prep(void)
 {
     mutex_lock(&lock);
     /* Enable ADC */
     ADCSRA |= (1 << ADEN);
 }
 
-static inline void done(void)
+static inline void _done(void)
 {
     /* Disable ADC */
     ADCSRA &= ~(1 << ADEN);
@@ -46,55 +46,52 @@ static inline void done(void)
 
 int adc_init(adc_t line)
 {
-    uint32_t clk_div = 1;
-
     /* check if the line is valid */
     if (line >= ADC_NUMOF) {
         return -1;
     }
 
-    prep();
+    _prep();
 
     /* Disable corresponding Digital input */
-    #if defined (CPU_ATMEGA328P) || defined (CPU_ATMEGA1281)
+    if (line < 8) {
         DIDR0 |= (1 << line);
-    #elif defined (CPU_ATMEGA2560)
-        if (line < 8)
-            DIDR0 |= (1 << line);
-        else
-            DIDR2 |= (1 << (line - 8));
-    #endif
+    }
+#if defined(CPU_ATMEGA2560)
+    else {
+        DIDR2 |= (1 << (line - 8));
+    }
+#endif
 
     /* Set ADC-pin as input */
-    #if defined (CPU_ATMEGA328P)
-        DDRC &= ~(1 << line);
-        PORTC &= ~(1 << line);
-    #elif defined (CPU_ATMEGA2560)
-        if (line < 8) {
-            DDRF &= ~(1 << line);
-            PORTF &= ~(1 << line);
-        }
-        else {
-            DDRK &= ~(1 << (line-8));
-            PORTK &= ~(1 << (line-8));
-        }
-    #elif defined (CPU_ATMEGA1281)
-        DDRF &= ~(1 << line);
+#if defined(CPU_ATMEGA328P)
+    DDRC &= ~(1 << line);
+    PORTC &= ~(1 << line);
+#elif defined(CPU_ATMEGA2560) || defined(CPU_ATMEGA1281)
+    if (line < 8) {
+        DDRF  &= ~(1 << line);
         PORTF &= ~(1 << line);
-    #endif
+    }
+#if defined(CPU_ATMEGA2560)
+    else {
+        DDRK  &= ~(1 << (line-8));
+        PORTK &= ~(1 << (line-8));
+    }
+#endif /* CPU_ATMEGA2560 */
+#endif /* CPU_ATMEGA328P */
 
     /* set clock prescaler to get the maximal possible ADC clock value */
-    for (clk_div = 1; clk_div < 8; clk_div++) {
+    for (uint32_t clk_div = 1; clk_div < 8; ++clk_div) {
         if ((CLOCK_CORECLOCK / (1 << clk_div)) <= ADC_MAX_CLK) {
+            ADCSRA |= clk_div;
             break;
         }
     }
-    ADCSRA |= clk_div;
 
     /* Ref Voltage is Vcc(5V) */
     ADMUX |= (1 << REFS0);
 
-    done();
+    _done();
 
     return 0;
 }
@@ -104,34 +101,35 @@ int adc_sample(adc_t line, adc_res_t res)
     int sample = 0;
 
     /* check if resolution is applicable */
-    assert(res == ADC_RES_10BIT);
+    if (res != ADC_RES_10BIT) {
+        return -1;
+    }
 
-    prep();
+    _prep();
 
     /* set conversion channel */
-    #if defined (CPU_ATMEGA328P) || defined (CPU_ATMEGA1281)
+#if defined(CPU_ATMEGA328P) || defined(CPU_ATMEGA1281)
+    ADMUX &= 0xf0;
+    ADMUX |= line;
+#elif defined(CPU_ATMEGA2560)
+    if (line < 8) {
+        ADCSRB &= ~(1 << MUX5);
         ADMUX &= 0xf0;
         ADMUX |= line;
-    #endif
-    #ifdef CPU_ATMEGA2560
-        if(line < 8) {
-            ADCSRB &= ~(1 << MUX5);
-            ADMUX &= 0xf0;
-            ADMUX |= line;
-        }
-        else {
-            ADCSRB |= (1 << MUX5);
-            ADMUX &= 0xf0;
-            ADMUX |= (line-8);
-        }
-    #endif
+    }
+    else {
+        ADCSRB |= (1 << MUX5);
+        ADMUX &= 0xf0;
+        ADMUX |= (line-8);
+    }
+#endif
 
     /* Start a new conversion. By default, this conversion will
        be performed in single conversion mode. */
     ADCSRA |= (1 << ADSC);
 
     /* Wait until the conversion is complete */
-    while(ADCSRA & (1 << ADSC)) {}
+    while (ADCSRA & (1 << ADSC)) {}
 
     /* Get conversion result */
     sample = ADC;
@@ -139,7 +137,7 @@ int adc_sample(adc_t line, adc_res_t res)
     /* Clear the ADIF flag */
     ADCSRA |= (1 << ADIF);
 
-    done();
+    _done();
 
     return sample;
 }
