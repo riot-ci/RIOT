@@ -213,7 +213,7 @@ enum {
      * @brief   reactive routing query
      *
      * A reactive routing query is issued when a route is unknown to the NIB.
-     * A reactive routing protocol can use this call to search a route in a
+     * A reactive routing protocol can use this call to search for a route in a
      * reactive manner.
      *
      * The `ctx_addr` will be the destination address of the unknown route,

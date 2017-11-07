@@ -133,7 +133,7 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
                                 SEC_PER_MIN * MS_PER_SEC;
                     DEBUG("nib: Address registration successful. "
                                "Scheduling re-registration in %" PRIu32 "ms\n",
-                           next_ns);
+                          next_ns);
                     assert(nce != NULL);
                     _evtimer_add(nce, GNRC_IPV6_NIB_SND_UC_NS, &nce->nud_timeout,
                                  next_ns);
