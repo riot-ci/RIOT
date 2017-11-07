@@ -57,12 +57,9 @@ void auto_init_isl29020(void)
     assert(ISL29020_NUM == ISL29020_INFO_NUM);
 
     for (unsigned int i = 0; i < ISL29020_NUM; i++) {
-        const isl29020_params_t *p = &isl29020_params[i];
-
         LOG_DEBUG("[auto_init_saul] initializing isl29020 #%u\n", i);
 
-        int res = isl29020_init(&isl29020_devs[i], p->i2c, p->addr,
-                                p->range, p->mode);
+        int res = isl29020_init(&isl29020_devs[i], &isl29020_params[i]);
         if (res < 0) {
             LOG_ERROR("[auto_init_saul] error initializing isl29020 #%u\n", i);
             continue;
