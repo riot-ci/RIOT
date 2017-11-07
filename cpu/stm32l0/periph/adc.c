@@ -128,33 +128,17 @@ int adc_init(adc_t line)
 int adc_sample(adc_t line,  adc_res_t res)
 {
     int sample;
-    uint8_t _res = 0;
 
     /* check if resolution is applicable */
-    if (res > 0x3) {
+    if ( (res != ADC_RES_6BIT) &&
+         (res != ADC_RES_8BIT) &&
+         (res != ADC_RES_10BIT) &&
+         (res != ADC_RES_12BIT)) {
         return -1;
     }
 
     /* lock and power on the ADC device  */
     prep();
-
-    switch (res) {
-        case ADC_RES_6BIT:
-            _res = 0x11;
-            break;
-        case ADC_RES_8BIT:
-            _res = 0x10;
-            break;
-        case ADC_RES_10BIT:
-            _res = 0x01;
-            break;
-        case ADC_RES_12BIT:
-            _res = 0x00;
-            break;
-        default:
-            return -1;
-            break;
-    }
 
     /* Enable ADC */
     _enable_adc();
@@ -170,7 +154,7 @@ int adc_sample(adc_t line,  adc_res_t res)
 
     /* set resolution and channel */
     ADC1->CFGR1 &= ~ADC_CFGR1_RES;
-    ADC1->CFGR1 |= _res << ADC_CFGR1_RES_Pos;
+    ADC1->CFGR1 |= res & ADC_CFGR1_RES;
     ADC1->CHSELR = (1 << adc_config[line].chan);
 
     /* clear flag */
