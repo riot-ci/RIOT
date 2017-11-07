@@ -56,7 +56,7 @@ extern "C" {
 #ifndef LIS3DH_PARAMS
 #define LIS3DH_PARAMS               { .spi   = LIS3DH_PARAM_SPI,   \
                                       .cs    = LIS3DH_PARAM_CS,    \
-                                      .clk   = LIS3DH_PARAM_CLK    \
+                                      .clk   = LIS3DH_PARAM_CLK,   \
                                       .int1  = LIS3DH_PARAM_INT1,  \
                                       .int2  = LIS3DH_PARAM_INT2,  \
                                       .scale = LIS3DH_PARAM_SCALE, \
