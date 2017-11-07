@@ -56,25 +56,25 @@ static inline void done(void)
 
 static void _enable_adc(void)
 {
-	if ((ADC1->CR & ADC_CR_ADEN) != 0) {
-		ADC1->CR |= ADC_CR_ADDIS;
-		while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
-	}
+    if ((ADC1->CR & ADC_CR_ADEN) != 0) {
+        ADC1->CR |= ADC_CR_ADDIS;
+        while(ADC1->CR & ADC_CR_ADEN) {} /* Wait for ADC disabled */
+    }
 
-	if ((ADC1->CR & ADC_CR_ADEN) == 0) {
-		/* Then, start a calibration */
-		ADC1->CR |= ADC_CR_ADCAL;
-		while(ADC1->CR & ADC_CR_ADCAL) {} /* Wait for the end of calibration */
-	}
+    if ((ADC1->CR & ADC_CR_ADEN) == 0) {
+        /* Then, start a calibration */
+        ADC1->CR |= ADC_CR_ADCAL;
+        while(ADC1->CR & ADC_CR_ADCAL) {} /* Wait for the end of calibration */
+    }
 
-	/* Clear flag */
-	ADC1->ISR |= ADC_ISR_ADRDY;
+    /* Clear flag */
+    ADC1->ISR |= ADC_ISR_ADRDY;
 
-	/* enable device */
-	ADC1->CR = ADC_CR_ADVREGEN | ADC_CR_ADEN;
+    /* enable device */
+    ADC1->CR = ADC_CR_ADVREGEN | ADC_CR_ADEN;
 
-	/* Wait for ADC to be ready */
-	while (!(ADC1->ISR & ADC_ISR_ADRDY)) {}
+    /* Wait for ADC to be ready */
+    while (!(ADC1->ISR & ADC_ISR_ADRDY)) {}
 }
 
 static void _disable_adc(void)
@@ -100,18 +100,23 @@ int adc_init(adc_t line)
     prep();
 
     if ((adc_config[line].chan != 17) && (adc_config[line].chan != 18)) {
-        /*configure the pin */
+        /* configure the pin */
         gpio_init_analog(adc_config[line].pin);
     }
 
-    ADC1->CFGR1 = 0; //no watchdog, no discontinuous mode, no auto off, single conv, no trigger, right align, 12bits, no dma, no wait
-    ADC1->CFGR2 = 0; //no oversampling: Watch out, MSB (CKMODE) MUST not be changed while on (it is zero by default)
-    //activate VREF, and set prescaler to 4 (4Mhz clock)
-    //activate also temp sensor, so that it will be ready for temp measure
+    /* no watchdog, no discontinuous mode, no auto off, single conv, no trigger,
+     * right align, 12bits, no dma, no wait */
+    ADC1->CFGR1 = 0;
+    /* no oversampling: Watch out, MSB (CKMODE) MUST not be changed while on
+     * (it is zero by default) */
+    ADC1->CFGR2 = 0;
+    /* activate VREF, and set prescaler to 4 (4Mhz clock)
+     * activate also temp sensor, so that it will be ready for temp measure */
     ADC->CCR = ADC_CCR_VREFEN | ADC_CCR_TSEN | ADC_CCR_PRESC_1;
-    /*Sampling time selection: 7 => 160 clocks => 40µs @ 4MHz (must be 10+10 for ref start and sampling time)*/
+    /* Sampling time selection: 7 => 160 clocks => 40µs @ 4MHz
+     * (must be 10+10 for ref start and sampling time) */
     ADC1->SMPR |= ADC_SMPR_SMP;
-    //clear previous flag
+    /* clear previous flag */
     ADC1->ISR |= ADC_ISR_EOC;
 
     /* power off an release device for now */
