@@ -48,7 +48,7 @@ extern "C" {
 #define ISL29020_PARAMS                 { .i2c   = ISL29020_PARAM_I2C,   \
                                           .addr  = ISL29020_PARAM_ADDR,  \
                                           .range = ISL29020_PARAM_RANGE, \
-                                          .mode  = ISL29020_PARAM_MODE,}
+                                          .mode  = ISL29020_PARAM_MODE }
 #endif
 #ifndef ISL29020_SAUL_INFO
 #define ISL29020_SAUL_INFO              { .name = "isl29020" }
