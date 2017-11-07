@@ -30,14 +30,17 @@ int main(void)
 
     puts("RIOT network stack example application");
 
-    /* get interface and print their addresses */
+    /* get interfaces and print their addresses */
     gnrc_netif2_t *netif = NULL;
     while ((netif = gnrc_netif2_iter(netif))) {
         ipv6_addr_t ipv6_addrs[GNRC_NETIF2_IPV6_ADDRS_NUMOF];
         int res = gnrc_netapi_get(netif->pid, NETOPT_IPV6_ADDR, 0, ipv6_addrs,
                                   sizeof(ipv6_addrs));
 
-        for (int i = 0; i < (res / sizeof(ipv6_addr_t)); i++) {
+        if (res < 0) {
+            continue;
+        }
+        for (unsigned i = 0; i < (unsigned)(res / sizeof(ipv6_addr_t)); i++) {
             char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
 
             ipv6_addr_to_str(ipv6_addr, &ipv6_addrs[i], IPV6_ADDR_MAX_STR_LEN);
