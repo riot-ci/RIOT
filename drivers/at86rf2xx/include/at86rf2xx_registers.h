@@ -19,7 +19,6 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Kévin Roussel <Kevin.Roussel@inria.fr>
- *
  */
 
 #ifndef AT86RF2XX_REGISTERS_H

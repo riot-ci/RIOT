@@ -10,7 +10,6 @@
 /**
  * @ingroup     drivers_at86rf2xx
  * @{
- *
  * @file
  * @brief       Default configuration for the AT86RF2xx driver
  *

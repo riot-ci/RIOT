@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2013 Alaeddine Weslati <alaeddine.weslati@inria.fr>
  * Copyright (C) 2015 Freie Universität Berlin
- *               2017 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,7 +18,6 @@
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      Sebastian Meiling <s@mlng.net>
  * @}
  */
 
