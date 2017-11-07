@@ -16,7 +16,8 @@ ifeq ($(PROGRAMMER),jlink)
   include $(RIOTMAKE)/tools/jlink.inc.mk
 else
   # by default, we use BOSSA to flash this board to take into account the
-  # pre-flashed Arduino bootloader
+  # pre-flashed Arduino bootloader. ROM_OFFSET skips the space taken by
+  # such bootloader.
   ROM_OFFSET ?= 0x2000
   include $(RIOTMAKE)/tools/bossa.inc.mk
 endif
