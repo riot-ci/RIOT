@@ -31,6 +31,13 @@ void board_init(void)
     LED_BLUE_OFF;
     gpio_init(LED_BLUE_PIN, GPIO_OUT);
 
+    /* reset RN2483 (LoRa) */
+    LORA_RESET_OFF;
+    gpio_init(LORA_RESET_PIN, GPIO_OUT);
+
+    GPS_ENABLE_OFF;
+    gpio_init(GPS_ENABLE_PIN, GPIO_OUT);
+
     /* initialize the CPU */
     cpu_init();
 }
