@@ -41,8 +41,7 @@ int main(void)
     }
 
     while (1) {
-        int value = isl29020_read(&dev);
-        printf("Light value: %5i LUX\n", value);
+        printf("Light value: %5i LUX\n", isl29020_read(&dev));
         xtimer_usleep(SLEEP);
     }
 
