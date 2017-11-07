@@ -41,6 +41,11 @@ static tsl2561_t tsl2561_devs[TSL2561_NUMOF];
 static saul_reg_t saul_entries[TSL2561_NUMOF];
 
 /**
+ * @brief   Define the number of saul info
+ */
+#define TSL2561_INFO_NUM    (sizeof(tsl2561_saul_reg_info) / sizeof(tsl2561_saul_reg_info[0]))
+
+/**
  * @brief   Reference the driver structs.
  * @{
  */
@@ -49,6 +54,8 @@ extern const saul_driver_t tsl2561_illuminance_saul_driver;
 
 void auto_init_tsl2561(void)
 {
+    assert(TSL2561_NUM == TSL2561_INFO_NUM);
+
     for (unsigned i = 0; i < TSL2561_NUMOF; i++) {
         LOG_DEBUG("[auto_init_saul] initializing tsl2561 #%u\n", i);
 
