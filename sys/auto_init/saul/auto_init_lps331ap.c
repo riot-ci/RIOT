@@ -58,11 +58,9 @@ void auto_init_lps331ap(void)
     assert(LPS331AP_NUM == LPS331AP_INFO_NUM);
 
     for (unsigned int i = 0; i < LPS331AP_NUM; i++) {
-        const lps331ap_params_t *p = &lps331ap_params[i];
-
         LOG_DEBUG("[auto_init_saul] initializing lps331ap #%u\n", i);
 
-        int res = lps331ap_init(&lps331ap_devs[i], p->i2c, p->addr, p->rate);
+        int res = lps331ap_init(&lps331ap_devs[i], &lps331ap_params[i]);
         if (res < 0) {
             LOG_ERROR("[auto_init_saul] error initializing lps331ap #%u\n", i);
             continue;
