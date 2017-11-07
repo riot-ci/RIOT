@@ -153,7 +153,8 @@ void board_init(void);
 #define MULLE_NOR_SPI_DEV               (SPI_DEV(0))
 #define MULLE_NOR_SPI_CLK               (SPI_CLK_5MHZ)
 #define MULLE_NOR_SPI_CS                (SPI_HWCS(2)) /**< Flash CS pin */
-/** @} *
+/** @} */
+
 /**
  * @name MTD configuration
  */
