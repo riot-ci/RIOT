@@ -29,7 +29,6 @@
 int main(void)
 {
     isl29020_t dev;
-    int value;
 
     puts("ISL29020 light sensor test application\n");
     puts("Initializing ISL29020 sensor");
@@ -42,7 +41,7 @@ int main(void)
     }
 
     while (1) {
-        value = isl29020_read(&dev);
+        int value = isl29020_read(&dev);
         printf("Light value: %5i LUX\n", value);
         xtimer_usleep(SLEEP);
     }
