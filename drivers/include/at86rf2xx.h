@@ -218,7 +218,7 @@ uint16_t at86rf2xx_get_addr_short(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] addr          (2-byte) short address to set
  */
-void at86rf2xx_set_addr_short(at86rf2xx_t *dev, const uint16_t addr);
+void at86rf2xx_set_addr_short(at86rf2xx_t *dev, uint16_t addr);
 
 /**
  * @brief   Get the configured long address of the given device
@@ -235,7 +235,7 @@ uint64_t at86rf2xx_get_addr_long(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] addr          (8-byte) long address to set
  */
-void at86rf2xx_set_addr_long(at86rf2xx_t *dev, const uint64_t addr);
+void at86rf2xx_set_addr_long(at86rf2xx_t *dev, uint64_t addr);
 
 /**
  * @brief   Get the configured channel number of the given device
@@ -252,7 +252,7 @@ uint8_t at86rf2xx_get_chan(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] chan          channel number to set
  */
-void at86rf2xx_set_chan(at86rf2xx_t *dev, const uint8_t chan);
+void at86rf2xx_set_chan(at86rf2xx_t *dev, uint8_t chan);
 
 /**
  * @brief   Get the configured channel page of the given device
@@ -269,7 +269,7 @@ uint8_t at86rf2xx_get_page(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] page          channel page to set
  */
-void at86rf2xx_set_page(at86rf2xx_t *dev, const uint8_t page);
+void at86rf2xx_set_page(at86rf2xx_t *dev, uint8_t page);
 
 /**
  * @brief   Get the configured PAN ID of the given device
@@ -286,7 +286,7 @@ uint16_t at86rf2xx_get_pan(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] pan           PAN ID to set
  */
-void at86rf2xx_set_pan(at86rf2xx_t *dev, const uint16_t pan);
+void at86rf2xx_set_pan(at86rf2xx_t *dev, uint16_t pan);
 
 /**
  * @brief   Get the configured transmission power of the given device [in dBm]
@@ -329,7 +329,7 @@ uint8_t at86rf2xx_get_max_retries(const at86rf2xx_t *dev);
  * @param[in] dev           device to write to
  * @param[in] max           the maximum number of retransmissions
  */
-void at86rf2xx_set_max_retries(const at86rf2xx_t *dev, const uint8_t max);
+void at86rf2xx_set_max_retries(const at86rf2xx_t *dev, uint8_t max);
 
 /**
  * @brief   Get the maximum number of channel access attempts per frame (CSMA)
@@ -407,8 +407,7 @@ int8_t at86rf2xx_get_ed_level(at86rf2xx_t *dev);
  * @param[in] option        option to enable/disable
  * @param[in] state         true for enable, false for disable
  */
-void at86rf2xx_set_option(at86rf2xx_t *dev,
-                          const uint16_t option, const bool state);
+void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state);
 
 /**
  * @brief   Set the state of the given device (trigger a state change)
@@ -418,7 +417,7 @@ void at86rf2xx_set_option(at86rf2xx_t *dev,
  *
  * @return                  the previous state before the new state was set
  */
-uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, const uint8_t state);
+uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state);
 
 /**
  * @brief   Convenience function for simply sending data
@@ -432,7 +431,7 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, const uint8_t state);
  * @return                  number of bytes that were actually send
  * @return                  0 on error
  */
-size_t at86rf2xx_send(at86rf2xx_t *dev, const uint8_t *data, const size_t len);
+size_t at86rf2xx_send(at86rf2xx_t *dev, const uint8_t *data, size_t len);
 
 /**
  * @brief   Prepare for sending of data
@@ -455,7 +454,7 @@ void at86rf2xx_tx_prepare(at86rf2xx_t *dev);
  * @return                  offset + number of bytes written
  */
 size_t at86rf2xx_tx_load(at86rf2xx_t *dev, const uint8_t *data,
-                         const size_t len, const size_t offset);
+                         size_t len, size_t offset);
 
 /**
  * @brief   Trigger sending of data previously loaded into transmit buffer
