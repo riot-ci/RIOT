@@ -130,9 +130,9 @@ void board_init(void);
  * @name Mulle power control configuration
  */
 /** @{ */
-#define MULLE_POWER_AVDD                (GPIO_PIN(PORT_B, 17) /**< AVDD enable pin */
-#define MULLE_POWER_VPERIPH             (GPIO_PIN(PORT_D,  7) /**< VPERIPH enable pin */
-#define MULLE_POWER_VSEC                (GPIO_PIN(PORT_B, 16) /**< VSEC enable pin */
+#define MULLE_POWER_AVDD                (GPIO_PIN(PORT_B, 17)) /**< AVDD enable pin */
+#define MULLE_POWER_VPERIPH             (GPIO_PIN(PORT_D,  7)) /**< VPERIPH enable pin */
+#define MULLE_POWER_VSEC                (GPIO_PIN(PORT_B, 16)) /**< VSEC enable pin */
 /** @} */
 
 /**
