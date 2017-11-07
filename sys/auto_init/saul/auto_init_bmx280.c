@@ -29,9 +29,29 @@
 #include "bmx280.h"
 
 /**
+ * @brief   The number of configured sensors
+ */
+#define BMX280_NUM    (sizeof(bmx280_params) / sizeof(bmx280_params[0]))
+
+/**
  * @brief   Allocation of memory for device descriptors
  */
-static bmx280_t bmx280_devs[BMX280_NUMOF];
+static bmx280_t bmx280_devs[BMX280_NUM];
+
+/**
+ * @brief   Memory for the SAUL registry entries
+ */
+#if defined(MODULE_BME280)
+#define SENSORS_NUM (3U)
+#else
+#define SENSORS_NUM (2U)
+#endif
+static saul_reg_t saul_entries[BMX280_NUM * SENSORS_NUM];
+
+/**
+ * @brief   Define the number of saul info
+ */
+#define BMX180_INFO_NUMOF (sizeof(bmx180_saul_reg_info) / sizeof(bmx180_saul_reg_info[0]))
 
 /**
  * @brief   Reference the driver structs.
@@ -44,20 +64,12 @@ extern const saul_driver_t bme280_relative_humidity_saul_driver;
 #endif
 /** @} */
 
-/**
- * @brief   Memory for the SAUL registry entries
- */
-#if defined(MODULE_BME280)
-#define SENSORS_NUMOF 3
-#else
-#define SENSORS_NUMOF 2
-#endif
-static saul_reg_t saul_entries[BMX280_NUMOF * SENSORS_NUMOF];
-
 void auto_init_bmx280(void)
 {
+    assert(BMX280_SAUL_INFO == BMX280_NUM);
+
     size_t se_ix = 0;
-    for (size_t i = 0; i < BMX280_NUMOF; i++) {
+    for (size_t i = 0; i < BMX280_NUM; i++) {
         LOG_DEBUG("[auto_init_saul] initializing BMX280 #%u\n", i);
         int res = bmx280_init(&bmx280_devs[i], &bmx280_params[i]);
         if (res < 0) {
