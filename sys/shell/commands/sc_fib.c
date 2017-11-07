@@ -206,7 +206,7 @@ int _fib_route_handler(int argc, char **argv)
     /* e.g. fibroute add <destination> via <next hop> lifetime <lifetime> */
     if ((argc == 7) && (strcmp("add", argv[1]) == 0) && (strcmp("via", argv[3]) == 0)
             && (strcmp("lifetime", argv[5]) == 0)) {
-                size_t ifnum = gnrc_netif2_numof();
+        size_t ifnum = gnrc_netif2_numof();
         if (ifnum == 1) {
             gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
             _fib_add(argv[2], argv[4], netif->pid,

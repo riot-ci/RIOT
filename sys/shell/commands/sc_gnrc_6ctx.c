@@ -69,7 +69,6 @@ static void _adv_ctx(void)
             gnrc_ndp_internal_send_rtr_adv(ifs[i], NULL, NULL, false);
         }
     }
-#endif
 }
 
 int _gnrc_6ctx_add(char *cmd_str, char *ctx_str, char *prefix_str, char *ltime_str)
