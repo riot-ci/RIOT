@@ -34,6 +34,26 @@ extern "C" {
 #endif
 
 /**
+ * @brief Max. allowed transmit power for the transceiver
+ */
+#ifdef MODULE_AT86RF212B
+#define AT86RF2XX_TXPOWER_MAX           (36)
+#elif MODULE_AT86RF233
+#define AT86RF2XX_TXPOWER_MAX           (21)
+#else
+#define AT86RF2XX_TXPOWER_MAX           (20)
+#endif
+
+/**
+ * @brief Transmit power offset
+ */
+#ifdef MODULE_AT86RF212B
+#define AT86RF2XX_TXPOWER_OFF           (25)
+#else
+#define AT86RF2XX_TXPOWER_OFF           (17)
+#endif
+
+/**
  * @brief   Transition time from SLEEP to TRX_OFF in us, refer figure 7-4, p.42.
  *          For different environments refer figure 13-13, p.201
  */
