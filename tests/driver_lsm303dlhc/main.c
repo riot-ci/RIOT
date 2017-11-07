@@ -29,9 +29,6 @@
 int main(void)
 {
     lsm303dlhc_t dev;
-    int16_t temp_value;
-    lsm303dlhc_3d_data_t mag_value;
-    lsm303dlhc_3d_data_t acc_value;
 
     puts("LSM303DLHC temperature test application\n");
     puts("Initializing LSM303DLHC sensor");
@@ -45,6 +42,10 @@ int main(void)
     }
 
     while (1) {
+        int16_t temp_value;
+        lsm303dlhc_3d_data_t mag_value;
+        lsm303dlhc_3d_data_t acc_value;
+
         if (lsm303dlhc_read_acc(&dev, &acc_value) == 0) {
             printf("Accelerometer x: %i y: %i z: %i\n", acc_value.x_axis,
                                                         acc_value.y_axis,
