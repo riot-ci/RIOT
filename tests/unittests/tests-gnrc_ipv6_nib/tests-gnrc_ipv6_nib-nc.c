@@ -276,13 +276,12 @@ static void test_nib_nc_mark_reachable__unmanaged(void)
 static void test_nib_nc_mark_reachable__success(void)
 {
     void *iter_state = NULL;
-    _nib_onl_entry_t *node;
     static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
                                              { .u64 = TEST_UINT64 } } };
     gnrc_ipv6_nib_nc_t nce;
 
-    TEST_ASSERT_NOT_NULL((node = _nib_nc_add(&addr, IFACE,
-                                             GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE)));
+    TEST_ASSERT_NOT_NULL(_nib_nc_add(&addr, IFACE,
+                                     GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE));
 
     /* check pre-state */
     TEST_ASSERT(gnrc_ipv6_nib_nc_iter(0, &iter_state, &nce));
