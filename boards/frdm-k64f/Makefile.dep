@@ -1,1 +1,1 @@
-include $(RIOTCPU)/$(CPU)/Makefile.dep
+include $(RIOTCPU)/kinetis/Makefile.dep
