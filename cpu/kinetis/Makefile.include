@@ -34,7 +34,7 @@ LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_ram_length=$(RAM_LEN)
 export UNDEF += $(BINDIR)/cpu/fcfield.o
 
 # include common periph drivers
-export USEMODULE += periph_common
+USEMODULE += periph_common
 
 # select kinetis periph drivers
 USEMODULE += periph_mcg
