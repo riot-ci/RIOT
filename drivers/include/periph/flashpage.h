@@ -107,6 +107,27 @@ static inline int flashpage_page(void *addr)
 void flashpage_write(int page, void *data);
 
 /**
+ * @brief   Write the given address with the given data and length
+ *
+ * @note The given address must be aligned to the size of the minimal
+ *       writing block allowed by the MCU. This function doesn't erase
+ *       the block to be written automatically, so be sure the block
+ *       is erased before writing it (using flashpage_write function).
+ *       While writing can be limited to small blocks, erasing often
+ *       is limited to bigger blocks, called sectors or rows in some MCUs.
+ *       Thus, take special care when modifying already written data.
+ *
+ * @param[in] target_addr   address to write
+ * @param[in] data          data to write to the address, MUST be aligned
+ *                          to the minimal writable block defined by the
+ *                          MCU.
+ * @param[in] len           length of the data to be written. It MUST not
+ *                          be less than the minimal allowed block write
+ *                          length.
+ */
+void flashpage_write_raw(void *target_addr, void *data, size_t len);
+
+/**
  * @brief   Read the given page into the given memory location
  *
  * @param[in]  page     page to read
