@@ -776,6 +776,7 @@ size_t gcoap_req_send2(const uint8_t *buf, size_t len,
                 memo->msg.data.pdu_buf = &_coap_state.resend_bufs[i*GCOAP_PDU_BUF_SIZE];
                 memcpy(memo->msg.data.pdu_buf, buf, GCOAP_PDU_BUF_SIZE);
                 memo->msg.data.pdu_len = len;
+                break;
             }
         }
         if (memo->msg.data.pdu_buf) {
