@@ -304,7 +304,6 @@ void gnrc_ndp2_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_netif2_t *netif,
 {
     ipv6_addr_t real_dst;
     gnrc_pktsnip_t *hdr, *pkt = ext_opts;
-    int tgt_idx;
     uint8_t adv_flags = 0;
 
     assert((tgt != NULL) && !ipv6_addr_is_multicast(tgt));
@@ -316,6 +315,8 @@ void gnrc_ndp2_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_netif2_t *netif,
           ipv6_addr_to_str(addr_str, dst, sizeof(addr_str)), supply_tl2a);
     gnrc_netif2_acquire(netif);
     do {    /* XXX: hidden goto */
+        int tgt_idx;
+
         if ((tgt_idx = gnrc_netif2_ipv6_addr_idx(netif, tgt)) < 0) {
             DEBUG("ndp2: tgt not assigned to interface. Abort sending\n");
             break;
@@ -389,7 +390,6 @@ void gnrc_ndp2_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_netif2_t *netif,
 void gnrc_ndp2_rtr_sol_send(gnrc_netif2_t *netif, const ipv6_addr_t *dst)
 {
     gnrc_pktsnip_t *hdr, *pkt = NULL;
-    ipv6_addr_t *src = NULL;
 
     assert(netif != NULL);
     if (dst == NULL) {
@@ -400,6 +400,8 @@ void gnrc_ndp2_rtr_sol_send(gnrc_netif2_t *netif, const ipv6_addr_t *dst)
           ipv6_addr_to_str(addr_str, dst, sizeof(addr_str)));
     gnrc_netif2_acquire(netif);
     do {    /* XXX: hidden goto */
+        ipv6_addr_t *src = NULL;
+
         /* add SL2AO => check if there is a fitting source address to target */
         if ((src = gnrc_netif2_ipv6_addr_best_src(netif, dst, false)) != NULL) {
             uint8_t l2src[8];
