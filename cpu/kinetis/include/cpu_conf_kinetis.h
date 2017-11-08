@@ -53,6 +53,41 @@ extern "C"
 /** @} */
 
 /**
+ * @name LPTMR module configuration
+ * @{
+ */
+#ifndef KINETIS_LPTMR_HZ
+#define KINETIS_LPTMR_HZ 32768u
+#endif
+/** @} */
+
+/**
+ * @name   xtimer configuration
+ *
+ * Use KINETIS_XTIMER_SOURCE_PIT, KINETIS_LPTMR_HZ to choose which configuration
+ * to use.
+ * @{
+ */
+#if KINETIS_XTIMER_SOURCE_PIT
+/* PIT xtimer configuration */
+#define XTIMER_DEV                  (TIMER_PIT_DEV(0))
+#define XTIMER_CHAN                 (0)
+/* Default xtimer settings should work on the PIT */
+#else
+/* LPTMR xtimer configuration */
+#define XTIMER_DEV                  (TIMER_LPTMR_DEV(0))
+#define XTIMER_CHAN                 (0)
+/* LPTMR is 16 bits wide and runs at 32768 Hz (clocked by the RTC module), or
+ * 1000 Hz (clocked by the internal low-power oscillator) */
+#define XTIMER_WIDTH                (16)
+#define XTIMER_BACKOFF              (5)
+#define XTIMER_ISR_BACKOFF          (5)
+#define XTIMER_OVERHEAD             (4)
+#define XTIMER_HZ                   (KINETIS_LPTMR_HZ)
+#endif
+/** @} */
+
+/**
  * @name Compatibility definitions between vendor headers
  * @{
  */
