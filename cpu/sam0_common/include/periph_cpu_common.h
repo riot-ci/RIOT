@@ -88,7 +88,6 @@ enum {
 #ifndef DOXYGEN
 /**
  * @brief   Override GPIO modes
- * @{
  */
 #define HAVE_GPIO_MODE_T
 typedef enum {

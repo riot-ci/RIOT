@@ -104,7 +104,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     if (mode == GPIO_IN_PU) {
         port->OUTSET.reg = pin_mask;
     }
-    else if(mode == GPIO_IN_PD) {
+    else if (mode == GPIO_IN_PD) {
         port->OUTCLR.reg = pin_mask;
     }
 
