@@ -226,9 +226,6 @@ void _nib_nc_set_reachable(_nib_onl_entry_t *node)
 #if GNRC_IPV6_NIB_CONF_ARSM
     gnrc_netif2_t *netif = gnrc_netif2_get_by_pid(_nib_onl_get_if(node));
 
-    DEBUG("nib: set %s%%%u reachable (reachable time = %u)\n",
-          ipv6_addr_to_str(addr_str, &node->ipv6, sizeof(addr_str)),
-          _nib_onl_get_if(node), (unsigned)netif->ipv6.reach_time);
     node->info &= ~GNRC_IPV6_NIB_NC_INFO_NUD_STATE_MASK;
     node->info |= GNRC_IPV6_NIB_NC_INFO_NUD_STATE_REACHABLE;
 #ifdef TEST_SUITES
@@ -237,6 +234,9 @@ void _nib_nc_set_reachable(_nib_onl_entry_t *node)
         return;
     }
 #endif
+    DEBUG("nib: set %s%%%u reachable (reachable time = %u)\n",
+          ipv6_addr_to_str(addr_str, &node->ipv6, sizeof(addr_str)),
+          _nib_onl_get_if(node), (unsigned)netif->ipv6.reach_time);
     _evtimer_add(node, GNRC_IPV6_NIB_REACH_TIMEOUT, &node->nud_timeout,
                  netif->ipv6.reach_time);
 #else

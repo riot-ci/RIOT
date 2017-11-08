@@ -115,7 +115,7 @@ typedef struct {
      * The callback may be `NULL` if no such behavior is required by the routing
      * protocol (or no routing protocol is present).
      *
-     * @param[in] type      [Type](@reg net_gnrc_ipv6_nib_route_info_type) of
+     * @param[in] type      [Type](@ref net_gnrc_ipv6_nib_route_info_type) of
      *                      the route info.
      * @param[in] ctx_addr  Context address of the route info.
      * @param[in] ctx       Further context of the route info.
