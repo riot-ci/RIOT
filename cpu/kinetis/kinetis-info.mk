@@ -136,7 +136,7 @@ ifeq ($(KINETIS_INFO_DEBUG),1)
   $(info RAM size:          $(shell printf '%-4s (%s)' $$(($(KINETIS_RAMSIZE))) '$(KINETIS_RAMSIZE)'))
   $(info SRAM_L:            $(shell printf '%-4s (%s)' $$(($(KINETIS_SRAM_L_SIZE))) '$(KINETIS_SRAM_L_SIZE)'))
   $(info Max speed:         $(KINETIS_SPEED))
-  $(info Temperature range: $(KINETIS_MASKREV))
+  $(info Temperature range: $(KINETIS_TEMPRANGE))
   $(info Revision:          $(KINETIS_MASKREV))
   $(info Package code:      $(KINETIS_PACKAGE))
 endif
