@@ -25,6 +25,9 @@
 #ifndef ARDUINO_PINMAP_H
 #define ARDUINO_PINMAP_H
 
+#include "periph/gpio.h"
+#include "periph/adc.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
