@@ -31,6 +31,7 @@
  * @brief   Allocate space for 1 flash page in RAM
  */
 static uint8_t page_mem[FLASHPAGE_SIZE];
+static char raw_buf[64];
 
 static int getpage(const char *str)
 {
@@ -40,6 +41,16 @@ static int getpage(const char *str)
         return -1;
     }
     return page;
+}
+
+static uint32_t getaddr(const char *str)
+{
+    uint32_t addr = strtol(str, NULL, 16);
+    if (addr < CPU_FLASH_BASE) {
+        printf("error: address %#lx is invalid\n", addr);
+        return -1;
+    }
+    return addr;
 }
 
 static void dumpchar(uint8_t mem)
@@ -164,6 +175,30 @@ static int cmd_write(int argc, char **argv)
     return 0;
 }
 
+static int cmd_write_raw(int argc, char **argv)
+{
+    uint32_t addr;
+
+    if (argc < 3) {
+        printf("usage: %s <addr> <data>\n", argv[0]);
+        return 1;
+    }
+
+    addr = getaddr(argv[1]);
+    if (addr < 0) {
+        return 1;
+    }
+
+    /* try to align */
+    memcpy(raw_buf, argv[2], strlen(argv[2]));
+
+    flashpage_write_raw((void*)addr, raw_buf, strlen(raw_buf));
+
+    printf("wrote local data to flash address %#lx of len %u\n",
+           addr, strlen(raw_buf));
+    return 0;
+}
+
 static int cmd_erase(int argc, char **argv)
 {
     int page;
@@ -248,6 +283,7 @@ static const shell_command_t shell_commands[] = {
     { "dump_local", "Dump the local page buffer to STDOUT", cmd_dump_local },
     { "read", "Read and output the given page", cmd_read },
     { "write", "Write (ASCII) data to the given page", cmd_write },
+    { "write_raw", "Write (ASCII, max 64B) data to the given address", cmd_write_raw },
     { "erase", "Erase the given page", cmd_erase },
     { "edit", "Write bytes to the local page", cmd_edit },
     { "test", "Write and verify test pattern", cmd_test },
