@@ -4,7 +4,7 @@ APPLICATION = riot_javascript
 # default BOARD environment
 BOARD ?= native
 
-BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 calliope-mini \
+BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 bluepill calliope-mini \
                              cc2650-launchpad cc2650stk maple-mini \
                              microbit nrf51dongle nrf6310 nucleo-f030 nucleo-f070 \
                              nucleo-f072 nucleo-f103 nucleo-f302 nucleo-f334 nucleo-f410 \
@@ -24,11 +24,24 @@ CFLAGS += -DDEVELHELP
 # Set stack size to something (conservatively) enormous
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=9092
 
-# Add the shell and some shell commands
-USEMODULE += shell
-USEMODULE += shell_commands
-
 # Add the package for Jerryscript
 USEPKG += jerryscript
 
 include $(CURDIR)/../../Makefile.include
+
+JS_PATH := $(BINDIR)/js/$(MODULE)
+# add directory of generated *.js.h files to include path
+CFLAGS += -I$(JS_PATH)
+
+# generate .js.h header files of .js files
+JS = $(wildcard *.js)
+JS_H := $(JS:%.js=$(JS_PATH)/%.js.h)
+
+$(JS_PATH)/:
+	@mkdir -p $@
+
+$(JS_H): | $(JS_PATH)/
+$(JS_H): $(JS_PATH)/%.js.h: %.js
+	xxd -i $< | sed 's/^unsigned/const unsigned/g' > $@
+
+$(RIOTBUILD_CONFIG_HEADER_C): $(JS_H)
