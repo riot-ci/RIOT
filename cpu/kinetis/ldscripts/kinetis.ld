@@ -22,11 +22,14 @@
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
+_vectors_length = 0x400;
+_flashsec_length = 0x10;
+
 MEMORY
 {
-    vectors (rx)   : ORIGIN = _rom_start_addr,          LENGTH = 0x400
-    flashsec (rx)  : ORIGIN = _rom_start_addr + 0x400,  LENGTH = 0x10
-    rom (rx)       : ORIGIN = _rom_start_addr + 0x410,  LENGTH = _rom_length - 0x410
+    vectors (rx)   : ORIGIN = _rom_start_addr, LENGTH = _vectors_length
+    flashsec (rx)  : ORIGIN = _rom_start_addr + _vectors_length, LENGTH = _flashsec_length
+    rom (rx)       : ORIGIN = _rom_start_addr + _vectors_length + _flashsec_length, LENGTH = _rom_length - (_vectors_length + _flashsec_length)
     ram (rwx)      : ORIGIN = _ram_start_addr, LENGTH = _ram_length
 }
 
