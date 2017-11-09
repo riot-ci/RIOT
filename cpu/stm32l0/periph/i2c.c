@@ -33,9 +33,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-/* guard file in case no I2C device is defined */
-#if I2C_NUMOF
-
 /* static function definitions */
 static void _i2c_init(I2C_TypeDef *i2c, uint32_t presc, uint32_t scll,
                       uint32_t sclh, uint32_t sdadel, uint32_t scldel,
@@ -506,5 +503,3 @@ static inline void _stop(I2C_TypeDef *dev)
     DEBUG("Generate stop condition\n");
     dev->CR2 |= I2C_CR2_STOP;
 }
-
-#endif /* I2C_NUMOF */
