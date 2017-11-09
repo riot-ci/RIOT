@@ -21,9 +21,7 @@
 extern "C" {
 #include "xtimer.h"
 #include "periph/gpio.h"
-#ifdef ADC_NUMOF
 #include "periph/adc.h"
-#endif
 }
 
 #include "arduino.hpp"
@@ -76,7 +74,7 @@ int analogRead(int arduino_pin)
     int adc_value;
 
     /* Check if the ADC line is valid */
-    assert((arduino_pin >= 0) && (arduino_pin < ANALOG_PIN_NUMOF));
+    assert((arduino_pin >= 0) && (arduino_pin < (int)ANALOG_PIN_NUMOF));
 
     /* Initialization of given ADC channel */
     if (!(adc_line_state & (1 << arduino_pin))) {
