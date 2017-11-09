@@ -1,5 +1,5 @@
 # Split the part number into qualification, family, subfamily, core, memory, temperature, package, speed
-KINETIS_INFO := $(shell printf '%s' '$(CPU_MODEL)' | tr 'a-z' 'A-Z' |sed -E -e 's/^(M|K|S9)K([ELMSVW]?|EA)([0-9]?)([0-9]?)([A-Z])([NX]?)([0-9][0-9M]?[0-9]?)([ABZ]?)(.*)$$/\1 \2 \3 \4 \5 \6 \7 \8:\9/' -e 's/^([^ ]*)  /\1 K /' -e 's/^([^:]*):([CMV])(..)([0-9]*).*$$/\1 \2 \3 \4/' -e 's/  / _ /g' -e 's/  / _ /g')
+KINETIS_INFO := $(shell printf '%s' '$(CPU_MODEL)' | tr 'a-z' 'A-Z' | sed -E -e 's/^(M|K|S9)K([ELMSVW]?|EA)([0-9]?)([0-9]?)([A-Z])([NX]?)([0-9][0-9M]?[0-9]?)([ABZ]?)(.*)$$/\1 \2 \3 \4 \5 \6 \7 \8:\9/' -e 's/^([^ ]*)  /\1 K /' -e 's/^([^:]*):([CMV])(..)([0-9]*).*$$/\1 \2 \3 \4/' -e 's/  / _ /g' -e 's/  / _ /g')
 
 
 export KINETIS_QUALIFICATION := $(word 1, $(KINETIS_INFO))
