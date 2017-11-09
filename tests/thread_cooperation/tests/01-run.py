@@ -14,8 +14,8 @@ sys.path.append(os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner'))
 import testrunner
 
 def testfunc(child):
-    # 1st 6LoWPAN fragment
-    child.expect(r"\[START\].*\n")
+    child.expect(r"MAIN: reply from T-\d+")
+    child.expect(r"MAIN: \d+! = \d+")
     child.expect_exact("[SUCCESS]")
 
 if __name__ == "__main__":
