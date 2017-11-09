@@ -378,7 +378,7 @@ static void test_nib_pl_del__success(void)
 }
 
 /**
- * Creates three prefix list entries and removes the second one
+ * Creates three prefix list entries and removes the second one.
  * The prefix list is then iterated.
  * Expected result: there should be two prefix list entries returned, the first
  * and the third one

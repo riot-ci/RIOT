@@ -618,7 +618,7 @@ static void test_nib_ft_del__success(void)
 }
 
 /**
- * Creates three default routes and removes one
+ * Creates three default routes and removes the first one.
  * The prefix list is then iterated.
  * Expected result: there should be two default routes returned, the last
  * two added.
@@ -653,7 +653,7 @@ static void test_nib_ft_iter__empty_def_route_at_beginning(void)
 }
 
 /**
- * Creates three prefix based routes and removes the second one
+ * Creates three prefix based routes and removes the second one.
  * The prefix list is then iterated.
  * Expected result: there should be two prefix based routes returned, the first
  * and the third one.
