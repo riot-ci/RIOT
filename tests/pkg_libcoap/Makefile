@@ -16,4 +16,4 @@ USEPKG += libcoap
 include $(RIOTBASE)/Makefile.include
 
 test:
-    tests/01-run.py
+	tests/01-run.py
