@@ -93,6 +93,7 @@ int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 {
     assert(dev == 0);
 
+    (void)dev;
     (void)freq; /* Cannot adjust Frequency */
 
     timer_isr_ctx.cb = cb;
@@ -125,6 +126,8 @@ int timer_set(tim_t dev, int channel, unsigned int timeout)
     assert(dev == 0);
     assert(channel < CHANNELS);
 
+    (void)dev;
+
     timeout >>= TIMER_ACCURACY_SHIFT;
     timeout <<= TIMER_ACCURACY_SHIFT;
 
@@ -139,6 +142,8 @@ int timer_set_absolute(tim_t dev, int channel, unsigned int value)
 {
     assert(dev == 0);
     assert(channel < CHANNELS);
+
+    (void)dev;
 
     value >>= TIMER_ACCURACY_SHIFT;
     value <<= TIMER_ACCURACY_SHIFT;
@@ -155,6 +160,8 @@ int timer_clear(tim_t dev, int channel)
     assert(dev == 0);
     assert(channel < CHANNELS);
 
+    (void)dev;
+
     uint32_t status = irq_arch_disable();
     compares[channel] = 0;
     irq_arch_restore(status);
@@ -165,6 +172,8 @@ int timer_clear(tim_t dev, int channel)
 unsigned int timer_read(tim_t dev)
 {
     assert(dev == 0);
+
+    (void)dev;
 
     return counter;
 }
