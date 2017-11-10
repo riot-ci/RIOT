@@ -155,14 +155,10 @@ extern "C" {
  *  -> boards -> arduino-atmega-common -> include -> board_common.h
  * @{
  */
-#if defined (CPU_ATMEGA328P)
-#define ADC_NUMOF       (8)
+#if defined (CPU_ATMEGA328P) || defined (CPU_ATMEGA1281)
+#define ADC_NUMOF       (8U)
 #elif defined (CPU_ATMEGA2560)
-#define ADC_NUMOF       (16)
-#endif
-
-#ifdef CPU_ATMEGA1281
-#define ADC_NUMOF       (8)
+#define ADC_NUMOF       (16U)
 #endif
 /** @} */
 
