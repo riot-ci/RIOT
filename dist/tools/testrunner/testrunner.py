@@ -40,7 +40,10 @@ def run(testfunc, timeout=10, echo=True, traceback=False):
         return 1
     finally:
         print("")
-        os.killpg(os.getpgid(child.pid), signal.SIGKILL)
-        child.close()
+        try:
+            os.killpg(os.getpgid(child.pid), signal.SIGKILL)
+            child.close()
+        except OSError:
+            pass
 
     return 0
