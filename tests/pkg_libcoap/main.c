@@ -18,6 +18,6 @@
 
 int main(void)
 {
-    puts("SUCCESS");
+    puts("SUCCESS: Libcoap compiled!");
     return 0;
 }
