@@ -114,16 +114,7 @@ extern "C" {
  * @name     ADC configuration
  * @{
  */
-#define ADC_NUMOF           8
-/* ADC Channels */
-#define ADC_PIN_0           0
-#define ADC_PIN_1           1
-#define ADC_PIN_2           2
-#define ADC_PIN_3           3
-#define ADC_PIN_4           4
-#define ADC_PIN_5           5
-#define ADC_PIN_6           6
-#define ADC_PIN_7           7
+#define ADC_NUMOF           (8U)
 /** @} */
 
 #ifdef __cplusplus
