@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2017 Inria
+ * Copyright (C)  2017 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_nucleo32-common
+ * @ingroup     boards_stm32f4discovery
  * @{
  *
  * @file
@@ -16,7 +16,7 @@
  * You can use the defines in this file for simplified interaction with the
  * Arduino specific pin numbers.
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ * @author      Sebastian Meiling <s@mlng.net>
  */
 
 #ifndef ARDUINO_PINMAP_H
@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Mapping of MCU pins to Arduino pins
+ * @name   Mapping of MCU pins to Arduino pins
  * @{
  */
 #define ARDUINO_PIN_0           GPIO_PIN(PORT_D, 12)
