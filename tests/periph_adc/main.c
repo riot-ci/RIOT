@@ -39,7 +39,7 @@ int main(void)
          "a 10-bit resolution and print the sampled results to STDIO\n\n");
 
     /* initialize all available ADC lines */
-    for (int i = 0; i < ADC_NUMOF; i++) {
+    for (unsigned i = 0; i < ADC_NUMOF; i++) {
         if (adc_init(ADC_LINE(i)) < 0) {
             printf("Initialization of ADC_LINE(%i) failed\n", i);
             return 1;
@@ -49,7 +49,7 @@ int main(void)
     }
 
     while (1) {
-        for (int i = 0; i < ADC_NUMOF; i++) {
+        for (unsigned i = 0; i < ADC_NUMOF; i++) {
             sample = adc_sample(ADC_LINE(i), RES);
             if (sample < 0) {
                 printf("ADC_LINE(%i): 10-bit resolution not applicable\n", i);
