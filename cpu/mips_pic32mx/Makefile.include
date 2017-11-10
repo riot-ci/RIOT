@@ -10,7 +10,6 @@ export CFLAGS += -march=m4k -DSKIP_COPY_TO_RAM
 export USEMODULE += mips_pic32_common
 export USEMODULE += mips_pic32_common_periph
 export USEMODULE += mips32r2_common
-export USEMODULE += periph
 export USEMODULE += periph_common
 export USEMODULE += newlib
 
