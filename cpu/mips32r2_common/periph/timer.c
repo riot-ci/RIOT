@@ -80,6 +80,8 @@ static volatile int spurious_int;
  */
 int gettimeofday(struct timeval *__restrict __p, void *__restrict __tz)
 {
+    (void)__tz;
+
     uint64_t now = counter * US_PER_MS;
     __p->tv_sec = div_u64_by_1000000(now);
     __p->tv_usec = now - (__p->tv_sec * US_PER_SEC);
@@ -169,16 +171,19 @@ unsigned int timer_read(tim_t dev)
 
 void timer_start(tim_t dev)
 {
+    (void)dev;
     mips32_bc_c0(C0_CAUSE, CR_DC);
 }
 
 void timer_stop(tim_t dev)
 {
+    (void)dev;
     mips32_bs_c0(C0_CAUSE, CR_DC);
 }
 
 void timer_irq_enable(tim_t dev)
 {
+    (void)dev;
 #ifdef EIC_IRQ
     eic_irq_enable(EIC_IRQ_TIMER);
 #else
@@ -189,6 +194,7 @@ void timer_irq_enable(tim_t dev)
 
 void timer_irq_disable(tim_t dev)
 {
+    (void)dev;
 #ifdef EIC_IRQ
     eic_irq_disable(EIC_IRQ_TIMER);
 #else
