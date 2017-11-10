@@ -163,6 +163,7 @@ static void recover_i2c_bus(void) {
 #ifdef MODULE_XTIMER
 static void _timer_cb(void *arg)
 {
+    (void)arg;
     mutex_unlock(&i2c_wait_mutex);
 }
 #endif
