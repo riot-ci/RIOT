@@ -4,7 +4,9 @@ export APP_START=0x80000000
 
 include $(RIOTMAKE)/arch/mips.inc.mk
 
-export USEMODULE += periph
+export INCLUDES += -I$(RIOTCPU)/mips32r2_common/include
+
+export USEMODULE += mips32r2_common_periph
 export USEMODULE += periph_common
 export USEMODULE += newlib
 
