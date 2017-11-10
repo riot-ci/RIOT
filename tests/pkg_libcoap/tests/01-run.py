@@ -9,7 +9,7 @@ import testrunner
 
 
 def testfunc(child):
-    child.expect('SUCCESS')
+    child.expect_exact('SUCCESS: Libcoap compiled!')
 
 if __name__ == "__main__":
     sys.exit(testrunner.run(testfunc))
