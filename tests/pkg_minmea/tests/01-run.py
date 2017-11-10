@@ -9,9 +9,8 @@ import testrunner
 
 
 def testfunc(child):
-    child.expect('START')
-    child.expect_exact('parsed coordinates: lat=52.483630 lon=13.446008')
-    child.expect('SUCCESS')
+    child.expect_exact('START')
+    child.expect_exact('SUCCESS')
 
 if __name__ == "__main__":
     sys.exit(testrunner.run(testfunc))
