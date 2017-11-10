@@ -22,6 +22,9 @@
 #ifndef CPU_CONF_H
 #define CPU_CONF_H
 
+/* disable -Wpedantic for vendor header */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #if defined(CPU_MODEL_MK60DN512VLL10) || defined(CPU_MODEL_MK60DN256VLL10)
 #include "vendor/MK60D10.h"
 
@@ -30,6 +33,8 @@
 #else
 #error Unknown CPU model. Update Makefile.include in the board directory.
 #endif
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #include "cpu_conf_kinetis.h"
 
