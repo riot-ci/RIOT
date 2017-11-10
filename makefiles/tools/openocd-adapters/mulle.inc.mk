@@ -24,7 +24,7 @@ endif
 # Default to version 0.70 programmer
 PROGRAMMER_VERSION ?= 0.70
 
-OPENOCD_ADAPTER_INIT ?= -f '$(RIOTBASE)/board/mulle/dist/openocd/mulle-programmer-$(PROGRAMMER_VERSION).cfg'
+OPENOCD_ADAPTER_INIT ?= -f '$(RIOTBASE)/boards/mulle/dist/openocd/mulle-programmer-$(PROGRAMMER_VERSION).cfg'
 
 # Add serial matching command, only if DEBUG_ADAPTER_ID was specified
 ifneq (,$(DEBUG_ADAPTER_ID))
