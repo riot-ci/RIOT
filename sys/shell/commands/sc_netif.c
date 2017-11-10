@@ -552,7 +552,7 @@ static void _netif_list(kernel_pid_t dev)
 
 static int _netif_set_u16(kernel_pid_t dev, netopt_t opt, char *u16_str)
 {
-    unsigned int res;
+    unsigned long int res;
     bool hex = false;
 
     if (_is_number(u16_str)) {
@@ -1101,7 +1101,8 @@ static int _netif_mtu(kernel_pid_t dev, char *mtu_str)
 #ifdef MODULE_GNRC_IPV6_NETIF
     int mtu;
     gnrc_ipv6_netif_t *entry;
-    if (((mtu = atoi(mtu_str)) < IPV6_MIN_MTU) || (mtu > UINT16_MAX)) {
+    if (((mtu = atoi(mtu_str)) < IPV6_MIN_MTU)
+        || ((unsigned) mtu > UINT16_MAX)) {
         printf("error: MTU must be between %" PRIu16 " and %" PRIu16 "\n",
                (uint16_t)IPV6_MIN_MTU, (uint16_t)UINT16_MAX);
         return 1;
@@ -1295,7 +1296,7 @@ int _netif_config(int argc, char **argv)
                 }
                 int hl;
                 gnrc_ipv6_netif_t *entry;
-                if (((hl = atoi(argv[3])) < 0) || (hl > UINT8_MAX)) {
+                if (((hl = atoi(argv[3])) < 0) || (hl > (int)UINT8_MAX)) {
                     printf("error: Hop limit must be between %" PRIu16 " and %" PRIu16 "\n",
                            (uint16_t)0, (uint16_t)UINT16_MAX);
                     return 1;
