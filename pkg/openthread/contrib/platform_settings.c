@@ -47,6 +47,11 @@ ThreadError otPlatSettingsAbandonChange(otInstance *aInstance)
 
 ThreadError otPlatSettingsGet(otInstance *aInstance, uint16_t aKey, int aIndex, uint8_t *aValue, uint16_t *aValueLength)
 {
+    (void)aInstance;
+    (void)aKey;
+    (void)aIndex;
+    (void)aValue;
+
     DEBUG("openthread: otPlatSettingsGet\n");
     *aValueLength = 0;
     return kThreadError_NotImplemented;
@@ -54,19 +59,34 @@ ThreadError otPlatSettingsGet(otInstance *aInstance, uint16_t aKey, int aIndex, 
 
 ThreadError otPlatSettingsSet(otInstance *aInstance, uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength)
 {
+    (void)aInstance;
+    (void)aKey;
+    (void)aValue;
+    (void)aValueLength;
+
     return kThreadError_None;
 }
 
 ThreadError otPlatSettingsAdd(otInstance *aInstance, uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength)
 {
+    (void)aInstance;
+    (void)aKey;
+    (void)aValue;
+    (void)aValueLength;
+
     return kThreadError_None;
 }
 
 ThreadError otPlatSettingsDelete(otInstance *aInstance, uint16_t aKey, int aIndex)
 {
+    (void)aInstance;
+    (void)aKey;
+    (void)aIndex;
+
     return kThreadError_None;
 }
 
 void otPlatSettingsWipe(otInstance *aInstance)
 {
+    (void)aInstance;
 }
