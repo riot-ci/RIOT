@@ -70,7 +70,7 @@ static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
 
     uint32_t phase_nearest = GNRC_LWMAC_PHASE_MAX;
 
-    for (int i = 0; i < GNRC_MAC_NEIGHBOR_COUNT; i++) {
+    for (unsigned i = 0; i < GNRC_MAC_NEIGHBOR_COUNT; i++) {
         if (gnrc_priority_pktqueue_length(&gnrc_netdev->tx.neighbors[i].queue) > 0) {
             /* Unknown destinations are initialized with their phase at the end
              * of the local interval, so known destinations that still wakeup
@@ -78,9 +78,9 @@ static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netdev_t *gnrc_netdev)
             uint32_t phase_check = _gnrc_lwmac_ticks_until_phase(gnrc_netdev->tx.neighbors[i].phase);
 
             if (phase_check <= phase_nearest) {
-                next = i;
+                next = (int)i;
                 phase_nearest = phase_check;
-                DEBUG("[LWMAC-int] Advancing queue #%d\n", i);
+                DEBUG("[LWMAC-int] Advancing queue #%u\n", i);
             }
         }
     }
@@ -260,7 +260,7 @@ static void _sleep_management(gnrc_netdev_t *gnrc_netdev)
 
             /* Offset in microseconds when the earliest (phase) destination
              * node wakes up that we have packets for. */
-            int time_until_tx = RTT_TICKS_TO_US(_gnrc_lwmac_ticks_until_phase(neighbour->phase));
+            uint32_t time_until_tx = RTT_TICKS_TO_US(_gnrc_lwmac_ticks_until_phase(neighbour->phase));
 
             /* If there's not enough time to prepare a WR to catch the phase
              * postpone to next interval */
