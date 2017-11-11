@@ -28,7 +28,7 @@
 pthread_t ths[NUM_THREADS];
 
 pthread_mutex_t mtx;
-volatile int storage = 1;
+volatile uint32_t storage = 1;
 
 void *run(void *parameter)
 {

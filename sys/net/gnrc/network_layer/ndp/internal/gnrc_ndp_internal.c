@@ -820,7 +820,7 @@ static size_t _get_l2src(kernel_pid_t iface, uint8_t *l2src, size_t l2src_maxlen
     }
 
     if (try_long && ((res = gnrc_netapi_get(iface, NETOPT_ADDRESS_LONG, 0,
-                                            l2src, l2src_maxlen)) > max_short_len)) {
+                                            l2src, l2src_maxlen)) > (int)max_short_len)) {
         l2src_len = (uint16_t)res;
     }
     else if ((res = gnrc_netapi_get(iface, NETOPT_ADDRESS, 0, l2src,
