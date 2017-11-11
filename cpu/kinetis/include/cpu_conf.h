@@ -19,6 +19,9 @@
 #ifndef CPU_CONF_H
 #define CPU_CONF_H
 
+/* disable -Wpedantic for vendor header */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 /* Dispatch to a separate file per family */
 #if defined(KINETIS_SERIES_K)
 #include "cpu_conf_kinetis_k.h"
@@ -31,6 +34,8 @@
 #elif defined(KINETIS_SERIES_W)
 #include "cpu_conf_kinetis_w.h"
 #endif /* defined(KINETIS_SERIES_x) */
+/* reinstate compiler switches */
+#pragma GCC diagnostic pop
 
 #ifndef MCU_MEM_MAP_VERSION
 #error Missing vendor header for the chosen CPU_MODEL
