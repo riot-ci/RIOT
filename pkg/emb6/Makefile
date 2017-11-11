@@ -8,4 +8,7 @@ PKG_LICENSE=BSD-3-Clause
 all: git-download
 	"$(MAKE)" -C $(PKG_BUILDDIR)
 
+CFLAGS += -Wno-unused-parameter -Wno-unused-function
+CFLAGS += -Wno-type-limits -Wno-sign-compare
+
 include $(RIOTBASE)/pkg/pkg.mk
