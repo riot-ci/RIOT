@@ -1,4 +1,5 @@
-# Copyright (C) 2016 Kaspar Schleiser <kaspar@schleiser.de>
+# Copyright (C) 2017 Cenk Gündoğan <cenk.guendogan@haw-hamburg.de>
+#               2016 Kaspar Schleiser <kaspar@schleiser.de>
 #               2014 Martine Lenders <mlenders@inf.fu-berlin.de>
 #
 # This file is subject to the terms and conditions of the GNU Lesser
@@ -12,7 +13,7 @@ import subprocess
 import time
 from traceback import print_tb
 
-from pexpect import spawnu, TIMEOUT
+from pexpect import spawnu, TIMEOUT, EOF
 
 
 def run(testfunc, timeout=10, echo=True, traceback=False):
@@ -38,9 +39,15 @@ def run(testfunc, timeout=10, echo=True, traceback=False):
         if traceback:
             print_tb(sys.exc_info()[2])
         return 1
+    except EOF:
+        print("EOF in expect script")
+        return 1
     finally:
         print("")
-        os.killpg(os.getpgid(child.pid), signal.SIGKILL)
-        child.close()
+        try:
+            os.killpg(os.getpgid(child.pid), signal.SIGKILL)
+        except ProcessLookupError:
+            print("Process already stopped")
 
+        child.close()
     return 0
