@@ -42,8 +42,8 @@ def run(testfunc, timeout=10, echo=True, traceback=False):
         print("")
         try:
             os.killpg(os.getpgid(child.pid), signal.SIGKILL)
-            child.close()
-        except OSError:
-            pass
+        except ProcessLookupError:
+            print("Process lookup failed")
 
+        child.close()
     return 0
