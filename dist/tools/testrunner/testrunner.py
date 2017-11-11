@@ -13,7 +13,7 @@ import subprocess
 import time
 from traceback import print_tb
 
-from pexpect import spawnu, TIMEOUT
+from pexpect import spawnu, TIMEOUT, EOF
 
 
 def run(testfunc, timeout=10, echo=True, traceback=False):
