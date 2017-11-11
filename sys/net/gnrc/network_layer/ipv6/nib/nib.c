@@ -256,22 +256,18 @@ void gnrc_ipv6_nib_handle_timer_event(void *ctx, uint16_t type)
 static size_t _get_l2src(kernel_pid_t iface, uint8_t *l2src,
                          size_t l2src_maxlen)
 {
-    bool try_long = false;
-    int res;
     uint16_t l2src_len;
     /* maximum address length that fits into a minimum length (8) S/TL2A
      * option */
     const uint16_t max_short_len = 6;
 
-    /* try getting source address */
-    if ((gnrc_netapi_get(iface, NETOPT_SRC_LEN, 0, &l2src_len,
-                         sizeof(l2src_len)) >= 0) &&
-        (l2src_len > max_short_len)) {
-        try_long = true;
-    }
-
-    if (try_long && ((res = gnrc_netapi_get(iface, NETOPT_ADDRESS_LONG, 0,
-                                            l2src, l2src_maxlen)) > max_short_len)) {
+    /* get source address length */
+    int res = gnrc_netapi_get(iface, NETOPT_SRC_LEN, 0,
+                              &l2src_len, sizeof(l2src_len));
+    /* get source address, try long address first if possible  */
+    if ((res >= 0) && (l2src_len > max_short_len) &&
+        (gnrc_netapi_get(iface, NETOPT_ADDRESS_LONG, 0,
+                         l2src, l2src_maxlen) > max_short_len)) {
         l2src_len = (uint16_t)res;
     }
     else if ((res = gnrc_netapi_get(iface, NETOPT_ADDRESS, 0, l2src,
