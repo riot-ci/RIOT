@@ -50,7 +50,6 @@ static void _init_interface(void)
                             sizeof(addr)) < 0) {
             printf("error: unable to add IPv6 address fd01::%x/64 to interface %u\n",
                    addr.u8[15], iface->pid);
-            return;
         }
     }
 }
