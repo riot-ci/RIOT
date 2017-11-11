@@ -1,4 +1,5 @@
-# Copyright (C) 2016 Kaspar Schleiser <kaspar@schleiser.de>
+# Copyright (C) 2017 Cenk Gündoğan <cenk.guendogan@haw-hamburg.de>
+#               2016 Kaspar Schleiser <kaspar@schleiser.de>
 #               2014 Martine Lenders <mlenders@inf.fu-berlin.de>
 #
 # This file is subject to the terms and conditions of the GNU Lesser
@@ -37,6 +38,9 @@ def run(testfunc, timeout=10, echo=True, traceback=False):
         print("Timeout in expect script")
         if traceback:
             print_tb(sys.exc_info()[2])
+        return 1
+    except EOF:
+        print("EOF in expect script")
         return 1
     finally:
         print("")
