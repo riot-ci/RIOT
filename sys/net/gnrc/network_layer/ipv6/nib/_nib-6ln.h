@@ -83,7 +83,7 @@ static inline uint32_t _get_next_rs_interval(const gnrc_netif2_t *netif)
         else {
             unsigned exp = netif->ipv6.rs_sent - SIXLOWPAN_ND_MAX_RS_NUMOF;
             uint32_t tmp = SIXLOWPAN_ND_RS_MSEC_INTERVAL +
-                            ((1 << exp) * (NDP_RS_MS_INTERVAL));
+                           ((1 << exp) * (NDP_RS_MS_INTERVAL));
 
             if (tmp > (SIXLOWPAN_ND_MAX_RS_SEC_INTERVAL * MS_PER_SEC)) {
                 tmp = SIXLOWPAN_ND_MAX_RS_SEC_INTERVAL * MS_PER_SEC;

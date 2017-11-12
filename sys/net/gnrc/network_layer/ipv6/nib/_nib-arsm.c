@@ -119,7 +119,7 @@ void _handle_sl2ao(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
          (memcmp(nce->l2addr, sl2ao + 1, nce->l2addr_len) != 0)) &&
         /* a 6LR MUST NOT modify an existing NCE based on an SL2AO in an RS
          * see https://tools.ietf.org/html/rfc6775#section-6.3 */
-         !_rtr_sol_on_6lr(netif, icmpv6)) {
+        !_rtr_sol_on_6lr(netif, icmpv6)) {
         DEBUG("nib: L2 address differs. Setting STALE\n");
         evtimer_del(&_nib_evtimer, &nce->nud_timeout.event);
         _set_nud_state(netif, nce, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE);
@@ -315,6 +315,7 @@ void _handle_state_timeout(_nib_onl_entry_t *nbr)
 void _probe_nbr(_nib_onl_entry_t *nbr, bool reset)
 {
     const uint16_t state = _get_nud_state(nbr);
+
     DEBUG("nib: Probing ");
     switch (state) {
         case GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED:

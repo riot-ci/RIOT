@@ -193,6 +193,7 @@ static void _snd_ra(gnrc_netif2_t *netif, const ipv6_addr_t *dst,
                     bool final, _nib_abr_entry_t *abr)
 {
     gnrc_pktsnip_t *ext_opts = _build_ext_opts(netif, abr);
+
     gnrc_ndp2_rtr_adv_send(netif, NULL, dst, final, ext_opts);
 }
 #else  /* GNRC_IPV6_NIB_CONF_ROUTER */

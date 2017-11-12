@@ -34,7 +34,7 @@ static inline bool _is_iface_eui64(gnrc_netif2_t *netif, const eui64_t *eui64)
 {
     /* TODO: adapt for short addresses */
     return (netif->l2addr_len == sizeof(eui64_t)) &&
-            (memcmp(&netif->l2addr, eui64, netif->l2addr_len) == 0);
+           (memcmp(&netif->l2addr, eui64, netif->l2addr_len) == 0);
 }
 
 static inline uint8_t _reverse_iid(const ipv6_addr_t *dst,
@@ -179,8 +179,8 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
             return _reg_addr_upstream(netif, ipv6, icmpv6, aro, sl2ao, nce);
         }
 #else
-    (void)sl2ao;
-    (void)nce;
+        (void)sl2ao;
+        (void)nce;
 #endif
     }
 #if ENABLE_DEBUG
@@ -287,6 +287,7 @@ uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
 #endif
 {
     uint16_t ltime;
+
 #ifdef MODULE_GNRC_SIXLOWPAN_CTX
     uint8_t cid;
 #endif

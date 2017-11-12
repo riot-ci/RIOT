@@ -140,7 +140,7 @@ void gnrc_ipv6_nib_init_iface(gnrc_netif2_t *netif)
     }
 #if GNRC_IPV6_NIB_CONF_ROUTER
     else {
-         _handle_snd_mc_ra(netif);
+        _handle_snd_mc_ra(netif);
     }
 #endif
     gnrc_netif2_release(netif);
@@ -478,7 +478,7 @@ static void _handle_rtr_sol(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
 
             /* check for integer overflows and initial value of last_ra */
             if (((netif->ipv6.last_ra > (UINT32_MAX - NDP_MIN_MS_DELAY_BETWEEN_RAS) &&
-                 (now < NDP_MIN_MS_DELAY_BETWEEN_RAS))) ||
+                  (now < NDP_MIN_MS_DELAY_BETWEEN_RAS))) ||
                 ((now - NDP_MIN_MS_DELAY_BETWEEN_RAS) > netif->ipv6.last_ra)) {
                 next_ra_delay += NDP_MIN_MS_DELAY_BETWEEN_RAS;
             }
@@ -505,6 +505,7 @@ static void _handle_rtr_adv(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
     size_t tmp_len = icmpv6_len - sizeof(ndp_rtr_adv_t);
     _nib_dr_entry_t *dr = NULL;
     ndp_opt_t *opt;
+
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
     sixlowpan_nd_opt_abr_t *abro = NULL;
     _nib_abr_entry_t *abr = NULL;
@@ -792,7 +793,7 @@ static void _handle_nbr_sol(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
         DEBUG("     - Source address: %s\n",
               ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
         DEBUG("     - Destination address: %s (should be of format "
-                      "ff02::1:ffxx:xxxx if source address is ::)\n",
+              "ff02::1:ffxx:xxxx if source address is ::)\n",
               ipv6_addr_to_str(addr_str, &ipv6->dst, sizeof(addr_str)));
         return;
     }
@@ -1007,6 +1008,7 @@ static bool _resolve_addr(const ipv6_addr_t *dst, gnrc_netif2_t *netif,
                           _nib_onl_entry_t *entry)
 {
     bool res = false;
+
 #if GNRC_IPV6_NIB_CONF_ARSM
     if ((entry != NULL) && (entry->mode & _NC) && _is_reachable(entry)) {
         if (_get_nud_state(entry) == GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE) {
@@ -1262,7 +1264,7 @@ static uint32_t _handle_pio(gnrc_netif2_t *netif, const icmpv6_hdr_t *icmpv6,
         if (pref_ltime < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
             /* same treatment for pref_ltime */
             pref_ltime = (pref_ltime > (UINT32_MAX / MS_PER_SEC)) ?
-                          UINT32_MAX : pref_ltime * MS_PER_SEC;
+                         UINT32_MAX : pref_ltime * MS_PER_SEC;
         }
         if ((pfx = _nib_pl_add(netif->pid, &pio->prefix, pio->prefix_len,
                                valid_ltime, pref_ltime))) {
