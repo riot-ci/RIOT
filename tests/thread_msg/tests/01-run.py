@@ -8,12 +8,12 @@ import testrunner
 
 
 def testfunc(child):
-    child.expect(u'THREADS CREATED')
-    child.expect(u'THREAD 1 start')
-    child.expect(u'THREAD 2 start')
-    child.expect(u'THREAD 3 start')
-    child.expect(u'THREAD 1 end')
-
+    child.expect_exact('THREADS CREATED')
+    child.expect_exact('THREAD 1 start')
+    child.expect_exact('THREAD 2 start')
+    child.expect_exact('THREAD 3 start')
+    child.expect_exact('THREAD 1 end')
+    child.expect_exact('SUCCESS')
 
 if __name__ == "__main__":
     sys.exit(testrunner.run(testfunc))
