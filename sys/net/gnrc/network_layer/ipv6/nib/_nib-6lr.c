@@ -64,7 +64,7 @@ uint8_t _reg_addr_upstream(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
             (memcmp(&nce->eui64, &aro->eui64, sizeof(aro->eui64)) == 0)) {
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_DAD
             /* TODO */
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_DAD */
             if (aro->ltime.u16 != 0) {
                 _handle_sl2ao(netif, ipv6, icmpv6, sl2ao);
                 /* re-get NCE in case it was updated */
@@ -117,7 +117,7 @@ gnrc_pktsnip_t *_copy_and_handle_aro(gnrc_netif2_t *netif,
             DEBUG("nib: Address was marked TENTATIVE => not replying NS, "
                   "waiting for DAC\n");
         }
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_DAD */
     }
     return reply_aro;
 }

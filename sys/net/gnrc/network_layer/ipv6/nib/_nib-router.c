@@ -20,7 +20,7 @@
 
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
 #include "_nib-6ln.h"
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
 #include "_nib-router.h"
 
 #define ENABLE_DEBUG    (0)
@@ -149,7 +149,7 @@ static gnrc_pktsnip_t *_build_ext_opts(gnrc_netif2_t *netif,
             ext_opts = sixco;
         }
     }
-#endif
+#endif  /* MODULE_GNRC_SIXLOWPAN_CTX */
     while ((pfx = _nib_abr_iter_pfx(abr, pfx))) {
         if (_nib_onl_get_if(pfx->next_hop) == id) {
             if ((ext_opts = _offl_to_pio(pfx, ext_opts)) == NULL) {

@@ -50,7 +50,7 @@ static inline uint8_t _reverse_iid(const ipv6_addr_t *dst,
             l2addr[4] = dst->u8[14];
             l2addr[5] = dst->u8[15];
             return ETHERNET_ADDR_LEN;
-#endif
+#endif  /* MODULE_NETDEV_ETH */
 #ifdef MODULE_NETDEV_IEEE802154
         case NETDEV_TYPE_IEEE802154:
             /* assume address was based on EUI-64
@@ -58,12 +58,12 @@ static inline uint8_t _reverse_iid(const ipv6_addr_t *dst,
             memcpy(l2addr, &dst->u64[1], sizeof(dst->u64[1]));
             l2addr[0] ^= 0x02;
             return sizeof(dst->u64[1]);
-#endif
+#endif  /* MODULE_NETDEV_IEEE802154 */
 #ifdef MODULE_CC110X
         case NETDEV_TYPE_CC110X:
             l2addr[0] = dst->u8[15];
             return sizeof(uint8_t);
-#endif
+#endif  /* MODULE_CC110X */
         default:
             (void)dst;
             (void)l2addr;
@@ -178,16 +178,16 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
             assert(nce != NULL);
             return _reg_addr_upstream(netif, ipv6, icmpv6, aro, sl2ao, nce);
         }
-#else
+#else   /* GNRC_IPV6_NIB_CONF_6LR */
         (void)sl2ao;
         (void)nce;
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_6LR */
     }
 #if ENABLE_DEBUG
     else if (aro->len != SIXLOWPAN_ND_OPT_AR_LEN) {
         DEBUG("nib: ARO of unexpected length %u, ignoring ARO\n", aro->len);
     }
-#endif
+#endif  /* ENABLE_DEBUG */
     return _ADDR_REG_STATUS_IGNORE;
 }
 
@@ -280,16 +280,16 @@ _nib_abr_entry_t *_handle_abro(const sixlowpan_nd_opt_abr_t *abro)
 uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
                      const sixlowpan_nd_opt_6ctx_t *sixco,
                      _nib_abr_entry_t *abr)
-#else
+#else   /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
 uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
                      const sixlowpan_nd_opt_6ctx_t *sixco)
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
 {
     uint16_t ltime;
 
 #ifdef MODULE_GNRC_SIXLOWPAN_CTX
     uint8_t cid;
-#endif
+#endif  /* MODULE_GNRC_SIXLOWPAN_CTX */
 
     if ((sixco->len != SIXLOWPAN_ND_OPT_6CTX_LEN_MIN) ||
         ((sixco->len != SIXLOWPAN_ND_OPT_6CTX_LEN_MAX) &&

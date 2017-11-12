@@ -129,7 +129,7 @@ uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
 #else   /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C || defined(DOXYGEN) */
 uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
                      const sixlowpan_nd_opt_6ctx_t *sixco);
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C || defined(DOXYGEN) */
 #else   /* GNRC_IPV6_NIB_CONF_6LN || defined(DOXYGEN) */
 #define _resolve_addr_from_ipv6(dst, netif, nce)    (false)
 /* _handle_aro() doesn't make sense without 6LR so don't even use it
@@ -142,7 +142,7 @@ uint32_t _handle_6co(const icmpv6_hdr_t *icmpv6,
 #define _handle_6co(icmpv6, sixco, abr)             (UINT32_MAX)
 #else   /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C || defined(DOXYGEN) */
 #define _handle_6co(icmpv6, sixco)                  (UINT32_MAX)
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C || defined(DOXYGEN) */
 #endif  /* GNRC_IPV6_NIB_CONF_6LN || defined(DOXYGEN) */
 
 
