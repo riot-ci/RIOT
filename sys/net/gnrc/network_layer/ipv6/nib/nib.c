@@ -512,6 +512,7 @@ static void _handle_rtr_adv(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
 #endif
     uint32_t next_timeout = UINT32_MAX;
 
+    assert(netif != NULL);
     /* check validity, see: https://tools.ietf.org/html/rfc4861#section-6.1.1 */
     /* checksum is checked by GNRC's ICMPv6 module */
     if (!(ipv6_addr_is_link_local(&ipv6->src)) ||
@@ -589,7 +590,6 @@ static void _handle_rtr_adv(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
     }
 #endif
 #endif
-    assert((netif != NULL) && (netif != NULL));
     if (rtr_adv->ltime.u16 != 0) {
         dr = _nib_drl_add(&ipv6->src, netif->pid);
         if (dr != NULL) {
@@ -1322,6 +1322,7 @@ static void _auto_configure_addr(gnrc_netif2_t *netif, const ipv6_addr_t *pfx,
         netif->ipv6.addrs_flags[idx] |= GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_VALID;
     }
 #endif
+    (void)idx;
     /* TODO: make this line conditional on 6LN when there is a SLAAC
      * implementation */
 #if GNRC_IPV6_NIB_CONF_ARSM

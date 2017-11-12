@@ -49,12 +49,12 @@ void _handle_reply_rs(_nib_onl_entry_t *host)
 void _handle_snd_mc_ra(gnrc_netif2_t *netif)
 {
     gnrc_netif2_acquire(netif);
+    assert(netif != NULL);
     if (!gnrc_netif2_is_6ln(netif)) {
         bool final_ra = (netif->ipv6.ra_sent > (UINT8_MAX - NDP_MAX_FIN_RA_NUMOF));
         uint32_t next_ra_time = random_uint32_range(NDP_MIN_RA_INTERVAL_MS,
                                                     NDP_MAX_RA_INTERVAL_MS);
 
-        assert(netif != NULL);
         /* router has router advertising interface or the RA is one of the
          * (now deactivated) routers final one */
         if (final_ra || gnrc_netif2_is_rtr_adv(netif)) {

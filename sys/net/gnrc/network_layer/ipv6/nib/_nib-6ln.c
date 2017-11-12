@@ -252,27 +252,26 @@ void _handle_rereg_address(const ipv6_addr_t *addr)
 _nib_abr_entry_t *_handle_abro(const sixlowpan_nd_opt_abr_t *abro)
 {
     _nib_abr_entry_t *abr = NULL;
-    uint32_t abro_version;
-    uint16_t ltime;
-    bool res;
 
     if (abro->len != SIXLOWPAN_ND_OPT_ABR_LEN) {
         /* ignore silently */
         return NULL;
     }
     abr = _nib_abr_add(&abro->braddr);
-    abro_version = sixlowpan_nd_opt_abr_get_version(abro);
-    ltime = byteorder_ntohs(abro->ltime);
-    res = (abr != NULL) || (abr->version >= abro_version);
+    if (abr != NULL) {
+        uint32_t abro_version = sixlowpan_nd_opt_abr_get_version(abro);
+        uint16_t ltime = byteorder_ntohs(abro->ltime);
 
-    if (res) {
-        abr->version = abro_version;
-        abr->valid_until = _now_min() + ltime;
+        if (abr->version >= abro_version) {
+            abr->version = abro_version;
+            abr->valid_until = _now_min() + ltime;
+        }
+        /* correct for default value */
+        ltime = (ltime == 0) ? SIXLOWPAN_ND_OPT_ABR_LTIME_DEFAULT : ltime;
+        _evtimer_add(abr, GNRC_IPV6_NIB_ABR_TIMEOUT, &abr->timeout,
+                     /* UINT16_MAX min < UINT32_MAX ms so no risk of overflow */
+                     MS_PER_SEC * SEC_PER_MIN * ltime);
     }
-    _evtimer_add(abr, GNRC_IPV6_NIB_ABR_TIMEOUT, &abr->timeout,
-                 /* UINT16_MAX min < UINT32_MAX ms so no risk of overflow */
-                 MS_PER_SEC * SEC_PER_MIN *
-                 ((ltime == 0) ? SIXLOWPAN_ND_OPT_ABR_LTIME_DEFAULT : ltime));
     return abr;
 }
 #endif /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
