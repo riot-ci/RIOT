@@ -3,4 +3,6 @@ export CPU_ARCH := cortex-m3
 # include common SPI functions
 USEMODULE += periph_common
 
+CFLAGS += -isystem $(RIOTCPU)/$(CPU)/include/vendor
+
 include $(RIOTMAKE)/arch/cortexm.inc.mk

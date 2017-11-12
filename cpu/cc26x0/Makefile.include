@@ -1,3 +1,5 @@
 export CPU_ARCH := cortex-m3
 
+CFLAGS += -isystem $(RIOTCPU)/$(CPU)/include/vendor
+
 include $(RIOTMAKE)/arch/cortexm.inc.mk
