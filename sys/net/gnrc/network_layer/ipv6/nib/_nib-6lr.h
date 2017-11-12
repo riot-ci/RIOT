@@ -83,6 +83,9 @@ static inline bool _rtr_sol_on_6lr(const gnrc_netif2_t *netif,
  *                      handed to the SL2AO handler function).
  * @param[in] aro       ARO that carries the address registration information.
  * @param[in] sl2ao     SL2AO associated with the ARO.
+ * @param[in] nce       The local neighbor cache entry the registration
+ *                      information is supposed to be copied into. May be NULL
+ *                      (this might create one).
  *
  * @return  registration status of the address (including
  *          @ref _ADDR_REG_STATUS_TENTATIVE and @ref _ADDR_REG_STATUS_IGNORE).

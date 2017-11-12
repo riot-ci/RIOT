@@ -31,7 +31,12 @@
 extern "C" {
 #endif
 
-#if GNRC_IPV6_NIB_CONF_ROUTER
+#if GNRC_IPV6_NIB_CONF_ROUTER || defined(DOXYGEN)
+/**
+ * @brief   Initializes interface for router behavior
+ *
+ * @param[in] netif An interface.
+ */
 static inline void _init_iface_router(gnrc_netif2_t *netif)
 {
     netif->ipv6.rtr_ltime = NDP_RTR_LTIME_SEC;
@@ -47,6 +52,17 @@ static inline void _init_iface_router(gnrc_netif2_t *netif)
     gnrc_netif2_ipv6_group_join(netif, &ipv6_addr_all_routers_link_local);
 }
 
+/**
+ * @brief   Helper function to safely call the
+ *          [route info callback](@ref gnrc_netif2_ipv6_t::route_info_cb) of an
+ *          interface
+ *
+ * @param[in] netif     An interface.
+ * @param[in] type      [Type](@ref net_gnrc_ipv6_nib_route_info_type) of the
+ *                      route info.
+ * @param[in] ctx_addr  Context address of the route info.
+ * @param[in] ctx       Further context of the route info.
+ */
 static inline void _call_route_info_cb(gnrc_netif2_t *netif, unsigned type,
                                        const ipv6_addr_t *ctx_addr,
                                        const void *ctx)
@@ -56,9 +72,42 @@ static inline void _call_route_info_cb(gnrc_netif2_t *netif, unsigned type,
     }
 }
 
+/**
+ * @brief   Handler for @ref GNRC_IPV6_NIB_REPLY_RS event handler
+ *
+ * @param[in] host  Host that sent the router solicitation
+ */
 void _handle_reply_rs(_nib_onl_entry_t *host);
+
+/**
+ * @brief   Handler for @ref GNRC_IPV6_NIB_SND_MC_RA event handler
+ *
+ * @param[in] netif Network interface to send multicast router advertisement
+ *                  over.
+ */
 void _handle_snd_mc_ra(gnrc_netif2_t *netif);
+
+/**
+ * @brief   Set the @ref GNRC_NETIF2_FLAGS_IPV6_RTR_ADV flag for an interface
+ *          and starts advertising that interface as a router
+ *
+ * @param[in] netif Interface to set the @ref GNRC_NETIF2_FLAGS_IPV6_RTR_ADV
+ *                  for.
+ */
 void _set_rtr_adv(gnrc_netif2_t *netif);
+
+/**
+ * @brief   Send router advertisements
+ *
+ * If @ref GNRC_IPV6_NIB_CONF_MULTIHOP_P6C is not 0 this sends one router
+ * advertisement per configured ABR, otherwise it just sends one single router
+ * advertisement for the interface.
+ *
+ * @param[in] netif The interface to send the router advertisement over.
+ * @param[in] dst   Destination address for the router advertisement.
+ * @param[in] final The router advertisement are the final ones of the @p netif
+ *                  (because it was set to be a non-forwarding interface e.g.).
+ */
 void _snd_rtr_advs(gnrc_netif2_t *netif, const ipv6_addr_t *dst,
                   bool final);
 #else  /* GNRC_IPV6_NIB_CONF_ROUTER */

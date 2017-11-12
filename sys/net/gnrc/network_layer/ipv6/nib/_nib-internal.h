@@ -62,7 +62,7 @@ extern "C" {
 
 /**
  * @name    Off-link entry flags
- * @ancho   net_gnrc_ipv6_nib_offl_flags
+ * @anchor  net_gnrc_ipv6_nib_offl_flags
  * @{
  */
 #define _PFX_ON_LINK    (0x0001)
