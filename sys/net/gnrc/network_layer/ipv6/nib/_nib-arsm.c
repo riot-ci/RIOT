@@ -22,6 +22,7 @@
 #endif
 
 #include "_nib-arsm.h"
+#include "_nib-router.h"
 #include "_nib-6lr.h"
 
 #define ENABLE_DEBUG    (0)
@@ -118,7 +119,7 @@ void _handle_sl2ao(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
          (memcmp(nce->l2addr, sl2ao + 1, nce->l2addr_len) != 0)) &&
         /* a 6LR MUST NOT modify an existing NCE based on an SL2AO in an RS
          * see https://tools.ietf.org/html/rfc6775#section-6.3 */
-         !_rtr_sol_on_6lr(netif, icmpv6)) {
+        !_rtr_sol_on_6lr(netif, icmpv6)) {
         DEBUG("nib: L2 address differs. Setting STALE\n");
         evtimer_del(&_nib_evtimer, &nce->nud_timeout.event);
         _set_nud_state(netif, nce, GNRC_IPV6_NIB_NC_INFO_NUD_STATE_STALE);
@@ -314,6 +315,7 @@ void _handle_state_timeout(_nib_onl_entry_t *nbr)
 void _probe_nbr(_nib_onl_entry_t *nbr, bool reset)
 {
     const uint16_t state = _get_nud_state(nbr);
+
     DEBUG("nib: Probing ");
     switch (state) {
         case GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED:
@@ -483,9 +485,9 @@ void _set_nud_state(gnrc_netif2_t *netif, _nib_onl_entry_t *nce,
 
 #if GNRC_IPV6_NIB_CONF_ROUTER
     gnrc_netif2_acquire(netif);
-    if ((netif != NULL) && (netif->ipv6.route_info_cb)) {
-        netif->ipv6.route_info_cb(GNRC_IPV6_NIB_ROUTE_INFO_TYPE_NSC,
-                                  &nce->ipv6, (void *)((intptr_t)state));
+    if (netif != NULL) {
+        _call_route_info_cb(netif, GNRC_IPV6_NIB_ROUTE_INFO_TYPE_NSC,
+                            &nce->ipv6, (void *)((intptr_t)state));
     }
     gnrc_netif2_release(netif);
 #else
