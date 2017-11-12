@@ -18,6 +18,14 @@ PEXPECT_PATH = os.path.dirname(pexpect.__file__)
 RIOTBASE = os.environ['RIOTBASE'] or \
            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+def find_exc_origin(exc_info):
+    pos = list_until(extract_tb(exc_info),
+                     lambda frame: frame.filename.startswith(PEXPECT_PATH)
+                    )[-1]
+    return pos.line, \
+           os.path.relpath(os.path.abspath(pos.filename), RIOTBASE), \
+           pos.lineno
+
 def list_until(l, cond):
     return l[:([i for i, e in  enumerate(l) if cond(e)][0])]
 
@@ -40,13 +48,9 @@ def run(testfunc, timeout=10, echo=True, traceback=False):
     try:
         testfunc(child)
     except pexpect.TIMEOUT:
-        timeouted_at = list_until(extract_tb(sys.exc_info()[2]),
-                                  lambda frame:
-                                      frame.filename.startswith(PEXPECT_PATH))[-1]
+        line, filename, lineno = find_exc_origin(sys.exc_info()[2])
         print("Timeout in expect script at \"%s\" (%s:%d)" %
-                    (timeouted_at.line,
-                     os.path.relpath(os.path.abspath(timeouted_at.filename), RIOTBASE),
-                     timeouted_at.lineno))
+              (line, filename, lineno))
         if traceback:
             print_tb(sys.exc_info()[2])
         return 1
