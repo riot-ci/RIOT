@@ -130,10 +130,9 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
                     /* if ltime 1min, reschedule NS in 30sec, otherwise 1min
                      * before timeout */
                     rereg_time = (ltime == 1U) ? (30 * MS_PER_SEC) :
-                                 (byteorder_ntohs(aro->ltime) - 1U) *
-                                 SEC_PER_MIN * MS_PER_SEC;
+                                 (ltime - 1U) * SEC_PER_MIN * MS_PER_SEC;
                     DEBUG("nib: Address registration of %s successful. "
-                               "Scheduling re-registration in %" PRIu32 "ms\n",
+                          "Scheduling re-registration in %" PRIu32 "ms\n",
                           ipv6_addr_to_str(addr_str, &ipv6->dst,
                                            sizeof(addr_str)), rereg_time);
                     netif->ipv6.addrs_flags[idx] &= ~GNRC_NETIF2_IPV6_ADDRS_FLAGS_STATE_MASK;
@@ -146,7 +145,7 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
                 }
                 case SIXLOWPAN_ND_STATUS_DUP:
                     DEBUG("nib: Address registration reports duplicate. "
-                               "Removing address %s%%%u\n",
+                          "Removing address %s%%%u\n",
                           ipv6_addr_to_str(addr_str,
                                            &ipv6->dst,
                                            sizeof(addr_str)), netif->pid);
@@ -155,7 +154,7 @@ uint8_t _handle_aro(gnrc_netif2_t *netif, const ipv6_hdr_t *ipv6,
                     break;
                 case SIXLOWPAN_ND_STATUS_NC_FULL: {
                         DEBUG("nib: Router's neighbor cache is full. "
-                                   "Searching new router for DAD\n");
+                              "Searching new router for DAD\n");
                         _nib_dr_entry_t *dr = _nib_drl_get(&ipv6->src, netif->pid);
                         assert(dr != NULL); /* otherwise we wouldn't be here */
                         _nib_drl_remove(dr);
@@ -219,7 +218,7 @@ void _handle_rereg_address(const ipv6_addr_t *addr)
         _snd_ns(&router->next_hop->ipv6, netif, addr, &router->next_hop->ipv6);
     }
     else {
-        DEBUG("nib: Couldn't re-register %s, no router found or address "
+        DEBUG("nib: Couldn't re-register %s, no current router found or address "
               "wasn't assigned to any interface anymore.\n",
               ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)));
     }
@@ -228,8 +227,8 @@ void _handle_rereg_address(const ipv6_addr_t *addr)
 
         if (_is_valid(netif, idx) || (_is_tentative(netif, idx) &&
              (gnrc_netif2_ipv6_addr_dad_trans(netif, idx) <
-              (SIXLOWPAN_ND_REG_TRANSMIT_NUMOF - 1)))) {
-            uint32_t retrans_time;;
+              SIXLOWPAN_ND_REG_TRANSMIT_NUMOF))) {
+            uint32_t retrans_time;
 
             if (_is_valid(netif, idx)) {
                 retrans_time = SIXLOWPAN_ND_MAX_RS_SEC_INTERVAL;
