@@ -1,7 +1,5 @@
 MODULE = cpu
 
-USEMODULE += mips_pic32_common
-USEMODULE += mips32r2_common
 DIRS += $(RIOTCPU)/mips_pic32_common
 
 ifneq (,$(filter newlib_syscalls_mips_uhi,$(USEMODULE)))
