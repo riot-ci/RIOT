@@ -31,7 +31,6 @@
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/netif2.h"
 #include "net/gnrc/netif/hdr.h"
-#include "xtimer.h"
 
 static void _init_interface(void)
 {
