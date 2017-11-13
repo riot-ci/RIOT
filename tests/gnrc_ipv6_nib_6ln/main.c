@@ -645,7 +645,6 @@ static void test_handle_pkt__nbr_adv__aro_duplicate(void)
                                      SIXLOWPAN_ND_STATUS_DUP);
     int idx;
 
-
     TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&_rem_ll, _mock_netif->pid,
                                                   _rem_l2, sizeof(_rem_l2)));
     idx = gnrc_netif2_ipv6_addr_add(_mock_netif, &_loc_gb, _LOC_GB_PFX_LEN,
