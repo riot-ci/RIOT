@@ -39,7 +39,7 @@ static inline bool soft_spi_bus_is_valid(soft_spi_t bus)
 {
     unsigned int soft_spi_num = (unsigned int) bus;
 
-    if (sizeof(soft_spi_config) / sizeof(soft_spi_config[0]) < soft_spi_num || soft_spi_num < 0) {
+    if (sizeof(soft_spi_config) / sizeof(soft_spi_config[0]) < soft_spi_num) {
         return false;
     }
     return true;
@@ -101,6 +101,7 @@ int soft_spi_init_cs(soft_spi_t bus, soft_spi_cs_t cs)
 
 int soft_spi_acquire(soft_spi_t bus, soft_spi_cs_t cs, soft_spi_mode_t mode, soft_spi_clk_t clk)
 {
+    (void) cs;
     assert(soft_spi_bus_is_valid(bus));
 
     /* lock bus */
