@@ -1,7 +1,7 @@
 dist: trusty
 
 before_install:
-  - sudo apt-get install doxygen graphviz python-lesscpy cppcheck coccinelle pcregrep
+  - sudo apt-get install coreutils realpath doxygen graphviz python-lesscpy cppcheck coccinelle pcregrep
 
 script:
   - make static-test
