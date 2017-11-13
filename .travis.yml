@@ -1,5 +1,9 @@
 dist: trusty
 
+env:
+  global:
+    - CI_BASE_BRANCH=${TRAVIS_BRANCH}
+
 before_install:
   - sudo apt-get install coreutils realpath doxygen graphviz python-lesscpy cppcheck coccinelle pcregrep
 
