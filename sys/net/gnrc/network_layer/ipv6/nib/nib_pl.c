@@ -54,7 +54,6 @@ int gnrc_ipv6_nib_pl_set(unsigned iface,
     int idx;
 
     if (netif == NULL) {
-        gnrc_netif2_release(netif);
         mutex_unlock(&_nib_mutex);
         return res;
     }

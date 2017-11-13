@@ -126,8 +126,8 @@ void gnrc_ipv6_nib_init_iface(gnrc_netif2_t *netif)
     netif->ipv6.na_sent = 0;
     if (gnrc_netif2_ipv6_group_join(netif,
                                     &ipv6_addr_all_nodes_link_local) < 0) {
-        LOG_ERROR("nib: Can't join link-local all-nodes on interface %u\n",
-                  netif->pid);
+        DEBUG("nib: Can't join link-local all-nodes on interface %u\n",
+              netif->pid);
         gnrc_netif2_release(netif);
         return;
     }
@@ -1248,12 +1248,6 @@ static uint32_t _handle_pio(gnrc_netif2_t *netif, const icmpv6_hdr_t *icmpv6,
             return UINT32_MAX;
         }
 
-        if (pref_ltime > valid_ltime) {
-            DEBUG("nib: received PIO with pref_ltime (%" PRIu32
-                  ") > valid_ltime (%" PRIu32 "). Ignoring PIO.\n",
-                  pref_ltime, valid_ltime);
-            return UINT32_MAX;
-        }
         if (valid_ltime < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
             /* the valid lifetime is given in seconds, but our timers work in
              * microseconds, so we have to scale down to the smallest possible
@@ -1303,9 +1297,8 @@ static void _auto_configure_addr(gnrc_netif2_t *netif, const ipv6_addr_t *pfx,
     ipv6_addr_init_prefix(&addr, pfx, pfx_len);
     if ((idx = gnrc_netif2_ipv6_addr_idx(netif, &addr)) < 0) {
         if ((idx = gnrc_netif2_ipv6_addr_add(netif, &addr, pfx_len, flags)) < 0) {
-            LOG_ERROR("nib: Can't add link-local address on interface %u\n",
-                      netif->pid);
-            gnrc_netif2_release(netif);
+            DEBUG("nib: Can't add link-local address on interface %u\n",
+                  netif->pid);
             return;
         }
 #if GNRC_IPV6_NIB_CONF_6LN
@@ -1331,9 +1324,8 @@ static void _auto_configure_addr(gnrc_netif2_t *netif, const ipv6_addr_t *pfx,
      * for SLAAC */
     ipv6_addr_set_solicited_nodes(&addr, &addr);
     if (gnrc_netif2_ipv6_group_join(netif, &addr) < 0) {
-        LOG_ERROR("nib: Can't join solicited-nodes of link-local address on "
-                  "interface %u\n", netif->pid);
-        gnrc_netif2_release(netif);
+        DEBUG("nib: Can't join solicited-nodes of link-local address on "
+              "interface %u\n", netif->pid);
         return;
     }
 #endif  /* GNRC_IPV6_NIB_CONF_ARSM */
