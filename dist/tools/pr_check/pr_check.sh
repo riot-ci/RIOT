@@ -27,6 +27,8 @@ fi
 SQUASH_COMMITS="$(git log $(git merge-base HEAD "${RIOT_MASTER}")...HEAD --pretty=format:"    %h %s" | \
                   grep -i -e "^    [0-9a-f]\{9\} .\{0,2\}SQUASH" -e "^    [0-9a-f]\{9\} .\{0,2\}FIX")"
 
+git log $(git merge-base HEAD "${RIOT_MASTER}")...HEAD --pretty=format:"    %h %s"
+
 if [ -n "${SQUASH_COMMITS}" ]; then
     echo -e "${CERROR}Pull request needs squashing:${CRESET}" 1>&2
     echo -e "${SQUASH_COMMITS}"
