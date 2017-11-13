@@ -39,12 +39,12 @@
 static volatile int fired;
 static volatile uint32_t sw_count;
 static volatile uint32_t timeouts[MAX_CHANNELS];
-static volatile int args[MAX_CHANNELS];
+static volatile uint32_t args[MAX_CHANNELS];
 
 static void cb(void *arg, int chan)
 {
     timeouts[chan] = sw_count;
-    args[chan] = (int)arg + chan;
+    args[chan] = (uint32_t)arg + chan;
     fired++;
 }
 
@@ -57,7 +57,7 @@ static int test_timer(unsigned num)
     fired = 0;
     for (unsigned i = 0; i < MAX_CHANNELS; i++) {
         timeouts[i] = 0;
-        args[i] = -1;
+        args[i] = UINT32_MAX;
     }
 
     /* initialize and halt timer */
