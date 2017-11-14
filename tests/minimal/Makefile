@@ -1,5 +1,6 @@
 # name of your application
 APPLICATION = minimal
+DEVELHELP ?= 0
 include ../Makefile.tests_common
 
 #
