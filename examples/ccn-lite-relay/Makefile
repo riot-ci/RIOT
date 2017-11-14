@@ -9,7 +9,6 @@ BOARD_WHITELIST := fox iotlab-m3 msba2 mulle native pba-d-01-kw2x samr21-xpro
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-CFLAGS += -DDEVELHELP
 CFLAGS += -DUSE_LINKLAYER
 CFLAGS += -DUSE_RONR
 CFLAGS += -DCCNL_UAPI_H_
