@@ -103,15 +103,15 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t value_len)
         case NETOPT_CHANNEL:
             assert(value_len > 1);
             *((uint16_t *)value) = (uint16_t)cc110x->radio_channel;
-            return 2;
+            return sizeof(uint16_t);
         case NETOPT_ADDRESS:
             assert(value_len > 0);
             *((uint8_t *)value) = cc110x->radio_address;
             return 1;
         case NETOPT_MAX_PACKET_SIZE:
             assert(value_len > 0);
-            *((uint8_t *)value) = CC110X_PACKET_LENGTH;
-            return 1;
+            *((uint16_t *)value) = CC110X_PACKET_LENGTH;
+            return sizeof(uint16_t);
         case NETOPT_IPV6_IID:
             return _get_iid(dev, value, value_len);
         default:
