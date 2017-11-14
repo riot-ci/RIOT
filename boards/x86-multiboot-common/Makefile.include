@@ -44,7 +44,7 @@ export LINK ?= $(RIOTBASE)/boards/x86-multiboot-common/dist/link $(PREFIX)gcc
 export SIZE ?= $(PREFIX)size
 export OBJCOPY ?= $(PREFIX)objcopy
 
-export CFLAGS += -m32 -mfpmath=387 -ffreestanding -nostdlib -nostdinc -fno-builtin
+export CFLAGS += -m32 -mfpmath=387 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector
 export OFLAGS = -O binary
 
 LINKFLAGS += -m32 -nostdlib -nostdinc -nostartfiles -nodefaultlibs \
