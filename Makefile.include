@@ -205,7 +205,12 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 # Add standard include directories
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
+CPUVENDOR ?= $(RIOTCPU)/$(CPU)/include/vendor
+ifneq (0,$(shell test -d $(CPUVENDOR)/; echo $$?))
+INCLUDES += -isystem$(CPUVENDOR)
+endif
 INCLUDES += -I$(RIOTBOARD)/$(BOARD)/include
+
 
 # process provided features
 -include $(RIOTBOARD)/$(BOARD)/Makefile.features
