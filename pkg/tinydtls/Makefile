@@ -1,7 +1,7 @@
 PKG_NAME=tinydtls
-PKG_URL=https://github.com/rfuentess/TinyDTLS.git
+PKG_URL=https://github.com/smlng/TinyDTLS.git
 # PKG_VERSION=RIOT-OS
-PKG_VERSION=5b5ba4b3c7a79dda168103be4d119ca489f89c3c
+PKG_VERSION=41332d38a45997f33eab9f9b027b5a2edbce4943
 PKG_LICENSE=EPL-1.0,EDL-1.0
 
 .PHONY: all
