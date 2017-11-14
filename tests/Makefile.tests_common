@@ -4,4 +4,6 @@ endif
 BOARD ?= native
 RIOTBASE ?= $(CURDIR)/../..
 QUIET ?= 1
+# DEVELHELP enabled by default for all tests, set 0 to disable
+DEVELHELP ?= 1
 APPLICATION := tests_$(APPLICATION)
