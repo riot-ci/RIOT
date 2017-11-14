@@ -15,6 +15,7 @@ ifeq ($(USE_UHI_SYSCALLS),1)
   #Use UHI to handle syscalls
   export LINKFLAGS += -luhi -Tuhi32.ld
   export USEMODULE += newlib_syscalls_mips_uhi
+  EXTRA_LIBS += $(BINDIR)/newlib_syscalls_mips_uhi.a
 else
   #Use RIOT to handle syscalls (default)
   export LINKFLAGS += -Tuhi32.ld
