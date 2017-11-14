@@ -26,16 +26,21 @@
 #include "net/ethertype.h"
 #include "net/ieee802154.h"
 #include "net/netdev/ieee802154.h"
+#include "openthread/config.h"
+#include "openthread/openthread.h"
+#include "openthread/platform/diag.h"
+#include "openthread/platform/platform.h"
 #include "openthread/platform/radio.h"
 #include "ot.h"
+
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
 #define RADIO_IEEE802154_FCS_LEN    (2U)
 
-static RadioPacket sTransmitFrame;
-static RadioPacket sReceiveFrame;
+static otRadioFrame sTransmitFrame;
+static otRadioFrame sReceiveFrame;
 static int8_t Rssi;
 
 static netdev_t *_dev;
@@ -134,7 +139,7 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
     /* very unlikely */
     if ((len > (unsigned) UINT16_MAX)) {
         DEBUG("Len too high: %d\n", len);
-        otPlatRadioReceiveDone(aInstance, NULL, kThreadError_Abort);
+        otPlatRadioReceiveDone(aInstance, NULL, OT_ERROR_ABORT);
         return;
     }
 
@@ -157,7 +162,7 @@ void recv_pkt(otInstance *aInstance, netdev_t *dev)
     DEBUG("\n");
 
     /* Tell OpenThread that receive has finished */
-    otPlatRadioReceiveDone(aInstance, res > 0 ? &sReceiveFrame : NULL, res > 0 ? kThreadError_None : kThreadError_Abort);
+    otPlatRadioReceiveDone(aInstance, res > 0 ? &sReceiveFrame : NULL, res > 0 ? OT_ERROR_NONE : OT_ERROR_ABORT);
 }
 
 /* Called upon TX event */
@@ -167,19 +172,19 @@ void send_pkt(otInstance *aInstance, netdev_t *dev, netdev_event_t event)
     switch (event) {
         case NETDEV_EVENT_TX_COMPLETE:
             DEBUG("openthread: NETDEV_EVENT_TX_COMPLETE\n");
-            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, kThreadError_None);
+            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, OT_ERROR_NONE);
             break;
         case NETDEV_EVENT_TX_COMPLETE_DATA_PENDING:
             DEBUG("openthread: NETDEV_EVENT_TX_COMPLETE_DATA_PENDING\n");
-            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, true, kThreadError_None);
+            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, true, OT_ERROR_NONE);
             break;
         case NETDEV_EVENT_TX_NOACK:
             DEBUG("openthread: NETDEV_EVENT_TX_NOACK\n");
-            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, kThreadError_NoAck);
+            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, OT_ERROR_NO_ACK);
             break;
         case NETDEV_EVENT_TX_MEDIUM_BUSY:
             DEBUG("openthread: NETDEV_EVENT_TX_MEDIUM_BUSY\n");
-            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, kThreadError_ChannelAccessFailure);
+            otPlatRadioTransmitDone(aInstance, &sTransmitFrame, false, OT_ERROR_CHANNEL_ACCESS_FAILURE);
             break;
         default:
             break;
@@ -212,7 +217,7 @@ void otPlatRadioSetShortAddress(otInstance *aInstance, uint16_t aShortAddress)
 }
 
 /* OpenThread will call this for enabling the radio */
-ThreadError otPlatRadioEnable(otInstance *aInstance)
+otError otPlatRadioEnable(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioEnable\n");
     (void) aInstance;
@@ -222,11 +227,11 @@ ThreadError otPlatRadioEnable(otInstance *aInstance)
         _set_idle();
     }
 
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 /* OpenThread will call this for disabling the radio */
-ThreadError otPlatRadioDisable(otInstance *aInstance)
+otError otPlatRadioDisable(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioDisable\n");
     (void) aInstance;
@@ -236,7 +241,7 @@ ThreadError otPlatRadioDisable(otInstance *aInstance)
         _set_sleep();
     }
 
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 bool otPlatRadioIsEnabled(otInstance *aInstance)
@@ -252,28 +257,28 @@ bool otPlatRadioIsEnabled(otInstance *aInstance)
 }
 
 /* OpenThread will call this for setting device state to SLEEP */
-ThreadError otPlatRadioSleep(otInstance *aInstance)
+otError otPlatRadioSleep(otInstance *aInstance)
 {
     DEBUG("otPlatRadioSleep\n");
     (void) aInstance;
 
     _set_sleep();
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 /*OpenThread will call this for waiting the reception of a packet */
-ThreadError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
+otError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
 {
     DEBUG("openthread: otPlatRadioReceive. Channel: %i\n", aChannel);
     (void) aInstance;
 
     _set_idle();
     _set_channel(aChannel);
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 /* OpenThread will call this function to get the transmit buffer */
-RadioPacket *otPlatRadioGetTransmitBuffer(otInstance *aInstance)
+otRadioFrame *otPlatRadioGetTransmitBuffer(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioGetTransmitBuffer\n");
     return &sTransmitFrame;
@@ -288,7 +293,7 @@ void otPlatRadioSetDefaultTxPower(otInstance *aInstance, int8_t aPower)
 }
 
 /* OpenThread will call this for transmitting a packet*/
-ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
+otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aPacket)
 {
     (void) aInstance;
     struct iovec pkt;
@@ -312,7 +317,7 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
     /* send packet though netdev */
     _dev->driver->send(_dev, &pkt, 1);
 
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 /* OpenThread will call this for getting the radio caps */
@@ -320,7 +325,7 @@ otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
 {
     DEBUG("openthread: otPlatRadioGetCaps\n");
     /* all drivers should handle ACK, including call of NETDEV_EVENT_TX_NOACK */
-    return kRadioCapsNone;
+    return OT_RADIO_CAPS_NONE;
 }
 
 /* OpenThread will call this for getting the state of promiscuous mode */
@@ -351,36 +356,36 @@ void otPlatRadioEnableSrcMatch(otInstance *aInstance, bool aEnable)
     (void)aEnable;
 }
 
-ThreadError otPlatRadioAddSrcMatchShortEntry(otInstance *aInstance, const uint16_t aShortAddress)
+otError otPlatRadioAddSrcMatchShortEntry(otInstance *aInstance, const uint16_t aShortAddress)
 {
     DEBUG("otPlatRadioAddSrcMatchShortEntry\n");
     (void)aInstance;
     (void)aShortAddress;
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
-ThreadError otPlatRadioAddSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
+otError otPlatRadioAddSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
 {
     DEBUG("otPlatRadioAddSrcMatchExtEntry\n");
     (void)aInstance;
     (void)aExtAddress;
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
-ThreadError otPlatRadioClearSrcMatchShortEntry(otInstance *aInstance, const uint16_t aShortAddress)
+otError otPlatRadioClearSrcMatchShortEntry(otInstance *aInstance, const uint16_t aShortAddress)
 {
     DEBUG("otPlatRadioClearSrcMatchShortEntry\n");
     (void)aInstance;
     (void)aShortAddress;
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
-ThreadError otPlatRadioClearSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
+otError otPlatRadioClearSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
 {
     DEBUG("otPlatRadioClearSrcMatchExtEntry\n");
     (void)aInstance;
     (void)aExtAddress;
-    return kThreadError_None;
+    return OT_ERROR_NONE;
 }
 
 void otPlatRadioClearSrcMatchShortEntries(otInstance *aInstance)
@@ -395,13 +400,13 @@ void otPlatRadioClearSrcMatchExtEntries(otInstance *aInstance)
     (void)aInstance;
 }
 
-ThreadError otPlatRadioEnergyScan(otInstance *aInstance, uint8_t aScanChannel, uint16_t aScanDuration)
+otError otPlatRadioEnergyScan(otInstance *aInstance, uint8_t aScanChannel, uint16_t aScanDuration)
 {
     DEBUG("otPlatRadioEnergyScan\n");
     (void)aInstance;
     (void)aScanChannel;
     (void)aScanDuration;
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
 void otPlatRadioGetIeeeEui64(otInstance *aInstance, uint8_t *aIeee64Eui64)
