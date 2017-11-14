@@ -4,6 +4,8 @@ PKG_URL=https://github.com/rfuentess/TinyDTLS.git
 PKG_VERSION=d06ad84d3e8bd3e86f7557faee34b68d5f8c0129
 PKG_LICENSE=EPL-1.0,EDL-1.0
 
+CFLAGS += -Wno-unused-parameter
+
 .PHONY: all
 
 all: git-download
