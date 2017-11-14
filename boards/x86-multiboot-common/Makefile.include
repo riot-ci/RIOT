@@ -56,8 +56,8 @@ LINKFLAGS += -m32 -nostdlib -nostdinc -nostartfiles -nodefaultlibs \
 export CFLAGS += -ffunction-sections -fdata-sections
 export LINKFLAGS += -Wl,--gc-sections
 
-BASELIBS += $(NEWLIB_BASE)/lib/libc.a \
-            $(NEWLIB_BASE)/lib/libm.a
+EXTRA_LIBS += $(NEWLIB_BASE)/lib/libc.a
+EXTRA_LIBS += $(NEWLIB_BASE)/lib/libm.a
 
 all:
 
