@@ -43,11 +43,6 @@ USEMODULE += ps
    USEMODULE += pthread
  endif
 
-# Comment this out to disable code in RIOT that does safety checking
-# which is not needed in a production environment but helps in the
-# development process:
-CFLAGS += -DDEVELHELP
-
 # NOTE: Add the package for TinyDTLS
 USEPKG += tinydtls
 
