@@ -972,9 +972,9 @@ static void test_handle_pkt__rtr_adv__success(uint8_t rtr_adv_flags,
                                               bool pio, uint8_t pio_flags,
                                               bool ctxo)
 {
-    gnrc_ipv6_nib_pl_t prefix = { 0 };
-    gnrc_ipv6_nib_nc_t nce = { 0 };
-    gnrc_ipv6_nib_ft_t route = { 0 };
+    gnrc_ipv6_nib_pl_t prefix;
+    gnrc_ipv6_nib_nc_t nce;
+    gnrc_ipv6_nib_ft_t route;
     void *state = NULL;
     size_t icmpv6_len = _set_rtr_adv(&_rem_ll, 255U, 0U,
                                      set_rtr_adv_fields, rtr_adv_flags,
