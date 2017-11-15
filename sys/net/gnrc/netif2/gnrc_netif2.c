@@ -19,6 +19,9 @@
 #include "net/ethernet.h"
 #include "net/ipv6.h"
 #include "net/gnrc.h"
+#ifdef MODULE_GNRC_IPV6_NIB
+#include "net/gnrc/ipv6/nib.h"
+#endif /* MODULE_GNRC_IPV6_NIB */
 #ifdef MODULE_NETSTATS_IPV6
 #include "net/netstats.h"
 #endif
@@ -278,7 +281,7 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
             }
             else {
                 if (gnrc_netif2_is_rtr_adv(netif)) {
-                    gnrc_ipv6_nib_iface_cease_rtr_adv(netif);
+                    gnrc_ipv6_nib_change_rtr_adv_iface(netif, false);
                 }
                 netif->flags &= ~GNRC_NETIF2_FLAGS_IPV6_FORWARDING;
             }
@@ -286,12 +289,8 @@ int gnrc_netif2_set_from_netdev(gnrc_netif2_t *netif,
             break;
         case NETOPT_IPV6_SND_RTR_ADV:
             assert(opt->data_len == sizeof(netopt_enable_t));
-            if (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE) {
-                gnrc_ipv6_nib_iface_start_rtr_adv(netif);
-            }
-            else {
-                gnrc_ipv6_nib_iface_cease_rtr_adv(netif);
-            }
+            gnrc_ipv6_nib_change_rtr_adv_iface(netif,
+                    (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE));
             res = sizeof(netopt_enable_t);
             break;
 #endif  /* GNRC_IPV6_NIB_CONF_ROUTER */
@@ -1101,11 +1100,17 @@ static void _init_from_device(gnrc_netif2_t *netif)
             break;
 #endif
         default:
-            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE, &tmp, sizeof(tmp));
-            assert(res == sizeof(tmp));
 #ifdef MODULE_GNRC_IPV6
-            netif->ipv6.mtu = tmp;
+            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE, &tmp, sizeof(tmp));
+            if (res < 0) {
+                /* assume maximum possible transition unit */
+                netif->ipv6.mtu = UINT16_MAX;
+            }
+            else {
+                netif->ipv6.mtu = tmp;
+            }
 #endif
+            break;
     }
     _update_l2addr_from_dev(netif);
 }
