@@ -26,6 +26,6 @@ $(SKETCH_MODULE_DIR):
 	@mkdir -p $@
 
 # Make everything rebuild if current makefile changes
-CURMK = $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
-$(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(CURMK)
-$(SKETCH_MODULE_DIR)/Makefile: $(CURMK)
+_ARDUINO_SKETCHES_MAKEFILE = $(lastword $(MAKEFILE_LIST))
+$(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(_ARDUINO_SKETCHES_MAKEFILE)
+$(SKETCH_MODULE_DIR)/Makefile: $(_ARDUINO_SKETCHES_MAKEFILE)
