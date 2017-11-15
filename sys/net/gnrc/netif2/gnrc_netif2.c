@@ -1110,6 +1110,7 @@ static void _init_from_device(gnrc_netif2_t *netif)
                 netif->ipv6.mtu = tmp;
             }
 #endif
+            break;
     }
     _update_l2addr_from_dev(netif);
 }
