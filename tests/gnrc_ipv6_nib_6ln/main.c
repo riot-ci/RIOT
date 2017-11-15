@@ -30,6 +30,7 @@
 #include "net/gnrc/ipv6/nib.h"
 #include "net/gnrc/ipv6/nib/nc.h"
 #include "net/gnrc/netif2/internal.h"
+#include "net/gnrc/sixlowpan/ctx.h"
 #include "net/gnrc/sixlowpan/nd.h"
 #include "net/ndp.h"
 #include "net/sixlowpan/nd.h"
