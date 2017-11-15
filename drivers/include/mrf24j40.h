@@ -372,7 +372,7 @@ void mrf24j40_software_reset(mrf24j40_t *dev);
  * @param[in] value         value to convert to dBm
  * @return                  converted value in dBm
  */
-int16_t mrf24j40_dbm_from_reg(uint8_t value);
+int8_t mrf24j40_dbm_from_reg(uint8_t value);
 
 /**
  * @brief   Prepare for sending of data
