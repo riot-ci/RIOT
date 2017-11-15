@@ -49,7 +49,7 @@ extern "C" {
 #include <stellaris_periph/rom.h>
 
 #ifdef CPU_MODEL_LM4F120H5QR
-#include <vendor/lm4f120h5qr.h>
+#include <lm4f120h5qr.h>
 #endif
 
 /**
