@@ -21,7 +21,7 @@
 
 /* vendor header includes */
 #include <nrf51.h>
-#include <vendor/nrf51_bitfields.h>
+#include<nrf51_bitfields.h>
 
 #include "cpu_conf_common.h"
 
