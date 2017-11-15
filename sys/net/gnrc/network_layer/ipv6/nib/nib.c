@@ -628,7 +628,7 @@ static bool _resolve_addr(const ipv6_addr_t *dst, gnrc_netif2_t *netif,
     bool res = false;
     if ((netif != NULL) && (netif->device_type == NETDEV_TYPE_SLIP)) {
         /* XXX: Linux doesn't do neighbor discovery for SLIP so no use sending
-         * NS and since SLIP doesn't has link-layer addresses  we can just
+         * NS and since SLIP doesn't has link-layer addresses anyway we can just
          * return the interface without any link-layer addresses */
         memcpy(&nce->ipv6, dst, sizeof(nce->ipv6));
         nce->info = (netif->pid << _NIB_IF_POS);
