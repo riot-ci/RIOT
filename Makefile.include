@@ -205,12 +205,7 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 # Add standard include directories
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
-CPUVENDOR ?= $(RIOTCPU)/$(CPU)/include/vendor
-ifneq (0,$(shell test -d $(CPUVENDOR)/; echo $$?))
-INCLUDES += -isystem$(CPUVENDOR)
-endif
 INCLUDES += -I$(RIOTBOARD)/$(BOARD)/include
-
 
 # process provided features
 -include $(RIOTBOARD)/$(BOARD)/Makefile.features
@@ -220,6 +215,14 @@ include $(RIOTMAKE)/pseudomodules.inc.mk
 include $(RIOTMAKE)/defaultmodules.inc.mk
 include $(RIOTBOARD)/$(BOARD)/Makefile.include
 include $(RIOTCPU)/$(CPU)/Makefile.include
+
+# Add vendor header includes if present
+CPUVENDOR = $(wildcard $(RIOTCPU)/$(CPU)/include/vendor)
+ifneq (,$(CPUVENDOR))
+INCLUDES += -isystem$(CPUVENDOR)
+else
+$(info No CPU specific vendor headers found.)
+endif
 
 # Import all toolchain settings
 include $(RIOTMAKE)/toolchain/$(TOOLCHAIN).inc.mk
