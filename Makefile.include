@@ -217,7 +217,7 @@ include $(RIOTBOARD)/$(BOARD)/Makefile.include
 include $(RIOTCPU)/$(CPU)/Makefile.include
 
 # Add vendor header includes if present
-CPUVENDOR = $(wildcard $(RIOTCPU)/$(CPU)/include/vendor)
+CPUVENDOR := $(wildcard $(RIOTCPU)/$(CPU)/include/vendor)
 ifneq (,$(CPUVENDOR))
 INCLUDES += -isystem$(CPUVENDOR)
 else
