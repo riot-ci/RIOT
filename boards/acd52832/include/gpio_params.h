@@ -14,6 +14,7 @@
  * @brief       Configuration of SAUL mapped GPIO pins
  *
  * @author      Dimitri Nahm <dimitri.nahm@haw-hamburg.de>
+ * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  */
 
 #ifndef GPIO_PARAMS_H
@@ -34,12 +35,14 @@ static const  saul_gpio_params_t saul_gpio_params[] =
     {
         .name = "LED 1",
         .pin = LED0_PIN,
-        .mode = GPIO_OUT
+        .mode = GPIO_OUT,
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
         {
         .name = "Button 1",
         .pin  = BTN0_PIN,
-        .mode = BTN0_MODE
+        .mode = BTN0_MODE,
+        .flags = SAUL_GPIO_INVERTED,
     }
 };
 
