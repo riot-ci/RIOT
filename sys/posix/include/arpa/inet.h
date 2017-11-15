@@ -60,7 +60,7 @@ extern "C" {
  * @return  NULL, if @p src or @p dst was NULL
  */
 const char *inet_ntop(int af, const void *restrict src, char *restrict dst,
-                                    socklen_t size);
+                      socklen_t size);
 
 /**
  * @brief   Converts an IP address string representation to a byte-represented
