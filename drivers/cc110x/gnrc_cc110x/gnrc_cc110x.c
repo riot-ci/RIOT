@@ -36,7 +36,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
     payload = pkt->next;
 
     if (pkt->type != GNRC_NETTYPE_NETIF) {
-        DEBUG("netif: First header was not generic netif header\n");
+        DEBUG("gnrc_cc110x: First header was not generic netif header\n");
         gnrc_pktbuf_release(pkt);
         return -EBADMSG;
     }
@@ -82,7 +82,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
         payload_len += payload->size;
 
         if (payload_len > CC110X_MAX_DATA_LENGTH) {
-            DEBUG("netif: payload length exceeds maximum"
+            DEBUG("gnrc_cc110x: payload length exceeds maximum"
                     "(%u>%u)\n", payload_len, CC110X_MAX_DATA_LENGTH);
             gnrc_pktbuf_release(pkt);
             return -EBADMSG;
@@ -98,7 +98,7 @@ static int _send(gnrc_netif2_t *netif, gnrc_pktsnip_t *pkt)
 
     cc110x_pkt.length = (uint8_t) payload_len + CC110X_HEADER_LENGTH;
 
-    DEBUG("netif: sending packet from %u to %u with payload "
+    DEBUG("gnrc_cc110x: sending packet from %u to %u with payload "
             "length %u\n",
             (unsigned)cc110x_pkt.phy_src,
             (unsigned)cc110x_pkt.address,
