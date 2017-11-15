@@ -13,7 +13,7 @@
 #include "net/ipv6/addr.h"
 
 const char *inet_ntop(int af, const void *restrict src, char *restrict dst,
-                                    socklen_t size)
+                      socklen_t size)
 {
     switch (af) {
 #ifdef MODULE_IPV4_ADDR
