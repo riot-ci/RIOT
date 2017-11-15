@@ -46,13 +46,10 @@ static void _unlock(void)
 
 void flashpage_write_raw(void *target_addr, void *data, size_t len)
 {
-    /* sam[dlr]21 can only write whole flash pages.
-     * Mind the use of the ATMEL FLASH_PAGE_SIZE (64B) define vs.
-     * FLASHPAGE_SIZE (256B) as defined by RIOT.
-     * The actual minimal block size for writing is 16B, thus we
+    /* The actual minimal block size for writing is 16B, thus we
      * assert we don't write less than that.
      */
-    assert(!(len % (FLASH_PAGE_SIZE / 4)));
+    assert(!(len % FLASHPAGE_RAW_BLOCKSIZE));
 
     /* ensure 4 byte aligned writes */
     assert(!(((unsigned)target_addr & 0x3) || ((unsigned)data & 0x3)));
