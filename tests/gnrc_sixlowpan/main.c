@@ -28,13 +28,13 @@
 #include "net/gnrc/pktbuf.h"
 #include "net/gnrc/netreg.h"
 #include "net/gnrc/netapi.h"
-#include "net/gnrc/netif2.h"
+#include "net/gnrc/netif.h"
 #include "net/gnrc/netif/hdr.h"
 #include "net/gnrc/pktdump.h"
 
 static void _init_interface(void)
 {
-    gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
+    gnrc_netif_t *netif = gnrc_netif_iter(NULL);
     ipv6_addr_t addr = IPV6_ADDR_UNSPECIFIED;
 
     /* fd01::01 */
@@ -51,7 +51,7 @@ static void _init_interface(void)
 
 static void _send_packet(void)
 {
-    gnrc_netif2_t *netif = gnrc_netif2_iter(NULL);
+    gnrc_netif_t *netif = gnrc_netif_iter(NULL);
 
     struct {
         gnrc_netif_hdr_t netif_hdr;
@@ -144,11 +144,11 @@ static void _send_packet(void)
 
     gnrc_netapi_dispatch_receive(GNRC_NETTYPE_SIXLOWPAN, GNRC_NETREG_DEMUX_CTX_ALL, pkt1);
 
-    gnrc_pktsnip_t *netif2 = gnrc_pktbuf_add(NULL,
+    gnrc_pktsnip_t *netif = gnrc_pktbuf_add(NULL,
                                              &netif_hdr,
                                              sizeof(netif_hdr),
                                              GNRC_NETTYPE_NETIF);
-    gnrc_pktsnip_t *pkt2 = gnrc_pktbuf_add(netif2,
+    gnrc_pktsnip_t *pkt2 = gnrc_pktbuf_add(netif,
                                            data2,
                                            sizeof(data2),
                                            GNRC_NETTYPE_SIXLOWPAN);
