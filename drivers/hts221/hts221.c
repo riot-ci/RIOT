@@ -30,9 +30,9 @@
 #define ENABLE_DEBUG    (1)
 #include "debug.h"
 
-#define I2C_SPEED		I2C_SPEED_FAST
-#define BUS				(dev->p.i2c)
-#define ADDR			(dev->p.addr)
+#define I2C_SPEED        I2C_SPEED_FAST
+#define BUS                (dev->p.i2c)
+#define ADDR            (dev->p.addr)
 
 static int _set_power(const hts221_t *dev, const bool active);
 
@@ -40,11 +40,11 @@ static int _set_power(const hts221_t *dev, const bool active);
  * @brief Read calibration parameters for humidity calculation
  *
  * @note This function does not acquire or release the I2C bus, must be done
- *		 in calling function!
+ *         in calling function!
  *
- * @param[in|out] dev	device descriptor of sensor
+ * @param[in|out] dev   device descriptor of sensor
  *
- * @returns				HTS221_OK on success, or error otherwise
+ * @returns             HTS221_OK on success, or error otherwise
  */
 int _humidity_calibration(hts221_t *dev)
 {
@@ -102,11 +102,11 @@ int _humidity_calibration(hts221_t *dev)
  * @brief Read calibration parameters for temperature calculation
  *
  * @note This function does not acquire or release the I2C bus, must be done
- *		 in calling function!
+ *       in calling function!
  *
- * @param[in|out] dev	device descriptor of sensor
+ * @param[in|out] dev   device descriptor of sensor
  *
- * @returns				HTS221_OK on success, or error otherwise
+ * @returns             HTS221_OK on success, or error otherwise
  */
 int _temperature_calibration(hts221_t *dev)
 {
