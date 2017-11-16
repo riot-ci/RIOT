@@ -52,6 +52,7 @@ typedef struct {
  */
 enum {
     HTS221_OK = 0,
+    HTS221_ERROR,
     HTS221_NOBUS,
     HTS221_NODEV,
 };
@@ -61,6 +62,14 @@ enum {
  */
 typedef struct {
     hts221_params_t p;     /**< Configuration parameters */
+    int16_t h0_rh;
+    int16_t h1_rh;
+    int16_t h0_t0_out;
+    int16_t h1_t0_out;
+    int16_t t0_degc;
+    int16_t t1_degc;
+    int16_t t0_out;
+    int16_t t1_out;
 } hts221_t;
 
 /**
