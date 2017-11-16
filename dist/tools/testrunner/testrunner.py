@@ -19,6 +19,7 @@ PEXPECT_PATH = os.path.dirname(pexpect.__file__)
 RIOTBASE = os.environ['RIOTBASE'] or \
            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+# Setting 'TESTRUNNER_START_WAIT' to empty value should use the default
 MAKE_TERM_START_WAIT = os.environ.get('TESTRUNNER_START_WAIT') or 3
 MAKE_TERM_START_WAIT = int(MAKE_TERM_START_WAIT)
 
