@@ -505,6 +505,20 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif2_t *netif,
                                         uint8_t *candidate_set);
 static int _group_idx(const gnrc_netif2_t *netif, const ipv6_addr_t *addr);
 
+void gnrc_netif2_acquire(gnrc_netif2_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_lock(&netif->mutex);
+    }
+}
+
+void gnrc_netif2_release(gnrc_netif2_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_unlock(&netif->mutex);
+    }
+}
+
 int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
                               unsigned pfx_len, uint8_t flags)
 {
@@ -761,6 +775,18 @@ int gnrc_netif2_ipv6_get_iid(gnrc_netif2_t *netif, eui64_t *eui64)
     }
 #endif
     return -ENOTSUP;
+}
+
+bool gnrc_netif2_is_6ln(const gnrc_netif2_t *netif)
+{
+    switch (netif->device_type) {
+        case NETDEV_TYPE_IEEE802154:
+        case NETDEV_TYPE_CC110X:
+        case NETDEV_TYPE_NRFMIN:
+            return true;
+        default:
+            return false;
+    }
 }
 
 static inline bool _addr_anycast(const gnrc_netif2_t *netif, unsigned idx)
