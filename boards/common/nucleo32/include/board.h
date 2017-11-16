@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_nucleo32-common STM Nucleo-32 Common
+ * @defgroup    boards_common_nucleo32 STM Nucleo-32 Common
  * @ingroup     boards_nucleo
  * @brief       Common files for STM Nucleo-32 boards
  * @{
@@ -18,11 +18,10 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef BOARD_COMMON_H
-#define BOARD_COMMON_H
+#ifndef BOARD_H
+#define BOARD_H
 
-#include "cpu.h"
-#include "periph_conf.h"
+#include "board_nucleo.h"
 #include "arduino_pinmap.h"
 
 #ifdef __cplusplus
@@ -40,14 +39,9 @@ extern "C" {
 #define LED0_TOGGLE         (GPIOB->ODR  ^= LED0_MASK)
 /** @} */
 
-/**
- * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
- */
-void board_init(void);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BOARD_COMMON_H */
+#endif /* BOARD_H */
 /** @} */
