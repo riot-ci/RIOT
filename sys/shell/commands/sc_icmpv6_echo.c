@@ -109,8 +109,8 @@ int _handle_reply(gnrc_pktsnip_t *pkt, uint32_t time)
                ipv6_addr_to_str(ipv6_str, &(ipv6_hdr->src), sizeof(ipv6_str)),
                byteorder_ntohs(icmpv6_hdr->id), seq, (unsigned)ipv6_hdr->hl,
                time / US_PER_MS, time % US_PER_MS);
-#ifdef MODULE_GNRC_IPV6_NC
-        gnrc_ipv6_nc_still_reachable(&ipv6_hdr->src);
+#ifdef MODULE_GNRC_IPV6_NIB
+        gnrc_ipv6_nib_nc_mark_reachable(&ipv6_hdr->src);
 #endif
     }
     else {
