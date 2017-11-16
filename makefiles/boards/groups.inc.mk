@@ -91,7 +91,6 @@ MCUGROUP.cortexm := \
   stm32f4discovery \
   stm32f7discovery \
   udoo \
-  waspmote-pro \
   yunjia-nrf51822 \
   #
 
@@ -119,7 +118,7 @@ MCUGROUP.8bit := $(MCUGROUP.avr8)
 MCUGROUP.16bit := $(MCUGROUP.msp430)
 MCUGROUP.32bit := $(sort $(MCUGROUP.arm7) $(MCUGROUP.cortexm) $(MCUGROUP.mips) $(MCUGROUP.native))
 
-MCUGROUPS.arch:= \
+MCUGROUPS.arch := \
   arm7 \
   avr8 \
   cortexm \
@@ -130,6 +129,6 @@ MCUGROUPS.arch:= \
 
 ALL_BOARDS := $(foreach group,$(MCUGROUPS.arch),$(MCUGROUP.$(group)))
 
-ifneq ($(BOARD), $(filter $(BOARD), $(ALL_BOARDS) none))
-  $(error Board $(BOARD) is not in any group!)
+ifneq ($(BOARD), $(filter $(BOARD),$(ALL_BOARDS) none))
+  $(error Board $(BOARD) is not in any group)
 endif
