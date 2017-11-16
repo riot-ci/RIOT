@@ -205,7 +205,7 @@ int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 	uint8_t reg[2];
 	int16_t h0_t0_out, h1_t0_out, h_t_out;
 	int16_t h0_rh, h1_rh;
-	uint32_t tmp;
+	uint32_t tmp32;
 
 	/* 1. read h0_rh and h1_rh coefficients */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_RH_X2, &reg[0], 2) != 2) {
@@ -215,14 +215,15 @@ int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 	}
 	h0_rh = reg[0] >> 1;
 	h1_rh = reg[1] >> 1;
-	DEBUG("hts221_read_humidity: h0_rh %"PRIi16", h1_rh %"PRIi16"\n", h0_rh, h1_rh);
+	DEBUG("hts221_read_humidity: h0_rh %"PRIi16", h1_rh %"PRIi16"\n",
+		  h0_rh, h1_rh);
 	/* 2. read h0_t0_out */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_T0_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
 		DEBUG("hts221_read_humidity: i2c_read_regs failed!\n");
 		return -HTS221_NOBUS;
 	}
-	h0_t0_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
+	h0_t0_out = ((uint16_t)reg[1] << 8) | reg[0];
 	/* 3. read h1_t0_out */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H1_T0_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
@@ -230,18 +231,20 @@ int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 		return -HTS221_NOBUS;
 	}
 	h1_t0_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
-	DEBUG("hts221_read_humidity: h0_t0_out %"PRIi16", h1_t0_out %"PRIi16"\n", h0_t0_out, h1_t0_out);
+	DEBUG("hts221_read_humidity: h0_t0_out %"PRIi16", h1_t0_out %"PRIi16"\n",
+		  h0_t0_out, h1_t0_out);
 	/* 4. read humidity */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_HUMIDITY_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
 		DEBUG("hts221_read_humidity: i2c_read_regs failed!\n");
 		return -HTS221_NOBUS;
 	}
-	h_t_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
-	DEBUG("hts221_read_humidity, raw: %i\n", h_t_out);
+	h_t_out = ((uint16_t)reg[1] << 8) | reg[0];
+	DEBUG("hts221_read_humidity, h_t_out: %"PRIi16"\n", h_t_out);
 	/* 5. compute RH [%] value by linear interpolation */
-	tmp = ((uint32_t)(h_t_out - h0_t0_out)) * ((uint32_t)(h1_rh - h0_rh)*10);
-	*val = (tmp / (h1_t0_out - h0_t0_out)) + (h0_rh * 10);
+	tmp32 = (uint32_t)(h_t_out - h0_t0_out) * (uint32_t)(h1_rh - h0_rh) * 10;
+	DEBUG("hts221_read_humidity, tmp32: %"PRIu32"\n", tmp32);
+	*val = (int16_t)((tmp / (h1_t0_out - h0_t0_out)) + (h0_rh * 10));
 	if (*val > 1000) {
 		*val = 1000;
 	}
@@ -269,37 +272,40 @@ int hts221_read_temperature(const hts221_t *dev, int16_t *val)
 		return -HTS221_NOBUS;
 	}
 	/* 3. calc values */
-	t0_degc_x8_u16 = (((uint16_t)(tmp & 0x03)) << 8) | ((uint16_t)reg[0]);
-	t1_degc_x8_u16 = (((uint16_t)(tmp & 0x0C)) << 8) | ((uint16_t)reg[1]);
+	t0_degc_x8_u16 = (((uint16_t)(tmp & 0x03)) << 8) | reg[0];
+	t1_degc_x8_u16 = (((uint16_t)(tmp & 0x0C)) << 6) | reg[1];
 	t0_degc = t0_degc_x8_u16 >> 3;
 	t1_degc = t1_degc_x8_u16 >> 3;
-	DEBUG("hts221_read_temperature: t0_degc %"PRIi16", t1_degc %"PRIi16"\n", t0_degc, t1_degc);
+	DEBUG("hts221_read_temperature: t0_degc %"PRIi16", t1_degc %"PRIi16"\n",
+		  t0_degc, t1_degc);
 	/* 4. read t0_out */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
 		DEBUG("hts221_read_temperature: i2c_read_regs failed!\n");
 		return -HTS221_NOBUS;
 	}
-	t0_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
+	t0_out = ((uint16_t)reg[1] << 8) | reg[0];
 	/* 5. read t1_out */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
 		DEBUG("hts221_read_temperature: i2c_read_regs failed!\n");
 		return -HTS221_NOBUS;
 	}
-	t1_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
-	DEBUG("hts221_read_temperature: t0_out %"PRIi16", t1_out %"PRIi16"\n", t0_out, t1_out);
+	t1_out = ((uint16_t)reg[1] << 8) | reg[0];
+	DEBUG("hts221_read_temperature: t0_out %"PRIi16", t1_out %"PRIi16"\n",
+		  t0_out, t1_out);
 	/* 6. read t_out */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_TEMP_OUT_L, &reg[0], 2) != 2) {
 		i2c_release(BUS);
 		DEBUG("hts221_read_temperature: i2c_read_regs failed!\n");
 		return -HTS221_NOBUS;
 	}
-	t_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
-	DEBUG("hts221_read_temperature, raw: %i\n", t_out);
+	t_out = ((uint16_t)reg[1] << 8) | reg[0];
+	DEBUG("hts221_read_temperature, t_out: %i\n", t_out);
 	/* 7. calculate temperatue */
 	tmp32 = ((uint32_t)(t_out - t0_out)) * ((uint32_t)(t1_degc - t0_degc) * 10);
-	*val = tmp32 / (t1_out - t0_out) + (t0_degc * 10);
+	DEBUG("hts221_read_temperature, tmp32: %"PRIu32"\n", tmp32);
+	*val = (int16_t)((tmp32 / (t1_out - t0_out)) + (t0_degc * 10));
 	DEBUG("hts221_read_temperature, val: %"PRIi16"\n", *val);
 	return HTS221_OK;
 }
