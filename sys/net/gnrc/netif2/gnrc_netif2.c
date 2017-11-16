@@ -428,6 +428,20 @@ size_t gnrc_netif2_addr_from_str(const char *str, uint8_t *out)
     return count;
 }
 
+void gnrc_netif2_acquire(gnrc_netif2_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_lock(&netif->mutex);
+    }
+}
+
+void gnrc_netif2_release(gnrc_netif2_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_unlock(&netif->mutex);
+    }
+}
+
 #ifdef MODULE_GNRC_IPV6
 static inline bool _addr_anycast(const gnrc_netif2_t *netif, unsigned idx);
 static int _addr_idx(const gnrc_netif2_t *netif, const ipv6_addr_t *addr);
@@ -504,20 +518,6 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif2_t *netif,
                                         const ipv6_addr_t *dst,
                                         uint8_t *candidate_set);
 static int _group_idx(const gnrc_netif2_t *netif, const ipv6_addr_t *addr);
-
-void gnrc_netif2_acquire(gnrc_netif2_t *netif)
-{
-    if (netif && (netif->ops)) {
-        rmutex_lock(&netif->mutex);
-    }
-}
-
-void gnrc_netif2_release(gnrc_netif2_t *netif)
-{
-    if (netif && (netif->ops)) {
-        rmutex_unlock(&netif->mutex);
-    }
-}
 
 int gnrc_netif2_ipv6_addr_add(gnrc_netif2_t *netif, const ipv6_addr_t *addr,
                               unsigned pfx_len, uint8_t flags)
