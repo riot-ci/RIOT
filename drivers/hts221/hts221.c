@@ -51,29 +51,47 @@ int _humidity_calibration(hts221_t *dev)
 	uint8_t reg[2];
 
 	/* 1. read h0_rh and h1_rh coefficients */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_RH_X2, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_RH_X2, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H1_RH_X2, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	dev->h0_rh = reg[0] >> 1;
 	dev->h1_rh = reg[1] >> 1;
 	DEBUG("%s: h0_rh %"PRIi16", h1_rh %"PRIi16"\n",
 		  DEBUG_FUNC, dev->h0_rh, dev->h1_rh);
 	/* 2. read h0_t0_out */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_T0_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_T0_OUT_L, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H0_T0_OUT_H, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	dev->h0_t0_out = ((uint16_t)reg[1] << 8) | reg[0];
 	/* 3. read h1_t0_out */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H1_T0_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H1_T0_OUT_L, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
-	dev->h1_t0_out = (((uint16_t)reg[1]) << 8) | (uint16_t)reg[0];
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_H1_T0_OUT_H, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
+	dev->h1_t0_out = ((uint16_t)reg[1] << 8) | reg[0];
 	DEBUG("%s: h0_t0_out %"PRIi16", h1_t0_out %"PRIi16"\n",
 		  DEBUG_FUNC, dev->h0_t0_out, dev->h1_t0_out);
 
@@ -96,11 +114,17 @@ int _temperature_calibration(hts221_t *dev)
 	uint8_t tmp;
 
 	/* 1. read t0_degc and t1_degc coefficients */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_DEGC_X8, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_DEGC_X8, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_DEGC_X8, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	/* 2. read t1_t0_msb */
 	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_T0_MSB, &tmp, 1) != 1) {
 		i2c_release(BUS);
@@ -115,18 +139,30 @@ int _temperature_calibration(hts221_t *dev)
 	DEBUG("%s: t0_degc %"PRIi16", t1_degc %"PRIi16"\n",
 		  DEBUG_FUNC, dev->t0_degc, dev->t1_degc);
 	/* 4. read t0_out */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_OUT_L, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T0_OUT_H, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	dev->t0_out = ((uint16_t)reg[1] << 8) | reg[0];
 	/* 5. read t1_out */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_OUT_L, &reg[0], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_T1_OUT_H, &reg[1], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	dev->t1_out = ((uint16_t)reg[1] << 8) | reg[0];
 	DEBUG("%s: t0_out %"PRIi16", t1_out %"PRIi16"\n",
 		  DEBUG_FUNC, dev->t0_out, dev->t1_out);
@@ -148,7 +184,7 @@ int hts221_init(hts221_t *dev, const hts221_params_t *params)
 	}
 
 	/* try if we can interact with the device by reading its manufacturer ID */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_WHO_AM_I, &reg, 1) != 1) {
+	if (i2c_read_reg(BUS, ADDR, HTS221_REGS_WHO_AM_I, &reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs HTS221_REGS_WHO_AM_I failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -165,13 +201,13 @@ int hts221_init(hts221_t *dev, const hts221_params_t *params)
 	}
 
 	i2c_acquire(BUS);
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_AV_CONF, &dev->p.avgx, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_AV_CONF, dev->p.avgx) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_write_regs HTS221_REGS_AV_CONF failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	reg = 0;
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_CTRL_REG1, reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_write_reg HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -201,14 +237,14 @@ int hts221_one_shot(const hts221_t *dev)
 
 	i2c_acquire(BUS);
 	/* second, read current settings */
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg, 1) != 1) {
+	if (i2c_read_reg(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	/* third, enable one-shot */
 	reg |= HTS221_REGS_CTRL_REG2_OS_EN;
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_CTRL_REG2, reg) != 1) {
 		i2c_release(BUS);
 		return -HTS221_NOBUS;
 	}
@@ -222,14 +258,14 @@ int hts221_set_rate(const hts221_t *dev, const uint8_t rate)
 	uint8_t reg;
 
 	i2c_acquire(BUS);
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg, 1) != 1) {
+	if (i2c_read_reg(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_reg HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	reg |= rate;
 	DEBUG("hts221_set_rate: %u\n", reg);
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_CTRL_REG1, reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_write_reg HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -245,14 +281,14 @@ int hts221_reboot(const hts221_t *dev)
 
 	i2c_acquire(BUS);
 	reg = HTS221_REGS_CTRL_REG2_BOOT;
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_CTRL_REG2, reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_write_reg HTS221_REGS_CTRL_REG2 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	/* loop until HTS221_REGS_CTRL_REG2_BOOT == 0 */
 	do {
-		i2c_read_regs(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg, 1);
+		i2c_read_reg(BUS, ADDR, HTS221_REGS_CTRL_REG2, &reg);
 	} while (reg & HTS221_REGS_CTRL_REG2_BOOT);
 	i2c_release(BUS);
 
@@ -264,7 +300,7 @@ static int _set_power(const hts221_t *dev, const bool active)
 	uint8_t reg;
 
 	i2c_acquire(BUS);
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg, 1) != 1) {
+	if (i2c_read_reg(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_reg HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -275,7 +311,7 @@ static int _set_power(const hts221_t *dev, const bool active)
 	else {
 		reg &= ~HTS221_REGS_CTRL_REG1_PD_ACTIVE;
 	}
-	if (i2c_write_regs(BUS, ADDR, HTS221_REGS_CTRL_REG1, &reg, 1) != 1) {
+	if (i2c_write_reg(BUS, ADDR, HTS221_REGS_CTRL_REG1, reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_write_reg HTS221_REGS_CTRL_REG1 failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -300,7 +336,7 @@ int hts221_get_state(const hts221_t *dev)
 	uint8_t reg;
 
 	i2c_acquire(BUS);
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_STATUS_REG, &reg, 1) != 1) {
+	if (i2c_read_reg(BUS, ADDR, HTS221_REGS_STATUS_REG, &reg) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
@@ -313,15 +349,24 @@ int hts221_get_state(const hts221_t *dev)
 int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 {
 	uint8_t reg[2];
-
+	if (!(hts221_get_state(dev) & HTS221_REGS_STATUS_REG_HDA)) {
+		DEBUG("%s: no data available ...\n", DEBUG_FUNC);
+		while(!(hts221_get_state(dev) & HTS221_REGS_STATUS_REG_HDA)) {}
+	}
 	/* read raw humidity */
 	i2c_acquire(BUS);
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_HUMIDITY_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_HUMIDITY_OUT_L, &reg[0], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_HUMIDITY_OUT_H, &reg[1], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	i2c_release(BUS);
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	int16_t h_t_out = ((uint16_t)reg[1] << 8) | reg[0];
 	DEBUG("%s, h_t_out: %"PRIi16"\n", DEBUG_FUNC, h_t_out);
 
@@ -329,8 +374,7 @@ int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 	uint32_t tmp32 = ((uint32_t)(h_t_out - dev->h0_t0_out)) *
 					 ((uint32_t)(dev->h1_rh - dev->h0_rh) * 10);
 	DEBUG("%s, tmp32: %"PRIu32"\n", DEBUG_FUNC, tmp32);
-	*val = (int16_t)((tmp32 / (dev->h1_t0_out - dev->h0_t0_out)) +
-		   (dev->h0_rh * 10));
+	*val = tmp32 / (dev->h1_t0_out - dev->h0_t0_out) + (dev->h0_rh * 10);
 	/* cut of humidty at 100% */
 	if (*val > 1000) {
 		*val = 1000;
@@ -343,17 +387,26 @@ int hts221_read_humidity(const hts221_t *dev, uint16_t *val)
 int hts221_read_temperature(const hts221_t *dev, int16_t *val)
 {
 	uint8_t reg[2];
-
+	if (!(hts221_get_state(dev) & HTS221_REGS_STATUS_REG_TDA)) {
+		DEBUG("%s: no data available ...\n", DEBUG_FUNC);
+		while(!(hts221_get_state(dev) & HTS221_REGS_STATUS_REG_TDA)) {}
+	}
 	/* read raw t_out */
 	i2c_acquire(BUS);
-	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_TEMP_OUT_L, &reg[0], 2) != 2) {
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_TEMP_OUT_L, &reg[0], 1) != 1) {
+		i2c_release(BUS);
+		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
+		return -HTS221_NOBUS;
+	}
+	if (i2c_read_regs(BUS, ADDR, HTS221_REGS_TEMP_OUT_H, &reg[1], 1) != 1) {
 		i2c_release(BUS);
 		DEBUG("%s: i2c_read_regs failed!\n", DEBUG_FUNC);
 		return -HTS221_NOBUS;
 	}
 	i2c_release(BUS);
+	DEBUG("%s: reg[0]=%u reg[1]=%u\n", DEBUG_FUNC, reg[0], reg[1]);
 	int16_t t_out = ((uint16_t)reg[1] << 8) | reg[0];
-	DEBUG("%s, t_out: %i\n", DEBUG_FUNC, t_out);
+	DEBUG("%s, t_out: %"PRIi16"\n", DEBUG_FUNC, t_out);
 
 	/* calculate actual temperatue */
 	uint32_t tmp32 = ((uint32_t)(t_out - dev->t0_out)) *
