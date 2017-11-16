@@ -18,7 +18,6 @@
 #include "rbuf.h"
 #include "net/ipv6/hdr.h"
 #include "net/gnrc.h"
-#include "net/gnrc/ipv6/netif.h"
 #include "net/gnrc/sixlowpan.h"
 #include "net/gnrc/sixlowpan/frag.h"
 #include "net/sixlowpan.h"
