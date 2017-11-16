@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013 Milan Babel <babel@inf.fu-berlin.de>
- *               2016 Freie Universität Berlin
+ *               2015-2017 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    boards_wsn430-common WSN430 common
+ * @defgroup    boards_wsn430_common Shared WSN430 files
  * @ingroup     boards
  * @brief       Common files for WSN430 based boards
  * @{
@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef BOARD_COMMON_H
-#define BOARD_COMMON_H
+#ifndef BOARD_H
+#define BOARD_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +39,18 @@ extern "C" {
  */
 #define XTIMER_WIDTH                (16)
 #define XTIMER_BACKOFF              (40)
+/** @} */
+
+/**
+ * @name    CPU core configuration
+ * @{
+ */
+/** @todo   Move this to the periph_conf.h */
+#define MSP430_INITIAL_CPU_SPEED    800000uL
+#define F_CPU                       MSP430_INITIAL_CPU_SPEED
+#define F_RC_OSCILLATOR             32768
+#define MSP430_HAS_DCOR             0
+#define MSP430_HAS_EXTERNAL_CRYSTAL 1
 /** @} */
 
 /**
@@ -71,5 +83,5 @@ extern "C" {
 }
 #endif
 
-#endif /* BOARD_COMMON_H */
+#endif /* BOARD_H */
 /** @} */
