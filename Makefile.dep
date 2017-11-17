@@ -37,7 +37,7 @@ endif
 
 ifneq (,$(filter gnrc_netdev_default,$(USEMODULE)))
   USEMODULE += netdev_default
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
 endif
 
 ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
@@ -193,23 +193,9 @@ ifneq (,$(filter gnrc_ipv6_router_default,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
 endif
 
-ifneq (,$(filter gnrc_ndp_router,$(USEMODULE)))
-  USEMODULE += gnrc_ndp_node
-  USEMODULE += random
-  USEMODULE += xtimer
-endif
-
-ifneq (,$(filter gnrc_ndp_node,$(USEMODULE)))
-  USEMODULE += gnrc_ndp_internal
-endif
-
-ifneq (,$(filter gnrc_ndp_%,$(USEMODULE)))
-  USEMODULE += gnrc_ndp
-endif
-
-ifneq (,$(filter gnrc_ndp2,$(USEMODULE)))
+ifneq (,$(filter gnrc_ndp,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
 endif
 
 ifneq (,$(filter gnrc_icmpv6_echo,$(USEMODULE)))
@@ -256,7 +242,7 @@ ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
   USEMODULE += ipv6_addr
   USEMODULE += gnrc_ipv6_hdr
   USEMODULE += gnrc_ipv6_nib
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
 endif
 
 ifneq (,$(filter gnrc_ipv6_hdr,$(USEMODULE)))
@@ -270,10 +256,6 @@ endif
 
 ifneq (,$(filter ipv6_hdr,$(USEMODULE)))
   USEMODULE += inet_csum
-  USEMODULE += ipv6_addr
-endif
-
-ifneq (,$(filter gnrc_ipv6_nc,$(USEMODULE)))
   USEMODULE += ipv6_addr
 endif
 
@@ -297,7 +279,7 @@ endif
 
 ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
   USEMODULE += evtimer
-  USEMODULE += gnrc_ndp2
+  USEMODULE += gnrc_ndp
   USEMODULE += ipv6_addr
   USEMODULE += random
 endif
@@ -318,7 +300,7 @@ endif
 ifneq (,$(filter gnrc_nettest,$(USEMODULE)))
   USEMODULE += gnrc_netapi
   USEMODULE += gnrc_netreg
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
   USEMODULE += gnrc_pktbuf
   USEMODULE += xtimer
 endif
@@ -479,7 +461,7 @@ endif
 ifneq (,$(filter gnrc,$(USEMODULE)))
   USEMODULE += gnrc_netapi
   USEMODULE += gnrc_netreg
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
   USEMODULE += gnrc_netif_hdr
   USEMODULE += gnrc_pktbuf
 endif
@@ -504,7 +486,7 @@ ifneq (,$(filter netstats_%, $(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_lwmac,$(USEMODULE)))
-  USEMODULE += gnrc_netif2
+  USEMODULE += gnrc_netif
   USEMODULE += gnrc_mac
   FEATURES_REQUIRED += periph_rtt
 endif
