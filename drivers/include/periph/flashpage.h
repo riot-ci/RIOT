@@ -128,14 +128,11 @@ void flashpage_write(int page, void *data);
  * @warning Make sure the targeted memory area is erased before calling
  *          this function
  *
- * The given address must be aligned to @p FLASHPAGE_RAW_BLOCKSIZE.
+ * Both target address and data address must be aligned to
+ * FLASHPAGE_RAW_ALIGN. len must be a multiple of @p FLASHPAGE_RAW_BLOCKSIZE
  * This function doesn't erase the block to be written automatically,
  * so be sure the block is erased before writing it (using
  * flashpage_write function).
- * While writing can be limited to small blocks, erasing often
- * is limited to bigger blocks, called sectors, rows or pages in
- * some MCUs. Thus, take special care when modifying already written
- * data.
  *
  * @param[in] target_addr   address to write
  * @param[in] data          data to write to the address, MUST be aligned
