@@ -28,6 +28,9 @@ BOARD_FOLDERS="$(find ${RIOTBASE}/boards/* -maxdepth 0 -type d \! -name "*-commo
 if [ "$(echo ${BOARD_LIST} | sort)" != "$(echo ${BOARD_FOLDERS} | sort)" ]; then
     echo "$0: board list mismatch!"
 
+    echo "list: $BOARD_LIST"
+    echo "folders: $BOARD_FOLDERS"
+
     LIST_MISSING="$(echo "$BOARD_FOLDERS" | $(_greplist $BOARD_LIST))"
     FOLDER_MISSING="$(echo "$BOARD_LIST" | $(_greplist $BOARD_FOLDERS))"
 
