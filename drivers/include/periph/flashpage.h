@@ -129,7 +129,7 @@ void flashpage_write(int page, void *data);
  *          this function
  *
  * Both target address and data address must be aligned to
- * FLASHPAGE_RAW_ALIGN. len must be a multiple of @p FLASHPAGE_RAW_BLOCKSIZE
+ * @p FLASHPAGE_RAW_ALIGN. len must be a multiple of @p FLASHPAGE_RAW_BLOCKSIZE
  * This function doesn't erase the block to be written automatically,
  * so be sure the block is erased before writing it (using
  * flashpage_write function).
