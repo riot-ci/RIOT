@@ -47,7 +47,23 @@ extern "C" {
 #ifndef CPU_FLASH_BASE
 #define CPU_FLASH_BASE      (0)
 #endif
+/**
+ * @brief   For raw writings to flash, this constant must define the
+ *          minimum write block allowed by the MCU.
+ */
+#ifdef DOXYGEN
+#define FLASHPAGE_RAW_BLOCKSIZE
+#endif
 
+/**
+ * @brief   The buffers to be written on flash MUST be aligned, as well as
+ *          the address on which the buffer is written on flash. This variable
+ *          must be defined for that purpose, according to the MCU align
+ *          requirements.
+ */
+#ifdef DOXYGEN
+#define FLASHPAGE_RAW_ALIGNMENT
+#endif
 /**
  * @brief   Make sure the page size and the number of pages is defined
  */
@@ -105,6 +121,26 @@ static inline int flashpage_page(void *addr)
  *                      byte. Set to NULL for page erase only.
  */
 void flashpage_write(int page, void *data);
+
+/**
+ * @brief   Write the given address with the given data and length
+ *
+ * @warning Make sure the targeted memory area is erased before calling
+ *          this function
+ *
+ * Both target address and data address must be aligned to
+ * @p FLASHPAGE_RAW_ALIGN. len must be a multiple of @p FLASHPAGE_RAW_BLOCKSIZE
+ * This function doesn't erase the block to be written automatically,
+ * so be sure the block is erased before writing it (using
+ * flashpage_write function).
+ *
+ * @param[in] target_addr   address to write
+ * @param[in] data          data to write to the address, MUST be aligned
+ *                          to @p FLASHPAGE_RAW_ALIGNMENT.
+ * @param[in] len           length of the data to be written. It MUST be
+ *                          multiple of @p FLASHPAGE_RAW_BLOCKSIZE.
+ */
+void flashpage_write_raw(void *target_addr, void *data, size_t len);
 
 /**
  * @brief   Read the given page into the given memory location
