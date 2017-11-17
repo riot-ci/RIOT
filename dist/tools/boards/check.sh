@@ -34,6 +34,9 @@ if [ "$(echo ${BOARD_LIST} | sort)" != "$(echo ${BOARD_FOLDERS} | sort)" ]; then
     LIST_MISSING="$(echo "$BOARD_FOLDERS" | $(_greplist $BOARD_LIST))"
     FOLDER_MISSING="$(echo "$BOARD_LIST" | $(_greplist $BOARD_FOLDERS))"
 
+    echo "list-missing: $LIST_MISSING"
+    echo "folder-missing: $FOLDER_MISSING"
+
     [ -n "$LIST_MISSING" ] && {
         echo "Boards missing in boards/group.mk: $LIST_MISSING"
     }
