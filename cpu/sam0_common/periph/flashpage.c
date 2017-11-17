@@ -49,8 +49,7 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
     /* The actual minimal block size for writing is 16B, thus we
      * assert we write on multiples and no less of that length.
      */
-    assert(!((len % FLASHPAGE_RAW_BLOCKSIZE) ||
-            (len <= FLASHPAGE_RAW_BLOCKSIZE)));
+    assert(!(len % FLASHPAGE_RAW_BLOCKSIZE));
 
     /* ensure 4 byte aligned writes */
     assert(!(((unsigned)target_addr % FLASHPAGE_RAW_ALIGNMENT) ||
