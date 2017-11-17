@@ -73,8 +73,7 @@ void gnrc_icmpv6_demux(kernel_pid_t iface, gnrc_pktsnip_t *pkt)
         return;
     }
 
-    /* Note: size will be checked again in gnrc_icmpv6_echo_req_handle,
-             gnrc_ndp_rtr_sol_handle, and others */
+    /* Note: size will be checked again in packet handlers */
 
     hdr = (icmpv6_hdr_t *)icmpv6->data;
 
@@ -102,7 +101,7 @@ void gnrc_icmpv6_demux(kernel_pid_t iface, gnrc_pktsnip_t *pkt)
         case ICMPV6_DAR:
         case ICMPV6_DAC:
             DEBUG("icmpv6: NDP message received. Handle with gnrc_ipv6_nib\n");
-            gnrc_ipv6_nib_handle_pkt(gnrc_netif2_get_by_pid(iface),
+            gnrc_ipv6_nib_handle_pkt(gnrc_netif_get_by_pid(iface),
                                      ipv6->data, hdr, icmpv6->size);
             break;
 
