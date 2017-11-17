@@ -80,8 +80,8 @@ static const spi_dev_t spi_config[] = {
         .mosi_pin = GPIO_PIN(PD, 15),
         .miso_pin = GPIO_PIN(PD, 14),
         .clk_pin = GPIO_PIN(PD, 13),
-        .loc = USART_ROUTELOC0_RXLOC_LOC19 |
-               USART_ROUTELOC0_TXLOC_LOC19 |
+        .loc = USART_ROUTELOC0_RXLOC_LOC21 |
+               USART_ROUTELOC0_TXLOC_LOC23 |
                USART_ROUTELOC0_CLKLOC_LOC19,
         .cmu = cmuClock_USART1,
         .irq = USART1_RX_IRQn
