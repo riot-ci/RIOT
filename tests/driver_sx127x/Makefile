@@ -19,6 +19,4 @@ USEMODULE += ${DRIVER}
 FEATURES_REQUIRED ?= periph_spi
 FEATURES_REQUIRED ?= periph_gpio
 
-CFLAGS += -DDEVELHELP
-
 include $(RIOTBASE)/Makefile.include
