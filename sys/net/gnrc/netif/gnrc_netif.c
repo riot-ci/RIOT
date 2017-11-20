@@ -599,7 +599,6 @@ int gnrc_netif_ipv6_addr_add(gnrc_netif_t *netif, const ipv6_addr_t *addr,
 void gnrc_netif_ipv6_addr_remove(gnrc_netif_t *netif,
                                  const ipv6_addr_t *addr)
 {
-    int idx;
     bool remove_sol_nodes = true;
     ipv6_addr_t sol_nodes;
 
@@ -608,8 +607,8 @@ void gnrc_netif_ipv6_addr_remove(gnrc_netif_t *netif,
     gnrc_netif_acquire(netif);
     for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
         if (ipv6_addr_equal(&netif->ipv6.addrs[i], addr)) {
-            netif->ipv6.addrs_flags[idx] = 0;
-            ipv6_addr_set_unspecified(&netif->ipv6.addrs[idx]);
+            netif->ipv6.addrs_flags[i] = 0;
+            ipv6_addr_set_unspecified(&netif->ipv6.addrs[i]);
         }
         else {
             ipv6_addr_t tmp;
