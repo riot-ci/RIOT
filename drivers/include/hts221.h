@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup	drivers_hts221 ST HTS221 digital Humidity Sensor
+ * @defgroup    drivers_hts221 ST HTS221 digital Humidity Sensor
  * @ingroup     drivers_sensors
  * @brief       Driver for the ST HTS221 digital Humidity Sensor
  *

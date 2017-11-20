@@ -107,10 +107,10 @@ enum {
  */
 #define HTS221_REGS_CTRL_REG1_PD_ACTIVE (1 << 7)    /**< power-down control, set active mode */
 #define HTS221_REGS_CTRL_REG1_BDU       (1 << 2)    /**< Block data update */
+/** @} */
 
 /**
- * @name Output data rate settings, HTS221_REGS_CTRL_REG1[1:0]
- * @{
+ * @brief Output data rate settings, HTS221_REGS_CTRL_REG1[1:0]
  */
 enum {
     HTS221_REGS_CTRL_REG1_ODR_ONE_SHOT = 0,
@@ -118,8 +118,6 @@ enum {
     HTS221_REGS_CTRL_REG1_ODR_7HZ,
     HTS221_REGS_CTRL_REG1_ODR_12HZ
 };
-/** @} */
-/** @} */
 
 /**
  * @name Config bits of HTS221_REGS_CTRL_REG2
