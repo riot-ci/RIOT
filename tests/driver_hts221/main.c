@@ -52,7 +52,7 @@ int main(void)
         if (hts221_read_temperature(&dev, &temp) != HTS221_OK) {
             puts(" -- failed to temperature!");
         }
-        bool negative = (temp < 0) ? 1 : 0;
+        bool negative = (temp < 0);
         if (negative) {
             temp = -temp;
         }
