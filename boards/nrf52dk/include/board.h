@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Feie Universität Berlin
+ * Copyright (C) 2016-2017 Feie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -22,7 +22,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "cpu.h"
+#include "board_common.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +37,7 @@ extern "C" {
 #define LED2_PIN            GPIO_PIN(0, 19)
 #define LED3_PIN            GPIO_PIN(0, 20)
 
+#define LED_PORT            (NRF_P0)
 #define LED0_MASK           (1 << 17)
 #define LED1_MASK           (1 << 18)
 #define LED2_MASK           (1 << 19)
@@ -72,11 +73,6 @@ extern "C" {
 #define BTN3_PIN            GPIO_PIN(0, 16)
 #define BTN3_MODE           GPIO_IN_PU
 /** @} */
-
-/**
- * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
- */
-void board_init(void);
 
 #ifdef __cplusplus
 }
