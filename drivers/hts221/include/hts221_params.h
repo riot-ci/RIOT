@@ -61,6 +61,16 @@ static const hts221_params_t hts221_params[] =
     HTS221_PARAMS,
 };
 
+/**
+ * @brief   Additional meta information to keep in the SAUL registry
+ */
+static const saul_reg_info_t hts221_saul_info[] =
+{
+    {
+        .name = "hts221",
+    },
+};
+
 #ifdef __cplusplus
 }
 #endif
