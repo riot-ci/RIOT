@@ -21,8 +21,11 @@
 #ifndef NET_GNRC_NETIF_INTERNAL_H
 #define NET_GNRC_NETIF_INTERNAL_H
 
-#include "net/gnrc/ipv6/nib/conf.h"
 #include "net/gnrc/netif.h"
+
+#ifdef MODULE_GNRC_IPV6_NIB
+#include "net/gnrc/ipv6/nib/conf.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
