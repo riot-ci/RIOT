@@ -32,8 +32,8 @@
 
 #define GAUSS_DIVIDER      (1000)
 
-#define DEV_I2C      (dev->params.i2c)
-#define DEV_ADDR     (dev->params.addr)
+#define DEV_I2C            (dev->params.i2c)
+#define DEV_ADDR           (dev->params.addr)
 
 /**
  * @brief Takes an unsigned value representing a two's complement number
