@@ -108,6 +108,9 @@ int ccm_compute_adata_mac(cipher_t* cipher, uint8_t* auth_data,
         /* 16 octet block size + max. 10 len encoding  */
         uint8_t auth_data_encoded[26], len_encoding = 0;
 
+        /* If 0 < l(a) < (2^16 - 2^8), then the length field is encoded as two
+         * octets. (RFC3610 page 2)
+         */
         if (auth_data_len < (((uint32_t) 1) << 16) - (1 << 8)) {
             /* length (0x0001 ... 0xFEFF)  */
             len_encoding = 2;
