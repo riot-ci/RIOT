@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 Inria
+ *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
@@ -52,6 +53,7 @@ extern "C" {
 #define LIS3MDL_PARAM_OPMODE        (LIS3MDL_OP_CONT_CONV)
 #endif
 
+#ifndef LIS3MDL_PARAMS
 #define LIS3MDL_PARAMS               { .i2c     = LIS3MDL_PARAM_I2C,    \
                                        .addr    = LIS3MDL_PARAM_ADDR,   \
                                        .xy_mode = LIS3MDL_PARAM_XYMODE, \
@@ -59,6 +61,10 @@ extern "C" {
                                        .odr     = LIS3MDL_PARAM_SCALE,  \
                                        .scale   = LIS3MDL_PARAM_ODR,    \
                                        .op_mode = LIS3MDL_PARAM_OPMODE }
+#endif
+#ifndef LIS3MDL_SAUL_INFO
+#define LIS3MDL_SAUL_INFO            { .name = "lis3mdl" }
+#endif
 /**@}*/
 
 /**
@@ -74,7 +80,7 @@ static const lis3mdl_params_t lis3mdl_params[] =
  */
 static const saul_reg_info_t lis3mdl_saul_info[] =
 {
-    { .name = "lis3mdl" }
+    LIS3MDL_SAUL_INFO
 };
 
 #ifdef __cplusplus

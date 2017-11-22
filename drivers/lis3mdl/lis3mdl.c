@@ -32,8 +32,8 @@
 
 #define GAUSS_DIVIDER      (1000)
 
-#define DEV_I2C      (dev->params.i2c)
-#define DEV_ADDR     (dev->params.addr)
+#define DEV_I2C            (dev->params.i2c)
+#define DEV_ADDR           (dev->params.addr)
 
 /**
  * @brief Takes an unsigned value representing a two's complement number
@@ -69,7 +69,8 @@ int lis3mdl_init(lis3mdl_t *dev, const lis3mdl_params_t *params)
 
     i2c_read_reg(DEV_I2C, DEV_ADDR, LIS3DML_WHO_AM_I_REG, &tmp);
     if (tmp != LIS3MDL_CHIP_ID) {
-        DEBUG("LIS3MDL: Identification failed\n");
+        DEBUG("LIS3MDL: Identification failed, %02X != %02X\n",
+              tmp, LIS3MDL_CHIP_ID);
         return -1;
     }
 
