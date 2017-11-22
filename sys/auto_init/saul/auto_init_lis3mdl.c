@@ -39,7 +39,7 @@ static lis3mdl_t lis3mdl_devs[LIS3MDL_NUM];
 /**
  * @brief   Memory for the SAUL registry entries
  */
-static saul_reg_t saul_entries[LIS3MDL_NUM * 2];
+static saul_reg_t saul_entries[LIS3MDL_NUM];
 
 /**
  * @brief   Define the number of saul info
@@ -53,6 +53,8 @@ extern saul_driver_t lis3mdl_saul_mag_driver;
 
 void auto_init_lis3mdl(void)
 {
+    assert(LIS3MDL_NUM == LIS3MDL_INFO_NUM);
+
     for (unsigned int i = 0; i < LIS3MDL_NUM; i++) {
         LOG_DEBUG("[auto_init_saul] initializing lis3mdl #%u\n", i);
 
