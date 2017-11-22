@@ -5,7 +5,7 @@ RIOT, like so many other free and open source software projects, is made up of a
 mixed group of professionals and volunteers from all over the world, working on
 every aspect of our goals - including teaching, steering, and connecting people.
 
-We want diversity to be one of our greatest strength, but it can also lead to
+We want diversity to be one of our greatest strengths, but it can also lead to
 communication issues and unhappiness. This is why we ask people to adhere to a
 few ground rules. They apply equally to founders, maintainers, contributors and
 those seeking help and guidance.
@@ -18,7 +18,7 @@ allowing everyone to participate.
 This code of conduct applies to all spaces managed by the RIOT community. This
 includes IRC, the mailing lists, our GitHub projects, face to face events, and
 any other forums created by the community for communication within the
-community. In additions, violations of this code outside these spaces may also
+community. In addition, violations of this code outside these spaces may also
 affect a person's ability to participate within them.
 
 If you believe someone is violating the code of conduct, we ask that you report
