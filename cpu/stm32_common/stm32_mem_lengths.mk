@@ -121,26 +121,35 @@ ifeq ($(STM32_TYPE), F)
     else ifeq ($(STM32_MODEL),303)
       ifneq (, $(filter $(STM32_ROMSIZE), 6 8))
         RAM_LEN = 16K
+        CCMRAM_LEN = 4K
       else ifneq (, $(filter $(STM32_ROMSIZE), B))
         RAM_LEN = 40K
+        CCMRAM_LEN = 8K
       else ifneq (, $(filter $(STM32_ROMSIZE), C))
         RAM_LEN = 48K
+        CCMRAM_LEN = 8K
       else ifneq (, $(filter $(STM32_ROMSIZE), D E))
         RAM_LEN = 80K
       endif
     else ifeq ($(STM32_MODEL3),4)
       RAM_LEN = 16K
+      CCMRAM_LEN = 4K
     else ifeq ($(STM32_MODEL),373)
       RAM_LEN = 32K
     else ifeq ($(STM32_MODEL3),8)
       ifneq (, $(filter $(STM32_MODEL2), 1 2))
         RAM_LEN = 16K
+        ifeq ($(STM32_MODEL2), 1)
+          CCMRAM_LEN = 4K
+        endif
       else ifneq (, $(filter $(STM32_MODEL2), 5))
         RAM_LEN = 48K
+        CCMRAM_LEN = 8K
       else ifneq (, $(filter $(STM32_MODEL2), 7))
         RAM_LEN = 32K
       else ifneq (, $(filter $(STM32_MODEL2), 9))
         RAM_LEN = 80K
+        CCMRAM_LEN = 16K
       endif
   endif
   else ifeq ($(STM32_FAMILY),4)
@@ -164,6 +173,8 @@ ifeq ($(STM32_TYPE), F)
       RAM_LEN = 192K
     else ifneq (, $(filter $(STM32_MODEL), 469 479))
       RAM_LEN = 384K
+    ifneq (, $(filter $(STM32_MODEL3), 5 7 9))
+      CCMRAM_LEN = 64K
     endif
   else ifeq ($(STM32_FAMILY),7)
     ifneq (, $(filter $(STM32_MODEL2), 2 3))
@@ -202,8 +213,6 @@ else ifeq ($(STM32_TYPE), L)
           RAM_LEN = 48K
         else ifneq (, $(filter $(STM32_ROMSIZE), E))
           RAM_LEN = 80K
-        else ifneq (, $(filter $(STM32_ROMSIZE), DT6X))
-          RAM_LEN = 80K
         endif
       else ifneq (, $(filter $(STM32_PINCOUNT), R))
         ifneq (, $(filter $(STM32_ROMSIZE), 6))
@@ -212,8 +221,6 @@ else ifeq ($(STM32_TYPE), L)
           RAM_LEN = 32K
         else ifneq (, $(filter $(STM32_ROMSIZE), B))
           RAM_LEN = 16K
-        else ifneq (, $(filter $(STM32_ROMSIZE), BT6A))
-          RAM_LEN = 32K
         else ifneq (, $(filter $(STM32_ROMSIZE), D))
           RAM_LEN = 48K
         else ifneq (, $(filter $(STM32_ROMSIZE), E))
@@ -299,10 +306,3 @@ else ifeq ($(STM32_PINCOUNT),V)
 else ifeq ($(STM32_PINCOUNT),Z)
   STM32_PINCOUNT = 144
 endif
-
-$(info STM32 type:       $(STM32_TYPE))
-$(info STM32 Family:     $(STM32_FAMILY))
-$(info STM32 Model:      $(STM32_MODEL))
-$(info STM32 Pin count:  $(STM32_PINCOUNT))
-$(info STM32 ROM size:   $(ROM_LEN))
-$(info STM32 RAM size:   $(RAM_LEN))
