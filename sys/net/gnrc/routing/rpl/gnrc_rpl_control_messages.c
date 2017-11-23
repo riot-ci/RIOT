@@ -425,7 +425,10 @@ bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt
                     break;
                 }
                 ipv6_addr_set_aiid(&pi->prefix, iid.uint8);
-                gnrc_netif_ipv6_addr_add(netif, &pi->prefix, pi->prefix_len, 0);
+                /* TODO: find a way to do this with DAD (i.e. state != VALID) */
+                gnrc_netif_ipv6_addr_add(netif, &pi->prefix, pi->prefix_len,
+                                         GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID);
+                /* set lifetimes */
                 gnrc_ipv6_nib_pl_set(netif->pid, &pi->prefix, pi->prefix_len,
                                      byteorder_ntohl(pi->valid_lifetime),
                                      byteorder_ntohl(pi->pref_lifetime));
