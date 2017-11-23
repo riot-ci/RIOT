@@ -749,7 +749,6 @@ void gnrc_rpl_send_DAO(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination, uint
 
         if ((tmp = _dao_transit_build(pkt, lifetime, false)) == NULL) {
             DEBUG("RPL: Send DAO - no space left in packet buffer\n");
-            gnrc_pktbuf_release(pkt);
             return;
         }
         pkt = tmp;
@@ -759,7 +758,6 @@ void gnrc_rpl_send_DAO(gnrc_rpl_instance_t *inst, ipv6_addr_t *destination, uint
 
             if ((tmp = _dao_target_build(pkt, &fte.dst, fte.dst_len)) == NULL) {
                 DEBUG("RPL: Send DAO - no space left in packet buffer\n");
-                gnrc_pktbuf_release(pkt);
                 return;
             }
             pkt = tmp;
