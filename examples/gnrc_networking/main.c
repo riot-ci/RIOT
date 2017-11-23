@@ -22,14 +22,22 @@
 
 #include "shell.h"
 #include "msg.h"
+#include "net/gnrc/pktbuf.h"
 
 #define MAIN_QUEUE_SIZE     (8)
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 
 extern int udp_cmd(int argc, char **argv);
 
+int pktbuf_cmd(int argc, char **argv)
+{
+    gnrc_pktbuf_stats();
+    return 0;
+}
+
 static const shell_command_t shell_commands[] = {
     { "udp", "send data over UDP and listen on UDP ports", udp_cmd },
+    { "pktbuf", "", pktbuf_cmd },
     { NULL, NULL, NULL }
 };
 
