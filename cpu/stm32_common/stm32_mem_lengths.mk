@@ -3,7 +3,7 @@ ROM_START_ADDR ?= 0x08000000
 RAM_START_ADDR ?= 0x20000000
 
 # The next block takes care of setting the rigth lengths of RAM and ROM
-# for the stm32 family. Most of the CPUs should have been taken into 
+# for the stm32 family. Most of the CPUs should have been taken into
 # account here, so no need to assign the lengths per model.
 STM32_INFO := $(shell printf '%s' $(CPU_MODEL) | tr 'a-z' 'A-Z' | sed -E -e 's/^STM32(F|L)(0|1|2|3|4|7)([0-9])([0-9])(.)(.)/\1 \2 \2\3\4 \3 \4 \5 \6/')
 STM32_TYPE      = $(word 1, $(STM32_INFO))
@@ -173,6 +173,7 @@ ifeq ($(STM32_TYPE), F)
       RAM_LEN = 192K
     else ifneq (, $(filter $(STM32_MODEL), 469 479))
       RAM_LEN = 384K
+    endif
     ifneq (, $(filter $(STM32_MODEL3), 5 7 9))
       CCMRAM_LEN = 64K
     endif
