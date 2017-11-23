@@ -494,6 +494,7 @@ void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src
                        uint16_t len)
 {
     (void) dst;
+    gnrc_netif_t *netif;
     gnrc_rpl_instance_t *inst = NULL;
     gnrc_rpl_dodag_t *dodag = NULL;
 
@@ -522,13 +523,14 @@ void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src
         inst->of = gnrc_rpl_get_of_for_ocp(GNRC_RPL_DEFAULT_OCP);
 
         if (iface == KERNEL_PID_UNDEF) {
-            gnrc_netif_t *netif = _find_interface_with_rpl_mcast();
-
-            iface = netif->pid;
-            assert(iface != KERNEL_PID_UNDEF);
+            netif = _find_interface_with_rpl_mcast();
         }
+        else {
+            netif = gnrc_netif_get_by_pid(iface);
+        }
+        assert(netif != NULL);
 
-        gnrc_rpl_dodag_init(inst, &dio->dodag_id, iface);
+        gnrc_rpl_dodag_init(inst, &dio->dodag_id, netif->pid);
 
         dodag = &inst->dodag;
 
@@ -569,7 +571,15 @@ void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src
 #endif
         }
 
-        /* TODO: create prefix list entry */
+        /* if there was no address created manually or by a PIO on the interface,
+         * leave this DODAG */
+        if (gnrc_netif_ipv6_addr_match(netif, &dodag->dodag_id) < 0) {
+            DEBUG("RPL: no IPv6 address configured on interface %i to match the "
+                  "given dodag id: %s\n", netif->pid,
+                  ipv6_addr_to_str(addr_str, &(dodag->dodag_id), sizeof(addr_str)));
+            gnrc_rpl_instance_remove(inst);
+            return;
+        }
 
         gnrc_rpl_delay_dao(dodag);
         trickle_start(gnrc_rpl_pid, &dodag->trickle, GNRC_RPL_MSG_TYPE_TRICKLE_MSG,
