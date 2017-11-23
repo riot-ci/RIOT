@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <unistd.h>
 
 #ifdef RIOT_VERSION
 #include "byteorder.h"
