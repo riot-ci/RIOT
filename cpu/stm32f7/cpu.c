@@ -33,7 +33,7 @@ void cpu_init(void)
     cortexm_init();
     /* initialize the system clock as configured in the periph_conf.h */
     stmclk_init_sysclk();
-#if defined(MODULE_STM32_PERIPH_DMA) && defined(DMA_NUMOF)
+#ifdef MODULE_PERIPH_DMA
     /* initialize DMA streams */
     dma_init();
 #endif
