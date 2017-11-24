@@ -401,7 +401,8 @@ void dma_init(void);
 /**
  * @brief   Execute a DMA transfer
  *
- * This function blocks until the transfer is completed
+ * This function blocks until the transfer is completed. This is a convenience
+ * function which configure, start, wait and stop a DMA transfer.
  *
  * @param[in]  dma     logical DMA stream
  * @param[in]  chan    DMA channel
@@ -433,6 +434,9 @@ void dma_release(dma_t dma);
 /**
  * @brief   Start a DMA transfer on a stream
  *
+ * Start a DMA transfer on a given stream. The stream must be configured first
+ * by a @p dma_configure call.
+ *
  * @param[in] dma     logical DMA stream
  */
 void dma_start(dma_t dma);
@@ -452,7 +456,7 @@ uint16_t dma_suspend(dma_t dma);
  * @param[in] dma         logical DMA stream
  * @param[in] reamaining  the remaining number of bytes to transfer
  */
-void dma_resume(dma_t dma, uint16_t reamaining);
+void dma_resume(dma_t dma, uint16_t remaining);
 
 /**
  * @brief   Stop a DMA transfer on a stream
