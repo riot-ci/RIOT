@@ -185,9 +185,9 @@ gnrc_pktsnip_t *_dio_prefix_info_build(gnrc_pktsnip_t *pkt, gnrc_rpl_dodag_t *do
                       &ple)) {
         uint32_t now = (xtimer_now_usec64() / US_PER_MS) & UINT32_MAX;
         uint32_t valid_ltime = (ple.valid_until < UINT32_MAX) ?
-                               ple.valid_until / MS_PER_SEC : UINT32_MAX;
+                               (ple.valid_until - now) / MS_PER_SEC : UINT32_MAX;
         uint32_t pref_ltime = (ple.pref_until < UINT32_MAX) ?
-                              ple.pref_until / MS_PER_SEC : UINT32_MAX;
+                              (ple.pref_until - now) / MS_PER_SEC : UINT32_MAX;
 
         prefix_info->valid_lifetime = byteorder_htonl(valid_ltime);
         prefix_info->pref_lifetime = byteorder_htonl(pref_ltime);
