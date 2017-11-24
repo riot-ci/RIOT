@@ -153,7 +153,7 @@ static inline void _wait_for_end(spi_t bus)
     while (dev(bus)->SR & SPI_SR_BSY) {}
 }
 
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
 static void _transfer_dma(spi_t bus, const void *out, void *in, size_t len)
 {
     uint8_t tmp = 0;
@@ -249,7 +249,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
         gpio_clear((gpio_t)cs);
     }
 
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
     if (spi_config[bus].tx_dma != DMA_STREAM_UNDEF
             && spi_config[bus].rx_dma != DMA_STREAM_UNDEF) {
         _transfer_dma(bus, out, in, len);
@@ -257,7 +257,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     else {
 #endif
     _transfer_no_dma(bus, out, in, len);
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
     }
 #endif
 
