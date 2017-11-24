@@ -25,7 +25,6 @@
 #include "mutex.h"
 #include "assert.h"
 
-#if defined(MODULE_STM32_PERIPH_DMA) && defined(DMA_NUMOF)
 #if !(defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7))
 #error "DMA is not supported for target CPU"
 #endif
@@ -307,5 +306,3 @@ void DMA_9_ISR(void)
     dma_isr_handler(9);
 }
 #endif
-
-#endif /* MODULE_STM32_PERIPH_DMA */

@@ -205,8 +205,7 @@ typedef enum {
 #endif /* ndef DOXYGEN */
 #endif /* ndef CPU_FAM_STM32F1 */
 
-#if defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
-
+#ifdef MODULE_PERIPH_DMA
 /**
  * @brief   DMA configuration
  */
@@ -247,8 +246,7 @@ typedef enum {
 #define DMA_DATA_WIDTH_MASK      (0x0C)
 #define DMA_DATA_WIDTH_SHIFT     (2)
 /** @} */
-
-#endif /* defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7) */
+#endif /* MODULE_PERIPH_DMA */
 
 /**
  * @brief   DAC line configuration data
@@ -303,7 +301,7 @@ typedef struct {
 #endif
     uint8_t bus;            /**< APB bus */
     uint8_t irqn;           /**< IRQ channel */
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
     dma_t dma;              /**< Logical DMA stream used for TX */
     uint8_t dma_chan;       /**< DMA channel used for TX */
 #endif
@@ -331,7 +329,7 @@ typedef struct {
 #endif
     uint32_t rccmask;       /**< bit in the RCC peripheral enable register */
     uint8_t apbbus;         /**< APBx bus the device is connected to */
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
     dma_t tx_dma;           /**< Logical DMA stream used for TX */
     uint8_t tx_dma_chan;    /**< DMA channel used for TX */
     dma_t rx_dma;           /**< Logical DMA stream used for RX */
@@ -389,7 +387,7 @@ void gpio_init_af(gpio_t pin, gpio_af_t af);
  */
 void gpio_init_analog(gpio_t pin);
 
-#ifdef MODULE_STM32_PERIPH_DMA
+#ifdef MODULE_PERIPH_DMA
 /**
  * @brief   DMA stream not defined
  */
@@ -624,7 +622,7 @@ static inline void dma_isr_clear(int stream)
         NVIC_ClearPendingIRQ((IRQn_Type)((int)DMA2_Stream5_IRQn + (stream - 13)));
     }
 }
-#endif /* MODULE_STM32_PERIPH_DMA */
+#endif /* MODULE_PERIPH_DMA */
 
 #ifdef __cplusplus
 }
