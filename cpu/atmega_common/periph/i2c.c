@@ -51,7 +51,7 @@ static mutex_t lock = MUTEX_INIT;
 int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 {
     /* TWI Bit Rate Register - division factor for the bit rate generator */
-    unsigned long  twibrr;
+    unsigned long twibrr;
     /* TWI Prescaler Bits - default 0 */
     uint8_t twipb = 0;
 
@@ -114,9 +114,9 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
     /* disable device */
     TWCR &= ~(1 << TWEN);
     /* configure I2C clock */
-    TWBR = (uint8_t)twibrr;                // Set TWI Bit Rate Register
-    TWSR &= ~(0x03);              // Reset TWI Prescaler Bits
-    TWSR |= twipb;                // Set TWI Prescaler Bits
+    TWBR = (uint8_t)twibrr;     /* Set TWI Bit Rate Register */
+    TWSR &= ~(0x03);            /* Reset TWI Prescaler Bits */
+    TWSR |= twipb;              /* Set TWI Prescaler Bits */
     /* enable device */
     TWCR |= (1 << TWEN);
 
