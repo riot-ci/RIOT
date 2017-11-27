@@ -29,7 +29,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define ISL29020_NUM    (sizeof(isl29020_params)/sizeof(isl29020_params[0]))
+#define ISL29020_NUM    (sizeof(isl29020_params) / sizeof(isl29020_params[0]))
 
 /**
  * @brief   Allocate memory for the device descriptors
@@ -44,7 +44,7 @@ static saul_reg_t saul_entries[ISL29020_NUM];
 /**
  * @brief   Define the number of saul info
  */
-#define ISL29020_INFO_NUM    (sizeof(isl29020_saul_info)/sizeof(isl29020_saul_info[0]))
+#define ISL29020_INFO_NUM    (sizeof(isl29020_saul_info) / sizeof(isl29020_saul_info[0]))
 
 /**
  * @brief   Reference the driver struct

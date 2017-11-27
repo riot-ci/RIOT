@@ -29,7 +29,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define DHT_NUM   (sizeof(dht_params) / sizeof(dht_params[0]))
+#define DHT_NUM     (sizeof(dht_params) / sizeof(dht_params[0]))
 
 /**
  * @brief   Allocate memory for the device descriptors

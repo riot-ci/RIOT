@@ -28,7 +28,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define TSL2561_NUM    (sizeof(tsl2561_params) / sizeof(tsl2561_params[0]))
+#define TSL2561_NUM      (sizeof(tsl2561_params) / sizeof(tsl2561_params[0]))
 
 /**
  * @brief   Allocation of memory for device descriptors

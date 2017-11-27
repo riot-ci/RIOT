@@ -29,7 +29,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define HDC1000_NUM    (sizeof(hdc1000_params)/sizeof(hdc1000_params[0]))
+#define HDC1000_NUM    (sizeof(hdc1000_params) / sizeof(hdc1000_params[0]))
 
 /**
  * @brief   Allocate memory for the device descriptors
@@ -44,7 +44,7 @@ static saul_reg_t saul_entries[HDC1000_NUM * 2];
 /**
  * @brief   Define the number of saul info
  */
-#define HDC1000_INFO_NUM    (sizeof(hdc1000_saul_info)/sizeof(hdc1000_saul_info[0]))
+#define HDC1000_INFO_NUM    (sizeof(hdc1000_saul_info) / sizeof(hdc1000_saul_info[0]))
 
 /**
  * @brief   Reference the driver struct
