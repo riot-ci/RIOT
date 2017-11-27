@@ -42,17 +42,14 @@ extern "C" {
 
 /* Defaults for Weather Monitoring */
 #ifndef BMX280_PARAMS
-#define BMX280_PARAMS                       \
-    {                                       \
-        .i2c_dev = BMX280_PARAM_I2C_DEV,    \
-        .i2c_addr = BMX280_PARAM_I2C_ADDR,  \
-        .t_sb = BMX280_SB_0_5,              \
-        .filter = BMX280_FILTER_OFF,        \
-        .run_mode = BMX280_MODE_FORCED,     \
-        .temp_oversample = BMX280_OSRS_X1,  \
-        .press_oversample = BMX280_OSRS_X1, \
-        .humid_oversample = BMX280_OSRS_X1, \
-    }
+#define BMX280_PARAMS                { .i2c_dev = BMX280_PARAM_I2C_DEV,    \
+                                       .i2c_addr = BMX280_PARAM_I2C_ADDR,  \
+                                       .t_sb = BMX280_SB_0_5,              \
+                                       .filter = BMX280_FILTER_OFF,        \
+                                       .run_mode = BMX280_MODE_FORCED,     \
+                                       .temp_oversample = BMX280_OSRS_X1,  \
+                                       .press_oversample = BMX280_OSRS_X1, \
+                                       .humid_oversample = BMX280_OSRS_X1 }
 #endif
 #ifndef BMX280_SAUL_INFO
 #if defined(MODULE_BME280)

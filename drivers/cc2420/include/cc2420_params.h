@@ -58,15 +58,15 @@ extern "C" {
 #endif
 
 #ifndef CC2420_PARAMS
-#define CC2420_PARAMS           {.spi        = CC2420_PARAM_SPI,     \
-                                 .spi_clk    = CC2420_PARAM_SPI_CLK, \
-                                 .pin_cs     = CC2420_PARAM_CS,      \
-                                 .pin_fifo   = CC2420_PARAM_FIFO,    \
-                                 .pin_fifop  = CC2420_PARAM_FIFOP,   \
-                                 .pin_cca    = CC2420_PARAM_CCA,     \
-                                 .pin_sfd    = CC2420_PARAM_SFD,     \
-                                 .pin_vrefen = CC2420_PARAM_VREFEN,  \
-                                 .pin_reset  = CC2420_PARAM_RESET}
+#define CC2420_PARAMS           { .spi        = CC2420_PARAM_SPI,     \
+                                  .spi_clk    = CC2420_PARAM_SPI_CLK, \
+                                  .pin_cs     = CC2420_PARAM_CS,      \
+                                  .pin_fifo   = CC2420_PARAM_FIFO,    \
+                                  .pin_fifop  = CC2420_PARAM_FIFOP,   \
+                                  .pin_cca    = CC2420_PARAM_CCA,     \
+                                  .pin_sfd    = CC2420_PARAM_SFD,     \
+                                  .pin_vrefen = CC2420_PARAM_VREFEN,  \
+                                  .pin_reset  = CC2420_PARAM_RESET}
 #endif
 /**@}*/
 

@@ -55,14 +55,13 @@ extern "C" {
 #endif
 
 #ifndef DSP0401_PARAMS
-#define DSP0401_PARAMS                {       \
-    .sdi          = DSP0401_PARAM_SDI_PIN,    \
-    .clk          = DSP0401_PARAM_CLK_PIN,    \
-    .lat          = DSP0401_PARAM_LAT_PIN,    \
-    .pwm          = DSP0401_PARAM_PWM_DEV,    \
-    .pwm_channel  = DSP0401_PARAM_PWM_CHAN,   \
-    .brightness   = DSP0401_PARAM_BRIGHTNESS, \
-    .module_count = DSP0401_PARAM_MODULE_COUNT }
+#define DSP0401_PARAMS                { .sdi          = DSP0401_PARAM_SDI_PIN,    \
+                                        .clk          = DSP0401_PARAM_CLK_PIN,    \
+                                        .lat          = DSP0401_PARAM_LAT_PIN,    \
+                                        .pwm          = DSP0401_PARAM_PWM_DEV,    \
+                                        .pwm_channel  = DSP0401_PARAM_PWM_CHAN,   \
+                                        .brightness   = DSP0401_PARAM_BRIGHTNESS, \
+                                        .module_count = DSP0401_PARAM_MODULE_COUNT }
 #endif
 /**@}*/
 
