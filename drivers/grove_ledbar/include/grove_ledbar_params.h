@@ -55,12 +55,10 @@ extern "C"
  * @brief   Default parameter settings
  */
 #ifndef GROVE_LEDBAR_PARAMS
-#define GROVE_LEDBAR_PARAMS     {   \
-    .leds       = 10,               \
-    .dir        = GROVE_LEDBAR_DIR, \
-    .clk        = GROVE_LEDBAR_CLK, \
-    .dat        = GROVE_LEDBAR_DAT, \
-}
+#define GROVE_LEDBAR_PARAMS     { .leds = 10,               \
+                                  .dir  = GROVE_LEDBAR_DIR, \
+                                  .clk  = GROVE_LEDBAR_CLK, \
+                                  .dat  = GROVE_LEDBAR_DAT }
 #endif
 
 /**

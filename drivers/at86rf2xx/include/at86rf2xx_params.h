@@ -50,12 +50,12 @@ extern "C" {
 #endif
 
 #ifndef AT86RF2XX_PARAMS
-#define AT86RF2XX_PARAMS            {.spi = AT86RF2XX_PARAM_SPI, \
-                                     .spi_clk = AT86RF2XX_PARAM_SPI_CLK, \
-                                     .cs_pin = AT86RF2XX_PARAM_CS, \
-                                     .int_pin = AT86RF2XX_PARAM_INT, \
-                                     .sleep_pin = AT86RF2XX_PARAM_SLEEP, \
-                                     .reset_pin = AT86RF2XX_PARAM_RESET}
+#define AT86RF2XX_PARAMS            { .spi = AT86RF2XX_PARAM_SPI,         \
+                                      .spi_clk = AT86RF2XX_PARAM_SPI_CLK, \
+                                      .cs_pin = AT86RF2XX_PARAM_CS,       \
+                                      .int_pin = AT86RF2XX_PARAM_INT,     \
+                                      .sleep_pin = AT86RF2XX_PARAM_SLEEP, \
+                                      .reset_pin = AT86RF2XX_PARAM_RESET}
 #endif
 /**@}*/
 

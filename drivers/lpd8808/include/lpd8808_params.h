@@ -40,9 +40,9 @@ extern "C" {
 #endif
 
 #ifndef LPD8808_PARAMS
-#define LPD8808_PARAMS              {.led_cnt = LPD8808_PARAM_LED_CNT, \
-                                     .pin_clk = LPD8808_PARAM_PIN_CLK, \
-                                     .pin_dat = LPD8808_PARAM_PIN_DAT }
+#define LPD8808_PARAMS              { .led_cnt = LPD8808_PARAM_LED_CNT, \
+                                      .pin_clk = LPD8808_PARAM_PIN_CLK, \
+                                      .pin_dat = LPD8808_PARAM_PIN_DAT }
 #endif
 /**@}*/
 

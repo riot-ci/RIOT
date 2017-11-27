@@ -41,9 +41,9 @@ extern "C" {
 #endif
 
 #ifndef BH1750FVI_PARAMS
-#define BH1750FVI_PARAMS            {.i2c = BH1750FVI_PARAM_I2C, \
-                                     .addr = BH1750FVI_PARAM_ADDR, \
-                                     .clk = BH1750FVI_PARAM_I2C_CLK}
+#define BH1750FVI_PARAMS            { .i2c = BH1750FVI_PARAM_I2C,   \
+                                      .addr = BH1750FVI_PARAM_ADDR, \
+                                      .clk = BH1750FVI_PARAM_I2C_CLK}
 #endif
 /**@}*/
 
