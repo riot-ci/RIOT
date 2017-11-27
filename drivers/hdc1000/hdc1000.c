@@ -33,6 +33,14 @@
 
 #define I2C_SPEED                  I2C_SPEED_FAST
 
+#ifndef HDC1000_RENEW_INTERVAL
+#define HDC1000_RENEW_INTERVAL 1000000ul
+#endif
+
+static int16_t temp_cached = 0;
+static int16_t hum_cached  = 0;
+static uint32_t last_read_time = 0xFFFFFFFF;
+
 int hdc1000_init(hdc1000_t *dev, const hdc1000_params_t *params)
 {
     uint8_t reg[2];
@@ -111,17 +119,40 @@ int hdc1000_get_results(const hdc1000_t *dev, int16_t *temp, int16_t *hum)
 
     if (status == HDC1000_OK) {
         /* if all ok, we convert the values to their physical representation */
+        uint16_t traw = ((uint16_t)buf[0] << 8) | buf[1];
+        temp_cached = (int16_t)((((int32_t)traw * 16500) >> 16) - 4000);
+
+        uint16_t hraw = ((uint16_t)buf[2] << 8) | buf[3];
+        hum_cached  = (int16_t)(((int32_t)hraw * 10000) >> 16);
+
         if (temp) {
-            uint16_t traw = ((uint16_t)buf[0] << 8) | buf[1];
-            *temp = (int16_t)((((int32_t)traw * 16500) >> 16) - 4000);
+            *temp = temp_cached;
         }
         if (hum) {
-            uint16_t hraw = ((uint16_t)buf[2] << 8) | buf[3];
-            *hum  = (int16_t)(((int32_t)hraw * 10000) >> 16);
+            *hum = hum_cached;
         }
     }
 
     return status;
+}
+
+int hdc1000_read_cached(const hdc1000_t *dev, int16_t *temp, int16_t *hum)
+{
+    /* check if initialization phase or outdated */
+    if ((last_read_time == 0xFFFFFFFF && hum_cached == 0 && temp_cached == 0) ||
+        (xtimer_now_usec() - last_read_time > HDC1000_RENEW_INTERVAL)) {
+        /* update last_read_time */
+        last_read_time = xtimer_now_usec();
+        return hdc1000_read(dev, temp, hum);
+    }
+
+    if (temp) {
+        *temp = temp_cached;
+    }
+    if (hum) {
+        *hum = hum_cached;
+    }
+    return HDC1000_OK;
 }
 
 int hdc1000_read(const hdc1000_t *dev, int16_t *temp, int16_t *hum)
