@@ -151,7 +151,9 @@ void uart_poweron(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 #ifdef STM32_PM_STOP
-    pm_block(STM32_PM_STOP);
+    if (isr_ctx[uart].rx_cb) {
+        pm_block(STM32_PM_STOP);
+    }
 #endif
     periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
 }
@@ -162,7 +164,9 @@ void uart_poweroff(uart_t uart)
 
     periph_clk_dis(uart_config[uart].bus, uart_config[uart].rcc_mask);
 #ifdef STM32_PM_STOP
-    pm_unblock(STM32_PM_STOP);
+    if (isr_ctx[uart].rx_cb) {
+        pm_unblock(STM32_PM_STOP);
+    }
 #endif
 }
 
