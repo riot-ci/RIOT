@@ -156,10 +156,16 @@ static int _nib_prefix(int argc, char **argv)
             return 1;
         }
         if (argc > 5) {
-            valid_ltime = atoi(argv[5]) * MS_PER_SEC;
+            uint32_t ltime_ms = atoi(argv[5]);
+            valid_ltime = (ltime_ms > UINT32_MAX / MS_PER_SEC) ?
+                          UINT32_MAX - 1 :
+                          ltime_ms * MS_PER_SEC;
         }
         if (argc > 6) {
-            pref_ltime = atoi(argv[6]) * MS_PER_SEC;
+            uint32_t ltime_ms = atoi(argv[6]);
+            pref_ltime = (ltime_ms > UINT32_MAX / MS_PER_SEC) ?
+                         UINT32_MAX - 1 :
+                         ltime_ms * MS_PER_SEC;
         }
         gnrc_ipv6_nib_pl_set(iface, &pfx, pfx_len, valid_ltime, pref_ltime);
     }
