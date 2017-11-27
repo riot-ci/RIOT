@@ -72,7 +72,7 @@ static void _usage_nib_prefix(char **argv)
 static void _usage_nib_route(char **argv)
 {
     printf("usage: %s %s [show|add|del|help]\n", argv[0], argv[1]);
-    printf("       %s %s add <iface> <prefix>[/<prefix_len>] <next_hop>\n",
+    printf("       %s %s add <iface> <prefix>[/<prefix_len>] <next_hop> [<ltime in sec>]\n",
            argv[0], argv[1]);
     printf("       %s %s del <iface> <prefix>[/<prefix_len>]\n", argv[0], argv[1]);
     printf("       %s %s show <iface>\n", argv[0], argv[1]);
@@ -106,8 +106,7 @@ static int _nib_neigh(int argc, char **argv)
             return 1;
         }
         if ((argc > 5) && /* TODO also check if interface supports link-layers or not */
-            (l2addr_len = gnrc_netif_addr_from_str(l2addr, sizeof(l2addr),
-                                                   argv[5])) == 0) {
+            (l2addr_len = gnrc_netif_addr_from_str(argv[5], l2addr)) == 0) {
             _usage_nib_neigh(argv);
             return 1;
         }
@@ -116,7 +115,7 @@ static int _nib_neigh(int argc, char **argv)
     else if ((argc > 3) && (strcmp(argv[2], "del") == 0)) {
         ipv6_addr_t ipv6_addr;
 
-        if (ipv6_addr_from_str(&ipv6_addr, argv[4]) == NULL) {
+        if (ipv6_addr_from_str(&ipv6_addr, argv[3]) == NULL) {
             _usage_nib_neigh(argv);
             return 1;
         }
@@ -150,7 +149,7 @@ static int _nib_prefix(int argc, char **argv)
         ipv6_addr_t pfx;
         unsigned iface = atoi(argv[3]);
         unsigned pfx_len = ipv6_addr_split_prefix(argv[4]);
-        unsigned valid_ltime = UINT32_MAX, pref_ltime = UINT32_MAX;
+        uint32_t valid_ltime = UINT32_MAX, pref_ltime = UINT32_MAX;
 
         if (ipv6_addr_from_str(&pfx, argv[4]) == NULL) {
             _usage_nib_prefix(argv);
@@ -203,6 +202,7 @@ static int _nib_route(int argc, char **argv)
         ipv6_addr_t pfx = IPV6_ADDR_UNSPECIFIED, next_hop;
         unsigned iface = atoi(argv[3]);
         unsigned pfx_len = ipv6_addr_split_prefix(argv[4]);
+        uint16_t ltime = 0;
 
         if (ipv6_addr_from_str(&pfx, argv[4]) == NULL) {
             /* check if string equals "default"
@@ -216,7 +216,10 @@ static int _nib_route(int argc, char **argv)
             _usage_nib_route(argv);
             return 1;
         }
-        gnrc_ipv6_nib_ft_add(&pfx, pfx_len, &next_hop, iface);
+        if (argc > 6) {
+            ltime = (uint16_t)atoi(argv[6]);
+        }
+        gnrc_ipv6_nib_ft_add(&pfx, pfx_len, &next_hop, iface, ltime);
     }
     else if ((argc > 4) && (strcmp(argv[2], "del") == 0)) {
         ipv6_addr_t pfx;
