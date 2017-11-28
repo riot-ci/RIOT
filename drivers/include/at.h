@@ -39,6 +39,7 @@
 
 #include "isrpipe.h"
 #include "periph/uart.h"
+#include "clist.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,12 +78,36 @@ extern "C" {
 #define AT_RECV_ERROR "ERROR"
 #endif
 
+#ifndef AT_BUF_SIZE
+/** Internal buffer size used to process out-of-band data */
+#define AT_BUF_SIZE (128)
+#endif
+
+/**
+ * @brief   Out-of-band data callback
+ *
+ * @param[in]   arg     optional argument
+ * @param[in]   urc     urc string received from the device
+ */
+typedef void (*at_oob_cb_t)(void *arg, const char *urc);
+
+/**
+ * @brief   Out-of-band data structure
+ */
+typedef struct {
+    clist_node_t list_node; /**< node list */
+    at_oob_cb_t cb;         /**< callback */
+    const char *urc;        /**< URC which must match */
+    void *arg;              /**< optional argument */
+} at_oob_t;
+
 /**
  * @brief AT device structure
  */
 typedef struct {
     isrpipe_t isrpipe;      /**< isrpipe used for getting data from uart */
     uart_t uart;            /**< UART device where the AT device is attached */
+    clist_node_t oob_list;
 } at_dev_t;
 
 /**
@@ -225,6 +250,31 @@ ssize_t at_readline(at_dev_t *dev, char *resp_buf, size_t len, bool keep_eol, ui
  * @param[in]   dev     device to operate on
  */
 void at_drain(at_dev_t *dev);
+
+/**
+ * @brief   add a callback for an out-of-bound data
+ *
+ * @param[in]   dev     device to operate on
+ * @param[in]   oob     out-of-band value to register
+ */
+void at_add_oob(at_dev_t *dev, at_oob_t *oob);
+
+/**
+ * @brief   remove an out-of-band data from the list
+ *
+ * @param[in]   dev     device to operate on
+ * @param[in]   oob     out-of-band value to remove
+ */
+void at_remove_oob(at_dev_t *dev, at_oob_t *oob);
+
+/**
+ * @brief   process out-of-band data received from the device
+ *
+ * The function returns immediately if no data is available to be read.
+ *
+ * @param[in]   dev     device to operate on
+ */
+void at_process_oob(at_dev_t *dev);
 
 #ifdef __cplusplus
 }
