@@ -44,6 +44,18 @@ static void _unlock(void)
 #endif
 }
 
+static void _lock(void)
+{
+    /* put peripheral access lock for the NVMCTRL peripheral */
+#ifdef CPU_FAM_SAML21
+    PAC->WRCTRL.reg = (PAC_WRCTRL_KEY_SET | ID_NVMCTRL);
+#else
+    if (PAC1->WPCLR.reg & NVMCTRL_PAC_BIT) {
+        PAC1->WPSET.reg = NVMCTRL_PAC_BIT;
+    }
+#endif
+}
+
 void flashpage_write_raw(void *target_addr, void *data, size_t len)
 {
     /* The actual minimal block size for writing is 16B, thus we
@@ -61,11 +73,15 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
     /* write 4 bytes in one go */
     len /= 4;
 
+    _unlock();
+
     NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC);
     for (unsigned i = 0; i < len; i++) {
         *page_addr++ = *data_addr++;
     }
     NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP);
+
+    _lock();
 }
 
 void flashpage_write(int page, void *data)
@@ -73,8 +89,6 @@ void flashpage_write(int page, void *data)
     assert(page < FLASHPAGE_NUMOF);
 
     uint32_t *page_addr = (uint32_t *)flashpage_addr(page);
-
-    _unlock();
 
     /* erase given page (the ADDR register uses 16-bit addresses) */
     NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1);
@@ -85,4 +99,5 @@ void flashpage_write(int page, void *data)
     if (data != NULL) {
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
+
 }
