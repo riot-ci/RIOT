@@ -203,7 +203,7 @@ static gnrc_mac_tx_neighbor_t *_next_tx_neighbor(gnrc_netif_t *netif)
     uint32_t phase_nearest = GNRC_LWMAC_PHASE_MAX;
 
     for (unsigned i = 0; i < GNRC_MAC_NEIGHBOR_COUNT; i++) {
-        if (gnrc_priority_pktqueue_length(&gnrc_netdev->tx.neighbors[i].queue) > 0) {
+        if (gnrc_priority_pktqueue_length(&netif->mac.tx.neighbors[i].queue) > 0) {
             /* Unknown destinations are initialized with their phase at the end
              * of the local interval, so known destinations that still wakeup
              * in this interval will be preferred. */
