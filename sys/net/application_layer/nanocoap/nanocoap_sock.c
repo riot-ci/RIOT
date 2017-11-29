@@ -39,13 +39,13 @@ ssize_t nanocoap_get(sock_udp_ep_t *remote, const char *path, uint8_t *buf, size
     uint32_t timeout = COAP_ACK_TIMEOUT * (1000000U);
     int tries = 0;
     while (tries++ < COAP_MAX_RETRANSMIT) {
-        if(!tries) {
+        if (!tries) {
             DEBUG("nanocoap: maximum retries reached.\n");
             res = -ETIMEDOUT;
             goto out;
         }
 
-        res = sock_udp_send(&sock, buf, pktpos-buf, NULL);
+        res = sock_udp_send(&sock, buf, pktpos - buf, NULL);
         if (res <= 0) {
             DEBUG("nanocoap: error sending coap request\n");
             goto out;
@@ -64,7 +64,7 @@ ssize_t nanocoap_get(sock_udp_ep_t *remote, const char *path, uint8_t *buf, size
         }
 
         coap_pkt_t pkt;
-        if (coap_parse(&pkt, (uint8_t*)buf, res) < 0) {
+        if (coap_parse(&pkt, (uint8_t *)buf, res) < 0) {
             puts("error parsing packet");
             continue;
         }
@@ -103,7 +103,7 @@ int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize)
         return -1;
     }
 
-    while(1) {
+    while (1) {
         res = sock_udp_recv(&sock, buf, bufsize, -1, &remote);
         if (res == -1) {
             DEBUG("error receiving UDP packet\n");
@@ -111,7 +111,7 @@ int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize)
         }
         else {
             coap_pkt_t pkt;
-            if (coap_parse(&pkt, (uint8_t*)buf, res) < 0) {
+            if (coap_parse(&pkt, (uint8_t *)buf, res) < 0) {
                 DEBUG("error parsing packet\n");
                 continue;
             }
