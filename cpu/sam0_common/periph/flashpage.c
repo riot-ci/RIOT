@@ -67,7 +67,10 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
     assert(!(((unsigned)target_addr % FLASHPAGE_RAW_ALIGNMENT) ||
             ((unsigned)data % FLASHPAGE_RAW_ALIGNMENT)));
 
-    uint32_t *page_addr = (uint32_t *)target_addr;
+    /* ensure the length doesn't exceed the actual flash size */
+    assert((target_addr + len) < (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)));
+
+    uint32_t *dst = (uint32_t *)target_addr;
     uint32_t *data_addr = (uint32_t *)data;
 
     /* write 4 bytes in one go */
@@ -77,7 +80,7 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
 
     NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC);
     for (unsigned i = 0; i < len; i++) {
-        *page_addr++ = *data_addr++;
+        *dst++ = *data_addr++;
     }
     NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP);
 
@@ -91,9 +94,11 @@ void flashpage_write(int page, void *data)
     uint32_t *page_addr = (uint32_t *)flashpage_addr(page);
 
     /* erase given page (the ADDR register uses 16-bit addresses) */
+    _unlock();
     NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1);
     NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER);
     while (!NVMCTRL->INTFLAG.bit.READY) {}
+    _lock();
 
     /* write data to page */
     if (data != NULL) {
