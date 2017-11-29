@@ -698,7 +698,7 @@ void gnrc_gomach_init_choose_subchannel(gnrc_netif_t *netif)
     /* Find a free sub-channel sequence. */
     int i = 0;
     for (i = 0; i < 14; i++) {
-    	uint16_t check_seq = subchannel_seq - 11;
+        uint16_t check_seq = subchannel_seq - 11;
         check_seq = (1 << check_seq);
 
         if (check_seq & netif->mac.prot.gomach.subchannel_occu_flags) {
