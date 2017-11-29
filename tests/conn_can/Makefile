@@ -7,6 +7,8 @@ BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h nucleo32-f031 nucleo32-f04
                              nucleo-l053 stm32f0discovery telosb wsn430-v1_3b \
                              wsn430-v1_4 z1
 
+CFLAGS += -DLOG_LEVEL=LOG_ALL
+
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
