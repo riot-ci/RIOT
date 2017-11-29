@@ -44,7 +44,7 @@ extern "C" {
 #define COAP_PORT               (5683)
 
 /**
- * @name    nanocoap specific maximum values
+ * @name    Nanocoap specific maximum values
  * @{
  */
 #define NANOCOAP_URL_MAX        (64)
@@ -174,7 +174,7 @@ extern "C" {
 #define COAP_FORMAT_OCTET       (42)
 #define COAP_FORMAT_JSON        (50)
 #define COAP_FORMAT_CBOR        (60)
-/** @brief    nanocoap-specific value to indicate no format specified. */
+/** @brief   nanocoap-specific value to indicate no format specified. */
 #define COAP_FORMAT_NONE     (65535)
 /** @} */
 
@@ -208,7 +208,7 @@ typedef struct {
 } coap_hdr_t;
 
 /**
- * @brief    CoAP option array entry
+ * @brief   CoAP option array entry
  */
 typedef struct {
     coap_hdr_t *hdr;                /**< pointer to raw packet              */
@@ -227,7 +227,7 @@ typedef struct {
 typedef ssize_t (*coap_handler_t)(coap_pkt_t* pkt, uint8_t *buf, size_t len);
 
 /**
- * @brief    Type for CoAP resource entry
+ * @brief   Type for CoAP resource entry
  */
 typedef struct {
     const char *path;               /**< URI path of resource               */
@@ -236,17 +236,17 @@ typedef struct {
 } coap_resource_t;
 
 /**
- * @brief    Global CoAP resource list
+ * @brief   Global CoAP resource list
  */
 extern const coap_resource_t coap_resources[];
 
 /**
- * @brief    Number of entries in global CoAP resource list
+ * @brief   Number of entries in global CoAP resource list
  */
 extern const unsigned coap_resources_numof;
 
 /**
- * @brief    Parse a CoAP PDU
+ * @brief   Parse a CoAP PDU
  *
  * This function parses a raw CoAP PDU from @p buf with size @p len and fills
  * the structure pointed to by @p pkt.
@@ -266,7 +266,7 @@ int coap_parse(coap_pkt_t* pkt, uint8_t *buf, size_t len);
  *
  * This function can be used to create a reply to any CoAP request packet.  It
  * will create the reply packet header based on parameters from the request
- * (e.g., id, token).  Passing a nonzero @p payload_len will ensure the payload
+ * (e.g., id, token).  Passing a non-zero @p payload_len will ensure the payload
  * fits into the buffer along with the header.
  *
  * @param[in]       pkt         packet to reply to
@@ -279,7 +279,7 @@ int coap_parse(coap_pkt_t* pkt, uint8_t *buf, size_t len);
  * @returns         <0 on error
  */
 ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
-        uint8_t *rbuf, unsigned rlen, unsigned payload_len);
+                         uint8_t *rbuf, unsigned rlen, unsigned payload_len);
 
 /**
  * @brief   Create CoAP reply (convenience function)
@@ -288,7 +288,7 @@ ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
  * use-cases.
  *
  * The reply will be written to @p buf. Is @p payload and @p payload_len
- * nonzero, the payload will be copied into the resulting reply packet.
+ * non-zero, the payload will be copied into the resulting reply packet.
  *
  * @param[in]       pkt         packet to reply to
  * @param[in]       code        reply code (e.g., COAP_CODE_204)
