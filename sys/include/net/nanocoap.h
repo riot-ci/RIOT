@@ -269,14 +269,14 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len);
  * (e.g., id, token).  Passing a non-zero @p payload_len will ensure the payload
  * fits into the buffer along with the header.
  *
- * @param[in]       pkt         packet to reply to
- * @param[in]       code        reply code (e.g., COAP_CODE_204)
- * @param[out]      rbuf        buffer to write reply to
- * @param[in]       rlen        size of @p rbuf
- * @param[in]       payload_len length of payload
+ * @param[in]   pkt         packet to reply to
+ * @param[in]   code        reply code (e.g., COAP_CODE_204)
+ * @param[out]  rbuf        buffer to write reply to
+ * @param[in]   rlen        size of @p rbuf
+ * @param[in]   payload_len length of payload
  *
- * @returns         size of reply packet on success
- * @returns         <0 on error
+ * @returns     size of reply packet on success
+ * @returns     <0 on error
  */
 ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
                          uint8_t *rbuf, unsigned rlen, unsigned payload_len);
@@ -290,16 +290,16 @@ ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
  * The reply will be written to @p buf. Is @p payload and @p payload_len
  * non-zero, the payload will be copied into the resulting reply packet.
  *
- * @param[in]       pkt         packet to reply to
- * @param[in]       code        reply code (e.g., COAP_CODE_204)
- * @param[out]      buf         buffer to write reply to
- * @param[in]       len         size of @p buf
- * @param[in]       ct          content type of payload
- * @param[in]       payload     ptr to payload
- * @param[in]       payload_len length of payload
+ * @param[in]   pkt         packet to reply to
+ * @param[in]   code        reply code (e.g., COAP_CODE_204)
+ * @param[out]  buf         buffer to write reply to
+ * @param[in]   len         size of @p buf
+ * @param[in]   ct          content type of payload
+ * @param[in]   payload     ptr to payload
+ * @param[in]   payload_len length of payload
  *
- * @returns         size of reply packet on success
- * @returns         <0 on error
+ * @returns     size of reply packet on success
+ * @returns     <0 on error
  */
 ssize_t coap_reply_simple(coap_pkt_t *pkt,
                           unsigned code,
@@ -317,8 +317,8 @@ ssize_t coap_reply_simple(coap_pkt_t *pkt,
  * @param[out]  resp_buf        buffer for response
  * @param[in]   resp_buf_len    size of response buffer
  *
- * @returns         size of reply packet on success
- * @returns         <0 on error
+ * @returns     size of reply packet on success
+ * @returns     <0 on error
  */
 ssize_t coap_handle_req(coap_pkt_t *pkt, uint8_t *resp_buf, unsigned resp_buf_len);
 
@@ -336,7 +336,8 @@ ssize_t coap_handle_req(coap_pkt_t *pkt, uint8_t *resp_buf, unsigned resp_buf_le
  *
  * @returns      length of resulting header
  */
-ssize_t coap_build_hdr(coap_hdr_t *hdr, unsigned type, uint8_t *token, size_t token_len, unsigned code, uint16_t id);
+ssize_t coap_build_hdr(coap_hdr_t *hdr, unsigned type, uint8_t *token,
+                       size_t token_len, unsigned code, uint16_t id);
 
 /**
  * @brief   Insert a CoAP option into buffer
@@ -384,9 +385,9 @@ size_t coap_put_option_uri(uint8_t *buf, uint16_t lastonum, const char *uri, uin
 /**
  * @brief   Get the CoAP version number
  *
- * @param[in] pkt   CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  CoAP version number
+ * @returns     CoAP version number
  */
 static inline unsigned coap_get_ver(coap_pkt_t *pkt)
 {
@@ -396,12 +397,12 @@ static inline unsigned coap_get_ver(coap_pkt_t *pkt)
 /**
  * @brief   Get the message type
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  COAP_TYPE_CON
- * @return  COAP_TYPE_NON
- * @return  COAP_TYPE_ACK
- * @return  COAP_TYPE_RST
+ * @returns     COAP_TYPE_CON
+ * @returns     COAP_TYPE_NON
+ * @returns     COAP_TYPE_ACK
+ * @returns     COAP_TYPE_RST
  */
 static inline unsigned coap_get_type(coap_pkt_t *pkt)
 {
@@ -411,9 +412,9 @@ static inline unsigned coap_get_type(coap_pkt_t *pkt)
 /**
  * @brief   Get a message's token length [in byte]
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  length of token in the given message (0-8 byte)
+ * @returns     length of token in the given message (0-8 byte)
  */
 static inline unsigned coap_get_token_len(coap_pkt_t *pkt)
 {
@@ -423,9 +424,9 @@ static inline unsigned coap_get_token_len(coap_pkt_t *pkt)
 /**
  * @brief   Get a message's code class (3 most significant bits of code)
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  message code class
+ * @returns     message code class
  */
 static inline unsigned coap_get_code_class(coap_pkt_t *pkt)
 {
@@ -435,9 +436,9 @@ static inline unsigned coap_get_code_class(coap_pkt_t *pkt)
 /**
  * @brief   Get a message's code detail (5 least significant bits of code)
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  message code detail
+ * @returns     message code detail
  */
 static inline unsigned coap_get_code_detail(coap_pkt_t *pkt)
 {
@@ -447,9 +448,9 @@ static inline unsigned coap_get_code_detail(coap_pkt_t *pkt)
 /**
  * @brief   Get a message's raw code (class + detail)
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  raw message code
+ * @returns     raw message code
  */
 static inline unsigned coap_get_code_raw(coap_pkt_t *pkt)
 {
@@ -459,9 +460,9 @@ static inline unsigned coap_get_code_raw(coap_pkt_t *pkt)
 /**
  * @brief   Get a message's code in decimal format ((class * 100) + detail)
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  message code in decimal format
+ * @returns     message code in decimal format
  */
 static inline unsigned coap_get_code(coap_pkt_t *pkt)
 {
@@ -471,9 +472,9 @@ static inline unsigned coap_get_code(coap_pkt_t *pkt)
 /**
  * @brief   Get the message ID of the given CoAP packet
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  message ID
+ * @returns     message ID
  */
 static inline unsigned coap_get_id(coap_pkt_t *pkt)
 {
@@ -483,9 +484,9 @@ static inline unsigned coap_get_id(coap_pkt_t *pkt)
 /**
  * @brief   Get the total header length (4-byte header + token length)
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  total header length
+ * @returns     total header length
  */
 static inline unsigned coap_get_total_hdr_len(coap_pkt_t *pkt)
 {
@@ -495,10 +496,10 @@ static inline unsigned coap_get_total_hdr_len(coap_pkt_t *pkt)
 /**
  * @brief   Encode given code class and code detail to raw code
  *
- * @param[in] class     message code class
- * @param[in] detail    message code detail
+ * @param[in]   class   message code class
+ * @param[in]   detail  message code detail
  *
- * @return  raw message code
+ * @returns     raw message code
  */
 static inline uint8_t coap_code(unsigned class, unsigned detail)
 {
@@ -508,8 +509,8 @@ static inline uint8_t coap_code(unsigned class, unsigned detail)
 /**
  * @brief   Write the given raw message code to given CoAP header
  *
- * @param[out] hdr      CoAP header to write to
- * @param[in]  code     raw message code
+ * @param[out]  hdr     CoAP header to write to
+ * @param[in]   code    raw message code
  */
 static inline void coap_hdr_set_code(coap_hdr_t *hdr, uint8_t code)
 {
@@ -521,8 +522,8 @@ static inline void coap_hdr_set_code(coap_hdr_t *hdr, uint8_t code)
  *
  * @pre     (type := [0-3])
  *
- * @param[out] hdr      CoAP header to write
- * @param[in]  type     message type as integer value [0-3]
+ * @param[out]  hdr     CoAP header to write
+ * @param[in]   type    message type as integer value [0-3]
  */
 static inline void coap_hdr_set_type(coap_hdr_t *hdr, unsigned type)
 {
@@ -536,9 +537,9 @@ static inline void coap_hdr_set_type(coap_hdr_t *hdr, unsigned type)
 /**
  * @brief   Convert message code (request method) into a corresponding bit field
  *
- * @param[in] code      request code denoting the request method
+ * @param[in]   code    request code denoting the request method
  *
- * @return  bit field corresponding to the given request method
+ * @returns     bit field corresponding to the given request method
  */
 static inline unsigned coap_method2flag(unsigned code)
 {
@@ -548,10 +549,10 @@ static inline unsigned coap_method2flag(unsigned code)
 /**
  * @brief   Identifies a packet containing an observe option
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  true if observe value is set
- * @return  false if not
+ * @returns     true if observe value is set
+ * @returns     false if not
  */
 static inline bool coap_has_observe(coap_pkt_t *pkt)
 {
@@ -561,7 +562,7 @@ static inline bool coap_has_observe(coap_pkt_t *pkt)
 /**
  * @brief   Clears the observe option value from a packet
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  */
 static inline void coap_clear_observe(coap_pkt_t *pkt)
 {
@@ -571,9 +572,9 @@ static inline void coap_clear_observe(coap_pkt_t *pkt)
 /**
  * @brief   Get the value of the observe option from the given packet
  *
- * @param[in] pkt       CoAP packet
+ * @param[in]   pkt   CoAP packet
  *
- * @return  value of the observe option
+ * @returns     value of the observe option
  */
 static inline uint32_t coap_get_observe(coap_pkt_t *pkt)
 {
