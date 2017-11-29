@@ -44,7 +44,7 @@ extern "C" {
 int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize);
 
 /**
- * @brief   simple synchronous CoAP get
+ * @brief   Simple synchronous CoAP get
  *
  * @param[in]   remote  remote UDP endpoint
  * @param[in]   path    remote path
@@ -54,7 +54,8 @@ int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize);
  * @returns     length of response on success
  * @returns     <0 on error
  */
-ssize_t nanocoap_get(sock_udp_ep_t *remote, const char *path, uint8_t *buf, size_t len);
+ssize_t nanocoap_get(sock_udp_ep_t *remote, const char *path, uint8_t *buf,
+                     size_t len);
 
 #ifdef __cplusplus
 }
