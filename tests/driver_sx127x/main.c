@@ -29,7 +29,6 @@
 #include "shell.h"
 #include "shell_commands.h"
 
-#include "net/gnrc/netdev.h"
 #include "net/netdev.h"
 #include "net/lora.h"
 
