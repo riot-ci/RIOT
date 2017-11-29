@@ -245,9 +245,11 @@ static void test_nib_nc_mark_reachable__unmanaged(void)
     void *iter_state = NULL;
     static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
                                              { .u64 = TEST_UINT64 } } };
+    uint8_t l2addr[] = L2ADDR;
     gnrc_ipv6_nib_nc_t nce;
 
-    TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&addr, IFACE, NULL, 0));
+    TEST_ASSERT_EQUAL_INT(0, gnrc_ipv6_nib_nc_set(&addr, IFACE, l2addr,
+                                                  sizeof(l2addr)));
     /* check pre-state */
     TEST_ASSERT(gnrc_ipv6_nib_nc_iter(0, &iter_state, &nce));
     TEST_ASSERT_EQUAL_INT(GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNMANAGED,
