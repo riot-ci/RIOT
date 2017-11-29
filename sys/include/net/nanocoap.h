@@ -113,14 +113,14 @@ extern "C" {
  * @{
  */
 #define COAP_CLASS_SUCCESS      (2)
-#define COAP_CODE_CREATED      ((2<<5) | 1)
-#define COAP_CODE_DELETED      ((2<<5) | 2)
-#define COAP_CODE_VALID        ((2<<5) | 3)
-#define COAP_CODE_CHANGED      ((2<<5) | 4)
-#define COAP_CODE_204          ((2<<5) | 4)
-#define COAP_CODE_CONTENT      ((2<<5) | 5)
-#define COAP_CODE_205          ((2<<5) | 5)
-#define COAP_CODE_231          ((2<<5) | 31)
+#define COAP_CODE_CREATED      ((2 << 5) | 1)
+#define COAP_CODE_DELETED      ((2 << 5) | 2)
+#define COAP_CODE_VALID        ((2 << 5) | 3)
+#define COAP_CODE_CHANGED      ((2 << 5) | 4)
+#define COAP_CODE_204          ((2 << 5) | 4)
+#define COAP_CODE_CONTENT      ((2 << 5) | 5)
+#define COAP_CODE_205          ((2 << 5) | 5)
+#define COAP_CODE_231          ((2 << 5) | 31)
 /** @} */
 
 /**
@@ -128,17 +128,17 @@ extern "C" {
  * @{
  */
 #define COAP_CLASS_CLIENT_FAILURE             (4)
-#define COAP_CODE_BAD_REQUEST                ((4<<5) | 0)
-#define COAP_CODE_UNAUTHORIZED               ((4<<5) | 1)
-#define COAP_CODE_BAD_OPTION                 ((4<<5) | 2)
-#define COAP_CODE_FORBIDDEN                  ((4<<5) | 3)
-#define COAP_CODE_PATH_NOT_FOUND             ((4<<5) | 4)
-#define COAP_CODE_404                        ((4<<5) | 4)
-#define COAP_CODE_METHOD_NOT_ALLOWED         ((4<<5) | 5)
-#define COAP_CODE_NOT_ACCEPTABLE             ((4<<5) | 6)
-#define COAP_CODE_PRECONDITION_FAILED        ((4<<5) | 0xC)
-#define COAP_CODE_REQUEST_ENTITY_TOO_LARGE   ((4<<5) | 0xD)
-#define COAP_CODE_UNSUPPORTED_CONTENT_FORMAT ((4<<5) | 0xF)
+#define COAP_CODE_BAD_REQUEST                ((4 << 5) | 0)
+#define COAP_CODE_UNAUTHORIZED               ((4 << 5) | 1)
+#define COAP_CODE_BAD_OPTION                 ((4 << 5) | 2)
+#define COAP_CODE_FORBIDDEN                  ((4 << 5) | 3)
+#define COAP_CODE_PATH_NOT_FOUND             ((4 << 5) | 4)
+#define COAP_CODE_404                        ((4 << 5) | 4)
+#define COAP_CODE_METHOD_NOT_ALLOWED         ((4 << 5) | 5)
+#define COAP_CODE_NOT_ACCEPTABLE             ((4 << 5) | 6)
+#define COAP_CODE_PRECONDITION_FAILED        ((4 << 5) | 0xC)
+#define COAP_CODE_REQUEST_ENTITY_TOO_LARGE   ((4 << 5) | 0xD)
+#define COAP_CODE_UNSUPPORTED_CONTENT_FORMAT ((4 << 5) | 0xF)
 /** @} */
 
 /**
@@ -146,12 +146,12 @@ extern "C" {
  * @{
  */
 #define COAP_CLASS_SERVER_FAILURE             (5)
-#define COAP_CODE_INTERNAL_SERVER_ERROR      ((5<<5) | 0)
-#define COAP_CODE_NOT_IMPLEMENTED            ((5<<5) | 1)
-#define COAP_CODE_BAD_GATEWAY                ((5<<5) | 2)
-#define COAP_CODE_SERVICE_UNAVAILABLE        ((5<<5) | 3)
-#define COAP_CODE_GATEWAY_TIMEOUT            ((5<<5) | 4)
-#define COAP_CODE_PROXYING_NOT_SUPPORTED     ((5<<5) | 5)
+#define COAP_CODE_INTERNAL_SERVER_ERROR      ((5 << 5) | 0)
+#define COAP_CODE_NOT_IMPLEMENTED            ((5 << 5) | 1)
+#define COAP_CODE_BAD_GATEWAY                ((5 << 5) | 2)
+#define COAP_CODE_SERVICE_UNAVAILABLE        ((5 << 5) | 3)
+#define COAP_CODE_GATEWAY_TIMEOUT            ((5 << 5) | 4)
+#define COAP_CODE_PROXYING_NOT_SUPPORTED     ((5 << 5) | 5)
 /** @} */
 
 /**
@@ -224,7 +224,7 @@ typedef struct {
 /**
  * @brief   Resource handler type
  */
-typedef ssize_t (*coap_handler_t)(coap_pkt_t* pkt, uint8_t *buf, size_t len);
+typedef ssize_t (*coap_handler_t)(coap_pkt_t *pkt, uint8_t *buf, size_t len);
 
 /**
  * @brief   Type for CoAP resource entry
@@ -259,7 +259,7 @@ extern const unsigned coap_resources_numof;
  * @returns     0 on success
  * @returns     <0 on error
  */
-int coap_parse(coap_pkt_t* pkt, uint8_t *buf, size_t len);
+int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len);
 
 /**
  * @brief   Build reply to CoAP request
@@ -302,10 +302,10 @@ ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
  * @returns         <0 on error
  */
 ssize_t coap_reply_simple(coap_pkt_t *pkt,
-        unsigned code,
-        uint8_t *buf, size_t len,
-        unsigned ct,
-        const uint8_t *payload, uint8_t payload_len);
+                          unsigned code,
+                          uint8_t *buf, size_t len,
+                          unsigned ct,
+                          const uint8_t *payload, uint8_t payload_len);
 
 /**
  * @brief   Handle incoming CoAP request
@@ -502,7 +502,7 @@ static inline unsigned coap_get_total_hdr_len(coap_pkt_t *pkt)
  */
 static inline uint8_t coap_code(unsigned class, unsigned detail)
 {
-   return (class << 5) | detail;
+    return (class << 5) | detail;
 }
 
 /**
@@ -584,7 +584,7 @@ static inline uint32_t coap_get_observe(coap_pkt_t *pkt)
  * @brief   Reference to the default .well-known/core handler defined by the
  *          application
  */
-extern ssize_t coap_well_known_core_default_handler(coap_pkt_t* pkt, \
+extern ssize_t coap_well_known_core_default_handler(coap_pkt_t *pkt, \
                                                     uint8_t *buf, size_t len);
 
 /**
