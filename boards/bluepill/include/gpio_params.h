@@ -35,7 +35,7 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .name = "LED",
         .pin = LED0_PIN,
         .mode = GPIO_OUT,
-        .flags = SAUL_GPIO_INVERTED
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR)
     },
 };
 
