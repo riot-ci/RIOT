@@ -1789,7 +1789,7 @@ static void test_nib_abr_add_pfx__pfx_not_in_nib(void)
     static const ipv6_addr_t addr = { .u64 = { { .u8 = GLOBAL_PREFIX },
                                              { .u64 = TEST_UINT64 } } };
     _nib_offl_entry_t offl;
-    offl.mode |= _PL;
+    offl.mode = _PL;
     TEST_ASSERT_NOT_NULL((abr = _nib_abr_add(&addr)));
     TEST_ASSERT_NULL(_nib_abr_iter_pfx(abr, NULL));
     _nib_abr_add_pfx(abr, &offl);
