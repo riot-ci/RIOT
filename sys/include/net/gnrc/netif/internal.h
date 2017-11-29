@@ -366,8 +366,7 @@ bool gnrc_netif_is_6ln(const gnrc_netif_t *netif);
  *          RFC 6775
  *
  * @attention   Requires prior locking
- * @note        Assumed to be false, when @ref GNRC_IPV6_NIB_CONF_6LR == 0 and
- *              .
+ * @note        Assumed to be false, when @ref GNRC_IPV6_NIB_CONF_6LR == 0
  *
  * @param[in] netif the network interface
  *
@@ -376,10 +375,10 @@ bool gnrc_netif_is_6ln(const gnrc_netif_t *netif);
  * @return  true, if the interface represents a 6LR
  * @return  false, if the interface does not represent a 6LR
  */
-#if GNRC_IPV6_NIB_6LR && \
-    /* if flag checkers even evaluate, otherwise just assume their result */ \
-    (defined(MODULE_IPV6_ROUTER) || \
-     (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN)) || \
+#if (GNRC_IPV6_NIB_6LR && \
+     /* if flag checkers even evaluate, otherwise just assume their result */ \
+     (defined(MODULE_IPV6_ROUTER) || \
+      (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN))) || \
     defined(DOXYGEN)
 static inline bool gnrc_netif_is_6lr(const gnrc_netif_t *netif)
 {
