@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Freie Universität Berlin
+ * Copyright (C) 2016-2017 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,15 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo STM Nucleo boards
- * @ingroup     boards
- * @brief       STM Nucleo boards
- */
-
-/**
- * @defgroup    boards_nucleo64_common STM Nucleo 64 boards common
+ * @defgroup    boards_nucleo64_common STM Nucleo-64 Common
  * @ingroup     boards_nucleo
- * @brief       Common files for STM Nucleo 64 boards
+ * @brief       Common files for STM Nucleo-64 boards
  * @{
  *
  * @file
@@ -25,11 +19,10 @@
  * @author      Sebastian Meiling <s@mlng.net>
  */
 
-#ifndef BOARD_COMMON_H
-#define BOARD_COMMON_H
+#ifndef BOARD_H
+#define BOARD_H
 
-#include "cpu.h"
-#include "periph_conf.h"
+#include "board_nucleo.h"
 #include "arduino_pinmap.h"
 
 #ifdef __cplusplus
@@ -37,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   LED pin definitions and handlers
+ * @name    LED pin definitions and handlers
  * @{
  */
 #ifdef CPU_MODEL_STM32F302R8
@@ -63,14 +56,9 @@ extern "C" {
 #define BTN0_MODE           GPIO_IN_PU
 /** @} */
 
-/**
- * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
- */
-void board_init(void);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BOARD_COMMON_H */
+#endif /* BOARD_H */
 /** @} */
