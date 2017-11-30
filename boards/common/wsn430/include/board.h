@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013 Milan Babel <babel@inf.fu-berlin.de>
- *               2016 Freie Universität Berlin
+ *               2015-2017 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    boards_wsn430-common WSN430 common
+ * @defgroup    boards_wsn430_common Shared WSN430 files
  * @ingroup     boards
  * @brief       Common files for WSN430 based boards
  * @{
