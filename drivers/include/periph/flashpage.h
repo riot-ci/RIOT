@@ -55,7 +55,7 @@ extern "C" {
  * @def     FLASHPAGE_RAW_BLOCKSIZE
  *
  * @brief   For raw writings to the flash, this constant must define the
- *          minimum write block allowed by the MCU.
+ *          minimum write length allowed by the MCU.
  */
 #ifdef DOXYGEN
 #define FLASHPAGE_RAW_BLOCKSIZE
@@ -141,8 +141,8 @@ void flashpage_write(int page, void *data);
  *
  * Both target address and data address must be aligned to
  * FLASHPAGE_RAW_ALIGN. @p len must be a multiple of FLASHPAGE_RAW_BLOCKSIZE.
- * This function doesn't erase any area in flash, thus be sure the block is
- * erased before writing it (using the flashpage_write function).
+ * This function doesn't erase any area in flash, thus be sure the targeted
+ * memory area is erased before writing on it (using the flashpage_write function).
  *
  * @param[in] target_addr   address in flash to write to. MUST be aligned
  *                          to FLASHPAGE_RAW_ALIGNMENT.
