@@ -6,8 +6,8 @@
  * directory for more details.
  */
 
-#include "memarray.h"
 #include <string.h>
+#include "memarray.h"
 
 void *memarray_alloc(memarray_t *mem)
 {
