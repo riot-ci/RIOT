@@ -7,9 +7,7 @@
  */
 
 /**
- * @defgroup    boards_iotlab-m3 IoT-LAB M3 open node
- * @ingroup     boards
- * @brief       Board specific files for the iotlab-m3 board.
+ * @ingroup     boards_common_iotlab
  * @{
  *
  * @file

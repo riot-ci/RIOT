@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_common_arduino-atmega Arduino Atmega Common
+ * @defgroup    boards_common_iotlab IoTlab Common
  * @ingroup     boards_common
- * @brief       Shared files and configuration for Arduino Atmega boards.
+ * @brief       Shared files and configuration for the IoTlab boards.
  */

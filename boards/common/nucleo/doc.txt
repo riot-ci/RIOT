@@ -7,7 +7,12 @@
  */
 
 /**
- * @defgroup    boards_common_arduino-atmega Arduino Atmega Common
+ * @defgroup    boards_common_nucleo STM Nucleo common
  * @ingroup     boards_common
- * @brief       Shared files and configuration for Arduino Atmega boards.
+ * @brief       Shared files and configuration for all STM Nucleo boards.
+ */
+
+/**
+ * @defgroup    boards_nucleo STM Nucleo Boards
+ * @ingroup     boards
  */

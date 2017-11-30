@@ -8,9 +8,7 @@
  */
 
 /**
- * @defgroup    boards_wsn430-common WSN430 common
- * @ingroup     boards
- * @brief       Common files for WSN430 based boards
+ * @ingroup     boards_common_wsn430
  * @{
  *
  * @file

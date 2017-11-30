@@ -7,9 +7,7 @@
  */
 
 /**
- * @defgroup    boards_msba2-common MSB-A2 common
- * @ingroup     boards
- * @brief       Common files for all MSB-A2 based boards
+ * @ingroup     boards_common_msba2
  * @{
  *
  * @file
