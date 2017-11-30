@@ -7,9 +7,7 @@
  */
 
 /**
- * @defgroup    boards_nucleo32-common STM Nucleo-32 Common
- * @ingroup     boards_nucleo
- * @brief       Common files for STM Nucleo-32 boards
+ * @ingroup     boards_common_nucleo32
  * @{
  *
  * @file
