@@ -8,8 +8,7 @@
  */
 
 /**
- * @ingroup     boards_remote
- * @brief       Support for the RE-Mote boards
+ * @ingroup     boards_common_remote
  * @{
  *
  * @file
