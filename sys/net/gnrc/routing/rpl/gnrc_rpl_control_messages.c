@@ -24,6 +24,7 @@
 #include "net/gnrc/netif/internal.h"
 #include "net/gnrc.h"
 #include "net/eui64.h"
+#include "gnrc_rpl_internal/globals.h"
 
 #ifdef MODULE_NETSTATS_RPL
 #include "gnrc_rpl_internal/netstats.h"
@@ -682,14 +683,22 @@ void gnrc_rpl_recv_DIO(gnrc_rpl_dio_t *dio, kernel_pid_t iface, ipv6_addr_t *src
     /* gnrc_rpl_parent_add_by_addr should have set this already */
     assert(parent != NULL);
 
-    parent->rank = byteorder_ntohs(dio->rank);
+    uint16_t dio_rank = byteorder_ntohs(dio->rank);
+
+    if (dio_rank > parent->rank) {
+        DEBUG("RPL: Received DIO from parent with worse rank than before\n");
+        gnrc_rpl_parent_remove(parent);
+    }
+    else {
+        parent->rank = dio_rank;
+    }
 
     gnrc_rpl_parent_update(dodag, parent);
 
     /* sender of incoming DIO is not a parent of mine (anymore) and has an INFINITE rank
        and I have a rank != INFINITE_RANK */
-    if (parent->state == 0) {
-        if ((byteorder_ntohs(dio->rank) == GNRC_RPL_INFINITE_RANK)
+    if (parent->state == GNRC_RPL_PARENT_UNUSED) {
+        if ((dio_rank == GNRC_RPL_INFINITE_RANK)
              && (dodag->my_rank != GNRC_RPL_INFINITE_RANK)) {
             trickle_reset_timer(&dodag->trickle);
             return;
