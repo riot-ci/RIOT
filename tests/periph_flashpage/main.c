@@ -41,10 +41,7 @@ static char raw_buf[64] __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)));
 static uint32_t getaddr(const char *str)
 {
     uint32_t addr = strtol(str, NULL, 16);
-    if (addr < CPU_FLASH_BASE) {
-        printf("error: address %#lx is invalid\n", addr);
-        return -1;
-    }
+
     return addr;
 }
 #endif
@@ -192,9 +189,6 @@ static int cmd_write_raw(int argc, char **argv)
     }
 
     addr = getaddr(argv[1]);
-    if (addr < 0) {
-        return 1;
-    }
 
     /* try to align */
     memcpy(raw_buf, argv[2], strlen(argv[2]));
