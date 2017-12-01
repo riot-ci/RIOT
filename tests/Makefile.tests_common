@@ -1,4 +1,4 @@
-APPLICATION ?= tests_$(shell basename $(CURDIR))
+APPLICATION ?= tests_$(notdir $(patsubst %/,%,$(CURDIR)))
 ifneq (,$(filter tests_driver_%,$(APPLICATION)))
     BOARD ?= samr21-xpro
 endif
