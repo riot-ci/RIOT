@@ -1,3 +1,5 @@
+APPLICATION = openthread
+
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
 
