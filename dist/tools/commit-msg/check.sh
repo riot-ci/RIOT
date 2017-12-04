@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2015 Oliver Hahm <oliver.hahm@inria.fr>
+# Copyright 2017 Freie Universität Berlin
 #
 # This file is subject to the terms and conditions of the GNU Lesser
 # General Public License v2.1. See the file LICENSE in the top level
@@ -24,18 +24,18 @@ else
     fi
 fi
 
-# select files to check
+# select HEAD, if no branch is given
 if [ -z "${BRANCH}" ]; then
     BRANCH=$(git rev-list HEAD | tail -n 1)
 fi
 
-ERROR="$(git -c core.whitespace="tab-in-indent,tabwidth=4" \
-    log --no-merges --pretty=format:'%s' $(git merge-base ${BRANCH} HEAD)..HEAD | \
+ERROR="$(git log \
+    --no-merges --pretty=format:'%s' $(git merge-base ${BRANCH} HEAD)..HEAD | \
     while read msg; do
     msg_length=$(echo "${msg}" | awk '{print length($0)}')
 
     if [ ${msg_length} -gt ${MSG_MAX_LENGTH} ]; then
-        echo "Commit message is longer than ${MSG_MAX_LENGTH} (${msg_length}) characters:" >&2
+        echo "Commit message is longer than ${MSG_MAX_LENGTH} characters:" >&2
         echo "    \"${msg}\"" >&2
         if [ ${msg_length} -gt ${MSG_STRETCH_LENGTH} ]; then
             echo "error"
