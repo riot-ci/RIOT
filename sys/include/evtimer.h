@@ -99,6 +99,17 @@ void evtimer_add(evtimer_t *evtimer, evtimer_event_t *event);
 void evtimer_del(evtimer_t *evtimer, evtimer_event_t *event);
 
 /**
+ * @brief   Retrieves the time remaining for an event
+ *
+ * @param[in] evtimer       The event timer the event belongs to
+ * @param[in] event         An event
+ *
+ * @return  The offset of the event
+ * @return  Zero when the event is not in the list
+ */
+uint32_t evtimer_get_offset(evtimer_t *evtimer, evtimer_event_t *event);
+
+/**
  * @brief   Print overview of current state of an event timer
  *
  * @param[in] evtimer   An event timer
