@@ -100,6 +100,8 @@ void evtimer_del(evtimer_t *evtimer, evtimer_event_t *event);
 
 /**
  * @brief   Retrieves the time remaining for an event
+ * @warning Retrieval of evtimer event offsets has O(n) complexity with (n)
+ *          being the number of active @ref evtimer_event_t
  *
  * @param[in] evtimer       The event timer the event belongs to
  * @param[in] event         An event
