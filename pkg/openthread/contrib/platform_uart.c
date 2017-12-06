@@ -54,6 +54,7 @@ int8_t getFirstEmptySerialBuffer(void) {
 /* OpenThread will call this for enabling UART (required for OpenThread's NCP)*/
 void uart_handler(void* arg, char c)  {
 
+    (void)arg;
     static int16_t currentSerialBufferNumber = 0;
     static uint8_t frameLength = 0;
     static uint8_t gOnGoingSpinelReception = 0;
