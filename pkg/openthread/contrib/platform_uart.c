@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "uart_stdio.h"
 #include "periph/uart.h"
@@ -114,7 +115,10 @@ void uart_handler(void* arg, char c)  {
 
 #else
 
-void uart_handler(void* arg, char c) {
+void uart_handler(void* arg, char c)
+{
+    (void) arg;
+
     static uint16_t frameLength = 0;
     if (frameLength == 0 && gSerialMessage != NULL) {
         memset(gSerialMessage[0], 0, sizeof(serial_msg_t));
