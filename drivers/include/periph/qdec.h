@@ -120,7 +120,6 @@ typedef enum {
  * @brief   Signature of event callback functions triggered from interrupts
  *
  * @param[in] arg       optional context for the callback
- * @param[in] channel   qdec channel that triggered the interrupt
  */
 typedef void (*qdec_cb_t)(void *arg);
 
@@ -149,6 +148,8 @@ typedef struct {
  *
  * @param[in] dev           QDEC device to initialize
  * @param[in] mode          QDEC mode : X1, X2 or X4
+ * @param[in] cb            Callback on QDEC timer overflow
+ * @param[in] arg           Callback arguments
  *
  * @return                  error code on error
  * @return                  0 on success

@@ -245,6 +245,28 @@ typedef struct {
 } pwm_conf_t;
 
 /**
+ * @brief   QDEC channel
+ */
+typedef struct {
+    gpio_t pin;             /**< GPIO pin mapped to this channel */
+    uint8_t cc_chan;        /**< capture compare channel used */
+} qdec_chan_t;
+
+/**
+ * @brief   QDEC configuration
+ */
+typedef struct {
+    TIM_TypeDef *dev;               /**< Timer used */
+    uint32_t max;
+    uint32_t rcc_mask;              /**< bit in clock enable register */
+    qdec_chan_t chan[TIMER_CHAN];    /**< channel mapping, set to {GPIO_UNDEF, 0}
+                                     *   if not used */
+    gpio_af_t af;                   /**< alternate function used */
+    uint8_t bus;                    /**< APB bus */
+    uint8_t irqn;                   /**< global IRQ channel */
+} qdec_conf_t;
+
+/**
  * @brief   Structure for UART configuration data
  */
 typedef struct {
