@@ -31,7 +31,7 @@ static vfs_mount_t _devfs_auto_init_mount = {
     .mount_point = "/dev",
 };
 
-#ifdef FEATURE_PERIPH_HWRNG
+#ifdef MODULE_PERIPH_HWRNG
 static devfs_t hwrng_devfs = {
     .path = "/hwrng",
     .f_op = &hwrng_vfs_ops,
@@ -50,7 +50,7 @@ void auto_init_devfs(void)
     DEBUG("auto_init_devfs: mounting /dev\n");
     vfs_mount(&_devfs_auto_init_mount);
 
-#ifdef FEATURE_PERIPH_HWRNG
+#ifdef MODULE_PERIPH_HWRNG
     devfs_register(&hwrng_devfs);
 #endif
 
