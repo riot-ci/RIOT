@@ -11,7 +11,7 @@ coding conventions, see https://github.com/RIOT-OS/RIOT/wiki/Coding-conventions.
 Put here the description of your contribution:
 - describe which part(s) of RIOT is (are) involved
 - if it's a bug fix, describe the bug that it solves and how it is solved
-- you can also give more information to reviewers about to test your changes
+- you can also give more information to reviewers about how to test your changes
 -->
 
 
