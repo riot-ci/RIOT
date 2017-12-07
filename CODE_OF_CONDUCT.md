@@ -22,7 +22,7 @@ community. In addition, violations of this code outside these spaces may also
 affect a person's ability to participate within them.
 
 If you believe someone is violating the code of conduct, we ask that you report
-it by emailing <riot@riot-os.org>. For more details please see our [Reporting
+it by emailing <conduct@riot-os.org>. For more details please see our [Reporting
 Guidelines](https://github.com/RIOT-OS/RIOT/wiki/CoC:-Reporting-Guidelines).
 
 -   **Be friendly and patient.**
@@ -76,4 +76,4 @@ Questions?
 ----------
 
 If you have questions, please see [the FAQ](https://github.com/RIOT-OS/RIOT/wiki/CoC:-FAQ).
-If that doesn't answer your questions, feel free to [contact us](mailto:riot@riot-os.org).
+If that doesn't answer your questions, feel free to [contact us](mailto:conduct@riot-os.org).
