@@ -18,8 +18,8 @@ Put here the description of your contribution:
 ### Issues/PRs references
 
 <!--
-Example: Fixes #1234. See also #5678.
-Please use keywords (e.g., Fixes) to create link to the issues or pull requests
-you resolved, so that they will automatically be closed when your pull request
-is merged. See https://github.com/blog/1506-closing-issues-via-pull-requests.
+Examples: Fixes #1234. See also #5678. Depends on PR #9876.
+Please use keywords (e.g., fixes, resolve) with link the issues you resolved,
+this way they will be automatically closed when your pull request is merged.
+See https://help.github.com/articles/closing-issues-using-keywords/.
 -->
