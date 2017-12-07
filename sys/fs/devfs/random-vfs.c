@@ -21,7 +21,7 @@
 
 #include "vfs.h"
 
-#ifdef FEATURE_PERIPH_HWRNG
+#ifdef MODULE_PERIPH_HWRNG
 
 #include "periph/hwrng.h"
 
@@ -54,7 +54,7 @@ static ssize_t hwrng_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes)
 
     return nbytes;
 }
-#endif /* FEATURE_PERIPH_HWRNG */
+#endif /* MODULE_PERIPH_HWRNG */
 
 #ifdef MODULE_RANDOM
 
