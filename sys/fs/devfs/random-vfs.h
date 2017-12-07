@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-#if defined(FEATURE_PERIPH_HWRNG) || defined(DOXYGEN)
+#if defined(MODULE_PERIPH_HWRNG) || defined(DOXYGEN)
 /**
  * @brief hwrng driver for vfs
  */
