@@ -1,11 +1,12 @@
 <!--
-If your issue is a usage question, submit it to the user mailing-list
-users@riot-os.org or the developer mailing-list devel@riot-os.org.
+If your issue is a usage question, please submit it to the user mailing-list
+users@riot-os.org or to the developer mailing-list devel@riot-os.org.
 -->
 
 #### Description
-<!-- Example: Cannot build gnrc_networking application for samr21-xpro
-board. -->
+<!--
+Example: Cannot build gnrc_networking application for samr21-xpro board.
+-->
 
 #### Steps to reproduce the issue
 <!--
@@ -15,10 +16,13 @@ setup, etc.
 -->
 
 #### Expected results
-<!-- Example: The gnrc_networking application builds on samr21-xpro. -->
+<!--
+Example: The gnrc_networking application builds on samr21-xpro.-->
 
 #### Actual results
-<!-- Please paste or specifically describe the actual output. -->
+<!--
+Please paste or specifically describe the actual output.
+-->
 
 #### Versions
 <!--
