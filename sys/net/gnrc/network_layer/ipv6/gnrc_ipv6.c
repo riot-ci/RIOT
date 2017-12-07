@@ -609,66 +609,71 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
     if (ipv6_addr_is_multicast(&hdr->dst)) {
         _send_multicast(netif, pkt, ipv6, payload, prep_hdr);
     }
-    else if (ipv6_addr_is_loopback(&hdr->dst) ||    /* dst is loopback address */
-             /* or dst registered to a local interface */
-             ((netif = gnrc_netif_get_by_ipv6_addr(&hdr->dst)) != NULL)) {
-        uint8_t *rcv_data;
-        gnrc_pktsnip_t *ptr = ipv6, *rcv_pkt;
-
-        if (prep_hdr) {
-            if (_fill_ipv6_hdr(netif, ipv6, payload) < 0) {
-                /* error on filling up header */
-                gnrc_pktbuf_release(pkt);
-                return;
-            }
-        }
-
-        rcv_pkt = gnrc_pktbuf_add(NULL, NULL, gnrc_pkt_len(ipv6), GNRC_NETTYPE_IPV6);
-
-        if (rcv_pkt == NULL) {
-            DEBUG("ipv6: error on generating loopback packet\n");
-            gnrc_pktbuf_release(pkt);
-            return;
-        }
-
-        rcv_data = rcv_pkt->data;
-
-        /* "reverse" packet (by making it one snip as if received from NIC) */
-        while (ptr != NULL) {
-            memcpy(rcv_data, ptr->data, ptr->size);
-            rcv_data += ptr->size;
-            ptr = ptr->next;
-        }
-
-        gnrc_pktbuf_release(pkt);
-
-        DEBUG("ipv6: packet is addressed to myself => loopback\n");
-
-        if (gnrc_netapi_receive(gnrc_ipv6_pid, rcv_pkt) < 1) {
-            DEBUG("ipv6: unable to deliver packet\n");
-            gnrc_pktbuf_release(rcv_pkt);
-        }
-    }
     else {
-        gnrc_ipv6_nib_nc_t nce;
+        gnrc_netif_t *tmp_netif = gnrc_netif_get_by_ipv6_addr(&hdr->dst);
 
-        if (gnrc_ipv6_nib_get_next_hop_l2addr(&hdr->dst, netif, pkt,
-                                              &nce) < 0) {
-            /* packet is released by NIB */
-            return;
-        }
-        netif = gnrc_netif_get_by_pid(gnrc_ipv6_nib_nc_get_iface(&nce));
-        assert(netif != NULL);
-        if (prep_hdr) {
-            if (_fill_ipv6_hdr(netif, ipv6, payload) < 0) {
-                /* error on filling up header */
+        if (ipv6_addr_is_loopback(&hdr->dst) ||    /* dst is loopback address */
+             /* or dst registered to a local interface */
+             (tmp_netif != NULL)) {
+            uint8_t *rcv_data;
+            gnrc_pktsnip_t *ptr = ipv6, *rcv_pkt;
+
+            if (prep_hdr) {
+                if (_fill_ipv6_hdr(tmp_netif, ipv6, payload) < 0) {
+                    /* error on filling up header */
+                    gnrc_pktbuf_release(pkt);
+                    return;
+                }
+            }
+
+            rcv_pkt = gnrc_pktbuf_add(NULL, NULL, gnrc_pkt_len(ipv6),
+                                      GNRC_NETTYPE_IPV6);
+
+            if (rcv_pkt == NULL) {
+                DEBUG("ipv6: error on generating loopback packet\n");
                 gnrc_pktbuf_release(pkt);
                 return;
             }
-        }
 
-        _send_unicast(netif, nce.l2addr,
-                      nce.l2addr_len, pkt);
+            rcv_data = rcv_pkt->data;
+
+            /* "reverse" packet (by making it one snip as if received from NIC) */
+            while (ptr != NULL) {
+                memcpy(rcv_data, ptr->data, ptr->size);
+                rcv_data += ptr->size;
+                ptr = ptr->next;
+            }
+
+            gnrc_pktbuf_release(pkt);
+
+            DEBUG("ipv6: packet is addressed to myself => loopback\n");
+
+            if (gnrc_netapi_receive(gnrc_ipv6_pid, rcv_pkt) < 1) {
+                DEBUG("ipv6: unable to deliver packet\n");
+                gnrc_pktbuf_release(rcv_pkt);
+            }
+        }
+        else {
+            gnrc_ipv6_nib_nc_t nce;
+
+            if (gnrc_ipv6_nib_get_next_hop_l2addr(&hdr->dst, netif, pkt,
+                                                  &nce) < 0) {
+                /* packet is released by NIB */
+                return;
+            }
+            netif = gnrc_netif_get_by_pid(gnrc_ipv6_nib_nc_get_iface(&nce));
+            assert(netif != NULL);
+            if (prep_hdr) {
+                if (_fill_ipv6_hdr(netif, ipv6, payload) < 0) {
+                    /* error on filling up header */
+                    gnrc_pktbuf_release(pkt);
+                    return;
+                }
+            }
+
+            _send_unicast(netif, nce.l2addr,
+                          nce.l2addr_len, pkt);
+        }
     }
 }
 
