@@ -141,11 +141,45 @@ static void test_devfs_mount_open(void)
     TEST_ASSERT_EQUAL_INT(0, res);
 }
 
+static void test_devfs_urandom(void)
+{
+    int res;
+    int fd = vfs_open("/dev/urandom", O_RDONLY, 0);
+    TEST_ASSERT(fd >= 0);
+
+    uint8_t buf[8] = { 0 };
+    res = vfs_read(fd, buf, sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(sizeof(buf), res);
+    for (unsigned i = 0; i < sizeof(buf); i++) {
+        TEST_ASSERT(buf[i]);
+    }
+}
+
+#ifdef MODULE_PERIPH_HWRNG
+static void test_devfs_hwrng(void)
+{
+    int res;
+    int fd = vfs_open("/dev/hwrng", O_RDONLY, 0);
+    TEST_ASSERT(fd >= 0);
+
+    uint8_t buf[8] = { 0 };
+    res = vfs_read(fd, buf, sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(sizeof(buf), res);
+    for (unsigned i = 0; i < sizeof(buf); i++) {
+        TEST_ASSERT(buf[i]);
+    }
+}
+#endif
+
 Test *tests_devfs_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_devfs_register),
         new_TestFixture(test_devfs_mount_open),
+        new_TestFixture(test_devfs_urandom),
+#ifdef MODULE_PERIPH_HWRNG
+        new_TestFixture(test_devfs_hwrng),
+#endif
     };
 
     EMB_UNIT_TESTCALLER(devfs_tests, NULL, NULL, fixtures);
