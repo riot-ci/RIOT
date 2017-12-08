@@ -19,20 +19,25 @@ def testfunc():
         if exc.errno == os.errno.ENOENT:
             print("ABORTING TEST: {} seems to be missing.\n".format(cross_gcc))
     else:
-        child = pexpect.spawn(['make'], env=os.environ)
+        child = pexpect.spawnu(['make'], env=os.environ)
+        child.logfile = sys.stdout
 
         try:
             if BOARD == 'stm32f4discovery':
-                child.expect_exact(b'\x1b[1;33mThe following features may conflict:'
-                                   b'\x1b[0m \x1b[1;32mperiph_dac periph_spi\x1b[0m')
-                child.expect_exact(b'\x1b[1;33mRationale: '
-                                   b'\x1b[0mOn stm32f4discovery boards there are '
-                                   b'the same pins for the DAC and/or SPI_0.')
-                child.expect_exact(b'\x1b[1;33mEXPECT undesired behaviour!\x1b[0m')
+                child.expect_exact('\x1b[1;33mThe following features may conflict:'
+                                   '\x1b[0m \x1b[1;32mperiph_dac periph_spi\x1b[0m')
+                child.expect_exact('\x1b[1;33mRationale: '
+                                   '\x1b[0mOn stm32f4discovery boards there are '
+                                   'the same pins for the DAC and/or SPI_0.')
+                child.expect_exact('\x1b[1;33mEXPECT undesired behaviour!\x1b[0m')
             else:
                 child.expect_exact('\x1b[1;31mThe selected BOARD={} is not whitelisted:\x1b[0m stm32f4discovery'
-                                   .format(BOARD).encode("ascii"))
-        except (pexpect.TIMEOUT, pexpect.EOF):
+                                   .format(BOARD))
+        except pexpect.TIMEOUT:
+            print("\x1b[1;31mTimeout in expect script\x1b[0m")
+            sys.exit(1)
+        except pexpect.EOF:
+            print("\x1b[1;31mUnexpected end of file in expect script\x1b[0m")
             sys.exit(1)
         finally:
             child.close()
