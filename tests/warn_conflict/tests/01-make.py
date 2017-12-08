@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+from traceback import print_tb
 import pexpect
 
 BOARD = os.getenv('BOARD', 'stm32f4discovery')
@@ -35,9 +36,11 @@ def testfunc():
                                    .format(BOARD))
         except pexpect.TIMEOUT:
             print("\x1b[1;31mTimeout in expect script\x1b[0m")
+            print_tb(sys.exc_info()[2])
             sys.exit(1)
         except pexpect.EOF:
             print("\x1b[1;31mUnexpected end of file in expect script\x1b[0m")
+            print_tb(sys.exc_info()[2])
             sys.exit(1)
         finally:
             child.close()
