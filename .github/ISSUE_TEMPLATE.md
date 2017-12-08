@@ -19,7 +19,8 @@ setup, etc.
 
 #### Expected results
 <!--
-Example: The gnrc_networking application builds on samr21-xpro.-->
+Example: The gnrc_networking application builds on samr21-xpro.
+-->
 
 #### Actual results
 <!--
