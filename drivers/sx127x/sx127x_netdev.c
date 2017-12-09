@@ -382,7 +382,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 sx127x_set_modem(dev, SX127X_MODEM_LORA);
                 return sizeof(uint16_t);
             }
-            break;
+            else {
+                return -EINVAL;
+            }
 
         case NETOPT_CHANNEL:
             assert(len <= sizeof(uint32_t));
