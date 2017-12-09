@@ -40,24 +40,24 @@ static void test_init(char *name)
 
     if (source == RNG_PRNG) {
 #if MODULE_PRNG_MERSENNE
-        printf("Mersenne Twister PRNG.\n\n");
+        puts("Mersenne Twister PRNG.\n");
 #elif MODULE_PRNG_MINSTD
-        printf("Park & Miller Minimal Standard PRNG.\n\n");
+        puts("Park & Miller Minimal Standard PRNG.\n");
 #elif MODULE_PRNG_MUSL_LCG
-        printf("Musl C PRNG.\n\n");
+        puts("Musl C PRNG.\n");
 #elif MODULE_PRNG_TINYMT32
-        printf("Tiny Mersenne Twister PRNG.\n\n");
+        puts("Tiny Mersenne Twister PRNG.\n");
 #else
-        printf("unknown PRNG.\n\n");
+        puts("unknown PRNG.\n");
 #endif
     }
 #ifdef MODULE_PERIPH_HWRNG
     else if (source == RNG_HWRNG) {
-        printf("HW RNG.\n\n");
+        puts("HW RNG.\n");
     }
 #endif
     else if (source == RNG_CONSTANT) {
-        printf("constant value.\n\n");
+        puts("constant value.\n");
     }
 }
 
@@ -93,10 +93,10 @@ static inline uint32_t test_get_uint32(void)
 void test_pass_fail(bool condition)
 {
     if (condition) {
-        printf("passed\n");
+        puts("passed");
     }
     else {
-        printf("failed\n");
+        puts("failed");
     }
 }
 
@@ -140,7 +140,7 @@ void test_distributions(uint32_t samples)
 
     /* if total is zero, it would yield a division by zero */
     if ((total / 100) == 0) {
-        printf("Total ones is zero.\n\n");
+        puts("Total ones is zero.\n");
         return;
     }
 
