@@ -1,4 +1,4 @@
-APPLICATION = rng_tools
+APPLICATION = rng
 include ../Makefile.tests_common
 
 # override PRNG if desired (see sys/random for alternatives)
