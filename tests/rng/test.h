@@ -25,7 +25,14 @@
 extern "C" {
 #endif
 
-/**w
+/**
+ * @brief   Define log2f for AVR-based targets.
+ */
+#ifdef __AVR__
+#define log2f(x) (logf (x) / (float) 0.693147180559945309417)
+#endif
+
+/**
  * @brief   Enum of possible RNG sources.
  */
 typedef enum {
