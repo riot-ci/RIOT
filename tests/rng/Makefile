@@ -2,7 +2,7 @@ APPLICATION = rng
 include ../Makefile.tests_common
 
 # override PRNG if desired (see sys/random for alternatives)
-# USEMODULE += prng_fortuna
+# USEMODULE += prng_minstd
 
 USEMODULE += fmt
 USEMODULE += printf_float
