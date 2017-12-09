@@ -9,6 +9,7 @@
 import pexpect
 import sys
 import os
+import re
 
 
 def testfunc(child):
@@ -36,7 +37,7 @@ def testfunc(child):
     child.expect("1034066532")
 
     child.sendline("entropy")
-    child.expect("Calculated 7.994709 bits of entropy from 10000 samples.")
+    child.expect(re.compile(r"Calculated 7\.994\d{3} bits of entropy from 10000 samples\."))
 
     # Constant source
     child.sendline("source 1")
@@ -62,7 +63,7 @@ def testfunc(child):
     child.expect("1337")
 
     child.sendline("entropy")
-    child.expect("Calculated 0.017260 bits of entropy from 10000 samples.")
+    child.expect(re.compile(r"Calculated 0\.017\d{3} bits of entropy from 10000 samples\."))
 
 
 if __name__ == "__main__":
