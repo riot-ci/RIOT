@@ -376,6 +376,11 @@ typedef enum {
     NETOPT_INTEGRITY_CHECK,
 
     /**
+     * @brief   Get/Set the channel frequency as uint32_t.
+     */
+    NETOPT_CHANNEL_FREQUENCY,
+
+    /**
      * @brief   Enable/disable channel hopping.
      */
     NETOPT_CHANNEL_HOP,
