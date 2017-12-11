@@ -1,4 +1,3 @@
-APPLICATION = ssp
 include ../Makefile.tests_common
 
 # avr8, msp430 and mips don't support ssp (yet)
@@ -12,3 +11,6 @@ USEMODULE += ssp
 CFLAGS += -DDEVELHELP
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py

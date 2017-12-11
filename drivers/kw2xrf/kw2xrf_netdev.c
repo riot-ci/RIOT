@@ -56,7 +56,7 @@ static int _init(netdev_t *netdev)
 {
     kw2xrf_t *dev = (kw2xrf_t *)netdev;
 
-    /* initialise SPI and GPIOs */
+    /* initialize SPI and GPIOs */
     if (kw2xrf_init(dev, &_irq_handler)) {
         LOG_ERROR("[kw2xrf] unable to initialize device\n");
         return -1;
@@ -169,7 +169,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     if (info != NULL) {
         netdev_ieee802154_rx_info_t *radio_info = info;
         radio_info->lqi = ((uint8_t*)buf)[pkt_len];
-        radio_info->rssi = (uint8_t)kw2xrf_get_rssi(radio_info->lqi);
+        radio_info->rssi = kw2xrf_get_rssi(radio_info->lqi);
     }
 
     /* skip FCS and LQI */
@@ -197,6 +197,7 @@ static int _set_state(kw2xrf_t *dev, netopt_state_t state)
         case NETOPT_STATE_OFF:
             /* TODO: Replace with powerdown (set reset input low) */
             kw2xrf_set_power_mode(dev, KW2XRF_HIBERNATE);
+            break;
         default:
             return -ENOTSUP;
     }
@@ -326,7 +327,7 @@ int _get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
     return netdev_ieee802154_get((netdev_ieee802154_t *)netdev, opt, value, len);
 }
 
-static int _set(netdev_t *netdev, netopt_t opt, void *value, size_t len)
+static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t len)
 {
     kw2xrf_t *dev = (kw2xrf_t *)netdev;
     int res = -ENOTSUP;

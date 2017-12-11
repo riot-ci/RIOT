@@ -362,7 +362,7 @@ static int nrfmin_recv(netdev_t *dev, void *buf, size_t len, void *info)
 
     assert(state != STATE_OFF);
 
-    int pktlen = (int)rx_buf.pkt.hdr.len;
+    unsigned pktlen = rx_buf.pkt.hdr.len;
 
     /* check if packet data is readable */
     if (rx_lock || (pktlen == 0)) {
@@ -392,6 +392,7 @@ static int nrfmin_recv(netdev_t *dev, void *buf, size_t len, void *info)
 
 static int nrfmin_init(netdev_t *dev)
 {
+    (void)dev;
     uint8_t cpuid[CPUID_LEN];
 
     /* check given device descriptor */
@@ -400,7 +401,7 @@ static int nrfmin_init(netdev_t *dev)
     /* initialize our own address from the CPU ID */
     my_addr = 0;
     cpuid_get(cpuid);
-    for (int i = 0; i < CPUID_LEN; i++) {
+    for (unsigned i = 0; i < CPUID_LEN; i++) {
         my_addr ^= cpuid[i] << (8 * (i & 0x01));
     }
 
@@ -459,6 +460,7 @@ static void nrfmin_isr(netdev_t *dev)
 static int nrfmin_get(netdev_t *dev, netopt_t opt, void *val, size_t max_len)
 {
     (void)dev;
+    (void)max_len;
 
     switch (opt) {
         case NETOPT_CHANNEL:
@@ -480,6 +482,7 @@ static int nrfmin_get(netdev_t *dev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_MAX_PACKET_SIZE:
             assert(max_len >= sizeof(uint16_t));
             *((uint16_t *)val) = NRFMIN_PAYLOAD_MAX;
+            return sizeof(uint16_t);
         case NETOPT_ADDRESS_LONG:
             assert(max_len >= sizeof(uint64_t));
             nrfmin_get_pseudo_long_addr((uint16_t *)val);
@@ -508,31 +511,32 @@ static int nrfmin_get(netdev_t *dev, netopt_t opt, void *val, size_t max_len)
     }
 }
 
-static int nrfmin_set(netdev_t *dev, netopt_t opt, void *val, size_t len)
+static int nrfmin_set(netdev_t *dev, netopt_t opt, const void *val, size_t len)
 {
     (void)dev;
+    (void)len;
 
     switch (opt) {
         case NETOPT_CHANNEL:
             assert(len == sizeof(uint16_t));
-            return nrfmin_set_channel(*((uint16_t *)val));
+            return nrfmin_set_channel(*((const uint16_t *)val));
         case NETOPT_ADDRESS:
             assert(len == sizeof(uint16_t));
-            nrfmin_set_addr(*((uint16_t *)val));
+            nrfmin_set_addr(*((const uint16_t *)val));
             return sizeof(uint16_t);
         case NETOPT_ADDR_LEN:
         case NETOPT_SRC_LEN:
             assert(len == sizeof(uint16_t));
-            if (*((uint16_t *)val) != 2) {
+            if (*((const uint16_t *)val) != 2) {
                 return -EAFNOSUPPORT;
             }
             return sizeof(uint16_t);
         case NETOPT_STATE:
             assert(len == sizeof(netopt_state_t));
-            return nrfmin_set_state(*((netopt_state_t *)val));
+            return nrfmin_set_state(*((const netopt_state_t *)val));
         case NETOPT_TX_POWER:
             assert(len == sizeof(int16_t));
-            nrfmin_set_txpower(*((int16_t *)val));
+            nrfmin_set_txpower(*((const int16_t *)val));
             return sizeof(int16_t);
         default:
             return -ENOTSUP;

@@ -19,11 +19,15 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "thread.h"
+#include "xtimer.h"
 
 static char stack[THREAD_STACKSIZE_MAIN];
 
 volatile unsigned done;
+
+#define TIMEOUT   (100UL * US_PER_MS)
 
 static void *_thread(void *arg)
 {
@@ -65,7 +69,7 @@ static void _set(thread_t *thread, thread_flags_t flags)
 
 int main(void)
 {
-    puts("main starting");
+    puts("START");
 
     kernel_pid_t pid = thread_create(stack,
                   sizeof(stack),
@@ -85,7 +89,20 @@ int main(void)
 
     while(!done) {};
 
-    puts("test finished.");
+    puts("main: setting 100ms timeout...");
+    xtimer_t t;
+    uint32_t before = xtimer_now_usec();
+    xtimer_set_timeout_flag(&t, TIMEOUT);
+    thread_flags_wait_any(THREAD_FLAG_TIMEOUT);
+    uint32_t diff = xtimer_now_usec() - before;
+    printf("main: timeout triggered. time passed: %uus\n", (unsigned)diff);
+
+    if (abs(diff - TIMEOUT) < 500) {
+        puts("SUCCESS");
+    }
+    else {
+        puts("FAILURE");
+    }
 
     return 0;
 }

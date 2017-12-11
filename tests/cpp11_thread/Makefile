@@ -1,5 +1,3 @@
-# name of your application
-APPLICATION = cpp11_thread
 include ../Makefile.tests_common
 
 # ROM is overflowing for these boards when using
@@ -24,3 +22,6 @@ USEMODULE += xtimer
 USEMODULE += timex
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py

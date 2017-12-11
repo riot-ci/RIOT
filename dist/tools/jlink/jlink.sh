@@ -12,7 +12,7 @@
 # JLINK_SERIAL:     Device serial used by JLink
 # JLINK_IF:         Interface used by JLink, default: "SWD"
 # JLINK_SPEED:      Interface clock speed to use (in kHz), default "2000"
-# JLINK_FLASH_ADDR: Starting address of the target's flash memory, default: "0"
+# FLASH_ADDR:       Starting address of the target's flash memory, default: "0"
 # JLINK_PRE_FLASH:  Additional JLink commands to execute before flashing
 # JLINK_POST_FLASH: Additional JLink commands to execute after flashing
 #
@@ -25,7 +25,7 @@
 #               options:
 #               BINFILE: path to the binary file that is flashed
 #
-# debug:        starts OpenOCD as GDB server in the background and
+# debug:        starts JLink as GDB server in the background and
 #               connects to the server with the GDB client specified by
 #               the board (DBG environment variable)
 #
@@ -35,7 +35,7 @@
 #               TUI:            if TUI!=null, the -tui option will be used
 #               ELFFILE:        path to the ELF file to debug
 #
-# debug-server: starts OpenOCD as GDB server, but does not connect to
+# debug-server: starts JLink as GDB server, but does not connect to
 #               to it with any frontend. This might be useful when using
 #               IDEs.
 #
@@ -57,8 +57,6 @@ _JLINK=JLinkExe
 _JLINK_SERVER=JLinkGDBServer
 _JLINK_IF=SWD
 _JLINK_SPEED=2000
-# default starting address of the devices flash memory
-_FLASH_ADDR=0
 
 #
 # a couple of tests for certain configuration options
@@ -86,8 +84,9 @@ test_config() {
         echo "Error: No target device defined in JLINK_DEVICE env var"
         exit 1
     fi
-    if [ -z "${JLINK_FLASH_ADDR}" ]; then
-        JLINK_FLASH_ADDR=${_FLASH_ADDR}
+    if [ -z "${FLASH_ADDR}" ]; then
+        echo "Error: No flash address defined in FLASH_ADDR env var"
+        exit 1
     fi
 }
 
@@ -129,6 +128,13 @@ test_serial() {
     fi
 }
 
+test_dbg() {
+    if [ -z "${DBG}" ]; then
+        echo "Error: No debugger defined in DBG env var"
+        exit 1
+    fi
+}
+
 #
 # now comes the actual actions
 #
@@ -142,7 +148,7 @@ do_flash() {
     if [ ! -z "${JLINK_PRE_FLASH}" ]; then
         printf "${JLINK_PRE_FLASH}\n" >> ${BINDIR}/burn.seg
     fi
-    echo "loadbin ${HEXFILE} ${JLINK_FLASH_ADDR}" >> ${BINDIR}/burn.seg
+    echo "loadbin ${HEXFILE} ${FLASH_ADDR}" >> ${BINDIR}/burn.seg
     if [ ! -z "${JLINK_POST_FLASH}" ]; then
         printf "${JLINK_POST_FLASH}\n" >> ${BINDIR}/burn.seg
     fi
@@ -162,6 +168,7 @@ do_debug() {
     test_elffile
     test_ports
     test_tui
+    test_dbg
     # start the JLink GDB server
     sh -c "${JLINK_SERVER} ${JLINK_SERIAL_SERVER} \
                            -device '${JLINK_DEVICE}' \
@@ -211,6 +218,7 @@ shift # pop $1 from $@
 case "${ACTION}" in
   flash)
     echo "### Flashing Target ###"
+    echo "### Flashing at address ${FLASH_ADDR} ###"
     do_flash "$@"
     ;;
   debug)

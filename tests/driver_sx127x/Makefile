@@ -1,9 +1,8 @@
-APPLICATION = driver_sx127x
 include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
 
-BOARD ?= nucleo-l1
+BOARD ?= nucleo-l152
 
 USEMODULE += od
 USEMODULE += shell
