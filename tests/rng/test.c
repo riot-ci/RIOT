@@ -336,7 +336,7 @@ void test_entropy(uint32_t samples)
     }
 
     /* print results */
-    printf("Calculated %02f bits of entropy from %" PRIu32 " samples.\n", entropy, samples);
+    printf("Calculated %02f bits of entropy from %" PRIu32 " samples.\n", (double) entropy, samples);
 }
 
 void test_speed(uint32_t duration)

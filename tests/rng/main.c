@@ -191,7 +191,7 @@ static int cmd_source(int argc, char **argv)
         for (int i = 0; i < RNG_NUMOF; i++) {
             printf("%d: %s", i, sources[i]);
 
-            if (source == i) {
+            if ((int) source == i) {
                 puts(" (selected)");
             }
             else {
