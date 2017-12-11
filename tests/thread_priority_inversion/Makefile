@@ -19,4 +19,3 @@ QUIET ?= 1
 USEMODULE += xtimer
 
 include $(RIOTBASE)/Makefile.include
-
