@@ -35,6 +35,8 @@ char stack_low[THREAD_STACKSIZE_MAIN];
 
 void *t_low_handler(void *arg)
 {
+    (void) arg;
+
     /* starting working loop immediately */
     while(1){
         puts("t_low: allocating resource...");
@@ -52,6 +54,8 @@ void *t_low_handler(void *arg)
 
 void *t_mid_handler(void *arg)
 {
+    (void) arg;
+
     /* starting working loop after 3s */
     xtimer_sleep(3);
 
@@ -63,6 +67,8 @@ void *t_mid_handler(void *arg)
 
 void *t_high_handler(void *arg)
 {
+    (void) arg;
+
     /* starting working loop after 500 ms */
     xtimer_usleep(500);
     while(1){
