@@ -24,15 +24,13 @@
 #include "net/gnrc.h"
 #include "net/gnrc/netif.h"
 #include "net/gnrc/netif/hdr.h"
+#include "net/lora.h"
 
 #ifdef MODULE_NETSTATS
 #include "net/netstats.h"
 #endif
 #ifdef MODULE_L2FILTER
 #include "net/l2filter.h"
-#endif
-#ifdef MODULE_LORA
-#include "net/lora.h"
 #endif
 
 /**
@@ -298,7 +296,6 @@ static const char *_netopt_state_str[] = {
     [NETOPT_STATE_STANDBY] = "STANDBY"
 };
 
-#ifdef MODULE_LORA
 static const char *_netopt_bandwidth_str[] = {
     [LORA_BW_125_KHZ] = "125",
     [LORA_BW_250_KHZ] = "250",
@@ -311,7 +308,6 @@ static const char *_netopt_coding_rate_str[] = {
     [LORA_CR_4_7] = "4/7",
     [LORA_CR_4_8] = "4/8"
 };
-#endif
 
 /* for some lines threshold might just be 0, so we can't use _LINE_THRESHOLD
  * here */
@@ -422,7 +418,6 @@ static void _netif_list(kernel_pid_t iface)
     if (res >= 0) {
         printf(" NID: 0x%" PRIx16, u16);
     }
-#ifdef MODULE_LORA
     res = gnrc_netapi_get(iface, NETOPT_BANDWIDTH, 0, &u8, sizeof(u8));
     if (res >= 0) {
         printf(" BW: %skHz ", _netopt_bandwidth_str[u8]);
@@ -435,7 +430,6 @@ static void _netif_list(kernel_pid_t iface)
     if (res >= 0) {
         printf(" CR: %s ", _netopt_coding_rate_str[u8]);
     }
-#endif
     line_thresh = _newline(0U, line_thresh);
     res = gnrc_netapi_get(iface, NETOPT_ADDRESS_LONG, 0, hwaddr, sizeof(hwaddr));
     if (res >= 0) {
@@ -635,7 +629,6 @@ static int _netif_set_u32(kernel_pid_t iface, netopt_t opt, uint32_t context,
     return 0;
 }
 
-#ifdef MODULE_LORA
 static int _netif_set_bandwidth(kernel_pid_t iface, char *value)
 {
     uint8_t bw;
@@ -694,7 +687,6 @@ static int _netif_set_coding_rate(kernel_pid_t iface, char *value)
 
     return 0;
 }
-#endif
 
 static int _netif_set_u16(kernel_pid_t iface, netopt_t opt, uint16_t context,
                           char *u16_str)
@@ -990,7 +982,6 @@ static int _netif_set(char *cmd_name, kernel_pid_t iface, char *key, char *value
     else if ((strcmp("frequency", key) == 0) || (strcmp("freq", key) == 0)) {
         return _netif_set_u32(iface, NETOPT_CHANNEL_FREQUENCY, 0, value);
     }
-#ifdef MODULE_LORA
     else if ((strcmp("bandwidth", key) == 0) || (strcmp("bw", key) == 0)) {
         return _netif_set_bandwidth(iface, value);
     }
@@ -1000,7 +991,6 @@ static int _netif_set(char *cmd_name, kernel_pid_t iface, char *key, char *value
     else if ((strcmp("coding_rate", key) == 0) || (strcmp("cr", key) == 0)) {
         return _netif_set_coding_rate(iface, value);
     }
-#endif
     else if ((strcmp("channel", key) == 0) || (strcmp("chan", key) == 0)) {
         return _netif_set_u16(iface, NETOPT_CHANNEL, 0, value);
     }
