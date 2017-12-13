@@ -601,11 +601,7 @@ static int _netif_set_u32(kernel_pid_t iface, netopt_t opt, uint32_t context,
         hex = true;
     }
 
-    if (res > 0xffffffff) {
-        puts("error: unable to parse value.\n"
-             "Must be a 32-bit unsigned integer (dec or hex)\n");
-        return 1;
-    }
+    assert(res <= ULONG_MAX);
 
     if (gnrc_netapi_set(iface, opt, context, (uint32_t *)&res,
                         sizeof(uint32_t)) < 0) {
