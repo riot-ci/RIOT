@@ -243,29 +243,34 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
                 uint8_t pfx_len = (uint8_t)(opt->context >> 8U);
                 /* acquire locks a recursive mutex so we are safe calling this
                  * public function */
-                gnrc_netif_ipv6_addr_add(netif, opt->data, pfx_len, flags);
-                res = sizeof(ipv6_addr_t);
+                res = gnrc_netif_ipv6_addr_add_internal(netif, opt->data,
+                                                        pfx_len, flags);
+                if (res >= 0) {
+                    res = sizeof(ipv6_addr_t);
+                }
             }
             break;
         case NETOPT_IPV6_ADDR_REMOVE:
             assert(opt->data_len == sizeof(ipv6_addr_t));
             /* acquire locks a recursive mutex so we are safe calling this
              * public function */
-            gnrc_netif_ipv6_addr_remove(netif, opt->data);
+            gnrc_netif_ipv6_addr_remove_internal(netif, opt->data);
             res = sizeof(ipv6_addr_t);
             break;
         case NETOPT_IPV6_GROUP:
             assert(opt->data_len == sizeof(ipv6_addr_t));
             /* acquire locks a recursive mutex so we are safe calling this
              * public function */
-            gnrc_netif_ipv6_group_join(netif, opt->data);
-            res = sizeof(ipv6_addr_t);
+            res = gnrc_netif_ipv6_group_join_internal(netif, opt->data);
+            if (res >= 0) {
+                res = sizeof(ipv6_addr_t);
+            }
             break;
         case NETOPT_IPV6_GROUP_LEAVE:
             assert(opt->data_len == sizeof(ipv6_addr_t));
             /* acquire locks a recursive mutex so we are safe calling this
              * public function */
-            gnrc_netif_ipv6_group_leave(netif, opt->data);
+            gnrc_netif_ipv6_group_leave_internal(netif, opt->data);
             res = sizeof(ipv6_addr_t);
             break;
         case NETOPT_MAX_PACKET_SIZE:
@@ -522,8 +527,9 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
                                         uint8_t *candidate_set);
 static int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
 
-int gnrc_netif_ipv6_addr_add(gnrc_netif_t *netif, const ipv6_addr_t *addr,
-                             unsigned pfx_len, uint8_t flags)
+int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
+                                      const ipv6_addr_t *addr,
+                                      unsigned pfx_len, uint8_t flags)
 {
     unsigned idx = UINT_MAX;
 
@@ -561,7 +567,7 @@ int gnrc_netif_ipv6_addr_add(gnrc_netif_t *netif, const ipv6_addr_t *addr,
     /* TODO: SHOULD delay join between 0 and MAX_RTR_SOLICITATION_DELAY
      * for SLAAC */
     ipv6_addr_set_solicited_nodes(&sol_nodes, addr);
-    res = gnrc_netif_ipv6_group_join(netif, &sol_nodes);
+    res = gnrc_netif_ipv6_group_join_internal(netif, &sol_nodes);
 #if ENABLE_DEBUG
     if (res < 0) {
         DEBUG("nib: Can't join solicited-nodes of %s on interface %u\n",
@@ -599,8 +605,8 @@ int gnrc_netif_ipv6_addr_add(gnrc_netif_t *netif, const ipv6_addr_t *addr,
     return idx;
 }
 
-void gnrc_netif_ipv6_addr_remove(gnrc_netif_t *netif,
-                                 const ipv6_addr_t *addr)
+void gnrc_netif_ipv6_addr_remove_internal(gnrc_netif_t *netif,
+                                          const ipv6_addr_t *addr)
 {
     bool remove_sol_nodes = true;
     ipv6_addr_t sol_nodes;
@@ -625,7 +631,7 @@ void gnrc_netif_ipv6_addr_remove(gnrc_netif_t *netif,
         }
     }
     if (remove_sol_nodes) {
-        gnrc_netif_ipv6_group_leave(netif, &sol_nodes);
+        gnrc_netif_ipv6_group_leave_internal(netif, &sol_nodes);
     }
     gnrc_netif_release(netif);
 }
@@ -715,8 +721,8 @@ gnrc_netif_t *gnrc_netif_get_by_prefix(const ipv6_addr_t *prefix)
     return best_netif;
 }
 
-int gnrc_netif_ipv6_group_join(gnrc_netif_t *netif,
-                               const ipv6_addr_t *addr)
+int gnrc_netif_ipv6_group_join_internal(gnrc_netif_t *netif,
+                                        const ipv6_addr_t *addr)
 {
     unsigned idx = UINT_MAX;
 
@@ -742,8 +748,8 @@ int gnrc_netif_ipv6_group_join(gnrc_netif_t *netif,
     return idx;
 }
 
-void gnrc_netif_ipv6_group_leave(gnrc_netif_t *netif,
-                                 const ipv6_addr_t *addr)
+void gnrc_netif_ipv6_group_leave_internal(gnrc_netif_t *netif,
+                                          const ipv6_addr_t *addr)
 {
     int idx;
 
