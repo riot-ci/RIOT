@@ -309,7 +309,7 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
             }
             res = sizeof(netopt_enable_t);
             break;
-#endif  /* MODULE_GNRC_SIXLOWPAN_IPHC */
+#endif  /* MODULE_GNRC_LOWPAN_IPHC */
         default:
             break;
     }
@@ -1158,15 +1158,15 @@ static void _init_from_device(gnrc_netif_t *netif)
     switch (netif->device_type) {
 #ifdef MODULE_NETDEV_IEEE802154
         case NETDEV_TYPE_IEEE802154:
-#ifdef MODULE_GNRC_SIXLOWPAN_IPHC
+#ifdef MODULE_GNRC_LOWPAN_IPHC
             netif->flags |= GNRC_NETIF_FLAGS_6LO_HC;
 #endif
 #ifdef MODULE_GNRC_IPV6
             res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE, &tmp, sizeof(tmp));
             assert(res == sizeof(tmp));
-#ifdef MODULE_GNRC_SIXLOWPAN
+#ifdef MODULE_GNRC_LOWPAN
             netif->ipv6.mtu = IPV6_MIN_MTU;
-            netif->sixlo.max_frag_size = tmp;
+            netif->lowpan.max_frag_size = tmp;
 #else
             netif->ipv6.mtu = tmp;
 #endif

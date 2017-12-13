@@ -590,7 +590,7 @@ bool gnrc_sixlowpan_iphc_encode(gnrc_pktsnip_t *pkt)
     bool addr_comp = false, nhc_comp = false;
     gnrc_sixlowpan_ctx_t *src_ctx = NULL, *dst_ctx = NULL;
     gnrc_pktsnip_t *dispatch = gnrc_pktbuf_add(NULL, NULL, pkt->next->size,
-                                               GNRC_NETTYPE_SIXLOWPAN);
+                                               GNRC_NETTYPE_LOWPAN);
 
     if (dispatch == NULL) {
         DEBUG("6lo iphc: error allocating dispatch space\n");

@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    net_sixlowpan   6LoWPAN
- * @ingroup     net
+ * @ingroup     net_lowpan
  * @brief       Provides 6LoWPAN dispatch types and helper functions
  * @{
  *
@@ -37,13 +37,6 @@ extern "C" {
  *          </a>
  * @{
  */
-#define SIXLOWPAN_UNCOMP            (0x41)      /**< uncompressed 6LoWPAN frame dispatch. */
-#define SIXLOWPAN_FRAG_DISP_MASK    (0xf8)      /**< mask for fragmentation
-                                                 *   dispatch */
-#define SIXLOWPAN_FRAG_1_DISP       (0xc0)      /**< dispatch for 1st fragment */
-#define SIXLOWPAN_FRAG_N_DISP       (0xe0)      /**< dispatch for subsequent
-                                                 *   fragments */
-#define SIXLOWPAN_FRAG_MAX_LEN      (2047)      /**< Maximum datagram size @f$ (2^{11} - 1) @f$ */
 
 /**
  * @brief   Dispatch mask for LOWPAN_IPHC.
@@ -60,89 +53,10 @@ extern "C" {
  *          </a>
  */
 #define SIXLOWPAN_IPHC1_DISP        (0x60)
-
-/**
- * @brief   Checks if dispatch indicates that frame is not a 6LoWPAN (NALP) frame.
- *
- * @param[in] disp  The first byte of a frame.
- *
- * @return  true, if frame is a NALP.
- * @return  false, if frame is not a NALP.
- */
-static inline bool sixlowpan_nalp(uint8_t disp)
-{
-    return ((disp & 0xc0) == 0);
-}
 /** @} */
 
 /**
- * @name    6LoWPAN fragmentation header definitions
- * @{
- */
-#define SIXLOWPAN_FRAG_SIZE_MASK    (0x07ff)    /**< mask for datagram size */
-
-/**
- * @brief   General and 1st 6LoWPAN fragmentation header
- *
- * @note    The general 6LoWPAN fragmentation header refers to the first 4
- *          bytes of a \c FRAG0 or \c FRAGN fragmentation header, which are
- *          identical.
- *
- * @see <a href="https://tools.ietf.org/html/rfc4944#section-5.3">
- *          RFC 4944, section 5.3
- *      </a>
- */
-typedef struct __attribute__((packed)) {
-    /**
-     * @brief   Dispatch and datagram size.
-     *
-     * @details The 5 most significant bits are the dispatch, the remaining
-     *          bits are the size.
-     */
-    network_uint16_t disp_size;
-    network_uint16_t tag;       /**< datagram tag */
-} sixlowpan_frag_t;
-
-/**
- * @brief   Subsequent 6LoWPAN fragmentation header
- *
- * @see <a href="https://tools.ietf.org/html/rfc4944#section-5.3">
- *          RFC 4944, section 5.3
- *      </a>
- *
- * @extends sixlowpan_frag_t
- */
-typedef struct __attribute__((packed)) {
-    /**
-     * @brief   Dispatch and datagram size.
-     *
-     * @details The 5 most significant bits are the dispatch, the remaining
-     *          bits are the size.
-     */
-    network_uint16_t disp_size;
-    network_uint16_t tag;       /**< datagram tag */
-    uint8_t offset;             /**< offset */
-} sixlowpan_frag_n_t;
-
-/**
- * @brief   Checks if a given fragment is a 6LoWPAN fragment.
- *
- * @param[in] hdr   A 6LoWPAN fragmentation header.
- *
- * @return  true, if given fragment is a 6LoWPAN fragment.
- * @return  false, if given fragment is not a 6LoWPAN fragment.
- */
-static inline bool sixlowpan_frag_is(sixlowpan_frag_t *hdr)
-{
-    return ((hdr->disp_size.u8[0] & SIXLOWPAN_FRAG_DISP_MASK) ==
-            SIXLOWPAN_FRAG_1_DISP) ||
-           ((hdr->disp_size.u8[0] & SIXLOWPAN_FRAG_DISP_MASK) ==
-            SIXLOWPAN_FRAG_N_DISP);
-}
-/** @} */
-
-/**
- * @name    6LoWPAN IPHC dispatch definitions
+ * @name    LoWPAN IPHC dispatch definitions
  * @{
  */
 /**
@@ -226,7 +140,7 @@ static inline bool sixlowpan_frag_is(sixlowpan_frag_t *hdr)
 #define SIXLOWPAN_IPHC2_M           (0x08)
 
 /**
- * @brief   6LoWPAN IPHC header length
+ * @brief   LoWPAN IPHC header length
  */
 #define SIXLOWPAN_IPHC_HDR_LEN      (2)
 
@@ -243,19 +157,11 @@ static inline bool sixlowpan_frag_is(sixlowpan_frag_t *hdr)
  * @return  true, if datagram is an IPHC datagram.
  * @return  false, if datagram is not an IPHC datagram.
  */
-static inline bool sixlowpan_iphc_is(uint8_t *data)
+static inline bool lowpan_iphc_is(uint8_t *data)
 {
     return ((*data & SIXLOWPAN_IPHC1_DISP_MASK) == SIXLOWPAN_IPHC1_DISP);
 }
 /** @} */
-
-/**
- * @brief   Prints 6LoWPAN dispatch to stdout.
- *
- * @param[in] data  A 6LoWPAN frame.
- * @param[in] size  Size of @p data.
- */
-void sixlowpan_print(uint8_t *data, size_t size);
 
 #ifdef __cplusplus
 }

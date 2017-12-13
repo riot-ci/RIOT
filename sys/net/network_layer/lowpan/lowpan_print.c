@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2017 HAW Hamburg
  * Copyright (C) 2015 Martine Lenders <mlenders@inf.fu-berlin.de>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -16,12 +17,14 @@
 #include <inttypes.h>
 
 #include "od.h"
+
+#include "net/lowpan.h"
 #include "net/ipv6/hdr.h"
 #include "net/sixlowpan.h"
 
-void sixlowpan_print(uint8_t *data, size_t size)
+void lowpan_print(uint8_t *data, size_t size)
 {
-    if (data[0] == SIXLOWPAN_UNCOMP) {
+    if (data[0] == LOWPAN_UNCOMP_IPV6) {
         puts("Uncompressed IPv6 packet");
 
         /* might just be the dispatch (or fragmented) so better check */
@@ -32,33 +35,33 @@ void sixlowpan_print(uint8_t *data, size_t size)
                         OD_WIDTH_DEFAULT);
         }
     }
-    else if (sixlowpan_nalp(data[0])) {
+    else if (lowpan_nalp(data[0])) {
         puts("Not a LoWPAN (NALP) frame");
         od_hex_dump(data, size, OD_WIDTH_DEFAULT);
     }
-    else if ((data[0] & SIXLOWPAN_FRAG_DISP_MASK) == SIXLOWPAN_FRAG_1_DISP) {
-        sixlowpan_frag_t *hdr = (sixlowpan_frag_t *)data;
+    else if ((data[0] & LOWPAN_FRAG_DISP_MASK) == LOWPAN_FRAG_1_DISP) {
+        lowpan_frag_t *hdr = (lowpan_frag_t *)data;
 
         puts("Fragmentation Header (first)");
         printf("datagram size: %" PRIu16 "\n",
-               (uint16_t) (byteorder_ntohs(hdr->disp_size) & SIXLOWPAN_FRAG_SIZE_MASK));
+               (uint16_t) (byteorder_ntohs(hdr->disp_size) & LOWPAN_FRAG_SIZE_MASK));
         printf("tag: 0x%" PRIu16 "\n", byteorder_ntohs(hdr->tag));
 
         /* Print next dispatch */
-        sixlowpan_print(data + sizeof(sixlowpan_frag_t),
-                           size - sizeof(sixlowpan_frag_t));
+        lowpan_print(data + sizeof(lowpan_frag_t),
+                           size - sizeof(lowpan_frag_t));
     }
-    else if ((data[0] & SIXLOWPAN_FRAG_DISP_MASK) == SIXLOWPAN_FRAG_N_DISP) {
-        sixlowpan_frag_n_t *hdr = (sixlowpan_frag_n_t *)data;
+    else if ((data[0] & LOWPAN_FRAG_DISP_MASK) == LOWPAN_FRAG_N_DISP) {
+        lowpan_frag_n_t *hdr = (lowpan_frag_n_t *)data;
 
         puts("Fragmentation Header (subsequent)");
         printf("datagram size: %" PRIu16 "\n",
-               (uint16_t) (byteorder_ntohs(hdr->disp_size) & SIXLOWPAN_FRAG_SIZE_MASK));
+               (uint16_t) (byteorder_ntohs(hdr->disp_size) & LOWPAN_FRAG_SIZE_MASK));
         printf("tag: 0x%" PRIu16 "\n", byteorder_ntohs(hdr->tag));
         printf("offset: 0x%u\n", (unsigned)hdr->offset);
 
-        od_hex_dump(data + sizeof(sixlowpan_frag_n_t),
-                    size - sizeof(sixlowpan_frag_n_t),
+        od_hex_dump(data + sizeof(lowpan_frag_n_t),
+                    size - sizeof(lowpan_frag_n_t),
                     OD_WIDTH_DEFAULT);
     }
     else if ((data[0] & SIXLOWPAN_IPHC1_DISP_MASK) == SIXLOWPAN_IPHC1_DISP) {
