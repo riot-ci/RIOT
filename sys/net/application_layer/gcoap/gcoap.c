@@ -35,7 +35,9 @@ static size_t _handle_req(coap_pkt_t *pdu, uint8_t *buf, size_t len,
                                                          sock_udp_ep_t *remote);
 static ssize_t _finish_pdu(coap_pkt_t *pdu, uint8_t *buf, size_t len);
 static void _expire_request(gcoap_request_memo_t *memo);
-static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *pdu);
+static int _cmp_endpoints(const sock_udp_ep_t *ep1, const sock_udp_ep_t *ep2);
+static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *pdu,
+                           const sock_udp_ep_t *remote);
 static void _find_resource(coap_pkt_t *pdu, coap_resource_t **resource_ptr,
                                             gcoap_listener_t **listener_ptr);
 static int _find_observer(sock_udp_ep_t **observer, sock_udp_ep_t *remote);
@@ -155,7 +157,7 @@ static void _listen(sock_udp_t *sock)
 
     /* incoming response */
     else {
-        _find_req_memo(&memo, &pdu);
+        _find_req_memo(&memo, &pdu, &remote);
         if (memo) {
             xtimer_remove(&memo->response_timer);
             memo->state = GCOAP_MEMO_RESP;
@@ -328,12 +330,14 @@ static ssize_t _finish_pdu(coap_pkt_t *pdu, uint8_t *buf, size_t len)
 
 /*
  * Finds the memo for an outstanding request within the _coap_state.open_reqs
- * array. Matches on token.
+ * array. Matches on remote endpoint and token.
  *
  * memo_ptr[out] -- Registered request memo, or NULL if not found
  * src_pdu[in] -- PDU for token to match
+ * remote[in] -- Remote endpoint to match
  */
-static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *src_pdu)
+static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *src_pdu,
+                           const sock_udp_ep_t *remote)
 {
     *memo_ptr = NULL;
     /* no need to initialize struct; we only care about buffer contents below */
@@ -355,7 +359,8 @@ static void _find_req_memo(gcoap_request_memo_t **memo_ptr, coap_pkt_t *src_pdu)
 
         if (coap_get_token_len(memo_pdu) == cmplen) {
             memo_pdu->token = &memo_pdu->hdr->data[0];
-            if (memcmp(src_pdu->token, memo_pdu->token, cmplen) == 0) {
+            if (memcmp(src_pdu->token, memo_pdu->token, cmplen) == 0
+                    && _cmp_endpoints(&memo->remote_ep, remote) == 0) {
                 *memo_ptr = memo;
                 break;
             }
@@ -462,6 +467,34 @@ static ssize_t _write_options(coap_pkt_t *pdu, uint8_t *buf, size_t len)
 }
 
 /*
+ * Compares the addresses and ports for two sock UDP endpoints.
+ *
+ * ep1[in] -- endpoint
+ * ep2[in] -- endpoint
+ *
+ * return Result of memcmp (-1, 0, 1) if address family and port match;
+ *        otherwise -2.
+ */
+static int _cmp_endpoints(const sock_udp_ep_t *ep1, const sock_udp_ep_t *ep2)
+{
+    size_t cmplen;
+
+    switch (ep1->family) {
+    case AF_INET6:
+        cmplen = 16;
+        break;
+    case AF_INET:
+        cmplen = 4;
+        break;
+    default:
+        return -2;
+    }
+    return (ep2->family == ep1->family && ep2->port == ep1->port)
+        ? memcmp(&ep1->addr.ipv6[0], &ep2->addr.ipv6[0], cmplen)
+        : -2;
+}
+
+/*
  * Find registered observer for a remote address and port.
  *
  * observer[out] -- Registered observer, or NULL if not found
@@ -475,23 +508,11 @@ static int _find_observer(sock_udp_ep_t **observer, sock_udp_ep_t *remote)
     int empty_slot = -1;
     *observer      = NULL;
     for (unsigned i = 0; i < GCOAP_OBS_CLIENTS_MAX; i++) {
-        unsigned cmplen = 0;
 
         if (_coap_state.observers[i].family == AF_UNSPEC) {
-            cmplen     = 0;
             empty_slot = i;
         }
-        else if (_coap_state.observers[i].family == AF_INET6) {
-            cmplen = 16;
-        }
-        else {
-            cmplen = 4;
-        }
-        if (cmplen &&
-                memcmp(&_coap_state.observers[i].addr.ipv6[0], &remote->addr.ipv6[0],
-                                                               cmplen) == 0
-                && _coap_state.observers[i].port == remote->port) {
-
+        else if (_cmp_endpoints(&_coap_state.observers[i], remote) == 0) {
             *observer = &_coap_state.observers[i];
             break;
         }
@@ -688,6 +709,7 @@ size_t gcoap_req_send2(const uint8_t *buf, size_t len,
     if (memo) {
         memo->send_limit = GCOAP_SEND_LIMIT_NON;
         memcpy(&memo->msg.hdr_buf[0], buf, GCOAP_HEADER_MAXLEN);
+        memcpy(&memo->remote_ep, remote, sizeof(sock_udp_ep_t));
         memo->resp_handler = resp_handler;
 
         size_t res = sock_udp_send(&_sock, buf, len, remote);
