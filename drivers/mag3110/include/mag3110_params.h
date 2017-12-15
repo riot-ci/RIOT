@@ -48,6 +48,9 @@ extern "C" {
                                   .dros   = MAG3110_DROS_DEFAULT, \
                                   .offset = MAG3110_PARAM_OFFSET }
 #endif
+#ifndef MAG3110_SAUL_INFO
+#define MAG3110_SAUL_INFO       { .name = "mag3110" }
+#endif
 /**@}*/
 
 /**
@@ -63,9 +66,7 @@ static const mag3110_params_t mag3110_params[] =
  */
 static const saul_reg_info_t mag3110_saul_info[] =
 {
-    {
-        .name = "mag3110"
-    }
+    MAG3110_SAUL_INFO
 };
 
 #ifdef __cplusplus
