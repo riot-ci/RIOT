@@ -1,0 +1,25 @@
+From 947509989135480bcf57c4c69b7dda53a825faab Mon Sep 17 00:00:00 2001
+From: Hauke Petersen <hauke.petersen@fu-berlin.de>
+Date: Fri, 15 Dec 2017 13:13:58 +0100
+Subject: [PATCH 2/2] minor style fixes
+
+---
+ lib/source/cmac_mode.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/source/cmac_mode.c b/lib/source/cmac_mode.c
+index 96d147e..22adf20 100644
+--- a/lib/source/cmac_mode.c
++++ b/lib/source/cmac_mode.c
+@@ -36,7 +36,7 @@
+ #include <tinycrypt/utils.h>
+ 
+ /* max number of calls until change the key (2^48).*/
+-const static uint64_t MAX_CALLS = ((uint64_t)1 << 48);
++static const uint64_t MAX_CALLS = ((uint64_t)1 << 48);
+ 
+ /*
+  *  gf_wrap -- In our implementation, GF(2^128) is represented as a 16 byte
+-- 
+1.9.1
+
