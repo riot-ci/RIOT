@@ -137,7 +137,7 @@ static void test_rw(void)
 
     /* try to read from WO file (success if no bytes are actually read) */
     nr = vfs_read(fd, buf, sizeof(test_txt));
-    print_test_result("test_rw__read_wo", nw <= 0);
+    print_test_result("test_rw__read_wo", nr <= 0);
 
     print_test_result("test_rw__close_wo", vfs_close(fd) == 0);
 
