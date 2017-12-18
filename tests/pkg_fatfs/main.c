@@ -322,7 +322,7 @@ static int _mkfs(int argc, char **argv)
     BYTE opt;
 
     if (argc == 3) {
-        vol_idx = (int)atoi(argv[1]);
+        vol_idx = atoi(argv[1]);
 
         if (strcmp(argv[2], "fat") == 0) {
             opt = FM_FAT;
