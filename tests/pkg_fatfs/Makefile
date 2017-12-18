@@ -1,7 +1,5 @@
 include ../Makefile.tests_common
 
-USEMODULE += shell
-
 BOARD ?= native
 
 FEATURES_OPTIONAL += periph_rtc
@@ -21,14 +19,30 @@ BOARD_WHITELIST := native airfy-beacon arduino-due arduino-duemilanove arduino-m
                    stm32f3discovery stm32f4discovery telosb udoo waspmote-pro \
                    wsn430-v1_3b wsn430-v1_4 yunjia-nrf51822 z1
 
+USEMODULE += shell
+USEMODULE += fatfs_diskio_mtd
+USEMODULE += mtd
+USEPKG    += fatfs
+
+FATFS_IMAGE_FILE_SIZE_MIB ?= 128
+
 ifeq ($(BOARD),native)
-  USEMODULE += fatfs_diskio_native
-  FATFS_DISKIO_NATIVE_DEFAULT_FILE ?= \"riot_fatfs_disk.img\"
+#overwrite default mtd_native-config to use fat image as flash device
+CFLAGS += -DMTD_NATIVE_FILENAME=\"./bin/riot_fatfs_disk.img\"
+CFLAGS += -DMTD_NATIVE_PAGE_SIZE=512
+CFLAGS += -DMTD_NATIVE_SECTOR_SIZE=512
+CFLAGS += -DFATFS_IMAGE_FILE_SIZE_MIB=$(FATFS_IMAGE_FILE_SIZE_MIB)
+CFLAGS += -DMTD_NATIVE_SECTOR_NUM=\(\(\(FATFS_IMAGE_FILE_SIZE_MIB\)*1024*1024\)/MTD_NATIVE_SECTOR_SIZE\)
 else
-  USEMODULE += fatfs_diskio_sdcard_spi
-  USEMODULE += auto_init_storage
+# for actual hardware use mtd_sdcard as storage device
+USEMODULE += mtd_sdcard
 endif
 
-USEPKG += fatfs
+image:
+	@tar -xjf riot_fatfs_disk.tar.gz -C ./bin/
+
+#this generates a compressed fat image file that can be used by the fat driver on native
+compressed-image:
+	@./create_fat_image_file.sh $(FATFS_IMAGE_FILE_SIZE_MIB)
 
 include $(RIOTBASE)/Makefile.include
