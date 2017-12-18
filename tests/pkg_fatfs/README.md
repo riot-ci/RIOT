@@ -15,4 +15,3 @@ To tell RIOT where your image file is located you can use the define MTD_NATIVE_
 # Real Hardware
 
 Currently the test defaults to sdcard_spi on real hardware. But generally any device that supports the mtd-interface can be used with FatFs.
-
