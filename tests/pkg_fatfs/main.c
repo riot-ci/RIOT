@@ -404,7 +404,7 @@ int main(void)
     #if MODULE_MTD_NATIVE
     fatfs_mtd_devs[0] = mtd0;
     #elif MODULE_MTD_SDCARD
-    for (int i = 0; i < SDCARD_SPI_NUM; i++){
+    for (unsigned int i = 0; i < SDCARD_SPI_NUM; i++){
         mtd_sdcard_devs[i].base.driver = &mtd_sdcard_driver;
         mtd_sdcard_devs[i].sd_card = &sdcard_spi_devs[i];
         mtd_sdcard_devs[i].params = &sdcard_spi_params[i];
