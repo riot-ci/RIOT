@@ -17,8 +17,8 @@
  * @author      Michel Rottleuthner <michel.rottleuthner@haw-hamburg.de>
  */
 
-#ifndef FATFS_H
-#define FATFS_H
+#ifndef FS_FATFS_H
+#define FS_FATFS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,6 +91,6 @@ extern const vfs_file_system_t fatfs_file_system;
 }
 #endif
 
-#endif /* FATFS_H */
+#endif /* FS_FATFS_H */
 
 /** @} */
