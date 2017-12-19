@@ -33,8 +33,7 @@ extern "C" {
 /**
  * @brief   Timer object description
  */
-typedef struct TimerEvent_s
-{
+typedef struct TimerEvent_s {
     uint32_t timeout;   /**< Timer timeout in us */
     uint8_t running;    /**< Check if timer is running */
     xtimer_t dev;       /**< xtimer instance attached to this LoRaMAC timer */

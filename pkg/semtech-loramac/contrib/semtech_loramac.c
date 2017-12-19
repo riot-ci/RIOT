@@ -78,7 +78,7 @@
 
 static char stack[LORAMAC_STACKSIZE];
 kernel_pid_t _mac_pid;
-kernel_pid_t _main_pid;
+kernel_pid_t _handler_pid;
 
 RadioEvents_t radio_events;
 
@@ -233,7 +233,7 @@ static void mcps_indication(McpsIndication_t *indication)
     else {
         msg.content.value = SEMTECH_LORAMAC_TX_DONE;
     }
-    msg_send(&msg, _main_pid);
+    msg_send(&msg, _handler_pid);
 }
 
 /*MLME-Confirm event function */
@@ -248,7 +248,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
                 msg_t msg;
                 msg.type = MSG_TYPE_LORAMAC_NOTIFY;
                 msg.content.value = SEMTECH_LORAMAC_JOIN_SUCCEEDED;
-                msg_send(&msg, _main_pid);
+                msg_send(&msg, _handler_pid);
             }
             else {
                 DEBUG("[semtech-loramac] join not successful\n");
@@ -256,7 +256,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
                 msg_t msg;
                 msg.type = MSG_TYPE_LORAMAC_NOTIFY;
                 msg.content.value = SEMTECH_LORAMAC_JOIN_FAILED;
-                msg_send(&msg, _main_pid);
+                msg_send(&msg, _handler_pid);
             }
             break;
 
@@ -537,7 +537,7 @@ int semtech_loramac_init(sx127x_t *dev)
     dev->netdev.driver = &sx127x_driver;
     dev->netdev.event_callback = _event_cb;
 
-    _main_pid = thread_getpid();
+    _handler_pid = thread_getpid();
     _mac_pid = thread_create(stack, sizeof(stack), THREAD_PRIORITY_MAIN - 1,
                              THREAD_CREATE_STACKTEST, _event_loop, NULL,
                              "recv_thread");
