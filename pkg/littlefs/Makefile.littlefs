@@ -1,0 +1,5 @@
+MODULE := littlefs
+
+CFLAGS += -Wno-unused-parameter -Wno-format
+
+include $(RIOTBASE)/Makefile.base
