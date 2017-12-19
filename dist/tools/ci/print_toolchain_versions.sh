@@ -91,4 +91,5 @@ for p in avr; do
 done
 printf "%20s: %s\n" "cppcheck" "$(cppcheck_version)"
 printf "%20s: %s\n" "coccinelle" "$(spatch_version)"
+printf "%20s: %s\n" "git" "$(git --version)"
 exit 0
