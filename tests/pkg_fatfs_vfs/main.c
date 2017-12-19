@@ -71,8 +71,8 @@ extern mtd_dev_t *mtd0;
 #define SDCARD_SPI_NUM (sizeof(sdcard_spi_params) / sizeof(sdcard_spi_params[0]))
 extern sdcard_spi_t sdcard_spi_devs[SDCARD_SPI_NUM];
 mtd_sdcard_t mtd_sdcard_devs[SDCARD_SPI_NUM];
-/* always default to first sdcard */
-mtd_dev_t *mtd0 = (mtd_dev_t*)&mtd_sdcard_devs[0];
+/* always default to first sdcard*/
+static mtd_dev_t *mtd1 = (mtd_dev_t*)&mtd_sdcard_devs[0];
 #endif
 
 static void print_test_result(const char *test_name, int ok)
@@ -309,7 +309,11 @@ int main(void)
     }
     #endif
 
+    #ifdef MODULE_MTD_NATIVE
     fatfs_mtd_devs[fatfs.vol_idx] = mtd0;
+    #else
+    fatfs_mtd_devs[fatfs.vol_idx] = mtd1;
+    #endif
 
     printf("Tests for FatFs over VFS - test results will be printed "
            "in the format test_name:result\n");
