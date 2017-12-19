@@ -213,7 +213,7 @@ static void tests_littlefs_unlink(void)
     res = vfs_unlink("/test-littlefs/test.txt");
     TEST_ASSERT_EQUAL_INT(0, res);
 }
-#include <stdio.h>
+
 static void tests_littlefs_readdir(void)
 {
     const char buf0[] = "TESTSTRING";

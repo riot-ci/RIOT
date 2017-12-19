@@ -62,7 +62,6 @@ static int littlefs_err_to_errno(ssize_t err)
 static int _dev_read(const struct lfs_config *c, lfs_block_t block,
                  lfs_off_t off, void *buffer, lfs_size_t size)
 {
-    (void)block;
     mtd_dev_t *mtd = c->context;
 
     DEBUG("lfs_read: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
@@ -72,15 +71,13 @@ static int _dev_read(const struct lfs_config *c, lfs_block_t block,
     if (ret >= 0) {
         return 0;
     }
-    else {
-        return ret;
-    }
+
+    return ret;
 }
 
 static int _dev_write(const struct lfs_config *c, lfs_block_t block,
                   lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-    (void)block;
     mtd_dev_t *mtd = c->context;
 
     DEBUG("lfs_write: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
@@ -90,9 +87,8 @@ static int _dev_write(const struct lfs_config *c, lfs_block_t block,
     if (ret >= 0) {
         return 0;
     }
-    else {
-        return ret;
-    }
+
+    return ret;
 }
 
 static int _dev_erase(const struct lfs_config *c, lfs_block_t block)
@@ -105,9 +101,8 @@ static int _dev_erase(const struct lfs_config *c, lfs_block_t block)
     if (ret >= 0) {
         return 0;
     }
-    else {
-        return ret;
-    }
+
+    return ret;
 }
 
 static int _dev_sync(const struct lfs_config *c)
@@ -138,8 +133,8 @@ static int _mount(vfs_mount_t *mountp)
     if (!fs->config.read_size) {
         fs->config.read_size = fs->dev->page_size;
     }
-    fs->config.lookahead = LITTLEFS_LOOKAHED_SIZE;
-    fs->config.lookahead_buffer = fs->lookahed_buf;
+    fs->config.lookahead = LITTLEFS_LOOKAHEAD_SIZE;
+    fs->config.lookahead_buffer = fs->lookahead_buf;
     fs->config.context = fs->dev;
     fs->config.read = _dev_read;
     fs->config.prog = _dev_write;

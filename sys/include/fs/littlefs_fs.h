@@ -11,8 +11,6 @@
  * @ingroup     pkg_littlefs
  * @brief       RIOT integration of littlefs
  *
- * Integration of littlefs into RIOT
- *
  * @{
  *
  * @file
@@ -45,9 +43,9 @@ extern "C" {
  * @name    littlefs configuration
  * @{
  */
-#ifndef LITTLEFS_LOOKAHED_SIZE
-/** Default lookahed size */
-#define LITTLEFS_LOOKAHED_SIZE      (128)
+#ifndef LITTLEFS_LOOKAHEAD_SIZE
+/** Default lookahead size */
+#define LITTLEFS_LOOKAHEAD_SIZE     (128)
 #endif
 
 #ifndef LITTLEFS_FILE_BUFFER_SIZE
@@ -91,7 +89,7 @@ typedef struct {
     uint8_t prog_buf[LITTLEFS_PROG_BUFFER_SIZE];
 #endif
     /** lookahead buffer to use internally */
-    uint8_t lookahed_buf[LITTLEFS_LOOKAHED_SIZE / 8];
+    uint8_t lookahead_buf[LITTLEFS_LOOKAHEAD_SIZE / 8];
 } littlefs_desc_t;
 
 /** The littlefs vfs driver */
