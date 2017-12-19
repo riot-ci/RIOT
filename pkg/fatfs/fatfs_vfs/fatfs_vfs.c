@@ -265,7 +265,7 @@ static int _fstat(vfs_file_t *filp, struct stat *buf)
     buf->st_size = fi.fsize;
 
     /* set last modification timestamp */
-    #ifdef SYS_STAT_H_
+    #ifdef SYS_STAT_H
     _fatfs_time_to_timespec(fi.fdate, fi.ftime, &(buf->st_mtim.tv_sec));
     #else
     _fatfs_time_to_timespec(fi.fdate, fi.ftime, &(buf->st_mtime));
