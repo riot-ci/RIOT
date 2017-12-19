@@ -1,10 +1,10 @@
-From 0e457af5dab43677f7ce048d21db3bcb85cf7b66 Mon Sep 17 00:00:00 2001
+From 829210e7e7c4c2927fb9aa8cf18ba8aff04150b8 Mon Sep 17 00:00:00 2001
 From: Alexandre Abadie <alexandre.abadie@inria.fr>
 Date: Wed, 13 Dec 2017 17:43:00 +0100
 Subject: [PATCH] adapt for RIOT
 
 ---
- src/mac/LoRaMac.c                   | 32 +++++++++++++++-----------------
+ src/mac/LoRaMac.c                   | 28 +++++++++++-----------------
  src/mac/LoRaMac.h                   |  4 +++-
  src/mac/region/Region.c             |  2 +-
  src/mac/region/RegionAS923.c        |  2 +-
@@ -18,10 +18,10 @@ Subject: [PATCH] adapt for RIOT
  src/mac/region/RegionKR920.c        |  2 +-
  src/mac/region/RegionUS915-Hybrid.c |  2 +-
  src/mac/region/RegionUS915.c        |  2 +-
- 14 files changed, 30 insertions(+), 30 deletions(-)
+ 14 files changed, 26 insertions(+), 30 deletions(-)
 
 diff --git a/src/mac/LoRaMac.c b/src/mac/LoRaMac.c
-index 0750ee5..1e2d6e6 100644
+index 0750ee5..3b9dbdf 100644
 --- a/src/mac/LoRaMac.c
 +++ b/src/mac/LoRaMac.c
 @@ -17,7 +17,8 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
@@ -46,31 +46,27 @@ index 0750ee5..1e2d6e6 100644
   * LoRaMac duty cycle delayed Tx timer
   */
  static TimerEvent_t TxDelayedTimer;
-@@ -687,8 +683,9 @@ static void PrepareRxDoneAbort( void )
+@@ -687,8 +683,7 @@ static void PrepareRxDoneAbort( void )
      LoRaMacFlags.Bits.MacDone = 1;
  
      // Trig OnMacCheckTimerEvent call as soon as possible
 -    TimerSetValue( &MacStateCheckTimer, 1 );
 -    TimerStart( &MacStateCheckTimer );
-+    // TimerSetValue( &MacStateCheckTimer, 1 );
-+    // TimerStart( &MacStateCheckTimer );
 +    OnMacStateCheckTimerEvent();
  }
  
  static void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
-@@ -1106,8 +1103,9 @@ static void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t
+@@ -1106,8 +1101,7 @@ static void OnRadioRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t
      LoRaMacFlags.Bits.MacDone = 1;
  
      // Trig OnMacCheckTimerEvent call as soon as possible
 -    TimerSetValue( &MacStateCheckTimer, 1 );
 -    TimerStart( &MacStateCheckTimer );
-+    // TimerSetValue( &MacStateCheckTimer, 1 );
-+    // TimerStart( &MacStateCheckTimer );
 +    OnMacStateCheckTimerEvent();
  }
  
  static void OnRadioTxTimeout( void )
-@@ -2285,7 +2283,7 @@ LoRaMacStatus_t SetTxContinuousWave1( uint16_t timeout, uint32_t frequency, uint
+@@ -2285,7 +2279,7 @@ LoRaMacStatus_t SetTxContinuousWave1( uint16_t timeout, uint32_t frequency, uint
      return LORAMAC_STATUS_OK;
  }
  
@@ -79,7 +75,7 @@ index 0750ee5..1e2d6e6 100644
  {
      GetPhyParams_t getPhy;
      PhyParam_t phyParam;
-@@ -2416,12 +2414,12 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
+@@ -2416,12 +2410,12 @@ LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacC
      LoRaMacInitializationTime = TimerGetCurrentTime( );
  
      // Initialize Radio driver
