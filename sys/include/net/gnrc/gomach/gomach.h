@@ -7,10 +7,25 @@
  */
 
 /**
- * @defgroup    net_gnrc_gomach A traffic-adaptive multi-channel MAC
+ * @defgroup    net_gnrc_gomach GoMacH
  * @ingroup     net_gnrc
- * @brief       A traffic adaptive MAC protocol that provides high traffic
- *              adaptability, high energy efficiency and high robustness.
+ * @brief       GoMacH is, we believe, "a General, nearly Optimal MAC protocol
+ *              for multi-Hop communications", for IEEE 802.15.4 IoT/WSNs networks.
+ *              It is designed to be a traffic adaptive MAC protocol that provides
+ *              high traffic adaptability, high energy efficiency and high robustness.
+ *
+ * ## GoMacH's main features
+ * 1. it is an asynchronous solution which doesn't rely on global synchronization;
+ * 2. it supports multi-hop and mesh network;
+ * 3. it adopts duty-cycle scheme to conserve power;
+ * 4. it provides high traffic adaptation for handling burst or dynamic traffics.
+ *    It achieves this by dynamically allocating transmission slots for intensive
+ *    senders (that have pending packets); it enables a (or several) sender
+ *    to burst transmit all of its buffered packets (for the same destination) to
+ *    the receiver in one shot (or during a shot notice); The burst slotted-transmissions
+ *    (of multi senders) will be ordered by the receiver device in a TDMA period;
+ * 5. it adopts multi-channel scheme for avoiding/reducing wireless interference jam.
+ *
  * @{
  *
  * @file
