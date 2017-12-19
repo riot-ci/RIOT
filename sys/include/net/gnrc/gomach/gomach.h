@@ -15,11 +15,11 @@
  *              high traffic adaptability, high energy efficiency and high robustness.
  *
  * ## GoMacH's main features
- * doesn't rely on global synchronization;
- * supports for Multi-hop and mesh network;
- * adopts a duty-cycle scheme to conserve power;
- * provides high traffic adaptation for handling burst or dynamic traffics.
- * adopts a Multi-hop-channel scheme for avoiding/reducing wireless interference jam.
+ * doesn't rely on global synchronization
+ * supports for multi-hop and mesh network
+ * adopts a duty-cycle scheme to conserve power
+ * provides high traffic adaptation for handling burst or dynamic traffics
+ * adopts a multi-channel scheme for avoiding/reducing wireless interference jam
  *
  * @{
  *
