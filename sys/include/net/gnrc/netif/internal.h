@@ -306,7 +306,7 @@ int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *eui64);
  * @return  true, if the interface represents a router
  * @return  false, if the interface does not represent a router
  */
-#if defined(MODULE_IPV6_ROUTER) || defined(DOXYGEN)
+#if defined(MODULE_GNRC_IPV6_ROUTER) || defined(DOXYGEN)
 static inline bool gnrc_netif_is_rtr(const gnrc_netif_t *netif)
 {
     return (netif->flags & GNRC_NETIF_FLAGS_IPV6_FORWARDING);
@@ -328,7 +328,7 @@ static inline bool gnrc_netif_is_rtr(const gnrc_netif_t *netif)
  * @return  false, if the interface is not allowed to send out router
  *          advertisements
  */
-#if defined(MODULE_IPV6_ROUTER) || defined(DOXYGEN)
+#if defined(MODULE_GNRC_IPV6_ROUTER) || defined(DOXYGEN)
 static inline bool gnrc_netif_is_rtr_adv(const gnrc_netif_t *netif)
 {
     return (netif->flags & GNRC_NETIF_FLAGS_IPV6_RTR_ADV);
@@ -377,7 +377,7 @@ bool gnrc_netif_is_6ln(const gnrc_netif_t *netif);
  */
 #if (GNRC_IPV6_NIB_6LR && \
      /* if flag checkers even evaluate, otherwise just assume their result */ \
-     (defined(MODULE_IPV6_ROUTER) || \
+     (defined(MODULE_GNRC_IPV6_ROUTER) || \
       (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN))) || \
     defined(DOXYGEN)
 static inline bool gnrc_netif_is_6lr(const gnrc_netif_t *netif)
