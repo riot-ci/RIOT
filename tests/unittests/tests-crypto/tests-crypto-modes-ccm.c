@@ -86,7 +86,7 @@ static uint8_t TEST_2_EXPECTED[] = {
 static size_t  TEST_2_EXPECTED_LEN = 40;
 
 /* Share test buffer output */
-static uint8_t data[512];
+static uint8_t data[60];
 
 static void test_encrypt_op(uint8_t* key, uint8_t key_len,
                             uint8_t* adata, size_t adata_len,
