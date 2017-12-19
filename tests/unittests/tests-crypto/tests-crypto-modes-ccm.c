@@ -17,7 +17,7 @@
 #include "crypto/modes/ccm.h"
 #include "tests-crypto.h"
 
-static const uint8_t nonce_and_len_encoding_size = 15;
+static const size_t nonce_and_len_encoding_size = 15;
 
 /* PACKET VECTOR #1 (RFC 3610 - Page 10) */
 static uint8_t TEST_1_KEY[] = {
@@ -98,7 +98,7 @@ static void test_encrypt_op(uint8_t* key, uint8_t key_len,
 {
     cipher_t cipher;
     int len, err, cmp;
-    uint8_t len_encoding = nonce_and_len_encoding_size - nonce_len;
+    size_t len_encoding = nonce_and_len_encoding_size - nonce_len;
 
     err = cipher_init(&cipher, CIPHER_AES_128, key, key_len);
     TEST_ASSERT_EQUAL_INT(1, err);
@@ -124,7 +124,7 @@ static void test_decrypt_op(uint8_t* key, uint8_t key_len,
 {
     cipher_t cipher;
     int len, err, cmp;
-    uint8_t len_encoding = nonce_and_len_encoding_size - nonce_len;
+    size_t len_encoding = nonce_and_len_encoding_size - nonce_len;
 
     err = cipher_init(&cipher, CIPHER_AES_128, key, key_len);
     TEST_ASSERT_EQUAL_INT(1, err);
