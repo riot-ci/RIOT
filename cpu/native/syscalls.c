@@ -38,6 +38,7 @@
 
 #include "cpu.h"
 #include "irq.h"
+#include "timex.h"
 #include "xtimer.h"
 
 #include "native_internal.h"
@@ -422,10 +423,9 @@ int getpid(void)
 int _gettimeofday(struct timeval *tp, void *restrict tzp)
 {
     (void) tzp;
-    timex_t now;
-    xtimer_now_timex(&now);
-    tp->tv_sec = now.seconds;
-    tp->tv_usec = now.microseconds;
+    uint64_t now = xtimer_now_usec64();
+    tp->tv_sec  = now / US_PER_SEC;
+    tp->tv_usec = now - tp->tv_sec;
     return 0;
 }
 #endif
