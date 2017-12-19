@@ -99,12 +99,12 @@ int main(void)
 
     memory_block_init();
     int count = 0;
-    struct block_t *head = NULL;
 
     printf("Starting (%d, %d)\n", MAX_NUMBER_BLOCKS, MESSAGE_SIZE);
     _ps_handler(0, NULL);
 
     while (count < NUMBER_OF_TESTS) {
+        struct block_t *head = NULL;
         head = (struct block_t *) memarray_alloc(&block_storage);
 
         printf("TEST #%i:\n", count + 1 );
