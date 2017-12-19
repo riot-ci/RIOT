@@ -411,9 +411,9 @@ int main(void)
         fatfs_mtd_devs[i] = &mtd_sdcard_devs[i].base;
 
         if(mtd_init(&mtd_sdcard_devs[i].base) == 0) {
-            printf("init sdcard_mtd %d [OK]\n", i);
+            printf("init sdcard_mtd %u [OK]\n", i);
         }else{
-            printf("init sdcard_mtd %d [FAILED]\n", i);
+            printf("init sdcard_mtd %u [FAILED]\n", i);
         }
     }
     #endif
