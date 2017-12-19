@@ -15,16 +15,16 @@
  *              high traffic adaptability, high energy efficiency and high robustness.
  *
  * ## GoMacH's main features
- * - doesn't rely on global synchronization
- * - supports for multi-hop and mesh network
- * - adopts a duty-cycle scheme to conserve power
- * - provides high traffic adaptation for handling burst or dynamic traffics
+ * - doesn't rely on global synchronization.
+ * - supports for multi-hop and mesh network.
+ * - adopts a duty-cycle scheme to conserve power.
+ * - provides high traffic adaptation for handling burst or dynamic traffics.
  *   It achieves this by dynamically allocating transmission slots to intensive
  *   senders (that have pending packets), which enables one (or more) sender(s)
  *   to burst transmit all of its (their) buffered packets (for the same destination) to
  *   the receiver in one shot (or during a shot notice). The burst slotted-transmissions
  *   will be ordered by the receiver device in a TDMA period.
- * - adopts a multi-channel scheme for avoiding/reducing wireless interference jam
+ * - adopts a multi-channel scheme for avoiding/reducing wireless interference jam.
  *
  * @{
  *
