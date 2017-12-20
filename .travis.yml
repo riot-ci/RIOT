@@ -2,6 +2,7 @@ dist: trusty
 
 before_install:
   - sudo apt-get install coreutils realpath doxygen graphviz python-lesscpy cppcheck coccinelle pcregrep python3-flake8
+  - sudo apt-get remove python-flake8
 
 script:
   - make static-test
