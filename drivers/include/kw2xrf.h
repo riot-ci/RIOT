@@ -129,6 +129,7 @@ typedef struct {
      * @brief   device specific fields
      * @{
      */
+    thread_t *thread;                   /**< Network driver thread, for providing feedback from IRQ handler */
     kw2xrf_params_t params;             /**< parameters for initialization */
     uint8_t buf[KW2XRF_MAX_PKT_LENGTH]; /**< Buffer for incoming or outgoing packets */
     uint8_t state;                      /**< current state of the radio */
