@@ -55,7 +55,7 @@ int lc709203f_init(lc709203f_t *dev, const lc709203f_params_t *params)
     i2c_acquire(dev->bus);
     if(i2c_init_master(dev->bus, I2C_SPEED_FAST)){
         i2c_release(dev->bus);
-        return LC709203F_NOI2C;   
+        return LC709203F_NOI2C; 
     }
     i2c_release(dev->bus);
     if(!lc709203f_get_id(dev)){

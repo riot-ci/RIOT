@@ -11,4 +11,3 @@ USEMODULE += xtimer
 CFLAGS += -DDEVELHELP
 
 include $(RIOTBASE)/Makefile.include
-

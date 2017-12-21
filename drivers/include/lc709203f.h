@@ -22,48 +22,83 @@
 #ifndef LC709203F_H
 #define LC709203F_H
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "periph/i2c.h"
 #include "periph/gpio.h"
 
+/**
+ * @brief Current direction modes
+ * @details For more details please see the datasheet (http://www.onsemi.com/pub/Collateral/LC709203F-D.PDF)
+ * @{
+ */
 typedef enum {
     AUTO_MODE = 0x0,
     CHARGE_MODE = 0x1,
     DISCHARGE_MODE = 0xffff
 } lc709203f_current_direction_t;
+/** @} */
 
+/**
+ * @brief Battery Profile Options
+ * @details For more details please see the datasheet (http://www.onsemi.com/pub/Collateral/LC709203F-D.PDF)
+ * @{
+ */
 typedef enum {
     BAT_PROFILE_1 = 0,
     BAT_PROFILE_2 = 1
 } lc709203f_battery_profile_t;
+/** @} */
 
+/**
+ * @brief Power mode choices
+ * @details For more details please see the datasheet (http://www.onsemi.com/pub/Collateral/LC709203F-D.PDF)
+ * @{
+ */
 typedef enum {
     OPERATIONAL_MODE = 1,
     SLEEP_MODE = 2
 } lc709203f_power_mode_t;
+/** @} */
 
+
+/**
+ * @brief Temperature obtaining mode options
+ * @details For more details please see the datasheet (http://www.onsemi.com/pub/Collateral/LC709203F-D.PDF)
+ * @{
+ */
 typedef enum {
     I2C_MODE = 0,
     THERMISTOR_MODE = 1
 } lc709203f_temp_obtaining_mode_t;
+/** @} */
 
 typedef void (*lc709203f_cb_t)(void *arg);
 
+
+/**
+ * @brief Parameter struct for driver initialization
+ * @{
+ */
 typedef struct {
-    gpio_t alarm_pin;
-    i2c_t bus;
-    uint8_t addr;
+    gpio_t alarm_pin;           /**< Pin which is connected to the interrupt pin of the sensor */
+    i2c_t bus;                  /**< I2C bus to use */
+    uint8_t addr;               /**< I2C Address of the fuel gauge */
 } lc709203f_params_t;
+/** @} */
 
 enum {
     LC709203F_OK    = 0,  /**< all went as expected */
     LC709203F_NOI2C = -1, /**< error using the I2C bus */
     LC709203F_CELL_TEMP_INVALID = -2 /**< Cell temp invalid */
 };
-
+/**
+ * @brief Device descriptor for the fuel gauge
+ * @details This struct will hold all information and configuration for the sensor
+ * @{
+ */
 typedef struct {
     i2c_t bus;                  /**< I2C bus to use */
     uint8_t addr;               /**< I2C Address of fuel gauge */
@@ -72,6 +107,7 @@ typedef struct {
     lc709203f_cb_t cb;          /**< callback method*/
     void *arg;                  /**< additional arguments for the callback method*/
 } lc709203f_t;
+/** @} */
 
 /*CRC I2C-Addresses for Read/write*/
 #define LC709203F_I2C_READ              0x17
@@ -186,7 +222,7 @@ int16_t lc709203f_get_alarm_low_voltage(const lc709203f_t *dev);
  * @brief  reads Alarm Low RSOC Register
  *
  * @param[in] *dev      pointer to lc709203f_t struct containing the i2c device and the address
- 
+ *
  * @return              0 Disable
  * @return              Threshold value in %
  */

@@ -1,5 +1,28 @@
+/*
+ * Copyright 2017, RWTH Aachen. All rights reserved.
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     drivers_lc709203f
+ * @name        Default parameters for the SHTC1 Temperature and humidity sensor
+ * @{
+ *
+ * @file
+ * @brief       Default parameters for the SHTC1 Temperature and humidity sensor
+ *
+ * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
+ * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
+ */
 #ifndef LC709203F_PARAMS_H
 #define LC709203F_PARAMS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "board.h"  /* THIS INCLUDE IS MANDATORY */
 #include "lc709203f.h"
@@ -35,4 +58,8 @@ static const lc709203f_params_t params_default[] = {
         LC709203F_PARAMS
     #endif
 };
+
+#ifdef __cplusplus
+}
+#endif
 #endif /*LC709203F_PARAMS_H*/
