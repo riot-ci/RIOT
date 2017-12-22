@@ -54,7 +54,7 @@ static void _print_mac_set_usage(void)
 {
     puts("Usage: mac set "
          "<deveui|appeui|devaddr|txport|txmode|pwridx|dr|adr|bat|"
-         "retx|linkchk|rx1|ar|rx2dr|rx2freq> <value>");
+         "retx|linkchk|rx1|ar|rx2dr|rx2freq|sleep_duration> <value>");
 }
 
 int rn2xx3_sys_cmd(int argc, char **argv) {
@@ -397,6 +397,9 @@ int rn2xx3_mac_cmd(int argc, char **argv) {
         }
         else if (strcmp(argv[2], "rx2freq") == 0) {
             rn2xx3_mac_set_rx2_freq(&rn2xx3_dev, atoi(argv[3]));
+        }
+        else if (strcmp(argv[2], "sleep_duration") == 0) {
+            rn2xx3_sys_set_sleep_duration(&rn2xx3_dev, atoi(argv[3]));
         }
         else {
             _print_mac_set_usage();

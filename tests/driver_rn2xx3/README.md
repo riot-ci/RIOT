@@ -35,10 +35,10 @@ Example in EU:
 For testing the LoRaBee driver you can use the shell commands provided by this
 test application: `sys` and `mac`:
 * `sys` contains subcommands for controlling the device at a low-level
-* `mac` contains subcommands for connecting to a LoRaWAN network, sendind,
+* `mac` contains subcommands for connecting to a LoRaWAN network, sending,
   receiving paquets and getting/setting some LoRaMAC parameters.
 
-The full list of available parameters for each command is decribed in the
+The full list of available parameters for each command is described in the
 following documents:
 - For EU region (868MHz and 433MHZ bands):
 [RN2483](http://ww1.microchip.com/downloads/en/DeviceDoc/40001784B.pdf)
