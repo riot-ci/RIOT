@@ -28,10 +28,14 @@
 
 #define RESP_TIMEOUT_SEC            (5U)
 
-static void _terminate_command(rn2xx3_t *dev)
+const char * closing_seq = "\r\n";
+
+static void _uart_write(rn2xx3_t *dev, const char *str)
 {
-    /* \r\n is the command closing sequence */
-    uart_write(dev->p.uart, (uint8_t*)"\r\n", 2);
+    size_t len = strlen(str);
+    if (len) {
+        uart_write(dev->p.uart, (uint8_t*)str, len);
+    }
 }
 
 static void isr_resp_timeout(void *arg)
@@ -69,14 +73,6 @@ static bool _wait_reply(rn2xx3_t *dev, uint8_t timeout)
     }
 
     return false;
-}
-
-static void _uart_write(rn2xx3_t *dev, const char *str)
-{
-    size_t len = strlen(str);
-    if (len) {
-        uart_write(dev->p.uart, (uint8_t*)str, len);
-    }
 }
 
 void rn2xx3_hex_to_bytes(const char *hex, uint8_t *byte_array)
@@ -173,7 +169,7 @@ int rn2xx3_write_cmd(rn2xx3_t *dev)
 
     mutex_lock(&(dev->cmd_lock));
     _uart_write(dev, dev->cmd_buf);
-    _terminate_command(dev);
+    _uart_write(dev, closing_seq);
 
     ret = rn2xx3_wait_response(dev);
     if (ret == RN2XX3_TIMEOUT) {
@@ -202,7 +198,7 @@ int rn2xx3_write_cmd_no_wait(rn2xx3_t *dev)
 
     mutex_lock(&(dev->cmd_lock));
     _uart_write(dev, dev->cmd_buf);
-    _terminate_command(dev);
+    _uart_write(dev, closing_seq);
 
     DEBUG("[rn2xx3] RET: %s\n", dev->resp_buf);
 
