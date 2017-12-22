@@ -687,7 +687,7 @@ uint8_t rn2xx3_mac_get_rx_port(rn2xx3_t *dev);
  * @brief   Sets the rn2xx3 sleep mode duration (in ms)
  *
  * @param[in] dev                      The rn2xx3 device descriptor
- * @param[in] sleep                    The sleep mode duration
+ * @param[in] sleep                    The sleep mode duration (ms)
  */
 void rn2xx3_sys_set_sleep_duration(rn2xx3_t *dev, uint32_t sleep);
 
