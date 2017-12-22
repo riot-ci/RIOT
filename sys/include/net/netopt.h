@@ -455,7 +455,6 @@ typedef enum {
      */
     NETOPT_TX_RETRIES_NEEDED,
 
-#ifdef MODULE_RN2XX3
     /**
      * @brief   Get/Set radio communication datarate
      */
@@ -510,7 +509,6 @@ typedef enum {
      * @brief   Enable/disable confirmable TX
      */
     NETOPT_TX_CONFIRMABLE,
-#endif
 
     /* add more options if needed */
 
