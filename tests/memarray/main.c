@@ -25,9 +25,9 @@
 
 #include "memarray.h"
 
-#define MAX_NUMBER_BLOCKS 10
-#define MESSAGE_SIZE 8
-#define NUMBER_OF_TESTS 12
+#define MAX_NUMBER_BLOCKS    (10U)
+#define MESSAGE_SIZE         (8U)
+#define NUMBER_OF_TESTS      (12U)
 
 extern int _ps_handler(int argc, char **argv);
 
@@ -39,7 +39,6 @@ struct block_t {
 };
 
 MEMARRAY(block_storage, sizeof(struct block_t), MAX_NUMBER_BLOCKS)
-
 
 int total = 0;
 
@@ -76,7 +75,6 @@ void free_memory(struct block_t *head)
     struct block_t *old;
 
     while (head) {
-
         total -= sizeof(struct block_t);
         printf("\tFree (%i) %d Bytes at 0x%p, total %d\n", \
                head->number, sizeof(struct block_t), (void *)head, total);
@@ -96,7 +94,6 @@ void free_memory(struct block_t *head)
 
 int main(void)
 {
-
     memory_block_init();
     int count = 0;
 

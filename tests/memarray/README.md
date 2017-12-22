@@ -11,7 +11,7 @@ This test is passed if the memory used by the main thread remains static.
 Background
 ==========
 
-The module `memarray` is the static memory allocator for RIOT O.S.
+The module `memarray` is the static memory allocator for RIOT-OS
 
 This test application is therefore specialized for only testing the use of the module.
 
