@@ -34,7 +34,7 @@ static void _uart_write(rn2xx3_t *dev, const char *str)
 {
     size_t len = strlen(str);
     if (len) {
-        uart_write(dev->p.uart, (uint8_t*)str, len);
+        uart_write(dev->p.uart, (uint8_t *)str, len);
     }
 }
 
@@ -106,7 +106,8 @@ void rn2xx3_bytes_to_hex(const uint8_t *byte_array, char *hex, uint8_t max_len)
 
 void rn2xx3_set_internal_state(rn2xx3_t *dev, uint8_t state)
 {
-    if (dev->int_state == RN2XX3_INT_STATE_SLEEP || dev->int_state == state) {
+    if ((dev->int_state == RN2XX3_INT_STATE_SLEEP) ||
+        (dev->int_state == state)) {
         return;
     }
 
@@ -114,42 +115,41 @@ void rn2xx3_set_internal_state(rn2xx3_t *dev, uint8_t state)
     printf("[rn2xx3] new state: ");
     switch(state) {
         case RN2XX3_INT_STATE_CMD:
-            printf("CMD");
+            puts("CMD");
             break;
 
         case RN2XX3_INT_STATE_IDLE:
-            printf("IDLE");
+            puts("IDLE");
             break;
 
         case RN2XX3_INT_STATE_MAC_JOIN:
-            printf("JOIN");
+            puts("JOIN");
             break;
 
         case RN2XX3_INT_STATE_MAC_RX_MESSAGE:
-            printf("RX MSG");
+            puts("RX MSG");
             break;
 
         case RN2XX3_INT_STATE_MAC_RX_PORT:
-            printf("RX PORT");
+            puts("RX PORT");
             break;
 
         case RN2XX3_INT_STATE_MAC_TX:
-            printf("TX");
+            puts("TX");
             break;
 
         case RN2XX3_INT_STATE_RESET:
-            printf("RESET");
+            puts("RESET");
             break;
 
         case RN2XX3_INT_STATE_SLEEP:
-            printf("SLEEP");
+            puts("SLEEP");
             break;
 
         default:
-            printf("UNKNOWN");
+            puts("UNKNOWN");
             break;
     }
-    puts("");
 #endif
 
     dev->int_state = state;
@@ -237,7 +237,7 @@ void rn2xx3_cmd_start(rn2xx3_t *dev)
     _uart_write(dev, dev->cmd_buf);
 }
 
-void rn2xx3_cmd_append(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len)
+void rn2xx3_cmd_append(rn2xx3_t *dev, const uint8_t *payload, uint8_t payload_len)
 {
     char payload_str[3];
     for (unsigned i = 0; i < payload_len; i++) {

@@ -75,7 +75,7 @@ static void _rx_cb(void *arg, uint8_t c)
     }
     else {
         switch (dev->int_state) {
-            /* A successful ùac TX command expects 2 kinds of replies:
+            /* A successful mac TX command expects 2 kinds of replies:
                  * - mac_tx_ok: transmission done, no data received
                  * - mac_rx <port> <data>: transmission done, some data
                  *                         received on port <port>. */

@@ -26,9 +26,9 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-static const char * mac = "mac";
-static const char * get = "get";
-static const char * set = "set";
+static const char *mac = "mac";
+static const char *get = "get";
+static const char *set = "set";
 
 /* internal helpers */
 static uint8_t _get_uint8_value(rn2xx3_t *dev, const char* command)
@@ -85,7 +85,7 @@ static bool _get_bool_value(rn2xx3_t *dev, const char* command)
 }
 
 static void _set_bool_value(rn2xx3_t *dev,
-                             const char* command, bool value)
+                            const char* command, bool value)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1, "%s %s %s %s",
                         mac, set, command, value ? "on": "off");
@@ -264,7 +264,8 @@ void rn2xx3_mac_set_rx2_dr(rn2xx3_t *dev, uint8_t dr)
 
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                         "%s %s %s %d %lu",
-                        mac, set, "rx2", dr, (unsigned long)dev->loramac.rx2_freq);
+                        mac, set, "rx2", dr,
+                        (unsigned long)dev->loramac.rx2_freq);
     dev->cmd_buf[p] = 0;
 
     rn2xx3_write_cmd(dev);
@@ -278,8 +279,7 @@ uint32_t rn2xx3_mac_get_rx2_freq(rn2xx3_t *dev)
 
     rn2xx3_write_cmd(dev);
 
-    char *data;
-    uint32_t freq = strtoul(dev->resp_buf + 2, &data, 10);
+    uint32_t freq = strtoul(dev->resp_buf + 2, NULL, 10);
 
     return freq;
 }
@@ -291,7 +291,8 @@ void rn2xx3_mac_set_rx2_freq(rn2xx3_t *dev, uint32_t freq)
 
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                         "%s %s %s %d %lu",
-                        mac, set, "rx2", dev->loramac.rx2_dr, (unsigned long)freq);
+                        mac, set, "rx2", dev->loramac.rx2_dr,
+                        (unsigned long)freq);
     dev->cmd_buf[p] = 0;
 
     rn2xx3_write_cmd(dev);
@@ -325,7 +326,7 @@ uint8_t rn2xx3_mac_get_rx_port(rn2xx3_t *dev)
 void rn2xx3_sys_set_sleep_duration(rn2xx3_t *dev, uint32_t sleep)
 {
     if (sleep < RN2XX3_SLEEP_MIN) {
-        DEBUG("[rn2xx3] sleep: duration should be greater than 100\n");
+        DEBUG("[rn2xx3] sleep: duration should be greater than 100 (ms)\n");
         return;
     }
 

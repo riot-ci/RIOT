@@ -53,7 +53,7 @@ void rn2xx3_bytes_to_hex(const uint8_t *byte_array, char *str, uint8_t max_len);
 void rn2xx3_set_internal_state(rn2xx3_t *dev, uint8_t state);
 
 /**
- * @brief   Starts writing a command with the content of the devive command buffer
+ * @brief   Starts writing a command with the content of the device command buffer
  *
  * @param[in] dev          The device descriptor
  */
@@ -66,7 +66,7 @@ void rn2xx3_set_internal_state(rn2xx3_t *dev, uint8_t state);
  * @param[in] data         The data buffer
  * @param[in] data_len     The data max length
  */
-void rn2xx3_cmd_append(rn2xx3_t *dev, uint8_t *data, uint8_t data_len);
+void rn2xx3_cmd_append(rn2xx3_t *dev, const uint8_t *data, uint8_t data_len);
 
 /**
  * @brief   Finalize a command
