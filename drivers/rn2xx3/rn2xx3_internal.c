@@ -71,6 +71,14 @@ static bool _wait_reply(rn2xx3_t *dev, uint8_t timeout)
     return false;
 }
 
+static void _uart_write(rn2xx3_t *dev, const char *str)
+{
+    size_t len = strlen(str);
+    if (len) {
+        uart_write(dev->p.uart, (uint8_t*)str, len);
+    }
+}
+
 void rn2xx3_hex_to_bytes(const char *hex, uint8_t *byte_array)
 {
     const uint8_t charmap[] = {
@@ -163,12 +171,8 @@ int rn2xx3_write_cmd(rn2xx3_t *dev)
 
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_CMD);
 
-    size_t len = strlen(dev->cmd_buf);
-
     mutex_lock(&(dev->cmd_lock));
-    if (len) {
-        uart_write(dev->p.uart, (uint8_t*)dev->cmd_buf, len);
-    }
+    _uart_write(dev, dev->cmd_buf);
     _terminate_command(dev);
 
     ret = rn2xx3_wait_response(dev);
@@ -181,6 +185,8 @@ int rn2xx3_write_cmd(rn2xx3_t *dev)
 
     ret = rn2xx3_process_response(dev);
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_IDLE);
+
+    DEBUG("RET: %d, RESP: %s\n", ret, dev->resp_buf);
 
     return ret;
 }
@@ -195,7 +201,7 @@ int rn2xx3_write_cmd_no_wait(rn2xx3_t *dev)
     }
 
     mutex_lock(&(dev->cmd_lock));
-    uart_write(dev->p.uart, (uint8_t*)dev->cmd_buf, strlen(dev->cmd_buf));
+    _uart_write(dev, dev->cmd_buf);
     _terminate_command(dev);
 
     DEBUG("[rn2xx3] RET: %s\n", dev->resp_buf);
@@ -232,15 +238,14 @@ void rn2xx3_cmd_start(rn2xx3_t *dev)
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_CMD);
     DEBUG("[rn2xx3] CMD: %s", dev->cmd_buf);
     mutex_lock(&(dev->cmd_lock));
-    uart_write(dev->p.uart, (uint8_t*)dev->cmd_buf, strlen(dev->cmd_buf));
+    _uart_write(dev, dev->cmd_buf);
 }
 
 void rn2xx3_cmd_append(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len)
 {
-    char payload_str[2];
+    char payload_str[3];
     for (unsigned i = 0; i < payload_len; i++) {
         rn2xx3_bytes_to_hex(&payload[i], payload_str, 1);
-        DEBUG("%s", payload_str);
         uart_write(dev->p.uart, (uint8_t*)payload_str, 2);
     }
 }
@@ -248,12 +253,14 @@ void rn2xx3_cmd_append(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len)
 int rn2xx3_cmd_finalize(rn2xx3_t *dev)
 {
     DEBUG("\n");
-    uart_write(dev->p.uart, (uint8_t*)"\r\n", 2);
+    _uart_write(dev, "\r\n");
     uint8_t ret = rn2xx3_wait_response(dev);
 
     mutex_unlock(&(dev->cmd_lock));
 
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_IDLE);
+
+    DEBUG("RET: %d, RESP: %s\n", ret, dev->resp_buf);
 
     return ret;
 }

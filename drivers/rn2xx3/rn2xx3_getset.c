@@ -26,7 +26,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-char cmd[32];
 static const char * mac = "mac";
 static const char * get = "get";
 static const char * set = "set";
@@ -38,10 +37,8 @@ static uint8_t _get_uint8_value(rn2xx3_t *dev, const char* command)
                         "%s %s %s", mac, get, command);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
 
-    DEBUG("RESP: %s\n", dev->resp_buf);
     return atoi(dev->resp_buf);
 }
 
@@ -52,10 +49,7 @@ static void _set_uint8_value(rn2xx3_t *dev,
                         mac, set, command, value);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 static uint16_t _get_uint16_value(rn2xx3_t *dev, const char* command)
@@ -64,10 +58,8 @@ static uint16_t _get_uint16_value(rn2xx3_t *dev, const char* command)
                         "%s %s %s", mac, get, command);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
 
-    DEBUG("RESP: %s\n", dev->resp_buf);
     return atoi(dev->resp_buf);
 }
 
@@ -78,10 +70,7 @@ static void _set_uint16_value(rn2xx3_t *dev,
                         mac, set, command, value);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 static bool _get_bool_value(rn2xx3_t *dev, const char* command)
@@ -90,10 +79,8 @@ static bool _get_bool_value(rn2xx3_t *dev, const char* command)
                         "%s %s %s", mac, get, command);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
 
-    DEBUG("RESP: %s\n", dev->resp_buf);
     return strcmp(dev->resp_buf, "on") == 0;
 }
 
@@ -104,10 +91,7 @@ static void _set_bool_value(rn2xx3_t *dev,
                         mac, set, command, value ? "on": "off");
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 static void _get_array_value(rn2xx3_t *dev, const char* command,
@@ -117,10 +101,8 @@ static void _get_array_value(rn2xx3_t *dev, const char* command,
                         "%s %s %s", mac, get, command);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
 
-    DEBUG("RESP: %s\n", dev->resp_buf);
     rn2xx3_hex_to_bytes(dev->resp_buf, value);
 }
 
@@ -134,8 +116,6 @@ static void _set_array_value(rn2xx3_t *dev, const char* command,
     rn2xx3_cmd_start(dev);
     rn2xx3_cmd_append(dev, value, value_len);
     rn2xx3_cmd_finalize(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 void rn2xx3_mac_get_dev_eui(rn2xx3_t *dev, uint8_t *eui)
@@ -253,7 +233,8 @@ uint16_t rn2xx3_mac_get_rx2_delay(rn2xx3_t *dev)
     return _get_uint16_value(dev, "rxdelay2");
 }
 
-bool rn2xx3_mac_get_ar(rn2xx3_t *dev) {
+bool rn2xx3_mac_get_ar(rn2xx3_t *dev)
+{
     return _get_bool_value(dev, "ar");
 }
 
@@ -268,10 +249,8 @@ uint8_t rn2xx3_mac_get_rx2_dr(rn2xx3_t *dev)
                         mac, get, "rx2", RN2XX3_FREQ_BAND);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
 
-    DEBUG("RESP: %s\n", dev->resp_buf);
     char *data;
     uint8_t dr = strtol(dev->resp_buf, &data, 10);
 
@@ -288,10 +267,7 @@ void rn2xx3_mac_set_rx2_dr(rn2xx3_t *dev, uint8_t dr)
                         mac, set, "rx2", dr, (unsigned long)dev->loramac.rx2_freq);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 uint32_t rn2xx3_mac_get_rx2_freq(rn2xx3_t *dev)
@@ -300,10 +276,7 @@ uint32_t rn2xx3_mac_get_rx2_freq(rn2xx3_t *dev)
                         "%s %s %s %d", mac, get, "rx2", RN2XX3_FREQ_BAND);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 
     char *data;
     uint32_t freq = strtoul(dev->resp_buf + 2, &data, 10);
@@ -321,10 +294,7 @@ void rn2xx3_mac_set_rx2_freq(rn2xx3_t *dev, uint32_t freq)
                         mac, set, "rx2", dev->loramac.rx2_dr, (unsigned long)freq);
     dev->cmd_buf[p] = 0;
 
-    DEBUG("CMD: %s\n", dev->cmd_buf);
     rn2xx3_write_cmd(dev);
-
-    DEBUG("RESP: %s\n", dev->resp_buf);
 }
 
 uint8_t rn2xx3_mac_get_tx_port(rn2xx3_t *dev)
