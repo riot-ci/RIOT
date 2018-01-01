@@ -58,8 +58,8 @@ extern "C" {
 /**
  * @brief   Default application session key
  */
-#ifndef LORAMAC_APPS_KEY
-#define LORAMAC_APPS_KEY          { 0x00, 0x00, 0x00, 0x00, \
+#ifndef LORAMAC_APP_SKEY
+#define LORAMAC_APP_SKEY          { 0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00 }
@@ -68,8 +68,8 @@ extern "C" {
 /**
  * @brief   Default network session key
  */
-#ifndef LORAMAC_NWKS_KEY
-#define LORAMAC_NWKS_KEY          { 0x00, 0x00, 0x00, 0x00, \
+#ifndef LORAMAC_NWK_SKEY
+#define LORAMAC_NWK_SKEY          { 0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00, \
                                     0x00, 0x00, 0x00, 0x00 }
