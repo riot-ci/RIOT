@@ -447,13 +447,68 @@ typedef enum {
                                  *   or read the current state */
 
     /**
-     * @brief   Get retry amount from missing ACKs of the last transmission
+     * @brief   Get/set the retries amount from missing ACKs of the last transmission
      *
-     * This retrieves the number of retries needed for the last transmissions.
+     * This retrieves/sets the number of retries needed for the last transmissions.
      * Only retransmissions due to missing ACK packets are considered.
      * Retries due to CCA failures are not counted.
      */
     NETOPT_TX_RETRIES_NEEDED,
+
+    /**
+     * @brief   Get/Set radio communication datarate
+     */
+    NETOPT_DATARATE,
+
+    /**
+     * @brief   Enable/disable adaptive datarate
+     */
+    NETOPT_ADAPTIVE_DATARATE,
+
+    /**
+     * @brief   Set battery level
+     */
+    NETOPT_BATTERY_LEVEL,
+
+    /**
+     * @brief   Set interval between link check messages
+     */
+    NETOPT_LINKCHECK_INTERVAL,
+
+    /**
+     * @brief   Get/Set delay before first RX window
+     */
+    NETOPT_RX1_WINDOW_DELAY,
+
+    /**
+     * @brief   Get delay before second RX window (basically rx1_delay + 1s)
+     */
+    NETOPT_RX2_WINDOW_DELAY,
+
+    /**
+     * @brief   Enable/disable automatic reply
+     */
+    NETOPT_AUTO_REPLY,
+
+    /**
+     * @brief   Get/set datarate used for second RX window
+     */
+    NETOPT_RX2_DATARATE,
+
+    /**
+     * @brief   Get/set frequency used for second RX window
+     */
+    NETOPT_RX2_FREQ,
+
+    /**
+     * @brief   Get/set TX port
+     */
+    NETOPT_TX_PORT,
+
+    /**
+     * @brief   Enable/disable confirmable TX
+     */
+    NETOPT_TX_CONFIRMABLE,
 
     /* add more options if needed */
 
