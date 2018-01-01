@@ -75,28 +75,28 @@ extern "C" {
  * @brief   Command responses and server replies status codes
  */
 enum {
-    RN2XX3_OK                         = 0,   /**< Command is valid */
-    RN2XX3_DATA                       = 1,   /**< Command returned data */
-    RN2XX3_ERR_MAC_INIT               = -1,  /**< Device mac initialization failed */
-    RN2XX3_TIMEOUT                    = -2,  /**< Command timeout */
-    RN2XX3_ERR_INVALID_PARAM          = -3,  /**< Wrong command given */
-    RN2XX3_ERR_NOT_JOINED             = -4,  /**< Network is not joined */
-    RN2XX3_ERR_NO_FREE_CH             = -5,  /**< All channels are busy */
-    RN2XX3_ERR_SILENT                 = -6,  /**< Device is in Silent Immediately state */
-    RN2XX3_ERR_FR_CNT_REJOIN_NEEDED   = -7,  /**< Frame counter rolled over */
-    RN2XX3_ERR_BUSY                   = -8,  /**< MAC is not in Idle state */
-    RN2XX3_ERR_MAC_PAUSED             = -9,  /**< MAC was paused */
-    RN2XX3_ERR_INVALID_DATA_LENGTH    = -10, /**< Wrong payload given */
-    RN2XX3_ERR_KEYS_NOT_INIT          = -11, /**< Keys not configured ("mac join" command) */
-    RN2XX3_REPLY_TX_MAC_OK            = 2,   /**< MAC transmission successful */
-    RN2XX3_REPLY_TX_MAC_ERR           = -12, /**< MAC transmission failed */
-    RN2XX3_REPLY_TX_INVALID_DATA_LEN  = -13, /**< Application payload too large */
-    RN2XX3_REPLY_TX_MAC_RX            = 3,   /**< Data received from server */
-    RN2XX3_REPLY_JOIN_ACCEPTED        = 4,   /**< Join procedure successful */
-    RN2XX3_REPLY_JOIN_DENIED          = -14, /**< Join procedure failed */
-    RN2XX3_REPLY_TIMEOUT              = -15, /**< No MAC reply received from server */
-    RN2XX3_REPLY_OTHER                = -16, /**< Unknown reply */
-    RN2XX3_ERR_SLEEP_MODE             = -17  /**< Failure because device is in sleep mode */
+    RN2XX3_OK,                         /**< Command is valid */
+    RN2XX3_DATA,                       /**< Command returned data */
+    RN2XX3_ERR_MAC_INIT,               /**< Device mac initialization failed */
+    RN2XX3_TIMEOUT,                    /**< Command timeout */
+    RN2XX3_ERR_INVALID_PARAM,          /**< Wrong command given */
+    RN2XX3_ERR_NOT_JOINED,             /**< Network is not joined */
+    RN2XX3_ERR_NO_FREE_CH,             /**< All channels are busy */
+    RN2XX3_ERR_SILENT,                 /**< Device is in Silent Immediately state */
+    RN2XX3_ERR_FR_CNT_REJOIN_NEEDED,   /**< Frame counter rolled over */
+    RN2XX3_ERR_BUSY,                   /**< MAC is not in Idle state */
+    RN2XX3_ERR_MAC_PAUSED,             /**< MAC was paused */
+    RN2XX3_ERR_INVALID_DATA_LENGTH,    /**< Wrong payload given */
+    RN2XX3_ERR_KEYS_NOT_INIT,          /**< Keys not configured ("mac join" command) */
+    RN2XX3_REPLY_TX_MAC_OK,            /**< MAC transmission successful */
+    RN2XX3_REPLY_TX_MAC_ERR,           /**< MAC transmission failed */
+    RN2XX3_REPLY_TX_INVALID_DATA_LEN,  /**< Application payload too large */
+    RN2XX3_REPLY_TX_MAC_RX,            /**< Data received from server */
+    RN2XX3_REPLY_JOIN_ACCEPTED,        /**< Join procedure successful */
+    RN2XX3_REPLY_JOIN_DENIED,          /**< Join procedure failed */
+    RN2XX3_REPLY_TIMEOUT,              /**< No MAC reply received from server */
+    RN2XX3_REPLY_OTHER,                /**< Unknown reply */
+    RN2XX3_ERR_SLEEP_MODE,             /**< Failure because device is in sleep mode */
 };
 
 /**
@@ -184,7 +184,7 @@ typedef struct {
 } rn2xx3_t;
 
 /**
- * @brief   Prepare the given RN2XX3 device
+ * @brief   Prepares the given RN2XX3 device
  *
  * @param[out] dev          RN2XX3 device to initialize
  * @param[in]  params       parameters for device initialization
@@ -289,7 +289,7 @@ int rn2xx3_write_cmd(rn2xx3_t *dev);
 int rn2xx3_write_cmd_no_wait(rn2xx3_t *dev);
 
 /**
- * @brief   Wait for a response to a command from the device
+ * @brief   Waits for a response to a command from the device
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
@@ -324,7 +324,7 @@ int rn2xx3_wait_response(rn2xx3_t *dev);
 int rn2xx3_wait_reply(rn2xx3_t *dev, uint8_t timeout);
 
 /**
- * @brief   Send data to LoRaWAN server
+ * @brief   Sends data to LoRaWAN server
  *
  * @param[in] dev           RN2XX3 device descriptor
  * @param[in] payload       Payload to transmit
@@ -343,7 +343,7 @@ int rn2xx3_wait_reply(rn2xx3_t *dev, uint8_t timeout);
 int rn2xx3_mac_tx(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len);
 
 /**
- * @brief   Start network activation procedure
+ * @brief   Starts network activation procedure
  *
  * @param[in] dev           RN2XX3 device descriptor
  * @param[in] mode          Activation procedure type
@@ -359,7 +359,7 @@ int rn2xx3_mac_tx(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len);
 int rn2xx3_mac_join_network(rn2xx3_t *dev, uint8_t mode);
 
 /**
- * @brief   Save current LoRaMAC configuration to internal EEPROM
+ * @brief   Saves current LoRaMAC configuration to internal EEPROM
  *
  * The configuration parameters saved are: frequency band, end device EUI,
  * application EUI, application key, network session key, application session
