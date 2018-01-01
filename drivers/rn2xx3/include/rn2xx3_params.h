@@ -88,6 +88,8 @@ extern "C" {
 #define LORAMAC_PARAMS            { .dev_eui  = LORAMAC_DEV_EUI, \
                                     .app_eui  = LORAMAC_APP_EUI, \
                                     .app_key  = LORAMAC_APP_KEY, \
+                                    .app_skey = LORAMAC_APP_SKEY, \
+                                    .nwk_skey = LORAMAC_NWK_SKEY, \
                                     .dev_addr = LORAMAC_DEV_ADDR }
 /**@}*/
 

@@ -121,8 +121,8 @@ typedef struct {
     uint8_t app_eui[LORAMAC_APPEUI_LEN];    /**< Application EUI */
     uint8_t app_key[LORAMAC_APPKEY_LEN];    /**< Application key */
     uint8_t dev_addr[LORAMAC_DEVADDR_LEN];  /**< Device address */
-    uint8_t apps_key[LORAMAC_APPSKEY_LEN];  /**< Application session key */
-    uint8_t nwks_key[LORAMAC_NWKSKEY_LEN];  /**< Network session key */
+    uint8_t app_skey[LORAMAC_APPSKEY_LEN];  /**< Application session key */
+    uint8_t nwk_skey[LORAMAC_NWKSKEY_LEN];  /**< Network session key */
 } loramac_params_t;
 
 /**
@@ -430,7 +430,7 @@ void rn2xx3_mac_set_app_key(rn2xx3_t *dev, uint8_t *key);
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] key                      The application session key
  */
-void rn2xx3_mac_set_apps_key(rn2xx3_t *dev, uint8_t *key);
+void rn2xx3_mac_set_app_skey(rn2xx3_t *dev, uint8_t *key);
 
 /**
  * @brief   Sets the rn2xx3 LoRaMAC network session key
@@ -440,7 +440,7 @@ void rn2xx3_mac_set_apps_key(rn2xx3_t *dev, uint8_t *key);
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] key                      The network session key
  */
-void rn2xx3_mac_set_nwks_key(rn2xx3_t *dev, uint8_t *key);
+void rn2xx3_mac_set_nwk_skey(rn2xx3_t *dev, uint8_t *key);
 
 /**
  * @brief   Gets the rn2xx3 LoRaMAC device address

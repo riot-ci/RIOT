@@ -247,8 +247,8 @@ int rn2xx3_mac_init(rn2xx3_t *dev)
     rn2xx3_mac_set_dev_eui(dev, dev->p.loramac.dev_eui);
     rn2xx3_mac_set_app_eui(dev, dev->p.loramac.app_eui);
     rn2xx3_mac_set_app_key(dev, dev->p.loramac.app_key);
-    rn2xx3_mac_set_apps_key(dev, dev->p.loramac.apps_key);
-    rn2xx3_mac_set_nwks_key(dev, dev->p.loramac.nwks_key);
+    rn2xx3_mac_set_app_skey(dev, dev->p.loramac.app_skey);
+    rn2xx3_mac_set_nwk_skey(dev, dev->p.loramac.nwk_skey);
     rn2xx3_mac_set_dev_addr(dev, dev->p.loramac.dev_addr);
 
     return RN2XX3_OK;

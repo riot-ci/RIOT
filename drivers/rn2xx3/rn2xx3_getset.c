@@ -143,12 +143,12 @@ void rn2xx3_mac_set_app_key(rn2xx3_t *dev, uint8_t *key)
     _set_array_value(dev, "appkey", key, LORAMAC_APPKEY_LEN);
 }
 
-void rn2xx3_mac_set_apps_key(rn2xx3_t *dev, uint8_t *key)
+void rn2xx3_mac_set_app_skey(rn2xx3_t *dev, uint8_t *key)
 {
     _set_array_value(dev, "appskey", key, LORAMAC_APPSKEY_LEN);
 }
 
-void rn2xx3_mac_set_nwks_key(rn2xx3_t *dev, uint8_t *key)
+void rn2xx3_mac_set_nwk_skey(rn2xx3_t *dev, uint8_t *key)
 {
     _set_array_value(dev, "nwkskey", key, LORAMAC_NWKSKEY_LEN);
 }
