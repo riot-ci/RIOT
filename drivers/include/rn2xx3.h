@@ -175,8 +175,6 @@ typedef struct {
                                         *   fly. */
     uint8_t rx_buf[RN2XX3_RX_MAX_BUF]; /**< RX data buffer */
     uint16_t rx_size;                  /**< counter for received char in RX */
-    char rx_port[4];                   /**< RX port buffer */
-    uint8_t rx_port_size;              /**< port used for RX */
 
     /* timers */
     xtimer_t sleep_timer;              /**< Timer used to count module sleep time */
@@ -675,11 +673,11 @@ uint8_t rn2xx3_mac_get_tx_mode(rn2xx3_t *dev);
 void rn2xx3_mac_set_tx_mode(rn2xx3_t *dev, uint8_t mode);
 
 /**
- * @brief   Gets the rn2xx3 LoRaMAC RX port
+ * @brief   Parses the response buffer to get the LoRaWAN RX port
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  *
- * @return                             The RX port
+ * @return                             The RX port (between 1 and 223)
  */
 uint8_t rn2xx3_mac_get_rx_port(rn2xx3_t *dev);
 

@@ -320,7 +320,7 @@ void rn2xx3_mac_set_tx_mode(rn2xx3_t *dev, uint8_t mode)
 
 uint8_t rn2xx3_mac_get_rx_port(rn2xx3_t *dev)
 {
-    return strtoul(dev->rx_port, NULL, 10);
+    return strtoul(&dev->resp_buf[6], NULL, 10);
 }
 
 void rn2xx3_sys_set_sleep_duration(rn2xx3_t *dev, uint32_t sleep)

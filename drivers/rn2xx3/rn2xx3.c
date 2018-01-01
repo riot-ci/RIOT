@@ -68,7 +68,6 @@ static void _rx_cb(void *arg, uint8_t c)
             }
         }
         dev->resp_size = 0;
-        dev->rx_port_size = 0;
         dev->rx_size = 0;
         dev->resp_done = 1;
         mutex_unlock(&(dev->resp_lock));
@@ -82,29 +81,18 @@ static void _rx_cb(void *arg, uint8_t c)
             case RN2XX3_INT_STATE_MAC_TX:
                 /* some data are available */
                 dev->resp_buf[dev->resp_size++] = c;
-
                 /* if module response ends with 'rx ' after 8 received chars,
                    the module starts receiving data */
                 if (dev->resp_size == 8 && dev->resp_buf[4] == 'r'
                     && dev->resp_buf[5] == 'x' && dev->resp_buf[6] == ' ') {
-                    if (netdev->event_callback) {
-                        netdev->event_callback(netdev, NETDEV_EVENT_ISR);
-                    }
-                    dev->rx_port_size = 0;
                     /* next received chars correspond to the port number */
                     dev->int_state = RN2XX3_INT_STATE_MAC_RX_PORT;
                 }
                 break;
 
             case RN2XX3_INT_STATE_MAC_RX_PORT:
-                /* read and parse RX port number */
-                if (c != ' ') {
-                    dev->rx_port[dev->rx_port_size++] = c;
-                }
-                else {
-                    dev->rx_port[dev->rx_port_size++] = '\0';
-                    dev->rx_size = 0;
-                    /* next received chars correspond to the data */
+                dev->resp_buf[dev->resp_size++] = c;
+                if (c == ' ') {
                     dev->int_state = RN2XX3_INT_STATE_MAC_RX_MESSAGE;
                 }
                 break;
@@ -112,6 +100,7 @@ static void _rx_cb(void *arg, uint8_t c)
             case RN2XX3_INT_STATE_MAC_RX_MESSAGE:
                 /* read and convert RX data (received in hex chars) */
                 if (c == ' ') {
+                    dev->resp_buf[dev->resp_size++] = c;
                     break;
                 }
                 dev->rx_tmp_buf[dev->rx_size % 2] = c;
