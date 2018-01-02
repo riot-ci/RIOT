@@ -422,9 +422,9 @@ static int check_mount(vfs_mount_t *mountp)
     if ((mountp == NULL) || (mountp->fs == NULL) || (mountp->mount_point == NULL)) {
         return -EINVAL;
     }
-    DEBUG("vfs_mount: -> \"%s\" (%p), %p\n", mountp->mount_point, (void *)mountp->mount_point, mountp->private_data);
+    DEBUG("vfs: check_mount: -> \"%s\" (%p), %p\n", mountp->mount_point, (void *)mountp->mount_point, mountp->private_data);
     if (mountp->mount_point[0] != '/') {
-        DEBUG("vfs_mount: not absolute mount_point path\n");
+        DEBUG("vfs: check_mount: not absolute mount_point path\n");
         return -EINVAL;
     }
     mountp->mount_point_len = strlen(mountp->mount_point);
@@ -434,7 +434,7 @@ static int check_mount(vfs_mount_t *mountp)
     if (found != NULL) {
         /* Same mount is already mounted */
         mutex_unlock(&_mount_mutex);
-        DEBUG("vfs_mount: Already mounted\n");
+        DEBUG("vfs: check_mount: Already mounted\n");
         return -EBUSY;
     }
 
@@ -489,10 +489,16 @@ int vfs_mount(vfs_mount_t *mountp)
 int vfs_umount(vfs_mount_t *mountp)
 {
     DEBUG("vfs_umount: %p\n", (void *)mountp);
-    if ((mountp == NULL) || (mountp->mount_point == NULL)) {
-        return -EINVAL;
+    int ret = check_mount(mountp);
+    if (ret == 0) {
+        DEBUG("vfs_umount: not mounted\n");
+        mutex_unlock(&_mount_mutex);
+        return 0;
     }
-    mutex_lock(&_mount_mutex);
+    else if (ret == -EINVAL) {
+        DEBUG("vfs_umount: invalid fs\n");
+        return ret;
+    }
     DEBUG("vfs_umount: -> \"%s\" open=%d\n", mountp->mount_point, atomic_load(&mountp->open_files));
     if (atomic_load(&mountp->open_files) > 0) {
         mutex_unlock(&_mount_mutex);
