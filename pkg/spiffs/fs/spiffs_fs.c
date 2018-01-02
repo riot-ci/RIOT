@@ -120,9 +120,8 @@ void spiffs_unlock(struct spiffs_t *fs)
     mutex_unlock(&fs_desc->lock);
 }
 
-static int _mount(vfs_mount_t *mountp)
+static int prepare(spiffs_desc_t *fs_desc)
 {
-    spiffs_desc_t *fs_desc = mountp->private_data;
 #if SPIFFS_HAL_CALLBACK_EXTRA == 1
     mtd_dev_t *dev = fs_desc->dev;
     fs_desc->fs.user_data = dev;
@@ -146,7 +145,12 @@ static int _mount(vfs_mount_t *mountp)
     fs_desc->config.phys_erase_block = dev->page_size * dev->pages_per_sector;
 #endif
 
-    mtd_init(dev);
+    return mtd_init(dev);
+}
+
+static int _format(vfs_mount_t *mountp)
+{
+    spiffs_desc_t *fs_desc = mountp->private_data;
 
     s32_t ret = SPIFFS_mount(&fs_desc->fs,
                              &fs_desc->config,
@@ -162,33 +166,34 @@ static int _mount(vfs_mount_t *mountp)
 #endif
                              NULL);
 
-    if (ret != 0) {
-        DEBUG("spiffs: mount: ret %" PRId32 "\n", ret);
-        switch (ret) {
-        case SPIFFS_ERR_NOT_A_FS:
-            DEBUG("spiffs: mount: formatting fs\n");
-            ret = SPIFFS_format(&fs_desc->fs);
-            DEBUG("spiffs: mount: format ret %" PRId32 "\n", ret);
-            if (ret < 0) {
-                return spiffs_err_to_errno(ret);
-            }
-            ret = SPIFFS_mount(&fs_desc->fs,
-                               &fs_desc->config,
-                               fs_desc->work,
-                               fs_desc->fd_space,
-                               SPIFFS_FS_FD_SPACE_SIZE,
-#if SPIFFS_CACHE == 1
-                               fs_desc->cache,
-                               SPIFFS_FS_CACHE_SIZE,
-#else
-                               NULL,
-                               0,
-#endif
-                               NULL);
-            DEBUG("spiffs: mount: ret %" PRId32 "\n", ret);
-            break;
-        }
+    if (ret == 0) {
+        DEBUG("spiffs: format: unmount fs\n");
+        SPIFFS_unmount(&fs_desc->fs);
     }
+    DEBUG("spiffs: format: formatting fs\n");
+    ret = SPIFFS_format(&fs_desc->fs);
+    DEBUG("spiffs: mount: format ret %" PRId32 "\n", ret);
+    return spiffs_err_to_errno(ret);
+}
+
+static int _mount(vfs_mount_t *mountp)
+{
+    spiffs_desc_t *fs_desc = mountp->private_data;
+    prepare(fs_desc);
+
+    s32_t ret = SPIFFS_mount(&fs_desc->fs,
+                             &fs_desc->config,
+                             fs_desc->work,
+                             fs_desc->fd_space,
+                             SPIFFS_FS_FD_SPACE_SIZE,
+#if SPIFFS_CACHE == 1
+                             fs_desc->cache,
+                             SPIFFS_FS_CACHE_SIZE,
+#else
+                             NULL,
+                             0,
+#endif
+                             NULL);
 
     return spiffs_err_to_errno(ret);
 }
@@ -488,6 +493,7 @@ static int spiffs_err_to_errno (s32_t err)
 }
 
 static const vfs_file_system_ops_t spiffs_fs_ops = {
+    .format = _format,
     .mount = _mount,
     .umount = _umount,
     .unlink = _unlink,
