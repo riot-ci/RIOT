@@ -129,8 +129,6 @@ static int prepare(spiffs_desc_t *fs_desc)
     mtd_dev_t *dev = SPIFFS_MTD_DEV;
 #endif
 
-    DEBUG("spiffs: mount: private_data = %p\n", mountp->private_data);
-
     fs_desc->config.hal_read_f = _dev_read;
     fs_desc->config.hal_write_f = _dev_write;
     fs_desc->config.hal_erase_f = _dev_erase;
@@ -151,6 +149,8 @@ static int prepare(spiffs_desc_t *fs_desc)
 static int _format(vfs_mount_t *mountp)
 {
     spiffs_desc_t *fs_desc = mountp->private_data;
+    DEBUG("spiffs: format: private_data = %p\n", mountp->private_data);
+    prepare(fs_desc);
 
     s32_t ret = SPIFFS_mount(&fs_desc->fs,
                              &fs_desc->config,
@@ -179,6 +179,7 @@ static int _format(vfs_mount_t *mountp)
 static int _mount(vfs_mount_t *mountp)
 {
     spiffs_desc_t *fs_desc = mountp->private_data;
+    DEBUG("spiffs: mount: private_data = %p\n", mountp->private_data);
     prepare(fs_desc);
 
     s32_t ret = SPIFFS_mount(&fs_desc->fs,
