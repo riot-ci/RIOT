@@ -7,7 +7,7 @@ PKG_BUILDDIR ?= $(PKGDIRBASE)/$(PKG_NAME)
 
 .PHONY: all
 
-all: #git-download
+all: git-download
 	@mkdir -p "$(PKG_BUILDDIR)/riotbuild"
 	@cp $(PKG_BUILDDIR)/*.c $(PKG_BUILDDIR)/*.h $(PKG_BUILDDIR)/riotbuild
 	@cp $(CURDIR)/Makefile.littlefs $(PKG_BUILDDIR)/riotbuild/Makefile
