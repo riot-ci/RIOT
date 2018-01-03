@@ -6,7 +6,7 @@ DIRS += $(RIOTBASE)/pkg/fatfs/fatfs_diskio/mtd
 
 
 ifneq (,$(filter fatfs_vfs,$(USEMODULE)))
-    DIRS += $(RIOTBASE)/pkg/fatfs/fatfs_vfs
+  DIRS += $(RIOTBASE)/pkg/fatfs/fatfs_vfs
 endif
 
 ifeq ($(shell uname -s),Darwin)

@@ -91,7 +91,7 @@ DSTATUS disk_initialize(BYTE pdrv)
 DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
 {
     DEBUG("disk_read: %d, %lu, %d\n", pdrv, sector, count);
-    if ( (pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL) ) {
+    if ((pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL)) {
         return RES_PARERR;
     }
 
@@ -100,8 +100,8 @@ DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
                        count * fatfs_mtd_devs[pdrv]->page_size);
 
     if (res >= 0) {
-        uint32_t r_sect = ((unsigned)res)/fatfs_mtd_devs[pdrv]->page_size;
-        return ( (r_sect == count) ? RES_OK : RES_ERROR);
+        uint32_t r_sect = ((unsigned)res) / fatfs_mtd_devs[pdrv]->page_size;
+        return ((r_sect == count) ? RES_OK : RES_ERROR);
     }
 
     return RES_ERROR;
@@ -122,7 +122,7 @@ DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
 DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
 {
     DEBUG("disk_write: %d, %lu, %d\n", pdrv, sector, count);
-    if ( (pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL) ) {
+    if ((pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL)) {
         return RES_PARERR;
     }
 
@@ -140,7 +140,7 @@ DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
                     count * fatfs_mtd_devs[pdrv]->page_size);
 
     if (res >= 0) {
-        uint32_t w_sect = ((unsigned)res)/fatfs_mtd_devs[pdrv]->page_size;
+        uint32_t w_sect = ((unsigned)res) / fatfs_mtd_devs[pdrv]->page_size;
         return ((w_sect == count) ? RES_OK : RES_ERROR);
     }
 
@@ -165,13 +165,13 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff)
     }
 
     switch (cmd) {
-        #if (_FS_READONLY == 0)
+#if (_FS_READONLY == 0)
         case CTRL_SYNC:
             /* r/w is always finished within r/w-functions of mtd */
             return RES_OK;
-        #endif
+#endif
 
-        #if (_USE_MKFS == 1)
+#if (_USE_MKFS == 1)
         case GET_SECTOR_COUNT:
             *(DWORD *)buff = fatfs_mtd_devs[pdrv]->sector_count;
             return RES_OK;
@@ -181,18 +181,18 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff)
         case GET_BLOCK_SIZE:
             *(DWORD *)buff = fatfs_mtd_devs[pdrv]->pages_per_sector;
             return RES_OK;
-        #endif
+#endif
 
-        #if (_MAX_SS != _MIN_SS)
+#if (_MAX_SS != _MIN_SS)
         case GET_SECTOR_SIZE:
             *(DWORD *)buff = fatfs_mtd_devs[pdrv]->page_size;
             return RES_OK;
-        #endif
+#endif
 
-        #if (_USE_TRIM == 1)
+#if (_USE_TRIM == 1)
         case CTRL_TRIM:
             return RES_OK;
-        #endif
+#endif
     }
 
     return RES_PARERR;

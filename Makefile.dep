@@ -669,8 +669,8 @@ ifneq (,$(filter ccn-lite,$(USEPKG)))
 endif
 
 ifneq (,$(filter fatfs_vfs,$(USEMODULE)))
-    USEPKG += fatfs
-    USEMODULE += vfs
+  USEPKG += fatfs
+  USEMODULE += vfs
 endif
 
 # always select gpio (until explicit dependencies are sorted out)

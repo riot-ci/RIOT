@@ -295,11 +295,11 @@ static void test_create(void)
 
 int main(void)
 {
-    #if FATFS_FFCONF_OPT_FS_NORTC == 0
+#if FATFS_FFCONF_OPT_FS_NORTC == 0
     rtc_init();
-    #endif
+#endif
 
-    #if MODULE_MTD_SDCARD
+#if MODULE_MTD_SDCARD
     for(unsigned int i = 0; i < SDCARD_SPI_NUM; i++){
         mtd_sdcard_devs[i].base.driver = &mtd_sdcard_driver;
         mtd_sdcard_devs[i].sd_card = &sdcard_spi_devs[i];
@@ -307,13 +307,13 @@ int main(void)
         fatfs_mtd_devs[i] = &mtd_sdcard_devs[i].base;
         mtd_init(&mtd_sdcard_devs[i].base);
     }
-    #endif
+#endif
 
-    #ifdef MODULE_MTD_NATIVE
+#ifdef MODULE_MTD_NATIVE
     fatfs_mtd_devs[fatfs.vol_idx] = mtd0;
-    #else
+#else
     fatfs_mtd_devs[fatfs.vol_idx] = mtd1;
-    #endif
+#endif
 
     printf("Tests for FatFs over VFS - test results will be printed "
            "in the format test_name:result\n");

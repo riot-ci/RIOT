@@ -265,11 +265,11 @@ static int _fstat(vfs_file_t *filp, struct stat *buf)
     buf->st_size = fi.fsize;
 
     /* set last modification timestamp */
-    #ifdef SYS_STAT_H
+#ifdef SYS_STAT_H
     _fatfs_time_to_timespec(fi.fdate, fi.ftime, &(buf->st_mtim.tv_sec));
-    #else
+#else
     _fatfs_time_to_timespec(fi.fdate, fi.ftime, &(buf->st_mtime));
-    #endif
+#endif
 
     if (fi.fattrib & AM_DIR) {
         buf->st_mode = S_IFDIR;  /**< it's a directory */
@@ -404,11 +404,11 @@ static int fatfs_err_to_errno(int32_t err)
         case FR_EXIST:
             return -EEXIST;
         case FR_INVALID_OBJECT:
-        #ifdef EBADFD
+#ifdef EBADFD
             return -EBADFD;
-        #else
+#else
             return -EINVAL;
-        #endif
+#endif
         case FR_WRITE_PROTECTED:
             return -EACCES;
         case FR_INVALID_DRIVE:
