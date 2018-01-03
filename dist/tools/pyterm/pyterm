@@ -249,9 +249,9 @@ class SerCmd(cmd.Cmd):
         # wait until connection is established and fire startup
         # commands to the node
         time.sleep(1)
-        for c in self.init_cmd:
-            self.logger.debug("WRITE ----->>>>>> '" + c + "'\n")
-            self.onecmd(self.precmd(cmd))
+        for command in self.init_cmd:
+            self.logger.debug("WRITE ----->>>>>> '" + command + "'\n")
+            self.onecmd(self.precmd(command))
 
         # start serial->console thread
         receiver_thread = threading.Thread(target=self.reader)
@@ -768,7 +768,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if (args.noprefix):
+    if args.noprefix:
         args.format = ""
     myshell = SerCmd(args.port, args.baudrate, args.toggle, args.tcp_serial,
                      args.directory, args.config, args.host, args.run_name,
