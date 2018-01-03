@@ -1,8 +1,6 @@
 PKG_NAME=littlefs
-#PKG_URL=https://github.com/geky/littlefs.git
-PKG_URL=https://github.com/OTAkeys/littlefs.git
-#PKG_VERSION=be22d3449f23a24e7462114349ce04d751e42437
-PKG_VERSION=6c84ed7d2a815089b83640878bd49d7340671733
+PKG_URL=https://github.com/geky/littlefs.git
+PKG_VERSION=be22d3449f23a24e7462114349ce04d751e42437
 PKG_BUILDDIR ?= $(PKGDIRBASE)/$(PKG_NAME)
 
 .PHONY: all
