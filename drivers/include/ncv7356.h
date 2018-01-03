@@ -25,7 +25,7 @@
 #include <stdio.h>
 
 #include "periph/gpio.h"
-#include "can/trx.h"
+#include "can/can_trx.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +38,7 @@ typedef struct ncv7356_trx {
     /**
      *  set mode interface
      */
-    trx_t trx;
+    can_trx_t trx;
 
     /**
      *  Mode 0 pin of ncv7356 device
@@ -61,7 +61,7 @@ typedef struct ncv7356_trx {
  * @return  0 on success
  * @return -1 on error
  */
-int ncv7356_trx_set_mode(trx_t *dev, trx_mode_t mode);
+int ncv7356_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 
 /**
  * @brief initialize the given ncv7356
@@ -71,7 +71,7 @@ int ncv7356_trx_set_mode(trx_t *dev, trx_mode_t mode);
  * @return  0 on success
  * @return -1 on error
  */
-int ncv7356_trx_init(trx_t *dev);
+int ncv7356_trx_init(can_trx_t *dev);
 
 /**
  * @brief ncv7356 driver
