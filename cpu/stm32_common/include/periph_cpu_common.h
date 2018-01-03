@@ -216,7 +216,7 @@ typedef struct {
 /**
  * @brief   DMA type
  */
-typedef int dma_t;
+typedef unsigned dma_t;
 
 /**
  * @brief   DMA modes
@@ -391,7 +391,7 @@ void gpio_init_analog(gpio_t pin);
 /**
  * @brief   DMA stream not defined
  */
-#define DMA_STREAM_UNDEF (-1)
+#define DMA_STREAM_UNDEF (UINT_MAX)
 
 /**
  * @brief   Initialize DMA

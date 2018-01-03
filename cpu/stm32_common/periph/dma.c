@@ -77,7 +77,7 @@ static void dma_clear_all_flags(dma_t dma)
 
 void dma_init(void)
 {
-    for (int i = 0; i < DMA_NUMOF; i++) {
+    for (unsigned i = 0; i < DMA_NUMOF; i++) {
         mutex_init(&dma_ctx[i].conf_lock);
         mutex_init(&dma_ctx[i].sync_lock);
         mutex_lock(&dma_ctx[i].sync_lock);
