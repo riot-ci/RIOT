@@ -153,7 +153,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
                 dma_stop(uart_config[uart].dma);
                 dev(uart)->CR3 &= ~USART_CR3_DMAT;
             }
-            for (int i = 0; i < len; i++) {
+            for (unsigned i = 0; i < len; i++) {
                 send_byte(uart, data[i]);
             }
             if (todo > 0) {
