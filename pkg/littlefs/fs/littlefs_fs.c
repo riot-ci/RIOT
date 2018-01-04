@@ -62,12 +62,13 @@ static int littlefs_err_to_errno(ssize_t err)
 static int _dev_read(const struct lfs_config *c, lfs_block_t block,
                  lfs_off_t off, void *buffer, lfs_size_t size)
 {
-    mtd_dev_t *mtd = c->context;
+    littlefs_desc_t *fs = c->context;
+    mtd_dev_t *mtd = fs->dev;
 
     DEBUG("lfs_read: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
           (void *)c, block, off, buffer, size);
 
-    int ret = mtd_read(mtd, buffer, block * c->block_size + off, size);
+    int ret = mtd_read(mtd, buffer, ((fs->base_addr + block) * c->block_size) + off, size);
     if (ret >= 0) {
         return 0;
     }
@@ -78,12 +79,13 @@ static int _dev_read(const struct lfs_config *c, lfs_block_t block,
 static int _dev_write(const struct lfs_config *c, lfs_block_t block,
                   lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-    mtd_dev_t *mtd = c->context;
+    littlefs_desc_t *fs = c->context;
+    mtd_dev_t *mtd = fs->dev;
 
     DEBUG("lfs_write: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
           (void *)c, block, off, buffer, size);
 
-    int ret = mtd_write(mtd, buffer, block * c->block_size + off, size);
+    int ret = mtd_write(mtd, buffer, ((fs->base_addr + block) * c->block_size) + off, size);
     if (ret >= 0) {
         return 0;
     }
@@ -93,11 +95,12 @@ static int _dev_write(const struct lfs_config *c, lfs_block_t block,
 
 static int _dev_erase(const struct lfs_config *c, lfs_block_t block)
 {
-    mtd_dev_t *mtd = c->context;
+    littlefs_desc_t *fs = c->context;
+    mtd_dev_t *mtd = fs->dev;
 
     DEBUG("lfs_erase: c=%p, block=%" PRIu32 "\n", (void *)c, block);
 
-    int ret = mtd_erase(mtd, block * c->block_size, c->block_size);
+    int ret = mtd_erase(mtd, ((fs->base_addr + block) * c->block_size), c->block_size);
     if (ret >= 0) {
         return 0;
     }
@@ -122,7 +125,7 @@ static int _mount(vfs_mount_t *mountp)
     DEBUG("littlefs: mount: mountp=%p\n", (void *)mountp);
 
     if (!fs->config.block_count) {
-        fs->config.block_count = fs->dev->sector_count;
+        fs->config.block_count = fs->dev->sector_count - fs->base_addr;
     }
     if (!fs->config.block_size) {
         fs->config.block_size = fs->dev->page_size * fs->dev->pages_per_sector;
@@ -135,7 +138,7 @@ static int _mount(vfs_mount_t *mountp)
     }
     fs->config.lookahead = LITTLEFS_LOOKAHEAD_SIZE;
     fs->config.lookahead_buffer = fs->lookahead_buf;
-    fs->config.context = fs->dev;
+    fs->config.context = fs;
     fs->config.read = _dev_read;
     fs->config.prog = _dev_write;
     fs->config.erase = _dev_erase;

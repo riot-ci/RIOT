@@ -76,6 +76,10 @@ typedef struct {
     struct lfs_config config;   /**< littlefs config */
     mtd_dev_t *dev;             /**< mtd device to use */
     mutex_t lock;               /**< mutex */
+    /** first block number to use,
+     * total number of block is defined in @p config.
+     * if set to 0, the total number of sectors from the mtd is used */
+    uint32_t base_addr;
 #if LITTLEFS_FILE_BUFFER_SIZE || DOXYGEN
     /** file buffer to use internally if LITTLEFS_FILE_BUFFER_SIZE is set */
     uint8_t file_buf[LITTLEFS_FILE_BUFFER_SIZE];
