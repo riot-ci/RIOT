@@ -118,7 +118,7 @@ typedef struct spiffs_desc {
 #endif
 #if (SPIFFS_SINGLETON == 0) || defined(DOXYGEN)
     uint32_t base_addr;                         /**< Base address of partition */
-    uint32_t part_block_count;                  /**< Number of blocks in current partition,
+    uint32_t block_count;                       /**< Number of blocks in current partition,
                                                  *  if 0, the mtd number of sector is used */
 #endif
 } spiffs_desc_t;
