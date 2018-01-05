@@ -821,8 +821,9 @@ int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *eui64)
                 }
                 break;
 #endif
-#ifdef MODULE_CC110X
+#if defined(MODULE_CC110X) || defined(MODULE_NRFMIN)
             case NETDEV_TYPE_CC110X:
+            case NETDEV_TYPE_NRFMIN:
                 _create_iid_from_short(netif, eui64);
                 return 0;
 #endif
