@@ -295,7 +295,7 @@ static void test_create(void)
 
 int main(void)
 {
-#if FATFS_FFCONF_OPT_FS_NORTC == 0
+#if defined(BOARD_NATIVE) && (FATFS_FFCONF_OPT_FS_NORTC == 0)
     rtc_init();
 #endif
 
