@@ -59,9 +59,9 @@ extern "C" {
 #endif
 
 #if defined(CPU_MODEL_STM32F103C8)
-#define FLASHPAGE_NUMOF     (32U)
-#elif defined(CPU_MODEL_STM32F103CB) || defined(CPU_MODEL_STM32F103RB)
 #define FLASHPAGE_NUMOF     (64U)
+#elif defined(CPU_MODEL_STM32F103CB) || defined(CPU_MODEL_STM32F103RB)
+#define FLASHPAGE_NUMOF     (128U)
 #elif defined(CPU_MODEL_STM32F103RE) || defined(CPU_MODEL_STM32F103ZE)
 #define FLASHPAGE_NUMOF     (256U)
 #endif
