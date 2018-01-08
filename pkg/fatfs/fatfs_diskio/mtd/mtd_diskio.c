@@ -160,7 +160,7 @@ DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
  */
 DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff)
 {
-    if ( (pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL) ) {
+    if ((pdrv >= _VOLUMES) || (fatfs_mtd_devs[pdrv]->driver == NULL)) {
         return RES_PARERR;
     }
 
