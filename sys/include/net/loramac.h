@@ -305,6 +305,15 @@ extern "C" {
  */
 
 /**
+ * @brief   Device class
+ */
+enum {
+    LORAMAC_CLASS_A,                   /**< Class A device */
+    LORAMAC_CLASS_B,                   /**< Class B device */
+    LORAMAC_CLASS_C,                   /**< Class C device */
+};
+
+/**
  * @brief   LoRaMAC network join procedure type
  */
 enum {
