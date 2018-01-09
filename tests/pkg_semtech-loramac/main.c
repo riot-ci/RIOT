@@ -75,13 +75,13 @@ static void _send_usage(void)
 
 static void _set_usage(void)
 {
-    puts("Usage: set <deveui|appeui|appkey|appskey|nwkskey|devaddr|dr|adr|"
+    puts("Usage: set <deveui|appeui|appkey|appskey|nwkskey|devaddr|class|dr|adr|"
          "public|netid|tx_power|rx2_freq|rx2_dr> <value>");
 }
 
 static void _get_usage(void)
 {
-    puts("Usage: get <deveui|appeui|appkey|appskey|nwkskey|devaddr|dr|adr|"
+    puts("Usage: get <deveui|appeui|appkey|appskey|nwkskey|devaddr|class|dr|adr|"
          "public|netid|tx_power|rx2_freq|rx2_dr>");
 }
 
@@ -199,6 +199,23 @@ static int _cmd_loramac_set(int argc, char **argv)
         _hex_to_bytes(argv[2], devaddr);
         semtech_loramac_set_devaddr(devaddr);
     }
+    else if (strcmp("class", argv[1]) == 0) {
+        loramac_class_t cls;
+        if (strcmp(argv[2], "A") == 0) {
+            cls = LORAMAC_CLASS_A;
+        }
+        else if (strcmp(argv[2], "B") == 0) {
+            cls = LORAMAC_CLASS_B;
+        }
+        else if (strcmp(argv[2], "C") == 0) {
+            cls = LORAMAC_CLASS_C;
+        }
+        else {
+            puts("Usage: set class <A,B,C>");
+            return 1;
+        }
+        semtech_loramac_set_class(cls);
+    }
     else if (strcmp("dr", argv[1]) == 0) {
         uint8_t dr = atoi(argv[2]);
         if (dr > LORAMAC_DR_15) {
@@ -310,6 +327,23 @@ static int _cmd_loramac_get(int argc, char **argv)
         semtech_loramac_get_devaddr(devaddr);
         _bytes_to_hex(devaddr, print_buf, 4);
         printf("DEVADDR: %s\n", print_buf);
+    }
+    else if (strcmp("class", argv[1]) == 0) {
+        printf("Device class: ");
+        switch(semtech_loramac_get_class()) {
+            case LORAMAC_CLASS_A:
+                puts("A");
+                break;
+            case LORAMAC_CLASS_B:
+                puts("B");
+                break;
+            case LORAMAC_CLASS_C:
+                puts("C");
+                break;
+            default:
+                puts("Invalid");
+                break;
+        }
     }
     else if (strcmp("dr", argv[1]) == 0) {
         printf("DATARATE: %d\n",
