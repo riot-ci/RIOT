@@ -91,8 +91,9 @@ static uint8_t app_skey[16] = LORAMAC_APP_SKEY_DEFAULT;
 static uint8_t dev_addr[4] = LORAMAC_DEV_ADDR_DEFAULT;
 
 #define LORAWAN_APP_DATA_MAX_SIZE                       242
-static uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE] = { 0 };
-static uint8_t rx_payload[LORAWAN_APP_DATA_MAX_SIZE] = { 0 };
+static uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE];
+static uint8_t rx_payload[LORAWAN_APP_DATA_MAX_SIZE];
+static uint8_t rx_port_internal;
 
 typedef struct {
     uint8_t port;
@@ -167,9 +168,15 @@ static void mcps_confirm(McpsConfirm_t *confirm)
 
         switch(confirm->McpsRequest) {
             case MCPS_UNCONFIRMED:
+            {
                 /* Check Datarate
                    Check TxPower */
                 DEBUG("[semtech-loramac] MCPS confirm event UNCONFIRMED\n");
+                msg_t msg;
+                msg.type = MSG_TYPE_LORAMAC_NOTIFY;
+                msg.content.value = SEMTECH_LORAMAC_TX_DONE;
+                msg_send(&msg, _handler_pid);
+            }
                 break;
 
             case MCPS_CONFIRMED:
@@ -228,7 +235,9 @@ static void mcps_indication(McpsIndication_t *indication)
     if (indication->RxData) {
         indication->Buffer[indication->BufferSize] = '\0';
         memcpy(rx_payload, indication->Buffer, indication->BufferSize + 1);
-        DEBUG("[semtech-loramac] MCPS indication, RX data: %s\n", (char*)rx_payload);
+        rx_port_internal = indication->Port;
+        DEBUG("[semtech-loramac] MCPS indication, RX data: %s, Port: %d\n",
+              (char*)rx_payload, rx_port);
         msg.content.value = SEMTECH_LORAMAC_RX_DATA;
     }
     else {
@@ -587,7 +596,7 @@ uint8_t semtech_loramac_join(uint8_t type)
 
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
-                             uint8_t *rx_buf)
+                             uint8_t *rx_buf, uint8_t *rx_port)
 {
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_NETWORK_JOINED;
@@ -614,6 +623,7 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     uint8_t status = (uint8_t)msg.content.value;
     if (status == SEMTECH_LORAMAC_RX_DATA) {
         memcpy(rx_buf, rx_payload, sizeof(rx_payload));
+        *rx_port = rx_port_internal;
     }
 
     return status;

@@ -79,6 +79,7 @@ uint8_t semtech_loramac_join(uint8_t type);
  * @param[in] tx_buf       The TX buffer
  * @param[in] tx_len       The length of the TX buffer
  * @param[out] rx_buf      The RX buffer when data is received from LoRaWAN
+ * @param[out] rx_port     The RX port used by received data
  *
  * @return                 SEMTECH_LORAMAC_NOT_JOINED when the network is not joined
  * @return                 SEMTECH_LORAMAC_TX_DONE when TX has completed but no data is received
@@ -86,7 +87,7 @@ uint8_t semtech_loramac_join(uint8_t type);
  */
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
-                             uint8_t *rx_buf);
+                             uint8_t *rx_buf, uint8_t *rx_port);
 
 /**
  * @brief   Sets the device EUI
