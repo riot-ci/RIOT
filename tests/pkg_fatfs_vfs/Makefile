@@ -47,10 +47,12 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
 
 include $(RIOTBASE)/Makefile.include
 
+image:
+	@tar -xjf riot_fatfs_disk.tar.gz -C ./bin/
+
 #this generates a compressed fat image file that can be used by the fat driver on native
-fatimage:
+compressed-image:
 	@./create_fat_image_file.sh $(FATFS_IMAGE_FILE_SIZE_MIB)
 
-test:
-	@tar -xjf riot_fatfs_disk.tar.gz -C ./bin/
+test: image
 	./tests/01-run.py
