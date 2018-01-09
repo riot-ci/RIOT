@@ -679,6 +679,24 @@ void semtech_loramac_get_devaddr(uint8_t *addr)
     memcpy(addr, dev_addr, 4);
 }
 
+void semtech_loramac_set_class(loramac_class_t cls)
+{
+    DEBUG("[semtech-loramac] set class %d\n", cls);
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_DEVICE_CLASS;
+    mibReq.Param.Class = (DeviceClass_t)cls;
+    LoRaMacMibSetRequestConfirm(&mibReq);
+}
+
+loramac_class_t semtech_loramac_get_class(void)
+{
+    DEBUG("[semtech-loramac] get device class\n");
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_DEVICE_CLASS;
+    LoRaMacMibGetRequestConfirm(&mibReq);
+    return (loramac_class_t)mibReq.Param.Class;
+}
+
 void semtech_loramac_set_dr(uint8_t dr)
 {
     DEBUG("[semtech-loramac] set dr %d\n", dr);
