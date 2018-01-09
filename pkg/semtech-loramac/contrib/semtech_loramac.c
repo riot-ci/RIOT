@@ -266,6 +266,22 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
     }
 }
 
+static void _loramac_set_rx2_params(uint32_t freq, uint8_t dr)
+{
+    Rx2ChannelParams_t params;
+    params.Frequency = freq;
+    params.Datarate = dr;
+
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
+    mibReq.Param.Rx2DefaultChannel = params;
+    LoRaMacMibSetRequestConfirm(&mibReq);
+
+    mibReq.Type = MIB_RX2_CHANNEL;
+    mibReq.Param.Rx2Channel = params;
+    LoRaMacMibSetRequestConfirm(&mibReq);
+}
+
 void _init_loramac(LoRaMacPrimitives_t * primitives, LoRaMacCallback_t *callbacks)
 {
     DEBUG("[semtech-loramac] initializing loramac\n");
@@ -318,20 +334,19 @@ void _init_loramac(LoRaMacPrimitives_t * primitives, LoRaMacCallback_t *callback
     LoRaMacChannelAdd(8, (ChannelParams_t)LC9);
     LoRaMacChannelAdd(9, (ChannelParams_t)LC10);
 
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
-    mibReq.Param.Rx2DefaultChannel = (Rx2ChannelParams_t){869525000, DR_3};
-    LoRaMacMibSetRequestConfirm(&mibReq);
-
-    mibReq.Type = MIB_RX2_CHANNEL;
-    mibReq.Param.Rx2Channel = (Rx2ChannelParams_t){869525000, DR_3};
-    LoRaMacMibSetRequestConfirm(&mibReq);
+    _loramac_set_rx2_params(LORAMAC_DEFAULT_RX2_FREQ, LORAMAC_DEFAULT_RX2_DR);
 #endif
 }
 
 static void _join_otaa(void)
 {
     DEBUG("[semtech-loramac] starting OTAA join\n");
+
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_NETWORK_JOINED;
+    mibReq.Param.IsNetworkJoined = false;
+    LoRaMacMibSetRequestConfirm(&mibReq);
+
     MlmeReq_t mlmeReq;
     mlmeReq.Type = MLME_JOIN;
     mlmeReq.Req.Join.DevEui = dev_eui;
@@ -344,7 +359,12 @@ static void _join_otaa(void)
 static void _join_abp(void)
 {
     DEBUG("[semtech-loramac] starting ABP join\n");
+
     MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_NETWORK_JOINED;
+    mibReq.Param.IsNetworkJoined = false;
+    LoRaMacMibSetRequestConfirm(&mibReq);
+
     mibReq.Type = MIB_NET_ID;
     mibReq.Param.NetID = LORAMAC_DEFAULT_NETID;
     LoRaMacMibSetRequestConfirm(&mibReq);
@@ -749,4 +769,44 @@ uint8_t semtech_loramac_get_tx_power(void)
     mibReq.Type = MIB_CHANNELS_TX_POWER;
     LoRaMacMibGetRequestConfirm(&mibReq);
     return (uint8_t)mibReq.Param.ChannelsTxPower;
+}
+
+void semtech_loramac_set_rx2_freq(uint8_t freq)
+{
+    Rx2ChannelParams_t params;
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
+    LoRaMacMibGetRequestConfirm(&mibReq);
+    params.Frequency = freq;
+    params.Datarate = mibReq.Param.Rx2DefaultChannel.Datarate;
+    _loramac_set_rx2_params(params.Frequency, params.Datarate);
+}
+
+uint32_t semtech_loramac_get_rx2_freq(void)
+{
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
+    LoRaMacMibGetRequestConfirm(&mibReq);
+
+    return mibReq.Param.Rx2DefaultChannel.Frequency;
+}
+
+void semtech_loramac_set_rx2_dr(uint8_t dr)
+{
+    Rx2ChannelParams_t params;
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
+    LoRaMacMibGetRequestConfirm(&mibReq);
+    params.Datarate = dr;
+    params.Frequency = mibReq.Param.Rx2DefaultChannel.Frequency;
+    _loramac_set_rx2_params(params.Frequency, params.Datarate);
+}
+
+uint8_t semtech_loramac_get_rx2_dr(void)
+{
+    MibRequestConfirm_t mibReq;
+    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
+    LoRaMacMibGetRequestConfirm(&mibReq);
+
+    return mibReq.Param.Rx2DefaultChannel.Datarate;
 }
