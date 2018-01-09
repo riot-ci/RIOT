@@ -31,8 +31,8 @@
 #include "sx127x_netdev.h"
 
 sx127x_t sx127x;
-static uint8_t rx_buf[242] = { 0 };
-static char print_buf[48] = { 0 };
+static uint8_t rx_buf[242];
+static char print_buf[48];
 
 static void _hex_to_bytes(const char *hex, uint8_t *byte_array)
 {
