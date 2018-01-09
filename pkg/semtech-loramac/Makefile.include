@@ -4,6 +4,4 @@ INCLUDES += -I$(RIOTBASE)/pkg/semtech-loramac/include \
             -I$(PKGDIRBASE)/semtech-loramac/src/system/crypto \
             -I$(PKGDIRBASE)/semtech-loramac/src
 
-CFLAGS += -Wno-missing-field-initializers -Wno-unused-parameter -Wno-sign-compare
-
 DIRS += $(RIOTBASE)/pkg/semtech-loramac/contrib
