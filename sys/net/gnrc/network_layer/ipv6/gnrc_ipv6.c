@@ -613,8 +613,8 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
         gnrc_netif_t *tmp_netif = gnrc_netif_get_by_ipv6_addr(&hdr->dst);
 
         if (ipv6_addr_is_loopback(&hdr->dst) ||    /* dst is loopback address */
-             /* or dst registered to a local interface */
-             (tmp_netif != NULL)) {
+                /* or dst registered to a local interface */
+                (tmp_netif != NULL)) {
             uint8_t *rcv_data;
             gnrc_pktsnip_t *ptr = ipv6, *rcv_pkt;
 
