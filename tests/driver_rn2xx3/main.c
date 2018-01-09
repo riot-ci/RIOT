@@ -35,7 +35,7 @@ static uint8_t payload[RN2XX3_MAX_BUF];
 
 static void _print_sys_usage(void)
 {
-    puts("Usage: mac <sleep|reset|factoryRESET>");
+    puts("Usage: sys <sleep|reset|factoryRESET>");
 }
 
 static void _print_mac_usage(void)
@@ -46,7 +46,7 @@ static void _print_mac_usage(void)
 static void _print_mac_get_usage(void)
 {
     puts("Usage: mac get "
-         "<deveui|appeui|appkey|devaddr|txport|txmode|poweridx|dr|adr|"
+         "<deveui|appeui|devaddr|txport|txmode|poweridx|dr|adr|"
          "band|retx|rx1|rx2|ar|rx2dr|rx2freq>");
 }
 
