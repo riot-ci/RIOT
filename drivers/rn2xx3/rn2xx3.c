@@ -28,12 +28,12 @@
 #include "rn2xx3_internal.h"
 
 #define ENABLE_DEBUG    (0)
+/* Warning: to correctly display debug messages from isrs
+   (sleep timer, rx callbacks),
+   add CFLAGS+=-DISR_STACKSIZE=THREAD_STACKSIZE_DEFAULT to your the build
+   command.
+*/
 #include "debug.h"
-
-#if ENABLE_DEBUG
-/* we are interested by the debug message in the sleep timer callback */
-#define ISR_STACKSIZE               (THREAD_STACKSIZE_DEFAULT)
-#endif
 
 /**
  * @brief   Delay when resetting the device, 10ms
