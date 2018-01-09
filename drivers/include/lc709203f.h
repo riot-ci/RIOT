@@ -75,6 +75,11 @@ typedef enum {
 } lc709203f_temp_obtaining_mode_t;
 /** @} */
 
+/**
+ * @brief Typedef for the Callback function
+ * @details A function of this type will be called when an Interrupt is triggered on low RSOC or Voltage
+ * @param[in]  arg Additional Arguments that will be passed to the function
+ */
 typedef void (*lc709203f_cb_t)(void *arg);
 
 
@@ -109,29 +114,31 @@ typedef struct {
 } lc709203f_t;
 /** @} */
 
-/*CRC I2C-Addresses for Read/write*/
-#define LC709203F_I2C_READ              0x17
-#define LC709203F_I2C_WRITE             0x16
-/*Defines for Registers*/
-#define LC709203F_REG_CELL_VOLTAGE      0x09
-#define LC709203F_REG_RSOC              0x0d
-#define LC709203F_REG_ITE               0x0f
-#define LC709203F_REG_ID                0x11
-#define LC709203F_REG_CELL_TEMP         0x08
-#define LC709203F_REG_STATUS            0x16
-#define LC709203F_REG_POWER_MODE        0x15
-#define LC709203F_REG_ALARM_VOLTAGE     0x14
-#define LC709203F_REG_ALARM_RSOC        0x13
-#define LC709203F_REG_CHANGE_PARAMETER  0x12
-#define LC709203F_REG_APT               0x0c
-#define LC709203F_REG_APA               0x0b
-#define LC709203F_REG_CURRENT_DIRECTION 0x0a
-#define LC709203F_REG_THERMISTOR        0x06
-#define LC709203F_REG_BEFORE_RSOC       0x04
-#define LC709203F_REG_INITIAL_RSOC      0x07
+/**
+ * @brief Register Addresses
+ * @details For more information on the registers and its funtions see the datasheet
+ * @{
+ */
+#define LC709203F_REG_CELL_VOLTAGE      0x09        /**< Register Cell Voltage */
+#define LC709203F_REG_RSOC              0x0d        /**< Register RSOC (Relative State of Charge) */
+#define LC709203F_REG_ITE               0x0f        /**< Register ITE (Indicator To Empty) */
+#define LC709203F_REG_ID                0x11        /**< Register IC Version */
+#define LC709203F_REG_CELL_TEMP         0x08        /**< Register Cell Temperature */
+#define LC709203F_REG_STATUS            0x16        /**< Register Status Bit */
+#define LC709203F_REG_POWER_MODE        0x15        /**< Register IC Power Mode */
+#define LC709203F_REG_ALARM_VOLTAGE     0x14        /**< Register Alarm Low Cell Voltage */
+#define LC709203F_REG_ALARM_RSOC        0x13        /**< Register Alarm Low RSOC */
+#define LC709203F_REG_CHANGE_PARAMETER  0x12        /**< Register Change of the parameter */
+#define LC709203F_REG_APT               0x0c        /**< Register APT (Adjustment Pack Thermistor) */
+#define LC709203F_REG_APA               0x0b        /**< Register APA (Adjustment Pack Application) */
+#define LC709203F_REG_CURRENT_DIRECTION 0x0a        /**< Register Current Direction */
+#define LC709203F_REG_THERMISTOR        0x06        /**< Register Thermistor B */
+#define LC709203F_REG_BEFORE_RSOC       0x04        /**< Register Before RSOC */
+#define LC709203F_REG_INITIAL_RSOC      0x07        /**< Register Initial RSOC */
+/** @} */
 
-/*Define CRC Polynomial*/
-#define LC709203F_CRC_POLYNOMIAL        0x07
+#define LC709203F_CRC_POLYNOMIAL        0x07        /**< CRC Polynomial */
+
 /**
  * @brief initializes the sensor and i2c
  *
