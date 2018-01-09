@@ -17,15 +17,17 @@
  * @}
  */
 
+#include <stdio.h>
 #include "board.h"
 #include "periph_conf.h"
 #include "lc709203f.h"
 #include "xtimer.h"
 #include "lc709203f_params.h"
 
-static void _gauge_cb(void *arg)
+static void _gauge_cb(void* arg)
 {
-    printf("\n ALARM: Low RSOC \n");
+    (void)arg;
+    printf("\n ALARM: Low RSOC \n"); 
 }
 
 int main(void)
