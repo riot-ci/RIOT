@@ -76,13 +76,13 @@ static void _send_usage(void)
 static void _set_usage(void)
 {
     puts("Usage: set <deveui|appeui|appkey|appskey|nwkskey|devaddr|dr|adr|"
-         "public|netid|tx_power> <value>");
+         "public|netid|tx_power|rx2_freq|rx2_dr> <value>");
 }
 
 static void _get_usage(void)
 {
     puts("Usage: get <deveui|appeui|appkey|appskey|nwkskey|devaddr|dr|adr|"
-         "public|netid|tx_power>");
+         "public|netid|tx_power|rx2_freq|rx2_dr>");
 }
 
 static int _cmd_loramac_join(int argc, char **argv)
@@ -201,6 +201,10 @@ static int _cmd_loramac_set(int argc, char **argv)
     }
     else if (strcmp("dr", argv[1]) == 0) {
         uint8_t dr = atoi(argv[2]);
+        if (dr > LORAMAC_DR_15) {
+            puts("Usage: set dr <0..16>");
+            return 1;
+        }
         semtech_loramac_set_dr(dr);
     }
     else if (strcmp("adr", argv[1]) == 0) {
@@ -242,6 +246,19 @@ static int _cmd_loramac_set(int argc, char **argv)
         }
 
         semtech_loramac_set_tx_power(power);
+    }
+    else if (strcmp("rx2_freq", argv[1]) == 0) {
+        uint32_t freq = atoi(argv[2]);
+        semtech_loramac_set_rx2_freq(freq);
+    }
+    else if (strcmp("rx2_dr", argv[1]) == 0) {
+        uint8_t dr = atoi(argv[2]);
+        if (dr > LORAMAC_DR_15) {
+            puts("Usage: set rx2_dr <0..16>");
+            return 1;
+        }
+
+        semtech_loramac_set_rx2_dr(dr);
     }
     else {
         _set_usage();
@@ -311,6 +328,12 @@ static int _cmd_loramac_get(int argc, char **argv)
     }
     else if (strcmp("tx_power", argv[1]) == 0) {
         printf("TX power index: %d\n", semtech_loramac_get_tx_power());
+    }
+    else if (strcmp("rx2_freq", argv[1]) == 0) {
+        printf("RX2 freq: %lu\n", semtech_loramac_get_rx2_freq());
+    }
+    else if (strcmp("rx2_dr", argv[1]) == 0) {
+        printf("RX2 dr: %d\n", semtech_loramac_get_rx2_dr());
     }
     else {
         _set_usage();
