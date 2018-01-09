@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include <inttypes.h>
+#include "net/loramac.h"
 
 #include "sx127x.h"
 
@@ -170,6 +171,20 @@ void semtech_loramac_set_devaddr(uint8_t *addr);
  * @param[in] addr          The device address
  */
 void semtech_loramac_get_devaddr(uint8_t *addr);
+
+/**
+ * @brief   Sets the device class
+ *
+ * @param[in] cls           The device class
+ */
+void semtech_loramac_set_class(loramac_class_t cls);
+
+/**
+ * @brief   Gets the device class
+ *
+ * @return                 The device class
+ */
+loramac_class_t semtech_loramac_get_class(void);
 
 /**
  * @brief   Sets the channels datarate
