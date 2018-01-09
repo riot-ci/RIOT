@@ -141,10 +141,12 @@ static int _cmd_loramac_send(int argc, char **argv)
         return 1;
     }
 
+    uint8_t rx_port;
     switch (semtech_loramac_send(cnf, port,
-                                 (uint8_t*)argv[3], strlen(argv[3]), rx_buf)) {
+                                 (uint8_t*)argv[3], strlen(argv[3]),
+                                 rx_buf, &rx_port)) {
         case SEMTECH_LORAMAC_RX_DATA:
-            printf("Data received: %s\n", (char*)rx_buf);
+            printf("Data received: %s, port: %d\n", (char*)rx_buf, rx_port);
             return 0;
 
         case SEMTECH_LORAMAC_TX_DONE:
