@@ -94,7 +94,7 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
  *
  * @param[in] eui           The device EUI
  */
-void semtech_loramac_set_deveui(uint8_t *eui);
+void semtech_loramac_set_deveui(const uint8_t *eui);
 
 /**
  * @brief   Gets the device EUI
@@ -108,7 +108,7 @@ void semtech_loramac_get_deveui(uint8_t *eui);
  *
  * @param[in] eui           The application EUI
  */
-void semtech_loramac_set_appeui(uint8_t *eui);
+void semtech_loramac_set_appeui(const uint8_t *eui);
 
 /**
  * @brief   Gets the application EUI
@@ -122,7 +122,7 @@ void semtech_loramac_get_appeui(uint8_t *eui);
  *
  * @param[in] key           The application key
  */
-void semtech_loramac_set_appkey(uint8_t *key);
+void semtech_loramac_set_appkey(const uint8_t *key);
 
 /**
  * @brief   Gets the application key
@@ -136,7 +136,7 @@ void semtech_loramac_get_appkey(uint8_t *key);
  *
  * @param[in] key           The application session key
  */
-void semtech_loramac_set_appskey(uint8_t *skey);
+void semtech_loramac_set_appskey(const uint8_t *skey);
 
 /**
  * @brief   Gets the application session key
@@ -150,7 +150,7 @@ void semtech_loramac_get_appskey(uint8_t *skey);
  *
  * @param[in] key           The network session key
  */
-void semtech_loramac_set_nwkskey(uint8_t *skey);
+void semtech_loramac_set_nwkskey(const uint8_t *skey);
 
 /**
  * @brief   Gets the network session key
@@ -164,7 +164,7 @@ void semtech_loramac_get_nwkskey(uint8_t *skey);
  *
  * @param[in] addr          The device address
  */
-void semtech_loramac_set_devaddr(uint8_t *addr);
+void semtech_loramac_set_devaddr(const uint8_t *addr);
 
 /**
  * @brief   Gets the device address

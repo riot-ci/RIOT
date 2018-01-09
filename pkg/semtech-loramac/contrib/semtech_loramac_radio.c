@@ -33,14 +33,12 @@
 
 #include "radio/radio.h"
 
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
 extern sx127x_t sx127x;
 
-#define LORAMAC_RX_WINDOW_DURATION  (600 * US_PER_MS)
-
+#define LORAMAC_RX_WINDOW_DURATION  (600UL * US_PER_MS)
 
 /*
  * Radio driver functions implementation wrappers, the netdev2 object
@@ -70,6 +68,8 @@ void SX1276SetChannel(uint32_t freq)
 bool SX1276IsChannelFree(RadioModems_t modem, uint32_t freq,
                          int16_t rssiThresh, uint32_t maxCarrierSenseTime )
 {
+    (void) modem;
+    (void) maxCarrierSenseTime;
     return sx127x_is_channel_free(&sx127x, freq, rssiThresh);
 }
 
@@ -87,6 +87,8 @@ void SX1276SetRxConfig(RadioModems_t modem, uint32_t bandwidth,
                        bool iqInverted, bool rxContinuous)
 {
     (void) bandwidthAfc;
+    (void) symbTimeout;
+    (void) fixLen;
     sx127x_set_modem(&sx127x, modem);
     sx127x_set_bandwidth(&sx127x, bandwidth);
     sx127x_set_spreading_factor(&sx127x, spreading_factor);
@@ -110,6 +112,7 @@ void SX1276SetTxConfig(RadioModems_t modem, int8_t power, uint32_t fdev,
                        uint8_t hopPeriod, bool iqInverted, uint32_t timeout)
 {
     (void) fdev;
+    (void) fixLen;
     sx127x_set_modem(&sx127x, modem);
     sx127x_set_freq_hop(&sx127x, freqHopOn);
     sx127x_set_bandwidth(&sx127x, bandwidth);
@@ -129,6 +132,7 @@ void SX1276SetTxConfig(RadioModems_t modem, int8_t power, uint32_t fdev,
 
 uint32_t SX1276GetTimeOnAir(RadioModems_t modem, uint8_t pktLen)
 {
+    (void) modem;
     return sx127x_get_time_on_air(&sx127x, pktLen);
 }
 
@@ -153,6 +157,7 @@ void SX1276SetStby(void)
 
 void SX1276SetRx(uint32_t timeout)
 {
+    (void) timeout;
     sx127x_set_rx(&sx127x);
 }
 
@@ -189,17 +194,22 @@ void SX1276ReadBuffer(uint8_t addr, uint8_t *buffer, uint8_t size)
 
 void SX1276SetMaxPayloadLength(RadioModems_t modem, uint8_t max)
 {
+    (void) modem;
     sx127x_set_max_payload_len(&sx127x, max);
 }
 
 bool SX1276CheckRfFrequency(uint32_t frequency)
 {
+    (void) frequency;
     /* Implement check. Currently all frequencies are supported */
     return true;
 }
 
 void SX1276SetTxContinuousWave(uint32_t freq, int8_t power, uint16_t time)
 {
+    (void) freq;
+    (void) power;
+    (void) time;
     /* TODO */
 }
 
