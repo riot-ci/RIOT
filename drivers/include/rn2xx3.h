@@ -114,18 +114,6 @@ enum {
 };
 
 /**
- * @brief   Device configuration parameters for LoRaWAN
- */
-typedef struct {
-    uint8_t dev_eui[LORAMAC_DEVEUI_LEN];    /**< Device EUI */
-    uint8_t app_eui[LORAMAC_APPEUI_LEN];    /**< Application EUI */
-    uint8_t app_key[LORAMAC_APPKEY_LEN];    /**< Application key */
-    uint8_t dev_addr[LORAMAC_DEVADDR_LEN];  /**< Device address */
-    uint8_t app_skey[LORAMAC_APPSKEY_LEN];  /**< Application session key */
-    uint8_t nwk_skey[LORAMAC_NWKSKEY_LEN];  /**< Network session key */
-} loramac_params_t;
-
-/**
  * @brief   LoRaMAC communication settings
  */
 typedef struct {
@@ -144,7 +132,6 @@ typedef struct {
     uint32_t baudrate;                 /**< baudrate to use */
     gpio_t pin_reset;                  /**< GPIO pin that is connected to the STATUS pin
                                             set to GPIO_UNDEF if not used */
-    loramac_params_t loramac;          /**< loramac static configuration */
 } rn2xx3_params_t;
 
 /**

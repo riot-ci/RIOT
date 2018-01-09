@@ -30,6 +30,11 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+#if ENABLE_DEBUG
+/* we are interested by the debug message in the sleep timer callback */
+#define ISR_STACKSIZE               (THREAD_STACKSIZE_DEFAULT)
+#endif
+
 /**
  * @brief   Delay when resetting the device, 10ms
  */
@@ -123,9 +128,9 @@ static void _rx_cb(void *arg, uint8_t c)
 
 static void _sleep_timer_cb(void *arg)
 {
+    DEBUG("[rn2xx3] exit sleep\n");
     rn2xx3_t *dev = (rn2xx3_t *)arg;
     dev->int_state = RN2XX3_INT_STATE_IDLE;
-    DEBUG("[rn2xx3] exit sleep\n");
 }
 
 /*
@@ -138,7 +143,7 @@ void rn2xx3_setup(rn2xx3_t *dev, const rn2xx3_params_t *params)
     /* initialize device parameters */
     memcpy(&dev->p, params, sizeof(rn2xx3_params_t));
 
-    /* initialize pins */
+    /* initialize pins and perform hardware reset */
     if (dev->p.pin_reset != GPIO_UNDEF) {
         gpio_init(dev->p.pin_reset, GPIO_OUT);
         gpio_set(dev->p.pin_reset);
@@ -244,13 +249,6 @@ int rn2xx3_mac_init(rn2xx3_t *dev)
     rn2xx3_mac_set_rx2_dr(dev, LORAMAC_DEFAULT_RX2_DR);
     rn2xx3_mac_set_rx2_freq(dev, LORAMAC_DEFAULT_RX2_FREQ);
 
-    rn2xx3_mac_set_deveui(dev, dev->p.loramac.dev_eui);
-    rn2xx3_mac_set_appeui(dev, dev->p.loramac.app_eui);
-    rn2xx3_mac_set_appkey(dev, dev->p.loramac.app_key);
-    rn2xx3_mac_set_appskey(dev, dev->p.loramac.app_skey);
-    rn2xx3_mac_set_nwkskey(dev, dev->p.loramac.nwk_skey);
-    rn2xx3_mac_set_devaddr(dev, dev->p.loramac.dev_addr);
-
     return RN2XX3_OK;
 }
 
@@ -281,27 +279,6 @@ int rn2xx3_mac_tx(rn2xx3_t *dev, uint8_t *payload, uint8_t payload_len)
 
 int rn2xx3_mac_join_network(rn2xx3_t *dev, uint8_t mode)
 {
-    /* With ABP join procedure, only save keys to EEPROM if device address is
-       different from the current value stored */
-    if (mode == LORAMAC_JOIN_ABP) {
-        uint8_t addr[4];
-        uint32_t eeprom_addr = 0, conf_addr = 0;
-        rn2xx3_mac_get_devaddr(dev, addr);
-        eeprom_addr |= (uint32_t)addr[0] << 24;
-        eeprom_addr |= (uint32_t)addr[1] << 16;
-        eeprom_addr |= (uint32_t)addr[2] << 8;
-        eeprom_addr |= (uint32_t)addr[3];
-
-        conf_addr |= (uint32_t)dev->p.loramac.dev_addr[0] << 24;
-        conf_addr |= (uint32_t)dev->p.loramac.dev_addr[1] << 16;
-        conf_addr |= (uint32_t)dev->p.loramac.dev_addr[2] << 8;
-        conf_addr |= (uint32_t)dev->p.loramac.dev_addr[3];
-
-        if (conf_addr != eeprom_addr) {
-            rn2xx3_mac_save(dev);
-        }
-    }
-
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                   "mac join %s", (mode == LORAMAC_JOIN_OTAA) ? "otaa" : "abp");
     dev->cmd_buf[p] = 0;

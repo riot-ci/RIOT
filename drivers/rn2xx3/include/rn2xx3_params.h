@@ -26,74 +26,6 @@ extern "C" {
 #endif
 
 /**
- * @name    Set default LoRaMac configuration parameters
- * @{
- */
-/**
- * @brief   Default device EUI
- */
-#ifndef LORAMAC_DEV_EUI
-#define LORAMAC_DEV_EUI           { 0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   Default application EUI
- */
-#ifndef LORAMAC_APP_EUI
-#define LORAMAC_APP_EUI           { 0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   Default application key
- */
-#ifndef LORAMAC_APP_KEY
-#define LORAMAC_APP_KEY           { 0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   Default application session key
- */
-#ifndef LORAMAC_APP_SKEY
-#define LORAMAC_APP_SKEY          { 0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   Default network session key
- */
-#ifndef LORAMAC_NWK_SKEY
-#define LORAMAC_NWK_SKEY          { 0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00, \
-                                    0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   Default device address
- */
-#ifndef LORAMAC_DEV_ADDR
-#define LORAMAC_DEV_ADDR          { 0x00, 0x00, 0x00, 0x00 }
-#endif
-
-/**
- * @brief   LoRaMAC params
- */
-#define LORAMAC_PARAMS            { .dev_eui  = LORAMAC_DEV_EUI, \
-                                    .app_eui  = LORAMAC_APP_EUI, \
-                                    .app_key  = LORAMAC_APP_KEY, \
-                                    .app_skey = LORAMAC_APP_SKEY, \
-                                    .nwk_skey = LORAMAC_NWK_SKEY, \
-                                    .dev_addr = LORAMAC_DEV_ADDR }
-/**@}*/
-
-/**
  * @name    Set default configuration parameters for the RN2483/RN2903 driver
  * @{
  */
@@ -110,8 +42,7 @@ extern "C" {
 #ifndef RN2XX3_PARAMS
 #define RN2XX3_PARAMS             { .uart      = RN2XX3_PARAM_UART,      \
                                     .baudrate  = RN2XX3_PARAM_BAUDRATE,  \
-                                    .pin_reset = RN2XX3_PARAM_PIN_RESET, \
-                                    .loramac   = LORAMAC_PARAMS }
+                                    .pin_reset = RN2XX3_PARAM_PIN_RESET }
 #endif
 /**@}*/
 
