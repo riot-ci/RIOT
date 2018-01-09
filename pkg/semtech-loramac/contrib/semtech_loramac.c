@@ -78,8 +78,8 @@
 #endif
 
 static char stack[LORAMAC_STACKSIZE];
-kernel_pid_t _mac_pid;
-kernel_pid_t _handler_pid;
+kernel_pid_t _semtech_loramac_pid;
+kernel_pid_t _semtech_loramac_handler_pid;
 
 RadioEvents_t radio_events;
 
@@ -175,7 +175,7 @@ static void mcps_confirm(McpsConfirm_t *confirm)
                 msg_t msg;
                 msg.type = MSG_TYPE_LORAMAC_NOTIFY;
                 msg.content.value = SEMTECH_LORAMAC_TX_DONE;
-                msg_send(&msg, _handler_pid);
+                msg_send(&msg, _semtech_loramac_handler_pid);
             }
                 break;
 
@@ -243,7 +243,7 @@ static void mcps_indication(McpsIndication_t *indication)
     else {
         msg.content.value = SEMTECH_LORAMAC_TX_DONE;
     }
-    msg_send(&msg, _handler_pid);
+    msg_send(&msg, _semtech_loramac_handler_pid);
 }
 
 /*MLME-Confirm event function */
@@ -258,7 +258,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
                 msg_t msg;
                 msg.type = MSG_TYPE_LORAMAC_NOTIFY;
                 msg.content.value = SEMTECH_LORAMAC_JOIN_SUCCEEDED;
-                msg_send(&msg, _handler_pid);
+                msg_send(&msg, _semtech_loramac_handler_pid);
             }
             else {
                 DEBUG("[semtech-loramac] join not successful\n");
@@ -266,7 +266,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
                 msg_t msg;
                 msg.type = MSG_TYPE_LORAMAC_NOTIFY;
                 msg.content.value = SEMTECH_LORAMAC_JOIN_FAILED;
-                msg_send(&msg, _handler_pid);
+                msg_send(&msg, _semtech_loramac_handler_pid);
             }
             break;
 
@@ -433,7 +433,7 @@ static void _semtech_loramac_call(semtech_loramac_func_t func, void *arg)
     msg_t msg;
     msg.type = MSG_TYPE_LORAMAC_CMD;
     msg.content.ptr = &call;
-    msg_send(&msg, _mac_pid);
+    msg_send(&msg, _semtech_loramac_pid);
 }
 
 static void _event_cb(netdev_t *dev, netdev_event_t event)
@@ -447,7 +447,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_ISR:
             msg.type = MSG_TYPE_ISR;
-            if (msg_send(&msg, _mac_pid) <= 0) {
+            if (msg_send(&msg, _semtech_loramac_pid) <= 0) {
                 DEBUG("[semtech-loramac] possibly lost interrupt.\n");
             }
             break;
@@ -461,7 +461,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
         case NETDEV_EVENT_TX_TIMEOUT:
             msg.type = MSG_TYPE_TX_TIMEOUT;
 
-            if (msg_send(&msg, _mac_pid) <= 0) {
+            if (msg_send(&msg, _semtech_loramac_pid) <= 0) {
                 DEBUG("[semtech-loramac] TX timeout, possibly lost interrupt.\n");
             }
             break;
@@ -479,7 +479,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
         case NETDEV_EVENT_RX_TIMEOUT:
             msg.type = MSG_TYPE_RX_TIMEOUT;
 
-            if (msg_send(&msg, _mac_pid) <= 0) {
+            if (msg_send(&msg, _semtech_loramac_pid) <= 0) {
                 DEBUG("[semtech-loramac] RX timeout, possibly lost interrupt.\n");
             }
             break;
@@ -508,6 +508,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
 void *_event_loop(void *arg)
 {
+    (void) arg;
     static msg_t _msg_q[LORAMAC_MSG_QUEUE];
     msg_init_queue(_msg_q, LORAMAC_MSG_QUEUE);
     LoRaMacPrimitives_t primitives;
@@ -566,12 +567,12 @@ int semtech_loramac_init(sx127x_t *dev)
     dev->netdev.driver = &sx127x_driver;
     dev->netdev.event_callback = _event_cb;
 
-    _handler_pid = thread_getpid();
-    _mac_pid = thread_create(stack, sizeof(stack), THREAD_PRIORITY_MAIN - 1,
-                             THREAD_CREATE_STACKTEST, _event_loop, NULL,
-                             "recv_thread");
+    _semtech_loramac_handler_pid = thread_getpid();
+    _semtech_loramac_pid = thread_create(stack, sizeof(stack), THREAD_PRIORITY_MAIN - 1,
+                                         THREAD_CREATE_STACKTEST, _event_loop, NULL,
+                                         "recv_thread");
 
-    if (_mac_pid <= KERNEL_PID_UNDEF) {
+    if (_semtech_loramac_pid <= KERNEL_PID_UNDEF) {
         DEBUG("Creation of receiver thread failed\n");
         return -1;
     }
@@ -629,7 +630,7 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     return status;
 }
 
-void semtech_loramac_set_deveui(uint8_t *eui)
+void semtech_loramac_set_deveui(const uint8_t *eui)
 {
     memcpy(dev_eui, eui, 8);
 }
@@ -639,7 +640,7 @@ void semtech_loramac_get_deveui(uint8_t *eui)
     memcpy(eui, dev_eui, 8);
 }
 
-void semtech_loramac_set_appeui(uint8_t *eui)
+void semtech_loramac_set_appeui(const uint8_t *eui)
 {
     memcpy(app_eui, eui, 8);
 }
@@ -649,7 +650,7 @@ void semtech_loramac_get_appeui(uint8_t *eui)
     memcpy(eui, app_eui, 8);
 }
 
-void semtech_loramac_set_appkey(uint8_t *key)
+void semtech_loramac_set_appkey(const uint8_t *key)
 {
     memcpy(app_key, key, 16);
 }
@@ -659,7 +660,7 @@ void semtech_loramac_get_appkey(uint8_t *key)
     memcpy(key, app_key, 16);
 }
 
-void semtech_loramac_set_appskey(uint8_t *skey)
+void semtech_loramac_set_appskey(const uint8_t *skey)
 {
     memcpy(app_skey, skey, 16);
 }
@@ -669,7 +670,7 @@ void semtech_loramac_get_appskey(uint8_t *skey)
     memcpy(skey, app_skey, 16);
 }
 
-void semtech_loramac_set_nwkskey(uint8_t *skey)
+void semtech_loramac_set_nwkskey(const uint8_t *skey)
 {
     memcpy(nwk_skey, skey, 16);
 }
@@ -679,7 +680,7 @@ void semtech_loramac_get_nwkskey(uint8_t *skey)
     memcpy(skey, nwk_skey, 16);
 }
 
-void semtech_loramac_set_devaddr(uint8_t *addr)
+void semtech_loramac_set_devaddr(const uint8_t *addr)
 {
     memcpy(dev_addr, addr, 4);
 }
