@@ -78,7 +78,7 @@ static int _mount(int argc, char **argv)
     vol_idx = atoi(argv[1]);
 
     if (vol_idx > (int)(MTD_NUM-1)) {
-        printf("max allowed <volume_idx> is %d\n", (MTD_NUM-1));
+        printf("max allowed <volume_idx> is %d\n", (int)(MTD_NUM - 1));
         return -1;
     }
 
@@ -342,8 +342,8 @@ static int _mkfs(int argc, char **argv)
         return -1;
     }
 
-    if (vol_idx > (int)(MTD_NUM-1)) {
-        printf("max allowed <volume_idx> is %d\n", (MTD_NUM-1));
+    if (vol_idx > (int)(MTD_NUM - 1)) {
+        printf("max allowed <volume_idx> is %d\n", (int)(MTD_NUM - 1));
         return -1;
     }
 
