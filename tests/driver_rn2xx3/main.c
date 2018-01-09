@@ -53,8 +53,8 @@ static void _print_mac_get_usage(void)
 static void _print_mac_set_usage(void)
 {
     puts("Usage: mac set "
-         "<deveui|appeui|devaddr|appskey|nwkskey|txport|txmode|pwridx|dr|adr|"
-         "bat|retx|linkchk|rx1|ar|rx2dr|rx2freq|sleep_duration> <value>");
+         "<deveui|appeui|appkey|devaddr|appskey|nwkskey|txport|txmode|pwridx|dr"
+         "|adr|bat|retx|linkchk|rx1|ar|rx2dr|rx2freq|sleep_duration> <value>");
 }
 
 int rn2xx3_sys_cmd(int argc, char **argv) {
