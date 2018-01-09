@@ -365,9 +365,7 @@ static void _join_abp(void)
     mibReq.Param.IsNetworkJoined = false;
     LoRaMacMibSetRequestConfirm(&mibReq);
 
-    mibReq.Type = MIB_NET_ID;
-    mibReq.Param.NetID = LORAMAC_DEFAULT_NETID;
-    LoRaMacMibSetRequestConfirm(&mibReq);
+    semtech_loramac_set_netid(LORAMAC_DEFAULT_NETID);
 
     mibReq.Type = MIB_DEV_ADDR;
     mibReq.Param.DevAddr = ((uint32_t)dev_addr[0] << 24 |
@@ -488,7 +486,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             break;
 
         case NETDEV_EVENT_CAD_DONE:
-            DEBUG("[DEBUG] test: CAD done\n");
+            DEBUG("[semtech-loramac] test: CAD done\n");
             radio_events.CadDone(((sx127x_t*)dev)->_internal.is_last_cad_success);
             break;
 
