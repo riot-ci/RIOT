@@ -39,6 +39,9 @@
 
 extern sx127x_t sx127x;
 
+#define LORAMAC_RX_WINDOW_DURATION  (600 * US_PER_MS)
+
+
 /*
  * Radio driver functions implementation wrappers, the netdev2 object
  * is known within the scope of the function
@@ -95,7 +98,7 @@ void SX1276SetRxConfig(RadioModems_t modem, uint32_t bandwidth,
     sx127x_set_freq_hop(&sx127x, freqHopOn);
     sx127x_set_hop_period(&sx127x, hopPeriod);
     sx127x_set_iq_invert(&sx127x, iqInverted);
-    sx127x_set_rx_timeout(&sx127x, 600 * US_PER_MS);
+    sx127x_set_rx_timeout(&sx127x, LORAMAC_RX_WINDOW_DURATION);
     sx127x_set_rx_single(&sx127x, !rxContinuous);
     sx127x_set_rx(&sx127x);
 }
@@ -121,7 +124,7 @@ void SX1276SetTxConfig(RadioModems_t modem, int8_t power, uint32_t fdev,
     sx127x_set_tx_power(&sx127x, power);
     sx127x_set_preamble_length(&sx127x, preambleLen);
     sx127x_set_rx_single(&sx127x, false);
-    sx127x_set_tx_timeout(&sx127x, timeout * 1000); /* base unit us, LoRaMAC ms */
+    sx127x_set_tx_timeout(&sx127x, timeout * US_PER_MS); /* base unit us, LoRaMAC ms */
 }
 
 uint32_t SX1276GetTimeOnAir(RadioModems_t modem, uint8_t pktLen)
