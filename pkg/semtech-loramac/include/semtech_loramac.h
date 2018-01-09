@@ -241,6 +241,34 @@ void semtech_loramac_set_tx_power(uint8_t power);
  */
 uint8_t semtech_loramac_get_tx_power(void);
 
+/**
+ * @brief   Sets the RX2 frequency
+ *
+ * @param[in] freq         The RX2 frequency
+ */
+void semtech_loramac_set_rx2_freq(uint8_t freq);
+
+/**
+ * @brief   Gets the RX2 frequency
+ *
+ * @return                 The RX2 frequency
+ */
+uint32_t semtech_loramac_get_rx2_freq(void);
+
+/**
+ * @brief   Sets the RX2 datarate
+ *
+ * @param[in] freq         The RX2 datarate
+ */
+void semtech_loramac_set_rx2_dr(uint8_t dr);
+
+/**
+ * @brief   Gets the RX2 datarate
+ *
+ * @return                 The RX2 datarate
+ */
+uint8_t semtech_loramac_get_rx2_dr(void);
+
 #ifdef __cplusplus
 }
 #endif
