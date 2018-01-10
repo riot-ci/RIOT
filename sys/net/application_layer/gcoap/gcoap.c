@@ -101,10 +101,10 @@ static void *_event_loop(void *arg)
                 }
                 /* retries remaining; double timeout and resend */
                 else {
-                    /* decrement send limit, and add 1 to advance the timeout */
-                    unsigned i       = COAP_MAX_RETRANSMIT - memo->send_limit-- + 1;
+                    unsigned i       = COAP_MAX_RETRANSMIT - memo->send_limit + 1;
                     uint32_t timeout = ((uint32_t)COAP_ACK_TIMEOUT << i) * US_PER_SEC;
                     timeout = random_uint32_range(timeout, timeout * COAP_RANDOM_FACTOR);
+                    memo->send_limit--;
 
                     size_t res = sock_udp_send(&_sock, memo->msg.data.pdu_buf,
                                                memo->msg.data.pdu_len,
