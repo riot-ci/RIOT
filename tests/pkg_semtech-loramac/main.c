@@ -98,7 +98,7 @@ static int _cmd_loramac(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "get") == 0) {
-        if (argc < 3) {
+        if (argc != 3) {
             _loramac_get_usage();
             return 1;
         }
@@ -192,7 +192,7 @@ static int _cmd_loramac(int argc, char **argv)
         }
 
         if (strcmp("deveui", argv[2]) == 0) {
-            if ((argc < 4) || (strlen(argv[3]) != LORAMAC_DEVEUI_LEN * 2)) {
+            if ((argc != 4) || (strlen(argv[3]) != LORAMAC_DEVEUI_LEN * 2)) {
                 puts("Usage: loramac set deveui <16 hex chars>");
                 return 1;
             }
@@ -201,7 +201,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_deveui(deveui);
         }
         else if (strcmp("appeui", argv[2]) == 0) {
-            if ((argc < 4) || (strlen(argv[3]) != LORAMAC_APPEUI_LEN * 2)) {
+            if ((argc != 4) || (strlen(argv[3]) != LORAMAC_APPEUI_LEN * 2)) {
                 puts("Usage: loramac set appeui <16 hex chars>");
                 return 1;
             }
@@ -210,7 +210,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_appeui(appeui);
         }
         else if (strcmp("appkey", argv[2]) == 0) {
-            if ((argc < 4) || (strlen(argv[3]) != LORAMAC_APPKEY_LEN * 2)) {
+            if ((argc != 4) || (strlen(argv[3]) != LORAMAC_APPKEY_LEN * 2)) {
                 puts("Usage: loramac set appkey <32 hex chars>");
                 return 1;
             }
@@ -219,7 +219,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_appkey(appkey);
         }
         else if (strcmp("appskey", argv[2]) == 0) {
-            if ((argc < 4) || (strlen(argv[3]) != LORAMAC_APPSKEY_LEN * 2)) {
+            if ((argc != 4) || (strlen(argv[3]) != LORAMAC_APPSKEY_LEN * 2)) {
                 puts("Usage: loramac set appskey <32 hex chars>");
                 return 1;
             }
@@ -228,7 +228,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_appskey(appskey);
         }
         else if (strcmp("nwkskey", argv[2]) == 0) {
-            if ((argc < 4) || (strlen(argv[3]) != LORAMAC_NWKSKEY_LEN * 2)) {
+            if ((argc != 4) || (strlen(argv[3]) != LORAMAC_NWKSKEY_LEN * 2)) {
                 puts("Usage: loramac set nwkskey <32 hex chars>");
                 return 1;
             }
@@ -246,7 +246,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_devaddr(devaddr);
         }
         else if (strcmp("class", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set class <A,B,C>");
                 return 1;
             }
@@ -267,11 +267,11 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_class(cls);
         }
         else if (strcmp("dr", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set dr <0..16>");
                 return 1;
             }
-            uint8_t dr = atoi(argv[3]);
+            loramac_dr_idx_t dr = atoi(argv[3]);
             if (dr > LORAMAC_DR_15) {
                 puts("Usage: loramac set dr <0..16>");
                 return 1;
@@ -279,7 +279,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_dr(dr);
         }
         else if (strcmp("adr", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set adr <on|off>");
                 return 1;
             }
@@ -297,7 +297,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_adr(adr);
         }
         else if (strcmp("public", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set public <on|off>");
                 return 1;
             }
@@ -315,18 +315,18 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_public_network(public);
         }
         else if (strcmp("netid", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set netid <integer value>");
                 return 1;
             }
             semtech_loramac_set_netid(strtoul(argv[2], NULL, 0));
         }
         else if (strcmp("tx_power", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set tx_power <0..16>");
                 return 1;
             }
-            uint8_t power = atoi(argv[3]);
+            loramac_tx_pwr_idx_t power = atoi(argv[3]);
             if (power > LORAMAC_TX_PWR_15) {
                 puts("Usage: loramac set tx_power <0..16>");
                 return 1;
@@ -334,7 +334,7 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_tx_power(power);
         }
         else if (strcmp("rx2_freq", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set rx2_freq <frequency>");
                 return 1;
             }
@@ -342,11 +342,11 @@ static int _cmd_loramac(int argc, char **argv)
             semtech_loramac_set_rx2_freq(freq);
         }
         else if (strcmp("rx2_dr", argv[2]) == 0) {
-            if (argc < 4) {
+            if (argc != 4) {
                 puts("Usage: loramac set rx2_dr <0..16>");
                 return 1;
             }
-            uint8_t dr = atoi(argv[3]);
+            loramac_dr_idx_t dr = atoi(argv[3]);
             if (dr > LORAMAC_DR_15){
                 puts("Usage: loramac set rx2_dr <0..16>");
                 return 1;
@@ -359,25 +359,25 @@ static int _cmd_loramac(int argc, char **argv)
         }
     }
     else if (strcmp(argv[1], "join") == 0) {
-        if (argc < 3) {
+        if (argc != 3) {
             _loramac_join_usage();
             return 1;
         }
 
-        uint8_t join_type;
+        loramac_join_mode_t mode;
         if (strcmp(argv[2], "otaa") == 0) {
-            join_type = LORAMAC_JOIN_OTAA;
+            mode = LORAMAC_JOIN_OTAA;
         }
         else if (strcmp(argv[2], "abp") == 0) {
-            join_type = LORAMAC_JOIN_ABP;
+            mode = LORAMAC_JOIN_ABP;
         }
         else {
-            (void) join_type;
+            (void) mode;
             _loramac_join_usage();
             return 1;
         }
 
-        if (semtech_loramac_join(join_type) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
+        if (semtech_loramac_join(mode) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
             puts("Join procedure failed!");
             return 1;
         }
@@ -390,7 +390,7 @@ static int _cmd_loramac(int argc, char **argv)
             return 1;
         }
 
-        uint8_t cnf = LORAMAC_DEFAULT_TX_MODE;  /* Default: confirmable */
+        loramac_tx_mode_t cnf = LORAMAC_DEFAULT_TX_MODE; /* Default: confirmable */
         uint8_t port = LORAMAC_DEFAULT_TX_PORT; /* Default: 2 */
         /* handle optional parameters */
         if (argc > 3) {
