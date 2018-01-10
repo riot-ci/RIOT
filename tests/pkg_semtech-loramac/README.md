@@ -69,38 +69,38 @@ The default region is `EU868`.
 
 ### Using the shell
 
-This application provides basic commands for configuring the MAC, joining a
-network and sending/receiving data to/from a LoRaWAN network. `join` and `send`
-commands are blocking until the MAC is done.
+This application provides the `loramac` command for configuring the MAC,
+joining a network and sending/receiving data to/from a LoRaWAN network.
+`join` and `tx` subcommands are blocking until the MAC is done.
 
 * Set your device EUI, application EUI, application key. Example for OTAA
   activation:
 ```
-    > set deveui AAAAAAAAAAAAAAAA
-    > set appeui BBBBBBBBBBBBBBBB
-    > set appkey CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    > loramac set deveui AAAAAAAAAAAAAAAA
+    > loramac set appeui BBBBBBBBBBBBBBBB
+    > loramac set appkey CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 ```
 
 * Join a network using the OTAA procedure:
 ```
-    > join otaa
+    > loramac join otaa
     Join procedure succeeded!
 ```
 * Send confirmable data on port 2 (cnf and port are optional):
 ```
-    > send This\ is\ RIOT! cnf 2
+    > loramac tx This\ is\ RIOT! cnf 2
 ```
 * Send unconfirmable data on port 10:
 ```
-    > send This\ is\ RIOT! uncnf 10
+    > loramac tx This\ is\ RIOT! uncnf 10
 ```
 * Switch the default datarate index (from 1 to 16). 5 is for SF7, BW125:
 ```
-    > set dr 5
+    > loramac set dr 5
 ```
 * Switch to adaptive data rate:
 ```
-    > set adr on
+    > loramac set adr on
 ```
 The list of available commands:
 ```
@@ -108,13 +108,8 @@ The list of available commands:
     help
     Command              Description
     ---------------------------------------
-    join                 try to join lorawan network
-    send                 send some data
-    set                  set MAC parameters
-    get                  get MAC parameters
+    loramac              control the loramac stack
     reboot               Reboot the node
-    random_init          initializes the PRNG
-    random_get           returns 32 bit of pseudo randomness
 ```
 
 On the TTN web console, you can follow the activation and the data
@@ -150,6 +145,6 @@ The payload sent is in the `payload_raw` json field and is formated in base64
 
 The node will also print the data received:
 ```
-    > send test
+    > loramac tx test
     Data received: This is RIOT!
 ```
