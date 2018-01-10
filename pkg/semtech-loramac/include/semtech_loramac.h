@@ -64,17 +64,17 @@ int semtech_loramac_init(sx127x_t *dev);
 /**
  * @brief   Starts a LoRaWAN network join procedure
  *
- * @param[in] type         The type of join procedure (otaa or abp)
+ * @param[in] type         The join procedure mode (otaa or abp)
  *
  * @return                 SEMTECH_LORAMAC_JOIN_SUCCEEDED on success
  * @return                 SEMTECH_LORAMAC_JOIN_FAILED on failure
  */
-uint8_t semtech_loramac_join(uint8_t type);
+uint8_t semtech_loramac_join(loramac_join_mode_t mode);
 
 /**
  * @brief   Sends data to LoRaWAN
  *
- * @param[in] cnf          Use confirmable/unconfirmable send type
+ * @param[in] cnf          Use confirmable/unconfirmable send mode
  * @param[in] port         The send port to use (between 1 and 223 for application)
  * @param[in] tx_buf       The TX buffer
  * @param[in] tx_len       The length of the TX buffer
@@ -85,7 +85,7 @@ uint8_t semtech_loramac_join(uint8_t type);
  * @return                 SEMTECH_LORAMAC_TX_DONE when TX has completed but no data is received
  * @return                 SEMTECH_LORAMAC_RX_DATA when TX has completed but data is received
  */
-uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
+uint8_t semtech_loramac_send(loramac_tx_mode_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
                              uint8_t *rx_buf, uint8_t *rx_port);
 
@@ -192,14 +192,14 @@ loramac_class_t semtech_loramac_get_class(void);
  *
  * @param[in] dr           The datarate (from 1 to 16)
  */
-void semtech_loramac_set_dr(uint8_t dr);
+void semtech_loramac_set_dr(loramac_dr_idx_t dr);
 
 /**
  * @brief   Gets the channels datarate
  *
  * @return                 The datarate (from 1 to 16)
  */
-uint8_t semtech_loramac_get_dr(void);
+loramac_dr_idx_t semtech_loramac_get_dr(void);
 
 /**
  * @brief   Enables/disable adaptive datarate
@@ -248,21 +248,21 @@ uint32_t semtech_loramac_get_netid(void);
  *
  * @param[in] dr           The TX power index (from 1 to 16)
  */
-void semtech_loramac_set_tx_power(uint8_t power);
+void semtech_loramac_set_tx_power(loramac_tx_pwr_idx_t power);
 
 /**
  * @brief   Gets the channels TX power index
  *
  * @return                 The TX power index (from 1 to 16)
  */
-uint8_t semtech_loramac_get_tx_power(void);
+loramac_tx_pwr_idx_t semtech_loramac_get_tx_power(void);
 
 /**
  * @brief   Sets the RX2 frequency
  *
  * @param[in] freq         The RX2 frequency
  */
-void semtech_loramac_set_rx2_freq(uint8_t freq);
+void semtech_loramac_set_rx2_freq(uint32_t freq);
 
 /**
  * @brief   Gets the RX2 frequency
@@ -276,14 +276,14 @@ uint32_t semtech_loramac_get_rx2_freq(void);
  *
  * @param[in] freq         The RX2 datarate
  */
-void semtech_loramac_set_rx2_dr(uint8_t dr);
+void semtech_loramac_set_rx2_dr(loramac_dr_idx_t dr);
 
 /**
  * @brief   Gets the RX2 datarate
  *
  * @return                 The RX2 datarate
  */
-uint8_t semtech_loramac_get_rx2_dr(void);
+loramac_dr_idx_t semtech_loramac_get_rx2_dr(void);
 
 #ifdef __cplusplus
 }

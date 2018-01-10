@@ -116,7 +116,7 @@ loramac_class_t semtech_loramac_get_class(void)
     return (loramac_class_t)mibReq.Param.Class;
 }
 
-void semtech_loramac_set_dr(uint8_t dr)
+void semtech_loramac_set_dr(loramac_dr_idx_t dr)
 {
     DEBUG("[semtech-loramac] set dr %d\n", dr);
     MibRequestConfirm_t mibReq;
@@ -125,7 +125,7 @@ void semtech_loramac_set_dr(uint8_t dr)
     LoRaMacMibSetRequestConfirm(&mibReq);
 }
 
-uint8_t semtech_loramac_get_dr(void)
+loramac_dr_idx_t semtech_loramac_get_dr(void)
 {
     DEBUG("[semtech-loramac] get dr\n");
     MibRequestConfirm_t mibReq;
@@ -188,7 +188,7 @@ uint32_t semtech_loramac_get_netid(void)
     return mibReq.Param.NetID;
 }
 
-void semtech_loramac_set_tx_power(uint8_t power)
+void semtech_loramac_set_tx_power(loramac_tx_pwr_idx_t power)
 {
     DEBUG("[semtech-loramac] set TX power %d\n", power);
     MibRequestConfirm_t mibReq;
@@ -197,7 +197,7 @@ void semtech_loramac_set_tx_power(uint8_t power)
     LoRaMacMibSetRequestConfirm(&mibReq);
 }
 
-uint8_t semtech_loramac_get_tx_power(void)
+loramac_tx_pwr_idx_t semtech_loramac_get_tx_power(void)
 {
     DEBUG("[semtech-loramac] get TX power\n");
     MibRequestConfirm_t mibReq;
@@ -206,7 +206,7 @@ uint8_t semtech_loramac_get_tx_power(void)
     return (uint8_t)mibReq.Param.ChannelsTxPower;
 }
 
-void semtech_loramac_set_rx2_freq(uint8_t freq)
+void semtech_loramac_set_rx2_freq(uint32_t freq)
 {
     Rx2ChannelParams_t params;
     MibRequestConfirm_t mibReq;
@@ -226,7 +226,7 @@ uint32_t semtech_loramac_get_rx2_freq(void)
     return mibReq.Param.Rx2DefaultChannel.Frequency;
 }
 
-void semtech_loramac_set_rx2_dr(uint8_t dr)
+void semtech_loramac_set_rx2_dr(loramac_dr_idx_t dr)
 {
     Rx2ChannelParams_t params;
     MibRequestConfirm_t mibReq;
@@ -237,7 +237,7 @@ void semtech_loramac_set_rx2_dr(uint8_t dr)
     _loramac_set_rx2_params(params.Frequency, params.Datarate);
 }
 
-uint8_t semtech_loramac_get_rx2_dr(void)
+loramac_dr_idx_t semtech_loramac_get_rx2_dr(void)
 {
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;

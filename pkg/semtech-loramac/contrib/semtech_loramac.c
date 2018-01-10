@@ -96,8 +96,8 @@ static uint8_t rx_port_internal;
 
 typedef struct {
     uint8_t port;
-    uint8_t cnf;
-    uint8_t dr;
+    loramac_tx_mode_t cnf;
+    loramac_dr_idx_t dr;
     uint8_t *payload;
     uint8_t len;
 } loramac_send_params_t;
@@ -115,8 +115,9 @@ typedef struct {
 } semtech_loramac_call_t;
 
 /* Prepares the payload of the frame */
-static bool _semtech_loramac_send(uint8_t cnf, uint8_t port, uint8_t dr,
-                                  uint8_t *payload, uint8_t len)
+static bool _semtech_loramac_send(loramac_tx_mode_t cnf, uint8_t port,
+                                  loramac_dr_idx_t dr, uint8_t *payload,
+                                  uint8_t len)
 {
     DEBUG("[semtech-loramac] send frame %s\n", (char*)payload);
     McpsReq_t mcpsReq;
@@ -274,7 +275,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
     }
 }
 
-void _loramac_set_rx2_params(uint32_t freq, uint8_t dr)
+void _loramac_set_rx2_params(uint32_t freq, loramac_dr_idx_t dr)
 {
     Rx2ChannelParams_t params;
     params.Frequency = freq;
@@ -398,17 +399,15 @@ static void _join_abp(void)
 static void _join(void *arg)
 {
     (void) arg;
-    uint8_t join_type = *(uint8_t*)arg;
+    loramac_join_mode_t mode = *(loramac_join_mode_t*)arg;
 
-    switch (join_type) {
+    switch (mode) {
         case LORAMAC_JOIN_OTAA:
             _join_otaa();
-
             break;
 
         case LORAMAC_JOIN_ABP:
             _join_abp();
-
             break;
 
         default:
@@ -579,11 +578,11 @@ int semtech_loramac_init(sx127x_t *dev)
     return 0;
 }
 
-uint8_t semtech_loramac_join(uint8_t type)
+uint8_t semtech_loramac_join(loramac_join_mode_t mode)
 {
-    _semtech_loramac_call(_join, (void*)&type);
+    _semtech_loramac_call(_join, (void*)&mode);
 
-    if (type == LORAMAC_JOIN_OTAA) {
+    if (mode == LORAMAC_JOIN_OTAA) {
         /* Wait until the OTAA join procedure is complete */
         msg_t msg;
         msg_receive(&msg);
@@ -594,7 +593,7 @@ uint8_t semtech_loramac_join(uint8_t type)
     return SEMTECH_LORAMAC_JOIN_SUCCEEDED;
 }
 
-uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
+uint8_t semtech_loramac_send(loramac_tx_mode_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
                              uint8_t *rx_buf, uint8_t *rx_port)
 {
