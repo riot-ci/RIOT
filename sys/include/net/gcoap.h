@@ -493,7 +493,7 @@ typedef struct {
                                              observe memos */
     gcoap_observe_memo_t observe_memos[GCOAP_OBS_REGISTRATIONS_MAX];
                                         /**< Observed resource registrations */
-    uint8_t resend_bufs[GCOAP_RESEND_BUFS_MAX * GCOAP_PDU_BUF_SIZE];
+    uint8_t resend_bufs[GCOAP_RESEND_BUFS_MAX][GCOAP_PDU_BUF_SIZE];
                                         /**< Buffers for PDU for request resends;
                                              if first byte of an entry is zero,
                                              the entry is available */
