@@ -86,13 +86,13 @@ commands are blocking until the MAC is done.
     > join otaa
     Join procedure succeeded!
 ```
-* Send confirmable data on port 2:
+* Send confirmable data on port 2 (cnf and port are optional):
 ```
-    > send cnf 2 This\ is\ RIOT!
+    > send This\ is\ RIOT! cnf 2
 ```
 * Send unconfirmable data on port 10:
 ```
-    > send uncnf 10 This\ is\ RIOT!
+    > send This\ is\ RIOT! uncnf 10
 ```
 * Switch the default datarate index (from 1 to 16). 5 is for SF7, BW125:
 ```
@@ -150,6 +150,6 @@ The payload sent is in the `payload_raw` json field and is formated in base64
 
 The node will also print the data received:
 ```
-    send cnf 2 test
+    > send test
     Data received: This is RIOT!
 ```
