@@ -70,7 +70,7 @@ static void _join_usage(void)
 
 static void _send_usage(void)
 {
-    puts("Usage: send <cnf|uncnf> <port> <payload>");
+    puts("Usage: send <payload> [<cnf|uncnf>] [port]");
 }
 
 static void _set_usage(void)
@@ -116,34 +116,41 @@ static int _cmd_loramac_join(int argc, char **argv)
 
 static int _cmd_loramac_send(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc < 2) {
         _send_usage();
         return 1;
     }
 
-    uint8_t cnf;
-    if (strcmp(argv[1], "cnf") == 0) {
-        cnf = LORAMAC_TX_CNF;
-    }
-    else if (strcmp(argv[1], "uncnf") == 0) {
-        cnf = LORAMAC_TX_UNCNF;
-    }
-    else {
-        (void) cnf;
-        _send_usage();
-        return 1;
-    }
 
-    uint8_t port = atoi(argv[2]);
-    if (port == 0 || port >= 224) {
-        printf("error: invalid port given '%d', "
-               "port can only be between 1 and 223\n", port);
-        return 1;
+    uint8_t cnf = LORAMAC_DEFAULT_TX_MODE;  /* Default: confirmable */
+    uint8_t port = LORAMAC_DEFAULT_TX_PORT; /* Default: 2 */
+    /* handle optional parameters */
+    if (argc > 2) {
+        if (strcmp(argv[2], "cnf") == 0) {
+            cnf = LORAMAC_TX_CNF;
+        }
+        else if (strcmp(argv[2], "uncnf") == 0) {
+            cnf = LORAMAC_TX_UNCNF;
+        }
+        else {
+            (void) cnf;
+            _send_usage();
+            return 1;
+        }
+
+        if (argc > 3) {
+            port = atoi(argv[3]);
+            if (port == 0 || port >= 224) {
+                printf("error: invalid port given '%d', "
+                       "port can only be between 1 and 223\n", port);
+                return 1;
+            }
+        }
     }
 
     uint8_t rx_port;
     switch (semtech_loramac_send(cnf, port,
-                                 (uint8_t*)argv[3], strlen(argv[3]),
+                                 (uint8_t*)argv[1], strlen(argv[1]),
                                  rx_buf, &rx_port)) {
         case SEMTECH_LORAMAC_RX_DATA:
             printf("Data received: %s, port: %d\n", (char*)rx_buf, rx_port);
