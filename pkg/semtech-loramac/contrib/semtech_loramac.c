@@ -47,14 +47,14 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define LORAMAC_MSG_QUEUE       (16U)
-#define LORAMAC_STACKSIZE       (THREAD_STACKSIZE_DEFAULT)
+#define LORAMAC_MSG_QUEUE                           (16U)
+#define LORAMAC_STACKSIZE                           (THREAD_STACKSIZE_DEFAULT)
 
 #define LORAWAN_MAX_JOIN_RETRIES                    (3U)
 
 #if defined(REGION_EU868)
-#define LORAWAN_DUTYCYCLE_ON                        true
-#define USE_SEMTECH_DEFAULT_CHANNEL_LINEUP          1
+#define LORAWAN_DUTYCYCLE_ON                        (true)
+#define USE_SEMTECH_DEFAULT_CHANNEL_LINEUP          (1)
 
 #if (USE_SEMTECH_DEFAULT_CHANNEL_LINEUP)
 #define LC4                { 867100000, 0, { ( ( DR_5 << 4 ) | DR_0 ) }, 0 }
@@ -69,10 +69,10 @@
 
 #if defined(REGION_CN779) || defined(REGION_EU868) || \
     defined(REGION_IN865) || defined(REGION_KR920)
-#define LORAWAN_APP_DATA_SIZE                       16
+#define LORAWAN_APP_DATA_SIZE                       (16U)
 #elif defined(REGION_AS923) || defined(REGION_AU915) || \
       defined(REGION_US915) || defined(REGION_US915_HYBRID)
-#define LORAWAN_APP_DATA_SIZE                       11
+#define LORAWAN_APP_DATA_SIZE                       (11U)
 #else
 #error "Please define a region in the compiler options."
 #endif
@@ -82,15 +82,14 @@ kernel_pid_t _semtech_loramac_pid;
 kernel_pid_t _semtech_loramac_handler_pid;
 
 RadioEvents_t radio_events;
+uint8_t dev_eui[LORAMAC_DEVEUI_LEN];
+uint8_t app_eui[LORAMAC_APPEUI_LEN];
+uint8_t app_key[LORAMAC_APPKEY_LEN];
+uint8_t nwk_skey[LORAMAC_NWKSKEY_LEN];
+uint8_t app_skey[LORAMAC_APPSKEY_LEN];
+uint8_t dev_addr[LORAMAC_DEVADDR_LEN];
 
-static uint8_t dev_eui[8] = LORAMAC_DEV_EUI_DEFAULT;
-static uint8_t app_eui[8] = LORAMAC_APP_EUI_DEFAULT;
-static uint8_t app_key[16] = LORAMAC_APP_KEY_DEFAULT;
-static uint8_t nwk_skey[16] = LORAMAC_NWK_SKEY_DEFAULT;
-static uint8_t app_skey[16] = LORAMAC_APP_SKEY_DEFAULT;
-static uint8_t dev_addr[4] = LORAMAC_DEV_ADDR_DEFAULT;
-
-#define LORAWAN_APP_DATA_MAX_SIZE                       242
+#define LORAWAN_APP_DATA_MAX_SIZE                   (242U)
 static uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE];
 static uint8_t rx_payload[LORAWAN_APP_DATA_MAX_SIZE];
 static uint8_t rx_port_internal;
@@ -275,7 +274,7 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
     }
 }
 
-static void _loramac_set_rx2_params(uint32_t freq, uint8_t dr)
+void _loramac_set_rx2_params(uint32_t freq, uint8_t dr)
 {
     Rx2ChannelParams_t params;
     params.Frequency = freq;
@@ -628,212 +627,4 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     }
 
     return status;
-}
-
-void semtech_loramac_set_deveui(const uint8_t *eui)
-{
-    memcpy(dev_eui, eui, 8);
-}
-
-void semtech_loramac_get_deveui(uint8_t *eui)
-{
-    memcpy(eui, dev_eui, 8);
-}
-
-void semtech_loramac_set_appeui(const uint8_t *eui)
-{
-    memcpy(app_eui, eui, 8);
-}
-
-void semtech_loramac_get_appeui(uint8_t *eui)
-{
-    memcpy(eui, app_eui, 8);
-}
-
-void semtech_loramac_set_appkey(const uint8_t *key)
-{
-    memcpy(app_key, key, 16);
-}
-
-void semtech_loramac_get_appkey(uint8_t *key)
-{
-    memcpy(key, app_key, 16);
-}
-
-void semtech_loramac_set_appskey(const uint8_t *skey)
-{
-    memcpy(app_skey, skey, 16);
-}
-
-void semtech_loramac_get_appskey(uint8_t *skey)
-{
-    memcpy(skey, app_skey, 16);
-}
-
-void semtech_loramac_set_nwkskey(const uint8_t *skey)
-{
-    memcpy(nwk_skey, skey, 16);
-}
-
-void semtech_loramac_get_nwkskey(uint8_t *skey)
-{
-    memcpy(skey, nwk_skey, 16);
-}
-
-void semtech_loramac_set_devaddr(const uint8_t *addr)
-{
-    memcpy(dev_addr, addr, 4);
-}
-
-void semtech_loramac_get_devaddr(uint8_t *addr)
-{
-    memcpy(addr, dev_addr, 4);
-}
-
-void semtech_loramac_set_class(loramac_class_t cls)
-{
-    DEBUG("[semtech-loramac] set class %d\n", cls);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_DEVICE_CLASS;
-    mibReq.Param.Class = (DeviceClass_t)cls;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-loramac_class_t semtech_loramac_get_class(void)
-{
-    DEBUG("[semtech-loramac] get device class\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_DEVICE_CLASS;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return (loramac_class_t)mibReq.Param.Class;
-}
-
-void semtech_loramac_set_dr(uint8_t dr)
-{
-    DEBUG("[semtech-loramac] set dr %d\n", dr);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_CHANNELS_DEFAULT_DATARATE;
-    mibReq.Param.ChannelsDatarate = dr;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-uint8_t semtech_loramac_get_dr(void)
-{
-    DEBUG("[semtech-loramac] get dr\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_CHANNELS_DEFAULT_DATARATE;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return (uint8_t)mibReq.Param.ChannelsDatarate;
-}
-
-void semtech_loramac_set_adr(bool adr)
-{
-    DEBUG("[semtech-loramac] set adr %d\n", adr);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_ADR;
-    mibReq.Param.AdrEnable = adr;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-bool semtech_loramac_get_adr(void)
-{
-    DEBUG("[semtech-loramac] get adr\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_ADR;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return mibReq.Param.AdrEnable;
-}
-
-void semtech_loramac_set_public_network(bool public)
-{
-    DEBUG("[semtech-loramac] set public network %d\n", public);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_PUBLIC_NETWORK;
-    mibReq.Param.EnablePublicNetwork = public;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-bool semtech_loramac_get_public_network(void)
-{
-    DEBUG("[semtech-loramac] get public network\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_PUBLIC_NETWORK;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return mibReq.Param.EnablePublicNetwork;
-}
-
-void semtech_loramac_set_netid(uint32_t netid)
-{
-    DEBUG("[semtech-loramac] set NetID %lu\n", netid);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_NET_ID;
-    mibReq.Param.NetID = netid;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-uint32_t semtech_loramac_get_netid(void)
-{
-    DEBUG("[semtech-loramac] get NetID\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_NET_ID;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return mibReq.Param.NetID;
-}
-
-void semtech_loramac_set_tx_power(uint8_t power)
-{
-    DEBUG("[semtech-loramac] set TX power %d\n", power);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_CHANNELS_TX_POWER;
-    mibReq.Param.ChannelsTxPower = power;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-}
-
-uint8_t semtech_loramac_get_tx_power(void)
-{
-    DEBUG("[semtech-loramac] get TX power\n");
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_CHANNELS_TX_POWER;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    return (uint8_t)mibReq.Param.ChannelsTxPower;
-}
-
-void semtech_loramac_set_rx2_freq(uint8_t freq)
-{
-    Rx2ChannelParams_t params;
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    params.Frequency = freq;
-    params.Datarate = mibReq.Param.Rx2DefaultChannel.Datarate;
-    _loramac_set_rx2_params(params.Frequency, params.Datarate);
-}
-
-uint32_t semtech_loramac_get_rx2_freq(void)
-{
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-
-    return mibReq.Param.Rx2DefaultChannel.Frequency;
-}
-
-void semtech_loramac_set_rx2_dr(uint8_t dr)
-{
-    Rx2ChannelParams_t params;
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-    params.Datarate = dr;
-    params.Frequency = mibReq.Param.Rx2DefaultChannel.Frequency;
-    _loramac_set_rx2_params(params.Frequency, params.Datarate);
-}
-
-uint8_t semtech_loramac_get_rx2_dr(void)
-{
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
-    LoRaMacMibGetRequestConfirm(&mibReq);
-
-    return mibReq.Param.Rx2DefaultChannel.Datarate;
 }
