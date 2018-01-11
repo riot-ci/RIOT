@@ -1,0 +1,5 @@
+DIRS += src/mac
+DIRS += src/mac/region
+DIRS += src/system/crypto
+
+include $(RIOTBASE)/Makefile.base
