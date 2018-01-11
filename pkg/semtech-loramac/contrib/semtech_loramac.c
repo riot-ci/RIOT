@@ -517,6 +517,7 @@ void *_event_loop(void *arg)
     semtech_loramac_set_dr(LORAMAC_DEFAULT_DR);
     semtech_loramac_set_adr(LORAMAC_DEFAULT_ADR);
     semtech_loramac_set_public_network(LORAMAC_DEFAULT_PUBLIC_NETWORK);
+    semtech_loramac_set_class(LORAMAC_DEFAULT_DEVICE_CLASS);
 
     while (1) {
         msg_t msg;
