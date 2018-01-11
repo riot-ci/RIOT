@@ -21,47 +21,17 @@
 
 #include "msg.h"
 #include "shell.h"
+#include "fmt.h"
 
-#include "net/netdev.h"
 #include "net/loramac.h"
 #include "semtech_loramac.h"
 
 #include "sx127x.h"
 #include "sx127x_params.h"
-#include "sx127x_netdev.h"
 
 sx127x_t sx127x;
 static uint8_t rx_buf[242];
 static char print_buf[48];
-
-static void _hex_to_bytes(const char *hex, uint8_t *byte_array)
-{
-    const uint8_t charmap[] = {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, /* 01234567 */
-        0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* 89:;<=>? */
-        0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, /* @ABCDEFG */
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /* HIJKLMNO */
-    };
-
-    size_t len = strlen(hex);
-    for (uint8_t pos = 0; pos < len; pos += 2) {
-        uint8_t idx0 = ((uint8_t)hex[pos + 0] & 0x1F) ^ 0x10;
-        uint8_t idx1 = ((uint8_t)hex[pos + 1] & 0x1F) ^ 0x10;
-        byte_array[pos / 2] = (uint8_t)(charmap[idx0] << 4) | charmap[idx1];
-    };
-}
-
-void _bytes_to_hex(const uint8_t *byte_array, char *hex, uint8_t max_len)
-{
-    char *pos = &hex[0];
-    const char *hex_chars = "0123456789ABCDEF";
-
-    for (unsigned i = 0; i < max_len; ++i) {
-        *pos++ = hex_chars[(*byte_array >> 4) & 0xF];
-        *pos++ = hex_chars[(*byte_array++) & 0xF];
-    }
-    *pos = '\0';
-}
 
 static void _loramac_usage(void)
 {
@@ -104,39 +74,39 @@ static int _cmd_loramac(int argc, char **argv)
         }
 
         if (strcmp("deveui", argv[2]) == 0) {
-            uint8_t deveui[8];
+            uint8_t deveui[LORAMAC_DEVEUI_LEN];
             semtech_loramac_get_deveui(deveui);
-            _bytes_to_hex(deveui, print_buf, 8);
+            fmt_bytes_hex(print_buf, deveui, LORAMAC_DEVEUI_LEN);
             printf("DEVEUI: %s\n", print_buf);
         }
         else if (strcmp("appeui", argv[2]) == 0) {
-            uint8_t appeui[8];
+            uint8_t appeui[LORAMAC_APPEUI_LEN];
             semtech_loramac_get_appeui(appeui);
-            _bytes_to_hex(appeui, print_buf, 8);
+            fmt_bytes_hex(print_buf, appeui, LORAMAC_APPEUI_LEN);
             printf("APPEUI: %s\n", print_buf);
         }
         else if (strcmp("appkey", argv[2]) == 0) {
-            uint8_t appkey[16];
+            uint8_t appkey[LORAMAC_APPKEY_LEN];
             semtech_loramac_get_appkey(appkey);
-            _bytes_to_hex(appkey, print_buf, 16);
+            fmt_bytes_hex(print_buf, appkey, LORAMAC_APPKEY_LEN);
             printf("APPKEY: %s\n", print_buf);
         }
         else if (strcmp("appskey", argv[2]) == 0) {
-            uint8_t appskey[16];
+            uint8_t appskey[LORAMAC_APPSKEY_LEN];
             semtech_loramac_get_appskey(appskey);
-            _bytes_to_hex(appskey, print_buf, 16);
+            fmt_bytes_hex(print_buf, appskey, LORAMAC_APPSKEY_LEN);
             printf("APPSKEY: %s\n", print_buf);
         }
         else if (strcmp("nwkskey", argv[2]) == 0) {
-            uint8_t nwkskey[16];
+            uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];
             semtech_loramac_get_nwkskey(nwkskey);
-            _bytes_to_hex(nwkskey, print_buf, 16);
+            fmt_bytes_hex(print_buf, nwkskey, LORAMAC_NWKSKEY_LEN);
             printf("NWKSKEY: %s\n", print_buf);
         }
         else if (strcmp("devaddr", argv[2]) == 0) {
-            uint8_t devaddr[4];
+            uint8_t devaddr[LORAMAC_DEVADDR_LEN];
             semtech_loramac_get_devaddr(devaddr);
-            _bytes_to_hex(devaddr, print_buf, 4);
+            fmt_bytes_hex(print_buf, devaddr, LORAMAC_DEVADDR_LEN);
             printf("DEVADDR: %s\n", print_buf);
         }
         else if (strcmp("class", argv[2]) == 0) {
@@ -196,8 +166,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set deveui <16 hex chars>");
                 return 1;
             }
-            uint8_t deveui[8];
-            _hex_to_bytes(argv[3], deveui);
+            uint8_t deveui[LORAMAC_DEVEUI_LEN];
+            fmt_hex_bytes(deveui, argv[3]);
             semtech_loramac_set_deveui(deveui);
         }
         else if (strcmp("appeui", argv[2]) == 0) {
@@ -205,8 +175,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set appeui <16 hex chars>");
                 return 1;
             }
-            uint8_t appeui[8];
-            _hex_to_bytes(argv[3], appeui);
+            uint8_t appeui[LORAMAC_APPEUI_LEN];
+            fmt_hex_bytes(appeui, argv[3]);
             semtech_loramac_set_appeui(appeui);
         }
         else if (strcmp("appkey", argv[2]) == 0) {
@@ -214,8 +184,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set appkey <32 hex chars>");
                 return 1;
             }
-            uint8_t appkey[16];
-            _hex_to_bytes(argv[3], appkey);
+            uint8_t appkey[LORAMAC_APPKEY_LEN];
+            fmt_hex_bytes(appkey, argv[3]);
             semtech_loramac_set_appkey(appkey);
         }
         else if (strcmp("appskey", argv[2]) == 0) {
@@ -223,8 +193,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set appskey <32 hex chars>");
                 return 1;
             }
-            uint8_t appskey[16];
-            _hex_to_bytes(argv[3], appskey);
+            uint8_t appskey[LORAMAC_APPSKEY_LEN];
+            fmt_hex_bytes(appskey, argv[3]);
             semtech_loramac_set_appskey(appskey);
         }
         else if (strcmp("nwkskey", argv[2]) == 0) {
@@ -232,8 +202,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set nwkskey <32 hex chars>");
                 return 1;
             }
-            uint8_t nwkskey[16];
-            _hex_to_bytes(argv[3], nwkskey);
+            uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];
+            fmt_hex_bytes(nwkskey, argv[3]);
             semtech_loramac_set_nwkskey(nwkskey);
         }
         else if (strcmp("devaddr", argv[3]) == 0) {
@@ -241,8 +211,8 @@ static int _cmd_loramac(int argc, char **argv)
                 puts("Usage: loramac set devaddr <8 hex chars>");
                 return 1;
             }
-            uint8_t devaddr[4];
-            _hex_to_bytes(argv[3], devaddr);
+            uint8_t devaddr[LORAMAC_DEVADDR_LEN];
+            fmt_hex_bytes(devaddr, argv[3]);
             semtech_loramac_set_devaddr(devaddr);
         }
         else if (strcmp("class", argv[2]) == 0) {
