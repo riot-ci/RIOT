@@ -15,6 +15,7 @@ USEMODULE += $(DRIVER)
 
 USEMODULE += shell
 USEMODULE += shell_commands
+USEMODULE += fmt
 
 CFLAGS += -DREGION_$(REGION)
 
