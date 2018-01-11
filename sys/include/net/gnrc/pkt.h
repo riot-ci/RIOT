@@ -106,10 +106,11 @@ typedef struct gnrc_pktsnip {
      *
      * @internal
      */
-    unsigned int users;
+    /* the first three fields *MUST* be identical to iolist_t! */
     struct gnrc_pktsnip *next;      /**< next snip in the packet */
     void *data;                     /**< pointer to the data of the snip */
     size_t size;                    /**< the length of the snip in byte */
+    unsigned int users;
     gnrc_nettype_t type;            /**< protocol of the packet snip */
 #ifdef MODULE_GNRC_NETERR
     kernel_pid_t err_sub;           /**< subscriber to errors related to this
