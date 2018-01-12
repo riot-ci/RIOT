@@ -416,8 +416,8 @@ static void _handle_rtr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
               netif->pid);
         DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
         DEBUG("     - ICMP code: %u (should be 0)\n", rtr_sol->code);
-        DEBUG("     - ICMP length: %u (should > %u)\n", icmpv6_len,
-              sizeof(ndp_rtr_sol_t));
+        DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
+              (unsigned)sizeof(ndp_rtr_sol_t));
         return;
     }
     /* pre-check option length */
@@ -527,7 +527,7 @@ static void _handle_rtr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
         DEBUG("     - ICMP code: %u (should be 0)\n", rtr_adv->code);
         DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
-              sizeof(ndp_rtr_adv_t));
+              (unsigned)sizeof(ndp_rtr_adv_t));
         DEBUG("     - Source address: %s (should be link-local)\n",
               ipv6_addr_to_str(addr_str, &ipv6->src, sizeof(addr_str)));
         DEBUG("     - Router lifetime: %u (should be <= 9000 on non-6LN)\n",
