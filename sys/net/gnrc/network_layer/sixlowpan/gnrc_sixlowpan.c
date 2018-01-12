@@ -302,7 +302,7 @@ static void _send(gnrc_pktsnip_t *pkt)
 #else
     (void) datagram_size;
     DEBUG("6lo: packet too big (%u > %" PRIu16 ")\n",
-          (unsigned int)datagram_size, iface->max_frag_size);
+          (unsigned int)datagram_size, iface->sixlo.max_frag_size);
     gnrc_pktbuf_release(pkt2);
 #endif
 }
