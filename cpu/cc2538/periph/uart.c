@@ -61,26 +61,23 @@ enum {
 #define DIVFRAC_MASK          ( (1 << DIVFRAC_NUM_BITS) - 1 )
 
 /** @brief Indicates if there are bytes available in the UART0 receive FIFO */
-#define uart0_rx_avail() ( UART0->cc2538_uart_fr.FRbits.RXFE == 0 )
+#define uart0_rx_avail() ( uart_config[0].dev->cc2538_uart_fr.FRbits.RXFE == 0 )
 
 /** @brief Indicates if there are bytes available in the UART1 receive FIFO */
-#define uart1_rx_avail() ( UART1->cc2538_uart_fr.FRbits.RXFE == 0 )
+#define uart1_rx_avail() ( uart_config[1].dev->cc2538_uart_fr.FRbits.RXFE == 0 )
 
 /** @brief Read one byte from the UART0 receive FIFO */
-#define uart0_read()     ( UART0->DR )
+#define uart0_read()     ( uart_config[0].dev->DR )
 
 /** @brief Read one byte from the UART1 receive FIFO */
-#define uart1_read()     ( UART1->DR )
+#define uart1_read()     ( uart_config[1].dev->DR )
 
 /*---------------------------------------------------------------------------*/
 
 /**
  * @brief Allocate memory to store the callback functions.
  */
-static uart_isr_ctx_t uart_config[UART_NUMOF];
-
-cc2538_uart_t * const UART0 = (cc2538_uart_t *)0x4000c000;
-cc2538_uart_t * const UART1 = (cc2538_uart_t *)0x4000d000;
+static uart_isr_ctx_t uart_ctx[UART_NUMOF];
 
 /*---------------------------------------------------------------------------*/
 static void reset(cc2538_uart_t *u)
@@ -106,49 +103,6 @@ static void reset(cc2538_uart_t *u)
 }
 /*---------------------------------------------------------------------------*/
 
-#if UART_0_EN
-void UART_0_ISR(void)
-{
-    uint_fast16_t mis;
-
-    /* Latch the Masked Interrupt Status and clear any active flags */
-    mis = UART_0_DEV->cc2538_uart_mis.MIS;
-    UART_0_DEV->ICR = mis;
-
-    while (UART_0_DEV->cc2538_uart_fr.FRbits.RXFE == 0) {
-        uart_config[0].rx_cb(uart_config[0].arg, UART_0_DEV->DR);
-    }
-
-    if (mis & (OEMIS | BEMIS | FEMIS)) {
-        /* ISR triggered due to some error condition */
-        reset(UART_0_DEV);
-    }
-
-    cortexm_isr_end();
-}
-#endif /* UART_0_EN */
-
-#if UART_1_EN
-void UART_1_ISR(void)
-{
-    uint_fast16_t mis;
-
-    /* Latch the Masked Interrupt Status and clear any active flags */
-    mis = UART_1_DEV->cc2538_uart_mis.MIS;
-    UART_1_DEV->ICR = mis;
-
-    while (UART_1_DEV->cc2538_uart_fr.FRbits.RXFE == 0) {
-        uart_config[1].rx_cb(uart_config[1].arg, UART_1_DEV->DR);
-    }
-
-    if (mis & (OEMIS | BEMIS | FEMIS)) {
-        /* ISR triggered due to some error condition */
-        reset(UART_1_DEV);
-    }
-
-    cortexm_isr_end();
-}
-#endif /* UART_1_EN */
 
 static int init_base(uart_t uart, uint32_t baudrate);
 
@@ -161,26 +115,12 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     }
 
     /* register callbacks */
-    uart_config[uart].rx_cb = rx_cb;
-    uart_config[uart].arg = arg;
+    uart_ctx[uart].rx_cb = rx_cb;
+    uart_ctx[uart].arg = arg;
 
     /* configure interrupts and enable RX interrupt */
-    switch (uart) {
-#if UART_0_EN
-        case UART_0:
-            NVIC_SetPriority(UART0_IRQn, UART_IRQ_PRIO);
-            NVIC_EnableIRQ(UART0_IRQn);
-            break;
-#endif
-#if UART_1_EN
-        case UART_1:
-            NVIC_SetPriority(UART1_IRQn, UART_IRQ_PRIO);
-            NVIC_EnableIRQ(UART1_IRQn);
-            break;
-#endif
-        default:
-            return UART_NODEV;
-    }
+    NVIC_SetPriority(uart_config[uart].irq, UART_IRQ_PRIO);
+    NVIC_EnableIRQ(uart_config[uart].irq);
 
     return UART_OK;
 }
@@ -189,30 +129,12 @@ static int init_base(uart_t uart, uint32_t baudrate)
 {
     cc2538_uart_t *u = NULL;
 
-    switch (uart) {
-#if UART_0_EN
-        case UART_0:
-            u = UART_0_DEV;
-            gpio_init_af(UART_0_RX_PIN, UART0_RXD, GPIO_IN);
-            gpio_init_af(UART_0_TX_PIN, UART0_TXD, GPIO_OUT);
-            break;
-#endif
-#if UART_1_EN
-        case UART_1:
-            u = UART_1_DEV;
-            gpio_init_af(UART_1_RX_PIN, UART1_RXD, GPIO_IN);
-            gpio_init_af(UART_1_TX_PIN, UART1_TXD, GPIO_OUT);
-            break;
-#endif
+    u = uart_config[uart].dev;
+    gpio_init_af(uart_config[uart].rx_pin, uart_config[uart].rxd, GPIO_IN);
+    gpio_init_af(uart_config[uart].tx_pin, uart_config[uart].txd, GPIO_OUT);
 
-        default:
-            (void)u;
-            return UART_NODEV;
-    }
-
-#if UART_0_EN || UART_1_EN
     /* Enable clock for the UART while Running, in Sleep and Deep Sleep */
-    unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)UART0 ) / 0x1000;
+    unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)uart_config[uart].dev ) / 0x1000;
     SYS_CTRL_RCGCUART |= (1 << uart_num);
     SYS_CTRL_SCGCUART |= (1 << uart_num);
     SYS_CTRL_DCGCUART |= (1 << uart_num);
@@ -224,20 +146,18 @@ static int init_base(uart_t uart, uint32_t baudrate)
     u->CC = 0;
 
     /* On the CC2538, hardware flow control is supported only on UART1 */
-    if (u == UART1) {
-#ifdef UART_1_RTS_PIN
-        gpio_init_af(UART_1_RTS_PIN, UART1_RTS, GPIO_OUT);
+    if (uart_config[uart].rts_pin != GPIO_UNDEF){
+        gpio_init_af(uart_config[uart].rts_pin, UART1_RTS, GPIO_OUT);
         u->cc2538_uart_ctl.CTLbits.RTSEN = 1;
-#endif
+    }
 
-#ifdef UART_1_CTS_PIN
-        gpio_init_af(UART_1_CTS_PIN, UART1_CTS, GPIO_IN);
+    if (uart_config[uart].cts_pin != GPIO_UNDEF){
+        gpio_init_af(uart_config[uart].cts_pin, UART1_CTS, GPIO_IN);
         u->cc2538_uart_ctl.CTLbits.CTSEN = 1;
-#endif
     }
 
     /* Enable clock for the UART while Running, in Sleep and Deep Sleep */
-    uart_num = ( (uintptr_t)u - (uintptr_t)UART0 ) / 0x1000;
+    uart_num = ( (uintptr_t)u - (uintptr_t)uart_config[0].dev ) / 0x1000;
     SYS_CTRL_RCGCUART |= (1 << uart_num);
     SYS_CTRL_SCGCUART |= (1 << uart_num);
     SYS_CTRL_DCGCUART |= (1 << uart_num);
@@ -277,27 +197,13 @@ static int init_base(uart_t uart, uint32_t baudrate)
     u->cc2538_uart_ctl.CTLbits.UARTEN = 1;
 
     return UART_OK;
-#endif /* UART_0_EN || UART_1_EN */
 }
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     cc2538_uart_t *u;
 
-    switch (uart) {
-#if UART_0_EN
-        case UART_0:
-            u = UART_0_DEV;
-            break;
-#endif
-#if UART_1_EN
-        case UART_1:
-            u = UART_1_DEV;
-            break;
-#endif
-        default:
-            return;
-    }
+    u = uart_config[uart].dev;
 
     /* Block if the TX FIFO is full */
     for (size_t i = 0; i < len; i++) {
@@ -316,3 +222,37 @@ void uart_poweroff(uart_t uart)
 {
     (void) uart;
 }
+
+static inline void irq_handler(uart_t uart)
+{
+    uint_fast16_t mis;
+
+    /* Latch the Masked Interrupt Status and clear any active flags */
+    mis = uart_config[uart].dev->cc2538_uart_mis.MIS;
+    uart_config[uart].dev->ICR = mis;
+
+    while (uart_config[uart].dev->cc2538_uart_fr.FRbits.RXFE == 0) {
+        uart_ctx[uart].rx_cb(uart_ctx[uart].arg, uart_config[uart].dev->DR);
+    }
+
+    if (mis & (OEMIS | BEMIS | FEMIS)) {
+        /* ISR triggered due to some error condition */
+        reset(uart_config[uart].dev);
+    }
+
+    cortexm_isr_end();
+}
+
+#ifdef UART_0_ISR
+void UART_0_ISR(void)
+{
+    irq_handler((uart_t)0);
+}
+#endif
+
+#ifdef UART_1_ISR
+void UART_1_ISR(void)
+{
+    irq_handler((uart_t)1);
+}
+#endif
