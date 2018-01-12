@@ -279,7 +279,7 @@ static void _send(gnrc_pktsnip_t *pkt)
     }
     else if (datagram_size <= SIXLOWPAN_FRAG_MAX_LEN) {
         DEBUG("6lo: Send fragmented (%u > %" PRIu16 ")\n",
-              (unsigned int)datagram_size, iface->max_frag_size);
+              (unsigned int)datagram_size, iface->sixlo.max_frag_size);
         msg_t msg;
 
         fragment_msg.pid = hdr->if_pid;
