@@ -1,0 +1,5 @@
+MPSRC = $(BINDIRBASE)/pkg/$(BOARD)/micropython
+
+INCLUDES += -I$(RIOTBASE)/pkg/micropython/include
+INCLUDES += -I$(MPSRC)
+INCLUDES += -I$(MPSRC)/riot

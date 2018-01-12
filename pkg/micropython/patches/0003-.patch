@@ -1,0 +1,117 @@
+From 4ab28df19036f665b04c3e4ff567c34384558243 Mon Sep 17 00:00:00 2001
+From: Kaspar Schleiser <kaspar@schleiser.de>
+Date: Tue, 19 Jul 2016 14:37:45 +0200
+Subject: [PATCH 3/4] ...
+
+---
+ riot/mp_riot.c      |  1 -
+ riot/mpconfigport.h | 24 +++++++++++++-----------
+ riot/mphalport.h    |  2 ++
+ 3 files changed, 15 insertions(+), 12 deletions(-)
+ create mode 100644 riot/mphalport.h
+
+diff --git a/riot/mp_riot.c b/riot/mp_riot.c
+index 049b531..e4bd892 100644
+--- a/riot/mp_riot.c
++++ b/riot/mp_riot.c
+@@ -7,7 +7,6 @@
+ #include "py/runtime.h"
+ #include "py/repl.h"
+ #include "py/gc.h"
+-#include "pyexec.h"
+ 
+ #include "thread.h"
+ 
+diff --git a/riot/mpconfigport.h b/riot/mpconfigport.h
+index 2158199..a132fb3 100644
+--- a/riot/mpconfigport.h
++++ b/riot/mpconfigport.h
+@@ -2,7 +2,10 @@
+ 
+ // options to control how Micro Python is built
+ 
++#define MICROPY_QSTR_BYTES_IN_HASH  (1)
++#define MICROPY_QSTR_EXTRA_POOL     mp_qstr_frozen_const_pool
+ #define MICROPY_ALLOC_PATH_MAX      (256)
++#define MICROPY_ALLOC_PARSE_CHUNK_INIT (16)
+ #define MICROPY_EMIT_X64            (0)
+ #define MICROPY_EMIT_THUMB          (0)
+ #define MICROPY_EMIT_INLINE_THUMB   (0)
+@@ -19,26 +22,29 @@
+ #define MICROPY_ENABLE_SOURCE_LINE  (0)
+ #define MICROPY_ENABLE_DOC_STRING   (0)
+ #define MICROPY_ERROR_REPORTING     (MICROPY_ERROR_REPORTING_TERSE)
++#define MICROPY_BUILTIN_METHOD_CHECK_SELF_ARG (0)
++#define MICROPY_PY_ASYNC_AWAIT      (0)
+ #define MICROPY_PY_BUILTINS_BYTEARRAY (0)
+ #define MICROPY_PY_BUILTINS_MEMORYVIEW (0)
+ #define MICROPY_PY_BUILTINS_ENUMERATE (0)
++#define MICROPY_PY_BUILTINS_FILTER  (0)
+ #define MICROPY_PY_BUILTINS_FROZENSET (0)
+ #define MICROPY_PY_BUILTINS_REVERSED (0)
+ #define MICROPY_PY_BUILTINS_SET     (0)
+ #define MICROPY_PY_BUILTINS_SLICE   (0)
+ #define MICROPY_PY_BUILTINS_PROPERTY (0)
++#define MICROPY_PY_BUILTINS_MIN_MAX (0)
+ #define MICROPY_PY___FILE__         (0)
+ #define MICROPY_PY_GC               (0)
+ #define MICROPY_PY_ARRAY            (0)
+ #define MICROPY_PY_ATTRTUPLE        (0)
+ #define MICROPY_PY_COLLECTIONS      (0)
+ #define MICROPY_PY_MATH             (0)
+-#define MICROPY_PY_MICROPYTHON_MEM_INFO (1)
+ #define MICROPY_PY_CMATH            (0)
+ #define MICROPY_PY_IO               (0)
+ #define MICROPY_PY_STRUCT           (0)
+ #define MICROPY_PY_SYS              (0)
+-#define MICROPY_MODULE_FROZEN       (0)
++#define MICROPY_MODULE_FROZEN_MPY   (1)
+ #define MICROPY_CPYTHON_COMPAT      (0)
+ #define MICROPY_LONGINT_IMPL        (MICROPY_LONGINT_IMPL_NONE)
+ #define MICROPY_FLOAT_IMPL          (MICROPY_FLOAT_IMPL_NONE)
+@@ -62,7 +68,6 @@ typedef void *machine_ptr_t; // must be of pointer size
+ typedef const void *machine_const_ptr_t; // must be of pointer size
+ typedef long mp_off_t;
+ 
+-void mp_hal_stdout_tx_strn_cooked(const char *str, mp_uint_t len);
+ #define MP_PLAT_PRINT_STRN(str, len) mp_hal_stdout_tx_strn_cooked(str, len)
+ 
+ // extra built in names to add to the global namespace
+@@ -75,21 +80,18 @@ extern const struct _mp_obj_fun_builtin_t mp_builtin_help_obj;
+ // We need to provide a declaration/definition of alloca()
+ #include <alloca.h>
+ 
++#define str(x) #x
++#define xstr(x) str(x)
++#define MICROPY_HW_BOARD_NAME xstr(RIOT_BOARD)
++#define MICROPY_HW_MCU_NAME xstr(RIOT_MCU)
++
+ #define HAL_GetTick() 0
+ int mp_hal_stdin_rx_chr(void);
+ void mp_hal_stdout_tx_str(const char *str);
+ void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len);
+ void mp_hal_stdout_tx_strn_cooked(const char *str, mp_uint_t len);
+ 
+-static inline void mp_hal_set_interrupt_char(char c) {(void)c;}
+-
+-#define str(x) #x
+-#define xstr(x) str(x)
+-#define MICROPY_HW_BOARD_NAME xstr(RIOT_BOARD)
+-#define MICROPY_HW_MCU_NAME xstr(RIOT_MCU)
+-
+ #define MP_STATE_PORT MP_STATE_VM
+ 
+ #define MICROPY_PORT_ROOT_POINTERS \
+     const char *readline_hist[8];
+-
+diff --git a/riot/mphalport.h b/riot/mphalport.h
+new file mode 100644
+index 0000000..60d68bd
+--- /dev/null
++++ b/riot/mphalport.h
+@@ -0,0 +1,2 @@
++static inline mp_uint_t mp_hal_ticks_ms(void) { return 0; }
++static inline void mp_hal_set_interrupt_char(char c) {}
+-- 
+2.9.0
+

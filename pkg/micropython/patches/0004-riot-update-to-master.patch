@@ -1,0 +1,85 @@
+From 6d8b4d58be459377559153faadf53e854006ad1f Mon Sep 17 00:00:00 2001
+From: Kaspar Schleiser <kaspar@schleiser.de>
+Date: Tue, 19 Jul 2016 16:12:23 +0200
+Subject: [PATCH 4/4] riot: update to master
+
+---
+ riot/Makefile       |  2 +-
+ riot/mp_riot.c      | 11 +++++------
+ riot/mpconfigport.h |  4 ++--
+ 3 files changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/riot/Makefile b/riot/Makefile
+index 87d4652..62081eb 100644
+--- a/riot/Makefile
++++ b/riot/Makefile
+@@ -41,7 +41,7 @@ Wno = -Wno-vla -Wno-unused-parameter -Wno-pedantic
+ CFLAGS += -DNDEBUG $(INC) $(Wno)
+ 
+ SRC_C = $(wildcard *.c) \
+-	stmhal/pyexec.c \
++	lib/utils/pyexec.c \
+ 	lib/mp-readline/readline.c \
+ 	unix/gccollect.c
+ 
+diff --git a/riot/mp_riot.c b/riot/mp_riot.c
+index e4bd892..1eb9d9b 100644
+--- a/riot/mp_riot.c
++++ b/riot/mp_riot.c
+@@ -10,9 +10,8 @@
+ 
+ #include "thread.h"
+ 
+-void mp_do_str(const char *src, int len)
+-{
+-    mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, len, 0);
++void mp_do_str(const char *src, mp_parse_input_kind_t input_kind) {
++    mp_lexer_t *lex = mp_lexer_new_from_str_len(MP_QSTR__lt_stdin_gt_, src, strlen(src), 0);
+     if (lex == NULL) {
+         printf("MemoryError: lexer could not allocate memory\n");
+         return;
+@@ -21,8 +20,8 @@ void mp_do_str(const char *src, int len)
+     nlr_buf_t nlr;
+     if (nlr_push(&nlr) == 0) {
+         qstr source_name = lex->source_name;
+-        mp_parse_node_t pn = mp_parse(lex, MP_PARSE_FILE_INPUT);
+-        mp_obj_t module_fun = mp_compile(pn, source_name, MP_EMIT_OPT_NONE, true);
++        mp_parse_tree_t parse_tree = mp_parse(lex, input_kind);
++        mp_obj_t module_fun = mp_compile(&parse_tree, source_name, MP_EMIT_OPT_NONE, true);
+         mp_call_function_0(module_fun);
+         nlr_pop();
+     } else {
+@@ -31,7 +30,7 @@ void mp_do_str(const char *src, int len)
+     }
+ }
+ 
+-void mp_riot_init(char* stack_start, int stack_size, char* heap, int heap_size)
++void mp_riot_init(char* heap, size_t heap_size)
+ {
+     #if MICROPY_ENABLE_GC
+     gc_init(heap, heap + heap_size);
+diff --git a/riot/mpconfigport.h b/riot/mpconfigport.h
+index a132fb3..fd2be5a 100644
+--- a/riot/mpconfigport.h
++++ b/riot/mpconfigport.h
+@@ -3,7 +3,7 @@
+ // options to control how Micro Python is built
+ 
+ #define MICROPY_QSTR_BYTES_IN_HASH  (1)
+-#define MICROPY_QSTR_EXTRA_POOL     mp_qstr_frozen_const_pool
++//#define MICROPY_QSTR_EXTRA_POOL     mp_qstr_frozen_const_pool
+ #define MICROPY_ALLOC_PATH_MAX      (256)
+ #define MICROPY_ALLOC_PARSE_CHUNK_INIT (16)
+ #define MICROPY_EMIT_X64            (0)
+@@ -44,7 +44,7 @@
+ #define MICROPY_PY_IO               (0)
+ #define MICROPY_PY_STRUCT           (0)
+ #define MICROPY_PY_SYS              (0)
+-#define MICROPY_MODULE_FROZEN_MPY   (1)
++#define MICROPY_MODULE_FROZEN_MPY   (0)
+ #define MICROPY_CPYTHON_COMPAT      (0)
+ #define MICROPY_LONGINT_IMPL        (MICROPY_LONGINT_IMPL_NONE)
+ #define MICROPY_FLOAT_IMPL          (MICROPY_FLOAT_IMPL_NONE)
+-- 
+2.9.0
+
