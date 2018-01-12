@@ -34,9 +34,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#if ENABLE_DEBUG
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
-#endif
 
 #define _NETIF_NETAPI_MSG_QUEUE_SIZE    (8)
 
