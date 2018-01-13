@@ -154,7 +154,7 @@
 #define STATUS_FLAG_BLOCKED_ANY     6   /**< waiting for any flag from flag_mask*/
 #define STATUS_FLAG_BLOCKED_ALL     7   /**< waiting for all flags in flag_mask */
 #define STATUS_MBOX_BLOCKED         8   /**< waiting for get/put on mbox        */
-#define STATUS_CONDITION_BLOCKED    9   /**< waiting for a condition variable   */
+#define STATUS_COND_BLOCKED         9   /**< waiting for a condition variable   */
 /** @} */
 
 /**

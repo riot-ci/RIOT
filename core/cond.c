@@ -27,12 +27,13 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-void cond_wait(condition_t* cond, mutex_t* mutex)
+void cond_wait(cond_t *cond, mutex_t *mutex)
 {
     unsigned irqstate = irq_disable();
-    thread_t* me = (thread_t*) sched_active_thread;
+    thread_t *me = (thread_t *)sched_active_thread;
+
     mutex_unlock(mutex);
-    sched_set_status(me, STATUS_CONDITION_BLOCKED);
+    sched_set_status(me, STATUS_COND_BLOCKED);
     thread_add_to_list(&cond->queue, me);
     irq_restore(irqstate);
     thread_yield_higher();
@@ -44,14 +45,15 @@ void cond_wait(condition_t* cond, mutex_t* mutex)
     mutex_lock(mutex);
 }
 
-void _cond_signal(condition_t* cond, bool broadcast)
+void _cond_signal(cond_t *cond, bool broadcast)
 {
     unsigned irqstate = irq_disable();
-    list_node_t* next;
+    list_node_t *next;
 
     uint16_t min_prio = THREAD_PRIORITY_MIN + 1;
+
     while ((next = list_remove_head(&cond->queue)) != NULL) {
-        thread_t* process = container_of((clist_node_t*) next, thread_t, rq_entry);
+        thread_t *process = container_of((clist_node_t *)next, thread_t, rq_entry);
         sched_set_status(process, STATUS_PENDING);
         uint16_t process_priority = process->priority;
         if (process_priority < min_prio) {

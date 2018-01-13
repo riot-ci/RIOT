@@ -70,8 +70,8 @@
  *
  * typedef struct pipe {
  *     queue_t queue;
- *     condition_t read_cond;
- *     condition_t write_cond;
+ *     cond_t read_cond;
+ *     cond_t write_cond;
  *     mutex_t lock;
  *     bool closed;
  * } pipe_t;
@@ -130,14 +130,14 @@
 #ifndef COND_H
 #define COND_H
 
-#include <cond.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "list.h"
 #include "mutex.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -149,10 +149,10 @@ typedef struct {
      * @internal
      */
     list_node_t queue;
-} condition_t;
+} cond_t;
 
 /**
- * @brief   Static initializer for condition_t.
+ * @brief   Static initializer for cond_t.
  * @details This initializer is preferable to cond_init().
  */
 #define COND_INIT { { NULL } }
@@ -164,7 +164,7 @@ typedef struct {
  *          variables.
  * @param[out] cond    pre-allocated condition structure, must not be NULL.
  */
-static inline void cond_init(condition_t* cond)
+static inline void cond_init(cond_t *cond)
 {
     cond->queue.next = NULL;
 }
@@ -175,7 +175,7 @@ static inline void cond_init(condition_t* cond)
  * @param[in] cond          Condition variable to wait on.
  * @param[in] mutex         Mutex object held by the current thread.
  */
-void cond_wait(condition_t* cond, mutex_t* mutex);
+void cond_wait(cond_t *cond, mutex_t *mutex);
 
 /**
  * @brief Wake up threads waiting on a condition variable.
@@ -186,7 +186,7 @@ void cond_wait(condition_t* cond, mutex_t* mutex);
  * @param[in] broadcast     If true, wakes up all threads. If false, only
  *                          wakes up the first waiting thread.
  */
-void _cond_signal(condition_t* cond, bool broadcast);
+void _cond_signal(cond_t *cond, bool broadcast);
 
 
 /**
@@ -197,7 +197,7 @@ void _cond_signal(condition_t* cond, bool broadcast);
  *
  * @param[in] cond  Condition variable to signal.
  */
-static inline void cond_signal(condition_t* cond)
+static inline void cond_signal(cond_t *cond)
 {
     _cond_signal(cond, false);
 }
@@ -209,7 +209,7 @@ static inline void cond_signal(condition_t* cond)
  *
  * @param[in] cond  Condition variable to broadcast.
  */
-static inline void cond_broadcast(condition_t* cond)
+static inline void cond_broadcast(cond_t *cond)
 {
     _cond_signal(cond, true);
 }
