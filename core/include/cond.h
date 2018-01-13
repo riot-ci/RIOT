@@ -102,7 +102,8 @@
  * void pipe_close(pipe_t* pipe) {
  *     mutex_lock(&pipe->lock);
  *     pipe->closed = true;
- *     cond_broadcast(&pipe->cond);
+ *     cond_broadcast(&pipe->read_cond);
+ *     cond_broadcast(&pipe->write_cond);
  *     mutex_unlock(&pipe->lock);
  * }
  *
