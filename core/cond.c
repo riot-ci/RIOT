@@ -66,7 +66,7 @@ void _cond_signal(cond_t *cond, bool broadcast)
     }
 
     irq_restore(irqstate);
-    if (!irq_is_in() && min_prio <= THREAD_PRIORITY_MIN) {
+    if (min_prio <= THREAD_PRIORITY_MIN) {
         sched_switch(min_prio);
     }
 }
