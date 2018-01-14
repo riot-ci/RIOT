@@ -95,16 +95,17 @@ static void *_event_loop(void *arg)
                 gcoap_request_memo_t *memo = (gcoap_request_memo_t *)msg_rcvd.content.ptr;
 
                 /* no retries remaining */
-                if (memo->send_limit == GCOAP_SEND_LIMIT_NON
-                        || memo->send_limit == 0) {
+                if ((memo->send_limit == GCOAP_SEND_LIMIT_NON)
+                        || (memo->send_limit == 0)) {
                     _expire_request(memo);
                 }
-                /* retries remaining; double timeout and resend */
+                /* reduce retries remaining, double timeout and resend */
                 else {
-                    unsigned i       = COAP_MAX_RETRANSMIT - memo->send_limit + 1;
-                    uint32_t timeout = ((uint32_t)COAP_ACK_TIMEOUT << i) * US_PER_SEC;
-                    timeout = random_uint32_range(timeout, timeout * COAP_RANDOM_FACTOR);
                     memo->send_limit--;
+                    unsigned i        = COAP_MAX_RETRANSMIT - memo->send_limit;
+                    uint32_t timeout  = ((uint32_t)COAP_ACK_TIMEOUT << i) * US_PER_SEC;
+                    uint32_t variance = ((uint32_t)COAP_ACK_VARIANCE << i) * US_PER_SEC;
+                    timeout = random_uint32_range(timeout, timeout + variance);
 
                     size_t res = sock_udp_send(&_sock, memo->msg.data.pdu_buf,
                                                memo->msg.data.pdu_len,
@@ -171,7 +172,6 @@ static void _listen(sock_udp_t *sock)
 
     /* validate class and type for incoming */
     switch (coap_get_code_class(&pdu)) {
-
     /* incoming request */
     case COAP_CLASS_REQ:
         if (coap_get_type(&pdu) == COAP_TYPE_NON
@@ -780,9 +780,10 @@ size_t gcoap_req_send2(const uint8_t *buf, size_t len,
             }
         }
         if (memo->msg.data.pdu_buf) {
-            memo->send_limit = COAP_MAX_RETRANSMIT;
-            timeout = (uint32_t)COAP_ACK_TIMEOUT * US_PER_SEC;
-            timeout = random_uint32_range(timeout, timeout * COAP_RANDOM_FACTOR);
+            memo->send_limit  = COAP_MAX_RETRANSMIT;
+            timeout           = (uint32_t)COAP_ACK_TIMEOUT * US_PER_SEC;
+            uint32_t variance = (uint32_t)COAP_ACK_VARIANCE * US_PER_SEC;
+            timeout = random_uint32_range(timeout, timeout + variance);
         }
         else {
             memo->state = GCOAP_MEMO_UNUSED;
