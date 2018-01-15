@@ -157,7 +157,7 @@ int rn2xx3_init(rn2xx3_t *dev)
 
     /* initialize buffers and locks*/
     dev->resp_size = 0;
-    dev->cmd_buf[0] = '\0';
+    dev->cmd_buf[0] = 0;
 
     /* initialize UART and GPIO pins */
     if (uart_init(dev->p.uart, dev->p.baudrate, _rx_cb, dev) != UART_OK) {

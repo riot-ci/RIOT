@@ -65,10 +65,10 @@ extern "C" {
 
 #if defined(MODULE_RN2903)
 #define RN2XX3_FREQ_BAND                (915U)
-#endif
-
-#if defined(MODULE_RN2483)
+#elif defined(MODULE_RN2483)
 #define RN2XX3_FREQ_BAND                (868U)
+#else
+#error "Unsupported module type, use either RN2483 or RN2903"
 #endif
 
 /**
@@ -77,8 +77,9 @@ extern "C" {
 enum {
     RN2XX3_OK,                         /**< Command is valid */
     RN2XX3_DATA,                       /**< Command returned data */
-    RN2XX3_ERR_MAC_INIT,               /**< Device mac initialization failed */
     RN2XX3_TIMEOUT,                    /**< Command timeout */
+    /* all other error codes */
+    RN2XX3_ERR_MAC_INIT,               /**< Device mac initialization failed */
     RN2XX3_ERR_INVALID_PARAM,          /**< Wrong command given */
     RN2XX3_ERR_NOT_JOINED,             /**< Network is not joined */
     RN2XX3_ERR_NO_FREE_CH,             /**< All channels are busy */
@@ -88,6 +89,8 @@ enum {
     RN2XX3_ERR_MAC_PAUSED,             /**< MAC was paused */
     RN2XX3_ERR_INVALID_DATA_LENGTH,    /**< Wrong payload given */
     RN2XX3_ERR_KEYS_NOT_INIT,          /**< Keys not configured ("mac join" command) */
+    RN2XX3_ERR_SLEEP_MODE,             /**< Failure because device is in sleep mode */
+    /* all other reply codes */
     RN2XX3_REPLY_TX_MAC_OK,            /**< MAC transmission successful */
     RN2XX3_REPLY_TX_MAC_ERR,           /**< MAC transmission failed */
     RN2XX3_REPLY_TX_INVALID_DATA_LEN,  /**< Application payload too large */
@@ -96,7 +99,6 @@ enum {
     RN2XX3_REPLY_JOIN_DENIED,          /**< Join procedure failed */
     RN2XX3_REPLY_TIMEOUT,              /**< No MAC reply received from server */
     RN2XX3_REPLY_OTHER,                /**< Unknown reply */
-    RN2XX3_ERR_SLEEP_MODE,             /**< Failure because device is in sleep mode */
 };
 
 /**
