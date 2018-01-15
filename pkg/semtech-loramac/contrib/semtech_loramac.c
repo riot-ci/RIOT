@@ -118,7 +118,7 @@ typedef struct {
 static bool _semtech_loramac_send(uint8_t cnf, uint8_t port, uint8_t dr,
                                   uint8_t *payload, uint8_t len)
 {
-    DEBUG("[semtech-loramac] send frame %s\n", (char*)payload);
+    DEBUG("[semtech-loramac] send frame %s\n", (char *)payload);
     McpsReq_t mcpsReq;
     LoRaMacTxInfo_t txInfo;
 
@@ -206,28 +206,28 @@ static void mcps_indication(McpsIndication_t *indication)
         return;
     }
 
-#if ENABLE_DEBUG
-    switch (indication->McpsIndication) {
-        case MCPS_UNCONFIRMED:
-            DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");
-            break;
+    if (ENABLE_DEBUG) {
+        switch (indication->McpsIndication) {
+            case MCPS_UNCONFIRMED:
+                DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");
+                break;
 
-        case MCPS_CONFIRMED:
-            DEBUG("[semtech-loramac] MCPS indication Confirmed\n");
-            break;
+            case MCPS_CONFIRMED:
+                DEBUG("[semtech-loramac] MCPS indication Confirmed\n");
+                break;
 
-        case MCPS_PROPRIETARY:
-            DEBUG("[semtech-loramac] MCPS indication Proprietary\n");
-            break;
+            case MCPS_PROPRIETARY:
+                DEBUG("[semtech-loramac] MCPS indication Proprietary\n");
+                break;
 
-        case MCPS_MULTICAST:
-            DEBUG("[semtech-loramac] MCPS indication Multicast\n");
-            break;
+            case MCPS_MULTICAST:
+                DEBUG("[semtech-loramac] MCPS indication Multicast\n");
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
-#endif
 
     msg_t msg;
     msg.type = MSG_TYPE_LORAMAC_NOTIFY;
@@ -236,7 +236,7 @@ static void mcps_indication(McpsIndication_t *indication)
         memcpy(rx_payload, indication->Buffer, indication->BufferSize + 1);
         rx_port_internal = indication->Port;
         DEBUG("[semtech-loramac] MCPS indication, RX data: %s, Port: %d\n",
-              (char*)rx_payload, rx_port);
+              (char *)rx_payload, rx_port);
         msg.content.value = SEMTECH_LORAMAC_RX_DATA;
     }
     else {
@@ -398,17 +398,15 @@ static void _join_abp(void)
 static void _join(void *arg)
 {
     (void) arg;
-    uint8_t join_type = *(uint8_t*)arg;
+    uint8_t join_type = *(uint8_t *)arg;
 
     switch (join_type) {
         case LORAMAC_JOIN_OTAA:
             _join_otaa();
-
             break;
 
         case LORAMAC_JOIN_ABP:
             _join_abp();
-
             break;
 
         default:
@@ -443,7 +441,6 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     msg.content.ptr = dev;
 
     switch (event) {
-
         case NETDEV_EVENT_ISR:
             msg.type = MSG_TYPE_ISR;
             if (msg_send(&msg, _semtech_loramac_pid) <= 0) {
@@ -472,8 +469,8 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             dev->driver->recv(dev, payload, len, &packet_info);
             radio_events.RxDone((uint8_t*)payload, len, packet_info.rssi,
                                  packet_info.snr);
-        }
             break;
+        }
 
         case NETDEV_EVENT_RX_TIMEOUT:
             msg.type = MSG_TYPE_RX_TIMEOUT;
@@ -490,12 +487,12 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_FHSS_CHANGE_CHANNEL:
             DEBUG("[semtech-loramac] FHSS channel change\n");
-            radio_events.FhssChangeChannel(((sx127x_t*)dev)->_internal.last_channel);
+            radio_events.FhssChangeChannel(((sx127x_t *)dev)->_internal.last_channel);
             break;
 
         case NETDEV_EVENT_CAD_DONE:
             DEBUG("[semtech-loramac] test: CAD done\n");
-            radio_events.CadDone(((sx127x_t*)dev)->_internal.is_last_cad_success);
+            radio_events.CadDone(((sx127x_t *)dev)->_internal.is_last_cad_success);
             break;
 
         default:
@@ -527,8 +524,8 @@ void *_event_loop(void *arg)
             {
                 netdev_t *dev = msg.content.ptr;
                 dev->driver->isr(dev);
-            }
                 break;
+            }
 
             case MSG_TYPE_RX_TIMEOUT:
                 DEBUG("[semtech-loramac] RX timer timeout\n");
@@ -545,15 +542,16 @@ void *_event_loop(void *arg)
                 DEBUG("[semtech-loramac] MAC timer timeout\n");
                 void (*callback)(void) = msg.content.ptr;
                 callback();
-            }
                 break;
+            }
+
             case MSG_TYPE_LORAMAC_CMD:
             {
                 DEBUG("[semtech-loramac] loramac cmd\n");
                 semtech_loramac_call_t *call = msg.content.ptr;
                 call->func(call->arg);
-            }
                 break;
+            }
 
             default:
                 DEBUG("[semtech-loramac] Unexpected msg type '%04x'\n", msg.type);
@@ -582,7 +580,7 @@ int semtech_loramac_init(sx127x_t *dev)
 
 uint8_t semtech_loramac_join(uint8_t type)
 {
-    _semtech_loramac_call(_join, (void*)&type);
+    _semtech_loramac_call(_join, (void *)&type);
 
     if (type == LORAMAC_JOIN_OTAA) {
         /* Wait until the OTAA join procedure is complete */
@@ -604,7 +602,6 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     LoRaMacMibGetRequestConfirm(&mibReq);
 
     if (!mibReq.Param.IsNetworkJoined) {
-        (void) rx_buf;
         DEBUG("[semtech-loramac] network is not joined\n");
         return SEMTECH_LORAMAC_NOT_JOINED;
     }
@@ -616,7 +613,7 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     params.payload = tx_buf;
     params.len = tx_len;
 
-    _semtech_loramac_call(_send, (void*)&params);
+    _semtech_loramac_call(_send, (void *)&params);
 
     /* Wait until sending is fully done */
     msg_t msg;

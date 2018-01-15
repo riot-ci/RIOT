@@ -138,7 +138,7 @@ uint32_t SX1276GetTimeOnAir(RadioModems_t modem, uint8_t pktLen)
 
 void SX1276Send(uint8_t *buffer, uint8_t size)
 {
-    netdev_t *dev = (netdev_t*)&sx127x;
+    netdev_t *dev = (netdev_t *)&sx127x;
     struct iovec vec[1];
     vec[0].iov_base = buffer;
     vec[0].iov_len = size;
