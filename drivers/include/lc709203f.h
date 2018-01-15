@@ -35,9 +35,9 @@ extern "C" {
  * @{
  */
 typedef enum {
-    AUTO_MODE = 0x0,
-    CHARGE_MODE = 0x1,
-    DISCHARGE_MODE = 0xffff
+    AUTO_MODE       = 0x0,
+    CHARGE_MODE     = 0x1,
+    DISCHARGE_MODE  = 0xffff
 } lc709203f_current_direction_t;
 /** @} */
 
@@ -47,8 +47,8 @@ typedef enum {
  * @{
  */
 typedef enum {
-    BAT_PROFILE_1 = 0,
-    BAT_PROFILE_2 = 1
+    BAT_PROFILE_1   = 0,
+    BAT_PROFILE_2   = 1
 } lc709203f_battery_profile_t;
 /** @} */
 
@@ -58,11 +58,10 @@ typedef enum {
  * @{
  */
 typedef enum {
-    OPERATIONAL_MODE = 1,
-    SLEEP_MODE = 2
+    OPERATIONAL_MODE    = 1,
+    SLEEP_MODE          = 2
 } lc709203f_power_mode_t;
 /** @} */
-
 
 /**
  * @brief Temperature obtaining mode options
@@ -70,7 +69,7 @@ typedef enum {
  * @{
  */
 typedef enum {
-    I2C_MODE = 0,
+    I2C_MODE        = 0,
     THERMISTOR_MODE = 1
 } lc709203f_temp_obtaining_mode_t;
 /** @} */
@@ -81,7 +80,6 @@ typedef enum {
  * @param[in]  arg Additional Arguments that will be passed to the function
  */
 typedef void (*lc709203f_cb_t)(void *arg);
-
 
 /**
  * @brief Parameter struct for driver initialization
@@ -95,10 +93,11 @@ typedef struct {
 /** @} */
 
 enum {
-    LC709203F_OK    = 0,  /**< all went as expected */
-    LC709203F_NOI2C = -1, /**< error using the I2C bus */
-    LC709203F_CELL_TEMP_INVALID = -2 /**< Cell temp invalid */
+    LC709203F_OK                =  0,       /**< all went as expected */
+    LC709203F_NOI2C             = -1,       /**< error using the I2C bus */
+    LC709203F_CELL_TEMP_INVALID = -2        /**< Cell temp invalid */
 };
+
 /**
  * @brief Device descriptor for the fuel gauge
  * @details This struct will hold all information and configuration for the sensor
@@ -254,7 +253,6 @@ int16_t lc709203f_get_change_of_parameter(const lc709203f_t *dev);
  */
 int16_t lc709203f_get_apt(const lc709203f_t *dev);
 
-
 /**
  * @brief  readsAPA (Adjustment Pack Application) in 1mOhm steps
  * value to adjust temperature measurement delay timing.
@@ -374,13 +372,12 @@ void lc709203f_set_alarm_low_cell_voltage(const lc709203f_t *dev, const unsigned
  */
 void lc709203f_set_power_mode(const lc709203f_t *dev, const lc709203f_power_mode_t value);
 
-
 /**
  * @brief  Sets temperature obtaining method
  *
  * @param[in] *dev      pointer to lc709203f_t struct containing the i2c device and the address
  * @param[in] value     method to be used (enum) I2C_MODE, THERMISTOR_MODE
-*/
+ */
 void lc709203f_set_status_bit(const lc709203f_t *dev, const lc709203f_temp_obtaining_mode_t value);
 
 #ifdef __cplusplus

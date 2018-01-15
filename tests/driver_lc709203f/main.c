@@ -24,7 +24,7 @@
 #include "xtimer.h"
 #include "lc709203f_params.h"
 
-static void _gauge_cb(void* arg)
+static void _gauge_cb(void *arg)
 {
     (void)arg;
     printf("\n ALARM: Low RSOC \n");
@@ -36,7 +36,7 @@ int main(void)
     lc709203f_t dev;
     dev.cb = _gauge_cb;
     dev.arg = NULL;
-    if(lc709203f_init(&dev, params_default)==LC709203F_OK){
+    if (lc709203f_init(&dev, params_default) == LC709203F_OK) {
         puts("The application will trigger an low_rsoc interrupt in 2s");
         xtimer_sleep(2);
         lc709203f_set_alarm_low_rsoc(&dev, 0);
@@ -52,7 +52,8 @@ int main(void)
             printf("ID: %u \n", lc709203f_get_id(&dev));
             printf("Cell Temp in 0.1C: %u \n", lc709203f_get_cell_temp(&dev));
         }
-    }else{
+    }
+    else {
         printf("Could not connect to fuel gauge\n");
     }
     return 0;
