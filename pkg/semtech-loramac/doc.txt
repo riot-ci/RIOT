@@ -5,7 +5,7 @@
  * @brief    Provides a RIOT adaption of LoRaMAC implementation from Semtech
  *
  * # Introduction
- * 
+ *
  * This package provides an API built on top of the
  * [Semtech LoRaMAC-node](github.com/Lora-net/LoRaMac-node) reference
  * implementation of a LoRa network.
@@ -94,10 +94,10 @@
  * @warning It is not possible to directly call the original LoRaMAC-node API
  *          using this package. This package should only be considered as a
  *          wrapper around the original LoRaMAC-node API and only the API
- *          provided in @file semtech-loramac.h should be used.
+ *          provided by this package should be used.
  *
  * # License
- * 
+ *
  * The library is using the BSD 3-clause license.
  *
  * @see      github.com/Lora-net/LoRaMac-node
