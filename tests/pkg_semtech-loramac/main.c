@@ -401,9 +401,6 @@ static int _cmd_loramac(int argc, char **argv)
             case SEMTECH_LORAMAC_NOT_JOINED:
                 puts("Failed: not joined");
                 return 1;
-
-            default:
-                break;
         }
     }
     else {
