@@ -74,8 +74,8 @@
  *
  *     /* 3. set the device required keys */
  *     semtech_loramac_set_deveui(deveui);
- *     semtech_loramac_set_deveui(appeui);
- *     semtech_loramac_set_deveui(appkey);
+ *     semtech_loramac_set_appeui(appeui);
+ *     semtech_loramac_set_appkey(appkey);
  *
  *     /* 4. join the network */
  *     if (semtech_loramac_join(LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
