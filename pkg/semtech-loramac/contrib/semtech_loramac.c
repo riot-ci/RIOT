@@ -47,9 +47,6 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define LORAMAC_MSG_QUEUE                           (16U)
-#define LORAMAC_STACKSIZE                           (THREAD_STACKSIZE_DEFAULT)
-
 #define LORAWAN_MAX_JOIN_RETRIES                    (3U)
 
 #if defined(REGION_EU868)
@@ -67,32 +64,22 @@
 #endif /* USE_SEMTECH_DEFAULT_CHANNEL_LINEUP */
 #endif /* REGION_EU868 */
 
-#if defined(REGION_CN779) || defined(REGION_EU868) || \
-    defined(REGION_IN865) || defined(REGION_KR920)
-#define LORAWAN_APP_DATA_SIZE                       (16U)
-#elif defined(REGION_AS923) || defined(REGION_AU915) || \
-      defined(REGION_US915) || defined(REGION_US915_HYBRID)
-#define LORAWAN_APP_DATA_SIZE                       (11U)
-#else
-#error "Please define a region in the compiler options."
-#endif
-
-static char stack[LORAMAC_STACKSIZE];
+#define SEMTECH_LORAMAC_MSG_QUEUE                   (16U)
+#define SEMTECH_LORAMAC_LORAMAC_STACKSIZE           (THREAD_STACKSIZE_DEFAULT)
+static char _semtech_loramac_stack[SEMTECH_LORAMAC_LORAMAC_STACKSIZE];
 kernel_pid_t _semtech_loramac_pid;
 kernel_pid_t _semtech_loramac_handler_pid;
 
-RadioEvents_t radio_events;
-uint8_t dev_eui[LORAMAC_DEVEUI_LEN];
-uint8_t app_eui[LORAMAC_APPEUI_LEN];
-uint8_t app_key[LORAMAC_APPKEY_LEN];
-uint8_t nwk_skey[LORAMAC_NWKSKEY_LEN];
-uint8_t app_skey[LORAMAC_APPSKEY_LEN];
-uint8_t dev_addr[LORAMAC_DEVADDR_LEN];
+RadioEvents_t _semtech_loramac_radio_events;
+uint8_t _semtech_loramac_dev_eui[LORAMAC_DEVEUI_LEN];
+uint8_t _semtech_loramac_app_eui[LORAMAC_APPEUI_LEN];
+uint8_t _semtech_loramac_app_key[LORAMAC_APPKEY_LEN];
+uint8_t _semtech_loramac_nwk_skey[LORAMAC_NWKSKEY_LEN];
+uint8_t _semtech_loramac_app_skey[LORAMAC_APPSKEY_LEN];
+uint8_t _semtech_loramac_dev_addr[LORAMAC_DEVADDR_LEN];
 
-#define LORAWAN_APP_DATA_MAX_SIZE                   (242U)
-static uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE];
-static uint8_t rx_payload[LORAWAN_APP_DATA_MAX_SIZE];
-static uint8_t rx_port_internal;
+static uint8_t _semtech_loramac_radio_payload[SX127X_RX_BUFFER_SIZE];
+static semtech_loramac_rx_data_t _semtech_loramac_rx_data;
 
 typedef struct {
     uint8_t port;
@@ -233,10 +220,19 @@ static void mcps_indication(McpsIndication_t *indication)
     msg.type = MSG_TYPE_LORAMAC_NOTIFY;
     if (indication->RxData) {
         indication->Buffer[indication->BufferSize] = '\0';
-        memcpy(rx_payload, indication->Buffer, indication->BufferSize + 1);
-        rx_port_internal = indication->Port;
-        DEBUG("[semtech-loramac] MCPS indication, RX data: %s, Port: %d\n",
-              (char *)rx_payload, rx_port_internal);
+        memcpy(_semtech_loramac_rx_data.payload, indication->Buffer,
+               indication->BufferSize);
+        _semtech_loramac_rx_data.payload[indication->BufferSize] = 0;
+        _semtech_loramac_rx_data.payload_len = indication->BufferSize;
+        _semtech_loramac_rx_data.port = indication->Port;
+        DEBUG("[semtech-loramac] MCPS indication:\n"
+              "  - Payload: %s\n"
+              "  - Size: %d\n"
+              "  - Port: %d\n",
+              (char *)_semtech_loramac_rx_data.payload,
+              _semtech_loramac_rx_data.payload_len,
+              _semtech_loramac_rx_data.port
+              );
         msg.content.value = SEMTECH_LORAMAC_RX_DATA;
     }
     else {
@@ -298,35 +294,35 @@ void _init_loramac(LoRaMacPrimitives_t * primitives, LoRaMacCallback_t *callback
     primitives->MacMlmeConfirm = mlme_confirm;
 #if defined(REGION_AS923)
     DEBUG("[semtech-loramac] initialize loramac for AS923 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_AS923);
 #elif defined(REGION_AU915)
     DEBUG("[semtech-loramac] initialize loramac for AU915 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_AU915);
 #elif defined(REGION_CN779)
     DEBUG("[semtech-loramac] initialize loramac for CN779 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_CN779);
 #elif defined(REGION_EU868)
     DEBUG("[semtech-loramac] initialize loramac for EU868 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_EU868);
 #elif defined(REGION_IN865)
     DEBUG("[semtech-loramac] initialize loramac for IN865 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_IN865);
 #elif defined(REGION_KR920)
     DEBUG("[semtech-loramac] initialize loramac for KR920 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_KR920);
 #elif defined(REGION_US915)
     DEBUG("[semtech-loramac] initialize loramac for US915 region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_US915);
 #elif defined(REGION_US915_HYBRID)
     DEBUG("[semtech-loramac] initialize loramac for US915 hybrid region\n");
-    LoRaMacInitialization(&radio_events, primitives, callbacks,
+    LoRaMacInitialization(&_semtech_loramac_radio_events, primitives, callbacks,
                           LORAMAC_REGION_US915_HYBRID);
 #else
 #error "Please define a region in the compiler options."
@@ -357,9 +353,9 @@ static void _join_otaa(void)
 
     MlmeReq_t mlmeReq;
     mlmeReq.Type = MLME_JOIN;
-    mlmeReq.Req.Join.DevEui = dev_eui;
-    mlmeReq.Req.Join.AppEui = app_eui;
-    mlmeReq.Req.Join.AppKey = app_key;
+    mlmeReq.Req.Join.DevEui = _semtech_loramac_dev_eui;
+    mlmeReq.Req.Join.AppEui = _semtech_loramac_app_eui;
+    mlmeReq.Req.Join.AppKey = _semtech_loramac_app_key;
     mlmeReq.Req.Join.NbTrials = LORAWAN_MAX_JOIN_RETRIES;
     LoRaMacMlmeRequest(&mlmeReq);
 }
@@ -376,18 +372,18 @@ static void _join_abp(void)
     semtech_loramac_set_netid(LORAMAC_DEFAULT_NETID);
 
     mibReq.Type = MIB_DEV_ADDR;
-    mibReq.Param.DevAddr = ((uint32_t)dev_addr[0] << 24 |
-                            (uint32_t)dev_addr[1] << 16 |
-                            (uint32_t)dev_addr[2] << 8 |
-                            (uint32_t)dev_addr[3]);
+    mibReq.Param.DevAddr = ((uint32_t)_semtech_loramac_dev_addr[0] << 24 |
+                            (uint32_t)_semtech_loramac_dev_addr[1] << 16 |
+                            (uint32_t)_semtech_loramac_dev_addr[2] << 8 |
+                            (uint32_t)_semtech_loramac_dev_addr[3]);
     LoRaMacMibSetRequestConfirm(&mibReq);
 
     mibReq.Type = MIB_NWK_SKEY;
-    mibReq.Param.NwkSKey = nwk_skey;
+    mibReq.Param.NwkSKey = _semtech_loramac_nwk_skey;
     LoRaMacMibSetRequestConfirm(&mibReq);
 
     mibReq.Type = MIB_APP_SKEY;
-    mibReq.Param.AppSKey = app_skey;
+    mibReq.Param.AppSKey = _semtech_loramac_app_skey;
     LoRaMacMibSetRequestConfirm(&mibReq);
 
     mibReq.Type = MIB_NETWORK_JOINED;
@@ -433,7 +429,7 @@ static void _semtech_loramac_call(semtech_loramac_func_t func, void *arg)
     msg_send(&msg, _semtech_loramac_pid);
 }
 
-static void _event_cb(netdev_t *dev, netdev_event_t event)
+static void _semtech_loramac_event_cb(netdev_t *dev, netdev_event_t event)
 {
     netdev_sx127x_lora_packet_info_t packet_info;
 
@@ -450,7 +446,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_TX_COMPLETE:
             sx127x_set_sleep((sx127x_t*)dev);
-            radio_events.TxDone();
+            _semtech_loramac_radio_events.TxDone();
             DEBUG("[semtech-loramac] Transmission completed\n");
             break;
 
@@ -466,9 +462,11 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
         {
             size_t len;
             len = dev->driver->recv(dev, NULL, 0, 0);
-            dev->driver->recv(dev, payload, len, &packet_info);
-            radio_events.RxDone((uint8_t*)payload, len, packet_info.rssi,
-                                 packet_info.snr);
+            dev->driver->recv(dev, _semtech_loramac_radio_payload, len, &packet_info);
+            _semtech_loramac_radio_events.RxDone(_semtech_loramac_radio_payload,
+                                                 len,
+                                                 packet_info.rssi,
+                                                 packet_info.snr);
             break;
         }
 
@@ -482,17 +480,17 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_CRC_ERROR:
             DEBUG("[semtech-loramac] RX CRC error\n");
-            radio_events.RxError();
+            _semtech_loramac_radio_events.RxError();
             break;
 
         case NETDEV_EVENT_FHSS_CHANGE_CHANNEL:
             DEBUG("[semtech-loramac] FHSS channel change\n");
-            radio_events.FhssChangeChannel(((sx127x_t *)dev)->_internal.last_channel);
+            _semtech_loramac_radio_events.FhssChangeChannel(((sx127x_t *)dev)->_internal.last_channel);
             break;
 
         case NETDEV_EVENT_CAD_DONE:
             DEBUG("[semtech-loramac] test: CAD done\n");
-            radio_events.CadDone(((sx127x_t *)dev)->_internal.is_last_cad_success);
+            _semtech_loramac_radio_events.CadDone(((sx127x_t *)dev)->_internal.is_last_cad_success);
             break;
 
         default:
@@ -502,11 +500,11 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     }
 }
 
-void *_event_loop(void *arg)
+void *_semtech_loramac_event_loop(void *arg)
 {
     (void) arg;
-    static msg_t _msg_q[LORAMAC_MSG_QUEUE];
-    msg_init_queue(_msg_q, LORAMAC_MSG_QUEUE);
+    static msg_t _msg_q[SEMTECH_LORAMAC_MSG_QUEUE];
+    msg_init_queue(_msg_q, SEMTECH_LORAMAC_MSG_QUEUE);
     LoRaMacPrimitives_t primitives;
     LoRaMacCallback_t callbacks;
 
@@ -529,12 +527,12 @@ void *_event_loop(void *arg)
 
             case MSG_TYPE_RX_TIMEOUT:
                 DEBUG("[semtech-loramac] RX timer timeout\n");
-                radio_events.RxTimeout();
+                _semtech_loramac_radio_events.RxTimeout();
                 break;
 
             case MSG_TYPE_TX_TIMEOUT:
                 DEBUG("[semtech-loramac] TX timer timeout\n");
-                radio_events.TxTimeout();
+                _semtech_loramac_radio_events.TxTimeout();
                 break;
 
             case MSG_TYPE_MAC_TIMEOUT:
@@ -563,11 +561,14 @@ void *_event_loop(void *arg)
 int semtech_loramac_init(sx127x_t *dev)
 {
     dev->netdev.driver = &sx127x_driver;
-    dev->netdev.event_callback = _event_cb;
+    dev->netdev.event_callback = _semtech_loramac_event_cb;
 
     _semtech_loramac_handler_pid = thread_getpid();
-    _semtech_loramac_pid = thread_create(stack, sizeof(stack), THREAD_PRIORITY_MAIN - 1,
-                                         THREAD_CREATE_STACKTEST, _event_loop, NULL,
+    _semtech_loramac_pid = thread_create(_semtech_loramac_stack,
+                                         sizeof(_semtech_loramac_stack),
+                                         THREAD_PRIORITY_MAIN - 1,
+                                         THREAD_CREATE_STACKTEST,
+                                         _semtech_loramac_event_loop, NULL,
                                          "recv_thread");
 
     if (_semtech_loramac_pid <= KERNEL_PID_UNDEF) {
@@ -595,7 +596,7 @@ uint8_t semtech_loramac_join(uint8_t type)
 
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
-                             uint8_t *rx_buf, uint8_t *rx_port)
+                             semtech_loramac_rx_data_t *rx_data)
 {
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_NETWORK_JOINED;
@@ -620,8 +621,8 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     msg_receive(&msg);
     uint8_t status = (uint8_t)msg.content.value;
     if (status == SEMTECH_LORAMAC_RX_DATA) {
-        memcpy(rx_buf, rx_payload, sizeof(rx_payload));
-        *rx_port = rx_port_internal;
+        memcpy(rx_data, &_semtech_loramac_rx_data,
+               sizeof(semtech_loramac_rx_data_t));
     }
 
     return status;
