@@ -128,6 +128,16 @@ extern "C"
 #endif /* KINETIS_RNGA */
 /** @} */
 
+/**
+ * @name Timer Control Register missing definitions for MK20D7.h
+ * @{
+ */
+#if !defined(PIT_TCTRL_CHN_MASK)
+#define PIT_TCTRL_CHN_MASK   (0x4u)
+#define PIT_TCTRL_CHN_SHIFT  (2)
+#endif /* PIT_TCTRL_CHN_MASK */
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
