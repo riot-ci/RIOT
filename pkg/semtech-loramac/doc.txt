@@ -1,8 +1,8 @@
 /**
- * @defgroup pkg_semtech-loramac   LoRaMAC implementation from Semtech
+ * @defgroup pkg_semtech-loramac   Semtech LoRaMAC implementation
  * @ingroup  pkg
  * @ingroup  net
- * @brief    Provides a RIOT adaption of LoRaMAC implementation from Semtech
+ * @brief    Provides a RIOT adaption of Semtech LoRaMAC implementation
  *
  * # Introduction
  *
