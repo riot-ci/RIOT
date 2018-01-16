@@ -29,73 +29,73 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-extern uint8_t dev_eui[LORAMAC_DEVEUI_LEN];
-extern uint8_t app_eui[LORAMAC_APPEUI_LEN];
-extern uint8_t app_key[LORAMAC_APPKEY_LEN];
-extern uint8_t nwk_skey[LORAMAC_NWKSKEY_LEN];
-extern uint8_t app_skey[LORAMAC_APPSKEY_LEN];
-extern uint8_t dev_addr[LORAMAC_DEVADDR_LEN];
+extern uint8_t _semtech_loramac_dev_eui[LORAMAC_DEVEUI_LEN];
+extern uint8_t _semtech_loramac_app_eui[LORAMAC_APPEUI_LEN];
+extern uint8_t _semtech_loramac_app_key[LORAMAC_APPKEY_LEN];
+extern uint8_t _semtech_loramac_nwk_skey[LORAMAC_NWKSKEY_LEN];
+extern uint8_t _semtech_loramac_app_skey[LORAMAC_APPSKEY_LEN];
+extern uint8_t _semtech_loramac_dev_addr[LORAMAC_DEVADDR_LEN];
 
 extern void _loramac_set_rx2_params(uint32_t freq, uint8_t dr);
 
 void semtech_loramac_set_deveui(const uint8_t *eui)
 {
-    memcpy(dev_eui, eui, LORAMAC_DEVEUI_LEN);
+    memcpy(_semtech_loramac_dev_eui, eui, LORAMAC_DEVEUI_LEN);
 }
 
 void semtech_loramac_get_deveui(uint8_t *eui)
 {
-    memcpy(eui, dev_eui, LORAMAC_DEVEUI_LEN);
+    memcpy(eui, _semtech_loramac_dev_eui, LORAMAC_DEVEUI_LEN);
 }
 
 void semtech_loramac_set_appeui(const uint8_t *eui)
 {
-    memcpy(app_eui, eui, LORAMAC_APPEUI_LEN);
+    memcpy(_semtech_loramac_app_eui, eui, LORAMAC_APPEUI_LEN);
 }
 
 void semtech_loramac_get_appeui(uint8_t *eui)
 {
-    memcpy(eui, app_eui, LORAMAC_APPEUI_LEN);
+    memcpy(eui, _semtech_loramac_app_eui, LORAMAC_APPEUI_LEN);
 }
 
 void semtech_loramac_set_appkey(const uint8_t *key)
 {
-    memcpy(app_key, key, LORAMAC_APPKEY_LEN);
+    memcpy(_semtech_loramac_app_key, key, LORAMAC_APPKEY_LEN);
 }
 
 void semtech_loramac_get_appkey(uint8_t *key)
 {
-    memcpy(key, app_key, LORAMAC_APPKEY_LEN);
+    memcpy(key, _semtech_loramac_app_key, LORAMAC_APPKEY_LEN);
 }
 
 void semtech_loramac_set_appskey(const uint8_t *skey)
 {
-    memcpy(app_skey, skey, LORAMAC_APPSKEY_LEN);
+    memcpy(_semtech_loramac_app_skey, skey, LORAMAC_APPSKEY_LEN);
 }
 
 void semtech_loramac_get_appskey(uint8_t *skey)
 {
-    memcpy(skey, app_skey, LORAMAC_APPSKEY_LEN);
+    memcpy(skey, _semtech_loramac_app_skey, LORAMAC_APPSKEY_LEN);
 }
 
 void semtech_loramac_set_nwkskey(const uint8_t *skey)
 {
-    memcpy(nwk_skey, skey, LORAMAC_NWKSKEY_LEN);
+    memcpy(_semtech_loramac_nwk_skey, skey, LORAMAC_NWKSKEY_LEN);
 }
 
 void semtech_loramac_get_nwkskey(uint8_t *skey)
 {
-    memcpy(skey, nwk_skey, LORAMAC_NWKSKEY_LEN);
+    memcpy(skey, _semtech_loramac_nwk_skey, LORAMAC_NWKSKEY_LEN);
 }
 
 void semtech_loramac_set_devaddr(const uint8_t *addr)
 {
-    memcpy(dev_addr, addr, LORAMAC_DEVADDR_LEN);
+    memcpy(_semtech_loramac_dev_addr, addr, LORAMAC_DEVADDR_LEN);
 }
 
 void semtech_loramac_get_devaddr(uint8_t *addr)
 {
-    memcpy(addr, dev_addr, LORAMAC_DEVADDR_LEN);
+    memcpy(addr, _semtech_loramac_dev_addr, LORAMAC_DEVADDR_LEN);
 }
 
 void semtech_loramac_set_class(loramac_class_t cls)
