@@ -49,7 +49,7 @@ extern "C" {
  * @brief   LoRaMAC status
  */
 enum {
-    SEMTECH_LORAMAC_JOIN_SUCCEEDED = 0,          /**< Join procedure succeeded */
+    SEMTECH_LORAMAC_JOIN_SUCCEEDED,              /**< Join procedure succeeded */
     SEMTECH_LORAMAC_JOIN_FAILED,                 /**< Join procedure failed */
     SEMTECH_LORAMAC_NOT_JOINED,                  /**< MAC is not joined */
     SEMTECH_LORAMAC_TX_DONE,                     /**< Transmission completed */

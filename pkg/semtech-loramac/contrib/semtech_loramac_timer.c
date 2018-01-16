@@ -22,7 +22,7 @@
 #include "xtimer.h"
 #include "thread.h"
 
-extern kernel_pid_t _semtech_loramac_pid;
+extern kernel_pid_t semtech_loramac_pid;
 
 void TimerInit(TimerEvent_t *obj, void (*cb)(void))
 {
@@ -44,7 +44,7 @@ void TimerStart(TimerEvent_t *obj)
     msg_t *msg = &(obj->msg);
     msg->type = MSG_TYPE_MAC_TIMEOUT;
     msg->content.ptr = obj->cb;
-    xtimer_set_msg(timer, obj->timeout, msg, _semtech_loramac_pid);
+    xtimer_set_msg(timer, obj->timeout, msg, semtech_loramac_pid);
 }
 
 void TimerStop(TimerEvent_t *obj)
