@@ -1,7 +1,3 @@
-INCLUDES += -I$(RIOTBASE)/pkg/semtech-loramac/include \
-            -I$(PKGDIRBASE)/semtech-loramac/src/mac \
-            -I$(PKGDIRBASE)/semtech-loramac/src/boards/mcu/stm32 \
-            -I$(PKGDIRBASE)/semtech-loramac/src/system/crypto \
-            -I$(PKGDIRBASE)/semtech-loramac/src
+INCLUDES += -I$(RIOTBASE)/pkg/semtech-loramac/include
 
 DIRS += $(RIOTBASE)/pkg/semtech-loramac/contrib
