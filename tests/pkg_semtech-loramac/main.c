@@ -30,7 +30,6 @@
 #include "sx127x_params.h"
 
 sx127x_t sx127x;
-static semtech_loramac_rx_data_t rx_data;
 static char print_buf[48];
 
 static void _loramac_usage(void)
@@ -386,6 +385,7 @@ static int _cmd_loramac(int argc, char **argv)
             }
         }
 
+        semtech_loramac_rx_data_t rx_data;
         switch (semtech_loramac_send(cnf, port,
                                      (uint8_t*)argv[2], strlen(argv[2]),
                                      &rx_data)) {
