@@ -41,7 +41,8 @@ static int _recv(netdev_t *netdev, void *buf, size_t n, void *info);
 static void _isr(netdev_t *netdev);
 static int _init(netdev_t *netdev);
 static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len);
-static int _set(netdev_t *netdev, netopt_t opt, void *value, size_t value_len);
+static int _set(netdev_t *netdev, netopt_t opt, const void *value,
+                size_t value_len);
 
 static const netdev_driver_t socket_zep_driver = {
     .send = _send,
@@ -341,7 +342,8 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
     }
 }
 
-static int _set(netdev_t *netdev, netopt_t opt, void *value, size_t value_len)
+static int _set(netdev_t *netdev, netopt_t opt, const void *value,
+                size_t value_len)
 {
     assert(netdev != NULL);
     return netdev_ieee802154_set((netdev_ieee802154_t *)netdev, opt,
