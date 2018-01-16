@@ -38,6 +38,8 @@
 #define FTFL_Collision_IRQn Read_Collision_IRQn
 #define PMC_IRQn LVD_LVW_IRQn
 #define Watchdog_IRQn WDOG_EWM_IRQn
+#define LLWU_IRQn LLW_IRQn
+#define LPTMR0_IRQn LPTimer_IRQn
 
 #include "vectors_kinetis.h"
 
