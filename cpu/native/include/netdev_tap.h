@@ -30,9 +30,9 @@ extern "C" {
 #include "net/ethernet/hdr.h"
 
 #ifdef __MACH__
-#include "net/if_var.h"
+#include <net/if_var.h>
 #else
-#include "net/if.h"
+#include <net/if.h>
 #endif
 
 /**
