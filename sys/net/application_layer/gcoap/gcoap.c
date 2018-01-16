@@ -107,15 +107,15 @@ static void *_event_loop(void *arg)
                     uint32_t variance = ((uint32_t)COAP_ACK_VARIANCE << i) * US_PER_SEC;
                     timeout = random_uint32_range(timeout, timeout + variance);
 
-                    size_t res = sock_udp_send(&_sock, memo->msg.data.pdu_buf,
-                                               memo->msg.data.pdu_len,
-                                               &memo->remote_ep);
-                    if (res) {
+                    ssize_t res2 = sock_udp_send(&_sock, memo->msg.data.pdu_buf,
+                                                 memo->msg.data.pdu_len,
+                                                 &memo->remote_ep);
+                    if (res2 > 0) {
                         xtimer_set_msg(&memo->response_timer, timeout,
                                        &memo->timeout_msg, _pid);
                     }
                     else {
-                        DEBUG("gcoap: sock resend failed: %d\n", res);
+                        DEBUG("gcoap: sock resend failed: %d\n", (int)res2);
                         _expire_request(memo);
                     }
                 }
