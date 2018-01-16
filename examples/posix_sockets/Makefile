@@ -28,6 +28,7 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
 
+CFLAGS += -D_XOPEN_SOURCE=600
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
