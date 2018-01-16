@@ -41,6 +41,11 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief   Maximum payload size of a LoRaWAN application data
+ */
+#define LORAWAN_APP_DATA_MAX_SIZE      (242U)
+
+/**
  * @brief   LoRaMAC status
  */
 enum {
@@ -50,6 +55,12 @@ enum {
     SEMTECH_LORAMAC_TX_DONE,                     /**< Transmission completed */
     SEMTECH_LORAMAC_RX_DATA,                     /**< Data received */
 };
+
+typedef struct {
+    uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE];  /**< RX payload buffer */
+    uint8_t payload_len;                         /**< Length of the RX payload */
+    uint8_t port;                                /**< RX port */
+} semtech_loramac_rx_data_t;
 
 /**
  * @brief   Initializes semtech loramac
@@ -78,8 +89,7 @@ uint8_t semtech_loramac_join(uint8_t type);
  * @param[in] port         The send port to use (between 1 and 223 for application)
  * @param[in] tx_buf       The TX buffer
  * @param[in] tx_len       The length of the TX buffer
- * @param[out] rx_buf      The RX buffer when data is received from LoRaWAN
- * @param[out] rx_port     The RX port used by received data
+ * @param[out] rx_data     The RX data descriptor
  *
  * @return                 SEMTECH_LORAMAC_NOT_JOINED when the network is not joined
  * @return                 SEMTECH_LORAMAC_TX_DONE when TX has completed but no data is received
@@ -87,7 +97,7 @@ uint8_t semtech_loramac_join(uint8_t type);
  */
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,
-                             uint8_t *rx_buf, uint8_t *rx_port);
+                             semtech_loramac_rx_data_t *rx_data);
 
 /**
  * @brief   Sets the device EUI
