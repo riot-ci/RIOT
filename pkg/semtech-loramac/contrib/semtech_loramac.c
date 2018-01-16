@@ -236,7 +236,7 @@ static void mcps_indication(McpsIndication_t *indication)
         memcpy(rx_payload, indication->Buffer, indication->BufferSize + 1);
         rx_port_internal = indication->Port;
         DEBUG("[semtech-loramac] MCPS indication, RX data: %s, Port: %d\n",
-              (char *)rx_payload, rx_port);
+              (char *)rx_payload, rx_port_internal);
         msg.content.value = SEMTECH_LORAMAC_RX_DATA;
     }
     else {
