@@ -61,7 +61,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              waspmote-pro \
                              wsn430-v1_3b \
                              wsn430-v1_4 \
-                             yunjia-nrf51822 z1
+                             yunjia-nrf51822 z1 \
+                             teensy31
 
 USEMODULE += embunit
 
