@@ -395,7 +395,7 @@ flash-only: $(FLASHDEPS)
 
 flash: all flash-only
 
-preflash: all
+preflash:
 	$(PREFLASHER) $(PREFFLAGS)
 
 term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
