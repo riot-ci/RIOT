@@ -39,6 +39,14 @@
 #define PMC_IRQn LVD_LVW_IRQn
 #define Watchdog_IRQn WDOG_EWM_IRQn
 
+#if defined(LLW_IRQn)
+#define LLWU_IRQn LLW_IRQn
+#endif
+
+#if defined(LPTimer_IRQn)
+#define LPTMR0_IRQn LPTimer_IRQn
+#endif
+
 #include "vectors_kinetis.h"
 
 /* CPU specific interrupt vector table */
