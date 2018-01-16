@@ -813,7 +813,7 @@ uint8_t gcoap_op_state(void)
 int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
 {
     assert(cf == COAP_CT_LINK_FORMAT);
-#ifndef DEVELHELP
+#ifdef NDEBUG
     (void)cf;
 #endif
 
