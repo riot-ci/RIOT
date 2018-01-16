@@ -24,7 +24,7 @@
 
 
 /*
- * all headers defining c functions, must be marked as extern "C" when included
+ * all headers defining c functions must be marked as extern "C" when included
  * into c++ sources
  */
 #ifdef __cplusplus
