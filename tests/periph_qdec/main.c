@@ -28,6 +28,7 @@
 
 void handler(void *arg)
 {
+    (void)arg;
     printf("INTERRUPT\n");
 }
 

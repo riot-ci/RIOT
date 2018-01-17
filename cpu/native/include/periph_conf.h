@@ -72,6 +72,15 @@
 #endif
 /** @} */
 
+/**
+ * @brief QDEC configuration
+ * @{
+ */
+#ifndef QDEC_NUMOF
+#define QDEC_NUMOF (8U)
+#endif
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
