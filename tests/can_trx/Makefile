@@ -1,10 +1,6 @@
 export APPLICATION = can_trx
 include ../Makefile.tests_common
 
-
-CFLAGS += -DDEVELHELP
-CFLAGS += -DLOG_LEVEL=LOG_ALL
-
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
