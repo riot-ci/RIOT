@@ -47,7 +47,7 @@ static int help(int argc, char **argv)
     puts("Help:");
     puts("\tinit [trx_id] - initialize a trx");
     puts("\tset_mode [trx_id] [mode] - set a mode on the trx");
-    printf("trx_id: 0..%u\n", sizeof(devs) / sizeof(devs[0]));
+    printf("trx_id: 0..%u\n", (unsigned)(sizeof(devs) / sizeof(devs[0])));
     puts("modes:");
     puts("\t0: normal mode");
     puts("\t1: silent mode");
