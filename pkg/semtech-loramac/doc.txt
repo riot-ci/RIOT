@@ -27,6 +27,13 @@
  *     USEPKG += semtech-loramac
  * ```
  *
+ * Since the LoRa radio depends on regional parameters regarding the access
+ * to the physical support, the region where the device is used needs to be
+ * set at compile time. Example for EU868:
+ * ```
+ *     CFLAGS += -DREGION_EU868
+ * ```
+ *
  * # Using the package API
  *
  * The package provides a simple API for initializing the MAC, setting/getting
