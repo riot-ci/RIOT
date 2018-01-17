@@ -393,7 +393,9 @@ flash-only: $(FLASHDEPS)
 		exit 1; }
 	$(FLASHER) $(FFLAGS)
 
-flash: all flash-only
+flash:
+	$(MAKE) all
+	$(MAKE) flash-only
 
 preflash:
 	$(PREFLASHER) $(PREFFLAGS)
