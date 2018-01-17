@@ -100,46 +100,46 @@ void rn2xx3_set_internal_state(rn2xx3_t *dev, uint8_t state)
         return;
     }
 
-#if ENABLE_DEBUG
-    printf("[rn2xx3] new state: ");
-    switch(state) {
-        case RN2XX3_INT_STATE_CMD:
-            puts("CMD");
-            break;
+    if (ENABLE_DEBUG) {
+        printf("[rn2xx3] new state: ");
+        switch(state) {
+            case RN2XX3_INT_STATE_CMD:
+                puts("CMD");
+                break;
 
-        case RN2XX3_INT_STATE_IDLE:
-            puts("IDLE");
-            break;
+            case RN2XX3_INT_STATE_IDLE:
+                puts("IDLE");
+                break;
 
-        case RN2XX3_INT_STATE_MAC_JOIN:
-            puts("JOIN");
-            break;
+            case RN2XX3_INT_STATE_MAC_JOIN:
+                puts("JOIN");
+                break;
 
-        case RN2XX3_INT_STATE_MAC_RX_MESSAGE:
-            puts("RX MSG");
-            break;
+            case RN2XX3_INT_STATE_MAC_RX_MESSAGE:
+                puts("RX MSG");
+                break;
 
-        case RN2XX3_INT_STATE_MAC_RX_PORT:
-            puts("RX PORT");
-            break;
+            case RN2XX3_INT_STATE_MAC_RX_PORT:
+                puts("RX PORT");
+                break;
 
-        case RN2XX3_INT_STATE_MAC_TX:
-            puts("TX");
-            break;
+            case RN2XX3_INT_STATE_MAC_TX:
+                puts("TX");
+                break;
 
-        case RN2XX3_INT_STATE_RESET:
-            puts("RESET");
-            break;
+            case RN2XX3_INT_STATE_RESET:
+                puts("RESET");
+                break;
 
-        case RN2XX3_INT_STATE_SLEEP:
-            puts("SLEEP");
-            break;
+            case RN2XX3_INT_STATE_SLEEP:
+                puts("SLEEP");
+                break;
 
-        default:
-            puts("UNKNOWN");
-            break;
+            default:
+                puts("UNKNOWN");
+                break;
+        }
     }
-#endif
 
     dev->int_state = state;
 }
@@ -171,7 +171,7 @@ int rn2xx3_write_cmd(rn2xx3_t *dev)
     ret = rn2xx3_process_response(dev);
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_IDLE);
 
-    DEBUG("RET: %d, RESP: %s\n", ret, dev->resp_buf);
+    DEBUG("[rn2xx3] RET: %d, RESP: %s\n", ret, dev->resp_buf);
 
     return ret;
 }
@@ -230,7 +230,7 @@ void rn2xx3_cmd_append(rn2xx3_t *dev, const uint8_t *payload, uint8_t payload_le
 {
     char payload_str[2];
     for (unsigned i = 0; i < payload_len; i++) {
-        fmt_bytes_hex(payload_str, &payload[i], 1);
+        fmt_byte_hex(payload_str, payload[i]);
         _uart_write_str(dev, payload_str);
     }
 }
@@ -245,7 +245,7 @@ int rn2xx3_cmd_finalize(rn2xx3_t *dev)
 
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_IDLE);
 
-    DEBUG("RET: %d, RESP: %s\n", ret, dev->resp_buf);
+    DEBUG("[rn2xx3] RET: %d, RESP: %s\n", ret, dev->resp_buf);
 
     return ret;
 }
@@ -264,9 +264,8 @@ int rn2xx3_mac_tx_finalize(rn2xx3_t *dev)
     rn2xx3_cmd_finalize(dev);
 
     rn2xx3_set_internal_state(dev, RN2XX3_INT_STATE_MAC_TX);
-    uint8_t ret = rn2xx3_process_response(dev);
 
-    return ret;
+    return rn2xx3_process_response(dev);
 }
 
 int rn2xx3_process_response(rn2xx3_t *dev)

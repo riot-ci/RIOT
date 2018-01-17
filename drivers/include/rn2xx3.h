@@ -184,20 +184,21 @@ void rn2xx3_setup(rn2xx3_t *dev, const rn2xx3_params_t *params);
  * @param[in] dev           RN2XX3 device descriptor
  *
  * @return                  RN2XX3_OK on success
- * @return                  -ENXIO if UART initialization failed
- * @return                  RN2XX3_TIMEOUT if UART communcation failed
+ * @return                 -ENXIO if UART initialization failed
+ * @return                  RN2XX3_TIMEOUT if UART communication failed
  */
 int rn2xx3_init(rn2xx3_t *dev);
 
 /**
  * @brief   Restarts the RN2XX2 device
  *
- *          dev->resp_buf contains the module name and version string.
+ *          After calling this function, dev->resp_buf contains the module
+ *          name and version string.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
  * @return                  RN2XX3_OK on success
- * @return                  RN2XX3_TIMEOUT if UART communcation failed
+ * @return                  RN2XX3_TIMEOUT if UART communication failed
  */
 int rn2xx3_sys_reset(rn2xx3_t *dev);
 
@@ -205,12 +206,13 @@ int rn2xx3_sys_reset(rn2xx3_t *dev);
  * @brief   Resets the module’s configuration data and user EEPPROM to factory
  *          default values and restarts the module
  *
- *          dev->resp_buf contains the module name and version string.
+ *          After calling this function, dev->resp_buf contains the module
+ *          name and version string.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
  * @return                  RN2XX3_OK on success
- * @return                  RN2XX3_TIMEOUT if UART communcation failed
+ * @return                  RN2XX3_TIMEOUT if UART communication failed
  */
 int rn2xx3_sys_factory_reset(rn2xx3_t *dev);
 
@@ -220,7 +222,7 @@ int rn2xx3_sys_factory_reset(rn2xx3_t *dev);
  * @param[in] dev           RN2XX3 device descriptor
  *
  * @return                  RN2XX3_OK on success
- * @return                  RN2XX3_TIMEOUT if UART communcation failed
+ * @return                  RN2XX3_TIMEOUT if UART communication failed
  */
  int rn2xx3_sys_sleep(rn2xx3_t *dev);
 
@@ -230,7 +232,7 @@ int rn2xx3_sys_factory_reset(rn2xx3_t *dev);
  * @param[in] dev           RN2XX3 device descriptor
  *
  * @return                  RN2XX3_OK on success
- * @return                  RN2XX3_TIMEOUT if UART communcation failed
+ * @return                  RN2XX3_TIMEOUT if UART communication failed
  */
 int rn2xx3_mac_init(rn2xx3_t *dev);
 
@@ -248,7 +250,7 @@ int rn2xx3_mac_init(rn2xx3_t *dev);
  * @return                  RN2XX3_ERR_NOT_JOINED if network is not joined
  * @return                  RN2XX3_ERR_NO_FREE_CH if no free channel
  * @return                  RN2XX3_ERR_SILENT if device is in Silent state
- * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter roller over
+ * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter rolled over
  * @return                  RN2XX3_ERR_BUSY if MAC is not in Idle state
  * @return                  RN2XX3_ERR_INVALID_DATA_LENGTH if payload is too large
  * @return                  RN2XX3_ERR_KEYS_NOT_INIT if keys are not configured
@@ -268,7 +270,7 @@ int rn2xx3_write_cmd(rn2xx3_t *dev);
  * @return                  RN2XX3_ERR_NOT_JOINED if network is not joined
  * @return                  RN2XX3_ERR_NO_FREE_CH if no free channel
  * @return                  RN2XX3_ERR_SILENT if device is in Silent state
- * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter roller over
+ * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter rolled over
  * @return                  RN2XX3_ERR_BUSY if MAC is not in Idle state
  * @return                  RN2XX3_ERR_INVALID_DATA_LENGTH if payload is too large
  * @return                  RN2XX3_ERR_KEYS_NOT_INIT if keys are not configured
@@ -286,7 +288,7 @@ int rn2xx3_write_cmd_no_wait(rn2xx3_t *dev);
  * @return                  RN2XX3_ERR_NOT_JOINED if network is not joined
  * @return                  RN2XX3_ERR_NO_FREE_CH if no free channel
  * @return                  RN2XX3_ERR_SILENT if device is in Silent state
- * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter roller over
+ * @return                  RN2XX3_ERR_FR_CNT_REJOIN_NEEDED if frame counter rolled over
  * @return                  RN2XX3_ERR_BUSY if MAC is not in Idle state
  * @return                  RN2XX3_ERR_INVALID_DATA_LENGTH if payload is too large
  * @return                  RN2XX3_ERR_KEYS_NOT_INIT if keys are not configured
