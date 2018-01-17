@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  OTA keys S.A.
+ * Copyright (C) 2016-2018  OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,14 @@
  */
 
 /**
- * @ingroup     tja1042 trx
+ * @ingroup     drivers_tja1042
  * @{
  *
  * @file
- * @brief       generic can transceiver implementation for tja1042
+ * @brief       generic CAN transceiver implementation for tja1042
  *
  * @author      Aurelien Gonce <aurelien.gonce@altran.com>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  *
  * @}
  */
