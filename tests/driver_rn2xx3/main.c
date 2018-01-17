@@ -117,8 +117,7 @@ int rn2xx3_mac_cmd(int argc, char **argv) {
             mode = LORAMAC_JOIN_ABP;
         }
 
-        switch(rn2xx3_mac_join_network(&rn2xx3_dev, mode)) {
-
+        switch (rn2xx3_mac_join_network(&rn2xx3_dev, mode)) {
             case RN2XX3_ERR_NO_FREE_CH:
                 printf("%s: all channels are busy\n", rn2xx3_dev.cmd_buf);
                 return -1;
@@ -162,8 +161,7 @@ int rn2xx3_mac_cmd(int argc, char **argv) {
             return -1;
         }
 
-        switch(rn2xx3_mac_tx(&rn2xx3_dev, (uint8_t*)argv[2], strlen(argv[2]))) {
-
+        switch (rn2xx3_mac_tx(&rn2xx3_dev, (uint8_t *)argv[2], strlen(argv[2]))) {
             case RN2XX3_ERR_INVALID_PARAM:
                 printf("%s: invalid param given\n", rn2xx3_dev.cmd_buf);
                 return -1;
@@ -217,7 +215,7 @@ int rn2xx3_mac_cmd(int argc, char **argv) {
                 puts("MAC transmission succeeded");
                 puts("Data received:");
                 printf(" -port: %d\n", rn2xx3_mac_get_rx_port(&rn2xx3_dev));
-                printf(" -payload len: %d\n", (uint8_t)strlen((char*)rn2xx3_dev.rx_buf));
+                printf(" -payload len: %d\n", (uint8_t)strlen((char *)rn2xx3_dev.rx_buf));
                 printf(" -payload: '%s'\n", rn2xx3_dev.rx_buf);
             }
                 break;

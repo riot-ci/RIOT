@@ -1,4 +1,3 @@
-APPLICATION = driver_rn2xx3
 include ../Makefile.tests_common
 
 DRIVER ?= rn2483
