@@ -12,6 +12,7 @@ struct iolist {
 };
 
 unsigned iolist_count(const iolist_t *iolist);
+size_t iolist_size(const iolist_t *iolist);
 
 struct iovec;
 size_t iolist_to_iovec(const iolist_t *iolist, struct iovec *iov, unsigned *count);
