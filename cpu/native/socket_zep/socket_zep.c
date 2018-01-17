@@ -424,7 +424,7 @@ void socket_zep_setup(socket_zep_t *dev, const socket_zep_params_t *params)
     dev->netdev.short_addr[0] = dev->netdev.long_addr[6];
     dev->netdev.short_addr[1] = dev->netdev.long_addr[7];
     native_async_read_setup();
-    native_async_read_add_handler(dev->sock_fd, NULL, _socket_isr);
+    native_async_read_add_handler(dev->sock_fd, dev, _socket_isr);
 #ifdef MODULE_NETSTATS_L2
     memset(&dev->netdev.netdev.stats, 0, sizeof(netstats_t));
 #endif
