@@ -79,12 +79,9 @@ static const timer_conf_t timer_config[] = {
  */
 static const uart_conf_t uart_config[] = {
     {    /* Virtual COM Port */
-        .dev      = (cc2538_uart_t *)0x4000c000,
-        .rx_pin   = GPIO_PIN(0,0),
-        .tx_pin   = GPIO_PIN(0,1),
-        .irq      = UART0_IRQn,
-        .rxd      = UART0_RXD,
-        .txd      = UART0_TXD,
+        .dev      = UART0_BASEADDR,
+        .rx_pin   = GPIO_PIN(0, 0),
+        .tx_pin   = GPIO_PIN(0, 1),
         .cts_pin  = GPIO_UNDEF,
         .rts_pin  = GPIO_UNDEF
     }
@@ -94,7 +91,6 @@ static const uart_conf_t uart_config[] = {
 #define UART_0_ISR          isr_uart0
 
 /* macros common across all UARTs */
-#define UART_IRQ_PRIO       1
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 
 /** @} */
