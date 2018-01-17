@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     test
+ * @ingroup     tests
  *
  * @file
  * @brief       Semtech LoRaMAC test application
@@ -341,7 +341,6 @@ static int _cmd_loramac(int argc, char **argv)
             join_type = LORAMAC_JOIN_ABP;
         }
         else {
-            (void) join_type;
             _loramac_join_usage();
             return 1;
         }
@@ -370,7 +369,6 @@ static int _cmd_loramac(int argc, char **argv)
                 cnf = LORAMAC_TX_UNCNF;
             }
             else {
-                (void) cnf;
                 _loramac_tx_usage();
                 return 1;
             }
@@ -387,11 +385,11 @@ static int _cmd_loramac(int argc, char **argv)
 
         semtech_loramac_rx_data_t rx_data;
         switch (semtech_loramac_send(cnf, port,
-                                     (uint8_t*)argv[2], strlen(argv[2]),
+                                     (uint8_t *)argv[2], strlen(argv[2]),
                                      &rx_data)) {
             case SEMTECH_LORAMAC_RX_DATA:
                 printf("Data received: %s, port: %d\n",
-                       (char*)rx_data.payload, rx_data.port);
+                       (char *)rx_data.payload, rx_data.port);
                 return 0;
 
             case SEMTECH_LORAMAC_TX_DONE:
