@@ -17,8 +17,8 @@
  * This implementation is an adaption of the applications provided on the
  * Semtech Lora-net repository.
  *
- * The LoRaMAC stack and the SX127x driver run in there own thread and IPC
- * messages are exchanged to control the MAC.
+ * The LoRaMAC stack and the SX127x driver run in their own thread and simple
+ * IPC messages are exchanged to control the MAC.
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Jose Alamos <jose.alamos@inria.cl>
@@ -152,7 +152,7 @@ static void mcps_confirm(McpsConfirm_t *confirm)
     if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
         DEBUG("[semtech-loramac] MCPS confirm event OK\n");
 
-        switch(confirm->McpsRequest) {
+        switch (confirm->McpsRequest) {
             case MCPS_UNCONFIRMED:
             {
                 /* Check Datarate

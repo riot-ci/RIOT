@@ -222,7 +222,6 @@ uint32_t semtech_loramac_get_rx2_freq(void)
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
     LoRaMacMibGetRequestConfirm(&mibReq);
-
     return mibReq.Param.Rx2DefaultChannel.Frequency;
 }
 
@@ -242,6 +241,5 @@ uint8_t semtech_loramac_get_rx2_dr(void)
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_RX2_DEFAULT_CHANNEL;
     LoRaMacMibGetRequestConfirm(&mibReq);
-
     return mibReq.Param.Rx2DefaultChannel.Datarate;
 }
