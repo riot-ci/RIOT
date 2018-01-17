@@ -46,7 +46,7 @@
 static void _rx_cb(void *arg, uint8_t c)
 {
     rn2xx3_t *dev = (rn2xx3_t *)arg;
-    netdev_t* netdev = (netdev_t *)dev;
+    netdev_t *netdev = (netdev_t *)dev;
 
     /* Avoid overflow of module response buffer */
     if (dev->resp_size >= RN2XX3_MAX_BUF) {

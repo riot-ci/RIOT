@@ -35,7 +35,7 @@ static const char *get = "get";
 static const char *set = "set";
 
 /* internal helpers */
-static uint8_t _get_uint8_value(rn2xx3_t *dev, const char* command)
+static uint8_t _get_uint8_value(rn2xx3_t *dev, const char *command)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                         "%s %s %s", mac, get, command);
@@ -47,7 +47,7 @@ static uint8_t _get_uint8_value(rn2xx3_t *dev, const char* command)
 }
 
 static void _set_uint8_value(rn2xx3_t *dev,
-                             const char* command, uint8_t value)
+                             const char *command, uint8_t value)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1, "%s %s %s %d",
                         mac, set, command, value);
@@ -56,7 +56,7 @@ static void _set_uint8_value(rn2xx3_t *dev,
     rn2xx3_write_cmd(dev);
 }
 
-static uint16_t _get_uint16_value(rn2xx3_t *dev, const char* command)
+static uint16_t _get_uint16_value(rn2xx3_t *dev, const char *command)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                         "%s %s %s", mac, get, command);
@@ -68,7 +68,7 @@ static uint16_t _get_uint16_value(rn2xx3_t *dev, const char* command)
 }
 
 static void _set_uint16_value(rn2xx3_t *dev,
-                              const char* command, uint16_t value)
+                              const char *command, uint16_t value)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1, "%s %s %s %i",
                         mac, set, command, value);
@@ -77,7 +77,7 @@ static void _set_uint16_value(rn2xx3_t *dev,
     rn2xx3_write_cmd(dev);
 }
 
-static bool _get_bool_value(rn2xx3_t *dev, const char* command)
+static bool _get_bool_value(rn2xx3_t *dev, const char *command)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
                         "%s %s %s", mac, get, command);
@@ -89,7 +89,7 @@ static bool _get_bool_value(rn2xx3_t *dev, const char* command)
 }
 
 static void _set_bool_value(rn2xx3_t *dev,
-                            const char* command, bool value)
+                            const char *command, bool value)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1, "%s %s %s %s",
                         mac, set, command, value ? "on": "off");
@@ -98,7 +98,7 @@ static void _set_bool_value(rn2xx3_t *dev,
     rn2xx3_write_cmd(dev);
 }
 
-static void _get_array_value(rn2xx3_t *dev, const char* command,
+static void _get_array_value(rn2xx3_t *dev, const char *command,
                              uint8_t *value)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
@@ -111,7 +111,7 @@ static void _get_array_value(rn2xx3_t *dev, const char* command,
 
 }
 
-static void _set_array_value(rn2xx3_t *dev, const char* command,
+static void _set_array_value(rn2xx3_t *dev, const char *command,
                              const uint8_t *value, uint8_t value_len)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1, "%s %s %s ",
@@ -256,8 +256,7 @@ loramac_dr_idx_t rn2xx3_mac_get_rx2_dr(rn2xx3_t *dev)
 
     rn2xx3_write_cmd(dev);
 
-    char *data;
-    loramac_dr_idx_t dr = strtol(dev->resp_buf, &data, 10);
+    loramac_dr_idx_t dr = strtol(dev->resp_buf, NULL, 10);
 
     return dr;
 }
