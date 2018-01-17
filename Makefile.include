@@ -386,14 +386,18 @@ distclean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
 	-@rm -rf $(BINDIRBASE)
 
-flash: all $(FLASHDEPS)
+flash-only: $(FLASHDEPS)
 	@command -v $(FLASHER) >/dev/null 2>&1 || \
 		{ $(COLOR_ECHO) \
 		'${COLOR_RED}Flash program $(FLASHER) not found. Aborting.${COLOR_RESET}'; \
 		exit 1; }
 	$(FLASHER) $(FFLAGS)
 
-preflash: all
+flash:
+	$(MAKE) all
+	$(MAKE) flash-only
+
+preflash:
 	$(PREFLASHER) $(PREFFLAGS)
 
 term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
