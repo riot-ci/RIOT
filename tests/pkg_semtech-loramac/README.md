@@ -94,7 +94,7 @@ joining a network and sending/receiving data to/from a LoRaWAN network.
 ```
     > loramac tx This\ is\ RIOT! uncnf 10
 ```
-* Switch the default datarate index (from 1 to 16). 5 is for SF7, BW125:
+* Switch the default datarate index (from 0 to 16). 5 is for SF7, BW125:
 ```
     > loramac set dr 5
 ```
