@@ -10,6 +10,7 @@ all: git-download
 	cp Makefile.loramac_mac $(PKG_BUILDDIR)/src/mac/Makefile
 	cp Makefile.loramac_region $(PKG_BUILDDIR)/src/mac/region/Makefile
 	cp Makefile.loramac_crypto $(PKG_BUILDDIR)/src/system/crypto/Makefile
+	cp Makefile.loramac_arch $(PKG_BUILDDIR)/src/boards/mcu/stm32/Makefile
 	"$(MAKE)" -C $(PKG_BUILDDIR)
 
 CFLAGS += -Wno-missing-field-initializers -Wno-unused-parameter -Wno-sign-compare
