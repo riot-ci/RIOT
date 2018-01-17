@@ -14,11 +14,11 @@
  * @file
  * @brief       Implementation of public API for Semtech LoRaMAC
  *
- *              This implementation is an adaption of the applications provided
- *              on the Semtech Lora-net repository.
+ * This implementation is an adaption of the applications provided on the
+ * Semtech Lora-net repository.
  *
- *              The LoRaMAC stack and the SX127x driver run in there own thread
- *              and IPC messages are exchanged to control the MAC.
+ * The LoRaMAC stack and the SX127x driver run in there own thread and IPC
+ * messages are exchanged to control the MAC.
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Jose Alamos <jose.alamos@inria.cl>

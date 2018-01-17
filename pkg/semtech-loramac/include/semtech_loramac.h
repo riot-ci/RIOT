@@ -33,8 +33,8 @@ extern "C" {
  * @{
  */
 #define MSG_TYPE_ISR                   (0x3456)  /**< radio device ISR */
-#define MSG_TYPE_RX_TIMEOUT            (0x3457)  /**< RX timeout in the device driver */
-#define MSG_TYPE_TX_TIMEOUT            (0x3458)  /**< TX timeout in the device driver*/
+#define MSG_TYPE_RX_TIMEOUT            (0x3457)  /**< radio driver RX timeout */
+#define MSG_TYPE_TX_TIMEOUT            (0x3458)  /**< radio driver TX timeout */
 #define MSG_TYPE_MAC_TIMEOUT           (0x3459)  /**< MAC timers timeout */
 #define MSG_TYPE_LORAMAC_CMD           (0x3460)  /**< Command sent to the MAC */
 #define MSG_TYPE_LORAMAC_NOTIFY        (0x3461)  /**< MAC notifications */
@@ -67,8 +67,8 @@ typedef struct {
  *
  * @param[in] dev          pointer to the radio device
  *
- * @return                 0 on success
- * @return                -1 on failure
+ * @return  0 on success
+ * @return -1 on failure
  */
 int semtech_loramac_init(sx127x_t *dev);
 
@@ -77,8 +77,8 @@ int semtech_loramac_init(sx127x_t *dev);
  *
  * @param[in] type         The type of join procedure (otaa or abp)
  *
- * @return                 SEMTECH_LORAMAC_JOIN_SUCCEEDED on success
- * @return                 SEMTECH_LORAMAC_JOIN_FAILED on failure
+ * @return SEMTECH_LORAMAC_JOIN_SUCCEEDED on success
+ * @return SEMTECH_LORAMAC_JOIN_FAILED on failure
  */
 uint8_t semtech_loramac_join(uint8_t type);
 
@@ -86,14 +86,14 @@ uint8_t semtech_loramac_join(uint8_t type);
  * @brief   Sends data to LoRaWAN
  *
  * @param[in] cnf          Use confirmable/unconfirmable send type
- * @param[in] port         The send port to use (between 1 and 223 for application)
+ * @param[in] port         The send port to use (between 1 and 223)
  * @param[in] tx_buf       The TX buffer
  * @param[in] tx_len       The length of the TX buffer
  * @param[out] rx_data     The RX data descriptor
  *
- * @return                 SEMTECH_LORAMAC_NOT_JOINED when the network is not joined
- * @return                 SEMTECH_LORAMAC_TX_DONE when TX has completed but no data is received
- * @return                 SEMTECH_LORAMAC_RX_DATA when TX has completed but data is received
+ * @return SEMTECH_LORAMAC_NOT_JOINED when the network is not joined
+ * @return SEMTECH_LORAMAC_TX_DONE when TX has completed, no data received
+ * @return SEMTECH_LORAMAC_RX_DATA when TX has completed and data is received
  */
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
                              uint8_t *tx_buf, uint8_t tx_len,

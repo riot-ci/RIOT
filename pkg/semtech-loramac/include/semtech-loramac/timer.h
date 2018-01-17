@@ -79,7 +79,7 @@ void TimerStart(TimerEvent_t *obj);
 void TimerStop(TimerEvent_t *obj);
 
 /**
- * @brief Resets the timer object
+ * @brief   Resets the timer object
  *
  * @param[in] obj Structure containing the timer object parameters
  */
@@ -117,7 +117,7 @@ TimerTime_t TimerGetElapsedTime(TimerTime_t time);
 TimerTime_t TimerGetFutureTime(TimerTime_t time);
 
 /**
- * @brief Manages the entry into low power mode
+ * @brief   Manages the entry into low power mode
  */
 void TimerLowPowerHandler(void);
 
