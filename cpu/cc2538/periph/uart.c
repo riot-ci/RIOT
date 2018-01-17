@@ -27,9 +27,10 @@
 #include "periph/uart.h"
 #include "periph_conf.h"
 
-/* Addresses, pin functions and interrupt definitions for the two UARTs */
+/* Pin functions and interrupt definitions for the two UARTs */
 #define UART0 (cc2538_uart_t *)(&UART0_DR)      /**< UART0 Instance */
 #define UART1 (cc2538_uart_t *)(&UART1_DR)      /**< UART1 Instance */
+
 #define UART_RXD(X) (cc2538_ioc_pin_t)(2 * (X)) /**< UART Rx pin function */
 #define UART_TXD(X) (cc2538_ioc_sel_t)(2 * (X)) /**< UART Tx pin function */
 #define UART_IRQ(X) (IRQn_Type)(5 + (X))        /**< UART interrupt */
