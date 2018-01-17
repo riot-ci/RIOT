@@ -248,4 +248,5 @@ endif
 
 ifneq (,$(filter tja1042,$(USEMODULE)))
   USEMODULE += can_trx
+  FEATURES_REQUIRED += periph_gpio
 endif
