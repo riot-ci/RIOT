@@ -28,9 +28,6 @@
 #include "periph_conf.h"
 
 /* Pin functions and interrupt definitions for the two UARTs */
-#define UART0 (cc2538_uart_t *)(&UART0_DR)      /**< UART0 Instance */
-#define UART1 (cc2538_uart_t *)(&UART1_DR)      /**< UART1 Instance */
-
 #define UART_RXD(X) (cc2538_ioc_pin_t)(2 * (X)) /**< UART Rx pin function */
 #define UART_TXD(X) (cc2538_ioc_sel_t)(2 * (X)) /**< UART Tx pin function */
 #define UART_IRQ(X) (IRQn_Type)(5 + (X))        /**< UART interrupt */
@@ -99,14 +96,14 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
 
     assert(uart < UART_NUMOF);
-   
+
     cc2538_uart_t *u = uart_config[uart].dev;
 
     /* uart_num refers to the CPU UART peripheral number, which may be
      * different from the value of the uart variable, depending on the board
      * configuration.
      */
-    unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)UART0 ) / 0x1000;
+    unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)UART0_BASEADDR ) / 0x1000;
 
     /* Configure the Rx and Tx pins */
     gpio_init_af(uart_config[uart].rx_pin, UART_RXD(uart_num), GPIO_IN);
