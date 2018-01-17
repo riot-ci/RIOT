@@ -199,6 +199,20 @@ void uart_poweroff(uart_t uart)
     uart_config[uart].dev->cc2538_uart_ctl.CTLbits.UARTEN = 0;
 }
 
+void uart_clockon(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+
+    SYS_CTRL->cc2538_sys_ctrl_unnamed1.RCGCUART |= (1 << uart);
+}
+
+void uart_clockoff(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+
+    SYS_CTRL->cc2538_sys_ctrl_unnamed1.RCGCUART &= ~(1 << uart);
+}
+
 static inline void irq_handler(uart_t uart)
 {
     assert(uart < UART_NUMOF);
