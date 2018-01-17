@@ -8,10 +8,6 @@
 # For more information see: https://www.pjrc.com/teensy/loader_cli.html
 #
 
-# get sources from repository
-git clone https://github.com/PaulStoffregen/teensy_loader_cli.git
-cd teensy_loader_cli
-
 # resolv build host in a hacky way
 UNAME=`uname`
 TARGET="WINDOWS";
@@ -20,6 +16,15 @@ if [ "x$UNAME" = "xLinux" ]; then
 elif [ "x$UNAME" = "xDarwin" ]; then
     TARGET="MACOSX";
 fi;
+
+# get sources from repository
+if [ "x$TARGET" = "xMACOSX" ]; then
+    # hacked version to make it work on MACOSX
+    git clone https://github.com/alswl/teensy_loader_cli.git
+else
+    git clone https://github.com/PaulStoffregen/teensy_loader_cli.git
+fi;
+cd teensy_loader_cli
 
 # check if the library exists
 if [ "x$TARGET" = "xLINUX" ] && ! ldconfig -p | grep 'libusb' > /dev/null; then
