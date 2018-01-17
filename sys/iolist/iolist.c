@@ -12,6 +12,16 @@ unsigned iolist_count(const iolist_t *iolist)
     return count;
 }
 
+size_t iolist_size(const iolist_t *iolist)
+{
+    size_t result = 0;
+    while (iolist) {
+        result += iolist->iol_len;
+        iolist = iolist->iol_next;
+    }
+    return result;
+}
+
 size_t iolist_to_iovec(const iolist_t *iolist, struct iovec *iov, unsigned *count)
 {
     size_t bytes = 0;
