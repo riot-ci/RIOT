@@ -17,8 +17,8 @@
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
-#ifndef ZEP_H
-#define ZEP_H
+#ifndef NET_ZEP_H
+#define NET_ZEP_H
 
 #include <stdint.h>
 
@@ -99,5 +99,5 @@ typedef struct __attribute__((packed)) {
 }
 #endif
 
-#endif /* ZEP_H */
+#endif /* NET_ZEP_H */
 /** @} */
