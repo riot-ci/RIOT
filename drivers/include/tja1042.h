@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  OTA keys S.A.
+ * Copyright (C) 2016-2018  OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,16 +7,18 @@
  */
 
 /**
- * @defgroup    tja1042 TJA1042
+ * @defgroup    drivers_tja1042 TJA1042
+ * @ingroup     drivers
  * @ingroup     trx_can
  * @brief       tja1042 High Speed CAN transceiver driver
  *
  * @{
  *
  * @file
- * @brief       tja1042 generic can transceiver interface initialization
+ * @brief       tja1042 generic CAN transceiver interface initialization
  *
  * @author      Aurelien Gonce <aurelien.gonce@altran.com>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  */
 #ifndef TJA1042_H
 #define TJA1042_H
@@ -31,7 +33,7 @@ extern "C" {
 #endif
 
 /**
- * tja1042 can trx descriptor
+ * @brief   tja1042 CAN trx descriptor
  */
 typedef struct tja1042_trx {
     /**
@@ -47,7 +49,7 @@ typedef struct tja1042_trx {
 } tja1042_trx_t;
 
 /**
- * @brief set mode interface
+ * @brief   Set mode interface
  *
  * @param[in] dev      Pointer to the tja1042 descriptor
  * @param[in] mode     mode to set
@@ -58,7 +60,7 @@ typedef struct tja1042_trx {
 int tja1042_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 
 /**
- * @brief initialize the given tja1042
+ * @brief   Initialize the given tja1042
  *
  * @param[in] dev      Pointer to the tja1042 descriptor
  *
@@ -68,7 +70,7 @@ int tja1042_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 int tja1042_trx_init(can_trx_t *dev);
 
 /**
- * @brief tja1042 driver
+ * @brief   tja1042 driver
  */
 extern const trx_driver_t tja1042_driver;
 
