@@ -121,11 +121,8 @@ typedef struct {
     cc2538_uart_t *dev;       /**< pointer to the used UART device */
     gpio_t rx_pin;            /**< pin used for RX */
     gpio_t tx_pin;            /**< pin used for TX */
-    IRQn_Type irq;            /**< interrupt number of the UART's multifunction interrupt */
-    cc2538_ioc_pin_t rxd;     /**< function assigned to the RX pin */
-    cc2538_ioc_sel_t txd;     /**< function assigned to the TX pin */
-    gpio_t cts_pin;           /**< CTS pin - set to GPIO_UNDEF when not using HW flow control */
-    gpio_t rts_pin;           /**< RTS pin - set to GPIO_UNDEF when not using HW flow control */
+    gpio_t cts_pin;           /**< CTS pin - set to GPIO_UNDEF when not using */
+    gpio_t rts_pin;           /**< RTS pin - set to GPIO_UNDEF when not using */
 } uart_conf_t;
 /** @} */
 
