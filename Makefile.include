@@ -387,19 +387,19 @@ distclean:
 	-@rm -rf $(BINDIRBASE)
 
 ifneq (,$(filter flash, $(MAKECMDGOALS)))
-  FLASHDEPS += all
+  PREFLASHDEPS += all
 endif
 
-flash-only: $(FLASHDEPS)
+flash: $(PREFLASHDEPS) $(FLASHDEPS)
 	@command -v $(FLASHER) >/dev/null 2>&1 || \
 		{ $(COLOR_ECHO) \
 		'${COLOR_RED}Flash program $(FLASHER) not found. Aborting.${COLOR_RESET}'; \
 		exit 1; }
 	$(FLASHER) $(FFLAGS)
 
-flash: flash-only
+flash-only: flash
 
-preflash:
+preflash: $(PREFLASHDEPS)
 	$(PREFLASHER) $(PREFFLAGS)
 
 term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
