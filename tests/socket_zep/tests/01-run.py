@@ -51,8 +51,8 @@ def testfunc(child):
              b"\x5b\x45\x00\x0a\x50\x45\x5a\x00Hello World\x3a\xf2",
              ("::1", zep_params['local_port']))
     child.expect(r"RSSI: \d+, LQI: \d+, Data:")
-    child.expect_exact(r"000000 41 dc 02 23 00 38 30 00 0a 50 45 5a 00 5b 45 00")
-    child.expect_exact(r"000010 0a 50 45 5a 00 48 65 6c 6c 6f 20 57 6f 72 6c 64")
+    child.expect_exact(r"00000000  41  DC  02  23  00  38  30  00  0A  50  45  5A  00  5B  45  00")
+    child.expect_exact(r"00000010  0A  50  45  5A  00  48  65  6C  6C  6F  20  57  6F  72  6C  64")
 
 if __name__ == "__main__":
     os.environ['TERMFLAGS'] = "-z [%s]:%d,[%s]:%d" % ( \
