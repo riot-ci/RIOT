@@ -663,7 +663,7 @@ static int xbee_send(netdev_t *dev, const iolist_t *iolist)
     /* send the actual data packet */
     DEBUG("[xbee] send: now sending out %i byte\n", (int)size);
     mutex_lock(&(xbee->tx_lock));
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         uart_write(xbee->p.uart, iol->iol_base, iol->iol_len);
     }
     uart_write(xbee->p.uart, &csum, 1);
