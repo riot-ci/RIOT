@@ -24,7 +24,11 @@
 
 #include <unistd.h>
 
-/** @brief Iolist forward declaration */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @brief iolist forward declaration */
 typedef struct iolist iolist_t;
 
 /**
@@ -76,4 +80,8 @@ struct iovec;
  */
 size_t iolist_to_iovec(const iolist_t *iolist, struct iovec *iov, unsigned *count);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* IOLIST_H */
+/** @} */
