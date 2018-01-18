@@ -186,6 +186,11 @@ static err_t _eth_link_output(struct netif *netif, struct pbuf *p)
 #endif
     LL_COUNT(p, q, count);
     iolist_t iolist[count];
+
+    if (count < 1) {
+        return -EINVAL;
+    }
+
     iolist_t *last = &iolist[count-1];
 
     for (q = p, count = 0; q != NULL; q = q->next, count++) {
