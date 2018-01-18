@@ -301,8 +301,8 @@ static int _send(netdev_t *netdev, const iolist_t *iolist) {
     /* copy packet to SRAM */
     size_t len = 0;
 
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
-        sram_op(dev, ENC_WGPDATA, (i ? 0xFFFF : TX_BUFFER_START), iol->iol_base, iol->iol_len);
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
+        sram_op(dev, ENC_WGPDATA, ((iol == iolist) ? TX_BUFFER_START : 0xFFFF), iol->iol_base, iol->iol_len);
         len += iol->iol_len;
     }
 
