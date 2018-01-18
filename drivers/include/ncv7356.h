@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  OTA keys S.A.
+ * Copyright (C) 2016-2018  OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,20 +7,21 @@
  */
 
 /**
- * @defgroup    ncv7356 NCV7356
+ * @defgroup    drivers_ncv7356 NCV7356
+ * @ingroup     drivers
  * @ingroup     trx_can
  * @brief       ncv7356 Single Wire CAN transceiver driver
  *
  * @{
  *
  * @file
- * @brief       ncv7356 generic can transceiver interface initialization
+ * @brief       ncv7356 generic CAN transceiver interface initialization
  *
  * @author      Aurelien Gonce <aurelien.gonce@altran.com>
  * @author      Vincent Dupont <vincent@otakeys.com>
  */
-#ifndef NCV7356_TRX_H
-#define NCV7356_TRX_H
+#ifndef NCV7356_H
+#define NCV7356_H
 
 #include <stdio.h>
 
@@ -32,7 +33,7 @@ extern "C" {
 #endif
 
 /**
- * ncv7356 trx descriptor
+ * @brief   ncv7356 trx descriptor
  */
 typedef struct ncv7356_trx {
     /**
@@ -53,7 +54,7 @@ typedef struct ncv7356_trx {
 } ncv7356_trx_t;
 
 /**
- * @brief set mode interface
+ * @brief   Set mode interface
  *
  * @param[in] dev      Pointer to the ncv7356 descriptor
  * @param[in] mode     mode to set
@@ -64,7 +65,7 @@ typedef struct ncv7356_trx {
 int ncv7356_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 
 /**
- * @brief initialize the given ncv7356
+ * @brief   Initialize the given ncv7356
  *
  * @param[in] dev      Pointer to the ncv7356 descriptor
  *
@@ -74,7 +75,7 @@ int ncv7356_trx_set_mode(can_trx_t *dev, can_trx_mode_t mode);
 int ncv7356_trx_init(can_trx_t *dev);
 
 /**
- * @brief ncv7356 driver
+ * @brief   ncv7356 driver
  */
 extern const trx_driver_t ncv7356_driver;
 
@@ -82,5 +83,5 @@ extern const trx_driver_t ncv7356_driver;
 }
 #endif
 
-#endif /* NCV7356_TRX_H */
+#endif /* NCV7356_H */
 /** @} */
