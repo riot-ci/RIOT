@@ -186,7 +186,7 @@ static err_t _eth_link_output(struct netif *netif, struct pbuf *p)
 #endif
     LL_COUNT(p, q, count);
     iolist_t iolist[count];
-    iolist_t *last = iolist[count-1];
+    iolist_t *last = &iolist[count-1];
 
     for (q = p, count = 0; q != NULL; q = q->next, count++) {
         iolist_t *iol = &iolist[count];
@@ -199,7 +199,7 @@ static err_t _eth_link_output(struct netif *netif, struct pbuf *p)
 #if ETH_PAD_SIZE
     pbuf_header(p, ETH_PAD_SIZE); /* reclaim the padding word */
 #endif
-    return (netdev->driver->send(netdev, &iolist) > 0) ? ERR_OK : ERR_BUF;
+    return (netdev->driver->send(netdev, iolist) > 0) ? ERR_OK : ERR_BUF;
 }
 #endif
 
