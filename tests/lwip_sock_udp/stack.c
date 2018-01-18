@@ -150,7 +150,7 @@ static int _netdev_send(netdev_t *dev, const iolist_t *iolist)
 
     (void)dev;
     mutex_lock(&_netdev_buffer_mutex);
-    for (; iolist; iolist = iolist->next) {
+    for (; iolist; iolist = iolist->iol_next) {
         memcpy(&_netdev_buffer[offset], iolist->iol_base, iolist->iol_len);
         offset += iolist->iol_len;
         if (offset > sizeof(_netdev_buffer)) {
