@@ -19,16 +19,6 @@
 
 #include "net/netdev_test.h"
 
-void netdev_test_setup(netdev_test_t *dev, void *state)
-{
-    netdev_t *netdev = (netdev_t *)dev;
-
-    netdev->driver = &_driver;
-    dev->state = state;
-    mutex_init(&dev->mutex);
-    netdev_test_reset(dev);
-}
-
 void netdev_test_reset(netdev_test_t *dev)
 {
     mutex_lock(&dev->mutex);
@@ -132,5 +122,15 @@ static const netdev_driver_t _driver = {
     .get    = _get,
     .set    = _set,
 };
+
+void netdev_test_setup(netdev_test_t *dev, void *state)
+{
+    netdev_t *netdev = (netdev_t *)dev;
+
+    netdev->driver = &_driver;
+    dev->state = state;
+    mutex_init(&dev->mutex);
+    netdev_test_reset(dev);
+}
 
 /** @} */
