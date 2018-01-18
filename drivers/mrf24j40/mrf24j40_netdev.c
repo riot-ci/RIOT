@@ -574,4 +574,3 @@ const netdev_driver_t mrf24j40_driver = {
     .get = _get,
     .set = _set,
 };
-
