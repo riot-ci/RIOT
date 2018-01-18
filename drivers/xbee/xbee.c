@@ -644,8 +644,8 @@ static int xbee_send(netdev_t *dev, const iolist_t *iolist)
 
     /* calculate the checksum and the packet size */
     size = iolist->iol_len;
-    csum = _cksum(3, (uint8_t *)iolist>iol_base, size);
-    for (iolist_t *iol = iolist->next; iol; iol = iol->next) {
+    csum = _cksum(3, (uint8_t *)iolist->iol_base, size);
+    for (iolist_t *iol = iolist->next; iol; iol = iol->iol_next) {
         size_t len = iol->iol_len;
 
         size += len
@@ -669,7 +669,7 @@ static int xbee_send(netdev_t *dev, const iolist_t *iolist)
     uart_write(xbee->p.uart, &csum, 1);
     mutex_unlock(&(xbee->tx_lock));
 
-    /* return number of payload byte */
+    /* return number of payload bytes */
     return (int)size;
 }
 
