@@ -302,7 +302,7 @@ static int _dev_send(netdev_t *dev, const iolist_t *iolist)
 
     (void)dev;
     /* check packet content with expected data */
-    for (; iolist; iolist = iolist->next) {
+    for (; iolist; iolist = iolist->iol_next) {
         if (memcmp(&(_tmp[idx]), iolist->iol_base, iolist->iol_len) != 0) {
             printf("Unexpected send data (vector index = %d)\n", i);
             puts("===========================================================");
