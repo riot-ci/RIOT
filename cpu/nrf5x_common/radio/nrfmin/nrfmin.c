@@ -333,7 +333,7 @@ static int nrfmin_send(netdev_t *dev, const iolist_t *iolist)
 
     /* copy packet data into the transmit buffer */
     int pos = 0;
-    for (iolist_t *iol = iolist; iol; iol = iol->iol_next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         if ((pos + iol->iol_len) > NRFMIN_PKT_MAX) {
             DEBUG("[nrfmin] send: unable to do so, packet is too large!\n");
             return -EOVERFLOW;
