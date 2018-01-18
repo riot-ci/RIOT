@@ -250,7 +250,6 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
 {
     int res;
     netdev_ieee802154_t *dev;
-    iolist_t iol_hdr, iol_data;
     uint8_t *src;
     size_t src_len;
     uint8_t mhr[IEEE802154_MAX_HDR_LEN];
@@ -262,10 +261,10 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
         return 1;
     }
 
-    iol_data = {
+    iolist_t iol_data = {
         .iol_base = data,
         .iol_len = strlen(data)
-    }
+    };
 
     dev = (netdev_ieee802154_t *)&devs[iface];
     flags = (uint8_t)(dev->flags & NETDEV_IEEE802154_SEND_MASK);
@@ -291,11 +290,11 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
         return 1;
     }
 
-    iol_hdr = {
+    iolist_t iol_hdr = {
         .iol_next = &iol_data,
         .iol_base = mhr,
         .iol_len = (size_t)res
-    }
+    };
 
     res = dev->netdev.driver->send((netdev_t *)dev, &iol_hdr);
     if (res < 0) {
@@ -303,7 +302,7 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
         return 1;
     }
     else {
-        printf("txtsnd: send %u bytes to ", (unsigned)iol_data->iol_len);
+        printf("txtsnd: send %u bytes to ", (unsigned)iol_data.iol_len);
         print_addr(dst, dst_len);
         printf(" (PAN: ");
         print_addr((uint8_t *)&dst_pan, sizeof(dst_pan));
