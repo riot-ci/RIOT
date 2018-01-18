@@ -22,14 +22,22 @@
 #ifdef MODULE_LIS2DH12
 
 #include "log.h"
+#include "assert.h"
 #include "saul_reg.h"
 #include "lis2dh12.h"
 #include "lis2dh12_params.h"
 
 /**
- * @brief   Define the number of configured sensors
+ * @brief   Number of configured sensors
  */
 #define LIS2DH12_NUM    (sizeof(lis2dh12_params) / sizeof(lis2dh12_params[0]))
+
+
+/**
+ * @brief   Number of defined SAUL registry info entries
+ */
+#define LIS2DH12_SAULINFO_NUM   (sizeof(lis2dh12_saul_info) / \
+                                 sizeof(lis2dh12_saul_info[0]))
 
 /**
  * @brief   Allocate memory for the device descriptors
@@ -43,6 +51,8 @@ static saul_reg_t saul_entries[LIS2DH12_NUM];
 
 void auto_init_lis2dh12(void)
 {
+    assert(LIS2DH12_NUM == LIS2DH12_SAULINFO_NUM);
+
     for (unsigned int i = 0; i < LIS2DH12_NUM; i++) {
         int res;
 
