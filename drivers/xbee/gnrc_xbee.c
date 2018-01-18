@@ -151,7 +151,7 @@ static int xbee_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         .iol_next = pkt->next,
         .iol_base = xhdr,
         .iol_len = res
-    }
+    };
 
 #ifdef MODULE_NETSTATS_L2
     if (hdr->flags & BCAST) {
