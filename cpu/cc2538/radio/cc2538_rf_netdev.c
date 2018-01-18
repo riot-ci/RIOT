@@ -252,7 +252,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
        start of the FIFO, so we can come back and update it later */
     rfcore_write_byte(0);
 
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         pkt_len += iol->iol_len;
 
         if (pkt_len > CC2538_RF_MAX_DATA_LEN) {
