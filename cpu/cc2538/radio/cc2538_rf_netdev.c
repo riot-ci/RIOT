@@ -400,4 +400,3 @@ const netdev_driver_t cc2538_rf_driver = {
     .isr  = _isr,
     .init = _init,
 };
-
