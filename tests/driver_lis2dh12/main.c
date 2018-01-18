@@ -26,7 +26,7 @@
 #include "lis2dh12_params.h"
 
 
-#define DELAY       (100 * US_PER_MS)
+#define DELAY       (100UL * US_PER_MS)
 
 /* allocate some memory for holding the formated sensor output */
 static char str_out[3][8];
@@ -36,8 +36,6 @@ static lis2dh12_t dev;
 
 int main(void)
 {
-    xtimer_ticks32_t last_wakeup = xtimer_now();
-
     puts("LIS2DH12 accelerometer driver test application\n");
 
     puts("Initializing LIS2DH12 sensor... ");
@@ -49,9 +47,8 @@ int main(void)
         return 1;
     }
 
+    xtimer_ticks32_t last_wakeup = xtimer_now();
     while (1) {
-        xtimer_periodic_wakeup(&last_wakeup, DELAY);
-
         /* read sensor data */
         int16_t data[3];
         if (lis2dh12_read(&dev, data) != LIS2DH12_OK) {
@@ -67,6 +64,8 @@ int main(void)
 
         /* print data to STDIO */
         printf("X: %8s Y: %8s Z: %8s\n", str_out[0], str_out[1], str_out[2]);
+
+        xtimer_periodic_wakeup(&last_wakeup, DELAY);
     }
 
     return 0;
