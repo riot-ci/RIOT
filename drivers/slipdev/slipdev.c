@@ -27,23 +27,6 @@
 #define SLIP_END_ESC           (0xdcU)
 #define SLIP_ESC_ESC           (0xddU)
 
-static int _send(netdev_t *dev, const struct iovec *vector, unsigned count);
-static int _recv(netdev_t *dev, void *buf, size_t len, void *info);
-static int _init(netdev_t *dev);
-static void _isr(netdev_t *dev);
-static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len);
-static int _set(netdev_t *dev, netopt_t opt, const void *value,
-                size_t value_len);
-
-static const netdev_driver_t slip_driver = {
-    .send = _send,
-    .recv = _recv,
-    .init = _init,
-    .isr = _isr,
-    .get = _get,
-    .set = _set,
-};
-
 void slipdev_setup(slipdev_t *dev, const slipdev_params_t *params)
 {
     /* set device descriptor fields */
@@ -84,16 +67,16 @@ static inline void _write_byte(slipdev_t *dev, uint8_t byte)
     uart_write(dev->config.uart, &byte, 1);
 }
 
-static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
+static int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     slipdev_t *dev = (slipdev_t *)netdev;
     int bytes = 0;
 
     DEBUG("slipdev: sending vector of length %u\n", count);
-    for (unsigned i = 0; i < count; i++) {
-        uint8_t *data = vector[i].iov_base;
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
+        uint8_t *data = iol->iol_base;
 
-        for (unsigned j = 0; j < vector[i].iov_len; j++, data++) {
+        for (unsigned j = 0; j < iol->.iol_len; j++, data++) {
             switch(*data) {
                 case SLIP_END:
                     /* escaping END byte*/
@@ -220,5 +203,14 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *value,
     (void)value_len;
     return -ENOTSUP;
 }
+
+static const netdev_driver_t slip_driver = {
+    .send = _send,
+    .recv = _recv,
+    .init = _init,
+    .isr = _isr,
+    .get = _get,
+    .set = _set,
+};
 
 /** @} */
