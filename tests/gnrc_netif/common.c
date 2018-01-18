@@ -54,7 +54,7 @@ static int _dump_send_packet(netdev_t *netdev, const iolist_t *iolist)
         printf("unknown ");
     }
     puts("device:");
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         size_t len = iol->iol_len;
         if ((tmp_buffer_bytes + len) > ETHERNET_DATA_LEN) {
             return -ENOBUFS;
