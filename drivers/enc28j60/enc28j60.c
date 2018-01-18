@@ -256,7 +256,7 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     cmd_w_addr(dev, ADDR_WRITE_PTR, BUF_TX_START);
     /* write control byte and the actual data into the buffer */
     cmd_wbm(dev, &ctrl, 1);
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         c += iol->iol_len;
         cmd_wbm(dev, iol->iol_base, iol->iol_len);
     }
