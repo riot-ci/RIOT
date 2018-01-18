@@ -34,7 +34,6 @@
 #include "debug.h"
 
 /* Internal helper functions */
-static uint8_t _get_tx_len(const iolist_t *iolist);
 static int _set_state(sx127x_t *dev, netopt_state_t state);
 static int _get_state(sx127x_t *dev, void *val);
 void _on_dio0_irq(void *arg);
@@ -52,8 +51,8 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         return -ENOTSUP;
     }
 
-    uint8_t size;
-    size = _get_tx_len(vector, count);
+    uint8_t size = iolist_size(iolist);
+
     switch (dev->settings.modem) {
         case SX127X_MODEM_FSK:
             /* todo */
@@ -74,7 +73,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
             }
 
             /* Write payload buffer */
-            for (iolist_t *iol = iolist; iol; iol = iol->next) {
+            for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
                 sx127x_write_fifo(dev, iol->iol_base, iol->iol_len);
             }
             break;
@@ -470,17 +469,6 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     }
 
     return res;
-}
-
-static uint8_t _get_tx_len(const iolist_t *iolist)
-{
-    uint8_t len = 0;
-
-    for (; iolist; iolist = iolist->next) {
-        len += iolist->iol_len;
-    }
-
-    return len;
 }
 
 static int _set_state(sx127x_t *dev, netopt_state_t state)
