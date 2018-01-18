@@ -134,7 +134,7 @@ size_t cc2420_tx_prepare(cc2420_t *dev, const iolist_t *iolist)
     while (cc2420_get_state(dev) & NETOPT_STATE_TX) {}
 
     /* get and check the length of the packet */
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         pkt_len += iol->iol_len;
     }
     if (pkt_len >= CC2420_PKT_MAXLEN) {
@@ -147,7 +147,7 @@ size_t cc2420_tx_prepare(cc2420_t *dev, const iolist_t *iolist)
     /* push packet length to TX FIFO */
     cc2420_fifo_write(dev, (uint8_t *)&pkt_len, 1);
     /* push packet to TX FIFO */
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         cc2420_fifo_write(dev, iol->iol_base, iol->iol_len);
     }
     DEBUG("cc2420: tx_prep: loaded %i byte into the TX FIFO\n", (int)pkt_len);
