@@ -645,10 +645,10 @@ static int xbee_send(netdev_t *dev, const iolist_t *iolist)
     /* calculate the checksum and the packet size */
     size = iolist->iol_len;
     csum = _cksum(3, (uint8_t *)iolist->iol_base, size);
-    for (iolist_t *iol = iolist->next; iol; iol = iol->iol_next) {
+    for (const iolist_t *iol = iolist->iol_next; iol; iol = iol->iol_next) {
         size_t len = iol->iol_len;
 
-        size += len
+        size += len;
         for (size_t p = 0; p < len; p++) {
             csum -= ((uint8_t *)iol->iol_base)[p];
         }
