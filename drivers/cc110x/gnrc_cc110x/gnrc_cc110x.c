@@ -74,7 +74,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     iolist_t iolist = {
         .iol_base = (char *)&cc110x_pkt,
         .iol_len = sizeof(cc110x_pkt_t)
-    }
+    };
 
     unsigned payload_len = 0;
     uint8_t *pos = cc110x_pkt.data;
