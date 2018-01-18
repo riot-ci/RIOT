@@ -98,7 +98,7 @@ int _gnrc_gomach_transmit(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         .iol_next = (iolist_t *)pkt->next,
         .iol_base = mhr,
         .iol_len = (size_t)res
-    }
+    };
 
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
