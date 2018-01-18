@@ -305,7 +305,7 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
     iolist_t iolist = {
         .iol_base = aPacket->mPsdu;
         .iol_len = (aPacket->mLength - RADIO_IEEE802154_FCS_LEN)
-    }
+    };
 
     /*Set channel and power based on transmit frame */
     DEBUG("otPlatRadioTransmit->channel: %i, length %d\n", (int) aPacket->mChannel, (int)aPacket->mLength);
