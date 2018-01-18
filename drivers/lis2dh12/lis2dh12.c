@@ -14,7 +14,6 @@
  * @brief       LIS2DH12 accelerometer driver implementation
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- *
  * @}
  */
 
@@ -27,7 +26,7 @@
 #include "debug.h"
 
 /* SPI bus speed and mode */
-#define CLK                 SPI_CLK_5MHZ
+#define BUS_CLK             SPI_CLK_5MHZ
 #define MODE                SPI_MODE_0
 
 #define BUS_OK              SPI_OK
@@ -37,33 +36,33 @@
 #define CS                  (dev->p->cs)
 
 /* flag to set when reading from the device */
-#define READ                (0x80)
+#define FLAG_READ           (0x80)
 
 /* flag to enable address auto incrementation on read or write */
-#define AUTOINC             (0x40)
+#define FLAG_AINC           (0x40)
 
-static inline int acquire(const lis2dh12_t *dev)
+static int _acquire(const lis2dh12_t *dev)
 {
-    return spi_acquire(BUS, CS, MODE, CLK);
+    return spi_acquire(BUS, CS, MODE, BUS_CLK);
 }
 
-static inline void release(const lis2dh12_t *dev)
+static void _release(const lis2dh12_t *dev)
 {
     spi_release(BUS);
 }
 
-static inline uint8_t read(const lis2dh12_t *dev, uint8_t reg)
+static uint8_t _read(const lis2dh12_t *dev, uint8_t reg)
 {
-    return spi_transfer_reg(BUS, CS, (READ | reg), 0);
+    return spi_transfer_reg(BUS, CS, (FLAG_READ | reg), 0);
 }
 
-static inline void read_burst(const lis2dh12_t *dev, uint8_t reg,
+static void _read_burst(const lis2dh12_t *dev, uint8_t reg,
                               void *data, size_t len)
 {
-    spi_transfer_regs(BUS, CS, (READ | AUTOINC | reg), NULL, data, len);
+    spi_transfer_regs(BUS, CS, (FLAG_READ | FLAG_AINC | reg), NULL, data, len);
 }
 
-static inline void write(const lis2dh12_t *dev, uint8_t reg, uint8_t data)
+static void _write(const lis2dh12_t *dev, uint8_t reg, uint8_t data)
 {
     DEBUG("[lis2dh12] write: reg 0x%02x, val 0x%02x\n", (int)reg, (int)data);
     spi_transfer_reg(BUS, CS, reg, data);
@@ -74,7 +73,7 @@ int lis2dh12_init(lis2dh12_t *dev, const lis2dh12_params_t *params)
     assert(dev && params);
 
     dev->p = params;
-    dev->comp = (1000 * (0x02 << (dev->p->scale >> 4)));
+    dev->comp = (1000UL * (0x02 << (dev->p->scale >> 4)));
 
     /* start by setting up the chip select pin */
     if (spi_init_cs(BUS, CS) != SPI_OK) {
@@ -83,24 +82,24 @@ int lis2dh12_init(lis2dh12_t *dev, const lis2dh12_params_t *params)
     }
 
     /* acquire the SPI bus and verify that our parameters are valid */
-    if (acquire(dev) != BUS_OK) {
+    if (_acquire(dev) != BUS_OK) {
         DEBUG("[lis2dh12] error: unable to acquire SPI bus\n");
         return LIS2DH12_NOBUS;
     }
 
     /* read the WHO_IM_I register to verify the connections to the device */
-    if (read(dev, REG_WHO_AM_I) != WHO_AM_I_VAL) {
+    if (_read(dev, REG_WHO_AM_I) != WHO_AM_I_VAL) {
         DEBUG("[lis2dh12] error: invalid value read from WHO_AM_I register\n");
-        release(dev);
+        _release(dev);
         return LIS2DH12_NODEV;
     }
 
     /* set sampling rate and scale. This also enables the device and starts
      * sampling of data */
-    write(dev, REG_CTRL_REG4, dev->p->scale);
-    write(dev, REG_CTRL_REG1, dev->p->rate);
+    _write(dev, REG_CTRL_REG4, dev->p->scale);
+    _write(dev, REG_CTRL_REG1, dev->p->rate);
 
-    release(dev);
+    _release(dev);
     return LIS2DH12_OK;
 }
 
@@ -111,9 +110,9 @@ int lis2dh12_read(const lis2dh12_t *dev, int16_t *data)
     uint8_t raw[6];
 
     /* read sampled data from the device */
-    acquire(dev);
-    read_burst(dev, REG_OUT_X_L, raw, 6);
-    release(dev);
+    _acquire(dev);
+    _read_burst(dev, REG_OUT_X_L, raw, 6);
+    _release(dev);
 
     for (int i = 0; i < 3; i++) {
         int32_t tmp = ((raw[i * 2] >> 6) | (raw[(i * 2) + 1] << 2));
@@ -130,9 +129,9 @@ int lis2dh12_poweron(const lis2dh12_t *dev)
 {
     assert(dev);
 
-    acquire(dev);
-    write(dev, REG_CTRL_REG1, dev->p->rate);
-    release(dev);
+    _acquire(dev);
+    _write(dev, REG_CTRL_REG1, dev->p->rate);
+    _release(dev);
 
     return LIS2DH12_OK;
 }
@@ -141,9 +140,9 @@ int lis2dh12_poweroff(const lis2dh12_t *dev)
 {
     assert(dev);
 
-    acquire(dev);
-    write(dev, REG_CTRL_REG1, 0);
-    release(dev);
+    _acquire(dev);
+    _write(dev, REG_CTRL_REG1, 0);
+    _release(dev);
 
     return LIS2DH12_OK;
 }

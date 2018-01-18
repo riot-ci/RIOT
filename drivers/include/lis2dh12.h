@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-/* So for I2C support is not implemented, so throw an error when selected */
+/* I2C support is not implemented (yet), so throw an error when selected */
 #ifndef MODULE_LIS2DH12_SPI
 #error "LIS2DH12 error: I2C mode is not supported, yet. Use module li2dh12_spi"
 #endif
