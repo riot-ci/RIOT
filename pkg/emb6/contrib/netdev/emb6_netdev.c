@@ -141,7 +141,7 @@ static int8_t _netdev_send(const void *pr_payload, uint8_t c_len)
         iolist_t iolist = {
             .iol_base = (void *)pr_payload,
             .iol_len = c_len,
-        }
+        };
         if (_dev->driver->send(_dev, &iolist) < 0) {
             DEBUG("Error on send\n");
             return RADIO_TX_ERR;
