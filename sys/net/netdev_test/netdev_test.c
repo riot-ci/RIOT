@@ -44,7 +44,7 @@ void netdev_test_reset(netdev_test_t *dev)
 static int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     netdev_test_t *dev = (netdev_test_t *)netdev;
-    int res = (int)count;   /* assume everything would be fine */
+    int res = -EINVAL;
 
     mutex_lock(&dev->mutex);
     if (dev->send_cb != NULL) {
