@@ -75,7 +75,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     mrf24j40_tx_prepare(dev);
 
     /* load packet data into FIFO */
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         /* current packet data + FCS too long */
         if ((len + iol->iol_len + 2) > IEEE802154_FRAME_LEN_MAX) {
             DEBUG("[mrf24j40] error: packet too large (%u byte) to be send\n",
