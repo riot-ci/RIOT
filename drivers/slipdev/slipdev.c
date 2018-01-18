@@ -73,7 +73,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     int bytes = 0;
 
     DEBUG("slipdev: sending vector of length %u\n", count);
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         uint8_t *data = iol->iol_base;
 
         for (unsigned j = 0; j < iol->.iol_len; j++, data++) {
