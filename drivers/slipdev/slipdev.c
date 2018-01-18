@@ -27,14 +27,6 @@
 #define SLIP_END_ESC           (0xdcU)
 #define SLIP_ESC_ESC           (0xddU)
 
-void slipdev_setup(slipdev_t *dev, const slipdev_params_t *params)
-{
-    /* set device descriptor fields */
-    memcpy(&dev->config, params, sizeof(dev->config));
-    dev->inesc = 0U;
-    dev->netdev.driver = &slip_driver;
-}
-
 static void _slip_rx_cb(void *arg, uint8_t byte)
 {
     slipdev_t *dev = arg;
@@ -72,11 +64,11 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     slipdev_t *dev = (slipdev_t *)netdev;
     int bytes = 0;
 
-    DEBUG("slipdev: sending vector of length %u\n", count);
+    DEBUG("slipdev: sending iolist\n");
     for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         uint8_t *data = iol->iol_base;
 
-        for (unsigned j = 0; j < iol->.iol_len; j++, data++) {
+        for (unsigned j = 0; j < iol->iol_len; j++, data++) {
             switch(*data) {
                 case SLIP_END:
                     /* escaping END byte*/
@@ -142,7 +134,8 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                         dev->inesc = 0;
                         break;
                     }
-                    /* falls through intentionally to default when !dev->inesc */
+                    /* default when !dev->inesc */
+                    /* falls through */
                 case SLIP_ESC_ESC:
                     if (dev->inesc) {
                         *(ptr++) = SLIP_ESC;
@@ -150,7 +143,8 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                         dev->inesc = 0;
                         break;
                     }
-                    /* falls through intentionally to default when !dev->inesc */
+                    /* default when !dev->inesc */
+                    /* falls through */
                 default:
                     *(ptr++) = (uint8_t)byte;
                     res++;
@@ -212,5 +206,13 @@ static const netdev_driver_t slip_driver = {
     .get = _get,
     .set = _set,
 };
+
+void slipdev_setup(slipdev_t *dev, const slipdev_params_t *params)
+{
+    /* set device descriptor fields */
+    memcpy(&dev->config, params, sizeof(dev->config));
+    dev->inesc = 0U;
+    dev->netdev.driver = &slip_driver;
+}
 
 /** @} */
