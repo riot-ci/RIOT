@@ -210,7 +210,7 @@ static int send(netdev_t *netdev, const iolist_t *iolist)
         pos = S0_TX_BASE;
     }
 
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         size_t len = iol->iol_len;
         pos = tx_upload(dev, pos, iol->iol_base, len);
         sum += len;
