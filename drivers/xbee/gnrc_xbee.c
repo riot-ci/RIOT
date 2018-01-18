@@ -104,8 +104,6 @@ static int xbee_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 {
     int res;
     size_t size;
-    size_t count;
-    gnrc_pktsnip_t *vec;
     gnrc_netif_hdr_t *hdr;
     uint8_t xhdr[XBEE_MAX_TXHDR_LENGTH];
 
@@ -148,7 +146,7 @@ static int xbee_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 
     /* now let's send out the stuff */
     iolist_t iolist = {
-        .iol_next = pkt->next,
+        .iol_next = (iolist_t *)pkt->next,
         .iol_base = xhdr,
         .iol_len = res
     };
