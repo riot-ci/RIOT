@@ -100,7 +100,7 @@ extern const csma_sender_conf_t CSMA_SENDER_CONF_DEFAULT;
  * @return              -EBUSY if radio medium never was available
  *                      to send the given data
  */
-int csma_sender_csma_ca_send(netdev_t *dev, iolist_t iolist,
+int csma_sender_csma_ca_send(netdev_t *dev, iolist_t *iolist,
                              const csma_sender_conf_t *conf);
 
 /**
