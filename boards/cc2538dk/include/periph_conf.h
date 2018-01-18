@@ -63,7 +63,7 @@ static const timer_conf_t timer_config[] = {
  * @{
  */
 static const uart_conf_t uart_config[] = {
-    {    /* Virtual COM Port */
+    {
         .dev      = UART0_BASEADDR,
         .rx_pin   = GPIO_PIN(0, 0),
         .tx_pin   = GPIO_PIN(0, 1),
