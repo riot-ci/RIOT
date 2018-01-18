@@ -493,7 +493,7 @@ int vfs_umount(vfs_mount_t *mountp)
     if (ret == 0) {
         DEBUG("vfs_umount: not mounted\n");
         mutex_unlock(&_mount_mutex);
-        return 0;
+        return -EINVAL;
     }
     else if (ret == -EINVAL) {
         DEBUG("vfs_umount: invalid fs\n");
