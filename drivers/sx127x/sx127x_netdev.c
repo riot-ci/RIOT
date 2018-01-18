@@ -34,7 +34,7 @@
 #include "debug.h"
 
 /* Internal helper functions */
-static uint8_t _get_tx_len(const struct iovec *vector, unsigned count);
+static uint8_t _get_tx_len(const iolist_t *iolist);
 static int _set_state(sx127x_t *dev, netopt_state_t state);
 static int _get_state(sx127x_t *dev, void *val);
 void _on_dio0_irq(void *arg);
@@ -42,24 +42,7 @@ void _on_dio1_irq(void *arg);
 void _on_dio2_irq(void *arg);
 void _on_dio3_irq(void *arg);
 
-/* Netdev driver api functions */
-static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count);
-static int _recv(netdev_t *netdev, void *buf, size_t len, void *info);
-static int _init(netdev_t *netdev);
-static void _isr(netdev_t *netdev);
-static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len);
-static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len);
-
-const netdev_driver_t sx127x_driver = {
-    .send = _send,
-    .recv = _recv,
-    .init = _init,
-    .isr = _isr,
-    .get = _get,
-    .set = _set,
-};
-
-static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
+static int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     sx127x_t *dev = (sx127x_t*) netdev;
 
@@ -91,8 +74,8 @@ static int _send(netdev_t *netdev, const struct iovec *vector, unsigned count)
             }
 
             /* Write payload buffer */
-            for (size_t i = 0; i < count; i++) {
-                sx127x_write_fifo(dev, vector[i].iov_base, vector[i].iov_len);
+            for (iolist_t *iol = iolist; iol; iol = iol->next) {
+                sx127x_write_fifo(dev, iol->iol_base, iol->iol_len);
             }
             break;
         default:
@@ -489,12 +472,12 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     return res;
 }
 
-static uint8_t _get_tx_len(const struct iovec *vector, unsigned count)
+static uint8_t _get_tx_len(const iolist_t *iolist)
 {
     uint8_t len = 0;
 
-    for (unsigned i = 0 ; i < count ; i++) {
-        len += vector[i].iov_len;
+    for (; iolist; iolist = iolist->next) {
+        len += iolist->iol_len;
     }
 
     return len;
@@ -717,3 +700,12 @@ void _on_dio3_irq(void *arg)
             break;
     }
 }
+
+const netdev_driver_t sx127x_driver = {
+    .send = _send,
+    .recv = _recv,
+    .init = _init,
+    .isr = _isr,
+    .get = _get,
+    .set = _set,
+};

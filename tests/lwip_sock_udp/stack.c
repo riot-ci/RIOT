@@ -143,24 +143,23 @@ static int _netdev_recv(netdev_t *dev, char *buf, int len, void *info)
     return res;
 }
 
-static int _netdev_send(netdev_t *dev, const struct iovec *vector, int count)
+static int _netdev_send(netdev_t *dev, const iolist_t *iolist)
 {
     msg_t done = { .type = _SEND_DONE };
     unsigned offset = 0;
 
     (void)dev;
     mutex_lock(&_netdev_buffer_mutex);
-    for (int i = 0; i < count; i++) {
-        memcpy(&_netdev_buffer[offset], vector[i].iov_base, vector[i].iov_len);
-        offset += vector[i].iov_len;
+    for (; iolist; iolist = iolist->next) {
+        memcpy(&_netdev_buffer[offset], iolist->iol_base, iolist->iol_len);
+        offset += iolist->iol_len;
         if (offset > sizeof(_netdev_buffer)) {
             mutex_unlock(&_netdev_buffer_mutex);
             return -ENOBUFS;
         }
     }
     mutex_unlock(&_netdev_buffer_mutex);
-    done.content.value = (uint32_t)offset - sizeof(ethernet_hdr_t) -
-                         sizeof(udp_hdr_t);
+    done.content.value = (uint32_t)offset - sizeof(ethernet_hdr_t);
     msg_send(&done, _check_pid);
     return offset;
 }
