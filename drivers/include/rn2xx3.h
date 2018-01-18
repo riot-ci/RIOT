@@ -192,8 +192,8 @@ int rn2xx3_init(rn2xx3_t *dev);
 /**
  * @brief   Restarts the RN2XX2 device
  *
- *          After calling this function, dev->resp_buf contains the module
- *          name and version string.
+ * After calling this function, dev->resp_buf contains the module
+ * name and version string.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
@@ -203,11 +203,13 @@ int rn2xx3_init(rn2xx3_t *dev);
 int rn2xx3_sys_reset(rn2xx3_t *dev);
 
 /**
- * @brief   Resets the module’s configuration data and user EEPPROM to factory
- *          default values and restarts the module
+ * @brief   Performs a factory reset of the module
  *
- *          After calling this function, dev->resp_buf contains the module
- *          name and version string.
+ * The configuration data and user EEPPROM are reinitialized to factory default
+ * values and the module reboots
+ *
+ * After calling this function, dev->resp_buf contains the module name and
+ * version string.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
@@ -239,8 +241,8 @@ int rn2xx3_mac_init(rn2xx3_t *dev);
 /**
  * @brief   Writes a command to the RN2XX3 device
  *
- *          The module will immediately reply with a meaningful message if
- *          the command is valid or not.
+ * The module will immediately reply with a meaningful message if the command
+ * is valid or not.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
@@ -260,8 +262,8 @@ int rn2xx3_write_cmd(rn2xx3_t *dev);
 /**
  * @brief   Writes a command to the RN2XX3 device but don't wait for timeout
  *
- *          The module will immediately reply with a meaningful message if
- *          the command is valid or not.
+ * The module will immediately reply with a meaningful message if the command
+ * is valid or not.
  *
  * @param[in] dev           RN2XX3 device descriptor
  *
@@ -366,7 +368,7 @@ int rn2xx3_mac_save(rn2xx3_t *dev);
 /**
  * @brief   Gets the rn2xx3 LoRaMAC device EUI
  *
- *          The device EUI is an array of 8 bytes.
+ * The device EUI is an array of 8 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[out] eui                     The device EUI
@@ -376,7 +378,7 @@ void rn2xx3_mac_get_deveui(rn2xx3_t *dev, uint8_t *eui);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC device EUI
  *
- *          The device EUI is an array of 8 bytes.
+ * The device EUI is an array of 8 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] eui                      The device EUI
@@ -386,7 +388,7 @@ void rn2xx3_mac_set_deveui(rn2xx3_t *dev, const uint8_t *eui);
 /**
  * @brief   Gets the rn2xx3 LoRaMAC application EUI
  *
- *          The application EUI is an array of 8 bytes.
+ * The application EUI is an array of 8 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[out] eui                     The application EUI
@@ -396,7 +398,7 @@ void rn2xx3_mac_get_appeui(rn2xx3_t *dev, uint8_t *eui);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC application EUI
  *
- *          The application key is an array of 8 bytes.
+ * The application key is an array of 8 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] eui                      The application EUI
@@ -406,7 +408,7 @@ void rn2xx3_mac_set_appeui(rn2xx3_t *dev, const uint8_t *eui);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC application key
  *
- *          The application key is an array of 16 bytes.
+ * The application key is an array of 16 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] key                      The application key
@@ -416,7 +418,7 @@ void rn2xx3_mac_set_appkey(rn2xx3_t *dev, const uint8_t *key);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC application session key
  *
- *          The application session key is an array of 16 bytes.
+ * The application session key is an array of 16 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] key                      The application session key
@@ -426,7 +428,7 @@ void rn2xx3_mac_set_appskey(rn2xx3_t *dev, const uint8_t *key);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC network session key
  *
- *          The network session key is an array of 16 bytes.
+ * The network session key is an array of 16 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] key                      The network session key
@@ -436,7 +438,7 @@ void rn2xx3_mac_set_nwkskey(rn2xx3_t *dev, const uint8_t *key);
 /**
  * @brief   Gets the rn2xx3 LoRaMAC device address
  *
- *          The device address is an array of 4 bytes.
+ * The device address is an array of 4 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[out] addr                    The device address
@@ -446,7 +448,7 @@ void rn2xx3_mac_get_devaddr(rn2xx3_t *dev, uint8_t *addr);
 /**
  * @brief   Sets the rn2xx3 LoRaMAC device address
  *
- *          The device address is an array of 4 bytes.
+ * The device address is an array of 4 bytes.
  *
  * @param[in] dev                      The rn2xx3 device descriptor
  * @param[in] addr                     The device address
