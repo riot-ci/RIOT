@@ -303,7 +303,7 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
      * these bytes are removed
      */
     iolist_t iolist = {
-        .iol_base = aPacket->mPsdu;
+        .iol_base = aPacket->mPsdu,
         .iol_len = (aPacket->mLength - RADIO_IEEE802154_FCS_LEN)
     };
 
