@@ -80,7 +80,6 @@ static int gnrc_nrfmin_send(gnrc_netif_t *dev, gnrc_pktsnip_t *pkt)
 {
     int res;
     nrfmin_hdr_t nrfmin_hdr;
-    iolist_t iolist;
 
     assert(pkt);
 
@@ -98,7 +97,7 @@ static int gnrc_nrfmin_send(gnrc_netif_t *dev, gnrc_pktsnip_t *pkt)
 
     /* link first entry after netif hdr of the pkt to the nrfmin header */
     iolist_t iolist = {
-        .iol_next = (iolist_t *)pkt->next;
+        .iol_next = (iolist_t *)pkt->next,
         .iol_base = &nrfmin_hdr,
         .iol_len = NRFMIN_HDR_LEN
     };
