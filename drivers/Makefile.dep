@@ -313,3 +313,8 @@ ifneq (,$(filter tja1042,$(USEMODULE)))
   USEMODULE += can_trx
   FEATURES_REQUIRED += periph_gpio
 endif
+
+ifneq (,$(filter nvc7356,$(USEMODULE)))
+  USEMODULE += can_trx
+  FEATURES_REQUIRED += periph_gpio
+endif
