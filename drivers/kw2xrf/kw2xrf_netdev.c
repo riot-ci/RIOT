@@ -148,7 +148,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     kw2xrf_wait_idle(dev);
 
     /* load packet data into buffer */
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         /* current packet data + FCS too long */
         if ((len + iol->iol_len + IEEE802154_FCS_LEN) > KW2XRF_MAX_PKT_LENGTH) {
             LOG_ERROR("[kw2xrf] packet too large (%u byte) to be send\n",
