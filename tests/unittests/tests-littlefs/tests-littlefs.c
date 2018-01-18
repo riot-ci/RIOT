@@ -146,7 +146,8 @@ static void test_littlefs_teardown(void)
 
 static void tests_littlefs_format(void)
 {
-    int res = vfs_umount(&_test_littlefs_mount);
+    int res;
+    vfs_umount(&_test_littlefs_mount);
     mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
 
     res = vfs_mount(&_test_littlefs_mount);
