@@ -107,6 +107,7 @@ int lis2dh12_read(const lis2dh12_t *dev, int16_t *data)
 {
     assert(dev && data);
 
+    /* allocate 6 byte to save the 6 RAW data registers */
     uint8_t raw[6];
 
     /* read sampled data from the device */
@@ -114,6 +115,7 @@ int lis2dh12_read(const lis2dh12_t *dev, int16_t *data)
     _read_burst(dev, REG_OUT_X_L, raw, 6);
     _release(dev);
 
+    /* calculate the actual g-values for the x, y, and z dimension */
     for (int i = 0; i < 3; i++) {
         int32_t tmp = ((raw[i * 2] >> 6) | (raw[(i * 2) + 1] << 2));
         if (tmp & 0x00000200) {

@@ -13,7 +13,7 @@
  *
  * This device driver provides a minimal interface to LIS2DH12 devices. As of
  * now, it only provides very basic access to the device. The driver configures
- * the device into continuously reading the acceleration data with statically
+ * the device to continuously read the acceleration data with statically
  * defined scale and rate, and with a fixed 10-bit resolution. The LIS2DH12's
  * FIFO is bypassed, so the driver might not be sufficient for use cases where
  * the complete history of readings is of interest.
