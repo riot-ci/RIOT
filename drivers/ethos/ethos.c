@@ -192,7 +192,7 @@ static int _init(netdev_t *encdev)
 static size_t iolist_count_total(const iolist_t *iolist)
 {
     size_t result = 0;
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         result += iol->iol_len;
     }
     return result;
@@ -271,7 +271,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     uart_write(dev->uart, &frame_delim, 1);
 
     /* send iolist */
-    for (iolist_t *iol = iolist; iol; iol = iol->next) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         size_t n = iol->iol_len;
         uint8_t *ptr = iol->iol_base;
         while(n--) {
