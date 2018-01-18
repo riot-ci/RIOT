@@ -188,6 +188,10 @@ Test *tests_devfs_tests(void)
 
 void tests_devfs(void)
 {
+#ifndef MODULE_AUTO_INIT
+    extern void auto_init_devfs(void);
+    auto_init_devfs();
+#endif
     TESTS_RUN(tests_devfs_tests());
 }
 /** @} */
