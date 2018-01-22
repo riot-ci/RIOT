@@ -456,35 +456,42 @@ static int mtd_spi_nor_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t size)
     if (addr + size > total_size) {
         return -EOVERFLOW;
     }
-    be_uint32_t addr_be = byteorder_htonl(addr);
-
-    /* write enable */
-    mtd_spi_cmd(dev, dev->opcode->wren);
-
-    if (size == total_size) {
-        mtd_spi_cmd(dev, dev->opcode->chip_erase);
-    }
-    else if ((dev->flag & SPI_NOR_F_SECT_4K) && size == 4096) {
-        /* 4 KiO sectors can be erased with sector erase command */
-        mtd_spi_cmd_addr_write(dev, dev->opcode->sector_erase, addr_be, NULL, 0);
-    }
-    else if ((dev->flag & SPI_NOR_F_SECT_32K) && size == 32768) {
-        /* 32 KiO sectors can be erased with sector erase command */
-        mtd_spi_cmd_addr_write(dev, dev->opcode->block_erase_32k, addr_be, NULL, 0);
-    }
-    else if (size % sector_size != 0) {
+    if (size % sector_size != 0) {
         return -EOVERFLOW;
     }
-    else {
-        for (size_t i = 0; i < size / sector_size; i++) {
+    be_uint32_t addr_be = byteorder_htonl(addr);
+
+    while (size) {
+        /* write enable */
+        mtd_spi_cmd(dev, dev->opcode->wren);
+
+        if (size == total_size) {
+            mtd_spi_cmd(dev, dev->opcode->chip_erase);
+            size -= total_size;
+        }
+        else if ((dev->flag & SPI_NOR_F_SECT_32K) && (size >= 32768) && ((addr & 0x7FFF) == 0)) {
+            /* 32 KiO sectors can be erased with sector erase command */
+            mtd_spi_cmd_addr_write(dev, dev->opcode->block_erase_32k, addr_be, NULL, 0);
+            addr += 32768ul;
+            size -= 32768ul;
+        }
+        else if ((dev->flag & SPI_NOR_F_SECT_4K) && (size >= 4096ul) && ((addr & 0xFFF) == 0)) {
+            /* 4 KiO sectors can be erased with sector erase command */
+            mtd_spi_cmd_addr_write(dev, dev->opcode->sector_erase, addr_be, NULL, 0);
+            addr += 4096ul;
+            size -= 4096ul;
+        }
+        else {
             mtd_spi_cmd_addr_write(dev, dev->opcode->block_erase, addr_be, NULL, 0);
             addr += sector_size;
-            addr_be = byteorder_htonl(addr);
+            size -= sector_size;
         }
+        addr_be = byteorder_htonl(addr);
+
+        /* waiting for the command to complete before continuing */
+        wait_for_write_complete(dev);
     }
 
-    /* waiting for the command to complete before returning */
-    wait_for_write_complete(dev);
     return 0;
 }
 
