@@ -44,6 +44,7 @@ static void _cb(void *arg)
 {
     (void)arg;
     puts("timer triggered");
+    sched_context_switch_request = 1;
 }
 
 int main(void)
