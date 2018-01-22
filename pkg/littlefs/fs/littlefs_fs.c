@@ -87,8 +87,8 @@ static int _dev_write(const struct lfs_config *c, lfs_block_t block,
 
     const uint8_t *buf = buffer;
     uint32_t addr = ((fs->base_addr + block) * c->block_size) + off;
-    for (size_t i = 0; i < size / c->prog_size; i++) {
-        int ret = mtd_write(mtd, buf, addr, c->prog_size);
+    for (const uint8_t *part = buf; part < buf + size; part += c->prog_size) {
+        int ret = mtd_write(mtd, part, addr, c->prog_size);
         if (ret < 0) {
             return ret;
         }
@@ -96,7 +96,6 @@ static int _dev_write(const struct lfs_config *c, lfs_block_t block,
             return -EIO;
         }
         addr += c->prog_size;
-        buf += c->prog_size;
     }
 
     return 0;
