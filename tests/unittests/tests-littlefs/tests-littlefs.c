@@ -381,10 +381,9 @@ static void tests_littlefs_statvfs(void)
 
     int res = vfs_statvfs("/test-littlefs/", &stat1);
     TEST_ASSERT_EQUAL_INT(0, res);
-    TEST_ASSERT_EQUAL_INT(_dev->page_size * _dev->pages_per_sector, stat1.f_bsize);
-    TEST_ASSERT_EQUAL_INT(_dev->page_size * _dev->pages_per_sector, stat1.f_frsize);
-    TEST_ASSERT((_dev->pages_per_sector * _dev->page_size * _dev->sector_count) >=
-                          stat1.f_blocks);
+    TEST_ASSERT_EQUAL_INT(_dev->min_erase_size, stat1.f_bsize);
+    TEST_ASSERT_EQUAL_INT(_dev->min_erase_size, stat1.f_frsize);
+    TEST_ASSERT((_dev->sector_size * _dev->sector_count) >= stat1.f_blocks);
 
     int fd = vfs_open("/test-littlefs/test.txt", O_CREAT | O_RDWR, 0);
     TEST_ASSERT(fd >= 0);
@@ -398,8 +397,8 @@ static void tests_littlefs_statvfs(void)
     res = vfs_statvfs("/test-littlefs/", &stat2);
     TEST_ASSERT_EQUAL_INT(0, res);
 
-    TEST_ASSERT_EQUAL_INT(_dev->page_size * _dev->pages_per_sector, stat2.f_bsize);
-    TEST_ASSERT_EQUAL_INT(_dev->page_size * _dev->pages_per_sector, stat2.f_frsize);
+    TEST_ASSERT_EQUAL_INT(_dev->min_erase_size, stat2.f_bsize);
+    TEST_ASSERT_EQUAL_INT(_dev->min_erase_size, stat2.f_frsize);
     TEST_ASSERT(stat1.f_bfree > stat2.f_bfree);
     TEST_ASSERT(stat1.f_bavail > stat2.f_bavail);
 }
