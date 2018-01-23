@@ -10,5 +10,8 @@ endif
 
 include $(RIOTBASE)/Makefile.include
 
+# use the header files from tinycrypts tests folder
+INCLUDES += -I$(PKGDIRBASE)/tinycrypt/tests/include
+
 test:
 	tests/01-run.py

@@ -9,9 +9,11 @@
 import os
 import sys
 
+
 def testfunc(child):
     child.expect_exact('PASS - main.')
     child.expect_exact('PROJECT EXECUTION SUCCESSFUL')
+
 
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner'))
