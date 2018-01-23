@@ -9,6 +9,7 @@
 /**
  * @defgroup    net_zep  ZEP header definitions
  * @ingroup     net
+ * @brief       ZigBee Encapsulation Protocol
  * @{
  *
  * @file
