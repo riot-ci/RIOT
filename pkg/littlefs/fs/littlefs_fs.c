@@ -125,10 +125,11 @@ static int _mount(vfs_mount_t *mountp)
     DEBUG("littlefs: mount: mountp=%p\n", (void *)mountp);
 
     if (!fs->config.block_count) {
-        fs->config.block_count = fs->dev->sector_count - fs->base_addr;
+        fs->config.block_count = ((fs->dev->sector_count * fs->dev->sector_size) /
+                                  fs->dev->min_erase_size) - fs->base_addr;
     }
     if (!fs->config.block_size) {
-        fs->config.block_size = fs->dev->page_size * fs->dev->pages_per_sector;
+        fs->config.block_size = fs->dev->min_erase_size;
     }
     if (!fs->config.prog_size) {
         fs->config.prog_size = fs->dev->page_size;
