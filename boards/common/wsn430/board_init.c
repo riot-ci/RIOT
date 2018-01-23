@@ -22,14 +22,15 @@
 
 #include "cpu.h"
 #include "irq.h"
+#include "assert.h"
 #include "uart_stdio.h"
 #include "periph_conf.h"
 
 enum {
-    MCLK_2MHZ_SCLK_1MHZ = 1000002uL,
-    MCLK_4MHZ_SCLK_1MHZ = 1000004uL,
-    MCLK_8MHZ_SCLK_1MHZ = 1000008uL,
-    MCLK_8MHZ_SCLK_8MHZ = 8000000uL
+    MCLK_2MHZ_SCLK_1MHZ = (SELM_2 | DIVM_2 | SELS | DIVS_3),
+    MCLK_4MHZ_SCLK_1MHZ = (SELM_2 | DIVM_1 | SELS | DIVS_3),
+    MCLK_8MHZ_SCLK_1MHZ = (SELM_2 | SELS | DIVS_3),
+    MCLK_8MHZ_SCLK_8MHZ = (SELM_2 | SELS),
 };
 
 static void msb_ports_init(void)
@@ -83,23 +84,10 @@ void msp430_init_cpuclk(uint32_t speed)
     }
 
     /* oscillator fault flag still set? */
-    while ((IFG1 & OFIFG) != 0);
+    while ((IFG1 & OFIFG) != 0) {}
 
-    switch (speed) {
-        case MCLK_2MHZ_SCLK_1MHZ:
-            BCSCTL2  = (SELM_2 | DIVM_2 | SELS | DIVS_3);
-            break;
-        case MCLK_4MHZ_SCLK_1MHZ:
-            BCSCTL2  = (SELM_2 | DIVM_1 | SELS | DIVS_3);
-            break;
-        case MCLK_8MHZ_SCLK_1MHZ:
-            BCSCTL2 = (SELM_2 | SELS | DIVS_3);
-            break;
-        default:
-            /* MCLK and SMCLK = XT2 (safe) */
-            BCSCTL2 = (SELM_2 | SELS);
-            break;
-    }
+    /* apply clock config */
+    BCSCTL2 = speed;
 }
 
 void board_init(void)
