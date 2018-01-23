@@ -364,8 +364,7 @@ static void tests_spiffs_statvfs(void)
     TEST_ASSERT_EQUAL_INT(0, res);
     TEST_ASSERT_EQUAL_INT(1, stat1.f_bsize);
     TEST_ASSERT_EQUAL_INT(1, stat1.f_frsize);
-    TEST_ASSERT((_dev->pages_per_sector * _dev->page_size * _dev->sector_count) >=
-                          stat1.f_blocks);
+    TEST_ASSERT((_dev->sector_size * _dev->sector_count) >= stat1.f_blocks);
 
     int fd = vfs_open("/test-spiffs/test.txt", O_CREAT | O_RDWR, 0);
     TEST_ASSERT(fd >= 0);
