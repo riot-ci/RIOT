@@ -191,6 +191,7 @@ static void test_mtd_erase_read(void)
     /* First erasable unit is not erased */
     memset(buf, 0, sizeof(buf));
     ret = mtd_read(dev, buf, dev->min_erase_size - sizeof(buf), sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(sizeof(buf), ret);
     for (unsigned j = 0; j < sizeof(buf); j++) {
         TEST_ASSERT_EQUAL_INT(0x55, buf[j]);
     }
@@ -198,6 +199,7 @@ static void test_mtd_erase_read(void)
     /* Second erasable unit of third sector is not erased */
     memset(buf, 0, sizeof(buf));
     ret = mtd_read(dev, buf, 2 * dev->sector_size + dev->min_erase_size, sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(sizeof(buf), ret);
     for (unsigned j = 0; j < sizeof(buf); j++) {
         TEST_ASSERT_EQUAL_INT(0x55, buf[j]);
     }
