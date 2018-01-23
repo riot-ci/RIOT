@@ -137,13 +137,13 @@ static int _mount(vfs_mount_t *mountp)
     fs_desc->config.hal_erase_f = _dev_erase;
 
 #if SPIFFS_SINGLETON == 0
-    DEBUG("spiffs: mount: mtd page_size=%" PRIu32 ", pages_per_sector=%" PRIu32
-          ", sector_count=%" PRIu32 "\n", dev->page_size, dev->pages_per_sector, dev->sector_count);
-    fs_desc->config.phys_size = dev->page_size * dev->pages_per_sector * dev->sector_count;
-    fs_desc->config.log_block_size = dev->page_size * dev->pages_per_sector;
+    DEBUG("spiffs: mount: mtd page_size=%" PRIu32 ", sector_size=%" PRIu32
+          ", sector_count=%" PRIu32 "\n", dev->page_size, dev->sector_size, dev->sector_count);
+    fs_desc->config.phys_size = dev->sector_size * dev->sector_count;
+    fs_desc->config.log_block_size = dev->min_erase_size;
     fs_desc->config.log_page_size = dev->page_size;
     fs_desc->config.phys_addr = 0;
-    fs_desc->config.phys_erase_block = dev->page_size * dev->pages_per_sector;
+    fs_desc->config.phys_erase_block = dev->min_erase_size;
 #endif
 
     mtd_init(dev);
