@@ -9,7 +9,7 @@
 /**
  * @defgroup    boards_limifrog-v1 LimiFrog Version 1
  * @ingroup     boards
- * @brief       Board specific files for the limifrog-v1 board.
+ * @brief       Support for the limifrog-v1 board.
  * @{
  *
  * @file
