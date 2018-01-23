@@ -195,8 +195,8 @@ static void _snd_ra(gnrc_netif_t *netif, const ipv6_addr_t *dst,
 {
     gnrc_pktsnip_t *ext_opts = NULL;
 
-    if (final) {
-        _build_ext_opts(netif, abr);
+    if (!final) {
+        ext_opts = _build_ext_opts(netif, abr);
     }
 
     gnrc_ndp_rtr_adv_send(netif, NULL, dst, final, ext_opts);
