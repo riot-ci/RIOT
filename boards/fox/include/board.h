@@ -9,7 +9,7 @@
 /**
  * @defgroup    boards_fox fox
  * @ingroup     boards
- * @brief       Board specific files for the fox board.
+ * @brief       Support for the fox board.
  * @{
  *
  * @file
