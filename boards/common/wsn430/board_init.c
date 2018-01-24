@@ -69,7 +69,7 @@ static void msb_ports_init(void)
 
 }
 
-void msp430_init_cpuclk(uint32_t speed)
+static void msp430_init_cpuclk(uint8_t speed)
 {
     /* stop watchdog */
     WDTCTL = WDTPW + WDTHOLD;
