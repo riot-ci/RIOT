@@ -123,7 +123,7 @@ endif
 WERROR ?= 1
 export WERROR
 ifeq ($(WERROR),1)
-  CFLAGS += -Wall -Werror -Wextra
+  CFLAGS += -Wall -Werror -Wextra -Werror=implicit-fallthrough=2
 endif
 
 WPEDANTIC ?= 0
