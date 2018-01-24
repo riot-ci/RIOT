@@ -34,7 +34,7 @@ void pm_reboot(void)
     MCUSR = 0x00;
     __asm__ __volatile__("mov r3, %0\n" :: "r" (0xAA));
     #endif /* CPU_ATMEGA256RFR2 */
-    
+
     /*
      * Since the AVR doesn't support a real software reset, we set the Watchdog
      * Timer on a 250ms timeout. Consider this a kludge.
