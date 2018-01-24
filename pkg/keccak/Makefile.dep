@@ -1,0 +1,5 @@
+FEATURES_BLACKLIST += arch_8bit arch_16bit arch_mips32r2 arch_riscv
+
+ifeq (llvm,$(TOOLCHAIN))
+  DISABLE_MODULE += cortexm_fpu
+endif
