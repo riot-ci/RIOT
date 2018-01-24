@@ -1,0 +1,5 @@
+INCLUDES += -I$(PKGDIRBASE)/keccak/Common
+INCLUDES += -I$(PKGDIRBASE)/keccak/Constructions
+INCLUDES += -I$(PKGDIRBASE)/keccak/Modes
+INCLUDES += -I$(PKGDIRBASE)/keccak/SnP/KeccakP-800/Compact
+INCLUDES += -I$(PKGDIRBASE)/keccak/SnP/KeccakP-1600/Compact64
