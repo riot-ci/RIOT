@@ -5,6 +5,8 @@ PKG_LICENSE=BSD-3-Clause
 
 MODULE:=$(PKG_NAME)
 
+CFLAGS += -Wno-implicit-fallthrough
+
 .PHONY: all
 
 all: git-download
