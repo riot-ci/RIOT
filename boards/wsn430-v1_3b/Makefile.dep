@@ -1,0 +1,4 @@
+ifneq (,$(filter netdev_default,$(USEMODULE)))
+  USEMODULE += cc110x
+endif
+
