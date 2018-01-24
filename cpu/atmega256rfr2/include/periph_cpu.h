@@ -134,6 +134,12 @@ typedef struct {
 #define MEGA_PRR            PRR0        /* Power Reduction Register is PRR0 */
 /** @} */
 
+/**
+ * @name ADC Configuration
+ * @{
+ */
+#define ADC_NUMOF           (8U)
+/** @} */
 
 #ifdef __cplusplus
 }
