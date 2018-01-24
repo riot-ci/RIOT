@@ -4,7 +4,7 @@ RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := chronos telosb nucleo-f042k6 nucleo-f031k6 \
                              nucleo-f030r8 nucleo-l053r8 nucleo-l031k6 \
-                             stm32f0discovery z1
+                             stm32f0discovery wsn430-v1_3v wsn430-v1_4 z1
 
 USEMODULE += sock_dns
 USEMODULE += gnrc_sock_udp
