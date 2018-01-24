@@ -27,7 +27,7 @@
 #include "atmega_regs_common.h"
 
 #ifdef MODULE_AT86RF2XX
-	#include "at86rf2xx_netdev.h"
+    #include "at86rf2xx_netdev.h"
 #endif
 
 #define ENABLE_DEBUG 0
@@ -63,24 +63,25 @@
 
 void cpuid_get(void *id)
 {
-	/* use random number generator to get last byte for the ID */
-	uint8_t random;
+    /* use random number generator to get last byte for the ID */
+    uint8_t random;
+
 #ifdef MODULE_AT86RF2XX
-	at86rf2xx_get_random_num( &random, 1);
+    at86rf2xx_get_random_num( &random, 1);
 #else
-	random= 0x11;
+    random = 0x11;
 #endif
 
-	uint8_t addr[] = {
-			random,
-			PART_NUM,
-			VERSION_NUM,
-			MAN_ID_0,
-			SIGNATURE_0,
-			SIGNATURE_1,
-			SIGNATURE_2,
-			MAN_ID_0
-	};
+    uint8_t addr[] = {
+        random,
+        PART_NUM,
+        VERSION_NUM,
+        MAN_ID_0,
+        SIGNATURE_0,
+        SIGNATURE_1,
+        SIGNATURE_2,
+        MAN_ID_0
+    };
 
-    memcpy( id , addr, 8);
+    memcpy( id, addr, 8);
 }
