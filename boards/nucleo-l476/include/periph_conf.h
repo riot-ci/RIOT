@@ -9,9 +9,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-l476 STM Nucleo-L476
- * @ingroup     boards_nucleo64
- * @brief       Support for the STM Nucleo-L476
+ * @defgroup    boards_nucleo-l476 ST Nucleo-L476
+ * @ingroup     boards_common_nucleo64
+ * @brief       Support for the ST Nucleo-L476
  * @{
  *
  * @file

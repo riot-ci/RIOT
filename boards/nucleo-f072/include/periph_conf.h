@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-f072 STM Nucleo-F072
- * @ingroup     boards_nucleo64
- * @brief       Support for the STM Nucleo-F072
+ * @defgroup    boards_nucleo-f072 ST Nucleo-F072
+ * @ingroup     boards_common_nucleo64
+ * @brief       Support for the ST Nucleo-F072
  * @{
  *
  * @file
