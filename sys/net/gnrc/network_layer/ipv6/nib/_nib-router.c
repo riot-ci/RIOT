@@ -57,8 +57,8 @@ void _handle_snd_mc_ra(gnrc_netif_t *netif)
         /* router has router advertising interface or the RA is one of the
          * (now deactivated) routers final one (and there is no next
          * scheduled within the possible time for next_ra_time) */
-        if (((final_ra && (next_scheduled > NDP_MAX_RA_INTERVAL_MS)) ||
-             gnrc_netif_is_rtr_adv(netif))) {
+        if ((final_ra && (next_scheduled > NDP_MAX_RA_INTERVAL_MS)) ||
+            gnrc_netif_is_rtr_adv(netif)) {
             _snd_rtr_advs(netif, NULL, final_ra);
             netif->ipv6.last_ra = (xtimer_now_usec64() / US_PER_MS) & UINT32_MAX;
             if ((netif->ipv6.ra_sent < NDP_MAX_INIT_RA_NUMOF) || final_ra) {
