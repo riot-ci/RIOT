@@ -43,10 +43,10 @@ int gnrc_netreg_register(gnrc_nettype_t type, gnrc_netreg_entry_t *entry)
     /* only threads with a message queue are allowed to register at gnrc */
     assert((entry->type != GNRC_NETREG_TYPE_DEFAULT) ||
            sched_threads[entry->target.pid]->msg_array);
-#endif
 #else
     /* only threads with a message queue are allowed to register at gnrc */
     assert(sched_threads[entry->target.pid]->msg_array);
+#endif
 #endif
 
     if (_INVALID_TYPE(type)) {
