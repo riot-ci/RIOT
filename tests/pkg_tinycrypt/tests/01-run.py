@@ -11,8 +11,7 @@ import sys
 
 
 def testfunc(child):
-    child.expect_exact('PASS - main.')
-    child.expect_exact('PROJECT EXECUTION SUCCESSFUL')
+    child.expect_exact('[SUCCESS]')
 
 
 if __name__ == "__main__":

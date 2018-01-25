@@ -1,17 +1,9 @@
 include ../Makefile.tests_common
 
 USEPKG += tinycrypt
-
-# The imported `test_utils.h` does throw warnings when used with `c99` on
-# `native, so we build this test without `-Wextra` on native
-ifeq (native,$(BOARD))
-  WERROR = 0
-endif
+USEMODULE = fmt
 
 include $(RIOTBASE)/Makefile.include
-
-# use the header files from tinycrypts tests folder
-INCLUDES += -I$(PKGDIRBASE)/tinycrypt/tests/include
 
 test:
 	tests/01-run.py
