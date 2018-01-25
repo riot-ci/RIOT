@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-f091 ST Nucleo-F091
+ * @defgroup    boards_nucleo-f091 STM32 Nucleo-F091
  * @ingroup     boards_common_nucleo64
- * @brief       Support for the ST Nucleo-F091
+ * @brief       Support for the STM32 Nucleo-F091
  * @{
  *
  * @file

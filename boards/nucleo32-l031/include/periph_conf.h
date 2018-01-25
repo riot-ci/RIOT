@@ -8,9 +8,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo32-l031 ST Nucleo32-L031
+ * @defgroup    boards_nucleo32-l031 STM32 Nucleo32-L031
  * @ingroup     boards_common_nucleo32
- * @brief       Support for the ST Nucleo32-L031
+ * @brief       Support for the STM32 Nucleo32-L031
  * @{
  *
  * @file

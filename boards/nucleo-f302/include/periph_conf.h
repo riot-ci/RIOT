@@ -9,9 +9,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-f302 ST Nucleo-F302
+ * @defgroup    boards_nucleo-f302 STM32 Nucleo-F302
  * @ingroup     boards_common_nucleo64
- * @brief       Support for the ST Nucleo-F302
+ * @brief       Support for the STM32 Nucleo-F302
  * @{
  *
  * @file
