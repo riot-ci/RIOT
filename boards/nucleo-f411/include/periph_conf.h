@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-f411 STM Nucleo-F411
- * @ingroup     boards_nucleo64
- * @brief       Support for the STM Nucleo-F411
+ * @defgroup    boards_nucleo-f411 ST Nucleo-F411
+ * @ingroup     boards_common_nucleo64
+ * @brief       Support for the ST Nucleo-F411
  * @{
  *
  * @file
