@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo144-f303 STM Nucleo144-F303
- * @ingroup     boards_nucleo144
- * @brief       Support for the STM Nucleo144-F303
+ * @defgroup    boards_nucleo144-f303 ST Nucleo144-F303
+ * @ingroup     boards_common_nucleo144
+ * @brief       Support for the ST Nucleo144-F303
  * @{
  *
  * @file

@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    boards_nucleo-f103 STM Nucleo-F103
- * @ingroup     boards_nucleo64
- * @brief       Support for the STM Nucleo-F103
+ * @defgroup    boards_nucleo-f103 ST Nucleo-F103
+ * @ingroup     boards_common_nucleo64
+ * @brief       Support for the ST Nucleo-F103
  * @{
  *
  * @file
