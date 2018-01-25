@@ -9,9 +9,9 @@
  */
 
 /**
- * @defgroup    boards_common_nucleo144 ST Nucleo-144
+ * @defgroup    boards_common_nucleo144 STM32 Nucleo-144
  * @ingroup     boards
- * @brief       Support for ST Nucleo-144 boards
+ * @brief       Support for STM32 Nucleo-144 boards
  * @{
  *
  * @file
