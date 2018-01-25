@@ -6,7 +6,7 @@ PKG_LICENSE=BSD-3-Clause
 .PHONY: all
 
 all: git-download
-	@cp Makefile.$(PKG_NAME) $(PKG_BUILDDIR)/lib/source/Makefile
-	"$(MAKE)" -C $(PKG_BUILDDIR)/lib/source/
+	"$(MAKE)" -C $(PKG_BUILDDIR)/lib/source/ \
+			  -f $(RIOTPKG)/tinycrypt/Makefile.$(PKG_NAME)
 
 include $(RIOTBASE)/pkg/pkg.mk
