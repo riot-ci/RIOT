@@ -1,11 +1,12 @@
 PKG_NAME=tinycrypt
 PKG_URL=https://github.com/01org/tinycrypt
-PKG_VERSION=8a35f172d48aebbdf3adc4b69af10b0957f1a8e0
+PKG_VERSION=3ea1a609e7aff9f2d8d13803e1076b7a8e551804
 PKG_LICENSE=BSD-3-Clause
 
 .PHONY: all
 
 all: git-download
-	"$(MAKE)" -C $(PKG_BUILDDIR)
+	@cp Makefile.$(PKG_NAME) $(PKG_BUILDDIR)/lib/source/Makefile
+	"$(MAKE)" -C $(PKG_BUILDDIR)/lib/source/
 
 include $(RIOTBASE)/pkg/pkg.mk
