@@ -1,45 +1,47 @@
-# thread_priority_inversion test application
+NOTE
+====
+THIS TEST WILL FAIL WHEN RUNNING RIOT USING THE DEFAULT CORE/KERNEL CONFIGURATION!
 
-This application uses three threads for demonstrating the
-priority inversion problem. In theory, the highest priority thread (**t_high**)
-should be scheduled periodically and produce some output:
-```
-2017-07-17 17:00:29,337 - INFO # t_high: got resource.
-...
-2017-07-17 17:00:30,343 - INFO # t_high: freeing resource...
-```
-During this phase of 1s, **t_high** lockes the mutex **res_mtx** which
-represents a shared ressource. After unlocking the mutex, **t_high** waits 1s
-before restaring its cycle again.
+TODO: merge the `core_priority_inheritance` module to enable priority
+      inheritance and with this successfully pass this test.
 
-A low priority thread **t_low** is doing the same. Since both threads sharing
-the same resource **res_mtx**, they have to wait for each other until the mutex
-is unlocked. On startup, **t_low** starts immediately, while **t_high** waits
-0.5s before so that **t_low** allocates the resource first. Together, the output
-looks like this:
-```
-2017-07-17 17:00:28,339 - INFO # t_low: allocating resource...
-2017-07-17 17:00:28,339 - INFO # t_low: got resource.
-2017-07-17 17:00:28,340 - INFO # t_high: allocating resource...
-2017-07-17 17:00:29,337 - INFO # t_low: freeing resource...
-2017-07-17 17:00:29,337 - INFO # t_high: got resource.
-2017-07-17 17:00:29,338 - INFO # t_low: freed resource.
-2017-07-17 17:00:30,343 - INFO # t_high: freeing resource...
-2017-07-17 17:00:30,344 - INFO # t_high: freed resource.
-2017-07-17 17:00:30,345 - INFO # t_low: allocating resource...
-2017-07-17 17:00:30,346 - INFO # t_low: got resource.
-...
-```
+Expected result
+===============
+When successful, you will see the three configured threads printing 7 different
+events in a defined order. If the test passes, the output should look like this:
 
-After 3s, a third thread with medium priority (**t_mid**) is started. This
-thread does not touch **res_mtx**, but it runs an infinite loop without leaving
-some CPU time to lower priority tasks. This prevents **t_low** from freeing the
-resource and thus, **t_high** from running (**Priority Inversion**). In this
-situation, the test program output stops with the following lines:
 ```
-2017-07-17 17:00:31,335 - INFO # t_mid: doing some stupid stuff...
-2017-07-17 17:00:31,340 - INFO # t_high: allocating resource...
+main(): This is RIOT! (Version: xxx)
+Simple test for showing the effect of priority inversion
+
+If this tests succeeds, you should see 7 events appearing in order.
+The expected output should look like this:
+Event  1:   t_low - locking mutex
+Event  2:   t_low - holding mutex
+Event  3:  t_high - locking mutex
+Event  4:   t_mid - starting infinite loop, potentially starving others
+Event  5:   t_low - unlocking mutex
+Event  6:  t_high - holding mutex
+Event  7:  t_high - unlocking mutex
+
+TEST OUTPUT:
+Event  1:   t_low - locking mutex
+Event  2:   t_low - holding mutex
+Event  3:  t_high - locking mutex
+Event  4:   t_mid - starting infinite loop, potentially starving others
+Event  5:   t_low - unlocking mutex
+Event  6:  t_high - holding mutex
+Event  7:  t_high - unlocking mutex
+
+   *** result: SUCCESS ***
 ```
 
-If the scheduler contains a mechanism for handling this problem, the program
-should continue with output from **t_high**.
+Background
+==========
+Priority inversion is a known problem in real-time systems, leading in certain
+constellations to lower priority threads indirectly blocking higher priority
+threads. This test application constructs a simple situation, where exactly this
+occurs: t_low owns a mutex, which t_high is waiting on. Now t_mid gets all the
+CPU time (as t_mid has a higher priority than t_low), preventing t_low from
+unlocking the mutex shared with t_high. So t_mid is indirectly preventing t_high
+from running.
