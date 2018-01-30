@@ -34,7 +34,14 @@
 
 static volatile I2C_TransferReturn_TypeDef i2c_progress[I2C_NUMOF];
 
-static mutex_t i2c_lock[I2C_NUMOF];
+/**
+ * @brief   Initialized bus locks (we have a maximum of three devices)
+ */
+static mutex_t i2c_lock[] = {
+    MUTEX_INIT,
+    MUTEX_INIT,
+    MUTEX_INIT
+};
 
 /**
  * @brief   Start and track an I2C transfer.
@@ -67,9 +74,6 @@ int i2c_init_master(i2c_t dev, i2c_speed_t speed)
     if (dev >= I2C_NUMOF) {
         return -1;
     }
-
-    /* initialize lock */
-    mutex_init(&i2c_lock[dev]);
 
     /* enable clocks */
     CMU_ClockEnable(cmuClock_HFPER, true);
