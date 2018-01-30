@@ -770,7 +770,7 @@ int gnrc_netif_ipv6_group_idx(gnrc_netif_t *netif, const ipv6_addr_t *addr)
 }
 
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_CC110X) || \
-    defined(MODULE_NRFMIN) || define(MODULE_XBEE)
+    defined(MODULE_NRFMIN) || defined(MODULE_XBEE)
 static void _create_iid_from_short(const gnrc_netif_t *netif, eui64_t *eui64)
 {
     const unsigned offset = sizeof(eui64_t) - netif->l2addr_len;
