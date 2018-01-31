@@ -94,6 +94,10 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
         if (nread <= 0) {
             gnrc_pktbuf_release(pkt);
             return NULL;
+        } else if (nread <= 1) {
+            DEBUG("_recv_ieee802154: received frame is too short\n");
+            gnrc_pktbuf_release(pkt);
+            return NULL;
         }
         if (!(state->flags & NETDEV_IEEE802154_RAW)) {
             gnrc_pktsnip_t *ieee802154_hdr, *netif_hdr;
