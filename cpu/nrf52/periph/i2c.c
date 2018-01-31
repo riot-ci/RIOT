@@ -101,6 +101,11 @@ int i2c_init_master(i2c_t bus, i2c_speed_t speed)
     /* configure bus clock speed */
     dev(bus)->FREQUENCY = speed;
 
+    /* re-enable the device. We expect that the device was being acquired before
+     * the i2c_init_master() function is called, so it should be enabled when
+     * exiting this function. */
+    dev(bus)->ENABLE = TWIM_ENABLE_ENABLE_Enabled;
+
     return 0;
 }
 
