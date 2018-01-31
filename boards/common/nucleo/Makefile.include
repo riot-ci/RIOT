@@ -2,5 +2,14 @@
 USEMODULE += boards_common_nucleo
 INCLUDES  += -I$(RIOTBOARD)/common/nucleo/include
 
+# configure the serial terminal
+PORT_LINUX ?= /dev/ttyACM0
+PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+include $(RIOTMAKE)/tools/serial.inc.mk
+
 # Nucleo boards use st-link
-include $(RIOTBOARD)/common/stm32-stlink/Makefile.include
+export DEBUG_ADAPTER ?= stlink
+export STLINK_VERSION ?= 2-1
+
+# include openocd
+include $(RIOTMAKE)/tools/openocd.inc.mk
