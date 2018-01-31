@@ -782,7 +782,7 @@ static void _create_iid_from_short(const gnrc_netif_t *netif, eui64_t *eui64)
     memcpy(&eui64->uint8[offset], netif->l2addr, netif->l2addr_len);
 }
 #endif /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_CC110X) ||
-        * defined(MODULE_NRFMIN) */
+        * defined(MODULE_NRFMIN) || defined(MODULE_XBEE) */
 
 int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *eui64)
 {
