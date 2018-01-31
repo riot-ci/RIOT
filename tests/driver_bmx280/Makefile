@@ -2,7 +2,7 @@ include ../Makefile.tests_common
 
 DRIVER ?= bme280
 
+USEMODULE += fmt
 USEMODULE += $(DRIVER)
-USEMODULE += xtimer
 
 include $(RIOTBASE)/Makefile.include
