@@ -248,22 +248,25 @@ int bmx280_init(bmx280_t *dev, const bmx280_params_t *params)
     /* configure the chip-select pin */
     if (spi_init_cs(BUS, CS) != SPI_OK) {
         DEBUG("[bmx280] error: unable to configure chip the select pin\n");
-        _release(dev);
-        return BMX280_ERR_BUS;
-    }
-#else
-    /* Initialize I2C interface */
-    if (i2c_init_master(BUS, CLK)) {
-        DEBUG("[bmx280] error: unable to initialize I2C device\n");
         return BMX280_ERR_BUS;
     }
 #endif
 
-    /* test bus configuration by acquiring SPI bus access */
+    /* acquire bus bus, this also tests the bus parameters in SPI mode */
     if (_acquire(dev) != BMX280_OK) {
         DEBUG("[bmx280] error: unable to acquire bus\n");
         return BMX280_ERR_BUS;
     }
+
+#ifndef BMX280_USE_SPI
+    /* initialize I2C interface, the init_master function expects the bus to be
+     * acquire first */
+    if (i2c_init_master(BUS, CLK)) {
+        _release(dev);
+        DEBUG("[bmx280] error: unable to initialize I2C device\n");
+        return BMX280_ERR_BUS;
+    }
+#endif
 
     /* test the connection to the device by reading and verifying its chip ID */
     if (_read_reg(dev, BMX280_CHIP_ID_REG, &reg) != BMX280_OK) {
