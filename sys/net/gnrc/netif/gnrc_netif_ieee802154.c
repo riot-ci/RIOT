@@ -82,7 +82,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
     gnrc_pktsnip_t *pkt = NULL;
     int bytes_expected = dev->driver->recv(dev, NULL, 0, NULL);
 
-    if (bytes_expected > 0) {
+    if (bytes_expected >= IEEE802154_MIN_FRAME_LEN) {
         int nread;
 
         pkt = gnrc_pktbuf_add(NULL, NULL, bytes_expected, GNRC_NETTYPE_UNDEF);
@@ -92,10 +92,6 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
         }
         nread = dev->driver->recv(dev, pkt->data, bytes_expected, &rx_info);
         if (nread <= 0) {
-            gnrc_pktbuf_release(pkt);
-            return NULL;
-        } else if (nread <= 1) {
-            DEBUG("_recv_ieee802154: received frame is too short\n");
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
@@ -159,6 +155,9 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
 
         DEBUG("_recv_ieee802154: reallocating.\n");
         gnrc_pktbuf_realloc_data(pkt, nread);
+    } else if (bytes_expected > 0) {
+        DEBUG("_recv_ieee802154: received frame is too short\n");
+        dev->driver->recv(dev, NULL, bytes_expected, NULL);
     }
 
     return pkt;
