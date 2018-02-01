@@ -136,15 +136,15 @@ typedef struct {
 /**
  * @brief   Initialize a QDEC device
  *
- * The QDEC module is based on virtual QDEC devices, which can have one or more
- * channels. The QDEC devices can be configured to run with a given frequency and
- * resolution, which are always identical for the complete device, hence for
- * every channel on a device.
+ * The QDEC module is based on virtual QDEC devices.
+ * The QDEC devices can be configured to run in three modes :
+ *      - X1
+ *      - X2
+ *      - X4
+ * See description above for more details about modes.
  *
- * The desired frequency and resolution may not be possible on a given device
- * when chosen too large. In this case the QDEC driver will always keep the
- * resolution and decrease the frequency if needed. To verify the correct
- * settings compare the returned value which is the actually set frequency.
+ * On QDEC counter overflow, an interuupt is triggered.
+ * The interruption calls the callback you will defined.
  *
  * @param[in] dev           QDEC device to initialize
  * @param[in] mode          QDEC mode : X1, X2 or X4
