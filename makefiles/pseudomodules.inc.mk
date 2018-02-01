@@ -77,6 +77,8 @@ PSEUDOMODULES += sock_udp
 PSEUDOMODULES += stdin
 PSEUDOMODULES += stdio_ethos
 PSEUDOMODULES += stdio_uart_rx
+PSEUDOMODULES += xtimer_on_ztimer
+PSEUDOMODULES += ztimer_%
 
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
