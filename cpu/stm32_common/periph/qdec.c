@@ -54,7 +54,7 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
     dev(qdec)->CR2 = 0;
     dev(qdec)->SMCR = 0;
     dev(qdec)->CCER = 0;
-    for (i = 0; i < TIMER_CHAN; i++) {
+    for (i = 0; i < QDEC_CHAN; i++) {
         dev(qdec)->CCR[i] = 0;
     }
 
@@ -80,13 +80,13 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
     }
 
     /* Reset configuration and CC channels */
-    for (i = 0; i < TIMER_CHAN; i++) {
+    for (i = 0; i < QDEC_CHAN; i++) {
         dev(qdec)->CCR[i] = 0;
     }
 
     /* Configure the used pins */
     i = 0;
-    while ((i < TIMER_CHAN) && (qdec_config[qdec].chan[i].pin != GPIO_UNDEF)) {
+    while ((i < QDEC_CHAN) && (qdec_config[qdec].chan[i].pin != GPIO_UNDEF)) {
         gpio_init(qdec_config[qdec].chan[i].pin, GPIO_IN);
         gpio_init_af(qdec_config[qdec].chan[i].pin, qdec_config[qdec].af);
         i++;

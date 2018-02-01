@@ -150,9 +150,7 @@ static const qdec_conf_t qdec_config[] = {
         .rcc_mask = RCC_APB1ENR_TIM3EN,
         .max      = 0xffffffff,
         .chan     = { { .pin = GPIO_PIN(PORT_B, 4) /* D5 */, .cc_chan = 0 },
-                      { .pin = GPIO_PIN(PORT_C, 7) /* D9 */, .cc_chan = 1 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
+                      { .pin = GPIO_PIN(PORT_C, 7) /* D9 */, .cc_chan = 1 } },
         .af       = GPIO_AF2,
         .bus      = APB1,
         .irqn     = TIM3_IRQn
@@ -162,9 +160,7 @@ static const qdec_conf_t qdec_config[] = {
         .rcc_mask = RCC_APB1ENR_TIM4EN,
         .max      = 0xffffffff,
         .chan     = { { .pin = GPIO_PIN(PORT_B, 6),           .cc_chan = 0 },
-                      { .pin = GPIO_PIN(PORT_B, 7),           .cc_chan = 1 },
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0 } },
+                      { .pin = GPIO_PIN(PORT_B, 7),           .cc_chan = 1 } },
         .af       = GPIO_AF2,
         .bus      = APB1,
         .irqn     = TIM4_IRQn

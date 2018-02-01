@@ -61,6 +61,11 @@ extern "C" {
 #define TIMER_CHAN          (4U)
 
 /**
+ * @brief   All STM QDEC timers have 2 capture channels
+ */
+#define QDEC_CHAN           (2U)
+
+/**
  * @brief   Use the shared SPI functions
  * @{
  */
@@ -259,7 +264,7 @@ typedef struct {
     TIM_TypeDef *dev;               /**< Timer used */
     uint32_t max;
     uint32_t rcc_mask;              /**< bit in clock enable register */
-    qdec_chan_t chan[TIMER_CHAN];    /**< channel mapping, set to {GPIO_UNDEF, 0}
+    qdec_chan_t chan[QDEC_CHAN];    /**< channel mapping, set to {GPIO_UNDEF, 0}
                                      *   if not used */
     gpio_af_t af;                   /**< alternate function used */
     uint8_t bus;                    /**< APB bus */
