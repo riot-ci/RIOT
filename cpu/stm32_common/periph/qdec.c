@@ -63,20 +63,20 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
      */
     switch (mode) {
         /* X2 mode */
-	    case QDEC_X2:
-		    dev(qdec)->SMCR |= (0x02 << TIM_SMCR_SMS_Pos);
-		    break;
+        case QDEC_X2:
+            dev(qdec)->SMCR |= (0x02 << TIM_SMCR_SMS_Pos);
+            break;
         /* X4 mode */
-	    case QDEC_X4:
-		    dev(qdec)->SMCR |= (0x03 << TIM_SMCR_SMS_Pos);
-		    break;
+        case QDEC_X4:
+            dev(qdec)->SMCR |= (0x03 << TIM_SMCR_SMS_Pos);
+            break;
         /* X1 mode does not exist on STM32 as STM32 always counts
          * on both rising and falling edges from encoder
          */
-	    case QDEC_X1:
-	    default:
-		    errno = EINVAL;
-		    goto err_invalid_mode;
+        case QDEC_X1:
+        default:
+            errno = EINVAL;
+            goto err_invalid_mode;
     }
 
     /* Reset configuration and CC channels */
