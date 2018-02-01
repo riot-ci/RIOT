@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Josua Arndt <jarndt@ias.rwth-aachen.de>
+ * Copyright (C) 2018 RWTH Aachen, Josua Arndt, Steffen Robertz
  *               2016 Kaspar Schleiser <kaspar@schleiser.de>
  *               2014 Freie Universität Berlin, Hinnerk van Bruinehsen
  *
@@ -9,7 +9,7 @@
  */
 
 /**
- * @ingroup     cpu_atmega_common
+ * @ingroup     cpu_atmega256rfr2
  * @ingroup     drivers_periph_pm
  * @{
  *
@@ -18,6 +18,7 @@
  *
  * @author      Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
  * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  *
  * @}
@@ -28,16 +29,16 @@
 #include "irq.h"
 #include "periph/pm.h"
 
+#include "stdio.h"
+
 void pm_reboot(void)
 {
-    #if defined(CPU_ATMEGA256RFR2)
+    /* set a variable to stack to signalizes soft reset */
+    #if defined(MODULE_AT86RFR2)
     /* clear MCU Status Register Interrupt flags */
     MCUSR = 0x00;
-    /* Softreset recognition feature, "r3" will be read out in .init0
-     * to be able to distinguish WDT reset and WDT software reset
-     */
-    __asm__ __volatile__("mov r3, %0\n" :: "r" (0xAA));
-    #endif /* CPU_ATMEGA256RFR2 */
+    _asm_ _volatile_("mov r3, %0\n" :: "r" (0xAA));
+    #endif
 
     /*
      * Since the AVR doesn't support a real software reset, we set the Watchdog
@@ -45,5 +46,14 @@ void pm_reboot(void)
      */
     irq_disable();
     wdt_enable(WDTO_250MS);
-    while(1){}
+
+    while (1) {
+    }
 }
+
+
+void pm_set_lowest(void)
+{
+    /* don't do anything here */
+}
+
