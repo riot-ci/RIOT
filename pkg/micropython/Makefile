@@ -1,6 +1,7 @@
 PKG_NAME=micropython
 PKG_URL=https://github.com/micropython/micropython
-PKG_VERSION=c3f519adfe1faf7808fa49fdb6006040317279ca
+PKG_VERSION=1f549a3496ac543390a170a7eb7b242475063016
+PKG_LICENSE=MIT
 
 .PHONY: all
 
