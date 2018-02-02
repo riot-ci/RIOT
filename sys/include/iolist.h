@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    sys_util iolist scatter / gather IO
- * @ingroup     sys
+ * @defgroup    sys_util_iolist iolist scatter / gather IO
+ * @ingroup     sys_util
  * @brief       Provides linked-list scatter / gather IO
  *
  * @{
