@@ -9,12 +9,16 @@
 .PHONY: prepare git-download clean
 
 git-download:
-	true
+	@true
 
-prepare:
+prepare: $(PKG_BUILDDIR)/.prepared
+	@true
+
+$(PKG_BUILDDIR)/.prepared:
 	rm -Rf $(PKG_BUILDDIR)
 	mkdir -p $$(dirname $(PKG_BUILDDIR))
 	cp -a $(PKG_SOURCE_LOCAL) $(PKG_BUILDDIR)
+	touch $@
 
-clean:
-	rm -Rf $(PKG_BUILDDIR)
+clean::
+	@rm -f $(PKG_BUILDDIR)/.prepared
