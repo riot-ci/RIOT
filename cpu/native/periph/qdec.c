@@ -71,12 +71,9 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
     switch (mode) {
         /* X1 mode */
         case QDEC_X1:
-        /* X2 mode */
+            break;
         case QDEC_X2:
-            break;
-        /* X4 mode */
         case QDEC_X4:
-            break;
         default:
             errno = EINVAL;
             goto err_invalid_mode;
