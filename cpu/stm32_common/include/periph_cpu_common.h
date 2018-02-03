@@ -262,7 +262,7 @@ typedef struct {
  */
 typedef struct {
     TIM_TypeDef *dev;               /**< Timer used */
-    uint32_t max;
+    uint32_t max;                   /**< Maximum counter value */
     uint32_t rcc_mask;              /**< bit in clock enable register */
     qdec_chan_t chan[QDEC_CHAN];    /**< channel mapping, set to {GPIO_UNDEF, 0}
                                      *   if not used */

@@ -49,7 +49,7 @@
 
 #ifdef QDEC_NUMOF
 
-#define NATIVE_QDEC_MAX     2147483647
+#define NATIVE_QDEC_MAX     (0x7FFFFFFFL)
 
 /* QDEC devices */
 uint32_t qdecs[QDEC_NUMOF];
@@ -58,8 +58,6 @@ int32_t  qdecs_value[QDEC_NUMOF];
 
 int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
 {
-    uint8_t i = 0;
-
     /* no interrupt needed since it is externally incremented */
     (void)cb;
     (void)arg;
@@ -68,7 +66,7 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
     assert((qdec < QDEC_NUMOF));
 
     /* Count on A (TI1) signal edges, B (TI2) signal edges or both,
-     * default to EINVAL (Invalide argument).
+     * default to EINVAL (Invalid argument).
      */
     switch (mode) {
         /* X1 mode */
@@ -85,8 +83,9 @@ int32_t qdec_init(qdec_t qdec, qdec_mode_t mode, qdec_cb_t cb, void *arg)
     }
 
     /* Initialize qdec channels */
-    for (i = 0; i < QDEC_NUMOF; i++)
+    for (uint8_t i = 0; i < QDEC_NUMOF; i++) {
         qdecs[qdec] = 0;
+    }
 
     /* Reset counter and start qdec */
     qdec_start(qdec);

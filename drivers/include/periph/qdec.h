@@ -7,11 +7,11 @@
  */
 
 /**
- * @defgroup    drivers_periph_qdec QDEC
+ * @defgroup    drivers_periph_qdec Quadrature Decoder (QDEC)
  * @ingroup     drivers_periph
  * @brief       Low-level QDEC peripheral driver
  *
- * This file was inspired by pwm.h writed by :
+ * This file was inspired by pwm.h written by :
  *  Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
  * QDEC interface enables access to CPU peripherals acquiring quadrature
@@ -128,7 +128,7 @@ typedef void (*qdec_cb_t)(void *arg);
  */
 #ifndef HAVE_TIMER_ISR_CTX_T
 typedef struct {
-    qdec_cb_t cb;          /**< callback executed from qdec interrupt */
+    qdec_cb_t cb;           /**< callback executed from qdec interrupt */
     void *arg;              /**< optional argument given to that callback */
 } qdec_isr_ctx_t;
 #endif
@@ -144,7 +144,7 @@ typedef struct {
  * See description above for more details about modes.
  *
  * On QDEC counter overflow, an interuupt is triggered.
- * The interruption calls the callback you will defined.
+ * The interruption calls the callback defined.
  *
  * @param[in] dev           QDEC device to initialize
  * @param[in] mode          QDEC mode : X1, X2 or X4
