@@ -7,19 +7,20 @@ PKG_LICENSE=LGPL-2.1
 
 CFLAGS += -Wno-gnu-zero-variadic-macro-arguments -Wno-unused-function -Wno-newline-eof
 
+TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
+
 all: $(PKG_BUILDDIR)/Makefile
 	$(MAKE) -C $(PKG_BUILDDIR) && \
 	cp $(PKG_BUILDDIR)/lib/librelic_s.a $(BINDIR)/$(PKG_NAME).a
 
 $(PKG_BUILDDIR)/Makefile: $(PKG_BUILDDIR)/xcompile-toolchain.cmake
-	cd "$(PKG_BUILDDIR)" && \
+	cd $(PKG_BUILDDIR) && \
 	COMP="$(filter-out -Werror=old-style-definition -Werror=strict-prototypes, $(CFLAGS) ) " \
-	cmake -DCMAKE_TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake \
+	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
 		  -DCHECK=off -DTESTS=0 -DBENCH=0 -DSHLIB=off -Wno-dev $(RELIC_CONFIG_FLAGS) .
 
-$(PKG_BUILDDIR)/xcompile-toolchain.cmake: fix_source
-	cd $(PKG_BUILDDIR) && \
-	perl $(RIOTTOOLS)/cmake/generate-xcompile-toolchain.pl > xcompile-toolchain.cmake
+$(TOOLCHAIN_FILE): fix_source
+	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
 fix_source: git-download
 	./fix-util_print_wo_args.sh $(PKG_BUILDDIR)
