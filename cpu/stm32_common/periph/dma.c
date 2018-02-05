@@ -87,7 +87,6 @@ void dma_init(void)
 int dma_transfer(dma_t dma, int chan, const void *src, void *dst, size_t len,
                  dma_mode_t mode, uint8_t flags)
 {
-    dma_acquire(dma);
     int ret = dma_configure(dma, chan, src, dst, len, mode, flags);
     if (ret != 0) {
         return ret;
@@ -95,7 +94,6 @@ int dma_transfer(dma_t dma, int chan, const void *src, void *dst, size_t len,
     dma_start(dma);
     dma_wait(dma);
     dma_stop(dma);
-    dma_release(dma);
 
     return len;
 }

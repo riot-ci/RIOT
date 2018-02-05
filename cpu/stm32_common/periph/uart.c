@@ -148,7 +148,11 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 #ifdef MODULE_PERIPH_DMA
     if (uart_config[uart].dma != DMA_STREAM_UNDEF) {
         if (irq_is_in()) {
-            uint16_t todo = dma_suspend(uart_config[uart].dma);
+            uint16_t todo = 0;
+            if (dev(uart)->CR3 & USART_CR3_DMAT) {
+                /* DMA transfer for UART on-going */
+                todo = dma_suspend(uart_config[uart].dma);
+            }
             if (todo) {
                 dma_stop(uart_config[uart].dma);
                 dev(uart)->CR3 &= ~USART_CR3_DMAT;
@@ -164,9 +168,11 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 
         }
         else {
+            dma_acquire(uart_config[uart].dma);
             dev(uart)->CR3 |= USART_CR3_DMAT;
             dma_transfer(uart_config[uart].dma, uart_config[uart].dma_chan, data,
                          (void *)&dev(uart)->DR, len, DMA_MEM_TO_PERIPH, DMA_INC_SRC_ADDR);
+            dma_release(uart_config[uart].dma);
 
             /* make sure the function is synchronous by waiting for the transfer to
              * finish */
