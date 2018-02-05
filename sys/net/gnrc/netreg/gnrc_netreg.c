@@ -84,18 +84,6 @@ gnrc_netreg_entry_t *gnrc_netreg_lookup_next(gnrc_netreg_entry_t *from,
     return res;
 }
 
-int gnrc_netreg_num(gnrc_nettype_t type, uint32_t demux_ctx)
-{
-    int num = 0;
-    gnrc_netreg_entry_t *entry = NULL;
-
-    while ((entry = gnrc_netreg_lookup_next(entry, type, demux_ctx))) {
-        ++num;
-    }
-
-    return num;
-}
-
 gnrc_netreg_entry_t *gnrc_netreg_getnext(gnrc_netreg_entry_t *entry)
 {
     return (entry ? gnrc_netreg_lookup_next(entry, 0, entry->demux_ctx) : NULL);
