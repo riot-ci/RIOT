@@ -7,9 +7,7 @@
  */
 
 /**
- * @defgroup    boards_nucleo144-f446 STM32 Nucleo144-F446
- * @ingroup     boards_common_nucleo144
- * @brief       Support for the STM32 Nucleo144-F446
+ * @ingroup     boards_nucleo144-f446
  * @{
  *
  * @file
