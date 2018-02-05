@@ -39,7 +39,7 @@ extern "C" {
  * 1: external crystal available (always 32.768kHz)
  *
  * LSE might not be available by default in early (C-01) Nucleo boards.
- * If you're sure it is present, define CLOCL_LSE=1 in your project
+ * If you're sure it is present, define CLOCK_LSE=1 in your project
  * configuration or makefile
  */
 #ifndef CLOCK_LSE
