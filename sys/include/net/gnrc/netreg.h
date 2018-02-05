@@ -334,6 +334,21 @@ void gnrc_netreg_unregister(gnrc_nettype_t type, gnrc_netreg_entry_t *entry);
 gnrc_netreg_entry_t *gnrc_netreg_lookup(gnrc_nettype_t type, uint32_t demux_ctx);
 
 /**
+ * @brief   Searches the next entry in the registry that matches given
+ *          parameters, start lookup from beginning or given entry.
+ *
+ * @param[in] from      A registry entry to lookup from or NULL to start fresh
+ * @param[in] type      Type of the protocol.
+ * @param[in] demux_ctx The demultiplexing context for the registered thread.
+ *                      See gnrc_netreg_entry_t::demux_ctx.
+ *
+ * @return  The first entry fitting the given parameters on success
+ * @return  NULL if no entry can be found.
+ */
+gnrc_netreg_entry_t *gnrc_netreg_lookup_next(gnrc_netreg_entry_t *from,
+                                             gnrc_nettype_t type,
+                                             uint32_t demux_ctx);
+/**
  * @brief   Returns number of entries with the same gnrc_netreg_entry_t::type and
  *          gnrc_netreg_entry_t::demux_ctx.
  *
