@@ -38,6 +38,7 @@
 #define PRINTER_TYPE        (0xabcd)
 
 #define POWEROFF_DELAY      (250U * US_PER_MS)      /* quarter of a second */
+#define CLOCKOFF_DELAY      POWEROFF_DELAY
 
 #ifndef UART_STDIO_DEV
 #define UART_STDIO_DEV      (UART_UNDEF)
@@ -119,6 +120,15 @@ static void sleep_test(int num, uart_t uart)
     puts("[OK]");
 }
 
+static void clockoff_test(int num, uart_t uart)
+{
+    printf("UARD_DEV(%i): test uart_clockon() and uart_clockoff()  ->  ", num);
+    uart_clockoff(uart);
+    xtimer_usleep(CLOCKOFF_DELAY);
+    uart_clockon(uart);
+    puts("[OK]");
+}
+
 static int cmd_init(int argc, char **argv)
 {
     int dev, res;
@@ -150,6 +160,7 @@ static int cmd_init(int argc, char **argv)
     /* also test if poweron() and poweroff() work (or at least don't break
      * anything) */
     sleep_test(dev, UART_DEV(dev));
+    clockoff_test(dev, UART_DEV(dev));
 
     return 0;
 }
@@ -195,11 +206,12 @@ int main(void)
          "being printed to STDOUT\n\n"
          "NOTE: all strings need to be '\\n' terminated!\n");
 
-    /* do sleep test for UART used as STDIO. There is a possibility, that the
+    /* do sleep and clockoff tests for UART used as STDIO. There is a possibility, that the
      * value given in UART_STDIO_DEV is not a numeral (depends on the CPU
      * implementation), so we rather break the output by printing a
      * non-numerical value instead of breaking the UART device descriptor */
     sleep_test(UART_STDIO_DEV, UART_STDIO_DEV);
+    clockoff_test(UART_STDIO_DEV, UART_STDIO_DEV);
 
     puts("\nUART INFO:");
     printf("Available devices:               %i\n", UART_NUMOF);
