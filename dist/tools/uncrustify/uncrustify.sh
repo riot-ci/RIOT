@@ -17,6 +17,10 @@ check () {
 }
 
 exec_uncrustify () {
+    if [ "$(git diff HEAD)" ] ; then
+        echo "Please commit all changes before running uncrustify.sh"
+        exit 1
+    fi
     for F in $FILES
     do
         uncrustify -c $CURDIR/uncrustify-riot.cfg --no-backup $RIOTBASE/$F
