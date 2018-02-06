@@ -94,14 +94,15 @@ static inline int _snd_rcv_mbox(mbox_t *mbox, uint16_t type, gnrc_pktsnip_t *pkt
 int gnrc_netapi_dispatch(gnrc_nettype_t type, uint32_t demux_ctx,
                          uint16_t cmd, gnrc_pktsnip_t *pkt)
 {
-    int numof = gnrc_netreg_num(type, demux_ctx);
+    int numof = 0;
+    gnrc_netreg_entry_t *sendto = gnrc_netreg_lookup(type, demux_ctx);
 
-    if (numof != 0) {
-        gnrc_netreg_entry_t *sendto = gnrc_netreg_lookup(type, demux_ctx);
-
-        gnrc_pktbuf_hold(pkt, numof - 1);
-
-        while (sendto) {
+    if (sendto != NULL) {
+        do {
+            if (numof != 0) {
+                gnrc_pktbuf_hold(pkt, 1);
+            }
+            numof++;
 #if defined(MODULE_GNRC_NETAPI_MBOX) || defined(MODULE_GNRC_NETAPI_CALLBACKS)
             int release = 0;
             switch (sendto->type) {
@@ -138,8 +139,7 @@ int gnrc_netapi_dispatch(gnrc_nettype_t type, uint32_t demux_ctx,
                 gnrc_pktbuf_release(pkt);
             }
 #endif
-            sendto = gnrc_netreg_getnext(sendto);
-        }
+        } while ((sendto = gnrc_netreg_getnext(sendto)));
     }
 
     return numof;
