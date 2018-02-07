@@ -80,7 +80,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
      */
     unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)UART0_BASEADDR ) / 0x1000;
 
-    /* Configure the Rx and Tx pins. If no callback function is defined, 
+    /* Configure the Rx and Tx pins. If no callback function is defined,
      * the UART should be initialised in Tx only mode.
      */
     if (rx_cb) {
@@ -127,8 +127,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     u->cc2538_uart_ifls.IFLSbits.TXIFLSEL = FIFO_LEVEL_4_8TH;     /**< MCU default */
     u->cc2538_uart_ctl.CTLbits.TXE = 1;
 
-    /* Enable high speed (UART is clocked using system clock divided by 8 
-     * rather than 16) 
+    /* Enable high speed (UART is clocked using system clock divided by 8
+     * rather than 16)
      */
     u->cc2538_uart_ctl.CTLbits.HSE = UART_CTL_HSE_VALUE;
 
@@ -184,7 +184,7 @@ void uart_poweroff(uart_t uart)
 
     /* Wait for the TX FIFO to clear */
     while (uart_config[uart].dev->cc2538_uart_fr.FRbits.TXFF) {}
-    
+
     uart_config[uart].dev->cc2538_uart_ctl.CTLbits.UARTEN = 0;
 }
 
