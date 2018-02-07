@@ -32,18 +32,15 @@
 #define UART_TXD(X) (cc2538_ioc_sel_t)(2 * (X)) /**< UART Tx pin function */
 #define UART_IRQ(X) (IRQn_Type)(5 + (X))        /**< UART interrupt */
 
-#undef BIT
-#define BIT(n) ( 1 << (n) )
-
 /* Bit field definitions for the UART Line Control Register: */
-#define FEN   BIT( 4) /**< Enable FIFOs */
+#define FEN (1 << 4)    /**< Enable FIFOs */
 
 /* Bit masks for the UART Masked Interrupt Status (MIS) Register: */
-#define OEMIS BIT(10) /**< UART overrun error masked status */
-#define BEMIS BIT( 9) /**< UART break error masked status */
-#define FEMIS BIT( 7) /**< UART framing error masked status */
-#define RTMIS BIT( 6) /**< UART RX time-out masked status */
-#define RXMIS BIT( 4) /**< UART RX masked interrupt status */
+#define OEMIS (1 << 10) /**< UART overrun error masked status */
+#define BEMIS (1 << 9)  /**< UART break error masked status */
+#define FEMIS (1 << 7)  /**< UART framing error masked status */
+#define RTMIS (1 << 6)  /**< UART RX time-out masked status */
+#define RXMIS (1 << 4)  /**< UART RX masked interrupt status */
 
 #define UART_CTL_HSE_VALUE    0
 #define DIVFRAC_NUM_BITS      6
@@ -70,28 +67,6 @@ enum {
  */
 static uart_isr_ctx_t uart_ctx[UART_NUMOF];
 
-static void reset(cc2538_uart_t *u)
-{
-    /* Make sure the UART is disabled before trying to configure it */
-    u->cc2538_uart_ctl.CTLbits.UARTEN = 0;
-
-    u->cc2538_uart_ctl.CTLbits.RXE = 1;
-    u->cc2538_uart_ctl.CTLbits.TXE = 1;
-    u->cc2538_uart_ctl.CTLbits.HSE = UART_CTL_HSE_VALUE;
-
-    /* Clear error status */
-    u->cc2538_uart_dr.ECR = 0xFF;
-
-    /* Flush FIFOs by clearing LCHR.FEN */
-    u->cc2538_uart_lcrh.LCRH &= ~FEN;
-
-    /* Restore LCHR configuration */
-    u->cc2538_uart_lcrh.LCRH |= FEN;
-
-    /* UART Enable */
-    u->cc2538_uart_ctl.CTLbits.UARTEN = 1;
-}
-
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
 
@@ -105,8 +80,12 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
      */
     unsigned int uart_num = ( (uintptr_t)u - (uintptr_t)UART0_BASEADDR ) / 0x1000;
 
-    /* Configure the Rx and Tx pins */
-    gpio_init_af(uart_config[uart].rx_pin, UART_RXD(uart_num), GPIO_IN);
+    /* Configure the Rx and Tx pins. If no callback function is defined, 
+     * the UART should be initialised in Tx only mode.
+     */
+    if (rx_cb) {
+        gpio_init_af(uart_config[uart].rx_pin, UART_RXD(uart_num), GPIO_IN);
+    }
     gpio_init_af(uart_config[uart].tx_pin, UART_TXD(uart_num), GPIO_OUT);
 
     /* Enable clock for the UART while Running, in Sleep and Deep Sleep */
@@ -121,12 +100,14 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     u->CC = 0;
 
     /* On the CC2538, hardware flow control is supported only on UART1 */
-    if (uart_config[uart].rts_pin != GPIO_UNDEF){
+    if (uart_config[uart].rts_pin != GPIO_UNDEF) {
+        assert(u != UART0_BASEADDR);
         gpio_init_af(uart_config[uart].rts_pin, UART1_RTS, GPIO_OUT);
         u->cc2538_uart_ctl.CTLbits.RTSEN = 1;
     }
 
-    if (uart_config[uart].cts_pin != GPIO_UNDEF){
+    if (uart_config[uart].cts_pin != GPIO_UNDEF) {
+        assert(u != UART0_BASEADDR);
         gpio_init_af(uart_config[uart].cts_pin, UART1_CTS, GPIO_IN);
         u->cc2538_uart_ctl.CTLbits.CTSEN = 1;
     }
@@ -136,14 +117,19 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
      * Acknowledge Overrun, Break and Framing Errors
      * Acknowledge RX Timeout and Rx
      */
-    u->cc2538_uart_im.IM = OEMIS | BEMIS | FEMIS | RTMIS | RXMIS | 0x00;
+    u->cc2538_uart_im.IM = (OEMIS | BEMIS | FEMIS | RTMIS | RXMIS);
 
-    /* Set FIFO interrupt levels: */
-    u->cc2538_uart_ifls.IFLSbits.RXIFLSEL = FIFO_LEVEL_4_8TH; /**< MCU default */
-    u->cc2538_uart_ifls.IFLSbits.TXIFLSEL = FIFO_LEVEL_4_8TH; /**< MCU default */
-
-    u->cc2538_uart_ctl.CTLbits.RXE = 1;
+    /* Set FIFO interrupt levels and enable Rx and/or Tx: */
+    if (rx_cb) {
+        u->cc2538_uart_ifls.IFLSbits.RXIFLSEL = FIFO_LEVEL_4_8TH; /**< MCU default */
+        u->cc2538_uart_ctl.CTLbits.RXE = 1;
+    }
+    u->cc2538_uart_ifls.IFLSbits.TXIFLSEL = FIFO_LEVEL_4_8TH;     /**< MCU default */
     u->cc2538_uart_ctl.CTLbits.TXE = 1;
+
+    /* Enable high speed (UART is clocked using system clock divided by 8 
+     * rather than 16) 
+     */
     u->cc2538_uart_ctl.CTLbits.HSE = UART_CTL_HSE_VALUE;
 
     /* Set the divisor for the baud rate generator */
@@ -157,15 +143,17 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* Configure line control for 8-bit, no parity, 1 stop bit and enable  */
     u->cc2538_uart_lcrh.LCRH = (WLEN_8_BITS << 5) | FEN;
 
+    /* register callbacks */
+    if (rx_cb) {
+        uart_ctx[uart].rx_cb = rx_cb;
+        uart_ctx[uart].arg = arg;
+    }
+
+    /* enable UART interrupt */
+    NVIC_EnableIRQ(UART_IRQ(uart_num));
+
     /* UART Enable */
     u->cc2538_uart_ctl.CTLbits.UARTEN = 1;
-
-    /* register callbacks */
-    uart_ctx[uart].rx_cb = rx_cb;
-    uart_ctx[uart].arg = arg;
-
-    /* enable RX interrupt */
-    NVIC_EnableIRQ(UART_IRQ(uart_num));
 
     return UART_OK;
 }
@@ -194,6 +182,9 @@ void uart_poweroff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 
+    /* Wait for the TX FIFO to clear */
+    while (uart_config[uart].dev->cc2538_uart_fr.FRbits.TXFF) {}
+    
     uart_config[uart].dev->cc2538_uart_ctl.CTLbits.UARTEN = 0;
 }
 
@@ -208,12 +199,17 @@ void uart_clockoff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 
+    /* Wait for the TX FIFO to clear */
+    while (uart_config[uart].dev->cc2538_uart_fr.FRbits.TXFF) {}
+
     SYS_CTRL->cc2538_sys_ctrl_unnamed1.RCGCUART &= ~(1 << uart);
 }
 
 static inline void irq_handler(uart_t uart)
 {
     assert(uart < UART_NUMOF);
+
+    cc2538_uart_t *u = uart_config[uart].dev;
 
     uint_fast16_t mis;
 
@@ -226,8 +222,8 @@ static inline void irq_handler(uart_t uart)
     }
 
     if (mis & (OEMIS | BEMIS | FEMIS)) {
-        /* ISR triggered due to some error condition */
-        reset(uart_config[uart].dev);
+        /* Clear error status */
+        u->cc2538_uart_dr.ECR = 0xFF;
     }
 
     cortexm_isr_end();
