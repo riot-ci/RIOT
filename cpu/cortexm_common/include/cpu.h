@@ -104,10 +104,17 @@ static inline void cortexm_sleep(int deep)
     }
 
     /* ensure that all memory accesses have completed and trigger sleeping */
-    /* avoid state to be stored in r0 (causes fault in some platforms) */
-    volatile unsigned state = irq_disable();
+    unsigned state = irq_disable();
     __DSB();
     __WFI();
+    /*
+     * For some reason this CPU crashes without a __NOP() before restoring
+     * interruptions, for other CPUs there's nothing to do.
+     * More info: https://community.st.com/thread/41010-wfi-instruction-causes-system-crash
+     */
+#if defined(CPU_MODEL_STM32L152RE)
+    __NOP();
+#endif
     irq_restore(state);
 }
 
