@@ -162,9 +162,6 @@ void uart_poweron(uart_t uart);
  */
 void uart_poweroff(uart_t uart);
 
-void uart_clockoff(uart_t uart);
-
-void uart_clockon(uart_t uart);
 #ifdef __cplusplus
 }
 #endif
