@@ -470,7 +470,7 @@ static int mtd_spi_nor_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t size)
             size -= total_size;
         }
         else if ((dev->flag & SPI_NOR_F_SECT_32K) && (size >= 32768) && ((addr & 0x7FFF) == 0)) {
-            /* 32 KiO sectors can be erased with sector erase command */
+            /* 32 KiO blocks can be erased with block erase command */
             mtd_spi_cmd_addr_write(dev, dev->opcode->block_erase_32k, addr_be, NULL, 0);
             addr += 32768ul;
             size -= 32768ul;
