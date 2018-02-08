@@ -77,9 +77,20 @@
 
 /* Longest timer timeout tested (TUT ticks)*/
 /* Reduce this if RAM usage is too high */
+#ifndef TEST_MAX
 #define TEST_MAX 128
+#endif
 /* Shortest timer timeout tested (TUT ticks) */
+#ifndef TEST_MIN
+#if TIM_TEST_FREQ < 100000
+/* this usually works for slow timers */
 #define TEST_MIN 1
+#else
+/* avoid problems with timer_set_absolute setting a time in the past because of
+ * processing delays */
+#define TEST_MIN 2
+#endif
+#endif
 /* Number of test values */
 #define TEST_NUM ((TEST_MAX) - (TEST_MIN) + 1)
 
@@ -97,13 +108,7 @@
 
 /* Print results every X TUT ticks */
 #ifndef TEST_PRINT_INTERVAL_TICKS
-#if (TIM_TEST_FREQ < 1000000ul)
-/* slow timer */
-#define TEST_PRINT_INTERVAL_TICKS 500000ul
-#else
-/* fast timer */
-#define TEST_PRINT_INTERVAL_TICKS 20000000ul
-#endif
+#define TEST_PRINT_INTERVAL_TICKS (TIM_TEST_FREQ * 15)
 #endif
 
 /* If variance or mean exceeds these values the row will be marked with a "SIC!"
@@ -120,8 +125,8 @@ typedef struct {
     int64_t sum;
     uint64_t sum_sq;
     uint32_t count;
-    int16_t min;
-    int16_t max;
+    int32_t min;
+    int32_t max;
 } test_state_t;
 
 /* Reference target */
@@ -144,8 +149,7 @@ static void cb(void *arg, int chan)
 {
     (void)chan;
     unsigned int now = timer_read(TIM_REF_DEV);
-    /* Assume difference is somewhat small */
-    int16_t diff = now - target;
+    int32_t diff = now - target;
     if (arg == NULL) {
         print_str("cb: Warning! arg = NULL\n");
         return;
@@ -158,10 +162,9 @@ static void cb(void *arg, int chan)
 
     ++state->count;
     state->sum += diff;
-    /* Assuming the differences will be small (< 2**16) and the
-     * number of samples is reasonably limited (< 2**33 at least), to prevent
-     * overflow in sum_sq */
-    state->sum_sq += diff * diff;
+    /* Assuming the differences will be small on average and the number of
+     * samples is reasonably limited, to prevent overflow in sum_sq */
+    state->sum_sq += (int64_t)diff * diff;
     if (diff > state->max) {
         state->max = diff;
     }
