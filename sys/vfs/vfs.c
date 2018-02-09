@@ -497,9 +497,12 @@ int vfs_umount(vfs_mount_t *mountp)
         DEBUG("vfs_umount: not mounted\n");
         mutex_unlock(&_mount_mutex);
         return -EINVAL;
-    case -EINVAL:
+    case -EBUSY:
+        /* -EBUSY returned when fs is mounted, just continue */
+        break;
+    default:
         DEBUG("vfs_umount: invalid fs\n");
-        return ret;
+        return -EINVAL;
     }
     DEBUG("vfs_umount: -> \"%s\" open=%d\n", mountp->mount_point, atomic_load(&mountp->open_files));
     if (atomic_load(&mountp->open_files) > 0) {
