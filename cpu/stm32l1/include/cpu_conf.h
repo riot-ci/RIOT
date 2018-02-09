@@ -72,6 +72,20 @@ extern "C" {
 #define CPU_FLASH_BASE                  FLASH_BASE
 /** @} */
 
+/**
+ * @brief   Flash page configuration
+ * @{
+ */
+#if defined(CPU_MODEL_STM32L152RE)
+#define FLASHPAGE_SIZE      (256U)
+#define FLASHPAGE_NUMOF     (2048U)
+#endif
+/* The minimum block size which can be written is 4B. However, the erase
+ * block is always FLASHPAGE_SIZE.
+ */
+#define FLASHPAGE_RAW_BLOCKSIZE    (4)
+/* Writing should be always 4 byte aligned */
+#define FLASHPAGE_RAW_ALIGNMENT    (4)
 #ifdef __cplusplus
 }
 #endif
