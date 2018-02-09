@@ -492,12 +492,12 @@ int vfs_umount(vfs_mount_t *mountp)
 {
     DEBUG("vfs_umount: %p\n", (void *)mountp);
     int ret = check_mount(mountp);
-    if (ret == 0) {
+    switch (ret) {
+    case 0:
         DEBUG("vfs_umount: not mounted\n");
         mutex_unlock(&_mount_mutex);
         return -EINVAL;
-    }
-    else if (ret == -EINVAL) {
+    case -EINVAL:
         DEBUG("vfs_umount: invalid fs\n");
         return ret;
     }
