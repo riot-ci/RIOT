@@ -150,7 +150,10 @@ static int _format(vfs_mount_t *mountp)
 {
     spiffs_desc_t *fs_desc = mountp->private_data;
     DEBUG("spiffs: format: private_data = %p\n", mountp->private_data);
-    prepare(fs_desc);
+    int res = prepare(fs_desc);
+    if (res) {
+        return -ENODEV;
+    }
 
     s32_t ret = SPIFFS_mount(&fs_desc->fs,
                              &fs_desc->config,
@@ -180,7 +183,10 @@ static int _mount(vfs_mount_t *mountp)
 {
     spiffs_desc_t *fs_desc = mountp->private_data;
     DEBUG("spiffs: mount: private_data = %p\n", mountp->private_data);
-    prepare(fs_desc);
+    int res = prepare(fs_desc);
+    if (res) {
+        return -ENODEV;
+    }
 
     s32_t ret = SPIFFS_mount(&fs_desc->fs,
                              &fs_desc->config,
