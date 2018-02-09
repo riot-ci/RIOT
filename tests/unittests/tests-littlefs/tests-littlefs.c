@@ -148,7 +148,8 @@ static void tests_littlefs_format(void)
 {
     int res;
     vfs_umount(&_test_littlefs_mount);
-    mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
+    res = mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
+    TEST_ASSERT_EQUAL_INT(0, res);
 
     res = vfs_mount(&_test_littlefs_mount);
     TEST_ASSERT(res < 0);
