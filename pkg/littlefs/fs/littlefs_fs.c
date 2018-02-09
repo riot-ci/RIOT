@@ -167,9 +167,12 @@ static int _format(vfs_mount_t *mountp)
     littlefs_desc_t *fs = mountp->private_data;
 
     DEBUG("littlefs: format: mountp=%p\n", (void *)mountp);
-    prepare(fs);
+    int ret = prepare(fs);
+    if (ret) {
+        return -ENODEV;
+    }
 
-    int ret = lfs_format(&fs->fs, &fs->config);
+    ret = lfs_format(&fs->fs, &fs->config);
     mutex_unlock(&fs->lock);
 
     return littlefs_err_to_errno(ret);
@@ -180,9 +183,12 @@ static int _mount(vfs_mount_t *mountp)
     littlefs_desc_t *fs = mountp->private_data;
 
     DEBUG("littlefs: mount: mountp=%p\n", (void *)mountp);
-    prepare(fs);
+    int ret = prepare(fs);
+    if (ret) {
+        return -ENODEV;
+    }
 
-    int ret = lfs_mount(&fs->fs, &fs->config);
+    ret = lfs_mount(&fs->fs, &fs->config);
     mutex_unlock(&fs->lock);
 
     return littlefs_err_to_errno(ret);
