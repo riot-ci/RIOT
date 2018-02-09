@@ -35,7 +35,14 @@
 static volatile I2C_TransferReturn_TypeDef i2c_progress[I2C_NUMOF];
 
 /**
- * @brief   Initialized bus locks (we have a maximum of three devices)
+ * @brief   Ensure number of I2C devices do not exceed maximum.
+ */
+#if I2C_NUMOF > 3
+#error "Too many I2C devices, update efm32/periph/i2c.c."
+#endif
+
+/**
+ * @brief   Initialized bus locks (we have a maximum of three devices).
  */
 static mutex_t i2c_lock[] = {
     MUTEX_INIT,
