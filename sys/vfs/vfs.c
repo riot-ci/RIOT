@@ -410,7 +410,7 @@ int vfs_closedir(vfs_DIR *dirp)
 /**
  * @brief Check if the given mount point is mounted
  *
- * If the mount point is not mounted, _mount_mutex is locked byt ehis function
+ * If the mount point is not mounted, _mount_mutex will be locked by this function
  *
  * @param mountp    mount point to check
  * @return 0 on success (mount point is valid and not mounted)
@@ -457,7 +457,8 @@ int vfs_format(vfs_mount_t *mountp)
         }
     }
 
-    return 0;
+    /* Format operation not supported */
+    return -ENOTSUP;
 }
 
 int vfs_mount(vfs_mount_t *mountp)

@@ -711,7 +711,7 @@ int vfs_closedir(vfs_DIR *dirp);
  * @p mountp should have been populated in advance with a file system driver,
  * a mount point, and private_data (if the file system driver uses one).
  *
- * @p mountp must not be mounted
+ * @pre @p mountp must not be mounted
  *
  * @param[in]  mountp   pointer to the mount structure of the filesystem to format
  *
