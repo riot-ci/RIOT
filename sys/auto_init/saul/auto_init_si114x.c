@@ -14,11 +14,12 @@
  * @brief       Auto initialization of Si114x driver.
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ *              Bas Stottelaar <basstottelaar@gmail.com>
  *
  * @}
  */
 
-#ifdef MODULE_SI70XX
+#ifdef MODULE_SI114X
 
 #include "log.h"
 #include "saul_reg.h"
