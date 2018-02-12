@@ -107,12 +107,8 @@ static inline void cortexm_sleep(int deep)
     unsigned state = irq_disable();
     __DSB();
     __WFI();
-    /*
-     * For some reason this CPU crashes without a __NOP() before restoring
-     * interruptions, for other CPUs there's nothing to do.
-     * More info: https://community.st.com/thread/41010-wfi-instruction-causes-system-crash
-     */
 #if defined(CPU_MODEL_STM32L152RE)
+    /* STM32L152RE crashes without this __NOP(). See #8518. */
     __NOP();
 #endif
     irq_restore(state);
