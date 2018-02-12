@@ -1,26 +1,22 @@
 ifneq (,$(filter newlib_nano,$(USEMODULE)))
-  # Test if nano.specs is available
-  ifeq ($(shell $(LINK) -specs=nano.specs -E - 2>/dev/null >/dev/null </dev/null ; echo $$?),0)
-    USE_NEWLIB_NANO = 1
-    ifeq ($(shell echo "int main(){} void _exit(int n) {(void)n;while(1);}" | LC_ALL=C $(CC) -xc - -o /dev/null -lc -specs=nano.specs -Wall -Wextra -pedantic 2>&1 | grep -q "use of wchar_t values across objects may fail" ; echo $$?),0)
-        CFLAGS += -fshort-wchar
-        LINKFLAGS += -Wl,--no-wchar-size-warning
+  ifeq ($(TOOLCHAIN), llvm)
+    # Clang does not use .specs files
+    # Test if libc_nano is found
+    ifneq ($(shell LC_ALL=C $(CC) $(CFLAGS) -xc - -o /dev/null -lc_nano 2>&1 >/dev/null </dev/null | grep -q 'find -lc_nano'; echo $$?),0)
+      USE_NEWLIB_NANO = 1
+    endif
+  else
+    # Test if nano.specs is available
+    ifeq ($(shell $(LINK) -specs=nano.specs -E - 2>/dev/null >/dev/null </dev/null ; echo $$?),0)
+      USE_NEWLIB_NANO = 1
     endif
   endif
 endif
 
+$(info USE_NEWLIB_NANO = $(USE_NEWLIB_NANO))
+
 ifneq (,$(filter newlib_gnu_source,$(USEMODULE)))
   CFLAGS += -D_GNU_SOURCE=1
-endif
-
-ifeq (1,$(USE_NEWLIB_NANO))
-  export LINKFLAGS += -specs=nano.specs
-endif
-
-ifeq ($(TARGET_ARCH),mips-mti-elf)
- export LINKFLAGS += -lc
-else
- export LINKFLAGS += -lc -lnosys
 endif
 
 # Search for Newlib include directories
@@ -61,17 +57,26 @@ ifeq ($(TOOLCHAIN),llvm)
   # A cross GCC already knows the target libc include path (build-in at compile time)
   # but Clang, when cross-compiling, needs to be told where to find the headers
   # for the system being built.
-  # We also add -nostdinc to avoid including the host system headers by mistake
-  # in case some header is missing from the cross tool chain
-  NEWLIB_INCLUDES := -isystem $(NEWLIB_INCLUDE_DIR) -nostdinc
+  NEWLIB_INCLUDES := -isystem $(NEWLIB_INCLUDE_DIR)
   NEWLIB_INCLUDES += $(addprefix -isystem ,$(abspath $(wildcard $(dir $(NEWLIB_INCLUDE_DIR))/usr/include)))
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
+  LINKFLAGS += -lc_nano
+  ifneq ($(TOOLCHAIN),llvm)
+    LINKFLAGS += -specs=nano.specs
+  endif
+  ifeq ($(shell echo "int main(){} void _exit(int n) {(void)n;while(1);}" | LC_ALL=C $(CC) -xc - -o /dev/null -lc -specs=nano.specs -Wall -Wextra -pedantic 2>&1 | grep -q "use of wchar_t values across objects may fail" ; echo $$?),0)
+      CFLAGS += -fshort-wchar
+      LINKFLAGS += -Wl,--no-wchar-size-warning
+  endif
+
   NEWLIB_NANO_INCLUDE_DIR ?= $(NEWLIB_INCLUDE_DIR)/newlib-nano
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
   INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
+else
+  LINKFLAGS += -lc
 endif
 
 # Newlib includes should go before GCC includes. This is especially important
