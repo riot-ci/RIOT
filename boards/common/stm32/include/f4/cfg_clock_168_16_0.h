@@ -16,8 +16,8 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef F4_CFG_CLOCK_168_16_1_H
-#define F4_CFG_CLOCK_168_16_1_H
+#ifndef F4_CFG_CLOCK_168_16_0_H
+#define F4_CFG_CLOCK_168_16_0_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,5 +58,5 @@ extern "C" {
 }
 #endif
 
-#endif /* F4_CFG_CLOCK_168_8_1_H */
+#endif /* F4_CFG_CLOCK_168_8_0_H */
 /** @} */
