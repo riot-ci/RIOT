@@ -70,6 +70,9 @@ static void _transfer(i2c_t dev, I2C_TransferSeq_TypeDef *transfer)
 
 int i2c_init_master(i2c_t dev, i2c_speed_t speed)
 {
+    /* assert number of locks */
+    assert(I2C_NUMOF <= (sizeof(i2c_lock) / sizeof(i2c_lock[0])));
+
     /* check if device is valid */
     if (dev >= I2C_NUMOF) {
         return -1;
