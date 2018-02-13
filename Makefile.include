@@ -386,6 +386,7 @@ distclean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
 	-@rm -rf $(BINDIRBASE)
 
+# if make target != 'flash-only', add target 'all' to ensure build before flash
 ifeq (,$(filter flash-only, $(MAKECMDGOALS)))
   BUILD_BEFORE_FLASH = all
 endif
