@@ -146,7 +146,7 @@ static int _umount(int argc, char **argv)
 static int _cat(int argc, char **argv)
 {
     if (argc < 2) {
-        puts("filename missing");
+        printf("Usage: %s <file>\n", argv[0]);
         return 1;
     }
     /* With newlib, low-level syscalls are plugged to RIOT vfs
@@ -177,7 +177,7 @@ static int _cat(int argc, char **argv)
     return 0;
 }
 
-static int _write(int argc, char **argv)
+static int _tee(int argc, char **argv)
 {
     if (argc != 3) {
         printf("Usage: %s <file> <str>\n", argv[0]);
@@ -213,7 +213,7 @@ static const shell_command_t shell_commands[] = {
     { "format", "format flash file system", _format },
     { "umount", "unmount flash filesystem", _umount },
     { "cat", "print the content of a file", _cat },
-    { "write", "write a string in a file", _write },
+    { "tee", "write a string in a file", _tee },
     { NULL, NULL, NULL }
 };
 
