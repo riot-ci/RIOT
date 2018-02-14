@@ -128,6 +128,17 @@ static const adc_conf_t adc_config[] = {
 };
 
 #define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
+/*
+ * KW41Z ADC reference settings:
+ * 0: VREFH external pin or VREF_OUT 1.2 V signal (if VREF module is enabled)
+ * 1: VDDA (analog supply input voltage)
+ * 2-3: reserved
+ *
+ * VREF_OUT and VREFH shares the pin on KW41Z and is only connected to a 100 nF
+ * capacitor on the FRDM-KW41Z board. So use VDDA by default on this board
+ * unless the application enables the VREF module.
+ */
+#define ADC_REF_SETTING     1
 /** @} */
 
 /**
