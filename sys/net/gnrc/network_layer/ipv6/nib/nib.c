@@ -647,15 +647,14 @@ static void _handle_rtr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
     }
 #if GNRC_IPV6_NIB_CONF_6LN
     if ((dr != NULL) && gnrc_netif_is_6ln(netif) &&
-        !gnrc_netif_is_6lbr(netif) &&
-        !(netif->flags & GNRC_NETIF_FLAGS_6LO_ADDRS_REG)) {
-        /* (register addresses already assigned)*/
+        !gnrc_netif_is_6lbr(netif)) {
+        /* (register addresses already assigned but not valid yet)*/
         for (int i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
-            if ((netif->ipv6.addrs_flags[i] != 0)) {
+            if ((netif->ipv6.addrs_flags[i] != 0) &&
+                (netif->ipv6.addrs_flags[i] != GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID)) {
                 _handle_rereg_address(&netif->ipv6.addrs[i]);
             }
         }
-        netif->flags |= GNRC_NETIF_FLAGS_6LO_ADDRS_REG;
     }
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
     tmp_len = icmpv6_len - sizeof(ndp_rtr_adv_t);
