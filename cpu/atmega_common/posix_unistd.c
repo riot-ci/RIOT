@@ -15,12 +15,12 @@
  */
 
 #include <errno.h>
-#include <fcntl.h>
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #ifdef MODULE_VFS
+#include <fcntl.h>
 #include "vfs.h"
 #elif defined(MODULE_UART_STDIO)
 #include "uart_stdio.h"
