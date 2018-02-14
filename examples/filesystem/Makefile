@@ -37,8 +37,8 @@ USEMODULE += mtd
 USEMODULE += vfs
 
 # Use a file system
-# USEMODULE += littlefs
-USEMODULE += spiffs
+USEMODULE += littlefs
+# USEMODULE += spiffs
 # USEMODULE += fatfs
 USEMODULE += constfs
 # USEMODULE += devfs
