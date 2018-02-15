@@ -29,38 +29,60 @@
 /* Flash mount point */
 #define FLASH_MOUNT_POINT   "/sda"
 
+/* In this example, MTD_0 is used as mtd interface for littlefs or spiffs */
+/* littlefs and spiffs basic usage are shown */
 #ifdef MTD_0
 /* File system descriptor initialization */
 #if defined(MODULE_LITTLEFS)
+/* include file system header for driver */
 #include "fs/littlefs_fs.h"
 
+/* file system specific descriptor
+ * for littlefs, some fields can be tweaked to define the size
+ * of the partition, see header documentation.
+ * In this example, default behavior will be used, i.e. the entire
+ * memory will be used (parameters come from mtd) */
 static littlefs_desc_t fs_desc = {
     .lock = MUTEX_INIT,
 };
 
+/* littlefs file system driver will be used */
 #define FS_DRIVER littlefs_file_system
+
 #elif defined(MODULE_SPIFFS)
+/* include file system header */
 #include "fs/spiffs_fs.h"
 
+/* file system specific descriptor
+ * as for littlefs, some fields can be changed if needed,
+ * this example focus on basic usage, i.e. entire memory used */
 static spiffs_desc_t fs_desc = {
     .lock = MUTEX_INIT,
 };
 
+/* spiffs driver will be used */
 #define FS_DRIVER spiffs_file_system
 #endif
 
+/* this structure defines the vfs mount point:
+ *  - fs field is set to the file system driver
+ *  - mount_point field is the mount point name
+ *  - private_data depends on the underlying file system. For both spiffs and
+ *  littlefs, it needs to be a pointer to the file system descriptor */
 static vfs_mount_t flash_mount = {
     .fs = &FS_DRIVER,
     .mount_point = FLASH_MOUNT_POINT,
     .private_data = &fs_desc,
 };
 #endif /* MTD_0 */
+
 /* constfs example */
 #include "fs/constfs.h"
 
 #define HELLO_WORLD_CONTENT "Hello World!\n"
 #define HELLO_RIOT_CONTENT  "Hello RIOT!\n"
 
+/* this defines two const files in the constfs */
 static constfs_file_t constfs_files[] = {
     {
         .path = "/hello-world",
@@ -74,11 +96,14 @@ static constfs_file_t constfs_files[] = {
     }
 };
 
+/* this is the constfs specific descriptor */
 static constfs_t constfs_desc = {
     .nfiles = sizeof(constfs_files) / sizeof(constfs_files[0]),
     .files = constfs_files,
 };
 
+/* constfs mount point, as for previous example, it needs a file system driver,
+ * a mount poinr and private_data is a pointer to the constfs descriptor */
 static vfs_mount_t const_mount = {
     .fs = &constfs_file_system,
     .mount_point = "/const",
