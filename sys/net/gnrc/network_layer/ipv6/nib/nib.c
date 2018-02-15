@@ -1321,7 +1321,7 @@ static void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
     }
 
-if GNRC_IPV6_NIB_CONF_6LN
+#if GNRC_IPV6_NIB_CONF_6LN
     /* mark link-local addresses as valid on 6LN */
     if (gnrc_netif_is_6ln(netif) && ipv6_addr_is_link_local(pfx)) {
         /* don't do this beforehand or risk a deadlock:
