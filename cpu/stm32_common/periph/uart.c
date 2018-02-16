@@ -117,20 +117,20 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
-static void send_byte(uart_t uart, uint8_t byte)
+static inline void send_byte(uart_t uart, uint8_t byte)
 {
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) \
     || defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L4) \
     || defined(CPU_FAM_STM32F7)
-        while (!(dev(uart)->ISR & USART_ISR_TXE)) {}
-        dev(uart)->TDR = byte;
+    while (!(dev(uart)->ISR & USART_ISR_TXE)) {}
+    dev(uart)->TDR = byte;
 #else
-        while (!(dev(uart)->SR & USART_SR_TXE)) {}
-        dev(uart)->DR = byte;
+    while (!(dev(uart)->SR & USART_SR_TXE)) {}
+    dev(uart)->DR = byte;
 #endif
 }
 
-static void wait_for_tx_complete(uart_t uart)
+static inline void wait_for_tx_complete(uart_t uart)
 {
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) \
     || defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L4) \
