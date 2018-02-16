@@ -74,7 +74,7 @@ static size_t _prep_vector(socket_zep_t *dev, const iolist_t *iolist,
     size_t bytes;
     dev->chksum_buf = 0;
 
-    bytes = iolist_count(iolist);
+    bytes = iolist_size(iolist);
     bytes += sizeof(uint16_t); /* FCS field */
     out[0].iov_base = &dev->snd_hdr_buf;
     out[0].iov_len = _zep_hdr_fill(dev, out[0].iov_base, bytes);
