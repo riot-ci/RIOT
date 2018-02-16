@@ -146,6 +146,9 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     assert(uart < UART_NUMOF);
 
 #ifdef MODULE_PERIPH_DMA
+    if (!len) {
+        return;
+    }
     if (uart_config[uart].dma != DMA_STREAM_UNDEF) {
         if (irq_is_in()) {
             uint16_t todo = 0;
