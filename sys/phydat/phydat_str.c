@@ -49,13 +49,18 @@ void phydat_dump(phydat_t *data, uint8_t dim)
                 scale_str = phydat_scale_to_str(data->scale);
         }
 
-        printf("\t[%i] ", (int)i);
-
+        printf("\t");
+        if (dim > 1) {
+            printf("[%u] ", (unsigned int)i);
+        }
+        else {
+            printf("     ");
+        }
         if (scale_str) {
-            printf("%i%c", (int)data->val[i], scale_str);
+            printf("%6d %c", (int)data->val[i], scale_str);
         }
         else if (data->scale == 0) {
-            printf("%i", (int)data->val[i]);
+            printf("%6d", (int)data->val[i]);
         }
         else if ((data->scale > -5) && (data->scale < 0)) {
             char num[8];
