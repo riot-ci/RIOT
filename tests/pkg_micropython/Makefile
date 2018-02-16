@@ -12,6 +12,8 @@ RIOTBASE ?= $(CURDIR)/../..
 # add directory of generated *.py.h files to include path
 CFLAGS += -I$(BINDIR)/$(MODULE)py_h/
 
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
+
 #
 include $(RIOTBASE)/Makefile.include
 
@@ -27,4 +29,4 @@ $(PY_H): $(BINDIR)/$(MODULE)py_h/%.py.h: %.py
 	rm -f $(BINDIR)/$(APPLICATION)/main.o
 	xxd -i $< > $@
 
-all: $(PY_H)
+prepare: $(PY_H)
