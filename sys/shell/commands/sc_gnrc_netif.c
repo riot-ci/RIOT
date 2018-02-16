@@ -350,14 +350,16 @@ static void _netif_list_ipv6(ipv6_addr_t *addr, uint8_t flags)
         printf(" [anycast]");
     }
     switch (flags & GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_MASK) {
-        case GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_TENTATIVE:
-            printf("  TNT");
-            break;
         case GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_DEPRECATED:
             printf("  DPR");
             break;
         case GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID:
             printf("  VAL");
+            break;
+        default:
+            if (flags & GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_TENTATIVE) {
+                printf("  TNT");
+            }
             break;
     }
     line_thresh = _newline(0U, line_thresh);
