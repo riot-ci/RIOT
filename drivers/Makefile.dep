@@ -252,6 +252,10 @@ ifneq (,$(filter pcd8544,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter periph_common,$(USEMODULE)))
+  USEMODULE += analog_util
+endif
+
 ifneq (,$(filter rgbled,$(USEMODULE)))
   USEMODULE += color
 endif
