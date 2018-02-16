@@ -168,7 +168,6 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
                 dev(uart)->CR3 |= USART_CR3_DMAT;
                 dma_resume(uart_config[uart].dma, todo);
             }
-
         }
         else {
             dma_acquire(uart_config[uart].dma);
@@ -191,7 +190,6 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     /* make sure the function is synchronous by waiting for the transfer to
      * finish */
     wait_for_tx_complete(uart);
-
 }
 
 void uart_poweron(uart_t uart)
