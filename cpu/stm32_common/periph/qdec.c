@@ -33,6 +33,16 @@
  */
 static qdec_isr_ctx_t isr_ctx[QDEC_NUMOF];
 
+/**
+ * @brief Read the current value of the given qdec device. Internal use.
+ *
+ * @param[in] dev           the qdec to read the current value from
+ * @param[in] dev           perform a reset of qdec counter if not 0
+ *
+ * @return                  the qdecs current value
+ */
+static int32_t _qdec_read(qdec_t qdec, uint8_t reset);
+
 static inline TIM_TypeDef *dev(qdec_t qdec)
 {
     return qdec_config[qdec].dev;
@@ -118,6 +128,16 @@ err_invalid_mode:
 
 int32_t qdec_read(qdec_t qdec)
 {
+    return _qdec_read(qdec, false);
+}
+
+int32_t qdec_read_and_reset(qdec_t qdec)
+{
+    return _qdec_read(qdec, true);
+}
+
+static int32_t _qdec_read(qdec_t qdec, uint8_t reset)
+{
     int32_t count = 0;
     uint32_t irq_save = 0;
 
@@ -126,18 +146,33 @@ int32_t qdec_read(qdec_t qdec)
 
     /* Get counter value */
     count = dev(qdec)->CNT;
-
-    /* Reset counter */
-    dev(qdec)->CNT = dev(qdec)->ARR / 2;
-
-    /* Substract offset before return */
-    count -= dev(qdec)->ARR / 2;
+    if (reset)
+    {
+        dev(qdec)->CNT = dev(qdec)->ARR / 2;
+    }
 
     /* Restore IRQ */
     irq_restore(irq_save);
 
+    /* Substract offset before return */
+    count -= dev(qdec)->ARR / 2;
+
     /* Return count minus offset */
     return count;
+}
+
+void qdec_reset(qdec_t qdec)
+{
+    uint32_t irq_save = 0;
+
+    /* Protect critical section */
+    irq_save = irq_disable();
+
+    /* Reset counter */
+    dev(qdec)->CNT = dev(qdec)->ARR / 2;
+
+    /* Restore IRQ */
+    irq_restore(irq_save);
 }
 
 void qdec_start(qdec_t qdec)

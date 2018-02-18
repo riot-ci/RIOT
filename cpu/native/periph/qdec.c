@@ -95,14 +95,26 @@ err_invalid_mode:
 }
 
 /* Return QDEC value */
-int32_t qdec_read(qdec_t qdec)
+int32_t qdec_read_and_reset(qdec_t qdec)
 {
     int32_t count = 0;
-    (void)qdec;
 
-    return qdecs_value[qdec];
+    count = qdecs_value[qdec];
+    qdecs_value[qdec] = 0;
 
     return count;
+}
+
+/* Return QDEC value */
+int32_t qdec_read(qdec_t qdec)
+{
+    return qdecs_value[qdec];
+}
+
+/* Return QDEC value */
+void qdec_reset(qdec_t qdec)
+{
+    qdecs_value[qdec] = 0;;
 }
 
 /* Empty functions to keep API */

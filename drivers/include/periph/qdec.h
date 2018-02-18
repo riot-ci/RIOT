@@ -166,6 +166,24 @@ int32_t qdec_init(qdec_t dev, qdec_mode_t mode, qdec_cb_t cb, void *arg);
 int32_t qdec_read(qdec_t dev);
 
 /**
+ * @brief Read the current value of the given qdec device and reset it
+ *
+ * @param[in] dev           the qdec to read the current value from
+ *
+ * @return                  the qdecs current value
+ */
+int32_t qdec_read_and_reset(qdec_t dev);
+
+/**
+ * @brief Reset the given qdec timer
+ *
+ * Reset the qdec counter to zero.
+ *
+ * @param[in] qdec          the qdec device to reset
+ */
+void qdec_reset(qdec_t qdec);
+
+/**
  * @brief Start the given qdec timer
  *
  * This function is only needed if the qdec timer was stopped manually before.
