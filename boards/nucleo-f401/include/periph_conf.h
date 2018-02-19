@@ -147,8 +147,8 @@ static const pwm_conf_t pwm_config[] = {
 static const qdec_conf_t qdec_config[] = {
     {
         .dev      = TIM3,
-        .rcc_mask = RCC_APB1ENR_TIM3EN,
         .max      = 0xffffffff,
+        .rcc_mask = RCC_APB1ENR_TIM3EN,
         .chan     = { { .pin = GPIO_PIN(PORT_B, 4) /* D5 */, .cc_chan = 0 },
                       { .pin = GPIO_PIN(PORT_C, 7) /* D9 */, .cc_chan = 1 } },
         .af       = GPIO_AF2,
@@ -157,8 +157,8 @@ static const qdec_conf_t qdec_config[] = {
     },
     {
         .dev      = TIM4,
-        .rcc_mask = RCC_APB1ENR_TIM4EN,
         .max      = 0xffffffff,
+        .rcc_mask = RCC_APB1ENR_TIM4EN,
         .chan     = { { .pin = GPIO_PIN(PORT_B, 6),           .cc_chan = 0 },
                       { .pin = GPIO_PIN(PORT_B, 7),           .cc_chan = 1 } },
         .af       = GPIO_AF2,
