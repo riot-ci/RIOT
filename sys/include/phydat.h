@@ -158,8 +158,8 @@ const char *phydat_unit_to_str(uint8_t unit);
 /**
  * @brief   Convert the given scale factor to an SI prefix
  *
- * The given scaling factor will be given as SI unit (e.g. M for Mega, u for
- * micro, etc), or `\0` otherwise.
+ * The given scaling factor is returned as a SI unit prefix (e.g. M for Mega, u
+ * for micro, etc), or `\0` otherwise.
  *
  * @param[in] scale     scale factor to convert
  *
