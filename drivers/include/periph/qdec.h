@@ -143,7 +143,7 @@ typedef struct {
  *      - X4
  * See description above for more details about modes.
  *
- * On QDEC counter overflow, an interuupt is triggered.
+ * On QDEC counter overflow, an interrupt is triggered.
  * The interruption calls the callback defined.
  *
  * @param[in] dev           QDEC device to initialize
