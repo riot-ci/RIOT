@@ -29,7 +29,7 @@ int8_t phydat_fit(phydat_t *dat, long value, unsigned int index, int8_t prescale
     assert(index < (sizeof(dat->val) / sizeof(dat->val[0])));
     int8_t ret = prescale;
     while (prescale > 0) {
-        value = (value + 5) / 10;
+        value /= 10;
         --prescale;
     }
     while (prescale < 0) {
@@ -38,9 +38,9 @@ int8_t phydat_fit(phydat_t *dat, long value, unsigned int index, int8_t prescale
     }
     int8_t scale_offset = 0;
     while ((value > PHYDAT_MAX) || (value < PHYDAT_MIN)) {
-        value = (value + 5) / 10;
+        value /= 10;
         for (unsigned int k = 0; k < (sizeof(dat->val) / sizeof(dat->val[0])); ++k) {
-            dat->val[k] = (dat->val[k] + 5) / 10;
+            dat->val[k] /= 10;
         }
         ++scale_offset;
     }
