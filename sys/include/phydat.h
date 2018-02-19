@@ -182,7 +182,8 @@ char phydat_prefix_from_scale(int8_t scale);
  * @brief   Scale an integer value to fit into a phydat_t
  *
  * Fit an integer value in an existing phydat_t by rescaling all numbers and
- * updating the scale factor. The result will be _rounded_ to nearest integer.
+ * updating the scale factor. The result will be rounded towards zero (the
+ * standard C99 integer division behaviour).
  * The final parameter @p prescale can be used to chain multiple calls to
  * this function in order to fit multidimensional values into the same phydat_t.
  *
