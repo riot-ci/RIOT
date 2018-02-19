@@ -36,7 +36,6 @@ void handler(void *arg)
 int main(void)
 {
     uint32_t i = 0;
-    int32_t error = 0;
     int32_t value = 0;
     puts("Welcome into Quadrature Decoder (QDEC) test program.");
     puts("This program will count pulses on all available QDEC channels");
@@ -46,7 +45,7 @@ int main(void)
     puts("Quadrature decoding mode is set to X4 : counting on all edges on both signals");
 
     for (i = 0; i < QDEC_NUMOF; i++) {
-        error = qdec_init(QDEC_DEV(i), QDEC_X4, handler, (void *)i);
+        int32_t error = qdec_init(QDEC_DEV(i), QDEC_X4, handler, (void *)i);
         if (error) {
             fprintf(stderr,"Not supported mode !\n");
             return error;
@@ -56,7 +55,7 @@ int main(void)
     while(1) {
         for (i = 0; i < QDEC_NUMOF; i++) {
             value = qdec_read_and_reset(QDEC_DEV(i));
-            printf("QDEC %lu = %ld\n", i, value);
+            printf("QDEC %lu = %ld\n", (unsigned long int)i, (long int)value);
         }
         xtimer_sleep(1);
     }
