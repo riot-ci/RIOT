@@ -146,6 +146,8 @@ static int32_t _qdec_read(qdec_t qdec, uint8_t reset)
 
     /* Get counter value */
     count = dev(qdec)->CNT;
+
+    /* Reset counter if asked */
     if (reset)
     {
         dev(qdec)->CNT = dev(qdec)->ARR / 2;
@@ -159,20 +161,6 @@ static int32_t _qdec_read(qdec_t qdec, uint8_t reset)
 
     /* Return count minus offset */
     return count;
-}
-
-void qdec_reset(qdec_t qdec)
-{
-    uint32_t irq_save = 0;
-
-    /* Protect critical section */
-    irq_save = irq_disable();
-
-    /* Reset counter */
-    dev(qdec)->CNT = dev(qdec)->ARR / 2;
-
-    /* Restore IRQ */
-    irq_restore(irq_save);
 }
 
 void qdec_start(qdec_t qdec)

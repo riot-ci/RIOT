@@ -111,12 +111,6 @@ int32_t qdec_read(qdec_t qdec)
     return qdecs_value[qdec];
 }
 
-/* Return QDEC value */
-void qdec_reset(qdec_t qdec)
-{
-    qdecs_value[qdec] = 0;;
-}
-
 /* Empty functions to keep API */
 void qdec_start(qdec_t qdec)
 {

@@ -30,7 +30,7 @@ void handler(void *arg)
 {
     qdec_t qdec = (qdec_t)arg;
     printf("QDEC %u counter overflow : reset counter\n", qdec);
-    qdec_reset(QDEC_DEV(qdec));
+    qdec_read_and_reset(QDEC_DEV(qdec));
 }
 
 int main(void)
