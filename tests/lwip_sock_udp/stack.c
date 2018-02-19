@@ -159,7 +159,8 @@ static int _netdev_send(netdev_t *dev, const iolist_t *iolist)
         }
     }
     mutex_unlock(&_netdev_buffer_mutex);
-    done.content.value = (uint32_t)offset - sizeof(ethernet_hdr_t);
+    done.content.value = (uint32_t)offset - sizeof(ethernet_hdr_t) -
+                         sizeof(udp_hdr_t);
     msg_send(&done, _check_pid);
     return offset;
 }
