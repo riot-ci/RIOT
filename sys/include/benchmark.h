@@ -30,13 +30,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Prepare the current scope for running BENCHMARK_x() macros
- */
-#define BENCHMARK_SETUP()                       \
-    unsigned state;                             \
-    unsigned time
-
-/**
  * @brief   Measure the runtime of a given function call
  *
  * As we are doing a time sensitive measurement here, there is no way around
@@ -49,15 +42,17 @@ extern "C" {
  * @param[in] runs      number of times to run @p func
  * @param[in] func      function call to benchmark
  */
-#define BENCHMARK_FUNC(name, runs, func)        \
-    state = irq_disable();                      \
-    time = xtimer_now_usec();                   \
-    for (unsigned long i = 0; i < runs; i++) {  \
-        func;                                   \
-    }                                           \
-    time = (xtimer_now_usec() - time);          \
-    irq_restore(state);                         \
-    benchmark_print_time(time, runs, name)
+#define BENCHMARK_FUNC(name, runs, func)                    \
+    {                                                       \
+    unsigned _benchmark_irqstate = irq_disable();           \
+    uint32_t _benchmark_time = xtimer_now_usec();           \
+    for (unsigned long i = 0; i < runs; i++) {              \
+        func;                                               \
+    }                                                       \
+    _benchmark_time = (xtimer_now_usec() - _benchmark_time);\
+    irq_restore(_benchmark_irqstate);                       \
+    benchmark_print_time(_benchmark_time, runs, name);      \
+    }
 
 /**
  * @brief   Output the given time as well as the time per run on STDIO
