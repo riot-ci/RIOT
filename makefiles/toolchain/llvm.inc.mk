@@ -9,14 +9,16 @@ endif
 export CC          = clang
 export CXX         = clang++
 export CCAS       ?= $(CC)
-export LINK        = $(CC)
 export AS          = $(LLVMPREFIX)as
 export AR          = $(LLVMPREFIX)ar
 export NM          = $(LLVMPREFIX)nm
-# There is no LLVM linker yet, use GNU binutils.
-#export LINKER      = $(LLVMPREFIX)ld
+# LLVM does have a linker, however, it is not entirely
+# compatible with GCC. For instance spec files as used in
+# `makefiles/libc/newlib.mk` are not supported. Therefore
+# we just use GCC for now.
+export LINK        = $(PREFIX)gcc
+export LINKXX      = $(PREFIX)g++
 # objcopy does not have a clear substitute in LLVM, use GNU binutils
-#export OBJCOPY     = $(LLVMPREFIX)objcopy
 export OBJCOPY    ?= $(shell command -v $(PREFIX)objcopy gobjcopy objcopy | head -n 1)
 ifeq ($(OBJCOPY),)
 $(warning objcopy not found. Hex file will not be created.)
@@ -52,7 +54,6 @@ ifneq (,$(TARGET_ARCH))
   # Tell clang to cross compile
   export CFLAGS     += -target $(TARGET_ARCH)
   export CXXFLAGS   += -target $(TARGET_ARCH)
-  export LINKFLAGS  += -target $(TARGET_ARCH)
 
   # Use the wildcard Makefile function to search for existing directories matching
   # the patterns above. We use the -isystem gcc/clang argument to add the include
