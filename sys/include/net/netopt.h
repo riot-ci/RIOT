@@ -271,6 +271,17 @@ typedef enum {
     NETOPT_IS_WIRED,
 
     /**
+     * @brief Get the Phy link status.
+     *
+     * Returns a boolean value depending on whether the link of the interface
+     * is up or down. If the interface is wireless or doesn't support link
+     * status detection this function will return -ENOTSUP.
+     *
+     * @note Setting this option will always return -ENOTSUP.
+     */
+    NETOPT_LINK_CONNECTED,
+
+    /**
      * @brief get a device's "type", e.g., ethernet, 802.15.4, ...
      */
     NETOPT_DEVICE_TYPE,
