@@ -559,6 +559,8 @@ static int _get_state(sx127x_t *dev, void *val)
             break;
 
         default:
+            /* prevent "‘state’ may be used uninitialized in this function" */
+            state = NETOPT_STATE_OFF;
             break;
     }
     memcpy(val, &state, sizeof(netopt_state_t));
