@@ -59,7 +59,7 @@ index 0000000..ce8b90b
 @@ -0,0 +1,5 @@
 +MODULE = u8g2_sdl
 +
-+CFLAGS += `sdl-config --cflags`
++CFLAGS += `sdl2-config --cflags`
 +
 +include $(RIOTBASE)/Makefile.base
 diff --git a/sys/utf8/common/Makefile b/sys/utf8/common/Makefile
