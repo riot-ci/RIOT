@@ -16,17 +16,17 @@ TEST_PIN_CD ?= GPIO_PIN\(0,0\)
 TEST_PIN_RESET ?= GPIO_PIN\(0,0\)
 
 ifeq ($(TEST_OUTPUT),3)
-TEST_DISPLAY ?= ucg_dev_ssd1331_18x96x64_univision
-TEST_DISPLAY_EXT ?= ucg_ext_ssd1331_18
+  TEST_DISPLAY ?= ucg_dev_ssd1331_18x96x64_univision
+  TEST_DISPLAY_EXT ?= ucg_ext_ssd1331_18
 endif
 
 # features depend on output type
 ifeq ($(TEST_OUTPUT),2)
-USEMODULE += ucglib_sdl
+  USEMODULE += ucglib_sdl
 endif
 
 ifeq ($(TEST_OUTPUT),3)
-FEATURES_REQUIRED += periph_gpio periph_spi
+  FEATURES_REQUIRED += periph_gpio periph_spi
 endif
 
 # export parameters
