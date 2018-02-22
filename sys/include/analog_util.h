@@ -34,8 +34,6 @@ extern "C" {
  * This function is useful for converting sampled ADC values into their physical
  * representation.
  *
- * The min value is asserted to be smaller than the max value.
- *
  * @param[in] sample        sampled ADC value
  * @param[in] res           ADC resolution
  * @param[in] min           the lower bound of the target interval
