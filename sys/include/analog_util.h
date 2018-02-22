@@ -21,6 +21,7 @@
 #ifndef ANALOG_UTIL_H
 #define ANALOG_UTIL_H
 
+#include <stdint.h>
 #include "periph/adc.h"
 
 #ifdef __cplusplus
@@ -32,8 +33,6 @@ extern "C" {
  *
  * This function is useful for converting sampled ADC values into their physical
  * representation.
- *
- * The min value is asserted to be smaller than the max value.
  *
  * @param[in] sample        sampled ADC value
  * @param[in] res           ADC resolution
