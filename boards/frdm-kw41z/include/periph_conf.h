@@ -32,25 +32,27 @@ extern "C"
  */
 static const clock_config_t clock_config = {
     /*
-     * This configuration results in the system running directly from the RF
-     * module clock with the following clock frequencies:
-     * Core:  32 MHz
-     * Bus:   16 MHz
-     * Flash: 16 MHz
+     * This configuration results in the system running with the internal clock
+     * with the following clock frequencies:
+     * Core:  48 MHz
+     * Bus:   24 MHz
+     * Flash: 24 MHz
      */
-    .clkdiv1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV4(1),
-    .default_mode = KINETIS_MCG_MODE_FEI,
+    .clkdiv1            = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV4(1),
+    /* Using FEI mode by default, the external crystal settings below are only
+     * used if mode is changed to an external mode (PEE, FBE, or FEE) */
+    .default_mode       = KINETIS_MCG_MODE_FEI,
     /* The crystal connected to RSIM OSC is 32 MHz */
-    .erc_range = KINETIS_MCG_ERC_RANGE_VERY_HIGH,
-    .fcrdiv = 0, /* Fast IRC divide by 1 => 4 MHz */
-    .oscsel = 0, /* Use RSIM for external clock */
-    .clc = 0, /* no load cap configuration */
-    .fll_frdiv = 0b101, /* Divide by 1024 */
-    .fll_factor_fei = KINETIS_MCG_FLL_FACTOR_1464, /* FLL freq = 48 MHz */
-    .fll_factor_fee = KINETIS_MCG_FLL_FACTOR_1280, /* FLL freq = 40 MHz */
-    .enable_oscillator = true, /* Use RF module oscillator */
-    .select_fast_irc = true,
-    .enable_mcgirclk = true, /* Used for LPUART clocking */
+    .erc_range          = KINETIS_MCG_ERC_RANGE_VERY_HIGH,
+    .fcrdiv             = 0, /* Fast IRC divide by 1 => 4 MHz */
+    .oscsel             = 0, /* Use RSIM for external clock */
+    .clc                = 0, /* no load cap configuration */
+    .fll_frdiv          = 0b101, /* Divide by 1024 */
+    .fll_factor_fei     = KINETIS_MCG_FLL_FACTOR_1464, /* FEI FLL freq = 48 MHz */
+    .fll_factor_fee     = KINETIS_MCG_FLL_FACTOR_1280, /* FEE FLL freq = 40 MHz */
+    .enable_oscillator  = true, /* Use RF module oscillator */
+    .select_fast_irc    = true,
+    .enable_mcgirclk    = true, /* Used for LPUART clocking */
 };
 /* Radio xtal frequency, either 32 MHz or 26 MHz */
 #define CLOCK_RADIOXTAL              (32000000ul)
