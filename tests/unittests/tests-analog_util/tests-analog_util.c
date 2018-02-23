@@ -15,33 +15,33 @@
 #include "debug.h"
 
 typedef struct {
-    int expected;
+    int32_t expected;
     int sample;
-    int min;
-    int max;
+    int32_t min;
+    int32_t max;
     adc_res_t res;
 } test_values_t;
 
 /* Arbitrarily chosen test vectors */
 /* TODO: Choose test vectors in a more qualified manner to catch any edge cases */
 static test_values_t test_data[] = {
-    {     0,     0,          0,      10000, ADC_RES_16BIT},
-    {  1000,     0,       1000,          0, ADC_RES_16BIT},
-    { 65535, 65535,          0,      65536, ADC_RES_16BIT},
-    { 32768,   128,          0,      65536,  ADC_RES_8BIT},
-    {  8192,   128,          0,      65536, ADC_RES_10BIT},
-    {   256,     1,          0,      65536,  ADC_RES_8BIT},
-    { 65280,   255,          0,      65536,  ADC_RES_8BIT},
-    {  1039,    10,       1000,       2000,  ADC_RES_8BIT},
-    { 17324,  3000,      10000,      20000, ADC_RES_12BIT},
-    { 11831,  3000,      10000,      20000, ADC_RES_14BIT},
-    {  2301,  3000,         13,      50000, ADC_RES_16BIT},
-    {  -134, 56789,      -1000,          0, ADC_RES_16BIT},
-    { 16062, 45671,      30000,      10000, ADC_RES_16BIT},
-    { -2535, 30000,     -30000,      30000, ADC_RES_16BIT},
-    {     0, 65535,      65535,          0, ADC_RES_16BIT},
-    { 65534,     1,      65535,          0, ADC_RES_16BIT},
-    {  3972,  9876,      10000,          0, ADC_RES_14BIT},
+    {     0L,     0,          0L,      10000L, ADC_RES_16BIT},
+    {  1000L,     0,       1000L,          0L, ADC_RES_16BIT},
+    { 65535L, 65535,          0L,      65536L, ADC_RES_16BIT},
+    { 32768L,   128,          0L,      65536L,  ADC_RES_8BIT},
+    {  8192L,   128,          0L,      65536L, ADC_RES_10BIT},
+    {   256L,     1,          0L,      65536L,  ADC_RES_8BIT},
+    { 65280L,   255,          0L,      65536L,  ADC_RES_8BIT},
+    {  1039L,    10,       1000L,       2000L,  ADC_RES_8BIT},
+    { 17324L,  3000,      10000L,      20000L, ADC_RES_12BIT},
+    { 11831L,  3000,      10000L,      20000L, ADC_RES_14BIT},
+    {  2301L,  3000,         13L,      50000L, ADC_RES_16BIT},
+    {  -134L, 56789,      -1000L,          0L, ADC_RES_16BIT},
+    { 16062L, 45671,      30000L,      10000L, ADC_RES_16BIT},
+    { -2535L, 30000,     -30000L,      30000L, ADC_RES_16BIT},
+    {     0L, 65535,      65535L,          0L, ADC_RES_16BIT},
+    { 65534L,     1,      65535L,          0L, ADC_RES_16BIT},
+    {  3972L,  9876,      10000L,          0L, ADC_RES_14BIT},
 };
 
 #define TEST_DATA_NUMOF (sizeof(test_data) / sizeof(test_data[0]))
