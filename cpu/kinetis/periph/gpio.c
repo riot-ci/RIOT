@@ -355,7 +355,7 @@ void isr_portg(void)
 
 #if defined(PORTB_BASE) && defined(PORTC_BASE)
 /* Combined ISR used in certain KL devices */
-void isr_portbc(void)
+void isr_portb_portc(void)
 {
     irq_handler(PORTB, 1);
     irq_handler(PORTC, 2);
