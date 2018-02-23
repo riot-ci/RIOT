@@ -29,6 +29,10 @@
 #include "assert.h"
 #include "periph/pwm.h"
 
+/* This driver uses the FlexTimer module (FTM) for generating PWM signals, but
+ * not all Kinetis CPUs have such a module. This preprocessor condition prevents
+ * compilation errors when the CPU header lacks the register definitions for the
+ * FTM */
 #ifdef FTM0
 
 #define PRESCALER_MAX       (7U)
