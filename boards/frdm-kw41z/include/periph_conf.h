@@ -106,6 +106,8 @@ static const uart_conf_t uart_config[] = {
 };
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 #define LPUART_0_ISR        isr_lpuart0
+/* Use MCGIRCLK (internal reference 4 MHz clock) */
+#define LPUART_0_SRC        3
 /** @} */
 
 /**

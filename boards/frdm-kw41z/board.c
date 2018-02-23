@@ -22,20 +22,13 @@
 #include "periph/gpio.h"
 #include "periph/rtt.h"
 
-static inline void set_lpuart_clock_source(void)
-{
-    /* Use MCGIRCLK (internal reference 4 MHz clock) */
-    SIM->SOPT2 = (SIM->SOPT2 & ~SIM_SOPT2_LPUART0SRC_MASK) | SIM_SOPT2_LPUART0SRC(3);
-}
-
 void board_init(void)
 {
     /* initialize the CPU core */
     cpu_init();
 
-    set_lpuart_clock_source();
-#if MODULE_XTIMER
-    /* Start the RTT, used as time base for xtimer */
+#if MODULE_XTIMER && !(KINETIS_XTIMER_SOURCE_PIT)
+    /* Start the RTT, used as time base for xtimer when using LPTMR backend */
     rtt_init();
 #endif
 
