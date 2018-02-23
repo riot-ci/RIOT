@@ -81,10 +81,8 @@ static const clock_config_t clock_config = {
         } \
     }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
-
 #define PIT_BASECLOCK           (CLOCK_BUSCLOCK)
 #define LPTMR_ISR_0             isr_lptmr0
-
 /** @} */
 
 /**
@@ -108,7 +106,6 @@ static const uart_conf_t uart_config[] = {
 };
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 #define LPUART_0_ISR        isr_lpuart0
-
 /** @} */
 
 /**
@@ -128,7 +125,6 @@ static const adc_conf_t adc_config[] = {
     [ 6] = { ADC0, GPIO_PIN(PORT_B,  3),  2 }, /* ADC0_SE2 */
     [ 7] = { ADC0, GPIO_PIN(PORT_B,  2),  3 }, /* ADC0_SE3 */
 };
-
 #define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
 /*
  * KW41Z ADC reference settings:
@@ -218,7 +214,6 @@ static const spi_conf_t spi_config[] = {
         .simmask  = SIM_SCGC6_SPI1_MASK
     }
 };
-
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 /** @} */
 
