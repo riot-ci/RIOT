@@ -307,12 +307,16 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 
     /* Set LPUART clock source */
 #ifdef SIM_SOPT2_LPUART0SRC
-    SIM->SOPT2 = (SIM->SOPT2 & ~SIM_SOPT2_LPUART0SRC_MASK) |
-        SIM_SOPT2_LPUART0SRC(LPUART_0_SRC);
+    if (dev == LPUART0) {
+        SIM->SOPT2 = (SIM->SOPT2 & ~SIM_SOPT2_LPUART0SRC_MASK) |
+            SIM_SOPT2_LPUART0SRC(LPUART_0_SRC);
+    }
 #endif
 #ifdef SIM_SOPT2_LPUART1SRC
-    SIM->SOPT2 = (SIM->SOPT2 & ~SIM_SOPT2_LPUART1SRC_MASK) |
-        SIM_SOPT2_LPUART1SRC(LPUART_1_SRC);
+    if (dev == LPUART1) {
+        SIM->SOPT2 = (SIM->SOPT2 & ~SIM_SOPT2_LPUART1SRC_MASK) |
+            SIM_SOPT2_LPUART1SRC(LPUART_1_SRC);
+    }
 #endif
 
     /* Select mode */
