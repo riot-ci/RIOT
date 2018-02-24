@@ -34,7 +34,7 @@ static char print_buf[48];
 
 static void _loramac_usage(void)
 {
-    puts("Usage: loramac <get|set|join|tx>");
+    puts("Usage: loramac <get|set|join|tx|link_check>");
 }
 
 static void _loramac_join_usage(void)
@@ -390,16 +390,34 @@ static int _cmd_loramac(int argc, char **argv)
             case SEMTECH_LORAMAC_RX_DATA:
                 printf("Data received: %s, port: %d\n",
                        (char *)rx_data.payload, rx_data.port);
-                return 0;
+                break;
 
             case SEMTECH_LORAMAC_TX_DONE:
                 puts("TX done");
-                return 0;
+                break;
 
             case SEMTECH_LORAMAC_NOT_JOINED:
                 puts("Failed: not joined");
                 return 1;
         }
+
+        semtech_loramac_link_check_info_t link_info;
+        if (semtech_loramac_retrieve_link_check_info(&link_info) ==
+            SEMTECH_LORAMAC_LINK_CHECK) {
+            printf("Link check information:\n"
+                   "  - Demodulation margin: %d\n"
+                   "  - Number of gateways: %d\n",
+                   link_info.demod_margin, link_info.nb_gateways);
+        }
+    }
+    else if (strcmp(argv[1], "link_check") == 0) {
+        if (argc > 2) {
+            _loramac_usage();
+            return 1;
+        }
+
+        semtech_loramac_request_link_check();
+        puts("Link check request scheduled");
     }
     else {
         _loramac_usage();
