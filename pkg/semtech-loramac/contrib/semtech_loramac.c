@@ -77,6 +77,8 @@ uint8_t semtech_loramac_dev_addr[LORAMAC_DEVADDR_LEN];
 
 static uint8_t _semtech_loramac_radio_payload[SX127X_RX_BUFFER_SIZE];
 static semtech_loramac_rx_data_t _semtech_loramac_rx_data;
+static semtech_loramac_link_check_info_t _semtech_loramac_link_check_info;
+static bool _semtech_loramac_link_check_received = false;
 
 typedef struct {
     uint8_t port;
@@ -262,6 +264,19 @@ static void mlme_confirm(MlmeConfirm_t *confirm)
             }
             break;
 
+        case MLME_LINK_CHECK:
+            if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
+                _semtech_loramac_link_check_info.demod_margin = confirm->DemodMargin;
+                _semtech_loramac_link_check_info.nb_gateways = confirm->NbGateways;
+                DEBUG("[semtech-loramac] link check info received:\n"
+                      "  - Demodulation marging: %d\n"
+                      "  - Number of gateways: %d\n",
+                      _semtech_loramac_link_check_info.demod_margin,
+                      _semtech_loramac_link_check_info.nb_gateways);
+                _semtech_loramac_link_check_received = true;
+            }
+            break;
+
         default:
             break;
     }
@@ -390,7 +405,6 @@ static void _join_abp(void)
 
 static void _join(void *arg)
 {
-    (void) arg;
     uint8_t join_type = *(uint8_t *)arg;
 
     switch (join_type) {
@@ -578,6 +592,28 @@ uint8_t semtech_loramac_join(uint8_t type)
 
     /* ABP join procedure always works */
     return SEMTECH_LORAMAC_JOIN_SUCCEEDED;
+}
+
+void semtech_loramac_request_link_check(void)
+{
+    _semtech_loramac_link_check_received = false;
+    MlmeReq_t mlmeReq;
+    mlmeReq.Type = MLME_LINK_CHECK;
+    LoRaMacMlmeRequest(&mlmeReq);
+}
+
+uint8_t semtech_loramac_retrieve_link_check_info(
+    semtech_loramac_link_check_info_t *link_info)
+{
+    if (_semtech_loramac_link_check_received) {
+        _semtech_loramac_link_check_received = false;
+        memcpy(link_info, &_semtech_loramac_link_check_info,
+               sizeof(semtech_loramac_link_check_info_t));
+
+        return SEMTECH_LORAMAC_LINK_CHECK;
+    }
+
+    return SEMTECH_LORAMAC_NO_LINK_CHECK;
 }
 
 uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,

@@ -54,13 +54,26 @@ enum {
     SEMTECH_LORAMAC_NOT_JOINED,                  /**< MAC is not joined */
     SEMTECH_LORAMAC_TX_DONE,                     /**< Transmission completed */
     SEMTECH_LORAMAC_RX_DATA,                     /**< Data received */
+    SEMTECH_LORAMAC_LINK_CHECK,                  /**< Link check received */
+    SEMTECH_LORAMAC_NO_LINK_CHECK,               /**< No link check info */
 };
 
+/**
+ * @brief   LoRaWAN RX data information
+ */
 typedef struct {
     uint8_t payload[LORAWAN_APP_DATA_MAX_SIZE];  /**< RX payload buffer */
     uint8_t payload_len;                         /**< Length of the RX payload */
     uint8_t port;                                /**< RX port */
 } semtech_loramac_rx_data_t;
+
+/**
+ * @brief   LoRaMAC link check information
+ */
+typedef struct {
+    uint8_t demod_margin;              /**< Demodulation margin */
+    uint8_t nb_gateways;               /**< number of LoRa gateways found */
+} semtech_loramac_link_check_info_t;
 
 /**
  * @brief   Initializes semtech loramac
@@ -81,6 +94,22 @@ int semtech_loramac_init(sx127x_t *dev);
  * @return SEMTECH_LORAMAC_JOIN_FAILED on failure
  */
 uint8_t semtech_loramac_join(uint8_t type);
+
+/**
+ * @brief   Requests a LoRaWAN link check
+ */
+void semtech_loramac_request_link_check(void);
+
+/**
+ * @brief   Retrieves the LoRaWAN link check information
+ *
+ * @param[out] link_info   The link check information
+ *
+ * @return SEMTECH_LORAMAC_LINK_CHECK when a link check info was received
+ * @return SEMTECH_LORAMAC_NO_LINK_CHECK when no link check info was received
+ */
+uint8_t semtech_loramac_retrieve_link_check_info(
+        semtech_loramac_link_check_info_t *link_info);
 
 /**
  * @brief   Sends data to LoRaWAN
