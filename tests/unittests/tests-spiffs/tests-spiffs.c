@@ -44,7 +44,6 @@ static int _init(mtd_dev_t *dev)
 {
     (void)dev;
 
-    memset(dummy_memory, 0xff, sizeof(dummy_memory));
     return 0;
 }
 
@@ -156,7 +155,7 @@ static void tests_spiffs_format(void)
 {
     int res;
     vfs_umount(&_test_spiffs_mount);
-    res = mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
+    res = mtd_erase(_dev, 0, _dev->sector_size * _dev->sector_count);
     TEST_ASSERT_EQUAL_INT(0, res);
 
     res = vfs_mount(&_test_spiffs_mount);
@@ -390,6 +389,9 @@ static void tests_spiffs_statvfs(void)
 
 Test *tests_spiffs_tests(void)
 {
+#ifndef MTD_0
+    memset(dummy_memory, 0xff, sizeof(dummy_memory));
+#endif
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_spiffs_format),
         new_TestFixture(tests_spiffs_mount_umount),
