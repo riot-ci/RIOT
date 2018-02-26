@@ -608,7 +608,7 @@ static sd_rw_response_t _read_data_packet(sdcard_spi_t *card, char token, char *
         if (_transfer_bytes(card, 0, crc_bytes, sizeof(crc_bytes)) == sizeof(crc_bytes)) {
             uint16_t data_crc16 = (crc_bytes[0] << 8) | crc_bytes[1];
 
-            if (ucrc16_calc_be((const uint8_t *)data, size, UCRC16_CCITT_POLY_BE, 0) == data_crc16) {
+            if (ucrc16_calc_be((uint8_t *)data, size, UCRC16_CCITT_POLY_BE, 0) == data_crc16) {
                 DEBUG("_read_data_packet: [OK]\n");
                 return SD_RW_OK;
             }
@@ -696,7 +696,7 @@ static sd_rw_response_t _write_data_packet(sdcard_spi_t *card, char token, const
 
     if (_transfer_bytes(card, data, 0, size) == size) {
 
-        uint16_t data_crc16 = ucrc16_calc_be((const uint8_t *)data, size, UCRC16_CCITT_POLY_BE, 0);
+        uint16_t data_crc16 = ucrc16_calc_be((uint8_t *)data, size, UCRC16_CCITT_POLY_BE, 0);
         char crc[sizeof(uint16_t)] = { data_crc16 >> 8, data_crc16 & 0xFF };
 
         if (_transfer_bytes(card, crc, 0, sizeof(crc)) == sizeof(crc)) {
