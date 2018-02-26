@@ -62,7 +62,7 @@ typedef struct fatfs_desc {
 } fatfs_desc_t;
 
 /**
- * @brief info of a single opened file
+ * @brief FatFs file instance descriptor
  */
 typedef struct fatfs_file_desc {
     FIL file;                     /**< FatFs work area for a single file */
