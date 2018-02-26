@@ -69,9 +69,6 @@ static int write(mtd_dev_t *dev, const void *buff, uint32_t addr, uint32_t size)
     if (addr + size > sizeof(dummy_memory)) {
         return -EOVERFLOW;
     }
-    if (size > PAGE_SIZE) {
-        return -EOVERFLOW;
-    }
     if (((addr % PAGE_SIZE) + size) > PAGE_SIZE) {
         return -EOVERFLOW;
     }

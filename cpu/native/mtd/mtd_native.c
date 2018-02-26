@@ -82,9 +82,6 @@ static int _write(mtd_dev_t *dev, const void *buff, uint32_t addr, uint32_t size
 
     DEBUG("mtd_native: write from 0x%" PRIx32 " count %" PRIu32 "\n", addr, size);
 
-    if (size > dev->page_size) {
-        return -EOVERFLOW;
-    }
     if (addr + size > mtd_size) {
         return -EOVERFLOW;
     }
