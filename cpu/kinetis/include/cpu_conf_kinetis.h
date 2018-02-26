@@ -21,6 +21,15 @@
 
 #include "cpu_conf_common.h"
 
+#if (__CORTEX_M < 3)
+/*
+ * Kinetis Cortex-M0+ devices have bit manipulation engine (BME) which provides
+ * the same functionality (and some more) as the bitband aliased memory found in
+ * Cortex-M3 and up
+ */
+#include "bme.h"
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -71,6 +80,11 @@ extern "C"
 #endif
 #if !defined(OSC0) && defined(OSC)
 #define OSC0 OSC
+#endif
+#if !defined(SIM_SOPT2_LPUART0SRC_MASK) && defined(SIM_SOPT2_LPUARTSRC_MASK)
+#define SIM_SOPT2_LPUART0SRC_MASK SIM_SOPT2_LPUARTSRC_MASK
+#define SIM_SOPT2_LPUART0SRC_SHIFT SIM_SOPT2_LPUARTSRC_SHIFT
+#define SIM_SOPT2_LPUART0SRC SIM_SOPT2_LPUARTSRC
 #endif
 #if !defined(SIM_SCGC5_LPTMR_SHIFT) && defined(SIM_SCGC5_LPTIMER_SHIFT)
 #define SIM_SCGC5_LPTMR_SHIFT SIM_SCGC5_LPTIMER_SHIFT
