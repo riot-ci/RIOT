@@ -8,7 +8,7 @@ BOARD ?= native
 RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-uno \
-                             chronos msb-430 msb-430h nucleo-f031k6 nucleo32-f042 \
+                             chronos msb-430 msb-430h nucleo-f031k6 nucleo-f042k6 \
                              nucleo32-f303 nucleo32-l031 nucleo-f030 nucleo-f070 \
                              nucleo-f072 nucleo-f302 nucleo-f334 nucleo-l053 \
                              stm32f0discovery telosb waspmote-pro wsn430-v1_3b \
