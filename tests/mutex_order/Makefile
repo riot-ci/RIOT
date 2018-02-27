@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6 nucleo-f042k6 nucleo32-l031 nucleo-f030 \
+BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 nucleo-f030 \
                              nucleo-l053 stm32f0discovery
 
 include $(RIOTBASE)/Makefile.include
