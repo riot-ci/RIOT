@@ -40,7 +40,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              nucleo-f334r8 \
                              nucleo-f410rb \
                              nucleo-l053r8 \
-                             nucleo-l073 \
+                             nucleo-l073rz \
                              nz32-sc151 \
                              opencm904 \
                              openmote \
@@ -139,7 +139,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        nucleo-f411re \
                        nucleo-f446re \
                        nucleo-l053r8 \
-                       nucleo-l073 \
+                       nucleo-l073rz \
                        nucleo-l152 \
                        nucleo-l476 \
                        nz32-sc151 \
