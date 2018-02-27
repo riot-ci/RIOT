@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Inria
+ * Copyright (C) 2016 Inria
+ * Copyright (C) 2017 OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,15 +8,16 @@
  */
 
 /**
- * @defgroup    boards_nucleo144-f429 STM32 Nucleo144-F429
+ * @defgroup    boards_nucleo-f413zh STM32 Nucleo-F413ZH
  * @ingroup     boards_common_nucleo144
- * @brief       Support for the STM32 Nucleo144-F429
+ * @brief       Support for the STM32 Nucleo-F413ZH
  * @{
  *
  * @file
- * @name        Peripheral MCU configuration for the nucleo144-f429 board
+ * @name        Peripheral MCU configuration for the nucleo-f413zh board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  */
 
 #ifndef PERIPH_CONF_H
@@ -35,8 +37,8 @@ extern "C" {
  * @{
  */
 /* give the target core clock (HCLK) frequency [in Hz],
- * maximum: 180MHz */
-#define CLOCK_CORECLOCK     (168000000U)
+ * maximum: 100MHz */
+#define CLOCK_CORECLOCK     (100000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
 #define CLOCK_HSE           (8000000U)
@@ -46,16 +48,27 @@ extern "C" {
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV4     /* max 45MHz */
-#define CLOCK_APB1          (CLOCK_CORECLOCK / 4)
-#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV2     /* max 90MHz */
-#define CLOCK_APB2          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV2     /* max 50MHz */
+#define CLOCK_APB1          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV1     /* max 100MHz */
+#define CLOCK_APB2          (CLOCK_CORECLOCK / 1)
 
 /* Main PLL factors */
 #define CLOCK_PLL_M          (4)
-#define CLOCK_PLL_N          (168)
-#define CLOCK_PLL_P          (2)
-#define CLOCK_PLL_Q          (7)
+#define CLOCK_PLL_N          (200)
+#define CLOCK_PLL_P          (4)
+#define CLOCK_PLL_Q          (0)
+
+/* PLL I2S configuration */
+#define CLOCK_ENABLE_PLL_I2S (1)
+#define CLOCK_PLL_I2S_SRC    (0)
+#define CLOCK_PLL_I2S_M      (4)
+#define CLOCK_PLL_I2S_N      (216)
+#define CLOCK_PLL_I2S_P      (0)
+#define CLOCK_PLL_I2S_Q      (9)
+
+/* Use alternative source for 48MHz clock */
+#define CLOCK_USE_ALT_48MHZ  (1)
 /** @} */
 
 /**
@@ -174,19 +187,19 @@ static const pwm_conf_t pwm_config[] = {
  * @{
  */
 static const uint8_t spi_divtable[2][5] = {
-    {       /* for APB1 @ 90000000Hz */
-        7,  /* -> 351562Hz */
-        7,  /* -> 351562Hz */
-        6,  /* -> 703125Hz */
-        3,  /* -> 5625000Hz */
-        2   /* -> 11250000Hz */
+    {       /* for APB1 @ 50000000Hz */
+        7,  /* -> 195312Hz */
+        6,  /* -> 390625Hz */
+        5,  /* -> 781250Hz */
+        2,  /* -> 6250000Hz */
+        1   /* -> 12500000Hz */
     },
-    {       /* for APB2 @ 180000000Hz */
-        7,  /* -> 703125Hz */
-        7,  /* -> 703125Hz */
-        7,  /* -> 703125Hz */
-        4,  /* -> 5625000Hz */
-        3   /* -> 11250000Hz */
+    {       /* for APB2 @ 100000000Hz */
+        7,  /* -> 390625Hz */
+        7,  /* -> 390625Hz */
+        6,  /* -> 781250Hz */
+        3,  /* -> 6250000Hz */
+        2   /* -> 12500000Hz */
     }
 };
 
@@ -196,7 +209,7 @@ static const spi_conf_t spi_config[] = {
         .mosi_pin = GPIO_PIN(PORT_A, 7),
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
-        .cs_pin   = GPIO_UNDEF,
+        .cs_pin   = GPIO_PIN(PORT_A, 4),
         .af       = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2
@@ -213,7 +226,7 @@ static const spi_conf_t spi_config[] = {
 #define I2C_NUMOF           (1U)
 #define I2C_0_EN            1
 #define I2C_IRQ_PRIO        1
-#define I2C_APBCLK          (42000000U)
+#define I2C_APBCLK          (CLOCK_APB1)
 
 /* I2C 0 device configuration */
 #define I2C_0_DEV           I2C1
@@ -238,7 +251,7 @@ static const spi_conf_t spi_config[] = {
  * @name   ADC configuration
  *
  * Note that we do not configure all ADC channels,
- * and not in the STM32F429zi order. Instead, we
+ * and not in the STM32F413zh order. Instead, we
  * just define 6 ADC channels, for the Nucleo
  * Arduino header pins A0-A5
  *
@@ -246,13 +259,29 @@ static const spi_conf_t spi_config[] = {
  */
 #define ADC_NUMOF          (6U)
 #define ADC_CONFIG {              \
-    {GPIO_PIN(PORT_A, 3), 2, 3},  \
-    {GPIO_PIN(PORT_C, 0), 2, 10}, \
-    {GPIO_PIN(PORT_C, 3), 2, 13}, \
-    {GPIO_PIN(PORT_F, 3), 2, 9},  \
-    {GPIO_PIN(PORT_F, 5), 2, 15}, \
-    {GPIO_PIN(PORT_F, 10), 2, 8}, \
+    {GPIO_PIN(PORT_A, 3), 0, 3},  \
+    {GPIO_PIN(PORT_C, 0), 0, 10}, \
+    {GPIO_PIN(PORT_C, 3), 0, 13}, \
+    {GPIO_PIN(PORT_C, 1), 0, 11}, \
+    {GPIO_PIN(PORT_C, 4), 0, 14}, \
+    {GPIO_PIN(PORT_C, 5), 0, 15}, \
 }
+/** @} */
+
+/**
+ * @name    RTC configuration
+ * @{
+ */
+#define RTC_NUMOF           (1)
+/** @} */
+
+/**
+ * @name    RTT configuration
+ * @{
+ */
+#define RTT_NUMOF           (1)
+#define RTT_FREQUENCY       (4096)
+#define RTT_MAX_VALUE       (0xffff)
 /** @} */
 
 #ifdef __cplusplus

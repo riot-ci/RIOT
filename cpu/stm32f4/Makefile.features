@@ -8,6 +8,6 @@ FEATURES_PROVIDED += periph_hwrng
 BOARDS_WITHOUT_HWRNG += nucleo-f401
 BOARDS_WITHOUT_HWRNG += nucleo-f411
 BOARDS_WITHOUT_HWRNG += nucleo-f446
-BOARDS_WITHOUT_HWRNG += nucleo144-f446
+BOARDS_WITHOUT_HWRNG += nucleo-f446ze
 
 -include $(RIOTCPU)/stm32_common/Makefile.features
