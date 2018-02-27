@@ -64,7 +64,7 @@ int8_t si114x_init(si114x_t *dev, const si114x_params_t *params)
     /* check sensor ID */
     char checkid = 0;
     i2c_read_reg(DEV_I2C, SI114X_ADDR, SI114X_REG_PART_ID, &checkid);
-    if ( (checkid != SI1145_ID) && (checkid != SI1146_ID) && (checkid != SI1147_ID)){
+    if ((checkid != SI1145_ID) && (checkid != SI1146_ID) && (checkid != SI1147_ID)) {
         DEBUG("[Error] The given i2c is not enabled.\n");
         i2c_release(DEV_I2C);
         return -SI114X_ERR_NODEV;
