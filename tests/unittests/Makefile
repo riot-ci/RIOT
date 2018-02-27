@@ -34,7 +34,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              nucleo-f030r8 \
                              nucleo-f070rb \
                              nucleo-f072rb \
-                             nucleo-f091 \
+                             nucleo-f091rc \
                              nucleo-f103 \
                              nucleo-f302 \
                              nucleo-f334 \
@@ -128,7 +128,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        nucleo-f030r8 \
                        nucleo-f070rb \
                        nucleo-f072rb \
-                       nucleo-f091 \
+                       nucleo-f091rc \
                        nucleo-f103 \
                        nucleo-f302 \
                        nucleo-f303 \
