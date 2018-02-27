@@ -38,13 +38,13 @@ struct block_t {
     unsigned char message[MESSAGE_SIZE];
 };
 
-MEMARRAY(block_storage, sizeof(struct block_t), MAX_NUMBER_BLOCKS)
+MEMARRAY(block_storage, struct block_t, MAX_NUMBER_BLOCKS)
 
 int total = 0;
 
 static void memory_block_init(void)
 {
-    memarray_init(&block_storage, sizeof(struct block_t), MAX_NUMBER_BLOCKS);
+    memarray_init(&block_storage);
 }
 
 void fill_memory(struct block_t *head)
