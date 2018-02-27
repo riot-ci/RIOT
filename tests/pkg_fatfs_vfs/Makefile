@@ -25,7 +25,7 @@ else
   USEMODULE += mtd_sdcard
 endif
 
-BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
+BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6
 
 # this list is composed of boards with sufficient memory and support spi/gpio + native
 BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560 \
@@ -35,8 +35,8 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
                    iotlab-m3 limifrog-v1 maple-mini msb-430 msb-430h msba2 msbiot \
                    mulle nrf52840dk nrf52dk nrf6310 nucleo-f207zg nucleo144-f303 \
                    nucleo144-f412 nucleo144-f413 nucleo144-f429 nucleo144-f446 \
-                   nucleo32-f042 nucleo32-f303 nucleo32-l031 \
-                   nucleo32-l432 nucleo-f072 nucleo-f091 nucleo-f103 nucleo-f302 \
+                   nucleo-f042k6 nucleo-f303k8 nucleo-l031k6 \
+                   nucleo-l432kc nucleo-f072 nucleo-f091 nucleo-f103 nucleo-f302 \
                    nucleo-f303 nucleo-f334 nucleo-f401 nucleo-f410 nucleo-f411 \
                    nucleo-f446 nucleo-l053 nucleo-l073 nucleo-l152 nucleo-l476 \
                    nz32-sc151 openmote-cc2538 pba-d-01-kw2x remote-pa remote-reva \
