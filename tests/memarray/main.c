@@ -25,9 +25,9 @@
 
 #include "memarray.h"
 
-#define MAX_NUMBER_BLOCKS    (10U)
+#define MAX_NUMBER_BLOCKS    (10)
 #define MESSAGE_SIZE         (8U)
-#define NUMBER_OF_TESTS      (12U)
+#define NUMBER_OF_TESTS      (12)
 
 extern int _ps_handler(int argc, char **argv);
 
