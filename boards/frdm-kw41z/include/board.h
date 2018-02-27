@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    board_frdm-kw41z Freescale FRDM-KW41Z Board
+ * @defgroup    boards_frdm-kw41z Freescale FRDM-KW41Z Board
  * @ingroup     boards
  * @brief       Board specific implementations for the FRDM-KW41Z
  * @{
@@ -30,7 +30,7 @@ extern "C"
 #endif
 
 /**
- * @brief   LED pin definitions and handlers
+ * @name    LED pin definitions and handlers
  * @{
  */
 #define LED0_PIN            GPIO_PIN(PORT_B,  0)
@@ -56,9 +56,7 @@ extern "C"
 /** @} */
 
 /**
- * @name   xtimer configuration
- *
- * @todo Move Kinetis xtimer config to kinetis_common
+ * @name    xtimer configuration
  * @{
  */
 #if KINETIS_XTIMER_SOURCE_PIT
@@ -80,7 +78,7 @@ extern "C"
 /** @} */
 
 /**
- * @name NOR flash hardware configuration
+ * @name    NOR flash hardware configuration
  * @{
  */
 #define FRDM_NOR_SPI_DEV               SPI_DEV(0)
@@ -89,7 +87,7 @@ extern "C"
 /** @} */
 
 /**
- * @brief Initialize board specific hardware, including clock, LEDs and standard I/O
+ * @brief   Initialize board specific hardware, including clock, LEDs and standard I/O
  */
 void board_init(void);
 
