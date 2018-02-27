@@ -21,6 +21,11 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /**
  * @brief Tell bit.h that we provide CPU specific bit manipulation functions
  */
@@ -238,5 +243,9 @@ static inline void bit_clear8(volatile uint8_t *ptr, uint8_t bit)
 {
     *((volatile uint8_t *)(((uintptr_t)ptr) | BME_AND_MASK)) = (uint8_t)(~(1ul << bit));
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 /** @} */
