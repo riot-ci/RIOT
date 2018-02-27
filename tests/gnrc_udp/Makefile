@@ -1,7 +1,7 @@
 include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := calliope-mini chronos microbit msb-430 msb-430h \
-                             nucleo-f031k6 nucleo-f042k6 nucleo-f303k8 nucleo32-l031 \
+                             nucleo-f031k6 nucleo-f042k6 nucleo-f303k8 nucleo-l031k6 \
                              nucleo-f030 nucleo-f070 nucleo-f072 nucleo-f103 nucleo-f302 \
                              nucleo-f334 nucleo-l053 spark-core stm32f0discovery telosb \
                              wsn430-v1_3b wsn430-v1_4 z1

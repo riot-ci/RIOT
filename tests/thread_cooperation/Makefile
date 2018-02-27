@@ -10,7 +10,7 @@ DISABLE_MODULE += auto_init
 ifneq (,$(filter nucleo-f042k6,$(BOARD)))
   PROBLEM ?= 3
 endif
-ifneq (,$(filter nucleo-f030 nucleo32-l031 nucleo-l053 stm32f0discovery,$(BOARD)))
+ifneq (,$(filter nucleo-f030 nucleo-l031k6 nucleo-l053 stm32f0discovery,$(BOARD)))
   PROBLEM ?= 5
 endif
 ifneq (,$(filter nucleo-f334,$(BOARD)))
