@@ -398,7 +398,7 @@ static void tests_spiffs_partition(void)
 
 #if SPIFFS_USE_MAGIC
     /* if SPIFFS_USE_MAGIC is used, a magic word is written at the end of the
-     * firt page of each sector */
+     * first page of each sector */
     uint8_t buf[4];
     mtd_read(_dev, buf, (_dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
     TEST_ASSERT(buf[0] != 0xff);
