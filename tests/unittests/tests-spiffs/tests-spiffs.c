@@ -393,7 +393,10 @@ static void tests_spiffs_partition(void)
     spiffs_desc.block_count = 2;
     mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
 
-    int res = vfs_mount(&_test_spiffs_mount);
+    int res = vfs_format(&_test_spiffs_mount);
+    TEST_ASSERT_EQUAL_INT(0, res);
+
+    res = vfs_mount(&_test_spiffs_mount);
     TEST_ASSERT_EQUAL_INT(0, res);
 
 #if SPIFFS_USE_MAGIC
