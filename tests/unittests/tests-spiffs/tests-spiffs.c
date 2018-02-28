@@ -143,6 +143,9 @@ static void test_spiffs_teardown(void)
     vfs_unlink("/test-spiffs/test1.txt");
     vfs_unlink("/test-spiffs/a/test2.txt");
     vfs_umount(&_test_spiffs_mount);
+
+    spiffs_desc.base_addr = 0;
+    spiffs_desc.block_count = 0;
 }
 
 static void tests_spiffs_format(void)
@@ -382,6 +385,49 @@ static void tests_spiffs_statvfs(void)
     TEST_ASSERT(sizeof(buf) <= (stat1.f_bavail - stat2.f_bavail));
 }
 
+static void tests_spiffs_partition(void)
+{
+    vfs_umount(&_test_spiffs_mount);
+
+    spiffs_desc.base_addr = _dev->page_size * _dev->pages_per_sector;
+    spiffs_desc.block_count = 2;
+    mtd_erase(_dev, 0, _dev->page_size * _dev->pages_per_sector * _dev->sector_count);
+
+    int res = vfs_format(&_test_spiffs_mount);
+    TEST_ASSERT_EQUAL_INT(0, res);
+
+    res = vfs_mount(&_test_spiffs_mount);
+    TEST_ASSERT_EQUAL_INT(0, res);
+
+#if SPIFFS_USE_MAGIC
+    /* if SPIFFS_USE_MAGIC is used, a magic word is written at the end of the
+     * first page of each sector */
+    uint8_t buf[4];
+    mtd_read(_dev, buf, (_dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
+    TEST_ASSERT(buf[0] != 0xff);
+    TEST_ASSERT(buf[1] != 0xff);
+    TEST_ASSERT(buf[2] != 0xff);
+    TEST_ASSERT(buf[3] != 0xff);
+    mtd_read(_dev, buf, (2 * _dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
+    TEST_ASSERT(buf[0] != 0xff);
+    TEST_ASSERT(buf[1] != 0xff);
+    TEST_ASSERT(buf[2] != 0xff);
+    TEST_ASSERT(buf[3] != 0xff);
+    /* Check previous page (must be erased) */
+    mtd_read(_dev, buf, _dev->page_size - 4, sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(0xff, buf[0]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[1]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[2]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[3]);
+    /* Check next page (must be erased) */
+    mtd_read(_dev, buf, (3 * _dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
+    TEST_ASSERT_EQUAL_INT(0xff, buf[0]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[1]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[2]);
+    TEST_ASSERT_EQUAL_INT(0xff, buf[3]);
+#endif
+}
+
 Test *tests_spiffs_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -393,6 +439,7 @@ Test *tests_spiffs_tests(void)
         new_TestFixture(tests_spiffs_readdir),
         new_TestFixture(tests_spiffs_rename),
         new_TestFixture(tests_spiffs_statvfs),
+        new_TestFixture(tests_spiffs_partition),
     };
 
     EMB_UNIT_TESTCALLER(spiffs_tests, test_spiffs_setup, test_spiffs_teardown, fixtures);
