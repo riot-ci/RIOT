@@ -400,31 +400,35 @@ static void tests_spiffs_partition(void)
     TEST_ASSERT_EQUAL_INT(0, res);
 
 #if SPIFFS_USE_MAGIC
-    /* if SPIFFS_USE_MAGIC is used, a magic word is written at the end of the
-     * first page of each sector */
+    /* if SPIFFS_USE_MAGIC is used, a magic word is written in each sector */
     uint8_t buf[4];
-    mtd_read(_dev, buf, (_dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
-    TEST_ASSERT(buf[0] != 0xff);
-    TEST_ASSERT(buf[1] != 0xff);
-    TEST_ASSERT(buf[2] != 0xff);
-    TEST_ASSERT(buf[3] != 0xff);
-    mtd_read(_dev, buf, (2 * _dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
-    TEST_ASSERT(buf[0] != 0xff);
-    TEST_ASSERT(buf[1] != 0xff);
-    TEST_ASSERT(buf[2] != 0xff);
-    TEST_ASSERT(buf[3] != 0xff);
-    /* Check previous page (must be erased) */
-    mtd_read(_dev, buf, _dev->page_size - 4, sizeof(buf));
-    TEST_ASSERT_EQUAL_INT(0xff, buf[0]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[1]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[2]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[3]);
-    /* Check next page (must be erased) */
-    mtd_read(_dev, buf, (3 * _dev->page_size * _dev->pages_per_sector) + _dev->page_size - 4, sizeof(buf));
-    TEST_ASSERT_EQUAL_INT(0xff, buf[0]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[1]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[2]);
-    TEST_ASSERT_EQUAL_INT(0xff, buf[3]);
+    const uint8_t buf_erased[4] = {0xff, 0xff, 0xff, 0xff};
+    res = 0;
+    for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
+        mtd_read(_dev, buf, _dev->page_size * _dev->pages_per_sector + i, sizeof(buf));
+        res += memcmp(buf, buf_erased, sizeof(buf));
+    }
+    TEST_ASSERT(res != 0);
+    res = 0;
+    for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
+        mtd_read(_dev, buf, (2 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
+        res += memcmp(buf, buf_erased, sizeof(buf));
+    }
+    TEST_ASSERT(res != 0);
+    /* Check previous sector (must be erased) */
+    res = 0;
+    for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
+        mtd_read(_dev, buf, i, sizeof(buf));
+        res += memcmp(buf, buf_erased, sizeof(buf));
+    }
+    TEST_ASSERT(res == 0);
+    /* Check next sector (must be erased) */
+    res = 0;
+    for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
+        mtd_read(_dev, buf, (3 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
+        res += memcmp(buf, buf_erased, sizeof(buf));
+    }
+    TEST_ASSERT(res == 0);
 #endif
 }
 
