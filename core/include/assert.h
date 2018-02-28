@@ -109,6 +109,13 @@ NORETURN void _assert_failure(const char *file, unsigned line);
 #define assert(cond) ((cond) ? (void)0 : core_panic(PANIC_ASSERT_FAIL, assert_crash_message))
 #endif
 
+#if __STDC_VERSION__ >= 201112L && !defined __cplusplus
+/**
+ * @brief define c11 static_assert() macro
+ */
+#define static_assert _Static_assert
+#endif
+
 #ifdef __cplusplus
 }
 #endif
