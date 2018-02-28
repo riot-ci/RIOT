@@ -9,6 +9,7 @@ export AR         = $(PREFIX)ar
 export RANLIB     = $(PREFIX)ranlib
 endif
 export AS         = $(PREFIX)as
+export LD         = $(PREFIX)ld
 export LINK       = $(PREFIX)gcc
 export LINKXX     = $(PREFIX)g++
 export SIZE       = $(PREFIX)size

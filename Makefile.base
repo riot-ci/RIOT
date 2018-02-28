@@ -9,7 +9,7 @@ MODULE ?= $(shell basename $(CURDIR))
 
 .PHONY: all $(DIRS:%=ALL--%) $(DIRS:%=CLEAN--%)
 
-all: $(BINDIR)/$(MODULE).a ..nothing
+all: $(BINDIR)/$(MODULE).o ..nothing
 
 ..nothing:
 	@:
@@ -64,6 +64,11 @@ DEP := $(OBJC:.o=.d) $(OBJCXX:.o=.d) $(ASSMOBJ:.o=.d)
 
 $(BINDIR)/$(MODULE)/:
 	$(Q)mkdir -p $@
+
+$(BINDIR)/$(MODULE).o $(OBJ): | $(BINDIR)/$(MODULE)/
+
+$(BINDIR)/$(MODULE).o: $(OBJ) | ${DIRS:%=ALL--%}
+	$(Q)[ -z '$^' ] || $(LD) -r -o $@ $^
 
 $(BINDIR)/$(MODULE).a $(OBJ): | $(BINDIR)/$(MODULE)/
 
