@@ -35,21 +35,15 @@ extern "C" {
 #define SOFT_SPI_PARAM_CLK          (GPIO_PIN(0, 1))
 #endif
 
-#define SOFT_SPI_PARAMS_DEFAULT     {\
-                                        .miso_pin = SOFT_SPI_PARAM_MISO,\
-                                        .mosi_pin = SOFT_SPI_PARAM_MOSI,\
-                                        .clk_pin  = SOFT_SPI_PARAM_CLK,\
-                                    }
+#define SOFT_SPI_PARAMS     { .miso_pin = SOFT_SPI_PARAM_MISO, \
+                              .mosi_pin = SOFT_SPI_PARAM_MOSI, \
+                              .clk_pin  = SOFT_SPI_PARAM_CLK }
 
 /**
  * @brief   Sotware SPI port descriptor array
  */
 static soft_spi_conf_t soft_spi_config[] = {
-#ifdef SOFT_SPI_PARAMS_CUSTOM
-    SOFT_SPI_PARAMS_CUSTOM,
-#else
-    SOFT_SPI_PARAMS_DEFAULT,
-#endif
+    SOFT_SPI_PARAMS,
 };
 
 #ifdef __cplusplus
