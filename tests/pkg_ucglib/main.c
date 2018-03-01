@@ -18,6 +18,7 @@
  * @}
  */
 
+#define TEST_OUTPUT_DUMMY 1
 #define TEST_OUTPUT_SDL 2
 #define TEST_OUTPUT_SPI 3
 
@@ -82,15 +83,22 @@ int main(void)
     uint32_t screen = 0;
     ucg_t ucg;
 
-    /* initialize to virtual SDL (native only) */
+#if TEST_OUTPUT == TEST_OUTPUT_DUMMY
+    /* initialize dummy output */
+    puts("Initializing dummy output.");
+
+    ucg_Init(&ucg, ucg_dev_dummy_cb, ucg_ext_none, NULL);
+#endif
+
 #if TEST_OUTPUT == TEST_OUTPUT_SDL
+    /* initialize to virtual SDL (native only) */
     puts("Initializing to SDL.");
 
     ucg_Init(&ucg, ucg_sdl_dev_cb, ucg_ext_none, NULL);
 #endif
 
-    /* initialize to SPI */
 #if TEST_OUTPUT == TEST_OUTPUT_SPI
+    /* initialize to SPI */
     puts("Initializing to SPI.");
 
     ucg_SetPins(&ucg, pins, pins_enabled);
