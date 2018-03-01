@@ -6,10 +6,16 @@ This is a test application for the Ucglib package. This package is a graphical c
 ## Usage
 This test application will initialize the Ucglib to output on one of the following:
 
+* output to dummy screen.
 * output to SDL virtual screen.
 * output to SPI graphics screen.
 
 Note: you may have to run `make clean` between different output modes.
+
+### Output to dummy
+To output to this virtual screen, supply `TEST_OUTPUT=1` to the `make` command.
+
+It logs internal calls to screen and is used for testing the package internals only.
 
 ### Output to SDL
 To output to this virtual screen, supply `TEST_OUTPUT=2` to the `make` command.
