@@ -399,7 +399,6 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
 void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
 {
     ctx->rateInBytes = rate / 8;
-    ctx->blockSize = 0;
 
     if (((rate + capacity) != 1600) || ((rate % 8) != 0)) {
         return;
@@ -418,17 +417,17 @@ void Keccak_update(keccak_state_t *ctx, const unsigned char *input, unsigned lon
 {
     /* === Absorb all the input blocks === */
     while (inputByteLen > 0) {
-        ctx->blockSize = MIN(inputByteLen + ctx->i, ctx->rateInBytes);
-        while (ctx->i < ctx->blockSize) {
+        unsigned int blockSize = MIN(inputByteLen + ctx->i, ctx->rateInBytes);
+        while (ctx->i < blockSize) {
             ctx->state[ctx->i] ^= *input;
             ++(ctx->i);
             input++;
             --inputByteLen;
         }
 
-        if (ctx->blockSize == ctx->rateInBytes) {
+        if (blockSize == ctx->rateInBytes) {
             KeccakF1600_StatePermute(ctx->state);
-            ctx->blockSize = 0;
+            blockSize = 0;
             ctx->i = 0;
         }
     }
@@ -439,9 +438,9 @@ void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long
 
     /* === Do the padding and switch to the squeezing phase === */
     /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
-    ctx->state[ctx->blockSize] ^= ctx->delimitedSuffix;
+    ctx->state[ctx->i] ^= ctx->delimitedSuffix;
     /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
-    if (((ctx->delimitedSuffix & 0x80) != 0) && (ctx->blockSize == (ctx->rateInBytes - 1))) {
+    if (((ctx->delimitedSuffix & 0x80) != 0) && (ctx->i == (ctx->rateInBytes - 1))) {
         KeccakF1600_StatePermute(ctx->state);
     }
     /* Add the second bit of padding */
@@ -451,10 +450,10 @@ void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long
 
     /* === Squeeze out all the output blocks === */
     while (outputByteLen > 0) {
-        ctx->blockSize = MIN(outputByteLen, ctx->rateInBytes);
-        memcpy(output, ctx->state, ctx->blockSize);
-        output += ctx->blockSize;
-        outputByteLen -= ctx->blockSize;
+        unsigned int blockSize = MIN(outputByteLen, ctx->rateInBytes);
+        memcpy(output, ctx->state, blockSize);
+        output += blockSize;
+        outputByteLen -= blockSize;
 
         if (outputByteLen > 0) {
             KeccakF1600_StatePermute(ctx->state);

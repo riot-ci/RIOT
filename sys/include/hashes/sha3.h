@@ -61,7 +61,6 @@ typedef struct {
     unsigned int capacity;
     /** The rate in bytes of the sponge **/
     unsigned int rateInBytes;
-    unsigned int blockSize;
 } keccak_state_t;
 
 /**
