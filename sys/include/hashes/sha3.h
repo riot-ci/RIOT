@@ -49,11 +49,17 @@
  * @brief Context for operations on a sponge with keccak permutation
  */
 typedef struct {
+    /** State of the KEccak sponge **/
     unsigned char state[200];
+    /** Current position within the state **/
     unsigned int i;
+    /** The suffix used for padding **/
     unsigned char delimitedSuffix;
+    /** The bitrate of the sponge **/
     unsigned int rate;
+    /** The capacity in bits of the sponge **/
     unsigned int capacity;
+    /** The rate in bytes of the sponge **/
     unsigned int rateInBytes;
     unsigned int blockSize;
 } keccak_state_t;
