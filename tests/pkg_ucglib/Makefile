@@ -7,7 +7,7 @@ USEMODULE += xtimer
 USEPKG += ucglib
 
 # set default device parameters in case they are undefined
-TEST_OUTPUT ?= 2
+TEST_OUTPUT ?= 1
 
 TEST_SPI ?= 0
 
@@ -42,3 +42,6 @@ CFLAGS += -DTEST_DISPLAY=$(TEST_DISPLAY)
 CFLAGS += -DTEST_DISPLAY_EXT=$(TEST_DISPLAY_EXT)
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py
