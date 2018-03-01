@@ -1,6 +1,6 @@
 PKG_NAME=ucglib
-PKG_URL=https://github.com/basilfx/ucglib
-PKG_VERSION=38d919a2bb817cd6b349829bd832af28caba098a
+PKG_URL=https://github.com/olikraus/ucglib
+PKG_VERSION=bf48515702dd7c87cbacdd17989738f33f003df2
 PKG_LICENSE=BSD-2-Clause
 
 .PHONY: all
