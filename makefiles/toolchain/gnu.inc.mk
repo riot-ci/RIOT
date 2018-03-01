@@ -8,6 +8,8 @@ export AR         = $(PREFIX)ar
 endif
 export AS         = $(PREFIX)as
 export LD         = $(PREFIX)ld
+export ILINK      = $(LD)
+export ILINKFLAGS ?= -r
 export LINK       = $(PREFIX)gcc
 export LINKXX     = $(PREFIX)g++
 export SIZE       = $(PREFIX)size
