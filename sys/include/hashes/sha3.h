@@ -49,13 +49,13 @@
  * @brief Context for operations on a sponge with keccak permutation
  */
 typedef struct {
-  unsigned char state[200];
-  unsigned int i;
-  unsigned char delimitedSuffix;
-  unsigned int rate;
-  unsigned int capacity;
-  unsigned int rateInBytes;
-  unsigned int blockSize;
+    unsigned char state[200];
+    unsigned int i;
+    unsigned char delimitedSuffix;
+    unsigned int rate;
+    unsigned int capacity;
+    unsigned int rateInBytes;
+    unsigned int blockSize;
 } keccak_state_t;
 
 /**
@@ -75,7 +75,7 @@ void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, 
  * @param[in] input         pointer to the data to be absorbed
  * @param[in] inputByteLen  length of the input data in bytes
  */
-void Keccak_update(keccak_state_t *ctx, const unsigned char* input, unsigned long long int inputByteLen);
+void Keccak_update(keccak_state_t *ctx, const unsigned char *input, unsigned long long int inputByteLen);
 
 /**
  * @brief Squeeze data from a sponge
