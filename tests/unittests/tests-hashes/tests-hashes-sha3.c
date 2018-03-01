@@ -245,4 +245,3 @@ Test *tests_hashes_sha3_tests(void)
 
     return (Test *)&hashes_sha3_tests;
 }
-
