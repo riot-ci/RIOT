@@ -278,14 +278,14 @@ void KeccakF1600_StatePermute(void *state)
 
     for (round = 0; round < 24; round++) {
         {   /* === θ step (see [Keccak Reference, Section 2.3.2]) === */
-            tKeccakLane C[5], D;
+            tKeccakLane C[5];
 
             /* Compute the parity of the columns */
             for (x = 0; x < 5; x++)
                 C[x] = readLane(x, 0) ^ readLane(x, 1) ^ readLane(x, 2) ^ readLane(x, 3) ^ readLane(x, 4);
             for (x = 0; x < 5; x++) {
                 /* Compute the θ effect for a given column */
-                D = C[(x + 4) % 5] ^ ROL64(C[(x + 1) % 5], 1);
+                tKeccakLane D = C[(x + 4) % 5] ^ ROL64(C[(x + 1) % 5], 1);
                 /* Add the θ effect to the whole column */
                 for (y = 0; y < 5; y++)
                     XORLane(x, y, D);
@@ -293,7 +293,7 @@ void KeccakF1600_StatePermute(void *state)
         }
 
         {   /* === ρ and π steps (see [Keccak Reference, Sections 2.3.3 and 2.3.4]) === */
-            tKeccakLane current, temp;
+            tKeccakLane current;
             /* Start at coordinates (1 0) */
             x = 1; y = 0;
             current = readLane(x, y);
@@ -304,7 +304,7 @@ void KeccakF1600_StatePermute(void *state)
                 /* Compute ((0 1)(2 3)) * (x y) */
                 unsigned int Y = (2 * x + 3 * y) % 5; x = y; y = Y;
                 /* Swap current and state(x,y), and rotate */
-                temp = readLane(x, y);
+                tKeccakLane temp = readLane(x, y);
                 writeLane(x, y, ROL64(current, r));
                 current = temp;
             }
