@@ -1,5 +1,5 @@
 /*-
- * Copyright 2017 Mathias Tausig
+ * Copyright 2017-2018 Mathias Tausig
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,14 @@
  * @author      Mathias Tausig
  */
 
-#ifndef __SHA_3_H_
-#define __SHA_3_H_
+#ifndef HASHES_SHA3_H
+#define HASHES_SHA3_H
 
 #include <stdlib.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define SHA3_256_DIGEST_LENGTH 32
 #define SHA3_384_DIGEST_LENGTH 48
@@ -178,5 +182,9 @@ void sha3_384(void *digest, const void *data, size_t len);
  *                     be SHA3_512_DIGEST_LENGTH
  */
 void sha3_512(void *digest, const void *data, size_t len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
