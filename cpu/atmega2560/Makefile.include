@@ -1,6 +1,9 @@
 # tell the build system that the CPU depends on the atmega common files
 USEMODULE += atmega_common
 
+# CPU family, see https://gcc.gnu.org/onlinedocs/gcc/AVR-Options.html
+export CPU_FAM = avr6
+
 # define path to atmega common module, which is needed for this CPU
 export ATMEGA_COMMON = $(RIOTCPU)/atmega_common/
 
