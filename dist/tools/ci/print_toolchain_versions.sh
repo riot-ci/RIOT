@@ -32,19 +32,19 @@ get_define() {
 
 newlib_version() {
     if [ -z "$1" ]; then
-        cc=gcc
-    else
-        cc=$1-gcc
+        printf "%s" "error"
     fi
+
+    local cc="$1"
     printf "%s" "$(get_define "$cc" newlib.h _NEWLIB_VERSION)"
 }
 
 avr_libc_version() {
     if [ -z "$1" ]; then
-        cc=gcc
-    else
-        cc=$1-gcc
+        printf "%s" "error"
     fi
+
+    local cc="$1"
     printf "%s (%s)" "$(get_define "$cc" avr/version.h __AVR_LIBC_VERSION_STRING__)" "$(get_define "$cc" avr/version.h __AVR_LIBC_DATE_STRING__)"
 }
 
@@ -58,12 +58,13 @@ printf "%21s: %s\n" "clang" "$(get_cmd_version clang)"
 printf "\n"
 printf "%s\n" "Installed compiler libs"
 printf "%s\n" "-----------------------"
+# platform specific newlib version
 for p in arm-none-eabi mips-mti-elf; do
-    printf "%21s: %s\n" "$p-newlib" "$(newlib_version "$p")"
+    printf "%21s: %s\n" "$p-newlib" "$(newlib_version ${p}-gcc)"
 done
-for p in avr; do
-    printf "%21s: %s\n" "$p-libc" "$(avr_libc_version "$p")"
-done
+# avr libc version
+printf "%21s: %s\n" "avr-libc" "$(avr_libc_version avr-gcc)"
+# tools
 printf "\n"
 printf "%s\n" "Installed development tools"
 printf "%s\n" "---------------------------"
