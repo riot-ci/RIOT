@@ -63,9 +63,9 @@
 #define LPUART_OVERSAMPLING_RATE (16)
 #endif
 
-#ifndef LPUART_0_SRC
 /* Default LPUART clock setting to avoid compilation failures, define this in
  * periph_conf.h to set board specific configuration if using the LPUART. */
+#ifndef LPUART_0_SRC
 #define LPUART_0_SRC            0
 #endif
 #ifndef LPUART_1_SRC
