@@ -36,8 +36,8 @@
  * @author      Mathias Tausig
  */
 
-#ifndef __SHA_3_H_
-#define __SHA_3_H_
+#ifndef HASHES_SHA3_H
+#define HASHES_SHA3_H
 
 #include <stdlib.h>
 
@@ -187,4 +187,4 @@ void sha3_512(void *digest, const void *data, size_t len);
 }
 #endif
 
-#endif
+#endif 
