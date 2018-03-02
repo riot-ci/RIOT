@@ -7,7 +7,10 @@ get_cmd_version() {
 
     local cmd="$1"
     if command -v "$cmd" 2>&1 >/dev/null; then
-        ver=$("$cmd" --version | head -n 1)
+        ver=$("$cmd" --version 2> /dev/null | head -n 1)
+        if [ -z "$ver" ]; then
+            ver="error"
+        fi
     else
         ver="missing"
     fi
