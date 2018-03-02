@@ -58,5 +58,5 @@ extern "C" {
 }
 #endif
 
-#endif /* F4_CFG_CLOCK_168_8_0_H */
+#endif /* F4_CFG_CLOCK_168_16_0_H */
 /** @} */

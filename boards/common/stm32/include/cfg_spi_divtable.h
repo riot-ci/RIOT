@@ -262,5 +262,5 @@ static const uint8_t spi_divtable[2][5] = {
 }
 #endif
 
-#endif /* PERIPH_CONF_H */
+#endif /* PERIPH_CFG_SPI_DIVTABLE_H */
 /** @} */
