@@ -36,8 +36,8 @@
  * @author      Mathias Tausig
  */
 
-#ifndef __SHA_3_H_
-#define __SHA_3_H_
+#ifndef HASHES_SHA3_H
+#define HASHES_SHA3_H
 
 #include <stdlib.h>
 
