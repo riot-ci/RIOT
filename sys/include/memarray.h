@@ -42,13 +42,13 @@ typedef struct {
  * @param[in]  numb       number of chunks in pool
  */
 #define MEMARRAY(name, structure, numb)                                           \
-    union el {                                                                    \
+    union _el_ ## name {                                                          \
         structure struc;                                                          \
         void *next;                                                               \
     };                                                                            \
-    static union el _data_ ## name[numb];                                         \
+    static union _el_ ## name _data_ ## name[numb];                               \
     static memarray_t name = { .first_free = _data_ ## name,                      \
-                               .size = sizeof(union el),                          \
+                               .size = sizeof(union _el_ ## name),                \
                                .num = numb };
 
 /**
