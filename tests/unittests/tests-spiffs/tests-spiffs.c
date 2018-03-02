@@ -403,30 +403,35 @@ static void tests_spiffs_partition(void)
     /* if SPIFFS_USE_MAGIC is used, a magic word is written in each sector */
     uint8_t buf[4];
     const uint8_t buf_erased[4] = {0xff, 0xff, 0xff, 0xff};
+    int read;
     res = 0;
     for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
-        mtd_read(_dev, buf, _dev->page_size * _dev->pages_per_sector + i, sizeof(buf));
-        res += memcmp(buf, buf_erased, sizeof(buf));
+        read = mtd_read(_dev, buf, _dev->page_size * _dev->pages_per_sector + i, sizeof(buf));
+        TEST_ASSERT_EQUAL_INT(sizeof(buf), read);
+        res |= memcmp(buf, buf_erased, sizeof(buf));
     }
     TEST_ASSERT(res != 0);
     res = 0;
     for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
-        mtd_read(_dev, buf, (2 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
-        res += memcmp(buf, buf_erased, sizeof(buf));
+        read = mtd_read(_dev, buf, (2 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
+        TEST_ASSERT_EQUAL_INT(sizeof(buf), read);
+        res |= memcmp(buf, buf_erased, sizeof(buf));
     }
     TEST_ASSERT(res != 0);
     /* Check previous sector (must be erased) */
     res = 0;
     for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
-        mtd_read(_dev, buf, i, sizeof(buf));
-        res += memcmp(buf, buf_erased, sizeof(buf));
+        read = mtd_read(_dev, buf, i, sizeof(buf));
+        TEST_ASSERT_EQUAL_INT(sizeof(buf), read);
+        res |= memcmp(buf, buf_erased, sizeof(buf));
     }
     TEST_ASSERT(res == 0);
     /* Check next sector (must be erased) */
     res = 0;
     for (size_t i = 0; i < _dev->page_size * _dev->pages_per_sector; i += sizeof(buf)) {
-        mtd_read(_dev, buf, (3 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
-        res += memcmp(buf, buf_erased, sizeof(buf));
+        read = mtd_read(_dev, buf, (3 * _dev->page_size * _dev->pages_per_sector) + i, sizeof(buf));
+        TEST_ASSERT_EQUAL_INT(sizeof(buf), read);
+        res |= memcmp(buf, buf_erased, sizeof(buf));
     }
     TEST_ASSERT(res == 0);
 #endif
