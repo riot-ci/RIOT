@@ -52,16 +52,6 @@
 #error TIMER_NUMOF should be the total of PIT and LPTMR timers in the system
 #endif
 
-/*
- * The RTC prescaler will normally count to 32767 every second unless configured
- * otherwise through the time compensation register.
- */
-#define TIMER_RTC_SUBTICK_MAX (0x7fff)
-/*
- * Number of bits in the ideal RTC prescaler counter
- */
-#define TIMER_RTC_SUBTICK_BITS (15)
-
 /**
  * @brief  The number of ticks that will be lost when setting a new target in the LPTMR
  *
