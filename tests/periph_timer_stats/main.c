@@ -26,6 +26,7 @@
 #include "mutex.h"
 #include "random.h"
 #include "div.h"
+#include "matstat.h"
 
 #include "periph/timer.h"
 #include "cpu.h"
@@ -120,25 +121,14 @@
 #define TEST_UNEXPECTED_MEAN 100
 #endif
 
-/* State vector element for keeping track of the statistics */
-typedef struct {
-    int64_t sum;
-    uint64_t sum_sq;
-    uint32_t count;
-    int32_t min;
-    int32_t max;
-} test_state_t;
-
 /* Reference target */
 static volatile unsigned int target = 0;
 
 /* State vector, first half will contain state for timer_set tests, second half
  * will contain state for timer_set_absolute */
-static test_state_t states[TEST_NUM * 2];
+static matstat_state_t states[TEST_NUM * 2];
 
-/**
- * @brief   Seed for initializing random module.
- */
+/* Seed for initializing the random module */
 static uint32_t seed = 123;
 
 /* Mutex used for signalling between main thread and ISR callback */
@@ -154,27 +144,19 @@ static void cb(void *arg, int chan)
         print_str("cb: Warning! arg = NULL\n");
         return;
     }
-    test_state_t *state = *((test_state_t**)arg);
+    matstat_state_t *state = *((matstat_state_t**)arg);
     if (state == NULL) {
         print_str("cb: Warning! state = NULL\n");
         return;
     }
 
-    ++state->count;
-    state->sum += diff;
-    /* Assuming the differences will be small on average and the number of
-     * samples is reasonably limited, to prevent overflow in sum_sq */
-    state->sum_sq += (int64_t)diff * diff;
-    if (diff > state->max) {
-        state->max = diff;
-    }
-    if (diff < state->min) {
-        state->min = diff;
-    }
+    /* Update running stats */
+    matstat_add(state, diff);
+
     mutex_unlock(&mtx_cb);
 }
 
-static void print_statistics(test_state_t *state)
+static void print_statistics(matstat_state_t *state)
 {
     if (state->count == 0) {
         print_str("no samples\n");
@@ -186,8 +168,8 @@ static void print_statistics(test_state_t *state)
         print("\n", 1);
         return;
     }
-    int32_t mean = state->sum / state->count;
-    uint64_t variance = (state->sum_sq - state->count * mean * mean) / (state->count - 1);
+    int32_t mean = matstat_mean(state);
+    uint64_t variance = matstat_variance(state);
 
     char buf[20];
     print(buf, fmt_lpad(buf, fmt_u32_dec(buf, state->count), 7, ' '));
@@ -211,25 +193,15 @@ static void print_statistics(test_state_t *state)
     print("\n", 1);
 }
 
-static void print_totals(test_state_t *states, size_t nelem)
+static void print_totals(matstat_state_t *states, size_t nelem)
 {
-    test_state_t totals;
-    memset(&totals, 0, sizeof(totals));
-    totals.min = INT16_MAX;
-    totals.max = INT16_MIN;
+    matstat_state_t totals;
+    matstat_clear(&totals);
     for (size_t k = 0; k < nelem; ++k) {
-        totals.count += states[k].count;
-        totals.sum += states[k].sum;
-        totals.sum_sq += states[k].sum_sq;
-        if (states[k].max > totals.max) {
-            totals.max = states[k].max;
-        }
-        if (states[k].min < totals.min) {
-            totals.min = states[k].min;
-        }
+        matstat_merge(&totals, &states[k]);
     }
-    int32_t mean = totals.sum / totals.count;
-    uint64_t variance = (totals.sum_sq - totals.count * mean * mean) / (totals.count - 1);
+    int32_t mean = matstat_mean(&totals);
+    uint64_t variance = matstat_variance(&totals);
 
     char buf[20];
     print(buf, fmt_lpad(buf, fmt_u32_dec(buf, totals.count), 7, ' '));
@@ -248,7 +220,7 @@ static void print_totals(test_state_t *states, size_t nelem)
     print("\n", 1);
 }
 
-static test_state_t *state = NULL;
+static matstat_state_t *state = NULL;
 
 static int test_timer(void)
 {
@@ -324,10 +296,8 @@ static int test_timer(void)
 int main(void)
 {
     print_str("\nStatistics test for peripheral timers\n");
-    memset(states, 0, sizeof(states));
     for (unsigned int k = 0; k < (sizeof(states) / sizeof(states[0])); ++k) {
-        states[k].max = INT16_MIN;
-        states[k].min = INT16_MAX;
+        matstat_clear(&states[k]);
     }
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
