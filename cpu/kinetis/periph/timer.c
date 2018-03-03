@@ -348,34 +348,32 @@ static inline void _lptmr_set_cb_config(uint8_t dev, timer_cb_t cb, void *arg)
 /**
  * @brief  Compute the LPTMR prescaler setting, see reference manual for details
  */
-static inline int32_t _lptmr_compute_prescaler(uint32_t freq) {
+static inline int32_t _lptmr_compute_prescaler(uint8_t dev, uint32_t freq) {
     uint32_t prescale = 0;
     if ((freq > LPTMR_BASE_FREQ) || (freq == 0)) {
         /* Frequency out of range */
         return -1;
     }
-    while (freq < LPTMR_BASE_FREQ){
+    while (freq < lptmr_config[dev].base_freq){
         ++prescale;
         freq <<= 1;
     }
-    if (freq != LPTMR_BASE_FREQ) {
-        /* freq was not a power of two division of LPTMR_BASE_FREQ */
+    if (freq != lptmr_config[dev].base_freq) {
+        /* freq was not a power of two division of base_freq */
         return -2;
     }
-    if (prescale > 0) {
-        /* LPTMR_PSR_PRESCALE == 0 yields LPTMR_BASE_FREQ/2,
-         * LPTMR_PSR_PRESCALE == 1 yields LPTMR_BASE_FREQ/4 etc.. */
-        return LPTMR_PSR_PRESCALE(prescale - 1);
-    }
-    else {
+    if (prescale == 0) {
         /* Prescaler bypass enabled */
         return LPTMR_PSR_PBYP_MASK;
     }
+    /* LPTMR_PSR_PRESCALE == 0 yields base_freq / 2,
+     * LPTMR_PSR_PRESCALE == 1 yields base_freq / 4 etc.. */
+    return LPTMR_PSR_PRESCALE(prescale - 1);
 }
 
 static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *arg)
 {
-    int32_t prescale = _lptmr_compute_prescaler(freq);
+    int32_t prescale = _lptmr_compute_prescaler(dev, freq);
     if (prescale < 0) {
         return -1;
     }
