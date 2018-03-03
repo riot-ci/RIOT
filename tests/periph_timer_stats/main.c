@@ -156,7 +156,7 @@ static void cb(void *arg, int chan)
     mutex_unlock(&mtx_cb);
 }
 
-static void print_statistics(matstat_state_t *state)
+static void print_statistics(const matstat_state_t *state)
 {
     if (state->count == 0) {
         print_str("no samples\n");
@@ -193,31 +193,14 @@ static void print_statistics(matstat_state_t *state)
     print("\n", 1);
 }
 
-static void print_totals(matstat_state_t *states, size_t nelem)
+static void print_totals(const matstat_state_t *states, size_t nelem)
 {
     matstat_state_t totals;
     matstat_clear(&totals);
     for (size_t k = 0; k < nelem; ++k) {
         matstat_merge(&totals, &states[k]);
     }
-    int32_t mean = matstat_mean(&totals);
-    uint64_t variance = matstat_variance(&totals);
-
-    char buf[20];
-    print(buf, fmt_lpad(buf, fmt_u32_dec(buf, totals.count), 7, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_s64_dec(buf, totals.sum), 9, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_u64_dec(buf, totals.sum_sq), 12, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_s32_dec(buf, totals.min), 6, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_s32_dec(buf, totals.max), 5, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_s32_dec(buf, mean), 5, ' '));
-    print(" ", 1);
-    print(buf, fmt_lpad(buf, fmt_u64_dec(buf, variance), 6, ' '));
-    print("\n", 1);
+    print_statistics(&totals);
 }
 
 static matstat_state_t *state = NULL;
