@@ -348,37 +348,6 @@ static inline void lptmr_start(uint8_t dev);
 static inline void lptmr_stop(uint8_t dev);
 static inline void lptmr_irq_handler(tim_t tim);
 
-#if 0
-/**
- * @brief Read the prescaler register from the RTC as a reliable 47 bit time counter
- */
-static inline uint32_t _rtt_get_subtick(void)
-{
-    uint32_t tpr;
-    uint32_t tsr;
-
-    for (int i = 0; i < 5; i++) {
-        /* Read twice to make sure we get a stable reading */
-        tpr = RTC->TPR & RTC_TPR_TPR_MASK;
-        tsr = RTC->TSR & RTC_TSR_TSR_MASK;
-
-        if ((tsr == (RTC->TSR & RTC_TSR_TSR_MASK)) &&
-            (tpr == (RTC->TPR & RTC_TPR_TPR_MASK))) {
-            break;
-        }
-    }
-    if (tpr > TIMER_RTC_SUBTICK_MAX) {
-        /* This only happens if the RTC time compensation value has been
-         * modified to compensate for RTC drift. See Kinetis ref.manual,
-         *  RTC Time Compensation Register (RTC_TCR).
-         */
-        tpr = TIMER_RTC_SUBTICK_MAX;
-    }
-
-    return (tsr << TIMER_RTC_SUBTICK_BITS) | tpr;
-}
-#endif
-
 static inline void _lptmr_set_cb_config(uint8_t dev, timer_cb_t cb, void *arg)
 {
     /* set callback function */
@@ -413,34 +382,6 @@ static inline int32_t _lptmr_compute_prescaler(uint32_t freq) {
         return LPTMR_PSR_PBYP_MASK;
     }
 }
-
-#if 0
-/**
- * @brief  Update the offset between RTT and LPTMR
- */
-static inline void _lptmr_update_rtt_offset(uint8_t dev)
-{
-    lptmr[dev].rtt_offset = _rtt_get_subtick();
-}
-
-/**
- * @brief  Update the reference time point (CNR=0)
- */
-static inline void _lptmr_update_reference(uint8_t dev)
-{
-    lptmr[dev].reference = _rtt_get_subtick() + LPTMR_RELOAD_OVERHEAD - lptmr[dev].rtt_offset;
-}
-
-static inline void _lptmr_set_counter(uint8_t dev)
-{
-    _lptmr_update_reference(dev);
-    LPTMR_Type *hw = lptmr_config[dev].dev;
-    hw->CSR = 0;
-    hw->CMR = lptmr[dev].cmr;
-    /* restore saved state */
-    hw->CSR = lptmr[dev].csr;
-}
-#endif
 
 static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *arg)
 {
