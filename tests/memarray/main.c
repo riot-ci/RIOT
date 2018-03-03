@@ -86,7 +86,6 @@ void free_memory(struct block_t *head)
         }
         else {
             memarray_free(&block_storage, head);
-            // printf("\tLast block released, *head: %p\n", (void *) head);
             head = 0;
         }
     }
