@@ -294,9 +294,9 @@ static int test_timer(void)
     }
     else {
         print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
-        print_str("         timer_set: ");
+        print_str(" timer_set          ");
         print_totals(&states[0], 1);
-        print_str("timer_set_absolute: ");
+        print_str(" timer_set_absolute ");
         print_totals(&states[1], 1);
     }
 
