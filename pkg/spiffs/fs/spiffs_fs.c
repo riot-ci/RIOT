@@ -142,10 +142,10 @@ static int prepare(spiffs_desc_t *fs_desc)
            <= dev->sector_count);
     /* base addr is aligned on a sector */
     assert(fs_desc->base_addr % dev->min_erase_size == 0);
-    fs_desc->config.phys_size = sector_count;
+    fs_desc->config.phys_size = dev->min_erase_size * sector_count;
     fs_desc->config.log_block_size = dev->min_erase_size;
     fs_desc->config.log_page_size = dev->page_size;
-    fs_desc->config.phys_addr = 0;
+    fs_desc->config.phys_addr = fs->base_addr;
     fs_desc->config.phys_erase_block = dev->min_erase_size;
 #endif
 
