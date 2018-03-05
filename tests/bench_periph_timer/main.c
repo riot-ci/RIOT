@@ -220,6 +220,27 @@ static void print_totals(const matstat_state_t *states, size_t nelem)
 
 static matstat_state_t *state = NULL;
 
+/**
+ * @brief   Select the proper state for the given test number depending on the
+ *          compile time configuration
+ *
+ * Depends on DETAILED_STATS, LOG2_STATS
+ */
+static void assign_state_ptr(unsigned int num)
+{
+    if (DETAILED_STATS) {
+        state = &states[num];
+    }
+    else {
+        if (num < TEST_NUM) {
+            state = &states[0];
+        }
+        else {
+            state = &states[1];
+        }
+    }
+}
+
 static int test_timer(void)
 {
     /* print test overview */
@@ -243,17 +264,7 @@ static int test_timer(void)
     uint32_t duration = 0;
     do {
         unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * 2);
-        if (DETAILED_STATS) {
-            state = &states[num];
-        }
-        else {
-            if (num < TEST_NUM) {
-                state = &states[0];
-            }
-            else {
-                state = &states[1];
-            }
-        }
+        assign_state_ptr(num);
         unsigned int interval = num + TEST_MIN;
         if (num >= TEST_NUM) {
             interval -= TEST_NUM;
