@@ -254,6 +254,8 @@ ssize_t sock_udp_send(sock_udp_t *sock, const void *data, size_t len,
         }
         if (sock != NULL) {
             /* bind sock object implicitly */
+            /* cppcheck-suppress nullPointer
+             * (reason: cppcheck is weird here as well, see above) */
             sock->local.port = src_port;
             if (remote == NULL) {
                 sock->local.family = sock->remote.family;
