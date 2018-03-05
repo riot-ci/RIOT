@@ -423,7 +423,10 @@ static inline int lptmr_set(uint8_t dev, uint16_t timeout)
     lptmr[dev].running = 1;
     if (!(hw->CSR & LPTMR_CSR_TEN_MASK)) {
         /* Timer is stopped, only update target */
-        lptmr[dev].cmr = timeout;
+        if (timeout < LPTMR_RELOAD_OVERHEAD) {
+            timeout = LPTMR_RELOAD_OVERHEAD;
+        }
+        lptmr[dev].cmr = timeout - LPTMR_RELOAD_OVERHEAD;
         irq_restore(mask);
         return 1;
     }
@@ -435,13 +438,16 @@ static inline int lptmr_set(uint8_t dev, uint16_t timeout)
         hw->CSR = hw->CSR;
     }
     else {
+        if (timeout < LPTMR_RELOAD_OVERHEAD) {
+            timeout = LPTMR_RELOAD_OVERHEAD;
+        }
         /* Update reference */
         hw->CNR = 0;
-        lptmr[dev].cnr += hw->CNR;
+        lptmr[dev].cnr += hw->CNR + LPTMR_RELOAD_OVERHEAD;
         /* Disable timer and set target, 1 to 2 ticks will be dropped by the
          * hardware during the disable-enable cycle */
         hw->CSR = 0;
-        hw->CMR = timeout;
+        hw->CMR = timeout - LPTMR_RELOAD_OVERHEAD;
     }
     /* Enable timer and IRQ */
     hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
