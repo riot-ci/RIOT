@@ -1,4 +1,4 @@
-# Statistics test for periph_timer
+# Benchmark test for periph_timer
 
 This test is intended to collect statistics about the runtime delays in the
 periph_timer implementation. This tool is mainly intended to detect problems in
