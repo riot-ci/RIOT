@@ -54,9 +54,7 @@ typedef struct {
 /**
  * @brief Initialize memarray pool with free list
  *
- * @param[out]  mem     memarray pool to initialize
- * @param[in]   size    size of single memory chunk
- * @param[in]   num     number of chunks in pool
+ * @param[in, out]  mem     memarray pool to initialize
  */
 void memarray_init(memarray_t *mem);
 
