@@ -13,8 +13,8 @@
   * @file
   * @brief      Unit tests for pkg cn-cbor.
   *
-  * @author     Lorenz Hüther
-  * @author     Mathias Detmers
+  * @author     Lorenz Hüther <lorenz.huether@uni-bremen.de>
+  * @author     Mathias Detmers <detmat@uni-bremen.de
   */
 
 #define EBUF_SIZE 32
@@ -31,17 +31,16 @@ typedef struct buffer {
     unsigned char *pntr;
 } buffer_t;
 
-typedef struct cbor_failure
-{
+typedef struct cbor_failure {
     char *hex;
     cn_cbor_error err;
 } cbor_failure;
 
-cn_cbor *cbor;
-buffer_t pbuf;
-size_t test, offs;
-unsigned char ebuf[EBUF_SIZE];
-cn_cbor_errback errb;
+static cn_cbor *cbor;
+static buffer_t pbuf;
+static size_t test, offs;
+static unsigned char ebuf[EBUF_SIZE];
+static cn_cbor_errback errb;
 
 static void setup_cncbor(void)
 {
@@ -166,11 +165,11 @@ static void test_errors(void)
             &inv));
 
     for (offs = 0; offs < sizeof(tests) / sizeof(cbor_failure); offs++) {
-    TEST_ASSERT(parse_hex(tests[offs].hex));
+        TEST_ASSERT(parse_hex(tests[offs].hex));
 
-    cbor = cn_cbor_decode(pbuf.pntr, pbuf.size, &errb);
-    TEST_ASSERT_NULL(cbor);
-    TEST_ASSERT_EQUAL_INT(errb.err, tests[offs].err);
+        cbor = cn_cbor_decode(pbuf.pntr, pbuf.size, &errb);
+        TEST_ASSERT_NULL(cbor);
+        TEST_ASSERT_EQUAL_INT(errb.err, tests[offs].err);
     }
 }
 
