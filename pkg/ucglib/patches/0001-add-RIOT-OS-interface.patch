@@ -1,4 +1,4 @@
-From 86492024e0487d9d9c52f42d99a3406a3261a557 Mon Sep 17 00:00:00 2001
+From 17bb482152c316b1bf33cd7c84a2ce96c9a720f3 Mon Sep 17 00:00:00 2001
 From: Bas Stottelaar <basstottelaar@gmail.com>
 Date: Fri, 2 Mar 2018 00:16:43 +0100
 Subject: [PATCH 1/1] add RIOT-OS interface.
@@ -87,7 +87,7 @@ index c070a77..553562c 100644
  }
 diff --git a/csrc/ucg_riotos.c b/csrc/ucg_riotos.c
 new file mode 100644
-index 0000000..b3bcccc
+index 0000000..b9e5086
 --- /dev/null
 +++ b/csrc/ucg_riotos.c
 @@ -0,0 +1,152 @@
@@ -220,7 +220,7 @@ index 0000000..b3bcccc
 +{
 +    static uint32_t pixels;
 +
-+    switch(msg) {
++    switch (msg) {
 +        case UCG_MSG_DEV_POWER_UP:
 +            puts("ucg: UCG_MSG_DEV_POWER_UP");
 +            return 1;
@@ -236,7 +236,7 @@ index 0000000..b3bcccc
 +            pixels++;
 +
 +            if (pixels % 128 == 0) {
-+                printf("ucg: UCG_MSG_DRAW_PIXEL (%d)\n", pixels);
++                printf("ucg: UCG_MSG_DRAW_PIXEL (%" PRIu32 ")\n", pixels);
 +            }
 +
 +            return 1;
