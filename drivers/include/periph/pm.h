@@ -36,6 +36,13 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Initialize power management
+ *
+ * Called by periph_init(), if PM_HAS_INIT is defined in periph_cpu.h.
+ */
+void pm_init(void);
+
+/**
  * @brief   Reboot MCU
  */
 void pm_reboot(void);
