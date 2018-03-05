@@ -96,7 +96,7 @@ int main(void)
     memory_block_init();
     int count = 0;
 
-    printf("Starting (%d, %d)\n", MAX_NUMBER_BLOCKS, MESSAGE_SIZE);
+    printf("Starting (%d, %u)\n", MAX_NUMBER_BLOCKS, MESSAGE_SIZE);
     _ps_handler(0, NULL);
 
     while (count < NUMBER_OF_TESTS) {
