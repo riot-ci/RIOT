@@ -184,7 +184,7 @@ static void print_statistics(const matstat_state_t *state)
         return;
     }
     int32_t mean = matstat_mean(state);
-    uint64_t variance = matstat_variance(state);
+    uint64_t variance = matstat_variance(state, mean);
 
     char buf[20];
     print(buf, fmt_lpad(buf, fmt_u32_dec(buf, state->count), 7, ' '));
