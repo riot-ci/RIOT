@@ -38,7 +38,12 @@ struct block_t {
     unsigned char message[MESSAGE_SIZE];
 };
 
-MEMARRAY(block_storage, struct block_t, MAX_NUMBER_BLOCKS)
+struct block_t block_storage_data[MAX_NUMBER_BLOCKS];
+memarray_t block_storage = {
+  .free_data = block_storage_data,
+  .size = sizeof(struct block_t),
+  .num = MAX_NUMBER_BLOCKS,
+};
 
 int total = 0;
 

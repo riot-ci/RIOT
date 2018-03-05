@@ -29,27 +29,10 @@ extern "C" {
  * @brief Memory pool
  */
 typedef struct {
-    void *first_free;   /**< head of the free list */
+    void *free_data;    /**< memory pool data / head of the free list */
     size_t size;        /**< size of single list element */
     size_t num;         /**< max number of elements in list */
 } memarray_t;
-
-/**
- * @brief Define static memory pool
- *
- * @param[out] name        name for defined memarray pool
- * @param[in]  structure   structure in single memory chunk
- * @param[in]  numb        number of chunks in pool
- */
-#define MEMARRAY(name, structure, numb)                                           \
-    union _el_ ## name {                                                          \
-        structure struc;                                                          \
-        void *next;                                                               \
-    };                                                                            \
-    static union _el_ ## name _data_ ## name[numb];                               \
-    static memarray_t name = { .first_free = _data_ ## name,                      \
-                               .size = sizeof(union _el_ ## name),                \
-                               .num = numb };
 
 /**
  * @brief Initialize memarray pool with free list

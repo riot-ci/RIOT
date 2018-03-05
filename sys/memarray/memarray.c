@@ -12,32 +12,33 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+void memarray_init(memarray_t *mem)
+{
+  DEBUG("memarray: Initialize memarray of %zu times %zu Bytes at %p\n",
+        mem->num,
+        mem->size,
+        mem->free_data);
+  for (size_t i = 0; i < (mem->num - 1); i++) {
+    void *next = ((char *)mem->free_data) + ((i + 1) * mem->size);
+    memcpy(((char *)mem->free_data) + (i * mem->size), &next, sizeof(void *));
+  }
+}
+
+
 void *memarray_alloc(memarray_t *mem)
 {
-    if (mem->first_free == NULL) {
+    if (mem->free_data == NULL) {
         return NULL;
     }
-    void *free = mem->first_free;
-    mem->first_free = *((void **)mem->first_free);
+    void *free = mem->free_data;
+    mem->free_data = *((void **)mem->free_data);
     DEBUG("memarray: Allocate %zu Bytes at %p\n", mem->size, free);
     return free;
 }
 
-void memarray_init(memarray_t *mem)
-{
-    DEBUG("memarray: Initialize memarray of %zu times %zu Bytes at %p\n",
-          mem->num,
-          mem->size,
-          mem->first_free);
-    for (size_t i = 0; i < (mem->num - 1); i++) {
-        void *next = ((char *)mem->first_free) + ((i + 1) * mem->size);
-        memcpy(((char *)mem->first_free) + (i * mem->size), &next, sizeof(void *));
-    }
-}
-
 void memarray_free(memarray_t *mem, void *ptr)
 {
-    memcpy(ptr, &mem->first_free, sizeof(void *));
-    mem->first_free = ptr;
+    memcpy(ptr, &mem->free_data, sizeof(void *));
+    mem->free_data = ptr;
     DEBUG("memarray: Free %zu Bytes at %p\n",mem->size, ptr);
 }
