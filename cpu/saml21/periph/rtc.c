@@ -97,7 +97,7 @@ void rtc_init(void)
 
     /* RTC config with RTC_MODE2_CTRL_CLKREP = 0 (24h) */
     RTC->MODE2.CTRLA.reg = RTC_MODE2_CTRLA_PRESCALER_DIV1024 |  /* CLK_RTC_CNT = 1KHz / 1024 -> 1Hz */
-#if (SAML21XXXB) || (SAMR30)
+#if (CPU_MODEL_SAML21J18B)
                            RTC_MODE2_CTRLA_CLOCKSYNC         |  /* Clock Read Synchronization Enable */
 #endif
                            RTC_MODE2_CTRLA_MODE_CLOCK;          /* Mode 2: Clock/Calendar */
