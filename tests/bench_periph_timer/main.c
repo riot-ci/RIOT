@@ -62,9 +62,16 @@
 #define DETAILED_STATS 0
 #endif
 
-/* Perform more complex test where timers are rescheduled before firing */
-#ifndef TEST_RESCHEDULE
-#define TEST_RESCHEDULE 1
+/* Group statistics into log2 size buckets, instead of one record per timer target
+ * i.e. 1, 2, 3-4, 5-8, 9-16, 17-32 etc. */
+/* Only used if DETAILED_STATS is 1 */
+#ifndef LOG2_STATS
+#define LOG2_STATS 1
+#endif
+
+/* Margin to ensure that the rescheduling timer never is hit */
+#ifndef RESCHEDULE_MARGIN
+#define RESCHEDULE_MARGIN (SPIN_MAX_TARGET * 16)
 #endif
 
 /**
@@ -144,13 +151,31 @@ static uint32_t seed = 123;
 /* Mutex used for signalling between main thread and ISR callback */
 static mutex_t mtx_cb = MUTEX_INIT_LOCKED;
 
+/* Results will be grouped by function, rescheduling yes/no, start/stop.
+ * functions: timer_set, timer_set_absolute
+ * reschedule: yes/no, when yes: first set one target time, before that time has
+ * passed, set the real target time
+ * start/stop: if stop: call timer_stop before setting the target time, then call timer_start
+ *
+ * All different variations will be mixed to provide the most varied input
+ * vector possible for the benchmark. A more varied input should yield a more
+ * correct estimate of the mean error and variance.
+ */
+
+enum {
+    TEST_RESCHEDULE         = 1,
+    TEST_STOPPED            = 2,
+    TEST_ABSOLUTE           = 4,
+    TEST_VARIANT_NUMOF      = 8,
+};
+
 #if DETAILED_STATS
 /* State vector, first half will contain state for timer_set tests, second half
  * will contain state for timer_set_absolute */
-static matstat_state_t states[TEST_NUM * 2];
+static matstat_state_t states[TEST_NUM * TEST_VARIANT_NUMOF];
 #else
-/* Only keep stats per function */
-static matstat_state_t states[2];
+/* Only keep stats per function variation */
+static matstat_state_t states[TEST_VARIANT_NUMOF];
 #endif
 
 /* Callback for the timeout */
@@ -257,9 +282,26 @@ void print_results(void)
     else {
         print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
         print_str(" timer_set          ");
+        print_totals(&states[0], 4);
+        print_str("  running           ");
         print_totals(&states[0], 1);
+        print_str("  resched           ");
+        print_totals(&states[TEST_RESCHEDULE], 1);
+        print_str("  stopped           ");
+        print_totals(&states[TEST_STOPPED], 1);
+        print_str("  resched, stopped  ");
+        print_totals(&states[TEST_RESCHEDULE | TEST_STOPPED], 1);
+        print("\n", 1);
         print_str(" timer_set_absolute ");
-        print_totals(&states[1], 1);
+        print_totals(&states[TEST_ABSOLUTE], 4);
+        print_str("  running           ");
+        print_totals(&states[TEST_ABSOLUTE], 1);
+        print_str("  resched           ");
+        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1);
+        print_str("  stopped           ");
+        print_totals(&states[TEST_ABSOLUTE | TEST_STOPPED], 1);
+        print_str("  resched, stopped  ");
+        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1);
     }
 
     print_str("-------------- END STATISTICS ---------------\n");
@@ -279,12 +321,7 @@ static void assign_state_ptr(unsigned int num)
         state = &states[num];
     }
     else {
-        if (num < TEST_NUM) {
-            state = &states[0];
-        }
-        else {
-            state = &states[1];
-        }
+        state = &states[num / TEST_NUM];
     }
 }
 
@@ -327,6 +364,40 @@ static void calibrate_spin_max(void)
     print("\n", 1);
 }
 
+static uint32_t run_test(unsigned int num)
+{
+    assign_state_ptr(num);
+    uint32_t interval = (num % TEST_NUM) + TEST_MIN;
+    spin_random_delay();
+    unsigned int interval_ref = TIM_TEST_TO_REF(interval);
+    unsigned int variant = num / TEST_NUM;
+    if (variant & TEST_RESCHEDULE) {
+        timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval + RESCHEDULE_MARGIN);
+        spin_random_delay();
+    }
+    if (variant & TEST_STOPPED) {
+        timer_stop(TIM_TEST_DEV);
+        spin_random_delay();
+    }
+    unsigned int now_ref = timer_read(TIM_REF_DEV);
+    target = now_ref + interval_ref;
+    if (variant & TEST_ABSOLUTE) {
+        unsigned int now = timer_read(TIM_TEST_DEV);
+        timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, now + interval);
+    }
+    else {
+        timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval);
+    }
+    if (variant & TEST_STOPPED) {
+        spin_random_delay();
+        now_ref = timer_read(TIM_REF_DEV);
+        target = now_ref + interval_ref;
+        timer_start(TIM_TEST_DEV);
+    }
+    mutex_lock(&mtx_cb);
+    return interval;
+}
+
 static int test_timer(void)
 {
     /* print test overview */
@@ -349,28 +420,8 @@ static int test_timer(void)
 
     uint32_t duration = 0;
     do {
-        unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * 2);
-        assign_state_ptr(num);
-        unsigned int interval = num + TEST_MIN;
-        if (num >= TEST_NUM) {
-            interval -= TEST_NUM;
-        }
-        spin_random_delay();
-        unsigned int interval_ref = TIM_TEST_TO_REF(interval);
-        unsigned int now_ref = timer_read(TIM_REF_DEV);
-        target = now_ref + interval_ref;
-        if (TEST_RESCHEDULE) {
-            timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval + 100);
-        }
-        if (num < TEST_NUM) {
-            timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval);
-        }
-        else {
-            unsigned int now = timer_read(TIM_TEST_DEV);
-            timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, now + interval);
-        }
-        mutex_lock(&mtx_cb);
-        duration += interval;
+        unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
+        duration += run_test(num);
     } while(duration < TEST_PRINT_INTERVAL_TICKS);
 
     print_results();
