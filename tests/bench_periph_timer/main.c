@@ -222,6 +222,49 @@ static void print_totals(const matstat_state_t *states, size_t nelem)
     print_statistics(&totals);
 }
 
+/**
+ * @brief   Present the results of the benchmark
+ *
+ * Depends on DETAILED_STATS, LOG2_STATS
+ */
+void print_results(void)
+{
+    print_str("------------- BEGIN STATISTICS --------------\n");
+
+    if (DETAILED_STATS) {
+        print_str("=== timer_set ===\n");
+        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
+        for (unsigned int i = 0; i < TEST_NUM; ++i) {
+            char buf[10];
+            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
+            print_str(": ");
+            print_statistics(&states[i]);
+        }
+        print_str("  TOTAL: ");
+        print_totals(&states[0], TEST_NUM);
+
+        print_str("=== timer_set_absolute ===\n");
+        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
+        for (unsigned int i = 0; i < TEST_NUM; ++i) {
+            char buf[10];
+            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
+            print_str(": ");
+            print_statistics(&states[i + TEST_NUM]);
+        }
+        print_str("  TOTAL: ");
+        print_totals(&states[TEST_NUM], TEST_NUM);
+    }
+    else {
+        print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
+        print_str(" timer_set          ");
+        print_totals(&states[0], 1);
+        print_str(" timer_set_absolute ");
+        print_totals(&states[1], 1);
+    }
+
+    print_str("-------------- END STATISTICS ---------------\n");
+}
+
 static matstat_state_t *state = NULL;
 
 /**
@@ -330,40 +373,7 @@ static int test_timer(void)
         duration += interval;
     } while(duration < TEST_PRINT_INTERVAL_TICKS);
 
-    print_str("------------- BEGIN STATISTICS --------------\n");
-
-    if (DETAILED_STATS) {
-        print_str("=== timer_set ===\n");
-        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
-        for (unsigned int i = 0; i < TEST_NUM; ++i) {
-            char buf[10];
-            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
-            print_str(": ");
-            print_statistics(&states[i]);
-        }
-        print_str("  TOTAL: ");
-        print_totals(&states[0], TEST_NUM);
-
-        print_str("=== timer_set_absolute ===\n");
-        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
-        for (unsigned int i = 0; i < TEST_NUM; ++i) {
-            char buf[10];
-            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
-            print_str(": ");
-            print_statistics(&states[i + TEST_NUM]);
-        }
-        print_str("  TOTAL: ");
-        print_totals(&states[TEST_NUM], TEST_NUM);
-    }
-    else {
-        print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
-        print_str(" timer_set          ");
-        print_totals(&states[0], 1);
-        print_str(" timer_set_absolute ");
-        print_totals(&states[1], 1);
-    }
-
-    print_str("-------------- END STATISTICS ---------------\n");
+    print_results();
 
     return 0;
 }
