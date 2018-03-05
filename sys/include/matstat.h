@@ -36,6 +36,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief   Internal state for computing running statistics
  */
@@ -124,4 +128,11 @@ void matstat_merge(matstat_state_t *dest, const matstat_state_t *src);
  * @precondition    @p state->count must be > 0
  */
 void matstat_change_offset(matstat_state_t *state, int32_t mean, int32_t new_offset);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* MATSTAT_H */
+
+/** @} */
