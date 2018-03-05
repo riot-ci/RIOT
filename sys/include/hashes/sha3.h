@@ -187,4 +187,4 @@ void sha3_512(void *digest, const void *data, size_t len);
 }
 #endif
 
-#endif
+#endif  /* HASHES_SHA3_H */
