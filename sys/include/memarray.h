@@ -37,9 +37,9 @@ typedef struct {
 /**
  * @brief Define static memory pool
  *
- * @param[out] name       name for defined memarray pool
- * @param[in]  structure  structure in single memory chunk
- * @param[in]  numb       number of chunks in pool
+ * @param[out] name        name for defined memarray pool
+ * @param[in]  structure   structure in single memory chunk
+ * @param[in]  numb        number of chunks in pool
  */
 #define MEMARRAY(name, structure, numb)                                           \
     union _el_ ## name {                                                          \
@@ -54,24 +54,25 @@ typedef struct {
 /**
  * @brief Initialize memarray pool with free list
  *
- * @param[in, out]  mem     memarray pool to initialize
+ * @param[in,out] mem   memarray pool to initialize
  */
 void memarray_init(memarray_t *mem);
 
 /**
  * @brief Allocate memory chunk in memarray pool
  *
- * @param[in,out]  mem      memarray pool to allocate block in
+ * @param[in,out] mem   memarray pool to allocate block in
  *
- * @return NULL on failure
+ * @return pointer to allocated structure, if enough memory was available
+ * @return NULL, on failure
  */
 void *memarray_alloc(memarray_t *mem);
 
 /**
  * @brief Free memory chunk in memarray pool
  *
- * @param[in,out]  mem      memarray pool to free block in
- * @param[in]      ptr      pointer to memarray chunk
+ * @param[in,out] mem   memarray pool to free block in
+ * @param[in]     ptr   pointer to memarray chunk
  */
 void memarray_free(memarray_t *mem, void *ptr);
 
