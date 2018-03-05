@@ -62,6 +62,11 @@
 #define DETAILED_STATS 0
 #endif
 
+/* Perform more complex test where timers are rescheduled before firing */
+#ifndef TEST_RESCHEDULE
+#define TEST_RESCHEDULE 1
+#endif
+
 /**
  * @brief Reference timer to compare against
  */
@@ -256,6 +261,9 @@ static int test_timer(void)
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
         unsigned int now_ref = timer_read(TIM_REF_DEV);
         target = now_ref + interval_ref;
+        if (TEST_RESCHEDULE) {
+            timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval + 100);
+        }
         if (num < TEST_NUM) {
             timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval);
         }
