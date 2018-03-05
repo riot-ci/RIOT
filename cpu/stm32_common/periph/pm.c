@@ -86,4 +86,9 @@ void pm_off(void)
     irq_disable();
     pm_set(0);
 }
+
+void pm_init(void)
+{
+    periph_clk_en(APB1, RCC_APB1ENR_PWREN);
+}
 #endif

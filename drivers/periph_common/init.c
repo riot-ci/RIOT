@@ -29,6 +29,9 @@
 #ifdef MODULE_PERIPH_HWRNG
 #include "periph/hwrng.h"
 #endif
+#ifdef MODULE_PERIPH_PM
+#include "periph/pm.h"
+#endif
 
 void periph_init(void)
 {
@@ -46,5 +49,9 @@ void periph_init(void)
 
 #ifdef MODULE_PERIPH_HWRNG
     hwrng_init();
+#endif
+
+#if defined(MODULE_PERIPH_PM) && defined(PM_HAS_INIT)
+    pm_init();
 #endif
 }
