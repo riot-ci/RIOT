@@ -131,6 +131,10 @@
 #define TEST_UNEXPECTED_MEAN 100
 #endif
 
+/* The spin calibration will try to set spin_limit to a number of loop
+ * iterations which correspond to this many TUT ticks */
+#define SPIN_MAX_TARGET 16
+
 /* Reference target */
 static volatile unsigned int target = 0;
 
@@ -241,6 +245,45 @@ static void assign_state_ptr(unsigned int num)
     }
 }
 
+/**
+ * @brief   Busy wait (spin) for the given number of loop iterations
+ */
+static void spin(uint32_t limit)
+{
+    /* Platform independent busy wait loop, should never be optimized out
+     * because of the volatile asm statement */
+    while (limit--) {
+        __asm__ volatile ("");
+    }
+}
+
+static uint32_t spin_max;
+
+/**
+ * @brief   Spin for a short random delay to increase fuzziness of the test
+ */
+static void spin_random_delay(void)
+{
+    uint32_t limit = random_uint32_range(0, spin_max);
+    spin(limit);
+}
+
+static void calibrate_spin_max(void)
+{
+    spin_max = 1024;
+    unsigned int t1;
+    unsigned int t2;
+    do {
+        spin_max *= 2;
+        t1 = timer_read(TIM_TEST_DEV);
+        spin(spin_max);
+        t2 = timer_read(TIM_TEST_DEV);
+    } while ((t2 - t1) < SPIN_MAX_TARGET);
+    print_str("spin_max = ");
+    print_u32_dec(spin_max);
+    print("\n", 1);
+}
+
 static int test_timer(void)
 {
     /* print test overview */
@@ -269,6 +312,7 @@ static int test_timer(void)
         if (num >= TEST_NUM) {
             interval -= TEST_NUM;
         }
+        spin_random_delay();
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
         unsigned int now_ref = timer_read(TIM_REF_DEV);
         target = now_ref + interval_ref;
@@ -347,6 +391,7 @@ int main(void)
         return res;
     }
 
+    calibrate_spin_max();
     while(1) {
         test_timer();
     }
