@@ -14,9 +14,9 @@
 
    RIOT OS adaptations by Mathias Tausig
 
-   This software is released under the Creative Commons CC0 1.0 license. 
-   To the extent possible under law, the implementer has waived all copyright 
-   and related or neighboring rights to the source code in this file. 
+   This software is released under the Creative Commons CC0 1.0 license.
+   To the extent possible under law, the implementer has waived all copyright
+   and related or neighboring rights to the source code in this file.
    For more information see: http://creativecommons.org/publicdomain/zero/1.0/
  */
 
@@ -72,15 +72,20 @@
  *                         (counting from 0=LSB to 7=MSB) and followed by bits 0
  *                         from position <i>n</i>+1 to position 7.
  *                         Some examples:
- *                             - If no bits are to be appended, then @a delimitedSuffix must be 0x01.
- *                             - If the 2-bit sequence 0,1 is to be appended (as for SHA3-*), @a delimitedSuffix must be 0x06.
- *                             - If the 4-bit sequence 1,1,1,1 is to be appended (as for SHAKE*), @a delimitedSuffix must be 0x1F.
- *                             - If the 7-bit sequence 1,1,0,1,0,0,0 is to be absorbed, @a delimitedSuffix must be 0x8B.
+ *                           - If no bits are to be appended, then @a delimitedSuffix must be 0x01.
+ *                           - If the 2-bit sequence 0,1 is to be appended (as for SHA3-*),
+ *                              @a delimitedSuffix must be 0x06.
+ *                           - If the 4-bit sequence 1,1,1,1 is to be appended (as for SHAKE*),
+ *                              @a delimitedSuffix must be 0x1F.
+ *                           - If the 7-bit sequence 1,1,0,1,0,0,0 is to be absorbed,
+ *                              @a delimitedSuffix must be 0x8B.
  * @param  output          Pointer to the buffer where to store the output.
  * @param  outputByteLen   The number of output bytes desired.
  * @pre    One must have r+c=1600 and the rate a multiple of 8 bits in this implementation.
  */
-void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input, unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output, unsigned long long int outputByteLen);
+void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
+            unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output,
+            unsigned long long int outputByteLen);
 
 /**
  *  Function to compute SHAKE128 on the input message with any output length.
@@ -286,7 +291,8 @@ void KeccakF1600_StatePermute(void *state)
 
             /* Compute the parity of the columns */
             for (x = 0; x < 5; x++)
-                C[x] = readLane(x, 0) ^ readLane(x, 1) ^ readLane(x, 2) ^ readLane(x, 3) ^ readLane(x, 4);
+                C[x] = readLane(x, 0) ^ readLane(x, 1) ^ readLane(x, 2) ^ readLane(x, 3) ^
+                       readLane(x, 4);
             for (x = 0; x < 5; x++) {
                 /* Compute the θ effect for a given column */
                 tKeccakLane D = C[(x + 4) % 5] ^ ROL64(C[(x + 1) % 5], 1);
@@ -326,7 +332,8 @@ void KeccakF1600_StatePermute(void *state)
             }
         }
 
-        {                                                   /* === ι step (see [Keccak Reference, Section 2.3.5]) === */
+        {
+            /* === ι step (see [Keccak Reference, Section 2.3.5]) === */
             for (j = 0; j < 7; j++) {
                 unsigned int bitPosition = (1 << j) - 1;    /* 2^j-1 */
                 if (LFSR86540(&LFSRstate)) {
@@ -347,7 +354,9 @@ void KeccakF1600_StatePermute(void *state)
 #include <string.h>
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input, unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output, unsigned long long int outputByteLen)
+void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
+            unsigned long long int inputByteLen, unsigned char delimitedSuffix,
+            unsigned char *output, unsigned long long int outputByteLen)
 {
     UINT8 state[200];
     unsigned int rateInBytes = rate / 8;
@@ -376,9 +385,11 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
     }
 
     /* === Do the padding and switch to the squeezing phase === */
-    /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
+    /* Absorb the last few bits and add the first bit of padding (which coincides with the
+       delimiter in delimitedSuffix) */
     state[blockSize] ^= delimitedSuffix;
-    /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
+    /* If the first bit of padding is at position rate-1, we need a whole new block for the
+       second bit of padding */
     if (((delimitedSuffix & 0x80) != 0) && (blockSize == (rateInBytes - 1))) {
         KeccakF1600_StatePermute(state);
     }
@@ -400,7 +411,8 @@ void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input
     }
 }
 
-void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix)
+void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity,
+                 unsigned char delimitedSuffix)
 {
     ctx->rateInBytes = rate / 8;
 
@@ -417,7 +429,8 @@ void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, 
     ctx->delimitedSuffix = delimitedSuffix;
 }
 
-void Keccak_update(keccak_state_t *ctx, const unsigned char *input, unsigned long long int inputByteLen)
+void Keccak_update(keccak_state_t *ctx, const unsigned char *input,
+                   unsigned long long int inputByteLen)
 {
     /* === Absorb all the input blocks === */
     while (inputByteLen > 0) {
@@ -441,9 +454,11 @@ void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long
 {
 
     /* === Do the padding and switch to the squeezing phase === */
-    /* Absorb the last few bits and add the first bit of padding (which coincides with the delimiter in delimitedSuffix) */
+    /* Absorb the last few bits and add the first bit of padding (which coincides with the
+       delimiter in delimitedSuffix) */
     ctx->state[ctx->i] ^= ctx->delimitedSuffix;
-    /* If the first bit of padding is at position rate-1, we need a whole new block for the second bit of padding */
+    /* If the first bit of padding is at position rate-1, we need a whole new block for the
+       second bit of padding */
     if (((ctx->delimitedSuffix & 0x80) != 0) && (ctx->i == (ctx->rateInBytes - 1))) {
         KeccakF1600_StatePermute(ctx->state);
     }

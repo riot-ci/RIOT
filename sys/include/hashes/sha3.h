@@ -2,12 +2,12 @@
  * Implementation by the Keccak, Keyak and Ketje Teams, namely, Guido Bertoni,
  * Joan Daemen, Michaël Peeters, Gilles Van Assche and Ronny Van Keer, hereby
  * denoted as "the implementer".
- * 
+ *
  * RIOT-OS adaptaion by Mathias Tausig
  *
- * This software is released under the Creative Commons CC0 1.0 license. 
- * To the extent possible under law, the implementer has waived all copyright 
- * and related or neighboring rights to the source code in this file. 
+ * This software is released under the Creative Commons CC0 1.0 license.
+ * To the extent possible under law, the implementer has waived all copyright
+ * and related or neighboring rights to the source code in this file.
  * For more information see: http://creativecommons.org/publicdomain/zero/1.0/
  */
 
@@ -20,7 +20,7 @@
  *
  * @author      Implementation by the Keccak, Keyak and Ketje Teams (https://keccak.team/)
  * @author      RIOT OS adaptations by Mathias Tausig
-  */
+ */
 
 #ifndef HASHES_SHA3_H
 #define HASHES_SHA3_H
