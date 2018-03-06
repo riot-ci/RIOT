@@ -36,7 +36,7 @@ extern "C" {
 #define CLOCK_HFCLK         (16U)           /* set to  0: internal RC oscillator
                                                       16: 16MHz crystal
                                                       32: 32MHz crystal */
-#define CLOCK_LFCLK         (0)             /* set to  0: internal RC oscillator
+#define CLOCK_LFCLK         (0U)             /* set to  0: internal RC oscillator
                                              *         1: 32.768 kHz crystal
                                              *         2: derived from HFCLK */
 /** @} */
@@ -57,18 +57,11 @@ static const timer_conf_t timer_config[] = {
         .channels = 3,
         .bitmode  = TIMER_BITMODE_BITMODE_16Bit,
         .irqn     = TIMER1_IRQn
-    },
-    {
-        .dev      = NRF_TIMER2,
-        .channels = 3,
-        .bitmode  = TIMER_BITMODE_BITMODE_16Bit,
-        .irqn     = TIMER2_IRQn
     }
 };
 
 #define TIMER_0_ISR         isr_timer0
 #define TIMER_1_ISR         isr_timer1
-#define TIMER_2_ISR         isr_timer2
 
 #define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
@@ -78,9 +71,9 @@ static const timer_conf_t timer_config[] = {
  * @{
  */
 #define RTT_NUMOF           (1U)
-#define RTT_DEV             (1)             /* NRF_RTC1 */
-#define RTT_MAX_VALUE       (0x00ffffff)
-#define RTT_FREQUENCY       (1024)
+#define RTT_DEV             (1U)             /* NRF_RTC1 */
+#define RTT_MAX_VALUE       (0x00ffffffU)
+#define RTT_FREQUENCY       (1024U)
 /** @} */
 
 /**
@@ -89,9 +82,9 @@ static const timer_conf_t timer_config[] = {
  */
 #define UART_NUMOF          (1U)
 /* UART pin configuration */
-#define UART_HWFLOWCTRL     0
-#define UART_PIN_RX         25
-#define UART_PIN_TX         24
+#define UART_HWFLOWCTRL     (0U)
+#define UART_PIN_RX         (25U)
+#define UART_PIN_TX         (24U)
 /** @} */
 
 /**
@@ -116,7 +109,7 @@ static const i2c_conf_t i2c_config[] = {
  * The configuration consists simply of a list of channels that should be used
  * @{
  */
-#define ADC_NUMOF          (0)
+#define ADC_NUMOF          (0U)
 /** @} */
 
 /**
@@ -126,7 +119,16 @@ static const i2c_conf_t i2c_config[] = {
  * own module in the build system.
  * @{
  */
-#define RADIO_IRQ_PRIO      1
+#define RADIO_IRQ_PRIO      (1U)
+/** @} */
+
+/**
+ * @name    PWM configuration
+ * @{
+ */
+#define PWM_NUMOF           (1U)
+#define PWM_TIMER           NRF_TIMER2
+#define PWM_PIN             (0U)
 /** @} */
 
 #ifdef __cplusplus
