@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "bitarithm.h"
 #include "fmt.h"
 #include "mutex.h"
 #include "random.h"
@@ -111,6 +112,9 @@
 #endif
 /* Number of test values */
 #define TEST_NUM ((TEST_MAX) - (TEST_MIN) + 1)
+/* 2-logarithm of TEST_NUM, not possible to compute automatically at compile
+ * time, so pick something large enough to fit any possible input values */
+#define TEST_LOG2NUM 16
 
 /* convert TUT ticks to reference ticks */
 /* x is expected to be < 2**16 */
@@ -159,7 +163,9 @@ static mutex_t mtx_cb = MUTEX_INIT_LOCKED;
  *
  * All different variations will be mixed to provide the most varied input
  * vector possible for the benchmark. A more varied input should yield a more
- * correct estimate of the mean error and variance.
+ * correct estimate of the mean error and variance. Random CPU processing delays
+ * will be inserted between each step to avoid phase locking the benchmark to
+ * unobservable timer internals.
  */
 
 enum {
@@ -170,9 +176,14 @@ enum {
 };
 
 #if DETAILED_STATS
+#if LOG2_STATS
+/* Group test values by 2-logarithm to reduce memory requirements */
+static matstat_state_t states[TEST_VARIANT_NUMOF * TEST_LOG2NUM];
+#else
 /* State vector, first half will contain state for timer_set tests, second half
  * will contain state for timer_set_absolute */
-static matstat_state_t states[TEST_NUM * TEST_VARIANT_NUMOF];
+static matstat_state_t states[TEST_VARIANT_NUMOF * TEST_NUM];
+#endif
 #else
 /* Only keep stats per function variation */
 static matstat_state_t states[TEST_VARIANT_NUMOF];
@@ -247,37 +258,74 @@ static void print_totals(const matstat_state_t *states, size_t nelem)
     print_statistics(&totals);
 }
 
+static void print_detailed(const matstat_state_t *states, size_t nelem)
+{
+    if (LOG2_STATS) {
+        print_str("   interval    count       sum       sum_sq    min   max  mean  variance\n");
+        for (unsigned int k = 0; k < nelem; ++k) {
+            char buf[20];
+            unsigned int num = (1 << k);
+            if (num >= TEST_NUM) {
+                break;
+            }
+            unsigned int start = num + TEST_MIN;
+            if (num == 1) {
+                /* special case, bitarithm_msb will return 0 for both 0 and 1 */
+                start = TEST_MIN;
+            }
+            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, start), 4, ' '));
+            print_str(" - ");
+            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, TEST_MIN + (num * 2) - 1), 4, ' '));
+            print_str(": ");
+            print_statistics(&states[k]);
+        }
+        print_str("      TOTAL  ");
+    }
+    else {
+        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
+        for (unsigned int k = 0; k < nelem; ++k) {
+            char buf[10];
+            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, k + TEST_MIN), 7, ' '));
+            print_str(": ");
+            print_statistics(&states[k]);
+        }
+        print_str("  TOTAL: ");
+    }
+    print_totals(states, nelem);
+}
+
 /**
  * @brief   Present the results of the benchmark
  *
  * Depends on DETAILED_STATS, LOG2_STATS
  */
-void print_results(void)
+static void print_results(void)
 {
     print_str("------------- BEGIN STATISTICS --------------\n");
+    print_str("Target error (actual trigger time - expected trigger time)\n");
+    print_str("positive: timer is late, negative: timer is early\n");
 
     if (DETAILED_STATS) {
-        print_str("=== timer_set ===\n");
-        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
-        for (unsigned int i = 0; i < TEST_NUM; ++i) {
-            char buf[10];
-            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
-            print_str(": ");
-            print_statistics(&states[i]);
+        static unsigned int count = TEST_NUM;
+        if (LOG2_STATS) {
+            count = TEST_LOG2NUM;
         }
-        print_str("  TOTAL: ");
-        print_totals(&states[0], TEST_NUM);
-
-        print_str("=== timer_set_absolute ===\n");
-        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
-        for (unsigned int i = 0; i < TEST_NUM; ++i) {
-            char buf[10];
-            print(buf, fmt_lpad(buf, fmt_u32_dec(buf, i + TEST_MIN), 7, ' '));
-            print_str(": ");
-            print_statistics(&states[i + TEST_NUM]);
-        }
-        print_str("  TOTAL: ");
-        print_totals(&states[TEST_NUM], TEST_NUM);
+        print_str("=== timer_set running ===\n");
+        print_detailed(&states[0], count);
+        print_str("=== timer_set resched ===\n");
+        print_detailed(&states[TEST_RESCHEDULE * count], count);
+        print_str("=== timer_set stopped ===\n");
+        print_detailed(&states[TEST_STOPPED * count], count);
+        print_str("=== timer_set resched, stopped ===\n");
+        print_detailed(&states[(TEST_RESCHEDULE | TEST_STOPPED) * count], count);
+        print_str("=== timer_set_absolute running ===\n");
+        print_detailed(&states[TEST_ABSOLUTE * count], count);
+        print_str("=== timer_set_absolute resched ===\n");
+        print_detailed(&states[(TEST_ABSOLUTE | TEST_RESCHEDULE) * count], count);
+        print_str("=== timer_set_absolute stopped ===\n");
+        print_detailed(&states[(TEST_ABSOLUTE | TEST_STOPPED) * count], count);
+        print_str("=== timer_set_absolute resched, stopped ===\n");
+        print_detailed(&states[(TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED) * count], count);
     }
     else {
         print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
@@ -318,7 +366,15 @@ static matstat_state_t *state = NULL;
 static void assign_state_ptr(unsigned int num)
 {
     if (DETAILED_STATS) {
-        state = &states[num];
+        if (LOG2_STATS) {
+            unsigned int variant = num / TEST_NUM;
+            unsigned int log2num = bitarithm_msb(num % TEST_NUM);
+
+            state = &states[variant * TEST_LOG2NUM + log2num];
+        }
+        else {
+            state = &states[num];
+        }
     }
     else {
         state = &states[num / TEST_NUM];
@@ -400,6 +456,23 @@ static uint32_t run_test(unsigned int num)
 
 static int test_timer(void)
 {
+    uint32_t duration = 0;
+    do {
+        unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
+        duration += run_test(num);
+    } while(duration < TEST_PRINT_INTERVAL_TICKS);
+
+    print_results();
+
+    return 0;
+}
+
+int main(void)
+{
+    print_str("\nStatistical benchmark for timers\n");
+    for (unsigned int k = 0; k < (sizeof(states) / sizeof(states[0])); ++k) {
+        matstat_clear(&states[k]);
+    }
     /* print test overview */
     print_str("Running timer test with seed ");
     print_u32_dec(seed);
@@ -418,23 +491,34 @@ static int test_timer(void)
     print_str("unknown PRNG.\n");
 #endif
 
-    uint32_t duration = 0;
-    do {
-        unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
-        duration += run_test(num);
-    } while(duration < TEST_PRINT_INTERVAL_TICKS);
+    print_str("TEST_MIN = ");
+    print_u32_dec(TEST_MIN);
+    print("\n", 1);
+    print_str("TEST_MAX = ");
+    print_u32_dec(TEST_MAX);
+    print("\n", 1);
+    print_str("TEST_NUM = ");
+    print_u32_dec(TEST_NUM);
+    print("\n", 1);
+    print_str("log2(TEST_NUM) = ");
+    print_u32_dec(bitarithm_msb(TEST_NUM));
+    print("\n", 1);
+    print_str("TIM_TEST_DEV = ");
+    print_u32_dec(TIM_TEST_DEV);
+    print_str(", TIM_TEST_FREQ = ");
+    print_u32_dec(TIM_TEST_FREQ);
+    print_str(", TIM_TEST_CHAN = ");
+    print_u32_dec(TIM_TEST_CHAN);
+    print("\n", 1);
+    print_str("TIM_REF_DEV  = ");
+    print_u32_dec(TIM_REF_DEV);
+    print_str(", TIM_REF_FREQ  = ");
+    print_u32_dec(TIM_REF_FREQ);
+    print("\n", 1);
+    print_str("USE_REFERENCE = ");
+    print_u32_dec(USE_REFERENCE);
+    print("\n", 1);
 
-    print_results();
-
-    return 0;
-}
-
-int main(void)
-{
-    print_str("\nStatistics test for peripheral timers\n");
-    for (unsigned int k = 0; k < (sizeof(states) / sizeof(states[0])); ++k) {
-        matstat_clear(&states[k]);
-    }
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");
