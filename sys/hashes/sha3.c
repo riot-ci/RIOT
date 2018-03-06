@@ -83,7 +83,7 @@
  * @param  outputByteLen   The number of output bytes desired.
  * @pre    One must have r+c=1600 and the rate a multiple of 8 bits in this implementation.
  */
-void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
+static void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
             unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output,
             unsigned long long int outputByteLen);
 
@@ -98,7 +98,7 @@ void FIPS202_SHA3_224(const unsigned char *input, unsigned int inputByteLen, uns
 /**
  *  Function to compute SHA3-256 on the input message. The output length is fixed to 32 bytes.
  */
-void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
+static void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
     Keccak(1088, 512, input, inputByteLen, 0x06, output, SHA3_256_DIGEST_LENGTH);
 }
@@ -127,7 +127,7 @@ void sha3_256_final(keccak_state_t *ctx, void *digest)
 /**
  *  Function to compute SHA3-384 on the input message. The output length is fixed to 48 bytes.
  */
-void FIPS202_SHA3_384(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
+static void FIPS202_SHA3_384(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
     Keccak(832, 768, input, inputByteLen, 0x06, output, 48);
 }
@@ -150,7 +150,7 @@ void sha3_384_final(keccak_state_t *ctx, void *digest)
 /**
  *  Function to compute SHA3-512 on the input message. The output length is fixed to 64 bytes.
  */
-void FIPS202_SHA3_512(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
+static void FIPS202_SHA3_512(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
 {
     Keccak(576, 1024, input, inputByteLen, 0x06, output, 64);
 }
@@ -246,7 +246,7 @@ static void xor64(UINT8 *x, UINT64 u)
  * Function that computes the linear feedback shift register (LFSR) used to
  * define the round constants (see [Keccak Reference, Section 1.2]).
  */
-int LFSR86540(UINT8 *LFSR)
+static int LFSR86540(UINT8 *LFSR)
 {
     int result = ((*LFSR) & 0x01) != 0;
 
@@ -263,7 +263,7 @@ int LFSR86540(UINT8 *LFSR)
 /**
  * Function that computes the Keccak-f[1600] permutation on the given state.
  */
-void KeccakF1600_StatePermute(void *state)
+static void KeccakF1600_StatePermute(void *state)
 {
     unsigned int round, x, y, j, t;
     UINT8 LFSRstate = 0x01;
@@ -337,7 +337,7 @@ void KeccakF1600_StatePermute(void *state)
 #include <string.h>
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
+static void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
             unsigned long long int inputByteLen, unsigned char delimitedSuffix,
             unsigned char *output, unsigned long long int outputByteLen)
 {
