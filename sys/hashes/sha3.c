@@ -88,14 +88,6 @@ static void Keccak(unsigned int rate, unsigned int capacity, const unsigned char
             unsigned long long int outputByteLen);
 
 /**
- *  Function to compute SHA3-224 on the input message. The output length is fixed to 28 bytes.
- */
-void FIPS202_SHA3_224(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
-{
-    Keccak(1152, 448, input, inputByteLen, 0x06, output, 28);
-}
-
-/**
  *  Function to compute SHA3-256 on the input message. The output length is fixed to 32 bytes.
  */
 static void FIPS202_SHA3_256(const unsigned char *input, unsigned int inputByteLen, unsigned char *output)
