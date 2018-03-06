@@ -122,7 +122,7 @@
 #if (TIM_TEST_FREQ == TIM_REF_FREQ)
 #define TIM_TEST_TO_REF(x) (x)
 #elif (TIM_TEST_FREQ == 32768ul) && (TIM_REF_FREQ == 1000000ul)
-#define TIM_TEST_TO_REF(x) (((uint32_t)x * 15625ul) >> 9)
+#define TIM_TEST_TO_REF(x) (((uint32_t)(x) * 15625ul) >> 9)
 #elif (TIM_TEST_FREQ == 1000000ul) && (TIM_REF_FREQ == 32768ul)
 #define TIM_TEST_TO_REF(x) (div_u32_by_15625div512(x))
 #endif
@@ -145,9 +145,6 @@
 /* The spin calibration will try to set spin_limit to a number of loop
  * iterations which correspond to this many TUT ticks */
 #define SPIN_MAX_TARGET 16
-
-/* Reference target */
-static volatile unsigned int target = 0;
 
 /* Seed for initializing the random module */
 static uint32_t seed = 123;
@@ -175,6 +172,17 @@ enum {
     TEST_VARIANT_NUMOF      = 8,
 };
 
+/* Test state element */
+typedef struct {
+    matstat_state_t *target_state; /* timer_set error statistics state */
+    matstat_state_t *read_state; /* timer_read error statistics state */
+    unsigned int target_ref; /* Target time in reference timer */
+    unsigned int start_tut; /* Start time in timer under test */
+    unsigned int start_ref; /* Start time in reference timer */
+} test_ctx_t;
+
+static test_ctx_t test_context;
+
 #if DETAILED_STATS
 #if LOG2_STATS
 /* Group test values by 2-logarithm to reduce memory requirements */
@@ -189,24 +197,36 @@ static matstat_state_t states[TEST_VARIANT_NUMOF * TEST_NUM];
 static matstat_state_t states[TEST_VARIANT_NUMOF];
 #endif
 
+/* timer_read error statistics states */
+static matstat_state_t read_states[TEST_VARIANT_NUMOF];
+
 /* Callback for the timeout */
 static void cb(void *arg, int chan)
 {
     (void)chan;
-    unsigned int now = timer_read(TIM_REF_DEV);
-    int32_t diff = now - target;
+    unsigned int now_ref = timer_read(TIM_REF_DEV);
+    unsigned int now_tut = timer_read(TIM_TEST_DEV);
     if (arg == NULL) {
         print_str("cb: Warning! arg = NULL\n");
         return;
     }
-    matstat_state_t *state = *((matstat_state_t**)arg);
-    if (state == NULL) {
-        print_str("cb: Warning! state = NULL\n");
+    test_ctx_t *ctx = arg;
+    if (ctx->target_state == NULL) {
+        print_str("cb: Warning! target_state = NULL\n");
         return;
     }
 
     /* Update running stats */
-    matstat_add(state, diff);
+    int32_t diff = now_ref - ctx->target_ref;
+    matstat_add(ctx->target_state, diff);
+
+    /* Update timer_read statistics only when timer_read has not overflowed
+     * since the timer was set */
+    if (now_tut >= ctx->start_tut) {
+        diff = TIM_TEST_TO_REF(now_tut - ctx->start_tut);
+        diff -= (now_ref - ctx->start_ref);
+        matstat_add(ctx->read_state, diff);
+    }
 
     mutex_unlock(&mtx_cb);
 }
@@ -351,11 +371,33 @@ static void print_results(void)
         print_str("  resched, stopped  ");
         print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1);
     }
+    print_str("=== timer_read statistics ===\n");
+    print_str("timer_read error (TUT time elapsed - reference time elapsed)\n");
+    print_str("positive: timer_read is speeding, negative: timer_read is dropping ticks\n");
+    print_str(" timer_set          ");
+    print_totals(&read_states[0], 4);
+    print_str("  running           ");
+    print_totals(&read_states[0], 1);
+    print_str("  resched           ");
+    print_totals(&read_states[TEST_RESCHEDULE], 1);
+    print_str("  stopped           ");
+    print_totals(&read_states[TEST_STOPPED], 1);
+    print_str("  resched, stopped  ");
+    print_totals(&read_states[TEST_RESCHEDULE | TEST_STOPPED], 1);
+    print("\n", 1);
+    print_str(" timer_set_absolute ");
+    print_totals(&read_states[TEST_ABSOLUTE], 4);
+    print_str("  running           ");
+    print_totals(&read_states[TEST_ABSOLUTE], 1);
+    print_str("  resched           ");
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1);
+    print_str("  stopped           ");
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_STOPPED], 1);
+    print_str("  resched, stopped  ");
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1);
 
     print_str("-------------- END STATISTICS ---------------\n");
 }
-
-static matstat_state_t *state = NULL;
 
 /**
  * @brief   Select the proper state for the given test number depending on the
@@ -363,21 +405,22 @@ static matstat_state_t *state = NULL;
  *
  * Depends on DETAILED_STATS, LOG2_STATS
  */
-static void assign_state_ptr(unsigned int num)
+static void assign_state_ptr(test_ctx_t *ctx, unsigned int num)
 {
+    unsigned int variant = num / TEST_NUM;
+    ctx->read_state = &read_states[variant];
     if (DETAILED_STATS) {
         if (LOG2_STATS) {
-            unsigned int variant = num / TEST_NUM;
             unsigned int log2num = bitarithm_msb(num % TEST_NUM);
 
-            state = &states[variant * TEST_LOG2NUM + log2num];
+            ctx->target_state = &states[variant * TEST_LOG2NUM + log2num];
         }
         else {
-            state = &states[num];
+            ctx->target_state = &states[num];
         }
     }
     else {
-        state = &states[num / TEST_NUM];
+        ctx->target_state = &states[variant];
     }
 }
 
@@ -420,9 +463,9 @@ static void calibrate_spin_max(void)
     print("\n", 1);
 }
 
-static uint32_t run_test(unsigned int num)
+static uint32_t run_test(test_ctx_t *ctx, unsigned int num)
 {
-    assign_state_ptr(num);
+    assign_state_ptr(ctx, num);
     uint32_t interval = (num % TEST_NUM) + TEST_MIN;
     spin_random_delay();
     unsigned int interval_ref = TIM_TEST_TO_REF(interval);
@@ -435,19 +478,21 @@ static uint32_t run_test(unsigned int num)
         timer_stop(TIM_TEST_DEV);
         spin_random_delay();
     }
-    unsigned int now_ref = timer_read(TIM_REF_DEV);
-    target = now_ref + interval_ref;
+    ctx->start_ref = timer_read(TIM_REF_DEV);
+    ctx->start_tut = timer_read(TIM_TEST_DEV);
+    ctx->target_ref = ctx->start_ref + interval_ref;
     if (variant & TEST_ABSOLUTE) {
-        unsigned int now = timer_read(TIM_TEST_DEV);
-        timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, now + interval);
+        timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, ctx->start_tut + interval);
     }
     else {
         timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval);
     }
     if (variant & TEST_STOPPED) {
         spin_random_delay();
-        now_ref = timer_read(TIM_REF_DEV);
-        target = now_ref + interval_ref;
+        /* do not update ctx->start_tut, because TUT should have been stopped
+         * and not incremented during spin_random_delay */
+        ctx->start_ref = timer_read(TIM_REF_DEV);
+        ctx->target_ref = ctx->start_ref + interval_ref;
         timer_start(TIM_TEST_DEV);
     }
     mutex_lock(&mtx_cb);
@@ -459,7 +504,7 @@ static int test_timer(void)
     uint32_t duration = 0;
     do {
         unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
-        duration += run_test(num);
+        duration += run_test(&test_context, num);
     } while(duration < TEST_PRINT_INTERVAL_TICKS);
 
     print_results();
@@ -472,6 +517,9 @@ int main(void)
     print_str("\nStatistical benchmark for timers\n");
     for (unsigned int k = 0; k < (sizeof(states) / sizeof(states[0])); ++k) {
         matstat_clear(&states[k]);
+    }
+    for (unsigned int k = 0; k < (sizeof(read_states) / sizeof(read_states[0])); ++k) {
+        matstat_clear(&read_states[k]);
     }
     /* print test overview */
     print_str("Running timer test with seed ");
@@ -528,7 +576,7 @@ int main(void)
     }
     random_init(seed);
 
-    res = timer_init(TIM_TEST_DEV, TIM_TEST_FREQ, cb, &state);
+    res = timer_init(TIM_TEST_DEV, TIM_TEST_FREQ, cb, &test_context);
     if (res < 0) {
         print_str("Error ");
         print_s32_dec(res);
