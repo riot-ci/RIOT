@@ -84,8 +84,8 @@
  * @pre    One must have r+c=1600 and the rate a multiple of 8 bits in this implementation.
  */
 static void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
-            unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output,
-            unsigned long long int outputByteLen);
+                   unsigned long long int inputByteLen, unsigned char delimitedSuffix, unsigned char *output,
+                   unsigned long long int outputByteLen);
 
 /**
  *  Function to compute SHA3-256 on the input message. The output length is fixed to 32 bytes.
@@ -330,8 +330,8 @@ static void KeccakF1600_StatePermute(void *state)
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static void Keccak(unsigned int rate, unsigned int capacity, const unsigned char *input,
-            unsigned long long int inputByteLen, unsigned char delimitedSuffix,
-            unsigned char *output, unsigned long long int outputByteLen)
+                   unsigned long long int inputByteLen, unsigned char delimitedSuffix,
+                   unsigned char *output, unsigned long long int outputByteLen)
 {
     UINT8 state[200];
     unsigned int rateInBytes = rate / 8;
