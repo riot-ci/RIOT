@@ -32,8 +32,8 @@ void board_init(void)
     /* perform common board initialization */
     board_common_init();
 
+#ifdef MODULE_SI70XX
     /* initialize the Si7021 sensor */
-#if SI7021_ENABLED
     gpio_init(SI7021_EN_PIN, GPIO_OUT);
     gpio_set(SI7021_EN_PIN);
 #endif
