@@ -55,8 +55,17 @@ extern "C" {
  * @{
  */
 #ifndef GNRC_PKTBUF_SIZE
-#define GNRC_PKTBUF_SIZE                (2048)
+#define GNRC_PKTBUF_SIZE        (2048)
 #endif
+/** @} */
+
+/**
+ * @brief   CPU specific PWM configuration
+ * @{
+ */
+#define PWM_GPIOTE_CH           (2U)
+#define PWM_PPI_A               (0U)
+#define PWM_PPI_B               (1U)
 /** @} */
 
 #ifdef __cplusplus
