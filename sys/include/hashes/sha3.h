@@ -61,7 +61,8 @@ typedef struct {
  * @param[in] capacity         the desired capcity of the sponge
  * @param[in] delimitedSuffix  suffix to be appended to the message after the absorbation phase
  */
-void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, unsigned char delimitedSuffix);
+void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity,
+                 unsigned char delimitedSuffix);
 
 /**
  * @brief Absorbs data into a sponge. Can be called multiple times
@@ -70,7 +71,8 @@ void Keccak_init(keccak_state_t *ctx, unsigned int rate, unsigned int capacity, 
  * @param[in] input         pointer to the data to be absorbed
  * @param[in] inputByteLen  length of the input data in bytes
  */
-void Keccak_update(keccak_state_t *ctx, const unsigned char *input, unsigned long long int inputByteLen);
+void Keccak_update(keccak_state_t *ctx, const unsigned char *input,
+                   unsigned long long int inputByteLen);
 
 /**
  * @brief Squeeze data from a sponge
@@ -79,7 +81,8 @@ void Keccak_update(keccak_state_t *ctx, const unsigned char *input, unsigned lon
  * @param[out] output        the squeezed data
  * @param[in] outputByteLen  size of the data to be squeezed.
  */
-void Keccak_final(keccak_state_t *ctx, unsigned char *output, unsigned long long int outputByteLen);
+void Keccak_final(keccak_state_t *ctx, unsigned char *output,
+                  unsigned long long int outputByteLen);
 
 /**
  * @brief SHA-3-256 initialization.  Begins a SHA-3-256 operation.
