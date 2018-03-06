@@ -173,6 +173,10 @@ typedef uint8_t UINT8;
 typedef uint64_t UINT64;
 typedef UINT64 tKeccakLane;
 
+#if __BYTE_ORDER__ == __ORDER__LITTLE_ENDIAN__
+#define LITTLE_ENDIAN
+#endif
+
 #ifndef LITTLE_ENDIAN
 /** Function to load a 64-bit value using the little-endian (LE) convention.
  * On a LE platform, this could be greatly simplified using a cast.
