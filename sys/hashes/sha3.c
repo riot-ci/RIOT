@@ -12,7 +12,7 @@
    and related or neighboring rights to the source code in this file.
    http://creativecommons.org/publicdomain/zero/1.0/
 
-   RIOT OS adaptations (c) Mathias Tausig
+   RIOT OS adaptations by Mathias Tausig
 
    This software is released under the Creative Commons CC0 1.0 license. 
    To the extent possible under law, the implementer has waived all copyright 
