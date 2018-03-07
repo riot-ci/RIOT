@@ -9,12 +9,12 @@ higher level systems such as xtimer.
 
 The test consists of a single thread of execution which will set random
 timeouts on a periph_timer device and measure the time it takes until the
-callback is called. The difference between the expected and the measured time
-is computed and the mean and variance of the recorded values is calculated. The
-results are printed as a table on stdout every 15-30 seconds. Both timer_set
-and timer_set_absolute calls are mixed in a random order. If the mean or
-variance of the difference is exceptionally large, the row will be marked with
-"SIC!" to draw attention to the fact.
+callback is called. The difference between the expected time and the measured
+time is computed, and the mean and variance of the recorded values are
+calculated. The results are printed as a table on stdout every 20-90 seconds.
+Both timer_set and timer_set_absolute calls are mixed in a random order. If the
+mean or variance of the difference is exceptionally large, the row will be
+marked with "SIC!" to draw attention to the fact.
 
 ## Configuration
 
