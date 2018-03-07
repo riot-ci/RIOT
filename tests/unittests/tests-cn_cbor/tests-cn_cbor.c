@@ -42,7 +42,7 @@ static size_t test, offs;
 static unsigned char ebuf[EBUF_SIZE];
 static cn_cbor_errback errb;
 
-static void setup_cncbor(void)
+static void setup_cn_cbor(void)
 {
     cbor = NULL;
     test = 0;
@@ -50,7 +50,7 @@ static void setup_cncbor(void)
     memset(ebuf, '\0', EBUF_SIZE);
 }
 
-static void teardown_cncbor(void)
+static void teardown_cn_cbor(void)
 {
         free(pbuf.pntr);
         cn_cbor_free(cbor);
@@ -173,18 +173,18 @@ static void test_errors(void)
     }
 }
 
-TestRef test_cncbor(void)
+TestRef test_cn_cbor(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_parse),
         new_TestFixture(test_errors)
     };
 
-    EMB_UNIT_TESTCALLER(tests_cncbor, setup_cncbor, teardown_cncbor, fixtures);
-    return (TestRef) & tests_cncbor;
+    EMB_UNIT_TESTCALLER(tests_cn_cbor, setup_cn_cbor, teardown_cn_cbor, fixtures);
+    return (TestRef) & tests_cn_cbor;
 }
 
-void tests_cncbor(void)
+void tests_cn_cbor(void)
 {
-    TESTS_RUN(test_cncbor());
+    TESTS_RUN(test_cn_cbor());
 }
