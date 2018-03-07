@@ -252,6 +252,7 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     puts("PWM peripheral driver test\n");
+    initiated = false;
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
