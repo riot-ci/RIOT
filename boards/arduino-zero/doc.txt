@@ -31,8 +31,7 @@
  * | SPIs       | max 6 (see UART)                  |
  * | I2Cs       | max 6 (see UART)              |
  * | Vcc        | 1.8V - 3.6V           |
- * | Datasheet  |
- * [Datasheet](http://www.atmel.com/Images/Atmel-42181-SAM-D21_Datasheet.pdf) |
+ * | Datasheet  | [Datasheet](http://www.atmel.com/Images/Atmel-42181-SAM-D21_Datasheet.pdf) |
  *
  * ### User Interface
  *
