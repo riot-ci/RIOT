@@ -52,24 +52,22 @@ typedef enum {
      */
     NETOPT_IS_CHANNEL_CLR,
     /**
-     * @brief   (various, see below) link layer address
+     * @brief   (byte array, see below) link layer address
      *
-     * Device type   | Type     | Meaning
-     * ------------- | -------- | -----
-     * IEEE 802.15.4 | uint16_t | device short address
-     * Ethernet      | FIXME    | device MAC address??
+     * Device type   | Length | Meaning
+     * ------------- | ------ | -----
+     * IEEE 802.15.4 | 2      | device short address
+     * Ethernet      | 6      | device MAC address
      */
     NETOPT_ADDRESS,
 
     /**
-     * @brief   (various, see below) long link layer address
+     * @brief   (byte array, see below) long link layer address
      *
-     * Examples for this include the EUI-64 in IEEE 802.15.4
-     *
-     * Device type   | Type         | Meaning
-     * ------------- | ------------ | -----
-     * IEEE 802.15.4 | @ref eui64_t | device long address (EUI-64)
-     * Ethernet      | FIXME        | device MAC address??
+     * Device type   | Length   | Meaning
+     * ------------- | -------- | -----
+     * IEEE 802.15.4 | 8        | device long address (EUI-64), @ref eui64_t
+     * Ethernet      | -ENOTSUP | not used
      */
     NETOPT_ADDRESS_LONG,
     /**
@@ -376,9 +374,9 @@ typedef enum {
     NETOPT_ENCRYPTION,
 
     /**
-     * @brief   (various, see below) set encryption key
+     * @brief   (byte array) set encryption key
      *
-     * The expected data type is dependent on encryption algorithm and device.
+     * The required byte array size is dependent on encryption algorithm and device.
      */
     NETOPT_ENCRYPTION_KEY,
 
