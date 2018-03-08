@@ -144,7 +144,9 @@
 
 /* The spin calibration will try to set spin_limit to a number of loop
  * iterations which correspond to this many TUT ticks */
+#ifndef SPIN_MAX_TARGET
 #define SPIN_MAX_TARGET 16
+#endif
 
 /* Seed for initializing the random module */
 static uint32_t seed = 123;
@@ -449,7 +451,7 @@ static void spin_random_delay(void)
 
 static void calibrate_spin_max(void)
 {
-    spin_max = 1024;
+    spin_max = 32;
     unsigned int t1;
     unsigned int t2;
     do {
