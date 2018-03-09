@@ -146,38 +146,50 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
     while (PWM_TIMER->EVENTS_COMPARE[1] == 0) {};
 
     /*
-     * guarding the compare event
-     * in case that the duty cycle is 0% (100%):
-     * - disable ppi channels
-     * - remember state in CC[0]
-     * - trigger the GPIOTE to set it to '0' ('1')
+     * checking pwm alignment first
+     * and guarding if duty cycle is 0% / 100%
      */
-    if (value == 0) {
-        if (PWM_TIMER->CC[0] != 0) {
-            NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
-        }
+    if (NRF_GPIOTE->CONFIG[PWM_GPIOTE_CH] & GPIOTE_CONFIG_OUTINIT_Msk) {
+        if (value == 0) {
+            if (PWM_TIMER->CC[0] != 0) {
+                NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
+            }
 
-        NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
-        PWM_TIMER->CC[0] = 0;
-    }
-    else if (value >= PWM_TIMER->CC[1]) {
-        if (PWM_TIMER->CC[0] == 0) {
-            NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
-        }
-
-        NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
-        PWM_TIMER->CC[0] = PWM_TIMER->CC[1];
-    }
-    else {
-        if (NRF_PPI->CHEN != NRF51_PWM_PPI_CHANNELS) {
+            NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+            PWM_TIMER->CC[0] = 0;
+        } else {
             if (PWM_TIMER->CC[0] == 0) {
                 NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
             }
-            NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+            if (value >= PWM_TIMER->CC[1]) {
+                NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+                PWM_TIMER->CC[0] = PWM_TIMER->CC[1];
+            } else {
+                NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+                PWM_TIMER->CC[0] = value;
+            }
         }
-
-        PWM_TIMER->CC[0] = value;
+    } else {
+        if (value >= PWM_TIMER->CC[1]) {
+            if (PWM_TIMER->CC[0] != PWM_TIMER->CC[1]) {
+                NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
+            }
+            NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+            PWM_TIMER->CC[0] = PWM_TIMER->CC[1];
+        } else {
+            if (PWM_TIMER->CC[0] == PWM_TIMER->CC[1]) {
+                NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
+            }
+            if (value == 0) {
+                NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+                PWM_TIMER->CC[0] = 0;
+            } else {
+                NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+                PWM_TIMER->CC[0] = PWM_TIMER->CC[1] - value;
+            }
+        }
     }
+
     /* reconfigure pwm to standard mode */
     PWM_TIMER->EVENTS_COMPARE[1] = 0;
     PWM_TIMER->TASKS_CLEAR = 1;
