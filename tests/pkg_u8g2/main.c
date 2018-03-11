@@ -189,6 +189,11 @@ int main(void)
         utf8_show();
 #endif
 
+#if TEST_OUTPUT == TEST_OUTPUT_SDL
+        /* handle SDL events */
+        u8g_sdl_get_key();
+#endif
+
         /* show screen in next iteration */
         screen = (screen + 1) % 3;
 
