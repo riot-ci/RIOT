@@ -3,6 +3,7 @@
  *               2014 Freie Universität Berlin
  *               2016 TriaGnoSys GmbH
  *               2018 Kaspar Schleiser <kaspar@schleiser.de>
+ *               2018 OTA keys S.A.
  *
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
@@ -24,6 +25,7 @@
  * @author      Nick van IJzendoorn <nijzendoorn@engineering-spirit.nl>
  * @author      Víctor Ariño <victor.arino@zii.aero>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  *
  * @}
  */
