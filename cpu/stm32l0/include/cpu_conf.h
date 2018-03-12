@@ -54,6 +54,29 @@ extern "C" {
 #endif
 /** @} */
 
+/**
+ * @name    Flash page configuration
+ * @{
+ */
+#define FLASH_KEY1     ((uint32_t)0x89ABCDEF)
+#define FLASH_KEY2     ((uint32_t)0x02030405)
+#define FLASH_PRGKEY1  ((uint32_t)0x8C9DAEBF)
+#define FLASH_PRGKEY2  ((uint32_t)0x13141516)
+
+#if defined(CPU_MODEL_STM32L073RZ) || defined(CPU_MODEL_STM32L072CZ) || \
+    defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L031K6)
+#define FLASHPAGE_SIZE      (128U)
+#endif
+
+#if defined(CPU_MODEL_STM32L073RZ) || defined(CPU_MODEL_STM32L072CZ)
+#define FLASHPAGE_NUMOF     (1536U)
+#elif defined(CPU_MODEL_STM32L053R8)
+#define FLASHPAGE_NUMOF     (512U)
+#elif defined(CPU_MODEL_STM32L031K6)
+#define FLASHPAGE_NUMOF     (256U)
+#endif
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
