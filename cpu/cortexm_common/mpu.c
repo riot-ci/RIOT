@@ -36,8 +36,11 @@ int mpu_enable(void) {
 #if __MPU_PRESENT
     MPU->CTRL |= MPU_CTRL_PRIVDEFENA_Msk | MPU_CTRL_ENABLE_Msk;
 
-    /* Enable the memory fault exception */
+#if !defined(CPU_ARCH_CORTEX_M0PLUS)
+    /* Enable the memory fault exception if we are on ARMv7-M. On ARMv6-M all
+     * fault conditions cause a HardFault. */
     SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+#endif
 
     return 0;
 #else
