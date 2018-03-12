@@ -22,11 +22,13 @@
 
 #include <stdint.h>
 #include <inttypes.h>
+
 #include "cpu.h"
 #include "periph/adc.h"
 #include "analog_util.h"
+#include "assert.h"
 
-#define ENABLE_DEBUG 0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 /**
@@ -46,15 +48,19 @@ static unsigned int _adc_res_bits(adc_res_t res)
         case ADC_RES_14BIT:
             return 14;
         case ADC_RES_16BIT:
-        default:
             return 16;
+        default:
+            /* Unsupported ADC resolution, modify your application to use a
+             * different resolution, or add it above */
+            assert(0 == 1);
+            return 0;
     }
 }
 
 int32_t adc_util_map(int sample, adc_res_t res, int32_t min, int32_t max)
 {
     /* Using 64 bit signed int as intermediate to prevent overflow when range
-     * multiplied by sample requires more bits than int offers */
+     * multiplied by sample requires more than 32 bits */
     int32_t scaled = (((int64_t)(max - min) * sample) >> _adc_res_bits(res));
     DEBUG("scaled: %" PRId32 "\n", scaled);
     return (min + scaled);
