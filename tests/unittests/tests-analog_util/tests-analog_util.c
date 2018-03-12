@@ -50,7 +50,7 @@ static void test_adc_util_map(void)
 {
     for (unsigned int k = 0; k < TEST_DATA_NUMOF; ++k) {
         test_values_t *testp = &test_data[k];
-        int res = adc_util_map(testp->sample, testp->res, testp->min, testp->max);
+        int32_t res = adc_util_map(testp->sample, testp->res, testp->min, testp->max);
         TEST_ASSERT_EQUAL_INT(testp->expected, res);
     }
 }
