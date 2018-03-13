@@ -301,7 +301,7 @@ endif
 APPLICATION_MODULE ?= application_$(APPLICATION)
 
 # the binaries to link
-BASELIBS += $(BINDIR)/$(APPLICATION_MODULE).a
+BASELIBS += $(BINDIR)/$(APPLICATION_MODULE).o
 BASELIBS += $(APPDEPS)
 
 .PHONY: all link clean flash flash-only term doc debug debug-server reset objdump help info-modules
@@ -318,17 +318,17 @@ LINKFLAGPREFIX ?= -Wl,
 
 DIRS += $(EXTERNAL_MODULE_DIRS)
 
-_LINK = $(if $(CPPMIX),$(LINKXX),$(LINK)) $(UNDEF) $(LINKFLAGPREFIX)--start-group $(BASELIBS) -lm $(LINKFLAGPREFIX)--end-group  $(LINKFLAGPREFIX)-Map=$(BINDIR)/$(APPLICATION).map $(LINKFLAGS)
+_LINK = $(if $(CPPMIX),$(LINKXX),$(LINK)) $(LINKFLAGPREFIX)--start-group $(BASELIBS) -lm $(LINKFLAGPREFIX)--end-group  $(LINKFLAGPREFIX)-Map=$(BINDIR)/$(APPLICATION).map $(LINKFLAGS)
 
 ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ## make script for your application. Build RIOT-base here!
-link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=${BINDIR}/%.a) $(APPDEPS)
+link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=${BINDIR}/%.o) $(APPDEPS)
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 ifeq (,$(RIOTNOLINK))
 ifeq ($(BUILDOSXNATIVE),1)
-	$(Q)$(if $(CPPMIX),$(LINKXX),$(LINK)) $(UNDEF) -o $(ELFFILE) $$(find $(BASELIBS) -size +8c) $(LINKFLAGS) $(LINKFLAGPREFIX)-no_pie
+	$(Q)$(if $(CPPMIX),$(LINKXX),$(LINK)) -o $(ELFFILE) $$(find $(BASELIBS) -size +8c) $(LINKFLAGS) $(LINKFLAGPREFIX)-no_pie
 else
 	$(Q)$(_LINK) -o $(ELFFILE)
 endif
@@ -369,13 +369,13 @@ USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
-.PHONY: pkg-prepare $(USEPKG:%=${BINDIR}/%.a)
+.PHONY: pkg-prepare $(USEPKG:%=${BINDIR}/%.o)
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
 
-$(USEPKG:%=${BINDIR}/%.a): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
+$(USEPKG:%=${BINDIR}/%.o): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
 	@mkdir -p ${BINDIR}
-	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst ${BINDIR}/%.a,%,$@)
+	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst ${BINDIR}/%.o,%,$@)
 
 clean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i clean ; done
@@ -385,7 +385,7 @@ clean:
 # Remove intermediates, but keep the .elf, .hex and .map etc.
 clean-intermediates:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
-	-@rm -rf $(BINDIR)/*.a $(BINDIR)/*/
+	-@rm -rf $(BINDIR)/*.o $(BINDIR)/*/
 
 clean-pkg:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
