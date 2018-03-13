@@ -264,11 +264,9 @@ ssize_t coap_handle_req(coap_pkt_t *pkt, uint8_t *resp_buf, unsigned resp_buf_le
 
 #ifdef MODULE_GCOAP
     uint8_t *uri = pkt->url;
-    int res;
 #else
     uint8_t uri[NANOCOAP_URI_MAX];
-    int res = coap_get_uri(pkt, uri);
-    if (res <= 0) {
+    if (coap_get_uri(pkt, uri) <= 0) {
         return -EBADMSG;
     }
 #endif
@@ -506,7 +504,8 @@ size_t coap_put_option_block1(uint8_t *buf, uint16_t lastonum, unsigned blknum, 
 
 int coap_get_block1(coap_pkt_t *pkt, coap_block1_t *block1)
 {
-    unsigned blknum, szx;
+    uint32_t blknum;
+    unsigned szx;
     block1->more = coap_get_blockopt(pkt, COAP_OPT_BLOCK1, &blknum, &szx);
     if (block1->more >= 0) {
         block1->offset = blknum << (szx + 4);
