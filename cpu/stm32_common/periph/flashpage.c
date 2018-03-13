@@ -23,6 +23,7 @@
  */
 
 #include "cpu.h"
+#include "stmclk.h"
 #include "assert.h"
 
 #define ENABLE_DEBUG        (0)
@@ -30,7 +31,7 @@
 
 #include "periph/flashpage.h"
 
-#if defined(CPU_FAM_STM32L0) | defined(CPU_FAM_STM32L1)
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
 /* Data EEPROM and control register unlock keys */
 #define FLASH_KEY1             ((uint32_t)0x89ABCDEF)
 #define FLASH_KEY2             ((uint32_t)0x02030405)
@@ -76,11 +77,43 @@ static void _lock(void)
     CNTRL_REG |= CNTRL_REG_LOCK;
 }
 
+static void _erase_page(void *page_addr)
+{
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    uint32_t *dst = page_addr;
+#else
+    uint16_t *dst = page_addr;
+#endif
+
+    /* make sure no flash operation is ongoing */
+    DEBUG("[flashpage] erase: waiting for any operation to finish\n");
+    while (FLASH->SR & FLASH_SR_BSY) {}
+    /* set page erase bit and program page address */
+    DEBUG("[flashpage] erase: setting the erase bit\n");
+    CNTRL_REG |= FLASH_CR_PER;
+    DEBUG("address to erase: %p\n", page_addr);
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    DEBUG("[flashpage] erase: trigger the page erase\n");
+    *dst = (uint32_t)0;
+#else
+    DEBUG("[flashpage] erase: setting the page address\n");
+    FLASH->AR = (uint32_t)dst;
+    /* trigger the page erase and wait for it to be finished */
+    DEBUG("[flashpage] erase: trigger the page erase\n");
+    CNTRL_REG |= FLASH_CR_STRT;
+#endif
+    DEBUG("[flashpage] erase: wait as long as device is busy\n");
+    while (FLASH->SR & FLASH_SR_BSY) {}
+    /* reset PER bit */
+    DEBUG("[flashpage] erase: resetting the page erase bit\n");
+    CNTRL_REG &= ~(FLASH_CR_PER);
+
+}
+
 void flashpage_write_raw(void *target_addr, void *data, size_t len)
 {
     /* The actual minimal block size for writing is 16B, thus we
-     * assert we write on multiples and no less of that length.
-     */
+     * assert we write on multiples and no less of that length. */
     assert(!(len % FLASHPAGE_RAW_BLOCKSIZE));
 
     /* ensure 4 byte aligned writes */
@@ -92,11 +125,9 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
            (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)) + 1);
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
-    /* STM32L0 only supports word sizes */
     uint32_t *dst = target_addr;
     uint32_t *data_addr = (uint32_t *)data;
 #else
-    /* Default is to support half-word sizes */
     uint16_t *dst = target_addr;
     uint16_t *data_addr = (uint16_t *)data;
 #endif
@@ -128,44 +159,23 @@ void flashpage_write(int page, void *data)
     assert(page < (int)FLASHPAGE_NUMOF);
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
-    /* STM32L0 only supports word sizes */
+    /* STM32L0/L1 only supports word sizes */
     uint32_t *page_addr = flashpage_addr(page);
 #else
     /* Default is to support half-word sizes */
     uint16_t *page_addr = flashpage_addr(page);
 #endif
+
     uint32_t hsi_state = (RCC->CR & RCC_CR_HSION);
 
     /* the internal RC oscillator (HSI) must be enabled */
-    RCC->CR |= (RCC_CR_HSION);
-    while (!(RCC->CR & RCC_CR_HSIRDY)) {}
+    stmclk_enable_hsi();
 
     /* unlock the flash module */
     _unlock();
 
     /* ERASE sequence */
-    /* make sure no flash operation is ongoing */
-    DEBUG("[flashpage] erase: waiting for any operation to finish\n");
-    while (FLASH->SR & FLASH_SR_BSY) {}
-    /* set page erase bit and program page address */
-    DEBUG("[flashpage] erase: setting the erase bit\n");
-    CNTRL_REG |= FLASH_CR_PER;
-    DEBUG("address to erase: %p\n", page_addr);
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
-    DEBUG("[flashpage] erase: trigger the page erase\n");
-    *page_addr = (uint32_t)0;
-#else
-    DEBUG("[flashpage] erase: setting the page address\n");
-    FLASH->AR = (uint32_t)page_addr;
-    /* trigger the page erase and wait for it to be finished */
-    DEBUG("[flashpage] erase: trigger the page erase\n");
-    CNTRL_REG |= FLASH_CR_STRT;
-#endif
-    DEBUG("[flashpage] erase: wait as long as device is busy\n");
-    while (FLASH->SR & FLASH_SR_BSY) {}
-    /* reset PER bit */
-    DEBUG("[flashpage] erase: resetting the page erase bit\n");
-    CNTRL_REG &= ~(FLASH_CR_PER);
+    _erase_page(page_addr);
 
     /* WRITE sequence */
     if (data != NULL) {
@@ -177,7 +187,6 @@ void flashpage_write(int page, void *data)
 
     /* restore the HSI state */
     if (!hsi_state) {
-        RCC->CR &= ~(RCC_CR_HSION);
-        while (RCC->CR & RCC_CR_HSIRDY) {}
+        stmclk_disable_hsi();
     }
 }
