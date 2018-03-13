@@ -26,7 +26,7 @@
 #include "stmclk.h"
 #include "assert.h"
 
-#define ENABLE_DEBUG        (0)
+#define ENABLE_DEBUG        (1)
 #include "debug.h"
 
 #include "periph/flashpage.h"
@@ -85,6 +85,9 @@ static void _erase_page(void *page_addr)
     uint16_t *dst = page_addr;
 #endif
 
+   /* unlock the flash module */
+    _unlock();
+
     /* make sure no flash operation is ongoing */
     DEBUG("[flashpage] erase: waiting for any operation to finish\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
@@ -108,6 +111,8 @@ static void _erase_page(void *page_addr)
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
 
+    /* lock the flash module again */
+    _lock();
 }
 
 void flashpage_write_raw(void *target_addr, void *data, size_t len)
@@ -128,7 +133,7 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
     uint32_t *dst = target_addr;
     uint32_t *data_addr = (uint32_t *)data;
 #else
-    uint16_t *dst = target_addr;
+    uint16_t *dst = (uint16_t *)target_addr;
     uint16_t *data_addr = (uint16_t *)data;
 #endif
 
@@ -140,7 +145,7 @@ void flashpage_write_raw(void *target_addr, void *data, size_t len)
     /* set PG bit and program page to flash */
     CNTRL_REG |= FLASH_CR_PG;
 #endif
-    for (size_t i = 0; i < (FLASHPAGE_SIZE / FLASHPAGE_DIV); i++) {
+    for (size_t i = 0; i < (len / FLASHPAGE_DIV); i++) {
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
         while (FLASH->SR & FLASH_SR_BSY) {}
@@ -171,9 +176,6 @@ void flashpage_write(int page, void *data)
     /* the internal RC oscillator (HSI) must be enabled */
     stmclk_enable_hsi();
 
-    /* unlock the flash module */
-    _unlock();
-
     /* ERASE sequence */
     _erase_page(page_addr);
 
@@ -181,9 +183,6 @@ void flashpage_write(int page, void *data)
     if (data != NULL) {
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
-
-    /* finally, lock the flash module again */
-    _lock();
 
     /* restore the HSI state */
     if (!hsi_state) {
