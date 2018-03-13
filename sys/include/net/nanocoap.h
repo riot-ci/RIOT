@@ -51,6 +51,11 @@ extern "C" {
 #define NANOCOAP_URI_MAX        (64)
 /** @} */
 
+#ifdef MODULE_GCOAP
+#define NANOCOAP_URL_MAX        NANOCOAP_URI_MAX
+#define NANOCOAP_QS_MAX         (64)
+#endif
+
 /**
  * @name    CoAP option numbers
  * @{
@@ -271,7 +276,7 @@ typedef struct {
  */
 typedef struct {
     size_t offset;
-    unsigned blknum;
+    uint32_t blknum;
     unsigned szx;
     int more;
 } coap_block1_t;
@@ -681,9 +686,6 @@ static inline unsigned coap_method2flag(unsigned code)
 }
 
 #if defined(MODULE_GCOAP) || defined(DOXYGEN)
-#define NANOCOAP_URL_MAX        NANOCOAP_URI_MAX
-#define NANOCOAP_QS_MAX         (64)
-
 /**
  * @brief   Identifies a packet containing an observe option
  *
