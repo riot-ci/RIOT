@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-void randombytes(uint8_t *target, uint64_t n)
+void randombytes(uint8_t *target, uint32_t n)
 {
     uint32_t random;
     uint8_t *random_pos = (uint8_t*)&random;
