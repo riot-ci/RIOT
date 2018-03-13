@@ -324,7 +324,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ## make script for your application. Build RIOT-base here!
-link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=${BINDIR}/%.o) $(APPDEPS)
+link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=${BINDIR}/%.a) $(APPDEPS)
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 ifeq (,$(RIOTNOLINK))
 ifeq ($(BUILDOSXNATIVE),1)
@@ -369,13 +369,13 @@ USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
-.PHONY: pkg-prepare $(USEPKG:%=${BINDIR}/%.o)
+.PHONY: pkg-prepare $(USEPKG:%=${BINDIR}/%.a)
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
 
-$(USEPKG:%=${BINDIR}/%.o): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
+$(USEPKG:%=${BINDIR}/%.a): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
 	@mkdir -p ${BINDIR}
-	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst ${BINDIR}/%.o,%,$@)
+	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst ${BINDIR}/%.a,%,$@)
 
 clean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i clean ; done
