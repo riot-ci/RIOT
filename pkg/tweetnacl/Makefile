@@ -1,6 +1,6 @@
 PKG_NAME=tweetnacl
-PKG_URL=https://github.com/RIOT-OS/tweetnacl
-PKG_VERSION=7ea05c7098a16c87fa66e9166ce301666f3f2623
+PKG_URL=https://github.com/kaspar030/tweetnacl
+PKG_VERSION=2bb06b428782909bc37e47eff11e461832c19c45
 PKG_LICENSE=PD
 
 .PHONY: all
