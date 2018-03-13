@@ -26,18 +26,17 @@
 
 #include "em_msc.h"
 
-void flashpage_write(int page, void *data)
+void flashpage_write(int page, const void *data)
 {
     assert(page < (int)FLASHPAGE_NUMOF);
 
     uint32_t *page_addr = (uint32_t *)flashpage_addr(page);
-    uint32_t *data_addr = (uint32_t *)data;
 
     MSC_Init();
     MSC_ErasePage(page_addr);
 
     if (data != NULL) {
-        MSC_WriteWord(page_addr, data_addr, FLASHPAGE_SIZE);
+        MSC_WriteWord(page_addr, data, FLASHPAGE_SIZE);
     }
 
     MSC_Deinit();
