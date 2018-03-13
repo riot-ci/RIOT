@@ -55,8 +55,10 @@ extern "C" {
   * @{
   */
 #define UART_NUMOF          (4)
+#ifndef MODULE_NEWLIB_SYSCALLS_MIPS_UHI
 #define DEBUG_VIA_UART      (3)
 #define DEBUG_UART_BAUD     (9600)
+#endif /* !defined(MODULE_NEWLIB_SYSCALLS_MIPS_UHI) */
 /** @} */
 
 #ifdef __cplusplus
