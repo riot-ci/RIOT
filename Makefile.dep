@@ -65,7 +65,6 @@ endif
 ifneq (,$(filter nordic_softdevice_ble,$(USEPKG)))
   USEMODULE += softdevice_handler
   USEMODULE += ble_common
-  USEMODULE += ble_6lowpan
   USEMODULE += gnrc_sixlowpan
   USEMODULE += gnrc_sixlowpan_iphc
   USEMODULE += gnrc_ipv6_nib_6ln
@@ -370,7 +369,9 @@ endif
 
 ifneq (,$(filter uart_stdio,$(USEMODULE)))
   USEMODULE += isrpipe
-  FEATURES_REQUIRED += periph_uart
+  ifeq (,$(filter newlib_syscalls_mips_uhi,$(USEMODULE)))
+    FEATURES_REQUIRED += periph_uart
+  endif
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
