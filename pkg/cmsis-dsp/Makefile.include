@@ -1,3 +1,1 @@
 INCLUDES += -I$(PKGDIRBASE)/cmsis-dsp/include
-# This package builds an object file
-USEMODULE += cmsis-dsp
