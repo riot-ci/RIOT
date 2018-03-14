@@ -237,8 +237,8 @@ typedef struct __attribute__((packed)) {
  * @brief   CoAP option array entry
  */
 typedef struct {
-    uint16_t opt_num;
-    uint16_t offset;
+    uint16_t opt_num;           /**< full CoAP option number    */
+    uint16_t offset;            /**< offset in packet           */
 } coap_optpos_t;
 
 typedef struct {
