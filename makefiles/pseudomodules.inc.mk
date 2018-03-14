@@ -117,3 +117,7 @@ PSEUDOMODULES += stm32_periph_%
 # declare periph submodules as pseudomodules, but exclude periph_common
 PSEUDOMODULES += periph_%
 NO_PSEUDOMODULES += periph_common
+
+# declare oonf submodules as pseudomodules, but exclude oonf_api
+PSEUDOMODULES += oonf_%
+NO_PSEUDOMODULES += oonf_api
