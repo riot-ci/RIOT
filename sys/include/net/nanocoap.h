@@ -275,10 +275,11 @@ typedef struct {
  * @brief   Block1 helper struct
  */
 typedef struct {
-    size_t offset;
-    uint32_t blknum;
-    unsigned szx;
-    int more;
+    size_t offset;                  /**< offset of received data            */
+    uint32_t blknum;                /**< block number                       */
+    unsigned szx;                   /**< szx value                          */
+    int more;                       /**< -1 for no option, 0 for last block,
+                                          1 for more blocks coming          */
 } coap_block1_t;
 
 /**
