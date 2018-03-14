@@ -34,9 +34,3 @@ DIRS += \
 		$(NORDIC_SRCS)/components/softdevice/common/softdevice_handler \
 		$(NORDIC_SRCS)/components/ble/common \
 		$(NORDIC_SRCS)/components/iot/ble_ipsp
-
-# this package builds object files instead of a static archive
-USEMODULE += nordic_softdevice_ble
-USEMODULE += ble_ipsp
-USEMODULE += ble_common
-USEMODULE += softdevice_handler
