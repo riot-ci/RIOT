@@ -202,6 +202,7 @@ int coap_get_uri(coap_pkt_t *pkt, uint8_t *target)
     uint8_t *opt_pos = coap_find_option(pkt, COAP_OPT_URI_PATH);
     if (!opt_pos) {
         DEBUG("nanocoap: no COAP_OPT_URI_PATH option\n");
+        *target = '\0';
         return -EBADMSG;
     }
 
