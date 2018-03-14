@@ -1,6 +1,13 @@
 INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-core/include
 INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-ext/include
 
+# the jerryscript build produces static archives
+USEARCHIVE += \
+  jerryscript \
+  jerryscript-ext \
+  jerryport-minimal \
+#
+
 ifneq (,$(filter cortex-m%,$(CPU_ARCH)))
   # jerryscript package package is not using system includes right now, so
   # many newlib hearders (not even stdio.h) is found
