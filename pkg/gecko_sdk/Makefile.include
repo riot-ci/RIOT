@@ -1,7 +1,5 @@
 INCLUDES += -I$(PKGDIRBASE)/gecko_sdk/dist/emlib/inc
 INCLUDES += -I$(PKGDIRBASE)/gecko_sdk/dist/emlib-extra/inc
 
-# this package builds object files instead of a static archive
-USEMODULE += gecko_sdk
 USEMODULE += gecko_sdk_emlib
 USEMODULE += gecko_sdk_emlib_extra
