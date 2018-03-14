@@ -31,12 +31,13 @@ void flashpage_write(int page, const void *data)
     assert(page < (int)FLASHPAGE_NUMOF);
 
     uint32_t *page_addr = (uint32_t *)flashpage_addr(page);
+    const uint32_t *data_addr = data;
 
     MSC_Init();
     MSC_ErasePage(page_addr);
 
     if (data != NULL) {
-        MSC_WriteWord(page_addr, data, FLASHPAGE_SIZE);
+        MSC_WriteWord(page_addr, data_addr, FLASHPAGE_SIZE);
     }
 
     MSC_Deinit();
