@@ -3,13 +3,11 @@ EXTDEFINES = $(addprefix -D,$(shell echo '$(ED)' | tr 'a-z-' 'A-Z_'))
 
 # filter "pseudomodules" from "real modules", but not "no_pseudomodules"
 # filter out any duplicate module names
-REALMODULES = $(shell echo $(filter-out $(PSEUDOMODULES), $(USEMODULE)) \
+REALMODULES = $(shell echo $(filter-out $(PSEUDOMODULES) $(USEARCHIVE), $(USEMODULE)) \
   $(filter $(NO_PSEUDOMODULES), $(USEMODULE)) | tr ' ' '\n' | awk '!a[$$0]++')
-# USEPKG packages are by default using static archives (.a) for linking, but
-# pkgs listed in USEMODULE are using object files (.o), so we filter out USEMODULE here
-REALPKGS = $(filter-out $(PSEUDOMODULES) $(USEMODULE), $(USEPKG)) \
-  $(filter $(NO_PSEUDOMODULES), $(filter-out $(USEMODULE), $(USEPKG)))
-export BASELIBS += $(REALMODULES:%=$(BINDIR)/%.o) $(REALPKGS:%=$(BINDIR)/%.a)
+REALPKGS = $(filter-out $(PSEUDOMODULES) $(USEARCHIVE), $(USEPKG)) $(filter $(NO_PSEUDOMODULES), $(USEPKG))
+REALARCHIVES = $(filter $(USEARCHIVE),$(USEMODULE) $(USEPKG))
+export BASELIBS += $(REALMODULES:%=$(BINDIR)/%.o) $(REALPKGS:%=$(BINDIR)/%.o) $(REALARCHIVES:%=$(BINDIR)/%.a)
 
 CFLAGS += $(EXTDEFINES)
 
