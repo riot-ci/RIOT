@@ -47,9 +47,14 @@ extern "C" {
  * @name    Nanocoap specific maximum values
  * @{
  */
-#define NANOCOAP_URL_MAX        (64)
-#define NANOCOAP_QS_MAX         (64)
+#define NANOCOAP_NOPTS_MAX      (16)
+#define NANOCOAP_URI_MAX        (64)
 /** @} */
+
+#ifdef MODULE_GCOAP
+#define NANOCOAP_URL_MAX        NANOCOAP_URI_MAX
+#define NANOCOAP_QS_MAX         (64)
+#endif
 
 /**
  * @name    CoAP option numbers
@@ -60,6 +65,8 @@ extern "C" {
 #define COAP_OPT_URI_PATH       (11)
 #define COAP_OPT_CONTENT_FORMAT (12)
 #define COAP_OPT_URI_QUERY      (15)
+#define COAP_OPT_BLOCK2         (23)
+#define COAP_OPT_BLOCK1         (27)
 /** @} */
 
 /**
@@ -207,6 +214,16 @@ extern "C" {
 /** @} */
 
 /**
+ * @name Blockwise transfer (RFC7959)
+ * @{
+ */
+#define COAP_BLOCKWISE_NUM_OFF  (4)
+#define COAP_BLOCKWISE_MORE_OFF (3)
+#define COAP_BLOCKWISE_SZX_MASK (0x07)
+#define COAP_BLOCKWISE_SZX_MAX  (7)
+/** @} */
+
+/**
  * @brief   Raw CoAP PDU header structure
  */
 typedef struct __attribute__((packed)) {
@@ -220,14 +237,23 @@ typedef struct __attribute__((packed)) {
  * @brief   CoAP option array entry
  */
 typedef struct {
-    coap_hdr_t *hdr;                /**< pointer to raw packet              */
-    uint8_t url[NANOCOAP_URL_MAX];  /**< parsed request URL                 */
-    uint8_t qs[NANOCOAP_QS_MAX];    /**< parsed query string                */
-    uint8_t *token;                 /**< pointer to token                   */
-    uint8_t *payload;               /**< pointer to payload                 */
-    unsigned payload_len;           /**< length of payload                  */
-    uint16_t content_type;          /**< content type                       */
-    uint32_t observe_value;         /**< observe value                      */
+    uint16_t opt_num;
+    uint16_t offset;
+} coap_optpos_t;
+
+typedef struct {
+    coap_hdr_t *hdr;                            /**< pointer to raw packet   */
+    uint8_t *token;                             /**< pointer to token        */
+    uint8_t *payload;                           /**< pointer to payload      */
+    uint16_t payload_len;                       /**< length of payload       */
+    uint16_t options_len;                       /**< length of options array */
+    coap_optpos_t options[NANOCOAP_NOPTS_MAX];  /**< option offset array     */
+#ifdef MODULE_GCOAP
+    uint8_t url[NANOCOAP_URI_MAX];              /**< parsed request URL      */
+    uint8_t qs[NANOCOAP_QS_MAX];                /**< parsed query string     */
+    uint16_t content_type;                      /**< content type            */
+    uint32_t observe_value;                     /**< observe value           */
+#endif
 } coap_pkt_t;
 
 /**
@@ -244,6 +270,17 @@ typedef struct {
     coap_handler_t handler;         /**< ptr to resource handler            */
     void *context;                  /**< ptr to user defined context data   */
 } coap_resource_t;
+
+/**
+ * @brief   Block1 helper struct
+ */
+typedef struct {
+    size_t offset;                  /**< offset of received data            */
+    uint32_t blknum;                /**< block number                       */
+    unsigned szx;                   /**< szx value                          */
+    int more;                       /**< -1 for no option, 0 for last block,
+                                          1 for more blocks coming          */
+} coap_block1_t;
 
 /**
  * @brief   Global CoAP resource list
@@ -391,6 +428,99 @@ size_t coap_put_option_ct(uint8_t *buf, uint16_t lastonum, uint16_t content_type
  * @returns     amount of bytes written to @p buf
  */
 size_t coap_put_option_uri(uint8_t *buf, uint16_t lastonum, const char *uri, uint16_t optnum);
+
+/**
+ * @brief    Generic block option getter
+ *
+ * @param[in]   pkt     pkt to work on
+ * @param[in]   option  actual block option number to get
+ * @param[out]  blknum  block number
+ * @param[out]  szx     SZX value
+ *
+ * @returns     -1 if option not found
+ * @returns     0 if more flag is not set
+ * @returns     1 if more flag is set
+ */
+int coap_get_blockopt(coap_pkt_t *pkt, uint16_t option, uint32_t *blknum, unsigned *szx);
+
+/**
+ * @brief    Block1 helper
+ *
+ * @param[in]   pkt     pkt to work on
+ * @param[out]  block1  ptr to preallocated coap_block1_t structure
+ *
+ * @returns     0 if block1 option not present
+ * @returns     1 if structure has been filles
+ */
+int coap_get_block1(coap_pkt_t *pkt, coap_block1_t *block1);
+
+/**
+ * @brief   Insert block1 option into buffer
+ *
+ * @param[out]  buf         buffer to write to
+ * @param[in]   lastonum    number of previous option (for delta calculation),
+ *                          must be < 27
+ * @param[in]   blknum      block number
+ * @param[in]   szx         SXZ value
+ * @param[in]   more        more flag (1 or 0)
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+size_t coap_put_option_block1(uint8_t *buf, uint16_t lastonum, unsigned blknum, unsigned szx, int more);
+
+/**
+ * @brief   Insert block1 option into buffer (from coap_block1_t)
+ *
+ * This function is wrapper around @ref coap_put_option_block1(),
+ * taking its arguments from a coap_block1_t struct.
+ *
+ * It will write option Nr. 27 (COAP_OPT_BLOCK1).
+ *
+ * It is safe to be called when @p block1 was generated for a non-blockwise
+ * request.
+ *
+ * @param[in]   pkt_pos     buffer to write to
+ * @param[in]   block1      ptr to block1 struct (created by coap_get_block1())
+ * @param[in]   lastonum    last option number (must be < 27)
+ *
+ * @returns     amount of bytes written to @p pkt_pos
+ */
+size_t coap_put_block1_ok(uint8_t *pkt_pos, coap_block1_t *block1, uint16_t lastonum);
+
+/**
+ * @brief    Get content type from packet
+ *
+ * @param[in]   pkt     packet to work on
+ *
+ * @returns     the packet's content type value
+ */
+unsigned coap_get_content_type(coap_pkt_t *pkt);
+
+/**
+ * @brief    Get the packet's request URI
+ *
+ * Caller must ensure @p target can hold at least NANOCOAP_URI_MAX bytes!
+ *
+ * @param[in]   pkt     pkt to work on
+ * @param[out]  target  buffer for target URI
+ *
+ * @returns     -EBADMSG    if no URI option in packet
+ * @returns     -ENOSPC     if URI option is larger than NANOCOAP_URI_MAX
+ * @returns     nr of bytes written to target
+ */
+int coap_get_uri(coap_pkt_t *pkt, uint8_t *target);
+
+/**
+ * @brief    Helper to convert SZX value to size
+ *
+ * @param[in]   szx     SZX value to convert
+ *
+ * @returns     size
+ */
+static inline unsigned coap_szx2size(unsigned szx)
+{
+    return (1 << (szx + 4));
+}
 
 /**
  * @brief   Get the CoAP version number
@@ -556,6 +686,7 @@ static inline unsigned coap_method2flag(unsigned code)
     return (1 << (code - 1));
 }
 
+#if defined(MODULE_GCOAP) || defined(DOXYGEN)
 /**
  * @brief   Identifies a packet containing an observe option
  *
@@ -590,6 +721,7 @@ static inline uint32_t coap_get_observe(coap_pkt_t *pkt)
 {
     return pkt->observe_value;
 }
+#endif
 
 /**
  * @brief   Reference to the default .well-known/core handler defined by the
