@@ -15,6 +15,7 @@ export INCLUDES              # The extra include paths, set by the various Makef
 
 export USEMODULE             # Sys Module dependencies of the application. Set in the application's Makefile.
 export USEPKG                # Pkg dependencies (third party modules) of the application. Set in the application's Makefile.
+export USEARCHIVE            # Build a static archive instead of a single object file for the given modules. Set by the package's Makefile.include when necessary
 export DISABLE_MODULE        # Used in the application's Makefile to suppress DEFAULT_MODULEs.
 export APPDEPS               # Files / Makefile targets that need to be created before the application can be build. Set in the application's Makefile.
 
@@ -47,6 +48,8 @@ export AR                    # The command to create the object file archives.
 export ARFLAGS               # Command-line options to pass to AR, default `rcs`.
 export AS                    # The assembler.
 export ASFLAGS               # Flags for the assembler.
+export ILINK                 # Command used to perform incremental linking to create intermediate object files. Usually "ld"
+export ILINKFLAGS            # Incremental link command line options.
 export LINK                  # The command used to link the files. Must take the same parameters as GCC, i.e. "ld" won't work.
 export LINKFLAGS             # Flags to supply in the linking step.
 export LTOFLAGS              # extra CFLAGS for compiling with link time optimization
@@ -55,7 +58,6 @@ export OFLAGS                # The parameter for OBJCOPY, e.g. to strip the debu
 export OBJDUMP               # The command used to create the assembly listing.
 export OBJDUMPFLAGS          # The parameter for OBJDUMP.
 export SIZE                  # The command to read to size of the ELF sections.
-export UNDEF                 # Object files that the linker must include in the ELFFILE even if no call to the functions or symbols (ex: interrupt vectors).
 export WERROR                # Treat all compiler warnings as errors if set to 1 (see -Werror flag in GCC manual)
 
 export GITCACHE              # path to git-cache executable
