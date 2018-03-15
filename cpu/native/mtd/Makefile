@@ -1,5 +1,6 @@
 MODULE := mtd_native
 
-include $(RIOTBASE)/Makefile.base
+# Use system posix include for native base modules
+INCLUDES := $(filter-out -I$(RIOTBASE)/sys/posix/include, $(INCLUDES))
 
-INCLUDES = $(NATIVEINCLUDES)
+include $(RIOTBASE)/Makefile.base
