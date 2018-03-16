@@ -23,14 +23,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "board.h"
 #include "msg.h"
 #include "thread.h"
 #include "fmt.h"
-
-#ifdef MODULE_PM_LAYERED
-#include "pm_layered.h"
-#endif
+#include "periph/pm.h"
 
 #include "periph/rtc.h"
 
@@ -78,6 +74,10 @@ static void _prepare_next_alarm(void)
         time.tm_hour++;
         time.tm_min -= 60;
     }
+    while (time.tm_hour > 24) {
+        time.tm_mday++;
+        time.tm_hour -= 24;
+    }
     rtc_set_alarm(&time, rtc_cb, NULL);
 }
 
@@ -100,10 +100,6 @@ static void *sender(void *arg)
 
     while (1) {
         msg_receive(&msg);
-#ifdef MODULE_PM_LAYERED
-        /* Ensure the low-power mode is blocked during send phase */
-        pm_block(PM_MODE);
-#endif
 
         /* Trigger the message send */
         _send_message();
@@ -111,11 +107,8 @@ static void *sender(void *arg)
         /* Schedule the next wake-up alarm */
         _prepare_next_alarm();
 
-#ifdef MODULE_PM_LAYERED
-        /* Unblock the low-power mode now => the system fall to idle thread
-           that sets the low-power mode. */
-        pm_unblock(PM_MODE);
-#endif
+        /* enable low-power mode */
+        pm_set(PM_MODE);
     }
 
     /* this should never be reached */
@@ -124,11 +117,6 @@ static void *sender(void *arg)
 
 int main(void)
 {
-#ifdef MODULE_PM_LAYERED
-    /* Ensure the low-power mode is blocked during initialization phase */
-    pm_block(PM_MODE);
-#endif
-
     puts("LoRaWAN Class A low-power application");
     puts("=====================================");
 
