@@ -52,22 +52,25 @@ typedef enum {
      */
     NETOPT_IS_CHANNEL_CLR,
     /**
-     * @brief   (byte array, see below) link layer address
+     * @brief   (byte array, see below) link layer address in network byte order
      *
      * Device type   | Length | Meaning
      * ------------- | ------ | -----
      * IEEE 802.15.4 | 2      | device short address
      * Ethernet      | 6      | device MAC address
+     * nrfmin        | 2      | device short address
+     * CC110x        | 1      | device address
      */
     NETOPT_ADDRESS,
 
     /**
-     * @brief   (byte array, see below) long link layer address
+     * @brief   (byte array, see below) long link layer address in network byte order
      *
      * Device type   | Length   | Meaning
      * ------------- | -------- | -----
      * IEEE 802.15.4 | 8        | device long address (EUI-64), @ref eui64_t
-     * Ethernet      | -ENOTSUP | not used
+     * nrfmin        | 8        | device long address (based on short address)
+     * BLE           | 8        | device long address (EUI-64), @ref eui64_t
      */
     NETOPT_ADDRESS_LONG,
     /**
@@ -106,7 +109,7 @@ typedef enum {
     NETOPT_IPV6_IID,
 
     /**
-     * @brief   (@ref ipv6_addr_t) get IPv6 addresses of an interface as array
+     * @brief   (@ref ipv6_addr_t[]) get IPv6 addresses of an interface as array
      *          of @ref ipv6_addr_t or add an IPv6 address as @ref ipv6_addr_t
      *          to an interface
      *
@@ -262,7 +265,7 @@ typedef enum {
      *
      * @note Be sure not to set NETOPT_CSMA simultaneously.
      *
-     * TODO: How to get feedback?
+     * @todo How to get feedback?
      */
     NETOPT_AUTOCCA,
 
@@ -477,14 +480,14 @@ typedef enum {
     /**
      * @brief   (uint32_t) reception timeout of a frame
      *
-     * TODO in what time unit?
+     * @todo in what time unit?
      */
     NETOPT_RX_TIMEOUT,
 
     /**
      * @brief   (uint32_t) transmission timeout of a frame
      *
-     * TODO in what time unit?
+     * @todo in what time unit?
      */
     NETOPT_TX_TIMEOUT,
 
