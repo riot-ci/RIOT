@@ -422,6 +422,9 @@ unsigned coap_get_content_type(coap_pkt_t *pkt);
 /**
  * @brief    Get the packet's request URI
  *
+ * This function decodes the pkt's URI option into a "/"-seperated and
+ * NULL-terminated string.
+ *
  * Caller must ensure @p target can hold at least NANOCOAP_URI_MAX bytes!
  *
  * @param[in]   pkt     pkt to work on
@@ -429,7 +432,7 @@ unsigned coap_get_content_type(coap_pkt_t *pkt);
  *
  * @returns     -EBADMSG    if no URI option in packet
  * @returns     -ENOSPC     if URI option is larger than NANOCOAP_URI_MAX
- * @returns     nr of bytes written to target
+ * @returns     nr of bytes written to @p target (including '\0')
  */
 int coap_get_uri(coap_pkt_t *pkt, uint8_t *target);
 
