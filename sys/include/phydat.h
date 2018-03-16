@@ -178,6 +178,38 @@ const char *phydat_unit_to_str(uint8_t unit);
  */
 char phydat_prefix_from_scale(int8_t scale);
 
+/**
+ * @brief   Scale an integer value to fit into a phydat_t
+ *
+ * Fit an integer value in an existing phydat_t by rescaling all numbers and
+ * updating the scale factor. The result will be rounded towards zero (the
+ * standard C99 integer division behaviour).
+ * The final parameter @p prescale can be used to chain multiple calls to
+ * this function in order to fit multidimensional values into the same phydat_t.
+ *
+ * The code example below shows how to chain multiple calls via the @p prescale parameter
+ *
+ * @code
+ * int val0 = 100000;
+ * int val1 = 2000000;
+ * int val2 = 30000000;
+ * phydat_t dat;
+ * dat.scale = 0;
+ * phydat_fit(&dat, val0, 0, phydat_fit(&dat, val1, 1, phydat_fit(&dat, val2, 2, 0)));
+ * @endcode
+ *
+ * The prescale scaling is only applied to @p value, the existing values in
+ * @p dat are only scaled if the prescaled @p value does not fit in phydat_t::dat
+ *
+ * @param[inout]    dat         the value will be written into this data array
+ * @param[in]       value       value to rescale
+ * @param[in]       index       place the value at this position in the phydat_t::val array
+ * @param[in]       prescale    start by scaling the value by this exponent
+ *
+ * @return  scaling offset that was applied
+ */
+int8_t phydat_fit(phydat_t *dat, long value, unsigned int index, int8_t prescale);
+
 #ifdef __cplusplus
 }
 #endif
