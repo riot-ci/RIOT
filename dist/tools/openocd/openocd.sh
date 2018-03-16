@@ -201,7 +201,7 @@ do_debug() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c 'halt' \
+            -c 'reset halt' \
             -l /dev/null & \
             echo \$! > $OCD_PIDFILE" &
     # Export to be able to access these from the sh -c command lines, may be
