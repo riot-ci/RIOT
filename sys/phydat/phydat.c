@@ -24,17 +24,13 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-int8_t phydat_fit(phydat_t *dat, long value, unsigned int index, int8_t prescale)
+uint8_t phydat_fit(phydat_t *dat, long value, unsigned int index, uint8_t prescale)
 {
     assert(index < (sizeof(dat->val) / sizeof(dat->val[0])));
-    int8_t ret = prescale;
+    uint8_t ret = prescale;
     while (prescale > 0) {
         value /= 10;
         --prescale;
-    }
-    while (prescale < 0) {
-        value *= 10;
-        ++prescale;
     }
     int8_t scale_offset = 0;
     while ((value > PHYDAT_MAX) || (value < PHYDAT_MIN)) {

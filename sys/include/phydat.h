@@ -208,7 +208,7 @@ char phydat_prefix_from_scale(int8_t scale);
  *
  * @return  scaling offset that was applied
  */
-int8_t phydat_fit(phydat_t *dat, long value, unsigned int index, int8_t prescale);
+uint8_t phydat_fit(phydat_t *dat, long value, unsigned int index, uint8_t prescale);
 
 #ifdef __cplusplus
 }
