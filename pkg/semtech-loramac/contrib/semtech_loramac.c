@@ -549,7 +549,6 @@ int semtech_loramac_init(sx127x_t *dev)
     dev->netdev.driver = &sx127x_driver;
     dev->netdev.event_callback = _semtech_loramac_event_cb;
 
-    semtech_loramac_handler_pid = thread_getpid();
     semtech_loramac_pid = thread_create(_semtech_loramac_stack,
                                         sizeof(_semtech_loramac_stack),
                                         THREAD_PRIORITY_MAIN - 1,
@@ -568,6 +567,8 @@ int semtech_loramac_init(sx127x_t *dev)
 uint8_t semtech_loramac_join(uint8_t type)
 {
     _semtech_loramac_call(_join, &type);
+    /* set caller thread pid here so it can handle the MAC replies if needed */
+    semtech_loramac_handler_pid = thread_getpid();
 
     if (type == LORAMAC_JOIN_OTAA) {
         /* Wait until the OTAA join procedure is complete */
@@ -601,6 +602,8 @@ uint8_t semtech_loramac_send(uint8_t cnf, uint8_t port,
     params.len = tx_len;
 
     _semtech_loramac_call(_send, &params);
+    /* set caller thread pid here so it can handle the MAC replies if needed */
+    semtech_loramac_handler_pid = thread_getpid();
 
     /* Wait until sending is fully done */
     msg_t msg;
