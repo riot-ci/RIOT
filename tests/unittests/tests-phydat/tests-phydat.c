@@ -17,14 +17,14 @@
 static void test_phydat_fit(void)
 {
     /* verify that these big numbers are scaled to fit in phydat_t::val which is int16_t */
-    int val0 =   100445;
-    int val1 =  2000954;
-    int val2 = 30000455;
-    int val4 =  1234567;
+    long val0 =   100445;
+    long val1 =  2000954;
+    long val2 = 30000455;
+    long val4 =  1234567;
     phydat_t dat;
     dat.scale = -6;
     dat.unit = UNIT_V;
-    int res = phydat_fit(&dat, val0, 0, 0);
+    uint8_t res = phydat_fit(&dat, val0, 0, 0);
     /* Check that the result was rescaled to 10044e-5 */
     TEST_ASSERT_EQUAL_INT(1, res);
     TEST_ASSERT_EQUAL_INT(UNIT_V, dat.unit);
@@ -46,6 +46,7 @@ static void test_phydat_fit(void)
     TEST_ASSERT_EQUAL_INT(   100, dat.val[0]);
     TEST_ASSERT_EQUAL_INT(  2000, dat.val[1]);
     TEST_ASSERT_EQUAL_INT( 30000, dat.val[2]);
+    /* Overwrite the second value in the phydat vector */
     res = phydat_fit(&dat, val4, 1, res);
     TEST_ASSERT_EQUAL_INT(3, res);
     TEST_ASSERT_EQUAL_INT(UNIT_V, dat.unit);
