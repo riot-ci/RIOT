@@ -26,10 +26,10 @@ static void test_phydat_fit(void)
     dat.unit = UNIT_V;
     uint8_t res = phydat_fit(&dat, val0, 0, 0);
     /* Check that the result was rescaled to 10044e-5 */
+    /* The scaled number is rounded toward zero */
     TEST_ASSERT_EQUAL_INT(1, res);
     TEST_ASSERT_EQUAL_INT(UNIT_V, dat.unit);
     TEST_ASSERT_EQUAL_INT(-5, dat.scale);
-    /* The scaled number is rounded toward zero */
     TEST_ASSERT_EQUAL_INT( 10044, dat.val[0]);
     /* Fit the next value in the phydat vector */
     res = phydat_fit(&dat, val1, 1, res);
