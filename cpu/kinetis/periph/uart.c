@@ -28,6 +28,17 @@
 #include "bit.h"
 #include "periph_conf.h"
 #include "periph/uart.h"
+#if MODULE_PERIPH_LLWU
+#include "llwu.h"
+#endif
+#if MODULE_PM_LAYERED
+#include "pm_layered.h"
+#define PM_BLOCK(x) pm_block(x)
+#define PM_UNBLOCK(x) pm_unblock(x)
+#else
+#define PM_BLOCK(x)
+#define PM_UNBLOCK(x)
+#endif
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -265,9 +276,7 @@ static inline void uart_init_uart(uart_t uart, uint32_t baudrate)
     /* enable receive interrupt */
     NVIC_EnableIRQ(uart_config[uart].irqn);
 }
-#endif /* KINETIS_HAVE_UART */
 
-#if KINETIS_HAVE_UART
 KINETIS_UART_WRITE_INLINE void uart_write_uart(uart_t uart, const uint8_t *data, size_t len)
 {
     UART_Type *dev = uart_config[uart].dev;
@@ -288,6 +297,18 @@ static inline void irq_handler_uart(uart_t uart)
     uint8_t s2 = dev->S2;
     /* Clear IRQ flags */
     dev->S2 = s2;
+    /* The IRQ flags in S1 are cleared by reading the D register */
+    uint8_t data = dev->D;
+    (void) data;
+    if (dev->SFIFO & UART_SFIFO_RXUF_MASK) {
+        /* RX FIFO underrun occurred, flush the RX FIFO to get the internal
+         * pointer back in sync */
+        dev->CFIFO |= UART_CFIFO_RXFLUSH_MASK;
+        /* Clear SFIFO flags */
+        dev->SFIFO = dev->SFIFO;
+        DEBUG("UART RXUF\n");
+    }
+    DEBUG("U: %c\n", data);
     if (s2 & UART_S2_RXEDGIF_MASK) {
         if (!config[uart].active) {
             config[uart].active = 1;
@@ -296,11 +317,8 @@ static inline void irq_handler_uart(uart_t uart)
             PM_BLOCK(KINETIS_PM_STOP);
         }
     }
-    /* The IRQ flags in S1 are cleared by reading the D register */
-    uint8_t data = dev->D;
-    (void) data;
     if (s1 & UART_S1_OR_MASK) {
-        /* UART overrun, the data was lost */
+        /* UART overrun, some data has been lost */
         DEBUG("UART OR\n");
     }
     if (s1 & UART_S1_RDRF_MASK) {
@@ -332,6 +350,7 @@ static inline void irq_handler_uart(uart_t uart)
             DEBUG("UART IDLE\n");
         }
     }
+    DEBUG("UART: s1 %x C1 %x C2 %x S1 %x S2 %x D %x SF %x\n", s1, dev->C1, dev->C2, dev->S1, dev->S2, data, dev->SFIFO);
     cortexm_isr_end();
 }
 
