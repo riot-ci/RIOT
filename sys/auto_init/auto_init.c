@@ -458,4 +458,9 @@ auto_init_mpu9150();
     auto_init_candev();
 
 #endif /* MODULE_AUTO_INIT_CAN */
+#ifdef MODULE_AUTO_INIT_DHCPV6_CLIENT
+    DEBUG("auto_init DHCPv6 client");
+    extern void dhcpv6_client_auto_init(void);
+    dhcpv6_client_auto_init();
+#endif /* MODULE_AUTO_INIT_DHCPV6_CLIENT */
 }
