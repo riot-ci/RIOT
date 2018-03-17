@@ -164,7 +164,7 @@ typedef struct __attribute__((packed)) {
  * @brief   DUID based on link-layer address plus time
  */
 typedef struct __attribute__((packed)) {
-    network_uint16_t type;      /**< @ref DHCPV6_DUID_TYPE_LL */
+    network_uint16_t type;      /**< @ref DHCPV6_DUID_TYPE_L2 */
     network_uint16_t l2type;    /**< [hardware type]
                                  *   (@ref net_arp_hwtype)) */
     /* link-layer address follows this header */
