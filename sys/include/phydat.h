@@ -191,14 +191,14 @@ char phydat_prefix_from_scale(int8_t scale);
  *
  * The code example below shows how to chain multiple calls via the @p prescale parameter
  *
- * @code
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
  * long val0 = 100000;
  * long val1 = 2000000;
  * long val2 = 30000000;
  * phydat_t dat;
  * dat.scale = 0;
  * phydat_fit(&dat, val0, 0, phydat_fit(&dat, val1, 1, phydat_fit(&dat, val2, 2, 0)));
- * @endcode
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * The prescale scaling is only applied to @p value, the existing values in
  * @p dat are only scaled if the prescaled @p value does not fit in phydat_t::val
