@@ -271,11 +271,12 @@ typedef enum {
     NETOPT_IS_WIRED,
 
     /**
-     * @brief Get the Phy link status.
+     * @brief (@ref netopt_enable_t) Phy link status.
      *
-     * Returns a boolean value depending on whether the link of the interface
-     * is up or down. If the interface is wireless or doesn't support link
-     * status detection this function will return -ENOTSUP.
+     * Returns NETOPT_ENABLE when the the link of the interface is up,
+     * NETOPT_DISABLE when the link is down. If the interface is wireless or
+     * doesn't support link status detection this function will return
+     * -ENOTSUP.
      *
      * @note Setting this option will always return -ENOTSUP.
      */
