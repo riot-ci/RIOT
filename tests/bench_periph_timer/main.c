@@ -452,9 +452,11 @@ static void spin_random_delay(void)
 
 static void calibrate_spin_max(void)
 {
+    print_str("Calibrating spin delay...\n");
     spin_max = 32;
     unsigned int t1;
     unsigned int t2;
+    timer_start(TIM_TEST_DEV);
     do {
         spin_max *= 2;
         t1 = timer_read(TIM_TEST_DEV);
