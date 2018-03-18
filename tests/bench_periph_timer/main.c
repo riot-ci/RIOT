@@ -376,6 +376,7 @@ static void print_results(void)
     print_str("=== timer_read statistics ===\n");
     print_str("timer_read error (TUT time elapsed - reference time elapsed)\n");
     print_str("positive: timer_read is speeding, negative: timer_read is dropping ticks\n");
+    print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
     print_str(" timer_set          ");
     print_totals(&read_states[0], 4);
     print_str("  running           ");
