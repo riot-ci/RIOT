@@ -309,6 +309,13 @@ BASELIBS += $(APPDEPS)
 
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
+BINFILE ?= $(ELFFILE:.elf=.bin)
+
+$(HEXFILE): $(ELFFILE)
+	$(Q)$(OBJCOPY) -O ihex $< $@
+
+$(BINFILE): $(ELFFILE)
+	$(Q)$(OBJCOPY) -O binary $< $@
 
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
@@ -400,6 +407,8 @@ ifeq (,$(filter flash-only, $(MAKECMDGOALS)))
 endif
 
 flash: $(BUILD_BEFORE_FLASH) $(FLASHDEPS)
+	echo $(FLASHDEPS)
+	ls -la $(BINDIR)
 	@command -v $(FLASHER) >/dev/null 2>&1 || \
 		{ $(COLOR_ECHO) \
 		'${COLOR_RED}Flash program $(FLASHER) not found. Aborting.${COLOR_RESET}'; \
@@ -605,4 +614,7 @@ CFLAGS += -include '$(RIOTBUILD_CONFIG_HEADER_C)'
 
 # include mcuboot support
 include $(RIOTMAKE)/mcuboot.mk
+
+# include Murdock helpers
+include $(RIOTMAKE)/murdock.inc.mk
 endif # BOARD=none
