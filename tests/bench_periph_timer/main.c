@@ -224,8 +224,7 @@ typedef struct {
     matstat_state_t *target_state; /* timer_set error statistics state */
     matstat_state_t *read_state; /* timer_read error statistics state */
     unsigned int target_ref; /* Target time in reference timer */
-    unsigned int start_tut; /* Start time in timer under test */
-    unsigned int start_ref; /* Start time in reference timer */
+    unsigned int target_tut; /* Target time in timer under test */
 } test_ctx_t;
 
 static test_ctx_t test_context;
@@ -269,9 +268,8 @@ static void cb(void *arg, int chan)
 
     /* Update timer_read statistics only when timer_read has not overflowed
      * since the timer was set */
-    if (now_tut >= ctx->start_tut) {
-        diff = TIM_TEST_TO_REF(now_tut - ctx->start_tut) - overhead_read;
-        diff -= (now_ref - ctx->start_ref);
+    if (now_tut >= ctx->target_tut) {
+        diff = now_tut - ctx->target_tut - overhead_read;
         matstat_add(ctx->read_state, diff);
     }
 
@@ -537,21 +535,19 @@ static uint32_t run_test(test_ctx_t *ctx, unsigned int num)
         timer_stop(TIM_TEST_DEV);
         spin_random_delay();
     }
-    ctx->start_ref = timer_read(TIM_REF_DEV);
-    ctx->start_tut = timer_read(TIM_TEST_DEV);
-    ctx->target_ref = ctx->start_ref + interval_ref;
+    ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
+    ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
     if (variant & TEST_ABSOLUTE) {
-        timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, ctx->start_tut + interval);
+        timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, ctx->target_tut);
     }
     else {
         timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval);
     }
     if (variant & TEST_STOPPED) {
         spin_random_delay();
-        /* do not update ctx->start_tut, because TUT should have been stopped
+        /* do not update ctx->target_tut, because TUT should have been stopped
          * and not incremented during spin_random_delay */
-        ctx->start_ref = timer_read(TIM_REF_DEV);
-        ctx->target_ref = ctx->start_ref + interval_ref;
+        ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
         timer_start(TIM_TEST_DEV);
     }
     mutex_lock(&mtx_cb);
@@ -587,9 +583,8 @@ static void estimate_cpu_overhead(void)
     ctx->read_state = &read_state;
     for (unsigned int k = 0; k < ESTIMATE_CPU_ITERATIONS; ++k) {
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
-        ctx->start_ref = timer_read(TIM_REF_DEV);
-        ctx->start_tut = timer_read(TIM_TEST_DEV);
-        ctx->target_ref = ctx->start_ref + interval_ref;
+        ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
+        ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
         /* call yield to simulate a context switch to isr and back */
         thread_yield();
         cb(ctx, TIM_TEST_CHAN);
