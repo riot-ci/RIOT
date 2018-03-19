@@ -9,11 +9,7 @@ SINGLE_TIMER_BOARDS = \
 # with the default settings of TEST_MIN and TEST_MAX, so DETAILED_STATS will be
 # disabled by default for these boards unless explicitly enabled
 SMALL_RAM_BOARDS = \
-  chronos \
-  msb-430 \
-  msb-430h \
   nucleo32-f031 \
-  nucleo32-f042 \
   #
 
 FEATURES_REQUIRED = periph_timer

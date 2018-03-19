@@ -108,9 +108,42 @@
 #endif
 /* Number of test values */
 #define TEST_NUM ((TEST_MAX) - (TEST_MIN) + 1)
-/* 2-logarithm of TEST_NUM, not possible to compute automatically at compile
- * time, so pick something large enough to fit any possible input values */
+/* 2-logarithm of TEST_NUM, not possible to compute automatically by the
+ * preprocessor unless comparing values like this */
+#if TEST_NUM <= 4
+#define TEST_LOG2NUM 2
+#elif TEST_NUM <= 8
+#define TEST_LOG2NUM 3
+#elif TEST_NUM <= 16
+#define TEST_LOG2NUM 4
+#elif TEST_NUM <= 32
+#define TEST_LOG2NUM 5
+#elif TEST_NUM <= 64
+#define TEST_LOG2NUM 6
+#elif TEST_NUM <= 128
+#define TEST_LOG2NUM 7
+#elif TEST_NUM <= 256
+#define TEST_LOG2NUM 8
+#elif TEST_NUM <= 512
+#define TEST_LOG2NUM 9
+#elif TEST_NUM <= 1024
+#define TEST_LOG2NUM 10
+#elif TEST_NUM <= 2048
+#define TEST_LOG2NUM 11
+#elif TEST_NUM <= 4096
+#define TEST_LOG2NUM 12
+#elif TEST_NUM <= 16384
+#define TEST_LOG2NUM 14
+#elif TEST_NUM <= 65536
 #define TEST_LOG2NUM 16
+#elif TEST_NUM <= 1048576
+#define TEST_LOG2NUM 20
+#elif TEST_NUM <= 16777216
+#define TEST_LOG2NUM 24
+#else
+#define TEST_LOG2NUM 32
+#endif
+
 
 /* convert TUT ticks to reference ticks */
 /* x is expected to be < 2**16 */
@@ -549,9 +582,23 @@ int main(void)
     print_str("TEST_NUM = ");
     print_u32_dec(TEST_NUM);
     print("\n", 1);
-    print_str("log2(TEST_NUM) = ");
-    print_u32_dec(bitarithm_msb(TEST_NUM));
+    print_str("log2(TEST_NUM - 1) = ");
+    unsigned log2test = bitarithm_msb(TEST_NUM - 1);
+    print_u32_dec(log2test);
     print("\n", 1);
+    print_str("state vector elements per variant = ");
+    print_u32_dec(sizeof(states) / sizeof(states[0]) / TEST_VARIANT_NUMOF);
+    print("\n", 1);
+    print_str("number of variants = ");
+    print_u32_dec(TEST_VARIANT_NUMOF);
+    print("\n", 1);
+    print_str("sizeof(state) = ");
+    print_u32_dec(sizeof(states[0]));
+    print_str(" bytes\n");
+    print_str("state vector total memory usage = ");
+    print_u32_dec(sizeof(states));
+    print("\n", 1);
+    assert(log2test < TEST_LOG2NUM);
     print_str("TIM_TEST_DEV = ");
     print_u32_dec(TIM_TEST_DEV);
     print_str(", TIM_TEST_FREQ = ");
