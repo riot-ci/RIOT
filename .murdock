@@ -118,9 +118,9 @@ compile() {
         test -f ${BINDIR}/.test && do_test=1
         if [ $do_test -eq 1 ]; then
             if [ "$board" = "native" ]; then
-                make -C${appdir} test
+                BOARD=$board make -C${appdir} test
             else
-                make -C${appdir} test-murdock
+                BOARD=$board make -C${appdir} test-murdock
             fi
             RES=$?
         fi
