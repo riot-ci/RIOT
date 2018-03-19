@@ -315,7 +315,7 @@ $(HEXFILE): $(ELFFILE)
 	$(Q)$(OBJCOPY) -O ihex $< $@
 
 $(BINFILE): $(ELFFILE)
-	$(Q)$(OBJCOPY) -O bin $< $@
+	$(Q)$(OBJCOPY) -O binary $< $@
 
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
