@@ -10,6 +10,8 @@ USEMODULE += xtimer
 
 DISABLE_MODULE += auto_init
 
+TEST_WHITELIST += native samr21-xpro
+
 include $(RIOTBASE)/Makefile.include
 
 test:
