@@ -3,7 +3,7 @@ test-murdock:
 		./.murdock test_job \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
 		$(BOARD) \
-		$(ELFFILE)
+		$(filter $(BINDIR)/%,$(wildcard $(FLASHDEPS)))
 
 # create $(BINDIR)/.test file only if BOARD is in $(TEST_WHITELIST)
 link: $(BINDIR)/.test
