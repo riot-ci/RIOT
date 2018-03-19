@@ -3,7 +3,7 @@ test-murdock:
 		./.murdock _test \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
 		$(BOARD) \
-		$(HEXFILE)
+		$(ELFFILE)
 
 # create $(BINDIR)/.test file only if BOARD is in $(TEST_WHITELIST)
 link: $(BINDIR)/.test
