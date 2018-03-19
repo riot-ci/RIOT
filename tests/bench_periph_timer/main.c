@@ -144,7 +144,6 @@
 #define TEST_LOG2NUM 32
 #endif
 
-
 /* convert TUT ticks to reference ticks */
 /* x is expected to be < 2**16 */
 #ifndef TIM_TEST_TO_REF
@@ -177,13 +176,22 @@
 #define SPIN_MAX_TARGET 16
 #endif
 
+/* estimate_cpu_overhead will loop for this many iterations to get a proper estimate */
+#define ESTIMATE_CPU_ITERATIONS 256
+
 /* variance due to errors in tick conversion */
 static uint32_t conversion_variance = 0;
 
+/* Limits for the mean and variance, to compare the results against expectation */
 static int32_t expected_mean_low;
 static int32_t expected_mean_high;
 static uint32_t expected_variance_low = 0;
 static uint32_t expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+
+/* Benchmark processing overhead, results will be compensated for this to make
+ * the results easier to understand */
+static int32_t overhead_target;
+static int32_t overhead_read;
 
 /* Seed for initializing the random module */
 static uint32_t seed = 123;
@@ -256,13 +264,13 @@ static void cb(void *arg, int chan)
     }
 
     /* Update running stats */
-    int32_t diff = now_ref - ctx->target_ref;
+    int32_t diff = now_ref - ctx->target_ref - overhead_target;
     matstat_add(ctx->target_state, diff);
 
     /* Update timer_read statistics only when timer_read has not overflowed
      * since the timer was set */
     if (now_tut >= ctx->start_tut) {
-        diff = TIM_TEST_TO_REF(now_tut - ctx->start_tut);
+        diff = TIM_TEST_TO_REF(now_tut - ctx->start_tut) - overhead_read;
         diff -= (now_ref - ctx->start_ref);
         matstat_add(ctx->read_state, diff);
     }
@@ -361,6 +369,15 @@ static void print_detailed(const matstat_state_t *states, size_t nelem)
 static void print_results(void)
 {
     print_str("------------- BEGIN STATISTICS --------------\n");
+    print_str("Limits: mean: [");
+    print_s32_dec(expected_mean_low);
+    print_str(", ");
+    print_s32_dec(expected_mean_high);
+    print_str("], variance: [");
+    print_u32_dec(expected_variance_low);
+    print_str(", ");
+    print_u32_dec(expected_variance_high);
+    print_str("]\n");
     print_str("Target error (actual trigger time - expected trigger time)\n");
     print_str("positive: timer is late, negative: timer is early\n");
 
@@ -554,6 +571,39 @@ static int test_timer(void)
     return 0;
 }
 
+static void estimate_cpu_overhead(void)
+{
+    /* Try to estimate the amount of CPU overhead between test start to test
+     * finish to get a better reading */
+    print_str("Estimating benchmark overhead...\n");
+    uint32_t interval = 0;
+    overhead_target = 0;
+    overhead_read = 0;
+    test_ctx_t context;
+    test_ctx_t *ctx = &context;
+    matstat_state_t target_state = MATSTAT_STATE_INIT;
+    matstat_state_t read_state = MATSTAT_STATE_INIT;
+    ctx->target_state = &target_state;
+    ctx->read_state = &read_state;
+    for (unsigned int k = 0; k < ESTIMATE_CPU_ITERATIONS; ++k) {
+        unsigned int interval_ref = TIM_TEST_TO_REF(interval);
+        ctx->start_ref = timer_read(TIM_REF_DEV);
+        ctx->start_tut = timer_read(TIM_TEST_DEV);
+        ctx->target_ref = ctx->start_ref + interval_ref;
+        /* call yield to simulate a context switch to isr and back */
+        thread_yield();
+        cb(ctx, TIM_TEST_CHAN);
+    }
+    overhead_target = matstat_mean(&target_state);
+    overhead_read = matstat_mean(&read_state);
+    print_str("overhead_target = ");
+    print_s32_dec(overhead_target);
+    print_str("\n");
+    print_str("overhead_read = ");
+    print_s32_dec(overhead_read);
+    print_str("\n");
+}
+
 int main(void)
 {
     print_str("\nStatistical benchmark for timers\n");
@@ -648,16 +698,6 @@ int main(void)
     print_str("Expected error variance due to truncation in tick conversion: ");
     print_u32_dec(conversion_variance);
     print("\n", 1);
-    print_str("Limits for mean: [");
-    print_s32_dec(expected_mean_low);
-    print_str(", ");
-    print_s32_dec(expected_mean_high);
-    print_str("]\n");
-    print_str("Limits for variance: [");
-    print_u32_dec(expected_variance_low);
-    print_str(", ");
-    print_u32_dec(expected_variance_high);
-    print_str("]\n");
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");
@@ -676,6 +716,8 @@ int main(void)
     }
 
     calibrate_spin_max();
+    estimate_cpu_overhead();
+
     while(1) {
         test_timer();
     }
