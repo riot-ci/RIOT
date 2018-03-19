@@ -120,10 +120,10 @@ compile() {
         if [ $do_test -eq 1 ]; then
             if [ "$board" = "native" ]; then
                 make -C${appdir} test
-                RES=$?
             else
-                _test $appdir $board
+                make -C$appdir test-murdock
             fi
+            RES=$?
         fi
     fi
 
