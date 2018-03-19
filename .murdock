@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# temporarily limit build matrix
+BOARDS="native samr21-xpro"
+
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
