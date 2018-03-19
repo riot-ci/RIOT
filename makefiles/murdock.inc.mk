@@ -1,6 +1,6 @@
 test-murdock:
 	cd $(RIOTBASE) && \
-		./.murdock _test \
+		./.murdock test_job \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
 		$(BOARD) \
 		$(ELFFILE)
