@@ -1,6 +1,6 @@
-test-murdock: link
+test-murdock:
 	cd $(RIOTBASE) && \
-		./.murdock make_test_job \
+		./.murdock _test \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
 		$(BOARD) \
 		$(HEXFILE)
