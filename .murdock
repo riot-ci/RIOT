@@ -19,9 +19,7 @@ check_label() {
 }
 
 [ "$RUN_TESTS" != "1" ] && {
-    if check_label "CI: run tests"; then
-        RUN_TESTS=1
-    fi
+    check_label "CI: run tests" && RUN_TESTS=1
 }
 
 error() {
