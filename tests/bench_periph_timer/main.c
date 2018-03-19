@@ -182,8 +182,8 @@ static uint32_t conversion_variance = 0;
 
 static int32_t expected_mean_low;
 static int32_t expected_mean_high;
-static int32_t expected_variance_low = 0;
-static int32_t expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+static uint32_t expected_variance_low = 0;
+static uint32_t expected_variance_high = TEST_UNEXPECTED_VARIANCE;
 
 /* Seed for initializing the random module */
 static uint32_t seed = 123;
@@ -299,9 +299,9 @@ static void print_statistics(const matstat_state_t *state)
     print(buf, fmt_lpad(buf, fmt_s32_dec(buf, mean), 5, ' '));
     print(" ", 1);
     print(buf, fmt_lpad(buf, fmt_u64_dec(buf, variance), 6, ' '));
-    if ((mean > TEST_UNEXPECTED_MEAN) || (-mean > TEST_UNEXPECTED_MEAN) ||
-        (variance > TEST_UNEXPECTED_VARIANCE)) {
-        /* mean or variance is greater than expected, alert the user */
+    if ((mean < expected_mean_low) || (expected_mean_high < mean) ||
+        (variance < expected_variance_low) || (expected_variance_high < variance) ) {
+        /* mean or variance is outside the expected range, alert the user */
         print_str("  <=== SIC!");
     }
     print("\n", 1);
@@ -649,9 +649,9 @@ int main(void)
     print_u32_dec(conversion_variance);
     print("\n", 1);
     print_str("Limits for mean: [");
-    print_u32_dec(expected_mean_low);
+    print_s32_dec(expected_mean_low);
     print_str(", ");
-    print_u32_dec(expected_mean_high);
+    print_s32_dec(expected_mean_high);
     print_str("]\n");
     print_str("Limits for variance: [");
     print_u32_dec(expected_variance_low);
