@@ -35,7 +35,7 @@
 
 extern sx127x_t sx127x;
 
-#define LORAMAC_RX_WINDOW_DURATION  (600UL * US_PER_MS)
+#define LORAMAC_RX_WINDOW_DURATION  (500UL * US_PER_MS)
 
 /*
  * Radio driver functions implementation wrappers, the netdev2 object
