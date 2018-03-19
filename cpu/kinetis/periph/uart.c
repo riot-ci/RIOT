@@ -93,7 +93,8 @@
 typedef struct {
     uart_rx_cb_t rx_cb;     /**< data received interrupt callback */
     void *arg;              /**< argument to both callback routines */
-    unsigned active;        /**< set to 1 while the receiver is active */
+    unsigned active;        /**< set to 1 while the receiver is active, to avoid mismatched PM_BLOCK/PM_UNBLOCK */
+    unsigned enabled;       /**< set to 1 while the receiver is enabled, to avoid mismatched PM_BLOCK/PM_UNBLOCK */
 } uart_isr_ctx_t;
 
 /**
@@ -141,6 +142,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     config[uart].rx_cb = rx_cb;
     config[uart].arg = arg;
     config[uart].active = 0;
+    config[uart].enabled = 0;
 
     uart_init_pins(uart);
 
@@ -162,27 +164,34 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
             return UART_NODEV;
     }
 
-    if (config[uart].rx_cb) {
-#if MODULE_PERIPH_LLWU
-        if (uart_config[uart].llwu_rx != LLWU_WAKEUP_PIN_UNDEF) {
-            /* Configure the RX pin for LLWU wakeup to be able to use RX in LLS mode */
-            llwu_wakeup_pin_set(uart_config[uart].llwu_rx, LLWU_WAKEUP_EDGE_FALLING, NULL, NULL);
-        }
-        else
-#endif
-        {
-            /* UART and LPUART receivers are stopped in LLS, prevent LLS when there
-             * is a configured RX callback and no LLWU wakeup pin configured */
-            DEBUG("uart: Blocking LLS\n");
-            PM_BLOCK(KINETIS_PM_LLS);
-        }
-    }
+    uart_poweron(uart);
+
     return UART_OK;
 }
 
 void uart_poweron(uart_t uart)
 {
     assert(uart < UART_NUMOF);
+    if (config[uart].rx_cb) {
+        unsigned state = irq_disable();
+        if (!config[uart].enabled) {
+            config[uart].enabled = 1;
+#if MODULE_PERIPH_LLWU
+            if (uart_config[uart].llwu_rx != LLWU_WAKEUP_PIN_UNDEF) {
+                /* Configure the RX pin for LLWU wakeup to be able to use RX in LLS mode */
+                llwu_wakeup_pin_set(uart_config[uart].llwu_rx, LLWU_WAKEUP_EDGE_FALLING, NULL, NULL);
+            }
+            else
+#endif
+            {
+                /* UART and LPUART receivers are stopped in LLS, prevent LLS when there
+                 * is a configured RX callback and no LLWU wakeup pin configured */
+                DEBUG("uart: Blocking LLS\n");
+                PM_BLOCK(KINETIS_PM_LLS);
+            }
+        }
+        irq_restore(state);
+    }
     switch (uart_config[uart].type) {
 #if KINETIS_HAVE_UART
         case KINETIS_UART:
@@ -202,6 +211,25 @@ void uart_poweron(uart_t uart)
 void uart_poweroff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
+    if (config[uart].rx_cb) {
+        unsigned state = irq_disable();
+        if (config[uart].enabled) {
+            config[uart].enabled = 0;
+#if MODULE_PERIPH_LLWU
+            if (uart_config[uart].llwu_rx != LLWU_WAKEUP_PIN_UNDEF) {
+                /* Disable LLWU wakeup for the RX pin */
+                llwu_wakeup_pin_set(uart_config[uart].llwu_rx, LLWU_WAKEUP_EDGE_NONE, NULL, NULL);
+            }
+            else
+#endif
+            {
+                /* re-enable LLS since we are not listening anymore */
+                DEBUG("uart: unblocking LLS\n");
+                PM_UNBLOCK(KINETIS_PM_LLS);
+            }
+        }
+        irq_restore(state);
+    }
     switch (uart_config[uart].type) {
 #if KINETIS_HAVE_UART
         case KINETIS_UART:
