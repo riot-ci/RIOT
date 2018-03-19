@@ -1,9 +1,22 @@
 #!/bin/sh
 
+# temporarily limit build matrix
+BOARDS="native samr21-xpro"
+
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
+
+NIGHTLY=${NIGHTLY:-0}
+RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
+
+[ "$RUN_TESTS" != "1" ] && {
+    . dist/tools/pr_check/check_labels.sh
+    if check_gh_label "CI: run tests"; then
+        RUN_TESTS=1
+    fi
+}
 
 error() {
     echo "$@"
@@ -95,10 +108,16 @@ compile() {
         make -C${appdir} clean all -j${JOBS:-4}
     RES=$?
 
-    if [ $RES -eq 0 ]; then
-        if [ "$board" = "native" -a "$appdir" = "tests/unittests" ]; then
-            make -C${appdir} test
-            RES=$?
+    if [ $RES -eq 0 -a $RUN_TEST -eq 1]; then
+        local do_test=0
+        test -f ${BINDIR}/.test && do_test=1
+        if [ $do_test -eq 1 ]; then
+            if [ "$board" = "native" ]; then
+                make -C${appdir} test
+                RES=$?
+            else
+                _test $appdir $board
+            fi
         fi
     fi
 
@@ -111,6 +130,19 @@ compile() {
     fi
 
     return $RES
+}
+
+_test() {
+    local appdir=$1
+    local board=$2
+    local flashfile="${3:-$(ls ${BINDIR}/*.hex | tail -n 1)}"
+
+    dwqc \
+        ${DWQ_JOB_ID:+--subjob} \
+        --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
+        --queue $board \
+        --maxfail 1 \
+        "BOARD=$board make -C$appdir flash-only test"
 }
 
 # execute static tests
