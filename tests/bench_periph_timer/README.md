@@ -100,11 +100,16 @@ the fact.
 
 Below are some rules of thumb that can be useful when looking at the results.
 These are only guidelines for when debugging timer drivers, the real world
-requirements vary from application to application.
+requirements vary from application to application. The CPU core clock speed will
+also affect the measured mean difference because of the execution time of the
+code between the timer interrupt being triggered and when the benchmark
+application has read out both timer values. The variance should not be affected
+by the CPU speed because the processing time between the ISR and the timer_read
+should be constant across all iterations.
 
 1 MHz timer tested with 1 MHz reference:
 
-abs(mean) < 10
+abs(mean) < 20
 variance < 10
 
 32768 Hz timer tested with 1 MHz reference:
