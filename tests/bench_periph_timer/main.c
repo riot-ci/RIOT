@@ -40,11 +40,7 @@
  * @brief Timer under test (TUT)
  */
 #ifndef TIM_TEST_DEV
-#if TIMER_NUMOF > 1
 #define TIM_TEST_DEV TIMER_DEV(1)
-#else
-#define TIM_TEST_DEV TIMER_DEV(0)
-#endif
 #endif
 #ifndef TIM_TEST_FREQ
 #define TIM_TEST_FREQ 1000000ul

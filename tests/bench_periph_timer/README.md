@@ -176,8 +176,7 @@ Configuration macros used by the application are described below
 
 #### TIM_TEST_DEV
 
-Timer under test. Default: `TIMER_DEV(1)` if `TIMER_NUMOF > 1`, `TIMER_DEV(0)`
-otherwise
+Timer under test. Default: `TIMER_DEV(1)`
 
 #### TIM_REF_DEV
 
