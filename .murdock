@@ -121,7 +121,7 @@ compile() {
             if [ "$board" = "native" ]; then
                 make -C${appdir} test
             else
-                make -C$appdir test-murdock
+                make -C${appdir} test-murdock
             fi
             RES=$?
         fi
@@ -143,7 +143,10 @@ _test() {
     local board=$2
     local flashfile="${3:-$(ls ${BINDIR}/*.hex | tail -n 1)}"
 
-    [ ! -f "$flashfile" ] && return 1
+    [ ! -f "$flashfile" ] && {
+        echo "$0: _test(): flashfile \"$flashfile\" doesn't exist!"
+        return 1
+    }
 
     dwqc \
         ${DWQ_JOB_ID:+--subjob} \
