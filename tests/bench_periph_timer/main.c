@@ -165,10 +165,10 @@
 /* If variance or mean exceeds these values the row will be marked with a "SIC!"
  * in the table output */
 #ifndef TEST_UNEXPECTED_VARIANCE
-#define TEST_UNEXPECTED_VARIANCE 100
+#define TEST_UNEXPECTED_VARIANCE 10
 #endif
 #ifndef TEST_UNEXPECTED_MEAN
-#define TEST_UNEXPECTED_MEAN 100
+#define TEST_UNEXPECTED_MEAN 10
 #endif
 
 /* The spin calibration will try to set spin_limit to a number of loop
@@ -176,6 +176,14 @@
 #ifndef SPIN_MAX_TARGET
 #define SPIN_MAX_TARGET 16
 #endif
+
+/* variance due to errors in tick conversion */
+static uint32_t conversion_variance = 0;
+
+static int32_t expected_mean_low;
+static int32_t expected_mean_high;
+static int32_t expected_variance_low = 0;
+static int32_t expected_variance_high = TEST_UNEXPECTED_VARIANCE;
 
 /* Seed for initializing the random module */
 static uint32_t seed = 123;
@@ -618,18 +626,38 @@ int main(void)
     print_u32_dec(TEST_PRINT_INTERVAL_TICKS);
     print("\n", 1);
 
+    expected_mean_low = -TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
+    expected_mean_high = TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
     if (TIM_TEST_FREQ < TIM_REF_FREQ) {
-        print_str("Expected error variance due to quantization: ");
         /* The quantization errors should be uniformly distributed within +/- 0.5
          * test timer ticks of the reference time */
         /* The formula for the variance of a rectangle distribution on [a, b] is
          * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
          * Using (b - a)^2 == (b - a) * ((b + 1) - (a + 1)) gives a smaller
          * truncation error when using integer operations for converting the ticks */
-        print_u32_dec(((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
-            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12);
-        print("\n", 1);
+        conversion_variance = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
+            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12;
+        /* The limits of the mean should account for the conversion error as well */
+        int32_t mean_error = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) +
+            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 2;
+        expected_mean_low -= mean_error;
+        expected_mean_high += mean_error;
+        expected_variance_low = conversion_variance - TEST_UNEXPECTED_VARIANCE;
+        expected_variance_high = conversion_variance + TEST_UNEXPECTED_VARIANCE;
     }
+    print_str("Expected error variance due to truncation in tick conversion: ");
+    print_u32_dec(conversion_variance);
+    print("\n", 1);
+    print_str("Limits for mean: [");
+    print_u32_dec(expected_mean_low);
+    print_str(", ");
+    print_u32_dec(expected_mean_high);
+    print_str("]\n");
+    print_str("Limits for variance: [");
+    print_u32_dec(expected_variance_low);
+    print_str(", ");
+    print_u32_dec(expected_variance_high);
+    print_str("]\n");
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");
