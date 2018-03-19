@@ -2,6 +2,7 @@
 
 # temporarily limit build matrix
 BOARDS="native samr21-xpro"
+STATIC_TESTS=0
 
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
