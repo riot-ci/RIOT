@@ -153,7 +153,7 @@ _test() {
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
         --queue $board \
         --maxfail 1 \
-        "BOARD=$board make -C$appdir flash-only test"
+        "BOARD=$board MURDOCK=1 make -C$appdir flash-only test"
 }
 
 # execute static tests
