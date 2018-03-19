@@ -137,7 +137,8 @@ compile() {
     return $RES
 }
 
-_test() {
+# runs "
+test_job() {
     local appdir=$1
     local board=$2
     local flashfile="${3:-$(ls ${BINDIR}/*.hex | tail -n 1)}"
@@ -152,7 +153,13 @@ _test() {
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
         --queue $board \
         --maxfail 1 \
-        "BOARD=$board MURDOCK=1 make -C$appdir flash-only test"
+        "run_test $appdir $board"
+}
+
+run_test() {
+    local appdir=$1
+    local board=$2
+    BOARD=$board make -C$appdir flash-only test
 }
 
 # execute static tests
