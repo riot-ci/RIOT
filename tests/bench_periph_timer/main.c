@@ -157,9 +157,9 @@
 #endif
 #endif
 
-/* Print results every X TUT ticks */
+/* Print results every X reference ticks */
 #ifndef TEST_PRINT_INTERVAL_TICKS
-#define TEST_PRINT_INTERVAL_TICKS (TIM_TEST_FREQ * 15)
+#define TEST_PRINT_INTERVAL_TICKS ((TIM_REF_FREQ) * 30)
 #endif
 
 /* If variance or mean exceeds these values the row will be marked with a "SIC!"
@@ -535,11 +535,11 @@ static uint32_t run_test(test_ctx_t *ctx, unsigned int num)
 
 static int test_timer(void)
 {
-    uint32_t duration = 0;
+    uint32_t time_begin = timer_read(TIM_REF_DEV);
     do {
         unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
-        duration += run_test(&test_context, num);
-    } while(duration < TEST_PRINT_INTERVAL_TICKS);
+        run_test(&test_context, num);
+    } while((timer_read(TIM_REF_DEV) - time_begin) < TEST_PRINT_INTERVAL_TICKS);
 
     print_results();
 
@@ -597,7 +597,7 @@ int main(void)
     print_str(" bytes\n");
     print_str("state vector total memory usage = ");
     print_u32_dec(sizeof(states));
-    print("\n", 1);
+    print_str(" bytes\n");
     assert(log2test < TEST_LOG2NUM);
     print_str("TIM_TEST_DEV = ");
     print_u32_dec(TIM_TEST_DEV);
@@ -614,7 +614,22 @@ int main(void)
     print_str("USE_REFERENCE = ");
     print_u32_dec(USE_REFERENCE);
     print("\n", 1);
+    print_str("TEST_PRINT_INTERVAL_TICKS = ");
+    print_u32_dec(TEST_PRINT_INTERVAL_TICKS);
+    print("\n", 1);
 
+    if (TIM_TEST_FREQ < TIM_REF_FREQ) {
+        print_str("Expected error variance due to quantization: ");
+        /* The quantization errors should be uniformly distributed within +/- 0.5
+         * test timer ticks of the reference time */
+        /* The formula for the variance of a rectangle distribution on [a, b] is
+         * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
+         * Using (b - a)^2 == (b - a) * ((b + 1) - (a + 1)) gives a smaller
+         * truncation error when using integer operations for converting the ticks */
+        print_u32_dec(((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
+            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12);
+        print("\n", 1);
+    }
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");

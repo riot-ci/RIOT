@@ -14,7 +14,7 @@ timeouts on a periph_timer device. A reference timer is used to measure the
 time it takes until the callback is called. The difference between the expected
 time and the measured time is computed, and the mean and variance of the
 recorded values are calculated. The results are printed as a table on stdout
-every 20-90 seconds. All of the test scenarios used in this application are
+every 30 seconds. All of the test scenarios used in this application are
 based on experience from real world bugs encountered during the development of
 RIOT and other systems.
 
@@ -218,8 +218,8 @@ overview. Default: `1`
 
 #### TEST_PRINT_INTERVAL_TICKS
 
-The result table will be printed to standard output when the sum of the tested
-timer offsets have passed this value. Default: `(TIM_TEST_FREQ * 15)`
+The result table will be printed to standard output when this many reference
+timer ticks have passed since the last printout. Default: `((TIM_REF_FREQ) * 30)`
 
 ### Settings related to timer input generation
 
