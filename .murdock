@@ -148,7 +148,7 @@ _test() {
     }
 
     dwqc \
-        ${DWQ_JOB_ID:+--subjob} \
+        ${DWQ_JOBID:+--subjob} \
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
         --queue $board \
         --maxfail 1 \
