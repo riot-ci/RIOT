@@ -143,6 +143,8 @@ _test() {
     local board=$2
     local flashfile="${3:-$(ls ${BINDIR}/*.hex | tail -n 1)}"
 
+    [ ! -f "$flashfile" ] && return 1
+
     dwqc \
         ${DWQ_JOB_ID:+--subjob} \
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
