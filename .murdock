@@ -8,11 +8,15 @@ export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
+check_label() {
+    local label="${1}"
+    [ -z "${CI_PULL_LABELS}" ] && return 1
+    echo "${CI_PULL_LABELS}" | grep -q "${label}"
+    return $?
+}
+
 [ "$RUN_TESTS" != "1" ] && {
-    . dist/tools/pr_check/check_labels.sh
-    if check_gh_label "CI: run tests"; then
-        RUN_TESTS=1
-    fi
+    check_label "CI: run tests" && RUN_TESTS=1
 }
 
 error() {
@@ -105,16 +109,16 @@ compile() {
         make -C${appdir} clean all -j${JOBS:-4}
     RES=$?
 
-    if [ $RES -eq 0 -a $RUN_TEST -eq 1]; then
+    if [ $RES -eq 0 -a $RUN_TESTS -eq 1 ]; then
         local do_test=0
         test -f ${BINDIR}/.test && do_test=1
         if [ $do_test -eq 1 ]; then
             if [ "$board" = "native" ]; then
-                make -C${appdir} test
-                RES=$?
+                BOARD=$board make -C${appdir} test
             else
-                _test $appdir $board
+                BOARD=$board make -C${appdir} test-murdock
             fi
+            RES=$?
         fi
     fi
 
@@ -129,17 +133,30 @@ compile() {
     return $RES
 }
 
-_test() {
+test_job() {
     local appdir=$1
     local board=$2
-    local flashfile="${3:-$(ls ${BINDIR}/*.hex | tail -n 1)}"
+    local flashfile="$3"
+
+    [ ! -f "$flashfile" ] && {
+        echo "$0: _test(): flashfile \"$flashfile\" doesn't exist!"
+        return 1
+    }
 
     dwqc \
-        ${DWQ_JOB_ID:+--subjob} \
+        ${DWQ_JOBID:+--subjob} \
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
         --queue $board \
         --maxfail 1 \
-        "BOARD=$board make -C$appdir flash-only test"
+        "./.murdock run_test $appdir $board"
+}
+
+run_test() {
+    local appdir=$1
+    local board=$2
+    print_worker
+    echo "-- executing tests for $appdir on $board:"
+    BOARD=$board make -C$appdir flash-only test
 }
 
 # execute static tests
