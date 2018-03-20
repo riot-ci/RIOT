@@ -3,6 +3,7 @@ include ../Makefile.tests_common
 # These boards only have a single timer in their periph_conf.h, needs special
 # CFLAGS configuration to build properly
 SINGLE_TIMER_BOARDS = \
+  native \
   nucleo32-f031 \
   nucleo32-f042 \
   #

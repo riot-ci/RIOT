@@ -103,8 +103,12 @@
 #else
 /* avoid problems with timer_set_absolute setting a time in the past because of
  * processing delays */
-#define TEST_MIN 2
+#define TEST_MIN 16
 #endif
+#endif
+/* Minimum delay for relative timers, should usually work with any value */
+#ifndef TEST_MIN_REL
+#define TEST_MIN_REL (0)
 #endif
 /* Number of test values */
 #define TEST_NUM ((TEST_MAX) - (TEST_MIN) + 1)
@@ -177,16 +181,10 @@
 #endif
 
 /* estimate_cpu_overhead will loop for this many iterations to get a proper estimate */
-#define ESTIMATE_CPU_ITERATIONS 256
+#define ESTIMATE_CPU_ITERATIONS 2048
 
 /* variance due to errors in tick conversion */
 static uint32_t conversion_variance = 0;
-
-/* Limits for the mean and variance, to compare the results against expectation */
-static int32_t expected_mean_low;
-static int32_t expected_mean_high;
-static uint32_t expected_variance_low = 0;
-static uint32_t expected_variance_high = TEST_UNEXPECTED_VARIANCE;
 
 /* Benchmark processing overhead, results will be compensated for this to make
  * the results easier to understand */
@@ -227,7 +225,19 @@ typedef struct {
     unsigned int target_tut; /* Target time in timer under test */
 } test_ctx_t;
 
+/* Test limits */
+typedef struct {
+    int32_t expected_mean_low;
+    int32_t expected_mean_high;
+    uint32_t expected_variance_low;
+    uint32_t expected_variance_high;
+} test_limits_t;
+
 static test_ctx_t test_context;
+
+/* Limits for the mean and variance, to compare the results against expectation */
+static test_limits_t target_limits;
+static test_limits_t read_limits;
 
 #if DETAILED_STATS
 #if LOG2_STATS
@@ -276,7 +286,7 @@ static void cb(void *arg, int chan)
     mutex_unlock(&mtx_cb);
 }
 
-static void print_statistics(const matstat_state_t *state)
+static void print_statistics(const matstat_state_t *state, const test_limits_t *limits)
 {
     if (state->count == 0) {
         print_str("no samples\n");
@@ -305,22 +315,24 @@ static void print_statistics(const matstat_state_t *state)
     print(buf, fmt_lpad(buf, fmt_s32_dec(buf, mean), 5, ' '));
     print(" ", 1);
     print(buf, fmt_lpad(buf, fmt_u64_dec(buf, variance), 6, ' '));
-    if ((mean < expected_mean_low) || (expected_mean_high < mean) ||
-        (variance < expected_variance_low) || (expected_variance_high < variance) ) {
-        /* mean or variance is outside the expected range, alert the user */
-        print_str("  <=== SIC!");
+    if (limits) {
+        if ((mean < limits->expected_mean_low) || (limits->expected_mean_high < mean) ||
+            (variance < limits->expected_variance_low) || (limits->expected_variance_high < variance) ) {
+            /* mean or variance is outside the expected range, alert the user */
+            print_str("  <=== SIC!");
+        }
     }
     print("\n", 1);
 }
 
-static void print_totals(const matstat_state_t *states, size_t nelem)
+static void print_totals(const matstat_state_t *states, size_t nelem, const test_limits_t *limits)
 {
     matstat_state_t totals;
     matstat_clear(&totals);
     for (size_t k = 0; k < nelem; ++k) {
         matstat_merge(&totals, &states[k]);
     }
-    print_statistics(&totals);
+    print_statistics(&totals, limits);
 }
 
 static void print_detailed(const matstat_state_t *states, size_t nelem)
@@ -342,7 +354,7 @@ static void print_detailed(const matstat_state_t *states, size_t nelem)
             print_str(" - ");
             print(buf, fmt_lpad(buf, fmt_u32_dec(buf, TEST_MIN + (num * 2) - 1), 4, ' '));
             print_str(": ");
-            print_statistics(&states[k]);
+            print_statistics(&states[k], &target_limits);
         }
         print_str("      TOTAL  ");
     }
@@ -352,11 +364,11 @@ static void print_detailed(const matstat_state_t *states, size_t nelem)
             char buf[10];
             print(buf, fmt_lpad(buf, fmt_u32_dec(buf, k + TEST_MIN), 7, ' '));
             print_str(": ");
-            print_statistics(&states[k]);
+            print_statistics(&states[k], &target_limits);
         }
         print_str("  TOTAL: ");
     }
-    print_totals(states, nelem);
+    print_totals(states, nelem, &target_limits);
 }
 
 /**
@@ -368,15 +380,15 @@ static void print_results(void)
 {
     print_str("------------- BEGIN STATISTICS --------------\n");
     print_str("Limits: mean: [");
-    print_s32_dec(expected_mean_low);
+    print_s32_dec(target_limits.expected_mean_low);
     print_str(", ");
-    print_s32_dec(expected_mean_high);
+    print_s32_dec(target_limits.expected_mean_high);
     print_str("], variance: [");
-    print_u32_dec(expected_variance_low);
+    print_u32_dec(target_limits.expected_variance_low);
     print_str(", ");
-    print_u32_dec(expected_variance_high);
+    print_u32_dec(target_limits.expected_variance_high);
     print_str("]\n");
-    print_str("Target error (actual trigger time - expected trigger time)\n");
+    print_str("Target error (actual trigger time - expected trigger time), in reference timer ticks\n");
     print_str("positive: timer is late, negative: timer is early\n");
 
     if (DETAILED_STATS) {
@@ -404,52 +416,61 @@ static void print_results(void)
     else {
         print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
         print_str(" timer_set          ");
-        print_totals(&states[0], 4);
+        print_totals(&states[0], 4, &target_limits);
         print_str("  running           ");
-        print_totals(&states[0], 1);
+        print_totals(&states[0], 1, &target_limits);
         print_str("  resched           ");
-        print_totals(&states[TEST_RESCHEDULE], 1);
+        print_totals(&states[TEST_RESCHEDULE], 1, &target_limits);
         print_str("  stopped           ");
-        print_totals(&states[TEST_STOPPED], 1);
+        print_totals(&states[TEST_STOPPED], 1, &target_limits);
         print_str("  resched, stopped  ");
-        print_totals(&states[TEST_RESCHEDULE | TEST_STOPPED], 1);
+        print_totals(&states[TEST_RESCHEDULE | TEST_STOPPED], 1, &target_limits);
         print("\n", 1);
         print_str(" timer_set_absolute ");
-        print_totals(&states[TEST_ABSOLUTE], 4);
+        print_totals(&states[TEST_ABSOLUTE], 4, &target_limits);
         print_str("  running           ");
-        print_totals(&states[TEST_ABSOLUTE], 1);
+        print_totals(&states[TEST_ABSOLUTE], 1, &target_limits);
         print_str("  resched           ");
-        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1);
+        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1, &target_limits);
         print_str("  stopped           ");
-        print_totals(&states[TEST_ABSOLUTE | TEST_STOPPED], 1);
+        print_totals(&states[TEST_ABSOLUTE | TEST_STOPPED], 1, &target_limits);
         print_str("  resched, stopped  ");
-        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1);
+        print_totals(&states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1, &target_limits);
     }
     print_str("=== timer_read statistics ===\n");
-    print_str("timer_read error (TUT time elapsed - reference time elapsed)\n");
-    print_str("positive: timer_read is speeding, negative: timer_read is dropping ticks\n");
+    print_str("Limits: mean: [");
+    print_s32_dec(read_limits.expected_mean_low);
+    print_str(", ");
+    print_s32_dec(read_limits.expected_mean_high);
+    print_str("], variance: [");
+    print_u32_dec(read_limits.expected_variance_low);
+    print_str(", ");
+    print_u32_dec(read_limits.expected_variance_high);
+    print_str("]\n");
+    print_str("timer_read error (TUT time elapsed - expected TUT interval), in timer under test ticks\n");
+    print_str("positive: timer target handling is slow, negative: timer_read is dropping ticks\n");
     print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
     print_str(" timer_set          ");
-    print_totals(&read_states[0], 4);
+    print_totals(&read_states[0], 4, &read_limits);
     print_str("  running           ");
-    print_totals(&read_states[0], 1);
+    print_totals(&read_states[0], 1, &read_limits);
     print_str("  resched           ");
-    print_totals(&read_states[TEST_RESCHEDULE], 1);
+    print_totals(&read_states[TEST_RESCHEDULE], 1, &read_limits);
     print_str("  stopped           ");
-    print_totals(&read_states[TEST_STOPPED], 1);
+    print_totals(&read_states[TEST_STOPPED], 1, &read_limits);
     print_str("  resched, stopped  ");
-    print_totals(&read_states[TEST_RESCHEDULE | TEST_STOPPED], 1);
+    print_totals(&read_states[TEST_RESCHEDULE | TEST_STOPPED], 1, &read_limits);
     print("\n", 1);
     print_str(" timer_set_absolute ");
-    print_totals(&read_states[TEST_ABSOLUTE], 4);
+    print_totals(&read_states[TEST_ABSOLUTE], 4, &read_limits);
     print_str("  running           ");
-    print_totals(&read_states[TEST_ABSOLUTE], 1);
+    print_totals(&read_states[TEST_ABSOLUTE], 1, &read_limits);
     print_str("  resched           ");
-    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1);
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE], 1, &read_limits);
     print_str("  stopped           ");
-    print_totals(&read_states[TEST_ABSOLUTE | TEST_STOPPED], 1);
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_STOPPED], 1, &read_limits);
     print_str("  resched, stopped  ");
-    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1);
+    print_totals(&read_states[TEST_ABSOLUTE | TEST_RESCHEDULE | TEST_STOPPED], 1, &read_limits);
 
     print_str("-------------- END STATISTICS ---------------\n");
 }
@@ -523,10 +544,17 @@ static void calibrate_spin_max(void)
 static uint32_t run_test(test_ctx_t *ctx, unsigned int num)
 {
     assign_state_ptr(ctx, num);
-    uint32_t interval = (num % TEST_NUM) + TEST_MIN;
+    uint32_t interval = (num % TEST_NUM);
     spin_random_delay();
-    unsigned int interval_ref = TIM_TEST_TO_REF(interval);
     unsigned int variant = num / TEST_NUM;
+    if (variant & TEST_ABSOLUTE) {
+        interval += TEST_MIN;
+    }
+    else {
+        interval += TEST_MIN_REL;
+    }
+    unsigned int interval_ref = TIM_TEST_TO_REF(interval);
+
     if (variant & TEST_RESCHEDULE) {
         timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval + RESCHEDULE_MARGIN);
         spin_random_delay();
@@ -583,21 +611,73 @@ static void estimate_cpu_overhead(void)
     ctx->read_state = &read_state;
     for (unsigned int k = 0; k < ESTIMATE_CPU_ITERATIONS; ++k) {
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
+        spin_random_delay();
         ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
         ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
         /* call yield to simulate a context switch to isr and back */
-        thread_yield();
+        thread_yield_higher();
         cb(ctx, TIM_TEST_CHAN);
     }
     overhead_target = matstat_mean(&target_state);
     overhead_read = matstat_mean(&read_state);
     print_str("overhead_target = ");
     print_s32_dec(overhead_target);
-    print_str("\n");
+    print_str(" (s2 = ");
+    uint32_t var = matstat_variance(&target_state);
+    print_u32_dec(var);
+    print_str(")\n");
+    if (var > 2) {
+        print_str("Warning: Variance in CPU estimation is too high\n");
+#ifdef CPU_NATIVE
+        print_str("This is expected on native when other processes are running\n");
+#endif
+    }
     print_str("overhead_read = ");
     print_s32_dec(overhead_read);
-    print_str("\n");
+    print_str(" (s2 = ");
+    var = matstat_variance(&read_state);
+    print_u32_dec(var);
+    print_str(")\n");
+    if (var > 2) {
+        print_str("Warning: Variance in CPU estimation is too high\n");
+#ifdef CPU_NATIVE
+        print_str("This is expected on native when other processes are running\n");
+#endif
+    }
 }
+
+static void set_limits(void)
+{
+    target_limits.expected_mean_low = -TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
+    target_limits.expected_mean_high = TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
+    target_limits.expected_variance_low = 0;
+    target_limits.expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+
+    read_limits.expected_mean_low = -(TEST_UNEXPECTED_MEAN);
+    read_limits.expected_mean_high = TEST_UNEXPECTED_MEAN;
+    read_limits.expected_variance_low = 0;
+    read_limits.expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+
+    if (TIM_TEST_FREQ < TIM_REF_FREQ) {
+        /* The quantization errors should be uniformly distributed within +/- 0.5
+         * test timer ticks of the reference time */
+        /* The formula for the variance of a rectangle distribution on [a, b] is
+         * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
+         * Using (b - a)^2 == (b - a) * ((b + 1) - (a + 1)) gives a smaller
+         * truncation error when using integer operations for converting the ticks */
+        conversion_variance = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
+            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12;
+        /* The limits of the mean should account for the conversion error as well */
+        int32_t mean_error = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) +
+            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 2;
+        target_limits.expected_mean_low -= mean_error;
+        target_limits.expected_mean_high += mean_error;
+        target_limits.expected_variance_low = conversion_variance - TEST_UNEXPECTED_VARIANCE;
+        target_limits.expected_variance_high = conversion_variance + TEST_UNEXPECTED_VARIANCE;
+    }
+    print_str("Expected error variance due to truncation in tick conversion: ");
+    print_u32_dec(conversion_variance);
+    print("\n", 1);}
 
 int main(void)
 {
@@ -631,6 +711,12 @@ int main(void)
     print("\n", 1);
     print_str("TEST_MAX = ");
     print_u32_dec(TEST_MAX);
+    print("\n", 1);
+    print_str("TEST_MIN_REL = ");
+    print_u32_dec(TEST_MIN_REL);
+    print("\n", 1);
+    print_str("TEST_MAX_REL = ");
+    print_u32_dec(TEST_MIN_REL+ TEST_NUM);
     print("\n", 1);
     print_str("TEST_NUM = ");
     print_u32_dec(TEST_NUM);
@@ -671,28 +757,6 @@ int main(void)
     print_u32_dec(TEST_PRINT_INTERVAL_TICKS);
     print("\n", 1);
 
-    expected_mean_low = -TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
-    expected_mean_high = TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
-    if (TIM_TEST_FREQ < TIM_REF_FREQ) {
-        /* The quantization errors should be uniformly distributed within +/- 0.5
-         * test timer ticks of the reference time */
-        /* The formula for the variance of a rectangle distribution on [a, b] is
-         * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
-         * Using (b - a)^2 == (b - a) * ((b + 1) - (a + 1)) gives a smaller
-         * truncation error when using integer operations for converting the ticks */
-        conversion_variance = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
-            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12;
-        /* The limits of the mean should account for the conversion error as well */
-        int32_t mean_error = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) +
-            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 2;
-        expected_mean_low -= mean_error;
-        expected_mean_high += mean_error;
-        expected_variance_low = conversion_variance - TEST_UNEXPECTED_VARIANCE;
-        expected_variance_high = conversion_variance + TEST_UNEXPECTED_VARIANCE;
-    }
-    print_str("Expected error variance due to truncation in tick conversion: ");
-    print_u32_dec(conversion_variance);
-    print("\n", 1);
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");
@@ -709,6 +773,8 @@ int main(void)
         print_str(" intializing timer under test\n");
         return res;
     }
+
+    set_limits();
 
     calibrate_spin_max();
     estimate_cpu_overhead();

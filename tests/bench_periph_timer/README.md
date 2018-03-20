@@ -51,7 +51,19 @@ was stopped before setting a timer target. The timer should set the new target,
 but not begin counting towards the target until timer_start is called. This is
 covered by this application under the "stopped" category of test inputs.
 
-## Result presentation
+### Estimating benchmark CPU overhead
+
+An estimation of the overhead resulting from the CPU processing delays inside
+the benchmarking code is performed during benchmark initialization. The
+estimation algorithm attempts to perform the exact same actions that the real
+benchmark will perform, but without setting any timers. The measured delay is
+assumed to originate in the benchmark code and will be subtracted when
+computing the difference between expected and actual values. A warning is
+printed when the variance of the estimated CPU overhead is too high, this can
+be a sign that some other process is running on the CPU and disrupting the
+estimation, or a sign of serious problems inside the timer_read function.
+
+## Results
 
 When the test has run for a certain amount of time, the current results will be
 presented as a table on stdout. To assist with finding the source of any
@@ -60,6 +72,70 @@ discrepancies, the results are split according to three parameters:
  - Function used: timer_set, timer_set_absolute
  - Rescheduled: yes/no
  - Stopped: yes/no
+
+### Interpreting timer_set_xxx statistics
+
+The first part of the results compares the reference time elapsed against the
+expected time. A negative value means that the timer alarm is triggered too
+soon, compared to the expected time. A positive value means that the timer
+alarm is triggered late, compared to the expected time.
+
+#### Expected variance
+
+The variance of the results should generally be as small as possible, except
+for the case where the reference timer is running at a higher frequency than
+the timer under test. There will always be a truncation error when setting a
+timer target because of the discrete timer counts that can be set. The
+benchmark will compute limits for the expected variance and show a message if
+the variance is less than or greater than the expected variance.
+
+##### Variance too low
+
+A variance lower than expected indicates that there is a phase correlation
+between the reference timer and the timer under test. This can only be
+explained by a software bug or a hardware failure. The primary suspect will be
+the reference timer.
+
+##### Variance too high
+
+A variance greater than expected indicates that there is some extra randomness
+in the timeout length, which can be caused by other processes interfering with
+the test, a software bug in the timer under test, or hardware failure.
+
+##### Mathematical explanation
+
+Let `X0` be the exact time that a timer_set call occurs, `X0` is a real number.
+Let `T` be the desired timeout, `T` is a positive integer because the timer can
+only count integer number of ticks. Let `x0 = floor(X0)` be the count that the
+timer is currently on when the timer is set, `x0` is an integer. If `X0` is
+uniformly random, then the truncation error `X0' = (X0 - x0)` will be a sample
+from a continuous uniform distribution in the interval `[0,1)` ticks. The timer
+target, `x1`, in the timer under test can be expressed as `x1 = x0 + T`. Let
+`k` be a real number that satisfies `Y = kx`, where `x` is an interval in the
+unit used by the timer under test, and `Y` is an interval in the unit used by
+the reference timer, `Y` is a real number. The time measured by the reference
+timer can be expressed as
+`Y = k(x1 - X0) = k(x0 + T - X0) = k(X0 - X0' + T - X0) = k(T - X0')`.
+`Y` will be a sample from a uniform random distribution in the interval
+`[kT, k(T + 1)]`. The variance of `Y` is defined as
+`Var(Y) = (k(T + 1) - kT)^2 / 12`.
+
+### Interpreting timer_read statistics
+
+A separate table is displayed for statistics on timer_read. This table compares
+the expected timer under test time after a timer has triggered, against the
+actual reported value from `timer_read(TIM_TEST_DEV)`. A positive value means
+that the TUT time has passed the timer target time. A negative value means
+that, according to the timer under test, the alarm target time has not yet been
+reached, even though the timer callback has been executed.
+
+### A note on BOARD=native
+
+When running on native, the application will be running as a normal process in
+a multi process system which means that most results will have a much greater
+variance than expected and the resulting differences will also be much larger
+than on a bare metal system. Be careful when drawing conclusions on results
+from native.
 
 ## Configuration
 
@@ -225,8 +301,14 @@ timer ticks have passed since the last printout. Default: `((TIM_REF_FREQ) * 30)
 
 #### TEST_MIN
 
-Minimum timer offset tested, in timer under test ticks. Default: `1` for
-timers < 1 MHz, `2` otherwise
+Minimum timer offset tested for `timer_set_absolute`, in timer under test
+ticks. Default: `1` for timers < 1 MHz, `16` otherwise, to prevent setting a
+timer target in the past
+
+#### TEST_MIN_REL
+
+Minimum timer offset tested for `timer_set`, in timer under test ticks.
+Default: `0`
 
 #### TEST_MAX
 
