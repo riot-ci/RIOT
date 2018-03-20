@@ -12,11 +12,11 @@ import scapy.all as scapy
 import sys
 import pexpect
 import queue
-import random
 import threading
 
 link_layer_addr = None
 l2_addr = None
+
 
 class MockServer(threading.Thread):
     def __init__(self, exc_queue, ll_lock, timeout, *args, **kwargs):
@@ -47,9 +47,9 @@ class MockServer(threading.Thread):
                 # check DHCPv6 type and MUST options
                 for check_type in ["DHCPv6 Solicit Message",
                                    "DHCP6 Client Identifier Option",
-                                   # For RIOT other DUIDs do not make much sense
-                                   # so it is safe to assume this DUID will
-                                   # stick
+                                   # For RIOT other DUIDs do not make much
+                                   # sense so it is safe to assume this DUID
+                                   # will stick
                                    "DUID - Based on Link-layer Address",
                                    "DHCP6 Elapsed Time Option",
                                    "DHCP6 Option Request Option"
@@ -59,16 +59,15 @@ class MockServer(threading.Thread):
                 assert False, "Received packet contained no %s" % check_type
             # check DUID correctness
             assert p["DUID - Based on Link-layer Address"].lladdr == l2_addr, \
-                    "DUID error: %s != %s" % (
-                            p["DUID - Based on Link-layer Address"].lladdr,
-                            l2_addr
-                        )
+                "DUID error: %s != %s" % (
+                    p["DUID - Based on Link-layer Address"].lladdr,
+                    l2_addr)
             # client is required to request SOL_MAX_RT option (82) from server
             assert 82 in p["DHCP6 Option Request Option"].reqopts
             # Try to crash client
-            scapy.sendp(scapy.Ether(dst=p["Ethernet"].src) / \
-                        scapy.IPv6(dst=p["IPv6"].src) / \
-                        scapy.UDP(dport=p["UDP"].sport, sport=p["UDP"].dport) / \
+            scapy.sendp(scapy.Ether(dst=p["Ethernet"].src) /
+                        scapy.IPv6(dst=p["IPv6"].src) /
+                        scapy.UDP(dport=p["UDP"].sport, sport=p["UDP"].dport) /
                         scapy.fuzz(
                                 scapy.DHCP6(
                                         trid=p["DHCPv6 Solicit Message"].trid
@@ -82,6 +81,7 @@ class MockServer(threading.Thread):
 
         except AssertionError as exc:
             self.exc_queue.put(exc)
+
 
 def testfunc(child):
     global l2_addr, link_layer_addr
@@ -97,6 +97,7 @@ def testfunc(child):
         pass
     else:
         assert False, "Node crashed"
+
 
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner'))
