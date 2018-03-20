@@ -277,7 +277,9 @@ static void _set_tid(uint8_t *tgt)
 
 static inline bool _is_tid(dhcpv6_msg_t *msg)
 {
-    uint32_t tid = (msg->tid[0] << 16) | (msg->tid[1] << 8) | (msg->tid[2]);
+    uint32_t tid = (((uint32_t)msg->tid[0]) << 16) |
+                   (((uint32_t)msg->tid[1]) << 8) |
+                   (msg->tid[2]);
 
     return (transaction_id == (tid));
 }
