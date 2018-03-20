@@ -54,15 +54,15 @@ extern "C" {
 #define DHCPV6_CLIENT_PFX_LEASE_MAX (1U)    /**< maximum number of prefix leases to store */
 #endif
 
-#if defined(MODULE_DHCPV6_CLIENT_AUTO_INIT) || defined(DOXYGEN)
+#if defined(MODULE_AUTO_INIT_DHCPV6_CLIENT) || defined(DOXYGEN)
 /**
  * @brief   Auto-initializes the client in its own thread
  *
- * @note    Only available with (and called by) the `dhcpv6_client_auto_init`
+ * @note    Only available with (and called by) the `auto_init_dhcpv6_client`
  *          module.
  */
 void dhcpv6_client_auto_init(void);
-#endif /* MODULE_DHCPV6_CLIENT_AUTO_INIT */
+#endif /* MODULE_AUTO_INIT_DHCPV6_CLIENT */
 
 /**
  * @brief   Initializes the client

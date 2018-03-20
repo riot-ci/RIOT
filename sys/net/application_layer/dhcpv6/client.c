@@ -100,7 +100,7 @@ static event_t request = { .handler = _request };
 static event_t renew = { .handler = _renew };
 static event_t rebind = { .handler = _rebind };
 
-#ifdef MODULE_DHCPV6_CLIENT_AUTO_INIT
+#ifdef MODULE_AUTO_INIT_DHCPV6_CLIENT
 static char _thread_stack[DHCPV6_CLIENT_STACK_SIZE];
 static void *_thread(void *args);
 static kernel_pid_t _thread_pid;
@@ -126,7 +126,7 @@ static void *_thread(void *args)
     event_loop(&event_queue);   /* never returns */
     return NULL;
 }
-#endif /* MODULE_DHCPV6_CLIENT_AUTO_INIT */
+#endif /* MODULE_AUTO_INIT_DHCPV6_CLIENT */
 
 void dhcpv6_client_init(event_queue_t *eq, uint16_t netif)
 {

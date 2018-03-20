@@ -1,3 +1,4 @@
+PSEUDOMODULES += auto_init_dhcpv6_client
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
