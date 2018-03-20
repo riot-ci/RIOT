@@ -6,6 +6,9 @@ BOARD_INSUFFICIENT_MEMORY := chronos telosb nucleo32-f042 nucleo32-f031 \
                              nucleo-f030 nucleo-l053 nucleo32-l031 \
                              stm32f0discovery z1
 
+# The following boards do not have an available UART
+BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker ruuvitag thingy52
+
 USEMODULE += dhcpv6_client
 USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_ipv6_default
