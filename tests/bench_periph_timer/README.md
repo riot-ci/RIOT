@@ -320,17 +320,18 @@ The CPU busy wait loop will be calibrated during application start up so that
 the maximum random spin length is approximately equal to this many timer under
 test ticks. Default: `16`
 
-#### TEST_UNEXPECTED_VARIANCE
+#### TEST_UNEXPECTED_STDDEV
 
-Mark the output row if the computed variance is greater than this value. This
-value will be automatically recomputed to compensate for the variance resulting
-from the truncation in the tick conversion if the reference timer is running at
-a higher frequency than the timer under test. Default: `10`
+Mark the output row if the computed variance implies a standard deviation which
+is greater than this value. This value will be automatically recomputed to
+compensate for the variance resulting from the truncation in the tick
+conversion if the reference timer is running at a higher frequency than the
+timer under test. Default: `4`
 
 #### TEST_UNEXPECTED_MEAN
 
-Mark the output row if the computed mean absolute value is greater than this
+Mark the output row if the computed mean absolute difference is greater than this
 number of timer under test ticks. This value will be automatically recomputed
 to compensate for the error resulting from the truncation in the tick
 conversion if the reference timer is running at a higher frequency than the
-timer under test. Default: `10`
+timer under test. Default: `2`

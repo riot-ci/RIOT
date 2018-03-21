@@ -167,8 +167,8 @@
 
 /* If variance or mean exceeds these values the row will be marked with a "SIC!"
  * in the table output */
-#ifndef TEST_UNEXPECTED_VARIANCE
-#define TEST_UNEXPECTED_VARIANCE 10
+#ifndef TEST_UNEXPECTED_STDDEV
+#define TEST_UNEXPECTED_STDDEV 4
 #endif
 #ifndef TEST_UNEXPECTED_MEAN
 #define TEST_UNEXPECTED_MEAN 10
@@ -260,8 +260,8 @@ static matstat_state_t read_states[TEST_VARIANT_NUMOF];
 static void cb(void *arg, int chan)
 {
     (void)chan;
-    unsigned int now_ref = timer_read(TIM_REF_DEV);
     unsigned int now_tut = timer_read(TIM_TEST_DEV);
+    unsigned int now_ref = timer_read(TIM_REF_DEV);
     if (arg == NULL) {
         print_str("cb: Warning! arg = NULL\n");
         return;
@@ -624,8 +624,8 @@ static uint32_t run_test(test_ctx_t *ctx, uint32_t num)
         timer_stop(TIM_TEST_DEV);
         spin_random_delay();
     }
-    ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
     ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
+    ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
     if (variant & TEST_ABSOLUTE) {
         timer_set_absolute(TIM_TEST_DEV, TIM_TEST_CHAN, ctx->target_tut);
     }
@@ -717,32 +717,35 @@ static void estimate_cpu_overhead(void)
 
 static void set_limits(void)
 {
-    target_limits.expected_mean_low = -TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
-    target_limits.expected_mean_high = TIM_TEST_TO_REF(TEST_UNEXPECTED_MEAN);
+    target_limits.expected_mean_low = -(TEST_UNEXPECTED_MEAN);
+    target_limits.expected_mean_high = (TEST_UNEXPECTED_MEAN);
     target_limits.expected_variance_low = 0;
-    target_limits.expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+    target_limits.expected_variance_high = (TEST_UNEXPECTED_STDDEV) * (TEST_UNEXPECTED_STDDEV);
 
     read_limits.expected_mean_low = -(TEST_UNEXPECTED_MEAN);
     read_limits.expected_mean_high = TEST_UNEXPECTED_MEAN;
     read_limits.expected_variance_low = 0;
-    read_limits.expected_variance_high = TEST_UNEXPECTED_VARIANCE;
+    read_limits.expected_variance_high = (TEST_UNEXPECTED_STDDEV) * (TEST_UNEXPECTED_STDDEV);
 
     if (TIM_TEST_FREQ < TIM_REF_FREQ) {
         /* The quantization errors should be uniformly distributed within +/- 0.5
          * test timer ticks of the reference time */
         /* The formula for the variance of a rectangle distribution on [a, b] is
          * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
-         * Using (b - a)^2 == (b - a) * ((b + 1) - (a + 1)) gives a smaller
-         * truncation error when using integer operations for converting the ticks */
-        conversion_variance = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) *
-            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 12;
+         * Using (b - a)^2 / 12 == (10b - 10a) * ((10b + 1) - (10a + 1)) / 1200
+         * gives a smaller truncation error when using integer operations for
+         * converting the ticks */
+        conversion_variance = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1))) / 1200;
+        target_limits.expected_variance_low = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) - 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) - 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
+        target_limits.expected_variance_high = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) + 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) + 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
         /* The limits of the mean should account for the conversion error as well */
-        int32_t mean_error = ((TIM_TEST_TO_REF(1) - TIM_TEST_TO_REF(0)) +
-            (TIM_TEST_TO_REF(2) - TIM_TEST_TO_REF(1))) / 2;
+        /* rounded towards positive infinity */
+        int32_t mean_error = (TIM_TEST_TO_REF(128) - TIM_TEST_TO_REF(0) + 127) / 128;
         target_limits.expected_mean_low -= mean_error;
         target_limits.expected_mean_high += mean_error;
-        target_limits.expected_variance_low = conversion_variance - TEST_UNEXPECTED_VARIANCE;
-        target_limits.expected_variance_high = conversion_variance + TEST_UNEXPECTED_VARIANCE;
     }
     print_str("Expected error variance due to truncation in tick conversion: ");
     print_u32_dec(conversion_variance);
