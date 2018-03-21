@@ -4,6 +4,8 @@ BOARD_INSUFFICIENT_MEMORY := chronos
 
 USEMODULE += xtimer
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

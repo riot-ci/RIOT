@@ -7,4 +7,6 @@ USEMODULE += event_timeout
 test:
 	tests/01-run.py
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include

@@ -16,6 +16,8 @@ USEMODULE += cpp11-compat
 USEMODULE += xtimer
 USEMODULE += timex
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

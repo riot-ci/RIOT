@@ -15,6 +15,8 @@ ifneq (,$(filter native,$(BOARD)))
   export LINKFLAGS += -lm
 endif
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

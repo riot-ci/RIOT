@@ -3,6 +3,8 @@ include ../Makefile.tests_common
 USEMODULE += core_thread_flags
 USEMODULE += xtimer
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

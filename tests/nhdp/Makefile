@@ -10,6 +10,8 @@ USEMODULE += gnrc_ipv6
 USEMODULE += gnrc_sock_udp
 USEMODULE += nhdp
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

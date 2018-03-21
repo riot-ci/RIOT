@@ -3,6 +3,8 @@ include ../Makefile.tests_common
 USEMODULE += od
 # USEMODULE += od_string
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

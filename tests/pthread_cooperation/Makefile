@@ -10,6 +10,8 @@ BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
 USEMODULE += posix
 USEMODULE += pthread
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

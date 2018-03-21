@@ -13,6 +13,8 @@ USEMODULE += pthread
 USEMODULE += random
 USEMODULE += xtimer
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
