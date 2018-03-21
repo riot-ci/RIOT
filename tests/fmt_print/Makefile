@@ -2,6 +2,8 @@ include ../Makefile.tests_common
 
 USEMODULE += fmt
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
