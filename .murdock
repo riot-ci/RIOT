@@ -1,5 +1,6 @@
 #!/bin/sh
 
+export TEST_BOARDS_AVAILABLE=${TEST_BOARDS_AVAILABLE:-"samr21-xpro"}
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
@@ -22,6 +23,18 @@ check_label() {
 error() {
     echo "$@"
     exit 1
+}
+
+# true if word "$1" is in list of words "$2", false otherwise
+# uses grep -w, thus only alphanum and "_" count as word bounderies
+# (word "def" matches "abc-def")
+is_in_list() {
+    [ $# -ne 2 ] && return 1
+
+    local needle="$1"
+    local haystack="$2"
+
+    echo "$haystack" | grep -q -w "$needle"
 }
 
 _greplist() {
@@ -115,10 +128,13 @@ compile() {
         if [ $do_test -eq 1 ]; then
             if [ "$board" = "native" ]; then
                 BOARD=$board make -C${appdir} test
+                RES=$?
             else
-                BOARD=$board make -C${appdir} test-murdock
+                if is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
+                    BOARD=$board make -C${appdir} test-murdock
+                    RES=$?
+                fi
             fi
-            RES=$?
         fi
     fi
 
