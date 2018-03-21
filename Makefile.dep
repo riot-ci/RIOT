@@ -34,9 +34,6 @@ endif
 
 ifneq (,$(filter dhcpv6_client,$(USEMODULE)))
   USEMODULE += event
-  # TODO: remove GNRC dependencies
-  USEMODULE += gnrc_netif
-  USEMODULE += gnrc_sock_udp
   USEMODULE += random
   USEMODULE += xtimer
 endif
