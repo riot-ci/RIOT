@@ -162,7 +162,7 @@ test_job() {
     dwqc \
         ${DWQ_JOBID:+--subjob} \
         --file $flashfile:$appdir/bin/${board}/$(basename $flashfile) \
-        --queue $board \
+        --queue ${TEST_QUEUE:-$board} \
         --maxfail 1 \
         "./.murdock run_test $appdir $board"
 }
