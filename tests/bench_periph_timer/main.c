@@ -271,15 +271,26 @@ static void cb(void *arg, int chan)
         print_str("cb: Warning! target_state = NULL\n");
         return;
     }
-
     /* Update running stats */
-    int32_t diff = now_ref - ctx->target_ref - overhead_target;
-    matstat_add(ctx->target_state, diff);
+    /* When setting a timer with a timeout of X ticks, we expect the
+     * duration between the set and the callback, dT, to be at least
+     * X * time_per_tick.
+     * In order to ensure that dT <= X * time_per_tick, the timer read value
+     * will actually have incremented (X + 1) times during that period,
+     * because the set can occur asynchrously anywhere between timer
+     * increments. Therefore, in this test, we consider (X + 1) to be the
+     * expected timer_read value at the point the callback is called.
+     */
 
+    /* Check that reference timer did not overflow during the test */
+    if ((now_ref + 0x4000u) >= ctx->target_ref) {
+        int32_t diff = now_ref - ctx->target_ref - 1 - overhead_target;
+        matstat_add(ctx->target_state, diff);
+    }
     /* Update timer_read statistics only when timer_read has not overflowed
      * since the timer was set */
-    if (now_tut >= ctx->target_tut) {
-        diff = now_tut - ctx->target_tut - overhead_read;
+    if ((now_tut + 0x4000u) >= ctx->target_tut) {
+        int32_t diff = now_tut - ctx->target_tut - 1 - overhead_read;
         matstat_add(ctx->read_state, diff);
     }
 
@@ -634,12 +645,19 @@ static uint32_t run_test(test_ctx_t *ctx, uint32_t num)
 
 static int test_timer(void)
 {
-    uint32_t time_begin = timer_read(TIM_REF_DEV);
+    uint32_t time_last = timer_read(TIM_REF_DEV);
+    uint32_t time_elapsed = 0;
     do {
         uint32_t num = random_uint32();
 
         run_test(&test_context, num);
-    } while((timer_read(TIM_REF_DEV) - time_begin) < TEST_PRINT_INTERVAL_TICKS);
+        uint32_t now = timer_read(TIM_REF_DEV);
+        if (now >= time_last) {
+            /* Account for reference timer possibly overflowing before 30 seconds have passed */
+            time_elapsed += now - time_last;
+        }
+        time_last = now;
+    } while(time_elapsed < TEST_PRINT_INTERVAL_TICKS);
 
     print_results();
 
@@ -663,8 +681,8 @@ static void estimate_cpu_overhead(void)
     for (unsigned int k = 0; k < ESTIMATE_CPU_ITERATIONS; ++k) {
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
         spin_random_delay();
-        ctx->target_tut = timer_read(TIM_TEST_DEV) + interval;
-        ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref;
+        ctx->target_tut = timer_read(TIM_TEST_DEV) + interval - 1;
+        ctx->target_ref = timer_read(TIM_REF_DEV) + interval_ref - 1;
         /* call yield to simulate a context switch to isr and back */
         thread_yield_higher();
         cb(ctx, TIM_TEST_CHAN);
