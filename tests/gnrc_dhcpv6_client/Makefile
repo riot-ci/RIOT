@@ -21,8 +21,8 @@ else
   ETHOS_BAUDRATE ?= 115200
   FEATURES_REQUIRED += periph_uart
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE) -DUSE_ETHOS_FOR_STDIO
-  TERMPROG ?= sudo sh $(RIOTBASE)/dist/tools/ethos/start_network.sh
-  TERMFLAGS ?= $(PORT) $(TAP) $(IPV6_PREFIX)
+  TERMPROG ?= sudo sh $(RIOTBASE)/dist/tools/ethos/ethos
+  TERMFLAGS ?= $(IFACE) $(PORT) $(ETHOS_BAUDRATE)
   TERMDEPS += ethos
 endif
 USEMODULE += auto_init_dhcpv6_client
