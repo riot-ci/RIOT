@@ -28,33 +28,32 @@
 #include "periph/pwm.h"
 #include "vectors_cortexm.h"
 
-#define ENABLE_DEBUG                (1)
+#define ENABLE_DEBUG        (0)
 #include "debug.h"
-#define DEBUG_ASSERT_VERBOSE        (1U)
 
-#define NRF51_PWM_PRESCALER_MIN     (0U)
-#define NRF51_PWM_PRESCALER_MAX     (10U)
-#define NRF51_PWM_PPI_CHANNELS      (((1U) << PWM_PPI_A) | ((1U) << PWM_PPI_B))
-#ifndef NRF51_PWM_PERCENT_VAL
-    #define NRF51_PWM_PERCENT_VAL   (1U)
+#define PS_MAX              (9U)
+#define PWM_PPI_CHANNELS    (((1U) << PWM_PPI_A) | ((1U) << PWM_PPI_B))
+#ifndef PERCENT_VAL
+    #define PERCENT_VAL     (1U)
 #endif
 
-inline uint32_t apply_prescaler(uint8_t prescaler)
-{
-    return 16000000 >> prescaler;
-}
+static const uint32_t divtable[11] = {
+    (CLOCK_CORELOCK >> 0),
+    (CLOCK_CORECLOCK >> 1),
+    (CLOCK_CORECLOCK >> 2),
+    (CLOCK_CORECLOCK >> 3),
+    (CLOCK_CORECLOCK >> 4),
+    (CLOCK_CORECLOCK >> 5),
+    (CLOCK_CORECLOCK >> 6),
+    (CLOCK_CORECLOCK >> 7),
+    (CLOCK_CORECLOCK >> 8),
+    (CLOCK_CORECLOCK >> 9),
+    (CLOCK_CORECLOCK >> 10),
+};
 
-/*
- * compare requested frequency with available frequency
- * has a margin of PERCENT_VAL
- */
-bool is_close_to(uint32_t f_requ, uint32_t f_avail)
+static uint32_t apply_prescaler(uint8_t prescaler)
 {
-    int percent = (f_avail / 100) * NRF51_PWM_PERCENT_VAL;
-    if (f_requ > (f_avail - percent) && f_requ < (f_avail + percent)) {
-        return true;
-    }
-    return false;
+    return CLOCK_CORECLOCK >> prescaler;
 }
 
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
@@ -62,22 +61,25 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     assert (dev == 0 && ((mode == PWM_LEFT) || (mode == PWM_RIGHT)));
 
     /* reset and configure the timer */
+    PWM_TIMER->POWER = 1;
     PWM_TIMER->TASKS_STOP = 1;
     PWM_TIMER->BITMODE = TIMER_BITMODE_BITMODE_32Bit;
     PWM_TIMER->MODE = TIMER_MODE_MODE_Timer;
     PWM_TIMER->TASKS_CLEAR = 1;
 
     /* calculate and set prescaler */
-    uint32_t timer_freq = freq * res;
-    for (uint32_t ps = NRF51_PWM_PRESCALER_MIN;
-         ps <= NRF51_PWM_PRESCALER_MAX;
+    uint32_t lower = (freq - (PERCENT_VAL * (freq / 100)));
+    uint32_t upper = (freq + (PERCENT_VAL * (freq / 100)));
+    for (uint32_t ps = 0;
+         ps <= (PS_MAX + 1);
          ps++) {
-        if (ps == NRF51_PWM_PRESCALER_MAX) {
+        if (ps == (PS_MAX + 1)) {
             DEBUG("[pwm] init error: resolution or frequency not supported\n");
             return 0;
         }
-        if (is_close_to(timer_freq, apply_prescaler(ps))){
-            PWM_TIMER->PRESCALER = (uint32_t)ps;
+        if((divtable[ps] < upper) && (divtable[ps] > lower)) {
+            PWM_TIMER->PRESCALER = ps;
+            freq = divtable[ps];
             break;
         }
     }
@@ -112,7 +114,7 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
         (uint32_t)(&NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH]);
 
     /* enable configured PPI Channels */
-    NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+    NRF_PPI->CHENSET = PWM_PPI_CHANNELS;
 
     /* shortcut to reset Counter after CC[1] event */
     PWM_TIMER->SHORTS = TIMER_SHORTS_COMPARE1_CLEAR_Msk;
@@ -155,17 +157,17 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
                 NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
             }
 
-            NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+            NRF_PPI->CHENCLR = PWM_PPI_CHANNELS;
             PWM_TIMER->CC[0] = 0;
         } else {
             if (PWM_TIMER->CC[0] == 0) {
                 NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
             }
             if (value >= PWM_TIMER->CC[1]) {
-                NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+                NRF_PPI->CHENCLR = PWM_PPI_CHANNELS;
                 PWM_TIMER->CC[0] = PWM_TIMER->CC[1];
             } else {
-                NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+                NRF_PPI->CHENSET = PWM_PPI_CHANNELS;
                 PWM_TIMER->CC[0] = value;
             }
         }
@@ -174,17 +176,17 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
             if (PWM_TIMER->CC[0] != PWM_TIMER->CC[1]) {
                 NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
             }
-            NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+            NRF_PPI->CHENCLR = PWM_PPI_CHANNELS;
             PWM_TIMER->CC[0] = PWM_TIMER->CC[1];
         } else {
             if (PWM_TIMER->CC[0] == PWM_TIMER->CC[1]) {
                 NRF_GPIOTE->TASKS_OUT[PWM_GPIOTE_CH] = 1;
             }
             if (value == 0) {
-                NRF_PPI->CHENCLR = NRF51_PWM_PPI_CHANNELS;
+                NRF_PPI->CHENCLR = PWM_PPI_CHANNELS;
                 PWM_TIMER->CC[0] = 0;
             } else {
-                NRF_PPI->CHENSET = NRF51_PWM_PPI_CHANNELS;
+                NRF_PPI->CHENSET = PWM_PPI_CHANNELS;
                 PWM_TIMER->CC[0] = PWM_TIMER->CC[1] - value;
             }
         }
@@ -207,18 +209,14 @@ void pwm_poweron(pwm_t dev)
 {
     assert(dev == 0);
 
-#if CPU_FAM_NRF51
     PWM_TIMER->POWER = 1;
     PWM_TIMER->TASKS_START = 1;
-#endif
 }
 
 void pwm_poweroff(pwm_t dev)
 {
     assert(dev == 0);
 
-#if CPU_FAM_NRF51
     PWM_TIMER->TASKS_STOP = 1;
     PWM_TIMER->POWER = 0;
-#endif
 }
