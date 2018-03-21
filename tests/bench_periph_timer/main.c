@@ -491,7 +491,7 @@ static void assign_state_ptr(test_ctx_t *ctx, unsigned int variant, uint32_t int
             ctx->target_state = &states[variant * TEST_LOG2NUM + log2num];
         }
         else {
-            ctx->target_state = &states[interval];
+            ctx->target_state = &states[variant * TEST_NUM + interval];
         }
     }
     else {
