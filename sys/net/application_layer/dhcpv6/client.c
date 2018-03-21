@@ -314,12 +314,15 @@ static inline uint32_t _sub_rt_us(uint32_t rt_prev_us, uint16_t mrt)
     return sub_rt_us;
 }
 
-#define OPT_LEN(opt)    (sizeof(dhcpv6_opt_t) + byteorder_ntohs((opt)->len))
-#define FOREACH_OPT(first, opt, len) \
-    for (opt = (dhcpv6_opt_t *)(first); \
-         len > 0; \
-         len -= OPT_LEN(opt), \
-         opt = (dhcpv6_opt_t *)(((uint8_t *)(opt)) + OPT_LEN(opt)))
+static inline size_t _opt_len(dhcpv6_opt_t *opt)
+{
+    return sizeof(dhcpv6_opt_t) + byteorder_ntohs(opt->len);
+}
+
+static inline dhcpv6_opt_t *_opt_next(dhcpv6_opt_t *opt)
+{
+    return (dhcpv6_opt_t *)(((uint8_t *)opt) + _opt_len(opt));
+}
 
 static bool _check_status_opt(dhcpv6_opt_status_t *status)
 {
@@ -367,7 +370,6 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     dhcpv6_opt_pref_t *pref = NULL;
     dhcpv6_opt_status_t *status = NULL;
     dhcpv6_opt_ia_pd_t *ia_pd = NULL;
-    dhcpv6_opt_t *opt = NULL;
     size_t orig_len = len;
     uint8_t pref_val = 0;
 
@@ -376,7 +378,8 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return -1;
     }
-    FOREACH_OPT(&adv[sizeof(dhcpv6_msg_t)], opt, len) {
+    for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return -1;
@@ -455,7 +458,6 @@ static void _schedule_t1_t2(void)
 static void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
-    dhcpv6_opt_t *opt = NULL;
 
     /* might not have been executed when not received in first retransmission
      * window => redo even if already done */
@@ -464,12 +466,12 @@ static void _parse_advertise(uint8_t *adv, size_t len)
     }
     DEBUG("DHCPv6 client: scheduling REQUEST\n");
     event_post(event_queue, &request);
-    FOREACH_OPT(&adv[sizeof(dhcpv6_msg_t)], opt, len) {
+    for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
                 for (unsigned i = 0; i < DHCPV6_CLIENT_PFX_LEASE_MAX; i++) {
                     dhcpv6_opt_ia_pd_t *ia_pd = (dhcpv6_opt_ia_pd_t *)opt;
-                    dhcpv6_opt_t *ia_pd_opt = NULL;
                     unsigned pd_t1, pd_t2;
                     uint32_t ia_id = byteorder_ntohl(ia_pd->ia_id);
                     size_t ia_pd_len = byteorder_ntohs(ia_pd->len);
@@ -479,7 +481,10 @@ static void _parse_advertise(uint8_t *adv, size_t len)
                         continue;
                     }
                     /* check for status */
-                    FOREACH_OPT(ia_pd + 1, ia_pd_opt, ia_pd_len) {
+                    for (dhcpv6_opt_t *ia_pd_opt = (dhcpv6_opt_t *)(ia_pd + 1);
+                         ia_pd_len > 0;
+                         ia_pd_len -= _opt_len(ia_pd_opt),
+                         ia_pd_opt = _opt_next(ia_pd_opt)) {
                         if (ia_pd_len > ia_pd_orig_len) {
                             DEBUG("DHCPv6 client: IA_PD options overflow option "
                                   "boundaries\n");
@@ -525,7 +530,6 @@ static bool _parse_reply(uint8_t *rep, size_t len)
     dhcpv6_opt_ia_pd_t *ia_pd = NULL;
     dhcpv6_opt_status_t *status = NULL;
     dhcpv6_opt_smr_t *smr = NULL;
-    dhcpv6_opt_t *opt = NULL;
     size_t orig_len = len;
 
     DEBUG("DHCPv6 client: received REPLY\n");
@@ -533,7 +537,8 @@ static bool _parse_reply(uint8_t *rep, size_t len)
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return false;
     }
-    FOREACH_OPT(&rep[sizeof(dhcpv6_msg_t)], opt, len) {
+    for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&rep[sizeof(dhcpv6_msg_t)]);
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return false;
@@ -573,14 +578,14 @@ static bool _parse_reply(uint8_t *rep, size_t len)
         return false;
     }
     len = orig_len;
-    FOREACH_OPT(&rep[sizeof(dhcpv6_msg_t)], opt, len) {
+    for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&rep[sizeof(dhcpv6_msg_t)]);
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
                 for (unsigned i = 0; i < DHCPV6_CLIENT_PFX_LEASE_MAX; i++) {
                     dhcpv6_opt_iapfx_t *iapfx = NULL;
                     pfx_lease_t *lease = &pfx_leases[i];
                     ia_pd = (dhcpv6_opt_ia_pd_t *)opt;
-                    dhcpv6_opt_t *ia_pd_opt = NULL;
                     unsigned pd_t1, pd_t2;
                     uint32_t ia_id = byteorder_ntohl(ia_pd->ia_id);
                     size_t ia_pd_len = byteorder_ntohs(ia_pd->len);
@@ -590,7 +595,10 @@ static bool _parse_reply(uint8_t *rep, size_t len)
                         continue;
                     }
                     /* check for status */
-                    FOREACH_OPT(ia_pd + 1, ia_pd_opt, ia_pd_len) {
+                    for (dhcpv6_opt_t *ia_pd_opt = (dhcpv6_opt_t *)(ia_pd + 1);
+                         ia_pd_len > 0;
+                         ia_pd_len -= _opt_len(ia_pd_opt),
+                         ia_pd_opt = _opt_next(ia_pd_opt)) {
                         if (ia_pd_len > ia_pd_orig_len) {
                             DEBUG("DHCPv6 client: IA_PD options overflow option "
                                   "boundaries\n");
