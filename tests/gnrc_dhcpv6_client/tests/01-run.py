@@ -32,7 +32,7 @@ class MockServer(threading.Thread):
 
             filter = "udp dst port %u" % DHCPV6_SERVER_PORT
             ps = scapy.sniff(iface=os.environ["IFACE"], filter=filter, count=1,
-                             timeout=timeout)
+                             timeout=self.timeout)
             assert len(ps) == 1, "No DHCPv6 packet sent by client"
             p = ps[0]
             # wait for link-layer address
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     exc_queue = queue.Queue()
     t = MockServer(exc_queue, ll_lock, timeout)
     t.start()
-    status = run(testfunc, timeout=5)
+    status = run(testfunc, timeout=timeout)
     t.join()
     try:
         exc = exc_queue.get(block=False)
