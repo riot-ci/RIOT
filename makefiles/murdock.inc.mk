@@ -23,7 +23,8 @@ test-murdock:
 link: $(BINDIR)/.test
 $(BINDIR)/.test: $(filter clean, $(MAKECMDGOALS))
 ifneq (,$(filter $(BOARD) all, $(TEST_WHITELIST)))
+	$(Q)mkdir -p $(BINDIR)
 	$(Q)touch $@
 else
-	$(Q)true
+	$(Q)rm -f $@
 endif
