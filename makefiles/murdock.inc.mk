@@ -19,6 +19,11 @@ test-murdock:
 		$(BOARD) \
 		$(FLASHFILE)
 
+# don't whitelist tests if there's no binary
+ifeq (1,$(RIOTNOLINK))
+  TEST_WHITELIST:=
+endif
+
 # create $(BINDIR)/.test file only if BOARD is in $(TEST_WHITELIST)
 link: $(BINDIR)/.test
 $(BINDIR)/.test: $(filter clean, $(MAKECMDGOALS))
