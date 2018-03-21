@@ -16,18 +16,12 @@
 #include <stdbool.h>
 
 #include "event.h"
-#include "log.h"
-#include "net/arp.h"
 #include "net/dhcpv6/client.h"
 #include "net/sock/udp.h"
 #include "random.h"
 #include "timex.h"
 #include "xtimer.h"
 #include "xtimer/implementation.h"
-
-#include "net/gnrc/ipv6/nib.h"
-#include "net/gnrc/netif.h"
-#include "net/gnrc/rpl.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -36,7 +30,6 @@
  * @brief   Representation of a generic lease
  */
 typedef struct {
-    clist_node_t list_node;
     union {
         uint32_t id;
         struct {
@@ -67,7 +60,6 @@ typedef struct {
     uint8_t duid_len;
 } server_t;
 
-static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 static uint8_t send_buf[DHCPV6_CLIENT_BUFLEN];
 static uint8_t recv_buf[DHCPV6_CLIENT_BUFLEN];
 static uint8_t best_adv[DHCPV6_CLIENT_BUFLEN];
@@ -88,7 +80,6 @@ static uint32_t transaction_start;
 static uint32_t transaction_id;
 static uint8_t duid_len = sizeof(dhcpv6_duid_l2_t);
 
-static void _generate_duid(void);
 static void _post_solicit_servers(void *args);
 static void _solicit_servers(event_t *event);
 static void _request(event_t *event);
@@ -140,16 +131,20 @@ void dhcpv6_client_start(void)
 {
     uint32_t delay = random_uint32_range(0, DHCPV6_SOL_MAX_DELAY * US_PER_SEC);
 
-    _generate_duid();
-    sock_udp_create(&sock, &local, NULL, 0);
-    timer.callback = _post_solicit_servers;
-    xtimer_set(&timer, delay);
+    duid_len = dhcpv6_client_get_duid_l2(local.netif,
+                                         (dhcpv6_duid_l2_t *)&duid);
+    if (duid_len > 0) {
+        sock_udp_create(&sock, &local, NULL, 0);
+        timer.callback = _post_solicit_servers;
+        xtimer_set(&timer, delay);
+    }
 }
 
-void dhcpv6_client_req_ia_pd(uint16_t netif, uint8_t pfx_len)
+void dhcpv6_client_req_ia_pd(unsigned netif, unsigned pfx_len)
 {
     pfx_lease_t *lease = NULL;
 
+    assert(pfx_len <= 128);
     for (unsigned i = 0; i < DHCPV6_CLIENT_PFX_LEASE_MAX; i++) {
         if (pfx_leases[i].parent.ia_id.id == 0) {
             lease = &pfx_leases[i];
@@ -157,58 +152,6 @@ void dhcpv6_client_req_ia_pd(uint16_t netif, uint8_t pfx_len)
             lease->parent.ia_id.info.type = DHCPV6_OPT_IA_PD;
             lease->pfx_len = pfx_len;
         }
-    }
-}
-
-/* TODO make GNRC-independent */
-static void _configure_prefix(pfx_lease_t *lease, uint32_t valid,
-                              uint32_t pref)
-{
-    gnrc_netif_t *netif = gnrc_netif_get_by_pid(lease->parent.ia_id.info.netif);
-    eui64_t iid;
-    ipv6_addr_t addr;
-
-    assert(netif != NULL);
-    DEBUG("DHCPv6 client: (re-)configure prefix %s/%d\n",
-          ipv6_addr_to_str(addr_str, &lease->pfx, sizeof(addr_str)),
-          lease->pfx_len);
-    if (gnrc_netapi_get(netif->pid, NETOPT_IPV6_IID, 0, &iid,
-                        sizeof(eui64_t)) >= 0) {
-        ipv6_addr_set_aiid(&addr, iid.uint8);
-    }
-    else {
-        LOG_WARNING("DHCPv6 client: cannot get IID of netif %u\n", netif->pid);
-        return;
-    }
-    ipv6_addr_init_prefix(&addr, &lease->pfx, lease->pfx_len);
-    if (gnrc_netif_ipv6_addr_add(netif, &addr, lease->pfx_len, 0) > 0) {
-        /* update lifetime */
-        if (valid < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
-            /* the valid lifetime is given in seconds, but the NIB's timers work
-             * in microseconds, so we have to scale down to the smallest
-             * possible value (UINT32_MAX - 1). */
-            valid = (valid > (UINT32_MAX / MS_PER_SEC)) ?
-                          (UINT32_MAX - 1) : valid * MS_PER_SEC;
-        }
-        if (pref < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
-            /* same treatment for pref */
-            pref = (pref > (UINT32_MAX / MS_PER_SEC)) ?
-                         (UINT32_MAX - 1) : pref * MS_PER_SEC;
-        }
-        gnrc_ipv6_nib_pl_set(netif->pid, &lease->pfx, lease->pfx_len,
-                             valid, pref);
-#if defined(MODULE_GNRC_IPV6_NIB) && GNRC_IPV6_NIB_CONF_6LBR && \
-        GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
-        gnrc_ipv6_nib_abr_add(&addr);
-#endif
-#ifdef MODULE_GNRC_RPL
-        gnrc_rpl_init(netif->pid);
-        gnrc_rpl_instance_t *inst = gnrc_rpl_instance_get(GNRC_RPL_DEFAULT_INSTANCE);
-        if (inst) {
-            gnrc_rpl_instance_remove(inst);
-        }
-        gnrc_rpl_root_init(GNRC_RPL_DEFAULT_INSTANCE, &addr, false, false);
-#endif
     }
 }
 
@@ -228,39 +171,6 @@ static void _post_rebind(void *args)
 {
     (void)args;
     event_post(event_queue, &rebind);
-}
-
-static void _generate_duid(void)
-{
-    gnrc_netif_t *netif;
-    dhcpv6_duid_l2_t *d = (dhcpv6_duid_l2_t *)duid;
-    uint8_t *l2addr = ((uint8_t *)(duid)) + sizeof(dhcpv6_duid_l2_t);
-    int res;
-
-    d->type = byteorder_htons(DHCPV6_DUID_TYPE_L2);
-    /* TODO make GNRC-independent */
-    if (local.netif == SOCK_ADDR_ANY_NETIF) {
-        netif = gnrc_netif_iter(NULL);
-    }
-    else {
-        netif = gnrc_netif_get_by_pid(local.netif);
-    }
-    assert(netif != NULL);
-    if ((res = gnrc_netapi_get(netif->pid, NETOPT_ADDRESS_LONG, 0,
-                               l2addr, GNRC_NETIF_L2ADDR_MAXLEN)) > 0) {
-        d->l2type = byteorder_htons(ARP_HWTYPE_EUI64);
-    }
-    else if ((netif->device_type == NETDEV_TYPE_ETHERNET) &&
-             ((res = gnrc_netapi_get(netif->pid, NETOPT_ADDRESS, 0,
-                                     l2addr, GNRC_NETIF_L2ADDR_MAXLEN)) > 0)) {
-        d->l2type = byteorder_htons(ARP_HWTYPE_ETHERNET);
-    }
-    else {
-        LOG_ERROR("DHCPv6 client: Link-layer type of interface %u not supported "
-                  "for DUID creation", netif->pid);
-        return;
-    }
-    duid_len = (uint8_t)res + sizeof(dhcpv6_duid_l2_t);
 }
 
 static void _generate_tid(void)
@@ -728,7 +638,10 @@ static bool _parse_reply(uint8_t *rep, size_t len)
                                               &iapfx->pfx,
                                               iapfx->pfx_len);
                         if (iapfx->pfx_len > 0) {
-                            _configure_prefix(lease, valid, pref);
+                            dhcpv6_client_conf_prefix(
+                                    lease->parent.ia_id.info.netif, &lease->pfx,
+                                    lease->pfx_len, valid, pref
+                                );
                         }
                         return true;
                     }
@@ -818,7 +731,7 @@ static void _request_renew_rebind(uint8_t type)
     uint16_t irt;
     uint16_t mrt;
     uint16_t mrc = 0;
-    uint16_t mrd = 0;
+    uint32_t mrd = 0;
 
     switch (type) {
         case DHCPV6_REQUEST:
@@ -836,30 +749,20 @@ static void _request_renew_rebind(uint8_t type)
             mrt = DHCPV6_REB_MAX_RT;
             /* calculate MRD from prefix leases */
             for (unsigned i = 0; i < DHCPV6_CLIENT_PFX_LEASE_MAX; i++) {
-                /* TODO make GNRC independent */
-                gnrc_ipv6_nib_pl_t ple;
-                void *state = NULL;
-                pfx_lease_t *lease = &pfx_leases[i];
-                bool leases_expired = true;
-
-                while (gnrc_ipv6_nib_pl_iter(lease->parent.ia_id.info.netif,
-                                             &state, &ple)) {
-                    if ((ple.pfx_len == lease->pfx_len) &&
-                        ((ple.valid_until / MS_PER_SEC) > mrd) &&
-                        (ipv6_addr_match_prefix(&ple.pfx,
-                                                &lease->pfx) >= ple.pfx_len)) {
-                        mrd = ple.valid_until / MS_PER_SEC;
-                        if (mrd > 0) {
-                            leases_expired = false;
-                        }
-                    }
+                const pfx_lease_t *lease = &pfx_leases[i];
+                uint32_t valid_until = dhcpv6_client_prefix_valid_until(
+                        lease->parent.ia_id.info.netif,
+                        &lease->pfx, lease->pfx_len
+                    );
+                if (valid_until > mrd) {
+                    mrd = valid_until;
                 }
-                if (leases_expired) {
-                    /* all leases already expired, don't try to rebind and
-                     * solicit immediately */
-                    _post_solicit_servers(NULL);
-                    return;
-                }
+            }
+            if (mrd > 0) {
+                /* all leases already expired, don't try to rebind and
+                 * solicit immediately */
+                _post_solicit_servers(NULL);
+                return;
             }
             break;
         }
