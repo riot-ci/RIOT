@@ -118,21 +118,23 @@ compile() {
     [ ! -d "$appdir" ] && error "$0: compile: error: application directory \"$appdir\" doesn't exist"
     [ ! -d "boards/$board" ] && error "$0: compile: error: board directory \"boards/$board\" doesn't exist"
 
+    # compile
     CCACHE_BASEDIR="$(pwd)" BOARD=$board RIOT_CI_BUILD=1 \
         make -C${appdir} clean all -j${JOBS:-4}
     RES=$?
 
-    if [ $RES -eq 0 -a $RUN_TESTS -eq 1 ]; then
-        local do_test=0
-        test -f ${BINDIR}/.test && do_test=1
-        if [ $do_test -eq 1 ]; then
-            if [ "$board" = "native" ]; then
-                BOARD=$board make -C${appdir} test
-                RES=$?
-            else
-                if is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
-                    BOARD=$board make -C${appdir} test-murdock
+    # run tests
+    if [ $RES -eq 0 ]; then
+        if [ $RUN_TESTS -eq 1 -o "$board" = "native" ]; then
+            if [ -f "${BINDIR}/.test" ]; then
+                if [ "$board" = "native" ]; then
+                    BOARD=$board make -C${appdir} test
                     RES=$?
+                else
+                    if is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
+                        BOARD=$board make -C${appdir} test-murdock
+                        RES=$?
+                    fi
                 fi
             fi
         fi
