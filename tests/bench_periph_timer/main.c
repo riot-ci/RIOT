@@ -481,18 +481,17 @@ static void print_results(void)
  *
  * Depends on DETAILED_STATS, LOG2_STATS
  */
-static void assign_state_ptr(test_ctx_t *ctx, unsigned int num)
+static void assign_state_ptr(test_ctx_t *ctx, unsigned int variant, uint32_t interval)
 {
-    unsigned int variant = num / TEST_NUM;
     ctx->read_state = &read_states[variant];
     if (DETAILED_STATS) {
         if (LOG2_STATS) {
-            unsigned int log2num = bitarithm_msb(num % TEST_NUM);
+            unsigned int log2num = bitarithm_msb(interval);
 
             ctx->target_state = &states[variant * TEST_LOG2NUM + log2num];
         }
         else {
-            ctx->target_state = &states[num];
+            ctx->target_state = &states[interval];
         }
     }
     else {
@@ -541,12 +540,63 @@ static void calibrate_spin_max(void)
     print("\n", 1);
 }
 
-static uint32_t run_test(test_ctx_t *ctx, unsigned int num)
+static uint32_t derive_interval(uint32_t num)
 {
-    assign_state_ptr(ctx, num);
-    uint32_t interval = (num % TEST_NUM);
+    uint32_t interval;
+    if ((DETAILED_STATS) && (LOG2_STATS)) {
+        /* Use a logarithmic method to generate geometric variates in order to
+         * populate the result table evenly across all buckets */
+
+        /* Static exponent mask, picking the mask as tightly as possible reduces the
+         * probability of discarded values, which reduces the computing overhead
+         * between test iterations */
+
+        static uint32_t exp_mask = 0;
+        if (exp_mask == 0) {
+            /* non-constant initializer */
+            exp_mask = (2 << bitarithm_msb(TEST_LOG2NUM)) - 1;
+            print_str("exp_mask = ");
+            print_u32_hex(exp_mask);
+            print("\n", 1);
+            print_str("max interval = ");
+            print_u32_dec((2 << exp_mask) - 1);
+            print("\n", 1);
+        }
+
+        /* Pick an exponent based on the top bits of the number */
+        /* exponent will be a number in the interval [0, log2(TEST_NUM) + 1] */
+        unsigned int exponent = ((num >> (32 - 8)) & exp_mask);
+        if (exponent == 0) {
+            /* Special handling to avoid the situation where we never see a zero */
+            /* We could also have used an extra right shift in the else case,
+             * but the state grouping also groups 0 and 1 in the same bucket, which means that they are twice as likely  */
+            interval = bitarithm_bits_set(num) & 1;
+        }
+        else {
+            interval = (1 << exponent);
+            interval |= (num & (interval - 1));
+        }
+    }
+    else {
+        static const uint32_t mask = (1 << TEST_LOG2NUM) - 1;
+        interval = num & mask;
+    }
+    return interval;
+}
+
+static uint32_t run_test(test_ctx_t *ctx, uint32_t num)
+{
+    unsigned int variant = (num >> (32 - 3));
+    if (variant >= TEST_VARIANT_NUMOF) {
+        return 0;
+    }
+    uint32_t interval = derive_interval(num);
+    if (interval >= TEST_NUM) {
+        /* Discard values outside our test range */
+        return 0;
+    }
+    assign_state_ptr(ctx, variant, interval);
     spin_random_delay();
-    unsigned int variant = num / TEST_NUM;
     if (variant & TEST_ABSOLUTE) {
         interval += TEST_MIN;
     }
@@ -586,7 +636,8 @@ static int test_timer(void)
 {
     uint32_t time_begin = timer_read(TIM_REF_DEV);
     do {
-        unsigned int num = (unsigned int)random_uint32_range(0, TEST_NUM * TEST_VARIANT_NUMOF);
+        uint32_t num = random_uint32();
+
         run_test(&test_context, num);
     } while((timer_read(TIM_REF_DEV) - time_begin) < TEST_PRINT_INTERVAL_TICKS);
 
@@ -716,7 +767,7 @@ int main(void)
     print_u32_dec(TEST_MIN_REL);
     print("\n", 1);
     print_str("TEST_MAX_REL = ");
-    print_u32_dec(TEST_MIN_REL+ TEST_NUM);
+    print_u32_dec(TEST_MIN_REL + TEST_NUM - 1);
     print("\n", 1);
     print_str("TEST_NUM = ");
     print_u32_dec(TEST_NUM);
@@ -757,6 +808,19 @@ int main(void)
     print_u32_dec(TEST_PRINT_INTERVAL_TICKS);
     print("\n", 1);
 
+    if (TEST_MAX > 512) { /* Arbitrarily chosen limit */
+        print_str("Warning: Using long intervals for testing makes the result "
+                  "more likely to be affected by clock drift between the "
+                  "reference timer and the timer under test. This can be "
+                  "detected as a skewness in the mean values between different "
+                  "intervals in the results table.\n");
+        if (LOG2_STATS) {
+            print_str("The variance of the larger intervals may also be greater "
+                      "than expected if there is significant clock drift across "
+                      "the bucketed time frame\n");
+        }
+
+    }
     int res = timer_init(TIM_REF_DEV, TIM_REF_FREQ, cb, NULL);
     if (res < 0) {
         print_str("Error ");
