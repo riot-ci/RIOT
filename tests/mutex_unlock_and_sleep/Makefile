@@ -2,6 +2,8 @@ include ../Makefile.tests_common
 
 DISABLE_MODULE += auto_init
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

@@ -2,6 +2,8 @@ include ../Makefile.tests_common
 
 FEATURES_REQUIRED = periph_timer
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

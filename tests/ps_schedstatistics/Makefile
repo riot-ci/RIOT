@@ -11,6 +11,8 @@ USEMODULE += ps
 USEMODULE += schedstatistics
 USEMODULE += printf_float
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

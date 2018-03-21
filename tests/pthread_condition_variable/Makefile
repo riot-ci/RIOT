@@ -13,6 +13,8 @@ USEMODULE += xtimer
 
 CFLAGS += -DNATIVE_AUTO_EXIT
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

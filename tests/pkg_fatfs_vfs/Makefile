@@ -45,6 +45,8 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
                    stm32f3discovery stm32f4discovery telosb udoo waspmote-pro \
                    wsn430-v1_3b wsn430-v1_4 yunjia-nrf51822 z1 native
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 image:

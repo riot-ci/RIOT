@@ -4,6 +4,8 @@ BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
 
 USEMODULE += xtimer
 
+TEST_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
