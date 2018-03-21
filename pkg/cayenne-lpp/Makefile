@@ -6,6 +6,6 @@ PKG_LICENSE=LGPLv2.1
 .PHONY: all
 
 all: git-download
-	"$(MAKE)" -C $(PKG_BUILDDIR) -f $(CURDIR)/Makefile.${PKG_NAME}
+	"$(MAKE)" -C $(PKG_BUILDDIR) -f $(CURDIR)/Makefile.$(PKG_NAME)
 
 include $(RIOTBASE)/pkg/pkg.mk
