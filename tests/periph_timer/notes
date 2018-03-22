@@ -1,0 +1,14 @@
+arm-none-eabi-readelf  -s bin/mips-malta/periph_common/timer.o | grep timer_set
+    39: 00000000    64 FUNC    GLOBAL DEFAULT   15 timer_set
+    41: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND timer_set_absolute
+arm-none-eabi-readelf  -s bin/mips-malta/mips32r2_common_periph/timer.o | grep timer_set
+   182: 00000000   124 FUNC    GLOBAL DEFAULT   59 timer_set
+   185: 00000000   116 FUNC    GLOBAL DEFAULT   61 timer_set_absolute
+
+AFTER
+
+arm-none-eabi-readelf  -s bin/mips-malta/mips32r2_common_periph/timer.o | grep timer_set
+   182: 00000000   124 FUNC    GLOBAL DEFAULT   59 timer_set
+   185: 00000000   116 FUNC    GLOBAL DEFAULT   61 timer_set_absolute
+arm-none-eabi-readelf  -s bin/mips-malta/periph_common/timer.o | grep timer_set
+# nothing
