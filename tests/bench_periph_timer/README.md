@@ -165,7 +165,7 @@ on timer device 0 (default) running at 1 MHz (default) on Mulle:
 ### Default configuration
 
 reference timer: TIMER_DEV(0)
-timer under test: TIMER_DEV(1) if TIMER_NUMOF > 1, TIMER_DEV(0) otherwise.
+timer under test: TIMER_DEV(1)
 timer frequency: 1 MHz
 
 Define USE_REFERENCE=0 to compare a timer against itself. Be aware that this
