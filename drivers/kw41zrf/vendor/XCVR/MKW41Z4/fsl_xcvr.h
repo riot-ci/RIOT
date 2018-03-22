@@ -34,10 +34,13 @@
 
 #include "cpu.h"
 #include "fsl_xcvr_trim.h"
-
+#if defined(gMWS_UseCoexistence_d)
 #if gMWS_UseCoexistence_d
 #include "MWS.h"
 #endif /* gMWS_UseCoexistence_d */
+#else
+#define gMWS_UseCoexistence_d 0
+#endif /* defined(gMWS_UseCoexistence_d) */
 /*!
  * @addtogroup xcvr
  * @{
@@ -286,7 +289,7 @@
 /* GEN2 TSM defines */
 #define AUX_PLL_DELAY       (0)
 /* TSM bitfield shift and value definitions */
-#define TX_DIG_EN_ASSERT    (95)
+#define TX_DIG_EN_ASSERT    (95) /* Assertion time for TX_DIG_EN, used in mode specific settings */
 #define ZGBE_TX_DIG_EN_ASSERT (TX_DIG_EN_ASSERT - 1) /* Zigbee TX_DIG_EN must assert 1 tick sooner, see adjustment below based on data padding */
 /* EDIT THIS LINE TO CONTROL PA_RAMP! */
 #define PA_RAMP_TIME        (2) /* Only allowable values are [0, 2, 4, or 8] for PA RAMP times in Gen2.0 */
@@ -370,8 +373,8 @@
 
 /* BLE LL timing definitions */
 #define TX_ON_DELAY     (0x85) /* Adjusted TX_ON_DELAY to make turnaround time 150usec */
-#define RX_ON_DELAY     (29 + END_OF_RX_WU)
-#define RX_ON_DELAY_26MHZ     (29 + END_OF_RX_WU_26MHZ)
+#define RX_ON_DELAY     (29 + END_OF_RX_WU+4)
+#define RX_ON_DELAY_26MHZ     (29 + END_OF_RX_WU_26MHZ+4)
 #define TX_RX_ON_DELAY_VAL  (TX_ON_DELAY << 8 | RX_ON_DELAY)
 #define TX_RX_ON_DELAY_VAL_26MHZ  (TX_ON_DELAY << 8 | RX_ON_DELAY_26MHZ)
 #define TX_SYNTH_DELAY  (TX_ON_DELAY - END_OF_TX_WU - TX_SYNTH_DELAY_ADJ) /* Adjustment to TX_SYNTH_DELAY due to DATA_PADDING */
@@ -461,11 +464,12 @@ typedef enum  _FAD_LPPS_CTRL
     LPPS_ENABLED = 2
 } FAD_LPPS_CTRL_T;
 
-/*! @brief  XCVR XCVR Panic codes for indicating panic reason. */
+/*! @brief  XCVR Panic codes for indicating panic reason. */
 typedef enum _XCVR_PANIC_ID
 {
     WRONG_RADIO_ID_DETECTED = 1,
     CALIBRATION_INVALID = 2,
+    RADIO_INIT_FAILURE = 3,
 } XCVR_PANIC_ID_T;
 
 /*! @brief  Initialization or mode change selection for config routine. */
@@ -475,6 +479,7 @@ typedef enum _XCVR_INIT_MODE_CHG
     XCVR_FIRST_INIT = 1,
 } XCVR_INIT_MODE_CHG_T;
 
+/*! @brief  Coexistence arbitration priority settings. */
 typedef enum _XCVR_COEX_PRIORITY
 {
     XCVR_COEX_LOW_PRIO = 0,
@@ -581,7 +586,7 @@ typedef struct _xcvr_common_config
     uint32_t agc_ctrl_1_init_26mhz; /* NOTE: This will be OR'd with datarate specific init to form complete register initialization */
     uint32_t agc_ctrl_1_init_32mhz; /* NOTE: This will be OR'd with datarate specific init to form complete register initialization */
     uint32_t agc_ctrl_3_init;
-    /* Other agc config inits moved to modeXdatarate config table */
+    /* Other agc config inits are in the modeXdatarate config table */
     uint32_t agc_gain_tbl_03_00_init;
     uint32_t agc_gain_tbl_07_04_init;
     uint32_t agc_gain_tbl_11_08_init;
@@ -715,7 +720,7 @@ typedef struct _xcvr_mode_config
     uint32_t phy_pre_ref1_init;
     uint32_t phy_pre_ref2_init;
     uint32_t phy_cfg1_init;
-    uint32_t phy_el_cfg_init; /* Should leave EL_WIN_SIZE and EL_INTERVAL to the data_rate specific configuration */
+    uint32_t phy_el_cfg_init; /* EL_WIN_SIZE and EL_INTERVAL are in the data_rate specific configuration */
 #endif /* RADIO_IS_GEN_3P0 */
 
     /* XCVR_RX_DIG configs */
