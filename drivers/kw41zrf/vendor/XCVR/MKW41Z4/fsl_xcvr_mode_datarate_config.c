@@ -70,7 +70,7 @@ const xcvr_datarate_config_t xcvr_1mbps_config =
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_HOLD_TIME(21),
     .dcoc_ctrl_0_init_32mhz = XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_DLY(12) |
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_HOLD_TIME(26),
-    
+
     .dcoc_ctrl_1_init_26mhz = XCVR_RX_DIG_DCOC_CTRL_1_DCOC_SIGN_SCALE_IDX(1) |
                               XCVR_RX_DIG_DCOC_CTRL_1_DCOC_ALPHAC_SCALE_IDX(3) |
                               XCVR_RX_DIG_DCOC_CTRL_1_DCOC_ALPHA_RADIUS_IDX(3) |
