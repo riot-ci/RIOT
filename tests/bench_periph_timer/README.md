@@ -208,7 +208,7 @@ variance < 10
 Below is a short sample of a test of a 32768 Hz timer with a 1 MHz reference:
 
     ------------- BEGIN STATISTICS --------------
-    Limits: mean: [-41, 41], variance: [58, 99]
+    Limits: mean: [-10, 41], variance: [58, 99]
     Target error (actual trigger time - expected trigger time), in reference timer ticks
     positive: timer is late, negative: timer is early
     === timer_set running ===
