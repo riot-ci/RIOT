@@ -8,7 +8,7 @@
 #
 
 EXIT_CODE=0
-: ${RIOTTOOLS:-./dist/tools}
+: ${RIOTTOOLS:=./dist/tools}
 . ${RIOTTOOLS}/pr_check/check_labels.sh
 
 if tput colors &> /dev/null && [ $(tput colors) -ge 8 ]; then
