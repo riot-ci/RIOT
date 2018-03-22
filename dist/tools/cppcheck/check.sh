@@ -8,7 +8,7 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-: ${RIOTTOOLS:-./dist/tools}
+: ${RIOTTOOLS:=./dist/tools}
 . ${RIOTTOOLS}/ci/changed_files.sh
 
 # Don't show warnings about unusedStructMembers by default
