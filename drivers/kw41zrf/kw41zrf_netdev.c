@@ -223,23 +223,22 @@ int kw41zrf_cca(kw41zrf_t *dev)
     return dev->cca_result;
 }
 
-static int kw41zrf_netdev_send(netdev_t *netdev, const struct iovec *vector, unsigned count)
+static int kw41zrf_netdev_send(netdev_t *netdev, const iolist_t *iolist)
 {
     kw41zrf_t *dev = (kw41zrf_t *)netdev;
-    const struct iovec *ptr = vector;
     size_t len = 0;
 
     kw41zrf_wait_idle(dev);
 
     /* load packet data into buffer */
-    for (unsigned i = 0; i < count; i++, ptr++) {
+    for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         /* current packet data + FCS too long */
-        if ((len + ptr->iov_len) > (KW41ZRF_MAX_PKT_LENGTH - IEEE802154_FCS_LEN)) {
+        if ((len + iol->iol_len) > (KW41ZRF_MAX_PKT_LENGTH - IEEE802154_FCS_LEN)) {
             LOG_ERROR("[kw41zrf] packet too large (%u byte) to fit\n",
                   (unsigned)len + IEEE802154_FCS_LEN);
             return -EOVERFLOW;
         }
-        len = kw41zrf_tx_load(ptr->iov_base, ptr->iov_len, len);
+        len = kw41zrf_tx_load(iol->iol_base, iol->iol_len, len);
     }
 
     DEBUG("[kw41zrf] TX %u bytes\n", len);
