@@ -42,3 +42,6 @@ test-kinetis-lptmr: all
 .DEFAULT_GOAL :=
 
 include $(RIOTBASE)/Makefile.include
+
+plot:
+	tests/01-plot.py
