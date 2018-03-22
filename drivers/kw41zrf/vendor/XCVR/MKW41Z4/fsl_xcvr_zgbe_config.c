@@ -64,7 +64,7 @@ const xcvr_mode_config_t zgbe_mode_config =
     .phy_pre_ref2_init = 0x0, /* Not used in Zigbee */
 
     .phy_cfg1_init = XCVR_PHY_CFG1_AA_PLAYBACK(0) |
-                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) | 
+                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) |
                      XCVR_PHY_CFG1_FSK_BIT_INVERT(0) |
                      XCVR_PHY_CFG1_BSM_EN_BLE(0) |
                      XCVR_PHY_CFG1_DEMOD_CLK_MODE(0) |
@@ -90,7 +90,7 @@ const xcvr_mode_config_t zgbe_mode_config =
     .agc_ctrl_0_init = XCVR_RX_DIG_AGC_CTRL_0_AGC_DOWN_RSSI_THRESH(0xFF),
     /* XCVR_TSM configs */
 #if (DATA_PADDING_EN)
-    .tsm_timing_35_init = B0(TX_DIG_EN_ASSERT+ZGBE_TX_DIG_EN_TX_HI_ADJ), /* DATA_PADDING adjustments are specified relative to the non-Zigbee base timing */ 
+    .tsm_timing_35_init = B0(TX_DIG_EN_ASSERT+ZGBE_TX_DIG_EN_TX_HI_ADJ), /* DATA_PADDING adjustments are specified relative to the non-Zigbee base timing */
 #else
     .tsm_timing_35_init = B0(ZGBE_TX_DIG_EN_ASSERT),
 #endif /* (DATA_PADDING_EN) */
@@ -115,18 +115,18 @@ const xcvr_mode_datarate_config_t xcvr_ZIGBEE_500kbps_config =
 {
     .radio_mode = ZIGBEE_MODE,
     .data_rate = DR_500KBPS,
-    
+
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(1), /* VCO KVM */
 
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(1) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(1), /* BBA_BW_SEL and BBA2_BW_SEL */ 
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(1) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(1), /* BBA_BW_SEL and BBA2_BW_SEL */
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(1), /*TZA_BW_SEL */ 
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(1), /*TZA_BW_SEL */
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0xA) ,
-                       
+
     /* AGC configs */
     .agc_ctrl_2_init_26mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(8) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
