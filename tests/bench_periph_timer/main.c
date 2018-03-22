@@ -744,7 +744,6 @@ static void set_limits(void)
         /* The limits of the mean should account for the conversion error as well */
         /* rounded towards positive infinity */
         int32_t mean_error = (TIM_TEST_TO_REF(128) - TIM_TEST_TO_REF(0) + 127) / 128;
-        target_limits.expected_mean_low -= mean_error;
         target_limits.expected_mean_high += mean_error;
     }
     print_str("Expected error variance due to truncation in tick conversion: ");
