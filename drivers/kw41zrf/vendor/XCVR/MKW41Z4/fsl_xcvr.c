@@ -710,6 +710,21 @@ xcvrStatus_t XCVR_Configure(const xcvr_common_config_t *com_config,
         XCVR_RX_DIG->DCOC_CTRL_2 = datarate_config->dcoc_ctrl_2_init_26mhz;
 #endif /* RADIO_IS_GEN_3P0 */
 
+    /* customize DCOC_CTRL_0 settings for Gen2 GFSK BT=0.5, h=0.32 */
+#if RADIO_IS_GEN_2P0
+        if ((mode_config->radio_mode == ANT_MODE) || (mode_config->radio_mode == GFSK_BT_0p5_h_0p32))
+        {
+            if (datarate_config->data_rate == DR_1MBPS) /* only apply fix to 1Mbps data rates */
+            {
+                /* apply the changes to the DCOC_CTRL_0 register XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_DLY & XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_HOLD_TIME */
+                temp = XCVR_RX_DIG->DCOC_CTRL_0;
+                temp &= ~XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_DLY_MASK | XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_HOLD_TIME_MASK;
+                temp |= XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_DLY(0x10) | XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORR_HOLD_TIME(0x0C);
+                XCVR_RX_DIG->DCOC_CTRL_0 = temp;
+            }
+        }
+#endif /* RADIO_IS_GEN_2P0 */
+
     }
 #else
     {
@@ -1075,9 +1090,8 @@ xcvrStatus_t XCVR_Configure(const xcvr_common_config_t *com_config,
         {
             config_status = gXcvrTrimFailure_c;
         }
-
+        DCOC_DAC_INIT_Cal(0);
         XCVR_ForceRxWd();
-        DCOC_DAC_INIT_Cal(1);
     }
 #endif /* TRIM_BBA_DCOC_DAC_AT_INIT */
 #endif /* ifndef SIMULATION */
@@ -1205,13 +1219,13 @@ void XCVR_RegisterPanicCb ( panic_fptr fptr ) /* Allow upper layers to provide P
 
 void XcvrPanic(XCVR_PANIC_ID_T panic_id, uint32_t panic_address)
 {
-    if (s_PanicFunctionPtr != NULL)
+    if ( s_PanicFunctionPtr != NULL)
     {
         s_PanicFunctionPtr(panic_id, panic_address, 0, 0);
     }
     else
     {
-        volatile uint8_t dummy = 0;
+        uint8_t dummy;
 
         while(1)
         {
