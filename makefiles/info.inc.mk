@@ -3,7 +3,7 @@
         info-features-provided info-features-required
 
 info-objsize:
-	@case "${SORTROW}" in \
+	@case "$(SORTROW)" in \
 	  text) SORTROW=1 ;; \
 	  data) SORTROW=2 ;; \
 	  bss) SORTROW=3 ;; \
@@ -15,7 +15,7 @@ info-objsize:
 	$(SIZE) -d -B $(BASELIBS) | \
 	  tail -n+2 | \
 	  sed -e 's#$(BINDIR)##' | \
-	  sort -rnk$${SORTROW}
+	  sort -rnk$$(SORTROW)
 
 info-buildsize:
 	@$(SIZE) -d -B $(BINDIR)/$(APPLICATION).elf || echo ''

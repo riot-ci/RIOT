@@ -63,7 +63,7 @@ scan-build-analyze: clean
 # ccc-analyzer needs to be told the proper -target setting for best results,
 # otherwise false error reports about unknown register names etc will be produced.
 # These kinds of errors can be safely ignored as long as they only come from LLVM
-	@if [ "$${TOOLCHAIN}" != "llvm" -a "$${BOARD}" != "native" ]; then \
+	@if [ "$$(TOOLCHAIN)" != "llvm" -a "$$(BOARD)" != "native" ]; then \
 	  $(COLOR_ECHO) '$(COLOR_YELLOW)Recommend using TOOLCHAIN=llvm for best results.$(COLOR_RESET)'; \
 	  $(COLOR_ECHO) '$(COLOR_YELLOW)Ignore any "error: unknown register name '\''rX'\'' in asm" messages.$(COLOR_RESET)'; \
 	fi
@@ -80,9 +80,9 @@ else
 	@echo "Showing most recent report in your web browser..."
 	@REPORT_FILE="$$(find '$(SCANBUILD_OUTPUTDIR)' -maxdepth 2 -mindepth 2 \
 	            -type f -name 'index.html' 2>/dev/null | sort | tail -n 1)"; \
-	  if [ -n "$${REPORT_FILE}" ]; then \
-	    echo "$(OPEN) $${REPORT_FILE}"; \
-	    $(OPEN) "$${REPORT_FILE}"; \
+	  if [ -n "$$(REPORT_FILE)" ]; then \
+	    echo "$(OPEN) $$(REPORT_FILE)"; \
+	    $(OPEN) "$$(REPORT_FILE)"; \
 	  else \
 	    echo "No report found"; \
 	  fi
