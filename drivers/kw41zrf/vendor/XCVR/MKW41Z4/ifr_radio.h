@@ -33,9 +33,7 @@
 /* clang-format on */
 
 #include <stdint.h>
-/* clang-format off */
-#define _FSL_XCVR_H_
-/* clang-format on */
+#include "fsl_xcvr.h"
 
 /*!
  * @addtogroup xcvr
@@ -120,10 +118,10 @@ enum IFR_TRIM_STATUS_T_enum
     BGAP_VOLTAGE_TRIM_FAILED = 1, /* < algorithm failure in BGAP voltagetrim */
     IQMC_GAIN_ADJ_FAILED = 2, /* < algorithm failure in IQMC gain trim */
     IQMC_PHASE_ADJ_FAILED = 4, /* < algorithm failure in IQMC phase trim */
-    IQMC_DC_GAIN_ADJ_FAILED = 8, /* < */
-    ADC_GAIN_TRIM_FAILED = 10, /* <*/
-    ZB_FILT_TRIM_FAILED = 20, /* < */
-    BLE_FILT_TRIM_FAILED = 40, /* < */
+    IQMC_DC_GAIN_ADJ_FAILED = 8, /* < IQMC DC gain trim failure */
+    ADC_GAIN_TRIM_FAILED = 10, /* < Trim failure for ADC Gain Trim */
+    ZB_FILT_TRIM_FAILED = 20, /* < Filter trim failure for 802.15.4 */
+    BLE_FILT_TRIM_FAILED = 40, /* < Filter trim failure for BLE */
 };
 
 /* \var  typedef struct IFR_SW_TRIM_TBL_ENTRY_T */
@@ -139,23 +137,6 @@ typedef struct
 /*******************************************************************************
  * API
  ******************************************************************************/
-/*!
- * @brief Reads a location in block 1 IFR for use by the radio.
- *
- * This function handles reading IFR data from flash memory for trim loading.
- *
- * @param read_addr the address in the IFR to be read.
- */
-uint32_t read_resource_ifr(uint32_t read_addr);
-
-/*!
- * @brief Reads a location in a simulated data array to support IFR handler testing.
- *
- * This function handles reading  data from a const table for testing the trim loading functions.
- *
- * @param read_addr the address in the IFR to be read.
- */
-uint32_t read_resource(uint16_t resource_id);
 
 /*!
  * @brief Main IFR handler function called by XCVR driver software to process trim table.

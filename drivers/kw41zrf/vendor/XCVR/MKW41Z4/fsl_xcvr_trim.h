@@ -95,8 +95,6 @@ typedef struct
 {
     uint16_t dcoc_step;
     uint16_t dcoc_step_rcp;
-//    uint16_t dcoc_step_q;
-//    uint16_t dcoc_step_rcp_q;
 } TZAdcocstep_t;
 
 typedef struct
