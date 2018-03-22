@@ -119,7 +119,7 @@ const xcvr_mode_datarate_config_t xcvr_MSK_1mbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(3) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(3), /* BBA_BW_SEL and BBA2_BW_SEL */ 
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(3) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(3), /* BBA_BW_SEL and BBA2_BW_SEL */
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
     .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(3), /*TZA_BW_SEL */
 
@@ -196,9 +196,9 @@ const xcvr_mode_datarate_config_t xcvr_MSK_500kbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */ 
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */ 
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0xa) ,
@@ -232,7 +232,7 @@ const xcvr_mode_datarate_config_t xcvr_MSK_500kbps_config =
     .rx_chf_coeffs_26mhz.rx_chf_coef_10 = 0x006F,
     .rx_chf_coeffs_26mhz.rx_chf_coef_11 = 0x0092,
 
-    /* MSK 500KBPS channel filter @ 32MHz RF OSC */ 
+    /* MSK 500KBPS channel filter @ 32MHz RF OSC */
     .rx_chf_coeffs_32mhz.rx_chf_coef_0 = 0xFFFF,
     .rx_chf_coeffs_32mhz.rx_chf_coef_1 = 0x0002,
     .rx_chf_coeffs_32mhz.rx_chf_coef_2 = 0x0006,
@@ -273,9 +273,9 @@ const xcvr_mode_datarate_config_t xcvr_MSK_250kbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */ 
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */ 
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0x8) ,
@@ -308,7 +308,7 @@ const xcvr_mode_datarate_config_t xcvr_MSK_250kbps_config =
     .rx_chf_coeffs_26mhz.rx_chf_coef_10 = 0x0072,
     .rx_chf_coeffs_26mhz.rx_chf_coef_11 = 0x00DD,
 
-    /* MSK 250KBPS channel filter @ 32MHz RF OSC */ 
+    /* MSK 250KBPS channel filter @ 32MHz RF OSC */
     .rx_chf_coeffs_32mhz.rx_chf_coef_0 = 0x0002,
     .rx_chf_coeffs_32mhz.rx_chf_coef_1 = 0x0003,
     .rx_chf_coeffs_32mhz.rx_chf_coef_2 = 0xFFFC,
