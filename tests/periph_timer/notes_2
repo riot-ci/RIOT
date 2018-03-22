@@ -1,0 +1,71 @@
+mips-mti-elf-objdump -d bin/mips-malta/mips32r2_common_periph/timer.o bin/mips-malta/periph_common/timer.o bin/
+mips-malta/*.elf | grep -A 30 '<timer_set>:'
+
+
+master:
+
+
+8000d658 <timer_set>:
+8000d658:       27bdffe0        addiu   sp,sp,-32
+8000d65c:       afbf001c        sw      ra,28(sp)
+8000d660:       afb10018        sw      s1,24(sp)
+8000d664:       10800005        beqz    a0,8000d67c <timer_set+0x24>
+8000d668:       afb00014        sw      s0,20(sp)
+8000d66c:       3c058001        lui     a1,0x8001
+8000d670:       24040003        li      a0,3
+8000d674:       0c00365b        jal     8000d96c <core_panic>
+8000d678:       24a5e78c        addiu   a1,a1,-6260
+8000d67c:       28a20003        slti    v0,a1,3
+8000d680:       1040fffa        beqz    v0,8000d66c <timer_set+0x14>
+8000d684:       00a08825        move    s1,a1
+8000d688:       0c0037ac        jal     8000deb0 <irq_disable>
+8000d68c:       00068282        srl     s0,a2,0xa
+8000d690:       3c038001        lui     v1,0x8001
+8000d694:       8f868044        lw      a2,-32700(gp)
+8000d698:       00112080        sll     a0,s1,0x2
+8000d69c:       2463f6cc        addiu   v1,v1,-2356
+8000d6a0:       00108280        sll     s0,s0,0xa
+8000d6a4:       00831821        addu    v1,a0,v1
+8000d6a8:       02068021        addu    s0,s0,a2
+8000d6ac:       00402025        move    a0,v0
+8000d6b0:       ac700000        sw      s0,0(v1)
+8000d6b4:       0c0037af        jal     8000debc <irq_restore>
+8000d6b8:       00000000        nop
+8000d6bc:       02201025        move    v0,s1
+8000d6c0:       8fbf001c        lw      ra,28(sp)
+8000d6c4:       8fb10018        lw      s1,24(sp)
+8000d6c8:       8fb00014        lw      s0,20(sp)
+8000d6cc:       03e00008        jr      ra
+
+
+8000d658 <timer_set>:
+8000d658:       27bdffe0        addiu   sp,sp,-32
+8000d65c:       afbf001c        sw      ra,28(sp)
+8000d660:       afb10018        sw      s1,24(sp)
+8000d664:       10800005        beqz    a0,8000d67c <timer_set+0x24>
+8000d668:       afb00014        sw      s0,20(sp)
+8000d66c:       3c058001        lui     a1,0x8001
+8000d670:       24040003        li      a0,3
+8000d674:       0c00365b        jal     8000d96c <core_panic>
+8000d678:       24a5e78c        addiu   a1,a1,-6260
+8000d67c:       28a20003        slti    v0,a1,3
+8000d680:       1040fffa        beqz    v0,8000d66c <timer_set+0x14>
+8000d684:       00a08825        move    s1,a1
+8000d688:       0c0037ac        jal     8000deb0 <irq_disable>
+8000d68c:       00068282        srl     s0,a2,0xa
+8000d690:       3c038001        lui     v1,0x8001
+8000d694:       8f868044        lw      a2,-32700(gp)
+8000d698:       00112080        sll     a0,s1,0x2
+8000d69c:       2463f6ec        addiu   v1,v1,-2324
+8000d6a0:       00108280        sll     s0,s0,0xa
+8000d6a4:       00831821        addu    v1,a0,v1
+8000d6a8:       02068021        addu    s0,s0,a2
+8000d6ac:       00402025        move    a0,v0
+8000d6b0:       ac700000        sw      s0,0(v1)
+8000d6b4:       0c0037af        jal     8000debc <irq_restore>
+8000d6b8:       00000000        nop
+8000d6bc:       02201025        move    v0,s1
+8000d6c0:       8fbf001c        lw      ra,28(sp)
+8000d6c4:       8fb10018        lw      s1,24(sp)
+8000d6c8:       8fb00014        lw      s0,20(sp)
+8000d6cc:       03e00008        jr      ra
