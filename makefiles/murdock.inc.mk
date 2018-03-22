@@ -25,6 +25,7 @@ ifeq (1,$(RIOTNOLINK))
 endif
 
 # create $(BINDIR)/.test file only if BOARD is in $(TEST_WHITELIST)
+.PHONY: $(BINDIR)/.test
 link: $(BINDIR)/.test
 $(BINDIR)/.test: $(filter clean, $(MAKECMDGOALS))
 ifneq (,$(filter $(BOARD) all, $(TEST_WHITELIST)))
