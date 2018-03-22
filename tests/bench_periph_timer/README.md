@@ -18,20 +18,6 @@ every 30 seconds. All of the test scenarios used in this application are
 based on experience from real world bugs encountered during the development of
 RIOT and other systems.
 
-### Avoiding phase lock
-
-The CPU time used for generation and setting of the next timer target in
-software is approximately constant across iterations. When the application flow
-is driven by the timer under test, via a mutex which is unlocked from the timer
-callback, the application will be "phase locked" to the timer under test. This
-peculiarity may hide certain implementation race conditions which only occur at
-specific phases of the timer ticks. In the test application, this problem is
-avoided by inserting random CPU delay loops at key locations:
-
- - After timer_stop
- - Before timer_set/timer_set_absolute
- - Before timer_start
-
 ### API functions tested
 
 Both timer_set and timer_set_absolute calls are mixed in a random order, to
@@ -50,6 +36,20 @@ Another class of bugs is the kind where a timer is not behaving correctly if it
 was stopped before setting a timer target. The timer should set the new target,
 but not begin counting towards the target until timer_start is called. This is
 covered by this application under the "stopped" category of test inputs.
+
+### Avoiding phase lock
+
+The CPU time used for generation and setting of the next timer target in
+software is approximately constant across iterations. When the application flow
+is driven by the timer under test, via a mutex which is unlocked from the timer
+callback, the application will be "phase locked" to the timer under test. This
+peculiarity may hide certain implementation race conditions which only occur at
+specific phases of the timer ticks. In the test application, this problem is
+avoided by inserting random CPU delay loops at key locations:
+
+ - After timer_stop
+ - Before timer_set/timer_set_absolute
+ - Before timer_start
 
 ### Estimating benchmark CPU overhead
 
@@ -72,6 +72,21 @@ discrepancies, the results are split according to three parameters:
  - Function used: timer_set, timer_set_absolute
  - Rescheduled: yes/no
  - Stopped: yes/no
+
+### Expected results
+
+It is difficult to set a general expected result which applies to all
+platforms. However, the mean and variance of the differences should be small,
+in relation to the tick duration of the timer under test. What is "small" also
+depends the CPU core frequency, because of CPU processing time spent in the
+driver code and in the test code. For example, when testing a 1 MHz timer and
+comparing with another 1 MHz timer, the mean difference should likely be in
+single digits on a Cortex-M CPU. Testing a 32768 Hz timer and referencing a 1
+MHz timer on the other hand should have a mean difference in double digits, the
+variance will also be greater because of the quantization errors and rounding
+in the tick conversion routine. If the mean or variance of the difference is
+exceptionally large, the row will be marked with "SIC!" to draw attention to
+the fact.
 
 ### Interpreting timer_set_xxx statistics
 
@@ -156,52 +171,6 @@ timer frequency: 1 MHz
 Define USE_REFERENCE=0 to compare a timer against itself. Be aware that this
 may hide a class of errors where the timer is losing ticks in certain
 situations, which a separate reference timer would be able to detect.
-
-## Expected result
-
-It is difficult to set a general expected result which applies to all
-platforms. However, the mean and variance of the differences should be small,
-in relation to the tick duration of the timer under test. What is "small" also
-depends the CPU core frequency, because of CPU processing time spent in the
-driver code and in the test code. For example, when testing a 1 MHz timer and
-comparing with another 1 MHz timer, the mean difference should likely be in
-single digits on a Cortex-M CPU. Testing a 32768 Hz timer and referencing a 1
-MHz timer on the other hand should have a mean difference in double digits, the
-variance will also be greater because of the quantization errors and rounding
-in the tick conversion routine. If the mean or variance of the difference is
-exceptionally large, the row will be marked with "SIC!" to draw attention to
-the fact.
-
-### Rule of thumb
-
-Below are some rules of thumb that can be useful when looking at the results.
-These are only guidelines for when debugging timer drivers, the real world
-requirements vary from application to application. The CPU core clock speed will
-also affect the measured mean difference because of the execution time of the
-code between the timer interrupt being triggered and when the benchmark
-application has read out both timer values. The variance should not be affected
-by the CPU speed because the processing time between the ISR and the timer_read
-should be constant across all iterations.
-
-1 MHz timer tested with 1 MHz reference:
-
-abs(mean) < 20
-variance < 10
-
-32768 Hz timer tested with 1 MHz reference:
-
-abs(mean) < 100
-variance < 100
-
-32768 Hz timer tested with 32768 Hz reference:
-
-abs(mean) < 4
-variance < 10
-
-1 MHz timer tested with 32768 Hz reference:
-
-abs(mean) < 2
-variance < 10
 
 ### Example output
 
