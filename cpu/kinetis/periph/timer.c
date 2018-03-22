@@ -393,7 +393,6 @@ static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *ar
     lptmr[dev].cnr = 0;
     lptmr[dev].cmr = 0;
     hw->CMR = 0;
-    hw->CSR = LPTMR_CSR_TFC_MASK;
     hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
 
     irq_restore(mask);
@@ -466,7 +465,8 @@ static inline int lptmr_set(uint8_t dev, uint16_t timeout)
         /* TCF is set, safe to update CMR live */
         hw->CNR = 0;
         hw->CMR = timeout + hw->CNR;
-        /* Clear IRQ flag */
+        /* cppcheck-suppress selfAssignment
+         * Clear IRQ flags */
         hw->CSR = hw->CSR;
         /* Enable timer and IRQ */
         hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
@@ -498,7 +498,8 @@ static inline int lptmr_set_absolute(uint8_t dev, uint16_t target)
     else if (hw->CSR & LPTMR_CSR_TCF_MASK) {
         /* TCF is set, safe to update CMR live */
         hw->CMR = target - lptmr[dev].cnr;
-        /* Clear IRQ flag */
+        /* cppcheck-suppress selfAssignment
+         * Clear IRQ flags */
         hw->CSR = hw->CSR;
         /* Enable timer and IRQ */
         hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
@@ -549,15 +550,13 @@ static inline void lptmr_start(uint8_t dev)
     if (lptmr[dev].running) {
         /* set target */
         hw->CMR = lptmr[dev].cmr;
-        /* enable IRQ */
-        hw->CSR = LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
+        /* enable interrupt and start timer */
         hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
     }
     else {
         /* no target */
         hw->CMR = 0;
         /* Disable interrupt, enable timer */
-        hw->CSR = LPTMR_CSR_TFC_MASK;
         hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
     }
     /* compensate for the reload delay when starting the timer */
