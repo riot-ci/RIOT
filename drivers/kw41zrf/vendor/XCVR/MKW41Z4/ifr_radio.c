@@ -372,7 +372,7 @@ void handle_ifr(IFR_SW_TRIM_TBL_ENTRY_T * sw_trim_tbl, uint16_t num_entries)
     uint32_t read_addr;
     uint32_t dest_data;
     uint32_t packed_data;
-    uint32_t *ifr_ptr;
+    const uint32_t *ifr_ptr;
 
 #if RADIO_IS_GEN_3P0
     num_words_avail = 0; /* Prep for handling 64 bit words from flash */
@@ -428,7 +428,7 @@ void handle_ifr(IFR_SW_TRIM_TBL_ENTRY_T * sw_trim_tbl, uint16_t num_entries)
     else
     {
         /* Valid header is not present, use blind IFR trim table */
-        ifr_ptr = (void *)BLOCK_1_IFR;
+        ifr_ptr = BLOCK_1_IFR;
         packed_data = *ifr_ptr;
         XCVR_MISC->OVERWRITE_VER = (packed_data & IFR_VERSION_MASK);
         store_sw_trim(sw_trim_tbl, num_entries, 0xABCD, (packed_data & IFR_VERSION_MASK)); /* Place IFR version # in SW trim array */
