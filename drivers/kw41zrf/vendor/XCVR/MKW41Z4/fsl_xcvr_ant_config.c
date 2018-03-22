@@ -48,7 +48,7 @@
 const xcvr_mode_config_t ant_mode_config =
 {
     .radio_mode = ANT_MODE,
-    .scgc5_clock_ena_bits = SIM_SCGC5_PHYDIG_MASK 
+    .scgc5_clock_ena_bits = SIM_SCGC5_PHYDIG_MASK
 #if !RADIO_IS_GEN_2P1
     | SIM_SCGC5_ANT_MASK
 #endif /* !RADIO_IS_GEN_2P1 */
@@ -83,14 +83,14 @@ const xcvr_mode_config_t ant_mode_config =
                          RW2PS(15, 0x1CU),
 
     .phy_cfg1_init = XCVR_PHY_CFG1_AA_PLAYBACK(1) |
-                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) | 
+                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) |
                      XCVR_PHY_CFG1_FSK_BIT_INVERT(0) |
                      XCVR_PHY_CFG1_BSM_EN_BLE(0) |
                      XCVR_PHY_CFG1_DEMOD_CLK_MODE(0) |
                      XCVR_PHY_CFG1_CTS_THRESH(0xF8) |
                      XCVR_PHY_CFG1_FSK_FTS_TIMEOUT(2),
 
-    .phy_el_cfg_init = XCVR_PHY_EL_CFG_EL_ENABLE(1) 
+    .phy_el_cfg_init = XCVR_PHY_EL_CFG_EL_ENABLE(1)
 #if !RADIO_IS_GEN_2P1
                      | XCVR_PHY_EL_CFG_EL_ZB_ENABLE(0)
 #endif /* !RADIO_IS_GEN_2P1 */
@@ -137,9 +137,9 @@ const xcvr_mode_datarate_config_t xcvr_ANT_1mbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */ 
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */ 
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0x6) ,
