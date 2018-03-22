@@ -9,7 +9,7 @@ MODULE ?= $(shell basename $(CURDIR))
 
 .PHONY: all ${DIRS:%=ALL--%} ${DIRS:%=CLEAN--%}
 
-all: $(BINDIR)/$(MODULE).a ..nothing
+all: $(BINDIR)/$(MODULE).o ..nothing
 
 ..nothing:
 	@:
@@ -64,6 +64,18 @@ DEP := $(OBJC:.o=.d) $(OBJCXX:.o=.d) $(ASSMOBJ:.o=.d)
 
 $(BINDIR)/$(MODULE)/:
 	$(Q)mkdir -p $@
+
+$(BINDIR)/$(MODULE).o $(OBJ): | $(BINDIR)/$(MODULE)/
+
+# An empty object file is included in the link to avoid situations where modules
+# do not provide any code (e.g. sys, some boards), causing the build to fail
+# with a missing object file.
+EMPTYOBJ = $(BINDIR)/$(MODULE)/.empty.o
+$(EMPTYOBJ): | $(BINDIR)/$(MODULE)/
+	$(Q)$(CC) $(CFLAGS) -Wno-pedantic -xc -o $@ -c - < /dev/null
+
+$(BINDIR)/$(MODULE).o: $(OBJ) $(EMPTYOBJ) | ${DIRS:%=ALL--%}
+	$(Q)$(ILINK) $(ILINKFLAGS) -o $@ $^
 
 $(BINDIR)/$(MODULE).a $(OBJ): | $(BINDIR)/$(MODULE)/
 
