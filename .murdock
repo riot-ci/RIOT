@@ -130,11 +130,9 @@ compile() {
                 if [ "$board" = "native" ]; then
                     BOARD=$board make -C${appdir} test
                     RES=$?
-                else
-                    if is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
-                        BOARD=$board make -C${appdir} test-murdock
-                        RES=$?
-                    fi
+                elif is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
+                    BOARD=$board make -C${appdir} test-murdock
+                    RES=$?
                 fi
             fi
         fi
