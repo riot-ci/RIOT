@@ -588,8 +588,11 @@ int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
         }
     }
 #if GNRC_IPV6_NIB_CONF_SLAAC
-    else {
-        /* TODO: send out NS to solicited nodes for DAD probing */
+    else if (!gnrc_netif_is_6ln(netif)) {
+        /* cast to remove const qualifier (will still be used NIB internally as
+         * const) */
+        gnrc_ipv6_nib_handle_timer_event(&netif->ipv6.addrs[idx],
+                                         GNRC_IPV6_NIB_DAD);
     }
 #endif
 #else
@@ -958,8 +961,7 @@ static int _create_candidate_set(const gnrc_netif_t *netif,
          *  be included in a candidate set."
          */
         if ((netif->ipv6.addrs_flags[i] == 0) ||
-            (gnrc_netif_ipv6_addr_get_state(netif, i) ==
-             GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_TENTATIVE)) {
+            gnrc_netif_ipv6_addr_dad_trans(netif, i)) {
             continue;
         }
         /* Check if we only want link local addresses */
