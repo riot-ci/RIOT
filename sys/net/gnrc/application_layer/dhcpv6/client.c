@@ -81,7 +81,9 @@ void dhcpv6_client_conf_prefix(unsigned iface, const ipv6_addr_t *pfx,
         return;
     }
     ipv6_addr_init_prefix(&addr, pfx, pfx_len);
-    if (gnrc_netif_ipv6_addr_add(netif, &addr, pfx_len, 0) > 0) {
+    /* add address as tentative */
+    if (gnrc_netif_ipv6_addr_add(netif, &addr, pfx_len,
+            GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_TENTATIVE & 0x1) > 0) {
         /* update lifetime */
         if (valid < UINT32_MAX) { /* UINT32_MAX means infinite lifetime */
             /* the valid lifetime is given in seconds, but the NIB's timers work
