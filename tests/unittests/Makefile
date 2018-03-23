@@ -227,7 +227,7 @@ BASELIBS += $(UNIT_TESTS:%=$(BINDIR)/%.a)
 INCLUDES += -I$(RIOTBASE)/tests/unittests/common
 
 # list of boards to run CI tests on
-TEST_WHITELIST += all
+TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
 
