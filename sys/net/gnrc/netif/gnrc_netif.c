@@ -588,8 +588,10 @@ int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
         }
     }
 #if GNRC_IPV6_NIB_CONF_SLAAC
-    else {
-        /* TODO: send out NS to solicited nodes for DAD probing */
+    else if (!gnrc_netif_is_6ln(netif)) {
+        /* cast to remove const qualifier (will still be used NIB internally as
+         * const) */
+        gnrc_ipv6_nib_handle_timer_event((void *)addr, GNRC_IPV6_NIB_DAD);
     }
 #endif
 #else
