@@ -21,6 +21,7 @@
 #include "net/gnrc.h"
 #ifdef MODULE_GNRC_IPV6_NIB
 #include "net/gnrc/ipv6/nib.h"
+#include "net/gnrc/ipv6.h"
 #endif /* MODULE_GNRC_IPV6_NIB */
 #ifdef MODULE_NETSTATS_IPV6
 #include "net/netstats.h"
@@ -591,8 +592,10 @@ int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
     else if (!gnrc_netif_is_6ln(netif)) {
         /* cast to remove const qualifier (will still be used NIB internally as
          * const) */
-        gnrc_ipv6_nib_handle_timer_event(&netif->ipv6.addrs[idx],
-                                         GNRC_IPV6_NIB_DAD);
+        msg_t msg = { .type = GNRC_IPV6_NIB_DAD,
+                      .content = { .ptr = &netif->ipv6.addrs[idx] } };
+
+        msg_send(&msg, gnrc_ipv6_pid);
     }
 #endif
 #else

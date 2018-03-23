@@ -143,41 +143,48 @@ void _remove_tentative_addr(gnrc_netif_t *netif, const ipv6_addr_t *addr)
     }
 }
 
-void _handle_dad(const ipv6_addr_t *addr)
+static int _get_netif_state(gnrc_netif_t **netif, const ipv6_addr_t *addr)
 {
-    gnrc_netif_t *netif = gnrc_netif_get_by_ipv6_addr(addr);
-
+    *netif = gnrc_netif_get_by_ipv6_addr(addr);
     if (netif != NULL) {
         int idx;
 
-        gnrc_netif_acquire(netif);
-        idx = gnrc_netif_ipv6_addr_idx(netif, addr);
-        if (gnrc_netif_ipv6_addr_dad_trans(netif, idx)) {
-            ipv6_addr_t sol_nodes;
+        gnrc_netif_acquire(*netif);
+        idx = gnrc_netif_ipv6_addr_idx(*netif, addr);
+        return ((idx >= 0) && gnrc_netif_ipv6_addr_dad_trans(*netif, idx)) ?
+               idx : -1;
+    }
+    return -1;
+}
 
-            ipv6_addr_set_solicited_nodes(&sol_nodes, addr);
-            _snd_ns(addr, netif, &ipv6_addr_unspecified, &sol_nodes);
-            _evtimer_add((void *)addr, GNRC_IPV6_NIB_VALID_ADDR,
-                         &netif->ipv6.addrs_timers[idx],
-                         netif->ipv6.retrans_time);
-        }
+void _handle_dad(const ipv6_addr_t *addr)
+{
+    ipv6_addr_t sol_nodes;
+    gnrc_netif_t *netif = NULL;
+    int idx = _get_netif_state(&netif, addr);
+    if (idx >= 0) {
+        ipv6_addr_set_solicited_nodes(&sol_nodes, addr);
+        _snd_ns(addr, netif, &ipv6_addr_unspecified, &sol_nodes);
+        _evtimer_add((void *)addr, GNRC_IPV6_NIB_VALID_ADDR,
+                     &netif->ipv6.addrs_timers[idx],
+                     netif->ipv6.retrans_time);
+
+    }
+    if (netif != NULL) {
         gnrc_netif_release(netif);
     }
 }
 
 void _handle_valid_addr(const ipv6_addr_t *addr)
 {
-    gnrc_netif_t *netif = gnrc_netif_get_by_ipv6_addr(addr);
+    gnrc_netif_t *netif = NULL;
+    int idx = _get_netif_state(&netif, addr);
 
+    if (idx >= 0) {
+        netif->ipv6.addrs_flags[idx] &= ~GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_MASK;
+        netif->ipv6.addrs_flags[idx] |= GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID;
+    }
     if (netif != NULL) {
-        int idx;
-
-        gnrc_netif_acquire(netif);
-        idx = gnrc_netif_ipv6_addr_idx(netif, addr);
-        if (gnrc_netif_ipv6_addr_dad_trans(netif, idx)) {
-            netif->ipv6.addrs_flags[idx] &= ~GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_MASK;
-            netif->ipv6.addrs_flags[idx] |= GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID;
-        }
         gnrc_netif_release(netif);
     }
 }

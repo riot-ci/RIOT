@@ -850,10 +850,14 @@ static void _handle_nbr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                 return;
             }
             _remove_tentative_addr(tgt_netif, &nbr_sol->tgt);
+            return;
         }
     }
 #endif  /* GNRC_IPV6_NIB_CONF_SLAAC */
-    if (!ipv6_addr_is_unspecified(&ipv6->src)) {
+    if (ipv6_addr_is_unspecified(&ipv6->src)) {
+        gnrc_ndp_nbr_adv_send(&nbr_sol->tgt, netif, &ipv6->src, false, NULL);
+    }
+    else {
         gnrc_pktsnip_t *reply_aro = NULL;
 #if GNRC_IPV6_NIB_CONF_6LR
         ndp_opt_t *sl2ao = NULL;
@@ -968,6 +972,7 @@ static void _handle_nbr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
 
         if (gnrc_netif_ipv6_addr_dad_trans(tgt_netif, idx)) {
             _remove_tentative_addr(tgt_netif, &nbr_adv->tgt);
+            return;
         }
         /* else case beyond scope of RFC4862:
          * https://tools.ietf.org/html/rfc4862#section-5.4.4 */
