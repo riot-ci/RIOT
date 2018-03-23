@@ -187,4 +187,24 @@
 /* estimate_cpu_overhead will loop for this many iterations to get a proper estimate */
 #define ESTIMATE_CPU_ITERATIONS 2048
 
+/* Results will be grouped by function, rescheduling yes/no, start/stop.
+ * functions: timer_set, timer_set_absolute
+ * reschedule: yes/no, when yes: first set one target time, before that time has
+ * passed, set the real target time
+ * start/stop: if stop: call timer_stop before setting the target time, then call timer_start
+ *
+ * All different variations will be mixed to provide the most varied input
+ * vector possible for the benchmark. A more varied input should yield a more
+ * correct estimate of the mean error and variance. Random CPU processing delays
+ * will be inserted between each step to avoid phase locking the benchmark to
+ * unobservable timer internals.
+ */
+
+enum {
+    TEST_RESCHEDULE         = 1,
+    TEST_STOPPED            = 2,
+    TEST_ABSOLUTE           = 4,
+    TEST_VARIANT_NUMOF      = 8,
+};
+
 #endif /* BENCH_PERIPH_TIMER_CONFIG_H */
