@@ -10,7 +10,7 @@ USEMODULE += xtimer
 
 DISABLE_MODULE += auto_init
 
-TEST_WHITELIST += all
+TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
 
