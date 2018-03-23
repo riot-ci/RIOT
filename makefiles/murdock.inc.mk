@@ -21,14 +21,14 @@ test-murdock:
 
 # don't whitelist tests if there's no binary
 ifeq (1,$(RIOTNOLINK))
-  TEST_WHITELIST:=
+  TEST_ON_CI_WHITELIST:=
 endif
 
-# create $(BINDIR)/.test file only if BOARD is in $(TEST_WHITELIST)
+# create $(BINDIR)/.test file only if BOARD is in $(TEST_ON_CI_WHITELIST)
 .PHONY: $(BINDIR)/.test
 link: $(BINDIR)/.test
 $(BINDIR)/.test: $(filter clean, $(MAKECMDGOALS))
-ifneq (,$(filter $(BOARD) all, $(TEST_WHITELIST)))
+ifneq (,$(filter $(BOARD) all, $(TEST_ON_CI_WHITELIST)))
 	$(Q)mkdir -p $(BINDIR)
 	$(Q)touch $@
 else
