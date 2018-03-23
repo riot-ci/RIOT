@@ -28,6 +28,7 @@
 #include "random.h"
 #include "div.h"
 #include "matstat.h"
+#include "spin_random.h"
 
 #include "periph/timer.h"
 #include "cpu.h"
@@ -510,47 +511,6 @@ static void assign_state_ptr(test_ctx_t *ctx, unsigned int variant, uint32_t int
     }
 }
 
-/**
- * @brief   Busy wait (spin) for the given number of loop iterations
- */
-static void spin(uint32_t limit)
-{
-    /* Platform independent busy wait loop, should never be optimized out
-     * because of the volatile asm statement */
-    while (limit--) {
-        __asm__ volatile ("");
-    }
-}
-
-static uint32_t spin_max;
-
-/**
- * @brief   Spin for a short random delay to increase fuzziness of the test
- */
-static void spin_random_delay(void)
-{
-    uint32_t limit = random_uint32_range(0, spin_max);
-    spin(limit);
-}
-
-static void calibrate_spin_max(void)
-{
-    print_str("Calibrating spin delay...\n");
-    spin_max = 32;
-    unsigned int t1;
-    unsigned int t2;
-    timer_start(TIM_TEST_DEV);
-    do {
-        spin_max *= 2;
-        t1 = timer_read(TIM_TEST_DEV);
-        spin(spin_max);
-        t2 = timer_read(TIM_TEST_DEV);
-    } while ((t2 - t1) < SPIN_MAX_TARGET);
-    print_str("spin_max = ");
-    print_u32_dec(spin_max);
-    print("\n", 1);
-}
-
 static uint32_t derive_interval(uint32_t num)
 {
     uint32_t interval;
@@ -860,7 +820,11 @@ int main(void)
 
     set_limits();
 
-    calibrate_spin_max();
+    print_str("Calibrating spin delay...\n");
+    uint32_t spin_max = spin_random_calibrate(TIM_TEST_DEV, SPIN_MAX_TARGET);
+    print_str("spin_max = ");
+    print_u32_dec(spin_max);
+    print("\n", 1);
     estimate_cpu_overhead();
 
     while(1) {
