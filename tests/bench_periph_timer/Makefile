@@ -18,6 +18,7 @@ SMALL_RAM_BOARDS = \
 FEATURES_REQUIRED = periph_timer
 
 USEMODULE += random
+USEMODULE += spin_random
 USEMODULE += fmt
 USEMODULE += matstat
 
