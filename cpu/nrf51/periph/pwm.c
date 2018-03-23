@@ -31,14 +31,14 @@
 #define ENABLE_DEBUG        (0)
 #include "debug.h"
 
-#define PS_MAX              (9U)
+#define PWM_PS_MAX          (9U)
 #define PWM_PPI_CHANNELS    (((1U) << PWM_PPI_A) | ((1U) << PWM_PPI_B))
-#ifndef PERCENT_VAL
-    #define PERCENT_VAL     (1U)
+#ifndef PWM_PERCENT_VAL
+    #define PWM_PERCENT_VAL (1U)
 #endif
 
 static const uint32_t divtable[11] = {
-    (CLOCK_CORELOCK >> 0),
+    (CLOCK_CORECLOCK >> 0),
     (CLOCK_CORECLOCK >> 1),
     (CLOCK_CORECLOCK >> 2),
     (CLOCK_CORECLOCK >> 3),
@@ -50,11 +50,6 @@ static const uint32_t divtable[11] = {
     (CLOCK_CORECLOCK >> 9),
     (CLOCK_CORECLOCK >> 10),
 };
-
-static uint32_t apply_prescaler(uint8_t prescaler)
-{
-    return CLOCK_CORECLOCK >> prescaler;
-}
 
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
 {
@@ -68,18 +63,19 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     PWM_TIMER->TASKS_CLEAR = 1;
 
     /* calculate and set prescaler */
-    uint32_t lower = (freq - (PERCENT_VAL * (freq / 100)));
-    uint32_t upper = (freq + (PERCENT_VAL * (freq / 100)));
+    uint32_t timer_freq = freq * res;
+    uint32_t lower = (timer_freq - (PWM_PERCENT_VAL * (timer_freq / 100)));
+    uint32_t upper = (timer_freq + (PWM_PERCENT_VAL * (timer_freq / 100)));
     for (uint32_t ps = 0;
-         ps <= (PS_MAX + 1);
+         ps <= (PWM_PS_MAX + 1);
          ps++) {
-        if (ps == (PS_MAX + 1)) {
+        if (ps == (PWM_PS_MAX + 1)) {
             DEBUG("[pwm] init error: resolution or frequency not supported\n");
             return 0;
         }
         if((divtable[ps] < upper) && (divtable[ps] > lower)) {
             PWM_TIMER->PRESCALER = ps;
-            freq = divtable[ps];
+            timer_freq = divtable[ps];
             break;
         }
     }
@@ -121,10 +117,9 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
 
     PWM_TIMER->TASKS_START = 1;
 
-    DEBUG("Timer frequency is set to %ld\n",
-          apply_prescaler(PWM_TIMER->PRESCALER));
+    DEBUG("Timer frequency is set to %ld\n", timer_freq);
 
-    return (uint32_t)(apply_prescaler(PWM_TIMER->PRESCALER) / res);
+    return (uint32_t)(timer_freq / res);
 }
 
 void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)

@@ -55,7 +55,7 @@ extern "C" {
  * @{
  */
 #ifndef GNRC_PKTBUF_SIZE
-#define GNRC_PKTBUF_SIZE        (2048)
+#define GNRC_PKTBUF_SIZE                (2048)
 #endif
 /** @} */
 
