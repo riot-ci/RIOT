@@ -9,8 +9,7 @@
  */
 
 /*
- * @defgroup    boards_mega-xplained
- * @ingroup     boards
+ * @ingroup     boards_mega-xplained
  * @brief       Support for the Mega Xplained board.
  * @{
  *

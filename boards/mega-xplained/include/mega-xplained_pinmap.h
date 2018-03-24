@@ -27,7 +27,8 @@ extern "C" {
 #endif
 
 /**
- * @brief   Mapping of MCU pins to Mega Xplaind pins
+ * @name   Mapping of MCU pins to Mega Xplained pins
+ * @{
  */
 /*
  * DESCRIPTION Xplained API PIN          PORT   PIN
@@ -67,7 +68,7 @@ extern "C" {
 #define J4_PIN6                 GPIO_PIN(PORT_B, 5)
 #define J4_PIN7                 GPIO_PIN(PORT_B, 6)
 #define J4_PIN8                 GPIO_PIN(PORT_B, 7)
-/** @ */
+/** @} */
 
 #ifdef __cplusplus
 }
