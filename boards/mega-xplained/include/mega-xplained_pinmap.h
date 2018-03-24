@@ -32,19 +32,6 @@ extern "C" {
 /*
  * DESCRIPTION Xplained API PIN          PORT   PIN
  */
-#define BTN0_PIN                GPIO_PIN(PORT_B, 0)
-#define BTN1_PIN                GPIO_PIN(PORT_B, 1)
-#define BTN2_PIN                GPIO_PIN(PORT_B, 2)
-
-#define LED0_PIN                GPIO_PIN(PORT_B, 0)
-#define LED1_PIN                GPIO_PIN(PORT_B, 3)
-#define LED2_PIN                GPIO_PIN(PORT_B, 1)
-#define LED3_PIN                GPIO_PIN(PORT_B, 2)
-
-#define NTC_OUTPUT              GPIO_PIN(PORT_A, 5)
-#define LIGHT_SENSOR_OUTPUT     GPIO_PIN(PORT_A, 6)
-#define FILTER_OUTPUT           GPIO_PIN(PORT_A, 7)
-
 #define J1_PIN1                 GPIO_PIN(PORT_C, 1)
 #define J1_PIN2                 GPIO_PIN(PORT_C, 0)
 #define J1_PIN3                 GPIO_PIN(PORT_D, 0)

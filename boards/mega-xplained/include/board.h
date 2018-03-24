@@ -77,6 +77,46 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    LED pin configuration
+ * @{
+ */
+#define LED0_PIN     GPIO_PIN(PORT_B, 0)
+#define LED0_MODE    GPIO_OD
+
+#define LED1_PIN     GPIO_PIN(PORT_B, 3)
+#define LED1_MODE    GPIO_OD
+
+#define LED2_PIN     GPIO_PIN(PORT_B, 1)
+#define LED2_MODE    GPIO_OD
+
+#define LED3_PIN     GPIO_PIN(PORT_B, 2)
+#define LED3_MODE    GPIO_OD
+/** @} */
+
+/**
+ * @name    Button pin configuration
+ * @{
+ */
+#define BTN0_PIN     GPIO_PIN(PORT_B, 0)
+#define BTN0_MODE    GPIO_IN
+
+#define BTN1_PIN     GPIO_PIN(PORT_B, 1)
+#define BTN1_MODE    GPIO_IN
+
+#define BTN2_PIN     GPIO_PIN(PORT_B, 2)
+#define BTN2_MODE    GPIO_IN
+/** @} */
+
+/**
+ * @name    ADC NTC, light sensor, and filter lines
+ * @{
+ */
+#define NTC_OUTPUT             GPIO_PIN(PORT_A, 5)
+#define LIGHT_SENSOR_OUTPUT    GPIO_PIN(PORT_A, 6)
+#define FILTER_OUTPUT          GPIO_PIN(PORT_A, 7)
+/** @} */
+
+/**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
  */
 void board_init(void);
