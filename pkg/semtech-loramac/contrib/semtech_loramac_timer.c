@@ -60,7 +60,7 @@ void TimerSetValue(TimerEvent_t *obj, uint32_t value)
         xtimer_remove(&(obj->dev));
     }
 
-    obj->timeout = (value - 50) * 1000;
+    obj->timeout = (value - 20) * 1000;
 }
 
 TimerTime_t TimerGetCurrentTime(void)
