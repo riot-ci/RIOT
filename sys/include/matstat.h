@@ -56,12 +56,12 @@ typedef struct {
  * @brief   Empty state initializer
  */
 #define MATSTAT_STATE_INIT (const matstat_state_t) { \
-        .min = INT32_MAX, \
-        .max = INT32_MIN, \
-        .count = 0, \
         .sum = 0, \
         .sum_sq = 0, \
+        .count = 0, \
         .mean = 0, \
+        .min = INT32_MAX, \
+        .max = INT32_MIN, \
     }
 
 /**
