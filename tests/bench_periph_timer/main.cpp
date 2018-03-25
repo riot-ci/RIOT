@@ -84,7 +84,7 @@ static void cb(void *arg, int chan)
         print_str("cb: Warning! arg = NULL\n");
         return;
     }
-    test_ctx_t *ctx = arg;
+    test_ctx_t *ctx = static_cast<test_ctx_t*>(arg);
     if (ctx->target_state == NULL) {
         print_str("cb: Warning! target_state = NULL\n");
         return;

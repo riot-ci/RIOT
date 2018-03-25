@@ -15,7 +15,8 @@ SMALL_RAM_BOARDS = \
   nucleo32-f031 \
   #
 
-FEATURES_REQUIRED = periph_timer
+FEATURES_REQUIRED += periph_timer
+FEATURES_REQUIRED += cpp
 
 USEMODULE += random
 USEMODULE += spin_random

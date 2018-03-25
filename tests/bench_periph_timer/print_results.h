@@ -21,6 +21,10 @@
 
 #include "matstat.h"
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 /**
  * @brief   Present the results of the benchmark
  *
@@ -34,5 +38,9 @@ void print_results(const matstat_state_t *states, const matstat_state_t *read_st
  * @brief   Calculate the limits for mean and variance for this test
  */
 void set_limits(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PRINT_RESULTS_H */
