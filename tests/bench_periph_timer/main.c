@@ -183,27 +183,11 @@ static uint32_t derive_interval(uint32_t num)
     return interval;
 }
 
-static uint32_t run_test(test_ctx_t *ctx, uint32_t num)
+static void run_test(test_ctx_t *ctx, uint32_t interval, unsigned int variant)
 {
-    unsigned int variant = (num >> (32 - 3));
-    if (variant >= TEST_VARIANT_NUMOF) {
-        return 0;
-    }
-    uint32_t interval = derive_interval(num);
-    if (interval >= TEST_NUM) {
-        /* Discard values outside our test range */
-        return 0;
-    }
-    assign_state_ptr(ctx, variant, interval);
-    spin_random_delay();
-    if (variant & TEST_ABSOLUTE) {
-        interval += TEST_MIN;
-    }
-    else {
-        interval += TEST_MIN_REL;
-    }
     unsigned int interval_ref = TIM_TEST_TO_REF(interval);
 
+    spin_random_delay();
     if (variant & TEST_RESCHEDULE) {
         timer_set(TIM_TEST_DEV, TIM_TEST_CHAN, interval + RESCHEDULE_MARGIN);
         spin_random_delay();
@@ -228,7 +212,6 @@ static uint32_t run_test(test_ctx_t *ctx, uint32_t num)
         timer_start(TIM_TEST_DEV);
     }
     mutex_lock(&mtx_cb);
-    return interval;
 }
 
 static int test_timer(void)
@@ -238,7 +221,23 @@ static int test_timer(void)
     do {
         uint32_t num = random_uint32();
 
-        run_test(&test_context, num);
+        unsigned int variant = (num >> (32 - 3));
+        if (variant >= TEST_VARIANT_NUMOF) {
+            continue;
+        }
+        uint32_t interval = derive_interval(num);
+        if (interval >= TEST_NUM) {
+            /* Discard values outside our test range */
+            continue;
+        }
+        assign_state_ptr(&test_context, variant, interval);
+        if (variant & TEST_ABSOLUTE) {
+            interval += TEST_MIN;
+        }
+        else {
+            interval += TEST_MIN_REL;
+        }
+        run_test(&test_context, interval, variant);
         uint32_t now = timer_read(TIM_REF_DEV);
         if (now >= time_last) {
             /* Account for reference timer possibly overflowing before 30 seconds have passed */
