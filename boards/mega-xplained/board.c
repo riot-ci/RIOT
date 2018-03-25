@@ -35,6 +35,7 @@
 void SystemInit(void);
 static int uart_putchar(char c, FILE *stream);
 static int uart_getchar(FILE *stream);
+void led_init(void);
 
 static FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
 static FILE uart_stdin = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
@@ -46,6 +47,9 @@ void board_init(void)
 
     /* initialize the CPU */
     cpu_init();
+
+    /* initialize the LEDs */
+    led_init();
 
     irq_enable();
 }
@@ -78,4 +82,23 @@ int uart_getchar(FILE *stream)
     char c;
     uart_stdio_read(&c, 1);
     return (int)c;
+}
+
+/**
+ * @brief Initialize the on-board LEDs
+ */
+void led_init(void)
+{
+/* Not currently supported due to lack of GPIO_OD support */
+/*    LED0_ENABLE_PORT;
+    LED0_OFF;
+
+    LED2_ENABLE_PORT;
+    LED2_OFF;*/
+
+    LED1_ENABLE_PORT;
+    LED1_OFF;
+
+    LED3_ENABLE_PORT;
+    LED3_OFF;
 }

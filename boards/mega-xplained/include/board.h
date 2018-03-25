@@ -25,6 +25,7 @@
 #define BOARD_H
 
 #include "cpu.h"
+#include "periph_cpu.h"
 #include "mega-xplained_pinmap.h"
 
 #ifdef __cplusplus
@@ -76,20 +77,47 @@ extern "C" {
 /** @} */
 
 /**
- * @name    LED pin configuration
+ * @name    LED pin definitions
  * @{
  */
-#define LED0_PIN     GPIO_PIN(PORT_B, 0)
+/* Not currently supported due to lack of GPIO_OD support */
+/*#define LED0_PIN     GPIO_PIN(PORT_B, 0)
 #define LED0_MODE    GPIO_OD
 
-#define LED1_PIN     GPIO_PIN(PORT_B, 3)
-#define LED1_MODE    GPIO_OD
-
 #define LED2_PIN     GPIO_PIN(PORT_B, 1)
-#define LED2_MODE    GPIO_OD
+#define LED2_MODE    GPIO_OD*/
+
+#define LED1_PIN     GPIO_PIN(PORT_B, 3)
+#define LED1_MODE    GPIO_OUT
 
 #define LED3_PIN     GPIO_PIN(PORT_B, 2)
-#define LED3_MODE    GPIO_OD
+#define LED3_MODE    GPIO_OUT
+/** @} */
+
+/**
+ * @name    Macros for controlling the on-board LEDs
+ * @{
+ */
+/* Not currently supported due to lack of GPIO_OD support */
+/*#define LED0_ENABLE_PORT    DDRB  |=  LED0_PIN
+#define LED0_ON             PORTB |=  LED0_PIN
+#define LED0_OFF            PORTB &= ~LED0_PIN
+#define LED0_TOGGLE         PORTB ^=  LED0_PIN
+
+#define LED2_ENABLE_PORT    DDRB  |=  LED2_PIN
+#define LED2_ON             PORTB |=  LED2_PIN
+#define LED2_OFF            PORTB &= ~LED2_PIN
+#define LED2_TOGGLE         PORTB ^=  LED2_PIN*/
+
+#define LED1_ENABLE_PORT    DDRB  |=  LED1_PIN
+#define LED1_ON             PORTB |=  LED1_PIN
+#define LED1_OFF            PORTB &= ~LED1_PIN
+#define LED1_TOGGLE         PORTB ^=  LED1_PIN
+
+#define LED3_ENABLE_PORT    DDRB  |=  LED3_PIN
+#define LED3_ON             PORTB |=  LED3_PIN
+#define LED3_OFF            PORTB &= ~LED3_PIN
+#define LED3_TOGGLE         PORTB ^=  LED3_PIN
 /** @} */
 
 /**
@@ -102,8 +130,9 @@ extern "C" {
 #define BTN1_PIN     GPIO_PIN(PORT_B, 1)
 #define BTN1_MODE    GPIO_IN
 
-#define BTN2_PIN     GPIO_PIN(PORT_B, 2)
-#define BTN2_MODE    GPIO_IN
+/* Not currently supported due to lack of GPIO_OD support */
+/*#define BTN2_PIN     GPIO_PIN(PORT_B, 2)
+#define BTN2_MODE    GPIO_IN*/
 /** @} */
 
 /**

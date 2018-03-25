@@ -45,7 +45,8 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .mode = BTN1_MODE,
         .flags = SAUL_GPIO_INVERTED,
     },
-    {
+    /* Not currently supported due to lack of GPIO_OD support */
+    /*{
         .name = "Button 2",
         .pin  = BTN2_PIN,
         .mode = BTN2_MODE,
@@ -58,15 +59,15 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
     {
-        .name = "LED 1",
-        .pin = LED1_PIN,
-        .mode = LED1_MODE,
-        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
-    },
-    {
         .name = "LED 2",
         .pin = LED2_PIN,
         .mode = LED2_MODE,
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
+    },*/
+    {
+        .name = "LED 1",
+        .pin = LED1_PIN,
+        .mode = LED1_MODE,
         .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
     {
