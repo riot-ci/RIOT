@@ -63,6 +63,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              sodaq-autonomo \
                              sodaq-explorer \
                              spark-core \
+                             stk3200 \
                              stk3600 \
                              stm32f0discovery \
                              stm32f3discovery \
@@ -172,6 +173,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        sodaq-autonomo \
                        sodaq-explorer \
                        spark-core \
+                       stk3200 \
                        stk3600 \
                        stk3700 \
                        stm32f0discovery \

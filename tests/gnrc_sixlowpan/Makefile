@@ -4,7 +4,7 @@ include ../Makefile.tests_common
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon chronos maple-mini msb-430 msb-430h \
                              nrf51dongle nrf6310 nucleo-f031k6 nucleo-f042k6 \
                              nucleo-l031k6 nucleo-f030r8 nucleo-f070rb nucleo-f103rb \
-                             nucleo-f334r8 nucleo-l053r8 spark-core \
+                             nucleo-f334r8 nucleo-l053r8 spark-core stk3200 \
                              stm32f0discovery telosb wsn430-v1_3b wsn430-v1_4 \
                              yunjia-nrf51822 z1
 
