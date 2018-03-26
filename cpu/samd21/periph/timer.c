@@ -208,11 +208,11 @@ int timer_clear(tim_t dev, int channel)
         switch (channel) {
         case 0:
             TIMER_1_DEV.INTFLAG.reg = TC_INTFLAG_MC0;
-            TIMER_0_DEV.INTENCLR.reg = TC_INTENCLR_MC0;
+            TIMER_1_DEV.INTENCLR.reg = TC_INTENCLR_MC0;
             break;
         case 1:
             TIMER_1_DEV.INTFLAG.reg = TC_INTFLAG_MC1;
-            TIMER_0_DEV.INTENCLR.reg = TC_INTENCLR_MC1;
+            TIMER_1_DEV.INTENCLR.reg = TC_INTENCLR_MC1;
             break;
         default:
             return -1;
