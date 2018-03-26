@@ -339,7 +339,7 @@ typedef enum {
     NETOPT_IS_WIRED,
 
     /**
-     * @brief   (uint8_t) device type
+     * @brief   (uint16_t) device type
      *
      * e.g. NETDEV_TYPE_ETHERNET, NETDEV_TYPE_IEEE802154, etc.
      */
