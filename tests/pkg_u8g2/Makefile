@@ -2,7 +2,8 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
                              arduino-uno chronos msb-430 msb-430h \
-                             nucleo-f031k6 telosb wsn430-v1_3b wsn430-v1_4 z1
+                             nucleo-f031k6 stk3200 telosb \
+                             wsn430-v1_3b wsn430-v1_4 z1
 
 USEMODULE += xtimer
 
