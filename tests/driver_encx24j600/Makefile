@@ -2,7 +2,7 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := msb-430 msb-430h \
                              nucleo-l053 nucleo32-f031 nucleo32-f042 \
-                             nucleo32-l031 stm32f0discovery telosb \
+                             nucleo32-l031 stk3200 stm32f0discovery telosb \
                              wsn430-v1_3b wsn430-v1_4 z1
 
 USEMODULE += auto_init_gnrc_netif

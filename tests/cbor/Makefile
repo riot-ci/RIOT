@@ -12,6 +12,8 @@ BOARD_BLACKLIST += wsn430-v1_3b wsn430-v1_4
 BOARD_BLACKLIST += z1
 BOARD_BLACKLIST += jiminy-mega256rfr2
 
+BOARD_INSUFFICIENT_MEMORY := stk3200
+
 USEMODULE += cbor
 USEMODULE += cbor_ctime
 USEMODULE += cbor_float
