@@ -1,11 +1,11 @@
-# Benchmark test for periph_timer
+# Benchmark test for RIOT timers
 
 This test is intended to collect statistics about the runtime delays in the
 periph_timer implementation. This tool is mainly intended to detect problems in
 the low level driver implementation which can be difficult to detect from
 higher level systems such as xtimer.
 
-## Test outline
+## Testing periph/timer
 
 The basic idea of the test is to generate a wide variety of calls to the
 periph/timer API, in order to detect problems with the software implementation.
@@ -18,7 +18,7 @@ every 30 seconds. All of the test scenarios used in this application are
 based on experience from real world bugs encountered during the development of
 RIOT and other systems.
 
-### API functions tested
+### periph/timer functions tested
 
 Both timer_set and timer_set_absolute calls are mixed in a random order, to
 ensure that both functions are working correctly.
@@ -36,6 +36,11 @@ Another class of bugs is the kind where a timer is not behaving correctly if it
 was stopped before setting a timer target. The timer should set the new target,
 but not begin counting towards the target until timer_start is called. This is
 covered by this application under the "stopped" category of test inputs.
+
+## General benchmark behaviour
+
+The benchmark application uses some techniques to improve the quality of the
+tests.
 
 ### Avoiding phase lock
 
@@ -62,6 +67,25 @@ computing the difference between expected and actual values. A warning is
 printed when the variance of the estimated CPU overhead is too high, this can
 be a sign that some other process is running on the CPU and disrupting the
 estimation, or a sign of serious problems inside the timer_read function.
+
+## Testing xtimer
+
+The benchmark application can be reconfigured for using xtimer instead of the
+low level periph/timer interface. Use the Makefile target test-xtimer to build
+a test for xtimer.
+
+### xtimer functions tested
+
+The application will mix calls to the following xtimer functions:
+
+ - `_xtimer_set`
+ - `_xtimer_set_absolute`
+ - `_xtimer_periodic_wakeup`
+ - `_xtimer_spin`
+
+These functions cover almost all uses of xtimer. The higher level functions
+such as `xtimer_usleep` and `xtimer_set_msg` all use these functions internally
+in the implementations.
 
 ## Results
 
