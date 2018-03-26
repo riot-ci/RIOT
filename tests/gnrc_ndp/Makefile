@@ -4,8 +4,9 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
                              arduino-mega2560 arduino-nano arduino-uno chronos \
                              i-nucleo-lrwan1 msb-430 msb-430h nucleo-f030r8 \
                              nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 \
-                             nucleo-l053r8 stm32f0discovery stm32l0538-disco \
-                             telosb waspmote-pro wsn430-v1_3b wsn430-v1_4
+                             nucleo-l053r8 stk3200 stm32f0discovery \
+                             stm32l0538-disco telosb waspmote-pro \
+                             wsn430-v1_3b wsn430-v1_4
 
 USEMODULE += gnrc_ipv6_nib_router
 USEMODULE += gnrc_ndp
