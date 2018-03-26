@@ -18,8 +18,8 @@
 #
 # The script supports the following actions:
 #
-# flash:        flash a given hex file to the target.
-#               hexfile is expected in ihex format and is pointed to
+# flash:        flash a given binary file to the target.
+#               flashfile is expected in binary format and is pointed to
 #               by BINFILE environment variable
 #
 #               options:
@@ -66,7 +66,7 @@ _JLINK_TERMFLAGS="-ts 19021"
 #
 test_config() {
     if [ -z "${HEXFILE}" ]; then
-        echo "no hexfile"
+        echo "no binfile"
     else
         echo "HEXFILE found"
     fi
