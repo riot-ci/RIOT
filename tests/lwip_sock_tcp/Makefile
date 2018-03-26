@@ -3,7 +3,7 @@ include ../Makefile.tests_common
 # lwIP's memory management doesn't seem to work on non 32-bit platforms at the
 # moment.
 BOARD_BLACKLIST := arduino-uno arduino-duemilanove arduino-mega2560 chronos \
-                   msb-430 msb-430h telosb waspmote-pro wsn430-v1_3b \
+                   msb-430 msb-430h stk3200 telosb waspmote-pro wsn430-v1_3b \
                    wsn430-v1_4 z1 jiminy-mega256rfr2
 BOARD_INSUFFICIENT_MEMORY = nucleo32-f031 nucleo32-f042 nucleo32-l031 nucleo-f030 \
                             nucleo-f334 nucleo-l053 stm32f0discovery
