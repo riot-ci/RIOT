@@ -1,6 +1,7 @@
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := chronos nucleo32-f031 nucleo32-f042 nucleo32-l031
+BOARD_INSUFFICIENT_MEMORY := chronos nucleo32-f031 nucleo32-f042 \
+                             nucleo32-l031 stk3200
 
 USEMODULE += gnrc_sock_check_reuse
 USEMODULE += gnrc_sock_udp

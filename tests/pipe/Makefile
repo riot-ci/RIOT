@@ -2,7 +2,7 @@ include ../Makefile.tests_common
 
 #malloc.h not found
 BOARD_BLACKLIST := jiminy-mega256rfr2
-BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
+BOARD_INSUFFICIENT_MEMORY := nucleo32-f031 stk3200
 
 USEMODULE += pipe
 
