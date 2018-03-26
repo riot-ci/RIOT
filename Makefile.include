@@ -305,7 +305,12 @@ BASELIBS += $(BINDIR)/$(APPLICATION_MODULE).a
 BASELIBS += $(APPDEPS)
 
 .PHONY: all link clean flash flash-only term doc debug debug-server reset objdump help info-modules
+.PHONY: print-size
 .PHONY: ..in-docker-container
+# Target can depend on FORCE to force running build command every time
+# and still let make use file modification timestamp (contrary to .PHONY)
+# Useful for commands that may keep files unchanged when executed.
+.PHONY: FORCE
 
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
@@ -319,6 +324,7 @@ LINKFLAGPREFIX ?= -Wl,
 DIRS += $(EXTERNAL_MODULE_DIRS)
 
 # Linker rule
+$(ELFFILE): FORCE  # Force rebuilding in case _LINK changes
 ifeq ($(BUILDOSXNATIVE),1)
   _LINK = $(if $(CPPMIX),$(LINKXX),$(LINK)) $(UNDEF) $$(find $(BASELIBS) -size +8c) $(LINKFLAGS) $(LINKFLAGPREFIX)-no_pie
 else
@@ -329,13 +335,26 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ## make script for your application. Build RIOT-base here!
-link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS)
-	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 ifeq (,$(RIOTNOLINK))
-	$(Q)$(_LINK) -o $(ELFFILE)
-	$(Q)$(SIZE) $(ELFFILE)
-	$(Q)$(OBJCOPY) $(OFLAGS) $(ELFFILE) $(HEXFILE)
-endif
+link: ..compiler-check ..build-message $(ELFFILE) $(HEXFILE) print-size
+else
+link: ..compiler-check ..build-message $(BASELIBS)
+endif # RIOTNOLINK
+
+$(ELFFILE): $(BASELIBS)
+	$(Q)$(_LINK) -o $@
+
+# All modules are built by application.inc.mk makefile
+$(BINDIR)/$(APPLICATION_MODULE).a: $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS)
+	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
+$(BINDIR)/$(APPLICATION_MODULE).a: FORCE  # we do not know here if it needs to be updated
+
+print-size: $(ELFFILE)
+	$(Q)$(SIZE) $<
+
+$(HEXFILE): $(ELFFILE)
+	$(Q)$(OBJCOPY) $(OFLAGS) $< $@
+
 endif # BUILD_IN_DOCKER
 
 # Check given command is available in the path
