@@ -237,14 +237,16 @@ void set_limits(void)
      * converting the ticks */
     uint32_t conversion_variance = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0)) *
         (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1))) / 1200;
-    target_limits.expected_variance_low = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) - 10 * (TEST_UNEXPECTED_STDDEV)) *
-        (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) - 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
-    target_limits.expected_variance_high = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) + 10 * (TEST_UNEXPECTED_STDDEV)) *
-        (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) + 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
-    /* The limits of the mean should account for the conversion error as well */
-    /* rounded towards positive infinity */
-    int32_t mean_error = (TIM_TEST_TO_REF(128) - TIM_TEST_TO_REF(0) + 127) / 128;
-    target_limits.expected_mean_high += mean_error;
+    if (TIM_REF_FREQ > TIM_TEST_FREQ) {
+        target_limits.expected_variance_low = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) - 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) - 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
+        target_limits.expected_variance_high = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) + 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) + 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
+        /* The limits of the mean should account for the conversion error as well */
+        /* rounded towards positive infinity */
+        int32_t mean_error = (TIM_TEST_TO_REF(128) - TIM_TEST_TO_REF(0) + 127) / 128;
+        target_limits.expected_mean_high += mean_error;
+    }
 
     print_str("Expected error variance due to truncation in tick conversion: ");
     print_u32_dec(conversion_variance);
