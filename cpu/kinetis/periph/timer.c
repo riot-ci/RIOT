@@ -59,6 +59,10 @@
  */
 #define LPTMR_RELOAD_OVERHEAD 1
 
+#ifndef RTC_LOAD_CAP_BITS
+#define RTC_LOAD_CAP_BITS    0
+#endif
+
 /* PIT channel state */
 typedef struct {
     timer_isr_ctx_t isr_ctx;
@@ -379,6 +383,13 @@ static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *ar
     LPTMR_CLKEN();
     /* Completely disable the module before messing with the settings */
     hw->CSR = 0;
+
+    /* Turn on RTC oscillator if it is not running */
+    RTT_UNLOCK();
+    if (!(RTT_DEV->CR & RTC_CR_OSCE_MASK)) {
+        RTT_DEV->CR = RTC_CR_OSCE_MASK | RTC_CR_SUP_MASK | RTC_LOAD_CAP_BITS;
+    }
+
     /* select ERCLK32K as clock source for LPTMR */
     hw->PSR = LPTMR_PSR_PCS(2) | ((uint32_t)prescale);
 
