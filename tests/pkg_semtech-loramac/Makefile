@@ -4,7 +4,7 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := nucleo32-f031 nucleo32-f042 nucleo32-l031
 
-BOARD_BLACKLIST := msb-430 msb-430h telosb wsn430-v1_3b wsn430-v1_4 z1
+BOARD_BLACKLIST := msb-430 msb-430h stk3200 telosb wsn430-v1_3b wsn430-v1_4 z1
 
 LORA_DRIVER ?= sx1276
 LORA_REGION ?= EU868
