@@ -5,8 +5,8 @@ export FLASHER = $(RIOTBOARD)/$(BOARD)/dist/flash.sh
 export DEBUGGER =
 export DEBUGSERVER =
 
-HEXFILE = $(BINFILE)
-export FFLAGS = $(HEXFILE)
+FLASHFILE = $(BINFILE)
+FFLAGS = $(FLASHFILE)
 export DEBUGGER_FLAGS =
 
 # define the default port depending on the host OS
