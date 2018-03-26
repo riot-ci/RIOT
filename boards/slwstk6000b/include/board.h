@@ -49,23 +49,23 @@ extern "C" {
  * via the USB port.
  * @{
  */
-#define BC_PIN              F5
+#define BC_PIN              MODULE_PIN_F5
 /** @} */
 
 /**
  * @name    Push button pin definitions
  * @{
  */
-#define PB0_PIN             F12
-#define PB1_PIN             F13
+#define PB0_PIN             MODULE_PIN_F12
+#define PB1_PIN             MODULE_PIN_F13
 /** @} */
 
 /**
  * @name    LED pin definitions
  * @{
  */
-#define LED0_PIN            F10
-#define LED1_PIN            F11
+#define LED0_PIN            MODULE_PIN_F10
+#define LED1_PIN            MODULE_PIN_F11
 /** @} */
 
 /**
@@ -87,9 +87,9 @@ extern "C" {
  * @{
  */
 #define DISP_SPI            SPI_DEV(0)
-#define DISP_COM_PIN        F18
-#define DISP_CS_PIN         F17
-#define DISP_EN_PIN         F14
+#define DISP_COM_PIN        MODULE_PIN_F18
+#define DISP_CS_PIN         MODULE_PIN_F17
+#define DISP_EN_PIN         MODULE_PIN_F14
 /** @} */
 
 /**
@@ -99,7 +99,7 @@ extern "C" {
  * @{
  */
 #define SI7021_I2C              I2C_DEV(0)
-#define SI7021_EN_PIN           P37
+#define SI7021_EN_PIN           MODULE_PIN_P37
 
 #define SI70XX_PARAM_I2C_DEV    SI7021_I2C
 /** @} */

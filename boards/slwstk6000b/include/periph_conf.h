@@ -93,8 +93,8 @@ static const adc_chan_conf_t adc_channel_config[] = {
 static const i2c_conf_t i2c_config[] = {
     {
         .dev = I2C0,
-        .sda_pin = P13,
-        .scl_pin = P12,
+        .sda_pin = MODULE_PIN_P13,
+        .scl_pin = MODULE_PIN_P12,
         .loc = I2C_ROUTELOC0_SDALOC_LOC16 |
                I2C_ROUTELOC0_SCLLOC_LOC14,
         .cmu = cmuClock_I2C0,
@@ -128,9 +128,9 @@ static const i2c_conf_t i2c_config[] = {
 static const spi_dev_t spi_config[] = {
     {
         .dev = USART1,
-        .mosi_pin = F16,
-        .miso_pin = P3,
-        .clk_pin = F15,
+        .mosi_pin = MODULE_PIN_F16,
+        .miso_pin = MODULE_PIN_P3,
+        .clk_pin = MODULE_PIN_F15,
         .loc = USART_ROUTELOC0_RXLOC_LOC11 |
                USART_ROUTELOC0_TXLOC_LOC11 |
                USART_ROUTELOC0_CLKLOC_LOC11,
@@ -173,8 +173,8 @@ static const timer_conf_t timer_config[] = {
 static const uart_conf_t uart_config[] = {
     {
         .dev = USART0,
-        .rx_pin = F6,
-        .tx_pin = F7,
+        .rx_pin = MODULE_PIN_F6,
+        .tx_pin = MODULE_PIN_F7,
         .loc = USART_ROUTELOC0_RXLOC_LOC0 |
                USART_ROUTELOC0_TXLOC_LOC0,
         .cmu = cmuClock_USART0,
