@@ -1,7 +1,7 @@
 /**************************************************************************//**
- * @file efr32mg1p133f256gm48.h
+ * @file efr32mg1p233f256gm48.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
- *        for EFR32MG1P133F256GM48
+ *        for EFR32MG1P233F256GM48
  * @version 5.3.3
  ******************************************************************************
  * # License
@@ -37,8 +37,8 @@
 #pragma clang system_header  /* Treat file as system include file. */
 #endif
 
-#ifndef EFR32MG1P133F256GM48_H
-#define EFR32MG1P133F256GM48_H
+#ifndef EFR32MG1P233F256GM48_H
+#define EFR32MG1P233F256GM48_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,7 +50,7 @@ extern "C" {
  *****************************************************************************/
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48 EFR32MG1P133F256GM48
+ * @defgroup EFR32MG1P233F256GM48 EFR32MG1P233F256GM48
  * @{
  *****************************************************************************/
 
@@ -96,7 +96,7 @@ typedef enum IRQn{
 } IRQn_Type;
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_Core Core
+ * @defgroup EFR32MG1P233F256GM48_Core Core
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
@@ -106,10 +106,10 @@ typedef enum IRQn{
 #define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
 #define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
 
-/** @} End of group EFR32MG1P133F256GM48_Core */
+/** @} End of group EFR32MG1P233F256GM48_Core */
 
 /**************************************************************************//**
-* @defgroup EFR32MG1P133F256GM48_Part Part
+* @defgroup EFR32MG1P233F256GM48_Part Part
 * @{
 ******************************************************************************/
 
@@ -132,12 +132,12 @@ typedef enum IRQn{
 #define _SILICON_LABS_32B_PLATFORM_2_GEN        1                                  /**< @deprecated Platform 2, generation 1 */
 
 /* If part number is not defined as compiler option, define it */
-#if !defined(EFR32MG1P133F256GM48)
-#define EFR32MG1P133F256GM48    1 /**< MIGHTY Gecko Part */
+#if !defined(EFR32MG1P233F256GM48)
+#define EFR32MG1P233F256GM48    1 /**< MIGHTY Gecko Part */
 #endif
 
 /** Configure part number */
-#define PART_NUMBER               "EFR32MG1P133F256GM48" /**< Part Number */
+#define PART_NUMBER               "EFR32MG1P233F256GM48" /**< Part Number */
 
 /** Memory Base addresses and limits */
 #define FLASH_MEM_BASE            ((uint32_t) 0x00000000UL) /**< FLASH base address  */
@@ -181,7 +181,7 @@ typedef enum IRQn{
 #define BITBAND_PER_BASE          ((uint32_t) 0x42000000UL) /**< Peripheral Address Space bit-band area */
 #define BITBAND_RAM_BASE          ((uint32_t) 0x22000000UL) /**< SRAM Address Space bit-band area */
 
-/** Flash and SRAM limits for EFR32MG1P133F256GM48 */
+/** Flash and SRAM limits for EFR32MG1P233F256GM48 */
 #define FLASH_BASE                (0x00000000UL) /**< Flash Base Address */
 #define FLASH_SIZE                (0x00040000UL) /**< Available Flash Memory */
 #define FLASH_PAGE_SIZE           2048U          /**< Flash Memory page size */
@@ -253,10 +253,10 @@ typedef enum IRQn{
 #include "core_cm4.h"           /* Cortex-M4 processor and core peripherals */
 #include "system_efr32mg1p.h"   /* System Header File */
 
-/** @} End of group EFR32MG1P133F256GM48_Part */
+/** @} End of group EFR32MG1P233F256GM48_Part */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_Peripheral_TypeDefs Peripheral TypeDefs
+ * @defgroup EFR32MG1P233F256GM48_Peripheral_TypeDefs Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
  *****************************************************************************/
@@ -294,10 +294,10 @@ typedef enum IRQn{
 #include "efr32mg1p_devinfo.h"
 #include "efr32mg1p_romtable.h"
 
-/** @} End of group EFR32MG1P133F256GM48_Peripheral_TypeDefs  */
+/** @} End of group EFR32MG1P233F256GM48_Peripheral_TypeDefs  */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_Peripheral_Base Peripheral Memory Map
+ * @defgroup EFR32MG1P233F256GM48_Peripheral_Base Peripheral Memory Map
  * @{
  *****************************************************************************/
 
@@ -331,10 +331,10 @@ typedef enum IRQn{
 #define LOCKBITS_BASE     (0x0FE04000UL) /**< Lock-bits page base address */
 #define USERDATA_BASE     (0x0FE00000UL) /**< User data page base address */
 
-/** @} End of group EFR32MG1P133F256GM48_Peripheral_Base */
+/** @} End of group EFR32MG1P233F256GM48_Peripheral_Base */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_Peripheral_Declaration Peripheral Declarations
+ * @defgroup EFR32MG1P233F256GM48_Peripheral_Declaration Peripheral Declarations
  * @{
  *****************************************************************************/
 
@@ -366,10 +366,10 @@ typedef enum IRQn{
 #define DEVINFO      ((DEVINFO_TypeDef *) DEVINFO_BASE)     /**< DEVINFO base pointer */
 #define ROMTABLE     ((ROMTABLE_TypeDef *) ROMTABLE_BASE)   /**< ROMTABLE base pointer */
 
-/** @} End of group EFR32MG1P133F256GM48_Peripheral_Declaration */
+/** @} End of group EFR32MG1P233F256GM48_Peripheral_Declaration */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_Peripheral_Offsets Peripheral Offsets
+ * @defgroup EFR32MG1P233F256GM48_Peripheral_Offsets Peripheral Offsets
  * @{
  *****************************************************************************/
 
@@ -384,10 +384,10 @@ typedef enum IRQn{
 #define IDAC_OFFSET       0x400 /**< Offset in bytes between IDAC instances */
 #define WDOG_OFFSET       0x400 /**< Offset in bytes between WDOG instances */
 
-/** @} End of group EFR32MG1P133F256GM48_Peripheral_Offsets */
+/** @} End of group EFR32MG1P233F256GM48_Peripheral_Offsets */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_BitFields Bit Fields
+ * @defgroup EFR32MG1P233F256GM48_BitFields Bit Fields
  * @{
  *****************************************************************************/
 
@@ -395,7 +395,7 @@ typedef enum IRQn{
 #include "efr32mg1p_dmareq.h"
 
 /**************************************************************************//**
- * @defgroup EFR32MG1P133F256GM48_UNLOCK Unlock Codes
+ * @defgroup EFR32MG1P233F256GM48_UNLOCK Unlock Codes
  * @{
  *****************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
@@ -406,9 +406,9 @@ typedef enum IRQn{
 #define TIMER_UNLOCK_CODE    0xCE80 /**< TIMER unlock code */
 #define RTCC_UNLOCK_CODE     0xAEE8 /**< RTCC unlock code */
 
-/** @} End of group EFR32MG1P133F256GM48_UNLOCK */
+/** @} End of group EFR32MG1P233F256GM48_UNLOCK */
 
-/** @} End of group EFR32MG1P133F256GM48_BitFields */
+/** @} End of group EFR32MG1P233F256GM48_BitFields */
 
 #include "efr32mg1p_af_ports.h"
 #include "efr32mg1p_af_pins.h"
@@ -429,11 +429,11 @@ typedef enum IRQn{
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 
-/** @} End of group EFR32MG1P133F256GM48 */
+/** @} End of group EFR32MG1P233F256GM48 */
 
 /** @} End of group Parts */
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* EFR32MG1P133F256GM48_H */
+#endif /* EFR32MG1P233F256GM48_H */
