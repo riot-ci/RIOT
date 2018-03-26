@@ -18,7 +18,6 @@
  * @}
  */
 
-#include "atmega_stdio.h"
 #include "board.h"
 #include "cpu.h"
 #include "irq.h"
