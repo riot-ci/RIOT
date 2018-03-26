@@ -5,15 +5,16 @@
 # to get the required information.
 
 # Module - CPU
-slwrb4150a efr32mg1p133f256gm48
+slwrb4150a efr32mg1p233f256gm48
 slwrb4150b efr32mg1p233f256gm48
 slwrb4151a efr32mg1p232f256gm48
+slwrb4152a efr32mg1p232f256gm48
 slwrb4153a efr32mg1p132f256gm48
 slwrb4154a efr32mg1p732f256gm32
 slwrb4158a efr32mg13p733f512gm48
 slwrb4159a efr32mg13p632f512gm48
 slwrb4161a efr32mg12p432f1024gl125
-slwrb4162a efr32mg12p432f1024gl125
+slwrb4162a efr32mg12p332f1024gl125
 slwrb4163a efr32mg12p433f1024gl125
 slwrb4164a efr32mg12p433f1024gl125
 slwrb4167a efr32mg13p733f512gm48
