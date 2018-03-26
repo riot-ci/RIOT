@@ -10,6 +10,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
                              nucleo-l031k6 \
                              nucleo-l053r8 \
                              nucleo-f030r8 \
+                             stk3200 \
                              stm32f0discovery \
                              stm32l0538-disco \
 

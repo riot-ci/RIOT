@@ -14,8 +14,9 @@ BOARD_INSUFFICIENT_MEMORY := blackpill blackpill-128kib bluepill \
                              nucleo-f042k6 nucleo-f070rb nucleo-f072rb \
                              nucleo-f103rb nucleo-f302r8 nucleo-f303k8 \
                              nucleo-f334r8 nucleo-f410rb nucleo-l031k6 \
-                             nucleo-l053r8 opencm904 saml10-xpro saml11-xpro \
-                             spark-core stm32f0discovery stm32l0538-disco
+                             nucleo-l053r8 opencm904 stk3200 saml10-xpro \
+                             saml11-xpro spark-core stm32f0discovery \
+                             stm32l0538-disco
 
 BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
                    arduino-mega2560 arduino-nano \
