@@ -314,6 +314,7 @@ BASELIBS += $(APPDEPS)
 
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
+BINFILE ?= $(ELFFILE:.elf=.bin)
 
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
@@ -352,8 +353,11 @@ $(BINDIR)/$(APPLICATION_MODULE).a: FORCE  # we do not know here if it needs to b
 print-size: $(ELFFILE)
 	$(Q)$(SIZE) $<
 
-$(HEXFILE): $(ELFFILE)
-	$(Q)$(OBJCOPY) $(OFLAGS) $< $@
+%.hex: %.elf
+	$(Q)$(OBJCOPY) $(OFLAGS) -Oihex $< $@
+
+%.bin: %.elf
+	$(Q)$(OBJCOPY) $(OFLAGS) -Obinary $< $@
 
 endif # BUILD_IN_DOCKER
 
