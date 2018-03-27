@@ -306,6 +306,7 @@ BASELIBS += $(APPDEPS)
 
 .PHONY: all link clean flash flash-only term doc debug debug-server reset objdump help info-modules
 .PHONY: ..in-docker-container
+.PHONY: elffile binfile hexfile
 # Target can depend on FORCE to force running build command every time
 # and still let make use file modification timestamp (contrary to .PHONY)
 # Useful for commands that may keep files unchanged when executed.
@@ -314,6 +315,11 @@ BASELIBS += $(APPDEPS)
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
 BINFILE ?= $(ELFFILE:.elf=.bin)
+
+# Targets to get given file
+elffile: $(ELFFILE)
+hexfile: $(HEXFILE)
+binfile: $(BINFILE)
 
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
