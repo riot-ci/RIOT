@@ -18,7 +18,7 @@ info-objsize:
 	  sort -rnk$${SORTROW}
 
 info-buildsize:
-	@$(SIZE) -d -B $(BINDIR)/$(APPLICATION).elf || echo ''
+	@$(SIZE) -d -B $(ELFFILE) || echo ''
 
 info-build:
 	@echo 'APPLICATION: $(APPLICATION)'
@@ -41,6 +41,8 @@ info-build:
 	@echo ''
 	@echo 'ELFFILE: $(ELFFILE)'
 	@echo 'HEXFILE: $(HEXFILE)'
+	@echo 'BINFILE: $(BINFILE)'
+	@echo 'FLASHFILE: $(FLASHFILE)'
 	@echo ''
 	@echo 'FEATURES_REQUIRED (excl. optional features):'
 	@echo '         $(or $(sort $(filter-out $(FEATURES_OPTIONAL), $(FEATURES_REQUIRED))), -none-)'
