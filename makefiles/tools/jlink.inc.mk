@@ -3,10 +3,9 @@ export DEBUGGER = $(RIOTBASE)/dist/tools/jlink/jlink.sh
 export DEBUGSERVER = $(RIOTBASE)/dist/tools/jlink/jlink.sh
 export RESET = $(RIOTBASE)/dist/tools/jlink/jlink.sh
 
-export OFLAGS = -O binary
-export HEXFILE = $(ELFFILE:.elf=.bin)
+FLASHFILE = $(BINFILE)
 
-export FFLAGS ?= flash
-export DEBUGGER_FLAGS ?= debug
+FFLAGS ?= flash $(FLASHFILE)
+export DEBUGGER_FLAGS ?= debug $(ELFFILE)
 export DEBUGSERVER_FLAGS ?= debug-server
 export RESET_FLAGS ?= reset
