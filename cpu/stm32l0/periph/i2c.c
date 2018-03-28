@@ -403,7 +403,7 @@ int i2c_write_regs(i2c_t dev, uint8_t address, uint8_t reg, const void *data, in
     }
 
     /* Check to see if the bus is busy */
-    while ((i2c->ISR & I2C_ISR_BUSY) & tick--) {
+    while ((i2c->ISR & I2C_ISR_BUSY) && tick--) {
         if ((i2c->ISR & ERROR_FLAG) || !tick) {
             return -1;
         }
@@ -451,24 +451,28 @@ void i2c_poweron(i2c_t dev)
 
 void i2c_poweroff(i2c_t dev)
 {
+#if defined I2C_0_EN || defined I2C_1_EN || defined I2C_2_EN
+    uint16_t tick = TICK_TIMEOUT;
+#endif
+
     switch (dev) {
 #if I2C_0_EN
         case I2C_0:
-            while (I2C_0_DEV->ISR & I2C_ISR_BUSY) {}
+            while ((I2C_0_DEV->ISR & I2C_ISR_BUSY) && tick--) {}
 
             I2C_0_CLKDIS();
             break;
 #endif
 #if I2C_1_EN
         case I2C_1:
-            while (I2C_1_DEV->ISR & I2C_ISR_BUSY) {}
+            while ((I2C_1_DEV->ISR & I2C_ISR_BUSY) && tick--) {}
 
             I2C_1_CLKDIS();
             break;
 #endif
 #if I2C_2_EN
         case I2C_2:
-            while (I2C_2_DEV->ISR & I2C_ISR_BUSY) {}
+            while ((I2C_2_DEV->ISR & I2C_ISR_BUSY) && tick--) {}
 
             I2C_2_CLKDIS();
             break;
