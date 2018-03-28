@@ -334,7 +334,6 @@ endif # BUILDOSXNATIVE
 ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
-## make script for your application. Build RIOT-base here!
 ifeq (,$(RIOTNOLINK))
 link: ..compiler-check ..build-message $(ELFFILE) $(HEXFILE) print-size
 else
