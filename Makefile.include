@@ -348,7 +348,7 @@ $(BINDIR)/$(APPLICATION_MODULE).a: $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BIN
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 $(BINDIR)/$(APPLICATION_MODULE).a: FORCE  # we do not know here if it needs to be updated
 
-# 'print-size' triggers a rebuild. If you need, 'info-buildsize' does not not.
+# 'print-size' triggers a rebuild. Use 'info-buildsize' if you do not need to rebuild.
 print-size: $(ELFFILE)
 	$(Q)$(SIZE) $<
 
