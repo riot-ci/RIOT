@@ -40,7 +40,7 @@ int netdev_set_pass(netdev_t *dev, netopt_t opt, const void *value, size_t value
 
 void netdev_event_cb_pass(netdev_t *dev, netdev_event_t event)
 {
-    netdev_t *cur_dev = (netdev_t *)dev->context;
+    netdev_t *cur_dev = dev->context;
 
-    cur_dev->event_callback((netdev_t *)cur_dev, event);
+    cur_dev->event_callback(cur_dev, event);
 }

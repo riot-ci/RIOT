@@ -37,6 +37,7 @@ extern "C" {
 static inline netdev_t *netdev_add_layer(netdev_t *top, netdev_t *dev)
 {
     assert(top != NULL);
+    assert(dev != NULL);
     dev->lower = top;
     top->context = dev;
     return dev;
