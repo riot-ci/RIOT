@@ -32,7 +32,7 @@ QUIET ?= 1
 USEMODULE += ps
 
 ifneq ($(BOARD),native)
-  # This stack size is large enough to run Lua print() functions of
+# This stack size is large enough to run Lua print() functions of
   # various lengths. Other functions untested.
   CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
 endif
