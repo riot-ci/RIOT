@@ -46,6 +46,7 @@ int lua_run_script(const char *buffer, size_t buffer_len)
     lua_close(L);
     return 0;
 }
+}
 
 int main(void)
 {
