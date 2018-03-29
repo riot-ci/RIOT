@@ -48,9 +48,9 @@ board.
 
 Depending on the type of radio device, set the `LORA_DRIVER` variable accordingly:
 For example:
-```
+
     LORA_DRIVER=sx1272 make BOARD=nucleo-f411 -C pkg/semtech-loramac flash term
-```
+
 will build the application for a nucleo-f411 with an SX1272 based mbed LoRa shield.
 
 The SX1276 is the default value.
@@ -58,9 +58,8 @@ The SX1276 is the default value.
 The other parameter that has to be set at build time is the geographic region:
 `EU868`, `US915`, etc. See LoRaWAN regional parameters for more information.
 
-```
     LORA_REGION=US915 LORA_DRIVER=sx1272 make BOARD=nucleo-f411 -C pkg/semtech-loramac flash term
-```
+
 will build the application for a nucleo-f411 with an SX1272 based mbed LoRa shield
 for US915 region.
 
@@ -73,43 +72,61 @@ This application provides the `loramac` command for configuring the MAC,
 joining a network and sending/receiving data to/from a LoRaWAN network.
 `join` and `tx` subcommands are blocking until the MAC is done.
 
+* Initialize the mac with default values:
+
+```
+> loramac init
+```
+
 * Set your device EUI, application EUI, application key. Example for OTAA
   activation:
+
 ```
-    > loramac set deveui AAAAAAAAAAAAAAAA
-    > loramac set appeui BBBBBBBBBBBBBBBB
-    > loramac set appkey CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+> loramac set deveui AAAAAAAAAAAAAAAA
+> loramac set appeui BBBBBBBBBBBBBBBB
+> loramac set appkey CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 ```
 
 * Join a network using the OTAA procedure:
+
 ```
-    > loramac join otaa
-    Join procedure succeeded!
+> loramac join otaa
+Join procedure succeeded!
 ```
+
 * Send confirmable data on port 2 (cnf and port are optional):
+
 ```
-    > loramac tx This\ is\ RIOT! cnf 2
+> loramac tx This\ is\ RIOT! cnf 2
 ```
+
 * Send unconfirmable data on port 10:
+
 ```
-    > loramac tx This\ is\ RIOT! uncnf 10
+> loramac tx This\ is\ RIOT! uncnf 10
 ```
+
 * Switch the default datarate index (from 0 to 16). 5 is for SF7, BW125:
+
 ```
-    > loramac set dr 5
+> loramac set dr 5
 ```
+
 * Switch to adaptive data rate:
+
 ```
-    > loramac set adr on
+> loramac set adr on
 ```
+
 The list of available commands:
+
 ```
-    > help
-    help
-    Command              Description
-    ---------------------------------------
-    loramac              control the loramac stack
-    reboot               Reboot the node
+> help
+help
+Command              Description
+---------------------------------------
+loramac              control the loramac stack
+reboot               Reboot the node
 ```
 
 On the TTN web console, you can follow the activation and the data
@@ -123,28 +140,35 @@ See the
 for more information.
 
 * Let's use [mosquitto](https://mosquitto.org/) clients. They can be installed
-on Ubuntu using:
+  on Ubuntu using:
+
 ```
-    sudo apt install mosquitto-clients
+sudo apt install mosquitto-clients
 ```
+
 * Subscribe to data raised by any node from any application:
+
 ```
-    mosquitto_sub -h eu.thethings.network -p 1883 -u <your username> -P <your password> -t '+/devices/+/up'
+mosquitto_sub -h eu.thethings.network -p 1883 -u <your username> -P <your password> -t '+/devices/+/up'
 ```
 * Publish some data to one of the node:
+
 ```
-    mosquitto_pub -h eu.thethings.network -p 1883 -u <your username> -P <your password> -t '<application name>/devices/<device name>/down' -m '{"port":2, "payload_raw":"VGhpcyBpcyBSSU9UIQ=="}'
+mosquitto_pub -h eu.thethings.network -p 1883 -u <your username> -P <your password> -t '<application name>/devices/<device name>/down' -m '{"port":2, "payload_raw":"VGhpcyBpcyBSSU9UIQ=="}'
 ```
 
 After sending some data from the node, the subscribed MQTT client will display:
+
 ```
-{"app_id":"<your application>","dev_id":"<your node>","hardware_serial":"XXXXXXXXXXXX","port":2,"counter":7,"confirmed":true,"payload_raw":"dGVzdA==","metadata":{"time":"2017-12-14T09:47:24.84548586Z","frequency":868.1,"modulation":"LORA","data_rate":"SF12BW125","coding_rate":"4/5","gateways":[{"gtw_id":"eui-xxxxxxxx","timestamp":3910359076,"time":"2017-12-14T09:47:24.85112Z","channel":0,"rssi":-10,"snr":12.2,"rf_chain":1,"latitude":48.715027,"longitude":2.2059395,"altitude":157,"location_source":"registry"}]}}
+{"app_id":"<your application>","dev_id":"<your node>","hardware_serial":"XXXXXXXXXXXX","port":2,"counter":7,"confirmed":true,"payload_raw":"dGVzdA=="  "metadata":{"time":"2017-12-14T09:47:24.84548586Z","frequency":868.1,"modulation":"LORA","data_rate":"SF12BW125","coding_rate":"4/5","gateways":[{"gtw_id":"eui-xxxxxxxx","timestamp":3910359076,"time":"2017-12-14T09:47:24.85112Z","channel":0,"rssi":-10,"snr":12.2,"rf_chain":1"latitude":48.715027, "longitude":2.2059395,"altitude":157,"location_source":"registry"}]}}
 ```
+
 The payload sent is in the `payload_raw` json field and is formated in base64
 (`dGVzdA==` in this example).
 
 The node will also print the data received:
+
 ```
-    > loramac tx test
-    Data received: This is RIOT!
+> loramac tx test
+Data received: This is RIOT!
 ```
