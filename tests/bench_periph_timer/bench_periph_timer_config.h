@@ -159,8 +159,48 @@
 #define TIM_TEST_TO_REF(x) (((uint32_t)(x) * 15625ul) >> 9)
 #elif (TIM_TEST_FREQ == 1000000ul) && (TIM_REF_FREQ == 32768ul)
 #define TIM_TEST_TO_REF(x) (div_u32_by_15625div512(x))
+/* General conversion for Timer with 2^x factor */
+#elif (TIM_TEST_FREQ < TIM_REF_FREQ ) && ((TIM_REF_FREQ % TIM_TEST_FREQ) == 0)
+#ifndef TIM_TEST_TO_REF_SHIFT
+#if ((TIM_REF_FREQ >> 1) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   1
+#elif ((TIM_REF_FREQ >> 2) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   2
+#elif ((TIM_REF_FREQ >> 3) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   3
+#elif ((TIM_REF_FREQ >> 4) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   4
+#elif ((TIM_REF_FREQ >> 5) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   5
+#elif ((TIM_REF_FREQ >> 6) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   6
+#elif ((TIM_REF_FREQ >> 7) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   7
+#elif ((TIM_REF_FREQ >> 8) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   8
+#elif ((TIM_REF_FREQ >> 9) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   9
+#elif ((TIM_REF_FREQ >> 10) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   10
+#elif ((TIM_REF_FREQ >> 11) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   11
+#elif ((TIM_REF_FREQ >> 12) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   12
+#elif ((TIM_REF_FREQ >> 13) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   13
+#elif ((TIM_REF_FREQ >> 14) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   14
+#elif ((TIM_REF_FREQ >> 15) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   15
+#elif ((TIM_REF_FREQ >> 16) == TIM_TEST_FREQ)
+#define TIM_TEST_TO_REF_SHIFT   16
 #else
-#error Define TIM_TEST_TO_REF for the chosen frequencies in bench_periph_timer_config.h
+#error define TIM_TEST_TO_REF_SHIFT so that TIM_REF_FREQ == (TIM_TEST_FREQ << TIM_TEST_FREQ_SHIFT)
+#endif
+#endif
+#define TIM_TEST_TO_REF(x) ((uint32_t)(x) << (TIM_TEST_TO_REF_SHIFT))
+#else
+#error define TIM_TEST_TO_REF so that TIM_REF_FREQ == TIM_TEST_TO_REF(TIM_TEST_FREQ)
 #endif
 #endif
 

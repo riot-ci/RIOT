@@ -28,12 +28,14 @@
 #include "random.h"
 #include "div.h"
 #include "matstat.h"
-#include "spin_random.h"
+#include "thread.h"
 
-#include "periph/timer.h"
+#include "board.h"
 #include "cpu.h"
+#include "periph/timer.h"
 
 #include "print_results.h"
+#include "spin_random.h"
 #include "bench_periph_timer_config.h"
 
 /* Results will be grouped by function, rescheduling yes/no, start/stop.
@@ -482,6 +484,11 @@ int main(void)
     print_str(", TIM_REF_FREQ  = ");
     print_u32_dec(TIM_REF_FREQ);
     print("\n", 1);
+#ifdef TIM_TEST_TO_REF_SHIFT
+    print_str("TIM_TEST_TO_REF_SHIFT = ");
+    print_u32_dec(TIM_TEST_TO_REF_SHIFT);
+    print("\n", 1);
+#endif
     print_str("USE_REFERENCE = ");
     print_u32_dec(USE_REFERENCE);
     print("\n", 1);
