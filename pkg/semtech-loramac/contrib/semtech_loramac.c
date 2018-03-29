@@ -601,12 +601,19 @@ int semtech_loramac_init(semtech_loramac_t *mac)
 
     _init_loramac(mac, &semtech_loramac_primitives, &semtech_loramac_callbacks);
 
+    mac->state = SEMTECH_LORAMAC_STATE_IDLE;
+
     return 0;
 }
 
 uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type)
 {
-    DEBUG("Starting join procedure: %d\n", type);
+    if (mac->state == SEMTECH_LORAMAC_STATE_NOT_INITIALIZED) {
+        DEBUG("[semtech-loramac] MAC is not initialized\n");
+        return SEMTECH_LORAMAC_NOT_INITIALIZED;
+    }
+
+    DEBUG("[semtech-loramac] Starting join procedure: %d\n", type);
 
     if (mac->state != SEMTECH_LORAMAC_STATE_IDLE) {
         DEBUG("[semtech-loramac] internal mac is busy\n");
@@ -641,6 +648,11 @@ void semtech_loramac_request_link_check(semtech_loramac_t *mac)
 
 uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
 {
+    if (mac->state == SEMTECH_LORAMAC_STATE_NOT_INITIALIZED) {
+        DEBUG("[semtech-loramac] MAC is not initialized\n");
+        return SEMTECH_LORAMAC_NOT_INITIALIZED;
+    }
+
     mutex_lock(&mac->lock);
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_NETWORK_JOINED;
@@ -669,6 +681,11 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
 
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac)
 {
+    if (mac->state == SEMTECH_LORAMAC_STATE_NOT_INITIALIZED) {
+        DEBUG("[semtech-loramac] MAC is not initialized\n");
+        return SEMTECH_LORAMAC_NOT_INITIALIZED;
+    }
+
     mac->caller_pid = thread_getpid();
 
     /* Wait until the mac receive some information */
