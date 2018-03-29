@@ -482,6 +482,8 @@ void i2c_poweroff(i2c_t dev)
 
 static void _start(I2C_TypeDef *dev, uint8_t address, uint8_t length, uint8_t rw_flag)
 {
+    uint16_t tick = TICK_TIMEOUT;
+
     dev->CR2 = 0;
     /* set address mode to 7-bit */
     dev->CR2 &= ~(I2C_CR2_ADD10);
@@ -508,7 +510,7 @@ static void _start(I2C_TypeDef *dev, uint8_t address, uint8_t length, uint8_t rw
     dev->CR2 |= I2C_CR2_START;
 
     /* Wait for the start followed by the address to be sent */
-    while (!(dev->CR2 & I2C_CR2_START)) {}
+    while (!(dev->CR2 & I2C_CR2_START) && tick--) {}
 }
 
 static inline int _read(I2C_TypeDef *dev, uint8_t *data, int length)
