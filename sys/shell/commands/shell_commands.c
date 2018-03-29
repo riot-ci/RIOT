@@ -149,6 +149,10 @@ extern int _app_metadata_handler(int argc, char **argv);
 extern int _i2c_scan(int argc, char **argv);
 #endif
 
+#ifdef MODULE_SEMTECH_LORAMAC
+extern int _loramac_handler(int argc, char **argv);
+#endif
+
 const shell_command_t _shell_command_list[] = {
     {"reboot", "Reboot the node", _reboot_handler},
 #ifdef MODULE_CONFIG
@@ -191,7 +195,7 @@ const shell_command_t _shell_command_list[] = {
 #ifdef MODULE_GNRC_IPV6_NIB
     {"nib", "Configure neighbor information base", _gnrc_ipv6_nib},
 #endif
-#ifdef MODULE_GNRC_NETIF
+#if defined(MODULE_GNRC_NETIF) && !defined(MODULE_SEMTECH_LORAMAC)
     {"ifconfig", "Configure network interfaces", _gnrc_netif_config},
 #ifdef MODULE_GNRC_TXTSND
     {"txtsnd", "Sends a custom string as is over the link layer", _gnrc_netif_send },
@@ -244,6 +248,9 @@ const shell_command_t _shell_command_list[] = {
 #endif
 #ifdef MODULE_I2C_SCAN
     { "i2c_scan", "Performs an I2C bus scan", _i2c_scan },
+#endif
+#ifdef MODULE_SEMTECH_LORAMAC
+    {"loramac", "Control Semtech loramac stack", _loramac_handler},
 #endif
     {NULL, NULL, NULL}
 };
