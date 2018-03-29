@@ -52,28 +52,16 @@
 #error TIMER_NUMOF should be the total of PIT and LPTMR timers in the system
 #endif
 
-/*
- * The RTC prescaler will normally count to 32767 every second unless configured
- * otherwise through the time compensation register.
- */
-#define TIMER_RTC_SUBTICK_MAX (0x7fff)
-/*
- * Number of bits in the ideal RTC prescaler counter
- */
-#define TIMER_RTC_SUBTICK_BITS (15)
-
 /**
  * @brief  The number of ticks that will be lost when setting a new target in the LPTMR
  *
  * The counter will otherwise drop ticks when setting new timeouts.
  */
-#define LPTMR_RELOAD_OVERHEAD 2
+#define LPTMR_RELOAD_OVERHEAD 1
 
-/**
- * @brief  Base clock frequency of the LPTMR module
- */
-/* The LPTMR implementation is hard-coded to use ER32KCLK */
-#define LPTMR_BASE_FREQ (32768ul)
+#ifndef RTC_LOAD_CAP_BITS
+#define RTC_LOAD_CAP_BITS    0
+#endif
 
 /* PIT channel state */
 typedef struct {
@@ -86,11 +74,9 @@ typedef struct {
 /* LPTMR state */
 typedef struct {
     timer_isr_ctx_t isr_ctx;
-    uint32_t csr;
+    uint32_t cnr;
     uint32_t cmr;
     uint32_t running;
-    uint16_t reference;
-    uint16_t rtt_offset;
 } lptmr_t;
 
 static const pit_conf_t pit_config[PIT_NUMOF] = PIT_CONFIG;
@@ -177,6 +163,8 @@ static inline void _pit_set_counter(uint8_t dev)
     PIT->CHANNEL[ch].TFLG = PIT_TFLG_TIF_MASK;
     /* Restore previous timer state */
     PIT->CHANNEL[ch].TCTRL = pit[dev].tctrl;
+    /* Set the next cycle to reload the maximum value */
+    PIT->CHANNEL[ch].LDVAL = PIT_MAX_VALUE;
 }
 
 static inline int pit_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *arg)
@@ -224,17 +212,18 @@ static inline int pit_set(uint8_t dev, uint32_t timeout)
     const uint8_t ch = pit_config[dev].count_ch;
     /* Disable IRQs to minimize the number of lost ticks */
     unsigned int mask = irq_disable();
+    uint32_t cval = pit[dev].ldval;
     pit[dev].ldval = timeout;
     pit[dev].tctrl = PIT_TCTRL_TIE_MASK | PIT_TCTRL_CHN_MASK | PIT_TCTRL_TEN_MASK;
     /* Add the new timeout offset to the up-counter */
     pit[dev].count += timeout;
-    if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) != 0) {
+    if (PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) {
         /* Timer is currently running */
-        uint32_t cval = PIT->CHANNEL[ch].CVAL;
-        /* Subtract if there was anything left on the counter */
-        pit[dev].count -= cval;
+        cval = PIT->CHANNEL[ch].CVAL;
         _pit_set_counter(dev);
     }
+    /* Subtract if there was anything left on the counter */
+    pit[dev].count -= cval;
     irq_restore(mask);
     return 0;
 }
@@ -250,7 +239,7 @@ static inline int pit_set_absolute(uint8_t dev, uint32_t target)
     pit[dev].tctrl = PIT_TCTRL_TIE_MASK | PIT_TCTRL_CHN_MASK | PIT_TCTRL_TEN_MASK;
     /* Set the new target time in the up-counter */
     pit[dev].count = target;
-    if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) != 0) {
+    if (PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) {
         _pit_set_counter(dev);
     }
 
@@ -264,18 +253,18 @@ static inline int pit_clear(uint8_t dev)
     /* Disable IRQs to minimize the number of lost ticks */
     unsigned int mask = irq_disable();
 
+    uint32_t cval = pit[dev].ldval;
     pit[dev].ldval = PIT_MAX_VALUE;
     pit[dev].tctrl = PIT_TCTRL_CHN_MASK | PIT_TCTRL_TEN_MASK;
-    /* pit[dev].count += PIT_MAX_VALUE + 1; */ /* == 0 (mod 2**32) */
 
     if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) != 0) {
         /* Timer is currently running */
-        uint32_t cval = PIT->CHANNEL[ch].CVAL;
-        /* Subtract if there was anything left on the counter */
-        pit[dev].count -= cval;
+        cval = PIT->CHANNEL[ch].CVAL;
         /* Set a long timeout */
         _pit_set_counter(ch);
     }
+    /* Subtract if there was anything left on the counter */
+    pit[dev].count -= cval;
 
     irq_restore(mask);
     return 0;
@@ -284,40 +273,42 @@ static inline int pit_clear(uint8_t dev)
 static inline uint32_t pit_read(uint8_t dev)
 {
     uint8_t ch = pit_config[dev].count_ch;
-    if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) != 0) {
-        /* Timer running */
-        return pit[dev].count - PIT->CHANNEL[ch].CVAL;
+    if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) == 0) {
+        /* Timer stopped, CVAL is unreliable */
+        return pit[dev].count - pit[dev].ldval;
     }
-    else {
-        /* Timer stopped */
-        return pit[dev].count;
-    }
+    /* Timer running */
+    return pit[dev].count - PIT->CHANNEL[ch].CVAL;
 }
 
 static inline void pit_start(uint8_t dev)
 {
     uint8_t ch = pit_config[dev].count_ch;
+    unsigned int mask = irq_disable();
     if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) != 0) {
         /* Already running */
+        irq_restore(mask);
         return;
     }
     PIT->CHANNEL[ch].LDVAL = pit[dev].ldval;
-    pit[dev].count += pit[dev].ldval;
     PIT->CHANNEL[ch].TCTRL = pit[dev].tctrl;
+    irq_restore(mask);
 }
 
 static inline void pit_stop(uint8_t dev)
 {
     uint8_t ch = pit_config[dev].count_ch;
+    unsigned int mask = irq_disable();
     if ((PIT->CHANNEL[ch].TCTRL & PIT_TCTRL_TEN_MASK) == 0) {
         /* Already stopped */
+        irq_restore(mask);
         return;
     }
     uint32_t cval = PIT->CHANNEL[ch].CVAL;
     pit[dev].tctrl = PIT->CHANNEL[ch].TCTRL;
     PIT->CHANNEL[ch].TCTRL = 0;
-    pit[dev].count -= cval;
     pit[dev].ldval = cval;
+    irq_restore(mask);
 }
 
 static inline void pit_irq_handler(tim_t dev)
@@ -325,7 +316,6 @@ static inline void pit_irq_handler(tim_t dev)
     uint8_t ch = pit_config[_pit_index(dev)].count_ch;
     pit_t *pit_ctx = &pit[_pit_index(dev)];
     pit_ctx->ldval = PIT_MAX_VALUE;
-    pit_ctx->count += PIT_MAX_VALUE;
     pit_ctx->tctrl = PIT_TCTRL_CHN_MASK | PIT_TCTRL_TEN_MASK;
     _pit_set_counter(_pit_index(dev));
 
@@ -350,35 +340,6 @@ static inline void lptmr_start(uint8_t dev);
 static inline void lptmr_stop(uint8_t dev);
 static inline void lptmr_irq_handler(tim_t tim);
 
-/**
- * @brief Read the prescaler register from the RTC as a reliable 47 bit time counter
- */
-static inline uint32_t _rtt_get_subtick(void)
-{
-    uint32_t tpr;
-    uint32_t tsr;
-
-    for (int i = 0; i < 5; i++) {
-        /* Read twice to make sure we get a stable reading */
-        tpr = RTC->TPR & RTC_TPR_TPR_MASK;
-        tsr = RTC->TSR & RTC_TSR_TSR_MASK;
-
-        if ((tsr == (RTC->TSR & RTC_TSR_TSR_MASK)) &&
-            (tpr == (RTC->TPR & RTC_TPR_TPR_MASK))) {
-            break;
-        }
-    }
-    if (tpr > TIMER_RTC_SUBTICK_MAX) {
-        /* This only happens if the RTC time compensation value has been
-         * modified to compensate for RTC drift. See Kinetis ref.manual,
-         *  RTC Time Compensation Register (RTC_TCR).
-         */
-        tpr = TIMER_RTC_SUBTICK_MAX;
-    }
-
-    return (tsr << TIMER_RTC_SUBTICK_BITS) | tpr;
-}
-
 static inline void _lptmr_set_cb_config(uint8_t dev, timer_cb_t cb, void *arg)
 {
     /* set callback function */
@@ -389,60 +350,32 @@ static inline void _lptmr_set_cb_config(uint8_t dev, timer_cb_t cb, void *arg)
 /**
  * @brief  Compute the LPTMR prescaler setting, see reference manual for details
  */
-static inline int32_t _lptmr_compute_prescaler(uint32_t freq) {
+static inline int32_t _lptmr_compute_prescaler(uint8_t dev, uint32_t freq) {
     uint32_t prescale = 0;
-    if ((freq > LPTMR_BASE_FREQ) || (freq == 0)) {
+    if ((freq > lptmr_config[dev].base_freq) || (freq == 0)) {
         /* Frequency out of range */
         return -1;
     }
-    while (freq < LPTMR_BASE_FREQ){
+    while (freq < lptmr_config[dev].base_freq){
         ++prescale;
         freq <<= 1;
     }
-    if (freq != LPTMR_BASE_FREQ) {
-        /* freq was not a power of two division of LPTMR_BASE_FREQ */
+    if (freq != lptmr_config[dev].base_freq) {
+        /* freq was not a power of two division of base_freq */
         return -2;
     }
-    if (prescale > 0) {
-        /* LPTMR_PSR_PRESCALE == 0 yields LPTMR_BASE_FREQ/2,
-         * LPTMR_PSR_PRESCALE == 1 yields LPTMR_BASE_FREQ/4 etc.. */
-        return LPTMR_PSR_PRESCALE(prescale - 1);
-    }
-    else {
+    if (prescale == 0) {
         /* Prescaler bypass enabled */
         return LPTMR_PSR_PBYP_MASK;
     }
-}
-
-/**
- * @brief  Update the offset between RTT and LPTMR
- */
-static inline void _lptmr_update_rtt_offset(uint8_t dev)
-{
-    lptmr[dev].rtt_offset = _rtt_get_subtick();
-}
-
-/**
- * @brief  Update the reference time point (CNR=0)
- */
-static inline void _lptmr_update_reference(uint8_t dev)
-{
-    lptmr[dev].reference = _rtt_get_subtick() + LPTMR_RELOAD_OVERHEAD - lptmr[dev].rtt_offset;
-}
-
-static inline void _lptmr_set_counter(uint8_t dev)
-{
-    _lptmr_update_reference(dev);
-    LPTMR_Type *hw = lptmr_config[dev].dev;
-    hw->CSR = 0;
-    hw->CMR = lptmr[dev].cmr;
-    /* restore saved state */
-    hw->CSR = lptmr[dev].csr;
+    /* LPTMR_PSR_PRESCALE == 0 yields base_freq / 2,
+     * LPTMR_PSR_PRESCALE == 1 yields base_freq / 4 etc.. */
+    return LPTMR_PSR_PRESCALE(prescale - 1);
 }
 
 static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *arg)
 {
-    int32_t prescale = _lptmr_compute_prescaler(freq);
+    int32_t prescale = _lptmr_compute_prescaler(dev, freq);
     if (prescale < 0) {
         return -1;
     }
@@ -454,11 +387,16 @@ static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *ar
     LPTMR_CLKEN();
     /* Completely disable the module before messing with the settings */
     hw->CSR = 0;
+
+    /* Turn on RTC oscillator if it is not running */
+    RTT_UNLOCK();
+    if (!(RTT_DEV->CR & RTC_CR_OSCE_MASK)) {
+        RTT_DEV->CR = RTC_CR_OSCE_MASK | RTC_CR_SUP_MASK | RTC_LOAD_CAP_BITS;
+    }
+
     /* select ERCLK32K as clock source for LPTMR */
     hw->PSR = LPTMR_PSR_PCS(2) | ((uint32_t)prescale);
 
-    /* Clear IRQ flag in case it was already set */
-    hw->CSR = LPTMR_CSR_TCF_MASK;
     /* Enable IRQs on the counting channel */
     NVIC_ClearPendingIRQ(lptmr_config[dev].irqn);
     NVIC_EnableIRQ(lptmr_config[dev].irqn);
@@ -466,9 +404,11 @@ static inline int lptmr_init(uint8_t dev, uint32_t freq, timer_cb_t cb, void *ar
     _lptmr_set_cb_config(dev, cb, arg);
 
     /* Reset state */
-    _lptmr_update_rtt_offset(dev);
     lptmr[dev].running = 1;
-    lptmr_clear(dev);
+    lptmr[dev].cnr = 0;
+    lptmr[dev].cmr = 0;
+    hw->CMR = 0;
+    hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
 
     irq_restore(mask);
 
@@ -480,86 +420,188 @@ static inline uint16_t lptmr_read(uint8_t dev)
     LPTMR_Type *hw = lptmr_config[dev].dev;
     /* latch the current timer value into CNR */
     hw->CNR = 0;
-    return lptmr[dev].reference + hw->CNR;
+    return lptmr[dev].cnr + hw->CNR;
+}
+
+/**
+ * @brief Reload the timer with the given timeout, or spin if timeout is too small
+ *
+ * @pre IRQs masked, timer running
+ */
+static inline void lptmr_reload_or_spin(uint8_t dev, uint16_t timeout)
+{
+    LPTMR_Type *hw = lptmr_config[dev].dev;
+    /* Disable timer and set target, 1 to 2 ticks will be dropped by the
+     * hardware during the disable-enable cycle */
+    /* Disable the timer interrupt first */
+    hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
+    if (timeout <= LPTMR_RELOAD_OVERHEAD) {
+        /* we spin if the timeout is too short to reload the timer */
+        hw->CNR = 0;
+        uint16_t cnr_begin = hw->CNR;
+        while ((hw->CNR - cnr_begin) <= timeout) {
+            hw->CNR = 0;
+        }
+        /* Emulate IRQ handler behaviour */
+        lptmr[dev].running = 0;
+        if (lptmr[dev].isr_ctx.cb != NULL) {
+            lptmr[dev].isr_ctx.cb(lptmr[dev].isr_ctx.arg, 0);
+        }
+        thread_yield_higher();
+        return;
+    }
+    /* Update reference */
+    hw->CNR = 0;
+    lptmr[dev].cnr += hw->CNR + LPTMR_RELOAD_OVERHEAD;
+    /* Disable timer */
+    hw->CSR = 0;
+    hw->CMR = timeout - LPTMR_RELOAD_OVERHEAD;
+    /* Enable timer and IRQ */
+    hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
 }
 
 static inline int lptmr_set(uint8_t dev, uint16_t timeout)
 {
+    LPTMR_Type *hw = lptmr_config[dev].dev;
     /* Disable IRQs to minimize jitter */
     unsigned int mask = irq_disable();
-    lptmr[dev].cmr = timeout;
-    /* Enable interrupt, enable timer */
-    lptmr[dev].csr = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TIE_MASK;
-    if (lptmr[dev].running != 0) {
-        /* Timer is currently running */
-        /* Set new target */
-        _lptmr_set_counter(dev);
+    lptmr[dev].running = 1;
+    if (!(hw->CSR & LPTMR_CSR_TEN_MASK)) {
+        /* Timer is stopped, only update target */
+        if (timeout > LPTMR_RELOAD_OVERHEAD) {
+            /* Compensate for the reload delay */
+            lptmr[dev].cmr = timeout - LPTMR_RELOAD_OVERHEAD;
+        }
+        else {
+            lptmr[dev].cmr = 0;
+        }
+    }
+    else if (hw->CSR & LPTMR_CSR_TCF_MASK) {
+        /* TCF is set, safe to update CMR live */
+        hw->CNR = 0;
+        hw->CMR = timeout + hw->CNR;
+        /* cppcheck-suppress selfAssignment
+         * Clear IRQ flags */
+        hw->CSR = hw->CSR;
+        /* Enable timer and IRQ */
+        hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
+    }
+    else {
+        lptmr_reload_or_spin(dev, timeout);
     }
     irq_restore(mask);
-    return 0;
+    return 1;
 }
 
 static inline int lptmr_set_absolute(uint8_t dev, uint16_t target)
 {
+    LPTMR_Type *hw = lptmr_config[dev].dev;
     /* Disable IRQs to minimize jitter */
     unsigned int mask = irq_disable();
-    uint16_t offset = target - lptmr[dev].reference;
-    lptmr[dev].cmr = offset;
-    /* Enable interrupt, enable timer */
-    lptmr[dev].csr = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TIE_MASK;
-    if (lptmr[dev].running != 0) {
-        /* Timer is currently running */
-        /* Set new target */
-        _lptmr_set_counter(dev);
+    lptmr[dev].running = 1;
+    if (!(hw->CSR & LPTMR_CSR_TEN_MASK)) {
+        /* Timer is stopped, only update target */
+        uint16_t timeout = target - lptmr[dev].cnr;
+        if (timeout > LPTMR_RELOAD_OVERHEAD) {
+            /* Compensate for the reload delay */
+            lptmr[dev].cmr = timeout - LPTMR_RELOAD_OVERHEAD;
+        }
+        else {
+            lptmr[dev].cmr = 0;
+        }
+    }
+    else if (hw->CSR & LPTMR_CSR_TCF_MASK) {
+        /* TCF is set, safe to update CMR live */
+        hw->CMR = target - lptmr[dev].cnr;
+        /* cppcheck-suppress selfAssignment
+         * Clear IRQ flags */
+        hw->CSR = hw->CSR;
+        /* Enable timer and IRQ */
+        hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
+    }
+    else {
+        uint16_t timeout = target - lptmr_read(dev);
+        lptmr_reload_or_spin(dev, timeout);
     }
     irq_restore(mask);
-    return 0;
+    return 1;
 }
 
 static inline int lptmr_clear(uint8_t dev)
 {
     /* Disable IRQs to minimize jitter */
+    LPTMR_Type *hw = lptmr_config[dev].dev;
     unsigned int mask = irq_disable();
-    lptmr[dev].cmr = LPTMR_MAX_VALUE;
-    /* Disable interrupt, enable timer */
-    lptmr[dev].csr = LPTMR_CSR_TEN_MASK;
-    if (lptmr[dev].running != 0) {
-        /* Timer is currently running */
-        /* Set new target */
-        _lptmr_set_counter(dev);
+    if (!lptmr[dev].running) {
+        /* Already clear */
+        irq_restore(mask);
+        return 1;
     }
+    lptmr[dev].running = 0;
+    if (!(hw->CSR & LPTMR_CSR_TEN_MASK)) {
+        /* Timer is stopped */
+        irq_restore(mask);
+        return 1;
+    }
+    /* Disable interrupt, enable timer */
+    hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
+    /* Clear IRQ if it occurred during this function */
+    NVIC_ClearPendingIRQ(lptmr_config[dev].irqn);
     irq_restore(mask);
-    return 0;
+    return 1;
 }
 
 static inline void lptmr_start(uint8_t dev)
 {
-    if (lptmr[dev].running != 0) {
-        /* Timer already running */
-        return;
-    }
-    lptmr[dev].running = 1;
-    _lptmr_set_counter(dev);
-}
-
-static inline void lptmr_stop(uint8_t dev)
-{
-    if (lptmr[dev].running == 0) {
-        /* Timer already stopped */
+    LPTMR_Type *hw = lptmr_config[dev].dev;
+    if (hw->CSR & LPTMR_CSR_TEN_MASK) {
+        /* Timer is running */
         return;
     }
     /* Disable IRQs to avoid race with ISR */
     unsigned int mask = irq_disable();
-    lptmr[dev].running = 0;
+    /* ensure hardware is reset */
+    hw->CSR = 0;
+    if (lptmr[dev].running) {
+        /* set target */
+        hw->CMR = lptmr[dev].cmr;
+        /* enable interrupt and start timer */
+        hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK | LPTMR_CSR_TIE_MASK;
+    }
+    else {
+        /* no target */
+        hw->CMR = 0;
+        /* Disable interrupt, enable timer */
+        hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
+    }
+    /* compensate for the reload delay when starting the timer */
+    lptmr[dev].cnr += LPTMR_RELOAD_OVERHEAD;
+    irq_restore(mask);
+}
+
+static inline void lptmr_stop(uint8_t dev)
+{
+    /* Disable IRQs to avoid race with ISR */
+    unsigned int mask = irq_disable();
     LPTMR_Type *hw = lptmr_config[dev].dev;
-    /* latch the current timer value into CNR */
-    hw->CNR = 12345;
-    uint16_t cnr = hw->CNR;
-    lptmr[dev].cmr = hw->CMR - cnr;
-    lptmr[dev].csr = hw->CSR;
-    _lptmr_update_reference(dev);
-    /* Disable counter and clear interrupt flag */
-    hw->CSR = LPTMR_CSR_TCF_MASK;
+    if (!(hw->CSR & LPTMR_CSR_TEN_MASK)) {
+        /* Timer is already stopped */
+        return;
+    }
+    /* Update state */
+    /* Latch counter value */
+    hw->CNR = 0;
+    lptmr[dev].cnr += hw->CNR;
+    uint16_t timeout = hw->CMR - hw->CNR;
+    /* Disable timer */
+    hw->CSR = 0;
+    if (timeout > LPTMR_RELOAD_OVERHEAD) {
+        /* Compensate for the delay in reloading */
+        lptmr[dev].cmr = timeout - LPTMR_RELOAD_OVERHEAD;
+    }
+    else {
+        lptmr[dev].cmr = timeout;
+    }
     /* Clear any pending IRQ */
     NVIC_ClearPendingIRQ(lptmr_config[dev].irqn);
     irq_restore(mask);
@@ -569,16 +611,16 @@ static inline void lptmr_irq_handler(tim_t tim)
 {
     uint8_t dev = _lptmr_index(tim);
     LPTMR_Type *hw = lptmr_config[dev].dev;
-    lptmr_t *lptmr_ctx = &lptmr[dev];
-    lptmr_ctx->cmr = LPTMR_MAX_VALUE;
-    _lptmr_set_counter(dev);
 
-    if (lptmr_ctx->isr_ctx.cb != NULL) {
-        lptmr_ctx->isr_ctx.cb(lptmr_ctx->isr_ctx.arg, 0);
+    lptmr[dev].running = 0;
+    /* Disable interrupt generation, keep timer running */
+    /* Do not clear TCF flag here, it is required for writing CMR without
+     * disabling timer first */
+    hw->CSR = LPTMR_CSR_TEN_MASK | LPTMR_CSR_TFC_MASK;
+
+    if (lptmr[dev].isr_ctx.cb != NULL) {
+        lptmr[dev].isr_ctx.cb(lptmr[dev].isr_ctx.arg, 0);
     }
-
-    /* Clear interrupt flag */
-    bit_set32(&hw->CSR, LPTMR_CSR_TCF_SHIFT);
 
     cortexm_isr_end();
 }
