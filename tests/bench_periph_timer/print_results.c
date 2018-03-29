@@ -110,7 +110,7 @@ static void print_detailed(const matstat_state_t *states, size_t nelem, unsigned
 
 void print_results(const result_presentation_t *pres, const matstat_state_t *ref_states, const matstat_state_t *int_states)
 {
-    static char buf[32]; /* String formatting temporary buffer, not thread safe */
+    static char buf[48]; /* String formatting temporary buffer, not thread safe */
     print_str("------------- BEGIN STATISTICS --------------\n");
     print_str("Limits: mean: [");
     print_s32_dec(pres->ref_limits->mean_low);

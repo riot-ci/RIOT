@@ -24,6 +24,9 @@
 
 #include "periph/timer.h"
 #include "cpu.h"
+#if TEST_XTIMER
+#include "xtimer.h"
+#endif
 
 #ifndef TIMER_NUMOF
 #error "TIMER_NUMOF not defined!"
@@ -95,7 +98,10 @@
 #endif
 /* Shortest timer timeout tested (TUT ticks) */
 #ifndef TEST_MIN
-#if TIM_TEST_FREQ < 100000
+#if TEST_XTIMER
+/* Default minimum delay for xtimer */
+#define TEST_MIN (XTIMER_ISR_BACKOFF)
+#elif TIM_TEST_FREQ < 100000
 /* this usually works for slow timers */
 #define TEST_MIN 1
 #else
@@ -106,7 +112,11 @@
 #endif
 /* Minimum delay for relative timers, should usually work with any value */
 #ifndef TEST_MIN_REL
+#if TEST_XTIMER
+#define TEST_MIN_REL (TEST_MIN)
+#else
 #define TEST_MIN_REL (0)
+#endif
 #endif
 /* Number of test values */
 #define TEST_NUM ((TEST_MAX) - (TEST_MIN) + 1)
@@ -226,5 +236,11 @@
 
 /* estimate_cpu_overhead will loop for this many iterations to get a proper estimate */
 #define ESTIMATE_CPU_ITERATIONS 2048
+
+#if TEST_XTIMER
+#define READ_TUT() _xtimer_now()
+#else
+#define READ_TUT() timer_read(TIM_TEST_DEV)
+#endif
 
 #endif /* BENCH_PERIPH_TIMER_CONFIG_H */
