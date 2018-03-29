@@ -62,15 +62,17 @@ enum {
     SEMTECH_LORAMAC_TX_SCHEDULED,                /**< TX data scheduled */
     SEMTECH_LORAMAC_TX_DONE,                     /**< Transmission completed */
     SEMTECH_LORAMAC_DATA_RECEIVED,               /**< Data received */
-    SEMTECH_LORAMAC_BUSY                         /**< Internal MAC is busy */
+    SEMTECH_LORAMAC_BUSY,                        /**< Internal MAC is busy */
+    SEMTECH_LORAMAC_NOT_INITIALIZED              /**< MAC is not initialized */
 };
 
 /**
  * @brief   LoRaMAC internal state
  */
 enum {
-    SEMTECH_LORAMAC_STATE_IDLE = 0,
-    SEMTECH_LORAMAC_STATE_BUSY
+    SEMTECH_LORAMAC_STATE_NOT_INITIALIZED = 0,
+    SEMTECH_LORAMAC_STATE_IDLE,
+    SEMTECH_LORAMAC_STATE_BUSY,
 };
 
 /**
@@ -139,6 +141,7 @@ int semtech_loramac_init(semtech_loramac_t *mac);
  * @return SEMTECH_LORAMAC_JOIN_SUCCEEDED on success
  * @return SEMTECH_LORAMAC_JOIN_FAILED on failure
  * @return SEMTECH_LORAMAC_BUSY when the mac is already active (join or tx in progress)
+ * @return SEMTECH_LORAMAC_NOT_INITIALIZED when the mac is not initialized
  */
 uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type);
 
@@ -156,6 +159,7 @@ uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type);
  * @return SEMTECH_LORAMAC_NOT_JOINED when the network is not joined
  * @return SEMTECH_LORAMAC_BUSY when the mac is already active (join or tx in progress)
  * @return SEMTECH_LORAMAC_TX_SCHEDULED when the TX is scheduled in the mac
+ * @return SEMTECH_LORAMAC_NOT_INITIALIZED when the mac is not initialized
  */
 uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len);
 
@@ -174,6 +178,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  *
  * @return SEMTECH_LORAMAC_TX_DONE when TX has completed, no data received
  * @return SEMTECH_LORAMAC_DATA_RECEIVED when TX has completed and data is received
+ * @return SEMTECH_LORAMAC_NOT_INITIALIZED when the mac is not initialized
  */
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac);
 
