@@ -72,8 +72,8 @@ static mutex_t mtx_cb = MUTEX_INIT_LOCKED;
 
 /* Test state element */
 typedef struct {
-    matstat_state_t *target_state; /* timer_set error statistics state */
-    matstat_state_t *read_state; /* timer_read error statistics state */
+    matstat_state_t *ref_state; /* timer_set error statistics state */
+    matstat_state_t *int_state; /* timer_read error statistics state */
     unsigned int target_ref; /* Target time in reference timer */
     unsigned int target_tut; /* Target time in timer under test */
 } test_ctx_t;
@@ -190,8 +190,12 @@ static void cb(void *arg, int chan)
         return;
     }
     test_ctx_t *ctx = arg;
-    if (ctx->target_state == NULL) {
-        print_str("cb: Warning! target_state = NULL\n");
+    if (ctx->ref_state == NULL) {
+        print_str("cb: Warning! ref_state = NULL\n");
+        return;
+    }
+    if (ctx->int_state == NULL) {
+        print_str("cb: Warning! int_state = NULL\n");
         return;
     }
     /* Update running stats */
@@ -208,13 +212,13 @@ static void cb(void *arg, int chan)
     /* Check that reference timer did not overflow during the test */
     if ((now_ref + 0x4000u) >= ctx->target_ref) {
         int32_t diff = now_ref - ctx->target_ref - 1 - overhead_target;
-        matstat_add(ctx->target_state, diff);
+        matstat_add(ctx->ref_state, diff);
     }
     /* Update timer_read statistics only when timer_read has not overflowed
      * since the timer was set */
     if ((now_tut + 0x4000u) >= ctx->target_tut) {
         int32_t diff = now_tut - ctx->target_tut - 1 - overhead_read;
-        matstat_add(ctx->read_state, diff);
+        matstat_add(ctx->int_state, diff);
     }
 
     mutex_unlock(&mtx_cb);
@@ -228,19 +232,19 @@ static void cb(void *arg, int chan)
  */
 static void assign_state_ptr(test_ctx_t *ctx, unsigned int variant, uint32_t interval)
 {
-    ctx->read_state = &int_states[variant];
+    ctx->int_state = &int_states[variant];
     if (DETAILED_STATS) {
         if (LOG2_STATS) {
             unsigned int log2num = bitarithm_msb(interval);
 
-            ctx->target_state = &ref_states[variant * TEST_LOG2NUM + log2num];
+            ctx->ref_state = &ref_states[variant * TEST_LOG2NUM + log2num];
         }
         else {
-            ctx->target_state = &ref_states[variant * TEST_NUM + interval];
+            ctx->ref_state = &ref_states[variant * TEST_NUM + interval];
         }
     }
     else {
-        ctx->target_state = &ref_states[variant];
+        ctx->ref_state = &ref_states[variant];
     }
 }
 
@@ -366,10 +370,10 @@ static void estimate_cpu_overhead(void)
     overhead_read = 0;
     test_ctx_t context;
     test_ctx_t *ctx = &context;
-    matstat_state_t target_state = MATSTAT_STATE_INIT;
-    matstat_state_t read_state = MATSTAT_STATE_INIT;
-    ctx->target_state = &target_state;
-    ctx->read_state = &read_state;
+    matstat_state_t ref_state = MATSTAT_STATE_INIT;
+    matstat_state_t int_state = MATSTAT_STATE_INIT;
+    ctx->ref_state = &ref_state;
+    ctx->int_state = &int_state;
     for (unsigned int k = 0; k < ESTIMATE_CPU_ITERATIONS; ++k) {
         unsigned int interval_ref = TIM_TEST_TO_REF(interval);
         spin_random_delay();
@@ -379,12 +383,12 @@ static void estimate_cpu_overhead(void)
         thread_yield_higher();
         cb(ctx, TIM_TEST_CHAN);
     }
-    overhead_target = matstat_mean(&target_state);
-    overhead_read = matstat_mean(&read_state);
+    overhead_target = matstat_mean(&ref_state);
+    overhead_read = matstat_mean(&int_state);
     print_str("overhead_target = ");
     print_s32_dec(overhead_target);
     print_str(" (s2 = ");
-    uint32_t var = matstat_variance(&target_state);
+    uint32_t var = matstat_variance(&ref_state);
     print_u32_dec(var);
     print_str(")\n");
     if (var > 2) {
@@ -396,7 +400,7 @@ static void estimate_cpu_overhead(void)
     print_str("overhead_read = ");
     print_s32_dec(overhead_read);
     print_str(" (s2 = ");
-    var = matstat_variance(&read_state);
+    var = matstat_variance(&int_state);
     print_u32_dec(var);
     print_str(")\n");
     if (var > 2) {
