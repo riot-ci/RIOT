@@ -24,6 +24,9 @@
 
 #include "periph/timer.h"
 #include "cpu.h"
+#if TEST_XTIMER
+#include "xtimer.h"
+#endif
 
 #ifndef TIMER_NUMOF
 #error "TIMER_NUMOF not defined!"
@@ -226,5 +229,11 @@
 
 /* estimate_cpu_overhead will loop for this many iterations to get a proper estimate */
 #define ESTIMATE_CPU_ITERATIONS 2048
+
+#if TEST_XTIMER
+#define READ_TUT() _xtimer_now()
+#else
+#define READ_TUT() timer_read(TIM_TEST_DEV);
+#endif
 
 #endif /* BENCH_PERIPH_TIMER_CONFIG_H */
