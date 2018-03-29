@@ -36,6 +36,29 @@
 #include "print_results.h"
 #include "bench_periph_timer_config.h"
 
+/* Results will be grouped by function, rescheduling yes/no, start/stop.
+ * functions: timer_set, timer_set_absolute
+ * reschedule: yes/no, when yes: first set one target time, before that time has
+ *             passed, set the real target time
+ * start/stop: if stop: call timer_stop before setting the target time, then call timer_start
+ *
+ * All different variations will be mixed to provide the most varied input
+ * vector possible for the benchmark. A more varied input should yield a more
+ * correct estimate of the mean error and variance. Random CPU processing delays
+ * will be inserted between each step to avoid phase locking the benchmark to
+ * unobservable timer internals.
+ */
+
+enum test_variants {
+    TEST_RESCHEDULE         = 1,
+    TEST_STOPPED            = 2,
+    TEST_ABSOLUTE           = 4,
+    TEST_VARIANT_NUMOF      = 8,
+};
+
+/* Number of variant groups, used when printing results */
+#define TEST_VARIANT_GROUPS 2
+
 /* Benchmark processing overhead, results will be compensated for this to make
  * the results easier to understand */
 static int32_t overhead_target;
@@ -60,19 +83,101 @@ static test_ctx_t test_context;
 #if DETAILED_STATS
 #if LOG2_STATS
 /* Group test values by 2-logarithm to reduce memory requirements */
-static matstat_state_t states[TEST_VARIANT_NUMOF * TEST_LOG2NUM];
+static matstat_state_t ref_states[TEST_VARIANT_NUMOF * TEST_LOG2NUM];
 #else
 /* State vector, first half will contain state for timer_set tests, second half
  * will contain state for timer_set_absolute */
-static matstat_state_t states[TEST_VARIANT_NUMOF * TEST_NUM];
+static matstat_state_t ref_states[TEST_VARIANT_NUMOF * TEST_NUM];
 #endif
 #else
 /* Only keep stats per function variation */
-static matstat_state_t states[TEST_VARIANT_NUMOF];
+static matstat_state_t ref_states[TEST_VARIANT_NUMOF];
 #endif
 
 /* timer_read error statistics states */
-static matstat_state_t read_states[TEST_VARIANT_NUMOF];
+static matstat_state_t int_states[TEST_VARIANT_NUMOF];
+
+/* Limits for the mean and variance, to compare the results against expectation */
+static stat_limits_t ref_limits;
+static stat_limits_t int_limits;
+
+static const result_presentation_t presentation = {
+    .groups = (const result_group_t[TEST_VARIANT_GROUPS]) {
+        {
+            .label = "timer_set",
+            .sub_labels = (const char *[]){
+                [0] = "running",
+                [TEST_RESCHEDULE] = "resched",
+                [TEST_STOPPED] = "stopped",
+                [TEST_STOPPED | TEST_RESCHEDULE] = "stopped, resched",
+            },
+            .num_sub_labels = (TEST_VARIANT_NUMOF / TEST_VARIANT_GROUPS),
+        },
+        {
+            .label = "timer_set_absolute",
+            .sub_labels = (const char *[]){
+                [0] = "running",
+                [TEST_RESCHEDULE] = "resched",
+                [TEST_STOPPED] = "stopped",
+                [TEST_STOPPED | TEST_RESCHEDULE] = "stopped, resched",
+            },
+            .num_sub_labels = (TEST_VARIANT_NUMOF / TEST_VARIANT_GROUPS),
+        },
+    },
+    .num_groups = 2,
+    .ref_limits = &ref_limits,
+    .int_limits = &int_limits,
+    .offsets = (const unsigned[]) {
+        [0] =                                               TEST_MIN_REL,
+        [TEST_RESCHEDULE] =                                 TEST_MIN_REL,
+        [TEST_STOPPED] =                                    TEST_MIN_REL,
+        [TEST_STOPPED | TEST_RESCHEDULE] =                  TEST_MIN_REL,
+        [TEST_ABSOLUTE] =                                   TEST_MIN,
+        [TEST_ABSOLUTE | TEST_RESCHEDULE] =                 TEST_MIN,
+        [TEST_ABSOLUTE | TEST_STOPPED] =                    TEST_MIN,
+        [TEST_ABSOLUTE | TEST_STOPPED | TEST_RESCHEDULE] =  TEST_MIN,
+    },
+};
+
+/**
+ * @brief   Calculate the limits for mean and variance for this test
+ */
+static void set_limits(void)
+{
+    ref_limits.mean_low = -(TEST_UNEXPECTED_MEAN);
+    ref_limits.mean_high = (TEST_UNEXPECTED_MEAN);
+    ref_limits.variance_low = 0;
+    ref_limits.variance_high = (TEST_UNEXPECTED_STDDEV) * (TEST_UNEXPECTED_STDDEV);
+
+    int_limits.mean_low = -(TEST_UNEXPECTED_MEAN);
+    int_limits.mean_high = TEST_UNEXPECTED_MEAN;
+    int_limits.variance_low = 0;
+    int_limits.variance_high = (TEST_UNEXPECTED_STDDEV) * (TEST_UNEXPECTED_STDDEV);
+
+    /* The quantization errors should be uniformly distributed within +/- 0.5
+     * test timer ticks of the reference time */
+    /* The formula for the variance of a rectangle distribution on [a, b] is
+     * Var = (b - a)^2 / 12 (taken directly from a statistics textbook)
+     * Using (b - a)^2 / 12 == (10b - 10a) * ((10b + 1) - (10a + 1)) / 1200
+     * gives a smaller truncation error when using integer operations for
+     * converting the ticks */
+    uint32_t conversion_variance = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0)) *
+        (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1))) / 1200;
+    if (TIM_REF_FREQ > TIM_TEST_FREQ) {
+        ref_limits.variance_low = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) - 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) - 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
+        ref_limits.variance_high = ((TIM_TEST_TO_REF(10) - TIM_TEST_TO_REF(0) + 10 * (TEST_UNEXPECTED_STDDEV)) *
+            (TIM_TEST_TO_REF(11) - TIM_TEST_TO_REF(1) + 10 * (TEST_UNEXPECTED_STDDEV))) / 1200;
+        /* The limits of the mean should account for the conversion error as well */
+        /* rounded towards positive infinity */
+        int32_t mean_error = (TIM_TEST_TO_REF(128) - TIM_TEST_TO_REF(0) + 127) / 128;
+        ref_limits.mean_high += mean_error;
+    }
+
+    print_str("Expected error variance due to truncation in tick conversion: ");
+    print_u32_dec(conversion_variance);
+    print("\n", 1);
+}
 
 /* Callback for the timeout */
 static void cb(void *arg, int chan)
@@ -123,19 +228,19 @@ static void cb(void *arg, int chan)
  */
 static void assign_state_ptr(test_ctx_t *ctx, unsigned int variant, uint32_t interval)
 {
-    ctx->read_state = &read_states[variant];
+    ctx->read_state = &int_states[variant];
     if (DETAILED_STATS) {
         if (LOG2_STATS) {
             unsigned int log2num = bitarithm_msb(interval);
 
-            ctx->target_state = &states[variant * TEST_LOG2NUM + log2num];
+            ctx->target_state = &ref_states[variant * TEST_LOG2NUM + log2num];
         }
         else {
-            ctx->target_state = &states[variant * TEST_NUM + interval];
+            ctx->target_state = &ref_states[variant * TEST_NUM + interval];
         }
     }
     else {
-        ctx->target_state = &states[variant];
+        ctx->target_state = &ref_states[variant];
     }
 }
 
@@ -246,7 +351,7 @@ static int test_timer(void)
         time_last = now;
     } while(time_elapsed < TEST_PRINT_INTERVAL_TICKS);
 
-    print_results(&states[0], &read_states[0]);
+    print_results(&presentation, &ref_states[0], &int_states[0]);
 
     return 0;
 }
@@ -305,11 +410,11 @@ static void estimate_cpu_overhead(void)
 int main(void)
 {
     print_str("\nStatistical benchmark for timers\n");
-    for (unsigned int k = 0; k < (sizeof(states) / sizeof(states[0])); ++k) {
-        matstat_clear(&states[k]);
+    for (unsigned int k = 0; k < (sizeof(ref_states) / sizeof(ref_states[0])); ++k) {
+        matstat_clear(&ref_states[k]);
     }
-    for (unsigned int k = 0; k < (sizeof(read_states) / sizeof(read_states[0])); ++k) {
-        matstat_clear(&read_states[k]);
+    for (unsigned int k = 0; k < (sizeof(int_states) / sizeof(int_states[0])); ++k) {
+        matstat_clear(&int_states[k]);
     }
     /* print test overview */
     print_str("Running timer test with seed ");
@@ -349,16 +454,16 @@ int main(void)
     print_u32_dec(log2test);
     print("\n", 1);
     print_str("state vector elements per variant = ");
-    print_u32_dec(sizeof(states) / sizeof(states[0]) / TEST_VARIANT_NUMOF);
+    print_u32_dec(sizeof(ref_states) / sizeof(ref_states[0]) / TEST_VARIANT_NUMOF);
     print("\n", 1);
     print_str("number of variants = ");
     print_u32_dec(TEST_VARIANT_NUMOF);
     print("\n", 1);
     print_str("sizeof(state) = ");
-    print_u32_dec(sizeof(states[0]));
+    print_u32_dec(sizeof(ref_states[0]));
     print_str(" bytes\n");
     print_str("state vector total memory usage = ");
-    print_u32_dec(sizeof(states));
+    print_u32_dec(sizeof(ref_states));
     print_str(" bytes\n");
     assert(log2test < TEST_LOG2NUM);
     print_str("TIM_TEST_DEV = ");
