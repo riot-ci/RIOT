@@ -13,7 +13,7 @@
  * @{
  *
  * @file
- * @brief       Common led inititialization for Arduino Atmega boards
+ * @brief       Common led initialization for Arduino Atmega boards
  *
  * @author      Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
@@ -28,7 +28,7 @@
 
 void led_init(void)
 {
-    /* initialize the onboard LED */
+    /* initialize the on-board LED */
     gpio_init(LED0_PIN, GPIO_OUT);
     LED0_OFF;
 }
