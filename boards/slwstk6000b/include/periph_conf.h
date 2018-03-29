@@ -103,7 +103,7 @@ static const i2c_conf_t i2c_config[] = {
 };
 
 #define I2C_NUMOF           PERIPH_NUMOF(i2c_config)
-#define I2C_0_ISR           isr_i2c1
+#define I2C_0_ISR           isr_i2c0
 /** @} */
 
 /**
@@ -173,8 +173,8 @@ static const timer_conf_t timer_config[] = {
 static const uart_conf_t uart_config[] = {
     {
         .dev = USART0,
-        .rx_pin = MODULE_PIN_F6,
-        .tx_pin = MODULE_PIN_F7,
+        .rx_pin = MODULE_PIN_F7,
+        .tx_pin = MODULE_PIN_F6,
         .loc = USART_ROUTELOC0_RXLOC_LOC0 |
                USART_ROUTELOC0_TXLOC_LOC0,
         .cmu = cmuClock_USART0,
