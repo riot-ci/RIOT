@@ -14,6 +14,7 @@
  * @brief       Power management peripheral test.
  *
  * @author      Bas Stottelaar <basstottelaar@gmail.com>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  *
  * @}
  */
@@ -22,8 +23,10 @@
 #include <stdlib.h>
 
 #include "periph/pm.h"
+#ifdef MODULE_PERIPH_RTC
+#include "periph/rtc.h"
+#endif
 #include "pm_layered.h"
-
 #include "shell.h"
 
 #ifdef MODULE_PM_LAYERED
@@ -35,6 +38,9 @@ static int cmd_reboot(int argc, char **argv);
 #ifdef MODULE_PM_LAYERED
 static int cmd_set(int argc, char **argv);
 static int cmd_unblock(int argc, char **argv);
+#ifdef MODULE_PERIPH_RTC
+static int cmd_unblock_rtc(int argc, char **argv);
+#endif
 #endif
 
 /**
@@ -50,32 +56,57 @@ static const shell_command_t shell_commands[] = {
 #ifdef MODULE_PM_LAYERED
     { "set", "set power mode", cmd_set },
     { "unblock", "unblock power mode", cmd_unblock },
+#ifdef MODULE_PERIPH_RTC
+    { "unblock_rtc", "temporary unblock power mode", cmd_unblock_rtc },
+#endif
 #endif
     { NULL, NULL, NULL }
 };
 
+#ifdef MODULE_PM_LAYERED
 static int parse_mode(int argc, char **argv)
 {
-    if (argc != 2) {
-        printf("Power mode expected (0 - %d).\n", PM_NUM_MODES - 1);
-        fflush(stdout);
-
+    if (argc < 2) {
+        printf("Error: power mode expected (0 - %d).\n", PM_NUM_MODES - 1);
         return -1;
     }
 
     int mode = atoi(argv[1]);
 
     if (mode < 0 || mode >= (int) PM_NUM_MODES) {
-        printf("Value not in range 0 - %d.\n", PM_NUM_MODES - 1);
-        fflush(stdout);
-
+        printf("Error: power mode not in range 0 - %d.\n", PM_NUM_MODES - 1);
         return -1;
     }
 
     return mode;
 }
 
-#ifdef MODULE_PM_LAYERED
+static int parse_duration(int argc, char **argv)
+{
+    if (argc < 3) {
+        printf("Error: duration expected (0 - %d).\n", INT_MAX);
+        return -1;
+    }
+
+    int duration = atoi(argv[2]);
+
+    if (duration < 0) {
+        puts("Error: duration must be a positive number.");
+        return -1;
+    }
+
+    return duration;
+}
+
+#ifdef MODULE_PERIPH_RTC
+static void cb_rtc(void *arg)
+{
+    int level = (int)arg;
+
+    pm_block(level);
+}
+#endif
+
 static int cmd_block(int argc, char **argv)
 {
     int mode = parse_mode(argc, argv);
@@ -164,6 +195,39 @@ static int cmd_unblock(int argc, char **argv)
 
     return 0;
 }
+
+#ifdef MODULE_PERIPH_RTC
+static int cmd_unblock_rtc(int argc, char **argv)
+{
+    struct tm time;
+
+    int mode = parse_mode(argc, argv);
+    int duration = parse_duration(argc, argv);
+
+    if (mode < 0 || duration < 0) {
+        return 1;
+    }
+
+    printf("Unblocking power mode %d for %d seconds.\n", mode, duration);
+    fflush(stdout);
+
+    rtc_get_time(&time);
+    time.tm_sec += duration;
+    while (time.tm_sec > 60) {
+        time.tm_min++;
+        time.tm_sec -= 60;
+    }
+    while (time.tm_min > 60) {
+        time.tm_hour++;
+        time.tm_min -= 60;
+    }
+    rtc_set_alarm(&time, cb_rtc, (void *)mode);
+
+    pm_unblock(mode);
+
+    return 0;
+}
+#endif
 #endif
 
 int main(void)
