@@ -126,7 +126,7 @@ static const result_presentation_t presentation = {
             .num_sub_labels = (TEST_VARIANT_NUMOF / TEST_VARIANT_GROUPS),
         },
     },
-    .num_groups = 2,
+    .num_groups = TEST_VARIANT_GROUPS,
     .ref_limits = &ref_limits,
     .int_limits = &int_limits,
     .offsets = (const unsigned[]) {
