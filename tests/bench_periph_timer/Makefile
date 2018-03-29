@@ -21,6 +21,7 @@ USEMODULE += random
 USEMODULE += spin_random
 USEMODULE += fmt
 USEMODULE += matstat
+USEMODULE += xtimer
 
 ifeq (,$(findstring TIM_TEST_DEV,$(CFLAGS)))
   ifneq (,$(filter $(BOARD),$(SINGLE_TIMER_BOARDS)))
@@ -33,6 +34,11 @@ ifeq (,$(findstring DETAILED_STATS,$(CFLAGS)))
     CFLAGS += -DDETAILED_STATS=0
   endif
 endif
+
+# Shortcut to configure the build for testing xtimer against a periph_timer reference
+.PHONY: test-xtimer
+test-xtimer: CFLAGS+=-DTEST_XTIMER -DTIM_TEST_FREQ=XTIMER_HZ -DTIM_TEST_DEV=XTIMER_DEV
+test-xtimer: all
 
 # Shortcut to configure the build for testing Kinetis LPTMR against a PIT reference
 # Usage: make BOARD=frdm-k22f test-kinetis-lptmr flash
