@@ -21,25 +21,20 @@
 #include "cpu.h"
 #include "periph/gpio.h"
 
-#define PIN_MASK        (0x00FF)
-#define PORT_SHIFT      (8U)
+/**
+ * @brief   Number of external interrupt lines.
+ */
+#define NUMOF_IRQS         (32)
 
-#define ISR_NUMOF       (4U)
+/**
+ * @brief   Hold one interrupt context per interrupt line
+ */
+static gpio_isr_ctx_t isr_ctx[NUMOF_IRQS];
 
-typedef struct {
-    __IO uint32_t PINSEL[11];
-    uint32_t RESERVED0[5];
-    __IO uint32_t PINMODE[10];
-    __IO uint32_t PINMODE_OD[5];
-    __IO uint32_t I2CPADCFG;
-    __IO uint32_t p[5][32];
-} LPC_IOCON_Typedef;
+static gpio_flank_t isr_state[2][32];
 
-#define LPC_IOCON ((LPC_IOCON_Typedef *) LPC_PINCON_BASE)
-
-static gpio_t isrmap[] = { GPIO_UNDEF, GPIO_UNDEF, GPIO_UNDEF, GPIO_UNDEF };
-
-static gpio_isr_ctx_t isrctx[ISR_NUMOF];
+#define PIN_MASK        (0x1f)
+#define PORT_SHIFT      (5U)
 
 static inline int _pin(gpio_t pin)
 {
@@ -51,18 +46,58 @@ static inline int _port(gpio_t pin)
     return (pin >> PORT_SHIFT);
 }
 
-static inline LPC_GPIO_TypeDef *_base(gpio_t pin)
+static inline LPC_GPIO_TypeDef* _base(gpio_t pin)
 {
     return (LPC_GPIO_TypeDef *) (LPC_GPIO_BASE + (_port(pin) * 0x20));
 }
 
+static inline void _configure_flank(gpio_t pin, gpio_flank_t flank)
+{
+    switch (flank) {
+        case GPIO_RISING:
+            if (_port(pin) == 0) {
+                LPC_GPIOINT->IO0IntEnF &= ~(1 << _pin(pin));
+                LPC_GPIOINT->IO0IntEnR |= (1 << _pin(pin));
+            }
+            else {
+                LPC_GPIOINT->IO2IntEnF &= ~(1 << _pin(pin));
+                LPC_GPIOINT->IO2IntEnR |= (1 << _pin(pin));
+            }
+
+            break;
+        case GPIO_FALLING:
+            if (_port(pin) == 0) {
+                LPC_GPIOINT->IO0IntEnF |= (1 << _pin(pin));
+                LPC_GPIOINT->IO0IntEnR &= ~(1 << _pin(pin));
+            }
+            else {
+                LPC_GPIOINT->IO2IntEnF |= (1 << _pin(pin));
+                LPC_GPIOINT->IO2IntEnR &= ~(1 << _pin(pin));
+            }
+
+            break;
+        case GPIO_BOTH:
+            if (_port(pin) == 0) {
+                LPC_GPIOINT->IO0IntEnF |= 1 << _pin(pin);
+                LPC_GPIOINT->IO0IntEnR |= 1 << _pin(pin);
+            }
+            else {
+                LPC_GPIOINT->IO2IntEnF |= 1 << _pin(pin);
+                LPC_GPIOINT->IO2IntEnR |= 1 << _pin(pin);
+            }
+
+            break;
+    }
+}
+
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
-    if (_port(pin) > 4) {
+    /* check for valid pin */
+    if (pin == GPIO_UNDEF) {
         return -1;
     }
 
-    if (_pin(pin) > 32) {
+    if (_port(pin) > 4 || _pin(pin) > 32) {
         return -1;
     }
 
@@ -72,32 +107,22 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     /* pin as output or input */
     LPC_GPIO_TypeDef *base = _base(pin);
 
-    if (mode & 0x1) {
-        base->FIODIR |= (1 << _pin(pin));
-    }
-    else {
-        base->FIODIR &= ~(1 << _pin(pin));
-    }
+    base->FIODIR &= ~(1 << _pin(pin));
+    base->FIODIR |= ((mode & 0x01) << _pin(pin));
 
+    /* configure pin function */
     int reg = 2 * _port(pin) + (_pin(pin) / 16);
     int bit = (pin % 16) * 2;
 
-    /* pin function */
-    LPC_IOCON->PINSEL[reg] &= ~(0x3 << bit);
+    ((uint32_t*) &LPC_PINCON->PINSEL0)[reg] &= ~(0x03 << bit);
 
-    /* pull up or pull down */
-    if (mode & 0x2) {
-        LPC_IOCON->PINMODE[reg] &= (0x3 << bit);
-    }
-    else {
-        LPC_IOCON->PINMODE[reg] &= (0x3 << bit);
-        LPC_IOCON->PINMODE[reg] |= (0x1 << bit);
-    }
+    /* configure pull up/down */
+    ((uint32_t*) &LPC_PINCON->PINMODE0)[reg] &= ~(0x03 << bit);
+    ((uint32_t*) &LPC_PINCON->PINMODE0)[reg] |= (((mode >> 1) & 0x03) << bit);
 
-    /* open drain */
-    if (mode & 0x4) {
-        LPC_IOCON->PINMODE_OD[_port(pin)] |= (1 << _pin(pin));
-    }
+    /* configure open drain */
+    ((uint32_t*) &LPC_PINCON->PINMODE_OD0)[_port(pin)] &= ~(1 << _pin(pin));
+    ((uint32_t*) &LPC_PINCON->PINMODE_OD0)[_port(pin)] |= (((mode >> 3) & 0x01) << _pin(pin));
 
     return 0;
 }
@@ -105,65 +130,53 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
-    /* make sure we have an interrupt channel available */
-    int i = 0;
-
-    while ((i < ISR_NUMOF) && (isrmap[i] != GPIO_UNDEF) && (isrmap[i] != pin)) {
-        i++;
-    }
-    if (i == ISR_NUMOF) {
+    /* only certain pins can be used as interrupt pins */
+    if (_port(pin) != 0 && _port(pin) != 2) {
         return -1;
     }
 
-    /* do basic pin configuration */
-    if (gpio_init(pin, mode) != 0) {
-        return -1;
+    /* initialize the pin */
+    int result = gpio_init(pin, mode);
+
+    if (result != 0) {
+        return result;
     }
 
-    /* enable power for GPIO pin interrupt interface */
+    /* store interrupt callback */
+    isr_ctx[_pin(pin)].cb = cb;
+    isr_ctx[_pin(pin)].arg = arg;
 
+    /* need to store flank configuration for (re)enable irq */
+    isr_state[_port(pin) >> 1][_pin(pin)] = flank;
 
-    /* save ISR context */
-    isrctx[i].cb = cb;
-    isrctx[i].arg = arg;
-    isrmap[i] = pin;
-
-    /* set active flank configuration */
-    switch (flank) {
-        case GPIO_RISING:
-
-            break;
-        case GPIO_FALLING:
-
-            break;
-        case GPIO_BOTH:
-            break;
-        default:
-            return -1;
-    }
+    /* set flank configuration */
+    _configure_flank(pin, flank);
 
     /* clear any pending requests and enable the interrupt */
-    LPC_SC->EXTINT = (1 << i);
-    NVIC_EnableIRQ(EINT0_IRQn + i);
+    NVIC_ClearPendingIRQ(EINT3_IRQn);
+    NVIC_EnableIRQ(EINT3_IRQn);
 
     return 0;
 }
 
 void gpio_irq_enable(gpio_t pin)
 {
-    for (int i = 0; i < ISR_NUMOF; i++) {
-        if (isrmap[i] == pin) {
-            NVIC_EnableIRQ(EINT0_IRQn + i);
-        }
-    }
+    assert(_port(pin) == 0 || _port(pin) == 2);
+
+    _configure_flank(pin, isr_state[_port(pin) >> 1][_pin(pin)]);
 }
 
 void gpio_irq_disable(gpio_t pin)
 {
-    for (int i = 0; i < ISR_NUMOF; i++) {
-        if (isrmap[i] == pin) {
-            NVIC_DisableIRQ(EINT0_IRQn + i);
-        }
+    assert(_port(pin) == 0 || _port(pin) == 2);
+
+    if (_port(pin) == 0) {
+        LPC_GPIOINT->IO0IntEnF &= ~(1 << _pin(pin));
+        LPC_GPIOINT->IO0IntEnR &= ~(1 << _pin(pin));
+    }
+    else {
+        LPC_GPIOINT->IO2IntEnF &= ~(1 << _pin(pin));
+        LPC_GPIOINT->IO2IntEnR &= ~(1 << _pin(pin));
     }
 }
 
@@ -192,12 +205,7 @@ void gpio_toggle(gpio_t pin)
 {
     LPC_GPIO_TypeDef *base = _base(pin);
 
-    if (base->FIOSET & _pin(pin)) {
-        base->FIOCLR |= (1 << _pin(pin));
-    }
-    else {
-        base->FIOSET |= (1 << _pin(pin));
-    }
+    base->FIOPIN ^= (1 << _pin(pin));
 }
 
 void gpio_write(gpio_t pin, int value)
@@ -212,27 +220,21 @@ void gpio_write(gpio_t pin, int value)
     }
 }
 
-static inline void isr_common(uint8_t channel)
-{
-    LPC_SC->EXTINT = (1 << channel);
-    isrctx[channel].cb(isrctx[channel].arg);
-
-    cortexm_isr_end();
-}
-
-void isr_eint0(void)
-{
-    isr_common(0);
-}
-void isr_eint1(void)
-{
-    isr_common(1);
-}
-void isr_eint2(void)
-{
-    isr_common(2);
-}
 void isr_eint3(void)
 {
-    isr_common(3);
+    /* combine all interrupts */
+    uint32_t status = LPC_GPIOINT->IO0IntStatF | LPC_GPIOINT->IO0IntStatR |
+                      LPC_GPIOINT->IO2IntStatF | LPC_GPIOINT->IO2IntStatR;
+
+    /* invoke all handlers */
+    for (int i = 0; i < NUMOF_IRQS; i++) {
+        if (status & (1 << i)) {
+            isr_ctx[i].cb(isr_ctx[i].arg);
+
+            LPC_GPIOINT->IO0IntClr |= (1 << i);
+            LPC_GPIOINT->IO2IntClr |= (1 << i);
+        }
+    }
+
+    cortexm_isr_end();
 }

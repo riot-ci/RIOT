@@ -20,47 +20,46 @@
 #ifndef PERIPH_CPU_H
 #define PERIPH_CPU_H
 
-#include "cpu.h"
-#include "periph/dev_enums.h"
 #include <stdint.h>
+
+#include "cpu.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief   Override the default GPIO type
+ * @name   Override the default GPIO type
  * @{
  */
 #define HAVE_GPIO_T
-typedef uint16_t gpio_t;
+typedef uint8_t gpio_t;
 /** @} */
 
 /**
  * @brief   Define a custom GPIO_PIN macro for the lpc1768
  */
-#define GPIO_PIN(port, pin)     (gpio_t)((port << 8) | pin)
+#define GPIO_PIN(port, pin)     (gpio_t)((port << 5) | pin)
 
 /**
- * @brief   Override the default GPIO mode values
+ * @name    Override the default GPIO mode values
  * @{
  */
-#define IN                  (0x0 << 0)
-#define OUT                 (0x1 << 0)
-
-#define PU                  (0x0 << 1)
-#define PD                  (0x1 << 1)
-
-#define OD                  (0x1 << 3)
+#define PIN_DIR_IN            (0x00 << 0)
+#define PIN_DIR_OUT           (0x01 << 0)
+#define PIN_MODE_PU           (0x00 << 1)
+#define PIN_MODE_PD           (0x02 << 1)
+#define PIN_MODE_NONE         (0x03 << 1)
+#define PIN_MODE_OD           (0x01 << 3)
 
 #define HAVE_GPIO_MODE_T
 typedef enum {
-    GPIO_IN    = (IN),              /**< in without pull resistor */
-    GPIO_IN_PD = (IN | PD),         /**< in with pull-down */
-    GPIO_IN_PU = (IN | PU),         /**< in with pull-up */
-    GPIO_OUT   = (OUT),             /**< push-pull output */
-    GPIO_OD    = (OUT | OD),        /**< open-drain output */
-    GPIO_OD_PU = (OUT | OD | PU)    /**< open-drain output with pull-up */
+    GPIO_IN    = (PIN_DIR_IN | PIN_MODE_NONE),              /**< in without pull-up/down */
+    GPIO_IN_PD = (PIN_DIR_IN | PIN_MODE_PD),                /**< in with pull-down */
+    GPIO_IN_PU = (PIN_DIR_IN | PIN_MODE_PU),                /**< in with pull-up */
+    GPIO_OUT   = (PIN_DIR_OUT | PIN_MODE_NONE),             /**< push-pull output */
+    GPIO_OD    = (PIN_DIR_OUT | PIN_MODE_OD),               /**< open-drain output */
+    GPIO_OD_PU = (PIN_DIR_OUT | PIN_MODE_OD | PIN_MODE_PU)  /**< open-drain output with pull-up */
 } gpio_mode_t;
 /** @} */
 
