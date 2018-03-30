@@ -191,14 +191,14 @@ void gpio_set(gpio_t pin)
 {
     LPC_GPIO_TypeDef *base = _base(pin);
 
-    base->FIOSET |= (1 << _pin(pin));
+    base->FIOSET = (1 << _pin(pin));
 }
 
 void gpio_clear(gpio_t pin)
 {
     LPC_GPIO_TypeDef *base = _base(pin);
 
-    base->FIOCLR |= (1 << _pin(pin));
+    base->FIOCLR = (1 << _pin(pin));
 }
 
 void gpio_toggle(gpio_t pin)
@@ -213,10 +213,10 @@ void gpio_write(gpio_t pin, int value)
     LPC_GPIO_TypeDef *base = _base(pin);
 
     if (value) {
-        base->FIOSET |= (1 << _pin(pin));
+        base->FIOSET = (1 << _pin(pin));
     }
     else {
-        base->FIOCLR |= (1 << _pin(pin));
+        base->FIOCLR = (1 << _pin(pin));
     }
 }
 
