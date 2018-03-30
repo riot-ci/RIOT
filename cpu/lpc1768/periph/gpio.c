@@ -46,7 +46,7 @@ static inline int _port(gpio_t pin)
     return (pin >> PORT_SHIFT);
 }
 
-static inline LPC_GPIO_TypeDef* _base(gpio_t pin)
+static inline LPC_GPIO_TypeDef *_base(gpio_t pin)
 {
     return (LPC_GPIO_TypeDef *) (LPC_GPIO_BASE + (_port(pin) * 0x20));
 }
@@ -114,15 +114,15 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     int reg = 2 * _port(pin) + (_pin(pin) / 16);
     int bit = (pin % 16) * 2;
 
-    ((uint32_t*) &LPC_PINCON->PINSEL0)[reg] &= ~(0x03 << bit);
+    ((uint32_t *) &LPC_PINCON->PINSEL0)[reg] &= ~(0x03 << bit);
 
     /* configure pull up/down */
-    ((uint32_t*) &LPC_PINCON->PINMODE0)[reg] &= ~(0x03 << bit);
-    ((uint32_t*) &LPC_PINCON->PINMODE0)[reg] |= (((mode >> 1) & 0x03) << bit);
+    ((uint32_t *) &LPC_PINCON->PINMODE0)[reg] &= ~(0x03 << bit);
+    ((uint32_t *) &LPC_PINCON->PINMODE0)[reg] |= (((mode >> 1) & 0x03) << bit);
 
     /* configure open drain */
-    ((uint32_t*) &LPC_PINCON->PINMODE_OD0)[_port(pin)] &= ~(1 << _pin(pin));
-    ((uint32_t*) &LPC_PINCON->PINMODE_OD0)[_port(pin)] |= (((mode >> 3) & 0x01) << _pin(pin));
+    ((uint32_t *) &LPC_PINCON->PINMODE_OD0)[_port(pin)] &= ~(1 << _pin(pin));
+    ((uint32_t *) &LPC_PINCON->PINMODE_OD0)[_port(pin)] |= (((mode >> 3) & 0x01) << _pin(pin));
 
     return 0;
 }
