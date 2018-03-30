@@ -68,4 +68,8 @@ ifneq (,$(filter periph_rtc,$(FEATURES_PROVIDED)))
   SRC += sc_rtc.c
 endif
 
+ifneq (,$(filter semtech-loramac,$(USEPKG)))
+  SRC += sc_loramac.c
+endif
+
 include $(RIOTBASE)/Makefile.base
