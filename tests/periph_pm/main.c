@@ -202,12 +202,18 @@ int main(void)
 {
     char line_buf[SHELL_DEFAULT_BUFSIZE];
 
-    /* print some information about the modes */
+    /* print test application information */
+#ifdef MODULE_PM_LAYERED
     printf("This application allows you to test the CPU power management.\n"
            "The available power modes are 0 - %d. Lower-numbered power modes\n"
            "save more power, but may require an event/interrupt to wake up\n"
            "the CPU. Reset the CPU if needed.\n",
            PM_NUM_MODES - 1);
+#else
+    puts("This application allows you to test the CPU power management.\n"
+         "Layered support is not unavailable for this CPU. Reset the CPU if\n"
+         "needed.");
+#endif
 
     /* run the shell and wait for the user to enter a mode */
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
