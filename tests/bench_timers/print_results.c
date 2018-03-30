@@ -75,7 +75,7 @@ static void print_totals(const matstat_state_t *states, size_t nelem, const stat
 static void print_detailed(const matstat_state_t *states, size_t nelem, unsigned int test_min, const stat_limits_t *limits)
 {
     if (LOG2_STATS) {
-        print_str("   interval    count       sum       sum_sq    min   max  mean  variance\n");
+        print_str("   interval     count       sum       sum_sq    min   max  mean  variance\n");
         for (unsigned int k = 0; k < nelem; ++k) {
             char buf[20];
             unsigned int num = (1 << k);
@@ -96,7 +96,7 @@ static void print_detailed(const matstat_state_t *states, size_t nelem, unsigned
         print_str("      TOTAL  ");
     }
     else {
-        print_str("interval   count       sum       sum_sq    min   max  mean  variance\n");
+        print_str("interval    count       sum       sum_sq    min   max  mean  variance\n");
         for (unsigned int k = 0; k < nelem; ++k) {
             char buf[10];
             print(buf, fmt_lpad(buf, fmt_u32_dec(buf, k + test_min), 7, ' '));
@@ -112,6 +112,7 @@ void print_results(const result_presentation_t *pres, const matstat_state_t *ref
 {
     static char buf[48]; /* String formatting temporary buffer, not thread safe */
     print_str("------------- BEGIN STATISTICS --------------\n");
+    print_str("===== Reference timer statistics =====\n");
     print_str("Limits: mean: [");
     print_s32_dec(pres->ref_limits->mean_low);
     print_str(", ");
@@ -122,7 +123,7 @@ void print_results(const result_presentation_t *pres, const matstat_state_t *ref
     print_u32_dec(pres->ref_limits->variance_high);
     print_str("]\n");
     print_str("Target error (actual trigger time - expected trigger time), in reference timer ticks\n");
-    print_str("positive: timer is late, negative: timer is early\n");
+    print_str("positive: timer under test is late, negative: timer under test is early\n");
 
     if (DETAILED_STATS) {
         static const unsigned int count = ((LOG2_STATS) ? (TEST_LOG2NUM) : (TEST_NUM));
@@ -155,7 +156,7 @@ void print_results(const result_presentation_t *pres, const matstat_state_t *ref
             }
         }
     }
-    print_str("=== timer_read statistics ===\n");
+    print_str("===== introspective statistics =====\n");
     print_str("Limits: mean: [");
     print_s32_dec(pres->int_limits->mean_low);
     print_str(", ");
@@ -165,8 +166,8 @@ void print_results(const result_presentation_t *pres, const matstat_state_t *ref
     print_str(", ");
     print_u32_dec(pres->int_limits->variance_high);
     print_str("]\n");
-    print_str("timer_read error (TUT time elapsed - expected TUT interval), in timer under test ticks\n");
-    print_str("positive: timer target handling is slow, negative: timer_read is dropping ticks\n");
+    print_str("self-referencing error (TUT time elapsed - expected TUT interval), in timer under test ticks\n");
+    print_str("positive: timer target handling is slow, negative: TUT is dropping ticks or triggering callback early\n");
     print_str("function              count       sum       sum_sq    min   max  mean  variance\n");
     for (unsigned k = 0, g = 0; g < pres->num_groups; ++g) {
         print("\n", 1);
