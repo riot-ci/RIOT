@@ -23,45 +23,13 @@
 #include <stdlib.h>
 
 #include "periph/pm.h"
+#ifdef MODULE_PM_LAYERED
 #ifdef MODULE_PERIPH_RTC
 #include "periph/rtc.h"
 #endif
+#endif
 #include "pm_layered.h"
 #include "shell.h"
-
-#ifdef MODULE_PM_LAYERED
-static int cmd_block(int argc, char **argv);
-#endif
-static int cmd_lowest(int argc, char **argv);
-static int cmd_off(int argc, char **argv);
-static int cmd_reboot(int argc, char **argv);
-#ifdef MODULE_PM_LAYERED
-static int cmd_set(int argc, char **argv);
-static int cmd_unblock(int argc, char **argv);
-#ifdef MODULE_PERIPH_RTC
-static int cmd_unblock_rtc(int argc, char **argv);
-#endif
-#endif
-
-/**
- * @brief   List of shell commands for this example.
- */
-static const shell_command_t shell_commands[] = {
-#ifdef MODULE_PM_LAYERED
-    { "block", "block power mode", cmd_block },
-#endif
-    { "lowest", "enter lowest mode", cmd_lowest },
-    { "off", "turn off", cmd_off },
-    { "reboot", "reboot", cmd_reboot },
-#ifdef MODULE_PM_LAYERED
-    { "set", "set power mode", cmd_set },
-    { "unblock", "unblock power mode", cmd_unblock },
-#ifdef MODULE_PERIPH_RTC
-    { "unblock_rtc", "temporary unblock power mode", cmd_unblock_rtc },
-#endif
-#endif
-    { NULL, NULL, NULL }
-};
 
 #ifdef MODULE_PM_LAYERED
 static int parse_mode(int argc, char **argv)
@@ -123,19 +91,6 @@ static int cmd_block(int argc, char **argv)
     return 0;
 }
 #endif
-
-static int cmd_lowest(int argc, char **argv)
-{
-    (void) argc;
-    (void) argv;
-
-    puts("CPU will enter lowest power mode possible.");
-    fflush(stdout);
-
-    pm_set_lowest();
-
-    return 0;
-}
 
 static int cmd_off(int argc, char **argv)
 {
@@ -213,14 +168,7 @@ static int cmd_unblock_rtc(int argc, char **argv)
 
     rtc_get_time(&time);
     time.tm_sec += duration;
-    while (time.tm_sec > 60) {
-        time.tm_min++;
-        time.tm_sec -= 60;
-    }
-    while (time.tm_min > 60) {
-        time.tm_hour++;
-        time.tm_min -= 60;
-    }
+    mktime(&time);
     rtc_set_alarm(&time, cb_rtc, (void *)mode);
 
     pm_unblock(mode);
@@ -230,15 +178,37 @@ static int cmd_unblock_rtc(int argc, char **argv)
 #endif
 #endif
 
+/**
+ * @brief   List of shell commands for this example.
+ */
+static const shell_command_t shell_commands[] = {
+#ifdef MODULE_PM_LAYERED
+    { "block", "block power mode", cmd_block },
+#endif
+    { "off", "turn off", cmd_off },
+    { "reboot", "reboot", cmd_reboot },
+#ifdef MODULE_PM_LAYERED
+    { "set", "set power mode", cmd_set },
+    { "unblock", "unblock power mode", cmd_unblock },
+#ifdef MODULE_PERIPH_RTC
+    { "unblock_rtc", "temporary unblock power mode", cmd_unblock_rtc },
+#endif
+#endif
+    { NULL, NULL, NULL }
+};
+
+/**
+ * @brief   Application entry point.
+ */
 int main(void)
 {
     char line_buf[SHELL_DEFAULT_BUFSIZE];
 
     /* print some information about the modes */
-    printf("This application allows you to test the power management\n"
-           "peripheral. The available power modes are 0 - %d. Lower-numbered\n"
-           "power modes save more power, but may require an event/interrupt\n"
-           "to wake up the CPU. Reset the CPU if needed.\n",
+    printf("This application allows you to test the CPU power management.\n"
+           "The available power modes are 0 - %d. Lower-numbered power modes\n"
+           "save more power, but may require an event/interrupt to wake up\n"
+           "the CPU. Reset the CPU if needed.\n",
            PM_NUM_MODES - 1);
 
     /* run the shell and wait for the user to enter a mode */
