@@ -178,6 +178,13 @@ do_flash() {
 do_debug() {
     test_config
     test_elffile
+
+    # Configure halt command: prepend a reset if required by the board config
+    local _pre_reset_halt=''
+    if [ -n "${PRE_DEBUG_RESET_HALT}" ]; then
+        _pre_reset_halt='reset'
+    fi
+
     # temporary file that saves OpenOCD pid
     OCD_PIDFILE=$(mktemp -t "openocd_pid.XXXXXXXXXX")
     # will be called by trap
@@ -201,7 +208,7 @@ do_debug() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c 'halt' \
+            -c '${_pre_reset_halt} halt' \
             -l /dev/null & \
             echo \$! > $OCD_PIDFILE" &
     # Export to be able to access these from the sh -c command lines, may be
