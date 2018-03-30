@@ -113,7 +113,9 @@ NORETURN void _assert_failure(const char *file, unsigned line);
 /**
  * @brief define c11 static_assert() macro
  */
-#define static_assert _Static_assert
+#define static_assert(...) _Static_assert(__VA_ARGS__)
+#else
+#define static_assert(...) struct static_assert_dummy
 #endif
 
 #ifdef __cplusplus
