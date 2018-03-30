@@ -83,12 +83,12 @@ static inline void cpu_print_last_instruction(void)
     uint8_t lo;
     uint16_t ptr;
 
-    __asm__ volatile( "in r0, __SP_H__; \n\t"
+    __asm__ volatile( "in r0, __SP_H__  \n\t"
                       "mov %0, r0       \n\t"
                              : "=g"(hi)
                              :
                              : "r0");
-    __asm__ volatile( "in r0, __SP_L__; \n\t"
+    __asm__ volatile( "in r0, __SP_L__  \n\t"
                       "mov %0, r0       \n\t"
                              : "=g"(lo)
                              :
