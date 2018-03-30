@@ -73,24 +73,8 @@ static void cb_rtc(void *arg)
 
     pm_block(level);
 }
-#endif
-
-static int cmd_block(int argc, char **argv)
-{
-    int mode = parse_mode(argc, argv);
-
-    if (mode < 0) {
-        return 1;
-    }
-
-    printf("Blocking power mode %d.\n", mode);
-    fflush(stdout);
-
-    pm_block(mode);
-
-    return 0;
-}
-#endif
+#endif /* MODULE_PERIPH_RTC */
+#endif /* MODULE_PM_LAYERED */
 
 static int cmd_off(int argc, char **argv)
 {
@@ -119,6 +103,22 @@ static int cmd_reboot(int argc, char **argv)
 }
 
 #ifdef MODULE_PM_LAYERED
+static int cmd_block(int argc, char **argv)
+{
+    int mode = parse_mode(argc, argv);
+
+    if (mode < 0) {
+        return 1;
+    }
+
+    printf("Blocking power mode %d.\n", mode);
+    fflush(stdout);
+
+    pm_block(mode);
+
+    return 0;
+}
+
 static int cmd_set(int argc, char **argv)
 {
     int mode = parse_mode(argc, argv);
@@ -175,19 +175,17 @@ static int cmd_unblock_rtc(int argc, char **argv)
 
     return 0;
 }
-#endif
-#endif
+#endif /* MODULE_PERIPH_RTC */
+#endif /* MODULE_PM_LAYERED */
 
 /**
  * @brief   List of shell commands for this example.
  */
 static const shell_command_t shell_commands[] = {
-#ifdef MODULE_PM_LAYERED
-    { "block", "block power mode", cmd_block },
-#endif
     { "off", "turn off", cmd_off },
     { "reboot", "reboot", cmd_reboot },
 #ifdef MODULE_PM_LAYERED
+    { "block", "block power mode", cmd_block },
     { "set", "set power mode", cmd_set },
     { "unblock", "unblock power mode", cmd_unblock },
 #ifdef MODULE_PERIPH_RTC
