@@ -27,8 +27,8 @@
 #ifdef MODULE_PERIPH_RTC
 #include "periph/rtc.h"
 #endif
-#endif
 #include "pm_layered.h"
+#endif
 #include "shell.h"
 
 #ifdef MODULE_PM_LAYERED
