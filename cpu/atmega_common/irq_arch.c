@@ -37,11 +37,11 @@ volatile uint8_t __in_isr = 0;
 __attribute__((always_inline)) static inline uint8_t  __get_interrupt_state(void)
 {
     uint8_t sreg;
-    __asm__ volatile("in __tmp_reg__, __SREG__; \n\t"
-                 "mov %0, __tmp_reg__           \n\t"
+    __asm__ volatile("in r0, __SREG__; \n\t"
+                 "mov %0, r0           \n\t"
                  : "=g"(sreg)
                  :
-                 : "__tmp_reg__");
+                 : "r0");
     return sreg & (1 << 7);
 }
 
