@@ -212,8 +212,6 @@
 #ifndef NET_GCOAP_H
 #define NET_GCOAP_H
 
-#include <stdint.h>
-
 #include "net/ipv6/addr.h"
 #include "net/sock/udp.h"
 #include "net/nanocoap.h"

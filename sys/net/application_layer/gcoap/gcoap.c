@@ -19,6 +19,7 @@
  */
 
 #include <errno.h>
+#include <stdint.h>
 #include <stdatomic.h>
 
 #include "net/gcoap.h"
