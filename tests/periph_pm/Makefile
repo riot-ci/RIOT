@@ -1,4 +1,3 @@
-APPLICATION = periph_pm
 BOARD ?= slstk3401a
 include ../Makefile.tests_common
 
