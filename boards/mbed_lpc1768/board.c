@@ -14,6 +14,7 @@
  * @brief       Board specific implementations for the mbed LPC1768 board
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Bas Stottelaar <basstottelaar@gmail.com>
  *
  * @}
  */
@@ -22,21 +23,10 @@
 
 #include "periph/gpio.h"
 
-static void leds_init(void);
 extern void SystemInit(void);
 
-void board_init(void)
-{
-    /* initialize core clocks via CMSIS function */
-    SystemInit();
-    /* initialize the CPU */
-    cpu_init();
-    /* initialize the boards LEDs */
-    leds_init();
-}
-
 /**
- * @brief Initialize the boards on-board LEDs.
+ * @brief Initialize the on-board LEDs.
  */
 static void leds_init(void)
 {
@@ -49,4 +39,14 @@ static void leds_init(void)
     LED1_OFF;
     LED2_OFF;
     LED3_OFF;
+}
+
+void board_init(void)
+{
+    /* initialize core clocks via CMSIS function */
+    SystemInit();
+    /* initialize the CPU */
+    cpu_init();
+    /* initialize the boards LEDs */
+    leds_init();
 }
