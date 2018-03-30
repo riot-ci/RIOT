@@ -83,16 +83,16 @@ static inline void cpu_print_last_instruction(void)
     uint8_t lo;
     uint16_t ptr;
 
-    __asm__ volatile( "in r0, __SP_H__; \n\t"
-                      "mov %0, r0       \n\t"
+    __asm__ volatile( "in __tmp_reg__, __SP_H__; \n\t"
+                      "mov %0, __tmp_reg__       \n\t"
                              : "=g"(hi)
                              :
-                             : "r0");
-    __asm__ volatile( "in r0, __SP_L__; \n\t"
-                      "mov %0, r0       \n\t"
+                             : "__tmp_reg__");
+    __asm__ volatile( "in __tmp_reg__, __SP_L__; \n\t"
+                      "mov %0, __tmp_reg__       \n\t"
                              : "=g"(lo)
                              :
-                             : "r0");
+                             : "__tmp_reg__");
     ptr = hi<<8 | lo;
     printf("Stack Pointer: 0x%04x\n", ptr);
 }
