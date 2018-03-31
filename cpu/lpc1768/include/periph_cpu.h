@@ -26,7 +26,15 @@
 extern "C" {
 #endif
 
-/* nothing to do here, yet */
+/**
+ * @brief   CPU provides own pm_off() function
+ */
+#define PROVIDES_PM_LAYERED_OFF
+
+/**
+ * @brief   Power management configuration
+ */
+#define PM_NUM_MODES    (3U)
 
 #ifdef __cplusplus
 }
