@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
- * Copyright (C) 2016 Eistec AB
+ *               2016 Eistec AB
+ *               2018 Josua Arndt
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,13 +9,16 @@
  */
 
 /**
- * @ingroup   sys_xtimer
+ * @ingroup sys_xtimer
 
  * @{
  * @file
  * @brief   xtimer implementation
+ *
  * @author  Kaspar Schleiser <kaspar@schleiser.de>
  * @author  Joakim Nohlgård <joakim.nohlgard@eistec.se>
+ * @author  Josua Arndt <jarndt@ias.rwth-aachen.de>
+ *
  */
 #ifndef XTIMER_IMPLEMENTATION_H
 #define XTIMER_IMPLEMENTATION_H
@@ -62,21 +66,21 @@ static inline uint32_t _xtimer_lltimer_mask(uint32_t val)
  * @internal
  */
 uint64_t _xtimer_now64(void);
-int _xtimer_set_absolute(xtimer_t *timer, uint32_t target);
-void _xtimer_set(xtimer_t *timer, uint32_t offset);
-void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset);
-void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period);
-void _xtimer_set_msg(xtimer_t *timer, uint32_t offset, msg_t *msg, kernel_pid_t target_pid);
-void _xtimer_set_msg64(xtimer_t *timer, uint64_t offset, msg_t *msg, kernel_pid_t target_pid);
-void _xtimer_set_wakeup(xtimer_t *timer, uint32_t offset, kernel_pid_t pid);
-void _xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset, kernel_pid_t pid);
+int _xtimer_set_absolute(xtimer_t *timer, uint32_t target_ticks);
+void _xtimer_set(xtimer_t *timer, uint32_t offset_ticks);
+void _xtimer_set64(xtimer_t *timer, uint32_t offset_ticks, uint32_t long_offset_ticks);
+void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period_ticks);
+void _xtimer_set_msg(xtimer_t *timer, uint32_t offset_ticks, msg_t *msg, kernel_pid_t target_pid);
+void _xtimer_set_msg64(xtimer_t *timer, uint64_t offset_ticks, msg_t *msg, kernel_pid_t target_pid);
+void _xtimer_set_wakeup(xtimer_t *timer, uint32_t offset_ticks, kernel_pid_t pid);
+void _xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset_ticks, kernel_pid_t pid);
 int _xtimer_msg_receive_timeout(msg_t *msg, uint32_t ticks);
 int _xtimer_msg_receive_timeout64(msg_t *msg, uint64_t ticks);
 
 /**
  * @brief  Sleep for the given number of ticks
  */
-void _xtimer_tsleep(uint32_t offset, uint32_t long_offset);
+void _xtimer_tsleep(uint32_t offset_ticks, uint32_t long_offset_ticks);
 /** @} */
 
 #ifndef XTIMER_MIN_SPIN
@@ -133,13 +137,13 @@ static inline uint64_t xtimer_now_usec64(void)
     return xtimer_usec_from_ticks64(xtimer_now64());
 }
 
-static inline void _xtimer_spin(uint32_t offset) {
+static inline void _xtimer_spin(uint32_t offset_ticks) {
     uint32_t start = _xtimer_lltimer_now();
 #if XTIMER_MASK
-    offset = _xtimer_lltimer_mask(offset);
-    while (_xtimer_lltimer_mask(_xtimer_lltimer_now() - start) < offset);
+    offset_ticks = _xtimer_lltimer_mask(offset_ticks);
+    while (_xtimer_lltimer_mask(_xtimer_lltimer_now() - start) < offset_ticks);
 #else
-    while ((_xtimer_lltimer_now() - start) < offset);
+    while ((_xtimer_lltimer_now() - start) < offset_ticks);
 #endif
 }
 
@@ -187,44 +191,50 @@ static inline void xtimer_tsleep64(xtimer_ticks64_t ticks)
     _xtimer_tsleep64(ticks.ticks64);
 }
 
-static inline void xtimer_periodic_wakeup(xtimer_ticks32_t *last_wakeup, uint32_t period)
+static inline void xtimer_periodic_wakeup(xtimer_ticks32_t *last_wakeup, uint32_t period_usec)
 {
-    _xtimer_periodic_wakeup(&last_wakeup->ticks32, _xtimer_ticks_from_usec(period));
+    _xtimer_periodic_wakeup(&last_wakeup->ticks32, _xtimer_ticks_from_usec(period_usec));
 }
 
-static inline void xtimer_set_msg(xtimer_t *timer, uint32_t offset, msg_t *msg, kernel_pid_t target_pid)
+static inline void xtimer_set_msg(xtimer_t *timer, uint32_t period_usec, msg_t *msg, kernel_pid_t target_pid)
 {
-    _xtimer_set_msg(timer, _xtimer_ticks_from_usec(offset), msg, target_pid);
+    _xtimer_set_msg(timer, _xtimer_ticks_from_usec(period_usec), msg, target_pid);
 }
 
-static inline void xtimer_set_msg64(xtimer_t *timer, uint64_t offset, msg_t *msg, kernel_pid_t target_pid)
+static inline void xtimer_set_msg64(xtimer_t *timer, uint64_t period_usec, msg_t *msg, kernel_pid_t target_pid)
 {
-    _xtimer_set_msg64(timer, _xtimer_ticks_from_usec64(offset), msg, target_pid);
+    _xtimer_set_msg64(timer, _xtimer_ticks_from_usec64(period_usec), msg, target_pid);
 }
 
-static inline void xtimer_set_wakeup(xtimer_t *timer, uint32_t offset, kernel_pid_t pid)
+static inline void xtimer_set_wakeup(xtimer_t *timer, uint32_t period_usec, kernel_pid_t pid)
 {
-    _xtimer_set_wakeup(timer, _xtimer_ticks_from_usec(offset), pid);
+    _xtimer_set_wakeup(timer, _xtimer_ticks_from_usec(period_usec), pid);
 }
 
-static inline void xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset, kernel_pid_t pid)
+static inline void xtimer_set_wakeup64(xtimer_t *timer, uint64_t period_usec, kernel_pid_t pid)
 {
-    _xtimer_set_wakeup64(timer, _xtimer_ticks_from_usec64(offset), pid);
+    _xtimer_set_wakeup64(timer, _xtimer_ticks_from_usec64(period_usec), pid);
 }
 
-static inline void xtimer_set(xtimer_t *timer, uint32_t offset)
+static inline void xtimer_set(xtimer_t *timer, uint32_t period_usec)
 {
-    _xtimer_set(timer, _xtimer_ticks_from_usec(offset));
+    _xtimer_set(timer, _xtimer_ticks_from_usec(period_usec));
 }
 
-static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout)
+static inline void xtimer_set64(xtimer_t *timer, uint32_t period_usec)
 {
-    return _xtimer_msg_receive_timeout(msg, _xtimer_ticks_from_usec(timeout));
+    uint64_t ticks = _xtimer_ticks_from_usec64(period_usec);
+    _xtimer_set64(timer, ticks, ticks >> 32);
 }
 
-static inline int xtimer_msg_receive_timeout64(msg_t *msg, uint64_t timeout)
+static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout_usec)
 {
-    return _xtimer_msg_receive_timeout64(msg, _xtimer_ticks_from_usec64(timeout));
+    return _xtimer_msg_receive_timeout(msg, _xtimer_ticks_from_usec(timeout_usec));
+}
+
+static inline int xtimer_msg_receive_timeout64(msg_t *msg, uint64_t timeout_usec)
+{
+    return _xtimer_msg_receive_timeout64(msg, _xtimer_ticks_from_usec64(timeout_usec));
 }
 
 static inline xtimer_ticks32_t xtimer_ticks_from_usec(uint32_t usec)
