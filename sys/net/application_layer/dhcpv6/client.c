@@ -427,6 +427,12 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     return pref_val;
 }
 
+static void _xtimer_set64_usec(xtimer_t *timer, uint64_t usec)
+{
+    xtimer_ticks64_t ticks = xtimer_ticks_from_usec64(usec);
+    _xtimer_set64(timer, ticks.ticks64, ticks.ticks64 >> 32);
+}
+
 static void _schedule_t2(void)
 {
     if (t2 < UINT32_MAX) {
@@ -437,7 +443,7 @@ static void _schedule_t2(void)
         rebind_timer.callback = _post_rebind;
         DEBUG("DHCPv6 client: scheduling REBIND in %lu sec\n",
               (unsigned long)t2);
-        _xtimer_set64(&rebind_timer, t2_usec, t2_usec >> 32);
+        _xtimer_set64_usec(&rebind_timer, t2_usec);
     }
 }
 
@@ -450,7 +456,7 @@ static void _schedule_t1_t2(void)
         timer.callback = _post_renew;
         DEBUG("DHCPv6 client: scheduling RENEW in %lu sec\n",
               (unsigned long)server.t1);
-        _xtimer_set64(&timer, t1_usec, t1_usec >> 32);
+        _xtimer_set64_usec(&timer, t1_usec);
     }
     _schedule_t2();
 }
