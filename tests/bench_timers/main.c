@@ -41,6 +41,10 @@
 #include "spin_random.h"
 #include "bench_periph_timer_config.h"
 
+#ifndef TEST_TRACE
+#define TEST_TRACE 0
+#endif
+
 /*
  * All different variations will be mixed to provide the most varied input
  * vector possible for the benchmark. A more varied input should yield a more
@@ -371,29 +375,32 @@ static void run_test(test_ctx_t *ctx, uint32_t interval, unsigned int variant)
         .callback = nop,
         .arg = NULL,
     };
-#if 0
-    switch (variant & ~TEST_PARALLEL) {
-        case TEST_XTIMER_SET:
-            print_str("rel ");
-            break;
-        case TEST_XTIMER_SET_ABSOLUTE:
-            print_str("abs ");
-            break;
-        case TEST_XTIMER_PERIODIC_WAKEUP:
-            print_str("per ");
-            break;
-        case TEST_XTIMER_SPIN:
-            print_str("spn ");
-            break;
-        default:
-            break;
+    if (TEST_TRACE) {
+        switch (variant & ~TEST_PARALLEL) {
+            case TEST_XTIMER_SET:
+                print_str("rel ");
+                break;
+            case TEST_XTIMER_SET_ABSOLUTE:
+                print_str("abs ");
+                break;
+            case TEST_XTIMER_PERIODIC_WAKEUP:
+                print_str("per ");
+                break;
+            case TEST_XTIMER_SPIN:
+                print_str("spn ");
+                break;
+            default:
+                break;
+        }
+        if (variant & TEST_PARALLEL) {
+            print_str("- ");
+        }
+        else {
+            print_str("= ");
+        }
+        print_u32_dec(interval);
+        print("\n", 1);
     }
-    if (variant & TEST_PARALLEL) {
-        print_str("par ");
-    }
-    print_u32_dec(interval);
-    print("\n", 1);
-#endif
 
     spin_random_delay();
     if (variant & TEST_PARALLEL) {
@@ -440,6 +447,31 @@ static void run_test(test_ctx_t *ctx, uint32_t interval, unsigned int variant)
         interval += TEST_MIN_REL;
     }
     unsigned int interval_ref = TIM_TEST_TO_REF(interval);
+
+    if (TEST_TRACE) {
+        if (variant & TEST_ABSOLUTE) {
+            print_str("A");
+        }
+        else {
+            print_str("_");
+        }
+        if (variant & TEST_RESCHEDULE) {
+            print_str("R");
+        }
+        else {
+            print_str("_");
+        }
+        if (variant & TEST_STOPPED) {
+            print_str("S ");
+        }
+        else {
+            print_str("_ ");
+        }
+        print_u32_dec(interval);
+        print_str("   ");
+        print_u64_hex(READ_TUT());
+        print("\n", 1);
+    }
 
     spin_random_delay();
     if (variant & TEST_RESCHEDULE) {
@@ -498,6 +530,9 @@ static int test_timer(void)
         //~ print_str("\n");
     } while(time_elapsed < TEST_PRINT_INTERVAL_TICKS);
 
+    print_str("Now TUT: ");
+    print_u64_dec(READ_TUT());
+    print_str("\n");
     print_results(&presentation, &ref_states[0], &int_states[0]);
 
     return 0;
