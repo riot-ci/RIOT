@@ -23,7 +23,6 @@
 
 #include "net/loramac.h"
 
-#include "semtech-loramac/board.h"
 #include "LoRaMac.h"
 
 #define ENABLE_DEBUG (0)
