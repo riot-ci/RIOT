@@ -21,6 +21,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              feather-m0 \
                              limifrog-v1 maple-mini \
                              mbed_lpc1768 \
+                             mega-xplained \
                              microbit \
                              msb-430 \
                              msb-430h \
@@ -226,11 +227,17 @@ BASELIBS += $(UNIT_TESTS:%=$(BINDIR)/%.a)
 
 INCLUDES += -I$(RIOTBASE)/tests/unittests/common
 
+# list of boards to run CI tests on
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 .PHONY: $(UNIT_TESTS)
 
 all:
+
+info-unittests:
+	@echo $(UNIT_TESTS)
 
 $(UNIT_TESTS): all
 

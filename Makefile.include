@@ -1,3 +1,6 @@
+# Globally set default goal to `all`
+.DEFAULT_GOAL := all
+
 # include Makefile.local if it exists
 -include Makefile.local
 
@@ -49,17 +52,17 @@ override PKGDIRBASE     := $(abspath $(PKGDIRBASE))
 override DLCACHE_DIR    := $(abspath $(DLCACHE_DIR))
 
 # Ensure that all directories are set and don't contain spaces.
-ifneq (, $(filter-out 1, $(foreach v,${__DIRECTORY_VARIABLES},$(words ${${v}}))))
+ifneq (, $(filter-out 1, $(foreach v,$(__DIRECTORY_VARIABLES),$(words $($(v))))))
   $(info Aborting compilation for your safety.)
-  $(info Related variables = ${__DIRECTORY_VARIABLES})
+  $(info Related variables = $(__DIRECTORY_VARIABLES))
   $(error Make sure no path override is empty or contains spaces!)
 endif
 
 # Use absolute paths in recusive "make" even if overriden on command line.
-MAKEOVERRIDES += $(foreach v,${__DIRECTORY_VARIABLES},${v}=${${v}})
+MAKEOVERRIDES += $(foreach v,$(__DIRECTORY_VARIABLES),$(v)=$($(v)))
 
 # Path to the current directory relative to RIOTPROJECT
-BUILDRELPATH ?= ${PWD:${RIOTPROJECT}/%=%}/
+BUILDRELPATH ?= $(PWD:$(RIOTPROJECT)/%=%)/
 
 # get host operating system
 OS := $(shell uname)
@@ -136,7 +139,7 @@ endif
 CFLAGS += -Wno-implicit-fallthrough
 CXXFLAGS += -Wno-implicit-fallthrough
 
-ifneq (10,$(if ${RIOT_VERSION},1,0)$(if ${__RIOTBUILD_FLAG},1,0))
+ifneq (10,$(if $(RIOT_VERSION),1,0)$(if $(__RIOTBUILD_FLAG),1,0))
 
 # Provide a shallow sanity check. You cannot call `make` in a module directory.
 export __RIOTBUILD_FLAG := RIOT
@@ -181,7 +184,7 @@ ifeq (,$(UNZIP_HERE))
   endif
 endif
 
-ifeq (, ${APPLICATION})
+ifeq (, $(APPLICATION))
     $(error An application name must be specified as APPLICATION.)
 endif
 ifneq (0,$(shell test -d $(RIOTBOARD)/$(BOARD); echo $$?))
@@ -324,7 +327,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ## make script for your application. Build RIOT-base here!
-link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=${BINDIR}/%.a) $(APPDEPS)
+link: ..compiler-check ..build-message $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS)
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 ifeq (,$(RIOTNOLINK))
 ifeq ($(BUILDOSXNATIVE),1)
@@ -337,14 +340,20 @@ endif
 endif
 endif # BUILD_IN_DOCKER
 
+# Check given command is available in the path
+#   check_cmd 'command' 'description'
+define check_cmd
+	@command -v $1 >/dev/null 2>&1 || \
+	  { $(COLOR_ECHO) \
+	    '$(COLOR_RED)$2 $1 is required but not found in PATH.  Aborting.$(COLOR_RESET)'; \
+	    exit 1;}
+endef
+
 ..compiler-check:
-	@command -v $(CC) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Compiler $(CC) is required but not found in PATH.  Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(CC),Compiler)
 
 ..build-message:
-	@$(COLOR_ECHO) '${COLOR_GREEN}Building application "$(APPLICATION)" for "$(BOARD)" with MCU "$(MCU)".${COLOR_RESET}'
+	@$(COLOR_ECHO) '$(COLOR_GREEN)Building application "$(APPLICATION)" for "$(BOARD)" with MCU "$(MCU)".$(COLOR_RESET)'
 	@$(COLOR_ECHO)
 
 # add extra include paths for packages in $(USEMODULE)
@@ -369,13 +378,13 @@ USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
-.PHONY: pkg-prepare $(USEPKG:%=${BINDIR}/%.a)
+.PHONY: pkg-prepare $(USEPKG:%=$(BINDIR)/%.a)
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
 
-$(USEPKG:%=${BINDIR}/%.a): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
-	@mkdir -p ${BINDIR}
-	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst ${BINDIR}/%.a,%,$@)
+$(USEPKG:%=$(BINDIR)/%.a): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
+	@mkdir -p $(BINDIR)
+	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst $(BINDIR)/%.a,%,$@)
 
 clean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i clean ; done
@@ -400,10 +409,7 @@ ifeq (,$(filter flash-only, $(MAKECMDGOALS)))
 endif
 
 flash: $(BUILD_BEFORE_FLASH) $(FLASHDEPS)
-	@command -v $(FLASHER) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Flash program $(FLASHER) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(FLASHER),Flash program)
 	$(FLASHER) $(FFLAGS)
 
 flash-only: flash
@@ -412,10 +418,7 @@ preflash: $(BUILD_BEFORE_FLASH)
 	$(PREFLASHER) $(PREFFLAGS)
 
 term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
-	@command -v $(TERMPROG) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Terminal program $(TERMPROG) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(TERMPROG),Terminal program)
 	$(TERMPROG) $(TERMFLAGS)
 
 list-ttys:
@@ -425,41 +428,26 @@ doc:
 	make -BC $(RIOTBASE) doc
 
 debug:
-	@command -v $(DEBUGGER) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Debug program $(DEBUGGER) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(DEBUGGER),Debug program)
 	$(DEBUGGER) $(DEBUGGER_FLAGS)
 
 debug-server:
-	@command -v $(DEBUGSERVER) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Debug server program $(DEBUGSERVER) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(DEBUGSERVER),Debug server program)
 	$(DEBUGSERVER) $(DEBUGSERVER_FLAGS)
 
 emulate:
-	@command -v $(EMULATOR) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Emulation program $(EMULATOR) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(EMULATOR),Emulation program)
 	$(EMULATOR) $(EMULATOR_FLAGS)
 
 reset:
-	@command -v $(RESET) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Reset program $(RESET) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(RESET),Reset program)
 	$(RESET) $(RESET_FLAGS)
 
 # Default OBJDUMPFLAGS for platforms which do not specify it:
 OBJDUMPFLAGS ?= -S -D -h
 
 objdump:
-	@command -v $(OBJDUMP) >/dev/null 2>&1 || \
-		{ $(COLOR_ECHO) \
-		'${COLOR_RED}Objdump program $(OBJDUMP) not found. Aborting.${COLOR_RESET}'; \
-		exit 1; }
+	$(call check_cmd,$(OBJDUMP),Objdump program)
 	$(OBJDUMP) $(OBJDUMPFLAGS) $(ELFFILE) | less
 
 # Generate an XML file containing all macro definitions and include paths for
@@ -475,8 +463,7 @@ $(CURDIR)/eclipsesym.xml:
 # Export variables used throughout the whole make system:
 include $(RIOTMAKE)/vars.inc.mk
 
-# Include build targets for selected tools after the default RIOT targets have
-# been defined (-> so the `all` will be always the first target)
+# Include build targets for selected tools
 include $(RIOTMAKE)/tools/targets.inc.mk
 
 # Warn if the selected board and drivers don't provide all needed features:
@@ -513,7 +500,7 @@ ifneq (, $(filter all, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
   # If there is a whitelist, then test if the board is whitelisted.
   ifneq (, $(BOARD_WHITELIST))
     ifeq (, $(filter $(BOARD_WHITELIST), $(BOARD)))
-      $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=${BOARD} is not whitelisted:$(COLOR_RESET) ${BOARD_WHITELIST}" 1>&2)
+      $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=$(BOARD) is not whitelisted:$(COLOR_RESET) $(BOARD_WHITELIST)" 1>&2)
       EXPECT_ERRORS := 1
     endif
   endif
@@ -521,7 +508,7 @@ ifneq (, $(filter all, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
   # If there is a blacklist, then test if the board is blacklisted.
   ifneq (, $(BOARD_BLACKLIST))
     ifneq (, $(filter $(BOARD_BLACKLIST), $(BOARD)))
-      $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=${BOARD} is blacklisted:$(COLOR_RESET) ${BOARD_BLACKLIST}" 1>&2)
+      $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=$(BOARD) is blacklisted:$(COLOR_RESET) $(BOARD_BLACKLIST)" 1>&2)
       EXPECT_ERRORS := 1
     endif
   endif
@@ -541,13 +528,13 @@ else # RIOT_VERSION
   export __RIOTBUILD_FLAG := RIOT
 
   NUM_RIOT_VERSION := $(shell cd $(RIOTBASE) && git rev-parse --verify --short "$(RIOT_VERSION)" 2>/dev/null)
-  ifeq (, ${NUM_RIOT_VERSION})
+  ifeq (, $(NUM_RIOT_VERSION))
     $(error The supplied RIOT_VERSION=$(RIOT_VERSION) is invalid!)
   endif
 
-  all $(filter-out clean, ${MAKECMDGOALS}): ..delegate
+  all $(filter-out clean, $(MAKECMDGOALS)): ..delegate
   ifneq (, $(filter clean, $(MAKECMDGOALS)))
-    all $(filter-out clean, ${MAKECMDGOALS}): clean
+    all $(filter-out clean, $(MAKECMDGOALS)): clean
   endif
 
   clean:
@@ -559,9 +546,9 @@ else # RIOT_VERSION
 	$(Q)cd $(RIOTBASE) && git archive --format=tar $(NUM_RIOT_VERSION) | ( cd $(@D) && tar x 1>&2 )
 
   ..delegate: $(BINDIR)/riot-version/$(NUM_RIOT_VERSION)/Makefile.include
-	@$(COLOR_ECHO) '$(COLOR_GREEN)Using RIOT_VERSION=${NUM_RIOT_VERSION}$(COLOR_RESET)' 1>&2
+	@$(COLOR_ECHO) '$(COLOR_GREEN)Using RIOT_VERSION=$(NUM_RIOT_VERSION)$(COLOR_RESET)' 1>&2
 	@$(COLOR_ECHO)
-	$(MAKE) RIOTBASE=$(<D) $(filter-out clean, ${MAKECMDGOALS})
+	$(MAKE) RIOTBASE=$(<D) $(filter-out clean, $(MAKECMDGOALS))
 
 endif
 
@@ -605,4 +592,13 @@ CFLAGS += -include '$(RIOTBUILD_CONFIG_HEADER_C)'
 
 # include mcuboot support
 include $(RIOTMAKE)/mcuboot.mk
+
+# include Murdock helpers
+include $(RIOTMAKE)/murdock.inc.mk
+
+# Sanity check, 'all' should be the default goal
+ifneq (all, $(.DEFAULT_GOAL))
+  $(error .DEFAULT_GOAL := $(.DEFAULT_GOAL))
+endif
+
 endif # BOARD=none
