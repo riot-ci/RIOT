@@ -133,7 +133,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                     sx127x_set_state(dev, SX127X_RF_IDLE);
                 }
 
-                xtimer_remove(&dev->_internal.rx_timeout_timer);
                 netdev->event_callback(netdev, NETDEV_EVENT_CRC_ERROR);
                 return -EBADMSG;
             }
@@ -192,8 +191,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
             if (!(dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG)) {
                 sx127x_set_state(dev, SX127X_RF_IDLE);
             }
-
-            xtimer_remove(&dev->_internal.rx_timeout_timer);
 
             /* Read the last packet from FIFO */
             uint8_t last_rx_addr = sx127x_reg_read(dev, SX127X_REG_LR_FIFORXCURRENTADDR);
@@ -432,11 +429,6 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
             sx127x_set_rx_single(dev, *((const netopt_enable_t*) val) ? true : false);
             return sizeof(netopt_enable_t);
 
-        case NETOPT_RX_TIMEOUT:
-            assert(len <= sizeof(uint32_t));
-            sx127x_set_rx_timeout(dev, *((const uint32_t*) val));
-            return sizeof(uint32_t);
-
         case NETOPT_TX_TIMEOUT:
             assert(len <= sizeof(uint32_t));
             sx127x_set_tx_timeout(dev, *((const uint32_t*) val));
@@ -486,8 +478,6 @@ static int _set_state(sx127x_t *dev, netopt_state_t state)
             break;
 
         case NETOPT_STATE_IDLE:
-            /* set permanent listening */
-            sx127x_set_rx_timeout(dev, 0);
             sx127x_set_rx(dev);
             break;
 
@@ -586,7 +576,6 @@ void _on_dio1_irq(void *arg)
                     /* todo */
                     break;
                 case SX127X_MODEM_LORA:
-                    xtimer_remove(&dev->_internal.rx_timeout_timer);
                     /*  Clear Irq */
                     sx127x_reg_write(dev, SX127X_REG_LR_IRQFLAGS, SX127X_RF_LORA_IRQFLAGS_RXTIMEOUT);
                     sx127x_set_state(dev, SX127X_RF_IDLE);

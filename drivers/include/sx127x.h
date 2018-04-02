@@ -170,8 +170,7 @@ typedef struct {
     uint8_t coderate;                  /**< Error coding rate */
     uint8_t freq_hop_period;           /**< Frequency hop period */
     uint8_t flags;                     /**< Boolean flags */
-    uint32_t rx_timeout;               /**< RX timeout in symbols */
-    uint32_t tx_timeout;               /**< TX timeout in symbols */
+    uint32_t tx_timeout;               /**< TX timeout in microseconds */
 } sx127x_lora_settings_t;
 
 /**
@@ -190,7 +189,6 @@ typedef struct {
 typedef struct {
     /* Data that will be passed to events handler in application */
     xtimer_t tx_timeout_timer;         /**< TX operation timeout timer */
-    xtimer_t rx_timeout_timer;         /**< RX operation timeout timer */
     uint32_t last_channel;             /**< Last channel in frequency hopping sequence */
     bool is_last_cad_success;          /**< Sign of success of last CAD operation (activity detected) */
 } sx127x_internal_t;
@@ -618,14 +616,6 @@ void sx127x_set_preamble_length(sx127x_t *dev, uint16_t preamble);
  * @param[in] timeout                  The LoRa symbol timeout
  */
 void sx127x_set_symbol_timeout(sx127x_t *dev, uint16_t timeout);
-
-/**
- * @brief   Sets the SX127X RX timeout
- *
- * @param[in] dev                      The sx127x device descriptor
- * @param[in] timeout                  The RX timeout
- */
-void sx127x_set_rx_timeout(sx127x_t *dev, uint32_t timeout);
 
 /**
  * @brief   Sets the SX127X TX timeout
