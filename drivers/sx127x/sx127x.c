@@ -45,7 +45,6 @@ static void _init_isrs(sx127x_t *dev);
 static void _init_timers(sx127x_t *dev);
 static int _init_peripherals(sx127x_t *dev);
 static void _on_tx_timeout(void *arg);
-static void _on_rx_timeout(void *arg);
 
 /* SX127X DIO interrupt handlers initialization */
 static void sx127x_on_dio0_isr(void *arg);
@@ -228,20 +227,10 @@ static void _on_tx_timeout(void *arg)
     dev->event_callback(dev, NETDEV_EVENT_TX_TIMEOUT);
 }
 
-static void _on_rx_timeout(void *arg)
-{
-    netdev_t *dev = (netdev_t *) arg;
-
-    dev->event_callback(dev, NETDEV_EVENT_RX_TIMEOUT);
-}
-
 static void _init_timers(sx127x_t *dev)
 {
     dev->_internal.tx_timeout_timer.arg = dev;
     dev->_internal.tx_timeout_timer.callback = _on_tx_timeout;
-
-    dev->_internal.rx_timeout_timer.arg = dev;
-    dev->_internal.rx_timeout_timer.callback = _on_rx_timeout;
 }
 
 static int _init_peripherals(sx127x_t *dev)
