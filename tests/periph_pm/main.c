@@ -49,6 +49,7 @@ static int parse_mode(int argc, char **argv)
     return mode;
 }
 
+#ifdef MODULE_PERIPH_RTC
 static int parse_duration(int argc, char **argv)
 {
     if (argc < 3) {
@@ -66,7 +67,6 @@ static int parse_duration(int argc, char **argv)
     return duration;
 }
 
-#ifdef MODULE_PERIPH_RTC
 static void cb_rtc(void *arg)
 {
     int level = (int)arg;
