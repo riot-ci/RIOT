@@ -38,7 +38,11 @@ def testfunc(child):
                 lower_bound = exp - (exp * INTERNAL_JITTER)
                 upper_bound = exp + (exp * INTERNAL_JITTER)
                 if not (lower_bound < sleep_time < upper_bound):
-                    raise InvalidTimeout("Invalid timeout %d (expected %d)" % (sleep_time, exp))
+                    delta = (upper_bound-lower_bound)/2
+                    raise InvalidTimeout("Invalid timeout %d ,expected %d < %d < %d"
+                                         "\nHost max error\t%d\nerror\t\t%d" %
+                                         (sleep_time,lower_bound, exp, upper_bound,
+                                         delta, sleep_time-lower_bound))
         testtime = (time.time() - start_test) * US_PER_SEC
         child.expect(u"Test ran for (\\d+) us")
         exp = int(child.match.group(1))
