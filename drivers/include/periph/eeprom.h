@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+#include "cpu.h"
 #include "periph_cpu.h"
 
 #ifdef __cplusplus
@@ -32,10 +33,6 @@ extern "C" {
 
 #ifndef EEPROM_SIZE
 #error "periph/eeprom: EEPROM_SIZE is not defined"
-#endif
-
-#ifndef EEPROM_START_ADDR
-#error "periph/eeprom: EEPROM_START_ADDR is not defined"
 #endif
 
 /**
