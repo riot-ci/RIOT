@@ -18,6 +18,8 @@ USEMODULE += cbor_ctime
 USEMODULE += cbor_float
 USEMODULE += cbor_semantic_tagging
 
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
