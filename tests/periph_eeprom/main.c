@@ -33,7 +33,9 @@ static int cmd_info(int argc, char **argv)
     (void)argc;
     (void)argv;
 
+#ifdef EEPROM_START_ADDR
     printf("EEPROM start addr:\t0x%08x\n", (int)EEPROM_START_ADDR);
+#endif
     printf("EEPROM size:\t\t%i\n", (int)EEPROM_SIZE);
 
     return 0;
