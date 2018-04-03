@@ -208,6 +208,11 @@ void flashpage_write(int page, const void *data)
 }
 
 #ifdef MODULE_PERIPH_EEPROM
+
+#ifndef EEPROM_START_ADDR
+#error "periph/eeprom: EEPROM_START_ADDR is not defined"
+#endif
+
 uint8_t eeprom_read_byte(uint32_t pos)
 {
     DEBUG("Reading data from EEPROM at pos %lu\n", pos);
