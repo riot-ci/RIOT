@@ -2,6 +2,11 @@ include ../Makefile.tests_common
 
 USEMODULE += xtimer
 
+# Port and pin configuration for probing with oscilloscope
+# Port number should be found in port enum e.g in cpu/include/periph_cpu.h
+#CFLAGS += -DSLEEP_PIN=7
+#CFLAGS += -DSLEEP_PORT=5
+
 include $(RIOTBASE)/Makefile.include
 
 test:
