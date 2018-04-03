@@ -112,10 +112,13 @@ NORETURN void _assert_failure(const char *file, unsigned line);
 #if !defined __cplusplus
 #if __STDC_VERSION__ >= 201112L
 /**
- * @brief define c11 static_assert() macro
+ * @brief c11 static_assert() macro
  */
 #define static_assert(...) _Static_assert(__VA_ARGS__)
 #else
+/**
+ * @brief static_assert dummy for c-version < c11
+ */
 #define static_assert(...) struct static_assert_dummy
 #endif
 #endif
