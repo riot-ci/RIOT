@@ -1,7 +1,7 @@
 # xtimer_usleep test application
 
 This test tests `xtimer_usleep()` against the timings of `xtimer_now_usec()`
- and by comparing the incoming strings with the test hosts time. 
+ and by comparing the incoming strings with the test hosts time.
 
 The sleep times can be probed with a oscilloscope at a pin if `SLEEP_PIN` is set
 and the respective gpio `SLEEP_PORT` is defined in the makefile.
@@ -20,9 +20,6 @@ make BOARD=<BoardName> flash test
 018-04-03 18:00:06,825 - INFO # Connect to serial port /dev/ttyACM0
 Welcome to pyterm!
 Type '/exit' to exit.
-2018-04-03 18:00:07,828 - INFO # n: XXX
-2018-04-03 18:00:07,829 - INFO # Running test 5 times with 
-
 2018-04-03 18:00:07,830 - INFO # main(): This is RIOT! (Version: XXX )
 2018-04-03 18:00:07,830 - INFO # Running test 5 times with 7 distinct sleep times
 2018-04-03 18:00:07,831 - INFO # Please hit any key and then ENTER to continue
