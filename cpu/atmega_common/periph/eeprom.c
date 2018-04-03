@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 #include "cpu.h"
+#include "periph/eeprom.h"
 
 uint8_t eeprom_read_byte(uint32_t pos)
 {
@@ -43,8 +44,8 @@ void eeprom_write_byte(uint32_t pos, uint8_t data)
     while(EECR & (1 << EEPE));
 
     /* Set up address and Data Registers */
-    EEAR = uiAddress;
-    EEDR = ucData;
+    EEAR = pos;
+    EEDR = data;
 
     /* Write logical one to EEMPE */
     EECR |= (1<<EEMPE);
