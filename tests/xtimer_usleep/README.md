@@ -15,7 +15,7 @@ Executed from the project directory
 make BOARD=<BoardName> flash test
 ```
 
-### Expected result running 
+### Expected result running
 ```
 018-04-03 18:00:06,825 - INFO # Connect to serial port /dev/ttyACM0
 Welcome to pyterm!
@@ -52,10 +52,10 @@ Type '/exit' to exit.
 2018-04-03 18:11:49,957 - INFO # (Version: XXX )
 2018-04-03 19:12:20,747 - INFO # Running test 5 times with 7 distinct sleep times
 2018-04-03 19:12:20,747 - INFO # Please hit any key and then ENTER to continue
-2018-04-03 19:12:20,747 - INFO # 
+2018-04-03 19:12:20,747 - INFO #
 a
 a
-2018-04-03 19:12:22,411 - INFO # 
+2018-04-03 19:12:22,411 - INFO #
 2018-04-03 19:12:22,421 - INFO # Slept for 10224 us (expected: 10000 us)
 2018-04-03 19:12:22,427 - INFO # MCU max error   70
 2018-04-03 19:12:22,480 - INFO # error          224
