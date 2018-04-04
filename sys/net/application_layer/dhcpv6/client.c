@@ -202,24 +202,25 @@ static inline uint32_t _now_cs(void)
     return (uint32_t)(xtimer_now_usec64() / US_PER_CS);
 }
 
-static inline uint16_t _compose_cid_opt(dhcpv6_opt_t *cid)
+static inline size_t _compose_duid_opt(dhcpv6_opt_t *opt, unsigned type,
+                                       void *duid, size_t duid_len)
 {
-    uint16_t len = duid_len;
-
-    cid->type = byteorder_htons(DHCPV6_OPT_CID);
-    cid->len = byteorder_htons(len);
-    memcpy(cid->data, duid, duid_len);
-    return len + sizeof(dhcpv6_opt_t);
+    assert(duid_len <= DHCPV6_DUID_MAX_LEN);
+    opt->type = byteorder_htons(type);
+    opt->len = byteorder_htons(duid_len);
+    memcpy(opt->data, duid, duid_len);
+    return duid_len + sizeof(dhcpv6_opt_t);
 }
 
-static inline uint16_t _compose_sid_opt(dhcpv6_opt_t *sid)
+static inline size_t _compose_cid_opt(dhcpv6_opt_t *cid)
 {
-    uint16_t len = server.duid_len;
+    return _compose_duid_opt(cid, DHCPV6_OPT_CID, duid, duid_len);
+}
 
-    sid->type = byteorder_htons(DHCPV6_OPT_SID);
-    sid->len = byteorder_htons(len);
-    memcpy(sid->data, server.duid.u8, server.duid_len);
-    return len + sizeof(dhcpv6_opt_t);
+static inline size_t _compose_sid_opt(dhcpv6_opt_t *sid)
+{
+    return _compose_duid_opt(sid, DHCPV6_OPT_SID,
+                             server.duid.u8, server.duid_len);
 }
 
 static inline uint16_t _get_elapsed_time(void)
