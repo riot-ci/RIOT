@@ -29,6 +29,7 @@
 #include "debug.h"
 
 static int _decode_value(unsigned val, uint8_t **pkt_pos_ptr, uint8_t *pkt_end);
+int coap_get_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target);
 
 /* http://tools.ietf.org/html/rfc7252#section-3
  *  0                   1                   2                   3
@@ -115,8 +116,11 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
 
 #ifdef MODULE_GCOAP
     coap_get_uri(pkt, pkt->url);
-    pkt->observe_value = UINT32_MAX;
     pkt->content_type = coap_get_content_type(pkt);
+
+    if (coap_get_uint(pkt, COAP_OPT_OBSERVE, &pkt->observe_value) != 0) {
+        pkt->observe_value = UINT32_MAX;
+    }
 #endif
 
     DEBUG("coap pkt parsed. code=%u detail=%u payload_len=%u, nopts=%u, 0x%02x\n",
@@ -155,6 +159,42 @@ static uint8_t *_parse_option(coap_pkt_t *pkt, uint8_t *pkt_pos, uint16_t *delta
     *opt_len = _decode_value(option_byte & 0xf, &pkt_pos, hdr_end);
 
     return pkt_pos;
+}
+
+static uint32_t _decode_uint(uint8_t *pkt_pos, unsigned nbytes)
+{
+    assert(nbytes <= 4);
+
+    uint32_t res = 0;
+    if (nbytes) {
+        memcpy(((uint8_t *)&res) + (4 - nbytes), pkt_pos, nbytes);
+    }
+    return ntohl(res);
+}
+
+int coap_get_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target)
+{
+    assert(target);
+
+    uint8_t *opt_pos = coap_find_option(pkt, opt_num);
+    if (opt_pos) {
+        uint16_t delta;
+        int option_len = 0;
+        uint8_t *pkt_pos = _parse_option(pkt, opt_pos, &delta, &option_len);
+        if (option_len) {
+            if (option_len > 4) {
+                DEBUG("nanocoap: uint option with len > 4 (unsupported).\n");
+                return -ENOSPC;
+            }
+            *target = _decode_uint(pkt_pos, option_len);
+            return 0;
+        }
+        else {
+            DEBUG("nanocoap: discarding packet with invalid option length.\n");
+            return -EBADMSG;
+        }
+    }
+    return -1;
 }
 
 uint8_t *coap_iterate_option(coap_pkt_t *pkt, uint8_t **optpos, int *opt_len, int first)
