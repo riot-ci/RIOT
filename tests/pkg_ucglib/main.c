@@ -50,6 +50,9 @@
 #include <stdio.h>
 
 #include "periph/gpio.h"
+#if TEST_OUTPUT == TEST_OUTPUT_SPI
+#include "periph/spi.h"
+#endif
 
 #include "xtimer.h"
 #include "ucg.h"
@@ -102,7 +105,7 @@ int main(void)
     puts("Initializing to SPI.");
 
     ucg_SetPins(&ucg, pins, pins_enabled);
-    ucg_SetDevice(&ucg, TEST_SPI);
+    ucg_SetDevice(&ucg, SPI_DEV(TEST_SPI));
 
     ucg_Init(&ucg, TEST_DISPLAY, TEST_DISPLAY_EXT, ucg_com_riotos_hw_spi);
 #endif
@@ -116,26 +119,29 @@ int main(void)
     /* start drawing in a loop */
     puts("Drawing on screen.");
 
-    while (true) {
+    while (1) {
         ucg_ClearScreen(&ucg);
 
-        if (screen == 0) {
-            ucg_SetColor(&ucg, 0, 189, 32, 43);
-            ucg_DrawString(&ucg, 0, 20, 0, "THIS");
-        }
-        else if (screen == 1) {
-            ucg_SetColor(&ucg, 0, 63, 167, 136);
-            ucg_DrawString(&ucg, 0, 20, 0, "IS");
-        }
-        else if (screen == 2) {
-            for (int y = 0; y < 48; y++) {
-                for (int x = 0; x < 96; x++) {
-                    uint32_t offset = (x + (y * 96)) * 3;
 
-                    ucg_SetColor(&ucg, 0, logo[offset + 0], logo[offset + 1], logo[offset + 2]);
-                    ucg_DrawPixel(&ucg, x, y);
+        switch (screen) {
+            case 0:
+                ucg_SetColor(&ucg, 0, 189, 32, 43);
+                ucg_DrawString(&ucg, 0, 20, 0, "THIS");
+                break;
+            case 1:
+                ucg_SetColor(&ucg, 0, 63, 167, 136);
+                ucg_DrawString(&ucg, 0, 20, 0, "IS");
+                break;
+            case 2:
+                for (int y = 0; y < 48; y++) {
+                    for (int x = 0; x < 96; x++) {
+                        uint32_t offset = (x + (y * 96)) * 3;
+
+                        ucg_SetColor(&ucg, 0, logo[offset + 0], logo[offset + 1], logo[offset + 2]);
+                        ucg_DrawPixel(&ucg, x, y);
+                    }
                 }
-            }
+                break;
         }
 
 #if TEST_OUTPUT == TEST_OUTPUT_SDL
