@@ -39,9 +39,9 @@ static int parse_mode(int argc, char **argv)
         return -1;
     }
 
-    int mode = atoi(argv[1]);
+    uint8_t mode = atoi(argv[1]);
 
-    if (mode < 0 || mode >= (int) PM_NUM_MODES) {
+    if (mode >= PM_NUM_MODES) {
         printf("Error: power mode not in range 0 - %d.\n", PM_NUM_MODES - 1);
         return -1;
     }
