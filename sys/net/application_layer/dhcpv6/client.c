@@ -285,34 +285,34 @@ static inline size_t _add_ia_pd_from_config(uint8_t *buf)
     return msg_len;
 }
 
-static inline int32_t get_rand_us(void)
+static inline int32_t get_rand_us_factor(void)
 {
-    int32_t rand = ((int32_t)random_uint32_range(0, 200 * US_PER_MS));
-    rand -= 100 * US_PER_SEC;
-    return rand;
+    int32_t res = ((int32_t)random_uint32_range(0, 200 * US_PER_MS));
+    res -= 100 * US_PER_SEC;
+    return res;
 }
 
 static inline uint32_t _irt_us(uint16_t irt, bool greater_irt)
 {
     uint32_t irt_us = (irt * US_PER_SEC);
-    int32_t rand = get_rand_us();
+    int32_t factor = get_rand_us_factor();
 
-    if (greater_irt && (rand < 0)) {
-        rand = -rand;
+    if (greater_irt && (factor < 0)) {
+        factor = -factor;
     }
-    irt_us += (rand * irt_us) / US_PER_SEC;
+    irt_us += (factor * irt_us) / US_PER_SEC;
     return irt_us;
 }
 
 static inline uint32_t _sub_rt_us(uint32_t rt_prev_us, uint16_t mrt)
 {
     uint32_t sub_rt_us = (2 * rt_prev_us) +
-                         ((get_rand_us() * rt_prev_us) / US_PER_SEC);
+                         ((get_rand_us_factor() * rt_prev_us) / US_PER_SEC);
 
     if (sub_rt_us > (mrt * US_PER_SEC)) {
         uint32_t mrt_us = mrt * US_PER_SEC;
 
-        sub_rt_us = mrt_us + ((get_rand_us() * mrt_us) / US_PER_SEC);
+        sub_rt_us = mrt_us + ((get_rand_us_factor() * mrt_us) / US_PER_SEC);
     }
     return sub_rt_us;
 }
