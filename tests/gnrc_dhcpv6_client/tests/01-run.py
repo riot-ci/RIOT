@@ -64,20 +64,20 @@ class MockServer(threading.Thread):
                     l2_addr)
             # client is required to request SOL_MAX_RT option (82) from server
             assert 82 in p["DHCP6 Option Request Option"].reqopts
-            # Try to crash client
+            # Try to crash client by bursting back ADVERTISE messages with
+            # randomized connent
             scapy.sendp(scapy.Ether(dst=p["Ethernet"].src) /
                         scapy.IPv6(dst=p["IPv6"].src) /
                         scapy.UDP(dport=p["UDP"].sport, sport=p["UDP"].dport) /
-                        scapy.fuzz(
-                                scapy.DHCP6(
-                                        trid=p["DHCPv6 Solicit Message"].trid
-                                    ) / scapy.Raw()
-                            ),
+                        scapy.DHCP6_Advertise(
+                                trid=p["DHCPv6 Solicit Message"].trid
+                            ) /
+                        scapy.fuzz(scapy.Raw()),
                         iface=os.environ["IFACE"],
-                        count=100)
-            # TODO/XXX client doesn't listen for address leases yet, so no sense
-            # in replying (since the client would interpret a ADVERTISE without
-            # leases as invalid as per the RFC)
+                        count=1000)
+            # TODO/XXX client doesn't listen for address leases yet, so no
+            # sense in replying (since the client would interpret a ADVERTISE
+            # without leases as invalid as per the RFC)
 
         except AssertionError as exc:
             self.exc_queue.put(exc)
