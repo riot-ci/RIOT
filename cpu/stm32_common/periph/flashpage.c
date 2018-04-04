@@ -58,6 +58,11 @@ static void _unlock(void)
         KEY_REG = FLASH_KEY1;
         KEY_REG = FLASH_KEY2;
     }
+}
+
+static void _unlock_flash(void)
+{
+    _unlock();
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     DEBUG("[flashpage] unlocking the flash program memory\n");
@@ -90,7 +95,7 @@ static void _erase_page(void *page_addr)
 #endif
 
    /* unlock the flash module */
-    _unlock();
+    _unlock_flash();
 
     /* make sure no flash operation is ongoing */
     DEBUG("[flashpage] erase: waiting for any operation to finish\n");
@@ -153,7 +158,7 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
 #endif
 
     DEBUG("[flashpage_raw] unlocking the flash module\n");
-    _unlock();
+    _unlock_flash();
 
     DEBUG("[flashpage] write: now writing the data\n");
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
@@ -201,3 +206,24 @@ void flashpage_write(int page, const void *data)
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
 }
+
+#ifdef MODULE_PERIPH_EEPROM
+
+#ifndef EEPROM_START_ADDR
+#error "periph/eeprom: EEPROM_START_ADDR is not defined"
+#endif
+
+uint8_t eeprom_read_byte(uint32_t pos)
+{
+    DEBUG("Reading data from EEPROM at pos %lu\n", pos);
+    return *(uint8_t *)(EEPROM_START_ADDR + pos);
+}
+
+void eeprom_write_byte(uint32_t pos, uint8_t data)
+{
+    DEBUG("Writing data '%c' to EEPROM at pos %lu\n", data, pos);
+    _unlock();
+    *(uint8_t *)(EEPROM_START_ADDR + pos) = data;
+    _lock();
+}
+#endif
