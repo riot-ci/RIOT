@@ -29,7 +29,7 @@
 #include "debug.h"
 
 static int _decode_value(unsigned val, uint8_t **pkt_pos_ptr, uint8_t *pkt_end);
-int coap_get_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target);
+int coap_get_option_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target);
 
 /* http://tools.ietf.org/html/rfc7252#section-3
  *  0                   1                   2                   3
@@ -118,7 +118,7 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
     coap_get_uri(pkt, pkt->url);
     pkt->content_type = coap_get_content_type(pkt);
 
-    if (coap_get_uint(pkt, COAP_OPT_OBSERVE, &pkt->observe_value) != 0) {
+    if (coap_get_option_uint(pkt, COAP_OPT_OBSERVE, &pkt->observe_value) != 0) {
         pkt->observe_value = UINT32_MAX;
     }
 #endif
@@ -172,7 +172,7 @@ static uint32_t _decode_uint(uint8_t *pkt_pos, unsigned nbytes)
     return ntohl(res);
 }
 
-int coap_get_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target)
+int coap_get_option_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target)
 {
     assert(target);
 
