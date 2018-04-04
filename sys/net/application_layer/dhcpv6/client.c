@@ -17,6 +17,7 @@
 
 #include "event.h"
 #include "net/dhcpv6/client.h"
+#include "net/dhcpv6.h"
 #include "net/sock/udp.h"
 #include "random.h"
 #include "timex.h"
@@ -25,6 +26,8 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+#include "_dhcpv6.h"
 
 /**
  * @brief   Representation of a generic lease
