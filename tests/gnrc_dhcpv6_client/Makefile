@@ -10,6 +10,8 @@ BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h nucleo32-f042 \
 # The following boards do not have an available UART
 BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker ruuvitag thingy52
 
+TEST_ON_CI_WHITELIST += all
+
 USEMODULE += gnrc_dhcpv6_client
 USEMODULE += gnrc_ipv6_default
 ifneq (,$(filter native,$(BOARD)))
