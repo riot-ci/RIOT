@@ -20,8 +20,9 @@
 #ifndef NET_DHCPV6_CLIENT_H
 #define NET_DHCPV6_CLIENT_H
 
+#include "byteorder.h"
 #include "event.h"
-#include "net/dhcpv6.h"
+#include "net/ipv6/addr.h"
 #include "thread.h"
 
 #ifdef __cplusplus
@@ -51,6 +52,22 @@ extern "C" {
 #ifndef DHCPV6_CLIENT_PFX_LEASE_MAX
 #define DHCPV6_CLIENT_PFX_LEASE_MAX (1U)    /**< maximum number of prefix leases to store */
 #endif
+
+/**
+ * @name DHCPv6 unique identifier (DUID) definitions
+ * @see [draft-ietf-dhc-rfc3315bis-12, section 11.2]
+ *      (https://tools.ietf.org/html/draft-ietf-dhc-rfc3315bis-12#section-11.2)
+ * @{
+ */
+/**
+ * @brief   DUID based on link-layer address plus time
+ */
+typedef struct __attribute__((packed)) {
+    network_uint16_t type;      /**< @ref DHCPV6_DUID_TYPE_L2 */
+    network_uint16_t l2type;    /**< [hardware type]
+                                 *   (@ref net_arp_hwtype)) */
+    /* link-layer address follows this header */
+} dhcpv6_duid_l2_t;
 
 #if defined(MODULE_AUTO_INIT_DHCPV6_CLIENT) || defined(DOXYGEN)
 /**
