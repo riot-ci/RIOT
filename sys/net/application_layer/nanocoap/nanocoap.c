@@ -163,17 +163,6 @@ static uint8_t *_parse_option(coap_pkt_t *pkt, uint8_t *pkt_pos, uint16_t *delta
     return pkt_pos;
 }
 
-static uint32_t _decode_uint(uint8_t *pkt_pos, unsigned nbytes)
-{
-    assert(nbytes <= 4);
-
-    uint32_t res = 0;
-    if (nbytes) {
-        memcpy(((uint8_t *)&res) + (4 - nbytes), pkt_pos, nbytes);
-    }
-    return ntohl(res);
-}
-
 int coap_get_option_uint(coap_pkt_t *pkt, unsigned opt_num, uint32_t *target)
 {
     assert(target);
