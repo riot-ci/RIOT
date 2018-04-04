@@ -310,8 +310,8 @@ static inline void xtimer_set(xtimer_t *timer, uint32_t offset);
  * @param[in] offset_us   time in microseconds from now specifying that timer's
  *                        callback's execution time
  */
-
 static inline void xtimer_set64(xtimer_t *timer, uint64_t offset_us);
+
 /**
  * @brief remove a timer
  *
