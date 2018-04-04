@@ -23,15 +23,15 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "xtimer.h"
 #include "timex.h"
-#include "stdlib.h"
 
 #define RUNS                (5U)
 #define SLEEP_TIMES_NUMOF   (sizeof(sleep_times) / sizeof(sleep_times[0]))
 
-static const uint32_t sleep_times[] = { 10000, 50000, 1234, 5678, 121212, 98765, 75000};
+static const uint32_t sleep_times[] = { 10000, 50000, 10234, 56780, 12122, 98765, 75000 };
 
 #define ERROR_US 70
 
@@ -77,18 +77,11 @@ int main(void)
 
             diff = xtimer_now_usec() - start_sleep;
 
-            if(sleep_times[n] < diff - ERROR_US
-              ||sleep_times[n] > diff + ERROR_US ){
-                int32_t err = (diff - sleep_times[n]);
-                printf("\nSlept for %" PRIu32 " us (expected: %" PRIu32 " us)",
-                        diff, sleep_times[n]);
-                printf("\nMCU max error\t%5" PRIi32 "\nerror\t\t%5" PRIi32 "",
-                        (uint32_t)ERROR_US, err);
-            }else{
-                printf("Slept for %" PRIu32 " us (expected: %" PRIu32 " us)\n",
-                                   diff, sleep_times[n]);
-           }
-        }
+            int32_t err = (diff - sleep_times[n]);
+
+            printf("Slept for %" PRIu32 " us (expected: %" PRIu32 " us) "
+                   "Offset: %d us\n", diff, sleep_times[n], err);
+        } //
     }
     testtime = xtimer_now_usec() - start_test;
     printf("Test ran for %" PRIu32 " us\n", testtime);
