@@ -116,19 +116,6 @@ typedef struct __attribute__((packed)) {
 } dhcpv6_opt_t;
 
 /**
- * @brief   DHCPv6 client or server identifier option format
- * @see [draft-ietf-dhc-rfc3315bis-12, section 21.2]
- *      (https://tools.ietf.org/html/draft-ietf-dhc-rfc3315bis-12#section-21.2)
- * @see [draft-ietf-dhc-rfc3315bis-12, section 21.3]
- *      (https://tools.ietf.org/html/draft-ietf-dhc-rfc3315bis-12#section-21.3)
- */
-typedef struct __attribute__((packed)) {
-    network_uint16_t type;      /**< @ref DHCPV6_OPT_CID or DHCPV6_OPT_SID */
-    network_uint16_t len;       /**< length of dhcpv6_opt_t::duid in byte */
-    uint8_t duid[];             /**< the DUID of the client or server */
-} dhcpv6_opt_duid_t;
-
-/**
  * @brief   DHCPv6 option request option format
  * @see [draft-ietf-dhc-rfc3315bis-12, section 21.7]
  *      (https://tools.ietf.org/html/draft-ietf-dhc-rfc3315bis-12#section-21.7)

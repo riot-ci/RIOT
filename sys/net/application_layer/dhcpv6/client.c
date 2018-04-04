@@ -202,23 +202,23 @@ static inline uint32_t _now_cs(void)
     return (uint32_t)(xtimer_now_usec64() / US_PER_CS);
 }
 
-static inline uint16_t _compose_cid_opt(dhcpv6_opt_duid_t *cid)
+static inline uint16_t _compose_cid_opt(dhcpv6_opt_t *cid)
 {
     uint16_t len = duid_len;
 
     cid->type = byteorder_htons(DHCPV6_OPT_CID);
     cid->len = byteorder_htons(len);
-    memcpy(cid->duid, duid, duid_len);
+    memcpy(cid->data, duid, duid_len);
     return len + sizeof(dhcpv6_opt_t);
 }
 
-static inline uint16_t _compose_sid_opt(dhcpv6_opt_duid_t *sid)
+static inline uint16_t _compose_sid_opt(dhcpv6_opt_t *sid)
 {
     uint16_t len = server.duid_len;
 
     sid->type = byteorder_htons(DHCPV6_OPT_SID);
     sid->len = byteorder_htons(len);
-    memcpy(sid->duid, server.duid.u8, server.duid_len);
+    memcpy(sid->data, server.duid.u8, server.duid_len);
     return len + sizeof(dhcpv6_opt_t);
 }
 
@@ -343,33 +343,33 @@ static bool _check_status_opt(dhcpv6_opt_status_t *status)
     return (status == NULL) || (status->code.u16 == DHCPV6_STATUS_SUCCESS);
 }
 
-static bool _check_cid_opt(dhcpv6_opt_duid_t *cid)
+static bool _check_cid_opt(dhcpv6_opt_t *cid)
 {
 #if ENABLE_DEBUG
     if ((byteorder_ntohs(cid->len) != duid_len) ||
-        (memcmp(cid->duid, duid, duid_len) != 0)) {
+        (memcmp(cid->data, duid, duid_len) != 0)) {
         DEBUG("DHCPv6 client: message is not for me\n");
     }
 #endif
     return ((byteorder_ntohs(cid->len) == duid_len) &&
-            (memcmp(cid->duid, duid, duid_len) == 0));
+            (memcmp(cid->data, duid, duid_len) == 0));
 }
 
-static bool _check_sid_opt(dhcpv6_opt_duid_t *sid)
+static bool _check_sid_opt(dhcpv6_opt_t *sid)
 {
 #if ENABLE_DEBUG
     if ((byteorder_ntohs(sid->len) != server.duid_len) ||
-        (memcmp(sid->duid, server.duid.u8, server.duid_len) != 0)) {
+        (memcmp(sid->data, server.duid.u8, server.duid_len) != 0)) {
         DEBUG("DHCPv6 client: message is not from my server\n");
     }
 #endif
     return ((byteorder_ntohs(sid->len) == server.duid_len) &&
-            (memcmp(sid->duid, server.duid.u8, server.duid_len) == 0));
+            (memcmp(sid->data, server.duid.u8, server.duid_len) == 0));
 }
 
 static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
 {
-    dhcpv6_opt_duid_t *cid = NULL, *sid = NULL;
+    dhcpv6_opt_t *cid = NULL, *sid = NULL;
     dhcpv6_opt_pref_t *pref = NULL;
     dhcpv6_opt_status_t *status = NULL;
     dhcpv6_opt_ia_pd_t *ia_pd = NULL;
@@ -389,10 +389,10 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
         }
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_CID:
-                cid = (dhcpv6_opt_duid_t *)opt;
+                cid = opt;
                 break;
             case DHCPV6_OPT_SID:
-                sid = (dhcpv6_opt_duid_t *)opt;
+                sid = opt;
                 break;
             case DHCPV6_OPT_STATUS:
                 status = (dhcpv6_opt_status_t *)opt;
@@ -424,7 +424,7 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
             *buf = best_adv;
         }
         server.duid_len = byteorder_ntohs(sid->len);
-        memcpy(server.duid.u8, sid->duid, server.duid_len);
+        memcpy(server.duid.u8, sid->data, server.duid_len);
         server.pref = pref_val;
     }
     return pref_val;
@@ -529,7 +529,7 @@ static void _parse_advertise(uint8_t *adv, size_t len)
 
 static bool _parse_reply(uint8_t *rep, size_t len)
 {
-    dhcpv6_opt_duid_t *cid = NULL, *sid = NULL;
+    dhcpv6_opt_t *cid = NULL, *sid = NULL;
     dhcpv6_opt_ia_pd_t *ia_pd = NULL;
     dhcpv6_opt_status_t *status = NULL;
     dhcpv6_opt_smr_t *smr = NULL;
@@ -548,10 +548,10 @@ static bool _parse_reply(uint8_t *rep, size_t len)
         }
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_CID:
-                cid = (dhcpv6_opt_duid_t *)opt;
+                cid = opt;
                 break;
             case DHCPV6_OPT_SID:
-                sid = (dhcpv6_opt_duid_t *)opt;
+                sid = opt;
                 break;
             case DHCPV6_OPT_STATUS:
                 status = (dhcpv6_opt_status_t *)opt;
@@ -680,7 +680,7 @@ static void _solicit_servers(event_t *event)
     _generate_tid();
     msg->type = DHCPV6_SOLICIT;
     _set_tid(msg->tid);
-    msg_len += _compose_cid_opt((dhcpv6_opt_duid_t *)&send_buf[msg_len]);
+    msg_len += _compose_cid_opt((dhcpv6_opt_t *)&send_buf[msg_len]);
     transaction_start = _now_cs();
     time = (dhcpv6_opt_elapsed_time_t *)&send_buf[msg_len];
     msg_len += _compose_elapsed_time_opt(time);
@@ -784,9 +784,9 @@ static void _request_renew_rebind(uint8_t type)
     _generate_tid();
     msg->type = type;
     _set_tid(msg->tid);
-    msg_len += _compose_cid_opt((dhcpv6_opt_duid_t *)&send_buf[msg_len]);
+    msg_len += _compose_cid_opt((dhcpv6_opt_t *)&send_buf[msg_len]);
     if (type != DHCPV6_REBIND) {
-        msg_len += _compose_sid_opt((dhcpv6_opt_duid_t *)&send_buf[msg_len]);
+        msg_len += _compose_sid_opt((dhcpv6_opt_t *)&send_buf[msg_len]);
     }
     transaction_start = _now_cs();
     time = (dhcpv6_opt_elapsed_time_t *)&send_buf[msg_len];
