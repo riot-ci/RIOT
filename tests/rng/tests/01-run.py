@@ -20,8 +20,9 @@ def testfunc(child):
             break
     # RNG source
     child.sendline("source 0")
+    child.expect('>')
     child.sendline("seed 1337")
-
+    child.expect('>')
     child.sendline("fips")
     child.expect("Running FIPS 140-2 test, with seed 1337 using Tiny Mersenne Twister PRNG.")
     child.expect("Monobit test: passed")
@@ -46,7 +47,9 @@ def testfunc(child):
 
     # Constant source
     child.sendline("source 1")
+    child.expect('>')
     child.sendline("seed 1337")
+    child.expect('>')
 
     child.sendline("fips")
     child.expect("Running FIPS 140-2 test, with seed 1337 using constant value.")
