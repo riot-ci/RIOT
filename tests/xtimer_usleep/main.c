@@ -34,10 +34,11 @@ int main(void)
 {
     uint32_t start_test, testtime;
 
-    printf("Running test %u times with %u distinct sleep times\n", RUNS,
-           (unsigned)SLEEP_TIMES_NUMOF);
     puts("Please hit any key and then ENTER to continue");
     getchar();
+
+    printf("Running test %u times with %u distinct sleep times\n", RUNS,
+           (unsigned)SLEEP_TIMES_NUMOF);
     start_test = xtimer_now_usec();
     for (unsigned m = 0; m < RUNS; m++) {
         for (unsigned n = 0;

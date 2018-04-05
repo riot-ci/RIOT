@@ -23,12 +23,11 @@ class InvalidTimeout(Exception):
 
 
 def testfunc(child):
-    child.expect(u"Running test (\\d+) times with (\\d+) distinct sleep times")
-    RUNS = int(child.match.group(1))
-    SLEEP_TIMES_NUMOF = int(child.match.group(2))
     try:
-        child.expect_exact(u"Please hit any key and then ENTER to continue")
         child.sendline(u"a")
+        child.expect(u"Running test (\\d+) times with (\\d+) distinct sleep times")
+        RUNS = int(child.match.group(1))
+        SLEEP_TIMES_NUMOF = int(child.match.group(2))
         start_test = time.time()
         for m in range(RUNS):
             for n in range(SLEEP_TIMES_NUMOF):
