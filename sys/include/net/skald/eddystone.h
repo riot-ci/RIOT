@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    net_skald_ Skald meets Eddy
+ * @defgroup    net_skald_eddystone Skald meets Eddy
  * @ingroup     net_skald
  * @brief       Skald's Eddystone implementation
  *
@@ -53,11 +53,11 @@ typedef struct __attribute__((packed)) {
 /**
  * @brief   Advertise Eddystone-UID data
  *
- * See https://github.com/google/eddystone/tree/master/eddystone-uid
+ * @see https://github.com/google/eddystone/tree/master/eddystone-uid
  *
  * @param[out] ctx      advertising context
  * @param[in] uid       UID to advertise
- * @param[in] tx_pwr    transmission power
+ * @param[in] tx_pwr    calibrated TX power to be advertised by the beacon
  */
 void skald_eddystone_uid_adv(skald_ctx_t *ctx,
                              const skald_eddystone_uid_t *uid, uint8_t tx_pwr);
@@ -65,12 +65,12 @@ void skald_eddystone_uid_adv(skald_ctx_t *ctx,
 /**
  * @brief   Advertise Eddystone-URL data
  *
- * See https://github.com/google/eddystone/tree/master/eddystone-url
+ * @see https://github.com/google/eddystone/tree/master/eddystone-url
  *
  * @param[out] ctx      advertising context
  * @param[in] scheme    encoded URL scheme prefix
- * @param[in] url       calibrated TX power to be advertised by the beacon
- * @param[in] tx_pwr    transmission power
+ * @param[in] url       (short) url as \0 terminated string
+ * @param[in] tx_pwr    calibrated TX power to be advertised by the beacon
  */
 void skald_eddystone_url_adv(skald_ctx_t *ctx,
                              uint8_t scheme, const char *url, uint8_t tx_pwr);

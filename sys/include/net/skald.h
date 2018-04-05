@@ -18,7 +18,7 @@
  * different kind of beacons using an extremely low memory footprint.
  *
  * # Design Decisions and Limitations
- * - support for random public addresses only (generated using `luid` for now)
+ * - support for local addresses only (using `luid` to generate them)
  * - advertising interval is configured during compile time, override by setting
  *   `CFLAGS+=-DSKALD_INTERVAL=xxx`
  * - advertising channels are configured during compile time, override by
