@@ -14,4 +14,10 @@ ifneq (,$(filter auto_init_can,$(USEMODULE)))
   DIRS += can
 endif
 
+SRC = auto_init.c
+
+ifneq (,$(filter auto_init_skald,$(USEMODULE)))
+  SRC += auto_init_skald.c
+endif
+
 include $(RIOTBASE)/Makefile.base
