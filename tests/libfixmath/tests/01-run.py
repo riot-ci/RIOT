@@ -31,6 +31,7 @@ def expect_binary(child):
 
 
 def testfunc(child):
+    child.sendline('a')
     child.expect_exact('Unary.')
     expect_unary(child)
     child.expect_exact('Binary.')

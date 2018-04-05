@@ -8,6 +8,7 @@
 
 import os
 import sys
+import pexpect
 
 EXPECTED_HELP = (
     'Command              Description',
@@ -44,11 +45,15 @@ def check_cmd(child, cmd, expected):
     child.sendline(cmd)
     for line in expected:
         child.expect_exact(line)
+    child.expect('>')
 
 
 def testfunc(child):
-    # check startup message
-    child.expect('test_shell.')
+    for x in range(0, 2):
+        child.sendline('help')
+        index = child.expect(['>', pexpect.TIMEOUT])
+        if index == 0:
+            break
 
     # loop other defined commands and expected output
     for cmd, expected in CMDS.items():

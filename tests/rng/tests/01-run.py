@@ -9,13 +9,20 @@
 import sys
 import os
 import re
+import pexpect
 
 
 def testfunc(child):
+    for x in range(0, 2):
+        child.sendline('help')
+        index = child.expect(['>', pexpect.TIMEOUT])
+        if index == 0:
+            break
     # RNG source
     child.sendline("source 0")
+    child.expect('>')
     child.sendline("seed 1337")
-
+    child.expect('>')
     child.sendline("fips")
     child.expect("Running FIPS 140-2 test, with seed 1337 using Tiny Mersenne Twister PRNG.")
     child.expect("Monobit test: passed")
@@ -40,7 +47,9 @@ def testfunc(child):
 
     # Constant source
     child.sendline("source 1")
+    child.expect('>')
     child.sendline("seed 1337")
+    child.expect('>')
 
     child.sendline("fips")
     child.expect("Running FIPS 140-2 test, with seed 1337 using constant value.")

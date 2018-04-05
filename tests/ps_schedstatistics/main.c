@@ -54,6 +54,9 @@ static void *_thread_fn(void *arg)
 
 int main(void)
 {
+    puts("Please hit any key and then ENTER to continue");
+    getchar();
+
     for (unsigned i = 0; i < NB_THREADS; ++i) {
         pids[i] = thread_create(stacks[i], sizeof(stacks[i]),
                                 THREAD_PRIORITY_MAIN - 1,
