@@ -6,6 +6,18 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     tests
+ * @{
+ *
+ * @file
+ * @brief       Definitions of visuals for the Ucglib test application.
+ *
+ * @author      Bas Stottelaar <basstottelaar@gmail.com>
+ *
+ * @}
+ */
+
 #ifndef LOGO_H
 #define LOGO_H
 
@@ -14,7 +26,7 @@ extern "C" {
 #endif
 
 /**
- * @name   RIOT-OS logo, 96x48 pixels in RGB format (24 bits).
+ * @brief  RIOT-OS logo, 96x48 pixels in RGB format (24 bits).
  */
 static const uint8_t logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

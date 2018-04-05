@@ -61,7 +61,7 @@
 
 #if TEST_OUTPUT == TEST_OUTPUT_SPI
 /**
- * @name    RIOT-OS pin maping of Ucglib pin numbers to RIOT-OS GPIO pins.
+ * @brief   RIOT-OS pin maping of Ucglib pin numbers to RIOT-OS GPIO pins.
  * @note    To minimize the overhead, you can implement an alternative for
  *          ucg_com_riotos_hw_spi.
  */
@@ -72,7 +72,7 @@ static gpio_t pins[] = {
 };
 
 /**
- * @name   Bit mapping to indicate which pins are set.
+ * @brief   Bit mapping to indicate which pins are set.
  */
 static uint32_t pins_enabled = (
     (1 << UCG_PIN_CS) +
@@ -121,7 +121,6 @@ int main(void)
 
     while (1) {
         ucg_ClearScreen(&ucg);
-
 
         switch (screen) {
             case 0:
