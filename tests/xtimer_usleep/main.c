@@ -80,7 +80,7 @@ int main(void)
             int32_t err = (diff - sleep_times[n]);
 
             printf("Slept for %" PRIu32 " us (expected: %" PRIu32 " us) "
-                   "Offset: %d us\n", diff, sleep_times[n], err);
+                   "Offset: %" PRIi32 " us\n", diff, sleep_times[n], err);
         } //
     }
     testtime = xtimer_now_usec() - start_test;
