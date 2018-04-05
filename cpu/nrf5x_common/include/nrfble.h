@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    drivers_nrf5x_nrfble nRF BLE radio driver
+ * @defgroup    drivers_nrf5x_nrfble NRF BLE radio driver
  * @ingroup     drivers_netdev
  * @brief       Radio driver for nRF5x SoCs for using the radio in BLE mode
  * @{
