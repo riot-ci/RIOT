@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    net_ble General BLE defines
+ * @defgroup    net_ble BLE defines
  * @ingroup     net
  * @brief       General values defined by the BT standard
  * @{
@@ -51,7 +51,7 @@ extern "C" {
 /**
  * @name    GATT Declaration UUIDs
  *
- * See https://www.bluetooth.com/specifications/gatt/declarations
+ * @see https://www.bluetooth.com/specifications/gatt/declarations
  * @{
  */
 #define BLE_DECL_PRI_SERVICE                (0x2800)
@@ -63,7 +63,7 @@ extern "C" {
 /**
  * @name    GATT descriptor UUIDs
  *
- * See https://www.bluetooth.com/specifications/gatt/descriptors
+ * @see https://www.bluetooth.com/specifications/gatt/descriptors
  * @{
  */
 #define BLE_DESC_AGGR_FMT                   (0x2905)
@@ -86,7 +86,7 @@ extern "C" {
 /**
  * @name    Characteristic format types (8-bit)
  *
- * See https://www.bluetooth.com/specifications/assigned-numbers/format-types
+ * @see https://www.bluetooth.com/specifications/assigned-numbers/format-types
  * @{
  */
 #define BLE_UNIT_BLE_FMT_BOOL               (0x01)
@@ -121,7 +121,7 @@ extern "C" {
 /**
  * @name    Units (16-bit)
  *
- * See https://www.bluetooth.com/specifications/assigned-numbers/units
+ * @see https://www.bluetooth.com/specifications/assigned-numbers/units
  * @{
  */
 #define BLE_UNIT_NONE                       (0x2700)    /**< no unit */
@@ -326,12 +326,12 @@ extern "C" {
 /** @} */
 
 /**
- * @name    Flags used in advertisement packets
+ * @name    Flags used in GAP advertisement packets
  * @{
  */
-#define GORM_GAP_DISCOVER_LIM               (0x01)
-#define GORM_GAP_DISCOVERABLE               (0x02)
-#define GORM_GAP_FLAG_BREDR_NOTSUP          (0x04)
+#define BLE_GAP_DISCOVER_LIM                (0x01)
+#define BLE_GAP_DISCOVERABLE                (0x02)
+#define BLE_GAP_FLAG_BREDR_NOTSUP           (0x04)
 /** @} */
 
 /**
@@ -360,9 +360,9 @@ extern "C" {
  * @name    Advertising packet flags
  * @{
  */
-#define GORM_LL_FLAG_CHSEL      (0x20)
-#define GORM_LL_FLAG_TXADD      (0x40)
-#define GORM_LL_FLAG_RXADD      (0x80)
+#define BLE_LL_FLAG_CHSEL                   (0x20)
+#define BLE_LL_FLAG_TXADD                   (0x40)
+#define BLE_LL_FLAG_RXADD                   (0x80)
 /** @} */
 
 /**
