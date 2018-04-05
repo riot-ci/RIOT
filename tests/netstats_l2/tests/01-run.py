@@ -9,9 +9,15 @@
 
 import os
 import sys
+import pexpect
 
 
 def testfunc(child):
+    for x in range(0, 2):
+        child.sendline('help')
+        index = child.expect(['>', pexpect.TIMEOUT])
+        if index == 0:
+            break
     child.sendline('ifconfig')
     child.expect(r'       Statistics for Layer 2')
     child.expect(r'        RX packets \d+  bytes \d+')
