@@ -6,6 +6,18 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     pkg_u8g2
+ * @{
+ *
+ * @file
+ * @brief       U8g2 driver for interacting with RIOT-OS drivers
+ *
+ * @author      Bas Stottelaar <basstottelaar@gmail.com>
+ *
+ * @}
+ */
+
 #include "u8g2.h"
 
 #include "xtimer.h"
