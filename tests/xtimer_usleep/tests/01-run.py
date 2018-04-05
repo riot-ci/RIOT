@@ -33,7 +33,6 @@ def testfunc(child):
         for m in range(RUNS):
             for n in range(SLEEP_TIMES_NUMOF):
                 child.expect(u"Slept for (\\d+) us \\(expected: (\\d+) us\\) Offset: (\\d+) us")
-               #child.expect(u"Slept for (\\d+) us \\(expected: (\\d+) us\\)")
                 sleep_time = int(child.match.group(1))
                 exp = int(child.match.group(2))
                 lower_bound = exp - (exp * INTERNAL_JITTER)

@@ -64,6 +64,7 @@ int main(void)
              n++) {
 
             uint32_t start_sleep, diff;
+            int32_t err;
 
             start_sleep = xtimer_now_usec();
 
@@ -77,11 +78,11 @@ int main(void)
 
             diff = xtimer_now_usec() - start_sleep;
 
-            int32_t err = (diff - sleep_times[n]);
+            err = diff - sleep_times[n];
 
             printf("Slept for %" PRIu32 " us (expected: %" PRIu32 " us) "
-                   "Offset: %d us\n", diff, sleep_times[n], err);
-        } //
+                   "Offset: %" PRIi32 " us\n", diff, sleep_times[n], err);
+        }
     }
     testtime = xtimer_now_usec() - start_test;
     printf("Test ran for %" PRIu32 " us\n", testtime);
