@@ -6,6 +6,18 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     pkg_ucglib
+ * @{
+ *
+ * @file
+ * @brief       Ucglib driver to interact with RIOT-OS drivers.
+ *
+ * @author      Bas Stottelaar <basstottelaar@gmail.com>
+ *
+ * @}
+ */
+
 #include "ucg.h"
 
 #include "xtimer.h"
