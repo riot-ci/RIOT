@@ -9,5 +9,4 @@ ifneq (,$(filter nrfmin,$(USEMODULE)))
   DIRS += radio/nrfmin
 endif
 
-
 include $(RIOTBASE)/Makefile.base

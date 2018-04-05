@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Freie Universität Berlin
+ * Copyright (C) 2017-2018 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -62,6 +62,9 @@
 #define STATE_RX                (0x01)
 #define STATE_TX                (0x02)
 #define STATE_BUSY              (0x80)
+
+/* forward declaration of the netdev driver struct */
+static const netdev_driver_t netdev_driver;
 
 /* current radio state */
 static volatile uint8_t _state = STATE_IDLE;
@@ -224,7 +227,7 @@ void isr_radio(void)
 
 netdev_t *nrfble_setup(void)
 {
-    _nrfble_dev.driver = &nrfble_netdev;
+    _nrfble_dev.driver = &netdev_driver;
     _nrfble_dev.event_callback = NULL;
     _nrfble_dev.context = NULL;
 #ifdef MODULE_NETSTATS_L2
@@ -347,7 +350,7 @@ static int _nrfble_set(netdev_t *dev, netopt_t opt, const void *val, size_t len)
 }
 
 /* export of the netdev interface */
-const netdev_driver_t nrfble_netdev = {
+static const netdev_driver_t netdev_driver = {
     .send = _nrfble_send,
     .recv = _nrfble_recv,
     .init = _nrfble_init,
