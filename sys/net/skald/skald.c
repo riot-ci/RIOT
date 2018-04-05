@@ -131,7 +131,7 @@ void skald_adv_start(skald_ctx_t *ctx)
     ctx->pkt.flags = (BLE_ADV_NONCON_IND | BLE_LL_FLAG_TXADD);
 
     /* start advertising */
-    xtimer_set(&ctx->timer, SKALD_INTERVAL);
+    _sched_next(ctx);
 }
 
 void skald_adv_stop(skald_ctx_t *ctx)
