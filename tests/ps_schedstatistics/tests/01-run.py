@@ -33,6 +33,7 @@ PS_EXPECTED = (
 
 
 def _check_startup(child):
+    child.sendline('a')
     for i in range(5):
         child.expect_exact('Creating thread #{}, next={}'
                            .format(i, (i + 1) % 5))

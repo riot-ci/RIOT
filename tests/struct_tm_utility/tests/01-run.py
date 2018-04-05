@@ -10,6 +10,7 @@ import os
 import sys
 import calendar
 import datetime
+import pexpect
 
 
 def _check_help(child):
@@ -105,7 +106,15 @@ def _check_day(child):
                        'but no error should occur.')
 
 
+def _wait_prompt(child):
+    for x in range(0, 2):
+        child.sendline('help')
+        index = child.expect(['>', pexpect.TIMEOUT])
+        if index == 0:
+            break
+
 def testfunc(child):
+    _wait_prompt(child)
     _check_help(child)
     _check_days_in(child)
     _check_leap_year(child)
