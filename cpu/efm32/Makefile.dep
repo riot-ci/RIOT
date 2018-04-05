@@ -1,3 +1,9 @@
+ifneq (,$(filter periph_rtt,$(USEMODULE)))
+  ifneq (,$(filter periph_rtc,$(USEMODULE)))
+    $(error Cannot use periph_rtc and periph_rtt at the same time)
+  endif
+endif
+
 ifneq (,$(filter periph_rtc,$(USEMODULE)))
   USEMODULE += periph_rtc_series$(EFM32_SERIES)
 endif
