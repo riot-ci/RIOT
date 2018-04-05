@@ -184,6 +184,9 @@ static void unary_ops(void)
 
 int main(void)
 {
+    puts("Please hit any key and then ENTER to continue");
+    getchar();
+
     puts("Unary.");
     unary_ops();
 
