@@ -30,7 +30,7 @@
 
 void auto_init_skald(void)
 {
-    netdev_t *dev = NULL;
+    netdev_t *dev;
 
     /* select radio depending on selected hardware */
 #if defined(MODULE_NRFBLE)
