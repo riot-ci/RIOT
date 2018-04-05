@@ -37,6 +37,7 @@ def _check_startup(child):
     for i in range(5):
         child.expect_exact('Creating thread #{}, next={}'
                            .format(i, (i + 1) % 5))
+    child.expect('>')
 
 
 def _check_help(child):
@@ -46,12 +47,14 @@ def _check_help(child):
     child.expect_exact('reboot               Reboot the node')
     child.expect_exact('ps                   Prints information about '
                        'running threads.')
+    child.expect('>')
 
 
 def _check_ps(child):
     child.sendline('ps')
     for line in PS_EXPECTED:
         child.expect(line)
+    child.expect('>')
 
 
 def testfunc(child):

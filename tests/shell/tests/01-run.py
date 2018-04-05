@@ -45,6 +45,7 @@ def check_cmd(child, cmd, expected):
     child.sendline(cmd)
     for line in expected:
         child.expect_exact(line)
+    child.expect('>')
 
 
 def testfunc(child):
