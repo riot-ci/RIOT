@@ -32,8 +32,8 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef SKALD_EDDYSTONE_H
-#define SKALD_EDDYSTONE_H
+#ifndef NET_SKALD_EDDYSTONE_H
+#define NET_SKALD_EDDYSTONE_H
 
 #include "net/eddystone.h"
 #include "net/skald.h"
@@ -79,5 +79,5 @@ void skald_eddystone_url_adv(skald_ctx_t *ctx,
 }
 #endif
 
-#endif /* SKALD_EDDYSTONE_H */
+#endif /* NET_SKALD_EDDYSTONE_H */
 /** @} */

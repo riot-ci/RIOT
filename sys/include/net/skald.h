@@ -41,8 +41,8 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef SKALD_H
-#define SKALD_H
+#ifndef NET_SKALD_H
+#define NET_SKALD_H
 
 #include <stdint.h>
 
@@ -125,5 +125,5 @@ void skald_generate_random_addr(uint8_t *buf);
 }
 #endif
 
-#endif
+#endif /* NET_SKALD_H */
 /** @} */
