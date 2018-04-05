@@ -7,11 +7,11 @@
  */
 
 /**
- * @defgroup    net_eddystone Eddystone Constants
+ * @defgroup    net_eddystone Eddystone
  * @ingroup     net
  * @brief       General values defined by the BLE Eddystone beacon format
  *
- * See https://github.com/google/eddystone/blob/master/protocol-specification.md
+ * @see https://github.com/google/eddystone/blob/master/protocol-specification.md
  * @{
  *
  * @file
@@ -31,18 +31,18 @@ extern "C" {
  * @name    Collection of general Eddystone constants
  * @{
  */
-#define EDDYSTONE_NAMESPACE_LEN         (10U)
-#define EDDYSTONE_INSTANCE_LEN          (6U)
+#define EDDYSTONE_NAMESPACE_LEN     (10U)
+#define EDDYSTONE_INSTANCE_LEN      (6U)
 /** @} */
 
 /**
  * @name    URL scheme prefix values
  * @{
  */
-#define EDDYSTONE_URL_HTTP_WWW          (0x00)      /**< http://www.URL */
-#define EDDYSTONE_URL_HTTPS_WWWW        (0x01)      /**< https://www.URL */
-#define EDDYSTONE_URL_HTTP              (0x02)      /**< http://URL */
-#define EDDYSTONE_URL_HTTPS             (0x03)      /**< https://URL */
+#define EDDYSTONE_URL_HTTP_WWW      (0x00)      /**< `http://www.URL` */
+#define EDDYSTONE_URL_HTTPS_WWWW    (0x01)      /**< `https://www.URL` */
+#define EDDYSTONE_URL_HTTP          (0x02)      /**< `http://URL` */
+#define EDDYSTONE_URL_HTTPS         (0x03)      /**< `https://URL` */
 /** @} */
 
 /**
