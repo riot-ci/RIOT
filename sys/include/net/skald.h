@@ -87,10 +87,8 @@ typedef struct {
 
 /**
  * @brief   Initialize Skald and the underlying radio
- *
- * @param[in,out] dev   BLE capable radio device
  */
-void skald_init(netdev_t *dev);
+void skald_init(void);
 
 /**
  * @brief   Start advertising the given packet
@@ -111,9 +109,6 @@ void skald_adv_stop(skald_ctx_t *ctx);
 
 /**
  * @brief   Generate a random public address
- *
- * @todo    Make sure resulting address does not conflict with and assigned
- *          vendor prefix (however we will do that..)
  *
  * @note    @p buf must be able to hold BLE_ADDR_LEN (6) bytes
  *

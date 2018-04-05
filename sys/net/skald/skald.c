@@ -27,6 +27,15 @@
 #include "net/netdev/ble.h"
 #include "net/skald.h"
 
+/* include fitting radio driver */
+#if defined(MODULE_NRFBLE)
+#include "nrfble.h"
+/* add other BLE radio drivers once implemented - and potentially move to
+ * auto-init at some point */
+#else
+#error "[skald] error: unable to find any netdev-ble capable radio"
+#endif
+
 #define ENABLE_DEBUG            (0)
 #include "debug.h"
 
@@ -69,9 +78,6 @@ static void _on_adv_evt(void *arg)
 
     /* advertise on the next adv channel - or skip this event if the radio is
      * busy */
-    if (_radio->context != NULL) {
-
-    }
     if ((ctx->cur_chan < ADV_CHAN_NUMOF) && (_radio->context == NULL)) {
         _radio->context = ctx;
         _ble_ctx.chan = _adv_chan[ctx->cur_chan];
@@ -96,11 +102,16 @@ static void _on_radio_evt(netdev_t *netdev, netdev_event_t event)
     }
 }
 
-void skald_init(netdev_t *dev)
+void skald_init(void)
 {
     assert(dev);
 
-    _radio = dev;
+    /* setup and a fitting radio driver - potentially move to auto-init at some
+     * point */
+#if defined(MODULE_NRFBLE)
+    _radio = nrfble_setup();
+#endif
+
     _radio->event_callback = _on_radio_evt;
     _radio->driver->init(_radio);
 }
@@ -138,4 +149,10 @@ void skald_generate_random_addr(uint8_t *buf)
     assert(buf);
 
     luid_get(buf, BLE_ADDR_LEN);
+    /* swap byte 0 and 5, so that the unique byte given by luid does not clash
+     * with universal/local and individual/group bits of address */
+    uint8_t tmp = buf[5];
+    buf[5] = buf[0];
+    /* make address individual and local */
+    buf[0] = ((tmp & 0xfc) | 0x02);
 }
