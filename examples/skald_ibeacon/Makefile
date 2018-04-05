@@ -8,7 +8,6 @@ BOARD ?= nrf52dk
 RIOTBASE ?= $(CURDIR)/../..
 
 # include Skald
-USEMODULE += auto_init_skald
 USEMODULE += skald_ibeacon
 
 # Comment this out to disable code in RIOT that does safety checking
