@@ -129,8 +129,8 @@ typedef struct {
  * is started.
  *
  * @note    Call this function only to start a new transmission sequence (radio
- *          is currently idle), or right after a packet was received
- *
+ *          is currently idle), or right after a packet was received. If called
+ *          at any other point in time, the behavior is undefined.
  *
  * @param[in] dev   radio to use for sending
  * @param[in] pkt   data to send
@@ -154,7 +154,8 @@ static inline int netdev_ble_send(netdev_t *dev, netdev_ble_pkt_t *pkt)
  * started.
  *
  * @note    Call this function only to start a new transmission sequence (radio
- *          is currently idle), or right after a packet was sent
+ *          is currently idle), or right after a packet was sent. If called
+ *          at any other point in time, the behavior is undefined.
  *
  * @param[in]  dev  radio to use for receiving
  * @param[out] pkt  buffer to write new packet to
