@@ -32,14 +32,19 @@
 #include "shell.h"
 
 #ifdef MODULE_PM_LAYERED
-static int parse_mode(int argc, char **argv)
+static int check_mode(int argc, char **argv)
 {
     if (argc < 2) {
-        printf("Error: power mode expected (0 - %d).\n", PM_NUM_MODES - 1);
+        printf("Usage: %s <power mode>\n", argv[0]);
         return -1;
     }
 
-    uint8_t mode = atoi(argv[1]);
+    return 0;
+}
+
+static int parse_mode(char *argv)
+{
+    uint8_t mode = atoi(argv);
 
     if (mode >= PM_NUM_MODES) {
         printf("Error: power mode not in range 0 - %d.\n", PM_NUM_MODES - 1);
@@ -50,14 +55,19 @@ static int parse_mode(int argc, char **argv)
 }
 
 #ifdef MODULE_PERIPH_RTC
-static int parse_duration(int argc, char **argv)
+static int check_mode_duration(int argc, char **argv)
 {
-    if (argc < 3) {
-        printf("Error: duration expected (0 - %d).\n", INT_MAX);
+    if (argc != 3) {
+        printf("Usage: %s <power mode> <duration (s)>\n", argv[0]);
         return -1;
     }
 
-    int duration = atoi(argv[2]);
+    return 0;
+}
+
+static int parse_duration(char *argv)
+{
+    int duration = atoi(argv);
 
     if (duration < 0) {
         puts("Error: duration must be a positive number.");
@@ -105,7 +115,11 @@ static int cmd_reboot(int argc, char **argv)
 #ifdef MODULE_PM_LAYERED
 static int cmd_block(int argc, char **argv)
 {
-    int mode = parse_mode(argc, argv);
+    if (check_mode(argc, argv) != 0) {
+        return 1;
+    }
+
+    int mode = parse_mode(argv[1]);
 
     if (mode < 0) {
         return 1;
@@ -121,7 +135,11 @@ static int cmd_block(int argc, char **argv)
 
 static int cmd_set(int argc, char **argv)
 {
-    int mode = parse_mode(argc, argv);
+    if (check_mode(argc, argv) != 0) {
+        return 1;
+    }
+
+    int mode = parse_mode(argv[1]);
 
     if (mode < 0) {
         return 1;
@@ -137,7 +155,11 @@ static int cmd_set(int argc, char **argv)
 
 static int cmd_unblock(int argc, char **argv)
 {
-    int mode = parse_mode(argc, argv);
+    if (check_mode(argc, argv) != 0) {
+        return 1;
+    }
+
+    int mode = parse_mode(argv[1]);
 
     if (mode < 0) {
         return 1;
@@ -154,10 +176,12 @@ static int cmd_unblock(int argc, char **argv)
 #ifdef MODULE_PERIPH_RTC
 static int cmd_unblock_rtc(int argc, char **argv)
 {
-    struct tm time;
+    if (check_mode_duration(argc, argv) != 0) {
+        return 1;
+    }
 
-    int mode = parse_mode(argc, argv);
-    int duration = parse_duration(argc, argv);
+    int mode = parse_mode(argv[1]);
+    int duration = parse_duration(argv[2]);
 
     if (mode < 0 || duration < 0) {
         return 1;
@@ -165,6 +189,8 @@ static int cmd_unblock_rtc(int argc, char **argv)
 
     printf("Unblocking power mode %d for %d seconds.\n", mode, duration);
     fflush(stdout);
+
+    struct tm time;
 
     rtc_get_time(&time);
     time.tm_sec += duration;
