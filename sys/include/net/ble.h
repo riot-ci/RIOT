@@ -403,4 +403,3 @@ extern "C" {
 
 #endif /* NET_BLE_H */
 /** @} */
-
