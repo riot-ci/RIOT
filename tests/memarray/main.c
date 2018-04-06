@@ -57,9 +57,9 @@ void fill_memory(struct block_t *head)
         head->message[MESSAGE_SIZE - 1] = 0;
         head->number = aux;
 
-        printf("\t(%i, %s) Allocated %zu Bytes at 0x%p, total %d\n",
-               head->number, head->message, sizeof(struct block_t), (void *)head,
-               total);
+        printf("\t(%i, %s) Allocated %u Bytes at %p, total %d\n",
+               head->number, head->message, (unsigned)sizeof(struct block_t),
+               (void *)head, total);
 
         /* NOTE: If there is not space, memarray_alloc returns zero */
         head->next = memarray_alloc(&block_storage);
@@ -76,8 +76,9 @@ void free_memory(struct block_t *head)
 
     while (head) {
         total -= sizeof(struct block_t);
-        printf("\tFree (%i) %zu Bytes at 0x%p, total %d\n", \
-               head->number, sizeof(struct block_t), (void *)head, total);
+        printf("\tFree (%i) %u Bytes at %p, total %d\n", \
+               head->number, (unsigned)sizeof(struct block_t),
+               (void *)head, total);
 
         if (head->next) {
             old = head;

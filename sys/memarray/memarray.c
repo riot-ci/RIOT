@@ -14,8 +14,8 @@
 
 void memarray_init(memarray_t *mem, void *data, size_t size, size_t num)
 {
-    DEBUG("memarray: Initialize memarray of %zu times %zu Bytes at %p\n",
-          num, size, data);
+    DEBUG("memarray: Initialize memarray of %u times %u Bytes at %p\n",
+          (unsigned)num, (unsigned)size, data);
 
     mem->free_data = data;
     mem->size = size;
@@ -34,7 +34,7 @@ void *memarray_alloc(memarray_t *mem)
     }
     void *free = mem->free_data;
     mem->free_data = *((void **)mem->free_data);
-    DEBUG("memarray: Allocate %zu Bytes at %p\n", mem->size, free);
+    DEBUG("memarray: Allocate %u Bytes at %p\n", (unsigned)mem->size, free);
     return free;
 }
 
@@ -42,5 +42,5 @@ void memarray_free(memarray_t *mem, void *ptr)
 {
     memcpy(ptr, &mem->free_data, sizeof(void *));
     mem->free_data = ptr;
-    DEBUG("memarray: Free %zu Bytes at %p\n", mem->size, ptr);
+    DEBUG("memarray: Free %u Bytes at %p\n", (unsigned)mem->size, ptr);
 }
