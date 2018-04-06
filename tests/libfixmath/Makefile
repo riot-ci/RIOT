@@ -3,7 +3,7 @@ include ../Makefile.tests_common
 USEPKG += libfixmath
 USEMODULE += libfixmath
 
-TEST_ON_CI_WHITELIST += all
+TEST_ON_CI_WHITELIST += native
 
 include $(RIOTBASE)/Makefile.include
 
