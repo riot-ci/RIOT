@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Tobias Heider <heidert@nm.ifi.lmu.de>
+ * Copyright (C) 2018 Tobias Heider <heidert@nm.ifi.lmu.de>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
