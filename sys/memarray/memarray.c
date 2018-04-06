@@ -14,7 +14,7 @@
 
 void memarray_init(memarray_t *mem, void *data, size_t size, size_t num)
 {
-    assert(size >= sizeof(void *));
+    assert((mem != NULL) && (data != NULL) && (size >= sizeof(void *)));
 
     DEBUG("memarray: Initialize memarray of %u times %u Bytes at %p\n",
           (unsigned)num, (unsigned)size, data);
@@ -31,6 +31,8 @@ void memarray_init(memarray_t *mem, void *data, size_t size, size_t num)
 
 void *memarray_alloc(memarray_t *mem)
 {
+    assert(mem != NULL);
+
     if (mem->free_data == NULL) {
         return NULL;
     }
@@ -42,6 +44,8 @@ void *memarray_alloc(memarray_t *mem)
 
 void memarray_free(memarray_t *mem, void *ptr)
 {
+    assert((mem != NULL) && (ptr != NULL));
+
     memcpy(ptr, &mem->free_data, sizeof(void *));
     mem->free_data = ptr;
     DEBUG("memarray: Free %u Bytes at %p\n", (unsigned)mem->size, ptr);

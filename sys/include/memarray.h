@@ -37,6 +37,10 @@ typedef struct {
 /**
  * @brief Initialize memarray pool with free list
  *
+ * @pre `mem != NULL`
+ * @pre `data != NULL`
+ * @pre `size >= sizeof(void*)`
+ *
  * @param[in,out] mem    memarray pool to initialize
  * @param[in]     data   pointer to user-allocated data
  * @param[in]     size   size of a single element in data
@@ -47,6 +51,8 @@ void memarray_init(memarray_t *mem, void *data, size_t size, size_t num);
 /**
  * @brief Allocate memory chunk in memarray pool
  *
+ * @pre `mem != NULL`
+ *
  * @param[in,out] mem   memarray pool to allocate block in
  *
  * @return pointer to allocated structure, if enough memory was available
@@ -56,6 +62,9 @@ void *memarray_alloc(memarray_t *mem);
 
 /**
  * @brief Free memory chunk in memarray pool
+ *
+ * @pre `mem != NULL`
+ * @pre `ptr != NULL`
  *
  * @param[in,out] mem   memarray pool to free block in
  * @param[in]     ptr   pointer to memarray chunk
