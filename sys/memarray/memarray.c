@@ -14,6 +14,8 @@
 
 void memarray_init(memarray_t *mem, void *data, size_t size, size_t num)
 {
+    assert(size >= sizeof(void *));
+
     DEBUG("memarray: Initialize memarray of %u times %u Bytes at %p\n",
           (unsigned)num, (unsigned)size, data);
 
