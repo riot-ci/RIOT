@@ -51,7 +51,7 @@ typedef struct __attribute__((packed)) {
     pre_t pre;
     uint8_t tx_pwr;
     uint8_t scheme;
-    uint8_t url;
+    uint8_t url[];
 } eddy_url_t;
 
 /* ćonstant GAP data preamble parts, containing the following GAP fields:
@@ -101,9 +101,9 @@ void skald_eddystone_url_adv(skald_ctx_t *ctx,
     /* set remaining service data fields */
     pdu->tx_pwr = tx_pwr;
     pdu->scheme = scheme;
-    memcpy(&pdu->url, url, len);
+    memcpy(pdu->url, url, len);
 
     /* start advertising */
-    ctx->pkt.len = (sizeof(eddy_url_t) - 1 + len);
+    ctx->pkt.len = (sizeof(pre_t) + 2 + len);
     skald_adv_start(ctx);
 }
