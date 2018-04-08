@@ -102,6 +102,13 @@ static inline void cpu_print_last_instruction(void)
  */
 void atmega_stdio_init(void);
 
+/**
+ * @brief   Exit ISR mode and yield with a return from interrupt. Use at the
+ * end of ISRs in place of thread_yield_higher. If thread_yield is needed, use
+ * thread_yield followed by thread_yield_isr instead of thread_yield alone.
+ */
+void thread_yield_isr(void);
+
 #ifdef __cplusplus
 }
 #endif
