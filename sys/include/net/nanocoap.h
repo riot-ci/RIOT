@@ -430,7 +430,6 @@ unsigned coap_get_content_type(coap_pkt_t *pkt);
  * @param[in]   pkt     pkt to work on
  * @param[out]  target  buffer for target URI
  *
- * @returns     -EBADMSG    if no URI option in packet
  * @returns     -ENOSPC     if URI option is larger than NANOCOAP_URI_MAX
  * @returns     nr of bytes written to @p target (including '\0')
  */
