@@ -14,5 +14,5 @@ export OPENOCD_ADAPTER_INIT
 
 # select OpenOCD configuration depending on CPU type
 ifeq (,$(OPENOCD_CONFIG))
-  export OPENOCD_CONFIG := $(RIOTMAKE)/tools/openocd-adapters/configs/$(CPU).cfg
+  export OPENOCD_CONFIG := $(RIOTBASE)/boards/common/st/configs/$(CPU).cfg
 endif
