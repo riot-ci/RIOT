@@ -1,7 +1,7 @@
 RIOT_EDBG = $(RIOTBASE)/dist/tools/edbg/edbg
 EDBG ?= $(RIOT_EDBG)
 FLASHER ?= $(EDBG)
-FLASHFILE = $(BINFILE)
+FLASHFILE ?= $(BINFILE)
 # Use USB serial number to select device when more than one is connected
 # Use /dist/tools/usb-serial/list-ttys.sh to find out serial number.
 #   Usage:
