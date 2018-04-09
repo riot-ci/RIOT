@@ -365,6 +365,9 @@ static void _join_abp(semtech_loramac_t *mac)
     mibReq.Type = MIB_NETWORK_JOINED;
     mibReq.Param.IsNetworkJoined = true;
     LoRaMacMibSetRequestConfirm(&mibReq);
+
+    /* switch back to idle state now*/
+    mac->state = SEMTECH_LORAMAC_STATE_IDLE;
     mutex_unlock(&mac->lock);
 }
 
