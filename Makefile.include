@@ -308,7 +308,7 @@ BASELIBS += $(BINDIR)/$(APPLICATION_MODULE).a
 BASELIBS += $(APPDEPS)
 
 .PHONY: all link clean flash flash-only term doc debug debug-server reset objdump help info-modules
-.PHONY: print-size
+.PHONY: print-size elffile binfile hexfile
 .PHONY: ..in-docker-container
 # Target can depend on FORCE to always rebuild but still let make use file
 # modification timestamp (contrary to .PHONY).
@@ -317,6 +317,15 @@ BASELIBS += $(APPDEPS)
 
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
+BINFILE ?= $(ELFFILE:.elf=.bin)
+
+# File used by the flasher (can be overwritten to $(HEXFILE), $(BINFILE))
+FLASHFILE ?= $(ELFFILE)
+
+# Targets to get given file
+elffile: $(ELFFILE)
+hexfile: $(HEXFILE)
+binfile: $(BINFILE)
 
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
@@ -338,7 +347,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ifeq (,$(RIOTNOLINK))
-link: ..compiler-check ..build-message $(ELFFILE) $(HEXFILE) print-size
+link: ..compiler-check ..build-message $(ELFFILE) $(FLASHFILE) print-size
 else
 link: ..compiler-check ..build-message $(BASELIBS)
 endif # RIOTNOLINK
@@ -355,8 +364,11 @@ $(BINDIR)/$(APPLICATION_MODULE).a: FORCE
 print-size: $(ELFFILE)
 	$(Q)$(SIZE) $<
 
-$(HEXFILE): $(ELFFILE)
-	$(Q)$(OBJCOPY) $(OFLAGS) $< $@
+%.hex: %.elf
+	$(Q)$(OBJCOPY) $(OFLAGS) -Oihex $< $@
+
+%.bin: %.elf
+	$(Q)$(OBJCOPY) $(OFLAGS) -Obinary $< $@
 
 endif # BUILD_IN_DOCKER
 
@@ -423,9 +435,10 @@ distclean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
 	-@rm -rf $(BINDIRBASE)
 
-# if make target != 'flash-only', add target 'all' to ensure build before flash
+# if make target != 'flash-only', add target '$(FLASHFILE)' before flashing.
+# It forces rebuilding as it has `.PHONY` dependencies.
 ifeq (,$(filter flash-only, $(MAKECMDGOALS)))
-  BUILD_BEFORE_FLASH = all
+  BUILD_BEFORE_FLASH = $(FLASHFILE)
 endif
 
 flash: $(BUILD_BEFORE_FLASH) $(FLASHDEPS)
