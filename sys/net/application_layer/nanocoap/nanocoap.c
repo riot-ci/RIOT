@@ -241,7 +241,7 @@ int coap_get_uri(coap_pkt_t *pkt, uint8_t *target)
     if (!opt_pos) {
         *target++ = '/';
         *target = '\0';
-        return 1;
+        return 2;
     }
 
     unsigned left = NANOCOAP_URI_MAX - 1;
