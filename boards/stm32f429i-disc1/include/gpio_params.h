@@ -42,17 +42,6 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .mode = GPIO_OUT
     },
     {
-        .name = "LD5 (green)",
-        .pin = LED2_PIN,
-        .mode = GPIO_OUT
-    },
-    {
-        .name = "LD6 (red)",
-        .pin = LED3_PIN,
-        .mode = GPIO_OUT,
-        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR)
-    },
-    {
         .name = "BTN USER",
         .pin  = BTN0_PIN,
         .mode = BTN0_MODE
