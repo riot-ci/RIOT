@@ -415,7 +415,8 @@ size_t coap_put_option_uri(uint8_t *buf, uint16_t lastonum, const char *uri, uin
  *
  * @param[in]   pkt     packet to work on
  *
- * @returns     the packet's content type value
+ * @returns     the packet's content type value if included,
+ *              COAP_FORMAT_NONE otherwise
  */
 unsigned coap_get_content_type(coap_pkt_t *pkt);
 
