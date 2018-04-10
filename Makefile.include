@@ -353,6 +353,9 @@ $(ELFFILE): $(BASELIBS)
 	$(Q)$(_LINK) -o $@
 
 # All modules are built by application.inc.mk makefile
+_SUBMAKE_LIBS = $(filter-out $(BINDIR)/$(APPLICATION_MODULE).a $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS), $(BASELIBS))
+$(_SUBMAKE_LIBS): $(BINDIR)/$(APPLICATION_MODULE).a
+
 $(BINDIR)/$(APPLICATION_MODULE).a: $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS)
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 $(BINDIR)/$(APPLICATION_MODULE).a: FORCE
