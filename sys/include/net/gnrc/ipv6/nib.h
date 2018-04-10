@@ -216,7 +216,7 @@ extern "C" {
 /**
  * @brief   Validate a tentative address event.
  *
- * Moves a TENTATIVE address to VALID stateo. The expected message context is a
+ * Moves a TENTATIVE address to VALID state. The expected message context is a
  * TENTATIVE IPv6 address.
  *
  * @note    Only handled with @ref GNRC_IPV6_NIB_CONF_SLAAC != 0

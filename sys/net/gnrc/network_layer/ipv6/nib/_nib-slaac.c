@@ -57,7 +57,7 @@ void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
     /* mark link-local addresses as valid on 6LN */
     if (gnrc_netif_is_6ln(netif) && ipv6_addr_is_link_local(pfx)) {
         /* don't do this beforehand or risk a deadlock:
-         *  * gnrc_netif_ipv6_addr_add_internal() adds VALID (i.e. manually configured
+         *  - gnrc_netif_ipv6_addr_add_internal() adds VALID (i.e. manually configured
          *    addresses to the prefix list locking the NIB's mutex which is already
          *    locked here) */
         netif->ipv6.addrs_flags[idx] &= ~GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_MASK;
@@ -135,11 +135,13 @@ void _remove_tentative_addr(gnrc_netif_t *netif, const ipv6_addr_t *addr)
 
     if (!ipv6_addr_is_link_local(addr) ||
         !_try_l2addr_reconfiguration(netif)) {
-        /* Can not use target address as personal address and can
+        /* Cannot use target address as personal address and can
          * not change hardware address to retry SLAAC => use purely
          * DHCPv6 instead */
         /* TODO: implement IA_NA for DHCPv6 */
         /* then => tgt_netif->aac_mode = GNRC_NETIF_AAC_DHCP; */
+        DEBUG("nib: would set interface %i to DHCPv6, "
+              "but is not implemented yet", netif->pid);
     }
 }
 
@@ -168,7 +170,6 @@ void _handle_dad(const ipv6_addr_t *addr)
         _evtimer_add((void *)addr, GNRC_IPV6_NIB_VALID_ADDR,
                      &netif->ipv6.addrs_timers[idx],
                      netif->ipv6.retrans_time);
-
     }
     if (netif != NULL) {
         gnrc_netif_release(netif);
