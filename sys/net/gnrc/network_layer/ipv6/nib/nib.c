@@ -849,6 +849,9 @@ static void _handle_nbr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                       "still TENTATIVE for us => Ignoring NS\n");
                 return;
             }
+            /* cancel validation timer */
+            evtimer_del(&_nib_evtimer,
+                        &tgt_netif->ipv6.addrs_timers[idx].event);
             _remove_tentative_addr(tgt_netif, &nbr_sol->tgt);
             return;
         }
@@ -971,6 +974,9 @@ static void _handle_nbr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         int idx = gnrc_netif_ipv6_addr_idx(tgt_netif, &nbr_adv->tgt);
 
         if (gnrc_netif_ipv6_addr_dad_trans(tgt_netif, idx)) {
+            /* cancel validation timer */
+            evtimer_del(&_nib_evtimer,
+                        &tgt_netif->ipv6.addrs_timers[idx].event);
             _remove_tentative_addr(tgt_netif, &nbr_adv->tgt);
             return;
         }
