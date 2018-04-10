@@ -79,51 +79,57 @@ void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
 static bool _try_l2addr_reconfiguration(gnrc_netif_t *netif)
 {
     uint8_t hwaddr[GNRC_NETIF_L2ADDR_MAXLEN];
-    eui64_t orig_iid;
-    bool remove_old = false;
     uint16_t hwaddr_len;
 
-    if (gnrc_netif_ipv6_get_iid(netif, &orig_iid) == 0) {
-        remove_old = true;
-    }
-    /* seize netif to netif thread, since gnrc_netapi_get/gnrc_netapi_set are
-     * synchronous, this is safe */
-    gnrc_netif_release(netif);
     if (gnrc_netapi_get(netif->pid, NETOPT_SRC_LEN, 0, &hwaddr_len,
                         sizeof(hwaddr_len)) < 0) {
-        goto error_exit;
+        return false;
     }
     luid_get(hwaddr, hwaddr_len);
 #if GNRC_IPV6_NIB_CONF_6LN
     if (hwaddr_len == IEEE802154_LONG_ADDRESS_LEN) {
         if (gnrc_netapi_set(netif->pid, NETOPT_ADDRESS_LONG, 0, hwaddr,
                             hwaddr_len) < 0) {
-            goto error_exit;
+            return false;
         }
     }
     else
 #endif
     if (gnrc_netapi_set(netif->pid, NETOPT_ADDRESS, 0, hwaddr,
                         hwaddr_len) < 0) {
-        goto error_exit;
+        return false;
     }
+    return true;
+}
 
+static bool _try_addr_reconfiguration(gnrc_netif_t *netif)
+{
+    eui64_t orig_iid;
+    bool remove_old = false, hwaddr_reconf;
+
+    if (gnrc_netif_ipv6_get_iid(netif, &orig_iid) == 0) {
+        remove_old = true;
+    }
+    /* seize netif to netif thread since _try_l2addr_reconfiguration uses
+     * gnrc_netapi_get()/gnrc_netapi_set(). Since these are synchronous this is
+     * safe */
+    gnrc_netif_release(netif);
+    /* reacquire netif for IPv6 address reconfiguraton */
+    hwaddr_reconf = _try_l2addr_reconfiguration(netif);
     gnrc_netif_acquire(netif);
-    if (remove_old) {
-        for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
-            ipv6_addr_t *addr = &netif->ipv6.addrs[i];
-            if (addr->u64[1].u64 == orig_iid.uint64.u64) {
-                gnrc_netif_ipv6_addr_remove_internal(netif, addr);
+    if (hwaddr_reconf) {
+        if (remove_old) {
+            for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
+                ipv6_addr_t *addr = &netif->ipv6.addrs[i];
+                if (addr->u64[1].u64 == orig_iid.uint64.u64) {
+                    gnrc_netif_ipv6_addr_remove_internal(netif, addr);
+                }
             }
         }
+        DEBUG("nib: Changed hardware address, due to DAD\n");
+        _auto_configure_addr(netif, &ipv6_addr_link_local_prefix, 64U);
     }
-    DEBUG("nib: Changed hardware address, due to DAD\n");
-    _auto_configure_addr(netif, &ipv6_addr_link_local_prefix, 64U);
-    return true;
-error_exit:
-    /* reacquire netif */
-    gnrc_netif_acquire(netif);
-    return false;
+    return hwaddr_reconf;
 }
 
 void _remove_tentative_addr(gnrc_netif_t *netif, const ipv6_addr_t *addr)
@@ -134,7 +140,7 @@ void _remove_tentative_addr(gnrc_netif_t *netif, const ipv6_addr_t *addr)
     gnrc_netif_ipv6_addr_remove_internal(netif, addr);
 
     if (!ipv6_addr_is_link_local(addr) ||
-        !_try_l2addr_reconfiguration(netif)) {
+        !_try_addr_reconfiguration(netif)) {
         /* Cannot use target address as personal address and can
          * not change hardware address to retry SLAAC => use purely
          * DHCPv6 instead */
@@ -172,6 +178,7 @@ void _handle_dad(const ipv6_addr_t *addr)
                      netif->ipv6.retrans_time);
     }
     if (netif != NULL) {
+        /* was acquired in `_get_netif_state()` */
         gnrc_netif_release(netif);
     }
 }
@@ -186,6 +193,7 @@ void _handle_valid_addr(const ipv6_addr_t *addr)
         netif->ipv6.addrs_flags[idx] |= GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID;
     }
     if (netif != NULL) {
+        /* was acquired in `_get_netif_state()` */
         gnrc_netif_release(netif);
     }
 }
