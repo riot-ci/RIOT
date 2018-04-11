@@ -264,13 +264,12 @@ LUALIB_API int luaR_do_buffer(const char *buf, size_t buflen, void *memory,
                                 modmask, retval);
 }
 
-#define N_ERR_STRINGS (sizeof(luaR_str_errors)/sizeof(*luaR_str_errors))
+#define MAX_ERR_STRING ((sizeof(luaR_str_errors)/sizeof(*luaR_str_errors))-1)
 #define MIN(x, y) (((x)<(y))? (x) : (y))
 
 LUALIB_API const char * luaR_strerror(int errn)
 {
-    return luaR_str_errors[MIN((unsigned int)errn, N_ERR_STRINGS)];
+    return luaR_str_errors[MIN((unsigned int)errn, MAX_ERR_STRING)];
 }
 
 /** @} */
-

@@ -1,7 +1,7 @@
 From d0c1f9e63b81ba2886ec09552fe5cfdb3f1b6aa2 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Mon, 14 May 2018 15:31:09 +0200
-Subject: [PATCH 7/7] Add a proper makefile.
+Subject: [PATCH 7/8] Add a proper makefile.
 
 The new makefile has automatic dependencies, can buid a debug an
 a non debug version simultaneously and is way cleaner.

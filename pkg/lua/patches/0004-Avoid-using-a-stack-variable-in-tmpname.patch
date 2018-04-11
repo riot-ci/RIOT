@@ -1,7 +1,7 @@
 From 168458f58725e3cbb034e60653bbafa210639574 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Mon, 7 May 2018 13:59:06 +0200
-Subject: [PATCH 4/7] Avoid using a stack variable in tmpname.
+Subject: [PATCH 4/8] Avoid using a stack variable in tmpname.
 
 Note: ideally this function should be removed.
 ---
