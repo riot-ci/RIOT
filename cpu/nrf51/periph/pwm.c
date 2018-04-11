@@ -22,11 +22,9 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 
 #include "periph/gpio.h"
 #include "periph/pwm.h"
-#include "vectors_cortexm.h"
 
 #define ENABLE_DEBUG        (0)
 #include "debug.h"
@@ -37,7 +35,7 @@
     #define PWM_PERCENT_VAL (1U)
 #endif
 
-static const uint32_t divtable[11] = {
+static const uint32_t divtable[10] = {
     (CLOCK_CORECLOCK >> 0),
     (CLOCK_CORECLOCK >> 1),
     (CLOCK_CORECLOCK >> 2),
@@ -48,7 +46,6 @@ static const uint32_t divtable[11] = {
     (CLOCK_CORECLOCK >> 7),
     (CLOCK_CORECLOCK >> 8),
     (CLOCK_CORECLOCK >> 9),
-    (CLOCK_CORECLOCK >> 10),
 };
 
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
@@ -66,14 +63,12 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     uint32_t timer_freq = freq * res;
     uint32_t lower = (timer_freq - (PWM_PERCENT_VAL * (timer_freq / 100)));
     uint32_t upper = (timer_freq + (PWM_PERCENT_VAL * (timer_freq / 100)));
-    for (uint32_t ps = 0;
-         ps <= (PWM_PS_MAX + 1);
-         ps++) {
+    for (uint32_t ps = 0; ps <= (PWM_PS_MAX + 1); ps++) {
         if (ps == (PWM_PS_MAX + 1)) {
             DEBUG("[pwm] init error: resolution or frequency not supported\n");
             return 0;
         }
-        if((divtable[ps] < upper) && (divtable[ps] > lower)) {
+        if ((divtable[ps] < upper) && (divtable[ps] > lower)) {
             PWM_TIMER->PRESCALER = ps;
             timer_freq = divtable[ps];
             break;
