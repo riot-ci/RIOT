@@ -45,7 +45,7 @@ extern "C" {
 #define CC110X_PARAM_GDO2           (GPIO_PIN(0, 3))
 #endif
 
-#define CC110X_PARAMS_DEFAULT     { .spi  = CC110X_PARAM_SPI,  \
+#define CC110X_PARAMS             { .spi  = CC110X_PARAM_SPI,  \
                                     .cs   = CC110X_PARAM_CS, \
                                     .gdo0 = CC110X_PARAM_GDO0, \
                                     .gdo1 = CC110X_PARAM_GDO1, \
@@ -58,11 +58,7 @@ extern "C" {
  * @name CC110X configuration
  */
 const cc110x_params_t cc110x_params[] = {
-#ifdef CC110X_PARAMS_BOARD
-    CC110X_PARAMS_BOARD,
-#else
-    CC110X_PARAMS_DEFAULT,
-#endif
+    CC110X_PARAMS
 };
 /** @} */
 
