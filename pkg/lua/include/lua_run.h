@@ -204,8 +204,14 @@ LUALIB_API int luaR_do_module(const char *modname, void *memory, size_t mem_size
  *
  * @see luaR_do_module() for more information on internal errors.
  *
- * @param       buf     Text data.
- * @return      See luaR_do_module().
+ * @param       buf     Text data (lua source code).
+ * @param       buflen  Size of the text data in bytes. If buf is
+ *                      a zero-terminated string, the zero must not be counted.
+ * @param       memory      @see luaR_newstate()
+ * @param       mem_size    @see luaR_newstate()
+ * @param       modmask     @see luaR_newstate()
+ * @param[out]  retval      @see luaR_do_module()
+ * @return      @see luaR_do_module().
  */
 LUALIB_API int luaR_do_buffer(const char *buf, size_t buflen, void *memory,
                               size_t mem_size, uint16_t modmask, int *retval);

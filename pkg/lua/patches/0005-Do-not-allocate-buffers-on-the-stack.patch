@@ -1,7 +1,7 @@
 From 9f610289d64a325269b8163f2ba760d47109c036 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Wed, 9 May 2018 14:05:53 +0200
-Subject: [PATCH 5/7] Do not allocate buffers on the stack.
+Subject: [PATCH 5/8] Do not allocate buffers on the stack.
 
 Change luaL_Buffer so that the memory for the object is always allocated in the heap.
 ---
