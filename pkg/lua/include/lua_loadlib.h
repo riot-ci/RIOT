@@ -36,6 +36,7 @@ extern "C" {
  * Upon sucessful execution, the compiled chunk will be at the top of the lua
  * stack.
  *
+ * @param   L       Initialized Lua interpreter state.
  * @param   name    Name of the module.
  *
  * @return      Same as lua_load. If the module is a C-module, then this will

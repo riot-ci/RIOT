@@ -32,7 +32,7 @@ char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned (__BIGGEST_ALIGNMENT_
 
 int main(void)
 {
-    printf("%p - %p %u\n", lua_memory, lua_memory+MAIN_LUA_MEM_SIZE, sizeof(void*));
+    printf("%p - %p %zu\n", lua_memory, lua_memory+MAIN_LUA_MEM_SIZE, sizeof(void*));
 
     while (1) {
         int status, value;

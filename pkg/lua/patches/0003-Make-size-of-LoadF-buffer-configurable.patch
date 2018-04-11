@@ -1,7 +1,7 @@
 From bd9e76ed9c9044521537d66fd017a21e98aa53c3 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Mon, 7 May 2018 13:29:15 +0200
-Subject: [PATCH 3/7] Make size of LoadF buffer configurable.
+Subject: [PATCH 3/8] Make size of LoadF buffer configurable.
 
 ---
  lauxlib.c | 2 +-
