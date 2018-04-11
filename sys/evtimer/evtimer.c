@@ -35,6 +35,7 @@ void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
 {
     uint32_t delta_sum = 0;
 
+    DEBUG("evtimer: new event %" PRIu32 " ms\n", event->offset_ms);
     /* we want list->next to point to the first list element. thus we take the
      * *address* of evtimer->events, then cast it from (evtimer_event_t **) to
      * (evtimer_event_t*). After that, list->next actually equals
@@ -43,20 +44,20 @@ void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
 
     while (list->next) {
         evtimer_event_t *list_entry = list->next;
-        if ((list_entry->offset + delta_sum) > event->offset) {
+        if ((list_entry->offset_ms + delta_sum) > event->offset_ms) {
             break;
         }
-        delta_sum += list_entry->offset;
+        delta_sum += list_entry->offset_ms;
         list = list->next;
     }
 
     event->next = list->next;
     if (list->next) {
         evtimer_event_t *next_entry = list->next;
-        next_entry->offset += delta_sum;
-        next_entry->offset -= event->offset;
+        next_entry->offset_ms += delta_sum;
+        next_entry->offset_ms -= event->offset_ms;
     }
-    event->offset -= delta_sum;
+    event->offset_ms -= delta_sum;
 
     list->next = event;
 }
@@ -71,7 +72,7 @@ static void _del_event_from_list(evtimer_t *evtimer, evtimer_event_t *event)
             list->next = event->next;
             if (list->next) {
                 list_entry = list->next;
-                list_entry->offset += event->offset;
+                list_entry->offset_ms += event->offset_ms;
             }
             break;
         }
@@ -79,21 +80,23 @@ static void _del_event_from_list(evtimer_t *evtimer, evtimer_event_t *event)
     }
 }
 
-static void _set_timer(xtimer_t *timer, uint32_t offset)
+static void _set_timer(xtimer_t *timer, uint32_t offset_ms)
 {
-    uint64_t offset_in_us = (uint64_t)offset * 1000;
+    uint64_t offset_in_us = (uint64_t)offset_ms * 1000;
 
-    DEBUG("evtimer: now=%" PRIu32 " setting xtimer to %" PRIu32 ":%" PRIu32 "\n",
-          xtimer_now_usec(), (uint32_t)(offset_in_us >> 32),
-          (uint32_t)(offset_in_us));
-    _xtimer_set64(timer, offset_in_us, offset_in_us >> 32);
+    DEBUG("evtimer: now=%" PRIu32 " us setting xtimer to %" PRIu32 ":%" PRIu32 " us\n",
+          xtimer_now_usec(), (uint32_t)(offset_in_us >> 32), (uint32_t)(offset_in_us));
+
+    xtimer_set64(timer, offset_in_us);
 }
 
 static void _update_timer(evtimer_t *evtimer)
 {
     if (evtimer->events) {
         evtimer_event_t *event = evtimer->events;
-        _set_timer(&evtimer->timer, event->offset);
+        DEBUG("evtimer: _update_head_offset(): new head offset %" PRIu32 "ms\n",
+              event->offset_ms);
+        _set_timer(&evtimer->timer, event->offset_ms);
     }
     else {
         xtimer_remove(&evtimer->timer);
@@ -119,8 +122,7 @@ static void _update_head_offset(evtimer_t *evtimer)
 {
     if (evtimer->events) {
         evtimer_event_t *event = evtimer->events;
-        event->offset = _get_offset(&evtimer->timer);
-        DEBUG("evtimer: _update_head_offset(): new head offset %" PRIu32 "\n", event->offset);
+        event->offset_ms = _get_offset(&evtimer->timer);
     }
 }
 
@@ -128,12 +130,13 @@ void evtimer_add(evtimer_t *evtimer, evtimer_event_t *event)
 {
     unsigned state = irq_disable();
 
-    DEBUG("evtimer_add(): adding event with offset %" PRIu32 "\n", event->offset);
+    DEBUG("evtimer_add(): adding event with offset %" PRIu32 " ms\n",
+          event->offset_ms);
 
     _update_head_offset(evtimer);
     evtimer_add_event_to_list(evtimer, event);
     if (evtimer->events == event) {
-        _set_timer(&evtimer->timer, event->offset);
+        _set_timer(&evtimer->timer, event->offset_ms);
     }
     irq_restore(state);
     if (sched_context_switch_request) {
@@ -145,7 +148,8 @@ void evtimer_del(evtimer_t *evtimer, evtimer_event_t *event)
 {
     unsigned state = irq_disable();
 
-    DEBUG("evtimer_del(): removing event with offset %" PRIu32 "\n", event->offset);
+    DEBUG("evtimer_del(): removing event with offset %" PRIu32 " ms\n",
+          event->offset_ms);
 
     _update_head_offset(evtimer);
     _del_event_from_list(evtimer, event);
@@ -155,9 +159,10 @@ void evtimer_del(evtimer_t *evtimer, evtimer_event_t *event)
 
 static evtimer_event_t *_get_next(evtimer_t *evtimer)
 {
+    DEBUG("evtimer: _get_next()\n");
     evtimer_event_t *event = evtimer->events;
 
-    if (event && (event->offset == 0)) {
+    if (event && (event->offset_ms == 0)) {
         evtimer->events = event->next;
         return event;
     }
@@ -175,7 +180,7 @@ static void _evtimer_handler(void *arg)
     /* this function gets called directly by xtimer if the set xtimer expired.
      * Thus the offset of the first event is down to zero. */
     evtimer_event_t *event = evtimer->events;
-    event->offset = 0;
+    event->offset_ms = 0;
 
     /* iterate the event list */
     while ((event = _get_next(evtimer))) {
@@ -199,7 +204,7 @@ void evtimer_print(const evtimer_t *evtimer)
 
     while (list->next) {
         evtimer_event_t *list_entry = list->next;
-        printf("ev offset=%u\n", (unsigned)list_entry->offset);
+        printf("ev offset=%u\n", (unsigned)list_entry->offset_ms);
         list = list->next;
     }
 }
