@@ -55,7 +55,7 @@ int main(void)
     uint32_t now = rtt_get_counter();
     printf("RTT now: %" PRIu32 "\n", now);
 
-    last = now + TICKS_TO_WAIT;
+    last = (now + TICKS_TO_WAIT) & RTT_MAX_VALUE;
     printf("Setting initial alarm to now + 10 s (%" PRIu32 ")\n", last);
     rtt_set_alarm(last, cb, 0);
 
