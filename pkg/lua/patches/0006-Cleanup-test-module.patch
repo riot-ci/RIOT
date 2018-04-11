@@ -1,7 +1,7 @@
 From ea2fc79b2e2a3d72b53dff3809f6cdeab29a34f7 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Mon, 14 May 2018 15:19:14 +0200
-Subject: [PATCH 6/7] Cleanup test module.
+Subject: [PATCH 6/8] Cleanup test module.
 
 This patch makes several improvements to the test module intended
 to allow testing inside embedded environments:

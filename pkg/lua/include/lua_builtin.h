@@ -30,9 +30,9 @@ extern "C" {
  * application binary.
  */
 struct luaR_builtin_lua {
-    const char *name;   /** Name of the module */
-    const char *code;   /** Lua source code buffer*/
-    size_t code_size;   /** Size of the source code buffer. */
+    const char *name;   /*!< Name of the module */
+    const char *code;   /*!< Lua source code buffer*/
+    size_t code_size;   /*!< Size of the source code buffer. */
 };
 
 /**
@@ -40,8 +40,11 @@ struct luaR_builtin_lua {
  * application binary.
  */
 struct luaR_builtin_c {
-    const char *name;
-    int (*luaopen)(lua_State *);
+    const char *name;   /*!< Name of the module */
+    int (*luaopen)(lua_State *); /*!< Loader function. It must place the module
+                                  *  table at the top of the lua stack.
+                                  *  @todo Add better docs.
+                                  */
 };
 
 /** Table containing all built in pure lua modules */
