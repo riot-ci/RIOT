@@ -42,7 +42,9 @@ static const clock_config_t clock_config = {
     /* unsure if this RTC load cap configuration is correct, but it matches the
      * settings used by the example code in the NXP provided SDK */
     .rtc_clc            = 0,
-    .osc32ksel          = SIM_SOPT1_OSC32KSEL(2),
+    /* Use the 32 kHz oscillator as ERCLK32K. Note that the values here have a
+     * different mapping for the KW41Z than the values used in the Kinetis K series */
+    .osc32ksel          = SIM_SOPT1_OSC32KSEL(0),
     .clock_flags =
         KINETIS_CLOCK_OSC0_EN | /* Enable RSIM oscillator */
         KINETIS_CLOCK_RTCOSC_EN |
