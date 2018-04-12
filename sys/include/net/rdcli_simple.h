@@ -30,8 +30,9 @@ extern "C" {
  * @brief   Error codes used by the rdcli_simple implementation
  */
 enum {
-    RDCLI_SIMPLE_OK  = 0,       /**< all ok */
-    RDCLI_SIMPLE_ERR = -1,      /**< return for formatting and network errors */
+    RDCLI_SIMPLE_OK     =  0,   /**< all good */
+    RDCLI_SIMPLE_NOADDR = -1,   /**< on address conversion errors */
+    RDCLI_SIMPLE_ERROR  = -2,   /**< on other errors */
 };
 
 /**

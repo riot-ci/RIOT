@@ -39,30 +39,30 @@ int rdcli_simple_register(void)
     sock_udp_ep_t remote = {
         .family    = AF_INET6,
         .netif     = SOCK_ADDR_ANY_NETIF,
-        .port      = RDCLI_SERVER_PORT
+        .port      = RDCLI_SERVER_PORT,
     };
 
     /* parse RD server address */
     if (ipv6_addr_from_str((ipv6_addr_t *)&remote.addr,
                            RDCLI_SERVER_ADDR) == NULL) {
-        return RDCLI_SIMPLE_ERR;
+        return RDCLI_SIMPLE_NOADDR;
     }
 
     /* build the initial CON packet */
     if (gcoap_req_init(&pkt, buf, sizeof(buf), COAP_METHOD_POST,
                              "/.well-known/core") < 0) {
-        return RDCLI_SIMPLE_ERR;
+        return RDCLI_SIMPLE_ERROR;
     }
     /* make packet confirmable */
     coap_hdr_set_type(pkt.hdr, COAP_TYPE_CON);
     /* add Uri-Query options */
     if (rdcli_common_add_qstring(&pkt) < 0) {
-        return RDCLI_SIMPLE_ERR;
+        return RDCLI_SIMPLE_ERROR;
     }
     /* finish, we don't have any payload */
     ssize_t len = gcoap_finish(&pkt, 0, COAP_FORMAT_LINK);
     if (gcoap_req_send2(buf, len, &remote, NULL) == 0) {
-        return RDCLI_SIMPLE_ERR;
+        return RDCLI_SIMPLE_ERROR;
     }
 
     return RDCLI_SIMPLE_OK;
