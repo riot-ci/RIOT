@@ -18,15 +18,14 @@
  * @}
  */
 
+#include <stdio.h>
+
 #include "u8g2.h"
 
 #include "xtimer.h"
-
 #include "periph/spi.h"
 #include "periph/i2c.h"
 #include "periph/gpio.h"
-
-#include <stdio.h>
 
 #ifdef SPI_NUMOF
 static spi_clk_t u8x8_pulse_width_to_spi_speed(uint32_t pulse_width)
