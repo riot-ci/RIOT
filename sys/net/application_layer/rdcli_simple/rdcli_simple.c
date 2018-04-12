@@ -25,22 +25,29 @@
 #include "net/rdcli_config.h"
 #include "net/rdcli_common.h"
 #include "net/rdcli_simple.h"
+#include "net/ipv6/addr.h"
 
 #define BUFSIZE             (128U)
 
+/* we don't want to allocate the CoAP packet and scratch buffer on the stack,
+ * as they are too large for that. */
 static coap_pkt_t pkt;
 static uint8_t buf[BUFSIZE];
 
-/* allocate an UDP endpoint to the RD server */
-static const sock_udp_ep_t remote = {
-    .family    = AF_INET6,
-    .netif     = SOCK_ADDR_ANY_NETIF,
-    .addr      = RDCLI_SERVER_ADDR ,
-    .port      = RDCLI_SERVER_PORT
-};
-
 int rdcli_simple_register(void)
 {
+    sock_udp_ep_t remote = {
+        .family    = AF_INET6,
+        .netif     = SOCK_ADDR_ANY_NETIF,
+        .port      = RDCLI_SERVER_PORT
+    };
+
+    /* parse RD server address */
+    if (ipv6_addr_from_str((ipv6_addr_t *)&remote.addr,
+                           RDCLI_SERVER_ADDR) == NULL) {
+        return RDCLI_SIMPLE_ERR;
+    }
+
     /* build the initial CON packet */
     if (gcoap_req_init(&pkt, buf, sizeof(buf), COAP_METHOD_POST,
                              "/.well-known/core") < 0) {
