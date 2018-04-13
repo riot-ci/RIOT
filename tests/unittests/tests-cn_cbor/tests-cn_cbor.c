@@ -37,6 +37,14 @@ static size_t test, offs;
 static unsigned char ebuf[EBUF_SIZE];
 static cn_cbor_errback errb;
 
+/* Dummy context struct to force fallback to POSIX calloc/free */
+static cn_cbor_context ct =
+{
+    NULL,
+    NULL,
+    NULL,
+};
+
 static void setup_cn_cbor(void)
 {
     cbor = NULL;
@@ -47,7 +55,7 @@ static void setup_cn_cbor(void)
 
 static void teardown_cn_cbor(void)
 {
-        cn_cbor_free(cbor);
+        cn_cbor_free(cbor, &ct);
 }
 
 static void test_parse(void)
@@ -114,7 +122,7 @@ static void test_parse(void)
 
         errb.err = CN_CBOR_NO_ERROR;
 
-        cbor = cn_cbor_decode(buf, len, &errb);
+        cbor = cn_cbor_decode(buf, len, &ct, &errb);
         TEST_ASSERT_EQUAL_INT(errb.err, CN_CBOR_NO_ERROR);
         TEST_ASSERT_NOT_NULL(cbor);
 
@@ -149,7 +157,7 @@ static void test_errors(void)
         size_t len = fmt_hex_bytes(buf, tests[offs].hex);
         TEST_ASSERT(len);
 
-        cbor = cn_cbor_decode(buf, len, &errb);
+        cbor = cn_cbor_decode(buf, len, &ct, &errb);
         TEST_ASSERT_NULL(cbor);
         TEST_ASSERT_EQUAL_INT(errb.err, tests[offs].err);
     }
