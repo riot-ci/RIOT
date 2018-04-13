@@ -197,6 +197,13 @@ static const result_presentation_t presentation = {
 };
 #endif /* else TEST_XTIMER */
 
+#ifdef MODULE_PERIPH_RTT
+static uint32_t rtt_begin;
+#endif
+
+static unsigned int ref_begin;
+static unsigned int tut_begin;
+
 /**
  * @brief   Calculate the limits for mean and variance for this test
  */
@@ -534,20 +541,20 @@ static int test_timer(void)
     } while(time_elapsed < TEST_PRINT_INTERVAL_TICKS);
 
     uint32_t ref_now = timer_read(TIM_REF_DEV);
-    uint64_t tut_now = READ_TUT();
+    uint32_t tut_now = READ_TUT();
 #ifdef MODULE_PERIPH_RTT
     uint32_t rtt_now = rtt_get_counter();
 #endif
-    print_str("Time now:\n");
+    print_str("Elapsed time:\n");
     print_str("        Reference: ");
-    print_u64_dec(ref_now);
+    print_u32_dec((ref_now - ref_begin) / TIM_REF_FREQ);
     print_str("\n");
     print_str(" Timer under test: ");
-    print_u64_dec(tut_now);
+    print_u32_dec((tut_now - tut_begin) / TIM_TEST_FREQ);
     print_str("\n");
 #ifdef MODULE_PERIPH_RTT
     print_str(" Wall clock (RTT): ");
-    print_u64_dec(rtt_now);
+    print_u32_dec((rtt_now - rtt_begin) / RTT_FREQUENCY);
     print_str("\n");
 #endif
     print_results(&presentation, &ref_states[0], &int_states[0]);
@@ -729,7 +736,11 @@ int main(void)
     print_u32_dec(spin_max);
     print("\n", 1);
     estimate_cpu_overhead();
-
+#ifdef MODULE_PERIPH_RTT
+    rtt_begin = rtt_get_counter();
+#endif
+    ref_begin = timer_read(TIM_REF_DEV);
+    tut_begin = READ_TUT();
     while(1) {
         test_timer();
     }
