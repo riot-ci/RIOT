@@ -35,5 +35,5 @@ The following commands are available:
 
 Apart from these commands, the default `vfs` commands can be used, for instance:
 
-- `vfs df`: shows all mountpoints and used/available memory
+- `vfs df`: shows all mountpoints and used/available filesystem space
 - `vfs ls <path>`: list files
