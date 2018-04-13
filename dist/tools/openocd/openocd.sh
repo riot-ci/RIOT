@@ -97,6 +97,10 @@
 # the file (default).
 # Valid values: elf, hex, s19, bin (see OpenOCD manual for more information)
 : ${IMAGE_TYPE:=}
+# Intial target state when using debug, by default a 'halt' request is sent to
+# the target when starting a debug session. 'reset halt' can also be used
+# depending on the type of target.
+: ${OPENOCD_EXTRA_DEBUG_INIT_CMD:=-c 'halt'}
 
 #
 # Examples of alternative debugger configurations
@@ -179,12 +183,6 @@ do_debug() {
     test_config
     test_elffile
 
-    # Configure halt command: prepend a reset if required by the board config
-    local _pre_reset_halt=''
-    if [ -n "${PRE_DEBUG_RESET_HALT}" ]; then
-        _pre_reset_halt='reset'
-    fi
-
     # temporary file that saves OpenOCD pid
     OCD_PIDFILE=$(mktemp -t "openocd_pid.XXXXXXXXXX")
     # will be called by trap
@@ -208,7 +206,7 @@ do_debug() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c '${_pre_reset_halt} halt' \
+            ${OPENOCD_EXTRA_DEBUG_INIT_CMD} \
             -l /dev/null & \
             echo \$! > $OCD_PIDFILE" &
     # Export to be able to access these from the sh -c command lines, may be
