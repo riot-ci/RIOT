@@ -12,9 +12,9 @@ import sys
 
 
 def testfunc(child):
-    child.expect(r"Iface  \d+  HWaddr: [0-9a-f:]+")
-    child.expect(r"inet6 addr: fe80:[0-9a-f:]+\s+scope: local")
-    child.expect(r"Iface  \d+  HWaddr: [0-9a-f:]+")
+    child.expect(r"Iface\s+\d\s+HWaddr: [0-9a-f:]+")
+    child.expect(r"inet6 addr:\sfe80:[0-9a-f:]+\s+scope: local")
+    child.expect(r"Iface\s+\d\s+HWaddr: [0-9a-f:]+")
     child.expect(r"inet6 addr:\s+fe80:[0-9a-f:]+\s+scope: local")
     child.expect(r"inet6 addr:\s+[0-9a-f:]+\s+scope: global")
 
@@ -24,4 +24,4 @@ if __name__ == "__main__":
             os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner')
         )
     from testrunner import run
-    status = run(testfunc, timeout=20)
+    status = run(testfunc, timeout=5)
