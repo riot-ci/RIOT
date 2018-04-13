@@ -27,6 +27,7 @@
 static char _dhcpv6_client_stack[DHCPV6_CLIENT_STACK_SIZE];
 
 extern int _gnrc_netif_config(int argc, char **argv);
+extern int _gnrc_ipv6_nib(int argc, char **argv);
 
 void *_dhcpv6_client_thread(void *args)
 {
@@ -50,6 +51,8 @@ void *_dhcpv6_client_thread(void *args)
 
 int main(void)
 {
+    char *pl[] = { "nib", "prefix" };
+
     _gnrc_netif_config(0, NULL);
     thread_create(_dhcpv6_client_stack, DHCPV6_CLIENT_STACK_SIZE,
                   DHCPV6_CLIENT_PRIORITY, THREAD_CREATE_STACKTEST,
@@ -57,5 +60,6 @@ int main(void)
     xtimer_sleep(5);
     /* global address should now be configured */
     _gnrc_netif_config(0, NULL);
+    _gnrc_ipv6_nib(2, pl);
     return 0;
 }
