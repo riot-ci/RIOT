@@ -97,7 +97,7 @@
 # the file (default).
 # Valid values: elf, hex, s19, bin (see OpenOCD manual for more information)
 : ${IMAGE_TYPE:=}
-# Intial target state when using debug, by default a 'halt' request is sent to
+# Initial target state when using debug, by default a 'halt' request is sent to
 # the target when starting a debug session. 'reset halt' can also be used
 # depending on the type of target.
 : ${OPENOCD_EXTRA_DEBUG_INIT_CMD:=-c 'halt'}
