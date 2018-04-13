@@ -1,5 +1,12 @@
 include ../Makefile.tests_common
 
+ifeq (,$(shell echo $$(command -v kea-dhcp6)))
+  $(error "kea-dhcp6 required")
+endif
+
+# generate random free port
+DHCPV6_SERVER_PORT := 61342
+
 RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h nucleo32-f042 \
@@ -12,6 +19,7 @@ BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker ruuvitag thingy52
 
 USEMODULE += gnrc_dhcpv6_client
 USEMODULE += gnrc_ipv6_default
+USEMODULE += xtimer
 ifneq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_default
   IFACE ?= tapbr0
@@ -25,7 +33,6 @@ else
   TERMFLAGS ?= $(IFACE) $(PORT) $(ETHOS_BAUDRATE)
   TERMDEPS += ethos
 endif
-USEMODULE += auto_init_dhcpv6_client
 USEMODULE += auto_init_gnrc_netif
 
 USEMODULE += shell_commands
@@ -37,7 +44,19 @@ ifeq ($(BOARD),$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
               -DGNRC_NETIF_IPV6_GROUPS_NUMOF=2 -DGNRC_IPV6_NIB_NUMOF=1 \
               -DNRC_IPV6_NIB_OFFL_NUMOF=1
 endif
+
+CFLAGS += -DDHCPV6_SERVER_PORT=$(DHCPV6_SERVER_PORT)
+
+TERMDEPS += dhcpv6_server
+
 include $(RIOTBASE)/Makefile.include
+
+
+.PHONY: dhcpv6_server
+
+dhcpv6_server:
+	# sudo required since kea uses some PID and Lock files in /var
+	sudo bash -x $(CURDIR)/dhcpv6_server.sh $(DHCPV6_SERVER_PORT) $(CURDIR)/kea-dhcp6.conf
 
 ifeq (,$(filter native,$(BOARD)))
 .PHONY: ethos
@@ -47,5 +66,5 @@ ethos:
 endif
 
 test:
-	@echo "Requiring sudo for scapy operation" >&2
-	sudo -E IFACE=$(IFACE) ./tests/01-run.py
+	# Require sudo for dhcpv6_server target and ethos
+	sudo RIOTBASE="$(RIOTBASE)" ./tests/01-run.py
