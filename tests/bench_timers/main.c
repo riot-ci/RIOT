@@ -29,6 +29,9 @@
 #include "div.h"
 #include "matstat.h"
 #include "thread.h"
+#ifdef MODULE_PERIPH_RTT
+#include "periph/rtt.h"
+#endif
 #if TEST_XTIMER
 #include "xtimer.h"
 #endif
@@ -530,9 +533,23 @@ static int test_timer(void)
         //~ print_str("\n");
     } while(time_elapsed < TEST_PRINT_INTERVAL_TICKS);
 
-    print_str("Now TUT: ");
-    print_u64_dec(READ_TUT());
+    uint32_t ref_now = timer_read(TIM_REF_DEV);
+    uint64_t tut_now = READ_TUT();
+#ifdef MODULE_PERIPH_RTT
+    uint32_t rtt_now = rtt_get_counter();
+#endif
+    print_str("Time now:\n");
+    print_str("        Reference: ");
+    print_u64_dec(ref_now);
     print_str("\n");
+    print_str(" Timer under test: ");
+    print_u64_dec(tut_now);
+    print_str("\n");
+#ifdef MODULE_PERIPH_RTT
+    print_str(" Wall clock (RTT): ");
+    print_u64_dec(rtt_now);
+    print_str("\n");
+#endif
     print_results(&presentation, &ref_states[0], &int_states[0]);
 
     return 0;
