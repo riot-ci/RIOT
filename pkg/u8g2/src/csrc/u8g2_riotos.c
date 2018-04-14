@@ -19,6 +19,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "u8g2.h"
 
@@ -157,9 +158,8 @@ uint8_t u8x8_byte_riotos_hw_i2c(u8x8_t *u8g2, uint8_t msg, uint8_t arg_int, void
 
     switch (msg) {
         case U8X8_MSG_BYTE_SEND:
-            while (arg_int--) {
-                buffer[index++] = *((uint8_t *)arg_ptr++);
-            }
+            memcpy(&buffer[index], arg_ptr, arg_int);
+            index += arg_int;
             break;
         case U8X8_MSG_BYTE_INIT:
             i2c_init_master(dev, I2C_SPEED_FAST);
