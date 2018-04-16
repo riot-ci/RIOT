@@ -48,7 +48,7 @@ static uint8_t nonce[COSE_CRYPTO_AEAD_CHACHA20POLY1305_NONCEBYTES] = { 0 };
 /* COSE structs */
 static cose_sign_t sign, verify;
 static cose_key_t signer, signer2, symm;
-static cose_encrypt_t encrypt, decrypt;
+static cose_encrypt_t test_encrypt, test_decrypt;
 /* COSE sign buffer */
 static uint8_t buf[1024];
 /*Signature Verification buffer */
@@ -173,24 +173,24 @@ static void test_libcose_02(void)
 static void test_libcose_03(void)
 {
     cose_key_init(&symm);
-    cose_encrypt_init(&encrypt);
-    cose_encrypt_init(&decrypt);
+    cose_encrypt_init(&test_encrypt);
+    cose_encrypt_init(&test_decrypt);
 
     cose_crypto_keygen(symmkey, sizeof(symmkey), COSE_ALGO_CHACHA20POLY1305);
     cose_key_set_kid(&symm, (uint8_t *)kid, sizeof(kid) - 1);
     cose_key_set_keys(&symm, 0, COSE_ALGO_CHACHA20POLY1305,
                       NULL, NULL, symmkey);
-    cose_encrypt_add_recipient(&encrypt, &symm);
-    cose_encrypt_set_algo(&encrypt, COSE_ALGO_DIRECT);
+    cose_encrypt_add_recipient(&test_encrypt, &symm);
+    cose_encrypt_set_algo(&test_encrypt, COSE_ALGO_DIRECT);
 
-    cose_encrypt_set_payload(&encrypt, payload, sizeof(payload) - 1);
+    cose_encrypt_set_payload(&test_encrypt, payload, sizeof(payload) - 1);
 
     uint8_t *out = NULL;
-    ssize_t len = cose_encrypt_encode(&encrypt, buf, sizeof(buf), nonce, &out, &ct);
+    ssize_t len = cose_encrypt_encode(&test_encrypt, buf, sizeof(buf), nonce, &out, &ct);
     TEST_ASSERT(len > 0);
-    TEST_ASSERT_EQUAL_INT(cose_encrypt_decode(&decrypt, out, len, &ct), 0);
+    TEST_ASSERT_EQUAL_INT(cose_encrypt_decode(&test_decrypt, out, len, &ct), 0);
     size_t plaintext_len = 0;
-    int res = cose_encrypt_decrypt(&decrypt, &symm, 0, buf, sizeof(buf), vbuf,
+    int res = cose_encrypt_decrypt(&test_decrypt, &symm, 0, buf, sizeof(buf), vbuf,
                                    &plaintext_len, &ct);
     TEST_ASSERT_EQUAL_INT(res, 0);
     TEST_ASSERT_EQUAL_INT(plaintext_len, sizeof(payload) - 1);
