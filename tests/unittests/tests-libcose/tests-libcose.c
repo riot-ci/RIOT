@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tweetnacl.h"
 #include "cn-cbor/cn-cbor.h"
 #include "cose.h"
 #include "cose/crypto.h"
@@ -39,17 +38,20 @@ static char payload[] = "Input string";
 static const char kid[] = "peter@riot-os.org";
 static const char kid2[] = "schmerzl@riot-os.org";
 /* Key pairs */
-static unsigned char pk[crypto_sign_PUBLICKEYBYTES];
-static unsigned char sk[crypto_sign_SECRETKEYBYTES];
-static unsigned char pk2[crypto_sign_PUBLICKEYBYTES];
-static unsigned char sk2[crypto_sign_SECRETKEYBYTES];
+static unsigned char pk[COSE_CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
+static unsigned char sk[COSE_CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
+static unsigned char pk2[COSE_CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
+static unsigned char sk2[COSE_CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
+static unsigned char symmkey[COSE_CRYPTO_AEAD_CHACHA20POLY1305_KEYBYTES];
+static uint8_t nonce[COSE_CRYPTO_AEAD_CHACHA20POLY1305_NONCEBYTES] = { 0 };
 /* COSE structs */
 static cose_sign_t sign, verify;
-static cose_key_t signer, signer2;
+static cose_key_t signer, signer2, symm;
+static cose_encrypt_t crypt, decrypt;
 /* COSE sign buffer */
-static uint8_t buf[512];
+static uint8_t buf[1024];
 /*Signature Verification buffer */
-static uint8_t vbuf[512];
+static uint8_t vbuf[1024];
 
 static cn_cbor block_storage_data[MAX_NUMBER_BLOCKS];
 static memarray_t storage;
@@ -86,34 +88,25 @@ static void setUp(void)
 {
     /* Initialize */
     random_init(0);
-    cose_crypto_keypair_ed25519(pk, sk);
-    cose_crypto_keypair_ed25519(pk2, sk2);
-    cose_sign_init(&verify, 0);
-
-    /* Set up first signer */
-    cose_key_init(&signer);
-    cose_key_init(&signer2);
-    cose_key_set_keys(&signer, COSE_EC_CURVE_ED25519, COSE_ALGO_EDDSA,
-                      pk, NULL, sk);
-    cose_key_set_kid(&signer, (uint8_t *)kid, sizeof(kid) - 1);
-
-    /* Second signer */
-    cose_crypto_keypair_ed25519(pk2, sk2);
-    cose_key_init(&signer2);
-    cose_key_set_keys(&signer2, COSE_EC_CURVE_ED25519, COSE_ALGO_EDDSA,
-                      pk2, NULL, sk2);
-    cose_key_set_kid(&signer2, (uint8_t *)kid2, sizeof(kid2) - 1);
-
+    memarray_init(&storage, block_storage_data, sizeof(cn_cbor),
+                  MAX_NUMBER_BLOCKS);
+    /* Clear buffer */
+    memset(buf, 0, sizeof(buf));
+    memset(vbuf, 0, sizeof(vbuf));
 }
 
 static void test_libcose_01(void)
 {
-    /* Clear buffer */
-    memset(buf, 0, sizeof(buf));
-    memset(vbuf, 0, sizeof(vbuf));
+    /* Set up first signer */
+    cose_key_init(&signer);
+    cose_key_set_keys(&signer, COSE_EC_CURVE_ED25519, COSE_ALGO_EDDSA,
+                      pk, NULL, sk);
+    cose_crypto_keypair_ed25519(&signer);
+    cose_key_set_kid(&signer, (uint8_t *)kid, sizeof(kid) - 1);
 
     /* Initialize struct */
     cose_sign_init(&sign, COSE_FLAGS_UNTAGGED);
+    cose_sign_init(&verify, 0);
 
     /* Add payload */
     cose_sign_set_payload(&sign, payload, sizeof(payload));
@@ -134,12 +127,23 @@ static void test_libcose_01(void)
 
 static void test_libcose_02(void)
 {
-    /* Clear buffer */
-    memset(buf, 0, sizeof(buf));
-    memset(vbuf, 0, sizeof(vbuf));
+    /* Set up first signer */
+    cose_key_init(&signer);
+    cose_key_set_keys(&signer, COSE_EC_CURVE_ED25519, COSE_ALGO_EDDSA,
+                      pk, NULL, sk);
+    cose_crypto_keypair_ed25519(&signer);
+    cose_key_set_kid(&signer, (uint8_t *)kid, sizeof(kid) - 1);
+
+    /* Second signer */
+    cose_key_init(&signer2);
+    cose_key_set_keys(&signer2, COSE_EC_CURVE_ED25519, COSE_ALGO_EDDSA,
+                      pk2, NULL, sk2);
+    cose_crypto_keypair_ed25519(&signer2);
+    cose_key_set_kid(&signer2, (uint8_t *)kid2, sizeof(kid2) - 1);
 
     /* Initialize struct */
     cose_sign_init(&sign, 0);
+    cose_sign_init(&verify, 0);
 
     /* Add payload */
     cose_sign_set_payload(&sign, payload, sizeof(payload));
@@ -151,7 +155,7 @@ static void test_libcose_02(void)
     uint8_t *out = NULL;
     size_t len = cose_sign_encode(&sign, buf, sizeof(buf), &out, &ct);
 
-
+    TEST_ASSERT(len > 0);
     TEST_ASSERT_EQUAL_INT(cose_sign_decode(&verify, out, len, &ct), 0);
 
     /* Test correct signature with correct signer */
@@ -165,11 +169,35 @@ static void test_libcose_02(void)
                                            sizeof(vbuf), &ct), 0);
 }
 
+static void test_libcose_03(void)
+{
+    cose_key_init(&symm);
+    cose_encrypt_init(&crypt);
+    cose_encrypt_init(&decrypt);
+
+    cose_crypto_keygen(symmkey, sizeof(symmkey), COSE_ALGO_CHACHA20POLY1305);
+    cose_key_set_kid(&symm, (uint8_t*)kid, sizeof(kid) - 1);
+    cose_key_set_keys(&symm, 0, COSE_ALGO_CHACHA20POLY1305, NULL, NULL, symmkey);
+    cose_encrypt_add_recipient(&crypt, &symm);
+    cose_encrypt_set_algo(&crypt, COSE_ALGO_DIRECT);
+
+    cose_encrypt_set_payload(&crypt, payload, sizeof(payload)-1);
+
+    uint8_t *out = NULL;
+    ssize_t len = cose_encrypt_encode(&crypt, buf, sizeof(buf), nonce, &out, &ct);
+    TEST_ASSERT(len > 0);
+    TEST_ASSERT_EQUAL_INT(cose_encrypt_decode(&decrypt, out, len, &ct), 0);
+    size_t plaintext_len = 0;
+    TEST_ASSERT_EQUAL_INT(cose_encrypt_decrypt(&decrypt, &symm, 0, buf, sizeof(buf), vbuf, &plaintext_len, &ct), 0);
+    TEST_ASSERT_EQUAL_INT(plaintext_len, sizeof(payload)-1);
+}
+
 Test *tests_libcose_all(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_libcose_01),
         new_TestFixture(test_libcose_02),
+        new_TestFixture(test_libcose_03),
     };
 
     EMB_UNIT_TESTCALLER(libcose_tests, setUp, NULL, fixtures);
@@ -180,7 +208,5 @@ void tests_libcose(void)
 {
     printf("Starting libcose test, performing multiple signature operations.\n");
     printf("This can take a while (up to 2 minutes on the samr21-xpro)\n");
-    memarray_init(&storage, block_storage_data, sizeof(cn_cbor),
-                  MAX_NUMBER_BLOCKS);
     TESTS_RUN(tests_libcose_all());
 }
