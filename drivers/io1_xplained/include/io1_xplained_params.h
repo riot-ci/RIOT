@@ -69,7 +69,7 @@ saul_reg_info_t io1_xplained_saul_info[][4] =
 /**
  * @brief   Allocate and configure the extension LED gpios
  */
-saul_gpio_params_t io1_xplained_saul_gpios[3] =
+saul_gpio_params_t io1_xplained_saul_gpios[] =
 {
     {
         .pin = IO1_LED_PIN,
