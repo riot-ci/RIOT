@@ -17,7 +17,8 @@
  * @author     Koen Zandberg <koen@bergzand.net>
  */
 
-#define MAX_NUMBER_BLOCKS 128
+/* Number of nodes allocated for cn-cbor */
+#define MAX_NUMBER_BLOCKS 32
 
 #include <stdio.h>
 #include <stdlib.h>
