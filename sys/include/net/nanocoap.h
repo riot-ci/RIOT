@@ -447,13 +447,21 @@ size_t coap_put_option_uri(uint8_t *buf, uint16_t lastonum, const char *uri, uin
 int coap_get_blockopt(coap_pkt_t *pkt, uint16_t option, uint32_t *blknum, unsigned *szx);
 
 /**
- * @brief    Block1 helper
+ * @brief    Block1 option getter
+ *
+ * This function gets a CoAP packet's block1 option and parses it into a helper
+ * structure.
+ *
+ * If no block1 option is present in @p pkt, the values in @p block1 will be
+ * initialized with zero. That implies both block1->offset and block1->more are
+ * also valid in that case, as packet with offset==0 and more==0 means it contains
+ * all the payload for the corresponding request.
  *
  * @param[in]   pkt     pkt to work on
  * @param[out]  block1  ptr to preallocated coap_block1_t structure
  *
  * @returns     0 if block1 option not present
- * @returns     1 if structure has been filles
+ * @returns     1 if structure has been filled
  */
 int coap_get_block1(coap_pkt_t *pkt, coap_block1_t *block1);
 
@@ -517,11 +525,11 @@ unsigned coap_get_content_type(coap_pkt_t *pkt);
 int coap_get_uri(coap_pkt_t *pkt, uint8_t *target);
 
 /**
- * @brief    Helper to convert SZX value to size
+ * @brief    Helper to decode SZX value to size in bytes
  *
- * @param[in]   szx     SZX value to convert
+ * @param[in]   szx     SZX value to decode
  *
- * @returns     size
+ * @returns     SZX value decoded to bytes
  */
 static inline unsigned coap_szx2size(unsigned szx)
 {
