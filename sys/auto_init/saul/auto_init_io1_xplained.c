@@ -77,7 +77,7 @@ void auto_init_io1_xplained(void)
              j++) {
             saul_reg_t *entry = &saul_entries[i * 4 + j + 1];
             entry->dev = &(io1_xplained_saul_gpios[j]);
-            entry->name = io1_xplained_saul_info[i][j].name;
+            entry->name = io1_xplained_saul_info[i][j + 1].name;
             entry->driver = &gpio_out_saul_driver;
             saul_reg_add(entry);
         }
