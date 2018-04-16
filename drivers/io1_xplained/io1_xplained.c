@@ -20,7 +20,10 @@
 
 #include "io1_xplained.h"
 #include "io1_xplained_internals.h"
+
 #include "at30tse75x.h"
+#include "sdcard_spi.h"
+
 #include "periph/i2c.h"
 #include "periph/gpio.h"
 
@@ -46,6 +49,21 @@ int io1_xplained_init(io1_xplained_t *dev, const io1_xplained_params_t *params)
 
     /* Use maximum resolution */
     at30tse75x_set_resolution(&dev->temp, AT30TSE75X_RESOLUTION_12BIT);
+
+    /* Initialize the SD Card */
+    sdcard_spi_params_t sdcard_params = {
+        .spi_dev        = SDCARD_SPI_PARAM_SPI,
+        .cs             = SDCARD_SPI_PARAM_CS,
+        .clk            = SDCARD_SPI_PARAM_CLK,
+        .mosi           = SDCARD_SPI_PARAM_MOSI,
+        .miso           = SDCARD_SPI_PARAM_MISO,
+        .power          = SDCARD_SPI_PARAM_POWER,
+        .power_act_high = SDCARD_SPI_PARAM_POWER_AH
+    };
+    if (sdcard_spi_init(&dev->sdcard, &sdcard_params) != 0) {
+        DEBUG("[io1_xplained] SD Card initialization failed\n");
+        return -IO1_XPLAINED_NOSDCARD;
+    }
 
     if (gpio_init(IO1_LED_PIN, GPIO_OUT) < 0) {
         DEBUG("[io1_xplained] LED initialization failed\n");

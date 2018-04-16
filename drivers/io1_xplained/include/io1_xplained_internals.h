@@ -37,6 +37,19 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    IO1 Xplained SD Card configuration
+ * @{
+ */
+#define SDCARD_SPI_PARAM_SPI                   SPI_DEV(1)
+#define SDCARD_SPI_PARAM_CS                    GPIO_PIN(1,3)
+#define SDCARD_SPI_PARAM_CLK                   GPIO_PIN(1,23)
+#define SDCARD_SPI_PARAM_MOSI                  GPIO_PIN(1,22)
+#define SDCARD_SPI_PARAM_MISO                  GPIO_PIN(1,2)
+#define SDCARD_SPI_PARAM_POWER                 (GPIO_UNDEF)
+#define SDCARD_SPI_PARAM_POWER_AH              (true)
+/** @} */
+
+/**
  * @name    IO1 Xplained LED pin
  * @{
  */
