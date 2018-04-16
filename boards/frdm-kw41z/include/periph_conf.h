@@ -57,9 +57,9 @@ static const clock_config_t clock_config = {
     .default_mode       = KINETIS_MCG_MODE_FEI,
     /* The crystal connected to RSIM OSC is 32 MHz */
     .erc_range          = KINETIS_MCG_ERC_RANGE_VERY_HIGH,
-    .fcrdiv             = MCG_SC_FCRDIV(0), /* Fast IRC divide by 1 => 4 MHz */
-    .oscsel             = MCG_C7_OSCSEL(0), /* Use RSIM for external clock */
     .osc_clc            = 0, /* no load cap configuration */
+    .oscsel             = MCG_C7_OSCSEL(0), /* Use RSIM for external clock */
+    .fcrdiv             = MCG_SC_FCRDIV(0), /* Fast IRC divide by 1 => 4 MHz */
     .fll_frdiv          = MCG_C1_FRDIV(0b101), /* Divide by 1024 */
     .fll_factor_fei     = KINETIS_MCG_FLL_FACTOR_1464, /* FEI FLL freq = 48 MHz */
     .fll_factor_fee     = KINETIS_MCG_FLL_FACTOR_1280, /* FEE FLL freq = 40 MHz */
