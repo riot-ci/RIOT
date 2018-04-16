@@ -13,8 +13,6 @@
  *
  * @file
  * @brief       Low-level PWM driver implementation
-*
- * @note        This driver initializes a duty cycle of '1'
  *
  * @author      Semjon Kerner <semjon.kerner@fu-berlin.de>
  * @}
@@ -48,9 +46,11 @@ static const uint32_t divtable[10] = {
     (CLOCK_CORECLOCK >> 9),
 };
 
+static uint32_t init_data[2];
+
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
 {
-    assert (dev == 0 && ((mode == PWM_LEFT) || (mode == PWM_RIGHT)));
+    assert(dev == 0 && ((mode == PWM_LEFT) || (mode == PWM_RIGHT)));
 
     /* reset and configure the timer */
     PWM_TIMER->POWER = 1;
@@ -110,7 +110,8 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     /* shortcut to reset Counter after CC[1] event */
     PWM_TIMER->SHORTS = TIMER_SHORTS_COMPARE1_CLEAR_Msk;
 
-    PWM_TIMER->TASKS_START = 1;
+    /* start pwm with value '0' */
+    pwm_set(dev, 0, 0);
 
     DEBUG("Timer frequency is set to %ld\n", timer_freq);
 
@@ -183,7 +184,6 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
     }
 
     /* reconfigure pwm to standard mode */
-    PWM_TIMER->EVENTS_COMPARE[1] = 0;
     PWM_TIMER->TASKS_CLEAR = 1;
     PWM_TIMER->SHORTS = TIMER_SHORTS_COMPARE1_CLEAR_Msk;
     PWM_TIMER->TASKS_START = 1;
@@ -199,8 +199,20 @@ void pwm_poweron(pwm_t dev)
 {
     assert(dev == 0);
 
-    PWM_TIMER->POWER = 1;
-    PWM_TIMER->TASKS_START = 1;
+    /*
+     * reinit pwm with correct alignment
+     */
+    if (NRF_GPIOTE->CONFIG[PWM_GPIOTE_CH] & GPIOTE_CONFIG_OUTINIT_Msk) {
+        pwm_init(dev, PWM_LEFT, init_data[1], (init_data[0] >> 16));
+    } else {
+        pwm_init(dev, PWM_RIGHT, init_data[1], (init_data[0] >> 16));
+    }
+
+    /*
+     * reset dutycycle
+     */
+    pwm_set(dev, 0, (init_data[0] & 0xffff));
+
 }
 
 void pwm_poweroff(pwm_t dev)
@@ -208,5 +220,26 @@ void pwm_poweroff(pwm_t dev)
     assert(dev == 0);
 
     PWM_TIMER->TASKS_STOP = 1;
+
+    /*
+     * power off function ensures that the inverted CC[0] is cached correctly
+     * when right aligned
+     */
+    if (((NRF_GPIOTE->CONFIG[PWM_GPIOTE_CH] & GPIOTE_CONFIG_OUTINIT_Msk) == 0) &
+        (PWM_TIMER->CC[1] != PWM_TIMER->CC[0]) &
+        (PWM_TIMER->CC[0] != 0)) {
+            init_data[0] = ((PWM_TIMER->CC[1] << 16) |
+                            (PWM_TIMER->CC[1] - PWM_TIMER->CC[0]));
+    } else {
+        init_data[0] = ((PWM_TIMER->CC[1] << 16) | PWM_TIMER->CC[0]);
+    }
+
+    init_data[1] = (divtable[PWM_TIMER->PRESCALER] / PWM_TIMER->CC[1]);
+
+    /*
+     * make sure the gpio is set to '0' while power is off
+     */
+    pwm_set(dev, 0, 0);
+
     PWM_TIMER->POWER = 0;
 }
