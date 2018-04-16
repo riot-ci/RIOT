@@ -17,6 +17,7 @@
  *
  * @author      Rakendra Thapa <rakendrathapa@gmail.com>
  *              Marc Poulhiès <dkm@kataplop.net>
+ * @}
  */
 
 #include <stdint.h>
@@ -29,12 +30,8 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-/* guard file in case no timers are defined */
-#if TIMER_NUMOF
-
 /**
  * @brief Struct holding the configuration data
- * @{
  */
 typedef struct {
     timer_cb_t cb;          /**< timeout callback */
@@ -43,7 +40,6 @@ typedef struct {
 } timer_conf_t;
 
 static timer_conf_t config[TIMER_NUMOF];
-/**@}*/
 
 #include "hw_timer.h"
 
@@ -344,6 +340,3 @@ void isr_wtimer1a(void)
     cortexm_isr_end();
 }
 #endif /* TIMER_1_EN */
-
-#endif /* TIMER_NUMOF */
-/** @} */
