@@ -535,7 +535,7 @@ typedef struct {
      *
      * @see @ref kinetis_clock_flags_t
      */
-    kinetis_clock_flags_t clock_flags;
+    unsigned int clock_flags;
     /**
      * @brief   MCG mode used after initialization
      *
