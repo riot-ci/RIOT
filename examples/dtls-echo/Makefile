@@ -13,7 +13,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno chronos \
                    z1 jiminy-mega256rfr2 mega-xplained
 
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 bluepill calliope-mini \
-                             cc2650-launchpad cc2650stk maple-mini \
+                             cc2650-launchpad cc2650stk hifive1 maple-mini \
                              microbit nrf51dongle nrf6310 nucleo32-f031 \
                              nucleo32-f042 nucleo32-f303 nucleo32-l031 nucleo-f030 \
                              nucleo-f070 nucleo-f072 nucleo-f103 nucleo-f302 nucleo-f334 \
