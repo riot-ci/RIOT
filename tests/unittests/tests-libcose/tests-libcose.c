@@ -176,20 +176,23 @@ static void test_libcose_03(void)
     cose_encrypt_init(&decrypt);
 
     cose_crypto_keygen(symmkey, sizeof(symmkey), COSE_ALGO_CHACHA20POLY1305);
-    cose_key_set_kid(&symm, (uint8_t*)kid, sizeof(kid) - 1);
-    cose_key_set_keys(&symm, 0, COSE_ALGO_CHACHA20POLY1305, NULL, NULL, symmkey);
+    cose_key_set_kid(&symm, (uint8_t *)kid, sizeof(kid) - 1);
+    cose_key_set_keys(&symm, 0, COSE_ALGO_CHACHA20POLY1305,
+                      NULL, NULL, symmkey);
     cose_encrypt_add_recipient(&crypt, &symm);
     cose_encrypt_set_algo(&crypt, COSE_ALGO_DIRECT);
 
-    cose_encrypt_set_payload(&crypt, payload, sizeof(payload)-1);
+    cose_encrypt_set_payload(&crypt, payload, sizeof(payload) - 1);
 
     uint8_t *out = NULL;
     ssize_t len = cose_encrypt_encode(&crypt, buf, sizeof(buf), nonce, &out, &ct);
     TEST_ASSERT(len > 0);
     TEST_ASSERT_EQUAL_INT(cose_encrypt_decode(&decrypt, out, len, &ct), 0);
     size_t plaintext_len = 0;
-    TEST_ASSERT_EQUAL_INT(cose_encrypt_decrypt(&decrypt, &symm, 0, buf, sizeof(buf), vbuf, &plaintext_len, &ct), 0);
-    TEST_ASSERT_EQUAL_INT(plaintext_len, sizeof(payload)-1);
+    int res = cose_encrypt_decrypt(&decrypt, &symm, 0, buf, sizeof(buf), vbuf,
+                                   &plaintext_len, &ct);
+    TEST_ASSERT_EQUAL_INT(res, 0);
+    TEST_ASSERT_EQUAL_INT(plaintext_len, sizeof(payload) - 1);
 }
 
 Test *tests_libcose_all(void)
