@@ -107,7 +107,7 @@ ssize_t _sha256_handler(coap_pkt_t* pkt, uint8_t *buf, size_t len, void *context
 /* must be sorted by path (alphabetically) */
 const coap_resource_t coap_resources[] = {
     COAP_WELL_KNOWN_CORE_DEFAULT_HANDLER,
-    { "/sha256", COAP_POST | COAP_PUT, _sha256_handler, NULL },
+    { "/sha256", COAP_POST, _sha256_handler, NULL },
     { "/riot/board", COAP_GET, _riot_board_handler, NULL },
     { "/riot/value", COAP_GET | COAP_PUT | COAP_POST, _riot_value_handler, NULL },
 };
