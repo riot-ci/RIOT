@@ -22,7 +22,9 @@
 
 #include "cpu.h"
 #include "periph_cpu.h"
-
+#include "periph/adc.h"
+#include "periph/gpio.h"
+#include "periph/spi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +49,14 @@ extern "C" {
 #define IO1_SDCARD_SPI_PARAM_MISO          GPIO_PIN(1,2)
 #define IO1_SDCARD_SPI_PARAM_POWER         (GPIO_UNDEF)
 #define IO1_SDCARD_SPI_PARAM_POWER_AH      (true)
+/** @} */
+
+/**
+ * @name    IO1 Xplained Light sensor ADC configuration
+ * @{
+ */
+#define IO1_LIGHT_ADC_LINE                 ADC_LINE(0)
+#define IO1_LIGHT_ADC_RES                  ADC_RES_10BIT
 /** @} */
 
 /**
