@@ -275,6 +275,19 @@ class SerCmd(cmd.Cmd):
                           "out" % line)
         for tok in line.split(';'):
             tok = self.get_alias(tok)
+            # handle ctrl+d nicely
+            if tok == "EOF":
+                quit = ''
+                while quit not in ('y', 'n'):
+                    quit = input('Exit pyterm ([y]/n)? ').lower()
+                    if quit == '':
+                        quit = 'y'
+                if quit == 'y':
+                    self.do_PYTERM_exit("")
+                    sys.exit(0)
+                else:
+                    return
+            # send the line
             if sys.version_info[0] == 2:
                 self.ser.write((tok.strip() + "\n").decode("utf-8").encode("utf-8"))
             else:
