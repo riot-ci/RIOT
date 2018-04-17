@@ -267,6 +267,14 @@ class SerCmd(cmd.Cmd):
                 return "PYTERM_" + line[1:]
         return line
 
+    def _prompt_exit(self):
+        reply = ''
+        while reply not in ('y', 'n'):
+            reply = input('Exit pyterm ([y]/n)? ').lower()
+            if not reply:
+                reply = 'y'
+        return reply
+
     def default(self, line):
         """In case of no Pyterm specific prefix is detected, split
         string by colons and send it to the node.
@@ -275,6 +283,14 @@ class SerCmd(cmd.Cmd):
                           "out" % line)
         for tok in line.split(';'):
             tok = self.get_alias(tok)
+            # handle ctrl+d nicely
+            if tok == "EOF":
+                if self._prompt_exit() == 'y':
+                    self.do_PYTERM_exit("")
+                    sys.exit(0)
+                else:
+                    return
+            # send the line
             if sys.version_info[0] == 2:
                 self.ser.write((tok.strip() + "\n").decode("utf-8").encode("utf-8"))
             else:
