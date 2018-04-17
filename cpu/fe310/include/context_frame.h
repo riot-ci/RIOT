@@ -30,6 +30,8 @@
 extern "C" {
 #endif
 
+#if !defined(__ASSEMBLER__)
+
 /**
  * @brief   context_switch_frame stores the registers and PC for a context switch.
  *
@@ -37,12 +39,6 @@ extern "C" {
  * structure is sized to maintain 16 byte stack alignment per the ABI.
  * https://github.com/riscv/riscv-elf-psabi-doc
  *
- */
-#if !defined(__ASSEMBLER__)
-
-/**
- * @name Register definitions
- * @{
  */
 struct context_switch_frame {
     uint32_t filler0;               /**< filler to maintain 16 byte alignment */
@@ -80,8 +76,9 @@ struct context_switch_frame {
     uint32_t a6;                    /**< a6 register */
     uint32_t a7;                    /**< a7 register */
 };
+
 #endif /* __ASSEMBLER__ */
-/** @} */
+
 
 /**
  * @name Register offsets
