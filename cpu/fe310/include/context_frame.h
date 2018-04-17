@@ -8,9 +8,7 @@
  */
 
 /**
- * @defgroup    cpu_fe310
- * @ingroup     cpu
- * @brief       Freedom E cpu
+ * @ingroup     cpu_fe310
  * @{
  *
  * @file
@@ -42,6 +40,10 @@ extern "C" {
  */
 #if !defined(__ASSEMBLER__)
 
+/**
+ * @name Register definitions
+ * @{
+ */
 /* N.B.: update the definitions below if this changes */
 struct context_switch_frame {
     uint32_t filler0;   /* filler to maintain 16 byte alignment */
@@ -60,7 +62,7 @@ struct context_switch_frame {
     uint32_t s9;
     uint32_t s10;
     uint32_t s11;
-    /* Caller saved register */
+    /* Caller saved registers */
     uint32_t ra;
     uint32_t tp;
     uint32_t t0;
@@ -80,8 +82,12 @@ struct context_switch_frame {
     uint32_t a7;
 };
 #endif /* __ASSEMBLER__ */
+/** @} */
 
-
+/**
+ * @name Register offsets
+ * @{
+ */
 /* These values are checked for correctness in context_frame.c */
 #define filler0_OFFSET 0
 #define filler1_OFFSET 4
@@ -115,9 +121,16 @@ struct context_switch_frame {
 #define a5_OFFSET     116
 #define a6_OFFSET     120
 #define a7_OFFSET     124
+/** @} */
 
+/**
+ * @brief Size of context switch frame
+ */
 #define CONTEXT_FRAME_SIZE (a7_OFFSET + 4)
 
+/**
+ * @brief Offset of stack pointer in context frame
+ */
 #define SP_OFFSET_IN_THREAD 0
 
 
