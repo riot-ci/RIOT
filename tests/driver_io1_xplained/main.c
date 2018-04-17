@@ -74,6 +74,13 @@ int main(void)
         _sd_card_cid();
         xtimer_sleep(DELAY_1S);
 
+        uint16_t light;
+        io1_xplained_read_light_level(&light);
+        printf("Light level: %i\n"
+               "+-------------------------------------+\n",
+               light);
+        xtimer_sleep(DELAY_1S);
+
         /* set led */
         gpio_set(IO1_LED_PIN);
         xtimer_sleep(DELAY_1S);
