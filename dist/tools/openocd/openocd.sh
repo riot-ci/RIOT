@@ -182,7 +182,6 @@ do_flash() {
 do_debug() {
     test_config
     test_elffile
-
     # temporary file that saves OpenOCD pid
     OCD_PIDFILE=$(mktemp -t "openocd_pid.XXXXXXXXXX")
     # will be called by trap
