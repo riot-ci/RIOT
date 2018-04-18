@@ -195,18 +195,19 @@ static inline void xtimer_spin(xtimer_ticks32_t ticks);
 
 /**
  * @brief will cause the calling thread to be suspended until the absolute
- * time (@p last_wakeup_ticks + @p period_us [in ticks]).
+ * time (@p last_wakeup_ticks + period_ticks). @p period_us will be internally 
+ * converted to ticks.
  *
  * When the function returns, @p last_wakeup_ticks is set to
- * (@p last_wakeup_ticks + @p period_us [in ticks]).
+ * (@p last_wakeup_ticks + @p period_ticks).
  *
  * This function can be used to create periodic wakeups.
  * @c last_wakeup_ticks should be set to xtimer_now() before first call of the
  * function.
  *
- * If the result of (@p last_wakeup_ticks + @p period_us [in ticks]) would be in
+ * If the result of (@p last_wakeup_ticks + @p period_ticks) would be in
  * the past, the function sets @p last_wakeup_ticks to
- * @p last_wakeup_ticks + @p period_us [in ticks] and returns immediately.
+ * (@p last_wakeup_ticks + @p period_ticks) and returns immediately.
  *
  * @param[in] last_wakeup_ticks   base time stamp for the wakeup
  * @param[in] period_us           time in microseconds that will be added to
@@ -221,7 +222,7 @@ static inline void xtimer_periodic_wakeup(xtimer_ticks32_t *last_wakeup_ticks,
  * This function sets a timer that will send a message @p offset_us
  * microseconds from now.
  *
- * The message struct specified by msg parameter will not be copied, e.g., it
+ * The message struct specified by msg parameter will not be copied, i.e., it
  * needs to point to valid memory until the message has been delivered.
  *
  * @param[in] timer        timer struct to work with.
@@ -240,7 +241,7 @@ static inline void xtimer_set_msg(xtimer_t *timer, uint32_t offset_us,
  * This function sets a timer that will send a message @p offset_us
  * microseconds from now.
  *
- * The message struct specified by msg parameter will not be copied, e.g., it
+ * The message struct specified by msg parameter will not be copied, i.e., it
  * needs to point to valid memory until the message has been delivered.
  *
  * @param[in] timer        timer struct to work with.
