@@ -16,6 +16,7 @@
  * @brief       Device driver interface for the PIR motion sensor
  *
  * @author      Ludwig Knüpfer <ludwig.knuepfer@fu-berlin.de>
+ * @author      Hyung-Sin Kim <hs.kim@cs.berkeley.edu>
  */
 
 #ifndef PIR_H
@@ -29,11 +30,24 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Parameters needed for device initialization
+ */
+typedef struct {
+    gpio_t gpio;      /**< GPIO device which is used */
+    bool active_high; /**< Active when GPIO pin is high or not */
+} pir_params_t;
+
+
+/**
  * @brief   device descriptor for a PIR sensor
  */
 typedef struct {
-    gpio_t          gpio_dev;       /**< GPIO device which is used */
-    kernel_pid_t    msg_thread_pid; /**< thread to msg on irq */
+    kernel_pid_t msg_thread_pid; /**< thread to msg on irq */
+    bool active;                 /**< Indicate PIR is active or not */
+    uint64_t start_active_time;  /**< Time when PIR starts to be active */
+    uint64_t accum_active_time;  /**< Accumulated active time */
+    uint64_t last_read_time;     /**< Last time when PIR status is read */
+    pir_params_t p;              /**< Configuration parameters */
 } pir_t;
 
 /**
@@ -62,12 +76,12 @@ typedef enum {
  * measurements can be made.
  *
  * @param[out] dev      device descriptor of an PIR sensor
- * @param[in] gpio      the GPIO device the sensor is connected to
+ * @param[in] params    parameters from the PIR sensor
  *
  * @return              0 on success
  * @return              -1 on error
  */
-int pir_init(pir_t *dev, gpio_t gpio);
+int pir_init(pir_t *dev, const pir_params_t* params);
 
 /**
  * @brief   Read the current status of the motion sensor
@@ -77,6 +91,17 @@ int pir_init(pir_t *dev, gpio_t gpio);
  * @return              1 if motion is detected, 0 otherwise
  */
 pir_event_t pir_get_status(const pir_t *dev);
+
+/**
+ * @brief   Read OCCUPANCY value
+ *
+ * @param[in] dev       device descriptor of the PIR motion sensor to read from
+ * @param[out] occup    occupancy radio [in 100 * percentage]
+ *
+ * @return              0 on success,
+ * @return              -1 on errors,
+ */
+int pir_get_occupancy(const pir_t *dev, int16_t *occup);
 
 /**
  * @brief   Register a thread for notification whan state changes on the

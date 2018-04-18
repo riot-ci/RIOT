@@ -14,6 +14,7 @@
  * @brief       Device driver implementation for the PIR motion sensor
  *
  * @author      Ludwig Knüpfer <ludwig.knuepfer@fu-berlin.de>
+ * @author      Hyung-Sin Kim <hs.kim@cs.berkeley.edu>
  *
  * @}
  */
@@ -21,6 +22,7 @@
 #include "pir.h"
 #include "thread.h"
 #include "msg.h"
+#include "xtimer.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -37,16 +39,45 @@ static void pir_send_msg(pir_t *dev, pir_event_t event);
  * public API implementation
  **********************************************************************/
 
-int pir_init(pir_t *dev, gpio_t gpio)
+int pir_init(pir_t *dev, const pir_params_t *params)
 {
-    dev->gpio_dev = gpio;
+    dev->p.gpio = params->gpio;
+    dev->p.active_high = params->active_high;
     dev->msg_thread_pid = KERNEL_PID_UNDEF;
-    return gpio_init(dev->gpio_dev, GPIO_IN);
+
+    dev->active = false;
+    dev->accum_active_time = 0;
+    dev->start_active_time = 0;
+    dev->last_read_time = xtimer_usec_from_ticks64(xtimer_now64());
+
+    if (gpio_init_int(dev->p.gpio, GPIO_IN_PD, GPIO_BOTH, pir_callback, dev)) {
+        return -1;
+    }
+    return 0;
 }
 
 pir_event_t pir_get_status(const pir_t *dev)
 {
-    return ((gpio_read(dev->gpio_dev) == 0) ? PIR_STATUS_LO : PIR_STATUS_HI);
+    return ((gpio_read(dev->p.gpio) == 0) ? PIR_STATUS_LO : PIR_STATUS_HI);
+}
+
+int pir_get_occupancy(const pir_t *dev, int16_t *occup) {
+    pir_t* pir_dev = (pir_t*) dev;
+    uint64_t now = xtimer_usec_from_ticks64(xtimer_now64());
+    uint64_t total_time = now - pir_dev->last_read_time;
+    if (total_time == 0) {
+        return -1;
+    }
+
+    /* We were busy counting */
+    if (pir_dev->start_active_time != 0xFFFFFFFFFFFFFFFF && pir_dev->active) {
+        pir_dev->accum_active_time += (now - pir_dev->start_active_time);
+        pir_dev->start_active_time = now;
+    }
+    *occup = (int16_t)((pir_dev->accum_active_time * 10000) / total_time);
+    pir_dev->last_read_time = now;
+    pir_dev->accum_active_time = 0;
+    return 0;
 }
 
 int pir_register_thread(pir_t *dev)
@@ -100,6 +131,24 @@ static void pir_callback(void *arg)
 {
     DEBUG("pir_callback: %p\n", arg);
     pir_t *dev = (pir_t*) arg;
+    bool pin_now = gpio_read(dev->p.gpio);
+    uint64_t now = xtimer_usec_from_ticks64(xtimer_now64());
+
+    /* We were busy counting */
+    if (dev->active && dev->start_active_time != 0xFFFFFFFFFFFFFFFF) {
+        /* Add into accumulation */
+        dev->accum_active_time += (now - dev->start_active_time);
+    }
+    /* Pin is rising */
+    if (pin_now == dev->p.active_high) {
+        dev->start_active_time = now;
+        dev->active = true;
+    /* Pin is falling */
+    } else {
+        dev->start_active_time = 0xFFFFFFFFFFFFFFFF;
+        dev->active = false;
+    }
+
     if (dev->msg_thread_pid != KERNEL_PID_UNDEF) {
         pir_send_msg(dev, pir_get_status(dev));
     }
@@ -107,5 +156,5 @@ static void pir_callback(void *arg)
 
 static int pir_activate_int(pir_t *dev)
 {
-    return gpio_init_int(dev->gpio_dev, GPIO_IN, GPIO_BOTH, pir_callback, dev);
+    return gpio_init_int(dev->p.gpio, GPIO_IN, GPIO_BOTH, pir_callback, dev);
 }

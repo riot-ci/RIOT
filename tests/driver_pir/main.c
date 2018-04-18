@@ -30,6 +30,7 @@
 
 static char pir_handler_stack[THREAD_STACKSIZE_MAIN];
 static pir_t dev;
+static const pir_params_t pir_param = {.gpio = PIR_GPIO, .active_high = true};
 
 void* pir_handler(void *arg)
 {
@@ -64,7 +65,7 @@ int main(void)
 {
     puts("PIR motion sensor test application\n");
     printf("Initializing PIR sensor at GPIO_%ld... ", (long)PIR_GPIO);
-    if (pir_init(&dev, PIR_GPIO) == 0) {
+    if (pir_init(&dev, &pir_param) == 0) {
         puts("[OK]\n");
     }
     else {
