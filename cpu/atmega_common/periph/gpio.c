@@ -41,18 +41,18 @@
  * @brief     Define GPIO interruptions for an specific atmega CPU, by default
  *            2 (for small atmega CPUs)
  */
-#if defined(INT2_vect)
-#define GPIO_EXT_INT_NUMOF      (3U)
-#elif defined(INT3_vect)
-#define GPIO_EXT_INT_NUMOF      (4U)
-#elif defined(INT4_vect)
-#define GPIO_EXT_INT_NUMOF      (5U)
-#elif defined(INT5_vect)
-#define GPIO_EXT_INT_NUMOF      (6U)
+#if defined(INT7_vect)
+#define GPIO_EXT_INT_NUMOF      (8U)
 #elif defined(INT6_vect)
 #define GPIO_EXT_INT_NUMOF      (7U)
-#elif defined(INT7_vect)
-#define GPIO_EXT_INT_NUMOF      (8U)
+#elif defined(INT5_vect)
+#define GPIO_EXT_INT_NUMOF      (6U)
+#elif defined(INT4_vect)
+#define GPIO_EXT_INT_NUMOF      (5U)
+#elif defined(INT3_vect)
+#define GPIO_EXT_INT_NUMOF      (4U)
+#elif defined(INT2_vect)
+#define GPIO_EXT_INT_NUMOF      (3U)
 #else
 #define GPIO_EXT_INT_NUMOF      (2U)
 #endif
