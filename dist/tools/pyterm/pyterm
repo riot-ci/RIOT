@@ -269,32 +269,12 @@ class SerCmd(cmd.Cmd):
                 return "PYTERM_" + line[1:]
         return line
 
-    def _prompt_exit(self):
-        reply = ''
-        while reply not in ('y', 'n'):
-            try:
-                reply = input('\nExit pyterm ([y]/n)? ').lower()
-            except EOFError:
-                self.do_PYTERM_exit("")
-                sys.exit(0)
-            if not reply:
-                reply = 'y'
-        return reply == 'y'
-
     def default(self, line):
         """In case of no Pyterm specific prefix is detected, split
         string by colons and send it to the node.
         """
         self.logger.debug("%s is no pyterm command, sending to default "
                           "out" % line)
-        # handle ctrl+d nicely
-        if line == "EOF":
-            if self._prompt_exit():
-                self.do_PYTERM_exit("")
-                sys.exit(0)
-            else:
-                return
-
         for tok in line.split(';'):
             tok = self.get_alias(tok)
             if sys.version_info[0] == 2:
@@ -307,6 +287,28 @@ class SerCmd(cmd.Cmd):
         node.
         """
         self.ser.write("help\n".encode("utf-8"))
+
+    def _prompt_for_exit(self):
+        """Prompt the user if he really wants to exit."""
+        reply = ''
+        while reply not in ('y', 'n'):
+            try:
+                reply = input('\nExit pyterm ([y]/n)? ').lower()
+            except EOFError:
+                self.do_PYTERM_exit("")
+                sys.exit(0)
+            if not reply:
+                reply = 'y'
+        return reply == 'y'
+
+    def do_EOF(self, line):
+        """Handle EOF (Ctrl+D) nicely."""
+        self.logger.info("Received EOF")
+        if self._prompt_for_exit():
+            self.do_PYTERM_exit("")
+            sys.exit(0)
+        else:
+            return
 
     def complete_date(self, text, line, begidx, endidm):
         """Auto completion for date string.
