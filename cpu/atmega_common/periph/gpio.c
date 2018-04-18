@@ -113,7 +113,7 @@ static inline uint16_t _pin_addr(gpio_t pin)
 static inline int8_t _int_num(gpio_t pin)
 {
     uint8_t num;
-    const gpio_t ext_ints[] = CPU_ATMEGA_EXT_INTS;
+    const gpio_t ext_ints[GPIO_EXT_INT_NUMOF] = CPU_ATMEGA_EXT_INTS;
 
     /* find pin in ext_ints array to get the interrupt number */
     for (num = 0; num < GPIO_EXT_INT_NUMOF; num++) {
