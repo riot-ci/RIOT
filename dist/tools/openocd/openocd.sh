@@ -83,6 +83,10 @@
 # Debugger flags, will be passed to sh -c, remember to escape any quotation signs.
 # Use ${DBG_DEFAULT_FLAGS} to insert the default flags anywhere in the string
 : ${DBG_FLAGS:=${DBG_DEFAULT_FLAGS} ${DBG_EXTRA_FLAGS}}
+# Initial target state when using debug, by default a 'halt' request is sent to
+# the target when starting a debug session. 'reset halt' can also be used
+# depending on the type of target.
+: ${OPENOCD_DBG_START_CMD:=-c 'halt'}
 # This is an optional offset to the base address that can be used to flash an
 # image in a different location than it is linked at. This feature can be useful
 # when flashing images for firmware swapping/remapping boot loaders.
@@ -97,10 +101,6 @@
 # the file (default).
 # Valid values: elf, hex, s19, bin (see OpenOCD manual for more information)
 : ${IMAGE_TYPE:=}
-# Initial target state when using debug, by default a 'halt' request is sent to
-# the target when starting a debug session. 'reset halt' can also be used
-# depending on the type of target.
-: ${OPENOCD_EXTRA_DEBUG_INIT_CMD:=-c 'halt'}
 
 #
 # Examples of alternative debugger configurations
@@ -206,7 +206,7 @@ do_debug() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            ${OPENOCD_EXTRA_DEBUG_INIT_CMD} \
+            ${OPENOCD_DBG_START_CMD} \
             -l /dev/null & \
             echo \$! > $OCD_PIDFILE" &
     # Export to be able to access these from the sh -c command lines, may be
