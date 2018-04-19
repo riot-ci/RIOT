@@ -72,6 +72,9 @@ The external module can define a `Makefile.include` file to add the include path
 to the API definitions to `USEMODULE_INCLUDES` and a `Makefile.dep` file for
 dependencies.
 
+An example can be found in
+[`tests/external_module_dirs`](https://github.com/RIOT-OS/RIOT/tree/master/tests/external_module_dirs)
+
 Pseudomodules                                                  {#pseudomodules}
 =============
 Pseudomodules are modules that do not have any code. Their main use cases are
