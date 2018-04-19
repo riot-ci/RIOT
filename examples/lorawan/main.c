@@ -32,9 +32,6 @@
 #include "net/loramac.h"
 #include "semtech_loramac.h"
 
-/* Use the STOP mode to ensure memory retention between each send */
-#define PM_MODE             (1)
-
 /* Messages are sent every 20s to respect the duty cycle on each channel */
 #define PERIOD              (20U)
 
