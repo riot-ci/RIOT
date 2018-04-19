@@ -24,16 +24,10 @@
 
 #define I2C_SPEED               I2C_SPEED_FAST
 
-#ifndef FXOS8700_RENEW_INTERVAL
-#define FXOS8700_RENEW_INTERVAL 1000000ul
-#endif
-
 #define ACCEL_ONLY_MODE         (0x00)
 #define MAG_ONLY_MODE           (0x01)
 #define HYBRID_MODE             (0x03)
 
-static fxos8700_measurement_t acc_cached, mag_cached;
-static uint32_t last_read_time;
 
 static int fxos8700_read_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_t len)
 {
@@ -71,6 +65,7 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
     }
     dev->p.addr = params->addr;
     dev->p.i2c = params->i2c;
+    dev->p.renew_interval = params->renew_interval;
 
     i2c_acquire(dev->p.i2c);
     if (i2c_init_master(dev->p.i2c, I2C_SPEED) != 0) {
@@ -107,10 +102,10 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
     }
 
     /* initial read for caching operation */
-    if (fxos8700_read(dev, &acc_cached, &mag_cached) != FXOS8700_OK) {
+    if (fxos8700_read(dev, &dev->acc_cached, &dev->mag_cached) != FXOS8700_OK) {
         return FXOS8700_BUSERR;
     }
-    last_read_time = xtimer_now_usec();
+    dev->last_read_time = xtimer_now_usec();
 
     return FXOS8700_OK;
 }
@@ -134,7 +129,8 @@ int fxos8700_set_idle(fxos8700_t* dev)
     return FXOS8700_OK;
 }
 
-int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxos8700_measurement_t* mag)
+int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc,
+                  fxos8700_measurement_t* mag)
 {
     uint8_t data[12];
     uint8_t ready = 0;
@@ -177,29 +173,30 @@ int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxos8700_m
     return FXOS8700_OK;
 }
 
-int fxos8700_read_cached(const fxos8700_t *dev, fxos8700_measurement_t* acc, fxos8700_measurement_t* mag)
+int fxos8700_read_cached(const fxos8700_t *dev, fxos8700_measurement_t* acc,
+                         fxos8700_measurement_t* mag)
 {
     uint32_t now = xtimer_now_usec();
 
     /* check if readings are outdated */
-    if (now - last_read_time > FXOS8700_RENEW_INTERVAL) {
-        /* update last_read_time */
-        if (fxos8700_read(dev, &acc_cached, &mag_cached) != FXOS8700_OK) {
+    if (now - dev->last_read_time > dev->p.renew_interval) {
+        /* refresh cache and update last_read_time */
+        if (fxos8700_read(dev, &dev->acc_cached, &dev->mag_cached) != FXOS8700_OK) {
             return FXOS8700_BUSERR;
         }
-        last_read_time = now;
+        dev->last_read_time = now;
     }
 
     /* Read cached data */
     if (acc) {
-        acc->x = acc_cached.x;
-        acc->y = acc_cached.y;
-        acc->z = acc_cached.z;
+        acc->x = dev->acc_cached.x;
+        acc->y = dev->acc_cached.y;
+        acc->z = dev->acc_cached.z;
     }
     if (mag) {
-        mag->x = mag_cached.x;
-        mag->y = mag_cached.y;
-        mag->z = mag_cached.z;
+        mag->x = dev->mag_cached.x;
+        mag->y = dev->mag_cached.y;
+        mag->z = dev->mag_cached.z;
     }
     return FXOS8700_OK;
 }

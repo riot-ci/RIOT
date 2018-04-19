@@ -175,14 +175,18 @@ enum {
  * @brief   Parameters needed for device initialization
  */
 typedef struct {
-    i2c_t i2c;              /**< I2C device that sensor is connected to */
-    uint8_t addr;           /**< I2C address of this particular sensor */
+    i2c_t i2c;                /**< I2C device that sensor is connected to */
+    uint8_t addr;             /**< I2C address of this particular sensor */
+    uint32_t renew_interval;  /**< Interval for cache renewal */
 } fxos8700_params_t;
 
 /**
  * @brief   Device descriptor for a FXOS8700 device
  */
 typedef struct {
+    fxos8700_measurement_t acc_cached; /**< cached 3-axis acceleration */
+    fxos8700_measurement_t mag_cached; /**< cached 3-axis magnetic field */
+    uint32_t last_read_time;           /**< last time when cached data was refreshed */
     fxos8700_params_t p;
 } fxos8700_t;
 
@@ -242,8 +246,8 @@ int fxos8700_set_idle(const fxos8700_t* dev);
  * finished and the get the results from the device.
  *
  * @param[in]  dev          device descriptor of sensor
- * @param[out] acc          temperature [in 100 * degree centigrade]
- * @param[out] mag          humidity [in 100 * percent relative]
+ * @param[out] acc          temperature [in 1000 * grativy acceleration (g) ]
+ * @param[out] mag          humidity [in 1000 * degree Gauss ]
  *
  * @return                  FXOS8700_OK on success
  * @return                  FXOS8700_BUSERR on I2C communication failures
@@ -258,8 +262,8 @@ int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxos8700_m
  * the conversion to be finished and the get the results from the device.
  *
  * @param[in]  dev          device descriptor of sensor
- * @param[out] acc          temperature [in 100 * degree centigrade]
- * @param[out] mag          humidity [in 100 * percent relative]
+ * @param[out] acc          temperature [in 1000 * grativy acceleration (g) ]
+ * @param[out] mag          humidity [in 1000 * degree Gauss (Gs) ]
  *
  * @return                  FXOS8700_OK on success
  * @return                  FXOS8700_BUSERR on I2C communication failures

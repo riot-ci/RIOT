@@ -36,18 +36,22 @@ extern "C" {
  * @{
  */
 #ifndef FXOS8700_PARAM_I2C
-#define FXOS8700_PARAM_I2C           I2C_DEV(0)
+#define FXOS8700_PARAM_I2C            I2C_DEV(0)
 #endif
 #ifndef FXOS8700_PARAM_ADDR
-#define FXOS8700_PARAM_ADDR          0x1E
+#define FXOS8700_PARAM_ADDR           0x1E
+#endif
+#ifndef FXOS8700_PARAM_RENEW_INTERVAL
+#define FXOS8700_PARAM_RENEW_INTERVAL 1000000ul
 #endif
 
 #ifndef FXOS8700_PARAMS
-#define FXOS8700_PARAMS              { .i2c  = FXOS8700_PARAM_I2C, \
-                                       .addr = FXOS8700_PARAM_ADDR }
+#define FXOS8700_PARAMS               { .i2c  = FXOS8700_PARAM_I2C, \
+                                        .addr = FXOS8700_PARAM_ADDR, \
+                                        .renew_interval = FXOS8700_PARAM_RENEW_INTERVAL }
 #endif
 #ifndef FXOS8700_SAUL_INFO
-#define FXOS8700_SAUL_INFO           { .name = "fxos8700" }
+#define FXOS8700_SAUL_INFO            { .name = "fxos8700" }
 #endif
 /**@}*/
 
