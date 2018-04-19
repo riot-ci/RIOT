@@ -27,9 +27,6 @@
 #include "thread.h"
 #include "fmt.h"
 
-#ifdef MODULE_PM_LAYERED
-#include "pm_layered.h"
-#endif
 #include "periph/rtc.h"
 
 #include "net/loramac.h"
@@ -95,11 +92,6 @@ static void *sender(void *arg)
 
         /* Schedule the next wake-up alarm */
         _prepare_next_alarm();
-
-#ifdef MODULE_PM_LAYERED
-        /* enable low-power mode */
-        pm_set(PM_MODE);
-#endif
     }
 
     /* this should never be reached */
