@@ -1,0 +1,202 @@
+/*
+ * Copyright (C) 2018 UC Berkeley
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @file
+ * @brief       Driver for the FXOS8700 3-axis accelerometer/magnetometer
+ *
+ * @author      Michael Andersen <m.andersen@cs.berkeley.edu>
+ * @author      Hyung-Sin Kim <hs.kim@cs.berkeleyedu>
+ */
+
+
+#include "periph/i2c.h"
+#include "xtimer.h"
+#include "fxos8700.h"
+
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
+#define I2C_SPEED               I2C_SPEED_FAST
+
+#define ACCEL_ONLY_MODE         (0x00)
+#define MAG_ONLY_MODE           (0x01)
+#define HYBRID_MODE             (0x03)
+
+
+static int fxos8700_read_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_t len)
+{
+    i2c_acquire(dev->p.i2c);
+    if (i2c_read_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
+        DEBUG("[fxos8700] Can't read register 0x%x\n", reg);
+        i2c_release(dev->p.i2c);
+        return FXOS8700_BUSERR;
+    }
+    i2c_release(dev->p.i2c);
+
+    return FXOS8700_OK;
+}
+
+static int fxos8700_write_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_t len)
+{
+    i2c_acquire(dev->p.i2c);
+    if (i2c_write_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
+        DEBUG("[fxos8700] Can't write to register 0x%x\n", reg);
+        i2c_release(dev->p.i2c);
+        return FXOS8700_BUSERR;
+    }
+    i2c_release(dev->p.i2c);
+
+    return FXOS8700_OK;
+}
+
+int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
+{
+    uint8_t config;
+
+    if ((params->addr < 0x1C) || (params->addr > 0x1F)) {
+        DEBUG("[fxos8700] Invalid address\n");
+        return FXOS8700_ADDRERR;
+    }
+    dev->p.addr = params->addr;
+    dev->p.i2c = params->i2c;
+    dev->p.renew_interval = params->renew_interval;
+
+    i2c_acquire(dev->p.i2c);
+    if (i2c_init_master(dev->p.i2c, I2C_SPEED) != 0) {
+        DEBUG("[fxos8700] Can't initialize I2C master\n");
+        i2c_release(dev->p.i2c);
+        return FXOS8700_NOBUS;
+    }
+
+    if (i2c_read_regs(dev->p.i2c, dev->p.addr, FXOS8700_REG_WHO_AM_I, &config, 1) <= 0) {
+        i2c_release(dev->p.i2c);
+        DEBUG("[fxos8700] Could not read WHOAMI\n");
+        return FXOS8700_NOBUS;
+    }
+    if (config != FXOS8700_WHO_AM_I_VAL) {
+        i2c_release(dev->p.i2c);
+        DEBUG("[fxos8700] WHOAMI is wrong (%2x)\n", config);
+        return FXOS8700_NODEV;
+    }
+
+    /* Configure the ODR to maximum (400Hz in hybrid mode) */
+    config = 0x00;
+    if (fxos8700_write_regs(dev, FXOS8700_REG_CTRL_REG1, &config, 1) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+    /* Activate hybrid mode */
+    config = HYBRID_MODE;
+    if (fxos8700_write_regs(dev, FXOS8700_REG_M_CTRL_REG1, &config, 1) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+    /* Set burst read mode (accel + magnet together) */
+    config = 0x20;
+    if (fxos8700_write_regs(dev, FXOS8700_REG_M_CTRL_REG2, &config, 1) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+
+    /* initial read for caching operation */
+    if (fxos8700_read(dev, &dev->acc_cached, &dev->mag_cached) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+    dev->last_read_time = xtimer_now_usec();
+
+    return FXOS8700_OK;
+}
+
+
+int fxos8700_set_active(fxos8700_t* dev)
+{
+    uint8_t config = 0x01;
+    if (fxos8700_write_regs(dev, FXOS8700_REG_CTRL_REG1, &config, 1) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+    return FXOS8700_OK;
+}
+
+int fxos8700_set_idle(fxos8700_t* dev)
+{
+    uint8_t config = 0x00;
+    if (fxos8700_write_regs(dev, FXOS8700_REG_CTRL_REG1, &config, 1) != FXOS8700_OK) {
+        return FXOS8700_BUSERR;
+    }
+    return FXOS8700_OK;
+}
+
+int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc,
+                  fxos8700_measurement_t* mag)
+{
+    uint8_t data[12];
+    uint8_t ready = 0;
+
+    if (fxos8700_set_active(dev)) {
+        return FXOS8700_BUSERR;
+    }
+
+    while (!(ready & 0x08)) {
+        fxos8700_read_regs(dev, FXOS8700_REG__STATUS, &ready, 1);
+    }
+    while (!(ready & 0x08)) {
+        fxos8700_read_regs(dev, FXOS8700_REG_M_DR_STATUS, &ready, 1);
+    }
+
+    /* Read all data at once */
+    if (fxos8700_read_regs(dev, FXOS8700_REG_OUT_X_MSB, &data[0], 12)) {
+        return FXOS8700_BUSERR;
+    }
+
+    if (fxos8700_set_idle(dev)) {
+        return FXOS8700_BUSERR;
+    }
+
+    /* Read accelerometer */
+    if (acc) {
+        int32_t acc_raw_x = (int32_t) ((data[0] << 6) | (data[1] >> 2));
+        int32_t acc_raw_y = (int32_t) ((data[2] << 6) | (data[3] >> 2));
+        int32_t acc_raw_z = (int32_t) ((data[4] << 6) | (data[5] >> 2));
+        acc->x = (int16_t) ((acc_raw_x * 244) / 1000);
+        acc->y = (int16_t) ((acc_raw_y * 244) / 1000);
+        acc->z = (int16_t) ((acc_raw_z * 244) / 1000);
+    }
+    /* Read magnetometer */
+    if (mag) {
+        mag->x = (int16_t) ((data[6] << 8) | data[7]);
+        mag->y = (int16_t) ((data[8] << 8) | data[9]);
+        mag->z = (int16_t) ((data[10] << 8) | data[11]);
+    }
+    return FXOS8700_OK;
+}
+
+int fxos8700_read_cached(const fxos8700_t *dev, fxos8700_measurement_t* acc,
+                         fxos8700_measurement_t* mag)
+{
+    uint32_t now = xtimer_now_usec();
+
+    /* check if readings are outdated */
+    if (now - dev->last_read_time > dev->p.renew_interval) {
+        /* refresh cache and update last_read_time */
+        if (fxos8700_read(dev, &dev->acc_cached, &dev->mag_cached) != FXOS8700_OK) {
+            return FXOS8700_BUSERR;
+        }
+        dev->last_read_time = now;
+    }
+
+    /* Read cached data */
+    if (acc) {
+        acc->x = dev->acc_cached.x;
+        acc->y = dev->acc_cached.y;
+        acc->z = dev->acc_cached.z;
+    }
+    if (mag) {
+        mag->x = dev->mag_cached.x;
+        mag->y = dev->mag_cached.y;
+        mag->z = dev->mag_cached.z;
+    }
+    return FXOS8700_OK;
+}
