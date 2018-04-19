@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2017 JP Bonn
  *
@@ -33,7 +32,7 @@ extern "C" {
 #if !defined(__ASSEMBLER__)
 
 /**
- * @brief   context_switch_frame stores the registers and PC for a context switch.
+ * @brief   Stores the registers and PC for a context switch.
  *
  * This also defines context_switch_frame offsets for assembly language.  The
  * structure is sized to maintain 16 byte stack alignment per the ABI.
@@ -41,8 +40,7 @@ extern "C" {
  *
  */
 struct context_switch_frame {
-    uint32_t filler0;               /**< filler to maintain 16 byte alignment */
-    uint32_t filler1;               /**< filler to maintain 16 byte alignment */
+    uint32_t pad[2];                /**< padding to maintain 16 byte alignment */
     uint32_t pc;                    /**< program counter */
     /* Callee saved registers */
     uint32_t s0;                    /**< s0 register */
@@ -85,8 +83,7 @@ struct context_switch_frame {
  * @{
  */
 /* These values are checked for correctness in context_frame.c */
-#define filler0_OFFSET 0
-#define filler1_OFFSET 4
+#define pad_OFFSET    0
 #define pc_OFFSET     8
 #define s0_OFFSET     12
 #define s1_OFFSET     16
@@ -125,7 +122,7 @@ struct context_switch_frame {
 #define CONTEXT_FRAME_SIZE (a7_OFFSET + 4)
 
 /**
- * @brief Offset of stack pointer in context frame
+ * @brief Offset of stack pointer in struct _thread
  */
 #define SP_OFFSET_IN_THREAD 0
 
