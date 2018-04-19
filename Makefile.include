@@ -406,7 +406,7 @@ $(RIOTPKG)/%/Makefile.include::
 .PHONY: $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 
-USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a[$$0]++' | tr '\n' ' ')
+USEMODULE_INCLUDES_ := $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a[$$0]++' | tr '\n' ' ')
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
