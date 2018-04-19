@@ -25,7 +25,7 @@
 
 static int read_mag(const void *dev, phydat_t *res)
 {
-    if (fxos8700_read_cahed((const fxos8700_t *)dev, NULL, (fxos8700_measurement_t *)res)
+    if (fxos8700_read_cached(dev, NULL, (fxos8700_measurement_t *)res)
         != FXOS8700_OK) {
         /* Read failure */
         return -ECANCELED;
@@ -37,7 +37,7 @@ static int read_mag(const void *dev, phydat_t *res)
 
 static int read_acc(const void *dev, phydat_t *res)
 {
-    if (fxos8700_read_cached((const fxos8700_t *)dev, (fxos8700_measurement_t *)res, NULL)
+    if (fxos8700_read_cached(dev, (fxos8700_measurement_t *)res, NULL)
         != FXOS8700_OK) {
         /* Read failure */
         return -ECANCELED;
