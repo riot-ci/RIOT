@@ -10,6 +10,7 @@
  * @defgroup    net_skald Skald, who advertises to the world
  * @ingroup     net
  * @brief       Skald, a minimalistic BLE advertising stack
+ * @experimental
  *
  * # About
  *
