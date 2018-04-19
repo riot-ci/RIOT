@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 UC Berkeley
+ * Copyright (C) 2018 UC Berkeley
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -28,9 +28,9 @@
 #define FXOS8700_RENEW_INTERVAL 1000000ul
 #endif
 
-#define ACCEL_ONLY_MODE         0x00
-#define MAG_ONLY_MODE           0x01
-#define HYBRID_MODE             0x03
+#define ACCEL_ONLY_MODE         (0x00)
+#define MAG_ONLY_MODE           (0x01)
+#define HYBRID_MODE             (0x03)
 
 static fxos8700_measurement_t acc_cached, mag_cached;
 static uint32_t last_read_time;
@@ -38,7 +38,7 @@ static uint32_t last_read_time;
 static int fxos8700_read_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_t len)
 {
     i2c_acquire(dev->p.i2c);
-    if(i2c_read_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
+    if (i2c_read_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
         DEBUG("[fxos8700] Can't read register 0x%x\n", reg);
         i2c_release(dev->p.i2c);
         return FXOS8700_BUSERR;
@@ -51,7 +51,7 @@ static int fxos8700_read_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_
 static int fxos8700_write_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size_t len)
 {
     i2c_acquire(dev->p.i2c);
-    if(i2c_write_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
+    if (i2c_write_regs(dev->p.i2c, dev->p.addr, reg, (char*) data, len) <= 0) {
         DEBUG("[fxos8700] Can't write to register 0x%x\n", reg);
         i2c_release(dev->p.i2c);
         return FXOS8700_BUSERR;
@@ -73,7 +73,7 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
     dev->p.i2c = params->i2c;
 
     i2c_acquire(dev->p.i2c);
-    if(i2c_init_master(dev->p.i2c, I2C_SPEED) != 0) {
+    if (i2c_init_master(dev->p.i2c, I2C_SPEED) != 0) {
         DEBUG("[fxos8700] Can't initialize I2C master\n");
         i2c_release(dev->p.i2c);
         return FXOS8700_NOBUS;
@@ -87,23 +87,23 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
     if (config != FXOS8700_WHO_AM_I_VAL) {
         i2c_release(dev->p.i2c);
         DEBUG("[fxos8700] WHOAMI is wrong (%2x)\n", config);
-        return FXOS8700_NOBUS;
+        return FXOS8700_NODEV;
     }
 
     /* Configure the ODR to maximum (400Hz in hybrid mode) */
     config = 0x00;
     if (fxos8700_write_regs(dev, FXOS8700_REG_CTRL_REG1, &config, 1) != FXOS8700_OK) {
-        return FXOS8700_NOBUS;
+        return FXOS8700_BUSERR;
     }
     /* Activate hybrid mode */
     config = HYBRID_MODE;
     if (fxos8700_write_regs(dev, FXOS8700_REG_M_CTRL_REG1, &config, 1) != FXOS8700_OK) {
-        return FXOS8700_NOBUS;
+        return FXOS8700_BUSERR;
     }
     /* Set burst read mode (accel + magnet together) */
     config = 0x20;
     if (fxos8700_write_regs(dev, FXOS8700_REG_M_CTRL_REG2, &config, 1) != FXOS8700_OK) {
-        return FXOS8700_NOBUS;
+        return FXOS8700_BUSERR;
     }
 
     /* initial read for caching operation */
@@ -143,10 +143,10 @@ int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxos8700_m
         return FXOS8700_BUSERR;
     }
 
-    while(!(ready & 0x08)) {
+    while (!(ready & 0x08)) {
         fxos8700_read_regs(dev, FXOS8700_REG__STATUS, &ready, 1);
     }
-    while(!(ready & 0x08)) {
+    while (!(ready & 0x08)) {
         fxos8700_read_regs(dev, FXOS8700_REG_M_DR_STATUS, &ready, 1);
     }
 
@@ -161,18 +161,18 @@ int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxos8700_m
 
     /* Read accelerometer */
     if (acc) {
-        int32_t acc_raw_x = (int32_t) ((data[0]<<6) | (data[1]>>2));
-        int32_t acc_raw_y = (int32_t) ((data[2]<<6) | (data[3]>>2));
-        int32_t acc_raw_z = (int32_t) ((data[4]<<6) | (data[5]>>2));
-        acc->x = (int16_t)(acc_raw_x*244/1000);
-        acc->y = (int16_t)(acc_raw_y*244/1000);
-        acc->z = (int16_t)(acc_raw_z*244/1000);
+        int32_t acc_raw_x = (int32_t) ((data[0] << 6) | (data[1] >> 2));
+        int32_t acc_raw_y = (int32_t) ((data[2] << 6) | (data[3] >> 2));
+        int32_t acc_raw_z = (int32_t) ((data[4] << 6) | (data[5] >> 2));
+        acc->x = (int16_t) ((acc_raw_x * 244) / 1000);
+        acc->y = (int16_t) ((acc_raw_y * 244) / 1000);
+        acc->z = (int16_t) ((acc_raw_z * 244) / 1000);
     }
     /* Read magnetometer */
     if (mag) {
-        mag->x = (int16_t) ((data[6] <<8) | data[7]);
-        mag->y = (int16_t) ((data[8] <<8) | data[9]);
-        mag->z = (int16_t) ((data[10]<<8) | data[11]);
+        mag->x = (int16_t) ((data[6] << 8) | data[7]);
+        mag->y = (int16_t) ((data[8] << 8) | data[9]);
+        mag->z = (int16_t) ((data[10] << 8) | data[11]);
     }
     return FXOS8700_OK;
 }

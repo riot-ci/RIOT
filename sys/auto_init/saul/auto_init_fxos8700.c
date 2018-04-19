@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Hyung-Sin Kim
+ * Copyright (C) 2018 UC Berkeley
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -41,7 +41,7 @@ static fxos8700_t fxos8700_devs[FXOS8700_NUM];
 static saul_reg_t saul_entries[FXOS8700_NUM * 2];
 
 /**
- * @brief   Reference the driver struct
+ * @name    Reference the driver struct
  * @{
  */
 extern saul_driver_t fxos8700_saul_acc_driver;

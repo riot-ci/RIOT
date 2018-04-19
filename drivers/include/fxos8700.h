@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Michael Andersen
+ * Copyright (C) 2018 UC Berkeley
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,8 +7,9 @@
  */
 
 /**
- * @defgroup    drivers_fxos8700 3-axis accelerometer/magnetometer
+ * @defgroup    drivers_fxos8700 FXOS8700 3-axis accelerometer/magnetometer
  * @ingroup     drivers_sensors
+ * @brief       Driver for the FXOS8700 3-axis accelerometer/magnetometer
  *
  * The connection between the MCU and the FXOS8700 is based on the
  * I2C-interface.
@@ -16,7 +17,7 @@
  * @{
  *
  * @file
- * @brief       Driver for the FXOS8700 3-axis accelerometer/magnetometer
+ * @brief       Interface definition for the FXOS8700 sensor driver
  *
  * @author      Michael Andersen <m.andersen@cs.berkeley.edu>
  * @author      Hyung-Sin Kim <hs.kim@cs.berkeley.edu>
@@ -166,7 +167,8 @@ enum {
     FXOS8700_OK      = 0,     /**< everything went as expected */
     FXOS8700_ADDRERR = -1,    /**< no FXOS8700 device found on the bus */
     FXOS8700_NOBUS   = -2,    /**< errors while initializing the I2C bus */
-    FXOS8700_BUSERR  = -3     /**< error during I2C communication */
+    FXOS8700_NODEV   = -3,    /**< no FXOS8700 device found on the bus */
+    FXOS8700_BUSERR  = -4     /**< error during I2C communication */
 };
 
 /**
@@ -203,6 +205,7 @@ typedef struct {
  * @return                  FXOS8700_NOBUS on I2C initialization error
  * @return                  FXOS8700_BUSERR on I2C communication error
  * @return                  FXOS8700_ADDRERR on invalid address
+ * @return                  FXOS8700_NODEV if no FXOS8700 device found on bus
  */
 int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t* params);
 
@@ -266,5 +269,5 @@ int fxos8700_read_cached(const fxos8700_t* dev, fxos8700_measurement_t* acc, fxo
 }
 #endif
 
-/** @} */
 #endif /* FXOS8700_H */
+/** @} */
