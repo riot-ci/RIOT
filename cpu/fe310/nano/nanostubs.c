@@ -159,7 +159,7 @@ int _gettimeofday(struct timeval *tp, void *tzp)
 
 int _getpid(void)
 {
-    return 1;
+    return thread_getpid();
 }
 
 int _kill(int pid, int sig)
