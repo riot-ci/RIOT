@@ -1,5 +1,5 @@
 /*
- * Copyright (C) UC Berkeley
+ * Copyright (C) 2017 UC Berkeley
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -63,8 +63,6 @@ static int fxos8700_write_regs(fxos8700_t* dev, uint8_t reg, uint8_t* data, size
 
 int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
 {
-    dev->p.i2c = params->i2c;
-    int rv;
     uint8_t config;
 
     if ((params->addr < 0x1C) || (params->addr > 0x1F)) {
@@ -72,6 +70,7 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
         return FXOS8700_ADDRERR;
     }
     dev->p.addr = params->addr;
+    dev->p.i2c = params->i2c;
 
     i2c_acquire(dev->p.i2c);
     if(i2c_init_master(dev->p.i2c, I2C_SPEED) != 0) {
@@ -80,13 +79,16 @@ int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t *params)
         return FXOS8700_NOBUS;
     }
 
-    rv = i2c_read_regs(dev->p.i2c, dev->p.addr, 0x0D, &config, 1);
-    if (rv != 1) {
+    if (i2c_read_regs(dev->p.i2c, dev->p.addr, FXOS8700_REG_WHO_AM_I, &config, 1) <= 0) {
         i2c_release(dev->p.i2c);
-        DEBUG("[fxos8700] Could not read WHOAMI (%d)\n", rv);
+        DEBUG("[fxos8700] Could not read WHOAMI\n");
         return FXOS8700_NOBUS;
     }
-    dev->whoami = config;
+    if (config != FXOS8700_WHO_AM_I_VAL) {
+        i2c_release(dev->p.i2c);
+        DEBUG("[fxos8700] WHOAMI is wrong (%2x)\n", config);
+        return FXOS8700_NOBUS;
+    }
 
     /* Configure the ODR to maximum (400Hz in hybrid mode) */
     config = 0x00;

@@ -64,7 +64,7 @@ static const fxos8700_params_t fxos8700_params[] =
  */
 static const saul_reg_info_t fxos8700_saul_info[] =
 {
-    HDC1000_SAUL_INFO
+    FXOS8700_SAUL_INFO
 };
 
 #ifdef __cplusplus

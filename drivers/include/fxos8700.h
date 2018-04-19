@@ -155,6 +155,11 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief FXOS8700 Device ID
+ */
+#define FXOS8700_WHO_AM_I_VAL           (0xC7)
+
+/**
  * @brief   FXOS8700 specific return values
  */
 enum {
@@ -173,70 +178,20 @@ typedef struct {
 } fxos8700_params_t;
 
 /**
-  * @brief   Device descriptor for a AT30TSE75x device
-  * @{
-  */
+ * @brief   Device descriptor for a FXOS8700 device
+ */
 typedef struct {
     fxos8700_params_t p;
-    uint8_t whoami;
 } fxos8700_t;
 
 /**
-  * @brief   Individual hybrid measurement
-  * @{
-  */
+ * @brief   Individual 3-axis measurement
+ */
 typedef struct {
     int16_t x;
     int16_t y;
     int16_t z;
 } fxos8700_measurement_t;
-
-typedef union {
-    struct {
-        uint8_t  zyxow:1;     /*!< bit:      0  Start Conversion Event In          */
-        uint8_t  zow:1;       /*!< bit:      1  Synchronization Event In           */
-        uint8_t  yow:1;       /*!< bit:  2.. 3  Reserved                           */
-        uint8_t  xow:1;       /*!< bit:      0  Start Conversion Event In          */
-        uint8_t  zyxdr:1;     /*!< bit:      1  Synchronization Event In           */
-        uint8_t  zdr:1;       /*!< bit:  2.. 3  Reserved                           */
-        uint8_t  ydr:1;       /*!< bit:      0  Start Conversion Event In          */
-        uint8_t  xdr:1;       /*!< bit:      1  Synchronization Event In           */
-    } bit;                    /*!< Structure used for bit  access                  */
-    uint8_t reg;              /*!< Type      used for register access              */
-} FXOS8700_STATUS_Type;
-
-typedef union {
-    struct {
-        uint8_t  aslp_rate:2; /*!< bit:      auto-wake sample frequency (for auto-sleep mode) */
-        uint8_t  dr:3;        /*!< bit:      Output data rate (ODR) selection      */
-        uint8_t  lnoise:1;    /*!< bit:      normal (0) / reduced noise (1)        */
-        uint8_t  f_read:1;    /*!< bit:      normal (0) / fast read with 8 bit output (1)     */
-        uint8_t  active:1;    /*!< bit:      standby (0) / active (1)              */
-    } bit;                    /*!< Structure used for bit  access                  */
-    uint8_t reg;              /*!< Type      used for register access              */
-} FXOS8700_CTRL_REG1_Type;
-
-typedef union {
-    struct {
-        uint8_t  st:1;        /*!< bit:      self-test  */
-        uint8_t  rst:1;       /*!< bit:      software reset      */
-        uint8_t  :1;          /*!< bit:      normal (0) / reduced noise (1)        */
-        uint8_t  smods:2;     /*!< bit:      normal (0) / fast read with 8 bit output (1)     */
-        uint8_t  slpe:1;      /*!< bit:      standby (0) / active (1)              */
-        uint8_t  modes:2;     /*!< bit:      standby (0) / active (1)              */
-    } bit;                    /*!< Structure used for bit  access                  */
-    uint8_t reg;              /*!< Type      used for register access              */
-} FXOS8700_CTRL_REG2_Type;
-
-typedef union {
-    struct {
-        uint8_t  fgerr:1;     /*!< bit:      0  Start Conversion Event In          */
-        uint8_t  figt:5;      /*!< bit:      1  Synchronization Event In           */
-        uint8_t  sysmod:2;    /*!< bit:  2.. 3  Reserved                           */
-    } bit;                    /*!< Structure used for bit  access                  */
-    uint8_t reg;              /*!< Type      used for register access              */
-} FXOS8700_SYSMOD_Type;
-/** @} */
 
 /**
  * @brief   Initialize an FXOS8700 device
@@ -251,8 +206,30 @@ typedef union {
  */
 int fxos8700_init(fxos8700_t* dev, const fxos8700_params_t* params);
 
+/**
+ * @brief   Convenience function for turning on the FXOS8700
+ *
+ * This function will trigger a new conversion, wait for the conversion to be
+ * finished and the get the results from the device.
+ *
+ * @param[in]  dev          device descriptor of sensor
+ *
+ * @return                  FXOS8700_OK on success
+ * @return                  FXOS8700_BUSERR on I2C communication failures
+ */
 int fxos8700_set_active(const fxos8700_t* dev);
 
+/**
+ * @brief   Convenience function for turning off the FXOS8700
+ *
+ * This function will trigger a new conversion, wait for the conversion to be
+ * finished and the get the results from the device.
+ *
+ * @param[in]  dev          device descriptor of sensor
+ *
+ * @return                  FXOS8700_OK on success
+ * @return                  FXOS8700_BUSERR on I2C communication failures
+ */
 int fxos8700_set_idle(const fxos8700_t* dev);
 
 /**
