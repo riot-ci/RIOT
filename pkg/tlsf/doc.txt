@@ -14,4 +14,8 @@
  *  - Efficient both in terms of memory overhead and processor time.
  *  - Low fragmentation.
  *
+ * Additionally, a contrib package @see pkg_tlsf_malloc implements a global heap
+ * allocator with the standard malloc/free functions.
+ *
+ *  @todo    The tlsf code uses printf to report errors. This is not OK.
  */
