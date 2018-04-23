@@ -57,11 +57,11 @@ extern "C" {
  *
  * @return  0 on success, nonzero on failure.
  */
-int tlsf_add_global_pool(void* mem, size_t bytes);
+int tlsf_add_global_pool(void *mem, size_t bytes);
 
 /**
  * Get a pointer to the global tlsf_control block.
- * 
+ *
  * Use for debugging purposes only.
  */
 tlsf_t *_tlsf_get_global_control(void);
@@ -97,3 +97,7 @@ void tlsf_gfree(void *ptr);
 #endif
 
 #endif /*TLSF_MALLOC_H*/
+
+/**
+ * @}
+ */

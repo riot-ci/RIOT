@@ -41,7 +41,8 @@ static tlsf_t gheap = NULL;
 
 #ifdef __GNUC__
 
-#define ALIAS(n, args)  __attribute__ ((alias (#n)));
+#define ALIAS(n, args)  __attribute__ ((alias(#n)));
+#define VALIAS(n, args)  __attribute__ ((alias(#n)));
 
 #else /* No GNU C -> no alias attribute */
 
@@ -77,12 +78,13 @@ void free(void *ptr) VALIAS(tlsf_gfree, (ptr))
 
 #endif /* TLSF_MALLOC_NOSYSTEM */
 
-int tlsf_add_global_pool(void* mem, size_t bytes)
+int tlsf_add_global_pool(void *mem, size_t bytes)
 {
     if (gheap == NULL) {
         gheap = tlsf_create_with_pool(mem, bytes);
         return gheap == NULL;
-    } else  {
+    }
+    else {
         return tlsf_add_pool(gheap, mem, bytes) == NULL;
     }
 }
@@ -96,6 +98,7 @@ void *tlsf_gmalloc(size_t bytes)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_malloc(gheap, bytes);
+
     irq_restore(old_state);
     return result;
 }
@@ -103,6 +106,7 @@ void *tlsf_gmalloc(size_t bytes)
 void *tlsf_gcalloc(size_t count, size_t bytes)
 {
     void *result = tlsf_gmalloc(count * bytes);
+
     if (result) {
         memset(result, 0, count * bytes);
     }
@@ -113,6 +117,7 @@ void *tlsf_gmemalign(size_t align, size_t bytes)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_memalign(gheap, align, bytes);
+
     irq_restore(old_state);
     return result;
 }
@@ -121,6 +126,7 @@ void *tlsf_grealloc(void *ptr, size_t size)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_realloc(gheap, ptr, size);
+
     irq_restore(old_state);
     return result;
 }
@@ -128,6 +134,11 @@ void *tlsf_grealloc(void *ptr, size_t size)
 void tlsf_gfree(void *ptr)
 {
     unsigned old_state = irq_disable();
+
     tlsf_free(gheap, ptr);
     irq_restore(old_state);
 }
+
+/**
+ * @}
+ */
