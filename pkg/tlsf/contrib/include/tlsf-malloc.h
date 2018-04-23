@@ -12,13 +12,6 @@
  *
  * @brief    TLSF-based global memory allocator.
  *
- * @file
- * @{
- *
- * @brief   TLSF-based global memory allocator.
- * @author  René Kijewski
- * @author  Juan I Carrano
- *
  * This is a malloc/free implementation built on top of the TLSF allocator.
  * It defines a global tlsf_control block and performs allocations on that
  * block.
@@ -31,8 +24,15 @@
  *
  * If this module is used as the system memory allocator, then the global memory
  * control block should be initialized as the first thing before the stdlib is
- * used. Boards should use tlsf_add_pool() at startup to add all the memory
+ * used. Boards should use tlsf_add_global_pool() at startup to add all the memory
  * regions they want to make available for dynamic allocation via malloc().
+ *
+ * @{
+ * @file
+ *
+ * @brief   TLSF-based global memory allocator.
+ * @author  René Kijewski
+ * @author  Juan I Carrano
  *
  */
 

@@ -9,8 +9,8 @@
  * @ingroup  pkg_tlsf_malloc
  * @ingroup  pkg
  * @ingroup  sys
- * @file
  * @{
+ * @file
  *
  * @brief   TLSF-based global memory allocator.
  * @author  René Kijewski
