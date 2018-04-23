@@ -96,7 +96,7 @@ void tlsf_gfree(void *ptr);
 }
 #endif
 
-#endif /*TLSF_MALLOC_H*/
+#endif /* TLSF_MALLOC_H */
 
 /**
  * @}
