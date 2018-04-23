@@ -57,6 +57,8 @@ CFLAGS += -DTEST_PIN_RESET=$(TEST_PIN_RESET)
 
 CFLAGS += -DTEST_DISPLAY=$(TEST_DISPLAY)
 
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
