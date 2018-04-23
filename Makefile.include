@@ -337,6 +337,7 @@ DIRS += $(EXTERNAL_MODULE_DIRS)
 
 # Define dependencies required for building (headers, dowloading source files,)
 BUILDDEPS += $(RIOTBUILD_CONFIG_HEADER_C)
+BUILDDEPS += pkg-prepare
 BUILDDEPS += $(APPDEPS)
 
 # Linker rule
@@ -403,7 +404,7 @@ include $(RIOTBASE)/drivers/Makefile.include
 
 # The `clean` needs to be serialized before everything else.
 ifneq (, $(filter clean, $(MAKECMDGOALS)))
-    all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) pkg-prepare $(BUILDDEPS): clean
+    all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) $(BUILDDEPS): clean
 endif
 
 # include Makefile.includes for packages in $(USEPKG)
@@ -421,7 +422,7 @@ INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
 
-$(USEPKG:%=$(BINDIR)/%.a): pkg-prepare $(BUILDDEPS)
+$(USEPKG:%=$(BINDIR)/%.a): $(BUILDDEPS)
 	@mkdir -p $(BINDIR)
 	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst $(BINDIR)/%.a,%,$@)
 
