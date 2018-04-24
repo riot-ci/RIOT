@@ -23,7 +23,7 @@ FCFIELD_END='0x410'
 FCFIELD_AWK_REGEX='^ 0400 '
 
 ACTUAL_FCFIELD=$(arm-none-eabi-objdump --start-address=${FCFIELD_START} --stop-address=${FCFIELD_END} ${HEXFILE} -s | awk -F' ' "/${FCFIELD_AWK_REGEX}/ { print \$2 \$3 \$4 \$5; }")
-EXPECTED_FCFIELD="fffffffffffffffffffffffffeffffff"
+EXPECTED_FCFIELD="fffffffffffffffffffffffffe3dffff"
 
 if [ "${ACTUAL_FCFIELD}" != "${EXPECTED_FCFIELD}" ]; then
     echo "Danger of bricking the device during flash!"

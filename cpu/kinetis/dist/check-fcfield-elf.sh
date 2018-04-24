@@ -11,7 +11,7 @@
 ELFFILE=$1
 
 RETVAL=$(arm-none-eabi-readelf -x .fcfield $ELFFILE  | awk '/0x00000400/ {print $2 $3 $4 $5}')
-UNLOCKED_FCFIELD="fffffffffffffffffffffffffeffffff"
+UNLOCKED_FCFIELD="fffffffffffffffffffffffffe3dffff"
 
 if [ "$RETVAL" != "$UNLOCKED_FCFIELD" ]; then
     echo "Danger of bricking the device during flash!"
