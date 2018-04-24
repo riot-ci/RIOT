@@ -30,53 +30,22 @@
  **/
 static tlsf_t gheap = NULL;
 
-
-/* Replace system memory routines
- *
- * Doing it this way (instead of changing the function names) has the
- * advantage of not breaking programs that use tlsf_g* just because someone
- * decides to use them as the default allocation routuines.
- * */
-#ifndef TLSF_MALLOC_NOSYSTEM
-
+/* TODO: Add defines for other compilers */
 #ifdef __GNUC__
 
-#define ALIAS(n, args)  __attribute__ ((alias(#n)));
-#define VALIAS(n, args)  __attribute__ ((alias(#n)));
+#define ATTR_MALLOC  __attribute__((malloc, alloc_size(1)))
+#define ATTR_CALLOC  __attribute__((malloc, alloc_size(1,2)))
+#define ATTR_MALIGN  __attribute__((alloc_align(1), alloc_size(2), malloc))
+#define ATTR_REALLOC  __attribute__((alloc_size(2)))
 
 #else /* No GNU C -> no alias attribute */
 
-#define ALIAS(n, args) { return n args; }
-#define VALIAS(n, args) { n args; }
+#define ATTR_MALLOC
+#define ATTR_CALLOC
+#define ATTR_MALIGN
+#define ATTR_REALLOC
 
 #endif /* __GNUC__ */
-
-/**
- * Allocate dynamic memory via TLSF.
- */
-void *malloc(size_t size) ALIAS(tlsf_gmalloc, (size))
-
-/**
- * Allocate and clear memory via TLSF
- */
-void *calloc(size_t count, size_t bytes) ALIAS(tlsf_gcalloc, (count, bytes))
-
-/**
- * Allocate an aligned block via TLSF.
- */
-void *memalign(size_t align, size_t bytes) ALIAS(tlsf_gmemalign, (align, bytes))
-
-/**
- * Reallocate a block of memory via TLSF.
- */
-void *realloc(void *ptr, size_t size) ALIAS(tlsf_grealloc, (ptr, size))
-
-/**
- * Free dynamic memory allocated via TLSF.
- */
-void free(void *ptr) VALIAS(tlsf_gfree, (ptr))
-
-#endif /* TLSF_MALLOC_NOSYSTEM */
 
 int tlsf_add_global_pool(void *mem, size_t bytes)
 {
@@ -94,7 +63,10 @@ tlsf_t *_tlsf_get_global_control(void)
     return gheap;
 }
 
-void *tlsf_gmalloc(size_t bytes)
+/**
+ * Allocate a block of size "bytes"
+ */
+ATTR_MALLOC void *malloc(size_t bytes)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_malloc(gheap, bytes);
@@ -103,9 +75,12 @@ void *tlsf_gmalloc(size_t bytes)
     return result;
 }
 
-void *tlsf_gcalloc(size_t count, size_t bytes)
+/**
+ * Allocate and clear a block of size "bytes*count"
+ */
+ATTR_CALLOC void *calloc(size_t count, size_t bytes)
 {
-    void *result = tlsf_gmalloc(count * bytes);
+    void *result = malloc(count * bytes);
 
     if (result) {
         memset(result, 0, count * bytes);
@@ -113,7 +88,10 @@ void *tlsf_gcalloc(size_t count, size_t bytes)
     return result;
 }
 
-void *tlsf_gmemalign(size_t align, size_t bytes)
+/**
+ * Allocate an aligned memory block.
+ */
+ATTR_MALIGN void *memalign(size_t align, size_t bytes)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_memalign(gheap, align, bytes);
@@ -122,7 +100,10 @@ void *tlsf_gmemalign(size_t align, size_t bytes)
     return result;
 }
 
-void *tlsf_grealloc(void *ptr, size_t size)
+/**
+ * Deallocate and reallocate with a different size.
+ */
+ATTR_REALLOC void *realloc(void *ptr, size_t size)
 {
     unsigned old_state = irq_disable();
     void *result = tlsf_realloc(gheap, ptr, size);
@@ -131,7 +112,11 @@ void *tlsf_grealloc(void *ptr, size_t size)
     return result;
 }
 
-void tlsf_gfree(void *ptr)
+
+/**
+ * Deallocate a block of data.
+ */
+void free(void *ptr)
 {
     unsigned old_state = irq_disable();
 

@@ -14,13 +14,10 @@
  *
  * This is a malloc/free implementation built on top of the TLSF allocator.
  * It defines a global tlsf_control block and performs allocations on that
- * block.
+ * block. This implemetation replaces the system malloc
  *
  * Additionally, the calls to TLSF are wrapped in irq_disable()/irq_restore(),
  * to make it thread-safe.
- *
- * By default, this implemetation replaces the system malloc. This behavior can
- * be changed by setting the TLSF_MALLOC_NOSYSTEM.
  *
  * If this module is used as the system memory allocator, then the global memory
  * control block should be initialized as the first thing before the stdlib is
@@ -52,6 +49,9 @@ extern "C" {
  * The first time this function is called, it will automatically perform a
  * tlsf_create() on the global tlsf_control block.
  *
+ * @warning If this module is used, then this function MUST be called at least
+ *          once, before any allocations take place.
+ *
  * @param   mem        Pointer to memory area. Should be aligned to 4 bytes.
  * @param   bytes      Size in bytes of the memory area.
  *
@@ -65,31 +65,6 @@ int tlsf_add_global_pool(void *mem, size_t bytes);
  * Use for debugging purposes only.
  */
 tlsf_t *_tlsf_get_global_control(void);
-
-/**
- * Allocate a block of size "bytes"
- */
-void *tlsf_gmalloc(size_t bytes);
-
-/**
- * Allocate a block of size "bytes*count"
- */
-void *tlsf_gcalloc(size_t count, size_t bytes);
-
-/**
- * Allocate an aligned memory block.
- */
-void *tlsf_gmemalign(size_t align, size_t bytes);
-
-/**
- * Deallocate and reallocate with a different size.
- */
-void *tlsf_grealloc(void *ptr, size_t size);
-
-/**
- * Deallocate a block of data.
- */
-void tlsf_gfree(void *ptr);
 
 
 #ifdef __cplusplus
