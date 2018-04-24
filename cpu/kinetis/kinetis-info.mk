@@ -110,7 +110,7 @@ else ifeq ($(KINETIS_SERIES),L)
     KINETIS_RAMSIZE = 96
   else ifeq ($(KINETIS_SUBFAMILY),7)
     # KL17, KL27
-    ifneq ($(KINETIS_ROMSIZE),256)
+    ifeq ($(KINETIS_ROMSIZE),256)
       KINETIS_RAMSIZE = 32
     else
       KINETIS_RAMSIZE = $(KINETIS_ROMSIZE)/4
