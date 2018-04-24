@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2014 Freie Universität Berlin
- * Copyright (C) 2014 PHYTEC Messtechnik GmbH
- * Copyright (C) 2017 Eistec AB
+ * Copyright (C) 2018 Eistec AB
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -9,11 +7,11 @@
  */
 
 /**
- * @ingroup     boards_frdm-k22f
+ * @ingroup     boards_frdm-kl32z
  * @{
  *
  * @file
- * @brief       Board specific implementations for the FRDM-K22F
+ * @brief       Board specific implementations for the FRDM-KL43Z
  *
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  *
@@ -33,6 +31,4 @@ void board_init(void)
     gpio_set(LED0_PIN);
     gpio_init(LED1_PIN, GPIO_OUT);
     gpio_set(LED1_PIN);
-    gpio_init(LED2_PIN, GPIO_OUT);
-    gpio_set(LED2_PIN);
 }
