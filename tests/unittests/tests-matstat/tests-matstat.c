@@ -194,6 +194,40 @@ static void test_matstat_merge_variance(void)
     TEST_ASSERT_EQUAL_INT(state_ref.mean, state1.mean);
 }
 
+static void test_matstat_merge_variance_regr1(void)
+{
+    /* This is a regression check for an issue where the sum_sq variable became
+     * negative after merging a sequence of states with different means, and
+     * small but non-zero sum_sq values. */
+    /* Numbers were taken from a stats dump from the bench_timers application */
+    matstat_state_t inputs[] = {
+        { .count = 2686, .sum = 5414, .sum_sq = 1380, .min = 1, .max = 3, .mean = 2 },
+        { .count = 2643, .sum = 5272, .sum_sq = 3263, .min = 1, .max = 3, .mean = 1 },
+        { .count = 2650, .sum = 5328, .sum_sq =  719, .min = 1, .max = 3, .mean = 2 },
+        { .count = 2562, .sum = 5117, .sum_sq = 2756, .min = 1, .max = 3, .mean = 1 },
+        { .count = 2579, .sum = 5157, .sum_sq =  635, .min = 1, .max = 3, .mean = 1 },
+        { .count = 2533, .sum = 5050, .sum_sq = 2944, .min = 1, .max = 3, .mean = 1 },
+        { .count = 2630, .sum = 5276, .sum_sq = 1078, .min = 1, .max = 3, .mean = 2 },
+        { .count = 2667, .sum = 5333, .sum_sq =  974, .min = 1, .max = 3, .mean = 1 },
+        { .count = 2414, .sum = 4859, .sum_sq = 1074, .min = 1, .max = 3, .mean = 2 },
+    };
+    matstat_state_t merged = MATSTAT_STATE_INIT;
+    for (unsigned k = 0; k < sizeof(inputs) / sizeof(inputs[0]); ++k) {
+        matstat_merge(&merged, &inputs[k]);
+    }
+    int64_t var = (int64_t)matstat_variance(&merged);
+    /* Expected variance for this input is 0, because of integer truncation of the result.
+     * The bug gave the following result instead:
+     * count = 23364, sum = 46806, sum_sq = 18446744073709540510, mean = 2, var = 789570863061659
+     */
+    /* Left here for debugging test case failures: */
+    /* printf("\nmerged: count = %" PRIu32 ", sum = %" PRId64 ", sum_sq = %" PRIu64 ", "
+        "mean = %" PRId32 ", var = %" PRIu64 "\n", merged.count, merged.sum,
+        merged.sum_sq, merged.mean, var); */
+    TEST_ASSERT((int64_t)merged.sum_sq > 0);
+    TEST_ASSERT(var >= 0);
+}
+
 static void test_matstat_accuracy(void)
 {
     /* This test verifies that the numeric accuracy is "good enough" */
@@ -246,6 +280,7 @@ Test *tests_matstat_tests(void)
         new_TestFixture(test_matstat_merge_basic),
         new_TestFixture(test_matstat_merge_empty),
         new_TestFixture(test_matstat_merge_variance),
+        new_TestFixture(test_matstat_merge_variance_regr1),
         new_TestFixture(test_matstat_accuracy),
         new_TestFixture(test_matstat_negative_variance),
     };
