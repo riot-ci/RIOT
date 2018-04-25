@@ -32,6 +32,19 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+/*
+ * Debug pin can be used to probe timer interrupts. Thus, determine when an
+ * interrupt occurs and how long the ISR takes.
+ *
+ * The timer interrupt times can be probed with a oscilloscope if pin
+ * `DEBUG_TIMER_PIN`, the respective `DEBUG_TIMER_PORT` and `DDEBUG_TIMER_DDR`
+ * are defined in the makefile as follows.
+ *
+ * CFLAGS += -DDEBUG_TIMER_PORT=PORTF
+ * CFLAGS += -DDEBUG_TIMER_DDR=DDRF
+ * CFLAGS += -DDEBUG_TIMER_PIN=PORTF4
+ */
+
 /**
  * @brief   All timers have three channels
  */
@@ -83,6 +96,14 @@ static ctx_t ctx[] = {
  */
 int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 {
+    /* Initialize debug pin */
+#if defined(DEBUG_TIMER_PORT)
+    DEBUG_TIMER_DDR |= (1 << DEBUG_TIMER_PIN);
+    DEBUG_TIMER_PORT &= ~(1 << DEBUG_TIMER_PIN);
+    DEBUG("Debug Pin: DDR 0x%02x Port 0x%02x Pin 0x%02x\n",
+           &DEBUG_TIMER_DDR , &DEBUG_TIMER_PORT,(1<<DEBUG_TIMER_PIN));
+#endif
+
     DEBUG("timer.c: freq = %ld\n", freq);
     uint8_t pre = 0;
 
@@ -162,10 +183,18 @@ void timer_start(tim_t tim)
 #ifdef TIMER_NUMOF
 static inline void _isr(tim_t tim, int chan)
 {
+#if defined(DEBUG_TIMER_PORT)
+    DEBUG_TIMER_PORT |= (1 << DEBUG_TIMER_PIN);
+#endif
+
     __enter_isr();
 
     *ctx[tim].mask &= ~(1 << (chan + OCIE1A));
     ctx[tim].cb(ctx[tim].arg, chan);
+
+#if defined(DEBUG_TIMER_PORT)
+    DEBUG_TIMER_PORT &= ~(1 << DEBUG_TIMER_PIN);
+#endif
 
     __exit_isr();
 }
