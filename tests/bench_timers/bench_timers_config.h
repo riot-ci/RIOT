@@ -17,8 +17,8 @@
  *
  * @}
  */
-#ifndef BENCH_PERIPH_TIMER_CONFIG_H
-#define BENCH_PERIPH_TIMER_CONFIG_H
+#ifndef BENCH_TIMERS_CONFIG_H
+#define BENCH_TIMERS_CONFIG_H
 
 #include <stdint.h>
 
