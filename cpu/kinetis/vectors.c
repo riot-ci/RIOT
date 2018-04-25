@@ -183,8 +183,14 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [SPI2_IRQn       ] = isr_spi2,            /* SPI2 Interrupt */
 #endif
 #ifdef I2S0
+#ifdef I2S_TCR1_TFW_MASK
+    /* K parts */
     [I2S0_Tx_IRQn    ] = isr_i2s0_tx,         /* I2S0 transmit interrupt */
     [I2S0_Rx_IRQn    ] = isr_i2s0_rx,         /* I2S0 receive interrupt */
+#else
+    /* KL parts */
+    [I2S0_IRQn       ] = isr_i2s0,            /* I2S0 interrupt */
+#endif
 #endif
 #ifdef UART0
 #ifdef UART_RPL_RPL_MASK
@@ -198,9 +204,14 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [UART1_ERR_IRQn  ] = isr_uart1_err,       /* UART1 Error interrupt */
 #endif
 #ifdef UART2
+#ifdef FLEXIO_VERID_MAJOR_MASK
+    /* KL parts with FlexIO uses combined IRQ */
+    [UART2_FLEXIO_IRQn] = isr_uart2_flexio,   /* UART2 or FLEXIO */
+#else /* FLEXIO_VERID_MAJOR_MASK */
     [UART2_RX_TX_IRQn] = isr_uart2_rx_tx,     /* UART2 Receive/Transmit interrupt */
     [UART2_ERR_IRQn  ] = isr_uart2_err,       /* UART2 Error interrupt */
-#endif
+#endif /* FLEXIO_VERID_MAJOR_MASK */
+#endif /* UART2 */
 #ifdef UART3
     [UART3_RX_TX_IRQn] = isr_uart3_rx_tx,     /* UART3 Receive/Transmit interrupt */
     [UART3_ERR_IRQn  ] = isr_uart3_err,       /* UART3 Error interrupt */
@@ -279,8 +290,11 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [DAC1_IRQn       ] = isr_dac1,            /* DAC1 interrupt */
 #endif
 #ifdef MCG
+#ifndef MCG_MC_LIRC_DIV2_MASK
+    /* Only on full MCG, not MCG_Lite */
     [MCG_IRQn        ] = isr_mcg,             /* MCG Interrupt */
-#endif
+#endif /* MCG_MC_LIRC_DIV2_MASK */
+#endif /* MCG */
 #ifdef LPTMR0
     [LPTMR0_IRQn     ] = isr_lptmr0,          /* LPTimer interrupt */
 #endif
@@ -288,8 +302,10 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [PORTA_IRQn      ] = isr_porta,           /* Port A interrupt */
 #endif
 #ifdef KINETIS_CORE_Z
-#if defined(PORTB) && defined(PORTC)
+#if defined(PORTB) && defined(PORTC) && !defined(PORTD)
     [PORTB_PORTC_IRQn] = isr_portb_portc,     /* Port B, C combined interrupt */
+#elif defined(PORTC) && defined(PORTD)
+    [PORTC_PORTD_IRQn] = isr_portc_portd,     /* Port C, D combined interrupt */
 #endif
 #else
 #ifdef PORTB
