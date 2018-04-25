@@ -72,7 +72,7 @@ void matstat_merge(matstat_state_t *dest, const matstat_state_t *src)
     /* Combining the variance of the two samples needs some extra
      * handling if the means are different between the two states,
      * source: https://stats.stackexchange.com/a/43183
-     * (using sum_sq = sigma2 * n)
+     * (using sum_sq = sigma2 * n, instead of sum_sq = sigma2 * (n-1) to simplify algorithm)
      */
     dest->sum_sq = (dest->sum_sq + dest->sum * dest->mean + src->sum_sq + src->sum * src->mean);
     dest->count += src->count;
