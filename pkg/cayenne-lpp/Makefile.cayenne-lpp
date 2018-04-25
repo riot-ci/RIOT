@@ -1,3 +1,7 @@
 MODULE = cayenne-lpp
 
+ifeq (native, $(BOARD))
+  CFLAGS += -msse2 -mfpmath=sse
+endif
+
 include $(RIOTBASE)/Makefile.base
