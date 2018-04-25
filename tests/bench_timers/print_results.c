@@ -21,7 +21,7 @@
 #include "print_results.h"
 #include "matstat.h"
 #include "fmt.h"
-#include "bench_periph_timer_config.h"
+#include "bench_timers_config.h"
 
 static void print_statistics(const matstat_state_t *state, const stat_limits_t *limits)
 {

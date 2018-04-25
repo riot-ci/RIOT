@@ -42,7 +42,7 @@
 
 #include "print_results.h"
 #include "spin_random.h"
-#include "bench_periph_timer_config.h"
+#include "bench_timers_config.h"
 
 #ifndef TEST_TRACE
 #define TEST_TRACE 0
