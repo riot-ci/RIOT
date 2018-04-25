@@ -5,9 +5,9 @@ import sys
 
 
 def testfunc(child):
-    child.expect_exact('03670110056700FF')
-    child.expect_exact('0167FFD8067104D1FB2F0000')
-    child.expect_exact('018806765EF2960A0003E8')
+    child.expect('[0-9A-F]{16}')
+    child.expect('[0-9A-F]{24}')
+    child.expect('[0-9A-F]{22}')
 
 
 if __name__ == "__main__":
