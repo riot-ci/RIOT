@@ -33,11 +33,9 @@
 
 /* XXX this function is intentionally non-static, since the optimizer can't
  * handle the pointer hack in this function */
-/* XXX this function is intentionally non-static, since the optimizer can't
- * handle the pointer hack in this function */
 void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
 {
-    DEBUG("evtimer: new event offset %" PRIu32 " ms\n", event->offset );
+    DEBUG("evtimer: new event offset %" PRIu32 " ms\n", event->offset);
     /* we want list->next to point to the first list element. thus we take the
      * *address* of evtimer->events, then cast it from (evtimer_event_t **) to
      * (evtimer_event_t*). After that, list->next actually equals
@@ -57,7 +55,7 @@ void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
         list = list->next;
     }
 
-    DEBUG("evtimer: new event relativ offset %" PRIu32 " ms\n", event->offset );
+    DEBUG("evtimer: new event relativ offset %" PRIu32 " ms\n", event->offset);
 
     /* Set found next bigger event after new event */
     event->next = list->next;
@@ -65,12 +63,12 @@ void evtimer_add_event_to_list(evtimer_t *evtimer, evtimer_event_t *event)
         /* Set offset following event relative to new event */
         evtimer_event_t *next_entry = list->next;
         DEBUG("evtimer: recalculate offset for %" PRIu32 " ms\n",
-              next_entry->offset );
+              next_entry->offset);
 
         next_entry->offset -= event->offset;
 
         DEBUG("evtimer: resulting new event offset %" PRIu32 " ms\n",
-              next_entry->offset );
+              next_entry->offset);
     }
 
     list->next = event;
