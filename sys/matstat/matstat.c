@@ -71,7 +71,14 @@ void matstat_merge(matstat_state_t *dest, const matstat_state_t *src)
     dest->count += src->count;
     dest->sum += src->sum;
     int32_t new_mean = dest->sum / dest->count;
-    dest->sum_sq = dest->sum_sq - new_mean * dest->sum;
+    int64_t diff = -new_mean * dest->sum;
+    if ((diff < 0) && ((uint64_t)(-diff) > dest->sum_sq)) {
+        /* Handle corner cases where sum_sq becomes negative */
+        dest->sum_sq = 0;
+    }
+    else {
+        dest->sum_sq += diff;
+    }
     dest->mean = new_mean;
     if (src->max > dest->max) {
         dest->max = src->max;
