@@ -27,7 +27,7 @@ USEMODULE += xtimer
 
 ifeq (,$(findstring TIM_TEST_DEV,$(CFLAGS)))
   ifneq (,$(filter $(BOARD),$(SINGLE_TIMER_BOARDS)))
-    CFLAGS += -DTIM_TEST_DEV=TIMER_DEV\(0\)
+    CFLAGS += -DTIM_TEST_DEV=TIMER_DEV\(0\) -DTIM_REF_DEV=TIMER_DEV\(0\)
   endif
 endif
 
