@@ -10,6 +10,3 @@ USEMODULE += periph_uart
 
 # include common peripheral initialization
 USEMODULE += periph_common
-
-# Force double precision when using floating point operations
-CFLAGS += -msse2 -mfpmath=sse
