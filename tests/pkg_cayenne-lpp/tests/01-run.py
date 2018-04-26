@@ -6,7 +6,8 @@ import sys
 
 def testfunc(child):
     child.expect_exact('03670110056700FF')
-    child.expect_exact('0167FFD8067104D1FB2F0000')
+    # floating point precision may vary between architectures (native, boards)
+    child.expect('0167FFD[78]067104D[12]FB2[EF]0000')
     child.expect_exact('018806765EF2960A0003E8')
 
 
