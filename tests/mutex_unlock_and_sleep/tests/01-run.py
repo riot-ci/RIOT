@@ -9,10 +9,13 @@
 import os
 import sys
 
+# It takes 32 seconds on wsn430, so add some margin
+TIMEOUT = 45
+
 
 def testfunc(child):
     for i in range(20):
-        child.expect(r"\[ALIVE\] alternated \d+k times.")
+        child.expect(r"\[ALIVE\] alternated \d+k times.", timeout=TIMEOUT)
 
 
 if __name__ == "__main__":
