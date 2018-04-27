@@ -43,6 +43,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              nucleo-f410 \
                              nucleo-l053 \
                              nucleo-l073 \
+                             nucleo-l433rc \
                              nz32-sc151 \
                              opencm904 \
                              openmote \
@@ -143,6 +144,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        nucleo-l053 \
                        nucleo-l073 \
                        nucleo-l152 \
+                       nucleo-l433rc \
                        nucleo-l476 \
                        nz32-sc151 \
                        opencm904 \
@@ -212,6 +214,8 @@ ifneq (, $(filter $(AVR_BOARDS), $(BOARD)))
   LARGE_STACK_TESTS += tests-qDSA
 endif
 
+LARGE_STACK_TESTS += tests-hacl
+LARGE_STACK_TESTS += tests-libcose
 LARGE_STACK_TESTS += tests-tweetnacl
 ifneq (,$(filter $(LARGE_STACK_TESTS), $(UNIT_TESTS)))
   CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(4*THREAD_STACKSIZE_DEFAULT+THREAD_EXTRA_STACKSIZE_PRINTF\)
