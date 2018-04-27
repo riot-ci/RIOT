@@ -27,6 +27,14 @@ static volatile int indicator;
 static kernel_pid_t main_pid;
 static char stack[THREAD_STACKSIZE_DEFAULT];
 
+#ifdef BOARD_NATIVE
+/* Use big iterations count for native to get a slow enough output */
+static const unsigned ITERATIONS = 100000;
+#else
+/* Use smaller number on 16bit platform to get faster iterations */
+static const unsigned ITERATIONS = (sizeof(int) == 2 ? 1000 : 10000);
+#endif
+
 static void *second_thread(void *arg)
 {
     (void) arg;
@@ -64,7 +72,7 @@ int main(void)
             printf("[ERROR] threads did not sleep properly (%d).\n", indicator);
             return 1;
         }
-        if ((count % 100000) == 0) {
+        if ((count % ITERATIONS) == 0) {
             printf("[ALIVE] alternated %"PRIu32"k times.\n", (count / 1000));
         }
         mutex_unlock_and_sleep(&mutex);
