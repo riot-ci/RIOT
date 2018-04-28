@@ -584,6 +584,7 @@ static void estimate_cpu_overhead(void)
         /* call yield to simulate a context switch to isr and back */
         thread_yield_higher();
         cb_timer_periph(ctx, TIM_TEST_CHAN);
+        mutex_lock(&mtx_cb);
     }
     overhead_target = matstat_mean(&ref_state);
     overhead_read = matstat_mean(&int_state);
