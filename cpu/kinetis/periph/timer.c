@@ -282,6 +282,10 @@ static inline void pit_irq_handler(tim_t dev)
 {
     uint8_t ch = pit_config[_pit_index(dev)].count_ch;
     pit_t *pit_ctx = &pit[_pit_index(dev)];
+    if (!PIT->CHANNEL[ch].TFLG) {
+        DEBUG("PIT%u!TFLG\n", (unsigned)dev);
+        return;
+    }
     /* Add the overflow amount to the counter before resetting */
     /* (this may be > 0 if the IRQ handler was delayed e.g. by irq_disable etc.) */
     pit_ctx->count += PIT->CHANNEL[ch].LDVAL - PIT->CHANNEL[ch].CVAL;
