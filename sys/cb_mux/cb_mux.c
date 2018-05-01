@@ -7,32 +7,32 @@
  */
 
 /**
- * @ingroup   sys_cbmplex
+ * @ingroup   sys_cb_mux
  * @{
  *
  * @file
- * @brief   cbmplex implementation
+ * @brief   cb_mux implementation
  *
  * @author  Matthew Blue <matthew.blue.neuro@gmail.com>
  * @}
  */
 
-#include "cbmplex.h"
+#include "cb_mux.h"
 #include "utlist.h"
 
-void cbmplex_add(cbmplex_t *head, cbmplex_t *entry)
+void cb_mux_add(cb_mux_t *head, cb_mux_t *entry)
 {
     LL_APPEND(head, entry);
 }
 
-void cbmplex_del(cbmplex_t *head, cbmplex_t *entry)
+void cb_mux_del(cb_mux_t *head, cb_mux_t *entry)
 {
     LL_DELETE(head, entry);
 }
 
-uint8_t cbmplex_nextid(cbmplex_t *head)
+uint8_t cb_mux_nextid(cb_mux_t *head)
 {
-    cbmplex_t *entry;
+    cb_mux_t *entry;
     uint8_t id = 0;
 
     LL_FOREACH(head, entry) {
@@ -44,18 +44,18 @@ uint8_t cbmplex_nextid(cbmplex_t *head)
     return id;
 }
 
-cbmplex_t *cbmplex_find_cbid(cbmplex_t *head, uint8_t cbid_val)
+cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val)
 {
-    cmbplex_t *entry;
+    cb_mux_t *entry;
 
     LL_SEARCH_SCALAR(head, entry, cbid, cbid_val);
 
     return entry;
 }
 
-cbmplex_t *cbmplex_find_flags(cbmplex_t *head, uint8_t flags, uint8_t mask)
+cb_mux_t *cb_mux_find_flags(cb_mux_t *head, uint8_t flags, uint8_t mask)
 {
-    cbmplex_t *entry;
+    cb_mux_t *entry;
 
     LL_FOREACH(head, entry) {
         if ((entry->flags & mask) == flags) {
@@ -66,9 +66,9 @@ cbmplex_t *cbmplex_find_flags(cbmplex_t *head, uint8_t flags, uint8_t mask)
     return NULL;
 }
 
-void cbmplex_update(cbmplex_t *head, cbmplex_ud_func_t func, void *arg)
+void cb_mux_update(cb_mux_t *head, cb_mux_ud_func_t func, void *arg)
 {
-    cbmplex_t *entry;
+    cb_mux_t *entry;
 
     LL_FOREACH(head, entry) {
         func(entry, arg);

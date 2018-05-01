@@ -7,17 +7,17 @@
  */
 
 /**
- * @ingroup   sys_cbmplex
+ * @ingroup   sys_cb_mux
  * @{
  *
  * @file
- * @brief   cbmplex interface definitions
+ * @brief   cb_mux interface definitions
  *
  * @author  Matthew Blue <matthew.blue.neuro@gmail.com>
  */
 
-#ifndef CBMPLEX_H
-#define CBMPLEX_H
+#ifndef CB_MUX_H
+#define CB_MUX_H
 
 #include <stdint.h>
 
@@ -26,41 +26,41 @@ extern "C" {
 #endif
 
 /**
- * @brief   cbmplex callback type
+ * @brief   cb_mux callback type
  */
-typedef void (*cbmplex_cb_t)(void *);
+typedef void (*cb_mux_cb_t)(void *);
 
 /**
- * @brief   cbmplex list entry structure
+ * @brief   cb_mux list entry structure
  */
-typedef struct cbmplex {
-    struct cbmplex *next;
+typedef struct cb_mux {
+    struct cb_mux *next;
     uint8_t flags;
     uint8_t cbid;
-    cbmplex_cb_t cb;
+    cb_mux_cb_t cb;
     void *arg;
-} cbmplex_t;
+} cb_mux_t;
 
 /**
- * @brief   cbmplex update function callback type for cbmplex_update
+ * @brief   cb_mux update function callback type for cb_mux_update
  */
-typedef void (*cbmplex_ud_func_t)(cbmplex_t *, void *);
+typedef void (*cb_mux_ud_func_t)(cb_mux_t *, void *);
 
 /**
- * @brief   Add a new entry to the end of a cmbplex list
+ * @brief   Add a new entry to the end of a cb_mux list
  *
  * @param[in] head   pointer to first list entry
  * @param[in] entry  entry to add
  */
-void cbmplex_add(cbmplex_t *head, cbmplex_t *entry);
+void cb_mux_add(cb_mux_t *head, cb_mux_t *entry);
 
 /**
- * @brief   Remove a entry from a cmbplex list
+ * @brief   Remove a entry from a cb_mux list
  *
  * @param[in] head   pointer to first list entry
  * @param[in] entry  entry to remove
  */
-void cbmplex_del(cbmplex_t *head, cbmplex_t *entry);
+void cb_mux_del(cb_mux_t *head, cb_mux_t *entry);
 
 /**
  * @brief   Find the next highest ID unused in the list
@@ -69,7 +69,7 @@ void cbmplex_del(cbmplex_t *head, cbmplex_t *entry);
  *
  * @return the next highest unused ID
  */
-uint8_t cbmplex_nextid(cbmplex_t *head);
+uint8_t cb_mux_nextid(cb_mux_t *head);
 
 /**
  * @brief   Find an entry in the list by ID
@@ -79,7 +79,7 @@ uint8_t cbmplex_nextid(cbmplex_t *head);
  *
  * @return pointer to the list entry
  */
-cbmplex_t *cbmplex_find_cbid(cbmplex_t *head, uint8_t cbid_val);
+cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val);
 
 /**
  * @brief   Find an entry in the list by flags set
@@ -92,16 +92,16 @@ cbmplex_t *cbmplex_find_cbid(cbmplex_t *head, uint8_t cbid_val);
  *
  * @return pointer to the list entry
  */
-cbmplex_t *cbmplex_find_flags(cbmplex_t *head, uint8_t flags, uint8_t mask);
+cb_mux_t *cb_mux_find_flags(cb_mux_t *head, uint8_t flags, uint8_t mask);
 
 /**
- * @brief   Run a function on every item in the cbmplex list
+ * @brief   Run a function on every item in the cb_mux list
  *
  * @param[in] head  pointer to first list entry
  * @param[in] func  function to run on each entry
  * @param[in] arg   argument for the function
  */
-void cbmplex_update(cbmplex_t *head, cbmplex_ud_func_t func, void *arg);
+void cb_mux_update(cb_mux_t *head, cb_mux_ud_func_t func, void *arg);
 
 #ifdef __cplusplus
 }
@@ -109,4 +109,4 @@ void cbmplex_update(cbmplex_t *head, cbmplex_ud_func_t func, void *arg);
 
 /** @} */
 
-#endif /* CBMPLEX_H */
+#endif /* CB_MUX_H */
