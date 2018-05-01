@@ -16,6 +16,9 @@
  * @author  Matthew Blue <matthew.blue.neuro@gmail.com>
  */
 
+#ifndef CBMPLEX_H
+#define CBMPLEX_H
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -105,3 +108,5 @@ void cbmplex_update(cbmplex_t *head, cbmplex_ud_func_t func, void *arg);
 #endif
 
 /** @} */
+
+#endif /* CBMPLEX_H */
