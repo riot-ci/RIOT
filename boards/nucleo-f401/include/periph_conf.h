@@ -130,6 +130,8 @@ static const uart_conf_t uart_config[] = {
 #define UART_0_DMA_ISR      (isr_dma1_stream6)
 #define UART_1_ISR          (isr_usart6)
 #define UART_1_DMA_ISR      (isr_dma1_stream6)
+#define UART_2_ISR          (isr_usart1)
+#define UART_2_DMA_ISR      (isr_dma1_stream6)
 
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 /** @} */
