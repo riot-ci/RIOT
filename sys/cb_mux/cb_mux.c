@@ -30,20 +30,6 @@ void cb_mux_del(cb_mux_t *head, cb_mux_t *entry)
     LL_DELETE(head, entry);
 }
 
-uint8_t cb_mux_nextid(cb_mux_t *head)
-{
-    cb_mux_t *entry;
-    uint8_t id = 0;
-
-    LL_FOREACH(head, entry) {
-        if (entry->cbid >= id) {
-            id = entry->cbid + 1;
-        }
-    }
-
-    return id;
-}
-
 cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val)
 {
     cb_mux_t *entry;
@@ -53,20 +39,30 @@ cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val)
     return entry;
 }
 
-cb_mux_t *cb_mux_find_flags(cb_mux_t *head, uint8_t flags, uint8_t mask)
+cb_mux_t *cb_mux_find_hilo_id(cb_mux_t *head, uint8_t order)
 {
-    cb_mux_t *entry;
+    cb_mux_t *entry_curr;
+    cb_mux_t *entry_hilo;
+    uint32_t id = 0;
 
-    LL_FOREACH(head, entry) {
-        if ((entry->flags & mask) == flags) {
-            return entry;
+    LL_FOREACH(head, entry_curr) {
+        if (order && (entry_curr->cbid <= id)) {
+            /* We were looking for highest */
+            continue;
         }
+        else if (!order && (entry_curr->cbid >= id)) {
+            /* We were looking for lowest */
+            continue;
+        }
+
+        id = entry_curr->cbid;
+        entry_hilo = entry_curr;
     }
 
-    return NULL;
+    return entry_hilo;
 }
 
-void cb_mux_update(cb_mux_t *head, cb_mux_ud_func_t func, void *arg)
+void cb_mux_iter(cb_mux_t *head, cb_mux_iter_t func, void *arg)
 {
     cb_mux_t *entry;
 

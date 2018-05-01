@@ -34,17 +34,17 @@ typedef void (*cb_mux_cb_t)(void *);
  * @brief   cb_mux list entry structure
  */
 typedef struct cb_mux {
-    struct cb_mux *next;
-    uint8_t flags;
-    uint8_t cbid;
-    cb_mux_cb_t cb;
-    void *arg;
+    uint32_t cbid;        /**< identifier for this callback */
+    struct cb_mux *next;  /**< next entry in the cb_mux list */
+    void *info;           /**< optional extra information */
+    cb_mux_cb_t cb;       /**< callback function */
+    void *arg;            /**< argument for callback function */
 } cb_mux_t;
 
 /**
- * @brief   cb_mux update function callback type for cb_mux_update
+ * @brief   cb_mux iterate function callback type for cb_mux_iter
  */
-typedef void (*cb_mux_ud_func_t)(cb_mux_t *, void *);
+typedef void (*cb_mux_iter_t)(cb_mux_t *, void *);
 
 /**
  * @brief   Add a new entry to the end of a cb_mux list
@@ -63,15 +63,6 @@ void cb_mux_add(cb_mux_t *head, cb_mux_t *entry);
 void cb_mux_del(cb_mux_t *head, cb_mux_t *entry);
 
 /**
- * @brief   Find the next highest ID unused in the list
- *
- * @param[in] head  pointer to first list entry
- *
- * @return the next highest unused ID
- */
-uint8_t cb_mux_nextid(cb_mux_t *head);
-
-/**
  * @brief   Find an entry in the list by ID
  *
  * @param[in] head      pointer to first list entry
@@ -79,20 +70,19 @@ uint8_t cb_mux_nextid(cb_mux_t *head);
  *
  * @return pointer to the list entry
  */
-cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val);
+cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint32_t cbid_val);
 
 /**
- * @brief   Find an entry in the list by flags set
+ * @brief   Find the entry with the highest or lowest ID
  *
- * Returns the oldest matching entry
+ * If there are multiple hits, this returns the oldest.
  *
  * @param[in] head   pointer to first list entry
- * @param[in] flags  flags bits to match
- * @param[in] mask   mask of which flag bits to search
+ * @param[in] order  0 for lowest ID, !0 for highest
  *
  * @return pointer to the list entry
  */
-cb_mux_t *cb_mux_find_flags(cb_mux_t *head, uint8_t flags, uint8_t mask);
+cb_mux_t *cb_mux_find_hilo_id(cb_mux_t *head, uint8_t order);
 
 /**
  * @brief   Run a function on every item in the cb_mux list
@@ -101,7 +91,7 @@ cb_mux_t *cb_mux_find_flags(cb_mux_t *head, uint8_t flags, uint8_t mask);
  * @param[in] func  function to run on each entry
  * @param[in] arg   argument for the function
  */
-void cb_mux_update(cb_mux_t *head, cb_mux_ud_func_t func, void *arg);
+void cb_mux_iter(cb_mux_t *head, cb_mux_iter_t func, void *arg);
 
 #ifdef __cplusplus
 }
