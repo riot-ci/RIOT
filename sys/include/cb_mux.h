@@ -87,8 +87,8 @@ cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint8_t cbid_val);
  * Returns the oldest matching entry
  *
  * @param[in] head   pointer to first list entry
- * @param[in] flags  flags to match
- * @param[in] mask   mask of which flag bits to check
+ * @param[in] flags  flags bits to match
+ * @param[in] mask   mask of which flag bits to search
  *
  * @return pointer to the list entry
  */
