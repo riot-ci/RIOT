@@ -28,11 +28,9 @@ static kernel_pid_t main_pid;
 static char stack[THREAD_STACKSIZE_DEFAULT];
 
 #ifdef BOARD_NATIVE
-/* Use big iterations count for native to get a slow enough output */
-static const unsigned ITERATIONS = 100000;
+static const unsigned KITERATIONS = 100;
 #else
-/* Use smaller number on 16bit platform to get faster iterations */
-static const unsigned ITERATIONS = (sizeof(int) == 2 ? 1000 : 10000);
+static const unsigned KITERATIONS = 10;
 #endif
 
 static void *second_thread(void *arg)
@@ -50,6 +48,7 @@ static void *second_thread(void *arg)
 int main(void)
 {
     uint32_t count = 0;
+    uint32_t kcount = 0;
 
     indicator = 0;
     main_pid = thread_getpid();
@@ -72,8 +71,11 @@ int main(void)
             printf("[ERROR] threads did not sleep properly (%d).\n", indicator);
             return 1;
         }
-        if ((count % ITERATIONS) == 0) {
-            printf("[ALIVE] alternated %"PRIu32"k times.\n", (count / 1000));
+        if (count == (KITERATIONS * 1000)) {
+            count = 0;
+            kcount++;
+            printf("[ALIVE] alternated %"PRIu32"k times.\n",
+                   KITERATIONS * kcount);
         }
         mutex_unlock_and_sleep(&mutex);
     }
