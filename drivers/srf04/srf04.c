@@ -24,6 +24,14 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+
+/*
+ * for inch define distance as "1480"
+ */
+#ifndef SRF04_DISTANCE
+#define SRF04_DISTANCE  (584U)
+#endif
+
 static bool state;
 
 static void _cb(void *arg)
@@ -31,53 +39,55 @@ static void _cb(void *arg)
     uint32_t t = xtimer_now_usec();
 
     srf04_t* dev = (srf04_t*)arg;
-    if (dev->p.state == SRF04_IDLE) {
-        dev->p.state = SRF04_MEASURING;
-        dev->p.time = t;
+    if (dev->state == SRF04_IDLE) {
+        dev->state = SRF04_MEASURING;
+        dev->time = t;
     }
     else if (state == SRF04_MEASURING) {
         gpio_irq_disable(dev->p.echo);
-        dev->p.state = SRF04_IDLE;
-        dev->p.distance = (t - dev->p.time);
+        dev->state = SRF04_IDLE;
+        dev->distance = (t - dev->time);
     }
 }
 
-int srf04_init(srf04_t* dev, const gpio_t trigger, const gpio_t echo)
+int srf04_init(srf04_t* dev)
 {
-    dev->p.state = SRF04_IDLE;
-    dev->p.trigger = trigger;
-    dev->p.echo = echo;
-    dev->p.distance = 0;
-    dev->p.time = 0;
+    dev->p = srf04_params[0];
 
-    if ((gpio_init(dev->p.trigger, GPIO_OUT) != 0) |
-        (gpio_init(dev->p.echo, GPIO_IN) != 0)){
-        DEBUG("[srf04] Error: could not initialize GPIO\n");
-        return SRF04_GPIO;
+    dev->state = SRF04_IDLE;
+    dev->distance = 0;
+    dev->time = 0;
+
+    if (gpio_init(dev->p.trigger, GPIO_OUT) != 0) {
+        DEBUG("[srf04] Error: could not initialize GPIO trigger pin\n");
+        return SRF04_ERR_GPIO;
     }
 
     if (gpio_init_int(dev->p.echo, GPIO_IN, GPIO_BOTH, _cb, (void*)dev) != 0) {
-        DEBUG("[srf04] Error: could not initialize GPIO Interrupts\n");
-        return SRF04_INT;
+        DEBUG("[srf04] Error: could not initialize GPIO echo pin\n");
+        return SRF04_ERR_INT;
     }
+
     gpio_irq_disable(dev->p.echo);
 
     return SRF04_OK;
 }
 
-int srf04_trigger(const srf04_t* dev)
+void srf04_trigger(const srf04_t* dev)
 {
     gpio_irq_enable(dev->p.echo);
 
-    //trigger on falling edge for 10us
     gpio_set(dev->p.trigger);
     xtimer_usleep(10);
     gpio_clear(dev->p.trigger);
-
-    return SRF04_OK;
 }
 
 int srf04_read(const srf04_t* dev)
 {
-    return dev->p.distance;
+    return dev->distance;
+}
+
+int srf04_read_distance(const srf04_t* dev)
+{
+    return ((dev->distance * 100) / SRF04_DISTANCE);
 }

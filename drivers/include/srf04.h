@@ -32,32 +32,47 @@ extern "C" {
 #endif
 
 /**
+ * @brief defines distance divisor
+ *
+ * @note for inch define distance as "1480"
+ */
+#ifndef SRF04_DISTANCE
+#define SRF04_DISTANCE  (584U)
+#endif
+
+/**
  * @brief   Status and error return codes
  */
 enum {
-    SRF04_OK      =  0,              /**< exit without error */
-    SRF04_GPIO    = -1,              /**< error initializing gpio*/
-    SRF04_INT     = -2,              /**< error initializing gpio interrupt*/
+    SRF04_OK        =  0,              /**< exit without error */
+    SRF04_ERR_GPIO  = -1,              /**< error initializing gpio*/
+    SRF04_ERR_INT   = -2,              /**< error initializing gpio interrupt*/
 };
 
+/**
+ * @brief   Interrupt states
+ */
 typedef enum {
     SRF04_MEASURING,
     SRF04_IDLE,
 } srf04_state_t;
 
+/**
+ * @brief   GPIO pins for srf04 device
+ */
 typedef struct {
-    srf04_state_t state;
     gpio_t trigger;
     gpio_t echo;
-    uint32_t distance;
-    uint32_t time;
 } srf04_params_t;
 
 /**
- * @brief   GPIO pins for hc-sr04_t device
+ * @brief   Device descriptor for srf04 sensor
  */
 typedef struct {
     srf04_params_t p;
+    srf04_state_t state;
+    uint32_t distance;
+    uint32_t time;
 } srf04_t;
 
 /**
@@ -70,16 +85,14 @@ typedef struct {
  * @return              SRF04_OK on success
  * @return              SRF04_GPIO on gpio init failure
  */
-int srf04_init(srf04_t *dev, const gpio_t trigger, const gpio_t echo);
+int srf04_init(srf04_t *dev);
 
 /**
  * @brief   Triggers measurement
  *
  * @param[in]  dev      device descriptor of sensor
- *
- * @return              SRF04_OK
  */
-int srf04_trigger(const srf04_t *dev);
+void srf04_trigger(const srf04_t *dev);
 
 /**
  * @brief   Returns time of flight in ms
@@ -92,6 +105,16 @@ int srf04_trigger(const srf04_t *dev);
  */
 int srf04_read(const srf04_t* dev);
 
+/**
+ * @brief   Returns time of flight in mm
+ *
+ * @note    should not be invoked within 50 ms after triggering
+ *
+ * @param[in]  dev      device descriptor of sensor
+ *
+ * @return              time of flight in mm
+ */
+int srf04_read_distance(const srf04_t* dev);
 
 #ifdef __cplusplus
 }

@@ -30,18 +30,18 @@
 
 int main(void)
 {
-    printf("SRF04 range finder example\n");
+    puts("SRF04 range finder example");
 
     srf04_t dev;
 
-    srf04_init(&dev, srf04_params[0].trigger, srf04_params[0].echo);
+    srf04_init(&dev);
 
-    while(1) {
+    while (1) {
         srf04_trigger(&dev);
 
         xtimer_usleep(SAMPLE_PERIOD);
 
-        printf("D: %d mm\n", (((srf04_read(&dev) * 100) / 292) / 2));
+        printf("D: %d mm\n", srf04_read_distance(&dev));
     }
 
     return 0;

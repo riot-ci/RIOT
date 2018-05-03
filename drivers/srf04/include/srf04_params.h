@@ -39,17 +39,14 @@ extern "C" {
 
 #ifndef SRF04_PARAMS
 #define SRF04_PARAMS                            \
-    {   .state          = SRF04_IDLE,           \
-        .trigger        = SRF04_PARAM_TRIGGER,  \
+    {   .trigger        = SRF04_PARAM_TRIGGER,  \
         .echo           = SRF04_PARAM_ECHO,     \
-        .distance       = (0U),                 \
-        .time           = (0U),                 \
     }
 #endif
 /** @} */
 
 /**
- * @brief   BMX055 configuration
+ * @brief   SRF04 configuration
  */
 static const srf04_params_t srf04_params[] = {
     SRF04_PARAMS
@@ -61,5 +58,5 @@ static const srf04_params_t srf04_params[] = {
 }
 #endif
 
-#endif /* BMX055_PARAMS_H */
+#endif /* SRF04_PARAMS_H */
 /** @} */
