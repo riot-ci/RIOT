@@ -73,9 +73,8 @@ int main(void)
         }
         if (count == (KITERATIONS * 1000)) {
             count = 0;
-            kcount++;
-            printf("[ALIVE] alternated %"PRIu32"k times.\n",
-                   KITERATIONS * kcount);
+            kcount += KITERATIONS;
+            printf("[ALIVE] alternated %"PRIu32"k times.\n", kcount);
         }
         mutex_unlock_and_sleep(&mutex);
     }
