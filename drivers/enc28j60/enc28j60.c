@@ -70,9 +70,9 @@
  * RX must start at buffer address 0x0000 (see errata sheet, section 5)
  */
 #define BUF_TX_START                ((BUFFER_SIZE / 4) * 3)
-#define BUF_TX_END                  (BUFFER_SIZE - 2)
+#define BUF_TX_END                  (BUFFER_SIZE - 1)
 #define BUF_RX_START                (0)
-#define BUF_RX_END                  (BUF_TX_START - 2)
+#define BUF_RX_END                  (BUF_TX_START - 1)
 
 
 static void switch_bank(enc28j60_t *dev, int8_t bank)
@@ -248,6 +248,27 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
 
     mutex_lock(&dev->devlock);
 
+    if (cmd_rcr(dev, REG_ECON1, -1) & ECON1_TXRTS)
+    {
+        /* there is already a transmission in progress */
+        if (xtimer_now_usec() - dev->tx_time > 2429)
+        {
+            /* if transmission time exceeds 2.4287 ms, we suppose that
+               TX logic hangs and has to be reset */
+            cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRST);
+            cmd_bfc(dev, REG_ECON1, -1, ECON1_TXRST);
+        }
+        else
+        {
+            /* otherwise we suppose that the transmission is still in progress
+               and return EBUSY */
+            mutex_unlock(&dev->devlock);
+            return -EBUSY;
+        }
+    }
+
+    /* set TX start pointer */
+    cmd_w_addr(dev, ADDR_TX_START, BUF_TX_START);
     /* set write pointer */
     cmd_w_addr(dev, ADDR_WRITE_PTR, BUF_TX_START);
     /* write control byte and the actual data into the buffer */
@@ -260,6 +281,8 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     cmd_w_addr(dev, ADDR_TX_END, cmd_r_addr(dev, ADDR_WRITE_PTR) - 1);
     /* trigger the send process */
     cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRTS);
+    /* set last transmission time for timeout handling */
+    dev->tx_time = xtimer_now_usec();
 
 #ifdef MODULE_NETSTATS_L2
     netdev->stats.tx_bytes += c;
@@ -269,23 +292,34 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     return c;
 }
 
+/*
+ * Section 14 of errata sheet: Even values in ERXRDPT may corrupt receive
+ * buffer as well as the next packet pointer. ERXRDPT need to be set always
+ * at odd addresses. Following macros determine odd ERXRDPT from next packet
+ * pointer and vise versa. Next packet pointer is always at even address
+ * because of hardware padding.
+ */
+#define NEXT_TO_ERXRDPT(n) ((n-1 < BUF_RX_START || n-1 > BUF_RX_END) ? BUF_RX_END : n-1)
+#define ERXRDPT_TO_NEXT(e) ((e >= BUF_RX_END) ? BUF_RX_START : e+1)
+
 static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 {
     enc28j60_t *dev = (enc28j60_t *)netdev;
     uint8_t head[6];
-    size_t size;
+    uint16_t size;
     uint16_t next;
 
     (void)info;
     mutex_lock(&dev->devlock);
 
     /* set read pointer to RX read address */
-    cmd_w_addr(dev, ADDR_READ_PTR, cmd_r_addr(dev, ADDR_RX_READ));
+    uint16_t rx_rd_ptr = cmd_r_addr(dev, ADDR_RX_READ);
+    cmd_w_addr(dev, ADDR_READ_PTR, ERXRDPT_TO_NEXT(rx_rd_ptr));
     /* read packet header */
     cmd_rbm(dev, head, 6);
     /* TODO: care for endianess */
     next = (uint16_t)((head[1] << 8) | head[0]);
-    size = (size_t)((head[3] << 8) | head[2]) - 4;  /* discard CRC */
+    size = (uint16_t)((head[3] << 8) | head[2]) - 4;  /* discard CRC */
 
     if (buf != NULL) {
 #ifdef MODULE_NETSTATS_L2
@@ -300,7 +334,7 @@ static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
             size = 0;
         }
         /* release memory */
-        cmd_w_addr(dev, ADDR_RX_READ, next);
+        cmd_w_addr(dev, ADDR_RX_READ, NEXT_TO_ERXRDPT(next));
         cmd_bfs(dev, REG_ECON2, -1, ECON2_PKTDEC);
     }
 
@@ -348,7 +382,7 @@ static int nd_init(netdev_t *netdev)
     /* configure the RX buffer */
     cmd_w_addr(dev, ADDR_RX_START, BUF_RX_START);
     cmd_w_addr(dev, ADDR_RX_END, BUF_RX_END);
-    cmd_w_addr(dev, ADDR_RX_READ, BUF_RX_START);
+    cmd_w_addr(dev, ADDR_RX_READ, NEXT_TO_ERXRDPT(BUF_RX_START));
     /* configure the TX buffer */
     cmd_w_addr(dev, ADDR_TX_START, BUF_TX_START);
     cmd_w_addr(dev, ADDR_TX_END, BUF_TX_END);
@@ -499,4 +533,5 @@ void enc28j60_setup(enc28j60_t *dev, const enc28j60_params_t *params)
     dev->reset_pin = params->reset_pin;
     mutex_init(&dev->devlock);
     dev->bank = 99;                         /* mark as invalid */
+    dev->tx_time = 0;
 }
