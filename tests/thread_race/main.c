@@ -77,7 +77,7 @@ int main(void)
                         THREAD_CREATE_SLEEPING,
                         _thread_irq_check, NULL, "irqchk");
 
-    puts("Checking for working context swap (to detect false positives)... ");
+    printf("Checking for working context swap (to detect false positives)... ");
     irq_occurred = 0;
     _thread_wake_wo_yield(pid);
 
@@ -94,7 +94,7 @@ int main(void)
         return -1;
     }
 
-    puts("Checking for proper reset of swaps (to detect false positives)... ");
+    printf("Checking for reset of swaps (to detect false positives)... ");
     irq_occurred = 0;
     _thread_wake_wo_yield(pid);
 
@@ -114,7 +114,7 @@ int main(void)
     /* Volatile so it is not messed with by optimizations */
     volatile uint8_t race_test;
 
-    puts("Checking for context swap race condition... ");
+    printf("Checking for context swap race condition... ");
     irq_occurred = 0;
     _thread_wake_wo_yield(pid);
 
