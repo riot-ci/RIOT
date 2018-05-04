@@ -66,8 +66,7 @@ fi
 if [ -z "$*" ]; then
     coccinelle_checkall "${RIOTTOOLS}"/coccinelle/force
 
-    COCCINELLE_WARNONLY=1 \
-        coccinelle_checkall "${RIOTTOOLS}"/coccinelle/warn
+    COCCINELLE_WARNONLY=1 coccinelle_checkall "${RIOTTOOLS}"/coccinelle/warn
 else
     for patch in "$@"; do
         coccinelle_checkone "$patch"
