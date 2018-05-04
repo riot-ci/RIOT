@@ -1,5 +1,6 @@
 include ../Makefile.tests_common
 
+FEATURES_REQUIRED += periph_i2c
 USEMODULE += sens0_i2c
 USEMODULE += saul_reg
 
