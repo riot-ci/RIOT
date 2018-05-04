@@ -47,3 +47,11 @@ _features_conflicting = $(if $(call _features_used_conflicting,$(subst :, ,$1)),
 #   $1: list of features that conflict together
 #   Return non empty on error
 _features_used_conflicting = $(filter $(words $1),$(words $(filter $(FEATURES_USED),$1)))
+
+# Return features that are used but blacklisted as
+# "!<feature>" ("not feature")
+_features_used_blacklisted = $$(addprefix !,$$(sort $$(filter $$(FEATURES_USED), $$(FEATURES_BLACKLIST))))
+
+# add used but blacklisted features to missing features list (with prepended
+# "!")
+FEATURES_MISSING += $(call _features_used_blacklisted)
