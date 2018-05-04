@@ -3,7 +3,7 @@ BOARD ?= samr21-xpro
 include ../Makefile.tests_common
 
 # MSP-430 doesn't support C11's atomic functionality yet
-FEATURE_BLACKLIST := arch_msp430
+FEATURES_BLACKLIST += arch_msp430
 
 BOARD_INSUFFICIENT_MEMORY := nucleo32-l031 nucleo32-f031 \
                              nucleo32-f042 nucleo-l053 stm32f0discovery
