@@ -6,8 +6,8 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-: ${RIOTTOOLS:=./dist/tools}
-. ${RIOTTOOLS}/ci/changed_files.sh
+: "${RIOTTOOLS:=./dist/tools}"
+. "${RIOTTOOLS}"/ci/changed_files.sh
 
 EXIT_CODE=0
 
@@ -64,10 +64,10 @@ fi
 : ${COCCINELLE_QUIET:=0}
 
 if [ -z "$*" ]; then
-    coccinelle_checkall ${RIOTTOOLS}/coccinelle/force
+    coccinelle_checkall "${RIOTTOOLS}"/coccinelle/force
 
     COCCINELLE_WARNONLY=1 \
-        coccinelle_checkall ${RIOTTOOLS}/coccinelle/warn
+        coccinelle_checkall "${RIOTTOOLS}"/coccinelle/warn
 else
     for patch in "$@"; do
         coccinelle_checkone "$patch"
