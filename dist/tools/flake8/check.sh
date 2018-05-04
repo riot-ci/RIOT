@@ -32,7 +32,7 @@ ${FLAKE8_CMD} --version &> /dev/null || {
     exit 1
 }
 
-ERRORS=$(${FLAKE8_CMD} --config=${RIOTTOOLS}/flake8/flake8.cfg ${FILES})
+ERRORS=$(${FLAKE8_CMD} --config="${RIOTTOOLS}"/flake8/flake8.cfg ${FILES})
 
 if [ -n "${ERRORS}" ]
 then
