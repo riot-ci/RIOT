@@ -20,8 +20,6 @@
  * @}
  */
 
-#include <avr/cpufunc.h>
-#include <avr/interrupt.h>
 #include <stdio.h>
 
 #include "irq.h"
