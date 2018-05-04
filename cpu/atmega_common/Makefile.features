@@ -1,1 +1,3 @@
 FEATURES_PROVIDED += periph_pm
+FEATURES_PROVIDED += arch_avr8
+FEATURES_PROVIDED += arch_8bit
