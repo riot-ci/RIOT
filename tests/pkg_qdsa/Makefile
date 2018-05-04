@@ -1,9 +1,8 @@
 include ../Makefile.tests_common
 
-USEMODULE += posix
-USEMODULE += pthread
+USEMODULE += random
 
-TEST_ON_CI_WHITELIST += all
+USEPKG += qDSA
 
 include $(RIOTBASE)/Makefile.include
 
