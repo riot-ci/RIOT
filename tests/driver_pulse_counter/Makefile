@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-FEATURE_BLACKLIST := arch_msp430
+FEATURES_BLACKLIST := arch_msp430
 
 USEMODULE += pulse_counter
 
