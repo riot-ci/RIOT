@@ -1,7 +1,10 @@
 include ../Makefile.tests_common
 
-FEATURE_BLACKLIST := arch_msp430
+USEMODULE += random
 
-USEMODULE += pulse_counter
+USEPKG += qDSA
 
 include $(RIOTBASE)/Makefile.include
+
+test:
+	tests/01-run.py
