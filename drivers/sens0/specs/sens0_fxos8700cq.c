@@ -20,6 +20,7 @@
  * @}
  */
 
+#include <stddef.h> /* for NULL */
 #include "saul.h"
 #include "sens0.h"
 #include "sens0/saul.h"
