@@ -30,21 +30,22 @@
  */
 #define INTERVAL            (1LU * US_PER_SEC)
 
+
 /* The sensor configuration below was written for a FRDM-K64F board with a
  * FRDM-STBC-AGM01 9DOF shield, but might work on other boards, especially other
  * NXP FRDM variants */
 static const sens0_i2c_t sens0devs[] = {
     {
         .specs = &sens0_specs_fxos8700cq,
-        .params = &(sens0_i2c_params_t){ .i2c = I2C_0, .addr = 0x1d, },
+        .params = &(sens0_i2c_params_t){ .i2c = I2C_DEV(0), .addr = 0x1d, },
     },
     {
         .specs = &sens0_specs_fxos8700cq,
-        .params = &(sens0_i2c_params_t){ .i2c = I2C_0, .addr = 0x1e, },
+        .params = &(sens0_i2c_params_t){ .i2c = I2C_DEV(0), .addr = 0x1e, },
     },
     {
         .specs = &sens0_specs_fxas21002c,
-        .params = &(sens0_i2c_params_t){ .i2c = I2C_0, .addr = 0x20, },
+        .params = &(sens0_i2c_params_t){ .i2c = I2C_DEV(0), .addr = 0x20, },
     },
 };
 static saul_reg_t saul_entries[] = {
