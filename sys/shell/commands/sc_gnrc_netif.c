@@ -60,6 +60,7 @@ static const struct {
     { "ack_req", NETOPT_ACK_REQ },
     { "autoack", NETOPT_AUTOACK },
     { "autocca", NETOPT_AUTOCCA },
+    { "busy", NETOPT_BUSY },
     { "csma", NETOPT_CSMA },
     { "encrypt", NETOPT_ENCRYPTION },
     { "mac_no_sleep", NETOPT_MAC_NO_SLEEP },
@@ -71,7 +72,8 @@ static const struct {
     { "rtr_adv", NETOPT_IPV6_SND_RTR_ADV },
     { "iq_invert", NETOPT_IQ_INVERT },
     { "rx_single", NETOPT_SINGLE_RECEIVE },
-    { "chan_hop", NETOPT_CHANNEL_HOP }
+    { "chan_hop", NETOPT_CHANNEL_HOP },
+    { "checksum", NETOPT_CHECKSUM }
 };
 
 /* utility functions */
@@ -146,10 +148,12 @@ static void _set_usage(char *cmd_name)
          "       * \"addr\" - sets (short) address\n"
          "       * \"addr_long\" - sets long address\n"
          "       * \"addr_short\" - alias for \"addr\"\n"
+         "       * \"busy\" - set busy mode on-off\n"
          "       * \"cca_threshold\" - set ED threshold during CCA in dBm\n"
          "       * \"freq\" - sets the \"channel\" center frequency\n"
          "       * \"channel\" - sets the frequency channel\n"
          "       * \"chan\" - alias for \"channel\"\n"
+         "       * \"checksum\" - set checksumming on-off\n"
          "       * \"csma_retries\" - set max. number of channel access attempts\n"
          "       * \"encrypt\" - set the encryption on-off\n"
          "       * \"hop_limit\" - set hop limit\n"
@@ -274,6 +278,14 @@ static void _print_netopt(netopt_t opt)
 
         case NETOPT_CODING_RATE:
             printf("coding rate");
+            break;
+
+        case NETOPT_CHECKSUM:
+            printf("checksum");
+            break;
+
+        case NETOPT_BUSY:
+            printf("busy");
             break;
 
         default:
