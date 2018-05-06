@@ -60,6 +60,7 @@ static const struct {
     { "ack_req", NETOPT_ACK_REQ },
     { "autoack", NETOPT_AUTOACK },
     { "autocca", NETOPT_AUTOCCA },
+    { "busy", NETOPT_BUSY },
     { "csma", NETOPT_CSMA },
     { "encrypt", NETOPT_ENCRYPTION },
     { "mac_no_sleep", NETOPT_MAC_NO_SLEEP },
@@ -147,6 +148,7 @@ static void _set_usage(char *cmd_name)
          "       * \"addr\" - sets (short) address\n"
          "       * \"addr_long\" - sets long address\n"
          "       * \"addr_short\" - alias for \"addr\"\n"
+         "       * \"busy\" - set busy mode on-off\n"
          "       * \"cca_threshold\" - set ED threshold during CCA in dBm\n"
          "       * \"freq\" - sets the \"channel\" center frequency\n"
          "       * \"channel\" - sets the frequency channel\n"
@@ -280,6 +282,10 @@ static void _print_netopt(netopt_t opt)
 
         case NETOPT_CHECKSUM:
             printf("checksum");
+            break;
+
+        case NETOPT_BUSY:
+            printf("busy");
             break;
 
         default:
