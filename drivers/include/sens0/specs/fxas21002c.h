@@ -19,8 +19,8 @@
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
-#ifndef SENS0_FXAS21002C_H
-#define SENS0_FXAS21002C_H
+#ifndef SENS0_SPECS_FXAS21002C_H
+#define SENS0_SPECS_FXAS21002C_H
 
 #include "sens0.h"
 #include "saul.h"
@@ -42,6 +42,6 @@ extern const saul_driver_t sens0_saul_drv_fxas21002c_i2c;
 }
 #endif
 
-#endif /* SENS0_FXAS21002C_H */
+#endif /* SENS0_SPECS_FXAS21002C_H */
 
 /** @} */

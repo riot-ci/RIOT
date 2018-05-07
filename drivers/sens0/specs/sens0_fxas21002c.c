@@ -21,10 +21,11 @@
  */
 
 #include <stddef.h> /* for NULL */
-#include "saul.h"
 #include "sens0.h"
-#include "sens0/saul.h"
-#include "sens0/specs/sens0_fxas21002c.h"
+#include "sens0/specs/fxas21002c.h"
+#ifdef MODULE_SAUL
+#include "saul.h"
+#endif
 
 static const sens0_reg_t sens0_fxas21002c_reset_regs[] = {
     { .reg = 0x13u, .value = 0x40u, /* CTRL_REG1, perform reset, will auto clear */ },
@@ -66,8 +67,10 @@ const sens0_specs_t sens0_specs_fxas21002c = {
     .power_value_standby = 0x00u, /* STANDBY mode */
 };
 
+#ifdef MODULE_SAUL
 const saul_driver_t sens0_saul_drv_fxas21002c_i2c = {
     .read = sens0_i2c_read_output0,
     .write = saul_notsup,
     .type = SAUL_SENSE_GYRO,
 };
+#endif /* MODULE_SAUL */
