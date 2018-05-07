@@ -21,9 +21,11 @@
 #include "xtimer.h"
 #include "sens0.h"
 #include "sens0/i2c.h"
-#include "sens0/specs/sens0_fxos8700cq.h"
-#include "sens0/specs/sens0_fxas21002c.h"
+#include "sens0/specs/fxos8700cq.h"
+#include "sens0/specs/fxas21002c.h"
+#ifdef MODULE_SAUL_REG
 #include "saul_reg.h"
+#endif
 
 /**
  * @brief   Read sensors every second
@@ -48,6 +50,7 @@ static const sens0_i2c_t sens0devs[] = {
         .params = &(sens0_i2c_params_t){ .i2c = I2C_DEV(0), .addr = 0x20, },
     },
 };
+#ifdef MODULE_SAUL_REG
 static saul_reg_t saul_entries[] = {
     { .name = "sens0_frdm_acc", .dev = (void *)&sens0devs[0], .driver = &sens0_saul_drv_fxos8700cq_i2c_acc, },
     { .name = "sens0_frdm_mag", .dev = (void *)&sens0devs[0], .driver = &sens0_saul_drv_fxos8700cq_i2c_mag, },
@@ -55,6 +58,7 @@ static saul_reg_t saul_entries[] = {
     { .name = "sens0_agm01_mag", .dev = (void *)&sens0devs[1], .driver = &sens0_saul_drv_fxos8700cq_i2c_mag, },
     { .name = "sens0_agm01_gyro", .dev = (void *)&sens0devs[2], .driver = &sens0_saul_drv_fxas21002c_i2c, },
 };
+#endif /* MODULE_SAUL_REG */
 
 int main(void)
 {
@@ -63,12 +67,15 @@ int main(void)
     puts("Sens0 test application");
 
     puts("Initialize sensors");
+#ifdef MODULE_SAUL_REG
     unsigned j = 0;
+#endif /* MODULE_SAUL_REG */
     for (unsigned k = 0; k < sizeof(sens0devs) / sizeof(sens0devs[0]); ++k) {
         const sens0_i2c_t *s0 = &sens0devs[k];
         int res = sens0_i2c_init(s0);
         if (res < 0) {
             printf("sens0 init %u failed, res = %d\n", k, res);
+#ifdef MODULE_SAUL_REG
             /* Skip all SAUL entries for this device to avoid leaving entries
              * for uninitialized/missing devices */
             /* This assumes the saul_entries array is sorted in the same order
@@ -77,15 +84,18 @@ int main(void)
                    (saul_entries[j].dev == s0)) {
                 ++j;
             }
+#endif /* MODULE_SAUL_REG */
             continue;
         }
         /* Bring sensor out of standby */
         sens0_i2c_set_active(s0);
+#ifdef MODULE_SAUL_REG
         while ((j < sizeof(saul_entries) / sizeof(saul_entries[0])) &&
                (saul_entries[j].dev == s0)) {
             saul_reg_add(&(saul_entries[j]));
             ++j;
         }
+#endif /* MODULE_SAUL_REG */
     }
 
     while (1) {
@@ -103,6 +113,7 @@ int main(void)
                 phydat_dump(&buf, dim);
             }
         }
+#ifdef MODULE_SAUL_REG
         puts("SAUL devices:");
         saul_reg_t *dev = saul_reg;
 
@@ -118,6 +129,7 @@ int main(void)
             phydat_dump(&buf, dim);
             dev = dev->next;
         }
+#endif /* MODULE_SAUL_REG */
         puts("\n##########################");
 
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
