@@ -17,7 +17,7 @@ else
     CRESET=
 fi
 
-: "${RIOTTOOLS:=./dist/tools}"
+: "${RIOTTOOLS:=${PWD}/dist/tools}"
 . "${RIOTTOOLS}"/ci/changed_files.sh
 
 FILES=$(FILEREGEX='(?=*.py$|pyterm$)' changed_files)
