@@ -8,4 +8,4 @@ ifeq (1,$(EFM32_TNRG))
   FEATURES_PROVIDED += periph_hwrng
 endif
 
--include $(RIOTCPU)/cortexm_common/Makefile.features
+include $(RIOTCPU)/cortexm_common/Makefile.features
