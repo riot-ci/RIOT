@@ -7,7 +7,8 @@ PKG_BUILDDIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
 .PHONY: all
 
 all: Makefile.lua
-	@cp Makefile.lua $(PKG_BUILDDIR)
-	"$(MAKE)" -C $(PKG_BUILDDIR) -f Makefile.lua
+	rm -f $(PKG_BUILDDIR)/makefile
+	@cp Makefile.lua $(PKG_BUILDDIR)/Makefile
+	"$(MAKE)" -C $(PKG_BUILDDIR)
 
 include $(RIOTBASE)/pkg/pkg.mk

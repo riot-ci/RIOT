@@ -14,8 +14,10 @@ local _R_ERROR = 3
     @return code_or_msg     either code (_R_EVAL) or a message (_R_ERROR) or nil
                             (_R_CONT, _R_EXIT).
 ]]
+
 local function re()
     io.write("L> ")
+    io.flush()
     local ln = io.read()
 
     if not ln then
@@ -35,7 +37,8 @@ local function re()
             function ()
                 coroutine.yield(ln.."\n")
                 while 1 do
-                    io.write("L.. ");
+                    io.write("L.. ")
+                    io.flush()
                     local l = io.read()
                     if #l ~= 0 then
                         l = l.."\n"
@@ -64,6 +67,8 @@ local function re()
 end
 
 local function repl()
+    io.write("Welcome to the interactive interpreter\n");
+
     while 1 do
         local action, fn_or_message = re()
 
@@ -78,7 +83,7 @@ local function repl()
             print()
             return
         elseif action == _R_ERROR then
-            print("Compile error:", msg)
+            print("Compile error:", fn_or_message)
         end -- (action == _R_CONT)
     end
 end

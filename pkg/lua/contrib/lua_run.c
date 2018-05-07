@@ -133,10 +133,11 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
                             uint16_t modmask, int *retval)
 {
     jmp_buf jump_buffer;
-    volatile lua_State *L = NULL;
+    lua_State * volatile L = NULL;
     volatile int tmp_retval = 0; /* we need to make it volatile because of the
                                     setjmp/longjmp */
-    int status = LUAR_EXIT, compilation_result;
+    volatile int status = LUAR_EXIT;
+    int compilation_result;
 
     if(setjmp(jump_buffer)) { /* We'll teleport back here if something goes wrong*/
         status = LUAR_INTERNAL_ERR;

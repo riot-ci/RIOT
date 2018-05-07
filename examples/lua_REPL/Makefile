@@ -1,4 +1,4 @@
-APPLICATION = lua
+APPLICATION = lua_repl
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
@@ -11,20 +11,17 @@ RIOTBASE ?= $(CURDIR)/../..
 # development process:
 DEVELHELP ?= 1
 
+CFLAGS_OPT = -Og
+
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-USEMODULE += ps
-USEMODULE += shell
-USEMODULE += shell_commands
+# This is a lot of stack, should be fixed in the future.
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=8192
 
-ifneq ($(BOARD),native)
-# This stack size is large enough to run Lua print() functions of
-# various lengths. Other functions untested.
-CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
-endif
-
+# USEMODULE += tlsf-malloc
 USEPKG += lua
+#USEMODULE += newlib
 
 include $(RIOTBASE)/Makefile.include
 
