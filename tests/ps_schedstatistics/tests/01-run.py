@@ -8,6 +8,7 @@
 
 import os
 import sys
+import time
 
 PS_EXPECTED = (
     ('\tpid | name                 | state    Q | pri | stack  ( used) | '
@@ -40,8 +41,10 @@ def _check_startup(child):
 
 def _check_help(child):
     child.sendline('')
-    child.expect('>')
+    child.expect('> ')
+    time.sleep(0.1)
     child.sendline('help')
+    time.sleep(0.5)
     child.expect_exact('Command              Description')
     child.expect_exact('---------------------------------------')
     child.expect_exact('reboot               Reboot the node')
