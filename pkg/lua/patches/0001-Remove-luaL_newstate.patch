@@ -1,7 +1,7 @@
 From ef0650e050057db5af2e0b4f934f294656c261a7 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Tue, 24 Apr 2018 16:38:37 +0200
-Subject: [PATCH] Remove luaL_newstate.
+Subject: [PATCH 1/5] Remove luaL_newstate.
 
 ---
  lauxlib.c | 25 -------------------------
@@ -9,7 +9,7 @@ Subject: [PATCH] Remove luaL_newstate.
  2 files changed, 27 deletions(-)
 
 diff --git a/lauxlib.c b/lauxlib.c
-index 7b14ca4..018a434 100644
+index 7b14ca4d..018a4347 100644
 --- a/lauxlib.c
 +++ b/lauxlib.c
 @@ -1005,31 +1005,6 @@ LUALIB_API const char *luaL_gsub (lua_State *L, const char *s, const char *p,
@@ -45,7 +45,7 @@ index 7b14ca4..018a434 100644
    const lua_Number *v = lua_version(L);
    if (sz != LUAL_NUMSIZES)  /* check numeric types */
 diff --git a/lauxlib.h b/lauxlib.h
-index 1d65c97..77d1494 100644
+index 1d65c975..77d1494d 100644
 --- a/lauxlib.h
 +++ b/lauxlib.h
 @@ -89,8 +89,6 @@ LUALIB_API int (luaL_loadbufferx) (lua_State *L, const char *buff, size_t sz,
@@ -58,5 +58,5 @@ index 1d65c97..77d1494 100644
  
  LUALIB_API const char *(luaL_gsub) (lua_State *L, const char *s, const char *p,
 -- 
-2.1.4
+2.17.0
 
