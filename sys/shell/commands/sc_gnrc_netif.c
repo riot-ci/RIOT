@@ -60,7 +60,6 @@ static const struct {
     { "ack_req", NETOPT_ACK_REQ },
     { "autoack", NETOPT_AUTOACK },
     { "autocca", NETOPT_AUTOCCA },
-    { "busy", NETOPT_BUSY },
     { "csma", NETOPT_CSMA },
     { "encrypt", NETOPT_ENCRYPTION },
     { "mac_no_sleep", NETOPT_MAC_NO_SLEEP },
@@ -68,6 +67,7 @@ static const struct {
     { "iphc", NETOPT_6LO_IPHC },
     { "preload", NETOPT_PRELOADING },
     { "promisc", NETOPT_PROMISCUOUSMODE },
+    { "phy_busy", NETOPT_PHY_BUSY },
     { "raw", NETOPT_RAWMODE },
     { "rtr_adv", NETOPT_IPV6_SND_RTR_ADV },
     { "iq_invert", NETOPT_IQ_INVERT },
@@ -148,7 +148,6 @@ static void _set_usage(char *cmd_name)
          "       * \"addr\" - sets (short) address\n"
          "       * \"addr_long\" - sets long address\n"
          "       * \"addr_short\" - alias for \"addr\"\n"
-         "       * \"busy\" - set busy mode on-off\n"
          "       * \"cca_threshold\" - set ED threshold during CCA in dBm\n"
          "       * \"freq\" - sets the \"channel\" center frequency\n"
          "       * \"channel\" - sets the frequency channel\n"
@@ -164,6 +163,7 @@ static void _set_usage(char *cmd_name)
          "       * \"page\" - set the channel page (IEEE 802.15.4)\n"
          "       * \"pan\" - alias for \"nid\"\n"
          "       * \"pan_id\" - alias for \"nid\"\n"
+         "       * \"phy_busy\" - set busy mode on-off\n"
          "       * \"bw\" - alias for channel bandwidth\n"
          "       * \"sf\" - alias for spreading factor\n"
          "       * \"cr\" - alias for coding rate\n"
@@ -284,8 +284,8 @@ static void _print_netopt(netopt_t opt)
             printf("checksum");
             break;
 
-        case NETOPT_BUSY:
-            printf("busy");
+        case NETOPT_PHY_BUSY:
+            printf("PHY busy");
             break;
 
         default:
