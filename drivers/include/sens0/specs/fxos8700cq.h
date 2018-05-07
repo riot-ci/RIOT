@@ -19,8 +19,8 @@
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
-#ifndef SENS0_FXOS8700CQ_H
-#define SENS0_FXOS8700CQ_H
+#ifndef SENS0_SPECS_FXOS8700CQ_H
+#define SENS0_SPECS_FXOS8700CQ_H
 
 #include "sens0.h"
 #include "saul.h"
@@ -46,6 +46,6 @@ extern const saul_driver_t sens0_saul_drv_fxos8700cq_i2c_mag;
 }
 #endif
 
-#endif /* SENS0_FXOS8700CQ_H */
+#endif /* SENS0_SPECS_FXOS8700CQ_H */
 
 /** @} */
