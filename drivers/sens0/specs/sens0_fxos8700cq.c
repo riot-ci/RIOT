@@ -21,10 +21,11 @@
  */
 
 #include <stddef.h> /* for NULL */
-#include "saul.h"
 #include "sens0.h"
-#include "sens0/saul.h"
-#include "sens0/specs/sens0_fxos8700cq.h"
+#include "sens0/specs/fxos8700cq.h"
+#ifdef MODULE_SAUL
+#include "saul.h"
+#endif
 
 static const sens0_reg_t sens0_fxos8700cq_reset_regs[] = {
     { .reg = 0x2bu, .value = 0x40u, /* CTRL_REG2, perform reset, will auto clear */ },
@@ -81,6 +82,7 @@ const sens0_specs_t sens0_specs_fxos8700cq = {
     .power_value_standby = 0x00u,
 };
 
+#ifdef MODULE_SAUL
 const saul_driver_t sens0_saul_drv_fxos8700cq_i2c_acc = {
     .read = sens0_i2c_read_output0,
     .write = saul_notsup,
@@ -92,3 +94,4 @@ const saul_driver_t sens0_saul_drv_fxos8700cq_i2c_mag = {
     .write = saul_notsup,
     .type = SAUL_SENSE_MAG,
 };
+#endif /* MODULE_SAUL */
