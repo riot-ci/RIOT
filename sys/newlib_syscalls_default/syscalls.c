@@ -541,12 +541,12 @@ int _gettimeofday_r(struct _reent *r, struct timeval *restrict tp, void *restric
  *
  * @param[out]  ptms    Not modified.
  *
- * @return  -1, this function always fails.
+ * @return  -1, this function always fails. errno is set to ENOSYS.
  */
-clock_t _times(struct tms *ptms)
+clock_t _times_r(struct _reent *ptr, struct tms *ptms)
 {
     (void)ptms;
+    ptr->_errno = ENOSYS;
 
-    errno = EINVAL;
     return (-1);
 }
