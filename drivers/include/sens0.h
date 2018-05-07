@@ -228,6 +228,37 @@ typedef struct {
     uint8_t  power_value_standby;
 } sens0_specs_t;
 
+/* These functions are prefixed sens0_i2c_, but are located here to avoid
+ * dependency on periph/i2c.h for specs implementations. The specs must be
+ * compilable without any particular hardware interface configured or enabled */
+
+/**
+ * @brief   Read value from the first output channel on the sensor
+ *
+ * This is equivalent to @ref sens0_i2c_read with the @c iout argument bound to 0
+ *
+ * Useful mainly in SAUL driver definitions.
+ */
+int sens0_i2c_read_output0(const void *dev, phydat_t *res);
+
+/**
+ * @brief   Read value from the second output channel on the sensor
+ *
+ * This is equivalent to @ref sens0_i2c_read with the @c iout argument bound to 1
+ *
+ * Useful mainly in SAUL driver definitions.
+ */
+int sens0_i2c_read_output1(const void *dev, phydat_t *res);
+
+/**
+ * @brief   Read value from the third output channel on the sensor
+ *
+ * This is equivalent to @ref sens0_i2c_read with the @c iout argument bound to 2
+ *
+ * Useful mainly in SAUL driver definitions.
+ */
+int sens0_i2c_read_output2(const void *dev, phydat_t *res);
+
 #ifdef __cplusplus
 }
 #endif
