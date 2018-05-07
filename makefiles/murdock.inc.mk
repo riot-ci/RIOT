@@ -2,8 +2,13 @@
 # This file contains helper targets used by the CI.
 #
 
+# specify flash file for nrf52dk
+ifeq (nrf52dk,$(BOARD))
+  FLASHFILE:=$(HEXFILE)
+else
 # (HACK) get actual flash binary from FFLAGS.
-FLASHFILE:=$(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
+  FLASHFILE:=$(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
+endif
 
 #
 # This target will run "make test" on the CI cluster.
