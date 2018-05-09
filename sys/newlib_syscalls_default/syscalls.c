@@ -539,13 +539,12 @@ int _gettimeofday_r(struct _reent *r, struct timeval *restrict tp, void *restric
 /**
  * Current process times (not implemented).
  *
- * @param[out]  ptms    Filled with zeros.
+ * @param[out]  ptms    Not modified.
  *
- * @return  Zero.
+ * @return  -1, this function always fails.
  */
 clock_t _times(struct tms *ptms)
 {
-    memset(ptms, 0, sizeof(*ptms));
-
-    return 0;
+    errno = EINVAL;
+    return (-1);
 }
