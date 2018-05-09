@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     test
+ * @ingroup     tests
  * @{
  *
  * @file
@@ -23,7 +23,6 @@
 
 #include "fmt.h"
 #include "tinycrypt/aes.h"
-
 
 static void dump_block(const char *head, const uint8_t *block)
 {
