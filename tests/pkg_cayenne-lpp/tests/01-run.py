@@ -3,11 +3,12 @@
 import os
 import sys
 
+NB_TESTS = 3
+
 
 def testfunc(child):
-    child.expect('[0-9A-F]{16}')
-    child.expect('[0-9A-F]{24}')
-    child.expect('[0-9A-F]{22}')
+    for test in range(1, NB_TESTS + 1):
+        child.expect_exact('Test {}: SUCCESS'.format(test))
 
 
 if __name__ == "__main__":
