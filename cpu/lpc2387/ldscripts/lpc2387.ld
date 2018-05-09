@@ -9,10 +9,10 @@
 /* specify the LPC2387 memory areas (see LPC2387 datasheet page 15)  */
 MEMORY
 {
-    flash               : ORIGIN = 0,          LENGTH = 504K    /* FLASH ROM 512kByte without ISP bootloader*/
+    flash (rx)          : ORIGIN = 0,          LENGTH = 504K    /* FLASH ROM 512kByte without ISP bootloader*/
     infomem             : ORIGIN = 0x0007D000, LENGTH = 4K      /* Last sector in FLASH ROM for config data */
     ram_battery         : ORIGIN = 0xE0084000, LENGTH = 2K      /* Battery RAM                              */
-    ram                 : ORIGIN = 0x40000000, LENGTH = 64K     /* LOCAL ON-CHIP STATIC RAM                 */
+    ram (w!rx)          : ORIGIN = 0x40000000, LENGTH = 64K     /* LOCAL ON-CHIP STATIC RAM                 */
     ram_usb             : ORIGIN = 0x7FD00000, LENGTH = 16K     /* USB RAM  !!! first 1024 bytes are occupied from GPDMA for MCI */
     ram_ethernet        : ORIGIN = 0x7FE00000, LENGTH = 16K     /* ethernet RAM                             */
 }
@@ -184,7 +184,7 @@ SECTIONS
      * collect all initialized .data sections that go into RAM
      * initial values get placed at the end of .text in flash
      */
-    .data : AT (_etext)
+    .data :
     {
         . = ALIGN(4);                   /* ensure data is aligned so relocation can use 4-byte operations */
         _data = .;                      /* create a global symbol marking the start of the .data section  */
@@ -209,7 +209,7 @@ SECTIONS
         KEEP(*(SORT(.fini_array.*)))
             KEEP(*(.fini_array))
             PROVIDE_HIDDEN (__fini_array_end = .);
-    } >ram                              /* put all the above into RAM (but load the LMA copy into FLASH) */
+    } > ram AT> flash                   /* put all the above into RAM (but load the LMA copy into FLASH) */
     . = ALIGN(4);                       /* ensure data is aligned so relocation can use 4-byte operations */
     _edata = .;                         /* define a global symbol marking the end of the .data section  */
 
