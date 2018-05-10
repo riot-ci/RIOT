@@ -7,8 +7,8 @@ NB_TESTS = 3
 
 
 def testfunc(child):
-    for test in range(1, NB_TESTS + 1):
-        child.expect_exact('Test {}:'.format(test))
+    for test in range(NB_TESTS):
+        child.expect_exact('Test {}:'.format(test + 1))
         child.expect('Buffer: [0-9A-Z]')
         child.expect_exact('Result: SUCCESS')
 
