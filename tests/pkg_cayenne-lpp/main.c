@@ -42,6 +42,7 @@ static const uint8_t test_buffer3[] = TEST_BUFFER3;
 
 static void _print_buffer(cayenne_lpp_t *lpp)
 {
+    printf("Buffer: ");
     for (uint8_t i = 0; i < lpp->cursor; ++i) {
         printf("%02X", lpp->buffer[i]);
     }
@@ -50,47 +51,50 @@ static void _print_buffer(cayenne_lpp_t *lpp)
 
 int main(void)
 {
-    puts("Cayenne LPP test application");
+    puts("Cayenne LPP test application\n");
 
     /* generate payload like the one given as example at
      * https://mydevices.com/cayenne/docs_stage/lora/#lora-cayenne-low-power-payload
      */
     /* Device with 2 temperature sensors */
+    puts("Test 1:");
+    puts("-------");
     cayenne_lpp_add_temperature(&lpp, 3, 27.2);
     cayenne_lpp_add_temperature(&lpp, 5, 25.5);
     _print_buffer(&lpp);
     /* check buffer */
-    printf("Test 1: ");
     if (memcmp(lpp.buffer, test_buffer1, lpp.cursor) != 0) {
-        puts("FAILED");
+        puts("Result: FAILED");
         return 1;
     }
-    puts("SUCCESS");
+    puts("Result: SUCCESS\n");
 
     /* Device with temperature and acceleration sensors */
+    puts("Test 2:");
+    puts("-------");
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_temperature(&lpp, 1, -4.1);
     cayenne_lpp_add_accelerometer(&lpp, 6, 1.234, -1.234, 0);
     _print_buffer(&lpp);
     /* check buffer */
-    printf("Test 2: ");
     if (memcmp(lpp.buffer, test_buffer2, lpp.cursor) != 0) {
-        puts("FAILED");
+        puts("Result: FAILED");
         return 1;
     }
-    puts("SUCCESS");
+    puts("Result: SUCCESS\n");
 
     /* Device with GPS */
+    puts("Test 3:");
+    puts("-------");
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_gps(&lpp, 1, 42.3519, -87.9094, 10);
     _print_buffer(&lpp);
     /* check buffer */
-    printf("Test 3: ");
     if (memcmp(lpp.buffer, test_buffer3, lpp.cursor) != 0) {
-        puts("FAILED");
+        puts("Result: FAILED");
         return 1;
     }
-    puts("SUCCESS");
+    puts("Result: SUCCESS");
 
     return 0;
 }
