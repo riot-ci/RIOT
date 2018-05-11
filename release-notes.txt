@@ -50,6 +50,7 @@ Networking
 
 Packages
 --------
+    + cayenne-lpp: A Cayenne LPP library written in C
     + HACL*: a formally verified cryptographic library written in F*
     + qDSA: Small and Secure Digital Signatures with Curve-based
             Diffie--Hellman Key Pairs
