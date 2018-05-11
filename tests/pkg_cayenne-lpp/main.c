@@ -40,13 +40,12 @@ static const uint8_t test_buffer1[] = TEST_BUFFER1;
 static const uint8_t test_buffer2[] = TEST_BUFFER2;
 static const uint8_t test_buffer3[] = TEST_BUFFER3;
 
-static void _print_buffer(cayenne_lpp_t *lpp)
+static void _print_buffer(cayenne_lpp_t *lpp, const char *msg)
 {
-    printf("Buffer: ");
+    printf("%s: ", msg);
     for (uint8_t i = 0; i < lpp->cursor; ++i) {
         printf("%02X", lpp->buffer[i]);
     }
-    puts("");
 }
 
 int main(void)
@@ -61,13 +60,15 @@ int main(void)
     puts("-------");
     cayenne_lpp_add_temperature(&lpp, 3, 27.2);
     cayenne_lpp_add_temperature(&lpp, 5, 25.5);
-    _print_buffer(&lpp);
+    _print_buffer(&lpp, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer1, lpp.cursor) != 0) {
-        puts("Result: FAILED");
+        puts("");
+        _print_buffer(&lpp, "Expected");
+        puts(" FAILED");
         return 1;
     }
-    puts("Result: SUCCESS\n");
+    puts(" SUCCESS\n");
 
     /* Device with temperature and acceleration sensors */
     puts("Test 2:");
@@ -75,26 +76,30 @@ int main(void)
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_temperature(&lpp, 1, -4.1);
     cayenne_lpp_add_accelerometer(&lpp, 6, 1.234, -1.234, 0);
-    _print_buffer(&lpp);
+    _print_buffer(&lpp, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer2, lpp.cursor) != 0) {
-        puts("Result: FAILED");
+        puts("");
+        _print_buffer(&lpp, "Expected");
+        puts(" FAILED");
         return 1;
     }
-    puts("Result: SUCCESS\n");
+    puts(" SUCCESS\n");
 
     /* Device with GPS */
     puts("Test 3:");
     puts("-------");
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_gps(&lpp, 1, 42.3519, -87.9094, 10);
-    _print_buffer(&lpp);
+    _print_buffer(&lpp, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer3, lpp.cursor) != 0) {
-        puts("Result: FAILED");
+        puts("");
+        _print_buffer(&lpp, "Expected");
+        puts(" FAILED");
         return 1;
     }
-    puts("Result: SUCCESS");
+    puts(" SUCCESS");
 
     return 0;
 }
