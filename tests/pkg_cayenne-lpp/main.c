@@ -40,11 +40,11 @@ static const uint8_t test_buffer1[] = TEST_BUFFER1;
 static const uint8_t test_buffer2[] = TEST_BUFFER2;
 static const uint8_t test_buffer3[] = TEST_BUFFER3;
 
-static void _print_buffer(cayenne_lpp_t *lpp, const char *msg)
+static void _print_buffer(const uint8_t *buffer, size_t len, const char *msg)
 {
     printf("%s: ", msg);
-    for (uint8_t i = 0; i < lpp->cursor; ++i) {
-        printf("%02X", lpp->buffer[i]);
+    for (uint8_t i = 0; i < len; i++) {
+        printf("%02X", buffer[i]);
     }
 }
 
@@ -60,11 +60,12 @@ int main(void)
     puts("-------");
     cayenne_lpp_add_temperature(&lpp, 3, 27.2);
     cayenne_lpp_add_temperature(&lpp, 5, 25.5);
-    _print_buffer(&lpp, "Result");
+    _print_buffer(lpp.buffer, lpp.cursor, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer1, lpp.cursor) != 0) {
         puts("");
-        _print_buffer(&lpp, "Expected");
+        _print_buffer(test_buffer1, 2 * CAYENNE_LPP_TEMPERATURE_SIZE,
+                      "Expected");
         puts(" FAILED");
         return 1;
     }
@@ -76,11 +77,13 @@ int main(void)
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_temperature(&lpp, 1, -4.1);
     cayenne_lpp_add_accelerometer(&lpp, 6, 1.234, -1.234, 0);
-    _print_buffer(&lpp, "Result");
+    _print_buffer(lpp.buffer, lpp.cursor, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer2, lpp.cursor) != 0) {
         puts("");
-        _print_buffer(&lpp, "Expected");
+        _print_buffer(test_buffer2,
+                      CAYENNE_LPP_TEMPERATURE_SIZE + CAYENNE_LPP_ACCELEROMETER_SIZE,
+                      "Expected");
         puts(" FAILED");
         return 1;
     }
@@ -91,11 +94,11 @@ int main(void)
     puts("-------");
     cayenne_lpp_reset(&lpp);
     cayenne_lpp_add_gps(&lpp, 1, 42.3519, -87.9094, 10);
-    _print_buffer(&lpp, "Result");
+    _print_buffer(lpp.buffer, lpp.cursor, "Result");
     /* check buffer */
     if (memcmp(lpp.buffer, test_buffer3, lpp.cursor) != 0) {
         puts("");
-        _print_buffer(&lpp, "Expected");
+        _print_buffer(test_buffer3, CAYENNE_LPP_GPS_SIZE, "Expected");
         puts(" FAILED");
         return 1;
     }
