@@ -8,6 +8,8 @@ USEMODULE += xtimer
 #CFLAGS += -DSLEEP_PIN=7
 #CFLAGS += -DSLEEP_PORT=PORT_F
 
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:
