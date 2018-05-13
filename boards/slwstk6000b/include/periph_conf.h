@@ -177,6 +177,7 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = MODULE_PIN_F6,
         .loc = USART_ROUTELOC0_RXLOC_LOC0 |
                USART_ROUTELOC0_TXLOC_LOC0,
+        .mode = UART_MODE_8N1,
         .cmu = cmuClock_USART0,
         .irq = USART0_RX_IRQn
     }
