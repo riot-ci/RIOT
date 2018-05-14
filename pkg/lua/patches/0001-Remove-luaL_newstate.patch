@@ -1,7 +1,7 @@
 From ef0650e050057db5af2e0b4f934f294656c261a7 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Tue, 24 Apr 2018 16:38:37 +0200
-Subject: [PATCH 1/5] Remove luaL_newstate.
+Subject: [PATCH 1/7] Remove luaL_newstate.
 
 ---
  lauxlib.c | 25 -------------------------
