@@ -218,6 +218,11 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
 #endif
 #if defined(CPU_MODEL_STM32L496ZG)
     [TIM4_IRQn               ] = isr_tim4,                 /* [30] TIM4 global Interrupt */
+    [TIM5_IRQn               ] = isr_tim5,                 /* [50] TIM5 global Interrupt */
+    [UART5_IRQn              ] = isr_uart5,                /* [53] UART5 global Interrupt */
+    [DFSDM1_FLT2_IRQn        ] = isr_dfsdm1_flt2,          /* [63] DFSDM1 Filter 2 global Interrupt */
+    [OTG_FS_IRQn             ] = isr_otg_fs,               /* [67] USB OTG FS global Interrupt */
+    [SAI2_IRQn               ] = isr_sai2,                 /* [75] Serial Audio Interface 2 global interrupt */
     [LCD_IRQn                ] = isr_lcd,                  /* [78] LCD global interrupt */
     [CRS_IRQn                ] = isr_crs,                  /* [82] CRS global interrupt */
     [I2C4_EV_IRQn            ] = isr_i2c4_ev,              /* [83] I2C4 Event interrupt */
