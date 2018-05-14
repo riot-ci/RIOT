@@ -1,7 +1,7 @@
 From 2e86c4b6b7061b69929d601096e3f0a086ffcc81 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Thu, 3 May 2018 16:55:05 +0200
-Subject: [PATCH 2/5] Allow LUAL_BUFFERSIZE to be defined in the command line.
+Subject: [PATCH 2/7] Allow LUAL_BUFFERSIZE to be defined in the command line.
 
 ---
  luaconf.h | 4 ++++
