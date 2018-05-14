@@ -504,7 +504,7 @@ void gcoap_register_listener(gcoap_listener_t *listener);
  * @param[out] buf      Buffer containing the PDU
  * @param[in] len       Length of the buffer
  * @param[in] code      Request code: GCOAP_[GET|POST|PUT|DELETE]
- * @param[in] path      Resource path
+ * @param[in] path      Resource path, *must* start with '/'
  *
  * @pre @p path not `NULL`
  * @pre @p path must start with `/`
