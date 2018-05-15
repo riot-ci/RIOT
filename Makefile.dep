@@ -718,14 +718,12 @@ ifneq (,$(filter event,$(USEMODULE)))
   USEMODULE += core_thread_flags
 endif
 
-ifneq (,$(filter spiffs,$(USEMODULE)))
-  USEPKG += spiffs
+ifneq (,$(filter spiffs,$(USEPKG)))
   USEMODULE += vfs
   USEMODULE += spiffs_fs
   USEMODULE += mtd
 endif
-ifneq (,$(filter littlefs,$(USEMODULE)))
-  USEPKG += littlefs
+ifneq (,$(filter littlefs,$(USEPKG)))
   USEMODULE += vfs
   USEMODULE += littlefs_fs
   USEMODULE += mtd
