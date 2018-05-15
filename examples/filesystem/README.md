@@ -19,7 +19,7 @@ This example uses `littlefs` as default file system on the whole `mtd`.
 A `constfs` file system is also demonstrated with two files.
 
 All the RIOT file systems are used through the `vfs` interface, and on most
-platforms they can be accessed transparently with `open/close/read/write/...`
+platforms files can be accessed transparently with `open/close/read/write/...`
 functions.
 With newlib, `fopen/fclose/fread/fwrite/...` can also be used transparently.
 
