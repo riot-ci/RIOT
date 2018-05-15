@@ -48,40 +48,20 @@ include $(RIOTBASE)/Makefile.include
 
 LUA_PATH := $(BINDIR)/lua
 
-# add directory of generated *.lua.c files to include path
+# add directory of generated *.lua.h files to include path
 CFLAGS += -I$(LUA_PATH)
 
 # generate .lua.h header files of .lua files
 LUA = $(wildcard *.lua)
 
-LUA_PRECOMPILED := $(LUA:%.lua=$(LUA_PATH)/%.lua.h)
-LUA_MODSREG_C = $(LUA_PATH)/lua_modules.c
-LUA_MODSREG_H = $(LUA_PATH)/lua_modules.h
+LUA_H := $(LUA:%.lua=$(LUA_PATH)/%.lua.h)
 
 $(LUA_PATH)/:
 	@mkdir -p $@
 
-$(LUA_PRECOMPILED): | $(LUA_PATH)/
-$(LUA_PRECOMPILED): $(LUA_PATH)/%.lua.h: %.lua
-	xxd -i $< | sed 's/^unsigned/static const/g' > $@
+$(LUA_H): | $(LUA_PATH)/
+$(LUA_H): $(LUA_PATH)/%.lua.h: %.lua
 
-LUA_PRECOMPILED_NAMES = $(LUA:%.lua=%)
+	xxd -i $< | sed 's/^unsigned/const/g' > $@
 
-$(LUA_MODSREG_H): $(LUA_PRECOMPILED)
-	echo "/* Automatically generated file. DO NOT EDIT */" > $@
-	echo "#ifndef RIOT_APP_LUA_MODULES_H" >> $@
-	echo "#define RIOT_APP_LUA_MODULES_H" >> $@
-	echo '#include "loadlib.h"'
-	echo "extern struct luamodule lua_lmodules[];"
-	echo "#endif /* RIOT_APP_LUA_MODULES_H */" >> $@
-
-$(LUA_MODSREG_C): $(LUA_PRECOMPILED)
-	echo "/* Automatically generated file. DO NOT EDIT */" > $@
-	for n in $(LUA_PRECOMPILED_NAMES) ; do \
-		echo "/* $${n} */" >> $@; \
-		echo "extern const char *$${n}_lua;" >> $@; \
-		echo "extern const int $${n}_lua_len;" >> $@; \
-	done
-	echo "#endif /* RIOT_APP_LUA_MODULES_H */" >> $@
-
-$(RIOTBUILD_CONFIG_HEADER_C): $(LUA_MODSREG)
+$(RIOTBUILD_CONFIG_HEADER_C): $(LUA_H)

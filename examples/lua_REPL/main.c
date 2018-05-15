@@ -24,7 +24,7 @@
 #include "lua_run.h"
 #include "repl.lua.h"
 
-#define MAIN_LUA_MEM_SIZE (20000)
+#define MAIN_LUA_MEM_SIZE (40000)
 
 char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned (__BIGGEST_ALIGNMENT__)));
 
@@ -41,7 +41,8 @@ int main(void)
         status = luaR_do_buffer(repl_lua, repl_lua_len, lua_memory, MAIN_LUA_MEM_SIZE,
                                 BARE_MINIMUM_MODS, &value);
 
-        printf("Exited. status: %d, return code %d\n", status, value);
+        printf("Exited. status: %s, return code %d\n", luaR_strerror(status),
+                                                        value);
         break;
     }
 

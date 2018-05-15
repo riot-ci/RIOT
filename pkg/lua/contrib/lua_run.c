@@ -33,6 +33,17 @@
 #include "lua_run.h"
 #include "lua_loadlib.h"
 
+const char * luaR_str_errors[] = {
+    "No errors",
+    "Error setting up the interpreter",
+    "Error while loading a builtin library",
+    "Cannot find the specified module",
+    "Compilation / syntax error",
+    "Unprotected error (uncaught exception)",
+    "Out of memory",
+    "Internal interpreter error",
+    "Unknown error"
+};
 
 /* The lua docs state the behavior in these cases:
  *
@@ -66,10 +77,28 @@ LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
                                     lua_CFunction panicf)
 {
     lua_State *L;
+    #ifdef LUA_DEBUG
+        Memcontrol *mc = memory;
+    #endif
+
+    /* If we are using the lua debug module, let's reserve a space for the
+     * memcontrol block directly. We don't use the allocator because we lose
+     * the pointer, so we won't be able to free it and we will get a false
+     * positive if we try to check for memory leaks.
+     */
+    #ifdef LUA_DEBUG
+        memory = (Memcontrol *)memory + 1;
+        mem_size -= (uint8_t*)memory - (uint8_t*)mc;
+    #endif
 
     tlsf_t tlsf = tlsf_create_with_pool(memory, mem_size);
 
-    L = lua_newstate(lua_tlsf_alloc, tlsf);
+    #ifdef LUA_DEBUG
+        luaB_init_memcontrol(mc, lua_tlsf_alloc, tlsf);
+        L = luaB_newstate(mc);
+    #else
+        L = lua_newstate(lua_tlsf_alloc, tlsf);
+    #endif
 
     if (L != NULL) {
         lua_atpanic(L, panicf);
@@ -94,6 +123,11 @@ static const luaL_Reg loadedlibs[LUAR_LOAD_O_ALL] = {
 LUALIB_API int luaR_openlibs(lua_State *L, uint16_t modmask)
 {
     int lib_index;
+
+    #ifdef LUA_DEBUG
+        luaL_requiref(L, LUA_TESTLIBNAME, luaB_opentests, 1);
+        lua_pop(L, 1);
+    #endif
 
     for (lib_index = 0; lib_index < LUAR_LOAD_O_ALL;
          lib_index++, modmask >>= 1) {
@@ -206,7 +240,7 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
 luaR_do_error:
 
     if (L != NULL) {
-        lua_close(L);
+        luaR_close(L);
     }
 
     if (retval != NULL) {
@@ -228,6 +262,14 @@ LUALIB_API int luaR_do_buffer(const char *buf, size_t buflen, void *memory,
 {
         return luaR_do_module_or_buf(buf, buflen, "=BUFFER", memory, mem_size,
                                 modmask, retval);
+}
+
+#define N_ERR_STRINGS (sizeof(luaR_str_errors)/sizeof(*luaR_str_errors))
+#define MIN(x, y) (((x)<(y))? (x) : (y))
+
+LUALIB_API const char * luaR_strerror(int errn)
+{
+    return luaR_str_errors[MIN((unsigned int)errn, N_ERR_STRINGS)];
 }
 
 /** @} */
