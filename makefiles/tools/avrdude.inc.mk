@@ -12,4 +12,4 @@ PROGRAMMER_FLAGS = -P $(AVRDUDE_PORT) -b $(PROGRAMMER_SPEED)
 
 # don't force to flash HEXFILE, but set it as default
 FLASHFILE ?= $(HEXFILE)
-FFLAGS += -c $(PROGRAMMER) $(PROGRAMMER_FLAGS) -F -D -U flash:w:$(FLASHFILE)
+FFLAGS += -c $(PROGRAMMER) $(PROGRAMMER_FLAGS) -F -D -U flash:w:$(HEXFILE)
