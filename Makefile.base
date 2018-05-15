@@ -9,7 +9,13 @@ MODULE ?= $(shell basename $(CURDIR))
 
 .PHONY: all $(DIRS:%=ALL--%) $(DIRS:%=CLEAN--%)
 
+# Build a static library if the current module is listed in LIBS
+ifneq (,$(filter $(MODULE),$(LIBS)))
+all: $(BINDIR)/$(MODULE).a ..nothing
+else
+# .. otherwise, build a monolithic object file
 all: $(BINDIR)/$(MODULE).o ..nothing
+endif
 
 ..nothing:
 	@:
