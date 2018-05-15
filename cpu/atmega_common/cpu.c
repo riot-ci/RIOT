@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2017 RWTH Aachen, Josua Arndt
+ * Copyright (C) 2014 Freie Universität Berlin, Hinnerk van Bruinehsen
+ *               2017 RWTH Aachen, Josua Arndt
+ *               2018 Matthew Blue
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +9,17 @@
  */
 
 /**
- * @ingroup     cpu_atmega256rfr2
+ * @ingroup     cpu_atmega_common
  * @{
  *
  * @file
  * @brief       Implementation of the CPU initialization
  *
+ * @author      Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
  * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
  * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
+ * @author      Matthew Blue <matthew.blue.neuro@gmail.com>
+
  * @}
  */
 
@@ -28,6 +33,17 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+#if !defined (CPU_ATMEGA256RFR2)
+/**
+ * @brief Initialize the CPU
+ */
+void cpu_init(void)
+{
+    /* trigger static peripheral initialization */
+    periph_init();
+}
+
+#else
 /*
 * Since this MCU does not feature a software reset, the watchdog timer
 * is being used. It will be set to the shortest time and then force a
@@ -135,3 +151,4 @@ ISR(BAT_LOW_vect, ISR_BLOCK){
     DEBUG("BAT_LOW \n");
     __exit_isr();
 }
+#endif
