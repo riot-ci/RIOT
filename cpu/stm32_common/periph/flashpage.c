@@ -73,8 +73,10 @@ static void _unlock(void)
 
 static void _lock(void)
 {
-    DEBUG("[flashpage] locking the flash module\n");
-    CNTRL_REG |= CNTRL_REG_LOCK;
+    if (!(CNTRL_REG & CNTRL_REG_LOCK)) {
+        DEBUG("[flashpage] locking the flash module\n");
+        CNTRL_REG |= CNTRL_REG_LOCK;
+    }
 }
 
 static void _erase_page(void *page_addr)
@@ -89,12 +91,15 @@ static void _erase_page(void *page_addr)
     stmclk_enable_hsi();
 #endif
 
-   /* unlock the flash module */
+    DEBUG("[flashpage] erase: unlocking the flash module\n");
     _unlock();
 
     /* make sure no flash operation is ongoing */
     DEBUG("[flashpage] erase: waiting for any operation to finish\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
+    if (FLASH->SR & FLASH_SR_EOP) {
+        FLASH->SR &= ~(FLASH_SR_EOP);
+    }
     /* set page erase bit and program page address */
     DEBUG("[flashpage] erase: setting the erase bit\n");
     CNTRL_REG |= FLASH_CR_PER;
@@ -111,11 +116,14 @@ static void _erase_page(void *page_addr)
 #endif
     DEBUG("[flashpage] erase: wait as long as device is busy\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
+    if (FLASH->SR & FLASH_SR_EOP) {
+        FLASH->SR &= ~(FLASH_SR_EOP);
+    }
     /* reset PER bit */
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
 
-    /* lock the flash module again */
+    DEBUG("[flashpage] erase: now locking the flash module again\n");
     _lock();
 
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
@@ -152,10 +160,10 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     stmclk_enable_hsi();
 #endif
 
-    DEBUG("[flashpage_raw] unlocking the flash module\n");
+    DEBUG("[flashpage_raw] write: unlocking the flash module\n");
     _unlock();
 
-    DEBUG("[flashpage] write: now writing the data\n");
+    DEBUG("[flashpage_raw] write: now writing the data\n");
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
     /* set PG bit and program page to flash */
     CNTRL_REG |= FLASH_CR_PG;
@@ -164,13 +172,16 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
         while (FLASH->SR & FLASH_SR_BSY) {}
+        if (FLASH->SR & FLASH_SR_EOP) {
+            FLASH->SR &= ~(FLASH_SR_EOP);
+        }
     }
 
     /* clear program bit again */
     CNTRL_REG &= ~(FLASH_CR_PG);
-    DEBUG("[flashpage] write: done writing data\n");
+    DEBUG("[flashpage_raw] write: done writing data\n");
 
-    DEBUG("flashpage_raw] now locking the flash module again\n");
+    DEBUG("flashpage_raw] write: now locking the flash module again\n");
     _lock();
 
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
