@@ -105,6 +105,21 @@ enum LUAR_ERRORS {
 };
 
 /**
+ * Human-readable description of the errors
+ */
+extern const char * luaR_str_errors[];
+
+/**
+ * Return a string describing an error from LUAR_ERRORS.
+ *
+ * @param   errn    Error number as returned by luaR_do_buffer() or
+ *                  luaR_do_buffer()
+ *
+ * @return A string describing the error, or "Unknown error".
+ */
+LUALIB_API const char * luaR_strerror(int errn);
+
+/**
  * Initialize a lua state and set the panic handler.
  *
  * @todo    Use a per-state allocator
@@ -125,13 +140,29 @@ LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
 
 
 /**
+ * Terminate the lua state.
+ *
+ * You must call this function if you want the finalizers (the __gc metamethods)
+ * to be called.
+ */
+#ifndef LUA_DEBUG
+    #define luaR_close lua_close
+#else
+    #define luaR_close luaB_close
+#endif /* LUA_DEBUG */
+
+/**
  * Open builtin libraries.
  *
  * This is like luaL_openlibs but it allows selecting which libraries will
  * be loaded.
+ *
  * Libraries are loaded in the order specified by the LUAR_LOAD_ORDER enum. If
  * there is an error the load sequence is aborted and the index of the library
  * that failed is reported.
+ *
+ * If debuging is enabled (compile with the LUA_DEBUG macro), then the test
+ * library will be unconditionally loaded.
  *
  * @param   L           Lua state
  * @param   modmask     Binary mask that indicates which modules should be
