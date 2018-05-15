@@ -123,15 +123,15 @@ static void _erase_page(void *page_addr)
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
 
+    DEBUG("[flashpage] erase: now locking the flash module again\n");
+    _lock();
+
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
     /* restore the HSI state */
     if (!hsi_state) {
         stmclk_disable_hsi();
     }
 #endif
-
-    DEBUG("flashpage] erase: now locking the flash module again\n");
-    _lock();
 }
 
 void flashpage_write_raw(void *target_addr, const void *data, size_t len)
@@ -148,9 +148,6 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     assert(((unsigned)target_addr + len) <
            (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)) + 1);
 
-    DEBUG("[flashpage_raw] unlocking the flash module\n");
-    _unlock();
-
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     uint32_t *dst = target_addr;
     const uint32_t *data_addr = data;
@@ -162,6 +159,9 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     /* the internal RC oscillator (HSI) must be enabled */
     stmclk_enable_hsi();
 #endif
+
+    DEBUG("[flashpage_raw] write: unlocking the flash module\n");
+    _unlock();
 
     DEBUG("[flashpage_raw] write: now writing the data\n");
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
@@ -181,15 +181,15 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     CNTRL_REG &= ~(FLASH_CR_PG);
     DEBUG("[flashpage_raw] write: done writing data\n");
 
+    DEBUG("flashpage_raw] write: now locking the flash module again\n");
+    _lock();
+
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
     /* restore the HSI state */
     if (!hsi_state) {
         stmclk_disable_hsi();
     }
 #endif
-
-    DEBUG("flashpage_raw] now locking the flash module again\n");
-    _lock();
 }
 
 void flashpage_write(int page, const void *data)
