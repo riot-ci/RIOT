@@ -4,4 +4,4 @@ ifeq ($(TOOLCHAIN), llvm)
   CFLAGS += -Wno-keyword-macro -Wno-parentheses-equality
 endif
 
-USEARCHIVE += oonf_api
+LIBS += oonf_api

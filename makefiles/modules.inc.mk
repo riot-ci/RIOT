@@ -2,12 +2,19 @@ ED = $(addprefix MODULE_,$(sort $(USEMODULE) $(USEPKG)))
 EXTDEFINES = $(addprefix -D,$(shell echo '$(ED)' | tr 'a-z-' 'A-Z_'))
 
 # filter "pseudomodules" from "real modules", but not "no_pseudomodules"
-# filter out any duplicate module names
-REALMODULES = $(filter-out $(USEARCHIVE), $(shell echo $(filter-out $(PSEUDOMODULES), $(USEMODULE)) \
-  $(filter $(NO_PSEUDOMODULES), $(USEMODULE)) | tr ' ' '\n' | awk '!a[$$0]++'))
-REALPKGS = $(filter-out $(USEARCHIVE), $(shell echo $(filter-out $(PSEUDOMODULES), $(USEPKG)) $(filter $(NO_PSEUDOMODULES), $(USEPKG)) | tr ' ' '\n' | awk '!a[$$0]++'))
-REALARCHIVES = $(filter $(USEARCHIVE),$(USEMODULE) $(USEPKG))
-export BASELIBS += $(REALMODULES:%=$(BINDIR)/%.o) $(REALPKGS:%=$(BINDIR)/%.o) $(REALARCHIVES:%=$(BINDIR)/%.a)
+# any module listed in LIBS will be used as a .a file instead of .o
+REALMODULES = $(filter-out $(LIBS), \
+  $(filter-out $(PSEUDOMODULES), $(USEMODULE)) \
+  $(filter $(NO_PSEUDOMODULES), $(USEMODULE)))
+REALPKGS = $(filter-out $(LIBS), \
+  $(filter-out $(PSEUDOMODULES), $(USEPKG)) \
+  $(filter $(NO_PSEUDOMODULES), $(USEPKG)))
+REALARCHIVES = $(filter $(LIBS),$(USEMODULE) $(USEPKG))
+# filter out any duplicate object file names
+BASELIBS += \
+  $(shell printf %s '$(REALMODULES:%=$(BINDIR)/%.o) $(REALPKGS:%=$(BINDIR)/%.o)' | \
+  tr ' ' '\n' | awk '!a[$$0]++')
+BASELIBS += $(REALARCHIVES:%=$(BINDIR)/%.a)
 
 CFLAGS += $(EXTDEFINES)
 
