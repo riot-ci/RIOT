@@ -8,3 +8,7 @@ ifneq (,$(filter openthread_contrib,$(USEMODULE)))
   DIRS += $(OPENTHREAD_DIR)/contrib
   DIRS += $(OPENTHREAD_DIR)/contrib/netdev
 endif
+
+LIBS += libmbedcrypto
+LIBS += libopenthread
+LIBS += libopenthread-cli
