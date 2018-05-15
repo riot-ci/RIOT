@@ -91,9 +91,13 @@ static void _erase_page(void *page_addr)
     stmclk_enable_hsi();
 #endif
 
+    DEBUG("[flashpage] erase: unlocking the flash module\n");
+    _unlock();
+
     /* make sure no flash operation is ongoing */
     DEBUG("[flashpage] erase: waiting for any operation to finish\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
+    __asm__ __volatile__("":::"memory");
     /* set page erase bit and program page address */
     DEBUG("[flashpage] erase: setting the erase bit\n");
     CNTRL_REG |= FLASH_CR_PER;
@@ -110,6 +114,7 @@ static void _erase_page(void *page_addr)
 #endif
     DEBUG("[flashpage] erase: wait as long as device is busy\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
+    __asm__ __volatile__("":::"memory");
     /* reset PER bit */
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
@@ -120,6 +125,9 @@ static void _erase_page(void *page_addr)
         stmclk_disable_hsi();
     }
 #endif
+
+    DEBUG("flashpage] erase: now locking the flash module again\n");
+    _lock();
 }
 
 void flashpage_write_raw(void *target_addr, const void *data, size_t len)
@@ -136,10 +144,8 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     assert(((unsigned)target_addr + len) <
            (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)) + 1);
 
-#ifndef CPU_FAM_STM32F1
     DEBUG("[flashpage_raw] unlocking the flash module\n");
     _unlock();
-#endif
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     uint32_t *dst = target_addr;
@@ -162,6 +168,7 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
         while (FLASH->SR & FLASH_SR_BSY) {}
+        __asm__ __volatile__("":::"memory");
     }
 
     /* clear program bit again */
@@ -175,10 +182,8 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     }
 #endif
 
-#ifndef CPU_FAM_STM32F1
     DEBUG("flashpage_raw] now locking the flash module again\n");
     _lock();
-#endif
 }
 
 void flashpage_write(int page, const void *data)
@@ -193,9 +198,6 @@ void flashpage_write(int page, const void *data)
     uint16_t *page_addr = flashpage_addr(page);
 #endif
 
-    DEBUG("[flashpage] unlocking the flash module\n");
-    _unlock();
-
     /* ERASE sequence */
     _erase_page(page_addr);
 
@@ -203,7 +205,4 @@ void flashpage_write(int page, const void *data)
     if (data != NULL) {
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
-
-    DEBUG("flashpage] now locking the flash module again\n");
-    _lock();
 }
