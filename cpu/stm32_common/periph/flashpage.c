@@ -97,7 +97,9 @@ static void _erase_page(void *page_addr)
     /* make sure no flash operation is ongoing */
     DEBUG("[flashpage] erase: waiting for any operation to finish\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
-    __asm__ __volatile__("":::"memory");
+    if (FLASH->SR & FLASH_SR_EOP) {
+        FLASH->SR &= ~(FLASH_SR_EOP);
+    }
     /* set page erase bit and program page address */
     DEBUG("[flashpage] erase: setting the erase bit\n");
     CNTRL_REG |= FLASH_CR_PER;
@@ -114,7 +116,9 @@ static void _erase_page(void *page_addr)
 #endif
     DEBUG("[flashpage] erase: wait as long as device is busy\n");
     while (FLASH->SR & FLASH_SR_BSY) {}
-    __asm__ __volatile__("":::"memory");
+    if (FLASH->SR & FLASH_SR_EOP) {
+        FLASH->SR &= ~(FLASH_SR_EOP);
+    }
     /* reset PER bit */
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
@@ -168,7 +172,9 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
         while (FLASH->SR & FLASH_SR_BSY) {}
-        __asm__ __volatile__("":::"memory");
+        if (FLASH->SR & FLASH_SR_EOP) {
+            FLASH->SR &= ~(FLASH_SR_EOP);
+        }
     }
 
     /* clear program bit again */
