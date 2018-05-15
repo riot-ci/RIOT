@@ -1,1 +1,3 @@
 INCLUDES += -I$(PKGDIRBASE)/relic/include
+
+USEARCHIVE += relic
