@@ -73,8 +73,10 @@ static void _unlock(void)
 
 static void _lock(void)
 {
-    DEBUG("[flashpage] locking the flash module\n");
-    CNTRL_REG |= CNTRL_REG_LOCK;
+    if (!(CNTRL_REG & CNTRL_REG_LOCK)) {
+        DEBUG("[flashpage] locking the flash module\n");
+        CNTRL_REG |= CNTRL_REG_LOCK;
+    }
 }
 
 static void _erase_page(void *page_addr)
