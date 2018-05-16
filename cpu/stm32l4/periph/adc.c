@@ -63,15 +63,7 @@ static const adc_conf_t adc_config[] = ADC_CONFIG;
 /**
  * @brief   Allocate locks for all three available ADC devices
  */
-static mutex_t locks[] = {
-#if ADC_DEVS > 1
-    MUTEX_INIT,
-#endif
-#if ADC_DEVS > 2
-    MUTEX_INIT,
-#endif
-    MUTEX_INIT
-};
+static mutex_t locks[ADC_DEVS];
 
 static inline ADC_TypeDef *dev(adc_t line)
 {
