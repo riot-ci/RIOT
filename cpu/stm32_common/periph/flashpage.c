@@ -44,7 +44,7 @@
 #if defined(CPU_FAM_STM32L4)
 #define FLASH_KEY1             ((uint32_t)0x45670123)
 #define FLASH_KEY2             ((uint32_t)0xCDEF89AB)
-#define FLASHPAGE_DIV          (4U)
+#define FLASHPAGE_DIV          (8U)
 #else
 #define FLASHPAGE_DIV          (2U)
 #endif
@@ -171,10 +171,12 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     assert(((unsigned)target_addr + len) <
            (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)) + 1);
 
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
-    defined(CPU_FAM_STM32L4)
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     uint32_t *dst = target_addr;
     const uint32_t *data_addr = data;
+#elif defined(CPU_FAM_STM32L4)
+    uint64_t *dst = target_addr;
+    const uint64_t *data_addr = data;
 #else
     uint16_t *dst = (uint16_t *)target_addr;
     const uint16_t *data_addr = data;
@@ -219,10 +221,11 @@ void flashpage_write(int page, const void *data)
 {
     assert(page < (int)FLASHPAGE_NUMOF);
 
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
-    defined(CPU_FAM_STM32L4)
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     /* STM32L0/L1 only supports word sizes */
     uint32_t *page_addr = flashpage_addr(page);
+#elif defined(CPU_FAM_STM32L4)
+    uint64_t *page_addr = flashpage_addr(page);
 #else
     /* Default is to support half-word sizes */
     uint16_t *page_addr = flashpage_addr(page);
