@@ -115,7 +115,7 @@ static void _erase_page(void *page_addr)
 #if FLASHPAGE_NUMOF <= 256
     pn = (uint8_t)flashpage_page(dst);
 #else
-    uint16_t page = flashpage_page(dst);
+    uint64_t page = flashpage_page(dst);
     if (page > 255) {
         CNTRL_REG |= FLASH_CR_BKER;
     }
@@ -159,13 +159,8 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     assert(!(len % FLASHPAGE_RAW_BLOCKSIZE));
 
     /* ensure writes are aligned */
-#if defined(CPU_FAM_STM32L4)
-    assert(!(((unsigned)target_addr % (FLASHPAGE_RAW_ALIGNMENT / 2)) ||
-        ((unsigned)data % (FLASHPAGE_RAW_ALIGNMENT / 2))));
-#else
     assert(!(((unsigned)target_addr % FLASHPAGE_RAW_ALIGNMENT) ||
             ((unsigned)data % FLASHPAGE_RAW_ALIGNMENT)));
-#endif
 
     /* ensure the length doesn't exceed the actual flash size */
     assert(((unsigned)target_addr + len) <
