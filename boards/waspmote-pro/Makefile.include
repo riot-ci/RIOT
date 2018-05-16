@@ -7,11 +7,15 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
 BAUD        ?= 9600
 include $(RIOTMAKE)/tools/serial.inc.mk
 
-# PROGRAMMER defaults to stk500v1 which is the internal flasher via USB. Can be
-# overridden for debugging (which requires changes that require to use an ISP)
+# PROGRAMMER defaults to stk500v1 which is the internal flasher via USB
+# using avrdude. Can be overridden for debugging (which requires changes
+# that require to use an ISP)
 PROGRAMMER ?= stk500v1
-PROGRAMMER_SPEED ?= 115200
-
+# set mcu model for avrdude
 FFLAGS += -p m1281
+# configure programmer speed in baud
+FFLAGS_EXTRA += -b 115200
+# avoid error if mcu signature doesn't match
+FFLAGS_EXTRA += -F
 
 include $(RIOTMAKE)/tools/avrdude.inc.mk
