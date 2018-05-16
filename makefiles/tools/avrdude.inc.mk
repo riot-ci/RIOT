@@ -7,9 +7,10 @@ DEBUGGER_FLAGS = "-x $(RIOTBOARD)/$(BOARD)/dist/gdb.conf $(ELFFILE)"
 DEBUGGER = $(DIST_PATH)/debug.sh $(DEBUGSERVER_FLAGS) $(DIST_PATH) $(DEBUGSERVER_PORT)
 
 # make the flasher port configurable (e.g. with atmelice the port is usb)
+# defaults to terminal's serial port if not configured
 AVRDUDE_PORT    ?= $(PORT)
-PROGRAMMER_FLAGS = -P $(AVRDUDE_PORT) -b $(PROGRAMMER_SPEED)
+PROGRAMMER_FLAGS = -P $(AVRDUDE_PORT) $(FFLAGS_EXTRA)
 
 # don't force to flash HEXFILE, but set it as default
 FLASHFILE ?= $(HEXFILE)
-FFLAGS += -c $(PROGRAMMER) $(PROGRAMMER_FLAGS) -F -D -U flash:w:$(HEXFILE)
+FFLAGS += -c $(PROGRAMMER) $(PROGRAMMER_FLAGS) -U flash:w:$(HEXFILE)
