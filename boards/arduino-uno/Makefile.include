@@ -8,11 +8,13 @@ PORT_LINUX  ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 BAUD        ?= 9600
 
-FFLAGS += -p m328p
-
-# PROGRAMMER defaults to arduino which is the internal flasher via USB. Can be
-# overridden for debugging (which requires changes that require to use an ISP)
+# PROGRAMMER defaults to stk500v2 which is the internal flasher via USB
+# using avrdude. Can be overridden for debugging (which requires changes
+# that require to use an ISP)
 PROGRAMMER ?= arduino
-PROGRAMMER_SPEED ?= 115200
+# set mcu model for avrdude
+FFLAGS += -p m328p
+# configure programmer speed in baud
+FFLAGS_EXTRA += -b 115200
 
 include $(RIOTBOARD)/common/arduino-atmega/Makefile.include
