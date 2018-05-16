@@ -127,7 +127,7 @@ static void _erase_page(void *page_addr)
 #if FLASHPAGE_NUMOF <= 256
     pn = (uint8_t)flashpage_page(dst);
 #else
-    uint64_t page = flashpage_page(dst);
+    uint16_t page = flashpage_page(dst);
     if (page > 255) {
         CNTRL_REG |= FLASH_CR_BKER;
     }
