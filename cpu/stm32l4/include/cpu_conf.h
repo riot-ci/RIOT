@@ -70,7 +70,7 @@ extern "C" {
 #else
 #define FLASHPAGE_NUMOF            (512U)
 #endif
-/* The minimum block size which can be written is 4B. However, the erase
+/* The minimum block size which can be written is 8B. However, the erase
  * block is always FLASHPAGE_SIZE.
  */
 #define FLASHPAGE_RAW_BLOCKSIZE    (8U)
