@@ -89,7 +89,7 @@ static void _erase_page(void *page_addr)
     stmclk_enable_hsi();
 #endif
 
-   /* unlock the flash module */
+    /* unlock the flash module */
     _unlock();
 
     /* make sure no flash operation is ongoing */
@@ -152,10 +152,10 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     stmclk_enable_hsi();
 #endif
 
-    DEBUG("[flashpage_raw] unlocking the flash module\n");
+    /* unlock the flash module */
     _unlock();
 
-    DEBUG("[flashpage] write: now writing the data\n");
+    DEBUG("[flashpage_raw] write: now writing the data\n");
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
     /* set PG bit and program page to flash */
     CNTRL_REG |= FLASH_CR_PG;
@@ -168,9 +168,9 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
 
     /* clear program bit again */
     CNTRL_REG &= ~(FLASH_CR_PG);
-    DEBUG("[flashpage] write: done writing data\n");
+    DEBUG("[flashpage_raw] write: done writing data\n");
 
-    DEBUG("flashpage_raw] now locking the flash module again\n");
+    /* lock the flash module again */
     _lock();
 
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
