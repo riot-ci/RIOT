@@ -5,5 +5,8 @@ INCLUDES += -I$(RIOTBOARD)/common/arduino-atmega/include
 
 include $(RIOTMAKE)/tools/serial.inc.mk
 
-# include flashing tool
+# Disable auto erase for flash and avoid error if signature doesn't match
+FFLAGS_EXTRA += -F -D
+
+# include avrdude flashing tool
 include $(RIOTMAKE)/tools/avrdude.inc.mk
