@@ -326,28 +326,28 @@ static inline bool GNRC_RPL_COUNTER_GREATER_THAN(uint8_t A, uint8_t B)
  * @{
  */
 #ifndef GNRC_RPL_DAO_SEND_RETRIES
-#define GNRC_RPL_DAO_SEND_RETRIES (4)
+#define GNRC_RPL_DAO_SEND_RETRIES   (4)
 #endif
 #ifndef GNRC_RPL_DAO_ACK_DELAY
-#define GNRC_RPL_DAO_ACK_DELAY (3000)
+#define GNRC_RPL_DAO_ACK_DELAY      (3000UL)
 #endif
 #ifndef GNRC_RPL_DAO_DELAY_LONG
 /**
  * @brief Long delay for DAOs in milli seconds
  */
-#define GNRC_RPL_DAO_DELAY_LONG     (60000LU)
+#define GNRC_RPL_DAO_DELAY_LONG     (60000UL)
 #endif
 #ifndef GNRC_RPL_DAO_DELAY_DEFAULT
 /**
  * @brief Default delay for DAOs in milli seconds
  */
-#define GNRC_RPL_DAO_DELAY_DEFAULT  (1000LU)
+#define GNRC_RPL_DAO_DELAY_DEFAULT  (1000UL)
 #endif
 #ifndef GNRC_RPL_DAO_DELAY_JITTER
 /**
  * @brief Jitter for DAOs in milli seconds
  */
-#define GNRC_RPL_DAO_DELAY_JITTER   (500UL)
+#define GNRC_RPL_DAO_DELAY_JITTER   (1000UL)
 #endif
 /** @} */
 
