@@ -30,7 +30,6 @@ extern "C" {
 
 #include "byteorder.h"
 #include "net/ipv6/addr.h"
-#include "xtimer.h"
 #include "evtimer.h"
 #include "evtimer_msg.h"
 #include "trickle.h"

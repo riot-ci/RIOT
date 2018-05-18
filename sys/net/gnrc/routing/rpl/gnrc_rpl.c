@@ -320,7 +320,10 @@ void _update_lifetime(void)
 void gnrc_rpl_delay_dao(gnrc_rpl_dodag_t *dodag)
 {
     evtimer_del(&gnrc_rpl_evtimer, (evtimer_event_t *)&dodag->dao_event);
-    ((evtimer_event_t *)&(dodag->dao_event))->offset = GNRC_RPL_DEFAULT_DAO_DELAY + random_uint32_range(500,2000);
+    ((evtimer_event_t *)&(dodag->dao_event))->offset = random_uint32_range(
+        GNRC_RPL_DAO_DELAY_DEFAULT - GNRC_RPL_DAO_DELAY_JITTER,
+        GNRC_RPL_DAO_DELAY_DEFAULT + GNRC_RPL_DAO_DELAY_JITTER
+    );
     evtimer_add_msg(&gnrc_rpl_evtimer, &dodag->dao_event, gnrc_rpl_pid);
     dodag->dao_counter = 0;
     dodag->dao_ack_received = false;
@@ -329,7 +332,10 @@ void gnrc_rpl_delay_dao(gnrc_rpl_dodag_t *dodag)
 void gnrc_rpl_long_delay_dao(gnrc_rpl_dodag_t *dodag)
 {
     evtimer_del(&gnrc_rpl_evtimer, (evtimer_event_t *)&dodag->dao_event);
-    ((evtimer_event_t *)&(dodag->dao_event))->offset = GNRC_RPL_REGULAR_DAO_INTERVAL + random_uint32_range(500,2000);
+    ((evtimer_event_t *)&(dodag->dao_event))->offset = random_uint32_range(
+        GNRC_RPL_DAO_DELAY_LONG - GNRC_RPL_DAO_DELAY_JITTER,
+        GNRC_RPL_DAO_DELAY_LONG + GNRC_RPL_DAO_DELAY_JITTER
+    );
     evtimer_add_msg(&gnrc_rpl_evtimer, &dodag->dao_event, gnrc_rpl_pid);
     dodag->dao_counter = 0;
     dodag->dao_ack_received = false;
@@ -349,7 +355,7 @@ void _dao_handle_send(gnrc_rpl_dodag_t *dodag)
         dodag->dao_counter++;
         gnrc_rpl_send_DAO(dodag->instance, NULL, dodag->default_lifetime);
         evtimer_del(&gnrc_rpl_evtimer, (evtimer_event_t *)&dodag->dao_event);
-        ((evtimer_event_t *)&(dodag->dao_event))->offset = GNRC_RPL_DEFAULT_WAIT_FOR_DAO_ACK * MS_PER_SEC;
+        ((evtimer_event_t *)&(dodag->dao_event))->offset = GNRC_RPL_DAO_ACK_DELAY;
         evtimer_add_msg(&gnrc_rpl_evtimer, &dodag->dao_event, gnrc_rpl_pid);
     }
     else if (dodag->dao_ack_received == false) {

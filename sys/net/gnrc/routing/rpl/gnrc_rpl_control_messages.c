@@ -53,7 +53,6 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #define GNRC_RPL_SHIFTED_MOP_MASK           (0x7)
 #define GNRC_RPL_PRF_MASK                   (0x7)
 #define GNRC_RPL_PREFIX_AUTO_ADDRESS_BIT    (1 << 6)
-#define GNRC_RPL_MAX_DAO_PREFIXES           (3)
 
 static gnrc_netif_t *_find_interface_with_rpl_mcast(void)
 {
