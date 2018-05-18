@@ -26,8 +26,10 @@
 #ifndef UUID_H
 #define UUID_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "byteorder.h"
 
 #ifdef __cplusplus
@@ -61,11 +63,11 @@ typedef struct __attribute__((packed)) {
     network_uint32_t time_low;      /**< The low field of the timestamp       */
     network_uint16_t time_mid;      /**< The middle field of the timestamp    */
     network_uint16_t time_hi;       /**< The high field of the timestamp
-                                      *  multiplexed with the version  number */
-    uint8_t  clk_seq_hi_res;        /**< The high field of the clock sequence
-                                      *  Multiplexed with the variant         */
-    uint8_t  clk_seq_low;           /**< The low field of the clock sequence  */
-    uint8_t  node[UUID_NODE_LEN];   /**< The spatially unique node identifier */
+                                     *  multiplexed with the version  number */
+    uint8_t clk_seq_hi_res;         /**< The high field of the clock sequence
+                                     *  Multiplexed with the variant         */
+    uint8_t clk_seq_low;            /**< The low field of the clock sequence  */
+    uint8_t node[UUID_NODE_LEN];    /**< The spatially unique node identifier */
 } uuid_t;
 
 
@@ -118,10 +120,24 @@ void uuid_v5(uuid_t *uuid, const uuid_t *ns, const uint8_t *name, size_t len);
  *
  * @return              Version number
  */
-static inline unsigned uuid_version(uuid_t* uuid)
+static inline unsigned uuid_version(uuid_t *uuid)
 {
     uint16_t time_hi_vers = byteorder_ntohs(uuid->time_hi);
+
     return (time_hi_vers & 0xF000) >> 12;
+}
+
+/**
+ * Compare two UUID's
+ *
+ * @param[in]   uuid1   First uuid to compare
+ * @param[in]   uuid2   Second uuid to compare
+ *
+ * @return              True when equal
+ */
+static inline bool uuid_equal(uuid_t *uuid1, uuid_t *uuid2)
+{
+    return (memcmp(uuid1, uuid2, sizeof(uuid_t)) == 0);
 }
 
 #ifdef __cplusplus
