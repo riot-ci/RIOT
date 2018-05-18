@@ -67,8 +67,8 @@ void test_uuid_v3(void)
     uuid_v3(&uuid_next, &uuid,
             (uint8_t*)test_str, TEST_STR_LEN);
 
-    TEST_ASSERT_EQUAL_INT(memcmp(&uuid, v3_check1, sizeof(uuid_t)), 0);
-    TEST_ASSERT_EQUAL_INT(memcmp(&uuid_next, v3_check2, sizeof(uuid_t)), 0);
+    TEST_ASSERT(uuid_equal(&uuid, (uuid_t*)v3_check1));
+    TEST_ASSERT(uuid_equal(&uuid_next, (uuid_t*)v3_check2));
     TEST_ASSERT_EQUAL_INT(uuid_version(&uuid), UUID_V3);
     TEST_ASSERT_EQUAL_INT(uuid_version(&uuid_next), UUID_V3);
 }
@@ -89,8 +89,8 @@ void test_uuid_v5(void)
     uuid_v5(&uuid_next, &uuid,
             (uint8_t*)test_str, TEST_STR_LEN);
 
-    TEST_ASSERT_EQUAL_INT(memcmp(&uuid, v5_check1, sizeof(uuid_t)), 0);
-    TEST_ASSERT_EQUAL_INT(memcmp(&uuid_next, v5_check2, sizeof(uuid_t)), 0);
+    TEST_ASSERT(uuid_equal(&uuid, (uuid_t*)v5_check1));
+    TEST_ASSERT(uuid_equal(&uuid_next, (uuid_t*)v5_check2));
     TEST_ASSERT_EQUAL_INT(uuid_version(&uuid), UUID_V5);
     TEST_ASSERT_EQUAL_INT(uuid_version(&uuid_next), UUID_V5);
 }
