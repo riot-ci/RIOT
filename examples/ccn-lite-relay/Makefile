@@ -37,10 +37,8 @@ USEMODULE += timex
 USEMODULE += xtimer
 USEMODULE += random
 USEMODULE += prng_xorshift
-
 USEMODULE += tlsf-malloc
 
-USEPKG += tlsf
 USEPKG += ccn-lite
 
 include $(RIOTBASE)/Makefile.include
