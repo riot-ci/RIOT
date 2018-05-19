@@ -84,7 +84,7 @@ static int cmd_write(int argc, char **argv)
     }
 
     size_t ret = eeprom_write(pos, (uint8_t *)argv[2], strlen(argv[2]));
-    printf("%d bytes writen to EEPROM\n", ret);
+    printf("%d bytes written to EEPROM\n", ret);
 
     return 0;
 }
@@ -99,7 +99,7 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     puts("EEPROM read write test\n");
-    puts("Please refer to the README.md for further information\n");
+    puts("Please refer to the README.md for more details\n");
 
     cmd_info(0, NULL);
 
