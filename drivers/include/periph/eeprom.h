@@ -48,10 +48,12 @@ uint8_t eeprom_read_byte(uint32_t pos);
  * @brief   Read @p len bytes from the given position
  *
  * @param[in]  pos      start position in eeprom
- * @param[out] data     byte array to write to
- * @param[in]  len      the number of bytes read
+ * @param[out] data     output byte array to write to
+ * @param[in]  len      the number of bytes to read
+ *
+ * @return  the number of bytes read
  */
-void eeprom_read(uint32_t pos, uint8_t *data, size_t len);
+size_t eeprom_read(uint32_t pos, uint8_t *data, size_t len);
 
 /**
  * @brief   Write a byte at the given position
@@ -65,10 +67,12 @@ void eeprom_write_byte(uint32_t pos, uint8_t data);
  * @brief   Write @p len bytes at the given position
  *
  * @param[in] pos       start position in eeprom
- * @param[in] data      byte array to read
+ * @param[in] data      input byte array to read into
  * @param[in] len       the number of bytes to read
+ *
+ * @param the number of bytes written
  */
-void eeprom_write(uint32_t pos, const uint8_t *data, size_t len);
+size_t eeprom_write(uint32_t pos, const uint8_t *data, size_t len);
 
 #ifdef __cplusplus
 }
