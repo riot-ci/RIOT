@@ -25,6 +25,13 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_CB_MUX_CBID_T
+/**
+ * @brief   cb_mux identifier type
+ */
+typedef uint16_t cb_mux_cbid_t;
+#endif
+
 /**
  * @brief   cb_mux callback type
  */
@@ -34,8 +41,8 @@ typedef void (*cb_mux_cb_t)(void *);
  * @brief   cb_mux list entry structure
  */
 typedef struct cb_mux {
-    uint32_t cbid;        /**< identifier for this callback */
     struct cb_mux *next;  /**< next entry in the cb_mux list */
+    cb_mux_cbid_t cbid;   /**< identifier for this callback */
     void *info;           /**< optional extra information */
     cb_mux_cb_t cb;       /**< callback function */
     void *arg;            /**< argument for callback function */
@@ -70,7 +77,7 @@ void cb_mux_del(cb_mux_t *head, cb_mux_t *entry);
  *
  * @return pointer to the list entry
  */
-cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, uint32_t cbid_val);
+cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val);
 
 /**
  * @brief   Find the entry with the highest or lowest ID
