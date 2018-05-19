@@ -36,9 +36,8 @@ USEMODULE += gnrc_pktdump
 USEMODULE += timex
 USEMODULE += xtimer
 USEMODULE += random
-USEMODULE += prng_minstd
-
-USEPKG += tlsf
+USEMODULE += prng_xorshift
+USEMODULE += tlsf-malloc
 
 USEPKG += ccn-lite
 

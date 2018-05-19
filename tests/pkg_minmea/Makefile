@@ -13,6 +13,8 @@ BOARD_BLACKLIST += arduino-duemilanove \
                    mega-xplained \
                    waspmote-pro
 
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
 
 test:

@@ -43,6 +43,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              nucleo-f410 \
                              nucleo-l053 \
                              nucleo-l073 \
+                             nucleo-l433rc \
                              nz32-sc151 \
                              opencm904 \
                              openmote \
@@ -102,6 +103,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        frdm-k22f \
                        frdm-k64f \
                        frdm-kw41z \
+                       ikea-tradfri \
                        iotlab-a8-m3 \
                        iotlab-m3 \
                        limifrog-v1 \
@@ -143,7 +145,9 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        nucleo-l053 \
                        nucleo-l073 \
                        nucleo-l152 \
+                       nucleo-l433rc \
                        nucleo-l476 \
+                       nucleo-l496zg \
                        nz32-sc151 \
                        opencm904 \
                        openmote-cc2538 \
@@ -155,11 +159,15 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        saml21-xpro \
                        samr21-xpro \
                        seeeduino_arch-pro \
+                       slstk3401a \
                        sltb001a \
+                       slwstk6000b \
                        slwstk6220a \
                        sodaq-autonomo \
                        sodaq-explorer \
                        spark-core \
+                       stk3600 \
+                       stk3700 \
                        stm32f0discovery \
                        stm32f3discovery \
                        stm32f4discovery \
@@ -212,6 +220,8 @@ ifneq (, $(filter $(AVR_BOARDS), $(BOARD)))
   LARGE_STACK_TESTS += tests-qDSA
 endif
 
+LARGE_STACK_TESTS += tests-hacl
+LARGE_STACK_TESTS += tests-libcose
 LARGE_STACK_TESTS += tests-tweetnacl
 ifneq (,$(filter $(LARGE_STACK_TESTS), $(UNIT_TESTS)))
   CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(4*THREAD_STACKSIZE_DEFAULT+THREAD_EXTRA_STACKSIZE_PRINTF\)
