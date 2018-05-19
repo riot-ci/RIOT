@@ -17,15 +17,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Definition of struct timespec for the atmega
- *
- */
-struct timespec {
-    time_t    tv_sec;     /**< seconds */
-    long      tv_nsec;    /**< nanoseconds */
-};
-
-/**
  * @brief   Definition of struct timeval for the atmega
  *
  */
