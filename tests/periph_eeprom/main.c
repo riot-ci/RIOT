@@ -61,10 +61,10 @@ static int cmd_read(int argc, char **argv)
         return 1;
     }
 
-    eeprom_read(pos, (uint8_t *)buffer, count);
+    size_t ret = eeprom_read(pos, (uint8_t *)buffer, count);
     buffer[count] = '\0';
 
-    printf("Data read from EEPROM: %s\n", buffer);
+    printf("Data read from EEPROM (%d bytes): %s\n", ret, buffer);
 
     return 0;
 }
@@ -83,8 +83,8 @@ static int cmd_write(int argc, char **argv)
         return 1;
     }
 
-    eeprom_write(pos, (uint8_t *)argv[2], strlen(argv[2]));
-    printf("Data writen to EEPROM\n");
+    size_t ret = eeprom_write(pos, (uint8_t *)argv[2], strlen(argv[2]));
+    printf("%d bytes writen to EEPROM\n", ret);
 
     return 0;
 }
