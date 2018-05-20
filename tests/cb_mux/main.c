@@ -32,14 +32,9 @@ enum {
 /* Function to iterate over cb_mux list */
 void mux_iter(cb_mux_t *entry, void *arg)
 {
-    (void *)arg;
+    (void)arg;
 
-    if ((uintptr_t)arg) {
-        (uintptr_t)entry->info |= 1 << ITER_TEST;
-    }
-    else {
-        (uintptr_t)entry->info &= ~(1 << ITER_TEST);
-    }
+    entry->info = (void *)((uintptr_t)entry->info | (1 << ITER_TEST));
 }
 
 /* Test callback */
@@ -64,7 +59,7 @@ int main(void)
     puts("Test list addition, retrieval, execution of 5 CBs");
 
     for (num = 0; num < 5; num++) {
-        cb_mux_add(cb_mux_head, &(entries[num]);
+        cb_mux_add(cb_mux_head, &(entries[num]));
     }
 
     for (num = 0; num < 5; num++) {
@@ -82,7 +77,7 @@ int main(void)
     for (num = 0; num < 5; num++) {
         entry = cb_mux_find_cbid(cb_mux_head, num);
 
-        if (entry = NULL) {
+        if (entry == NULL) {
             continue;
         }
 
