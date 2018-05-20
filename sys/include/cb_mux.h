@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Matthew Blue <matthew.blue.neuro@gmail.com>
+ * Copyright (C) 2018 Acutam Automation, LLC
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -89,7 +89,19 @@ cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val);
  *
  * @return pointer to the list entry
  */
-cb_mux_t *cb_mux_find_hilo_id(cb_mux_t *head, uint8_t order);
+cb_mux_t *cb_mux_find_hilo_entry(cb_mux_t *head, uint8_t order);
+
+/**
+ * @brief   Find the lowest unused ID
+ *
+ * Returns highest possible ID on failure
+ *
+ * @param[in] head   pointer to first list entry
+ * @param[in] order  0 for lowest ID, !0 for highest
+ *
+ * @return lowest unused ID
+ */
+cb_mux_cbid_t cb_mux_find_free_id(cb_mux_t *head);
 
 /**
  * @brief   Run a function on every item in the cb_mux list
