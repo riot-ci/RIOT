@@ -42,7 +42,7 @@ cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val)
 cb_mux_t *cb_mux_find_hilo_entry(cb_mux_t *head, uint8_t order)
 {
     cb_mux_t *entry_curr;
-    cb_mux_t *entry_hilo;
+    cb_mux_t *entry_hilo = NULL;
     cb_mux_cbid_t id = 0;
 
     LL_FOREACH(head, entry_curr) {

@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-#ifdef HAVE_CB_MUX_CBID_T
+#ifndef HAVE_CB_MUX_CBID_T
 /**
  * @brief   cb_mux identifier type
  */
@@ -97,7 +97,6 @@ cb_mux_t *cb_mux_find_hilo_entry(cb_mux_t *head, uint8_t order);
  * Returns highest possible ID on failure
  *
  * @param[in] head   pointer to first list entry
- * @param[in] order  0 for lowest ID, !0 for highest
  *
  * @return lowest unused ID
  */
