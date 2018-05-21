@@ -116,10 +116,7 @@ static const uart_conf_t uart_config[] = {
         .bus        = APB1,
         .irqn       = LPUART1_IRQn,
         .type       = STM32_LPUART,
-#ifdef UART_USE_DMA
-        .dma_stream = 5,
-        .dma_chan   = 4
-#endif
+        .clk_src    = STM32_UART_CLOCK_APB,
     },
     {
         .dev        = USART1,
@@ -130,11 +127,13 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB2,
         .irqn       = USART1_IRQn,
-    }
+        .type       = STM32_USART,
+        .clk_src    = STM32_UART_CLOCK_APB,
 #ifdef UART_USE_DMA
         .dma_stream = 5,
         .dma_chan   = 5
 #endif
+    }
 };
 
 #define UART_0_ISR          (isr_lpuart1)
