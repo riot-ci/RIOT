@@ -37,6 +37,7 @@ def testfunc(child):
     child.expect_exact("Entry 4 was updated correctly")
     child.expect_exact("Tests complete!")
 
+
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner'))
     from testrunner import run
