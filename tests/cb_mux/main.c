@@ -54,25 +54,31 @@ int main(void)
     for (num = 0; num < 5; num++) {
         entries[num].cb = cb;
         entries[num].arg = (void *)num;
+        entries[num].cbid = num;
     }
 
     puts("Test list addition, retrieval, execution of 5 CBs");
 
     for (num = 0; num < 5; num++) {
-        cb_mux_add(cb_mux_head, &(entries[num]));
+        cb_mux_add(&cb_mux_head, &(entries[num]));
     }
 
     for (num = 0; num < 5; num++) {
         entry = cb_mux_find_cbid(cb_mux_head, num);
+
+        if (entry->cb == NULL) {
+            puts("[FAILED] Unexpected NULL pointer");
+            return 1;
+        }
 
         entry->cb(entry->arg);
     }
 
     puts("Test list deletion of CB 0, 2, 4, execution of 1, 3");
 
-    cb_mux_del(cb_mux_head, &(entries[0]));
-    cb_mux_del(cb_mux_head, &(entries[2]));
-    cb_mux_del(cb_mux_head, &(entries[4]));
+    cb_mux_del(&cb_mux_head, &(entries[0]));
+    cb_mux_del(&cb_mux_head, &(entries[2]));
+    cb_mux_del(&cb_mux_head, &(entries[4]));
 
     for (num = 0; num < 5; num++) {
         entry = cb_mux_find_cbid(cb_mux_head, num);
@@ -86,26 +92,31 @@ int main(void)
 
     puts("Test execution of CB with lowest ID (1)");
 
-    entry = cb_mux_find_hilo_entry(cb_mux_head, 0);
-
+    entry = cb_mux_find_low(cb_mux_head);
+    if (entry->cb == NULL) {
+        puts("[FAILED] Unexpected NULL pointer");
+        return 1;
+    }
     entry->cb(entry->arg);
 
     puts("Test execution of CB with highest ID (3)");
 
-    entry = cb_mux_find_hilo_entry(cb_mux_head, 1);
-
+    entry = cb_mux_find_high(cb_mux_head);
+    if (entry->cb == NULL) {
+        puts("[FAILED] Unexpected NULL pointer");
+        return 1;
+    }
     entry->cb(entry->arg);
 
     puts("Re-adding list entries (0, 2, 4) by finding next free ID");
 
-    num = 0;
+    num = cb_mux_find_free_id(cb_mux_head);
     while (num < 5) {
-        num = cb_mux_find_free_id(cb_mux_head);
-
-        entries[num].cb = cb;
-        entries[num].arg = (void *)num;
+        cb_mux_add(&cb_mux_head, &(entries[num]));
 
         printf("Added entry %i\n", num);
+
+        num = cb_mux_find_free_id(cb_mux_head);
     }
 
     puts("Test iteration of a function over list");
