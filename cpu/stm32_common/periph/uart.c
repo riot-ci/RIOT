@@ -247,14 +247,14 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
     uint32_t clk;
 
     switch (uart_config[uart].clk_src) {
-        case STM32_LPUART_CLOCK_APB:
+        case STM32_UART_CLOCK_APB:
             clk = periph_apb_clk(uart_config[uart].bus);
             break;
-        case STM32_LPUART_CLOCK_CORE:
+        case STM32_UART_CLOCK_CORE:
             clk = CLOCK_CORECLOCK;
             RCC->CCIPR |= RCC_CCIPR_LPUART1SEL_0;
             break;
-        case STM32_LPUART_CLOCK_LSE:
+        case STM32_UART_CLOCK_LSE:
             clk = 32768;
             RCC->CCIPR |= (RCC_CCIPR_LPUART1SEL_0 | RCC_CCIPR_LPUART1SEL_1);
             break;
