@@ -291,10 +291,10 @@ typedef enum {
  * @brief LPUART clock source
  */
 enum {
-    STM32_LPUART_CLOCK_APB,     /**< Use Advanced Peripheral Bus clock */
-    STM32_LPUART_CLOCK_CORE,    /**< Use system core clock */
-    STM32_LPUART_CLOCK_HSI,     /**< Use High Speed Internal clock */
-    STM32_LPUART_CLOCK_LSE,     /**< Use Low Speed External clock */
+    STM32_UART_CLOCK_APB,   /**< Use Advanced Peripheral Bus clock */
+    STM32_UART_CLOCK_CORE,  /**< Use system core clock */
+    STM32_UART_CLOCK_HSI,   /**< Use High Speed Internal clock */
+    STM32_UART_CLOCK_LSE,   /**< Use Low Speed External clock */
 };
 
 /**
@@ -324,9 +324,7 @@ typedef struct {
 #endif
 #endif
     uart_type_t type;       /**< hardware module type (USART or LPUART) */
-#ifdef LPUART1
-    uint8_t clk_src;        /**< clock source used for LPUART */
-#endif
+    uint8_t clk_src;        /**< clock source used for UART */
 } uart_conf_t;
 
 /**
