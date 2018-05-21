@@ -20,14 +20,14 @@
 #include "cb_mux.h"
 #include "utlist.h"
 
-void cb_mux_add(cb_mux_t *head, cb_mux_t *entry)
+void cb_mux_add(cb_mux_t **head, cb_mux_t *entry)
 {
-    LL_APPEND(head, entry);
+    LL_APPEND(*head, entry);
 }
 
-void cb_mux_del(cb_mux_t *head, cb_mux_t *entry)
+void cb_mux_del(cb_mux_t **head, cb_mux_t *entry)
 {
-    LL_DELETE(head, entry);
+    LL_DELETE(*head, entry);
 }
 
 cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val)
@@ -39,27 +39,42 @@ cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val)
     return entry;
 }
 
-cb_mux_t *cb_mux_find_hilo_entry(cb_mux_t *head, uint8_t order)
+cb_mux_t *cb_mux_find_low(cb_mux_t *head)
 {
-    cb_mux_t *entry_curr;
-    cb_mux_t *entry_hilo = NULL;
-    cb_mux_cbid_t id = 0;
+    cb_mux_t *entry;
+    cb_mux_t *entry_low = NULL;
+    cb_mux_cbid_t id = (cb_mux_cbid_t)(-1);
 
-    LL_FOREACH(head, entry_curr) {
-        if (order && (entry_curr->cbid <= id)) {
-            /* We were looking for highest */
-            continue;
-        }
-        else if (!order && (entry_curr->cbid >= id)) {
-            /* We were looking for lowest */
+    LL_FOREACH(head, entry) {
+        /* Entry does not have lower ID */
+        if (entry->cbid >= id) {
             continue;
         }
 
-        id = entry_curr->cbid;
-        entry_hilo = entry_curr;
+        id = entry->cbid;
+        entry_low = entry;
     }
 
-    return entry_hilo;
+    return entry_low;
+}
+
+cb_mux_t *cb_mux_find_high(cb_mux_t *head)
+{
+    cb_mux_t *entry;
+    cb_mux_t *entry_high = NULL;
+    cb_mux_cbid_t id = 0;
+
+    LL_FOREACH(head, entry) {
+        /* Entry does not have higher ID */
+        if (entry->cbid <= id) {
+            continue;
+        }
+
+        id = entry->cbid;
+        entry_high = entry;
+    }
+
+    return entry_high;
 }
 
 cb_mux_cbid_t cb_mux_find_free_id(cb_mux_t *head)

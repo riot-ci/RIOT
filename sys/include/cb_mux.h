@@ -21,6 +21,9 @@
 
 #include <stdint.h>
 
+/* For alternate cb_mux_cbid_t */
+#include "periph_cpu.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,7 +32,7 @@ extern "C" {
 /**
  * @brief   cb_mux identifier type
  */
-typedef uint16_t cb_mux_cbid_t;
+typedef unsigned int cb_mux_cbid_t;
 #endif
 
 /**
@@ -56,18 +59,18 @@ typedef void (*cb_mux_iter_t)(cb_mux_t *, void *);
 /**
  * @brief   Add a new entry to the end of a cb_mux list
  *
- * @param[in] head   pointer to first list entry
+ * @param[in] head   double pointer to first list entry
  * @param[in] entry  entry to add
  */
-void cb_mux_add(cb_mux_t *head, cb_mux_t *entry);
+void cb_mux_add(cb_mux_t **head, cb_mux_t *entry);
 
 /**
  * @brief   Remove a entry from a cb_mux list
  *
- * @param[in] head   pointer to first list entry
+ * @param[in] head   double pointer to first list entry
  * @param[in] entry  entry to remove
  */
-void cb_mux_del(cb_mux_t *head, cb_mux_t *entry);
+void cb_mux_del(cb_mux_t **head, cb_mux_t *entry);
 
 /**
  * @brief   Find an entry in the list by ID
@@ -80,16 +83,26 @@ void cb_mux_del(cb_mux_t *head, cb_mux_t *entry);
 cb_mux_t *cb_mux_find_cbid(cb_mux_t *head, cb_mux_cbid_t cbid_val);
 
 /**
- * @brief   Find the entry with the highest or lowest ID
+ * @brief   Find the entry with the lowest ID
  *
  * If there are multiple hits, this returns the oldest.
  *
  * @param[in] head   pointer to first list entry
- * @param[in] order  0 for lowest ID, !0 for highest
  *
  * @return pointer to the list entry
  */
-cb_mux_t *cb_mux_find_hilo_entry(cb_mux_t *head, uint8_t order);
+cb_mux_t *cb_mux_find_low(cb_mux_t *head);
+
+/**
+ * @brief   Find the entry with the highest ID
+ *
+ * If there are multiple hits, this returns the oldest.
+ *
+ * @param[in] head   pointer to first list entry
+ *
+ * @return pointer to the list entry
+ */
+cb_mux_t *cb_mux_find_high(cb_mux_t *head);
 
 /**
  * @brief   Find the lowest unused ID
