@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2014-2017 Freie Universität Berlin
  * Copyright (C) 2016 OTA keys
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -20,6 +21,7 @@
  * @author      Fabian Nack <nack@inf.fu-berlin.de>
  * @author      Hermann Lelong <hermann@otakeys.com>
  * @author      Toon Stegen <toon.stegen@altran.com>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  * @}
  */
@@ -32,7 +34,7 @@
 #include "periph/gpio.h"
 #include "pm_layered.h"
 
-#define RXENABLE            (USART_CR1_RE | USART_CR1_RXNEIE)
+#define RXENABLE                (USART_CR1_RE | USART_CR1_RXNEIE)
 
 /**
  * @brief   Allocate memory to store the callback functions
@@ -44,19 +46,27 @@ static inline USART_TypeDef *dev(uart_t uart)
     return uart_config[uart].dev;
 }
 
-int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
+static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
+#endif
+
+/* Only use the dispatch function for uart_write if both USART and LPUART are
+ * available at the same time */
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+#define STM32_UART_INLINE static inline
+STM32_UART_INLINE void uart_poweron_usart(uart_t uart);
+STM32_UART_INLINE void uart_poweron_lpuart(uart_t uart);
+STM32_UART_INLINE void uart_poweroff_usart(uart_t uart);
+STM32_UART_INLINE void uart_poweroff_lpuart(uart_t uart);
+#else
+#define uart_poweron_usart uart_poweron
+#define uart_poweroff_usart uart_poweroff
+#endif
+
+static inline void uart_init_pins(uart_t uart, uart_rx_cb_t rx_cb)
 {
-    uint16_t mantissa;
-    uint8_t fraction;
-    uint32_t clk;
-
-    assert(uart < UART_NUMOF);
-
-    /* save ISR context */
-    isr_ctx[uart].rx_cb = rx_cb;
-    isr_ctx[uart].arg   = arg;
-
-    /* configure TX pin */
+     /* configure TX pin */
     gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
     /* set TX pin high to avoid garbage during further initialization */
     gpio_set(uart_config[uart].tx_pin);
@@ -84,6 +94,17 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 #endif
     }
 #endif
+}
+
+int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
+{
+    assert(uart < UART_NUMOF);
+
+    /* save ISR context */
+    isr_ctx[uart].rx_cb = rx_cb;
+    isr_ctx[uart].arg   = arg;
+
+    uart_init_pins(uart, rx_cb);
 
     /* enable the clock */
     uart_poweron(uart);
@@ -93,11 +114,20 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     dev(uart)->CR2 = 0;
     dev(uart)->CR3 = 0;
 
-    /* calculate and apply baudrate */
-    clk = periph_apb_clk(uart_config[uart].bus) / baudrate;
-    mantissa = (uint16_t)(clk / 16);
-    fraction = (uint8_t)(clk - (mantissa * 16));
-    dev(uart)->BRR = ((mantissa & 0x0fff) << 4) | (fraction & 0x0f);
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+    switch (uart_config[uart].type) {
+        case STM32_USART:
+            uart_init_usart(uart, baudrate);
+            break;
+        case STM32_LPUART:
+            uart_init_lpuart(uart, baudrate);
+            break;
+        default:
+            return UART_NODEV;
+    }
+#else
+    uart_init_usart(uart, baudrate);
+#endif
 
     /* enable RX interrupt if applicable */
     if (rx_cb) {
@@ -117,6 +147,143 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     return UART_OK;
 }
+
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+void uart_poweron(uart_t uart)
+{
+    switch (uart_config[uart].type) {
+        case STM32_USART:
+            uart_poweron_usart(uart);
+            break;
+        case STM32_LPUART:
+            uart_poweron_lpuart(uart);
+            break;
+        default:
+            return;
+    }
+}
+
+void uart_poweroff(uart_t uart)
+{
+    switch (uart_config[uart].type) {
+        case STM32_USART:
+            uart_poweroff_usart(uart);
+            break;
+        case STM32_LPUART:
+            uart_poweroff_lpuart(uart);
+            break;
+        default:
+            return;
+    }
+}
+#endif
+
+static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
+{
+    uint16_t mantissa;
+    uint8_t fraction;
+    uint32_t clk;
+
+    /* calculate and apply baudrate */
+    clk = periph_apb_clk(uart_config[uart].bus) / baudrate;
+    mantissa = (uint16_t)(clk / 16);
+    fraction = (uint8_t)(clk - (mantissa * 16));
+    dev(uart)->BRR = ((mantissa & 0x0fff) << 4) | (fraction & 0x0f);
+}
+
+void uart_poweron_usart(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+
+#ifdef STM32_PM_STOP
+    if (isr_ctx[uart].rx_cb) {
+        pm_block(STM32_PM_STOP);
+    }
+#endif
+
+    periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
+}
+
+void uart_poweroff_usart(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+
+    periph_clk_dis(uart_config[uart].bus, uart_config[uart].rcc_mask);
+
+#ifdef STM32_PM_STOP
+    if (isr_ctx[uart].rx_cb) {
+        pm_unblock(STM32_PM_STOP);
+    }
+#endif
+}
+
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
+{
+    uint32_t clk;
+
+    switch (uart_config[uart].clk_src) {
+        case 0:
+            clk = periph_apb_clk(uart_config[uart].bus);
+            break;
+        case RCC_CCIPR_LPUART1SEL_0:
+            clk = CLOCK_CORECLOCK;
+            break;
+        case (RCC_CCIPR_LPUART1SEL_0 | RCC_CCIPR_LPUART1SEL_1):
+            clk = 32768;
+            break;
+        default: /* HSI is not supported */
+            return;
+    }
+
+    RCC->CCIPR |= uart_config[uart].clk_src;
+
+    /* LSE can only be used with baudrate <= 9600 */
+    if ( (clk < (3 * baudrate)) || (clk > (4096 * baudrate))) {
+        return;
+    }
+
+    /* LPUARTDIV = f_clk * 256 / baudrate */
+    uint32_t brr = (uint32_t)(((uint64_t)clk << 8) / baudrate);
+
+    dev(uart)->BRR = brr;
+}
+
+void uart_poweron_lpuart(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+#ifdef STM32_PM_STOP
+    if (isr_ctx[uart].rx_cb) {
+        pm_block(STM32_PM_STOP);
+    }
+#endif
+
+    /* LPUART1 specific */
+#if defined CPU_FAM_STM32L4
+    RCC->APB1ENR2 |= uart_config[uart].rcc_mask;
+#else
+    RCC->APB1ENR |= uart_config[uart].rcc_mask;
+#endif
+}
+
+void uart_poweroff_lpuart(uart_t uart)
+{
+    assert(uart < UART_NUMOF);
+
+    /* LPUART specific */
+#if defined CPU_FAM_STM32L4
+    RCC->APB1ENR2 &= ~uart_config[uart].rcc_mask;
+#else
+    RCC->APB1ENR &= ~uart_config[uart].rcc_mask;
+#endif
+
+#ifdef STM32_PM_STOP
+    if (isr_ctx[uart].rx_cb) {
+        pm_unblock(STM32_PM_STOP);
+    }
+#endif
+}
+#endif
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
@@ -142,29 +309,6 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     while (!(dev(uart)->ISR & USART_ISR_TC)) {}
 #else
     while (!(dev(uart)->SR & USART_SR_TC)) {}
-#endif
-}
-
-void uart_poweron(uart_t uart)
-{
-    assert(uart < UART_NUMOF);
-#ifdef STM32_PM_STOP
-    if (isr_ctx[uart].rx_cb) {
-        pm_block(STM32_PM_STOP);
-    }
-#endif
-    periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
-}
-
-void uart_poweroff(uart_t uart)
-{
-    assert(uart < UART_NUMOF);
-
-    periph_clk_dis(uart_config[uart].bus, uart_config[uart].rcc_mask);
-#ifdef STM32_PM_STOP
-    if (isr_ctx[uart].rx_cb) {
-        pm_unblock(STM32_PM_STOP);
-    }
 #endif
 }
 
