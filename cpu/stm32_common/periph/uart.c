@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2014-2017 Freie Universität Berlin
  * Copyright (C) 2016 OTA keys
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -20,6 +21,7 @@
  * @author      Fabian Nack <nack@inf.fu-berlin.de>
  * @author      Hermann Lelong <hermann@otakeys.com>
  * @author      Toon Stegen <toon.stegen@altran.com>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  * @}
  */
@@ -31,22 +33,6 @@
 #include "periph/uart.h"
 #include "periph/gpio.h"
 #include "pm_layered.h"
-
-#ifndef STM32_HAVE_LPUART
-#ifdef LPUART1
-#define STM32_HAVE_LPUART       1
-#else
-#define STM32_HAVE_LPUART       0
-#endif
-#endif /* STM32_HAVE_LPUART */
-
-#ifndef STM32_HAVE_USART
-#ifdef USART1
-#define STM32_HAVE_USART        1
-#else
-#define STM32_HAVE_USART        0
-#endif
-#endif /* STM32_HAVE_USART */
 
 #define RXENABLE                (USART_CR1_RE | USART_CR1_RXNEIE)
 
@@ -60,30 +46,22 @@ static inline USART_TypeDef *dev(uart_t uart)
     return uart_config[uart].dev;
 }
 
-#if STM32_HAVE_USART
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
-#endif
-#if STM32_HAVE_LPUART
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
 #endif
 
 /* Only use the dispatch function for uart_write if both USART and LPUART are
  * available at the same time */
-#if STM32_HAVE_USART && STM32_HAVE_LPUART
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 #define STM32_UART_INLINE static inline
 STM32_UART_INLINE void uart_poweron_usart(uart_t uart);
 STM32_UART_INLINE void uart_poweron_lpuart(uart_t uart);
 STM32_UART_INLINE void uart_poweroff_usart(uart_t uart);
 STM32_UART_INLINE void uart_poweroff_lpuart(uart_t uart);
 #else
-#define STM32_UART_INLINE
-#if STM32_HAVE_USART
 #define uart_poweron_usart uart_poweron
 #define uart_poweroff_usart uart_poweroff
-#elif STM32_HAVE_LPUART
-#define uart_poweron_lpuart uart_poweron
-#define uart_poweroff_lpuart uart_poweroff
-#endif
 #endif
 
 static inline void uart_init_pins(uart_t uart, uart_rx_cb_t rx_cb)
@@ -136,20 +114,20 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     dev(uart)->CR2 = 0;
     dev(uart)->CR3 = 0;
 
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
     switch (uart_config[uart].type) {
-#if STM32_HAVE_USART
         case STM32_USART:
             uart_init_usart(uart, baudrate);
             break;
-#endif
-#if STM32_HAVE_LPUART
         case STM32_LPUART:
             uart_init_lpuart(uart, baudrate);
             break;
-#endif
         default:
             return UART_NODEV;
     }
+#else
+    uart_init_usart(uart, baudrate);
+#endif
 
     /* enable RX interrupt if applicable */
     if (rx_cb) {
@@ -170,7 +148,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
-#if STM32_HAVE_USART && STM32_HAVE_LPUART
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 void uart_poweron(uart_t uart)
 {
     switch (uart_config[uart].type) {
@@ -200,7 +178,6 @@ void uart_poweroff(uart_t uart)
 }
 #endif
 
-#if STM32_HAVE_USART
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 {
     uint16_t mantissa;
@@ -239,9 +216,8 @@ void uart_poweroff_usart(uart_t uart)
     }
 #endif
 }
-#endif
 
-#if STM32_HAVE_LPUART
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 {
     uint32_t clk;
