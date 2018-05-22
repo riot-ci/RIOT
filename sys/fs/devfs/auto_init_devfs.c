@@ -31,14 +31,14 @@ static vfs_mount_t _devfs_auto_init_mount = {
     .mount_point = "/dev",
 };
 
-#ifdef MODULE_PERIPH_HWRNG
+#ifdef MODULE_DEVFS_HWRNG
 static devfs_t hwrng_devfs = {
     .path = "/hwrng",
     .f_op = &hwrng_vfs_ops,
 };
 #endif
 
-#ifdef MODULE_RANDOM
+#ifdef MODULE_DEVFS_RANDOM
 static devfs_t random_devfs = {
     .path = "/urandom",
     .f_op = &random_vfs_ops,
@@ -50,11 +50,11 @@ void auto_init_devfs(void)
     DEBUG("auto_init_devfs: mounting /dev\n");
     vfs_mount(&_devfs_auto_init_mount);
 
-#ifdef MODULE_PERIPH_HWRNG
+#ifdef MODULE_DEVFS_HWRNG
     devfs_register(&hwrng_devfs);
 #endif
 
-#ifdef MODULE_RANDOM
+#ifdef MODULE_DEVFS_RANDOM
     devfs_register(&random_devfs);
 #endif
 }
