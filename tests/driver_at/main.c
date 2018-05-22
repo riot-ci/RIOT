@@ -44,7 +44,7 @@ static int init(int argc, char **argv)
     }
 
     uint8_t uart = atoi(argv[1]);
-    uint32_t baudrate = atoi(argv[1]);
+    uint32_t baudrate = atoi(argv[2]);
 
     at_dev_init(&at_dev, UART_DEV(uart), baudrate, buf, sizeof(buf));
 
