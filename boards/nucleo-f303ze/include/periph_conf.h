@@ -7,13 +7,13 @@
  */
 
 /**
- * @defgroup    boards_nucleo144-f446 STM32 Nucleo144-F446
+ * @defgroup    boards_nucleo-f303ze STM32 Nucleo-F303ZE
  * @ingroup     boards_common_nucleo144
- * @brief       Support for the STM32 Nucleo144-F446
+ * @brief       Support for the STM32 Nucleo-F303ZE
  * @{
  *
  * @file
- * @name        Peripheral MCU configuration for the nucleo144-f446 board
+ * @name        Peripheral MCU configuration for the nucleo-f303ze board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
@@ -35,8 +35,8 @@ extern "C" {
  * @{
  */
 /* give the target core clock (HCLK) frequency [in Hz],
- * maximum: 180MHz */
-#define CLOCK_CORECLOCK     (180000000U)
+ * maximum: 72MHz */
+#define CLOCK_CORECLOCK     (72000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
 #define CLOCK_HSE           (8000000U)
@@ -46,26 +46,14 @@ extern "C" {
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV4     /* max 45MHz */
-#define CLOCK_APB1          (CLOCK_CORECLOCK / 4)
-#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV2     /* max 90MHz */
-#define CLOCK_APB2          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV2     /* max 36MHz */
+#define CLOCK_APB1          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV1     /* max 72MHz */
+#define CLOCK_APB2          (CLOCK_CORECLOCK / 1)
 
-/* Main PLL factors */
-#define CLOCK_PLL_M          (4)
-#define CLOCK_PLL_N          (180)
-#define CLOCK_PLL_P          (2)
-#define CLOCK_PLL_Q          (0)
-
-/* PLL SAI configuration */
-#define CLOCK_ENABLE_PLL_SAI (1)
-#define CLOCK_PLL_SAI_M      (4)
-#define CLOCK_PLL_SAI_N      (192)
-#define CLOCK_PLL_SAI_P      (8)
-#define CLOCK_PLL_SAI_Q      (0)
-
-/* Use alternative source for 48MHz clock */
-#define CLOCK_USE_ALT_48MHZ  (1)
+/* PLL factors */
+#define CLOCK_PLL_PREDIV     (1)
+#define CLOCK_PLL_MUL        (9)
 /** @} */
 
 /**
@@ -74,15 +62,15 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
-        .dev      = TIM5,
+        .dev      = TIM2,
         .max      = 0xffffffff,
-        .rcc_mask = RCC_APB1ENR_TIM5EN,
+        .rcc_mask = RCC_APB1ENR_TIM2EN,
         .bus      = APB1,
-        .irqn     = TIM5_IRQn
+        .irqn     = TIM2_IRQn
     }
 };
 
-#define TIMER_0_ISR         isr_tim5
+#define TIMER_0_ISR         isr_tim2
 
 #define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
@@ -107,14 +95,14 @@ static const uart_conf_t uart_config[] = {
 #endif
     },
     {
-        .dev        = USART6,
-        .rcc_mask   = RCC_APB2ENR_USART6EN,
-        .rx_pin     = GPIO_PIN(PORT_G, 9),
-        .tx_pin     = GPIO_PIN(PORT_G, 14),
-        .rx_af      = GPIO_AF8,
-        .tx_af      = GPIO_AF8,
+        .dev        = USART1,
+        .rcc_mask   = RCC_APB2ENR_USART1EN,
+        .rx_pin     = GPIO_PIN(PORT_C, 5),
+        .tx_pin     = GPIO_PIN(PORT_C, 4),
+        .rx_af      = GPIO_AF7,
+        .tx_af      = GPIO_AF7,
         .bus        = APB2,
-        .irqn       = USART6_IRQn,
+        .irqn       = USART1_IRQn,
 #ifdef UART_USE_DMA
         .dma_stream = 5,
         .dma_chan   = 4
@@ -138,7 +126,7 @@ static const uart_conf_t uart_config[] = {
 
 #define UART_0_ISR          (isr_usart3)
 #define UART_0_DMA_ISR      (isr_dma1_stream6)
-#define UART_1_ISR          (isr_usart6)
+#define UART_1_ISR          (isr_usart1)
 #define UART_1_DMA_ISR      (isr_dma1_stream5)
 #define UART_2_ISR          (isr_usart2)
 #define UART_2_DMA_ISR      (isr_dma1_stream4)
@@ -157,20 +145,20 @@ static const pwm_conf_t pwm_config[] = {
         .chan     = { { .pin = GPIO_PIN(PORT_E,  9) /* D6 */, .cc_chan = 0},
                       { .pin = GPIO_PIN(PORT_E, 11) /* D5 */, .cc_chan = 1},
                       { .pin = GPIO_PIN(PORT_E, 13) /* D3 */, .cc_chan = 2},
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0} },
-        .af       = GPIO_AF1,
+                      { .pin = GPIO_UNDEF,           .cc_chan = 0} },
+        .af       = GPIO_AF2,
         .bus      = APB2
     },
     {
         .dev      = TIM4,
         .rcc_mask = RCC_APB1ENR_TIM4EN,
         .chan     = { { .pin = GPIO_PIN(PORT_D, 15) /* D9 */, .cc_chan = 3},
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0},
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0},
-                      { .pin = GPIO_UNDEF,                    .cc_chan = 0} },
+                      { .pin = GPIO_UNDEF,           .cc_chan = 0},
+                      { .pin = GPIO_UNDEF,           .cc_chan = 0},
+                      { .pin = GPIO_UNDEF,           .cc_chan = 0} },
         .af       = GPIO_AF2,
         .bus      = APB1
-    },
+    }
 };
 
 #define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
@@ -184,19 +172,19 @@ static const pwm_conf_t pwm_config[] = {
  * @{
  */
 static const uint8_t spi_divtable[2][5] = {
-    {       /* for APB1 @ 90000000Hz */
-        7,  /* -> 351562Hz */
-        7,  /* -> 351562Hz */
-        6,  /* -> 703125Hz */
-        3,  /* -> 5625000Hz */
-        2   /* -> 11250000Hz */
+    {       /* for APB1 @ 36000000Hz */
+        7,  /* -> 140625Hz */
+        6,  /* -> 281250Hz */
+        4,  /* -> 1125000Hz */
+        2,  /* -> 4500000Hz */
+        1   /* -> 9000000Hz */
     },
-    {       /* for APB2 @ 180000000Hz */
-        7,  /* -> 703125Hz */
-        7,  /* -> 703125Hz */
-        7,  /* -> 703125Hz */
-        4,  /* -> 5625000Hz */
-        3   /* -> 11250000Hz */
+    {       /* for APB2 @ 72000000Hz */
+        7,  /* -> 281250Hz */
+        7,  /* -> 281250Hz */
+        5,  /* -> 1125000Hz */
+        3,  /* -> 4500000Hz */
+        2   /* -> 9000000Hz */
     }
 };
 
@@ -216,36 +204,16 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 /** @} */
 
+
 /**
  * @name    I2C configuration
  * @{
  */
-#define I2C_NUMOF           (1U)
-#define I2C_0_EN            1
-#define I2C_IRQ_PRIO        1
-#define I2C_APBCLK          (42000000U)
-
-/* I2C 0 device configuration */
-#define I2C_0_DEV           I2C1
-#define I2C_0_CLKEN()       (periph_clk_en(APB1, RCC_APB1ENR_I2C1EN))
-#define I2C_0_CLKDIS()      (periph_clk_dis(APB1, RCC_APB1ENR_I2C1EN))
-#define I2C_0_EVT_IRQ       I2C1_EV_IRQn
-#define I2C_0_EVT_ISR       isr_i2c1_ev
-#define I2C_0_ERR_IRQ       I2C1_ER_IRQn
-#define I2C_0_ERR_ISR       isr_i2c1_er
-/* I2C 0 pin configuration */
-#define I2C_0_SCL_PORT      GPIOB
-#define I2C_0_SCL_PIN       8
-#define I2C_0_SCL_AF        4
-#define I2C_0_SCL_CLKEN()   (periph_clk_en(AHB1, RCC_AHB1ENR_GPIOBEN))
-#define I2C_0_SDA_PORT      GPIOB
-#define I2C_0_SDA_PIN       9
-#define I2C_0_SDA_AF        4
-#define I2C_0_SDA_CLKEN()   (periph_clk_en(AHB1, RCC_AHB1ENR_GPIOBEN))
+#define I2C_NUMOF           (0U)
 /** @} */
 
 /**
- * @name    ADC configuration
+ * @name   ADC configuration
  * @{
  */
 #define ADC_NUMOF          (0)
