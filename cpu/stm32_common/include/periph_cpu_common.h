@@ -280,6 +280,14 @@ typedef struct {
 } qdec_conf_t;
 
 /**
+ * @brief UART hardware module types
+ */
+typedef enum {
+    STM32_USART,            /**< STM32 USART module type */
+    STM32_LPUART,           /**< STM32 Low-power UART (LPUART) module type */
+} uart_type_t;
+
+/**
  * @brief   Structure for UART configuration data
  */
 typedef struct {
@@ -304,6 +312,10 @@ typedef struct {
     gpio_af_t cts_af;       /**< alternate function for CTS pin */
     gpio_af_t rts_af;       /**< alternate function for RTS pin */
 #endif
+#endif
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+    uart_type_t type;       /**< hardware module type (USART or LPUART) */
+    uint32_t clk_src;       /**< clock source used for UART */
 #endif
 } uart_conf_t;
 
