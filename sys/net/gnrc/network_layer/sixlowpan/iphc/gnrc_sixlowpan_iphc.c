@@ -528,7 +528,8 @@ static inline size_t iphc_nhc_udp_encode(uint8_t *nhc_data,
     uint16_t dst_port = byteorder_ntohs(udp_hdr->dst_port);
     size_t nhc_len = 1; /* skip over NHC header */
 
-    /* Set UDP header ID (rfc6282#section-5). */
+    /* Set UDP NHC header type
+     * (see https://tools.ietf.org/html/rfc6282#section-4.3). */
     nhc_data[0] = NHC_UDP_ID;
     /* Compressing UDP ports, follow the same sequence as the linux kernel (nhc_udp module). */
     if (((src_port & NHC_UDP_4BIT_MASK) == NHC_UDP_4BIT_PORT) &&
