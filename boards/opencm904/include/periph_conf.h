@@ -104,7 +104,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pin     = GPIO_PIN(PORT_A, 3),
         .tx_pin     = GPIO_PIN(PORT_A, 2),
         .bus        = APB1,
-        .irqn       = USART2_IRQn
+        .irqn       = USART2_IRQn,
     },
     {
         .dev        = USART1,
@@ -112,7 +112,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pin     = GPIO_PIN(PORT_B, 7),
         .tx_pin     = GPIO_PIN(PORT_B, 6),
         .bus        = APB2,
-        .irqn       = USART1_IRQn
+        .irqn       = USART1_IRQn,
     },
     {
         .dev        = USART3,
@@ -120,7 +120,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pin     = GPIO_PIN(PORT_B, 11),
         .tx_pin     = GPIO_PIN(PORT_B, 10),
         .bus        = APB1,
-        .irqn       = USART3_IRQn
+        .irqn       = USART3_IRQn,
     }
 };
 
