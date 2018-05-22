@@ -51,19 +51,6 @@ static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
 #endif
 
-/* Only use the dispatch function for uart_write if both USART and LPUART are
- * available at the same time */
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
-#define STM32_UART_INLINE static inline
-STM32_UART_INLINE void uart_poweron_usart(uart_t uart);
-STM32_UART_INLINE void uart_poweron_lpuart(uart_t uart);
-STM32_UART_INLINE void uart_poweroff_usart(uart_t uart);
-STM32_UART_INLINE void uart_poweroff_lpuart(uart_t uart);
-#else
-#define uart_poweron_usart uart_poweron
-#define uart_poweroff_usart uart_poweroff
-#endif
-
 static inline void uart_init_pins(uart_t uart, uart_rx_cb_t rx_cb)
 {
      /* configure TX pin */
@@ -148,50 +135,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 void uart_poweron(uart_t uart)
-{
-    switch (uart_config[uart].type) {
-        case STM32_USART:
-            uart_poweron_usart(uart);
-            break;
-        case STM32_LPUART:
-            uart_poweron_lpuart(uart);
-            break;
-        default:
-            return;
-    }
-}
-
-void uart_poweroff(uart_t uart)
-{
-    switch (uart_config[uart].type) {
-        case STM32_USART:
-            uart_poweroff_usart(uart);
-            break;
-        case STM32_LPUART:
-            uart_poweroff_lpuart(uart);
-            break;
-        default:
-            return;
-    }
-}
-#endif
-
-static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
-{
-    uint16_t mantissa;
-    uint8_t fraction;
-    uint32_t clk;
-
-    /* calculate and apply baudrate */
-    clk = periph_apb_clk(uart_config[uart].bus) / baudrate;
-    mantissa = (uint16_t)(clk / 16);
-    fraction = (uint8_t)(clk - (mantissa * 16));
-    dev(uart)->BRR = ((mantissa & 0x0fff) << 4) | (fraction & 0x0f);
-}
-
-void uart_poweron_usart(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 
@@ -204,7 +148,7 @@ void uart_poweron_usart(uart_t uart)
     periph_clk_en(uart_config[uart].bus, uart_config[uart].rcc_mask);
 }
 
-void uart_poweroff_usart(uart_t uart)
+void uart_poweroff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 
@@ -215,6 +159,19 @@ void uart_poweroff_usart(uart_t uart)
         pm_unblock(STM32_PM_STOP);
     }
 #endif
+}
+
+static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
+{
+    uint16_t mantissa;
+    uint8_t fraction;
+    uint32_t clk;
+
+    /* calculate and apply baudrate */
+    clk = periph_apb_clk(uart_config[uart].bus) / baudrate;
+    mantissa = (uint16_t)(clk / 16);
+    fraction = (uint8_t)(clk - (mantissa * 16));
+    dev(uart)->BRR = ((mantissa & 0x0fff) << 4) | (fraction & 0x0f);
 }
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
@@ -247,41 +204,6 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
     uint32_t brr = (uint32_t)(((uint64_t)clk << 8) / baudrate);
 
     dev(uart)->BRR = brr;
-}
-
-void uart_poweron_lpuart(uart_t uart)
-{
-    assert(uart < UART_NUMOF);
-#ifdef STM32_PM_STOP
-    if (isr_ctx[uart].rx_cb) {
-        pm_block(STM32_PM_STOP);
-    }
-#endif
-
-    /* LPUART1 specific */
-#if defined CPU_FAM_STM32L4
-    RCC->APB1ENR2 |= uart_config[uart].rcc_mask;
-#else
-    RCC->APB1ENR |= uart_config[uart].rcc_mask;
-#endif
-}
-
-void uart_poweroff_lpuart(uart_t uart)
-{
-    assert(uart < UART_NUMOF);
-
-    /* LPUART specific */
-#if defined CPU_FAM_STM32L4
-    RCC->APB1ENR2 &= ~uart_config[uart].rcc_mask;
-#else
-    RCC->APB1ENR &= ~uart_config[uart].rcc_mask;
-#endif
-
-#ifdef STM32_PM_STOP
-    if (isr_ctx[uart].rx_cb) {
-        pm_unblock(STM32_PM_STOP);
-    }
-#endif
 }
 #endif
 
