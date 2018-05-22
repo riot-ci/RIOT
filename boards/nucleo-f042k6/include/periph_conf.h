@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017  Inria
- *               2017  OTA keys
+ * Copyright (C) 2016  OTA keys
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,15 +7,14 @@
  */
 
 /**
- * @defgroup    boards_nucleo32-l432 STM32 Nucleo32-L432
+ * @defgroup    boards_nucleo-f042k6 STM32 Nucleo-F042K6
  * @ingroup     boards_common_nucleo32
- * @brief       Support for the STM32 Nucleo32-L432
+ * @brief       Support for the STM32 Nucleo-F042K6
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for the nucleo32-l432 board
+ * @brief       Peripheral MCU configuration for the nucleo-f042k6 board
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Vincent Dupont <vincent@otakeys.com>
  */
 
@@ -30,48 +28,33 @@ extern "C" {
 #endif
 
 /**
- * @name Clock system configuration
+ * @name    Clock settings
+ *
+ * @note    This is auto-generated from
+ *          `cpu/stm32_common/dist/clk_conf/clk_conf.c`
  * @{
  */
+/* give the target core clock (HCLK) frequency [in Hz],
+ * maximum: 48MHz */
+#define CLOCK_CORECLOCK     (48000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
-#define CLOCK_HSE           (0)
+#define CLOCK_HSE           (0U)
 /* 0: no external low speed crystal available,
  * 1: external crystal available (always 32.768kHz) */
-#define CLOCK_LSE           (1)
-/* 0: enable MSI only if HSE isn't available
- * 1: always enable MSI (e.g. if USB or RNG is used)*/
-#define CLOCK_MSI_ENABLE    (1)
-/* 0: disable Hardware auto calibration with LSE
- * 1: enable Hardware auto calibration with LSE (PLL-mode)*/
-#define CLOCK_MSI_LSE_PLL   (1)
-/* give the target core clock (HCLK) frequency [in Hz], maximum: 80MHz */
-#define CLOCK_CORECLOCK     (80000000U)
-/* PLL configuration: make sure your values are legit!
- *
- * compute by: CORECLOCK = (((PLL_IN / M) * N) / R)
- * with:
- * PLL_IN:  input clock, HSE or MSI @ 48MHz
- * M:       pre-divider,  allowed range: [1:8]
- * N:       multiplier,   allowed range: [8:86]
- * R:       post-divider, allowed range: [2,4,6,8]
- *
- * Also the following constraints need to be met:
- * (PLL_IN / M)     -> [4MHz:16MHz]
- * (PLL_IN / M) * N -> [64MHz:344MHz]
- * CORECLOCK        -> 80MHz MAX!
- */
-#define CLOCK_PLL_M         (6)
-#define CLOCK_PLL_N         (20)
-#define CLOCK_PLL_R         (2)
+#define CLOCK_LSE           (0)
 /* peripheral clock setup */
 #define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1
 #define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV4
-#define CLOCK_APB1          (CLOCK_CORECLOCK / 4)
-#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV2
-#define CLOCK_APB2          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB1_DIV      RCC_CFGR_PPRE_DIV1      /* max 48MHz */
+#define CLOCK_APB1          (CLOCK_CORECLOCK / 1)
+#define CLOCK_APB2          (CLOCK_APB1)
+
+/* PLL factors */
+#define CLOCK_PLL_PREDIV     (2)
+#define CLOCK_PLL_MUL        (12)
 /** @} */
+
 
 /**
  * @name   Timer configuration
@@ -81,7 +64,7 @@ static const timer_conf_t timer_config[] = {
     {
         .dev      = TIM2,
         .max      = 0xffffffff,
-        .rcc_mask = RCC_APB1ENR1_TIM2EN,
+        .rcc_mask = RCC_APB1ENR_TIM2EN,
         .bus      = APB1,
         .irqn     = TIM2_IRQn
     }
@@ -93,17 +76,17 @@ static const timer_conf_t timer_config[] = {
 /** @} */
 
 /**
- * @name UART configuration
+ * @name   UART configuration
  * @{
  */
 static const uart_conf_t uart_config[] = {
     {
         .dev        = USART2,
-        .rcc_mask   = RCC_APB1ENR1_USART2EN,
+        .rcc_mask   = RCC_APB1ENR_USART2EN,
         .rx_pin     = GPIO_PIN(PORT_A, 15),
         .tx_pin     = GPIO_PIN(PORT_A, 2),
-        .rx_af      = GPIO_AF3,
-        .tx_af      = GPIO_AF7,
+        .rx_af      = GPIO_AF1,
+        .tx_af      = GPIO_AF1,
         .bus        = APB1,
         .irqn       = USART2_IRQn
     },
@@ -112,11 +95,11 @@ static const uart_conf_t uart_config[] = {
         .rcc_mask   = RCC_APB2ENR_USART1EN,
         .rx_pin     = GPIO_PIN(PORT_A, 10),
         .tx_pin     = GPIO_PIN(PORT_A, 9),
-        .rx_af      = GPIO_AF7,
-        .tx_af      = GPIO_AF7,
+        .rx_af      = GPIO_AF1,
+        .tx_af      = GPIO_AF1,
         .bus        = APB2,
         .irqn       = USART1_IRQn
-    },
+    }
 };
 
 #define UART_0_ISR          (isr_usart2)
@@ -126,7 +109,7 @@ static const uart_conf_t uart_config[] = {
 /** @} */
 
 /**
- * @name   PWM configuration
+ * @name    PWM configuration
  * @{
  */
 static const pwm_conf_t pwm_config[] = {
@@ -137,8 +120,28 @@ static const pwm_conf_t pwm_config[] = {
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
-        .af       = GPIO_AF1,
+        .af       = GPIO_AF2,
         .bus      = APB2
+    },
+    {
+        .dev      = TIM14,
+        .rcc_mask = RCC_APB1ENR_TIM14EN,
+        .chan     = { { .pin = GPIO_PIN(PORT_B, 1) /* D6 */, .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
+        .af       = GPIO_AF0,
+        .bus      = APB1
+    },
+    {
+        .dev      = TIM3,
+        .rcc_mask = RCC_APB1ENR_TIM3EN,
+        .chan     = { { .pin = GPIO_PIN(PORT_B, 0) /* D3 */, .cc_chan = 2 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 }},
+        .af       = GPIO_AF1,
+        .bus      = APB1
     }
 };
 
@@ -153,19 +156,19 @@ static const pwm_conf_t pwm_config[] = {
  * @{
  */
 static const uint8_t spi_divtable[2][5] = {
-    {       /* for APB1 @ 20000000Hz */
-        7,  /* -> 78125Hz */
-        5,  /* -> 312500Hz */
-        3,  /* -> 1250000Hz */
-        1,  /* -> 5000000Hz */
-        0   /* -> 10000000Hz */
+    {       /* for APB1 @ 48000000Hz */
+        7,  /* -> 187500Hz */
+        6,  /* -> 375000Hz */
+        5,  /* -> 750000Hz */
+        2,  /* -> 6000000Hz */
+        1   /* -> 12000000Hz */
     },
-    {       /* for APB2 @ 40000000Hz */
-        7,  /* -> 156250Hz */
-        6,  /* -> 312500Hz */
-        4,  /* -> 1250000Hz */
-        2,  /* -> 5000000Hz */
-        1   /* -> 10000000Hz */
+    {       /* for APB2 @ 48000000Hz */
+        7,  /* -> 187500Hz */
+        6,  /* -> 375000Hz */
+        5,  /* -> 750000Hz */
+        2,  /* -> 6000000Hz */
+        1   /* -> 12000000Hz */
     }
 };
 
@@ -176,7 +179,7 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_B, 4),
         .sclk_pin = GPIO_PIN(PORT_B, 3),
         .cs_pin   = GPIO_UNDEF,
-        .af       = GPIO_AF5,
+        .af       = GPIO_AF0,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2
     }
@@ -189,6 +192,10 @@ static const spi_conf_t spi_config[] = {
  * @name RTC configuration
  * @{
  */
+/**
+ * Nucleo-f042 does not have any LSE, current RTC driver does not support LSI as
+ * clock source, so disabling RTC.
+ */
 #define RTC_NUMOF           (0U)
 /** @} */
 
@@ -196,7 +203,15 @@ static const spi_conf_t spi_config[] = {
  * @name   ADC configuration
  * @{
  */
-#define ADC_NUMOF           (0U)
+#define ADC_CONFIG {            \
+    { GPIO_PIN(PORT_A, 0), 0 }, \
+    { GPIO_PIN(PORT_A, 1), 1 }, \
+    { GPIO_PIN(PORT_A, 3), 3 }, \
+    { GPIO_PIN(PORT_A, 4), 4 }, \
+    { GPIO_PIN(PORT_A, 7), 7 }  \
+}
+
+#define ADC_NUMOF          (5)
 /** @} */
 
 #ifdef __cplusplus
