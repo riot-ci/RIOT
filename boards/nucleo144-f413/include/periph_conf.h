@@ -104,8 +104,6 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB1,
         .irqn       = USART3_IRQn,
-        .type       = STM32_USART,
-        .clk_src    = 0, /* Use APB clock */
 #ifdef UART_USE_DMA
         .dma_stream = 6,
         .dma_chan   = 4
@@ -120,8 +118,6 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF8,
         .bus        = APB2,
         .irqn       = USART6_IRQn,
-        .type       = STM32_USART,
-        .clk_src    = 0, /* Use APB clock */
 #ifdef UART_USE_DMA
         .dma_stream = 5,
         .dma_chan   = 4
@@ -136,8 +132,6 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB1,
         .irqn       = USART2_IRQn,
-        .type       = STM32_USART,
-        .clk_src    = 0, /* Use APB clock */
 #ifdef UART_USE_DMA
         .dma_stream = 4,
         .dma_chan   = 4

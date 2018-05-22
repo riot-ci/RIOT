@@ -89,8 +89,6 @@ static const uart_conf_t uart_config[] = {
         .tx_af      = GPIO_AF7,
         .bus        = APB2,
         .irqn       = USART1_IRQn,
-        .type       = STM32_USART,
-        .clk_src    = 0, /* Use APB clock */
 #ifdef UART_USE_DMA
         .dma_stream = 4,
         .dma_chan   = 4
