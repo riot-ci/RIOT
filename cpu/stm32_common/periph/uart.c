@@ -34,7 +34,7 @@
 #include "periph/gpio.h"
 #include "pm_layered.h"
 
-#define RXENABLE                (USART_CR1_RE | USART_CR1_RXNEIE)
+#define RXENABLE            (USART_CR1_RE | USART_CR1_RXNEIE)
 
 /**
  * @brief   Allocate memory to store the callback functions
