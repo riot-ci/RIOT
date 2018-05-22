@@ -131,7 +131,7 @@ static const uart_conf_t uart_config[] = {
         .clk_src    = 0, /* Use APB clock */
 #ifdef UART_USE_DMA
         .dma_stream = 5,
-        .dma_chan   = 5
+        .dma_chan   = 4
 #endif
     }
 };
