@@ -8,7 +8,7 @@ BOARD ?= native
 RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon chronos msb-430 msb-430h nrf51dongle \
-                             nrf6310 nucleo32-f031 nucleo32-f042 nucleo32-l031 \
+                             nrf6310 nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 \
                              nucleo-f030 nucleo-f070 nucleo-f072 nucleo-f334 \
                              nucleo-l053 stm32f0discovery telosb \
                              wsn430-v1_3b wsn430-v1_4 yunjia-nrf51822 z1
