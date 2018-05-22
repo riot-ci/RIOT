@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "fs/devfs.h"
+#include "random.h"
 
 #include "embUnit/embUnit.h"
 
@@ -155,7 +156,6 @@ static void test_devfs_urandom(void)
     TEST_ASSERT(memcmp(zeroes, buf, sizeof(buf)));
 }
 
-#ifdef MODULE_PERIPH_HWRNG
 static void test_devfs_hwrng(void)
 {
     const uint8_t zeroes[8] = { 0 };
@@ -168,7 +168,6 @@ static void test_devfs_hwrng(void)
     TEST_ASSERT_EQUAL_INT(sizeof(buf), res);
     TEST_ASSERT(memcmp(zeroes, buf, sizeof(buf)));
 }
-#endif
 
 Test *tests_devfs_tests(void)
 {
@@ -176,9 +175,7 @@ Test *tests_devfs_tests(void)
         new_TestFixture(test_devfs_register),
         new_TestFixture(test_devfs_mount_open),
         new_TestFixture(test_devfs_urandom),
-#ifdef MODULE_PERIPH_HWRNG
         new_TestFixture(test_devfs_hwrng),
-#endif
     };
 
     EMB_UNIT_TESTCALLER(devfs_tests, NULL, NULL, fixtures);
@@ -188,10 +185,11 @@ Test *tests_devfs_tests(void)
 
 void tests_devfs(void)
 {
-#ifndef MODULE_AUTO_INIT
     extern void auto_init_devfs(void);
     auto_init_devfs();
-#endif
+
+    random_init(1);
+
     TESTS_RUN(tests_devfs_tests());
 }
 /** @} */

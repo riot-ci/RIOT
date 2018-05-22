@@ -1,5 +1,4 @@
 USEMODULE += vfs
 USEMODULE += devfs
-USEMODULE += random
-USEMODULE += auto_init
-FEATURES_OPTIONAL += periph_hwrng
+USEMODULE += devfs_random
+USEMODULE += devfs_hwrng
