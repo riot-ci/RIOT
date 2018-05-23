@@ -16,8 +16,8 @@
  * @author      Cenk Gündoğan <cenk.guendogan@haw-hamburg.de>
  */
 
-#ifndef GNRC_RPL_GLOBALS_H
-#define GNRC_RPL_GLOBALS_H
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 #include "evtimer.h"
 
@@ -56,7 +56,7 @@ extern evtimer_msg_t gnrc_rpl_evtimer;
 
 /**
  * @defgroup gnrc_rpl_parent_states Parent states
- * State of a RPL parent (@ref gnrc_rpl_parent_t::state)
+ * State of a RPL parent
  * @{
  */
 /**
@@ -81,5 +81,5 @@ extern evtimer_msg_t gnrc_rpl_evtimer;
 }
 #endif
 
-#endif /* GNRC_RPL_GLOBALS_H */
+#endif /* GLOBALS_H */
 /** @} */
