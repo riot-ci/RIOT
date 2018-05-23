@@ -1,0 +1,2 @@
+INCLUDES += -I$(BINDIRBASE)
+USEMODULE += ndn-encoding
