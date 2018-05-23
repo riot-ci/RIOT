@@ -3,14 +3,16 @@
 import os
 import sys
 
+NB_TESTS = 3
+
 
 def testfunc(child):
-    child.expect_exact('03670110056700FF')
-    child.expect_exact('0167FFD8067104D1FB2F0000')
-    child.expect_exact('018806765EF2960A0003E8')
+    for test in range(NB_TESTS):
+        child.expect_exact('Test {}:'.format(test + 1))
+        child.expect('Result: [0-9A-Z]+ SUCCESS')
 
 
 if __name__ == "__main__":
-    sys.path.append(os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner'))
+    sys.path.append(os.path.join(os.environ['RIOTTOOLS'], 'testrunner'))
     from testrunner import run
     sys.exit(run(testfunc))

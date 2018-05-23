@@ -293,6 +293,10 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     netdev->stats.tx_bytes += c;
 #endif
 
+#ifdef MODULE_NETSTATS_L2
+    netdev->stats.tx_bytes += c;
+#endif
+
     mutex_unlock(&dev->devlock);
     return c;
 }
