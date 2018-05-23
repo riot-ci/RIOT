@@ -1,2 +1,4 @@
-INCLUDES += -I$(BINDIRBASE)
+is this file taken in account ????
+
+INCLUDES += -I$(PKGDIRBASE)
 USEMODULE += ndn-encoding
