@@ -1,6 +1,6 @@
 PKG_NAME=ndn-riot
 PKG_URL=https://github.com/astralien3000/ndn-riot
-PKG_VERSION=c12d057eca51b9676d8c423e523286684636be08
+PKG_VERSION=eaa8372537b9d787e8acc9a72972b4fd4d27ee3a
 PKG_LICENSE=LGPLv2.1
 
 .PHONY: all
