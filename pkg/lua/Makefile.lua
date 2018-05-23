@@ -6,8 +6,4 @@ ifeq ($(BOARD),native)
 CFLAGS += -DLUA_USE_LINUX
 endif
 
-# This redefines a lua prng function, avoiding the need for the _times system
-# call, which RIOT doesn't provide
-CFLAGS += -D'l_randomizePivot()=0'
-
 include $(RIOTBASE)/Makefile.base
