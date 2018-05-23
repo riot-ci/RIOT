@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2017  Inria
- *               2017  OTA keys
+ * Copyright (C) 2017   Inria
+ *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
  */
 
 /**
- * @defgroup    boards_nucleo32-f031 STM32 Nucleo32-F031
+ * @defgroup    boards_nucleo-f303k8 STM32 Nucleo-F303K8
  * @ingroup     boards_common_nucleo32
- * @brief       Support for the STM32 Nucleo32-F031
+ * @brief       Support for the STM32 Nucleo-F303K8
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for the nucleo32-f031 board
+ * @brief       Peripheral MCU configuration for the nucleo-f303k8 board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
- * @author      Vincent Dupont <vincent@otakeys.com>
  */
 
 #ifndef PERIPH_CONF_H
@@ -36,24 +35,25 @@ extern "C" {
  * @{
  */
 /* give the target core clock (HCLK) frequency [in Hz],
- * maximum: 48MHz */
-#define CLOCK_CORECLOCK      (48000000U)
+ * maximum: 72MHz */
+#define CLOCK_CORECLOCK     (64000000U)
 /* 0: no external high speed crystal available
  * else: actual crystal frequency [in Hz] */
-#define CLOCK_HSE            (0U)
+#define CLOCK_HSE           (0U)
 /* 0: no external low speed crystal available,
  * 1: external crystal available (always 32.768kHz) */
-#define CLOCK_LSE            (0)
+#define CLOCK_LSE           (0)
 /* peripheral clock setup */
-#define CLOCK_AHB_DIV        RCC_CFGR_HPRE_DIV1
-#define CLOCK_AHB            (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB1_DIV       RCC_CFGR_PPRE_DIV1      /* max 48MHz */
-#define CLOCK_APB1           (CLOCK_CORECLOCK / 1)
-#define CLOCK_APB2           (CLOCK_APB1)
+#define CLOCK_AHB_DIV       RCC_CFGR_HPRE_DIV1
+#define CLOCK_AHB           (CLOCK_CORECLOCK / 1)
+#define CLOCK_APB1_DIV      RCC_CFGR_PPRE1_DIV2     /* max 36MHz */
+#define CLOCK_APB1          (CLOCK_CORECLOCK / 2)
+#define CLOCK_APB2_DIV      RCC_CFGR_PPRE2_DIV1     /* max 72MHz */
+#define CLOCK_APB2          (CLOCK_CORECLOCK / 1)
 
 /* PLL factors */
 #define CLOCK_PLL_PREDIV     (2)
-#define CLOCK_PLL_MUL        (12)
+#define CLOCK_PLL_MUL        (16)
 /** @} */
 
 /**
@@ -76,32 +76,53 @@ static const timer_conf_t timer_config[] = {
 /** @} */
 
 /**
- * @name UART configuration
+ * @name   UART configuration
  * @{
  */
 static const uart_conf_t uart_config[] = {
     {
-        .dev        = USART1,
-        .rcc_mask   = RCC_APB2ENR_USART1EN,
+        .dev        = USART2,
+        .rcc_mask   = RCC_APB1ENR_USART2EN,
         .rx_pin     = GPIO_PIN(PORT_A, 15),
         .tx_pin     = GPIO_PIN(PORT_A, 2),
-        .rx_af      = GPIO_AF1,
-        .tx_af      = GPIO_AF1,
+        .rx_af      = GPIO_AF7,
+        .tx_af      = GPIO_AF7,
+        .bus        = APB1,
+        .irqn       = USART2_IRQn
+    },
+    {
+        .dev        = USART1,
+        .rcc_mask   = RCC_APB2ENR_USART1EN,
+        .rx_pin     = GPIO_PIN(PORT_A, 10),
+        .tx_pin     = GPIO_PIN(PORT_A,  9),
+        .rx_af      = GPIO_AF7,
+        .tx_af      = GPIO_AF7,
         .bus        = APB2,
         .irqn       = USART1_IRQn
     }
 };
 
-#define UART_0_ISR          (isr_usart1)
+#define UART_0_ISR          (isr_usart2)
+#define UART_1_ISR          (isr_usart1)
 
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 /** @} */
 
 /**
- * @name   PWM configuration
+ * @name    PWM configuration
  * @{
  */
 static const pwm_conf_t pwm_config[] = {
+    {
+        .dev      = TIM3,
+        .rcc_mask = RCC_APB1ENR_TIM3EN,
+        .chan     = { { .pin = GPIO_PIN(PORT_B, 0) /* D3 */, .cc_chan = 2 },
+                      { .pin = GPIO_PIN(PORT_B, 1) /* D6 */, .cc_chan = 3 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
+                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
+        .af       = GPIO_AF2,
+        .bus      = APB1
+    },
     {
         .dev      = TIM1,
         .rcc_mask = RCC_APB2ENR_TIM1EN,
@@ -109,29 +130,9 @@ static const pwm_conf_t pwm_config[] = {
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
                       { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
-        .af       = GPIO_AF2,
+        .af       = GPIO_AF6,
         .bus      = APB2
-    },
-    {
-        .dev      = TIM14,
-        .rcc_mask = RCC_APB1ENR_TIM14EN,
-        .chan     = { { .pin = GPIO_PIN(PORT_B, 1) /* D6 */, .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
-        .af       = GPIO_AF0,
-        .bus      = APB1
-    },
-    {
-        .dev      = TIM3,
-        .rcc_mask = RCC_APB1ENR_TIM3EN,
-        .chan     = { { .pin = GPIO_PIN(PORT_B, 0) /* D3 */, .cc_chan = 2 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,                   .cc_chan = 0 } },
-        .af       = GPIO_AF1,
-        .bus      = APB1
-    },
+    }
 };
 
 #define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
@@ -145,19 +146,19 @@ static const pwm_conf_t pwm_config[] = {
  * @{
  */
 static const uint8_t spi_divtable[2][5] = {
-    {       /* for APB1 @ 48000000Hz */
-        7,  /* -> 187500Hz */
-        6,  /* -> 375000Hz */
-        5,  /* -> 750000Hz */
-        2,  /* -> 6000000Hz */
-        1   /* -> 12000000Hz */
+    {       /* for APB1 @ 32000000Hz */
+        7,  /* -> 125000Hz */
+        5,  /* -> 500000Hz */
+        4,  /* -> 1000000Hz */
+        2,  /* -> 4000000Hz */
+        1   /* -> 8000000Hz */
     },
-    {       /* for APB2 @ 48000000Hz */
-        7,  /* -> 187500Hz */
-        6,  /* -> 375000Hz */
-        5,  /* -> 750000Hz */
-        2,  /* -> 6000000Hz */
-        1   /* -> 12000000Hz */
+    {       /* for APB2 @ 64000000Hz */
+        7,  /* -> 250000Hz */
+        6,  /* -> 500000Hz */
+        5,  /* -> 1000000Hz */
+        3,  /* -> 4000000Hz */
+        2   /* -> 8000000Hz */
     }
 };
 
@@ -181,10 +182,6 @@ static const spi_conf_t spi_config[] = {
  * @name RTC configuration
  * @{
  */
-/**
- * Nucleo-f031 does not have any LSE, current RTC driver does not support LSI as
- * clock source, so disabling RTC.
- */
 #define RTC_NUMOF           (0U)
 /** @} */
 
@@ -192,15 +189,7 @@ static const spi_conf_t spi_config[] = {
  * @name   ADC configuration
  * @{
  */
-#define ADC_CONFIG {            \
-    { GPIO_PIN(PORT_A, 0), 0 }, \
-    { GPIO_PIN(PORT_A, 1), 1 }, \
-    { GPIO_PIN(PORT_A, 3), 3 }, \
-    { GPIO_PIN(PORT_A, 4), 4 }, \
-    { GPIO_PIN(PORT_A, 7), 7 }  \
-}
-
-#define ADC_NUMOF           (5)
+#define ADC_NUMOF (0)
 /** @} */
 
 #ifdef __cplusplus
