@@ -49,6 +49,7 @@ extern "C" {
 #endif
 
 #ifndef AT_SEND_ECHO
+/** Enable/disable the expected echo after an AT command is sent */
 #define AT_SEND_ECHO 1
 #endif
 
