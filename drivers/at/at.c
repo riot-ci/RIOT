@@ -63,14 +63,16 @@ int at_send_cmd(at_dev_t *dev, const char *command, uint32_t timeout)
     size_t cmdlen = strlen(command);
 
     uart_write(dev->uart, (const uint8_t *)command, cmdlen);
-    uart_write(dev->uart, (const uint8_t *)AT_EOL, AT_EOL_LEN);
+    uart_write(dev->uart, (const uint8_t *)AT_SEND_EOL, AT_SEND_EOL_LEN);
 
-    if (at_expect_bytes(dev, command, timeout)) {
-        return -1;
-    }
+    if (AT_SEND_ECHO) {
+        if (at_expect_bytes(dev, command, timeout)) {
+            return -1;
+        }
 
-    if (at_expect_bytes(dev, AT_EOL "\r\n", timeout)) {
-        return -2;
+        if (at_expect_bytes(dev, AT_SEND_EOL "\r\n", timeout)) {
+            return -2;
+        }
     }
 
     return 0;
@@ -172,13 +174,13 @@ int at_send_cmd_wait_prompt(at_dev_t *dev, const char *command, uint32_t timeout
     at_drain(dev);
 
     uart_write(dev->uart, (const uint8_t *)command, cmdlen);
-    uart_write(dev->uart, (const uint8_t *)AT_EOL, AT_EOL_LEN);
+    uart_write(dev->uart, (const uint8_t *)AT_SEND_EOL, AT_SEND_EOL_LEN);
 
     if (at_expect_bytes(dev, command, timeout)) {
         return -1;
     }
 
-    if (at_expect_bytes(dev, AT_EOL "\n", timeout)) {
+    if (at_expect_bytes(dev, AT_SEND_EOL "\n", timeout)) {
         return -2;
     }
 

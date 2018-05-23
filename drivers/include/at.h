@@ -43,13 +43,17 @@
 extern "C" {
 #endif
 
-#ifndef AT_EOL
+#ifndef AT_SEND_EOL
 /** End of line character to send after the AT command */
-#define AT_EOL "\r"
+#define AT_SEND_EOL "\r"
 #endif
 
-/** Shortcut for getting end of line length */
-#define AT_EOL_LEN  (sizeof(AT_EOL) - 1)
+#ifndef AT_SEND_ECHO
+#define AT_SEND_ECHO 1
+#endif
+
+/** Shortcut for getting send end of line length */
+#define AT_SEND_EOL_LEN  (sizeof(AT_SEND_EOL) - 1)
 
 /**
  * @brief AT device structure
