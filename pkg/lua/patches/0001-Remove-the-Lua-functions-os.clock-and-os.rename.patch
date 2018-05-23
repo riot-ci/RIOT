@@ -1,0 +1,39 @@
+From dbe9b215820480580c88dfc46a71be48d1c8b935 Mon Sep 17 00:00:00 2001
+From: danpetry <daniel.petry@fu-berlin.de>
+Date: Wed, 23 May 2018 14:09:17 +0200
+Subject: [PATCH 1/1] Remove the Lua functions os.clock and os.rename
+
+These functions will now return an error, stating "not yet
+implemented in RIOT".
+---
+ loslib.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/loslib.c b/loslib.c
+index dd2bb378..f9e5cbd2 100644
+--- a/loslib.c
++++ b/loslib.c
+@@ -157,9 +157,7 @@ static int os_remove (lua_State *L) {
+ 
+ 
+ static int os_rename (lua_State *L) {
+-  const char *fromname = luaL_checkstring(L, 1);
+-  const char *toname = luaL_checkstring(L, 2);
+-  return luaL_fileresult(L, rename(fromname, toname) == 0, NULL);
++  return luaL_error(L, "This function is not implemented in RIOT yet");
+ }
+ 
+ 
+@@ -181,8 +179,7 @@ static int os_getenv (lua_State *L) {
+ 
+ 
+ static int os_clock (lua_State *L) {
+-  lua_pushnumber(L, ((lua_Number)clock())/(lua_Number)CLOCKS_PER_SEC);
+-  return 1;
++  return luaL_error(L, "This function is not implemented in RIOT yet");
+ }
+ 
+ 
+-- 
+2.17.0
+
