@@ -74,6 +74,14 @@
 #define BUF_RX_START                (0)
 #define BUF_RX_END                  (BUF_TX_START - 1)
 
+/**
+ * @brief  Maximum transmission time
+ *
+ * The time in us that is required to send an Ethernet frame of maximum length
+ * (Preamle + SFD + 1518 byte) at 10 Mbps in full duplex mode with a guard
+ * period of 9,6 us. This time is used as time out for send operations.
+ */
+#define MAX_TX_TIME                 1230
 
 static void switch_bank(enc28j60_t *dev, int8_t bank)
 {
@@ -248,18 +256,15 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
 
     mutex_lock(&dev->devlock);
 
-    if (cmd_rcr(dev, REG_ECON1, -1) & ECON1_TXRTS)
-    {
+    if (cmd_rcr(dev, REG_ECON1, -1) & ECON1_TXRTS) {
         /* there is already a transmission in progress */
-        if (xtimer_now_usec() - dev->tx_time > 2429)
-        {
-            /* if transmission time exceeds 2.4287 ms, we suppose that
-               TX logic hangs and has to be reset */
+        if (xtimer_now_usec() - dev->tx_time > MAX_TX_TIME*2) {
+            /* if transmission time exceeds the double of maximum transmission
+               time, we suppose that TX logic hangs and has to be reset */
             cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRST);
             cmd_bfc(dev, REG_ECON1, -1, ECON1_TXRST);
         }
-        else
-        {
+        else {
             /* otherwise we suppose that the transmission is still in progress
                and return EBUSY */
             mutex_unlock(&dev->devlock);
