@@ -1,6 +1,6 @@
 PKG_NAME=ndn-riot
-PKG_URL=https://github.com/named-data-iot/ndn-riot
-PKG_VERSION=b18133a687bfd848e04019dcd73f7f99062e26b6
+PKG_URL=https://github.com/astralien3000/ndn-riot
+PKG_VERSION=1501308b046dfcb12ad7fa4f0e944663f0d312a7
 PKG_LICENSE=LGPLv2.1
 
 .PHONY: all
