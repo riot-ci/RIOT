@@ -64,7 +64,7 @@ static int send(int argc, char **argv)
         return 1;
     }
 
-    printf("Response (len=%d): %s\n", len, resp);
+    printf("Response (len=%d): %s\n", (int)len, resp);
 
     return 0;
 }
@@ -99,7 +99,7 @@ static int send_lines(int argc, char **argv)
         return 1;
     }
 
-    printf("Response (len=%d): %s\n", len, resp);
+    printf("Response (len=%d): %s\n", (int)len, resp);
 
     return 0;
 }
