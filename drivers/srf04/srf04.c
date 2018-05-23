@@ -24,28 +24,16 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-
-/*
- * for inch define distance as "1480"
- */
-#ifndef SRF04_DISTANCE
-#define SRF04_DISTANCE  (584U)
-#endif
-
-static bool state;
-
 static void _cb(void *arg)
 {
     uint32_t t = xtimer_now_usec();
 
     srf04_t* dev = (srf04_t*)arg;
-    if (dev->state == SRF04_IDLE) {
-        dev->state = SRF04_MEASURING;
+    if (dev->distance > SRF04_ERR_MEASURING) {
+        dev->distance = SRF04_ERR_MEASURING;
         dev->time = t;
-    }
-    else if (state == SRF04_MEASURING) {
+    } else {
         gpio_irq_disable(dev->p.echo);
-        dev->state = SRF04_IDLE;
         dev->distance = (t - dev->time);
     }
 }
@@ -54,8 +42,7 @@ int srf04_init(srf04_t* dev)
 {
     dev->p = srf04_params[0];
 
-    dev->state = SRF04_IDLE;
-    dev->distance = 0;
+    dev->distance = SRF04_ERR_INVALID;
     dev->time = 0;
 
     if (gpio_init(dev->p.trigger, GPIO_OUT) != 0) {
@@ -65,7 +52,7 @@ int srf04_init(srf04_t* dev)
 
     if (gpio_init_int(dev->p.echo, GPIO_IN, GPIO_BOTH, _cb, (void*)dev) != 0) {
         DEBUG("[srf04] Error: could not initialize GPIO echo pin\n");
-        return SRF04_ERR_INT;
+        return SRF04_ERR_GPIO;
     }
 
     gpio_irq_disable(dev->p.echo);
@@ -75,6 +62,10 @@ int srf04_init(srf04_t* dev)
 
 void srf04_trigger(const srf04_t* dev)
 {
+    if (dev->distance == SRF04_ERR_MEASURING) {
+        return;
+    }
+
     gpio_irq_enable(dev->p.echo);
 
     gpio_set(dev->p.trigger);
@@ -89,5 +80,19 @@ int srf04_read(const srf04_t* dev)
 
 int srf04_read_distance(const srf04_t* dev)
 {
-    return ((dev->distance * 100) / SRF04_DISTANCE);
+    if (dev->distance >= SRF04_OK) {
+        return ((dev->distance * 100) / SRF04_DISTANCE);
+    }
+    return dev->distance;
 }
+
+int srf04_get_distance(const srf04_t* dev)
+{
+    /* trigger new reading */
+    srf04_trigger(dev);
+    /* give the sensor the required time for sampling */
+    xtimer_usleep(SRF04_SAMPLE_PERIOD);
+    /* get the result */
+    return srf04_read_distance(dev);
+}
+

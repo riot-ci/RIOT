@@ -41,21 +41,19 @@ extern "C" {
 #endif
 
 /**
+ * @brief defines sensor required sample time
+ */
+#define SRF04_SAMPLE_PERIOD (50U * US_PER_MS)
+
+/**
  * @brief   Status and error return codes
  */
 enum {
-    SRF04_OK        =  0,              /**< exit without error */
-    SRF04_ERR_GPIO  = -1,              /**< error initializing gpio*/
-    SRF04_ERR_INT   = -2,              /**< error initializing gpio interrupt*/
+    SRF04_OK        =  0,   /**< exit without error */
+    SRF04_ERR_INVALID   = -1,   /**< error no valid measurement available*/
+    SRF04_ERR_MEASURING = -2,   /**< error sensor is measuring*/
+    SRF04_ERR_GPIO  = -3,   /**< error initializing gpio*/
 };
-
-/**
- * @brief   Interrupt states
- */
-typedef enum {
-    SRF04_MEASURING,
-    SRF04_IDLE,
-} srf04_state_t;
 
 /**
  * @brief   GPIO pins for srf04 device
@@ -70,8 +68,7 @@ typedef struct {
  */
 typedef struct {
     srf04_params_t p;
-    srf04_state_t state;
-    uint32_t distance;
+    int distance;
     uint32_t time;
 } srf04_t;
 
@@ -102,6 +99,8 @@ void srf04_trigger(const srf04_t *dev);
  * @param[in]  dev      device descriptor of sensor
  *
  * @return              time of flight in ms
+ * @return              SRF04_MEASURING if measurement is in progress
+ * @return              SRF04_INVALID if no valid measurement is available
  */
 int srf04_read(const srf04_t* dev);
 
@@ -113,8 +112,21 @@ int srf04_read(const srf04_t* dev);
  * @param[in]  dev      device descriptor of sensor
  *
  * @return              time of flight in mm
+ * @return              SRF04_MEASURING if measurement is in progress
+ * @return              SRF04_INVALID if no valid measurement is available
  */
 int srf04_read_distance(const srf04_t* dev);
+
+/**
+ * @brief   Convenience function triggers a measurement and returns distance
+ *
+ * @param[in]  dev      device descriptor of sensor
+ *
+ * @return              time of flight in mm
+ * @return              SRF04_MEASURING if measurement is in progress
+ * @return              SRF04_INVALID if no valid measurement is available
+ */
+int srf04_get_distance(const srf04_t* dev);
 
 #ifdef __cplusplus
 }

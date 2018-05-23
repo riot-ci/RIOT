@@ -24,24 +24,22 @@
 
 #include "srf04_params.h"
 #include "srf04.h"
-#include "xtimer.h"
-
-#define SAMPLE_PERIOD       (50U * US_PER_MS)
 
 int main(void)
 {
     puts("SRF04 range finder example");
 
     srf04_t dev;
-
     srf04_init(&dev);
+    int distance;
 
     while (1) {
-        srf04_trigger(&dev);
-
-        xtimer_usleep(SAMPLE_PERIOD);
-
-        printf("D: %d mm\n", srf04_read_distance(&dev));
+        distance = srf04_get_distance(&dev);
+        if (distance < SRF04_OK) {
+            puts("Error: no valid data available");
+        } else {
+            printf("D: %d mm\n", distance);
+        }
     }
 
     return 0;
