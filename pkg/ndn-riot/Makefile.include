@@ -1,2 +1,2 @@
-INCLUDES += -I$(BINDIRBASE)/pkg/$(BOARD)
+INCLUDES += -I$(BINDIRBASE)
 USEMODULE += ndn-encoding
