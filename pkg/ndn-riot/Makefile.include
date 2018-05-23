@@ -1,3 +1,2 @@
 INCLUDES += -I$(BINDIRBASE)/pkg/$(BOARD)
-DIRS += $(BINDIRBASE)/pkg/$(BOARD)/ndn-riot
 USEMODULE += ndn-encoding
