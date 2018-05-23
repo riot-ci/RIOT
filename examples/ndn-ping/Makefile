@@ -8,7 +8,7 @@ BOARD ?= native
 RIOTBASE ?= $(CURDIR)/../../
 
 BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h telosb weio wsn430-v1_3b wsn430-v1_4 z1 \
-                             nucleo32-f042 nucleo32-f031 nucleo32-l031 nucleo-f030r8 nucleo-l053r8 \
+                             nucleo-f042k6 nucleo-f031k6 nucleo-l031k6 nucleo-f030r8 nucleo-l053r8 \
                              stm32f0discovery
 
 # Include packages that pull up and auto-init the link layer.
