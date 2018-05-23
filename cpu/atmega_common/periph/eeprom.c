@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include <assert.h>
 
 #include "cpu.h"
 #include "periph/eeprom.h"
