@@ -1,0 +1,166 @@
+# check some environment variables first
+ifndef NEWLIB_DIR
+    $(info NEWLIB_DIR should be defined as /path/to/newlib directory)
+    $(info NEWLIB_DIR is set by default to /opt/esp/newlib-xtensa)
+    export NEWLIB_DIR=/opt/esp/newlib-xtensa
+endif
+
+ifndef SDK_DIR
+    $(info SDK_DIR should be defined as /path/to/sdk directory)
+    $(info SDK_DIR is set by default to /opt/esp/esp-open-sdk/sdk)
+    export SDK_DIR=/opt/esp/esp-open-sdk/sdk
+endif
+
+export CPU ?= esp8266
+export TARGET_ARCH ?= xtensa-lx106-elf
+
+INCLUDES += -I$(NEWLIB_DIR)/$(TARGET_ARCH)/include
+INCLUDES += -I$(RIOTBOARD)/common/$(CPU)/include
+INCLUDES += -I$(RIOTCPU)/$(CPU)
+INCLUDES += -I$(RIOTCPU)/$(CPU)/espressif
+
+CFLAGS  += -DRIOT_OS -DESP_OPEN_SDK
+CFLAGS  += -Wno-unused-parameter -Wformat=0
+CFLAGS  += -mlongcalls -mtext-section-literals
+ASFLAGS += --longcalls --text-section-literals
+
+NETIF_NUMOF=0
+
+ifeq ($(SDK), 1)
+    INCLUDES += -I$(SDK_DIR)/include
+    CFLAGS   += -DSDK_USED -DUSE_US_TIMER
+    ifeq ($(SDK_INT_HANDLING), 1)
+        CFLAGS += -DSDK_INT_HANDLING
+    endif
+else
+    INCLUDES += -I$(SDK_DIR)/include
+    CFLAGS   += -DSDK_NOT_USED
+endif
+
+CFLAGS_OPT = -fzero-initialized-in-bss -O2
+
+ifeq ($(ENABLE_GDBSTUB), 1)
+    GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/esp-gdbstub
+    CFLAGS_OPT   = -Og -ggdb -DGDBSTUB_FREERTOS=0
+    CFLAGS      += -DENABLE_GDBSTUB
+    INCLUDES    += -I$(GDBSTUB_DIR)
+    USEMODULE   += gdbstub
+endif
+
+ifeq ($(ENABLE_GDB), 1)
+    CFLAGS_OPT  = -fzero-initialized-in-bss -Og -ggdb
+endif
+
+CFLAGS += $(CFLAGS_OPT)
+
+ifeq ($(ENABLE_SW_TIMER), 1)
+    CFLAGS += -DSW_TIMER_USED
+endif
+
+ifeq ($(ENABLE_SPI), 1)
+    CFLAGS += -DSPI_USED
+endif
+
+ifeq ($(ENABLE_SPIFFS), 1)
+    export SPIFFS_STD_OPTION = -std=c99
+    USEMODULE += spiffs
+endif
+
+ifeq ($(ENABLE_MRF24J40), 1)
+    $(eval NETIF_NUMOF=$(shell echo $$(($(NETIF_NUMOF)+1))))
+    CFLAGS += -DSPI_USED
+    USEMODULE += mrf24j40
+endif
+
+ifeq ($(ENABLE_ENC28J60), 1)
+    $(eval NETIF_NUMOF=$(shell echo $$(($(NETIF_NUMOF)+1))))
+    CFLAGS += -DSPI_USED
+    USEMODULE += enc28j60
+endif
+
+ifdef DEFAULT_NETIF
+    CFLAGS += -DGNRC_RPL_DEFAULT_NETIF=$(DEFAULT_NETIF)
+endif
+
+ifeq ($(QEMU), 1)
+    CFLAGS += -DQEMU
+endif
+
+ifeq ($(FLASH_MODE), qio)
+    CFLAGS += -DFLASH_MODE_QIO
+endif
+
+ifeq ($(FLASH_MODE), qout)
+    CFLAGS += -DFLASH_MODE_QOUT
+endif
+
+CFLAGS += -DGNRC_NETIF_NUMOF=$(NETIF_NUMOF)
+
+LINKFLAGS += -L$(NEWLIB_DIR)/$(TARGET_ARCH)/lib
+LINKFLAGS += -L$(SDK_DIR)/lib
+
+ifeq ($(SDK), 1)
+    LINKFLAGS += -Wl,--start-group $(BINDIR)/sdk.a
+    ifeq ($(ENABLE_ESPNOW), 1)
+        LINKFLAGS += -lespnow
+    endif
+    LINKFLAGS += -lmain -lnet80211 -lcrypto -lwpa2 -lwpa -llwip -lpp -lphy -lc -lhal
+    LINKFLAGS += -Wl,--end-group
+    LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp8266.riot-os.sdk.app.ld
+else
+    LINKFLAGS += -Wl,--start-group -lphy -lhal -lc -Wl,--end-group
+    LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp8266.riot-os.no_sdk.app.ld
+endif
+
+LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/eagle.rom.addr.v6.ld
+LINKFLAGS += -nostdlib -lgcc -u ets_run -Wl,-gc-sections # -Wl,--print-gc-sections
+
+USEMODULE += auto_init
+USEMODULE += esp
+USEMODULE += mtd
+USEMODULE += periph
+USEMODULE += periph_common
+USEMODULE += ps
+USEMODULE += random
+USEMODULE += sdk
+USEMODULE += vfs
+USEMODULE += xtensa
+
+ifneq (,$(filter shell,$(USEMODULE)))
+    USEMODULE += newlib_syscalls_default
+    USEMODULE += xtimer
+endif
+
+ifneq (,$(filter xtimer,$(USEMODULE)))
+    USEMODULE += newlib_syscalls_default
+endif
+
+ifneq (,$(findstring posix,$(USEMODULE)))
+    USEMODULE += newlib_syscalls_default
+endif
+
+ifneq (,$(filter newlib_syscalls_default,$(USEMODULE)))
+    USEMODULE += uart_stdio
+endif
+
+# configure preflasher to convert .elf to .bin before flashing
+FLASH_SIZE = -fs 8m
+export PREFLASHER ?= esptool.py
+export PREFFLAGS  ?= elf2image $(FLASH_SIZE) $(ELFFILE)
+export FLASHDEPS  ?= preflash
+
+# flasher configuration
+ifeq ($(QEMU), 1)
+    export FLASHER = cat
+    export FFLAGS += $(ELFFILE)-0x00000.bin /dev/zero | head -c $$((0x10000)) | cat -
+    export FFLAGS += $(ELFFILE)-0x10000.bin /dev/zero | head -c $$((0xfc000)) | cat -
+    export FFLAGS += $(RIOTCPU)/$(CPU)/bin/esp_init_data_default.bin > $(ELFFILE).bin
+else
+    FLASH_MODE ?= dout
+    export PROGRAMMER_SPEED ?= 460800
+    export FLASHER = esptool.py
+    export FFLAGS += -p $(PORT) -b $(PROGRAMMER_SPEED) write_flash
+    export FFLAGS += -fm $(FLASH_MODE)
+    export FFLAGS += 0 $(ELFFILE)-0x00000.bin
+    export FFLAGS += 0x10000 $(ELFFILE)-0x10000.bin
+endif
