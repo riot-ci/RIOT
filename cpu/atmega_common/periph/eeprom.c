@@ -29,7 +29,7 @@ uint8_t eeprom_read_byte(uint32_t pos)
     assert(pos < EEPROM_SIZE);
 
     /* Wait for completion of previous operation */
-    while (EECR & (1 << EEPE));
+    while (EECR & (1 << EEPE)) {}
 
     /* Set up address register */
     EEAR = pos;
@@ -46,7 +46,7 @@ void eeprom_write_byte(uint32_t pos, uint8_t data)
     assert(pos < EEPROM_SIZE);
 
     /* Wait for completion of previous operation */
-    while (EECR & (1 << EEPE));
+    while (EECR & (1 << EEPE)) {}
 
     /* Set up address and Data Registers */
     EEAR = pos;
