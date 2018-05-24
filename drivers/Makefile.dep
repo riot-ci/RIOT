@@ -61,22 +61,18 @@ ifneq (,$(filter bmp180,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-ifneq (,$(filter bme280_spi,$(USEMODULE)))
-  USEMODULE += bme280
-endif
-
-ifneq (,$(filter bmp280_spi,$(USEMODULE)))
-  USEMODULE += bmp280
-endif
-
-ifneq (,$(filter bme280 bmp280,$(USEMODULE)))
-  ifneq (,$(filter bme280_spi bmp280_spi,$(USEMODULE)))
-    FEATURES_REQUIRED += periph_spi
-    FEATURES_REQUIRED += periph_gpio
-  else
-    FEATURES_REQUIRED += periph_i2c
-  endif
+ifneq (,$(filter bm%280_spi,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_spi
+  FEATURES_REQUIRED += periph_gpio
   USEMODULE += bmx280
+endif
+
+ifneq (,$(filter bm%280_i2c,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += bmx280
+endif
+
+ifneq (,$(filter bmx280,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
