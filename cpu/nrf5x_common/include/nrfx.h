@@ -16,8 +16,8 @@
  * @author          Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef CPU_NRFX_H
-#define CPU_NRFX_H
+#ifndef NRFX_H
+#define NRFX_H
 
 #include "cpu_conf.h"
 
@@ -31,5 +31,5 @@ extern "C" {
 }
 #endif
 
-#endif /* CPU_NRFX_H */
+#endif /* NRFX_H */
 /** @} */
