@@ -62,6 +62,8 @@ static void update_ad(void)
 
 static int gap_event_cb(struct ble_gap_event *event, void *arg)
 {
+    (void)arg;
+
     switch (event->type) {
     case BLE_GAP_EVENT_CONNECT:
         if (event->connect.status) {

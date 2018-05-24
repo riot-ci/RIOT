@@ -13,10 +13,6 @@ RIOTBASE ?= $(CURDIR)/../..
 # Include NimBLE
 USEPKG += nimble
 
-# As of now, NimBLE does not comply to RIOT's compiler warning settings, so we
-# need to build it with errors disabled
-WERROR = 0
-
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
