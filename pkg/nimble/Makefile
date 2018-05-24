@@ -6,6 +6,10 @@ PKG_LICENSE = Apache-2.0
 TDIR = $(RIOTPKG)/$(PKG_NAME)
 PDIR = $(PKG_BUILDDIR)
 
+# As of now, NimBLE does not build without warnings for -Wextra, so we disable
+# that flag for this package. Will hopefully be fixed some time in the future.
+CFLAGS += -Wno-extra
+
 .PHONY: all
 
 all: git-download
