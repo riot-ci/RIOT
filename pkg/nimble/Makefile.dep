@@ -17,10 +17,8 @@ USEMODULE += nimble_porting_nimble
 USEMODULE += nimble_npl_riot
 
 # nimble controller specific sub-modules
-ifneq (,$(filter nimble_controller,$(USEMODULE)))
-  USEMODULE += nimble_controller
-  USEMODULE += nimble_transport_ram
-  ifeq (nrf52,$(CPU_FAM))
-    USEMODULE += nimble_drivers_nrf52
-  endif
+USEMODULE += nimble_controller
+USEMODULE += nimble_transport_ram
+ifeq (nrf52,$(CPU_FAM))
+  USEMODULE += nimble_drivers_nrf52
 endif

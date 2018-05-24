@@ -10,13 +10,9 @@ INCLUDES += $(NIMIBASE)/ext/tinycrypt/include
 INCLUDES += $(NIMIBASE)/porting/npl/riot/include
 
 # include nimble controller headers
-ifneq (,$(filter nimble_controller,$(USEMODULE)))
-  CFLAGS += -DNIMBLE_CFG_CONTROLLER=1
-
-  INCLUDES += $(NIMIBASE)/nimble/transport/ram/include
-  INCLUDES += $(NIMIBASE)/nimble/controller/include
-  INCLUDES += $(NIMIBASE)/nimble/drivers/nrf52/include
-endif
+INCLUDES += $(NIMIBASE)/nimble/transport/ram/include
+INCLUDES += $(NIMIBASE)/nimble/controller/include
+INCLUDES += $(NIMIBASE)/nimble/drivers/nrf52/include
 
 # include nimble host headers
 INCLUDES += $(NIMIBASE)/nimble/include
@@ -34,4 +30,5 @@ INCLUDES += $(NIMIBASE)/nimble/host/util/include
 INCLUDES += $(NIMIBASE)/porting/nimble/include
 
 # set environment
+CFLAGS += -DNIMBLE_CFG_CONTROLLER=1
 CFLAGS += -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768
