@@ -31,26 +31,22 @@ size_t eeprom_read(uint32_t pos, uint8_t *data, size_t len)
 {
     assert(pos + len < EEPROM_SIZE);
 
-    size_t ret = len;
-
-    while (len--) {
-        *(uint8_t *)data++ = eeprom_read_byte(pos++);
+    for (size_t i = 0; i < len; ++i) {
+        data[i] = eeprom_read_byte(pos++);
     }
 
-    return ret;
+    return len;
 }
 
 size_t eeprom_write(uint32_t pos, const uint8_t *data, size_t len)
 {
     assert(pos + len < EEPROM_SIZE);
 
-    size_t ret = len;
-
-    while (len--) {
-        eeprom_write_byte(pos++, *(uint8_t *)data++);
+    for (size_t i = 0; i < len; ++i) {
+        eeprom_write_byte(pos++, data[i]);
     }
 
-    return ret;
+    return len;
 }
 
 #endif
