@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-DRIVER ?= bme280
+DRIVER ?= bme280_i2c
 
 USEMODULE += fmt
 USEMODULE += $(DRIVER)
