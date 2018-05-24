@@ -22,13 +22,14 @@ void event_queue_init_detached(event_queue_t *queue)
 
 void event_queue_init(event_queue_t *queue)
 {
-    event_queue_init_detached(queue);
-    event_queue_claim(queue);
+    assert(queue);
+    memset(queue, '\0', sizeof(*queue));
+    queue->waiter = (thread_t *)sched_active_thread;
 }
 
 void event_queue_claim(event_queue_t *queue)
 {
-    assert(queue->waiter == NULL);
+    assert(queue && (queue->waiter == NULL));
     queue->waiter = (thread_t *)sched_active_thread;
 }
 
