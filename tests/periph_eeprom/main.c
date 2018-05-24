@@ -26,7 +26,11 @@
 
 #include "periph/eeprom.h"
 
-static char buffer[42];
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE     (42U)
+#endif
+
+static char buffer[BUFFER_SIZE + 1];
 
 static int cmd_info(int argc, char **argv)
 {
@@ -53,6 +57,11 @@ static int cmd_read(int argc, char **argv)
 
     if (!count) {
         puts("Count should be greater than 0");
+        return 1;
+    }
+
+    if (count > BUFFER_SIZE) {
+        puts("Count exceeds buffer size");
         return 1;
     }
 
