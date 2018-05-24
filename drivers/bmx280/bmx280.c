@@ -303,7 +303,7 @@ int bmx280_init(bmx280_t *dev, const bmx280_params_t *params)
 
 #ifdef MODULE_BME280
     /* ctrl_hum must be written before ctrl_meas for changes to become
-     * effective ... */
+     * effective */
     reg = dev->params.humid_oversample;
     if (_write_reg(dev, BME280_CTRL_HUM_REG, reg) != BMX280_OK) {
         goto err;
