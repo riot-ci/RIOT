@@ -14,6 +14,12 @@
 #include "clist.h"
 #include "thread.h"
 
+void event_queue_init_detached(event_queue_t *queue)
+{
+    assert(queue);
+    memset(queue, '\0', sizeof(*queue));
+}
+
 void event_queue_init(event_queue_t *queue)
 {
     assert(queue);
@@ -21,9 +27,15 @@ void event_queue_init(event_queue_t *queue)
     queue->waiter = (thread_t *)sched_active_thread;
 }
 
+void event_queue_claim(event_queue_t *queue)
+{
+    assert(queue && (queue->waiter == NULL));
+    queue->waiter = (thread_t *)sched_active_thread;
+}
+
 void event_post(event_queue_t *queue, event_t *event)
 {
-    assert(queue && queue->waiter && event);
+    assert(queue && event);
 
     unsigned state = irq_disable();
     if (!event->list_node.next) {
@@ -31,7 +43,9 @@ void event_post(event_queue_t *queue, event_t *event)
     }
     irq_restore(state);
 
-    thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    if (queue->waiter) {
+        thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    }
 }
 
 void event_cancel(event_queue_t *queue, event_t *event)
@@ -49,8 +63,8 @@ event_t *event_get(event_queue_t *queue)
 {
     unsigned state = irq_disable();
     event_t *result = (event_t *) clist_lpop(&queue->event_list);
-
     irq_restore(state);
+
     if (result) {
         result->list_node.next = NULL;
     }

@@ -112,6 +112,11 @@ extern "C" {
 #define EVENT_QUEUE_INIT    { .waiter = (thread_t *)sched_active_thread }
 
 /**
+ * @brief   static initializer for detached event queues
+ */
+#define EVENT_QUEUE_INIT_DETACHED   { 0 }
+
+/**
  * @brief   event structure forward declaration
  */
 typedef struct event event_t;
@@ -145,6 +150,10 @@ typedef struct {
  * @param[out]  queue   event queue object to initialize
  */
 void event_queue_init(event_queue_t *queue);
+
+void event_queue_init_detached(event_queue_t *queue);
+
+void event_queue_claim(event_queue_t *queue);
 
 /**
  * @brief   Queue an event
@@ -191,6 +200,8 @@ event_t *event_get(event_queue_t *queue);
  *
  * In order to handle an event retrieved using this function,
  * call event->handler(event).
+ *
+ * @note    There can only be a single waiter on a queue!
  *
  * @param[in]   queue   event queue to get event from
  *
