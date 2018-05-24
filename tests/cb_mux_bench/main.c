@@ -35,7 +35,7 @@ cb_mux_t *cb_mux_head;
 cb_mux_t entries[NUM_ENTRIES];
 
 /* Timing */
-uint32_t time_prev, time_curr;
+unsigned long time_prev, time_curr;
 
 void cb(void *arg)
 {
@@ -45,7 +45,7 @@ void cb(void *arg)
 
 int main(void)
 {
-    uint32_t xtimer_delay, time_diff;
+    unsigned long xtimer_delay, time_diff;
     uint8_t num;
     cb_mux_t *entry;
 
@@ -74,7 +74,7 @@ int main(void)
 
     time_diff = time_curr - time_prev - xtimer_delay;
 
-    printf("List walk time: %i us\n", time_diff);
+    printf("List walk time: %lu us\n", time_diff);
 
     if (time_diff > FAIL_THRESH) {
         printf("Walk time greater than threshold of %lu us\n", FAIL_THRESH);
