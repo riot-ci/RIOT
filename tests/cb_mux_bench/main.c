@@ -58,7 +58,7 @@ int main(void)
     /* Test for worst case: finding last entry */
     entries[NUM_ENTRIES - 1].cbid = 1;
 
-    printf("Populating cb_mux list with %i items\n", NUM_ENTRIES);
+    printf("Populating cb_mux list with %u items\n", NUM_ENTRIES);
 
     for (num = 0; num < NUM_ENTRIES; num++) {
         entries[num].cb = cb;
@@ -77,12 +77,12 @@ int main(void)
     printf("List walk time: %i us\n", time_diff);
 
     if (time_diff > FAIL_THRESH) {
-        printf("Walk time greater than threshold of %i us\n", FAIL_THRESH);
+        printf("Walk time greater than threshold of %lu us\n", FAIL_THRESH);
         puts("[FAILURE]");
         return 1;
     }
     else {
-        printf("Walk time less than threshold of %i us\n", FAIL_THRESH);
+        printf("Walk time less than threshold of %lu us\n", FAIL_THRESH);
         puts("[SUCCESS]");
     }
 
