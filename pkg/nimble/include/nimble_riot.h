@@ -41,5 +41,5 @@ void nimble_riot_controller_init(void);
 }
 #endif
 
-#endif /* BH1750FVI_H */
+#endif /* NIMBLE_RIOT_H */
 /** @} */
