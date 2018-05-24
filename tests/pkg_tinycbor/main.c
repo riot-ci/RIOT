@@ -80,8 +80,6 @@ static void test_parse(void)
 
         CborError err = cbor_parser_init(buf, len, CborValidateStrictMode, &parser, &it);
         TEST_ASSERT_EQUAL_INT(err, 0);
-        err = cbor_value_validate(&it, CborValidateStrictMode);
-        TEST_ASSERT_EQUAL_INT(err, 0);
     }
 }
 
