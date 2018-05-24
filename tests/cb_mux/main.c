@@ -40,7 +40,7 @@ void mux_iter(cb_mux_t *entry, void *arg)
 /* Test callback */
 void cb(void *arg)
 {
-    printf("Callback %i executed\n", (uintptr_t)arg);
+    printf("Callback %p executed\n", arg);
 }
 
 int main(void)
