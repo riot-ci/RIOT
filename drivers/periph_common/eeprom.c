@@ -31,7 +31,7 @@ size_t eeprom_read(uint32_t pos, uint8_t *data, size_t len)
 {
     assert(pos + len < EEPROM_SIZE);
 
-    for (size_t i = 0; i < len; ++i) {
+    for (size_t i = 0; i < len; i++) {
         data[i] = eeprom_read_byte(pos++);
     }
 
@@ -42,7 +42,7 @@ size_t eeprom_write(uint32_t pos, const uint8_t *data, size_t len)
 {
     assert(pos + len < EEPROM_SIZE);
 
-    for (size_t i = 0; i < len; ++i) {
+    for (size_t i = 0; i < len; i++) {
         eeprom_write_byte(pos++, data[i]);
     }
 
