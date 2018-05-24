@@ -7,8 +7,8 @@ PKG_BUILDDIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
 .PHONY: all
 
 all:
-	$(info $$PKG_BUILDDIR is [${PKG_BUILDDIR}])
-	$(info $$PKGDIRBASE is [${PKGDIRBASE}])
+	echo $(PKG_BUILDDIR)
+	echo $(PKGDIRBASE)
 	@cp Makefile.lua $(PKG_BUILDDIR)
 	"$(MAKE)" -C $(PKG_BUILDDIR) -f Makefile.lua
 
