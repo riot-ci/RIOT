@@ -1,0 +1,31 @@
+# name of your application
+APPLICATION = nimble_gatt
+
+# If no BOARD is found in the environment, use this default:
+BOARD ?= nrf52dk
+
+# So far, NimBLE only works on nRF52 based platforms
+BOARD_WHITELIST := nrf52dk nrf52840dk
+
+# This has to be the absolute path to the RIOT base directory:
+RIOTBASE ?= $(CURDIR)/../..
+
+# Include the necessary parts of the NimBLE stack
+USEPKG += nimble
+USEMODULE += nimble_controller
+
+# As of now, NimBLE does not comply to RIOT's compiler warning settings, so we
+# need to build it with errors disabled
+WERROR = 0
+
+# Comment this out to disable code in RIOT that does safety checking
+# which is not needed in a production environment but helps in the
+# development process:
+DEVELHELP ?= 1
+
+# Change this to 0 show compiler invocation lines by default:
+QUIET ?= 1
+
+CFLAGS += -I$(CURDIR)/include
+
+include $(RIOTBASE)/Makefile.include
