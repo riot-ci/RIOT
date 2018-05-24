@@ -113,6 +113,7 @@ static isr_ctx_t isr_ctx[CTX_NUMOF];
  */
 static uint32_t isr_map[ISR_MAP_SIZE];
 
+static const uint8_t port_irqs[] = PORT_IRQS;
 
 static inline PORT_Type *port(gpio_t pin)
 {
@@ -217,21 +218,10 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
     /* clear interrupt flags */
     port(pin)->ISFR &= ~(1 << pin_num(pin));
+
     /* enable global port interrupts in the NVIC */
-#ifdef KINETIS_CORE_Z
-    /* The Kinetis Cortex-M0+ parts usually only have two IRQs for GPIOs */
-    if (port_num(pin) == 0) {
-        /* PORTA gets its own IRQ */
-        NVIC_EnableIRQ(PORTA_IRQn);
-    }
-    else {
-        /* All other ports are combined on the next IRQ number */
-        NVIC_EnableIRQ(PORTA_IRQn + 1);
-    }
-#else
-    /* Cortex-M4 parts have one IRQ per port */
-    NVIC_EnableIRQ(PORTA_IRQn + port_num(pin));
-#endif
+    NVIC_EnableIRQ(port_irqs[port_num(pin)]);
+
     /* finally, enable the interrupt for the selected pin */
     port(pin)->PCR[pin_num(pin)] |= flank;
     return 0;
