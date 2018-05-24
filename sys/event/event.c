@@ -18,20 +18,21 @@ void event_queue_init(event_queue_t *queue)
 {
     assert(queue);
     memset(queue, '\0', sizeof(*queue));
-    queue->waiter = (thread_t *)sched_active_thread;
 }
 
 void event_post(event_queue_t *queue, event_t *event)
 {
-    assert(queue && queue->waiter && event);
+    assert(queue && event);
 
     unsigned state = irq_disable();
     if (!event->list_node.next) {
         clist_rpush(&queue->event_list, &event->list_node);
     }
-    irq_restore(state);
 
-    thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    if (queue->waiter) {
+        thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    }
+    irq_restore(state);
 }
 
 void event_cancel(event_queue_t *queue, event_t *event)
@@ -49,8 +50,8 @@ event_t *event_get(event_queue_t *queue)
 {
     unsigned state = irq_disable();
     event_t *result = (event_t *) clist_lpop(&queue->event_list);
-
     irq_restore(state);
+
     if (result) {
         result->list_node.next = NULL;
     }
@@ -59,14 +60,16 @@ event_t *event_get(event_queue_t *queue)
 
 event_t *event_wait(event_queue_t *queue)
 {
-    thread_flags_wait_any(THREAD_FLAG_EVENT);
-    unsigned state = irq_disable();
-    event_t *result = (event_t *) clist_lpop(&queue->event_list);
-    if (clist_rpeek(&queue->event_list)) {
-        queue->waiter->flags |= THREAD_FLAG_EVENT;
+    assert(queue->waiter == NULL);
+
+    event_t *result = NULL;
+    queue->waiter = (thread_t *)sched_active_thread;
+
+    while (!(result = event_get(queue))) {
+        thread_flags_wait_any(THREAD_FLAG_EVENT);
     }
-    irq_restore(state);
-    result->list_node.next = NULL;
+
+    queue->waiter = NULL;
     return result;
 }
 

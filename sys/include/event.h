@@ -109,7 +109,7 @@ extern "C" {
 /**
  * @brief   event_queue_t static initializer
  */
-#define EVENT_QUEUE_INIT    { .waiter = (thread_t *)sched_active_thread }
+#define EVENT_QUEUE_INIT    { 0 }
 
 /**
  * @brief   event structure forward declaration
@@ -191,6 +191,8 @@ event_t *event_get(event_queue_t *queue);
  *
  * In order to handle an event retrieved using this function,
  * call event->handler(event).
+ *
+ * @note    There can only be a single waiter on a queue!
  *
  * @param[in]   queue   event queue to get event from
  *
