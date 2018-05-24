@@ -28,7 +28,7 @@
 #include "xtimer.h"
 #include "fmt.h"
 
-#define MAINLOOP_DELAY  (2 * US_PER_SEC)      /* read sensor every 2 seconds */
+#define MAINLOOP_DELAY  (2)         /* read sensor every 2 seconds */
 
 int main(void)
 {
@@ -108,7 +108,7 @@ int main(void)
 #endif
         puts("\n+-------------------------------------+\n");
 
-        xtimer_usleep(MAINLOOP_DELAY);
+        xtimer_sleep(MAINLOOP_DELAY);
     }
 
     return 0;
