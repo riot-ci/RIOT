@@ -45,8 +45,15 @@ enum {
  * @name   Defines for the I2C interface
  * @{
  */
-#define I2C_PORT_REG            PORTC
-#define I2C_PIN_MASK            (1 << PORTC4) | (1 << PORTC5)
+#define I2C_PORT_REG           PORTC
+#define I2C_PIN_MASK           (1 << PORTC4) | (1 << PORTC5)
+/** @} */
+
+/**
+ * @name    EEPROM configuration
+ * @{
+ */
+#define EEPROM_SIZE            (1024U)  /* 1kB */
 /** @} */
 
 #ifdef __cplusplus
