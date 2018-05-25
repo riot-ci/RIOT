@@ -31,6 +31,10 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
+#ifdef MODULE_GPIO_EXP
+#include "gpio_exp.h"
+#endif
+
 /* this implementation is not valid for the stm32f1 */
 #ifndef CPU_FAM_STM32F1
 
@@ -73,6 +77,19 @@ static inline int _pin_num(gpio_t pin)
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     GPIO_TypeDef *port = _port(pin);
     int pin_num = _pin_num(pin);
 
@@ -105,6 +122,20 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
+                                           mode, flank, cb, arg);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     int pin_num = _pin_num(pin);
     int port_num = _port_num(pin);
 
@@ -193,44 +224,99 @@ void gpio_init_analog(gpio_t pin)
 
 void gpio_irq_enable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     EXTI->IMR |= (1 << _pin_num(pin));
 }
 
 void gpio_irq_disable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     EXTI->IMR &= ~(1 << _pin_num(pin));
 }
 
 int gpio_read(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
+    }
+#endif /* MODULE_GPIO_EXP */
+
     return (_port(pin)->IDR & (1 << _pin_num(pin)));
 }
 
 void gpio_set(gpio_t pin)
 {
-    _port(pin)->BSRR = (1 << _pin_num(pin));
+    gpio_write(pin, 1);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    _port(pin)->BSRR = (1 << (_pin_num(pin) + 16));
+    gpio_write(pin, 0);
 }
 
 void gpio_toggle(gpio_t pin)
 {
     if (gpio_read(pin)) {
-        gpio_clear(pin);
+        gpio_write(pin, 0);
     } else {
-        gpio_set(pin);
+        gpio_write(pin, 1);
     }
 }
 
 void gpio_write(gpio_t pin, int value)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     if (value) {
-        gpio_set(pin);
+        _port(pin)->BSRR = (1 << _pin_num(pin));
     } else {
-        gpio_clear(pin);
+        _port(pin)->BSRR = (1 << (_pin_num(pin) + 16));
     }
 }
 
