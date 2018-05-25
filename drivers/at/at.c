@@ -134,7 +134,7 @@ ssize_t at_send_cmd_get_lines(at_dev_t *dev, const char *command,
         res = at_readline(dev, pos, bytes_left, keep_eol, timeout);
         if (res == 0) {
             if (bytes_left) {
-                *pos++ = eol[sizeof(eol) - 1];
+                *pos++ = eol[sizeof(eol) - 2];
                 bytes_left--;
             }
             continue;
@@ -157,7 +157,7 @@ ssize_t at_send_cmd_get_lines(at_dev_t *dev, const char *command,
             else {
                 pos += res;
                 if (bytes_left) {
-                    *pos++ = eol[sizeof(eol) - 1];
+                    *pos++ = eol[sizeof(eol) - 2];
                     bytes_left--;
                 }
                 else {
@@ -237,7 +237,7 @@ ssize_t at_readline(at_dev_t *dev, char *resp_buf, size_t len, bool keep_eol, ui
                     continue;
                 }
             }
-            if (*resp_pos == eol[sizeof(eol) - 1]) {
+            if (*resp_pos == eol[sizeof(eol) - 2]) {
                 *resp_pos = '\0';
                 res = resp_pos - resp_buf;
                 goto out;
