@@ -381,7 +381,9 @@ typedef struct {
     gpio_t rx_pin;          /**< pin used for RX */
     gpio_t tx_pin;          /**< pin used for TX */
     uint32_t loc;           /**< location of UART pins */
+#if EFM32_UART_MODES
     uint32_t mode;          /**< UART mode of operation */
+#endif
     CMU_Clock_TypeDef cmu;  /**< the device CMU channel */
     IRQn_Type irq;          /**< the devices base IRQ channel */
 } uart_conf_t;
