@@ -205,7 +205,6 @@ void board_init(void)
 {
     /* init CPU core */
     msp430_cpu_init();
-
     /* disable watchdog timer */
     WDTCTL     =  WDTPW + WDTHOLD;
 
