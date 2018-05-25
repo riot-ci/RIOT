@@ -89,7 +89,7 @@ int main(void)
 {
     puts("[START] event test application.\n");
 
-    event_queue_t queue = { .waiter = (thread_t *)sched_active_thread };
+    event_queue_t queue = EVENT_QUEUE_INIT;
     printf("posting 0x%08x\n", (unsigned)&event);
     event_post(&queue, &event);
 

@@ -1,9 +1,23 @@
 /*
  * Copyright (C) 2017 Kaspar Schleiser <kaspar@schleiser.de>
+ *               2018 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
+ */
+
+/**
+ * @ingroup     sys_event
+ * @{
+ *
+ * @file
+ * @brief       Event loop implementation
+ *
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ *
+ * @}
  */
 
 #include <assert.h>
@@ -14,6 +28,12 @@
 #include "clist.h"
 #include "thread.h"
 
+void event_queue_init_detached(event_queue_t *queue)
+{
+    assert(queue);
+    memset(queue, '\0', sizeof(*queue));
+}
+
 void event_queue_init(event_queue_t *queue)
 {
     assert(queue);
@@ -21,9 +41,15 @@ void event_queue_init(event_queue_t *queue)
     queue->waiter = (thread_t *)sched_active_thread;
 }
 
+void event_queue_claim(event_queue_t *queue)
+{
+    assert(queue && (queue->waiter == NULL));
+    queue->waiter = (thread_t *)sched_active_thread;
+}
+
 void event_post(event_queue_t *queue, event_t *event)
 {
-    assert(queue && queue->waiter && event);
+    assert(queue && event);
 
     unsigned state = irq_disable();
     if (!event->list_node.next) {
@@ -31,7 +57,9 @@ void event_post(event_queue_t *queue, event_t *event)
     }
     irq_restore(state);
 
-    thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    if (queue->waiter) {
+        thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    }
 }
 
 void event_cancel(event_queue_t *queue, event_t *event)
@@ -49,8 +77,8 @@ event_t *event_get(event_queue_t *queue)
 {
     unsigned state = irq_disable();
     event_t *result = (event_t *) clist_lpop(&queue->event_list);
-
     irq_restore(state);
+
     if (result) {
         result->list_node.next = NULL;
     }
