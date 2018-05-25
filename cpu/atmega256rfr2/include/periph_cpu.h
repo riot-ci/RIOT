@@ -50,8 +50,8 @@ enum {
  * @name   Defines for the I2C interface
  * @{
  */
-#define I2C_PORT_REG            PORTD
-#define I2C_PIN_MASK            (1 << PORTD1) | (1 << PORTD0)
+#define I2C_PORT_REG       PORTD
+#define I2C_PIN_MASK       (1 << PORTD1) | (1 << PORTD0)
 /** @} */
 
 /**
@@ -59,9 +59,16 @@ enum {
  * @{
  */
 #ifndef GPIO_UNDEF
-#define GPIO_UNDEF          (0xFFFF)
+#define GPIO_UNDEF         (0xFFFF)
 #endif
 /** @}*/
+
+/**
+ * @name    EEPROM configuration
+ * @{
+ */
+#define EEPROM_SIZE        (8192U)  /* 8kB */
+/** @} */
 
 #ifdef __cplusplus
 }
