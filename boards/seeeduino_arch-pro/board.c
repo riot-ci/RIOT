@@ -23,8 +23,6 @@
 
 #include "periph/gpio.h"
 
-extern void SystemInit(void);
-
 /**
  * @brief Initialize the on-board LEDs.
  */
@@ -43,10 +41,6 @@ static void leds_init(void)
 
 void board_init(void)
 {
-    /* initialize core clocks via CMSIS function */
-    SystemInit();
-    /* initialize the CPU */
-    cpu_init();
     /* initialize the boards LEDs */
     leds_init();
 }
