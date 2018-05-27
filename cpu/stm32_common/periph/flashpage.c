@@ -42,8 +42,6 @@
 #define FLASHPAGE_DIV          (4U) /* write 4 bytes in one go */
 #else
 #if defined(CPU_FAM_STM32L4)
-#define FLASH_KEY1             ((uint32_t)0x45670123)
-#define FLASH_KEY2             ((uint32_t)0xCDEF89AB)
 #define FLASHPAGE_DIV          (8U)
 #else
 #define FLASHPAGE_DIV          (2U)
@@ -51,7 +49,6 @@
 #define CNTRL_REG              (FLASH->CR)
 #define CNTRL_REG_LOCK         (FLASH_CR_LOCK)
 #define KEY_REG                (FLASH->KEYR)
-#define FLASHPAGE_DIV          (2U)
 #endif
 
 extern void _lock(void);
