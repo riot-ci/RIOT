@@ -48,7 +48,6 @@
 #endif
 #define CNTRL_REG              (FLASH->CR)
 #define CNTRL_REG_LOCK         (FLASH_CR_LOCK)
-#define KEY_REG                (FLASH->KEYR)
 #endif
 
 extern void _lock(void);
