@@ -30,7 +30,7 @@
 /**
  * @brief   Allocate space for 1 flash page in RAM
  */
-static uint8_t page_mem[FLASHPAGE_SIZE];
+static uint8_t page_mem[FLASHPAGE_SIZE] __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)));
 
 #ifdef MODULE_PERIPH_FLASHPAGE_RAW
 /*
