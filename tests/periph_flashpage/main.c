@@ -27,10 +27,16 @@
 
 #define LINE_LEN            (16)
 
+#ifdef MODULE_PERIPH_FLASHPAGE_RAW
+#define ALIGNMENT_OPTS __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)))
+#else
+#define ALIGNMENT_OPTS
+#endif
+
 /**
  * @brief   Allocate space for 1 flash page in RAM
  */
-static uint8_t page_mem[FLASHPAGE_SIZE];
+static uint8_t page_mem[FLASHPAGE_SIZE] ALIGNMENT_OPTS;
 
 #ifdef MODULE_PERIPH_FLASHPAGE_RAW
 /*
