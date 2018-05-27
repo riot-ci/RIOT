@@ -31,6 +31,10 @@
 #define CNTRL_REG_LOCK         (FLASH_PECR_PELOCK)
 #define KEY_REG                (FLASH->PEKEYR)
 #else
+#if defined(CPU_FAM_STM32L4)
+#define FLASH_KEY1             ((uint32_t)0x45670123)
+#define FLASH_KEY2             ((uint32_t)0xCDEF89AB)
+#endif
 #define CNTRL_REG              (FLASH->CR)
 #define CNTRL_REG_LOCK         (FLASH_CR_LOCK)
 #define KEY_REG                (FLASH->KEYR)
@@ -38,8 +42,8 @@
 
 void _unlock(void)
 {
-    DEBUG("[flash-common] unlocking the flash module\n");
     if (CNTRL_REG & CNTRL_REG_LOCK) {
+        DEBUG("[flash-common] unlocking the flash module\n");
         KEY_REG = FLASH_KEY1;
         KEY_REG = FLASH_KEY2;
     }
@@ -47,6 +51,8 @@ void _unlock(void)
 
 void _lock(void)
 {
-    DEBUG("[flash-common] locking the flash module\n");
-    CNTRL_REG |= CNTRL_REG_LOCK;
+    if (!(CNTRL_REG & CNTRL_REG_LOCK)) {
+        DEBUG("[flash-common] locking the flash module\n");
+        CNTRL_REG |= CNTRL_REG_LOCK;
+    }
 }
