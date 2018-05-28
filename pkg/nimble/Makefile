@@ -1,6 +1,6 @@
 PKG_NAME    = nimble
-PKG_URL     = https://github.com/andrzej-kaczmarek/apache-mynewt-nimble.git
-PKG_VERSION = 86a1b597c99b3e17522f42fef5b1802b4a6860ba
+PKG_URL     = https://github.com/apache/mynewt-nimble.git
+PKG_VERSION = 4cb32139298ed9e959634ca9c64f99415fc4c9d4
 PKG_LICENSE = Apache-2.0
 
 TDIR = $(RIOTPKG)/$(PKG_NAME)
