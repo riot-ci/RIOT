@@ -7,13 +7,23 @@
  */
 
 /**
- * @ingroup   sys_cb_mux
+ * @defgroup    sys_cb_mux Callback multiplexer
+ * @ingroup     sys
+ * @brief       cb_mux provides utilities for storing, retrieving, and managing
+ *              callback information in a singly linked list.
+ *
+ * If an API provides the ability to call multiple callbacks, cb_mux can
+ * simplify handling of an arbitrary number of callbacks by requiring memory
+ * for a cb_mux entry to be passed along with other arguments. The cb_mux entry
+ * is then attached to a list using cb_mux_add. The code implementing that API
+ * can manage the list using the various utility functions that cb_mux provides.
+ *
  * @{
  *
  * @file
- * @brief   cb_mux interface definitions
+ * @brief       cb_mux interface definitions
  *
- * @author  Matthew Blue <matthew.blue.neuro@gmail.com>
+ * @author      Matthew Blue <matthew.blue.neuro@gmail.com>
  */
 
 #ifndef CB_MUX_H
