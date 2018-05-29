@@ -74,6 +74,7 @@ static inline void __exit_isr(void)
 {
     if (sched_context_switch_request) {
         thread_yield();
+        __in_isr = 0;
         thread_yield_isr();
     }
     __in_isr = 0;
