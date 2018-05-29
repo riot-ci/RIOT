@@ -40,11 +40,13 @@ void gnrc_netreg_init(void)
 int gnrc_netreg_register(gnrc_nettype_t type, gnrc_netreg_entry_t *entry)
 {
 #ifdef DEVELHELP
-    bool has_msg_q = sched_threads[entry->target.pid]->msg_array;
-
 #if defined(MODULE_GNRC_NETAPI_MBOX) || defined(MODULE_GNRC_NETAPI_CALLBACKS)
-    has_msg_q = has_msg_q || (entry->type != GNRC_NETREG_TYPE_DEFAULT);
+    bool has_msg_q = (entry->type != GNRC_NETREG_TYPE_DEFAULT) ||
+                     sched_threads[entry->target.pid]->msg_array;
+#else
+    bool has_msg_q = sched_threads[entry->target.pid]->msg_array;
 #endif
+
     /* only threads with a message queue are allowed to register at gnrc */
     if (!has_msg_q) {
         LOG_ERROR("\n!!!! gnrc_netreg: initialize message queue of thread %u "
