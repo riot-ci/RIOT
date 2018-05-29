@@ -39,6 +39,9 @@ USEMODULE += ps
 
 USEPKG += tinydtls
 
+# The PSK and RPK keys, and parameters, are in this header
+INCLUDES += -I$(APPDIR)/keys
+
 # UDP Port to use (20220 is default for DTLS).
 DTLS_PORT ?= 20220
 CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT)

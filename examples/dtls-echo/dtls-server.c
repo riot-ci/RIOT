@@ -27,6 +27,7 @@
 
 #include "net/sock/udp.h"
 #include "msg.h"
+#include "keys/tinydtls_keys.h"
 
 /* TinyDTLS */
 #include "dtls.h"
@@ -57,29 +58,6 @@ typedef struct {
     sock_udp_t *sock;
     sock_udp_ep_t *remote;
 } dtls_remote_peer_t;
-
-#ifdef DTLS_ECC
-static const unsigned char ecdsa_priv_key[] = {
-    0xD9, 0xE2, 0x70, 0x7A, 0x72, 0xDA, 0x6A, 0x05,
-    0x04, 0x99, 0x5C, 0x86, 0xED, 0xDB, 0xE3, 0xEF,
-    0xC7, 0xF1, 0xCD, 0x74, 0x83, 0x8F, 0x75, 0x70,
-    0xC8, 0x07, 0x2D, 0x0A, 0x76, 0x26, 0x1B, 0xD4
-};
-
-static const unsigned char ecdsa_pub_key_x[] = {
-    0xD0, 0x55, 0xEE, 0x14, 0x08, 0x4D, 0x6E, 0x06,
-    0x15, 0x59, 0x9D, 0xB5, 0x83, 0x91, 0x3E, 0x4A,
-    0x3E, 0x45, 0x26, 0xA2, 0x70, 0x4D, 0x61, 0xF2,
-    0x7A, 0x4C, 0xCF, 0xBA, 0x97, 0x58, 0xEF, 0x9A
-};
-
-static const unsigned char ecdsa_pub_key_y[] = {
-    0xB4, 0x18, 0xB6, 0x4A, 0xFE, 0x80, 0x30, 0xDA,
-    0x1D, 0xDC, 0xF4, 0xF4, 0x2E, 0x2F, 0x26, 0x31,
-    0xD0, 0x43, 0xB1, 0xFB, 0x03, 0xE2, 0x2F, 0x4D,
-    0x17, 0xDE, 0x43, 0xF9, 0xF9, 0xAD, 0xEE, 0x70
-};
-#endif
 
 static kernel_pid_t _dtls_server_pid = KERNEL_PID_UNDEF;
 
@@ -186,6 +164,10 @@ static int _send_to_peer_handler(struct dtls_context_t *ctx,
 }
 
 #ifdef DTLS_PSK
+static unsigned char psk_id[PSK_ID_MAXLEN] = PSK_DEFAULT_IDENTITY;
+static size_t psk_id_length = sizeof(PSK_DEFAULT_IDENTITY) - 1;
+static unsigned char psk_key[PSK_MAXLEN] = PSK_DEFAULT_KEY;
+static size_t psk_key_length = sizeof(PSK_DEFAULT_KEY) - 1;
 
 /*
  * This function is the "key store" for tinyDTLS. It is called to retrieve a
@@ -205,8 +187,8 @@ static int _peer_get_psk_info_handler(struct dtls_context_t *ctx, const session_
         unsigned char *key;
         size_t key_length;
     } psk[3] = {
-        { (unsigned char *)"Client_identity", 15,
-          (unsigned char *)"secretPSK", 9 },
+        { (unsigned char *)psk_id, psk_id_length,
+          (unsigned char *)psk_key, psk_key_length },
         { (unsigned char *)"default identity", 16,
           (unsigned char *)"\x11\x22\x33", 3 },
         { (unsigned char *)"\0", 2,
@@ -218,7 +200,7 @@ static int _peer_get_psk_info_handler(struct dtls_context_t *ctx, const session_
     }
 
     if (id) {
-        unsigned int i;
+        uint8_t i;
         for (i = 0; i < sizeof(psk) / sizeof(struct keymap_t); i++) {
             if (id_len == psk[i].id_length && memcmp(id, psk[i].id, id_len) == 0) {
                 if (result_length < psk[i].key_length) {
