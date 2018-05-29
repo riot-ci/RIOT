@@ -801,6 +801,11 @@ FEATURES_OPTIONAL += periph_pm
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
+# include staging tree (if requested)
+ifeq (1,$(ENABLE_STAGING))
+  include $(RIOTBASE)/staging/Makefile.dep
+endif
+
 # remove required features from optional features
 FEATURES_OPTIONAL := $(filter-out $(FEATURES_REQUIRED),$(FEATURES_OPTIONAL))
 
