@@ -19,13 +19,12 @@
  */
 
 #include <string.h>
-#include "cpu.h"
+
 #include "assert.h"
+#include "periph/eeprom.h"
 
 /* guard this file, must be done before including periph/eeprom.h */
 #if defined(EEPROM_SIZE)
-
-#include "periph/eeprom.h"
 
 size_t eeprom_read(uint32_t pos, uint8_t *data, size_t len)
 {
