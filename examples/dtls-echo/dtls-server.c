@@ -139,7 +139,7 @@ static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet, size_t size)
     return;
 }
 
-/* Reception of a DTLS Applicaiton data record. */
+/* Reception of a DTLS Application data record. */
 static int _read_from_peer_handler(struct dtls_context_t *ctx,
                                    session_t *session, uint8 *data, size_t len)
 {
@@ -180,7 +180,7 @@ static int _send_to_peer_handler(struct dtls_context_t *ctx,
     dtls_remote_peer_t *remote_peer;
     remote_peer = (dtls_remote_peer_t *)dtls_get_app_data(ctx);
 
-    DEBUG("DBG-Server: Sendinng record\n");
+    DEBUG("DBG-Server: Sending record\n");
 
     return sock_udp_send(remote_peer->sock, buf, len, remote_peer->remote);
 }
@@ -250,7 +250,7 @@ static int _peer_get_ecdsa_key_handler(struct dtls_context_t *ctx,
         .pub_key_y = ecdsa_pub_key_y
     };
 
-    /*TODO: Load the key from external source */
+    /* TODO: Load the key from external source */
 
     *result = &ecdsa_key;
     return 0;
@@ -409,11 +409,11 @@ void *_dtls_server_wrapper(void *arg)
                         printf("ERROR: unexpected code error: %zd\n", pckt_rcvd_size);
                         break;
                 } /* END-Switch */
-            } /*END-Else (sock_udp_recv) */
+            } /* END-Else (sock_udp_recv) */
         } /* END-Else (thread message)*/
-    } /*End-While */
+    } /* End-While */
 
-    /* Release resoruces (strict order) */
+    /* Release resources (strict order) */
     dtls_free_context(dtls_context); /* This also sends a DTLS Alert record */
     sock_udp_close(&udp_socket);
     msg_reply(&msg, &msg); /* Basic answer to the main thread */
@@ -436,7 +436,7 @@ static void start_server(void)
                                      THREAD_CREATE_STACKTEST,
                                      _dtls_server_wrapper, NULL, "DTLS_Server");
 
-    /*Uncommon but better be sure */
+    /* Uncommon but better be sure */
     if (_dtls_server_pid == EINVAL) {
         puts("ERROR: Thread invalid");
         _dtls_server_pid = KERNEL_PID_UNDEF;

@@ -53,7 +53,7 @@
 #define MAX_TIMES_TRY_TO_SEND 10
 #define DEFAULT_DELAY 100
 
-static int dtls_connected = 0; /* This is handled by Tinydtls' callbacks */
+static int dtls_connected = 0; /* This is handled by Tinydtls callbacks */
 
 #ifdef DTLS_ECC
 static const unsigned char ecdsa_priv_key[] = {
@@ -97,7 +97,7 @@ static int _events_handler(struct dtls_context_t *ctx,
         DEBUG("CLIENT: DTLS Channel started\n");
     }
 
-    /*NOTE: DTLS_EVENT_RENEGOTIATE can be handled here */
+    /* NOTE: DTLS_EVENT_RENEGOTIATE can be handled here */
 
     return 0;
 }
@@ -220,7 +220,7 @@ static int _peer_get_ecdsa_key_handler(struct dtls_context_t *ctx,
     (void) ctx;
     (void) session;
 
-    /*TODO: Load the key from external source */
+    /* TODO: Load the key from external source */
 
     static const dtls_ecdsa_key_t ecdsa_key = {
         .curve = DTLS_ECDH_CURVE_SECP256R1,
@@ -251,7 +251,7 @@ static int _peer_verify_ecdsa_key_handler(struct dtls_context_t *ctx,
 }
 #endif /* DTLS_ECC */
 
-/* Reception of a DTLS Applicaiton data record. */
+/* Reception of a DTLS Application data record. */
 static int _read_from_peer_handler(struct dtls_context_t *ctx,
                                    session_t *session,
                                    uint8 *data, size_t len)
@@ -276,7 +276,7 @@ static int _read_from_peer_handler(struct dtls_context_t *ctx,
     return 0;
 }
 
-/* Transmits the next DTLS flight for a speicifc Peer. */
+/* Transmits the next DTLS flight for a specific Peer. */
 ssize_t try_send(struct dtls_context_t *ctx, session_t *dst, uint8 *buf, size_t len)
 {
     int res = 0;
@@ -530,18 +530,18 @@ static void client_send(char *addr_str, char *data,
                     printf("ERROR: unexpected code error: %zd \n", pckt_rcvd_size);
                     break;
             } /* END-Switch */
-        } /*END-Else */
+        } /* END-Else */
 #endif
 
         watch--;
         /*
          * This delay is to give time to the remote peer to do the compute.
-         * This become strongly important when ECC is used in another sensor.
+         * This becomes strongly important when ECC is used in another sensor.
          */
         xtimer_usleep(delay);
 
 
-    } /*END while*/
+    } /* END while */
 
     /*
      * BUG: tinyDTLS (<= 0.8.6)
