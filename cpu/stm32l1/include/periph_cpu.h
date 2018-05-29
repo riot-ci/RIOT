@@ -73,6 +73,31 @@ typedef enum {
 } adc_res_t;
 /** @} */
 
+/**
+ * @brief   I2C configuration data structure
+ */
+typedef struct {
+    I2C_TypeDef *dev;       /**< i2c device */
+    gpio_t scl;             /**< scl pin number */
+    gpio_t sda;             /**< sda pin number */
+    gpio_mode_t pin_mode;   /**< with or without pull resistor */
+    gpio_af_t af;           /**< I2C alternate function value */
+    uint8_t er_irqn;        /**< error IRQ */
+    uint8_t ev_irqn;        /**< event IRQ */
+} i2c_conf_t;
+
+/**
+ * @name    EEPROM configuration
+ * @{
+ */
+#define EEPROM_START_ADDR          (0x08080000)
+#if defined(CPU_MODEL_STM32L152RE)
+#define EEPROM_SIZE                (16384UL)  /* 16kB */
+#elif defined(CPU_MODEL_STM32L151RC)
+#define EEPROM_SIZE                (8192U)    /* 8kB */
+#endif
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
