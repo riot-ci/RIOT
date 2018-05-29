@@ -12,18 +12,26 @@ import pexpect
 
 
 def testfunc(child):
-    child.expect(u"This test will call xtimer_usleep for values from \\d+ down to \\d+\r\n")
+    child.expect(u"This test will call xtimer_usleep for values from (\d+) down to (\d+)")
+    sleep_max = int(child.match.group(1))
+    sleep_min = int(child.match.group(2))
 
-    i = 500
+    i = sleep_max - sleep_min
 
     while (i >= 0):
         try:
-            child.expect(u"going to sleep \\d+ usecs...\r\n", timeout=3)
+            child.expect(u"going to sleep (\d+) us", timeout=3)
+            sleep_exp = int(child.match.group(1))
+
+            child.expect(u"Slept for      (\d+) us", timeout=3)
+
         except pexpect.TIMEOUT:
-            print("xtimer stuck when trying to sleep %d usecs" % (i+1))
+            print("xtimer stuck when trying to sleep %d us" % (sleep_exp))
             print("[FAILED]")
             break
         i = i - 1
+
+    child.expect(u"Slept for (\d+) us expected (\d+) us")
 
     child.expect(u"[SUCCESS]", timeout=3)
 
