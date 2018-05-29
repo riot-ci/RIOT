@@ -15,6 +15,7 @@ endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
   export LINKFLAGS += -specs=nano.specs
+  export CFLAGS += -specs=nano.specs
 endif
 
 export LINKFLAGS += -lc
@@ -61,14 +62,6 @@ ifeq ($(TOOLCHAIN),llvm)
   # in case some header is missing from the cross tool chain
   NEWLIB_INCLUDES := -isystem $(NEWLIB_INCLUDE_DIR) -nostdinc
   NEWLIB_INCLUDES += $(addprefix -isystem ,$(abspath $(wildcard $(dir $(NEWLIB_INCLUDE_DIR))/usr/include)))
-endif
-
-ifeq (1,$(USE_NEWLIB_NANO))
-  # newlib-nano include directory is called either newlib-nano or nano. Use the one we find first.
-  NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(addprefix $(NEWLIB_INCLUDE_DIR)/, newlib-nano nano)))
-  # newlib-nano overrides newlib.h and its include dir should therefore go before
-  # the regular system include dirs.
-  INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
 endif
 
 # Newlib includes should go before GCC includes. This is especially important
