@@ -15,20 +15,20 @@ ifneq (,$(filter tinydtls,$(USEPKG)))
   #       suite(s) it should not be enabled.
   # TODO: Create the flag DTLS_CIPHERS with keywords PSK, ECC (and future)
   ifeq (,$(filter -DDTLS_PSK,$(CFLAGS)))
-      ifeq (,$(filter -DDTLS_ECC,$(CFLAGS)))
-        CFLAGS += -DDTLS_PSK
-      endif
+    ifeq (,$(filter -DDTLS_ECC,$(CFLAGS)))
+      CFLAGS += -DDTLS_PSK
+    endif
   endif
 
   # Handles the verbosity of tinyDTLS. Default: Minimum or just error messages.
   ifeq (,$(filter -DTINYDTLS_DEBUG,$(CFLAGS)))
-      ifeq ( , $(TINYDTLS_LOG))
-        CFLAGS += -DTINYDTLS_LOG_LVL=0
-      else
-        CFLAGS += -DTINYDTLS_LOG_LVL=$(TINYDTLS_LOG)
-      endif
+    ifeq ( , $(TINYDTLS_LOG))
+      CFLAGS += -DTINYDTLS_LOG_LVL=0
+    else
+      CFLAGS += -DTINYDTLS_LOG_LVL=$(TINYDTLS_LOG)
+    endif
   else
-      CFLAGS += -DTINYDTLS_LOG_LVL=6
+    CFLAGS += -DTINYDTLS_LOG_LVL=6
   endif
 
 endif
