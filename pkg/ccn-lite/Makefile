@@ -5,8 +5,6 @@ PKG_LICENSE=ISC
 
 .PHONY: all
 
-export RIOT_CFLAGS = $(CFLAGS) $(INCLUDES)
-
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
 all: $(PKG_BUILDDIR)/src/Makefile
@@ -16,7 +14,7 @@ all: $(PKG_BUILDDIR)/src/Makefile
 $(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE)
 	cd $(PKG_BUILDDIR)/src && \
 	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
-		  -DCCNL_RIOT=1 -DRIOT_CFLAGS="$(RIOT_CFLAGS)" -DBUILD_TESTING=OFF .
+		  -DCCNL_RIOT=1 -DBUILD_TESTING=OFF .
 
 $(TOOLCHAIN_FILE): git-download
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
