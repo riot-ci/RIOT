@@ -200,7 +200,7 @@ static inline int _i2c_start(I2C_Type *dev, uint8_t address, uint8_t rw_flag)
     }
 
     /* wait for address transfer to complete */
-    while (!(dev->S & I2C_S_IICIF_MASK));
+    while (!(dev->S & I2C_S_IICIF_MASK)) {}
 
     dev->S = I2C_S_IICIF_MASK;
 
@@ -225,7 +225,7 @@ static inline int _i2c_restart(I2C_Type *dev, uint8_t address, uint8_t rw_flag)
     dev->D = address << 1 | (rw_flag & 1);
 
     /* wait for address transfer to complete */
-    while (!(dev->S & I2C_S_IICIF_MASK));
+    while (!(dev->S & I2C_S_IICIF_MASK)) {}
 
     dev->S = I2C_S_IICIF_MASK;
 
@@ -259,7 +259,7 @@ static inline int _i2c_receive(I2C_Type *dev, uint8_t *data, int length)
     dev->D;
 
     while (length > 0) {
-        while (!(dev->S & I2C_S_IICIF_MASK));
+        while (!(dev->S & I2C_S_IICIF_MASK)) {}
 
         dev->S = I2C_S_IICIF_MASK;
 
@@ -297,7 +297,7 @@ static inline int _i2c_transmit(I2C_Type *dev, const uint8_t *data, int length)
         TRACE("i2c: tx: %02x\n", data[n]);
         dev->D = data[n];
 
-        while (!(dev->S & I2C_S_IICIF_MASK));
+        while (!(dev->S & I2C_S_IICIF_MASK)) {}
 
         dev->S = I2C_S_IICIF_MASK;
 
@@ -318,7 +318,7 @@ static inline void _i2c_stop(I2C_Type *dev)
     dev->C1 = I2C_C1_IICEN_MASK;
 
     /* wait for bus idle */
-    while (dev->S & I2C_S_BUSY_MASK);
+    while (dev->S & I2C_S_BUSY_MASK) {}
 }
 
 static inline void _i2c_reset(I2C_Type *dev)
