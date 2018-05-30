@@ -56,7 +56,7 @@ static void *thread1(void *arg)
     f = init;
 
     while (1) {
-        for (int i = 0; i < 10000; i++) {
+        for (unsigned long i = 0; i < 10000ul; i++) {
             f = f + 1.0 / f;
         }
         mutex_lock(&lock);
