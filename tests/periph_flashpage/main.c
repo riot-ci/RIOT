@@ -27,24 +27,21 @@
 
 #define LINE_LEN            (16)
 
-/**
- * @brief   Allocate space for 1 flash page in RAM
- */
-static uint8_t page_mem[FLASHPAGE_SIZE];
+#ifndef MODULE_PERIPH_FLASHPAGE_RAW
+#define ALIGNMENT_OPTS
+#else
+#define ALIGNMENT_OPTS __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)))
 
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
 /*
  * @brief   Allocate an aligned buffer for raw writings
  */
-static char raw_buf[64] __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)));
-
-static uint32_t getaddr(const char *str)
-{
-    uint32_t addr = strtol(str, NULL, 16);
-
-    return addr;
-}
+static char raw_buf[64] ALIGNMENT_OPTS;
 #endif
+
+/**
+ * @brief   Allocate space for 1 flash page in RAM
+ */
+static uint8_t page_mem[FLASHPAGE_SIZE] ALIGNMENT_OPTS;
 
 static int getpage(const char *str)
 {
@@ -179,6 +176,13 @@ static int cmd_write(int argc, char **argv)
 }
 
 #ifdef MODULE_PERIPH_FLASHPAGE_RAW
+static uint32_t getaddr(const char *str)
+{
+    uint32_t addr = strtol(str, NULL, 16);
+
+    return addr;
+}
+
 static int cmd_write_raw(int argc, char **argv)
 {
     uint32_t addr;
