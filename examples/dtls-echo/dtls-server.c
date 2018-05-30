@@ -27,7 +27,7 @@
 
 #include "net/sock/udp.h"
 #include "msg.h"
-#include "keys/tinydtls_keys.h"
+#include "tinydtls_keys.h"
 
 /* TinyDTLS */
 #include "dtls.h"
@@ -125,11 +125,7 @@ static int _read_from_peer_handler(struct dtls_context_t *ctx,
 
     printf("\nServer: got DTLS Data App: --- ");
     for (i = 0; i < len; i++) {
-#ifndef COAP_MSG_SPOOF
         printf("%c", data[i]);
-#else
-        printf("%2X", data[i]);
-#endif
     }
     puts(" ---\t(echo!)");
 

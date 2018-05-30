@@ -39,9 +39,6 @@ USEMODULE += ps
 
 USEPKG += tinydtls
 
-# The PSK and RPK keys, and parameters, are in this header
-INCLUDES += -I$(APPDIR)/keys
-
 # UDP Port to use (20220 is default for DTLS).
 DTLS_PORT ?= 20220
 CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT)
@@ -59,11 +56,6 @@ TINYDTLS_LOG ?= 0
 # Enable this line for setting tinyDTLS in debug mode.
 # This overrides TINYDTLS_LOG to 6
 # CFLAGS += -DTINYDTLS_DEBUG
-
-# dtls-client.c will generate a "CoAP get /riot/value" message instead of
-# sending the user input (ASCII).
-# dtls-server.c will display hexadecimal characters instead of ASCII.
-#CFLAGS += -DCOAP_MSG_SPOOF
 
 # FIXME: This is a temporary patch
 # TinyDTLS <= 0.8.6 requires around 426 bytes in RAM.

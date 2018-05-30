@@ -25,7 +25,7 @@
 #include <inttypes.h>
 
 #include "net/sock/udp.h"
-#include "keys/tinydtls_keys.h"
+#include "tinydtls_keys.h"
 
 /* TinyDTLS */
 #include "dtls_debug.h"
@@ -39,8 +39,8 @@
 #endif
 
 #define CLIENT_PORT DTLS_DEFAULT_PORT + 1
-#define MAX_TIMES_TRY_TO_SEND 10
-#define DEFAULT_DELAY 100
+#define MAX_TIMES_TRY_TO_SEND 10 /* Expected to be 1 - 255 */
+#define DEFAULT_US_DELAY 100
 
 static int dtls_connected = 0; /* This is handled by Tinydtls callbacks */
 
@@ -227,11 +227,7 @@ static int _read_from_peer_handler(struct dtls_context_t *ctx,
 
     printf("Client: got DTLS Data App -- ");
     for (size_t i = 0; i < len; i++)
-#ifndef COAP_MSG_SPOOF
         printf("%c", data[i]);
-#else
-        printf("%X  ", data[i]);
-#endif
     puts(" --");
 
     /*
@@ -379,7 +375,7 @@ static void client_send(char *addr_str, char *data,
     sock_udp_t sock;
 
     uint8_t packet_rcvd[DTLS_MAX_BUF];
-    int8_t watch = MAX_TIMES_TRY_TO_SEND;
+    uint8_t watch = MAX_TIMES_TRY_TO_SEND;
 
     ssize_t pckt_rcvd_size = DTLS_MAX_BUF;  /* DTLS flights records */
     ssize_t app_data_buf = 0;               /* Upper layer packet to send */
@@ -393,7 +389,6 @@ static void client_send(char *addr_str, char *data,
         return;
     }
 
-#ifndef COAP_MSG_SPOOF
     char *client_payload;
     if (strlen(data) > DTLS_MAX_BUF) {
         puts("ERROR: Exceeded max size of DTLS buffer.");
@@ -401,16 +396,6 @@ static void client_send(char *addr_str, char *data,
     }
     client_payload = data;
     app_data_buf = strlen(client_payload);
-#else /* COAP_MSG_SPOOF */
-    (void) data;
-    /* CoAP Message: NON, MID:59394, GET, TKN:0d 9f, /riot/value */
-    unsigned char client_payload[] = {
-        0x52, 0x01, 0xe8, 0x02, 0x0d, 0x9f, 0xb4, 0x72,
-        0x69, 0x6f, 0x74, 0x05, 0x76, 0x61, 0x6c, 0x75,
-        0x65
-    };
-    app_data_buf = sizeof(client_payload);
-#endif /* COAP_MSG_SPOOF */
 
     /* The sock must be opened with the remote already linked to it */
     if (sock_udp_create(&sock, &local, &remote, 0) != 0) {
@@ -463,8 +448,7 @@ static void client_send(char *addr_str, char *data,
         if (pckt_rcvd_size >= 0) {
             dtls_handle_read(dtls_context, packet_rcvd, pckt_rcvd_size);
         }
-#if ENABLE_DEBUG
-        else {
+        else if (ENABLE_DEBUG)  {
             switch (pckt_rcvd_size) {
                 case -ENOBUFS:
                     puts("ERROR: Buffer space not enough large!");
@@ -497,7 +481,6 @@ static void client_send(char *addr_str, char *data,
                     break;
             } /* END-Switch */
         } /* END-Else */
-#endif
 
         watch--;
         /*
@@ -532,9 +515,8 @@ static void client_send(char *addr_str, char *data,
 
 int udp_client_cmd(int argc, char **argv)
 {
-    uint32_t delay = DEFAULT_DELAY;
+    uint32_t delay = DEFAULT_US_DELAY;
 
-#ifndef COAP_MSG_SPOOF
     if (argc < 3) {
         printf("usage: %s <addr> <data> [<delay in us>]\n", argv[0]);
         return 1;
@@ -543,16 +525,6 @@ int udp_client_cmd(int argc, char **argv)
         delay = atoi(argv[3]);
     }
     client_send(argv[1], argv[2], delay);
-#else
-    if (argc < 2) {
-        printf("usage: %s <addr> [<delay in us>]\n", argv[0]);
-        return 1;
-    }
-    else if (argc > 2) {
-        delay = atoi(argv[2]);
-    }
-    client_send(argv[1], NULL, delay);
-#endif
 
     return 0;
 }

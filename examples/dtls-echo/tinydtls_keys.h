@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 /*
- *  Defautl keys examples for tinyDTLS (for RIOT, Linux and Contiki)
+ *  Default keys examples for tinyDTLS (for RIOT, Linux and Contiki)
  */
 #ifdef DTLS_PSK
 #define PSK_DEFAULT_IDENTITY "Client_identity"
