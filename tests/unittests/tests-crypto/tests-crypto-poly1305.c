@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2018 Freie Universität Berlin
+ * Copyright (C) 2018 Inria
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
 
 #include "embUnit/embUnit.h"
 #include "tests-crypto.h"
@@ -5,7 +13,6 @@
 #include "crypto/poly1305.h"
 
 #include <string.h>
-#include <stdio.h>
 
 static const uint8_t key_1[32] = { 0 };
 static const uint8_t msg_1[64] = { 0 };
