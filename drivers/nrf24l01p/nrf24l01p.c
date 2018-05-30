@@ -35,8 +35,8 @@
 #define SPI_CLK             SPI_CLK_400KHZ
 
 /* Interrupt struct for gpio_init_int */
-#if MODULE_CB_MUX
-static volatile gpio_int_t int_entry;
+#if GPIO_USE_INT_ENTRY
+static gpio_int_t int_entry;
 #define INT_ENTRY (&int_entry)
 #else
 #define INT_ENTRY (NULL)
