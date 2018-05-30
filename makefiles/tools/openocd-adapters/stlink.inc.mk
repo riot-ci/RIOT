@@ -12,13 +12,13 @@ ifneq (,$(DEBUG_ADAPTER_ID))
 endif
 export OPENOCD_ADAPTER_INIT
 
-# select OpenOCD configuration if not already set by the board configuration
+# if no openocd specific configuration file, check for default locations:
+# 1. Using the default dist/openocd.cfg (automatically set by openocd.sh)
+# 2. Using the common cpu specific config file
 ifeq (,$(OPENOCD_CONFIG))
-  ifneq (0,$(words $(wildcard $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg)))
-    # Use the openocd config file in the board directory if it exists
-    export OPENOCD_CONFIG := $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg
-  else
-    # select OpenOCD configuration depending on CPU type
+  # if no openocd default configuration is provided by the board,
+  # use the ST common one
+  ifeq (0,$(words $(wildcard $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg)))
     export OPENOCD_CONFIG := $(RIOTBASE)/boards/common/st/configs/$(CPU).cfg
   endif
 endif
