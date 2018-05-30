@@ -15,11 +15,11 @@
 #include "periph/uart.h"
 #include "xtimer.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 #ifndef AT_PRINT_INCOMING
-#define AT_PRINT_INCOMING (1)
+#define AT_PRINT_INCOMING (0)
 #endif
 
 int at_dev_init(at_dev_t *dev, uart_t uart, uint32_t baudrate, char *buf, size_t bufsize)
@@ -267,6 +267,7 @@ out:
     return res;
 }
 
+#ifdef MODULE_AT_OOB
 void at_add_oob(at_dev_t *dev, at_oob_t *oob)
 {
     assert(oob);
@@ -323,3 +324,4 @@ void at_process_oob(at_dev_t *dev)
         return;
     }
 }
+#endif

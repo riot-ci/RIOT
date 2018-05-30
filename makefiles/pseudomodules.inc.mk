@@ -1,3 +1,4 @@
+PSEUDOMODULES += at_oob
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm

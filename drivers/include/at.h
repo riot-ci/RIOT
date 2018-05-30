@@ -78,6 +78,7 @@ extern "C" {
 #define AT_RECV_ERROR "ERROR"
 #endif
 
+#if defined(MODULE_AT_OOB) || DOXYGEN
 #ifndef AT_BUF_SIZE
 /** Internal buffer size used to process out-of-band data */
 #define AT_BUF_SIZE (128)
@@ -100,6 +101,7 @@ typedef struct {
     const char *urc;        /**< URC which must match */
     void *arg;              /**< optional argument */
 } at_oob_t;
+#endif
 
 /**
  * @brief AT device structure
@@ -251,6 +253,7 @@ ssize_t at_readline(at_dev_t *dev, char *resp_buf, size_t len, bool keep_eol, ui
  */
 void at_drain(at_dev_t *dev);
 
+#if defined(MODULE_AT_OOB) || DOXYGEN
 /**
  * @brief   add a callback for an out-of-bound data
  *
@@ -275,6 +278,7 @@ void at_remove_oob(at_dev_t *dev, at_oob_t *oob);
  * @param[in]   dev     device to operate on
  */
 void at_process_oob(at_dev_t *dev);
+#endif
 
 #ifdef __cplusplus
 }
