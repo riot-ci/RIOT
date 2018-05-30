@@ -14,8 +14,7 @@ export OPENOCD_ADAPTER_INIT
 
 # select OpenOCD configuration if not already set by the board configuration
 ifeq (,$(OPENOCD_CONFIG))
-  OPENOCD_BOARD_CFG = $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg
-  ifeq "$(OPENOCD_BOARD_CFG)" "$(wildcard $(OPENOCD_BOARD_CFG))"
+  ifneq (0,$(words $(wildcard $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg)))
     # Use the openocd config file in the board directory if it exists
     export OPENOCD_CONFIG := $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg
   else
