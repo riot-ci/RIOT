@@ -376,7 +376,7 @@ static int _read_bytes(I2C_TypeDef *i2c, uint8_t address, uint8_t *data, int len
 
             cnt = 0;
             *err = 0;
-            while (!(i2c->SR1 & I2C_SR1_BTF) && cnt++ < I2C_MAX_LOOP_CNT && !(*err));
+            while (!(i2c->SR1 & I2C_SR1_BTF) && cnt++ < I2C_MAX_LOOP_CNT && !(*err)) {}
             if (cnt == I2C_MAX_LOOP_CNT || *err) {
                 return -3;
             }
@@ -616,7 +616,7 @@ static int _start(I2C_TypeDef *dev, uint8_t address, uint8_t rw_flag, uint8_t *e
     dev->CR1 |= I2C_CR1_START;
     DEBUG("Wait for SB flag to be set\n");
 
-    while (!(dev->SR1 & I2C_SR1_SB) && cnt++ < I2C_MAX_LOOP_CNT && !(*err));
+    while (!(dev->SR1 & I2C_SR1_SB) && cnt++ < I2C_MAX_LOOP_CNT && !(*err)) {}
     if (cnt == I2C_MAX_LOOP_CNT || *err) {
         return -3;
     }
