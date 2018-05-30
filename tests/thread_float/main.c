@@ -80,7 +80,7 @@ static void *thread2(void *arg)
     f = init;
 
     while (1) {
-        for (int i = 0; i < 100000; i++) {
+        for (unsigned int i = 0; i < 100000ul; i++) {
             f = f + 1.0 / f;
         }
         init += 1.0;
