@@ -123,6 +123,17 @@ typedef enum {
 typedef cb_mux_t gpio_int_t;
 
 /**
+ * @brief   Tell users of periph/gpio.h to use new behavior
+ */
+#ifndef GPIO_USE_INT_ENTRY
+#ifdef MODULE_CB_MUX
+#define GPIO_USE_INT_ENTRY    (1)
+#else /* MODULE_CB_MUX */
+#define GPIO_USE_INT_ENTRY    (0)
+#endif /* MODULE_CB_MUX */
+#endif /* GPIO_USE_INT_ENTRY */
+
+/**
  * @brief   Signature of event callback functions triggered from interrupts
  */
 typedef cb_mux_cb_t gpio_cb_t;
