@@ -299,6 +299,8 @@ static int _check_oob(clist_node_t *node, void *arg)
 
 void at_process_oob(at_dev_t *dev)
 {
+    const char eol[] = AT_RECV_EOL_1 AT_RECV_EOL_2;
+    assert(sizeof(eol) > 1);
     char buf[AT_BUF_SIZE];
     char *p;
     size_t read = 0;
@@ -312,12 +314,13 @@ void at_process_oob(at_dev_t *dev)
             print(buf, res);
         }
         read += res;
-        if (buf[read - 1] != '\n') {
+        if (buf[read - 1] != eol[sizeof(eol) - 2]) {
             DEBUG("Not a full line\n");
             continue;
         }
         p = buf;
-        while ((*p == '\r' || *p == '\n' || *p == ' ') && ((size_t)(p - buf) < read)) {
+        while (((*p == eol[0]) || (sizeof(eol) > 2 && *p == eol[1]) || (*p == ' '))
+               && ((size_t)(p - buf) < read)) {
             p++;
         }
         clist_foreach(&dev->oob_list, _check_oob, p);
