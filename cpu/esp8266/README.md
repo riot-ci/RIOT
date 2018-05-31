@@ -21,7 +21,7 @@ Following software components are required:
 
 - **esp-open-sdk** which includes the Xtensa GCC compiler toolchain, the hardware abstraction library for Xtensa LX106, and the flash programmer tool ```esptool.py```
 - **newlib-c** library for xtensa (esp-open-rtos version)
-- **optional SDK**, either as part of ```esp-open-sdk``` or the ```ESP8266_NONOS_SDK```
+- **SDK (optional)**, either as part of ```esp-open-sdk``` or the ```ESP8266_NONOS_SDK```
 
 ### Installation of esp-open-sdk
 
@@ -66,7 +66,7 @@ First, set the target directory for the installation.
 export NEWLIB_DIR=/path/to/esp/newlib-xtensa
 ```
 
-Please take care, to use the newlib-c version from esp-open-rtos since it includes ```stdatomic.h```.
+Please take care, to use the newlib-c version that was modified for esp-open-rtos since it includes ```stdatomic.h```.
 
 ```
 cd /my/source/dir
