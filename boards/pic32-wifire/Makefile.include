@@ -7,6 +7,10 @@ PORT_LINUX ?= /dev/ttyUSB0
 BAUD ?= 9600
 include $(RIOTMAKE)/tools/serial.inc.mk
 
+# running the terminal does reset the board
+RESET ?= echo
+RESET_FLAGS ?= "No RESET but opening UART does a reset"
+
 # pic32prog
 #
 # For PICkit3:
