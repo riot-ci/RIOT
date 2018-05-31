@@ -19,9 +19,6 @@ I ran this on Ubuntu 16.04
 * Install Virtualbox
 * Add yourself to the 'vboxusers' group
   `sudo usermod -a -G vboxusers your_username`
-* (may not be necessary if doing USB1 but I already did it, so not sure if
-  needed or not)
-  * Install virtualbox-ext-pack for USB2 support (closed source)
 * Reboot (was necessary for the ext-pack may be possible without)
 
 ### Setup Windows VM
@@ -38,6 +35,7 @@ I downloaded a Windows 10 virtualbox image
 * optional: set an empty password in Settings-Accounts
 * optional: Create a shared folder with your host machine. I run an offline
   windows machine so download everything from my host.
+* Install Virtualbox Guest-additions for USB support (reboot)
 * USB add both 'microchip' usb as USB1 devices
 
 ### Downloads
