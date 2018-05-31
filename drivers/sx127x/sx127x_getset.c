@@ -65,8 +65,6 @@ void sx127x_set_state(sx127x_t *dev, uint8_t state)
 
 void sx127x_set_modem(sx127x_t *dev, uint8_t modem)
 {
-    DEBUG("[sx127x] set modem: %d\n", modem);
-
     if ((sx127x_reg_read(dev, SX127X_REG_OPMODE) & SX127X_RF_LORA_OPMODE_LONGRANGEMODE_ON) != 0) {
         dev->settings.modem = SX127X_MODEM_LORA;
     }
@@ -80,6 +78,8 @@ void sx127x_set_modem(sx127x_t *dev, uint8_t modem)
         DEBUG("[sx127x] already using modem: %d\n", modem);
         return;
     }
+
+    DEBUG("[DEBUG] set modem: %d\n", modem);
 
     dev->settings.modem = modem;
 
@@ -202,7 +202,6 @@ void sx127x_set_sleep(sx127x_t *dev)
 
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
-    xtimer_remove(&dev->_internal.rx_timeout_timer);
 
     /* Put chip into sleep */
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_SLEEP);
@@ -215,7 +214,6 @@ void sx127x_set_standby(sx127x_t *dev)
 
     /* Disable running timers */
     xtimer_remove(&dev->_internal.tx_timeout_timer);
-    xtimer_remove(&dev->_internal.rx_timeout_timer);
 
     sx127x_set_op_mode(dev, SX127X_RF_OPMODE_STANDBY);
     sx127x_set_state(dev,  SX127X_RF_IDLE);
@@ -309,9 +307,6 @@ void sx127x_set_rx(sx127x_t *dev)
     }
 
     sx127x_set_state(dev, SX127X_RF_RX_RUNNING);
-    if (dev->settings.lora.rx_timeout != 0) {
-        xtimer_set(&(dev->_internal.rx_timeout_timer), dev->settings.lora.rx_timeout);
-    }
 
     if (dev->settings.lora.flags & SX127X_RX_CONTINUOUS_FLAG) {
         sx127x_set_op_mode(dev, SX127X_RF_LORA_OPMODE_RECEIVER);
@@ -622,7 +617,7 @@ bool sx127x_get_rx_single(const sx127x_t *dev)
 
 void sx127x_set_rx_single(sx127x_t *dev, bool single)
 {
-    DEBUG("[sx127x] Set RX single: %d\n", single);
+    DEBUG("[DEBUG] Set RX single: %d\n", single);
     _set_flag(dev, SX127X_RX_CONTINUOUS_FLAG, !single);
 }
 
@@ -639,7 +634,7 @@ bool sx127x_get_crc(const sx127x_t *dev)
 
 void sx127x_set_crc(sx127x_t *dev, bool crc)
 {
-    DEBUG("[sx127x] Set CRC: %d\n", crc);
+    DEBUG("[DEBUG] Set CRC: %d\n", crc);
     _set_flag(dev, SX127X_ENABLE_CRC_FLAG, crc);
 
 #if defined(MODULE_SX1272)
@@ -662,7 +657,7 @@ uint8_t sx127x_get_hop_period(const sx127x_t *dev)
 
 void sx127x_set_hop_period(sx127x_t *dev, uint8_t hop_period)
 {
-    DEBUG("[sx127x] Set Hop period: %d\n", hop_period);
+    DEBUG("[DEBUG] Set Hop period: %d\n", hop_period);
 
     dev->settings.lora.freq_hop_period = hop_period;
 
@@ -681,7 +676,7 @@ bool  sx127x_get_fixed_header_len_mode(const sx127x_t *dev)
 
 void sx127x_set_fixed_header_len_mode(sx127x_t *dev, bool fixed_len)
 {
-    DEBUG("[sx127x] Set fixed header length: %d\n", fixed_len);
+    DEBUG("[DEBUG] Set fixed header length: %d\n", fixed_len);
 
     _set_flag(dev, SX127X_ENABLE_FIXED_HEADER_LENGTH_FLAG, fixed_len);
 
@@ -703,7 +698,7 @@ uint8_t sx127x_get_payload_length(const sx127x_t *dev)
 
 void sx127x_set_payload_length(sx127x_t *dev, uint8_t len)
 {
-    DEBUG("[sx127x] Set payload len: %d\n", len);
+    DEBUG("[DEBUG] Set payload len: %d\n", len);
 
     sx127x_reg_write(dev, SX127X_REG_LR_PAYLOADLENGTH, len);
 }
@@ -724,7 +719,7 @@ uint8_t sx127x_get_tx_power(const sx127x_t *dev)
 
 void sx127x_set_tx_power(sx127x_t *dev, int8_t power)
 {
-    DEBUG("[sx127x] Set power: %d\n", power);
+    DEBUG("[DEBUG] Set power: %d\n", power);
 
     dev->settings.lora.power = power;
 
@@ -812,13 +807,6 @@ void sx127x_set_preamble_length(sx127x_t *dev, uint16_t preamble)
                      preamble & 0xFF);
 }
 
-void sx127x_set_rx_timeout(sx127x_t *dev, uint32_t timeout)
-{
-    DEBUG("[sx127x] Set RX timeout: %lu\n", timeout);
-
-    dev->settings.lora.rx_timeout = timeout;
-}
-
 void sx127x_set_tx_timeout(sx127x_t *dev, uint32_t timeout)
 {
     DEBUG("[sx127x] Set TX timeout: %lu\n", timeout);
@@ -830,13 +818,11 @@ void sx127x_set_symbol_timeout(sx127x_t *dev, uint16_t timeout)
 {
     DEBUG("[sx127x] Set symbol timeout: %d\n", timeout);
 
-    dev->settings.lora.rx_timeout = timeout;
-
     uint8_t config2_reg = sx127x_reg_read(dev, SX127X_REG_LR_MODEMCONFIG2);
     config2_reg &= SX127X_RF_LORA_MODEMCONFIG2_SYMBTIMEOUTMSB_MASK;
     config2_reg |= (timeout >> 8) & ~SX127X_RF_LORA_MODEMCONFIG2_SYMBTIMEOUTMSB_MASK;
     sx127x_reg_write(dev, SX127X_REG_LR_MODEMCONFIG2, config2_reg);
-    sx127x_reg_write(dev, SX127X_REG_LR_SYMBTIMEOUTLSB,timeout & 0xFF);
+    sx127x_reg_write(dev, SX127X_REG_LR_SYMBTIMEOUTLSB, timeout & 0xFF);
 }
 
 bool sx127x_get_iq_invert(const sx127x_t *dev)
