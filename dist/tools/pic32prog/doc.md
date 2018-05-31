@@ -1,0 +1,138 @@
+Flashing on Linux using pickit-3
+================================
+
+Allow flashing a pic32-wifire from linux using https://github.com/sergev/pic32prog
+
+
+Informations come from this comment
+
+https://github.com/RIOT-OS/RIOT/pull/6092#issuecomment-261987955
+
+
+Steps
+-----
+
+### Setup your computer
+
+I ran this on Ubuntu 16.04
+
+* Install Virtualbox
+* Add yourself to the 'vboxusers' group
+  `sudo usermod -a -G vboxusers your_username`
+* (may not be necessary if doing USB1 but I already did it, so not sure if
+  needed or not)
+  * Install virtualbox-ext-pack for USB2 support (closed source)
+* Reboot (was necessary for the ext-pack may be possible without)
+
+### Setup Windows VM
+
+You can download a free 90 days valid windows virtualbox image from:
+
+    https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
+
+I downloaded a Windows 10 virtualbox image
+
+* Create a machine in virtualbox in File-Import Appliance.
+  * optional: disabled network
+* Start and login with password: Passw0rd!
+* optional: set an empty password in Settings-Accounts
+* optional: Create a shared folder with your host machine. I run an offline
+  windows machine so download everything from my host.
+* USB add both 'microchip' usb as USB1 devices
+
+### Downloads
+
+Download and extract:
+
+* PICkit3-Programmer http://ww1.microchip.com/downloads/en/DeviceDoc/PICkit3%20Programmer%20Application%20v3.10.zip
+
+Adapted from the README (on Windows 10 machine .NET 4.00 is already installed)
+
+* Extract `PICkit3 Programmer Application Setup v3.10.zip`
+* Run `setup.exe`
+* Run PICkit3
+* Tools/Download PICkit Operating System
+  * Select c://Program Files/Microchip/PICkit3/PK3OSV020005.hex
+* Device should be flashed there will be a message saying the board is found
+* Turn off your VM
+
+
+pic32prog
+---------
+
+Download and compile `pic32prog` flasher
+
+https://github.com/sergev/pic32prog
+
+Run it without the board connected
+
+```
+Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
+    Copyright: (C) 2011-2015 Serge Vakulenko
+      Adapter: PICkit3 Version 2.0.5
+No device attached.
+
+No target found.
+```
+
+
+
+Flashing
+--------
+
+* Connect the chipKIT-Wi-Fire to USB
+* Connect the PICkit3 to JP1 ICSP holes
+  * https://docs.creatordev.io/wifire/guides/wifire-programming/
+  * The Arrow `▶` goes into the hole number 1 (a hole with a square around it)
+  * Opposite side of the JP1 ICSP text.
+
+Run pic32prog again
+
+```
+Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
+    Copyright: (C) 2011-2015 Serge Vakulenko
+      Adapter: PICkit3 Version 2.0.5
+    Processor: MZ2048EFG100 (id 1720E053)
+ Flash memory: 2048 kbytes
+  Boot memory: 80 kbytes
+Configuration:
+    DEVCFG0 = fff6fff7
+                     3 Debugger disabled
+                     4 JTAG enabled
+                     8 Use PGC2/PGD2
+                   3   Flash ECC disabled, unlocked
+    DEVCFG1 = 03743cb9
+                     1 System PLL
+                    8  Internal-external switch over enabled
+                   0   Primary oscillator: External
+                   4   CLKO output disabled
+    DEVCFG2 = fff9b11a
+                     2 PLL divider: 1/3
+                    1  PLL input frequency range: 5-10 MHz
+                  31   PLL feedback divider: x50
+                 1     PLL postscaler: 1/2
+              4        USB PLL input clock: 24 MHz
+              8        Enable USB PLL
+    DEVCFG3 = 86ffffff
+               2       Default Ethernet pins
+                       USBID pin: controlled by port
+```
+
+pic32prog firmware.hex
+
+```
+pic32prog bin/pic32-wifire/default.hex
+Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
+    Copyright: (C) 2011-2015 Serge Vakulenko
+      Adapter: PICkit3 Version 2.0.5
+    Processor: MZ2048EFG100
+ Flash memory: 2048 kbytes
+  Boot memory: 80 kbytes
+         Data: 117020 bytes
+        Erase: done
+Program flash: ########################### done
+ Program boot: #### done
+ Verify flash: ########################## done
+  Verify boot: ### done
+ Program rate: 6159 bytes per second
+```
