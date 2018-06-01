@@ -35,6 +35,7 @@ if [ -n "${UNDEFINED_GROUPS}" ]
 then
     echo "WARNING: There are undefined Doxygen groups:"
     echo "${UNDEFINED_GROUPS}"
+    exit 2
 fi
 
 exit 0
