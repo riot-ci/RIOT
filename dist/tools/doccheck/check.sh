@@ -44,6 +44,7 @@ then
     COUNT=$(echo "${UNDEFINED_GROUPS}" | wc -l)
     echo "WARNING: There are ${COUNT} undefined Doxygen groups:"
     echo "${UNDEFINED_GROUPS}"
+    exit 2
 fi
 
 exit 0
