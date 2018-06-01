@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    lwip_arch_cc    Compiler and processor description
- * @ingroup     lwip
+ * @ingroup     pkg_lwip
  * @brief       Describes compiler and processor to lwIP
  * @{
  *
