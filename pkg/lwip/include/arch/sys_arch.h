@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    lwip_arch_sys_arch Architecture depentent definitions
- * @ingroup     lwip
+ * @ingroup     pkg_lwip
  * @brief       Semaphores and mailboxes.
  * @{
  *
