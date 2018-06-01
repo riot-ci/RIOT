@@ -87,6 +87,7 @@ then
         DIFFFILTER="MR" ERROR_EXIT_CODE=0 run ./dist/tools/licenses/check.sh
         DIFFFILTER="AC" run ./dist/tools/licenses/check.sh
         run ./dist/tools/doccheck/check.sh
+        run ./dist/tools/doxygroupcheck/check.sh
         run ./dist/tools/externc/check.sh
         run ./dist/tools/cppcheck/check.sh
         run ./dist/tools/pr_check/pr_check.sh ${CI_BASE_BRANCH}
