@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     auto_init_saul
+ * @ingroup     sys_autoinit_saul
  * @{
  *
  * @file
