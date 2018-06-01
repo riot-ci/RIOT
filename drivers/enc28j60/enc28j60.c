@@ -258,7 +258,7 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
 
     if (cmd_rcr(dev, REG_ECON1, -1) & ECON1_TXRTS) {
         /* there is already a transmission in progress */
-        if (xtimer_now_usec() - dev->tx_time > MAX_TX_TIME*2) {
+        if (xtimer_now_usec() - dev->tx_time > MAX_TX_TIME * 2) {
             /* if transmission time exceeds the double of maximum transmission
                time, we suppose that TX logic hangs and has to be reset */
             cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRST);
@@ -293,10 +293,6 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     netdev->stats.tx_bytes += c;
 #endif
 
-#ifdef MODULE_NETSTATS_L2
-    netdev->stats.tx_bytes += c;
-#endif
-
     mutex_unlock(&dev->devlock);
     return c;
 }
@@ -308,8 +304,8 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
  * pointer and vise versa. Next packet pointer is always at even address
  * because of hardware padding.
  */
-#define NEXT_TO_ERXRDPT(n) ((n-1 < BUF_RX_START || n-1 > BUF_RX_END) ? BUF_RX_END : n-1)
-#define ERXRDPT_TO_NEXT(e) ((e >= BUF_RX_END) ? BUF_RX_START : e+1)
+#define NEXT_TO_ERXRDPT(n) ((n - 1 < BUF_RX_START || n - 1 > BUF_RX_END) ? BUF_RX_END : n - 1)
+#define ERXRDPT_TO_NEXT(e) ((e >= BUF_RX_END) ? BUF_RX_START : e + 1)
 
 static int nd_recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 {
