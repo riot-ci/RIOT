@@ -9,7 +9,7 @@
  */
 
 /*
- * @ingroup auto_init_gnrc_netif
+ * @ingroup sys_autoinit_gnrc_netif
  * @{
  *
  * @file

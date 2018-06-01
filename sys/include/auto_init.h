@@ -8,22 +8,55 @@
  * directory for more details.
  */
 
-
 /**
  * @defgroup    sys_autoinit Auto-init
  * @ingroup     sys
  * @brief       Auto initialize modules
- * @note        This feature can be used by any application by adding auto_init to
- *              USEMODULE in the application's Makefile. auto_init will initialize
- *              any other included module that does not require a parameter in
- *              its init function, i.e. if the prototype looks like this: void
- *              MODULE_init(void). Most timer modules or simple drivers can be
- *              initialized by auto_init. The modules will be initialized in
- *              the context of the main thread right before the main function
- *              gets called. Be aware that most modules expect to be
- *              initialized only once, so do not call a module's init function
- *              when using auto_init unless you know what you're doing.
  *
+ * This feature can be enabled in any application by adding the `auto_init`
+ * module to the application Makefile:
+ *
+ * ```mk
+ * USEMODULE += auto_init
+ * ```
+ *
+ * `auto_init` initializes any included module that provides auto
+ * initialization capabilities.
+ *
+ * Drivers or cpu peripherals that provides a SAUL adaption and net interfaces
+ * can be initialized automatically with auto_init.
+ *
+ * For high-level device drivers (@ref drivers), the default initialization
+ * parameters are taken from the `DRIVERS_params.h` files provided by the
+ * driver implementation.
+ *
+ * From low-level CPU peripheral, the default initialization parameters are
+ * defined in each board configuration that supports them.
+ *
+ * The modules will be initialized in the context of the main thread right
+ * before the main function gets called. Be aware that most modules expect to
+ * be initialized only once, so do not call a module's init function when using
+ * auto_init unless you know what you're doing.
+ */
+
+/**
+ * @defgroup    sys_autoinit_saul SAUL drivers auto-initialization
+ * @ingroup     sys_autoinit
+ * @brief       Provides auto-initialization of SAUL drivers.
+ *
+ * This module contains all high-level drivers (sensor or actuators) that
+ * support auto-initialization via SAUL.
+ */
+
+/**
+ * @defgroup    sys_autoinit_gnrc_netif GNRC netif drivers auto-initialization
+ * @ingroup     sys_autoinit
+ * @brief       Provides auto-initialization of Netif drivers via GNRC.
+ *
+ * This module contains all netif drivers that support auto-initialization.
+ */
+
+/**
  * @{
  *
  * @file
