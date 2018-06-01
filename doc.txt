@@ -31,3 +31,13 @@
 /**
  * @}
  */
+
+/**
+ * @defgroup    examples Examples
+ * @brief       Example applications
+ */
+
+/**
+ * @defgroup    tests Tests
+ * @brief       Tests applications
+ */
