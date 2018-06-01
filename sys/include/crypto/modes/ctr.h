@@ -7,11 +7,12 @@
  */
 
 /**
+ * @defgroup    sys_crypto_mode_ctr Counter
  * @ingroup     sys_crypto
+ * @brief       Counter mode of operation for block ciphers
  * @{
  *
  * @file        ctr.h
- * @brief       Counter mode of operation for block ciphers
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>
@@ -71,3 +72,4 @@ int cipher_decrypt_ctr(cipher_t* cipher, uint8_t nonce_counter[16],
 #endif
 
 #endif /* CRYPTO_MODES_CTR_H */
+/** @} */
