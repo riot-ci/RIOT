@@ -1,1 +1,1 @@
-USEPKG += heatshrink
+USEMODULE += heatshrink
