@@ -9,7 +9,7 @@ BOARD_BLACKLIST := msb-430 msb-430h telosb wsn430-v1_3b wsn430-v1_4 z1
 LORA_DRIVER ?= sx1276
 LORA_REGION ?= EU868
 
-USEPKG += semtech-loramac
+USEMODULE += semtech-loramac
 USEMODULE += $(LORA_DRIVER)
 
 USEMODULE += shell
