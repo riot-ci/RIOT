@@ -1,6 +1,6 @@
 /*
  * Copyright (C)  2016 Freie Universität Berlin
- *                2016-2017 Inria
+ *                2016-2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,11 +8,11 @@
  */
 
 /**
- * @ingroup     boards_common_arduino-mkr
+ * @ingroup     boards_arduino-mkrwan1300
  * @{
  *
  * @file
- * @brief       Configuration of CPU peripherals for Arduino MKR boards
+ * @brief       Configuration of CPU peripherals for Arduino MKRWAN1300 board
  *
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
@@ -45,11 +45,22 @@ static const uart_conf_t uart_config[] = {
         .tx_pad   = UART_PAD_TX_2,
         .flags    = UART_FLAG_NONE,
         .gclk_src = GCLK_CLKCTRL_GEN_GCLK0
-    }
+    },
+    { /* LoRa module */
+        .dev      = &SERCOM4->USART,
+        .rx_pin   = GPIO_PIN(PA,15),
+        .tx_pin   = GPIO_PIN(PA,12),
+        .mux      = GPIO_MUX_D,
+        .rx_pad   = UART_PAD_RX_3,
+        .tx_pad   = UART_PAD_TX_0,
+        .flags    = UART_FLAG_NONE,
+        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0
+    },
 };
 
 /* interrupt function name mapping */
 #define UART_0_ISR          isr_sercom5
+#define UART_1_ISR          isr_sercom4
 
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 /** @} */
@@ -64,17 +75,6 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PA, 19),   /* ARDUINO_PIN_8, SERCOM1-MISO */
         .mosi_pin = GPIO_PIN(PA, 16),   /* ARDUINO_PIN_10, SERCOM1-MOSI */
         .clk_pin  = GPIO_PIN(PA, 17),   /* ARDUINO_PIN_9, SERCOM1-SCK */
-        .miso_mux = GPIO_MUX_C,
-        .mosi_mux = GPIO_MUX_C,
-        .clk_mux  = GPIO_MUX_C,
-        .miso_pad = SPI_PAD_MISO_3,
-        .mosi_pad = SPI_PAD_MOSI_0_SCK_1
-    },
-    {
-        .dev      = &SERCOM2->SPI,
-        .miso_pin = GPIO_PIN(PA, 15),
-        .mosi_pin = GPIO_PIN(PA, 12),
-        .clk_pin  = GPIO_PIN(PA, 13),
         .miso_mux = GPIO_MUX_C,
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,
