@@ -32,7 +32,7 @@ CFLAGS += -DTHREAD_STACKSIZE_MAIN=9092
 endif
 
 # Add the package for Jerryscript
-USEPKG += jerryscript
+USEMODULE += jerryscript
 
 include $(RIOTBASE)/Makefile.include
 
