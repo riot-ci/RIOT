@@ -647,8 +647,10 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
         }
         /* discard to avoid complex checks for correctness (will be re-added
          * with correct addresses anyway as for the case were there is no
-         * netif header provided) */
-        pkt = gnrc_pktbuf_remove_snip(pkt, tmp_pkt);
+         * netif header provided)
+         * Also re-establish temporary pointer used for write protection as
+         * actual pointer */
+        pkt = gnrc_pktbuf_remove_snip(tmp_pkt, tmp_pkt);
     }
     if (pkt->type != GNRC_NETTYPE_IPV6) {
         DEBUG("ipv6: unexpected packet type\n");
