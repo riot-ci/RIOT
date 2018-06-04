@@ -1,6 +1,6 @@
 PKG_NAME=gecko_sdk
-PKG_URL=https://github.com/basilfx/RIOT-gecko-sdk
-PKG_VERSION=d381e526d68a2d0c951f37040c1c2e168ac66cd6
+PKG_URL=https://github.com/kaibeckmann/RIOT-gecko-sdk
+PKG_VERSION=c4be44b6a57897d00c3e00f9084d697bd011f73a
 PKG_LICENSE=Zlib
 
 ifneq ($(CPU),efm32)
