@@ -37,7 +37,7 @@ ifneq ($(BOARD),native)
   CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
 endif
 
-USEPKG += lua
+USEMODULE += lua
 
 include $(RIOTBASE)/Makefile.include
 
