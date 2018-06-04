@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inria
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,11 +7,12 @@
  */
 
 /**
- * @ingroup     boards_arduino-mkrfox1200
+ * @ingroup     boards_arduino-mkrwan1300
+ * @brief       Support for the Arduino MKRWAN1300 board.
  * @{
  *
  * @file
- * @brief       Board specific definitions for the Arduino MKRFOX1200
+ * @brief       Board specific definitions for the Arduino MKRWAN1300
  *              board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
@@ -28,17 +29,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @name    The on-board ATA8520E configuration
- * @{
- */
-#define ATA8520E_PARAM_SPI         SPI_DEV(1)
-#define ATA8520E_PARAM_CS_PIN      GPIO_PIN(PA, 14)
-#define ATA8520E_PARAM_INT_PIN     GPIO_PIN(PB, 9)
-#define ATA8520E_PARAM_POWER_PIN   GPIO_PIN(PA, 28)
-#define ATA8520E_PARAM_RESET_PIN   GPIO_PIN(PA, 27)
-/** @} */
 
 /**
  * @brief   The on-board LED is connected to pin 6 on this board
@@ -58,7 +48,7 @@ extern "C" {
 #define LED0_OFF            (LED_PORT.OUTCLR.reg = LED0_MASK)
 #define LED0_TOGGLE         (LED_PORT.OUTTGL.reg = LED0_MASK)
 
-#define LED0_NAME           "LED(Green)"
+#define LED0_NAME           "LED(Amber)"
 /** @} */
 
 #ifdef __cplusplus
