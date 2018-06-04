@@ -1,6 +1,32 @@
 /**
  * @defgroup pkg_lua Lua ported to RIOT
  * @ingroup  pkg
- * @brief    Provides Lua support for RIOT
+ * @brief    Provides a Lua interpreter for RIOT
  * @see      https://github.com/lua/lua
+ * @see      sys_lua
+ *
+ * # Customizations
+ *
+ * The upstream Lua code is used without modification, with the following
+ * exceptions:
+ *
+ * - lua.c (the main interface to the interpreter) is replaced by our own
+ *   stripped-down version. The REPL is no longer included.
+ * - loadlib.c (the "package" module) is replaced by our own (simplified)
+ *   loader. All the code dealing with files and dynamic loading has been
+ *   removed.
+ *
+ */
+
+/* These are docs for the future */
+/*
+ * # Running Lua and C code
+ *
+ * see \ref sys_lua for information on how to access RIOT modules from within
+ * Lua.
+ *
+ * While it is possible to include your application specific modules and run
+ * arbitrary Lua code only just using this interpreter, the \ref sys_lua module
+ * provides an automated way of handling Lua modules.
+ *
  */

@@ -20,15 +20,21 @@
 
 #include <stdio.h>
 #include <errno.h>
+
 #include "lauxlib.h"
 #include "lualib.h"
+#include "lua_run.h"
+
+#include "lua_run.h"
 
 #include "main.lua.h"
 
+#define LUA_MEM_SIZE (8192*3)
+static char lua_mem[LUA_MEM_SIZE];
+
 int lua_run_script(const char *buffer, size_t buffer_len)
 {
-
-    lua_State *L = luaL_newstate();
+    lua_State *L = luaR_newstate(lua_mem, sizeof(lua_mem), NULL);
 
     if (L == NULL) {
         puts("cannot create state: not enough memory");
@@ -51,5 +57,7 @@ int main(void)
 {
     puts("Lua RIOT build");
     lua_run_script(main_lua, main_lua_len);
+    puts("Lua interpreter exited");
+
     return 0;
 }
