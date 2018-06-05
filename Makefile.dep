@@ -14,14 +14,6 @@ ifneq (,$(filter cbor_ctime,$(USEMODULE)))
   endif
 endif
 
-ifneq (,$(filter ndn-riot,$(USEMODULE)))
-  USEMODULE += gnrc
-  USEMODULE += xtimer
-  USEMODULE += random
-  USEMODULE += hashes
-  USEMODULE += micro-ecc
-endif
-
 ifneq (,$(filter csma_sender,$(USEMODULE)))
   USEMODULE += random
   USEMODULE += xtimer
@@ -71,13 +63,6 @@ ifneq (,$(filter uhcpc,$(USEMODULE)))
 endif
 
 ifneq (,$(filter nordic_softdevice_ble,$(USEMODULE)))
-  USEMODULE += softdevice_handler
-  USEMODULE += ble_common
-  USEMODULE += ble_6lowpan
-  USEMODULE += gnrc_sixlowpan
-  USEMODULE += gnrc_sixlowpan_iphc
-  USEMODULE += gnrc_ipv6_nib_6ln
-  USEMODULE += gnrc_ipv6_default
   # prevent application from being a router
   # TODO: maybe find a nicer solution in future build system update
   _ROUTER_MODULES = gnrc_ipv6_router% gnrc_rpl netstats_rpl auto_init_gnrc_rpl
@@ -405,75 +390,8 @@ ifneq (,$(filter posix_time,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-ifneq (,$(filter lwip_sixlowpan,$(USEMODULE)))
-  USEMODULE += lwip_ipv6_autoconfig
-endif
-
-ifneq (,$(filter lwip_ipv6_autoconfig lwip_ipv6_mld,$(USEMODULE)))
-  USEMODULE += lwip_ipv6
-endif
-
-ifneq (,$(filter lwip_ipv6,$(USEMODULE)))
-  USEMODULE += random
-endif
-
-ifneq (,$(filter lwip_udplite,$(USEMODULE)))
-  USEMODULE += lwip_udp
-endif
-
-ifneq (,$(filter lwip_sock_%,$(USEMODULE)))
-  USEMODULE += lwip_sock
-endif
-
-ifneq (,$(filter lwip_sock_ip,$(USEMODULE)))
-  USEMODULE += lwip_raw
-  USEMODULE += sock_ip
-endif
-
-ifneq (,$(filter lwip_sock_tcp,$(USEMODULE)))
-  USEMODULE += lwip_tcp
-  USEMODULE += sock_tcp
-endif
-
-ifneq (,$(filter lwip_sock_udp,$(USEMODULE)))
-  USEMODULE += lwip_udp
-  USEMODULE += sock_udp
-endif
-
-ifneq (,$(filter lwip_%,$(USEMODULE)))
-  USEMODULE += lwip
-endif
-
-ifneq (,$(filter lwip,$(USEMODULE)))
-  USEMODULE += core_mbox
-  USEMODULE += lwip_api
-  USEMODULE += lwip_contrib
-  USEMODULE += lwip_core
-  USEMODULE += lwip_netif
-  ifeq (,$(filter lwip_ipv4 lwip_ipv6,$(USEMODULE)))
-    USEMODULE += lwip_ipv4
-  endif
-  ifeq (,$(filter lwip_tcp lwip_udp lwip_udplite,$(USEMODULE)))
-    USEMODULE += lwip_raw
-  endif
-endif
-
-ifneq (,$(filter lwip_ppp,$(USEMODULE)))
-  USEMODULE += lwip_polarssl
-endif
-
-ifneq (,$(filter lwip_contrib,$(USEMODULE)))
-  USEMODULE += sema
-  USEMODULE += xtimer
-endif
-
 ifneq (,$(filter sema,$(USEMODULE)))
   USEMODULE += xtimer
-endif
-
-
-ifneq (,$(filter libfixmath-unittests,$(USEMODULE)))
-  USEMODULE += libfixmath
 endif
 
 ifneq (,$(filter luid,$(USEMODULE)))
@@ -483,15 +401,6 @@ endif
 ifneq (,$(filter fib,$(USEMODULE)))
   USEMODULE += universal_address
   USEMODULE += xtimer
-endif
-
-ifneq (,$(filter oonf_rfc5444,$(USEMODULE)))
-  USEMODULE += oonf_common
-endif
-
-ifneq (,$(filter oonf_common,$(USEMODULE)))
-  USEMODULE += oonf_api
-  USEMODULE += posix_sockets
 endif
 
 # if any log_* is used, also use LOG pseudomodule
@@ -638,11 +547,6 @@ ifneq (,$(filter random,$(USEMODULE)))
   USEMODULE += luid
 endif
 
-ifneq (,$(filter openthread_contrib,$(USEMODULE)))
-  USEMODULE += openthread_contrib_netdev
-  FEATURES_REQUIRED += cpp
-endif
-
 ifneq (,$(filter emcute,$(USEMODULE)))
   USEMODULE += core_thread_flags
   USEMODULE += sock_udp
@@ -679,17 +583,6 @@ ifneq (,$(filter event,$(USEMODULE)))
   USEMODULE += core_thread_flags
 endif
 
-ifneq (,$(filter spiffs,$(USEMODULE)))
-  USEMODULE += vfs
-  USEMODULE += spiffs_fs
-  USEMODULE += mtd
-endif
-ifneq (,$(filter littlefs,$(USEMODULE)))
-  USEMODULE += vfs
-  USEMODULE += littlefs_fs
-  USEMODULE += mtd
-endif
-
 ifneq (,$(filter l2filter_%,$(USEMODULE)))
   USEMODULE += l2filter
 endif
@@ -705,15 +598,6 @@ endif
 
 ifneq (,$(filter nanocoap_%,$(USEMODULE)))
   USEMODULE += nanocoap
-endif
-
-ifneq (,$(filter ccn-lite,$(USEMODULE)))
-  USEMODULE += ccn-lite-utils
-endif
-
-ifneq (,$(filter fatfs_vfs,$(USEMODULE)))
-  USEMODULE += fatfs
-  USEMODULE += vfs
 endif
 
 ifneq (,$(filter benchmark,$(USEMODULE)))
@@ -744,10 +628,6 @@ ifneq (,$(filter rdcli_common,$(USEMODULE)))
   USEMODULE += fmt
   USEMODULE += gcoap
   USEMODULE += luid
-endif
-
-ifneq (,$(filter tlsf-malloc,$(USEMODULE)))
-  USEMODULE += tlsf
 endif
 
 ifneq (,$(filter uuid,$(USEMODULE)))
