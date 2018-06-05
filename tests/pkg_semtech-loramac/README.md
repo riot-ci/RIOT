@@ -148,3 +148,10 @@ The node will also print the data received:
     > loramac tx test
     Data received: This is RIOT!
 ```
+
+### The Things Network
+
+If using TTN make sure to set the correct datarate for RX2. Otherwise confirmed and downlink messages won't work. The datarate for RX2 should be DR3 (SF9BW125) as seen in [TTN LoRaWAN Frequencies Overview](https://www.thethingsnetwork.org/docs/lorawan/frequency-plans.html):
+```
+    > loramac set rx2_dr 3
+```
