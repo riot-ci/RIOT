@@ -1,5 +1,7 @@
-USEMODULE += fatfs_diskio_mtd
-USEMODULE += auto_init_storage
-USEMODULE += mtd
+ifneq (,$(filter fatfs,$(USEMODULE)))
+  USEMODULE += fatfs_diskio_mtd
+  USEMODULE += auto_init_storage
+  USEMODULE += mtd
 
-FEATURES_OPTIONAL += periph_rtc
+  FEATURES_OPTIONAL += periph_rtc
+endif
