@@ -6,22 +6,8 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-BOARD_INSUFFICIENT_MEMORY :=  airfy-beacon b-l072z-lrwan1 bluepill calliope-mini \
-                              cc2650-launchpad cc2650stk hifive1 maple-mini \
-                              microbit msb-430 msb-430h nrf51dongle nrf6310 \
-                              nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 \
-                              nucleo-f070rb nucleo-f072rb nucleo-f103rb \
-                              nucleo-f302r8 nucleo-f303k8 nucleo-f334r8 \
-                              nucleo-f410rb nucleo-l031k6 nucleo-l053r8 \
-                              opencm904 spark-core stm32f0discovery \
-                              telosb weio wsn430-v1_3b wsn430-v1_4 \
-                              yunjia-nrf51822 z1 \
-
-BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno \
-                   chronos hifive1 jiminy-mega256rfr2 mega-xplained mips-malta \
-				   msb-430 msb-430h pic32-clicker pic32-wifire telosb \
-				   waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
-
+BOARD_WHITELIST := frdm-k64f iotlab-m3 mulle nrf52840dk nucleo-f411re \
+				   stm32f4discovery
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
@@ -37,7 +23,6 @@ QUIET ?= 1
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=8000 -DDEBUG_ASSERT_VERBOSE -DLUA_DEBUG
 
 USEPKG += lua
-USEMODULE += newlib
 
 include $(RIOTBASE)/Makefile.include
 
