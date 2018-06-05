@@ -23,13 +23,22 @@ fi
 
 # Check all groups are defined
 
-DEFINED_GROUPS="$(git grep defgroup | grep -v vendor | grep -oE '@defgroup[ ]+[^ ]+' | grep -oE '[^ ]+$' | sort -u)"
+DEFINED_GROUPS="$(git grep defgroup | \
+                  grep -v vendor | \
+                  grep -oE '@defgroup[ ]+[^ ]+' | \
+                  grep -oE '[^ ]+$' | sort -u)"
 
 UNDEFINED_GROUPS=$( \
-    for group in $(git grep '@ingroup' | grep -v vendor | grep -oE '[^ ]+$' | sort -u); \
+    for group in $(git grep '@ingroup' | \
+                   grep -v vendor | \
+                   grep -v examples | \
+                   grep -v tests | \
+                   grep -oE '[^ ]+$' | \
+                   sort -u); \
     do \
         echo "$DEFINED_GROUPS" | grep -xq "$group" || echo "$group"; \
-    done)
+    done \
+)
 
 if [ -n "${UNDEFINED_GROUPS}" ]
 then
