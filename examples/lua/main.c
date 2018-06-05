@@ -27,7 +27,7 @@
 
 #include "main.lua.h"
 
-#define LUA_MEM_SIZE (8192*3)
+#define LUA_MEM_SIZE (11000)
 static char lua_mem[LUA_MEM_SIZE];
 
 int lua_run_script(const char *buffer, size_t buffer_len)
@@ -39,7 +39,7 @@ int lua_run_script(const char *buffer, size_t buffer_len)
         return ENOMEM;
     }
 
-    luaL_openlibs(L);
+    luaR_openlibs(L, LUAR_LOAD_BASE);
     luaL_loadbuffer(L, buffer, buffer_len, "lua input script");
 
     if (lua_pcall(L, 0, 0, 0) != LUA_OK){
