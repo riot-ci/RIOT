@@ -29,12 +29,10 @@ DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-USEMODULE += ps
-
 ifneq ($(BOARD),native)
   # This stack size is large enough to run Lua print() functions of
   # various lengths. Other functions untested.
-  CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
+  CFLAGS += -DTHREAD_STACKSIZE_MAIN=3000
 endif
 
 USEPKG += lua
