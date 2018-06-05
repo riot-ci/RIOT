@@ -1,0 +1,5 @@
+ifneq (,$(filter lua,$(USEPKG)))
+  USEPKG += tlsf
+  USEMODULE += lua-contrib
+  USEMODULE += printf_float
+endif
