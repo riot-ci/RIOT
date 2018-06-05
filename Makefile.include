@@ -255,6 +255,14 @@ ALL_PKGS := $(sort $(notdir $(patsubst %/Makefile,%,$(wildcard $(RIOTPKG)/*/Make
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
 
+ifneq (,$(USEPKG))
+  $(warning USEPKG contains: $(USEPKG))
+  $(error Packages dependencies should now be declared using USEMODULE instead of USEPKG)
+endif
+
+# deduce packages from USEMODULE
+USEPKG := $(filter $(ALL_PKGS), $(USEMODULE))
+
 USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
 ifeq ($(strip $(MCU)),)
