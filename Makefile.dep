@@ -761,13 +761,10 @@ FEATURES_OPTIONAL += periph_gpio
 # always select power management if available
 FEATURES_OPTIONAL += periph_pm
 
-# Transitional option until dependencies do not use `USEPKG` anymore
-USEMODULE += $(USEPKG)
-# Set USEPKG to modules that have a directory in pkg/
-USEPKG := $(sort $(filter $(ALL_PKGS), $(USEMODULE)))
-
 # include package dependencies
--include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
+# only process used packages until Makefile.dep are safe to include all the time
+_USEPKG := $(sort $(filter $(ALL_PKGS), $(USEMODULE)))
+-include $(_USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
 # remove required features from optional features
 FEATURES_OPTIONAL := $(filter-out $(FEATURES_REQUIRED),$(FEATURES_OPTIONAL))
