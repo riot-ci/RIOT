@@ -31,36 +31,34 @@ then
     exit 2
 fi
 
+exclude_filter() {
+    grep -v -e vendor -e examples -e tests
+}
+
 # Check all groups are defined
 DEFINED_GROUPS=$(git grep @defgroup -- '*.h' '*.txt' | \
-                  grep -v vendor | \
-                  grep -v examples | \
-                  grep -v tests | \
-                  grep -oE '@defgroup[ ]+[^ ]+' | \
-                  grep -oE '[^ ]+$' | sort -u)
+                    exclude_filter | \
+                    grep -oE '@defgroup[ ]+[^ ]+' | \
+                    grep -oE '[^ ]+$' | sort -u)
 
 UNDEFINED_GROUPS=$( \
     for group in $(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | \
-                    grep -v vendor | \
-                    grep -v examples | \
-                    grep -v tests | \
+                    exclude_filter | \
                     grep -oE '[^ ]+$' | sort -u); \
     do \
-        echo "$DEFINED_GROUPS" | grep -xq "$group" || echo "$group"; \
+        echo "${DEFINED_GROUPS}" | grep -xq "${group}" || echo "${group}"; \
     done \
     )
 
 ALL_RAW_INGROUP=$(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | \
-                grep -v vendor | \
-                grep -v examples | \
-                grep -v tests)
+                    exclude_filter)
 
 UNDEFINED_GROUPS_PRINT=$( \
-    for group in $UNDEFINED_GROUPS; \
+    for group in ${UNDEFINED_GROUPS}; \
     do \
-        echo -e "\n${CWARN}$group${CRESET} found in:"; \
-        echo "$ALL_RAW_INGROUP" | grep " $group$" | sort -u | \
-                awk '{ print "\t" substr($1, 1, length($1)-1) }'; \
+        echo -e "\n${CWARN}${group}${CRESET} found in:"; \
+        echo "${ALL_RAW_INGROUP}" | grep "\<${group}\>$" | sort -u | \
+                awk -F: '{ print "\t" $1 }'; \
     done \
     )
 
