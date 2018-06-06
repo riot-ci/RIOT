@@ -27,6 +27,6 @@ all: git-download
 	"$(MAKE)" -C $(PDIR)/nimble/controller/src/ -f $(TDIR)/controller.mk
 	"$(MAKE)" -C $(PDIR)/nimble/drivers/nrf52/src/ -f $(TDIR)/drivers.nrf52.mk
 
-	"$(MAKE)" -C $(TDIR)/glue/
+	"$(MAKE)" -C $(TDIR)/contrib/
 
 include $(RIOTBASE)/pkg/pkg.mk

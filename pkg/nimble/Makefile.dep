@@ -4,7 +4,7 @@ USEMODULE += event_callback
 USEMODULE += xtimer
 
 # glue code
-USEMODULE += nimble_riot_glue
+USEMODULE += nimble_riot_contrib
 
 # nimble sub-modules that we build
 USEMODULE += nimble_tinycrypt
