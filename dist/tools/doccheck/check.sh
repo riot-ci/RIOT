@@ -50,8 +50,7 @@ UNDEFINED_GROUPS=$( \
     done \
     )
 
-ALL_RAW_INGROUP=$(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | \
-                    exclude_filter)
+ALL_RAW_INGROUP=$(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | exclude_filter)
 
 UNDEFINED_GROUPS_PRINT=$( \
     for group in ${UNDEFINED_GROUPS}; \
