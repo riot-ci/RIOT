@@ -18,14 +18,13 @@
  * @}
  */
 #include <stdio.h>
-
-extern uint32_t global_puf_seed;
+#include "puf_sram.h"
 
 int main(void)
 {
     puts("Start: Test random number generator");
 
-    printf("Success: Data for global_puf_seed: [0x%08lX]",global_puf_seed);
+    printf("Success: Data for global_puf_seed: [0x%08lX]", global_puf_seed);
 
     puts("End: Test finished");
     return 0;
