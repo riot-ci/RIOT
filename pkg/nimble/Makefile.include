@@ -1,7 +1,7 @@
 NIMIBASE = -I$(PKGDIRBASE)/nimble
 
 # include RIOT glue code headers
-INCLUDES += -I$(RIOTPKG)/nimble/include
+INCLUDES += -I$(RIOTPKG)/nimble/contrib/include
 
 # include tinycrypt headers
 INCLUDES += $(NIMIBASE)/ext/tinycrypt/include

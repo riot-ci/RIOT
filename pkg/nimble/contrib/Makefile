@@ -1,3 +1,3 @@
-MODULE = nimble_riot_glue
+MODULE = nimble_riot_contrib
 
 include $(RIOTBASE)/Makefile.base
