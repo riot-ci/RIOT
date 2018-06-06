@@ -7,11 +7,12 @@
  */
 
 /**
+ * @defgroup    sys_crypto_mode_ccm Counter with CBC-MAC
  * @ingroup     sys_crypto
+ * @brief       Counter with CBC-MAC mode of operation for block ciphers
  * @{
  *
  * @file        ccm.h
- * @brief       Counter with CBC-MAC mode of operation for block ciphers
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>
@@ -26,11 +27,16 @@
 extern "C" {
 #endif
 
-#define CCM_ERR_INVALID_NONCE_LENGTH -2
-#define CCM_ERR_INVALID_CBC_MAC -3
-#define CCM_ERR_INVALID_DATA_LENGTH -3
-#define CCM_ERR_INVALID_LENGTH_ENCODING -4
-#define CCM_ERR_INVALID_MAC_LENGTH -5
+/**
+ * @name CCM error codes
+ * @{
+ */
+#define CCM_ERR_INVALID_NONCE_LENGTH        (-2)
+#define CCM_ERR_INVALID_CBC_MAC             (-3)
+#define CCM_ERR_INVALID_DATA_LENGTH         (-3)
+#define CCM_ERR_INVALID_LENGTH_ENCODING     (-4)
+#define CCM_ERR_INVALID_MAC_LENGTH          (-5)
+/** @} */
 
 /**
  * @brief Encrypt and authenticate data of arbitrary length in ccm mode.
@@ -86,3 +92,4 @@ int cipher_decrypt_ccm(cipher_t* cipher, uint8_t* auth_data,
 #endif
 
 #endif /* CRYPTO_MODES_CCM_H */
+/** @} */
