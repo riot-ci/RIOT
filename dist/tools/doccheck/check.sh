@@ -70,5 +70,4 @@ then
     echo -ne "${CWARN}WARNING${CRESET} "
     echo -ne "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups:"
     echo "${UNDEFINED_GROUPS_PRINT}"
-    exit 2
 fi
