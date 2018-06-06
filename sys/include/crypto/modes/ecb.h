@@ -7,11 +7,12 @@
  */
 
 /**
+ * @defgroup    sys_crypto_mode_ecb Electronic code book
  * @ingroup     sys_crypto
+ * @brief       Electronic code book mode of operation for block ciphers
  * @{
  *
  * @file        ecb.h
- * @brief       Electronic code book mode of operation for block ciphers
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>
@@ -60,3 +61,4 @@ int cipher_decrypt_ecb(cipher_t* cipher, uint8_t* input, size_t length,
 #endif
 
 #endif /* CRYPTO_MODES_ECB_H */
+/** @} */
