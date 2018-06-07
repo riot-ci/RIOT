@@ -27,7 +27,7 @@
 /**
  * @defgroup    sys_auto_init_saul SAUL drivers auto-initialization
  * @ingroup     sys_auto_init
- * @brief       Provides auto-initialization of drivers via SAUL
+ * @brief       Provides auto-initialization of SAUL drivers
  *
  * @see @ref drivers_saul
  */
@@ -35,7 +35,7 @@
 /**
  * @defgroup    sys_auto_init_gnrc_netif GNRC netif drivers auto-initialization
  * @ingroup     sys_auto_init
- * @brief       Provides auto-initialization
+ * @brief       Provides auto-initialization of
  * [network device drivers](@ref drivers_netdev) via GNRC
  *
  * @see @ref net_gnrc_netif
