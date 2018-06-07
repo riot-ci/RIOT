@@ -49,7 +49,7 @@ USEMODULE += ps
 DEVELHELP ?= 1
 
 # NOTE: Add the package for TinyDTLS
-USEPKG += tinydtls
+USEMODULE += tinydtls
 
 # NOTE: Those are taken from TinyDTLS. As the original Makefiles are
 #      overwitten is a good idea to preserve them here.

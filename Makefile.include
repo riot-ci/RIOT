@@ -250,8 +250,18 @@ ifneq ($(GNRC_NETIF_NUMOF),1)
   CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
 endif
 
+# list of all RIOT packages
+ALL_PKGS := $(sort $(notdir $(patsubst %/Makefile,%,$(wildcard $(RIOTPKG)/*/Makefile))))
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
+
+ifneq (,$(USEPKG))
+  $(warning USEPKG contains: $(USEPKG))
+  $(error Packages dependencies should now be declared using USEMODULE instead of USEPKG)
+endif
+
+# deduce packages from USEMODULE
+USEPKG := $(filter $(ALL_PKGS), $(USEMODULE))
 
 USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
