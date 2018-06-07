@@ -10,7 +10,7 @@
 /**
  * @defgroup    boards_common_stm32f103c8 STM32F103C8 based boards common
  * @ingroup     boards_common
- * @brief       Shared files and configuration STM32F103C8 based boards
+ * @brief       Shared files and configuration for STM32F103C8 based boards
  * @{
  *
  * @file
