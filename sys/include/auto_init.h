@@ -27,18 +27,17 @@
 /**
  * @defgroup    sys_auto_init_saul SAUL drivers auto-initialization
  * @ingroup     sys_auto_init
- * @brief       Provides auto-initialization of SAUL drivers.
+ * @brief       Provides auto-initialization of drivers via SAUL
  *
- * This module contains all high-level drivers (sensor or actuators) that
- * support auto-initialization via SAUL.
+ * @see @ref drivers_saul
  */
 
 /**
  * @defgroup    sys_auto_init_gnrc_netif GNRC netif drivers auto-initialization
  * @ingroup     sys_auto_init
- * @brief       Provides auto-initialization of Netif drivers via GNRC.
+ * @brief       Provides auto-initialization of network device drivers via GNRC
  *
- * This module contains all netif drivers that support auto-initialization.
+ * @see @ref net_gnrc_netif
  */
 
 /**
