@@ -7,12 +7,11 @@
  */
 
 /**
- * @defgroup    sys_crypto_mode_ccm Counter with CBC-MAC
  * @ingroup     sys_crypto
- * @brief       Counter with CBC-MAC mode of operation for block ciphers
  * @{
  *
  * @file        ccm.h
+ * @brief       Counter with CBC-MAC mode of operation for block ciphers
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>
