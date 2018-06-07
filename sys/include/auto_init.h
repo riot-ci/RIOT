@@ -35,7 +35,8 @@
 /**
  * @defgroup    sys_auto_init_gnrc_netif GNRC netif drivers auto-initialization
  * @ingroup     sys_auto_init
- * @brief       Provides auto-initialization [network device drivers](@ref drivers_netdev) via GNRC
+ * @brief       Provides auto-initialization
+ * [network device drivers](@ref drivers_netdev) via GNRC
  *
  * @see @ref net_gnrc_netif
  */
