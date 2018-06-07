@@ -7,12 +7,11 @@
  */
 
 /**
- * @defgroup    sys_crypto_mode_cbc Cipher block chaining mode
  * @ingroup     sys_crypto
- * @brief       Cipher block chaining mode of operation for block ciphers
  * @{
  *
  * @file        cbc.h
+ * @brief       Cipher block chaining mode of operation for block ciphers
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>

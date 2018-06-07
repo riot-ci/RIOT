@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     sys_crypto_mode_cbc
+ * @ingroup     sys_crypto
  * @{
  *
  * @file
