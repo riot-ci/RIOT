@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Test the correct loading and linking of the tinycryp package
+ * @brief       Test the correct loading and linking of the tinycrypt package
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
