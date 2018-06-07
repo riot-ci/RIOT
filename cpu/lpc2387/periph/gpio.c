@@ -28,6 +28,10 @@
 #include "periph/gpio.h"
 #include "bitfield.h"
 
+#ifdef MODULE_GPIO_EXP
+#include "gpio_exp.h"
+#endif
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -65,6 +69,19 @@ static int _isr_map_entry(gpio_t pin) {
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     unsigned _pin = pin & 31;
     unsigned port = pin >> 5;
     FIO_PORT_t *_port = &FIO_PORTS[port];
@@ -97,6 +114,20 @@ int gpio_init_mux(unsigned pin, unsigned mux)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
+                                           mode, flank, cb, arg);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     (void)mode;
 
     DEBUG("gpio_init_int(): pin %u\n", pin);
@@ -200,6 +231,20 @@ static void _gpio_configure(gpio_t pin, unsigned rising, unsigned falling)
 
 void gpio_irq_enable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     int isr_map_entry =_isr_map_entry(pin);
     int _state_index = _gpio_isr_map[isr_map_entry];
 
@@ -213,13 +258,40 @@ void gpio_irq_enable(gpio_t pin)
             bf_isset(_gpio_falling, _state_index));
 }
 
-void gpio_irq_disable(gpio_t dev)
+void gpio_irq_disable(gpio_t pin)
 {
-    _gpio_configure(dev, 0, 0);
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
+    _gpio_configure(pin, 0, 0);
 }
 
 int gpio_read(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
+    }
+#endif /* MODULE_GPIO_EXP */
+
     unsigned _pin = pin & 31;
     unsigned port = pin >> 5;
     FIO_PORT_t *_port = &FIO_PORTS[port];
@@ -228,37 +300,49 @@ int gpio_read(gpio_t pin)
 
 void gpio_set(gpio_t pin)
 {
-    unsigned _pin = pin & 31;
-    unsigned port = pin >> 5;
-    FIO_PORT_t *_port = &FIO_PORTS[port];
-    _port->SET = 1 << _pin;
+    gpio_write(pin, 1);
 }
 
 void gpio_clear(gpio_t pin)
 {
+    gpio_write(pin, 0);
+}
+
+void gpio_toggle(gpio_t pin)
+{
+    if (gpio_read(pin)) {
+        gpio_write(pin, 0);
+    }
+    else {
+        gpio_write(pin, 1);
+    }
+}
+
+void gpio_write(gpio_t pin, int value)
+{
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     unsigned _pin = pin & 31;
     unsigned port = pin >> 5;
     FIO_PORT_t *_port = &FIO_PORTS[port];
-    _port->CLR = 1 << _pin;
-}
 
-void gpio_toggle(gpio_t dev)
-{
-    if (gpio_read(dev)) {
-        gpio_clear(dev);
-    }
-    else {
-        gpio_set(dev);
-    }
-}
-
-void gpio_write(gpio_t dev, int value)
-{
     if (value) {
-        gpio_set(dev);
+        _port->SET = 1 << _pin;
     }
     else {
-        gpio_clear(dev);
+        _port->CLR = 1 << _pin;
     }
 }
 
