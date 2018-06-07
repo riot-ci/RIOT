@@ -39,6 +39,6 @@ USEMODULE += random
 USEMODULE += prng_xorshift
 USEMODULE += tlsf-malloc
 
-USEPKG += ccn-lite
+USEMODULE += ccn-lite
 
 include $(RIOTBASE)/Makefile.include
