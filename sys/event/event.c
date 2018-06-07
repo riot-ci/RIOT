@@ -55,10 +55,16 @@ void event_post(event_queue_t *queue, event_t *event)
     if (!event->list_node.next) {
         clist_rpush(&queue->event_list, &event->list_node);
     }
+    thread_t *waiter = queue->waiter;
     irq_restore(state);
 
-    if (queue->waiter) {
-        thread_flags_set(queue->waiter, THREAD_FLAG_EVENT);
+    /* WARNING: there is a minimal chance, that a waiter claims a formerly
+     *          detached queue between the end of the critical section above and
+     *          the block below. In that case, the new waiter will not be woken
+     *          up. This should be fixed at some point once it is safe to call
+     *          thread_flags_set() inside a critical section on all platforms. */
+    if (waiter) {
+        thread_flags_set(waiter, THREAD_FLAG_EVENT);
     }
 }
 
