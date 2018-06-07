@@ -256,6 +256,7 @@ ALL_PKGS := $(sort $(notdir $(patsubst %/Makefile,%,$(wildcard $(RIOTPKG)/*/Make
 include $(RIOTBASE)/Makefile.dep
 
 ifneq (,$(USEPKG))
+  $(warning USEPKG contains: $(USEPKG))
   $(error Packages dependencies should now be declared using USEMODULE instead of USEPKG)
 endif
 
