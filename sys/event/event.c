@@ -93,13 +93,18 @@ event_t *event_get(event_queue_t *queue)
 
 event_t *event_wait(event_queue_t *queue)
 {
-    thread_flags_wait_any(THREAD_FLAG_EVENT);
-    unsigned state = irq_disable();
-    event_t *result = (event_t *) clist_lpop(&queue->event_list);
-    if (clist_rpeek(&queue->event_list)) {
-        queue->waiter->flags |= THREAD_FLAG_EVENT;
-    }
-    irq_restore(state);
+    assert(queue);
+    event_t *result;
+
+    do {
+        unsigned state = irq_disable();
+        result = (event_t *)clist_lpop(&queue->event_list);
+        irq_restore(state);
+        if (result == NULL) {
+            thread_flags_wait_any(THREAD_FLAG_EVENT);
+        }
+    } while (result == NULL);
+
     result->list_node.next = NULL;
     return result;
 }
