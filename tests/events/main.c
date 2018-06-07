@@ -100,7 +100,7 @@ static void delayed_callback1(event_t *arg)
     order++;
     assert(order == 1);
     assert(arg == &delayed_event1);
-    printf("triggered delayed event #1\n");
+    printf("triggered delayed event %p\n", (void *)arg);
 }
 
 static void delayed_callback2(event_t *arg)
@@ -108,7 +108,7 @@ static void delayed_callback2(event_t *arg)
     order++;
     assert(order == 2);
     assert(arg = &delayed_event2);
-    printf("triggered delayed event #2\n");
+    printf("triggered delayed event %p\n", (void *)arg);
 }
 
 static void *claiming_thread(void *arg)
