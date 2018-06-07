@@ -36,7 +36,7 @@ exclude_filter() {
 }
 
 # Check all groups are defined
-DEFINED_GROUPS=$(git grep @defgroup -- '*.h' '*.txt' | \
+DEFINED_GROUPS=$(git grep @defgroup -- '*.h' '*.c' '*.txt' | \
                     exclude_filter | \
                     grep -oE '@defgroup[ ]+[^ ]+' | \
                     grep -oE '[^ ]+$' | sort -u)
