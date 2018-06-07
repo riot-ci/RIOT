@@ -1,1 +1,3 @@
-USEMODULE += posix
+ifneq (,$(filter cn-cbor,$(USEMODULE)))
+  USEMODULE += posix
+endif

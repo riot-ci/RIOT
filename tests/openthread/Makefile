@@ -11,7 +11,7 @@ RIOTBASE ?= $(CURDIR)/../..
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-USEPKG += openthread
+USEMODULE += openthread
 USEMODULE += openthread_contrib
 USEMODULE += libmbedcrypto
 USEMODULE += libopenthread
