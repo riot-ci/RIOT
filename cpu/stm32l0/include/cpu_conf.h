@@ -25,16 +25,13 @@
 
 #include "cpu_conf_common.h"
 
-#ifdef CPU_MODEL_STM32L073RZ
+#if defined(CPU_MODEL_STM32L073RZ)
 #include "vendor/stm32l073xx.h"
-#endif
-#ifdef CPU_MODEL_STM32L072CZ
+#elif defined(CPU_MODEL_STM32L072CZ)
 #include "vendor/stm32l072xx.h"
-#endif
-#ifdef CPU_MODEL_STM32L053R8
+#elif defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L053C8)
 #include "vendor/stm32l053xx.h"
-#endif
-#ifdef CPU_MODEL_STM32L031K6
+#elif defined(CPU_MODEL_STM32L031K6)
 #include "vendor/stm32l031xx.h"
 #endif
 
@@ -59,13 +56,14 @@ extern "C" {
  * @{
  */
 #if defined(CPU_MODEL_STM32L073RZ) || defined(CPU_MODEL_STM32L072CZ) || \
-    defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L031K6)
+    defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L053C8) || \
+    defined(CPU_MODEL_STM32L031K6)
 #define FLASHPAGE_SIZE      (128U)
 #endif
 
 #if defined(CPU_MODEL_STM32L073RZ) || defined(CPU_MODEL_STM32L072CZ)
 #define FLASHPAGE_NUMOF     (1536U)
-#elif defined(CPU_MODEL_STM32L053R8)
+#elif defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L053C8)
 #define FLASHPAGE_NUMOF     (512U)
 #elif defined(CPU_MODEL_STM32L031K6)
 #define FLASHPAGE_NUMOF     (256U)
@@ -86,7 +84,7 @@ extern "C" {
 #define EEPROM_START_ADDR          (0x08080000)
 #if defined(CPU_MODEL_STM32L073RZ) || defined(CPU_MODEL_STM32L072CZ)
 #define EEPROM_SIZE                (6144U)  /* 6kB */
-#elif defined(CPU_MODEL_STM32L053R8)
+#elif defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L053C8)
 #define EEPROM_SIZE                (2048U)  /* 2kB */
 #elif defined(CPU_MODEL_STM32L031K6)
 #define EEPROM_SIZE                (1024U)  /* 1kB */
