@@ -33,6 +33,11 @@ ifeq ($(CC_NOCOLOR),0)
   endif
 endif
 
+# Warn if a user-supplied include directory does not exist if supported
+ifeq ($(shell $(CC) -Wmissing-include-dirs -E - 2>/dev/null >/dev/null </dev/null ; echo $$?),0)
+  CFLAGS += -Wmissing-include-dirs
+endif
+
 # Fast-out on old style function definitions.
 # They cause unreadable error compiler errors on missing semicolons.
 # Worse yet they hide errors by accepting wildcard argument types.
@@ -59,9 +64,6 @@ CFLAGS += -fno-common
 
 # Enable all default warnings
 CFLAGS += -Wall
-
-# Warn if a user-supplied include directory does not exist.
-CFLAGS += -Wmissing-include-dirs
 
 ifeq (,$(filter -DDEVELHELP,$(CFLAGS)))
   ifneq (1,$(FORCE_ASSERTS))
