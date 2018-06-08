@@ -141,6 +141,14 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
 
     xtimer_remove(timer);
 
+    //printf("%" PRIu32 "\n", offset);
+
+    /* for small delays the Backoff check in _xtimer_set_absolute will fail,
+     * as 'now < target' which will result in one 32 bit cicle delay.
+     */
+    // if (offset < XTIMER_BACKOFF/2) {
+    //     offset = XTIMER_BACKOFF/2;
+    // }
     if (offset < XTIMER_BACKOFF) {
         _xtimer_spin(offset);
         _shoot(timer);
@@ -148,7 +156,7 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
     else {
         uint32_t target = _xtimer_now() + offset;
         _xtimer_set_absolute(timer, target);
-    }
+     }
 }
 
 static void _periph_timer_callback(void *arg, int chan)
@@ -177,12 +185,25 @@ int _xtimer_set_absolute(xtimer_t *timer, uint32_t target)
     uint32_t now = _xtimer_now();
     int res = 0;
 
-    DEBUG("timer_set_absolute(): now=%" PRIu32 " target=%" PRIu32 "\n", now, target);
-
     timer->next = NULL;
-    if ((target >= now) && ((target - XTIMER_BACKOFF) < now)) {
+    /* Ensure that offset is bigger than 'XTIMER_BACKOFF',
+     * 'target - now' will allways be the offset no matter if target < or > now.
+     * 
+     * This expects that target was not set to close to now, so from setting
+     * target up until the call of '_xtimer_now()' above now has not become equal
+     * and than bigger target. This is crucial when using low CPU frequencies.
+     * 
+     * '_xtimer_set()' and `_xtimer_periodic_wakeup()` ensure this by backing of
+     * for small values.
+     * */
+    uint32_t offset = (target - now);
+
+    DEBUG("timer_set_absolute(): now=%" PRIu32 " target=%" PRIu32 " offset=" PRIu32 "%\n",
+          now, target, offset);
+
+    if (offset <= XTIMER_BACKOFF) {
         /* backoff */
-        xtimer_spin_until(target + XTIMER_BACKOFF);
+        xtimer_spin_until(target);
         _shoot(timer);
         return 0;
     }
@@ -195,10 +216,15 @@ int _xtimer_set_absolute(xtimer_t *timer, uint32_t target)
     timer->target = target;
     timer->long_target = _long_cnt;
 
-    /* Ensure timer is fired in right hardware timer period. */
+    /* Ensure timer is fired in right timer period.
+     * Backoff condition above ensures that 'target - XTIMER_OVERHEAD` is later 
+     * than 'now', also for values when now will overflow soon and the value of 
+     * 'target < now'.
+     * If `target < XTIMER_OVERHEAD` then the new target will be at the end of 
+     * this 32bit period, instead at the beginning of the next.*/
     target = target - XTIMER_OVERHEAD;
 
-    /* 32 bit target overflow */
+    /* 32 bit target overflow, target is in next 32bit period */
     if (target < now) {
         timer->long_target++;
     }
