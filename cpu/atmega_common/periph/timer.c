@@ -29,35 +29,36 @@
 #include "periph/timer.h"
 #include "periph_conf.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 /**
  * @brief   All timers have three channels
  */
-#define CHANNELS                (3)
+#define CHANNELS (3)
 
 /**
  * @brief   We have 5 possible prescaler values
  */
-#define PRESCALE_NUMOF          (5U)
+#define PRESCALE_NUMOF (5U)
 
 /**
  * @brief   Possible prescaler values, encoded as 2 ^ val
  */
-static const uint8_t prescalers[] = { 0, 3, 6, 8, 10 };
+static const uint8_t prescalers[] = {0, 3, 6, 8, 10};
 
 /**
  * @brief   Timer state context
  */
-typedef struct {
-    mega_timer_t *dev;          /**< timer device */
-    volatile uint8_t *mask;     /**< address of interrupt mask register */
-    volatile uint8_t *flag;     /**< address of interrupt flag register */
-    timer_cb_t cb;              /**< interrupt callback */
-    void *arg;                  /**< interrupt callback argument */
-    uint8_t mode;               /**< remember the configured mode */
-    uint8_t isrs;               /**< remember the interrupt state */
+typedef struct
+{
+    mega_timer_t *dev;      /**< timer device */
+    volatile uint8_t *mask; /**< address of interrupt mask register */
+    volatile uint8_t *flag; /**< address of interrupt flag register */
+    timer_cb_t cb;          /**< interrupt callback */
+    void *arg;              /**< interrupt callback argument */
+    uint8_t mode;           /**< remember the configured mode */
+    uint8_t isrs;           /**< remember the interrupt state */
 } ctx_t;
 
 /**
@@ -65,16 +66,16 @@ typedef struct {
  */
 static ctx_t ctx[] = {
 #ifdef TIMER_0
-    { TIMER_0, TIMER_0_MASK, TIMER_0_FLAG, NULL, NULL, 0, 0 },
+    {TIMER_0, TIMER_0_MASK, TIMER_0_FLAG, NULL, NULL, 0, 0},
 #endif
 #ifdef TIMER_1
-    { TIMER_1, TIMER_1_MASK, TIMER_1_FLAG, NULL, NULL, 0, 0 },
+    {TIMER_1, TIMER_1_MASK, TIMER_1_FLAG, NULL, NULL, 0, 0},
 #endif
 #ifdef TIMER_2
-    { TIMER_2, TIMER_2_MASK, TIMER_2_FLAG, NULL, NULL, 0, 0 },
+    {TIMER_2, TIMER_2_MASK, TIMER_2_FLAG, NULL, NULL, 0, 0},
 #endif
 #ifdef TIMER_3
-    { TIMER_3, TIMER_3_MASK, TIMER_3_FLAG, NULL, NULL, 0, 0 },
+    {TIMER_3, TIMER_3_MASK, TIMER_3_FLAG, NULL, NULL, 0, 0},
 #endif
 };
 
@@ -87,17 +88,21 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     uint8_t pre = 0;
 
     /* make sure given device is valid */
-    if (tim >= TIMER_NUMOF) {
+    if (tim >= TIMER_NUMOF)
+    {
         return -1;
     }
 
     /* figure out if freq is applicable */
-    for (; pre < PRESCALE_NUMOF; pre++) {
-        if ((CLOCK_CORECLOCK >> prescalers[pre]) == freq) {
+    for (; pre < PRESCALE_NUMOF; pre++)
+    {
+        if ((CLOCK_CORECLOCK >> prescalers[pre]) == freq)
+        {
             break;
         }
     }
-    if (pre == PRESCALE_NUMOF) {
+    if (pre == PRESCALE_NUMOF)
+    {
         DEBUG("timer.c: prescaling failed!\n");
         return -1;
     }
@@ -109,8 +114,8 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     ctx[tim].dev->CNT = 0;
 
     /* save interrupt context and timer mode */
-    ctx[tim].cb   = cb;
-    ctx[tim].arg  = arg;
+    ctx[tim].cb = cb;
+    ctx[tim].arg = arg;
     ctx[tim].mode = (pre + 1);
 
     /* enable timer with calculated prescaler */
@@ -122,20 +127,22 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 
 int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 {
-    if (channel >= CHANNELS) {
+    if (channel >= CHANNELS)
+    {
         return -1;
     }
 
     ctx[tim].dev->OCR[channel] = (uint16_t)value;
     *ctx[tim].flag &= ~(1 << (channel + OCF1A));
-    *ctx[tim].mask |=  (1 << (channel + OCIE1A));
+    *ctx[tim].mask |= (1 << (channel + OCIE1A));
 
     return 1;
 }
 
 int timer_clear(tim_t tim, int channel)
 {
-    if (channel >= CHANNELS) {
+    if (channel >= CHANNELS)
+    {
         return -1;
     }
 
