@@ -29,6 +29,10 @@
 #include "vendor/platform.h"
 #include "vendor/plic_driver.h"
 
+#ifdef MODULE_GPIO_EXP
+#include "gpio_exp.h"
+#endif
+
 /* Num of GPIOs supported */
 #define GPIO_NUMOF (32)
 
@@ -63,6 +67,19 @@ void gpio_isr(int num)
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     /* Check for valid pin */
     if (pin >= GPIO_NUMOF) {
         return -1;
@@ -102,6 +119,20 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
+                                           mode, flank, cb, arg);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     /* Configure pin */
     if (gpio_init(pin, mode) != 0) {
         return -1;
@@ -131,6 +162,20 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     /* Check for valid pin */
     if (pin >= GPIO_NUMOF) {
         return;
@@ -158,6 +203,20 @@ void gpio_irq_enable(gpio_t pin)
 
 void gpio_irq_disable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     /* Check for valid pin */
     if (pin >= GPIO_NUMOF) {
         return;
@@ -185,26 +244,67 @@ void gpio_irq_disable(gpio_t pin)
 
 int gpio_read(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
+    }
+#endif /* MODULE_GPIO_EXP */
+
     return (GPIO_REG(GPIO_INPUT_VAL) & (1 << pin)) ? 1 : 0;
 }
 
 void gpio_set(gpio_t pin)
 {
-    GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << pin);
+    gpio_write(pin, 1);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << pin);
+    gpio_write(pin, 0);
 }
 
 void gpio_toggle(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Read then write if pin is on GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        if (gpio_read(pin)) {
+            gpio_write(pin, 0);
+        }
+        else {
+            gpio_write(pin, 1);
+        }
+
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << pin);
 }
 
 void gpio_write(gpio_t pin, int value)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     if (value) {
         GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << pin);
     }
