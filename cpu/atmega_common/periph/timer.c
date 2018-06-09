@@ -45,13 +45,12 @@
 /**
  * @brief   Possible prescaler values, encoded as 2 ^ val
  */
-static const uint8_t prescalers[] = {0, 3, 6, 8, 10};
+static const uint8_t prescalers[] = { 0, 3, 6, 8, 10 };
 
 /**
  * @brief   Timer state context
  */
-typedef struct
-{
+typedef struct {
     mega_timer_t *dev;      /**< timer device */
     volatile uint8_t *mask; /**< address of interrupt mask register */
     volatile uint8_t *flag; /**< address of interrupt flag register */
@@ -66,16 +65,16 @@ typedef struct
  */
 static ctx_t ctx[] = {
 #ifdef TIMER_0
-    {TIMER_0, TIMER_0_MASK, TIMER_0_FLAG, NULL, NULL, 0, 0},
+    { TIMER_0, TIMER_0_MASK, TIMER_0_FLAG, NULL, NULL, 0, 0 },
 #endif
 #ifdef TIMER_1
-    {TIMER_1, TIMER_1_MASK, TIMER_1_FLAG, NULL, NULL, 0, 0},
+    { TIMER_1, TIMER_1_MASK, TIMER_1_FLAG, NULL, NULL, 0, 0 },
 #endif
 #ifdef TIMER_2
-    {TIMER_2, TIMER_2_MASK, TIMER_2_FLAG, NULL, NULL, 0, 0},
+    { TIMER_2, TIMER_2_MASK, TIMER_2_FLAG, NULL, NULL, 0, 0 },
 #endif
 #ifdef TIMER_3
-    {TIMER_3, TIMER_3_MASK, TIMER_3_FLAG, NULL, NULL, 0, 0},
+    { TIMER_3, TIMER_3_MASK, TIMER_3_FLAG, NULL, NULL, 0, 0 },
 #endif
 };
 
@@ -88,21 +87,17 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     uint8_t pre = 0;
 
     /* make sure given device is valid */
-    if (tim >= TIMER_NUMOF)
-    {
+    if (tim >= TIMER_NUMOF) {
         return -1;
     }
 
     /* figure out if freq is applicable */
-    for (; pre < PRESCALE_NUMOF; pre++)
-    {
-        if ((CLOCK_CORECLOCK >> prescalers[pre]) == freq)
-        {
+    for (; pre < PRESCALE_NUMOF; pre++) {
+        if ((CLOCK_CORECLOCK >> prescalers[pre]) == freq) {
             break;
         }
     }
-    if (pre == PRESCALE_NUMOF)
-    {
+    if (pre == PRESCALE_NUMOF) {
         DEBUG("timer.c: prescaling failed!\n");
         return -1;
     }
@@ -127,8 +122,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 
 int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 {
-    if (channel >= CHANNELS)
-    {
+    if (channel >= CHANNELS) {
         return -1;
     }
 
@@ -141,8 +135,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 
 int timer_clear(tim_t tim, int channel)
 {
-    if (channel >= CHANNELS)
-    {
+    if (channel >= CHANNELS) {
         return -1;
     }
 
@@ -194,8 +187,8 @@ ISR(TIMER_0_ISRC, ISR_BLOCK)
 {
     _isr(0, 2);
 }
-#endif /* TIMER_0_ISRC */
-#endif /* TIMER_0 */
+#endif  /* TIMER_0_ISRC */
+#endif  /* TIMER_0 */
 
 #ifdef TIMER_1
 ISR(TIMER_1_ISRA, ISR_BLOCK)
@@ -213,8 +206,8 @@ ISR(TIMER_1_ISRC, ISR_BLOCK)
 {
     _isr(1, 2);
 }
-#endif /* TIMER_1_ISRC */
-#endif /* TIMER_1 */
+#endif  /* TIMER_1_ISRC */
+#endif  /* TIMER_1 */
 
 #ifdef TIMER_2
 ISR(TIMER_2_ISRA, ISR_BLOCK)
