@@ -1,31 +1,37 @@
 /*
- * Copyright 2016-2017 NXP
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* The Clear BSD License
+* Copyright 2016-2017 NXP
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
+* 
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+* 
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+* 
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+* 
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #include "fsl_xcvr.h"
 
@@ -57,14 +63,14 @@ const xcvr_mode_config_t gfsk_bt_0p7_h_0p5_mode_config =
     .xcvr_ctrl.init = XCVR_CTRL_XCVR_CTRL_PROTOCOL(8) |
                       XCVR_CTRL_XCVR_CTRL_TGT_PWR_SRC(7) |
                       XCVR_CTRL_XCVR_CTRL_DEMOD_SEL(1),
-
+                     
     /* XCVR_PHY configs */
     .phy_pre_ref0_init = 0x79CDEB39,
     .phy_pre_ref1_init = 0xCE77DEF7,
     .phy_pre_ref2_init = 0x0000CEB7,
 
     .phy_cfg1_init = XCVR_PHY_CFG1_AA_PLAYBACK(1) |
-                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) |
+                     XCVR_PHY_CFG1_AA_OUTPUT_SEL(1) | 
                      XCVR_PHY_CFG1_FSK_BIT_INVERT(0) |
                      XCVR_PHY_CFG1_BSM_EN_BLE(0) |
                      XCVR_PHY_CFG1_DEMOD_CLK_MODE(0) |
@@ -79,13 +85,17 @@ const xcvr_mode_config_t gfsk_bt_0p7_h_0p5_mode_config =
 
     /* XCVR_RX_DIG configs */
     .rx_dig_ctrl_init_26mhz = XCVR_RX_DIG_RX_DIG_CTRL_RX_FSK_ZB_SEL(0) | /* Depends on protocol */
-                              XCVR_RX_DIG_RX_DIG_CTRL_RX_DC_RESID_EN(1) | /* Depends on protocol */
+                              XCVR_RX_DIG_RX_DIG_CTRL_RX_DC_RESID_EN(1), /* Depends on protocol */
                               XCVR_RX_DIG_RX_DIG_CTRL_RX_SRC_RATE(0),
 
     .rx_dig_ctrl_init_32mhz = XCVR_RX_DIG_RX_DIG_CTRL_RX_FSK_ZB_SEL(0) | /* Depends on protocol */
                               XCVR_RX_DIG_RX_DIG_CTRL_RX_DC_RESID_EN(1), /* Depends on protocol */
 
+#if RADIO_IS_GEN_2P0 
     .agc_ctrl_0_init = XCVR_RX_DIG_AGC_CTRL_0_AGC_DOWN_RSSI_THRESH(0xFF),
+#else
+    .agc_ctrl_0_init = XCVR_RX_DIG_AGC_CTRL_0_AGC_DOWN_RSSI_THRESH(0x05),
+#endif
 
     /* XCVR_TSM configs */
 #if (DATA_PADDING_EN)
@@ -131,26 +141,44 @@ const xcvr_mode_datarate_config_t xcvr_GFSK_BT_0p7_h_0p5_1mbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(3) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(3), /* BBA_BW_SEL and BBA2_BW_SEL */
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(3) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(3), /* BBA_BW_SEL and BBA2_BW_SEL */ 
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(3), /*TZA_BW_SEL */
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(3), /*TZA_BW_SEL */ 
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0xA) ,
 
     /* AGC configs */
+                     
+#if RADIO_IS_GEN_2P1
+    .agc_ctrl_0_init_26mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(2),
+    .agc_ctrl_0_init_32mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(2),               
+#endif
+
     .agc_ctrl_2_init_26mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(11) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
+#if RADIO_IS_GEN_2P0
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
                              XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(16),
+#endif
     .agc_ctrl_2_init_32mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(12) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
+#if RADIO_IS_GEN_2P0
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
                              XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(16),
+#endif
 
     /* All constant values are represented as 16 bits, register writes will remove unused bits */
     .rx_chf_coeffs_26mhz.rx_chf_coef_0 = 0x0001,
@@ -207,26 +235,44 @@ const xcvr_mode_datarate_config_t xcvr_GFSK_BT_0p7_h_0p5_500kbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */ 
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */ 
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0x8) ,
 
     /* AGC configs */
+                     
+#if RADIO_IS_GEN_2P1
+    .agc_ctrl_0_init_26mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(2),
+    .agc_ctrl_0_init_32mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(2),               
+#endif
+
     .agc_ctrl_2_init_26mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(15) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
+#if RADIO_IS_GEN_2P0
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
                              XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(24),
+#endif
     .agc_ctrl_2_init_32mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(18) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
+#if RADIO_IS_GEN_2P0
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
                              XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(24),
+#endif
 
     /* All constant values are represented as 16 bits, register writes will remove unused bits */
     .rx_chf_coeffs_26mhz.rx_chf_coef_0 = 0x0002,
@@ -283,26 +329,45 @@ const xcvr_mode_datarate_config_t xcvr_GFSK_BT_0p7_h_0p5_250kbps_config =
     .ana_sy_ctrl2.mask = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM_MASK,
     .ana_sy_ctrl2.init = XCVR_ANALOG_SY_CTRL_2_SY_VCO_KVM(0), /* VCO KVM */
     .ana_rx_bba.mask = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL_MASK | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL_MASK,
-    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */
+    .ana_rx_bba.init = XCVR_ANALOG_RX_BBA_RX_BBA_BW_SEL(5) | XCVR_ANALOG_RX_BBA_RX_BBA2_BW_SEL(5), /* BBA_BW_SEL and BBA2_BW_SEL */ 
     .ana_rx_tza.mask = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL_MASK,
-    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */
+    .ana_rx_tza.init = XCVR_ANALOG_RX_TZA_RX_TZA_BW_SEL(5), /* TZA_BW_SEL */ 
 
     .phy_cfg2_init = XCVR_PHY_CFG2_PHY_FIFO_PRECHG(8) |
                      XCVR_PHY_CFG2_X2_DEMOD_GAIN(0x6) ,
 
     /* AGC configs */
+#if RADIO_IS_GEN_2P1
+    .agc_ctrl_0_init_26mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(0),
+    .agc_ctrl_0_init_32mhz = XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_EN(1) |
+                             XCVR_RX_DIG_AGC_CTRL_0_SLOW_AGC_SRC(0),               
+#endif
+
     .agc_ctrl_2_init_26mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(18) |
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
-                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
-                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
-                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
-    .agc_ctrl_2_init_32mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(22) |
-                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |
+#if RADIO_IS_GEN_2P0
                              XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(2) |
-                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
                              XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
                              XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(48),
+#endif
+    .agc_ctrl_2_init_32mhz = XCVR_RX_DIG_AGC_CTRL_2_BBA_GAIN_SETTLE_TIME(22) |
+                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_LO(5) |        
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_LO(3) |
+#if RADIO_IS_GEN_2P0
+                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(2) |
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(7) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(5),
+#else
+                             XCVR_RX_DIG_AGC_CTRL_2_BBA_PDET_SEL_HI(6) |
+                             XCVR_RX_DIG_AGC_CTRL_2_TZA_PDET_SEL_HI(5) |
+                             XCVR_RX_DIG_AGC_CTRL_2_AGC_FAST_EXPIRE(48),
+#endif
 
     /* All constant values are represented as 16 bits, register writes will remove unused bits */
     .rx_chf_coeffs_26mhz.rx_chf_coef_0 = 0x0000,
@@ -317,7 +382,7 @@ const xcvr_mode_datarate_config_t xcvr_GFSK_BT_0p7_h_0p5_250kbps_config =
     .rx_chf_coeffs_26mhz.rx_chf_coef_9 = 0x0036,
     .rx_chf_coeffs_26mhz.rx_chf_coef_10 = 0x006B,
     .rx_chf_coeffs_26mhz.rx_chf_coef_11 = 0x008D,
-
+    
     /* 32MHz Channel Filter */
     .rx_chf_coeffs_32mhz.rx_chf_coef_0 = 0xFFFF,
     .rx_chf_coeffs_32mhz.rx_chf_coef_1 = 0x0000,
