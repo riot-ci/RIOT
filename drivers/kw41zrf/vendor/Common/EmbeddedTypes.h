@@ -1,6 +1,8 @@
 /*!
+* The Clear BSD License
 * Copyright (c) 2015, Freescale Semiconductor, Inc.
 * Copyright 2016-2017 NXP
+* All rights reserved.
 *
 * \file
 *
@@ -9,30 +11,34 @@
 * for each new target/platform.
 * The header file also provides definitions for TRUE, FALSE and NULL.
 *
-* Redistribution and use in source and binary forms, with or without modification,
-* are permitted provided that the following conditions are met:
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
 *
-* o Redistributions of source code must retain the above copyright notice, this list
-*   of conditions and the following disclaimer.
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
 *
-* o Redistributions in binary form must reproduce the above copyright notice, this
-*   list of conditions and the following disclaimer in the documentation and/or
-*   other materials provided with the distribution.
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
 *
-* o Neither the name of Freescale Semiconductor, Inc. nor the names of its
-*   contributors may be used to endorse or promote products derived from this
-*   software without specific prior written permission.
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #ifndef _EMBEDDEDTYPES_H_
@@ -109,6 +115,40 @@ typedef unsigned char uchar_t;
 /* Type definitions for link configuration of instantiable layers  */
 #define gInvalidInstanceId_c (instanceId_t)(-1)
 typedef uint32_t instanceId_t;
+
+/* Bit shift definitions */
+#define BIT0              0x01
+#define BIT1              0x02
+#define BIT2              0x04
+#define BIT3              0x08
+#define BIT4              0x10
+#define BIT5              0x20
+#define BIT6              0x40
+#define BIT7              0x80
+#define BIT8             0x100
+#define BIT9             0x200
+#define BIT10            0x400
+#define BIT11            0x800
+#define BIT12           0x1000
+#define BIT13           0x2000
+#define BIT14           0x4000
+#define BIT15           0x8000
+#define BIT16          0x10000
+#define BIT17          0x20000
+#define BIT18          0x40000
+#define BIT19          0x80000
+#define BIT20         0x100000
+#define BIT21         0x200000
+#define BIT22         0x400000
+#define BIT23         0x800000
+#define BIT24        0x1000000
+#define BIT25        0x2000000
+#define BIT26        0x4000000
+#define BIT27        0x8000000
+#define BIT28       0x10000000
+#define BIT29       0x20000000
+#define BIT30       0x40000000
+#define BIT31       0x80000000
 
 /* Shift definitions */
 #define SHIFT0      (0)

@@ -1,32 +1,38 @@
 /*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* The Clear BSD License
+* Copyright (c) 2015, Freescale Semiconductor, Inc.
+* Copyright 2016-2017 NXP
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
+* 
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+* 
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+* 
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+* 
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 #ifndef __IFR_RADIO_H__
 /* clang-format off */
 #define __IFR_RADIO_H__
@@ -58,10 +64,10 @@
 #define IS_VALID_REG_ADDR(x)    (((x) & 0xFFFF0000U) == 0x41000000U) /* Valid addresses are 0x410xxxxx */
 #endif /* (defined(CPU_K32W042S1M2CAx_M0P) || defined(CPU_K32W042S1M2VPJ_M0P)) */
 /* KW41 and KW35/36 valid registers support */
-#if (defined(CPU_MODEL_MKW41Z256VHT4) || defined(CPU_MODEL_MKW41Z512VHT4) || \
-     defined(CPU_MODEL_MKW31Z256VHT4) || defined(CPU_MODEL_MKW31Z512VHT4) || \
-     defined(CPU_MODEL_MKW21Z256VHT4) || defined(CPU_MODEL_MKW21Z512VHT4) || \
-     defined(CPU_MODEL_MKW35A512VFP4) || defined(CPU_MODEL_MKW36A512VFP4) )
+#if (defined(CPU_MKW41Z256VHT4) || defined(CPU_MKW41Z512VHT4) || \
+     defined(CPU_MKW31Z256VHT4) || defined(CPU_MKW31Z512VHT4) || \
+     defined(CPU_MKW21Z256VHT4) || defined(CPU_MKW21Z512VHT4) || \
+     defined(CPU_MKW35A512VFP4) || defined(CPU_MKW36A512VFP4) )
 
 #define IS_VALID_REG_ADDR(x)    (((x) & 0xFFFF0000U) == 0x40050000U) /* Valid addresses are 0x4005xxxx */
 #endif
@@ -145,7 +151,7 @@ typedef struct
  *
  * @param sw_trim_tbl pointer to the table used to store software trim values.
  * @param num_entries the number of entries that can be stored in the SW trim table.
- */
+ */ 
 void handle_ifr(IFR_SW_TRIM_TBL_ENTRY_T * sw_trim_tbl, uint16_t num_entries);
 
 /*!
@@ -154,7 +160,7 @@ void handle_ifr(IFR_SW_TRIM_TBL_ENTRY_T * sw_trim_tbl, uint16_t num_entries);
  * This function handles reading die ID value for debug and testing usage.
  *
  * @return the value of the die ID field.
- */
+ */ 
 uint32_t handle_ifr_die_id(void);
 
 /*!
@@ -163,7 +169,7 @@ uint32_t handle_ifr_die_id(void);
  * This function handles reading KW chip version for debug and testing usage.
  *
  * @return the value of the KW version field.
- */
+ */ 
 uint32_t handle_ifr_die_kw_type(void);
 
 /*!
@@ -173,7 +179,7 @@ uint32_t handle_ifr_die_kw_type(void);
  *
  * @param dump_tbl pointer to the table used to store IFR entry values.
  * @param num_entries the number of entries that can be stored in the dump table.
- */
+ */ 
 void dump_ifr(uint32_t * dump_tbl, uint8_t num_entries);
 
 #endif /*__IFR_RADIO_H__ */

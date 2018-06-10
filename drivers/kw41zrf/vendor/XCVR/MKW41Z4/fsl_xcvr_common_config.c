@@ -1,32 +1,38 @@
 /*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* The Clear BSD License
+* Copyright (c) 2015, Freescale Semiconductor, Inc.
+* Copyright 2016-2017 NXP
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
+* 
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+* 
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+* 
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+* 
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #include "fsl_xcvr.h"
 
@@ -121,7 +127,7 @@ const xcvr_common_config_t xcvr_common_config =
 /*-------------------------------------------------------------------------------------------------*/
 
     .pll_mod_ctrl = XCVR_PLL_DIG_MOD_CTRL_HPM_MOD_DISABLE(hpm_mod_disable) |
-                    XCVR_PLL_DIG_MOD_CTRL_HPM_MOD_MANUAL(hpm_mod_manual) |
+                    XCVR_PLL_DIG_MOD_CTRL_HPM_MOD_MANUAL(hpm_mod_manual) | 
                     XCVR_PLL_DIG_MOD_CTRL_HPM_SDM_OUT_DISABLE(hpm_sdm_out_disable) |
                     XCVR_PLL_DIG_MOD_CTRL_HPM_SDM_OUT_MANUAL(hpm_sdm_out_manual) |
                     XCVR_PLL_DIG_MOD_CTRL_MOD_DISABLE(mod_disable) |
@@ -228,7 +234,7 @@ const xcvr_common_config_t xcvr_common_config =
                        XCVR_RX_DIG_AGC_CTRL_3_AGC_PDET_LO_DLY(2) |
                        XCVR_RX_DIG_AGC_CTRL_3_AGC_RSSI_DELT_H2S(20) |
                        XCVR_RX_DIG_AGC_CTRL_3_AGC_H2S_STEP_SZ(6) |
-                       XCVR_RX_DIG_AGC_CTRL_3_AGC_UP_STEP_SZ(2),
+                       XCVR_RX_DIG_AGC_CTRL_3_AGC_UP_STEP_SZ(2),    
 
     /* DCOC configs */
     .dcoc_ctrl_0_init_26mhz = XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CAL_DURATION(16) | /* Only the duration changes between 26MHz and 32MHz ref osc settings */
@@ -238,7 +244,7 @@ const xcvr_common_config_t xcvr_common_config =
                               XCVR_RX_DIG_DCOC_CTRL_0_TRACK_FROM_ZERO(0) |
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORRECT_EN(1) |
                               XCVR_RX_DIG_DCOC_CTRL_0_TZA_CORR_POL(0) |
-                              XCVR_RX_DIG_DCOC_CTRL_0_BBA_CORR_POL(0) |
+                              XCVR_RX_DIG_DCOC_CTRL_0_BBA_CORR_POL(0) | 
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORRECT_SRC(1),
     .dcoc_ctrl_0_init_32mhz = XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CAL_DURATION(20) | /* Only the duration changes between 26MHz and 32MHz ref osc settings */
 #if (RADIO_IS_GEN_2P1)
@@ -247,12 +253,12 @@ const xcvr_common_config_t xcvr_common_config =
                               XCVR_RX_DIG_DCOC_CTRL_0_TRACK_FROM_ZERO(0) |
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORRECT_EN(1) |
                               XCVR_RX_DIG_DCOC_CTRL_0_TZA_CORR_POL(0) |
-                              XCVR_RX_DIG_DCOC_CTRL_0_BBA_CORR_POL(0) |
+                              XCVR_RX_DIG_DCOC_CTRL_0_BBA_CORR_POL(0) |  
                               XCVR_RX_DIG_DCOC_CTRL_0_DCOC_CORRECT_SRC(1),
-
+    
     .dcoc_ctrl_1_init = XCVR_RX_DIG_DCOC_CTRL_1_DCOC_TRK_MIN_AGC_IDX(26),
 
-    .dc_resid_ctrl_init = XCVR_RX_DIG_DC_RESID_CTRL_DC_RESID_ITER_FREEZE(4) |
+    .dc_resid_ctrl_init = XCVR_RX_DIG_DC_RESID_CTRL_DC_RESID_ITER_FREEZE(5) |
                           XCVR_RX_DIG_DC_RESID_CTRL_DC_RESID_ALPHA(1) |
                           XCVR_RX_DIG_DC_RESID_CTRL_DC_RESID_EXT_DC_EN(1) |
                           XCVR_RX_DIG_DC_RESID_CTRL_DC_RESID_MIN_AGC_IDX(26),
@@ -350,13 +356,13 @@ const xcvr_common_config_t xcvr_common_config =
     .dcoc_cal_pass_th_init = XCVR_RX_DIG_DCOC_CAL_PASS_TH_DCOC_CAL_BETA_P_TH(16) |
                              XCVR_RX_DIG_DCOC_CAL_PASS_TH_DCOC_CAL_ALPHA_P_TH(2),
 #endif /* (RADIO_IS_GEN_2P1) */
-    /* AGC Configs */
+    /* AGC Configs */    
     .agc_gain_tbl_03_00_init = XCVR_RX_DIG_AGC_GAIN_TBL_03_00_LNA_GAIN_00(0) |
-                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_00(0) |
+                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_00(0) | 
                                XCVR_RX_DIG_AGC_GAIN_TBL_03_00_LNA_GAIN_01(1) |
-                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_01(1) |
+                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_01(1) | 
                                XCVR_RX_DIG_AGC_GAIN_TBL_03_00_LNA_GAIN_02(2) |
-                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_02(1) |
+                               XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_02(1) | 
                                XCVR_RX_DIG_AGC_GAIN_TBL_03_00_LNA_GAIN_03(2) |
                                XCVR_RX_DIG_AGC_GAIN_TBL_03_00_BBA_GAIN_03(2),
 
@@ -411,7 +417,7 @@ const xcvr_common_config_t xcvr_common_config =
                                XCVR_RX_DIG_AGC_GAIN_TBL_26_24_BBA_GAIN_25(9) |
                                XCVR_RX_DIG_AGC_GAIN_TBL_26_24_LNA_GAIN_26(9) |
                                XCVR_RX_DIG_AGC_GAIN_TBL_26_24_BBA_GAIN_26(10),
-
+    
     .rssi_ctrl_0_init = XCVR_RX_DIG_RSSI_CTRL_0_RSSI_USE_VALS(1) |
                         XCVR_RX_DIG_RSSI_CTRL_0_RSSI_HOLD_SRC(0) |
                         XCVR_RX_DIG_RSSI_CTRL_0_RSSI_HOLD_EN(1) |
@@ -476,7 +482,7 @@ const xcvr_common_config_t xcvr_common_config =
                           XCVR_TSM_PA_RAMP_TBL1_PA_RAMP6(PA_RAMP_6) | XCVR_TSM_PA_RAMP_TBL1_PA_RAMP7(PA_RAMP_7),
 
     .recycle_count_init_26mhz = B3(0) | B2(0x1C + ADD_FOR_26MHZ) | B1(0x06) | B0(0x66 + ADD_FOR_26MHZ),
-    .recycle_count_init_32mhz = B3(0) | B2(0x1C) | B1(0x06) | B0(0x66),
+    .recycle_count_init_26mhz = B3(0) | B2(0x1C) | B1(0x06) | B0(0x66),
 
     .tsm_timing_00_init = B3(END_OF_RX_WD) | B2(0x00) | B1(END_OF_TX_WD) | B0(0x00), /* bb_ldo_hf_en */
     .tsm_timing_01_init = B3(END_OF_RX_WD) | B2(0x00) | B1(END_OF_TX_WD) | B0(0x00), /* bb_ldo_adcdac_en */
