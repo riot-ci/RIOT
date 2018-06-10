@@ -1,0 +1,13 @@
+export CPU       = cc13x2
+export CPU_MODEL = cc1352r1
+export XDEBUGGER = XDS110
+
+# set default port depending on operating system
+PORT_LINUX  ?= /dev/ttyACM0
+PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+
+# setup serial terminal
+include $(RIOTMAKE)/tools/serial.inc.mk
+
+# configure the flash tool
+include $(RIOTMAKE)/tools/uniflash.inc.mk
