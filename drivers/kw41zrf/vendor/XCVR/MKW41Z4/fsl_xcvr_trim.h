@@ -1,37 +1,46 @@
 /*
+* The Clear BSD License
 * Copyright 2016-2017 NXP
+* All rights reserved.
 *
-* Redistribution and use in source and binary forms, with or without modification,
-* are permitted provided that the following conditions are met:
-*
-* o Redistributions of source code must retain the above copyright notice, this list
-*   of conditions and the following disclaimer.
-*
-* o Redistributions in binary form must reproduce the above copyright notice, this
-*   list of conditions and the following disclaimer in the documentation and/or
-*   other materials provided with the distribution.
-*
-* o Neither the name of Freescale Semiconductor, Inc. nor the names of its
-*   contributors may be used to endorse or promote products derived from this
-*   software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
+* 
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+* 
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+* 
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+* 
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef _FSL_XCVR_TRIM_H_
 /* Clang-format off. */
 #define _FSL_XCVR_TRIM_H_
 /* Clang-format on. */
 
-#include <stdint.h>
+//#include "fsl_common.h"
+#include "fsl_device_registers.h"
+#include "fsl_xcvr.h"
+
 /*!
 * @addtogroup xcvr
 * @{
@@ -93,8 +102,8 @@ typedef enum /* Enumeration of ADC_GAIN_CAL 2 */
 /* \brief  Defines an entry in an array of structs to describe TZA DCOC STEP and TZA_DCOC_STEP_RECIPROCAL. */
 typedef struct
 {
-    uint16_t dcoc_step;
-    uint16_t dcoc_step_rcp;
+    uint16_t dcoc_step; 
+    uint16_t dcoc_step_rcp; 
 } TZAdcocstep_t;
 
 typedef struct
@@ -114,6 +123,9 @@ void XcvrCalDelay(uint32_t time);
 void rx_dc_est_average(int16_t * i_avg, int16_t * q_avg, uint16_t SampleNumber);
 uint8_t rx_bba_dcoc_dac_trim_DCest(void);
 void DCOC_DAC_INIT_Cal(uint8_t standalone_operation);
+
+
+
 
 /* @} */
 

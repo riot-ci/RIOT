@@ -1,33 +1,39 @@
 /*!
+* The Clear BSD License
 * Copyright (c) 2015, Freescale Semiconductor, Inc.
 * Copyright 2016-2017 NXP
+* All rights reserved.
 *
 * \file
 *
-* Redistribution and use in source and binary forms, with or without modification,
-* are permitted provided that the following conditions are met:
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted (subject to the limitations in the
+* disclaimer below) provided that the following conditions are met:
 *
-* o Redistributions of source code must retain the above copyright notice, this list
-*   of conditions and the following disclaimer.
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
 *
-* o Redistributions in binary form must reproduce the above copyright notice, this
-*   list of conditions and the following disclaimer in the documentation and/or
-*   other materials provided with the distribution.
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
 *
-* o Neither the name of Freescale Semiconductor, Inc. nor the names of its
-*   contributors may be used to endorse or promote products derived from this
-*   software without specific prior written permission.
+* * Neither the name of the copyright holder nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+* GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+* HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+* IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
@@ -42,45 +48,45 @@ extern "C"
 {
 #endif
 
-    
+
 /*! *********************************************************************************
 *************************************************************************************
 * Public type definitions
 *************************************************************************************
 ********************************************************************************** */
-/*! @brief Type for the Task Priority*/    
-  typedef uint16_t osaTaskPriority_t;   
-/*! @brief Type for the timer definition*/    
+/*! @brief Type for the Task Priority*/
+  typedef uint16_t osaTaskPriority_t;
+/*! @brief Type for the timer definition*/
   typedef enum  {
     osaTimer_Once             =     0, /*!< one-shot timer*/
-    osaTimer_Periodic         =     1  /*!< repeating timer*/ 
-  } osaTimer_t; 
-  /*! @brief Type for a task handler, returned by the OSA_TaskCreate function. */  
+    osaTimer_Periodic         =     1  /*!< repeating timer*/
+  } osaTimer_t;
+  /*! @brief Type for a task handler, returned by the OSA_TaskCreate function. */
   typedef void* osaTaskId_t;
-/*! @brief Type for the parameter to be passed to the task at its creation */    
+/*! @brief Type for the parameter to be passed to the task at its creation */
   typedef void* osaTaskParam_t;
-  /*! @brief Type for task pointer. Task prototype declaration */    
-  typedef void (*osaTaskPtr_t) (osaTaskParam_t task_param); 
-/*! @brief Type for the semaphore handler, returned by the OSA_SemaphoreCreate function. */    
-  typedef void* osaSemaphoreId_t; 
-/*! @brief Type for the mutex handler, returned by the OSA_MutexCreate function. */      
-  typedef void* osaMutexId_t; 
-/*! @brief Type for the event handler, returned by the OSA_EventCreate function. */        
-  typedef void* osaEventId_t; 
-/*! @brief Type for an event flags group, bit 32 is reserved. */  
-  typedef uint32_t osaEventFlags_t; 
-/*! @brief Message definition. */    
-  typedef void* osaMsg_t; 
-/*! @brief Type for the message queue handler, returned by the OSA_MsgQCreate function. */          
-  typedef void* osaMsgQId_t; 
-  /*! @brief Type for the Timer handler, returned by the OSA_TimerCreate function. */          
+  /*! @brief Type for task pointer. Task prototype declaration */
+  typedef void (*osaTaskPtr_t) (osaTaskParam_t task_param);
+/*! @brief Type for the semaphore handler, returned by the OSA_SemaphoreCreate function. */
+  typedef void* osaSemaphoreId_t;
+/*! @brief Type for the mutex handler, returned by the OSA_MutexCreate function. */
+  typedef void* osaMutexId_t;
+/*! @brief Type for the event handler, returned by the OSA_EventCreate function. */
+  typedef void* osaEventId_t;
+/*! @brief Type for an event flags group, bit 32 is reserved. */
+  typedef uint32_t osaEventFlags_t;
+/*! @brief Message definition. */
+  typedef void* osaMsg_t;
+/*! @brief Type for the message queue handler, returned by the OSA_MsgQCreate function. */
+  typedef void* osaMsgQId_t;
+  /*! @brief Type for the Timer handler, returned by the OSA_TimerCreate function. */
   typedef void *osaTimerId_t;
-/*! @brief Type for the Timer callback function pointer. */          
-  typedef void (*osaTimerFctPtr_t) (void const *argument); 
-/*! @brief Thread Definition structure contains startup information of a thread.*/ 
+/*! @brief Type for the Timer callback function pointer. */
+  typedef void (*osaTimerFctPtr_t) (void const *argument);
+/*! @brief Thread Definition structure contains startup information of a thread.*/
 typedef struct osaThreadDef_tag  {
-  osaTaskPtr_t           pthread;    /*!< start address of thread function*/ 
-  uint32_t             tpriority;    /*!< initial thread priority*/ 
+  osaTaskPtr_t           pthread;    /*!< start address of thread function*/
+  uint32_t             tpriority;    /*!< initial thread priority*/
   uint32_t             instances;    /*!< maximum number of instances of that thread function*/
   uint32_t             stacksize;    /*!< stack size requirements in bytes; 0 is default stack size*/
   uint32_t              *tstack;
@@ -88,7 +94,7 @@ typedef struct osaThreadDef_tag  {
   uint8_t               *tname;
   bool_t               useFloat;
 } osaThreadDef_t;
-/*! @brief Thread Link Definition structure .*/ 
+/*! @brief Thread Link Definition structure .*/
 typedef struct osaThreadLink_tag{
   uint8_t          link[12];
   osaTaskId_t      osThreadId;
@@ -96,7 +102,7 @@ typedef struct osaThreadLink_tag{
   uint32_t          *osThreadStackHandle;
 }osaThreadLink_t, *osaThreadLinkHandle_t;
 
-/*! @Timer Definition structure contains timer parameters.*/ 
+/*! @Timer Definition structure contains timer parameters.*/
 typedef struct osaTimerDef_tag  {
   osaTimerFctPtr_t       pfCallback;    /* < start address of a timer function */
   void                   *argument;
@@ -137,8 +143,8 @@ typedef enum osaStatus_tag
 #define OSA_PRIORITY_HIGH          (1)
 #define OSA_PRIORITY_REAL_TIME     (0)
 #define OSA_TASK_PRIORITY_MAX (0)
-#define OSA_TASK_PRIORITY_MIN (15)  
-#define SIZE_IN_UINT32_UNITS(size) (((size) + sizeof(uint32_t) - 1) / sizeof(uint32_t)) 
+#define OSA_TASK_PRIORITY_MIN (15)
+#define SIZE_IN_UINT32_UNITS(size) (((size) + sizeof(uint32_t) - 1) / sizeof(uint32_t))
 
 /*! @brief Constant to pass as timeout value in order to wait indefinitely. */
 #define osaWaitForever_c   ((uint32_t)(-1))
@@ -149,14 +155,14 @@ typedef enum osaStatus_tag
 
 /* ==== Thread Management ==== */
 
-/* Create a Thread Definition with function, priority, and stack requirements. 
- * \param         name         name of the thread function. 
+/* Create a Thread Definition with function, priority, and stack requirements.
+ * \param         name         name of the thread function.
  * \param         priority     initial priority of the thread function.
  * \param         instances    number of possible thread instances.
  * \param         stackSz      stack size (in bytes) requirements for the thread function.
- * \param         useFloat             
- */ 
-#if defined(FSL_RTOS_MQX)        
+ * \param         useFloat
+ */
+#if defined(FSL_RTOS_MQX)
 #define OSA_TASK_DEFINE(name, priority, instances, stackSz, useFloat)  \
 osaThreadLink_t osThreadLink_##name[instances] = {0}; \
 osThreadStackDef(name, stackSz, instances) \
@@ -168,8 +174,8 @@ osaThreadDef_t os_thread_def_##name = { (name), \
                                        osThreadLink_##name, \
                                        (uint8_t*) #name,\
                                        (useFloat)}
-#elif defined (FSL_RTOS_UCOSII)         
-  #if gTaskMultipleInstancesManagement_c                                       
+#elif defined (FSL_RTOS_UCOSII)
+  #if gTaskMultipleInstancesManagement_c
 #define OSA_TASK_DEFINE(name, priority, instances, stackSz, useFloat)  \
 osaThreadLink_t osThreadLink_##name[instances] = {0}; \
 osThreadStackDef(name, stackSz, instances) \
@@ -180,7 +186,7 @@ osaThreadDef_t os_thread_def_##name = { (name), \
                                         osThreadStackArray(name), \
                                         osThreadLink_##name, \
                                         (uint8_t*) #name,\
-                                        (useFloat)}                                       
+                                        (useFloat)}
 #else
 #define OSA_TASK_DEFINE(name, priority, instances, stackSz, useFloat)  \
 osThreadStackDef(name, stackSz, instances) \
@@ -191,7 +197,7 @@ osaThreadDef_t os_thread_def_##name = { (name), \
                                         osThreadStackArray(name), \
                                         NULL, \
                                         (uint8_t*) #name,\
-                                        (useFloat)}                                                                               
+                                        (useFloat)}
 #endif
 #else
 #define OSA_TASK_DEFINE(name, priority, instances, stackSz, useFloat)  \
@@ -202,10 +208,10 @@ osaThreadDef_t os_thread_def_##name = { (name), \
                                        NULL, \
                                        NULL, \
                                        (uint8_t*) #name,\
-                                       (useFloat)}                                       
-#endif                                       
-/* Access a Thread defintion. 
- * \param         name          name of the thread definition object. 
+                                       (useFloat)}
+#endif
+/* Access a Thread defintion.
+ * \param         name          name of the thread definition object.
  */
 #define OSA_TASK(name)  \
 &os_thread_def_##name
@@ -222,7 +228,7 @@ extern osaThreadDef_t os_thread_def_##name
 osaTimerDef_t os_timer_def_##name = \
 { (function), NULL }
 
-/* Access a Timer definition. 
+/* Access a Timer definition.
  * \param         name          name of the timer object.
  */
 #define OSA_TIMER(name) \
@@ -485,7 +491,7 @@ osaStatus_t OSA_EventClear(osaEventId_t eventId, osaEventFlags_t flagsToClear);
  * @retval osaStatus_Success The wait condition met and function returns successfully.
  * @retval osaStatus_Timeout Has not met wait condition within timeout.
  * @retval osaStatus_Error   An incorrect parameter was passed.
- 
+
  *
  * @note    Please pay attention to the flags bit width, FreeRTOS uses the most
  *          significant 8 bis as control bits, so do not wait these bits while using
@@ -510,7 +516,7 @@ osaStatus_t OSA_EventDestroy(osaEventId_t eventId);
  * This function  allocates memory for and initializes a message queue. Message queue elements are hardcoded as void*.
  *
  * @param msgNo :number of messages the message queue should accommodate.
- *               This parameter should not exceed osNumberOfMessages defined in OSAbstractionConfig.h. 
+ *               This parameter should not exceed osNumberOfMessages defined in OSAbstractionConfig.h.
  *
 * @return:  Handler to access the queue for put and get operations. If message queue
  *         creation failed, return NULL.
@@ -605,4 +611,4 @@ void OSA_InstallIntHandler(uint32_t IRQNumber, void (*handler)(void));
 }
 #endif
 
-#endif  
+#endif
