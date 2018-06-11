@@ -1,4 +1,4 @@
-From 9f610289d64a325269b8163f2ba760d47109c036 Mon Sep 17 00:00:00 2001
+From 0900faaa14e95b24ad126bb64eebfed60121608b Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Wed, 9 May 2018 14:05:53 +0200
 Subject: [PATCH 5/8] Do not allocate buffers on the stack.
@@ -160,5 +160,5 @@ index 588bf40d..0e50898b 100644
      addfield(L, &b, i);
      luaL_addlstring(&b, sep, lsep);
 -- 
-2.17.0
+2.17.1
 
