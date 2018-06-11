@@ -1,4 +1,4 @@
-From ea2fc79b2e2a3d72b53dff3809f6cdeab29a34f7 Mon Sep 17 00:00:00 2001
+From 542105cafbba381ef40c414a4025ea25d20371a2 Mon Sep 17 00:00:00 2001
 From: Juan Carrano <j.carrano@fu-berlin.de>
 Date: Mon, 14 May 2018 15:19:14 +0200
 Subject: [PATCH 6/8] Cleanup test module.
@@ -493,5 +493,5 @@ index fc4e2388..b40f0d5c 100644
  /*
  ** RCS ident string
 -- 
-2.17.0
+2.17.1
 
