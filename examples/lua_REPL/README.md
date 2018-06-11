@@ -1,20 +1,20 @@
 ### About
 
-This example shows how to write IoT applications using Lua.
+This example shows how to run a Lua Read-Eval-Print loop.
 
-### Caveats
-
-Currently, the only actual function available is "print"
-
-### How to use
-
-Put your lua code into "main.lua" (check the example). The file will
-automatically be included when compiling the application. You can then execute the
-file using the lua_run_script command.
 
 ### How to run
 
-Type `make flash term
+Type `make all flash` to program your board. The lua interpreter communicates
+via UART (like the shell).
 
-Note: you may have to press `RESET` on the board (after the flash) if the board
-reboots faster than the terminal program can start..
+It is not recommended to use `make term` because the default RIOT terminal messes
+up the input and output and the REPL needs multi-line input. Instead, use something
+like `miniterm.py` from pyserial:
+
+```
+miniterm.py --eol LF --echo /dev/ttyACM0 115200
+```
+
+By default only some of the builtin modules are loaded, to preserve RAM. See
+the definition of `BARE_MINIMUM_MODS` in main.c.

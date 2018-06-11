@@ -24,7 +24,6 @@
 extern "C" {
 #endif
 
-
 /**
  * Entry describing a pure lua module whose source is built into the
  * application binary.
