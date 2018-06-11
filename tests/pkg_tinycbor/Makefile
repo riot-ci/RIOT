@@ -7,7 +7,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno chronos \
 
 USEMODULE += embunit
 USEMODULE += fmt
-USEPKG += tinycbor
+USEMODULE += tinycbor
 
 TEST_ON_CI_WHITELIST += all
 include $(RIOTBASE)/Makefile.include
