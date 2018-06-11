@@ -156,7 +156,6 @@ int luaR_getloader(lua_State *L, const char *name)
 
 /* ======================== 'require' function ============================= */
 
-
 static int searcher_preload(lua_State *L)
 {
     const char *name = luaL_checkstring(L, 1);
@@ -199,7 +198,6 @@ static void findloader(lua_State *L, const char *name)
         }
     }
 }
-
 
 static int ll_require(lua_State *L)
 {
