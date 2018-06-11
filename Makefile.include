@@ -257,6 +257,7 @@ include $(RIOTBASE)/Makefile.dep
 
 ifneq (,$(USEPKG))
   $(warning USEPKG contains: $(USEPKG))
+  $(warning USEPKG origin: $(origin RIOT_VERSION))
   $(error Packages dependencies should now be declared using USEMODULE instead of USEPKG)
 endif
 
