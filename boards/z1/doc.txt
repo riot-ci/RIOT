@@ -39,7 +39,8 @@ RIOT comes with a version of `goodfet.bsl`, a flashing tool for MSP430 based
 platforms.
 Just link or copy it somewhere into your `$PATH` and you are good to go.
 e.g.
-```Bash
+```
+Bash
 $> cp /path/to/RIOT/dist/tools/goodfet/goodfet.bsl /usr/local/bin
 ```
  */

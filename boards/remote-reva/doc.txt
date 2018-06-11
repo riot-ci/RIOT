@@ -59,7 +59,8 @@ button` and `reset button`, but the current version handles the sequence with an
 on-board PIC, so automatically unlocks the bootloader upon flashing.
 
 e.g.
-```Bash
+```
+Bash
 $ make BOARD=remote-reva flash
 ```
 

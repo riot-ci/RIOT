@@ -77,7 +77,8 @@ instructions on building OpenOCD and make sure "cmsis-dap" and "hidapi-libusb"
 are enabled.
 
 On Linux you will have to add a **udev** rule for hidraw, like
-```bash
+```
+bash
 echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"' \
     | sudo tee -a /etc/udev/rules.d/99-usb.rules
 sudo service udev restart

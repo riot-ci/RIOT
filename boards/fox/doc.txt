@@ -59,7 +59,8 @@ RIOT.
 When starting the debugger with `make debug BOARD=fox` GDB connects to
 openocd, loads the elf-file and puts the MCU into halt state. Before setting
 breakpoints it is sometimes needed to use the following workflow
-```bash
+```
+bash
 monitor reset run
 monitor reset halt
 b <breakpoint>
@@ -121,14 +122,15 @@ seems necessary to prepend a `monitor reset run` before executing continue.
 In general you can
 use openocd commands prepended by `monitor`.
 In the case the node crashes it can be reseted with the following sequence
-```Bash
+```
+Bash
 (gdb) monitor reset halt
 (gdb) monitor reset run
 ```
 
 ## Troubleshooting
 
-For terminal output on OS X (```make term```) you need to install a driver:
+For terminal output on OS X (`make term`) you need to install a driver:
 http://www.ftdichip.com/Drivers/VCP.htm
 http://www.ftdichip.com/Drivers/VCP.htm
  */
