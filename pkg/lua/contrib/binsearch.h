@@ -45,12 +45,11 @@
 #define BINSEARCH_H
 
 #include <stdint.h>
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define BINSEARCH_NOTFOUND (-1)
 
 /**
  * Produce a compiler error if x is not an lvalue.
@@ -78,7 +77,7 @@ extern "C" {
  * safe
  *
  * @return  Index of the array element containing the string, or
- *              BINSEARCH_NOTFOUND if it is not found.
+ *              (-ENOENT) if it is not found.
  */
 #define BINSEARCH_STR(arr, nmemb, member, str, n) \
     (_ENSURE_LVALUE(arr), \
@@ -115,7 +114,7 @@ extern "C" {
  * @param   n       Compare up to n characters (see strncmp())
  *
  * @return      Index of the array element containing the string, or
- *              BINSEARCH_NOTFOUND if it is not found.
+ *              (-ENOENT) if it is not found.
  */
 int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
                   const char *str, size_t n);
