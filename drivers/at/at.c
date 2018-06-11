@@ -141,14 +141,16 @@ ssize_t at_send_cmd_get_lines(at_dev_t *dev, const char *command,
         }
         else if (res > 0) {
             bytes_left -= res;
-            uint8_t len_ok = strlen(AT_RECV_OK);
-            uint8_t len_error = strlen(AT_RECV_ERROR);
+            size_t len_ok = sizeof(AT_RECV_OK) - 1;
+            size_t len_error = sizeof(AT_RECV_ERROR) - 1;
             if ((res == (len_ok + keep_eol)) &&
+                (len_ok != 0) &&
                 (strncmp(pos, AT_RECV_OK, len_ok) == 0)) {
                 res = len - bytes_left;
                 break;
             }
             else if ((res == (len_error + keep_eol)) &&
+                     (len_error != 0) &&
                      (strncmp(pos, AT_RECV_ERROR, len_error) == 0)) {
                 return -1;
             }
