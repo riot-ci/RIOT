@@ -6,7 +6,7 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-BOARD_WHITELIST := frdm-k64f iotlab-m3 mulle nrf52840dk nucleo-f411re \
+BOARD_WHITELIST := frdm-k64f iotlab-m3 mulle native nrf52840dk nucleo-f411re \
 				   stm32f4discovery
 
 # Comment this out to disable code in RIOT that does safety checking
