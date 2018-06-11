@@ -36,7 +36,7 @@ int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
         else /* (cmp > 0) */
             lo = mid + 1;
     }
-    return BINSEARCH_NOTFOUND;
+    return (-ENOENT);
 }
 
 const void * binsearch_str_p(const void *start, size_t offset, size_t stride,
@@ -44,5 +44,5 @@ const void * binsearch_str_p(const void *start, size_t offset, size_t stride,
 {
     int ix = binsearch_str(start, offset, stride, nmemb, str, n);
 
-    return (ix == BINSEARCH_NOTFOUND)? NULL : (const uint8_t *)start + ix*stride;
+    return (ix == (-ENOENT))? NULL : (const uint8_t *)start + ix*stride;
 }
