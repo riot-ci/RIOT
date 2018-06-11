@@ -14,13 +14,15 @@ BOARD_WHITELIST := frdm-k64f iotlab-m3 mulle nrf52840dk nucleo-f411re \
 # development process:
 DEVELHELP ?= 1
 
-CFLAGS_OPT = -Og
+# Uncomment the following lines to enable debugging features.
+#CFLAGS_OPT = -Og
+#CFLAGS += -DDEBUG_ASSERT_VERBOSE -DLUA_DEBUG
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
 # This is a lot of stack, should be fixed in the future.
-CFLAGS += -DTHREAD_STACKSIZE_MAIN=8000 -DDEBUG_ASSERT_VERBOSE -DLUA_DEBUG
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=8000
 
 USEPKG += lua
 
