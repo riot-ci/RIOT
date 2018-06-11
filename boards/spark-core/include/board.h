@@ -34,7 +34,7 @@
 #define XTIMER_WIDTH        (16)
 
 /**
- * @brief   Macros for controlling the on-board LEDs
+ * @name    Macros for controlling the on-board LEDs
  * @{
  */
 #define LED0_PIN            GPIO_PIN(PORT_A, 9)
@@ -67,8 +67,10 @@
 
 /**
  * @name User button configuration
+ * @{
  */
 #define BUTTON1             GPIO_PIN(PORT_B,2)
+/** @} */
 
 /**
  * @name CC3000 pin configuration

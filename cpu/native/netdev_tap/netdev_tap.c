@@ -141,9 +141,11 @@ static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t value_len
         case NETOPT_ADDRESS:
             assert(value_len >= ETHERNET_ADDR_LEN);
             _set_mac_addr(dev, (const uint8_t*)value);
+            res = ETHERNET_ADDR_LEN;
             break;
         case NETOPT_PROMISCUOUSMODE:
             _set_promiscous(dev, ((const bool *)value)[0]);
+            res = sizeof(netopt_enable_t);
             break;
         default:
             res = netdev_eth_set(dev, opt, value, value_len);
@@ -298,7 +300,8 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 
 void netdev_tap_setup(netdev_tap_t *dev, const netdev_tap_params_t *params) {
     dev->netdev.driver = &netdev_driver_tap;
-    strncpy(dev->tap_name, *(params->tap_name), IFNAMSIZ);
+    strncpy(dev->tap_name, *(params->tap_name), IFNAMSIZ - 1);
+    dev->tap_name[IFNAMSIZ - 1] = '\0';
 }
 
 static void _tap_isr(int fd, void *arg) {

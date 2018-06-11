@@ -248,10 +248,6 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
 
     mutex_lock(&dev->devlock);
 
-#ifdef MODULE_NETSTATS_L2
-    netdev->stats.tx_bytes += count;
-#endif
-
     /* set write pointer */
     cmd_w_addr(dev, ADDR_WRITE_PTR, BUF_TX_START);
     /* write control byte and the actual data into the buffer */
@@ -264,6 +260,10 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     cmd_w_addr(dev, ADDR_TX_END, cmd_r_addr(dev, ADDR_WRITE_PTR) - 1);
     /* trigger the send process */
     cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRTS);
+
+#ifdef MODULE_NETSTATS_L2
+    netdev->stats.tx_bytes += c;
+#endif
 
     mutex_unlock(&dev->devlock);
     return c;
@@ -454,6 +454,14 @@ static int nd_get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
             assert(max_len >= ETHERNET_ADDR_LEN);
             mac_get(dev, (uint8_t *)value);
             return ETHERNET_ADDR_LEN;
+        case NETOPT_LINK_CONNECTED:
+            if (cmd_r_phy(dev, REG_PHY_PHSTAT2) & PHSTAT2_LSTAT) {
+                *((netopt_enable_t *)value) = NETOPT_ENABLE;
+            }
+            else {
+                *((netopt_enable_t *)value) = NETOPT_DISABLE;
+            }
+            return sizeof(netopt_enable_t);
         default:
             return netdev_eth_get(netdev, opt, value, max_len);
     }

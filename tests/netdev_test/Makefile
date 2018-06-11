@@ -4,7 +4,7 @@
 CFLAGS += -DNDEBUG
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := nucleo32-f031
+BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6
 
 DISABLE_MODULE = auto_init
 
@@ -18,6 +18,8 @@ USEMODULE += netdev_test
 USEMODULE += od
 
 CFLAGS += -DGNRC_PKTBUF_SIZE=200
+
+TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
 

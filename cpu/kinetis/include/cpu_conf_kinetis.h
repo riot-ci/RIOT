@@ -124,6 +124,10 @@ extern "C"
 /** Enable PIT clock gate */
 #define PIT_CLKEN()    (bit_set32(&SIM->SCGC6, SIM_SCGC6_PIT_SHIFT))
 #endif
+#ifdef SIM_SCGC6_RTC_SHIFT
+/** Enable RTC clock gate */
+#define RTC_CLKEN()    (bit_set32(&SIM->SCGC6, SIM_SCGC6_RTC_SHIFT))
+#endif
 /** @} */
 
 /**
@@ -151,6 +155,7 @@ extern "C"
 #define LPTMR0_IRQn LPTimer_IRQn
 #define PIT_TCTRL_CHN_MASK   (0x4u)
 #define PIT_TCTRL_CHN_SHIFT  (2)
+#define PORT_IRQS   { PORTA_IRQn, PORTB_IRQn, PORTC_IRQn, PORTD_IRQn, PORTE_IRQn }
 #endif /* MK20D7_H_ */
 /** @} */
 

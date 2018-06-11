@@ -46,7 +46,7 @@ extern "C" {
 #define EIC_IRQ (1)
 
 /**
- * @brief   LED pin configuration
+ * @name    LED pin configuration
  * @{
  */
 #define LED1_PIN            GPIO_PIN(PORT_B, 1)

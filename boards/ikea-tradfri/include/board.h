@@ -20,7 +20,6 @@
 #define BOARD_H
 
 #include "cpu.h"
-
 #include "periph_conf.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"

@@ -47,7 +47,7 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   User button
+ * @name    User button
  * @{
  */
 #define BTN0_PIN            GPIO_PIN(PORT_B, 8)
