@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards
+ * @ingroup     boards_stm32f769i-disco
  * @{
  *
  * @file
