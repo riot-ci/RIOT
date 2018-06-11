@@ -138,7 +138,6 @@ LUALIB_API const char * luaR_strerror(int errn);
 LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
                                     lua_CFunction panicf);
 
-
 /**
  * Terminate the lua state.
  *
