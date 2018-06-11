@@ -9,7 +9,7 @@ BOARD_INSUFFICIENT_MEMORY := msb-430 msb-430h nucleo-l031k6 nucleo-f031k6 \
                              nucleo-f042k6 nucleo-l053r8 stm32f0discovery telosb \
                              wsn430-v1_3b wsn430-v1_4 z1
 
-USEPKG += emb6
+USEMODULE += emb6
 
 USEMODULE += emb6_router
 USEMODULE += emb6_sock_udp
