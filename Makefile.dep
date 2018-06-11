@@ -148,6 +148,10 @@ ifneq (,$(filter gnrc_netif,$(USEMODULE)))
   USEMODULE += netif
 endif
 
+ifneq (,$(filter gnrc_netif_async_events,$(USEMODULE)))
+  USEMODULE += event
+endif
+
 ifneq (,$(filter ieee802154 nrfmin,$(USEMODULE)))
   ifneq (,$(filter gnrc_ipv6, $(USEMODULE)))
     USEMODULE += gnrc_sixlowpan
