@@ -1,0 +1,4 @@
+/**
+@ingroup     boards_iotlab-a8-m3
+@brief       Support for iotlab-m3 board.
+ */
