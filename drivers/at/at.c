@@ -267,37 +267,37 @@ out:
     return res;
 }
 
-#ifdef MODULE_AT_OOB
-void at_add_oob(at_dev_t *dev, at_oob_t *oob)
+#ifdef MODULE_AT_URC
+void at_add_urc(at_dev_t *dev, at_urc_t *urc)
 {
-    assert(oob);
-    assert(oob->urc);
-    assert(oob->cb);
+    assert(urc);
+    assert(urc->code);
+    assert(urc->cb);
 
-    clist_rpush(&dev->oob_list, &oob->list_node);
+    clist_rpush(&dev->urc_list, &urc->list_node);
 }
 
-void at_remove_oob(at_dev_t *dev, at_oob_t *oob)
+void at_remove_urc(at_dev_t *dev, at_urc_t *urc)
 {
-    clist_remove(&dev->oob_list, &oob->list_node);
+    clist_remove(&dev->urc_list, &urc->list_node);
 }
 
-static int _check_oob(clist_node_t *node, void *arg)
+static int _check_urc(clist_node_t *node, void *arg)
 {
     const char *buf = arg;
-    at_oob_t *oob = container_of(node, at_oob_t, list_node);
+    at_urc_t *urc = container_of(node, at_urc_t, list_node);
 
-    DEBUG("Trying to match with %s\n", oob->urc);
+    DEBUG("Trying to match with %s\n", urc->code);
 
-    if (strncmp(buf, oob->urc, strlen(oob->urc)) == 0) {
-        oob->cb(oob->arg, buf);
+    if (strncmp(buf, urc->code, strlen(urc->code)) == 0) {
+        urc->cb(urc->arg, buf);
         return 1;
     }
 
     return 0;
 }
 
-void at_process_oob(at_dev_t *dev)
+void at_process_urc(at_dev_t *dev)
 {
     const char eol[] = AT_RECV_EOL_1 AT_RECV_EOL_2;
     assert(sizeof(eol) > 1);
@@ -323,7 +323,7 @@ void at_process_oob(at_dev_t *dev)
                && ((size_t)(p - buf) < read)) {
             p++;
         }
-        clist_foreach(&dev->oob_list, _check_oob, p);
+        clist_foreach(&dev->urc_list, _check_urc, p);
         return;
     }
 }
