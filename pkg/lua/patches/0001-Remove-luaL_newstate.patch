@@ -58,5 +58,5 @@ index 1d65c975..77d1494d 100644
  
  LUALIB_API const char *(luaL_gsub) (lua_State *L, const char *s, const char *p,
 -- 
-2.17.0
+2.17.1
 
