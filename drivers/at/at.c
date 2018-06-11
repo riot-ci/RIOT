@@ -272,6 +272,7 @@ void at_add_urc(at_dev_t *dev, at_urc_t *urc)
 {
     assert(urc);
     assert(urc->code);
+    assert(strlen(urc->code) != 0);
     assert(urc->cb);
 
     clist_rpush(&dev->urc_list, &urc->list_node);

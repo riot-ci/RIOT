@@ -101,7 +101,8 @@ typedef struct {
     const char *code;       /**< URC string which must match */
     void *arg;              /**< optional argument */
 } at_urc_t;
-#endif
+
+#endif /* MODULE_AT_URC */
 
 /**
  * @brief AT device structure
@@ -109,7 +110,9 @@ typedef struct {
 typedef struct {
     isrpipe_t isrpipe;      /**< isrpipe used for getting data from uart */
     uart_t uart;            /**< UART device where the AT device is attached */
+#ifdef MODULE_AT_URC
     clist_node_t urc_list;  /**< list to keep track of all registered urc's */
+#endif
 } at_dev_t;
 
 /**
