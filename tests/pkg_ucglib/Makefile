@@ -2,7 +2,7 @@ include ../Makefile.tests_common
 
 USEMODULE += xtimer
 
-USEPKG += ucglib
+USEMODULE += ucglib
 
 # set default device parameters in case they are undefined
 TEST_OUTPUT ?= 1

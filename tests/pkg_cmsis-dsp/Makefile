@@ -1,7 +1,7 @@
 BOARD ?= samr21-xpro
 include ../Makefile.tests_common
 
-USEPKG += cmsis-dsp
+USEMODULE += cmsis-dsp
 
 BOARD_WHITELIST := \
   airfy-beacon \
