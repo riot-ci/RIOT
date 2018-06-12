@@ -35,11 +35,7 @@ You can download a free 90 days valid windows virtualbox image from:
 I downloaded a Windows 10 virtualbox image
 
 * Create a machine in virtualbox in File-Import Appliance.
-  * optional: disabled network
-* Start and login with password: Passw0rd!
-* optional: set an empty password in Settings-Accounts
-* optional: Create a shared folder with your host machine. I run an offline
-  windows machine so download everything from my host.
+* Start the virtual machine and wait until you are on the windows desktop
 * Install Virtualbox Guest-additions for USB support
   * Doc: https://www.virtualbox.org/manual/ch04.html#additions-windows
 * Shutdown the virtual machine
