@@ -89,7 +89,7 @@ Flashing
 * Connect the chipKIT-Wi-Fire to USB
 * Connect the PICkit3 to JP1 ICSP holes
   * https://docs.creatordev.io/wifire/guides/wifire-programming/
-  * The Arrow `▶` goes into the hole number 1 (a hole with a square around it)
+  * The triangle `▶` goes into the port number 1 (a hole with a square around it)
   * Opposite side of the JP1 ICSP text.
 
 Run pic32prog again
