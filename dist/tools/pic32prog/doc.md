@@ -73,6 +73,7 @@ https://github.com/sergev/pic32prog
 Run it without the board connected
 
 ```
+$ pic32prog
 Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
     Copyright: (C) 2011-2015 Serge Vakulenko
       Adapter: PICkit3 Version 2.0.5
@@ -95,6 +96,7 @@ Flashing
 Run pic32prog again
 
 ```
+$ pic32prog
 Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
     Copyright: (C) 2011-2015 Serge Vakulenko
       Adapter: PICkit3 Version 2.0.5
@@ -127,7 +129,7 @@ Configuration:
 pic32prog firmware.hex
 
 ```
-pic32prog bin/pic32-wifire/default.hex
+$ pic32prog bin/pic32-wifire/default.hex
 Programmer for Microchip PIC32 microcontrollers, Version 2.0.221
     Copyright: (C) 2011-2015 Serge Vakulenko
       Adapter: PICkit3 Version 2.0.5
