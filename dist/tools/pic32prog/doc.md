@@ -1,8 +1,13 @@
 Flashing on Linux using pickit-3
 ================================
 
-Allow flashing a pic32-wifire from linux using https://github.com/sergev/pic32prog
+This document describes how to enable flashing a pic32-wifire from Linux with a
+PICkit3 using [pic32prog](https://github.com/sergev/pic32prog).
 
+It will require flashing a specific firmware on the PICkit3.
+As this can only be done from a Windows computer, that not many Linux users
+have, the following steps explain how to setup a Windows VirtualBox virtual
+machine and flash the PICkit3 from it.
 
 Informations come from this comment
 
