@@ -41,6 +41,7 @@ I downloaded a Windows 10 virtualbox image
 * optional: Create a shared folder with your host machine. I run an offline
   windows machine so download everything from my host.
 * Install Virtualbox Guest-additions for USB support
+  * Doc: https://www.virtualbox.org/manual/ch04.html#additions-windows
 * Shutdown the virtual machine
 * In the virtual machin settings, go to USB:
   * Select "Enable USB Controller" with "USB 1.1"
