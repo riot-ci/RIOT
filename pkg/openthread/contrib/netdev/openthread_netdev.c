@@ -31,10 +31,6 @@
 #include "random.h"
 #include "ot.h"
 
-#ifdef MODULE_OPENTHREAD_NCP_FTD
-#include "openthread/ncp.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -88,10 +84,6 @@ static void *_openthread_event_loop(void *arg) {
     otIp6SetEnabled(sInstance, true);
     /* Start Thread protocol operation */
     otThreadSetEnabled(sInstance, true);
-#endif
-
-#ifdef MODULE_OPENTHREAD_NCP_FTD
-    otNcpInit(sInstance);
 #endif
 
 #if OPENTHREAD_ENABLE_DIAG

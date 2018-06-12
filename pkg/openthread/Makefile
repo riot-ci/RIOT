@@ -11,11 +11,6 @@ ifneq (,$(filter openthread-cli-mtd,$(USEMODULE)))
   $(info Compile OpenThread for MTD device)
   OPENTHREAD_ARGS += --enable-cli-app=mtd --enable-joiner
 endif
-ifneq (,$(filter openthread-ncp-ftd,$(USEMODULE)))
-  $(info Compile OpenThread with NCP)
-  OPENTHREAD_ARGS += --enable-ncp-app=ftd --with-ncp-bus=uart \
-                     --enable-commissioner --enable-border-router
-endif
 OPENTHREAD_ARGS += --enable-application-coap
 CONFIG_FILE      = OPENTHREAD_PROJECT_CORE_CONFIG_FILE='\"platform_config.h\"'
 $(info $$OPENTHREAD_ARGS is [${OPENTHREAD_ARGS}])
@@ -47,10 +42,6 @@ endif
 ifneq (,$(filter openthread-cli-mtd,$(USEMODULE)))
 	cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/openthread-mtd.a
 	cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/openthread-cli-mtd.a
-endif
-ifneq (,$(filter openthread-ncp-ftd,$(USEMODULE)))
-	cp $(PKG_BUILDDIR)/output/lib/libopenthread-ftd.a ${BINDIR}/openthread-ftd.a
-	cp $(PKG_BUILDDIR)/output/lib/libopenthread-ncp-ftd.a ${BINDIR}/openthread-ncp-ftd.a
 endif
 	sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
 

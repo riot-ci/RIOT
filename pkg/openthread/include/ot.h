@@ -59,13 +59,8 @@ extern "C" {
 #define OPENTHREAD_NUMBER_OF_SERIAL_BUFFER                  (1U)
 /** @brief   sizeof in bytes the two first members of she serial structure */
 #define OPENTHREAD_SIZEOF_LENGTH_AND_FREEBUFF               (4U)
-#ifdef MODULE_OPENTHREAD_NCP_FTD
-/** @brief   sizeof the serial buffer */
-#define OPENTHREAD_SERIAL_BUFFER_SIZE                       OPENTHREAD_SIZEOF_LENGTH_AND_FREEBUFF + 200
-#else
 /** @brief   sizeof the serial buffer */
 #define OPENTHREAD_SERIAL_BUFFER_SIZE                       OPENTHREAD_SIZEOF_LENGTH_AND_FREEBUFF + 100
-#endif
 /** @brief   sizeof the spinel payload data */
 #define OPENTHREAD_SERIAL_BUFFER__PAYLOAD_SIZE              OPENTHREAD_SERIAL_BUFFER_SIZE - OPENTHREAD_SIZEOF_LENGTH_AND_FREEBUFF
 /** @brief   error when no more buffer available */
