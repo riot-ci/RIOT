@@ -81,8 +81,20 @@ No device attached.
 
 No target found.
 ```
+You should see the `Adapter: PICkit3 Version 2.0.5` line.
 
+### Troubleshooting
 
+If you do not get the `Adapter: PICkit3 Version 2.0.5` line,
+try running it with `sudo pic32prog`. If it works with `sudo` it is a
+permission issue.
+
+Add yourself to the `plugdev` group and add the following `udev` rule.
+(Find a tutorial if you do not know how to do this).
+
+```
+ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="900a", MODE="664", GROUP="plugdev"
+```
 
 Flashing
 --------
