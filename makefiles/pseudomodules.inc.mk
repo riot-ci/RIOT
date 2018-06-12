@@ -90,9 +90,10 @@ PSEUDOMODULES += adc081c
 PSEUDOMODULES += adc101c
 PSEUDOMODULES += adc121c
 
-# include variants of SX127X drivers as pseudo modules
-PSEUDOMODULES += sx1272
-PSEUDOMODULES += sx1276
+# include variants of SHT1X drivers as pseudo modules
+PSEUDOMODULES += sht10
+PSEUDOMODULES += sht11
+PSEUDOMODULES += sht15
 
 # include variants of Si114x drivers as pseudo modules
 PSEUDOMODULES += si1145
@@ -104,6 +105,10 @@ PSEUDOMODULES += si7006
 PSEUDOMODULES += si7013
 PSEUDOMODULES += si7020
 PSEUDOMODULES += si7021
+
+# include variants of SX127X drivers as pseudo modules
+PSEUDOMODULES += sx1272
+PSEUDOMODULES += sx1276
 
 # include variants of RN2XX3 drivers as pseudo modules
 PSEUDOMODULES += rn2483
