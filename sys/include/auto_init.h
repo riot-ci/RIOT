@@ -14,7 +14,7 @@
  * @brief       Auto initialize modules
  *
  * This feature can be enabled in any application by adding the `auto_init`
- * module to the application `Makefile`:
+ * module to the application's `Makefile`:
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
  * USEMODULE += auto_init
