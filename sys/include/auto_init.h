@@ -22,43 +22,43 @@
  *
  * `auto_init` initializes any included module that provides
  * auto-initialization capabilities.
+ * This concerns first any other included module that does not require a
+ * parameter in its init function, i.e. if the init prototype looks like this:
+ * `void MODULE_init(void)`. Most timer modules or simple drivers can be
+ * initialized by `auto_init`.
+ * The modules will be initialized in the context of the main thread right
+ * before the main function gets called. Be aware that most modules expect to
+ * be initialized only once, so do not call a module's init function when using
+ * `auto_init` unless you know what you're doing.
  *
- * Drivers or cpu peripherals that provides a @ref drivers_saul adaption and
- * @ref drivers_netdev can be initialized automatically using the `auto_init`
- * module.
- *
- * For regular device drivers such as sensors, actuators, network devices
- * (@ref drivers), the default initialization parameters are taken from the
- * `DRIVER_params.h` file provided by the driver implementation.
- *
- * The default initialization parameters can be overriden by the application in
- * several ways (examples with the @ref drivers_bmp180 oversampling parameter
+ * More complex device [drivers](@ref drivers), for example
+ * [SAUL](@ref drivers_saul) drivers or
+ * [network device drivers](@ref drivers_netdev), can also be initialized
+ * automatically using the `auto_init` module.
+ * To do so, each driver implementation must provide default initialization
+ * parameters in the `DRIVER_params.h` file.
+ * These parameters can be overriden from the application code in several ways
+ * (examples with the @ref drivers_bmp180 oversampling parameter
  * `BMP180_PARAM_OVERSAMPLING`):
  *
- *  - by passing them via the `CFLAGS` variable on the build command line`:
+ *  - by passing them via the `CFLAGS` variable on the build command line:
  *
  * ```
  * CFLAGS=-DBMP180_PARAM_OVERSAMPLING=1 USEMODULE=bmp180 make BOARD=arduino-zero -C examples/default
  * ```
  *
- * - by just setting the `CFLAGS` variable in the application `Makefile`:
+ * - by setting the `CFLAGS` variable in the application `Makefile`:
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
- * CFLAGS +=-DBMP180_PARAM_OVERSAMPLING=1
+ * CFLAGS += -DBMP180_PARAM_OVERSAMPLING=1
  * ~~~~~~~~~~~~~~~~~~~~~~~
  *
  * - by copying the `bmp180_params.h` header to the application directory and
- * editing it there with the desired values (not recommended). This file will
- * be included first and, thanks to header guards, the one from the driver
- * implementation will be skipped.
+ * editing it there with the desired values. This file is be included first
+ * and thus the one from the driver implementation is skipped.
  *
  * From low-level CPU peripheral, the default initialization parameters are
- * defined in each board configuration that supports them.
- *
- * The modules will be initialized in the context of the main thread right
- * before the main function gets called. Be aware that most modules expect to
- * be initialized only once, so do not call a module's init function when using
- * `auto_init` unless you know what you're doing.
+ * defined in each board configuration that provides them.
  */
 
 /**
