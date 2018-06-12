@@ -89,7 +89,7 @@ If you do not get the `Adapter: PICkit3 Version 2.0.5` line,
 try running it with `sudo pic32prog`. If it works with `sudo` it is a
 permission issue.
 
-Add yourself to the `plugdev` group and add the following `udev` rule.
+Add yourself to the `plugdev` group, add the following `udev` rule and reboot.
 (Find a tutorial if you do not know how to do this).
 
 ```
