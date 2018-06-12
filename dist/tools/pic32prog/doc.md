@@ -40,8 +40,13 @@ I downloaded a Windows 10 virtualbox image
 * optional: set an empty password in Settings-Accounts
 * optional: Create a shared folder with your host machine. I run an offline
   windows machine so download everything from my host.
-* Install Virtualbox Guest-additions for USB support (reboot)
-* USB add both 'microchip' usb as USB1 devices
+* Install Virtualbox Guest-additions for USB support
+* Shutdown the virtual machine
+* In the virtual machin settings, go to USB:
+  * Select "Enable USB Controller" with "USB 1.1"
+  * Click the small '+' sign on the right and add the Microchip devices.
+  * Doc: https://www.virtualbox.org/manual/ch03.html#idm1640
+* Start the virtual machine
 
 ### Downloads
 
