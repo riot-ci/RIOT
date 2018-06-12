@@ -17,8 +17,8 @@ export OPENOCD_ADAPTER_INIT
 # 2. Using the common cpu specific config file
 ifeq (,$(OPENOCD_CONFIG))
   # if no openocd default configuration is provided by the board,
-  # use the ST common one
+  # use the STM32 common one
   ifeq (0,$(words $(wildcard $(RIOTBOARD)/$(BOARD)/dist/openocd.cfg)))
-    export OPENOCD_CONFIG := $(RIOTBASE)/boards/common/st/configs/$(CPU).cfg
+    export OPENOCD_CONFIG := $(RIOTBASE)/boards/common/stm32/configs/$(CPU).cfg
   endif
 endif
