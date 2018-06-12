@@ -210,7 +210,7 @@ void otPlatRadioSetPanId(otInstance *aInstance, uint16_t panid)
 }
 
 /* OpenThread will call this for setting extended address */
-void otPlatRadioSetExtendedAddress(otInstance *aInstance, const otExtAddress *aExtendedAddress)
+void otPlatRadioSetExtendedAddress(otInstance *aInstance, uint8_t *aExtendedAddress)
 {
     (void)aInstance;
     DEBUG("openthread: otPlatRadioSetExtendedAddress\n");
@@ -410,7 +410,7 @@ otError otPlatRadioAddSrcMatchShortEntry(otInstance *aInstance, const uint16_t a
     return OT_ERROR_NONE;
 }
 
-otError otPlatRadioAddSrcMatchExtEntry(otInstance *aInstance, const otExtAddress *aExtAddress)
+otError otPlatRadioAddSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
 {
     DEBUG("otPlatRadioAddSrcMatchExtEntry\n");
     (void)aInstance;
@@ -426,7 +426,7 @@ otError otPlatRadioClearSrcMatchShortEntry(otInstance *aInstance, const uint16_t
     return OT_ERROR_NONE;
 }
 
-otError otPlatRadioClearSrcMatchExtEntry(otInstance *aInstance, const otExtAddress *aExtAddress)
+otError otPlatRadioClearSrcMatchExtEntry(otInstance *aInstance, const uint8_t *aExtAddress)
 {
     DEBUG("otPlatRadioClearSrcMatchExtEntry\n");
     (void)aInstance;
