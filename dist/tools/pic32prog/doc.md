@@ -57,7 +57,7 @@ Adapted from the README (on Windows 10 machine .NET 4.00 is already installed)
 * Run `setup.exe`
 * Run PICkit3
 * Tools/Download PICkit Operating System
-  * Select c://Program Files/Microchip/PICkit3/PK3OSV020005.hex
+  * Select `c://Program Files/Microchip/PICkit3/PK3OSV020005.hex`
 * Device should be flashed there will be a message saying the board is found
 * Close the program (it crashes when closing it but it is ok)
 * Turn off your VM
