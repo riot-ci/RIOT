@@ -9,7 +9,7 @@ FILES=$(changed_files | grep -vf "$BLACKLIST")
 check () {
     for F in $FILES
     do
-        OUT="$(diff "$RIOTBASE/$F" <(uncrustify -c "$CURDIR"/uncrustify-force.cfg -f "$RIOTBASE/$F" 2>/dev/null))"
+        OUT="$(uncrustify -c "$CURDIR"/uncrustify-force.cfg -f "$RIOTBASE/$F" --check 2> /dev/null)"
         if [ "$OUT" ] ; then
             echo "Please run 'dist/tools/uncrustify/uncrustify.sh'"
             exit 1
