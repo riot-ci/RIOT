@@ -141,8 +141,8 @@ ssize_t at_send_cmd_get_lines(at_dev_t *dev, const char *command,
         }
         else if (res > 0) {
             bytes_left -= res;
-            size_t len_ok = sizeof(AT_RECV_OK) - 1;
-            size_t len_error = sizeof(AT_RECV_ERROR) - 1;
+            ssize_t len_ok = sizeof(AT_RECV_OK) - 1;
+            ssize_t len_error = sizeof(AT_RECV_ERROR) - 1;
             if ((res == (len_ok + keep_eol)) &&
                 (len_ok != 0) &&
                 (strncmp(pos, AT_RECV_OK, len_ok) == 0)) {
@@ -212,7 +212,7 @@ int at_send_cmd_wait_ok(at_dev_t *dev, const char *command, uint32_t timeout)
     res = at_send_cmd_get_resp(dev, command, resp_buf, sizeof(resp_buf), timeout);
 
     if (res > 0) {
-        size_t len_ok = sizeof(AT_RECV_OK) - 1;
+        ssize_t len_ok = sizeof(AT_RECV_OK) - 1;
         if ((len_ok != 0) && (strcmp(resp_buf, AT_RECV_OK) == 0)) {
             res = 0;
         }
