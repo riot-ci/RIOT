@@ -24,7 +24,7 @@ I ran this on Ubuntu 16.04
 * Install Virtualbox
 * Add yourself to the 'vboxusers' group
   `sudo usermod -a -G vboxusers your_username`
-* Reboot (was necessary for the ext-pack may be possible without)
+* Reboot
 
 ### Setup Windows VM
 
