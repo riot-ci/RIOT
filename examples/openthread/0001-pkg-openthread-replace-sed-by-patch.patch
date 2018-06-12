@@ -1,0 +1,44 @@
+From 65d3ea906c4908cc8382f0f4dad8e89697918908 Mon Sep 17 00:00:00 2001
+From: Jose Alamos <jose.alamos@haw-hamburg.de>
+Date: Fri, 5 Oct 2018 15:58:59 +0200
+Subject: [PATCH] pkg/openthread: replace sed by patch
+
+---
+ pkg/openthread/Makefile                           |   1 -
+ .../patches/0001-fix-macro-conflict.patch         | Bin 0 -> 938 bytes
+ 2 files changed, 1 deletion(-)
+ create mode 100644 pkg/openthread/patches/0001-fix-macro-conflict.patch
+
+diff --git a/pkg/openthread/Makefile b/pkg/openthread/Makefile
+index aa2bcf948..863c1af35 100644
+--- a/pkg/openthread/Makefile
++++ b/pkg/openthread/Makefile
+@@ -43,6 +43,5 @@ ifneq (,$(filter openthread-cli-mtd,$(USEMODULE)))
+ 	cp $(PKG_BUILDDIR)/output/lib/libopenthread-mtd.a ${BINDIR}/openthread-mtd.a
+ 	cp $(PKG_BUILDDIR)/output/lib/libopenthread-cli-mtd.a ${BINDIR}/openthread-cli-mtd.a
+ endif
+-	sed -ie 's/BASE/_BASE/g' $(PKG_BUILDDIR)/output/include/openthread/types.h
+ 
+ include $(RIOTBASE)/pkg/pkg.mk
+diff --git a/pkg/openthread/patches/0001-fix-macro-conflict.patch b/pkg/openthread/patches/0001-fix-macro-conflict.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..cbddd8bb7336006cd2a1234c7a69f76f2aabbf41
+GIT binary patch
+literal 938
+zcmcJNZ)@8y5XRr@Qyd)(E4CatiDTD{lFV(o4wj6j@3s+S>y)VYAGX5MZ6AKN+hm17
+z_G&_yyR)9(9gnoA%N)2A!6;SJOP+Aa6%SP+1F3kB@Ugf|CO&fXxfsKzvVb*K;03^W
+z)NdGZ?vX`{iQr?|Aj~t7mkqpoY!g@X$!sUSvz^G3eZ6%hUXg2IFoH#`9q?h5nik@P
+z;Q5h1jrbUB-a^TGpFCn}BKY!o{t$oo21*|w7inEWS{5qPsUd_hMnD&7wwE|8D=f^e
+zMj?mhslvwH!7rGAZFh&fR-YlHJ5g*=IxuQw4c11NMPu2tD@e@nIcJm*sg(l8w%ULg
+zo@tSs`AKvk@c=5Eh(P-2x?vy`2AF`y`E)Yr=08g(wr#`N4zn4sspo`X_un?fgTcCh
+zi}(V55_ls~=>j2MEg$B0%e&?6=KdyL-CtWm${L%-fzB+awFfgv;VXe|Syoqt0ky2X
+zE=;&FZTO;~z@SvBK~t*!*ilSr+pns{HWzRk#~`)X7G+~}3RPJRhJ+obc|Tv@06%zt
+zD*4k1**H0E2e2Cb12=}g?ZN@=B$Qp{l(Ie~_7S!@(N3j*(t6Dc?m7N%R=t|#wbQ*>
+XShUX!hJ(Ma2RgeLkdf<!E+^zS$>1Aa
+
+literal 0
+HcmV?d00001
+
+-- 
+2.18.0
+

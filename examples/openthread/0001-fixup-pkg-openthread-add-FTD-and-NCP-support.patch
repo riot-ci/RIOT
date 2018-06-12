@@ -1,0 +1,24 @@
+From 4dba7adf797e49350c750c48acd3ed47eecc19e5 Mon Sep 17 00:00:00 2001
+From: Jose Alamos <jose.alamos@haw-hamburg.de>
+Date: Fri, 5 Oct 2018 16:36:29 +0200
+Subject: [PATCH] fixup! pkg/openthread: add FTD and NCP support
+
+---
+ pkg/openthread/Makefile.include | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/pkg/openthread/Makefile.include b/pkg/openthread/Makefile.include
+index be575ff1f..b7ef33354 100644
+--- a/pkg/openthread/Makefile.include
++++ b/pkg/openthread/Makefile.include
+@@ -1,7 +1,6 @@
+ OPENTHREAD_DIR = $(RIOTBASE)/pkg/openthread
+ 
+ INCLUDES += -I$(OPENTHREAD_DIR)/include \
+-            -I$(OPENTHREAD_DIR)/include/openthread \
+             -I$(PKGDIRBASE)/openthread/include/
+ 
+ ifneq (,$(filter openthread_contrib,$(USEMODULE)))
+-- 
+2.18.0
+
