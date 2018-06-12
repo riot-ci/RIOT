@@ -23,9 +23,9 @@
  * `auto_init` initializes any included module that provides
  * auto-initialization capabilities.
  *
- * Drivers or cpu peripherals that provides a SAUL adaption (@ref drivers_saul)
- * and network interfaces (@ref drivers_netdev) can be initialized
- * automatically with `auto_init`.
+ * Drivers or cpu peripherals that provides a @ref drivers_saul adaption and
+ * @ref drivers_netdev can be initialized automatically using the `auto_init`
+ * module.
  *
  * For regular device drivers such as sensors, actuators, network devices
  * (@ref drivers), the default initialization parameters are taken from the
