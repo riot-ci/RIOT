@@ -212,7 +212,8 @@ int at_send_cmd_wait_ok(at_dev_t *dev, const char *command, uint32_t timeout)
     res = at_send_cmd_get_resp(dev, command, resp_buf, sizeof(resp_buf), timeout);
 
     if (res > 0) {
-        if (strcmp(resp_buf, AT_RECV_OK) == 0) {
+        size_t len_ok = sizeof(AT_RECV_OK) - 1;
+        if ((len_ok != 0) && (strcmp(resp_buf, AT_RECV_OK) == 0)) {
             res = 0;
         }
         else {
