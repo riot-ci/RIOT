@@ -18,7 +18,7 @@ $(info $$OPENTHREAD_ARGS is [${OPENTHREAD_ARGS}])
 .PHONY: all
 
 OPENTHREAD_COMMON_FLAGS = -fdata-sections -ffunction-sections -Os
-OPENTHREAD_COMMON_FLAGS += -Wno-implicit-fallthrough
+OPENTHREAD_COMMON_FLAGS += -Wno-implicit-fallthrough -Wno-unused-parameter
 
 all: git-download
 	cd $(PKG_BUILDDIR) && PREFIX="/" ./bootstrap
