@@ -39,8 +39,10 @@
  * Usually, if it is only of interest that an event occurred, but not how many
  * of them, thread flags should be considered.
  *
- * Note that some flags (currently the three most significant bits) are used by
- * core functions and should not be set by the user. They can be waited for.
+ * Note that some flags (currently the four most significant bits) are used by
+ * core functions, system libraries, and device drivers and should not be set by
+ * a user application. These special flags can still be waited for to create
+ * event loops and wait conditions.
  *
  * This API is optional and must be enabled by adding "core_thread_flags" to USEMODULE.
  *
@@ -62,7 +64,7 @@
 #include "sched.h"  /* for thread_t typedef */
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -96,13 +98,31 @@
  *          ...
  *      }
  */
-#define THREAD_FLAG_MSG_WAITING      (0x1<<15)
+#define THREAD_FLAG_MSG_WAITING     (1u << 15)
 /**
  * @brief Set by @ref xtimer_set_timeout_flag() when the timer expires
  *
  * @see xtimer_set_timeout_flag
  */
-#define THREAD_FLAG_TIMEOUT          (0x1<<14)
+#define THREAD_FLAG_TIMEOUT         (1u << 14)
+/**
+ * @brief Set by some drivers for signaling from an ISR to an application thread
+ *
+ * Example usages include periph drivers waiting for data to be read or written
+ * when using an IRQ driven or DMA driven method, and in network device drivers
+ * waiting for feedback from the hardware when trying to send a frame etc.
+ */
+#define THREAD_FLAG_IRQ_SERVICED    (1u << 13)
+
+#ifndef THREAD_FLAG_EVENT
+/**
+ * @brief   Thread flag use to notify available events in an event queue
+ *
+ * @see @ref event_wait, @ref event_post, @ref event_loop
+ */
+#define THREAD_FLAG_EVENT           (1u << 12)
+#endif
+
 /** @} */
 
 /**
