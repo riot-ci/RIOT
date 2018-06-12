@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010,2015 Freie Universität Berlin
  * Copyright (C) 2010 Kaspar Schleiser <kaspar@schleiser.de>
- * Copyright (C) 2013 INRIA
+ * Copyright (C) 2013-2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -9,7 +9,7 @@
  */
 
 /**
- * @defgroup    sys_auto_init Auto-init
+ * @defgroup    sys_auto_init Auto-initialization
  * @ingroup     sys
  * @brief       Auto initialize modules
  *
@@ -20,11 +20,12 @@
  * USEMODULE += auto_init
  * ~~~~~~~~~~~~~~~~~~~~~~~
  *
- * `auto_init` initializes any included module that provides auto
- * initialization capabilities.
+ * `auto_init` initializes any included module that provides
+ * auto-initialization capabilities.
  *
- * Drivers or cpu peripherals that provides a SAUL adaption and network
- * interfaces can be initialized automatically with `auto_init`.
+ * Drivers or cpu peripherals that provides a SAUL adaption (@ref drivers_saul)
+ * and network interfaces (@ref drivers_netdev) can be initialized
+ * automatically with `auto_init`.
  *
  * For regular device drivers such as sensors, actuators, network devices
  * (@ref drivers), the default initialization parameters are taken from the
@@ -85,6 +86,7 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Oliver Hahm <oliver.hahm@inria.fr>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
 #ifndef AUTO_INIT_H
