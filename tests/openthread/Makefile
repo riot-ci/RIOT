@@ -47,7 +47,6 @@ endif
 
 USEMODULE += $(DRIVER)
 
-USEMODULE += xtimer
 USEMODULE += random
 USEMODULE += ps
 
