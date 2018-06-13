@@ -16,22 +16,22 @@ Test for showing priority inversion when using msg_send_receive
 
 If this tests succeeds, you should see 6 events appearing in order.
 The expected output should look like this:
-Event  1:      t3 - waiting for incoming message
-Event  2:      t2 - starting infinite loop, potentially starving others
-Event  3:      t1 - sending msg to t3 (msg_send_receive)
-Event  4:      t3 - received message
-Event  5:      t3 - sending reply
-Event  6:      t1 - received reply
+Event  1:   t_low - waiting for incoming message
+Event  2:   t_mid - starting infinite loop, potentially starving others
+Event  3:  t_high - sending msg to t_low (msg_send_receive)
+Event  4:   t_low - received message
+Event  5:   t_low - sending reply
+Event  6:  t_high - received reply
 
 TEST OUTPUT:
-Event  1:      t3 - waiting for incoming message
-Event  2:      t2 - starting infinite loop, potentially starving others
-Event  3:      t1 - sending msg to t3 (msg_send_receive)
-Event  4:      t3 - received message
-Event  5:      t3 - sending reply
-Event  6:      t1 - received reply
+Event  1:   t_low - waiting for incoming message
+Event  2:   t_mid - starting infinite loop, potentially starving others
+Event  3:  t_high - sending msg to t_low (msg_send_receive)
+Event  4:   t_low - received message
+Event  5:   t_low - sending reply
+Event  6:  t_high - received reply
 
-   *** result: SUCCESS ***
+[SUCCESS]
 ```
 
 Background
