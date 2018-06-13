@@ -61,7 +61,7 @@ static inline void _event(int num, const char *t_name, const char *msg)
     printf("Event %2i: %7s - %s\n", num, t_name, msg);
 }
 
-static void *t1(void *arg)
+static void *t_high(void *arg)
 {
     (void)arg;
     msg_t m;
@@ -70,22 +70,22 @@ static void *t1(void *arg)
     m.type = MSG_TYPE;
     m.content.value = (uint32_t)'M';
 
-    _delay(2);
+    _delay(1);
 
-    _event(3, _names[HIGH], "sending msg to t_low (msg_send_receive)");
+    _event(2, _names[HIGH], "sending msg to t_low (msg_send_receive)");
     msg_send_receive(&m, &rply, _pids[2]);
     _event(6, _names[HIGH], "received reply");
 
     return NULL;
 }
 
-static void *t2(void *arg)
+static void *t_mid(void *arg)
 {
     (void)arg;
 
-    _delay(1);
+    _delay(2);
 
-    _event(2, _names[MID], "starting infinite loop, potentially starving others");
+    _event(4, _names[MID], "starting infinite loop, potentially starving others");
     while (1) {
         thread_yield_higher();
     }
@@ -93,7 +93,7 @@ static void *t2(void *arg)
     return NULL;
 }
 
-static void *t3(void *arg)
+static void *t_low(void *arg)
 {
     (void)arg;
     msg_t m;
@@ -104,7 +104,9 @@ static void *t3(void *arg)
 
     _event(1, _names[LOW], "waiting for incoming message");
     msg_receive(&m);
-    _event(4, _names[LOW], "received message");
+    _event(3, _names[LOW], "received message and do some quick work");
+
+    _delay(2);
 
     _event(5, _names[LOW], "sending reply");
     msg_reply(&m, &rply);
@@ -112,19 +114,20 @@ static void *t3(void *arg)
     return NULL;
 }
 
-static thread_task_func_t _handlers[] = { t1, t2, t3 };
+static thread_task_func_t _handlers[] = { t_high, t_mid, t_low };
 
 int main(void)
 {
     puts("Test for showing priority inversion when using msg_send_receive\n");
     puts("If this tests succeeds, you should see 6 events appearing in order.\n"
          "The expected output should look like this:\n"
-         "Event 1:  t_low - waiting for incoming message\n"
-         "Event 2:  t_mid - starting infinite loop, potentially starving others\n"
-         "Event 3: t_high - sending msg to t_low (msg_send_receive)\n"
-         "Event 4:  t_low - received message\n"
-         "Event 5:  t_low - sending reply\n"
-         "Event 6: t_high - received reply\n");
+         "Event  1:   t_low - waiting for incoming message\n"
+         "Event  2:  t_high - sending msg to t_low (msg_send_receive)\n"
+         "Event  3:   t_low - received message and do some quick work\n"
+         "Event  4:   t_mid - starting infinite loop, potentially starving others\n"
+         "Event  5:   t_low - sending reply\n"
+         "Event  6:  t_high - received reply\n");
+
     puts("TEST OUTPUT:");
 
     /* create threads */
@@ -136,7 +139,7 @@ int main(void)
                                  _names[i]);
     }
 
-    _delay(3);
+    _delay(4);
 
     if (_result == EXPECTED_RESULT) {
         puts("\n[SUCCESS]");
