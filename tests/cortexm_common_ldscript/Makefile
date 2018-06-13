@@ -20,6 +20,14 @@ all: $(COMPILE_TESTS)
 .PHONY: $(COMPILE_TESTS)
 
 
+# Test elffiles should not have $(ELFFILE) prerequisite as target specific
+# variables are used for configuration and they also apply to prerequisites.
+#
+# https://www.gnu.org/software/make/manual/make.html#Target_002dspecific
+
+ELFFILES_DEPS = $(BASELIBS) FORCE
+
+
 # Compile elf files with different ROM_OFFSET
 # and verify the offset is taken into account
 
@@ -38,7 +46,7 @@ test-offset_%: $(BINDIR)/$(APPLICATION)_offset_%.elf
 	$(Q)@echo [OK]
 
 $(BINDIR)/$(APPLICATION)_offset_%.elf: ROM_OFFSET=$*
-$(BINDIR)/$(APPLICATION)_offset_%.elf: $(ELFFILE)
+$(BINDIR)/$(APPLICATION)_offset_%.elf: $(ELFFILES_DEPS)
 	$(Q)$(_LINK) -o $@
 .PRECIOUS: $(BINDIR)/$(APPLICATION)_offset_%.elf
 
@@ -63,7 +71,7 @@ test-fw_len_half_rom: $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf
 	fi
 	$(Q)@echo [OK]
 $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: FW_ROM_LEN=$$(($(ROM_LEN_BYTES)/2))
-$(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: $(ELFFILE)
+$(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: $(ELFFILES_DEPS)
 	$(Q)$(_LINK) -o $@
 .PRECIOUS: $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf
 
@@ -80,7 +88,7 @@ $(BINDIR)/$(APPLICATION)_assert_overflow_too_big_for_rom.elf: FW_ROM_LEN=$$(($(R
 $(BINDIR)/$(APPLICATION)_assert_overflow_offset_and_romlen.elf: ROM_OFFSET=0x1000
 $(BINDIR)/$(APPLICATION)_assert_overflow_offset_and_romlen.elf: FW_ROM_LEN=$(ROM_LEN_BYTES)
 
-$(BINDIR)/$(APPLICATION)_assert_overflow_%.elf: $(ELFFILE)
+$(BINDIR)/$(APPLICATION)_assert_overflow_%.elf: $(ELFFILES_DEPS)
 	$(Q) echo -n "Test ROM overflow detection: "
 	$(Q){ $(_LINK) -o $@ 2>&1 | grep -q 'Specified _fw_rom_length does not fit in ROM' ; } \
 		&& echo [OK] || { echo [ERROR] Compilation should have failed >&2; exit 1; }
