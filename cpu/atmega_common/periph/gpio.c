@@ -174,11 +174,21 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
     /* apply flank to interrupt number int_num */
     if (int_num < 4) {
-        EICRA |= (flank << (int_num * 2));
+        if (flank == GPIO_LOW) {
+            EICRA &= ~(0x3 << (int_num * 2));
+        }
+        else {
+            EICRA |= (flank << (int_num * 2));
+        }
     }
 #if defined(EICRB)
     else {
-        EICRB |= (flank << ((int_num % 4) * 2));
+        if (flank == GPIO_LOW) {
+            EICRB &= ~(0x3 << ((int_num % 4) * 2));
+        }
+        else {
+            EICRB |= (flank << ((int_num % 4) * 2));
+        }
     }
 #endif
 
@@ -244,54 +254,46 @@ static inline void irq_handler(uint8_t int_num)
     __exit_isr();
 }
 
-ISR(INT0_vect, ISR_BLOCK)
-{
+ISR(INT0_vect, ISR_BLOCK){
     irq_handler(0); /**< predefined interrupt pin */
 }
 
-ISR(INT1_vect, ISR_BLOCK)
-{
+ISR(INT1_vect, ISR_BLOCK){
     irq_handler(1); /**< predefined interrupt pin */
 }
 
 #if defined(INT2_vect)
-ISR(INT2_vect, ISR_BLOCK)
-{
+ISR(INT2_vect, ISR_BLOCK){
     irq_handler(2); /**< predefined interrupt pin */
 }
 #endif
 
 #if defined(INT3_vect)
-ISR(INT3_vect, ISR_BLOCK)
-{
+ISR(INT3_vect, ISR_BLOCK){
     irq_handler(3); /**< predefined interrupt pin */
 }
 #endif
 
 #if defined(INT4_vect)
-ISR(INT4_vect, ISR_BLOCK)
-{
+ISR(INT4_vect, ISR_BLOCK){
     irq_handler(4); /**< predefined interrupt pin */
 }
 #endif
 
 #if defined(INT5_vect)
-ISR(INT5_vect, ISR_BLOCK)
-{
+ISR(INT5_vect, ISR_BLOCK){
     irq_handler(5); /**< predefined interrupt pin */
 }
 #endif
 
 #if defined(INT6_vect)
-ISR(INT6_vect, ISR_BLOCK)
-{
+ISR(INT6_vect, ISR_BLOCK){
     irq_handler(6); /**< predefined interrupt pin */
 }
 #endif
 
 #if defined(INT7_vect)
-ISR(INT7_vect, ISR_BLOCK)
-{
+ISR(INT7_vect, ISR_BLOCK){
     irq_handler(7); /**< predefined interrupt pin */
 }
 #endif
