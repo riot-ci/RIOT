@@ -30,7 +30,7 @@ extern "C" {
  */
 #if OPENTHREAD_MTD
 #define OPENTHREAD_CONFIG_NUM_MESSAGE_BUFFERS       (20U)
-#elif OPENTHREAD_FTD
+#else
 #define OPENTHREAD_CONFIG_NUM_MESSAGE_BUFFERS       (10U)
 #endif
 
