@@ -41,7 +41,7 @@ Background
 Priority inversion is a known problem in real-time systems, leading in certain
 constellations to lower priority threads indirectly blocking higher priority
 threads. This test application constructs a simple situation, where exactly this
-occurs: t_low owns a mutex, which t_high is waiting on. Now t_mid gets all the
-CPU time (as t_mid has a higher priority than t_low), preventing t_low from
-unlocking the mutex shared with t_high. So t_mid is indirectly preventing t_high
-from running.
+occurs: t_low owns a mutex, which t_high is waiting on. At that point, t_mid
+starts and pre-emts t_low (as t_mid has a higher priority than t_low),
+preventing t_low from unlocking the mutex shared with t_high. So t_mid is
+indirectly preventing t_high from running.

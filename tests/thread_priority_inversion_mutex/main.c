@@ -81,7 +81,7 @@ static void *t_mid_handler(void *arg)
     delay(2);
 
     event(4, "t_mid", "starting infinite loop, potentially starving others");
-    while(1){
+    while (1) {
         thread_yield_higher();
     }
 
@@ -104,7 +104,7 @@ static void *t_high_handler(void *arg)
     event(7, "t_high", "unlocking mutex");
     mutex_unlock(&_res_mtx);
 
-  return NULL;
+    return NULL;
 }
 
 int main(void)
