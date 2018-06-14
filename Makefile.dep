@@ -726,10 +726,6 @@ ifneq (,$(filter rdcli_common,$(USEMODULE)))
   USEMODULE += luid
 endif
 
-ifneq (,$(filter tlsf-malloc,$(USEMODULE)))
-  USEMODULE += tlsf
-endif
-
 ifneq (,$(filter uuid,$(USEMODULE)))
   USEMODULE += hashes
   USEMODULE += random
