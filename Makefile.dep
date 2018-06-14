@@ -667,10 +667,6 @@ ifneq (,$(filter nanocoap_%,$(USEMODULE)))
   USEMODULE += nanocoap
 endif
 
-ifneq (,$(filter ccn-lite,$(USEMODULE)))
-  USEMODULE += ccn-lite-utils
-endif
-
 ifneq (,$(filter benchmark,$(USEMODULE)))
   USEMODULE += xtimer
 endif
