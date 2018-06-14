@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup tests
+ * @ingroup     tests
  * @{
  *
  * @file
- * @brief   msg benchmark test application
+ * @brief       Measure messages send per second
  *
- * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
@@ -25,22 +25,24 @@
 #include "xtimer.h"
 
 #ifndef TEST_DURATION
-#define TEST_DURATION 1000000U
+#define TEST_DURATION       (1000000U)
 #endif
 
-volatile unsigned flag = 0;
+volatile unsigned _flag = 0;
+static char _stack[THREAD_STACKSIZE_MAIN];
 
 static void _timer_callback(void*arg)
 {
     (void)arg;
-    flag = 1;
+
+    _flag = 1;
 }
 
-static char stack[THREAD_STACKSIZE_MAIN];
-static void *second_thread(void *arg)
+static void *_second_thread(void *arg)
 {
-    (void) arg;
+    (void)arg;
     msg_t test;
+
     while(1) {
         msg_receive(&test);
     }
@@ -52,13 +54,13 @@ int main(void)
 {
     printf("main starting\n");
 
-    kernel_pid_t other = thread_create(stack,
-                  sizeof(stack),
-                  THREAD_PRIORITY_MAIN - 1,
-                  THREAD_CREATE_STACKTEST,
-                  second_thread,
-                  NULL,
-                  "second_thread");
+    kernel_pid_t other = thread_create(_stack,
+                                       sizeof(_stack),
+                                       (THREAD_PRIORITY_MAIN - 1),
+                                       THREAD_CREATE_STACKTEST,
+                                       _second_thread,
+                                       NULL,
+                                       "second_thread");
 
     xtimer_t timer;
     timer.callback = _timer_callback;
@@ -66,8 +68,9 @@ int main(void)
     msg_t test;
 
     uint32_t n = 0;
+
     xtimer_set(&timer, TEST_DURATION);
-    while(!flag) {
+    while(!_flag) {
         msg_send(&test, other);
         n++;
     }
