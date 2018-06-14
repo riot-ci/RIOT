@@ -25,8 +25,8 @@ extern "C" {
 #endif
 
 /**
-    * @brief   The entry point of this test suite.
-    */
+ * @brief   The entry point of this test suite.
+ */
 void tests_mtd_flashpage_tests(void);
 
 #ifdef __cplusplus
