@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup tests
+ * @ingroup     tests
  * @{
  *
  * @file
- * @brief   scheduler benchmark test application
+ * @brief       Scheduler benchmark test application
  *
- * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
@@ -24,15 +24,16 @@
 #include "xtimer.h"
 
 #ifndef TEST_DURATION
-#define TEST_DURATION 1000000U
+#define TEST_DURATION       (1000000U)
 #endif
 
-volatile unsigned flag = 0;
+volatile unsigned _flag = 0;
 
 static void _timer_callback(void*arg)
 {
     (void)arg;
-    flag = 1;
+
+    _flag = 1;
 }
 
 int main(void)
@@ -43,8 +44,9 @@ int main(void)
     timer.callback = _timer_callback;
 
     uint32_t n = 0;
+
     xtimer_set(&timer, TEST_DURATION);
-    while(!flag) {
+    while(!_flag) {
         thread_yield();
         n++;
     }

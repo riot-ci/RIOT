@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup tests
+ * @ingroup     tests
  * @{
  *
  * @file
- * @brief   context switch benchmark test application
+ * @brief       Context switch benchmark test application
  *
- * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
@@ -24,21 +24,23 @@
 #include "xtimer.h"
 
 #ifndef TEST_DURATION
-#define TEST_DURATION 1000000U
+#define TEST_DURATION       (1000000U)
 #endif
 
-volatile unsigned flag = 0;
+volatile unsigned _flag = 0;
+static char _stack[THREAD_STACKSIZE_MAIN];
 
 static void _timer_callback(void*arg)
 {
     (void)arg;
-    flag = 1;
+
+    _flag = 1;
 }
 
-static char stack[THREAD_STACKSIZE_MAIN];
-static void *second_thread(void *arg)
+static void *_second_thread(void *arg)
 {
-    (void) arg;
+    (void)arg;
+
     while(1) {
         thread_yield();
     }
@@ -50,11 +52,11 @@ int main(void)
 {
     printf("main starting\n");
 
-    thread_create(stack,
-                  sizeof(stack),
+    thread_create(_stack,
+                  sizeof(_stack),
                   THREAD_PRIORITY_MAIN,
                   THREAD_CREATE_STACKTEST,
-                  second_thread,
+                  _second_thread,
                   NULL,
                   "second_thread");
 
@@ -62,8 +64,9 @@ int main(void)
     timer.callback = _timer_callback;
 
     uint32_t n = 0;
+
     xtimer_set(&timer, TEST_DURATION);
-    while(!flag) {
+    while(!_flag) {
         thread_yield();
         n++;
     }
