@@ -1,14 +1,16 @@
 include ../Makefile.tests_common
 
-# no need to build this test for all targets, so just build for some selected
-# boards
-BOARD_WHITELIST += native nrf52dk samr21-xpro z1 arduino-mega2560
-
-# disabled by default:
-# USEMODULE += core_thread_flags
+# Modules that will have an impact on the size of the TCB (thread_t):
 #
-# enabled by default:
-# DISABLE_MODULE += core_msg
+# disabled by default, enable on demand:
+ifneq (,$(USE_FLAGS))
+  USEMODULE += core_thread_flags
+endif
+#
+# enabled by default, disable on demand:
+ifneq (,$(NO_MSG))
+  DISABLE_MODULE += core_msg
+endif
 
 TEST_ON_CI_WHITELIST += all
 
