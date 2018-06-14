@@ -1,12 +1,12 @@
-USEMODULE += fatfs_diskio_mtd
-USEMODULE += auto_init_storage
-USEMODULE += mtd
+ifneq (,$(filter fatfs_vfs,$(USEMODULE)))
+  USEMODULE += fatfs
+  USEMODULE += vfs
+endif
 
-include $(RIOTBASE)/boards/$(BOARD)/Makefile.features
+ifneq (,$(filter fatfs,$(USEMODULE)))
+  USEMODULE += fatfs_diskio_mtd
+  USEMODULE += auto_init_storage
+  USEMODULE += mtd
 
-#if periph_rtc is available use it. Otherwise use static timestamps
-ifneq (, $(filter periph_rtc, $(FEATURES_PROVIDED)))
-  CFLAGS += -DFATFS_FFCONF_OPT_FS_NORTC=0
-else
-  CFLAGS += -DFATFS_FFCONF_OPT_FS_NORTC=1
+  FEATURES_OPTIONAL += periph_rtc
 endif
