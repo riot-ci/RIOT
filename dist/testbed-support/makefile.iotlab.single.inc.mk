@@ -20,8 +20,8 @@
 #
 # It is the user responsability to start an experiment beforehand
 #
-# If the user has multiple running experiments, the one to use must configured
-# with the `IOTLAB_EXP_ID` setting
+# If the user has multiple running experiments, the one to use must be
+# configured with the `IOTLAB_EXP_ID` setting
 #
 # Prerequisites
 # -------------
