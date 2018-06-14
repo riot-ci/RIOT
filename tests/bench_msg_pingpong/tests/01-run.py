@@ -12,7 +12,7 @@ import sys
 
 
 def testfunc(child):
-    child.expect_exact(u"{ \"result\" :")
+    child.expect_exact("{ \"result\" :")
 
 
 if __name__ == "__main__":
