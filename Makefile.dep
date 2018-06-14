@@ -691,11 +691,6 @@ ifneq (,$(filter ccn-lite,$(USEMODULE)))
   USEMODULE += ccn-lite-utils
 endif
 
-ifneq (,$(filter fatfs_vfs,$(USEMODULE)))
-  USEMODULE += fatfs
-  USEMODULE += vfs
-endif
-
 ifneq (,$(filter benchmark,$(USEMODULE)))
   USEMODULE += xtimer
 endif
