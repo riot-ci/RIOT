@@ -102,27 +102,6 @@
 extern uint32_t _estack;
 extern uint32_t _sstack;
 
-/**
- * @brief   Noticeable marker marking the beginning of a stack segment
- *
- * This marker is used e.g. by *cpu_switch_context_exit* to identify the
- * stacks beginning.
- */
-#define STACK_MARKER                (0x77777777)
-
-/**
- * @brief   Initial program status register value for a newly created thread
- *
- * In the initial state, only the Thumb mode-bit is set
- */
-#define INITIAL_XPSR                (0x01000000)
-
-/**
- * @brief   ARM Cortex-M specific exception return value, that triggers the
- *          return to the task mode stack pointer
- */
-#define EXCEPT_RET_TASK_MODE        (0xfffffffd)
-
 char *thread_stack_init(thread_task_func_t task_func,
                              void *arg,
                              void *stack_start,

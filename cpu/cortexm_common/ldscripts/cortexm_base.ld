@@ -114,7 +114,7 @@ SECTIONS
         . = ALIGN(8);
         _estack = .;
         KEEP (*(.puf_stack))
-        . = ALIGN(4);
+        . = ALIGN(8);
         _pstack = .;
     } > ram
 
