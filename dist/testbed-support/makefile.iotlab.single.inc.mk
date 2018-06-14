@@ -27,8 +27,6 @@
 # -------------
 #
 # * Install iotlab-cli-tools: https://github.com/iot-lab/cli-tools
-# * Install iotlab-ssh-cli-tools: https://github.com/iot-lab/ssh-cli-tools
-#   * Can be done using given `requirements.txt`
 # * Configured your account with 'iotlab-auth'
 # * If using an A8 node from a frontend:
 #   * Register the frontend public key in your ssh keys list on your profile.
