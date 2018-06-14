@@ -86,8 +86,7 @@ size_t fmt_strlen(const char *str)
 size_t fmt_strnlen(const char *str, size_t maxlen)
 {
     const char *tmp = str;
-    const char *end = str + maxlen;
-    while(*tmp && tmp < end) {
+    while(*tmp && maxlen--) {
         tmp++;
     }
     return (tmp - str);
