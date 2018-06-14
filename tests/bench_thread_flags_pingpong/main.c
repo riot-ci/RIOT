@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup tests
+ * @ingroup     tests
  * @{
  *
  * @file
- * @brief   thread flags benchmark test application
+ * @brief       Thread flags benchmark test application
  *
- * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
@@ -25,23 +25,25 @@
 #include "xtimer.h"
 
 #ifndef TEST_DURATION
-#define TEST_DURATION 1000000U
+#define TEST_DURATION       (1000000U)
 #endif
 
-volatile unsigned flag = 0;
+volatile unsigned _flag = 0;
+static char _stack[THREAD_STACKSIZE_MAIN];
 
 static void _timer_callback(void*arg)
 {
     (void)arg;
-    flag = 1;
+
+    _flag = 1;
 }
 
-static char stack[THREAD_STACKSIZE_MAIN];
-static void *second_thread(void *arg)
+static void *_second_thread(void *arg)
 {
-    (void) arg;
+    (void)arg;
+
     while(1) {
-        thread_flags_wait_any(0x0-1);
+        thread_flags_wait_any(0x0 - 1);
     }
 
     return NULL;
@@ -51,22 +53,23 @@ int main(void)
 {
     printf("main starting\n");
 
-    kernel_pid_t other = thread_create(stack,
-                  sizeof(stack),
-                  THREAD_PRIORITY_MAIN - 1,
-                  THREAD_CREATE_STACKTEST,
-                  second_thread,
-                  NULL,
-                  "second_thread");
+    kernel_pid_t other = thread_create(_stack,
+                                       sizeof(_stack),
+                                       (THREAD_PRIORITY_MAIN - 1),
+                                       THREAD_CREATE_STACKTEST,
+                                       _second_thread,
+                                       NULL,
+                                       "second_thread");
 
-    thread_t *tcb = (thread_t*)sched_threads[other];
+    thread_t *tcb = (thread_t *)sched_threads[other];
 
     xtimer_t timer;
     timer.callback = _timer_callback;
 
     uint32_t n = 0;
+
     xtimer_set(&timer, TEST_DURATION);
-    while(!flag) {
+    while(!_flag) {
         thread_flags_set(tcb, 0x1);
         n++;
     }
