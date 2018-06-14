@@ -129,13 +129,16 @@ endif
 WERROR ?= 1
 export WERROR
 ifeq ($(WERROR),1)
-  CFLAGS += -Wall -Werror -Wextra
+  CFLAGS += -Werror
 endif
 
 WPEDANTIC ?= 0
 export WPEDANTIC
 ifeq ($(WPEDANTIC),1)
-    CFLAGS += -Wpedantic -pedantic-errors
+  CFLAGS += -Wpedantic
+  ifeq ($(WERROR),1)
+    CFLAGS += -pedantic-errors
+  endif
 endif
 
 # remove this once codebase is adapted
