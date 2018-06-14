@@ -7,3 +7,6 @@ ifeq ($(BOARD),native)
 endif
 
 include $(RIOTBASE)/Makefile.base
+ifneq (,$(filter -Wformat-nonliteral -Wformat=2, $(CFLAGS)))
+  CFLAGS += -Wno-format-nonliteral
+endif
