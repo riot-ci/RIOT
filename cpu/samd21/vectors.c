@@ -28,8 +28,18 @@
 /* SRAM memory marker defined in the linker script */
 extern uint32_t _srelocate;
 
+/* stack of the idle thread defined in kernel initialization */
+extern char idle_stack[];
+
 void pre_startup(void) {
-    puf_sram_uint32((uint8_t *)&_srelocate);
+    /* TODO !!! calling puf_sram_softreset() this way does not consider misaligned stack sizes */
+
+    uint32_t marker = STACK_MARKER;
+    /* only generate a new seed when no software reset (or button reset) was detected */
+    if (!puf_sram_softreset((uint8_t *)(idle_stack+THREAD_STACKSIZE_IDLE-sizeof(thread_t)-sizeof(marker)),
+                                        (uint8_t *)&marker, sizeof(uint32_t))) {
+        puf_sram_uint32((uint8_t *)&_srelocate);
+    }
 }
 #endif
 

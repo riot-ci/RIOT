@@ -40,6 +40,11 @@ extern "C" {
 extern uint32_t global_puf_seed;
 
 /**
+ * @brief Global seed state, allocated on the stack in puf_sram.c
+ */
+extern uint32_t global_puf_state;
+
+/**
  * @brief builds hash from @p SEED_RAM_LEN bytes uninitialized SRAM, writs it
  *        to the global variable @p global_puf_seed and returns the value
  *
@@ -48,6 +53,19 @@ extern uint32_t global_puf_seed;
  * @return  a random number
  */
 uint32_t puf_sram_uint32(const uint8_t *ram);
+
+/**
+ * @brief checks for the stack marker in the idle thread to determine whether memory
+          contains old data. Otherwise it assumes a reboot from power down mode
+ *
+ * @param[in] ram    pointer to memory position of stack marker in @p idle_stack
+ * @param[in] marker pointer to  stack marker
+ * @param[in] length length of the stack marker
+ *
+ * @return    0 when seed was generated from SRAM pattern
+ * @return    1 when reset without power down was detected
+ */
+bool puf_sram_softreset(const uint8_t *ram, const uint8_t *marker, size_t length);
 
 
 #ifdef __cplusplus
