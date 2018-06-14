@@ -56,7 +56,7 @@ static void _flag_waitall(void)
 static void _flag_waitone(void)
 {
     thread_flags_set(t, _flag);
-    thread_flags_wait_all(_flag);
+    thread_flags_wait_one(_flag);
 }
 
 int main(void)
