@@ -463,11 +463,6 @@ ifneq (,$(filter sema,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-
-ifneq (,$(filter libfixmath-unittests,$(USEMODULE)))
-  USEMODULE += libfixmath
-endif
-
 ifneq (,$(filter luid,$(USEMODULE)))
   FEATURES_OPTIONAL += periph_cpuid
 endif
