@@ -36,7 +36,7 @@
 # * Install iotlab-ssh-cli-tools https://github.com/iot-lab/ssh-cli-tools
 
 ifeq (,$(IOTLAB_NODE))
-  $(warning IOTLAB_NODE undefined it should be defined to:)
+  $(warning IOTLAB_NODE undefined, it should be defined to:)
   $(warning  * <type>-<number>.<site>.iot-lab.info when run from your computer)
   $(warning    Example: m3-380.grenoble.iot-lab.info or a8-1.grenoble.iot-lab.info)
   $(warning  * <type>-<number> when run from iot-lab frontend)
@@ -113,7 +113,7 @@ endif
 override IOTLAB_NODE := $(patsubst node-%,%,$(IOTLAB_NODE))
 
 
-# Create node list and optionnaly frontend url
+# Create node list and optionally frontend url
 ifeq (,$(_IOTLAB_ON_FRONTEND))
   # m3-380.grenoble.iot-lab.info    -> grenoble,m3,380
   # a8-1.grenoble.iot-lab.info      -> grenoble,a8,1
