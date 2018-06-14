@@ -68,6 +68,30 @@ extern "C" {
 #endif
 /** @} */
 
+/**
+ * @brief   Noticeable marker marking the beginning of a stack segment
+ *
+ * This marker is used e.g. by *cpu_switch_context_exit* to identify the
+ * stacks beginning.
+ */
+#define STACK_MARKER                (0x77777777)
+/** @} */
+
+/**
+ * @brief   Initial program status register value for a newly created thread
+ *
+ * In the initial state, only the Thumb mode-bit is set
+ */
+#define INITIAL_XPSR                (0x01000000)
+/** @} */
+
+/**
+ * @brief   ARM Cortex-M specific exception return value, that triggers the
+ *          return to the task mode stack pointer
+ */
+#define EXCEPT_RET_TASK_MODE        (0xfffffffd)
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif

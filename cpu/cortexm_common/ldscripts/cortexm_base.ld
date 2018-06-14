@@ -113,6 +113,9 @@ SECTIONS
         KEEP (*(.isr_stack))
         . = ALIGN(8);
         _estack = .;
+        KEEP (*(.puf_stack))
+        . = ALIGN(8);
+        _pstack = .;
     } > ram
 
     .relocate :

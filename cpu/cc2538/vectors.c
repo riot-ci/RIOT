@@ -22,6 +22,17 @@
 #include "board.h"
 #include "vectors_cortexm.h"
 
+#ifdef MODULE_PUF_SRAM
+#include "puf_sram.h"
+
+/* SRAM memory marker defined in the linker script */
+extern uint32_t _srelocate;
+
+void pre_startup(void) {
+    puf_sram_uint32((uint8_t *)&_srelocate);
+}
+#endif
+
 /* define a local dummy handler as it needs to be in the same compilation unit
  * as the alias definition */
 void dummy_handler(void) {
