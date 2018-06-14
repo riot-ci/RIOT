@@ -58,6 +58,8 @@ CFLAGS += -fno-common
 
 # Enable all default warnings and all extra warnings
 CFLAGS += -Wall -Wextra
+# Enable additional checks for printf/scanf format strings
+$(foreach flag,-Wformat=2 -Wformat-overflow -Wformat-truncation,$(eval $(call cflags_test_and_add,$(flag))))
 
 ifeq (,$(filter -DDEVELHELP,$(CFLAGS)))
   ifneq (1,$(FORCE_ASSERTS))
