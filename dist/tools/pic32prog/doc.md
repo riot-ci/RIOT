@@ -54,7 +54,7 @@ Download and extract:
 
 * PICkit3-Programmer http://ww1.microchip.com/downloads/en/DeviceDoc/PICkit3%20Programmer%20Application%20v3.10.zip
 
-Adapted from the README (on Windows 10 machine .NET 4.00 is already installed)
+The steps were adapted from the archive README:
 
 * Extract `PICkit3 Programmer Application Setup v3.10.zip`
 * Run `setup.exe`
