@@ -19,6 +19,6 @@ RESET_FLAGS ?= "No RESET but opening UART does a reset"
 # * Connect the chipKIT-Wi-Fire to USB
 # * Connect the PICkit3 to ICSP holes
 # * https://docs.creatordev.io/wifire/guides/wifire-programming/
-# * The Arrow `▶` pin goes into the pin number 1 (with a square shape around it)
+# * The triangle `▶` goes into the port number 1 (a hole with a square around it)
 #   opposite side of the JP1 ICSP text.
 include $(RIOTMAKE)/tools/pic32prog.inc.mk
