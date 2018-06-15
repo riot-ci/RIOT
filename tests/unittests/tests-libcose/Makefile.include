@@ -1,6 +1,6 @@
 ﻿CFLAGS +=-DCOSE_SIGNATURES_MAX=2
 
-USEPKG += libcose
+USEMODULE += libcose
 
 USEMODULE += random
 USEMODULE += memarray
