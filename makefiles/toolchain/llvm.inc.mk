@@ -18,7 +18,7 @@ export NM          = $(LLVMPREFIX)nm
 # we just use GCC for now.
 export LD          = $(PREFIX)ld
 export ILINK       = $(LD)
-export ILINKFLAGS ?= -r
+export ILINKFLAGS ?= -r --unique
 export LINK        = $(PREFIX)gcc
 export LINKXX      = $(PREFIX)g++
 # objcopy does not have a clear substitute in LLVM, use GNU binutils
