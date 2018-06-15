@@ -575,7 +575,7 @@ static inline bool _compressible(gnrc_pktsnip_t *hdr)
     switch (hdr->type) {
         case GNRC_NETTYPE_UNDEF:    /* when forwarded */
         case GNRC_NETTYPE_IPV6:
-#ifdef MODULE_GNRC_SIXLOWPAN_IPHC_NHC
+#if defined(MODULE_GNRC_SIXLOWPAN_IPHC_NHC) && defined(MODULE_GNRC_UDP)
         case GNRC_NETTYPE_UDP:
             return true;
 #endif
