@@ -21,22 +21,22 @@ Steps
 
 I ran this on Ubuntu 16.04
 
-* Install Virtualbox
+* Install VirtualBox
 * Add yourself to the 'vboxusers' group
   `sudo usermod -a -G vboxusers your_username`
 * Reboot
 
 ### Setup Windows VM
 
-You can download a free 90 days valid windows virtualbox image from:
+You can download a free 90 days valid windows VirtualBox image from:
 
     https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
 
-I downloaded a Windows 10 virtualbox image
+I downloaded a Windows 10 VirtualBox image
 
-* Create a machine in virtualbox in File-Import Appliance.
+* Create a machine in VirtualBox in File-Import Appliance.
 * Start the virtual machine and wait until you are on the windows desktop
-* Install Virtualbox Guest-additions for USB support
+* Install VirtualBox Guest-additions for USB support
   * Doc: https://www.virtualbox.org/manual/ch04.html#additions-windows
 * Shutdown the virtual machine
 * Plug the PICkit3 flasher USB to your computer
