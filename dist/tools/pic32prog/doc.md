@@ -164,3 +164,5 @@ Program flash: ########################### done
   Verify boot: ### done
  Program rate: 6159 bytes per second
 ```
+
+Congratulations, you can now use your PICkit3 on Linux within RIOT.
