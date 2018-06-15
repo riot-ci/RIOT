@@ -1,9 +1,3 @@
 INCLUDES += -I$(RIOTBASE)/pkg/semtech-loramac/include
 
-# This needs to be a static library or else all regions gets linked regardless
-# of what is used by the executable, resulting in bloated .bss and .text sections.
-# The reason is that there are static variables which end up in the same output
-# section in the monolithic object which prevents the linker from garbage collecting them
-LIBS += semtech_loramac_mac_region
-
 DIRS += $(RIOTBASE)/pkg/semtech-loramac/contrib
