@@ -58,7 +58,6 @@ export DOCKER_ENV_VARS = \
   SCANBUILD_OUTPUTDIR \
   SIZE \
   TOOLCHAIN \
-  UNDEF \
   #
 
 # Find which variables were set using the command line or the environment and
