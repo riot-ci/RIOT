@@ -37,32 +37,32 @@ extern "C" {
  * @name    LED pin definitions and handlers
  * @{
  */
-#define LED_GREEN_PIN       GPIO_PIN(PB, 10)
+#define LED0_PIN            GPIO_PIN(PA, 15)
 
-#define LED_GREEN_PORT      PORT->Group[PB]
-#define LED_GREEN_MASK      (1 << 10)
+#define LED0_PORT           PORT->Group[PA]
+#define LED0_MASK           (1 << 15)
 
-#define LED_GREEN_OFF       (LED_GREEN_PORT.OUTSET.reg = LED_GREEN_MASK)
-#define LED_GREEN_ON        (LED_GREEN_PORT.OUTCLR.reg = LED_GREEN_MASK)
-#define LED_GREEN_TOGGLE    (LED_GREEN_PORT.OUTTGL.reg = LED_GREEN_MASK)
+#define LED0_OFF            (LED0_PORT.OUTSET.reg = LED0_MASK)
+#define LED0_ON             (LED0_PORT.OUTCLR.reg = LED0_MASK)
+#define LED0_TOGGLE         (LED0_PORT.OUTTGL.reg = LED0_MASK)
 
-#define LED_RED_PIN         GPIO_PIN(PA, 15)
+#define LED1_PIN            GPIO_PIN(PB, 10)
 
-#define LED_RED_PORT        PORT->Group[PA]
-#define LED_RED_MASK        (1 << 15)
+#define LED1_PORT           PORT->Group[PB]
+#define LED1_MASK           (1 << 10)
 
-#define LED_RED_OFF         (LED_RED_PORT.OUTSET.reg = LED_RED_MASK)
-#define LED_RED_ON          (LED_RED_PORT.OUTCLR.reg = LED_RED_MASK)
-#define LED_RED_TOGGLE      (LED_RED_PORT.OUTTGL.reg = LED_RED_MASK)
+#define LED1_OFF            (LED1_PORT.OUTSET.reg = LED1_MASK)
+#define LED1_ON             (LED1_PORT.OUTCLR.reg = LED1_MASK)
+#define LED1_TOGGLE         (LED1_PORT.OUTTGL.reg = LED1_MASK)
 
-#define LED_BLUE_PIN        GPIO_PIN(PB, 11)
+#define LED2_PIN            GPIO_PIN(PB, 11)
 
-#define LED_BLUE_PORT       PORT->Group[PB]
-#define LED_BLUE_MASK       (1 << 11)
+#define LED2_PORT           PORT->Group[PB]
+#define LED2_MASK           (1 << 11)
 
-#define LED_BLUE_OFF        (LED_BLUE_PORT.OUTSET.reg = LED_BLUE_MASK)
-#define LED_BLUE_ON         (LED_BLUE_PORT.OUTCLR.reg = LED_BLUE_MASK)
-#define LED_BLUE_TOGGLE     (LED_BLUE_PORT.OUTTGL.reg = LED_BLUE_MASK)
+#define LED2_OFF            (LED2_PORT.OUTSET.reg = LED2_MASK)
+#define LED2_ON             (LED2_PORT.OUTCLR.reg = LED2_MASK)
+#define LED2_TOGGLE         (LED2_PORT.OUTTGL.reg = LED2_MASK)
 /** @} */
 
 /**
