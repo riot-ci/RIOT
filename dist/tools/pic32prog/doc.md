@@ -90,11 +90,12 @@ If you do not get the `Adapter: PICkit3 Version 2.0.5` line,
 try running it with `sudo pic32prog`. If it works with `sudo` it is a
 permission issue.
 
-Add yourself to the `plugdev` group, add the following `udev` rule and reboot.
-(Find a tutorial if you do not know how to do this).
+Add yourself to the `plugdev` group, add the following `udev` rule to
+`/etc/udev/rules.d/26-microchip.rules` and reboot.
 
 ```
-ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="900a", MODE="664", GROUP="plugdev"
+# Adapted from http://en.microstickplus.com/mplabx-on-linux
+ATTR{idVendor}=="04d8", MODE="664", GROUP="plugdev"
 ```
 
 Flashing
