@@ -23,7 +23,9 @@ I ran this on Ubuntu 16.04
 
 * Install VirtualBox
 * Add yourself to the 'vboxusers' group
-  `sudo usermod -a -G vboxusers your_username`
+  ```
+  sudo usermod -a -G vboxusers your_username`
+  ```
 * Reboot
 
 ### Setup Windows VM
