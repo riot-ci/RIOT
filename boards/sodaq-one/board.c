@@ -24,12 +24,12 @@
 void board_init(void)
 {
     /* initialize the on-board LEDs, switch them off to start with */
-    LED_GREEN_OFF;
-    gpio_init(LED_GREEN_PIN, GPIO_OUT);
-    LED_RED_OFF;
-    gpio_init(LED_RED_PIN, GPIO_OUT);
-    LED_BLUE_OFF;
-    gpio_init(LED_BLUE_PIN, GPIO_OUT);
+    LED0_OFF;
+    gpio_init(LED0_PIN, GPIO_OUT);
+    LED1_OFF;
+    gpio_init(LED1_PIN, GPIO_OUT);
+    LED2_OFF;
+    gpio_init(LED2_PIN, GPIO_OUT);
 
     /* reset RN2483 (LoRa) */
     LORA_RESET_OFF;
