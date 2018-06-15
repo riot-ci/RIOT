@@ -259,3 +259,15 @@ void gpio_init_af(gpio_t pin, uint8_t sel, uint8_t over)
     /* enable alternative function mode */
     gpio(pin)->AFSEL |= _pin_mask(pin);
 }
+
+void gpio_init_mux(gpio_t pin, cc2538_ioc_over_t over,
+                   cc2538_ioc_sel_t sel, cc2538_ioc_pin_t func)
+{
+    assert(pin != GPIO_UNDEF);
+    /* configure pin function and multiplexing */
+    IOC->OVER[_pp_num(pin)] = over;
+    IOC->SEL[_pp_num(pin)] = sel;
+    IOC->PINS[func] = _pp_num(pin);
+    /* enable alternative function mode */
+    gpio(pin)->AFSEL |= _pin_mask(pin);
+}
