@@ -144,9 +144,9 @@ Configuration:
                        USBID pin: controlled by port
 ```
 
-* Now try flashing the chipKIT-Wi-Fire with RIOT default example compiled for pic32-wifire
+Now try flashing the chipKIT-Wi-Fire with RIOT default example compiled for
+pic32-wifire with `pic32prog path/to/firmware.hex`
 
-pic32prog firmware.hex
 
 ```
 $ pic32prog bin/pic32-wifire/default.hex
