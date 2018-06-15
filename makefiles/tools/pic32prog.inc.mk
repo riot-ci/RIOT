@@ -11,19 +11,10 @@
 # PICkit-3
 # --------
 #
-# Changing the firmware to 'scripting mode'
-# Should be done from a Windows computer as described here
+# This requires changing the firmware to 'scripting mode'
+# Should be done from a Windows computer/virtual machine as described here
 #
-# http://ww1.microchip.com/downloads/en/DeviceDoc/PICkit3%20Programmer%20Application%20v3.10.zip
-#
-# ### Setup summary
-#
-# * Extract PICkit3 Programmer Application Setup v3.10.zip
-# * setup.exe
-# * Run PICkit3
-# * Tools/Download PICkit Operating System
-#   * Select C://Program Files/Microchip/PICkit3/PK3OSV020005.hex
-#
+# https://github.com/RIOT-OS/RIOT/blob/master/dist/tools/pic32prog/doc.md
 
 PIC32PROG = $(RIOTTOOLS)/pic32prog/pic32prog
 
