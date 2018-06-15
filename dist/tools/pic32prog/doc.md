@@ -39,6 +39,7 @@ I downloaded a Windows 10 virtualbox image
 * Install Virtualbox Guest-additions for USB support
   * Doc: https://www.virtualbox.org/manual/ch04.html#additions-windows
 * Shutdown the virtual machine
+* Plug the PICkit3 flasher USB to your computer
 * In the virtual machine settings, go to USB:
   * Select "Enable USB Controller" with "USB 1.1"
   * Click the small '+' sign on the right and add the Microchip devices.
