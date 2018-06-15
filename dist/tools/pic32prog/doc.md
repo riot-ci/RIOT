@@ -19,7 +19,7 @@ Steps
 
 ### Setup your computer
 
-I ran this on Ubuntu 16.04
+The steps were run on Ubuntu 16.04
 
 * Install VirtualBox
 * Add yourself to the 'vboxusers' group
@@ -34,7 +34,7 @@ You can download a free 90 days valid windows VirtualBox image from:
 
     https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
 
-I downloaded a Windows 10 VirtualBox image
+This document was tested on a Windows 10 VirtualBox image
 
 * Create a machine in VirtualBox in File-Import Appliance.
 * Start the virtual machine and wait until you are on the windows desktop
