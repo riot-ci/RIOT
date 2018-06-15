@@ -74,7 +74,8 @@ Download and compile `pic32prog` flasher
 
 https://github.com/sergev/pic32prog
 
-Run it without the board connected
+Run the following command with PICkit3 connected in usb but without the Wi-Fire
+board connected
 
 ```
 $ pic32prog
