@@ -51,7 +51,7 @@ endif
 IOTLAB_AUTH ?= $(HOME)/.iotlabrc
 IOTLAB_USER ?= $(shell cut -f1 -d: $(IOTLAB_AUTH))
 
-# OptionaL Experiment id. Required when having multiple experiments
+# Optional Experiment id. Required when having multiple experiments
 IOTLAB_EXP_ID ?=
 
 # File to use for flashing
