@@ -18,7 +18,7 @@
 #
 #   make BOARD=iotlab-m3 IOTLAB_NODE=m3-380.grenoble.iot-lab.info flash term
 #
-# It is the user responsability to start an experiment beforehand
+# It is the user responsibility to start an experiment beforehand
 #
 # If the user has multiple running experiments, the one to use must be
 # configured with the `IOTLAB_EXP_ID` setting
@@ -51,7 +51,7 @@ endif
 IOTLAB_AUTH ?= $(HOME)/.iotlabrc
 IOTLAB_USER ?= $(shell cut -f1 -d: $(IOTLAB_AUTH))
 
-# Optionnal experiment id. Required when having multiple experiments
+# OptionaL Experiment id. Required when having multiple experiments
 IOTLAB_EXP_ID ?=
 
 # File to use for flashing
