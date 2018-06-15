@@ -15,7 +15,7 @@
  * This file contains a condition variable with Mesa-style semantics.
  *
  * Condition variable solve the following problem. Suppose that a thread should
- * sleep until a certain condition comes true. Condition variable provide a
+ * sleep until a certain condition comes true. Condition variables provide a
  * primitive whereby a thread can go to sleep by calling cond_wait(). Then,
  * when the condition comes true in a thread or interrupt context, cond_signal()
  * can be called, to wake up the thread.
@@ -45,12 +45,14 @@
  * false again before the thread is scheduled. To handle this case, the
  * condition variable should be used in a while loop as follows:
  *
+ * ```
  * mutex_lock(&lock);
  * while (condition_is_not_true) {
  *     cond_wait(&cond, &lock);
  * }
  * // do work while condition is true.
  * mutex_unlock(&lock);
+ * ```
  *
  * When used in this way, the thread checks, once it has has awakened, whether
  * the condition is actually true, and goes to sleep again if it is not. This
@@ -68,6 +70,7 @@
  * structure queue_t. We assume it is unsafe to add to the queue if it is full,
  * or remove from the queue if it is empty.
  *
+ * ```
  * typedef struct pipe {
  *     queue_t queue;
  *     cond_t read_cond;
@@ -121,6 +124,7 @@
  *     mutex_unlock(&pipe->lock);
  *     return 1;
  * }
+ * ```
  *
  * Note that this could actually be written with a single condition variable.
  * However, the example includes two for didactic reasons.
@@ -147,6 +151,7 @@ extern "C" {
 typedef struct {
     /**
      * @brief   The process waiting queue of the condition variable.
+     *
      * @internal
      */
     list_node_t queue;
@@ -154,16 +159,19 @@ typedef struct {
 
 /**
  * @brief   Static initializer for cond_t.
- * @details This initializer is preferable to cond_init().
+ *
+ * @note This initializer is preferable to cond_init().
  */
 #define COND_INIT { { NULL } }
 
 /**
  * @brief Initializes a condition variable.
+ *
  * @details For initialization of variables use COND_INIT instead.
  *          Only use the function call for dynamically allocated condition
  *          variables.
- * @param[out] cond    pre-allocated condition structure, must not be NULL.
+ *
+ * @param[in] cond    Pre-allocated condition structure. Must not be NULL.
  */
 static inline void cond_init(cond_t *cond)
 {
@@ -179,9 +187,10 @@ static inline void cond_init(cond_t *cond)
 void cond_wait(cond_t *cond, mutex_t *mutex);
 
 /**
- * @brief Wake up threads waiting on a condition variable.
- * @details For commit purposes you should probably use cond_signal() and
- *          cond_broadcast() instead.
+ * @brief Wakes up threads waiting on a condition variable.
+ *
+ * @details This is a helper function used by cond_signal() and
+ * cond_broadcast(). You should use those functions instead of this one.
  *
  * @param[in] cond          Condition variable whose threads to wake up.
  * @param[in] broadcast     If true, wakes up all threads. If false, only
@@ -191,10 +200,11 @@ void _cond_signal(cond_t *cond, bool broadcast);
 
 
 /**
- * @brief Wakes up one thread waiting on the condition variable. The thread is
- * marked as runnable and will only be scheduled later at the scheduler's whim,
- * so the thread should re-check the condition and wait again if it is not
- * fulfilled.
+ * @brief Wakes up one thread waiting on the condition variable.
+ *
+ * @details The thread is marked as runnable and will only be scheduled later
+ * at the scheduler's whim, so the thread should re-check the condition and wait
+ * again if it is not fulfilled.
  *
  * @param[in] cond  Condition variable to signal.
  */
@@ -204,9 +214,11 @@ static inline void cond_signal(cond_t *cond)
 }
 
 /**
- * @brief Wakes up all threads waiting on the condition variable. They are
- * marked as runnable and will only be scheduled later at the scheduler's whim,
- * so they should re-check the condition and wait again if it is not fulfilled.
+ * @brief Wakes up all threads waiting on the condition variable.
+ *
+ * @details The threads are marked as runnable and will only be scheduled later
+ * at the scheduler's whim, so they should re-check the condition and wait again
+ * if it is not fulfilled.
  *
  * @param[in] cond  Condition variable to broadcast.
  */
