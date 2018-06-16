@@ -136,9 +136,6 @@ WPEDANTIC ?= 0
 export WPEDANTIC
 ifeq ($(WPEDANTIC),1)
   CFLAGS += -Wpedantic
-  ifeq ($(WERROR),1)
-    CFLAGS += -pedantic-errors
-  endif
 endif
 
 # remove this once codebase is adapted
