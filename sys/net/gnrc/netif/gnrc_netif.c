@@ -1311,7 +1311,9 @@ static void *_gnrc_netif_thread(void *args)
             event_t *evp;
             while ((evp = event_get(&netif->evq))) {
                 DEBUG("gnrc_netif: event %p\n", (void *)evp);
-                evp->handler(evp);
+                if (evp->handler) {
+                    evp->handler(evp);
+                }
             }
         }
         if (flags & THREAD_FLAG_MSG_WAITING) {
