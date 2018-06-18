@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "periph/gpio.h"
+#include "periph/spi.h"
 #include "periph/uart.h"
 #include "bitarithm.h"
 #include "board.h"
