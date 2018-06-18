@@ -389,16 +389,9 @@ export USEMODULE_INCLUDES =
 
 include $(RIOTBASE)/sys/Makefile.include
 include $(RIOTBASE)/drivers/Makefile.include
-
-# The `clean` needs to be serialized before everything else.
-ifneq (, $(filter clean, $(MAKECMDGOALS)))
-  all $(BASELIBS) $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare: clean
-endif
-
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 
 USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | tr ' ' '\n' | awk '!a[$$0]++' | tr '\n' ' ')
-
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
 .PHONY: pkg-prepare $(USEPKG:%=$(BINDIR)/%.a)
@@ -618,6 +611,14 @@ include $(RIOTMAKE)/mcuboot.mk
 
 # include Murdock helpers
 include $(RIOTMAKE)/murdock.inc.mk
+
+
+# The `clean` needs to be serialized before everything else.
+# It makes 'make clean all' work in parallel
+ifneq (, $(filter clean, $(MAKECMDGOALS)))
+  all $(BASELIBS) $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare: clean
+endif
+
 
 # Sanity check, 'all' should be the default goal
 ifneq (all, $(.DEFAULT_GOAL))
