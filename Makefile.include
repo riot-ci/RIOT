@@ -256,7 +256,7 @@ include $(RIOTBASE)/Makefile.dep
 USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
 ifeq ($(strip $(MCU)),)
-	MCU = $(CPU)
+  MCU = $(CPU)
 endif
 
 # set some settings useful for continuous integration builds
@@ -281,7 +281,7 @@ CFLAGS += -DMCU_$(MCUDEF)=\"$(MCU)\" -DRIOT_MCU=MCU_$(MCUDEF)
 # OSX fails to create empty archives. Provide a wrapper to catch that error.
 ifneq (0, $(shell mkdir -p $(BINDIR); $(AR) rc $(BINDIR)/empty-archive.a 2> /dev/null; \
             echo $$?; rm -f $(BINDIR)/empty-archive.a 2>&1 > /dev/null))
-	AR := $(RIOTBASE)/dist/ar-wrapper $(AR)
+  AR := $(RIOTBASE)/dist/ar-wrapper $(AR)
 endif
 
 # Feature test default CFLAGS and LINKFLAGS for the set compiled.
@@ -399,7 +399,7 @@ include $(RIOTBASE)/drivers/Makefile.include
 
 # The `clean` needs to be serialized before everything else.
 ifneq (, $(filter clean, $(MAKECMDGOALS)))
-    all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare: clean
+  all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare: clean
 endif
 
 # include Makefile.includes for packages in $(USEPKG)
