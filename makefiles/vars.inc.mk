@@ -71,9 +71,9 @@ export GIT_CACHE_DIR         # path to git-cache cache directory
 export FLASHER               # The command to call on "make flash".
 export FFLAGS                # The parameters to supply to FLASHER.
 export FLASH_ADDR            # Define an offset to flash code into ROM memory.
-export TERMPROG              # The command to call on "make term".
-export TERMFLAGS             # Additional parameters to supply to TERMPROG.
-export PORT                  # The port to connect the TERMPROG to.
+# TERMPROG                   # The command to call on "make term".
+# TERMFLAGS                  # Additional parameters to supply to TERMPROG.
+# PORT                       # The port to connect the TERMPROG to.
 export ELFFILE               # The unstripped result of the compilation.
 export HEXFILE               # The stripped result of the compilation.
 export DEBUGGER              # The command to call on "make debug", usually a script starting the GDB front-end.
