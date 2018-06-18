@@ -243,13 +243,6 @@ include $(RIOTCPU)/$(CPU)/Makefile.include
 # Import all toolchain settings
 include $(RIOTMAKE)/toolchain/$(TOOLCHAIN).inc.mk
 
-# get number of interfaces straight before resolving dependencies
-GNRC_NETIF_NUMOF ?= 1
-
-ifneq ($(GNRC_NETIF_NUMOF),1)
-  CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
-endif
-
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
 

@@ -22,6 +22,10 @@ ifneq (,$(filter gnrc_sock,$(USEMODULE)))
     CFLAGS += -DSOCK_HAS_IPV6
   endif
 endif
+ifneq ($(GNRC_NETIF_NUMOF),)
+  CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
+endif
+
 ifneq (,$(filter posix,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/sys/posix/include
 endif
