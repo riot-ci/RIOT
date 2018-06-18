@@ -1,0 +1,4 @@
+ifneq (,$(filter openthread_contrib,$(USEMODULE)))
+  USEMODULE += openthread_contrib_netdev
+  FEATURES_REQUIRED += cpp
+endif

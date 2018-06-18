@@ -4,7 +4,7 @@ BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6
 
 USEMODULE += xtimer
 
-USEPKG += u8g2
+USEMODULE += u8g2
 
 # set default device parameters in case they are undefined
 TEST_OUTPUT ?= 1
