@@ -8,12 +8,6 @@ ifneq (,$(filter lwip,$(USEMODULE)))
   USEMODULE += lwip_contrib
   USEMODULE += lwip_core
   USEMODULE += lwip_netif
-  ifeq (,$(filter lwip_ipv4 lwip_ipv6,$(USEMODULE)))
-    USEMODULE += lwip_ipv4
-  endif
-  ifeq (,$(filter lwip_tcp lwip_udp lwip_udplite,$(USEMODULE)))
-    USEMODULE += lwip_raw
-  endif
 endif
 
 ifneq (,$(filter lwip_contrib,$(USEMODULE)))
@@ -58,4 +52,15 @@ endif
 
 ifneq (,$(filter lwip_udplite,$(USEMODULE)))
   USEMODULE += lwip_udp
+endif
+
+
+# Select default implementation
+ifneq (,$(filter lwip,$(USEMODULE)))
+  ifeq (,$(filter lwip_ipv4 lwip_ipv6,$(USEMODULE)))
+    USEMODULE += lwip_ipv4
+  endif
+  ifeq (,$(filter lwip_tcp lwip_udp lwip_udplite,$(USEMODULE)))
+    USEMODULE += lwip_raw
+  endif
 endif
