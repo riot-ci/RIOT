@@ -11,7 +11,7 @@ BOARD_WHITELIST := nrf52dk nrf52840dk
 RIOTBASE ?= $(CURDIR)/../..
 
 # Include NimBLE
-USEPKG += nimble
+USEMODULE += nimble
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the

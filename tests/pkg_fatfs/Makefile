@@ -25,7 +25,7 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
 USEMODULE += shell
 USEMODULE += fatfs_diskio_mtd
 USEMODULE += mtd
-USEPKG    += fatfs
+USEMODULE += fatfs
 
 FATFS_IMAGE_FILE_SIZE_MIB ?= 128
 
