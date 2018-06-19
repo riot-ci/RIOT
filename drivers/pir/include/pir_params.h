@@ -32,14 +32,14 @@ extern "C" {
  * @{
  */
 #ifndef PIR_PARAM_GPIO
-#define PIR_PARAM_GPIO             GPIO_PIN(PA, 6)
+#define PIR_PARAM_GPIO             GPIO_PIN(0, 6)
 #endif
 #ifndef PIR_PARAM_ACTIVE_HIGH
 #define PIR_PARAM_ACTIVE_HIGH      1
 #endif
 
 #ifndef PIR_PARAMS
-#define PIR_PARAMS                 { .gpio        = PIR_PARAM_GPIO, \
+#define PIR_PARAMS                 { .gpio = PIR_PARAM_GPIO, \
                                      .active_high = PIR_PARAM_ACTIVE_HIGH }
 #endif
 #ifndef PIR_SAUL_INFO

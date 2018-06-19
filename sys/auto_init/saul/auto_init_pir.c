@@ -8,7 +8,7 @@
  */
 
 /*
- * @ingroup     auto_init_saul
+ * @ingroup     sys_auto_init_saul
  * @{
  *
  * @file
@@ -41,7 +41,7 @@ static pir_t pir_devs[PIR_NUM];
 static saul_reg_t saul_entries[PIR_NUM];
 
 /**
- * @brief   Reference the occupancy driver struct
+ * @brief   Reference to the occupancy driver struct
  * @{
  */
 extern saul_driver_t pir_saul_occup_driver;
