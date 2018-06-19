@@ -10,8 +10,10 @@
 /**
  * @defgroup    drivers_lsm6dsl LSM6DSL 3D accelerometer/gyroscope
  * @ingroup     drivers_sensors
- * @brief       Device driver for the LSM6DSL 3D accelerometer/gyroscope
+ * @ingroup     drivers_saul
+ * @brief       Device drive for the LSM6DSL 3D accelerometer/gyroscope
  *
+ * This driver provides @ref drivers_saul capabilities.
  * @{
  *
  * @file
