@@ -222,10 +222,12 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
 {
     DEBUG("%s\n", __FUNCTION__);
     DEBUG(" - I2C master status (%u).\n", _i2c_master_status());
-    (void)flags;
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
         return -EINVAL;
+    }
+    if (flags & (I2C_REG16 | I2C_ADDR10)) {
+        return -EOPNOTSUPP;
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_read_bytes: device busy!\n");
@@ -285,10 +287,12 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
 {
     DEBUG("%s\n", __FUNCTION__);
     DEBUG(" - I2C master status (%u).\n", _i2c_master_status());
-    (void)flags;
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
         return -EINVAL;
+    }
+    if (flags & (I2C_REG16 | I2C_ADDR10)) {
+        return -EOPNOTSUPP;
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_write_bytes: device busy!\n");
