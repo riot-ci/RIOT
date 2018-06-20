@@ -68,7 +68,7 @@ int pir_init(pir_t *dev, const pir_params_t *params)
 
 pir_event_t pir_get_status(const pir_t *dev)
 {
-    return ((gpio_read(dev->p.gpio) == dev->p.active_high) ?
+    return (((gpio_read(dev->p.gpio) > 0) == dev->p.active_high) ?
             PIR_STATUS_ACTIVE : PIR_STATUS_INACTIVE);
 }
 

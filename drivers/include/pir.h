@@ -24,6 +24,7 @@
 
 #include "kernel_types.h"
 #include "periph/gpio.h"
+#include "stdbool.h"
 
 #ifdef __cplusplus
 extern "C" {
