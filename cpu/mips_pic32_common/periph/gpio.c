@@ -24,6 +24,10 @@
 #include "periph/gpio.h"
 #include "board.h"
 
+#ifdef MODULE_GPIO_EXP
+#include "gpio_exp.h"
+#endif
+
 #define GPIO_PIN_NO(PIN)    (1 << ((PIN) & 0xf))
 #define GPIO_PORT(PIN)      ((PIN) >> 4)
 
@@ -122,6 +126,19 @@ static inline int check_valid_port(uint8_t port)
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     uint8_t port = GPIO_PORT(pin);
     uint32_t pin_no = GPIO_PIN_NO(pin);
     uint8_t output = 0, pu = 0, pd = 0, od = 0;
@@ -175,6 +192,21 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
+/* NOTE: gpio_exp ints not expected to work until normal ints implemented */
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
+                                           mode, flank, cb, arg);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     (void)pin;
     (void)mode;
     (void)flank;
@@ -186,8 +218,65 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     return -1;
 }
 
+void gpio_irq_enable(gpio_t pin)
+{
+/* NOTE: gpio_exp irqs not expected to work until normal irqs implemented */
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
+    (void)pin;
+
+    /* TODO: Not implemented yet */
+}
+
+void gpio_irq_disable(gpio_t pin)
+{
+/* NOTE: gpio_exp irqs not expected to work until normal irqs implemented */
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
+    (void)pin;
+
+    /* TODO: Not implemented yet */
+}
+
 int gpio_read(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
+    }
+#endif /* MODULE_GPIO_EXP */
+
     assert(check_valid_port(GPIO_PORT(pin)));
 
     return PORTx(GPIO_PORT(pin)) & GPIO_PIN_NO(pin);
@@ -195,20 +284,30 @@ int gpio_read(gpio_t pin)
 
 void gpio_set(gpio_t pin)
 {
-    assert(check_valid_port(GPIO_PORT(pin)));
-
-    LATxSET(GPIO_PORT(pin)) = GPIO_PIN_NO(pin);
+    gpio_write(pin, 1);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    assert(check_valid_port(GPIO_PORT(pin)));
-
-    LATxCLR(GPIO_PORT(pin)) = GPIO_PIN_NO(pin);
+    gpio_write(pin, 0);
 }
 
 void gpio_toggle(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Read then write if pin is on GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        if (gpio_read(pin)) {
+            gpio_write(pin, 0);
+        }
+        else {
+            gpio_write(pin, 1);
+        }
+
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     assert(check_valid_port(GPIO_PORT(pin)));
 
     LATxINV(GPIO_PORT(pin)) = GPIO_PIN_NO(pin);
@@ -216,8 +315,26 @@ void gpio_toggle(gpio_t pin)
 
 void gpio_write(gpio_t pin, int value)
 {
-    if (value)
-        gpio_set(pin);
-    else
-        gpio_clear(pin);
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
+    assert(check_valid_port(GPIO_PORT(pin)));
+
+    if (value) {
+        LATxSET(GPIO_PORT(pin)) = GPIO_PIN_NO(pin);
+    }
+    else {
+        LATxCLR(GPIO_PORT(pin)) = GPIO_PIN_NO(pin);
+    }
 }
