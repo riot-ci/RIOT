@@ -248,12 +248,15 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
         else {
             cmd |= ACK;
         }
+
         /* run command */
         _i2c_master_ctrl(cmd);
         /* wait until master is done transferring */
         DEBUG ("%s: wait for master...\n", __FUNCTION__);
         unsigned cw = CMD_WAIT;
         while (_i2c_master_busy() || (cw--)) {}
+        /* read data into buffer */
+        buf[n] = _i2c_master_data_get();
 
         /* check master status */
         uint_fast8_t stat = _i2c_master_status();
@@ -272,8 +275,6 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
             DEBUG(" unknown!\n");
             return -EAGAIN;
         }
-        /* read data into buffer */
-        buf[n] = _i2c_master_data_get();
     }
 
     return 0;
@@ -307,6 +308,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
         if (((len - n) == 1) && !(flags & I2C_NOSTOP)) {
             cmd |= STOP;
         }
+
         /* write byte to mem */
         _i2c_master_data_put(buf[n]);
         /* run command */
