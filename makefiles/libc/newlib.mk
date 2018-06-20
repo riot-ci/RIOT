@@ -69,7 +69,7 @@ ifeq (1,$(USE_NEWLIB_NANO))
   # the regular system include dirs.
   ifeq (0,$(words $(wildcard $(NEWLIB_NANO_INCLUDE_DIR))))
     # HACK until this is really fixed. It keeps the old build system behaviour
-    # but remove the error on non existing directory
+    # but removes the error on non existing directory
     $(warning $(lastword $(MAKEFILE_LIST)) could not correctly find include path to newlib-nano headers.)
     $(warning It was set to $(NEWLIB_NANO_INCLUDE_DIR) which does not exist on your system.)
     $(warning The non newlib-nano newlib.h may be used)
