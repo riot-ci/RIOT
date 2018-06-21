@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Matthew Blue <matthew.blue.neuro@gmail.com>
+ * Copyright (C) 2018 Acutam Automation, LLC
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -206,6 +206,7 @@ ISR(TIMER2_COMPB_vect) {
 
     if (sched_context_switch_request) {
         thread_yield();
+        thread_yield_isr();
     }
     __exit_isr();
 }
