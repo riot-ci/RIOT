@@ -12,7 +12,7 @@ import sys
 
 
 def testfunc(child):
-    child.expect(r"OK \(1 tests\)")
+    child.expect(r"OK \(2 tests\)")
 
 
 if __name__ == "__main__":
