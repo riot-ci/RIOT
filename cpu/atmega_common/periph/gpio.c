@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2015 HAW Hamburg
  *               2016 INRIA
-
+ *               2018 Acutam Automation, LLC
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,6 +19,7 @@
  * @author      René Herthel <rene-herthel@outlook.de>
  * @author      Francisco Acosta <francisco.acosta@inria.fr>
  * @author      Laurent Navet <laurent.navet@gmail.com>
+ * @author      Matthew Blue <matthew.blue.neuro@gmail.com>
  *
  * @}
  */
@@ -31,6 +32,10 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 #include "periph_cpu.h"
+
+#ifdef MODULE_GPIO_EXP
+#include "gpio_exp.h"
+#endif
 
 #define GPIO_BASE_PORT_A        (0x20)
 #define GPIO_OFFSET_PORT_H      (0xCB)
@@ -127,6 +132,19 @@ static inline int8_t _int_num(gpio_t pin)
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     switch (mode) {
         case GPIO_OUT:
             _SFR_MEM8(_ddr_addr(pin)) |= (1 << _pin_num(pin));
@@ -148,6 +166,20 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
+                                           mode, flank, cb, arg);
+    }
+#endif /* MODULE_GPIO_EXP */
+
     int8_t int_num = _int_num(pin);
 
     if ((mode != GPIO_IN) && (mode != GPIO_IN_PU)) {
@@ -194,46 +226,101 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     EIMSK |= (1 << _int_num(pin));
 }
 
 void gpio_irq_disable(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     EIMSK &= ~(1 << _int_num(pin));
 }
 
 int gpio_read(gpio_t pin)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return -1;
+        }
+
+        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
+    }
+#endif /* MODULE_GPIO_EXP */
+
     return (_SFR_MEM8(_pin_addr(pin)) & (1 << _pin_num(pin)));
 }
 
 void gpio_set(gpio_t pin)
 {
-    _SFR_MEM8(_port_addr(pin)) |= (1 << _pin_num(pin));
+    gpio_write(pin, 1);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    _SFR_MEM8(_port_addr(pin)) &= ~(1 << _pin_num(pin));
+    gpio_write(pin, 0);
 }
 
 void gpio_toggle(gpio_t pin)
 {
     if (gpio_read(pin)) {
-        gpio_clear(pin);
+        gpio_write(pin, 0);
     }
     else {
-        gpio_set(pin);
+        gpio_write(pin, 1);
     }
 }
 
 void gpio_write(gpio_t pin, int value)
 {
+#ifdef MODULE_GPIO_EXP
+    /* Redirect pin handling to GPIO expander */
+    if (pin > GPIO_EXP_THRESH) {
+        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
+
+        if (exp_entry == NULL) {
+            return;
+        }
+
+        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
+        return;
+    }
+#endif /* MODULE_GPIO_EXP */
+
     if (value) {
-        gpio_set(pin);
+        _SFR_MEM8(_port_addr(pin)) |= (1 << _pin_num(pin));
     }
     else {
-        gpio_clear(pin);
+        _SFR_MEM8(_port_addr(pin)) &= ~(1 << _pin_num(pin));
     }
 }
 
