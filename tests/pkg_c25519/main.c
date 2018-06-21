@@ -47,7 +47,7 @@ static void test_c25519_signverify(void)
     edsign_sec_to_pub(sign_pk, sign_sk);
 
     /* Sign */
-	edsign_sign(signature, sign_pk, sign_sk, message, sizeof(message));
+    edsign_sign(signature, sign_pk, sign_sk, message, sizeof(message));
 
     /* Verifying... */
     res = edsign_verify(signature, sign_pk, message, sizeof(message));
