@@ -53,7 +53,7 @@ int main(void)
 
     for (num = 0; num < 5; num++) {
         entries[num].cb = cb;
-        entries[num].arg = (void *)num;
+        entries[num].arg = (void *)(uintptr_t)num;
         entries[num].cbid = num;
     }
 
