@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 Robert Hartung <hartung@ibr.cs.tu-bs.de>
- *               2018 Matthew Blue <matthew.blue.neuro@gmail.com>
+ *               2018 Acutam Automation, LLC
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -208,7 +208,7 @@ void _asynch_wait(void)
 ISR(TIMER2_OVF_vect) {
     __enter_isr();
     /* Enable RTT alarm if overflowed enough times */
-    if (rtt_state.ext_comp == rtt_state.ext_cnt) {
+    if ((uint32_t)rtt_state.ext_comp == (uint32_t)rtt_state.ext_cnt + 1) {
         TIMSK2 |= (1 << OCIE2A);
     }
 
@@ -232,6 +232,7 @@ ISR(TIMER2_OVF_vect) {
 
     if (sched_context_switch_request) {
         thread_yield();
+        thread_yield_isr();
     }
     __exit_isr();
 }
@@ -248,6 +249,7 @@ ISR(TIMER2_COMPA_vect) {
 
     if (sched_context_switch_request) {
         thread_yield();
+        thread_yield_isr();
     }
     __exit_isr();
 }
