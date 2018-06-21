@@ -115,6 +115,7 @@ typedef void (*gpio_exp_write_t)(void *dev, gpio_t pin, int value);
 
 /**
  * @brief   Default not supported functions
+ * @{
  */
 int gpio_exp_init_notsup(void *dev, gpio_t pin, gpio_mode_t mode);
 int gpio_exp_init_int_notsup(void *dev, gpio_t pin, gpio_mode_t mode,
@@ -122,6 +123,7 @@ int gpio_exp_init_int_notsup(void *dev, gpio_t pin, gpio_mode_t mode,
 void gpio_exp_irq_notsup(void *dev, gpio_t pin, int state);
 int gpio_exp_read_notsup(void *dev, gpio_t pin);
 void gpio_exp_write_notsup(void *dev, gpio_t pin, int value);
+/** @} */
 
 /**
  * @brief   GPIO expansion driver entry
