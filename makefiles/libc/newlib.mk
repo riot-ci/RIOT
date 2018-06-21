@@ -40,6 +40,7 @@ NEWLIB_INCLUDE_PATTERNS ?= \
   /usr/$(TARGET_ARCH)/include \
   /usr/local/opt/$(TARGET_ARCH)*/$(TARGET_ARCH)/include \
   /usr/local/opt/gcc-*/$(TARGET_ARCH)/include \
+  /usr/include \
   #
 # Use the wildcard Makefile function to search for existing directories matching
 # the patterns above. We use the -isystem gcc/clang argument to add the include
@@ -64,7 +65,7 @@ ifeq ($(TOOLCHAIN),llvm)
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
-  NEWLIB_NANO_INCLUDE_DIR ?= $(NEWLIB_INCLUDE_DIR)/newlib-nano
+  NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(addsuffix /newlib-nano, $(NEWLIB_INCLUDE_PATTERNS)) $(addsuffix /newlib/nano, $(NEWLIB_INCLUDE_PATTERNS))))
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
   INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
