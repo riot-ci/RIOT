@@ -142,6 +142,12 @@ static bool _i2c_master_busy(void)
     return ((I2CM_STAT & BUSY) ? true : false);
 }
 
+static bool _i2c_master_busbusy(void)
+{
+    DEBUG("%s\n", __FUNCTION__);
+    return ((I2CM_STAT & BUSBSY) ? true : false);
+}
+
 static void _i2c_master_slave_addr(uint16_t addr, bool receive)
 {
     DEBUG("%s (%" PRIx16 ", %d)\n", __FUNCTION__, addr, (int)receive);
@@ -171,8 +177,14 @@ static inline int _i2c_master_status(void)
 {
     uint_fast8_t stat = _i2c_master_stat_get();
     DEBUG (" - I2C master status (%u): ", stat);
-    if (stat & ERROR) {
+    if (stat & BUSY) {
+        DEBUG("busy!\n");
+        return 0;
+    }
+    else if (stat & (ERROR | ARBLST)) {
         _i2c_master_ctrl(STOP);
+        unsigned cw = CMD_WAIT;
+        while (_i2c_master_busy() || (cw--)) {}
         if (stat & ADRACK) {
             DEBUG("addr ack lost!\n");
             return -ENXIO;
@@ -191,6 +203,7 @@ static inline int _i2c_master_status(void)
     DEBUG("okay.\n");
     return 0;
 }
+
 void i2c_init(i2c_t dev)
 {
     DEBUG("%s (%i)\n", __FUNCTION__, (int)dev);
@@ -241,6 +254,10 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_read_bytes: device busy!\n");
+        return -EAGAIN;
+    }
+    if (!(_i2c_master_busbusy()) && (flags & I2C_NOSTART)) {
+        DEBUG("i2c_read_bytes: bus not busy!\n");
         return -EAGAIN;
     }
 
