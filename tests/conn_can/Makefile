@@ -9,8 +9,6 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-nano \
                              saml11-xpro stm32f0discovery telosb waspmote-pro \
                              wsn430-v1_3b wsn430-v1_4 z1
 
-CFLAGS += -DLOG_LEVEL=LOG_ALL
-
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
@@ -20,5 +18,9 @@ USEMODULE += can_isotp
 USEMODULE += conn_can_isotp_multi
 USEMODULE += can_pm
 USEMODULE += can_trx
+
+CFLAGS += -DGNRC_PKTBUF_SIZE=4096
+CFLAGS += -DCAN_PKT_BUF_SIZE=64
+CFLAGS += -DCAN_ROUTER_MAX_FILTER=32
 
 include $(RIOTBASE)/Makefile.include
