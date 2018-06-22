@@ -207,8 +207,11 @@ void _asynch_wait(void)
 
 ISR(TIMER2_OVF_vect) {
     __enter_isr();
+
+    rtt_state.ext_cnt++;
+
     /* Enable RTT alarm if overflowed enough times */
-    if ((uint32_t)rtt_state.ext_comp == (uint32_t)rtt_state.ext_cnt + 1) {
+    if (rtt_state.ext_comp == rtt_state.ext_cnt) {
         TIMSK2 |= (1 << OCIE2A);
     }
 
@@ -217,17 +220,12 @@ ISR(TIMER2_OVF_vect) {
     atmega_rtc_incr();
 #endif
 
-    /* Virtual 24-bit timer overflow */
-    if (rtt_state.ext_cnt == 0xFFFF) {
-        rtt_state.ext_cnt = 0;
-
+    /* Virtual 24-bit timer overflowed */
+    if (rtt_state.ext_cnt == 0) {
         /* Execute callback */
         if (rtt_state.overflow_cb != NULL) {
             rtt_state.overflow_cb(rtt_state.overflow_arg);
         }
-    }
-    else {
-        rtt_state.ext_cnt++;
     }
 
     if (sched_context_switch_request) {
