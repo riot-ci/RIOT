@@ -94,7 +94,7 @@ get_app_board_toolchain_triplets() {
     do
         for toolchain in $(get_supported_toolchains $board)
         do
-            echo $appdir $board
+            echo $appdir $board $toolchain
         done
     done | $(_greplist $BOARDS)
 }
