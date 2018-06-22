@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 OTA keys S.A.
+ * Copyright (C) 2016-2018 OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -386,6 +386,7 @@ int can_dll_dispatch_bus_off(kernel_pid_t pid)
 int can_dll_init(void)
 {
     can_pkt_init();
+    can_router_init();
 
     return 0;
 }
