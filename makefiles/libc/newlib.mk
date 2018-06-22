@@ -21,6 +21,12 @@ export LINKFLAGS += -lc
 
 # Search for Newlib include directories
 
+# Try to search for newlib in the standard search path of the compiler for includes
+ifeq (,$(NEWLIB_INCLUDE_DIR))
+  COMPILER_INCLUDE_PATHS := $(shell echo | $(PREFIX)gcc -E -Wp, -v - 2>&1 | grep '^\s' | tr -d '\n')
+  NEWLIB_INCLUDE_DIR := $(firstword $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS)))))
+endif
+
 # Since Clang is not installed as a separate instance for each crossdev target
 # we need to tell it where to look for platform specific includes (Newlib
 # headers instead of Linux/Glibc headers.)
@@ -40,12 +46,15 @@ NEWLIB_INCLUDE_PATTERNS ?= \
   /usr/$(TARGET_ARCH)/include \
   /usr/local/opt/$(TARGET_ARCH)*/$(TARGET_ARCH)/include \
   /usr/local/opt/gcc-*/$(TARGET_ARCH)/include \
+  /usr/include \
   #
 # Use the wildcard Makefile function to search for existing directories matching
 # the patterns above. We use the -isystem gcc/clang argument to add the include
 # directories as system include directories, which means they will not be
 # searched until after all the project specific include directories (-I/path)
-NEWLIB_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_PATTERNS)))
+ifeq (,$(NEWLIB_INCLUDE_DIR))
+  NEWLIB_INCLUDE_DIR ?= $(firstword $(dir $(wildcard $(addsuffix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS)))))
+endif
 
 # If nothing was found we will try to fall back to searching for a cross-gcc in
 # the current PATH and use a relative path for the includes
@@ -64,7 +73,7 @@ ifeq ($(TOOLCHAIN),llvm)
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
-  NEWLIB_NANO_INCLUDE_DIR ?= $(NEWLIB_INCLUDE_DIR)/newlib-nano
+  NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_DIR)newlib-nano $(NEWLIB_INCLUDE_DIR)newlib/nano $(NEWLIB_INCLUDE_DIR)nano))
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
   INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
