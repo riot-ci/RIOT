@@ -88,7 +88,7 @@ get_supported_toolchains() {
 
 # given an app dir as parameter, print "$appdir board toolchain" for each
 # supported board and toolchain. Only print for boards in $BOARDS.
-get_app_board_toolchain_tripples_pairs() {
+get_app_board_toolchain_triplets() {
     local appdir=$1
     for board in $(get_supported_boards $appdir)
     do
@@ -103,7 +103,7 @@ get_app_board_toolchain_tripples_pairs() {
 get_compile_jobs() {
     get_apps | \
         dwqc ${DWQ_ENV} -s \
-        "$0 get_app_board_pairs \${1}" \
+        "$0 get_app_board_toolchain_triplets \${1}" \
         | xargs '-d\n' -n 1 echo $0 compile
 }
 
