@@ -298,34 +298,20 @@ static int _check_urc(clist_node_t *node, void *arg)
     return 0;
 }
 
-void at_process_urc(at_dev_t *dev)
+void at_process_urc(at_dev_t *dev, uint32_t timeout)
 {
-    const char eol[] = AT_RECV_EOL_1 AT_RECV_EOL_2;
-    assert(sizeof(eol) > 1);
     char buf[AT_BUF_SIZE];
-    char *p;
-    size_t read = 0;
 
-    while (1) {
-        int res = isrpipe_try_read(&dev->isrpipe, buf + read, sizeof(buf) - read);
-        if (!res) {
+    DEBUG("Processing URC (timeout=%" PRIu32 "us)\n", timeout);
+
+    ssize_t res;
+    /* keep reading while received data are shorter than EOL */
+    while ((res = at_readline(dev, buf, sizeof(buf), true, timeout)) <
+           (ssize_t)sizeof(AT_RECV_EOL_1 AT_RECV_EOL_2) - 1) {
+        if (res < 0) {
             return;
         }
-        if (AT_PRINT_INCOMING) {
-            print(buf, res);
-        }
-        read += res;
-        if (buf[read - 1] != eol[sizeof(eol) - 2]) {
-            DEBUG("Not a full line\n");
-            continue;
-        }
-        p = buf;
-        while (((*p == eol[0]) || (sizeof(eol) > 2 && *p == eol[1]) || (*p == ' '))
-               && ((size_t)(p - buf) < read)) {
-            p++;
-        }
-        clist_foreach(&dev->urc_list, _check_urc, p);
-        return;
     }
+    clist_foreach(&dev->urc_list, _check_urc, buf);
 }
 #endif

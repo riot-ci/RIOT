@@ -258,7 +258,7 @@ void at_drain(at_dev_t *dev);
 
 #if defined(MODULE_AT_URC) || DOXYGEN
 /**
- * @brief   add a callback for an unsolicited responce code
+ * @brief   Add a callback for an unsolicited response code
  *
  * @param[in]   dev     device to operate on
  * @param[in]   urc     unsolicited result code to register
@@ -266,7 +266,7 @@ void at_drain(at_dev_t *dev);
 void at_add_urc(at_dev_t *dev, at_urc_t *urc);
 
 /**
- * @brief   remove an unsolicited responce code from the list
+ * @brief   Remove an unsolicited response code from the list
  *
  * @param[in]   dev     device to operate on
  * @param[in]   urc     unsolicited result code to remove
@@ -274,13 +274,12 @@ void at_add_urc(at_dev_t *dev, at_urc_t *urc);
 void at_remove_urc(at_dev_t *dev, at_urc_t *urc);
 
 /**
- * @brief   process out-of-band data received from the device
- *
- * The function returns immediately if no data is available to be read.
+ * @brief   Process out-of-band data received from the device
  *
  * @param[in]   dev     device to operate on
+ * @param[in]   timeout timeout (in usec)
  */
-void at_process_urc(at_dev_t *dev);
+void at_process_urc(at_dev_t *dev, uint32_t timeout);
 #endif
 
 #ifdef __cplusplus
