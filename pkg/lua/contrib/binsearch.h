@@ -81,8 +81,8 @@ extern "C" {
  */
 #define BINSEARCH_STR(arr, nmemb, member, str, n) \
     (_ENSURE_LVALUE(arr), \
-    (binsearch_str((arr), _ARRAY_MEMBER_OFFS(arr, member), _ARRAY_STRIDE(arr), \
-        (nmemb), (str), (n))) \
+     (binsearch_str((arr), _ARRAY_MEMBER_OFFS(arr, member), _ARRAY_STRIDE(arr), \
+                    (nmemb), (str), (n))) \
     )
 
 /**
@@ -94,8 +94,8 @@ extern "C" {
  */
 #define BINSEARCH_STR_P(arr, nmemb, member, str, n) \
     (_ENSURE_LVALUE(arr), \
-    (binsearch_str_p((arr), _ARRAY_MEMBER_OFFS(arr, member), _ARRAY_STRIDE(arr),\
-        (nmemb), (str), (n))) \
+     (binsearch_str_p((arr), _ARRAY_MEMBER_OFFS(arr, member), _ARRAY_STRIDE(arr), \
+                      (nmemb), (str), (n))) \
     )
 
 /**
@@ -125,8 +125,8 @@ int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
  * @return      Address of the element containing the string, or null if it is
  *              not found.
  */
-const void * binsearch_str_p(const void *start, size_t offset, size_t stride,
-                             size_t nmemb, const char *str, size_t n);
+const void *binsearch_str_p(const void *start, size_t offset, size_t stride,
+                            size_t nmemb, const char *str, size_t n);
 
 
 #ifdef __cplusplus

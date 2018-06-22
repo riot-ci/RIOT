@@ -26,23 +26,27 @@ int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
 
     while (lo < hi) {
         size_t mid = (lo + hi) / 2;
-        const char *target = *((const char * const *)(cstart + mid * stride));
+        const char *target = *((const char *const *)(cstart + mid * stride));
         int cmp = strncmp(str, target, n);
 
-        if (cmp == 0)
+        if (cmp == 0) {
             return mid;
-        else if (cmp < 0)
+        }
+        else if (cmp < 0) {
             hi = mid;
-        else /* (cmp > 0) */
+        }
+        else {   /* (cmp > 0) */
             lo = mid + 1;
+        }
     }
     return (-ENOENT);
 }
 
-const void * binsearch_str_p(const void *start, size_t offset, size_t stride,
+const void *binsearch_str_p(const void *start, size_t offset, size_t stride,
                             size_t nmemb, const char *str, size_t n)
 {
     int ix = binsearch_str(start, offset, stride, nmemb, str, n);
 
-    return (ix == (-ENOENT))? NULL : (const uint8_t *)start + ix*stride;
+    return (ix == (-ENOENT)) ? NULL : (const uint8_t *)start + ix * stride;
 }
+

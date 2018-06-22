@@ -1,6 +1,7 @@
 PKG_NAME=lua
 PKG_URL=https://github.com/lua/lua.git
-PKG_VERSION=v5-3-4
+# tag: v5-3-4
+PKG_VERSION=e354c6355e7f48e087678ec49e340ca0696725b1
 PKG_LICENSE=MIT
 
 .PHONY: all
