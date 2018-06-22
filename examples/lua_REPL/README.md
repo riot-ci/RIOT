@@ -1,6 +1,10 @@
+## Lua interactive interpreter
+
 ### About
 
-This example shows how to run a Lua Read-Eval-Print loop.
+This example shows how to run a [Lua](https://www.lua.org/) Read-Eval-Print loop.
+It works in a similar way to the lua shell found in the default lua installation
+in your operating system.
 
 
 ### How to run
@@ -18,3 +22,11 @@ miniterm.py --eol LF --echo /dev/ttyACM0 115200
 
 By default only some of the builtin modules are loaded, to preserve RAM. See
 the definition of `BARE_MINIMUM_MODS` in main.c.
+
+### Using the interpreter
+
+See the [Lua manual](https://www.lua.org/manual/5.3/) for the syntax of the language.
+
+Each piece of single or multi-line input is compiled as a chunk and run. For this
+reason, issuing "local" definitions may not work as expected: the definitions
+will be local to that chunk only.

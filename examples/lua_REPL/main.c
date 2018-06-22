@@ -24,15 +24,19 @@
 #include "lua_run.h"
 #include "repl.lua.h"
 
+/* The basic interpreter+repl needs about 13k ram AT Minimum but we need more
+ * memory in order to do interesting stuff.
+ */
 #define MAIN_LUA_MEM_SIZE (40000)
 
-char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned (__BIGGEST_ALIGNMENT__)));
+static char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIGNMENT__)));
 
-#define BARE_MINIMUM_MODS (LUAR_LOAD_BASE|LUAR_LOAD_IO|LUAR_LOAD_CORO)
+#define BARE_MINIMUM_MODS (LUAR_LOAD_BASE | LUAR_LOAD_IO)
 
 int main(void)
 {
-    printf("%p - %p %zu\n", lua_memory, lua_memory+MAIN_LUA_MEM_SIZE, sizeof(void*));
+    printf("Using memory range for Lua heap: %p - %p, %zu bytes\n",
+           lua_memory, lua_memory + MAIN_LUA_MEM_SIZE, sizeof(void *));
 
     while (1) {
         int status, value;
@@ -42,8 +46,7 @@ int main(void)
                                 BARE_MINIMUM_MODS, &value);
 
         printf("Exited. status: %s, return code %d\n", luaR_strerror(status),
-                                                        value);
-        break;
+               value);
     }
 
     return 0;

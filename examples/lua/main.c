@@ -28,7 +28,7 @@
 #include "main.lua.h"
 
 #define LUA_MEM_SIZE (11000)
-static char lua_mem[LUA_MEM_SIZE];
+static char lua_mem[LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIGNMENT__)));
 
 int lua_run_script(const char *buffer, size_t buffer_len)
 {
@@ -42,7 +42,7 @@ int lua_run_script(const char *buffer, size_t buffer_len)
     luaR_openlibs(L, LUAR_LOAD_BASE);
     luaL_loadbuffer(L, buffer, buffer_len, "lua input script");
 
-    if (lua_pcall(L, 0, 0, 0) != LUA_OK){
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
         puts("Lua script running failed");
         return EINTR;
     }

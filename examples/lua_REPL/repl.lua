@@ -25,17 +25,19 @@ local function re()
     elseif ln == "\n" then
         return _R_CONT
     end
-
+    -- Try to see if we have an expression
     local maybe_code, compile_err = load("return "..ln)
-
-    if maybe_code == nil then
+    -- Try to see if we have a single-line statement
+    if not maybe_code then
         maybe_code, compile_err = load(ln)
     end
-
-    if maybe_code == nil then
+    -- Try a multiline statement
+    if not maybe_code then
+        -- It's not really necessary to use a coroutine, but it shows that they
+        -- work.
         local _get_multiline = coroutine.create(
             function ()
-                coroutine.yield(ln.."\n")
+                coroutine.yield(ln.."\n")   -- We already have the first line of input
                 while 1 do
                     io.write("L.. ")
                     io.flush()
@@ -59,7 +61,7 @@ local function re()
         maybe_code, compile_err = load(get_multiline)
     end
 
-    if maybe_code == nil then
+    if not maybe_code then
         return _R_ERROR, compile_err
     else
         return _R_EVAL, maybe_code
@@ -84,7 +86,7 @@ local function repl()
             return
         elseif action == _R_ERROR then
             print("Compile error:", fn_or_message)
-        end -- (action == _R_CONT)
+        end -- (action == _R_CONT) : do nothing
     end
 end
 

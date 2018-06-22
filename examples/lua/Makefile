@@ -1,4 +1,4 @@
-APPLICATION = lua
+APPLICATION = lua_basic
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
@@ -32,7 +32,7 @@ QUIET ?= 1
 ifneq ($(BOARD),native)
   # This stack size is large enough to run Lua print() functions of
   # various lengths. Other functions untested.
-  CFLAGS += -DTHREAD_STACKSIZE_MAIN=3000
+  CFLAGS += -DTHREAD_STACKSIZE_MAIN='(THREAD_STACKSIZE_DEFAULT+2048)'
 endif
 
 USEPKG += lua

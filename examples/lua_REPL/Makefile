@@ -22,7 +22,7 @@ DEVELHELP ?= 1
 QUIET ?= 1
 
 # This is a lot of stack, should be fixed in the future.
-CFLAGS += -DTHREAD_STACKSIZE_MAIN=8000
+CFLAGS += -DTHREAD_STACKSIZE_MAIN='(THREAD_STACKSIZE_DEFAULT+7000)'
 
 USEPKG += lua
 
