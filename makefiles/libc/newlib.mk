@@ -21,6 +21,12 @@ export LINKFLAGS += -lc
 
 # Search for Newlib include directories
 
+# Try to search for newlib in the standard search path of the compiler for includes
+ifeq (,$(NEWLIB_INCLUDE_DIR))
+  COMPILER_INCLUDE_PATHS := $(shell echo | $(PREFIX)gcc -E -Wp, -v - 2>&1 | grep '^\s' | tr -d '\n')
+  NEWLIB_INCLUDE_DIR := $(firstword $(dir $(wildcard $(addprefix /newlib.h, $(COMPILER_INCLUDE_PATHS)))))
+endif
+
 # Since Clang is not installed as a separate instance for each crossdev target
 # we need to tell it where to look for platform specific includes (Newlib
 # headers instead of Linux/Glibc headers.)
@@ -46,12 +52,8 @@ NEWLIB_INCLUDE_PATTERNS ?= \
 # the patterns above. We use the -isystem gcc/clang argument to add the include
 # directories as system include directories, which means they will not be
 # searched until after all the project specific include directories (-I/path)
-NEWLIB_INCLUDE_DIR ?= $(firstword $(dir $(wildcard $(addprefix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS)))))
-
-# Try to search for newlib in the standard search path of the compiler for includes
 ifeq (,$(NEWLIB_INCLUDE_DIR))
-  COMPILER_INCLUDE_PATHS := $(shell echo | $(PREFIX)gcc -E -Wp, -v - 2>&1 | grep '^\s' | tr -d '\n')
-  NEWLIB_INCLUDE_DIR := $(firstword $(dir $(wildcard $(addprefix /newlib.h, $(COMPILER_INCLUDE_PATHS)))))
+  NEWLIB_INCLUDE_DIR ?= $(firstword $(dir $(wildcard $(addprefix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS)))))
 endif
 
 # If nothing was found we will try to fall back to searching for a cross-gcc in
