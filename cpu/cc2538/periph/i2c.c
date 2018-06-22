@@ -112,14 +112,14 @@ static inline void _i2c_master_enable(bool enable)
         /* enable I2C master function */
         I2CM_CR |= MFE;
         /* enable I2C master interrupts */
-        NVIC_SetPriority(I2C_IRQn, I2C_IRQ_PRIO);
-        NVIC_EnableIRQ(I2C_IRQn);
-        I2CM_IMR = 1;
+        //NVIC_SetPriority(I2C_IRQn, I2C_IRQ_PRIO);
+        //NVIC_EnableIRQ(I2C_IRQn);
+        //I2CM_IMR = 1;
     }
     else {
         /* disable I2C master interrupts */
-        I2CM_IMR = 0;
-        NVIC_DisableIRQ(I2C_IRQn);
+        //I2CM_IMR = 0;
+        //NVIC_DisableIRQ(I2C_IRQn);
         /* disable master function */
         I2CM_CR &= ~(MFE);
     }
