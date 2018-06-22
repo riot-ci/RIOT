@@ -57,8 +57,6 @@
 #define ERROR       BIT(1)
 #define BUSY        BIT(0)
 
-#define ANY_ERROR   (ARBLST | DATACK | ADRACK | ERROR)
-
 /* I2CM_CR Bits */
 #define SFE         BIT(5)  /**< I2C slave function enable */
 #define MFE         BIT(4)  /**< I2C master function enable */
@@ -142,7 +140,7 @@ static inline void _i2c_master_frequency(i2c_speed_t speed)
     I2CM_TPR = (ps - 1);
 }
 
-static uint_fast8_t _i2c_master_status(void)
+static uint_fast8_t _i2c_master_stat_get(void)
 {
     DEBUG("%s\n", __FUNCTION__);
     return I2CM_STAT;
@@ -179,6 +177,30 @@ static inline void _i2c_master_ctrl(uint_fast8_t cmd)
     I2CM_CTRL = cmd;
 }
 
+static inline int _i2c_master_status(void)
+{
+    uint_fast8_t stat = _i2c_master_stat_get();
+    DEBUG (" - I2C master status (%u): ", stat);
+    if (stat & ERROR) {
+        _i2c_master_ctrl(STOP);
+        if (stat & ADRACK) {
+            DEBUG("addr ack lost!\n");
+            return -ENXIO;
+        }
+        if (stat & DATACK) {
+            DEBUG("data ack lost!\n");
+            return -EIO;
+        }
+        if (stat & ARBLST) {
+            DEBUG("lost bus arbitration!\n");
+            return -EAGAIN;
+        }
+        DEBUG("unknown!\n");
+        return -EAGAIN;
+    }
+    DEBUG("okay.\n");
+    return 0;
+}
 void i2c_init(i2c_t dev)
 {
     DEBUG("%s (%i)\n", __FUNCTION__, (int)dev);
@@ -194,7 +216,7 @@ void i2c_init(i2c_t dev)
     _i2c_master_enable(true);
     /* set bus frequency */
     _i2c_master_frequency(SPEED(dev));
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_status());
+    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
 }
 
 int i2c_acquire(i2c_t dev)
@@ -221,7 +243,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
                    void *data, size_t len, uint8_t flags)
 {
     DEBUG("%s\n", __FUNCTION__);
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_status());
+    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
     (void)flags;
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
@@ -234,7 +256,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
 
     /* set slave address for receive */
     _i2c_master_slave_addr(addr, true);
-
+    int rc = 0;
     uint8_t *buf = data;
 
     for (size_t n = 0; n < len; n++) {
@@ -256,34 +278,21 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
         while (_i2c_master_busy() || (cw--)) {}
 
         /* check master status */
-        uint_fast8_t stat = _i2c_master_status();
-        DEBUG ("%s: I2C master status (%u).\n", __FUNCTION__, stat);
-        if (stat & ANY_ERROR) {
-            _i2c_master_ctrl(STOP);
-            DEBUG("\tI2C master error: ");
-            if (stat &  DATACK) {
-                DEBUG("data ack lost!\n");
-                return -EIO;
-            }
-            if (stat & ARBLST) {
-                DEBUG("lost bus arbitration!\n");
-                return -EAGAIN;
-            }
-            DEBUG(" unknown!\n");
-            return -EAGAIN;
+        if ((rc = _i2c_master_status()) > 0) {
+            break;
         }
         /* read data into buffer */
         buf[n] = _i2c_master_data_get();
     }
 
-    return 0;
+    return rc;
 }
 
 int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
                     size_t len, uint8_t flags)
 {
     DEBUG("%s\n", __FUNCTION__);
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_status());
+    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
     (void)flags;
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
@@ -297,6 +306,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
     /* set slave address for write */
     _i2c_master_slave_addr(addr, false);
 
+    int rc = 0;
     const uint8_t *buf = data;
 
     for (size_t n = 0; n < len; n++) {
@@ -317,23 +327,10 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
         while (_i2c_master_busy() || (cw--)) {}
 
         /* check master status */
-        uint_fast8_t stat = _i2c_master_status();
-        DEBUG ("%s: I2C master status (%u).\n", __FUNCTION__, stat);
-        if (stat & ANY_ERROR) {
-            _i2c_master_ctrl(STOP);
-            DEBUG("\tI2C master error: ");
-            if (stat &  DATACK) {
-                DEBUG("data ack lost!\n");
-                return -EIO;
-            }
-            if (stat & ARBLST) {
-                DEBUG("lost bus arbitration!\n");
-                return -EAGAIN;
-            }
-            DEBUG(" unknown!\n");
-            return -EAGAIN;
+        if ((rc = _i2c_master_status()) > 0) {
+            break;
         }
     }
 
-    return 0;
+    return rc;
 }
