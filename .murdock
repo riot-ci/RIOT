@@ -79,7 +79,7 @@ get_supported_boards() {
 get_supported_toolchains() {
     local board=$1
 
-    if [ "$board" = "native" ];
+    if [ "$board" = "native" ]; then
         echo "gnu llvm"
     else
         echo "gnu"
