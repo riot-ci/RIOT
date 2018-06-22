@@ -71,7 +71,8 @@ static mutex_t lock = MUTEX_INIT;
 void isr_i2c(void)
 {
     /* Clear the interrupt flag */
-    I2CM_ICR = 1;
+    I2CM_ICR = 0x1;
+    I2CM_MIS = 0x1;
 
     cortexm_isr_end();
 }
@@ -108,8 +109,16 @@ static inline void _i2c_master_enable(bool enable)
     if (enable) {
         /* enable I2C master function */
         I2CM_CR |= MFE;
+        /* Enable I2C master interrupts */
+        NVIC_SetPriority(I2C_IRQn, I2C_IRQ_PRIO);
+        NVIC_EnableIRQ(I2C_IRQn);
+        /* Enable I2C master interrupts */
+        I2CM_IMR = 1;
     }
     else {
+        /* Disable I2C master interrupts */
+        I2CM_IMR = 0;
+        NVIC_DisableIRQ(I2C_IRQn);
         /* disable master function */
         I2CM_CR &= ~(MFE);
     }
@@ -307,6 +316,10 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_write_bytes: device busy!\n");
+        return -EAGAIN;
+    }
+    if (!(_i2c_master_busbusy()) && (flags & I2C_NOSTART)) {
+        DEBUG("i2c_read_bytes: bus not busy!\n");
         return -EAGAIN;
     }
 
