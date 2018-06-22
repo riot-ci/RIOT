@@ -48,6 +48,12 @@ NEWLIB_INCLUDE_PATTERNS ?= \
 # searched until after all the project specific include directories (-I/path)
 NEWLIB_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_PATTERNS)/newlib*))
 
+# Try to search for newlib in the standard search path of the compiler for includes
+ifeq (,$(NEWLIB_INCLUDE_DIR))
+  COMPILER_INCLUDE_PATHS := $(shell echo | $(PREFIX)gcc -E -Wp, -v - 2>&1 | grep '^\s' | tr -d '\n')
+  NEWLIB_INCLUDE_DIR ?= $(firstword $(wildcard $(COMPILER_INCLUDE_PATHS)/newlib*))
+endif
+
 # If nothing was found we will try to fall back to searching for a cross-gcc in
 # the current PATH and use a relative path for the includes
 ifeq (,$(NEWLIB_INCLUDE_DIR))
