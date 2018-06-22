@@ -46,7 +46,7 @@ NEWLIB_INCLUDE_PATTERNS ?= \
 # the patterns above. We use the -isystem gcc/clang argument to add the include
 # directories as system include directories, which means they will not be
 # searched until after all the project specific include directories (-I/path)
-NEWLIB_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_PATTERNS)))
+NEWLIB_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_PATTERNS)/newlib*))
 
 # If nothing was found we will try to fall back to searching for a cross-gcc in
 # the current PATH and use a relative path for the includes
@@ -65,7 +65,7 @@ ifeq ($(TOOLCHAIN),llvm)
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
-  NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(addsuffix /newlib-nano, $(NEWLIB_INCLUDE_PATTERNS)) $(addsuffix /newlib/nano, $(NEWLIB_INCLUDE_PATTERNS))))
+  NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_DIR)/newlib-nano $(NEWLIB_INCLUDE_DIR)/newlib/nano))
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
   INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
