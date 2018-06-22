@@ -63,6 +63,7 @@
 #define SCL_HP      (4U)    /**< SCL High Period (fixed at 4). */
 
 #define CMD_WAIT    (16U)   /**< small delay to wait for I2C command */
+#define RST_WAIT    (32U)   /**< reset delay */
 
 #define INVALID_SPEED_MASK  (0x0f)
 
@@ -83,7 +84,7 @@ static inline void _i2c_reset(void)
     /* Reset I2C peripheral */
     SYS_CTRL_SRI2C |= 1;
     /* wait shortly for reset */
-    for (unsigned delay = 0; delay < 32; ++delay) {};
+    for (unsigned delay = 0; delay < RST_WAIT; ++delay) {}
     /* clear periph reset trigger */
     SYS_CTRL_SRI2C &= ~1;
 }
@@ -185,7 +186,7 @@ static inline void _i2c_master_ctrl(uint_fast8_t cmd)
 static inline int _i2c_master_status(void)
 {
     uint_fast8_t stat = _i2c_master_stat_get();
-    DEBUG (" - I2C master status (%u): ", stat);
+    DEBUG(" - I2C master status (0x%x).\n", stat);
     if (stat & BUSY) {
         DEBUG("busy!\n");
         return 0;
@@ -228,7 +229,7 @@ void i2c_init(i2c_t dev)
     _i2c_master_enable(true);
     /* set bus frequency */
     _i2c_master_frequency(SPEED(dev));
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
+    DEBUG(" - I2C master status (0x%x).\n", _i2c_master_stat_get());
 }
 
 int i2c_acquire(i2c_t dev)
@@ -255,11 +256,13 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
                    void *data, size_t len, uint8_t flags)
 {
     DEBUG("%s\n", __FUNCTION__);
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
-    (void)flags;
+    DEBUG(" - I2C master status (0x%x).\n", _i2c_master_stat_get());
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
         return -EINVAL;
+    }
+    if (flags & (I2C_REG16 | I2C_ADDR10)) {
+        return -EOPNOTSUPP;
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_read_bytes: device busy!\n");
@@ -308,11 +311,13 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
                     size_t len, uint8_t flags)
 {
     DEBUG("%s\n", __FUNCTION__);
-    DEBUG(" - I2C master status (%u).\n", _i2c_master_stat_get());
-    (void)flags;
+    DEBUG(" - I2C master status (0x%x).\n", _i2c_master_stat_get());
 
     if ((dev >= I2C_NUMOF) || (data == NULL) || (len == 0)) {
         return -EINVAL;
+    }
+    if (flags & (I2C_REG16 | I2C_ADDR10)) {
+        return -EOPNOTSUPP;
     }
     if (_i2c_master_busy()) {
         DEBUG("i2c_write_bytes: device busy!\n");
