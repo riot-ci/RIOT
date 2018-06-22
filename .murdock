@@ -92,21 +92,34 @@ get_supported_boards() {
     done | $(_greplist $BOARDS)
 }
 
-# given an app dir as parameter, print "$appdir board" for each supported
-# board. Only print for boards in $BOARDS.
-get_app_board_pairs() {
+get_supported_toolchains() {
+    local board=$1
+
+    if [ "$board" = "native" ]; then
+        echo "gnu llvm"
+    else
+        echo "gnu"
+    fi
+}
+
+# given an app dir as parameter, print "$appdir board toolchain" for each
+# supported board and toolchain. Only print for boards in $BOARDS.
+get_app_board_toolchain_triplets() {
     local appdir=$1
     for board in $(get_supported_boards $appdir)
     do
-        echo $appdir $board
+        for toolchain in $(get_supported_toolchains $board)
+        do
+            echo $appdir $board $toolchain
+        done
     done | $(_greplist $BOARDS)
 }
 
-# use dwqc to create full "appdir board" compile job list
+# use dwqc to create full "appdir board toolchain" compile job list
 get_compile_jobs() {
     get_apps | \
         dwqc ${DWQ_ENV} -s \
-        "$0 get_app_board_pairs \${1}" \
+        "$0 get_app_board_toolchain_triplets \${1}" \
         | xargs '-d\n' -n 1 echo $0 compile
 }
 
@@ -115,10 +128,11 @@ print_worker() {
         echo "-- running on worker ${DWQ_WORKER} thread ${DWQ_WORKER_THREAD}, build number $DWQ_WORKER_BUILDNUM."
 }
 
-# compile one app for one board. delete intermediates.
+# compile one app for one board with one toolchain. delete intermediates.
 compile() {
     local appdir=$1
     local board=$2
+    local toolchain=$3
 
     [ "$board" = "makefile_broken" ] && error "$0: Makefile in \"$appdir\" seems to be broken!"
 
@@ -132,12 +146,12 @@ compile() {
     print_worker
 
     # sanity checks
-    [ $# -ne 2 ] && error "$0: compile: invalid parameters (expected \$appdir \$board)"
+    [ $# -ne 3 ] && error "$0: compile: invalid parameters (expected \$appdir \$board \$toolchain)"
     [ ! -d "$appdir" ] && error "$0: compile: error: application directory \"$appdir\" doesn't exist"
     [ ! -d "boards/$board" ] && error "$0: compile: error: board directory \"boards/$board\" doesn't exist"
 
     # compile
-    CCACHE_BASEDIR="$(pwd)" BOARD=$board RIOT_CI_BUILD=1 \
+    CCACHE_BASEDIR="$(pwd)" BOARD=$board TOOLCHAIN=$toolchain RIOT_CI_BUILD=1 \
         make -C${appdir} clean all -j${JOBS:-4}
     RES=$?
 
