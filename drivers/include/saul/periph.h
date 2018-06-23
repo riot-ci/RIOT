@@ -47,11 +47,11 @@ typedef enum {
  * @brief   Direct mapped GPIO configuration values
  */
 typedef struct {
-    const char *name;             /**< name of the device(s) on this pin */
-    saul_ctxt_list_t ctxtlist;    /**< bit list of pins to map */
-    gpio_t pin;                   /**< GPIO pin offset for ctxtlist */
-    gpio_mode_t mode;             /**< pin mode to use */
-    saul_gpio_flags_t flags;      /**< Configuration flags */
+    const char *name;            /**< name of the device(s) on this pin */
+    gpio_t pin;                  /**< GPIO pin offset for ctxtlist */
+    saul_ctxt_list_t pinlist;    /**< bit list of pins to map */
+    gpio_mode_t mode;            /**< pin mode to use */
+    saul_gpio_flags_t flags;     /**< Configuration flags */
 } saul_gpio_params_t;
 #endif /* MODULE_SAUL_GPIO */
 
@@ -61,8 +61,8 @@ typedef struct {
  */
 typedef struct {
     const char *name;             /**< name of the device(s) on this pin */
-    saul_ctxt_list_t ctxtlist;    /**< bit list of lines to expose */
     adc_t line;                   /**< ADC line offset for ctxtlist */
+    saul_ctxt_list_t linelist;    /**< bit list of lines to expose */
     adc_res_t res;                /**< ADC resolution */
 } saul_adc_params_t;
 #endif /* MODULE_SAUL_ADC */
