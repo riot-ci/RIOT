@@ -27,100 +27,65 @@
 
 #include "saul_reg.h"
 
-/* this function does not check, if the given device is valid */
-static void probe(int num, saul_reg_t *dev, int ctxt)
+/* this function does not check if the given device is valid */
+static void probe(unsigned num, saul_ctxt_ptr_t ctxt_ptr, void *arg)
 {
+    (void)arg;
+
     int dim;
     phydat_t res;
 
-    dim = saul_reg_read(dev, ctxt, &res);
+    dim = saul_reg_read(ctxt_ptr.reg, ctxt_ptr.ctxt, &res);
     if (dim <= 0) {
-        printf("error: failed to read from device #%i\n", num);
+        printf("error: failed to read from device #%u\n", num);
         return;
     }
 
     /* print results */
-    printf("Reading from #%i (", num);
+    printf("Reading from #%u (", num);
 
-    /* replace context in name */
-    printf(dev->name, ctxt);
+    /* replace context item number in name */
+    printf(ctxt_ptr.reg->name, ctxt_ptr.num);
 
-    printf("|%s)\n", saul_class_to_str(dev->driver->type));
+    printf("|%s)\n", saul_class_to_str(ctxt_ptr.reg->driver->type));
 
     phydat_dump(&res, dim);
 }
 
 static void probe_all(void)
 {
-    saul_reg_t *dev = saul_reg;
-    unsigned int i = 0;
+    saul_reg_iter(probe, NULL);
+}
 
-    while (dev) {
-        /* if ctxtlist is empty, ignore it */
-        if (dev->ctxtlist == 0) {
-            probe(i++, dev, 0);
-            puts("");
-            dev = dev->next;
-            continue;
-        }
+static void list_print_item(unsigned num, saul_ctxt_ptr_t ctxt_ptr, void *arg)
+{
+    (void)arg;
 
-        for (unsigned j = 0; j <= sizeof(dev->ctxtlist); j++) {
-            /* check to see if this context bit is enabled */
-            if ((dev->ctxtlist >> j) & 0x1) {
-                probe(i++, dev, j);
-                puts("");
-            }
-        }
+    printf("#%u\t%s\t", num, saul_class_to_str(ctxt_ptr.reg->driver->type));
 
-        dev = dev->next;
-    }
+    /* replace context item number in name */
+    printf(ctxt_ptr.reg->name, ctxt_ptr.num);
+
+    /* print newline */
+    puts("");
 }
 
 static void list(void)
 {
-    saul_reg_t *dev = saul_reg;
-    int i = 0;
-
-    if (dev) {
+    if (saul_reg) {
         puts("ID\tClass\t\tName");
     }
     else {
         puts("No devices found");
     }
 
-    while (dev) {
-        /* if ctxtlist is empty, ignore it */
-        if (dev->ctxtlist == 0) {
-            printf("#%i\t%s\t%s\n",
-                   i++, saul_class_to_str(dev->driver->type), dev->name);
-            dev = dev->next;
-            continue;
-        }
-
-        for (unsigned j = 0; j <= sizeof(dev->ctxtlist); j++) {
-            /* check to see if this context bit is enabled */
-            if ((dev->ctxtlist >> j) & 0x1) {
-                printf("#%u\t%s\t", i, saul_class_to_str(dev->driver->type));
-
-                /* replace context in name */
-                printf(dev->name, j);
-
-                /* print newline */
-                puts("");
-
-                /* increment list counter, as if context is real list item */
-                i++;
-            }
-        }
-
-        dev = dev->next;
-    }
+    saul_reg_iter(list_print_item, NULL);
 }
 
 static void read(int argc, char **argv)
 {
-    int num;
-    saul_ctxt_ptr_t dev;
+    unsigned num;
+    saul_ctxt_ptr_t ctxt_ptr;
 
     if (argc < 3) {
         printf("usage: %s %s <device id>|all\n", argv[0], argv[1]);
@@ -132,18 +97,17 @@ static void read(int argc, char **argv)
     }
     /* get device id */
     num = atoi(argv[2]);
-    dev = saul_reg_find_nth(num);
-    if (dev.reg == NULL) {
+    if (saul_reg_find_nth(&ctxt_ptr, num) == NULL) {
         puts("error: undefined device id given");
         return;
     }
-    probe(num, dev.reg, dev.ctxt);
+    probe(num, ctxt_ptr, NULL);
 }
 
 static void write(int argc, char **argv)
 {
     int num, dim;
-    saul_ctxt_ptr_t dev;
+    saul_ctxt_ptr_t ctxt_ptr;
     phydat_t data;
 
     if (argc < 4) {
@@ -152,8 +116,7 @@ static void write(int argc, char **argv)
         return;
     }
     num = atoi(argv[2]);
-    dev = saul_reg_find_nth(num);
-    if (dev.reg == NULL) {
+    if (saul_reg_find_nth(&ctxt_ptr, num) == NULL) {
         puts("error: undefined device given");
         return;
     }
@@ -167,12 +130,12 @@ static void write(int argc, char **argv)
     /* print values before writing */
     printf("Writing to device #%i - ", num);
     /* replace context in name */
-    printf(dev.reg->name, dev.ctxt);
+    printf(ctxt_ptr.reg->name, ctxt_ptr.num);
     puts("");
 
     phydat_dump(&data, dim);
     /* write values to device */
-    dim = saul_reg_write(dev.reg, dev.ctxt, &data);
+    dim = saul_reg_write(ctxt_ptr.reg, ctxt_ptr.ctxt, &data);
     if (dim <= 0) {
         if (dim == -ENOTSUP) {
             printf("error: device #%i is not writable\n", num);
