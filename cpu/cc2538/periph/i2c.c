@@ -142,19 +142,16 @@ static inline void _i2c_master_frequency(i2c_speed_t speed)
 
 static uint_fast8_t _i2c_master_stat_get(void)
 {
-    DEBUG("%s\n", __FUNCTION__);
     return I2CM_STAT;
 }
 
 static bool _i2c_master_busy(void)
 {
-    DEBUG("%s\n", __FUNCTION__);
     return ((I2CM_STAT & BUSY) ? true : false);
 }
 
 static bool _i2c_master_busbusy(void)
 {
-    DEBUG("%s\n", __FUNCTION__);
     return ((I2CM_STAT & BUSBSY) ? true : false);
 }
 
@@ -173,8 +170,9 @@ static void _i2c_master_data_put(uint8_t data)
 
 static uint_fast8_t _i2c_master_data_get(void)
 {
-    DEBUG("%s\n", __FUNCTION__);
-    return I2CM_DR;
+    uint_fast8_t data = I2CM_DR;
+    DEBUG("%s (0x%x)\n", __FUNCTION__, data);
+    return data;
 }
 
 static inline void _i2c_master_ctrl(uint_fast8_t cmd)
@@ -185,8 +183,9 @@ static inline void _i2c_master_ctrl(uint_fast8_t cmd)
 
 static inline int _i2c_master_status(void)
 {
+    DEBUG("%s\n", __FUNCTION__);
     uint_fast8_t stat = _i2c_master_stat_get();
-    DEBUG(" - I2C master status (0x%x).\n", stat);
+    DEBUG(" - I2C master status (0x%x): ", stat);
     if (stat & BUSY) {
         DEBUG("busy!\n");
         return 0;
@@ -297,7 +296,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
         while (_i2c_master_busy() || (cw--)) {}
 
         /* check master status */
-        if ((rc = _i2c_master_status()) > 0) {
+        if ((rc = _i2c_master_status()) != 0) {
             break;
         }
         /* read data into buffer */
@@ -352,7 +351,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data,
         while (_i2c_master_busy() || (cw--)) {}
 
         /* check master status */
-        if ((rc = _i2c_master_status()) > 0) {
+        if ((rc = _i2c_master_status()) != 0) {
             break;
         }
     }
