@@ -63,21 +63,21 @@ void auto_init_adc(void)
         saul_reg_entries[i].driver = &adc_saul_driver;
 
         /* initialize the ADC line(s) */
-        if (p->ctxtlist == 0) {
-            /* ignore empty ctxtlist */
+        if (p->linelist == 0) {
+            /* ignore empty linelist */
             adc_init(p->line);
         }
         else {
-            for (unsigned j = 0; j < sizeof(p->ctxtlist); j++) {
+            for (unsigned j = 0; j < 8 * sizeof(p->linelist); j++) {
                 /* check to see if this context bit is enabled */
-                if ((p->ctxtlist >> j) & 0x1) {
+                if ((p->linelist >> j) & 0x1) {
                     adc_init(p->line + j);
                 }
             }
         }
 
         /* populate context list */
-        saul_reg_entries[i].ctxtlist = p->ctxtlist;
+        saul_reg_entries[i].ctxtlist = p->linelist;
 
         /* add to registry */
         saul_reg_add(&(saul_reg_entries[i]));

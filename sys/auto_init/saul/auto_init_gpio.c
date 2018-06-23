@@ -83,17 +83,17 @@ void auto_init_gpio(void)
         }
 
         /* initialize the GPIO pin(s) */
-        if (p->ctxtlist == 0) {
-            /* ignore empty ctxtlist */
+        if (p->pinlist == 0) {
+            /* ignore empty pinlist */
             gpio_init(p->pin, p->mode);
             if (s.val[0] != -1) {
                 saul_reg_entries[i].driver->write(p, 0, &s);
             }
         }
         else {
-            for (unsigned j = 0; j < sizeof(p->ctxtlist); j++) {
+            for (unsigned j = 0; j < 8 * sizeof(p->pinlist); j++) {
                 /* check to see if this context bit is enabled */
-                if ((p->ctxtlist >> j) & 0x1) {
+                if ((p->pinlist >> j) & 0x1) {
                     gpio_init(p->pin + j, p->mode);
                     if (s.val[0] != -1) {
                         saul_reg_entries[i].driver->write(p, j, &s);
@@ -103,7 +103,7 @@ void auto_init_gpio(void)
         }
 
         /* populate context list */
-        saul_reg_entries[i].ctxtlist = p->ctxtlist;
+        saul_reg_entries[i].ctxtlist = p->pinlist;
 
         /* add to registry */
         saul_reg_add(&(saul_reg_entries[i]));
