@@ -106,15 +106,15 @@ static void test_reg_find_nth(void)
 {
     saul_ctxt_ptr_t ctxt_ptr;
 
-    saul_reg_t *dev = saul_reg_find_nth(ctxt_ptr, 0);
+    saul_reg_t *dev = saul_reg_find_nth(&ctxt_ptr, 0);
     TEST_ASSERT_NOT_NULL(dev);
     TEST_ASSERT_EQUAL_STRING("S0", dev->name);
 
-    dev = saul_reg_find_nth(ctxt_ptr, 2);
+    dev = saul_reg_find_nth(&ctxt_ptr, 2);
     TEST_ASSERT_NOT_NULL(dev);
     TEST_ASSERT_EQUAL_STRING("S2", dev->name);
 
-    dev = saul_reg_find_nth(ctxt_ptr, 17);
+    dev = saul_reg_find_nth(&ctxt_ptr, 17);
     TEST_ASSERT_NULL(dev);
 }
 
