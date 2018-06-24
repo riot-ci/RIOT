@@ -868,14 +868,13 @@ int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
     }
     coap_hdr_set_code(pdu->hdr, code);
 
-    unsigned header_len  = sizeof(coap_hdr_t) + coap_get_token_len(pdu);
-    bool has_obs_register = (coap_get_observe(pdu) == COAP_OBS_REGISTER);
+    unsigned header_len  = coap_get_total_hdr_len(pdu);
 
     pdu->options_len = 0;
     pdu->payload     = buf + header_len;
-    pdu->payload_len = len - (pdu->payload - buf);
+    pdu->payload_len = len - header_len;
 
-    if (has_obs_register) {
+    if (coap_get_observe(pdu) == COAP_OBS_REGISTER) {
         /* generate initial notification value */
         uint32_t now       = xtimer_now_usec();
         pdu->observe_value = (now >> GCOAP_OBS_TICK_EXPONENT) & 0xFFFFFF;
