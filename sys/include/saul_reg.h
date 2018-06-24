@@ -39,7 +39,6 @@ extern "C" {
 /**
  * @brief   SAUL context list type
  */
-#define SAUL_HAVE_CTXT_LIST_T
 typedef uint16_t saul_ctxt_list_t;
 #endif
 
@@ -163,9 +162,9 @@ int saul_reg_read(saul_reg_t *dev, uint8_t ctxt, phydat_t *res);
 /**
  * @brief   Write data to the given device
  *
- * @param[in] dev        pointer to device to write to
- * @param[in] context    context for device to write to
- * @param[in] data       data to write to the device
+ * @param[in] dev     pointer to device to write to
+ * @param[in] ctxt    context for device to write to
+ * @param[in] data    data to write to the device
  *
  * @return      the number of data elements processed by the device
  * @return      -ENODEV if given device is invalid
