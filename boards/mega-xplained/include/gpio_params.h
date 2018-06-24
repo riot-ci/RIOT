@@ -38,7 +38,7 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .pin = BTN_PORT_PIN0,
         .pinlist = (1 << (BTN0_PIN - BTN_PORT_PIN0))
                    | (1 << (BTN1_PIN - BTN_PORT_PIN0)),
-        .mode = BTN_MODE,
+        .mode = BTN0_MODE,
         .flags = SAUL_GPIO_INVERTED,
     },
     /* BTN2, LED0,2 currently unsupported due to lack of GPIO_OD support */
@@ -47,7 +47,7 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .pin = LED_PORT_PIN0,
         .pinlist = (1 << (LED1_PIN - LED_PORT_PIN0))
                    | (1 << (LED3_PIN - LED_PORT_PIN0)),
-        .mode = LED_MODE,
+        .mode = LED1_MODE,
         .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     }
 };
