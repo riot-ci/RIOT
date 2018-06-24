@@ -999,6 +999,7 @@ int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val)
     size_t key_len = strlen(key);
     size_t val_len = (val) ? (strlen(val) + 1) : 0;
 
+    /* add 2 for '=' and null terminator */
     if ((key_len + val_len + 2) >= NANOCOAP_URI_MAX) {
         return -1;
     }
