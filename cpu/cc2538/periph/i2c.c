@@ -194,6 +194,9 @@ static inline int _i2c_master_status(void)
         _i2c_master_ctrl(STOP);
         unsigned cw = CMD_WAIT;
         while (_i2c_master_busy() || (cw--)) {}
+        _i2c_master_ctrl(0x0);
+        cw = CMD_WAIT;
+        while (_i2c_master_busy() || (cw--)) {}
         if (stat & ADRACK) {
             DEBUG("addr ack lost!\n");
             return -ENXIO;
