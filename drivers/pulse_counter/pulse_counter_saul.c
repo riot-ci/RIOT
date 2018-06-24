@@ -33,7 +33,7 @@ static int read_pulse_counter(const void *dev, const uint8_t ctxt, phydat_t *res
     return 1;
 }
 
-static int write_pulse_counter(const void *dev, const uint8_t ctxt, phydat_t *res)
+static int write_pulse_counter(const void *dev, const uint8_t ctxt, phydat_t *data)
 {
     (void)ctxt;
 
