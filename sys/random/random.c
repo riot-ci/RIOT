@@ -74,7 +74,6 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b)
             if (highest_pow2 << 1) {
                 random = (random % (highest_pow2 << 1) );
             }
-            /* get new value in same interval if max. already reached */
         }
         return (random + a);
     }

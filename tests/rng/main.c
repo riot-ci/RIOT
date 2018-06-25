@@ -107,7 +107,7 @@ static int cmd_dump(int argc, char **argv)
         test_dump_range(samples, low_thresh, high_thresh);
     }
     else {
-        printf("usage: %s [samples] [lower-bound upper-bound]", argv[0]);
+        printf("usage: %s [samples] [lower-bound upper-bound]\n", argv[0]);
     }
 
 
@@ -251,7 +251,7 @@ static int cmd_speed(int argc, char **argv)
         test_speed_range(duration, low_thresh, high_thresh);
     }
     else {
-        printf("usage: %s [duration] [lower-bound upper-bound]", argv[0]);
+        printf("usage: %s [duration] [lower-bound upper-bound]\n", argv[0]);
     }
 
     return 0;
