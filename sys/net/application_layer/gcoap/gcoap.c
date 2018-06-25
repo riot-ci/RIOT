@@ -661,7 +661,8 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
     if (hdrlen > 0) {
         coap_pkt_init(pdu, buf, len, hdrlen);
         coap_opt_add_string(pdu, COAP_OPT_URI_PATH, path, '/');
-        /* placeholder until gcoap_finish() */
+        /* Content-Format specified in gcoap_finish(), after payload written.
+         * Must reserve space for it before payload written. */
         coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
         return 0;
     }
@@ -881,7 +882,8 @@ int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
         coap_opt_add_uint(pdu, COAP_OPT_OBSERVE, pdu->observe_value);
     }
 
-    /* placeholder until gcoap_finish() */
+    /* Content-Format specified in gcoap_finish(), after payload written.
+     * Must reserve space for it before payload written. */
     coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
 
     return 0;
@@ -910,7 +912,8 @@ int gcoap_obs_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
         pdu->observe_value = (now >> GCOAP_OBS_TICK_EXPONENT) & 0xFFFFFF;
         coap_opt_add_uint(pdu, COAP_OPT_OBSERVE, pdu->observe_value);
 
-        /* placeholder until gcoap_finish() */
+        /* Content-Format specified in gcoap_finish(), after payload written.
+         * Must reserve space for it before payload written. */
         coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
 
         return GCOAP_OBS_INIT_OK;
