@@ -54,3 +54,27 @@ void random_bytes(uint8_t *target, size_t n)
         *target++ = *random_pos++;
     }
 }
+
+uint32_t random_uint32_range(uint32_t a, uint32_t b)
+{
+    uint32_t range = b - a;
+    uint32_t highest_pow2 = (1 << bitarithm_msb(range));
+    uint32_t random = random_uint32();
+
+    /* check if range is a power of two */
+    if (!(range % highest_pow2)) {
+        return (random % range) + a;
+    }
+    else {
+        /* get random numbers until value is smaller than range */
+        while (random >= range) {
+            random = random_uint32();
+            /* get new value from next power of two interval
+             * else, get new random number */
+            if (highest_pow2 << 1) {
+                random = (random % (highest_pow2 << 1) );
+            }
+        }
+        return (random + a);
+    }
+}
