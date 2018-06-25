@@ -672,18 +672,32 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
     }
 }
 
+/*
+ * Expect a placeholder Content-Format option already has been written with
+ * pseudo-value COAP_FORMAT_NO_PAYLOAD, which is 3 bytes long. So, two tasks
+ * here: Adjust or remove Content-Format option based on the 'format'
+ * parameter provided here, and then adjust the position of subsequent options
+ * and the payload. First these adjustments are performed on the options array
+ * in the PDU struct, and then on the contents of the buffer itself.
+ *
+ * Finally, the COAP_FORMAT_NO_PAYLOAD value is one byte longer than the
+ * maximum possible value for the Content-Format option. This extra byte
+ * guarantees space to insert the payload marker before the payload.
+ */
 ssize_t gcoap_finish(coap_pkt_t *pdu, size_t payload_len, unsigned format)
 {
+    /* offset for Content-Format option in options array; use UINT_MAX as
+     * sentinel value until found */
     unsigned format_offset = UINT_MAX;
     unsigned len_delta = 0;     /* buffer length to move forward */
-    uint8_t *move_pos = 0;      /* buffer position to move forward */
+    uint8_t *move_pos = 0;      /* starting buffer position to move forward */
 
-    /* Remove or adjust Content-Format option for request, if any.
-     * Assumes current payload format is COAP_FORMAT_NO_PAYLOAD */
+    /* update options array */
     for (unsigned i = 0; i < pdu->options_len; i++) {
         if (pdu->options[i].opt_num == COAP_OPT_CONTENT_FORMAT) {
-            /* assume option value is COAP_FORMAT_NO_PAYLOAD */
             format_offset = i;
+            /* determine length of Content-Format option; we expect it to be
+             * 4 bytes, but read PDU struct to be sure */
             if (pdu->options_len > (i + 1)) {
                 len_delta = pdu->options[i+1].offset - pdu->options[i].offset;
             }
@@ -691,36 +705,38 @@ ssize_t gcoap_finish(coap_pkt_t *pdu, size_t payload_len, unsigned format)
                 len_delta = (pdu->payload - (uint8_t *)pdu->hdr)
                                 - pdu->options[i].offset;
             }
+            assert(len_delta == 4);
             if (format == COAP_FORMAT_NONE) {
                 pdu->options_len--;
             }
             else {
-                /* new format must be shorter; COAP_FORMAT_NO_PAYLOAD is 3 bytes */
+                /* write actual option value and finalize position delta for
+                 * following options and payload */
                 len_delta -= coap_put_option_ct(
                                 (uint8_t *)pdu->hdr + pdu->options[i].offset,
                                 (i > 0) ? pdu->options[i-1].opt_num : 0, format);
             }
         }
         else if (format_offset < UINT_MAX) {
+            /* Content-Format option already found, adjust following options */
+            if (!move_pos) {
+                /* buffer moves forward starting here */
+                move_pos = (uint8_t *)pdu->hdr + pdu->options[i].offset;
+            }
             if (format == COAP_FORMAT_NONE) {
-                if (!move_pos) {
-                    move_pos = (uint8_t *)pdu->hdr + pdu->options[i].offset;
-                }
-                /* move following options forward */
+                /* Content-Format option removed, so update PDU struct array
+                 * and move buffer offset forward */
                 pdu->options[i-1].opt_num = pdu->options[i].opt_num;
                 pdu->options[i-1].offset  = pdu->options[i].offset - len_delta;
             }
             else {
-                if (!move_pos) {
-                    move_pos = (uint8_t *)pdu->hdr + pdu->options[i].offset;
-                }
-                /* move offset forward */
+                /* otherwise, just move buffer offset forward */
                 pdu->options[i].offset -= len_delta;
             }
         }
     }
 
-    /* first move any trailing options by len_delta */
+    /* Update buffer. First move any trailing options by len_delta. */
     if (move_pos) {
         memmove(move_pos - len_delta, move_pos, pdu->payload - move_pos);
     }
