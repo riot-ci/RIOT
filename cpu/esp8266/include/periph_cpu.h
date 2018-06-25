@@ -62,7 +62,7 @@ extern "C" {
 /**
  * @brief   Define CPU specific number of GPIO pins
  */
-#define GPIO_PIN_NUMOF  16
+#define GPIO_PIN_NUMOF  GPIO_PIN_COUNT+1
 
 /**
  * @name   Predefined GPIO names
@@ -84,6 +84,7 @@ extern "C" {
 #define GPIO13      (GPIO_PIN(PORT_GPIO,13))
 #define GPIO14      (GPIO_PIN(PORT_GPIO,14))
 #define GPIO15      (GPIO_PIN(PORT_GPIO,15))
+#define GPIO16      (GPIO_PIN(PORT_GPIO,16))
 /** @} */
 
 #ifndef DOXYGEN
@@ -103,6 +104,7 @@ extern "C" {
 #define GPIO13_MASK (BIT(13))
 #define GPIO14_MASK (BIT(14))
 #define GPIO15_MASK (BIT(15))
+#define GPIO16_MASK (BIT(16))
 
 /**
  * @brief   Override flank selection values
@@ -142,6 +144,11 @@ typedef enum {
 
 #define SPI_DEV(x)  ((unsigned int)(x+1))
 #define SPI_NUMOF   1
+
+#define SPI_MISO_GPIO   GPIO12
+#define SPI_MOSI_GPIO   GPIO13
+#define SPI_SCK_GPIO    GPIO14
+#define SPI_CS0_GPIO    GPIO15
 
 #define PERIPH_SPI_NEEDS_TRANSFER_BYTE
 #define PERIPH_SPI_NEEDS_TRANSFER_REG

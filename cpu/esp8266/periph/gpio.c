@@ -68,14 +68,15 @@ _gpio_pin_usage_t _gpio_pin_usage [GPIO_PIN_NUMOF] =
    _GPIO,   /* gpio12 */
    _GPIO,   /* gpio13 */
    _GPIO,   /* gpio14 */
-   _GPIO    /* gpio15 */
+   _GPIO,   /* gpio15 */
+   _GPIO    /* gpio16 */
 };
 
 /* TODO GPIO16 handling */
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
-    CHECK_PARAM_RET(pin < GPIO_PIN_COUNT, -1);
+    CHECK_PARAM_RET(pin < GPIO_PIN_NUMOF, -1);
 
     /* check whether pin can be used as GPIO or is used in anyway else */
     switch (_gpio_pin_usage[pin]) {
@@ -85,6 +86,44 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
         case _SPIF: LOG_ERROR("GPIO%d is used as SPI flash.\n", pin); return -1;
         case _UART: LOG_ERROR("GPIO%d is used as UART interface.\n", pin); return -1;
         default: break;
+    }
+
+    /* GPIO16 requires separate handling */
+    if (pin == GPIO16) {
+        RTC.GPIO_CFG[3] = (RTC.GPIO_CFG[3] & 0xffffffbc) | BIT(0);
+        RTC.GPIO_CONF = RTC.GPIO_CONF & ~RTC_GPIO_CONF_OUT_ENABLE;
+
+        switch (mode) {
+            case GPIO_OUT:
+                RTC.GPIO_ENABLE = RTC.GPIO_OUT | RTC_GPIO_CONF_OUT_ENABLE;
+                break;
+
+            case GPIO_OD:
+                LOG_ERROR("GPIO mode GPIO_OD is not supported for GPIO16.\n");
+                return -1;
+
+            case GPIO_OD_PU:
+                LOG_ERROR("GPIO mode GPIO_OD_PU is not supported for GPIO16.\n");
+                return -1;
+
+            case GPIO_IN:
+                RTC.GPIO_ENABLE = RTC.GPIO_OUT & ~RTC_GPIO_CONF_OUT_ENABLE;
+                RTC.GPIO_CFG[3] &= ~RTC_GPIO_CFG3_PIN_PULLUP;
+                break;
+
+            case GPIO_IN_PU:
+                LOG_ERROR("GPIO mode GPIO_IN_PU is not supported for GPIO16.\n");
+                return -1;
+
+            case GPIO_IN_PD:
+                LOG_ERROR("GPIO mode GPIO_IN_PD is not supported for GPIO16.\n");
+                return -1;
+
+            default:
+                LOG_ERROR("Invalid GPIO mode for GPIO%d.\n", pin);
+                return -1;
+        }
+        return 0;
     }
 
     uint8_t  iomux      = _gpio_to_iomux [pin];
@@ -122,14 +161,14 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     return 0;
 }
 
-static gpio_isr_ctx_t gpio_isr_ctx_table [GPIO_PIN_COUNT] = { };
-static bool gpio_int_enabled_table [GPIO_PIN_COUNT] = { };
+static gpio_isr_ctx_t gpio_isr_ctx_table [GPIO_PIN_NUMOF] = { };
+static bool gpio_int_enabled_table [GPIO_PIN_NUMOF] = { };
 
 void IRAM gpio_int_handler (void* arg)
 {
     irq_isr_enter();
 
-    for (int i = 0; i < GPIO_PIN_COUNT; i++) {
+    for (int i = 0; i < GPIO_PIN_NUMOF; i++) {
 
         uint32_t mask = BIT(i);
 
@@ -152,6 +191,11 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
         return -1;
     }
 
+    if (pin == GPIO16) {
+        /* GPIO16 requires separate handling */
+        LOG_ERROR("GPIO16 cannot generate interrupts.\n");
+        return -1;
+    }
     gpio_isr_ctx_table[pin].cb  = cb;
     gpio_isr_ctx_table[pin].arg = arg;
 
@@ -167,28 +211,39 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable (gpio_t pin)
 {
-    CHECK_PARAM(pin < GPIO_PIN_COUNT);
+    CHECK_PARAM(pin < GPIO_PIN_NUMOF);
 
     gpio_int_enabled_table [pin] = true;
 }
 
 void gpio_irq_disable (gpio_t pin)
 {
-    CHECK_PARAM(pin < GPIO_PIN_COUNT);
+    CHECK_PARAM(pin < GPIO_PIN_NUMOF);
 
     gpio_int_enabled_table [pin] = false;
 }
 
 int gpio_read (gpio_t pin)
 {
-    CHECK_PARAM_RET(pin < GPIO_PIN_COUNT, -1);
+    CHECK_PARAM_RET(pin < GPIO_PIN_NUMOF, -1);
+
+    if (pin == GPIO16) {
+        /* GPIO16 requires separate handling */
+        return RTC.GPIO_IN & BIT(0);
+    }
 
     return (GPIO.IN & BIT(pin)) ? 1 : 0;
 }
 
 void gpio_write (gpio_t pin, int value)
 {
-    CHECK_PARAM(pin < GPIO_PIN_COUNT);
+    CHECK_PARAM(pin < GPIO_PIN_NUMOF);
+
+    if (pin == GPIO16) {
+        /* GPIO16 requires separate handling */
+        RTC.GPIO_OUT = (RTC.GPIO_OUT & ~BIT(0)) | (value ? 1 : 0);
+        return;
+    }
 
     if (value) {
         GPIO.OUT_SET = BIT(pin) & GPIO_OUT_PIN_MASK;
@@ -210,7 +265,13 @@ void gpio_clear (gpio_t pin)
 
 void gpio_toggle (gpio_t pin)
 {
-    CHECK_PARAM(pin < GPIO_PIN_COUNT);
+    CHECK_PARAM(pin < GPIO_PIN_NUMOF);
+
+    if (pin == GPIO16) {
+        /* GPIO16 requires separate handling */
+        RTC.GPIO_OUT = (RTC.GPIO_OUT & ~BIT(0)) | ((RTC.GPIO_IN & BIT(0)) ? 0 : 1);
+        return;
+    }
 
     GPIO.OUT ^= BIT(pin);
 }
