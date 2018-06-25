@@ -81,7 +81,7 @@
  * (Preamle + SFD + 1518 byte) at 10 Mbps in full duplex mode with a guard
  * period of 9,6 us. This time is used as time out for send operations.
  */
-#define MAX_TX_TIME                 1230
+#define MAX_TX_TIME                 (1230U)
 
 static void switch_bank(enc28j60_t *dev, int8_t bank)
 {
@@ -259,14 +259,18 @@ static int nd_send(netdev_t *netdev, const iolist_t *iolist)
     if (cmd_rcr(dev, REG_ECON1, -1) & ECON1_TXRTS) {
         /* there is already a transmission in progress */
         if (xtimer_now_usec() - dev->tx_time > MAX_TX_TIME * 2) {
-            /* if transmission time exceeds the double of maximum transmission
-               time, we suppose that TX logic hangs and has to be reset */
+            /*
+             * if transmission time exceeds the double of maximum transmission
+             * time, we suppose that TX logic hangs and has to be reset
+             */
             cmd_bfs(dev, REG_ECON1, -1, ECON1_TXRST);
             cmd_bfc(dev, REG_ECON1, -1, ECON1_TXRST);
         }
         else {
-            /* otherwise we suppose that the transmission is still in progress
-               and return EBUSY */
+            /*
+             * otherwise we suppose that the transmission is still in progress
+             * and return EBUSY
+             */
             mutex_unlock(&dev->devlock);
             return -EBUSY;
         }
