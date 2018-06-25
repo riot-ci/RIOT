@@ -23,8 +23,8 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
-
 #include "common.h"
+#include "log.h"
 
 #include <string.h>
 
@@ -40,23 +40,53 @@
 #define SPI_BUS_NUM     2
 #define SPI_BLOCK_SIZE  64         /* number of bytes per SPI transfer */
 
-#define SPI_MISO_GPIO   GPIO12
-#define SPI_MOSI_GPIO   GPIO13
-#define SPI_SCK_GPIO    GPIO14
-
 static mutex_t _spi_lock[SPI_BUS_NUM] = { MUTEX_INIT };
 
-void spi_init(spi_t bus)
-{
-    DEBUG("%s bus=%lu\n", __func__, bus);
+/* indicate whether SPI interface were already initilized */
+static bool _spi_initialized[SPI_BUS_NUM] = { false };
 
+/* indicate whether pins of the SPI interface were already initilized */
+static bool _spi_pins_initialized[SPI_BUS_NUM] = { false };
+
+/*
+ * GPIOs that were once initialized as SPI interface pins can not be used
+ * afterwards for anything else. Therefore, SPI interfaces are not initialized
+ * until they are used for the first time. The *spi_init* function is just a
+ * dummy for source code compatibility. The initialization of an SPI interface
+ * is performed by the *_spi_init_internal* function, which is called either by
+ * the *spi_init_cs* function or the *spi_acquire* function when the interface
+ * is used for the first time.
+ */
+void IRAM spi_init (spi_t bus)
+{
+    return;
+}
+
+void _spi_init_internal(spi_t bus)
+{
     /* only one physical SPI(1) bus (HSPI) can be used for peripherals */
     /* RIOT's SPI_DEV(0) is mapped to SPI(1) bus (HSPI) */
     /* TODO SPI overlap mode SPI and HSPI */
     CHECK_PARAM (bus == SPI_DEV(0));
 
+    /* avoid multiple initializations */
+    if (_spi_initialized[bus]) {
+        return;
+    }
+    _spi_initialized[bus] = true;
+
+    DEBUG("%s bus=%lu\n", __func__, bus);
+
     /* initialize pins */
     spi_init_pins(bus);
+
+    /* check whether pins could be initialized, otherwise return, CS is not
+       initialized in spi_init_pins */
+    if (_gpio_pin_usage[SPI_SCK_GPIO] != _SPI &&
+        _gpio_pin_usage[SPI_MOSI_GPIO] != _SPI &&
+        _gpio_pin_usage[SPI_MISO_GPIO] != _SPI) {
+        return;
+    }
 
     /* set bus into a defined state */
     SPI(bus).USER0  = SPI_USER0_MOSI | SPI_USER0_CLOCK_IN_EDGE | SPI_USER0_DUPLEX;
@@ -74,23 +104,37 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
-    DEBUG("%s bus=%lu\n", __func__, bus);
-
     /* see spi_init */
     CHECK_PARAM (bus == SPI_DEV(0));
 
+    /* call initialization of the SPI interface if it is not initialized yet */
+    if (!_spi_initialized[bus]) {
+        _spi_init_internal(bus);
+    }
+
+    /* avoid multiple pin initializations */
+    if (_spi_pins_initialized[bus]) {
+        return;
+    }
+    _spi_pins_initialized[bus] = true;
+
+    DEBUG("%s bus=%lu\n", __func__, bus);
+
     uint32_t iomux_func = (bus == 0) ? IOMUX_FUNC(1) : IOMUX_FUNC(2);
 
-    /* TODO hardware CS */
+    /*
+     * CS is handled as normal GPIO ouptut. Due to the small number of GPIOs
+     * we have, we do not initialize the default CS pin here. Either the app
+     * uses spi_init_cs to initialize the CS pin explicitly, or we initialize
+     * the default CS when spi_aquire is used first time.
+     */
     IOMUX.PIN[_gpio_to_iomux[SPI_MISO_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
     IOMUX.PIN[_gpio_to_iomux[SPI_MOSI_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
     IOMUX.PIN[_gpio_to_iomux[SPI_SCK_GPIO]]  &= ~IOMUX_PIN_FUNC_MASK;
-    /* IOMUX.PIN[_gpio_to_iomux[SPI_CS0_GPIO]]  &= ~IOMUX_PIN_FUNC_MASK; */
 
     IOMUX.PIN[_gpio_to_iomux[SPI_MISO_GPIO]] |= iomux_func;
     IOMUX.PIN[_gpio_to_iomux[SPI_MOSI_GPIO]] |= iomux_func;
     IOMUX.PIN[_gpio_to_iomux[SPI_SCK_GPIO]]  |= iomux_func;
-    /* IOMUX.PIN[_gpio_to_iomux[SPI_CS0_GPIO]]  |= iomux_func; */
 
     _gpio_pin_usage [SPI_MISO_GPIO] = _SPI;  /* pin cannot be used for anything else */
     _gpio_pin_usage [SPI_MOSI_GPIO] = _SPI;  /* pin cannot be used for anything else */
@@ -103,6 +147,16 @@ int spi_init_cs(spi_t bus, spi_cs_t cs)
 
     /* see spi_init */
     CHECK_PARAM_RET (bus == SPI_DEV(0), SPI_NODEV);
+
+    /* call initialization of the SPI interface if it is not initialized yet */
+    if (!_spi_initialized[bus]) {
+        _spi_init_internal(bus);
+    }
+
+    /* return if pin is already initialized as SPI CS signal */
+    if (_gpio_pin_usage [cs] == _SPI) {
+        return SPI_OK;
+    }
 
     if (_gpio_pin_usage [cs] != _GPIO) {
         return SPI_NOCS;
@@ -123,8 +177,19 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     /* see spi_init */
     CHECK_PARAM_RET (bus == SPI_DEV(0), SPI_NODEV);
 
-    /* check whether given cs is initialized as CS signal */
-    CHECK_PARAM_RET ( _gpio_pin_usage [cs] == _SPI, SPI_NOCS);
+    /* call initialization of the SPI interface if it is not initialized yet */
+    if (!_spi_initialized[bus]) {
+        _spi_init_internal(bus);
+    }
+
+    /* if parameter cs is GPIO_UNDEF, the default CS pin is used */
+    cs = (cs == GPIO_UNDEF) ? SPI_CS0_GPIO : cs;
+
+    /* if the CS pin used is not yet initialized, we do it now */
+    if (_gpio_pin_usage[cs] != _SPI && spi_init_cs(bus, cs) != SPI_OK) {
+        LOG_ERROR("SPI_DEV(%s) CS signal could not be initialized\n", bus);
+        return SPI_NOCS;
+    }
 
     /* lock the bus */
     mutex_lock(&_spi_lock[bus]);
