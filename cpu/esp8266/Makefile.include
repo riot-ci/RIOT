@@ -61,6 +61,10 @@ ifeq ($(ENABLE_SPI), 1)
     CFLAGS += -DSPI_USED
 endif
 
+ifneq (,$(filter sdcard_spi,$(USEMODULE)))
+    CFLAGS += -DSPI_USED
+endif
+
 ifeq ($(ENABLE_SPIFFS), 1)
     export SPIFFS_STD_OPTION = -std=c99
     USEMODULE += spiffs
