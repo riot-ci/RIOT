@@ -62,21 +62,26 @@ extern mtd_dev_t *mtd0;
 #define SPIFFS_MTD_DEV (MTD_0)
 #endif
 
-#if defined(MODULE_MRF24J40) && !defined(DOXYGEN)
-
+#if defined(MODULE_MRF24J40) && !DOXYGEN
 #define MRF24J40_PARAM_SPI_CLK      (SPI_CLK_1MHZ)
-#define MRF24J40_PARAM_CS           (GPIO_PIN(0,2))
+#define MRF24J40_PARAM_CS           (GPIO_PIN(0,16))
 #define MRF24J40_PARAM_INT          (GPIO_PIN(0,0))
-#define MRF24J40_PARAM_RESET        (GPIO_PIN(0,15))
-
+#define MRF24J40_PARAM_RESET        (GPIO_PIN(0,2))
 #endif
 
-#if defined(MODULE_ENC28J60) && !defined(DOXYGEN)
-
+#if defined(MODULE_ENC28J60) && !DOXYGEN
 #define ENC28J60_PARAM_CS           (GPIO_PIN(0,4))
-#define ENC28J60_PARAM_INT          (GPIO_PIN(0,5))
-#define ENC28J60_PARAM_RESET        (GPIO_PIN(0,9)) /* only in DIO and DOUT mode */
+#define ENC28J60_PARAM_INT          (GPIO_PIN(0,9))
+#define ENC28J60_PARAM_RESET        (GPIO_PIN(0,10)) /* only in DIO and DOUT mode */
+#endif
 
+#if defined(MODULE_SDCARD_SPI) && !defined(SDCARD_SPI_PARAM_SPI) && !DOXYGEN
+#define SDCARD_SPI_PARAM_SPI        SPI_DEV(0)
+#define SDCARD_SPI_PARAM_CS         SPI_CS0_GPIO
+#define SDCARD_SPI_PARAM_CLK        SPI_SCK_GPIO
+#define SDCARD_SPI_PARAM_MOSI       SPI_MOSI_GPIO
+#define SDCARD_SPI_PARAM_MISO       SPI_MISO_GPIO
+#define SDCARD_SPI_PARAM_POWER      GPIO_UNDEF
 #endif
 
 /**
