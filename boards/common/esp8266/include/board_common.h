@@ -7,15 +7,11 @@
  */
 
 /**
- * @defgroup    boards_common_esp8266 ESP8266 Common
- * @ingroup     boards_common
- * @brief       Common files for the esp8266 board.
- * @{
- *
+ * @ingroup     boards_common_esp8266
+ * @brief       Board definitions that are common for all esp8266 boards.
  * @file
- * @brief       Definitions that are common for all esp8266 boards.
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef BOARD_COMMON_H
