@@ -59,31 +59,25 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b)
 {
     assert(a < b);
 
-    uint32_t range = b - a;
-    uint32_t highest_pow2 = (1 << bitarithm_msb(range));
-    uint32_t random = random_uint32();
+    uint32_t highest_pow2, random, range = b - a;
+    uint8_t range_msb = bitarithm_msb(range);
 
     /* check if range is a power of two */
     if (!(range & (range - 1))) {
-        /* modulo when divisor is power of two */
-        return (random & (highest_pow2 - 1)) + a;
+        highest_pow2 = (1 << range_msb) - 1;
     }
-    /* leftshift / multiply with 2 for next power of two interval and
-     * reuse old variable */
-    highest_pow2 = (highest_pow2 << 1);
-
-    /* check if result is in uint32_t range */
-    if (highest_pow2) {
-        /* reuse variable to calculate (power-of-two)-modulo in loop below */
-        highest_pow2 = highest_pow2 -1;
+    else if (range_msb < 31) {
+        /* leftshift for next power of two interval */
+        highest_pow2 = (1 << (range_msb + 1)) -1;
     }
     else {
         /* disable modulo operation in loop below */
         highest_pow2 = UINT32_MAX;
     }
     /* get random numbers until value is smaller than range */
-    while (random >= range) {
+    do {
         random = (random_uint32() & highest_pow2);
-    }
+    } while (random >= range);
+    /* return random in range [a,b] */
     return (random + a);
 }
