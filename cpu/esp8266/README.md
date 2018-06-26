@@ -2,7 +2,7 @@
 
 There are two implementations that can be used:
 
-- the **SDK version** which is realized on top of an SDK (esp-open-sdk or ESP8266_NONOS_SDK and
+- the **SDK version** which is realized on top of an SDK (esp-open-sdk or ESP8266_NONOS_SDK) and
 - the **non-SDK version** which is realized without the SDK.
 
 The non-SDK version produces a much smaller code size than the SDK version and is more efficient in excecution because it does not need to run additional SDK functions to keep the SDK system alive.
