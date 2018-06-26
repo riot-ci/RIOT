@@ -57,6 +57,8 @@ void random_bytes(uint8_t *target, size_t n)
 
 uint32_t random_uint32_range(uint32_t a, uint32_t b)
 {
+    assert(a < b);
+
     uint32_t range = b - a;
     uint32_t highest_pow2 = (1 << bitarithm_msb(range));
     uint32_t random = random_uint32();
