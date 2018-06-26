@@ -51,12 +51,16 @@ static void test_init(char *name)
     printf("Running %s test, with seed %" PRIu32 " using ", name, seed);
 
     if (source == RNG_PRNG) {
-#if MODULE_PRNG_MERSENNE
+#if MODULE_PRNG_FORTUNA
+        puts("Fortuna PRNG.\n");
+#elif MODULE_PRNG_MERSENNE
         puts("Mersenne Twister PRNG.\n");
 #elif MODULE_PRNG_MINSTD
         puts("Park & Miller Minimal Standard PRNG.\n");
 #elif MODULE_PRNG_MUSL_LCG
         puts("Musl C PRNG.\n");
+#elif MODULE_PRNG_SHA1PRNG
+        puts("SHA1 PRNG.\n");
 #elif MODULE_PRNG_TINYMT32
         puts("Tiny Mersenne Twister PRNG.\n");
 #elif MODULE_PRNG_XORSHIFT

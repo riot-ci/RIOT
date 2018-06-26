@@ -11,13 +11,14 @@ RIOTCPU        ?= $(RIOTBASE)/cpu
 RIOTBOARD      ?= $(RIOTBASE)/boards
 RIOTMAKE       ?= $(RIOTBASE)/makefiles
 RIOTPKG        ?= $(RIOTBASE)/pkg
+RIOTTOOLS      ?= $(RIOTBASE)/dist/tools
 RIOTPROJECT    ?= $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
-GITCACHE       ?= $(RIOTBASE)/dist/tools/git/git-cache
+GITCACHE       ?= $(RIOTTOOLS)/git/git-cache
 APPDIR         ?= $(CURDIR)
 BINDIRBASE     ?= $(APPDIR)/bin
 BINDIR         ?= $(BINDIRBASE)/$(BOARD)
 PKGDIRBASE     ?= $(BINDIRBASE)/pkg/$(BOARD)
-DLCACHE        ?= $(RIOTBASE)/dist/tools/dlcache/dlcache.sh
+DLCACHE        ?= $(RIOTTOOLS)/dlcache/dlcache.sh
 DLCACHE_DIR    ?= $(RIOTBASE)/.dlcache
 
 __DIRECTORY_VARIABLES := \
@@ -26,6 +27,7 @@ __DIRECTORY_VARIABLES := \
   RIOTBOARD \
   RIOTMAKE \
   RIOTPKG \
+  RIOTTOOLS \
   RIOTPROJECT \
   APPDIR \
   BINDIRBASE \
@@ -43,6 +45,7 @@ override RIOTCPU        := $(abspath $(RIOTCPU))
 override RIOTBOARD      := $(abspath $(RIOTBOARD))
 override RIOTMAKE       := $(abspath $(RIOTMAKE))
 override RIOTPKG        := $(abspath $(RIOTPKG))
+override RIOTTOOLS      := $(abspath $(RIOTTOOLS))
 override RIOTPROJECT    := $(abspath $(RIOTPROJECT))
 override GITCACHE       := $(abspath $(GITCACHE))
 override APPDIR         := $(abspath $(APPDIR))
@@ -226,7 +229,7 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 # Add standard include directories
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
-INCLUDES += -I$(RIOTBOARD)/$(BOARD)/include
+INCLUDES += $(addprefix -I,$(wildcard $(RIOTBOARD)/$(BOARD)/include))
 
 # process provided features
 -include $(RIOTBOARD)/$(BOARD)/Makefile.features
@@ -362,7 +365,7 @@ $(_SUBMAKE_LIBS): $(BINDIR)/$(APPLICATION_MODULE).a $(USEPKG:%=$(BINDIR)/%.a)
 
 # 'print-size' triggers a rebuild. Use 'info-buildsize' if you do not need to rebuild.
 print-size: $(ELFFILE)
-	$(Q)$(SIZE) $<
+	$(Q)$(SIZE) $(SIZEFLAGS) $<
 
 %.hex: %.elf
 	$(Q)$(OBJCOPY) $(OFLAGS) -Oihex $< $@
@@ -454,7 +457,7 @@ term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
 	$(TERMPROG) $(TERMFLAGS)
 
 list-ttys:
-	$(Q)$(RIOTBASE)/dist/tools/usb-serial/list-ttys.sh
+	$(Q)$(RIOTTOOLS)/usb-serial/list-ttys.sh
 
 doc:
 	make -BC $(RIOTBASE) doc
@@ -490,7 +493,7 @@ eclipsesym.xml: $(CURDIR)/eclipsesym.xml
 
 $(CURDIR)/eclipsesym.xml:
 	$(Q)printf "%s\n" $(CC) $(CFLAGS_WITH_MACROS) $(INCLUDES) | \
-		$(RIOTBASE)/dist/tools/eclipsesym/cmdline2xml.sh > $@
+		$(RIOTTOOLS)/eclipsesym/cmdline2xml.sh > $@
 
 # Export variables used throughout the whole make system:
 include $(RIOTMAKE)/vars.inc.mk
@@ -592,9 +595,13 @@ ifneq (,$(filter iotlab-m3 wsn430-v1_3b wsn430-v1_4,$(BOARD)))
     include $(RIOTBASE)/dist/testbed-support/Makefile.iotlab
   endif
 endif
+ifneq (,$(IOTLAB_NODE))
+  # iot-lab serial and flasher
+  include $(RIOTBASE)/dist/testbed-support/makefile.iotlab.single.inc.mk
+endif
 
 # Include desvirt Makefile
-include $(RIOTBASE)/dist/tools/desvirt/Makefile.desvirt
+include $(RIOTTOOLS)/desvirt/Makefile.desvirt
 
 # include bindist target
 include $(RIOTMAKE)/bindist.inc.mk
@@ -608,7 +615,7 @@ include $(RIOTMAKE)/modules.inc.mk
 .PHONY: $(RIOTBUILD_CONFIG_HEADER_C)
 $(RIOTBUILD_CONFIG_HEADER_C):
 	@mkdir -p '$(dir $@)'
-	$(Q)'$(RIOTBASE)/dist/tools/genconfigheader/genconfigheader.sh' '$@' $(CFLAGS_WITH_MACROS)
+	$(Q)'$(RIOTTOOLS)/genconfigheader/genconfigheader.sh' '$@' $(CFLAGS_WITH_MACROS)
 
 CFLAGS_WITH_MACROS := $(CFLAGS)
 

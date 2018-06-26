@@ -62,9 +62,7 @@ typedef struct {
 
 /**
  * @brief   Allocate memory for saving the device states
- * @{
  */
-#ifdef TIMER_NUMOF
 static ctx_t ctx[] = {
 #ifdef TIMER_0
     { TIMER_0, TIMER_0_MASK, TIMER_0_FLAG, NULL, NULL, 0, 0 },
@@ -79,11 +77,6 @@ static ctx_t ctx[] = {
     { TIMER_3, TIMER_3_MASK, TIMER_3_FLAG, NULL, NULL, 0, 0 },
 #endif
 };
-#else
-/* fallback if no timer is configured */
-static ctx_t *ctx[] = {{ NULL }};
-#endif
-/** @} */
 
 /**
  * @brief Setup the given timer
@@ -176,6 +169,7 @@ static inline void _isr(tim_t tim, int chan)
 
     if (sched_context_switch_request) {
         thread_yield();
+        thread_yield_isr();
     }
 
     __exit_isr();

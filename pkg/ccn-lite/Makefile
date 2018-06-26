@@ -1,11 +1,11 @@
 PKG_NAME=ccn-lite
 PKG_URL=https://github.com/cn-uofbasel/ccn-lite/
-PKG_VERSION=dbf3e1a8935cfc4b6bcfa1a5baa477553ffdafec
+PKG_VERSION=48b17ebee7600b2e79b3acf0728217473d7a4ee8
 PKG_LICENSE=ISC
 
 .PHONY: all
 
-export RIOT_CFLAGS = $(CFLAGS) $(INCLUDES)
+RIOT_CFLAGS = $(INCLUDES)
 
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
@@ -19,6 +19,6 @@ $(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE)
 		  -DCCNL_RIOT=1 -DRIOT_CFLAGS="$(RIOT_CFLAGS)" -DBUILD_TESTING=OFF .
 
 $(TOOLCHAIN_FILE): git-download
-	$(RIOTBASE)/dist/tools/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
+	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
 include $(RIOTBASE)/pkg/pkg.mk

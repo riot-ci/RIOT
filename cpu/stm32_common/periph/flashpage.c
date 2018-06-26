@@ -32,32 +32,26 @@
 #include "periph/flashpage.h"
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
-/* Data EEPROM and control register unlock keys */
-#define FLASH_KEY1             ((uint32_t)0x89ABCDEF)
-#define FLASH_KEY2             ((uint32_t)0x02030405)
 /* Program memory unlock keys */
 #define FLASH_PRGKEY1          ((uint32_t)0x8C9DAEBF)
 #define FLASH_PRGKEY2          ((uint32_t)0x13141516)
 #define CNTRL_REG              (FLASH->PECR)
 #define CNTRL_REG_LOCK         (FLASH_PECR_PELOCK)
-#define KEY_REG                (FLASH->PEKEYR)
 #define FLASH_CR_PER           (FLASH_PECR_ERASE | FLASH_PECR_PROG)
 #define FLASH_CR_PG            (FLASH_PECR_FPRG | FLASH_PECR_PROG)
 #define FLASHPAGE_DIV          (4U) /* write 4 bytes in one go */
 #else
 #define CNTRL_REG              (FLASH->CR)
 #define CNTRL_REG_LOCK         (FLASH_CR_LOCK)
-#define KEY_REG                (FLASH->KEYR)
 #define FLASHPAGE_DIV          (2U)
 #endif
 
-static void _unlock(void)
+extern void _lock(void);
+extern void _unlock(void);
+
+static void _unlock_flash(void)
 {
-    DEBUG("[flashpage] unlocking the flash module\n");
-    if (CNTRL_REG & CNTRL_REG_LOCK) {
-        KEY_REG = FLASH_KEY1;
-        KEY_REG = FLASH_KEY2;
-    }
+    _unlock();
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     DEBUG("[flashpage] unlocking the flash program memory\n");
@@ -71,10 +65,15 @@ static void _unlock(void)
 #endif
 }
 
-static void _lock(void)
+static void _wait_for_pending_operations(void)
 {
-    DEBUG("[flashpage] locking the flash module\n");
-    CNTRL_REG |= CNTRL_REG_LOCK;
+    DEBUG("[flashpage] waiting for any pending operation to finish\n");
+    while (FLASH->SR & FLASH_SR_BSY) {}
+
+    /* Clear 'end of operation' bit in status register */
+    if (FLASH->SR & FLASH_SR_EOP) {
+        FLASH->SR &= ~(FLASH_SR_EOP);
+    }
 }
 
 static void _erase_page(void *page_addr)
@@ -89,12 +88,12 @@ static void _erase_page(void *page_addr)
     stmclk_enable_hsi();
 #endif
 
-   /* unlock the flash module */
-    _unlock();
+    /* unlock the flash module */
+    _unlock_flash();
 
     /* make sure no flash operation is ongoing */
-    DEBUG("[flashpage] erase: waiting for any operation to finish\n");
-    while (FLASH->SR & FLASH_SR_BSY) {}
+    _wait_for_pending_operations();
+
     /* set page erase bit and program page address */
     DEBUG("[flashpage] erase: setting the erase bit\n");
     CNTRL_REG |= FLASH_CR_PER;
@@ -109,8 +108,9 @@ static void _erase_page(void *page_addr)
     DEBUG("[flashpage] erase: trigger the page erase\n");
     CNTRL_REG |= FLASH_CR_STRT;
 #endif
-    DEBUG("[flashpage] erase: wait as long as device is busy\n");
-    while (FLASH->SR & FLASH_SR_BSY) {}
+    /* wait as long as device is busy */
+    _wait_for_pending_operations();
+
     /* reset PER bit */
     DEBUG("[flashpage] erase: resetting the page erase bit\n");
     CNTRL_REG &= ~(FLASH_CR_PER);
@@ -152,10 +152,10 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     stmclk_enable_hsi();
 #endif
 
-    DEBUG("[flashpage_raw] unlocking the flash module\n");
-    _unlock();
+    /* unlock the flash module */
+    _unlock_flash();
 
-    DEBUG("[flashpage] write: now writing the data\n");
+    DEBUG("[flashpage_raw] write: now writing the data\n");
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))
     /* set PG bit and program page to flash */
     CNTRL_REG |= FLASH_CR_PG;
@@ -163,14 +163,15 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
     for (size_t i = 0; i < (len / FLASHPAGE_DIV); i++) {
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
-        while (FLASH->SR & FLASH_SR_BSY) {}
+        /* wait as long as device is busy */
+        _wait_for_pending_operations();
     }
 
     /* clear program bit again */
     CNTRL_REG &= ~(FLASH_CR_PG);
-    DEBUG("[flashpage] write: done writing data\n");
+    DEBUG("[flashpage_raw] write: done writing data\n");
 
-    DEBUG("flashpage_raw] now locking the flash module again\n");
+    /* lock the flash module again */
     _lock();
 
 #if !(defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1))

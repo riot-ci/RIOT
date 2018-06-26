@@ -158,7 +158,13 @@
  * bytes long. For resources that change slowly, this length can be reduced via
  * GCOAP_OBS_VALUE_WIDTH.
  *
- * To cancel a notification, the server expects to receive a GET request with
+ * A client always may re-register for a resource with the same token or with
+ * a new token to indicate continued interest in receiving notifications about
+ * it. Of course the client must not already be using any new token in the
+ * registration for a different resource. Successful registration always is
+ * indicated by the presence of the Observe option in the response.
+ *
+ * To cancel registration, the server expects to receive a GET request with
  * the Observe option value set to 1. The server does not support cancellation
  * via a reset (RST) response to a non-confirmable notification.
  *
@@ -227,7 +233,9 @@ extern "C" {
 /**
  * @brief  Size for module message queue
  */
+#ifndef GCOAP_MSG_QUEUE_SIZE
 #define GCOAP_MSG_QUEUE_SIZE    (4)
+#endif
 
 /**
  * @brief   Server port; use RFC 7252 default if not defined
@@ -410,7 +418,8 @@ extern "C" {
  * @brief Stack size for module thread
  */
 #ifndef GCOAP_STACK_SIZE
-#define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE)
+#define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
+                          + sizeof(coap_pkt_t))
 #endif
 
 /**
@@ -503,11 +512,14 @@ void gcoap_register_listener(gcoap_listener_t *listener);
  * @param[in] code      Request code: GCOAP_[GET|POST|PUT|DELETE]
  * @param[in] path      Resource path, *must* start with '/'
  *
+ * @pre @p path not `NULL`
+ * @pre @p path must start with `/`
+ *
  * @return  0 on success
  * @return  < 0 on error
  */
 int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
-                   unsigned code, char *path);
+                   unsigned code, const char *path);
 
 /**
  * @brief   Finishes formatting a CoAP PDU after the payload has been written

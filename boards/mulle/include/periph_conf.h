@@ -107,6 +107,8 @@ static const clock_config_t clock_config = {
         { \
             .dev = LPTMR0, \
             .irqn = LPTMR0_IRQn, \
+            .src = 2, \
+            .base_freq = 32768u, \
         } \
     }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
@@ -334,8 +336,6 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 /** @} */
 
-/** @} */
-
 /**
  * @name I2C configuration
  * @{
@@ -375,29 +375,6 @@ static const spi_conf_t spi_config[] = {
 /* Fast plus (1000 kHz): MUL = 1, SCL divider = 48, total: 48 */
 #define KINETIS_I2C_F_ICR_FAST_PLUS  (0x10)
 #define KINETIS_I2C_F_MULT_FAST_PLUS (0)
-/** @} */
-
-/**
- * @name RTC configuration
- * @{
- */
-/* RIOT RTC implementation uses RTT for underlying timekeeper */
-#define RTC_NUMOF           (1U)
-/** @} */
-
-/**
- * @name RTT configuration
- * @{
- */
-#define RTT_NUMOF           (1U)
-#define RTT_IRQ             RTC_IRQn
-#define RTT_IRQ_PRIO        10
-#define RTT_ISR             isr_rtc
-#define RTT_DEV             RTC
-#define RTT_UNLOCK()        (BITBAND_REG32(SIM->SCGC6, SIM_SCGC6_RTC_SHIFT) = 1)
-#define RTT_MAX_VALUE       (0xffffffff)
-#define RTT_FREQUENCY       (1)             /* in Hz */
-
 /** @} */
 
 #ifdef __cplusplus

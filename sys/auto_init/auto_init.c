@@ -7,7 +7,7 @@
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
  *
- * @ingroup auto_init
+ * @ingroup sys_auto_init
  * @{
  * @file
  * @brief   initializes any used module that has a trivial init function
@@ -84,6 +84,9 @@
 #include "net/skald.h"
 #endif
 
+#ifdef MODULE_NDN_RIOT
+#include "ndn-riot/ndn.h"
+#endif
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -265,6 +268,12 @@ void auto_init(void)
     auto_init_gnrc_uhcpc();
 #endif
 
+/* initialize NDN module after the network devices are initialized */
+#ifdef MODULE_NDN_RIOT
+    DEBUG("Auto init NDN module.\n");
+    ndn_init();
+#endif
+
 /* initialize sensors and actuators */
 #ifdef MODULE_AUTO_INIT_SAUL
     DEBUG("auto_init SAUL\n");
@@ -357,6 +366,10 @@ auto_init_mpu9150();
     extern void auto_init_hdc1000(void);
     auto_init_hdc1000();
 #endif
+#ifdef MODULE_FXOS8700
+    extern void auto_init_fxos8700(void);
+    auto_init_fxos8700();
+#endif
 #ifdef MODULE_HTS221
     extern void auto_init_hts221(void);
     auto_init_hts221();
@@ -392,6 +405,10 @@ auto_init_mpu9150();
 #ifdef MODULE_ADCXX1C
     extern void auto_init_adcxx1c(void);
     auto_init_adcxx1c();
+#endif
+#ifdef MODULE_ADS101X
+    extern void auto_init_ads101x(void);
+    auto_init_ads101x();
 #endif
 #ifdef MODULE_LIS2DH12
     extern void auto_init_lis2dh12(void);
