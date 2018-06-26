@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/reent.h>
+#include <sys/stat.h>
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -379,6 +380,8 @@ void* IRAM _sbrk_r (struct _reent *r, ptrdiff_t incr)
     return (caddr_t) _cheap_old;
 }
 
+
+
 #endif  /* MODULE_NEWLIB_SYSCALLS_DEFAULT */
 
 unsigned int IRAM get_free_heap_size (void)
@@ -393,6 +396,48 @@ unsigned int IRAM get_free_heap_size (void)
 NORETURN void _exit(int status)
 {
     UNREACHABLE();
+}
+
+static int _no_sys_func (struct _reent *r)
+{
+    DEBUG("%s: system function does not exist\n", __func__);
+    r->_errno = ENOSYS;
+    return -1;
+}
+
+int _open_r(struct _reent *r, const char *path, int flag, int m)
+{
+    return _no_sys_func (r);
+}
+
+int _close_r(struct _reent *r, int fd)
+{
+    return _no_sys_func (r);
+}
+
+int _fstat_r(struct _reent *r, int fdes, struct stat *stat)
+{
+    return _no_sys_func (r);
+}
+
+int _stat_r(struct _reent *r, const char *path, struct stat *buff)
+{
+    return _no_sys_func (r);
+}
+
+int _lseek_r(struct _reent *r, int fdes, int off, int w)
+{
+    return _no_sys_func (r);
+}
+
+int _write_r(struct _reent *r, int fd, const void *buff, size_t cnt)
+{
+    return _no_sys_func (r);
+}
+
+int _read_r(struct _reent *r, int fd, void *buff, size_t cnt)
+{
+    return _no_sys_func (r);
 }
 
 #endif /* MODULE_NEWLIB_SYSCALLS_DEFAULT */
