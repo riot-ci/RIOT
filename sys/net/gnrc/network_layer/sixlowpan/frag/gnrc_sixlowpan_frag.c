@@ -220,6 +220,7 @@ gnrc_sixlowpan_msg_frag_t *gnrc_sixlowpan_msg_frag_get(void)
 
 void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
 {
+    assert(ctx != NULL);
     gnrc_sixlowpan_msg_frag_t *fragment_msg = ctx;
     gnrc_netif_t *iface = gnrc_netif_get_by_pid(fragment_msg->pid);
     uint16_t res;
@@ -228,7 +229,6 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     size_t payload_len = gnrc_pkt_len(fragment_msg->pkt->next);
     msg_t msg;
 
-    assert(ctx != NULL);
     assert((fragment_msg->pkt == pkt) || (pkt == NULL));
     (void)page;
     (void)pkt;

@@ -96,7 +96,7 @@ gnrc_sixlowpan_msg_frag_t *gnrc_sixlowpan_msg_frag_get(void);
  *      `pkt == NULL`.
  *
  * @param[in] pkt       A packet. May be NULL.
- * @param[in] context   Message containing status of the 6LoWPAN fragmentation
+ * @param[in] ctx       Message containing status of the 6LoWPAN fragmentation
  *                      progress. Expected to be of type
  *                      @ref gnrc_sixlowpan_msg_frag_t, with
  *                      gnrc_sixlowpan_msg_frag_t set to @p pkt. Must not be
@@ -109,7 +109,7 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page);
  * @brief   Handles a packet containing a fragment header
  *
  * @param[in] pkt       The packet to handle
- * @param[in] context   Context for the packet. May be NULL.
+ * @param[in] ctx       Context for the packet. May be NULL.
  * @param[in] page      Current 6Lo dispatch parsing page.
  */
 void gnrc_sixlowpan_frag_recv(gnrc_pktsnip_t *pkt, void *ctx, unsigned page);
