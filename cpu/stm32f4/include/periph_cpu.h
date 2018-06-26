@@ -59,9 +59,10 @@ enum {
     || defined(CPU_MODEL_STM32F423MH) || defined(CPU_MODEL_STM32F423VH) \
     || defined(CPU_MODEL_STM32F423ZH)
 #define ADC_DEVS            (1U)
-#elif defined(CPU_MODEL_STM32F407VG) || defined(CPU_MODEL_STM32F415RG) \
-    || defined(CPU_MODEL_STM32F429ZI) || defined(CPU_MODEL_STM32F437VG) \
-    || defined(CPU_MODEL_STM32F446RE) || defined(CPU_MODEL_STM32F446ZE)
+#elif defined(CPU_MODEL_STM32F405RG) || defined(CPU_MODEL_STM32F407VG) \
+    || defined(CPU_MODEL_STM32F415RG) || defined(CPU_MODEL_STM32F429ZI) \
+    || defined(CPU_MODEL_STM32F437VG) ||defined(CPU_MODEL_STM32F446RE) \
+    || defined(CPU_MODEL_STM32F446ZE)
 #define ADC_DEVS            (3U)
 #endif
 

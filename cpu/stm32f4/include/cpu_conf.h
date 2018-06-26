@@ -27,6 +27,8 @@
 
 #if defined(CPU_MODEL_STM32F401RE)
 #include "vendor/stm32f401xe.h"
+#elif defined(CPU_MODEL_STM32F405RG)
+#include "vendor/stm32f405xx.h"
 #elif defined(CPU_MODEL_STM32F407VG)
 #include "vendor/stm32f407xx.h"
 #elif defined(CPU_MODEL_STM32F410RB)
@@ -66,7 +68,8 @@ extern "C" {
 #define CPU_DEFAULT_IRQ_PRIO            (1U)
 #if defined(CPU_MODEL_STM32F401RE)
 #define CPU_IRQ_NUMOF                   (85U)
-#elif defined(CPU_MODEL_STM32F407VG) || defined(CPU_MODEL_STM32F415RG)
+#elif defined(CPU_MODEL_STM32F405RG) || defined(CPU_MODEL_STM32F407VG) \
+    || defined(CPU_MODEL_STM32F415RG)
 #define CPU_IRQ_NUMOF                   (82U)
 #elif defined(CPU_MODEL_STM32F410RB)
 #define CPU_IRQ_NUMOF                   (98U)
