@@ -30,14 +30,19 @@ extern "C" {
 #endif
 
 /**
- * @brief   Set on entry into and reset on exit from an ISR
+ * @brief   Indicates the interrupt nesting depth
  *
- * NOTE: since they use a local variable they can be used only in same function
+ * The variable is increment on entry into and decremented on exit from an ISR.
  */
-extern uint8_t irq_interrupt_nesting;
+extern uint32_t irq_interrupt_nesting;
 
 #if defined(SDK_INT_HANDLING) || defined(DOXYGEN)
-
+/**
+ * @brief   Macros that have to be used on entry into and reset from an ISR
+ *
+ * NOTE: since they use a local variable they can be used only in same function
+ * @{
+ */
 /** Macro that has to be used at the entry point of an ISR */
 #define irq_isr_enter()    int _irq_state = irq_disable (); \
                            irq_interrupt_nesting++;
@@ -49,10 +54,9 @@ extern uint8_t irq_interrupt_nesting;
                            if (sched_context_switch_request) \
                                thread_yield();
 
-#else /* !SDK_INT_HANDLING */
+#else /* SDK_INT_HANDLING */
 
 /* in non SDK task handling all the stuff is done in _frxt_int_enter and _frxt_int_exit */
-
 #define irq_isr_enter() /* int _irq_state = irq_disable (); \
                            irq_interrupt_nesting++; */
 

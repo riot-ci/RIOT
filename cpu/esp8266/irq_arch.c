@@ -36,7 +36,7 @@
 /**
  * @brief Set on entry into and reset on exit from an ISR
  */
-volatile uint8_t irq_interrupt_nesting = 0;
+volatile uint32_t irq_interrupt_nesting = 0;
 
 /**
  * @brief Disable all maskable interrupts
