@@ -7,13 +7,11 @@
  */
 
 /**
- * @ingroup     boards_common_esp8266 ESP8266 Common
- * @{
- *
- * @file
+ * @ingroup     boards_common_esp8266
  * @brief       Configurations of MCU periphery that are common for all ESP8266 boards
- *
+ * @file
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef PERIPH_CONF_H

@@ -16,6 +16,6 @@ By default, the non-SDK version is compiled. To compile the SDK-version, add opt
 
     make flash BOARD=esp8266-esp-12x -C test/shell SDK=1 ...
 
-Please refer file RIOTBASE/cpu/esp8266/README.md for more information about the toolchain, supported features and compile options.
+Please refer file $(RIOTBASE)/cpu/esp8266/README.md for more information about the toolchain, supported features and compile options.
 
 */
