@@ -68,6 +68,7 @@ endif
 ifeq ($(ENABLE_SPIFFS), 1)
     export SPIFFS_STD_OPTION = -std=c99
     USEMODULE += spiffs
+    USEMODULE += vfs
 endif
 
 ifeq ($(ENABLE_MRF24J40), 1)
@@ -127,7 +128,6 @@ USEMODULE += periph_common
 USEMODULE += ps
 USEMODULE += random
 USEMODULE += sdk
-USEMODULE += vfs
 USEMODULE += xtensa
 
 ifneq (,$(filter shell,$(USEMODULE)))
@@ -137,6 +137,11 @@ endif
 
 ifneq (,$(filter xtimer,$(USEMODULE)))
     USEMODULE += newlib_syscalls_default
+endif
+
+ifneq (,$(filter vfs,$(USEMODULE)))
+    USEMODULE += newlib_syscalls_default
+    USEMODULE += xtimer
 endif
 
 ifneq (,$(findstring posix,$(USEMODULE)))
