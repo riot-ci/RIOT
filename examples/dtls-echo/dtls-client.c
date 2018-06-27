@@ -74,11 +74,11 @@ static int _events_handler(struct dtls_context_t *ctx,
  * peer or a currently established peer.
  *
  */
-static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet,
-                             size_t size)
+static void dtls_handle_read(dtls_context_t *ctx)
 {
     static session_t session;
     static sock_udp_ep_t remote = SOCK_IPV6_EP_ANY;
+    uint8_t packet_rcvd[DTLS_MAX_BUF];
 
     if (!ctx) {
         DEBUG("%s: No DTLS context\n", __func__);
@@ -99,14 +99,24 @@ static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet,
         return;
     }
 
+    ssize_t res = sock_udp_recv(sock, packet_rcvd, DTLS_MAX_BUF,
+                                1 * US_PER_SEC, &remote);
+
+    if (res <= 0) {
+        if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {
+            DEBUG("sock_udp_recv unexepcted code error: %i\n", res);
+        }
+        return;
+    }
+
     /* session requires the remote socket (IPv6:UDP) address and netif  */
     session.size = sizeof(uint8_t) * 16 + sizeof(unsigned short);
     session.port = remote.port;
     if (&remote.netif ==  SOCK_ADDR_ANY_NETIF) {
-        session.ifindex  = SOCK_ADDR_ANY_NETIF;
+        session.ifindex = SOCK_ADDR_ANY_NETIF;
     }
     else {
-        session.ifindex  = remote.netif;
+        session.ifindex = remote.netif;
     }
 
     if (memcpy(&session.addr, &remote.addr.ipv6, 16) == NULL) {
@@ -120,7 +130,7 @@ static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet,
         DEBUG("]:%u\n", remote.port);
     }
 
-    dtls_handle_message(ctx, &session, packet, (int)size);
+    dtls_handle_message(ctx, &session, packet_rcvd, (int)DTLS_MAX_BUF);
 
     return;
 }
@@ -374,12 +384,8 @@ static void client_send(char *addr_str, char *data,
     sock_udp_ep_t remote = SOCK_IPV6_EP_ANY;
     sock_udp_t sock;
 
-    uint8_t packet_rcvd[DTLS_MAX_BUF];
     uint8_t watch = MAX_TIMES_TRY_TO_SEND;
-
-    ssize_t pckt_rcvd_size = DTLS_MAX_BUF;  /* DTLS flights records */
     ssize_t app_data_buf = 0;               /* Upper layer packet to send */
-
 
     /* NOTE: dtls_init() must be called previous to this (see main.c) */
 
@@ -442,46 +448,9 @@ static void client_send(char *addr_str, char *data,
             }
         }
 
-        pckt_rcvd_size = sock_udp_recv(&sock, packet_rcvd, DTLS_MAX_BUF,
-                                       1 * US_PER_SEC, &remote);
-
-        if (pckt_rcvd_size >= 0) {
-            dtls_handle_read(dtls_context, packet_rcvd, pckt_rcvd_size);
-        }
-        else if (ENABLE_DEBUG)  {
-            switch (pckt_rcvd_size) {
-                case -ENOBUFS:
-                    puts("ERROR: Buffer space not enough large!");
-                    break;
-
-                case -EADDRNOTAVAIL:
-                    puts("ERROR: Local Socket NULL");
-                    break;
-
-                /* NOTE: Actually, those are OK for this test */
-                case -EAGAIN:
-                case -ETIMEDOUT:
-                    /* watchdog can be updated here */
-                    break;
-
-                case -ENOMEM:
-                    puts("ERROR: Memory overflow!");
-                    break;
-
-                case -EINVAL:
-                    puts("ERROR: remote or sock is not properly initialized");
-                    break;
-
-                case -EPROTO:
-                    puts("ERROR: source address of received packet did not equal the remote");
-                    break;
-
-                default:
-                    printf("ERROR: unexpected code error: %zd \n", pckt_rcvd_size);
-                    break;
-            } /* END-Switch */
-        } /* END-Else */
-
+        /* Check if a DTLS record was received */
+        /* NOTE: We expect an answer after try_send() */
+        dtls_handle_read(dtls_context);
         watch--;
         /*
          * This delay is to give time to the remote peer to do the compute.

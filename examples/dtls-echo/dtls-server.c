@@ -77,9 +77,10 @@ char _dtls_server_stack[THREAD_STACKSIZE_MAIN +
  * DTLS records. Also, it determines if said DTLS record is coming from a new
  * peer or a currently established peer.
  */
-static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet, size_t size)
+static void dtls_handle_read(dtls_context_t *ctx)
 {
     static session_t session;
+    static uint8_t packet_rcvd[DTLS_MAX_BUF];
 
     assert(ctx);
     assert(dtls_get_app_data(ctx));
@@ -97,14 +98,26 @@ static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet, size_t size)
     dtls_remote_peer_t *remote_peer;
     remote_peer = (dtls_remote_peer_t *)dtls_get_app_data(ctx);
 
+    ssize_t res = sock_udp_recv(remote_peer->sock, packet_rcvd, DTLS_MAX_BUF,
+                                10 * US_PER_SEC, remote_peer->remote);
+
+    if (res <= 0) {
+        if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {
+            DEBUG("sock_udp_recv unexepcted code error: %i\n", res);
+        }
+        return;
+    }
+
+    DEBUG("DBG-Server: Record Rcvd\n");
+
     /* (DTLS) session requires the remote peer address (IPv6:Port) and netif */
     session.size = sizeof(uint8_t) * 16 + sizeof(unsigned short);
     session.port = remote_peer->remote->port;
     if (remote_peer->remote->netif ==  SOCK_ADDR_ANY_NETIF) {
-        session.ifindex  = SOCK_ADDR_ANY_NETIF;
+        session.ifindex = SOCK_ADDR_ANY_NETIF;
     }
     else {
-        session.ifindex  = remote_peer->remote->netif;
+        session.ifindex = remote_peer->remote->netif;
     }
 
     if (memcpy(&session.addr, &remote_peer->remote->addr.ipv6, 16) == NULL) {
@@ -112,7 +125,7 @@ static void dtls_handle_read(dtls_context_t *ctx, uint8_t *packet, size_t size)
         return;
     }
 
-    dtls_handle_message(ctx, &session, packet, (int)size);
+    dtls_handle_message(ctx, &session, packet_rcvd, (int)DTLS_MAX_BUF);
 
     return;
 }
@@ -307,9 +320,6 @@ void *_dtls_server_wrapper(void *arg)
     msg_t _reader_queue[READER_QUEUE_SIZE];
     msg_t msg;
 
-    ssize_t pckt_rcvd_size = DTLS_MAX_BUF;
-    uint8_t pckt_rcvd[DTLS_MAX_BUF];
-
     sock_udp_t udp_socket;
     sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
     sock_udp_ep_t remote = SOCK_IPV6_EP_ANY;
@@ -345,56 +355,16 @@ void *_dtls_server_wrapper(void *arg)
         if (msg.type == DTLS_STOP_SERVER_MSG) {
             active = false;
         }
-        else { /* Normal operation */
-
-            /* NOTE: The 10 seconds time is for reaching the IPC msgs again. */
-            pckt_rcvd_size = sock_udp_recv(&udp_socket, pckt_rcvd,
-                                           sizeof(pckt_rcvd),
-                                           10 * US_PER_SEC, &remote);
-            if (pckt_rcvd_size >= 0) {
-                DEBUG("DBG-Server: Record Rcvd\n");
-                dtls_handle_read(dtls_context, pckt_rcvd, pckt_rcvd_size);
-            }
-            else if (ENABLE_DEBUG) {
-                switch (pckt_rcvd_size) {
-                    case -ENOBUFS:
-                        puts("ERROR: Buffer space not enough large!");
-                        break;
-
-                    case -EADDRNOTAVAIL:
-                        puts("ERROR: Local Socket NULL");
-                        break;
-
-                    /* NOTE: Those are OK for this test */
-                    case -EAGAIN:
-                    case -ETIMEDOUT:
-                        /* watchdog can be updated here */
-                        break;
-
-                    case -ENOMEM:
-                        puts("ERROR: Memory overflow!");
-                        break;
-
-                    case -EINVAL:
-                        puts("ERROR: remote or sock is not properly initialized");
-                        break;
-
-                    case -EPROTO:
-                        puts("ERROR: source address of received packet did not equal the remote");
-                        break;
-
-                    default:
-                        printf("ERROR: unexpected code error: %zd\n", pckt_rcvd_size);
-                        break;
-                } /* END-Switch */
-            } /* END-Else (sock_udp_recv) */
-        } /* END-Else (thread message)*/
-    } /* End-While */
+        else {
+            /* Listening for any DTLS recodrd */
+            dtls_handle_read(dtls_context);
+        }
+    }
 
     /* Release resources (strict order) */
-    dtls_free_context(dtls_context); /* This also sends a DTLS Alert record */
+    dtls_free_context(dtls_context);    /* This also sends a DTLS Alert record */
     sock_udp_close(&udp_socket);
-    msg_reply(&msg, &msg); /* Basic answer to the main thread */
+    msg_reply(&msg, &msg);              /* Basic answer to the main thread */
 
     return (void *) NULL;
 }
