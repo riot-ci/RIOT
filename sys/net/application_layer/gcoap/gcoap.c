@@ -1012,13 +1012,13 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
 
 int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val)
 {
-    char qs[NANOCOAP_URI_MAX];
+    char qs[NANOCOAP_QS_MAX];
     size_t qs_len  = 0;
     size_t key_len = strlen(key);
     size_t val_len = (val) ? (strlen(val) + 1) : 0;
 
     /* add 2 for '=' and null terminator */
-    if ((key_len + val_len + 2) >= NANOCOAP_URI_MAX) {
+    if ((key_len + val_len + 2) >= NANOCOAP_QS_MAX) {
         return -1;
     }
 
