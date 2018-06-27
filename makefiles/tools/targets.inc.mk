@@ -10,6 +10,11 @@ $(RIOTTOOLS)/bossa/bossac:
 	@make -C $(RIOTTOOLS)/bossa
 	@echo "[INFO] bossac binary successfully build!"
 
+$(RIOTTOOLS)/pic32prog/pic32prog:
+	@echo "[INFO] $(@F) binary not found - building it from source now"
+	make -C $(@D)
+	@echo "[INFO] $(@F) binary successfully build!"
+
 $(RIOTTOOLS)/edbg/edbg:
 	@echo "[INFO] edbg binary not found - building it from source now"
 	CC= CFLAGS= make -C $(RIOTTOOLS)/edbg
