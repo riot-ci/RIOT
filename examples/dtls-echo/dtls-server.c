@@ -99,7 +99,7 @@ static void dtls_handle_read(dtls_context_t *ctx)
     remote_peer = (dtls_remote_peer_t *)dtls_get_app_data(ctx);
 
     ssize_t res = sock_udp_recv(remote_peer->sock, packet_rcvd, DTLS_MAX_BUF,
-                                10 * US_PER_SEC, remote_peer->remote);
+                                1 * US_PER_SEC, remote_peer->remote);
 
     if (res <= 0) {
         if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {

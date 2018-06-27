@@ -40,7 +40,13 @@
 
 #define CLIENT_PORT DTLS_DEFAULT_PORT + 1
 #define MAX_TIMES_TRY_TO_SEND 10 /* Expected to be 1 - 255 */
+
+/* Delay to give time to the remote peer to do the compute (client only). */
+#ifdef DTLS_ECC
+#define DEFAULT_US_DELAY 10000000
+#else
 #define DEFAULT_US_DELAY 100
+#endif
 
 static int dtls_connected = 0; /* This is handled by Tinydtls callbacks */
 
@@ -100,7 +106,8 @@ static void dtls_handle_read(dtls_context_t *ctx)
     }
 
     ssize_t res = sock_udp_recv(sock, packet_rcvd, DTLS_MAX_BUF,
-                                1 * US_PER_SEC, &remote);
+                                1 * US_PER_SEC + DEFAULT_US_DELAY,
+                                &remote);
 
     if (res <= 0) {
         if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {
@@ -374,8 +381,7 @@ dtls_context_t *_init_dtls(sock_udp_t *sock, sock_udp_ep_t *local,
     return new_context;
 }
 
-static void client_send(char *addr_str, char *data,
-                        unsigned int delay)
+static void client_send(char *addr_str, char *data)
 {
     static session_t dst;
     dtls_context_t *dtls_context = NULL;
@@ -452,13 +458,6 @@ static void client_send(char *addr_str, char *data,
         /* NOTE: We expect an answer after try_send() */
         dtls_handle_read(dtls_context);
         watch--;
-        /*
-         * This delay is to give time to the remote peer to do the compute.
-         * This becomes strongly important when ECC is used in another sensor.
-         */
-        xtimer_usleep(delay);
-
-
     } /* END while */
 
     /*
@@ -484,16 +483,11 @@ static void client_send(char *addr_str, char *data,
 
 int udp_client_cmd(int argc, char **argv)
 {
-    uint32_t delay = DEFAULT_US_DELAY;
-
-    if (argc < 3) {
-        printf("usage: %s <addr> <data> [<delay in us>]\n", argv[0]);
+    if (argc != 3) {
+        printf("usage: %s <addr> <data> \n", argv[0]);
         return 1;
     }
-    else if (argc > 3) {
-        delay = atoi(argv[3]);
-    }
-    client_send(argv[1], argv[2], delay);
+    client_send(argv[1], argv[2]);
 
     return 0;
 }
