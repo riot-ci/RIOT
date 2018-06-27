@@ -50,13 +50,13 @@
 
 static const struct luaR_builtin_lua _luaR_builtin_lua_table[1];
 const struct luaR_builtin_lua *const luaR_builtin_lua_table WEAK
-                                                = _luaR_builtin_lua_table;
+    = _luaR_builtin_lua_table;
 
 const size_t luaR_builtin_lua_table_len WEAK = 0;
 
 static const struct luaR_builtin_c _luaR_builtin_c_table[1];
 const struct luaR_builtin_c *const luaR_builtin_c_table WEAK
-                                                = _luaR_builtin_c_table;
+    = _luaR_builtin_c_table;
 
 const size_t luaR_builtin_c_table_len WEAK = 0;
 
@@ -78,7 +78,8 @@ static int _ll_searcher_builtin_lua(lua_State *L, const char *name)
         }
 
         return load_result;
-    } else {
+    }
+    else {
         return LUAR_MODULE_NOTFOUND;
     }
 }
@@ -91,18 +92,18 @@ static int _ll_searcher_builtin_lua(lua_State *L, const char *name)
  */
 static int searcher_builtin_lua(lua_State *L)
 {
-    const char *name = luaL_checkstring (L, 1);
+    const char *name = luaL_checkstring(L, 1);
     int load_result = _ll_searcher_builtin_lua(L, name);
 
     switch (load_result) {
-    case LUA_OK:
-        return 2; /* there are two elements in the stack */
-    case LUAR_MODULE_NOTFOUND:
-        return luaL_error(L, "Module '%s' not found in Lua-builtins",
-                          lua_tostring(L, 1));
-    default:
-        return luaL_error(L, "error loading module '%s' from Lua-builtins: \n%s",
-                          lua_tostring(L, 1), lua_tostring(L, 2));
+        case LUA_OK:
+            return 2; /* there are two elements in the stack */
+        case LUAR_MODULE_NOTFOUND:
+            return luaL_error(L, "Module '%s' not found in Lua-builtins",
+                              lua_tostring(L, 1));
+        default:
+            return luaL_error(L, "error loading module '%s' from Lua-builtins: \n%s",
+                              lua_tostring(L, 1), lua_tostring(L, 2));
     }
 }
 
@@ -117,7 +118,8 @@ static int _ll_searcher_builtin_c(lua_State *L, const char *name)
         lua_pushcfunction(L, cmodule->luaopen);
         lua_pushstring(L, name);    /* will be 2nd argument to module */
         return LUA_OK;
-    } else {
+    }
+    else {
         return LUAR_MODULE_NOTFOUND;
     }
 }
@@ -135,7 +137,8 @@ static int searcher_builtin_c(lua_State *L)
 
     if (load_result == LUA_OK) {
         return 2;
-    } else {
+    }
+    else {
         return luaL_error(L, "Module '%s' not found in C-builtins",
                           lua_tostring(L, 1));
     }

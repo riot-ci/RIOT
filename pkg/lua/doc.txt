@@ -5,20 +5,127 @@
  * @see      https://github.com/lua/lua
  * @see      sys_lua
  *
- * # Customizations
+ * # Lua programming language support
  *
- * The upstream Lua code is used without modification, with the following
- * exceptions:
+ * ## Introduction
+ *
+ * This package embeds a [Lua 5.3](https://www.lua.org/) interpreter into RIOT.
+ * With a few exceptions, all the APIs mentioned in the
+ * [official documentation](https://www.lua.org/manual/5.3/) are available in
+ * this package too.
+ *
+ * ## Running Lua code.
+ *
+ * lua_run.h contains functions that make it easy to setup the interpreter and
+ * catch errors in a safe way. The functions from Lua's auxlib can still be used
+ * but then you must supply your own allocator and panic routines, load the
+ * builtin modules, etc.
+ *
+ * To run a chunk of code stored in an array use:
+ * ```
+ * luaR_do_buffer(const char *buf, size_t buflen, void *memory,
+ *                            size_t mem_size, uint16_t modmask, int *retval);
+ * ```
+ * The interpreter will not use the global heap for allocations, instead the
+ * user must supply a memory buffer.
+ *
+ * To save some memory, some builtin modules can be left out. `modmask` specifies
+ * which builtins to load. Note that if a builtin is not loaded by C code, then
+ * it cannot be loaded by Lua code later.
+ *
+ * `luaR_do_buffer` takes care of setting up the Lua state, registering a panic
+ * handler that does not crash the application, configuring an allocator, loading
+ * libraries, etc.
+ *
+ * To run a module as a script use `luaR_do_module`. This is roughly equivalent
+ * to executing:
+ * ```
+ * require('modulename')
+ * ```
+ *
+ * ## Memory requirements
+ *
+ * While generally efficient, the Lua interpreter was not really designed for
+ * constrained devices.
+ *
+ * A basic interpreter session typically requires about 12kB RAM. The stack
+ * but it depends on the functions used (string handling tends to use more stack).
+ * It also depends on the platform.
+ *
+ * There is currently no easy way to determine the stack needs other than trial
+ * and error. Future versions of the package will include instrumentation to
+ * this end.
+ *
+ * ## Adding yout own modules.
+ *
+ * `lua_loadlib.c` contains two loaders, one for modules written in Lua and
+ * another one for C extensions.
+ *
+ * An index to the modules is stored in a table (there are two, one for each
+ * kind of module). The tables are indexed by the module name and must be sorted
+ * in ascending order by this key.
+ *
+ * The definitions for the table types are in `lua_builtin.h`. The loader module
+ * containes empty tables, defined as weak symbols so they can be ovewritten
+ * by the application. The variables that must be defined are:
+ *
+ * ```
+ * /** Table containing all built in pure lua modules */
+ * const struct luaR_builtin_lua *const luaR_builtin_lua_table;
+ * /** Number of elements of luaR_builtin_lua_table */
+ * const size_t luaR_builtin_lua_table_len;
+ *
+ * /** Table containing all built in c lua modules */
+ * const struct luaR_builtin_c *const luaR_builtin_c_table;
+ * /** Number of elements of luaR_builtin_c_table */
+ * const size_t luaR_builtin_c_table_len;
+ * ```
+ *
+ * Currently, these must be defined manually in the application code. In the
+ * future a script will generate this tables, populating them with both RIOT
+ * modules and the user modules.
+ *
+ *
+ * ## Customizations
+ *
+ * The upstream Lua code is used without with the following modifications.
+ *
+ * Modifications that affect the API:
  *
  * - lua.c (the main interface to the interpreter) is replaced by our own
  *   stripped-down version. The REPL is no longer included.
  * - loadlib.c (the "package" module) is replaced by our own (simplified)
  *   loader. All the code dealing with files and dynamic loading has been
  *   removed.
+ * - os.tmpname() is removed as it caused compiler warnings and it is not
+ *   really possible to use it right. Use io.tmpfile() instead.
+ * - The test module has been modified to allow it run in the RIOT environment.
+ *   This is not a public API, though.
+ *
+ * Other modifications:
+ *
+ * - There is a patch changing the Makefile. This updated makefile is not used
+ *   in the package, but is provided to aid development in a PC.
+ * - Some patches to reduce stack and memory usage.
+ *
+ * ## TODO
+ *
+ * The following features are missing and will be eventually added:
+ *
+ * - Load source code incrementally. It can be done now, but then the rest of the
+ *   interpreter setup must be loaded manually.
+ * - Bindings to access RIOT functionality.
+ * - Support in the build system for easily including application-specific
+ *   modules.
+ * - Instrumentation to measure stack consumption (and maybe prevent overflow).
+ * - Support for "frozen tables" (i.e. tables that live in ROM).
+ * - Provide a better way of supplying data to a script and getting back results.
+ * - Specify a function to call inside a module (????)
+ * - Expand this readme into a proper manual.
  *
  */
 
-/* These are docs for the future */
+/* These are docs for the future (when we have the script to compile module tables) */
 /*
  * # Running Lua and C code
  *

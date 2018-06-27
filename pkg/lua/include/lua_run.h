@@ -42,7 +42,7 @@ extern "C" {
 /**
  * Convert a library index into a bit mask.
  */
-#define LUAR_LOAD_FLAG(n) (((uint16_t)1)<<(n))
+#define LUAR_LOAD_FLAG(n) (((uint16_t)1) << (n))
 
 /**
  * Order in which the builtin libraries are loaded.
@@ -85,8 +85,8 @@ enum LUAR_LOAD_ORDER {
 /* TODO: maybe we can implement a "restricted base" package containing a subset
  * of base that is safe. */
 
-#define LUAR_LOAD_ALL        (0xFFFF)            /** Load all standard modules */
-#define LUAR_LOAD_NONE       (0x0000)            /** Do not load any modules */
+#define LUAR_LOAD_ALL        (0xFFFF)               /** Load all standard modules */
+#define LUAR_LOAD_NONE       (0x0000)               /** Do not load any modules */
 
 /** Errors that can be raised when running lua code. */
 enum LUAR_ERRORS {
@@ -107,7 +107,7 @@ enum LUAR_ERRORS {
 /**
  * Human-readable description of the errors
  */
-extern const char * luaR_str_errors[];
+extern const char *luaR_str_errors[];
 
 /**
  * Return a string describing an error from LUAR_ERRORS.
@@ -117,7 +117,7 @@ extern const char * luaR_str_errors[];
  *
  * @return A string describing the error, or "Unknown error".
  */
-LUALIB_API const char * luaR_strerror(int errn);
+LUALIB_API const char *luaR_strerror(int errn);
 
 /**
  * Initialize a lua state and set the panic handler.
