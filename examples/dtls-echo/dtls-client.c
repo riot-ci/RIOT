@@ -238,7 +238,7 @@ static int _read_from_peer_handler(struct dtls_context_t *ctx,
     return 0;
 }
 
-/* Transmits the next DTLS flight for a specific Peer. */
+/* Transmits the upper layer data data in one or more DTLS Data App records . */
 ssize_t try_send(struct dtls_context_t *ctx, session_t *dst, uint8 *buf, size_t len)
 {
     int res = 0;
