@@ -31,7 +31,6 @@
 
 static mutex_t _lock;
 static thread_t *t;
-static kernel_pid_t pid;
 static thread_flags_t _flag = 0x0001;
 static msg_t _msg;
 
@@ -64,9 +63,8 @@ int main(void)
     puts("Runtime of Selected Core API functions\n");
 
     t = (thread_t *)sched_active_thread;
-    pid = thread_getpid();
 
-    BENCHMARK_FUNC("nop loop", BENCH_RUNS, __asm__ volatile("nop"));
+    BENCHMARK_FUNC("nop loop", BENCH_RUNS, __asm__ volatile ("nop"));
     puts("");
     BENCHMARK_FUNC("mutex_init()", BENCH_RUNS, mutex_init(&_lock));
     BENCHMARK_FUNC("mutex lock/unlock", BENCH_RUNS, _mutex_lockunlock());

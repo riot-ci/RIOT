@@ -10,8 +10,12 @@ import os
 import sys
 
 
+# The default timeout is not enough for this test on some of the slower boards
+TIMEOUT = 30
+
+
 def testfunc(child):
-    child.expect_exact('[SUCCESS]')
+    child.expect_exact('[SUCCESS]', timeout=TIMEOUT)
 
 
 if __name__ == "__main__":
