@@ -67,7 +67,7 @@ ifeq (1,$(USE_NEWLIB_NANO))
   NEWLIB_NANO_INCLUDE_DIR ?= $(NEWLIB_INCLUDE_DIR)/newlib-nano
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
-  ifeq (0,$(words $(wildcard $(NEWLIB_NANO_INCLUDE_DIR))))
+  ifeq (,$(wildcard $(NEWLIB_NANO_INCLUDE_DIR)))
     # HACK until this is really fixed. It keeps the old build system behaviour
     # but removes the error on non existing directory
     $(warning $(lastword $(MAKEFILE_LIST)) could not correctly find include path to newlib-nano headers.)
