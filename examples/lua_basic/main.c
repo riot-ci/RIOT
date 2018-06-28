@@ -1,10 +1,10 @@
 o/*
- * Copyright (C) 2018 FU Berlin
- *
- * This file is subject to the terms and conditions of the GNU Lesser
- * General Public License v2.1. See the file LICENSE in the top level
- * directory for more details.
- */
+  * Copyright (C) 2018 FU Berlin
+  *
+  * This file is subject to the terms and conditions of the GNU Lesser
+  * General Public License v2.1. See the file LICENSE in the top level
+  * directory for more details.
+  */
 
 /**
  * @ingroup     examples
@@ -32,14 +32,14 @@ static char lua_mem[LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIGNMENT__)
 
 int lua_run_script(const char *buffer, size_t buffer_len)
 {
-    lua_State *L = luaR_newstate(lua_mem, sizeof(lua_mem), NULL);
+    lua_State *L = lua_riot_newstate(lua_mem, sizeof(lua_mem), NULL);
 
     if (L == NULL) {
         puts("cannot create state: not enough memory");
         return ENOMEM;
     }
 
-    luaR_openlibs(L, LUAR_LOAD_BASE);
+    lua_riot_openlibs(L, LUAR_LOAD_BASE);
     luaL_loadbuffer(L, buffer, buffer_len, "lua input script");
 
     if (lua_pcall(L, 0, 0, 0) != LUA_OK) {

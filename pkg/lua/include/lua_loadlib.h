@@ -46,10 +46,11 @@ extern "C" {
  * @return      Same as lua_load. If the module is a C-module, then this will
  *              always succeed and return LUA_OK.
  */
-int luaR_getloader(lua_State *L, const char *name);
+int lua_riot_getloader(lua_State *L, const char *name);
 
 #ifdef __cplusplus
-extern "C" }
+extern "C"
+}
 #endif
 
 #endif /* LUA_LOADLIB_H */

@@ -104,17 +104,17 @@ enum LUAR_ERRORS {
 /**
  * Human-readable description of the errors
  */
-extern const char *luaR_str_errors[];
+extern const char *lua_riot_str_errors[];
 
 /**
  * Return a string describing an error from LUAR_ERRORS.
  *
- * @param   errn    Error number as returned by luaR_do_buffer() or
- *                  luaR_do_buffer()
+ * @param   errn    Error number as returned by lua_riot_do_buffer() or
+ *                  lua_riot_do_buffer()
  *
  * @return A string describing the error, or "Unknown error".
  */
-LUALIB_API const char *luaR_strerror(int errn);
+LUALIB_API const char *lua_riot_strerror(int errn);
 
 /**
  * Initialize a lua state and set the panic handler.
@@ -132,8 +132,8 @@ LUALIB_API const char *luaR_strerror(int errn);
  *
  * @return      the new state, or NULL if there is a memory allocation error.
  */
-LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
-                                    lua_CFunction panicf);
+LUALIB_API lua_State *lua_riot_newstate(void *memory, size_t mem_size,
+                                        lua_CFunction panicf);
 
 /**
  * Terminate the lua state.
@@ -142,9 +142,9 @@ LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
  * to be called.
  */
 #ifndef LUA_DEBUG
-    #define luaR_close lua_close
+    #define lua_riot_close lua_close
 #else
-    #define luaR_close luaB_close
+    #define lua_riot_close luaB_close
 #endif /* LUA_DEBUG */
 
 /**
@@ -168,7 +168,7 @@ LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
  * @return      The index of the library that failed to load, or LUAR_LOAD_O_ALL
  *              if all libraries were loaded.
  */
-LUALIB_API int luaR_openlibs(lua_State *L, uint16_t modmask);
+LUALIB_API int lua_riot_openlibs(lua_State *L, uint16_t modmask);
 
 /**
  * Initialize the interpreter and run a built-in module in protected mode.
@@ -180,17 +180,17 @@ LUALIB_API int luaR_openlibs(lua_State *L, uint16_t modmask);
  * or to manually reset the heap (only if there's no other thread using it).
  *
  * @param       modname     name of the module.
- * @param       memory      @see luaR_newstate()
- * @param       mem_size    @see luaR_newstate()
- * @param       modmask     @see luaR_newstate()
+ * @param       memory      @see lua_riot_newstate()
+ * @param       mem_size    @see lua_riot_newstate()
+ * @param       modmask     @see lua_riot_newstate()
  * @param[out]  retval      Value returned by the lua code, if it is a number,
  *                          or zero if no value is returned or the value is not
  *                          a number. If retval is null, the value is not stored.
  *
  * @return      An error code ( @see LUAR_ERRORS). LUAR_EXIT indicates no error.
  */
-LUALIB_API int luaR_do_module(const char *modname, void *memory, size_t mem_size,
-                              uint16_t modmask, int *retval);
+LUALIB_API int lua_riot_do_module(const char *modname, void *memory, size_t mem_size,
+                                  uint16_t modmask, int *retval);
 
 /**
  * Initialize the interpreter and run a user supplied buffer in protected mode.
@@ -198,19 +198,19 @@ LUALIB_API int luaR_do_module(const char *modname, void *memory, size_t mem_size
  * Only text data (i.e. lua source code) can be loaded by this function. The
  * lua interpreter is not robust against corrupt binary code.
  *
- * @see luaR_do_module() for more information on internal errors.
+ * @see lua_riot_do_module() for more information on internal errors.
  *
  * @param       buf     Text data (lua source code).
  * @param       buflen  Size of the text data in bytes. If buf is
  *                      a zero-terminated string, the zero must not be counted.
- * @param       memory      @see luaR_newstate()
- * @param       mem_size    @see luaR_newstate()
- * @param       modmask     @see luaR_newstate()
- * @param[out]  retval      @see luaR_do_module()
- * @return      @see luaR_do_module().
+ * @param       memory      @see lua_riot_newstate()
+ * @param       mem_size    @see lua_riot_newstate()
+ * @param       modmask     @see lua_riot_newstate()
+ * @param[out]  retval      @see lua_riot_do_module()
+ * @return      @see lua_riot_do_module().
  */
-LUALIB_API int luaR_do_buffer(const char *buf, size_t buflen, void *memory,
-                              size_t mem_size, uint16_t modmask, int *retval);
+LUALIB_API int lua_riot_do_buffer(const char *buf, size_t buflen, void *memory,
+                                  size_t mem_size, uint16_t modmask, int *retval);
 
 #ifdef __cplusplus
 extern "C" }

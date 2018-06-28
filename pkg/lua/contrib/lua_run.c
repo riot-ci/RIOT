@@ -32,7 +32,7 @@
 #include "lua_run.h"
 #include "lua_loadlib.h"
 
-const char *luaR_str_errors[] = {
+const char *lua_riot_str_errors[] = {
     "No errors",
     "Error setting up the interpreter",
     "Error while loading a builtin library",
@@ -73,8 +73,8 @@ static void *lua_tlsf_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     return tlsf_realloc(tlsf, ptr, nsize);
 }
 
-LUALIB_API lua_State *luaR_newstate(void *memory, size_t mem_size,
-                                    lua_CFunction panicf)
+LUALIB_API lua_State *lua_riot_newstate(void *memory, size_t mem_size,
+                                        lua_CFunction panicf)
 {
     lua_State *L;
 
@@ -121,7 +121,7 @@ static const luaL_Reg loadedlibs[LUAR_LOAD_O_ALL] = {
     { LUA_DBLIBNAME, luaopen_debug },
 };
 
-LUALIB_API int luaR_openlibs(lua_State *L, uint16_t modmask)
+LUALIB_API int lua_riot_openlibs(lua_State *L, uint16_t modmask)
 {
     int lib_index;
 
@@ -163,9 +163,9 @@ NORETURN static int _jump_back(lua_State *L)
     longjmp(*jump_buffer, 1);
 }
 
-static int luaR_do_module_or_buf(const char *buf, size_t buflen,
-                                 const char *modname, void *memory, size_t mem_size,
-                                 uint16_t modmask, int *retval)
+static int lua_riot_do_module_or_buf(const char *buf, size_t buflen,
+                                     const char *modname, void *memory, size_t mem_size,
+                                     uint16_t modmask, int *retval)
 {
     jmp_buf jump_buffer;
     lua_State *volatile L = NULL;
@@ -176,13 +176,13 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
 
     if (setjmp(jump_buffer)) { /* We'll teleport back here if something goes wrong*/
         status = LUAR_INTERNAL_ERR;
-        goto luaR_do_error;
+        goto lua_riot_do_error;
     }
 
-    L = luaR_newstate(memory, mem_size, _jump_back);
+    L = lua_riot_newstate(memory, mem_size, _jump_back);
     if (L == NULL) {
         status = LUAR_STARTUP_ERR;
-        goto luaR_do_error;
+        goto lua_riot_do_error;
     }
 
     /* lua_getextraspace() gives us a pointer to an are large enough to hold a
@@ -194,14 +194,14 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
      */
     *(jmp_buf **)lua_getextraspace(L) = &jump_buffer;
 
-    tmp_retval = luaR_openlibs(L, modmask);
+    tmp_retval = lua_riot_openlibs(L, modmask);
     if (tmp_retval != LUAR_LOAD_O_ALL) {
         status = LUAR_LOAD_ERR;
-        goto luaR_do_error;
+        goto lua_riot_do_error;
     }
 
     if (buf == NULL) {
-        compilation_result = luaR_getloader(L, modname);
+        compilation_result = lua_riot_getloader(L, modname);
     }
     else {
         compilation_result = luaL_loadbufferx(L, buf, buflen, modname, "t");
@@ -210,15 +210,15 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
     switch (compilation_result) {
         case LUAR_MODULE_NOTFOUND:
             status = LUAR_NOMODULE;
-            goto luaR_do_error;
+            goto lua_riot_do_error;
         case LUA_ERRSYNTAX:
             status = LUAR_COMPILE_ERR;
-            goto luaR_do_error;
+            goto lua_riot_do_error;
         case LUA_ERRMEM:    /* fallthrough */
         case LUA_ERRGCMM:   /* fallthrough */
         default:
             status = LUAR_MEMORY_ERR;
-            goto luaR_do_error;
+            goto lua_riot_do_error;
         case LUA_OK:
             break;
     }
@@ -232,21 +232,21 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
         case LUA_ERRGCMM:   /* fallthrough */
         default:
             status = LUAR_RUNTIME_ERR;
-            puts(lua_tostring (L, -1));
-            goto luaR_do_error;
+            puts(lua_tostring(L, -1));
+            goto lua_riot_do_error;
         case LUA_ERRMEM:
             status = LUAR_MEMORY_ERR;
-            goto luaR_do_error;
+            goto lua_riot_do_error;
         case LUA_OK:
             break;
     }
 
     tmp_retval = lua_tonumber(L, 1);
 
-luaR_do_error:
+lua_riot_do_error:
 
     if (L != NULL) {
-        luaR_close(L);
+        lua_riot_close(L);
     }
 
     if (retval != NULL) {
@@ -256,26 +256,26 @@ luaR_do_error:
     return status;
 }
 
-LUALIB_API int luaR_do_module(const char *modname, void *memory, size_t mem_size,
-                              uint16_t modmask, int *retval)
+LUALIB_API int lua_riot_do_module(const char *modname, void *memory, size_t mem_size,
+                                  uint16_t modmask, int *retval)
 {
-    return luaR_do_module_or_buf(NULL, 0, modname, memory, mem_size, modmask,
-                                 retval);
+    return lua_riot_do_module_or_buf(NULL, 0, modname, memory, mem_size, modmask,
+                                     retval);
 }
 
-LUALIB_API int luaR_do_buffer(const char *buf, size_t buflen, void *memory,
-                              size_t mem_size, uint16_t modmask, int *retval)
+LUALIB_API int lua_riot_do_buffer(const char *buf, size_t buflen, void *memory,
+                                  size_t mem_size, uint16_t modmask, int *retval)
 {
-    return luaR_do_module_or_buf(buf, buflen, "=BUFFER", memory, mem_size,
-                                 modmask, retval);
+    return lua_riot_do_module_or_buf(buf, buflen, "=BUFFER", memory, mem_size,
+                                     modmask, retval);
 }
 
-#define MAX_ERR_STRING ((sizeof(luaR_str_errors) / sizeof(*luaR_str_errors)) - 1)
+#define MAX_ERR_STRING ((sizeof(lua_riot_str_errors) / sizeof(*lua_riot_str_errors)) - 1)
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-LUALIB_API const char *luaR_strerror(int errn)
+LUALIB_API const char *lua_riot_strerror(int errn)
 {
-    return luaR_str_errors[MIN((unsigned int)errn, MAX_ERR_STRING)];
+    return lua_riot_str_errors[MIN((unsigned int)errn, MAX_ERR_STRING)];
 }
 
 /** @} */

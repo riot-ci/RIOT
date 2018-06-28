@@ -34,13 +34,13 @@ static char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIG
 
 #define BARE_MINIMUM_MODS (LUAR_LOAD_BASE | LUAR_LOAD_IO | LUAR_LOAD_CORO | LUAR_LOAD_PACKAGE)
 
-const struct luaR_builtin_lua _luaR_builtin_lua_table[] = {
+const struct lua_riot_builtin_lua _lua_riot_builtin_lua_table[] = {
     { "repl", repl_lua, repl_lua_len }
 };
 
-const struct luaR_builtin_lua *const luaR_builtin_lua_table = _luaR_builtin_lua_table;
+const struct lua_riot_builtin_lua *const lua_riot_builtin_lua_table = _lua_riot_builtin_lua_table;
 
-const size_t luaR_builtin_lua_table_len = 1;
+const size_t lua_riot_builtin_lua_table_len = 1;
 
 int main(void)
 {
@@ -51,10 +51,10 @@ int main(void)
         int status, value;
         puts("This is Lua: starting interactive session\n");
 
-        status = luaR_do_module("repl", lua_memory, MAIN_LUA_MEM_SIZE,
-                                BARE_MINIMUM_MODS, &value);
+        status = lua_riot_do_module("repl", lua_memory, MAIN_LUA_MEM_SIZE,
+                                    BARE_MINIMUM_MODS, &value);
 
-        printf("Exited. status: %s, return code %d\n", luaR_strerror(status),
+        printf("Exited. status: %s, return code %d\n", lua_riot_strerror(status),
                value);
     }
 
