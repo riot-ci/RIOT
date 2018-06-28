@@ -49,4 +49,3 @@ const void *binsearch_str_p(const void *start, size_t offset, size_t stride,
 
     return (ix == (-ENOENT)) ? NULL : (const uint8_t *)start + ix * stride;
 }
-
