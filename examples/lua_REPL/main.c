@@ -35,8 +35,9 @@ static char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIG
 #define BARE_MINIMUM_MODS (LUAR_LOAD_BASE | LUAR_LOAD_IO | LUAR_LOAD_CORO | LUAR_LOAD_PACKAGE)
 
 const struct lua_riot_builtin_lua _lua_riot_builtin_lua_table[] = {
-    { "repl", repl_lua, repl_lua_len }
+    { "repl", repl_lua, sizeof(repl_lua) }
 };
+
 
 const struct lua_riot_builtin_lua *const lua_riot_builtin_lua_table = _lua_riot_builtin_lua_table;
 
