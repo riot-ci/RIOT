@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "lua_run.h"
+#include "lua_builtin.h"
 #include "repl.lua.h"
 
 /* The basic interpreter+repl needs about 13k ram AT Minimum but we need more
@@ -31,7 +32,15 @@
 
 static char lua_memory[MAIN_LUA_MEM_SIZE] __attribute__ ((aligned(__BIGGEST_ALIGNMENT__)));
 
-#define BARE_MINIMUM_MODS (LUAR_LOAD_BASE | LUAR_LOAD_IO)
+#define BARE_MINIMUM_MODS (LUAR_LOAD_BASE | LUAR_LOAD_IO | LUAR_LOAD_CORO | LUAR_LOAD_PACKAGE)
+
+const struct luaR_builtin_lua _luaR_builtin_lua_table[] = {
+    { "repl", repl_lua, repl_lua_len }
+};
+
+const struct luaR_builtin_lua *const luaR_builtin_lua_table = _luaR_builtin_lua_table;
+
+const size_t luaR_builtin_lua_table_len = 1;
 
 int main(void)
 {
@@ -42,7 +51,7 @@ int main(void)
         int status, value;
         puts("This is Lua: starting interactive session\n");
 
-        status = luaR_do_buffer(repl_lua, repl_lua_len, lua_memory, MAIN_LUA_MEM_SIZE,
+        status = luaR_do_module("repl", lua_memory, MAIN_LUA_MEM_SIZE,
                                 BARE_MINIMUM_MODS, &value);
 
         printf("Exited. status: %s, return code %d\n", luaR_strerror(status),

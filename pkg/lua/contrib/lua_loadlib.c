@@ -8,8 +8,6 @@
  */
 /**
  * @ingroup  pkg_lua
- * @ingroup  pkg
- * @ingroup  sys
  * @{
  * @file
  *
@@ -41,23 +39,6 @@
 
 #include "lua_builtin.h"
 #include "lua_loadlib.h"
-
-
-/* Avoid compilation errors where there are no external modules defined */
-/* FIXME: this should be adapted to work with all compilers */
-#define WEAK __attribute__((weak))
-
-static const struct luaR_builtin_lua _luaR_builtin_lua_table[1];
-const struct luaR_builtin_lua *const luaR_builtin_lua_table WEAK
-    = _luaR_builtin_lua_table;
-
-const size_t luaR_builtin_lua_table_len WEAK = 0;
-
-static const struct luaR_builtin_c _luaR_builtin_c_table[1];
-const struct luaR_builtin_c *const luaR_builtin_c_table WEAK
-    = _luaR_builtin_c_table;
-
-const size_t luaR_builtin_c_table_len WEAK = 0;
 
 /* ======================== 'searchers' functions =========================== */
 

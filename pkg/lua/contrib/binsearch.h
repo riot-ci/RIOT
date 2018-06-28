@@ -101,7 +101,8 @@ extern "C" {
 /**
  * Search for an array element containing a string.
  *
- * This does NOT check for NULL pointers.
+ * This does NOT check for NULL pointers, though start can be NULL of the size
+ * (nmemb) is zero.
  *
  * @param   start   Pointer to start of array. The array must be ordered
  *                  according to the search string.

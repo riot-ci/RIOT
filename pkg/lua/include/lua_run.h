@@ -7,8 +7,6 @@
  */
 /**
  * @ingroup  pkg_lua
- * @ingroup  pkg
- * @ingroup  sys
  * @file
  * @{
  *

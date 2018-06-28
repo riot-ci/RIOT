@@ -7,8 +7,6 @@
  */
 /**
  * @ingroup  pkg_lua
- * @ingroup  pkg
- * @ingroup  sys
  * @{
  * @file
  *
@@ -21,6 +19,7 @@
 
 #include "lprefix.h"
 
+#include <stdio.h>
 #include <setjmp.h>
 
 #include "kernel_defines.h"
@@ -223,13 +222,17 @@ static int luaR_do_module_or_buf(const char *buf, size_t buflen,
         case LUA_OK:
             break;
     }
-    lua_pushstring(L, modname);
+
+    if (buf != NULL) {
+        lua_pushstring(L, modname);
+    }
 
     switch (lua_pcall(L, 1, 1, 0)) {
         case LUA_ERRRUN:    /* fallthrough */
         case LUA_ERRGCMM:   /* fallthrough */
         default:
             status = LUAR_RUNTIME_ERR;
+            puts(lua_tostring (L, -1));
             goto luaR_do_error;
         case LUA_ERRMEM:
             status = LUAR_MEMORY_ERR;

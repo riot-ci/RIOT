@@ -7,14 +7,19 @@
  */
 /**
  * @ingroup  pkg_lua
- * @ingroup  pkg
- * @ingroup  sys
  * @{
  * @file
  *
  * @brief   Definitions for including built-in modules.
  * @author  Juan Carrano <j.carrano@fu-berlin.de>
  *
+ * The modules must be placed in the tables luaR_builtin_lua_table (for lua
+ * source code) and luaR_builtin_c_table (for C extensions) and the lengths
+ * of these tables must be in luaR_builtin_lua_table_len and
+ * luaR_builtin_c_table_len.
+ *
+ * These symbols are defined as weak, so there if they are not defined elsewhere
+ * they will default to zero (or NULL), that is, empty tables.
  */
 
 #ifndef LUA_BUILTIN_H
@@ -23,6 +28,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Avoid compilation errors where there are no external modules defined */
+/**
+ * Attribute to make symbols weak.
+ *
+ * @todo This should be made part of RIOT.
+ */
+#define WEAK __attribute__((weak))
 
 /**
  * Only the first `LUAR_MAX_MODULE_NAME` characters of a module name
@@ -53,14 +66,14 @@ struct luaR_builtin_c {
 };
 
 /** Table containing all built in pure lua modules */
-extern const struct luaR_builtin_lua *const luaR_builtin_lua_table;
+extern WEAK const struct luaR_builtin_lua *const luaR_builtin_lua_table;
 /** Number of elements of luaR_builtin_lua_table */
-extern const size_t luaR_builtin_lua_table_len;
+extern WEAK const size_t luaR_builtin_lua_table_len;
 
 /** Table containing all built in c lua modules */
-extern const struct luaR_builtin_c *const luaR_builtin_c_table;
+extern WEAK const struct luaR_builtin_c *const luaR_builtin_c_table;
 /** Number of elements of luaR_builtin_c_table */
-extern const size_t luaR_builtin_c_table_len;
+extern WEAK const size_t luaR_builtin_c_table_len;
 
 #ifdef __cplusplus
 extern "C" }
