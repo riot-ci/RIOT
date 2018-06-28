@@ -34,8 +34,8 @@ the overall validity of the PR.
     Is the problem that the PR intends to solve clearly stated?
 2.  Is the solution presented in the PR as simple as possible to satisfy the
     requirements, but no simpler?
-3.  Is the PR functionally atomicm, does it address a single issue or should
-    it be split into multiple individual PR's?
+3.  Is the PR functionally atomic, does it address a single issue or should
+    it be split into multiple individual PRs?
 4.  Is the solution well designed on a high level?
 5.  Do the concepts used by the PR make sense?
 6.  Does the PR break with existing concepts?
