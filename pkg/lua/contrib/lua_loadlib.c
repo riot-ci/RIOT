@@ -42,7 +42,6 @@
 #include "lua_builtin.h"
 #include "lua_loadlib.h"
 
-#define LUAR_MAX_MODULE_NAME 64
 
 /* Avoid compilation errors where there are no external modules defined */
 /* FIXME: this should be adapted to work with all compilers */

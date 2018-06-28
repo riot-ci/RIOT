@@ -21,7 +21,9 @@ DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-# This is a lot of stack, should be fixed in the future.
+# This value is in excess because we are not sure of the exact requirements of
+# lua (see the package's docs). It must be fixed in the future by taking
+# appropriate measurements.
 CFLAGS += -DTHREAD_STACKSIZE_MAIN='(THREAD_STACKSIZE_DEFAULT+7000)'
 
 USEPKG += lua
@@ -44,6 +46,9 @@ LUA_H := $(LUA:%.lua=$(LUA_PATH)/%.lua.h)
 
 $(LUA_PATH)/:
 	@mkdir -p $@
+
+# FIXME: This way of embedding lua code is not robust. A proper script will
+# 		 be included later.
 
 $(LUA_H): | $(LUA_PATH)/
 $(LUA_H): $(LUA_PATH)/%.lua.h: %.lua

@@ -25,6 +25,12 @@ extern "C" {
 #endif
 
 /**
+ * Only the first `LUAR_MAX_MODULE_NAME` characters of a module name
+ * will be considered when performing a lookup.
+ */
+#define LUAR_MAX_MODULE_NAME 64
+
+/**
  * Entry describing a pure lua module whose source is built into the
  * application binary.
  */

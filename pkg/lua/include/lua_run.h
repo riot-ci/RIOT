@@ -20,9 +20,8 @@
  *
  * - Easy to use routines for executing modules as scrips.
  * - Control over which modules get loaded.
- *
- * In a future versio, support will be added for an allocator that works with
- * a user supplied array.
+ * - Support for using a local heap allocator.
+ * - Out of memory handling via setjmp/longjmp.
  *
  * This library is not strictly required, as all of the functionality could be
  * implemented in terms of the public lua api, but it covers most of the use

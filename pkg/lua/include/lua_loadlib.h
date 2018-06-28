@@ -24,6 +24,12 @@
 extern "C" {
 #endif
 
+/**
+ * Error code for when a modules is not found.
+ *
+ * The numeric value is chosen so that there is no collision with Lua's
+ * own error codes.
+ */
 #define LUAR_MODULE_NOTFOUND 50
 
 /**
