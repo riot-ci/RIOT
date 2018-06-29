@@ -1,0 +1,27 @@
+/**
+@defgroup        cpu_esp32 ESP32
+@ingroup         cpu
+@brief           Port of RIOT-OS to Espressif's ESP32 MCUs
+
+## Introduction
+
+**RIOT-Xtensa-ESP** is a bare metal implementation of **RIOT-OS** for **ESP32** SOCs which supports most features of RIOT-OS. The peripheral SPI and I2C interfaces allow to connect all external hardware modules supported by RIOT-OS, such as sensors and actuators. SPI interface can also be used to connect external IEEE802.15.4 modules to integrate ESP32 boards into a GNRC network.
+
+Although the port does not use the official ESP-IDF (Espresso IoT Development Framework) SDK, it must be installed for compilation. The reason is that the port uses most of the ESP32 SOC definitions provided by the ESP-IDF header files. In addition, it needs the hardware abstraction library (libhal), which is part of the ESP-IDF SDK.
+
+## Limitations
+
+- The implementation uses **only one core** (the PRO CPU) because RIOT does not support running multiple threads simultaneously.
+
+- **WLAN and Bluetooth** cannot be used at the moment. (Maybe it will never be possible.) The reason is that these modules are controlled by **proprietary binary libraries** from Espressif which are not documented and require the ESP-IDF, the official SDK from Espressif. ESP-IDF itself is a multicore FreeRTOS port, which of course can not be used together with the RIOT-OS. Furthermore, Espressif's proprietary libraries use FreeRTOS functionality themselves. That is, to get the Wi-Fi or Bluetooth module up and running, many ESP-IDF SDK functions and a FreeRTOS adoption level would have to be (re)implemented.
+
+- **Flash encryption** is not yet supported.
+
+## Known Problems
+
+If a task terminates with return statement, spilling registers in the windowed register ABI may result in illegal retw instructions during next context switch. As long as all tasks are executed as infinite loops and don't terminate, there are no problems.
+
+## Readme
+
+Please refer file $(RIOTBASE)/cpu/esp32/README.md for more information about the toolchain, supported features and compile options.
+*/
