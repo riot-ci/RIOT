@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 Martine Lenders <mlenders@inf.fu-berlin.de>
+ *               2018 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -12,10 +13,12 @@
  * @file
  * @brief       GNRC implementation of @ref net_sock_udp
  *
- * @author  Martine Lenders <mlenders@inf.fu-berlin.de>
+ * @author      Martine Lenders <mlenders@inf.fu-berlin.de>
+ * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
 #include <errno.h>
+#include <string.h>
 
 #include "byteorder.h"
 #include "net/af.h"
@@ -172,6 +175,29 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *remote)
     }
     memcpy(remote, &sock->remote, sizeof(sock_udp_ep_t));
     return 0;
+}
+
+bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b)
+{
+    assert(a && b);
+
+    /* compare family and port */
+    if ((a->family != b->family) || (a->port != b->port)) {
+        return 0;
+    }
+
+    /* compare addresses */
+    switch (a->family) {
+#ifdef SOCK_HAS_IPV6
+        case AF_INET6:
+            return (memcmp(a->addr.ipv6, b->addr.ipv6, 16) == 0);
+
+#endif
+        case AF_INET:
+            return (memcmp(a->addr.ipv4, b->addr.ipv4, 4) == 0);
+        default:
+            return true;
+    }
 }
 
 ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
