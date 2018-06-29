@@ -25,17 +25,12 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 bluepill calliope-mini 
 USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
-USEMODULE += gnrc_ipv6_router_default
+USEMODULE += gnrc_ipv6_default
 USEMODULE += gnrc_sock_udp
-# Add a routing protocol (optional)
-USEMODULE += gnrc_rpl
 
-# Additional networking modules that can be dropped if not needed
-USEMODULE += gnrc_icmpv6_echo
 # Add also the shell, some shell commands
 USEMODULE += shell
 USEMODULE += shell_commands
-USEMODULE += ps
 
 USEPKG += tinydtls
 
