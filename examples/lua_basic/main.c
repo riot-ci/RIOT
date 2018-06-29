@@ -1,4 +1,4 @@
-o/*
+/*
   * Copyright (C) 2018 FU Berlin
   *
   * This file is subject to the terms and conditions of the GNU Lesser
