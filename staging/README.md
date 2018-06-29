@@ -34,6 +34,8 @@ staging/).
   as broken
 - the original contributor is considered maintainer for a module
 - non-trivial changes SHOULD be ACK'ed by a module's maintainer
+- PR's to staging/ are labeled with "staging"
+- PR's changing both staging and main tree code are *not* labeled "staging"
 
 ## Procedures
 
@@ -43,14 +45,14 @@ TBD
 
 ### Mark as "broken"
 
-Modules can be marked as broken in staging/broken.mk.
+Modules can be marked as broken in staging/staging.mk.
 Add a comment with a date and a reason, e.g.,
 
     BROKEN += heart   # 2018/12/24: broken through change in friend API (#12345)
 
 ### Advance to main tree
 
-If a module in staging/ has matured enough do be deemed fit for the main tree,
+If a module in staging/ has matured enough to be deemed fit for the main tree,
 anyone can open a PR that moves the corresponding code out of staging/. At this
 point, a full review of the code has to be made.
 The PR SHOULD do the move in one commit that only contains the file moves
