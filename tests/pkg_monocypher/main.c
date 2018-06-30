@@ -44,7 +44,7 @@ static void test_monocypher_signverify(void)
     crypto_sign_public_key(sign_pk, sign_sk);
 
     /* Sign */
-	crypto_sign(signature, sign_sk, sign_pk, message, sizeof(message));
+    crypto_sign(signature, sign_sk, sign_pk, message, sizeof(message));
 
     /* Verifying... */
     res = crypto_check(signature, sign_pk, message, sizeof(message));
@@ -66,7 +66,6 @@ static void test_monocypher_verifynegative(void)
 Test *tests_monocypher(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
-//        new_TestFixture(test_c25519_01),
         new_TestFixture(test_monocypher_signverify),
         new_TestFixture(test_monocypher_verifynegative)
     };
