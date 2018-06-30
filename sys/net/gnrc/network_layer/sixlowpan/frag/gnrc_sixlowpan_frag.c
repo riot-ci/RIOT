@@ -117,6 +117,10 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *iface, gnrc_pktsnip_t *pkt,
     hdr->disp_size.u8[0] |= SIXLOWPAN_FRAG_1_DISP;
     hdr->tag = byteorder_htons(_tag);
 
+    /* Tell the link layer that we will send more fragments */
+    gnrc_netif_hdr_t *netif_hdr = pkt->data;
+    netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_MORE_DATA;
+
     pkt = pkt->next;    /* don't copy netif header */
 
     while (pkt != NULL) {
@@ -170,6 +174,7 @@ static uint16_t _send_nth_fragment(gnrc_netif_t *iface, gnrc_pktsnip_t *pkt,
     hdr->tag = byteorder_htons(_tag);
     /* don't mention payload diff in offset */
     hdr->offset = (uint8_t)((offset + (datagram_size - payload_len)) >> 3);
+    gnrc_netif_hdr_t *netif_hdr = pkt->data; /* remember netif header for flags */
     pkt = pkt->next;    /* don't copy netif header */
 
     while ((pkt != NULL) && (offset_count != offset)) {   /* go to offset */
@@ -182,6 +187,12 @@ static uint16_t _send_nth_fragment(gnrc_netif_t *iface, gnrc_pktsnip_t *pkt,
 
             memcpy(data, ((uint8_t *)pkt->data) + pkt_offset, clen);
             local_offset = clen;
+            if (local_offset == max_frag_size) {
+                if ((clen < (pkt->size - pkt_offset)) || (pkt->next != NULL)) {
+                    /* Tell the link layer that we will send more fragments */
+                    netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_MORE_DATA;
+                }
+            }
             pkt = pkt->next;
             break;
         }
@@ -197,6 +208,10 @@ static uint16_t _send_nth_fragment(gnrc_netif_t *iface, gnrc_pktsnip_t *pkt,
             local_offset += clen;
 
             if (local_offset == max_frag_size) {
+                if ((clen < pkt->size) || (pkt->next != NULL)) {
+                    /* Tell the link layer that we will send more fragments */
+                    netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_MORE_DATA;
+                }
                 break;
             }
 
@@ -243,7 +258,7 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     }
 #endif
 
-    /* Check weater to send the first or an Nth fragment */
+    /* Check whether to send the first or an Nth fragment */
     if (fragment_msg->offset == 0) {
         /* increment tag for successive, fragmented datagrams */
         _tag++;
