@@ -30,9 +30,9 @@
 
 #include "kernel_types.h"
 #include "msg.h"
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
+#ifdef MODULE_GNRC_NETIF_EVENTS
 #include "event.h"
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 #include "net/ipv6/addr.h"
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/pkt.h"
@@ -59,16 +59,6 @@ extern "C" {
  */
 typedef struct gnrc_netif_ops gnrc_netif_ops_t;
 
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
-/**
- * @brief   Event type used for passing netdev pointers together with the event
- */
-typedef struct {
-    event_t super;
-    netdev_t *dev;
-} event_netdev_t;
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
-
 /**
  * @brief   Representation of a network interface
  */
@@ -88,7 +78,7 @@ typedef struct {
      * @see net_gnrc_netif_flags
      */
     uint32_t flags;
-#if defined(MODULE_GNRC_NETIF_ASYNC_EVENTS) || DOXYGEN
+#if defined(MODULE_GNRC_NETIF_EVENTS) || DOXYGEN
     /**
      * @brief   Event queue for asynchronous events
      */
@@ -101,8 +91,8 @@ typedef struct {
      * while still keeping the allocation of specific events an implementation
      * detail of gnrc_netif.c
      */
-    void *event_table;
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+    void *events;
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 #if (GNRC_NETIF_L2ADDR_MAXLEN > 0)
     /**
      * @brief   The link-layer address currently used as the source address

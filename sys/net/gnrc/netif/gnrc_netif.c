@@ -37,11 +37,19 @@
 
 #define _NETIF_NETAPI_MSG_QUEUE_SIZE    (8)
 
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
+#ifdef MODULE_GNRC_NETIF_EVENTS
+/**
+ * @brief   Event type used for passing netdev pointers together with the event
+ */
+typedef struct {
+    event_t super;
+    netdev_t *dev;
+} event_netdev_t;
+
 typedef struct {
     event_netdev_t isr;
-} event_table_t;
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+} gnrc_netif_events_t;
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 
 static gnrc_netif_t _netifs[GNRC_NETIF_NUMOF];
 
@@ -1232,7 +1240,7 @@ static void _init_from_device(gnrc_netif_t *netif)
     _update_l2addr_from_dev(netif);
 }
 
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
+#ifdef MODULE_GNRC_NETIF_EVENTS
 /**
  * @brief   Call the ISR handler from an asynchronous event
  *
@@ -1243,7 +1251,7 @@ static void _event_handler_isr(event_t *evp)
     netdev_t *dev = ((event_netdev_t*)evp)->dev;
     dev->driver->isr(dev);
 }
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 
 static void *_gnrc_netif_thread(void *args)
 {
@@ -1259,17 +1267,17 @@ static void *_gnrc_netif_thread(void *args)
     gnrc_netif_acquire(netif);
     dev = netif->dev;
     netif->pid = sched_active_pid;
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
-    event_table_t event_table = {
+#ifdef MODULE_GNRC_NETIF_EVENTS
+    gnrc_netif_events_t event_table = {
         .isr = {
             .super = { .handler = _event_handler_isr, },
             .dev = dev,
         },
     };
-    netif->event_table = &event_table;
+    netif->events = &event_table;
     /* set up the event queue */
     event_queue_init(&netif->evq);
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#endif /* MODULE_GNRC_NETIF_EVENTS */
     /* setup the link-layer's message queue */
     msg_init_queue(msg_queue, _NETIF_NETAPI_MSG_QUEUE_SIZE);
     /* register the event callback with the device driver */
@@ -1290,9 +1298,8 @@ static void *_gnrc_netif_thread(void *args)
 
     while (1) {
         int msg_waiting = 0;
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
-        /* Using messages for ordered, synchronous IPC, and events for
-         * unordered, asynchronous events */
+#ifdef MODULE_GNRC_NETIF_EVENTS
+        /* Using messages for external IPC, and events for internal events */
         DEBUG("gnrc_netif: waiting for events\n");
         /* We can not use event_loop() or event_wait() because then we would not
          * wake up when a message arrives */
@@ -1311,11 +1318,11 @@ static void *_gnrc_netif_thread(void *args)
             /* non-blocking msg check */
             msg_waiting = msg_try_receive(&msg);
         }
-#else /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#else /* MODULE_GNRC_NETIF_EVENTS */
         /* Only messages used for event handling */
         DEBUG("gnrc_netif: waiting for incoming messages\n");
         msg_waiting = msg_receive(&msg);
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#endif /* MODULE_GNRC_NETIF_EVENTS */
         while (msg_waiting > 0) {
             /* dispatch netdev, MAC and gnrc_netapi messages */
             DEBUG("gnrc_netif: message %u\n", (unsigned)msg.type);
@@ -1396,17 +1403,17 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     gnrc_netif_t *netif = (gnrc_netif_t *) dev->context;
 
     if (event == NETDEV_EVENT_ISR) {
-#ifdef MODULE_GNRC_NETIF_ASYNC_EVENTS
-        event_table_t *etp = netif->event_table;
-        event_post(&netif->evq, (event_t *)&etp->isr);
-#else /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#ifdef MODULE_GNRC_NETIF_EVENTS
+        gnrc_netif_events_t *etp = netif->events;
+        event_post(&netif->evq, &etp->isr.super);
+#else /* MODULE_GNRC_NETIF_EVENTS */
         msg_t msg = { .type = NETDEV_MSG_TYPE_EVENT,
                       .content = { .ptr = netif } };
 
         if (msg_send(&msg, netif->pid) <= 0) {
             puts("gnrc_netif: possibly lost interrupt.");
         }
-#endif /* MODULE_GNRC_NETIF_ASYNC_EVENTS */
+#endif /* MODULE_GNRC_NETIF_EVENTS */
     }
     else {
         DEBUG("gnrc_netif: event triggered -> %i\n", event);

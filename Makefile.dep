@@ -148,7 +148,8 @@ ifneq (,$(filter gnrc_netif,$(USEMODULE)))
   USEMODULE += netif
 endif
 
-ifneq (,$(filter gnrc_netif_async_events,$(USEMODULE)))
+ifneq (,$(filter gnrc_netif_events,$(USEMODULE)))
+  USEMODULE += core_thread_flags
   USEMODULE += event
 endif
 
