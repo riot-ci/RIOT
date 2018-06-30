@@ -86,10 +86,11 @@ typedef struct {
     /**
      * @brief   Pointer to event instance table
      *
-     * This pointer is a way to pass an event instance allocated on the stack by
-     * the netif thread to the IRQ event handler called by the netdev driver
-     * while still keeping the allocation of specific events an implementation
-     * detail of gnrc_netif.c
+     * This pointer gives a way to allocate events on the stack of each
+     * gnrc_netif thread, instead of having a single global instance which will
+     * not work if the system has more than one network interface.
+     * The _event_cb function of gnrc_netif.c uses this pointer to be able to
+     * post events from interrupt context.
      */
     void *events;
 #endif /* MODULE_GNRC_NETIF_EVENTS */
