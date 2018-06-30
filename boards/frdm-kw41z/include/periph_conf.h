@@ -87,9 +87,10 @@ static const clock_config_t clock_config = {
 #define LPTMR_CONFIG { \
         { \
             .dev = LPTMR0, \
-            .irqn = LPTMR0_IRQn, \
-            .src = 2, \
             .base_freq = 32768u, \
+            .llwu = LLWU_WAKEUP_MODULE_LPTMR0, \
+            .src = 2, \
+            .irqn = LPTMR0_IRQn, \
         } \
     }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
@@ -114,6 +115,9 @@ static const uart_conf_t uart_config[] = {
         .scgc_bit = SIM_SCGC5_LPUART0_SHIFT,
         .mode   = UART_MODE_8N1,
         .type   = KINETIS_LPUART,
+        /* Using LLWU requires using lower baud rates */
+        /* LLWU_WAKEUP_PIN_PTC6 is the correct setting on this dev board if using LLWU */
+        .llwu_rx = LLWU_WAKEUP_PIN_UNDEF,
     },
 };
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
