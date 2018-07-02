@@ -24,7 +24,7 @@ int main(void)
 {
     puts("Start: Test random number generator");
 
-    printf("Success: Data for global_puf_seed: [0x%08lX]", global_puf_seed);
+    printf("Success: Data for puf_sram_seed: [0x%08lX]", puf_sram_seed);
 
     puts("End: Test finished");
     return 0;
