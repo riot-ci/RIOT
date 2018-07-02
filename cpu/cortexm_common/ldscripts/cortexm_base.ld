@@ -113,8 +113,9 @@ SECTIONS
         KEEP (*(.isr_stack))
         . = ALIGN(8);
         _estack = .;
+        _puf_sram_len = DEFINED(_puf_sram_len) ? _puf_sram_len : 0 ;
         KEEP (*(.puf_stack))
-        . = ALIGN(4);
+        . = ALIGN(_puf_sram_len);
         _pstack = .;
     } > ram
 
