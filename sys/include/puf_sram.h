@@ -35,6 +35,13 @@ extern "C" {
 #endif
 
 /**
+ * @brief SRAM marker to detect reboot without power-off
+ *
+ * Source: https://www.random.org/bytes/
+ */
+#define PUF_SRAM_MARKER  (0xad3021ff)
+
+/**
  * @brief Global seed variable, allocated on the stack in puf_sram.c
  */
 extern uint32_t puf_sram_seed;
@@ -55,17 +62,13 @@ extern uint32_t puf_sram_state;
 uint32_t puf_sram_uint32(const uint8_t *ram);
 
 /**
- * @brief checks for the stack marker in the idle thread to determine whether memory
-          contains old data. Otherwise it assumes a reboot from power down mode
+ * @brief checks for a memory marker determine whether memory contains old data.
+          Otherwise it assumes a reboot from power down mode
  *
- * @param[in] ram    pointer to memory position of stack marker in @p idle_stack
- * @param[in] marker pointer to  stack marker
- * @param[in] length length of the stack marker
- *
- * @return    0 when seed was generated from SRAM pattern
+ * @return    0 when preceding power down phase is expected
  * @return    1 when reset without power down was detected
  */
-bool puf_sram_softreset(const uint8_t *ram, const uint8_t *marker, size_t length);
+bool puf_sram_softreset(void);
 
 
 #ifdef __cplusplus
