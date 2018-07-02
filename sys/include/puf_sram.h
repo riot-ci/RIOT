@@ -37,16 +37,16 @@ extern "C" {
 /**
  * @brief Global seed variable, allocated on the stack in puf_sram.c
  */
-extern uint32_t global_puf_seed;
+extern uint32_t puf_sram_seed;
 
 /**
  * @brief Global seed state, allocated on the stack in puf_sram.c
  */
-extern uint32_t global_puf_state;
+extern uint32_t puf_sram_state;
 
 /**
  * @brief builds hash from @p SEED_RAM_LEN bytes uninitialized SRAM, writs it
- *        to the global variable @p global_puf_seed and returns the value
+ *        to the global variable @p puf_sram_seed and returns the value
  *
  * @param[in] ram pointer to SRAM memory
  *
