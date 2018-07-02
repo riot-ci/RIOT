@@ -35,10 +35,10 @@ void auto_init_random(void)
     uint32_t seed;
 #ifdef MODULE_PUF_SRAM
     /* TODO: hand state to application? */
-    if (global_puf_state) {
+    if (puf_sram_state) {
         LOG_WARNING("random: PUF SEED not fresh\n");
     }
-    seed = global_puf_seed;
+    seed = puf_sram_seed;
 #endif
 #if !defined (MODULE_PUF_SRAM) && defined (MODULE_PERIPH_CPUID)
     luid_get(&seed, 4);
