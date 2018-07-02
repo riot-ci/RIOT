@@ -73,11 +73,11 @@ extern "C" {
  * Find the index of the array element that contains "str" in
  *     member "member".
  *
- * An error will be raised if arr is not an lvalue. This ensures the macro is
- * safe
+ * A compile-time error will be raised if arr is not an lvalue. This ensures the
+ * macro is safe.
  *
- * @return  Index of the array element containing the string, or
- *              (-ENOENT) if it is not found.
+ * @return      Index of the array element containing the string.
+ * @return      (-ENOENT) if it is not found.
  */
 #define BINSEARCH_STR(arr, nmemb, member, str, n) \
     (_ENSURE_LVALUE(arr), \
@@ -89,8 +89,8 @@ extern "C" {
  * Find a pointer of the array element that contains "str" in
  *     member "member".
  *
- * @return      Address of the element containing the string (as a void pointer),
- *      or null if it is not found.
+ * @return      Address of the element containing the string (as a void pointer).
+ * @return      Null if it is not found.
  */
 #define BINSEARCH_STR_P(arr, nmemb, member, str, n) \
     (_ENSURE_LVALUE(arr), \
@@ -114,8 +114,8 @@ extern "C" {
  * @param   str     String that will be compared against.
  * @param   n       Compare up to n characters (see strncmp())
  *
- * @return      Index of the array element containing the string, or
- *              (-ENOENT) if it is not found.
+ * @return      Index of the array element containing the string.
+ * @return      (-ENOENT) if it is not found.
  */
 int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
                   const char *str, size_t n);
@@ -123,8 +123,8 @@ int binsearch_str(const void *start, size_t offset, size_t stride, size_t nmemb,
 /**
  * Like binsearch_str but returns the pointer to the element.
  *
- * @return      Address of the element containing the string, or null if it is
- *              not found.
+ * @return      Address of the element containing the string.
+ * @return      Null if it is not found.
  */
 const void *binsearch_str_p(const void *start, size_t offset, size_t stride,
                             size_t nmemb, const char *str, size_t n);

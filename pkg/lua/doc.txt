@@ -23,7 +23,7 @@
  *
  * To run a chunk of code stored in an array use:
  * ```
- * luaR_do_buffer(const char *buf, size_t buflen, void *memory,
+ * lua_riot_do_buffer(const char *buf, size_t buflen, void *memory,
  *                            size_t mem_size, uint16_t modmask, int *retval);
  * ```
  * The interpreter will not use the global heap for allocations, instead the
@@ -33,11 +33,11 @@
  * which builtins to load. Note that if a builtin is not loaded by C code, then
  * it cannot be loaded by Lua code later.
  *
- * `luaR_do_buffer` takes care of setting up the Lua state, registering a panic
+ * `lua_riot_do_buffer` takes care of setting up the Lua state, registering a panic
  * handler that does not crash the application, configuring an allocator, loading
  * libraries, etc.
  *
- * To run a module as a script use `luaR_do_module`. This is roughly equivalent
+ * To run a module as a script use `lua_riot_do_module`. This is roughly equivalent
  * to executing:
  * ```
  * require('modulename')
@@ -56,7 +56,7 @@
  * and error. Future versions of the package will include instrumentation to
  * this end.
  *
- * ## Adding yout own modules.
+ * ## Adding your own modules.
  *
  * `lua_loadlib.c` contains two loaders, one for modules written in Lua and
  * another one for C extensions.
@@ -71,14 +71,14 @@
  *
  * ```
  * /** Table containing all built in pure lua modules */
- * const struct luaR_builtin_lua *const luaR_builtin_lua_table;
- * /** Number of elements of luaR_builtin_lua_table */
- * const size_t luaR_builtin_lua_table_len;
+ * const struct lua_riot_builtin_lua *const lua_riot_builtin_lua_table;
+ * /** Number of elements of lua_riot_builtin_lua_table */
+ * const size_t lua_riot_builtin_lua_table_len;
  *
  * /** Table containing all built in c lua modules */
- * const struct luaR_builtin_c *const luaR_builtin_c_table;
- * /** Number of elements of luaR_builtin_c_table */
- * const size_t luaR_builtin_c_table_len;
+ * const struct lua_riot_builtin_c *const lua_riot_builtin_c_table;
+ * /** Number of elements of lua_riot_builtin_c_table */
+ * const size_t lua_riot_builtin_c_table_len;
  * ```
  *
  * Currently, these must be defined manually in the application code. In the

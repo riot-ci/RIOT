@@ -2,6 +2,7 @@
    @file repl.lua
    @brief   Read-eval-print loop for LUA
    @author  Juan Carrano <j.carrano@fu-berlin.de>
+   Copyright (C) 2018 Freie Universität Berlin. Distributed under the GNU Lesser General Public License v2.1.
 ]]
 
 local _R_EVAL = 0

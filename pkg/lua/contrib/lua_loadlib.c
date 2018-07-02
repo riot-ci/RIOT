@@ -68,7 +68,7 @@ static int _ll_searcher_builtin_lua(lua_State *L, const char *name)
  * Search in the list of pure lua modules.
  *
  * If the module is found, the source code is compiled and the compiled chunk
- * is returned.
+ * is placed on the lua stack, followed by the module name (as a string).
  */
 static int searcher_builtin_lua(lua_State *L)
 {

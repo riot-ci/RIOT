@@ -13,17 +13,17 @@ BOARD_INSUFFICIENT_MEMORY := bluepill calliope-mini cc2650-launchpad \
                              nucleo-f302r8 nucleo-f303k8 nucleo-f334r8 \
                              nucleo-f410rb nucleo-l031k6 nucleo-l053r8 \
                              opencm904 spark-core stm32f0discovery \
-							 stm32mindev airfy-beacon  arduino-mkr1000 \
-							 arduino-mkrfox1200 arduino-mkrzero arduino-zero \
-							 b-l072z-lrwan1  cc2538dk ek-lm4f120xl  feather-m0 \
-							 ikea-tradfri limifrog-v1 mbed_lpc1768  nrf6310 \
-							 nucleo-f091rc  nucleo-l073rz  nz32-sc151 \
-							 openmote-cc2538  pba-d-01-kw2x  remote-pa \
-							 remote-reva remote-revb samd21-xpro  saml21-xpro \
-							 samr21-xpro seeeduino_arch-pro  slstk3401a \
-							 sltb001a slwstk6220a sodaq-autonomo \
-							 sodaq-explorer  stk3600  stm32f3discovery \
-							 yunjia-nrf51822
+                             stm32mindev airfy-beacon  arduino-mkr1000 \
+                             arduino-mkrfox1200 arduino-mkrzero arduino-zero \
+                             b-l072z-lrwan1  cc2538dk ek-lm4f120xl  feather-m0 \
+                             ikea-tradfri limifrog-v1 mbed_lpc1768  nrf6310 \
+                             nucleo-f091rc  nucleo-l073rz  nz32-sc151 \
+                             openmote-cc2538  pba-d-01-kw2x  remote-pa \
+                             remote-reva remote-revb samd21-xpro  saml21-xpro \
+                             samr21-xpro seeeduino_arch-pro  slstk3401a \
+                             sltb001a slwstk6220a sodaq-autonomo \
+                             sodaq-explorer  stk3600  stm32f3discovery \
+                             yunjia-nrf51822
 
 BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno \
                    chronos hifive1 jiminy-mega256rfr2 mega-xplained mips-malta \
@@ -66,14 +66,14 @@ LUA = $(wildcard *.lua)
 LUA_H := $(LUA:%.lua=$(LUA_PATH)/%.lua.h)
 
 $(LUA_PATH)/:
-	@mkdir -p $@
+    @mkdir -p $@
 
 # FIXME: This way of embedding lua code is not robust. A proper script will
-# 		 be included later.
+#        be included later.
 
 $(LUA_H): | $(LUA_PATH)/
 $(LUA_H): $(LUA_PATH)/%.lua.h: %.lua
 
-	xxd -i $< | sed 's/^unsigned/const/g' > $@
+    xxd -i $< | sed 's/^unsigned/const/g' > $@
 
 $(RIOTBUILD_CONFIG_HEADER_C): $(LUA_H)
