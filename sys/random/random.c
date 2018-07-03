@@ -23,6 +23,9 @@
 #include "luid.h"
 #include "periph/cpuid.h"
 #include "random.h"
+#ifdef MODULE_PUF_SRAM
+#include "puf_sram.h"
+#endif
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -30,9 +33,16 @@
 void auto_init_random(void)
 {
     uint32_t seed;
-#ifdef MODULE_PERIPH_CPUID
+#ifdef MODULE_PUF_SRAM
+    /* TODO: hand state to application? */
+    if (puf_sram_state) {
+        LOG_WARNING("random: PUF SEED not fresh\n");
+    }
+    seed = puf_sram_seed;
+#endif
+#if !defined (MODULE_PUF_SRAM) && defined (MODULE_PERIPH_CPUID)
     luid_get(&seed, 4);
-#else
+#elif !defined (MODULE_PUF_SRAM) && !defined (MODULE_PERIPH_CPUID)
     LOG_WARNING("random: NO SEED AVAILABLE!\n");
     seed = RANDOM_SEED_DEFAULT;
 #endif
