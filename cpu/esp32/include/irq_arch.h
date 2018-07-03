@@ -40,12 +40,13 @@ extern uint32_t irq_interrupt_nesting;
   * @brief fixed allocated CPU interrupt numbers that are used by RIOT
   * @{
   */
-#define CPU_INUM_GPIO   2   /* level interrupt, low priority = 1 */
-#define CPU_INUM_TIMER  3   /* level interrupt, low priority = 1 */
-#define CPU_INUM_UART   5   /* level interrupt, low priority = 1 */
-#define CPU_INUM_I2C    12  /* level interrupt, low priority = 1 */
-#define CPU_INUM_WDT    13  /* level interrupt, low priority = 1 */
-#define CPU_INUM_RTC    9   /* level interrupt, low priority = 1 */
+#define CPU_INUM_GPIO       2   /* level interrupt, low priority = 1 */
+#define CPU_INUM_TIMER      3   /* level interrupt, low priority = 1 */
+#define CPU_INUM_UART       5   /* level interrupt, low priority = 1 */
+#define CPU_INUM_RTC        9   /* level interrupt, low priority = 1 */
+#define CPU_INUM_I2C        12  /* level interrupt, low priority = 1 */
+#define CPU_INUM_WDT        13  /* level interrupt, low priority = 1 */
+#define CPU_INUM_SOFTWARE   17  /* level interrupt, low priority = 1 */
 /** @} */
 
 #if defined(SDK_INT_HANDLING) || defined(DOXYGEN)

@@ -26,7 +26,9 @@
 #include <sys/reent.h>
 
 #include "board.h"
+#include "esp_attr.h"
 #include "exceptions.h"
+#include "irq_arch.h"
 #include "kernel_defines.h"
 #include "kernel_init.h"
 #include "log.h"
@@ -53,6 +55,7 @@
 #include "soc/rtc_cntl_struct.h"
 #include "soc/timer_group_struct.h"
 #include "xtensa/core-macros.h"
+#include "xtensa/xtensa_api.h"
 
 #include "periph_cpu.h"
 #include "tools.h"
@@ -230,6 +233,8 @@ static void IRAM system_clk_init (void)
     esp_perip_clk_init();
 }
 
+extern void IRAM_ATTR thread_yield_isr(void* arg);
+
 static NORETURN void IRAM system_init (void)
 {
     /* initialize the ISR stack for usage measurements */
@@ -325,9 +330,16 @@ static NORETURN void IRAM system_init (void)
     /* print the board config */
     print_board_config();
 
+    /* route a software interrupt source to CPU as trigger for thread yields */
+    intr_matrix_set(PRO_CPU_NUM, ETS_FROM_CPU_INTR0_SOURCE, CPU_INUM_SOFTWARE);
+    /* set thread yield handler and enable the software interrupt */
+    xt_set_interrupt_handler(CPU_INUM_SOFTWARE, thread_yield_isr, NULL);
+    xt_ints_on(BIT(CPU_INUM_SOFTWARE));
+
     /* starting RIOT */
     ets_printf("Starting RIOT kernel on PRO cpu\n");
     kernel_init();
+
 
     UNREACHABLE();
 }

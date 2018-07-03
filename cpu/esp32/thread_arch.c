@@ -45,7 +45,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define ENABLE_DEBUG    0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 #include <stdio.h>
@@ -59,10 +59,13 @@
 #include "sched.h"
 
 #include "common.h"
-#include "esp/xtensa_ops.h"
-#include "rom/ets_sys.h"
+#include "irq_arch.h"
 #include "syscalls.h"
 #include "tools.h"
+
+#include "esp/xtensa_ops.h"
+#include "rom/ets_sys.h"
+#include "soc/dport_reg.h"
 #include "xtensa/xtensa_context.h"
 
 /* User exception dispatcher when exiting */
@@ -77,6 +80,9 @@ extern void _frxt_setup_switch(void);
 /* Switch context to the highest priority ready task with context save */
 extern void vPortYield(void);
 extern void vPortYieldFromInt(void);
+
+/* forward declarations */
+NORETURN void task_exit(void);
 
 char* thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_start, int stack_size)
 {
@@ -147,7 +153,7 @@ char* thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_sta
 
     /* Explicitly initialize certain saved registers for call0 ABI */
     exc_frame->pc   = (uint32_t)task_func;         /* task entry point */
-    exc_frame->a0   = (uint32_t)sched_task_exit;   /* task exit point*/
+    exc_frame->a0   = (uint32_t)task_exit;         /* task exit point*/
     exc_frame->a1   = (uint32_t)sp + XT_STK_FRMSZ; /* physical top of stack frame */
     exc_frame->exit = (uint32_t)_xt_user_exit;     /* user exception exit dispatcher */
 
@@ -161,7 +167,7 @@ char* thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_sta
     /* for Windowed Register ABI set PS.CALLINC=01 to handle task entry as
        call4 return address in a4 and parameter in a6 and */
     exc_frame->ps = PS_UM | PS_EXCM | PS_WOE | PS_CALLINC(1);
-    exc_frame->a4 = (uint32_t)sched_task_exit;   /* task exit point*/
+    exc_frame->a4 = (uint32_t)task_exit;         /* task exit point*/
     exc_frame->a6 = (uint32_t)arg;               /* parameters for task_func */
     #endif
 
@@ -186,13 +192,30 @@ char* thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_sta
     /* END - code from FreeRTOS port for Xtensa from Cadence */
     DEBUG("%s start=%p size=%ld top=%p sp=%p free=%lu\n",
           __func__, stack_start, stack_size, top_of_stack, sp, sp-(uint8_t*)stack_start);
-
     return (char*)sp;
 }
 
+/**
+ * Context switches are realized using software interrupts since interrupt
+ * entry and exit functions are the only way to save and restore complete
+ * context including spilling the register windows to the stack
+ */
+void IRAM_ATTR thread_yield_isr(void* arg)
+{
+    /* clear the interrupt first */
+    DPORT_WRITE_PERI_REG(DPORT_CPU_INTR_FROM_CPU_0_REG, 0);
+    /* set the context switch flag (indicates that context has to be switched
+       is switch on exit from interrupt in _frxt_int_exit */
+    _frxt_setup_switch();
+}
 
-unsigned sched_interrupt_nesting = 0;  /* Interrupt nesting level */
-
+/**
+ * If we are already in an interrupt handler, the function simply sets the
+ * context switch flag, which indicates that the context has to be switched
+ * in the _frxt_int_exit function when exiting the interrupt. Otherwise, we
+ * will generate a software interrupt to force the context switch when
+ * terminating the software interrupt (see thread_yield_isr).
+ */
 void  thread_yield_higher(void)
 {
     /* reset hardware watchdog */
@@ -208,9 +231,11 @@ void  thread_yield_higher(void)
     #endif
 
     if (!irq_is_in()) {
-        vPortYield();
+        /* generate the software interrupt to switch the context */
+        DPORT_WRITE_PERI_REG(DPORT_CPU_INTR_FROM_CPU_0_REG, DPORT_CPU_INTR_FROM_CPU_0);
     }
     else {
+        /* set the context switch flag */
         _frxt_setup_switch();
     }
 
@@ -300,10 +325,58 @@ void thread_isr_stack_init(void) {}
 
 #endif /* DEVELHELP */
 
+static bool _initial_exit = true;
+
+/**
+ * The function is used on task exit to switch to the context to the next
+ * running task. It realizes only the second half of a complete context by
+ * simulating the exit from an interrupt handling where a context switch is
+ * forced. The old context is not saved here since it is no longer needed.
+ */
+NORETURN void task_exit(void)
+{
+    DEBUG("sched_task_exit: ending thread %" PRIkernel_pid "...\n", sched_active_thread->pid);
+
+    (void) irq_disable();
+
+    /* remove old task from scheduling */
+    sched_threads[sched_active_pid] = NULL;
+    sched_num_threads--;
+    sched_set_status((thread_t *)sched_active_thread, STATUS_STOPPED);
+    sched_active_thread = NULL;
+
+    /* determine the new running task */
+    sched_run();
+
+    /* set the context switch flag (indicates that context has to be switched
+       is switch on exit from interrupt in _frxt_int_exit */
+    _frxt_setup_switch();
+
+    /* set interrupt nesting level to the right value */
+    irq_interrupt_nesting++;
+
+    /* reset windowed registers */
+    __asm__ volatile ("movi a2, 0\n"
+                      "wsr a2, windowstart\n"
+                      "wsr a2, windowbase\n"
+                      "rsync\n");
+
+    /* exit from simulated interrupt to switch to the new context */
+    __asm__ volatile ("call0 _frxt_int_exit");
+
+    /* should not be executed */
+    UNREACHABLE();
+}
+
 NORETURN void cpu_switch_context_exit(void)
 {
     /* Switch context to the highest priority ready task without context save */
-    __asm__ volatile ("call0 _frxt_dispatch");
-
+    if (_initial_exit) {
+        _initial_exit = false;
+        __asm__ volatile ("call0 _frxt_dispatch");
+    }
+    else {
+        task_exit();
+    }
     UNREACHABLE();
 }
