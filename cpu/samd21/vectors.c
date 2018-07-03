@@ -28,8 +28,16 @@
 /* SRAM memory marker defined in the linker script */
 extern uint32_t _srelocate;
 
-/* stack of the idle thread defined in kernel initialization */
-extern char idle_stack[];
+bool puf_sram_softreset(void)
+{
+    /*  read "Power On Reset" Bit in RCAUSE register */
+    if(PM->RCAUSE.reg & PM_RCAUSE_POR) {
+        puf_sram_state = 2;
+        return 0;
+    }
+    puf_sram_state = 1;
+    return 1;
+}
 
 void pre_startup(void) {
     /* only generate a new seed when no software (or button) reset was detected */
