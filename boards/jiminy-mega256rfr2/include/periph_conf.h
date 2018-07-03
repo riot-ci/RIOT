@@ -81,6 +81,22 @@ extern "C" {
 /** @} */
 
 /**
+ * @name RTC configuration
+ * @{
+ */
+#define RTC_NUMOF    (1U)
+/** @} */
+
+/**
+ * @name RTT configuration
+ * @{
+ */
+#define RTT_NUMOF        (1U)
+#define RTT_MAX_VALUE    (0x00FFFFFF)    /* 24-bit timer */
+#define RTT_FREQUENCY    (32U)
+/** @} */
+
+/**
  * @name   UART configuration
  *
  * The UART devices have fixed pin mappings, so all we need to do, is to specify
