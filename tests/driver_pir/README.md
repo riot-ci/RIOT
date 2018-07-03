@@ -15,12 +15,10 @@ Connect the sensor's "out" pin to a GPIO of your board that can be
 configured to create interrupts.
 Compile and flash this test application like:
 
-    export BOARD=your_board
-    export PIR_PARAM_GPIO=name_of_your_pin
-    export PIR_PARAM_ACTIVE_HIGH=if_gpio_pin_is_high_or_low_when_pir_is_active
-    make clean
-    make all-interrupt
-    make flash
+    CFLAGS += "-DPIR_PARAM_GPIO=name_of_your_pin
+               -DPIR_PARAM_ACTIVE_HIGH=if_gpio_pin_is_high_or_low_when_pir_is_active"
+    (Ideally, the above configuration should be in "board.h")
+    make BOARD=your_board clean all-interrupt flash
 
 The output should look like:
 
@@ -40,12 +38,10 @@ The output should look like:
 Connect the sensor's "out" pin to any GPIO pin of you board.
 Compile and flash this test application like:
 
-    export BOARD=your_board
-    export PIR_PARAM_GPIO=name_of_your_pin
-    export PIR_PARAM_ACTIVE_HIGH=if_gpio_pin_is_high_or_low_when_pir_is_active
-    make clean
-    make all-polling
-    make flash
+    CFLAGS += "-DPIR_PARAM_GPIO=name_of_your_pin
+               -DPIR_PARAM_ACTIVE_HIGH=if_gpio_pin_is_high_or_low_when_pir_is_active"
+    (Ideally, the above configuration should be in "board.h")
+    make BOARD=your_board clean all-polling flash
 
 The output should look like this:
 
