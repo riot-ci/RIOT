@@ -1,0 +1,4 @@
+# on ESP32 modules all board features results directly from CPU features
+# therefore just include CPU's Makefile.features
+
+include $(RIOTCPU)/esp32/Makefile.features
