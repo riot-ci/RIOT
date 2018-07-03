@@ -40,7 +40,7 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
                               -e '/End of search list./,$$d' \
                               -e 's/\s//')
   $(eval $(shell $(PREFIX)gcc -v -x c -E /dev/null))
-  NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
+  NEWLIB_INCLUDE_DIR := $(firstword $(call dir_contains_newlib_h, $(COMPILER_INCLUDE_PATHS)))
 endif
 
 $(warning 0 - COMPILER_INCLUDE_PATHS)
@@ -72,7 +72,7 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
   # the patterns above. We use the -isystem gcc/clang argument to add the include
   # directories as system include directories, which means they will not be
   # searched until after all the project specific include directories (-I/path)
-  NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS))))))
+  NEWLIB_INCLUDE_DIR := $(firstword $(call dir_contains_newlib_h, $(NEWLIB_INCLUDE_PATTERNS)))
 endif
 
 $(warning 2 - NEWLIB_INCLUDE_DIR: $(NEWLIB_INCLUDE_DIR))
