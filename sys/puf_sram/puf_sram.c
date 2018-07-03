@@ -19,30 +19,32 @@
 #include "puf_sram.h"
 
 /* Allocation of the PUF seed variable */
-__attribute__((used,section(".puf_stack"))) uint32_t global_puf_seed;
+__attribute__((used,section(".puf_stack"))) uint32_t puf_sram_seed;
 
 /* Allocation of the PUF seed state */
-__attribute__((used,section(".puf_stack"))) uint32_t global_puf_state;
+__attribute__((used,section(".puf_stack"))) uint32_t puf_sram_state;
+
+/* Allocation of the memory marker */
+__attribute__((used,section(".puf_stack"))) uint32_t puf_sram_marker;
 
 uint32_t puf_sram_uint32(const uint8_t *ram)
 {
     /* seting state to 0 means seed was generated from
      * SRAM pattern*/
-    global_puf_state = 0;
-    global_puf_seed = dek_hash(ram, SEED_RAM_LEN);
-    return global_puf_seed;
+    puf_sram_seed = dek_hash(ram, SEED_RAM_LEN);
+    puf_sram_marker = PUF_SRAM_MARKER;
+    puf_sram_state = 0;
+    return puf_sram_seed;
 }
 
-bool puf_sram_softreset(const uint8_t *marker_addr, const uint8_t *marker, size_t len)
+#ifndef HAVE_REBOOT_DETECTION
+bool puf_sram_softreset(void)
 {
-    for (size_t i = 0; i < len; i++) {
-        if (marker_addr[i] != marker[i]) {
-            global_puf_state = 2;
-            return 0;
-        }
+    if(puf_sram_marker != PUF_SRAM_MARKER){
+        puf_sram_state = 2;
+        return 0;
     }
-    /* seting state to 1 means seed was generated from
-     * previous round*/
-    global_puf_state = 1;
+    puf_sram_state = 1;
     return 1;
 }
+#endif
