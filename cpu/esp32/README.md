@@ -12,10 +12,6 @@ Although the port does not use the official ESP-IDF (Espresso IoT Development Fr
 
 - **Flash encryption** is not yet supported.
 
-## Known Problems
-
-If a task terminates with return statement, spilling registers in the windowed register ABI may result in illegal retw instructions during next context switch. As long as all tasks are executed as infinite loops and don't terminate, there are no problems.
-
 ## Toolchain
 
 Following software components are required:
