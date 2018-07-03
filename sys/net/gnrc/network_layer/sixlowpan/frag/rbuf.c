@@ -49,7 +49,7 @@ static rbuf_t rbuf[RBUF_SIZE];
 static char l2addr_str[3 * IEEE802154_LONG_ADDRESS_LEN];
 
 static xtimer_t _gc_timer;
-static msg_t _gc_timer_msg;
+static msg_t _gc_timer_msg = { .type = GNRC_SIXLOWPAN_MSG_FRAG_GC_RBUF };
 
 /* ------------------------------------
  * internal function definitions
@@ -274,7 +274,6 @@ void rbuf_gc(void)
 
 static inline void _set_rbuf_timeout(void)
 {
-    _gc_timer_msg.type = GNRC_SIXLOWPAN_MSG_FRAG_GC_RBUF;
     xtimer_set_msg(&_gc_timer, RBUF_TIMEOUT, &_gc_timer_msg, sched_active_pid);
 }
 
