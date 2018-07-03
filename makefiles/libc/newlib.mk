@@ -21,6 +21,10 @@ LINKFLAGS += -lc
 
 # Search for Newlib include directories
 
+# Function that returns absolute path to directories that contain newlib.h
+# It returns the directory without trailing slash
+dir_contains_newlib_h = $(abspath $(dir $(wildcard $(addsuffix /newlib.h, $(1)))))
+
 # Try to search for newlib in the standard search path of the compiler for includes
 ifeq (,$(NEWLIB_INCLUDE_DIR))
   COMPILER_INCLUDE_PATHS := $(shell $(PREFIX)gcc -v -x c -E /dev/null 2>&1 | \
