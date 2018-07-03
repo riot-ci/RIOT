@@ -1000,7 +1000,8 @@ if __name__ == "__main__":
             'ieee_address': 0,
             'bootloader_active_high': False,
             'bootloader_invert_lines': False,
-            'disable-bootloader': 0
+            'disable-bootloader': 0,
+            'reset': 0
         }
 
 # http://www.python.org/doc/2.5.2/lib/module-getopt.html
@@ -1011,7 +1012,8 @@ if __name__ == "__main__":
                                    ['help', 'ieee-address=',
                                     'disable-bootloader',
                                     'bootloader-active-high',
-                                    'bootloader-invert-lines', 'version'])
+                                    'bootloader-invert-lines', 'version',
+                                    'reset'])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))  # will print something like "option -a not recognized"
@@ -1056,6 +1058,8 @@ if __name__ == "__main__":
         elif o == '--version':
             print_version()
             sys.exit(0)
+        elif o == '--reset':
+            conf['reset'] = 1
         else:
             assert False, "Unhandled option"
 
@@ -1205,6 +1209,7 @@ if __name__ == "__main__":
                           "Set address done                                ")
             else:
                 raise CmdException("Set address failed                       ")
+            cmd.cmdReset()
 
         if conf['read']:
             length = conf['len']
@@ -1228,7 +1233,8 @@ if __name__ == "__main__":
         if conf['disable-bootloader']:
             device.disable_bootloader()
 
-        cmd.cmdReset()
+        if conf['reset']:
+            cmd.cmdReset()
 
     except Exception as err:
         if QUIET >= 10:
