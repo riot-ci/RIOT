@@ -27,17 +27,17 @@ __attribute__((used,section(".puf_stack"))) uint32_t puf_sram_state;
 /* Allocation of the memory marker */
 __attribute__((used,section(".puf_stack"))) uint32_t puf_sram_marker;
 
-uint32_t puf_sram_uint32(const uint8_t *ram)
+uint32_t puf_sram_generate(const uint8_t *ram, size_t len)
 {
-    /* seting state to 0 means seed was generated from
-     * SRAM pattern*/
-    puf_sram_seed = dek_hash(ram, SEED_RAM_LEN);
+    /* build hash from start-up pattern */
+    puf_sram_seed = dek_hash(ram, len);
+    /* write marker to a defined section for subsequent reset detection */
     puf_sram_marker = PUF_SRAM_MARKER;
+    /* seting state to 0 means seed was generated from SRAM pattern */
     puf_sram_state = 0;
     return puf_sram_seed;
 }
 
-#ifndef HAVE_REBOOT_DETECTION
 bool puf_sram_softreset(void)
 {
     if(puf_sram_marker != PUF_SRAM_MARKER){
@@ -47,4 +47,3 @@ bool puf_sram_softreset(void)
     puf_sram_state = 1;
     return 1;
 }
-#endif

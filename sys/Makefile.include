@@ -91,6 +91,7 @@ ifneq (native,$(BOARD))
 endif
 
 ifneq (,$(filter puf_sram,$(USEMODULE)))
+  # allocate space for 3 x 32 Bit integers: seed, state, marker
   export PUF_SRAM_LEN ?= 12
   export LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_puf_sram_len=$(PUF_SRAM_LEN)
 endif

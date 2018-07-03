@@ -48,25 +48,30 @@ extern uint32_t puf_sram_seed;
 
 /**
  * @brief Global seed state, allocated on the stack in puf_sram.c
+ *        0 means seed was generated from SRAM pattern,
+          1 means missing power cycle detected,
+          2 means power cycle detected. The state will most likely
+            be overwritten with 0 in the next steps
  */
 extern uint32_t puf_sram_state;
 
 /**
- * @brief builds hash from @p SEED_RAM_LEN bytes uninitialized SRAM, writs it
+ * @brief builds hash from @p SEED_RAM_LEN bytes uninitialized SRAM, writes it
  *        to the global variable @p puf_sram_seed and returns the value
  *
  * @param[in] ram pointer to SRAM memory
+ * @param[in] len length of the memroy to consider
  *
  * @return  a random number
  */
-uint32_t puf_sram_uint32(const uint8_t *ram);
+uint32_t puf_sram_generate(const uint8_t *ram, size_t len);
 
 /**
  * @brief checks for a memory marker determine whether memory contains old data.
           Otherwise it assumes a reboot from power down mode
  *
- * @return    0 when preceding power down phase is expected
- * @return    1 when reset without power down was detected
+ * @return    0 when reset with power cycle was detected
+ * @return    1 when reset without power cycle was detected
  */
 bool puf_sram_softreset(void);
 
