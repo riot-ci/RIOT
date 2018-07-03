@@ -29,7 +29,9 @@
 extern uint32_t _srelocate;
 
 void pre_startup(void) {
-    puf_sram_uint32((uint8_t *)&_srelocate);
+    if (!puf_sram_softreset()) {
+        puf_sram_generate((uint8_t *)&_srelocate, SEED_RAM_LEN);
+    }
 }
 #endif
 
