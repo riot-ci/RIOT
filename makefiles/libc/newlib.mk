@@ -14,10 +14,10 @@ ifneq (,$(filter newlib_gnu_source,$(USEMODULE)))
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
-  export LINKFLAGS += -specs=nano.specs
+  LINKFLAGS += -specs=nano.specs
 endif
 
-export LINKFLAGS += -lc
+LINKFLAGS += -lc
 
 # Note on `realpath` vs `abspath`
 #
@@ -108,4 +108,4 @@ endif
 # bundled headers. Clang compatible versions of those headers are already
 # provided by Newlib, so placing this directory first will eliminate those problems.
 # The above problem was observed with LLVM 3.9.1 when building against GCC 6.3.0 headers.
-export INCLUDES := $(NEWLIB_INCLUDES) $(INCLUDES)
+INCLUDES := $(NEWLIB_INCLUDES) $(INCLUDES)
