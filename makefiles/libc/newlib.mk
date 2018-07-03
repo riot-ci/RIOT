@@ -78,6 +78,13 @@ ifeq ($(TOOLCHAIN),llvm)
   # in case some header is missing from the cross tool chain
   NEWLIB_INCLUDES := $(addprefix -isystem ,$(NEWLIB_INCLUDE_DIR)) -nostdinc
   NEWLIB_INCLUDES += $(addprefix -isystem ,$(abspath $(wildcard $(dir $(NEWLIB_INCLUDE_DIR))/usr/include)))
+
+  # Newlib includes should go before GCC includes. This is especially important
+  # when using Clang, because Clang will yield compilation errors on some GCC-
+  # bundled headers. Clang compatible versions of those headers are already
+  # provided by Newlib, so placing this directory first will eliminate those problems.
+  # The above problem was observed with LLVM 3.9.1 when building against GCC 6.3.0 headers.
+  INCLUDES := $(NEWLIB_INCLUDES) $(INCLUDES)
 endif
 
 ifeq (1,$(USE_NEWLIB_NANO))
@@ -97,10 +104,3 @@ ifeq (1,$(USE_NEWLIB_NANO))
     CFLAGS += -include '$(RIOTMAKE)/libc/assert_newlib_nano_included.h'
   endif
 endif
-
-# Newlib includes should go before GCC includes. This is especially important
-# when using Clang, because Clang will yield compilation errors on some GCC-
-# bundled headers. Clang compatible versions of those headers are already
-# provided by Newlib, so placing this directory first will eliminate those problems.
-# The above problem was observed with LLVM 3.9.1 when building against GCC 6.3.0 headers.
-INCLUDES := $(NEWLIB_INCLUDES) $(INCLUDES)
