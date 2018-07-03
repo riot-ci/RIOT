@@ -127,7 +127,7 @@ void gnrc_sixlowpan_multiplex_by_size(gnrc_pktsnip_t *pkt,
         if (fragment_msg == NULL) {
             DEBUG("6lo: Not enough resources to fragment packet. "
                   "Dropping packet\n");
-            gnrc_pktbuf_release(pkt);
+            gnrc_pktbuf_release_error(pkt, ENOMEM);
             return;
         }
         fragment_msg->pid = netif->pid;
@@ -143,7 +143,7 @@ void gnrc_sixlowpan_multiplex_by_size(gnrc_pktsnip_t *pkt,
         (void)orig_datagram_size;
         DEBUG("6lo: packet too big (%u > %u)\n",
               (unsigned int)datagram_size, netif->sixlo.max_frag_size);
-        gnrc_pktbuf_release(pkt);
+        gnrc_pktbuf_release_error(pkt, EMSGSIZE);
     }
 }
 
