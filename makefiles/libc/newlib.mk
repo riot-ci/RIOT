@@ -62,7 +62,8 @@ endif
 # If nothing was found we will try to fall back to searching for a cross-gcc in
 # the current PATH and use a relative path for the includes
 ifeq (,$(NEWLIB_INCLUDE_DIR))
-  NEWLIB_INCLUDE_DIR := $(abspath $(wildcard $(dir $(shell command -v $(PREFIX)gcc 2>/dev/null))/../$(TARGET_ARCH)/include))
+  GCC_RELATIVE_INCLUDE_PATH := $(dir $(shell command -v $(PREFIX)gcc 2>/dev/null))/../$(TARGET_ARCH)/include
+  NEWLIB_INCLUDE_DIR := $(abspath $(wildcard $(GCC_RELATIVE_INCLUDE_PATH)))
 endif
 
 ifeq ($(TOOLCHAIN),llvm)
