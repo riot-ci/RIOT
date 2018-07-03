@@ -22,6 +22,31 @@
 #include <stdint.h>
 #include "vectors_cortexm.h"
 
+#ifdef MODULE_PUF_SRAM
+#include "puf_sram.h"
+
+/* SRAM memory marker defined in the linker script */
+extern uint32_t _srelocate;
+
+bool puf_sram_softreset(void)
+{
+    /*  read "Power On Reset" Bit in RCAUSE register */
+    if(PM->RCAUSE.reg & PM_RCAUSE_POR) {
+        puf_sram_state = 2;
+        return 0;
+    }
+    puf_sram_state = 1;
+    return 1;
+}
+
+void pre_startup(void) {
+    /* only generate a new seed when no software (or button) reset was detected */
+    if (!puf_sram_softreset()) {
+        puf_sram_uint32((uint8_t *)&_srelocate);
+    }
+}
+#endif
+
 /* define a local dummy handler as it needs to be in the same compilation unit
  * as the alias definition */
 void dummy_handler(void) {

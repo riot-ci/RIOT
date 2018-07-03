@@ -1,1 +1,4 @@
+FEATURES_PROVIDED += puf_sram
+CFLAGS += -DHAVE_REBOOT_DETECTION=1
+
 -include $(RIOTCPU)/sam0_common/Makefile.features
