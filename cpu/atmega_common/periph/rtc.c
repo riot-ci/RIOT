@@ -80,6 +80,8 @@ int rtc_set_time(struct tm *time)
     /* Convert to seconds since the epoch */
     rtc_state.time = mk_gmtime(time) - offset;
 
+    DEBUG("RTC set time: %" PRIu32 " seconds\n", rtc_state.time);
+
     return 0;
 }
 
@@ -102,6 +104,8 @@ int rtc_get_time(struct tm *time)
     /* Convert from seconds since the epoch */
     gmtime_r(&time_secs, time);
 
+    DEBUG("RTC get time: %" PRIu32 " seconds\n", time_secs);
+
     return 0;
 }
 
@@ -120,6 +124,9 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
 
     /* Prepare the counter for sub 8-second precision */
     OCR2B = ((uint8_t)rtc_state.alarm & 0x07) << 5;
+
+    DEBUG("RTC set alarm: %" PRIu32 " seconds, OCR2B: %" PRIu8 "\n",
+          rtc_state.alarm, OCR2B);
 
     /* Interrupt safe order of assignment */
     rtc_state.alarm_arg = arg;
@@ -148,6 +155,8 @@ int rtc_get_alarm(struct tm *time)
     /* Note: assignment is to discard volatile */
     time_t alarm = rtc_state.alarm;
     gmtime_r(&alarm, time);
+
+    DEBUG("RTC get alarm: %" PRIu32 " seconds\n", alarm);
 
     return 0;
 }
