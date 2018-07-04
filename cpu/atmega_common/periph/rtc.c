@@ -59,11 +59,8 @@ static volatile rtc_state_t rtc_state;
 
 void rtc_init(void)
 {
-    /* Only initialize RTT once */
-    if (!(ASSR & (1 << AS2))) {
-        /* RTC depends on RTT */
-        rtt_init();
-    }
+    /* RTC depends on RTT */
+    rtt_init();
 }
 
 int rtc_set_time(struct tm *time)
@@ -135,6 +132,9 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
             rtc_state.alarm_cb(rtc_state.alarm_arg);
         }
         else {
+            /* Clear interrupt flag */
+            TIFR2 = (1 << OCF2B);
+
             TIMSK2 |= (1 << OCIE2B);
         }
     }
@@ -147,7 +147,7 @@ int rtc_get_alarm(struct tm *time)
     /* Convert from seconds since the epoch */
     /* Note: assignment is to discard volatile */
     time_t alarm = rtc_state.alarm;
-    gmtime_r(alarm, time);
+    gmtime_r(&alarm, time);
 
     return 0;
 }
@@ -156,6 +156,9 @@ void rtc_clear_alarm(void)
 {
     /* Disable alarm interrupt */
     TIMSK2 &= ~(1 << OCIE2B);
+
+    /* Clear interrupt flag */
+    TIFR2 = (1 << OCF2B);
 
     /* Interrupt safe order of assignment */
     rtc_state.alarm_cb = NULL;
@@ -183,6 +186,9 @@ void atmega_rtc_incr(void)
             rtc_state.alarm_cb(rtc_state.alarm_arg);
         }
         else {
+            /* Clear interrupt flag */
+            TIFR2 = (1 << OCF2B);
+
             TIMSK2 |= (1 << OCIE2B);
         }
     }
