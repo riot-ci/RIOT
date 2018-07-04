@@ -65,20 +65,13 @@ void rtc_init(void)
 
 int rtc_set_time(struct tm *time)
 {
-    uint8_t offset;
-
     /* Make sure it is safe to read TCNT2, in case we just woke up */
     DEBUG("RTT sleeps until safe to read TCNT2\n");
     TCCR2A = 0;
     _asynch_wait();
 
-    offset = TCNT2;
-
-    /* Convert to seconds (highest 3 bits) */
-    offset = (offset & 0xE0) >> 5;
-
     /* Convert to seconds since the epoch */
-    rtc_state.time = mk_gmtime(time) - offset;
+    rtc_state.time = mk_gmtime(time) - (TCNT2 >> 5);
 
     DEBUG("RTC set time: %" PRIu32 " seconds\n", rtc_state.time);
 
@@ -94,12 +87,7 @@ int rtc_get_time(struct tm *time)
     TCCR2A = 0;
     _asynch_wait();
 
-    time_secs = (time_t)TCNT2;
-
-    /* Convert to seconds (highest 3 bits of TCNT2) */
-    time_secs = (time_secs & 0x000000E0) >> 5;
-
-    time_secs += rtc_state.time;
+    time_secs = rtc_state.time + (TCNT2 >> 5);
 
     /* Convert from seconds since the epoch */
     gmtime_r(&time_secs, time);
@@ -111,19 +99,35 @@ int rtc_get_time(struct tm *time)
 
 int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
 {
+    time_t now, diff;
+
     /* Disable alarm interrupt */
     TIMSK2 &= ~(1 << OCIE2B);
     rtc_state.alarm_cb = NULL;
 
-    /* Wait until not busy anymore (should be immediate) */
-    DEBUG("RTC sleeps until safe to write OCR2B\n");
+    /* Make sure it is safe to read TCNT2, in case we just woke up, and */
+    /* safe to write OCR2B (in case it was busy) */
+    DEBUG("RTC sleeps until safe read TCNT2 and to write OCR2B\n");
+    TCCR2A = 0;
     _asynch_wait();
+
+    now = rtc_state.time + (TCNT2 >> 5);
 
     /* Set alarm time */
     rtc_state.alarm = mk_gmtime(time);
 
+    if (rtc_state.alarm < now) {
+        DEBUG("RTC alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
+              PRIu32 "\n", now, rtc_state.alarm);
+        cb(arg);
+        return 0;
+    }
+
+    /* Calculate time to wait, based on TCNT2 = 0 */
+    diff = rtc_state.alarm - rtc_state.time;
+
     /* Prepare the counter for sub 8-second precision */
-    OCR2B = ((uint8_t)rtc_state.alarm & 0x07) << 5;
+    OCR2B = (uint8_t)(rtc_state.alarm << 5);
 
     DEBUG("RTC set alarm: %" PRIu32 " seconds, OCR2B: %" PRIu8 "\n",
           rtc_state.alarm, OCR2B);
@@ -133,17 +137,17 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
     rtc_state.alarm_cb = cb;
 
     /* Enable irq only if alarm is in the 8s period before it overflows */
-    if ((rtc_state.alarm & 0xFFFFFFF8) <= (rtc_state.time & 0xFFFFFFF8)) {
-        if (rtc_state.alarm <= rtc_state.time) {
-            /* Prevent alarm offset if time is too soon */
-            rtc_state.alarm_cb(rtc_state.alarm_arg);
-        }
-        else {
-            /* Clear interrupt flag */
-            TIFR2 = (1 << OCF2B);
+    if (diff < 8) {
+        /* Clear interrupt flag */
+        TIFR2 = (1 << OCF2B);
 
-            TIMSK2 |= (1 << OCIE2B);
-        }
+        /* Enable interrupt */
+        TIMSK2 |= (1 << OCIE2B);
+
+        DEBUG("RTT alarm interrupt active\n");
+    }
+    else {
+        DEBUG("RTT alarm interrupt not active\n");
     }
 
     return 0;
@@ -188,18 +192,25 @@ void atmega_rtc_incr(void)
 {
     rtc_state.time += 8;
 
-    /* Enable irq only if alarm is in the 8s period before it overflows */
-    if ((rtc_state.alarm & 0xFFFFFFF8) == (rtc_state.time & 0xFFFFFFF8)) {
-        if (rtc_state.alarm <= rtc_state.time) {
-            /* Prevent alarm offset if time is too soon */
-            rtc_state.alarm_cb(rtc_state.alarm_arg);
-        }
-        else {
-            /* Clear interrupt flag */
-            TIFR2 = (1 << OCF2B);
+    /* If alarm not set, nothing else to do */
+    if (rtc_state.alarm_cb == NULL) {
+        return;
+    }
 
-            TIMSK2 |= (1 << OCIE2B);
-        }
+    /* Check to see if alarm was missed */
+    if (rtc_state.alarm <= rtc_state.time) {
+        rtc_state.alarm_cb(rtc_state.alarm_arg);
+        rtc_clear_alarm();
+        return;
+    }
+
+    /* Enable irq only if alarm is in the 8s period before it overflows */
+    if ((rtc_state.alarm - rtc_state.time) < 8) {
+        /* Clear interrupt flag */
+        TIFR2 = (1 << OCF2B);
+
+        /* Enable interrupt */
+        TIMSK2 |= (1 << OCIE2B);
     }
 }
 
@@ -213,12 +224,13 @@ void _asynch_wait(void)
 
 ISR(TIMER2_COMPB_vect) {
     __enter_isr();
-    /* Disable alarm interrupt */
-    TIMSK2 &= ~(1 << OCIE2B);
 
+    /* Execute callback */
     if (rtc_state.alarm_cb != NULL) {
         rtc_state.alarm_cb(rtc_state.alarm_arg);
     }
+    rtc_clear_alarm();
+
     __exit_isr();
 }
 
