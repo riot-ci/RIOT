@@ -335,6 +335,11 @@ LINKFLAGPREFIX ?= -Wl,
 
 DIRS += $(EXTERNAL_MODULE_DIRS)
 
+# Define dependencies required for building (headers, dowloading source files,)
+BUILDDEPS += $(RIOTBUILD_CONFIG_HEADER_C)
+BUILDDEPS += pkg-prepare
+BUILDDEPS += $(APPDEPS)
+
 # Linker rule
 $(ELFFILE): FORCE
 ifeq ($(BUILDOSXNATIVE),1)
@@ -355,7 +360,7 @@ endif # RIOTNOLINK
 $(ELFFILE): $(BASELIBS)
 	$(Q)$(_LINK) -o $@
 
-$(BINDIR)/$(APPLICATION_MODULE).a: $(RIOTBUILD_CONFIG_HEADER_C) $(USEPKG:%=$(BINDIR)/%.a) $(APPDEPS)
+$(BINDIR)/$(APPLICATION_MODULE).a: $(USEPKG:%=$(BINDIR)/%.a) $(BUILDDEPS)
 	$(Q)DIRS="$(DIRS)" "$(MAKE)" -C $(APPDIR) -f $(RIOTMAKE)/application.inc.mk
 $(BINDIR)/$(APPLICATION_MODULE).a: FORCE
 
@@ -399,7 +404,7 @@ include $(RIOTBASE)/drivers/Makefile.include
 
 # The `clean` needs to be serialized before everything else.
 ifneq (, $(filter clean, $(MAKECMDGOALS)))
-    all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare: clean
+    all $(BASELIBS) $(USEPKG:%=$(RIOTPKG)/%/Makefile.include) $(BUILDDEPS): clean
 endif
 
 # include Makefile.includes for packages in $(USEPKG)
@@ -417,7 +422,7 @@ INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
 
-$(USEPKG:%=$(BINDIR)/%.a): $(RIOTBUILD_CONFIG_HEADER_C) pkg-prepare
+$(USEPKG:%=$(BINDIR)/%.a): $(BUILDDEPS)
 	@mkdir -p $(BINDIR)
 	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$(patsubst $(BINDIR)/%.a,%,$@)
 
