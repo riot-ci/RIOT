@@ -19,6 +19,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              chronos \
                              ek-lm4f120xl \
                              feather-m0 \
+                             hamilton \
                              ikea-tradfri \
                              limifrog-v1 maple-mini \
                              mbed_lpc1768 \
