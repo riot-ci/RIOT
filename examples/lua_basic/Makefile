@@ -35,7 +35,7 @@ ifneq ($(BOARD),native)
   CFLAGS += -DTHREAD_STACKSIZE_MAIN='(THREAD_STACKSIZE_DEFAULT+2048)'
 endif
 
-USEPKG += lua
+USEMODULE += lua
 
 include $(RIOTBASE)/Makefile.include
 
