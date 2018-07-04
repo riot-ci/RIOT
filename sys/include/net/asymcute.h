@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    net_asymcute MQTT-SN Client (emCute)
+ * @defgroup    net_asymcute MQTT-SN Client (Asymcute)
  * @ingroup     net
  * @brief       Asymcute is an asynchronous MQTT-SN implementation
  *
@@ -85,7 +85,7 @@ extern "C" {
 /**
  * @brief   Default priority for an Asymcute listener thread
  *
- * @note    Must be of higher priority than ASYMCUTE_HANDLER_PRIO
+ * @note    Must be of higher priority than @ref ASYMCUTE_HANDLER_PRIO
  */
 #define ASYMCUTE_LISTENER_PRIO      (THREAD_PRIORITY_MAIN - 3)
 #endif
@@ -284,11 +284,6 @@ struct asymcute_con {
     asymcute_evt_cb_t user_cb;  /**< event callback provided by user */
 
     uint8_t rxbuf[ASYMCUTE_BUFSIZE];    /**< connection specific receive buf */
-
-    /**
-     * @brief   Stack used for listener thread
-     */
-    char stack[ASYMCUTE_LISTENER_STACKSIZE];
 };
 
 /**
@@ -413,8 +408,8 @@ static inline bool asymcute_topic_equal(const asymcute_topic_t *a,
  *
  * @param[out] topic        topic to initialize
  * @param[in] topic_name    topic name (ASCII), may be NULL if topic should use
- *                          a pre-shared topic ID
- * @param[in] topic_id      pre-shared topic ID, or don't care if @p topic_name
+ *                          a pre-defined topic ID
+ * @param[in] topic_id      pre-defined topic ID, or don't care if @p topic_name
  *                          is given
  */
 int asymcute_topic_init(asymcute_topic_t *topic, const char *topic_name,
@@ -423,9 +418,12 @@ int asymcute_topic_init(asymcute_topic_t *topic, const char *topic_name,
 /**
  * @brief   Start a listener thread
  *
- * @note    Must have higher priority then the handler thread
+ * @note    Must have higher priority then the handler thread (defined by
+ *          @ref ASYMCUTE_HANDLER_PRIO)
  *
  * @param[in] con       connection context to use for this connection
+ * @param[in] stack     stack used to run the listener thread
+ * @param[in] stacksize size of @p stack in bytes
  * @param[in] priority  priority of the listener thread created by this function
  * @param[in] callback  user callback for notification about connection related
  *                      events
@@ -433,16 +431,14 @@ int asymcute_topic_init(asymcute_topic_t *topic, const char *topic_name,
  * @return  ASYMCUTE_OK on success
  * @return  ASYMCUTE_BUSY if connection context is already in use
  */
-int asymcute_listener_run(asymcute_con_t *con, char priority,
-                          asymcute_evt_cb_t callback);
+int asymcute_listener_run(asymcute_con_t *con, char *stack, size_t stacksize,
+                          char priority, asymcute_evt_cb_t callback);
 
 /**
  * @brief   Start the global Asymcute handler thread for processing timeouts and
  *          keep alive events
  *
  * This function is typically called during system initialization.
- *
- * @note    Must have lower priority than listener threads
  */
 void asymcute_handler_run(void);
 
@@ -530,7 +526,8 @@ int asymcute_publish(asymcute_con_t *con, asymcute_req_t *req,
  * @param[in] con       connection to use
  * @param[in,out] req   request context used for SUBSCRIBE procedure
  * @param[out] sub      subscription context to store subscription state
- * @param[in,out] topic topic to subscribe to, must be initialized
+ * @param[in,out] topic topic to subscribe to, must be initialized (see
+ *                      asymcute_topic_init())
  * @param[in] callback  user callback triggered on events for this subscription
  * @param[in] arg       user supplied argument passed to the event callback
  * @param[in] flags     additional flags (QoS level and DUP)
@@ -546,7 +543,7 @@ int asymcute_subscribe(asymcute_con_t *con, asymcute_req_t *req,
                        asymcute_sub_cb_t callback, void *arg, uint8_t flags);
 
 /**
- * @brief   Unsubscribe from a given topic
+ * @brief   Cancel an active subscription
  *
  * @param[in] con       connection to use
  * @param[in,out] req   request context used for UNSUBSCRIBE procedure
