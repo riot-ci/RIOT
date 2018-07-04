@@ -411,6 +411,10 @@ static inline bool asymcute_topic_equal(const asymcute_topic_t *a,
  *                          a pre-defined topic ID
  * @param[in] topic_id      pre-defined topic ID, or don't care if @p topic_name
  *                          is given
+ *
+ * @return  ASYMCUTE_OK on success
+ * @return  ASYMCUTE_REGERR if topic is already registered
+ * @return  ASYMCUTE_OVERFLOW if topic name does not fit into buffer
  */
 int asymcute_topic_init(asymcute_topic_t *topic, const char *topic_name,
                         uint16_t topic_id);
@@ -536,6 +540,7 @@ int asymcute_publish(asymcute_con_t *con, asymcute_req_t *req,
  * @return  ASYMCUTE_NOTSUP if invalid or unsupported flags have been set
  * @return  ASYMCUTE_REGERR if topic is not initialized
  * @return  ASYMCUTE_GWERR if not connected to a gateway
+ * @return  ASYMCUTE_SUBERR if already subscribed to the given topic
  * @return  ASYMCUTE_BUSY if the given request context is already in use
  */
 int asymcute_subscribe(asymcute_con_t *con, asymcute_req_t *req,
