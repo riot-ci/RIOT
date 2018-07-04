@@ -94,9 +94,9 @@ static asymcute_sub_t *_find_sub(const char *name)
     return NULL;
 }
 
-static uint16_t _topic_parse_pre(const char *name, size_t len)
+static uint16_t _topic_parse_pre(const char *name)
 {
-    if ((len > 4) && memcmp(name, "pre_", 4) == 0) {
+    if (strncmp(name, "pre_", 4) == 0) {
         return (uint16_t)atoi(&name[4]);
     }
     return 0;
@@ -104,8 +104,7 @@ static uint16_t _topic_parse_pre(const char *name, size_t len)
 
 static int _topic_init(asymcute_topic_t *t, const char *name)
 {
-    size_t len = strlen(name);
-    uint16_t id = _topic_parse_pre(name, len);
+    uint16_t id = _topic_parse_pre(name);
 
     if (id != 0) {
         name = NULL;
@@ -120,7 +119,7 @@ static int _topic_init(asymcute_topic_t *t, const char *name)
 static int _topic_find(asymcute_topic_t *t, const char *name)
 {
     size_t len = strlen(name);
-    uint16_t id = _topic_parse_pre(name, len);
+    uint16_t id = _topic_parse_pre(name);
 
     if ((id != 0) || (len == 2)) {
         if (t) {
@@ -132,8 +131,7 @@ static int _topic_find(asymcute_topic_t *t, const char *name)
     /* need to find topic in list of registered ones */
     for (unsigned i = 0; i < TOPIC_BUF_NUMOF; i++) {
         if (asymcute_topic_is_reg(&_topics[i]) &&
-            strlen(_topics[i].name) > 0 &&
-            (strcmp(name, _topics[i].name) == 0)) {
+            (strncmp(name, _topics[i].name, sizeof(_topics[i].name)) == 0)) {
             if (t) {
                 memcpy(t, &_topics[i], sizeof(asymcute_topic_t));
             }
@@ -145,7 +143,7 @@ static int _topic_find(asymcute_topic_t *t, const char *name)
 
 static void _topics_clear(void)
 {
-    memset(_topics, 0, (sizeof(asymcute_topic_t) * TOPIC_BUF_NUMOF));
+    memset(_topics, 0, (sizeof(_topics) * TOPIC_BUF_NUMOF));
 }
 
 static asymcute_topic_t *_topic_get_free(void)
@@ -166,7 +164,7 @@ static int _qos_parse(int argc, char **argv, int pos, unsigned *flags)
     /* parse QoS level */
     int qos = atoi(argv[pos]);
     switch (qos) {
-        case 0: *flags = 0; break;
+        case 0: *flags = MQTTSN_QOS_0; break;
         case 1: *flags = MQTTSN_QOS_1; break;
         case 2: *flags = MQTTSN_QOS_2; break;
         default: return -1;
@@ -341,7 +339,6 @@ static int _cmd_unreg(int argc, char **argv)
     for (; i < TOPIC_BUF_NUMOF; i++) {
         if (strcmp(argv[1], _topics[i].name) == 0) {
             for (unsigned s = 0; s < SUB_CTX_NUMOF; s++) {
-                printf("cmp: %p vs %p\n", (void *)_subscriptions[i].topic, (void *)&_topics[i]);
                 if (_subscriptions[i].topic == &_topics[i]) {
                     puts("error: topic used in active subscription");
                     return 1;
