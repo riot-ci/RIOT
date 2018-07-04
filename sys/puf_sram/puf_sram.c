@@ -26,6 +26,7 @@ __attribute__((used,section(".puf_stack"))) uint32_t puf_sram_state;
 
 /* Allocation of the memory marker */
 __attribute__((used,section(".puf_stack"))) uint32_t puf_sram_marker;
+__attribute__((used,section(".puf_stack"))) uint32_t deleteme[120];
 
 uint32_t puf_sram_generate(const uint8_t *ram, size_t len)
 {
