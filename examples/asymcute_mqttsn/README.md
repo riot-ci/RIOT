@@ -12,8 +12,8 @@ by providing a dedicated `rsmb` make target, type:
 make rsmb
 ```
 
-This will download, build, and run the Eclipse Mosquitto.rsmb `Really Small
-Message Broker` [(found here)](https://github.com/eclipse/mosquitto.rsmb).
+This will download, build, and run the Eclipse Mosquitto.rsmb 'Really Small
+Message Broker' [(found here)](https://github.com/eclipse/mosquitto.rsmb).
 
 ## Usage
 Simply type
