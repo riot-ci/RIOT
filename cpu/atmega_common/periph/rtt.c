@@ -146,6 +146,9 @@ void rtt_set_counter(uint32_t counter)
 
     rtt_state.ext_cnt = (uint16_t)(counter >> 8);
     TCNT2 = (uint8_t)counter;
+
+    DEBUG("RTT set counter TCNT2: %" PRIu8 ", ext_cnt: %" PRIu16 "\n",
+          TCNT2, rtt_state.ext_cnt);
 }
 
 void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
@@ -161,6 +164,8 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
     /* Set the alarm value */
     rtt_state.ext_comp = (uint16_t)(alarm >> 8);
     OCR2A = (uint8_t)alarm;
+
+    DEBUG("RTT set alarm TCNT2: %" PRIu8 ", OCR2A: %" PRIu8 "\n", TCNT2, OCR2A);
 
     /* Interrupt safe order of assignment */
     rtt_state.alarm_arg = arg;
