@@ -103,7 +103,7 @@ static void dtls_handle_read(dtls_context_t *ctx)
 
     if (res <= 0) {
         if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {
-            DEBUG("sock_udp_recv unexepcted code error: %i\n", res);
+            DEBUG("sock_udp_recv unexepcted code error: %i\n", (int)res);
         }
         return;
     }
