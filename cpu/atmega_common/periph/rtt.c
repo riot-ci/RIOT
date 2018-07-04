@@ -227,11 +227,6 @@ ISR(TIMER2_OVF_vect) {
             rtt_state.overflow_cb(rtt_state.overflow_arg);
         }
     }
-
-    if (sched_context_switch_request) {
-        thread_yield();
-        thread_yield_isr();
-    }
     __exit_isr();
 }
 
@@ -243,11 +238,6 @@ ISR(TIMER2_COMPA_vect) {
     /* Execute callback */
     if (rtt_state.alarm_cb != NULL) {
         rtt_state.alarm_cb(rtt_state.alarm_arg);
-    }
-
-    if (sched_context_switch_request) {
-        thread_yield();
-        thread_yield_isr();
     }
     __exit_isr();
 }
