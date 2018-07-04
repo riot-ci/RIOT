@@ -97,7 +97,7 @@ void rtt_init(void)
     TCCR2A = 0;
 
     /* 32768Hz / 1024 = 32 ticks per second */
-    TCCR2B = (1 << CS22) | (1 << CS21) | (1 <<  CS20);
+    TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20);
 
     /* Wait until not busy anymore */
     DEBUG("RTT waits until ASSR not busy\n");
@@ -153,13 +153,26 @@ void rtt_set_counter(uint32_t counter)
 
 void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 {
+    uint32_t now;
+
     /* Disable alarm interrupt */
     TIMSK2 &= ~(1 << OCIE2A);
     rtt_state.alarm_cb = NULL;
 
-    /* Wait until not busy anymore (should be immediate) */
-    DEBUG("RTT sleeps until safe to write OCR2A\n");
+    /* Make sure it is safe to read TCNT2, in case we just woke up, and */
+    /* safe to write OCR2B (in case it was busy) */
+    DEBUG("RTC sleeps until safe read TCNT2 and to write OCR2B\n");
+    TCCR2A = 0;
     _asynch_wait();
+
+    now = ((uint32_t)rtt_state.ext_cnt << 8) | TCNT2;
+
+    if (alarm < now) {
+        DEBUG("RTC alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
+              PRIu32 "\n", now, alarm);
+        cb(arg);
+        return 0;
+    }
 
     /* Set the alarm value */
     rtt_state.ext_comp = (uint16_t)(alarm >> 8);
@@ -176,7 +189,13 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
         /* Clear interrupt flag */
         TIFR2 = (1 << OCF2A);
 
+        /* Enable interrupt */
         TIMSK2 |= (1 << OCIE2A);
+
+        DEBUG("RTT alarm interrupt active\n");
+    }
+    else {
+        DEBUG("RTT alarm interrupt not active\n");
     }
 }
 
@@ -222,10 +241,11 @@ ISR(TIMER2_OVF_vect) {
     rtt_state.ext_cnt++;
 
     /* Enable RTT alarm if overflowed enough times */
-    if (rtt_state.ext_comp == rtt_state.ext_cnt) {
+    if (rtt_state.ext_comp <= rtt_state.ext_cnt) {
         /* Clear interrupt flag */
         TIFR2 = (1 << OCF2A);
 
+        /* Enable interrupt */
         TIMSK2 |= (1 << OCIE2A);
     }
 
@@ -246,13 +266,13 @@ ISR(TIMER2_OVF_vect) {
 
 ISR(TIMER2_COMPA_vect) {
     __enter_isr();
-    /* Disable alarm until overflowed enough times */
-    TIMSK2 &= ~(1 << OCIE2A);
 
     /* Execute callback */
     if (rtt_state.alarm_cb != NULL) {
         rtt_state.alarm_cb(rtt_state.alarm_arg);
     }
+    rtt_clear_alarm();
+
     __exit_isr();
 }
 
