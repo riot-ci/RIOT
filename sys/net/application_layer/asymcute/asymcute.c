@@ -61,7 +61,7 @@ static size_t _len_set(uint8_t *buf, size_t len)
     }
     else {
         buf[0] = 0x01;
-        byteorder_htolebufs(&buf[1], (uint16_t)(len + 3));
+        byteorder_htobebufs(&buf[1], (uint16_t)(len + 3));
         return 3;
     }
 }
@@ -73,7 +73,7 @@ static size_t _len_get(uint8_t *buf, size_t *len)
         return 1;
     }
     else {
-        *len = byteorder_lebuftohs(&buf[1]);
+        *len = byteorder_bebuftohs(&buf[1]);
         return 3;
     }
 }
@@ -97,7 +97,7 @@ static asymcute_req_t *_req_preprocess(asymcute_con_t *con,
         return NULL;
     }
 
-     uint16_t msg_id = (buf == NULL) ? 0 : byteorder_lebuftohs(&buf[id_pos]);
+     uint16_t msg_id = (buf == NULL) ? 0 : byteorder_bebuftohs(&buf[id_pos]);
 
     asymcute_req_t *res = NULL;
     asymcute_req_t *iter = con->pending;
@@ -151,7 +151,7 @@ static void _compile_sub_unsub(asymcute_req_t *req, asymcute_con_t *con,
     req->msg_id = _msg_id_next(con);
     req->data[pos] = type;
     req->data[pos + 1] = sub->topic->flags;
-    byteorder_htolebufs(&req->data[pos + 2], req->msg_id);
+    byteorder_htobebufs(&req->data[pos + 2], req->msg_id);
     memcpy(&req->data[pos + 4], sub->topic->name, topic_len);
     req->data_len = (pos + 4 + topic_len);
     req->arg = (void *)sub;
@@ -372,7 +372,7 @@ static void _on_regack(asymcute_con_t *con, const uint8_t *data, size_t len)
     if (data[6] == MQTTSN_ACCEPTED) {
         /* finish the registration by applying the topic id */
         asymcute_topic_t *topic = (asymcute_topic_t *)req->arg;
-        topic->id = byteorder_lebuftohs(&data[2]);
+        topic->id = byteorder_bebuftohs(&data[2]);
         topic->con = con;
         ret = ASYMCUTE_REGISTERED;
     }
@@ -391,7 +391,7 @@ static void _on_publish(asymcute_con_t *con, uint8_t *data,
         return;
     }
 
-    uint16_t topic_id = byteorder_lebuftohs(&data[pos + 2]);
+    uint16_t topic_id = byteorder_bebuftohs(&data[pos + 2]);
 
     /* find any subscription for that topic */
     mutex_lock(&con->lock);
@@ -449,7 +449,7 @@ static void _on_suback(asymcute_con_t *con, const uint8_t *data, size_t len)
     if (data[7] == MQTTSN_ACCEPTED) {
         /* parse and apply assigned topic id */
         asymcute_sub_t *sub = (asymcute_sub_t *)req->arg;
-        sub->topic->id = byteorder_lebuftohs(&data[3]);
+        sub->topic->id = byteorder_bebuftohs(&data[3]);
         sub->topic->con = con;
         /* insert subscription to connection context */
         sub->next = con->subscriptions;
@@ -706,7 +706,7 @@ int asymcute_connect(asymcute_con_t *con, asymcute_req_t *req,
     req->data[1] = MQTTSN_CONNECT;
     req->data[2] = ((clean) ? MQTTSN_CS : 0);
     req->data[3] = PROTOCOL_VERSION;
-    byteorder_htolebufs(&req->data[4], ASYMCUTE_KEEPALIVE);
+    byteorder_htobebufs(&req->data[4], ASYMCUTE_KEEPALIVE);
     memcpy(&req->data[6], cli_id, id_len);
     req->data_len = (size_t)req->data[0];
     _req_send(req, con, _on_con_timeout);
@@ -783,8 +783,8 @@ int asymcute_register(asymcute_con_t *con, asymcute_req_t *req,
     req->msg_id = _msg_id_next(con);
     size_t pos = _len_set(req->data, (topic_len + 5));
     req->data[pos] = MQTTSN_REGISTER;
-    byteorder_htolebufs(&req->data[pos + 1], 0);
-    byteorder_htolebufs(&req->data[pos + 3], req->msg_id);
+    byteorder_htobebufs(&req->data[pos + 1], 0);
+    byteorder_htobebufs(&req->data[pos + 3], req->msg_id);
     memcpy(&req->data[pos + 5], topic->name, topic_len);
     req->data_len = (pos + 5 + topic_len);
 
@@ -838,8 +838,8 @@ int asymcute_publish(asymcute_con_t *con, asymcute_req_t *req,
     size_t pos = _len_set(req->data, data_len + 6);
     req->data[pos] = MQTTSN_PUBLISH;
     req->data[pos + 1] = (flags | topic->flags);
-    byteorder_htolebufs(&req->data[pos + 2], topic->id);
-    byteorder_htolebufs(&req->data[pos + 4], req->msg_id);
+    byteorder_htobebufs(&req->data[pos + 2], topic->id);
+    byteorder_htobebufs(&req->data[pos + 4], req->msg_id);
     memcpy(&req->data[pos + 6], data, data_len);
     req->data_len = (pos + 6 + data_len);
 
