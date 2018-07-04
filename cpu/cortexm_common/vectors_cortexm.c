@@ -49,6 +49,7 @@ extern uint32_t _szero;
 extern uint32_t _ezero;
 extern uint32_t _sstack;
 extern uint32_t _estack;
+extern uint32_t _pstack;
 extern uint8_t _sram;
 extern uint8_t _eram;
 /** @} */
