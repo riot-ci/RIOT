@@ -30,8 +30,8 @@
 #include "net/asymcute.h"
 #include "net/ipv6/addr.h"
 
-#ifndef REG_CTX_NUMOF
-#define REG_CTX_NUMOF       (8U)
+#ifndef REQ_CTX_NUMOF
+#define REQ_CTX_NUMOF       (8U)
 #endif
 
 #ifndef SUB_CTX_NUMOF
@@ -48,8 +48,10 @@ static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 
 #define LISTENER_PRIO       (THREAD_PRIORITY_MAIN - 1)
 
+static char listener_stack[ASYMCUTE_LISTENER_STACKSIZE];
+
 static asymcute_con_t _connection;
-static asymcute_req_t _reqs[REG_CTX_NUMOF];
+static asymcute_req_t _reqs[REQ_CTX_NUMOF];
 static asymcute_sub_t _subscriptions[SUB_CTX_NUMOF];
 static asymcute_topic_t _topics[TOPIC_BUF_NUMOF];
 
@@ -62,7 +64,7 @@ static int _ok(asymcute_req_t *req)
 
 static asymcute_req_t *_get_req_ctx(void)
 {
-    for (unsigned i = 0; i < REG_CTX_NUMOF; i++) {
+    for (unsigned i = 0; i < REQ_CTX_NUMOF; i++) {
         if (!asymcute_req_in_use(&_reqs[i])) {
             return &_reqs[i];
         }
@@ -540,7 +542,8 @@ int main(void)
          "information.");
 
     /* setup the connection context */
-    asymcute_listener_run(&_connection, LISTENER_PRIO, _on_con_evt);
+    asymcute_listener_run(&_connection, listener_stack, sizeof(listener_stack),
+                          LISTENER_PRIO, _on_con_evt);
 
     /* we need a message queue for the thread running the shell in order to
      * receive potentially fast incoming networking packets */
