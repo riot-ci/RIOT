@@ -168,6 +168,9 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 
     /* Enable alarm interrupt only if it will trigger before overflow */
     if (rtt_state.ext_comp <= rtt_state.ext_cnt) {
+        /* Clear interrupt flag */
+        TIFR2 = (1 << OCF2A);
+
         TIMSK2 |= (1 << OCIE2A);
     }
 }
@@ -181,6 +184,9 @@ void rtt_clear_alarm(void)
 {
     /* Disable alarm interrupt */
     TIMSK2 &= ~(1 << OCIE2A);
+
+    /* Clear interrupt flag */
+    TIFR2 = (1 << OCF2A);
 
     /* Interrupt safe order of assignment */
     rtt_state.alarm_cb = NULL;
@@ -212,6 +218,9 @@ ISR(TIMER2_OVF_vect) {
 
     /* Enable RTT alarm if overflowed enough times */
     if (rtt_state.ext_comp == rtt_state.ext_cnt) {
+        /* Clear interrupt flag */
+        TIFR2 = (1 << OCF2A);
+
         TIMSK2 |= (1 << OCIE2A);
     }
 
