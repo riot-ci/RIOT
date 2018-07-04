@@ -39,10 +39,9 @@ void auto_init_random(void)
         LOG_WARNING("random: PUF SEED not fresh\n");
     }
     seed = puf_sram_seed;
-#endif
-#if !defined (MODULE_PUF_SRAM) && defined (MODULE_PERIPH_CPUID)
+#elif defined (MODULE_PERIPH_CPUID)
     luid_get(&seed, 4);
-#elif !defined (MODULE_PUF_SRAM) && !defined (MODULE_PERIPH_CPUID)
+#else
     LOG_WARNING("random: NO SEED AVAILABLE!\n");
     seed = RANDOM_SEED_DEFAULT;
 #endif

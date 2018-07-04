@@ -42,12 +42,12 @@ extern "C" {
 #define PUF_SRAM_MARKER  (0xad3021ff)
 
 /**
- * @brief Global seed variable, allocated on the stack in puf_sram.c
+ * @brief Global seed variable, allocated in puf_sram.c
  */
 extern uint32_t puf_sram_seed;
 
 /**
- * @brief Global seed state, allocated on the stack in puf_sram.c
+ * @brief Global seed state, allocated in puf_sram.c
  *        0 means seed was generated from SRAM pattern,
           1 means missing power cycle detected,
           2 means power cycle detected. The state will most likely

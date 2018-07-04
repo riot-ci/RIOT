@@ -108,9 +108,8 @@ SECTIONS
     /* stack section */
     .stack (NOLOAD):
     {
-        _puf_sram_len = DEFINED(_puf_sram_len) ? _puf_sram_len : 0 ;
         KEEP (*(.puf_stack))
-        . = ALIGN(_puf_sram_len);
+        . = ALIGN(8);
         _pstack = .;
         . = ALIGN(8);
         _sstack = .;
