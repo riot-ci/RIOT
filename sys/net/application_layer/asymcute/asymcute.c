@@ -577,8 +577,8 @@ void *_handler(void *arg)
     return NULL;
 }
 
-int asymcute_listener_run(asymcute_con_t *con, char priority,
-                          asymcute_evt_cb_t callback)
+int asymcute_listener_run(asymcute_con_t *con, char *stack, size_t stacksize,
+                          char priority, asymcute_evt_cb_t callback)
 {
     /* make sure con is not running */
     assert(con);
@@ -604,8 +604,8 @@ int asymcute_listener_run(asymcute_con_t *con, char priority,
     con->user_cb = callback;
 
     /* start listener thread */
-    thread_create(con->stack,
-                  ASYMCUTE_LISTENER_STACKSIZE,
+    thread_create(stack,
+                  stacksize,
                   priority,
                   THREAD_CREATE_WOUT_YIELD,
                   _listener,
