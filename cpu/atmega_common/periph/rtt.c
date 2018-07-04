@@ -171,7 +171,7 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
         DEBUG("RTC alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
               PRIu32 "\n", now, alarm);
         cb(arg);
-        return 0;
+        return;
     }
 
     /* Set the alarm value */
