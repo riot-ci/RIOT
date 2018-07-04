@@ -128,7 +128,7 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
     rtc_state.alarm_arg = arg;
     rtc_state.alarm_cb = cb;
 
-    /* Enable alarm only if it will trigger in < 8 seconds */
+    /* Enable irq only if alarm is in the 8s period before it overflows */
     if ((rtc_state.alarm & 0xFFFFFFF8) <= (rtc_state.time & 0xFFFFFFF8)) {
         if (rtc_state.alarm <= rtc_state.time) {
             /* Prevent alarm offset if time is too soon */
@@ -145,8 +145,9 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
 int rtc_get_alarm(struct tm *time)
 {
     /* Convert from seconds since the epoch */
-    /* Note: Cast tells the compiler to discard volatile */
-    gmtime_r((time_t *)&rtc_state.alarm, time);
+    /* Note: assignment is to discard volatile */
+    time_t alarm = rtc_state.alarm;
+    gmtime_r(alarm, time);
 
     return 0;
 }
@@ -175,7 +176,7 @@ void atmega_rtc_incr(void)
 {
     rtc_state.time += 8;
 
-    /* Enable alarm only if it will trigger in < 8 seconds */
+    /* Enable irq only if alarm is in the 8s period before it overflows */
     if ((rtc_state.alarm & 0xFFFFFFF8) == (rtc_state.time & 0xFFFFFFF8)) {
         if (rtc_state.alarm <= rtc_state.time) {
             /* Prevent alarm offset if time is too soon */
@@ -202,11 +203,6 @@ ISR(TIMER2_COMPB_vect) {
 
     if (rtc_state.alarm_cb != NULL) {
         rtc_state.alarm_cb(rtc_state.alarm_arg);
-    }
-
-    if (sched_context_switch_request) {
-        thread_yield();
-        thread_yield_isr();
     }
     __exit_isr();
 }
