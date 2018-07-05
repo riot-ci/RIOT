@@ -29,6 +29,8 @@
 #include "thread.h"
 #include "net/asymcute.h"
 #include "net/ipv6/addr.h"
+#include "net/sock/udp.h"
+#include "net/sock/util.h"
 
 #ifndef REQ_CTX_NUMOF
 #define REQ_CTX_NUMOF       (8U)
