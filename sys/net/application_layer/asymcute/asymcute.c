@@ -37,6 +37,20 @@
 #define VALID_PUBLISH_FLAGS     (MQTTSN_QOS_1 | MQTTSN_DUP | MQTTSN_RETAIN)
 #define VALID_SUBSCRIBE_FLAGS   (MQTTSN_QOS_1 | MQTTSN_DUP)
 
+#define MINLEN_CONNACK          (3U)
+#define MINLEN_DISCONNECT       (2U)
+#define MINLEN_REGACK           (7U)
+#define MINLEN_PUBACK           (7U)
+#define MINLEN_SUBACK           (8U)
+#define MINLEN_UNSUBACK         (4U)
+
+#define IDPOS_REGACK            (4U)
+#define IDPOS_PUBACK            (4U)
+#define IDPOS_SUBACK            (5U)
+#define IDPOS_UNSUBACK          (2U)
+
+#define LEN_PINGRESP            (2U)
+
 /* Internally used connection states */
 enum {
     UNINITIALIZED = 0,      /**< connection context is not initialized */
@@ -300,7 +314,7 @@ static void _on_keepalive_evt(void *arg)
 static void _on_connack(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
-    asymcute_req_t *req = _req_preprocess(con, len, 3, NULL, 0);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_CONNACK, NULL, 0);
     if (req == NULL) {
         mutex_unlock(&con->lock);
         return;
@@ -326,7 +340,7 @@ static void _on_disconnect(asymcute_con_t *con, size_t len)
 
     /* we might have triggered the DISCONNECT process ourselves, so make sure
      * the pending request is being handled */
-    asymcute_req_t *req = _req_preprocess(con, len, 2, NULL, 0);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_DISCONNECT, NULL, 0);
 
     /* put the connection back to NOTCON in any case and let the user know */
     _disconnect(con, NOTCON);
@@ -342,8 +356,8 @@ static void _on_pingreq(asymcute_con_t *con)
 {
     /* simply reply with a PINGRESP message */
     mutex_lock(&con->lock);
-    uint8_t resp[2] = { 2, MQTTSN_PINGRESP };
-    sock_udp_send(&con->sock, resp, 2, &con->server_ep);
+    uint8_t resp[2] = { LEN_PINGRESP, MQTTSN_PINGRESP };
+    sock_udp_send(&con->sock, resp, sizeof(resp), &con->server_ep);
     mutex_unlock(&con->lock);
 }
 
@@ -362,7 +376,8 @@ static void _on_pingresp(asymcute_con_t *con)
 static void _on_regack(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
-    asymcute_req_t *req = _req_preprocess(con, len, 7, data, 4);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_REGACK,
+                                          data, IDPOS_REGACK);
     if (req == NULL) {
         mutex_unlock(&con->lock);
         return;
@@ -424,7 +439,8 @@ static void _on_publish(asymcute_con_t *con, uint8_t *data,
 static void _on_puback(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
-    asymcute_req_t *req = _req_preprocess(con, len, 7, data, 4);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_PUBACK,
+                                          data, IDPOS_PUBACK);
     if (req == NULL) {
         mutex_unlock(&con->lock);
         return;
@@ -440,7 +456,8 @@ static void _on_puback(asymcute_con_t *con, const uint8_t *data, size_t len)
 static void _on_suback(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
-    asymcute_req_t *req = _req_preprocess(con, len, 8, data, 5);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_SUBACK,
+                                          data, IDPOS_SUBACK);
     if (req == NULL) {
         mutex_unlock(&con->lock);
         return;
@@ -467,7 +484,8 @@ static void _on_suback(asymcute_con_t *con, const uint8_t *data, size_t len)
 static void _on_unsuback(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
-    asymcute_req_t *req = _req_preprocess(con, len, 4, data, 2);
+    asymcute_req_t *req = _req_preprocess(con, len, MINLEN_UNSUBACK,
+                                          data, IDPOS_UNSUBACK);
     if (req == NULL) {
         mutex_unlock(&con->lock);
         return;
