@@ -377,8 +377,9 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *ep);
  * @param[in] a     Endpoint A
  * @param[in] b     Endpoint B
  *
- * @return  0 if given endpoint identifiers do not point to the same destination
- * @return  1 if given endpoint identifiers point to the same destination
+ * @return  true if given endpoint identifiers point to the same destination
+ * @return  false if given endpoint identifiers do not point to the same
+ *          destination
  */
 bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b);
 
