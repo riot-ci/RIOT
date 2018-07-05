@@ -117,7 +117,6 @@ static asymcute_req_t *_req_preprocess(asymcute_con_t *con,
     }
 
     if (res) {
-        res->next = NULL;
         res->con = NULL;
         event_timeout_clear(&res->to_timer);
     }
@@ -135,7 +134,6 @@ static void _req_remove(asymcute_con_t *con, asymcute_req_t *req)
             cur->next = cur->next->next;
         }
     }
-    req->next = NULL;
     req->con = NULL;
 }
 
@@ -206,11 +204,10 @@ static void _disconnect(asymcute_con_t *con, uint8_t state)
     if (con->state == CONNECTED) {
         /* cancel all pending requests */
         event_timeout_clear(&con->keepalive_timer);
-        while (con->pending) {
-            asymcute_req_t *req = con->pending;
-            con->pending = con->pending->next;
+        for (asymcute_req_t *req = con->pending; req; req = req->next) {
             _req_cancel(req);
         }
+        con->pending = NULL;
         for (asymcute_sub_t *sub = con->subscriptions; sub; sub = sub->next) {
             _sub_cancel(sub);
         }
@@ -244,7 +241,7 @@ static void _on_req_timeout(void *arg)
         }
         mutex_unlock(&req->lock);
         mutex_unlock(&con->lock);
-        req->con->user_cb(req, ret);
+        con->user_cb(req, ret);
     }
 }
 
@@ -326,6 +323,7 @@ static void _on_connack(asymcute_con_t *con, const uint8_t *data, size_t len)
 static void _on_disconnect(asymcute_con_t *con, size_t len)
 {
     mutex_lock(&con->lock);
+
     /* we might have triggered the DISCONNECT process ourselves, so make sure
      * the pending request is being handled */
     asymcute_req_t *req = _req_preprocess(con, len, 2, NULL, 0);
@@ -337,6 +335,7 @@ static void _on_disconnect(asymcute_con_t *con, size_t len)
     }
     mutex_unlock(&con->lock);
     con->user_cb(req, ASYMCUTE_DISCONNECTED);
+
 }
 
 static void _on_pingreq(asymcute_con_t *con)
