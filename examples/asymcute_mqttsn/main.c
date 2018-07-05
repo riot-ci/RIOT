@@ -151,6 +151,14 @@ static asymcute_topic_t *_topic_get_free(void)
     return NULL;
 }
 
+static void _topic_print_help(void)
+{
+    puts("        topic can be\n"
+         "        - short topic: 2 byte string\n"
+         "        - predefined topic id: pre_XXXXX (e.g. pre_738)\n"
+         "        - normal: any string\n");
+}
+
 static int _qos_parse(int argc, char **argv, int pos, unsigned *flags)
 {
     if (argc <= pos) {
@@ -288,10 +296,7 @@ static int _cmd_reg(int argc, char **argv)
 {
     if (argc < 2) {
         printf("usage: %s <topic name>\n", argv[0]);
-        puts("        topic can be\n"
-             "        - short topic: 2 byte string\n"
-             "        - predefined topic id: pre_XXXXX (e.g. pre_738)\n"
-             "        - normal: any string\n");
+        _topic_print_help();
         return 1;
     }
 
@@ -361,10 +366,7 @@ static int _cmd_pub(int argc, char **argv)
 {
     if (argc < 3) {
         printf("usage: %s <topic> <data> [QoS level]\n", argv[0]);
-          puts("        topic can be\n"
-               "        - short topic: 2 byte string\n"
-               "        - predefined topic id: pre_XXXXX (e.g. pre_738)\n"
-               "        - normal: any string\n");
+        _topic_print_help();
         return 1;
     }
 
@@ -407,10 +409,7 @@ static int _cmd_sub(int argc, char **argv)
 {
     if (argc < 2) {
         printf("usage: %s <topic> [QoS level]\n", argv[0]);
-          puts("        topic can be\n"
-               "        - short topic: 2 byte string\n"
-               "        - predefined topic id: pre_XXXXX (e.g. pre_738)\n"
-               "        - normal: any string\n");
+        _topic_print_help();
         return 1;
     }
 
