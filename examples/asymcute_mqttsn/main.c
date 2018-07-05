@@ -143,7 +143,7 @@ static int _topic_find(asymcute_topic_t *t, const char *name)
 
 static void _topics_clear(void)
 {
-    memset(_topics, 0, (sizeof(_topics) * TOPIC_BUF_NUMOF));
+    memset(_topics, 0, sizeof(_topics));
 }
 
 static asymcute_topic_t *_topic_get_free(void)
@@ -457,7 +457,7 @@ static int _cmd_sub(int argc, char **argv)
     return _ok(req);
 }
 
-static int _cmb_unsub(int argc, char **argv)
+static int _cmd_unsub(int argc, char **argv)
 {
     if (argc < 2) {
         printf("usage: %s <topic>\n", argv[0]);
@@ -527,7 +527,7 @@ static const shell_command_t shell_commands[] = {
     { "unreg", "remove a topic registration [locally]", _cmd_unreg },
     { "pub", "publish data", _cmd_pub },
     { "sub", "subscribe to topic", _cmd_sub },
-    { "unsub", "unsubscribe from topic", _cmb_unsub },
+    { "unsub", "unsubscribe from topic", _cmd_unsub },
     { "info", "print state information", _cmd_info },
     { NULL, NULL, NULL },
 };
