@@ -248,52 +248,43 @@ struct asymcute_req {
     struct asymcute_req *next;  /**< the requests list entry */
     mutex_t lock;               /**< synchronization lock */
     asymcute_con_t *con;        /**< connection the request is using */
-
-    event_callback_t to_evt;    /**< timeout event */
-    event_timeout_t to_timer;   /**< timeout timer */
-    uint8_t retry_cnt;          /**< retransmission counter */
-
-    uint16_t msg_id;            /**< used message id for this request */
-    size_t data_len;            /**< length of the request packet in byte */
-    uint8_t data[ASYMCUTE_BUFSIZE]; /**< buffer holding the request's data */
-
     asymcute_to_cb_t cb;        /**< internally used callback */
     void *arg;                  /**< internally used additional state */
+    event_callback_t to_evt;    /**< timeout event */
+    event_timeout_t to_timer;   /**< timeout timer */
+    uint8_t data[ASYMCUTE_BUFSIZE]; /**< buffer holding the request's data */
+    size_t data_len;            /**< length of the request packet in byte */
+    uint16_t msg_id;            /**< used message id for this request */
+    uint8_t retry_cnt;          /**< retransmission counter */
 };
 
 /**
  * @brief   Asymcute connection context
  */
 struct asymcute_con {
-    uint8_t state;              /**< connection state */
     mutex_t lock;               /**< lock synchronizing access to this struct */
-
     sock_udp_t sock;            /**< socket used by a connections */
     sock_udp_ep_t server_ep;    /**< the gateway's UDP endpoint */
-
     asymcute_req_t *pending;        /**< list holding pending requests */
     asymcute_sub_t *subscriptions;  /**< list holding active subscriptions */
-
-    char cli_id[ASYMCUTE_ID_MAXLEN + 1];    /**< buffer to store client ID */
-    uint16_t last_id;           /**< last used message ID for this connection */
-
+    asymcute_evt_cb_t user_cb;  /**< event callback provided by user */
     event_callback_t keepalive_evt;     /**< keep alive event */
     event_timeout_t keepalive_timer;    /**< keep alive timer */
+    uint16_t last_id;           /**< last used message ID for this connection */
     uint8_t keepalive_retry_cnt;        /**< keep alive transmission counter */
-
-    asymcute_evt_cb_t user_cb;  /**< event callback provided by user */
-
+    uint8_t state;              /**< connection state */
     uint8_t rxbuf[ASYMCUTE_BUFSIZE];    /**< connection specific receive buf */
+    char cli_id[ASYMCUTE_ID_MAXLEN + 1];    /**< buffer to store client ID */
 };
 
 /**
  * @brief   Data-structure for holding topics and their registration status
  */
 struct asymcute_topic {
-    char name[ASYMCUTE_TOPIC_MAXLEN + 1];   /**< topic string (ACSII only) */
     asymcute_con_t *con;        /**< connection used for registration */
-    uint16_t id;                /**< topic id */
+    char name[ASYMCUTE_TOPIC_MAXLEN + 1];   /**< topic string (ACSII only) */
     uint8_t flags;              /**< normal, short, or predefined */
+    uint16_t id;                /**< topic id */
 };
 
 /**
