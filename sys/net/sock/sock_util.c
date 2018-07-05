@@ -188,7 +188,7 @@ bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b)
 
     /* compare family and port */
     if ((a->family != b->family) || (a->port != b->port)) {
-        return 0;
+        return false;
     }
 
     /* compare addresses */
