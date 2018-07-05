@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 Martine Lenders <mlenders@inf.fu-berlin.de>
+ *               2018 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -12,10 +13,12 @@
  * @file
  * @brief       GNRC implementation of @ref net_sock_udp
  *
- * @author  Martine Lenders <mlenders@inf.fu-berlin.de>
+ * @author      Martine Lenders <mlenders@inf.fu-berlin.de>
+ * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
 #include <errno.h>
+#include <string.h>
 
 #include "byteorder.h"
 #include "net/af.h"
