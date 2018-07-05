@@ -328,7 +328,7 @@ $(info $(USEPKG:%=$(RIOTPKG)/%/Makefile.include))
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 
 # Deduplicate includes without sorting them
-USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | awk 'BEGIN {RS=" "} !a[$$0]++')
+USEMODULE_INCLUDES_ = $(shell echo $(USEMODULE_INCLUDES) | awk 'BEGIN { RS=" "; ORS=" " } !a[$$0]++ { print $1 }')
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
