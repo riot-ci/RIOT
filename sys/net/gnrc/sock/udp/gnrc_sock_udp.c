@@ -18,7 +18,6 @@
  */
 
 #include <errno.h>
-#include <string.h>
 
 #include "byteorder.h"
 #include "net/af.h"
