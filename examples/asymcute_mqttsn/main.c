@@ -236,19 +236,19 @@ static void _on_pub_evt(const asymcute_sub_t *sub, unsigned evt_type,
 static int _cmd_connect(int argc, char **argv)
 {
     if (argc < 3) {
-        printf("usage %s <cli id> <addr> [<port> [<will topic> <will msg>]]\n",
+        printf("usage %s <cli id> <addr> [<will topic> <will msg>]\n",
                argv[0]);
         return 1;
     }
 
     /* get sock ep */
-    sock_udp_ep_t ep = { .family = AF_INET6, .port = MQTTSN_DEFAULT_PORT };
-    if (ipv6_addr_from_str((ipv6_addr_t *)ep.addr.ipv6, argv[2]) == NULL) {
-        puts("error: unable to parse IPv6 address");
+    sock_udp_ep_t ep;
+    if (sock_udp_str2ep(&ep, argv[2]) != 0) {
+        puts("error: unable to parse gateway address");
         return 1;
     }
-    if (argc >= 4) {
-        ep.port = (uint16_t)atoi(argv[3]);
+    if (ep.port == 0) {
+        ep.port = MQTTSN_DEFAULT_PORT;
     }
 
     /* get request context */
