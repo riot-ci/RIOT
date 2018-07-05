@@ -55,13 +55,6 @@ static asymcute_req_t _reqs[REQ_CTX_NUMOF];
 static asymcute_sub_t _subscriptions[SUB_CTX_NUMOF];
 static asymcute_topic_t _topics[TOPIC_BUF_NUMOF];
 
-
-static int _ok(asymcute_req_t *req)
-{
-    printf("Request %p: issued\n", (void *)req);
-    return 0;
-}
-
 static asymcute_req_t *_get_req_ctx(void)
 {
     for (unsigned i = 0; i < REQ_CTX_NUMOF; i++) {
@@ -231,6 +224,12 @@ static void _on_pub_evt(const asymcute_sub_t *sub, unsigned evt_type,
         printf("subscription -> topic #%i [%s]: CANCELED\n",
                (int)sub->topic->id, sub->topic->name);
     }
+}
+
+static int _ok(asymcute_req_t *req)
+{
+    printf("Request %p: issued\n", (void *)req);
+    return 0;
 }
 
 static int _cmd_connect(int argc, char **argv)
