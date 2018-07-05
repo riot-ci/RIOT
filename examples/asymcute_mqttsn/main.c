@@ -242,7 +242,7 @@ static int _cmd_connect(int argc, char **argv)
     }
 
     /* get sock ep */
-    sock_udp_ep_t ep = { .family = AF_INET6, .port = MQTTSN_DEFAULT_PORT};;
+    sock_udp_ep_t ep = { .family = AF_INET6, .port = MQTTSN_DEFAULT_PORT };
     if (ipv6_addr_from_str((ipv6_addr_t *)ep.addr.ipv6, argv[2]) == NULL) {
         puts("error: unable to parse IPv6 address");
         return 1;
