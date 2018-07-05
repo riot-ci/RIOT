@@ -53,6 +53,7 @@
 #include "event/callback.h"
 #include "net/mqttsn.h"
 #include "net/sock/udp.h"
+#include "net/sock/util.h"
 
 #ifdef __cplusplus
 extern "C" {
