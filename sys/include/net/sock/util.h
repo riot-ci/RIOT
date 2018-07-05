@@ -87,7 +87,7 @@ int sock_udp_str2ep(sock_udp_ep_t *ep_out, const char *str);
  *
  * @return  true if given endpoint identifiers point to the same destination
  * @return  false if given endpoint identifiers do not point to the same
- *          destination
+ *          destination, or if the address family is unknown
  */
 bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b);
 
