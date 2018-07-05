@@ -441,7 +441,7 @@ static int _cmd_sub(int argc, char **argv)
         return 1;
     }
     if (_topic_init(t, argv[1]) != 0) {
-        puts("error: unable to parse topic");
+        puts("error: unable to initialize topic");
         return 1;
     }
 
