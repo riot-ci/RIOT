@@ -177,29 +177,6 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *remote)
     return 0;
 }
 
-bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b)
-{
-    assert(a && b);
-
-    /* compare family and port */
-    if ((a->family != b->family) || (a->port != b->port)) {
-        return 0;
-    }
-
-    /* compare addresses */
-    switch (a->family) {
-#ifdef SOCK_HAS_IPV6
-        case AF_INET6:
-            return (memcmp(a->addr.ipv6, b->addr.ipv6, 16) == 0);
-
-#endif
-        case AF_INET:
-            return (memcmp(a->addr.ipv4, b->addr.ipv4, 4) == 0);
-        default:
-            return true;
-    }
-}
-
 ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
                       uint32_t timeout, sock_udp_ep_t *remote)
 {

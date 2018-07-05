@@ -369,21 +369,6 @@ int sock_udp_get_local(sock_udp_t *sock, sock_udp_ep_t *ep);
 int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *ep);
 
 /**
- * @brief   Compare the two given UDP endpoints
- *
- * The given endpoint identifiers are compared by checking their address family,
- * their addresses, and their port value.
- *
- * @param[in] a     Endpoint A
- * @param[in] b     Endpoint B
- *
- * @return  true if given endpoint identifiers point to the same destination
- * @return  false if given endpoint identifiers do not point to the same
- *          destination
- */
-bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b);
-
-/**
  * @brief   Receives a UDP message from a remote end point
  *
  * @pre `(sock != NULL) && (data != NULL) && (max_len > 0)`
