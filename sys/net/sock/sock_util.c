@@ -201,6 +201,6 @@ bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b)
         case AF_INET:
             return (memcmp(a->addr.ipv4, b->addr.ipv4, 4) == 0);
         default:
-            return true;
+            return false;
     }
 }
