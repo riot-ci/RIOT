@@ -284,7 +284,7 @@ struct asymcute_con {
 struct asymcute_topic {
     asymcute_con_t *con;        /**< connection used for registration */
     char name[ASYMCUTE_TOPIC_MAXLEN + 1];   /**< topic string (ACSII only) */
-    uint8_t flags;              /**< normal, short, or predefined */
+    uint8_t flags;              /**< normal, short, or pre-defined */
     uint16_t id;                /**< topic id */
 };
 
@@ -406,7 +406,8 @@ static inline bool asymcute_topic_equal(const asymcute_topic_t *a,
  *
  * @return  ASYMCUTE_OK on success
  * @return  ASYMCUTE_REGERR if topic is already registered
- * @return  ASYMCUTE_OVERFLOW if topic name does not fit into buffer
+ * @return  ASYMCUTE_OVERFLOW if topic name does not fit into buffer or if pre-
+ *          defined topic ID is invalid
  */
 int asymcute_topic_init(asymcute_topic_t *topic, const char *topic_name,
                         uint16_t topic_id);
