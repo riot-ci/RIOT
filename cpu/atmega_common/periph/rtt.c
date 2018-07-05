@@ -266,12 +266,17 @@ ISR(TIMER2_OVF_vect) {
 
 ISR(TIMER2_COMPA_vect) {
     __enter_isr();
+    /* Disable alarm interrupt */
+    TIMSK2 &= ~(1 << OCIE2A);
 
-    /* Execute callback */
     if (rtt_state.alarm_cb != NULL) {
-        rtt_state.alarm_cb(rtt_state.alarm_arg);
+        /* Clear callback */
+        rtt_alarm_cb_t cb = rtt_state.alarm_cb;
+        rtt_state.alarm_cb = NULL;
+
+        /* Execute callback */
+        cb(rtt_state.alarm_arg);
     }
-    rtt_clear_alarm();
 
     __exit_isr();
 }
