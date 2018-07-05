@@ -30,22 +30,22 @@
 #include "debug.h"
 
 #ifndef RXTX_LED_ENABLE
-    #define RXTX_LED_ENABLE (1)
+#define RXTX_LED_ENABLE (1)
 #endif
 
 #if RXTX_LED_ENABLE
-    #define RXTX_LED_INIT (LED_PORT_DDR |= LED0_MASK)
-    #define RXTX_LED_ON   LED0_ON
-    #define RXTX_LED_OFF  LED0_OFF
+#define RXTX_LED_INIT (LED_PORT_DDR |= LED0_MASK)
+#define RXTX_LED_ON   LED0_ON
+#define RXTX_LED_OFF  LED0_OFF
 #endif
 
 #define DEBUG_ATRFR2_PINS (0)
 #ifdef DEBUG_ATRFR2_PINS
-    #define DEBUG_ATRFR2_PORT_DDR     (DDRF)
-    #define DEBUG_ATRFR2_PORT         (PORTF)
-    #define DEBUG_ATRFR2_PIN_TX_START (1 << PORTF7)
-    #define DEBUG_ATRFR2_PIN_TX_END   (1 << PORTF6)
-    #define DEBUG_ATRFR2_PIN_RX_END   (1 << PORTF5)
+#define DEBUG_ATRFR2_PORT_DDR     (DDRF)
+#define DEBUG_ATRFR2_PORT         (PORTF)
+#define DEBUG_ATRFR2_PIN_TX_START (1 << PORTF7)
+#define DEBUG_ATRFR2_PIN_TX_END   (1 << PORTF6)
+#define DEBUG_ATRFR2_PIN_RX_END   (1 << PORTF5)
 #endif
 
 /* netdev_t to at86rfr2_dev for Interrupt handling */
@@ -82,7 +82,7 @@ void _exit_isr_yield(void)
 }
 
 /**
- * \brief ISR for transceiver's receive end interrupt
+ * @brief ISR for transceiver's receive end interrupt
  *
  *  Is triggered when valid data is received. FCS check passed.
  *  Save IRQ status and inform upper layer of data reception.
@@ -111,7 +111,7 @@ ISR(TRX24_RX_END_vect, ISR_BLOCK){
 }
 
 /**
- * \brief  Transceiver Frame Address Match, indicates incoming frame
+ * @brief  Transceiver Frame Address Match, indicates incoming frame
  *
  *  Is triggered when Frame with valid Address is received.
  *  Can be used to wake up MCU from sleep, etc.
@@ -127,7 +127,7 @@ ISR(TRX24_XAH_AMI_vect, ISR_BLOCK){
 }
 
 /**
- * \brief ISR for transceiver's transmit end interrupt
+ * @brief ISR for transceiver's transmit end interrupt
  *
  *  Is triggered when data or when acknowledge frames where send.
  *
@@ -174,7 +174,7 @@ ISR(TRX24_TX_END_vect, ISR_BLOCK){
 }
 
 /**
- * \brief ISR for transceiver's TX_START interrupt
+ * @brief ISR for transceiver's TX_START interrupt
  *
  * In procedure TX_ARET the TRX24_TX_START interrupt is issued separately for every
  * frame transmission and frame retransmission.

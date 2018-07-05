@@ -53,16 +53,18 @@ static inline void getbus(const at86rf2xx_t *dev)
 #endif
 
 #ifdef MODULE_AT86RFR2
-void at86rf2xx_reg_write(__attribute__((unused)) const at86rf2xx_t *dev,
+void at86rf2xx_reg_write(const at86rf2xx_t *dev,
                          volatile uint8_t *addr, uint8_t value)
 {
+    (void)dev;
     /* already casted *(volatile uint8_t *) in iom256rfr2, _SFR_MEM8(), _MMIO_BYTE */
     *(addr) = value;
 }
 
-uint8_t at86rf2xx_reg_read(__attribute__((unused)) const at86rf2xx_t *dev,
+uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev,
                            volatile uint8_t *addr)
 {
+    (void)dev;
     /* already casted *(volatile uint8_t *) in iom256rfr2 */
     return *addr;
 }
@@ -89,10 +91,11 @@ uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
 }
 #endif
 
-void at86rf2xx_sram_read(__attribute__((unused)) const at86rf2xx_t *dev, uint8_t offset,
+void at86rf2xx_sram_read(const at86rf2xx_t *dev, uint8_t offset,
                          uint8_t *data, size_t len)
 {
 #ifdef MODULE_AT86RFR2
+    (void)dev;
     memcpy( data, (void *)(AT86RF2XX_REG__TRXFBST + offset), len);
 #else
     uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_READ);
@@ -105,10 +108,11 @@ void at86rf2xx_sram_read(__attribute__((unused)) const at86rf2xx_t *dev, uint8_t
 #endif
 }
 
-void at86rf2xx_sram_write(__attribute__((unused)) const at86rf2xx_t *dev, uint8_t offset,
+void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
                           const uint8_t *data, size_t len)
 {
 #ifdef MODULE_AT86RFR2
+    (void)dev;
     memcpy((void *)(AT86RF2XX_REG__TRXFBST + offset), data, len);
 #else
     uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_WRITE);
@@ -121,10 +125,11 @@ void at86rf2xx_sram_write(__attribute__((unused)) const at86rf2xx_t *dev, uint8_
 #endif
 }
 
-void at86rf2xx_fb_start(__attribute__((unused)) const at86rf2xx_t *dev)
+void at86rf2xx_fb_start(const at86rf2xx_t *dev)
 {
 #ifdef MODULE_AT86RFR2
-    // nothing to do here
+    /* nothing to do here */
+    (void)dev;
 #else
     uint8_t reg = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
 
@@ -133,10 +138,11 @@ void at86rf2xx_fb_start(__attribute__((unused)) const at86rf2xx_t *dev)
 #endif
 }
 
-void at86rf2xx_fb_read(__attribute__((unused)) const at86rf2xx_t *dev,
+void at86rf2xx_fb_read(const at86rf2xx_t *dev,
                        uint8_t *data, size_t len)
 {
 #ifdef MODULE_AT86RFR2
+    (void)dev;
     memcpy( data, (void *)(AT86RF2XX_REG__TRXFBST), len);
 #else
     spi_transfer_bytes(SPIDEV, CSPIN, true, NULL, data, len);
@@ -148,14 +154,15 @@ void at86rf2xx_fb_read(__attribute__((unused)) const at86rf2xx_t *dev,
 #endif
 }
 
-void at86rf2xx_fb_stop(__attribute__((unused)) const at86rf2xx_t *dev)
+void at86rf2xx_fb_stop(const at86rf2xx_t *dev)
 {
 #ifdef MODULE_AT86RFR2
     /* clear frame buffer protection */
+    (void)dev;
     /* TODO investigate calls from _recv As there is a problem of releasing
      * frame buffer to early, postpone release.
      */
-    // *AT86RF2XX_REG__TRX_CTRL_2 &= ~(1<<RX_SAFE_MODE);
+    /* *AT86RF2XX_REG__TRX_CTRL_2 &= ~(1<<RX_SAFE_MODE); */
 #else
     /* transfer one byte (which we ignore) to release the chip select */
     spi_transfer_byte(SPIDEV, CSPIN, false, 1);
@@ -179,7 +186,7 @@ void at86rf2xx_assert_awake(at86rf2xx_t *dev)
     if (at86rf2xx_get_status(dev) == AT86RF2XX_STATE_SLEEP) {
         /* wake up and wait for transition to TRX_OFF */
 #ifdef MODULE_AT86RFR2
-        /* Setting SLPTR bit in TRXPR to = returns the radio transceiver
+        /* Setting SLPTR bit in TRXPR to 0 returns the radio transceiver
          * to the TRX_OFF state */
         *AT86RF2XX_REG__TRXPR &= ~(AT86RF2XX_TRXPR_SLPTR);
 #else
@@ -203,7 +210,8 @@ void at86rf2xx_hardware_reset(at86rf2xx_t *dev)
 {
     /* trigger hardware reset */
 #ifdef MODULE_AT86RFR2
-    *(AT86RF2XX_REG__TRXPR) |= AT86RF2XX_TRXPR_TRXRST; // set reset bit
+    /* set reset Bit */
+    *(AT86RF2XX_REG__TRXPR) |= AT86RF2XX_TRXPR_TRXRST;
 #else
     gpio_clear(dev->params.reset_pin);
     xtimer_usleep(AT86RF2XX_RESET_PULSE_WIDTH);

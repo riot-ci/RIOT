@@ -202,13 +202,14 @@ void at86rf2xx_set_pan(at86rf2xx_t *dev, uint16_t pan)
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__PAN_ID_1, le_pan.u8[1]);
 }
 
-int16_t at86rf2xx_get_txpower(__attribute__((unused)) const at86rf2xx_t *dev)
+int16_t at86rf2xx_get_txpower(const at86rf2xx_t *dev)
 {
 #ifdef MODULE_AT86RF212B
     uint8_t txpower = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_TX_PWR);
     DEBUG("txpower value: %x\n", txpower);
     return _tx_pow_to_dbm_212b(dev->netdev.chan, dev->page, txpower);
 #elif defined(MODULE_AT86RFR2)
+    (void)dev;
     uint8_t txpower = *AT86RF2XX_REG__PHY_TX_PWR & AT86RF2XX_PHY_TX_PWR_MASK__TX_PWR;
     return tx_pow_to_dbm[txpower];
 #else
@@ -272,7 +273,7 @@ uint8_t at86rf2xx_get_csma_max_retries(const at86rf2xx_t *dev)
 {
     uint8_t tmp;
 
-    tmp  = at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_0);
+    tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_0);
     tmp &= AT86RF2XX_XAH_CTRL_0__MAX_CSMA_RETRIES;
     tmp >>= 1;
     return tmp;
@@ -387,12 +388,12 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
             /* disable/enable auto ACKs in promiscuous mode */
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CSMA_SEED_1);
             tmp = (state) ? (tmp |  AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK)
-                  : (tmp & ~AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
+                          : (tmp & ~AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_SEED_1, tmp);
             /* enable/disable promiscuous mode */
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__XAH_CTRL_1);
             tmp = (state) ? (tmp |  AT86RF2XX_XAH_CTRL_1__AACK_PROM_MODE)
-                  : (tmp & ~AT86RF2XX_XAH_CTRL_1__AACK_PROM_MODE);
+                          : (tmp & ~AT86RF2XX_XAH_CTRL_1__AACK_PROM_MODE);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__XAH_CTRL_1, tmp);
             break;
         case AT86RF2XX_OPT_AUTOACK:
@@ -400,7 +401,7 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
                   (state ? "enable" : "disable"));
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CSMA_SEED_1);
             tmp = (state) ? (tmp & ~AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK)
-                  : (tmp |  AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
+                          : (tmp |  AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_SEED_1, tmp);
             break;
         case AT86RF2XX_OPT_TELL_RX_START:
@@ -408,7 +409,7 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
                   (state ? "enable" : "disable"));
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__IRQ_MASK);
             tmp = (state) ? (tmp |  AT86RF2XX_IRQ_STATUS_MASK__RX_START)
-                  : (tmp & ~AT86RF2XX_IRQ_STATUS_MASK__RX_START);
+                          : (tmp & ~AT86RF2XX_IRQ_STATUS_MASK__RX_START);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__IRQ_MASK, tmp);
             break;
 #ifdef MODULE_AT86RFR2
@@ -417,7 +418,7 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
                   (state ? "enable" : "disable"));
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__IRQ_MASK);
             tmp = (state) ? (tmp |  AT86RF2XX_IRQ_STATUS_MASK__TX_END)
-                  : (tmp & ~AT86RF2XX_IRQ_STATUS_MASK__TX_END);
+                          : (tmp & ~AT86RF2XX_IRQ_STATUS_MASK__TX_END);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__IRQ_MASK, tmp);
             break;
 #endif
@@ -425,7 +426,7 @@ void at86rf2xx_set_option(at86rf2xx_t *dev, uint16_t option, bool state)
             DEBUG("[at86rf2xx] opt: enabling pending ACKs\n");
             tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CSMA_SEED_1);
             tmp = (state) ? (tmp |  AT86RF2XX_CSMA_SEED_1__AACK_SET_PD)
-                  : (tmp & ~AT86RF2XX_CSMA_SEED_1__AACK_SET_PD);
+                          : (tmp & ~AT86RF2XX_CSMA_SEED_1__AACK_SET_PD);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__CSMA_SEED_1, tmp);
             break;
         default:
@@ -462,8 +463,7 @@ static inline void _set_state(at86rf2xx_t *dev, uint8_t state, uint8_t cmd)
      * at least make sure if state transition is in progress or not
      */
     else {
-        while (at86rf2xx_get_status(dev) == AT86RF2XX_STATE_IN_PROGRESS) {
-        }
+        while (at86rf2xx_get_status(dev) == AT86RF2XX_STATE_IN_PROGRESS) {}
     }
 
     dev->state = state;
@@ -477,7 +477,7 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
      * in progress */
     do {
         old_state = at86rf2xx_get_status(dev);
-        DEBUG("at86rf2xx_set_state: 0x%02x old_state is: 0x%02x\n",state, old_state);
+        DEBUG("at86rf2xx_set_state: 0x%02x old_state is: 0x%02x\n", state, old_state);
     } while (old_state == AT86RF2XX_STATE_BUSY_RX_AACK ||
              old_state == AT86RF2XX_STATE_BUSY_TX_ARET ||
              old_state == AT86RF2XX_STATE_IN_PROGRESS);
@@ -503,8 +503,8 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
             /* Go to SLEEP mode from TRX_OFF */
 #ifdef MODULE_AT86RFR2
             /* reset interrupts states in device */
-            dev->irq_status =0;
-            dev->irq_status1=0;
+            dev->irq_status = 0;
+            dev->irq_status1 = 0;
             /* Setting SLPTR bit brings radio transceiver to sleep in in TRX_OFF*/
             *AT86RF2XX_REG__TRXPR |= (AT86RF2XX_TRXPR_SLPTR);
 #else

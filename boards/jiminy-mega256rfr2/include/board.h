@@ -36,7 +36,7 @@ extern "C" {
  *
  * For 8MHz F_CPU following Baudrate have good error rates
  *  76800
- *  38400 fetching data from interrupt to slow for long data
+ *  38400 Seems to fast for long byte streams, collecting in interrupt to slow.
  *  19200
  *   9600
  *

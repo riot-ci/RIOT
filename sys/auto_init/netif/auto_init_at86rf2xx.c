@@ -40,7 +40,7 @@
  * @{
  */
 #ifndef AT86RF2XX_MAC_STACKSIZE
-    #define AT86RF2XX_MAC_STACKSIZE     (THREAD_STACKSIZE_DEFAULT)
+#define AT86RF2XX_MAC_STACKSIZE     (THREAD_STACKSIZE_DEFAULT)
 #endif
 
 #ifndef AT86RF2XX_MAC_PRIO
@@ -52,7 +52,7 @@
  * As of now it is not intended to support external at86rf2xx devices at the
  * same time as the On-Chip transceiver drive is in use.
  */
-    #define AT86RF2XX_NUM 1
+#define AT86RF2XX_NUM 1
 #else
 #define AT86RF2XX_NUM (sizeof(at86rf2xx_params) / sizeof(at86rf2xx_params[0]))
 #endif

@@ -192,10 +192,10 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 #endif
         return -ENOBUFS;
     }
-    #ifdef MODULE_NETSTATS_L2
+#ifdef MODULE_NETSTATS_L2
     netdev->stats.rx_count++;
     netdev->stats.rx_bytes += pkt_len;
-    #endif
+#endif
     /* copy payload */
     at86rf2xx_fb_read(dev, (uint8_t *)buf, pkt_len);
 
@@ -700,13 +700,13 @@ static void _isr(netdev_t *netdev)
         }
         else if ((state == AT86RF2XX_STATE_TX_ARET_ON)
                  || (state == AT86RF2XX_STATE_BUSY_TX_ARET)) {
-            /* check for more pending TX calls and return to idle state if
-             * there are none */
 #ifdef MODULE_AT86RFR2
             /* clear TX interrupt status */
             dev->irq_status &= ~AT86RF2XX_IRQ_STATUS_MASK__TX_END;
 #endif
-            // assert(dev->pending_tx != 0);
+            /* check for more pending TX calls and return to idle state if
+             * there are none */
+            assert(dev->pending_tx != 0);
             if ((--dev->pending_tx) == 0) {
                 at86rf2xx_set_state(dev, dev->idle_state);
                 DEBUG("[at86rf2xx] return to idle state 0x%x\n", dev->idle_state);
