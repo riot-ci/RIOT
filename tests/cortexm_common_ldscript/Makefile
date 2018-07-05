@@ -4,9 +4,9 @@ include ../Makefile.tests_common
 
 # Normally all boards using `cortexm_common/ldscripts/cortexm.ld` linkerscript
 # Only tested on these ones for the moment
-BOARD_WHITELIST += iotlab-a8-m3     # cortex-m3
-BOARD_WHITELIST += iotlab-m3        # cortex-m3
-BOARD_WHITELIST += samr21-xpro      # cortex-m0plus
+BOARD_WHITELIST += iotlab-a8-m3
+BOARD_WHITELIST += iotlab-m3
+BOARD_WHITELIST += samr21-xpro
 
 include $(RIOTBASE)/Makefile.include
 
