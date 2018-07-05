@@ -224,12 +224,18 @@ void _asynch_wait(void)
 
 ISR(TIMER2_COMPB_vect) {
     __enter_isr();
+    /* Disable alarm interrupt */
+    TIMSK2 &= ~(1 << OCIE2B);
 
     /* Execute callback */
     if (rtc_state.alarm_cb != NULL) {
-        rtc_state.alarm_cb(rtc_state.alarm_arg);
+        /* Clear callback */
+        rtc_alarm_cb_t cb = rtc_state.alarm_cb;
+        rtc_state.alarm_cb = NULL;
+
+        /* Execute callback */
+        cb(rtc_state.alarm_arg);
     }
-    rtc_clear_alarm();
 
     __exit_isr();
 }
