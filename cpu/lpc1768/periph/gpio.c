@@ -21,10 +21,6 @@
 #include "cpu.h"
 #include "periph/gpio.h"
 
-#ifdef MODULE_GPIO_EXP
-#include "gpio_exp.h"
-#endif
-
 /**
  * @brief   Number of external interrupt lines.
  */
@@ -96,18 +92,7 @@ static inline void _configure_flank(gpio_t pin, gpio_flank_t flank)
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_INIT(pin, mode);
 
     /* check for valid pin */
     if (pin == GPIO_UNDEF) {
@@ -147,19 +132,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
-                                           mode, flank, cb, arg);
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_INIT_INT(pin, mode, flank, cb, arg);
 
     /* only certain pins can be used as interrupt pins */
     if (_port(pin) != 0 && _port(pin) != 2) {
@@ -192,19 +165,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_IRQ_ENABLE(pin);
 
     assert(_port(pin) == 0 || _port(pin) == 2);
 
@@ -213,19 +174,7 @@ void gpio_irq_enable(gpio_t pin)
 
 void gpio_irq_disable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_IRQ_DISABLE(pin);
 
     assert(_port(pin) == 0 || _port(pin) == 2);
 
@@ -241,18 +190,7 @@ void gpio_irq_disable(gpio_t pin)
 
 int gpio_read(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_READ(pin);
 
     LPC_GPIO_TypeDef *base = _base(pin);
 
@@ -261,29 +199,25 @@ int gpio_read(gpio_t pin)
 
 void gpio_set(gpio_t pin)
 {
-    gpio_write(pin, 1);
+    GPIO_INTERCEPT_SET(pin);
+
+    LPC_GPIO_TypeDef *base = _base(pin);
+
+    base->FIOSET = (1 << _pin(pin));
 }
 
 void gpio_clear(gpio_t pin)
 {
-    gpio_write(pin, 0);
+    GPIO_INTERCEPT_CLEAR(pin);
+
+    LPC_GPIO_TypeDef *base = _base(pin);
+
+    base->FIOCLR = (1 << _pin(pin));
 }
 
 void gpio_toggle(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Read then write if pin is on GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        if (gpio_read(pin)) {
-            gpio_write(pin, 0);
-        }
-        else {
-            gpio_write(pin, 1);
-        }
-
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_TOGGLE(pin);
 
     LPC_GPIO_TypeDef *base = _base(pin);
 
@@ -292,19 +226,7 @@ void gpio_toggle(gpio_t pin)
 
 void gpio_write(gpio_t pin, int value)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_WRITE(pin, value);
 
     LPC_GPIO_TypeDef *base = _base(pin);
 
