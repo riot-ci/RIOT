@@ -116,6 +116,6 @@ ifeq (1,$(USE_NEWLIB_NANO))
 
   ifneq (,$(filter 1, $(ASSERT_NEWLIB_NANO_HEADER) $(RIOT_CI_BUILD)))
     # Add a check to assert newlib-nano is used
-    CFLAGS += -include '$(RIOTMAKE)/libc/assert_newlib_nano_included.h'
+    INCLUDES += -include '$(RIOTMAKE)/libc/assert_newlib_nano_included.h'
   endif
 endif
