@@ -27,10 +27,6 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
-#ifdef MODULE_GPIO_EXP
-#include "gpio_exp.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -99,18 +95,7 @@ static gpio_state_t gpio_config[NUM_OF_PORT][NUM_OF_PINS];
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->init(exp_entry->dev, gpio_exp_pin(pin), mode);
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_INIT(pin, mode);
 
     const uint8_t port_num = _port_num(pin);
     const uint32_t port_addr = _port_base[port_num];
@@ -181,19 +166,7 @@ void isr_gpio_portf(void){
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->init_int(exp_entry->dev, gpio_exp_pin(pin),
-                                           mode, flank, cb, arg);
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_INIT_INT(pin, mode, flank, cb, arg);
 
     const uint8_t port_num = _port_num(pin);
     const uint32_t port_addr = _port_base[port_num];
@@ -235,19 +208,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 1);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_IRQ_ENABLE(pin);
 
     const uint8_t port_num = _port_num(pin);
     const uint32_t port_addr = _port_base[port_num];
@@ -260,19 +221,7 @@ void gpio_irq_enable(gpio_t pin)
 
 void gpio_irq_disable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->irq(exp_entry->dev, gpio_exp_pin(pin), 0);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_IRQ_DISABLE(pin);
 
     const uint8_t port_num = _port_num(pin);
     const uint32_t port_addr = _port_base[port_num];
@@ -286,18 +235,7 @@ void gpio_irq_disable(gpio_t pin)
 
 int gpio_read(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return -1;
-        }
-
-        return exp_entry->driver->read(exp_entry->dev, gpio_exp_pin(pin));
-    }
-#endif /* MODULE_GPIO_EXP */
+    GPIO_INTERCEPT_READ(pin);
 
     const uint8_t port_num = _port_num(pin);
     const uint32_t port_addr = _port_base[port_num];
@@ -308,16 +246,31 @@ int gpio_read(gpio_t pin)
 
 void gpio_set(gpio_t pin)
 {
-    gpio_write(pin, 1);
+    GPIO_INTERCEPT_SET(pin);
+
+    const uint8_t port_num = _port_num(pin);
+    const uint32_t port_addr = _port_base[port_num];
+    const uint8_t pin_num = _pin_num(pin);
+    DEBUG("Setting bit %d of port %c\n", pin_num, 'A' + port_num);
+    DEBUG("Port addr %" PRIx32 ", vs %x\n", port_addr,  GPIO_PORTF_BASE);
+    ROM_GPIOPinWrite(port_addr, 1<<pin_num, 1<<pin_num);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    gpio_write(pin, 0);
+    GPIO_INTERCEPT_CLEAR(pin);
+
+    const uint8_t port_num = _port_num(pin);
+    const uint32_t port_addr = _port_base[port_num];
+    const uint8_t pin_num = _pin_num(pin);
+
+    HWREG(port_addr + ((1<<pin_num) << 2)) = 0;
 }
 
 void gpio_toggle(gpio_t pin)
 {
+    GPIO_INTERCEPT_TOGGLE(pin);
+
     if (gpio_read(pin)) {
         gpio_clear(pin);
     }
@@ -328,30 +281,12 @@ void gpio_toggle(gpio_t pin)
 
 void gpio_write(gpio_t pin, int value)
 {
-#ifdef MODULE_GPIO_EXP
-    /* Redirect pin handling to GPIO expander */
-    if (pin > GPIO_EXP_THRESH) {
-        gpio_exp_t *exp_entry = gpio_exp_entry(pin);
-
-        if (exp_entry == NULL) {
-            return;
-        }
-
-        exp_entry->driver->write(exp_entry->dev, gpio_exp_pin(pin), value);
-        return;
-    }
-#endif /* MODULE_GPIO_EXP */
-
-    const uint8_t port_num = _port_num(pin);
-    const uint32_t port_addr = _port_base[port_num];
-    const uint8_t pin_num = _pin_num(pin);
-    DEBUG("Setting bit %d of port %c\n", pin_num, 'A' + port_num);
-    DEBUG("Port addr %" PRIx32 ", vs %x\n", port_addr,  GPIO_PORTF_BASE);
+    GPIO_INTERCEPT_WRITE(pin, value);
 
     if (value) {
-        ROM_GPIOPinWrite(port_addr, 1<<pin_num, 1<<pin_num);
+        gpio_set(pin);
     }
     else {
-        HWREG(port_addr + ((1<<pin_num) << 2)) = 0;
+        gpio_clear(pin);
     }
 }
