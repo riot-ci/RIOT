@@ -143,9 +143,12 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     /* ignore MSB (refer p.80) and substract length of FCS field */
     pkt_len = (phr & 0x7f) - 2;
 
-    /* just return length when buf == NULL */
+    /* return length when buf == NULL */
     if (buf == NULL) {
-        at86rf2xx_fb_stop(dev);
+        /* also drop packet when len > 0 */
+        if (len > 0) {
+            at86rf2xx_fb_stop(dev);
+        }
         return pkt_len;
     }
     /* not enough space in buf */
