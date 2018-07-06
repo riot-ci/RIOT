@@ -40,6 +40,9 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(4);
+
 /* Internal functions */
 static int _init_spi(sx127x_t *dev);
 static int _init_gpios(sx127x_t *dev);
@@ -210,29 +213,29 @@ static void sx127x_on_dio3_isr(void *arg)
 /* Internal event handlers */
 static int _init_gpios(sx127x_t *dev)
 {
-    int res = gpio_init_int(dev->params.dio0_pin, GPIO_IN, GPIO_RISING,
-                            sx127x_on_dio0_isr, dev);
+    int res = gpio_init_int(GPIO_GET_ALLOC(0), dev->params.dio0_pin, GPIO_IN,
+                            GPIO_RISING, sx127x_on_dio0_isr, dev);
     if (res < 0) {
         DEBUG("[sx127x] error: failed to initialize DIO0 pin\n");
         return res;
     }
 
-    res = gpio_init_int(dev->params.dio1_pin, GPIO_IN, GPIO_RISING,
-                         sx127x_on_dio1_isr, dev);
+    res = gpio_init_int(GPIO_GET_ALLOC(1), dev->params.dio1_pin, GPIO_IN,
+                        GPIO_RISING, sx127x_on_dio1_isr, dev);
     if (res < 0) {
         DEBUG("[sx127x] error: failed to initialize DIO1 pin\n");
         return res;
     }
 
-    res = gpio_init_int(dev->params.dio2_pin, GPIO_IN, GPIO_RISING,
-                        sx127x_on_dio2_isr, dev);
+    res = gpio_init_int(GPIO_GET_ALLOC(2), dev->params.dio2_pin, GPIO_IN,
+                        GPIO_RISING, sx127x_on_dio2_isr, dev);
     if (res < 0) {
         DEBUG("[sx127x] error: failed to initialize DIO2 pin\n");
         return res;
     }
 
-    res = gpio_init_int(dev->params.dio3_pin, GPIO_IN, GPIO_RISING,
-                        sx127x_on_dio3_isr, dev);
+    res = gpio_init_int(GPIO_GET_ALLOC(3), dev->params.dio3_pin, GPIO_IN,
+                        GPIO_RISING, sx127x_on_dio3_isr, dev);
     if (res < 0) {
         DEBUG("[sx127x] error: failed to initialize DIO3 pin\n");
         return res;

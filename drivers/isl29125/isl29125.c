@@ -32,6 +32,9 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 /***********************************************************************
  * public API implementation
  **********************************************************************/
@@ -140,7 +143,8 @@ int isl29125_init_int(isl29125_t *dev, isl29125_interrupt_status_t interrupt_sta
     DEBUG("isl29125_init: i2c_write_reg(ISL29125_REG_HTHHB)\n");
     (void) i2c_write_reg(dev->i2c, ISL29125_I2C_ADDRESS, ISL29125_REG_HTHHB, hthhb);
 
-    if (gpio_init_int(dev->gpio, GPIO_IN, GPIO_FALLING, cb, arg) < 0) {
+    if (gpio_init_int(GPIO_GET_ALLOC(0), dev->gpio, GPIO_IN,
+                      GPIO_FALLING, cb, arg) < 0) {
         DEBUG("error: gpio_init_int failed\n");
         return -1;
     }

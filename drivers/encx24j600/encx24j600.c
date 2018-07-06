@@ -79,6 +79,9 @@ static const netdev_driver_t netdev_driver_encx24j600 = {
     .set = netdev_eth_set,
 };
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static inline void lock(encx24j600_t *dev) {
     spi_acquire(dev->spi, dev->cs, SPI_MODE, SPI_CLK);
 }
@@ -243,7 +246,8 @@ static int _init(netdev_t *encdev)
     if (spi_init_cs(dev->spi, dev->cs) != SPI_OK) {
         return -1;
     }
-    gpio_init_int(dev->int_pin, GPIO_IN_PU, GPIO_FALLING, encx24j600_isr, (void*)dev);
+    gpio_init_int(GPIO_GET_ALLOC(0), dev->int_pin, GPIO_IN_PU,
+                  GPIO_FALLING, encx24j600_isr, (void*)dev);
 
     lock(dev);
 

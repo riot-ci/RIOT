@@ -84,9 +84,11 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     return 0;
 }
 
-int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
-                  gpio_cb_t cb, void *arg)
+int gpio_init_int(gpio_int_t *entry, gpio_t pin, gpio_mode_t mode,
+                  gpio_flank_t flank, gpio_cb_t cb, void *arg)
 {
+    (void)entry;
+
     /* disable external interrupt in case one is active */
     NRF_GPIOTE->INTENSET &= ~(GPIOTE_INTENSET_IN0_Msk);
     /* save callback */
