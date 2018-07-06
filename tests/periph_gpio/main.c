@@ -28,6 +28,9 @@
 
 #define BENCH_RUNS_DEFAULT      (1000UL * 1000)
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static void cb(void *arg)
 {
     printf("INT: external interrupt from pin %i\n", (int)arg);
@@ -140,7 +143,8 @@ static int init_int(int argc, char **argv)
         }
     }
 
-    if (gpio_init_int(GPIO_PIN(po, pi), mode, flank, cb, (void *)pi) < 0) {
+    if (gpio_init_int(GPIO_GET_ALLOC(0), GPIO_PIN(po, pi), mode,
+                      flank, cb, (void *)pi) < 0) {
         printf("error: init_int of GPIO_PIN(%i, %i) failed\n", po, pi);
         return 1;
     }

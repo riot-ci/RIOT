@@ -29,6 +29,9 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 /**********************************************************************
  * internal API declaration
  **********************************************************************/
@@ -60,7 +63,8 @@ int pir_init(pir_t *dev, const pir_params_t *params)
         gpio_mode = GPIO_IN_PU;
     }
 
-    if (gpio_init_int(dev->p.gpio, gpio_mode, GPIO_BOTH, pir_callback, dev)) {
+    if (gpio_init_int(GPIO_GET_ALLOC(0), dev->p.gpio, gpio_mode,
+                      GPIO_BOTH, pir_callback, dev)) {
         return PIR_NOGPIO;
     }
     return PIR_OK;
@@ -176,7 +180,8 @@ static int pir_activate_int(pir_t *dev)
         gpio_mode = GPIO_IN_PU;
     }
 
-    if (gpio_init_int(dev->p.gpio, gpio_mode, GPIO_BOTH, pir_callback, dev)) {
+    if (gpio_init_int(GPIO_GET_ALLOC(0), dev->p.gpio, gpio_mode,
+                      GPIO_BOTH, pir_callback, dev)) {
         return PIR_NOGPIO;
     }
     return PIR_OK;

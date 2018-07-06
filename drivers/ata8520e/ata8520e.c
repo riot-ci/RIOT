@@ -50,6 +50,9 @@
 #define TX_TIMEOUT           (8U)             /* 8 s */
 #define TX_RX_TIMEOUT        (50U)            /* 50 s */
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static void _print_atmel_status(uint8_t status)
 {
     DEBUG("[ata8520e] Atmel status: %d\n", status);
@@ -242,7 +245,7 @@ int ata8520e_init(ata8520e_t *dev, const ata8520e_params_t *params)
     memcpy(&dev->params, params, sizeof(ata8520e_params_t));
 
     /* Initialize pins*/
-    if (gpio_init_int(INTPIN, GPIO_IN_PD,
+    if (gpio_init_int(GPIO_GET_ALLOC(0), INTPIN, GPIO_IN_PD,
                       GPIO_FALLING, _irq_handler, dev) < 0 ) {
         DEBUG("[ata8520e] ERROR: Interrupt pin not initialized\n");
         return -ATA8520E_ERR_GPIO_INT;

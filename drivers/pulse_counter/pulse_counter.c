@@ -26,6 +26,9 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 /* Accumulate pulse count */
 static void pulse_counter_trigger(void *arg)
 {
@@ -46,7 +49,8 @@ int pulse_counter_init(pulse_counter_t *dev, const pulse_counter_params_t *param
         gpio_mode = GPIO_IN_PD;
     }
 
-    if (gpio_init_int(params->gpio, gpio_mode, params->gpio_flank, pulse_counter_trigger, dev)) {
+    if (gpio_init_int(GPIO_GET_ALLOC(0), params->gpio, gpio_mode,
+                      params->gpio_flank, pulse_counter_trigger, dev)) {
         return -1;
     }
 

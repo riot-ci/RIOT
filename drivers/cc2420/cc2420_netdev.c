@@ -55,6 +55,9 @@ const netdev_driver_t cc2420_driver = {
     .set = _set,
 };
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static void _irq_handler(void *arg)
 {
     netdev_t *dev = (netdev_t *)arg;
@@ -113,7 +116,8 @@ static int _init(netdev_t *netdev)
     gpio_init(dev->params.pin_cca, GPIO_IN);
     gpio_init(dev->params.pin_sfd, GPIO_IN);
     gpio_init(dev->params.pin_fifo, GPIO_IN);
-    gpio_init_int(dev->params.pin_fifop, GPIO_IN, GPIO_RISING, _irq_handler, dev);
+    gpio_init_int(GPIO_GET_ALLOC(0), dev->params.pin_fifop, GPIO_IN,
+                  GPIO_RISING, _irq_handler, dev);
 
     /* initialize the chip select line and the SPI bus */
     spi_init_cs(dev->params.spi, dev->params.pin_cs);

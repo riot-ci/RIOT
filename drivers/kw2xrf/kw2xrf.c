@@ -40,6 +40,9 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static void kw2xrf_set_address(kw2xrf_t *dev)
 {
     DEBUG("[kw2xrf] set MAC addresses\n");
@@ -78,7 +81,8 @@ int kw2xrf_init(kw2xrf_t *dev, gpio_cb_t cb)
     kw2xrf_set_out_clk(dev);
     kw2xrf_disable_interrupts(dev);
     /* set up GPIO-pin used for IRQ */
-    gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING, cb, dev);
+    gpio_init_int(GPIO_GET_ALLOC(0), dev->params.int_pin,
+                  GPIO_IN, GPIO_FALLING, cb, dev);
 
     kw2xrf_abort_sequence(dev);
     kw2xrf_update_overwrites(dev);

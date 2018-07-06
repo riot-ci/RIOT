@@ -39,6 +39,9 @@
 
 #define _MAX_MHR_OVERHEAD   (25)
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static void _irq_handler(void *arg)
 {
     netdev_t *dev = (netdev_t *) arg;
@@ -57,7 +60,8 @@ static int _init(netdev_t *netdev)
     spi_init_cs(dev->params.spi, dev->params.cs_pin);
     gpio_init(dev->params.reset_pin, GPIO_OUT);
     gpio_set(dev->params.reset_pin);
-    gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_RISING, _irq_handler, dev);
+    gpio_init_int(GPIO_GET_ALLOC(0), dev->params.int_pin, GPIO_IN,
+                  GPIO_RISING, _irq_handler, dev);
 
 #ifdef MODULE_NETSTATS_L2
     memset(&netdev->stats, 0, sizeof(netstats_t));

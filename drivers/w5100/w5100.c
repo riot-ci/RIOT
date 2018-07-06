@@ -45,6 +45,9 @@
 
 static const netdev_driver_t netdev_driver_w5100;
 
+/* Memory allocation for GPIO interrupt entry (if enabled) */
+GPIO_ALLOC_INT(1);
+
 static inline void send_addr(w5100_t *dev, uint16_t addr)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -123,7 +126,8 @@ void w5100_setup(w5100_t *dev, const w5100_params_t *params)
 
     /* initialize the chip select pin and the external interrupt pin */
     spi_init_cs(dev->p.spi, dev->p.cs);
-    gpio_init_int(dev->p.evt, GPIO_IN, GPIO_FALLING, extint, dev);
+    gpio_init_int(GPIO_GET_ALLOC(0), dev->p.evt, GPIO_IN,
+                  GPIO_FALLING, extint, dev);
 }
 
 static int init(netdev_t *netdev)
