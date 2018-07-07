@@ -24,6 +24,7 @@
 #include <stdint.h>
 
 #include "cpu.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 
 #define ENABLE_DEBUG (0)

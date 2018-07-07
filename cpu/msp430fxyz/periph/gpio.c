@@ -21,6 +21,7 @@
 
 #include "cpu.h"
 #include "bitarithm.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 
 /**

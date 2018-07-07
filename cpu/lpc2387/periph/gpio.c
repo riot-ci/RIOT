@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "irq.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 #include "bitfield.h"
 

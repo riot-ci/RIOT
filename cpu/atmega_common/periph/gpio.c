@@ -29,6 +29,7 @@
 #include <avr/interrupt.h>
 
 #include "cpu.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 #include "periph_conf.h"
 #include "periph_cpu.h"

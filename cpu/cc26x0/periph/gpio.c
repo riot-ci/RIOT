@@ -20,6 +20,7 @@
  */
 
 #include "cpu.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 
 #define GPIO_ISR_CHAN_NUMOF     (32)

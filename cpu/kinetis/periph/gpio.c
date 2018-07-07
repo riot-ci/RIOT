@@ -29,6 +29,7 @@
 #include <stdint.h>
 #include "cpu.h"
 #include "bit.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 
 #ifndef PORT_PCR_ODE_MASK

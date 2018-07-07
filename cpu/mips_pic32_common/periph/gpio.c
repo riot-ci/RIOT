@@ -21,6 +21,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 #include "board.h"
 

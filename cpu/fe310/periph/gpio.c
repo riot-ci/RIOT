@@ -22,6 +22,7 @@
 
 #include "irq.h"
 #include "cpu.h"
+#include "gpio_exp.h"
 #include "periph_cpu.h"
 #include "periph_conf.h"
 #include "periph/gpio.h"

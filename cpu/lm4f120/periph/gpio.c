@@ -24,6 +24,7 @@
 
 #include "cpu.h"
 #include "cpu_conf.h"
+#include "gpio_exp.h"
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
