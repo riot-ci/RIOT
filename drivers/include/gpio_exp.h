@@ -163,6 +163,8 @@ gpio_exp_t *gpio_exp_entry(gpio_t gpio);
  */
 gpio_t gpio_exp_pin(gpio_t gpio);
 
+#ifdef MODULE_GPIO_EXP
+
 /**
  * @brief   Macro for intercepting and redirecting gpio_init calls
  */
@@ -288,6 +290,27 @@ gpio_t gpio_exp_pin(gpio_t gpio);
         } \
     } \
     while (0)
+
+#else /* MODULE_GPIO_EXP */
+
+/**
+ * @brief   No-ops for when no GPIO expander intercepts are performed
+ * @{
+ */
+#define GPIO_INTERCEPT_NOOP                        do {} while (0)
+#define GPIO_INTERCEPT_INIT(pin, mode)             GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_INIT_INT(pin, mode, \
+                                flank, cb, arg)    GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_IRQ_ENABLE(pin)             GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_IRQ_DISABLE(pin)            GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_READ(pin)                   GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_SET(pin)                    GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_CLEAR(pin)                  GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_TOGGLE(pin)                 GPIO_INTERCEPT_NOOP
+#define GPIO_INTERCEPT_WRITE(pin, value)           GPIO_INTERCEPT_NOOP
+/** @} */
+
+#endif /* MODULE_GPIO_EXP */
 
 #ifdef __cplusplus
 }

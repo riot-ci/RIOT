@@ -226,25 +226,6 @@ void gpio_toggle(gpio_t pin);
  */
 void gpio_write(gpio_t pin, int value);
 
-#ifndef MODULE_GPIO_EXP
-/**
- * @brief   No-ops for when no GPIO expander intercepts are performed
- * @{
- */
-#define GPIO_INTERCEPT_NOOP                        do {} while (0)
-#define GPIO_INTERCEPT_INIT(pin, mode)             GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_INIT_INT(pin, mode, \
-                                flank, cb, arg)    GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_IRQ_ENABLE(pin)             GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_IRQ_DISABLE(pin)            GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_READ(pin)                   GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_SET(pin)                    GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_CLEAR(pin)                  GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_TOGGLE(pin)                 GPIO_INTERCEPT_NOOP
-#define GPIO_INTERCEPT_WRITE(pin, value)           GPIO_INTERCEPT_NOOP
-/** @} */
-#endif
-
 #ifdef __cplusplus
 }
 #endif
