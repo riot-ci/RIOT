@@ -58,11 +58,6 @@
 #include "periph_cpu.h"
 #include "periph_conf.h"
 
-#ifdef MODULE_GPIO_EXP
-/* for GPIO expander intercepts */
-#include "gpio_exp.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
