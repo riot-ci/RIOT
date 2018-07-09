@@ -95,11 +95,15 @@ get_supported_boards() {
 get_supported_toolchains() {
     local board=$1
 
-    if [ "$board" = "native" ]; then
-        echo "gnu llvm"
-    else
-        echo "gnu"
-    fi
+    # TODO provide make target in similar fashion as the info-boards-supported one
+    for b in native samr21-xpro nucleo-f401re
+    do
+        if [ "$b" = "${board}" ]; then
+            echo "llvm gnu"
+            return
+        fi
+    done
+    echo "gnu"
 }
 
 # given an app dir as parameter, print "$appdir board toolchain" for each
