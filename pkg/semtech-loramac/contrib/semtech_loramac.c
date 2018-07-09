@@ -827,10 +827,14 @@ void semtech_loramac_erase_config(void)
         return;
     }
 
+    MibRequestConfirm_t mibReq;
+    size_t uplink_counter_len = sizeof(mibReq.Param.UpLinkCounter);
+
     size_t end = (pos + SEMTECH_LORAMAC_EEPROM_MAGIC_LEN +
                   LORAMAC_DEVEUI_LEN + LORAMAC_APPEUI_LEN +
                   LORAMAC_APPKEY_LEN + LORAMAC_APPSKEY_LEN +
-                  LORAMAC_NWKSKEY_LEN + LORAMAC_DEVADDR_LEN + 4);
+                  LORAMAC_NWKSKEY_LEN + LORAMAC_DEVADDR_LEN + 
+                  uplink_counter_len);
     for (size_t p = pos; p < end; p++) {
         eeprom_write_byte(p, 0);
     }
