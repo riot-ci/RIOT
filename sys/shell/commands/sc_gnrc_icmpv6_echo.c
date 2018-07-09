@@ -364,7 +364,8 @@ static void _print_reply(_ping_data_t *data, gnrc_pktsnip_t *icmpv6,
         printf("%u bytes from %s: icmp_seq=%u ttl=%u", (unsigned)icmpv6->size,
                from_str, recv_seq, hoplimit);
         if (data->datalen >= sizeof(uint32_t)) {
-            printf(" time=%u.%03u ms", triptime / 1000, triptime % 1000);
+            printf(" time=%lu.%03lu ms", (long unsigned)triptime / 1000,
+                   (long unsigned)triptime % 1000);
         }
         puts(dupmsg);
         fflush(stdout);
