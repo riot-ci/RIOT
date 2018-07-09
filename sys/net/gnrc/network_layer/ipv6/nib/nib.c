@@ -1058,7 +1058,7 @@ static void _handle_nbr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
             gnrc_netif_is_6ln(netif)) {
             _handle_dad(&ipv6->dst);
         }
-#else
+#elif GNRC_IPV6_NIB_CONF_6LN
         (void)aro_status;
 #endif
     }
