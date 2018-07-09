@@ -8,7 +8,7 @@ BOARD_BLACKLIST := arduino-uno arduino-duemilanove arduino-mega2560 chronos \
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon hifive1 nrf6310 nucleo-f031k6 nucleo-f042k6 \
                              nucleo-l031k6 nucleo-f030r8 nucleo-f303k8 \
                              nucleo-f334r8 nucleo-l053r8 stm32f0discovery \
-                             yunjia-nrf51822
+                             stm32l0538-disco yunjia-nrf51822
 
 # including lwip_ipv6_mld would currently break this test on at86rf2xx radios
 USEMODULE += lwip lwip_ipv6_autoconfig lwip_sock_ip lwip_netdev

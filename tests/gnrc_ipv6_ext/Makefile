@@ -4,7 +4,7 @@ include ../Makefile.tests_common
 BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h nucleo-f030r8 \
                              nucleo-f031k6 nucleo-f042k6 nucleo-f303k8 \
                              nucleo-f334r8 nucleo-l031k6 nucleo-l053r8 \
-                             stm32f0discovery
+                             stm32f0discovery stm32l0538-disco
 
 # use Ethernet as link-layer protocol
 USEMODULE += netdev_eth
