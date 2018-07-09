@@ -94,10 +94,10 @@ extern void board_init(void);
  * @brief  Swith LED on or off.
  * @note   LED outputs are supposed to be low active.
  */
-extern void led_on_off (uint8_t led, uint8_t value);
+extern void esp8266_led_on_off (uint8_t led, uint8_t value);
 
 /** Toggle the LED status. */
-extern void led_toggle (uint8_t led);
+extern void esp8266_led_toggle (uint8_t led);
 /** @} */
 
 #ifdef __cplusplus
