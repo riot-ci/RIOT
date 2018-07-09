@@ -23,10 +23,8 @@
 
 #include <stdint.h>
 
-#include "board_common.h"
-
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -47,6 +45,9 @@
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif
+
+/* include common board definitions as last step */
+#include "board_common.h"
 
 #endif /* BOARD_H */
 /** @} */
