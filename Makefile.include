@@ -335,7 +335,7 @@ define uniq =
   $(seen)
 endef
 
-USEMODULE_INCLUDES_ = $(call uniq,$(USEMODULE_INCLUDES))
+USEMODULE_INCLUDES_ = $(strip $(call uniq,$(USEMODULE_INCLUDES)))
 
 INCLUDES += $(USEMODULE_INCLUDES_:%=-I%)
 
