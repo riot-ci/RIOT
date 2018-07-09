@@ -272,7 +272,7 @@ static void _pinger(_ping_data_t *data)
         timer = data->timeout;
         if (data->num_recv) {
             /* approx. 2*tmax, in seconds (2 RTT) */
-            timer = (data->tmax / (512 * 1024)) * US_PER_SEC;
+            timer = (data->tmax / (512UL * 1024UL)) * US_PER_SEC;
             if (timer == 0) {
                 timer = 1U * US_PER_SEC;
             }
@@ -371,7 +371,6 @@ static void _print_reply(_ping_data_t *data, gnrc_pktsnip_t *icmpv6,
                    (long unsigned)triptime % 1000);
         }
         puts(dupmsg);
-        fflush(stdout);
     }
 }
 
