@@ -179,12 +179,6 @@ typedef enum
 } FunctionalState;
 #define IS_FUNCTIONAL_STATE(STATE) (((STATE) == DISABLE) || ((STATE) == ENABLE))
 
-typedef enum
-{
-  ERROR = 0,
-  SUCCESS = !ERROR
-} ErrorStatus;
-
 /**
   * @}
   */
