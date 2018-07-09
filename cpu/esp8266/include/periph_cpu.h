@@ -140,7 +140,7 @@ typedef enum {
  * SPI_DEV(0).CSx     GPIOn with n = 0|2|4|5|15 (+9|10 in DOUT flash mode)
  * @{
  */
-#if defined(SPI_USED)
+#if defined(MODULE_PERIPH_SPI)
 
 #define SPI_DEV(x)  ((unsigned int)(x+1))
 #define SPI_NUMOF   1
@@ -154,7 +154,7 @@ typedef enum {
 #define PERIPH_SPI_NEEDS_TRANSFER_REG
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 
-#endif /* SPI_USED */
+#endif /* MODULE_PERIPH_SPI */
 /** @} */
 
 /**
