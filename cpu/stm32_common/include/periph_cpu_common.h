@@ -77,9 +77,10 @@ extern "C" {
 /**
  * @brief   Number of usable low power modes
  */
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0) || \
-    defined(CPU_FAM_STM32L1) || defined(DOXYGEN)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
+    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
+    defined(DOXYGEN)
 #define PM_NUM_MODES    (2U)
 
 /**
