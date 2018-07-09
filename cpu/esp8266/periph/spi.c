@@ -19,7 +19,7 @@
  * @}
  */
 
-#if defined(SPI_USED)
+#if defined(MODULE_PERIPH_SPI)
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -397,4 +397,4 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     #endif
 }
 
-#endif
+#endif /* MODULE_PERIPH_SPI */

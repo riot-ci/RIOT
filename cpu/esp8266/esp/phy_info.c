@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 #ifdef SDK_NOT_USED
-#ifdef RIOT_OS
+#ifdef RIOT_VERSION
 #include <stdio.h>
 #include "c_types.h"
 #include "esp/common_macros.h"
