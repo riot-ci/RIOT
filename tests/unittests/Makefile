@@ -68,6 +68,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              stk3600 \
                              stm32f0discovery \
                              stm32f3discovery \
+                             stm32l0538-disco \
                              stm32mindev \
                              teensy31 \
                              telosb \
@@ -181,6 +182,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        stm32f3discovery \
                        stm32f4discovery \
                        stm32f769i-disco \
+                       stm32l0538-disco \
                        udoo \
                        yunjia-nrf51822 \
                        #

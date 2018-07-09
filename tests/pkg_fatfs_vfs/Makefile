@@ -43,7 +43,7 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
                    nz32-sc151 openmote-cc2538 pba-d-01-kw2x remote-pa remote-reva \
                    remote-revb samd21-xpro saml21-xpro samr21-xpro sltb001a \
                    sodaq-autonomo sodaq-explorer spark-core stm32f0discovery \
-                   stm32f3discovery stm32f4discovery udoo waspmote-pro \
+                   stm32f3discovery stm32f4discovery stm32l0538-disco udoo waspmote-pro \
                    yunjia-nrf51822 native
 
 include $(RIOTBASE)/Makefile.include
