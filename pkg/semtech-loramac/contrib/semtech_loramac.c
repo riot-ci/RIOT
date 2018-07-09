@@ -762,7 +762,10 @@ void semtech_loramac_save_config(semtech_loramac_t *mac)
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_UPLINK_COUNTER;
     LoRaMacMibGetRequestConfirm(&mibReq);
-    *(uint32_t *)counter = mibReq.Param.UpLinkCounter;
+    counter[0] = (uint8_t)(mibReq.Param.UpLinkCounter >> 24);
+    counter[1] = (uint8_t)(mibReq.Param.UpLinkCounter >> 16);
+    counter[2] = (uint8_t)(mibReq.Param.UpLinkCounter >> 8);
+    counter[3] = (uint8_t)(mibReq.Param.UpLinkCounter);
     mutex_unlock(&mac->lock);
     pos += eeprom_write(pos, counter, 4);
 }
@@ -771,10 +774,15 @@ void _set_uplink_counter(semtech_loramac_t *mac, uint8_t *counter)
 {
     DEBUG("[semtech-loramac] uplink counter: %lu\n", *(uint32_t *)counter);
 
+    uint32_t counter4 = ((uint32_t)counter[0] << 24 |
+                         (uint32_t)counter[1] << 16 |
+                         (uint32_t)counter[2] << 8 |
+                         counter[3]);
+
     mutex_lock(&mac->lock);
     MibRequestConfirm_t mibReq;
     mibReq.Type = MIB_UPLINK_COUNTER;
-    mibReq.Param.UpLinkCounter = *(uint32_t *)counter;
+    mibReq.Param.UpLinkCounter = counter4;
     LoRaMacMibSetRequestConfirm(&mibReq);
     mutex_unlock(&mac->lock);
 }
