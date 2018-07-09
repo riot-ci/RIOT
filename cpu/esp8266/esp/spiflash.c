@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-#ifdef RIOT_OS
+#ifdef RIOT_VERSION
 #include "esp/spiflash.h"
 #include "esp/flashchip.h"
 #include "esp/rom.h"
