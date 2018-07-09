@@ -197,7 +197,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
             switch (argv[0][1]) {
                 case 'c':
                     if (argc--) {
-                        data->count = (unsigned)atoi(*(++argv));
+                        data->count = atoi(*(++argv));
                         if (data->count > 0) {
                             continue;
                         }
@@ -389,9 +389,9 @@ static void _handle_reply(_ping_data_t *data, gnrc_pktsnip_t *pkt)
     ipv6_hdr = ipv6->data;
     _print_reply(data, icmpv6, &ipv6_hdr->src, ipv6_hdr->hl);
 #ifdef MODULE_GNRC_IPV6_NIB
-        /* successful ping to neighbor (NIB handles case if ipv6->src is not a
-         * neighbor) can be taken as upper-layer hint for reachability:
-         * https://tools.ietf.org/html/rfc4861#section-7.3.1 */
+    /* successful ping to neighbor (NIB handles case if ipv6->src is not a
+     * neighbor) can be taken as upper-layer hint for reachability:
+     * https://tools.ietf.org/html/rfc4861#section-7.3.1 */
     gnrc_ipv6_nib_nc_mark_reachable(&ipv6_hdr->src);
 #endif
 }
