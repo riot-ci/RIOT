@@ -23,7 +23,7 @@
 #include "board.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 #ifndef DOXYGEN
@@ -44,16 +44,16 @@
 
 #ifdef LED0_PIN
 #define LED0_MASK       (BIT(LED0_PIN))
-#define LED0_ON         led_on_off (LED0_PIN, 1)
-#define LED0_OFF        led_on_off (LED0_PIN, 0)
-#define LED0_TOGGLE     led_toggle (LED0_PIN)
+#define LED0_ON         esp8266_led_on_off (LED0_PIN, 1)
+#define LED0_OFF        esp8266_led_on_off (LED0_PIN, 0)
+#define LED0_TOGGLE     esp8266_led_toggle (LED0_PIN)
 #endif
 
 #ifdef LED1_PIN
 #define LED1_MASK       (BIT(LED1_PIN))
-#define LED1_ON         led_on_off (LED1_PIN, 1)
-#define LED1_OFF        led_on_off (LED1_PIN, 0)
-#define LED1_TOGGLE     led_toggle (LED1_PIN)
+#define LED1_ON         esp8266_led_on_off (LED1_PIN, 1)
+#define LED1_OFF        esp8266_led_on_off (LED1_PIN, 0)
+#define LED1_TOGGLE     esp8266_led_toggle (LED1_PIN)
 #endif
 
 #if defined(SW_TIMER_USED)

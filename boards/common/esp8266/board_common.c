@@ -21,36 +21,28 @@
 #include "espressif/eagle_soc.h"
 #include "board_common.h"
 #include "periph/gpio.h"
-#include "periph/spi.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-static uint32_t leds_initialized = 0x0;
-
-void led_on_off (uint8_t led, uint8_t value)
+void esp8266_led_on_off (uint8_t led, uint8_t value)
 {
-    uint32_t led_mask = BIT(led);
-    if (!(leds_initialized & led_mask)) {
-        gpio_init (led, GPIO_OUT);
-        leds_initialized |= led_mask;
-    }
-    GPIO_REG_WRITE((value ? GPIO_OUT_W1TC_ADDRESS : GPIO_OUT_W1TS_ADDRESS), led_mask);
+    GPIO_REG_WRITE((value ? GPIO_OUT_W1TC_ADDRESS : GPIO_OUT_W1TS_ADDRESS), BIT(led));
 }
 
-void led_toggle (uint8_t led)
+void esp8266_led_toggle (uint8_t led)
 {
-    uint32_t led_mask = BIT(led);
-    led_on_off (led, ((GPIO_REG_READ(GPIO_OUT_ADDRESS) & led_mask)) ? 1 : 0);
+    esp8266_led_on_off (led, ((GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT(led))) ? 1 : 0);
 }
 
 void board_init(void)
 {
-    #if defined(SPI_USED)
-    for (int i = 0; i < SPI_NUMOF; i++) {
-        spi_init (SPI_DEV(i));
-    }
+    #ifdef LED0_PIN
+    gpio_init (LED0_PIN, GPIO_OUT);
+    #endif
+    #ifdef LED1_PIN
+    gpio_init (LED1_PIN, GPIO_OUT);
     #endif
 }
 
