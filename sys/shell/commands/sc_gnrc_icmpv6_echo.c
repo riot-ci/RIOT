@@ -77,7 +77,7 @@ static void _usage(char *cmdname);
 static int _configure(int argc, char **argv, _ping_data_t *data);
 static void _pinger(_ping_data_t *data);
 static void _print_reply(_ping_data_t *data, gnrc_pktsnip_t *icmpv6,
-                         ipv6_addr_t *from, int hoplimit);
+                         ipv6_addr_t *from, unsigned hoplimit);
 static void _handle_reply(_ping_data_t *data, gnrc_pktsnip_t *pkt);
 static int _finish(_ping_data_t *data);
 
@@ -326,16 +326,16 @@ error_exit:
 }
 
 static void _print_reply(_ping_data_t *data, gnrc_pktsnip_t *icmpv6,
-                         ipv6_addr_t *from, int hoplimit)
+                         ipv6_addr_t *from, unsigned hoplimit)
 {
     icmpv6_echo_t *icmpv6_hdr = icmpv6->data;
-    char from_str[IPV6_ADDR_MAX_STR_LEN];
 
     /* discard if too short */
     if (icmpv6->size < (data->datalen + sizeof(icmpv6_echo_t))) {
         return;
     }
     if (icmpv6_hdr->type == ICMPV6_ECHO_REP) {
+        char from_str[IPV6_ADDR_MAX_STR_LEN];
         const char *dupmsg = " (DUP!)";
         uint32_t triptime = 0;
         uint16_t recv_seq;
