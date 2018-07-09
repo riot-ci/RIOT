@@ -6,16 +6,15 @@ BOARD_INSUFFICIENT_MEMORY := chronos hifive1 msb-430 msb-430h nucleo-f031k6 nucl
                              nucleo-l053r8 stm32f0discovery telosb wsn430-v1_3b \
                              wsn430-v1_4 z1
 
-BOARDS_WITH_STM32_CANDEV := nucleo-f072 \
-                            nucleo-f091 \
-                            nucleo-f103 \
-                            nucleo-f446 \
-                            nucleo144-f207 \
-                            nucleo144-f412 \
-                            nucleo144-f413 \
-                            nucleo144-f429 \
-                            nucleo144-f446 \
-                            nucleo144-f467
+BOARDS_WITH_STM32_CANDEV := nucleo-f072rb \
+                            nucleo-f091rc \
+                            nucleo-f103rb \
+                            nucleo-f207zg \
+                            nucleo-f412zg \
+                            nucleo-f413zh \
+                            nucleo-f429zg \
+                            nucleo-f446re \
+                            nucleo-f446ze
 
 
 
