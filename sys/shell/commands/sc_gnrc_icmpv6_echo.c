@@ -123,6 +123,22 @@ finish:
     xtimer_remove(&data.sched_timer);
     res = _finish(&data);
     gnrc_netreg_unregister(GNRC_NETTYPE_ICMPV6, &data.netreg);
+    for (unsigned i = 0;
+         i < cib_avail((cib_t *)&sched_active_thread->msg_queue);
+         i++) {
+        msg_t msg;
+
+        /* remove all remaining messages (likely caused by duplicates) */
+        if ((msg_try_receive(&msg) > 0) &&
+            (msg.type == GNRC_NETAPI_MSG_TYPE_RCV) &&
+            (((gnrc_pktsnip_t *)msg.content.ptr)->type == GNRC_NETTYPE_ICMPV6)) {
+            gnrc_pktbuf_release(msg.content.ptr);
+        }
+        else {
+            /* requeue other packets */
+            msg_send(&msg, sched_active_pid);
+        }
+    }
     return res;
 }
 
