@@ -331,8 +331,8 @@ $(info $(USEPKG:%=$(RIOTPKG)/%/Makefile.include))
 # see https://stackoverflow.com/questions/16144115/makefile-remove-duplicate-words-without-sorting
 define uniq =
   $(eval seen :=)
-  $(foreach _,$1,$(if $(filter $_,${seen}),,$(eval seen += $_)))
-  ${seen}
+  $(foreach _,$1,$(if $(filter $_,$(seen)),,$(eval seen += $_)))
+  $(seen)
 endef
 
 USEMODULE_INCLUDES_ = $(call uniq,$(USEMODULE_INCLUDES))
