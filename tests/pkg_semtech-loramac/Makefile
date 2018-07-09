@@ -16,6 +16,8 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += fmt
 
+FEATURES_OPTIONAL += periph_eeprom
+
 CFLAGS += -DREGION_$(LORA_REGION)
 
 include $(RIOTBASE)/Makefile.include
