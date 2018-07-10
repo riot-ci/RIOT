@@ -9,9 +9,7 @@ include $(RIOTBASE)/sys/arduino/arduino_sketches.inc.mk
 # Depends on module
 USEMODULE += $(SKETCH_MODULE)
 DIRS      += $(SKETCH_MODULE_DIR)
-# Use `$(RIOTBUILD_CONFIG_HEADER_C)` target to create it before building as
-# 'APPDEPS' is currently broken
-$(RIOTBUILD_CONFIG_HEADER_C): $(SKETCH_MODULE_DIR)/Makefile
+BUILDDEPS += $(SKETCH_MODULE_DIR)/Makefile
 
 # include the Arduino headers
 INCLUDES += -I$(RIOTBASE)/sys/arduino/include
