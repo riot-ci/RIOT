@@ -49,6 +49,12 @@ inline int sched_yield(void)
     return 0;
 }
 #else
+/**
+ * @brief Compilation with g++ may require the declaration of this function.
+ *
+ * If implementation of this function is required, it can be realized in
+ * thread_arch.c.
+ */
 extern int sched_yield(void);
 #endif /* BOARD_NATIVE */
 
