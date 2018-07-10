@@ -23,7 +23,51 @@ Following software components are required:
 - **newlib-c** library for xtensa (esp-open-rtos version)
 - **SDK (optional)**, either as part of ```esp-open-sdk``` or the ```ESP8266_NONOS_SDK```
 
-### Installation of esp-open-sdk
+You have following options to install the tool chain:
+
+- **precompiled toolchain** installation from GIT, see section _Precompiled toolchain_
+- **riotdocker** version, see section _RIOT docker toolchain_
+- **manual installation**, see section _Manual toolchain installation_
+
+### Precompiled toolchain
+
+You can get a precompiled version of the whole toolchain from the GIT repository [RIOT-Xtensa-ESP8266-toolchain](https://github.com/gschorcht/RIOT-Xtensa-ESP8266-toolchain). This repository contains the precompiled toolchain including all libraries that are necessary to compile RIOT-OS for ESP8266.
+
+To install the toolchain use the following commands:
+```
+cd /opt
+sudo git clone https://github.com/gschorcht/RIOT-Xtensa-ESP8266-toolchain.git esp
+```
+After the installation, all components of the toolchain are installed in directory ```/opt/esp```. Of course, you can use any other location for the installation.
+
+To use the toolchain, you have to add the path of the binaries to your ```PATH``` variable according to your toolchain location
+
+```
+export PATH=$PATH:/path/to/toolchain/esp-open-sdk/xtensa-lx106-elf/bin
+```
+where ```/path/to/toolchain/``` is the directory you selected for the installation of the toolchain. For the default installation in ```/opt/esp``` this would be:
+```
+export PATH=$PATH:/opt/esp/esp-open-sdk/xtensa-lx106-elf/bin
+```
+
+Furthermore, you have to set variables ```SDK_DIR``` and ```NEWLIB_DIR``` according to the location of the toolchain.
+```
+export SDK_DIR=/path/to/toolchain/esp-open-sdk/sdk
+export NEWLIB_DIR=/path/to/toolchain/newlib-xtensa
+```
+If you have used ```/opt/esp``` as installation directory, it is not necessary to set these variables since makefiles use them as default directories.
+
+### RIOT docker toolchain
+
+Another option for toolchain installation would be to use docker. You will find a docker version that also installs ```RIOT-Xtensa-ESP8266-toolchain``` at [riotdocker-Xtensa-ESP](https://github.com/gschorcht/riotdocker-Xtensa-ESP.git).
+
+Please refer the [RIOT wiki](https://github.com/RIOT-OS/RIOT/wiki/Use-Docker-to-build-RIOT) on how to use the docker image to compile RIOT OS.
+
+### Manual toolchain installation
+
+The most difficult way to install the toolchain is the manual installation of required components as described below.
+
+#### Installation of esp-open-sdk
 
 esp-open-sdk is directly installed inside its source directory. Therefore, change directly to the target directory of the toolchain to build it.
 
@@ -58,7 +102,7 @@ If you have compiled the standalone version of esp-open-sdk and you plan to use 
 export SDK_DIR=$ESP_OPEN_SDK_DIR/sdk
 ```
 
-### Installation of newlib-c
+#### Installation of newlib-c
 
 First, set the target directory for the installation.
 
@@ -81,7 +125,7 @@ make
 make install
 ```
 
-### Installtion of Espressif original SDK (optional)
+#### Installtion of Espressif original SDK (optional)
 
 If you plan to use the SDK version of the RIOT port and if you want to use one of Espressif's original SDKs, you have to install it.
 
@@ -140,7 +184,7 @@ ENABLE_SW_TIMER | 0, 1 | 0 | Enable software timer implementation, only availabl
 FLASH_MODE | dout, dio, qout, qio | dout | Set the flash mode, please take care with your module, see section _Flash Modes_ below.
 PORT | /dev/ttyUSBx | /dev/ttyUSB0 | Set the port for flashing the firmware.
 QEMU | 0, 1 | 0 | Use QEMU mode and generate an image for QEMU, see _QEMU Mode and GDB_ below.
-SDK | 0, 1 | 0 | Compile the SDK version (```SDK=1```) or non-SDK version (```SDK=0```). ```SDK=1```, see section _SDK Task Handling_ below.
+SDK | 0, 1 | 0 | Compile the SDK version (```SDK=1```) or non-SDK version (```SDK=0```), see section _SDK Task Handling_ below.
 
 ## SPI Interface
 
@@ -158,17 +202,17 @@ As CS signal GPIOs 0, 2, 4, 5 or 15 can be used. In flash modes ```dio``` and ``
 
 ## SPIFFS Module
 
-If SPIFFS module is enabled (```ENABLE_SPIFFS=1```), implemented MTD device ```mtd0``` for the build-in SPI flash memory is used together with modules SPIFFS and VFS to realize a file system.
+If SPIFFS module is enabled (```ENABLE_SPIFFS=1```), the implemented MTD device ```mtd0``` for the build-in SPI flash memory is used together with modules SPIFFS and VFS to realize a persistent file system.
 
-For this purpose, flash memory is formatted as SPIFFS starting at the address ```0x80000``` (512 kbyte) on first boot. All sectors up to the last 5 sectors of the flash memory are then used for the file system. With a fixed sector size of 4096 bytes, the top address of the SPIFF is ```flash Size - 5 * 4096```, e.g., ```0xfb000``` for a flash memory of 1 MByte. The size of the SPIFF then results from ```flash size - 5 * 4096 - 512 kByte```.
+For this purpose, flash memory is formatted as SPIFFS starting at the address ```0x80000``` (512 kbyte) on first boot. All sectors up to the last 5 sectors of the flash memory are then used for the file system. With a fixed sector size of 4096 bytes, the top address of the SPIFF is ```flash size - 5 * 4096```, e.g., ```0xfb000``` for a flash memory of 1 MByte. The size of the SPIFF then results from ```flash size - 5 * 4096 - 512 kByte```.
 
 Please refer file ```$(RIOTBASE)/tests/unittests/test-spiffs/tests-spiffs.c``` for more information on how to use SPIFFS and VFS together with a MTD device ```mtd0``` alias ```MTD_0```.
 
 ## Timer Implementations
 
-Per default, the **hardware timer implementation** is used. In this implementation there is avaibable one timer with only one channel.
+Per default, the **hardware timer implementation** is used. In this implementation there is only one timer with only one channel available.
 
-If you use the SDK version of the RIOT port (```SDK = 1```), you can activate the **Software-Timer** (```ENABLE_SW_TIMER=1```), which implements one timer with 10 channels. The software timer uses SDK software timers to implement various timer channels. Although these SDK timers usually have a precision of a few microseconds, they can deviate up to 500 microseconds. So if you need a timer with high accuracy, you'll need to use the hardware timer with just one timer channel.
+If you use the SDK version of the RIOT port (```SDK = 1```), you can activate the **Software-Timer** (```ENABLE_SW_TIMER=1```), which implements one timer with 10 channels. The software timer uses SDK software timers to implement various timer channels. Although these SDK timers usually have a precision of a few microseconds, they can deviate up to 500 microseconds. So if you need a timer with high accuracy, you'll need to use the hardware timer with only one timer channel.
 
 ## Flash Modes
 
@@ -272,6 +316,6 @@ The ESP8266 port of RIOT also supports
 - one hardware number generator,
 - one UART interface
 - a CPU-ID function,
-- a power management.
+- power management functions.
 
 RTC is not yet implemented.
