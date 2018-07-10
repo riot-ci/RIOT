@@ -49,7 +49,7 @@ int cc2420_init(cc2420_t *dev)
     uint16_t reg;
     uint8_t addr[8];
 
-    netdev_ieee802154_reset((netdev_ieee802154_t*)dev);
+    netdev_ieee802154_reset(&dev->netdev);
 
     /* set default address, channel, PAN ID, and TX power */
     luid_get(addr, sizeof(addr));
