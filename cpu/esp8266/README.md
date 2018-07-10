@@ -187,7 +187,7 @@ Interrupt service routines do not process interrupts directly but use the ```ets
 In the RIOT port, the task management of the SDK is replaced by the task management of the RIOT. To handle SDK tasks with pending events so that the SDK functions work and the system keeps alive, the ROM functions ```ets_run``` and ```ets_post``` are overwritten. The ```ets_run``` function performs all SDK tasks with pending events exactly once. It is executed at the end of the ```ets_post``` function and thus usually at the end of an SDK interrupt service routine or before the system goes into the lowest power mode.
 
 **Please note:**
-Since the non-SDK version of RIOT is much smaller and faster than the SDK version, you should always compile your application without the SDK (```SDK=0```, the default) if you don't need the built-in WiFi module. 
+Since the non-SDK version of RIOT is much smaller and faster than the SDK version, you should always compile your application without the SDK (```SDK=0```, the default) if you don't need the built-in WiFi module.
 
 ## QEMU Mode and GDB
 
