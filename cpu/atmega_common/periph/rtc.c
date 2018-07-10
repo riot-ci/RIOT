@@ -127,7 +127,7 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
     diff = rtc_state.alarm - rtc_state.time;
 
     /* Prepare the counter for sub 8-second precision */
-    OCR2B = (uint8_t)(rtc_state.alarm << 5);
+    OCR2B = (uint8_t)(diff << 5);
 
     DEBUG("RTC set alarm: %" PRIu32 " seconds, OCR2B: %" PRIu8 "\n",
           rtc_state.alarm, OCR2B);
@@ -199,8 +199,13 @@ void atmega_rtc_incr(void)
 
     /* Check to see if alarm was missed */
     if (rtc_state.alarm <= rtc_state.time) {
-        rtc_state.alarm_cb(rtc_state.alarm_arg);
-        rtc_clear_alarm();
+        /* Clear callback */
+        rtc_alarm_cb_t cb = rtc_state.alarm_cb;
+        rtc_state.alarm_cb = NULL;
+
+        /* Execute callback */
+        cb(rtc_state.alarm_arg);
+
         return;
     }
 
