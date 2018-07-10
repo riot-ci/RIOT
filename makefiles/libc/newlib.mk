@@ -28,7 +28,7 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
                               -e '1,/\#include <...> search starts here:/d' \
                               -e '/End of search list./,$$d' \
                               -e 's/\s//')
-  NEWLIB_INCLUDE_DIR := $(firstword $(abspath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
+  NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
 endif
 
 ifeq (,$(NEWLIB_INCLUDE_DIR))
@@ -56,7 +56,7 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
   # the patterns above. We use the -isystem gcc/clang argument to add the include
   # directories as system include directories, which means they will not be
   # searched until after all the project specific include directories (-I/path)
-  NEWLIB_INCLUDE_DIR := $(firstword $(abspath $(dir $(wildcard $(addsuffix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS))))))
+  NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS))))))
 endif
 
 # If nothing was found we will try to fall back to searching for a cross-gcc in
