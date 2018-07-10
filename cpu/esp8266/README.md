@@ -140,8 +140,7 @@ ENABLE_SW_TIMER | 0, 1 | 0 | Enable software timer implementation, only availabl
 FLASH_MODE | dout, dio, qout, qio | dout | Set the flash mode, please take care with your module, see section _Flash Modes_ below.
 PORT | /dev/ttyUSBx | /dev/ttyUSB0 | Set the port for flashing the firmware.
 QEMU | 0, 1 | 0 | Use QEMU mode and generate an image for QEMU, see _QEMU Mode and GDB_ below.
-SDK | 0, 1 | 0 | Compile the SDK version (```SDK=1```) or non-SDK version (```SDK=0```).
-```SDK=1```, see section _SDK Task Handling_ below.
+SDK | 0, 1 | 0 | Compile the SDK version (```SDK=1```) or non-SDK version (```SDK=0```). ```SDK=1```, see section _SDK Task Handling_ below.
 
 ## SPI Interface
 
@@ -178,6 +177,17 @@ If you use the SDK version of the RIOT port (```SDK = 1```), you can activate th
 **ESP8285 modules** have to be always flashed with ```dout```.
 
 For more information about flash mode, refer the documentation of [esptool.py](https://github.com/espressif/esptool/wiki/SPI-Flash-Modes).
+
+## SDK Task Handling
+
+With compile option ```SDK=1``` the Espressif SDK is used. This is necessary, for example, if you want to use the built-in WLAN module. The SDK internally uses its own tasks (SDK tasks) and its own scheduling mechanism to realize event-driven SDK functions such as WiFi functions and software timers, and to keep the system alive. For this purpose, the SDK regularly executes SDK tasks with pending events in an endless loop using the ROM function ```ets_run```.
+
+Interrupt service routines do not process interrupts directly but use the ```ets_post``` ROM function to send an event to one of these SDK tasks, which then processes the interrupts asynchronously. A context switch is not possible in the interrupt service routines.
+
+In the RIOT port, the task management of the SDK is replaced by the task management of the RIOT. To handle SDK tasks with pending events so that the SDK functions work and the system keeps alive, the ROM functions ```ets_run``` and ```ets_post``` are overwritten. The ```ets_run``` function performs all SDK tasks with pending events exactly once. It is executed at the end of the ```ets_post``` function and thus usually at the end of an SDK interrupt service routine or before the system goes into the lowest power mode.
+
+**Please note:**
+Since the non-SDK version of RIOT is much smaller and faster than the SDK version, you should always compile your application without the SDK (```SDK=0```, the default) if you don't need the built-in WiFi module. 
 
 ## QEMU Mode and GDB
 
