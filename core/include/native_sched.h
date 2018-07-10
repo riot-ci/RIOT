@@ -48,6 +48,8 @@ inline int sched_yield(void)
     puts("[ERROR] sched_yield called (defined in sched.h)\n");
     return 0;
 }
+#else
+extern int sched_yield(void);
 #endif /* BOARD_NATIVE */
 
 #ifdef __cplusplus
