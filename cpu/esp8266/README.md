@@ -132,8 +132,9 @@ The compilation process can be configured with various command-line options for 
 
 Option | Values | Default | Meaning
 -------|--------|---------|--------
+ENABLE_ENC28J60 | 0, 1 | 0 | Enable ENC28J60 module to use ethernet interfaces based on ENC28J60.
 ENABLE_GDB | 0, 1 | 0 | Enable compilation with debug information for debugging with QEMU (```QEMU=1```), see section _QEMU Mode and GDB_ below
-ENABLE_SPI | 0, 1 | 0 | Enable the HSPI interface using the GPIOs with prefix SPI defined in ```periph_cpu.conf```, see section _SPI Interface_ below.
+ENABLE_MRF24J40 | 0, 1 | 0 | Enable MRF24J40 module to use IEEE 802.15.4 radio modules based on MRF24J40.
 ENABLE_SPIFFS | 0, 1 | 0 | Enable or disable the SPIFFS file system, see section _SPIFFS Module_ below.
 ENABLE_SW_TIMER | 0, 1 | 0 | Enable software timer implementation, only available in conjunction with ```SDK=1```, see section _Timer Implementations_ below.
 FLASH_MODE | dout, dio, qout, qio | dout | Set the flash mode, please take care with your module, see section _Flash Modes_ below.
@@ -152,7 +153,7 @@ MISO   | GPIO12
 MOSI   | GPIO13
 SCK    | GPIO14
 
-When SPI interface is enabled, these GPIOs cannot be used for any other purpose. Therefore, the SPI interface has to be enabled explicitly during compilation with (```ENABLE_SPI=1```).
+When SPI interface is enabled, these GPIOs cannot be used for any other purpose.
 
 As CS signal GPIOs 0, 2, 4, 5 or 15 can be used. In flash modes ```dio``` and ```dout``` (see section _Flash Modes_), GPIO's 9 and 10 can also be as CS signal.
 
