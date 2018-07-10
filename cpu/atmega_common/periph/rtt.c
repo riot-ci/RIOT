@@ -271,7 +271,7 @@ ISR(TIMER2_COMPA_vect) {
 
     if (rtt_state.alarm_cb != NULL) {
         /* Clear callback */
-        rtt_alarm_cb_t cb = rtt_state.alarm_cb;
+        rtt_cb_t cb = rtt_state.alarm_cb;
         rtt_state.alarm_cb = NULL;
 
         /* Execute callback */
