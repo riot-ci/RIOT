@@ -165,18 +165,13 @@ static void _usage(char *cmdname)
 static int _configure(int argc, char **argv, _ping_data_t *data)
 {
     char *cmdname = argv[0];
-    int res = 0;
+    int res = 1;
 
-    /* jump over cmdname */
-    if ((--argc) == 0) {
-        /* only command name given */
-        res = 1;
-    }
-    ++argv;
     /* parse command line arguments */
-    for (; argc > 0; argc--, argv++) {
-        if (argv[0][0] != '-') {
-            data->hostname = *argv;
+    for (int i = 1; i < argc; i++) {
+        char *arg = argv[i];
+        if (arg[0] != '-') {
+            data->hostname = arg;
 #ifdef MODULE_SOCK_DNS
             if (sock_dns_query(data->hostname, &data->host, AF_INET6) == 0) {
                 continue;
@@ -192,15 +187,15 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
 #endif
             }
             if (ipv6_addr_from_str(&data->host, data->hostname) == NULL) {
-                res = 1;
                 break;
             }
+            res = 0;
         }
         else {
-            switch (argv[0][1]) {
+            switch (arg[1]) {
                 case 'c':
-                    if (argc--) {
-                        data->count = atoi(*(++argv));
+                    if (((i++) + 1) < argc) {
+                        data->count = atoi(argv[i]);
                         if (data->count > 0) {
                             continue;
                         }
@@ -211,28 +206,28 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                     continue;
                     /* falls through intentionally */
                 case 'i':
-                    if (argc--) {
-                        data->interval = (uint32_t)atoi(*(++argv)) * US_PER_MS;
+                    if ((++i) < argc) {
+                        data->interval = (uint32_t)atoi(argv[i]) * US_PER_MS;
                         if (data->interval > 0) {
                             continue;
                         }
                     }
                     /* falls through intentionally */
                 case 's':
-                    if (argc--) {
-                        data->datalen = atoi(*(++argv));
+                    if ((++i) < argc) {
+                        data->datalen = atoi(argv[i]);
                         continue;
                     }
                     /* falls through intentionally */
                 case 't':
-                    if (argc--) {
-                        data->hoplimit = atoi(*(++argv));
+                    if ((++i) < argc) {
+                        data->hoplimit = atoi(argv[i]);
                         continue;
                     }
                     /* falls through intentionally */
                 case 'W':
-                    if (argc--) {
-                        data->timeout = (uint32_t)atoi(*(++argv)) * US_PER_MS;
+                    if ((++i) < argc) {
+                        data->timeout = (uint32_t)atoi(argv[i]) * US_PER_MS;
                         if (data->timeout > 0) {
                             continue;
                         }
