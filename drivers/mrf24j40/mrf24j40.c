@@ -46,7 +46,7 @@ void mrf24j40_reset(mrf24j40_t *dev)
 
     mrf24j40_init(dev);
 
-    netdev_ieee802154_reset((netdev_ieee802154_t*)dev);
+    netdev_ieee802154_reset(&dev->netdev);
 
     /* get an 8-byte unique ID to use as hardware address */
     luid_get(addr_long.uint8, IEEE802154_LONG_ADDRESS_LEN);
