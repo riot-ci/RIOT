@@ -30,5 +30,5 @@ _ARDUINO_SKETCHES_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 $(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(_ARDUINO_SKETCHES_MAKEFILE)
 $(SKETCH_MODULE_DIR)/Makefile: $(_ARDUINO_SKETCHES_MAKEFILE)
 
-# Hack to force rebuilding if one of the `SKETCHES` is deleted
-.PHONY: $(SKETCH_MODULE_DIR)/$(SKETCH_CPP)
+# Rebuild cpp files everytime in case one of the `SKETCHES` is deleted
+$(SKETCH_MODULE_DIR)/$(SKETCH_CPP): FORCE
