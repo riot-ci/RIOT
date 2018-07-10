@@ -56,7 +56,7 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
 
     at86rf2xx_hardware_reset(dev);
 
-    netdev_ieee802154_reset((netdev_ieee802154_t*)dev);
+    netdev_ieee802154_reset(&dev->netdev);
 
     /* Reset state machine to ensure a known state */
     if (dev->state == AT86RF2XX_STATE_P_ON) {
