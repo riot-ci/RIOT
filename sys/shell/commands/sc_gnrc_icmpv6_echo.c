@@ -168,8 +168,11 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
     int res = 0;
 
     /* jump over cmdname */
-    argc--;
-    argv++;
+    if ((--argc) == 0) {
+        /* only command name given */
+        res = 1;
+    }
+    ++argv;
     /* parse command line arguments */
     for (; argc > 0; argc--, argv++) {
         if (argv[0][0] != '-') {
