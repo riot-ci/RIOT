@@ -19,6 +19,13 @@ endif
 
 export LINKFLAGS += -lc
 
+# Note on `realpath` vs `abspath`
+#
+# `realpath` is used instead of `abspath` to support Mingw32
+# It fixes issues when using windows formatted paths like in the gcc output
+# It does leave the trailing `/` on windows though
+
+
 # Search for Newlib include directories
 
 # Try to search for newlib in the standard search path of the compiler for includes
