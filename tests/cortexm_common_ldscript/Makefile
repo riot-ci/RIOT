@@ -35,9 +35,8 @@ ROM_LEN_BYTES = $(shell printf "0x%x\n" $$(($(ROM_LEN:%K=%*1024))))
 
 # Test `ROM_OFFSET` is removed from firmware rom length if the board defines it
 test-elffile-fw_rom_length: $(ELFFILE)
-	echo $(ROM_OFFSET)
 	$(Q)echo -n "Test rom offset substracted from rom length in elffile: "
-	$(Q)if test -n $(ROM_OFFSET); then \
+	$(Q)if test -n "$(ROM_OFFSET)"; then \
 	  TEST_FW_LEN=$$($(PREFIX)readelf --symbols $^ 2>/dev/null | awk '/_fw_rom_length/{printf "0x%s\n", $$2}'); \
 	  EXPECT_FW_LEN=$$(printf "0x%08x" $$(( $(ROM_LEN_BYTES) - $(ROM_OFFSET) ))); \
 	  if test $${TEST_FW_LEN} != $${EXPECT_FW_LEN}; then \
