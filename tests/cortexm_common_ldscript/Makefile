@@ -24,9 +24,30 @@ include $(RIOTBASE)/Makefile.include
 # Compile time tests for ROM_OFFSET and FW_ROM_LENGTH #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-COMPILE_TESTS = tests-offsets tests-fw_rom_len tests-rom-overflow
+COMPILE_TESTS = test-elffile-fw_rom_length tests-offsets tests-fw_rom_len tests-rom-overflow
 all: $(COMPILE_TESTS)
 .PHONY: $(COMPILE_TESTS)
+
+
+# iotlab-m3 defines ROM_LEN as 512K which is not handled by bash math operations
+ROM_LEN_BYTES = $(shell printf "0x%x\n" $$(($(ROM_LEN:%K=%*1024))))
+
+
+# Test `ROM_OFFSET` is removed from firmware rom length if the board defines it
+test-elffile-fw_rom_length: $(ELFFILE)
+	echo $(ROM_OFFSET)
+	$(Q)echo -n "Test rom offset substracted from rom length in elffile: "
+	$(Q)if test -n $(ROM_OFFSET); then \
+	  TEST_FW_LEN=$$($(PREFIX)readelf --symbols $^ 2>/dev/null | awk '/_fw_rom_length/{printf "0x%s\n", $$2}'); \
+	  EXPECT_FW_LEN=$$(printf "0x%08x" $$(( $(ROM_LEN_BYTES) - $(ROM_OFFSET) ))); \
+	  if test $${TEST_FW_LEN} != $${EXPECT_FW_LEN}; then \
+	    echo "[ERROR] Rom offset not taken into account for firmware length $${TEST_FW_LEN} != $${EXPECT_FW_LEN}" >&2; \
+	    exit 1;\
+	  fi ;\
+	  echo [OK] ; \
+	else \
+	  echo "[SKIP](Reason: board does not have a ROM_OFFSET configured)" ;\
+	fi
 
 
 # Test elffiles should not have $(ELFFILE) prerequisite as target specific
@@ -59,9 +80,6 @@ $(BINDIR)/$(APPLICATION)_offset_%.elf: $(ELFFILES_DEPS)
 	$(Q)$(_LINK) -o $@
 .PRECIOUS: $(BINDIR)/$(APPLICATION)_offset_%.elf
 
-
-# iotlab-m3 define ROM_LEN as 512K which is not handled by bash math operations
-ROM_LEN_BYTES := $(shell printf "0x%x\n" $$(($(ROM_LEN:%K=%*1024))))
 
 # Compile elf files with FW_ROM_LEN and verify the length is taken into account
 #   I arbitrarily do 'half' size because I needed to take a value and
