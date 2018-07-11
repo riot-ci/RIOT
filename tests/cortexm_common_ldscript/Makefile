@@ -73,7 +73,7 @@ test-offset_%: $(BINDIR)/$(APPLICATION)_offset_%.elf
 	  echo "[ERROR] Linker offset not used $${TEST_START_ADDR} != $${EXPECT_START_ADDR}" >&2; \
 	  exit 1;\
 	fi
-	$(Q)@echo [OK]
+	$(Q)echo [OK]
 
 $(BINDIR)/$(APPLICATION)_offset_%.elf: ROM_OFFSET=$*
 $(BINDIR)/$(APPLICATION)_offset_%.elf: $(ELFFILES_DEPS)
