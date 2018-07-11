@@ -96,7 +96,7 @@ test-fw_len_half_rom: $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf
 	  echo "[ERROR] Linker firmware length not used $${TEST_FW_LEN} != $${EXPECT_FW_LEN}" >&2; \
 	  exit 1;\
 	fi
-	$(Q)@echo [OK]
+	$(Q)echo [OK]
 $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: FW_ROM_LEN=$$(($(ROM_LEN_BYTES)/2))
 $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: $(ELFFILES_DEPS)
 	$(Q)$(_LINK) -o $@
