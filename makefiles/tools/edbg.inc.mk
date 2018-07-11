@@ -1,5 +1,7 @@
 RIOT_EDBG = $(RIOTTOOLS)/edbg/edbg
-EDBG ?= $(RIOT_EDBG)
+override EDBG = $(RIOT_EDBG)
+export EDBG
+
 FLASHER ?= $(EDBG)
 HEXFILE = $(BINFILE)
 # Use USB serial number to select device when more than one is connected
