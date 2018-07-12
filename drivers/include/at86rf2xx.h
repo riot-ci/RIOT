@@ -94,6 +94,20 @@ extern "C" {
 #   define RSSI_BASE_VAL                   (-91)
 #endif
 
+/**
+ * @brief   Max and Min Receiver sensitivity value in dBm
+ */
+#if MODULE_AT86RF233
+#   define MIN_RX_SENSITIVITY              (-101)
+#   define MAX_RX_SENSITIVITY              (-52)
+#elif MODULE_AT86RF212B
+#   define MIN_RX_SENSITIVITY              (-110)
+#   define MAX_RX_SENSITIVITY              (-54)
+#else
+#   define MIN_RX_SENSITIVITY              (-101)
+#   define MAX_RX_SENSITIVITY              (-49)
+#endif
+
 #if defined(DOXYGEN) || defined(MODULE_AT86RF232) || defined(MODULE_AT86RF233)
 /**
  * @brief   Frame retry counter reporting
@@ -106,6 +120,15 @@ extern "C" {
 #define AT86RF2XX_HAVE_RETRIES             (1)
 #else
 #define AT86RF2XX_HAVE_RETRIES             (0)
+#endif
+
+/**
+ * @brief   Smart idle listening feature
+ */
+#ifdef MODULE_AT86RF233
+#define AT86RF2XX_SMART_IDLE_LISTENING     (1)
+#else
+#define AT86RF2XX_SMART_IDLE_LISTENING     (0)
 #endif
 
 /**
@@ -313,6 +336,19 @@ int16_t at86rf2xx_get_txpower(const at86rf2xx_t *dev);
  * @param[in] txpower       transmission power in dBm
  */
 void at86rf2xx_set_txpower(const at86rf2xx_t *dev, int16_t txpower);
+
+/**
+ * @brief   Set the receiver sensitivity of the given device [in dBm]
+ *
+ * If the device does not support the exact dBm value given, it will set a value
+ * as close as possible to the given value. If the given value is larger or
+ * lower then the maximal or minimal possible value, the min or max value is
+ * set, respectively.
+ *
+ * @param[in] dev           device to write to
+ * @param[in] rxsens        rx sensitivity in dBm
+ */
+void at86rf2xx_set_rxsensitivity(const at86rf2xx_t *dev, int16_t rxsens);
 
 /**
  * @brief   Get the maximum number of retransmissions
