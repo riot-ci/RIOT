@@ -146,6 +146,12 @@ void spi_ram_heap_init(void)
 {
     #if CONFIG_SPIRAM_SUPPORT
 
+    #if CONFIG_SPIRAM_MEMTEST
+    if (!esp_spiram_test()) {
+        return;
+    }
+    #endif /* CONFIG_SPIRAM_MEMTEST */
+
     #if CONFIG_SPIRAM_USE_CAPS_ALLOC || CONFIG_SPIRAM_USE_MALLOC
     esp_err_t r=esp_spiram_add_to_heapalloc();
     if (r != ESP_OK) {
@@ -247,4 +253,100 @@ esp_err_t esp_efuse_mac_get_default(uint8_t* mac)
         }
     }
     return ESP_OK;
+}
+
+/*
+ * source: /path/to/esp-idf/component/esp32/system_api.c
+ */
+/* "inner" restart function for after RTOS, interrupts & anything else on this
+ * core are already stopped. Stalls other core, resets hardware,
+ * triggers restart.
+*/
+void IRAM_ATTR esp_restart_noos(void)
+{
+    // Disable interrupts
+    xt_ints_off(0xFFFFFFFF);
+
+    // Enable RTC watchdog for 1 second
+    REG_WRITE(RTC_CNTL_WDTWPROTECT_REG, RTC_CNTL_WDT_WKEY_VALUE);
+    REG_WRITE(RTC_CNTL_WDTCONFIG0_REG,
+            RTC_CNTL_WDT_FLASHBOOT_MOD_EN_M |
+            (RTC_WDT_STG_SEL_RESET_SYSTEM << RTC_CNTL_WDT_STG0_S) |
+            (RTC_WDT_STG_SEL_RESET_RTC << RTC_CNTL_WDT_STG1_S) |
+            (1 << RTC_CNTL_WDT_SYS_RESET_LENGTH_S) |
+            (1 << RTC_CNTL_WDT_CPU_RESET_LENGTH_S) );
+    REG_WRITE(RTC_CNTL_WDTCONFIG1_REG, rtc_clk_slow_freq_get_hz() * 1);
+
+    // Reset and stall the other CPU.
+    // CPU must be reset before stalling, in case it was running a s32c1i
+    // instruction. This would cause memory pool to be locked by arbiter
+    // to the stalled CPU, preventing current CPU from accessing this pool.
+    const uint32_t core_id = 0;
+    const uint32_t other_core_id = (core_id == 0) ? 1 : 0;
+    esp_cpu_reset(other_core_id);
+    esp_cpu_stall(other_core_id);
+
+    // Other core is now stalled, can access DPORT registers directly
+    esp_dport_access_int_abort();
+
+    // Disable TG0/TG1 watchdogs
+    TIMERG0.wdt_wprotect=TIMG_WDT_WKEY_VALUE;
+    TIMERG0.wdt_config0.en = 0;
+    TIMERG0.wdt_wprotect=0;
+    TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE;
+    TIMERG1.wdt_config0.en = 0;
+    TIMERG1.wdt_wprotect=0;
+
+    // Flush any data left in UART FIFOs
+    uart_tx_wait_idle(0);
+    uart_tx_wait_idle(1);
+    uart_tx_wait_idle(2);
+
+    // Disable cache
+    Cache_Read_Disable(0);
+    Cache_Read_Disable(1);
+
+    // 2nd stage bootloader reconfigures SPI flash signals.
+    // Reset them to the defaults expected by ROM.
+    WRITE_PERI_REG(GPIO_FUNC0_IN_SEL_CFG_REG, 0x30);
+    WRITE_PERI_REG(GPIO_FUNC1_IN_SEL_CFG_REG, 0x30);
+    WRITE_PERI_REG(GPIO_FUNC2_IN_SEL_CFG_REG, 0x30);
+    WRITE_PERI_REG(GPIO_FUNC3_IN_SEL_CFG_REG, 0x30);
+    WRITE_PERI_REG(GPIO_FUNC4_IN_SEL_CFG_REG, 0x30);
+    WRITE_PERI_REG(GPIO_FUNC5_IN_SEL_CFG_REG, 0x30);
+
+    // Reset wifi/bluetooth/ethernet/sdio (bb/mac)
+    DPORT_SET_PERI_REG_MASK(DPORT_CORE_RST_EN_REG, 
+         DPORT_BB_RST | DPORT_FE_RST | DPORT_MAC_RST |
+         DPORT_BT_RST | DPORT_BTMAC_RST | DPORT_SDIO_RST |
+         DPORT_SDIO_HOST_RST | DPORT_EMAC_RST | DPORT_MACPWR_RST | 
+         DPORT_RW_BTMAC_RST | DPORT_RW_BTLP_RST);
+    DPORT_REG_WRITE(DPORT_CORE_RST_EN_REG, 0);
+
+    // Reset timer/spi/uart
+    DPORT_SET_PERI_REG_MASK(DPORT_PERIP_RST_EN_REG,
+            DPORT_TIMERS_RST | DPORT_SPI_RST_1 | DPORT_UART_RST);
+    DPORT_REG_WRITE(DPORT_PERIP_RST_EN_REG, 0);
+
+    // Set CPU back to XTAL source, no PLL, same as hard reset
+    rtc_clk_cpu_freq_set(RTC_CPU_FREQ_XTAL);
+
+    // Clear entry point for APP CPU
+    DPORT_REG_WRITE(DPORT_APPCPU_CTRL_D_REG, 0);
+
+    // Reset CPUs
+    if (core_id == 0) {
+        // Running on PRO CPU: APP CPU is stalled. Can reset both CPUs.
+        esp_cpu_reset(1);
+        esp_cpu_reset(0);
+    } else {
+        // Running on APP CPU: need to reset PRO CPU and unstall it,
+        // then reset APP CPU
+        esp_cpu_reset(0);
+        esp_cpu_unstall(0);
+        esp_cpu_reset(1);
+    }
+    while(true) {
+        ;
+    }
 }

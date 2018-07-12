@@ -94,5 +94,12 @@ extern void esp_restart_noos(void) __attribute__ ((noreturn));
 void pm_reboot(void)
 {
     DEBUG ("%s\n", __func__);
+
+    /* suspend and flush UARTs */
+    for (int i = 0; i < 3; ++i) {
+        REG_SET_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XOFF);
+        uart_tx_wait_idle(i);
+    }
+
     software_reset();
 }

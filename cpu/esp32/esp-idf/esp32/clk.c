@@ -123,6 +123,14 @@ void esp_clk_init(void)
             freq = RTC_CPU_FREQ_160M;
             break;
         case 80:
+            freq = RTC_CPU_FREQ_160M;
+            break;
+        case 40:
+            freq = RTC_CPU_FREQ_XTAL;
+            break;
+        case 2:
+            freq = RTC_CPU_FREQ_2M;
+            break;
         default:
             freq = RTC_CPU_FREQ_80M;
             break;

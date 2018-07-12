@@ -74,7 +74,8 @@ extern "C" {
 #endif
 
 #define CONFIG_SPI_FLASH_ROM_DRIVER_PATCH       1
-#define CONFIG_NEWLIB_NANO_FORMAT               1
+#define CONFIG_NEWLIB_NANO_FORMAT               0
+
 #ifdef __cplusplus
 }
 #endif

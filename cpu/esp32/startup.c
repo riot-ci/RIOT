@@ -106,14 +106,12 @@ NORETURN void IRAM call_start_cpu0 (void)
 {
     register uint32_t *sp __asm__ ("a1"); (void)sp;
 
-    RESET_REASON reset_reason;
-
     cpu_configure_region_protection();
 
     /* move exception vectors to IRAM */
     asm volatile ("wsr %0, vecbase\n" ::"r"(&_init_start));
 
-    reset_reason = rtc_get_reset_reason(PRO_CPU_NUM);
+    RESET_REASON reset_reason = rtc_get_reset_reason(PRO_CPU_NUM);
 
     /* reset from panic handler by RWDT or TG0WDT */
     if (reset_reason == RTCWDT_SYS_RESET || reset_reason == TG0WDT_SYS_RESET) {
@@ -126,24 +124,18 @@ NORETURN void IRAM call_start_cpu0 (void)
 
     /* if we are not waking up from deep sleep, clear RTC bss */
     if (reset_reason != DEEPSLEEP_RESET) {
-        memset(&_rtc_bss_start, 0,
-               (&_rtc_bss_end - &_rtc_bss_start) * sizeof(_rtc_bss_start));
+        memset(&_rtc_bss_start, 0, (&_rtc_bss_end - &_rtc_bss_start));
     }
 
     /* initialize RTC data after power on */
-    if (reset_reason == POWERON_RESET) {
-        memset(&_rtc_bss_rtc_start, 0,
-               (&_rtc_bss_rtc_end - &_rtc_bss_rtc_start) * sizeof(_rtc_bss_rtc_start));
+    if (reset_reason == POWERON_RESET || reset_reason == RTCWDT_RTC_RESET) {
+        memset(&_rtc_bss_rtc_start, 0, (&_rtc_bss_rtc_end - &_rtc_bss_rtc_start));
     }
 
     ets_printf("Current clocks in Hz: CPU=%d APB=%d XTAL=%d SLOW=%d\n",
                 rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()),
                 rtc_clk_apb_freq_get(), rtc_clk_xtal_freq_get()*MHZ,
                 rtc_clk_slow_freq_get_hz());
-
-    /* init SPI RAM if enabled */
-    #if CONFIG_SPIRAM_SUPPORT && CONFIG_SPIRAM_BOOT_INIT
-    #endif
 
     #if ENABLE_DEBUG
     ets_printf("reset reason: %d\n", reset_reason);
@@ -178,6 +170,11 @@ NORETURN void IRAM call_start_cpu0 (void)
     #endif /* ENABLE_DEBUG */
     #endif /* ESP_IDF_HEAP_USED */
 
+    /* init SPI RAM if enabled */
+    #if CONFIG_SPIRAM_SUPPORT && CONFIG_SPIRAM_BOOT_INIT
+    spi_ram_init();
+    #endif
+
     ets_printf("PRO cpu starts user code\n");
     system_init();
 
@@ -204,6 +201,8 @@ static void IRAM system_clk_init (void)
 
     /* wait until UART is idle to avoid loosing output */
     uart_tx_wait_idle(CONFIG_CONSOLE_UART_NUM);
+    ets_printf("Switching system clocks can lead to some unreadable characters\n");
+    ets_printf("This message is not visible at console\n");
 
     /* determine configured CPU clock frequency from sdkconfig.h */
     rtc_cpu_freq_t freq;
@@ -228,39 +227,35 @@ static void IRAM system_clk_init (void)
     /* Recalculate the ccount to make time calculation correct. */
     uint32_t freq_after = CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ;
     XTHAL_SET_CCOUNT( XTHAL_GET_CCOUNT() * freq_after / freq_before );
-
-    /* disable clocks of peripherals that are not needed at startup */
-    esp_perip_clk_init();
 }
 
 extern void IRAM_ATTR thread_yield_isr(void* arg);
 
 static NORETURN void IRAM system_init (void)
 {
+    /* enable cached read from flash */
+    Cache_Read_Enable(PRO_CPU_NUM);
+
     /* initialize the ISR stack for usage measurements */
     thread_isr_stack_init();
 
     /* initialize clocks (CPU_CLK, APB_CLK, SLOW and FAST) */
     system_clk_init();
 
+    /* disable clocks of peripherals that are not needed at startup */
+    esp_perip_clk_init();
+
+    /* set configured console UART baudrate */
     const int uart_clk_freq = rtc_clk_apb_freq_get();
     uart_tx_wait_idle(CONFIG_CONSOLE_UART_NUM);
     uart_div_modify(CONFIG_CONSOLE_UART_NUM,
-                    (uart_clk_freq << 4) / CONFIG_CONSOLE_UART_BAUDRATE);
+                    (uart_clk_freq << 4) / UART_STDIO_BAUDRATE);
 
     /* initialize system call tables of ESP32 rom and newlib */
     syscalls_init();
 
-    /* enable cached read from flash */
-    Cache_Read_Enable(PRO_CPU_NUM);
-
     /* initialize the RTC module (restore timer values from RTC RAM) */
     rtc_init();
-
-    /* add SPI RAM to heap if enabled */
-    #if CONFIG_SPIRAM_SUPPORT && CONFIG_SPIRAM_BOOT_INIT
-    spi_ram_heap_init();
-    #endif
 
     /* install execption handlers */
     init_exceptions();
@@ -272,7 +267,7 @@ static NORETURN void IRAM system_init (void)
     extern void uart_system_init (void);
     uart_system_init();
 
-    /* Disable the hold flag of alll RTC GPIO pins */
+    /* Disable the hold flag of all RTC GPIO pins */
     RTCCNTL.hold_force.val = 0;
 
     /* initialize newlib data structure */
@@ -294,14 +289,18 @@ static NORETURN void IRAM system_init (void)
     extern void spi_flash_drive_init (void);
     spi_flash_drive_init();
 
-    #ifdef MODULE_NEWLIB_SYSCALLS_DEFAULT
-    /* initialization as it should be called from newlibc */
+    #if defined(MODULE_NEWLIB_SYSCALLS_DEFAULT)
+    /* initialization as it should be called from newlibc (includes the
+       execution of uart_stdio_init) */
     extern void _init(void);
     _init();
+    #elif definfed(MODULE_UART_STDIO)
+    uart_stdio_init();
     #endif
 
-    #ifdef MODULE_UART_STDIO
-    uart_stdio_init();
+    /* add SPI RAM to heap if enabled */
+    #if CONFIG_SPIRAM_SUPPORT && CONFIG_SPIRAM_BOOT_INIT
+    spi_ram_heap_init();
     #endif
 
     /* print some infos */
@@ -317,9 +316,6 @@ static NORETURN void IRAM system_init (void)
     ets_printf("System time: %04d-%02d-%02d %02d:%02d:%02d\n",
                _sys_time.tm_year + 1900, _sys_time.tm_mon + 1, _sys_time.tm_mday,
                _sys_time.tm_hour, _sys_time.tm_min, _sys_time.tm_sec);
-
-    /* init watchdogs */
-    system_wdt_init();
 
     /* initialize the board */
     board_init();
@@ -339,7 +335,6 @@ static NORETURN void IRAM system_init (void)
     /* starting RIOT */
     ets_printf("Starting RIOT kernel on PRO cpu\n");
     kernel_init();
-
 
     UNREACHABLE();
 }

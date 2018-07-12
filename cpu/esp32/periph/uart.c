@@ -148,6 +148,14 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         __uarts[uart].regs->clk_div.div_frag = clk & 0xf;
     }
 
+    /* set 8 data bits */
+    __uarts[uart].regs->conf0.bit_num = 3;
+    /* reset the FIFOs */
+    __uarts[uart].regs->conf0.rxfifo_rst = 1;
+    __uarts[uart].regs->conf0.rxfifo_rst = 0;
+    __uarts[uart].regs->conf0.txfifo_rst = 1;
+    __uarts[uart].regs->conf0.txfifo_rst = 0;
+
     /* register interrupt context */
     isr_ctx[uart].rx_cb = rx_cb;
     isr_ctx[uart].arg   = arg;
@@ -205,20 +213,23 @@ void IRAM __uart_intr_handler (void *arg)
 
     irq_isr_enter ();
 
-    DEBUG("%s \n", __func__);
-
     /* UART0, UART1, UART2 peripheral interrupt sources are routed to the same
        interrupt, so we have to use the status to distinguish interruptees */
     for (unsigned uart = 0; uart < UART_NUMOF; uart++) {
-        if (__uarts[uart].used && __uarts[uart].regs->int_st.rxfifo_full) {
-            /* read one byte of data */
-            uint8_t data = __uart_rx_one_char (uart);
-            /* call registered RX callback function */
-            isr_ctx[uart].rx_cb(isr_ctx[uart].arg, data);
-            /* clear interrupt flag */
-            __uarts[uart].regs->int_clr.rxfifo_full = 1;
-        }
-        else {
+        if (__uarts[uart].used) {
+            DEBUG("%s uart=%d int_st=%08lx\n", __func__, uart, __uarts[uart]);
+
+            if (__uarts[uart].used && __uarts[uart].regs->int_st.rxfifo_full) {
+                /* read one byte of data */
+                uint8_t data = __uart_rx_one_char (uart);
+                /* if registered, call the RX callback function */
+                if (isr_ctx[uart].rx_cb) {
+                    isr_ctx[uart].rx_cb(isr_ctx[uart].arg, data);
+                }
+                /* clear interrupt flag */
+                __uarts[uart].regs->int_clr.rxfifo_full = 1;
+            }
+
             /* TODO handle other types of interrupts, for the moment just clear them */
             __uarts[uart].regs->int_clr.val = ~0x0;
         }
@@ -274,4 +285,20 @@ void uart_print_config(void)
         LOG_INFO("UART_DEV(%d): txd=%d rxd=%d\n", uart,
                  __uarts[uart].pin_txd, __uarts[uart].pin_rxd);
     }
+}
+
+int uart_set_baudrate(uart_t uart, uint32_t baudrate)
+{
+    DEBUG("%s uart=%d, rate=%d\n", __func__, uart, baudrate);
+
+    CHECK_PARAM_RET (uart < UART_NUMOF, -1);
+
+    /* use APB_CLK */
+    __uarts[uart].regs->conf0.tick_ref_always_on = 1;
+    /* compute and set the integral and the decimal part */
+    uint32_t clk = (UART_CLK_FREQ << 4) / baudrate;
+    __uarts[uart].regs->clk_div.div_int  = clk >> 4;
+    __uarts[uart].regs->clk_div.div_frag = clk & 0xf;
+
+    return UART_OK;
 }
