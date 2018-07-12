@@ -51,8 +51,8 @@ Community
 
 Documentation
 -------------
-    + Fix undefined doxygen groups and add a static check
-    + 'Improved dox for auto_init' check detail when I have internet https://github.com/RIOT-OS/RIOT/pull/9328
+    + Fix undefined doxygen groups and add a dedicated static check
+    + Extend `auto_init` documentation
 
 Core
 ----
