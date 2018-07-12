@@ -72,7 +72,7 @@ BOARD_APP_CONF | file name | empty | Specify an application specific board confi
 CONFIGS | string | empty | Specify an application specific board configuration file located in application source directory, see section _Application Specific Board Configuration_.
 ENABLE_GDB | 0, 1 | 0 | Enable the compilation with debug information for debugging with QEMU (```QEMU=1```), see section _QEMU Mode and GDB_ below.
 ENABLE_HW_COUNTER | 0, 1 | 0 | Enable the timer implementation that uses counters instead of hardware timer modules, see section _Timer Implementations_ below.
-ENABLE_MRF24J40 | 0, 1 | 0 | Enable MRF24J40 module to use IEEE 802.15.4 radio modules based on MRF 24J40.
+ENABLE_MRF24J40 | 0, 1 | 0 | Enable MRF24J40 module to use IEEE 802.15.4 radio modules based on MRF24J40.
 ENABLE_SPIFFS | 0, 1 | 0 | Enable SPIFFS file system, see section _SPIFFS Drive_ below.
 ENABLE_SPI_RAM | 0, 1 | 0 | Enable SPI RAM, see section _SPI RAM_ below.
 ENABLE_SW_I2C | 0, 1 | 0 | Enable the I2C software implementation, see section _I2C Implementations_ below.
