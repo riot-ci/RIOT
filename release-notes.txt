@@ -1,3 +1,143 @@
+RIOT-2018.07 - Release Notes
+============================
+RIOT is a multi-threading operating system which enables soft real-time
+capabilities and comes with support for a range of devices that are typically
+found in the Internet of Things: 8-bit and 16-bit microcontrollers as well as
+light-weight 32-bit processors.
+
+RIOT is based on the following design principles: energy-efficiency, soft
+real-time capabilities, small memory footprint, modularity, and uniform API
+access, independent of the underlying hardware (with partial POSIX compliance).
+
+RIOT is developed by an international open-source community which is
+independent of specific vendors (e.g. similarly to the Linux community) and is
+licensed with a non-viral copyleft license (LGPLv2.1), which allows indirect
+business models around the free open-source software platform provided by RIOT.
+
+
+About this release:
+===================
+
+**DRAFT TODO**
+
+The 2018.07 release includes ...
+....
+....
+....
+
+> RMME: These are infos from 2018-07-12
+> RMME: Update them with: 'dist/tools/release-stats/release-stats.sh'
+
+About 320 pull requests with about 685 commits have been merged since the last
+release and about 54 issues have been solved. 44 people contributed with code
+in 85 days. Approximately 1648 files have been touched with 146204 insertions
+and 15683 deletions.
+
+**DRAFT TODO**
+
+
+Notations used below:
+=====================
+    + means new feature/item
+    * means modified feature/item
+    - means removed feature/item
+
+New features and changes
+========================
+
+Community
+---------
+    + Maintainers guidelines have been written and added to the repository
+
+Documentation
+-------------
+    + Fix undefined doxygen groups and add a static check
+    + 'Improved dox for auto_init' check detail when I have internet https://github.com/RIOT-OS/RIOT/pull/9328
+
+Core
+----
+    + core: clist_foreach() now returns break-causing node
+
+System libraries
+----------------
+    +
+    -
+
+Networking
+----------
+    + **TODO* gcoap: List improvements
+    + ...
+    -
+
+Packages
+--------
+    + NimBLE: Bluetooth Low Energy stack used in mynewt
+    + TLSF: re-enable original api to have different pools
+    + LUA: **TODO** tell the current state
+    -
+
+Boards
+------
+    + Nucleo boards use their marketing names
+    + HiFive1 (RISC-V)
+    + slstk3402a
+    + stm32mindev
+
+CPU
+---
+    + E310 (RISC-V)
+
+Device Drivers
+--------------
+    +
+
+Build System / Tooling
+----------------------
+    + iotlab-m3/iotlab-a8-m3: fix boards flashing
+    + Fix use of non completely initialized BASELIBS variable
+
+Known Issues
+===========
+
+> TODO
+
+Acknowledgements
+================
+We would like to thank all companies (vendors) that provided us with (their)
+hardware for porting and testing RIOT-OS. Further thanks go to companies and
+institutions that directly sponsored development time. And finally, big thanks
+to all of you contributing in so many different ways to make RIOT worthwhile!
+
+More information
+================
+http://www.riot-os.org
+
+Mailing lists
+-------------
+* RIOT OS kernel developers list
+  devel@riot-os.org (http://lists.riot-os.org/mailman/listinfo/devel)
+* RIOT OS users list
+  users@riot-os.org (http://lists.riot-os.org/mailman/listinfo/users)
+* RIOT commits
+  commits@riot-os.org (http://lists.riot-os.org/mailman/listinfo/commits)
+* Github notifications
+  notifications@riot-os.org (http://lists.riot-os.org/mailman/listinfo/notifications)
+
+IRC
+---
+* Join the RIOT IRC channel at: irc.freenode.net, #riot-os
+
+License
+=======
+* The code developed by the RIOT community is licensed under the GNU Lesser
+  General Public License (LGPL) version 2.1 as published by the Free Software
+  Foundation.
+* Some external sources and packages are published under a separate license.
+
+All code files contain licensing information.
+
+
+
 RIOT-2018.04 - Release Notes
 ============================
 RIOT is a multi-threading operating system which enables soft real-time
