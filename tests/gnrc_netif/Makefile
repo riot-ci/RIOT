@@ -28,6 +28,3 @@ CFLAGS += -DLOG_LEVEL=LOG_NONE
 CFLAGS += -DTEST_SUITES
 
 include $(RIOTBASE)/Makefile.include
-
-test:
-	tests/01-run.py

@@ -24,8 +24,6 @@ USEMODULE += ps
 
 CFLAGS += -DGNRC_NETIF_IPV6_ADDRS_NUMOF=3
 
+# Note: The test can check more things with ENABLE_DEBUG set to 1 in gnrc_ipv6.c
+#
 include $(RIOTBASE)/Makefile.include
-
-# The test can check more things with ENABLE_DEBUG set to 1 in gnrc_ipv6.c
-test:
-	tests/01-run.py
