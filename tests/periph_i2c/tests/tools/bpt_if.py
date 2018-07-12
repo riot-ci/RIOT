@@ -522,7 +522,7 @@ def main():
     logging.getLogger().setLevel(logging.DEBUG)
     try:
         bpt = BptIf.from_autodetect(baud=9600)
-    except Exception as ex:
+    except:
         pass
     bpt = BptIf.from_autodetect()
     bpt2 = BptIf.copy_driver(bpt)
