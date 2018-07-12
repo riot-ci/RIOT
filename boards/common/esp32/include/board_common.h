@@ -25,9 +25,15 @@
 
 #include "cpu.h"
 #include "periph_conf.h"
+#include "sdkconfig.h"
 
 #ifdef __cplusplus
  extern "C" {
+#endif
+
+#ifndef UART_STDIO_BAUDRATE
+/** baudrate for stdio */
+#define UART_STDIO_BAUDRATE      (CONFIG_CONSOLE_UART_BAUDRATE)
 #endif
 
 /**
