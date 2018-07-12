@@ -27,6 +27,11 @@
  extern "C" {
 #endif
 
+#ifndef UART_STDIO_BAUDRATE
+/** default baudrate of the console interface */
+#define UART_STDIO_BAUDRATE (115200)
+#endif
+
 #if defined(MODULE_MTD) || defined(DOXYGEN)
 #include "mtd.h"
 
