@@ -95,6 +95,7 @@ Build System / Tooling
 ----------------------
     + iotlab-m3/iotlab-a8-m3: fix boards flashing
     + Fix use of non completely initialized BASELIBS variable
+    + newlib.mk: extract gcc include search directories for newlib-nano support
 
 Known Issues
 ===========
