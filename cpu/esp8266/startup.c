@@ -30,6 +30,7 @@
 #include "c_types.h"
 #include "spi_flash.h"
 
+#include "board.h"
 #include "common.h"
 #include "exceptions.h"
 #include "syscalls.h"
@@ -165,7 +166,7 @@ void IRAM user_init (void)
     system_timer_reinit ();
 
     /* setup the serial communication */
-    uart_div_modify(0, UART_CLK_FREQ / 115200);
+    uart_div_modify(0, UART_CLK_FREQ / UART_STDIO_BAUDRATE);
 
     /* once the ETS initialization is done we can start with our code as callback */
     system_init_done_cb(system_init);
@@ -454,19 +455,20 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
      * at the beginning of the cold start, we have to set it to 177231 baud.
      * This is changed later in function system_set_pll.
      */
-    system_set_pll(1); /* parameter is fixed (from esp_init_data_default.bin byte 48) */
+    system_set_pll(1); /* parameter is fix (from esp_init_data_default.bin byte 48) */
 
     #if 0
     if (rst_if.reason > REASON_DEFAULT_RST) {
         /* warm start */
-        uart_div_modify(0, UART_CLK_FREQ / 115200);
+        uart_div_modify(0, UART_CLK_FREQ / UART_STDIO_BAUDRATE);
     }
     else {
         /* cold start */
         uart_div_modify(0, UART_CLK_FREQ / 177231);
     }
+    #else
+    uart_div_modify(0, UART_CLK_FREQ / UART_STDIO_BAUDRATE);
     #endif
-    uart_div_modify(0, UART_CLK_FREQ / 115200);
 
     /* flush uart_tx_buffer */
     ets_uart_printf("                                                     \n");
@@ -708,7 +710,7 @@ void start_phase2 (void)
 
     /* set correct system clock and adopt UART frequency */
     system_set_pll(1); /* parameter is fixed (from esp_init_data_default.bin byte 48) */
-    uart_div_modify(0, UART_CLK_FREQ / 115200);
+    uart_div_modify(0, UART_CLK_FREQ / UART_STDIO_BAUDRATE);
     uart_tx_flush(0);
     uart_tx_flush(1);
 
