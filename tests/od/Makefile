@@ -1,7 +1,7 @@
 include ../Makefile.tests_common
 
 USEMODULE += od
-USEMODULE += od_string
+# USEMODULE += od_string
 
 TEST_ON_CI_WHITELIST += all
 
