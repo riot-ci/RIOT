@@ -53,7 +53,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     DEBUG("%s uart=%d, rate=%d, rx_cb=%p, arg=%p\n", __func__, uart, baudrate, rx_cb, arg);
 
     /* setup the baudrate */
-    uart_div_modify(uart, UART_CLK_FREQ / 115200);
+    uart_div_modify(uart, UART_CLK_FREQ / baudrate);
 
     /* register interrupt context */
     isr_ctx[uart].rx_cb = rx_cb;
