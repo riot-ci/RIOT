@@ -78,7 +78,6 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
 {
     netdev_t *dev = netif->dev;
     netdev_ieee802154_rx_info_t rx_info;
-    netdev_ieee802154_t *state = (netdev_ieee802154_t *)netif->dev;
     gnrc_pktsnip_t *pkt = NULL;
     int bytes_expected = dev->driver->recv(dev, NULL, 0, NULL);
 
@@ -95,7 +94,9 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
-        if (!(state->flags & NETDEV_IEEE802154_RAW)) {
+        netopt_enable_t raw = NETOPT_DISABLE;
+        dev->driver->get(dev, NETOPT_RAWMODE, &raw, sizeof(raw));
+        if (raw == NETOPT_DISABLE) {
             gnrc_pktsnip_t *ieee802154_hdr, *netif_hdr;
             gnrc_netif_hdr_t *hdr;
 #if ENABLE_DEBUG
@@ -138,7 +139,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             hdr->lqi = rx_info.lqi;
             hdr->rssi = rx_info.rssi;
             hdr->if_pid = thread_getpid();
-            pkt->type = state->proto;
+            dev->driver->get(dev, NETOPT_PROTO, &pkt->type, sizeof(pkt->type));
 #if ENABLE_DEBUG
             DEBUG("_recv_ieee802154: received packet from %s of length %u\n",
                   gnrc_netif_addr_to_str(gnrc_netif_hdr_get_src_addr(hdr),
