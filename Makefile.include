@@ -538,7 +538,10 @@ reset:
 
 TESTS ?= $(wildcard $(APPDIR)/tests/*)
 test: $(TEST_DEPS)
-	for t in $(TESTS); do $$t || exit 1; done
+	for t in $(TESTS); do \
+		test -f $$t -a -x $$t || continue ; \
+		$$t || exit 1; \
+	done
 
 # Default OBJDUMPFLAGS for platforms which do not specify it:
 OBJDUMPFLAGS ?= -S -D -h
