@@ -359,7 +359,6 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
             /* FUN_GPIO / FUN_WPU / FUN_WPD are set later */
             break;
     }
-ets_printf("G1 %08lx %p\n", *((uint32_t*)_gpio_to_iomux_reg[pin]), _gpio_to_iomux_reg[pin]);
     /* select GPIO as IO_MUX function (FUN_GPIO) */
     REG_SET_FIELD(_gpio_to_iomux_reg[pin], MCU_SEL, FUN_GPIO);
 
@@ -369,17 +368,14 @@ ets_printf("G1 %08lx %p\n", *((uint32_t*)_gpio_to_iomux_reg[pin]), _gpio_to_iomu
 
     /* enable/disable the pull-down resistor (FUN_WPD) */
     REG_SET_CLR_BIT(mode == GPIO_IN_PD, _gpio_to_iomux_reg[pin], FUN_PD);
-ets_printf("G2 %08lx\n", *((uint32_t*)_gpio_to_iomux_reg[pin]));
 
     /* handle pull-up/pull-down resistors for RTC_GPIOs */
     if (rtc) {
-ets_printf("R1 %08lx %p %d\n", *((uint32_t*)rtc->reg), rtc->reg, mode == GPIO_IN_PU || mode == GPIO_OD_PU || mode == GPIO_IN_OD_PU);
         /* enable/disable the pull-up resistor (FUN_WPU) */
         REG_SET_CLR_BIT(mode == GPIO_IN_PU || mode == GPIO_OD_PU || mode == GPIO_IN_OD_PU,
                         rtc->reg, BIT(rtc->pullup));
         /* enable/disable the pull-down resistor (FUN_WPD) */
         REG_SET_CLR_BIT(mode == GPIO_IN_PD, rtc->reg, BIT(rtc->pulldown));
-ets_printf("R2 %08lx %p\n", *((uint32_t*)rtc->reg), rtc->reg);
     }
 
     return 0;
@@ -444,7 +440,6 @@ void gpio_irq_disable (gpio_t pin)
 int gpio_read (gpio_t pin)
 {
     CHECK_PARAM_RET(pin < GPIO_PIN_NUMOF, -1);
-ets_printf("RR %08lx %08lx\n", GPIO.in, GPIO.in1.val);
     return GPIO_REG_BIT_GET(in, in1, pin) ? 1 : 0;
 }
 
