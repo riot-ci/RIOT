@@ -3,7 +3,7 @@ export TARGET_ARCH ?= msp430
 
 # define build specific options
 CFLAGS_CPU   = -mmcu=$(CPU_MODEL)
-NEED_GNU_99 := 1
+STD_DEFAULT_GNU_99 := 1
 CFLAGS_LINK  = -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -gdwarf-2
 CFLAGS_OPT  ?= -Os

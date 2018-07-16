@@ -32,7 +32,7 @@ endif
 # newlib commit 81c17949f0419d1c4fee421c60987ea1149522ae
 # https://cygwin.com/git/gitweb.cgi?p=newlib-cygwin.git;a=commitdiff;h=81c17949f0419d1c4fee421c60987ea1149522ae
 # Otherwise we get an error about a missing declaration of strnlen in some parts.
-NEED_GNU_99 := 1
+STD_DEFAULT_GNU_99 := 1
 export CFLAGS_CPU   = -EL -mabi=$(ABI)
 export CFLAGS_LINK  = -ffunction-sections -fno-builtin -fshort-enums -fdata-sections
 export CFLAGS_DBG   = -g3

@@ -48,7 +48,7 @@ export GPROF ?= gprof
 
 # basic cflags:
 export CFLAGS += -Wall -Wextra -pedantic
-NEED_GNU_99 := 1
+STD_DEFAULT_GNU_99 := 1
 
 ifeq ($(shell uname -m),x86_64)
   export CFLAGS += -m32

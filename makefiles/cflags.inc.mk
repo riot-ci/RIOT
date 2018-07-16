@@ -1,7 +1,7 @@
 # Test if the input language was specified externally.
 # Otherwise test if the compiler unterstands the "-std=c99" flag, and use it if so.
 ifeq ($(filter -std=%,$(CFLAGS)),)
-  ifeq ($(NEED_GNU_99), 1)
+  ifeq ($(STD_DEFAULT_GNU_99), 1)
     ifeq ($(shell $(CC) -std=gnu99 -E - 2>/dev/null >/dev/null </dev/null ; echo $$?),0)
       CFLAGS += -std=gnu99
     endif
