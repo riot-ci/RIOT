@@ -498,12 +498,12 @@ static inline void _send_multicast_over_iface(gnrc_pktsnip_t *pkt,
                                               gnrc_netif_t *netif,
                                               uint8_t netif_hdr_flags)
 {
-    pkt = _create_netif_hdr(NULL, 0, pkt,
-                            netif_hdr_flags | GNRC_NETIF_HDR_FLAGS_MULTICAST);
-    DEBUG("ipv6: send multicast over interface %" PRIkernel_pid "\n", netif->pid);
-    if (pkt == NULL) {
+    if ((pkt = _create_netif_hdr(NULL, 0, pkt,
+                                 netif_hdr_flags |
+                                 GNRC_NETIF_HDR_FLAGS_MULTICAST)) == NULL) {
         return;
     }
+    DEBUG("ipv6: send multicast over interface %" PRIkernel_pid "\n", netif->pid);
     /* mark as multicast */
     ((gnrc_netif_hdr_t *)pkt->data)->flags |= GNRC_NETIF_HDR_FLAGS_MULTICAST;
 #ifdef MODULE_NETSTATS_IPV6
