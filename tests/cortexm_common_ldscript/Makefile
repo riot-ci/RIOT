@@ -24,7 +24,9 @@ include $(RIOTBASE)/Makefile.include
 # Compile time tests for ROM_OFFSET and FW_ROM_LENGTH #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-COMPILE_TESTS = test-elffile-fw_rom_length tests-offsets tests-fw_rom_len tests-rom-overflow
+COMPILE_TESTS  = test-elffile-fw_rom_length test-elffile-overflow
+COMPILE_TESTS += tests-offsets tests-fw_rom_len tests-rom-overflow
+
 all: $(COMPILE_TESTS)
 .PHONY: $(COMPILE_TESTS)
 
@@ -47,6 +49,20 @@ test-elffile-fw_rom_length: $(ELFFILE)
 	else \
 	  echo "[SKIP](Reason: board does not have a ROM_OFFSET configured)" ;\
 	fi
+
+
+# test-elffile-overflow depends on $(BINFILE) to prevent:
+# * ROM_LEN to be passed to $(ELFFILE) generation
+# * dummy error message of wc not finding the .bin file (ELFFILE is not enough)
+test-elffile-overflow: $(BINFILE) _test-elffile-overflow-runtest
+
+.PHONY: _test-elffile-overflow-runtest
+_test-elffile-overflow-runtest: ROM_LEN=$(firstword $(shell wc -c $(BINFILE)))-1+$(if $(ROM_OFFSET),$(ROM_OFFSET),0)
+_test-elffile-overflow-runtest: $(BINFILE)
+	$(Q)echo -n "Test rom offset 1 byte overflow detection: "
+	$(Q)\
+	{ $(_LINK) -o /dev/null  2>&1 | grep -q "region \`rom' overflowed by 1 byte" ; } \
+	  && echo [OK] || { echo [ERROR] Compilation should have failed >&2; exit 1; }
 
 
 # Test elffiles should not have $(ELFFILE) prerequisite as target specific
