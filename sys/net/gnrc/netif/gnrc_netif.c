@@ -326,6 +326,14 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
                 case NETOPT_SRC_LEN:
                     _update_l2addr_from_dev(netif);
                     break;
+                case NETOPT_RAWMODE:
+                    if (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE) {
+                        netif->flags |= GNRC_NETIF_FLAGS_RAWMODE;
+                    }
+                    else {
+                        netif->flags &= ~GNRC_NETIF_FLAGS_RAWMODE;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -1176,6 +1184,7 @@ static void _init_from_device(gnrc_netif_t *netif)
     (void)res;
     assert(res == sizeof(tmp));
     netif->device_type = (uint8_t)tmp;
+
     switch (netif->device_type) {
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_NRFMIN) || defined(MODULE_XBEE)
         case NETDEV_TYPE_IEEE802154:

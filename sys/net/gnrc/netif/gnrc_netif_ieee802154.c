@@ -94,9 +94,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
-        netopt_enable_t raw = NETOPT_DISABLE;
-        dev->driver->get(dev, NETOPT_RAWMODE, &raw, sizeof(raw));
-        if (raw == NETOPT_DISABLE) {
+        if (!(netif->flags & GNRC_NETIF_FLAGS_RAWMODE)) {
             gnrc_pktsnip_t *ieee802154_hdr, *netif_hdr;
             gnrc_netif_hdr_t *hdr;
 #if ENABLE_DEBUG
