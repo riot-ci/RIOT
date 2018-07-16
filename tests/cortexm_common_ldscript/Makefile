@@ -106,7 +106,8 @@ tests-fw_rom_len: test-fw_len_half_rom
 .PHONY: test-fw_len_half_rom
 test-fw_len_half_rom: $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf
 	$(Q)echo -n "Test compilation with half ROM length: "
-	$(Q)TEST_FW_LEN=$$($(PREFIX)readelf --symbols $^ 2>/dev/null | awk '/_fw_rom_length/{printf "0x%s\n", $$2}'); \
+	$(Q)\
+	TEST_FW_LEN=$$($(PREFIX)readelf --symbols $^ 2>/dev/null | awk '/_fw_rom_length/{printf "0x%s\n", $$2}'); \
 	EXPECT_FW_LEN=$$(printf "0x%08x" $$(( $(ROM_LEN_BYTES) / 2 ))); \
 	if test $${TEST_FW_LEN} != $${EXPECT_FW_LEN}; then \
 	  echo "[ERROR] Linker firmware length not used $${TEST_FW_LEN} != $${EXPECT_FW_LEN}" >&2; \
