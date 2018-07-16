@@ -38,6 +38,9 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
   NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
 endif
 
+$(warning 0 - COMPILER_INCLUDE_PATHS: $(COMPILER_INCLUDE_PATHS))
+$(warning 1 - NEWLIB_INCLUDE_DIR: $(NEWLIB_INCLUDE_DIR))
+
 ifeq (,$(NEWLIB_INCLUDE_DIR))
   # Since Clang is not installed as a separate instance for each crossdev target
   # we need to tell it where to look for platform specific includes (Newlib
@@ -66,11 +69,15 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
   NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(NEWLIB_INCLUDE_PATTERNS))))))
 endif
 
+$(warning 2 - NEWLIB_INCLUDE_DIR: $(NEWLIB_INCLUDE_DIR))
+
 # If nothing was found we will try to fall back to searching for a cross-gcc in
 # the current PATH and use a relative path for the includes
 ifeq (,$(NEWLIB_INCLUDE_DIR))
   NEWLIB_INCLUDE_DIR := $(realpath $(wildcard $(dir $(shell command -v $(PREFIX)gcc 2>/dev/null))/../$(TARGET_ARCH)/include))
 endif
+
+$(warning 3 - NEWLIB_INCLUDE_DIR: $(NEWLIB_INCLUDE_DIR))
 
 ifeq ($(TOOLCHAIN),llvm)
   # A cross GCC already knows the target libc include path (build-in at compile time)
@@ -86,6 +93,8 @@ ifeq (1,$(USE_NEWLIB_NANO))
   NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_DIR)/newlib-nano \
                                                     $(NEWLIB_INCLUDE_DIR)/newlib/nano \
                                                     $(NEWLIB_INCLUDE_DIR)/nano))
+  $(warning A - NEWLIB_NANO_INCLUDE_DIR: $(NEWLIB_NANO_INCLUDE_DIR))
+
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
   INCLUDES := -isystem $(NEWLIB_NANO_INCLUDE_DIR) $(INCLUDES)
