@@ -35,6 +35,7 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
                               -e '1,/\#include <...> search starts here:/d' \
                               -e '/End of search list./,$$d' \
                               -e 's/\s//')
+  $(eval $(shell $(PREFIX)gcc -v -x c -E /dev/null))
   NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
 endif
 
