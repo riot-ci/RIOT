@@ -38,7 +38,8 @@ ifeq (,$(NEWLIB_INCLUDE_DIR))
   NEWLIB_INCLUDE_DIR := $(firstword $(realpath $(dir $(wildcard $(addsuffix /newlib.h, $(COMPILER_INCLUDE_PATHS))))))
 endif
 
-$(warning 0 - COMPILER_INCLUDE_PATHS: $(COMPILER_INCLUDE_PATHS))
+$(warning 0 - COMPILER_INCLUDE_PATHS)
+$(foreach path,$(COMPILER_INCLUDE_PATHS), $(warning 0 - $(path): $(wildcard $(addsuffix /newlib.h, $(path)))))
 $(warning 1 - NEWLIB_INCLUDE_DIR: $(NEWLIB_INCLUDE_DIR))
 
 ifeq (,$(NEWLIB_INCLUDE_DIR))
@@ -93,7 +94,7 @@ ifeq (1,$(USE_NEWLIB_NANO))
   NEWLIB_NANO_INCLUDE_DIR ?= $(firstword $(wildcard $(NEWLIB_INCLUDE_DIR)/newlib-nano \
                                                     $(NEWLIB_INCLUDE_DIR)/newlib/nano \
                                                     $(NEWLIB_INCLUDE_DIR)/nano))
-  $(warning A - NEWLIB_NANO_INCLUDE_DIR: $(NEWLIB_NANO_INCLUDE_DIR))
+  $(warning 4 - NEWLIB_NANO_INCLUDE_DIR: $(NEWLIB_NANO_INCLUDE_DIR))
 
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
