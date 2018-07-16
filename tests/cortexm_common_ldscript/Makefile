@@ -82,7 +82,8 @@ tests-offsets: $(OFFSETS_TESTS:%=test-offset_%)
 .PHONY: test-offset_%
 test-offset_%: $(BINDIR)/$(APPLICATION)_offset_%.elf
 	$(Q)echo -n "Test compilation with offset $*: "
-	$(Q)TEST_START_ADDR=$$($(PREFIX)readelf --section-headers $^ 2>/dev/null | awk '/.text/{printf "0x%s\n", $$5}'); \
+	$(Q)\
+	TEST_START_ADDR=$$($(PREFIX)readelf --section-headers $^ 2>/dev/null | awk '/.text/{printf "0x%s\n", $$5}'); \
 	EXPECT_START_ADDR=$$(printf "0x%08x" $$(( $(ROM_START_ADDR) + $* ))); \
 	if test $${TEST_START_ADDR} != $${EXPECT_START_ADDR}; then \
 	  echo "[ERROR] Linker offset not used $${TEST_START_ADDR} != $${EXPECT_START_ADDR}" >&2; \
