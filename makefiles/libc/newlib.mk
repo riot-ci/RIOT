@@ -96,6 +96,7 @@ ifeq (1,$(USE_NEWLIB_NANO))
                                                     $(NEWLIB_INCLUDE_DIR)/newlib/nano \
                                                     $(NEWLIB_INCLUDE_DIR)/nano))
   $(warning 4 - NEWLIB_NANO_INCLUDE_DIR: $(NEWLIB_NANO_INCLUDE_DIR))
+  $(foreach path,$(sort $(dir $(wildcard $(NEWLIB_INCLUDE_DIR)/*/*))), $(warning 4 - $(path)))
 
   # newlib-nano overrides newlib.h and its include dir should therefore go before
   # the regular system include dirs.
