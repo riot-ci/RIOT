@@ -123,16 +123,19 @@ $(BINDIR)/$(APPLICATION)_fw_len_half_rom.elf: $(ELFFILES_DEPS)
 # Test FW_ROM_LEN overflow detection
 
 OVERFLOW_TESTS = too_big_for_rom offset_and_romlen
-tests-rom-overflow: $(OVERFLOW_TESTS:%=$(BINDIR)/$(APPLICATION)_assert_overflow_%.elf)
+tests-rom-overflow: $(OVERFLOW_TESTS:%=test-assert_overflow_%)
+
 
 # Simple FW_ROM_LEN overflow
-$(BINDIR)/$(APPLICATION)_assert_overflow_too_big_for_rom.elf: FW_ROM_LEN=$$(($(ROM_LEN_BYTES) + 1))
+test-assert_overflow_too_big_for_rom: FW_ROM_LEN=$$(($(ROM_LEN_BYTES) + 1))
 
 # ROM_OFFSET and FW_ROM_LEN set ROM_LEN
-$(BINDIR)/$(APPLICATION)_assert_overflow_offset_and_romlen.elf: ROM_OFFSET=0x1000
-$(BINDIR)/$(APPLICATION)_assert_overflow_offset_and_romlen.elf: FW_ROM_LEN=$(ROM_LEN_BYTES)
+test-assert_overflow_offset_and_romlen: ROM_OFFSET=0x1000
+test-assert_overflow_offset_and_romlen: FW_ROM_LEN=$(ROM_LEN_BYTES)
 
-$(BINDIR)/$(APPLICATION)_assert_overflow_%.elf: $(ELFFILES_DEPS)
+.PHONY: test-assert_overflow_%
+test-assert_overflow_%: $(ELFFILES_DEPS)
 	$(Q) echo -n "Test ROM overflow detection: "
-	$(Q){ $(_LINK) -o $@ 2>&1 | grep -q 'Specified _fw_rom_length does not fit in ROM' ; } \
-		&& echo [OK] || { echo [ERROR] Compilation should have failed >&2; exit 1; }
+	$(Q)\
+	{ $(_LINK) -o /dev/null 2>&1 | grep -q 'Specified _fw_rom_length does not fit in ROM' ; } \
+	  && echo [OK] || { echo [ERROR] Compilation should have failed >&2; exit 1; }
