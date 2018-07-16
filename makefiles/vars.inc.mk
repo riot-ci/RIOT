@@ -60,6 +60,7 @@ export SIZE                  # The command to read to size of the ELF sections.
 export SIZEFLAGS             # The optional size flags.
 export UNDEF                 # Object files that the linker must include in the ELFFILE even if no call to the functions or symbols (ex: interrupt vectors).
 export WERROR                # Treat all compiler warnings as errors if set to 1 (see -Werror flag in GCC manual)
+# STD_DEFAULT_GNU_99         # Use -std=gnu99 instead of -std=c99 as default if set to 1
 
 export GITCACHE              # path to git-cache executable
 export FLASHER               # The command to call on "make flash".
