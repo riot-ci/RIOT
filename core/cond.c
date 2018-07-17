@@ -50,7 +50,7 @@ void cond_wait(cond_t *cond, mutex_t *mutex)
     mutex_lock(mutex);
 }
 
-void _cond_signal(cond_t *cond, bool broadcast)
+static void _cond_signal(cond_t *cond, bool broadcast)
 {
     unsigned irqstate = irq_disable();
     list_node_t *next;
