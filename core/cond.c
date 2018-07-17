@@ -27,6 +27,11 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+void cond_init(cond_t *cond)
+{
+    cond->queue.next = NULL;
+}
+
 void cond_wait(cond_t *cond, mutex_t *mutex)
 {
     unsigned irqstate = irq_disable();
@@ -69,4 +74,14 @@ void _cond_signal(cond_t *cond, bool broadcast)
     if (min_prio <= THREAD_PRIORITY_MIN) {
         sched_switch(min_prio);
     }
+}
+
+void cond_signal(cond_t *cond)
+{
+    _cond_signal(cond, false);
+}
+
+void cond_broadcast(cond_t *cond)
+{
+    _cond_signal(cond, true);
 }

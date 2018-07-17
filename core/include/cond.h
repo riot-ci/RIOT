@@ -6,7 +6,7 @@
 
 /**
  * @brief       Condition variable for thread synchronization
- * @ingroup     core
+ * @ingroup     core, core_sync
  * @{
  *
  * @file
@@ -173,10 +173,7 @@ typedef struct {
  *
  * @param[in] cond    Pre-allocated condition structure. Must not be NULL.
  */
-static inline void cond_init(cond_t *cond)
-{
-    cond->queue.next = NULL;
-}
+void cond_init(cond_t *cond);
 
 /**
  * @brief Waits on a condition.
@@ -185,18 +182,6 @@ static inline void cond_init(cond_t *cond)
  * @param[in] mutex         Mutex object held by the current thread.
  */
 void cond_wait(cond_t *cond, mutex_t *mutex);
-
-/**
- * @brief Wakes up threads waiting on a condition variable.
- *
- * @details This is a helper function used by cond_signal() and
- * cond_broadcast(). You should use those functions instead of this one.
- *
- * @param[in] cond          Condition variable whose threads to wake up.
- * @param[in] broadcast     If true, wakes up all threads. If false, only
- *                          wakes up the first waiting thread.
- */
-void _cond_signal(cond_t *cond, bool broadcast);
 
 
 /**
@@ -208,10 +193,7 @@ void _cond_signal(cond_t *cond, bool broadcast);
  *
  * @param[in] cond  Condition variable to signal.
  */
-static inline void cond_signal(cond_t *cond)
-{
-    _cond_signal(cond, false);
-}
+void cond_signal(cond_t *cond);
 
 /**
  * @brief Wakes up all threads waiting on the condition variable.
@@ -222,10 +204,7 @@ static inline void cond_signal(cond_t *cond)
  *
  * @param[in] cond  Condition variable to broadcast.
  */
-static inline void cond_broadcast(cond_t *cond)
-{
-    _cond_signal(cond, true);
-}
+void cond_broadcast(cond_t *cond);
 
 #ifdef __cplusplus
 }
