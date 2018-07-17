@@ -138,5 +138,5 @@ test-assert_overflow_offset_and_romlen: FW_ROM_LEN=$(ROM_LEN_BYTES)
 test-assert_overflow_%: $(ELFFILES_DEPS)
 	$(Q) echo -n "Test ROM overflow detection ($*): "
 	$(Q)\
-	{ $(_LINK) -o /dev/null 2>&1 | grep -q 'Specified _fw_rom_length does not fit in ROM' ; } \
+	{ $(_LINK) -o /dev/null 2>&1 | grep -q 'Specified firmware size does not fit in ROM' ; } \
 	  && echo [OK] || { echo [ERROR] Compilation should have failed >&2; exit 1; }
