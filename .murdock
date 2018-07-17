@@ -1,6 +1,8 @@
 #!/bin/sh
 
 export TEST_BOARDS_AVAILABLE=${TEST_BOARDS_AVAILABLE:-"samr21-xpro"}
+# TODO provide make target in similar fashion as the info-boards-supported one?
+export TEST_BOARDS_LLVM_COMPILE=${TEST_BOARDS_LLVM_COMPILE:-"native samr21-xpro nucleo-f401re"}
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
@@ -95,15 +97,11 @@ get_supported_boards() {
 get_supported_toolchains() {
     local board=$1
 
-    # TODO provide make target in similar fashion as the info-boards-supported one
-    for b in native samr21-xpro nucleo-f401re
-    do
-        if [ "$b" = "${board}" ]; then
-            echo "llvm gnu"
-            return
-        fi
-    done
-    echo "gnu"
+    if is_in_list "${board}" "${TEST_BOARDS_LLVM_COMPILE}"; then
+        echo "llvm gnu"
+    else
+        echo "gnu"
+    fi
 }
 
 # given an app dir as parameter, print "$appdir board toolchain" for each
