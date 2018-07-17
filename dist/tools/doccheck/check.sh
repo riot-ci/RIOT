@@ -8,7 +8,7 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-RIOTBASE=$(readlink -f "$(dirname $(realpath $0))/../../..")
+RIOTBASE="$(cd $(dirname $0)/../../..; pwd)"
 
 if tput colors &> /dev/null && [ $(tput colors) -ge 8 ]; then
     CERROR="\e[1;31m"
@@ -64,7 +64,8 @@ UNDEFINED_GROUPS_PRINT=$( \
 if [ -n "${UNDEFINED_GROUPS}" ]
 then
     COUNT=$(echo "${UNDEFINED_GROUPS}" | wc -l)
-    echo -ne "${CWARN}WARNING${CRESET} "
+    echo -ne "${CERROR}ERROR${CRESET} "
     echo -e "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups:"
     echo "${UNDEFINED_GROUPS_PRINT}"
+    exit 2
 fi

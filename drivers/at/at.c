@@ -141,11 +141,17 @@ ssize_t at_send_cmd_get_lines(at_dev_t *dev, const char *command,
         }
         else if (res > 0) {
             bytes_left -= res;
-            if ((res == (2 + keep_eol)) && (strncmp(pos, "OK", 2) == 0)) {
+            size_t len_ok = sizeof(AT_RECV_OK) - 1;
+            size_t len_error = sizeof(AT_RECV_ERROR) - 1;
+            if (((size_t )res == (len_ok + keep_eol)) &&
+                (len_ok != 0) &&
+                (strncmp(pos, AT_RECV_OK, len_ok) == 0)) {
                 res = len - bytes_left;
                 break;
             }
-            else if ((res == (5 + keep_eol)) && (strncmp(pos, "ERROR", 5) == 0)) {
+            else if (((size_t )res == (len_error + keep_eol)) &&
+                     (len_error != 0) &&
+                     (strncmp(pos, AT_RECV_ERROR, len_error) == 0)) {
                 return -1;
             }
             else if (strncmp(pos, "+CME ERROR:", 11) == 0) {
@@ -204,8 +210,10 @@ int at_send_cmd_wait_ok(at_dev_t *dev, const char *command, uint32_t timeout)
     char resp_buf[64];
 
     res = at_send_cmd_get_resp(dev, command, resp_buf, sizeof(resp_buf), timeout);
+
     if (res > 0) {
-        if (strcmp(resp_buf, "OK") == 0) {
+        ssize_t len_ok = sizeof(AT_RECV_OK) - 1;
+        if ((len_ok != 0) && (strcmp(resp_buf, AT_RECV_OK) == 0)) {
             res = 0;
         }
         else {
@@ -257,4 +265,63 @@ out:
         *resp_buf = '\0';
     }
     return res;
+}
+
+#ifdef MODULE_AT_URC
+void at_add_urc(at_dev_t *dev, at_urc_t *urc)
+{
+    assert(urc);
+    assert(urc->code);
+    assert(strlen(urc->code) != 0);
+    assert(urc->cb);
+
+    clist_rpush(&dev->urc_list, &urc->list_node);
+}
+
+void at_remove_urc(at_dev_t *dev, at_urc_t *urc)
+{
+    clist_remove(&dev->urc_list, &urc->list_node);
+}
+
+static int _check_urc(clist_node_t *node, void *arg)
+{
+    const char *buf = arg;
+    at_urc_t *urc = container_of(node, at_urc_t, list_node);
+
+    DEBUG("Trying to match with %s\n", urc->code);
+
+    if (strncmp(buf, urc->code, strlen(urc->code)) == 0) {
+        urc->cb(urc->arg, buf);
+        return 1;
+    }
+
+    return 0;
+}
+
+void at_process_urc(at_dev_t *dev, uint32_t timeout)
+{
+    char buf[AT_BUF_SIZE];
+
+    DEBUG("Processing URC (timeout=%" PRIu32 "us)\n", timeout);
+
+    ssize_t res;
+    /* keep reading while received data are shorter than EOL */
+    while ((res = at_readline(dev, buf, sizeof(buf), true, timeout)) <
+           (ssize_t)sizeof(AT_RECV_EOL_1 AT_RECV_EOL_2) - 1) {
+        if (res < 0) {
+            return;
+        }
+    }
+    clist_foreach(&dev->urc_list, _check_urc, buf);
+}
+#endif
+
+void at_dev_poweron(at_dev_t *dev)
+{
+    uart_poweron(dev->uart);
+}
+
+void at_dev_poweroff(at_dev_t *dev)
+{
+    uart_poweroff(dev->uart);
 }
