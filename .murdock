@@ -134,7 +134,7 @@ print_worker() {
 compile() {
     local appdir=$1
     local board=$(echo $2 | cut -f 1 -d':')
-    local toolchain=${$(echo $2 | cut -f 2 -d':'):-gnu}
+    local toolchain=$(echo $2 | cut -f 2 -d':')
 
     [ "$board" = "makefile_broken" ] && error "$0: Makefile in \"$appdir\" seems to be broken!"
 
