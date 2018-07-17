@@ -19,6 +19,7 @@ thread_prio = {
         }
 first_group_size = 3
 
+
 def testfunc(child):
     for k in thread_prio.keys():
         child.expect(u"T%i \(prio %i\): waiting on condition variable now" % (k, thread_prio[k]))
