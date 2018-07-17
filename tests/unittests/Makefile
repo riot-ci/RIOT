@@ -48,8 +48,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              nz32-sc151 \
                              opencm904 \
                              openmote \
-                             openmote-cc2538 \
                              openmote-b \
+                             openmote-cc2538 \
                              pba-d-01-kw2x \
                              remote-pa \
                              remote-reva \
@@ -58,6 +58,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              samd21-xpro \
                              samr21-xpro \
                              seeeduino_arch-pro \
+                             sensebox \
                              slstk3401a \
                              sltb001a \
                              slwstk6220a \
