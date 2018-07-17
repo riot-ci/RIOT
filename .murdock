@@ -99,7 +99,7 @@ get_supported_toolchains() {
     local toolchains="gnu"
 
     if is_in_list "${board}" "${TEST_BOARDS_LLVM_COMPILE}"; then
-        toolchains="$toolchains llvm"
+        toolchains="${toolchains} llvm"
     fi
     echo "${toolchains}"
 }
