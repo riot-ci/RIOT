@@ -40,8 +40,8 @@ static void timer_cb(void *arg)
 {
     (void) arg;
 
+    thread_yield();
     xtimer_set(&timer, OFFSET);
-    sched_switch(THREAD_PRIORITY_MAIN - 2);
 }
 
 static void *thread1(void *arg)
@@ -91,13 +91,13 @@ static void *thread2(void *arg)
 
 int main(void)
 {
-    p1 = thread_create(t1_stack, sizeof(t1_stack), THREAD_PRIORITY_MAIN - 1,
+    p1 = thread_create(t1_stack, sizeof(t1_stack), THREAD_PRIORITY_MAIN + 1,
                        THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
                        thread1, NULL, "nr1");
-    p2 = thread_create(t2_stack, sizeof(t2_stack), THREAD_PRIORITY_MAIN - 1,
+    p2 = thread_create(t2_stack, sizeof(t2_stack), THREAD_PRIORITY_MAIN + 1,
                        THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
                        thread2, NULL, "nr2");
-    p3 = thread_create(t3_stack, sizeof(t3_stack), THREAD_PRIORITY_MAIN - 1,
+    p3 = thread_create(t3_stack, sizeof(t3_stack), THREAD_PRIORITY_MAIN + 1,
                        THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
                        thread1, NULL, "nr3");
     puts("THREADS CREATED\n");
