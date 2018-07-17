@@ -96,12 +96,12 @@ get_supported_boards() {
 
 get_supported_toolchains() {
     local board=$1
+    local toolchains="gnu"
 
     if is_in_list "${board}" "${TEST_BOARDS_LLVM_COMPILE}"; then
-        echo "llvm gnu"
-    else
-        echo "gnu"
+        toolchains="$toolchains llvm"
     fi
+    echo "${toolchains}"
 }
 
 # given an app dir as parameter, print "$appdir board toolchain" for each
