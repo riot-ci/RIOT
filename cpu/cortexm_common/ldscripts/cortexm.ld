@@ -20,7 +20,7 @@
  * @}
  */
 
-_rom_offset = DEFINED( _rom_offset ) ? _rom_offset : 0x0 ;
+_rom_offset = DEFINED( _rom_offset ) ? _rom_offset : 0x0;
 _fw_rom_length = DEFINED( _fw_rom_length ) ? _fw_rom_length : _rom_length - _rom_offset;
 
 ASSERT((_fw_rom_length <= _rom_length - _rom_offset), "Specified _fw_rom_length does not fit in ROM");
