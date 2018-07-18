@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x
-
 export TEST_BOARDS_AVAILABLE=${TEST_BOARDS_AVAILABLE:-"samr21-xpro"}
 # TODO provide make target in similar fashion as the info-boards-supported one?
 export TEST_BOARDS_LLVM_COMPILE=${TEST_BOARDS_LLVM_COMPILE:-"native samr21-xpro nucleo-f401re"}
