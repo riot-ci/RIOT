@@ -1,20 +1,20 @@
 # check some environment variables first
-ifndef NEWLIB_DIR
-    $(info NEWLIB_DIR should be defined as /path/to/newlib directory)
-    $(info NEWLIB_DIR is set by default to /opt/esp/newlib-xtensa)
-    export NEWLIB_DIR=/opt/esp/newlib-xtensa
+ifndef ESP8266_NEWLIB_DIR
+    $(info ESP8266_NEWLIB_DIR should be defined as /path/to/newlib directory)
+    $(info ESP8266_NEWLIB_DIR is set by default to /opt/esp/newlib-xtensa)
+    export ESP8266_NEWLIB_DIR=/opt/esp/newlib-xtensa
 endif
 
-ifndef SDK_DIR
-    $(info SDK_DIR should be defined as /path/to/sdk directory)
-    $(info SDK_DIR is set by default to /opt/esp/esp-open-sdk/sdk)
-    export SDK_DIR=/opt/esp/esp-open-sdk/sdk
+ifndef ESP8266_SDK_DIR
+    $(info ESP8266_SDK_DIR should be defined as /path/to/sdk directory)
+    $(info ESP8266_SDK_DIR is set by default to /opt/esp/esp-open-sdk/sdk)
+    export ESP8266_SDK_DIR=/opt/esp/esp-open-sdk/sdk
 endif
 
 export CPU ?= esp8266
 export TARGET_ARCH ?= xtensa-lx106-elf
 
-INCLUDES += -I$(NEWLIB_DIR)/$(TARGET_ARCH)/include
+INCLUDES += -I$(ESP8266_NEWLIB_DIR)/$(TARGET_ARCH)/include
 INCLUDES += -I$(RIOTBOARD)/common/$(CPU)/include
 INCLUDES += -I$(RIOTCPU)/$(CPU)
 INCLUDES += -I$(RIOTCPU)/$(CPU)/espressif
@@ -27,13 +27,13 @@ ASFLAGS += --longcalls --text-section-literals
 NETIF_NUMOF=0
 
 ifeq ($(SDK), 1)
-    INCLUDES += -I$(SDK_DIR)/include
+    INCLUDES += -I$(ESP8266_SDK_DIR)/include
     CFLAGS   += -DSDK_USED -DUSE_US_TIMER
     ifeq ($(SDK_INT_HANDLING), 1)
         CFLAGS += -DSDK_INT_HANDLING
     endif
 else
-    INCLUDES += -I$(SDK_DIR)/include
+    INCLUDES += -I$(ESP8266_SDK_DIR)/include
     CFLAGS   += -DSDK_NOT_USED
 endif
 
@@ -91,8 +91,8 @@ endif
 
 CFLAGS += -DGNRC_NETIF_NUMOF=$(NETIF_NUMOF)
 
-LINKFLAGS += -L$(NEWLIB_DIR)/$(TARGET_ARCH)/lib
-LINKFLAGS += -L$(SDK_DIR)/lib
+LINKFLAGS += -L$(ESP8266_NEWLIB_DIR)/$(TARGET_ARCH)/lib
+LINKFLAGS += -L$(ESP8266_SDK_DIR)/lib
 
 ifeq ($(SDK), 1)
     LINKFLAGS += -Wl,--start-group $(BINDIR)/sdk.a
