@@ -1188,7 +1188,6 @@ static void _init_from_device(gnrc_netif_t *netif)
     (void)res;
     assert(res == sizeof(tmp));
     netif->device_type = (uint8_t)tmp;
-
     switch (netif->device_type) {
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_NRFMIN) || defined(MODULE_XBEE)
         case NETDEV_TYPE_IEEE802154:
