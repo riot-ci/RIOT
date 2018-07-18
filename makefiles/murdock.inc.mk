@@ -17,7 +17,7 @@ test-murdock:
 	cd $(RIOTBASE) && \
 		./.murdock test_job \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
-		$(BOARD):$(TOOLCHAIN) \
+		"$(BOARD):$(TOOLCHAIN)" \
 		$(FLASHFILE)
 
 # don't whitelist tests if there's no binary
