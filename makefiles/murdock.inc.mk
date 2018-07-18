@@ -15,7 +15,7 @@ FLASHFILE:=$(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
 test-murdock: TOOLCHAIN ?= gnu
 test-murdock:
 	cd $(RIOTBASE) && \
-		./.murdock test_job \
+		bash -x ./.murdock test_job \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
 		"$(BOARD):$(TOOLCHAIN)" \
 		$(FLASHFILE)
