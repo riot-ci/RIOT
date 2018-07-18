@@ -50,10 +50,10 @@ where ```/path/to/toolchain/``` is the directory you selected for the installati
 export PATH=$PATH:/opt/esp/esp-open-sdk/xtensa-lx106-elf/bin
 ```
 
-Furthermore, you have to set variables ```SDK_DIR``` and ```NEWLIB_DIR``` according to the location of the toolchain.
+Furthermore, you have to set variables ```ESP8266_SDK_DIR``` and ```ESP8266_NEWLIB_DIR``` according to the location of the toolchain.
 ```
-export SDK_DIR=/path/to/toolchain/esp-open-sdk/sdk
-export NEWLIB_DIR=/path/to/toolchain/newlib-xtensa
+export ESP8266_SDK_DIR=/path/to/toolchain/esp-open-sdk/sdk
+export ESP8266_NEWLIB_DIR=/path/to/toolchain/newlib-xtensa
 ```
 If you have used ```/opt/esp``` as installation directory, it is not necessary to set these variables since makefiles use them as default directories.
 
@@ -75,7 +75,7 @@ esp-open-sdk is directly installed inside its source directory. Therefore, chang
 cd /path/to/esp
 git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
 cd esp-open-sdk
-export ESP_OPEN_SDK_DIR=$PWD
+export ESP_OPEN_ESP8266_SDK_DIR=$PWD
 ```
 
 If you plan to use the SDK-version of the RIOT port and to use the SDK as part of esp-open-sdk, simply build its standalone version.
@@ -93,13 +93,13 @@ make toolchain esptool libhal STANDALONE=n
 Once compilation has been finished, the toolchain is available in **```$PWD/xtensa-lx106-elf/bin```**. To use it, set the **```PATH```** variable accordingly.
 
 ```
-export PATH=$ESP_OPEN_SDK_DIR/xtensa-lx106-elf/bin:$PATH
+export PATH=$ESP_OPEN_ESP8266_SDK_DIR/xtensa-lx106-elf/bin:$PATH
 ```
 
-If you have compiled the standalone version of esp-open-sdk and you plan to use this SDK version, set additionally the **```SDK_DIR```** variable.
+If you have compiled the standalone version of esp-open-sdk and you plan to use this SDK version, set additionally the **```ESP8266_SDK_DIR```** variable.
 
 ```
-export SDK_DIR=$ESP_OPEN_SDK_DIR/sdk
+export ESP8266_SDK_DIR=$ESP_OPEN_ESP8266_SDK_DIR/sdk
 ```
 
 #### Installation of newlib-c
@@ -107,7 +107,7 @@ export SDK_DIR=$ESP_OPEN_SDK_DIR/sdk
 First, set the target directory for the installation.
 
 ```
-export NEWLIB_DIR=/path/to/esp/newlib-xtensa
+export ESP8266_NEWLIB_DIR=/path/to/esp/newlib-xtensa
 ```
 
 Please take care, to use the newlib-c version that was modified for esp-open-rtos since it includes ```stdatomic.h```.
@@ -120,7 +120,7 @@ git clone https://github.com/ourairquality/newlib.git
 Once you have cloned the GIT repository, build and install it with following commands.
 ```
 cd newlib
-./configure --prefix=$NEWLIB_DIR --with-newlib --enable-multilib --disable-newlib-io-c99-formats --enable-newlib-supplied-syscalls --enable-target-optspace --program-transform-name="s&^&xtensa-lx106-elf-&" --disable-option-checking --with-target-subdir=xtensa-lx106-elf --target=xtensa-lx106-elf --enable-newlib-nano-formatted-io --enable-newlib-reent-small
+./configure --prefix=$ESP8266_NEWLIB_DIR --with-newlib --enable-multilib --disable-newlib-io-c99-formats --enable-newlib-supplied-syscalls --enable-target-optspace --program-transform-name="s&^&xtensa-lx106-elf-&" --disable-option-checking --with-target-subdir=xtensa-lx106-elf --target=xtensa-lx106-elf --enable-newlib-nano-formatted-io --enable-newlib-reent-small
 make
 make install
 ```
@@ -138,10 +138,10 @@ cd /path/to/esp
 tar xvfz /downloads/ESP8266_NONOS_SDK-2.1.0.tar.gz
 ```
 
-To use the installed SDK, set variable **```SDK_DIR```** accordingly.
+To use the installed SDK, set variable **```ESP8266_SDK_DIR```** accordingly.
 
 ```
-export SDK_DIR=/path/to/esp/ESP8266_NONOS_SDK-2.1.0
+export ESP8266_SDK_DIR=/path/to/esp/ESP8266_NONOS_SDK-2.1.0
 ```
 
 ## Usage
@@ -158,16 +158,16 @@ To use the toolchain and optionally the SDK, please check that your environment 
 
 ```
 export PATH=/path/to/esp/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
-export NEWLIB_DIR=/path/to/esp/newlib-xtensa
+export ESP8266_NEWLIB_DIR=/path/to/esp/newlib-xtensa
 ```
 and optionally
 ```
-export SDK_DIR=/path/to/esp/esp-open-sdk/sdk
+export ESP8266_SDK_DIR=/path/to/esp/esp-open-sdk/sdk
 ```
 or
 
 ```
-export SDK_DIR=/path/to/esp/ESP8266_NONOS_SDK-2.1.0
+export ESP8266_SDK_DIR=/path/to/esp/ESP8266_NONOS_SDK-2.1.0
 ```
 
 ## Compile Options
