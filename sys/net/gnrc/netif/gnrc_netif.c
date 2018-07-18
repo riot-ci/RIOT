@@ -312,6 +312,18 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
             res = sizeof(netopt_enable_t);
             break;
 #endif  /* MODULE_GNRC_SIXLOWPAN_IPHC */
+        case NETOPT_RAWMODE:
+            if (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE) {
+                netif->flags |= GNRC_NETIF_FLAGS_RAWMODE;
+            }
+            else {
+                netif->flags &= ~GNRC_NETIF_FLAGS_RAWMODE;
+            }
+            /* Also propagate to the netdev device */
+            netif->dev->driver->set(netif->dev, NETOPT_RAWMODE, opt->data,
+                                      opt->data_len);
+            res = sizeof(netopt_enable_t);
+            break;
         default:
             break;
     }
@@ -325,14 +337,6 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
                 case NETOPT_ADDR_LEN:
                 case NETOPT_SRC_LEN:
                     _update_l2addr_from_dev(netif);
-                    break;
-                case NETOPT_RAWMODE:
-                    if (*(((netopt_enable_t *)opt->data)) == NETOPT_ENABLE) {
-                        netif->flags |= GNRC_NETIF_FLAGS_RAWMODE;
-                    }
-                    else {
-                        netif->flags &= ~GNRC_NETIF_FLAGS_RAWMODE;
-                    }
                     break;
                 default:
                     break;
