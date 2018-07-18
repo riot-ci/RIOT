@@ -204,11 +204,12 @@ test_job() {
 
 run_test() {
     local appdir=$1
-    local board=$2
+    local board=$(echo $2 | cut -f 1 -d':')
+    local toolchain=$(echo $2 | cut -f 2 -d':')
     print_worker
     echo "-- executing tests for $appdir on $board:"
     hook run_test_pre
-    BOARD=$board make -C$appdir flash-only test
+    BOARD=$board TOOLCHAIN=${toolchain} make -C$appdir flash-only test
 }
 
 # execute static tests
