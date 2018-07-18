@@ -75,7 +75,7 @@ esp-open-sdk is directly installed inside its source directory. Therefore, chang
 cd /path/to/esp
 git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
 cd esp-open-sdk
-export ESP_OPEN_ESP8266_SDK_DIR=$PWD
+export ESP_OPEN_SDK_DIR=$PWD
 ```
 
 If you plan to use the SDK-version of the RIOT port and to use the SDK as part of esp-open-sdk, simply build its standalone version.
@@ -93,13 +93,13 @@ make toolchain esptool libhal STANDALONE=n
 Once compilation has been finished, the toolchain is available in **```$PWD/xtensa-lx106-elf/bin```**. To use it, set the **```PATH```** variable accordingly.
 
 ```
-export PATH=$ESP_OPEN_ESP8266_SDK_DIR/xtensa-lx106-elf/bin:$PATH
+export PATH=$ESP_OPEN_SDK_DIR/xtensa-lx106-elf/bin:$PATH
 ```
 
 If you have compiled the standalone version of esp-open-sdk and you plan to use this SDK version, set additionally the **```ESP8266_SDK_DIR```** variable.
 
 ```
-export ESP8266_SDK_DIR=$ESP_OPEN_ESP8266_SDK_DIR/sdk
+export ESP8266_SDK_DIR=$ESP_OPEN_SDK_DIR/sdk
 ```
 
 #### Installation of newlib-c
