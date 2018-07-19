@@ -40,9 +40,11 @@ void board_init(void)
 {
     #ifdef LED0_PIN
     gpio_init (LED0_PIN, GPIO_OUT);
+    LED0_OFF;
     #endif
     #ifdef LED1_PIN
     gpio_init (LED1_PIN, GPIO_OUT);
+    LED1_OFF;
     #endif
 }
 
