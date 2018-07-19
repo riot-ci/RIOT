@@ -275,7 +275,16 @@ char *make_message(const char *format, va_list argp)
     }
 
     while (1) {
+#if defined(__clang__) || defined(__llvm__)
+        _Pragma("clang diagnostic push")
+        /* The point of that call is to wrap the actual host system's formatting
+         * functions, so the non-literal formatting string is alright here. */
+        _Pragma("clang diagnostic ignored \"-Wformat-nonliteral\"")
+#endif
         int n = vsnprintf(message, size, format, argp);
+#if defined(__clang__) || defined(__llvm__)
+        _Pragma("clang diagnostic pop")
+#endif
         if (n < 0)
             return NULL;
         if (n < size)
