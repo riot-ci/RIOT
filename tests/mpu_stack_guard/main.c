@@ -23,9 +23,6 @@
 #include "cpu.h"
 #include "thread.h"
 
-/* recurse() recurses infinitely ;-) */
-#pragma clang diagnostic ignored "-Winfinite-recursion"
-
 #define CANARY_VALUE 0xdeadbeef
 
 static struct {
