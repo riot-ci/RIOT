@@ -156,7 +156,7 @@ void rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                frag_size - data_offset);
     }
 
-    gnrc_sixlowpan_frag_rbuf_check(&entry->super, netif_hdr);
+    gnrc_sixlowpan_frag_rbuf_dispatch_when_complete(&entry->super, netif_hdr);
 }
 
 static inline bool _rbuf_int_overlap_partially(rbuf_int_t *i, uint16_t start, uint16_t end)

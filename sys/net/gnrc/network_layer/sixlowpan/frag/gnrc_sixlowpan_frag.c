@@ -331,8 +331,8 @@ void gnrc_sixlowpan_frag_rbuf_remove(gnrc_sixlowpan_rbuf_t *rbuf)
     rbuf_rm((rbuf_t *)rbuf);
 }
 
-void gnrc_sixlowpan_frag_rbuf_check(gnrc_sixlowpan_rbuf_t *rbuf,
-                                    gnrc_netif_hdr_t *netif_hdr)
+void gnrc_sixlowpan_frag_rbuf_dispatch_when_complete(gnrc_sixlowpan_rbuf_t *rbuf,
+                                                     gnrc_netif_hdr_t *netif_hdr)
 {
     assert(rbuf);
     assert(netif_hdr);

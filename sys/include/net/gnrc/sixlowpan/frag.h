@@ -156,13 +156,14 @@ void gnrc_sixlowpan_frag_rbuf_remove(gnrc_sixlowpan_rbuf_t *rbuf);
  *                  Used to construct the @ref gnrc_netif_hdr_t of the completed
  *                  datagram. Must not be NULL.
  */
-void gnrc_sixlowpan_frag_rbuf_check(gnrc_sixlowpan_rbuf_t *rbuf,
-                                    gnrc_netif_hdr_t *netif);
+void gnrc_sixlowpan_frag_rbuf_dispatch_when_complete(gnrc_sixlowpan_rbuf_t *rbuf,
+                                                     gnrc_netif_hdr_t *netif);
 #else
 /* NOPs to be used with gnrc_sixlowpan_iphc if gnrc_sixlowpan_frag is not
  * compiled in */
 #define gnrc_sixlowpan_frag_rbuf_remove(rbuf)       (void)(rbuf)
-#define gnrc_sixlowpan_frag_rbuf_check(rbuf, netif) (void)(rbuf); (void)(netif)
+#define gnrc_sixlowpan_frag_rbuf_dispatch_when_complete(rbuf, netif) \
+    (void)(rbuf); (void)(netif)
 #endif
 
 #ifdef __cplusplus
