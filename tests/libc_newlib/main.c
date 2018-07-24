@@ -55,6 +55,11 @@
  */
 static void test_newlib(void)
 {
+    /*
+     * Be sure `iprintf` and `printf` are used when `newlib` is included as
+     * they should be visible in the final elf file for compile time tests
+     */
+
 #ifdef MODULE_NEWLIB
 #ifdef MODULE_NEWLIB_NANO
     /* Nano maps iprintf to printf */
