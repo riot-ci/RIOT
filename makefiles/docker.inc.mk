@@ -79,13 +79,8 @@ DOCKER_OVERRIDE_CMDLINE := $(foreach varname,$(DOCKER_ENV_VARS), \
     ))
 DOCKER_OVERRIDE_CMDLINE := $(strip $(DOCKER_OVERRIDE_CMDLINE))
 
-# Allow running 'docker' with sudo
-DOCKER_WITH_SUDO ?= 0
-ifeq (1,$(DOCKER_WITH_SUDO))
-  DOCKER = sudo docker
-else
-  DOCKER = docker
-endif
+# Overwrite if you want to use `docker` with sudo
+DOCKER ?= docker
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
