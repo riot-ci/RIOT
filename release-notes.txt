@@ -60,6 +60,8 @@ Core
 
 System libraries
 ----------------
+    + puf_sram: SRAM PUF feature to seed PRNGs cortex-m platforms
+    + random: SHA-1 based PRNG
     +
     -
 
