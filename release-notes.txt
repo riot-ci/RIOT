@@ -88,6 +88,8 @@ Boards
     + Nucleo boards use their marketing names
     + HiFive1 (RISC-V)
     + slstk3402a
+    + stm32f429i-disc1
+    + stm32l476-disco
     + stm32mindev
 
 CPU
