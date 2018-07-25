@@ -109,7 +109,6 @@ void gnrc_sixlowpan_multiplex_by_size(gnrc_pktsnip_t *pkt,
     assert(pkt != NULL);
     assert(netif != NULL);
     size_t datagram_size = gnrc_pkt_len(pkt->next);
-    assert(datagram_size <= orig_datagram_size);
     DEBUG("6lo: iface->sixlo.max_frag_size = %u for interface %i\n",
           netif->sixlo.max_frag_size, netif->pid);
     if ((netif->sixlo.max_frag_size == 0) ||
