@@ -249,22 +249,23 @@ static void _receive(gnrc_pktsnip_t *pkt)
     gnrc_sixlowpan_dispatch_recv(pkt, NULL, 0);
 }
 
-static int _add_uncompr_disp(gnrc_pktsnip_t *pkt)
+static inline bool _add_uncompr_disp(gnrc_pktsnip_t *pkt)
 {
     gnrc_pktsnip_t *sixlowpan;
-    const uint8_t disp[] = { SIXLOWPAN_UNCOMP };
+    uint8_t *disp;
 
     DEBUG("6lo: Send uncompressed\n");
 
-    sixlowpan = gnrc_pktbuf_add(NULL, disp, sizeof(disp),
-                                GNRC_NETTYPE_SIXLOWPAN);
+    sixlowpan = gnrc_pktbuf_add(NULL, NULL, sizeof(uint8_t), GNRC_NETTYPE_SIXLOWPAN);
 
     if (sixlowpan == NULL) {
-        return 0;
+        return false;
     }
     sixlowpan->next = pkt->next;
     pkt->next = sixlowpan;
-    return (int)sixlowpan->size;
+    disp = sixlowpan->data;
+    disp[0] = SIXLOWPAN_UNCOMP;
+    return true;
 }
 
 static void _send(gnrc_pktsnip_t *pkt)
@@ -274,7 +275,6 @@ static void _send(gnrc_pktsnip_t *pkt)
     gnrc_netif_t *netif;
     /* datagram_size: pure IPv6 packet without 6LoWPAN dispatches or compression */
     size_t datagram_size;
-    int res;
 
     if ((pkt == NULL) || (pkt->size < sizeof(gnrc_netif_hdr_t))) {
         DEBUG("6lo: Sending packet has no netif header\n");
@@ -312,14 +312,11 @@ static void _send(gnrc_pktsnip_t *pkt)
         return;
     }
 #endif
-    if ((res = _add_uncompr_disp(pkt)) == 0) {
+    if (!_add_uncompr_disp(pkt)) {
         /* adding uncompressed dispatch failed */
         DEBUG("6lo: no space left in packet buffer\n");
         gnrc_pktbuf_release(pkt);
         return;
-    }
-    else {
-        datagram_size += res;
     }
     gnrc_sixlowpan_multiplex_by_size(pkt, datagram_size, netif, 0);
 }
