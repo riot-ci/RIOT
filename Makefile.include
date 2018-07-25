@@ -355,7 +355,7 @@ include $(RIOTMAKE)/modules.inc.mk
 # into account.
 #
 # FORCE is useful for goals that may keep outputs unchanged (for example, if it
-# depends on environment or configuration variables). If the goal were PHONY, it
+# depends on environment or configuration variables). If the goal were .PHONY, it
 # would trigger a rebuild of all its dependents regardless of file modification.
 #
 # As general rule, use .PHONY only for non-file targets.
