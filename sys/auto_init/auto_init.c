@@ -201,6 +201,16 @@ void auto_init(void)
     auto_init_enc28j60();
 #endif
 
+#ifdef MODULE_ESP_NET_ESPNOW
+    extern void auto_init_esp_net_espnow(void);
+    auto_init_esp_net_espnow();
+#endif
+
+#ifdef MODULE_ESP_NET_ESPETH
+    extern void auto_init_esp_net_espeth(void);
+    auto_init_esp_net_espeth();
+#endif
+
 #ifdef MODULE_ETHOS
     extern void auto_init_ethos(void);
     auto_init_ethos();
