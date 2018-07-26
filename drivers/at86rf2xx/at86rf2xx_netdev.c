@@ -175,7 +175,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
      * AT86RF231 MAN. p.89 8.3.2 Reading RSSI
      * AT86RF232 MAN. p.88 8.3.2 Reading RSSI
      * AT86RF233 MAN. p.99 8.4.2 Reading RSSI
-     * "It is not recommended reading the RSSI value when using the Extended 
+     * "It is not recommended reading the RSSI value when using the Extended
      * Operating Modes, use ED instead"
      * at86RF231  RSSI_BASE_VAL +ED, base -90dBm
      * at86RF232  RSSI_BASE_VAL +ED, base -91dBm
