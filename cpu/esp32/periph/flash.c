@@ -114,7 +114,7 @@ void spi_flash_drive_init (void)
     else if (CONFIG_SPI_FLASH_DRIVE_START % _flashchip->sector_size) {
         LOG_ERROR("[spi_flash_drive] configured start address has to be a "
                   "multiple of %d byte\n", _flashchip->sector_size);
-        part_top = ((CONFIG_SPI_FLASH_DRIVE_START + 
+        part_top = ((CONFIG_SPI_FLASH_DRIVE_START +
                      _flashchip->sector_size)) & ~(_flashchip->sector_size-1);
     }
     else {

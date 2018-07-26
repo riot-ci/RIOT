@@ -478,7 +478,7 @@ static void espnow_setup (espnow_netdev_t* dev)
                                              THREAD_CREATE_WOUT_YIELD |
                                              THREAD_CREATE_STACKTEST,
                                              espnow_event_handler,
-                                             NULL, "espnow-event-loop");
+                                             NULL, "net-esp-now-event");
 
     /* timer for peer scan initialization */
     _espnow_scan_peers_done = false;
@@ -573,7 +573,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 
     else {
         /* for other addresses, try to find an entry in NIB cache */
-          gnrc_ipv6_nib_nc_t nce;
+        gnrc_ipv6_nib_nc_t nce;
         int ret = gnrc_ipv6_nib_get_next_hop_l2addr (&ipv6_hdr->dst, dev->netif,
                                                      NULL, &nce);
         if (ret == 0) {
@@ -882,7 +882,7 @@ void auto_init_esp_net_espnow (void)
     espnow_setup(&_espnow_dev);
     _espnow_dev.netif = gnrc_netif_raw_create(_espnow_stack,
                                               ESPNOW_STACKSIZE, ESPNOW_PRIO,
-                                              "espnow-netdev",
+                                              "net-esp-now",
                                               (netdev_t *)&_espnow_dev);
 }
 

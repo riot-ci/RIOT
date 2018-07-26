@@ -420,7 +420,7 @@ void auto_init_esp_net_espeth (void)
     _espeth_dev.netif = gnrc_netif_ethernet_create(_espeth_stack,
                                                    ESPETH_STACKSIZE,
                                                    ESPETH_PRIO,
-                                                   "espeth-netdev",
+                                                   "net-esp-eth",
                                                    (netdev_t *)&_espeth_dev);
 }
 
