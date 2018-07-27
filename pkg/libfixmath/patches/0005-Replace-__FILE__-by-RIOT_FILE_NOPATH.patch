@@ -22,7 +22,7 @@ index a72d025..52ad7cb 100644
  #define TEST(x) \
      if (!(x)) { \
 -        printf( "\033[31;1mFAILED:\033[22;39m " __FILE__ ":" STR2(__LINE__) " " #x "\n"); \
-+        printf( "\033[31;1mFAILED:\033[22;39m " RIOT_FILE_NO_PATH ":" STR2(__LINE__) " " #x "\n"); \
++        printf( "\033[31;1mFAILED:\033[22;39m " RIOT_FILE_NOPATH ":" STR2(__LINE__) " " #x "\n"); \
          status = 1; \
      } else { \
          printf("\033[32;1mOK:\033[22;39m " #x "\n"); \
