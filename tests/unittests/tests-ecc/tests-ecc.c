@@ -21,6 +21,7 @@
 
 #include "ecc/hamming256.h"
 #include "ecc/golay2412.h"
+#include "ecc/repetition.h"
 
 static void test_hamming256_single(void)
 {
@@ -100,12 +101,27 @@ static void test_golay2412_message(void)
     TEST_ASSERT_EQUAL_INT(0, memcmp(&data, &result, sizeof(data)));
 }
 
+static void test_repetition(void)
+{
+    /* source for random bytes: https://www.random.org/bytes */
+    unsigned char data[] = {23, 117, 174, 230, 162};
+    unsigned char result[sizeof(data)];
+    unsigned char msg_enc[ECC_REPETITION_COUNT*sizeof(data)];
+
+    repetition_encode(sizeof(data), &data[0], &msg_enc[0]);
+    /* TODO: add (ECC_REPETITION_COUNT-1)/2 errors here */
+    repetition_decode(sizeof(data), &msg_enc[0], &result[0]);
+
+    TEST_ASSERT_EQUAL_INT(0, memcmp(data, result, sizeof(data)));
+}
+
 TestRef test_all(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_hamming256_single),
         new_TestFixture(test_hamming256_padding),
         new_TestFixture(test_golay2412_message),
+        new_TestFixture(test_repetition),
     };
 
     EMB_UNIT_TESTCALLER(EccTest, NULL, NULL, fixtures);
