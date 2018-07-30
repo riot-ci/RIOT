@@ -96,13 +96,6 @@ define docker_volume_and_env
   -e '$1=$(DOCKER_BUILD_ROOT)/$1'
 endef
 
-
-DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
-DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_BUILD_ROOT)/riotbase'
-DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_BUILD_ROOT)/riotbase'
-DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_BUILD_ROOT)/riotbase'
-
-
 # Add volumes for possible outside directories
 
 DOCKER_RIOT_DIRS = riotcpu riotboard riotmake riotproject
@@ -112,12 +105,21 @@ riotboard   = RIOTBOARD
 riotmake    = RIOTMAKE
 riotproject = RIOTPROJECT
 
-DOCKER_VOLUMES_AND_ENV += \
+# Volumes and env variable for external directories
+DOCKER_VOLUMES_AND_ENV_EXTERNAL += \
     $(foreach varname, $(DOCKER_RIOT_DIRS), \
       $(if $(call dir_is_outside_riotbase,$($($(varname)))),\
         $(strip $(call docker_volume_and_env,$(varname)))))
 
 
+DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += $(DOCKER_VOLUMES_AND_ENV_EXTERNAL)
+
+
+# Application directory relative to either riotbase or riotproject
 DOCKER_PROJECT_DIR = $(strip $(if $(call dir_is_outside_riotbase,$(RIOTPROJECT)),\
                        $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH),\
                        $(DOCKER_BUILD_ROOT)/riotbase/$(BUILDRELPATH)))
