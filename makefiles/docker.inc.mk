@@ -82,6 +82,49 @@ DOCKER_OVERRIDE_CMDLINE := $(strip $(DOCKER_OVERRIDE_CMDLINE))
 # Overwrite if you want to use `docker` with sudo
 DOCKER ?= docker
 
+
+# terminating '/' in patsubst is important to match $1 == $(RIOTBASE)
+define dir_is_outside_riotbase
+$(filter $1/,$(patsubst $(RIOTBASE)/%,%,$1/))
+endef
+
+# $1 = riotcpu  $($1) = RIOTCPU  $($($1)) = $(RIOTCPU)
+# -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu'
+# -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu'
+define docker_volume_and_env
+  -v '$($($(1))):$(DOCKER_BUILD_ROOT)/$1'
+  -e '$1=$(DOCKER_BUILD_ROOT)/$1'
+endef
+
+# Add volumes for possible outside directories
+
+DOCKER_RIOT_DIRS = riotcpu riotboard riotmake riotproject
+# Names with uppercase
+riotcpu     = RIOTCPU
+riotboard   = RIOTBOARD
+riotmake    = RIOTMAKE
+riotproject = RIOTPROJECT
+
+# Volumes and env variable for external directories
+DOCKER_VOLUMES_AND_ENV_EXTERNAL += \
+    $(foreach varname, $(DOCKER_RIOT_DIRS), \
+      $(if $(call dir_is_outside_riotbase,$($($(varname)))),\
+        $(strip $(call docker_volume_and_env,$(varname)))))
+
+
+DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_BUILD_ROOT)/riotbase'
+DOCKER_VOLUMES_AND_ENV += $(DOCKER_VOLUMES_AND_ENV_EXTERNAL)
+
+
+# Application directory relative to either riotbase or riotproject
+DOCKER_PROJECT_DIR = $(strip $(if $(call dir_is_outside_riotbase,$(RIOTPROJECT)),\
+                       $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH),\
+                       $(DOCKER_BUILD_ROOT)/riotbase/$(BUILDRELPATH)))
+
+
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
 # order to only perform building inside the container and defer executing any
@@ -92,18 +135,7 @@ DOCKER ?= docker
 ..in-docker-container:
 	@$(COLOR_ECHO) '$(COLOR_GREEN)Launching build container using image "$(DOCKER_IMAGE)".$(COLOR_RESET)'
 	$(DOCKER) run $(DOCKER_FLAGS) -t -u "$$(id -u)" \
-	    -v '$(RIOTBASE):$(DOCKER_BUILD_ROOT)/riotbase' \
-	    -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject' \
-	    -v /etc/localtime:/etc/localtime:ro \
-	    -e 'RIOTBASE=$(DOCKER_BUILD_ROOT)/riotbase' \
-	    -e 'CCACHE_BASEDIR=$(DOCKER_BUILD_ROOT)/riotbase' \
-	    -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject' \
+	    $(DOCKER_VOLUMES_AND_ENV) \
 	    $(DOCKER_ENVIRONMENT_CMDLINE) \
-	    -w '$(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)' \
+	    -w '$(DOCKER_PROJECT_DIR)' \
 	    '$(DOCKER_IMAGE)' make $(DOCKER_MAKECMDGOALS) $(DOCKER_OVERRIDE_CMDLINE)
