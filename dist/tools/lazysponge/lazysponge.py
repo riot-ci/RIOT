@@ -54,7 +54,7 @@ DESCRIPTION = ('Soak up all input from stdin and write it to <outfile>'
                ' If the content is the same, file is not modified.')
 PARSER = argparse.ArgumentParser(description=DESCRIPTION)
 PARSER.add_argument('outfile', help='Output file')
-PARSER.add_argument('--verbose', help='Verbose output', default=False,
+PARSER.add_argument('--verbose', '-v', help='Verbose output', default=False,
                     action='store_true')
 
 
