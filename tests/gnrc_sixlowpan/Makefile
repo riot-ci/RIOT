@@ -8,16 +8,17 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon chronos maple-mini msb-430 msb-430h \
                              spark-core stm32f0discovery telosb wsn430-v1_3b \
                              wsn430-v1_4 yunjia-nrf51822 z1
 
-# Include packages that pull up and auto-init the link layer.
-# NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
-USEMODULE += gnrc_netdev_default
-USEMODULE += auto_init_gnrc_netif
+# use IEEE 802.15.4 as link-layer protocol
+USEMODULE += netdev_ieee802154
+USEMODULE += netdev_test
 # 6LoWPAN and its extensions
 USEMODULE += gnrc_sixlowpan_default
 # UDP
 USEMODULE += gnrc_udp
 # Dumps packets
 USEMODULE += gnrc_pktdump
+
+TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
 
