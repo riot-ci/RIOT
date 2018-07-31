@@ -31,7 +31,7 @@ endif
 $(PKG_BUILDDIR)/.git-downloaded:
 	rm -Rf $(PKG_BUILDDIR)
 	mkdir -p $(PKG_BUILDDIR)
-	$(GITCACHE) clone "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
+	GIT_CACHE_DIR=$(GIT_CACHE_DIR) $(GITCACHE) clone "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
 	touch $@
 
 clean::
