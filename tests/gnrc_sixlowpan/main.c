@@ -80,7 +80,7 @@ static void _init_interface(void)
     netdev_test_set_get_cb(&_ieee802154_dev, NETOPT_SRC_LEN,
                            _get_netdev_src_len);
     netif = gnrc_netif_ieee802154_create(
-            _netif_stack, THREAD_STACKSIZE_DEFAULT, GNRC_NETIF_PRIO,
+            _netif_stack, THREAD_STACKSIZE_SMALL, GNRC_NETIF_PRIO,
             "dummy_netif", (netdev_t *)&_ieee802154_dev);
     ipv6_addr_t addr = IPV6_ADDR_UNSPECIFIED;
 
