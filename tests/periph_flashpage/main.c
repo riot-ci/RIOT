@@ -195,8 +195,8 @@ static int cmd_write_raw(int argc, char **argv)
 
     flashpage_write_raw((void*)addr, raw_buf, strlen(raw_buf));
 
-    printf("wrote local data to flash address %#lx of len %u\n",
-           addr, strlen(raw_buf));
+    printf("wrote local data to flash address %#lu of len %u\n",
+           (long unsigned)addr, strlen(raw_buf));
     return 0;
 }
 #endif
