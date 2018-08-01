@@ -329,9 +329,8 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 len = dev->driver->recv(dev, NULL, 0, 0);
                 dev->driver->recv(dev, message, len, &packet_info);
                 printf("{Payload: \"%s\" (%d bytes), RSSI: %i, SNR: %i, TOA: %lu}\n",
-                       message, (int)len,
-                       packet_info.rssi, (int)packet_info.snr,
-                       sx127x_get_time_on_air((const sx127x_t*)dev, len));
+                       message, (int) len, packet_info.rssi, (int) packet_info.snr,
+                       (unsigned long) sx127x_get_time_on_air((const sx127x_t*)dev, len));
                 break;
 
             case NETDEV_EVENT_TX_COMPLETE:
