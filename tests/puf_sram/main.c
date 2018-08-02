@@ -17,6 +17,7 @@
  *
  * @}
  */
+#include <inttypes.h>
 #include <stdio.h>
 #include "puf_sram.h"
 
