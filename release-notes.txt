@@ -72,7 +72,7 @@ Networking
       [RFC4862](https://tools.ietf.org/html/rfc4862)
     + gnrc_ipv6: support to handle RDNSS option in neighbor discovery
     + netif.h: a network-stack agnostic API to network interfaces
-    * sock_udp: allocate ephemeral on sock creation when port is 0
+    * sock_udp: allocate ephemeral port on sock creation when port is 0
     * **TODO* gcoap: List improvements
     -
 
