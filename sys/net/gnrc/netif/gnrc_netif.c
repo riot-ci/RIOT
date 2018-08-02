@@ -456,6 +456,7 @@ void gnrc_netif_release(gnrc_netif_t *netif)
 #ifdef MODULE_GNRC_IPV6
 static inline bool _addr_anycast(const gnrc_netif_t *netif, unsigned idx);
 static int _addr_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
+static int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
 
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 
@@ -551,7 +552,6 @@ static int _create_candidate_set(const gnrc_netif_t *netif,
 static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
                                         const ipv6_addr_t *dst,
                                         uint8_t *candidate_set);
-static int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
 
 int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
                                       const ipv6_addr_t *addr,
@@ -781,6 +781,7 @@ void gnrc_netif_ipv6_group_leave_internal(gnrc_netif_t *netif,
     int idx;
 
     assert((netif != NULL) && (addr != NULL));
+
     gnrc_netif_acquire(netif);
     idx = _group_idx(netif, addr);
     if (idx >= 0) {
@@ -796,6 +797,7 @@ int gnrc_netif_ipv6_group_idx(gnrc_netif_t *netif, const ipv6_addr_t *addr)
     int idx;
 
     assert((netif != NULL) && (addr != NULL));
+
     gnrc_netif_acquire(netif);
     idx = _group_idx(netif, addr);
     gnrc_netif_release(netif);
@@ -879,16 +881,27 @@ static inline bool _addr_anycast(const gnrc_netif_t *netif, unsigned idx)
     return (netif->ipv6.addrs_flags[idx] & GNRC_NETIF_IPV6_ADDRS_FLAGS_ANYCAST);
 }
 
-static int _addr_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr)
+static int _idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr, bool mcast)
 {
     if (!ipv6_addr_is_unspecified(addr)) {
+        const ipv6_addr_t *iplist = (mcast) ? netif->ipv6.groups : netif->ipv6.addrs;
         for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
-            if (ipv6_addr_equal(&netif->ipv6.addrs[i], addr)) {
+            if (ipv6_addr_equal(&iplist[i], addr)) {
                 return i;
             }
         }
     }
     return -1;
+}
+
+static inline int _addr_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr)
+{
+    return _idx(netif, addr, false);
+}
+
+static inline int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr)
+{
+    return _idx(netif, addr, true);
 }
 
 static unsigned _match_length(const gnrc_netif_t *netif,
@@ -1135,18 +1148,6 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
     /* otherwise apply rule 8: Use longest matching prefix. */
     int idx = _match_index(netif, dst, candidate_set);
     return (idx < 0) ? NULL : &netif->ipv6.addrs[idx];
-}
-
-static int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr)
-{
-    if (!ipv6_addr_is_unspecified(addr)) {
-        for (unsigned i = 0; i < GNRC_NETIF_IPV6_GROUPS_NUMOF; i++) {
-            if (ipv6_addr_equal(&netif->ipv6.groups[i], addr)) {
-                return i;
-            }
-        }
-    }
-    return -1;
 }
 #endif  /* MODULE_GNRC_IPV6 */
 
