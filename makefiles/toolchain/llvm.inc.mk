@@ -101,3 +101,8 @@ ifneq (,$(TARGET_ARCH))
 
   export INCLUDES += $(GCC_C_INCLUDES)
 endif
+
+# Workaround for clang causing warnings when compiling the preprocessed version
+# of otherwise harmless C code.
+# (See http://peter.eisentraut.org/blog/2014/12/01/ccache-and-clang-part-3/)
+export CCACHE_CPP2=yes
