@@ -777,7 +777,6 @@ void gnrc_netif_ipv6_group_leave_internal(gnrc_netif_t *netif,
     int idx;
 
     assert((netif != NULL) && (addr != NULL));
-
     gnrc_netif_acquire(netif);
     idx = _group_idx(netif, addr);
     if (idx >= 0) {
@@ -793,7 +792,6 @@ int gnrc_netif_ipv6_group_idx(gnrc_netif_t *netif, const ipv6_addr_t *addr)
     int idx;
 
     assert((netif != NULL) && (addr != NULL));
-
     gnrc_netif_acquire(netif);
     idx = _group_idx(netif, addr);
     gnrc_netif_release(netif);
