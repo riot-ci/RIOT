@@ -210,12 +210,10 @@ typedef struct {
 
 /**
  * @brief   Timer configuration
- *
- * General purpose timers (GPT[0-3]) are configured consecutively and in order
- * (without gaps) starting from GPT0, i.e. if multiple timers are enabled.
  */
 typedef struct {
-    uint_fast8_t chn;   /**< number of channels */
+    uint_fast8_t num;   /**< number of timer device, 0..3 */
+    uint_fast8_t chn;   /**< number of channels, 1..2 */
     uint_fast8_t cfg;   /**< timer config word */
 } timer_conf_t;
 

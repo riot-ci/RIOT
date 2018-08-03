@@ -36,18 +36,22 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
+        .num = 0,
         .chn = 2,
         .cfg = GPTMCFG_16_BIT_TIMER, /* required for XTIMER */
     },
     {
+        .num = 1,
         .chn = 1,
         .cfg = GPTMCFG_32_BIT_TIMER,
     },
     {
+        .num = 2,
         .chn = 2,
         .cfg = GPTMCFG_16_BIT_TIMER,
     },
     {
+        .num = 3,
         .chn = 1,
         .cfg = GPTMCFG_32_BIT_TIMER,
     },

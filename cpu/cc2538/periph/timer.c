@@ -86,7 +86,7 @@ static inline cc2538_gptimer_t *dev(tim_t tim)
 {
     assert(tim < TIMER_NUMOF);
 
-    return ((cc2538_gptimer_t *)(GPTIMER0_BASE | (((uint32_t)tim) << 12)));
+    return ((cc2538_gptimer_t *)(GPTIMER0_BASE | (((uint32_t)timer_config[tim].num) << 12)));
 }
 
 /**
@@ -106,7 +106,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     isr_ctx[tim].arg = arg;
 
     /* Enable the clock for this timer: */
-    SYS_CTRL->RCGCGPT |= (1 << tim);
+    SYS_CTRL->RCGCGPT |= (1 << timer_config[tim].num);
 
     /* Disable this timer before configuring it: */
     dev(tim)->CTL = 0;
