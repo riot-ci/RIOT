@@ -881,8 +881,8 @@ static int _idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr, bool mcast)
 {
     if (!ipv6_addr_is_unspecified(addr)) {
         const ipv6_addr_t *iplist = (mcast) ? netif->ipv6.groups : netif->ipv6.addrs;
-        unsigned max = (mcast) ? GNRC_NETIF_IPV6_GROUPS_NUMOF : GNRC_NETIF_IPV6_ADDRS_NUMOF;
-        for (unsigned i = 0; i < max; i++) {
+        unsigned ipmax = (mcast) ? GNRC_NETIF_IPV6_GROUPS_NUMOF : GNRC_NETIF_IPV6_ADDRS_NUMOF;
+        for (unsigned i = 0; i < ipmax; i++) {
             if (ipv6_addr_equal(&iplist[i], addr)) {
                 return i;
             }
