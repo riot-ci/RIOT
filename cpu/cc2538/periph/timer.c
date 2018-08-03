@@ -109,7 +109,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     SYS_CTRL->RCGCGPT |= (1 << tim);
 
     /* Disable this timer before configuring it: */
-    dev(tim)->cc2538_gptimer_ctl.CTL = 0;
+    dev(tim)->CTL = 0;
 
     uint32_t prescaler = 0;
     uint32_t chan_mode = TNMIE | GPTIMER_PERIODIC_MODE;
@@ -144,15 +144,15 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     }
 
     dev(tim)->CFG = timer_config[tim].cfg;
-    dev(tim)->cc2538_gptimer_ctl.CTL = TAEN;
-    dev(tim)->cc2538_gptimer_tamr.TAMR = chan_mode;
+    dev(tim)->CTL = TAEN;
+    dev(tim)->TAMR = chan_mode;
 
     if (timer_config[tim].chn > 1) {
-        dev(tim)->cc2538_gptimer_tbmr.TBMR = chan_mode;
+        dev(tim)->TBMR = chan_mode;
         dev(tim)->TBPR = prescaler;
         dev(tim)->TBILR = LOAD_VALUE;
         /* Enable the timer: */
-        dev(tim)->cc2538_gptimer_ctl.CTL = TBEN | TAEN;
+        dev(tim)->CTL = TBEN | TAEN;
     }
 
     /* Enable interrupts for given timer: */
@@ -177,7 +177,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     else {
         dev(tim)->TBMATCHR = (LOAD_VALUE - value);
     }
-    dev(tim)->cc2538_gptimer_imr.IMR |= chn_isr_cfg[channel].flag;
+    dev(tim)->IMR |= chn_isr_cfg[channel].flag;
 
     return 1;
 }
@@ -190,7 +190,7 @@ int timer_clear(tim_t tim, int channel)
         return -1;
     }
     /* clear interupt flags */
-    dev(tim)->cc2538_gptimer_imr.IMR &= ~(chn_isr_cfg[channel].flag);
+    dev(tim)->IMR &= ~(chn_isr_cfg[channel].flag);
 
     return 1;
 }
@@ -223,7 +223,7 @@ void timer_stop(tim_t tim)
     DEBUG("%s(%u)\n", __FUNCTION__, tim);
 
     if (tim < TIMER_NUMOF) {
-        dev(tim)->cc2538_gptimer_ctl.CTL = 0;
+        dev(tim)->CTL = 0;
     }
 }
 
@@ -233,10 +233,10 @@ void timer_start(tim_t tim)
 
     if (tim < TIMER_NUMOF) {
         if (timer_config[tim].chn == 1) {
-            dev(tim)->cc2538_gptimer_ctl.CTL = TAEN;
+            dev(tim)->CTL = TAEN;
         }
         else if (timer_config[tim].chn == 2) {
-            dev(tim)->cc2538_gptimer_ctl.CTL = TBEN | TAEN;
+            dev(tim)->CTL = TBEN | TAEN;
         }
     }
 }
@@ -261,7 +261,7 @@ static void irq_handler(tim_t tim, int channel)
 
   if (mis & chn_isr_cfg[channel].flag) {
       /* Disable further match interrupts for this timer/channel */
-      dev(tim)->cc2538_gptimer_imr.IMR &= ~chn_isr_cfg[channel].flag;
+      dev(tim)->IMR &= ~chn_isr_cfg[channel].flag;
       /* Invoke the callback function */
       isr_ctx[tim].cb(isr_ctx[tim].arg, channel);
   }
