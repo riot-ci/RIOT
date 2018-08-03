@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 #include "cpu.h"
+#include "vendor/hw_ssi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -204,7 +205,7 @@ typedef struct {
  * @{
  */
 typedef struct {
-    cc2538_ssi_t *dev;      /**< SSI device */
+    uint8_t num;            /**< SSI device */
     gpio_t mosi_pin;        /**< pin used for MOSI */
     gpio_t miso_pin;        /**< pin used for MISO */
     gpio_t sck_pin;         /**< pin used for SCK */
