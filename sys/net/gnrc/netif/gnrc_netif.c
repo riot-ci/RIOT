@@ -588,7 +588,7 @@ int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
     ipv6_addr_set_solicited_nodes(&sol_nodes, addr);
     res = gnrc_netif_ipv6_group_join_internal(netif, &sol_nodes);
     if (res < 0) {
-        DEBUG("gnrc_netif: Can't join solicited-nodes of %s on interface %u\n",
+        DEBUG("gnrc_netif: Can't join solicited-nodes of %s on interface %" PRIkernel_pid "\n",
               ipv6_addr_to_str(addr_str, addr, sizeof(addr_str)),
               netif->pid);
         return res;
