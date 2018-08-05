@@ -14,7 +14,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon chronos hifive1 microbit msb-430 \
                              nucleo-f031k6 nucleo-f042k6 nucleo-f070rb \
                              nucleo-f072rb nucleo-f303k8 nucleo-f334r8 \
                              nucleo-l031k6 nucleo-l053r8 stm32f0discovery \
-                             telosb wsn430-v1_3b wsn430-v1_4 yunjia-nrf51822 z1
+                             stm32l0538-disco telosb wsn430-v1_3b wsn430-v1_4 \
+                             yunjia-nrf51822 z1
 
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present

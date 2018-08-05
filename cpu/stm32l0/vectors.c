@@ -86,7 +86,7 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
 #if defined(CPU_MODEL_STM32L031K6)
     [ 4] = isr_rcc,                  /* [ 4] RCC Interrupt */
     [29] = isr_lpuart1,              /* [29] LPUART1 Interrupt */
-#elif defined(CPU_MODEL_STM32L053R8)
+#elif defined(CPU_MODEL_STM32L053R8) || defined(CPU_MODEL_STM32L053C8)
     [ 4] = isr_rcc_crs,              /* [ 4] RCC and CRS Interrupts */
     [ 8] = isr_tsc,                  /* [ 8] TSC Interrupt */
     [17] = isr_tim6_dac,             /* [17] TIM6 and DAC Interrupts */
