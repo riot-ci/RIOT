@@ -151,6 +151,50 @@ static const spi_conf_t spi_config[] = {
 
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 
+/**
+ * @name    I2C configuration
+ * @{
+ */
+#define I2C_NUMOF           (2U)
+#define I2C_0_EN            1
+#define I2C_1_EN            1
+#define I2C_2_EN            0
+#define I2C_3_EN            0
+#define I2C_IRQ_PRIO        1
+
+/* I2C 0 Dev */
+#define I2C_0_DEV           SERCOM0->I2CM
+#define I2C_0_IRQ           SERCOM0_IRQn
+#define I2C_0_ISR           isr_sercom0
+/* I2C 0 GCLK */
+#define I2C_0_GCLK_ID       SERCOM0_GCLK_ID_CORE
+#define I2C_0_GCLK_ID_SLOW  SERCOM0_GCLK_ID_SLOW
+/* I2C 0 pin configuration */
+#define I2C_0_SDA           GPIO_PIN(PA, 8) /* SDA pin */
+#define I2C_0_SCL           GPIO_PIN(PA, 9) /* SCL pin */
+#define I2C_0_MUX           GPIO_MUX_C
+
+/* I2C 1 Dev */
+#define I2C_1_DEV           SERCOM2->I2CM
+#define I2C_1_IRQ           SERCOM2_IRQn
+#define I2C_1_ISR           isr_sercom2
+/* I2C 1 GCLK */
+#define I2C_1_GCLK_ID       SERCOM2_GCLK_ID_CORE
+#define I2C_1_GCLK_ID_SLOW  SERCOM2_GCLK_ID_SLOW
+/* I2C 1 pin configuration */
+#define I2C_1_SDA           GPIO_PIN(PA, 12) /* SDA pin */
+#define I2C_1_SCL           GPIO_PIN(PA, 13) /* SCL pin */
+#define I2C_1_MUX           GPIO_MUX_C
+/** @} */
+
+
+/**
+ * @name    RTC configuration
+ * @{
+ */
+#define RTC_NUMOF           (1U)
+#define RTC_DEV             RTC->MODE2
+
 /** @} */
 
 #if 0
