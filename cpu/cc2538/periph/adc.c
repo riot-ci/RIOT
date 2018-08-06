@@ -20,6 +20,9 @@
  * @}
   */
 
+#include "vendor/hw_memmap.h"
+#include "vendor/hw_soc_adc.h"
+
 #include "board.h"
 #include "cpu.h"
 #include "periph_conf.h"
@@ -29,6 +32,8 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+static cc2538_soc_adc_t *adc_dev = (cc2538_soc_adc_t *)SOC_ADC_BASE;
+
 int adc_init(adc_t line)
 {
     if (line >= ADC_NUMOF) {
@@ -36,11 +41,10 @@ int adc_init(adc_t line)
         return -1;
     }
 
-    cc2538_soc_adc_t *adca = SOC_ADC;
     /* stop random number generator, and set STSEL = 1 */
-    adca->cc2538_adc_adccon1.ADCCON1 = 0x3c;
+    adc_dev->ADCCON1 = (SOC_ADC_ADCCON1_STSEL_M | SOC_ADC_ADCCON1_RCTRL_M);
     /* disable any DMA, continous ADC settings */
-    adca->ADCCON2 = 0x0;
+    adc_dev->ADCCON2 = 0x0;
     /* configure ADC GPIO as analog input */
     gpio_init(adc_config[line], GPIO_IN_ANALOG);
 
@@ -83,25 +87,23 @@ int adc_sample(adc_t line, adc_res_t res)
      */
     rshift--;
 
-    cc2538_soc_adc_t *adca = SOC_ADC;
     /* configure adc line with parameters and trigger a single conversion*/
-    uint32_t reg = (adca->ADCCON3) & ~(SOC_ADC_ADCCON3_EREF |
-                                       SOC_ADC_ADCCON3_EDIV |
-                                       SOC_ADC_ADCCON3_ECH);
-    adca->ADCCON3 = reg | res | SOC_ADC_ADCCON_REF |
-                    (adc_config[line] & GPIO_PIN_MASK);
+    uint32_t reg = (adc_dev->ADCCON3) & ~(SOC_ADC_ADCCON3_EREF_M |
+                                          SOC_ADC_ADCCON3_EDIV_M |
+                                          SOC_ADC_ADCCON3_ECH_M);
+    adc_dev->ADCCON3 = reg | res | SOC_ADC_ADCCON3_EREF |
+                       (adc_config[line] & GPIO_PIN_MASK);
 
     DEBUG("ADCCON1: %"PRIu32" ADCCON2: %"PRIu32" ADCCON3: %"PRIu32"\n",
-          adca->cc2538_adc_adccon1.ADCCON1, adca->ADCCON2, adca->ADCCON3);
+          adc_dev->ADCCON1, adc_dev->ADCCON2, adc_dev->ADCCON3);
 
     /* Poll/wait until end of conversion */
-    while ((adca->cc2538_adc_adccon1.ADCCON1 &
-            SOC_ADC_ADCCON1_EOC_MASK) == 0) {}
+    while ((adc_dev->ADCCON1 & SOC_ADC_ADCCON1_EOC_M) == 0) {}
 
     /* Read result after conversion completed,
      * reading SOC_ADC_ADCH last will clear SOC_ADC_ADCCON1.EOC */
-    int16_t sample = adca->ADCL & SOC_ADC_ADCL_MASK;
-    sample |= (adca->ADCH & SOC_ADC_ADCH_MASK) << 8;
+    int16_t sample = adc_dev->ADCL & SOC_ADC_ADCL_ADC_M;
+    sample |= (adc_dev->ADCH & SOC_ADC_ADCH_ADC_M) << 8;
     /* sample right shifted depending on resolution */
     sample = sample >> rshift;
     DEBUG("adc_sample: raw value %"PRIi16"\n", sample);
