@@ -1,0 +1,63 @@
+From cdb1c3b233a4f31e0cf718997fd8b0ac8078d69f Mon Sep 17 00:00:00 2001
+From: Alexandre Abadie <alexandre.abadie@inria.fr>
+Date: Mon, 6 Aug 2018 15:46:40 +0200
+Subject: [PATCH] Applying: patch utilities functions
+
+---
+ src/boards/mcu/utilities.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/src/boards/mcu/utilities.c b/src/boards/mcu/utilities.c
+index d32d573..7670ee6 100644
+--- a/src/boards/mcu/utilities.c
++++ b/src/boards/mcu/utilities.c
+@@ -22,7 +22,9 @@
+  */
+ #include <stdlib.h>
+ #include <stdio.h>
++#include <string.h>
+ #include "utilities.h"
++#include "random.h"
+ 
+ /*!
+  * Redefinition of rand() and srand() standard C functions.
+@@ -41,21 +43,18 @@ int32_t rand1( void )
+ 
+ void srand1( uint32_t seed )
+ {
+-    next = seed;
++    (void) seed;
+ }
+ // Standard random functions redefinition end
+ 
+ int32_t randr( int32_t min, int32_t max )
+ {
+-    return ( int32_t )rand1( ) % ( max - min + 1 ) + min;
++    return (int32_t) (random_uint32_range(0, max - min) + min);
+ }
+ 
+ void memcpy1( uint8_t *dst, const uint8_t *src, uint16_t size )
+ {
+-    while( size-- )
+-    {
+-        *dst++ = *src++;
+-    }
++    memcpy(dst, src, size);
+ }
+ 
+ void memcpyr( uint8_t *dst, const uint8_t *src, uint16_t size )
+@@ -69,10 +68,7 @@ void memcpyr( uint8_t *dst, const uint8_t *src, uint16_t size )
+ 
+ void memset1( uint8_t *dst, uint8_t value, uint16_t size )
+ {
+-    while( size-- )
+-    {
+-        *dst++ = value;
+-    }
++    memset(dst, value, size);
+ }
+ 
+ int8_t Nibble2HexChar( uint8_t a )
+-- 
+2.17.1
+
