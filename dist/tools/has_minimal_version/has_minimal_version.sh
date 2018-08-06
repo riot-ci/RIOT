@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# usage: has_higher_version.sh <version> <minimal_version> [toolname]
+# usage: has_minimal_version.sh <version> <minimal_version> [toolname]
 #   Checks that version >= minimal_version
 #   Version format MAJOR.MINOR.PATCH ex 3.1.4
 
