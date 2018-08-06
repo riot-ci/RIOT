@@ -27,21 +27,27 @@
 
 #define LINE_LEN            (16)
 
-#ifndef MODULE_PERIPH_FLASHPAGE_RAW
-#define ALIGNMENT_OPTS
-#else
-#define ALIGNMENT_OPTS __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)))
+/* When writing raw bytes on flash, data must be correctly aligned. */
+#ifdef MODULE_PERIPH_FLASHPAGE_RAW
+#define ALIGNMENT_ATTR __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)))
 
 /*
  * @brief   Allocate an aligned buffer for raw writings
  */
-static char raw_buf[64] ALIGNMENT_OPTS;
+static char raw_buf[64] ALIGNMENT_ATTR;
+#else
+#define ALIGNMENT_ATTR
 #endif
 
 /**
  * @brief   Allocate space for 1 flash page in RAM
+ *
+ * @note    The flash page in RAM must be correctly aligned, even in RAM, when
+ *          using flashpage_raw. This is because some architecture uses
+ *          32 bit alignment implicitly and there are cases (stm32l4) that
+ *          requires 64 bit alignment.
  */
-static uint8_t page_mem[FLASHPAGE_SIZE] ALIGNMENT_OPTS;
+static uint8_t page_mem[FLASHPAGE_SIZE] ALIGNMENT_ATTR;
 
 static int getpage(const char *str)
 {
