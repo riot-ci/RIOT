@@ -662,7 +662,7 @@ void gnrc_sixlowpan_iphc_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
             if (addr_comp) {    /* addr_comp was used as release indicator */
                 gnrc_pktbuf_release(pkt);
             }
-            return false;
+            return;
         }
         ptr = tmp;
         if (dispatch == NULL) {
@@ -989,7 +989,7 @@ void gnrc_sixlowpan_iphc_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
                 if (udp == NULL) {
                     DEBUG("gnrc_sixlowpan_iphc_encode: unable to mark UDP header\n");
                     gnrc_pktbuf_release(dispatch);
-                    return false;
+                    return;
                 }
             }
             gnrc_pktbuf_remove_snip(pkt, udp);
