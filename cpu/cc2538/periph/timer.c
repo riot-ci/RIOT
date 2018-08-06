@@ -45,8 +45,8 @@
 #define TAEN                    GPTIMER_CTL_TAEN
 
 /* GPTIMER_TnMR Bits */
-#define TnMIE                   GPTIMER_TAMR_TAMIE
-#define TnCDIR                  GPTIMER_TAMR_TACDIR
+#define TNMIE                   GPTIMER_TAMR_TAMIE
+#define TNCDIR                  GPTIMER_TAMR_TACDIR
 
 typedef struct {
     uint16_t mask;
@@ -112,10 +112,10 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     dev(tim)->CTL = 0;
 
     uint32_t prescaler = 0;
-    uint32_t chan_mode = TnMIE | GPTIMER_PERIODIC_MODE;
+    uint32_t chan_mode = TNMIE | GPTIMER_PERIODIC_MODE;
     if (timer_config[tim].cfg == GPTMCFG_32_BIT_TIMER) {
         /* Count up in periodic mode */
-        chan_mode |= TnCDIR ;
+        chan_mode |= TNCDIR ;
 
         if (timer_config[tim].chn > 1) {
             DEBUG("Invalid timer_config. Multiple channels are available only in 16-bit mode.");
