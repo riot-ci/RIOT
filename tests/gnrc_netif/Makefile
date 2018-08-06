@@ -22,7 +22,7 @@ USEMODULE += netdev_test
 USEMODULE += od
 
 # deactivate automatically emitted packets from IPv6 neighbor discovery
-CFLAGS += -DGNRC_IPV6_NIB_CONF_ARSM=1
+CFLAGS += -DGNRC_IPV6_NIB_CONF_ARSM=0
 CFLAGS += -DGNRC_IPV6_NIB_CONF_SLAAC=0
 CFLAGS += -DGNRC_IPV6_NIB_CONF_NO_RTR_SOL=1
 CFLAGS += -DGNRC_NETIF_NUMOF=4
