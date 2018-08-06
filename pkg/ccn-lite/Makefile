@@ -16,11 +16,14 @@ all: $(PKG_BUILDDIR)/src/Makefile
 	$(MAKE) -C $(PKG_BUILDDIR)/src && \
 	cp $(PKG_BUILDDIR)/src/lib/libccnl-riot.a $(BINDIR)/ccn-lite.a
 
-$(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE) | ..cmake_version_supported
+$(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE)
 	cd $(PKG_BUILDDIR)/src && \
 	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
 		  -DCCNL_RIOT=1 -DRIOT_CFLAGS="$(RIOT_CFLAGS)" -DBUILD_TESTING=OFF .
+$(TOOLCHAIN_FILE): git-download
+	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
+git-download: | ..cmake_version_supported
 
 # Verify that current cmake version is higher than CMAKE_MINIMAL_VERSION
 # Adapted from https://stackoverflow.com/a/24067243 to have >=
@@ -32,8 +35,6 @@ $(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE) | ..cmake_version_supported
 	test "$${HIGHEST}" = "$${CMAKE_VERSION}" || \
 	{ printf "\ncmake version $${CMAKE_VERSION} is not >= to minimal required $(CMAKE_MINIMAL_VERSION)\n\n"; exit 1; }
 
-$(TOOLCHAIN_FILE): git-download
-	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
 include $(RIOTBASE)/pkg/pkg.mk
 ifneq (,$(filter -Wformat-nonliteral -Wformat=2, $(CFLAGS)))
