@@ -25,15 +25,11 @@ $(TOOLCHAIN_FILE): git-download
 
 git-download: | ..cmake_version_supported
 
-# Verify that current cmake version is higher than CMAKE_MINIMAL_VERSION
-# Adapted from https://stackoverflow.com/a/24067243 to have >=
 ..cmake_version_supported:
-	@ # Remove '-rcX' from version as 'sort -V' does not handle them well
+	@ # Remove '-rcX' from version as they are not well handled
 	$(Q)\
 	CMAKE_VERSION=$$(cmake --version | sed -n '1 {s/cmake version //;s/-rc.*//;p;}'); \
-	HIGHEST=$$(printf "$${CMAKE_VERSION}\n$(CMAKE_MINIMAL_VERSION)\n" | sort -rV | head -n 1); \
-	test "$${HIGHEST}" = "$${CMAKE_VERSION}" || \
-	{ printf "\ncmake version $${CMAKE_VERSION} is not >= to minimal required $(CMAKE_MINIMAL_VERSION)\n\n"; exit 1; }
+	$(RIOTTOOLS)/has_higher_version/has_higher_version.sh "$${CMAKE_VERSION}" "$(CMAKE_MINIMAL_VERSION)" cmake
 
 
 include $(RIOTBASE)/pkg/pkg.mk
