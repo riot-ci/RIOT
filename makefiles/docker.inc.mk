@@ -85,8 +85,8 @@ DOCKER ?= docker
 # Mounted volumes and exported environment variables
 
 # Add GIT_CACHE_DIR if the direcotry exists
-DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)/),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
-DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)/),-e GIT_CACHE_DIR=$(DOCKER_BUILD_ROOT)/gitcache)
+DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
+DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-e GIT_CACHE_DIR=$(DOCKER_BUILD_ROOT)/gitcache)
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
