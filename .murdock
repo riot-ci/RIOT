@@ -2,7 +2,7 @@
 
 : ${TEST_BOARDS_AVAILABLE:="samr21-xpro"}
 # TODO provide make target in similar fashion as the info-boards-supported one?
-: ${TEST_BOARDS_LLVM_COMPILE:="native samr21-xpro nucleo-f401re"}
+: ${TEST_BOARDS_LLVM_COMPILE:="native samr21-xpro nucleo-f401re slstk3402a"}
 
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
