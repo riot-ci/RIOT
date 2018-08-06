@@ -37,7 +37,8 @@ static mutex_t locks[SPI_NUMOF];
 
 static inline cc2538_ssi_t *dev(spi_t bus)
 {
-    return (cc2538_ssi_t *)(SSI0_BASE + (spi_config[bus].num * 0x1000));
+    /* .num is either 0 or 1, return respective base address */
+    return (spi_config[bus].num) ? (cc2538_ssi_t *)SSI1_BASE : (cc2538_ssi_t *)SSI0_BASE;
 }
 
 static inline void poweron(spi_t bus)
