@@ -27,7 +27,7 @@ $(PKG_BUILDDIR)/src/Makefile: $(TOOLCHAIN_FILE) | ..cmake_version_supported
 ..cmake_version_supported:
 	@ # Remove '-rcX' from version as 'sort -V' does not handle them well
 	$(Q)\
-	CMAKE_VERSION=$$(cmake --version | sed -n '1 {s/cmake version //;s/-rc.*//;p'}); \
+	CMAKE_VERSION=$$(cmake --version | sed -n '1 {s/cmake version //;s/-rc.*//;p}'); \
 	HIGHEST=$$(printf "$${CMAKE_VERSION}\n$(CMAKE_MINIMAL_VERSION)\n" | sort -rV | head -n 1); \
 	test "$${HIGHEST}" = "$${CMAKE_VERSION}" || \
 	{ printf "\ncmake version $${CMAKE_VERSION} is not >= to minimal required $(CMAKE_MINIMAL_VERSION)\n\n"; exit 1; }
