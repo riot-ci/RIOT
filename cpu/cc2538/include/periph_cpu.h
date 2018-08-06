@@ -205,7 +205,7 @@ typedef struct {
  * @{
  */
 typedef struct {
-    uint8_t num;            /**< SSI device */
+    uint8_t num;            /**< number of SSI device, i.e. 0 or 1 */
     gpio_t mosi_pin;        /**< pin used for MOSI */
     gpio_t miso_pin;        /**< pin used for MISO */
     gpio_t sck_pin;         /**< pin used for SCK */
