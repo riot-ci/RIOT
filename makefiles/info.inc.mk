@@ -1,7 +1,8 @@
 .PHONY: info-objsize info-buildsizes info-build info-boards-supported \
         info-features-missing info-modules info-cpu \
         info-features-provided info-features-required \
-        info-debug-variable-% info-toolchains-supported
+        info-debug-variable-% info-toolchains-supported \
+        check-toolchain-supported
 
 info-objsize:
 	@case "$(SORTROW)" in \
@@ -134,4 +135,4 @@ info-toolchains-supported:
 	@echo $(filter-out $(TOOLCHAINS_BLACKLIST),$(TOOLCHAINS_SUPPORTED))
 
 check-toolchain-supported:
-	@exit $(if $(filter $(TOOLCHAIN), $(filter-out $(TOOLCHAINS_BLACKLIST),$(TOOLCHAINS_SUPPORTED))),1,0)
+	@exit $(if $(filter $(TOOLCHAIN),$(filter-out $(TOOLCHAINS_BLACKLIST),$(TOOLCHAINS_SUPPORTED))),0,1)
