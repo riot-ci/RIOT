@@ -8,3 +8,6 @@ ifneq (,$(filter openthread_contrib,$(USEMODULE)))
   DIRS += $(OPENTHREAD_DIR)/contrib
   DIRS += $(OPENTHREAD_DIR)/contrib/netdev
 endif
+
+# There is a problem with ranlib and LLVM/clang in this package
+TOOLCHAINS_BLACKLIST += llvm
