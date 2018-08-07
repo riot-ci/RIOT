@@ -242,6 +242,8 @@ include $(RIOTBOARD)/$(BOARD)/Makefile.include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
 include $(RIOTCPU)/$(CPU)/Makefile.include
 
+# Assume GCC/GNU as supported toolchain if CPU's Makefile.include doesn't
+# provide this macro
 TOOLCHAINS_SUPPORTED ?= gnu
 # Import all toolchain settings
 include $(RIOTMAKE)/toolchain/$(TOOLCHAIN).inc.mk
