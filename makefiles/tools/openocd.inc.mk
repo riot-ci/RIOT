@@ -8,6 +8,8 @@ export DEBUGGER_FLAGS ?= debug
 export DEBUGSERVER_FLAGS ?= debug-server
 export RESET_FLAGS ?= reset
 
+include $(RIOTMAKE)/tools/serial_compat.inc.mk
+
 ifneq (,$(DEBUG_ADAPTER))
   include $(RIOTMAKE)/tools/openocd-adapters/$(DEBUG_ADAPTER).inc.mk
 endif
