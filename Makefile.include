@@ -652,7 +652,7 @@ include $(RIOTTOOLS)/desvirt/Makefile.desvirt
 $(RIOTBUILD_CONFIG_HEADER_C): FORCE
 	@mkdir -p '$(dir $@)'
 	$(Q)'$(RIOTTOOLS)/genconfigheader/genconfigheader.sh' $(CFLAGS_WITH_MACROS) \
-		| '$(RIOTTOOLS)/lazysponge/lazysponge.py' $(if $(filter 1,$(QUIET)),,--verbose) '$@'
+		| '$(LAZYSPONGE)' $(LAZYSPONGE_FLAGS) '$@'
 
 CFLAGS_WITH_MACROS := $(CFLAGS)
 
