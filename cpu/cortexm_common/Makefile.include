@@ -13,4 +13,4 @@ ifneq (,$(ROM_START_ADDR)$(RAM_START_ADDR)$(ROM_LEN)$(RAM_LEN))
   LINKFLAGS += $(LINKFLAGPREFIX)--defsym=_ram_length=$(RAM_LEN)
 endif
 
-TOOLCHAINS_SUPPORTED += gnu llvm
+TOOLCHAINS_SUPPORTED = gnu llvm
