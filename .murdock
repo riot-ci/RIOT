@@ -101,7 +101,8 @@ get_supported_toolchains() {
     local toolchains="gnu"
 
     if is_in_list "${board}" "${TEST_BOARDS_LLVM_COMPILE}"; then
-        toolchains="$(make -s --no-print-directory -C${appdir} BOARD=${board} info-toolchains-supported 2> /dev/null)"
+        toolchains="$(make -s --no-print-directory -C${appdir} BOARD=${board} \
+                      info-toolchains-supported 2> /dev/null | grep -o -e "llvm" -e "gnu")"
     fi
     echo "${toolchains}"
 }
