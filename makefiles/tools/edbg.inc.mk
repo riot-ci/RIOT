@@ -2,6 +2,9 @@ RIOT_EDBG = $(RIOTTOOLS)/edbg/edbg
 EDBG ?= $(RIOT_EDBG)
 FLASHER ?= $(EDBG)
 HEXFILE = $(BINFILE)
+
+include $(RIOTMAKE)/tools/serial_compat.inc.mk
+
 # Use USB serial number to select device when more than one is connected
 # Use /dist/tools/usb-serial/list-ttys.sh to find out serial number.
 #   Usage:
