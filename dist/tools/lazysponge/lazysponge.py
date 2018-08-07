@@ -63,9 +63,10 @@ def _print_hash_debug_info(outfilename, oldbytes, newbytes):
     oldhash = hashlib.md5(oldbytes).hexdigest() if oldbytes is not None else ''
     newhash = hashlib.md5(newbytes).hexdigest()
     if oldbytes == newbytes:
-        print('Keeping old {} ({})'.format(outfilename, oldhash))
+        msg = 'Keeping old {} ({})'.format(outfilename, oldhash)
     else:
-        print('Replacing {} ({} != {})'.format(outfilename, oldhash, newhash))
+        msg = 'Replacing {} ({} != {})'.format(outfilename, oldhash, newhash)
+    print(msg, file=sys.stderr)
 
 
 def main():
