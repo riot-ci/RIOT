@@ -7,7 +7,7 @@ buildtest:
 	@ \
 	RESULT=true ; \
 	for board in $(BOARDS); do \
-		if $(MAKE) check-toolchain-supported; then
+		if BOARD=$${board} $(MAKE) check-toolchain-supported > /dev/null 2>&1; then \
 			$(COLOR_ECHO) -n "Building for $$board ... " ; \
 			BOARD=$${board} RIOT_CI_BUILD=1 RIOT_VERSION_OVERRIDE=buildtest \
 				$(MAKE) clean all -j $(NPROC) >/dev/null 2>&1; \
@@ -19,7 +19,7 @@ buildtest:
 				RESULT=false ; \
 			fi ; \
 			$(MAKE) clean-intermediates >/dev/null 2>&1 || true; \
-		fi
+		fi; \
 	done ; \
 	$${RESULT}
 endif # BUILD_IN_DOCKER
