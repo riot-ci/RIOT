@@ -27,8 +27,10 @@ include $(RIOTBASE)/Makefile.include
 COMPILE_TESTS  = test-elffile-overflow test-elffile-fw_rom_length
 COMPILE_TESTS += tests-offsets tests-fw_rom_len tests-rom-overflow
 
-all: $(COMPILE_TESTS)
-.PHONY: $(COMPILE_TESTS)
+all: compile-tests
+
+compile-tests: $(COMPILE_TESTS)
+.PHONY: compile-tests $(COMPILE_TESTS)
 
 
 # iotlab-m3 defines ROM_LEN as 512K which is not handled by bash math operations
