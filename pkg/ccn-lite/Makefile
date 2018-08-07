@@ -29,7 +29,7 @@ git-download: | ..cmake_version_supported
 	@ # Remove '-rcX' from version as they are not well handled
 	$(Q)\
 	CMAKE_VERSION=$$(cmake --version | sed -n '1 {s/cmake version //;s/-rc.*//;p;}'); \
-	$(RIOTTOOLS)/has_higher_version/has_higher_version.sh "$${CMAKE_VERSION}" "$(CMAKE_MINIMAL_VERSION)" cmake
+	$(RIOTTOOLS)/has_minimal_version/has_minimal_version.sh "$${CMAKE_VERSION}" "$(CMAKE_MINIMAL_VERSION)" cmake
 
 
 include $(RIOTBASE)/pkg/pkg.mk
