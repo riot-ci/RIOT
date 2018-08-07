@@ -1,4 +1,4 @@
 INCLUDES += -I$(PKGDIRBASE)/micro-ecc
 
 # LLVM/clang can't handle the inline assembler instructions in this package
-TOOLCHAINS_BLACKLIST := llvm
+TOOLCHAINS_BLACKLIST += llvm
