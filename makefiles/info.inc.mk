@@ -132,3 +132,6 @@ info-debug-variable-%:
 
 info-toolchains-supported:
 	@echo $(filter-out $(TOOLCHAINS_BLACKLIST),$(TOOLCHAINS_SUPPORTED))
+
+check-toolchain-supported:
+	@exit $(if $(filter $(TOOLCHAIN), $(filter-out $(TOOLCHAINS_BLACKLIST),$(TOOLCHAINS_SUPPORTED))),1,0)
