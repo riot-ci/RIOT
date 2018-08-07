@@ -29,5 +29,5 @@ fi
 HIGHEST=$(printf "%s\n%s\n" "${TOOLVERSION}" "${MINVERSION}" | sort -rV | head -n 1)
 test "${HIGHEST}" = "${TOOLVERSION}" && exit 0
 
-printf "\n%sversion %s is not >= to minimal required %s\n\n" "${TOOLSTR}" "${TOOLVERSION}" "${MINVERSION}"
+printf "\n%sversion %s is not >= to minimal required %s\n\n" "${TOOLSTR}" "${TOOLVERSION}" "${MINVERSION}" >&2
 exit 1
