@@ -10,3 +10,7 @@ endif
 
 # Declare pseudomodules here to be selfcontained
 PSEUDOMODULES += libcose_crypt_%
+
+# There is a problem with the LLVM assembler and the assembly part of this
+# package
+TOOLCHAINS_BLACKLIST += llvm
