@@ -1,5 +1,6 @@
 /*
  * Copyright (C)  2017 Inria
+ * Copyright (C)  2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +8,14 @@
  */
 
 /**
- * @ingroup     boards_feather-m0
+ * @ingroup     boards_sensebox
  * @{
  *
  * @file
- * @brief       Board specific implementations for the Adafruit Feather M0 boards
+ * @brief       Board specific implementations for the SenseBox boards.
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  *
  * @}
  */
@@ -35,4 +37,27 @@ void board_init(void)
 
     /* initialize the on-board button on pin PA20 */
     gpio_init(BTN0_PIN, BTN0_MODE);
+
+    /* initialize XBEE1 bus enable pin */
+    gpio_init(XBEE1_EN_PIN, XBEE1_EN_MODE);
+
+    /* enable XBEE1 bus */
+    XBEE1_ENABLE;
+
+    /* initialize XBEE2 bus enable pin */
+    gpio_init(XBEE2_EN_PIN, XBEE2_EN_MODE);
+
+    /* enable XBEE2 bus */
+    XBEE2_ENABLE;
+
+    /* initialize I2C bus enable pin */
+    gpio_init(I2C_EN_PIN, I2C_EN_MODE);
+
+    /* enable I2C bus */
+    I2C_ENABLE;
+
+    /* delay for SPI reset. Read README.md for more information. */
+    for(uint32_t i = 0; i < 3000000; i++){
+        __asm__("nop");
+    }
 }

@@ -16,6 +16,7 @@
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Jose Alamos <jose.alamos@haw-hamburg.de>
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 
 #ifndef PERIPH_CONF_H
@@ -155,38 +156,28 @@ static const spi_conf_t spi_config[] = {
  * @name    I2C configuration
  * @{
  */
-#define I2C_NUMOF           (2U)
-#define I2C_0_EN            1
-#define I2C_1_EN            1
-#define I2C_2_EN            0
-#define I2C_3_EN            0
-#define I2C_IRQ_PRIO        1
+static const i2c_conf_t i2c_config[] = {
+    {
+        .dev      = &(SERCOM0->I2CM),
+        .speed    = I2C_SPEED_NORMAL,
+        .scl_pin  = GPIO_PIN(PA, 8),
+        .sda_pin  = GPIO_PIN(PA, 9),
+        .mux      = GPIO_MUX_C,
+        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0,
+        .flags    = I2C_FLAG_NONE
+     },
+    {
+        .dev      = &(SERCOM2->I2CM),
+        .speed    = I2C_SPEED_NORMAL,
+        .scl_pin  = GPIO_PIN(PA, 12),
+        .sda_pin  = GPIO_PIN(PA, 13),
+        .mux      = GPIO_MUX_C,
+        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0,
+        .flags    = I2C_FLAG_NONE
+     }
+};
 
-/* I2C 0 Dev */
-#define I2C_0_DEV           SERCOM0->I2CM
-#define I2C_0_IRQ           SERCOM0_IRQn
-#define I2C_0_ISR           isr_sercom0
-/* I2C 0 GCLK */
-#define I2C_0_GCLK_ID       SERCOM0_GCLK_ID_CORE
-#define I2C_0_GCLK_ID_SLOW  SERCOM0_GCLK_ID_SLOW
-/* I2C 0 pin configuration */
-#define I2C_0_SDA           GPIO_PIN(PA, 8) /* SDA pin */
-#define I2C_0_SCL           GPIO_PIN(PA, 9) /* SCL pin */
-#define I2C_0_MUX           GPIO_MUX_C
-
-/* I2C 1 Dev */
-#define I2C_1_DEV           SERCOM2->I2CM
-#define I2C_1_IRQ           SERCOM2_IRQn
-#define I2C_1_ISR           isr_sercom2
-/* I2C 1 GCLK */
-#define I2C_1_GCLK_ID       SERCOM2_GCLK_ID_CORE
-#define I2C_1_GCLK_ID_SLOW  SERCOM2_GCLK_ID_SLOW
-/* I2C 1 pin configuration */
-#define I2C_1_SDA           GPIO_PIN(PA, 12) /* SDA pin */
-#define I2C_1_SCL           GPIO_PIN(PA, 13) /* SCL pin */
-#define I2C_1_MUX           GPIO_MUX_C
-/** @} */
-
+#define I2C_NUMOF          (sizeof(i2c_config) / sizeof(i2c_config[0]))
 
 /**
  * @name    RTC configuration
@@ -196,145 +187,6 @@ static const spi_conf_t spi_config[] = {
 #define RTC_DEV             RTC->MODE2
 
 /** @} */
-
-#if 0
-/**
- * @name    PWM configuration
- * @{
- */
-#define PWM_0_EN            0
-#define PWM_1_EN            0
-#define PWM_MAX_CHANNELS    0
-/* for compatibility with test application */
-#define PWM_0_CHANNELS      PWM_MAX_CHANNELS
-#define PWM_1_CHANNELS      PWM_MAX_CHANNELS
-
-#if 0
-/* PWM device configuration */
-static const pwm_conf_t pwm_config[] = {
-#if PWM_0_EN
-    {TCC0, {
-        /* GPIO pin, MUX value, TCC channel */
-        { GPIO_UNDEF, (gpio_mux_t)0,  0 },
-        { GPIO_PIN(PA, 7), GPIO_MUX_E, 1 }, /* ~9 */
-    }},
-#endif
-#if PWM_1_EN
-    {TCC2, {
-        /* GPIO pin, MUX value, TCC channel */
-        { GPIO_PIN(PA, 16), GPIO_MUX_E, 0 }, /* ~11 */
-        { GPIO_UNDEF, (gpio_mux_t)0, 1 },
-    }},
-#endif
-};
-#endif
-
-/* number of devices that are actually defined */
-#define PWM_NUMOF           (0U)
-/** @} */
-#endif
-#if 0
-
-/**
- * @name    ADC configuration
- * @{
- */
-#define ADC_0_EN                           1
-#define ADC_MAX_CHANNELS                   14
-/* ADC 0 device configuration */
-#define ADC_0_DEV                          ADC
-#define ADC_0_IRQ                          ADC_IRQn
-
-/* ADC 0 Default values */
-#define ADC_0_CLK_SOURCE                   0 /* GCLK_GENERATOR_0 */
-#define ADC_0_PRESCALER                    ADC_CTRLB_PRESCALER_DIV512
-
-#define ADC_0_NEG_INPUT                    ADC_INPUTCTRL_MUXNEG_GND
-#define ADC_0_GAIN_FACTOR_DEFAULT          ADC_INPUTCTRL_GAIN_1X
-#define ADC_0_REF_DEFAULT                  ADC_REFCTRL_REFSEL_INT1V
-
-static const adc_conf_chan_t adc_channels[] = {
-    /* port, pin, muxpos */
-    { GPIO_PIN(PA, 2), ADC_INPUTCTRL_MUXPOS_PIN0 },     /* A0 */
-    { GPIO_PIN(PB, 8), ADC_INPUTCTRL_MUXPOS_PIN2 },     /* A1 */
-    { GPIO_PIN(PB, 9), ADC_INPUTCTRL_MUXPOS_PIN3 },     /* A2 */
-    { GPIO_PIN(PA, 4), ADC_INPUTCTRL_MUXPOS_PIN4 },     /* A3 */
-    { GPIO_PIN(PA, 5), ADC_INPUTCTRL_MUXPOS_PIN5 },     /* A4 */
-    { GPIO_PIN(PB, 2), ADC_INPUTCTRL_MUXPOS_PIN10 },    /* A5 */
-};
-
-#define ADC_0_CHANNELS                     (6U)
-//#define ADC_NUMOF                          ADC_0_CHANNELS
-#define ADC_NUMOF 0
-/** @} */
-
-/**
- * @name    SPI configuration
- * @{
- */
-static const spi_conf_t spi_config[] = {
-    {
-        .dev      = &SERCOM4->SPI,
-        .miso_pin = GPIO_PIN(PA, 12),
-        .mosi_pin = GPIO_PIN(PB, 10),
-        .clk_pin  = GPIO_PIN(PB, 11),
-        .miso_mux = GPIO_MUX_D,
-        .mosi_mux = GPIO_MUX_D,
-        .clk_mux  = GPIO_MUX_D,
-        .miso_pad = SPI_PAD_MISO_0,
-        .mosi_pad = SPI_PAD_MOSI_2_SCK_3
-    }
-};
-
-//#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
-#define SPI_NUMOF           1
-/** @} */
-
-/**
- * @name    I2C configuration
- * @{
- */
-#define I2C_NUMOF           (0U)
-#define I2C_0_EN            1
-#define I2C_1_EN            0
-#define I2C_2_EN            0
-#define I2C_3_EN            0
-#define I2C_IRQ_PRIO        1
-
-#define I2C_0_DEV           SERCOM3->I2CM
-#define I2C_0_IRQ           SERCOM3_IRQn
-#define I2C_0_ISR           isr_sercom3
-/* I2C 0 GCLK */
-#define I2C_0_GCLK_ID       SERCOM3_GCLK_ID_CORE
-#define I2C_0_GCLK_ID_SLOW  SERCOM3_GCLK_ID_SLOW
-/* I2C 0 pin configuration */
-#define I2C_0_SDA           GPIO_PIN(PA, 22) /* SDA pin */
-#define I2C_0_SCL           GPIO_PIN(PA, 23) /* SCL pin */
-#define I2C_0_MUX           GPIO_MUX_C
-/** @} */
-
-/**
- * @name    RTC configuration
- * @{
- */
-#define RTC_NUMOF           (0U)
-#define RTC_DEV             RTC->MODE2
-/** @} */
-
-/**
- * @name    RTT configuration
- * @{
- */
-#define RTT_NUMOF           (0U)
-#define RTT_DEV             RTC->MODE0
-#define RTT_IRQ             RTC_IRQn
-#define RTT_IRQ_PRIO        10
-#define RTT_ISR             isr_rtc
-#define RTT_MAX_VALUE       (0xffffffff)
-#define RTT_FREQUENCY       (32768U)    /* in Hz. For changes see `rtt.c` */
-#define RTT_RUNSTDBY        (1)         /* Keep RTT running in sleep states */
-/** @} */
-#endif
 
 #ifdef __cplusplus
 }
