@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 Inria
+ * Copyright (C) 2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +8,15 @@
  */
 
 /**
- * @ingroup     boards_feather-m0
+ * @ingroup     boards_sensebox
  * @{
  *
  * @file
- * @brief       SD card configuration for the Adafruit Feather M0 Adalogger
+ * @brief       SD card configuration for SenseBox board. This configuration
+ *              considers that SD is connected to the XBEE2 port.
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 
 #ifndef SDCARD_SPI_PARAMS_H
@@ -28,7 +31,7 @@ extern "C" {
 /**
  * @brief   Card detect pin
  */
- #define CARD_DETECT_PIN              (GPIO_PIN(PA, 21))
+ #define CARD_DETECT_PIN              (XBEE2_INT_PIN)
 
 /**
  * @brief   sdcard_spi configuration
@@ -36,10 +39,10 @@ extern "C" {
 static const  sdcard_spi_params_t sdcard_spi_params[] = {
     {
         .spi_dev        = SPI_DEV(0),
-        .cs             = GPIO_PIN(PA, 8),
-        .clk            = GPIO_PIN(PB, 11),
-        .mosi           = GPIO_PIN(PB, 10),
-        .miso           = GPIO_PIN(PA, 12),
+        .cs             = XBEE2_CS_PIN,
+        .clk            = GPIO_PIN(PA, 17),
+        .mosi           = GPIO_PIN(PA, 16),
+        .miso           = GPIO_PIN(PA, 19),
         .power          = GPIO_UNDEF,
         .power_act_high = true
     },
