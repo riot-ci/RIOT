@@ -1,6 +1,5 @@
 /*
- * Copyright (C)  2017 Inria
- * Copyright (C)  2018 HAW Hamburg
+ * Copyright (C) 2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +13,6 @@
  * @file
  * @brief       Board specific implementations for the SenseBox boards.
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  *
  * @}

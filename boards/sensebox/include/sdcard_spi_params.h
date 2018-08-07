@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2017 Inria
  * Copyright (C) 2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -15,7 +14,6 @@
  * @brief       SD card configuration for SenseBox board. This configuration
  *              considers that SD is connected to the XBEE2 port.
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 

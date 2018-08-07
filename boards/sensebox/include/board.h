@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2017 Inria
  * Copyright (C) 2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -16,7 +15,6 @@
  * @file
  * @brief       Board specific configuration for the SenseBox board.
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 
@@ -73,8 +71,8 @@ extern "C" {
 #define XBEE1_EN_MODE           GPIO_OUT
 #define XBEE1_EN_PIN            GPIO_PIN(PB, 3)
 
-#define XBEE1_ENABLE             (XBEE1_EN_PORT.OUTCLR.reg = XBEE1_EN_MASK)
-#define XBEE1_DISABLE            (XBEE1_EN_PORT.OUTSET.reg = XBEE1_EN_MASK)
+#define XBEE1_ENABLE            (XBEE1_EN_PORT.OUTCLR.reg = XBEE1_EN_MASK)
+#define XBEE1_DISABLE           (XBEE1_EN_PORT.OUTSET.reg = XBEE1_EN_MASK)
 
 #define XBEE1_CS_PIN            GPIO_PIN(PA, 18)
 
@@ -93,8 +91,8 @@ extern "C" {
 #define XBEE2_EN_PIN            GPIO_PIN(PB, 10)
 #define XBEE2_EN_MODE           GPIO_OUT
 
-#define XBEE2_ENABLE             (XBEE2_EN_PORT.OUTCLR.reg = XBEE2_EN_MASK)
-#define XBEE2_DISABLE            (XBEE2_EN_PORT.OUTSET.reg = XBEE2_EN_MASK)
+#define XBEE2_ENABLE            (XBEE2_EN_PORT.OUTCLR.reg = XBEE2_EN_MASK)
+#define XBEE2_DISABLE           (XBEE2_EN_PORT.OUTSET.reg = XBEE2_EN_MASK)
 
 #define XBEE2_CS_PIN            GPIO_PIN(PA, 14)
 
@@ -113,11 +111,9 @@ extern "C" {
 #define I2C_EN_PIN            GPIO_PIN(PB, 11)
 #define I2C_EN_MODE           GPIO_OUT
 
-#define I2C_ENABLE             (I2C_EN_PORT.OUTSET.reg = I2C_EN_MASK)
-#define I2C_DISABLE            (I2C_EN_PORT.OUTCLR.reg = I2C_EN_MASK)
+#define I2C_ENABLE            (I2C_EN_PORT.OUTSET.reg = I2C_EN_MASK)
+#define I2C_DISABLE           (I2C_EN_PORT.OUTCLR.reg = I2C_EN_MASK)
 /** @} */
-
-
 
 /**
  * @name SX127X

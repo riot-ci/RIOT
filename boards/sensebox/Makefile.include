@@ -1,4 +1,4 @@
-# define the cpu used by Adafruit Feather M0 boards
+# define the cpu used by SenseBox board
 export CPU = samd21
 export CPU_MODEL = samd21g18a
 

@@ -1,6 +1,5 @@
 /*
- * Copyright (C)  2017 Inria
- * Copyright (C)  2018 HAW Hamburg
+ * Copyright (C) 2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +13,6 @@
  * @file
  * @brief       Configuration of CPU peripherals for SenseBox
  *
- * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  * @author      Jose Alamos <jose.alamos@haw-hamburg.de>
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
@@ -105,8 +103,8 @@ extern "C" {
 static const uart_conf_t uart_config[] = {
     {
         .dev    = &SERCOM3->USART,
-        .rx_pin = GPIO_PIN(PA, 23), /* RX pin */
-        .tx_pin = GPIO_PIN(PA, 22), /* TX pin */
+        .rx_pin = GPIO_PIN(PA, 23),
+        .tx_pin = GPIO_PIN(PA, 22),
         .mux    = GPIO_MUX_C,
         .rx_pad = UART_PAD_RX_1,
         .tx_pad = UART_PAD_TX_0,
@@ -115,8 +113,8 @@ static const uart_conf_t uart_config[] = {
     },
     {
         .dev    = &SERCOM4->USART,
-        .rx_pin = GPIO_PIN(PB, 9), /* RX pin */
-        .tx_pin = GPIO_PIN(PB, 8), /* TX pin */
+        .rx_pin = GPIO_PIN(PB, 9),
+        .tx_pin = GPIO_PIN(PB, 8),
         .mux    = GPIO_MUX_D,
         .rx_pad = UART_PAD_RX_1,
         .tx_pad = UART_PAD_TX_0,
@@ -174,7 +172,7 @@ static const i2c_conf_t i2c_config[] = {
         .mux      = GPIO_MUX_C,
         .gclk_src = GCLK_CLKCTRL_GEN_GCLK0,
         .flags    = I2C_FLAG_NONE
-     }
+    }
 };
 
 #define I2C_NUMOF          (sizeof(i2c_config) / sizeof(i2c_config[0]))
