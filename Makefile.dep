@@ -630,6 +630,10 @@ ifneq (,$(filter puf_sram,$(USEMODULE)))
   FEATURES_REQUIRED += puf_sram
 endif
 
+ifneq (,$(filter can_stm32,$(USEMODULE)))
+  USEMODULE += xtimer
+endif
+
 ifneq (,$(filter random,$(USEMODULE)))
   USEMODULE += prng
   # select default prng
