@@ -119,7 +119,7 @@ void ets_run(void)
  */
 void system_init(void)
 {
-    LOG_INFO("\nStarting ESP8266 CPU with ID: %0lx", system_get_chip_id());
+    LOG_INFO("\nStarting ESP8266 CPU with ID: %08x", system_get_chip_id());
     LOG_INFO("\nSDK Version %s\n\n", system_get_sdk_version());
 
     /* avoid reconnection all the time */
@@ -560,7 +560,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
         default: ets_printf("\n");
     }
 
-    ets_uart_printf("\nStarting ESP8266 CPU with ID: %0lx\n\n", system_get_chip_id());
+    ets_uart_printf("\nStarting ESP8266 CPU with ID: %08x\n\n", system_get_chip_id());
 
     /* clear .bss to avoid startup problems because of compiler optimization options */
     memset(&_bss_start, 0x0, &_bss_end-&_bss_start);
@@ -592,20 +592,20 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
     Cache_Read_Enable(0, 0, 1);
 
     #if ENABLE_DEBUG
-    printf("boot_inf sector @0x%lx\n", flash_size - SPI_FLASH_SECTOR_SIZE);
+    printf("boot_inf sector @0x%x\n", flash_size - SPI_FLASH_SECTOR_SIZE);
     hexdump(&binfo, sizeof(binfo), 'b', 16);
     #endif
 
-    LOG_INFO("load boot_inf 0x%lx, len %d, chk %02x\n",
+    LOG_INFO("load boot_inf 0x%x, len %d, chk %02x\n",
              binfo_addr, sizeof(binfo),
              system_get_checksum((uint8_t*)&binfo, sizeof(binfo)));
-    LOG_INFO("load wifi_cfg 0x%lx, len %d, chk %02x\n",
+    LOG_INFO("load wifi_cfg 0x%x, len %d, chk %02x\n",
              wscfg_addr, sizeof(wscfg),
              system_get_checksum((uint8_t*)&wscfg, sizeof(wscfg)));
 
     /* check whether boot_inf sector could be loaded */
     if (binfo.bank > 0 && binfo.flag == 0xffffffff) {
-        LOG_INFO("no boot_inf sector @0x%lx, write a default one to flash\n", binfo_addr);
+        LOG_INFO("no boot_inf sector @0x%x, write a default one to flash\n", binfo_addr);
         memcpy (&binfo, ets_store_wifi_hdr_default, sizeof(binfo));
         spi_flash_write (binfo_addr, (uint32_t*)&binfo, sizeof(binfo));
 
@@ -618,7 +618,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
     }
     else {
         /* checksum error but continue */
-        LOG_INFO("flash check sum error @0x%lx\n", wscfg_addr);
+        LOG_INFO("flash check sum error @0x%x\n", wscfg_addr);
 
         /* check whether there is no wifi_cfg sector */
         uint8_t* wscfg_sec = (uint8_t*)&wscfg;
@@ -633,7 +633,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
         if (i == sizeof(wscfg)) {
             /* TODO write a default wifi_cfg sector automatically into the flash in that case */
             LOG_INFO("\nno wifi_cfg sector found, use following command:\n"
-                     "esptool.py write_flash 0x%lx $(RIOT_CPU)/bin/wifi_cfg_default.bin\n\n",
+                     "esptool.py write_flash 0x%x $(RIOT_CPU)/bin/wifi_cfg_default.bin\n\n",
                      wscfg_addr);
         }
     }
@@ -729,7 +729,7 @@ void start_phase2 (void)
     sdk_phy_info_t* phy_info = (sdk_phy_info_t*)pbuf;
     spi_flash_read (phy_info_addr, (uint32_t*)phy_info, sizeof(sdk_phy_info_t));
 
-    LOG_INFO("load phy_info 0x%lx, len %d, chk %02x\n",
+    LOG_INFO("load phy_info 0x%x, len %d, chk %02x\n",
              phy_info_addr, sizeof(sdk_phy_info_t),
              system_get_checksum((uint8_t*)phy_info, sizeof(sdk_phy_info_t)));
 
@@ -739,15 +739,15 @@ void start_phase2 (void)
     spi_flash_read (rf_cal_sec_addr, (uint32_t*)(pbuf + 128), 628);
 
     LOG_INFO("rf_cal_sec=%d\n", rf_cal_sec);
-    LOG_INFO("load rf_cal 0x%lx, len %d, chk %02x\n",
+    LOG_INFO("load rf_cal 0x%x, len %d, chk %02x\n",
              rf_cal_sec_addr, 628, system_get_checksum(pbuf + 128, 628));
     LOG_INFO("reset reason: %d %d\n", rst_if.reason, rtc_get_reset_reason());
 
     #if ENABLE_DEBUG
-    printf("phy_info sector @0x%lx\n", phy_info_addr);
+    printf("phy_info sector @0x%x\n", phy_info_addr);
     hexdump(pbuf, 128, 'b', 16);
 
-    printf("rf_cal sector @0x%lx\n", rf_cal_sec_addr);
+    printf("rf_cal sector @0x%x\n", rf_cal_sec_addr);
     /* hexdump(pbuf+128, 628, 'b', 16); */
     #endif
 
@@ -767,7 +767,7 @@ void start_phase2 (void)
         /* no data different from 0xff found, we assume that the flash was erased */
         if (i == sizeof(sdk_phy_info_t)) {
             /* write a default default phy_info sector into the flash */
-            LOG_INFO("no phy_info sector found @0x%lx, "
+            LOG_INFO("no phy_info sector found @0x%x, "
                      "writing esp_init_data_default.bin into flash\n",
                      phy_info_addr);
             spi_flash_write (phy_info_addr,

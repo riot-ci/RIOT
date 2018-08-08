@@ -19,8 +19,9 @@
 
 #include "c_types.h"
 
-/* include board.h to make board specific configuration visible in any case */
+/* include board.h and cpu_conf.h to make them visible in any case */
 #include "board.h"
+#include "cpu_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
