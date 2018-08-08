@@ -21,14 +21,14 @@
 #define CANDEV_STM32_PARAMS_H
 
 #include "can/device.h"
-#include "candev_stm32.h"
+#include "periph/can.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** Default STM32 CAN devices config */
-static const candev_stm32_conf_t candev_stm32_conf[] = {
+static const can_conf_t candev_conf[] = {
     {
 #if defined(CPU_FAM_STM32F0)
         .can = CAN,
@@ -115,7 +115,7 @@ static const candev_stm32_conf_t candev_stm32_conf[] = {
 };
 
 /** Default STM32 CAN devices parameters */
-static const candev_params_t candev_stm32_params[] = {
+static const candev_params_t candev_params[] = {
     {
         .name = "can_stm32_0",
     },
