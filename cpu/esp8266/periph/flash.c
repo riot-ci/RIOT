@@ -98,7 +98,7 @@ uint8_t _flash_buf[SPI_FLASH_BUF_SIZE];
 
 static int _flash_read  (mtd_dev_t *dev, void *buff, uint32_t addr, uint32_t size)
 {
-    DEBUG("%s dev=%p addr=%08lx size=%lu buf=%p\n", __func__, dev, addr, size, buff);
+    DEBUG("%s dev=%p addr=%08x size=%u buf=%p\n", __func__, dev, addr, size, buff);
 
     CHECK_PARAM_RET (dev == &_flash_dev, -ENODEV);
     CHECK_PARAM_RET (buff != NULL, -ENOTSUP);
@@ -162,7 +162,7 @@ static int _flash_read  (mtd_dev_t *dev, void *buff, uint32_t addr, uint32_t siz
 
 static int _flash_write (mtd_dev_t *dev, const void *buff, uint32_t addr, uint32_t size)
 {
-    DEBUG("%s dev=%p addr=%08lx size=%lu buf=%p\n", __func__, dev, addr, size, buff);
+    DEBUG("%s dev=%p addr=%08x size=%u buf=%p\n", __func__, dev, addr, size, buff);
 
     CHECK_PARAM_RET (dev == &_flash_dev, -ENODEV);
     CHECK_PARAM_RET (buff != NULL, -ENOTSUP);
@@ -228,7 +228,7 @@ static int _flash_write (mtd_dev_t *dev, const void *buff, uint32_t addr, uint32
 
 static int _flash_erase (mtd_dev_t *dev, uint32_t addr, uint32_t size)
 {
-    DEBUG("%s dev=%p addr=%08lx size=%lu\n", __func__, dev, addr, size);
+    DEBUG("%s dev=%p addr=%08x size=%u\n", __func__, dev, addr, size);
 
     CHECK_PARAM_RET (dev == &_flash_dev, -ENODEV);
 

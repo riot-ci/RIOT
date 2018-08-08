@@ -115,7 +115,7 @@ static void _pwm_stop(void)
 
 uint32_t pwm_init(pwm_t pwm, pwm_mode_t mode, uint32_t freq, uint16_t res)
 {
-    DEBUG ("%s pwm=%lu mode=%lu freq=%lu, res=%u\n", __func__, pwm, mode, freq, res);
+    DEBUG ("%s pwm=%u mode=%u freq=%u, res=%u\n", __func__, pwm, mode, freq, res);
 
     uint8_t _pwm_channel_gpio_num = sizeof(_pwm_channel_gpios) >> 2;
 
@@ -174,7 +174,7 @@ uint8_t pwm_channels(pwm_t pwm)
 
 void pwm_set(pwm_t pwm, uint8_t channel, uint16_t value)
 {
-    DEBUG("%s pwm=%lu channel=%u value=%u\n", __func__, pwm, channel, value);
+    DEBUG("%s pwm=%u channel=%u value=%u\n", __func__, pwm, channel, value);
 
     CHECK_PARAM (pwm < PWM_NUMOF);
     CHECK_PARAM (channel < _pwm_dev.chn_num);

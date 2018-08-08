@@ -45,14 +45,14 @@ extern "C" {
  */
 #define PRINTF_BUFSIZ 256
 
-/* The following include is neccessary to overwrite the definition of PRIu8 */
+/* Following include is neccessary to overwrite newlib's PRI*8 and PRI*32. */
 /* PLEASE NOTE: ets_vprintf does not understand %i %li, or %hi */
 #ifndef DOXYGEN
 #include <inttypes.h>
-#undef  PRIi8
-#undef  PRIu8
-#define PRIi8 "d"
-#define PRIu8 "u"
+#undef  __INT8
+#define __INT8
+#undef  __INT32
+#define __INT32
 #endif
 
 #ifdef __cplusplus
