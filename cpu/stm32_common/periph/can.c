@@ -572,10 +572,10 @@ static inline int is_master(can_t *dev)
 static void _wkup_cb(void *arg)
 {
     can_t *dev = arg;
+    gpio_irq_disable(dev->rx_pin);
 
     DEBUG("int wkup: %p\n", arg);
 
-    gpio_irq_disable(dev->rx_pin);
     dev->isr_flags.isr_wkup = 1;
 
     if (dev->candev.event_callback) {
@@ -626,6 +626,8 @@ static void disable_int(can_t *dev, int master_from_slave)
 static void turn_off(can_t *dev)
 {
     DEBUG("turn off (%p)\n", (void *)dev);
+
+    unsigned irq = irq_disable();
 #if CANDEV_STM32_CHAN_NUMOF > 1
     if (is_master(dev)) {
         int chan = get_channel(dev->conf->can);
@@ -680,11 +682,14 @@ static void turn_off(can_t *dev)
     periph_clk_dis(APB1, dev->conf->rcc_mask);
     gpio_init_int(dev->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, dev);
 #endif
+    irq_restore(irq);
 }
 
 static void turn_on(can_t *dev)
 {
     DEBUG("turn on (%p)\n", (void *)dev);
+
+    unsigned irq = irq_disable();
 #if CANDEV_STM32_CHAN_NUMOF > 1
     if (!is_master(dev)) {
         int master_chan = get_channel(get_master(dev));
@@ -710,6 +715,8 @@ static void turn_on(can_t *dev)
         periph_clk_en(APB1, dev->conf->rcc_mask);
     }
     _status[get_channel(dev->conf->can)] = STATUS_ON;
+
+    irq_restore(irq);
 }
 
 static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
