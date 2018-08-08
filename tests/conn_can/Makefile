@@ -6,7 +6,17 @@ BOARD_INSUFFICIENT_MEMORY := chronos hifive1 msb-430 msb-430h nucleo-f031k6 nucl
                              nucleo-l053r8 stm32f0discovery telosb wsn430-v1_3b \
                              wsn430-v1_4 z1
 
-CFLAGS += -DLOG_LEVEL=LOG_ALL
+BOARDS_WITH_STM32_CANDEV := nucleo-f072rb \
+                            nucleo-f091rc \
+                            nucleo-f103rb \
+                            nucleo-f207zg \
+                            nucleo-f412zg \
+                            nucleo-f413zh \
+                            nucleo-f429zg \
+                            nucleo-f446re \
+                            nucleo-f446ze
+
+
 
 USEMODULE += shell
 USEMODULE += shell_commands
@@ -17,5 +27,7 @@ USEMODULE += can_isotp
 USEMODULE += conn_can_isotp_multi
 USEMODULE += can_pm
 USEMODULE += can_trx
+
+FEATURES_OPTIONAL += periph_can
 
 include $(RIOTBASE)/Makefile.include
