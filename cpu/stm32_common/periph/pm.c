@@ -2,6 +2,7 @@
  * Copyright (C) 2016 Kaspar Schleiser <kaspar@schleiser.de>
  *               2015 Freie Universität Berlin
  *               2015 Engineering-Spirit
+ *               2017-2018 OTA keys S.A.
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,14 +20,16 @@
  * @author      Nick v. IJzendoorn <nijzndoorn@engineering-spirit.nl>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Fabian Nack <nack@inf.fu-berlin.de>
+ * @author      Vincent Dupont <vincent@otakeys.com>
  *
  * @}
  */
 
 #include "irq.h"
 #include "periph/pm.h"
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
+    defined(CPU_FAM_STM32L0)
 #include "stmclk.h"
 #endif
 
@@ -39,8 +42,48 @@
  *
  * Available values can be found in reference manual, PWR section, register CR.
  */
+#if defined(CPU_FAM_STM32F0)
+#define PM_STOP_CONFIG (PWR_CR_LPDS)
+#else
 #define PM_STOP_CONFIG (PWR_CR_LPDS | PWR_CR_FPDS)
 #endif
+#endif
+
+static inline uint32_t _ewup_config(void)
+{
+    uint32_t tmp = 0;
+#ifdef PM_EWUP_CONFIG
+    tmp |= PM_EWUP_CONFIG;
+#elif defined(PWR_CSR_EWUP)
+    tmp |= PWR_CSR_EWUP;
+#else
+#if defined(PWR_CSR_EWUP8)
+    tmp |= PWR_CSR_EWUP8;
+#endif
+#if defined(PWR_CSR_EWUP7)
+    tmp |= PWR_CSR_EWUP7;
+#endif
+#if defined(PWR_CSR_EWUP6)
+    tmp |= PWR_CSR_EWUP6;
+#endif
+#if defined(PWR_CSR_EWUP5)
+    tmp |= PWR_CSR_EWUP5;
+#endif
+#if defined(PWR_CSR_EWUP4)
+    tmp |= PWR_CSR_EWUP4;
+#endif
+#if defined(PWR_CSR_EWUP3)
+    tmp |= PWR_CSR_EWUP3;
+#endif
+#if defined(PWR_CSR_EWUP2)
+    tmp |= PWR_CSR_EWUP2;
+#endif
+#if defined(PWR_CSR_EWUP1)
+    tmp |= PWR_CSR_EWUP1;
+#endif
+#endif
+    return tmp;
+}
 
 void pm_set(unsigned mode)
 {
@@ -48,22 +91,15 @@ void pm_set(unsigned mode)
 
 /* I just copied it from stm32f1/2/4, but I suppose it would work for the
  * others... /KS */
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
+    defined(CPU_FAM_STM32L0)
     switch (mode) {
         case STM32_PM_STANDBY:
             /* Set PDDS to enter standby mode on deepsleep and clear flags */
             PWR->CR |= (PWR_CR_PDDS | PWR_CR_CWUF | PWR_CR_CSBF);
             /* Enable WKUP pin to use for wakeup from standby mode */
-#if defined(CPU_FAM_STM32L0)
-            PWR->CSR |= (PWR_CSR_EWUP1 | PWR_CSR_EWUP2);
-#if !defined(CPU_MODEL_STM32L053R8)
-            /* STM32L053 only have 2 wake pins */
-            PWR->CSR |= PWR_CSR_EWUP3;
-#endif
-#else
-            PWR->CSR |= PWR_CSR_EWUP;
-#endif
+            PWR->CSR |= _ewup_config();
             /* Set SLEEPDEEP bit of system control block */
             deep = 1;
             break;
@@ -93,8 +129,9 @@ void pm_set(unsigned mode)
 
     cortexm_sleep(deep);
 
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
+    defined(CPU_FAM_STM32L0)
     if (deep) {
         /* Re-init clock after STOP */
         stmclk_init_sysclk();
@@ -102,8 +139,9 @@ void pm_set(unsigned mode)
 #endif
 }
 
-#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
+    defined(CPU_FAM_STM32L0)
 void pm_off(void)
 {
     irq_disable();
