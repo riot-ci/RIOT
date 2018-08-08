@@ -29,7 +29,7 @@
    its implementation in [esp-open-rtos](https://github.com/SuperHouse/esp-open-rtos.git).
    These parts are under the copyright of their respective owners.
 */
-
+#if 0
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -588,4 +588,5 @@ static /* IRAM */ uint8_t _i2c_read_byte(_i2c_bus_t* bus, bool ack)
     return byte;
 }
 
+#endif
 #endif

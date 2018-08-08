@@ -42,13 +42,13 @@ void hexdump (const void* addr, uint32_t num, char width, uint8_t per_line)
 
     while (count < num) {
         if (count % per_line == 0) {
-            printf ("%08lx: ", (uint32_t)((uint8_t*)addr+count*size));
+            printf ("%08x: ", (uint32_t)((uint8_t*)addr+count*size));
         }
         switch (width) {
             case 'b': printf("%02x ", addr8[count++]); break;
             case 'h': printf("%04x ", addr16[count++]); break;
             case 'w': printf("%08x ", addr32[count++]); break;
-            case 'g': printf("%016x ",addr64[count++]); break;
+            case 'g': printf("%016llx ",addr64[count++]); break;
             default : printf("."); count++; break;
         }
         if (count % per_line == 0) {

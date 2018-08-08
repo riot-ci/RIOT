@@ -113,14 +113,14 @@ void IRAM hw_timer_handler(void* arg)
 
 int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 {
-    DEBUG("%s dev=%lu freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
+    DEBUG("%s dev=%u freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
 
     CHECK_PARAM_RET (dev  <  HW_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (freq == XTIMER_HZ_BASE, -1);
     CHECK_PARAM_RET (cb   != NULL, -1);
 
     if (timers[dev].initialized) {
-        DEBUG("%s timer dev=%lu is already initialized (used)\n", __func__, dev);
+        DEBUG("%s timer dev=%u is already initialized (used)\n", __func__, dev);
         return -1;
     }
 
@@ -144,7 +144,7 @@ int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 
 int IRAM timer_set(tim_t dev, int chn, unsigned int delta)
 {
-    DEBUG("%s dev=%lu channel=%ld delta=%lu\n", __func__, dev, chn, delta);
+    DEBUG("%s dev=%u channel=%d delta=%u\n", __func__, dev, chn, delta);
 
     CHECK_PARAM_RET (dev < HW_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (chn < HW_TIMER_CHANNELS, -1);
@@ -168,14 +168,14 @@ int IRAM timer_set(tim_t dev, int chn, unsigned int delta)
 
 int IRAM timer_set_absolute(tim_t dev, int chn, unsigned int value)
 {
-    DEBUG("%s dev=%lu channel=%ld value=%lu\n", __func__, dev, chn, value);
+    DEBUG("%s dev=%u channel=%d value=%u\n", __func__, dev, chn, value);
 
     return timer_set (dev, chn, value - timer_read(dev));
 }
 
 int timer_clear(tim_t dev, int chn)
 {
-    DEBUG("%s dev=%lu channel=%ld\n", __func__, dev, chn);
+    DEBUG("%s dev=%u channel=%d\n", __func__, dev, chn);
 
     CHECK_PARAM_RET (dev < HW_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (chn < HW_TIMER_CHANNELS, -1);
@@ -199,7 +199,7 @@ unsigned int IRAM timer_read(tim_t dev)
 
 void IRAM timer_start(tim_t dev)
 {
-    DEBUG("%s dev=%lu @%lu\n", __func__, dev, phy_get_mactime());
+    DEBUG("%s dev=%u @%u\n", __func__, dev, phy_get_mactime());
 
     CHECK_PARAM (dev < HW_TIMER_NUMOF);
     CHECK_PARAM (!timers[dev].started);
@@ -222,7 +222,7 @@ void IRAM timer_start(tim_t dev)
 
 void IRAM timer_stop(tim_t dev)
 {
-    DEBUG("%s dev=%lu\n", __func__, dev);
+    DEBUG("%s dev=%u\n", __func__, dev);
 
     CHECK_PARAM (dev < HW_TIMER_NUMOF);
 
@@ -251,7 +251,7 @@ static void IRAM __timer_channel_start (struct hw_timer_t* timer, struct hw_chan
     channel->cycles     = channel->delta_time >> HW_TIMER_DELTA_RSHIFT;
     channel->remainder  = channel->delta_time &  HW_TIMER_DELTA_MASK;
 
-    DEBUG("%s cycles=%u remainder=%lu @%lu\n",
+    DEBUG("%s cycles=%u remainder=%u @%u\n",
           __func__, channel->cycles, channel->remainder, phy_get_mactime());
 
     /* start timer either with full cycles, remaining or minimum time */
@@ -372,14 +372,14 @@ void IRAM os_timer_handler (void* arg)
 
 int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 {
-    DEBUG("%s dev=%lu freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
+    DEBUG("%s dev=%u freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
 
     CHECK_PARAM_RET (dev  <  OS_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (freq == XTIMER_HZ_BASE, -1);
     CHECK_PARAM_RET (cb   != NULL, -1);
 
     if (timers[dev].initialized) {
-        DEBUG("%s timer dev=%lu is already initialized (used)\n", __func__, dev);
+        DEBUG("%s timer dev=%u is already initialized (used)\n", __func__, dev);
         return -1;
     }
 
@@ -403,7 +403,7 @@ int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 
 int IRAM timer_set(tim_t dev, int chn, unsigned int delta)
 {
-    DEBUG("%s dev=%lu channel=%ld delta=%lu\n", __func__, dev, chn, delta);
+    DEBUG("%s dev=%u channel=%d delta=%u\n", __func__, dev, chn, delta);
 
     CHECK_PARAM_RET (dev < OS_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (chn < OS_TIMER_CHANNELS, -1);
@@ -427,14 +427,14 @@ int IRAM timer_set(tim_t dev, int chn, unsigned int delta)
 
 int IRAM timer_set_absolute(tim_t dev, int chn, unsigned int value)
 {
-    DEBUG("%s dev=%lu channel=%ld value=%lu\n", __func__, dev, chn, value);
+    DEBUG("%s dev=%u channel=%d value=%u\n", __func__, dev, chn, value);
 
     return timer_set (dev, chn, value - timer_read(dev));
 }
 
 int timer_clear(tim_t dev, int chn)
 {
-    DEBUG("%s dev=%lu channel=%ld\n", __func__, dev, chn);
+    DEBUG("%s dev=%u channel=%d\n", __func__, dev, chn);
 
     CHECK_PARAM_RET (dev < OS_TIMER_NUMOF, -1);
     CHECK_PARAM_RET (chn < OS_TIMER_CHANNELS, -1);
@@ -458,7 +458,7 @@ unsigned int IRAM timer_read(tim_t dev)
 
 void IRAM timer_start(tim_t dev)
 {
-    DEBUG("%s dev=%lu\n", __func__, dev);
+    DEBUG("%s dev=%u\n", __func__, dev);
 
     CHECK_PARAM (dev < OS_TIMER_NUMOF);
     CHECK_PARAM (!timers[dev].started);
@@ -478,7 +478,7 @@ void IRAM timer_start(tim_t dev)
 
 void IRAM timer_stop(tim_t dev)
 {
-    DEBUG("%s dev=%lu\n", __func__, dev);
+    DEBUG("%s dev=%u\n", __func__, dev);
 
     CHECK_PARAM (dev < OS_TIMER_NUMOF);
 
@@ -510,7 +510,7 @@ static void IRAM __timer_channel_start (struct phy_timer_t* timer, struct phy_ch
     channel->cycles     = channel->delta_time >> OS_TIMER_DELTA_RSHIFT;
     channel->remainder  = channel->delta_time &  OS_TIMER_DELTA_MASK;
 
-    DEBUG("%s cycles=%u remainder=%lu @%lu\n",
+    DEBUG("%s cycles=%u remainder=%u @%u\n",
           __func__, channel->cycles, channel->remainder, phy_get_mactime());
 
     /* start timer either with full cycles, remainder or minimum time */

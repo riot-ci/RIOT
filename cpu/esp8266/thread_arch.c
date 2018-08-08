@@ -182,7 +182,7 @@ char* thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_sta
 
     /* END - code from FreeRTOS port for Xtensa from Cadence */
 
-    DEBUG("%s start=%p size=%ld top=%p sp=%p free=%lu\n",
+    DEBUG("%s start=%p size=%d top=%p sp=%p free=%u\n",
           __func__, stack_start, stack_size, top_of_stack, sp, sp-(uint8_t*)stack_start);
 
     return (char*)sp;
@@ -202,7 +202,7 @@ void  thread_yield_higher(void)
     /* yield next task */
     #if defined(ENABLE_DEBUG) && defined(DEVELHELP)
     if (sched_active_thread) {
-        DEBUG("%lu old task %lu %s %lu\n", phy_get_mactime(),
+        DEBUG("%u old task %u %s %u\n", phy_get_mactime(),
                sched_active_thread->pid, sched_active_thread->name,
                sched_active_thread->sp - sched_active_thread-> stack_start);
     }
@@ -217,7 +217,7 @@ void  thread_yield_higher(void)
 
     #if defined(ENABLE_DEBUG) && defined(DEVELHELP)
     if (sched_active_thread) {
-        DEBUG("%lu new task %lu %s %lu\n", phy_get_mactime(),
+        DEBUG("%u new task %u %s %u\n", phy_get_mactime(),
                sched_active_thread->pid, sched_active_thread->name,
                sched_active_thread->sp - sched_active_thread-> stack_start);
     }
