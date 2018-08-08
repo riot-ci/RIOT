@@ -156,5 +156,5 @@ static void __uart_intr_enable(uart_t uart)
     UART(uart).INT_ENABLE |= UART_INT_ENABLE_RXFIFO_FULL;
     ETS_INTR_ENABLE(ETS_UART_INUM);
 
-    DEBUG("%s %08lx\n", __func__, UART(uart).INT_ENABLE);
+    DEBUG("%s %08x\n", __func__, UART(uart).INT_ENABLE);
 }

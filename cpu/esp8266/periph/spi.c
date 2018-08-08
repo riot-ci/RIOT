@@ -75,7 +75,7 @@ void _spi_init_internal(spi_t bus)
     }
     _spi_initialized[bus] = true;
 
-    DEBUG("%s bus=%lu\n", __func__, bus);
+    DEBUG("%s bus=%u\n", __func__, bus);
 
     /* initialize pins */
     spi_init_pins(bus);
@@ -98,7 +98,7 @@ void _spi_init_internal(spi_t bus)
     /* set bit order to most significant first for read and write operations */
     SPI(bus).CTRL0 = 0; /* ~(SPI_CTRL0_WR_BIT_ORDER | SPI_CTRL0_RD_BIT_ORDER); */
 
-    DEBUG("%s SPI(bus).USER0=%08lx SPI(bus).CTRL0=%08lx\n",
+    DEBUG("%s SPI(bus).USER0=%08x SPI(bus).CTRL0=%08x\n",
           __func__,  SPI(bus).USER0, SPI(bus).CTRL0);
 }
 
@@ -118,7 +118,7 @@ void spi_init_pins(spi_t bus)
     }
     _spi_pins_initialized[bus] = true;
 
-    DEBUG("%s bus=%lu\n", __func__, bus);
+    DEBUG("%s bus=%u\n", __func__, bus);
 
     uint32_t iomux_func = (bus == 0) ? IOMUX_FUNC(1) : IOMUX_FUNC(2);
 
@@ -143,7 +143,7 @@ void spi_init_pins(spi_t bus)
 
 int spi_init_cs(spi_t bus, spi_cs_t cs)
 {
-    DEBUG("%s bus=%lu cs=%lu\n", __func__, bus, cs);
+    DEBUG("%s bus=%u cs=%u\n", __func__, bus, cs);
 
     /* see spi_init */
     CHECK_PARAM_RET (bus == SPI_DEV(0), SPI_NODEV);
@@ -172,7 +172,7 @@ int spi_init_cs(spi_t bus, spi_cs_t cs)
 
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 {
-    DEBUG("%s bus=%lu cs=%lu mode=%lu clk=%lu\n", __func__, bus, cs, mode, clk);
+    DEBUG("%s bus=%u cs=%u mode=%u clk=%u\n", __func__, bus, cs, mode, clk);
 
     /* see spi_init */
     CHECK_PARAM_RET (bus == SPI_DEV(0), SPI_NODEV);
@@ -187,7 +187,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
     /* if the CS pin used is not yet initialized, we do it now */
     if (_gpio_pin_usage[cs] != _SPI && spi_init_cs(bus, cs) != SPI_OK) {
-        LOG_ERROR("SPI_DEV(%s) CS signal could not be initialized\n", bus);
+        LOG_ERROR("SPI_DEV(%d) CS signal could not be initialized\n", bus);
         return SPI_NOCS;
     }
 
@@ -248,7 +248,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     spi_clkdiv_pre--;
     spi_clkcnt_N--;
 
-    DEBUG("%s spi_clkdiv_prev=%lu spi_clkcnt_N=%lu\n", __func__, spi_clkdiv_pre, spi_clkcnt_N);
+    DEBUG("%s spi_clkdiv_prev=%u spi_clkcnt_N=%u\n", __func__, spi_clkdiv_pre, spi_clkcnt_N);
 
     /* SPI clock is derived from system bus frequency and should not be affected by */
     /* CPU clock */
@@ -260,7 +260,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
                       VAL2FIELD_M (SPI_CLOCK_COUNT_HIGH, (spi_clkcnt_N+1)/2-1) |
                       VAL2FIELD_M (SPI_CLOCK_COUNT_LOW, spi_clkcnt_N);
 
-    DEBUG("%s IOMUX.CONF=%08lx SPI(bus).CLOCK=%08lx\n",
+    DEBUG("%s IOMUX.CONF=%08x SPI(bus).CLOCK=%08x\n",
           __func__, IOMUX.CONF, SPI(bus).CLOCK);
 
     return SPI_OK;
@@ -324,7 +324,7 @@ static const uint8_t spi_empty_out[SPI_BLOCK_SIZE] = { 0 };
 
 static void _spi_buf_transfer(uint8_t bus, const void *out, void *in, size_t len)
 {
-    DEBUG("%s bus=%lu out=%p in=%p len=%lu\n", __func__, bus, out, in, len);
+    DEBUG("%s bus=%u out=%p in=%p len=%u\n", __func__, bus, out, in, len);
 
     /* transfer one block data */
     _wait(bus);
@@ -343,7 +343,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     /* see spi_init */
     CHECK_PARAM (bus == SPI_DEV(0));
 
-    DEBUG("%s bus=%lu cs=%lu cont=%d out=%p in=%p len=%lu\n",
+    DEBUG("%s bus=%u cs=%u cont=%d out=%p in=%p len=%u\n",
           __func__, bus, cs, cont, out, in, len);
 
     if (!len) {
@@ -367,7 +367,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     size_t blocks = len / SPI_BLOCK_SIZE;
     uint8_t tail = len % SPI_BLOCK_SIZE;
 
-    DEBUG("%s bus=%lu cs=%lu blocks=%d tail=%d\n",
+    DEBUG("%s bus=%u cs=%u blocks=%d tail=%d\n",
           __func__, bus, cs, blocks, tail);
 
     for (size_t i = 0; i < blocks; i++) {

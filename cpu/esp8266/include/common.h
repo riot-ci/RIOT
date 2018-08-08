@@ -62,7 +62,7 @@ extern "C" {
   */
 #define CHECK_PARAM_RET(cond,err) if (!(cond)) \
                                   { \
-                                    DEBUG("parameter condition (" #cond ") not fulfilled\n"); \
+                                    DEBUG("%s\n", "parameter condition (" #cond ") not fulfilled"); \
                                     return err; \
                                   }
 
@@ -75,7 +75,7 @@ extern "C" {
  */
 #define CHECK_PARAM(cond)         if (!(cond)) \
                                   { \
-                                    DEBUG("parameter condition (" #cond ") not fulfilled\n"); \
+                                    DEBUG("%s\n", "parameter condition (" #cond ") not fulfilled"); \
                                     return; \
                                   }
 #else
