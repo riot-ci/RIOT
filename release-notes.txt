@@ -72,6 +72,7 @@ Networking
       [RFC4862](https://tools.ietf.org/html/rfc4862)
     + gnrc_ipv6: support to handle RDNSS option in neighbor discovery
     + netif.h: a network-stack agnostic API to network interfaces
+    + lorawan: add example application of autonomous class A device
     * sock_udp: allocate ephemeral port on sock creation when port is 0
     * **TODO* gcoap: List improvements
     -
@@ -81,6 +82,7 @@ Packages
     + NimBLE: Bluetooth Low Energy stack used in mynewt
     + TLSF: re-enable original api to have different pools
     + LUA: **TODO** tell the current state
+    + semtech-loramac: add support for link_check MAC command
     -
 
 Boards
@@ -90,6 +92,7 @@ Boards
     + slstk3402a
     + stm32f429i-disc1
     + stm32l476-disco
+    + nucleo-l496zg
     + stm32mindev
 
 CPU
@@ -98,13 +101,18 @@ CPU
 
 Device Drivers
 --------------
-    +
+    + periph_eeprom API with support for STM32 L0/L1 and AVR
+    + AT commands parser
+    + Fix periph_flashpage for iotlab-a8-m3/iotlab-m3/fox boards
+    + IO1 Xplained extension: add support for light sensor and SD card, fix
+      GPIOs initialization and SAUL support
 
 Build System / Tooling
 ----------------------
     + iotlab-m3/iotlab-a8-m3: fix boards flashing
     + Fix use of non completely initialized BASELIBS variable
     + newlib.mk: extract gcc include search directories for newlib-nano support
+    * testbed-support: use new iot-lab command names
 
 Known Issues
 ===========
