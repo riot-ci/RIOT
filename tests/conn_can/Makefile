@@ -28,8 +28,6 @@ USEMODULE += conn_can_isotp_multi
 USEMODULE += can_pm
 USEMODULE += can_trx
 
-ifneq (,$(filter $(BOARD),$(BOARDS_WITH_STM32_CANDEV)))
-  USEMODULE += can_stm32
-endif
+FEATURES_OPTIONAL += periph_can
 
 include $(RIOTBASE)/Makefile.include
