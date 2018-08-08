@@ -1,6 +1,8 @@
 INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-core/include
 INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-ext/include
 
-# There are problem with unused `-mcpu...` arguments in clang and with
-# ranlib + LLVM/clang in this package
-TOOLCHAINS_BLACKLIST += llvm
+ifneq (,$(filter cortex-m%,$(CPU_ARCH)))
+  # There is a linking issue to `_setjmp()` and `stderr` when compiling
+  # for Cortex-M with LLVM/clang
+  TOOLCHAINS_BLACKLIST += llvm
+endif
