@@ -22,7 +22,8 @@
 #include <limits.h>
 #include <cpu_conf.h>
 
-#include "candev_stm32.h"
+#include "periph/can.h"
+#include "periph/gpio.h"
 #include "can/device.h"
 #include "can/common.h"
 #include "periph_conf.h"
@@ -55,14 +56,14 @@ static int _get(candev_t *candev, canopt_t opt, void *value, size_t max_len);
 static int _set_filter(candev_t *candev, const struct can_filter *filter);
 static int _remove_filter(candev_t *candev, const struct can_filter *filter);
 
-static void tx_irq_handler(candev_stm32_t *dev);
-static void tx_isr(candev_stm32_t *dev);
-static void tx_conf(candev_stm32_t *dev, int mailbox);
-static void rx_irq_handler(candev_stm32_t *dev, int mailbox);
-static void rx_isr(candev_stm32_t *dev);
-static void sce_irq_handler(candev_stm32_t *dev);
+static void tx_irq_handler(can_t *dev);
+static void tx_isr(can_t *dev);
+static void tx_conf(can_t *dev, int mailbox);
+static void rx_irq_handler(can_t *dev, int mailbox);
+static void rx_isr(can_t *dev);
+static void sce_irq_handler(can_t *dev);
 
-static inline void set_bit_timing(candev_stm32_t *dev);
+static inline void set_bit_timing(can_t *dev);
 
 static inline can_mode_t get_mode(CAN_TypeDef *can);
 static int set_mode(CAN_TypeDef *can, can_mode_t mode);
@@ -98,7 +99,7 @@ enum {
 
 static uint8_t _status[CANDEV_STM32_CHAN_NUMOF];
 
-static candev_stm32_t *_can[CANDEV_STM32_CHAN_NUMOF];
+static can_t *_can[CANDEV_STM32_CHAN_NUMOF];
 
 static inline int get_channel(CAN_TypeDef *can)
 {
@@ -170,7 +171,7 @@ static inline int filter_is_set(CAN_TypeDef *master, uint8_t filter)
     return (master->FA1R & (1 << filter)) >> filter;
 }
 
-int candev_stm32_init(candev_stm32_t *dev, const candev_stm32_conf_t *conf)
+void can_init(can_t *dev, const can_conf_t *conf)
 {
     dev->candev.driver = &candev_stm32_driver;
 
@@ -183,8 +184,6 @@ int candev_stm32_init(candev_stm32_t *dev, const candev_stm32_conf_t *conf)
 
     dev->rx_pin = GPIO_UNDEF;
     dev->tx_pin = GPIO_UNDEF;
-
-    return 0;
 }
 
 static void set_filter(CAN_TypeDef *can, uint32_t fr1, uint32_t fr2, uint8_t filter, uint8_t fifo)
@@ -238,10 +237,10 @@ static inline void unset_filter(CAN_TypeDef *can, uint8_t filter)
 }
 
 #ifndef CPU_FAM_STM32F1
-void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
+void candev_stm32_set_pins(can_t *dev, gpio_t tx_pin, gpio_t rx_pin,
                            gpio_af_t af)
 #else
-void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin)
+void candev_stm32_set_pins(can_t *dev, gpio_t tx_pin, gpio_t rx_pin)
 #endif
 {
     if (dev->tx_pin != GPIO_UNDEF) {
@@ -268,7 +267,7 @@ void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin)
 
 static int _init(candev_t *candev)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
     int res = 0;
 
     _can[get_channel(dev->conf->can)] = dev;
@@ -376,7 +375,7 @@ else {
     return res;
 }
 
-static inline void set_bit_timing(candev_stm32_t *dev)
+static inline void set_bit_timing(can_t *dev)
 {
     /* Set bit timing */
     dev->conf->can->BTR = (((uint32_t)(dev->candev.bittiming.sjw - 1) << 24) & CAN_BTR_SJW) |
@@ -389,7 +388,7 @@ static inline void set_bit_timing(candev_stm32_t *dev)
 
 static int _send(candev_t *candev, const struct can_frame *frame)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
     CAN_TypeDef *can = dev->conf->can;
     int mailbox = 0;
 
@@ -430,7 +429,7 @@ static int _send(candev_t *candev, const struct can_frame *frame)
 
 static int _abort(candev_t *candev, const struct can_frame *frame)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
     CAN_TypeDef *can = dev->conf->can;
     int mailbox = 0;
 
@@ -453,7 +452,7 @@ static int _abort(candev_t *candev, const struct can_frame *frame)
 #define CAN_RIxR_EFF_SHIFT 3
 #define CAN_RDTxR_FMI_SHIFT 8
 
-static int read_frame(candev_stm32_t *dev, struct can_frame *frame, int mailbox)
+static int read_frame(can_t *dev, struct can_frame *frame, int mailbox)
 {
     CAN_TypeDef *can = dev->conf->can;
 
@@ -496,7 +495,7 @@ static int read_frame(candev_stm32_t *dev, struct can_frame *frame, int mailbox)
 
 static void _isr(candev_t *candev)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
 
     if (dev->isr_flags.isr_tx) {
         tx_isr(dev);
@@ -531,7 +530,7 @@ static void _isr(candev_t *candev)
     }
 }
 
-static inline int get_first_filter(candev_stm32_t *dev)
+static inline int get_first_filter(can_t *dev)
 {
 #if CANDEV_STM32_CHAN_NUMOF == 1
     (void)dev;
@@ -541,7 +540,7 @@ static inline int get_first_filter(candev_stm32_t *dev)
 #endif
 }
 
-static inline int get_nb_filter(candev_stm32_t *dev)
+static inline int get_nb_filter(can_t *dev)
 {
 #if CANDEV_STM32_CHAN_NUMOF == 1
     (void)dev;
@@ -551,7 +550,7 @@ static inline int get_nb_filter(candev_stm32_t *dev)
 #endif
 }
 
-static inline CAN_TypeDef *get_master(candev_stm32_t *dev)
+static inline CAN_TypeDef *get_master(can_t *dev)
 {
 #if CANDEV_STM32_CHAN_NUMOF == 1
     return dev->conf->can;
@@ -560,7 +559,7 @@ static inline CAN_TypeDef *get_master(candev_stm32_t *dev)
 #endif
 }
 
-static inline int is_master(candev_stm32_t *dev)
+static inline int is_master(can_t *dev)
 {
 #if CANDEV_STM32_CHAN_NUMOF == 1
     (void)dev;
@@ -572,7 +571,7 @@ static inline int is_master(candev_stm32_t *dev)
 
 static void _wkup_cb(void *arg)
 {
-    candev_stm32_t *dev = arg;
+    can_t *dev = arg;
 
     DEBUG("int wkup: %p\n", arg);
 
@@ -585,12 +584,12 @@ static void _wkup_cb(void *arg)
 }
 
 #if CANDEV_STM32_CHAN_NUMOF > 1
-static void enable_int(candev_stm32_t *dev, int master_from_slave)
+static void enable_int(can_t *dev, int master_from_slave)
 {
     DEBUG("EN int (%d) (%p)\n", master_from_slave, (void *)dev);
 
     if (master_from_slave) {
-        candev_stm32_t *master = _can[get_channel(get_master(dev))];
+        can_t *master = _can[get_channel(get_master(dev))];
         gpio_init_int(master->rx_pin, GPIO_IN, GPIO_FALLING, _wkup_cb, master);
     }
     else {
@@ -599,13 +598,13 @@ static void enable_int(candev_stm32_t *dev, int master_from_slave)
 }
 #endif
 
-static void disable_int(candev_stm32_t *dev, int master_from_slave)
+static void disable_int(can_t *dev, int master_from_slave)
 {
     DEBUG("DIS int (%d) (%p)\n", master_from_slave, (void *)dev);
 
     if (master_from_slave) {
 #if CANDEV_STM32_CHAN_NUMOF > 1
-        candev_stm32_t *master = _can[get_channel(get_master(dev))];
+        can_t *master = _can[get_channel(get_master(dev))];
         gpio_irq_disable(master->rx_pin);
 #ifndef CPU_FAM_STM32F1
         candev_stm32_set_pins(master, master->tx_pin, master->rx_pin, master->af);
@@ -624,7 +623,7 @@ static void disable_int(candev_stm32_t *dev, int master_from_slave)
     }
 }
 
-static void turn_off(candev_stm32_t *dev)
+static void turn_off(can_t *dev)
 {
     DEBUG("turn off (%p)\n", (void *)dev);
 #if CANDEV_STM32_CHAN_NUMOF > 1
@@ -683,7 +682,7 @@ static void turn_off(candev_stm32_t *dev)
 #endif
 }
 
-static void turn_on(candev_stm32_t *dev)
+static void turn_on(can_t *dev)
 {
     DEBUG("turn on (%p)\n", (void *)dev);
 #if CANDEV_STM32_CHAN_NUMOF > 1
@@ -715,7 +714,7 @@ static void turn_on(candev_stm32_t *dev)
 
 static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
     CAN_TypeDef *can = dev->conf->can;
     int res = 0;
     can_mode_t mode;
@@ -777,7 +776,7 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
 
 static int _get(candev_t *candev, canopt_t opt, void *value, size_t max_len)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
     CAN_TypeDef *can = dev->conf->can;
     int res = 0;
 
@@ -866,7 +865,7 @@ static int _get(candev_t *candev, canopt_t opt, void *value, size_t max_len)
 
 static int _set_filter(candev_t *candev, const struct can_filter *filter)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
 
     DEBUG("_set_filter: dev=%p, filter=0x%" PRIx32 "\n", (void *)candev, filter->can_id);
 
@@ -892,7 +891,7 @@ static int _set_filter(candev_t *candev, const struct can_filter *filter)
 
 static int _remove_filter(candev_t *candev, const struct can_filter *filter)
 {
-    candev_stm32_t *dev = (candev_stm32_t *)candev;
+    can_t *dev = (can_t *)candev;
 
     int first_filter = get_first_filter(dev);
     int last_filter = first_filter + get_nb_filter(dev);
@@ -928,7 +927,7 @@ static int _remove_filter(candev_t *candev, const struct can_filter *filter)
     return 0;
 }
 
-static void tx_conf(candev_stm32_t *dev, int mailbox)
+static void tx_conf(can_t *dev, int mailbox)
 {
     candev_t *candev = (candev_t *) dev;
     const struct can_frame *frame = dev->tx_mailbox[mailbox];
@@ -943,7 +942,7 @@ static void tx_conf(candev_stm32_t *dev, int mailbox)
     }
 }
 
-static void tx_irq_handler(candev_stm32_t *dev)
+static void tx_irq_handler(can_t *dev)
 {
     CAN_TypeDef *can = dev->conf->can;
     int flags = dev->isr_flags.isr_tx;
@@ -974,7 +973,7 @@ static void tx_irq_handler(candev_stm32_t *dev)
     }
 }
 
-static void tx_isr(candev_stm32_t *dev)
+static void tx_isr(can_t *dev)
 {
     unsigned int irq;
 
@@ -1009,7 +1008,7 @@ static void tx_isr(candev_stm32_t *dev)
     }
 }
 
-static void rx_irq_handler(candev_stm32_t *dev, int mailbox)
+static void rx_irq_handler(can_t *dev, int mailbox)
 {
     CAN_TypeDef *can = dev->conf->can;
     candev_t *candev = (candev_t *) dev;
@@ -1056,7 +1055,7 @@ static void rx_irq_handler(candev_stm32_t *dev, int mailbox)
     }
 }
 
-static void rx_isr(candev_stm32_t *dev)
+static void rx_isr(can_t *dev)
 {
     DEBUG("_rx_isr: device=%p\n", (void *)dev);
 
@@ -1078,7 +1077,7 @@ static void rx_isr(candev_stm32_t *dev)
     }
 }
 
-static void sce_irq_handler(candev_stm32_t *dev)
+static void sce_irq_handler(can_t *dev)
 {
     CAN_TypeDef *can = dev->conf->can;
     candev_t *candev = (candev_t *) dev;

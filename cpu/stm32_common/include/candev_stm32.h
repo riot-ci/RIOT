@@ -33,10 +33,6 @@ extern "C" {
 #endif
 
 #include "can/candev.h"
-#include "cpu_conf.h"
-#include "periph/gpio.h"
-#include "mutex.h"
-#include "xtimer.h"
 
 #if defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx)
 #define CANDEV_STM32_CHAN_NUMOF 3
@@ -67,7 +63,7 @@ extern "C" {
 #endif
 
 /** bxCAN device configuration */
-typedef struct candev_stm32_conf {
+typedef struct {
     CAN_TypeDef *can;           /**< CAN device */
     uint32_t rcc_mask;          /**< RCC mask to enable clock */
     gpio_t rx_pin;              /**< RX pin */
@@ -102,7 +98,8 @@ typedef struct candev_stm32_conf {
     uint8_t txfp : 1;                   /**< Transmit FIFO priority */
     uint8_t lbkm : 1;                   /**< Loopback mode */
     uint8_t silm : 1;                   /**< Silent mode */
-} candev_stm32_conf_t;
+} can_conf_t;
+#define HAVE_CAN_CONF_T
 
 /** The number of transmit mailboxes */
 #define CAN_STM32_TX_MAILBOXES 3
@@ -116,7 +113,8 @@ typedef struct candev_stm32_conf {
 #endif
 
 /** bxCAN candev descriptor */
-typedef struct candev_stm32 candev_stm32_t;
+typedef struct can can_t;
+#define HAVE_CAN_T
 
 /** This structure holds anything related to the receive part */
 typedef struct candev_stm32_rx_fifo {
@@ -134,9 +132,9 @@ typedef struct candev_stm32_isr {
 } candev_stm32_isr_t;
 
 /** STM32 CAN device descriptor */
-struct candev_stm32 {
+struct can {
     candev_t candev;                    /**< Common candev struct */
-    const candev_stm32_conf_t *conf;    /**< Configuration */
+    const can_conf_t *conf;    /**< Configuration */
     gpio_t rx_pin;                      /**< RX pin */
     gpio_t tx_pin;                      /**< TX pin */
     gpio_af_t af;                       /**< Alternate pin function to use */
@@ -145,16 +143,6 @@ struct candev_stm32 {
     candev_stm32_rx_fifo_t rx_fifo;     /**< Rx FIFOs */
     candev_stm32_isr_t isr_flags;       /**< ISR flags */
 };
-
-/**
- * @brief Initializes a stm32 CAN device @p dev with given @p conf
- *
- * @param[in,out] dev     the device to initialize
- * @param[in] conf        the device configuration
- *
- * @return 0 on success
- */
-int candev_stm32_init(candev_stm32_t *dev, const candev_stm32_conf_t *conf);
 
 #ifndef CPU_FAM_STM32F1
 /**
@@ -165,7 +153,7 @@ int candev_stm32_init(candev_stm32_t *dev, const candev_stm32_conf_t *conf);
  * @param[in] rx_pin      rx pin
  * @param[in] af          alternate function
  */
-void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
+void candev_stm32_set_pins(can_t *dev, gpio_t tx_pin, gpio_t rx_pin,
                            gpio_af_t af);
 #else
 /**
@@ -175,7 +163,7 @@ void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin,
  * @param[in] tx_pin      tx pin
  * @param[in] rx_pin      rx pin
  */
-void candev_stm32_set_pins(candev_stm32_t *dev, gpio_t tx_pin, gpio_t rx_pin);
+void candev_stm32_set_pins(can_t *dev, gpio_t tx_pin, gpio_t rx_pin);
 #endif
 
 #ifdef __cplusplus
