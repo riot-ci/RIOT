@@ -23,7 +23,6 @@
 #include "can/device.h"
 #include "candev_stm32.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,10 +44,13 @@ static const candev_stm32_conf_t candev_stm32_conf[] = {
         .master_rcc_mask = RCC_APB1ENR_CAN1EN,
         .first_filter = 0,
         .nb_filters = 14,
+#ifndef CPU_FAM_STM32F1
         .rx_pin = GPIO_PIN(PORT_D, 0),
         .tx_pin = GPIO_PIN(PORT_D, 1),
-#ifndef CPU_FAM_STM32F1
         .af = GPIO_AF9,
+#else
+        .rx_pin = GPIO_PIN(PORT_A, 11),
+        .tx_pin = GPIO_PIN(PORT_A, 12),
 #endif
         .tx_irqn = CAN1_TX_IRQn,
         .rx0_irqn = CAN1_RX0_IRQn,
