@@ -75,7 +75,7 @@ def main():
 
     # No support for 'interactive' input as catching Ctrl+c breaks in 'read'
     if os.isatty(sys.stdin.fileno()):
-        print('Interactive input no supported. Use piped input',
+        print('Interactive input not supported. Use piped input',
               file=sys.stderr)
         print('  echo message | {}'.format(' '.join(sys.argv)),
               file=sys.stderr)
