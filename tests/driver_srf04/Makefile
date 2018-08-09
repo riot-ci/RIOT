@@ -1,10 +1,8 @@
-APPLICATION = driver_srf04
+include ../Makefile.tests_common
 
 BOARD ?= nrf52dk
 
 RIOTBASE ?= $(CURDIR)/../..
-
-FEATURES_REQUIRED = periph_gpio
 
 USEMODULE += srf04
 

@@ -38,9 +38,9 @@ static void _cb(void *arg)
     }
 }
 
-int srf04_init(srf04_t* dev)
+int srf04_init(srf04_t* dev, const srf04_params_t *params)
 {
-    dev->p = srf04_params[0];
+    dev->p = *params;
 
     dev->distance = SRF04_ERR_INVALID;
     dev->time = 0;
@@ -78,14 +78,6 @@ int srf04_read(const srf04_t* dev)
     return dev->distance;
 }
 
-int srf04_read_distance(const srf04_t* dev)
-{
-    if (dev->distance >= SRF04_OK) {
-        return ((dev->distance * 100) / SRF04_DISTANCE);
-    }
-    return dev->distance;
-}
-
 int srf04_get_distance(const srf04_t* dev)
 {
     /* trigger new reading */
@@ -93,6 +85,9 @@ int srf04_get_distance(const srf04_t* dev)
     /* give the sensor the required time for sampling */
     xtimer_usleep(SRF04_SAMPLE_PERIOD);
     /* get the result */
-    return srf04_read_distance(dev);
+    if (dev->distance >= SRF04_OK) {
+        return ((dev->distance * 100) / SRF04_DISTANCE);
+    }
+    return dev->distance;
 }
 

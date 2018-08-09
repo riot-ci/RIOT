@@ -34,7 +34,7 @@ extern "C" {
 /**
  * @brief defines distance divisor
  *
- * @note for inch define distance as "1480"
+ * @note for inch define "SRF04_DISTANCE (1480U)"
  */
 #ifndef SRF04_DISTANCE
 #define SRF04_DISTANCE  (584U)
@@ -49,40 +49,39 @@ extern "C" {
  * @brief   Status and error return codes
  */
 enum {
-    SRF04_OK        =  0,   /**< exit without error */
+    SRF04_OK            =  0,   /**< exit without error */
     SRF04_ERR_INVALID   = -1,   /**< error no valid measurement available*/
     SRF04_ERR_MEASURING = -2,   /**< error sensor is measuring*/
-    SRF04_ERR_GPIO  = -3,   /**< error initializing gpio*/
+    SRF04_ERR_GPIO      = -3,   /**< error initializing gpio*/
 };
 
 /**
  * @brief   GPIO pins for srf04 device
  */
 typedef struct {
-    gpio_t trigger;
-    gpio_t echo;
+    gpio_t trigger;     /**< GPIO Port the trigger pin is connected to */
+    gpio_t echo;        /**< GPIO Port the echo pin is connected to */
 } srf04_params_t;
 
 /**
  * @brief   Device descriptor for srf04 sensor
  */
 typedef struct {
-    srf04_params_t p;
-    int distance;
-    uint32_t time;
+    srf04_params_t p;   /**< GPIO Ports of device */
+    int distance;       /**< raw time of flight distance */ 
+    uint32_t time;      /**< timestamp of trigger or echo */
 } srf04_t;
 
 /**
  * @brief   Initialize gpio and interrupt
  *
  * @param[out] dev      device descriptor of sensor to initialize
- * @param[in]  trigger  gpio pin of trigger
- * @param[in]  echo     gpio pin of echo
+ * @param[in] params    init param struct holding gpio trigger and echo pins
  *
  * @return              SRF04_OK on success
  * @return              SRF04_GPIO on gpio init failure
  */
-int srf04_init(srf04_t *dev);
+int srf04_init(srf04_t *dev, const srf04_params_t *params);
 
 /**
  * @brief   Triggers measurement
@@ -103,19 +102,6 @@ void srf04_trigger(const srf04_t *dev);
  * @return              SRF04_INVALID if no valid measurement is available
  */
 int srf04_read(const srf04_t* dev);
-
-/**
- * @brief   Returns time of flight in mm
- *
- * @note    should not be invoked within 50 ms after triggering
- *
- * @param[in]  dev      device descriptor of sensor
- *
- * @return              time of flight in mm
- * @return              SRF04_MEASURING if measurement is in progress
- * @return              SRF04_INVALID if no valid measurement is available
- */
-int srf04_read_distance(const srf04_t* dev);
 
 /**
  * @brief   Convenience function triggers a measurement and returns distance

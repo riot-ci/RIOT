@@ -30,7 +30,7 @@ int main(void)
     puts("SRF04 range finder example");
 
     srf04_t dev;
-    srf04_init(&dev);
+    srf04_init(&dev, &srf04_params[0]);
     int distance;
 
     while (1) {
