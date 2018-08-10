@@ -8,7 +8,6 @@
 
 # Author: Martin Elshuber <martin.elshuber@theobroma-systems.com>
 
-import sys
 from testrunner import run
 
 
@@ -46,4 +45,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    exit(run(testfunc))

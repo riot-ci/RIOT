@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 from testrunner import run
 
 NB_TESTS = 3
@@ -13,4 +12,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    exit(run(testfunc))

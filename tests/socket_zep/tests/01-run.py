@@ -7,7 +7,6 @@
 # directory for more details.
 
 import os
-import sys
 import socket
 from testrunner import run
 
@@ -65,4 +64,4 @@ if __name__ == "__main__":
         print("Run tests successful")
     else:
         print("Run tests failed")
-    sys.exit(res)
+    exit(res)

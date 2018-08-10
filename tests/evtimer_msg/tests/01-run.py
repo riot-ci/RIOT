@@ -7,7 +7,6 @@
 # directory for more details.
 
 from __future__ import print_function
-import sys
 from testrunner import run
 
 ACCEPTED_ERROR = 20
@@ -30,4 +29,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    exit(run(testfunc))

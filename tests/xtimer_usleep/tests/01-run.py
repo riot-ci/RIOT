@@ -9,7 +9,6 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-import sys
 import time
 from testrunner import run
 
@@ -54,8 +53,8 @@ def testfunc(child):
                                  (testtime, exp))
     except InvalidTimeout as e:
         print(e)
-        sys.exit(1)
+        exit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    exit(run(testfunc))
