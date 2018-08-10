@@ -6,7 +6,6 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-import os
 import sys
 
 import socket
@@ -53,7 +52,6 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.path.append(os.path.join(os.environ['RIOTTOOLS'], 'testrunner'))
     import testrunner
 
     os.environ['TERMFLAGS'] = "-z [%s]:%d,[%s]:%d" % (
