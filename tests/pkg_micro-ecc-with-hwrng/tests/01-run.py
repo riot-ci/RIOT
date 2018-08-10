@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import os
-import sys
+from testrunner import run
 
 
 def testfunc(child):
@@ -13,6 +12,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.path.append(os.path.join(os.environ['RIOTTOOLS'], 'testrunner'))
-    from testrunner import run
-    sys.exit(run(testfunc, timeout=60))
+    exit(run(testfunc, timeout=60))
