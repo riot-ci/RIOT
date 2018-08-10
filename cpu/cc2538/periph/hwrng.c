@@ -38,7 +38,7 @@ void hwrng_init(void)
     int i;
 
     /* Make sure the RNG is on */
-    soc_adc->ADCCON1 = (0UL << SOC_ADC_ADCCON1_RCTRL_S);
+    soc_adc->ADCCON1 &= ~(SOC_ADC_ADCCON1_RCTRL_M);
 
     /* Enable clock for the RF Core */
     SYS_CTRL_RCGCRFC = 1;
