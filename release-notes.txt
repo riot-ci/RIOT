@@ -117,6 +117,8 @@ Build System / Tooling
 Known Issues
 ===========
 
+    + at86rf2xx: cannot correctly set channel after `NETOPT_STATE_RESET`
+
 > TODO
 
 Acknowledgements
