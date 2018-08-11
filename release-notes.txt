@@ -117,6 +117,7 @@ Build System / Tooling
 Known Issues
 ===========
 
+#9548: Many i2c bugs found with the i2c api rework but did not reach the release
 #9616: at86rf2xx: can not correctly set channel after `NETOPT_STATE_RESET`
 #9656: gnrc/netif: various problems after resetting interface a second time
 #9709: examples: failed assertion in dtls-echo example
