@@ -118,6 +118,11 @@ Known Issues
 ===========
 
 #9616: at86rf2xx: can not correctly set channel after `NETOPT_STATE_RESET`
+#9656: gnrc/netif: various problems after resetting interface a second time
+#9709: examples: failed assertion in dtls-echo example
+#9573: pkg/lwip: assert on samr21-xpro
+#9616: ATmega platform issues. ROM and RAM overflow not detected at link time
+#9584: drivers/cc2420: add netopt NETOPT_MAX_PACKET_SIZE
 
 > TODO
 
