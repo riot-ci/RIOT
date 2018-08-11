@@ -74,14 +74,15 @@ extern "C" {
 /**
  * @brief   More data will follow
  *
- * This flag signals that this packet is part of a burst of packets. The link
- * layer implementation can choose to translate this flag into frame header bits
- * to tell the remote node that more traffic will follow shortly. The most
- * direct use case for this flag is to set it for fragmented packets in duty
- * cycled networks to tell the remote node to keep its radio turned on after
- * receiving the first fragment.
+ * @details This flag signals that this packet is part of a burst of packets.
+ *          The link layer implementation can choose to translate this flag into
+ *          frame header bits to tell the remote node that more traffic will
+ *          follow shortly. The most direct use case for this flag is to set it
+ *          for fragmented packets in duty cycled networks to tell the remote
+ *          node to keep its radio turned on after receiving the first fragment.
  *
- * @see The corresponding bit in the IEEE 802.15.4 frame control field, @ref IEEE802154_FCF_FRAME_PEND
+ * @see     The corresponding bit in the IEEE 802.15.4 frame control field,
+ *          @ref IEEE802154_FCF_FRAME_PEND
  */
 #define GNRC_NETIF_HDR_FLAGS_MORE_DATA  (0x10)
 /**
