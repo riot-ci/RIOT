@@ -244,6 +244,10 @@ include $(RIOTCPU)/$(CPU)/Makefile.include
 # Import all toolchain settings
 include $(RIOTMAKE)/toolchain/$(TOOLCHAIN).inc.mk
 
+# avoid ccache passing preprocessed code to the compiler, causing 
+# -Wimplicit-fallthrough warnings even when they are properly commented. 
+export CCACHE_CPP2=yes
+
 # get number of interfaces straight before resolving dependencies
 GNRC_NETIF_NUMOF ?= 1
 
