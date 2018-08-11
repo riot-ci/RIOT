@@ -64,7 +64,6 @@ System libraries
     + random: SHA-1 based PRNG
     + matstat: Integer mathematical statistics library
     * analog_util: Refactor, add unit test
-    -
 
 Networking
 ----------
@@ -76,19 +75,18 @@ Networking
     + lorawan: add example application of autonomous class A device
     * sock_udp: allocate ephemeral port on sock creation when port is 0
     * gnrc_netif: Enable RX and TX complete events after netdev init
-    * **TODO* gcoap: List improvements
-    -
+    * net/gcoap: Refine Observe re-registration
+    * net/nanocoap: Build message with coap_pkt_t
 
 Packages
 --------
     + NimBLE: Bluetooth Low Energy stack used in mynewt
     + TLSF: re-enable original api to have different pools
-    + LUA: **TODO** tell the current state
+    + LUA: Add an example with the shell
     + semtech-loramac: add support for link_check MAC command
     * libcose: Use RIOT random_bytes instead of randombytes
     * tweetnacl: Use RIOT random_bytes instead of randombytes
     * hacl: Use RIOT random_bytes instead of randombytes
-    -
 
 Boards
 ------
@@ -124,13 +122,21 @@ Device Drivers
 
 Build System / Tooling
 ----------------------
+    + Correctly set the RIOT_VERSION on release archives
     + iotlab-m3/iotlab-a8-m3: fix boards flashing
     + Fix use of non completely initialized BASELIBS variable
     + newlib.mk: extract gcc include search directories for newlib-nano support
+    + llvm: many compatibilities issues have been resolved
     * testbed-support: use new iot-lab command names
 
+Testing
+-------
+    + Address some of the failing tests
+    + New tests enabled by default in CI
+    + Improve testing automation for release testing
+
 Known Issues
-===========
+============
 
 Networking related issues
 -------------------------
