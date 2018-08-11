@@ -132,15 +132,96 @@ Build System / Tooling
 Known Issues
 ===========
 
-#9548: Many i2c bugs found with the i2c api rework but did not reach the release
+Networking related issues
+-------------------------
+
+#4527: gnrc_ipv6: Multicast is not forwarded if routing node listens to the
+       address
+#5016: gnrc_rpl: Rejoining RPL instance as root after reboot messes up rooting
+#5051: Forwarding a packet back to its link layer source should not be allowed
+#5230: gnrc_ipv6: multicast packes are not dispatched to the upper layers
+#5748: gnrc: nodes crashing with too small packet buffer
+#6123: gnrc: crash with (excessive) traffic in native
+#7474: 6lo: gnrc fragmentation expects driver to block on TX
+#7737: pkg: libcoap is partially broken and outdated
+#8086: gnrc_rpl_p2p: not compiling
+#8130: gcoap: can't build witth network stacks other than gnrc
+#8172: gnrc_netif, gnrc_uhcpc: Replacing prefix on border router results in no
+       configured prefix
+#8271: app/netdev: application stops working after receiving frames with
+       assertion or completely without error
 #9616: at86rf2xx: can not correctly set channel after `NETOPT_STATE_RESET`
 #9656: gnrc/netif: various problems after resetting interface a second time
-#9709: examples: failed assertion in dtls-echo example
 #9573: pkg/lwip: assert on samr21-xpro
-#9616: ATmega platform issues. ROM and RAM overflow not detected at link time
 #9584: drivers/cc2420: add netopt NETOPT_MAX_PACKET_SIZE
 
-> TODO
+Timer related issues
+--------------------
+
+#5103: xtimer: weird behavior of tests/xtimer_drift
+#5338: xtimer: xtimer_now() is not ISR safe
+#6052: tests: xtimer_drift_gets_stuck
+#7114: xtimer: adds items to the wrong list if the timer overflows between
+       _xtimer_now() and irq_disable()
+#7347: xtimer_usleep stuck for small values
+#8251: telosb: timer config wrong when running o a tmote sky
+
+Native related issues
+---------------------
+
+#495: native not float safe
+#5796 native: tlsf: early malloc will lead to a crash
+#6442: cpu/native: timer interrupt issue
+#7206: native: race-condition in IPC
+
+Other platforms related issues
+------------------------------
+
+#4512: pkg: tests: RELIC unittests fail on iotlab-m3
+#4612: pkg: TLSF does not build for 16 bit platforms
+#4872: at86rf2xx: Simultaneous use of different transceiver types is not
+       supported
+#4954: chronos: compiling with -O0 breaks
+#4866: periph: GPIO drivers are not thread tafe
+#5009: RIOT is saw-toothing in energy consumption (even when idling)
+#5128: some use of asm keyword might be missing volatile
+#5486: at86rf2xx: lost interrupts
+#5774: cpu: cortexm_common: context switching code breaks when compiling with
+       LTO
+#5848: arduino: Race condition in sys/arduino/Makefile.include
+#6018: nRF52: gnrc 6lowpan ble memory leak
+#6437: periph/spi: Leftovers from SPI rework in #4780
+#6567: periph/spi: Switching between CPOL=0,1 problems on Kinetis with software
+       CS
+#6650: GPIO Port shift in cc2538 is unconsistent
+#6838: Issuing a reboot on ATmega328p makes the board loop-reboot
+#6874: SAMD21: possible CMSIS bug
+#7020: isr_rfcoreerrors while pinging between CC2538DKs
+#7667: sam0 flashpage_write issues
+#7846: stm32f1: I2C read functions return bogus values with unconnected devices
+#8028: diskio: failed assertion in send_cmd() on lpc2387
+#8045: stm32/periph/uart: extra byte transmitted on first transmission
+#8436: Kinetis PhyNode: failed to flash binary > 256K
+#8444: tests/thread_priority_inversion hangup
+#9616: ATmega platform issues.
+
+
+Other issues
+------------
+
+#1263: sys: the TLSF implementation contains (a) read-before-write error(s)
+#4053: macros: RIOT_FILE_RELATIVE printing wrong file name for headers
+#4488: making the newlib thread-safe
+#5561: C++11 extensions in header files
+#5776: make: Predefining CFLAGS are parsed weirdly
+#5863: OSX+SAMR21-xpro: shell cannot handle command inputs larger than 64 chars
+#6120: Windows AVR Mega development makefile Error
+#7220: sys/fmt: Missing tests for fmt_float,fmt_lpad
+#7877: SPI connection can't read 16bit size register
+#8107: crypto/ccm: bugs in the implementation of CCM mode
+#9548: Many i2c bugs found with the i2c api rework but did not reach the release
+#9709: examples: failed assertion in dtls-echo example
+
 
 Acknowledgements
 ================
