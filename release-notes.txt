@@ -62,7 +62,8 @@ System libraries
 ----------------
     + puf_sram: SRAM PUF feature to seed PRNGs cortex-m platforms
     + random: SHA-1 based PRNG
-    +
+    + matstat: Integer mathematical statistics library
+    * analog_util: Refactor, add unit test
     -
 
 Networking
@@ -74,6 +75,7 @@ Networking
     + netif.h: a network-stack agnostic API to network interfaces
     + lorawan: add example application of autonomous class A device
     * sock_udp: allocate ephemeral port on sock creation when port is 0
+    * gnrc_netif: Enable RX and TX complete events after netdev init
     * **TODO* gcoap: List improvements
     -
 
@@ -83,6 +85,9 @@ Packages
     + TLSF: re-enable original api to have different pools
     + LUA: **TODO** tell the current state
     + semtech-loramac: add support for link_check MAC command
+    * libcose: Use RIOT random_bytes instead of randombytes
+    * tweetnacl: Use RIOT random_bytes instead of randombytes
+    * hacl: Use RIOT random_bytes instead of randombytes
     -
 
 Boards
@@ -94,10 +99,19 @@ Boards
     + stm32l476-disco
     + nucleo-l496zg
     + stm32mindev
+    + frdm-k22f, frdm-k64f, frdm-kw41z: Add bus configuration for onboard FXOS8700CQ sensor
+    * mulle: Fix mixed up RX TX pins on UART0
 
 CPU
 ---
     + E310 (RISC-V)
+    * kinetis: GPIO: Enable the correct IRQn on CM0+
+    * kinetis: Refactor PIT timer driver implementation
+    * kinetis: Refactor RTT driver
+    * kinetis: Refactor clock initialization code
+    * kinetis: Refactor LPTMR timer implementation
+    * kinetis: Clean up SPI module power handling
+    * kinetis: Conditionally enable MCG
 
 Device Drivers
 --------------
@@ -106,6 +120,7 @@ Device Drivers
     + Fix periph_flashpage for iotlab-a8-m3/iotlab-m3/fox boards
     + IO1 Xplained extension: add support for light sensor and SD card, fix
       GPIOs initialization and SAUL support
+    + tests/bench_timers: A comprehensive benchmark for periph_timer
 
 Build System / Tooling
 ----------------------
