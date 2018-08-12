@@ -62,7 +62,8 @@ System libraries
     + random: SHA-1 based PRNG
     + matstat: Integer mathematical statistics library
     * analog_util: Refactor, add unit test
-    - cbor: Deprecation of this module, use cn-cbor package instead
+    - cbor: Deprecation of this module, use cn-cbor package or tinycbor package
+      package instead
 
 Networking
 ----------
