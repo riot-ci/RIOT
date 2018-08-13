@@ -40,12 +40,12 @@ void pm_set_lowest(void)
     ets_tasks_run ();
 
     #if !defined(QEMU)
-    DEBUG ("%s enter to sleep @%lu\n", __func__, phy_get_mactime());
+    DEBUG ("%s enter to sleep @%u\n", __func__, phy_get_mactime());
 
     /* passive wait for interrupt to leave lowest power mode */
     __asm__ volatile ("waiti 0");
 
-    DEBUG ("%s exit from sleep @%lu\n", __func__, phy_get_mactime());
+    DEBUG ("%s exit from sleep @%u\n", __func__, phy_get_mactime());
     #endif
 
     /*
