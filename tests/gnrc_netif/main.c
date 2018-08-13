@@ -523,7 +523,7 @@ static void test_ipv6_group_join__ENOMEM(void)
 {
     ipv6_addr_t addr = IPV6_ADDR_ALL_NODES_LINK_LOCAL;
 
-    for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF;
+    for (unsigned i = 0; i < GNRC_NETIF_IPV6_GROUPS_NUMOF;
          i++, addr.u16[7].u16++) {
         TEST_ASSERT(0 <= gnrc_netif_ipv6_group_join_internal(netifs[0], &addr));
     }
@@ -1043,7 +1043,7 @@ static void test_netif_iter(void)
 
 static void test_netif_get_name(void)
 {
-    char exp_name[NETIF_NAMELENMAX];
+    char exp_name[NETIF_NAMELENMAX + 1];
     char name[NETIF_NAMELENMAX];
     int res;
     netif_t netif = netif_iter(NETIF_INVALID);

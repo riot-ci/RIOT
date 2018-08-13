@@ -26,6 +26,9 @@
 #include "openthread/config.h"
 #include "openthread/platform/logging.h"
 
+/* adapted from OpenThread posix example:
+ * See: https://github.com/openthread/openthread/blob/master/examples/platforms/posix/logging.c */
+__attribute__((__format__ (__printf__, 3, 4)))
 void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, ...)
 {
     (void) aLogLevel;
