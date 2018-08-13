@@ -214,7 +214,6 @@ Other platforms related issues
 #8444: tests/thread_priority_inversion hangup
 #9616: ATmega platform issues.
 
-
 Other issues
 ------------
 
@@ -230,6 +229,19 @@ Other issues
 #8107: crypto/ccm: bugs in the implementation of CCM mode
 #9548: Many i2c bugs found with the i2c api rework but did not reach the release
 #9709: examples: failed assertion in dtls-echo example
+
+Fixed Issues from the last release (2018.04)
+============================================
+
+#8112 crypto/ccm: fix input_len checking with length_encoding
+#8532 kinetis: timer_set_absolute randomly misses its target
+#8778 sys/random: random_uint32_range is only uniform if range is a power of 2
+      bug quality defect
+#9065 flashpage_write broken on iotlab-m3
+#9154 cpu/lpc2387: Fixed broken SPI driver
+#9451 Makefile.include: fully define BASELIBS before using its value
+#9579 stm32_common: fix ram length for MCUs with non-contiguous ram regions
+#9675 tests: gnrc_netif: fix group join iteration macro
 
 
 Acknowledgements
