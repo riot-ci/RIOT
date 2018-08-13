@@ -172,6 +172,7 @@ Timer related issues
        _xtimer_now() and irq_disable()
 #7347: xtimer_usleep stuck for small values
 #8251: telosb: timer config wrong when running o a tmote sky
+#9052: misc issues with tests/trickle
 
 Native related issues
 ---------------------
