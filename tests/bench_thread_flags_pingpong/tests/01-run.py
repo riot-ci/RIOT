@@ -10,6 +10,7 @@
 import sys
 from testrunner import run
 
+
 def testfunc(child):
     child.expect(r"{ \"result\" : \d+ }")
 

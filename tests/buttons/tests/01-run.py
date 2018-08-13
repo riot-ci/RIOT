@@ -9,6 +9,7 @@
 import sys
 from testrunner import run
 
+
 def testfunc(child):
     child.expect_exact("On-board button test")
     index = child.expect([

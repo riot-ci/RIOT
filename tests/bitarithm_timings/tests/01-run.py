@@ -9,6 +9,7 @@
 import sys
 from testrunner import run
 
+
 def testfunc(child):
     child.expect_exact("Start.")
     child.expect('\+ bitarithm_msb: \d+ iterations per second')
