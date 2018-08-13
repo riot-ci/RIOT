@@ -45,7 +45,7 @@ void rtc_init(void)
     /* Turn on power manager for RTC */
     PM->APBAMASK.reg |= PM_APBAMASK_RTC;
 
-    setup_gen2_xosc32(false);
+    setup_gen2_xosc32(true);
 
     /* RTC uses GEN2_XOSC32 because OSC32K isn't accurate
      * enough (p1075/1138). */

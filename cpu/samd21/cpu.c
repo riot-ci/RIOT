@@ -190,7 +190,7 @@ static void clk_init(void)
                          GCLK_GENCTRL_SRC_FDPLL |
                          GCLK_GENCTRL_ID(0));
 #elif CLOCK_SRC == CLOCK_USE_DFLL
-    setup_gen2_xosc32(false);
+    setup_gen2_xosc32(true);
     /* Set GEN2_XOSC32 as source for DFLL */
     GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_GEN_GCLK2 |
                          GCLK_CLKCTRL_ID_DFLL48 |
