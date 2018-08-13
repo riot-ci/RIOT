@@ -75,7 +75,7 @@ Networking
     + netif.h: a network-stack agnostic API to network interfaces
     + lorawan: add example application of autonomous class A device
     * sock_udp: allocate ephemeral port on sock creation when port is 0
-    * gnrc_netif: Enable RX and TX complete events after netdev init
+    * gnrc_netif: Enable RX and TX complete events after netdev initialization
     * net/gcoap: Refine Observe re-registration
     * net/nanocoap: Build message with coap_pkt_t
 
