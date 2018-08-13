@@ -29,7 +29,8 @@ The 2018.07 release includes ...
 > RMME: Update them with: 'dist/tools/release-stats/release-stats.sh'
 
 About 380 pull requests with about 675 commits have been merged since the last
-release and about 27 issues have been solved in 91 days.
+release and about 27 issues have been solved. 45 people contributed with code
+in 93 days.
 Approximately 1678 files have been touched with 147122 insertions
 and 16060 deletions.
 
