@@ -244,6 +244,10 @@ Fixed Issues from the last release (2018.04)
 #9675 tests: gnrc_netif: fix group join iteration macro
 
 
+You can get the complete detail in the git history and in the release milestone
+[Release 2018.07](https://github.com/RIOT-OS/RIOT/milestone/23?closed=1).
+
+
 Acknowledgements
 ================
 We would like to thank all companies (vendors) that provided us with (their)
