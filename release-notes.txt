@@ -21,7 +21,7 @@ About this release:
 The 2018.07 release includes new features, like NimBLE (ble stack),
 a MQTT-SN client, SHA-1 based PRNG, an UUID implementation. The RISC-V CPU
 architecture support used by the hifive1 board.
-Effort was done on refactoring, documentation, tests improvements and bug fixes.
+Effort was done on refactoring, documentation, test improvements and bug fixes.
 
 During the last release, maintainers contributed by running the automated test
 suites on their boards. This gave valuable feedback on the board support state,
