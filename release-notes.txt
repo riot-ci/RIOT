@@ -18,20 +18,19 @@ business models around the free open-source software platform provided by RIOT.
 About this release:
 ===================
 
-**DRAFT TODO**
+The 2018.07 release includes new features, like NimBLE (ble stack),
+a MQTT-SN client, SHA-1 based PRNG, an UUID implementation. The RISC-V CPU
+architecture support was added wich allow adding the hifive1 board.
+Effort was done on refactoring, tests improvements and bug fixes.
 
-The 2018.07 release includes ...
-....
-....
-....
-
-> RMME: These are infos from 2018-07-12
-> RMME: Update them with: 'dist/tools/release-stats/release-stats.sh'
+During the last release, maintainers contributed by running the automated test
+suites on their boards. This gave valuable feedback on the board support state,
+test reliability and where to focus effort to make testing easier and more
+reliable.
 
 About 380 pull requests with about 675 commits have been merged since the last
 release and about 27 issues have been solved. 45 people contributed with code
-in 93 days.
-Approximately 1678 files have been touched with 147122 insertions
+in 93 days. Approximately 1678 files have been touched with 147122 insertions
 and 16060 deletions.
 
 
