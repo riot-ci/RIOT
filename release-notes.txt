@@ -82,7 +82,7 @@ Networking
 Packages
 --------
     + NimBLE: Bluetooth Low Energy stack used in mynewt
-    + TLSF: re-enable original api to have different pools
+    + TLSF: re-enable original API to have different pools
     + LUA: Add an example with the shell
     + semtech-loramac: add support for link_check MAC command
     * libcose: Use RIOT random_bytes instead of randombytes
