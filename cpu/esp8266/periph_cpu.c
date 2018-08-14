@@ -20,7 +20,3 @@
 #include "debug.h"
 
 #include "periph_cpu.h"
-
-void periph_init(void)
-{
-}
