@@ -10,3 +10,9 @@ endif
 
 # Declare pseudomodules here to be selfcontained
 PSEUDOMODULES += libcose_crypt_%
+
+ifneq (,$(filter cortex-m0%,$(CPU_ARCH)))
+  # There is a problem with the LLVM assembler, the M0(+) instruction set, and
+  # the assembly part of this package
+  TOOLCHAINS_BLACKLIST += llvm
+endif
