@@ -1,0 +1,21 @@
+/**
+@defgroup        cpu_esp8266 ESP8266/ESP8285
+@ingroup         cpu
+@brief           Port of RIOT-OS to Espressif's ESP8266/ESP8285 MCUs
+
+There are two implementations that can be used:
+
+- the **SDK version** which is realized on top of an SDK (esp-open-sdk or ESP8266_NONOS_SDK) and
+- the **non-SDK version** which is realized without the SDK.
+
+The non-SDK version produces a much smaller code size than the SDK version and is more efficient in excecution because it does not need to run additional SDK functions to keep the SDK system alive.
+
+The **non-SDK** version is probably the **best choice if you do not need the built-in WiFi module**, for example, when you plan to connect the MCU to an IEEE 802.15.4 radio module for communication.
+
+By default, the non-SDK version is compiled. To compile the SDK-version, add option ```SDK=1``` to the make command, e.g.,
+
+    make flash BOARD=esp8266-esp-12x -C test/shell SDK=1 ...
+
+Please refer file $(RIOTBASE)/cpu/esp8266/README.md for more information about the toolchain, supported features and compile options.
+
+*/
