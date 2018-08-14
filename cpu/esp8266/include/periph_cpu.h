@@ -43,6 +43,11 @@ extern "C" {
 #define CPUID_LEN           (4U)
 
 /**
+ * @name    GPIO configuration of ESP8266
+ * @{
+ */
+
+/**
  * @brief   Available ports on the ESP8266
  * @{
  */
@@ -108,7 +113,6 @@ extern "C" {
 
 /**
  * @brief   Override flank selection values
- *
  * @{
  */
 #define HAVE_GPIO_FLANK_T
@@ -121,8 +125,21 @@ typedef enum {
     GPIO_HIGH    = 5         /**< emit interrupt on low level     */
 } gpio_flank_t;
 /** @} */
-
 #endif /* DOXYGEN */
+
+/** @} */
+
+/**
+ * @name   I2C configuration
+ * @{
+ */
+#define I2C_SPEED_DEF   I2C_SPEED_FAST
+
+#define PERIPH_I2C_NEED_READ_REG
+#define PERIPH_I2C_NEED_READ_REGS
+#define PERIPH_I2C_NEED_WRITE_REG
+#define PERIPH_I2C_NEED_WRITE_REGS
+/** @} */
 
 /**
  * @name   SPI configuration
