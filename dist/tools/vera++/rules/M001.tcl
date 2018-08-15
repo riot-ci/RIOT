@@ -132,7 +132,7 @@ foreach f [getSourceFileNames] {
             #ignore
             #puts "$tokenName -> $identifier: => Found1:: -> Found1:: space
         } elseif {$state == "Found1" && [isBuiltInType $tokenName]} {
-            #ignore 
+            #ignore
             #puts "$tokenName -> $identifier: => Found1 -> Found1 Built in"
         } elseif {$state == "Found1" && $tokenName == "less"} {
             set state "Found1<"

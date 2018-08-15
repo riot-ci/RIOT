@@ -12,7 +12,7 @@ foreach fileName [getSourceFileNames] {
 
         if {$state == "control"} {
             if {$type == "leftparen"} {
-                incr parenCount				
+                incr parenCount
             } elseif {$type == "rightparen"} {
                 incr parenCount -1
                 if {$parenCount == 0} {
