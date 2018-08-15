@@ -38,7 +38,8 @@ void hwrng_init(void)
     int i;
 
     /* Make sure the RNG is on */
-    soc_adc->ADCCON1 &= ~(SOC_ADC_ADCCON1_RCTRL_M);
+    uint32_t reg32 = soc_adc->ADCCON1 & ~(SOC_ADC_ADCCON1_RCTRL_M);
+    soc_adc->ADCCON1 = reg32;
 
     /* Enable clock for the RF Core */
     SYS_CTRL_RCGCRFC = 1;
@@ -80,16 +81,16 @@ void hwrng_init(void)
 
 void hwrng_read(void *buf, unsigned int num)
 {
-    unsigned count;
     uint8_t *b = (uint8_t *)buf;
 
-    for (count = 0; count < num; ) {
+    for (unsigned count = 0; count < num; count++) {
         /* Clock the RNG LSFR once: */
-        soc_adc->ADCCON1 = (1UL << SOC_ADC_ADCCON1_RCTRL_S);
+        uint32_t reg32 = soc_adc->ADCCON1 | (1UL << SOC_ADC_ADCCON1_RCTRL_S);
+        soc_adc->ADCCON1 = reg32;
 
         /* Read up to 2 bytes of hwrng data: */
         b[count++] = soc_adc->RNDL;
         if (count >= num) break;
-        b[count++] = soc_adc->RNDH;
+        b[count] = soc_adc->RNDH;
     }
 }
