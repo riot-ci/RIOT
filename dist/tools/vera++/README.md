@@ -26,8 +26,7 @@ Check all changed files and don't display the results (only exit code):
     QUIET=1 check.sh
 
 Check all changed files and only display errors (exit code 0):
-    WARNONLY=1 check.sh 
+    WARNONLY=1 check.sh
 
 Use a different profile under `profile` folder:
     VERA_PROFILE=other_profile check.sh
-
