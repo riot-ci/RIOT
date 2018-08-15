@@ -23,4 +23,3 @@ fi
 . "$RIOTBASE"/dist/tools/ci/changed_files.sh
 sed -e "s#^#$RIOTBASE/#" <(changed_files) | vera++ --root "$CURDIR" \
     --profile $VERA_PROFILE --exclusions "$CURDIR"/exclude $PARAMS
-
