@@ -4,3 +4,21 @@ export CPU_MODEL = stm32l151cb
 
 # add the common header files to the include path
 INCLUDES  += -I$(RIOTBOARD)/lorabox/include
+
+# configure the serial terminal
+PORT_LINUX ?= /dev/ttyUSB0
+PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+
+# setup serial terminal
+include $(RIOTMAKE)/tools/serial.inc.mk
+
+# all Nucleo boards have an on-board ST-link adapter
+export DEBUG_ADAPTER ?= stlink
+
+# nucleo boards use openocd
+include $(RIOTMAKE)/tools/openocd.inc.mk
+
+#FLASHER = $(RIOTTOOLS)/stm32loader/stm32loader.py
+#HEXFILE = $(BINFILE)
+#FFLAGS = -e -u -l 0x1ff -w $(HEXFILE)
+TERMFLAGS += -ir -id
