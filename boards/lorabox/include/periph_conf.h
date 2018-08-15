@@ -29,6 +29,16 @@
 extern "C" {
 #endif
 
+
+/**
+ * @name    xtimer configuration
+ * @{
+ */
+#define XTIMER_WIDTH        (16)
+#define XTIMER_BACKOFF      (50)
+#define XTIMER_ISR_BACKOFF  (40)
+/** @} */
+
 /**
  * @name Clock system configuration
  * @{
@@ -69,15 +79,15 @@ extern "C" {
  */
 static const timer_conf_t timer_config[] = {
     {
-        .dev      = TIM5,
-        .max      = 0xffffffff,
-        .rcc_mask = RCC_APB1ENR_TIM5EN,
+        .dev      = TIM2,
+        .max      = 0x0000ffff,
+        .rcc_mask = RCC_APB1ENR_TIM2EN,
         .bus      = APB1,
-        .irqn     = TIM5_IRQn
+        .irqn     = TIM2_IRQn
     }
 };
 
-#define TIMER_0_ISR         (isr_tim5)
+#define TIMER_0_ISR         (isr_tim2)
 
 #define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
