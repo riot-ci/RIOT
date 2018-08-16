@@ -1,4 +1,5 @@
 PSEUDOMODULES += at_urc
+PSEUDOMODULES += auto_init_dhcpv6_client
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
@@ -9,8 +10,10 @@ PSEUDOMODULES += cbor_float
 PSEUDOMODULES += cbor_semantic_tagging
 PSEUDOMODULES += conn_can_isotp_multi
 PSEUDOMODULES += core_%
+PSEUDOMODULES += dhcpv6_%
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += event_%
+PSEUDOMODULES += gnrc_dhcpv6_%
 PSEUDOMODULES += gnrc_ipv6_default
 PSEUDOMODULES += gnrc_ipv6_router
 PSEUDOMODULES += gnrc_ipv6_router_default
