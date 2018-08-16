@@ -36,3 +36,7 @@ all: git-download
 	"$(MAKE)" -C $(TDIR)/contrib/
 
 include $(RIOTBASE)/pkg/pkg.mk
+
+ifeq (llvm,$(TOOLCHAIN))
+  CFLAGS += -Wno-unused-function
+endif

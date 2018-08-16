@@ -186,6 +186,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        yunjia-nrf51822 \
                        #
 DISABLE_TEST_FOR_ARM_CORTEX_M := tests-relic
+DISABLE_TEST_FOR_ARM_CORTEX_M += tests-qDSA  # TODO TEST IF THIS ONE FAILS ONLY
 
 AVR_BOARDS := arduino-duemilanove \
               arduino-mega2560 \
