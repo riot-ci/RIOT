@@ -67,25 +67,17 @@
  * @file
  * @brief SEGGER RTT stdio implementation
  *
- * This file implements UART read/write functions, but it
- * is actually a virtual UART backed by a ringbuffer that
- * complies with SEGGER RTT. It is designed to shadow
- * uart_stdio that is used by newlib.
+ * This file implements RIOTs STDIO interface and works with a ringbuffer that
+ * complies with SEGGER RTT.
  *
  * @author      Michael Andersen <m.andersen@cs.berkeley.edu>
  *
  * @}
  */
 
-#include <stdio.h>
-#if MODULE_VFS
-#include <unistd.h>
-#include <errno.h>
-#include <fcntl.h>
-#endif
 #include <string.h>
-#include <rtt_stdio.h>
 
+#include "stdio_rtt.h"
 #include "thread.h"
 #include "mutex.h"
 #include "xtimer.h"
@@ -286,40 +278,7 @@ int rtt_write(const char* buf_ptr, unsigned num_bytes) {
     return num_bytes_written;
 }
 
-#if MODULE_VFS
-
-static ssize_t rtt_stdio_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes);
-static ssize_t rtt_stdio_vfs_write(vfs_file_t *filp, const void *src, size_t nbytes);
-
-/**
- * @brief VFS file operation table for stdin/stdout/stderr
- */
-static vfs_file_ops_t rtt_stdio_vfs_ops = {
-    .read = rtt_stdio_vfs_read,
-    .write = rtt_stdio_vfs_write,
-};
-
-static ssize_t rtt_stdio_vfs_read(vfs_file_t *filp, void *dest, size_t nbytes)
-{
-    int fd = filp->private_data.value;
-    if (fd != STDIN_FILENO) {
-        return -EBADF;
-    }
-    return rtt_read(dest, nbytes);
-}
-
-static ssize_t rtt_stdio_vfs_write(vfs_file_t *filp, const void *src, size_t nbytes)
-{
-    int fd = filp->private_data.value;
-    if (fd == STDIN_FILENO) {
-        return -EBADF;
-    }
-    return rtt_write(src, nbytes);
-}
-
-#endif
-
-void uart_stdio_init(void) {
+void stdio_init(void) {
     #ifndef RTT_STDIO_DISABLE_STDIN
     stdin_enabled = 1;
     #endif
@@ -329,19 +288,7 @@ void uart_stdio_init(void) {
     #endif
 
 #if MODULE_VFS
-    int fd;
-    fd = vfs_bind(STDIN_FILENO, O_RDONLY, &rtt_stdio_vfs_ops, (void *)STDIN_FILENO);
-    if (fd < 0) {
-        /* How to handle errors on init? */
-    }
-    fd = vfs_bind(STDOUT_FILENO, O_WRONLY, &rtt_stdio_vfs_ops, (void *)STDOUT_FILENO);
-    if (fd < 0) {
-        /* How to handle errors on init? */
-    }
-    fd = vfs_bind(STDERR_FILENO, O_WRONLY, &rtt_stdio_vfs_ops, (void *)STDERR_FILENO);
-    if (fd < 0) {
-        /* How to handle errors on init? */
-    }
+    vfs_bind_stdio();
 #endif
 
     /* the mutex should start locked */
@@ -363,8 +310,8 @@ void rtt_stdio_enable_blocking_stdout(void) {
    actually have an RTT console (because we are deployed on
    a battery somewhere) then we REALLY don't want to poll
    especially since we are not expecting to EVER get input. */
-int uart_stdio_read(char* buffer, int count) {
-    int res = rtt_read(buffer, count);
+ssize_t stdio_read(void* buffer, size_t count) {
+    int res = rtt_read((void *)buffer, (uint16_t)count);
     if (res == 0) {
         if (!stdin_enabled) {
             mutex_lock(&_rx_mutex);
@@ -379,15 +326,16 @@ int uart_stdio_read(char* buffer, int count) {
                 return res;
         }
     }
-    return res;
+    return (ssize_t)res;
 }
 
-int uart_stdio_write(const char* buffer, int len) {
-    int written = rtt_write(buffer, len);
+ssize_t stdio_write(const void* in, size_t len) {
+    const char *buffer = (const char *)in;
+    int written = rtt_write(buffer, (unsigned)len);
     xtimer_ticks32_t last_wakeup = xtimer_now();
-    while (blocking_stdout && written < len) {
+    while (blocking_stdout && ((size_t)written < len)) {
         xtimer_periodic_wakeup(&last_wakeup, STDIO_POLL_INTERVAL);
         written += rtt_write(&buffer[written], len-written);
     }
-    return written;
+    return (ssize_t)written;
 }
