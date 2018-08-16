@@ -145,6 +145,11 @@ test_imagefile() {
     fi
 }
 
+# Return 0 if given file is a binary
+_is_binfile() {
+    test "$(file -b ${IMAGE_FILE})" = "data"
+}
+
 #
 # now comes the actual actions
 #
