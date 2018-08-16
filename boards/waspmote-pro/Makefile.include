@@ -1,6 +1,11 @@
 # define the cpu used by the waspmote pro board
 export CPU = atmega1281
 
+# TODO is there a bootloader on the flash ? I do not understand...
+# http://www.libelium.com/products/waspmote/hardware/
+# ARDUINO_BOOTLOADER_SIZE = 2K
+ROM_RESERVED = $(ARDUINO_BOOTLOADER_SIZE)
+
 # configure the terminal program
 PORT_LINUX  ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
