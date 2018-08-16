@@ -187,6 +187,15 @@ do_flash() {
             exit $RETVAL
         fi
     fi
+
+    # In case of binary file, IMAGE_OFFSET should include the flash base address
+    # This allows flashing normal binary files without env configuration
+    if _is_binfile ${IMAGE_FILE}; then
+        # hardwritten to use the first bank
+        FLASH_ADDR=$(_flash_address 1)
+        IMAGE_OFFSET=$(printf "0x%x\n" "$((${IMAGE_OFFSET} + ${FLASH_ADDR}))")
+    fi
+
     # flash device
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
