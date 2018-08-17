@@ -21,4 +21,6 @@ export BAUD = 38400
 # overridden for debugging (which requires changes that require to use an ISP)
 export PROGRAMMER ?= wiring
 
+# TODO Configure this ARDUINO_BOOTLOADER_SIZE = 2K
+
 include $(RIOTBOARD)/common/arduino-atmega/Makefile.include
