@@ -116,7 +116,7 @@ GNUMAKEFLAGS += --output-sync=target
 
 ifeq ($(QUIET),1)
   Q=@
-  MAKEFLAGS += --no-print-directory
+  GNUMAKEFLAGS += --no-print-directory
 else
   Q=
 endif
