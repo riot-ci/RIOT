@@ -2,8 +2,6 @@ INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-core/include
 INCLUDES += -I$(PKGDIRBASE)/jerryscript/jerry-ext/include
 
 # the jerryscript build produces static archives
-LIBS += \
-  jerryscript \
-  jerryscript-ext \
-  jerryport-minimal \
-#
+LIBS += jerryscript
+LIBS += jerryscript-ext
+LIBS += jerryport-minimal
