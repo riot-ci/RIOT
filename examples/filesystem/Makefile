@@ -4,7 +4,6 @@ APPLICATION = filesystem
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
 
-BOARD_INSUFFICIENT_MEMORY :=  arduino-duemilanove arduino-uno
 
 # Blacklisting msp430-based boards, as file syscalls are not supported
 BOARD_BLACKLIST :=  chronos \
@@ -16,7 +15,7 @@ BOARD_BLACKLIST :=  chronos \
                     z1 \
                     #
 
-BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6
+BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-uno nucleo-f031k6
 
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
