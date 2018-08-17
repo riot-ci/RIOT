@@ -90,10 +90,6 @@ static int _init(netdev_t *netdev)
         return -1;
     }
 
-#ifdef MODULE_NETSTATS_L2
-    memset(&netdev->stats, 0, sizeof(netstats_t));
-#endif
-
     return 0;
 }
 
@@ -112,9 +108,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
                   (unsigned)len + 2);
             return -EOVERFLOW;
         }
-#ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_bytes += len;
-#endif
         len = at86rf2xx_tx_load(dev, iol->iol_base, iol->iol_len, len);
     }
 
@@ -153,10 +146,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         at86rf2xx_fb_stop(dev);
         return -ENOBUFS;
     }
-#ifdef MODULE_NETSTATS_L2
-    netdev->stats.rx_count++;
-    netdev->stats.rx_bytes += pkt_len;
-#endif
     /* copy payload */
     at86rf2xx_fb_read(dev, (uint8_t *)buf, pkt_len);
 
