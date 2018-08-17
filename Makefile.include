@@ -111,9 +111,12 @@ endif
 
 QUIET ?= 1
 
+# Synchronize output by target to get better output with parallel build
+GNUMAKEFLAGS += --output-sync=target
+
 ifeq ($(QUIET),1)
   Q=@
-  MAKEFLAGS += --no-print-directory
+  GNUMAKEFLAGS += --no-print-directory
 else
   Q=
 endif
