@@ -102,7 +102,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     netdev_t *dev = netif->dev;
 
 #ifdef MODULE_NETSTATS_L2
-    dev->stats.tx_unicast_count++;
+    netif->stats.tx_unicast_count++;
 #endif
 
     res = dev->driver->send(dev, (iolist_t *)pkt);
