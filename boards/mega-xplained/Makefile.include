@@ -1,6 +1,10 @@
 # define the cpu used by the Mega Xplained board
 export CPU = atmega1284p
 
+# TODO is there a bootloader on the flash ? I do not understand...
+# https://www.microchip.com/DevelopmentTools/ProductDetails/atmega1284p-xpld
+# ARDUINO_BOOTLOADER_SIZE = 2K
+
 # configure the terminal program
 export PORT_LINUX  ?= /dev/ttyACM0
 export PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))

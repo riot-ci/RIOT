@@ -4,6 +4,8 @@ APPLICATION = filesystem
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
 
+BOARD_INSUFFICIENT_MEMORY :=  arduino-duemilanove arduino-uno
+
 # Blacklisting msp430-based boards, as file syscalls are not supported
 BOARD_BLACKLIST :=  chronos \
                     msb-430 \
