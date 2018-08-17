@@ -187,7 +187,7 @@ void dump_phy_info(const sdk_phy_info_t *info, bool raw)
     if(raw) {
         printf("Raw values:");
         uint8_t *p = (uint8_t *)info;
-        for(size_t i = 0; i < sizeof(sdk_phy_info_t); i ++) {
+        for(unsigned int i = 0; i < sizeof(sdk_phy_info_t); i ++) {
             if(i % 8 == 0) {
                 printf("\n0x%02x:", i);
             }
