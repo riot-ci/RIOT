@@ -132,4 +132,8 @@ PSEUDOMODULES += auto_init_skald
 PSEUDOMODULES += skald_ibeacon
 PSEUDOMODULES += skald_eddystone
 
+# declare oonf submodules as pseudomodules, but exclude oonf_api
+PSEUDOMODULES += oonf_%
+NO_PSEUDOMODULES += oonf_api
+
 # Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.
