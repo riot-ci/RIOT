@@ -45,6 +45,9 @@
 #include "net/gnrc/netif/mac.h"
 #endif
 #include "net/netdev.h"
+#ifdef MODULE_NETSTATS_L2
+#include "net/netstats.h"
+#endif
 #include "rmutex.h"
 
 #ifdef __cplusplus
