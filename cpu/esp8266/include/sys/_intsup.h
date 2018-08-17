@@ -106,11 +106,7 @@ extern "C" {
 #define __INT16 "h"
 #elif (__INT16_TYPE__ == 2)
 #define __INT16
-#elif (__INT16_TYPE__ == 4 || __INT#ifdef __cplusplus
-}
-#endif
-
-16_TYPE__ == 6)
+#elif (__INT16_TYPE__ == 4 || __INT16_TYPE__ == 6)
 #define __INT16 "l"
 #elif (__INT16_TYPE__ == 8 || __INT16_TYPE__ == 10)
 #define __INT16 "ll"
