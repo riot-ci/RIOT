@@ -1396,7 +1396,6 @@ static void _pass_on_packet(gnrc_pktsnip_t *pkt)
 static void _event_cb(netdev_t *dev, netdev_event_t event)
 {
     gnrc_netif_t *netif = (gnrc_netif_t *) dev->context;
-    gnrc_pktsnip_t *pkt = NULL;
 
     if (event == NETDEV_EVENT_ISR) {
         msg_t msg = { .type = NETDEV_MSG_TYPE_EVENT,
@@ -1408,6 +1407,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     }
     else {
         DEBUG("gnrc_netif: event triggered -> %i\n", event);
+        gnrc_pktsnip_t *pkt = NULL;
         switch (event) {
             case NETDEV_EVENT_RX_COMPLETE:
                 pkt = netif->ops->recv(netif);
