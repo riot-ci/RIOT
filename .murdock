@@ -1,7 +1,6 @@
 #!/bin/sh
 
 : ${TEST_BOARDS_AVAILABLE:="samr21-xpro"}
-# TODO provide make target in similar fashion as the info-boards-supported one?
 : ${TEST_BOARDS_LLVM_COMPILE:="native"}
 
 export RIOT_CI_BUILD=1
