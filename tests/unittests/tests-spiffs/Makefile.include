@@ -1,1 +1,1 @@
-USEPKG += spiffs
+USEMODULE += spiffs
