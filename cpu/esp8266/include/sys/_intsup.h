@@ -17,6 +17,10 @@
 
 #ifndef DOXYGEN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* additional header guard to avoid conflicts if original file is included later */
 #ifndef _SYS__INTSUP_H
 #define _SYS__INTSUP_H
@@ -102,7 +106,11 @@
 #define __INT16 "h"
 #elif (__INT16_TYPE__ == 2)
 #define __INT16
-#elif (__INT16_TYPE__ == 4 || __INT16_TYPE__ == 6)
+#elif (__INT16_TYPE__ == 4 || __INT#ifdef __cplusplus
+}
+#endif
+
+16_TYPE__ == 6)
 #define __INT16 "l"
 #elif (__INT16_TYPE__ == 8 || __INT16_TYPE__ == 10)
 #define __INT16 "ll"
@@ -215,6 +223,10 @@
 #pragma pop_macro("long")
 
 #endif /* _SYS__INTSUP_H */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DOXYGEN */
 #endif /* SYS__INTSUP_H */
