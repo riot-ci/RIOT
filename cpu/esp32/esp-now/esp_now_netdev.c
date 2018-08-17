@@ -478,10 +478,6 @@ static int _init(netdev_t *netdev)
 {
     DEBUG("%s: %p\n", __func__, netdev);
 
-    #ifdef MODULE_NETSTATS_L2
-    memset(&netdev->stats, 0x00, sizeof(netstats_t));
-    #endif
-
     return 0;
 }
 
@@ -531,10 +527,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         DEBUG("multicast to all peers\n");
         _esp_now_dst = 0;
         _esp_now_sending = dev->peers_all;
-
-        #ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_mcast_count++;
-        #endif
     }
 
     else if ((byteorder_ntohs(ipv6_hdr->dst.u16[0]) & 0xffc0) == 0xfe80) {
@@ -569,10 +561,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
             _esp_now_dst = 0;
             _esp_now_sending = dev->peers_all;
 
-            #ifdef MODULE_NETSTATS_L2
-            netdev->stats.tx_mcast_count++;
-            #endif
-
         #ifdef MODULE_GNRC_IPV6_NIB
         }
         #endif
@@ -589,10 +577,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     if (ipv6_hdr->dst.u8[0] == 0xff) {
         /* packets to multicast prefix ff::/8 are sent to all peers */
         DEBUG("multicast to all peers\n");
-
-        #ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_mcast_count++;
-        #endif
     }
 
     else if ((byteorder_ntohs(ipv6_hdr->dst.u16[0]) & 0xffc0) == 0xfe80) {
@@ -623,10 +607,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         else {
             /* entry was not found in NIB, send to all peers */
             DEBUG("global, no neibhbor found, multicast to all peers\n");
-
-            #ifdef MODULE_NETSTATS_L2
-            netdev->stats.tx_mcast_count++;
-            #endif
         }
     }
 
@@ -642,19 +622,12 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         while (_esp_now_sending > 0) {
             thread_yield_higher();
         }
-
-        #ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_bytes += dev->tx_len;
+#ifdef MODULE_NETSTATS_L2
         netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
-        #endif
+#endif
 
         mutex_unlock(&dev->dev_lock);
         return dev->tx_len;
-    }
-    else {
-        #ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_failed++;
-        #endif
     }
 
     mutex_unlock(&dev->dev_lock);
@@ -707,11 +680,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
         memcpy(buf, dev->rx_buf, dev->rx_len);
         dev->rx_len = 0;
-
-        #ifdef MODULE_NETSTATS_L2
-        netdev->stats.rx_count++;
-        netdev->stats.rx_bytes += size;
-        #endif
 
         mutex_unlock(&dev->dev_lock);
         return size;
@@ -787,14 +755,6 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         case NETOPT_IPV6_IID:
             res = _get_iid(dev, val, max_len);
             break;
-
-        #ifdef MODULE_NETSTATS_L2
-        case NETOPT_STATS:
-            CHECK_PARAM_RET (max_len == sizeof(uintptr_t), -EOVERFLOW);
-            *((netstats_t **)val) = &netdev->stats;
-            res = sizeof(uintptr_t);
-            break;
-        #endif
 
         default:
             DEBUG("%s: %s not supported\n", __func__, netopt2str(opt));
