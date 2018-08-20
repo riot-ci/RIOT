@@ -593,7 +593,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
 
     #if ENABLE_DEBUG
     printf("boot_inf sector @0x%x\n", flash_size - SPI_FLASH_SECTOR_SIZE);
-    hexdump(&binfo, sizeof(binfo), 'b', 16);
+    esp_hexdump(&binfo, sizeof(binfo), 'b', 16);
     #endif
 
     LOG_INFO("load boot_inf 0x%x, len %d, chk %02x\n",
@@ -745,10 +745,10 @@ void start_phase2 (void)
 
     #if ENABLE_DEBUG
     printf("phy_info sector @0x%x\n", phy_info_addr);
-    hexdump(pbuf, 128, 'b', 16);
+    esp_hexdump(pbuf, 128, 'b', 16);
 
     printf("rf_cal sector @0x%x\n", rf_cal_sec_addr);
-    /* hexdump(pbuf+128, 628, 'b', 16); */
+    /* esp_hexdump(pbuf+128, 628, 'b', 16); */
     #endif
 
     sdk_phy_info_t default_phy_info;

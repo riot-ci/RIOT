@@ -17,7 +17,7 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
-#include "c_types.h"
+/* #include "c_types.h" */
 
 /* include board.h and cpu_conf.h to make them visible in any case */
 #include "board.h"

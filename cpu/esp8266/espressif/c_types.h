@@ -31,6 +31,7 @@
 #define _C_TYPES_H_
 
 #ifndef DOXYGEN
+#ifndef _DTLS_GLOBAL_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -39,17 +40,10 @@
 extern "C" {
 #endif
 
-//typedef unsigned char       uint8_t;
 typedef signed char         sint8_t;
-//typedef signed char         int8_t;
-//typedef unsigned short      uint16_t;
 typedef signed short        sint16_t;
-//typedef signed short        int16_t;
-//typedef unsigned int        uint32_t;
 typedef signed long         sint32_t;
-//typedef signed int          int32_t;
 typedef signed long long    sint64_t;
-//typedef unsigned long long  uint64_t;
 typedef unsigned long long  u_int64_t;
 typedef float               real32_t;
 typedef double              real64_t;
@@ -79,7 +73,7 @@ typedef double              real64;
 
 typedef unsigned int        size_t;
 
-// #define __packed        __attribute__((packed))
+/* #define __packed        __attribute__((packed)) */
 
 #define LOCAL       static
 
@@ -117,13 +111,19 @@ typedef enum {
 #define STORE_ATTR __attribute__((aligned(4)))
 
 #ifndef __cplusplus
-//typedef unsigned char   bool;
 #define BOOL            bool
-//#define true            (1)
-//#define false           (0)
+#ifndef true
+#define true            (1)
+#endif
+#ifndef false
+#define false           (0)
+#endif
+#ifndef TRUE
 #define TRUE            true
+#endif
+#ifndef FALSE
 #define FALSE           false
-
+#endif
 
 #endif /* !__cplusplus */
 
@@ -131,6 +131,7 @@ typedef enum {
 }
 #endif
 
-#endif // DOXYGEN
+#endif /* _DTLS_GLOBAL_H_ */
+#endif /* DOXYGEN */
 #endif /* _C_TYPES_H_ */
 #endif /* C_TYPES_H */
