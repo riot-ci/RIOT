@@ -178,7 +178,7 @@ Option | Values | Default | Meaning
 -------|--------|---------|--------
 ENABLE_GDB | 0, 1 | 0 | Enable compilation with debug information for debugging with QEMU (```QEMU=1```), see section _QEMU Mode and GDB_ below
 FLASH_MODE | dout, dio, qout, qio | dout | Set the flash mode, please take care with your module, see section _Flash Modes_ below.
-NETDEV_DEFAULT | module name | mrf24j40 | Set the module that is used as default network device, see section _Network Device Selection_ 
+NETDEV_DEFAULT | module name | mrf24j40 | Set the module that is used as default network device, see section _Network Device Selection_ below.
 PORT | /dev/ttyUSBx | /dev/ttyUSB0 | Set the port for flashing the firmware.
 QEMU | 0, 1 | 0 | Use QEMU mode and generate an image for QEMU, see _QEMU Mode and GDB_ below.
 SDK | 0, 1 | 0 | Compile the SDK version (```USE_SDK=1```) or non-SDK version (```USE_SDK=0```), see section _SDK Task Handling_ below.
