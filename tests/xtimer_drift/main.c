@@ -91,6 +91,9 @@ void *worker_thread(void *arg)
 {
     (void) arg;
 
+    /* Calculate interval based on possible precision when 'XTIMER_SHIFT > 0',
+     * to apply precision loss to expected interval length.
+     * test_interval != TEST_INTERVAL */
     uint32_t test_interval = xtimer_usec_from_ticks(xtimer_ticks_from_usec(TEST_INTERVAL));
     uint32_t loop_counter = 0;
     uint32_t start = 0;
