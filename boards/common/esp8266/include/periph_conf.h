@@ -57,7 +57,7 @@ extern "C" {
 #define LED1_TOGGLE     esp8266_led_toggle (LED1_PIN)
 #endif
 
-#if defined(SW_TIMER_USED)
+#if defined(MODULE_ESP_SW_TIMER)
 
 /* software timer */
 #define TIMER_NUMOF        (1)
@@ -67,7 +67,7 @@ extern "C" {
 #define XTIMER_BACKOFF     (100)
 #define XTIMER_ISR_BACKOFF (100)
 
-#else /* SW_TIMER_USED */
+#else /* MODULE_ESP_SW_TIMER */
 
 /* hardware timer */
 #define TIMER_NUMOF     (1)
@@ -75,7 +75,7 @@ extern "C" {
 
 #define XTIMER_OVERHEAD (0)
 
-#endif /* SW_TIMER_USED */
+#endif /* MODULE_ESP_SW_TIMER */
 
 /**
  * @brief   PWM configuration

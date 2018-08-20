@@ -32,7 +32,7 @@
 #include "sdk/sdk.h"
 #include "xtensa/hal.h"
 
-#if !defined(SW_TIMER_USED)
+#if !defined(MODULE_ESP_SW_TIMER)
 
 /* hardware timer used */
 
@@ -292,7 +292,7 @@ static void IRAM __timer_channel_stop (struct hw_timer_t* timer, struct hw_chann
     }
 }
 
-#else /* SW_TIMER_USED */
+#else /* MODULE_ESP_SW_TIMER */
 
 #ifdef SDK_NOT_USED
 #error Software timers are not available in Non-SDK version
@@ -551,4 +551,4 @@ static void IRAM __timer_channel_stop (struct phy_timer_t* timer, struct phy_cha
 
 #endif /* NON_SDK */
 
-#endif /* SW_TIMER_USED */
+#endif /* MODULE_ESP_SW_TIMER */

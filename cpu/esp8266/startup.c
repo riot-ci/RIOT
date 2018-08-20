@@ -42,7 +42,7 @@
 #include "esp/xtensa_ops.h"
 #include "sdk/sdk.h"
 
-#if ENABLE_GDBSTUB
+#if MODULE_ESP_GDBSTUB
 #include "esp-gdbstub/gdbstub.h"
 #endif
 
@@ -98,7 +98,7 @@ void ets_run(void)
     ets_isr_unmask(BIT(ETS_WDT_INUM));
     #endif
 
-    #ifdef ENABLE_GDBSTUB
+    #ifdef MODULE_ESP_GDBSTUB
     gdbstub_init();
     #endif
 
@@ -672,7 +672,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
     _init();
     #endif
 
-    #ifdef ENABLE_GDBSTUB
+    #ifdef MODULE_ESP_GDBSTUB
     gdbstub_init();
     #endif
 
