@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_esp8266-sparkfun-thing Sparkfun ESP8266 Thing
+ * @defgroup    boards_esp8266-sparkfun-thing ESP8266 - Sparkfun ESP8266 Thing
  * @ingroup     boards
  * @brief       Support for the Sparkfun ESP8266 Thing modules.
  * @{

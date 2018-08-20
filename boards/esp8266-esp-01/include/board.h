@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_esp8266-esp-01 ESP-01 module
+ * @defgroup    boards_esp8266-esp-01 ESP8266 - ESP-01 module
  * @ingroup     boards
  * @brief       Support for the ESP-01 module.
  * @{

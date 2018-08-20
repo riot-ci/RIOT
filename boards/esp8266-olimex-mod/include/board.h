@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_esp8266-olimex-mod Olimex MOD-WIFI-ESP8266-DEV
+ * @defgroup    boards_esp8266-olimex-mod ESP8266 - Olimex MOD-WIFI-ESP8266-DEV
  * @ingroup     boards
  * @brief       Support for the Olimex MOD-WIFI-ESP8266-DEV module.
  * @{
