@@ -13,12 +13,12 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 # all Nucleo boards have an on-board ST-link adapter
-export DEBUG_ADAPTER ?= stlink
+#export DEBUG_ADAPTER ?= stlink
 
 # nucleo boards use openocd
-include $(RIOTMAKE)/tools/openocd.inc.mk
+#include $(RIOTMAKE)/tools/openocd.inc.mk
 
-#FLASHER = $(RIOTTOOLS)/stm32loader/stm32loader.py
-#HEXFILE = $(BINFILE)
-#FFLAGS = -e -u -l 0x1ff -w $(HEXFILE)
+FLASHER = $(RIOTTOOLS)/stm32loader/stm32loader.py
+HEXFILE = $(BINFILE)
+FFLAGS += -e -u -S -l 0x1ff -w $(HEXFILE)
 TERMFLAGS += -ir -id
