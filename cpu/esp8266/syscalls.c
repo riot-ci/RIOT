@@ -377,7 +377,7 @@ void* IRAM _sbrk_r (struct _reent *r, ptrdiff_t incr)
     #endif
 
     /* return allocated memory */
-    return (caddr_t) _cheap_old;
+    return (void*) _cheap_old;
 }
 
 
