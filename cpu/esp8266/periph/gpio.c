@@ -18,6 +18,9 @@
  * @}
  */
 
+#define ENABLE_DEBUG    (0)
+#include "debug.h"
+
 #include <stdbool.h>
 
 #include "log.h"
@@ -76,6 +79,8 @@ _gpio_pin_usage_t _gpio_pin_usage [GPIO_PIN_NUMOF] =
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
+    DEBUG("%s: %d %d\n", __func__, pin, mode);
+
     CHECK_PARAM_RET(pin < GPIO_PIN_NUMOF, -1);
 
     /* check whether pin can be used as GPIO or is used in anyway else */
@@ -237,6 +242,8 @@ int gpio_read (gpio_t pin)
 
 void gpio_write (gpio_t pin, int value)
 {
+    DEBUG("%s: %d %d\n", __func__, pin, value);
+
     CHECK_PARAM(pin < GPIO_PIN_NUMOF);
 
     if (pin == GPIO16) {
@@ -265,6 +272,8 @@ void gpio_clear (gpio_t pin)
 
 void gpio_toggle (gpio_t pin)
 {
+    DEBUG("%s: %d\n", __func__, pin);
+
     CHECK_PARAM(pin < GPIO_PIN_NUMOF);
 
     if (pin == GPIO16) {

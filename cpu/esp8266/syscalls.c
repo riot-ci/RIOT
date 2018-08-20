@@ -465,9 +465,9 @@ int _rename_r (struct _reent *r, const char* old, const char* new)
 #include <math.h>
 
 double __ieee754_remainder(double x, double y) {
-	return x - y * floor(x/y);
+    return x - y * floor(x/y);
 }
 
 float __ieee754_remainderf(float x, float y) {
-	return x - y * floor(x/y);
+    return x - y * floor(x/y);
 }

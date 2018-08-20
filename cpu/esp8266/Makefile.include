@@ -14,6 +14,11 @@ endif
 export CPU ?= esp8266
 export TARGET_ARCH ?= xtensa-lx106-elf
 
+# ESP8266 pseudomodules
+PSEUDOMODULES += esp_sw_timer
+PSEUDOMODULES += esp_spiffs
+PSEUDOMODULES += esp_now
+
 ifneq (, $(filter pthread, $(USEMODULE)))
     INCLUDES += -I$(RIOTBASE)/sys/posix/pthread/include
 endif
@@ -28,7 +33,7 @@ CFLAGS  += -Wno-unused-parameter -Wformat=0
 CFLAGS  += -mlongcalls -mtext-section-literals -fdata-sections
 ASFLAGS += --longcalls --text-section-literals
 
-ifeq ($(SDK), 1)
+ifeq ($(USE_SDK), 1)
     INCLUDES += -I$(ESP8266_SDK_DIR)/include
     CFLAGS   += -DSDK_USED -DUSE_US_TIMER
     ifeq ($(SDK_INT_HANDLING), 1)
@@ -43,23 +48,23 @@ CFLAGS_OPT = -fzero-initialized-in-bss -O2
 
 ifeq ($(ENABLE_GDBSTUB), 1)
     GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/esp-gdbstub
-    CFLAGS_OPT   = -fzero-initialized-in-bss -Og -ggdb
-    CFLAGS      += -DENABLE_GDBSTUB -DGDBSTUB_FREERTOS=0
+    CFLAGS_OPT   = -fzero-initialized-in-bss -Og -ggdb -g3
+    CFLAGS      += -DGDBSTUB_FREERTOS=0
     INCLUDES    += -I$(GDBSTUB_DIR)
-    USEMODULE   += gdbstub
+    USEMODULE   += esp_gdbstub
 endif
 
 ifeq ($(ENABLE_GDB), 1)
-    CFLAGS_OPT  = -fzero-initialized-in-bss -Og -ggdb
+    CFLAGS_OPT   = -fzero-initialized-in-bss -Og -ggdb -g3
 endif
 
 CFLAGS += $(CFLAGS_OPT)
 
-ifeq ($(ENABLE_SW_TIMER), 1)
-    CFLAGS += -DSW_TIMER_USED
+ifeq ($(USE_SW_TIMER), 1)
+    USEMODULE += esp_sw_timer
 endif
 
-ifeq ($(ENABLE_SPIFFS), 1)
+ifeq ($(USE_SPIFFS), 1)
     export SPIFFS_STD_OPTION = -std=c99
     USEMODULE += spiffs
     USEMODULE += vfs
@@ -84,9 +89,10 @@ endif
 LINKFLAGS += -L$(ESP8266_NEWLIB_DIR)/$(TARGET_ARCH)/lib
 LINKFLAGS += -L$(ESP8266_SDK_DIR)/lib
 
-ifeq ($(SDK), 1)
+ifeq ($(USE_SDK), 1)
     LINKFLAGS += -Wl,--start-group $(BINDIR)/sdk.a
-    ifeq ($(ENABLE_ESPNOW), 1)
+    ifeq ($(USE_ESP_NOW), 1)
+        USEMODULE += esp_now
         LINKFLAGS += -lespnow
     endif
     LINKFLAGS += -lmain -lnet80211 -lcrypto -lwpa2 -lwpa -llwip -lpp -lphy -lc -lhal
@@ -109,37 +115,6 @@ USEMODULE += ps
 USEMODULE += random
 USEMODULE += sdk
 USEMODULE += xtensa
-
-ifneq (, $(filter lua, $(USEPKG)))
-    USEMODULE += newlib_syscalls_default
-    USEMODULE += xtimer
-endif
-
-ifneq (, $(filter lwip%, $(USEMODULE)))
-    USEMODULE += newlib_syscalls_default
-endif
-
-ifneq (, $(filter posix%, $(USEMODULE)))
-    USEMODULE += newlib_syscalls_default
-endif
-
-ifneq (, $(filter shell, $(USEMODULE)))
-    USEMODULE += newlib_syscalls_default
-    USEMODULE += xtimer
-endif
-
-ifneq (, $(filter xtimer, $(USEMODULE)))
-    USEMODULE += newlib_syscalls_default
-endif
-
-ifneq (, $(filter vfs, $(USEMODULE)))
-    USEMODULE += newlib_syscalls_default
-    USEMODULE += xtimer
-endif
-
-ifneq (, $(filter newlib_syscalls_default, $(USEMODULE)))
-    USEMODULE += uart_stdio
-endif
 
 # configure preflasher to convert .elf to .bin before flashing
 FLASH_SIZE = -fs 8m
