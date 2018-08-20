@@ -1,0 +1,10 @@
+# Because of very limited pads of ESP-01 modules, only some of the
+# CPU features can be used.
+
+FEATURES_PROVIDED += periph_cpuid
+FEATURES_PROVIDED += periph_gpio
+FEATURES_PROVIDED += periph_hwrng
+FEATURES_PROVIDED += periph_pm
+FEATURES_PROVIDED += periph_pwm
+FEATURES_PROVIDED += periph_timer
+FEATURES_PROVIDED += periph_uart
