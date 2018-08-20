@@ -2,17 +2,17 @@
 
 There are two implementations that can be used:
 
-- the **SDK version** which is realized on top of an SDK (esp-open-sdk or ESP8266_NONOS_SDK) and
+- the **SDK version** which is realized on top of an SDK (*esp-open-sdk* or *ESP8266_NONOS_SDK*) and
 - the **non-SDK version** which is realized without the SDK.
 
 The non-SDK version produces a much smaller code size than the SDK version and is more efficient in excecution because it does not need to run additional SDK functions to keep the SDK system alive.
 
-The **non-SDK** version is probably the **best choice if you do not need the built-in WiFi module**, for example, when you plan to connect the MCU to an IEEE 802.15.4 radio module for communication.
+The **non-SDK** version is probably the **best choice if you do not need the built-in WiFi module**, for example, when you plan to connect an IEEE 802.15.4 radio module to the MCU for communication.
 
-By default, the non-SDK version is compiled. To compile the SDK-version, add option ```SDK=1``` to the make command, e.g.,
-
-    make flash BOARD=esp8266-esp-12x -C test/shell SDK=1 ...
-
+By default, the non-SDK version is compiled. To compile the SDK-version, add option ```USE_SDK=1``` to the make command, e.g.,
+```
+    make flash BOARD=esp8266-esp-12x -C test/shell USE_SDK=1 ...
+```
 For more information, see section **Compile Options**.
 
 ## Tool Chain
@@ -172,19 +172,18 @@ export ESP8266_SDK_DIR=/path/to/esp/ESP8266_NONOS_SDK-2.1.0
 
 ## Compile Options
 
-The compilation process can be configured with various command-line options for the make command. Following table shows these command-line options.
+The compilation process can be configured with various command-line variables for the make command. Following table shows these command-line variables.
 
 Option | Values | Default | Meaning
 -------|--------|---------|--------
-ENABLE_ENC28J60 | 0, 1 | 0 | Enable ENC28J60 module to use ethernet interfaces based on ENC28J60.
 ENABLE_GDB | 0, 1 | 0 | Enable compilation with debug information for debugging with QEMU (```QEMU=1```), see section _QEMU Mode and GDB_ below
-ENABLE_MRF24J40 | 0, 1 | 0 | Enable MRF24J40 module to use IEEE 802.15.4 radio modules based on MRF24J40.
-ENABLE_SPIFFS | 0, 1 | 0 | Enable or disable the SPIFFS file system, see section _SPIFFS Module_ below.
-ENABLE_SW_TIMER | 0, 1 | 0 | Enable software timer implementation, only available in conjunction with ```SDK=1```, see section _Timer Implementations_ below.
 FLASH_MODE | dout, dio, qout, qio | dout | Set the flash mode, please take care with your module, see section _Flash Modes_ below.
+NETDEV_DEFAULT | module name | mrf24j40 | Set the module that is used as default network device, see section _Network Device Selection_ 
 PORT | /dev/ttyUSBx | /dev/ttyUSB0 | Set the port for flashing the firmware.
 QEMU | 0, 1 | 0 | Use QEMU mode and generate an image for QEMU, see _QEMU Mode and GDB_ below.
-SDK | 0, 1 | 0 | Compile the SDK version (```SDK=1```) or non-SDK version (```SDK=0```), see section _SDK Task Handling_ below.
+SDK | 0, 1 | 0 | Compile the SDK version (```USE_SDK=1```) or non-SDK version (```USE_SDK=0```), see section _SDK Task Handling_ below.
+USE_SPIFFS | 0, 1 | 0 | Enable or disable the SPIFFS file system, see section _SPIFFS Module_ below.
+USE_SW_TIMER | 0, 1 | 0 | Enable software timer implementation, only available in conjunction with ```USE_SDK=1```, see section _Timer Implementations_ below.
 
 ## SPI Interface
 
@@ -198,11 +197,115 @@ SCK    | GPIO14
 
 When SPI interface is enabled, these GPIOs cannot be used for any other purpose.
 
-As CS signal GPIOs 0, 2, 4, 5 or 15 can be used. In flash modes ```dio``` and ```dout``` (see section _Flash Modes_), GPIO's 9 and 10 can also be as CS signal.
+As CS signal GPIOs 0, 2, 4, 5, 15, or 16 can be used. In flash modes ```dio``` and ```dout``` (see section _Flash Modes_), GPIO's 9 and 10 can also be as CS signal.
+
+## I2C Interface
+
+Since ESP8266 does not support I2C in hardware, the I2C interface is realized as bit-banging protocol in software. The maximum usable bus speed is therefore ```I2C_SPEED_FAST_PLUS```. The maximum number of busses that can be defined is 3 (```I2C_DEV(0) ... ```I2C_DEV(2)```.
+
+Number of I2C busses and GPIO pins used as signals for theses busses have to be defined in the board specific peripheral configuration in ```board.h```. In the following example only one I2C with the two signals ```I2C_SDA_0``` and ```I2C_SCL_0``` for bus 0 are defined.
+
+```
+#define I2C_NUM 1
+#define I2C_SDA_0   GPIO4
+#define I2C_SCL_0   GPIO5
+```
+A configuration of two I2C busses could look like the following.
+
+```
+#define I2C_NUM 2
+#define I2C_SDA_0   GPIO4
+#define I2C_SCL_0   GPIO5
+#define I2C_SDA_1   GPIO2
+#define I2C_SCL_1   GPIO14
+```
+
+## PWM Channels
+
+Up to 8 GPIOs can be defined as PWM channels to generate PWM output signals. By default, GPIOs 2, 4 and 5 are defined as PWM channels. As long as these channels are not started with function ```pwm_set```, they can be used as normal GPIOs for other purposes.
+
+To defined other GPIOs as PWM channels, just overwrite the definition of ```PWM_CHANNEL_GPIOS``` in your ```board.h``` file.
+
+```
+#define PWM_CHANNEL_GPIOS { GPIO12, GPIO13, GPIO14, GPIO15 }
+```
+
+The maximum number of PWM clock cycles per second is 100.000 (period of 10 us). That is, the product of PWM signal frequency and PWM sinal resolution must not be greater than 100.000. Otherwise, the PWM signal frequency is reduced.
+
+## Other Peripheral Features
+
+The ESP8266 port of RIOT also supports
+
+- one ADC channel with a resolution of 10 bit, please refer your hardware manual,
+- one hardware number generator,
+- one UART interface
+- a CPU-ID function,
+- power management functions.
+
+RTC is not yet implemented.
+
+## Network Device Selection
+
+RIOT provides a number of driver modules for different types of network devices, e.g., IEEE 802.15.4 radio modules and Ethernet modules. Which one is used as default network device is determined by the ```NETDEV_DEFAULT``` command-line make variable. The value has to be the name of a driver module that implements an interface according to the [Network Device Driver API (netdev)](http://riot-os.org/api/group__drivers__netdev__api.html).
+
+ESP8266 was tested with modules ```mrf24j40``` (driver for Microchip MRF24j40 based IEEE 802.15.4 modules) and ```enc28j60`` (driver for Microchip ENC28J60 based Ethernet modules).
+
+### Using MRF24J40 (module ```mrf24j40```)
+
+To use MRF24J40 based IEEE 802.15.4 modules as network device, module ```mrf24j40``` has to be added to your makefile:
+
+```
+USEMODULE += mrf24j40
+```
+
+**Please note:** If module ```netdev_default``` is used (which is usually the case in all networking applications), module ```mrf24j40``` is added automatically.
+
+Module ```mrf24j40``` uses the following interface parameters by default:
+
+Parameter     | Default      | Remarks
+--------------|--------------|----------------------------
+```MRF24J40_SPI```  | ```SPI_DEV(0)```   | fix, see section _SPI Interface_
+```MRF24J40_CLK```  | ```SPI_CLK_1MHZ``` | fix
+```MRF24J40_CS```   | ```GPIO16```       | can be overriden by command-line variable
+```MRF24J40_INT```  | ```GPIO0```        | can be overriden by command-line variable
+```MRF24J40_RST```  | ```GPIO2```        | can be overriden by command-line variable
+
+Used GPIO's can be overriden by corresponding command-line variables, for example:
+```
+make flash BOARD=esp8266-esp-12x -C examples/gnrc_networking MRF24J40_CS=GPIO15
+```
+
+### Using ENC28J60 (module ```enc28j60```)
+
+To use MRF24J40 based IEEE 802.15.4 modules as network device, module ```mrf24j40``` has to be added to your makefile:
+
+```
+USEMODULE += enc28j60
+```
+
+Module ```enc28j60``` uses the following interface parameters by default:
+
+Parameter    | Default      | Remarks
+-------------|--------------|----------------------------
+```ENC28J60_SPI``` | ```SPI_DEV(0)```   | fix, see section _SPI Interface_
+```ENC28J60_CS```  | ```GPIO4```        | can be overriden by command-line variable
+```ENC28J60_INT``` | ```GPIO9```        | can be overriden by command-line variable
+```ENC28J60_RST``` | ```GPIO10```       | can be overriden by command-line variable
+
+Used GPIO's can be overwritten by command-line variables, for example:
+```
+make flash BOARD=esp8266-esp-12x -C examples/gnrc_networking ENC28J60_CS=GPIO15
+```
+
+To use module ```enc28j60``` as default network device, the ```NETDEV_DEFAULT``` command-line make variable has to set, for example:
+
+```
+make flash BOARD=esp8266-esp-12x -C examples/gnrc_networking NETDEV_DEFAULT=enc28j60
+```
 
 ## SPIFFS Module
 
-If SPIFFS module is enabled (```ENABLE_SPIFFS=1```), the implemented MTD device ```mtd0``` for the build-in SPI flash memory is used together with modules SPIFFS and VFS to realize a persistent file system.
+If SPIFFS module is enabled (```USE_SPIFFS=1```), the implemented MTD device ```mtd0``` for the build-in SPI flash memory is used together with modules SPIFFS and VFS to realize a persistent file system.
 
 For this purpose, flash memory is formatted as SPIFFS starting at the address ```0x80000``` (512 kbyte) on first boot. All sectors up to the last 5 sectors of the flash memory are then used for the file system. With a fixed sector size of 4096 bytes, the top address of the SPIFF is ```flash size - 5 * 4096```, e.g., ```0xfb000``` for a flash memory of 1 MByte. The size of the SPIFF then results from ```flash size - 5 * 4096 - 512 kByte```.
 
@@ -212,7 +315,7 @@ Please refer file ```$(RIOTBASE)/tests/unittests/test-spiffs/tests-spiffs.c``` f
 
 Per default, the **hardware timer implementation** is used. In this implementation there is only one timer with only one channel available.
 
-If you use the SDK version of the RIOT port (```SDK = 1```), you can activate the **Software-Timer** (```ENABLE_SW_TIMER=1```), which implements one timer with 10 channels. The software timer uses SDK software timers to implement various timer channels. Although these SDK timers usually have a precision of a few microseconds, they can deviate up to 500 microseconds. So if you need a timer with high accuracy, you'll need to use the hardware timer with only one timer channel.
+If you use the SDK version of the RIOT port (```USE_SDK=1```), you can activate the **Software-Timer** (```USE_SW_TIMER=1```), which implements one timer with 10 channels. The software timer uses SDK software timers to implement various timer channels. Although these SDK timers usually have a precision of a few microseconds, they can deviate up to 500 microseconds. So if you need a timer with high accuracy, you'll need to use the hardware timer with only one timer channel.
 
 ## Flash Modes
 
@@ -224,14 +327,14 @@ For more information about flash mode, refer the documentation of [esptool.py](h
 
 ## SDK Task Handling
 
-With compile option ```SDK=1``` the Espressif SDK is used. This is necessary, for example, if you want to use the built-in WLAN module. The SDK internally uses its own tasks (SDK tasks) and its own scheduling mechanism to realize event-driven SDK functions such as WiFi functions and software timers, and to keep the system alive. For this purpose, the SDK regularly executes SDK tasks with pending events in an endless loop using the ROM function ```ets_run```.
+With compile option ```USE_SDK=1``` the Espressif SDK is used. This is necessary, for example, if you want to use the built-in WLAN module. The SDK internally uses its own tasks (SDK tasks) and its own scheduling mechanism to realize event-driven SDK functions such as WiFi functions and software timers, and to keep the system alive. For this purpose, the SDK regularly executes SDK tasks with pending events in an endless loop using the ROM function ```ets_run```.
 
 Interrupt service routines do not process interrupts directly but use the ```ets_post``` ROM function to send an event to one of these SDK tasks, which then processes the interrupts asynchronously. A context switch is not possible in the interrupt service routines.
 
 In the RIOT port, the task management of the SDK is replaced by the task management of the RIOT. To handle SDK tasks with pending events so that the SDK functions work and the system keeps alive, the ROM functions ```ets_run``` and ```ets_post``` are overwritten. The ```ets_run``` function performs all SDK tasks with pending events exactly once. It is executed at the end of the ```ets_post``` function and thus usually at the end of an SDK interrupt service routine or before the system goes into the lowest power mode.
 
 **Please note:**
-Since the non-SDK version of RIOT is much smaller and faster than the SDK version, you should always compile your application without the SDK (```SDK=0```, the default) if you don't need the built-in WiFi module.
+Since the non-SDK version of RIOT is much smaller and faster than the SDK version, you should always compile your application without the SDK (```USE_SDK=0```, the default) if you don't need the built-in WiFi module.
 
 ## QEMU Mode and GDB
 
@@ -274,48 +377,3 @@ To start debugging, you have to connect to QEMU with command:
 ```
 (gdb) target remote :1234
 ```
-
-## I2C Interface
-
-Since ESP8266 does not support I2C in hardware, the I2C interface is realized as bit-banging protocol in software. The maximum usable bus speed is therefore ```I2C_SPEED_FAST_PLUS```. The maximum number of busses that can be defined is 3 (```I2C_DEV(0) ... ```I2C_DEV(2)```.
-
-Number of I2C busses and GPIO pins used as signals for theses busses have to be defined in the board specific peripheral configuration in ```board.h```. In the following example only one I2C with the two signals ```I2C_SDA_0``` and ```I2C_SCL_0``` for bus 0 are defined.
-
-```
-#define I2C_NUM 1
-#define I2C_SDA_0   GPIO4
-#define I2C_SCL_0   GPIO5
-```
-A configuration of two I2C busses could look like the following.
-
-```
-#define I2C_NUM 2
-#define I2C_SDA_0   GPIO4
-#define I2C_SCL_0   GPIO5
-#define I2C_SDA_1   GPIO2
-#define I2C_SCL_1   GPIO14
-```
-
-## PWM Channels
-
-Up to 8 GPIOs can be defined as PWM channels to generate PWM output signals. By default, GPIOs 2, 4 and 5 are defined as PWM channels. As long as these channels are not started with function ```pwm_set```, they can be used as normal GPIOs for other functions.
-
-To defined other GPIOs as PWM channels, just overwrite the definition of ```PWM_CHANNEL_GPIOS``` in your ```board.h``` file.
-
-```
-#define PWM_CHANNEL_GPIOS { GPIO12, GPIO13, GPIO14, GPIO15 }
-```
-
-The maximum number of PWM clock cycles per second is 100.000 (period of 10 us). That is, the product of PWM signal frequency and PWM sinal resolution must not be greater than 100.000. Otherwise, the PWM signal frequency is reduced.
-
-## Other Peripheral Features
-
-The ESP8266 port of RIOT also supports
-
-- one ADC channel with a resolution of 10 bit, please refer your hardware manual,
-- one hardware number generator,
-- one UART interface
-- a CPU-ID function,
-- power management functions.
-
-RTC is not yet implemented.

@@ -63,19 +63,6 @@ extern mtd_dev_t *mtd0;
 #define SPIFFS_MTD_DEV (MTD_0)
 #endif
 
-#if defined(MODULE_MRF24J40) && !DOXYGEN
-#define MRF24J40_PARAM_SPI_CLK      (SPI_CLK_1MHZ)
-#define MRF24J40_PARAM_CS           (GPIO_PIN(0,16))
-#define MRF24J40_PARAM_INT          (GPIO_PIN(0,0))
-#define MRF24J40_PARAM_RESET        (GPIO_PIN(0,2))
-#endif
-
-#if defined(MODULE_ENC28J60) && !DOXYGEN
-#define ENC28J60_PARAM_CS           (GPIO_PIN(0,4))
-#define ENC28J60_PARAM_INT          (GPIO_PIN(0,9))
-#define ENC28J60_PARAM_RESET        (GPIO_PIN(0,10)) /* only in DIO and DOUT mode */
-#endif
-
 #if defined(MODULE_SDCARD_SPI) && !defined(SDCARD_SPI_PARAM_SPI) && !DOXYGEN
 #define SDCARD_SPI_PARAM_SPI        SPI_DEV(0)
 #define SDCARD_SPI_PARAM_CS         SPI_CS0_GPIO
