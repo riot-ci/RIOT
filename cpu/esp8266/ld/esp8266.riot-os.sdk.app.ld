@@ -109,8 +109,12 @@ SECTIONS
   {
     _rodata_start = ABSOLUTE(.);
     *(.sdk.version)
-    *(.rodata)
-    *(.rodata.*)
+    /* TODO put only necessary .rodata to dram
+    *libc.a:*.o(.rodata.* .rodata)
+    *core.a:*(.rodata.* .rodata)
+    *cpu.a:*(.rodata .rodata.*)
+    */
+    *(.rodata .rodata.*)
     *(.gnu.linkonce.r.*)
     *(.rodata1)
     __XT_EXCEPTION_TABLE__ = ABSOLUTE(.);
@@ -270,7 +274,7 @@ SECTIONS
 
     /* RIOT-OS compiled code goes into IROM by default
        (except for functions with section names defined in .text above.) */
-    *(.literal .text .literal.* .text.*)
+    *(.literal .text .literal.* .text.* .rodata .rodata.*)
 
     /* Anything explicitly marked as "irom" or "irom0" should go here */
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)

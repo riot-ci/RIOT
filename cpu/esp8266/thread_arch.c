@@ -237,7 +237,7 @@ void  thread_stack_print(void)
         char* stack_top = task->stack_start + task->stack_size;
         int   size = stack_top - task->sp;
         printf("Printing current stack of thread %" PRIkernel_pid "\n", thread_getpid());
-        hexdump((void*)(task->sp), size >> 2, 'w', 8);
+        esp_hexdump((void*)(task->sp), size >> 2, 'w', 8);
     }
     #else
     NOT_SUPPORTED();
@@ -292,7 +292,7 @@ void *thread_isr_stack_start(void)
 void thread_isr_stack_print(void)
 {
     printf("Printing current ISR\n");
-    hexdump(&port_IntStack, &port_IntStackTop-&port_IntStack, 'w', 8);
+    esp_hexdump(&port_IntStack, &port_IntStackTop-&port_IntStack, 'w', 8);
 }
 
 #else /* DEVELHELP */
