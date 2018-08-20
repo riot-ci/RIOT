@@ -12,10 +12,10 @@ The non-SDK version produces a much smaller code size than the SDK version and i
 
 The **non-SDK** version is probably the **best choice if you do not need the built-in WiFi module**, for example, when you plan to connect the MCU to an IEEE 802.15.4 radio module for communication.
 
-By default, the non-SDK version is compiled. To compile the SDK-version, add option ```SDK=1``` to the make command, e.g.,
+By default, the non-SDK version is compiled. To compile the SDK-version, add option ```USE_SDK=1``` to the make command, e.g.,
 
-    make flash BOARD=esp8266-esp-12x -C test/shell SDK=1 ...
+    make flash BOARD=esp8266-esp-12x -C test/shell USE_SDK=1 ...
 
-Please refer file $(RIOTBASE)/cpu/esp8266/README.md for more information about the toolchain, supported features and compile options.
+Please refer file ```/path/to/RIOT/cpu/esp8266/README.md``` for more information about the toolchain, supported features and compile options.
 
 */

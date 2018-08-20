@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    boards_esp8266-esp-12x ESP-12x based modules
+ * @defgroup    boards_esp8266-esp-12x ESP8266 - ESP-12x based modules
  * @ingroup     boards
  * @brief       Support for ESP-12x based modules.
  *
