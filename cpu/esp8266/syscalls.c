@@ -49,7 +49,7 @@
 #include "esp/xtensa_ops.h"
 #include "esp/common_macros.h"
 
-#include "sdk/ets.h"
+#include "sdk/sdk.h"
 
 int IRAM puts(const char * str)
 {
@@ -398,46 +398,76 @@ NORETURN void _exit(int status)
     UNREACHABLE();
 }
 
-static int _no_sys_func (struct _reent *r)
+static int _no_sys_func (struct _reent *r, const char* f)
 {
-    DEBUG("%s: system function does not exist\n", __func__);
+    LOG_ERROR("system function %s does not exist\n", f);
     r->_errno = ENOSYS;
     return -1;
 }
 
 int _open_r(struct _reent *r, const char *path, int flag, int m)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _close_r(struct _reent *r, int fd)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _fstat_r(struct _reent *r, int fdes, struct stat *stat)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _stat_r(struct _reent *r, const char *path, struct stat *buff)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _lseek_r(struct _reent *r, int fdes, int off, int w)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _write_r(struct _reent *r, int fd, const void *buff, size_t cnt)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
 }
 
 int _read_r(struct _reent *r, int fd, void *buff, size_t cnt)
 {
-    return _no_sys_func (r);
+    return _no_sys_func (r, __func__);
+}
+
+#include <sys/time.h>
+
+int _gettimeofday_r(struct _reent *r, struct timeval *tv, void *tz)
+{
+    (void) tz;
+    if (tv) {
+        uint32_t microseconds = system_get_time();
+        tv->tv_sec = microseconds / 1000000;
+        tv->tv_usec = microseconds % 1000000;
+    }
+    return 0;
 }
 
 #endif /* MODULE_NEWLIB_SYSCALLS_DEFAULT */
+
+int _rename_r (struct _reent *r, const char* old, const char* new)
+{
+    DEBUG("%s: system function does not exist\n", __func__);
+    r->_errno = ENOSYS;
+    return -1;
+}
+
+#include <math.h>
+
+double __ieee754_remainder(double x, double y) {
+	return x - y * floor(x/y);
+}
+
+float __ieee754_remainderf(float x, float y) {
+	return x - y * floor(x/y);
+}

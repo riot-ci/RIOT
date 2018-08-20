@@ -34,7 +34,7 @@ extern "C" {
  * @param[in]  width     format of the items
  * @param[in]  per_line  number of items per line
  */
-extern void hexdump (const void* addr, uint32_t num, char width, uint8_t per_line);
+extern void esp_hexdump (const void* addr, uint32_t num, char width, uint8_t per_line);
 
 #ifdef __cplusplus
 }
