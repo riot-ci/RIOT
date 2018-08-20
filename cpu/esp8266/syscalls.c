@@ -245,7 +245,7 @@ void IRAM _lock_init(_lock_t *lock)
 {
     CHECK_PARAM (sched_active_thread != 0);
     CHECK_PARAM (lock != NULL);
-    CHECK_PARAM (*lock != (_lock_t)&_malloc_rmtx);
+    CHECK_PARAM (*lock != ((_lock_t)&_malloc_rmtx));
 
     mutex_t* mtx = malloc (sizeof(mutex_t));
 
@@ -259,7 +259,7 @@ void IRAM _lock_init_recursive(_lock_t *lock)
 {
     CHECK_PARAM (sched_active_thread != 0);
     CHECK_PARAM (lock != NULL);
-    CHECK_PARAM (*lock != (_lock_t)&_malloc_rmtx);
+    CHECK_PARAM (*lock != ((_lock_t)&_malloc_rmtx));
 
     rmutex_t* rmtx = malloc (sizeof(rmutex_t));
 
@@ -272,7 +272,7 @@ void IRAM _lock_init_recursive(_lock_t *lock)
 void IRAM _lock_close(_lock_t *lock)
 {
     CHECK_PARAM (lock != NULL);
-    CHECK_PARAM (*lock != (_lock_t)&_malloc_rmtx);
+    CHECK_PARAM (*lock != ((_lock_t)&_malloc_rmtx));
 
     free ((void*)*lock);
     *lock = 0;
@@ -281,7 +281,7 @@ void IRAM _lock_close(_lock_t *lock)
 void IRAM _lock_close_recursive(_lock_t *lock)
 {
     CHECK_PARAM (lock != NULL);
-    CHECK_PARAM (*lock != (_lock_t)&_malloc_rmtx);
+    CHECK_PARAM (*lock != ((_lock_t)&_malloc_rmtx));
 
     free ((void*)*lock);
     *lock = 0;

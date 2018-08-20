@@ -39,8 +39,6 @@ uint8_t ets_highest_1_bit (uint32_t mask)
  */
 void IRAM ets_tasks_run (void)
 {
-    uint8_t  hbit;
-
     #if ENABLE_DEBUG
     uint32_t _entry = phy_get_mactime();
     uint32_t _exit;
@@ -51,6 +49,7 @@ void IRAM ets_tasks_run (void)
     system_soft_wdt_feed();
 
     while (1) {
+        uint8_t  hbit;
         int state = irq_disable();
         hbit = ets_highest_1_bit (ets_task_exec_mask);
         if (min_prio < hbit) {
