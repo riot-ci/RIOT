@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014-2016 Freie Universität Berlin
+ *               2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,11 +14,12 @@
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for theLobaro lorabox board
+ * @brief       Peripheral MCU configuration for the Lobaro lorabox board
  *
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Kevin Weiss <kevin.weiss@haw-hamburg.de>
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 
 #ifndef PERIPH_CONF_H
@@ -48,10 +50,6 @@ extern "C" {
 /*
  * 0: no external low speed crystal available,
  * 1: external crystal available (always 32.768kHz)
- *
- * LSE might not be available by default in early (C-01) Nucleo boards.
- * For newer revisions, an LSE crystal is present and CLOCK_LSE can be set to 1
- * if one wants to use it.
  */
 #ifndef CLOCK_LSE
 #define CLOCK_LSE           (1)
@@ -136,7 +134,6 @@ static const uart_conf_t uart_config[] = {
  * @name   PWM configuration
  * @{
  */
-
 #define PWM_NUMOF           0
 /** @} */
 
@@ -206,23 +203,10 @@ static const i2c_conf_t i2c_config[] = {
         .rcc_mask       = RCC_APB1ENR_I2C1EN,
         .clk            = CLOCK_APB1,
         .irqn           = I2C1_EV_IRQn
-    },
-    {
-        .dev            = I2C2,
-        .speed          = I2C_SPEED_NORMAL,
-        .scl_pin        = GPIO_PIN(PORT_B, 10),
-        .sda_pin        = GPIO_PIN(PORT_B, 11),
-        .scl_af         = GPIO_AF4,
-        .sda_af         = GPIO_AF4,
-        .bus            = APB1,
-        .rcc_mask       = RCC_APB1ENR_I2C2EN,
-        .clk            = CLOCK_APB1,
-        .irqn           = I2C2_EV_IRQn
     }
 };
 
 #define I2C_0_ISR           isr_i2c1_ev
-#define I2C_1_ISR           isr_i2c2_ev
 
 #define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
 /** @} */
@@ -231,7 +215,6 @@ static const i2c_conf_t i2c_config[] = {
  * @name   ADC configuration
  * @{
  */
-
 #define ADC_NUMOF           (0U)
 /** @} */
 
@@ -239,10 +222,8 @@ static const i2c_conf_t i2c_config[] = {
  * @name   DAC configuration
  * @{
  */
-
 #define DAC_NUMOF           0
 /** @} */
-
 
 #ifdef __cplusplus
 }
