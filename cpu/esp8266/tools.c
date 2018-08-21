@@ -19,6 +19,8 @@
  */
 
 #include <stdio.h>
+#include <inttypes.h>
+
 #include "esp/common_macros.h"
 #include "tools.h"
 
@@ -30,10 +32,7 @@ void esp_hexdump (const void* addr, uint32_t num, char width, uint8_t per_line)
     uint8_t*  addr8  = (uint8_t*) addr;
     uint16_t* addr16 = (uint16_t*)addr;
     uint32_t* addr32 = (uint32_t*)addr;
-
-    #if 0 /* Codacy claims that uint64_t is long unsigned */
     uint64_t* addr64 = (uint64_t*)addr;
-    #endif
 
     switch (width) {
         case 'b': size = 1; break;
@@ -48,13 +47,10 @@ void esp_hexdump (const void* addr, uint32_t num, char width, uint8_t per_line)
             printf ("%08x: ", (uint32_t)((uint8_t*)addr+count*size));
         }
         switch (width) {
-            case 'b': printf("%02x ", addr8[count++]); break;
-            case 'h': printf("%04x ", addr16[count++]); break;
-            case 'w': printf("%08x ", addr32[count++]); break;
-
-            #if 0 /* Codacy claims that uint64_t is long unsigned */
-            case 'g': printf("%016llx ",addr64[count++]); break;
-            #endif
+            case 'b': printf("%02" PRIx8, addr8[count++]); break;
+            case 'h': printf("%04" PRIx16, addr16[count++]); break;
+            case 'w': printf("%08" PRIx32, addr32[count++]); break;
+            case 'g': printf("%016" PRIx64, addr64[count++]); break;
 
             default : printf("."); count++; break;
         }
