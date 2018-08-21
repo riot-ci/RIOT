@@ -17,7 +17,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 bluepill calliope-mini 
                              yunjia-nrf51822
 
 BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno chronos \
-                   hifive1 mips-malta msb-430 msb-430h telosb waspmote-pro
+                   hifive1 mips-malta msb-430 msb-430h telosb waspmote-pro \
                    wsn430-v1_3b wsn430-v1_4 z1 pic32-wifire pic32-clicker \
                    jiminy-mega256rfr2 mega-xplained
 
