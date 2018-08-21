@@ -30,7 +30,7 @@ extern "C" {
 /**
  * @name    Starting address of the CPU ID
  */
-#ifdef CPU_MODEL_STM32L151RBA
+#if defined(CPU_MODEL_STM32L151RBA) || defined(CPU_MODEL_STM32L151CB)
 #define CPUID_ADDR          (0x1ff80050)
 #else
 #define CPUID_ADDR          (0x1ff800d0)
