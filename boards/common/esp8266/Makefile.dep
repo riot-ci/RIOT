@@ -1,1 +1,1 @@
-include $(RIOTCPU)/$(CPU)/Makefile.dep
+include $(RIOTCPU)/esp8266/Makefile.dep
