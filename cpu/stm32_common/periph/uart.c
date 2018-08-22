@@ -48,7 +48,9 @@ static inline USART_TypeDef *dev(uart_t uart)
 
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+#ifdef STM32_HAVE_LPUART
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
+#endif
 #endif
 
 static inline void uart_init_pins(uart_t uart, uart_rx_cb_t rx_cb)
@@ -106,9 +108,11 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         case STM32_USART:
             uart_init_usart(uart, baudrate);
             break;
+#ifdef STM32_HAVE_LPUART
         case STM32_LPUART:
             uart_init_lpuart(uart, baudrate);
             break;
+#endif
         default:
             return UART_NODEV;
     }
@@ -149,6 +153,7 @@ static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 }
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
+#ifdef STM32_HAVE_LPUART
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 {
     uint32_t clk;
@@ -179,7 +184,8 @@ static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 
     dev(uart)->BRR = brr;
 }
-#endif
+#endif /* STM32_HAVE_LPUART */
+#endif /* STM32L0 || STM32L4 */
 
 static inline void send_byte(uart_t uart, uint8_t byte)
 {
