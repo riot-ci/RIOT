@@ -10,7 +10,7 @@ all: libjerry
 
 libjerry:
 	mkdir -p $(BUILD_DIR)
-	cmake -B$(BUILD_DIR) -H./ \
+	cmake -B$(BUILD_DIR) -H$(CURDIR) \
 	 -DCMAKE_SYSTEM_NAME=RIOT \
 	 -DCMAKE_SYSTEM_PROCESSOR="$(MCPU)" \
 	 -DCMAKE_C_COMPILER=$(CC) \
