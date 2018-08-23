@@ -46,7 +46,9 @@ static inline USART_TypeDef *dev(uart_t uart)
     return uart_config[uart].dev;
 }
 
+#ifndef STM32_HAVE_NO_USART
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
+#endif
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 #ifdef STM32_HAVE_LPUART
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
@@ -105,9 +107,11 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
     switch (uart_config[uart].type) {
+#ifndef STM32_HAVE_NO_USART
         case STM32_USART:
             uart_init_usart(uart, baudrate);
             break;
+#endif
 #ifdef STM32_HAVE_LPUART
         case STM32_LPUART:
             uart_init_lpuart(uart, baudrate);
@@ -139,6 +143,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
+#ifndef STM32_HAVE_NO_USART
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 {
     uint16_t mantissa;
@@ -151,6 +156,7 @@ static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
     fraction = (uint8_t)(clk - (mantissa * 16));
     dev(uart)->BRR = ((mantissa & 0x0fff) << 4) | (fraction & 0x0f);
 }
+#endif
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4)
 #ifdef STM32_HAVE_LPUART
