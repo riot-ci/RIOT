@@ -9,7 +9,7 @@ EXT_CFLAGS :=-D__TARGET_RIOT
 all: libjerry
 
 libjerry:
-	cmake -B$(BUILD_DIR) -H$(CURDIR) \
+	cmake -B$(BUILD_DIR) -H./ \
 	 -DCMAKE_SYSTEM_NAME=RIOT \
 	 -DCMAKE_SYSTEM_PROCESSOR="$(MCPU)" \
 	 -DCMAKE_C_COMPILER=$(CC) \
