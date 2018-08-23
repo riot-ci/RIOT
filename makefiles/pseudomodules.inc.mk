@@ -93,6 +93,10 @@ PSEUDOMODULES += adc081c
 PSEUDOMODULES += adc101c
 PSEUDOMODULES += adc121c
 
+# DS323x family
+PSEUDOMODULES += ds323x_%
+PSEUDOMODULES += ds3234
+
 # include variants of SX127X drivers as pseudo modules
 PSEUDOMODULES += sx1272
 PSEUDOMODULES += sx1276
