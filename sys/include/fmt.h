@@ -344,6 +344,13 @@ size_t fmt_strnlen(const char *str, size_t maxlen);
 size_t fmt_str(char *out, const char *str);
 
 /**
+ * @brief   Converts all upercase letter in lowercase in a string
+ *
+ * @param[in,out]   str     String to convert uppercase to lowercase
+ */
+void fmt_to_lower(char *str);
+
+/**
  * @brief Convert digits to uint32
  *
  * Will convert up to @p n digits. Stops at any non-digit or '\0' character.
