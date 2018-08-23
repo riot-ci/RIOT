@@ -14,8 +14,6 @@
  * @file
  * @brief       Low-level I2C driver implementation using ESP8266 SDK
  *
- * @note        This implementation only implements the 7-bit addressing mode.
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
  *
  * @}
