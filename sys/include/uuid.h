@@ -140,6 +140,14 @@ static inline bool uuid_equal(uuid_t *uuid1, uuid_t *uuid2)
     return (memcmp(uuid1, uuid2, sizeof(uuid_t)) == 0);
 }
 
+/**
+ * @brief   Generate an UUID string from an UUID structure
+ *
+ * @param[out]  str     UUID string, must be at least 37 bytes
+ * @param[in]   uuid    UUID
+ */
+void uuid_to_string(char *str, const uuid_t *uuid);
+
 #ifdef __cplusplus
 }
 #endif
