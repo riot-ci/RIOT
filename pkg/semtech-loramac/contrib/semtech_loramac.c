@@ -412,7 +412,7 @@ void semtech_loramac_erase_config(void)
         eeprom_write_byte(p, 0);
     }
 }
-#endif
+#endif /* MODULE_PERIPH_EEPROM */
 
 void _init_loramac(semtech_loramac_t *mac,
                    LoRaMacPrimitives_t * primitives, LoRaMacCallback_t *callbacks)
@@ -727,6 +727,10 @@ void *_semtech_loramac_event_loop(void *arg)
                         msg_ret.type = msg.type;
                         msg_ret.content.value = msg.content.value;
                         msg_send(&msg_ret, mac->caller_pid);
+#ifdef MODULE_PERIPH_EEPROM
+                        /* save the uplink counter */
+                        _save_uplink_counter(mac);
+#endif
                     }
                     break;
                 }
