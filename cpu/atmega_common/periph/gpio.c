@@ -133,9 +133,9 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
             break;
         case GPIO_IN:
             _SFR_MEM8(_ddr_addr(pin)) &= ~(1 << _pin_num(pin));
-            _SFR_MEM8(_port_addr(pin)) &= ~(1 << _pin_num(pin));
             break;
         case GPIO_IN_PU:
+            _SFR_MEM8(_ddr_addr(pin)) &= ~(1 << _pin_num(pin));
             _SFR_MEM8(_port_addr(pin)) |= (1 << _pin_num(pin));
             break;
         default:
