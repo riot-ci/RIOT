@@ -78,7 +78,7 @@ static void test_lora_serialization_02(void)
 {
     /* should transform a simple unixtime to a byte array */
     lora_serialization_reset(&lora_serialization);
-    
+
     lora_serialization_write_unix_time(&lora_serialization,
                                          LORA_SERIALIZATION_UNIX_TIME_SIMPLE);
     uint8_t expected[] = LORA_SERIALIZATION_EXPECTED_UNIX_TIME_SIMPLE;
