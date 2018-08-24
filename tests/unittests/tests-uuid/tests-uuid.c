@@ -95,12 +95,21 @@ void test_uuid_v5(void)
     TEST_ASSERT_EQUAL_INT(uuid_version(&uuid_next), UUID_V5);
 }
 
+void test_uuid_str(void)
+{
+    const char dns[] = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+    char str[40];
+    uuid_to_string(str, &uuid_namespace_dns);
+    TEST_ASSERT_EQUAL_INT(0, memcmp(dns, str, sizeof(dns)));
+}
+
 Test *tests_uuid_all(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_uuid_v3),
         new_TestFixture(test_uuid_v4),
         new_TestFixture(test_uuid_v5),
+        new_TestFixture(test_uuid_str),
     };
 
     EMB_UNIT_TESTCALLER(uuid_tests, NULL, NULL, fixtures);
