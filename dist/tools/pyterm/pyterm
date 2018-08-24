@@ -288,6 +288,28 @@ class SerCmd(cmd.Cmd):
         """
         self.ser.write("help\n".encode("utf-8"))
 
+    def _prompt_for_exit(self):
+        """Prompt the user if he really wants to exit."""
+        reply = ''
+        while reply not in ('y', 'n'):
+            try:
+                reply = input('\nExit pyterm ([y]/n)? ').lower()
+            except EOFError:
+                self.do_PYTERM_exit("")
+                sys.exit(0)
+            if not reply:
+                reply = 'y'
+        return reply == 'y'
+
+    def do_EOF(self, line):
+        """Handle EOF (Ctrl+D) nicely."""
+        self.logger.debug("Received EOF")
+        if self._prompt_for_exit():
+            self.do_PYTERM_exit("")
+            sys.exit(0)
+        else:
+            return
+
     def complete_date(self, text, line, begidx, endidm):
         """Auto completion for date string.
         """
