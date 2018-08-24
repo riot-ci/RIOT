@@ -17,9 +17,9 @@
  */
 
 /**
- * @defgroup    sys_ubjson Universal Binary JSON
- * @ingroup     sys
- * @brief       A library to read and write UBJSON serialized data.
+ * @defgroup sys_ubjson  Universal Binary JSON deserializer
+ * @ingroup  sys_serialization
+ * @brief    Provides a BSON deserializer library to RIOT
  * @{
  *
  * @file
