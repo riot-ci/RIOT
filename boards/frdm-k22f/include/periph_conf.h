@@ -80,14 +80,15 @@ static const clock_config_t clock_config = {
     },                           \
 }
 #define LPTMR_NUMOF             (1U)
-#define LPTMR_CONFIG {          \
-    {                           \
-        .dev = LPTMR0,          \
-        .irqn = LPTMR0_IRQn,    \
-        .src = 2,               \
-        .base_freq = 32768u,    \
-    },                          \
-}
+#define LPTMR_CONFIG { \
+        { \
+            .dev = LPTMR0, \
+            .base_freq = 32768u, \
+            .llwu = LLWU_WAKEUP_MODULE_LPTMR0, \
+            .src = 2, \
+            .irqn = LPTMR0_IRQn, \
+        } \
+    }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
 
 #define PIT_BASECLOCK           (CLOCK_BUSCLOCK)
@@ -113,6 +114,7 @@ static const uart_conf_t uart_config[] = {
         .scgc_bit = SIM_SCGC4_UART1_SHIFT,
         .mode   = UART_MODE_8N1,
         .type   = KINETIS_UART,
+        .llwu_rx = LLWU_WAKEUP_PIN_PTE1,
     },
 };
 
