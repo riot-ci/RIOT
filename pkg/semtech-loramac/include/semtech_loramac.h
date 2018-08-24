@@ -474,16 +474,6 @@ uint8_t semtech_loramac_get_rx2_dr(semtech_loramac_t *mac);
 void semtech_loramac_save_config(semtech_loramac_t *mac);
 
 /**
- * @brief   Read the stored LoRaWAN configuration from the internal EEPROM
- *
- * @param[in] mac           Pointer to the mac
- *
- * @return                  0 when read is successful
- * @return                  -1 when read fails (no configuration stored)
- */
-int semtech_loramac_read_config(semtech_loramac_t *mac);
-
-/**
  * @brief   Erases any stored LoRaWAN configuration from the internal EEPROM
  */
 void semtech_loramac_erase_config(void);
