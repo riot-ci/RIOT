@@ -375,7 +375,7 @@ void semtech_loramac_erase_config(void)
         eeprom_write_byte(p, 0);
     }
 }
-#endif
+#endif /* MODULE_PERIPH_EEPROM */
 
 void _init_loramac(semtech_loramac_t *mac,
                    LoRaMacPrimitives_t * primitives, LoRaMacCallback_t *callbacks)
@@ -679,9 +679,10 @@ void *_semtech_loramac_event_loop(void *arg)
                     /* switch back to idle state now*/
                     mac->state = SEMTECH_LORAMAC_STATE_IDLE;
 
-
+#ifdef MODULE_PERIPH_EEPROM
                     /* save the uplink counter */
                     _save_uplink_counter(mac);
+#endif
                     break;
                 }
                 case MSG_TYPE_LORAMAC_TX_CNF_FAILED:
