@@ -782,6 +782,7 @@ endif
 ifneq (,$(filter uuid,$(USEMODULE)))
   USEMODULE += hashes
   USEMODULE += random
+  USEMODULE += fmt
 endif
 
 # always select gpio (until explicit dependencies are sorted out)
