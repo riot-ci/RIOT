@@ -205,7 +205,7 @@ static void ready_reception(unsigned int blks, unsigned int bs)
     MCI_CLEAR = 0x72A;                      /* Clear status flags */
     MCI_MASK0 = 0x72A;                      /* DataBlockEnd StartBitErr DataEnd RxOverrun DataTimeOut DataCrcFail */
 
-    for (n = 0; bs > 1; bs >>= 1, n += 0x10);
+    for (n = 0; bs > 1; bs >>= 1, n += 0x10) {}
 
     MCI_DATA_CTRL  = n | 0xB;               /* Start to receive data blocks */
 }
@@ -844,7 +844,8 @@ diskio_result_t mci_write(const unsigned char *buff, unsigned long sector, unsig
         buff += 512;             /* Next user buffer address */
     }
 
-    while (!(XferStat & 0xC)) {} /* Wait for all blocks sent (block underrun) */
+    /* Wait for all blocks sent (block underrun) */
+    while (!(XferStat & 0xC)) {}
 
     if (XferStat & 0x8) {
         count = 1;    /* Abort if any MCI error has occured */

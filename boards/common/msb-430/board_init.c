@@ -125,7 +125,8 @@ void msp430_init_dco(void)
     do {
         IFG1 &= ~OFIFG;             /* Clear oscillator fault flag */
 
-        for (i = 0xFF; i > 0; i--); /* Time for flag to set */
+        /* Time for flag to set */
+        for (i = 0xFF; i > 0; i--) {}
     }
     while ((IFG1 & OFIFG) != 0);    /* Oscillator fault flag still set? */
 
@@ -148,7 +149,8 @@ void msp430_init_dco(void)
     WDTCTL = WDTPW + WDTHOLD;             /* Stop WDT */
     BCSCTL1 |= DIVA1 + DIVA0;             /* ACLK = LFXT1CLK/8 */
 
-    for (i = 0xffff; i > 0; i--);         /* Delay for XTAL to settle */
+    /* Delay for XTAL to settle */
+    for (i = 0xffff; i > 0; i--) {}
 
     CCTL2 = CCIS0 + CM0 + CAP;            /* Define CCR2, CAP, ACLK */
     TACTL = TASSEL1 + TACLR + MC1;        /* SMCLK, continous mode */
@@ -157,7 +159,8 @@ void msp430_init_dco(void)
     while (1) {
         unsigned int compare;
 
-        while ((CCTL2 & CCIFG) != CCIFG);   /* Wait until capture occured! */
+        /* Wait until capture occured! */
+        while ((CCTL2 & CCIFG) != CCIFG) {}
 
         CCTL2 &= ~CCIFG;                    /* Capture occured, clear flag */
         compare = CCR2;                     /* Get current captured SMCLK */
