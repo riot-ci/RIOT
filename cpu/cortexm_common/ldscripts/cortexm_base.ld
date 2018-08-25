@@ -1,33 +1,12 @@
-/* ----------------------------------------------------------------------------
- *         SAM Software Package License
- * ----------------------------------------------------------------------------
- * Copyright (c) 2012, Atmel Corporation
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following condition is met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the disclaimer below.
- *
- * Atmel's name may not be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * DISCLAIMER: THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
- * DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ----------------------------------------------------------------------------
- */
+/* Copyright (C) 2014-2018 Free Software Foundation, Inc.
+   Copying and distribution of this script, with or without modification,
+   are permitted in any medium without royalty provided the copyright
+   notice and this notice are preserved.  */
 
-OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
+/* Based on the default ldscript in GNU binutils 2.30, adjusted for ROM->RAM
+ * relocations */
+/* Script for -z combreloc -z now -z relro: combine and sort reloc sections */
+OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 SEARCH_DIR(.)
 
@@ -37,76 +16,231 @@ ENTRY(reset_handler_default)
 /* Section Definitions */
 SECTIONS
 {
-    .text :
+    /* Read-only sections, merged into rom segment: */
+    PROVIDE (__executable_start = SEGMENT_START("rom", 0x0)); . = SEGMENT_START("rom", 0x0);
+    .vectors        :
     {
-        . = ALIGN(4);
-        _sfixed = .;
         _isr_vectors = DEFINED(_isr_vectors) ? _isr_vectors : . ;
         KEEP(*(SORT(.vectors*)))
-        *(.text .text.* .gnu.linkonce.t.*)
-        *(.glue_7t) *(.glue_7)
-        *(.rodata .rodata* .gnu.linkonce.r.*)
-        *(.ARM.extab* .gnu.linkonce.armextab.*)
-
-        /* Support C constructors, and C destructors in both user code
-           and the C library. This also provides support for C++ code. */
         . = ALIGN(4);
-        KEEP(*(.init))
+    }
+    .interp         : { *(.interp) }
+    .note.gnu.build-id : { *(.note.gnu.build-id) }
+    .hash           : { *(.hash) }
+    .gnu.hash       : { *(.gnu.hash) }
+    .dynsym         : { *(.dynsym) }
+    .dynstr         : { *(.dynstr) }
+    .gnu.version    : { *(.gnu.version) }
+    .gnu.version_d  : { *(.gnu.version_d) }
+    .gnu.version_r  : { *(.gnu.version_r) }
+    .rel.dyn        :
+    {
+        *(.rel.init)
+        *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
+        *(.rel.fini)
+        *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*)
+        *(.rel.data.rel.ro .rel.data.rel.ro.* .rel.gnu.linkonce.d.rel.ro.*)
+        *(.rel.data .rel.data.* .rel.gnu.linkonce.d.*)
+        *(.rel.tdata .rel.tdata.* .rel.gnu.linkonce.td.*)
+        *(.rel.tbss .rel.tbss.* .rel.gnu.linkonce.tb.*)
+        *(.rel.ctors)
+        *(.rel.dtors)
+        *(.rel.got)
+        *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
+        PROVIDE_HIDDEN (__rel_iplt_start = .);
+        *(.rel.iplt)
+        PROVIDE_HIDDEN (__rel_iplt_end = .);
+    }
+    .rela.dyn       :
+    {
+        *(.rela.init)
+        *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+        *(.rela.fini)
+        *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+        *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+        *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+        *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+        *(.rela.ctors)
+        *(.rela.dtors)
+        *(.rela.got)
+        *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+        PROVIDE_HIDDEN (__rela_iplt_start = .);
+        *(.rela.iplt)
+        PROVIDE_HIDDEN (__rela_iplt_end = .);
+    }
+    .rel.plt        :
+    {
+        *(.rel.plt)
+    }
+    .rela.plt       :
+    {
+        *(.rela.plt)
+    }
+    .init           :
+    {
+        KEEP (*(SORT_NONE(.init)))
+    }
+    .plt            : { *(.plt) }
+    .iplt           : { *(.iplt) }
+    .text           :
+    {
         . = ALIGN(4);
-        __preinit_array_start = .;
+        *(.text.unlikely .text.*_unlikely .text.unlikely.*)
+        *(.text.exit .text.exit.*)
+        *(.text.startup .text.startup.*)
+        *(.text.hot .text.hot.*)
+        *(.text .stub .text.* .gnu.linkonce.t.*)
+        /* .gnu.warning sections are handled specially by elf32.em.  */
+        *(.gnu.warning)
+        *(.glue_7t) *(.glue_7) *(.vfp11_veneer) *(.v4_bx)
+        . = ALIGN(4);
+    }
+    . = ALIGN(4);
+    .fini           :
+    {
+        KEEP (*(SORT_NONE(.fini)))
+    }
+    PROVIDE (__etext = .);
+    PROVIDE (_etext = .);
+    PROVIDE (etext = .);
+    .rodata         :
+    {
+        . = ALIGN(4);
+        *(.rodata .rodata.* .gnu.linkonce.r.*)
+        . = ALIGN(4);
+    }
+    . = ALIGN(4);
+    .rodata1        :
+    {
+        . = ALIGN(4);
+        *(.rodata1)
+        . = ALIGN(4);
+    }
+    . = ALIGN(4);
+    .openocd        :
+    {
+        KEEP (*(.openocd .openocd.*))
+    } > rom
+    .ARM.extab      : { *(.ARM.extab* .gnu.linkonce.armextab.*) }
+     PROVIDE_HIDDEN (__exidx_start = .);
+    .ARM.exidx      : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) }
+     PROVIDE_HIDDEN (__exidx_end = .);
+    .eh_frame_hdr   : { *(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*) }
+    .eh_frame       : ONLY_IF_RO { KEEP (*(.eh_frame)) *(.eh_frame.*) }
+    .gcc_except_table   : ONLY_IF_RO { *(.gcc_except_table .gcc_except_table.*) }
+    .gnu_extab   : ONLY_IF_RO { *(.gnu_extab*) }
+    /* These sections are generated by the Sun/Oracle C++ compiler.  */
+    .exception_ranges   : ONLY_IF_RO { *(.exception_ranges .exception_ranges*) }
+    /* This violates § 3.2.4.1 of C++ ABI for the ARM Architecture.
+     * the .preinit_array, .init_array, and .fini_array sections must be writable,
+     * but must be treated as if they were read-only, to allow for dynamic
+     * loaders to remap addresses. Ignoring this rule and placing them in ROM
+     * saves RAM space. */
+    .preinit_array  :
+    {
+        . = ALIGN(4);
+        PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP (*(.preinit_array))
-        __preinit_array_end = .;
-
+        PROVIDE_HIDDEN (__preinit_array_end = .);
         . = ALIGN(4);
-        __init_array_start = .;
-        KEEP (*(SORT(.init_array.*)))
-        KEEP (*(.init_array))
-        __init_array_end = .;
-
-        . = ALIGN(0x4);
+    } > rom
+    .init_array     :
+    {
+        . = ALIGN(4);
+        PROVIDE_HIDDEN (__init_array_start = .);
+        KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
+        KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
+        PROVIDE_HIDDEN (__init_array_end = .);
+        . = ALIGN(4);
+    } > rom
+    .fini_array     :
+    {
+        . = ALIGN(4);
+        PROVIDE_HIDDEN (__fini_array_start = .);
+        KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
+        KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
+        PROVIDE_HIDDEN (__fini_array_end = .);
+        . = ALIGN(4);
+    } > rom
+    .ctors          :
+    {
+        /* gcc uses crtbegin.o to find the start of
+           the constructors, so we make sure it is
+           first.  Because this is a wildcard, it
+           doesn't matter if the user does not
+           actually link against crtbegin.o; the
+           linker won't look for a file to match a
+           wildcard.  The wildcard also means that it
+           doesn't matter which directory crtbegin.o
+           is in.  */
         KEEP (*crtbegin.o(.ctors))
-        KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
+        KEEP (*crtbegin?.o(.ctors))
+        /* We don't want to include the .ctor section from
+           the crtend.o file until after the sorted ctors.
+           The .ctor section from the crtend file contains the
+           end of ctors marker and it must be last */
+        KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .ctors))
         KEEP (*(SORT(.ctors.*)))
-        KEEP (*crtend.o(.ctors))
-
-        . = ALIGN(4);
-        KEEP(*(.fini))
-
-        . = ALIGN(4);
-        __fini_array_start = .;
-        KEEP (*(.fini_array))
-        KEEP (*(SORT(.fini_array.*)))
-        __fini_array_end = .;
-
+        KEEP (*(.ctors))
+    } > rom
+    .dtors          :
+    {
         KEEP (*crtbegin.o(.dtors))
-        KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
+        KEEP (*crtbegin?.o(.dtors))
+        KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .dtors))
         KEEP (*(SORT(.dtors.*)))
-        KEEP (*crtend.o(.dtors))
+        KEEP (*(.dtors))
+    } > rom
+    .jcr            : { KEEP (*(.jcr)) }
+    .data.rel.ro    : { *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*) *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*) }
+    .dynamic        : { *(.dynamic) }
+    .got            : { *(.got.plt) *(.igot.plt) *(.got) *(.igot) }
 
+    /* Writable sections, must be relocated from ROM to RAM during early boot */
+    .data           :
+    {
         . = ALIGN(4);
-        _efixed = .;            /* End of text section */
-    } > rom
-
-    /* .ARM.exidx is sorted, so has to go in its own output section.  */
-    PROVIDE_HIDDEN (__exidx_start = .);
-    .ARM.exidx :
+        __data_start = .;
+        *(.data .data.* .gnu.linkonce.d.*)
+        SORT(CONSTRUCTORS)
+        . = ALIGN(4);
+    } > ram AT> rom
+    __data_load_start = LOADADDR(.data);
+    .ramfunc        :
     {
-      *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > rom
-    PROVIDE_HIDDEN (__exidx_end = .);
-
-    /* exception handling */
-    . = ALIGN(4);
-    .eh_frame :
+        . = ALIGN(4);
+        __ramfunc_start = .;
+        *(.ramfunc .ramfunc.*)
+        . = ALIGN(4);
+    } > ram AT> rom
+    __ramfunc_end = .;
+    /* Exception handling  */
+    .eh_frame       : ONLY_IF_RW { KEEP (*(.eh_frame)) *(.eh_frame.*) } > ram AT> rom
+    .gnu_extab      : ONLY_IF_RW { *(.gnu_extab) } > ram AT> rom
+    .gcc_except_table   : ONLY_IF_RW { *(.gcc_except_table .gcc_except_table.*) } > ram AT> rom
+    .exception_ranges   : ONLY_IF_RW { *(.exception_ranges .exception_ranges*) } > ram AT> rom
+    /* Thread Local Storage sections  */
+    .tdata          : { *(.tdata .tdata.* .gnu.linkonce.td.*) } > ram AT> rom
+    .tbss           : { *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon) } > ram AT> rom
+    .data1          : { *(.data1) } > ram AT> rom
+    __data_end = .;
+    _edata = .; PROVIDE (edata = .);
+    .bss (NOLOAD)   :
     {
-        KEEP (*(.eh_frame))
-    } > rom
-
-    . = ALIGN(4);
-    _etext = .;
-
-    /* stack section */
-    .stack (NOLOAD):
+        . = ALIGN(4);
+        __bss_start = .;
+        __bss_start__ = .;
+        *(.dynbss)
+        *(.bss .bss.* .gnu.linkonce.b.*)
+        *(COMMON)
+        . = ALIGN(4);
+    }
+    . = ALIGN(32 / 8);
+    _bss_end__ = . ; __bss_end__ = . ;
+    __bss_end = .;
+    __end__ = . ;
+    _end = .; PROVIDE (end = .);
+    .stack (NOLOAD) :
     {
         KEEP (*(.puf))
         . = ALIGN(8);
@@ -114,36 +248,58 @@ SECTIONS
         KEEP (*(.isr_stack))
         . = ALIGN(8);
         _estack = .;
-    } > ram
-
-    .relocate :
-    {
-        . = ALIGN(4);
-        _srelocate = .;
-        *(.ramfunc .ramfunc.*);
-        *(.data .data.*);
-        KEEP (*(.openocd .openocd.*))
-        . = ALIGN(4);
-        _erelocate = .;
-    } > ram AT> rom
-
-    /* .bss section which is used for uninitialized data */
-    .bss (NOLOAD) :
-    {
-        . = ALIGN(4);
-        _sbss = . ;
-        _szero = .;
-        *(.bss .bss.*)
-        *(COMMON)
-        . = ALIGN(4);
-        _ebss = . ;
-        _ezero = .;
-    } > ram
+    }
 
     /* heap section */
     . = ALIGN(4);
-    _sheap = . ;
-    _eheap = ORIGIN(ram) + LENGTH(ram);
+    .heap (NOLOAD) :
+    {
+        _sheap = . ;
+        _eheap = ORIGIN(ram) + LENGTH(ram) ;
+    }
+
+    /* Stabs debugging sections.  */
+    .stab          0 : { *(.stab) }
+    .stabstr       0 : { *(.stabstr) }
+    .stab.excl     0 : { *(.stab.excl) }
+    .stab.exclstr  0 : { *(.stab.exclstr) }
+    .stab.index    0 : { *(.stab.index) }
+    .stab.indexstr 0 : { *(.stab.indexstr) }
+    .comment       0 : { *(.comment) }
+    /* DWARF debug sections.
+       Symbols in the DWARF debugging sections are relative to the beginning
+       of the section so we begin them at 0.  */
+    /* DWARF 1 */
+    .debug          0 : { *(.debug) }
+    .line           0 : { *(.line) }
+    /* GNU DWARF 1 extensions */
+    .debug_srcinfo  0 : { *(.debug_srcinfo) }
+    .debug_sfnames  0 : { *(.debug_sfnames) }
+    /* DWARF 1.1 and DWARF 2 */
+    .debug_aranges  0 : { *(.debug_aranges) }
+    .debug_pubnames 0 : { *(.debug_pubnames) }
+    /* DWARF 2 */
+    .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+    .debug_abbrev   0 : { *(.debug_abbrev) }
+    .debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end ) }
+    .debug_frame    0 : { *(.debug_frame) }
+    .debug_str      0 : { *(.debug_str) }
+    .debug_loc      0 : { *(.debug_loc) }
+    .debug_macinfo  0 : { *(.debug_macinfo) }
+    /* SGI/MIPS DWARF 2 extensions */
+    .debug_weaknames 0 : { *(.debug_weaknames) }
+    .debug_funcnames 0 : { *(.debug_funcnames) }
+    .debug_typenames 0 : { *(.debug_typenames) }
+    .debug_varnames  0 : { *(.debug_varnames) }
+    /* DWARF 3 */
+    .debug_pubtypes 0 : { *(.debug_pubtypes) }
+    .debug_ranges   0 : { *(.debug_ranges) }
+    /* DWARF Extension.  */
+    .debug_macro    0 : { *(.debug_macro) }
+    .debug_addr     0 : { *(.debug_addr) }
+    .ARM.attributes 0 : { KEEP (*(.ARM.attributes)) KEEP (*(.gnu.attributes)) }
+    .note.gnu.arm.ident 0 : { KEEP (*(.note.gnu.arm.ident)) }
+    /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }
 
     /* Populate information about ram size */
     _sram = ORIGIN(ram);
