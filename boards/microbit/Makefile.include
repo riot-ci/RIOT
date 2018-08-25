@@ -21,6 +21,8 @@ ifeq (fscopy,$(PROGRAMMER))
 else ifeq (jlink,$(PROGRAMMER))
   export JLINK_DEVICE := nrf51822
   include $(RIOTMAKE)/tools/jlink.inc.mk
+else ifeq (pyocd, $(PROGRAMMER))
+  include $(RIOTMAKE)/tools/pyocd.inc.mk
 else
   $(info ERROR: invalid flash tool specified)
 endif
