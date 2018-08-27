@@ -148,8 +148,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
     /* return length when buf == NULL */
     if (buf == NULL) {
-        /* release SPI bus */
-        at86rf2xx_fb_stop(dev);
 
         /* drop packet, continue receiving */
         if (len > 0) {
@@ -157,6 +155,9 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
              * e.g RX_AACK_ON */
             at86rf2xx_set_state(dev, dev->idle_state);
         }
+
+        /* release SPI bus */
+        at86rf2xx_fb_stop(dev);
 
         return pkt_len;
     }
