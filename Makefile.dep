@@ -784,9 +784,9 @@ ifneq (,$(filter uuid,$(USEMODULE)))
   USEMODULE += random
 endif
 
-# Enable periph_gpio when periph_gpio_irq is required
+# Enable periph_gpio when periph_gpio_irq is enabled
 ifneq (,$(filter periph_gpio_irq,$(USEMODULE)))
-  USEMODULE += periph_gpio
+  FEATURES_REQUIRED += periph_gpio
 endif
 
 # always select gpio (until explicit dependencies are sorted out)
