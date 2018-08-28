@@ -96,6 +96,11 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
+#ifdef MODULE_NETSTATS_L2
+        netif->stats.rx_count++;
+        netif->stats.rx_bytes += pkt->size;
+#endif
+
         if (netif->flags & GNRC_NETIF_FLAGS_RAWMODE) {
             /* Raw mode, skip packet processing, but provide rx_info via
              * GNRC_NETTYPE_NETIF */

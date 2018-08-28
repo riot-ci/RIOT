@@ -70,6 +70,11 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
+#ifdef MODULE_NETSTATS_L2
+        netif->stats.rx_count++;
+        netif->stats.rx_bytes += pkt->size;
+#endif
+
         if (nread < bytes_expected) {
             /* we've got less then the expected packet size,
              * so free the unused space.*/
