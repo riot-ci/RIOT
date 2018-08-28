@@ -20,7 +20,6 @@
  */
 
 #include <string.h>
-
 #include "embUnit.h"
 #include "tests-lora_serialization.h"
 #include "lora_serialization.h"
@@ -205,6 +204,23 @@ static void test_lora_serialization_10(void)
     TEST_ASSERT_EQUAL_INT(lora_serialization.cursor, sizeof(expected));
 }
 
+
+static void test_lora_serialization_11(void)
+{
+    /* fail to write more than LORA_SERIALIZATION_MAX_BUFFER_SIZE bytes */
+    lora_serialization_reset(&lora_serialization);
+    uint8_t iterations = LORA_SERIALIZATION_MAX_BUFFER_SIZE /
+                         LORA_SERIALIZATION_UINT8_SIZE;
+
+    for (uint8_t i = 0; i < iterations; i++) {
+        lora_serialization_write_uint8(&lora_serialization,
+            LORA_SERIALIZATION_UINT8);
+    }
+
+    TEST_ASSERT_EQUAL_INT(lora_serialization_write_uint8(&lora_serialization,
+                            LORA_SERIALIZATION_UINT8), -ENOBUFS);
+}
+
 Test *tests_lora_serialization_all(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -218,6 +234,7 @@ Test *tests_lora_serialization_all(void)
         new_TestFixture(test_lora_serialization_08),
         new_TestFixture(test_lora_serialization_09),
         new_TestFixture(test_lora_serialization_10),
+        new_TestFixture(test_lora_serialization_11),
     };
 
     EMB_UNIT_TESTCALLER(lora_serialization_tests, setUp, tearDown, fixtures);
