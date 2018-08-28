@@ -85,9 +85,7 @@ void hwrng_read(void *buf, unsigned int num)
 
     for (unsigned count = 0; count < num; count++) {
         /* Clock the RNG LSFR once: */
-        uint32_t reg32 = soc_adc->ADCCON1 | (1UL << SOC_ADC_ADCCON1_RCTRL_S);
-        soc_adc->ADCCON1 = reg32;
-
+        soc_adc->ADCCON1 = soc_adc->ADCCON1 | (1UL << SOC_ADC_ADCCON1_RCTRL_S);
         /* Read up to 2 bytes of hwrng data: */
         b[count] = soc_adc->RNDL;
         count++;
