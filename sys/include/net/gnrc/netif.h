@@ -45,6 +45,9 @@
 #include "net/gnrc/netif/mac.h"
 #endif
 #include "net/netdev.h"
+#ifdef MODULE_NETSTATS_L2
+#include "net/netstats.h"
+#endif
 #include "rmutex.h"
 
 #ifdef __cplusplus
@@ -63,6 +66,9 @@ typedef struct {
     const gnrc_netif_ops_t *ops;            /**< Operations of the network interface */
     netdev_t *dev;                          /**< Network device of the network interface */
     rmutex_t mutex;                         /**< Mutex of the interface */
+#ifdef MODULE_NETSTATS_L2
+    netstats_t stats;                       /**< transceiver's statistics */
+#endif
 #if defined(MODULE_GNRC_IPV6) || DOXYGEN
     gnrc_netif_ipv6_t ipv6;                 /**< IPv6 component */
 #endif
