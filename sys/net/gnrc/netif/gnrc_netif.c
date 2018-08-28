@@ -1422,10 +1422,6 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             case NETDEV_EVENT_RX_COMPLETE:
                 pkt = netif->ops->recv(netif);
                 if (pkt) {
-#ifdef MODULE_NETSTATS_L2
-                    netif->stats.rx_count++;
-                    netif->stats.rx_bytes += pkt->size;
-#endif
                     _pass_on_packet(pkt);
                 }
                 break;

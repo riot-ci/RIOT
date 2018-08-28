@@ -182,6 +182,10 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             DEBUG("gnrc_netif_ethernet: read error.\n");
             goto safe_out;
         }
+#ifdef MODULE_NETSTATS_L2
+        netif->stats.rx_count++;
+        netif->stats.rx_bytes += pkt->size;
+#endif
 
         if (nread < bytes_expected) {
             /* we've got less than the expected packet size,
