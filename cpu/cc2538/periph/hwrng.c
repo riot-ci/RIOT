@@ -89,8 +89,10 @@ void hwrng_read(void *buf, unsigned int num)
         soc_adc->ADCCON1 = reg32;
 
         /* Read up to 2 bytes of hwrng data: */
-        b[count++] = soc_adc->RNDL;
-        if (count >= num) break;
-        b[count] = soc_adc->RNDH;
+        b[count] = soc_adc->RNDL;
+        count++;
+        if (count < num) {
+            b[count] = soc_adc->RNDH;
+        }
     }
 }
