@@ -26,9 +26,6 @@ extern "C" {
 #include "net/gnrc/rpl/structs.h"
 #include "net/gnrc/icmpv6.h"
 
-#define ENABLE_DEBUG    (0)
-#include "debug.h"
-
 /**
  * @brief   Checks validity of DIS control messages
  *
@@ -45,8 +42,6 @@ static inline bool gnrc_rpl_validation_DIS(gnrc_rpl_dis_t *dis, uint16_t len)
     if (expected_len <= len) {
         return true;
     }
-
-    DEBUG("RPL: wrong DIS len: %d, expected: %d\n", len, expected_len);
 
     return false;
 }
@@ -82,8 +77,6 @@ static inline bool gnrc_rpl_validation_DIO(gnrc_rpl_dio_t *dio, uint16_t len)
         return true;
     }
 
-    DEBUG("RPL: wrong DIO len: %d, expected: %d\n", len, expected_len);
-
     return false;
 }
 
@@ -108,8 +101,6 @@ static inline bool gnrc_rpl_validation_DAO(gnrc_rpl_dao_t *dao, uint16_t len)
         return true;
     }
 
-    DEBUG("RPL: wrong DAO len: %d, expected: %d\n", len, expected_len);
-
     return false;
 }
 
@@ -130,7 +121,6 @@ static inline bool gnrc_rpl_validation_DAO_ACK(gnrc_rpl_dao_ack_t *dao_ack,
     uint16_t expected_len = sizeof(*dao_ack) + sizeof(icmpv6_hdr_t);
 
     if (ipv6_addr_is_multicast(dst)) {
-        DEBUG("RPL: received DAO-ACK on multicast address\n");
         return false;
     }
 
@@ -141,8 +131,6 @@ static inline bool gnrc_rpl_validation_DAO_ACK(gnrc_rpl_dao_ack_t *dao_ack,
     if (expected_len == len) {
         return true;
     }
-
-    DEBUG("RPL: wrong DAO-ACK len: %d, expected: %d\n", len, expected_len);
 
     return false;
 }
