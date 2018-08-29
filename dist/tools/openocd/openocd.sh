@@ -145,6 +145,35 @@ test_imagefile() {
     fi
 }
 
+# Return 0 if given file is a binary
+_is_binfile() {
+    test "$2" = "bin" || {
+        test "$2" = "" && expr match "$1" '^.*\.bin$' > /dev/null ;}
+}
+
+# Outputs bank info on different lines without the '{}'
+_flash_list() {
+    # Openocd output for 'flash list' is
+    # ....
+    # {name nrf51 base 0 size 0 bus_width 1 chip_width 1} {name nrf51 base 268439552 size 0 bus_width 1 chip_width 1}
+    # ....
+    sh -c "${OPENOCD} \
+            ${OPENOCD_ADAPTER_INIT} \
+            -f '${OPENOCD_CONFIG}' \
+            -c 'flash list' \
+            -c 'shutdown'" 2>&1 | sed -n '/^{.*}$/ {s/\} /\}\n/g;s/[{}]//g;p}'
+}
+
+# Print flash address for 'bank_num' num defaults to 1
+# _flash_address  [bank_num:1]
+_flash_address() {
+    bank_num=${1:-1}
+
+    # extract 'base' value and print as hexadecimal
+    # name nrf51 base 268439552 size 0 bus_width 1 chip_width 1
+    _flash_list | awk "NR==${bank_num}"'{printf "0x%08x\n", $4}'
+}
+
 #
 # now comes the actual actions
 #
@@ -159,6 +188,21 @@ do_flash() {
             exit $RETVAL
         fi
     fi
+
+    # In case of binary file, IMAGE_OFFSET should include the flash base address
+    # This allows flashing normal binary files without env configuration
+    if _is_binfile "${IMAGE_FILE}" "${IMAGE_TYPE}"; then
+        # hardwritten to use the first bank
+        FLASH_ADDR=$(_flash_address 1)
+        echo "Binfile detected, adding ROM base address: ${FLASH_ADDR}"
+        IMAGE_TYPE=bin
+        IMAGE_OFFSET=$(printf "0x%x\n" "$((${IMAGE_OFFSET} + ${FLASH_ADDR}))")
+    fi
+
+    if [ "${IMAGE_OFFSET}" != "0" ]; then
+        echo "Flashing with IMAGE_OFFSET: ${IMAGE_OFFSET}"
+    fi
+
     # flash device
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
@@ -173,7 +217,7 @@ do_flash() {
             ${OPENOCD_PRE_FLASH_CMDS} \
             -c 'flash write_image erase \"${IMAGE_FILE}\" ${IMAGE_OFFSET} ${IMAGE_TYPE}' \
             ${OPENOCD_PRE_VERIFY_CMDS} \
-            -c 'verify_image \"${IMAGE_FILE}\"' \
+            -c 'verify_image \"${IMAGE_FILE}\" ${IMAGE_OFFSET}' \
             -c 'reset run' \
             -c 'shutdown'" &&
     echo 'Done flashing'
