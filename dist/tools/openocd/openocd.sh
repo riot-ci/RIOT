@@ -147,7 +147,8 @@ test_imagefile() {
 
 # Return 0 if given file is a binary
 _is_binfile() {
-    test "$2" = "bin" || expr match "$1" '^.*\.bin$' > /dev/null
+    test "$2" = "bin" || {
+        test "$2" = "" && expr match "$1" '^.*\.bin$' > /dev/null ;}
 }
 
 # Outputs bank info on different lines without the '{}'
