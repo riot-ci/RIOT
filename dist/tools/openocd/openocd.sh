@@ -196,6 +196,10 @@ do_flash() {
         IMAGE_OFFSET=$(printf "0x%x\n" "$((${IMAGE_OFFSET} + ${FLASH_ADDR}))")
     fi
 
+    if [ "${IMAGE_OFFSET}" != "0" ]; then
+        echo "Flashing with IMAGE_OFFSET: ${IMAGE_OFFSET}"
+    fi
+
     # flash device
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
