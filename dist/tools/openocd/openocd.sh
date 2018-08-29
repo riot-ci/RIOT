@@ -147,7 +147,7 @@ test_imagefile() {
 
 # Return 0 if given file is a binary
 _is_binfile() {
-    test "$(file -b ${IMAGE_FILE})" = "data"
+    test "$(file -b $1)" = "data"
 }
 
 # Outputs bank info on different lines without the '{}'
