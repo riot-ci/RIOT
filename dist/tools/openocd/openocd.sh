@@ -147,7 +147,7 @@ test_imagefile() {
 
 # Return 0 if given file is a binary
 _is_binfile() {
-    expr match "$1" '^.*\.bin$' > /dev/null
+    test "$2" = "bin" || expr match "$1" '^.*\.bin$' > /dev/null
 }
 
 # Outputs bank info on different lines without the '{}'
@@ -190,7 +190,7 @@ do_flash() {
 
     # In case of binary file, IMAGE_OFFSET should include the flash base address
     # This allows flashing normal binary files without env configuration
-    if _is_binfile "${IMAGE_FILE}"; then
+    if _is_binfile "${IMAGE_FILE}" "${IMAGE_TYPE}"; then
         # hardwritten to use the first bank
         FLASH_ADDR=$(_flash_address 1)
         IMAGE_OFFSET=$(printf "0x%x\n" "$((${IMAGE_OFFSET} + ${FLASH_ADDR}))")
