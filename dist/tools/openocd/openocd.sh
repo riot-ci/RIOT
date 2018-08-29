@@ -193,6 +193,8 @@ do_flash() {
     if _is_binfile "${IMAGE_FILE}" "${IMAGE_TYPE}"; then
         # hardwritten to use the first bank
         FLASH_ADDR=$(_flash_address 1)
+        echo "Binfile detected, adding ROM base address: ${FLASH_ADDR}"
+        IMAGE_TYPE=bin
         IMAGE_OFFSET=$(printf "0x%x\n" "$((${IMAGE_OFFSET} + ${FLASH_ADDR}))")
     fi
 
