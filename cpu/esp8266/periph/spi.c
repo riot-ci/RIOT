@@ -410,7 +410,7 @@ void spi_print_config(void)
 
 void spi_print_config(void)
 {
-    LOG_INFO("\tno SPI devices\n");
+    LOG_INFO("\tSPI: no devices\n");
 }
 
 #endif /* MODULE_PERIPH_SPI */

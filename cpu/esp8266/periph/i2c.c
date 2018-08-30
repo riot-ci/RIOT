@@ -637,7 +637,7 @@ void i2c_print_config(void)
 
 void i2c_print_config(void)
 {
-    LOG_INFO("\tno I2C devices\n");
+    LOG_INFO("\tI2C: no devices\n");
 }
 
 #endif /* if defined(I2C_NUMOF) && I2C_NUMOF */

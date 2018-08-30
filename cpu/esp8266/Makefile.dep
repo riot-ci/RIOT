@@ -33,7 +33,7 @@ ifneq (, $(filter vfs, $(USEMODULE)))
 endif
 
 ifneq (, $(filter newlib_syscalls_default, $(USEMODULE)))
-    USEMODULE += uart_stdio
+    USEMODULE += stdio_uart
 endif
 
 # network interface dependencies

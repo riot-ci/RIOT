@@ -232,7 +232,7 @@ void pwm_print_config(void)
 
 void pwm_print_config(void)
 {
-    LOG_INFO("\tno PWM devices\n");
+    LOG_INFO("\tPWM: no devices\n");
 }
 
 #endif /* defined(PWM_NUMOF) && PWM_NUMOF > 0 */
