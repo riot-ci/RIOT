@@ -48,16 +48,21 @@ Although the board definition works with both boards, it's important to know tha
 
 Feature                        | ESP8266 Thing | ESP8266 Thing Dev
 -------------------------------|---------------|------------------
-Battery connector              | yes           | no (can be retrofitted)
-LiPo Charger on-board          | yes           | no
 USB to Serial adapter on-board | no            | yes
-I2C pull resistors on-board    | yes (jumpable)| no
+I2C pull-up resistors on-board | yes (jumpable)| no [1]
 Programming interface          | FTDI USB to Serial adapter | USB
 Reset/Flash/Boot logic         | FTDI          | USB
+Battery connector              | yes           | no (can be retrofitted)
+LiPo Charger on-board          | yes           | no
+LED (GPIO5)                    | high active   | low active [2]
 GPIO15 broken out              | no            | yes
 CHIP_EN broken out             | yes           | no
 
 </center>
+
+[1] Although the SparkFun ESP8266 Thing Dev has no on-board I2C pull-up resistors, the I2C interface can be used because the ESP8266 SoC has built-in pull-up resistors that are activated by the I2C peripheral driver.
+
+[2] The board configuration defines high-active LEDs. If the SparkFun ESP8266 Thing Dev is used with this board configuration, the LED outputs must be inverted by the application.
 
 ### RIOT Pin Mapping
 

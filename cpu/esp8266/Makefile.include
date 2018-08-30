@@ -26,7 +26,8 @@ endif
 INCLUDES += -I$(ESP8266_NEWLIB_DIR)/$(TARGET_ARCH)/include
 INCLUDES += -I$(RIOTBOARD)/common/$(CPU)/include
 INCLUDES += -I$(RIOTCPU)/$(CPU)
-INCLUDES += -I$(RIOTCPU)/$(CPU)/espressif
+INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor
+INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor/espressif
 
 CFLAGS  += -DESP_OPEN_SDK
 CFLAGS  += -Wno-unused-parameter -Wformat=0
@@ -47,7 +48,7 @@ endif
 CFLAGS_OPT = -fzero-initialized-in-bss -O2
 
 ifeq ($(ENABLE_GDBSTUB), 1)
-    GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/esp-gdbstub
+    GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/vendor/esp-gdbstub
     CFLAGS_OPT   = -fzero-initialized-in-bss -Og -ggdb -g3
     CFLAGS      += -DGDBSTUB_FREERTOS=0
     INCLUDES    += -I$(GDBSTUB_DIR)

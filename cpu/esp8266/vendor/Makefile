@@ -1,9 +1,9 @@
-# Define the module that is built:
-MODULE = cpu
-
 # Add a list of subdirectories, that should also be built:
-DIRS += periph
-DIRS += sdk
-DIRS += vendor
+DIRS += esp
+DIRS += xtensa
+
+ifeq ($(ENABLE_GDBSTUB), 1)
+    DIRS += esp-gdbstub
+endif
 
 include $(RIOTBASE)/Makefile.base
