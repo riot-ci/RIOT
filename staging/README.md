@@ -42,6 +42,7 @@ staging/).
 - non-trivial changes SHOULD be ACK'ed by a module's maintainer(s)
 - PR's to staging/ are labeled with "staging"
 - PR's changing both staging and main tree code are *not* labeled "staging"
+- each staging module has a README.md as described below
 
 ## Procedures
 
@@ -62,6 +63,16 @@ Add a comment with a date and a reason, e.g.,
 
 If a contribution to the main tree fails to build because of a module in
 staging/, it is perfectly valid to mark that module as "broken".
+
+### README.md
+
+Each module in staging/ *must* come with a README.md that outlines what the
+module can do and what's missing. If possible, also outline what is the mode in
+which the module will be developed.
+
+For example, write "This is a driver for device foo. It works with a Nucleo
+foobar, but didn't get much testing, and only mode 42 is implemented. Please
+help improving.
 
 ### Advance to main tree
 
