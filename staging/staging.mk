@@ -1,3 +1,6 @@
+# staging.mk
+# this makefile is being included by staging/Makefile.include and staging/Makefile.dep.
+
 # list of staging modules
 STAGING_MODULES += test
 
