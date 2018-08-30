@@ -1,4 +1,3 @@
-# All board features of ESP8266 boards result directly from CPU features.
-# Therefore we just include CPU's Makefile.features here.
+# Board provides all common peripheral features defined for all ESP8266 boards
 
-include $(RIOTCPU)/esp8266/Makefile.features
+include $(RIOTBOARD)/common/esp8266/Makefile.features

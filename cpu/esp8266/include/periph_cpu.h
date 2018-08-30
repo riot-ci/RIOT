@@ -28,14 +28,14 @@ extern "C" {
 #endif
 
 /**
- * @name    Power management configuration
+ * @brief   Override the ADC resolution configuration
  * @{
  */
-#define PROVIDES_PM_SET_LOWEST
-#define PROVIDES_PM_RESTART
-#define PROVIDES_PM_OFF
+#define HAVE_ADC_RES_T
+typedef enum {
+    ADC_RES_10BIT      /* only one resolution is supported */
+} adc_res_t;
 /** @} */
-
 
 /**
  * @brief   Length of the CPU_ID in octets
@@ -133,8 +133,6 @@ typedef enum {
  * @name   I2C configuration
  * @{
  */
-#define I2C_SPEED_DEF   I2C_SPEED_FAST
-
 #define PERIPH_I2C_NEED_READ_REG
 #define PERIPH_I2C_NEED_READ_REGS
 #define PERIPH_I2C_NEED_WRITE_REG
@@ -142,48 +140,25 @@ typedef enum {
 /** @} */
 
 /**
+ * @name    Power management configuration
+ * @{
+ */
+#define PROVIDES_PM_SET_LOWEST
+#define PROVIDES_PM_RESTART
+#define PROVIDES_PM_OFF
+/** @} */
+
+/**
  * @name   SPI configuration
- *
- * Since SPI(0) is used for on-board/on-chip flash memory, it is not
- * possible to use it for peripharals. Therefore the only usable SPI
- * interface is SPI(1) which is mapped to RIOT's SPI_DEV(0).
- *
- * SPI pin configuration is fixed. Only CS signals can be defined
- * separatly.
- *
- * SPI_DEV(0).MISO    GPIO12
- * SPI_DEV(0).MOSI    GPIO13
- * SPI_DEV(0).SCK     GPIO14
- * SPI_DEV(0).CSx     GPIOn with n = 0|2|4|5|15 (+9|10 in DOUT flash mode)
  * @{
  */
 #if defined(MODULE_PERIPH_SPI)
-
-#define SPI_DEV(x)  ((unsigned int)(x+1))
-#define SPI_NUMOF   1
-
-#define SPI_MISO_GPIO   GPIO12
-#define SPI_MOSI_GPIO   GPIO13
-#define SPI_SCK_GPIO    GPIO14
-#define SPI_CS0_GPIO    GPIO15
 
 #define PERIPH_SPI_NEEDS_TRANSFER_BYTE
 #define PERIPH_SPI_NEEDS_TRANSFER_REG
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 
 #endif /* MODULE_PERIPH_SPI */
-/** @} */
-
-/**
- * @name   UART cofiguration
- *
- * The UART devices have fixed pin mappings, so all we need to do, is to specify
- * which devices we would like to use and their corresponding RX interrupts. See
- * the reference manual for the fixed pin mapping.
- *
- * @{
- */
-#define UART_NUMOF   1
 /** @} */
 
 #ifdef __cplusplus

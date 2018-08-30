@@ -19,12 +19,12 @@
  * @}
  */
 
-#if defined(MODULE_PERIPH_SPI)
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "common.h"
 #include "log.h"
+
+#if defined(MODULE_PERIPH_SPI)
 
 #include <string.h>
 
@@ -82,9 +82,9 @@ void _spi_init_internal(spi_t bus)
 
     /* check whether pins could be initialized, otherwise return, CS is not
        initialized in spi_init_pins */
-    if (_gpio_pin_usage[SPI_SCK_GPIO] != _SPI &&
-        _gpio_pin_usage[SPI_MOSI_GPIO] != _SPI &&
-        _gpio_pin_usage[SPI_MISO_GPIO] != _SPI) {
+    if (_gpio_pin_usage[SPI0_SCK_GPIO] != _SPI &&
+        _gpio_pin_usage[SPI0_MOSI_GPIO] != _SPI &&
+        _gpio_pin_usage[SPI0_MISO_GPIO] != _SPI) {
         return;
     }
 
@@ -128,17 +128,17 @@ void spi_init_pins(spi_t bus)
      * uses spi_init_cs to initialize the CS pin explicitly, or we initialize
      * the default CS when spi_aquire is used first time.
      */
-    IOMUX.PIN[_gpio_to_iomux[SPI_MISO_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
-    IOMUX.PIN[_gpio_to_iomux[SPI_MOSI_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
-    IOMUX.PIN[_gpio_to_iomux[SPI_SCK_GPIO]]  &= ~IOMUX_PIN_FUNC_MASK;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_MISO_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_MOSI_GPIO]] &= ~IOMUX_PIN_FUNC_MASK;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_SCK_GPIO]]  &= ~IOMUX_PIN_FUNC_MASK;
 
-    IOMUX.PIN[_gpio_to_iomux[SPI_MISO_GPIO]] |= iomux_func;
-    IOMUX.PIN[_gpio_to_iomux[SPI_MOSI_GPIO]] |= iomux_func;
-    IOMUX.PIN[_gpio_to_iomux[SPI_SCK_GPIO]]  |= iomux_func;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_MISO_GPIO]] |= iomux_func;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_MOSI_GPIO]] |= iomux_func;
+    IOMUX.PIN[_gpio_to_iomux[SPI0_SCK_GPIO]]  |= iomux_func;
 
-    _gpio_pin_usage [SPI_MISO_GPIO] = _SPI;  /* pin cannot be used for anything else */
-    _gpio_pin_usage [SPI_MOSI_GPIO] = _SPI;  /* pin cannot be used for anything else */
-    _gpio_pin_usage [SPI_SCK_GPIO]  = _SPI;  /* pin cannot be used for anything else */
+    _gpio_pin_usage [SPI0_MISO_GPIO] = _SPI;  /* pin cannot be used for anything else */
+    _gpio_pin_usage [SPI0_MOSI_GPIO] = _SPI;  /* pin cannot be used for anything else */
+    _gpio_pin_usage [SPI0_SCK_GPIO]  = _SPI;  /* pin cannot be used for anything else */
 }
 
 int spi_init_cs(spi_t bus, spi_cs_t cs)
@@ -183,7 +183,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     }
 
     /* if parameter cs is GPIO_UNDEF, the default CS pin is used */
-    cs = (cs == GPIO_UNDEF) ? SPI_CS0_GPIO : cs;
+    cs = (cs == GPIO_UNDEF) ? SPI0_CS0_GPIO : cs;
 
     /* if the CS pin used is not yet initialized, we do it now */
     if (_gpio_pin_usage[cs] != _SPI && spi_init_cs(bus, cs) != SPI_OK) {
@@ -395,6 +395,22 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
         DEBUG("\n");
     }
     #endif
+}
+
+void spi_print_config(void)
+{
+    LOG_INFO("\tSPI_DEV(0): ");
+    LOG_INFO("sck=%d " , SPI0_SCK_GPIO);
+    LOG_INFO("miso=%d ", SPI0_MISO_GPIO);
+    LOG_INFO("mosi=%d ", SPI0_MOSI_GPIO);
+    LOG_INFO("cs=%d\n" , SPI0_CS0_GPIO);
+}
+
+#else /* MODULE_PERIPH_SPI */
+
+void spi_print_config(void)
+{
+    LOG_INFO("\tno SPI devices\n");
 }
 
 #endif /* MODULE_PERIPH_SPI */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2018 Gunar Schorcht
+ * Copyright (C) 2018 Gunar Schorcht
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,11 @@
  */
 
 /**
- * @ingroup     boards_esp8266-esp-12x
- * @{
- *
- * @file
+ * @ingroup     boards_esp8266_sparkfun-thing
  * @brief       Board specific configuration for the Arduino API
- *
+ * @file
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef ARDUINO_BOARD_H

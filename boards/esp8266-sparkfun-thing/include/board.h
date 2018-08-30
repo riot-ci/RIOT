@@ -7,15 +7,17 @@
  */
 
 /**
- * @defgroup    boards_esp8266-sparkfun-thing ESP8266 - Sparkfun ESP8266 Thing
- * @ingroup     boards
- * @brief       Support for the Sparkfun ESP8266 Thing modules.
- * @{
- *
+ * @defgroup    boards_esp8266_sparkfun-thing SparkFun ESP8266 Thing
+ * @ingroup     boards_esp8266
+ */
+
+/**
+ * @ingroup     boards_esp8266_sparkfun-thing
+ * @brief       Board specific definitions for
+ *              SparkFun ESP8266 Thing boards.
  * @file
- * @brief       Board specific definitions for the Sparkfun ESP8266 Thing modules.
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef BOARD_H
@@ -28,23 +30,30 @@ extern "C" {
 #endif
 
 /**
- * @brief   Pin of first LED
- */
-#define LED0_PIN    GPIO5
-
-/**
- * @brief   Number of ADC inputs
- */
-#define ADC_NUMOF   1
-
-/**
- * @name   I2C configuration
+ * @name    On-board LED configuration and control definitions
  * @{
  */
-#define I2C_NUMOF   1
-#define I2C_SDA_0   GPIO2
-#define I2C_SCL_0   GPIO14
+#define LED0_PIN    GPIO5
+#define LED0_ON     (gpio_set(LED0_PIN))    /**< LED is high active */
+#define LED0_OFF    (gpio_clear(LED0_PIN))  /**< LED is high active */
 /** @} */
+
+/**
+ * @name    SPI configuration
+ * @{
+ */
+#if defined(MODULE_PERIPH_SPI) || defined(DOXYGEN)
+/**
+ * GPIO15 is not available on SparkFun Thing Dev. Therefore another GPIO is
+ * define as default CS signal for HSPI interface SPI_DEV(0).
+ */
+#ifndef SPI0_CS0_GPIO
+#define SPI0_CS0_GPIO    GPIO16  /**< HSPI / SPI_DEV(0) CS default pin, only used when cs
+                                      parameter in spi_acquire is GPIO_UNDEF */
+#endif
+#endif /* defined(MODULE_PERIPH_SPI) || defined(DOXYGEN) */
+/** @} */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

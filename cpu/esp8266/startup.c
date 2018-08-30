@@ -47,6 +47,8 @@
 #endif
 
 extern void board_init(void);
+extern void board_print_config(void);
+
 uint32_t hwrand (void);
 
 #ifdef MODULE_NEWLIB_SYSCALLS_DEFAULT
@@ -140,6 +142,9 @@ void system_init(void)
 
     /* trigger board initialization */
     board_init();
+
+    /* print the board config */
+    board_print_config();
 }
 
 
@@ -667,6 +672,9 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
 
     /* initialize the board and startup the kernel */
     board_init();
+
+    /* print the board config */
+    board_print_config();
 
     #ifdef MODULE_NEWLIB_SYSCALLS_DEFAULT
     _init();

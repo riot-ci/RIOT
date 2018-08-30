@@ -33,6 +33,8 @@
 #include "gpio_common.h"
 #include "sdk/ets.h"
 
+#if defined(PWM_NUMOF) && PWM_NUMOF > 0
+
 #define TIMER_FRC1_CLKDIV_16    BIT(2)
 #define TIMER_FRC1_CLKDIV_256   BIT(3)
 
@@ -63,7 +65,7 @@ typedef struct
 
 static _pwm_dev_t _pwm_dev;
 
-static const uint32_t _pwm_channel_gpios[] = PWM_CHANNEL_GPIOS;
+static const uint32_t _pwm_channel_gpios[] = PWM0_CHANNEL_GPIOS;
 
 static void _pwm_timer_handler (void* arg)
 {
@@ -216,3 +218,21 @@ void pwm_poweroff(pwm_t pwm)
 
     _pwm_stop ();
 }
+
+void pwm_print_config(void)
+{
+    LOG_INFO("\tPWM_DEV(0): channels=[ ");
+    for (unsigned i = 0; i < sizeof(_pwm_channel_gpios) >> 2; i++) {
+        LOG_INFO("%d ", _pwm_channel_gpios[i]);
+    }
+    LOG_INFO("]\n");
+}
+
+#else /* defined(PWM_NUMOF) && PWM_NUMOF > 0 */
+
+void pwm_print_config(void)
+{
+    LOG_INFO("\tno PWM devices\n");
+}
+
+#endif /* defined(PWM_NUMOF) && PWM_NUMOF > 0 */

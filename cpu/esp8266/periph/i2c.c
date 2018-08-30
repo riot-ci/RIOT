@@ -75,22 +75,25 @@ typedef struct
 
 static _i2c_bus_t _i2c_bus[] =
 {
-  #if defined(I2C_SDA_0) && defined(I2C_SDA_0)
+  #if defined(I2C0_SDA) && defined(I2C0_SDA)
   {
-    .sda = I2C_SDA_0,
-    .scl = I2C_SCL_0
+    .speed = I2C0_SPEED,
+    .sda = I2C0_SDA,
+    .scl = I2C0_SCL
   },
   #endif
-  #if defined(I2C_SDA_1) && defined(I2C_SDA_1)
+  #if defined(I2C1_SDA) && defined(I2C1_SDA)
   {
-    .sda = I2C_SDA_1,
-    .scl = I2C_SCL_1
+    .speed = I2C1_SPEED,
+    .sda = I2C1_SDA,
+    .scl = I2C1_SCL
   },
   #endif
-  #if defined(I2C_SDA_2) && defined(I2C_SDA_2)
+  #if defined(I2C2_SDA) && defined(I2C2_SDA)
   {
-    .sda = I2C_SDA_2,
-    .scl = I2C_SCL_2
+    .speed = I2C2_SPEED,
+    .sda = I2C2_SDA,
+    .scl = I2C2_SCL
   },
   #endif
 };
@@ -140,7 +143,7 @@ void i2c_init(i2c_t dev)
 
     CHECK_PARAM (dev < I2C_NUMOF)
 
-    if (I2C_SPEED_DEF == I2C_SPEED_HIGH) {
+    if (_i2c_bus[dev].speed == I2C_SPEED_HIGH) {
         LOG_INFO("I2C_SPEED_HIGH is not supported\n");
         return;
     }
@@ -148,8 +151,7 @@ void i2c_init(i2c_t dev)
     i2c_acquire (dev);
 
     _i2c_bus[dev].dev     = dev;
-    _i2c_bus[dev].speed   = I2C_SPEED_DEF;
-    _i2c_bus[dev].delay   =_i2c_delays[I2C_SPEED_DEF][ets_get_cpu_frequency() == 80 ? 1 : 0];
+    _i2c_bus[dev].delay   =_i2c_delays[_i2c_bus[dev].speed][ets_get_cpu_frequency() == 80 ? 1 : 0];
     _i2c_bus[dev].scl_bit = BIT(_i2c_bus[dev].scl); /* store bit mask for faster access */
     _i2c_bus[dev].sda_bit = BIT(_i2c_bus[dev].sda); /* store bit mask for faster access */
     _i2c_bus[dev].started = false; /* for handling of repeated start condition */
@@ -623,4 +625,19 @@ static /* IRAM */ int _i2c_read_byte(_i2c_bus_t* bus, uint8_t *byte, bool ack)
     return 0;
 }
 
-#endif
+void i2c_print_config(void)
+{
+    for (unsigned bus = 0; bus < I2C_NUMOF; bus++) {
+        LOG_INFO("\tI2C_DEV(%d): scl=%d sda=%d\n",
+                 bus, _i2c_bus[bus].scl, _i2c_bus[bus].sda);
+    }
+}
+
+#else /* if defined(I2C_NUMOF) && I2C_NUMOF */
+
+void i2c_print_config(void)
+{
+    LOG_INFO("\tno I2C devices\n");
+}
+
+#endif /* if defined(I2C_NUMOF) && I2C_NUMOF */

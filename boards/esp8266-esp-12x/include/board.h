@@ -7,17 +7,16 @@
  */
 
 /**
- * @defgroup    boards_esp8266-esp-12x ESP8266 - ESP-12x based modules
- * @ingroup     boards
- * @brief       Support for ESP-12x based modules.
- *
- * Compatible modules: Wemos D1 mini, NodeMCU, HUZZAH ESP8266 Breakout, ...
- * @{
- *
+ * @defgroup    boards_esp8266_esp-12x  ESP-12x based boards
+ * @ingroup     boards_esp8266
+ */
+
+/**
+ * @ingroup     boards_esp8266_esp-12x
+ * @brief       Board specific definitions for ESP-12x based boards.
  * @file
- * @brief       Board specific definitions for the ESP-12x based modules.
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef BOARD_H
@@ -30,22 +29,12 @@ extern "C" {
 #endif
 
 /**
- * @brief   Pin of first LED
- */
-#define LED0_PIN    GPIO2
-
-/**
- * @brief   Number of ADC inputs
- */
-#define ADC_NUMOF   1
-
-/**
- * @name   I2C configuration
+ * @name    On-board LED configuration and control definitions
  * @{
  */
-#define I2C_NUMOF   1
-#define I2C_SDA_0   GPIO4
-#define I2C_SCL_0   GPIO5
+#define LED0_PIN    GPIO2
+#define LED0_ON     (gpio_clear(LED0_PIN)) /**< LED is low active */
+#define LED0_OFF    (gpio_set(LED0_PIN))   /**< LED is low active */
 /** @} */
 
 #ifdef __cplusplus

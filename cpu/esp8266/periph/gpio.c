@@ -75,8 +75,6 @@ _gpio_pin_usage_t _gpio_pin_usage [GPIO_PIN_NUMOF] =
    _GPIO    /* gpio16 */
 };
 
-/* TODO GPIO16 handling */
-
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
     DEBUG("%s: %d %d\n", __func__, pin, mode);

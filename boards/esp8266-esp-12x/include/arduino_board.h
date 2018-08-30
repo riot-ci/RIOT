@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_esp8266-esp-12x
+ * @ingroup     boards_esp8266_esp-12x
  * @{
  *
  * @file

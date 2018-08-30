@@ -158,3 +158,8 @@ static void __uart_intr_enable(uart_t uart)
 
     DEBUG("%s %08x\n", __func__, UART(uart).INT_ENABLE);
 }
+
+void uart_print_config(void)
+{
+    LOG_INFO("\tUART_DEV(0): txd=%d rxd=%d\n", UART0_TXD, UART0_RXD);
+}

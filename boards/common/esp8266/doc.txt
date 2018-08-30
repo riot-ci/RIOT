@@ -1,13 +1,21 @@
-/*
- * Copyright (C) 2018 Gunar Schorcht
+/**
+ * @defgroup    boards_common_esp8266  ESP8266 Common
+ * @ingroup     boards_common
+ * @ingroup     boards_esp8266
+ * @brief       Definitions and configurations that are common for
+ *              all ESP8266 boards.
  *
- * This file is subject to the terms and conditions of the GNU Lesser
- * General Public License v2.1. See the file LICENSE in the top level
- * directory for more details.
+ * For detailed information about the ESP8266, configuring and compiling RIOT
+ * for ESP8266 boards, please refer \ref esp8266_riot.
  */
 
 /**
- * @defgroup    boards_common_esp8266 ESP8266 Common
- * @ingroup     boards_common
- * @brief       Definitions that are common for all esp8266 boards.
+ * @defgroup    boards_esp8266  ESP8266 Boards
+ * @ingroup     boards
+ * @brief       This group of boards contains the documentation
+ *              defined ESP8266 boards.
+ *
+ * @note        For detailed information about the ESP8266 SoC, the tool chain
+ *              as well as configuring and compiling RIOT for ESP8266 boards,
+ *              see \ref esp8266_riot.
  */

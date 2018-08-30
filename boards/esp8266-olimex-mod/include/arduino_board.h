@@ -7,13 +7,11 @@
  */
 
 /**
- * @ingroup     boards_esp8266-esp-12x
- * @{
- *
- * @file
+ * @ingroup     boards_esp8266_olimex-mod
  * @brief       Board specific configuration for the Arduino API
- *
+ * @file
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef ARDUINO_BOARD_H

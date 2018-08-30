@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "board.h"
 #include "common.h"
 #include "irq_arch.h"
 #include "log.h"
@@ -54,6 +55,8 @@ static uint32_t _flash_beg;  /* first byte addr of the flash drive in SPI flash 
 static uint32_t _flash_end;  /* first byte addr after the flash drive in SPI flash */
 static uint32_t _flash_size; /* resulting size of the flash drive in SPI flash */
 
+#define SPIFFS_FLASH_BEGIN 0x80000 /* TODO determine real possible value */
+
 void flash_drive_init (void)
 {
     DEBUG("%s\n", __func__);
@@ -64,7 +67,7 @@ void flash_drive_init (void)
     _flash_driver.erase = &_flash_erase;
     _flash_driver.power = &_flash_power;
 
-    _flash_beg  = 0x80000; /* TODO determine real possible value */
+    _flash_beg  = SPIFFS_FLASH_BEGIN;
     _flash_end  = flashchip->chip_size - 5 * flashchip->sector_size;
     _flash_size = _flash_end - _flash_beg;
 
@@ -89,6 +92,16 @@ static int _flash_init  (mtd_dev_t *dev)
     DEBUG("%s dev=%p driver=%p\n", __func__, dev, &_flash_driver);
 
     CHECK_PARAM_RET (dev == &_flash_dev, -ENODEV);
+
+    #ifdef SPI_FLASH_CHIP_SIZE
+    if (SPI_FLASH_CHIP_SIZE <= SPIFFS_FLASH_BEGIN) {
+    #else
+    if (flashchip->chip_size <= SPIFFS_FLASH_BEGIN) {
+    #endif
+        LOG_ERROR("Flash size is equal or less than %d Byte, "
+                  "SPIFFS cannot be used\n", SPIFFS_FLASH_BEGIN);
+        return -ENODEV;
+    }
 
     return 0;
 }

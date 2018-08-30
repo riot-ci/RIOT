@@ -22,6 +22,7 @@
  * to timer underflows, system crashes or system dead locks in worst case. */
 #define ENABLE_DEBUG 0
 #include "debug.h"
+#include "log.h"
 
 #include "xtimer.h"
 #include "periph/timer.h"
@@ -292,10 +293,18 @@ static void IRAM __timer_channel_stop (struct hw_timer_t* timer, struct hw_chann
     }
 }
 
+void timer_print_config(void)
+{
+    for (int i = 0; i < HW_TIMER_NUMOF; i++) {
+        LOG_INFO("\tTIMER_DEV(%d): %d channel(s)\n", i,
+                 sizeof(timers[i].channels) / sizeof(struct hw_channel_t));
+    }
+}
+
 #else /* MODULE_ESP_SW_TIMER */
 
 #ifdef SDK_NOT_USED
-#error Software timers are not available in Non-SDK version
+#error Software timers are not available in Non-SDK version, use USE_SDK=1 to enable SDK-version.
 #else
 
 /* software timer based on os_timer_arm functions */
@@ -546,6 +555,14 @@ static void IRAM __timer_channel_stop (struct phy_timer_t* timer, struct phy_cha
     else {
         /* otherwise deactivate the channel */
         channel->used = false;
+    }
+}
+
+void timer_print_config(void)
+{
+    for (int i = 0; i < OS_TIMER_NUMOF; i++) {
+        LOG_INFO("\tTIMER_DEV(%d): %d channel(s)\n", i,
+                 sizeof(timers[i].channels) / sizeof(struct phy_channel_t));
     }
 }
 

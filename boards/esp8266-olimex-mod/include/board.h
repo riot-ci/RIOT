@@ -7,15 +7,17 @@
  */
 
 /**
- * @defgroup    boards_esp8266-olimex-mod ESP8266 - Olimex MOD-WIFI-ESP8266-DEV
- * @ingroup     boards
- * @brief       Support for the Olimex MOD-WIFI-ESP8266-DEV module.
- * @{
- *
+ * @defgroup    boards_esp8266_olimex-mod Olimex MOD-WIFI-ESP8266-DEV
+ * @ingroup     boards_esp8266
+ */
+
+/**
+ * @ingroup     boards_esp8266_olimex-mod
+ * @brief       Board specific definitions for
+ *              Olimex MOD-WIFI-ESP8266-DEV boards.
  * @file
- * @brief       Board specific definitions for the Olimex MOD-WIFI-ESP8266-DEV module.
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
+ * @{
  */
 
 #ifndef BOARD_H
@@ -28,22 +30,12 @@
 #endif
 
 /**
- * @brief   Pin of first LED
- */
-#define LED0_PIN    GPIO1
-
-/**
- * @brief   Number of ADC inputs
- */
-#define ADC_NUMOF   1
-
-/**
- * @name   I2C configuration
+ * @name    On-board LED configuration and control definitions
  * @{
  */
-#define I2C_NUMOF   1
-#define I2C_SDA_0   GPIO2
-#define I2C_SCL_0   GPIO14
+#define LED0_PIN    GPIO1
+#define LED0_ON     (gpio_clear(LED0_PIN))  /**< LED is low active */
+#define LED0_OFF    (gpio_set(LED0_PIN))    /**< LED is low active */
 /** @} */
 
 #ifdef __cplusplus

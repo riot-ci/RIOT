@@ -18,23 +18,13 @@
  * @author      Gunar Schorcht <gunar@schorcht.net>
  */
 
-#include "espressif/eagle_soc.h"
 #include "board_common.h"
+#include "log.h"
 #include "periph/gpio.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void esp8266_led_on_off (uint8_t led, uint8_t value)
-{
-    GPIO_REG_WRITE((value ? GPIO_OUT_W1TC_ADDRESS : GPIO_OUT_W1TS_ADDRESS), BIT(led));
-}
-
-void esp8266_led_toggle (uint8_t led)
-{
-    esp8266_led_on_off (led, ((GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT(led))) ? 1 : 0);
-}
 
 void board_init(void)
 {
@@ -46,6 +36,41 @@ void board_init(void)
     gpio_init (LED1_PIN, GPIO_OUT);
     LED1_OFF;
     #endif
+    #ifdef LED2_PIN
+    gpio_init (LED2_PIN, GPIO_OUT);
+    LED2_OFF;
+    #endif
+}
+
+extern void pwm_print_config(void);
+extern void i2c_print_config(void);
+extern void spi_print_config(void);
+extern void uart_print_config(void);
+extern void timer_print_config(void);
+
+void board_print_config (void)
+{
+    LOG_INFO("\nBoard configuration:\n");
+
+    pwm_print_config();
+    i2c_print_config();
+    spi_print_config();
+    uart_print_config();
+    timer_print_config();
+
+    LOG_INFO("\tLED: pins=[ ");
+    #ifdef LED0_PIN
+    LOG_INFO("%d ", LED0_PIN);
+    #endif
+    #ifdef LED1_PIN
+    LOG_INFO("%d ", LED1_PIN);
+    #endif
+    #ifdef LED2_PIN
+    LOG_INFO("%d ", LED2_PIN);
+    #endif
+    LOG_INFO("]\n");
+
+    LOG_INFO("\n\n");
 }
 
 #ifdef __cplusplus
