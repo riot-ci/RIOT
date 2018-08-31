@@ -24,6 +24,9 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+#define SRF04_DISTANCE  (584U)
+#define SRF04_SAMPLE_PERIOD (50U * US_PER_MS)
+
 static void _cb(void *arg)
 {
     uint32_t t = xtimer_now_usec();
@@ -90,4 +93,3 @@ int srf04_get_distance(const srf04_t* dev)
     }
     return dev->distance;
 }
-

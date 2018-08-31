@@ -32,20 +32,6 @@ extern "C" {
 #endif
 
 /**
- * @brief defines distance divisor
- *
- * @note for inch define "SRF04_DISTANCE (1480U)"
- */
-#ifndef SRF04_DISTANCE
-#define SRF04_DISTANCE  (584U)
-#endif
-
-/**
- * @brief defines sensor required sample time
- */
-#define SRF04_SAMPLE_PERIOD (50U * US_PER_MS)
-
-/**
  * @brief   Status and error return codes
  */
 enum {
@@ -105,6 +91,8 @@ int srf04_read(const srf04_t* dev);
 
 /**
  * @brief   Convenience function triggers a measurement and returns distance
+ *
+ * @note    This function will return after 50 ms once new data is available
  *
  * @param[in]  dev      device descriptor of sensor
  *

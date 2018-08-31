@@ -30,10 +30,13 @@ int main(void)
     puts("SRF04 range finder example");
 
     srf04_t dev;
-    srf04_init(&dev, &srf04_params[0]);
-    int distance;
+    if (srf04_init(&dev, &srf04_params[0]) != SRF04_OK) {
+        puts("Error: initializing");
+        return 1;
+    }
 
     while (1) {
+        int distance;
         distance = srf04_get_distance(&dev);
         if (distance < SRF04_OK) {
             puts("Error: no valid data available");
