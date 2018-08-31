@@ -603,7 +603,7 @@ size_t coap_opt_put_string(uint8_t *buf, uint16_t lastonum, uint16_t optnum,
 
         part_len = (uint8_t *)uripos - part_start;
 
-        if (part_len) {
+        if (part_len || (separator == '/')) {
             bufpos += coap_put_option(bufpos, lastonum, optnum, part_start, part_len);
             lastonum = optnum;
         }
