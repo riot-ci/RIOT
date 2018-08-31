@@ -595,7 +595,7 @@ size_t coap_put_option_uri(uint8_t *buf, uint16_t lastonum, const char *uri, uin
 
         part_len = (uint8_t *)uripos - part_start;
 
-        if (part_len) {
+        if (part_len || (separator == '/')) {
             bufpos += coap_put_option(bufpos, lastonum, optnum, part_start, part_len);
             lastonum = optnum;
         }
