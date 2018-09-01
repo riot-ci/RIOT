@@ -26,13 +26,13 @@
  *    EEPROM_RESERV_CPU_LOW
  *    EEPROM_RESERV_BOARD_LOW
  *    Registry magic number ("RIOTREG\0")
- *    Registry end location info
- *    Registry entry 1 data location info
- *    Registry entry 1 name (null terminated)
- *    Registry entry 2 data location info
+ *    Registry end pointer
+ *    Registry entry 1 meta-data length (1 byte)
+ *    Registry entry 1 name (unterminated)
+ *    Registry entry 1 data pointer
+ *    Registry entry 2 meta-data length
  *    Registry entry 2 name
- *    ...
- *    Registry start of unused space location info
+ *    Registry entry 2 data pointer
  *    ... (new registry meta-data may be added in ascending order)
  *    unused space
  *    ... (new data locations may be added in descending order)
@@ -40,6 +40,9 @@
  *    Entry 1 data
  *    EEPROM_RESERV_BOARD_HI
  *    EEPROM_RESERV_CPU_HI
+ *
+ * Pointer length is dependent on the size of the available EEPROM (see
+ * EEPREG_PTR_LEN below).
  *
  * @{
  *
@@ -98,16 +101,16 @@ extern "C" {
 #endif
 
 /**
- * @brief   Size in bytes of location meta-data entries in EEPROM
+ * @brief   Size in bytes of pointer meta-data in EEPROM
  */
 #if (EEPROM_SIZE > 0x1000000)
-#define EEPREG_LOC_LEN    (4U)
+#define EEPREG_PTR_LEN    (4U)
 #elif (EEPROM_SIZE > 0x10000)
-#define EEPREG_LOC_LEN    (3U)
+#define EEPREG_PTR_LEN    (3U)
 #elif (EEPROM_SIZE > 0x100)
-#define EEPREG_LOC_LEN    (2U)
+#define EEPREG_PTR_LEN    (2U)
 #else
-#define EEPREG_LOC_LEN    (1U)
+#define EEPREG_PTR_LEN    (1U)
 #endif
 
 /**
@@ -160,7 +163,8 @@ int eepreg_read(uint32_t *pos, const char *name);
  *
  * This ignores existing meta-data and always makes a new entry in the
  * registry. Typical use should be through eepreg_add and not eepreg_write.
- * Mainly intended for use by migration utilities.
+ * If multiple entries with the same name exist, eepreg functions will find
+ * the oldest. Mainly intended for use by migration utilities.
  *
  * @param[out] pos    pointer to position variable
  * @param[in] name    name of entry to write
@@ -192,8 +196,11 @@ int eepreg_rm(const char *name);
 /**
  * @brief   Iterate over meta-data entries in EEPROM registry
  *
- * This executes a callback over each name in the EEPROM registry. Mainly
- * intended for use by migration utilities.
+ * This executes a callback over each name in the EEPROM registry. Note: it is
+ * safe for the callback to remove the entry it is called with, or to add new
+ * entries. The intended work-flow for migration is to: iterate over each entry,
+ * check to see if migration is needed, duplicate using eepreg_write if needed,
+ * migrate data to duplicate entry, then delete old entry using eepreg_rm.
  *
  * @param[in] cb     callback to iterate over entries
  * @param[in] arg    argument for cb
@@ -218,7 +225,7 @@ int eepreg_check(void);
  * @brief   Clear existing meta-data registry
  *
  * This removes any existing meta-data registry by writing a new registry with
- * no entries. Mainly intended for use by migration utilities.
+ * no entries.
  *
  * @return    0 on success
  * @return    -EIO on EEPROM I/O error
