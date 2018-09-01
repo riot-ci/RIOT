@@ -178,7 +178,7 @@ int main(void)
     printf("free ");
     ret = eepreg_free(&tmp2);
     if (ret < 0
-        || tmp1 != (tmp2 + ENT1_SIZE + sizeof(ENT1_NAME) + EEPREG_LOC_LEN)) {
+        || tmp1 != (tmp2 + ENT1_SIZE + sizeof(ENT1_NAME) + EEPREG_PTR_LEN)) {
 
         puts("[FAILED]");
         return 1;
