@@ -299,7 +299,11 @@ static inline int sercom_id(void *sercom)
 #if defined(CPU_FAM_SAMD21)
     return ((((uint32_t)sercom) >> 10) & 0x7) - 2;
 #elif defined(CPU_FAM_SAML21)
-    return ((((uint32_t)sercom) >> 10) & 0x7);
+    if (((uint32_t)sercom) == ((uint32_t)SERCOM5) {
+        return 5;
+    } else {
+        return ((((uint32_t)sercom) >> 10) & 0x7);
+    }
 #endif
 }
 
