@@ -35,7 +35,7 @@
 #include "debug.h"
 
 /*
-* Since this MCU does not feature a software reset, the watchdog timer
+* Since atmega MCUs do not feature a software reset, the watchdog timer
 * is being used. It will be set to the shortest time and then force a
 * reset. Therefore the MCUSR register needs to be resetted as fast as
 * possible. In this case in the bootloader already. In order to regain
