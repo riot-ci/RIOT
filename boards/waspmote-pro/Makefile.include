@@ -1,9 +1,10 @@
 # define the cpu used by the waspmote pro board
 export CPU = atmega1281
 
-# TODO is there a bootloader on the flash ? I do not understand...
+# Bootloader uses stk500v1 protocol, which usually is implemented in
+# bootloaders of 2K size.
 # http://www.libelium.com/products/waspmote/hardware/
-# ARDUINO_BOOTLOADER_SIZE = 2K
+ARDUINO_BOOTLOADER_SIZE = 2K
 ROM_RESERVED = $(ARDUINO_BOOTLOADER_SIZE)
 
 # configure the terminal program
