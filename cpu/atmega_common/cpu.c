@@ -34,17 +34,6 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#if !defined (CPU_ATMEGA256RFR2)
-/**
- * @brief Initialize the CPU
- */
-void cpu_init(void)
-{
-    /* trigger static peripheral initialization */
-    periph_init();
-}
-
-#else
 /*
 * Since this MCU does not feature a software reset, the watchdog timer
 * is being used. It will be set to the shortest time and then force a
@@ -58,6 +47,7 @@ void cpu_init(void)
 uint8_t mcusr_mirror __attribute__((section(".noinit")));
 uint8_t soft_rst __attribute__((section(".noinit")));
 void get_mcusr(void) __attribute__((naked)) __attribute__((section(".init0")));
+
 void get_mcusr(void)
 {
     /* save the reset flags passed from the bootloader */
@@ -83,9 +73,11 @@ void _reset_cause(void)
             DEBUG("Watchdog reset!\n");
         }
     }
+#if !defined (CPU_ATMEGA328P)
     if (mcusr_mirror & (1 << JTRF)) {
         DEBUG("JTAG reset!\n");
     }
+#endif
 }
 
 void cpu_init(void)
@@ -100,7 +92,7 @@ void cpu_init(void)
     /* set the Division factor to 1 results in divisor 2 for internal Oscillator
      * So FCPU = 8MHz
      *
-     * Attention!
+     * Attention for atmega256rfr2!
      * The CPU can not be used with the external xtal oscillator if the core
      * should be put in sleep while the transceiver is in rx mode.
      *
@@ -116,6 +108,7 @@ void cpu_init(void)
     periph_init();
 }
 
+#if defined (CPU_ATMEGA256RFR2)
 /* This is a vector which is aliased to __vector_default,
  * the vector executed when an ISR fires with no accompanying
  * ISR handler. This may be used along with the ISR() macro to
@@ -127,19 +120,19 @@ void cpu_init(void)
  * EIFR – External Interrupt Flag Register
  * PCIFR – Pin Change Interrupt Flag Register
  */
-ISR(BADISR_vect){
-
+ISR(BADISR_vect)
+{
     _reset_cause();
 
     printf_P(PSTR("FATAL ERROR: BADISR_vect called, unprocessed Interrupt.\n"
                   "STOP Execution.\n"));
 
     printf("IRQ_STATUS %#02x\nIRQ_STATUS1 %#02x\n",
-            (unsigned int)IRQ_STATUS, (unsigned int)IRQ_STATUS1 );
+            (unsigned int)IRQ_STATUS, (unsigned int)IRQ_STATUS1);
 
-    printf("SCIRQS %#02x\nBATMON %#02x\n", (unsigned int)SCIRQS, (unsigned int)BATMON );
+    printf("SCIRQS %#02x\nBATMON %#02x\n", (unsigned int)SCIRQS, (unsigned int)BATMON);
 
-    printf("EIFR %#02x\nPCIFR %#02x\n", (unsigned int)EIFR, (unsigned int)PCIFR );
+    printf("EIFR %#02x\nPCIFR %#02x\n", (unsigned int)EIFR, (unsigned int)PCIFR);
 
     /* White LED light is used to signal ERROR. */
     LED_PORT |= (LED2_MASK | LED1_MASK | LED0_MASK);
@@ -147,9 +140,10 @@ ISR(BADISR_vect){
     while (1) {}
 }
 
-ISR(BAT_LOW_vect, ISR_BLOCK){
+ISR(BAT_LOW_vect, ISR_BLOCK)
+{
     __enter_isr();
-    DEBUG("BAT_LOW \n");
+    DEBUG("BAT_LOW\n");
     __exit_isr();
 }
 #endif
