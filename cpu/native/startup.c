@@ -54,7 +54,9 @@ typedef enum {
     _STDIOTYPE_FILE,        /**< redirect to file */
 } _stdiotype_t;
 
+#ifdef MODULE_PERIPH_TIMER
 extern int native_timer_scale;
+#endif
 
 int _native_null_in_pipe[2];
 int _native_null_out_file;
@@ -410,7 +412,9 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
                 _native_rng_mode = 1;
                 break;
             case 't':
+#ifdef MODULE_PERIPH_TIMER
                 native_timer_scale = atoi(optarg);
+#endif
                 break;
             case 'd':
                 dmn = true;
