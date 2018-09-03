@@ -147,8 +147,10 @@ test_imagefile() {
 
 # Return 0 if given file is a binary
 _is_binfile() {
-    test "$2" = "bin" || {
-        test "$2" = "" && expr match "$1" '^.*\.bin$' > /dev/null ;}
+    local firmware="$1"
+    local firmware_type="$2"
+    test "${firmware_type}" = "bin" || {
+        test "${firmware_type}" = "" && expr match "${firmware}" '^.*\.bin$' > /dev/null ;}
 }
 
 # Outputs bank info on different lines without the '{}'
