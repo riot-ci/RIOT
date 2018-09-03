@@ -145,12 +145,18 @@ test_imagefile() {
     fi
 }
 
-# Return 0 if given file is a binary
+_has_bin_extension() {
+    # The regex need to be without quotes
+    local firmware=$1
+    [[ "${firmware}" =~ ^.*\.bin$ ]]
+}
+
+# Return 0 if given file should be considered a binary
 _is_binfile() {
     local firmware="$1"
     local firmware_type="$2"
-    test "${firmware_type}" = "bin" || {
-        test "${firmware_type}" = "" && expr match "${firmware}" '^.*\.bin$' > /dev/null ;}
+    [[ "${firmware_type}" = "bin" ]] || { \
+        [[ -z "${firmware_type}" ]] && _has_bin_extension "${firmware}"; }
 }
 
 # Outputs bank info on different lines without the '{}'
