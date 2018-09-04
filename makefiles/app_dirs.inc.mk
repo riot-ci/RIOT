@@ -10,5 +10,5 @@ APPLICATION_DIRS := $(sort $(patsubst ./%,%,$(patsubst %/,%,$(dir $(wildcard \
 	$(RIOTBASE)/tests/*/Makefile    \
 	)))))
 
-info-apps:
+info-applications:
 	@for dir in $(APPLICATION_DIRS); do echo $$dir; done
