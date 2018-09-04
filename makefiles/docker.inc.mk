@@ -1,5 +1,6 @@
 export DOCKER_IMAGE ?= riot/riotbuild:latest
 export DOCKER_BUILD_ROOT ?= /data/riotbuild
+DOCKER_RIOTBASE ?= $(DOCKER_BUILD_ROOT)/riotbase
 export DOCKER_FLAGS ?= --rm
 # List of Docker-enabled make goals
 export DOCKER_MAKECMDGOALS_POSSIBLE = \
@@ -109,7 +110,7 @@ ETC_LOCALTIME = $(realpath /etc/localtime)
 ..in-docker-container:
 	@$(COLOR_ECHO) '$(COLOR_GREEN)Launching build container using image "$(DOCKER_IMAGE)".$(COLOR_RESET)'
 	$(DOCKER) run $(DOCKER_FLAGS) -t -u "$$(id -u)" \
-	    -v '$(RIOTBASE):$(DOCKER_BUILD_ROOT)/riotbase' \
+	    -v '$(RIOTBASE):$(DOCKER_RIOTBASE)' \
 	    -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu' \
 	    -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard' \
 	    -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake' \
