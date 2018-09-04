@@ -3,8 +3,8 @@ export CPU = atmega1284p
 
 # Found by checking fuse settings (2048 words so 4KB)
 # https://www.microchip.com/DevelopmentTools/ProductDetails/atmega1284p-xpld
-_BOOTLOADER_SIZE = 2K
-ROM_RESERVED = $(_BOOTLOADER_SIZE)
+BOOTLOADER_SIZE = 4K
+ROM_RESERVED = $(BOOTLOADER_SIZE)
 
 # configure the terminal program
 export PORT_LINUX  ?= /dev/ttyACM0
