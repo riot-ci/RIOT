@@ -84,10 +84,27 @@ DOCKER_OVERRIDE_CMDLINE := $(strip $(DOCKER_OVERRIDE_CMDLINE))
 # Overwrite if you want to use `docker` with sudo
 DOCKER ?= docker
 
+# Resolve symlink of /etc/localtime to its real path
+# This is a workaround for docker on macOS, for more information see:
+# https://github.com/docker/for-mac/issues/2396
+ETC_LOCALTIME = $(realpath /etc/localtime)
+
 
 DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
 
-# Mounted volumes and exported environment variables
+# Directory mapping in docker and directories environment variable configuration
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject'
+DOCKER_VOLUMES_AND_ENV += -v '$(ETC_LOCALTIME):/etc/localtime:ro'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject'
 
 # Add GIT_CACHE_DIR if the directory exists
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
@@ -97,11 +114,6 @@ DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-e GIT_CACHE_DIR=$(D
 _is_git_worktree = $(shell grep '^gitdir: ' $(RIOTBASE)/.git 2>/dev/null)
 GIT_WORKTREE_COMMONDIR = $(abspath $(shell git rev-parse --git-common-dir))
 DOCKER_VOLUMES_AND_ENV += $(if $(_is_git_worktree),-v $(GIT_WORKTREE_COMMONDIR):$(GIT_WORKTREE_COMMONDIR))
-
-# Resolve symlink of /etc/localtime to its real path
-# This is a workaround for docker on macOS, for more information see:
-# https://github.com/docker/for-mac/issues/2396
-ETC_LOCALTIME = $(realpath /etc/localtime)
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
@@ -113,18 +125,6 @@ ETC_LOCALTIME = $(realpath /etc/localtime)
 ..in-docker-container:
 	@$(COLOR_ECHO) '$(COLOR_GREEN)Launching build container using image "$(DOCKER_IMAGE)".$(COLOR_RESET)'
 	$(DOCKER) run $(DOCKER_FLAGS) -t -u "$$(id -u)" \
-	    -v '$(RIOTBASE):$(DOCKER_RIOTBASE)' \
-	    -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject' \
-	    -v '$(ETC_LOCALTIME):/etc/localtime:ro' \
-	    -e 'RIOTBASE=$(DOCKER_BUILD_ROOT)/riotbase' \
-	    -e 'CCACHE_BASEDIR=$(DOCKER_BUILD_ROOT)/riotbase' \
-	    -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject' \
 	    $(DOCKER_VOLUMES_AND_ENV) \
 	    $(DOCKER_ENVIRONMENT_CMDLINE) \
 	    -w '$(DOCKER_APPDIR)' \
