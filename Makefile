@@ -20,11 +20,11 @@ docclean:
 
 clean:
 	@echo "Cleaning all build products for the current board"
-	@for dir in $(APP_DIRS); do "$(MAKE)" -C$$dir clean; done
+	@for dir in $(APPLICATION_DIRS); do "$(MAKE)" -C$$dir clean; done
 
 distclean: docclean
 	@echo "Cleaning all build products"
-	@for dir in $(APP_DIRS); do "$(MAKE)" -C$$dir distclean; done
+	@for dir in $(APPLICATION_DIRS); do "$(MAKE)" -C$$dir distclean; done
 
 welcome:
 	@echo "Welcome to RIOT - The friendly OS for IoT!"
