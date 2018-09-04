@@ -22,7 +22,7 @@ export BAUD = 38400
 export PROGRAMMER ?= wiring
 
 # From current fuse configuration
-ARDUINO_BOOTLOADER_SIZE = 4K
-ROM_RESERVED = $(ARDUINO_BOOTLOADER_SIZE)
+BOOTLOADER_SIZE = 4K
+ROM_RESERVED = $(BOOTLOADER_SIZE)
 
 include $(RIOTBOARD)/common/arduino-atmega/Makefile.include
