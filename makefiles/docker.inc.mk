@@ -219,6 +219,29 @@ DOCKER_VOLUMES_AND_ENV += $(call docker_volume_and_env,RIOTMAKE,,riotmake)
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-e GIT_CACHE_DIR=$(DOCKER_BUILD_ROOT)/gitcache)
 
+# Remap external module directories.
+#
+# This remaps directories from EXTERNAL_MODULE_DIRS to subdirectories of
+# $(DOCKER_BUILD_ROOT)/external
+#
+# Warning: They must all have different basenames
+#
+# As EXTERNAL_MODULE_DIRS should ignore the 'Makefile' configuration, they must
+# be set using command line variable settings to not be modified within docker.
+DOCKER_VOLUMES_AND_ENV += $(call docker_volumes_mapping,$(EXTERNAL_MODULE_DIRS),$(DOCKER_BUILD_ROOT)/external,)
+DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+
+# External module directories sanity check:
+#
+# Detect if there are directories with the same name as it is not handled.
+# Having EXTERNAL_MODULE_DIRS = relative/to/dir/name \
+#                               another/directory/also/called/name
+# Would lead to both being mapped to '$(DOCKER_BUILD_ROOT)/external/name
+ifneq ($(words $(sort $(notdir $(EXTERNAL_MODULE_DIRS)))),$(words $(sort $(EXTERNAL_MODULE_DIRS))))
+  $(warning EXTERNAL_MODULE_DIRS: $(EXTERNAL_MODULE_DIRS))
+  $(error Mapping EXTERNAL_MODULE_DIRS in docker is not supported for directories with the same name)
+endif
+
 # Handle worktree by mounting the git common dir in the same location
 _is_git_worktree = $(shell grep '^gitdir: ' $(RIOTBASE)/.git 2>/dev/null)
 GIT_WORKTREE_COMMONDIR = $(abspath $(shell git rev-parse --git-common-dir))
