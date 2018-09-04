@@ -83,6 +83,39 @@ DOCKER_OVERRIDE_CMDLINE := $(strip $(DOCKER_OVERRIDE_CMDLINE))
 # Overwrite if you want to use `docker` with sudo
 DOCKER ?= docker
 
+
+# # # # # # # # # # # # # # # #
+# Directory mapping functions #
+# # # # # # # # # # # # # # # #
+
+# terminating '/' in patsubst is important to match $1 == $(RIOTBASE)
+define dir_is_outside_riotbase
+$(filter $1/,$(patsubst $(RIOTBASE)/%,%,$1/))
+endef
+
+# Mapping of directores inside docker
+#
+# $1 = directories (can be a list)
+# $2 = docker remap base directory (defaults to DOCKER_BUILD_ROOT)
+# $3 = mapname (defaults to $(notdir $d))
+#
+# For each directory:
+#  * if inside, returns  $(DOCKER_RIOTBASE)/<relative_path_in_riotbase>
+#  * if outside, returns <docker remapbase>/<mapname>
+#
+# From env:
+#  * RIOTBASE
+#  * DOCKER_RIOTBASE
+#  * DOCKER_BUILD_ROOT
+#
+path_in_docker = $(foreach d,$1,$(strip $(call _dir_path_in_docker,$d,$2,$3)))
+define _dir_path_in_docker
+      $(if $(call dir_is_outside_riotbase,$1),\
+        $(if $2,$2,$(DOCKER_BUILD_ROOT))/$(if $3,$3,$(notdir $1)),\
+        $(patsubst %/,%,$(patsubst $(RIOTBASE)/%,$(DOCKER_RIOTBASE)/%,$1/)))
+endef
+
+
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
 # order to only perform building inside the container and defer executing any
