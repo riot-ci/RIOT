@@ -152,6 +152,16 @@ DOCKER_VOLUMES_AND_ENV += $(call docker_volume_and_env,RIOTCPU,,riotcpu)
 DOCKER_VOLUMES_AND_ENV += $(call docker_volume_and_env,RIOTBOARD,,riotboard)
 DOCKER_VOLUMES_AND_ENV += $(call docker_volume_and_env,RIOTMAKE,,riotmake)
 
+# Remap external module directories. Not handled if they have common dirnames
+ifneq ($(words $(sort $(notdir $(EXTERNAL_MODULE_DIRS)))),$(words $(sort $(EXTERNAL_MODULE_DIRS))))
+  $(warnings EXTERNAL_MODULE_DIRS: $(EXTERNAL_MODULE_DIRS))
+  $(error Mapping EXTERNAL_MODULE_DIRS in docker is not supported for directories with the same name)
+endif
+# EXTERNAL_MODULE_DIRS should ignore the 'Makefile' configuration, so set
+# variables using command line arguments
+DOCKER_VOLUMES_AND_ENV += $(call docker_volumes_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
