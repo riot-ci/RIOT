@@ -86,6 +86,20 @@ DOCKER ?= docker
 
 DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
 
+# Directory mapping in docker and directories environment variable configuration
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject'
+DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject'
+
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
@@ -97,18 +111,7 @@ DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
 ..in-docker-container:
 	@$(COLOR_ECHO) '$(COLOR_GREEN)Launching build container using image "$(DOCKER_IMAGE)".$(COLOR_RESET)'
 	$(DOCKER) run $(DOCKER_FLAGS) -t -u "$$(id -u)" \
-	    -v '$(RIOTBASE):$(DOCKER_RIOTBASE)' \
-	    -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject' \
-	    -v /etc/localtime:/etc/localtime:ro \
-	    -e 'RIOTBASE=$(DOCKER_RIOTBASE)' \
-	    -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)' \
-	    -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject' \
+	    $(DOCKER_VOLUMES_AND_ENV) \
 	    $(DOCKER_ENVIRONMENT_CMDLINE) \
 	    -w '$(DOCKER_APPDIR)' \
 	    '$(DOCKER_IMAGE)' make $(DOCKER_MAKECMDGOALS) $(DOCKER_OVERRIDE_CMDLINE)
