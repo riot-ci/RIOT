@@ -116,6 +116,9 @@ define _dir_path_in_docker
 endef
 
 
+DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
+
+
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
 # order to only perform building inside the container and defer executing any
@@ -139,5 +142,5 @@ endef
 	    -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake' \
 	    -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject' \
 	    $(DOCKER_ENVIRONMENT_CMDLINE) \
-	    -w '$(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)' \
+	    -w '$(DOCKER_APPDIR)' \
 	    '$(DOCKER_IMAGE)' make $(DOCKER_MAKECMDGOALS) $(DOCKER_OVERRIDE_CMDLINE)
