@@ -57,8 +57,6 @@
 #define GPIO_EXT_INT_NUMOF      (2U)
 #endif
 
-static gpio_isr_ctx_t config[GPIO_EXT_INT_NUMOF];
-
 /**
  * @brief     Extract the pin number of the given pin
  */
@@ -110,21 +108,6 @@ static inline uint16_t _pin_addr(gpio_t pin)
     return (_port_addr(pin) - 0x02);
 }
 
-static inline int8_t _int_num(gpio_t pin)
-{
-    uint8_t num;
-    const gpio_t ext_ints[GPIO_EXT_INT_NUMOF] = CPU_ATMEGA_EXT_INTS;
-
-    /* find pin in ext_ints array to get the interrupt number */
-    for (num = 0; num < GPIO_EXT_INT_NUMOF; num++) {
-        if (pin == ext_ints[num]) {
-            return num;
-        }
-    }
-
-    return -1;
-}
-
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
     switch (mode) {
@@ -143,6 +126,60 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     }
 
     return 0;
+}
+
+int gpio_read(gpio_t pin)
+{
+    return (_SFR_MEM8(_pin_addr(pin)) & (1 << _pin_num(pin)));
+}
+
+void gpio_set(gpio_t pin)
+{
+    _SFR_MEM8(_port_addr(pin)) |= (1 << _pin_num(pin));
+}
+
+void gpio_clear(gpio_t pin)
+{
+    _SFR_MEM8(_port_addr(pin)) &= ~(1 << _pin_num(pin));
+}
+
+void gpio_toggle(gpio_t pin)
+{
+    if (gpio_read(pin)) {
+        gpio_clear(pin);
+    }
+    else {
+        gpio_set(pin);
+    }
+}
+
+void gpio_write(gpio_t pin, int value)
+{
+    if (value) {
+        gpio_set(pin);
+    }
+    else {
+        gpio_clear(pin);
+    }
+}
+
+#ifdef MODULE_PERIPH_GPIO_IRQ
+static gpio_isr_ctx_t config[GPIO_EXT_INT_NUMOF];
+
+
+static inline int8_t _int_num(gpio_t pin)
+{
+    uint8_t num;
+    const gpio_t ext_ints[GPIO_EXT_INT_NUMOF] = CPU_ATMEGA_EXT_INTS;
+
+    /* find pin in ext_ints array to get the interrupt number */
+    for (num = 0; num < GPIO_EXT_INT_NUMOF; num++) {
+        if (pin == ext_ints[num]) {
+            return num;
+        }
+    }
+
+    return -1;
 }
 
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
@@ -207,41 +244,6 @@ void gpio_irq_disable(gpio_t pin)
     EIMSK &= ~(1 << _int_num(pin));
 }
 
-int gpio_read(gpio_t pin)
-{
-    return (_SFR_MEM8(_pin_addr(pin)) & (1 << _pin_num(pin)));
-}
-
-void gpio_set(gpio_t pin)
-{
-    _SFR_MEM8(_port_addr(pin)) |= (1 << _pin_num(pin));
-}
-
-void gpio_clear(gpio_t pin)
-{
-    _SFR_MEM8(_port_addr(pin)) &= ~(1 << _pin_num(pin));
-}
-
-void gpio_toggle(gpio_t pin)
-{
-    if (gpio_read(pin)) {
-        gpio_clear(pin);
-    }
-    else {
-        gpio_set(pin);
-    }
-}
-
-void gpio_write(gpio_t pin, int value)
-{
-    if (value) {
-        gpio_set(pin);
-    }
-    else {
-        gpio_clear(pin);
-    }
-}
-
 static inline void irq_handler(uint8_t int_num)
 {
     __enter_isr();
@@ -300,3 +302,4 @@ ISR(INT7_vect, ISR_BLOCK)
     irq_handler(7); /**< predefined interrupt pin */
 }
 #endif
+#endif /* MODULE_PERIPH_GPIO_IRQ */
