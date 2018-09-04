@@ -157,6 +157,16 @@ DOCKER_VOLUMES_AND_ENV += $(call docker_volume_and_env,RIOTMAKE,,riotmake)
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-e GIT_CACHE_DIR=$(DOCKER_BUILD_ROOT)/gitcache)
 
+# Remap external module directories. Not handled if they have common dirnames
+ifneq ($(words $(sort $(notdir $(EXTERNAL_MODULE_DIRS)))),$(words $(sort $(EXTERNAL_MODULE_DIRS))))
+  $(warnings EXTERNAL_MODULE_DIRS: $(EXTERNAL_MODULE_DIRS))
+  $(error Mapping EXTERNAL_MODULE_DIRS in docker is not supported for directories with the same name)
+endif
+# EXTERNAL_MODULE_DIRS should ignore the 'Makefile' configuration, so set
+# variables using command line arguments
+DOCKER_VOLUMES_AND_ENV += $(call docker_volumes_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+
 # Handle worktree by mounting the git common dir in the same location
 _is_git_worktree = $(shell grep '^gitdir: ' $(RIOTBASE)/.git 2>/dev/null)
 GIT_WORKTREE_COMMONDIR = $(shell git rev-parse --git-common-dir)
