@@ -10,6 +10,8 @@ LWIP_MODULE_MAKEFILE := $(RIOTBASE)/Makefile.base
 
 .PHONY: all $(LWIP_SUBMODULES)
 
+CFLAGS += -Wno-address
+
 make_module = "$(MAKE)" -f $(LWIP_MODULE_MAKEFILE) MODULE=$@ -C $(1)
 
 all: git-download lwip
