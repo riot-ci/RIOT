@@ -4,8 +4,8 @@ export CPU = atmega1281
 # Bootloader uses stk500v1 protocol, which usually is implemented in
 # bootloaders of 2K size.
 # http://www.libelium.com/products/waspmote/hardware/
-ARDUINO_BOOTLOADER_SIZE = 2K
-ROM_RESERVED = $(ARDUINO_BOOTLOADER_SIZE)
+BOOTLOADER_SIZE = 2K
+ROM_RESERVED = $(BOOTLOADER_SIZE)
 
 # configure the terminal program
 PORT_LINUX  ?= /dev/ttyACM0
