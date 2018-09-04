@@ -90,7 +90,7 @@ def get_results_and_output_from(fd):
 
 
 def get_app_dirs():
-    yield from check_output(["make", "-f", "makefiles/app_dirs.inc.mk", "info-apps"]) \
+    yield from check_output(["make", "-f", "makefiles/app_dirs.inc.mk", "info-applications"]) \
             .decode("utf-8", errors="ignore")\
             .split()
 
