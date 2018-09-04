@@ -87,7 +87,19 @@ DOCKER ?= docker
 
 DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
 
-# Mounted volumes and exported environment variables
+# Directory mapping in docker and directories environment variable configuration
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject'
+DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake'
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject'
 
 # Add GIT_CACHE_DIR if the directory exists
 DOCKER_VOLUMES_AND_ENV += $(if $(wildcard $(GIT_CACHE_DIR)),-v $(GIT_CACHE_DIR):$(DOCKER_BUILD_ROOT)/gitcache)
@@ -108,18 +120,6 @@ DOCKER_VOLUMES_AND_ENV += $(if $(_is_git_worktree),-v $(GIT_WORKTREE_COMMONDIR):
 ..in-docker-container:
 	@$(COLOR_ECHO) '$(COLOR_GREEN)Launching build container using image "$(DOCKER_IMAGE)".$(COLOR_RESET)'
 	$(DOCKER) run $(DOCKER_FLAGS) -t -u "$$(id -u)" \
-	    -v '$(RIOTBASE):$(DOCKER_RIOTBASE)' \
-	    -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -v '$(RIOTBOARD):$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -v '$(RIOTMAKE):$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject' \
-	    -v /etc/localtime:/etc/localtime:ro \
-	    -e 'RIOTBASE=$(DOCKER_RIOTBASE)' \
-	    -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)' \
-	    -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu' \
-	    -e 'RIOTBOARD=$(DOCKER_BUILD_ROOT)/riotboard' \
-	    -e 'RIOTMAKE=$(DOCKER_BUILD_ROOT)/riotmake' \
-	    -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject' \
 	    $(DOCKER_VOLUMES_AND_ENV) \
 	    $(DOCKER_ENVIRONMENT_CMDLINE) \
 	    -w '$(DOCKER_APPDIR)' \
