@@ -115,8 +115,10 @@ define _dir_path_in_docker
         $(patsubst %/,%,$(patsubst $(RIOTBASE)/%,$(DOCKER_RIOTBASE)/%,$1/)))
 endef
 
+# Application directory relative to either riotbase or riotproject
+DOCKER_RIOTPROJECT = $(call path_in_docker,$(RIOTPROJECT),,riotproject)
+DOCKER_APPDIR = $(DOCKER_RIOTPROJECT)/$(BUILDRELPATH)
 
-DOCKER_APPDIR = $(DOCKER_BUILD_ROOT)/riotproject/$(BUILDRELPATH)
 
 # Directory mapping in docker and directories environment variable configuration
 DOCKER_VOLUMES_AND_ENV += -v /etc/localtime:/etc/localtime:ro
@@ -124,8 +126,10 @@ DOCKER_VOLUMES_AND_ENV += -v '$(RIOTBASE):$(DOCKER_RIOTBASE)'
 DOCKER_VOLUMES_AND_ENV += -e 'RIOTBASE=$(DOCKER_RIOTBASE)'
 DOCKER_VOLUMES_AND_ENV += -e 'CCACHE_BASEDIR=$(DOCKER_RIOTBASE)'
 
-DOCKER_VOLUMES_AND_ENV += -v '$(RIOTPROJECT):$(DOCKER_BUILD_ROOT)/riotproject'
-DOCKER_VOLUMES_AND_ENV += -e 'RIOTPROJECT=$(DOCKER_BUILD_ROOT)/riotproject'
+ifneq (,$(call dir_is_outside_riotbase,$(RIOTPROJECT)))
+  DOCKER_VOLUMES_AND_ENV += -v '$(RIOTPROJECT):$(DOCKER_RIOTPROJECT)'
+fi
+DOCKER_VOLUMES_AND_ENV += -e 'RIOTPROJECT=$(DOCKER_RIOTPROJECT)'
 
 DOCKER_VOLUMES_AND_ENV += -v '$(RIOTCPU):$(DOCKER_BUILD_ROOT)/riotcpu'
 DOCKER_VOLUMES_AND_ENV += -e 'RIOTCPU=$(DOCKER_BUILD_ROOT)/riotcpu'
