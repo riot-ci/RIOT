@@ -5,10 +5,10 @@ RIOTBASE ?= .
 # 2. use patsubst to drop trailing "/"
 # 3. use patsubst to drop possible leading "./"
 # 4. sort
-APP_DIRS := $(sort $(patsubst ./%,%,$(patsubst %/,%,$(dir $(wildcard \
+APPLICATION_DIRS := $(sort $(patsubst ./%,%,$(patsubst %/,%,$(dir $(wildcard \
 	$(RIOTBASE)/examples/*/Makefile \
 	$(RIOTBASE)/tests/*/Makefile    \
 	)))))
 
 info-apps:
-	@for dir in $(APP_DIRS); do echo $$dir; done
+	@for dir in $(APPLICATION_DIRS); do echo $$dir; done
