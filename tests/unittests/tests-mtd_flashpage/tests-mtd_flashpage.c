@@ -39,7 +39,7 @@ static void test_mtd_erase(void)
     int ret = mtd_erase(dev, (FLASHPAGE_NUMOF - 1) * FLASHPAGE_SIZE, FLASHPAGE_SIZE);
     TEST_ASSERT_EQUAL_INT(0, ret);
 
-    /* Erase with wrong size (les than sector size) */
+    /* Erase with wrong size (less than sector size) */
     ret = mtd_erase(dev, (FLASHPAGE_NUMOF - 1) * FLASHPAGE_SIZE, dev->page_size);
     TEST_ASSERT_EQUAL_INT(-EOVERFLOW, ret);
 
