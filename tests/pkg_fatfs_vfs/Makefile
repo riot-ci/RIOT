@@ -43,8 +43,10 @@ BOARD_WHITELIST := airfy-beacon arduino-due arduino-duemilanove arduino-mega2560
                    nz32-sc151 openmote-cc2538 pba-d-01-kw2x remote-pa remote-reva \
                    remote-revb samd21-xpro saml21-xpro samr21-xpro sltb001a \
                    sodaq-autonomo sodaq-explorer spark-core stm32f0discovery \
-                   stm32f3discovery stm32f4discovery udoo waspmote-pro \
-                   yunjia-nrf51822 native
+                   stm32f3discovery stm32f4discovery telosb udoo waspmote-pro \
+                   wsn430-v1_3b wsn430-v1_4 yunjia-nrf51822 z1 native
+
+TEST_DEPS += image
 
 include $(RIOTBASE)/Makefile.include
 
@@ -54,6 +56,3 @@ image:
 #this generates a compressed fat image file that can be used by the fat driver on native
 compressed-image:
 	@./create_fat_image_file.sh $(FATFS_IMAGE_FILE_SIZE_MIB)
-
-test: image
-	./tests/01-run.py
