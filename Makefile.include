@@ -539,7 +539,7 @@ reset:
 TESTS ?= $(foreach file,$(wildcard $(APPDIR)/tests/*),\
                         $(shell test -f $(file) -a -x $(file) && echo $(file)))
 test: $(TEST_DEPS)
-	for t in $(TESTS); do \
+	$(Q) for t in $(TESTS); do \
 		$$t || exit 1; \
 	done
 
