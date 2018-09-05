@@ -43,10 +43,10 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     if (addr % FLASHPAGE_RAW_ALIGNMENT) {
-        return -EOVERFLOW;
+        return -EINVAL;
     }
     if ((uintptr_t)buf % FLASHPAGE_RAW_ALIGNMENT) {
-        return -EOVERFLOW;
+        return -EINVAL;
     }
     if (size % FLASHPAGE_RAW_BLOCKSIZE) {
         return -EOVERFLOW;
