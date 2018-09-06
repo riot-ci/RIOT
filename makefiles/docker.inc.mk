@@ -89,13 +89,14 @@ DOCKER ?= docker
 # # # # # # # # # # # # # # # #
 
 # terminating '/' in patsubst is important to match $1 == $(RIOTBASE)
+# Handles relative directories
 define dir_is_outside_riotbase
-$(filter $1/,$(patsubst $(RIOTBASE)/%,%,$1/))
+$(filter $(abspath $1)/,$(patsubst $(RIOTBASE)/%,%,$(abspath $1)/))
 endef
 
 # Mapping of directores inside docker
 #
-# $1 = directories (can be a list)
+# $1 = directories (can be a list of relative files)
 # $2 = docker remap base directory (defaults to DOCKER_BUILD_ROOT)
 # $3 = mapname (defaults to $(notdir $d))
 #
@@ -111,8 +112,8 @@ endef
 path_in_docker = $(foreach d,$1,$(strip $(call _dir_path_in_docker,$d,$2,$3)))
 define _dir_path_in_docker
       $(if $(call dir_is_outside_riotbase,$1),\
-        $(if $2,$2,$(DOCKER_BUILD_ROOT))/$(if $3,$3,$(notdir $1)),\
-        $(patsubst %/,%,$(patsubst $(RIOTBASE)/%,$(DOCKER_RIOTBASE)/%,$1/)))
+        $(if $2,$2,$(DOCKER_BUILD_ROOT))/$(if $3,$3,$(notdir $(abspath $1))),\
+        $(patsubst %/,%,$(patsubst $(RIOTBASE)/%,$(DOCKER_RIOTBASE)/%,$(abspath $1)/)))
 endef
 
 # Volume mapping and environment arguments
