@@ -321,8 +321,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void* info)
         }
 
         dev->last_framesize = 0;
-
-
         return (int)len;
     }
     else {
