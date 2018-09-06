@@ -159,8 +159,8 @@ ifneq ($(words $(sort $(notdir $(EXTERNAL_MODULE_DIRS)))),$(words $(sort $(EXTER
 endif
 # EXTERNAL_MODULE_DIRS should ignore the 'Makefile' configuration, so set
 # variables using command line arguments
-DOCKER_VOLUMES_AND_ENV += $(if $(EXTERNAL_MODULE_DIRS),$(call docker_volumes_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,))
-DOCKER_OVERRIDE_CMDLINE += $(if $(EXTERNAL_MODULE_DIRS),$(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,))
+DOCKER_VOLUMES_AND_ENV += $(call docker_volumes_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(DOCKER_BUILD_ROOT)/external,)
 
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
