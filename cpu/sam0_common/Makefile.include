@@ -16,9 +16,6 @@ export CFLAGS += -DDONT_USE_CMSIS_INIT
 # For Cortex-M cpu we use the common cortexm.ld linker script
 LINKER_SCRIPT ?= cortexm.ld
 
-# use common periph functions
-USEMODULE += periph_common
-
 # include sam0 common periph drivers
 USEMODULE += sam0_common_periph
 
