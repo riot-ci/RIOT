@@ -465,6 +465,12 @@ unsigned int IRAM timer_read(tim_t dev)
     return phy_get_mactime ();
 }
 
+unsigned int IRAM timer_diff(tim_t dev, unsigned int begin, unsigned int until)
+{
+    (void) dev;
+    return (until - begin);
+}
+
 void IRAM timer_start(tim_t dev)
 {
     DEBUG("%s dev=%u\n", __func__, dev);

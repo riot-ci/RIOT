@@ -158,6 +158,11 @@ typedef enum {
 #define PERIPH_SPI_NEEDS_TRANSFER_REG
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 
+/**
+ * @brief Timer implementation provides custom timer_diff function
+ */
+#define PERIPH_TIMER_PROVIDES_DIFF
+
 #endif /* MODULE_PERIPH_SPI */
 /** @} */
 
