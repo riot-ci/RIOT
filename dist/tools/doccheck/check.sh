@@ -32,7 +32,7 @@ then
 fi
 
 exclude_filter() {
-    grep -v -e vendor -e examples -e tests -e "\<dist/tools\>"
+    grep -v -e vendor -e examples -e tests -e "\<dist/tools\>" -e staging
 }
 
 # Check all groups are defined
