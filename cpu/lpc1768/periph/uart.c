@@ -154,6 +154,8 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
             break;
 #endif
         default:
+            /* prevent cppcheck uninitialized variable error */
+            dev = (LPC_UART_TypeDef *) 0;
             return;
     }
 
