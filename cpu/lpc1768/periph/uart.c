@@ -140,7 +140,7 @@ static int init_base(uart_t uart, uint32_t baudrate)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
-    LPC_UART_TypeDef *dev;
+    LPC_UART_TypeDef *dev = NULL;
 
     switch (uart) {
 #if UART_0_EN
