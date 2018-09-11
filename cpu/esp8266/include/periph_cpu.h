@@ -160,12 +160,12 @@ typedef enum {
 
 #endif /* MODULE_PERIPH_SPI */
 
+/** @} */
+
 /**
  * @brief   Prevent shared timer functions from being used
  */
 #define PERIPH_TIMER_PROVIDES_SET
-
-/** @} */
 
 #ifdef __cplusplus
 }
