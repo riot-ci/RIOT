@@ -12,6 +12,7 @@ ifndef ESP8266_SDK_DIR
     export ESP8266_SDK_DIR=/opt/esp/esp-open-sdk/sdk
 endif
 
+
 # Options to control the compilation
 
 ifeq ($(USE_SDK), 1)
@@ -24,22 +25,39 @@ endif
 
 ifeq ($(ENABLE_GDBSTUB), 1)
     USEMODULE += esp_gdbstub
-    USEMODULE += esp_gdb
 endif
 
-# regular Makefile
 
 export TARGET_ARCH ?= xtensa-lx106-elf
 
+ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
+    USEMODULE += esp_sdk
+endif
+
+
+# regular Makefile
+
 # ESP8266 pseudomodules
 PSEUDOMODULES += esp_gdb
-PSEUDOMODULES += esp_now
 PSEUDOMODULES += esp_sdk
 PSEUDOMODULES += esp_sdk_int_handling
 PSEUDOMODULES += esp_sw_timer
 PSEUDOMODULES += esp_spiffs
 
+export CPU ?= esp8266
+export TARGET_ARCH ?= xtensa-lx106-elf
+
+USEMODULE += esp
+USEMODULE += mtd
+USEMODULE += periph
+USEMODULE += periph_common
+USEMODULE += ps
+USEMODULE += random
+USEMODULE += sdk
+USEMODULE += xtensa
+
 ifneq (, $(filter pthread, $(USEMODULE)))
+    # has to be included before $(ESP8266_NEWLIB_DIR)
     INCLUDES += -I$(RIOTBASE)/sys/posix/pthread/include
 endif
 
@@ -51,12 +69,9 @@ INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor/espressif
 
 CFLAGS  += -DESP_OPEN_SDK
 CFLAGS  += -Wno-unused-parameter -Wformat=0
-CFLAGS  += -mlongcalls -mtext-section-literals -fdata-sections
+CFLAGS  += -mlongcalls -mtext-section-literals
+CFLAGS  += -fdata-sections -fzero-initialized-in-bss
 ASFLAGS += --longcalls --text-section-literals
-
-ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
-    USEMODULE += esp_sdk
-endif
 
 ifneq (, $(filter esp_sdk, $(USEMODULE)))
     INCLUDES += -I$(ESP8266_SDK_DIR)/include
@@ -64,23 +79,16 @@ ifneq (, $(filter esp_sdk, $(USEMODULE)))
 endif
 
 ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
+    USEMODULE   += esp_gdb
     GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/vendor/esp-gdbstub
     CFLAGS      += -DGDBSTUB_FREERTOS=0
     INCLUDES    += -I$(GDBSTUB_DIR)
 endif
 
 ifneq (, $(filter esp_gdb, $(USEMODULE)))
-    CFLAGS_OPT = -fzero-initialized-in-bss -Og -ggdb -g3
+    CFLAGS += -Og -ggdb -g3
 else
-    CFLAGS_OPT = -fzero-initialized-in-bss -O2
-endif
-
-CFLAGS += $(CFLAGS_OPT)
-
-ifneq (, $(filter esp_spiffs, $(USEMODULE)))
-    export SPIFFS_STD_OPTION = -std=c99
-    USEMODULE += spiffs
-    USEMODULE += vfs
+    CFLAGS += -O2
 endif
 
 ifeq ($(QEMU), 1)
@@ -100,9 +108,6 @@ LINKFLAGS += -L$(ESP8266_SDK_DIR)/lib
 
 ifneq (, $(filter esp_sdk, $(USEMODULE)))
     LINKFLAGS += -Wl,--start-group $(BINDIR)/sdk.a
-    ifneq (, $(filter esp_now, $(USEMODULE)))
-        LINKFLAGS += -lespnow
-    endif
     LINKFLAGS += -lmain -lnet80211 -lcrypto -lwpa2 -lwpa -llwip -lpp -lphy -lc -lhal
     LINKFLAGS += -Wl,--end-group
     LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp8266.riot-os.sdk.app.ld
@@ -114,15 +119,6 @@ endif
 LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/eagle.rom.addr.v6.ld
 LINKFLAGS += -nostdlib -lgcc -u ets_run -Wl,-gc-sections # -Wl,--print-gc-sections
 LINKFLAGS += -Wl,--warn-unresolved-symbols
-
-USEMODULE += esp
-USEMODULE += mtd
-USEMODULE += periph
-USEMODULE += periph_common
-USEMODULE += ps
-USEMODULE += random
-USEMODULE += sdk
-USEMODULE += xtensa
 
 # configure preflasher to convert .elf to .bin before flashing
 FLASH_SIZE = -fs 8m
