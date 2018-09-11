@@ -34,6 +34,11 @@ ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
     USEMODULE += esp_sdk
 endif
 
+ifneq (, $(filter esp_now, $(USEMODULE)))
+    $(eval GNRC_NETIF_NUMOF=$(shell echo $$(($(GNRC_NETIF_NUMOF)+1))))
+    USEMODULE += esp_sdk
+endif
+
 
 # regular Makefile
 
@@ -67,7 +72,7 @@ INCLUDES += -I$(RIOTCPU)/$(CPU)
 INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor
 INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor/espressif
 
-CFLAGS  += -DESP_OPEN_SDK
+CFLAGS  += -DESP_OPEN_SDK -DCONTEXT_SWITCH_BY_INT
 CFLAGS  += -Wno-unused-parameter -Wformat=0
 CFLAGS  += -mlongcalls -mtext-section-literals
 CFLAGS  += -fdata-sections -fzero-initialized-in-bss
@@ -108,6 +113,9 @@ LINKFLAGS += -L$(ESP8266_SDK_DIR)/lib
 
 ifneq (, $(filter esp_sdk, $(USEMODULE)))
     LINKFLAGS += -Wl,--start-group $(BINDIR)/sdk.a
+    ifneq (, $(filter esp_now, $(USEMODULE)))
+        LINKFLAGS += -lespnow
+    endif
     LINKFLAGS += -lmain -lnet80211 -lcrypto -lwpa2 -lwpa -llwip -lpp -lphy -lc -lhal
     LINKFLAGS += -Wl,--end-group
     LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp8266.riot-os.sdk.app.ld
@@ -139,5 +147,5 @@ else
     export FFLAGS += -p $(PORT) -b $(PROGRAMMER_SPEED) write_flash
     export FFLAGS += -fm $(FLASH_MODE)
     export FFLAGS += 0 $(ELFFILE)-0x00000.bin
-    export FFLAGS += 0x10000 $(ELFFILE)-0x10000.bin
+    export FFLAGS += 0x10000 $(ELFFILE)-0x10000.bin; esptool.py -p $(PORT) run
 endif
