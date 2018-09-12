@@ -1,0 +1,18 @@
+/*
+ * Copyright (C) 2018 Gunar Schorcht
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @defgroup        cpu_esp32_esp_now ESP_NOW netdev interface
+ * @ingroup         cpu_esp32
+ * @brief           WiFi based ESP_NOW network device driver
+ *
+ * This module realizes a netdev interface using Espressif's ESP_NOW
+ * technology which uses the built-in WiFi module.
+ *
+ * @author      Gunar Schorcht <gunar@schorcht.net>
+ */
