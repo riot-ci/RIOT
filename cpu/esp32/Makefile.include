@@ -162,7 +162,7 @@ export PREFFLAGS += echo "phy_init, data, phy, 0xf000, 0x1000" >> $(BINDIR)/part
 export PREFFLAGS += echo -n "factory, app, factory, 0x10000, " >> $(BINDIR)/partitions.csv;
 export PREFFLAGS += ls -l $(ELFFILE).bin | awk '{ print $$5 }' >> $(BINDIR)/partitions.csv;
 
-export PREFFLAGS += python $(RIOTCPU)/$(CPU)/gen_esp32part.py --disable-md5sum
+export PREFFLAGS += python $(RIOTCPU)/$(CPU)/gen_esp32part.py --disable-sha256sum
 export PREFFLAGS += --verify $(BINDIR)/partitions.csv $(BINDIR)/partitions.bin
 export FLASHDEPS  = preflash
 
