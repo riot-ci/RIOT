@@ -151,12 +151,12 @@ static void IRAM_ATTR esp_now_scan_peers_done (void)
 
     esp_err_t ret;
     uint16_t ap_num;
-    uint32_t state;
 
     ret = esp_wifi_scan_get_ap_num(&ap_num);
     DEBUG("wifi_scan_get_ap_num ret=%d num=%d\n", ret ,ap_num);
 
     if (ret == ESP_OK && ap_num) {
+        uint32_t state;
         /* reallocation of memory must not be disturbed */
         critical_enter_var(state);
         /* allocate memory for APs record list blockwise and fetch them the list */
