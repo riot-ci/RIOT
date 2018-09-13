@@ -12,6 +12,11 @@ BOARD_BLACKLIST += waspmote-pro
 BOARD_BLACKLIST += wsn430-v1_3b wsn430-v1_4
 BOARD_BLACKLIST += z1
 BOARD_BLACKLIST += jiminy-mega256rfr2
+BOARD_BLACKLIST += esp32-mh-et-live-minikit
+BOARD_BLACKLIST += esp32-olimex-evb
+BOARD_BLACKLIST += esp32-wemos-lolin-d32-pro
+BOARD_BLACKLIST += esp32-wroom-32
+BOARD_BLACKLIST += esp32-wrover-kit
 
 USEMODULE += cbor
 USEMODULE += cbor_ctime
