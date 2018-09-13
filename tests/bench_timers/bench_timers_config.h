@@ -252,9 +252,6 @@ extern "C" {
 #define TUT_RUN test_xtimer_run
 #define TUT_PRESENTATION test_xtimer_presentation
 #define TUT_READ() _xtimer_now()
-#elif TEST_ZTIMER
-#define TEST_VARIANT_NUMOF 2
-#define TUT_READ() ztimer_now(TIM_TEST_DEV)
 #else
 #define TEST_VARIANT_NUMOF 6
 #define TUT_RUN test_periph_timer_run

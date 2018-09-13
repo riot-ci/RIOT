@@ -77,7 +77,7 @@ const result_presentation_t test_xtimer_presentation = {
 };
 
 
-static void nop(void *arg)
+static void cb_nop(void *arg)
 {
     (void)arg;
 }
@@ -95,7 +95,7 @@ void test_xtimer_run(test_ctx_t *ctx, uint32_t interval, unsigned int variant)
     xtimer_t xt_parallel = {
         .target = 0,
         .long_target = 0,
-        .callback = nop,
+        .callback = cb_nop,
         .arg = NULL,
     };
     if (TEST_TRACE) {
