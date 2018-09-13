@@ -164,6 +164,9 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     /* not enough space in buf */
     if (pkt_len > len) {
         at86rf2xx_fb_stop(dev);
+        /* set device back in operation state which was used before last transmission.
+            * e.g RX_AACK_ON */
+        at86rf2xx_set_state(dev, dev->idle_state);
         return -ENOBUFS;
     }
 #ifdef MODULE_NETSTATS_L2
