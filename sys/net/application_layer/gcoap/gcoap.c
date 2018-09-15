@@ -388,7 +388,7 @@ static int _find_resource(coap_pkt_t *pdu, const coap_resource_t **resource_ptr,
     gcoap_listener_t *listener = _coap_state.listeners;
 
     uint8_t uri[NANOCOAP_URI_MAX];
-    if (coap_get_uri(pdu, uri) <= 0) {
+    if (coap_get_uri_path(pdu, uri) <= 0) {
         return GCOAP_RESOURCE_NO_PATH;
     }
 
