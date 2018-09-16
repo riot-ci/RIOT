@@ -12,7 +12,7 @@ shared early with a wider audience in order to facilitate easier collaboration.
 
 **WARNING**
 
-Do not depend on anything within this subfolder!  Everything in here might be
+Do not depend on anything within this subfolder! Everything in here might be
 broken or break or be changed or removed at any time, and everything is
 officially unsupported (but may be supported by one or more individuals)! API's
 from this tree might change without notice.
