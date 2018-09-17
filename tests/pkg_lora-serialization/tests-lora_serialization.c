@@ -21,7 +21,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include "embUnit.h"
 #include "lora_serialization.h"
 
 #if defined(BOARD_NATIVE) && !defined(__clang__)
