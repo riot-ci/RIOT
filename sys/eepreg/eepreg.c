@@ -33,7 +33,7 @@
 static const char eepreg_magic[] = "RIOTREG";
 
 /* constant lengths */
-#define MAGIC_SIZE      (sizeof(eepreg_magic))
+#define MAGIC_SIZE      (sizeof(eepreg_magic) - 1)    /* -1 to remove null */
 #define ENT_LEN_SIZ     (1U)
 
 /* constant locations */
@@ -436,10 +436,7 @@ int eepreg_iter(eepreg_iter_cb_t cb, void *arg)
 
 int eepreg_check(void)
 {
-    char magic[MAGIC_SIZE + 1];
-
-    /* make sure string is always terminated */
-    magic[MAGIC_SIZE] = '\0';
+    char magic[MAGIC_SIZE];
 
     /* get magic number from EEPROM */
     if (eeprom_read(REG_MAGIC_LOC, (uint8_t *)magic, MAGIC_SIZE)
@@ -450,7 +447,7 @@ int eepreg_check(void)
     }
 
     /* check to see if magic number is the same */
-    if (strcmp(magic, eepreg_magic) != 0) {
+    if (strncmp(magic, eepreg_magic, MAGIC_SIZE) != 0) {
         DEBUG("[eepreg_check] No registry detected\n");
         return -ENOENT;
     }
