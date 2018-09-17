@@ -25,7 +25,7 @@
  * The layout of the EEPROM used looks like this:
  *    EEPROM_RESERV_CPU_LOW
  *    EEPROM_RESERV_BOARD_LOW
- *    Registry magic number ("RIOTREG\0")
+ *    Registry magic number ("RIOTREG")
  *    Registry end pointer
  *    Registry entry 1 meta-data length (1 byte)
  *    Registry entry 1 name (unterminated)
