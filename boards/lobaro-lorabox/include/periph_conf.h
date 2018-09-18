@@ -8,8 +8,7 @@
  */
 
 /**
- * @defgroup    boards_lorabox Lobaro lorabox
- * @ingroup     boards_lorabox
+ * @ingroup     boards_lobaro_lorabox
  * @brief       Support for the Lobaro lorabox with stm32l151cb
  * @{
  *

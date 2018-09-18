@@ -7,8 +7,7 @@
  */
 
 /**
- * @defgroup    Lobaro Lorabox
- * @ingroup     boards
+ * @ingroup     boards_lobaro_lorabox
  * @brief       Support for Lobaro LoraBox
  * @{
  *

@@ -1,6 +1,6 @@
 /**
-@defgroup    boards_lobaro_lorabox
-@ingroup     boards_lobaro_lorabox
+@defgroup    boards_lobaro_lorabox Lobaro Lorabox
+@ingroup     boards
 @brief       Support for the Lobaro LoraBox with stm32l151cb-a
 
 ## Hardware
