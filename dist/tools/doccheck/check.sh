@@ -10,6 +10,11 @@
 
 RIOTBASE="$(cd $(dirname $0)/../../..; pwd)"
 
+die() {
+   echo "warning: 'make doc' exited with non-zero code"
+   exit 2
+}
+
 if tput colors &> /dev/null && [ $(tput colors) -ge 8 ]; then
     CERROR="\e[1;31m"
     CWARN="\033[1;33m"
@@ -20,7 +25,7 @@ else
     CRESET=
 fi
 
-ERRORS=$(make -C "${RIOTBASE}" doc 2>&1 | \
+ERRORS=$((make -C "${RIOTBASE}" doc 2>&1 || die "Doc build failed") | \
             grep '.*warning' | \
             sed "s#${PWD}/\([^:]*\)#\1#g")
 
