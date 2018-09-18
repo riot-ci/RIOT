@@ -11,7 +11,7 @@
 RIOTBASE="$(cd $(dirname $0)/../../..; pwd)"
 
 die() {
-   echo "warning: Failed to build run doxygen"
+   echo "warning: 'make doc' exited with non-zero code"
    exit 2
 }
 
