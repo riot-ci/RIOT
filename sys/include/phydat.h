@@ -185,9 +185,9 @@ char phydat_prefix_from_scale(int8_t scale);
  * Inserts the @p values in the given @p dat so that all @p dim values in
  * @p values fit inside the limits of the data type,
  * [@ref PHYDAT_MIN, @ref PHYDAT_MAX], and updates the stored scale factor.
- * The value is rounded towards infinity, e.g. `0.5` and `0.6` are rounded to
- * `1`, `0.4` and `-0.4` are rounded to `0`, `-0.5` and `-0.6` are rounded to
- * `-1`.
+ * The value is rounded to the nearest integer if possible, otherwise away from
+ * zero. E.g. `0.5` and `0.6` are rounded to `1`, `0.4` and `-0.4` are rounded
+ * to `0`, `-0.5` and `-0.6` are rounded to `-1`.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
  * int32_t values[] = { 100000, 2000000, 30000000 };
