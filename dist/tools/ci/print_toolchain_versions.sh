@@ -8,6 +8,10 @@ get_cmd_version() {
     local cmd="$1"
     if command -v "$cmd" 2>&1 >/dev/null; then
         ver=$("$cmd" --version 2> /dev/null | head -n 1)
+        # some tools (eg. openocd) print version info to stderr
+        if [ -z "$ver" ]; then
+            ver=$("$cmd" --version 2>&1 | head -n 1)
+        fi
         if [ -z "$ver" ]; then
             ver="error"
         fi
@@ -68,7 +72,7 @@ printf "%23s: %s\n" "avr-libc" "$(avr_libc_version avr-gcc)"
 printf "\n"
 printf "%s\n" "Installed development tools"
 printf "%s\n" "---------------------------"
-for c in cmake cppcheck doxygen flake8 git; do
+for c in cmake cppcheck doxygen flake8 git openocd python python2 python3; do
     printf "%23s: %s\n" "$c" "$(get_cmd_version $c)"
 done
 printf "%23s: %s\n" "coccinelle" "$(get_cmd_version spatch)"
