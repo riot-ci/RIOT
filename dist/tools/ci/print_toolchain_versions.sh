@@ -35,7 +35,7 @@ get_define() {
 }
 
 get_kernel_info() {
-    printf "%s" "$(uname -a)"
+    printf "%s" "$(uname -mprs)"
 }
 
 get_os_info() {
