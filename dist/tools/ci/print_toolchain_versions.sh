@@ -42,10 +42,10 @@ get_os_info() {
     local os="$(uname -s)"
     local osname="unknown"
     local osvers="unknown"
-    if [ "$os" == "Linux" ]; then
+    if [ "$os" = "Linux" ]; then
         osname="$(cat /etc/os-release | grep ^NAME= | awk -F'=' '{print $2}')"
         osvers="$(cat /etc/os-release | grep ^VERSION= | awk -F'=' '{print $2}')"
-    elif [ "$os" == "Darwin" ]; then
+    elif [ "$os" = "Darwin" ]; then
         osname="$(sw_vers -productName)"
         osvers="$(sw_vers -productVersion)"
     fi
