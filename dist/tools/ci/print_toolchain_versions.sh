@@ -35,7 +35,7 @@ get_define() {
 }
 
 get_kernel_info() {
-    printf "version=%s machine=%s processor=%s" $(uname -r) $(uname -m) $(uname -p)
+    printf "version=%s machine=%s processor=%s" "$(uname -r)" "$(uname -m)" "$(uname -p)"
 }
 
 get_os_info() {
@@ -43,13 +43,13 @@ get_os_info() {
     local osname="unknown"
     local osvers="unknown"
     if [ "$os" == "Linux" ]; then
-        osname = "$(cat /etc/os-release | grep ^NAME= | awk -F'=' '{print $2}')"
-        osvers = "$(cat /etc/os-release | grep ^VERSION= | awk -F'=' '{print $2}')"
+        osname="$(cat /etc/os-release | grep ^NAME= | awk -F'=' '{print $2}')"
+        osvers="$(cat /etc/os-release | grep ^VERSION= | awk -F'=' '{print $2}')"
     elif [ "$os" == "Darwin" ]; then
         osname="$(sw_vers -productName)"
         osvers="$(sw_vers -productVersion)"
     fi
-    printf "name=%s version=%s" "$osname" "$osvers"
+    printf "%s %s" "$osname" "$osvers"
 }
 
 newlib_version() {
