@@ -206,7 +206,7 @@ void gpio_write_redir(gpio_t pin, int value);
  */
 static inline int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         return gpio_init_redir(pin, mode);
     }
@@ -236,7 +236,7 @@ static inline int gpio_init(gpio_t pin, gpio_mode_t mode)
 static inline int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t
                                 flank, gpio_cb_t cb, void *arg)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         return gpio_init_int_redir(pin, mode, flank, cb, arg);
     }
@@ -254,7 +254,7 @@ static inline int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t
  */
 static inline void gpio_irq_enable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_irq_enable_redir(pin);
         return;
@@ -271,7 +271,7 @@ static inline void gpio_irq_enable(gpio_t pin)
  */
 static inline void gpio_irq_disable(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_irq_disable_redir(pin);
         return;
@@ -291,7 +291,7 @@ static inline void gpio_irq_disable(gpio_t pin)
  */
 static inline int gpio_read(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         return gpio_read_redir(pin);
     }
@@ -307,7 +307,7 @@ static inline int gpio_read(gpio_t pin)
  */
 static inline void gpio_set(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_set_redir(pin);
         return;
@@ -324,7 +324,7 @@ static inline void gpio_set(gpio_t pin)
  */
 static inline void gpio_clear(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_clear_redir(pin);
         return;
@@ -341,7 +341,7 @@ static inline void gpio_clear(gpio_t pin)
  */
 static inline void gpio_toggle(gpio_t pin)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_toggle_redir(pin);
         return;
@@ -359,7 +359,7 @@ static inline void gpio_toggle(gpio_t pin)
  */
 static inline void gpio_write(gpio_t pin, int value)
 {
-#ifdef MODULE_GPIO_EXT
+#ifdef MODULE_EXTEND_GPIO
     if (pin > GPIO_EXT_THRESH) {
         gpio_write_redir(pin, value);
         return;
