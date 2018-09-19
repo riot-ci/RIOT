@@ -29,8 +29,8 @@
 void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
 {
     assert(dim <= (sizeof(dat->val) / sizeof(dat->val[0])));
-    long divisor = 1;
-    long max = 0;
+    int32_t divisor = 1;
+    int32_t max = 0;
 
     /* Get the value with the highest magnitude */
     for (unsigned int i = 0; i < dim; i++) {
