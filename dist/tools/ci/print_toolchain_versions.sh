@@ -35,7 +35,7 @@ get_define() {
 }
 
 get_kernel_info() {
-    printf "version=%s machine=%s processor=%s" "$(uname -r)" "$(uname -m)" "$(uname -p)"
+    printf "%s" "$(uname -a)"
 }
 
 get_os_info() {
