@@ -407,6 +407,8 @@ endif
 
 ifneq (,$(filter srf04,$(USEMODULE)))
   USEMODULE += xtimer
+  FEATURES_REQUIRED += periph_gpio
+  FEATURES_REQUIRED += periph_gpio_irq
 endif
 
 ifneq (,$(filter srf08,$(USEMODULE)))
