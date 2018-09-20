@@ -36,8 +36,7 @@ int main(void)
     }
 
     while (1) {
-        int distance;
-        distance = srf04_get_distance(&dev);
+        int distance = srf04_get_distance(&dev);
         if (distance < SRF04_OK) {
             puts("Error: no valid data available");
         } else {
