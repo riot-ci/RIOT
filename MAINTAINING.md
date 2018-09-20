@@ -119,14 +119,21 @@ complete that no input from the original developer or maintainer is required.
 
 ### Organisation of reviewing between maintainers
 
-This section is a placeholder for further discussion around making the review
-process more efficient and effective when multiple maintainers are involved.
-This could include:
+When you review a PR only partly according to the points outlined in the
+[technical guidelines](#technical-guidelines) please do not "approve" the PR to
+prevent accidental merges. Rather, give your a verbal ACK and describe what you
+reviewed. In addition, if you processed or reasonably stepped over a whole
+section, mark the PR with the according label from the "Reviewed:" category.
+If you disagree with the assessment of a previous review, you may remove a
+certain "Reviewed:" label.
 
--   Usage of labels
--   Division of review responsibilities, e.g. with ACKs for different areas of
-    review
--   Usage of GitHub functionality, for example "Reviewers" and "Assignees" lists
+It is also good etiquette to describe what you reviewed, even if you gave the PR
+a full review and approve it. This way the contributor and other maintainers are
+able to follow your thought process.
+
+Only assign yourself to PRs, you can however request reviews from other
+maintainers or contributors, either by mentioning them in a comment or
+selecting them in GitHub's review sidebar.
 
 #### Github etiquette
 
