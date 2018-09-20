@@ -77,6 +77,7 @@
  */
 #define PINS_PER_PORT       (32)
 
+#ifdef MODULE_PERIPH_GPIO_IRQ
 /**
  * @brief   Calculate the needed memory (in byte) needed to save 4 bits per MCU
  *          pin
@@ -114,6 +115,7 @@ static isr_ctx_t isr_ctx[CTX_NUMOF];
 static uint32_t isr_map[ISR_MAP_SIZE];
 
 static const uint8_t port_irqs[] = PORT_IRQS;
+#endif
 
 static inline PORT_Type *port(gpio_t pin)
 {
@@ -140,6 +142,83 @@ static inline void clk_en(gpio_t pin)
     bit_set32(&SIM->SCGC5, SIM_SCGC5_PORTA_SHIFT + port_num(pin));
 }
 
+int gpio_init(gpio_t pin, gpio_mode_t mode)
+{
+    /* set pin to analog mode while configuring it */
+    gpio_init_port(pin, GPIO_AF_ANALOG);
+
+    /* set pin direction */
+    if (mode & MODE_OUT) {
+        gpio(pin)->PDDR |=  (1 << pin_num(pin));
+    }
+    else {
+        gpio(pin)->PDDR &= ~(1 << pin_num(pin));
+    }
+
+    /* enable GPIO function */
+    port(pin)->PCR[pin_num(pin)] = (GPIO_AF_GPIO | (mode & MODE_PCR_MASK));
+    return 0;
+}
+
+void gpio_init_port(gpio_t pin, uint32_t pcr)
+{
+    /* enable PORT clock in case it was not active before */
+    clk_en(pin);
+
+#ifdef MODULE_PERIPH_GPIO_IRQ
+    /* if the given interrupt was previously configured as interrupt source, we
+     * need to free its interrupt context. We to this only after we
+     * re-configured the pin in case an event is happening just in between... */
+    uint32_t isr_state = port(pin)->PCR[pin_num(pin)];
+#endif
+
+    /* set new PCR value */
+    port(pin)->PCR[pin_num(pin)] = pcr;
+
+#ifdef MODULE_PERIPH_GPIO_IRQ
+    /* and clear the interrupt context if needed */
+    if (isr_state & PORT_PCR_IRQC_MASK) {
+        ctx_clear(port_num(pin), pin_num(pin));
+    }
+#endif
+}
+
+int gpio_read(gpio_t pin)
+{
+    if (gpio(pin)->PDDR & (1 << pin_num(pin))) {
+        return (gpio(pin)->PDOR & (1 << pin_num(pin))) ? 1 : 0;
+    }
+    else {
+        return (gpio(pin)->PDIR & (1 << pin_num(pin))) ? 1 : 0;
+    }
+}
+
+void gpio_set(gpio_t pin)
+{
+    gpio(pin)->PSOR = (1 << pin_num(pin));
+}
+
+void gpio_clear(gpio_t pin)
+{
+    gpio(pin)->PCOR = (1 << pin_num(pin));
+}
+
+void gpio_toggle(gpio_t pin)
+{
+    gpio(pin)->PTOR = (1 << pin_num(pin));
+}
+
+void gpio_write(gpio_t pin, int value)
+{
+    if (value) {
+        gpio(pin)->PSOR = (1 << pin_num(pin));
+    }
+    else {
+        gpio(pin)->PCOR = (1 << pin_num(pin));
+    }
+}
+
+#ifdef MODULE_PERIPH_GPIO_IRQ
 /**
  * @brief   Get context for a specific pin
  */
@@ -179,24 +258,6 @@ static void ctx_clear(int port, int pin)
     write_map(port, pin, ctx);
 }
 
-int gpio_init(gpio_t pin, gpio_mode_t mode)
-{
-    /* set pin to analog mode while configuring it */
-    gpio_init_port(pin, GPIO_AF_ANALOG);
-
-    /* set pin direction */
-    if (mode & MODE_OUT) {
-        gpio(pin)->PDDR |=  (1 << pin_num(pin));
-    }
-    else {
-        gpio(pin)->PDDR &= ~(1 << pin_num(pin));
-    }
-
-    /* enable GPIO function */
-    port(pin)->PCR[pin_num(pin)] = (GPIO_AF_GPIO | (mode & MODE_PCR_MASK));
-    return 0;
-}
-
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
@@ -227,23 +288,6 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     return 0;
 }
 
-void gpio_init_port(gpio_t pin, uint32_t pcr)
-{
-    /* enable PORT clock in case it was not active before */
-    clk_en(pin);
-
-    /* if the given interrupt was previously configured as interrupt source, we
-     * need to free its interrupt context. We to this only after we
-     * re-configured the pin in case an event is happening just in between... */
-    uint32_t isr_state = port(pin)->PCR[pin_num(pin)];
-    /* set new PCR value */
-    port(pin)->PCR[pin_num(pin)] = pcr;
-    /* and clear the interrupt context if needed */
-    if (isr_state & PORT_PCR_IRQC_MASK) {
-        ctx_clear(port_num(pin), pin_num(pin));
-    }
-}
-
 void gpio_irq_enable(gpio_t pin)
 {
     int ctx = get_ctx(port_num(pin), pin_num(pin));
@@ -255,41 +299,6 @@ void gpio_irq_disable(gpio_t pin)
     int ctx = get_ctx(port_num(pin), pin_num(pin));
     isr_ctx[ctx].state = port(pin)->PCR[pin_num(pin)] & PORT_PCR_IRQC_MASK;
     port(pin)->PCR[pin_num(pin)] &= ~(PORT_PCR_IRQC_MASK);
-}
-
-int gpio_read(gpio_t pin)
-{
-    if (gpio(pin)->PDDR & (1 << pin_num(pin))) {
-        return (gpio(pin)->PDOR & (1 << pin_num(pin))) ? 1 : 0;
-    }
-    else {
-        return (gpio(pin)->PDIR & (1 << pin_num(pin))) ? 1 : 0;
-    }
-}
-
-void gpio_set(gpio_t pin)
-{
-    gpio(pin)->PSOR = (1 << pin_num(pin));
-}
-
-void gpio_clear(gpio_t pin)
-{
-    gpio(pin)->PCOR = (1 << pin_num(pin));
-}
-
-void gpio_toggle(gpio_t pin)
-{
-    gpio(pin)->PTOR = (1 << pin_num(pin));
-}
-
-void gpio_write(gpio_t pin, int value)
-{
-    if (value) {
-        gpio(pin)->PSOR = (1 << pin_num(pin));
-    }
-    else {
-        gpio(pin)->PCOR = (1 << pin_num(pin));
-    }
 }
 
 static inline void irq_handler(PORT_Type *port, int port_num)
@@ -364,3 +373,4 @@ void isr_portb_portc(void)
     irq_handler(PORTC, 2);
 }
 #endif
+#endif /* MODULE_PERIPH_GPIO_IRQ */
