@@ -344,11 +344,12 @@ size_t fmt_strnlen(const char *str, size_t maxlen);
 size_t fmt_str(char *out, const char *str);
 
 /**
- * @brief   Converts all upercase letter in lowercase in a string
+ * @brief   Copy null-terminated string to a lowercase string (excluding terminating \0)
  *
- * @param[in,out]   str     String to convert uppercase to lowercase
+ * @param[out]  out     Pointer to output buffer, or NULL
+ * @param[in]   str     Pointer to null-terminated source string
  */
-void fmt_to_lower(char *str);
+size_t fmt_to_lower(char *out, const char *str);
 
 /**
  * @brief Convert digits to uint32

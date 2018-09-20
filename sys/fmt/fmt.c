@@ -415,14 +415,25 @@ size_t fmt_lpad(char *out, size_t in_len, size_t pad_len, char pad_char)
     return pad_len;
 }
 
-void fmt_to_lower(char *str)
 {
+size_t fmt_to_lower(char *out, const char *str)
+{
+    size_t len = 0;
+
     while (str && *str) {
         if (_is_upper(*str)) {
-            *str = _to_lower(*str);
+            if (out) {
+                *out++ = _to_lower(*str);
+            }
+        }
+        else if (out) {
+            *out++ = *str;
         }
         str++;
+        len++;
     }
+
+    return len;
 }
 
 uint32_t scn_u32_dec(const char *str, size_t n)
