@@ -129,6 +129,8 @@ section, mark the PR with the according label from the "Reviewed:" category.
 If you disagree with the assessment of a previous review, you may remove a
 certain "Reviewed:" label.
 
+When all "Reviewed:" labels are set you may give your approval for the PR.
+
 #### Github etiquette
 
 It is good etiquette to describe what you reviewed, even if you gave the PR a
