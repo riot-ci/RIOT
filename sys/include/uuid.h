@@ -38,6 +38,8 @@ extern "C" {
 
 #define UUID_NODE_LEN    (6U)   /**< Size of the node identifier in bytes */
 
+#define UUID_STR_LEN     (36U)  /**< Size of a string UUID without null character */
+
 /**
  * @name UUID version identifiers
  * @{
@@ -143,10 +145,10 @@ static inline bool uuid_equal(uuid_t *uuid1, uuid_t *uuid2)
 /**
  * @brief   Generate an UUID string from an UUID structure
  *
- * @param[out]  str     UUID string, must be at least 37 bytes
  * @param[in]   uuid    UUID
+ * @param[out]  str     null-terminated UUID string, must be at least UUID_STR_LEN + 1 bytes
  */
-void uuid_to_string(char *str, const uuid_t *uuid);
+void uuid_to_string(const uuid_t *uuid, char *str);
 
 #ifdef __cplusplus
 }
