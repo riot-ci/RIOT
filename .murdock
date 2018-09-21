@@ -13,6 +13,9 @@ RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
 DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS"
 
+export APPS="tests/fmt_print"
+export BOARDS="samr21-xpro"
+
 check_label() {
     local label="${1}"
     [ -z "${CI_PULL_LABELS}" ] && return 1
