@@ -60,6 +60,8 @@ static void test_newlib(void)
      * Be sure `iprintf` and `printf` are used when `newlib` is included as
      * they should be visible in the final elf file for compile time tests
      */
+
+#ifdef MODULE_NEWLIB
     int (*iprintf_addr)(const char*, ...) = &iprintf;
     int (*printf_addr)(const char*, ...) = &printf;
     /* With llvm and samr21-xpro, I could not directly do 'printf == iprintf'.
@@ -71,7 +73,6 @@ static void test_newlib(void)
      */
     unsigned iprintf_cmp_printf = memcmp(&iprintf_addr, &printf_addr,
                                          sizeof(void (*)(void)));
-#ifdef MODULE_NEWLIB
 #ifdef MODULE_NEWLIB_NANO
     /* Nano maps iprintf to printf */
     TEST_ASSERT_MESSAGE(iprintf_cmp_printf == 0, "iprintf == printf");
