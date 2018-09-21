@@ -42,6 +42,7 @@ extern "C" {
 
 static const i2c_conf_t i2c_config[I2C_NUMOF] = {
     {
+        .speed = I2C_SPEED_FAST,    /**< bus speed */
         .scl_pin = I2C_0_SCL_PIN,
         .sda_pin = I2C_0_SDA_PIN,
     },
