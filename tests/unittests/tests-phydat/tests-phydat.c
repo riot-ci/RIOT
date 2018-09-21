@@ -15,6 +15,11 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+/* Default is smaller implementation */
+#ifndef PHYDAT_FIT_TRADE_PRECISION_FOR_ROM
+#define PHYDAT_FIT_TRADE_PRECISION_FOR_ROM 1
+#endif
+
 static void test_phydat_fit(void)
 {
     /* Input values for each test: */
@@ -24,8 +29,11 @@ static void test_phydat_fit(void)
         { 30000449, -30000450, 30000500 },
         { -30000449, -30000499, -30000500 },
         { 0, 0, 1234567 },
+        { 32768, 32768, 32768 },
         { 32767, 32767, 32767 },
         { 32766, 32766, 32766 },
+        { -32769, -32769, -32769 },
+        { -32768, -32768, -32768 },
         { -32767, -32767, -32767 },
         { -32766, -32766, -32766 },
     };
@@ -38,11 +46,17 @@ static void test_phydat_fit(void)
         0,
         0,
         0,
-        0
+        0,
+        0,
+        0,
+        0,
     };
     static const unsigned int dims[] = {
         1,
         2,
+        3,
+        3,
+        3,
         3,
         3,
         3,
@@ -61,6 +75,9 @@ static void test_phydat_fit(void)
         UNIT_NONE,
         UNIT_NONE,
         UNIT_NONE,
+        UNIT_NONE,
+        UNIT_NONE,
+        UNIT_NONE,
     };
     /* Expected output values for each test: */
     static const phydat_t expected[] = {
@@ -70,8 +87,15 @@ static void test_phydat_fit(void)
         { .val = { -30000, -30000, -30001 }, .unit = UNIT_LUX,  .scale =  2 },
         { .val = {      0,      0,  12346 }, .unit = UNIT_M,    .scale =  7 },
         { .val = {   3277,   3277,   3277 }, .unit = UNIT_NONE, .scale =  1 },
+        { .val = {  32767,  32767,  32767 }, .unit = UNIT_NONE, .scale =  0 },
         { .val = {  32766,  32766,  32766 }, .unit = UNIT_NONE, .scale =  0 },
         { .val = {  -3277,  -3277,  -3277 }, .unit = UNIT_NONE, .scale =  1 },
+#if PHYDAT_FIT_TRADE_PRECISION_FOR_ROM
+        { .val = {  -3277,  -3277,  -3277 }, .unit = UNIT_NONE, .scale =  1 },
+#else
+        { .val = { -32768, -32768, -32768 }, .unit = UNIT_NONE, .scale =  0 },
+#endif
+        { .val = { -32767, -32767, -32767 }, .unit = UNIT_NONE, .scale =  0 },
         { .val = { -32766, -32766, -32766 }, .unit = UNIT_NONE, .scale =  0 },
     };
 
@@ -82,11 +106,11 @@ static void test_phydat_fit(void)
             .unit = units[i]
         };
         phydat_fit(&dat, values[i], dims[i]);
-        TEST_ASSERT_EQUAL_INT(expected[i].unit, dat.unit);
-        TEST_ASSERT_EQUAL_INT(expected[i].scale, dat.scale);
         TEST_ASSERT_EQUAL_INT(expected[i].val[0], dat.val[0]);
         TEST_ASSERT_EQUAL_INT(expected[i].val[1], dat.val[1]);
         TEST_ASSERT_EQUAL_INT(expected[i].val[2], dat.val[2]);
+        TEST_ASSERT_EQUAL_INT(expected[i].scale, dat.scale);
+        TEST_ASSERT_EQUAL_INT(expected[i].unit, dat.unit);
     }
 }
 
