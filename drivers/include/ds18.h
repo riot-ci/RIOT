@@ -22,8 +22,8 @@
  * @author      Frits Kuipers <frits.kuipers@gmail.com>
  */
 
-#ifndef DS18_TEMP_H
-#define DS18_TEMP_H
+#ifndef DS18_H
+#define DS18_H
 
 #include "periph/gpio.h"
 
@@ -84,4 +84,4 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature);
 #endif
 
 /** @} */
-#endif /* DS18_TEMP_H */
+#endif /* DS18_H */
