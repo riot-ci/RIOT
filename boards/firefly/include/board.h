@@ -23,7 +23,6 @@
 
 #include "cpu.h"
 #include "board_common.h"
-#include "periph_cpu.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,21 +33,19 @@ extern "C" {
  * @{
  */
 #define LED0_PIN        GPIO_PIN(PORT_D, 5)
-#define LED1_PIN        GPIO_PIN(PORT_D, 4)
-#define LED2_PIN        GPIO_PIN(PORT_D, 3)
-
 #define LED0_MASK       (1 << 5)
-#define LED1_MASK       (1 << 4)
-#define LED2_MASK       (1 << 3)
-
 #define LED0_ON         (GPIO_D->DATA |=  LED0_MASK)
 #define LED0_OFF        (GPIO_D->DATA &= ~LED0_MASK)
 #define LED0_TOGGLE     (GPIO_D->DATA ^=  LED0_MASK)
 
+#define LED1_PIN        GPIO_PIN(PORT_D, 4)
+#define LED1_MASK       (1 << 4)
 #define LED1_ON         (GPIO_D->DATA |=  LED1_MASK)
 #define LED1_OFF        (GPIO_D->DATA &= ~LED1_MASK)
 #define LED1_TOGGLE     (GPIO_D->DATA ^=  LED1_MASK)
 
+#define LED2_PIN        GPIO_PIN(PORT_D, 3)
+#define LED2_MASK       (1 << 3)
 #define LED2_ON         (GPIO_D->DATA |=  LED2_MASK)
 #define LED2_OFF        (GPIO_D->DATA &= ~LED2_MASK)
 #define LED2_TOGGLE     (GPIO_D->DATA ^=  LED2_MASK)
@@ -58,7 +55,7 @@ extern "C" {
  * @name User button pin definition
  * @{
  */
-#define BTN0_PIN        GPIO_PIN(0, 3)
+#define BTN0_PIN        GPIO_PIN(PORT_A, 3)
 #define BTN0_MODE       GPIO_IN_PU
 /** @} */
 
@@ -84,5 +81,6 @@ void board_init(void);
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif
+
 #endif /* BOARD_H */
 /** @} */
