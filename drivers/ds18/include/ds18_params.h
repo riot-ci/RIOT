@@ -20,6 +20,7 @@
 #define DS18_PARAMS_H
 
 #include "ds18.h"
+#include "saul_reg.h"
 
 #ifdef __cplusplus
 extern "C" {

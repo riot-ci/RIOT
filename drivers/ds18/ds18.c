@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 Frits Kuipers
+ *               2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +15,7 @@
  * @brief       Device driver implementation for the Maxim Integrated DS1822 and DS18B20 temperature sensors.
  *
  * @author      Frits Kuipers <frits.kuipers@gmail.com>
- *
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  * @}
  */
 
@@ -163,11 +164,14 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
     return DS18_OK;
 }
 
-int ds18_init(ds18_t *dev, ds18_params_t *params)
+int ds18_init(ds18_t *dev, const ds18_params_t *params)
 {
+    int res;
+
     /* Initialize the device and the pin */
     dev->pin = params->pin;
     dev->in_mode = params->in_mode;
-    gpio_init(dev->pin, dev->in_mode);
-    return DS18_OK;
+    res = gpio_init(dev->pin, dev->in_mode) == 0 ? DS18_OK : DS18_ERROR;
+
+    return res;
 }

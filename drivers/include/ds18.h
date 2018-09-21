@@ -9,17 +9,15 @@
 /**
  * @defgroup    drivers_ds18 DS18 temperature sensor driver
  * @ingroup     drivers_sensors
+ * @ingroup     drivers_saul
+ * @brief       Driver interface for the DS18 temperature sensors
  *
- * @brief       ds18 temperature sensor driver
- *
- * ## Description
- *
- * TODO
- *
+ * This driver provides @ref drivers_saul capabilities.
  * @{
  *
  * @file
- * @brief       Driver for Maxim Integrated DS1822 and DS18B20 temperature sensors.
+ * @brief       Driver for Maxim Integrated DS1822 and DS18B20 temperature
+ *              sensors.
  *
  * @author      Frits Kuipers <frits.kuipers@gmail.com>
  */
@@ -68,7 +66,7 @@ typedef struct {
  * @return                   0 on success
  * @return                  -1 on error
  */
-int ds18_init(ds18_t *dev, ds18_params_t *params);
+int ds18_init(ds18_t *dev, const ds18_params_t *params);
 
 /**
  * @brief   Get measured temperature

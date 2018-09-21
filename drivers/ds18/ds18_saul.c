@@ -23,7 +23,7 @@
 #include "saul.h"
 #include "ds18.h"
 
-static int read_temperature(void *dev, phydat_t *res)
+static int read_temperature(const void *dev, phydat_t *res)
 {
     int16_t temperature;
     ds18_t *d = (ds18_t *)dev;
