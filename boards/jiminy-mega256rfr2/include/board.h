@@ -90,6 +90,17 @@ extern "C" {
 #define XTIMER_HZ           (125000UL)
 /** @} */
 
+/** 
+ * @name Indicate Watchdog cleared in bootloader an 
+ * 
+ * AVR CPUs need to reset the Watchdog as fast as possible.
+ * This flag indicates that the watchdog is reseted in the bootloader
+ * and that the MCUSR value is stored in register 2 (r2)
+ * @{
+ */
+#define BOOTLOADER_CLEARS_WATCHDOG_AND_PASSES_MCUSR 1
+/** @} */
+
 /**
  * @name CPU clock scale for jiminy-megarfr256rfr2
  * 
