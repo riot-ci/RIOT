@@ -11,7 +11,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect_exact('OK \(3 tests\)')
+    child.expect_exact('OK (3 tests)')
 
 
 if __name__ == "__main__":
