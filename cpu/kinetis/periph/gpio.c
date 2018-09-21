@@ -137,6 +137,47 @@ static inline int pin_num(gpio_t pin)
     return (int)(pin & 0x3f);
 }
 
+#ifdef MODULE_PERIPH_GPIO_IRQ
+/**
+ * @brief   Get context for a specific pin
+ */
+static inline int get_ctx(int port, int pin)
+{
+    return (isr_map[(port * 4) + (pin >> 3)] >> ((pin & 0x7) * 4)) & 0xf;
+}
+
+/**
+ * @brief   Find a free spot in the array containing the interrupt contexts
+ */
+static int get_free_ctx(void)
+{
+    for (unsigned int i = 0; i < CTX_NUMOF; i++) {
+        if (isr_ctx[i].cb == NULL) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
+ * @brief   Write an entry to the context map array
+ */
+static void write_map(int port, int pin, int ctx)
+{
+    isr_map[(port * 4) + (pin >> 3)] &= ~(0xf << ((pin & 0x7) * 4));
+    isr_map[(port * 4) + (pin >> 3)] |=  (ctx << ((pin & 0x7) * 4));
+}
+
+/**
+ * @brief   Clear the context for the given pin
+ */
+static void ctx_clear(int port, int pin)
+{
+    int ctx = get_ctx(port, pin);
+    write_map(port, pin, ctx);
+}
+#endif
+
 static inline void clk_en(gpio_t pin)
 {
     bit_set32(&SIM->SCGC5, SIM_SCGC5_PORTA_SHIFT + port_num(pin));
@@ -219,45 +260,6 @@ void gpio_write(gpio_t pin, int value)
 }
 
 #ifdef MODULE_PERIPH_GPIO_IRQ
-/**
- * @brief   Get context for a specific pin
- */
-static inline int get_ctx(int port, int pin)
-{
-    return (isr_map[(port * 4) + (pin >> 3)] >> ((pin & 0x7) * 4)) & 0xf;
-}
-
-/**
- * @brief   Find a free spot in the array containing the interrupt contexts
- */
-static int get_free_ctx(void)
-{
-    for (unsigned int i = 0; i < CTX_NUMOF; i++) {
-        if (isr_ctx[i].cb == NULL) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-/**
- * @brief   Write an entry to the context map array
- */
-static void write_map(int port, int pin, int ctx)
-{
-    isr_map[(port * 4) + (pin >> 3)] &= ~(0xf << ((pin & 0x7) * 4));
-    isr_map[(port * 4) + (pin >> 3)] |=  (ctx << ((pin & 0x7) * 4));
-}
-
-/**
- * @brief   Clear the context for the given pin
- */
-static void ctx_clear(int port, int pin)
-{
-    int ctx = get_ctx(port, pin);
-    write_map(port, pin, ctx);
-}
-
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
                   gpio_cb_t cb, void *arg)
 {
