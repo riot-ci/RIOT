@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 Frits Kuipers
+ *               2018 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,6 +15,7 @@
  * @brief       Internal addresses, registers, constants for DS1822 and DS18B20 temperature sensors.
  *
  * @author      Frits Kuipers <frits.kuipers@gmail.com>
+ * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  */
 
 #ifndef DS18_INTERNAL_H
@@ -48,7 +50,7 @@ extern "C" {
 #define DS18_DELAY_RESET            (480U)
 #define DS18_DELAY_PRESENCE         (60U)
 #define DS18_DELAY_SLOT             (60U)
-#define DS18_SAMPLE_TIME            (15U)
+#define DS18_SAMPLE_TIME            (10U)
 #define DS18_DELAY_CONVERT          (750U * US_PER_MS)
 /** @} */
 

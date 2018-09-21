@@ -59,40 +59,50 @@ static void ds18_write_bit(ds18_t *dev, uint8_t bit)
     xtimer_usleep(1);
 }
 
-static uint8_t ds18_read_bit(ds18_t *dev)
+static int ds18_read_bit(ds18_t *dev, uint8_t *bit)
 {
-    uint8_t bit;
-    uint32_t start, end, measurement;
+    uint32_t start, measurement = 0;
 
     /* Initiate read slot */
     ds18_low(dev);
     xtimer_usleep(1);
     ds18_release(dev);
 
-    /* Measure time low off device pin*/
+    /* Measure time low of device pin, timeout after slot time*/
     start = xtimer_now_usec();
-    while (!gpio_read(dev->pin)) ;
-    end = xtimer_now_usec();
+    while (!gpio_read(dev->pin) && measurement < DS18_DELAY_SLOT) {
+        measurement = xtimer_now_usec() - start;
+    };
+
+    /* If there was a timeout return error */
+    if (measurement >= DS18_DELAY_SLOT) {
+        return DS18_ERROR;
+    }
 
     /* When gpio was low for less than the sample time, bit is high*/
-    measurement = (end - start);
-    bit = measurement < DS18_SAMPLE_TIME;
+    *bit = measurement < DS18_SAMPLE_TIME;
 
     /* Wait for slot to end */
     xtimer_usleep(DS18_DELAY_SLOT - measurement);
 
-    return bit;
+    return DS18_OK;
 }
 
-static uint8_t ds18_read_byte(ds18_t *dev)
+static int ds18_read_byte(ds18_t *dev, uint8_t *byte)
 {
-    uint8_t byte = 0;
+    uint8_t bit = 0;
+    *byte = 0;
 
     for (int i = 0; i < 8; i++) {
-        byte |= (ds18_read_bit(dev) << i);
+        if (ds18_read_bit(dev, &bit) == DS18_OK) {
+            *byte |= (bit << i);
+        }
+        else {
+            return DS18_ERROR;
+        }
     }
 
-    return byte;
+    return DS18_OK;
 }
 
 static void ds18_write_byte(ds18_t *dev, uint8_t byte)
@@ -126,6 +136,7 @@ static int ds18_reset(ds18_t *dev)
 int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
 {
     int res;
+    uint8_t b1 = 0, b2 = 0;
 
     res = ds18_reset(dev);
     if (res) {
@@ -148,10 +159,18 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
     ds18_write_byte(dev, DS18_CMD_SKIPROM);
     ds18_write_byte(dev, DS18_CMD_RSCRATCHPAD);
 
-    uint8_t b1 = ds18_read_byte(dev);
-    uint8_t b2 = ds18_read_byte(dev);
+    if (ds18_read_byte(dev, &b1) != DS18_OK) {
+        DEBUG("[DS18] Error reading temperature byte 1\n");
+        return DS18_ERROR;
+    }
 
     DEBUG("[DS18] Received byte: 0x%02x\n", b1);
+
+    if (ds18_read_byte(dev, &b2) != DS18_OK) {
+        DEBUG("[DS18] Error reading temperature byte 2\n");
+        return DS18_ERROR;
+    }
+
     DEBUG("[DS18] Received byte: 0x%02x\n", b2);
 
     /* Fixed point value to uint16_t */
