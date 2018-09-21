@@ -195,6 +195,14 @@ char phydat_prefix_from_scale(int8_t scale);
  * phydat_fit(&dat, values, 3);
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
+ * @note Unless compiled with `-DPHYDAT_FIT_TRADE_PRECISION_FOR_ROM=0`, this
+ *       function will scale the value `-32768`, even though it would fit into a
+ *       @ref phydat_t. Statistically, this precision loss happens in 0.00153%
+ *       of the calls. This optimization saves a bit more than 20 bytes.
+ *
+ * @warning The scale member in @p dat has to be initialized by the caller prior
+ *          to calling this function.
+ *
  * @param[in, out]  dat         the value will be written into this data array
  * @param[in]       values      value(s) to rescale
  * @param[in]       dim         Number of elements in @p values

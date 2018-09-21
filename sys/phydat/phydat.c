@@ -26,29 +26,81 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+#ifndef PHYDAT_FIT_TRADE_PRECISION_FOR_ROM
+#define PHYDAT_FIT_TRADE_PRECISION_FOR_ROM 1
+#endif
+
+static const int32_t lookup_table_positive[] = {
+    327674999,
+    32767499,
+    3276749,
+    327674,
+    32767,
+};
+
+#if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
+static const int32_t lookup_table_negative[] = {
+    327684999,
+    32768499,
+    3276849,
+    327684,
+    32768,
+};
+#endif
+
+static const int32_t divisors[] = {
+    100000,
+    10000,
+    1000,
+    100,
+    10,
+};
+
+#define LOOKUP_LEN (sizeof(lookup_table_positive)/sizeof(int32_t))
+
 void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
 {
     assert(dim <= (sizeof(dat->val) / sizeof(dat->val[0])));
-    int32_t divisor = 1;
+    int32_t divisor = 0;
     int32_t max = 0;
+    const int32_t *lookup = lookup_table_positive;
 
-    /* Get the value with the highest magnitude */
+    /* Get the value with the highest magnitude and the correct lookup table.
+     * If PHYDAT_FIT_TRADE_PRECISION_FOR_ROM is true, the same lookup table will
+     * be used for both positive and negative values. As result, -32768 will be
+     * considered as out of range and scaled down. So statistically in 0.00153%
+     * of the cases an unneeded scaling is performed, when
+     * PHYDAT_FIT_TRADE_PRECISION_FOR_ROM is true.
+     */
     for (unsigned int i = 0; i < dim; i++) {
         if (values[i] > max) {
             max = values[i];
+#if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
+            lookup = lookup_table_positive;
+#endif
         }
         else if (-values[i] > max) {
             max = -values[i];
+#if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
+            lookup = lookup_table_negative;
+#endif
         }
     }
 
-    /* Get the correct scale
-     * (Not using max /= 10 here to prevent precision loss when rounding down)
-     * (Not stopping at PHYDAT_MAX because rounding up could overflow)
-     */
-    while ((max / divisor) >= PHYDAT_MAX) {
-        divisor *= 10;
-        dat->scale++;
+    for (unsigned int i = 0; i < LOOKUP_LEN; i++) {
+        if (max > lookup[i]){
+            divisor = divisors[i];
+            dat->scale += 5 - i;
+            break;
+        }
+    }
+
+    if (!divisor) {
+        /* No rescaling required */
+        for (unsigned int i = 0; i < dim; i++) {
+            dat->val[i] = values[i];
+        }
+        return;
     }
 
     /* Applying scale and add half of the divisor for correct rounding */
