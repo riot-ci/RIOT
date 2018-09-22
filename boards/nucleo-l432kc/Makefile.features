@@ -1,3 +1,6 @@
+CPU = stm32l4
+CPU_MODEL = stm32l432kc
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_pwm
 FEATURES_PROVIDED += periph_rtc
@@ -10,5 +13,3 @@ include $(RIOTBOARD)/common/nucleo32/Makefile.features
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = cortex_m4_1
-
-include $(RIOTCPU)/stm32l4/Makefile.features

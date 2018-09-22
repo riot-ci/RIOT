@@ -1,7 +1,3 @@
-# define the cpu used by the board
-export CPU = kinetis
-export CPU_MODEL = mkw41z512vht4
-
 # This board is factory flashed with a sniffer application which uses a
 # proprietary protocol (FSCI) over USB for transferring received data frames.
 # The user needs to replace the proprietary USB interface application with a

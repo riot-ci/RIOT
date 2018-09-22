@@ -1,3 +1,6 @@
+CPU = efm32
+CPU_MODEL = efm32lg990f256
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
 FEATURES_PROVIDED += periph_dac
@@ -14,5 +17,3 @@ FEATURES_PROVIDED += periph_uart
 FEATURES_MCU_GROUP = cortex_m3_2
 
 include $(RIOTBOARD)/common/silabs/Makefile.features
-
-include $(RIOTCPU)/efm32/Makefile.features

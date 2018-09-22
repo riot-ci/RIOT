@@ -1,3 +1,6 @@
+CPU = kinetis
+CPU_MODEL = mk22fn512vlh12
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
 FEATURES_PROVIDED += periph_i2c
@@ -10,5 +13,3 @@ FEATURES_PROVIDED += periph_uart
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = cortex_m4_1
-
-include $(RIOTCPU)/kinetis/Makefile.features
