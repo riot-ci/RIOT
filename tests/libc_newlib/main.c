@@ -23,7 +23,6 @@
  */
 #define _DEFAULT_SOURCE 1
 
-#include <string.h>
 #include <stdio.h>
 #include "embUnit.h"
 
@@ -59,26 +58,18 @@ static void test_newlib(void)
     /*
      * Be sure `iprintf` and `printf` are used when `newlib` is included as
      * they should be visible in the final elf file for compile time tests
+     *
+     * With llvm and samr21-xpro, I could not directly do 'printf == iprintf'.
+     * But doing `(printf - iprintf) == 0` correctly checked if they are equal.
      */
 
 #ifdef MODULE_NEWLIB
-    int (*iprintf_addr)(const char*, ...) = &iprintf;
-    int (*printf_addr)(const char*, ...) = &printf;
-    /* With llvm and samr21-xpro, I could not directly do 'printf == iprintf'.
-     * And I could not cast them to an integer value in a portable way.
-     * So I use real function pointers for this.
-     * However comparing `printf_addr` with `iprintf_addr` does not work if
-     * there is not the memcmp to somehow 'force them' to be pointers...
-     * So I used the 'memcmp' for the comparison.
-     */
-    unsigned iprintf_cmp_printf = memcmp(&iprintf_addr, &printf_addr,
-                                         sizeof(void (*)(void)));
 #ifdef MODULE_NEWLIB_NANO
     /* Nano maps iprintf to printf */
-    TEST_ASSERT_MESSAGE(iprintf_cmp_printf == 0, "iprintf == printf");
+    TEST_ASSERT_MESSAGE((printf - iprintf) == 0, "iprintf == printf");
 #else
     /* Normal newlib does not */
-    TEST_ASSERT_MESSAGE(iprintf_cmp_printf != 0, "iprintf != printf");
+    TEST_ASSERT_MESSAGE((printf - iprintf) != 0, "iprintf != printf");
 #endif
 #endif
 }
