@@ -115,30 +115,30 @@ static const spi_conf_t spi_config[] = {
  * @name    RTC configuration
  * @{
  */
-#define RTC_NUMOF           (1)
-#define EXTERNAL_OSC32_SOURCE                    1
-#define INTERNAL_OSC32_SOURCE                    0
-#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE      0
+#define RTC_NUMOF                               (1)
+#define EXTERNAL_OSC32_SOURCE                   1
+#define INTERNAL_OSC32_SOURCE                   0
+#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE     0
 /** @} */
 
 /**
  * @name    RTT configuration
  * @{
  */
-#define RTT_FREQUENCY       (32768U)
-#define RTT_MAX_VALUE       (0xffffffffU)
-#define RTT_NUMOF           (1)
+#define RTT_FREQUENCY                           (32768U)
+#define RTT_MAX_VALUE                           (0xffffffffU)
+#define RTT_NUMOF                               (1)
 /** @} */
 
 /**
  * @name ADC Configuration
  * @{
  */
-#define ADC_NUMOF                          (3U)
+#define ADC_NUMOF                               (3U)
 
 /* ADC 0 Default values */
-#define ADC_0_CLK_SOURCE                   0 /* GCLK_GENERATOR_0 */
-#define ADC_0_PRESCALER                    ADC_CTRLB_PRESCALER_DIV256
+#define ADC_0_CLK_SOURCE                        0 /* GCLK_GENERATOR_0 */
+#define ADC_0_PRESCALER                         ADC_CTRLB_PRESCALER_DIV256
 
 static const adc_conf_chan_t adc_channels[] = {
     /* port, pin, muxpos */
@@ -147,8 +147,8 @@ static const adc_conf_chan_t adc_channels[] = {
     {GPIO_PIN(PA, 2), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN0)}
 };
 
-#define ADC_0_NEG_INPUT                    ADC_INPUTCTRL_MUXNEG(0x18u)
-#define ADC_0_REF_DEFAULT                  ADC_REFCTRL_REFSEL_INTVCC2
+#define ADC_0_NEG_INPUT                         ADC_INPUTCTRL_MUXNEG(0x18u)
+#define ADC_0_REF_DEFAULT                       ADC_REFCTRL_REFSEL_INTVCC2
 /** @} */
 
 #ifdef __cplusplus
