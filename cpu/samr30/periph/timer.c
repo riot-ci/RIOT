@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
- *               2015 FreshTemp, LLC.
- *               2014 Freie Universität Berlin
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -10,15 +8,14 @@
  */
 
 /**
- * @ingroup     cpu_saml21
+ * @ingroup     cpu_samr30
  * @ingroup     drivers_periph_timer
  * @{
  *
  * @file        timer.c
  * @brief       Low-level timer driver implementation
  *
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Baptiste Clenet <bapclenet@gmail.com>
  *
  * @}
  */

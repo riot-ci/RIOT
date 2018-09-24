@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
- *               2015 FreshTemp, LLC.
- *               2014-2015 Freie Universität Berlin
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -9,15 +7,13 @@
  */
 
 /**
- * @ingroup     cpu_saml21
+ * @ingroup     cpu_samr30
  * @{
  *
  * @file        startup.c
  * @brief       Startup code and interrupt vector definition
  *
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Baptiste Clenet <bapclenet@gmail.com>
  *
  * @}
  */

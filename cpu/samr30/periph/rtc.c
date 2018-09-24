@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Baptiste CLENET
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup     cpu_saml21
+ * @ingroup     cpu_samr30
  * @ingroup     drivers_periph_rtc
  * @{
  * @file
  * @brief       Low-level RTC driver implementation
  * @author      Baptiste Clenet <bapclenet@gmail.com>
- * @autor       ported to SAML21 by FWX <FWX@dialine.fr>
+ * @author      FWX <FWX@dialine.fr>
  * @}
  */
 

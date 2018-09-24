@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Freie Universität Berlin
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +7,14 @@
  */
 
 /**
- * @ingroup         cpu_saml21
+ * @ingroup         cpu_samr30
  * @brief           CPU specific definitions for internal peripheral handling
  * @{
  *
  * @file
  * @brief           CPU specific definitions for internal peripheral handling
  *
- * @author          Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author          Baptiste Clenet <bapclenet@gmail.com>
  */
 
 #ifndef PERIPH_CPU_H
@@ -36,6 +36,10 @@ static const int8_t exti_config[2][32] = {
       0,  1, -1, -1, -1, -1,  6,  7, -1, -1, -1, -1, -1, -1, 14, 15},
 };
 
+/**
+ * @name    Override the ADC resolution configuration
+ * @{
+ */
 #define HAVE_ADC_RES_T
 typedef enum {
     ADC_RES_6BIT  = 0xff,                       /**< not supported */
@@ -46,6 +50,7 @@ typedef enum {
     ADC_RES_16BIT = 0xfd                        /**< not supported */
 } adc_res_t;
 /** @} */
+
 #ifdef __cplusplus
 }
 #endif

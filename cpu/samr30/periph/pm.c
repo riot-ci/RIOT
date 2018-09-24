@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Kaspar Schleiser <kaspar@schleiser.de>
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +7,14 @@
  */
 
 /**
- * @ingroup     cpu_saml21
+ * @ingroup     cpu_samr30
  * @ingroup     drivers_periph_pm
  * @{
  *
  * @file
  * @brief       Implementation of the kernels power management interface
  *
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Baptiste Clenet <bapclenet@gmail.com>
  *
  * @}
  */
