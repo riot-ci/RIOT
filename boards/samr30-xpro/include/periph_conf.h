@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
- *               2015 FreshTemp, LLC.
- *               2014-2016 Freie Universität Berlin
+ * Copyright (C) 2017 Baptiste Clenet <bapclenet@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -9,15 +7,13 @@
  */
 
 /**
- * @ingroup     boards_saml21-xpro
+ * @ingroup     boards_samr30-xpro
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for the Atmel SAM L21 Xplained Pro board
+ * @brief       Peripheral MCU configuration for the Atmel SAM R30 Xplained Pro board
  *
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Baptiste Clenet <bapclenet@gmail.com>
  */
 
 #ifndef PERIPH_CONF_H

@@ -1,7 +1,6 @@
-# define the cpu used by the saml21 board
+# define the cpu used by the samr30-xpro board
 export CPU = samr30
 export CPU_MODEL = samr30g18a
-export CFLAGS += -D__SAMR30G18A__
 
 # set edbg device type
 EDBG_DEVICE_TYPE = atmel_cm0p
