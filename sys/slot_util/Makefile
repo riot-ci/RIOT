@@ -1,0 +1,3 @@
+CFLAGS += -DSLOT0_SIZE=$(RIOTBOOT_SLOT0_SIZE)
+
+include $(RIOTBASE)/Makefile.base
