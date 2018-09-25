@@ -650,7 +650,7 @@ devopen(const char *dev, int flags)
 {
     char t[1024];
     strcpy(t, "/dev/");
-    /* need to consider `\0` terminator and strlen("dev") = 5, hence 6 */
+    /* need to consider `\0` terminator and strlen("/dev/") = 5, hence 6 */
     /* cppcheck-suppress bufferAccessOutOfBounds
      * (reason: seems to be a bug in cppcheck 1.7x) */
     strncat(t, dev, sizeof(t) - 6);
