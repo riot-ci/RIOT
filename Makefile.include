@@ -15,7 +15,8 @@ RIOTTOOLS      ?= $(RIOTBASE)/dist/tools
 RIOTPROJECT    ?= $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
 GITCACHE       ?= $(RIOTTOOLS)/git/git-cache
 APPDIR         ?= $(CURDIR)
-BINDIRBASE     ?= $(APPDIR)/bin
+BUILDOUT_DIR   ?= $(APPDIR)
+BINDIRBASE     ?= $(BUILDOUT_DIR)/bin
 BINDIR         ?= $(BINDIRBASE)/$(BOARD)
 PKGDIRBASE     ?= $(BINDIRBASE)/pkg/$(BOARD)
 DLCACHE        ?= $(RIOTTOOLS)/dlcache/dlcache.sh
@@ -30,6 +31,7 @@ __DIRECTORY_VARIABLES := \
   RIOTTOOLS \
   RIOTPROJECT \
   APPDIR \
+  BUILDOUT_DIR \
   BINDIRBASE \
   BINDIR \
   CCACHE_BASEDIR \
@@ -49,6 +51,7 @@ override RIOTTOOLS      := $(abspath $(RIOTTOOLS))
 override RIOTPROJECT    := $(abspath $(RIOTPROJECT))
 override GITCACHE       := $(abspath $(GITCACHE))
 override APPDIR         := $(abspath $(APPDIR))
+override BUILDOUT_DIR   := $(abspath $(BUILDOUT_DIR))
 override BINDIRBASE     := $(abspath $(BINDIRBASE))
 override BINDIR         := $(abspath $(BINDIR))
 override PKGDIRBASE     := $(abspath $(PKGDIRBASE))
