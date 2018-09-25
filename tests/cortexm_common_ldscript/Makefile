@@ -17,7 +17,7 @@ BOARD_WHITELIST += feather-m0
 BOARD_WHITELIST += opencm904
 BOARD_WHITELIST += spark-core
 
-include $(RIOTBASE)/Makefile.include
+include $(TESTBASE)/../Makefile.include
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
