@@ -15,10 +15,10 @@ RIOTTOOLS      ?= $(RIOTBASE)/dist/tools
 RIOTPROJECT    ?= $(shell git rev-parse --show-toplevel 2>/dev/null || pwd)
 GITCACHE       ?= $(RIOTTOOLS)/git/git-cache
 APPDIR         ?= $(CURDIR)
-BUILDOUT_DIR   ?= $(APPDIR)
+BUILDOUT_DIR   ?= $(APPDIR)/build
 BINDIRBASE     ?= $(BUILDOUT_DIR)/bin
 BINDIR         ?= $(BINDIRBASE)/$(BOARD)
-PKGDIRBASE     ?= $(BINDIRBASE)/pkg/$(BOARD)
+PKGDIRBASE     ?= $(BUILDOUT_DIR)/pkg/$(BOARD)
 DLCACHE        ?= $(RIOTTOOLS)/dlcache/dlcache.sh
 DLCACHE_DIR    ?= $(RIOTBASE)/.dlcache
 
