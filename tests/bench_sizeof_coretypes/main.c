@@ -105,6 +105,7 @@ int main(void)
 #endif
 #if defined(DEVELHELP) || defined(SCHED_TEST_STACK) || defined(MODULE_MPU_STACK_GUARD)
     P(stack_start);
+    P(stack_size);
 #endif
 
     puts("\n[SUCCESS]");
