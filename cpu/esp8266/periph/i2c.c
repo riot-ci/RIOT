@@ -53,8 +53,8 @@
 extern uint8_t system_get_cpu_freq(void);
 extern bool system_update_cpu_freq(uint8_t freq);
 
-/* max clock stretching counter */
-#define I2C_CLOCK_STRETCH 400
+/* max clock stretching counter (ca. 10 ms) */
+#define I2C_CLOCK_STRETCH 40000
 
 typedef struct
 {
@@ -130,7 +130,7 @@ static int _i2c_read_byte (_i2c_bus_t* bus, uint8_t* byte, bool ack);
 static int _i2c_arbitration_lost (_i2c_bus_t* bus, const char* func);
 
 /* implementation of i2c interface */
-
+#include "xtimer.h"
 void i2c_init(i2c_t dev)
 {
     if (I2C_NUMOF != sizeof(_i2c_bus)/sizeof(_i2c_bus_t)) {
@@ -483,7 +483,7 @@ static /* IRAM */ int _i2c_stop_cond(_i2c_bus_t* bus)
         res = -ETIMEDOUT;
     }
 
-    /* wait t_SU;STO - hold time (repeated) START condition, */
+    /* wait t_SU;STO - hold time STOP condition, */
     /* min. in us: 4.0 (SM), 0.6 (FM), 0.26 (FPM), 0.16 (HSM); no max. */
     _i2c_delay (bus);
 
@@ -495,6 +495,8 @@ static /* IRAM */ int _i2c_stop_cond(_i2c_bus_t* bus)
 
     /* wait t_BUF - bus free time between a STOP and a START condition */
     /* min. in us: 4.7 (SM), 1.3 (FM), 0.5 (FPM), 0.16 (HSM); no max. */
+    _i2c_delay (bus);
+    /* one additional delay */
     _i2c_delay (bus);
 
     /* if SDA is low, arbitration is lost and someone else is driving the bus */
