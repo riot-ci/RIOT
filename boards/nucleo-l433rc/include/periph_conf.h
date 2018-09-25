@@ -139,8 +139,6 @@ static const uart_conf_t uart_config[] = {
 #define UART_0_ISR          (isr_lpuart1)
 #define UART_1_ISR          (isr_usart1)
 
-#define STM32_HAVE_LPUART
-
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 /** @} */
 
