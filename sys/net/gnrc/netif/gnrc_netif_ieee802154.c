@@ -97,6 +97,11 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             gnrc_pktbuf_release(pkt);
             return NULL;
         }
+#ifdef MODULE_NETSTATS_L2
+        netif->stats.rx_count++;
+        netif->stats.rx_bytes += pkt->size;
+#endif
+
         if (!(state->flags & NETDEV_IEEE802154_RAW)) {
             gnrc_pktsnip_t *ieee802154_hdr, *netif_hdr;
             gnrc_netif_hdr_t *hdr;
@@ -227,10 +232,10 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
             (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
-        netif->dev->stats.tx_mcast_count++;
+        netif->stats.tx_mcast_count++;
     }
     else {
-        netif->dev->stats.tx_unicast_count++;
+        netif->stats.tx_unicast_count++;
     }
 #endif
 #ifdef MODULE_GNRC_MAC
