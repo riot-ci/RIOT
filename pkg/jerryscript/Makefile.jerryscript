@@ -10,8 +10,6 @@ ifeq (esp8266,$(CPU))
   #  * -Wconversion
   #  * -Wsign-conversion
   # that are enable by jerryscript build system
-  #EXT_CFLAGS += -Wno-undef -Wno-conversion -Wno-sign-conversion
-  EXT_CFLAGS += -Wno-error
   EXT_CFLAGS += -Wno-error=undef -Wno-error=conversion -Wno-error=sign-conversion
 endif
 
