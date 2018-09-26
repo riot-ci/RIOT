@@ -67,7 +67,7 @@ ifneq (,$(filter conn_can,$(USEMODULE)))
   SRC += sc_can.c
 endif
 
-ifneq (,$(filter periph_rtc,$(FEATURES_PROVIDED)))
+ifneq (,$(filter periph_rtc,$(USEMODULE)))
   SRC += sc_rtc.c
 endif
 
