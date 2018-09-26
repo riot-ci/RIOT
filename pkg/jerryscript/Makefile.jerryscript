@@ -9,8 +9,10 @@ ifeq (esp8266,$(CPU))
   #  * -Wundef
   #  * -Wconversion
   #  * -Wsign-conversion
-  # that are enable by jerryscript build system
-  EXT_CFLAGS += -Wno-error=undef -Wno-error=conversion -Wno-error=sign-conversion
+  # that are enabled by jerryscript build system so disable them for this cpu
+  EXT_CFLAGS += -Wno-undef -Wno-error=undef
+  EXT_CFLAGS += -Wno-conversion -Wno-error=conversion
+  EXT_CFLAGS += -Wno-sign-conversion -Wno-error=sign-conversion
 endif
 
 .PHONY: libjerry riot-jerry flash clean
