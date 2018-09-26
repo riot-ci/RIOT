@@ -121,13 +121,17 @@ complete that no input from the original developer or maintainer is required.
 
 #### Partial review
 
-When you review a PR only partly according to the points outlined in the
-[technical guidelines](#technical-guidelines) please do not "approve" the PR to
-prevent accidental merges. Rather, give your verbal ACK and describe what you
-reviewed. In addition, if you processed or reasonably stepped over a whole
-section, mark the PR with the according label from the "Reviewed:" category.
-If you disagree with the assessment of a previous review, you may remove a
-certain "Reviewed:" label.
+You can review a PR partially. This would involve reviewing all points in one or
+more sections outlined in the [technical guidelines](#technical-guidelines).
+In that case, please do not "approve" the PR to prevent accidental merges.
+Rather, give your verbal ACK and describe what you reviewed. In addition, if you
+processed or reasonably stepped over a whole section, mark the PR with the
+according label from the "Reviewed:" category. If you set a label by stepping
+over a section, please articulate your reasoning for this clearly, as noted in
+the [introduction](#introduction). This will help other maintainers help to
+better understand your line of thought. If you disagree with the assessment of
+a previous review, you may remove a certain "Reviewed:" label. Please state your
+reasoning in this case as well.
 
 When all "Reviewed:" labels are set you may give your approval for the PR.
 
