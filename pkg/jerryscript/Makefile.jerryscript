@@ -6,10 +6,10 @@ EXT_CFLAGS :=-D__TARGET_RIOT
 
 ifeq (esp8266,$(CPU))
   # The esp8266 C newlib version XXXX has errors when compiling with warnings
+  # that are enabled by jerryscript build system so disable them for this cpu:
   #  * -Wundef
   #  * -Wconversion
   #  * -Wsign-conversion
-  # that are enabled by jerryscript build system so disable them for this cpu
   EXT_CFLAGS += -Wno-undef -Wno-error=undef
   EXT_CFLAGS += -Wno-conversion -Wno-error=conversion
   EXT_CFLAGS += -Wno-sign-conversion -Wno-error=sign-conversion
