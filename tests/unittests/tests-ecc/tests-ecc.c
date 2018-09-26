@@ -14,7 +14,6 @@
  * @brief       Tests for Error Correction Codes
  *
  * @author      Lucas Jenß <lucas@x3ro.de>
- * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  */
 #include <string.h>
 #include "embUnit.h"
