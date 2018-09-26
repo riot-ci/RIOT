@@ -7,8 +7,7 @@
  */
 
 /**
- * @addtogroup oneway_malloc
- * @ingroup sys
+ * @ingroup one_way_malloc
  * @{
  *
  * @file
