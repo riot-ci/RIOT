@@ -39,7 +39,7 @@ extern "C" {
 #define AT86RF2XX_PARAM_SPI_CLK     SPI_CLK_5MHZ
 /** @}*/
 
-/*
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
@@ -59,7 +59,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name SW0 (Button) pin definitions
+ * @name    BTN0 (SW0 Button) pin definitions
  * @{
  */
 #define BTN0_PORT                   PORT->Group[0]
