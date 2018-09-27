@@ -28,15 +28,14 @@ extern "C" {
 #endif
 
 /**
-* @name NG_AT86RF212B configuration
- *
- * {spi bus, spi speed, cs pin, int pin, reset pin, sleep pin}
+ * @name NG_AT86RF212B configuration
+ * @{
  */
+#define AT86RF2XX_PARAM_SPI         SPI_DEV(0)
 #define AT86RF2XX_PARAM_CS          GPIO_PIN(PB, 31)
 #define AT86RF2XX_PARAM_INT         GPIO_PIN(PB, 0)
 #define AT86RF2XX_PARAM_SLEEP       GPIO_PIN(PA, 20)
 #define AT86RF2XX_PARAM_RESET       GPIO_PIN(PB, 15)
-#define AT86RF2XX_PARAM_SPI         SPI_DEV(0)
 #define AT86RF2XX_PARAM_SPI_CLK     SPI_CLK_5MHZ
 /** @}*/
 
