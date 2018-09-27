@@ -65,7 +65,7 @@ static int cmd_read(int argc, char **argv)
         return 1;
     }
 
-    if (pos + count >= EEPROM_SIZE) {
+    if (pos + count > EEPROM_SIZE) {
         puts("Failed: cannot read out of eeprom bounds");
         return 1;
     }
@@ -87,7 +87,7 @@ static int cmd_write(int argc, char **argv)
 
     uint32_t pos = atoi(argv[1]);
 
-    if (pos + strlen(argv[2]) >= EEPROM_SIZE) {
+    if (pos + strlen(argv[2]) > EEPROM_SIZE) {
         puts("Failed: cannot write out of eeprom bounds");
         return 1;
     }
