@@ -128,6 +128,7 @@ static int _i2c_read_bit (_i2c_bus_t* bus, bool* bit);
 static int _i2c_write_byte (_i2c_bus_t* bus, uint8_t byte);
 static int _i2c_read_byte (_i2c_bus_t* bus, uint8_t* byte, bool ack);
 static int _i2c_arbitration_lost (_i2c_bus_t* bus, const char* func);
+static void _i2c_abort (_i2c_bus_t* bus, const char* func);
 
 /* implementation of i2c interface */
 void i2c_init(i2c_t dev)
@@ -217,7 +218,7 @@ int /* IRAM */ i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, 
             if ((res = _i2c_write_byte (bus, addr1)) != 0 ||
                 (res = _i2c_write_byte (bus, addr2)) != 0) {
                 /* abort transfer */
-                _i2c_stop_cond (bus);
+                _i2c_abort (bus, __func__);
                 return res;
             }
         }
@@ -225,7 +226,7 @@ int /* IRAM */ i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, 
             /* send address byte with read flag */
             if ((res = _i2c_write_byte (bus, (addr << 1 | I2C_READ))) != 0) {
                 /* abort transfer */
-                _i2c_stop_cond (bus);
+                _i2c_abort (bus, __func__);
                 return res;
             }
         }
@@ -235,7 +236,7 @@ int /* IRAM */ i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, 
     for (unsigned int i = 0; i < len; i++) {
         if ((res = _i2c_read_byte (bus, &(((uint8_t*)data)[i]), i < len-1)) != 0) {
             /* abort transfer */
-            _i2c_stop_cond (bus);
+            _i2c_abort (bus, __func__);
             return res;
         }
     }
@@ -278,7 +279,7 @@ int /* IRAM */ i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_
             if ((res = _i2c_write_byte (bus, addr1)) != 0 ||
                 (res = _i2c_write_byte (bus, addr2)) != 0) {
                 /* abort transfer */
-                _i2c_stop_cond (bus);
+                _i2c_abort (bus, __func__);
                 return res;
             }
         }
@@ -286,7 +287,7 @@ int /* IRAM */ i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_
             /* send address byte without read flag */
             if ((res = _i2c_write_byte (bus, addr << 1)) != 0) {
                 /* abort transfer */
-                _i2c_stop_cond (bus);
+                _i2c_abort (bus, __func__);
                 return res;
             }
         }
@@ -296,7 +297,7 @@ int /* IRAM */ i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_
     for (unsigned int i = 0; i < len; i++) {
         if ((res = _i2c_write_byte (bus, ((uint8_t*)data)[i])) != 0) {
             /* abort transfer */
-            _i2c_stop_cond (bus);
+            _i2c_abort (bus, __func__);
             return res;
         }
     }
@@ -381,6 +382,18 @@ static inline void _i2c_clear_sda(_i2c_bus_t* bus)
 {
     /* set SDA signal low (actively driven to low) */
     GPIO.OUT_CLEAR = bus->sda_bit;
+}
+
+static void _i2c_abort(_i2c_bus_t* bus, const char* func)
+{
+    DEBUG("%s: dev=%u\n", func, bus->dev);
+
+    /* reset SCL and SDA to passive HIGH (floating and pulled-up) */
+    _i2c_set_sda (bus);
+    _i2c_set_scl (bus);
+
+    /* reset repeated start indicator */
+    bus->started = false;
 }
 
 static /* IRAM */ int _i2c_arbitration_lost (_i2c_bus_t* bus, const char* func)
@@ -495,6 +508,8 @@ static /* IRAM */ int _i2c_stop_cond(_i2c_bus_t* bus)
     /* wait t_BUF - bus free time between a STOP and a START condition */
     /* min. in us: 4.7 (SM), 1.3 (FM), 0.5 (FPM), 0.16 (HSM); no max. */
     _i2c_delay (bus);
+    /* one additional delay */
+   // _i2c_delay (bus);
 
     /* if SDA is low, arbitration is lost and someone else is driving the bus */
     if (_i2c_read_sda (bus) == 0) {
