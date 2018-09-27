@@ -1,5 +1,5 @@
-# define the cpu used by the samr30-xpro board
-export CPU = samr30
+# define the cpu used by the samr30-xpro board (based on saml21)
+export CPU = saml21
 export CPU_MODEL = samr30g18a
 
 # set edbg device type
