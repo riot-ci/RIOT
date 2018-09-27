@@ -106,6 +106,12 @@ static inline int mutex_trylock(mutex_t *mutex)
 /**
  * @brief Locks a mutex, blocking.
  *
+ * Mutexes are served in FIFO order, respecting thread priority (i.e. a higher
+ * priority thread will be unlocked before a lower priority one even if if arrived
+ * later). As long as no thread holds the mutex indefinitely and as long as there
+ * are no deadlocks, all same-priority threads blocked on mutex_lock() should
+ * eventually unblock.
+ *
  * @param[in] mutex Mutex object to lock. Has to be initialized first. Must not be NULL.
  */
 static inline void mutex_lock(mutex_t *mutex)
@@ -115,6 +121,12 @@ static inline void mutex_lock(mutex_t *mutex)
 
 /**
  * @brief Unlocks the mutex.
+ *
+ * One of the threads waiting on the mutex will be unblocked. For details on the
+ * order in which mutexes are served see mutex_lock().
+ *
+ * A mutex in RIOT can be unlocked by any thread not just the one that is
+ * holding the mutex. This can be used to construct other synchronization devices.
  *
  * @param[in] mutex Mutex object to unlock, must not be NULL.
  */
