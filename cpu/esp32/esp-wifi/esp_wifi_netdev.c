@@ -122,8 +122,6 @@ static esp_err_t IRAM_ATTR _esp_system_event_handler(void *ctx, system_event_t *
 /** TODO better place
  * Default WiFi configuration, overwrite them with your configs
  */
-#define CONFIG_WIFI_STA_SSID        "BSHS1"
-#define CONFIG_WIFI_STA_PASSWORD    "DasistdasHausvomNikolaus"
 #ifndef CONFIG_WIFI_STA_SSID
 #define CONFIG_WIFI_STA_SSID        "RIOT_AP"
 #endif
