@@ -50,15 +50,20 @@ size_t eeprom_write(uint32_t pos, const uint8_t *data, size_t len)
     return len;
 }
 
-size_t eeprom_clear(uint32_t pos, size_t len)
+size_t eeprom_set(uint32_t pos, uint8_t val, size_t len)
 {
     assert(pos + len <= EEPROM_SIZE);
 
     for (size_t i = 0; i < len; i++) {
-        eeprom_write_byte(pos++, 0);
+        eeprom_write_byte(pos++, val);
     }
 
     return len;
+}
+
+size_t eeprom_clear(uint32_t pos, size_t len)
+{
+    return eeprom_set(pos, 0, len);
 }
 
 size_t eeprom_erase(void)
