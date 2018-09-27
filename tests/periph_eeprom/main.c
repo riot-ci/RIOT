@@ -65,7 +65,7 @@ static int cmd_read(int argc, char **argv)
         return 1;
     }
 
-    if (pos + count >= EEPROM_SIZE) {
+    if (pos + count > EEPROM_SIZE) {
         puts("Failed: cannot read out of eeprom bounds");
         return 1;
     }
@@ -87,7 +87,7 @@ static int cmd_write(int argc, char **argv)
 
     uint32_t pos = atoi(argv[1]);
 
-    if (pos + strlen(argv[2]) >= EEPROM_SIZE) {
+    if (pos + strlen(argv[2]) > EEPROM_SIZE) {
         puts("Failed: cannot write out of eeprom bounds");
         return 1;
     }
@@ -98,10 +98,52 @@ static int cmd_write(int argc, char **argv)
     return 0;
 }
 
+static int cmd_clear(int argc, char **argv)
+{
+    if (argc < 3) {
+        printf("usage: %s <pos> <count>\n", argv[0]);
+        return 1;
+    }
+
+    uint32_t pos = atoi(argv[1]);
+    uint32_t count = atoi(argv[2]);
+
+    if (pos + count > EEPROM_SIZE) {
+        puts("Failed: cannot clear out of eeprom bounds");
+        return 1;
+    }
+
+    size_t ret = eeprom_clear(pos, count);
+    printf("%d bytes cleared in EEPROM\n", (int)ret);
+
+    return 0;
+}
+
+static int cmd_erase(int argc, char **argv)
+{
+    if (argc != 1) {
+        printf("usage: %s\n", argv[0]);
+        return 1;
+    }
+
+    size_t ret = eeprom_erase();
+    if (ret == EEPROM_SIZE) {
+        puts("EEPROM erased with success");
+    }
+    else {
+        puts("EEPROM erase failed");
+        return 1;
+    }
+
+    return 0;
+}
+
 static const shell_command_t shell_commands[] = {
     { "info", "Print information about eeprom", cmd_info },
     { "read", "Read bytes from eeprom", cmd_read },
     { "write", "Write bytes to eeprom", cmd_write},
+    { "clear", "Clear bytes to eeprom", cmd_clear},
+    { "erase", "Erase whole eeprom", cmd_erase},
     { NULL, NULL, NULL }
 };
 
