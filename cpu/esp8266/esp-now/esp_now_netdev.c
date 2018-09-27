@@ -214,7 +214,7 @@ static void IRAM esp_now_recv_cb(uint8_t *mac, uint8_t *data, uint8_t len)
     printf ("%s: received %d byte from %02x:%02x:%02x:%02x:%02x:%02x\n",
             __func__, len,
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    hexdump (data, len, 'b', 16);
+    esp_hexdump (data, len, 'b', 16);
     #endif
 
     _esp_now_dev.rx_len = len;
@@ -344,7 +344,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 
     #if ENABLE_DEBUG
     printf ("%s: send %d byte\n", __func__, dev->tx_len);
-    hexdump (dev->tx_buf, dev->tx_len, 'b', 16);
+    esp_hexdump (dev->tx_buf, dev->tx_len, 'b', 16);
     #endif
 
     _esp_now_sending = 1;
@@ -462,7 +462,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
               _esp_now_dst[3], _esp_now_dst[4], _esp_now_dst[5]);
     }
     else {
-        DEBUG("%s: send to espnow addr = NULL", __func__);
+        DEBUG("%s: send to espnow addr = NULL\n", __func__);
     }
 
     /* send the the packet to the peer(s) mac address */
@@ -526,7 +526,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 __func__, dev->rx_len,
                 dev->rx_mac[0], dev->rx_mac[1], dev->rx_mac[2],
                 dev->rx_mac[3], dev->rx_mac[4], dev->rx_mac[5]);
-        hexdump (dev->rx_buf, dev->rx_len, 'b', 16);
+        esp_hexdump (dev->rx_buf, dev->rx_len, 'b', 16);
         #endif
 
         if (esp_now_is_peer_exist(dev->rx_mac) <= 0) {
