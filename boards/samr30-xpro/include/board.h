@@ -48,15 +48,15 @@ extern "C" {
 
 #define LED0_PIN                    GPIO_PIN(PA, 18)
 #define LED0_MASK                   (1 << 18)
-#define LED0_ON                     (LED_PORT.OUTCLR.reg = LED0GREEN_MASK)
-#define LED0_OFF                    (LED_PORT.OUTSET.reg = LED0GREEN_MASK)
-#define LED0_TOGGLE                 (LED_PORT.OUTTGL.reg = LED0GREEN_MASK)
+#define LED0_ON                     (LED_PORT.OUTCLR.reg = LED0_MASK)
+#define LED0_OFF                    (LED_PORT.OUTSET.reg = LED0_MASK)
+#define LED0_TOGGLE                 (LED_PORT.OUTTGL.reg = LED0_MASK)
 
 #define LED1_PIN                    GPIO_PIN(PA, 19)
 #define LED1_MASK                   (1 << 19)
-#define LED1_ON                     (LED_PORT.OUTCLR.reg = LED1ORANGE_MASK)
-#define LED1_OFF                    (LED_PORT.OUTSET.reg = LED1ORANGE_MASK)
-#define LED1_TOGGLE                 (LED_PORT.OUTTGL.reg = LED1ORANGE_MASK)
+#define LED1_ON                     (LED_PORT.OUTCLR.reg = LED1_MASK)
+#define LED1_OFF                    (LED_PORT.OUTSET.reg = LED1_MASK)
+#define LED1_TOGGLE                 (LED_PORT.OUTTGL.reg = LED1_MASK)
 /** @} */
 
 /**
