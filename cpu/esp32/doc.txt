@@ -317,14 +317,12 @@ A more difficult way to install the toolchain is the manual installation of requ
 
 ### <a name="esp32_installation_of_xtensa_gcc"> Installation of Xtensa GCC compiler suite </a> &nbsp;[[TOC](#esp32_toc)]
 
-Xtensa GCC compiler for ESP32 can be downloaded and installed as precompiled binary archive from Espressif's web page.
+Xtensa GCC compiler for ESP32 can be downloaded and installed as precompiled binary archive from GitHub.
 
 ```
 mkdir -p $HOME/esp
 cd $HOME/esp
-wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
-tar -xzf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
-rm xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+git clone https://github.com/gschorcht/xtensa-esp32-elf.git
 ```
 Once the compiler is installed you can add the binary directory to your ```PATH``` variable.
 ```
@@ -339,9 +337,9 @@ ESP-IDF, the official SDK from Espressif, can be downloaded and installed as GIT
 cd $HOME/esp
 git clone --recursive https://github.com/espressif/esp-idf.git
 cd esp-idf
-git checkout f198339
+git checkout -q f198339ec09e90666150672884535802304d23ec
 cd components/esp32/lib
-git checkout 534a9b1
+git checkout -q 534a9b14101af90231d40a4f94924d67bc848d5f
 ```
 
 @note Please take care to checkout correct branches which were used for the port. Newer versions might also work but were not tested.
