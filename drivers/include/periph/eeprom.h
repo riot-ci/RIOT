@@ -77,6 +77,7 @@ size_t eeprom_write(uint32_t pos, const uint8_t *data, size_t len);
  * @brief   Set @p len bytes from the given position @p pos with value @p val
  *
  * @param[in] pos       start position in eeprom
+ * @param[in] val       the value to set
  * @param[in] len       the number of bytes to set
  *
  * @return the number of bytes set
