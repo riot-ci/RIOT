@@ -354,7 +354,7 @@ static inline void _save_uplink_counter(semtech_loramac_t *mac)
                  LORAMAC_DEVEUI_LEN + LORAMAC_APPEUI_LEN +
                  LORAMAC_APPKEY_LEN + LORAMAC_APPSKEY_LEN +
                  LORAMAC_NWKSKEY_LEN + LORAMAC_DEVADDR_LEN;
-    
+
     uint8_t counter[4];
     mutex_lock(&mac->lock);
     MibRequestConfirm_t mibReq;
@@ -570,6 +570,10 @@ static void _send(semtech_loramac_t *mac, void *arg)
         msg.content.value = (uint8_t)status;
         msg_send(&msg, semtech_loramac_pid);
     }
+    else {
+        /* save the uplink counter */
+        _save_uplink_counter(mac);
+    }
 }
 
 static void _semtech_loramac_call(semtech_loramac_func_t func, void *arg)
@@ -727,10 +731,6 @@ void *_semtech_loramac_event_loop(void *arg)
                         msg_ret.type = msg.type;
                         msg_ret.content.value = msg.content.value;
                         msg_send(&msg_ret, mac->caller_pid);
-#ifdef MODULE_PERIPH_EEPROM
-                        /* save the uplink counter */
-                        _save_uplink_counter(mac);
-#endif
                     }
                     break;
                 }
@@ -843,10 +843,6 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
     params.len = len;
 
     _semtech_loramac_call(_send, &params);
-
-#ifdef MODULE_PERIPH_EEPROM
-    semtech_loramac_save_config(mac);
-#endif
 
     return SEMTECH_LORAMAC_TX_SCHEDULE;
 }
