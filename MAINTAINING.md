@@ -135,6 +135,10 @@ reasoning in this case as well.
 
 When all "Reviewed:" labels are set you may give your approval for the PR.
 
+As everything in this document this is a "CAN", not a "MUST": It might help
+other maintainers to track your work, but if the overhead isn't justified, a
+simple approving ACK might suffice.
+
 #### Github etiquette
 
 It is good etiquette to describe what you reviewed, even if you gave the PR a
