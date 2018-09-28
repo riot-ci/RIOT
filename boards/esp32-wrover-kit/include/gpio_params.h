@@ -29,30 +29,30 @@ extern "C" {
  */
 static const  saul_gpio_params_t saul_gpio_params[] =
 {
-    #ifdef LED0_PIN
+#ifdef LED0_PIN
     {
         .name = "LED red",
         .pin = LED0_PIN,
         .mode = GPIO_OUT,
         .flags = SAUL_GPIO_INIT_CLEAR
     },
-    #endif
-    #ifdef LED1_PIN
+#endif
+#ifdef LED1_PIN
     {
         .name = "LED blue",
         .pin = LED1_PIN,
         .mode = GPIO_OUT,
         .flags = SAUL_GPIO_INIT_CLEAR
     },
-    #endif
-    #ifdef LED2_PIN
+#endif
+#ifdef LED2_PIN
     {
         .name = "LED green",
         .pin = LED2_PIN,
         .mode = GPIO_OUT,
         .flags = SAUL_GPIO_INIT_CLEAR
     }
-    #endif
+#endif
 };
 
 #ifdef __cplusplus
