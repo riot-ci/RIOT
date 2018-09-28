@@ -96,7 +96,7 @@
  *
  * Finally, write any message payload at the coap_pkt_t `payload` pointer
  * attribute. The `payload_len` attribute provides the available length in the
- * buffer.
+ * buffer. The option functions keep these values current as they are used.
  *
  * @{
  *
