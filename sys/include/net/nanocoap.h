@@ -29,7 +29,10 @@
  * ### Handler functions ###
  *
  * For each resource, you must implement a ::coap_handler_t handler function.
- * nanocoap provides functions to help implement the handler.
+ * nanocoap provides functions to help implement the handler. If the handler
+ * is called via nanocoap_server(), the response buffer provided to the handler
+ * reuses the buffer for the request. So, your handler must read the request
+ * thoroughly before writing the response.
  *
  * If a response does not require specific CoAP options, use
  * coap_reply_simple(). If there is a payload, it writes a Content-Format
