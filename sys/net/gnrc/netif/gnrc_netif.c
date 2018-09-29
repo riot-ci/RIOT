@@ -363,7 +363,7 @@ char *gnrc_netif_addr_to_str(const uint8_t *addr, size_t addr_len, char *out)
     assert((out != NULL) && ((addr != NULL) || (addr_len == 0U)));
     out[0] = '\0';
     for (size_t i = 0; i < addr_len; i++) {
-        fmt_byte_hex((out++), *(addr++));
+        out += fmt_byte_hex((out), *(addr++));
         *(out++) = (i == (addr_len - 1)) ? '\0' : ':';
     }
     return res;
