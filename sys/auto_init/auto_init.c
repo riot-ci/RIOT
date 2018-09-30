@@ -428,6 +428,10 @@ auto_init_mpu9150();
     extern void auto_init_mma7660(void);
     auto_init_mma7660();
 #endif
+#ifdef MODULE_HMC5883L
+    extern void auto_init_hmc5883l(void);
+    auto_init_hmc5883l();
+#endif
 
 #endif /* MODULE_AUTO_INIT_SAUL */
 
