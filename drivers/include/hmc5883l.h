@@ -238,7 +238,7 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw);
  * @brief   Power down the sensor
  *
  * Changes the sensor operation mode to #HMC5883L_OP_MODE_IDLE in which
- * almost all internal blocks are switched off. I2C and SPI interface are
+ * almost all internal blocks are switched off. I2C interface is
  * still active. The content of the configuration registers is preserved.
  *
  * @param[in]   dev     Device descriptor of HMC5883L device to read from
