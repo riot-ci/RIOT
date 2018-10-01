@@ -214,7 +214,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev);
  * micro-Gauss (uGs) to preserve full resolution:
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor
- * @param[out]  data    result vector in mdps per axis
+ * @param[out]  data    result vector in micro-Gauss (uGs) per axis
  *
  * @retval  HMC5883L_OK         on success
  * @retval  HMC5883L_ERROR_*    a negative error code on error,
