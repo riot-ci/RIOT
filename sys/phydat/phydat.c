@@ -30,7 +30,7 @@
 #define PHYDAT_FIT_TRADE_PRECISION_FOR_ROM 1
 #endif
 
-static const int32_t lookup_table_positive[] = {
+static const uint32_t lookup_table_positive[] = {
     327674999,
     32767499,
     3276749,
@@ -39,7 +39,7 @@ static const int32_t lookup_table_positive[] = {
 };
 
 #if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
-static const int32_t lookup_table_negative[] = {
+static const uint32_t lookup_table_negative[] = {
     327684999,
     32768499,
     3276849,
@@ -48,7 +48,7 @@ static const int32_t lookup_table_negative[] = {
 };
 #endif
 
-static const int32_t divisors[] = {
+static const uint32_t divisors[] = {
     100000,
     10000,
     1000,
@@ -56,14 +56,14 @@ static const int32_t divisors[] = {
     10,
 };
 
-#define LOOKUP_LEN (sizeof(lookup_table_positive)/sizeof(int32_t))
+#define LOOKUP_LEN (sizeof(lookup_table_positive) / sizeof(int32_t))
 
 void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
 {
     assert(dim <= (sizeof(dat->val) / sizeof(dat->val[0])));
-    int32_t divisor = 0;
-    int32_t max = 0;
-    const int32_t *lookup = lookup_table_positive;
+    uint32_t divisor = 0;
+    uint32_t max = 0;
+    const uint32_t *lookup = lookup_table_positive;
 
     /* Get the value with the highest magnitude and the correct lookup table.
      * If PHYDAT_FIT_TRADE_PRECISION_FOR_ROM is true, the same lookup table will
@@ -73,13 +73,13 @@ void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
      * PHYDAT_FIT_TRADE_PRECISION_FOR_ROM is true.
      */
     for (unsigned int i = 0; i < dim; i++) {
-        if (values[i] > max) {
+        if (values[i] > (int32_t)max) {
             max = values[i];
 #if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
             lookup = lookup_table_positive;
 #endif
         }
-        else if (-values[i] > max) {
+        else if (-values[i] > (int32_t)max) {
             max = -values[i];
 #if !(PHYDAT_FIT_TRADE_PRECISION_FOR_ROM)
             lookup = lookup_table_negative;
@@ -88,7 +88,7 @@ void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
     }
 
     for (unsigned int i = 0; i < LOOKUP_LEN; i++) {
-        if (max > lookup[i]){
+        if (max > lookup[i]) {
             divisor = divisors[i];
             dat->scale += 5 - i;
             break;
@@ -104,17 +104,17 @@ void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
     }
 
     /* Applying scale and add half of the divisor for correct rounding */
-    long divisor_half = divisor >> 1;
+    uint32_t divisor_half = divisor >> 1;
     for (unsigned int i = 0; i < dim; i++) {
         if (values[i] >= 0) {
-            dat->val[i] = (values[i] + divisor_half) / divisor;
+            dat->val[i] = (uint32_t)(values[i] + divisor_half) / divisor;
         }
         else {
             /* For negative integers the C standards seems to lack information
              * on whether to round down or towards zero. So using positive
              * integer division as last resort here.
              */
-            dat->val[i] = -(((-values[i]) + divisor_half) / divisor);
+            dat->val[i] = -((uint32_t)((-values[i]) + divisor_half) / divisor);
         }
     }
 }
