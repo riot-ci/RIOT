@@ -173,12 +173,8 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
 
     DEBUG("[DS18] Received byte: 0x%02x\n", b2);
 
-    /* Fixed point value to uint16_t */
-    uint16_t degrees  = (b2 << 4) + (b1 >> 4);
-    uint16_t mdegrees = (b1 & 0xF) * 6.25;
-
-    /* Temperature in centi-degrees */
-    *temperature = degrees * 100 + mdegrees;
+    int32_t measurement = ((int32_t)(b2 << 8 | b1) * 625);
+    *temperature = (int16_t)(measurement / 100);
 
     return DS18_OK;
 }
