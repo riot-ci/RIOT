@@ -38,7 +38,7 @@ static void ds18_low(ds18_t *dev)
 
 static void ds18_release(ds18_t *dev)
 {
-    /* Init pin as input and enable pull-up */
+    /* Init pin as input */
     gpio_init(dev->pin, dev->in_mode);
 }
 
@@ -144,6 +144,8 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
     }
 
     DEBUG("[DS18] Convert T\n");
+    /* Please note that this command triggers a conversion on all devices
+     * connected to the bus. */
     ds18_write_byte(dev, DS18_CMD_SKIPROM);
     ds18_write_byte(dev, DS18_CMD_CONVERT);
 

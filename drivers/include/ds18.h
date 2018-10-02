@@ -13,6 +13,12 @@
  * @brief       Driver interface for the DS18 temperature sensors
  *
  * This driver provides @ref drivers_saul capabilities.
+ * Currently the driver has the following limitations:
+ *  - Does not allow addressing devices, only supports a single device on the
+ *    bus.
+ *  - The 1-Wire bus handling is hardcoded to the driver.
+ *  - Does not allow configuration of sampling width.
+ * 
  * @{
  *
  * @file
