@@ -201,14 +201,14 @@ static void test_bitarithm_bits_set_one(void)
 
 static void test_bitarithm_bits_set_limit(void)
 {
-    TEST_ASSERT_EQUAL_INT(sizeof(unsigned) * 8,
-                          bitarithm_bits_set(UINT_MAX));
+    TEST_ASSERT_EQUAL_INT(sizeof(uint32_t) * 8,
+                          bitarithm_bits_set(UINT32_MAX));
 }
 
 static void test_bitarithm_bits_set_random(void)
 {
-    TEST_ASSERT_EQUAL_INT(3, bitarithm_bits_set(7)); /* randomized by fair
-                                                        dice roll ;-) */
+    TEST_ASSERT_EQUAL_INT(21, bitarithm_bits_set(4072524027)); /* randomized by fair
+                                                                * dice roll ;-) */
 }
 
 Test *tests_core_bitarithm_tests(void)
