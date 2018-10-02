@@ -371,9 +371,9 @@ typedef struct netdev_driver {
      * @brief   Get an option value from a given network device
      *
      * @pre `(dev != NULL)`
-     * @pre for scalar types of @ref netopt_t `max_len` must be of exactly that
+     * @pre for scalar types of @ref netopt_t @p max_len must be of exactly that
      *      length (see [netopt documentation](@ref net_netopt) for type)
-     * @pre for array types of @ref netopt_t `max_len` must greater or equal the
+     * @pre for array types of @ref netopt_t @p max_len must greater or equal the
      *      required length (see [netopt documentation](@ref net_netopt) for
      *      type)
      *
@@ -392,10 +392,10 @@ typedef struct netdev_driver {
      * @brief   Set an option value for a given network device
      *
      * @pre `(dev != NULL)`
-     * @pre for scalar types of @ref netopt_t `max_len` must be of exactly that
-     *      length (see [netopt documentation](@ref net_netopt) for type)
-     * @pre for array types of @ref netopt_t `max_len` must lesser or equal the
-     *      required length (see [netopt documentation](@ref net_netopt) for
+     * @pre for scalar types of @ref netopt_t @p value_len must be of exactly
+     *      that length (see [netopt documentation](@ref net_netopt) for type)
+     * @pre for array types of @ref netopt_t @p value_len must lesser or equal
+     *      the required length (see [netopt documentation](@ref net_netopt) for
      *      type)
      *
      * @param[in] dev       network device descriptor
@@ -406,8 +406,8 @@ typedef struct netdev_driver {
      * @return              number of bytes written to @p value
      * @return              `-ENOTSUP` if @p opt is not configurable for the
      *                      device
-     * @return              `-EINVAL` if @p value is invalid an invalid value
-     *                      for @p opt
+     * @return              `-EINVAL` if @p value is an invalid value with
+     *                      regards to @p opt
      */
     int (*set)(netdev_t *dev, netopt_t opt,
                const void *value, size_t value_len);
