@@ -55,7 +55,8 @@
  *
  * To send the message and await the response, see nanocoap_request() as well
  * as nanocoap_get(), which additionally copies the response payload to a user
- * supplied buffer.
+ * supplied buffer. Finally, read the response as described above in the server
+ * _Handler functions_ section for reading a request.
  *
  * ## Write Options and Payload ##
  *
@@ -81,14 +82,15 @@
  *
  * Before starting, ensure the CoAP header has been initialized with
  * coap_build_hdr(). For a response, coap_build_reply() includes a call to
- * coap_build_hdr().
+ * coap_build_hdr(). Use the returned length to track the next position in the
+ * buffer to write and remaining length.
  *
  * Next, use the coap_opt_put_xxx() and coap_put_xxx() functions to write each
- * option.
+ * option. These functions require the position in the buffer to start writing,
+ * and return the number of bytes written.
  *
  * If there is a payload, append a payload marker (0xFF). Then write the
- * message payload at the coap_pkt_t _payload_ pointer attribute. The
- * _payload_len_ attribute provides the available length in the buffer.
+ * payload to within the maximum length remaining in the buffer.
  *
  * ### Struct-based API ###
  *
