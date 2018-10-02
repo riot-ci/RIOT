@@ -200,8 +200,8 @@ char phydat_prefix_from_scale(int8_t scale);
  *       @ref phydat_t. Statistically, this precision loss happens in 0.00153%
  *       of the calls. This optimization saves a bit more than 20 bytes.
  *
- * @warning The scale member in @p dat has to be initialized by the caller prior
- *          to calling this function.
+ * @pre  The @ref phydat_t::scale member in @p dat was initialized by the
+         caller prior to calling this function.
  *
  * @param[in, out]  dat         the value will be written into this data array
  * @param[in]       values      value(s) to rescale
