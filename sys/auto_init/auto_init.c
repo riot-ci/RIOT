@@ -288,7 +288,7 @@ void auto_init(void)
     extern void auto_init_adc(void);
     auto_init_adc();
 #endif
-    #ifdef MODULE_SAUL_GPIO
+#ifdef MODULE_SAUL_GPIO
     extern void auto_init_gpio(void);
     auto_init_gpio();
 #endif
