@@ -87,19 +87,19 @@ riotboot/flash-combined-slot0: export IMAGE_FILE=$(BINDIR)/$(APPLICATION)-slot0-
 riotboot/flash-combined-slot0: $(BINDIR)/$(APPLICATION)-slot0-combined.bin
 	$(FLASHER) $(FFLAGS)
 
-# Flashing rule for slot 1
+# Flashing rule for slot 0
 riotboot/flash-slot0: export IMAGE_OFFSET=$(RIOTBOOT_LEN)
-# Flashing rule for edbg to flash only slot 1
+# Flashing rule for edbg to flash only slot 0
 riotboot/flash-slot0: HEXFILE=$(BINDIR)/$(APPLICATION)-slot0.riot.bin
 # openocd
 riotboot/flash-slot0: export IMAGE_FILE=$(BINDIR)/$(APPLICATION)-slot0.riot.bin
 riotboot/flash-slot0: $(BINDIR)/$(APPLICATION)-slot0.riot.bin riotboot/flash-bootloader
 	$(FLASHER) $(FFLAGS)
 
-# Targets to generate only slot 1 binary
+# Targets to generate only slot 0 binary
 riotboot/slot0: $(BINDIR)/$(APPLICATION)-slot0.riot.bin
 
-# Default flashing rule for bootloader + slot 1
+# Default flashing rule for bootloader + slot 0
 riotboot/flash: riotboot/flash-slot0
 
 else
