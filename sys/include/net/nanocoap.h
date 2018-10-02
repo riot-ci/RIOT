@@ -11,7 +11,7 @@
 /**
  * @defgroup    net_nanocoap Nanocoap small CoAP library
  * @ingroup     net
- * @brief       CoAP functionality optimized for minimal resource usage
+ * @brief       CoAP library optimized for minimal resource usage
  *
  * nanocoap provides a granular, low-level interface for writing CoAP messages
  * via RIOT's sock networking API.
@@ -33,6 +33,11 @@
  * is called via nanocoap_server(), the response buffer provided to the handler
  * reuses the buffer for the request. So, your handler must read the request
  * thoroughly before writing the response.
+ *
+ * To read the request, use the coap_get_xxx() functions to read the header and
+ * options. Use the coap_opt_get_xxx() functions to read an option generically
+ * by data type. If the pkt _payload_len_ attribute is a positive value, start
+ * to read it at the _payload_ pointer attribute.
  *
  * If a response does not require specific CoAP options, use
  * coap_reply_simple(). If there is a payload, it writes a Content-Format
@@ -68,8 +73,9 @@
  * - **struct-based API** uses a coap_pkt_t struct to conveniently track each
  * option as it is written and prepare for any payload.
  *
- * For either API, the caller *must* write options in order by option number
- * (see "CoAP option numbers", below).
+ * You must use one API exclusively for a given message. For either API, the
+ * caller must write options in order by option number (see "CoAP option
+ * numbers", below).
  *
  * ### Minimal API ###
  *
@@ -81,8 +87,8 @@
  * option.
  *
  * If there is a payload, append a payload marker (0xFF). Then write the
- * message payload at the coap_pkt_t `payload` pointer attribute. The
- * `payload_len` attribute provides the available length in the buffer.
+ * message payload at the coap_pkt_t _payload_ pointer attribute. The
+ * _payload_len_ attribute provides the available length in the buffer.
  *
  * ### Struct-based API ###
  *
@@ -94,8 +100,8 @@
  * coap_opt_add_uint(). When all options have been added, call
  * coap_opt_finish().
  *
- * Finally, write any message payload at the coap_pkt_t `payload` pointer
- * attribute. The `payload_len` attribute provides the available length in the
+ * Finally, write any message payload at the coap_pkt_t _payload_ pointer
+ * attribute. The _payload_len_ attribute provides the available length in the
  * buffer. The option functions keep these values current as they are used.
  *
  * @{
