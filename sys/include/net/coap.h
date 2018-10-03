@@ -122,23 +122,14 @@ extern "C" {
 /** @} */
 
 /**
- * @name    Content types
- * @{
- */
-#define COAP_CT_LINK_FORMAT     (40)
-#define COAP_CT_XML             (41)
-#define COAP_CT_OCTET_STREAM    (42)
-#define COAP_CT_EXI             (47)
-#define COAP_CT_JSON            (50)
-/** @} */
-
-/**
  * @name    Content-Format option codes
  * @{
  */
 #define COAP_FORMAT_TEXT         (0)
 #define COAP_FORMAT_LINK        (40)
+#define COAP_FORMAT_XML         (41)
 #define COAP_FORMAT_OCTET       (42)
+#define COAP_FORMAT_EXI         (47)
 #define COAP_FORMAT_JSON        (50)
 #define COAP_FORMAT_CBOR        (60)
 /** @} */
