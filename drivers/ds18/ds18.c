@@ -133,24 +133,27 @@ static int ds18_reset(ds18_t *dev)
     return res;
 }
 
-int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
+int ds18_trigger(ds18_t *dev)
 {
     int res;
-    uint8_t b1 = 0, b2 = 0;
 
     res = ds18_reset(dev);
     if (res) {
         return DS18_ERROR;
     }
 
-    DEBUG("[DS18] Convert T\n");
     /* Please note that this command triggers a conversion on all devices
      * connected to the bus. */
     ds18_write_byte(dev, DS18_CMD_SKIPROM);
     ds18_write_byte(dev, DS18_CMD_CONVERT);
 
-    DEBUG("[DS18] Wait for convert T\n");
-    xtimer_usleep(DS18_DELAY_CONVERT);
+    return DS18_OK;
+}
+
+int ds18_read(ds18_t *dev, int16_t *temperature)
+{
+    int res;
+    uint8_t b1 = 0, b2 = 0;
 
     DEBUG("[DS18] Reset and read scratchpad\n");
     res = ds18_reset(dev);
@@ -179,6 +182,26 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
     *temperature = (int16_t)(measurement / 100);
 
     return DS18_OK;
+}
+
+int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
+{
+    int res;
+
+    res = ds18_reset(dev);
+    if (res) {
+        return DS18_ERROR;
+    }
+
+    DEBUG("[DS18] Convert T\n");
+    if (ds18_trigger(dev)) {
+        return DS18_ERROR;
+    }
+
+    DEBUG("[DS18] Wait for convert T\n");
+    xtimer_usleep(DS18_DELAY_CONVERT);
+
+    return ds18_read(dev, temperature);
 }
 
 int ds18_init(ds18_t *dev, const ds18_params_t *params)

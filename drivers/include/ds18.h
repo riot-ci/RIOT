@@ -76,10 +76,33 @@ typedef struct {
 int ds18_init(ds18_t *dev, const ds18_params_t *params);
 
 /**
- * @brief   Get measured temperature
+ * @brief Triggers a temperature conversion
+ * @Note This also triggers a conversion on all devices connected to the bus
+ * 
+ * @param[in] dev           device descriptor
+ * 
+ * @return                  0 on success
+ * @return                 -1 on error
+ */
+int ds18_trigger(ds18_t *dev);
+
+/**
+ * @brief Reads the scratchpad for the last conversion
+ * 
+ * @param[in] dev           device descriptor 
+ * @param[out] temperature  buffer to write the temperature in centi-degrees
+ * 
+ * @return                  0 on success
+ * @return                 -1 on error
+ */
+int ds18_read(ds18_t *dev, int16_t *temperature);
+
+/**
+ * @brief   convenience fuction for triggering a conversion and reading the
+ * value
  *
  * @param[in] dev           device descriptor
- * @param[out] temperature  uint16_t buffer where temperature will be written to in centi-degrees
+ * @param[out] temperature  buffer to write the temperature in centi-degrees
  *
  * @return                   0 on success
  * @return                  -1 on error
