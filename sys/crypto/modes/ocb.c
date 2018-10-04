@@ -119,12 +119,12 @@ static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
     }
 
     /* The tag can be at most 128 bit long */
-    if (tag_length > 16) {
+    if (tag_length > 16 || tag_length == 0) {
         return OCB_ERR_INVALID_TAG_LENGTH;
     }
 
     /* The nonce can be at most 120 bit long */
-    if (nonce_len >= 16) {
+    if (nonce_len >= 16 || nonce_len == 0) {
         return OCB_ERR_INVALID_NONCE_LENGTH;
     }
 
