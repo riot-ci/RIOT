@@ -18,7 +18,7 @@
  *    bus.
  *  - The 1-Wire bus handling is hardcoded to the driver.
  *  - Does not allow configuration of sampling width.
- * 
+ *
  * @{
  *
  * @file
@@ -78,9 +78,9 @@ int ds18_init(ds18_t *dev, const ds18_params_t *params);
 /**
  * @brief Triggers a temperature conversion
  * @Note This also triggers a conversion on all devices connected to the bus
- * 
+ *
  * @param[in] dev           device descriptor
- * 
+ *
  * @return                  0 on success
  * @return                 -1 on error
  */
@@ -88,10 +88,10 @@ int ds18_trigger(ds18_t *dev);
 
 /**
  * @brief Reads the scratchpad for the last conversion
- * 
- * @param[in] dev           device descriptor 
+ *
+ * @param[in] dev           device descriptor
  * @param[out] temperature  buffer to write the temperature in centi-degrees
- * 
+ *
  * @return                  0 on success
  * @return                 -1 on error
  */
