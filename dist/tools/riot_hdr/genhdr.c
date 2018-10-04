@@ -41,7 +41,7 @@ int genhdr(int argc, char *argv[])
     long hdr_len_arg = 0;
 
     /* header variables */
-    int riot_hdr_len = 0;
+    size_t riot_hdr_len = 0;
     uint32_t app_ver = 0;
     uint32_t start_addr = 0;
 
@@ -55,21 +55,23 @@ int genhdr(int argc, char *argv[])
     }
 
     app_ver_arg = strtol(argv[2], &p, 0);
-    if (errno != 0 || *p != '\0' || app_ver_arg > INT_MAX) {
+    if (errno != 0 || *p != '\0' || app_ver_arg > UINT32_MAX) {
         fprintf(stderr, "Error: APP_VER not valid!\n");
-    } else {
+    }
+    else {
         app_ver = app_ver_arg;
     }
 
     start_addr_arg = strtol(argv[3], &p, 0);
-    if (errno != 0 || *p != '\0' || start_addr_arg > INT_MAX) {
+    if (errno != 0 || *p != '\0' || start_addr_arg > UINT32_MAX) {
         fprintf(stderr, "Error: START_ADDR not valid!\n");
-    } else {
+    }
+    else {
         start_addr = start_addr_arg;
     }
 
     hdr_len_arg = strtol(argv[4], &p, 0);
-    if (errno != 0 || *p != '\0' || hdr_len_arg % HDR_ALIGN || hdr_len_arg > INT_MAX) {
+    if (errno != 0 || *p != '\0' || hdr_len_arg % HDR_ALIGN || hdr_len_arg > UINT32_MAX) {
         fprintf(stderr, "Error: HDR_LEN not valid!\n");
         return -1;
     }
@@ -77,8 +79,8 @@ int genhdr(int argc, char *argv[])
         riot_hdr_len = hdr_len_arg;
     }
 
-    /* prepare the buffer for riot_hdr_t */
-    hdr_buf = malloc(riot_hdr_len);
+    /* prepare a 0 initialised buffer for riot_hdr_t */
+    hdr_buf = calloc(1, riot_hdr_len);
     if (hdr_buf == NULL) {
         fprintf(stderr, "Error: not enough memory!\n");
         return -1;
@@ -86,7 +88,6 @@ int genhdr(int argc, char *argv[])
 
     /* ensure the buffer and header have 0's */
     memset(&riot_hdr, '\0', sizeof(riot_hdr_t));
-    memset(hdr_buf, '\0', riot_hdr_len);
 
     /* Generate image header */
     memcpy(&riot_hdr.magic_number, "RIOT", 4);

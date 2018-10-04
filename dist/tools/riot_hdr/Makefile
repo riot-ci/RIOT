@@ -31,5 +31,5 @@ bin/:
 bin/genhdr: $(GENHDR_HDR) $(GENHDR_SRC) Makefile | bin/
 	$(Q)$(CC) $(CFLAGS) -I$(RIOT_INCLUDE) $(GENHDR_SRC) -o $@
 
-clean::
-	$(Q)rm -rf bin/genhdr
+clean:
+	$(Q)rm -rf bin/
