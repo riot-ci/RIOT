@@ -22,7 +22,7 @@ As a reminder, all contributors are expected to follow our
 
 Before opening a new feature request, check the
 [existing feature requests][existing-feature-request] if there's one already
-opened on the same topic.
+open on the same topic.
 
 To request new features or enhancements, just open a new
 [feature request issue][new-feature-request]. Describe your use case, why you
@@ -43,13 +43,13 @@ RIOT users, please send an email describing the bug to security@riot-os.org**.
 We would appreciate waiting for a 6 months grace period before reporting it on
 public channels, to allow us adequate time to release the fix.
 
-Before reporting a bug, have a look at [opened bugs][opened-bugs-link]. Maybe
+Before reporting a bug, have a look at [open bugs][existing-bugs-link]. Maybe
 someone has already reported your error.
 
 Once you have verified that they haven't, opening an issue is as easy as
 clicking on [this link][bug-report-link] and filling out the fields.
 
-[opened-bugs-link]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:bug
+[existing-bugs-link]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:bug
 [bug-report-link]: https://github.com/RIOT-OS/RIOT/issues/new?template=bug_report.md&title=Bug:
 
 Each bug report issue uses a template with 5 sections that are there to help
@@ -97,7 +97,7 @@ into the source repository.
   "memo" label, maybe one of them is also about the same topic.
 
 * Each Pull Request form uses a template with 3 sections that are here to help
-  maintainer understand your contribution and help them testing it:
+  maintainers understand your contribution and help them testing it:
 
       #### Contribution description
 
@@ -152,9 +152,9 @@ into the source repository.
   are also only human and it can happen that they miss a few PRs or might be
   preoccupied with other PRs. If it happens that your PR receive no review for
   a long time, don't hesitate to gently solicit a review by commenting or
-  by explicitly mentionning a maintainer that you know is knowledgeable in the
-  area of the PR. You can also advertise the PR on the devel mailing list and
-  ask for a review there.
+  by explicitly mentioning a maintainer that you know is knowledgeable in the
+  area of the PR. You can also advertise the PR on devel@riot-os.org mailing
+  list and ask for a review there.
 
 You can find more information about RIOT development procedure on this
 [wiki page][development-procedures].
@@ -256,7 +256,7 @@ commits.
 Once squashing is done, you will have to force push your branch to update the
 PR:
 
-    $ git push -f
+    $ git push --force-with-lease
 
 ## Writing Documentation
 [writing-documentation]: #writing-documentation
