@@ -21,6 +21,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#define OCB_MODE_ENCRYPT 1
+#define OCB_MODE_DECRYPT 2
+
 static void double_block(uint8_t source[16], uint8_t dest[16])
 {
     uint8_t msb = source[0] >> 7;
@@ -105,9 +108,9 @@ static void hash(cipher_t *cipher, uint8_t l_star[16], uint8_t l_zero[16],
     }
 }
 
-int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                       uint8_t *input, size_t input_len, uint8_t *output)
+static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
+                   uint8_t tag[16], uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
+                   uint8_t *input, size_t input_len, uint8_t *output, uint8_t mode)
 {
 
     /* OCB mode only works for ciphers of block length 16 */
@@ -184,21 +187,32 @@ int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         uint8_t l_i[16];
         calculate_l_i(l_zero, ntz(i + 1), l_i);
         xor_block(offset, l_i, offset);
-        /* C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i) */
-        uint8_t ci[16], cipher_input[16];
-        xor_block(input, offset, cipher_input);
-        cipher->interface->encrypt(&(cipher->context), cipher_input, ci);
-        xor_block(ci, offset, ci);
-        memcpy(output + output_pos, ci, 16);
-        output_pos += 16;
-        /* Checksum_i = Checksum_{i-1} xor P_i */
-        xor_block(checksum, input, checksum);
-
+        if (mode == OCB_MODE_ENCRYPT) {
+            /* C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i) */
+            uint8_t ci[16], cipher_input[16];
+            xor_block(input, offset, cipher_input);
+            cipher->interface->encrypt(&(cipher->context), cipher_input, ci);
+            xor_block(ci, offset, ci);
+            memcpy(output + output_pos, ci, 16);
+            output_pos += 16;
+            /* Checksum_i = Checksum_{i-1} xor P_i */
+            xor_block(checksum, input, checksum);
+        }
+        else if (mode == OCB_MODE_DECRYPT) {
+            /* P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i) */
+            uint8_t pi[16], cipher_input[16];
+            xor_block(input, offset, cipher_input);
+            cipher->interface->decrypt(&(cipher->context), cipher_input, pi);
+            xor_block(pi, offset, pi);
+            memcpy(output + output_pos, pi, 16);
+            /* Checksum_i = Checksum_{i-1} xor P_i */
+            xor_block(checksum, output + output_pos, checksum);
+            output_pos += 16;
+        }
         input += 16;
     }
 
     /* Process any final partial block and compute raw tag */
-    uint8_t tag[16];
     if (remaining_input_len > 0) {
         /* Offset_* = Offset_m xor L_* */
         xor_block(offset, l_star, offset);
@@ -207,21 +221,27 @@ int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         uint8_t pad[16];
         cipher->interface->encrypt(&(cipher->context), offset, pad);
 
-        /* C_* = P_* xor Pad[1..bitlen(P_*)] */
-        uint8_t c_star[remaining_input_len];
-        memcpy(c_star, pad, remaining_input_len);
+        /* Encrypt: C_* = P_* xor Pad[1..bitlen(P_*)] */
+        /* Decrypt: P_* = C_* xor Pad[1..bitlen(C_*)] */
+        uint8_t final_block[remaining_input_len];
+        memcpy(final_block, pad, remaining_input_len);
         for (uint8_t i = 0; i < remaining_input_len; ++i) {
-            c_star[i] = input[i] ^ pad[i];
+            final_block[i] = input[i] ^ pad[i];
         }
-        memcpy(output + output_pos, c_star, remaining_input_len);
-        output_pos += remaining_input_len;
+        memcpy(output + output_pos, final_block, remaining_input_len);
 
         /* Checksum_* = Checksum_m xor (P_* || 1 || zeros(127-bitlen(P_*))) */
         uint8_t padded_block[16];
         memset(padded_block, 0, 16);
-        memcpy(padded_block, input, remaining_input_len);
+        if (mode == OCB_MODE_ENCRYPT) {
+            memcpy(padded_block, input, remaining_input_len);
+        }
+        else if (mode == OCB_MODE_DECRYPT) {
+            memcpy(padded_block, output + output_pos, remaining_input_len);
+        }
         padded_block[remaining_input_len] = 0x80;
         xor_block(checksum, padded_block, checksum);
+        output_pos += remaining_input_len;
 
         /* Tag = ENCIPHER(K, Checksum_* xor Offset_* xor L_$) xor HASH(K,A) */
         uint8_t hash_value[16];
@@ -246,7 +266,53 @@ int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         cipher->interface->encrypt(&(cipher->context), cipher_data, tag);
         xor_block(tag, hash_value, tag);
     }
+
+    return output_pos;
+}
+
+int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
+                       uint8_t *input, size_t input_len, uint8_t *output)
+{
+    uint8_t tag[16];
+
+    int cipher_text_length = run_ocb(cipher, auth_data, auth_data_len,
+                                     tag, tag_length, nonce, nonce_len,
+                                     input, input_len, output, OCB_MODE_ENCRYPT);
+
+    if (cipher_text_length < 0) {
+        // An error occured. Retur the error code
+        return cipher_text_length;
+    }
     /* C = C_1 || C_2 || ... || C_m || C_* || Tag[1..TAGLEN] */
-    memcpy(output + output_pos, tag, tag_length);
-    return (output_pos + tag_length);
+    memcpy(output + cipher_text_length, tag, tag_length);
+    return (cipher_text_length + tag_length);
+}
+
+int cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
+                       uint8_t *input, size_t input_len, uint8_t *output)
+{
+
+    uint8_t tag[16];
+    int plain_text_length = run_ocb(cipher, auth_data, auth_data_len,
+                                    tag, tag_length, nonce, nonce_len,
+                                    input, input_len - tag_length, output, OCB_MODE_DECRYPT);
+
+    if (plain_text_length < 0) {
+        // An error occured. Retur the error code
+        return plain_text_length;
+    }
+    /* Check the tag */
+    if (memcmp(tag, input + input_len - tag_length, tag_length) == 0) {
+        /* Tag is valid */
+        /* P = P_1 || P_2 || ... || P_m || P_* */
+        return plain_text_length;
+    }
+    else {
+        /* Tag is not valid */
+        /* Destroy the decrypted data to prevent misuse */
+        memset(output, 0, input_len - tag_length);
+        return OCB_ERR_INVALID_TAG;
+    }
 }

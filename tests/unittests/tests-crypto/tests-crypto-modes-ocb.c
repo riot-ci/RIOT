@@ -313,11 +313,63 @@ static void test_crypto_modes_ocb_encrypt(void)
     do_test_encrypt_op(17);
 }
 
+static void test_decrypt_op(uint8_t* key, uint8_t key_len,
+                            uint8_t* adata, size_t adata_len,
+                            uint8_t* nonce, uint8_t nonce_len,
+                            uint8_t* encrypted, size_t encrypted_len,
+                            uint8_t* output_expected,
+                            size_t output_expected_len,
+                            uint8_t tag_length)
+{
+    cipher_t cipher;
+    int len, err, cmp;
+    
+    TEST_ASSERT_MESSAGE(sizeof(data) >= output_expected_len,
+                        "Output buffer too small");
+
+    err = cipher_init(&cipher, CIPHER_AES_128, key, key_len);
+    TEST_ASSERT_EQUAL_INT(1, err);
+
+    len = cipher_decrypt_ocb(&cipher, adata, adata_len,
+                             tag_length, nonce, nonce_len, 
+                             encrypted, encrypted_len, data);
+    TEST_ASSERT_MESSAGE(len >= 0, "Decryption failed");
+
+    TEST_ASSERT_EQUAL_INT(output_expected_len, len);
+    cmp = compare(output_expected, data, len);
+    TEST_ASSERT_MESSAGE(1 == cmp , "wrong ciphertext");
+}
+
+#define do_test_decrypt_op(name) do { \
+    test_decrypt_op(TEST_##name##_KEY, TEST_KEY_LEN, \
+                    TEST_##name##_ADATA, TEST_##name##_ADATA_LEN, \
+                    TEST_##name##_NONCE, TEST_##name##_NONCE_LEN, \
+                    \
+                    TEST_##name##_EXPECTED, \
+                    TEST_##name##_EXPECTED_LEN, \
+                    \
+                    TEST_##name##_INPUT, \
+                    TEST_##name##_INPUT_LEN, \
+                    \
+                    TEST_##name##_TAG_LEN \
+                    ); \
+} while (0)
+
+static void test_crypto_modes_ocb_decrypt(void)
+{
+    do_test_decrypt_op(1);
+    do_test_decrypt_op(2);
+    do_test_decrypt_op(3);
+    do_test_decrypt_op(4);
+    do_test_decrypt_op(16);
+    do_test_decrypt_op(17);
+}
+
 Test *tests_crypto_modes_ocb_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_crypto_modes_ocb_encrypt),
-        // new_TestFixture(test_crypto_modes_ccm_decrypt),
+        new_TestFixture(test_crypto_modes_ocb_decrypt),
         // new_TestFixture(test_crypto_modes_ccm_check_len),
     };
 
