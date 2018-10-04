@@ -36,7 +36,7 @@ $(BINDIR)/$(APPLICATION)-slot0.riot.bin: %.riot.bin: %.hdr %.bin
 	$(Q)cat $^ > $@
 
 # compile header tool if it doesn't exist
-$(HEADER_TOOL):
+$(HEADER_TOOL): FORCE
 	@echo "compiling $@..."
 		$(Q)/usr/bin/env -i \
 		QUIET=$(QUIET) \
