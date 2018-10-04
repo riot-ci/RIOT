@@ -34,11 +34,11 @@ extern "C" {
 #define DS18_PARAM_PIN             (GPIO_PIN(0, 0))
 #endif
 #ifndef DS18_PARAM_PULL
-#define DS18_PARAM_PULL            (GPIO_IN_PU)
+#define DS18_PARAM_PULL            (GPIO_OD_PU)
 #endif
 
 #define DS18_PARAMS_DEFAULT        { .pin     = DS18_PARAM_PIN, \
-                                     .in_mode = DS18_PARAM_PULL }
+                                     .out_mode = DS18_PARAM_PULL }
 /**@}*/
 
 /**

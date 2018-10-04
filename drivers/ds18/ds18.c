@@ -125,7 +125,7 @@ static int ds18_reset(ds18_t *dev)
     xtimer_usleep(DS18_DELAY_PRESENCE);
 
     /* Check device presence */
-    res = gpio_read(dev->pin);;
+    res = gpio_read(dev->pin);
 
     /* Sleep for reset delay */
     xtimer_usleep(DS18_DELAY_RESET);
@@ -185,9 +185,13 @@ int ds18_init(ds18_t *dev, const ds18_params_t *params)
 {
     int res;
 
+    /* Deduct the input mode from the output mode. If pull-up resistors are
+     * used for output then will be used for input as well. */
+    dev->in_mode = (params->out_mode == GPIO_OD_PU) ? GPIO_IN_PU : GPIO_IN;
+
     /* Initialize the device and the pin */
     dev->pin = params->pin;
-    dev->in_mode = params->in_mode;
+    dev->out_mode = params->out_mode;
     res = gpio_init(dev->pin, dev->in_mode) == 0 ? DS18_OK : DS18_ERROR;
 
     return res;

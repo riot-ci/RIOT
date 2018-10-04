@@ -26,13 +26,10 @@
 
 static int read_temperature(const void *dev, phydat_t *res)
 {
-    int16_t temperature;
-
-    if (ds18_get_temperature((ds18_t *)dev, &temperature) == DS18_ERROR) {
+    if (ds18_get_temperature((ds18_t *)dev, &res->val[0]) == DS18_ERROR) {
         return -ECANCELED;
     }
-    
-    res->val[0] = temperature;
+
     res->unit = UNIT_TEMP_C;
     res->scale = -2;
     return 1;

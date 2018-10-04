@@ -51,7 +51,8 @@ extern "C" {
  */
 typedef struct {
     gpio_t pin;             /**< Pin the sensor is connected to */
-    gpio_mode_t in_mode;    /**< Pin output mode */
+    gpio_mode_t out_mode;  /**< Pin output mode */
+    gpio_mode_t in_mode;    /**< Pin input mode */
 } ds18_t;
 
 /**
@@ -59,7 +60,7 @@ typedef struct {
  */
 typedef struct {
     gpio_t pin;             /**< Pin the sensor is connected to */
-    gpio_mode_t in_mode;    /**< Pin output mode */
+    gpio_mode_t out_mode;    /**< Pin output mode */
 } ds18_params_t;
 
 /**
