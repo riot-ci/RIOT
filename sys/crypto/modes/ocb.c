@@ -248,5 +248,5 @@ int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
     }
     /* C = C_1 || C_2 || ... || C_m || C_* || Tag[1..TAGLEN] */
     memcpy(output + output_pos, tag, tag_length);
-    return input_len + tag_length;
+    return (output_pos + tag_length);
 }

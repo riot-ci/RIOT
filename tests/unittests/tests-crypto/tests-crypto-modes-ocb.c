@@ -22,14 +22,13 @@ static uint8_t TEST_KEY[] = {
 };
 static uint8_t TEST_KEY_LEN = 16;
 
-static uint8_t TEST_TAG_LEN = 16;
-
 /* Test 1:
     N: BBAA99887766554433221100
     A:
     P:
     C: 785407BFFFC8AD9EDCC5520AC9111EE6
  */
+static uint8_t *TEST_1_KEY = TEST_KEY;
 
 static uint8_t TEST_1_NONCE[] = {
     0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
@@ -49,6 +48,9 @@ static uint8_t TEST_1_EXPECTED[] = {
 };
 static size_t TEST_1_EXPECTED_LEN = 16;
 
+static uint8_t TEST_1_TAG_LEN = 16;
+
+
 
 /* Test 2:
     N: BBAA99887766554433221101
@@ -57,6 +59,8 @@ static size_t TEST_1_EXPECTED_LEN = 16;
     C: 6820B3657B6F615A5725BDA0D3B4EB3A257C9AF1F8F03009
  */
 
+static uint8_t *TEST_2_KEY = TEST_KEY;
+
 static uint8_t TEST_2_NONCE[] = {
     0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
     0x33, 0x22, 0x11, 0x01,
@@ -64,7 +68,7 @@ static uint8_t TEST_2_NONCE[] = {
 static size_t TEST_2_NONCE_LEN = 12;
 
 static uint8_t TEST_2_INPUT[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07    
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
 };
 static size_t TEST_2_INPUT_LEN = sizeof(TEST_2_INPUT);
 
@@ -79,6 +83,181 @@ static uint8_t TEST_2_EXPECTED[] = {
     0x25, 0x7C, 0x9A, 0xF1, 0xF8, 0xF0, 0x30, 0x09
 };
 static size_t TEST_2_EXPECTED_LEN = sizeof(TEST_2_EXPECTED);
+
+static uint8_t TEST_2_TAG_LEN = 16;
+
+
+/* Test 3:
+    N: BBAA99887766554433221102
+    A: 0001020304050607
+    P:
+    C: 81017F8203F081277152FADE694A0A00
+ */
+
+static uint8_t *TEST_3_KEY = TEST_KEY;
+
+static uint8_t TEST_3_NONCE[] = {
+    0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
+    0x33, 0x22, 0x11, 0x02,
+};
+static size_t TEST_3_NONCE_LEN = 12;
+
+static uint8_t *TEST_3_INPUT;
+
+static size_t TEST_3_INPUT_LEN = 0;
+
+static uint8_t TEST_3_ADATA[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+};
+static size_t TEST_3_ADATA_LEN = sizeof(TEST_2_ADATA);
+
+static uint8_t TEST_3_EXPECTED[] = {
+    0x81, 0x01, 0x7F, 0x82, 0x03, 0xF0, 0x81, 0x27,
+    0x71, 0x52, 0xFA, 0xDE, 0x69, 0x4A, 0x0A, 0x00
+};
+static size_t TEST_3_EXPECTED_LEN = sizeof(TEST_3_EXPECTED);
+
+static uint8_t TEST_3_TAG_LEN = 16;
+
+
+/* Test 4:
+    N: BBAA99887766554433221103
+    A:
+    P: 0001020304050607
+    C: 45DD69F8F5AAE72414054CD1F35D82760B2CD00D2F99BFA9
+ */
+
+static uint8_t *TEST_4_KEY = TEST_KEY;
+
+static uint8_t TEST_4_NONCE[] = {
+    0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
+    0x33, 0x22, 0x11, 0x03,
+};
+static size_t TEST_4_NONCE_LEN = 12;
+
+static uint8_t TEST_4_INPUT[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+};
+static size_t TEST_4_INPUT_LEN = sizeof(TEST_4_INPUT);
+
+static uint8_t *TEST_4_ADATA;
+
+static size_t TEST_4_ADATA_LEN = 0;
+
+static uint8_t TEST_4_EXPECTED[] = {
+    0x45, 0xDD, 0x69, 0xF8, 0xF5, 0xAA, 0xE7, 0x24,
+    0x14, 0x05, 0x4C, 0xD1, 0xF3, 0x5D, 0x82, 0x76,
+    0x0B, 0x2C, 0xD0, 0x0D, 0x2F, 0x99, 0xBF, 0xA9
+};
+static size_t TEST_4_EXPECTED_LEN = sizeof(TEST_4_EXPECTED);
+
+static uint8_t TEST_4_TAG_LEN = 16;
+
+
+/* Test 16:
+    N: BBAA9988776655443322110F
+    A:
+    P: 000102030405060708090A0B0C0D0E0F1011121314151617
+       18191A1B1C1D1E1F2021222324252627
+    C: 4412923493C57D5DE0D700F753CCE0D1D2D95060122E9F15
+       A5DDBFC5787E50B5CC55EE507BCB084E479AD363AC366B95
+       A98CA5F3000B1479
+ */
+
+static uint8_t *TEST_16_KEY = TEST_KEY;
+
+static uint8_t TEST_16_NONCE[] = {
+    0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
+    0x33, 0x22, 0x11, 0x0F,
+};
+static size_t TEST_16_NONCE_LEN = 12;
+
+static uint8_t TEST_16_INPUT[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
+};
+static size_t TEST_16_INPUT_LEN = sizeof(TEST_16_INPUT);
+
+static uint8_t *TEST_16_ADATA;
+static size_t TEST_16_ADATA_LEN = 0;
+
+static uint8_t TEST_16_EXPECTED[] = {
+    0x44, 0x12, 0x92, 0x34, 0x93, 0xC5, 0x7D, 0x5D,
+    0xE0, 0xD7, 0x00, 0xF7, 0x53, 0xCC, 0xE0, 0xD1,
+    0xD2, 0xD9, 0x50, 0x60, 0x12, 0x2E, 0x9F, 0x15,
+    0xA5, 0xDD, 0xBF, 0xC5, 0x78, 0x7E, 0x50, 0xB5,
+    0xCC, 0x55, 0xEE, 0x50, 0x7B, 0xCB, 0x08, 0x4E,
+    0x47, 0x9A, 0xD3, 0x63, 0xAC, 0x36, 0x6B, 0x95,
+    0xA9, 0x8C, 0xA5, 0xF3, 0x00, 0x0B, 0x14, 0x79
+};
+static size_t TEST_16_EXPECTED_LEN = sizeof(TEST_16_EXPECTED);
+
+static uint8_t TEST_16_TAG_LEN = 16;
+
+
+
+/* Test 17:
+
+    The next tuple shows a result with a tag length of 96 bits and a
+    different key.
+
+    K: 0F0E0D0C0B0A09080706050403020100
+
+    N: BBAA9988776655443322110D
+    A: 000102030405060708090A0B0C0D0E0F1011121314151617
+        18191A1B1C1D1E1F2021222324252627
+    P: 000102030405060708090A0B0C0D0E0F1011121314151617
+        18191A1B1C1D1E1F2021222324252627
+    C: 1792A4E31E0755FB03E31B22116E6C2DDF9EFD6E33D536F1
+        A0124B0A55BAE884ED93481529C76B6AD0C515F4D1CDD4FD
+        AC4F02AA
+
+ */
+
+static uint8_t TEST_17_KEY[] = {
+    0x0F, 0x0E, 0x0D, 0x0C, 0x0B, 0x0A, 0x09, 0x08,
+    0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
+};
+
+static uint8_t TEST_17_NONCE[] = {
+    0xBB, 0xAA, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44,
+    0x33, 0x22, 0x11, 0x0D,
+};
+static size_t TEST_17_NONCE_LEN = 12;
+
+static uint8_t TEST_17_INPUT[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
+};
+static size_t TEST_17_INPUT_LEN = sizeof(TEST_17_INPUT);
+
+static uint8_t TEST_17_ADATA[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
+};
+static size_t TEST_17_ADATA_LEN = sizeof(TEST_17_ADATA);
+
+static uint8_t TEST_17_EXPECTED[] = {
+    0x17, 0x92, 0xA4, 0xE3, 0x1E, 0x07, 0x55, 0xFB,
+    0x03, 0xE3, 0x1B, 0x22, 0x11, 0x6E, 0x6C, 0x2D,
+    0xDF, 0x9E, 0xFD, 0x6E, 0x33, 0xD5, 0x36, 0xF1,
+    0xA0, 0x12, 0x4B, 0x0A, 0x55, 0xBA, 0xE8, 0x84,
+    0xED, 0x93, 0x48, 0x15, 0x29, 0xC7, 0x6B, 0x6A,
+    0xD0, 0xC5, 0x15, 0xF4, 0xD1, 0xCD, 0xD4, 0xFD,
+    0xAC, 0x4F, 0x02, 0xAA
+};
+static size_t TEST_17_EXPECTED_LEN = sizeof(TEST_17_EXPECTED);
+
+static uint8_t TEST_17_TAG_LEN = 12;
 
 
 /* Share test buffer output */
@@ -107,21 +286,20 @@ static void test_encrypt_op(uint8_t *key, uint8_t key_len,
     TEST_ASSERT_MESSAGE(len > 0, "Encryption failed");
 
     TEST_ASSERT_EQUAL_INT(output_expected_len, len);
+
     cmp = compare(output_expected, data, len);
     TEST_ASSERT_MESSAGE(1 == cmp, "wrong ciphertext");
 }
 
 #define do_test_encrypt_op(name) do { \
-        test_encrypt_op(TEST_KEY, TEST_KEY_LEN, \
+        test_encrypt_op(TEST_ ## name ## _KEY, TEST_KEY_LEN, \
                         TEST_ ## name ## _ADATA, TEST_ ## name ## _ADATA_LEN, \
                         TEST_ ## name ## _NONCE, TEST_ ## name ## _NONCE_LEN, \
                     \
                         TEST_ ## name ## _INPUT, TEST_ ## name ## _INPUT_LEN, \
                     \
-                        TEST_ ## name ## _EXPECTED + TEST_ ## name ## _ADATA_LEN, \
-                        TEST_ ## name ## _EXPECTED_LEN - TEST_ ## name ## _ADATA_LEN, \
-                    \
-                        TEST_TAG_LEN \
+                        TEST_ ## name ## _EXPECTED, \
+                        TEST_ ## name ## _EXPECTED_LEN, TEST_ ## name ## _TAG_LEN \
                         ); \
 } while (0)
 
@@ -129,6 +307,10 @@ static void test_crypto_modes_ocb_encrypt(void)
 {
     do_test_encrypt_op(1);
     do_test_encrypt_op(2);
+    do_test_encrypt_op(3);
+    do_test_encrypt_op(4);
+    do_test_encrypt_op(16);
+    do_test_encrypt_op(17);
 }
 
 Test *tests_crypto_modes_ocb_tests(void)
