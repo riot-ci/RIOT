@@ -215,9 +215,7 @@ static void test_bitarithm_bits_set_random(void)
 
 static void test_bitarithm_bits_set_u32_random(void)
 {
-    TEST_ASSERT_EQUAL_INT(21, bitarithm_bits_set_u32(4072524027)); /* randomized by fair
-                                                                    * dice roll ;-)
-                                                                    */
+    TEST_ASSERT_EQUAL_INT(21, bitarithm_bits_set_u32(4072524027)); /* Source: https://www.random.org/bytes */
 }
 
 Test *tests_core_bitarithm_tests(void)
