@@ -34,9 +34,7 @@ static int cmd_check(int argc, char **argv)
     }
 
     char *address;
-    uint32_t address_value;
-
-    sscanf(argv[1] + 2, "%lx", &address_value); /* ignore 0x prefix */
+    uint32_t address_value = strtol(argv[1], NULL, 0);
 
     address = (char *)address_value;
 
