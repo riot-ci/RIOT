@@ -39,14 +39,13 @@ extern "C" {
 
 /** @} */
 
+int32_t cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, size_t auth_data_len,
+                           uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
+                           uint8_t *input, size_t input_len, uint8_t *output);
 
-int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                       uint8_t *input, size_t input_len, uint8_t *output);
-
-int cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                       uint8_t *input, size_t input_len, uint8_t *output);
+int32_t cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, size_t auth_data_len,
+                           uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
+                           uint8_t *input, size_t input_len, uint8_t *output);
 
 #endif /* CRYPTO_MODES_OCB_H */
 /** @} */

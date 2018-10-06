@@ -108,9 +108,9 @@ static void hash(cipher_t *cipher, uint8_t l_star[16], uint8_t l_zero[16],
     }
 }
 
-static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                   uint8_t tag[16], uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                   uint8_t *input, size_t input_len, uint8_t *output, uint8_t mode)
+static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t tag[16], uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
+                       uint8_t *input, size_t input_len, uint8_t *output, uint8_t mode)
 {
 
     /* OCB mode only works for ciphers of block length 16 */
@@ -119,7 +119,7 @@ static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
     }
 
     /* The tag can be at most 128 bit long */
-    if (tag_length > 16 || tag_length == 0) {
+    if (tag_len > 16 || tag_len == 0) {
         return OCB_ERR_INVALID_TAG_LENGTH;
     }
 
@@ -150,7 +150,7 @@ static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
     /* Nonce = num2str(TAGLEN mod 128,7) || zeros(120-bitlen(N)) || 1 || N */
     uint8_t nonce_padded[16];
     memset(nonce_padded, 0, 16);
-    nonce_padded[0] = (tag_length * 8) << 1;
+    nonce_padded[0] = (tag_len * 8) << 1;
     nonce_padded[15 - nonce_len] = 0x01;
     memcpy(nonce_padded + 16 - nonce_len, nonce, nonce_len);
 
@@ -270,14 +270,19 @@ static int run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
     return output_pos;
 }
 
-int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                       uint8_t *input, size_t input_len, uint8_t *output)
+int32_t cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, size_t auth_data_len,
+                           uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
+                           uint8_t *input, size_t input_len, uint8_t *output)
 {
     uint8_t tag[16];
 
+    if (input_len > (uint32_t)(INT32_MAX - tag_len)) {
+        // We would not be able to return the proper output length for data this long
+        return OCB_ERR_INVALID_DATA_LENGTH;
+    }
+
     int cipher_text_length = run_ocb(cipher, auth_data, auth_data_len,
-                                     tag, tag_length, nonce, nonce_len,
+                                     tag, tag_len, nonce, nonce_len,
                                      input, input_len, output, OCB_MODE_ENCRYPT);
 
     if (cipher_text_length < 0) {
@@ -285,26 +290,31 @@ int cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         return cipher_text_length;
     }
     /* C = C_1 || C_2 || ... || C_m || C_* || Tag[1..TAGLEN] */
-    memcpy(output + cipher_text_length, tag, tag_length);
-    return (cipher_text_length + tag_length);
+    memcpy(output + cipher_text_length, tag, tag_len);
+    return (cipher_text_length + tag_len);
 }
 
-int cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_len,
-                       uint8_t tag_length, uint8_t *nonce, size_t nonce_len,
-                       uint8_t *input, size_t input_len, uint8_t *output)
+int32_t cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, size_t auth_data_len,
+                           uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
+                           uint8_t *input, size_t input_len, uint8_t *output)
 {
+
+    if (input_len - tag_len > INT32_MAX) {
+        // We would not be able to return the proper output length for data this long
+        return OCB_ERR_INVALID_DATA_LENGTH;
+    }
 
     uint8_t tag[16];
     int plain_text_length = run_ocb(cipher, auth_data, auth_data_len,
-                                    tag, tag_length, nonce, nonce_len,
-                                    input, input_len - tag_length, output, OCB_MODE_DECRYPT);
+                                    tag, tag_len, nonce, nonce_len,
+                                    input, input_len - tag_len, output, OCB_MODE_DECRYPT);
 
     if (plain_text_length < 0) {
         // An error occured. Retur the error code
         return plain_text_length;
     }
     /* Check the tag */
-    if (memcmp(tag, input + input_len - tag_length, tag_length) == 0) {
+    if (memcmp(tag, input + input_len - tag_len, tag_len) == 0) {
         /* Tag is valid */
         /* P = P_1 || P_2 || ... || P_m || P_* */
         return plain_text_length;
@@ -312,7 +322,7 @@ int cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
     else {
         /* Tag is not valid */
         /* Destroy the decrypted data to prevent misuse */
-        memset(output, 0, input_len - tag_length);
+        memset(output, 0, input_len - tag_len);
         return OCB_ERR_INVALID_TAG;
     }
 }
