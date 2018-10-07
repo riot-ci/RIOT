@@ -770,7 +770,7 @@ void coap_block2_finish(coap_block_slicer_t *slicer)
      * it's already in the buffer. So just point past the option. */
     uint8_t *pos = slicer->opt + 1;
     uint16_t delta = _decode_value(*slicer->opt >> 4, &pos, slicer->opt + 3);
-    int more = (slicer->cur > slicer->end) ? 0x80 : 0;
+    int more = (slicer->cur > slicer->end) ? 1 : 0;
 
     coap_opt_put_block2(slicer->opt, COAP_OPT_BLOCK2 - delta, slicer, more);
 }
