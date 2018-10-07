@@ -547,7 +547,7 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags);
  *
  * @param[out]  buf         buffer to write to
  * @param[in]   lastonum    number of previous option (for delta calculation),
- *                          must be < 27
+ *                          must be < 23
  * @param[in]   slicer      coap blockwise slicer helper struct
  * @param[in]   more        more flag (1 or 0)
  *
