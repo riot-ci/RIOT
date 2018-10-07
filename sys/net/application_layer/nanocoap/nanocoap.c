@@ -605,7 +605,7 @@ int coap_get_block2(coap_pkt_t *pkt, coap_block1_t *block2)
 {
     block2->more = coap_get_blockopt(pkt, COAP_OPT_BLOCK2, &block2->blknum,
             &block2->szx);
-    return block2->more;
+    return (block2->more >= 0);
 }
 
 size_t coap_put_block1_ok(uint8_t *pkt_pos, coap_block1_t *block1, uint16_t lastonum)
