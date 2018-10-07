@@ -711,8 +711,8 @@ void coap_block2_finish(coap_block_slicer_t *slicer);
  * @returns     <0 on error
  */
 ssize_t coap_block2_build_reply(coap_pkt_t *pkt, unsigned code,
-                        uint8_t *rbuf, unsigned rlen, unsigned payload_len,
-                        coap_block_slicer_t *slicer);
+                                uint8_t *rbuf, unsigned rlen, unsigned payload_len,
+                                coap_block_slicer_t *slicer);
 
 /**
  * @brief Add a single character to a block2 reply.
