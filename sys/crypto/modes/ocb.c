@@ -10,7 +10,7 @@
  * @ingroup     sys_crypto
  * @{
  *
- * @file        
+ * @file
  * @brief       Offset Codebook (OCB3) AEAD mode as specified in RFC 7253
  *
  * @author      Mathias Tausig <mathias@tausig.at>
@@ -76,25 +76,31 @@ static void xor_block(uint8_t block1[16], uint8_t block2[16], uint8_t output[16]
     }
 }
 
-static void processBlock(ocb_state_t *state, size_t blockNumber, uint8_t input[16], uint8_t output[16], uint8_t mode) {
+static void processBlock(ocb_state_t *state, size_t blockNumber, uint8_t input[16], uint8_t output[16], uint8_t mode)
+{
     /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
     uint8_t l_i[16];
+
     calculate_l_i(state->l_zero, ntz(blockNumber + 1), l_i);
     xor_block(state->offset, l_i, state->offset);
     /* Sum_i = Sum_{i-1} xor ENCIPHER(K, A_i xor Offset_i) */
     uint8_t cipher_output[16], cipher_input[16];
     xor_block(input, state->offset, cipher_input);
-    if(mode == OCB_MODE_ENCRYPT)
+    if (mode == OCB_MODE_ENCRYPT) {
         state->cipher->interface->encrypt(&(state->cipher->context), cipher_input, cipher_output);
-    else if(mode == OCB_MODE_DECRYPT)
-        state->cipher->interface->decrypt(&(state->cipher->context), cipher_input, cipher_output);        
+    }
+    else if (mode == OCB_MODE_DECRYPT) {
+        state->cipher->interface->decrypt(&(state->cipher->context), cipher_input, cipher_output);
+    }
     xor_block(state->offset, cipher_output, output);
-    if(state->checksum != NULL){
+    if (state->checksum != NULL) {
         /* Checksum_i = Checksum_{i-1} xor P_i */
-        if(mode == OCB_MODE_ENCRYPT)
+        if (mode == OCB_MODE_ENCRYPT) {
             xor_block(state->checksum, input, state->checksum);
-        else if (mode == OCB_MODE_DECRYPT)
+        }
+        else if (mode == OCB_MODE_DECRYPT) {
             xor_block(state->checksum, output, state->checksum);
+        }
     }
 }
 
@@ -110,7 +116,7 @@ static void hash(ocb_state_t *state, uint8_t *data, size_t data_len, uint8_t out
     uint8_t offset[16];
     memset(offset, 0, 16);
     for (size_t i = 0; i < m; ++i) {
-     /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
+        /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
         uint8_t l_i[16];
         calculate_l_i(state->l_zero, ntz(i + 1), l_i);
         xor_block(offset, l_i, offset);
@@ -138,10 +144,11 @@ static void hash(ocb_state_t *state, uint8_t *data, size_t data_len, uint8_t out
     }
 }
 
-static void init_ocb(cipher_t *cipher, uint8_t tag_len, uint8_t *nonce, size_t nonce_len, ocb_state_t *state) {
-    
+static void init_ocb(cipher_t *cipher, uint8_t tag_len, uint8_t *nonce, size_t nonce_len, ocb_state_t *state)
+{
+
     state->cipher = cipher;
-    
+
     /* Key-dependent variables
 
        L_* = ENCIPHER(K, zeros(128))
@@ -218,7 +225,7 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
     /* Process any whole blocks */
     size_t output_pos = 0;
     for (size_t i = 0; i < m; ++i) {
-        processBlock(&state, i, input, output+output_pos, mode);
+        processBlock(&state, i, input, output + output_pos, mode);
         output_pos += 16;
         input += 16;
     }
@@ -255,7 +262,7 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         output_pos += remaining_input_len;
     }
     /* else: C_* = <empty string> */
-    
+
     /* Tag = ENCIPHER(K, Checksum_* xor Offset_* xor L_$) xor HASH(K,A) */
     /* Tag = ENCIPHER(K, Checksum_m xor Offset_m xor L_$) xor HASH(K,A) */
     uint8_t hash_value[16];
@@ -266,7 +273,7 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
 
     cipher->interface->encrypt(&(cipher->context), cipher_data, tag);
     xor_block(tag, hash_value, tag);
-    
+
     return output_pos;
 }
 
