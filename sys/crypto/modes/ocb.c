@@ -241,31 +241,20 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
         padded_block[remaining_input_len] = 0x80;
         xor_block(checksum, padded_block, checksum);
         output_pos += remaining_input_len;
-
-        /* Tag = ENCIPHER(K, Checksum_* xor Offset_* xor L_$) xor HASH(K,A) */
-        uint8_t hash_value[16];
-        hash(cipher, l_star, l_zero, auth_data, auth_data_len, hash_value);
-        uint8_t cipher_data[16];
-        xor_block(checksum, offset, cipher_data);
-        xor_block(cipher_data, l_dollar, cipher_data);
-
-        cipher->interface->encrypt(&(cipher->context), cipher_data, tag);
-        xor_block(tag, hash_value, tag);
     }
-    else {
-        /* C_* = <empty string>
-           Tag = ENCIPHER(K, Checksum_m xor Offset_m xor L_$) xor HASH(K,A)
-         */
-        uint8_t hash_value[16];
-        hash(cipher, l_star, l_zero, auth_data, auth_data_len, hash_value);
-        uint8_t cipher_data[16];
-        xor_block(checksum, offset, cipher_data);
-        xor_block(cipher_data, l_dollar, cipher_data);
+    /* else: C_* = <empty string> */
+    
+    /* Tag = ENCIPHER(K, Checksum_* xor Offset_* xor L_$) xor HASH(K,A) */
+    /* Tag = ENCIPHER(K, Checksum_m xor Offset_m xor L_$) xor HASH(K,A) */
+    uint8_t hash_value[16];
+    hash(cipher, l_star, l_zero, auth_data, auth_data_len, hash_value);
+    uint8_t cipher_data[16];
+    xor_block(checksum, offset, cipher_data);
+    xor_block(cipher_data, l_dollar, cipher_data);
 
-        cipher->interface->encrypt(&(cipher->context), cipher_data, tag);
-        xor_block(tag, hash_value, tag);
-    }
-
+    cipher->interface->encrypt(&(cipher->context), cipher_data, tag);
+    xor_block(tag, hash_value, tag);
+    
     return output_pos;
 }
 
