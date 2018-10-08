@@ -10,7 +10,7 @@
  * @ingroup     sys_crypto
  * @{
  *
- * @file        ocb.c
+ * @file        
  * @brief       Offset Codebook (OCB3) AEAD mode as specified in RFC 7253
  *
  * @author      Mathias Tausig <mathias@tausig.at>
