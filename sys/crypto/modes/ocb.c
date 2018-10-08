@@ -65,6 +65,29 @@ static void xor_block(uint8_t block1[16], uint8_t block2[16], uint8_t output[16]
     }
 }
 
+static void processBlock(cipher_t *cipher, size_t blockNumber, uint8_t l_zero[16], uint8_t input[16], uint8_t output[16], 
+    uint8_t offset[16], uint8_t checksum[16], uint8_t mode) {
+    /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
+    uint8_t l_i[16];
+    calculate_l_i(l_zero, ntz(blockNumber + 1), l_i);
+    xor_block(offset, l_i, offset);
+    /* Sum_i = Sum_{i-1} xor ENCIPHER(K, A_i xor Offset_i) */
+    uint8_t cipher_output[16], cipher_input[16];
+    xor_block(input, offset, cipher_input);
+    if(mode == OCB_MODE_ENCRYPT)
+        cipher->interface->encrypt(&(cipher->context), cipher_input, cipher_output);
+    else if(mode == OCB_MODE_DECRYPT)
+        cipher->interface->decrypt(&(cipher->context), cipher_input, cipher_output);        
+    xor_block(offset, cipher_output, output);
+    if(checksum != NULL){
+        /* Checksum_i = Checksum_{i-1} xor P_i */
+        if(mode == OCB_MODE_ENCRYPT)
+            xor_block(checksum, input, checksum);
+        else if (mode == OCB_MODE_DECRYPT)
+            xor_block(checksum, output, checksum);
+    }
+}
+
 static void hash(cipher_t *cipher, uint8_t l_star[16], uint8_t l_zero[16],
                  uint8_t *data, size_t data_len, uint8_t output[16])
 {
@@ -80,7 +103,7 @@ static void hash(cipher_t *cipher, uint8_t l_star[16], uint8_t l_zero[16],
     uint8_t offset[16];
     memset(offset, 0, 16);
     for (size_t i = 0; i < m; ++i) {
-        /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
+     /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
         uint8_t l_i[16];
         calculate_l_i(l_zero, ntz(i + 1), l_i);
         xor_block(offset, l_i, offset);
@@ -183,32 +206,8 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data, uint32_t auth_data_
     /* Process any whole blocks */
     size_t output_pos = 0;
     for (size_t i = 0; i < m; ++i) {
-        /* Offset_i = Offset_{i-1} xor L_{ntz(i)} */
-        uint8_t l_i[16];
-        calculate_l_i(l_zero, ntz(i + 1), l_i);
-        xor_block(offset, l_i, offset);
-        if (mode == OCB_MODE_ENCRYPT) {
-            /* C_i = Offset_i xor ENCIPHER(K, P_i xor Offset_i) */
-            uint8_t ci[16], cipher_input[16];
-            xor_block(input, offset, cipher_input);
-            cipher->interface->encrypt(&(cipher->context), cipher_input, ci);
-            xor_block(ci, offset, ci);
-            memcpy(output + output_pos, ci, 16);
-            output_pos += 16;
-            /* Checksum_i = Checksum_{i-1} xor P_i */
-            xor_block(checksum, input, checksum);
-        }
-        else if (mode == OCB_MODE_DECRYPT) {
-            /* P_i = Offset_i xor DECIPHER(K, C_i xor Offset_i) */
-            uint8_t pi[16], cipher_input[16];
-            xor_block(input, offset, cipher_input);
-            cipher->interface->decrypt(&(cipher->context), cipher_input, pi);
-            xor_block(pi, offset, pi);
-            memcpy(output + output_pos, pi, 16);
-            /* Checksum_i = Checksum_{i-1} xor P_i */
-            xor_block(checksum, output + output_pos, checksum);
-            output_pos += 16;
-        }
+        processBlock(cipher, i, l_zero, input, output+output_pos, offset, checksum, mode);
+        output_pos += 16;
         input += 16;
     }
 
