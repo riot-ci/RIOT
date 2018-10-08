@@ -102,7 +102,7 @@
  *
  * Source: http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogObvious
  */
-unsigned bitarithm_msb(unsigned v);
+uint8_t bitarithm_msb(uint32_t v);
 
 /**
  * @brief   Returns the number of the lowest '1' bit in a value
@@ -111,7 +111,7 @@ unsigned bitarithm_msb(unsigned v);
  * @return          Bit Number
  *
  */
-static inline unsigned bitarithm_lsb(unsigned v);
+static inline uint8_t bitarithm_lsb(uint32_t v);
 
 /**
  * @brief   Returns the number of bits set in a value
@@ -119,11 +119,11 @@ static inline unsigned bitarithm_lsb(unsigned v);
  * @return          Number of set bits
  *
  */
-unsigned bitarithm_bits_set(unsigned v);
+uint8_t bitarithm_bits_set(uint32_t v);
 
 /* implementations */
 
-static inline unsigned bitarithm_lsb(unsigned v)
+static inline uint8_t bitarithm_lsb(uint32_t v)
 #if defined(BITARITHM_LSB_BUILTIN)
 {
     return __builtin_ffs(v) - 1;
@@ -137,7 +137,7 @@ static inline unsigned bitarithm_lsb(unsigned v)
 #else
 {
 /* Source: http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogObvious */
-    unsigned r = 0;
+    uint8_t r = 0;
 
     while ((v & 0x01) == 0) {
         v >>= 1;

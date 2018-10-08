@@ -23,12 +23,12 @@
 
 #include "bitarithm.h"
 
-unsigned bitarithm_msb(unsigned v)
+uint8_t bitarithm_msb(uint32_t v)
 {
-    register unsigned r; /* result of log2(v) will go here */
+    register uint8_t r; /* result of log2(v) will go here */
 
 #if ARCH_32_BIT
-    register unsigned shift;
+    register uint32_t shift;
 
     r =     (v > 0xFFFF) << 4; v >>= r;
     shift = (v > 0xFF  ) << 3; v >>= shift; r |= shift;
@@ -46,9 +46,9 @@ unsigned bitarithm_msb(unsigned v)
     return r;
 }
 
-unsigned bitarithm_bits_set(unsigned v)
+uint8_t bitarithm_bits_set(uint32_t v)
 {
-    unsigned c; /* c accumulates the total bits set in v */
+    uint8_t c; /* c accumulates the total bits set in v */
 
     for (c = 0; v; c++) {
         v &= v - 1; /* clear the least significant bit set */
