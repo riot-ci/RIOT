@@ -71,7 +71,6 @@
 static int _is_available(const itg320x_t *dev);
 static int _reset(itg320x_t *dev);
 
-// static uint8_t _get_reg_bit(uint8_t byte, uint8_t mask);
 static void _set_reg_bit(uint8_t *byte, uint8_t mask, uint8_t bit);
 static int _reg_read(const itg320x_t *dev, uint8_t reg, uint8_t *data, uint16_t len);
 static int _reg_write(const itg320x_t *dev, uint8_t reg, uint8_t *data, uint16_t len);
