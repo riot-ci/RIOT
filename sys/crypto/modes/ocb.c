@@ -93,14 +93,12 @@ static void processBlock(ocb_state_t *state, size_t blockNumber, uint8_t input[1
         state->cipher->interface->decrypt(&(state->cipher->context), cipher_input, cipher_output);
     }
     xor_block(state->offset, cipher_output, output);
-    if (state->checksum != NULL) {
-        /* Checksum_i = Checksum_{i-1} xor P_i */
-        if (mode == OCB_MODE_ENCRYPT) {
-            xor_block(state->checksum, input, state->checksum);
-        }
-        else if (mode == OCB_MODE_DECRYPT) {
-            xor_block(state->checksum, output, state->checksum);
-        }
+    /* Checksum_i = Checksum_{i-1} xor P_i */
+    if (mode == OCB_MODE_ENCRYPT) {
+        xor_block(state->checksum, input, state->checksum);
+    }
+    else if (mode == OCB_MODE_DECRYPT) {
+        xor_block(state->checksum, output, state->checksum);
     }
 }
 
