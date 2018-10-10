@@ -25,8 +25,6 @@
 #include "slot_util.h"
 #include "riot_hdr.h"
 
-#ifdef RIOT_VERSION
-#ifndef BOARD_NATIVE
 /*
  * Store the start addresses of each slot.
  * Take into account that CPU_FLASH_BASE represents the starting
@@ -93,47 +91,3 @@ riot_hdr_t *slot_util_get_hdr(unsigned slot)
     _assert_slot(slot);
     return (riot_hdr_t*)slot_util_slots[slot];
 }
-
-#else /* BOARD_NATIVE */
-const unsigned slot_util_num_slots = 1;
-
-void slot_util_jump_to_image(riot_hdr_t *riot_hdr)
-{
-    (void)riot_hdr;
-    printf("%s native stub\n", __func__);
-}
-
-int slot_util_current_slot(void)
-{
-    printf("%s native stub\n", __func__);
-
-    return 1;
-}
-
-unsigned slot_util_get_image_startaddr(unsigned slot)
-{
-    (void)slot;
-    printf("%s native stub\n", __func__);
-    return 0;
-}
-
-void slot_util_jump(unsigned slot)
-{
-    (void)slot;
-    printf("%s native stub\n", __func__);
-}
-
-void slot_util_dump_addrs(void)
-{
-    printf("%s native stub\n", __func__);
-}
-
-riot_hdr_t *slot_util_get_hdr(unsigned slot)
-{
-    (void)slot;
-    printf("%s native stub\n", __func__);
-    return NULL;
-}
-
-#endif /* BOARD_NATIVE */
-#endif /* RIOT_VERSION */
