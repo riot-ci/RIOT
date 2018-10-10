@@ -32,6 +32,11 @@
 #include "riot_hdr.h"
 #include "checksum/fletcher32.h"
 
+/**
+ *  @brief Number of header bytes that get checksummed
+ */
+#define RIOT_HDR_CHECKSUM_LEN      (12)
+
 void riot_hdr_print(const riot_hdr_t *riot_hdr)
 {
     printf("Image magic_number: 0x%08x\n", (unsigned)riot_hdr->magic_number);
@@ -43,7 +48,7 @@ void riot_hdr_print(const riot_hdr_t *riot_hdr)
 
 int riot_hdr_validate(const riot_hdr_t *riot_hdr)
 {
-    if (memcmp(riot_hdr, "RIOT", 4)) {
+    if (riot_hdr->magic_number != RIOT_HDR_MAGIC) {
         LOG_INFO("%s: riot_hdr magic number invalid\n", __func__);
         return -1;
     }
@@ -58,5 +63,5 @@ int riot_hdr_validate(const riot_hdr_t *riot_hdr)
 
 uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr)
 {
-    return fletcher32((uint16_t *)riot_hdr, RIOT_HDR_CHECKSUM_LEN / 2);
+    return fletcher32((uint16_t*)riot_hdr, RIOT_HDR_CHECKSUM_LEN / sizeof(uint16_t));
 }
