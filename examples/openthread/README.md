@@ -16,18 +16,28 @@ You can either build a FTD or MTD firmware:
 
 With RIOT port, a node is auto-setup and ready to communicate with
 this configuration:
-```OPENTHREAD_PANID=0xbeef```
-```OPENTHREAD_CHANNEL=26```
+```
+OPENTHREAD_PANID=0xbeef
+OPENTHREAD_CHANNEL=26
+```
 
 You can pass the panid/channel independently when building the firmware:
-```make BOARD=<target> OPENTHREAD_PANID=0xaaaa OPENTHREAD_TYPE=ftd flash term```
-```make BOARD=<target> OPENTHREAD_CHANNEL=20 OPENTHREAD_TYPE=ftd flash term```
+```
+make BOARD=<target> OPENTHREAD_PANID=0xaaaa OPENTHREAD_TYPE=ftd flash term
+```
+```
+make BOARD=<target> OPENTHREAD_CHANNEL=20 OPENTHREAD_TYPE=ftd flash term
+```
 
 To try OpenThread in RIOT, you can do the following:
 
 1. Flash nodes with MTD or FTD functionality:
-```make BOARD=<target> clean all flash OPENTHREAD_TYPE=mtd```
-```make BOARD=<target> clean all flash OPENTHREAD_TYPE=ftd```
+```
+make BOARD=<target> clean all flash OPENTHREAD_TYPE=mtd
+```
+```
+make BOARD=<target> clean all flash OPENTHREAD_TYPE=ftd
+```
 
 2. Check the state of the node with `state`. In the beginning, it should be
 `detached`, but after some seconds it should become `leader`
@@ -44,7 +54,9 @@ ipaddr
    fe80::3984:f4eb:d182:5dae
 ```
 5. Ping from another node with
-```ping fdde:ad00:beef:0:946a:c722:a5d9:848```
+```
+ping fdde:ad00:beef:0:946a:c722:a5d9:848
+```
 
 6. You can try IEEE802.15.4 scan with `scan` command
 
