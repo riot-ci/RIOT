@@ -8,7 +8,6 @@ BOARD_WHITELIST += samr21-xpro iotlab-m3
 
 # Include modules to test the bootloader
 USEMODULE += slot_util
-USEMODULE += riot_hdr
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
