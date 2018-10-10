@@ -32,14 +32,6 @@ extern "C" {
 #include "riot_hdr.h"
 
 /**
- * @brief  Jump to image
- *
- * @param[in] riot_hdr  ptr to image header
- *
- */
-void slot_util_jump_to_image(riot_hdr_t *riot_hdr);
-
-/**
  * @brief  Get currently running image slot
  *
  * returns nr of currently active slot
