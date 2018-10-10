@@ -59,9 +59,32 @@ void slot_util_jump(unsigned slot);
  *
  * @param[in]   slot    slot nr to work on
  *
- * returns header of image slot nr @p slot
+ * @returns header of image slot nr @p slot
  */
 const riot_hdr_t *slot_util_get_hdr(unsigned slot);
+
+/**
+ * @brief  Validate slot
+ *
+ * @param[in] slot    slot nr to work on
+ *
+ * @returns 0 if ok.
+ */
+static inline int slot_util_validate(unsigned slot)
+{
+    return riot_hdr_validate(slot_util_get_hdr(slot));
+}
+
+/**
+ * @brief  Print formatted slot header to STDIO
+ *
+ * @param[in]   slot    slot nr to work on
+ *
+ */
+static inline void slot_util_print_slot_hdr(unsigned slot)
+{
+    riot_hdr_print(slot_util_get_hdr(slot));
+}
 
 /**
  * @brief   Number of configured firmware slots (incl. bootloader slot)
