@@ -30,5 +30,5 @@ LINKFLAGS += $(if $(FW_ROM_LEN),$(LINKFLAGPREFIX)--defsym=_fw_rom_length=$(FW_RO
 # 4KB are currently enough
 RIOTBOOT_LEN ?= 0x1000
 # Take the whole flash minus RIOTBOOT_LEN
-RIOTBOOT_SLOT_LEN ?= $(shell printf "0x%x" $$(($(ROM_LEN:%K=%*1024)-$(RIOTBOOT_LEN))))
-RIOTBOOT_SLOT_LEN := $(RIOTBOOT_SLOT_LEN)
+SLOT_LEN ?= $(shell printf "0x%x" $$(($(ROM_LEN:%K=%*1024)-$(RIOTBOOT_LEN))))
+SLOT_LEN := $(SLOT_LEN)
