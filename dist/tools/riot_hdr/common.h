@@ -8,8 +8,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <unistd.h>
-#include <sys/types.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
  extern "C" {
