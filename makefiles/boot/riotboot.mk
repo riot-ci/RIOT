@@ -16,7 +16,11 @@ RIOTBOOT_HDR_LEN ?= 0x100
 
 # export variables for 'slot_util'
 export RIOTBOOT_LEN
-export RIOTBOOT_SLOT_LEN
+export SLOT_LEN
+
+# By default, slot 0 is found just after RIOTBOOT_LEN. It might
+# be overridden to add more offset as needed.
+export SLOT0_OFFSET ?= $(RIOTBOOT_LEN)
 
 # Mandatory APP_VER, set to 0 by default
 APP_VER ?= 0
@@ -26,9 +30,9 @@ $(BINDIR)/$(APPLICATION)-%.elf: link
 	$(Q)$(_LINK) -o $@
 
 # slot 0 targets
-SLOT0_OFFSET := $$(($(RIOTBOOT_LEN) + $(RIOTBOOT_HDR_LEN)))
-$(BINDIR)/$(APPLICATION)-slot%.elf: FW_ROM_LEN=$(RIOTBOOT_SLOT_LEN - $(RIOTBOOT_HDR_LEN))
-$(BINDIR)/$(APPLICATION)-slot0.elf: ROM_OFFSET=$(SLOT0_OFFSET)
+SLOT0_FIRMWARE_OFFSET := $$(($(RIOTBOOT_LEN) + $(RIOTBOOT_HDR_LEN)))
+$(BINDIR)/$(APPLICATION)-slot%.elf: FW_ROM_LEN=$(SLOT_LEN - $(RIOTBOOT_HDR_LEN))
+$(BINDIR)/$(APPLICATION)-slot0.elf: ROM_OFFSET=$(SLOT0_FIRMWARE_OFFSET)
 
 # create binary target with RIOT header
 $(BINDIR)/$(APPLICATION)-slot0.riot.bin: %.riot.bin: %.hdr %.bin
@@ -48,7 +52,7 @@ $(HEADER_TOOL): FORCE
 %.hdr: $(HEADER_TOOL) %.bin FORCE
 	$(Q)$(HEADER_TOOL) generate $< $(APP_VER) $$(($(ROM_START_ADDR)+$(OFFSET))) $(RIOTBOOT_HDR_LEN) - > $@
 
-$(BINDIR)/$(APPLICATION)-slot0.hdr: OFFSET=$(SLOT0_OFFSET)
+$(BINDIR)/$(APPLICATION)-slot0.hdr: OFFSET=$(SLOT0_FIRMWARE_OFFSET)
 
 # Generic target to create a binary file from the image with header
 riotboot: $(BINDIR)/$(APPLICATION)-slot0.riot.bin
