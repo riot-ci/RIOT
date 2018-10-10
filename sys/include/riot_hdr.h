@@ -38,9 +38,10 @@ extern "C" {
 #include <stdint.h>
 
 /**
- *  @brief Number of header bytes that get checksummed
+ * @brief  Magic number for riot_hdr
+ *
  */
-#define RIOT_HDR_CHECKSUM_LEN      (12)
+#define RIOT_HDR_MAGIC         0x544f4952 /* "RIOT" */
 
 /**
  * @brief Structure to store image header - All members are little endian
