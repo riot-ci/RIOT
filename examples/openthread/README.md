@@ -2,10 +2,11 @@
 
 This example demonstrates how to use the [OpenThread](https://github.com/openthread/openthread)
 open source implementation of [Thread](https://threadgroup.org/) on RIOT.
+
 The [Command Line Interface](https://github.com/openthread/openthread/blob/master/examples/apps/cli/README.md) of
-OpenThread was ported. Please check the [full documentation]
-(https://github.com/openthread/openthread/blob/master/src/cli/README.md)
- of the CLI for usage information.
+OpenThread was ported. Please check the
+[full documentation](https://github.com/openthread/openthread/blob/master/src/cli/README.md)
+of the CLI for usage information.
 
 You can either build a FTD or MTD firmware:
 - MTD: A Minimal Thread Device does not have router functionality compiled in.
