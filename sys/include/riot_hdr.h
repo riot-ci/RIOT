@@ -60,7 +60,7 @@ typedef struct {
  * @param[in] riot_hdr  ptr to image header
  *
  */
-void riot_hdr_print(riot_hdr_t *riot_hdr);
+void riot_hdr_print(const riot_hdr_t *riot_hdr);
 
 /**
  * @brief  Validate image header
@@ -68,7 +68,7 @@ void riot_hdr_print(riot_hdr_t *riot_hdr);
  * @param[in] riot_hdr  ptr to image header
  *
  */
-int riot_hdr_validate(riot_hdr_t *riot_hdr);
+int riot_hdr_validate(const riot_hdr_t *riot_hdr);
 
 /**
  * @brief  Calculate header checksum
@@ -76,7 +76,7 @@ int riot_hdr_validate(riot_hdr_t *riot_hdr);
  * @param[in] riot_hdr  ptr to image header
  *
  */
-uint32_t riot_hdr_checksum(riot_hdr_t *riot_hdr);
+uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr);
 
 #ifdef __cplusplus
 }
