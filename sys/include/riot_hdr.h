@@ -12,59 +12,15 @@
  * @ingroup     sys
  * @{
  *
- * # RIOT image header for riotboot bootloader
- *
- * ## Overview
- *
- * riotboot is the name of a minimal bootloader application and infrastructure.
- * It consists of
- *
- * - the application "riotboot" in the bootloaders folder which serves as
- *   minimal bootloader
- *
- * - the module "riot_hdr" used to recognise RIOT firmware images
- *   which riotboot can boot.
- *
- * - the module "slot_util" used to manage the images (slots) with a
- *   RIOT header attached to them
- *
- * - a tool in dist/tools/riot_hdr for header generation.
- *
- * - several make targets to glue everything together
- *
- * ## Concept
- *
- * `riotboot` expects the flash to be separated in slots: at CPU_FLASH_BASE
- * address resides the bootloader, which is followed by a slot 0 with a
- * firmware image.
- *
- * A RIOT image with a single slot looks like:
- *
- * |------------------------------- FLASH -------------------------------------|
- * |----- RIOTBOOT_LEN ----|----------- RIOTBOOT_SLOT_SIZE (slot 0) -----------|
- *                         |--- RIOTBOOT_HDR_LEN ----|
- *  ---------------------------------------------------------------------------
- * |       bootloader      | riot_hdr_t + filler (0) |     RIOT firmware       |
- *  ---------------------------------------------------------------------------
- *
- * Please note that `RIOTBOOT_HDR_LEN` depends on the architecture of the
- * MCU, since it needs to be aligned to 256B. This is fixed regardless of
- * `sizeof(riot_hdr_t)`
- *
- * The bootloader will, on reset, verify the checksum of the first slot, then
- * boot it. If the slot doesn't have a valid checksum, no image will be
- * booted and the bootloader will enter "while(1);".
- *
  * The header contains
  *
  * - "RIOT" as magic number
- * - an application version
- * - a checksum
- *
- * The bootloader "riotboot" only cares about checksum.
+ * - the application version
+ * - the address where to find the RIOT firmware
+ * - the checksum of the three previous fields
  *
  * @file
- * @brief       RIOT images header and tools
+ * @brief       RIOT firmware header and tools
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Francisco Acosta <francisco.acosta@inria.fr>
