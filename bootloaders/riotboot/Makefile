@@ -4,8 +4,8 @@ APPLICATION = riotboot
 # Default testing board
 BOARD ?= samr21-xpro
 
-# Select the boards that were tested and work with riotboot
-BOARD_WHITELIST += samr21-xpro iotlab-m3
+# Select the boards with riotboot feature
+FEATURES_REQUIRED += riotboot
 
 # Disable unused modules
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
