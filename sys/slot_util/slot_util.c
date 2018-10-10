@@ -43,7 +43,7 @@ static void _assert_slot(unsigned slot)
     (void)slot;
 }
 
-void slot_util_jump_to_image(riot_hdr_t *riot_hdr)
+static void _slot_util_jump_to_image(const riot_hdr_t *riot_hdr)
 {
     cpu_jump_to_image(riot_hdr->start_addr);
 }
@@ -65,7 +65,7 @@ int slot_util_current_slot(void)
 void slot_util_jump(unsigned slot)
 {
     _assert_slot(slot);
-    slot_util_jump_to_image(slot_util_get_hdr(slot));
+    _slot_util_jump_to_image(slot_util_get_hdr(slot));
 }
 
 uint32_t slot_util_get_image_startaddr(unsigned slot)
