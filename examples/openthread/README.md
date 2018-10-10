@@ -1,6 +1,6 @@
 ## OpenThread on RIOT
 
-This test demonstrates how to use the [OpenThread](https://github.com/openthread/openthread)
+This example demonstrates how to use the [OpenThread](https://github.com/openthread/openthread)
 open source implementation of [Thread](https://threadgroup.org/) on RIOT.
  The [Command Line Interface](https://github.com/openthread/openthread/blob/master/examples/apps/cli/README.md) of
 OpenThread was ported. Please check the [full documentation]
@@ -20,7 +20,7 @@ You can pass the panid/channel independently when building the firmware:
 `make BOARD=<target> OPENTHREAD_PANID=0xaaaa OPENTHREAD_TYPE=ftd flash term`
 `make BOARD=<target> OPENTHREAD_CHANNEL=20 OPENTHREAD_TYPE=ftd flash term`
 
-To test OpenThread in RIOT, you can do the following:
+To try OpenThread in RIOT, you can do the following:
 
 1. Flash nodes with MTD or FTD functionality:
 `make BOARD=<target> clean all flash OPENTHREAD_TYPE=mtd`
