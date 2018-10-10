@@ -41,7 +41,7 @@ $(HEADER_TOOL): FORCE
 	$(Q)/usr/bin/env -i \
 		QUIET=$(QUIET) \
 		PATH=$(PATH) \
-			make --no-print-directory -C $(HEADER_TOOL_DIR) clean all
+			make --no-print-directory -C $(HEADER_TOOL_DIR) all
 
 # Generate RIOT header and keep the original binary file
 .PRECIOUS: %.bin
@@ -107,4 +107,4 @@ riotboot:
 	$(Q)echo "error: riotboot feature not selected! (try FEATURES_REQUIRED += riotboot)"
 	$(Q)false
 
-endif # (,$(filter riotboot,$(FEATURES_USED)))
+endif # (,$(filter riotboot,$(FEATURES_PROVIDED)))
