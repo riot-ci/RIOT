@@ -34,7 +34,7 @@ int main(void)
     /* print some information about the running image */
     current_slot = slot_util_current_slot();
     if (current_slot != -1) {
-        printf("riotboot_test: running from slot %u\n", current_slot);
+        printf("riotboot_test: running from slot %d\n", current_slot);
         slot_util_print_slot_hdr(current_slot);
     }
     else {
