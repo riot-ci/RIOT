@@ -23,7 +23,6 @@
 #include <string.h>
 
 #ifdef RIOT_VERSION
-#include "cpu.h"
 #include "log.h"
 #else
 #include <stdio.h>
