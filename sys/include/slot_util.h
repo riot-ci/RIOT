@@ -61,7 +61,7 @@ void slot_util_jump(unsigned slot);
  *
  * returns header of image slot nr @p slot
  */
-riot_hdr_t *slot_util_get_hdr(unsigned slot);
+const riot_hdr_t *slot_util_get_hdr(unsigned slot);
 
 /**
  * @brief   Number of configured firmware slots (incl. bootloader slot)
@@ -69,9 +69,9 @@ riot_hdr_t *slot_util_get_hdr(unsigned slot);
 extern const unsigned slot_util_num_slots;
 
 /**
- * @brief   Storage for addresses of the configured slots
+ * @brief   Storage for header pointers of the configured slots
  */
-extern const uint32_t slot_util_slots[];
+extern const riot_hdr_t * const slot_util_slots[];
 
 #ifdef __cplusplus
 }
