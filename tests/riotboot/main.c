@@ -21,20 +21,25 @@
 #include <stdio.h>
 
 #include "slot_util.h"
-#include "riot_hdr.h"
 
 int main(void)
 {
+    int current_slot;
+
     puts("Hello riotboot!");
 
     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
 
     /* print some information about the running image */
-    unsigned current_slot = slot_util_current_slot();
-    riot_hdr_t *riot_hdr = slot_util_get_hdr(current_slot);
-    printf("riot_hdr: running from slot %u\n", current_slot);
-    riot_hdr_print(riot_hdr);
+    current_slot = slot_util_current_slot();
+    if (current_slot != -1) {
+        printf("riotboot_test: running from slot %u\n", current_slot);
+        slot_util_print_slot_hdr(current_slot);
+    }
+    else {
+        printf("[FAILED] You're not running riotboot\n");
+    }
 
     return 0;
 }
