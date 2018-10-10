@@ -32,7 +32,7 @@
  * space reserved to the bootloader.
  */
 const riot_hdr_t * const slot_util_slots[] = {
-    (riot_hdr_t*)(CPU_FLASH_BASE + RIOTBOOT_LEN),   /* First slot address -> firmware image */
+    (riot_hdr_t*)(CPU_FLASH_BASE + SLOT0_OFFSET),   /* First slot address -> firmware image */
 };
 
 /* Calculate the number of slots */
