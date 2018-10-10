@@ -18,10 +18,11 @@
 #include <string.h>
 
 int genhdr(int argc, char *argv[]);
-extern const char generate_usage[];
 
 int main(int argc, char *argv[])
 {
+    char *usage = "genhdr generate [args]";
+
     if (argc < 2) {
         goto usage;
     }
@@ -30,6 +31,6 @@ int main(int argc, char *argv[])
     }
 
 usage:
-    fprintf(stderr, "usage: %s\n", generate_usage);
+    fprintf(stderr, "usage: %s\n", usage);
     return 1;
 }

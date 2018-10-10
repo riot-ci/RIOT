@@ -27,12 +27,25 @@
  */
 #define HDR_ALIGN              (256)
 
-const char generate_usage[] = "genhdr generate <IMG_BIN> <APP_VER> <START_ADDR> <HDR_LEN> <outfile|->";
+static void populate_hdr(riot_hdr_t *riot_hdr, uint32_t ver, uint32_t addr)
+{
+    /* ensure the buffer and header have 0's */
+    memset(riot_hdr, '\0', sizeof(riot_hdr_t));
+
+    /* Generate image header */
+    riot_hdr->magic_number = RIOT_HDR_MAGIC;
+    riot_hdr->version = ver;
+    riot_hdr->start_addr = addr;
+
+    /* calculate header checksum */
+    riot_hdr->chksum = riot_hdr_checksum(riot_hdr);
+}
 
 int genhdr(int argc, char *argv[])
 {
-    /* riot_hdr header and buffer */
-    riot_hdr_t riot_hdr;
+    const char generate_usage[] = "<IMG_BIN> <APP_VER> <START_ADDR> <HDR_LEN> <outfile|->";
+
+    /* riot_hdr buffer */
     uint8_t *hdr_buf;
 
     /* arguments storage variables */
@@ -50,7 +63,7 @@ int genhdr(int argc, char *argv[])
     char *p;
 
     if (argc < 6) {
-        fprintf(stderr, "usage: %s\n", generate_usage);
+        fprintf(stderr, "usage: genhdr generate %s\n", generate_usage);
         return -1;
     }
 
@@ -86,19 +99,7 @@ int genhdr(int argc, char *argv[])
         return -1;
     }
 
-    /* ensure the buffer and header have 0's */
-    memset(&riot_hdr, '\0', sizeof(riot_hdr_t));
-
-    /* Generate image header */
-    memcpy(&riot_hdr.magic_number, "RIOT", 4);
-    riot_hdr.version = app_ver;
-    riot_hdr.start_addr = start_addr;
-
-    /* calculate header checksum */
-    riot_hdr.chksum = riot_hdr_checksum(&riot_hdr);
-
-    /* save riot_hdr to buffer */
-    memcpy(hdr_buf, &riot_hdr, sizeof(riot_hdr_t));
+    populate_hdr((riot_hdr_t*)hdr_buf, app_ver, start_addr);
 
     /* Write the header */
     if (!to_file(argv[5], hdr_buf, riot_hdr_len)) {
