@@ -28,7 +28,8 @@ ifeq ($(ENABLE_GDBSTUB), 1)
 endif
 
 
-export TARGET_ARCH ?= xtensa-lx106-elf
+# SPECIAL module dependencies
+# cannot be done in Makefile.dep since Makefile.dep is included too late
 
 ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
     USEMODULE += esp_sdk
@@ -40,8 +41,13 @@ ifneq (, $(filter esp_now, $(USEMODULE)))
     USEMODULE += netopt
 endif
 
+ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
+    USEMODULE += esp_gdb
+endif
 
 # regular Makefile
+
+export TARGET_ARCH ?= xtensa-lx106-elf
 
 # ESP8266 pseudomodules
 PSEUDOMODULES += esp_gdb
@@ -49,9 +55,6 @@ PSEUDOMODULES += esp_sdk
 PSEUDOMODULES += esp_sdk_int_handling
 PSEUDOMODULES += esp_sw_timer
 PSEUDOMODULES += esp_spiffs
-
-export CPU ?= esp8266
-export TARGET_ARCH ?= xtensa-lx106-elf
 
 USEMODULE += esp
 USEMODULE += mtd
@@ -85,7 +88,6 @@ ifneq (, $(filter esp_sdk, $(USEMODULE)))
 endif
 
 ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
-    USEMODULE   += esp_gdb
     GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/vendor/esp-gdbstub
     CFLAGS      += -DGDBSTUB_FREERTOS=0
     INCLUDES    += -I$(GDBSTUB_DIR)
