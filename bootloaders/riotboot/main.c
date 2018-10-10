@@ -23,18 +23,15 @@
 
 #include "cpu.h"
 #include "panic.h"
-#include "riot_hdr.h"
 #include "slot_util.h"
 
 void kernel_init(void)
 {
-    /* read the header for slot 1 (slot 0 is the bootlaoder) */
-    riot_hdr_t *slot_hdr = slot_util_get_hdr(1);
+    /* bootloader boots only slot 0 if it is valid */
+    unsigned slot = 0;
 
-    /* if the header is valid, jump to it */
-    if (riot_hdr_validate(slot_hdr) == 0) {
-        /* jump to slot 1 where the firmware image is */
-        slot_util_jump(1);
+    if (slot_util_validate(slot) == 0) {
+        slot_util_jump(slot);
     }
 
     /* serious trouble! */
