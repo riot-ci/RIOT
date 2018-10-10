@@ -11,8 +11,7 @@ FEATURES_REQUIRED += riotboot
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
 DISABLE_MODULE += auto_init
 
-# Shared interface to read RIOT header
-USEMODULE += riot_hdr
+# Shared interface to read RIOT headers on flash partitions
 USEMODULE += slot_util
 
 # RIOT codebase
