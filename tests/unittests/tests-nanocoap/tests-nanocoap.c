@@ -24,7 +24,7 @@
 #include "tests-nanocoap.h"
 
 
-#define _BUF_SIZE (128)
+#define _BUF_SIZE (128U)
 
 /*
  * Validates encoded message ID byte order and put/get URI option.
@@ -256,8 +256,9 @@ static void test_nanocoap__get_path_too_long(void)
 
 /*
  * Helper for server_get tests below.
- * Request for nanocoap server example /riot/value resource.
+ * GET Request for nanocoap server example /riot/value resource.
  * Includes 2-byte token; non-confirmable.
+ * Generated with libcoap.
  */
 static int _read_riot_value_req(coap_pkt_t *pkt, uint8_t *buf)
 {
@@ -297,7 +298,7 @@ static void test_nanocoap__server_reply_simple(void)
 {
     uint8_t buf[_BUF_SIZE];
     coap_pkt_t pkt;
-    char payload[2] = "0";
+    char *payload = "0";
 
     int res = _read_riot_value_req(&pkt, &buf[0]);
 
@@ -313,8 +314,9 @@ static void test_nanocoap__server_reply_simple(void)
 
 /*
  * Helper for server_get tests below.
- * Request for nanocoap server example /riot/value resource.
+ * GET request for nanocoap server example /riot/value resource.
  * Includes 2-byte token; confirmable.
+ * Generated with libcoap.
  */
 static int _read_riot_value_req_con(coap_pkt_t *pkt, uint8_t *buf)
 {
@@ -346,7 +348,7 @@ static void test_nanocoap__server_reply_simple_con(void)
 {
     uint8_t buf[_BUF_SIZE];
     coap_pkt_t pkt;
-    char payload[2] = "0";
+    char *payload = "0";
 
     _read_riot_value_req_con(&pkt, &buf[0]);
 
