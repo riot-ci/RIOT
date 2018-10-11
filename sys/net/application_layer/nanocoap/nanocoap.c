@@ -371,7 +371,7 @@ ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
     }
 
     /* if code is COAP_CODE_EMPTY (zero), assume Reset (RST) type */
-    unsigned type;
+    unsigned type = COAP_TYPE_RST;
     if (code) {
         if (coap_get_type(pkt) == COAP_TYPE_CON) {
             type = COAP_TYPE_ACK;
@@ -379,9 +379,6 @@ ssize_t coap_build_reply(coap_pkt_t *pkt, unsigned code,
         else {
             type = COAP_TYPE_NON;
         }
-    }
-    else {
-        type = COAP_TYPE_RST;
     }
 
     coap_build_hdr((coap_hdr_t *)rbuf, type, pkt->token, tkl, code,
