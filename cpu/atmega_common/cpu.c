@@ -40,13 +40,13 @@
 * Since atmega MCUs do not feature a software reset, the watchdog timer
 * is being used. It will be set to the shortest time and then force a
 * reset. Therefore the MCUSR register needs to be resetted as fast as
-* possible. 
+* possible.
 * Which means in the bootloader or in the following init0 if no bootloader is used.
 * Bootloader resets watchdog and pass MCUSR in r2 (e.g. Optiboot) in order to pass
 * information about the reset cause to the application.
 * When no Bootloader is used the watchdog will be disabled in the init0 section.
-* When a software reset was triggered, r3 will contain 0xAA. 
-* In order to prevent changes to the values from the .init section, MCUSR and r3 
+* When a software reset was triggered, r3 will contain 0xAA.
+* In order to prevent changes to the values from the .init section, MCUSR and r3
 * are saved in the .init0 section
 */
 uint8_t mcusr_mirror __attribute__((section(".noinit")));
@@ -62,9 +62,7 @@ void get_mcusr(void)
     __asm__ __volatile__("mov %0, r2\n" : "=r" (mcusr_mirror) :);
 #else
     /* save the reset flags */
-#if defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__) ||	\
-    defined(__AVR_ATmega16__)   || defined(__AVR_ATmega162__) ||	\
-    defined (__AVR_ATmega128__)
+#ifdef MCUCSR
   mcusr_mirror = MCUCSR;
   MCUSR = 0;
 #else
@@ -137,9 +135,10 @@ ISR(BADISR_vect)
 
     printf("EIFR %#02x\nPCIFR %#02x\n", (unsigned int)EIFR, (unsigned int)PCIFR);
 #endif
-
+#ifdef LED_PANIC
     /* Use LED light to signal ERROR. */
     LED_PANIC;
+#endif
 
     core_panic(PANIC_GENERAL_ERROR, PSTR("FATAL ERROR: BADISR_vect called, unprocessed Interrupt.\n"
                   "STOP Execution.\n"));
