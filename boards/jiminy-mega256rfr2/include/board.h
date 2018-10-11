@@ -90,9 +90,9 @@ extern "C" {
 #define XTIMER_HZ           (125000UL)
 /** @} */
 
-/** 
- * @name Indicate Watchdog cleared in bootloader an 
- * 
+/**
+ * @name Indicate Watchdog cleared in bootloader an
+ *
  * AVR CPUs need to reset the Watchdog as fast as possible.
  * This flag indicates that the watchdog is reseted in the bootloader
  * and that the MCUSR value is stored in register 2 (r2)
@@ -103,7 +103,7 @@ extern "C" {
 
 /**
  * @name CPU clock scale for jiminy-megarfr256rfr2
- * 
+ *
  * The CPU can not be used with the external xtal oscillator if the core
  * should be put in sleep while the transceiver is in rx mode.
  *

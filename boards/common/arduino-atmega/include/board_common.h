@@ -68,7 +68,7 @@ extern "C" {
 
 /**
  * @name CPU clock scale for arduino boards
- * 
+ *
  */
 #define CPU_ATMEGA_CLK_SCALE_INIT    CPU_ATMEGA_CLK_SCALE_DIV1
 /** @} */
