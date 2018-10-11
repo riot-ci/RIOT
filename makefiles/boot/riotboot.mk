@@ -1,4 +1,4 @@
-ifneq (,$(filter riotboot,$(FEATURES_PROVIDED)))
+ifneq (,$(filter riotboot,$(FEATURES_USED)))
 
 .PHONY: riotboot/flash riotboot/flash-bootloader riotboot/flash-slot0 riotboot/bootloader/%
 
@@ -111,4 +111,4 @@ riotboot:
 	$(Q)echo "error: riotboot feature not selected! (try FEATURES_REQUIRED += riotboot)"
 	$(Q)false
 
-endif # (,$(filter riotboot,$(FEATURES_PROVIDED)))
+endif # (,$(filter riotboot,$(FEATURES_USED)))
