@@ -33,30 +33,30 @@ extern "C" {
  * @{
  */
 #ifndef VCNL40X0_PARAM_I2C_DEV
-#define VCNL40X0_PARAM_I2C_DEV         I2C_DEV(0)
+#define VCNL40X0_PARAM_I2C_DEV          I2C_DEV(0)
 #endif
 #ifndef VCNL40X0_PARAM_I2C_ADDR
-#define VCNL40X0_PARAM_I2C_ADDR        (VCNL40X0_ADDR)
+#define VCNL40X0_PARAM_I2C_ADDR         (VCNL40X0_ADDR)
 #endif
 #ifndef VCNL40X0_PARAM_LED_CURRENT
-#define VCNL40X0_PARAM_LED_CURRENT     (2U)
+#define VCNL40X0_PARAM_LED_CURRENT      (2U)
 #endif
 #ifndef VCNL40X0_PARAM_PROXIMITY_RATE
-#define VCNL40X0_PARAM_PROXIMITY_RATE  (VCNL40X0_PROXIMITY_RATE_2)
+#define VCNL40X0_PARAM_PROXIMITY_RATE   (VCNL40X0_PROXIMITY_RATE_2)
 #endif
 #ifndef VCNL40X0_PARAM_AMBIENT_AVG
-#define VCNL40X0_PARAM_AMBIENT_AVG     (VCNL40X0_AMBIENT_AVERAGE_32)
+#define VCNL40X0_PARAM_AMBIENT_AVG      (VCNL40X0_AMBIENT_AVERAGE_32)
 #endif
 #ifndef VCNL40X0_PARAM_AMBIENT_RATE
-#define VCNL40X0_PARAM_AMBIENT_RATE    (VCNL40X0_AMBIENT_RATE_2)
+#define VCNL40X0_PARAM_AMBIENT_RATE     (VCNL40X0_AMBIENT_RATE_2)
 #endif
 
-#define VCNL40X0_PARAMS_DEFAULT        { .i2c_dev = VCNL40X0_PARAM_I2C_DEV,               \
-                                         .i2c_addr = VCNL40X0_PARAM_I2C_ADDR,             \
-                                         .led_current = VCNL40X0_PARAM_LED_CURRENT,       \
-                                         .proximity_rate = VCNL40X0_PARAM_PROXIMITY_RATE, \
-                                         .ambient_avg = VCNL40X0_PARAM_AMBIENT_AVG,       \
-                                         .ambient_rate = VCNL40X0_PARAM_AMBIENT_RATE }
+#define VCNL40X0_PARAMS             { .i2c_dev = VCNL40X0_PARAM_I2C_DEV,               \
+                                      .i2c_addr = VCNL40X0_PARAM_I2C_ADDR,             \
+                                      .led_current = VCNL40X0_PARAM_LED_CURRENT,       \
+                                      .proximity_rate = VCNL40X0_PARAM_PROXIMITY_RATE, \
+                                      .ambient_avg = VCNL40X0_PARAM_AMBIENT_AVG,       \
+                                      .ambient_rate = VCNL40X0_PARAM_AMBIENT_RATE }
 /**@}*/
 
 /**
@@ -64,11 +64,7 @@ extern "C" {
  */
 static const vcnl40x0_params_t vcnl40x0_params[] =
 {
-#ifdef VCNL40X0_PARAMS_BOARD
-    VCNL40X0_PARAMS_BOARD,
-#else
-    VCNL40X0_PARAMS_DEFAULT,
-#endif
+    VCNL40X0_PARAMS,
 };
 
 /**
