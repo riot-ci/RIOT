@@ -12,6 +12,7 @@ ifndef ESP8266_SDK_DIR
     export ESP8266_SDK_DIR=/opt/esp/esp-open-sdk/sdk
 endif
 
+
 # Options to control the compilation
 
 ifeq ($(USE_SDK), 1)
@@ -24,6 +25,23 @@ endif
 
 ifeq ($(ENABLE_GDBSTUB), 1)
     USEMODULE += esp_gdbstub
+endif
+
+
+# SPECIAL module dependencies
+# cannot be done in Makefile.dep since Makefile.dep is included too late
+
+ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
+    USEMODULE += esp_sdk
+endif
+
+ifneq (, $(filter esp_now, $(USEMODULE)))
+    $(eval GNRC_NETIF_NUMOF=$(shell echo $$(($(GNRC_NETIF_NUMOF)+1))))
+    USEMODULE += esp_sdk
+    USEMODULE += netopt
+endif
+
+ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
     USEMODULE += esp_gdb
 endif
 
@@ -33,13 +51,22 @@ export TARGET_ARCH ?= xtensa-lx106-elf
 
 # ESP8266 pseudomodules
 PSEUDOMODULES += esp_gdb
-PSEUDOMODULES += esp_now
 PSEUDOMODULES += esp_sdk
 PSEUDOMODULES += esp_sdk_int_handling
 PSEUDOMODULES += esp_sw_timer
 PSEUDOMODULES += esp_spiffs
 
+USEMODULE += esp
+USEMODULE += mtd
+USEMODULE += periph
+USEMODULE += periph_common
+USEMODULE += ps
+USEMODULE += random
+USEMODULE += sdk
+USEMODULE += xtensa
+
 ifneq (, $(filter pthread, $(USEMODULE)))
+    # has to be included before $(ESP8266_NEWLIB_DIR)
     INCLUDES += -I$(RIOTBASE)/sys/posix/pthread/include
 endif
 
@@ -49,14 +76,11 @@ INCLUDES += -I$(RIOTCPU)/$(CPU)
 INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor
 INCLUDES += -I$(RIOTCPU)/$(CPU)/vendor/espressif
 
-CFLAGS  += -DESP_OPEN_SDK
+CFLAGS  += -DESP_OPEN_SDK -DCONTEXT_SWITCH_BY_INT
 CFLAGS  += -Wno-unused-parameter -Wformat=0
-CFLAGS  += -mlongcalls -mtext-section-literals -fdata-sections
+CFLAGS  += -mlongcalls -mtext-section-literals
+CFLAGS  += -fdata-sections -fzero-initialized-in-bss
 ASFLAGS += --longcalls --text-section-literals
-
-ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
-    USEMODULE += esp_sdk
-endif
 
 ifneq (, $(filter esp_sdk, $(USEMODULE)))
     INCLUDES += -I$(ESP8266_SDK_DIR)/include
@@ -70,17 +94,9 @@ ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
 endif
 
 ifneq (, $(filter esp_gdb, $(USEMODULE)))
-    CFLAGS_OPT = -fzero-initialized-in-bss -Og -ggdb -g3
+    CFLAGS += -Og -ggdb -g3
 else
-    CFLAGS_OPT = -fzero-initialized-in-bss -O2
-endif
-
-CFLAGS += $(CFLAGS_OPT)
-
-ifneq (, $(filter esp_spiffs, $(USEMODULE)))
-    export SPIFFS_STD_OPTION = -std=c99
-    USEMODULE += spiffs
-    USEMODULE += vfs
+    CFLAGS += -O2
 endif
 
 ifeq ($(QEMU), 1)
@@ -115,15 +131,6 @@ LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/eagle.rom.addr.v6.ld
 LINKFLAGS += -nostdlib -lgcc -u ets_run -Wl,-gc-sections # -Wl,--print-gc-sections
 LINKFLAGS += -Wl,--warn-unresolved-symbols
 
-USEMODULE += esp
-USEMODULE += mtd
-USEMODULE += periph
-USEMODULE += periph_common
-USEMODULE += ps
-USEMODULE += random
-USEMODULE += sdk
-USEMODULE += xtensa
-
 # configure preflasher to convert .elf to .bin before flashing
 FLASH_SIZE = -fs 8m
 export PREFLASHER ?= esptool.py
@@ -143,5 +150,5 @@ else
     export FFLAGS += -p $(PORT) -b $(PROGRAMMER_SPEED) write_flash
     export FFLAGS += -fm $(FLASH_MODE)
     export FFLAGS += 0 $(ELFFILE)-0x00000.bin
-    export FFLAGS += 0x10000 $(ELFFILE)-0x10000.bin
+    export FFLAGS += 0x10000 $(ELFFILE)-0x10000.bin; esptool.py -p $(PORT) run
 endif
