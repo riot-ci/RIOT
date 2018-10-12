@@ -427,22 +427,6 @@ void _init_loramac(semtech_loramac_t *mac,
                           LORAMAC_ACTIVE_REGION);
     mutex_unlock(&mac->lock);
 
-#if defined(REGION_EU868) && USE_SEMTECH_DEFAULT_CHANNEL_LINEUP
-    DEBUG("[semtech-loramac] EU868 region: use default channels\n");
-    mutex_lock(&mac->lock);
-    LoRaMacChannelAdd(3, (ChannelParams_t)LC4);
-    LoRaMacChannelAdd(4, (ChannelParams_t)LC5);
-    LoRaMacChannelAdd(5, (ChannelParams_t)LC6);
-    LoRaMacChannelAdd(6, (ChannelParams_t)LC7);
-    LoRaMacChannelAdd(7, (ChannelParams_t)LC8);
-    LoRaMacChannelAdd(8, (ChannelParams_t)LC9);
-    LoRaMacChannelAdd(9, (ChannelParams_t)LC10);
-    mutex_unlock(&mac->lock);
-
-    semtech_loramac_set_rx2_dr(mac, LORAMAC_DEFAULT_RX2_DR);
-    semtech_loramac_set_rx2_freq(mac, LORAMAC_DEFAULT_RX2_FREQ);
-#endif
-
     semtech_loramac_set_dr(mac, LORAMAC_DEFAULT_DR);
     semtech_loramac_set_adr(mac, LORAMAC_DEFAULT_ADR);
     semtech_loramac_set_public_network(mac, LORAMAC_DEFAULT_PUBLIC_NETWORK);
