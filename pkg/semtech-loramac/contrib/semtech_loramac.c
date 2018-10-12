@@ -570,10 +570,12 @@ static void _send(semtech_loramac_t *mac, void *arg)
         msg.content.value = (uint8_t)status;
         msg_send(&msg, semtech_loramac_pid);
     }
+#ifdef MODULE_PERIPH_EEPROM
     else {
         /* save the uplink counter */
         _save_uplink_counter(mac);
     }
+#endif
 }
 
 static void _semtech_loramac_call(semtech_loramac_func_t func, void *arg)
