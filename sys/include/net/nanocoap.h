@@ -547,7 +547,7 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags);
  *
  * @param[out]  buf         buffer to write to
  * @param[in]   lastonum    number of previous option (for delta calculation),
- *                          must be < 27
+ *                          must be < 23
  * @param[in]   slicer      coap blockwise slicer helper struct
  * @param[in]   more        more flag (1 or 0)
  *
@@ -711,8 +711,8 @@ void coap_block2_finish(coap_block_slicer_t *slicer);
  * @returns     <0 on error
  */
 ssize_t coap_block2_build_reply(coap_pkt_t *pkt, unsigned code,
-                        uint8_t *rbuf, unsigned rlen, unsigned payload_len,
-                        coap_block_slicer_t *slicer);
+                                uint8_t *rbuf, unsigned rlen, unsigned payload_len,
+                                coap_block_slicer_t *slicer);
 
 /**
  * @brief Add a single character to a block2 reply.
