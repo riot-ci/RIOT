@@ -713,7 +713,7 @@ ssize_t coap_well_known_core_default_handler(coap_pkt_t *pkt, uint8_t *buf, \
 
     uint8_t *bufpos = payload;
 
-    bufpos += coap_put_option_ct(bufpos, 0, COAP_CT_LINK_FORMAT);
+    bufpos += coap_put_option_ct(bufpos, 0, COAP_FORMAT_LINK);
     *bufpos++ = 0xff;
 
     for (unsigned i = 0; i < coap_resources_numof; i++) {
