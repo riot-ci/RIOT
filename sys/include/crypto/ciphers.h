@@ -140,6 +140,9 @@ int cipher_init(cipher_t* cipher, cipher_id_t cipher_id, const uint8_t* key,
  * @param input      pointer to input data to encrypt
  * @param output     pointer to allocated memory for encrypted data. It has to
  *                   be of size BLOCK_SIZE
+ *
+ * @return           The result of the encrypt operation of the underlying cipher,
+ *                   which is always 1 in case of success and a negative value for an error
  */
 int cipher_encrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output);
 
@@ -152,6 +155,9 @@ int cipher_encrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output
  * @param input      pointer to input data (of size BLOCKS_SIZE) to decrypt
  * @param output     pointer to allocated memory for decrypted data. It has to
  *                   be of size BLOCK_SIZE
+ *
+ * @return           The result of the decrypt operation of the underlying cipher,
+ *                   which is always 1 in case of success and a negative value for an error
  */
 int cipher_decrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output);
 
@@ -161,6 +167,8 @@ int cipher_decrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output
  * *
  *
  * @param cipher     Already initialized cipher struct
+ * 
+ * @return           The cipher's block size (in bytes)
  */
 int cipher_get_block_size(const cipher_t* cipher);
 

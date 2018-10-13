@@ -99,7 +99,8 @@ int aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySize);
  * @param       cipher_block  a pointer to the place where the ciphertext will
  *                            be stored
  *
- * @return  1 or result of aes_set_encrypt_key if it failed
+ * @return  1 or negative value if cipher key cannot be expanded into
+ *          encryption key schedule
  */
 int aes_encrypt(const cipher_context_t *context, const uint8_t *plain_block,
                 uint8_t *cipher_block);

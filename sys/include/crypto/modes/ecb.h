@@ -37,6 +37,9 @@ extern "C" {
  * @param length     length of the input data
  * @param output     pointer to allocated memory for encrypted data. It has to
  *                   be of size data_len + BLOCK_SIZE - data_len % BLOCK_SIZE.
+ * 
+ * @return           length of decrypted data or a negative error code
+ *
  */
 int cipher_encrypt_ecb(cipher_t* cipher, uint8_t* input, size_t length,
                        uint8_t* output);
@@ -51,6 +54,9 @@ int cipher_encrypt_ecb(cipher_t* cipher, uint8_t* input, size_t length,
  * @param length     length of the input data
  * @param output     pointer to allocated memory for plaintext data. It has to
  *                   be of size `lengh`.
+ * 
+ * @return           length of decrypted data or a negative error code
+ * 
  */
 int cipher_decrypt_ecb(cipher_t* cipher, uint8_t* input, size_t length,
                        uint8_t* output);

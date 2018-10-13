@@ -40,6 +40,8 @@ extern "C" {
  * @param length        length of the input data
  * @param output        pointer to allocated memory for encrypted data. It has
  *                      to be of size data_len.
+ * 
+ * @return              length of encrypted data or a negative error code
  */
 int cipher_encrypt_ctr(cipher_t* cipher, uint8_t nonce_counter[16],
                        uint8_t nonce_len, uint8_t* input, size_t length,
@@ -61,6 +63,9 @@ int cipher_encrypt_ctr(cipher_t* cipher, uint8_t nonce_counter[16],
  * @param length        length of the input data
  * @param output        pointer to allocated memory for encrypted data. It has
  *                      to be of size data_len.
+ * 
+ * @return              length of decrypted data or a negative error code
+ * 
  */
 int cipher_decrypt_ctr(cipher_t* cipher, uint8_t nonce_counter[16],
                        uint8_t nonce_len, uint8_t* input, size_t length,
