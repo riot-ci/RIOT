@@ -175,15 +175,7 @@ extern "C" {
 /**
  * @brief   Nanocoap-specific value to indicate no format specified
  */
-#define COAP_FORMAT_NONE        (65535)
-/**
- * @brief    nanocoap-internal value to indicate no payload present.
- *
- * Not intended for use in a transmitted packet. Must be a 3-byte unsigned
- * value.
- */
-#define COAP_FORMAT_NO_PAYLOAD  (65536)
-/** @} */
+#define COAP_FORMAT_NONE        (UINT16_MAX)
 
 /**
  * @name    Nanocoap specific maximum values
