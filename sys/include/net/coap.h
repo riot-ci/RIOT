@@ -122,6 +122,18 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    Content types
+ * @deprecated  Deprecated in favour of `COAP_FORMAT_` style defines
+ * @{
+ */
+#define COAP_CT_LINK_FORMAT     (40)
+#define COAP_CT_XML             (41)
+#define COAP_CT_OCTET_STREAM    (42)
+#define COAP_CT_EXI             (47)
+#define COAP_CT_JSON            (50)
+/** @} */
+
+/**
  * @name    Content-Format option codes
  * @{
  */
