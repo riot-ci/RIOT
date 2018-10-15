@@ -80,6 +80,15 @@ extern "C" {
 /** @} */
 
 /**
+ * @name        DS18
+ * 
+ * DS18 temperature sensor configuration
+ */
+#define DS18_PARAM_PIN                  GPIO_PIN(PORT_B, 3)
+#define DS18_PARAM_PULL                 (GPIO_OUT)
+/** @} */
+
+/**
  * @brief Initialize board specific hardware, including clock, LEDs and std-IO
  */
 void board_init(void);
