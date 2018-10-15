@@ -182,6 +182,10 @@ _flash_address() {
     _flash_list | awk "NR==${bank_num}"'{printf "0x%08x\n", $4}'
 }
 
+echo DEBUG >&2
+_flash_list >&2
+echo DEBUG >&2
+
 #
 # now comes the actual actions
 #
