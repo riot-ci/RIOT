@@ -305,7 +305,7 @@ static int _init(netdev_t *netdev)
 static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 {
     assert(netdev != NULL);
-    return netdev_ieee802154_get(netdev, opt, value, max_len);
+    return netdev_ieee802154_get((netdev_ieee802154_t *)netdev, opt, value, max_len);
 }
 
 static int _set(netdev_t *netdev, netopt_t opt, const void *value,
