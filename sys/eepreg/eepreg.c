@@ -172,15 +172,15 @@ static inline uint32_t _get_meta_loc(const char *name)
 {
     uint32_t meta_loc = REG_ENT1_LOC;
     uint32_t reg_end = _get_reg_end();
-    uint8_t meta_len = _get_meta_len(meta_loc);
 
-    while (meta_loc + meta_len <= reg_end) {
+    while (meta_loc < reg_end) {
+        uint8_t meta_len = _get_meta_len(meta_loc);
+
         if (_cmp_name(meta_loc, name, meta_len)) {
             return meta_loc;
         }
 
         meta_loc += meta_len;
-        meta_len = _get_meta_len(meta_loc);
     }
 
     /* no meta-data found */
