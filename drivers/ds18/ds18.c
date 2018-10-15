@@ -61,12 +61,18 @@ static void ds18_write_bit(ds18_t *dev, uint8_t bit)
 
 static int ds18_read_bit(ds18_t *dev, uint8_t *bit)
 {
-    uint32_t start, measurement = 0;
-
     /* Initiate read slot */
     ds18_low(dev);
-    xtimer_usleep(1);
+    xtimer_usleep(DS18_DELAY_RW_PULSE);
     ds18_release(dev);
+
+#if defined(MODULE_DS18_OPTIMIZED)
+    xtimer_usleep(DS18_SAMPLE_TIME);
+    *bit = gpio_read(dev->pin);
+    xtimer_usleep(DS18_DELAY_R_RECOVER);
+    return DS18_OK;
+#else
+    uint32_t start, measurement = 0;
 
     /* Measure time low of device pin, timeout after slot time*/
     start = xtimer_now_usec();
@@ -86,6 +92,7 @@ static int ds18_read_bit(ds18_t *dev, uint8_t *bit)
     xtimer_usleep(DS18_DELAY_SLOT - measurement);
 
     return DS18_OK;
+#endif
 }
 
 static int ds18_read_byte(ds18_t *dev, uint8_t *byte)
@@ -216,6 +223,10 @@ int ds18_init(ds18_t *dev, const ds18_params_t *params)
     dev->pin = params->pin;
     dev->out_mode = params->out_mode;
     res = gpio_init(dev->pin, dev->in_mode) == 0 ? DS18_OK : DS18_ERROR;
+
+#if defined(MODULE_DS18_OPTIMIZED)
+    DEBUG("[DS18] Using optimized read function");
+#endif
 
     return res;
 }

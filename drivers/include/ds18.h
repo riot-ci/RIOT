@@ -18,7 +18,14 @@
  *    bus.
  *  - The 1-Wire bus handling is hardcoded to the driver.
  *  - Does not allow configuration of sampling width.
- *
+ * *
+ * @note Due to timing issues present on some boards this drivers features two
+ * ways of reading information from the sensor. The optimized uses accurate 
+ * delays to handle this, while the second way polls the line for changes. If
+ * you know that your board can handle ~3us resolution with the xtimer module,
+ * then the optimized way is recommended. To used the optimized way add the
+ * ds18_optimized module.
+ * 
  * @{
  *
  * @file

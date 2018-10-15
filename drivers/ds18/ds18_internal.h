@@ -52,6 +52,8 @@ extern "C" {
 #define DS18_DELAY_SLOT             (60U)
 #define DS18_SAMPLE_TIME            (10U)
 #define DS18_DELAY_CONVERT          (750U * US_PER_MS)
+#define DS18_DELAY_RW_PULSE         (1U)
+#define DS18_DELAY_R_RECOVER        (DS18_DELAY_SLOT - DS18_SAMPLE_TIME)
 /** @} */
 
 
