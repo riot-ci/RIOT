@@ -198,6 +198,9 @@ void _net_init(void)
 #endif
 #if LWIP_IPV6
     static const uint8_t local6_a[] = _TEST_ADDR6_LOCAL;
+    /* XXX need to copy into a stack variable. Otherwise, when just using
+     * `local6_a` this leads to weird alignment problems on some platforms with
+     * netif_add_ip6_address() below */
     ip6_addr_t local6 = { 0 };
     s8_t idx;
     memcpy(&local6.addr, local6_a, sizeof(local6));
