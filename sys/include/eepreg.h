@@ -17,11 +17,12 @@
  * written to migrate legacy data to new formats. It also allows the addition
  * and removal of new entries dynamically.
  *
- * NOTE: Names are used as identifiers and must be unique! It is also
+ * @note   Names are used as identifiers and must be unique! It is also
  * recommended to keep them as short as possible (while still being unique and
  * human readable), as many systems have very small amounts of EEPROM.
  * Disemvowelment can shorten long names while still retaining readability.
  *
+ * @code {unparsed}
  * The layout of the EEPROM used looks like this:
  *    EEPROM_RESERV_CPU_LOW
  *    EEPROM_RESERV_BOARD_LOW
@@ -40,6 +41,7 @@
  *    Entry 1 data
  *    EEPROM_RESERV_BOARD_HI
  *    EEPROM_RESERV_CPU_HI
+ * @endcode
  *
  * Pointer length is dependent on the size of the available EEPROM (see
  * EEPREG_PTR_LEN below).
@@ -196,11 +198,13 @@ int eepreg_rm(const char *name);
 /**
  * @brief   Iterate over meta-data entries in EEPROM registry
  *
- * This executes a callback over each name in the EEPROM registry. Note: it is
- * safe for the callback to remove the entry it is called with, or to add new
- * entries. The intended work-flow for migration is to: iterate over each entry,
- * check to see if migration is needed, duplicate using eepreg_write if needed,
- * migrate data to duplicate entry, then delete old entry using eepreg_rm.
+ * This executes a callback over each name in the EEPROM registry. The intended
+ * work-flow for migration is to: iterate over each entry, check to see if
+ * migration is needed, duplicate using eepreg_write if needed, migrate data to
+ * duplicate entry, then delete old entry using eepreg_rm.
+ *
+ * @note   It is safe for the callback to remove the entry it is called with,
+ * or to add new entries.
  *
  * @param[in] cb     callback to iterate over entries
  * @param[in] arg    argument for cb
@@ -235,7 +239,7 @@ int eepreg_reset(void);
 /**
  * @brief   Calculate data length from meta-data in EEPROM registry
  *
- * Note: this information is typically already available to code that has
+ * @note   This information is typically already available to code that has
  * called eepreg_add.
  *
  * @param[out] len    pointer to length variable
