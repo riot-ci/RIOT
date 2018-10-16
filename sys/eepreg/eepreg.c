@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "eepreg.h"
-#include "irq.h"
 #include "periph/eeprom.h"
 
 #define ENABLE_DEBUG 0
@@ -215,9 +214,6 @@ static inline int _new_entry(const char *name, uint32_t data_len)
         return -ENOSPC;
     }
 
-    /* don't allow interrupts when editing registry */
-    unsigned int irq_state = irq_disable();
-
     /* set the length of the meta-data */
     _set_meta_len(reg_end, meta_len);
 
@@ -229,8 +225,6 @@ static inline int _new_entry(const char *name, uint32_t data_len)
 
     /* update end of the registry */
     _set_reg_end(reg_end + meta_len);
-
-    irq_restore(irq_state);
 
     return 0;
 }
@@ -367,9 +361,6 @@ int eepreg_rm(const char *name)
     /* data_loc is above last_loc due to descending order */
     uint32_t tot_data_len = data_loc - last_loc;
 
-    /* don't allow interrupts when editing registry */
-    unsigned int irq_state = irq_disable();
-
     _move_data(meta_loc + meta_len, meta_loc, tot_meta_len);
 
     _move_data(last_loc, last_loc + data_len, tot_data_len);
@@ -387,8 +378,6 @@ int eepreg_rm(const char *name)
 
         meta_loc += meta_len;
     }
-
-    irq_restore(irq_state);
 
     return 0;
 }
@@ -457,22 +446,16 @@ int eepreg_check(void)
 
 int eepreg_reset(void)
 {
-    /* don't allow interrupts when editing registry */
-    unsigned int irq_state = irq_disable();
-
     /* write new registry magic number */
     if (eeprom_write(REG_MAGIC_LOC, (uint8_t *)eepreg_magic, MAGIC_SIZE)
         != MAGIC_SIZE) {
 
         DEBUG("[eepreg_reset] EEPROM write error\n");
-        irq_restore(irq_state);
         return -EIO;
     }
 
     /* new registry has no entries */
     _set_reg_end(REG_ENT1_LOC);
-
-    irq_restore(irq_state);
 
     return 0;
 }
