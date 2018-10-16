@@ -205,6 +205,7 @@ void _net_init(void)
      * netif_add_ip6_address() below */
     ip6_addr_t local6 = { 0 };
     s8_t idx;
+
     memcpy(&local6.addr, local6_a, sizeof(local6));
     netif_add_ip6_address(&netif, &local6, &idx);
     for (int i = 0; i <= idx; i++) {
