@@ -201,7 +201,7 @@ void _net_init(void)
 #if LWIP_IPV6
     static const uint8_t local6[] = _TEST_ADDR6_LOCAL;
     s8_t idx;
-    netif_add_ip6_address(&netif, (ip6_addr_t *)&local6, &idx);
+    netif_add_ip6_address(&netif, (ip6_addr_t *)&local6[0], &idx);
     for (int i = 0; i <= idx; i++) {
         netif.ip6_addr_state[i] |= IP6_ADDR_VALID;
     }
