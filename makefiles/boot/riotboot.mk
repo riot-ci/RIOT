@@ -15,7 +15,7 @@ HEADER_TOOL ?= $(HEADER_TOOL_DIR)/bin/genhdr
 RIOTBOOT_HDR_LEN ?= 0x100
 
 # Export variables for 'slot_util'
-export SLOT_LEN
+export SLOT0_LEN
 
 # By default, slot 0 is found just after RIOTBOOT_LEN. It might
 # be overridden to add more offset as needed.
@@ -35,7 +35,7 @@ $(BINDIR)/$(APPLICATION)-%.elf: link
 SLOT0_IMAGE_OFFSET := $$(($(RIOTBOOT_LEN) + $(RIOTBOOT_HDR_LEN)))
 
 # Link slot ELF *after* riot_hdr and limit the ROM to the slot length
-$(BINDIR)/$(APPLICATION)-slot%.elf: FW_ROM_LEN=$(SLOT_LEN - $(RIOTBOOT_HDR_LEN))
+$(BINDIR)/$(APPLICATION)-slot%.elf: FW_ROM_LEN=$(SLOT0_LEN - $(RIOTBOOT_HDR_LEN))
 $(BINDIR)/$(APPLICATION)-slot0.elf: ROM_OFFSET=$(SLOT0_IMAGE_OFFSET)
 
 # Create binary target with RIOT header
