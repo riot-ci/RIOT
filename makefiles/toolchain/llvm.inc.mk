@@ -37,8 +37,10 @@ include $(RIOTMAKE)/tools/gdb.inc.mk
 #
 #   `realpath` is used instead of `abspath` to support Mingw32 which has issues
 #   with windows formatted gcc directories
+#
+# CFLAGS_CPU is used to get the correct multilib include header.
 gcc_include_dirs = $(realpath \
-    $(shell $(PREFIX)gcc -v -x $1 -E /dev/null 2>&1 | \
+    $(shell $(PREFIX)gcc $(CFLAGS_CPU) -v -x $1 -E /dev/null 2>&1 | \
         sed \
         -e '1,/\#include <...> search starts here:/d' \
         -e '/End of search list./,$$d' \
@@ -46,6 +48,10 @@ gcc_include_dirs = $(realpath \
 )
 
 ifneq (,$(TARGET_ARCH))
+  ifeq (,$(CFLAGS_CPU))
+    $(error CFLAGS_CPU must have been defined to use `llvm`.)
+  endif
+
   # Tell clang to cross compile
   CFLAGS     += -target $(TARGET_ARCH)
   CXXFLAGS   += -target $(TARGET_ARCH)
