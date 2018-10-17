@@ -137,14 +137,29 @@ endef
 
 # Volume mapping and environment arguments
 #
-# Docker arguments for directories:
+# Docker arguments for mapping directories:
 #
 # * volume mapping for each directory not in RIOT
 # * remap environment variable directories to the docker ones
 #
-# $1 = variable name (content can be a list)
-# $2 = docker remap base directory (defaults to DOCKER_BUILD_ROOT)
-# $3 = mapname (defaults to $(notdir $d))
+#
+#   docker_volume_and_env  <path_in_docker_args|...>
+#     docker_volumes_mapping and docker_environ_mapping on different lines
+#
+#   docker_volumes_mapping <path_in_docker_args|...>
+#     Command line argument for mapping volumes, if it should be mounted
+#       -v directory:docker_directory
+#
+#   docker_environ_mapping <path_in_docker_args|...>
+#     Command line argument for mapping environment variables
+#       -e variable=docker_directory
+#
+#   docker_cmdline_mapping <path_in_docker_args|...>
+#     Command line argument for mapping environment variables
+#       variable=docker_directory
+#
+# Arguments are the same as 'path_in_docker'
+
 docker_volume_and_env = $(strip $(call _docker_volume_and_env,$1,$2,$3))
 define _docker_volume_and_env
   $(call docker_volumes_mapping,$($1),$2,$3)
