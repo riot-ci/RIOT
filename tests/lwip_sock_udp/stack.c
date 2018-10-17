@@ -203,10 +203,11 @@ void _net_init(void)
     /* XXX need to copy into a stack variable. Otherwise, when just using
      * `local6_a` this leads to weird alignment problems on some platforms with
      * netif_add_ip6_address() below */
-    ip6_addr_t local6 = { 0 };
+    ip6_addr_t local6;
     s8_t idx;
 
     memcpy(&local6.addr, local6_a, sizeof(local6));
+    ip6_addr_clear_zone(&local6);
     netif_add_ip6_address(&netif, &local6, &idx);
     for (int i = 0; i <= idx; i++) {
         netif.ip6_addr_state[i] |= IP6_ADDR_VALID;
