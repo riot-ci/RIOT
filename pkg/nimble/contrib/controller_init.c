@@ -27,6 +27,12 @@
 #include "nrf_clock.h"
 #endif
 
+#ifdef DEVELHELP
+#define FLAGS           (THREAD_CREATE_STACKTEST)
+#else
+#define FLAGS           (0)
+#endif
+
 static char stack[THREAD_STACKSIZE_DEFAULT];
 
 void nimble_riot_controller_init(void)
@@ -39,7 +45,7 @@ void nimble_riot_controller_init(void)
      * Create task where NimBLE LL will run. This one is required as LL has its
      * own event queue and should have highest priority.
      */
-    thread_create(stack, sizeof(stack), NIMBLE_CONTROLLER_PRIO, 0,
+    thread_create(stack, sizeof(stack), NIMBLE_CONTROLLER_PRIO, FLAGS,
                   (thread_task_func_t)nimble_port_ll_task_func,
                   NULL, "nimble_ctrl");
 }
