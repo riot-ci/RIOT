@@ -93,14 +93,7 @@ static uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
                                       uint32_t _m,
                                       uint32_t _k)
 {
-    if (_m == 0) {
-        DEBUG("block_get_enc_msg_len(), input block size cannot be zero\n");
-        return ENOTSUP;
-    }
-    else if (_k < _m) {
-        DEBUG("block_get_enc_msg_len(), output block size cannot be smaller than input\n");
-        return ENOTSUP;
-    }
+    assert((_m > 0) && (_k >= _m));
 
     /* compute total number of bits in decoded message  */
     uint32_t num_bits_in = _dec_msg_len * 8;
@@ -153,10 +146,7 @@ static uint32_t golay2412_matrix_mul(uint32_t _v,
 static uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t *_A)
 {
     /* validate input */
-    if (_sym_dec >= (1 << 12)) {
-        printf("error, golay2412_encode_symbol(), input symbol too large\n");
-        return ENOTSUP;
-    }
+    assert(_sym_dec > (1 << 12));
 
     /* compute encoded/transmitted message: v = m*G */
     return golay2412_matrix_mul(_sym_dec, _A, 24);
@@ -165,7 +155,7 @@ static uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t *_A)
 /* search for p[i] such that w(v+p[i]) <= 2, return -1 on fail */
 static int golay2412_parity_search(uint32_t _v, const uint32_t *_A)
 {
-    assert( _v < (1 << 12));
+    assert(_v < (1 << 12));
 
     uint8_t i;
     for (i = 0; i < 12; i++) {
@@ -187,10 +177,7 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
                                         const uint32_t *_B)
 {
     /* validate input */
-    if ((_sym_enc) >= (1L << 24)) {
-        printf("error, golay2412_decode_symbol(), input symbol too large\n");
-        return ENOTSUP;
-    }
+    assert((_sym_enc) < (1L << 24));
 
     /* state variables */
     uint32_t s = 0;         /* syndrome vector */
