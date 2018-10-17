@@ -125,7 +125,7 @@ static uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
 #endif
 
 /* multiply input vector with parity check matrix, H */
-static inline uint32_t golay2412_matrix_mul(uint32_t   _v,
+static uint32_t golay2412_matrix_mul(uint32_t   _v,
                                   const uint32_t * _A,
                                   uint32_t   _n)
 {
@@ -144,7 +144,7 @@ static inline uint32_t golay2412_matrix_mul(uint32_t   _v,
     }
     return x;
 }
-static inline uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t * _A)
+static uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t * _A)
 {
     /* validate input */
     if (_sym_dec >= (1<<12)) {
@@ -157,7 +157,7 @@ static inline uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t
 }
 
 /* search for p[i] such that w(v+p[i]) <= 2, return -1 on fail */
-static inline int golay2412_parity_search(uint32_t _v, const uint32_t * _A)
+static int golay2412_parity_search(uint32_t _v, const uint32_t * _A)
 {
     assert( _v < (1<<12) );
 
@@ -175,7 +175,7 @@ static inline int golay2412_parity_search(uint32_t _v, const uint32_t * _A)
     return -1;
 }
 
-static inline uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
+static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
                                                     const uint32_t * _A,
                                                     const uint32_t * _B)
 {
