@@ -51,6 +51,10 @@ int cord_epsim_register(void);
  * @brief   Spawn a new thread that registers the node and updates the
  *          registration with all responding RDs using the simple registration
  *          process
+ *
+ * @note    Only available with @ref cord_epsim_standalone compiled in
+ * @note    This function must only be called once (typically during system
+ *          initialization)
  */
 void cord_epsim_run(void);
 #endif
