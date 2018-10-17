@@ -15,8 +15,7 @@
 
 : "${RIOTBASE:="$(cd "$(dirname "$0")/../../../" || exit; pwd)"}"
 
-# Ignore this file when matching as it self matches)
-PATHSPEC=(':!dist/tools/buildsystem_sanity_check/check.sh')
+SCRIPT_PATH=dist/tools/buildsystem_sanity_check/check.sh
 
 # Modules should not check the content of FEATURES_PROVIDED/_REQUIRED/OPTIONAL
 # Handling specific behaviors/dependencies should by checking the content of:
@@ -24,11 +23,17 @@ PATHSPEC=(':!dist/tools/buildsystem_sanity_check/check.sh')
 # * maybe `FEATURES_USED` if it is not a module (== not a periph_)
 check_not_parsing_features() {
     local patterns=()
-    local pathspec=("${PATHSPEC[@]}")
+    local pathspec=()
 
     patterns+=(-e 'if.*filter.*FEATURES_PROVIDED')
     patterns+=(-e 'if.*filter.*FEATURES_REQUIRED')
     patterns+=(-e 'if.*filter.*FEATURES_OPTIONAL')
+
+    # Pathspec with exclude should start by an inclusive pathspec in git 2.7.4
+    pathspec+=('*')
+
+    # Ignore this file when matching as it self matches
+    pathspec+=(":!${SCRIPT_PATH}")
 
     # These two files contain sanity checks using FEATURES_ so are allowed
     pathspec+=(':!Makefile.include' ':!makefiles/info-global.inc.mk')
