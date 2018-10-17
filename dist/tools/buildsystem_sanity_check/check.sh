@@ -33,10 +33,6 @@ check_not_parsing_features() {
     # These two files contain sanity checks using FEATURES_ so are allowed
     pathspec+=(':!Makefile.include' ':!makefiles/info-global.inc.mk')
 
-    # TODO remove when dependencies is resolved before Makefile.include
-    # It requires parsing 'cpu' dependencies which is not the case now.
-    pathspec+=(':!cpu/stm32_common/Makefile.include')
-
     git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}"
 }
 
