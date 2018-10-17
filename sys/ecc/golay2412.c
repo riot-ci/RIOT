@@ -351,7 +351,9 @@ void golay2412_encode(
         j += 3;
     }
 
-    assert( j== block_get_enc_msg_len(_dec_msg_len,12,24) );
+    if(j != block_get_enc_msg_len(_dec_msg_len,12,24)) {
+        assert(!"j != block_get_enc_msg_len(_dec_msg_len,12,24)");
+    }
     assert( i == _dec_msg_len);
 }
 
@@ -424,6 +426,8 @@ void golay2412_decode(
         j += 3;
     }
 
-    assert( j== block_get_enc_msg_len(_dec_msg_len,12,24) );
+    if(j != block_get_enc_msg_len(_dec_msg_len,12,24)) {
+        assert(!"j != block_get_enc_msg_len(_dec_msg_len,12,24)");
+    }
     assert( i == _dec_msg_len);
 }
