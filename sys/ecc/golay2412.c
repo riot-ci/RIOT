@@ -153,7 +153,7 @@ static uint32_t golay2412_encode_symbol(uint32_t _sym_dec, const uint32_t *_A)
 }
 
 /* search for p[i] such that w(v+p[i]) <= 2, return -1 on fail */
-static int golay2412_parity_search(uint32_t _v, const uint32_t *_A)
+static int8_t golay2412_parity_search(uint32_t _v, const uint32_t *_A)
 {
     assert(_v < (1 << 12));
 
@@ -211,7 +211,7 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
 #if DEBUG_FEC_GOLAY2412
         printf("    searching for w(s + p_i) <= 2...\n");
 #endif
-        int s_index = golay2412_parity_search(s, _A);
+        int8_t s_index = golay2412_parity_search(s, _A);
 
         if (s_index >= 0) {
             /* vector found! */
@@ -248,7 +248,7 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
 #if DEBUG_FEC_GOLAY2412
                 printf("    searching for w(s*P + p_i) == 2...\n");
 #endif
-                int sP_index = golay2412_parity_search(sP, _A);
+                int8_t sP_index = golay2412_parity_search(sP, _A);
 
                 if (sP_index >= 0) {
                     /* vector found! */
