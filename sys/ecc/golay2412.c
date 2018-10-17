@@ -83,7 +83,8 @@ static inline void liquid_print_bitstring(uint32_t _x,
 }
 #endif
 
-static inline uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
+#ifndef NDEBUG
+static uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
                                        uint32_t _m,
                                        uint32_t _k)
 {
@@ -121,6 +122,7 @@ static inline uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
 
     return num_bytes_out;
 }
+#endif
 
 /* multiply input vector with parity check matrix, H */
 static inline uint32_t golay2412_matrix_mul(uint32_t   _v,
