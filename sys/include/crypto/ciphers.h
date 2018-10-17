@@ -125,8 +125,8 @@ typedef struct {
  * @param key_size   length of the encryption key
  *
  * @return  CIPHER_INIT_SUCCESS if the initialization was successful.
- *          The command may be unsuccessful if the key size is not valid.
- *          CIPHER_ERR_BAD_CONTEXT_SIZE if CIPHER_MAX_CONTEXT_SIZE has not been defined (which means that the cipher has not been included in the build)
+ * @return  CIPHER_ERR_BAD_CONTEXT_SIZE if CIPHER_MAX_CONTEXT_SIZE has not been defined (which means that the cipher has not been included in the build)
+ * @return  The command may return CIPHER_ERR_INVALID_KEY_SIZE if the key size is not valid.
  */
 int cipher_init(cipher_t* cipher, cipher_id_t cipher_id, const uint8_t* key,
                 uint8_t key_size);
@@ -142,7 +142,8 @@ int cipher_init(cipher_t* cipher, cipher_id_t cipher_id, const uint8_t* key,
  *                   be of size BLOCK_SIZE
  *
  * @return           The result of the encrypt operation of the underlying cipher,
- *                   which is always 1 in case of success and a negative value for an error
+ *                   which is always 1 in case of success 
+ * @return           A negative value for an error
  */
 int cipher_encrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output);
 
@@ -157,7 +158,8 @@ int cipher_encrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output
  *                   be of size BLOCK_SIZE
  *
  * @return           The result of the decrypt operation of the underlying cipher,
- *                   which is always 1 in case of success and a negative value for an error
+ *                   which is always 1 in case of success 
+ * @return           A negative value for an error
  */
 int cipher_decrypt(const cipher_t* cipher, const uint8_t* input, uint8_t* output);
 
