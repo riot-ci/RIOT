@@ -130,12 +130,12 @@ endef
 docker_volume_and_env = $(strip $(call _docker_volume_and_env,$1,$2,$3))
 define _docker_volume_and_env
   $(call docker_volumes_mapping,$($1),$2,$3)
-  $(call docker_environment_mapping,$1,$2,$3)
+  $(call docker_environ_mapping,$1,$2,$3)
 endef
-docker_volumes_mapping = $(foreach d,$1,$(call _volume_mapping,$d,$2,$3))
-_volume_mapping = $(if $1,$(if $(call dir_is_outside_riotbase,$1), -v '$(abspath $1):$(call path_in_docker,$1,$2,$3)'))
+docker_volumes_mapping = $(foreach d,$1,$(call _docker_volume_mapping,$d,$2,$3))
+_docker_volume_mapping = $(if $1,$(if $(call dir_is_outside_riotbase,$1), -v '$(abspath $1):$(call path_in_docker,$1,$2,$3)'))
+docker_environ_mapping = $(addprefix -e ,$(call docker_cmdline_mapping,$1,$2,$3))
 docker_cmdline_mapping = $(if $($1),'$1=$(call path_in_docker,$($1),$2,$3)')
-docker_environment_mapping = $(addprefix -e ,$(call docker_cmdline_mapping,$1,$2,$3))
 
 
 # Application directory relative to either riotbase or riotproject
