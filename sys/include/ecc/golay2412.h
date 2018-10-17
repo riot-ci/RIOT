@@ -54,10 +54,9 @@ extern "C" {
  * @param[in] _msg_dec         decoded message [size: 1 x _dec_msg_len]
  * @param[in] _msg_enc         encoded message [size: 1 x 2*_dec_msg_len]
  */
-void golay2412_encode(
-                          uint32_t _dec_msg_len,
-                          unsigned char *_msg_dec,
-                          unsigned char *_msg_enc);
+void golay2412_encode(uint32_t _dec_msg_len,
+                      unsigned char *_msg_dec,
+                      unsigned char *_msg_enc);
 
 /**
  * @brief decode block of data using Golay(24,12) decoder
@@ -66,10 +65,9 @@ void golay2412_encode(
  * @param[in] _msg_dec         encoded message [size: 1 x 2*_dec_msg_len]
  * @param[in] _msg_enc         decoded message [size: 1 x _dec_msg_len]
  */
-void golay2412_decode(
-                          uint32_t _dec_msg_len,
-                          unsigned char *_msg_enc,
-                          unsigned char *_msg_dec);
+void golay2412_decode(uint32_t _dec_msg_len,
+                      unsigned char *_msg_enc,
+                      unsigned char *_msg_dec);
 
 #ifdef __cplusplus
 }
