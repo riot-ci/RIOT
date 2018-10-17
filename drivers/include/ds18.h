@@ -107,6 +107,9 @@ int ds18_read(ds18_t *dev, int16_t *temperature);
 /**
  * @brief   convenience fuction for triggering a conversion and reading the
  * value
+ * 
+ * @note This function will block for the convertion time. The current 
+ * implementation of the driver uses 12-bit resolution, so this time is 750 ms.
  *
  * @param[in] dev           device descriptor
  * @param[out] temperature  buffer to write the temperature in centi-degrees

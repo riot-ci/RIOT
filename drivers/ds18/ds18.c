@@ -195,11 +195,6 @@ int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
 {
     int res;
 
-    res = ds18_reset(dev);
-    if (res) {
-        return DS18_ERROR;
-    }
-
     DEBUG("[DS18] Convert T\n");
     if (ds18_trigger(dev)) {
         return DS18_ERROR;
@@ -223,10 +218,6 @@ int ds18_init(ds18_t *dev, const ds18_params_t *params)
     dev->pin = params->pin;
     dev->out_mode = params->out_mode;
     res = gpio_init(dev->pin, dev->in_mode) == 0 ? DS18_OK : DS18_ERROR;
-
-#if defined(MODULE_DS18_OPTIMIZED)
-    DEBUG("[DS18] Using optimized read function");
-#endif
 
     return res;
 }

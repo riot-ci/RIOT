@@ -56,11 +56,9 @@ extern "C" {
 #define DS18_DELAY_R_RECOVER        (DS18_DELAY_SLOT - DS18_SAMPLE_TIME)
 /** @} */
 
-
 #ifdef __cplusplus
 }
 #endif
 /** @} */
-
 
 #endif /* DS18_INTERNAL_H */
