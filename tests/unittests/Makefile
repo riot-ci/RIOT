@@ -231,10 +231,6 @@ ifneq (,$(filter tests-cpp_%, $(UNIT_TESTS)))
   export CPPMIX := 1
 endif
 
-ifneq (, $(filter $(AVR_BOARDS), $(BOARD)))
-  LARGE_STACK_TESTS += tests-qDSA
-endif
-
 LARGE_STACK_TESTS += tests-hacl
 LARGE_STACK_TESTS += tests-libcose
 LARGE_STACK_TESTS += tests-tweetnacl
