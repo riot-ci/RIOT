@@ -258,7 +258,7 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
 #endif
                     /* NOTE : uj = 1 << (12-j-1)
                      *      [      uj << 1 2    ] [    sP + p[j]    ] */
-                    e_hat = (1 << (23 - sP_index)) | (sP ^ _A[sP_index]);
+                    e_hat = (1L << (23 - sP_index)) | (sP ^ _A[sP_index]);
                 }
                 else {
                     /* step 7: decoding error */
