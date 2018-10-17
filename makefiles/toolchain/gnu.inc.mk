@@ -10,6 +10,9 @@ export RANLIB     = $(PREFIX)ranlib
 endif
 export AS         = $(PREFIX)as
 export NM         = $(PREFIX)nm
+export LD         = $(PREFIX)ld
+export ILINK      = $(LD)
+export ILINKFLAGS ?= -r --unique
 export LINK       = $(PREFIX)gcc
 export LINKXX     = $(PREFIX)g++
 export SIZE       = $(PREFIX)size
