@@ -108,19 +108,25 @@ endef
 
 # Mapping of directores inside docker
 #
-# $1 = directories (can be a list of relative files)
+# Return the path of directories from the host within the container
+#
+#   path_in_docker <directories> <map base directory|> <mapname|>
+#
+# $1 = directories (can be a list of relative directories)
 # $2 = docker remap base directory (defaults to DOCKER_BUILD_ROOT)
-# $3 = mapname (defaults to $(notdir $d))
+# $3 = mapname (defaults to each directory name).
+#      If provided $1 must only contain one directory.
+# Returns: the path the directory would have in docker
 #
 # For each directory:
-#  * if inside, returns  $(DOCKER_RIOTBASE)/<relative_path_in_riotbase>
-#  * if outside, returns <docker remapbase>/<mapname>
+#  * if inside $(RIOTBASE), returns $(DOCKER_RIOTBASE)/<relative_path_in_riotbase>
+#  * if outside $(RIOTBASE), returns <docker remapbase>/<mapname>
 #
 # From env:
 #  * RIOTBASE
 #  * DOCKER_RIOTBASE
 #  * DOCKER_BUILD_ROOT
-#
+
 path_in_docker = $(foreach d,$1,$(strip $(call _dir_path_in_docker,$d,$2,$3)))
 define _dir_path_in_docker
       $(if $(call dir_is_outside_riotbase,$1),\
