@@ -88,11 +88,23 @@ DOCKER ?= docker
 # Directory mapping functions #
 # # # # # # # # # # # # # # # #
 
-# terminating '/' in patsubst is important to match $1 == $(RIOTBASE)
-# Handles relative directories
+# Test if a directory is a subdirectory of `RIOTBASE`
+#
+#   dir_is_outside_riotbase <directory>
+#
+# $1 = directory
+# Returns: a non empty value if it is True
+#
+# From env:
+#  * RIOTBASE
+#
+# The terminating '/' in patsubst is important to match $1 == $(RIOTBASE)
+# It also handles relative directories
+
 define dir_is_outside_riotbase
 $(filter $(abspath $1)/,$(patsubst $(RIOTBASE)/%,%,$(abspath $1)/))
 endef
+
 
 # Mapping of directores inside docker
 #
