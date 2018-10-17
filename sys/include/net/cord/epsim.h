@@ -53,7 +53,8 @@ int cord_epsim_register(void);
  *          process
  *
  * @note    Only available with @ref cord_epsim_standalone compiled in
- * @note    This function must only be called once (typically during system
+ *
+ * @warning This function must only be called once (typically during system
  *          initialization)
  */
 void cord_epsim_run(void);
