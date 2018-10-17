@@ -11,7 +11,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect('OK \(\d+ tests\)')
+    child.expect('OK \(\d+ tests\)', timeout=120)
 
 
 if __name__ == "__main__":
