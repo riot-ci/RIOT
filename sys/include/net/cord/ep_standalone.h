@@ -53,7 +53,7 @@ typedef void(*cord_ep_standalone_cb_t)(cord_ep_standalone_event_t event);
  * @brief   Spawn a new thread that takes care of sending periodic updates to an
  *          active RD entry
  *
- * @note    This function must only be called once (typically during system
+ * @warning This function must only be called once (typically during system
  *          initialization)
  */
 void cord_ep_standalone_run(void);
