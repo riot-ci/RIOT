@@ -22,6 +22,17 @@
 #include "ecc/hamming256.h"
 #include "ecc/golay2412.h"
 
+/* source for random bytes: https://www.random.org/bytes */
+unsigned char data_in[] = { 201, 240, 154, 5, 227, 60, 116, 192, 214 };
+/* encoded sequence */
+unsigned char msg_enc[] = { 220, 124, 159,  19, 64, 154, 135, 208,  94,
+                            227,  35,  60, 248, 39,  76, 187,  16, 214 };
+/* Added errors. golay(24, 12) can correct up to 3 errors in one 24-bit
+ * symbol (= 3 bytes). Positions for bitflips generated at
+ * https://www.random.org/bytes */
+unsigned char msg_enc_3_err_per_symbol[] = { 252, 60, 191,  18, 64, 190, 135, 209,  22,
+                                             227, 43, 188, 252, 33,  76,  57,  16, 212 };
+
 static void test_hamming256_single(void)
 {
     uint8_t data[256];
@@ -76,28 +87,45 @@ static void test_hamming256_padding(void)
     TEST_ASSERT_EQUAL_INT(Hamming_ERROR_ECC, result);
 }
 
-static void test_golay2412_message(void)
+static void test_golay2412_message_encode(void)
 {
-    /* source for random bytes: https://www.random.org/bytes */
-    unsigned char data[] = {201, 240, 154, 5, 227, 60, 116, 192, 214};
-    unsigned char result[sizeof(data)];
-    unsigned char msg_enc[2*sizeof(data)];
+    unsigned char encoded[2 * sizeof(data_in)];
 
-    golay2412_encode(sizeof(data), &data[0], &msg_enc[0]);
+    golay2412_encode(sizeof(data_in), &data_in[0], &encoded[0]);
 
-    /* Add errors here. golay(24, 12) can correct up to 3 errors in one 24-bit
-     * symbol (= 3 bytes). Positions for bitflips generated at
-     * https://www.random.org/bytes */
-    msg_enc[0]  ^= (1L << 14) | (1L << 13) | (1L <<  5);
-    msg_enc[3]  ^= (1L <<  0) | (1L << 21) | (1L << 18);
-    msg_enc[6]  ^= (1L << 16) | (1L << 22) | (1L << 19);
-    msg_enc[9]  ^= (1L << 11) | (1L <<  8) | (1L << 15);
-    msg_enc[12] ^= (1L <<  9) | (1L <<  2) | (1L << 10);
-    msg_enc[15] ^= (1L << 17) | (1L <<  1) | (1L <<  7);
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&msg_enc, &encoded, sizeof(encoded)));
+}
 
-    golay2412_decode(sizeof(data), &msg_enc[0], &result[0]);
+static void test_golay2412_message_noerr(void)
+{
+    unsigned char result[sizeof(data_in)];
+    unsigned char encoded[2 * sizeof(data_in)];
 
-    TEST_ASSERT_EQUAL_INT(0, memcmp(&data, &result, sizeof(data)));
+    golay2412_encode(sizeof(data_in), &data_in[0], &encoded[0]);
+    golay2412_decode(sizeof(result), &encoded[0], &result[0]);
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&data_in, &result, sizeof(data_in)));
+}
+
+static void test_golay2412_message_decode_success(void)
+{
+    unsigned char result[sizeof(data_in)];
+
+    golay2412_decode(sizeof(result), &msg_enc_3_err_per_symbol[0], &result[0]);
+
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&data_in, &result, sizeof(data_in)));
+}
+
+static void test_golay2412_message_decode_fail(void)
+{
+    unsigned char result[sizeof(data_in)];
+
+    /* adding a 4th error to the first symbol leads to an
+       uncorrectable sequence */
+    msg_enc_3_err_per_symbol[0] ^= (1L << 6);
+
+    golay2412_decode(sizeof(result), &msg_enc_3_err_per_symbol[0], &result[0]);
+
+    TEST_ASSERT(memcmp(&data_in, &result, sizeof(data_in)));
 }
 
 TestRef test_all(void)
@@ -105,7 +133,10 @@ TestRef test_all(void)
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_hamming256_single),
         new_TestFixture(test_hamming256_padding),
-        new_TestFixture(test_golay2412_message),
+        new_TestFixture(test_golay2412_message_encode),
+        new_TestFixture(test_golay2412_message_noerr),
+        new_TestFixture(test_golay2412_message_decode_success),
+        new_TestFixture(test_golay2412_message_decode_fail),
     };
 
     EMB_UNIT_TESTCALLER(EccTest, NULL, NULL, fixtures);
