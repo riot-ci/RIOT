@@ -1,10 +1,32 @@
 include ../Makefile.tests_common
 
 # The following boards are known to fail or have not been tested.
-BOARD_BLACKLIST := arduino-mega2560 chronos f4vi1 mega-xplained msb-430 \
-                   msb-430h msbiot redbee-econotag stm32f0discovery \
-                   stm32f3discovery telosb wsn430-v1_3b wsn430-v1_4 z1 \
-                   waspmote-pro
+BOARD_BLACKLIST :=  arduino-duemilanove \
+                    arduino-mega2560 \
+                    arduino-uno \
+                    chronos \
+                    f4vi1 \
+                    jiminy-mega256rfr2 \
+                    mega-xplained \
+                    msb-430 \
+                    msb-430h \
+                    msbiot \
+                    redbee-econotag \
+                    stm32f0discovery \
+                    stm32f3discovery \
+                    telosb \
+                    waspmote-pro \
+                    wsn430-v1_3b \
+                    wsn430-v1_4 \
+                    z1 \
+                    #
+
+BOARD_INSUFFICIENT_MEMORY :=    nucleo-f030r8 \
+                                nucleo-f031k6 \
+                                nucleo-f042k6 \
+                                nucleo-l031k6 \
+                                nucleo-l053r8 \
+                                #
 
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(4*THREAD_STACKSIZE_DEFAULT\)
 
