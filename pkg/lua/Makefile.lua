@@ -6,6 +6,9 @@ endif
 
 CFLAGS += -DLUA_MAXCAPTURES=16 -DL_MAXLENNUM=50
 
+# Upstream has several of this which will not be fixed
+CFLAGS += -Wno-cast-qual
+
 #    Enable these options to debug stack usage
 #          -Wstack-usage=128 -Wno-error=stack-usage=128
 
