@@ -16,3 +16,6 @@ $(call _putdots,$(1)) $(2))
 # Given a directory and a path (both absolute), calculate the path of the second
 # argument relative to the first one.
 relpath = $(call joinpath,$(call _relpath,$(call splitpath,$(1)),$(call splitpath,$(2))))
+
+# Return a path relative to the current directory
+relpath_here = $(call relpath,$(abspath .),$(abspath $(1)))

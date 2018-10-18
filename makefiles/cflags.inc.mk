@@ -73,5 +73,5 @@ endif
 # Default ARFLAGS for platforms which do not specify it.
 # Note: make by default provides ARFLAGS=rv which we want to override
 ifeq ($(origin ARFLAGS),default)
-  ARFLAGS = rcs
+  ARFLAGS = rcTs
 endif
