@@ -28,6 +28,9 @@ BOARD_INSUFFICIENT_MEMORY :=    nucleo-f030r8 \
                                 nucleo-l053r8 \
                                 #
 
+TEST_BOARDS_LLVM_COMPILE := native \
+                            #
+
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(4*THREAD_STACKSIZE_DEFAULT\)
 
 USEPKG += relic
