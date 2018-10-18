@@ -6,12 +6,16 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
+import os
 import sys
 from testrunner import run
 
 
 def testfunc(child):
-    child.expect('OK \(\d+ tests\)', timeout=60)
+    board = os.environ['BOARD']
+    # Increase timeout on "real" hardware
+    timeout = 120 if board is not 'native' else -1
+    child.expect('OK \(\d+ tests\)', timeout=timeout)
 
 
 if __name__ == "__main__":
