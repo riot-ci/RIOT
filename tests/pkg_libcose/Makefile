@@ -8,7 +8,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno \
 BOARD_INSUFFICIENT_MEMORY := nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 \
                              nucleo-l031k6 nucleo-l053r8 stm32f0discovery
 
-TEST_ON_CI_WHITELIST += all
+TEST_ON_CI_WHITELIST += native
 
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(4*THREAD_STACKSIZE_DEFAULT\)
 
