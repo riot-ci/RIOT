@@ -8,6 +8,7 @@ CFLAGS += -I$(BINDIR)/riotbuild
 
 HEADER_TOOL_DIR = $(RIOTBASE)/dist/tools/riot_hdr
 HEADER_TOOL ?= $(HEADER_TOOL_DIR)/bin/genhdr
+BINDIR_APP = $(BINDIR)/$(APPLICATION)
 
 # Indicate the reserved space for a header, 256B by default
 # Notice that it must be 256B aligned. This is restricted by
@@ -25,18 +26,18 @@ export SLOT0_OFFSET ?= $(RIOTBOOT_LEN)
 APP_VER ?= 0
 
 # Final target for slot 0 with riot_hdr
-SLOT0_RIOT_FIRMWARE = $(BINDIR)/$(APPLICATION)-slot0.riot.bin
+SLOT0_RIOT_FIRMWARE = $(BINDIR_APP)-slot0.riot.bin
 
 # For slot generation only link is needed
-$(BINDIR)/$(APPLICATION)-%.elf: link
+$(BINDIR_APP)-%.elf: link
 	$(Q)$(_LINK) -o $@
 
 # Slot 0 firmware offset, after header
 SLOT0_IMAGE_OFFSET := $$(($(RIOTBOOT_LEN) + $(RIOTBOOT_HDR_LEN)))
 
-# Link slot ELF *after* riot_hdr and limit the ROM to the slot length
-$(BINDIR)/$(APPLICATION)-slot%.elf: FW_ROM_LEN=$(SLOT0_LEN - $(RIOTBOOT_HDR_LEN))
-$(BINDIR)/$(APPLICATION)-slot0.elf: ROM_OFFSET=$(SLOT0_IMAGE_OFFSET)
+# Link slots ELF *after* riot_hdr and limit the ROM to the slots length
+$(BINDIR_APP)-slot0.elf: FW_ROM_LEN=$$((SLOT0_LEN - $(RIOTBOOT_HDR_LEN)))
+$(BINDIR_APP)-slot0.elf: ROM_OFFSET=$(SLOT0_IMAGE_OFFSET)
 
 # Create binary target with RIOT header
 $(SLOT0_RIOT_FIRMWARE): %.riot.bin: %.hdr %.bin
@@ -58,12 +59,12 @@ $(HEADER_TOOL): FORCE
 %.hdr: $(HEADER_TOOL) %.bin FORCE
 	$(Q)$(HEADER_TOOL) generate $< $(APP_VER) $$(($(ROM_START_ADDR)+$(OFFSET))) $(RIOTBOOT_HDR_LEN) - > $@
 
-$(BINDIR)/$(APPLICATION)-slot0.hdr: OFFSET=$(SLOT0_IMAGE_OFFSET)
+$(BINDIR_APP)-slot0.hdr: OFFSET=$(SLOT0_IMAGE_OFFSET)
 
 # Generic target to create a binary file from the image with header
 riotboot: $(SLOT0_RIOT_FIRMWARE)
 
-# riotboot compile target
+# riotboot bootloader compile target
 riotboot/flash-bootloader: riotboot/bootloader/flash
 riotboot/bootloader/%:
 	$(Q)/usr/bin/env -i \
@@ -74,11 +75,11 @@ riotboot/bootloader/%:
 # Generate a binary file from the bootloader which fills all the
 # allocated space. This is used afterwards to create a combined
 # binary with both bootloader and RIOT firmware with header
-BOOTLOADER_BIN = $(RIOTBASE)/riotboot/bin/$(BOARD)
+BOOTLOADER_BIN = $(RIOTBOOT_DIR)/bin/$(BOARD)
 $(BOOTLOADER_BIN)/riotboot.extended.bin: $(BOOTLOADER_BIN)/riotboot.bin
-	cp $^ $@.tmp
-	truncate -s $$(($(RIOTBOOT_LEN))) $@.tmp
-	mv $@.tmp $@
+	$(Q)cp $^ $@.tmp
+	$(Q)truncate -s $$(($(RIOTBOOT_LEN))) $@.tmp
+	$(Q)mv $@.tmp $@
 
 # Only call sub make if not already in riotboot
 ifneq ($(BOOTLOADER_BIN)/riotboot.bin,$(BINFILE))
@@ -86,31 +87,31 @@ ifneq ($(BOOTLOADER_BIN)/riotboot.bin,$(BINFILE))
 endif
 
 # Create combined binary booloader + RIOT firmware with header
-riotboot/combined-slot0: $(BINDIR)/$(APPLICATION)-slot0-combined.bin
-$(BINDIR)/$(APPLICATION)-slot0-combined.bin: $(BOOTLOADER_BIN)/riotboot.extended.bin $(SLOT0_RIOT_FIRMWARE)
-	cat $^ > $@
+riotboot/combined-slot0: $(BINDIR_APP)-slot0-combined.bin
+$(BINDIR_APP)-slot0-combined.bin: $(BOOTLOADER_BIN)/riotboot.extended.bin $(SLOT0_RIOT_FIRMWARE)
+	$(Q)cat $^ > $@
 
 # Flashing rule for edbg to flash combined binaries
-riotboot/flash-combined-slot0: HEXFILE=$(BINDIR)/$(APPLICATION)-slot0-combined.bin
+riotboot/flash-combined-slot0: HEXFILE=$(BINDIR_APP)-slot0-combined.bin
 # Flashing rule for openocd to flash combined binaries
-riotboot/flash-combined-slot0: export IMAGE_FILE=$(BINDIR)/$(APPLICATION)-slot0-combined.bin
-riotboot/flash-combined-slot0: $(BINDIR)/$(APPLICATION)-slot0-combined.bin
+riotboot/flash-combined-slot0: export IMAGE_FILE=$(BINDIR_APP)-slot0-combined.bin
+riotboot/flash-combined-slot0: $(BINDIR_APP)-slot0-combined.bin
 	$(FLASHER) $(FFLAGS)
 
 # Flashing rule for slot 0
-riotboot/flash-slot0: export IMAGE_OFFSET=$(RIOTBOOT_LEN)
+riotboot/flash-slot0: export IMAGE_OFFSET=$(SLOT0_OFFSET)
 # Flashing rule for edbg to flash only slot 0
 riotboot/flash-slot0: HEXFILE=$(SLOT0_RIOT_FIRMWARE)
 # openocd
 riotboot/flash-slot0: export IMAGE_FILE=$(SLOT0_RIOT_FIRMWARE)
-riotboot/flash-slot0: $(SLOT0_RIOT_FIRMWARE) riotboot/flash-bootloader
+riotboot/flash-slot0: $(SLOT0_RIOT_FIRMWARE)
 	$(FLASHER) $(FFLAGS)
 
 # Targets to generate only slot 0 binary
 riotboot/slot0: $(SLOT0_RIOT_FIRMWARE)
 
 # Default flashing rule for bootloader + slot 0
-riotboot/flash: riotboot/flash-slot0
+riotboot/flash: riotboot/flash-slot0 riotboot/flash-bootloader
 
 else
 riotboot:
