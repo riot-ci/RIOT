@@ -36,6 +36,10 @@
 #   define M_PI 3.14159265359
 #endif
 
+#ifndef M_PI
+#   define PREVENT_UART_FLOOD_DELAY 1000000
+#endif
+
 void dumb_delay(uint32_t delay)
 {
     for (uint32_t i = 0; i < delay; i++) {
@@ -192,9 +196,8 @@ static void unary_ops(void)
 int main(void)
 {
     /* Delay output to prevent flooding of buffer */
-    dumb_delay(1000000);
+    dumb_delay(PREVENT_UART_FLOOD_DELAY);
     puts("Unary.");
-
     unary_ops();
 
     puts("Binary.");
