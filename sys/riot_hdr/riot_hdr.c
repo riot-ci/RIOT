@@ -40,7 +40,7 @@
 void riot_hdr_print(const riot_hdr_t *riot_hdr)
 {
     printf("Image magic_number: 0x%08x\n", (unsigned)riot_hdr->magic_number);
-    printf("Image Version: %#x\n", (unsigned)riot_hdr->version);
+    printf("Image Version: 0x%08x\n", (unsigned)riot_hdr->version);
     printf("Image start address: 0x%08x\n", (unsigned)riot_hdr->start_addr);
     printf("Image chksum: 0x%08x\n", (unsigned)riot_hdr->chksum);
     printf("\n");
