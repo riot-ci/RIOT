@@ -36,6 +36,13 @@
 #   define M_PI 3.14159265359
 #endif
 
+void dumb_delay(uint32_t delay)
+{
+    for (uint32_t i = 0; i < delay; i++) {
+        __asm__("nop");
+    }
+}
+
 static void binary_ops(void)
 {
     static const struct {
@@ -184,7 +191,10 @@ static void unary_ops(void)
 
 int main(void)
 {
+    /* Delay output to prevent flooding of buffer */
+    dumb_delay(1000000);
     puts("Unary.");
+
     unary_ops();
 
     puts("Binary.");
