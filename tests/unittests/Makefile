@@ -207,7 +207,7 @@ MSP430_BOARDS := chronos \
                  wsn430-v1_4 \
                  z1 \
                  #
-DISABLE_TEST_FOR_MSP430 := tests-relic tests-spiffs tests-cpp_%
+DISABLE_TEST_FOR_MSP430 := tests-relic tests-cpp_%
 
 ifneq (, $(filter $(ARM7_BOARDS), $(BOARD)))
   UNIT_TESTS := $(filter-out $(DISABLE_TEST_FOR_ARM7), $(UNIT_TESTS))
