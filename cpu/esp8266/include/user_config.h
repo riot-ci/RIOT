@@ -24,7 +24,9 @@ extern "C" {
  * @brief   Default CPU frequency in MHz.
  * Possible values are 80 and 160.
  */
-#define ESP8266_CPU_FREQUENCY_DEFAULT   80
+#ifndef ESP8266_CPU_FREQUENCY
+#define ESP8266_CPU_FREQUENCY   80
+#endif
 
 #ifdef __cplusplus
 }

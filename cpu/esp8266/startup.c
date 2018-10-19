@@ -171,11 +171,7 @@ void IRAM user_init (void)
     thread_isr_stack_init ();
 
     /* set system frequency */
-    #ifdef ESP8266_CPU_FREQUENCY
     system_update_cpu_freq(ESP8266_CPU_FREQUENCY);
-    #else
-    system_update_cpu_freq(ESP8266_CPU_FREQUENCY_DEFAULT);
-    #endif
 
     /* reinit system timer as microsecond timer */
     system_timer_reinit ();
@@ -667,11 +663,7 @@ void __attribute__((noreturn)) IRAM cpu_user_start (void)
     /** }@ */
 
     /* set system frequency */
-    #ifdef ESP8266_CPU_FREQUENCY
     system_update_cpu_freq(ESP8266_CPU_FREQUENCY);
-    #else
-    system_update_cpu_freq(ESP8266_CPU_FREQUENCY_DEFAULT);
-    #endif
 
     /* PHASE 3: start RIOT-OS kernel */
 
