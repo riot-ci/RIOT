@@ -34,7 +34,7 @@ extern "C" {
 /**
  * @brief  Get currently running image slot
  *
- * returns nr of currently active slot
+ * @returns nr of currently active slot
  */
 int slot_util_current_slot(void);
 
@@ -85,6 +85,12 @@ static inline void slot_util_print_slot_hdr(unsigned slot)
 {
     riot_hdr_print(slot_util_get_hdr(slot));
 }
+
+/**
+ * @brief  Dump the addresses of all configured slots
+ *
+ */
+void slot_util_dump_addrs(void);
 
 /**
  * @brief   Number of configured firmware slots (incl. bootloader slot)

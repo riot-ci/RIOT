@@ -36,7 +36,7 @@ const riot_hdr_t * const slot_util_slots[] = {
 };
 
 /* Calculate the number of slots */
-const unsigned slot_util_num_slots = sizeof(slot_util_slots) / sizeof(uint32_t);
+const unsigned slot_util_num_slots = sizeof(slot_util_slots) / sizeof(riot_hdr_t*);
 
 static void _slot_util_jump_to_image(const riot_hdr_t *riot_hdr)
 {
@@ -70,9 +70,15 @@ uint32_t slot_util_get_image_startaddr(unsigned slot)
 void slot_util_dump_addrs(void)
 {
     for (unsigned slot = 0; slot < slot_util_num_slots; slot++) {
-        printf("slot %u: metadata: %p image: 0x%08" PRIx32 "\n", slot,
-               slot_util_get_hdr(slot),
-               slot_util_get_image_startaddr(slot));
+        const riot_hdr_t *riot_hdr = slot_util_get_hdr(slot);
+
+        if (riot_hdr != NULL) {
+            printf("slot %u: metadata: %p image: 0x%08" PRIx32 "\n", slot,
+                   riot_hdr,
+                   riot_hdr->start_addr);
+        } else {
+            printf("[slot_util]: No riot_hdr found at %p\n", riot_hdr);
+        }
     }
 }
 
