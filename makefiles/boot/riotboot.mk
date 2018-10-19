@@ -51,7 +51,7 @@ $(HEADER_TOOL): FORCE
 	$(Q)/usr/bin/env -i \
 		QUIET=$(QUIET) \
 		PATH=$(PATH) \
-			make --no-print-directory -C $(HEADER_TOOL_DIR) all
+			$(MAKE) --no-print-directory -C $(HEADER_TOOL_DIR) all
 
 # Generate RIOT header and keep the original binary file
 # It must be always regenerated in case of any changes, so FORCE
@@ -70,7 +70,7 @@ riotboot/bootloader/%:
 	$(Q)/usr/bin/env -i \
 		QUIET=$(QUIET)\
 		PATH=$(PATH) BOARD=$(BOARD) \
-			make --no-print-directory -C $(RIOTBOOT_DIR) $*
+			$(MAKE) --no-print-directory -C $(RIOTBOOT_DIR) $*
 
 # Generate a binary file from the bootloader which fills all the
 # allocated space. This is used afterwards to create a combined
