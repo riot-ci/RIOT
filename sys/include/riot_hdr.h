@@ -68,6 +68,7 @@ void riot_hdr_print(const riot_hdr_t *riot_hdr);
  *
  * @param[in] riot_hdr  ptr to image header
  *
+ * @returns 0 if OK
  */
 int riot_hdr_validate(const riot_hdr_t *riot_hdr);
 
@@ -76,6 +77,7 @@ int riot_hdr_validate(const riot_hdr_t *riot_hdr);
  *
  * @param[in] riot_hdr  ptr to image header
  *
+ * @returns the checksum of the given riot_hdr
  */
 uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr);
 
