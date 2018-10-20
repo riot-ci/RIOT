@@ -18,6 +18,8 @@
  * @brief       Poly1305 MAC interface
  *
  * @author      Koen Zandberg <koen@bergzand.net>
+ * 
+ * @see         https://tools.ietf.org/html/rfc8439#section-2.5
  */
 #ifndef CRYPTO_POLY1305_H
 #define CRYPTO_POLY1305_H
@@ -29,18 +31,17 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-#define poly1305_block_size 16
+#define POLY1305_BLOCK_SIZE 16
 
 /**
  * @brief Poly1305 context
  */
 typedef struct {
-    uint32_t r[5];                          /**< first key part         */
-    uint32_t h[5];                          /**< second key part        */
-    uint32_t pad[4];                        /**< pad                    */
-    size_t leftover;                        /**< leftover of the buffer */
-    uint8_t buffer[poly1305_block_size];    /**< tag buffer             */
-    uint8_t final;                          /**< end of data indicator  */
+    uint32_t r[4];                          /**< first key part         */
+    uint32_t pad[4];                        /**< Second key part        */
+    uint32_t h[5];                          /**< Hash                   */
+    uint32_t c[4];                          /**< Message chunk          */
+    size_t c_idx;                           /**< Chunk length            */
 } poly1305_ctx_t;
 
 /**
@@ -76,9 +77,8 @@ void poly1305_finish(poly1305_ctx_t *ctx, uint8_t *mac);
  * @param   len     length of the message
  * @param   key     32 byte key
  */
-void poly1305_auth(uint8_t *mac, const uint8_t *data, size_t len, const uint8_t *key);
-
-int poly1305_verify(const uint8_t *mac1, const uint8_t *mac2);
+void poly1305_auth(uint8_t *mac, const uint8_t *data, size_t len,
+                   const uint8_t *key);
 
 #ifdef __cplusplus
 }
