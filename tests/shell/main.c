@@ -23,6 +23,7 @@
 
 #include "shell_commands.h"
 #include "shell.h"
+#include "periph/pm.h"
 
 static int print_teststart(int argc, char **argv)
 {
@@ -76,5 +77,6 @@ int main(void)
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
     */
 
+    pm_off();
     return 0;
 }

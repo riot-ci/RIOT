@@ -72,7 +72,7 @@ typedef struct shell_command_t {
  *
  * @returns         This function does not return.
  */
-void shell_run(const shell_command_t *commands, char *line_buf, int len) NORETURN;
+void shell_run(const shell_command_t *commands, char *line_buf, int len);
 
 #ifdef __cplusplus
 }

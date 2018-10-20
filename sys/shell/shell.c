@@ -31,7 +31,6 @@
 #include <stdlib.h>
 #include "shell.h"
 #include "shell_commands.h"
-#include "periph/pm.h"
 
 #if !defined(SHELL_NO_ECHO) || !defined(SHELL_NO_PROMPT)
 #ifdef MODULE_NEWLIB
@@ -289,7 +288,7 @@ void shell_run(const shell_command_t *shell_commands, char *line_buf, int len)
         int res = readline(line_buf, len);
 
         if (res == EOF) {
-            pm_off();
+            break;
         }
 
         if (!res) {
