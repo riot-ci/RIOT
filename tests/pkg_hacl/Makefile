@@ -6,6 +6,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno \
 
 TEST_ON_CI_WHITELIST += native
 
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(5*THREAD_STACKSIZE_DEFAULT\)
 USEPKG += hacl
 USEMODULE += random
 USEMODULE += embunit
