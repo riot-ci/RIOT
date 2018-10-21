@@ -253,26 +253,28 @@ extern "C" {
 #endif
 
 /**
- * @brief   Size of the buffer used to write options, other than Uri-Path, in a
- *          request
+ * @brief   Reduce payload length by this value for a request created with
+ *          gcoap_req_init()
  *
- * Accommodates Content-Format and Uri-Queries
+ * Accommodates writing Content-Format option in gcoap_finish()
  */
-#define GCOAP_REQ_OPTIONS_BUF   (40)
+#define GCOAP_REQ_OPTIONS_BUF   (4)
 
 /**
- * @brief   Size of the buffer used to write options in a response
+ * @brief   Reduce payload length by this value for a respons created with
+ *          gcoap_resp_init()
  *
- * Accommodates Content-Format.
+ * Accommodates writing Content-Format option in gcoap_finish()
  */
-#define GCOAP_RESP_OPTIONS_BUF  (8)
+#define GCOAP_RESP_OPTIONS_BUF  (4)
 
 /**
- * @brief   Size of the buffer used to write options in an Observe notification
+ * @brief   Reduce payload length by this value for an observe notification
+ *          created with gcoap_obs_init()
  *
- * Accommodates Content-Format and Observe.
+ * Accommodates writing Content-Format option in gcoap_finish()
  */
-#define GCOAP_OBS_OPTIONS_BUF   (8)
+#define GCOAP_OBS_OPTIONS_BUF   (4)
 
 /**
  * @brief   Maximum number of requests awaiting a response
