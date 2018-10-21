@@ -49,6 +49,14 @@ void crypto_block_inc_ctr(uint8_t block[16], int L);
  */
 int crypto_equals(uint8_t *a, uint8_t *b, size_t len);
 
+/**
+ * @brief   Secure wipe function
+ *
+ * @param[in]   buf     buffer to wipe
+ * @param[in]   len     size of the buffer in bytes
+ */
+void crypto_wipe(void *buf, size_t len);
+
 #ifdef __cplusplus
 }
 #endif
