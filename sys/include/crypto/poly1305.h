@@ -12,6 +12,10 @@
  * @ingroup     sys_crypto
  * @defgroup    sys_crypto_poly1305 poly1305
  * @brief       Poly1305 one-time message authentication code
+ *
+ * Poly1305 is a one-time authenticator designed by D.J. Bernstein. It uses a
+ * 32-byte one-time key and a message and produces a 16-byte tag.
+ *
  * @{
  *
  * @file
