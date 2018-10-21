@@ -38,12 +38,6 @@
 #define GCOAP_RESOURCE_WRONG_METHOD -1
 #define GCOAP_RESOURCE_NO_PATH -2
 
-/*
- * gcoap internal Content-Format option value. Not intended for use in a
- * transmitted packet. Must be a 3-byte unsigned value.
- */
-#define COAP_FORMAT_NO_PAYLOAD  (UINT16_MAX + 1)
-
 /* Internal functions */
 static void *_event_loop(void *arg);
 static void _listen(sock_udp_t *sock);
@@ -665,11 +659,8 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
 #endif
 
     if (hdrlen > 0) {
-        coap_pkt_init(pdu, buf, len, hdrlen);
+        coap_pkt_init(pdu, buf, len - GCOAP_REQ_OPTIONS_BUF, hdrlen);
         coap_opt_add_string(pdu, COAP_OPT_URI_PATH, path, '/');
-        /* Content-Format specified in gcoap_finish(), after payload written.
-         * Must reserve space for it before payload written. */
-        coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
         return 0;
     }
     else {
@@ -679,82 +670,38 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
 }
 
 /*
- * Expect a placeholder Content-Format option already has been written with
- * pseudo-value COAP_FORMAT_NO_PAYLOAD, which is 3 bytes long. So, two tasks
- * here: Adjust or remove Content-Format option based on the 'format'
- * parameter provided here, and then adjust the position of subsequent options
- * and the payload. First these adjustments are performed on the options array
- * in the PDU struct, and then on the contents of the buffer itself.
- *
- * Finally, the COAP_FORMAT_NO_PAYLOAD value is one byte longer than the
- * maximum possible value for the Content-Format option. This extra byte
- * guarantees space to insert the payload marker before the payload.
+ * Assumes pdu.payload_len attribute was reduced in gcoap_xxx_init() to
+ * ensure enough space in PDU buffer to write Content-Format option and
+ * payload marker here.
  */
 ssize_t gcoap_finish(coap_pkt_t *pdu, size_t payload_len, unsigned format)
 {
-    /* offset for Content-Format option in options array; use UINT_MAX as
-     * sentinel value until found */
-    unsigned format_offset = UINT_MAX;
-    unsigned len_delta = 0;     /* buffer length to move forward */
-    uint8_t *move_pos = 0;      /* starting buffer position to move forward */
-
-    /* update options array */
-    for (unsigned i = 0; i < pdu->options_len; i++) {
-        if (pdu->options[i].opt_num == COAP_OPT_CONTENT_FORMAT) {
-            format_offset = i;
-            /* determine length of Content-Format option; we expect it to be
-             * 4 bytes, but read PDU struct to be sure */
-            if (pdu->options_len > (i + 1)) {
-                len_delta = pdu->options[i+1].offset - pdu->options[i].offset;
-            }
-            else {
-                len_delta = (pdu->payload - (uint8_t *)pdu->hdr)
-                                - pdu->options[i].offset;
-            }
-            assert(len_delta == 4);
-            if (format == COAP_FORMAT_NONE) {
-                pdu->options_len--;
-            }
-            else {
-                /* write actual option value and finalize position delta for
-                 * following options and payload */
-                len_delta -= coap_put_option_ct(
-                                (uint8_t *)pdu->hdr + pdu->options[i].offset,
-                                (i > 0) ? pdu->options[i-1].opt_num : 0, format);
-            }
-        }
-        else if (format_offset < UINT_MAX) {
-            /* Content-Format option already found, adjust following options */
-            if (!move_pos) {
-                /* buffer moves forward starting here */
-                move_pos = (uint8_t *)pdu->hdr + pdu->options[i].offset;
-            }
-            if (format == COAP_FORMAT_NONE) {
-                /* Content-Format option removed, so update PDU struct array
-                 * and move buffer offset forward */
-                pdu->options[i-1].opt_num = pdu->options[i].opt_num;
-                pdu->options[i-1].offset  = pdu->options[i].offset - len_delta;
-            }
-            else {
-                /* otherwise, just move buffer offset forward */
-                pdu->options[i].offset -= len_delta;
-            }
-        }
+    if (pdu->options_len && payload_len) {
+        assert(pdu->options[pdu->options_len-1].opt_num < COAP_OPT_CONTENT_FORMAT);
     }
 
-    /* Update buffer. First move any trailing options by len_delta. */
-    if (move_pos) {
-        memmove(move_pos - len_delta, move_pos, pdu->payload - move_pos);
-    }
-    /* then separately insert payload marker and move payload */
     if (payload_len) {
-        *(pdu->payload - len_delta) = 0xFF;
-        len_delta--;
-        if (len_delta) {
-            memmove(pdu->payload - len_delta, pdu->payload, payload_len);
+        /* determine Content-Format option length */
+        unsigned format_optlen = 1;
+        if (format == COAP_FORMAT_NONE) {
+            format_optlen = 0;
         }
+        else if (format > 255) {
+            format_optlen = 3;
+        }
+        else if (format > 0) {
+            format_optlen = 2;
+        }
+
+        /* move payload to accommodate option and payload marker */
+        memmove(pdu->payload+format_optlen+1, pdu->payload, payload_len);
+
+        if (format_optlen) {
+            coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, format);
+        }
+        *pdu->payload++ = 0xFF;
     }
-    pdu->payload -= len_delta;
+    /* must write option before updating PDU with actual length */
     pdu->payload_len = payload_len;
 
     return pdu->payload_len + (pdu->payload - (uint8_t *)pdu->hdr);
@@ -895,7 +842,7 @@ int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
 
     pdu->options_len = 0;
     pdu->payload     = buf + header_len;
-    pdu->payload_len = len - header_len;
+    pdu->payload_len = len - header_len - GCOAP_RESP_OPTIONS_BUF;
 
     if (coap_get_observe(pdu) == COAP_OBS_REGISTER) {
         /* generate initial notification value */
@@ -903,10 +850,6 @@ int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
         pdu->observe_value = (now >> GCOAP_OBS_TICK_EXPONENT) & 0xFFFFFF;
         coap_opt_add_uint(pdu, COAP_OPT_OBSERVE, pdu->observe_value);
     }
-
-    /* Content-Format specified in gcoap_finish(), after payload written.
-     * Must reserve space for it before payload written. */
-    coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
 
     return 0;
 }
@@ -928,15 +871,11 @@ int gcoap_obs_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
                                     memo->token_len, COAP_CODE_CONTENT, msgid);
 
     if (hdrlen > 0) {
-        coap_pkt_init(pdu, buf, len, hdrlen);
+        coap_pkt_init(pdu, buf, len - GCOAP_OBS_OPTIONS_BUF, hdrlen);
 
         uint32_t now       = xtimer_now_usec();
         pdu->observe_value = (now >> GCOAP_OBS_TICK_EXPONENT) & 0xFFFFFF;
         coap_opt_add_uint(pdu, COAP_OPT_OBSERVE, pdu->observe_value);
-
-        /* Content-Format specified in gcoap_finish(), after payload written.
-         * Must reserve space for it before payload written. */
-        coap_opt_add_uint(pdu, COAP_OPT_CONTENT_FORMAT, COAP_FORMAT_NO_PAYLOAD);
 
         return GCOAP_OBS_INIT_OK;
     }
