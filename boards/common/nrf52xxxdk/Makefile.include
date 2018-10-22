@@ -35,7 +35,7 @@ ifeq (jlink,$(PROGRAMMER))
 else ifeq (openocd,$(PROGRAMMER))
   # setup OpenOCD for flashing. Version 0.10 of OpenOCD doesn't contain support
   # for nrf52dk and nrf52840dk boards. To use OpenOCD with these a version
-  # build from source (master > 2018, August the 31st) is required.
+  # build from source (master > 2018, August the 13rd) is required.
   ifneq (,$(filter nordic_softdevice_ble,$(USEPKG)))
     # openocd doesn't work (yet) with softdevice
     $(error Cannot use OpenOCD with nordic_softdevice module)
