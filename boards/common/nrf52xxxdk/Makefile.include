@@ -33,8 +33,11 @@ ifeq (jlink,$(PROGRAMMER))
   endif
   include $(RIOTMAKE)/tools/jlink.inc.mk
 else ifeq (openocd,$(PROGRAMMER))
-  # openocd doesn't work (yet) with softdevice
+  # setup OpenOCD for flashing. Version 0.10 of OpenOCD doesn't contain support
+  # for nrf52dk and nrf52840dk boards. To use OpenOCD with these a version
+  # build from source (master > 2018, August the 31st) is required.
   ifneq (,$(filter nordic_softdevice_ble,$(USEPKG)))
+    # openocd doesn't work (yet) with softdevice
     $(error Cannot use OpenOCD with nordic_softdevice module)
   endif
   export DEBUG_ADAPTER ?= jlink
