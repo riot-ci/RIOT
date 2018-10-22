@@ -86,5 +86,29 @@ gnrc_pktsnip_t *gnrc_pktbuf_replace_snip(gnrc_pktsnip_t *pkt,
     return pkt;
 }
 
+gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt)
+{
+    gnrc_pktsnip_t *reversed = NULL;
+
+    for (gnrc_pktsnip_t *ptr = pkt; ptr != NULL;
+         /* progress within loop, as next pointers get switched out */) {
+        gnrc_pktsnip_t *next = NULL;
+
+        /* use pkt as temporary variable */
+        pkt = gnrc_pktbuf_start_write(ptr);
+        if (pkt == NULL) {
+            gnrc_pktbuf_release(reversed);
+            gnrc_pktbuf_release(ptr);
+            return NULL;
+        }
+        /* switch around pointers */
+        next = pkt->next;
+        pkt->next = reversed;
+        reversed = pkt;
+        ptr = next;
+    }
+    return reversed;
+}
+
 
 /** @} */
