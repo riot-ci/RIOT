@@ -78,7 +78,7 @@ static int ds18_read_bit(ds18_t *dev, uint8_t *bit)
     start = xtimer_now_usec();
     while (!gpio_read(dev->pin) && measurement < DS18_DELAY_SLOT) {
         measurement = xtimer_now_usec() - start;
-    };
+    }
 
     /* If there was a timeout return error */
     if (measurement >= DS18_DELAY_SLOT) {
@@ -193,7 +193,6 @@ int ds18_read(ds18_t *dev, int16_t *temperature)
 
 int ds18_get_temperature(ds18_t *dev, int16_t *temperature)
 {
-    int res;
 
     DEBUG("[DS18] Convert T\n");
     if (ds18_trigger(dev)) {
