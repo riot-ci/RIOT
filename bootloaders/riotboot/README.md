@@ -40,6 +40,21 @@ The bootloader will, on reset, verify the checksum of the first slot header,
 then boot it. If the slot doesn't have a valid checksum, no image will be
 booted and the bootloader will enter `while(1);` endless loop.
 
+# Requirements
+A board capable to use riotboot must meet the following requirements:
+
+  - Embed a Cortex-M0+/3/4/7 processor
+  - Provide the variables `ROM_START_ADDR` and `ROM_LEN`
+  - Use cpu/cortexm_common/ldscripts/cortexm.ld ld script
+  - Pass the cortexm_common_ldscript test in tests/
+  - Being able to execute startup code at least twice (`board_init()`)
+  - Declare `FEATURES_PROVIDED += riotboot` to pull the rigth dependencies
+  - Being able to flash binary files, if integration with the build
+    system is required for flashing
+
+The above requirements are usually met if the board succeeds to execute
+the riotboot test in tests/.
+
 # Usage
 Just compile your application using the target `riotboot`. The header
 is generated automatically according to your `APP_VER`, which can be
@@ -49,7 +64,7 @@ optionally set (0 by default) in your makefile.
 The image can be flashed using `riotboot/flash` which also flashes
 the bootloader.
 
-e.g. `BOARD=samr21-xpro APP_VER=$(date +%s) make -C examples/hello-world riotboot/flash`
+e.g. `BOARD=samr21-xpro FEATURES_REQUIRED+=riotboot APP_VER=$(date +%s) make -C examples/hello-world riotboot/flash`
 
 The command compiles both the hello-world example and riotboot,
 generates the header and attaches it at the beginning of the example
