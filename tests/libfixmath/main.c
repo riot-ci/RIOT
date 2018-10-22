@@ -30,22 +30,12 @@
 
 #include <stdio.h>
 
+#include "xtimer.h"
 #include "fix16.h"
 
 #ifndef M_PI
 #   define M_PI 3.14159265359
 #endif
-
-#ifndef M_PI
-#   define PREVENT_UART_FLOOD_DELAY 1000000
-#endif
-
-void dumb_delay(uint32_t delay)
-{
-    for (uint32_t i = 0; i < delay; i++) {
-        __asm__("nop");
-    }
-}
 
 static void binary_ops(void)
 {
@@ -196,7 +186,7 @@ static void unary_ops(void)
 int main(void)
 {
     /* Delay output to prevent flooding of buffer */
-    dumb_delay(PREVENT_UART_FLOOD_DELAY);
+    xtimer_sleep(1);
     puts("Unary.");
     unary_ops();
 
