@@ -7,6 +7,6 @@ It demonstrates:
 
  * Adding a module with source code
  * Setting a header include directory
- * Adding dependences, which are evaluated before other modules dependencies
+ * Adding dependencies, which are evaluated before other modules dependencies
 
 If the application compiles, everything is ok.
