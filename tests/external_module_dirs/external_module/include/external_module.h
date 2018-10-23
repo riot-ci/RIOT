@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2018 Freie Universität Berlin
- * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,30 +7,31 @@
  */
 
 /**
- * @addtogroup  unittests
+ * @defgroup
+ * @ingroup
+ * @brief
  * @{
  *
  * @file
- * @brief       Unittests for the libcose package
+ * @brief
  *
+ * @author  Gaëtan Harter <gaetan.harter@fu-berlin.de>
  */
-#ifndef TESTS_LIBCOSE_H
-#define TESTS_LIBCOSE_H
-
-#include "embUnit/embUnit.h"
+#ifndef EXTERNAL_MODULE_H
+#define EXTERNAL_MODULE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- *  @brief   The entry point of this test suite.
+ * @brief   A simple string message
  */
-void tests_libcose(void);
+extern char *external_module_message;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TESTS_LIBCOSE_H */
 /** @} */
+#endif /* EXTERNAL_MODULE_H */
