@@ -46,7 +46,6 @@ static void ds18_write_bit(ds18_t *dev, uint8_t bit)
 {
     /* Initiate write slot */
     ds18_low(dev);
-    xtimer_usleep(1);
 
     /* Release pin when bit==1 */
     if (bit) {
@@ -63,7 +62,6 @@ static int ds18_read_bit(ds18_t *dev, uint8_t *bit)
 {
     /* Initiate read slot */
     ds18_low(dev);
-    xtimer_usleep(DS18_DELAY_RW_PULSE);
     ds18_release(dev);
 
 #if defined(MODULE_DS18_OPTIMIZED)
