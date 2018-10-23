@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 Martine Lenders <mlenders@inf.fu-berlin.de>
+ * Copyright (C) 2015 Cenk Gündoğan <cnkgndgn@gmail.com>
+ * Copyright (C) 2018 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -10,6 +11,8 @@
  * @{
  *
  * @file
+ * @author Cenk Gündoğan <cnkgndgn@gmail.com>
+ * @author Martine Lenders <m.lenders@fu-berlin.de>
  */
 
 #include <string.h>
