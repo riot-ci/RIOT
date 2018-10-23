@@ -2,6 +2,8 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
                              arduino-uno \
+			     arduino-mega2560 \
+			     mega-xplained \
                              nucleo-f031k6 \
                              #
 
