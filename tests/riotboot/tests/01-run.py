@@ -23,7 +23,7 @@ def testfunc(child):
     # Other info is hardware/app dependant so we just check basic compliance
     child.expect("Image Version: 0x[0-9a-fA-F]{8}")
     child.expect("Image start address: 0x[0-9a-fA-F]{8}")
-    child.expect("Image chksum: 0x[0-9a-fA-F]{8}")
+    child.expect("Header chksum: 0x[0-9a-fA-F]{8}")
     child.expect('>')
 
 
