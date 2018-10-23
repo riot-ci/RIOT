@@ -28,8 +28,7 @@ BOARD_INSUFFICIENT_MEMORY :=    nucleo-f030r8 \
                                 nucleo-l053r8 \
                                 #
 
-TEST_BOARDS_LLVM_COMPILE := native \
-                            #
+export TEST_BOARDS_LLVM_COMPILE := native
 
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(5*THREAD_STACKSIZE_DEFAULT\)
 
