@@ -35,7 +35,7 @@ int crypto_equals(uint8_t *a, uint8_t *b, size_t len)
 }
 
 /* Compiler should not be allowed to optimize this */
-void crypto_wipe(void *buf, size_t len)
+void crypto_secure_wipe(void *buf, size_t len)
 {
     volatile uint8_t *vbuf = (uint8_t*)buf;
     for (size_t i = 0; i < len; i++) {
