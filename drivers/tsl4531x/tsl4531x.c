@@ -98,7 +98,7 @@ int tsl4531x_init(tsl4531x_t *dev, const tsl4531x_params_t *params)
     return 0;
 }
 
-int tsl4531x_set_low_power_mode(tsl4531x_t *dev, bool low_power_mode)
+int tsl4531x_set_low_power_mode(tsl4531x_t *dev, uint8_t low_power_mode)
 {
     assert(dev);
 
@@ -136,10 +136,10 @@ int tsl4531x_start_sample(tsl4531x_t *dev)
 {
     assert(dev);
 
-    int r;
-
     /* Don't change the mode to one-shot if the device is in high power mode. */
     if (dev->low_power_mode) {
+
+        int r;
 
         if ((r = i2c_acquire(dev->i2c_dev)) < 0) {
             DEBUG("[Error] Cannot acquire device. I2C error: %d\n", r);
@@ -194,7 +194,7 @@ int tsl4531x_get_sample(const tsl4531x_t *dev)
     int r;
     uint8_t als_data[2]; /* = {[DATALOW], [DATAHIGH]} */
 
-    if ((r = i2c_acquire(dev->i2c_dev) < 0)) {
+    if ((r = i2c_acquire(dev->i2c_dev)) < 0) {
         DEBUG("[Error] Cannot acquire device. I2C error: %d\n", r);
         return -ENODEV;
     }

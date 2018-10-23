@@ -85,7 +85,7 @@ typedef struct {
     i2c_t i2c_dev;                              /**< I2C device which is used */
     i2c_t i2c_addr;                             /**< I2C address of sensor */
     tsl4531x_intgn_time_t integration_time;     /**< integration time */
-    bool low_power_mode : 1;                    /**< low power mode */
+    uint8_t low_power_mode : 1;                 /**< low power mode */
     uint8_t part_number;                        /**< part number, according to variant */
 } tsl4531x_params_t;
 
@@ -96,8 +96,8 @@ typedef struct {
     i2c_t i2c_dev;                              /**< I2C device which is used */
     i2c_t i2c_addr;                             /**< I2C address of sensor */
     tsl4531x_intgn_time_t integration_time;     /**< integration time */
-    bool low_power_mode : 1;                    /**< low power mode */
-    bool high_power_mode_started_up : 1;        /**< high power mode started up flag */
+    uint8_t low_power_mode : 1;                 /**< low power mode */
+    uint8_t high_power_mode_started_up : 1;     /**< high power mode started up flag */
     uint32_t sample_start_time;                 /**< sample start time */
 } tsl4531x_t;
 
@@ -122,7 +122,7 @@ int tsl4531x_init(tsl4531x_t *dev, const tsl4531x_params_t *params);
  *
  * @return     Zero
  */
-int tsl4531x_set_low_power_mode(tsl4531x_t *dev, bool low_power_on);
+int tsl4531x_set_low_power_mode(tsl4531x_t *dev, uint8_t low_power_on);
 
 /**
  * Start collecting sample in low power mode. This provides asynchronous operation

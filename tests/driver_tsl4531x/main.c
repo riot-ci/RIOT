@@ -80,7 +80,7 @@ int main(void)
         }
 
         printf("Sample ready time | High power mode | From device                      |");
-        printf(" [us] | %lu\n", change_times[1] - change_times[0]);
+        printf(" [us] | %lu\n", (unsigned long)(change_times[1] - change_times[0]));
 
         /* Set into low power mode */
         tsl4531x_set_low_power_mode(&dev, true);
@@ -110,7 +110,7 @@ int main(void)
         printf("Illuminance       | Low power mode  | Asynchronous read                |");
         printf(" [lx] | %u\n", lux);
         printf("Sample ready time | Low power mode  | From driver                      |");
-        printf(" [us] | %lu\n", t);
+        printf(" [us] | %lu\n", (unsigned long)t);
 
         xtimer_usleep(_100ms_in_us);
     }
