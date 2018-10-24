@@ -18,6 +18,9 @@
 #include "net/ipv6/ext/rh.h"
 #include "net/gnrc.h"
 
+#ifdef MODULE_GNRC_ICMPV6_ERROR
+#include "net/gnrc/icmpv6/error.h"
+#endif
 
 #ifdef MODULE_GNRC_RPL_SRH
 #include "net/gnrc/rpl/srh.h"
@@ -65,6 +68,7 @@ int gnrc_ipv6_ext_rh_process(gnrc_pktsnip_t *pkt)
     ipv6_ext_rh_t *ext = pkt->data;
     ipv6_hdr_t *hdr;
     int res = GNRC_IPV6_EXT_RH_AT_DST;
+    void *err_ptr = NULL;
 
     /* check seg_left early to avoid duplicating the packet */
     if (ext->seg_left == 0) {
@@ -76,11 +80,12 @@ int gnrc_ipv6_ext_rh_process(gnrc_pktsnip_t *pkt)
     switch (ext->type) {
 #ifdef MODULE_GNRC_RPL_SRH
         case IPV6_EXT_RH_TYPE_RPL_SRH:
-            res = gnrc_rpl_srh_process(hdr, (gnrc_rpl_srh_t *)ext);
+            res = gnrc_rpl_srh_process(hdr, (gnrc_rpl_srh_t *)ext, &err_ptr);
             break;
 #endif
         default:
             res = GNRC_IPV6_EXT_RH_ERROR;
+            err_ptr = &ext->type;
             break;
     }
     switch (res) {
@@ -90,7 +95,17 @@ int gnrc_ipv6_ext_rh_process(gnrc_pktsnip_t *pkt)
         case GNRC_IPV6_EXT_RH_AT_DST:
             break;
         default:
-            gnrc_pktbuf_release(pkt);
+#ifdef MODULE_GNRC_ICMPV6_ERROR
+            if (err_ptr) {
+                gnrc_icmpv6_error_param_prob_send(
+                        ICMPV6_ERROR_PARAM_PROB_HDR_FIELD,
+                        err_ptr, pkt
+                    );
+            }
+#else
+            (void)err_ptr;
+#endif
+            gnrc_pktbuf_release_error(pkt, EINVAL);
             break;
     }
     return res;
