@@ -28,8 +28,6 @@ BOARD_INSUFFICIENT_MEMORY :=    nucleo-f030r8 \
                                 nucleo-l053r8 \
                                 #
 
-TOOLCHAIN_BLACKLIST += llvm
-
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(5*THREAD_STACKSIZE_DEFAULT\)
 
 USEPKG += relic
