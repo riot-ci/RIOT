@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_common_nrf51-beacon
+ * @ingroup     boards_common_nrf51
  * @{
  *
  * @file
