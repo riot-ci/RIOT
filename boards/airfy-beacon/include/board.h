@@ -21,6 +21,8 @@
 
 #include "cpu.h"
 
+#include "board_common.h"
+
 #ifdef __cplusplus
  extern "C" {}
 #endif
