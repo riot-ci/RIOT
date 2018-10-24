@@ -1,6 +1,9 @@
 # define the used CPU model
 export CPU_MODEL = nrf51x22xxaa
 
+# include common nrf51 boards module into the build
+USEMODULE += boards_common_nrf51
+
 # This board uses an ST-Link v2 debug adapter
 export DEBUG_ADAPTER ?= stlink
 export STLINK_VERSION ?= 2
