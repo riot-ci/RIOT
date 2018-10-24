@@ -1,6 +1,8 @@
 # define the used CPU
-export CPU = nrf51
 export CPU_MODEL = nrf51x22xxaa
+
+# include nrf51 common headers
+INCLUDES += -I$(RIOTBOARD)/common/nrf51/include
 
 # set default port depending on operating system
 PORT_LINUX ?= /dev/ttyUSB0
@@ -19,3 +21,9 @@ export RESET_FLAGS = $(BINDIR)
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
+
+# use jlink to program this board
+PROGRAMMER = jlink
+
+# include nrf51 boards common configuration
+include $(RIOTBOARD)/common/nrf51/Makefile.include

@@ -20,19 +20,12 @@
 #define BOARD_H
 
 #include "cpu.h"
+#include "board_common.h"
 #include "periph_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @name    Xtimer configuration
- * @{
- */
-#define XTIMER_WIDTH                (24)
-#define XTIMER_BACKOFF              (40)
-/** @} */
 
 /**
  * @name    LED pin definitions and handlers
