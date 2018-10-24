@@ -8,6 +8,11 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 # this board supports flashing through plain fscopy, using JLink or using
 # openocd. Default programmer is fscopy
 PROGRAMMER ?= fscopy
+
+ifeq (openocd,$(PROGRAMMER))
+  DEBUG_ADAPTER = dap
+endif
+
 ifeq (fscopy,$(PROGRAMMER))
   export FFLAGS =
   export DEBUGGER_FLAGS =
