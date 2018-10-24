@@ -21,6 +21,7 @@
 #define PERIPH_CONF_H
 
 #include "periph_cpu.h"
+#include "periph_conf_common.h"
 
 #ifdef __cplusplus
  extern "C" {
@@ -64,16 +65,6 @@ static const timer_conf_t timer_config[] = {
 #define UART_NUMOF          (1U)
 #define UART_PIN_RX         17
 #define UART_PIN_TX         18
-/** @} */
-
-/**
- * @name    Real time counter configuration
- * @{
- */
-#define RTT_NUMOF           (1U)
-#define RTT_DEV             (1)             /* NRF_RTC1 */
-#define RTT_MAX_VALUE       (0x00ffffff)
-#define RTT_FREQUENCY       (1024)
 /** @} */
 
 /**
