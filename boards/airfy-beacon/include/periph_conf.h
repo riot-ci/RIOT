@@ -43,20 +43,6 @@
 /** @} */
 
 /**
- * @name    Timer configuration
- * @{
- */
-static const timer_conf_t timer_config[] = {
-    /* dev, channels, width */
-    { NRF_TIMER0, 3, TIMER_BITMODE_BITMODE_24Bit, TIMER0_IRQn }
-};
-
-#define TIMER_0_ISR         isr_timer0
-
-#define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
-/** @} */
-
-/**
  * @name    UART configuration
  *
  *          The CPU only supports one UART device, so we keep it simple
