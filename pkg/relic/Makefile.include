@@ -1,1 +1,8 @@
 INCLUDES += -I$(PKGDIRBASE)/relic/include
+
+ifneq (,$(filter cortex-m%,$(CPU_ARCH)))
+  # jerryscript package package is not using system includes right now, so
+  # many newlib hearders (not even stdio.h) is found
+  # Fixed in #9821 (so remove when merged)
+  TOOLCHAINS_BLACKLIST += llvm
+endif
