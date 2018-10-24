@@ -1,6 +1,6 @@
 # Overview
 This folder contains a simple bootloader called "riotboot".
-A header with metadata, of length `RIOTBOOT_HDR_LEN` precedes
+A header with metadata of length `RIOTBOOT_HDR_LEN` precedes
 the RIOT firmware. The header contains "RIOT" as a magic
 number to recognise a RIOT firmware image, a checksum, and
 the version of the RIOT firmware `APP_VER`.
@@ -25,12 +25,14 @@ RIOT firmware.
 
 A RIOT firmware in a single slot is composed by:
 
+```
 |------------------------------- FLASH -------------------------------------|
 |----- RIOTBOOT_LEN ----|----------- RIOTBOOT_SLOT_SIZE (slot 0) -----------|
                         |--- RIOTBOOT_HDR_LEN ----|
  ---------------------------------------------------------------------------
 |        riotboot       | riot_hdr_t + filler (0) |     RIOT firmware       |
  ---------------------------------------------------------------------------
+```
 
 Please note that `RIOTBOOT_HDR_LEN` depends on the architecture of the
 MCU, since it needs to be aligned to 256B. This is fixed regardless of
