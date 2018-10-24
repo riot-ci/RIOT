@@ -858,6 +858,10 @@ static void _receive(gnrc_pktsnip_t *pkt)
             if (pkt != NULL) {
                 _send(pkt, false);
             }
+            else {
+                DEBUG("ipv6: unable to reverse pkt from receive order to send "
+                      "order; dropping it\n");
+            }
             return;
         }
         else {
