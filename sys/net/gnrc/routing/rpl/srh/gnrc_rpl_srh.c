@@ -71,6 +71,7 @@ int gnrc_rpl_srh_process(ipv6_hdr_t *ipv6, gnrc_rpl_srh_t *rh)
     uint8_t *addr_vec = (uint8_t *) (rh + 1);
     uint8_t num_addr;
     uint8_t current_pos, pref_elided, addr_len, compri_addr_len;
+    const uint8_t new_seg_left = rh->seg_left - 1;
 
     if (rh->seg_left == 0) {
         return EXT_RH_CODE_OK;
@@ -90,8 +91,8 @@ int gnrc_rpl_srh_process(ipv6_hdr_t *ipv6, gnrc_rpl_srh_t *rh)
     }
 
     rh->seg_left--;
-    current_pos = num_addr - rh->seg_left;
-    pref_elided = rh->seg_left
+    current_pos = num_addr - new_seg_left;
+    pref_elided = (new_seg_left)
                 ? GNRC_RPL_SRH_COMPRI(rh->compr)
                 : GNRC_RPL_SRH_COMPRE(rh->compr);
     compri_addr_len = sizeof(ipv6_addr_t) - GNRC_RPL_SRH_COMPRI(rh->compr);
@@ -112,6 +113,7 @@ int gnrc_rpl_srh_process(ipv6_hdr_t *ipv6, gnrc_rpl_srh_t *rh)
                                       compri_addr_len)) {
         return EXT_RH_CODE_ERROR;
     }
+    rh->seg_left = new_seg_left;
     memcpy(&addr_vec[(current_pos - 1) * compri_addr_len],
            &ipv6->dst.u8[pref_elided], addr_len);
 
