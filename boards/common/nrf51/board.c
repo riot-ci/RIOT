@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_yunjia-boards_common_nrf51
+ * @ingroup     boards_common_nrf51
  * @{
  *
  * @file
