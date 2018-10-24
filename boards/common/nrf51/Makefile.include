@@ -8,9 +8,8 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
-# include this module into the build
+# include common nrf51 headers
 INCLUDES += -I$(RIOTBOARD)/common/nrf51/include
-USEMODULE += boards_common_nrf51
 
 ifeq ($(PROGRAMMER),openocd)
   # use common openocd configuration for nrf51

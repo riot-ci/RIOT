@@ -2,4 +2,4 @@
 FEATURES_PROVIDED += periph_rtt
 FEATURES_PROVIDED += periph_timer
 
-include $(RIOTCPU)/nrf51/Makefile.features
+-include $(RIOTCPU)/nrf51/Makefile.features
