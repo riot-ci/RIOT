@@ -1,6 +1,8 @@
 # define the used CPU
-export CPU = nrf51
 export CPU_MODEL = nrf51x22xxab
+
+# include nrf51 common headers
+INCLUDES += -I$(RIOTBOARD)/common/nrf51/include
 
 # define the default port depending on the host OS
 PORT_LINUX ?= /dev/ttyACM0
