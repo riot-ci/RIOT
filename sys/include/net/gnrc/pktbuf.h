@@ -226,7 +226,7 @@ gnrc_pktsnip_t *gnrc_pktbuf_remove_snip(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *sni
 gnrc_pktsnip_t *gnrc_pktbuf_replace_snip(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *old, gnrc_pktsnip_t *add);
 
 /**
- * @brief   Reverses snip order of a packet securely.
+ * @brief   Reverses snip order of a packet in a write-protected manner.
  *
  * This can be used to change the send/receive order of a packet (see
  * @ref gnrc_pktsnip_t)
@@ -234,11 +234,11 @@ gnrc_pktsnip_t *gnrc_pktbuf_replace_snip(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *ol
  * @note    @p pkt is released on failure.
  *
  * @param[in] pkt   A packet. When this function fails (due to a full packet
- *                  packet buffer) @p pkt will be released
+ *                  packet buffer) @p pkt will be released.
  *
  * @return  The reversed version of @p pkt on success
  * @return  NULL, when there is not enough space in the packet buffer to reverse
- *          the packet securely.
+ *          the packet in a write-protected manner.
  */
 gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt);
 

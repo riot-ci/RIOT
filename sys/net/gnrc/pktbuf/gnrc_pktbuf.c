@@ -92,10 +92,10 @@ gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt)
 
     for (gnrc_pktsnip_t *ptr = pkt; ptr != NULL;
          /* progress within loop, as next pointers get switched out */) {
-        gnrc_pktsnip_t *next = NULL;
+        gnrc_pktsnip_t *next;
 
-        /* use pkt as temporary variable */
-        pkt = gnrc_pktbuf_start_write(ptr);
+        /* try to write-protect snip as its next-pointer is changed below */
+        pkt = gnrc_pktbuf_start_write(ptr); /* use pkt as temporary variable */
         if (pkt == NULL) {
             gnrc_pktbuf_release(reversed);
             gnrc_pktbuf_release(ptr);
