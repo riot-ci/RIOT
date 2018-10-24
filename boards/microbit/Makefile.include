@@ -1,5 +1,4 @@
 # define the used CPU
-export CPU = nrf51
 export CPU_MODEL = nrf51x22xxab
 
 # include nrf51 common headers
