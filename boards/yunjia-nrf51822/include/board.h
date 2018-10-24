@@ -21,26 +21,7 @@
 
 #include "cpu.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * @name   Xtimer configuration
- * @{
- */
-#define XTIMER_WIDTH                (24)
-#define XTIMER_BACKOFF              (40)
-/** @} */
-
-/**
- * @brief Initialize board specific hardware, including clock, LEDs and std-IO
- */
-void board_init(void);
-
-#ifdef __cplusplus
-}
-#endif
+#include "board_common.h"
 
 #endif /* BOARD_H */
 /** @} */
