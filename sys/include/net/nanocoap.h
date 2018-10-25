@@ -959,7 +959,7 @@ static inline unsigned coap_get_id(coap_pkt_t *pkt)
  */
 static inline uint8_t *coap_data_ptr(coap_hdr_t *hdr)
 {
-	return (uint8_t*)hdr + sizeof(coap_hdr_t);
+    return (uint8_t*)hdr + sizeof(coap_hdr_t);
 }
 
 /**
