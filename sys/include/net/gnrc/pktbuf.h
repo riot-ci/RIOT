@@ -238,7 +238,8 @@ gnrc_pktsnip_t *gnrc_pktbuf_replace_snip(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *ol
  *
  * @return  The reversed version of @p pkt on success
  * @return  NULL, when there is not enough space in the packet buffer to reverse
- *          the packet in a write-protected manner.
+ *          the packet in a write-protected manner. @p pkt is released in that
+ *          case.
  */
 gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt);
 
