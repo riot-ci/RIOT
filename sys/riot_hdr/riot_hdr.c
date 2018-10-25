@@ -31,6 +31,11 @@
 
 #include "riot_hdr.h"
 #include "checksum/fletcher32.h"
+#include "byteorder.h"
+
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+#   error "This code is implementented in a way that it will only work for little-endian systems!"
+#endif
 
 /**
  *  @brief Number of header bytes that get checksummed
