@@ -51,6 +51,28 @@ extern "C"
 /** @} */
 
 /**
+ * @name    xtimer configuration
+ * @{
+ */
+#if KINETIS_XTIMER_SOURCE_PIT
+/* PIT xtimer configuration */
+#define XTIMER_DEV                  (TIMER_PIT_DEV(0))
+#define XTIMER_CHAN                 (0)
+/* Default xtimer settings should work on the PIT */
+#else
+/* LPTMR xtimer configuration */
+#define XTIMER_DEV                  (TIMER_LPTMR_DEV(0))
+#define XTIMER_CHAN                 (0)
+/* LPTMR is 16 bits wide and runs at 32768 Hz (clocked by the RTC) */
+#define XTIMER_WIDTH                (16)
+#define XTIMER_BACKOFF              (5)
+#define XTIMER_ISR_BACKOFF          (5)
+#define XTIMER_OVERHEAD             (4)
+#define XTIMER_HZ                   (32768ul)
+#endif
+/** @} */
+
+/**
  * @name    MAG3110 3-axis magnetometer bus configuration
  * @{
  */
