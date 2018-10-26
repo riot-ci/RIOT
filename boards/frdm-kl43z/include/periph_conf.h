@@ -94,6 +94,7 @@ static const clock_config_t clock_config = {
 static const uart_conf_t uart_config[] = {
     {
         .dev    = LPUART0,
+        /* This configuration will yield 125000 baud when 115200 is requested */
         .freq   = CLOCK_MCGIRCLK,
         .pin_rx = GPIO_PIN(PORT_A,  1),
         .pin_tx = GPIO_PIN(PORT_A,  2),
@@ -118,10 +119,12 @@ static const uart_conf_t uart_config[] = {
  */
 static const adc_conf_t adc_config[] = {
     /* dev, pin, channel */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  0), .chan =  8 }, /* PTB0 (Arduino A0) */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  1), .chan =  9 }, /* PTB1 (Arduino A1) */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  2), .chan = 15 }, /* PTB2 (Arduino A2) */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  3), .chan =  4 }, /* PTB3 (Arduino A3) */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  0), .chan =  8 }, /* Arduino A0 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  1), .chan =  9 }, /* Arduino A1 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  2), .chan = 15 }, /* Arduino A2 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  3), .chan =  4 }, /* Arduino A3 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  2), .chan = 11 }, /* Arduino A4 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  1), .chan = 15 }, /* Arduino A5 */
 };
 
 #define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
@@ -138,50 +141,31 @@ static const adc_conf_t adc_config[] = {
 * @name I2C configuration
 * @{
 */
-/* TODO */
-#define I2C_NUMOF                    (1U)
-#define I2C_0_EN                     1
-/* Low (10 kHz): MUL = 2, SCL divider = 1536, total: 3072 */
-#define KINETIS_I2C_F_ICR_LOW        (0x36)
-#define KINETIS_I2C_F_MULT_LOW       (1)
-/* Normal (100 kHz): MUL = 2, SCL divider = 160, total: 320 */
-#define KINETIS_I2C_F_ICR_NORMAL     (0x1D)
-#define KINETIS_I2C_F_MULT_NORMAL    (1)
-/* Fast (400 kHz): MUL = 1, SCL divider = 80, total: 80 */
-#define KINETIS_I2C_F_ICR_FAST       (0x14)
-#define KINETIS_I2C_F_MULT_FAST      (0)
-/* Fast plus (1000 kHz): MUL = 1, SCL divider = 30, total: 30 */
-#define KINETIS_I2C_F_ICR_FAST_PLUS  (0x05)
-#define KINETIS_I2C_F_MULT_FAST_PLUS (0)
-
-/* I2C 0 device configuration */
-#define I2C_0_DEV                    I2C0
-#define I2C_0_CLKEN()                (SIM->SCGC4 |= (SIM_SCGC4_I2C0_MASK))
-#define I2C_0_CLKDIS()               (SIM->SCGC4 &= ~(SIM_SCGC4_I2C0_MASK))
-#define I2C_0_IRQ                    I2C0_IRQn
-#define I2C_0_IRQ_HANDLER            isr_i2c0
-/* I2C 0 pin configuration */
-#define I2C_0_PORT                   PORTB
-#define I2C_0_PORT_CLKEN()           (SIM->SCGC5 |= (SIM_SCGC5_PORTB_MASK))
-#define I2C_0_PIN_AF                 2
-#define I2C_0_SDA_PIN                3
-#define I2C_0_SCL_PIN                2
-#define I2C_0_PORT_CFG               (PORT_PCR_MUX(I2C_0_PIN_AF) | PORT_PCR_ODE_MASK)
-/** @} */
-
-/**
-* @name RTT and RTC configuration
-* @{
-*/
-#define RTT_NUMOF                    (1U)
-#define RTC_NUMOF                    (1U)
-#define RTT_DEV                      RTC
-#define RTT_IRQ                      RTC_IRQn
-#define RTT_IRQ_PRIO                 10
-#define RTT_UNLOCK()                 (SIM->SCGC6 |= (SIM_SCGC6_RTC_MASK))
-#define RTT_ISR                      isr_rtc
-#define RTT_FREQUENCY                (1)
-#define RTT_MAX_VALUE                (0xffffffff)
+static const i2c_conf_t i2c_config[] = {
+    {
+        .i2c = I2C0,
+        .scl_pin = GPIO_PIN(PORT_E, 24),
+        .sda_pin = GPIO_PIN(PORT_E, 25),
+        .freq = CLOCK_CORECLOCK,
+        .speed = I2C_SPEED_FAST,
+        .irqn = I2C0_IRQn,
+        .scl_pcr = (PORT_PCR_MUX(5)),
+        .sda_pcr = (PORT_PCR_MUX(5)),
+    },
+    {
+        .i2c = I2C1,
+        .scl_pin = GPIO_PIN(PORT_E,  1),
+        .sda_pin = GPIO_PIN(PORT_E,  0),
+        .freq = CLOCK_CORECLOCK,
+        .speed = I2C_SPEED_FAST,
+        .irqn = I2C1_IRQn,
+        .scl_pcr = (PORT_PCR_MUX(6)),
+        .sda_pcr = (PORT_PCR_MUX(6)),
+    },
+};
+#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
+#define I2C_0_ISR           (isr_i2c0)
+#define I2C_1_ISR           (isr_i2c1)
 /** @} */
 
 #ifdef __cplusplus

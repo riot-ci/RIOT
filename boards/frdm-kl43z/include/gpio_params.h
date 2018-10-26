@@ -43,6 +43,11 @@ static const  saul_gpio_params_t saul_gpio_params[] =
         .mode = GPIO_OUT,
         .flags = SAUL_GPIO_INVERTED
     },
+    {
+        .name = "SW1",
+        .pin = GPIO_PIN(PORT_C, 3),
+        .mode = GPIO_IN_PU
+    },
 };
 
 #ifdef __cplusplus
