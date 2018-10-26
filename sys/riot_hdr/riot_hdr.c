@@ -21,6 +21,7 @@
  */
 
 #include <string.h>
+#include <stddef.h>
 
 #ifdef RIOT_VERSION
 #include "log.h"
@@ -36,11 +37,6 @@
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
 #   error "This code is implementented in a way that it will only work for little-endian systems!"
 #endif
-
-/**
- *  @brief Number of header bytes that get checksummed
- */
-#define RIOT_HDR_CHECKSUM_LEN      (12)
 
 void riot_hdr_print(const riot_hdr_t *riot_hdr)
 {
@@ -68,5 +64,5 @@ int riot_hdr_validate(const riot_hdr_t *riot_hdr)
 
 uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr)
 {
-    return fletcher32((uint16_t*)riot_hdr, RIOT_HDR_CHECKSUM_LEN / sizeof(uint16_t));
+    return fletcher32((uint16_t*)riot_hdr, offsetof(riot_hdr_t, chksum) / sizeof(uint16_t));
 }
