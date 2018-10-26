@@ -191,7 +191,7 @@ int _xtimer_set_absolute(xtimer_t *timer, uint32_t target)
      * This is crucial when using low CPU frequencies so reaching the '_xtimer_now()'
      * call needs multiple xtimer ticks.
      *
-     * '_xtimer_set()' and `_xtimer_periodic_wakeup()` ensure this by allready
+     * '_xtimer_set()' and `_xtimer_periodic_wakeup()` ensure this by already
      * backing of for small values. */
     uint32_t offset = (target - now);
 
