@@ -724,9 +724,14 @@ int aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySize)
 {
     uint8_t i;
 
+    /* This implementation only supports a single key size (defined in AES_KEY_SIZE) */
+    if (keySize != AES_KEY_SIZE) {
+        return CIPHER_ERR_INVALID_KEY_SIZE;
+    }
+
     /* Make sure that context is large enough. If this is not the case,
        you should build with -DAES */
-    if(CIPHER_MAX_CONTEXT_SIZE < AES_KEY_SIZE) {
+    if (CIPHER_MAX_CONTEXT_SIZE < AES_KEY_SIZE) {
         return CIPHER_ERR_BAD_CONTEXT_SIZE;
     }
 
@@ -783,7 +788,7 @@ static int aes_set_encrypt_key(const unsigned char *userKey, const int bits,
 
     if (bits == 128) {
         while (1) {
-            temp  = rk[3];
+            temp = rk[3];
             rk[4] = rk[0] ^
                     (Te4[(temp >> 16) & 0xff] & 0xff000000) ^
                     (Te4[(temp >>  8) & 0xff] & 0x00ff0000) ^
@@ -877,6 +882,7 @@ static int aes_set_decrypt_key(const unsigned char *userKey, const int bits,
 
     /* first, start with an encryption schedule */
     int status;
+
     status = aes_set_encrypt_key(userKey, bits, key);
 
     if (status < 0) {
@@ -943,8 +949,9 @@ int aes_encrypt(const cipher_context_t *context, const uint8_t *plainBlock,
     int res;
     AES_KEY aeskey;
     const AES_KEY *key = &aeskey;
+
     res = aes_set_encrypt_key((unsigned char *)context->context,
-                                   AES_KEY_SIZE * 8, &aeskey);
+                              AES_KEY_SIZE * 8, &aeskey);
     if (res < 0) {
         return res;
     }
@@ -1071,22 +1078,22 @@ int aes_encrypt(const cipher_context_t *context, const uint8_t *plainBlock,
         if (key->rounds > 12) {
             /* round 12: */
             s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >>  8) &
-                    0xff] ^ Te3[t3 & 0xff] ^ rk[48];
+                                                              0xff] ^ Te3[t3 & 0xff] ^ rk[48];
             s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >>  8) &
-                    0xff] ^ Te3[t0 & 0xff] ^ rk[49];
+                                                              0xff] ^ Te3[t0 & 0xff] ^ rk[49];
             s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >>  8) &
-                    0xff] ^ Te3[t1 & 0xff] ^ rk[50];
+                                                              0xff] ^ Te3[t1 & 0xff] ^ rk[50];
             s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >>  8) &
-                    0xff] ^ Te3[t2 & 0xff] ^ rk[51];
+                                                              0xff] ^ Te3[t2 & 0xff] ^ rk[51];
             /* round 13: */
             t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >>  8) &
-                    0xff] ^ Te3[s3 & 0xff] ^ rk[52];
+                                                              0xff] ^ Te3[s3 & 0xff] ^ rk[52];
             t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >>  8) &
-                    0xff] ^ Te3[s0 & 0xff] ^ rk[53];
+                                                              0xff] ^ Te3[s0 & 0xff] ^ rk[53];
             t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >>  8) &
-                    0xff] ^ Te3[s1 & 0xff] ^ rk[54];
+                                                              0xff] ^ Te3[s1 & 0xff] ^ rk[54];
             t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >>  8) &
-                    0xff] ^ Te3[s2 & 0xff] ^ rk[55];
+                                                              0xff] ^ Te3[s2 & 0xff] ^ rk[55];
         }
     }
 
@@ -1157,16 +1164,16 @@ int aes_encrypt(const cipher_context_t *context, const uint8_t *plainBlock,
 
 #endif /* ?FULL_UNROLL */
     /*
-         * apply last round and
-         * map cipher state to byte array block:
-         */
+     * apply last round and
+     * map cipher state to byte array block:
+     */
     s0 =
         (Te4[(t0 >> 24)       ] & 0xff000000) ^
         (Te4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
         (Te4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
         (Te4[(t3) & 0xff]       & 0x000000ff) ^
         rk[0];
-    PUTU32(cipherBlock     , s0);
+    PUTU32(cipherBlock, s0);
     s1 =
         (Te4[(t1 >> 24)       ] & 0xff000000) ^
         (Te4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
@@ -1202,6 +1209,7 @@ int aes_decrypt(const cipher_context_t *context, const uint8_t *cipherBlock,
     int res;
     AES_KEY aeskey;
     const AES_KEY *key = &aeskey;
+
     res = aes_set_decrypt_key((unsigned char *)context->context,
                               AES_KEY_SIZE * 8, &aeskey);
 
@@ -1417,16 +1425,16 @@ int aes_decrypt(const cipher_context_t *context, const uint8_t *cipherBlock,
 
 #endif /* ?FULL_UNROLL */
     /*
-         * apply last round and
-         * map cipher state to byte array block:
-         */
+     * apply last round and
+     * map cipher state to byte array block:
+     */
     s0 =
         (Td4[(t0 >> 24)       ] & 0xff000000) ^
         (Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
         (Td4[(t2 >>  8) & 0xff] & 0x0000ff00) ^
         (Td4[(t1) & 0xff]       & 0x000000ff) ^
         rk[0];
-    PUTU32(plainBlock     , s0);
+    PUTU32(plainBlock, s0);
     s1 =
         (Td4[(t1 >> 24)       ] & 0xff000000) ^
         (Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
