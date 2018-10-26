@@ -1,3 +1,7 @@
+# include RIOT_MAKEFILES_GLOBAL_PRE configuration files
+# allows setting user specific system wide configuration parsed before
+include $(RIOT_MAKEFILES_GLOBAL_PRE)
+
 # Globally set default goal to `all`
 .DEFAULT_GOAL := all
 
@@ -733,3 +737,7 @@ ifneq ($(_BASELIBS_VALUE_BEFORE_USAGE),$(BASELIBS))
 endif
 
 endif # BOARD=none
+
+# include RIOT_MAKEFILES_GLOBAL_POST configuration files
+# allows setting user specific system wide configuration parsed after
+include $(RIOT_MAKEFILES_GLOBAL_POST)
