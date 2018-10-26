@@ -19,9 +19,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "cpu.h"
 #include "board_common.h"
-#include "periph_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
