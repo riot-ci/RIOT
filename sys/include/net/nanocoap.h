@@ -957,7 +957,7 @@ static inline unsigned coap_get_id(coap_pkt_t *pkt)
  *
  * @returns     pointer to first byte after the header
  */
-static inline uint8_t *coap_data_ptr(coap_hdr_t *hdr)
+static inline uint8_t *coap_hdr_data_ptr(coap_hdr_t *hdr)
 {
     return ((uint8_t *)hdr) + sizeof(coap_hdr_t);
 }
