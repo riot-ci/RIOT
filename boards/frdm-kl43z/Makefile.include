@@ -13,5 +13,8 @@ export USE_OLD_OPENOCD ?= 0
 # https://www.nxp.com/support/developer-resources/run-time-software/kinetis-developer-resources/ides-for-kinetis-mcus/opensda-serial-and-debug-adapter:OPENSDA
 export DEBUG_ADAPTER ?= dap
 
+# 115200 baud is not reachable at the default clocking settings, use 125000 instead
+export BAUD ?= 125000
+
 # Include default FRDM board config
 include $(RIOTBOARD)/common/frdm/Makefile.include
