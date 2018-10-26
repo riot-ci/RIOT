@@ -41,13 +41,43 @@ extern "C"
 #define LED0_MASK           (1 <<  5)
 #define LED1_MASK           (1 << 31)
 
-#define LED0_ON            (GPIOD->PCOR = LED0_MASK)
-#define LED0_OFF           (GPIOD->PSOR = LED0_MASK)
-#define LED0_TOGGLE        (GPIOD->PTOR = LED0_MASK)
+#define LED0_ON             (GPIOD->PCOR = LED0_MASK)
+#define LED0_OFF            (GPIOD->PSOR = LED0_MASK)
+#define LED0_TOGGLE         (GPIOD->PTOR = LED0_MASK)
 
-#define LED1_ON            (GPIOE->PCOR = LED1_MASK)
-#define LED1_OFF           (GPIOE->PSOR = LED1_MASK)
-#define LED1_TOGGLE        (GPIOE->PTOR = LED1_MASK)
+#define LED1_ON             (GPIOE->PCOR = LED1_MASK)
+#define LED1_OFF            (GPIOE->PSOR = LED1_MASK)
+#define LED1_TOGGLE         (GPIOE->PTOR = LED1_MASK)
+/** @} */
+
+/**
+ * @name    MAG3110 3-axis magnetometer bus configuration
+ * @{
+ */
+#define MAG3110_PARAM_I2C       I2C_DEV(0)
+#define MAG3110_PARAM_ADDR      0x0E
+/** @} */
+
+/**
+ * @name    MMA8451Q 3-axis accelerometer bus configuration
+ * @{
+ */
+#define MMA8X5X_PARAM_I2C       I2C_DEV(0)
+#define MMA8X5X_PARAM_ADDR      0x1D
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8451)
+/** @} */
+
+/**
+ * @name    STDIO configuration
+ *
+ * The LPUART module is clocked from the 8 MHz MCGIRCLK. The integer prescalers
+ * possible in the module results in 125000 baud if 115200 is selected. To avoid
+ * confusion we change the configuration to say 125000 as well.
+ * @{
+ */
+#ifndef STDIO_UART_BAUDRATE
+#define STDIO_UART_BAUDRATE (125000U)
+#endif
 /** @} */
 
 /**
