@@ -953,7 +953,7 @@ static inline unsigned coap_get_id(coap_pkt_t *pkt)
 /**
  * @brief   Get the start of data after the header
  *
- * @param[in]   hdr   Header of CoAP packet in continuous memory
+ * @param[in]   hdr   Header of CoAP packet in contiguous memory
  *
  * @returns     pointer to first byte after the header
  */
