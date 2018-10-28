@@ -1,3 +1,3 @@
-MODULE = boards_common_nrf52xxdk
+MODULE = board
 
 include $(RIOTBASE)/Makefile.base
