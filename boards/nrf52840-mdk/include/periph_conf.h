@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Freie Universität Berlin
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup     boards_ruuvitag
+ * @ingroup     boards_nrf52840-mdk
  * @{
  *
  * @file
- * @brief       Peripheral configuration for the RuuviTag
+ * @brief       Peripheral configuration for the nRF52840-MDK
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  */
 
@@ -29,28 +29,28 @@ extern "C" {
 #endif
 
 /**
+ * @name    UART configuration
+ * @{
+ */
+#define UART_NUMOF          (1U)
+#define UART_PIN_RX         GPIO_PIN(0,19)
+#define UART_PIN_TX         GPIO_PIN(0,20)
+/** @} */
+
+/**
  * @name    SPI configuration
  * @{
  */
 static const spi_conf_t spi_config[] = {
     {
         .dev  = NRF_SPI0,
-        .sclk = 29,
-        .mosi = 25,
-        .miso = 28,
+        .sclk = 15,
+        .mosi = 13,
+        .miso = 14
     }
 };
 
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
-/** @} */
-
-/**
- * @name    UART configuration
- * @{
- */
-#define UART_NUMOF          (1U)
-#define UART_PIN_RX         GPIO_PIN(0, 4)
-#define UART_PIN_TX         GPIO_PIN(0, 5)
 /** @} */
 
 #ifdef __cplusplus
