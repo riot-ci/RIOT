@@ -45,17 +45,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Devices supported by this driver
- */
-enum {
-    MMA8X5X_TYPE_MMA8652 = 0x4a,    /**< MMA8652 */
-    MMA8X5X_TYPE_MMA8653 = 0x5a,    /**< MMA8653 */
-    MMA8X5X_TYPE_MMA8451 = 0x1a,    /**< MMA8451 */
-    MMA8X5X_TYPE_MMA8452 = 0x2a,    /**< MMA8452 */
-    MMA8X5X_TYPE_MMA8453 = 0x3a     /**< MMA8453 */
-};
-
-/**
  * @brief   Available sampling rates
  */
 enum {
@@ -95,7 +84,6 @@ enum {
 typedef struct {
     i2c_t i2c;                  /**< I2C bus the device is connected to */
     uint8_t addr;               /**< I2C bus address of the device */
-    uint8_t type;               /**< device type */
     uint8_t rate;               /**< sampling rate to use */
     uint8_t range;              /**< scale range to use */
     uint8_t offset[3];          /**< data offset in X, Y, and Z direction */
