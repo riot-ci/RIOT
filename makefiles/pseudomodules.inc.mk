@@ -108,6 +108,13 @@ PSEUDOMODULES += vcnl4010
 PSEUDOMODULES += vcnl4020
 PSEUDOMODULES += vcnl4040
 
+# include variants of MMA8X5X drivers as pseudo modules
+PSEUDOMODULES += mma8451
+PSEUDOMODULES += mma8452
+PSEUDOMODULES += mma8453
+PSEUDOMODULES += mma8652
+PSEUDOMODULES += mma8653
+
 # add all pseudo random number generator variants as pseudomodules
 PSEUDOMODULES += prng_%
 
