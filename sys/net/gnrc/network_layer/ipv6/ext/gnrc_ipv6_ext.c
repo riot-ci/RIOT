@@ -26,16 +26,13 @@
 #include "debug.h"
 
 #ifdef MODULE_GNRC_IPV6_EXT_RH
-static void _forward_pkt(gnrc_pktsnip_t *pkt)
+/* unchecked precondition: hdr is gnrc_pktsnip_t::data of the
+ * GNRC_NETTYPE_IPV6 snip within pkt */
+static void _forward_pkt(gnrc_pktsnip_t *pkt, ipv6_hdr_t *hdr)
 {
-    gnrc_pktsnip_t *netif_snip, *ipv6_snip;
-    ipv6_hdr_t *ipv6;
+    gnrc_pktsnip_t *netif_snip;
 
-    ipv6_snip = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_IPV6);
-    /* there should be an IPv6 header */
-    assert(ipv6_snip != NULL);
-    ipv6 = ipv6_snip->data;
-    if (--(ipv6->hl) == 0) {
+    if (--(hdr->hl) == 0) {
         DEBUG("ipv6_ext_rh: hop limit reached 0: drop packet\n");
         gnrc_pktbuf_release(pkt);
     }
@@ -100,7 +97,7 @@ static int _handle_rh(gnrc_pktsnip_t *current, gnrc_pktsnip_t *pkt)
             break;
 
         case GNRC_IPV6_EXT_RH_FORWARDED:
-            _forward_pkt(pkt);
+            _forward_pkt(pkt, hdr);
             break;
 
         case GNRC_IPV6_EXT_RH_AT_DST:
