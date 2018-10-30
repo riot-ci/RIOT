@@ -45,16 +45,16 @@ int main(void)
     }
     /* run some tests */
     LOG_INFO("- light up all LEDs one by one.\n");
-    for (unsigned i=0; i < dev.params.leds; ++i) {
+    for (unsigned i=0; i < dev.params.leds; i++) {
         my9221_set_led(&dev, i, MY9221_LED_ON);
         xtimer_usleep(TEST_WAIT);
         my9221_set_led(&dev, i, MY9221_LED_OFF);
     }
     xtimer_usleep(TEST_WAIT);
-    for (unsigned i=dev.params.leds; i > 0 ; --i) {
-        my9221_set_led(&dev, i, MY9221_LED_ON);
+    for (unsigned i=dev.params.leds; i > 0 ; i--) {
+        my9221_set_led(&dev, i-1, MY9221_LED_ON);
         xtimer_usleep(TEST_WAIT);
-        my9221_set_led(&dev, i, MY9221_LED_OFF);
+        my9221_set_led(&dev, i-1, MY9221_LED_OFF);
     }
     xtimer_usleep(TEST_WAIT);
     LOG_INFO("- light up all LEDs to 33%%.\n");
