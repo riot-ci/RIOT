@@ -98,7 +98,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
         }
 #ifdef MODULE_NETSTATS_L2
         netif->stats.rx_count++;
-        netif->stats.rx_bytes += pkt->size;
+        netif->stats.rx_bytes += nread;
 #endif
 
         if (netif->flags & GNRC_NETIF_FLAGS_RAWMODE) {
