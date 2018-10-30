@@ -22,8 +22,11 @@
 #include <string.h>
 #include <errno.h>
 
+#include "cpu_conf.h"
 #include "mtd_flashpage.h"
 #include "periph/flashpage.h"
+
+#define MTD_FLASHPAGE_END_ADDR     CPU_FLASH_BASE + (FLASHPAGE_NUMOF * FLASHPAGE_SIZE)
 
 static int _init(mtd_dev_t *dev)
 {
@@ -34,14 +37,21 @@ static int _init(mtd_dev_t *dev)
 
 static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 {
+    assert(addr < MTD_FLASHPAGE_END_ADDR);
     (void)dev;
-    memcpy(buf, (void *)addr, size);
+
+    if (addr % FLASHPAGE_RAW_ALIGNMENT) {
+        return -EINVAL;
+    }
+
+    memcpy(buf, (void*)addr, size);
 
     return size;
 }
 
 static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
+    (void)dev;
     if (addr % FLASHPAGE_RAW_ALIGNMENT) {
         return -EINVAL;
     }
@@ -51,7 +61,7 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
     if (size % FLASHPAGE_RAW_BLOCKSIZE) {
         return -EOVERFLOW;
     }
-    if (addr + size > dev->pages_per_sector * dev->page_size * dev->sector_count) {
+    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
         return -EOVERFLOW;
     }
     flashpage_write_raw((void *)addr, buf, size);
@@ -66,7 +76,7 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
     if (size % sector_size) {
         return -EOVERFLOW;
     }
-    if (addr + size > sector_size * dev->sector_count) {
+    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
         return - EOVERFLOW;
     }
     if (addr % sector_size) {
