@@ -22,7 +22,7 @@
 #define AT_PRINT_INCOMING (0)
 #endif
 
-static void isrpipe_write_one_wrapper(void *_isrpipe, uint8_t data)
+static void _isrpipe_write_one_wrapper(void *_isrpipe, uint8_t data)
 {
     isrpipe_write_one(_isrpipe, (char)data);
 }
