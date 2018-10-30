@@ -31,7 +31,7 @@ int at_dev_init(at_dev_t *dev, uart_t uart, uint32_t baudrate, char *buf, size_t
 {
     dev->uart = uart;
     isrpipe_init(&dev->isrpipe, buf, bufsize);
-    uart_init(uart, baudrate, isrpipe_write_one_wrapper,
+    uart_init(uart, baudrate, _isrpipe_write_one_wrapper,
               &dev->isrpipe);
 
     return 0;
