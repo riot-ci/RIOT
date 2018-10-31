@@ -527,6 +527,8 @@ overflow:
         DEBUG("_timer_callback: overflowed while executing callbacks. %i\n",
               timer_list_head != NULL);
         _next_period();
+        /* wait till overflow */
+        while( reference < _xtimer_lltimer_now()){}
         reference = 0;
         goto overflow;
     }
