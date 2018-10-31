@@ -521,7 +521,9 @@ overflow:
      * time to overflow.  In that case we advance to
      * next timer period and check again for expired
      * timers.*/
-    if (reference > _xtimer_lltimer_now()) {
+    /* check if the end of this period is very soon */
+    uint32_t now = _xtimer_lltimer_now() + XTIMER_ISR_BACKOFF;
+    if (now < reference) {
         DEBUG("_timer_callback: overflowed while executing callbacks. %i\n",
               timer_list_head != NULL);
         _next_period();
