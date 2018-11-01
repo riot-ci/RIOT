@@ -28,10 +28,10 @@ extern "C" {
  * @brief   Arduino's digital pins mappings
  */
 static const gpio_t arduino_pinmap[] = {
-    GPIO_PIN(PE, 2),  // LED 0
-    GPIO_PIN(PE, 3),  // LED 1
-    GPIO_PIN(PB, 9),  // PB0
-    GPIO_PIN(PB, 10), // PB1
+    LED0_PIN,
+    LED1_PIN,
+    PB0_PIN,
+    PB1_PIN
 };
 
 /**
@@ -50,7 +50,6 @@ static const adc_t arduino_analog_map[] = {
  * @brief   On-board serial port mapping
  */
 #define ARDUINO_UART_DEV         UART_DEV(0)
-
 
 #ifdef __cplusplus
 }
