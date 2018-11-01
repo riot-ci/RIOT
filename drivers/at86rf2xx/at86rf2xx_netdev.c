@@ -296,7 +296,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
 static int _set_state(at86rf2xx_t *dev, netopt_state_t state)
 {
-    printf("[at86rf2xx] _set_state: 0x%02x", state);
+    DEBUG("[at86rf2xx] _set_state: 0x%02x", state);
     switch (state) {
         case NETOPT_STATE_STANDBY:
             at86rf2xx_set_state(dev, AT86RF2XX_STATE_TRX_OFF);
