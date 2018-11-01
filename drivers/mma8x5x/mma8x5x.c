@@ -38,15 +38,17 @@
 #define ADDR                (dev->params.addr)
 
 #if defined(MODULE_MMA8451)
-#define MMA8X5X_TYPE        (0x1a)
+#define MMA8X5X_TYPE_CHECK  (reg != 0x1a)
 #elif defined(MODULE_MMA8452)
-#define MMA8X5X_TYPE        (0x2a)
+#define MMA8X5X_TYPE_CHECK  (reg != 0x2a)
 #elif defined(MODULE_MMA8453)
-#define MMA8X5X_TYPE        (0x3a)
+#define MMA8X5X_TYPE_CHECK  (reg != 0x3a)
 #elif defined(MODULE_MMA8652)
-#define MMA8X5X_TYPE        (0x4a)
+#define MMA8X5X_TYPE_CHECK  (reg != 0x4a)
 #elif defined(MODULE_MMA8653)
-#define MMA8X5X_TYPE        (0x5a)
+#define MMA8X5X_TYPE_CHECK  (reg != 0x5a)
+#elif defined(MODULE_MMA8X5X) /* fallback that works for all variants */
+#define MMA8X5X_TYPE_CHECK  ((reg & 0x0f) != 0x0a)
 #endif
 
 int mma8x5x_init(mma8x5x_t *dev, const mma8x5x_params_t *params)
@@ -63,7 +65,7 @@ int mma8x5x_init(mma8x5x_t *dev, const mma8x5x_params_t *params)
 
     /* test if the target device responds */
     i2c_read_reg(BUS, ADDR, MMA8X5X_WHO_AM_I, &reg, 0);
-    if (reg != MMA8X5X_TYPE) {
+    if (MMA8X5X_TYPE_CHECK) {
         i2c_release(BUS);
         DEBUG("[mma8x5x] init - error: invalid WHO_AM_I value [0x%02x]\n",
                (int)reg);
