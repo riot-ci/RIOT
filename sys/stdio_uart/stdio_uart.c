@@ -52,9 +52,9 @@ isrpipe_t stdio_uart_isrpipe = ISRPIPE_INIT(_rx_buf_mem);
 void stdio_init(void)
 {
 #ifndef USE_ETHOS_FOR_STDIO
-    uart_init(STDIO_UART_DEV, STDIO_UART_BAUDRATE, (uart_rx_cb_t) isrpipe_write_one, &stdio_uart_isrpipe);
+    uart_init(STDIO_UART_DEV, STDIO_UART_BAUDRATE, isrpipe_write_uartcb, &stdio_uart_isrpipe);
 #else
-    uart_init(ETHOS_UART, ETHOS_BAUDRATE, (uart_rx_cb_t) isrpipe_write_one, &stdio_uart_isrpipe);
+    uart_init(ETHOS_UART, ETHOS_BAUDRATE, isrpipe_write_uartcb, &stdio_uart_isrpipe);
 #endif
 #if MODULE_VFS
     vfs_bind_stdio();
