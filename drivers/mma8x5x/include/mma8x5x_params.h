@@ -37,6 +37,19 @@ extern "C" {
 #ifndef MMA8X5X_PARAM_ADDR
 #define MMA8X5X_PARAM_ADDR      (MMA8X5X_I2C_ADDRESS)
 #endif
+#ifndef MMA8X5X_PARAM_TYPE
+#if defined(MODULE_MMA8451)
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8451)
+#elif defined(MODULE_MMA8452)
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8452)
+#elif defined(MODULE_MMA8453)
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8453)
+#elif defined(MODULE_MMA8653)
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8653)
+#else
+#define MMA8X5X_PARAM_TYPE      (MMA8X5X_TYPE_MMA8652) /* Default to mma8652 */
+#endif
+#endif
 #ifndef MMA8X5X_PARAM_RATE
 #define MMA8X5X_PARAM_RATE      (MMA8X5X_RATE_200HZ)
 #endif
@@ -50,6 +63,7 @@ extern "C" {
 #ifndef MMA8X5X_PARAMS
 #define MMA8X5X_PARAMS          { .i2c    = MMA8X5X_PARAM_I2C,   \
                                   .addr   = MMA8X5X_PARAM_ADDR,  \
+                                  .type   = MMA8X5X_PARAM_TYPE,  \
                                   .rate   = MMA8X5X_PARAM_RATE,  \
                                   .range  = MMA8X5X_PARAM_RANGE, \
                                   .offset = MMA8X5X_PARAM_OFFSET }
