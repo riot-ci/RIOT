@@ -431,17 +431,33 @@ static void kinetis_mcg_set_ext(void)
 }
 
 /**
- * @brief Initialize LIRC (8 MHz) mode.
+ * @brief Initialize LIRC mode.
+ *
+ * Use @p ircs to select between LIRC8M (8 MHz) and LIRC2M (2 MHz).
+ *
+ * @param[in]   lirc8m  set to 1 -> LIRC8M, 0 -> LIRC2M
  */
-static void kinetis_mcg_set_lirc8m(void)
+static void kinetis_mcg_set_lirc(unsigned lirc8m)
 {
-    /* We can not switch directly between LIRC2M <-> LIRC8M, go via HIRC */
-    if (current_mode == KINETIS_MCG_MODE_LIRC2M) {
+    uint32_t clkdiv = SIM->CLKDIV1;
+    if ((lirc8m && (current_mode == KINETIS_MCG_MODE_LIRC8M)) ||
+        (!lirc8m && (current_mode == KINETIS_MCG_MODE_LIRC2M))) {
+        /* We can not switch directly between LIRC2M <-> LIRC8M, go via HIRC */
+        /* Set safe clock dividers so we don't run out of specs while switching */
+        SIM->CLKDIV1 = SIM_CLKDIV1_OUTDIV1(3); /* divide clock by 4 => 12 MHz */
         kinetis_mcg_set_hirc();
     }
 
-    /* Select 8 MHz mode */
-    bit_set8(&MCG->C2, MCG_C2_IRCS_SHIFT);
+    if (lirc8m) {
+        /* Select 8 MHz mode */
+        bit_set8(&MCG->C2, MCG_C2_IRCS_SHIFT);
+        current_mode = KINETIS_MCG_MODE_LIRC8M;
+    }
+    else {
+        /* Select 2 MHz mode */
+        bit_clear8(&MCG->C2, MCG_C2_IRCS_SHIFT);
+        current_mode = KINETIS_MCG_MODE_LIRC2M;
+    }
 
     /* select LIRC as clock source */
     MCG->C1 = (MCG->C1 & ~MCG_C1_CLKS_MASK) | (MCG_C1_CLKS(1));
@@ -449,29 +465,8 @@ static void kinetis_mcg_set_lirc8m(void)
     /* Wait until LIRC is selected */
     while ((MCG->S & (MCG_S_CLKST_MASK)) != MCG_S_CLKST(1)) {}
 
-    current_mode = KINETIS_MCG_MODE_LIRC8M;
-}
-
-/**
- * @brief Initialize LIRC (2 MHz) mode.
- */
-static void kinetis_mcg_set_lirc2m(void)
-{
-    /* We can not switch directly between LIRC2M <-> LIRC8M, go via HIRC */
-    if (current_mode == KINETIS_MCG_MODE_LIRC8M) {
-        kinetis_mcg_set_hirc();
-    }
-
-    /* Select 2 MHz mode */
-    bit_clear8(&MCG->C2, MCG_C2_IRCS_SHIFT);
-
-    /* select LIRC as clock source */
-    MCG->C1 = (MCG->C1 & ~MCG_C1_CLKS_MASK) | (MCG_C1_CLKS(1));
-
-    /* Wait until LIRC is selected */
-    while ((MCG->S & (MCG_S_CLKST_MASK)) != MCG_S_CLKST(1)) {}
-
-    current_mode = KINETIS_MCG_MODE_LIRC8M;
+    /* Restore clock divider settings */
+    SIM->CLKDIV1 = clkdiv;
 }
 #endif /* KINETIS_HAVE_MCG_LITE */
 
@@ -480,7 +475,7 @@ int kinetis_mcg_set_mode(kinetis_mcg_mode_t mode)
 #if KINETIS_HAVE_MCG_LITE
     switch(mode) {
         case KINETIS_MCG_MODE_LIRC8M:
-            kinetis_mcg_set_lirc8m();
+            kinetis_mcg_set_lirc(1);
             break;
         case KINETIS_MCG_MODE_HIRC:
             kinetis_mcg_set_hirc();
@@ -489,7 +484,7 @@ int kinetis_mcg_set_mode(kinetis_mcg_mode_t mode)
             kinetis_mcg_set_ext();
             break;
         case KINETIS_MCG_MODE_LIRC2M:
-            kinetis_mcg_set_lirc2m();
+            kinetis_mcg_set_lirc(0);
             break;
         default:
             return -1;
