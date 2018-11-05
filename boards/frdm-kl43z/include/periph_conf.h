@@ -96,7 +96,6 @@ static const clock_config_t clock_config = {
 static const uart_conf_t uart_config[] = {
     {
         .dev    = LPUART0,
-        /* This configuration will yield 125000 baud when 115200 is requested */
         .freq   = CLOCK_MCGIRCLK,
         .pin_rx = GPIO_PIN(PORT_A,  1),
         .pin_tx = GPIO_PIN(PORT_A,  2),
