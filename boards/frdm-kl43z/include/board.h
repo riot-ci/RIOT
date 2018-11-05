@@ -90,19 +90,6 @@ extern "C"
 /** @} */
 
 /**
- * @name    STDIO configuration
- *
- * The LPUART module is clocked from the 8 MHz MCGIRCLK. The integer prescalers
- * possible in the module results in 125000 baud if 115200 is selected. To avoid
- * confusion we change the configuration to say 125000 as well.
- * @{
- */
-#ifndef STDIO_UART_BAUDRATE
-#define STDIO_UART_BAUDRATE (125000U)
-#endif
-/** @} */
-
-/**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
  */
 void board_init(void);
