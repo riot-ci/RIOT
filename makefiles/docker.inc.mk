@@ -233,12 +233,13 @@ DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(
 
 # External module directories sanity check:
 #
-# Detect if there are directories with the same name as it is not handled.
-# Having EXTERNAL_MODULE_DIRS = relative/to/dir/name \
-#                               another/directory/also/called/name
-# Would lead to both being mapped to '$(DOCKER_BUILD_ROOT)/external/name
-ifneq ($(words $(sort $(notdir $(EXTERNAL_MODULE_DIRS)))),$(words $(sort $(EXTERNAL_MODULE_DIRS))))
-  $(warning EXTERNAL_MODULE_DIRS: $(EXTERNAL_MODULE_DIRS))
+# Detect if there are remapped directories with the same name as it is not handled.
+# Having EXTERNAL_MODULE_DIRS = /path/to/dir/name \
+#                               /another/directory/also/called/name
+# would lead to both being mapped to '$(DOCKER_BUILD_ROOT)/external/name'
+_mounted_dirs = $(foreach d,$(EXTERNAL_MODULE_DIRS),$(if $(call dir_is_outside_riotbase,$(d)),$(d)))
+ifneq ($(words $(sort $(notdir $(_mounted_dirs)))),$(words $(sort $(_mounted_dirs))))
+  $(warning Mounted EXTERNAL_MODULE_DIRS: $(_mounted_dirs))
   $(error Mapping EXTERNAL_MODULE_DIRS in docker is not supported for directories with the same name)
 endif
 
