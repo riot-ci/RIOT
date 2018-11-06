@@ -169,7 +169,7 @@ Disabling the brown-out detection by setting the extended fuse bit is recommende
 ## Using the external crystal oscillator (Transceiver Crystal Oscillator) and deep sleep
 
 When the external crystal oscillator is used as system clock and the device is put into deep sleep mode it seems that
-the clocks for all peripherals are enabled and set to the smallest devider (highest frequency). This leads to a higher
+the clocks for all peripherals are enabled and set to the smallest divider (highest frequency). This leads to a higher
 power consumption. When the device should be put into deep sleep it is recommended to use the internal RC oscillator
 as system clock source.
 
