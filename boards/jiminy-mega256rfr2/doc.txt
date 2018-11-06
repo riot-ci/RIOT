@@ -136,7 +136,7 @@ to the configured baud rate which is set for AVRDUDE. Rates of up to 500kBaud ca
 
 # Fuse Settings
 Reading out the fuses can be done with
-`avrdude -c wiring -p m256rfr2 -P /dev/ttyACM0 -b 0010005 -U lfuse:r:-:i -v`
+`avrdude -c wiring -p m256rfr2 -P /dev/ttyACM0 -b 0010005 -v`
 
 The last line should read
 `avrdude: safemode: Fuses OK (E:FE, H:D0, L:E2)`
@@ -146,8 +146,16 @@ E: extended fuse = FE
 H: high fuse     = D0
 L: low fuse      = E2
 
-To program this fuse setting execute following line
-`avrdude -c wiring -p m256rfr2 -P /dev/ttyACM0 -b 0010005 -U lfuse:w:0xe2:m -U hfuse:w:0xd0:m -U efuse:w:0xfe:m`
+To program the fuses an JTAG programer (Atmel-ICE, Dragon) is needed, they can not be set with the bootloader.
+Connect the programmer JTAG pins with the board pins F4 JTAG TCK, F5 JTAG TMS, F6 JTAG TDO, F7 JTAG TDI,
+GND and VDD with V+ m256rfr2. Alternatively use a pogo pin connector ( e.g. SparkFun ISP Pogo Adapter)
+on the backside of the board.
+
+To program the fuses default setting execute following line
+`avrdude -c atmelice -p m256rfr2 -U lfuse:w:0xe2:m -U hfuse:w:0xd0:m -U efuse:w:0xfe:m`
+
+Attention: the default settings above have brown-out detection enabled,
+see troubleshooting when using the board with 1.8V supply.
 
 # Troubleshooting
 
@@ -156,7 +164,7 @@ To program this fuse setting execute following line
 Setting the TPS6274x output voltage to 1.8V may lead to an undervoltage and thus triggers the brown-out reset.
 Disabling the brown-out detection by setting the extended fuse bit is recommended when a 1.8V supply is used.
 
-`avrdude -c wiring -p m256rfr2 -P /dev/ttyACM0 -b 0010005 -U efuse:w:0xff:m`
+`avrdude -c atmelice -p m256rfr2 -U efuse:w:0xff:m`
 
 ## Using the external crystal oscillator (Transceiver Crystal Oscillator) and deep sleep
 
