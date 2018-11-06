@@ -309,11 +309,11 @@ static inline void irq_handler(PORT_Type *port, int port_num)
     /* take interrupt flags only from pins which interrupt is enabled */
     uint32_t status = port->ISFR;
 
-    unsigned pin = 0;
     while (status) {
-        unsigned tz = bitarithm_lsb(status);
-        pin += tz;
-        status >>= tz + 1;
+        /* get position of first bit set in status */
+        unsigned pin = bitarithm_lsb(status);
+        /* clear it */
+        status &= ~(1 << pin);
         if (port->PCR[pin] & PORT_PCR_IRQC_MASK) {
             port->ISFR = (1u << pin);
             int ctx = get_ctx(port_num, pin);
