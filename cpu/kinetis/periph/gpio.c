@@ -28,6 +28,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "cpu.h"
+#include "bitarithm.h"
 #include "bit.h"
 #include "periph/gpio.h"
 
@@ -310,7 +311,7 @@ static inline void irq_handler(PORT_Type *port, int port_num)
 
     unsigned pin = 0;
     while (status) {
-        unsigned tz = __builtin_ctz(status);
+        unsigned tz = bitarithm_lsb(status);
         pin += tz;
         status >>= tz + 1;
         if (port->PCR[pin] & PORT_PCR_IRQC_MASK) {
