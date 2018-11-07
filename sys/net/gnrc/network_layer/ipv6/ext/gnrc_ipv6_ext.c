@@ -39,11 +39,12 @@ static void _forward_pkt(gnrc_pktsnip_t *pkt, ipv6_hdr_t *hdr)
     /* remove L2 headers around IPV6 */
     netif_snip = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_NETIF);
     if (netif_snip != NULL) {
-        gnrc_pktbuf_remove_snip(pkt, netif_snip);
+        pkt = gnrc_pktbuf_remove_snip(pkt, netif_snip);
     }
     pkt = gnrc_pktbuf_reverse_snips(pkt);
     if (pkt == NULL) {
         DEBUG("ipv6_ext_rh: can't reverse snip order in packet");
+        /* gnrc_pktbuf_reverse_snips() releases pkt on error */
         return;
     }
     /* forward packet */
