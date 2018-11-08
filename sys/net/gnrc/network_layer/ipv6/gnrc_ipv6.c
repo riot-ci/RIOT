@@ -897,7 +897,6 @@ static void _receive(gnrc_pktsnip_t *pkt)
 
 static void _decapsulate(gnrc_pktsnip_t *pkt)
 {
-    int res;
     gnrc_pktsnip_t *ptr = pkt;
 
     pkt->type = GNRC_NETTYPE_UNDEF; /* prevent payload (the encapsulated packet)
@@ -910,13 +909,10 @@ static void _decapsulate(gnrc_pktsnip_t *pkt)
 
     pkt->type = GNRC_NETTYPE_IPV6;
 
-    res = gnrc_netapi_dispatch_receive(GNRC_NETTYPE_IPV6,
-                                       GNRC_NETREG_DEMUX_CTX_ALL,
-                                       pkt);
-    /* something went horribly wrong if that's not the case because we
-     * are currently in a thread that is subscribing to the parameters above */
-    assert(res > 0);
-    (void)res;
+    if (gnrc_netapi_dispatch_receive(GNRC_NETTYPE_IPV6,
+                                     GNRC_NETREG_DEMUX_CTX_ALL, pkt) == 0) {
+        gnrc_pktbuf_release(pkt);
+    }
 }
 
 /** @} */
