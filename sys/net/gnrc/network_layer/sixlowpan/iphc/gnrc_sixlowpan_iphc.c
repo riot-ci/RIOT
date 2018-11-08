@@ -440,6 +440,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             break;
 
         case IPHC_M_DAC_DAM_U_CTX_64:
+            assert(ctx != NULL);
             memcpy(ipv6_hdr->dst.u8 + 8, iphc_hdr + payload_offset, 8);
             ipv6_addr_init_prefix(&ipv6_hdr->dst, &ctx->prefix,
                                   ctx->prefix_len);
@@ -450,6 +451,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             ipv6_hdr->dst.u32[2] = byteorder_htonl(0x000000ff);
             ipv6_hdr->dst.u16[6] = byteorder_htons(0xfe00);
             memcpy(ipv6_hdr->dst.u8 + 14, iphc_hdr + payload_offset, 2);
+            assert(ctx != NULL);
             ipv6_addr_init_prefix(&ipv6_hdr->dst, &ctx->prefix,
                                   ctx->prefix_len);
             payload_offset += 2;
@@ -459,6 +461,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             ieee802154_get_iid((eui64_t *)(&ipv6_hdr->dst.u64[1]),
                                gnrc_netif_hdr_get_dst_addr(netif_hdr),
                                netif_hdr->dst_l2addr_len);
+            assert(ctx != NULL);
             ipv6_addr_init_prefix(&ipv6_hdr->dst, &ctx->prefix,
                                   ctx->prefix_len);
             break;
@@ -491,6 +494,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
 
         case IPHC_M_DAC_DAM_M_UC_PREFIX:
             do {
+                assert(ctx != NULL);
                 uint8_t orig_ctx_len = ctx->prefix_len;
 
                 ipv6_addr_set_unspecified(&ipv6_hdr->dst);
