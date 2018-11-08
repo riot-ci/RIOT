@@ -372,6 +372,7 @@ static void _netif_list_ipv6(ipv6_addr_t *addr, uint8_t flags)
             printf("  VAL");
             break;
     }
+    puts("");
 }
 
 static void _netif_list_groups(ipv6_addr_t *addr)
@@ -379,7 +380,7 @@ static void _netif_list_groups(ipv6_addr_t *addr)
     if ((ipv6_addr_is_multicast(addr))) {
         char addr_str[IPV6_ADDR_MAX_STR_LEN];
         ipv6_addr_to_str(addr_str, addr, sizeof(addr_str));
-        printf("inet6 group: %s", addr_str);
+        printf("inet6 group: %s\n", addr_str);
     }
 }
 #endif
