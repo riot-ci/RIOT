@@ -382,7 +382,7 @@ static gnrc_pktsnip_t *_create_snip(gnrc_pktsnip_t *next, const void *data, size
         }
     }
     _set_pktsnip(pkt, next, _data, size, type);
-    if (data != NULL) {
+    if ((data != NULL) && (size > 0)) {
         memcpy(_data, data, size);
     }
     return pkt;
