@@ -75,14 +75,14 @@ typedef struct {
 /**
  * @brief   initializes the AES Cipher-algorithm with the passed parameters
  *
- * @param       context   the cipher_context_t-struct to save the 
+ * @param       context   the cipher_context_t-struct to save the
  *                        initialization of the cipher in
  * @param       keySize   the size of the key
  * @param       key       a pointer to the key
  *
  * @return  CIPHER_INIT_SUCCESS if the initialization was successful.
- * @return  CIPHER_ERR_BAD_CONTEXT_SIZE if CIPHER_MAX_CONTEXT_SIZE has not 
- *          been defined (which means that the cipher has not been included 
+ * @return  CIPHER_ERR_BAD_CONTEXT_SIZE if CIPHER_MAX_CONTEXT_SIZE has not
+ *          been defined (which means that the cipher has not been included
  *          in the build)
  */
 int aes_init(cipher_context_t *context, const uint8_t *key, uint8_t keySize);

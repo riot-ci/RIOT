@@ -130,7 +130,7 @@ void chacha_prng_seed(const void *data, size_t bytes);
  *
  * @warning After you have read 2^68 numbers you have to re-seed the PRNG.
  *          Otherwise the sequence will repeat.
- * 
+ *
  * @return The random value
  */
 uint32_t chacha_prng_next(void);
