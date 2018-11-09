@@ -1,6 +1,8 @@
 include ../Makefile.tests_common
 
-USEMODULE += mma8x5x
+DRIVER ?= mma8652
+
+USEMODULE += $(DRIVER)
 USEMODULE += xtimer
 
 include $(RIOTBASE)/Makefile.include
