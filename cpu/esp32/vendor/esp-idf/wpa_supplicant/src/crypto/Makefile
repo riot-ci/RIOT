@@ -11,6 +11,7 @@ CFLAGS += -D__ets__ -DESPRESSIF_USE
 
 include $(RIOTCPU)/$(CPU)/Makefile.include
 
+# Why are these includes here (this is a module)
 INCLUDES += -I$(RIOTBASE)/core/include
 INCLUDES += -I$(RIOTBASE)/drivers/include
 INCLUDES += -I$(RIOTBASE)/sys/include
