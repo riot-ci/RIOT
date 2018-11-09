@@ -57,6 +57,7 @@ ifneq (,$(filter esp_spiffs,$(USEMODULE)))
     USEMODULE += vfs
     export SPIFFS_STD_OPTION = -std=c99
     INCLUDES += -I$(RIOTBASE)/sys/include
+    # Why is this include here?
     INCLUDES += -I$(RIOTBASE)/sys/posix/include
 endif
 
