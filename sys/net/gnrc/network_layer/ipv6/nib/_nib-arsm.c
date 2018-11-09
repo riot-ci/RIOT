@@ -517,6 +517,9 @@ static inline uint32_t _exp_backoff_retrans_timer(uint8_t ns_sent,
     uint32_t tmp = random_uint32_range(NDP_MIN_RANDOM_FACTOR,
                                        NDP_MAX_RANDOM_FACTOR);
 
+    /* this is a given since ns_sent is only incremented in _probe_nbr when
+     * it is less than (NDP_MAX_NS_NUMOF + 2) */
+    assert(ns_sent < 32);
     /* backoff according to  https://tools.ietf.org/html/rfc7048 with
      * BACKOFF_MULTIPLE == 2 */
     tmp = ((1 << ns_sent) * retrans_timer * tmp) / US_PER_MS;
