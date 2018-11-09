@@ -17,6 +17,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+#ifdef MODULE_GNRC_ICMPV6_ERROR
+#include "net/gnrc/icmpv6/error.h"
+#endif
 #include "net/gnrc/ipv6.h"
 #include "net/gnrc/ipv6/nib/conf.h"
 #include "net/gnrc/ipv6/nib/nc.h"
@@ -265,6 +268,10 @@ void _nib_nc_remove(_nib_onl_entry_t *node)
          (ptr != NULL) && (tmp = (ptr->next), 1);
          ptr = tmp) {
         gnrc_pktqueue_t *entry = gnrc_pktqueue_remove(&node->pktqueue, ptr);
+#ifdef MODULE_GNRC_ICMPV6_ERROR
+        gnrc_icmpv6_error_dst_unr_send(ICMPV6_ERROR_DST_UNR_ADDR,
+                                       entry->pkt);
+#endif
         gnrc_pktbuf_release_error(entry->pkt, EHOSTUNREACH);
         entry->pkt = NULL;
     }
