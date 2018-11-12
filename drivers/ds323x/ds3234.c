@@ -78,6 +78,7 @@ int ds3234_pps_init(const ds3234_params_t *dev)
     if (res < 0) {
         return -EIO;
     }
+    DEBUG("ds3234: init on SPI_DEV(%u)\n", dev->spi);
 
     if (ENABLE_DEBUG) {
         for (int k = 0; k <= 0x19; ++k) {
@@ -94,6 +95,12 @@ int ds3234_pps_init(const ds3234_params_t *dev)
     reg &= ~(DS323X_REG_CONTROL_EOSC_MASK | DS323X_REG_CONTROL_INTCN_MASK |
         DS323X_REG_CONTROL_RS1_MASK | DS323X_REG_CONTROL_RS2_MASK);
     ds3234_write_reg(dev, DS323X_REG_CONTROL, 1, &reg);
+    uint8_t readback = 0;
+    ds3234_read_reg(dev, DS323X_REG_CONTROL, 1, &readback);
+    if (reg != readback) {
+        DEBUG("ds3234: readback mismatch: expected %u, actual %u\n", (unsigned)reg, (unsigned)readback);
+        return -EIO;
+    }
 
     return 0;
 }
