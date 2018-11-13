@@ -73,7 +73,7 @@ static void _dump_snip(gnrc_pktsnip_t *pkt)
             hdr_len = sizeof(ipv6_hdr_t);
             break;
 #endif
-#ifdef MODULE_GNRC_IPV6_HDR
+#ifdef MODULE_GNRC_IPV6_EXT
         case GNRC_NETTYPE_IPV6_EXT:
             printf("NETTYPE_IPV6_EXT (%i)\n", pkt->type);
             od_hex_dump(pkt->data, pkt->size, OD_WIDTH_DEFAULT);
