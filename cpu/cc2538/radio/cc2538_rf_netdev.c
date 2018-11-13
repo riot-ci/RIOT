@@ -361,8 +361,6 @@ static int _init(netdev_t *netdev)
     netdev_ieee802154_reset(&dev->netdev);
 
     /* Initialise netdev_ieee802154_t struct */
-    netdev_ieee802154_set(&dev->netdev, NETOPT_NID,
-                          &pan, sizeof(pan));
     netdev_ieee802154_set(&dev->netdev, NETOPT_CHANNEL,
                           &chan, sizeof(chan));
     netdev_ieee802154_set(&dev->netdev, NETOPT_ADDRESS,
