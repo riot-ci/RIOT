@@ -34,7 +34,7 @@ static inline int min(int a, int b)
     }
 }
 
-int ccm_compute_cbc_mac(cipher_t* cipher, uint8_t iv[16],
+int ccm_compute_cbc_mac(cipher_t* cipher, const uint8_t iv[16],
                         const uint8_t* input, size_t length, uint8_t* mac)
 {
     uint8_t offset, block_size, mac_enc[16] = {0};
