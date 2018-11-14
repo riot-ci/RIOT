@@ -105,7 +105,7 @@ int gnrc_rpl_srh_process(ipv6_hdr_t *ipv6, gnrc_rpl_srh_t *rh)
     }
 
     /* check if multiple addresses of my interface exist */
-    if (_contains_multiple_of_my_addr(&ipv6->dst, rh, addr_len,
+    if (_contains_multiple_of_my_addr(&ipv6->dst, rh, num_addr,
                                       compri_addr_len)) {
         return GNRC_IPV6_EXT_RH_ERROR;
     }
