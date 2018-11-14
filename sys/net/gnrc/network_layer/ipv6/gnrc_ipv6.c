@@ -93,46 +93,18 @@ kernel_pid_t gnrc_ipv6_init(void)
 static void _dispatch_next_header(gnrc_pktsnip_t *pkt, unsigned nh,
                                   bool interested);
 
+static inline bool _gnrc_ipv6_is_interested(unsigned nh) {
+#ifdef MODULE_GNRC_ICMPV6
+    return (nh == PROTNUM_ICMPV6);
+#else  /* MODULE_GNRC_ICMPV6 */
+    return false;
+#endif /* MODULE_GNRC_ICMPV6 */
+}
+
 static void _demux(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, unsigned nh)
 {
-    bool interested = false;
-
-#ifdef MODULE_GNRC_IPV6_EXT
-    bool is_ext = true;
-
-    while (is_ext) {
-        switch (nh) {
-            case PROTNUM_IPV6_EXT_HOPOPT:
-            case PROTNUM_IPV6_EXT_DST:
-            case PROTNUM_IPV6_EXT_RH:
-            case PROTNUM_IPV6_EXT_FRAG:
-            case PROTNUM_IPV6_EXT_AH:
-            case PROTNUM_IPV6_EXT_ESP:
-            case PROTNUM_IPV6_EXT_MOB: {
-                ipv6_ext_t *ext_hdr;
-
-                DEBUG("ipv6: handle extension header (nh = %u)\n", nh);
-                ext_hdr = pkt->data;
-                if ((pkt = gnrc_ipv6_ext_demux(pkt, nh)) == NULL) {
-                    DEBUG("ipv6: packet was consumed by extension header "
-                          "handling\n");
-                    return;
-                }
-                nh = ext_hdr->nh;
-                break;
-            }
-            default:
-                is_ext = false;
-                break;
-        }
-    }
-#endif /* MODULE_GNRC_IPV6_EXT */
-
-#ifdef MODULE_GNRC_ICMPV6
-    interested = (nh == PROTNUM_ICMPV6);
-#endif /* MODULE_GNRC_ICMPV6 */
     pkt->type = gnrc_nettype_from_protnum(nh);
-    _dispatch_next_header(pkt, nh, interested);
+    _dispatch_next_header(pkt, nh, _gnrc_ipv6_is_interested(nh));
     switch (nh) {
 #ifdef MODULE_GNRC_ICMPV6
         case PROTNUM_ICMPV6:
@@ -628,6 +600,61 @@ static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr)
 }
 
 /* functions for receiving */
+#ifdef MODULE_GNRC_IPV6_EXT
+static bool _duplicate_hopopt(gnrc_pktsnip_t *pkt, unsigned nh)
+{
+    if (nh == PROTNUM_IPV6_EXT_HOPOPT) {
+        DEBUG("ipv6: duplicate Hop-by-Hop header\n");
+#ifdef MODULE_GNRC_ICMPV6_ERROR
+        gnrc_icmpv6_error_param_prob_send(
+                ICMPV6_ERROR_PARAM_PROB_NH,
+                &((ipv6_ext_t *)pkt->next->data)->nh, pkt
+            );
+#endif
+        gnrc_pktbuf_release_error(pkt, EINVAL);
+        return true;
+    }
+    return false;
+}
+
+gnrc_pktsnip_t *_process_all_ext_hdr(gnrc_pktsnip_t *pkt, unsigned *nh)
+{
+    bool is_ext = true;
+    while (is_ext) {
+        switch (*nh) {
+            case PROTNUM_IPV6_EXT_DST:
+            case PROTNUM_IPV6_EXT_RH:
+            case PROTNUM_IPV6_EXT_FRAG:
+            case PROTNUM_IPV6_EXT_AH:
+            case PROTNUM_IPV6_EXT_ESP:
+            case PROTNUM_IPV6_EXT_MOB: {
+                ipv6_ext_t *ext_hdr;
+
+                DEBUG("ipv6: handle extension header (nh = %u)\n", *nh);
+                ext_hdr = pkt->data;
+                if ((pkt = gnrc_ipv6_ext_demux(pkt, *nh)) == NULL) {
+                    DEBUG("ipv6: packet was consumed by extension header "
+                          "handling\n");
+                    return NULL;
+                }
+
+                *nh = ext_hdr->nh;
+
+                if (_duplicate_hopopt(pkt, *nh)) {
+                    return NULL;
+                }
+
+                break;
+            }
+            default:
+                is_ext = false;
+                break;
+        }
+    }
+    return pkt;
+}
+#endif
+
 static inline bool _pkt_not_for_me(gnrc_netif_t **netif, ipv6_hdr_t *hdr)
 {
     if (ipv6_addr_is_loopback(&hdr->dst)) {
@@ -648,6 +675,7 @@ static void _receive(gnrc_pktsnip_t *pkt)
     gnrc_netif_t *netif = NULL;
     gnrc_pktsnip_t *ipv6, *netif_hdr;
     ipv6_hdr_t *hdr;
+    unsigned first_nh;
 
     assert(pkt != NULL);
 
@@ -737,6 +765,32 @@ static void _receive(gnrc_pktsnip_t *pkt)
           ipv6_addr_to_str(addr_str, &(hdr->dst), sizeof(addr_str)),
           hdr->nh, byteorder_ntohs(hdr->len));
 
+    first_nh = hdr->nh;
+#ifdef MODULE_GNRC_IPV6_EXT
+    if ((first_nh == PROTNUM_IPV6_EXT_HOPOPT) && (pkt != NULL)) {
+        /* if a hop-by-hop options header is within the IPv6 packet it comes
+         * immediately after the IPv6 header and it must be processed before
+         * the packet is forwarded
+         * (see https://tools.ietf.org/html/rfc8200#section-4.1) */
+        if ((pkt = gnrc_ipv6_ext_demux(pkt, first_nh)) == NULL) {
+            DEBUG("ipv6: packet was consumed in extension header handling\n");
+            return;
+        }
+        /* packet can only be unmarked (since we are the first one to
+         * process this packet and 6LoWPAN only provides packets unmarked)
+         *
+         * pkt -----------> pkt->next --------> pkt->next->next
+         *  v                     v                         v
+         * next header          hop-by-hop option       IPv6 header */
+        assert((pkt->next != NULL) && (pkt->next->next != NULL) &&
+               (pkt->next->next->type == GNRC_NETTYPE_IPV6));
+        ipv6 = pkt->next->next;
+        first_nh = ((ipv6_ext_t *)pkt->next->data)->nh;
+        if (_duplicate_hopopt(pkt, first_nh)) {
+            return;
+        }
+    }
+#endif
     if (_pkt_not_for_me(&netif, hdr)) { /* if packet is not for me */
         DEBUG("ipv6: packet destination not this host\n");
 
@@ -804,8 +858,13 @@ static void _receive(gnrc_pktsnip_t *pkt)
         return;
 #endif /* MODULE_GNRC_IPV6_ROUTER */
     }
-
-    _demux(netif, pkt, hdr->nh);
+#ifdef MODULE_GNRC_IPV6_EXT
+    if ((pkt = _process_all_ext_hdr(pkt, &first_nh)) == NULL) {
+        DEBUG("ipv6: packet was consumed in extension header handling\n");
+        return;
+    }
+#endif
+    _demux(netif, pkt, first_nh);
 }
 
 /** @} */
