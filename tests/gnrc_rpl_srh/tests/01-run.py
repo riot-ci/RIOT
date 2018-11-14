@@ -52,7 +52,6 @@ class Sniffer(threading.Thread):
     def start_sniff(self, stop_filter):
         self.stop_filter = stop_filter
         self.enter_loop.set()
-        self.ps = []
 
     def wait_for_sniff_results(self):
         if self.sniff_results.wait(5):
