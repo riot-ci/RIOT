@@ -54,11 +54,12 @@ class Sniffer(threading.Thread):
         self.enter_loop.set()
 
     def wait_for_sniff_results(self):
+        res = []
         if self.sniff_results.wait(5):
             self.sniff_results.clear()
-        else:
-            self.ps = []
-        return self.ps
+            res = self.ps
+        self.ps = []
+        return res
 
     def stop(self):
         self.stopped = True
