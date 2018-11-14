@@ -50,6 +50,7 @@ static void test_rpl_srh_nexthop_no_prefix_elided(void)
     int res;
     gnrc_rpl_srh_t *srh = (gnrc_rpl_srh_t *) buf;
     uint8_t *vec = (uint8_t *) (srh + 1);
+    void *err_ptr;
     ipv6_addr_t a1 = IPV6_ADDR1, a2 = IPV6_ADDR2, dst = IPV6_DST,
                      expected1 = IPV6_ADDR1, expected2 = IPV6_ADDR2;
 
@@ -61,13 +62,13 @@ static void test_rpl_srh_nexthop_no_prefix_elided(void)
     memcpy(vec + sizeof(a1), &a2, sizeof(a2));
 
     /* first hop */
-    res = gnrc_rpl_srh_process(&hdr, srh);
+    res = gnrc_rpl_srh_process(&hdr, srh, &err_ptr);
     TEST_ASSERT_EQUAL_INT(res, GNRC_IPV6_EXT_RH_FORWARDED);
     TEST_ASSERT_EQUAL_INT(SRH_SEG_LEFT - 1, srh->seg_left);
     TEST_ASSERT(ipv6_addr_equal(&hdr.dst, &expected1));
 
     /* second hop */
-    res = gnrc_rpl_srh_process(&hdr, srh);
+    res = gnrc_rpl_srh_process(&hdr, srh, &err_ptr);
     TEST_ASSERT_EQUAL_INT(res, GNRC_IPV6_EXT_RH_FORWARDED);
     TEST_ASSERT_EQUAL_INT(SRH_SEG_LEFT - 2, srh->seg_left);
     TEST_ASSERT(ipv6_addr_equal(&hdr.dst, &expected2));
@@ -82,6 +83,7 @@ static void test_rpl_srh_nexthop_prefix_elided(void)
     int res;
     gnrc_rpl_srh_t *srh = (gnrc_rpl_srh_t *) buf;
     uint8_t *vec = (uint8_t *) (srh + 1);
+    void *err_ptr;
     ipv6_addr_t dst = IPV6_DST, expected1 = IPV6_ADDR1, expected2 = IPV6_ADDR2;
 
     hdr.dst = dst;
@@ -94,13 +96,13 @@ static void test_rpl_srh_nexthop_prefix_elided(void)
     memcpy(vec + sizeof(a1), &a2, sizeof(a2));
 
     /* first hop */
-    res = gnrc_rpl_srh_process(&hdr, srh);
+    res = gnrc_rpl_srh_process(&hdr, srh, &err_ptr);
     TEST_ASSERT_EQUAL_INT(res, GNRC_IPV6_EXT_RH_FORWARDED);
     TEST_ASSERT_EQUAL_INT(SRH_SEG_LEFT - 1, srh->seg_left);
     TEST_ASSERT(ipv6_addr_equal(&hdr.dst, &expected1));
 
     /* second hop */
-    res = gnrc_rpl_srh_process(&hdr, srh);
+    res = gnrc_rpl_srh_process(&hdr, srh, &err_ptr);
     TEST_ASSERT_EQUAL_INT(res, GNRC_IPV6_EXT_RH_FORWARDED);
     TEST_ASSERT_EQUAL_INT(SRH_SEG_LEFT - 2, srh->seg_left);
     TEST_ASSERT(ipv6_addr_equal(&hdr.dst, &expected2));
