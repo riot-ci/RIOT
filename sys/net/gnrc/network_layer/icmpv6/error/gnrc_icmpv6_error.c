@@ -113,8 +113,9 @@ static gnrc_pktsnip_t *_icmpv6_error_build(uint8_t type, uint8_t code,
     if (pkt != NULL) {
         ICMPV6_ERROR_SET_VALUE(pkt->data, value);
         if (_check_send_order(orig_pkt)) {
-            const gnrc_pktsnip_t *ptr = (orig_pkt->type == GNRC_NETTYPE_NETIF) ?
-                                        orig_pkt->next : orig_pkt;
+            const gnrc_pktsnip_t *ptr = (orig_pkt->type == GNRC_NETTYPE_NETIF)
+                                      ? orig_pkt->next
+                                      : orig_pkt;
             size_t offset = ICMPV6_ERROR_SZ;
 
             while ((ptr != NULL) && (offset < pkt->size)) {
