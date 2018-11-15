@@ -818,7 +818,7 @@ static void _receive(gnrc_pktsnip_t *pkt)
               (int) byteorder_ntohs(hdr->len),
               (int) (gnrc_pkt_len_upto(pkt, GNRC_NETTYPE_IPV6) - sizeof(ipv6_hdr_t)));
         gnrc_icmpv6_error_param_prob_send(ICMPV6_ERROR_PARAM_PROB_HDR_FIELD,
-                                           &(hdr->len), pkt);
+                                          &(hdr->len), pkt);
         gnrc_pktbuf_release_error(pkt, EINVAL);
         return;
     }
