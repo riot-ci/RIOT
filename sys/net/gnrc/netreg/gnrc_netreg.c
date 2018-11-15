@@ -40,7 +40,7 @@ void gnrc_netreg_init(void)
 int gnrc_netreg_register(gnrc_nettype_t type, gnrc_netreg_entry_t *entry)
 {
 #if DEVELHELP
-    bool has_msg_q = (sched_threads[entry->target.pid]->msg_array != NULL);
+    bool has_msg_q = thread_has_msg_queue(sched_threads[entry->target.pid]);
 
 # if defined(MODULE_GNRC_NETAPI_MBOX) || defined(MODULE_GNRC_NETAPI_CALLBACKS)
     has_msg_q = (entry->type != GNRC_NETREG_TYPE_DEFAULT) || has_msg_q;
