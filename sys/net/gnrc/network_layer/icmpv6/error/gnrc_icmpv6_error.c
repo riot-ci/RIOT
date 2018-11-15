@@ -210,8 +210,8 @@ static void _send(gnrc_pktsnip_t *pkt, const gnrc_pktsnip_t *orig_pkt)
         }
         pkt = ipv6;
         if (netif) {
-           /* copy interface from original netif header to assure packet
-            * goes out where it came from */
+            /* copy interface from original netif header to assure packet
+             * goes out where it came from */
             gnrc_netif_hdr_t *netif_hdr = netif->data;
             kernel_pid_t netif_pid = netif_hdr->if_pid;
 
