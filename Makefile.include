@@ -352,10 +352,6 @@ include $(RIOTBASE)/sys/Makefile.include
 include $(RIOTBASE)/drivers/Makefile.include
 
 # include Makefile.includes for packages in $(USEPKG)
-$(RIOTPKG)/%/Makefile.include::
-	$(Q)"$(MAKE)" -C $(RIOTPKG)/$* Makefile.include
-
-$(USEPKG:%=$(RIOTPKG)/%/Makefile.include): FORCE
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 
 # include external modules configuration
