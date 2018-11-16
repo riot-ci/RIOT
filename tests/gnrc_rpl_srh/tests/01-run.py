@@ -81,7 +81,7 @@ def get_bridge(tap):
 
 def get_host_lladdr(tap):
     addr_info = subprocess.check_output(
-            ["ip", "addr", "show", "dev", "tapbr0", "scope", "link"]
+            ["ip", "addr", "show", "dev", tap, "scope", "link"]
         ).decode("utf-8")
     for line in addr_info.splitlines():
         m = re.search(r"inet6\s+(?P<lladdr>[0-9A-Fa-f:]+)/\d+", line)
@@ -94,7 +94,7 @@ def get_host_lladdr(tap):
 
 def get_host_hwaddr(tap):
     addr_info = subprocess.check_output(
-            ["ip", "addr", "show", "dev", "tapbr0", "scope", "link"]
+            ["ip", "addr", "show", "dev", tap, "scope", "link"]
         ).decode("utf-8")
     for line in addr_info.splitlines():
         m = re.search(r"link[^\s]+\s+(?P<hwaddr>[0-9A-Fa-f:]+)", line)
