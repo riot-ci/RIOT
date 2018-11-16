@@ -303,8 +303,17 @@ def testfunc(child):
     global sniffer
     tap = get_bridge(os.environ["TAP"])
 
-    child.expect(r"OK \((\d+) tests\)") # wait for and check result of unittests
-    print("." * int(child.match.group(1)), end="", flush=True)
+    exp = 0
+    i = 0
+    # wait for and check result of unittests
+    while True:
+        exp = child.expect([r"{}\) OK \w+".format(i + 1),
+                            r"OK \((\d+) tests\)"])
+        if exp == 1:
+            assert(int(child.match.group(1)) == i)
+            break
+        i += 1
+        print(".", end="", flush=True)
     lladdr_src = get_host_lladdr(tap)
     child.sendline("ifconfig")
     child.expect("HWaddr: (?P<hwaddr>[A-Fa-f:0-9]+)")
