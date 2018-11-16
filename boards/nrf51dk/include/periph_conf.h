@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Freie Universität Berlin
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,13 @@
  */
 
 /**
- * @ingroup     boards_nrf51dongle
+ * @ingroup     boards_nrf51dk
  * @{
  *
  * @file
- * @brief       Peripheral configuration for the Nordic nRF51 Dongle
+ * @brief       Peripheral configuration for the Nordic nRF51DK
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
 #ifndef PERIPH_CONF_H
@@ -38,6 +38,37 @@ extern "C" {
 #define UART_PIN_TX         9
 #define UART_PIN_RTS        8
 #define UART_PIN_CTS        10
+/** @} */
+
+/**
+ * @name    SPI configuration
+ * @{
+ */
+static const spi_conf_t spi_config[] = {
+    {
+        .dev  = NRF_SPI0,
+        .sclk = 29,
+        .mosi = 25,
+        .miso = 28
+    }
+};
+
+#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+/** @} */
+
+/**
+ * @name    I2C configuration
+ * @{
+ */
+static const i2c_conf_t i2c_config[] = {
+    {
+        .dev = NRF_TWI1,
+        .pin_scl = 7,
+        .pin_sda = 30,
+        .speed = I2C_SPEED_NORMAL
+    }
+};
+#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
 /** @} */
 
 /**
