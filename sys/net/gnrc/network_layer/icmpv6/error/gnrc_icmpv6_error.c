@@ -32,8 +32,7 @@
 static inline size_t _fit(const gnrc_pktsnip_t *pkt)
 {
     /* TODO: replace IPV6_MIN_MTU with known path MTU? */
-    return MIN((gnrc_pkt_len((gnrc_pktsnip_t *)pkt) + ICMPV6_ERROR_SZ),
-               IPV6_MIN_MTU);
+    return MIN((gnrc_pkt_len(pkt) + ICMPV6_ERROR_SZ), IPV6_MIN_MTU);
 }
 
 static inline bool _in_orig_pkt(const gnrc_pktsnip_t *orig_pkt)
