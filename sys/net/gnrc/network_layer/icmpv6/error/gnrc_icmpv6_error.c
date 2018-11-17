@@ -248,7 +248,7 @@ static gnrc_pktsnip_t *_check_ipv6_hdr(const gnrc_pktsnip_t *orig_pkt)
     if (ipv6_addr_is_unspecified(&ipv6_hdr->src)) {
         ipv6 = NULL;
     }
-    return NULL;
+    return ipv6;
 }
 
 void gnrc_icmpv6_error_dst_unr_send(uint8_t code, const gnrc_pktsnip_t *orig_pkt)
