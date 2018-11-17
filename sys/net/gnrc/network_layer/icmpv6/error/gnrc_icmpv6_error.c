@@ -192,7 +192,7 @@ static gnrc_pktsnip_t *_param_prob_build(uint8_t code, void *ptr,
     return pkt;
 }
 
-static void _send(gnrc_pktsnip_t *pkt, const gnrc_pktsnip_t *orig_pkt
+static void _send(gnrc_pktsnip_t *pkt, const gnrc_pktsnip_t *orig_pkt,
                   gnrc_pktsnip_t *ipv6)
 {
     if (pkt != NULL) {
