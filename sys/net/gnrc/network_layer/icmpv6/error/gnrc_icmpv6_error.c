@@ -237,7 +237,7 @@ static void _send(gnrc_pktsnip_t *pkt, const gnrc_pktsnip_t *orig_pkt,
     }
 }
 
-static gnrc_pktsnip_t *ipv6 _check_ipv6_hdr(const gnrc_pktsnip_t *orig_pkt)
+static gnrc_pktsnip_t *_check_ipv6_hdr(const gnrc_pktsnip_t *orig_pkt)
 {
     /* discarding const qualifier is safe here */
     gnrc_pktsnip_t *ipv6 = gnrc_pktsnip_search_type((gnrc_pktsnip_t *)orig_pkt,
