@@ -64,7 +64,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
                 return -EOVERFLOW;
             }
             *((uint16_t *)value) = (uint16_t)cc2538_get_chan();
-            return sizeof(uint8_t);
+            return sizeof(uint16_t);
 
         case NETOPT_CHANNEL_PAGE:
             if (max_len < sizeof(uint16_t)) {
