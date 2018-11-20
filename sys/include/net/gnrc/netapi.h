@@ -108,15 +108,15 @@ typedef struct {
  *          @ref GNRC_NETAPI_MSG_TYPE_RCV messages
  *
  * @param[in] pid       PID of the targeted network module
+ * @param[in] pkt       pointer into the packet buffer holding the data to send
  * @param[in] type      type of the message to send. Must be either
  *                      @ref GNRC_NETAPI_MSG_TYPE_SND or
  *                      @ref GNRC_NETAPI_MSG_TYPE_RCV
- * @param[in] pkt       pointer into the packet buffer holding the data to send
  *
  * @return              1 if packet was successfully delivered
  * @return              -1 on error (invalid PID or no space in queue)
  */
-int _gnrc_netapi_snd_rcv(kernel_pid_t pid, uint16_t type, gnrc_pktsnip_t *pkt);
+int _gnrc_netapi_snd_rcv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type);
 
 /**
  * @brief   Shortcut function for sending @ref GNRC_NETAPI_MSG_TYPE_GET or
@@ -124,22 +124,21 @@ int _gnrc_netapi_snd_rcv(kernel_pid_t pid, uint16_t type, gnrc_pktsnip_t *pkt);
  *          @ref GNRC_NETAPI_MSG_TYPE_ACK message
  *
  * @param[in] pid       PID of the targeted network module
- * @param[in] type      type of the message to send. Must be either
- *                      @ref GNRC_NETAPI_MSG_TYPE_GET or
- *                      @ref GNRC_NETAPI_MSG_TYPE_SET
  * @param[in] opt       option to get
  * @param[in] context   (optional) context to the given option
  * @param[in] data      pointer to buffer for reading the option's value
  * @param[in] max_len   maximum number of bytes that fit into @p data
+ * @param[in] type      type of the message to send. Must be either
+ *                      @ref GNRC_NETAPI_MSG_TYPE_GET or
+ *                      @ref GNRC_NETAPI_MSG_TYPE_SET
  *
  * @return              value returned by the @ref GNRC_NETAPI_MSG_TYPE_ACK message i.e. the actual
  *                      length of the resulting data on success, a negative errno on error. The
  *                      actual error value is for the implementation to decide but should be
  *                      sensible to indicate what went wrong.
  */
-int _gnrc_netapi_get_set(kernel_pid_t pid, uint16_t type,
-                         netopt_t opt, uint16_t context,
-                         void *data, size_t data_len);
+int _gnrc_netapi_get_set(kernel_pid_t pid, netopt_t opt, uint16_t context,
+                         void *data, size_t data_len, uint16_t type);
 
 
 /**
@@ -182,7 +181,7 @@ int gnrc_netapi_dispatch(gnrc_nettype_t type, uint32_t demux_ctx, uint16_t cmd,
 static inline int gnrc_netapi_dispatch_send(gnrc_nettype_t type, uint32_t demux_ctx,
                                             gnrc_pktsnip_t *pkt)
 {
-    return gnrc_netapi_dispatch(type, GNRC_NETAPI_MSG_TYPE_SND, demux_ctx, pkt);
+    return gnrc_netapi_dispatch(type, demux_ctx, GNRC_NETAPI_MSG_TYPE_SND, pkt);
 }
 
 /**
@@ -196,7 +195,7 @@ static inline int gnrc_netapi_dispatch_send(gnrc_nettype_t type, uint32_t demux_
  */
 static inline int gnrc_netapi_receive(kernel_pid_t pid, gnrc_pktsnip_t *pkt)
 {
-    return _gnrc_netapi_snd_rcv(pid, GNRC_NETAPI_MSG_TYPE_RCV, pkt);
+    return _gnrc_netapi_snd_rcv(pid, pkt, GNRC_NETAPI_MSG_TYPE_RCV);
 }
 
 /**
@@ -233,8 +232,8 @@ static inline int gnrc_netapi_dispatch_receive(gnrc_nettype_t type, uint32_t dem
 static inline int gnrc_netapi_get(kernel_pid_t pid, netopt_t opt,
                                   uint16_t context, void *data, size_t max_len)
 {
-    return _gnrc_netapi_get_set(pid, GNRC_NETAPI_MSG_TYPE_GET, opt, context,
-                                data, max_len);
+    return _gnrc_netapi_get_set(pid, opt, context, data, max_len,
+                                GNRC_NETAPI_MSG_TYPE_GET);
 }
 
 /**
@@ -258,8 +257,8 @@ static inline int gnrc_netapi_set(kernel_pid_t pid, netopt_t opt,
 {
     /* disregard const pointer. This *should* be safe and any modification
      * to `data` should be considered a bug */
-    return _gnrc_netapi_get_set(pid, GNRC_NETAPI_MSG_TYPE_SET, opt, context,
-                                (void *)data, data_len);
+    return _gnrc_netapi_get_set(pid, opt, context, (void *)data, data_len,
+                                GNRC_NETAPI_MSG_TYPE_SET);
 }
 
 #ifdef __cplusplus
