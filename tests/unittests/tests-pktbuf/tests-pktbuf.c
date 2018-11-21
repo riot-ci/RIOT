@@ -655,9 +655,11 @@ static void test_pktbuf_realloc_data__success3(void)
 
 static void test_pktbuf_merge_data__memfull(void)
 {
-    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, NULL, (GNRC_PKTBUF_SIZE/4), GNRC_NETTYPE_TEST);
-    pkt = gnrc_pktbuf_add(pkt, NULL, (GNRC_PKTBUF_SIZE/4)+1, GNRC_NETTYPE_TEST);
+    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, NULL, (GNRC_PKTBUF_SIZE / 4),
+                                          GNRC_NETTYPE_TEST);
 
+    pkt = gnrc_pktbuf_add(pkt, NULL, (GNRC_PKTBUF_SIZE / 4) + 1,
+                          GNRC_NETTYPE_TEST);
     TEST_ASSERT_EQUAL_INT(ENOMEM, gnrc_pktbuf_merge(pkt));
     gnrc_pktbuf_release(pkt);
     TEST_ASSERT(gnrc_pktbuf_is_empty());
@@ -677,15 +679,21 @@ static void test_pktbuf_merge_data__success1(void)
 
 static void test_pktbuf_merge_data__success2(void)
 {
-    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, TEST_STRING4, sizeof(TEST_STRING4), GNRC_NETTYPE_TEST);
+    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, TEST_STRING4,
+                                          sizeof(TEST_STRING4),
+                                          GNRC_NETTYPE_TEST);
+
     pkt = gnrc_pktbuf_add(pkt, TEST_STRING8, sizeof(TEST_STRING8), GNRC_NETTYPE_TEST);
     pkt = gnrc_pktbuf_add(pkt, TEST_STRING16, sizeof(TEST_STRING16), GNRC_NETTYPE_TEST);
 
     TEST_ASSERT_EQUAL_INT(0, gnrc_pktbuf_merge(pkt));
     TEST_ASSERT_NULL(pkt->next);
     TEST_ASSERT_EQUAL_STRING(TEST_STRING16, pkt->data);
-    TEST_ASSERT_EQUAL_STRING(TEST_STRING8, (char *) pkt->data+sizeof(TEST_STRING16));
-    TEST_ASSERT_EQUAL_STRING(TEST_STRING4, (char *) pkt->data+sizeof(TEST_STRING16)+sizeof(TEST_STRING8));
+    TEST_ASSERT_EQUAL_STRING(TEST_STRING8,
+                             (char *) pkt->data + sizeof(TEST_STRING16));
+    TEST_ASSERT_EQUAL_STRING(TEST_STRING4,
+                             (char *) pkt->data + sizeof(TEST_STRING16) +
+                             sizeof(TEST_STRING8));
     gnrc_pktbuf_release(pkt);
     TEST_ASSERT(gnrc_pktbuf_is_empty());
     TEST_ASSERT(gnrc_pktbuf_is_sane());
