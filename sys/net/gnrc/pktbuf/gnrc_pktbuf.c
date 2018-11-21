@@ -112,9 +112,9 @@ gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt)
 int gnrc_pktbuf_merge(gnrc_pktsnip_t *pkt)
 {
     size_t offset = pkt->size;
+    size_t size = gnrc_pkt_len(pkt);
     int res = 0;
 
-    size_t size = gnrc_pkt_len(pkt);
     if (pkt->size >= size) {
         return res;
     }
