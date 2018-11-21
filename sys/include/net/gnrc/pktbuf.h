@@ -337,6 +337,9 @@ gnrc_pktsnip_t *gnrc_pktbuf_duplicate_upto(gnrc_pktsnip_t *pkt, gnrc_nettype_t t
  *                                                                 .      .
  *
  * @warning @p pkt needs to write protected before calling this function.
+ * @note    Packets in receive order need to call
+ *          @ref gnrc_pktbuf_reverse_snips() first to get the data in the
+ *          correct order.
  *
  * @param[in,out] pkt   The snip to merge.
  *
