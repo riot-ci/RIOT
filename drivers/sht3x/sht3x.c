@@ -327,8 +327,8 @@ static int _read_data(sht3x_dev_t* dev, uint8_t *data, uint8_t len)
 #endif /* ENABLE_DEBUG */
     }
     else {
-        DEBUG_DEV("could not read %d bytes from sensor, reason %d (%s)",
-                  dev, len, res, strerror(-res));
+        DEBUG_DEV("could not read %d bytes from sensor, reason %d",
+                  dev, len, res);
         return -SHT3X_ERROR_I2C;
     }
 
