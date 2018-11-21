@@ -125,6 +125,8 @@ int gnrc_pktbuf_merge(gnrc_pktsnip_t *pkt)
     if (res != 0) {
         return res;
     }
+
+    /* Copy data to new buffer */
     while (ptr != NULL) {
         gnrc_pktsnip_t *tmp = ptr->next;
 
