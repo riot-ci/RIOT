@@ -111,7 +111,6 @@ gnrc_pktsnip_t *gnrc_pktbuf_reverse_snips(gnrc_pktsnip_t *pkt)
 
 int gnrc_pktbuf_merge(gnrc_pktsnip_t *pkt)
 {
-    gnrc_pktsnip_t *ptr = pkt->next;
     size_t offset = pkt->size;
     int res = 0;
 
@@ -127,14 +126,14 @@ int gnrc_pktbuf_merge(gnrc_pktsnip_t *pkt)
     }
 
     /* Copy data to new buffer */
-    while (ptr != NULL) {
-        gnrc_pktsnip_t *tmp = ptr->next;
-
+    for (gnrc_pktsnip_t *ptr = pkt->next; ptr != NULL; ptr = ptr->next) {
         memcpy(((uint8_t *)pkt->data) + offset, ptr->data, ptr->size);
         offset += ptr->size;
-        pkt = gnrc_pktbuf_remove_snip(pkt, ptr);
-        ptr = tmp;
     }
+
+    /* Release old pktsnips and data*/
+    gnrc_pktbuf_release(pkt->next);
+    pkt->next = NULL;
     return res;
 }
 
