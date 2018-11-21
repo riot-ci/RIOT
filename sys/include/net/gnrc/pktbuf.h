@@ -301,6 +301,10 @@ gnrc_pktsnip_t *gnrc_pktbuf_duplicate_upto(gnrc_pktsnip_t *pkt, gnrc_nettype_t t
 /**
  * @brief   Merge pktsnip chain to single pktsnip.
  *
+ * Specifically it calls @ref gnrc_pktbuf_realloc_data() on @p pkt, then copies
+ * the data of all following packet snips into that reallocated space, and
+ * removes the packet snip the data was copied from afterwards.
+ *
  *          Example:
  *              Input:
  *                                                                  buffer
