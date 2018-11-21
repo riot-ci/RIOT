@@ -115,7 +115,7 @@ int gnrc_pktbuf_merge(gnrc_pktsnip_t *pkt)
     size_t size = gnrc_pkt_len(pkt);
     int res = 0;
 
-    if (pkt->size >= size) {
+    if (pkt->size == size) {
         return res;
     }
 
