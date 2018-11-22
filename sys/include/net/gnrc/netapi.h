@@ -127,7 +127,7 @@ int _gnrc_netapi_send_recv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type)
  * @param[in] opt       option to get
  * @param[in] context   (optional) context to the given option
  * @param[in] data      pointer to buffer for reading the option's value
- * @param[in] max_len   maximum number of bytes that fit into @p data
+ * @param[in] data_len  (maximum) number of bytes in @p data
  * @param[in] type      type of the message to send. Must be either
  *                      @ref GNRC_NETAPI_MSG_TYPE_GET or
  *                      @ref GNRC_NETAPI_MSG_TYPE_SET
