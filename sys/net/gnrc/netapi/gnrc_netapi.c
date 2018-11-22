@@ -48,7 +48,7 @@ int _gnrc_netapi_get_set(kernel_pid_t pid, netopt_t opt, uint16_t context,
     return (int)ack.content.value;
 }
 
-int _gnrc_netapi_snd_rcv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type)
+int _gnrc_netapi_send_recv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type)
 {
     msg_t msg;
     /* set the outgoing message's fields */
@@ -94,7 +94,8 @@ int gnrc_netapi_dispatch(gnrc_nettype_t type, uint32_t demux_ctx,
             int release = 0;
             switch (sendto->type) {
                 case GNRC_NETREG_TYPE_DEFAULT:
-                    if (_gnrc_netapi_snd_rcv(sendto->target.pid, pkt, cmd) < 1) {
+                    if (_gnrc_netapi_send_recv(sendto->target.pid, pkt,
+                                               cmd) < 1) {
                         /* unable to dispatch packet */
                         release = 1;
                     }
@@ -121,7 +122,7 @@ int gnrc_netapi_dispatch(gnrc_nettype_t type, uint32_t demux_ctx,
                 gnrc_pktbuf_release(pkt);
             }
 #else
-            if (_gnrc_netapi_snd_rcv(sendto->target.pid, pkt, cmd) < 1) {
+            if (_gnrc_netapi_send_recv(sendto->target.pid, pkt, cmd) < 1) {
                 /* unable to dispatch packet */
                 gnrc_pktbuf_release(pkt);
             }

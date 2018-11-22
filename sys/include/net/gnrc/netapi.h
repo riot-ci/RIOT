@@ -116,7 +116,7 @@ typedef struct {
  * @return              1 if packet was successfully delivered
  * @return              -1 on error (invalid PID or no space in queue)
  */
-int _gnrc_netapi_snd_rcv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type);
+int _gnrc_netapi_send_recv(kernel_pid_t pid, gnrc_pktsnip_t *pkt, uint16_t type);
 
 /**
  * @brief   Shortcut function for sending @ref GNRC_NETAPI_MSG_TYPE_GET or
@@ -152,7 +152,7 @@ int _gnrc_netapi_get_set(kernel_pid_t pid, netopt_t opt, uint16_t context,
  */
 static inline int gnrc_netapi_send(kernel_pid_t pid, gnrc_pktsnip_t *pkt)
 {
-    return _gnrc_netapi_snd_rcv(pid, pkt, GNRC_NETAPI_MSG_TYPE_SND);
+    return _gnrc_netapi_send_recv(pid, pkt, GNRC_NETAPI_MSG_TYPE_SND);
 }
 
 /**
@@ -195,7 +195,7 @@ static inline int gnrc_netapi_dispatch_send(gnrc_nettype_t type, uint32_t demux_
  */
 static inline int gnrc_netapi_receive(kernel_pid_t pid, gnrc_pktsnip_t *pkt)
 {
-    return _gnrc_netapi_snd_rcv(pid, pkt, GNRC_NETAPI_MSG_TYPE_RCV);
+    return _gnrc_netapi_send_recv(pid, pkt, GNRC_NETAPI_MSG_TYPE_RCV);
 }
 
 /**
