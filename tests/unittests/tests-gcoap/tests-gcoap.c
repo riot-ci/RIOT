@@ -83,7 +83,10 @@ static void test_gcoap__client_get_req(void)
     TEST_ASSERT_EQUAL_INT(GCOAP_TOKENLEN, coap_get_token_len(&pdu));
     TEST_ASSERT_EQUAL_INT(hdr_fixed_len + GCOAP_TOKENLEN, coap_get_total_hdr_len(&pdu));
     TEST_ASSERT_EQUAL_INT(COAP_TYPE_NON, coap_get_type(&pdu));
-    TEST_ASSERT_EQUAL_STRING(&path[0], (char *)&pdu.url[0]);
+
+    char uri[NANOCOAP_URI_MAX] = {0};
+    coap_get_uri_path(&pdu, (uint8_t *)&uri[0]);
+    TEST_ASSERT_EQUAL_STRING(&path[0], &uri[0]);
     TEST_ASSERT_EQUAL_INT(0, pdu.payload_len);
     TEST_ASSERT_EQUAL_INT(sizeof(pdu_data), len);
 }
@@ -158,7 +161,10 @@ static void test_gcoap__server_get_req(void)
     TEST_ASSERT_EQUAL_INT(4 + 2, coap_get_total_hdr_len(&pdu));
     TEST_ASSERT_EQUAL_INT(COAP_TYPE_NON, coap_get_type(&pdu));
     TEST_ASSERT_EQUAL_INT(0, pdu.payload_len);
-    TEST_ASSERT_EQUAL_STRING("/cli/stats", (char *) &pdu.url[0]);
+
+    char uri[NANOCOAP_URI_MAX] = {0};
+    coap_get_uri_path(&pdu, (uint8_t *)&uri[0]);
+    TEST_ASSERT_EQUAL_STRING("/cli/stats", &uri[0]);
 }
 
 /*
