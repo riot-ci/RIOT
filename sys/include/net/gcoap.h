@@ -484,6 +484,12 @@ void gcoap_register_listener(gcoap_listener_t *listener);
 
 /**
  * @brief   Initializes a CoAP request PDU on a buffer.
+
+ * @warning After you use this function, you only may add Options with option
+ * number greater than COAP_OPT_URI_PATH. Otherwise, use the
+ * struct-based API described with @link net_nanocoap nanocoap @endlink to
+ * initialize the message. See the implementation of gcoap_req_init() itself
+ * as an example.
  *
  * @param[out] pdu      Request metadata
  * @param[out] buf      Buffer containing the PDU
