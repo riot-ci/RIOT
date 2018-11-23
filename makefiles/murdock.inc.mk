@@ -3,7 +3,7 @@
 #
 
 # (HACK) get actual flash binary from FFLAGS.
-FLASHFILE:=$(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
+FLASHFILE = $(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
 
 #
 # This target will run "make test" on the CI cluster.
