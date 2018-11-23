@@ -41,6 +41,7 @@ static void _forward_pkt(gnrc_pktsnip_t *pkt, ipv6_hdr_t *hdr)
     if (netif_snip != NULL) {
         pkt = gnrc_pktbuf_remove_snip(pkt, netif_snip);
     }
+    /* reverse packet into send order */
     pkt = gnrc_pktbuf_reverse_snips(pkt);
     if (pkt == NULL) {
         DEBUG("ipv6_ext_rh: can't reverse snip order in packet");
