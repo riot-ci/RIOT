@@ -968,25 +968,24 @@ int gcoap_get_resource_list(void *buf, size_t maxlen, uint8_t cf)
 int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val)
 {
     char qs[NANOCOAP_QS_MAX];
-    size_t qs_len  = 0;
-    size_t key_len = strlen(key);
+    size_t len = strlen(key);
     size_t val_len = (val) ? (strlen(val) + 1) : 0;
 
-    /* add 2 for '=' and null terminator */
-    if ((key_len + val_len + 2) >= NANOCOAP_QS_MAX) {
+    /* test if the query string fits, account for the zero termination */
+    if ((len + val_len + 1) >= NANOCOAP_QS_MAX) {
         return -1;
     }
 
-    memcpy(&qs[0], key, key_len);
-    qs_len += key_len;
+    memcpy(&qs[0], key, len);
     if (val) {
-        qs[qs_len++] = '=';
-        memcpy(&qs[qs_len], val, val_len);
-        qs_len += val_len;
+        qs[len] = '=';
+        /* the `=` character was already counted in `val_len`, so subtract it here */
+        memcpy(&qs[len + 1], val, (val_len - 1));
+        len += val_len;
     }
-    qs[qs_len] = '\0';
+    qs[len] = '\0';
 
-    return coap_opt_add_string(pdu, COAP_OPT_URI_QUERY, &qs[0], '&');
+    return coap_opt_add_string(pdu, COAP_OPT_URI_QUERY, qs, '&');
 }
 
 /** @} */
