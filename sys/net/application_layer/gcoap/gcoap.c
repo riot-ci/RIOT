@@ -685,9 +685,10 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
  */
 ssize_t gcoap_finish(coap_pkt_t *pdu, size_t payload_len, unsigned format)
 {
-    if (pdu->options_len && payload_len) {
-        assert(pdu->options[pdu->options_len-1].opt_num < COAP_OPT_CONTENT_FORMAT);
-    }
+    assert( !(pdu->options_len) ||
+            !(payload_len) ||
+            (format == COAP_FORMAT_NONE) ||
+            (pdu->options[pdu->options_len-1].opt_num < COAP_OPT_CONTENT_FORMAT));
 
     if (payload_len) {
         /* determine Content-Format option length */
