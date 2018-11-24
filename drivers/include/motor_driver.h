@@ -64,10 +64,10 @@
  *
  * @endverbatim
  *
- * From this truth tables we can extract three direction states :
+ * From this truth tables we can extract two direction states :
  * - CW (ClockWise)
  * - CCW (Counter ClockWise)
- * - BRAKE
+ * and a brake capability
  *
  * BRAKE LOW is functionnaly the same than BRAKE HIGH but some H-bridge only
  * brake on BRAKE HIGH due to hardware.
@@ -126,7 +126,6 @@ typedef enum {
 typedef enum {
     MOTOR_CW      = 0,          /**< clockwise */
     MOTOR_CCW     = 1,          /**< counter clockwise */
-    MOTOR_BRAKE   = 2           /**< brake */
 } motor_direction_t;
 
 /**
@@ -161,6 +160,7 @@ typedef struct {
     pwm_t pwm_dev;                          /**< PWM device driving motors */
     motor_driver_mode_t mode;               /**< driver mode */
     motor_driver_mode_brake_t mode_brake;   /**< driver brake mode */
+    pwm_mode_t pwm_mode;                    /**< PWM mode */
     uint32_t pwm_frequency;                 /**< PWM device frequency */
     uint32_t pwm_resolution;                /**< PWM device resolution */
     uint8_t nb_motors;                      /**< number of moros */
@@ -183,14 +183,24 @@ int motor_driver_init(const motor_driver_t motor_driver);
  *
  * @param[in] motor_driver      motor driver to which motor is attached
  * @param[in] motor_id          motor ID on driver
- * @param[in] direction         motor direction
- * @param[in] pwm_duty_cycle    PWM duty_cycle to set motor speed
+ * @param[in] pwm_duty_cycle    Signed PWM duty_cycle to set motor speed and direction
  *
  * @return                      0 on success
  * @return                      -1 on error with errno set
  */
 int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
-    motor_direction_t direction, uint16_t pwm_duty_cycle);
+    int32_t pwm_duty_cycle);
+
+/**
+ * @brief Brake the motor of a given motor driver
+ *
+ * @param[in] motor_driver      motor driver to which motor is attached
+ * @param[in] motor_id          motor ID on driver
+ *
+ * @return                      0 on success
+ * @return                      -1 on error with errno set
+ */
+int motor_brake(const motor_driver_t motor_driver, uint8_t motor_id);
 
 /**
  * @brief Enable a motor of a given motor driver
