@@ -26,11 +26,9 @@ extern int32_t qdecs_value[QDEC_NUMOF];
 
 void native_motor_driver_qdec_simulation(
     const motor_driver_t motor_driver, uint8_t motor_id,
-    motor_direction_t direction, uint16_t pwm_duty_cycle)
+    int32_t pwm_duty_cycle)
 {
     uint32_t id;
-
-    int32_t pwm_value = direction ? -pwm_duty_cycle : pwm_duty_cycle;
 
     for (uint32_t i = 0; i < motor_driver; i++) {
         const motor_driver_config_t motor_driver_conf =
@@ -40,19 +38,19 @@ void native_motor_driver_qdec_simulation(
     id += motor_id;
 
     if (id < QDEC_NUMOF) {
-        qdecs_value[id] = pwm_value;
+        qdecs_value[id] = pwm_duty_cycle;
 
         LOG_DEBUG("MOTOR-DRIVER=%u"             \
             "    MOTOR_ID = %u"                 \
             "    PWM_VALUE = %d"                \
             "    QDEC_ID = %"PRIu32""           \
-            "    QDEC_VALUE = %d\n",          \
-            motor_driver, motor_id, pwm_value, id, pwm_value);
+            "    QDEC_VALUE = %d\n",            \
+            motor_driver, motor_id, pwm_duty_cycle, id, pwm_duty_cycle);
     }
     else {
         LOG_ERROR("MOTOR-DRIVER=%u"             \
             "    MOTOR_ID = %u"                 \
-            "    no QDEC device associated\n",    \
+            "    no QDEC device associated\n",  \
             motor_driver, motor_id);
     }
 }

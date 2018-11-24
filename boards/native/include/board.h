@@ -129,7 +129,7 @@ extern mtd_dev_t *mtd0;
 
 void native_motor_driver_qdec_simulation( \
     const motor_driver_t motor_driver, uint8_t motor_id, \
-    motor_direction_t direction, uint16_t pwm_duty_cycle);
+    int32_t pwm_duty_cycle);
 
 /**
  * @brief Describe DC motor with PWM channel and GPIOs

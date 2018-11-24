@@ -150,8 +150,8 @@ typedef unsigned int motor_driver_t;
  * @brief   Motor callback. It is called at end of motor_set()
  */
 typedef void (*motor_driver_cb_t)(const motor_driver_t motor_driver,
-    uint8_t motor_id,
-    motor_direction_t direction, uint16_t pwm_duty_cycle);
+                                  uint8_t motor_id,
+                                  int32_t pwm_duty_cycle);
 
 /**
  * @brief Describe DC motor driver with PWM device and motors array
