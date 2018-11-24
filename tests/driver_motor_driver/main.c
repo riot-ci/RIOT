@@ -18,38 +18,39 @@
 #ifdef MOTOR_DRIVER_NUMOF
 char motion_control_thread_stack[THREAD_STACKSIZE_DEFAULT];
 
-void motors_control(uint16_t duty_cycle, uint8_t dir)
+void motors_control(int32_t duty_cycle)
 {
     char str[6];
 
-    switch (dir) {
-        case (MOTOR_CW):
-            strncpy(str, "CW", 3);
-            break;
-        case (MOTOR_CCW):
-            strncpy(str, "CCW", 4);
-            break;
-        case (MOTOR_BRAKE):
-            strncpy(str, "BRAKE", 6);
-            break;
-        default:
-            strncpy(str, "ERROR", 6);
-    }
+    if (duty_cycle >= 0)
+        strncpy(str, "CW", 3);
+    else
+        strncpy(str, "CCW", 4);
 
-    printf("Duty cycle = %u   Direction = %s\n", duty_cycle, str);
+    printf("Duty cycle = %"PRId32"   Direction = %s\n", duty_cycle, str);
 
-    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_0_ID, dir, duty_cycle))
-        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", MOTOR_0_ID);
-    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_1_ID, dir, duty_cycle++))
-        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", MOTOR_1_ID);
+    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_0_ID, duty_cycle))
+        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", (uint32_t)MOTOR_0_ID);
+    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_1_ID, duty_cycle))
+        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", (uint32_t)MOTOR_1_ID);
+}
+
+void motors_brake(void)
+{
+    puts("Brake motors !!!");
+
+    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_0_ID))
+        printf("Cannot brake motor %"PRIu32"\n", (uint32_t)MOTOR_0_ID);
+    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_1_ID))
+        printf("Cannot brake motor %"PRIu32"\n", (uint32_t)MOTOR_1_ID);
 }
 
 void *motion_control_thread(void *arg)
 {
-    uint8_t dir = 0;
+    int8_t dir = 1;
     int ret = 0;
     xtimer_ticks32_t last_wakeup/*, start*/;
-    uint16_t pwm_res = motor_driver_config[MOTOR_DRIVER_DEV(0)].pwm_resolution;
+    int32_t pwm_res = motor_driver_config[MOTOR_DRIVER_DEV(0)].pwm_resolution;
 
     (void) arg;
 
@@ -59,31 +60,31 @@ void *motion_control_thread(void *arg)
     assert(ret == 0);
 
     for(;;) {
+        /* BRAKE - duty cycle 100% */
+        last_wakeup = xtimer_now();
+        motors_brake();
+        xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
+
         /* CW - duty cycle 50% */
         last_wakeup = xtimer_now();
-        motors_control(pwm_res / 2, dir);
+        motors_control(dir * pwm_res / 10);
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
 
         /* Disable motor during INTERVAL µs (motor driver must have enable feature */
-        /*last_wakeup = xtimer_now();
+        last_wakeup = xtimer_now();
         motor_disable(MOTOR_DRIVER_DEV(0), MOTOR_0_ID);
         motor_disable(MOTOR_DRIVER_DEV(0), MOTOR_1_ID);
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
         motor_enable(MOTOR_DRIVER_DEV(0), MOTOR_0_ID);
-        motor_enable(MOTOR_DRIVER_DEV(0), MOTOR_1_ID);*/
+        motor_enable(MOTOR_DRIVER_DEV(0), MOTOR_1_ID);
 
         /* CW - duty cycle 100% */
         last_wakeup = xtimer_now();
-        motors_control(pwm_res, dir);
-        xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
-
-        /* BRAKE - duty cycle 100% */
-        last_wakeup = xtimer_now();
-        motors_control(pwm_res, MOTOR_BRAKE);
+        motors_control(dir * pwm_res);
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
 
         /* Reverse direction */
-        dir = dir ? MOTOR_CW : MOTOR_CCW;
+        dir = dir * -1;
     }
 
     return NULL;
