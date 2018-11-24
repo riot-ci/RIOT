@@ -33,27 +33,28 @@ extern "C" {
  */
 static const motor_driver_config_t motor_driver_config[] = {
     {
-        .mode            = MOTOR_DRIVER_1_DIR,
-        .mode_brake      = MOTOR_BRAKE_LOW,
+        .mode            = MOTOR_DRIVER_2_DIRS,
+        .mode_brake      = MOTOR_BRAKE_HIGH,
         .pwm_dev         = 1,
+        .pwm_mode        = PWM_LEFT,
         .pwm_frequency   = 20000U,
         .pwm_resolution  = 2250U,
         .nb_motors       = 2,
         .motors          = {
             {
                 .pwm_channel            = 0,
-                .gpio_enable            = GPIO_UNDEF,
+                .gpio_enable            = GPIO_PIN(PORT_B, 12),
                 .gpio_dir0              = GPIO_PIN(PORT_A, 11),
-                .gpio_dir1_or_brake     = GPIO_UNDEF,
+                .gpio_dir1_or_brake     = GPIO_PIN(PORT_A, 12),
                 .gpio_dir_reverse       = 0,
                 .gpio_enable_invert     = 0,
                 .gpio_brake_invert      = 0,
             },
             {
                 .pwm_channel            = 2,
-                .gpio_enable            = GPIO_UNDEF,
-                .gpio_dir0              = GPIO_PIN(PORT_A, 12),
-                .gpio_dir1_or_brake     = GPIO_UNDEF,
+                .gpio_enable            = GPIO_PIN(PORT_B, 13),
+                .gpio_dir0              = GPIO_PIN(PORT_B, 14),
+                .gpio_dir1_or_brake     = GPIO_PIN(PORT_B, 15),
                 .gpio_dir_reverse       = 0,
                 .gpio_enable_invert     = 0,
                 .gpio_brake_invert      = 0,
