@@ -127,12 +127,22 @@ extern mtd_dev_t *mtd0;
 /** @} */
 #endif
 
+/**
+ * @brief Simulate QDEC on motor_set() calls
+ *
+ * @param[in] motor_driver      motor driver to which motor is attached
+ * @param[in] motor_id          motor ID on driver
+ * @param[in] pwm_duty_cycle    Signed PWM duty_cycle to set motor speed and direction
+ *
+ * @return                      0 on success
+ */
 void native_motor_driver_qdec_simulation( \
     const motor_driver_t motor_driver, uint8_t motor_id, \
     int32_t pwm_duty_cycle);
 
 /**
- * @brief Describe DC motor with PWM channel and GPIOs
+ * @name Describe DC motors with PWM channel and GPIOs
+ * @{
  */
 static const motor_driver_config_t motor_driver_config[] = {
     {
@@ -166,6 +176,7 @@ static const motor_driver_config_t motor_driver_config[] = {
 };
 
 #define MOTOR_DRIVER_NUMOF           (sizeof(motor_driver_config) / sizeof(motor_driver_config[0]))
+/** @} */
 
 #ifdef __cplusplus
 }

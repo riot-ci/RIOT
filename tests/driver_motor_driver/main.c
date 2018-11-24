@@ -22,44 +22,53 @@ void motors_control(int32_t duty_cycle)
 {
     char str[6];
 
-    if (duty_cycle >= 0)
+    if (duty_cycle >= 0) {
         strncpy(str, "CW", 3);
-    else
+    }
+    else {
         strncpy(str, "CCW", 4);
+    }
 
-    printf("Duty cycle = %"PRId32"   Direction = %s\n", duty_cycle, str);
+    printf("Duty cycle = %" PRId32 "   Direction = %s\n", duty_cycle, str);
 
-    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_0_ID, duty_cycle))
-        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", (uint32_t)MOTOR_0_ID);
-    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_1_ID, duty_cycle))
-        printf("Cannot set PWM duty cycle for motor %"PRIu32"\n", (uint32_t)MOTOR_1_ID);
+    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_0_ID, duty_cycle)) {
+        printf("Cannot set PWM duty cycle for motor %" PRIu32 "\n", \
+               (uint32_t)MOTOR_0_ID);
+    }
+    if (motor_set(MOTOR_DRIVER_DEV(0), MOTOR_1_ID, duty_cycle)) {
+        printf("Cannot set PWM duty cycle for motor %" PRIu32 "\n", \
+               (uint32_t)MOTOR_1_ID);
+    }
 }
 
 void motors_brake(void)
 {
     puts("Brake motors !!!");
 
-    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_0_ID))
-        printf("Cannot brake motor %"PRIu32"\n", (uint32_t)MOTOR_0_ID);
-    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_1_ID))
-        printf("Cannot brake motor %"PRIu32"\n", (uint32_t)MOTOR_1_ID);
+    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_0_ID)) {
+        printf("Cannot brake motor %" PRIu32 "\n", (uint32_t)MOTOR_0_ID);
+    }
+    if (motor_brake(MOTOR_DRIVER_DEV(0), MOTOR_1_ID)) {
+        printf("Cannot brake motor %" PRIu32 "\n", (uint32_t)MOTOR_1_ID);
+    }
 }
 
 void *motion_control_thread(void *arg)
 {
     int8_t dir = 1;
     int ret = 0;
-    xtimer_ticks32_t last_wakeup/*, start*/;
+    xtimer_ticks32_t last_wakeup /*, start*/;
     int32_t pwm_res = motor_driver_config[MOTOR_DRIVER_DEV(0)].pwm_resolution;
 
     (void) arg;
 
     ret = motor_driver_init(MOTOR_DRIVER_DEV(0));
-    if (ret)
+    if (ret) {
         LOG_ERROR("motor_driver_init failed with error code %d\n", ret);
+    }
     assert(ret == 0);
 
-    for(;;) {
+    for (;;) {
         /* BRAKE - duty cycle 100% */
         last_wakeup = xtimer_now();
         motors_brake();
@@ -70,7 +79,8 @@ void *motion_control_thread(void *arg)
         motors_control(dir * pwm_res / 10);
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
 
-        /* Disable motor during INTERVAL µs (motor driver must have enable feature */
+        /* Disable motor during INTERVAL µs (motor driver must have enable
+           feature */
         last_wakeup = xtimer_now();
         motor_disable(MOTOR_DRIVER_DEV(0), MOTOR_0_ID);
         motor_disable(MOTOR_DRIVER_DEV(0), MOTOR_1_ID);
@@ -80,7 +90,7 @@ void *motion_control_thread(void *arg)
 
         /* CW - duty cycle 100% */
         last_wakeup = xtimer_now();
-        motors_control(dir * pwm_res);
+        motors_control(dir * pwm_res / 5);
         xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
 
         /* Reverse direction */

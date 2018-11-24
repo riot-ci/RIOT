@@ -98,18 +98,21 @@ extern "C" {
 #define MOTOR_DRIVER_MAX    (2)
 #endif /* MOTOR_DRIVER_MAX */
 
+/**
+ * @brief Macro to return motor driver id
+ */
 #define MOTOR_DRIVER_DEV(x) (x)
 
 /**
  * @brief Describe DC motor driver modes
  */
 typedef enum {
-    MOTOR_DRIVER_2_DIRS         = 0,          /**< 2 GPIOS for direction, \
-                                                    handling BRAKE */
-    MOTOR_DRIVER_1_DIR          = 1,          /**< Single GPIO for direction, \
-                                                    no BRAKE */
-    MOTOR_DRIVER_1_DIR_BRAKE    = 2           /**< Single GPIO for direction, \
-                                                    Single GPIO for BRAKE */
+    MOTOR_DRIVER_2_DIRS         = 0,            /**< 2 GPIOS for direction, \
+                                                      handling BRAKE */
+    MOTOR_DRIVER_1_DIR          = 1,            /**< Single GPIO for direction, \
+                                                      no BRAKE */
+    MOTOR_DRIVER_1_DIR_BRAKE    = 2             /**< Single GPIO for direction, \
+                                                      Single GPIO for BRAKE */
 } motor_driver_mode_t;
 
 /**
@@ -124,8 +127,8 @@ typedef enum {
  * @brief Describe DC motor direction states
  */
 typedef enum {
-    MOTOR_CW      = 0,          /**< clockwise */
-    MOTOR_CCW     = 1,          /**< counter clockwise */
+    MOTOR_CW    = 0,            /**< clockwise */
+    MOTOR_CCW   = 1,            /**< counter clockwise */
 } motor_direction_t;
 
 /**
@@ -189,7 +192,7 @@ int motor_driver_init(const motor_driver_t motor_driver);
  * @return                      -1 on error with errno set
  */
 int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
-    int32_t pwm_duty_cycle);
+              int32_t pwm_duty_cycle);
 
 /**
  * @brief Brake the motor of a given motor driver

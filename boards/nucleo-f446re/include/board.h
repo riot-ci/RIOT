@@ -29,7 +29,8 @@ extern "C" {
 #endif
 
 /**
- * @brief Describe DC motors with PWM channel and GPIOs
+ * @name Describe DC motors with PWM channel and GPIOs
+ * @{
  */
 static const motor_driver_config_t motor_driver_config[] = {
     {
@@ -65,6 +66,7 @@ static const motor_driver_config_t motor_driver_config[] = {
 };
 
 #define MOTOR_DRIVER_NUMOF           (sizeof(motor_driver_config) / sizeof(motor_driver_config[0]))
+/** @} */
 
 #ifdef __cplusplus
 }

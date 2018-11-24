@@ -18,7 +18,8 @@ int motor_driver_init(motor_driver_t motor_driver)
 
     assert(motor_driver < MOTOR_DRIVER_NUMOF);
 
-    const motor_driver_config_t *motor_driver_conf = &motor_driver_config[motor_driver];
+    const motor_driver_config_t *motor_driver_conf = \
+        &motor_driver_config[motor_driver];
 
     pwm_t pwm_dev = motor_driver_conf->pwm_dev;
     pwm_mode_t mode = motor_driver_conf->pwm_mode;
@@ -34,22 +35,22 @@ int motor_driver_init(motor_driver_t motor_driver)
 
     for (uint8_t i = 0; i < motor_driver_conf->nb_motors; i++) {
         if ((motor_driver_conf->motors[i].gpio_dir0 != GPIO_UNDEF)
-          && (gpio_init(motor_driver_conf->motors[i].gpio_dir0,
-          GPIO_OUT))) {
+            && (gpio_init(motor_driver_conf->motors[i].gpio_dir0,
+                          GPIO_OUT))) {
             err = EIO;
             LOG_ERROR("gpio_dir0 init failed\n");
             goto motor_init_err;
         }
         if ((motor_driver_conf->motors[i].gpio_dir1_or_brake != GPIO_UNDEF)
-          && (gpio_init(motor_driver_conf->motors[i].gpio_dir1_or_brake,
-          GPIO_OUT))) {
+            && (gpio_init(motor_driver_conf->motors[i].gpio_dir1_or_brake,
+                          GPIO_OUT))) {
             err = EIO;
             LOG_ERROR("gpio_dir1_or_brake init failed\n");
             goto motor_init_err;
         }
         if (motor_driver_conf->motors[i].gpio_enable != GPIO_UNDEF) {
             if (gpio_init(motor_driver_conf->motors[i].gpio_enable,
-                GPIO_OUT)) {
+                          GPIO_OUT)) {
                 err = EIO;
                 LOG_ERROR("gpio_enable init failed\n");
                 goto motor_init_err;
@@ -65,7 +66,7 @@ motor_init_err:
 }
 
 int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
-    int32_t pwm_duty_cycle)
+              int32_t pwm_duty_cycle)
 {
     int err = 0;
 
@@ -92,8 +93,7 @@ int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
             err = ENODEV;
             goto motor_set_err;
         }
-        switch (direction)
-        {
+        switch (direction) {
             case MOTOR_CW:
             case MOTOR_CCW:
                 /* Direction */
@@ -111,8 +111,7 @@ int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
             err = ENODEV;
             goto motor_set_err;
         }
-        switch (direction)
-        {
+        switch (direction) {
             case MOTOR_CW:
             case MOTOR_CCW:
                 /* Direction */
@@ -130,8 +129,7 @@ int motor_set(const motor_driver_t motor_driver, uint8_t motor_id, \
             err = ENODEV;
             goto motor_set_err;
         }
-        switch (direction)
-        {
+        switch (direction) {
             case MOTOR_CW:
             case MOTOR_CCW:
                 /* Direction */
