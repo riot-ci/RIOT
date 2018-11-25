@@ -22,6 +22,9 @@
 
 #include "board.h"
 #include "slipdev.h"
+#ifdef MODULE_SLIPDEV_STDIO
+#include "stdio_uart.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,11 +35,19 @@ extern "C" {
  * @{
  */
 #ifndef SLIPDEV_PARAM_UART
-#define SLIPDEV_PARAM_UART      (UART_DEV(0))
-#endif
+# ifndef MODULE_SLIPDEV_STDIO
+#  define SLIPDEV_PARAM_UART        (UART_DEV(0))
+# else  /* MODULE_SLIPDEV_STDIO */
+#  define SLIPDEV_PARAM_UART        (STDIO_UART_DEV)
+# endif /* MODULE_SLIPDEV_STDIO */
+#endif  /* SLIPDEV_PARAM_UART */
 #ifndef SLIPDEV_PARAM_BAUDRATE
-#define SLIPDEV_PARAM_BAUDRATE  (115200U)
-#endif
+# ifndef MODULE_SLIPDEV_STDIO
+#  define SLIPDEV_PARAM_BAUDRATE    (115200U)
+# else  /* MODULE_SLIPDEV_STDIO */
+#  define SLIPDEV_PARAM_BAUDRATE    (STDIO_UART_BAUDRATE)
+# endif /* MODULE_SLIPDEV_STDIO */
+#endif  /* SLIPDEV_PARAM_BAUDRATE */
 
 #ifndef SLIPDEV_PARAMS
 #define SLIPDEV_PARAMS          { .uart = SLIPDEV_PARAM_UART,   \
@@ -46,6 +57,9 @@ extern "C" {
 
 /**
  * @brief   slipdev configuration
+ *
+ * The first element in this array will be used to multiplex stdio if
+ * `slipdev_stdio` is included.
  */
 static const slipdev_params_t slipdev_params[] = {
     SLIPDEV_PARAMS
