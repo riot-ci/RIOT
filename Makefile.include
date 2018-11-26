@@ -495,10 +495,12 @@ pkg-build-%: $(BUILDDEPS)
 	$(QQ)"$(MAKE)" -C $(RIOTPKG)/$*
 
 clean:
+	@# DEBUG COMMIT CHANGES TO SIMPLIFY TESTING
 	sleep 2
 	-for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i clean ; done
 	-rm -rf $(BINDIR)
 	-rm -rf $(SCANBUILD_OUTPUTDIR)
+	@# DEBUG COMMIT CHANGES TO SIMPLIFY TESTING
 
 # Remove intermediates, but keep the .elf, .hex and .map etc.
 clean-intermediates:
