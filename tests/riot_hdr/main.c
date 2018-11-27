@@ -66,12 +66,6 @@ static void test_riot_hdr_04(void)
     TEST_ASSERT_EQUAL_INT(0x02eda672, chksum);
 }
 
-static void test_riot_hdr_05(void)
-{
-    uint32_t chksum = riot_hdr_checksum(&riot_hdr_good);
-    TEST_ASSERT_EQUAL_INT(0x02eda672, chksum);
-}
-
 Test *tests_riot_hdr(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -79,7 +73,6 @@ Test *tests_riot_hdr(void)
         new_TestFixture(test_riot_hdr_02),
         new_TestFixture(test_riot_hdr_03),
         new_TestFixture(test_riot_hdr_04),
-        new_TestFixture(test_riot_hdr_05),
     };
 
     EMB_UNIT_TESTCALLER(riot_hdr_tests, NULL, NULL, fixtures);
