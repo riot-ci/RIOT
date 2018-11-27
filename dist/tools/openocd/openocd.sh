@@ -308,7 +308,7 @@ do_debugserver() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c 'halt'"
+            -c 'reset halt'"
 }
 
 do_reset() {
