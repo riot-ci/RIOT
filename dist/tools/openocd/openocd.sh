@@ -86,7 +86,7 @@
 # Initial target state when using debug, by default a 'halt' request is sent to
 # the target when starting a debug session. 'reset halt' can also be used
 # depending on the type of target.
-: ${OPENOCD_DBG_START_CMD:=-c 'halt'}
+: ${OPENOCD_DBG_START_CMD:=-c \'reset halt\'}
 # This is an optional offset to the base address that can be used to flash an
 # image in a different location than it is linked at. This feature can be useful
 # when flashing images for firmware swapping/remapping boot loaders.
@@ -308,7 +308,7 @@ do_debugserver() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c 'halt'"
+            ${OPENOCD_DBG_START_CMD}"
 }
 
 do_reset() {
