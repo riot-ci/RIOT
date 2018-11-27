@@ -2,11 +2,6 @@
 export CPU = kinetis
 export CPU_MODEL = mkl43z256vlh4
 
-# During development, we discovered that there were some issues with reset and
-# flashing when using an older OpenOCD with this board, it works best with
-# OpenOCD 0.10 or later.
-export USE_OLD_OPENOCD ?= 0
-
 # This board comes with OpenSDA configured with a P&E debugger application,
 # which we do not have any support for. Update your OpenSDA firmware with
 # the latest CMSIS-DAP firmware for your board from
