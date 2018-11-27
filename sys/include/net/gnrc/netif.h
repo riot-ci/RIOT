@@ -132,7 +132,8 @@ struct gnrc_netif_ops {
      * This is called after the default settings were set, right before the
      * interface's thread starts receiving messages. It is not necessary to lock
      * the interface's mutex gnrc_netif_t::mutex, since the thread will already
-     * lock it. Leave NULL if you do not need any special initialization.
+     * lock it. Set to @ref gnrc_netif_default_init() if you do not need any
+     * special initialization.
      */
     void (*init)(gnrc_netif_t *netif);
 

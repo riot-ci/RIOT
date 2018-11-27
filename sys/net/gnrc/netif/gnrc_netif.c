@@ -1311,9 +1311,7 @@ static void *_gnrc_netif_thread(void *args)
     _test_options(netif);
 #endif
     netif->cur_hl = GNRC_NETIF_DEFAULT_HL;
-    if (netif->ops->init) {
-        netif->ops->init(netif);
-    }
+    netif->ops->init(netif);
 #ifdef MODULE_NETSTATS_L2
     memset(&netif->stats, 0, sizeof(netstats_t));
 #endif
