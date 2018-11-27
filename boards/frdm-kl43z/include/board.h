@@ -30,6 +30,12 @@ extern "C"
 #endif
 
 /**
+ * @brief   FOPT setting
+ */
+/* Disable ROM bootloader, launch user application from flash */
+#define KINETIS_FOPT        (0xff & ~(NV_FOPT_BOOTSRC_SEL_MASK | NV_FOPT_BOOTPIN_OPT_MASK))
+
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
