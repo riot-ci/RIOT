@@ -19,6 +19,8 @@
  * @}
  */
 
+#include <stdint.h>
+
 #include "cpu.h"
 
 #include "periph/timer.h"
@@ -141,6 +143,12 @@ int timer_clear(tim_t dev, int channel)
 unsigned int timer_read(tim_t dev)
 {
     return (unsigned int) TIMER_CounterGet(timer_config[dev].timer.dev);
+}
+
+unsigned int timer_max(tim_t dev)
+{
+    (void)dev;
+    return UINT16_MAX;
 }
 
 void timer_stop(tim_t dev)
