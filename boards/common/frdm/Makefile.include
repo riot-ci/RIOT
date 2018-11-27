@@ -11,7 +11,7 @@ export DEBUG_ADAPTER ?= dap
 # watchdog automatically. Some older releases of Ubuntu and Debian have only
 # version 0.9.0 or earlier OpenOCD packages (Ubuntu 17.04, Debian Jessie)
 # Set this to 1 if you are using one of these older releases.
-export USE_OLD_OPENOCD ?= 0
+USE_OLD_OPENOCD ?= 0
 
 ifeq (1,$(USE_OLD_OPENOCD))
 # We need special handling of the watchdog if we want to speed up the flash
