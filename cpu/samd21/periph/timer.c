@@ -251,6 +251,22 @@ unsigned int timer_read(tim_t dev)
 
 }
 
+unsigned int timer_max(tim_t dev)
+{
+    switch (dev) {
+#if TIMER_0_EN
+    case TIMER_0:
+        return TIMER_0_MAX_VALUE;
+#endif
+#if TIMER_1_EN
+    case TIMER_1:
+        return TIMER_1_MAX_VALUE;
+#endif
+    default:
+        return 0;
+    }
+}
+
 void timer_stop(tim_t dev)
 {
     switch (dev) {
