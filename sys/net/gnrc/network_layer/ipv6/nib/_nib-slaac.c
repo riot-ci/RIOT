@@ -37,10 +37,6 @@ void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
     DEBUG("nib: add address based on %s/%u automatically to interface %u\n",
           ipv6_addr_to_str(addr_str, pfx, sizeof(addr_str)),
           pfx_len, netif->pid);
-    if (!(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR)) {
-        DEBUG("nib: interface %i has no link-layer addresses\n", netif->pid);
-        return;
-    }
 #if GNRC_IPV6_NIB_CONF_6LN
     bool new_address = false;
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
