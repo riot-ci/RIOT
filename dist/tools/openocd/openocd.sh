@@ -89,7 +89,7 @@
 # Initial target state when using debug, by default a 'halt' request is sent to
 # the target when starting a debug session. 'reset halt' can also be used
 # depending on the type of target.
-: ${OPENOCD_DBG_START_CMD:=-c 'halt'}
+: ${OPENOCD_DBG_START_CMD:="-c 'reset halt'"}
 # command used to reset the board
 : ${OPENOCD_CMD_RESET_RUN:="-c 'reset run'"}
 # This is an optional offset to the base address that can be used to flash an
@@ -311,7 +311,7 @@ do_debugserver() {
             -c 'gdb_port ${GDB_PORT}' \
             -c 'init' \
             -c 'targets' \
-            -c 'halt'"
+            ${OPENOCD_DBG_START_CMD}"
 }
 
 do_reset() {
