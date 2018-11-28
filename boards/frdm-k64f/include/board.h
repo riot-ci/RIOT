@@ -64,7 +64,7 @@ extern "C"
 #define BTN0_MODE           GPIO_IN_PU
 /* BTN1 is mapped to SW3 */
 #define BTN1_PIN            GPIO_PIN(PORT_A,  4)
-#define BTN1_MODE           GPIO_IN
+#define BTN1_MODE           GPIO_IN_PU
 /** @} */
 
 /**
