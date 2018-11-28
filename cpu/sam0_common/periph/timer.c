@@ -207,6 +207,18 @@ unsigned int timer_read(tim_t tim)
     return dev(tim)->COUNT.reg;
 }
 
+unsigned int timer_max(tim_t dev)
+{
+    switch (dev) {
+#if TIMER_0_EN
+    case TIMER_0:
+        return TIMER_0_MAX_VALUE;
+#endif
+    default:
+        return 0;
+    }
+}
+
 void timer_stop(tim_t tim)
 {
     dev(tim)->CTRLA.bit.ENABLE = 0;
