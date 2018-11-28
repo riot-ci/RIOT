@@ -343,7 +343,13 @@ static inline bool gnrc_netif_is_rtr_adv(const gnrc_netif_t *netif)
  * @return  true, if the interface represents a 6LN
  * @return  false, if the interface does not represent a 6LN
  */
-#define gnrc_netif_is_6lo(netif)    gnrc_netif_is_6ln(netif)
+#if (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN) || defined(DOXYGEN)
+bool gnrc_netif_is_6lo(const gnrc_netif_t *netif);
+#elif GNRC_IPV6_NIB_CONF_6LN
+#define gnrc_netif_is_6lo(netif)                (true)
+#else
+#define gnrc_netif_is_6lo(netif)                (false)
+#endif
 
 /**
  * @brief   Checks if the interface represents a 6Lo node (6LN) according to
@@ -363,7 +369,10 @@ static inline bool gnrc_netif_is_rtr_adv(const gnrc_netif_t *netif)
  * @return  false, if the interface does not represent a 6LN
  */
 #if (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN) || defined(DOXYGEN)
-bool gnrc_netif_is_6ln(const gnrc_netif_t *netif);
+static inline bool gnrc_netif_is_6ln(const gnrc_netif_t *netif)
+{
+    return (netif->flags & GNRC_NETIF_FLAGS_6LN);
+}
 #elif GNRC_IPV6_NIB_CONF_6LN
 #define gnrc_netif_is_6ln(netif)                (true)
 #else

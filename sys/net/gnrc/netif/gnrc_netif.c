@@ -1094,7 +1094,7 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
 #endif  /* MODULE_GNRC_IPV6 */
 
 #if (GNRC_NETIF_NUMOF > 1) || !defined(MODULE_GNRC_SIXLOWPAN)
-bool gnrc_netif_is_6ln(const gnrc_netif_t *netif)
+bool gnrc_netif_is_6lo(const gnrc_netif_t *netif)
 {
     switch (netif->device_type) {
 #ifdef MODULE_GNRC_SIXLOENC
