@@ -173,7 +173,7 @@ unsigned int timer_max(tim_t dev);
  * @return                  time difference, i.e., `until - begin`
  * @return                  0 on error
  */
-unsigned int timer_diff(tim_t tim, unsigned int begin, unsigned int until);
+unsigned int timer_diff(tim_t dev, unsigned int begin, unsigned int until);
 
 /**
  * @brief Start the given timer

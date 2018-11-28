@@ -29,11 +29,11 @@ int timer_set(tim_t dev, int channel, unsigned int timeout)
 }
 #endif
 
-unsigned int timer_diff(tim_t tim, unsigned int begin, unsigned int until)
+unsigned int timer_diff(tim_t dev, unsigned int begin, unsigned int until)
 {
     unsigned int diff = 0;
-    if (tim < TIMER_NUMOF) {
-        diff = (until - begin) & timer_max(tim);
+    if (dev < TIMER_NUMOF) {
+        diff = (until - begin) & timer_max(dev);
     }
     return diff;
 }
