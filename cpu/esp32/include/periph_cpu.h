@@ -410,6 +410,10 @@ extern const unsigned spi_bus_num;
 /** Timer used for system time */
 #define TIMER_SYSTEM    TIMERG0.hw_timer[0]
 
+/**
+ * @brief   Prevent shared timer functions from being used
+ */
+#define PERIPH_TIMER_PROVIDES_SET
 /** @} */
 
 /**
