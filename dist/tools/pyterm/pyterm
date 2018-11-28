@@ -240,9 +240,9 @@ class SerCmd(cmd.Cmd):
                 sys.exit(1)
         # otherwise go for the serial port
         elif self.port:
-            unconnected = True
+            connected = False
             self.logger.info("Connect to serial port %s" % self.port)
-            while unconnected:
+            while not connected:
                 try:
                     self.serial_connect()
                 except OSError as e:
@@ -258,7 +258,7 @@ class SerCmd(cmd.Cmd):
                     self.logger.error("Unexpected exception {}".format(e))
                     sys.exit(1)
                 else:
-                    unconnected = False
+                    connected = True
 
         # wait until connection is established and fire startup
         # commands to the node
