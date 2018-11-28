@@ -6,7 +6,7 @@ FLASHER = lpc2k_pgm
 # configure serial interface
 PORT_LINUX ?= /dev/ttyUSB0
 # This does not make a lot of sense, but it has the same value as the previous code
-PORT_DARWIN ?= /dev/ttyUSB0
+PORT_DARWIN ?= /dev/tty.usbserial-ARM
 
 TERMFLAGS += -tg -p "$(PORT)"
 include $(RIOTMAKE)/tools/serial.inc.mk
