@@ -12,6 +12,7 @@ ifeq ($(TOOLCHAIN)_$(BOARD),llvm_native)
   CFLAGS += -Wno-macro-redefined
   CFLAGS += -Wno-gnu-folding-constant
   CFLAGS += -Wno-conversion
+  export CFLAGS
 endif
 
 all: git-download
