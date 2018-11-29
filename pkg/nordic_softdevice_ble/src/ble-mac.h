@@ -51,7 +51,7 @@ typedef enum {
 #define BLE_IFACE_ADDED             (10000)
 
 #define BLE_SIXLOWPAN_MTU           (1280U)
-#define BLE_SIXLOWPAN_L2_ADDR_LEN   (8)
+#define BLE_L2_ADDR_LEN             (6U)
 
 #define IPV6_IID_FLIP_VALUE         (0x02)
 
@@ -86,8 +86,8 @@ static inline void ble_eui64_from_eui48(uint8_t eui64[8], uint8_t eui48[6], int 
  * @brief   Structure handling a received BLE mac packet
  */
 typedef struct {
-    uint8_t src[8];                      /**< Source address of the packet */
     uint8_t payload[BLE_SIXLOWPAN_MTU];  /**< Payload of the packet */
+    uint8_t src[BLE_L2_ADDR_LEN];        /**< Source address of the packet */
     uint16_t len;                        /**< Length of the packet */
     int8_t rssi;                         /**< RSSI of the received packet */
 } ble_mac_inbuf_t;
@@ -114,7 +114,8 @@ void ble_mac_init(ble_mac_callback_t callback);
  * @return 0 if send is successful
  * @return <0 if send failed
  */
-int ble_mac_send(uint8_t dest[8], void *data, size_t len);
+int ble_mac_send(uint8_t dest[BLE_L2_ADDR_LEN], void *data,
+                 size_t len);
 
 extern volatile int ble_mac_busy_tx;    /**< Flag is set to 1 when the driver
                                              is busy transmitting a packet. */
