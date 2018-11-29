@@ -21,6 +21,8 @@
 #include "adcxx1c_params.h"
 #include "adcxx1c_regs.h"
 
+#include "log.h"
+
 #include "periph/i2c.h"
 #include "periph/gpio.h"
 
@@ -50,7 +52,7 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
 
     if (reg != CONF_TEST_VALUE) {
         i2c_release(I2C);
-        DEBUG("[adcxx1c] init - error: unable to communicate with the device (reg=%x)\n", reg);
+        LOG_DEBUG("[adcxx1c] init - error: unable to communicate with the device (reg=%x)\n", reg);
         return ADCXX1C_NODEV;
     }
 
@@ -74,6 +76,8 @@ int adcxx1c_read_raw(const adcxx1c_t *dev, int16_t *raw)
     status = i2c_read_regs(I2C, ADDR, ADCXX1C_CONV_RES_ADDR, buf, 2, 0);
     i2c_release(I2C);
     if (status < 0) {
+        LOG_DEBUG("[adcxx1c] read - error: unable to communicate "
+                  "with the device (err=%x)\n", status);
         return ADCXX1C_NOI2C;
     }
 
