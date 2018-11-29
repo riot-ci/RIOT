@@ -110,6 +110,7 @@ ble_stack_init(void)
  * @brief Return device EUI64 MAC address
  * @param addr pointer to a buffer to store the address
  */
+#include "ble-mac.h"
 void
 ble_get_mac(uint8_t addr[6])
 {
@@ -119,7 +120,9 @@ ble_get_mac(uint8_t addr[6])
   err_code = sd_ble_gap_address_get(&ble_addr);
   APP_ERROR_CHECK(err_code);
 
-  memcpy(addr, ble_addr.addr, sizeof(ble_addr.addr));
+  ble_eui48(addr,
+            ble_addr.addr,
+            ble_addr.addr_type == BLE_GAP_ADDR_TYPE_PUBLIC);
 }
 /*---------------------------------------------------------------------------*/
 /**

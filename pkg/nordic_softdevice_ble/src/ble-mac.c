@@ -217,11 +217,14 @@ static uint32_t ble_mac_ipsp_evt_handler_irq(ble_ipsp_handle_t *p_handle, ble_ip
 
     switch (p_evt->evt_id) {
         case BLE_IPSP_EVT_CHANNEL_CONNECTED: {
+            uint8_t peer_addr[BLE_L2_ADDR_LEN];
+
             DEBUG("ble-mac: channel connected\n");
-            p_instance = ble_mac_interface_add(
-                    p_evt->evt_param->params.ch_conn_request.peer_addr.addr,
-                    p_handle
-                );
+            ble_eui48(peer_addr,
+                      p_evt->evt_param->params.ch_conn_request.peer_addr.addr,
+                      p_evt->evt_param->params.ch_conn_request.peer_addr.addr_type ==
+                              BLE_GAP_ADDR_TYPE_PUBLIC);
+            p_instance = ble_mac_interface_add(peer_addr, p_handle);
 
             if (p_instance != NULL) {
                 DEBUG("ble-mac: added new IPSP interface\n");
