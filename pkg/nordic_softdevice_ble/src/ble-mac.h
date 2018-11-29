@@ -53,9 +53,34 @@ typedef enum {
 #define BLE_SIXLOWPAN_MTU           (1280U)
 #define BLE_L2_ADDR_LEN             (6U)
 
+#ifndef IPV6_IID_FLIP_VALUE
 #define IPV6_IID_FLIP_VALUE         (0x02)
+#endif
 
-#include "net/eui64.h"
+/**
+ * @brief   Get BLE EUI64 from EUI48
+ *
+ * @param[out] eui48                   The output EUI48 (big-endian,
+ *                                     6 bytes long)
+ * @param[in] ble_adr                  The input BLE address (little-endian,
+ *                                     6 bytes long)
+ * @param[in] _public                  True if public interface, false otherwise
+ */
+static inline void ble_eui48(uint8_t *eui48, const uint8_t *ble_addr, int _public)
+{
+    eui48[0] = ble_addr[5];
+    eui48[1] = ble_addr[4];
+    eui48[2] = ble_addr[3];
+    eui48[3] = ble_addr[2];
+    eui48[4] = ble_addr[1];
+    eui48[5] = ble_addr[0];
+    if (_public) {
+        eui48[0] &= ~(IPV6_IID_FLIP_VALUE);
+    }
+    else {
+        eui48[0] |= IPV6_IID_FLIP_VALUE;
+    }
+}
 
 /**
  * @brief   Structure handling a received BLE mac packet
