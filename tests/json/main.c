@@ -92,13 +92,20 @@ void tests_json_read_digit(json_read_cookie_t *cookie, int digit, bool *okay)
 
 #define TESTS_JSON_NEW_TEST_FIXTURE(NAME) new_TestFixture(tests_json_##NAME),
 
-EMB_UNIT_TESTFIXTURES(tests_json_fixtures) {
-    MAP(TESTS_JSON_NEW_TEST_FIXTURE, TESTS_JSON_ALL)
-    new_TestFixture(tests_json_parsing)
-};
-EMB_UNIT_TESTCALLER(tests_json_tests, NULL, NULL, tests_json_fixtures);
-
-void tests_json(void)
+TestRef test_json(void)
 {
-    TESTS_RUN((Test *) &tests_json_tests);
+    EMB_UNIT_TESTFIXTURES(fixtures) {
+        MAP(TESTS_JSON_NEW_TEST_FIXTURE, TESTS_JSON_ALL)
+        new_TestFixture(tests_json_parsing)
+    };
+
+    EMB_UNIT_TESTCALLER(test_json, NULL, NULL, fixtures);
+    return (TestRef) & test_json;
+}
+
+int main(void)
+{
+    TESTS_START();
+    TESTS_RUN(test_json());
+    TESTS_END();
 }
