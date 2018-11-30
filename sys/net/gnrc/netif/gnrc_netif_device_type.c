@@ -84,6 +84,8 @@ int gnrc_netif_ipv6_iid_from_addr(const gnrc_netif_t *netif,
                 }
 #endif  /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
             default:
+                (void)addr;
+                (void)addr_len;
                 (void)iid;
 #ifdef DEVELHELP
                 LOG_ERROR("gnrc_netif: can't convert hardware address to IID "
