@@ -73,6 +73,23 @@ static void test_rgb2hex__success(void)
     TEST_ASSERT_EQUAL_INT(0x000AB13C, hex);
 }
 
+static void test_rgb2hsv__black(void)
+{
+    color_hsv_t hsv;
+    color_rgb_t rgb = { .r = 0x00, .g = 0x00, .b = 0x00 };
+
+    color_rgb2hsv(&rgb, &hsv);
+
+    /* XXX floats should never be compared for equality, so we check if we
+     * are within 0.01% of tolerance */
+    TEST_ASSERT(-0.0001f <= hsv.h);
+    TEST_ASSERT(-0.0001f <= hsv.s);
+    TEST_ASSERT(-0.0001f <= hsv.v);
+    TEST_ASSERT(0.0001f >= hsv.h);
+    TEST_ASSERT(0.0001f >= hsv.s);
+    TEST_ASSERT(0.0001f >= hsv.v);
+}
+
 static void test_rgb_invert__success(void)
 {
     const color_rgb_t col = {.r = 100, .g = 128, .b =   0};
@@ -109,6 +126,7 @@ Test *tests_color_tests(void)
         new_TestFixture(test_hex2rgb__success),
         new_TestFixture(test_rgb2hex__success),
         new_TestFixture(test_rgb2str__success),
+        new_TestFixture(test_rgb2hsv__black),
         new_TestFixture(test_rgb_invert__success),
         new_TestFixture(test_rgb_complementary__success),
     };
