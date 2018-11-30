@@ -30,7 +30,7 @@
 #define TESTS_JSON_H
 
 #include "embUnit.h"
-#include "../map.h"
+#include "map.h"
 
 #include "kernel_defines.h"
 #include "json.h"
