@@ -22,7 +22,7 @@
  * @brief       Poly1305 MAC interface
  *
  * @author      Koen Zandberg <koen@bergzand.net>
- * 
+ *
  * @see         https://tools.ietf.org/html/rfc8439#section-2.5
  */
 #ifndef CRYPTO_POLY1305_H
