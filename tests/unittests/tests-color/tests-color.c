@@ -80,9 +80,14 @@ static void test_rgb2hsv__black(void)
 
     color_rgb2hsv(&rgb, &hsv);
 
-    TEST_ASSERT(0.0f == hsv.h);
-    TEST_ASSERT(0.0f == hsv.s);
-    TEST_ASSERT(0.0f == hsv.v);
+    /* XXX floats should never be compared for equality, so we check if we
+     * are within 0.01% of tolerance */
+    TEST_ASSERT(-0.0001f <= hsv.h);
+    TEST_ASSERT(-0.0001f <= hsv.s);
+    TEST_ASSERT(-0.0001f <= hsv.v);
+    TEST_ASSERT(0.0001f >= hsv.h);
+    TEST_ASSERT(0.0001f >= hsv.s);
+    TEST_ASSERT(0.0001f >= hsv.v);
 }
 
 static void test_rgb_invert__success(void)
