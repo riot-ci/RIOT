@@ -35,6 +35,9 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * @brief Poly1305 block size
+ */
 #define POLY1305_BLOCK_SIZE 16
 
 /**
