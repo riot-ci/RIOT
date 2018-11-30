@@ -48,8 +48,8 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
     uint8_t reg = 0;
 
     /* Test communication write and read configuration register */
-    i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, CONF_TEST_VALUE, 0);
-    status = i2c_read_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, &reg, 0);
+    status = i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, CONF_TEST_VALUE, 0);
+    status += i2c_read_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, &reg, 0);
 
     if (status < 0 || reg != CONF_TEST_VALUE) {
         i2c_release(I2C);
