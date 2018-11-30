@@ -224,7 +224,7 @@ gnrc_pktsnip_t *gnrc_netif_hdr_build(uint8_t *src, uint8_t src_len, uint8_t *dst
  * @return  The @ref gnrc_netif_t representation of the interface on success
  * @return  NULL, on error.
  */
-static inline gnrc_netif_t *gnrc_netif_hdr_get_netif(gnrc_netif_hdr_t *hdr)
+static inline gnrc_netif_t *gnrc_netif_hdr_get_netif(const gnrc_netif_hdr_t *hdr)
 {
     assert(hdr != NULL);
     return gnrc_netif_get_by_pid(hdr->if_pid);
