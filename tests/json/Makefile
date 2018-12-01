@@ -40,6 +40,7 @@ BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
                                 nrf51dongle \
                                 nrf6310 \
                                 nucleo-f030r8 \
+                                nucleo-f031k6 \
                                 nucleo-f042k6 \
                                 nucleo-f070rb \
                                 nucleo-f072rb \
