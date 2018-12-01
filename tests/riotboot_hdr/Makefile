@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-USEMODULE += riot_hdr
+USEMODULE += riotboot_hdr
 USEMODULE += embunit
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
