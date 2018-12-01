@@ -22,7 +22,7 @@
 #include "embUnit.h"
 
 const riotboot_hdr_t riotboot_hdr_good = {
-    .magic_number = RIOT_HDR_MAGIC,
+    .magic_number = RIOTBOOT_MAGIC,
     .version = 0x5bd19bff,
     .start_addr = 0x00001100,
     .chksum = 0x02eda672
@@ -36,7 +36,7 @@ const riotboot_hdr_t riotboot_hdr_bad_magic = {
 };
 
 const riotboot_hdr_t riotboot_hdr_bad_chksum = {
-    .magic_number = RIOT_HDR_MAGIC,
+    .magic_number = RIOTBOOT_MAGIC,
     .version = 0x5bd19bff,
     .start_addr = 0x00001100,
     .chksum = 0x02000000
