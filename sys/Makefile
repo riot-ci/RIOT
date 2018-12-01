@@ -139,6 +139,9 @@ endif
 ifneq (,$(filter cord_ep,$(USEMODULE)))
     DIRS += net/application_layer/cord/ep
 endif
+ifneq (,$(filter riotboot_%,$(USEMODULE)))
+    DIRS += riotboot
+endif
 
 
 DIRS += $(dir $(wildcard $(addsuffix /Makefile, $(USEMODULE))))

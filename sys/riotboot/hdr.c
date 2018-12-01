@@ -30,7 +30,7 @@
 #define LOG_INFO(...) printf(__VA_ARGS__)
 #endif
 
-#include "riot_hdr.h"
+#include "riotboot/hdr.h"
 #include "checksum/fletcher32.h"
 #include "byteorder.h"
 

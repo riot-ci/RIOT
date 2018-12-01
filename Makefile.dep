@@ -791,13 +791,14 @@ ifneq (,$(filter uuid,$(USEMODULE)))
   USEMODULE += random
 endif
 
+ifneq (,$(filter riotboot_hdr, $(USEMODULE)))
+  USEMODULE += checksum
+  USEMODULE += riotboot
+endif
+
 # Enable periph_gpio when periph_gpio_irq is enabled
 ifneq (,$(filter periph_gpio_irq,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
-endif
-
-ifneq (,$(filter riot_hdr, $(USEMODULE)))
-  USEMODULE += checksum
 endif
 
 # always select gpio (until explicit dependencies are sorted out)
