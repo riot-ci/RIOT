@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    sys_riot_hdr RIOT header helpers and tools
+ * @defgroup    sys_riotboot_hdr RIOT header helpers and tools
  * @ingroup     sys
  * @{
  *
@@ -28,8 +28,8 @@
  * @}
  */
 
-#ifndef RIOT_HDR_H
-#define RIOT_HDR_H
+#ifndef RIOTBOOT_HDR_H
+#define RIOTBOOT_HDR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,10 +38,10 @@ extern "C" {
 #include <stdint.h>
 
 /**
- * @brief  Magic number for riot_hdr
+ * @brief  Magic number for riotboot_hdr
  *
  */
-#define RIOT_HDR_MAGIC         0x544f4952 /* "RIOT" */
+#define RIOTBOOT_MAGIC         0x544f4952 /* "RIOT" */
 
 /**
  * @brief Structure to store image header - All members are little endian
@@ -51,38 +51,38 @@ typedef struct {
     uint32_t magic_number;     /**< header magic_number (always "RIOT")              */
     uint32_t version;          /**< Integer representing the partition version       */
     uint32_t start_addr;       /**< Address after the allocated space for the header */
-    uint32_t chksum;           /**< checksum of riot_hdr                             */
-} riot_hdr_t;
+    uint32_t chksum;           /**< checksum of riotboot_hdr                             */
+} riotboot_hdr_t;
 /** @} */
 
 /**
- * @brief  Print formatted riot_hdr_t to STDIO
+ * @brief  Print formatted riotboot_hdr_t to STDIO
  *
- * @param[in] riot_hdr  ptr to image header
+ * @param[in] riotboot_hdr  ptr to image header
  *
  */
-void riot_hdr_print(const riot_hdr_t *riot_hdr);
+void riotboot_hdr_print(const riotboot_hdr_t *riotboot_hdr);
 
 /**
  * @brief  Validate image header
  *
- * @param[in] riot_hdr  ptr to image header
+ * @param[in] riotboot_hdr  ptr to image header
  *
  * @returns 0 if OK
  */
-int riot_hdr_validate(const riot_hdr_t *riot_hdr);
+int riotboot_hdr_validate(const riotboot_hdr_t *riotboot_hdr);
 
 /**
  * @brief  Calculate header checksum
  *
- * @param[in] riot_hdr  ptr to image header
+ * @param[in] riotboot_hdr  ptr to image header
  *
- * @returns the checksum of the given riot_hdr
+ * @returns the checksum of the given riotboot_hdr
  */
-uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr);
+uint32_t riotboot_hdr_checksum(const riotboot_hdr_t *riotboot_hdr);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* RIOT_HDR_H */
+#endif /* RIOTBOOT_HDR_H */
