@@ -27,7 +27,6 @@
 #include "kw2xrf_intern.h"
 #include "byteorder.h"
 
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
