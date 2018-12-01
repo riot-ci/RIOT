@@ -1,12 +1,25 @@
 include ../Makefile.tests_common
 
+# blacklist due to error: size of array is too large
+BOARD_BLACKLIST +=  arduino-duemilanove \
+                    arduino-mega2560 \
+                    arduino-uno \
+                    chronos \
+                    jiminy-mega256rfr2 \
+                    mega-xplained \
+                    msb-430 \
+                    msb-430h \
+                    telosb \
+                    waspmote-pro \
+                    wsn430-v1_3b \
+                    wsn430-v1_4 \
+                    z1 \
+                    #
+
 BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
-                                arduino-duemilanove \
-                                arduino-mega2560 \
                                 arduino-mkr1000 \
                                 arduino-mkrfox1200 \
                                 arduino-mkrzero \
-                                arduino-uno \
                                 arduino-zero \
                                 b-l072z-lrwan1 \
                                 blackpill \
@@ -14,21 +27,16 @@ BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
                                 calliope-mini \
                                 cc2650-launchpad \
                                 cc2650stk \
-                                chronos \
                                 ek-lm4f120xl \
                                 esp8266-esp-12x \
                                 esp8266-olimex-mod \
                                 esp8266-sparkfun-thing \
                                 feather-m0 \
                                 ikea-tradfri \
-                                jiminy-mega256rfr2 \
                                 limifrog-v1 \
                                 lobaro-lorabox \
                                 maple-mini \
-                                mega-xplained \
                                 microbit \
-                                msb-430 \
-                                msb-430h \
                                 nrf51dongle \
                                 nrf6310 \
                                 nucleo-f030r8 \
@@ -64,12 +72,9 @@ BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
                                 stk3600 \
                                 stm32f0discovery \
                                 stm32f3discovery \
-                                teensy31 \telosb \
-                                waspmote-pro \
-                                wsn430-v1_3b \
-                                wsn430-v1_4 \
+                                teensy31 \
                                 yunjia-nrf51822 \
-                                z1
+                                #
 
 USEMODULE += embunit
 USEMODULE += json
