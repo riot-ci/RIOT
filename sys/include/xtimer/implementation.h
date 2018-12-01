@@ -157,7 +157,7 @@ static inline void _xtimer_spin(uint32_t offset) {
     offset = _xtimer_lltimer_mask(offset);
     while (_xtimer_lltimer_mask(_xtimer_lltimer_now() - start) < offset);
 #else
-    while ((_xtimer_lltimer_now() - start) < offset);
+    while ((_xtimer_lltimer_now() - start) < offset) {}
 #endif
 }
 

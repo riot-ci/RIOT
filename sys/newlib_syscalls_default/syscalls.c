@@ -93,7 +93,7 @@ void _exit(int n)
 {
     LOG_INFO("#! exit %i: powering off\n", n);
     pm_off();
-    while(1);
+    while (1) {}
 }
 
 /**

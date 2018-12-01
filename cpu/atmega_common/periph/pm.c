@@ -43,5 +43,5 @@ void pm_reboot(void)
      */
     irq_disable();
     wdt_enable(WDTO_250MS);
-    while(1);
+    while(1) {}
 }
