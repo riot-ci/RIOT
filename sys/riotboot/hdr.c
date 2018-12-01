@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     sys_riot_hdr
+ * @ingroup     sys_riotboot_hdr
  * @{
  *
  * @file
@@ -38,31 +38,31 @@
 #   error "This code is implementented in a way that it will only work for little-endian systems!"
 #endif
 
-void riot_hdr_print(const riot_hdr_t *riot_hdr)
+void riotboot_hdr_print(const riotboot_hdr_t *riotboot_hdr)
 {
-    printf("Image magic_number: 0x%08x\n", (unsigned)riot_hdr->magic_number);
-    printf("Image Version: 0x%08x\n", (unsigned)riot_hdr->version);
-    printf("Image start address: 0x%08x\n", (unsigned)riot_hdr->start_addr);
-    printf("Header chksum: 0x%08x\n", (unsigned)riot_hdr->chksum);
+    printf("Image magic_number: 0x%08x\n", (unsigned)riotboot_hdr->magic_number);
+    printf("Image Version: 0x%08x\n", (unsigned)riotboot_hdr->version);
+    printf("Image start address: 0x%08x\n", (unsigned)riotboot_hdr->start_addr);
+    printf("Header chksum: 0x%08x\n", (unsigned)riotboot_hdr->chksum);
     printf("\n");
 }
 
-int riot_hdr_validate(const riot_hdr_t *riot_hdr)
+int riotboot_hdr_validate(const riotboot_hdr_t *riotboot_hdr)
 {
-    if (riot_hdr->magic_number != RIOT_HDR_MAGIC) {
-        LOG_INFO("%s: riot_hdr magic number invalid\n", __func__);
+    if (riotboot_hdr->magic_number != RIOTBOOT_MAGIC) {
+        LOG_INFO("%s: riotboot_hdr magic number invalid\n", __func__);
         return -1;
     }
 
-    int res = riot_hdr_checksum(riot_hdr) == riot_hdr->chksum ? 0 : -1;
+    int res = riotboot_hdr_checksum(riotboot_hdr) == riotboot_hdr->chksum ? 0 : -1;
     if (res) {
-        LOG_INFO("%s: riot_hdr checksum invalid\n", __func__);
+        LOG_INFO("%s: riotboot_hdr checksum invalid\n", __func__);
     }
 
     return res;
 }
 
-uint32_t riot_hdr_checksum(const riot_hdr_t *riot_hdr)
+uint32_t riotboot_hdr_checksum(const riotboot_hdr_t *riotboot_hdr)
 {
-    return fletcher32((uint16_t*)riot_hdr, offsetof(riot_hdr_t, chksum) / sizeof(uint16_t));
+    return fletcher32((uint16_t*)riotboot_hdr, offsetof(riotboot_hdr_t, chksum) / sizeof(uint16_t));
 }
