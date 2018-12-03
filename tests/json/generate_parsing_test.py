@@ -41,8 +41,8 @@ def transform_string(dest_file, input_file, test_name, esc_test_name):
 def escape_test_name(test_name, index):
     escaped_str = b''.join(
         b'%c' % (c,) if c in range(ord('a'), ord('z') + 1) or
-                        c in range(ord('A'), ord('Z') + 1) or
-                        c in range(ord('0'), ord('9') + 1) and index > 0 else
+        c in range(ord('A'), ord('Z') + 1) or
+        c in range(ord('0'), ord('9') + 1) and index > 0 else
         b'_%02x' % (c,)
         for index, c in enumerate(test_name)
     )
@@ -116,7 +116,7 @@ def main(dest_path='./generated-parsing-tests.c',
 
         dest_file.write(b'const size_t '
                         b'tests_json_parsing_tests_count = %d;\n' %
-                         (len(test_names),))
+                        (len(test_names),))
 
 
 if __name__ == '__main__':
