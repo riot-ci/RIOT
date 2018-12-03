@@ -22,11 +22,11 @@
 
 #include <string.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #ifdef RIOT_VERSION
 #include "log.h"
 #else
-#include <stdio.h>
 #define LOG_INFO(...) printf(__VA_ARGS__)
 #endif
 
