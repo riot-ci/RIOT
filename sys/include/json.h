@@ -95,7 +95,7 @@ typedef enum {
 } json_write_state_t;
 
 /**
- * @brief   The cookie to store and pass all the information needed to serialize JSON data.
+ * @brief   The cookie with all the information needed to serialize JSON data.
  *
  * @see @ref container_of
  * @see json_write_init()
@@ -121,7 +121,8 @@ static inline void json_write_init(json_write_cookie_t *cookie, json_write_t wri
 /**
  * @brief End a JSON serialization stream.
  *
- * @details An empty stream without any data is invalid.
+ * @note An empty stream without any data is invalid.
+ *
  * @see json_write_init()
  *
  * @param[in] cookie            The cookie, initialized with json_write_init().
@@ -134,10 +135,11 @@ json_result_t json_write_finish(json_write_cookie_t *cookie);
 /**
  * @brief   Open an object to serialize.
  *
- * @details Inside the object call json_write_object_key() to write a key,
- *          then invoke any other write function to write the value associated to this key.
- *          Repeat until you are done, then call json_write_object_close().
- *          An empty object is valid, too.
+ * Inside the object call json_write_object_key() to write a key, then invoke
+ * any other write function to write the value associated to this key. Repeat
+ * until you are done, then call json_write_object_close(). An empty object
+ * is valid, too.
+ *
  * @see json_write_object_close()
  * @see json_write_object_key()
  *
@@ -166,9 +168,10 @@ json_result_t json_write_object_close(json_write_cookie_t *cookie);
 /**
  * @brief   Write a key inside an object.
  *
- * @details Invoke this function multiple times directly to concatenate this substring.
- *          You could write out a string `"test"` character by character if you want to.
- *          An empty key is valid, too.
+ * Invoke this function multiple times directly to concatenate this substring.
+ * You could write out a string `"test"` character by character if you want to.
+ * An empty key is valid, too.
+ *
  * @see json_write_object_open()
  * @see json_write_object_close()
  *
@@ -199,12 +202,12 @@ json_result_t json_write_array_open(json_write_cookie_t *cookie);
 /**
  * @brief   Separate items inside the array.
  *
- * @details Inside the array call opened with json_write_array_open() call
- *          json_write_array_next() to separate values.
- *          Calling json_write_array_next() directly after opening the array
- *          is valid but not needed.
- *          Calling json_write_array_next() before closing the array with
- *          json_write_array_close() without putting an item is invalid.
+ * Inside the array call opened with json_write_array_open() call
+ * json_write_array_next() to separate values. Calling json_write_array_next()
+ * directly after opening the array is valid but not needed.
+ * Calling json_write_array_next() before closing the array with
+ * json_write_array_close() without putting an item is invalid.
+ *
  * @see json_write_object_open()
  * @see json_write_array_next()
  *
@@ -219,7 +222,8 @@ json_result_t json_write_array_close(json_write_cookie_t *cookie);
 /**
  * @brief   Close an array.
  *
- * @details See description in json_write_array_close().
+ * See description in json_write_array_close().
+ *
  * @see json_write_object_open()
  * @see json_write_array_close()
  *
@@ -234,9 +238,12 @@ json_result_t json_write_array_next(json_write_cookie_t *cookie);
 /**
  * @brief   Write a single integer value.
  *
- * @details JSON does not differentiate between integers and floating point numbers.
- * @warning JSON is an unframed format. If the data to deliver consists of a single number,
- *          then there is a fair chance that it will not be processed correctly by the decoder side.
+ * JSON does not differentiate between integers and floating point numbers.
+ *
+ * @warning JSON is an unframed format. If the data to deliver consists of
+ *          a single number, then there is a fair chance that it will not be
+ *          processed correctly by the decoder side.
+ *
  * @see json_write_float()
  * @see json_write_int64()
  *
@@ -252,11 +259,15 @@ json_result_t json_write_int(json_write_cookie_t *cookie, int32_t value);
 /**
  * @brief   Write a floating point number.
  *
- * @details JSON does not differentiate between integers and floating point numbers.
+ * JSON does not differentiate between integers and floating point numbers.
+ *
  * @warning The number must be finite, i.e. it must not be NaN, +Inf or -Inf.
  *          Illegal inputs are not caught but the stream will be broken.
- * @warning JSON is an unframed format. If the data to deliver consists of a single number,
- *          then there is a fair chance that it will not be processed correctly by the decoder side.
+ *
+ * @warning JSON is an unframed format. If the data to deliver consists of
+ *          a single number, then there is a fair chance that it will not be
+ *          processed correctly by the decoder side.
+ *
  * @see json_write_int()
  * @see json_write_int64()
  *
@@ -273,9 +284,12 @@ json_result_t json_write_float(json_write_cookie_t *cookie, float value);
 /**
  * @brief   Write a single integer value.
  *
- * @details JSON does not differentiate between integers and floating point numbers.
- * @warning JSON is an unframed format. If the data to deliver consists of a single number,
- *          then there is a fair chance that it will not be processed correctly by the decoder side.
+ * JSON does not differentiate between integers and floating point numbers.
+ *
+ * @warning JSON is an unframed format. If the data to deliver consists of
+ *          a single number, then there is a fair chance that it will not be
+ *          processed correctly by the decoder side.
+ *
  * @see json_write_int()
  * @see json_write_float()
  *
@@ -292,12 +306,12 @@ json_result_t json_write_int64(json_write_cookie_t *cookie, int64_t value);
 /**
  * @brief   Write a string.
  *
- * @details The character encoding should be UTF-8, but any ASCII-compatible encoding will work
- *          (e.g. Latin-1, UTF-8, but not UTF-7, UTF-16).
+ * The character encoding should be UTF-8, but any ASCII-compatible encoding
+ * will work (e.g. Latin-1, UTF-8, but not UTF-7, UTF-16).
  *
- *          Call this function multiple times to concatenate multiple substrings.
+ * Call this function multiple times to concatenate multiple substrings.
  *
- *          To put an object key use json_write_object_key() instead.
+ * @note To put an object key use json_write_object_key() instead.
  *
  * @param[in] cookie            The cookie, initialized with json_write_init().
  * @param[in] string            The substring to put into the stream.
@@ -431,10 +445,12 @@ typedef struct json_read_cookie json_read_cookie_t;
 /**
  * @brief   The function used to read a byte from the input stream.
  *
- * @details If your input is a `char` array, then explicitly cast the return value
- *          to `unsigned char` or an 8-bit input will be interpreted as the end of the stream.
+ * If your input is a `char` array, then explicitly cast the return value
+ * to `unsigned char` or an 8-bit input will be interpreted as the end of
+ * the stream.
  *
- *          The result does not differentiate between the end of the stream and the end of the input.
+ * The result does not differentiate between the end of the stream and the
+ * end of the input.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  *
@@ -454,7 +470,7 @@ typedef enum {
 } json_read_state_t;
 
 /**
- * @brief   The cookie that passes all the needed state and information to deserialize a JSON stream.
+ * @brief   The cookie with all the information needed to deserialize JSON data.
  *
  * @see json_read_init()
  * @see @ref container_of
@@ -468,7 +484,7 @@ struct json_read_cookie {
 /**
  * @brief   Initialize a JSON input stream.
  *
- * @details There is no `json_read_finish()`.
+ * There is no `json_read_finish()`.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  * @param[in] read              The function that is used to get the next character.
@@ -483,9 +499,10 @@ static inline void json_read_init(json_read_cookie_t *cookie, json_read_t read)
 /**
  * @brief   Determine the type of the next item in the stream.
  *
- * @details You may invoke this function multiple times on the same item.
- * @warning Do not call this function inside an array or object before you have called
- *          json_read_object_next() or json_read_array_next().
+ * You may invoke this function multiple times on the same item.
+ *
+ * @warning Do not call this function inside an array or object before you
+ *          have called json_read_object_next() or json_read_array_next().
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  * @param[out] type             The type if the next item.
@@ -498,10 +515,12 @@ json_result_t json_read_peek(json_read_cookie_t *cookie, json_type_t *type);
 /**
  * @brief   Read out a Unicode codepoint from the stream.
  *
- * @details If json_read_object_next() or json_read_string() returned @ref JSON_READ_UNICODE,
- *          then you need to call this function to read out the code point.
- *          @ref JSON_READ_UNICODE will only occur for `\uXXXX` or `\uXXXX\uYYYY` sequences,
- *          and only if the value was not in ASCII-range `[\u0000 .. \u007F]`.
+ * If json_read_object_next() or json_read_string() returned
+ * @ref JSON_READ_UNICODE, then you need to call this function to read out
+ * the code point.
+ * @ref JSON_READ_UNICODE will only occur for `\uXXXX` or `\uXXXX\uYYYY`
+ * sequences, and only if the value was not in ASCII-range `[\u0000 .. \u007F]`.
+ *
  * @see json_codepoint_to_utf8()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -518,11 +537,12 @@ static inline uint32_t json_read_unicode(json_read_cookie_t *cookie)
 /**
  * @brief   Read an object.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_OBJECT,
- *          or if you know that an object follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_OBJECT,
+ * or if you know that an object follows.
  *
- *          There is no `json_read_object_close()` function.
- *          json_read_object_next() tells you if the object was completely read.
+ * There is no `json_read_object_close()` function.
+ * json_read_object_next() tells you if the object was completely read.
+ *
  * @see json_read_object_next()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -536,14 +556,16 @@ json_result_t json_read_object(json_read_cookie_t *cookie);
 /**
  * @brief   Read the next object key.
  *
- * @details If json_read_peek() returned @ref JSON_OBJECT, then first call json_read_object().
- *          Then in a loop json_read_object_next(), json_read_peek(), `json_read_XXX()`.
- *          Repeat until @p object_closed is @c true.
+ * If json_read_peek() returned @ref JSON_OBJECT, then first call json_read_object().
+ * Then in a loop json_read_object_next(), json_read_peek(), `json_read_XXX()`.
+ * Repeat until @p object_closed is @c true.
  *
- *          You can read the key in substrings.
- *          For that call json_read_object_next() until @p key_read is @c true.
- *          Before you proceed you have to read the whole key.
+ * @note You can read the key in substrings.
+ *       For that call json_read_object_next() until @p key_read is @c true.
+ *       Before you proceed you have to read the whole key.
+ *
  * @warning @p key_buffer is not null-terminated. @p key_len_out is not initialized.
+ *
  * @see json_read_object()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -566,11 +588,12 @@ json_result_t json_read_object_next(json_read_cookie_t *cookie, bool *object_clo
 /**
  * @brief   Read an array.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_ARRAY,
- *          or if you know that an array follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_ARRAY,
+ * or if you know that an array follows.
  *
- *          There is no `json_read_array_close()` function.
- *          json_read_array_next() tells you if the object was completely read.
+ * @note There is no `json_read_array_close()` function.
+ *       json_read_array_next() tells you if the object was completely read.
+ *
  * @see json_read_array_next()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -584,9 +607,10 @@ json_result_t json_read_array(json_read_cookie_t *cookie);
 /**
  * @brief   Read the next array item.
  *
- * @details If json_read_peek() returned @ref JSON_ARRAY, then first call json_read_array().
- *          Then in a loop json_read_array_next(), json_read_peek(), `json_read_XXX()`.
- *          Repeat until @p array_closed is @c true.
+ * If json_read_peek() returned @ref JSON_ARRAY, then first call json_read_array().
+ * Then in a loop json_read_array_next(), json_read_peek(), `json_read_XXX()`.
+ * Repeat until @p array_closed is @c true.
+ *
  * @see json_read_array()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -601,11 +625,12 @@ json_result_t json_read_array_next(json_read_cookie_t *cookie, bool *array_close
 /**
  * @brief   Read a string.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_STRING,
- *          or if you know that a string follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_STRING,
+ * or if you know that a string follows.
  *
- *          You can read the string in substrings.
- *          Invoke json_read_string() multiple times until @p done is @c true.
+ * @note You can read the string in substrings.
+ *       Invoke json_read_string() multiple times until @p done is @c true.
+ *
  * @warning @p buffer is not null-terminated. @p len_out is not initialized.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -627,19 +652,21 @@ json_result_t json_read_string(json_read_cookie_t *cookie,
 /**
  * @brief   Read a number.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_NUMBER,
- *          or if you know that a number follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_NUMBER,
+ * or if you know that a number follows.
  *
- *          JSON does not differentiate between integers and floating point numbers.
- *          Use json_number_type() to see what type of number the input is.
+ * JSON does not differentiate between integers and floating point numbers.
+ * Use json_number_type() to see what type of number the input is.
  *
- *          The input might be broken. This function only tests if the input contains
- *          only characters that can occur in a number, but it does not keep track if
- *          they are in the correct order.
+ * The input might be broken. This function only tests if the input contains
+ * only characters that can occur in a number, but it does not keep track if
+ * they are in the correct order.
  *
- *          You can read the number in substrings.
- *          Invoke json_read_number() multiple times until @p done it @c true.
+ * @note You can read the number in substrings.
+ *       Invoke json_read_number() multiple times until @p done it @c true.
+ *
  * @warning @p buffer is not null-terminated. @p len_out is not initialized.
+ *
  * @see json_number_type()
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
@@ -659,8 +686,8 @@ json_result_t json_read_number(json_read_cookie_t *cookie,
 /**
  * @brief   Read a literal `true`.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_TRUE,
- *          or if you know that a literal `true` follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_TRUE,
+ * or if you know that a literal `true` follows.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  *
@@ -673,8 +700,8 @@ json_result_t json_read_true(json_read_cookie_t *cookie);
 /**
  * @brief   Read a literal `false`.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_FALSE,
- *          or if you know that a literal `false` follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_FALSE,
+ * or if you know that a literal `false` follows.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  *
@@ -687,8 +714,8 @@ json_result_t json_read_false(json_read_cookie_t *cookie);
 /**
  * @brief   Read a literal `null`.
  *
- * @details Call this function if json_read_peek() returned the type @ref JSON_NULL,
- *          or if you know that a literal `null` follows.
+ * Call this function if json_read_peek() returned the type @ref JSON_NULL,
+ * or if you know that a literal `null` follows.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  *
@@ -700,11 +727,12 @@ json_result_t json_read_null(json_read_cookie_t *cookie);
 
 /**
  * @brief   Strip a range of of whitespace characters between values.
- * @details This function is only useful when you need to make sure that all remaining
- *          data is only spaces/padding. For this usecase @ref JSON_PREMATURELY_ENDED
- *          is the **good** outcome, and @ref JSON_INVALID_DATA would indicate an error.
  *
- *          This function does not return @ref JSON_OKAY in any case.
+ * This function is only useful when you need to make sure that all remaining
+ * data is only spaces/padding. For this usecase @ref JSON_PREMATURELY_ENDED
+ * is the **good** outcome, and @ref JSON_INVALID_DATA would indicate an error.
+ *
+ * This function does not return @ref JSON_OKAY in any case.
  *
  * @param[in] cookie            The cookie, initialized with json_read_init().
  *
@@ -755,8 +783,8 @@ typedef enum {
 /**
  * @brief   Determine the type of a number read with json_read_number().
  *
- * @details Even though the data is a valid string representation of an integer or float,
- *          the number may still not fit into the respective data type.
+ * Even though the data is a valid string representation of an integer or float,
+ * the number may still not fit into the respective data type.
  *
  * @param[in] str               The read string.
  * @param[in] len               The length of the read string.
@@ -771,10 +799,11 @@ json_result_t json_number_type(const char *str, size_t len, json_number_t *type)
 /**
  * @brief   Convert a string read with json_read_number() into an int64_t.
  *
- * @details Use json_number_type() to determine if this function or json_number_to_float()
- *          is the correct function to invoke.
- * @warning Even though the number represents an integer, it might still not fit into an int64_t.
- *          This case is not caught by this convenience function.
+ * Use json_number_type() to determine if this function or json_number_to_float()
+ * is the correct function to invoke.
+ *
+ * @warning Even though the number represents an integer, it might still not fit
+ *          into an int64_t. This case is not caught by this convenience function.
  *
  * @param[in] str               The string read with json_read_number().
  * @param[in] len               The length of the string.
@@ -787,10 +816,11 @@ int64_t json_number_to_int(const char *str, size_t len);
 /**
  * @brief   Convert a string read with json_read_number() into a float.
  *
- * @details Use json_number_type() to determine if this function or json_number_to_int()
- *          is the correct function to invoke.
- * @warning Even though the number represents an integer, it might still not fit into a float.
- *          This case is not caught by this convenience function.
+ * Use json_number_type() to determine if this function or json_number_to_int()
+ * is the correct function to invoke.
+ *
+ * @warning Even though the number represents an integer, it might still not fit
+ *          into a float. This case is not caught by this convenience function.
  *
  * @param[in] str               The string read with json_read_number().
  * @param[in] len               The length of the string.
