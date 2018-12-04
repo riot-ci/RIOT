@@ -282,6 +282,11 @@ int gnrc_netif_ndp_addr_len_from_l2ao(gnrc_netif_t *netif,
                     return -EINVAL;
             }
 #endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
+#if defined(MODULE_CC110X)
+        case NETDEV_TYPE_CC110X:
+            (void)opt;
+            return sizeof(uint8_t);
+#endif  /* defined(MODULE_CC110X) */
         default:
             (void)opt;
 #ifdef DEVELHELP
