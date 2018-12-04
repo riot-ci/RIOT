@@ -35,6 +35,7 @@ static void _forward_pkt(gnrc_pktsnip_t *pkt, ipv6_hdr_t *hdr)
     if (--(hdr->hl) == 0) {
         DEBUG("ipv6_ext_rh: hop limit reached 0: drop packet\n");
         gnrc_pktbuf_release(pkt);
+        return;
     }
     /* remove L2 headers around IPV6 */
     netif_snip = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_NETIF);
