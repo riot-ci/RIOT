@@ -14,6 +14,8 @@
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
 
+#include <errno.h>
+
 #include "log.h"
 #include "net/gnrc/netif.h"
 #include "net/ethernet.h"
