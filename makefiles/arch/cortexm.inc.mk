@@ -57,15 +57,15 @@ ARM_GCC_UNSUPPORTED += 15:6.3.1%  # ubuntu bionic, ignore 'svn' build part
 
 # Should not raise an error on the host system version when building in docker
 ifneq (1,$(BUILD_IN_DOCKER))
-ifneq (,$(filter $(ARM_GCC_UNSUPPORTED),$(ARM_GCC_VERSION)))
-  $(warning $(TARGET_ARCH)-gcc version not supported)
-  $(warning $(shell $(TARGET_ARCH)-gcc --version | head -n 1))
-  $(warning The currently recommanded version is the one installed in the riotdocker image)
-  $(warning https://github.com/RIOT-OS/riotdocker/blob/master/Dockerfile)
-ifeq (1,$(WERROR))
-  $(error This check can be ignored by building with 'WERROR=0')
-endif # WERROR
-endif # ARM_GCC_UNSUPPORTED
+  ifneq (,$(filter $(ARM_GCC_UNSUPPORTED),$(ARM_GCC_VERSION)))
+    $(warning $(TARGET_ARCH)-gcc version not supported)
+    $(warning $(shell $(TARGET_ARCH)-gcc --version | head -n 1))
+    $(warning The currently recommanded version is the one installed in the riotdocker image)
+    $(warning https://github.com/RIOT-OS/riotdocker/blob/master/Dockerfile)
+    ifeq (1,$(WERROR))
+      $(error This check can be ignored by building with 'WERROR=0')
+    endif # WERROR
+  endif # ARM_GCC_UNSUPPORTED
 endif # BUILD_IN_DOCKER
 
 
