@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     sys_slot_util
+ * @ingroup     sys_riotboot_slot
  * @{
  *
  * @file
@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include "cpu.h"
-#include "slot_util.h"
+#include "riotboot/slot.h"
 #include "riotboot/hdr.h"
 
 /*
@@ -31,24 +31,24 @@
  * address of the bootloader, thus the header is located after the
  * space reserved to the bootloader.
  */
-const riotboot_hdr_t * const slot_util_slots[] = {
+const riotboot_hdr_t * const riotboot_slot_slots[] = {
     (riotboot_hdr_t*)(CPU_FLASH_BASE + SLOT0_OFFSET),   /* First slot address -> firmware image */
 };
 
 /* Calculate the number of slots */
-const unsigned slot_util_num_slots = sizeof(slot_util_slots) / sizeof(riotboot_hdr_t*);
+const unsigned riotboot_slot_num_slots = sizeof(riotboot_slot_slots) / sizeof(riotboot_hdr_t*);
 
-static void _slot_util_jump_to_image(const riotboot_hdr_t *hdr)
+static void _riotboot_slot_jump_to_image(const riotboot_hdr_t *hdr)
 {
     cpu_jump_to_image(hdr->start_addr);
 }
 
-int slot_util_current_slot(void)
+int riotboot_slot_current_slot(void)
 {
     uint32_t base_addr = cpu_get_image_baseaddr();
 
-    for (unsigned i = 0; i < slot_util_num_slots; i++) {
-        const riotboot_hdr_t *hdr = slot_util_get_hdr(i);
+    for (unsigned i = 0; i < riotboot_slot_num_slots; i++) {
+        const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(i);
         if (base_addr == hdr->start_addr) {
             return i;
         }
@@ -57,34 +57,34 @@ int slot_util_current_slot(void)
     return -1;
 }
 
-void slot_util_jump(unsigned slot)
+void riotboot_slot_jump(unsigned slot)
 {
-    _slot_util_jump_to_image(slot_util_get_hdr(slot));
+    _riotboot_slot_jump_to_image(riotboot_slot_get_hdr(slot));
 }
 
-uint32_t slot_util_get_image_startaddr(unsigned slot)
+uint32_t riotboot_slot_get_image_startaddr(unsigned slot)
 {
-    return slot_util_get_hdr(slot)->start_addr;
+    return riotboot_slot_get_hdr(slot)->start_addr;
 }
 
-void slot_util_dump_addrs(void)
+void riotboot_slot_dump_addrs(void)
 {
-    for (unsigned slot = 0; slot < slot_util_num_slots; slot++) {
-        const riotboot_hdr_t *hdr = slot_util_get_hdr(slot);
+    for (unsigned slot = 0; slot < riotboot_slot_num_slots; slot++) {
+        const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(slot);
 
         if (hdr != NULL) {
             printf("slot %u: metadata: %p image: 0x%08" PRIx32 "\n", slot,
                    hdr,
                    hdr->start_addr);
         } else {
-            printf("[slot_util]: No riotboot_hdr found at %p\n", hdr);
+            printf("[riotboot_slot]: No riotboot_hdr found at %p\n", hdr);
         }
     }
 }
 
-const riotboot_hdr_t *slot_util_get_hdr(unsigned slot)
+const riotboot_hdr_t *riotboot_slot_get_hdr(unsigned slot)
 {
-    assert(slot < slot_util_num_slots);
+    assert(slot < riotboot_slot_num_slots);
 
-    return slot_util_slots[slot];
+    return riotboot_slot_slots[slot];
 }
