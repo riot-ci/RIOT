@@ -11,11 +11,11 @@ defined by the CPU, just after the space allocated for riotboot.
 riotboot consists of:
 
   - This application which serves as minimal bootloader,
-  - the module "riot_hdr" used to recognise RIOT firmware which riotboot
+  - the module "riotboot_hdr" used to recognise RIOT firmware which riotboot
     can boot,
-  - the module "slot_util" used to manage the partitions (slots) with a
+  - the module "riotboot_slot" used to manage the partitions (slots) with a
     RIOT header attached to them,
-  - a tool in dist/tools/riot_hdr for header generation,
+  - a tool in dist/tools/riotboot_gen_hdr for header generation,
   - several make targets to glue everything together.
 
 ## Concept
