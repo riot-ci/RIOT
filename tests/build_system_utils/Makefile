@@ -1,5 +1,4 @@
 BOARD_WHITELIST = native
-TEST_ON_CI_WHITELIST += native
 
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
