@@ -11,8 +11,8 @@ FEATURES_REQUIRED += riotboot
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
 DISABLE_MODULE += auto_init
 
-# Shared interface to read RIOT headers on flash partitions
-USEMODULE += slot_util
+# Include riotboot flash partition functionality
+USEMODULE += riotboot_slot
 
 # RIOT codebase
 RIOTBASE ?= $(CURDIR)/../../
