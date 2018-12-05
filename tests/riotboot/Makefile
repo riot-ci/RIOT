@@ -7,7 +7,7 @@ TEST_ON_CI_WHITELIST += all
 FEATURES_REQUIRED += riotboot
 
 # Include modules to test the bootloader
-USEMODULE += slot_util
+USEMODULE += riotboot_slot
 USEMODULE += shell
 
 # Comment this out to disable code in RIOT that does safety checking
