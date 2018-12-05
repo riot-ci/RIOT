@@ -15,7 +15,7 @@ BINDIR_APP = $(BINDIR)/$(APPLICATION)
 # the Cortex-M0+/3/4/7 architecture
 RIOTBOOT_HDR_LEN ?= 0x100
 
-# Export variables for 'slot_util'
+# Export variables for 'riotboot_slot'
 export SLOT0_LEN
 
 # By default, slot 0 is found just after RIOTBOOT_LEN. It might
