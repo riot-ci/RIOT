@@ -1,5 +1,5 @@
-Advanced tricks                                              {#advanced-tricks}
-================
+Advanced build system tricks                    {#advanced-build-system-tricks}
+============================
 
 [TOC]
 
