@@ -2,7 +2,8 @@
 _riotbase := $(dir $(lastword $(MAKEFILE_LIST)))
 
 # include RIOT_MAKEFILES_GLOBAL_PRE configuration files
-# allows setting user specific system wide configuration parsed before
+# allows setting user specific system wide configuration parsed before the body
+# of $(RIOTBASE)/Makefile.include
 include $(RIOT_MAKEFILES_GLOBAL_PRE)
 
 # Globally set default goal to `all`
@@ -743,5 +744,6 @@ endif
 endif # BOARD=none
 
 # include RIOT_MAKEFILES_GLOBAL_POST configuration files
-# allows setting user specific system wide configuration parsed after
+# allows setting user specific system wide configuration parsed after the body
+# of $(RIOTBASE)/Makefile.include
 include $(RIOT_MAKEFILES_GLOBAL_POST)
