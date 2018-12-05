@@ -31,8 +31,7 @@ static void _create_iid_from_short(const uint8_t *addr, size_t addr_len,
     iid->uint8[4] = 0xfe;
     memcpy(&iid->uint8[offset], addr, addr_len);
 }
-#endif /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_CC110X) ||
-        * defined(MODULE_NRFMIN) || defined(MODULE_XBEE) */
+#endif /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
 
 int gnrc_netif_ipv6_iid_from_addr(const gnrc_netif_t *netif,
                                   const uint8_t *addr, size_t addr_len,
