@@ -36,7 +36,7 @@ extern "C" {
  *
  * @returns nr of currently active slot
  */
-int riotboot_slot_current_slot(void);
+int riotboot_slot_current(void);
 
 /**
  * @brief  Get jump-to address of image slot
@@ -81,7 +81,7 @@ static inline int riotboot_slot_validate(unsigned slot)
  * @param[in]   slot    slot nr to work on
  *
  */
-static inline void riotboot_slot_print_slot_hdr(unsigned slot)
+static inline void riotboot_slot_print_hdr(unsigned slot)
 {
     riotboot_hdr_print(riotboot_slot_get_hdr(slot));
 }
@@ -95,12 +95,12 @@ void riotboot_slot_dump_addrs(void);
 /**
  * @brief   Number of configured firmware slots (incl. bootloader slot)
  */
-extern const unsigned riotboot_slot_num_slots;
+extern const unsigned riotboot_slot_numof;
 
 /**
  * @brief   Storage for header pointers of the configured slots
  */
-extern const riotboot_hdr_t * const riotboot_slot_slots[];
+extern const riotboot_hdr_t * const riotboot_slots[];
 
 #ifdef __cplusplus
 }

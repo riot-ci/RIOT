@@ -32,7 +32,7 @@ static int cmd_print_slot_nr(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    printf("Current slot=%d\n", riotboot_slot_current_slot());
+    printf("Current slot=%d\n", riotboot_slot_current());
     return 0;
 }
 
@@ -41,8 +41,8 @@ static int cmd_print_slot_hdr(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    int current_slot = riotboot_slot_current_slot();
-    riotboot_slot_print_slot_hdr(current_slot);
+    int current_slot = riotboot_slot_current();
+    riotboot_slot_print_hdr(current_slot);
     return 0;
 }
 
@@ -83,10 +83,10 @@ int main(void)
     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
 
     /* print some information about the running image */
-    current_slot = riotboot_slot_current_slot();
+    current_slot = riotboot_slot_current();
     if (current_slot != -1) {
         printf("riotboot_test: running from slot %d\n", current_slot);
-        riotboot_slot_print_slot_hdr(current_slot);
+        riotboot_slot_print_hdr(current_slot);
     }
     else {
         printf("[FAILED] You're not running riotboot\n");

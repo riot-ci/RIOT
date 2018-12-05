@@ -31,23 +31,23 @@
  * address of the bootloader, thus the header is located after the
  * space reserved to the bootloader.
  */
-const riotboot_hdr_t * const riotboot_slot_slots[] = {
+const riotboot_hdr_t * const riotboot_slots[] = {
     (riotboot_hdr_t*)(CPU_FLASH_BASE + SLOT0_OFFSET),   /* First slot address -> firmware image */
 };
 
 /* Calculate the number of slots */
-const unsigned riotboot_slot_num_slots = sizeof(riotboot_slot_slots) / sizeof(riotboot_hdr_t*);
+const unsigned riotboot_slot_numof = sizeof(riotboot_slots) / sizeof(riotboot_hdr_t*);
 
 static void _riotboot_slot_jump_to_image(const riotboot_hdr_t *hdr)
 {
     cpu_jump_to_image(hdr->start_addr);
 }
 
-int riotboot_slot_current_slot(void)
+int riotboot_slot_current(void)
 {
     uint32_t base_addr = cpu_get_image_baseaddr();
 
-    for (unsigned i = 0; i < riotboot_slot_num_slots; i++) {
+    for (unsigned i = 0; i < riotboot_slot_numof; i++) {
         const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(i);
         if (base_addr == hdr->start_addr) {
             return i;
@@ -69,7 +69,7 @@ uint32_t riotboot_slot_get_image_startaddr(unsigned slot)
 
 void riotboot_slot_dump_addrs(void)
 {
-    for (unsigned slot = 0; slot < riotboot_slot_num_slots; slot++) {
+    for (unsigned slot = 0; slot < riotboot_slot_numof; slot++) {
         const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(slot);
 
         if (hdr != NULL) {
@@ -84,7 +84,7 @@ void riotboot_slot_dump_addrs(void)
 
 const riotboot_hdr_t *riotboot_slot_get_hdr(unsigned slot)
 {
-    assert(slot < riotboot_slot_num_slots);
+    assert(slot < riotboot_slot_numof);
 
-    return riotboot_slot_slots[slot];
+    return riotboot_slots[slot];
 }
