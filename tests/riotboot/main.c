@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-#include "slot_util.h"
+#include "riotboot/slot.h"
 #include "shell.h"
 
 static int cmd_print_slot_nr(int argc, char **argv)
@@ -32,7 +32,7 @@ static int cmd_print_slot_nr(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    printf("Current slot=%d\n", slot_util_current_slot());
+    printf("Current slot=%d\n", riotboot_slot_current_slot());
     return 0;
 }
 
@@ -41,8 +41,8 @@ static int cmd_print_slot_hdr(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    int current_slot = slot_util_current_slot();
-    slot_util_print_slot_hdr(current_slot);
+    int current_slot = riotboot_slot_current_slot();
+    riotboot_slot_print_slot_hdr(current_slot);
     return 0;
 }
 
@@ -52,7 +52,7 @@ static int cmd_print_slot_addr(int argc, char **argv)
 
     int reqslot=atoi(argv[1]);
     printf("Slot %d address=0x%08" PRIx32 "\n",
-           reqslot, slot_util_get_image_startaddr(reqslot));
+           reqslot, riotboot_slot_get_image_startaddr(reqslot));
     return 0;
 }
 
@@ -61,7 +61,7 @@ static int cmd_dumpaddrs(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    slot_util_dump_addrs();
+    riotboot_slot_dump_addrs();
     return 0;
 }
 
@@ -83,10 +83,10 @@ int main(void)
     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
 
     /* print some information about the running image */
-    current_slot = slot_util_current_slot();
+    current_slot = riotboot_slot_current_slot();
     if (current_slot != -1) {
         printf("riotboot_test: running from slot %d\n", current_slot);
-        slot_util_print_slot_hdr(current_slot);
+        riotboot_slot_print_slot_hdr(current_slot);
     }
     else {
         printf("[FAILED] You're not running riotboot\n");
