@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    sys_slot_util   Helpers to manipulate partitions (slots)
+ * @defgroup    sys_riotboot_slot   Helpers to manipulate partitions (slots)
  *                              on internal flash
  * @ingroup     sys
  * @{
@@ -22,8 +22,8 @@
  * @}
  */
 
-#ifndef SLOT_UTIL_H
-#define SLOT_UTIL_H
+#ifndef RIOTBOOT_SLOT_H
+#define RIOTBOOT_SLOT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
  *
  * @returns nr of currently active slot
  */
-int slot_util_current_slot(void);
+int riotboot_slot_current_slot(void);
 
 /**
  * @brief  Get jump-to address of image slot
@@ -45,14 +45,14 @@ int slot_util_current_slot(void);
  *
  * @returns address of first byte of @p slot
  */
-uint32_t slot_util_get_image_startaddr(unsigned slot);
+uint32_t riotboot_slot_get_image_startaddr(unsigned slot);
 
 /**
  * @brief  Boot into image in slot @p slot
  *
  * @param[in]   slot    slot nr to jump to
  */
-void slot_util_jump(unsigned slot);
+void riotboot_slot_jump(unsigned slot);
 
 /**
  * @brief  Get header from a given flash slot
@@ -61,7 +61,7 @@ void slot_util_jump(unsigned slot);
  *
  * @returns header of image slot nr @p slot
  */
-const riotboot_hdr_t *slot_util_get_hdr(unsigned slot);
+const riotboot_hdr_t *riotboot_slot_get_hdr(unsigned slot);
 
 /**
  * @brief  Validate slot
@@ -70,9 +70,9 @@ const riotboot_hdr_t *slot_util_get_hdr(unsigned slot);
  *
  * @returns 0 if ok.
  */
-static inline int slot_util_validate(unsigned slot)
+static inline int riotboot_slot_validate(unsigned slot)
 {
-    return riotboot_hdr_validate(slot_util_get_hdr(slot));
+    return riotboot_hdr_validate(riotboot_slot_get_hdr(slot));
 }
 
 /**
@@ -81,29 +81,29 @@ static inline int slot_util_validate(unsigned slot)
  * @param[in]   slot    slot nr to work on
  *
  */
-static inline void slot_util_print_slot_hdr(unsigned slot)
+static inline void riotboot_slot_print_slot_hdr(unsigned slot)
 {
-    riotboot_hdr_print(slot_util_get_hdr(slot));
+    riotboot_hdr_print(riotboot_slot_get_hdr(slot));
 }
 
 /**
  * @brief  Dump the addresses of all configured slots
  *
  */
-void slot_util_dump_addrs(void);
+void riotboot_slot_dump_addrs(void);
 
 /**
  * @brief   Number of configured firmware slots (incl. bootloader slot)
  */
-extern const unsigned slot_util_num_slots;
+extern const unsigned riotboot_slot_num_slots;
 
 /**
  * @brief   Storage for header pointers of the configured slots
  */
-extern const riotboot_hdr_t * const slot_util_slots[];
+extern const riotboot_hdr_t * const riotboot_slot_slots[];
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* SLOT_UTIL_H */
+#endif /* RIOTBOOT_SLOT_H */

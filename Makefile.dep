@@ -802,7 +802,7 @@ ifneq (,$(filter periph_gpio_irq,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
 endif
 
-ifneq (,$(filter slot_util, $(USEMODULE)))
+ifneq (,$(filter riotboot_slot, $(USEMODULE)))
   USEMODULE += riotboot_hdr
 endif
 
