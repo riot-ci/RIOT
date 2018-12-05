@@ -23,15 +23,15 @@
 
 #include "cpu.h"
 #include "panic.h"
-#include "slot_util.h"
+#include "riotboot/slot.h"
 
 void kernel_init(void)
 {
     /* bootloader boots only slot 0 if it is valid */
     unsigned slot = 0;
 
-    if (slot_util_validate(slot) == 0) {
-        slot_util_jump(slot);
+    if (riotboot_slot_validate(slot) == 0) {
+        riotboot_slot_jump(slot);
     }
 
     /* serious trouble! */
