@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2018 Freie Universität Berlin
+ * Copyright (C) 2018 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +7,13 @@
  */
 
 /**
- * @defgroup    boards_common_nrf52xxxdk NRF52 DK common
- * @ingroup     boards_common_nrf52
+ * @ingroup     boards_particle-mesh
  * @{
  *
  * @file
- * @brief       Peripheral configuration for the nRF52 DK
+ * @brief       Peripheral configuration for the Particle Mesh
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  */
 
@@ -69,19 +68,8 @@ static const i2c_conf_t i2c_config[] = {
 #define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
 /** @} */
 
-/**
- * @name   PWM configuration
- * @{
- */
-static const pwm_conf_t pwm_config[] = {
-    { NRF_PWM0, { 28, 29, 30, 31 } }
-};
-#define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
-/** @} */
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* PERIPH_CONF_H */
-/** @} */
