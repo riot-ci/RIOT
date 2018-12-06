@@ -27,7 +27,7 @@ include $(RIOTBASE)/Makefile.include
 # This is currently hacky as there is no way of specifiying a FLASHFILE
 all: riotboot/combined-slot0
 # openocd
-export IMAGE_FILE = $(BINDIR_APP)-slot0-combined.bin
+ELFFILE = $(BINDIR_APP)-slot0-combined.bin
 # edbg
 HEXFILE = $(BINDIR_APP)-slot0-combined.bin
 # murdock uses ':=' to get the flashfile variable so should also be overwritten
