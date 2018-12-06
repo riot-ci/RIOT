@@ -511,10 +511,13 @@ distclean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
 	-@rm -rf $(BINDIRBASE)
 
-define flash-commands =
+define flash-commands
   $(call check_cmd,$(FLASHER),Flash program)
   $(FLASHER) $(FFLAGS)
 endef
+
+# Do not add dependencies to "flash" directly, use FLASHDEPS, as this is shared
+# with flash-only too
 
 flash: all $(FLASHDEPS)
 	$(flash-commands)
