@@ -9,6 +9,7 @@ BOARD_BLACKLIST := chronos msb-430 msb-430h telosb wsn430-v1_3b wsn430-v1_4 z1
 BOARD_BLACKLIST += arduino-duemilanove \
                    arduino-mega2560 \
                    arduino-uno \
+                   arduino-leonardo \
                    jiminy-mega256rfr2 \
                    mega-xplained \
                    waspmote-pro

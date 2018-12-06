@@ -2,6 +2,7 @@
  * Copyright (C) 2014 Freie Universität Berlin, Hinnerk van Bruinehsen
  *               2016 Laurent Navet <laurent.navet@gmail.com>
  *               2017 HAW Hamburg, Dimitri Nahm
+ *               2017 Thomas Perrot <thomas.perrot@tupi.fr>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -19,6 +20,7 @@
  * @author      Laurent Navet <laurent.navet@gmail.com>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Dimitri Nahm <dimitri.nahm@haw-hamburg.de>
+ * @author      Thomas Perrot <thomas.perrot@tupi.fr>
  */
 
 #ifndef PERIPH_CONF_H
@@ -61,6 +63,17 @@ extern "C" {
 #define TIMER_0_ISRB        TIMER1_COMPB_vect
 #endif
 
+#ifdef CPU_ATMEGA32U4
+#define TIMER_NUMOF         (2U)
+
+#define TIMER_0             MEGA_TIMER1
+#define TIMER_0_MASK        &TIMSK1
+#define TIMER_0_FLAG        &TIFR1
+#define TIMER_0_ISRA        TIMER1_COMPA_vect
+#define TIMER_0_ISRB        TIMER1_COMPB_vect
+
+#endif
+
 #ifdef CPU_ATMEGA2560
 #define TIMER_NUMOF         (2U)
 #define TIMER_CHANNELS      (3)
@@ -97,6 +110,14 @@ extern "C" {
 #define UART_0_ISR          USART_RX_vect
 #endif
 
+#ifdef CPU_ATMEGA32U4
+#define UART_NUMOF          (1U)
+
+#define UART_0              MEGA_UART1
+#define UART_0_ISR          USART1_RX_vect
+
+#endif
+
 #ifdef CPU_ATMEGA2560
 #define UART_NUMOF          (4U)
 
@@ -117,8 +138,9 @@ extern "C" {
 /**
  * @name    SPI configuration
  *
- * The atmega2560/atmega1281/atmega328p has only one hardware SPI with fixed pin
- * configuration, so all we can do here, is to enable or disable it...
+ * The atmega32u4/atmega2560/atmega1281/atmega328p has only one hardware SPI
+ * with fixed pin configuration, so all we can do here, is to enable or
+ * disable it...
  *
  * The fixed pins for arduino uno and duemilanove (atmega328p) are:
  * MOSI - PB3 (Arduino pin 11)
@@ -131,6 +153,12 @@ extern "C" {
  * MISO - PB3 (Arduino pin 50)
  * SCK  - PB1 (Arduino pin 52)
  * SS   - PB0 (Arduino pin 53) -> this pin is configured as output, but not used
+ *
+ * The fixed pins for arduino leonardo are:
+ * MOSI - PB2 (Arduino pin 16)
+ * MISO - PB3 (Arduino pin 14)
+ * SCK  - PB1 (Arduino pin 15)
+ * SS   - PB0 (Arduino pin 17) -> this pin is configured as output, but not used
  *
  * The SS pin must be configured as output for the SPI device to work as
  * master correctly, though we do not use it for now (as we handle the chip
@@ -160,10 +188,23 @@ extern "C" {
  *  -> boards -> arduino-atmega-common -> include -> board_common.h
  * @{
  */
-#if defined (CPU_ATMEGA328P) || defined (CPU_ATMEGA1281)
+#if defined (CPU_ATMEGA328P) || defined (CPU_ATMEGA1281) || defined (CPU_ATMEGA32U4)
 #define ADC_NUMOF       (8U)
 #elif defined (CPU_ATMEGA2560)
 #define ADC_NUMOF       (16U)
+#endif
+/** @} */
+
+/**
+ * @name    PRR configuration
+ *
+ * The Power Reduction configuration
+ * @{
+ */
+#ifdef CPU_ATMEGA32U4
+#define MEGA_PRR            SMCR        /* Power Reduction Register is SMCR */
+#elif defined (CPU_ATMEGA2560)
+#define MEGA_PRR            PRR0        /* Power Reduction Register is PRR0 */
 #endif
 /** @} */
 
@@ -183,6 +224,9 @@ extern "C" {
 #define PWM_PINS_CH0 { GPIO_PIN(PORT_D, 6), GPIO_PIN(PORT_D, 5) }
 #define PWM_PINS_CH1 { GPIO_PIN(PORT_B, 3), GPIO_PIN(PORT_D, 3) }
 
+#elif defined(CPU_ATMEGA32U4)
+#define PWM_PINS_CH0 { GPIO_PIN(PORT_B, 7), GPIO_PIN(PORT_D, 0) }
+
 #elif defined(CPU_ATMEGA2560)
 #define PWM_PINS_CH0 { GPIO_PIN(PORT_B, 7), GPIO_PIN(PORT_G, 5) }
 #define PWM_PINS_CH1 { GPIO_PIN(PORT_B, 4), GPIO_PIN(PORT_H, 6) }
@@ -198,11 +242,14 @@ static const pwm_conf_t pwm_conf[] = {
         .pin_ch = PWM_PINS_CH0,
         .div = MINI_TIMER0_DIV,
     },
+#if defined(CPU_ATMEGA32U4)
+#else
     {
         .dev = MINI_TIMER2,
         .pin_ch = PWM_PINS_CH1,
         .div = MINI_TIMER2_DIV,
     }
+#endif
 };
 #define PWM_NUMOF (sizeof(pwm_conf) / sizeof(pwm_conf[0]))
 /** @} */
@@ -212,3 +259,4 @@ static const pwm_conf_t pwm_conf[] = {
 #endif
 
 #endif /* PERIPH_CONF_H */
+/** @} */
