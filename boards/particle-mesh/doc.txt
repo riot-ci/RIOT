@@ -1,0 +1,63 @@
+/**
+@defgroup    boards_particle-mesh Particle Mesh
+@ingroup     boards
+@brief       Support for the Particle Mesh boards family (Xenon, Argon, Photon)
+
+### General information
+
+[Particle Mesh](https://www.particle.io/mesh/) are mesh-ready development kits.
+Depending on the board type (Xenon, Argon, Boron), it provides access to
+multiple communication protocols: BLE, 802.15.4, WiFi, LTE.
+
+This support is generic to the 3 types of Particle Mesh development kits:
+the 3 boards share the same design with extra hardware for some of them.
+Using this extra hardware (ESP32, LTE) with RIOT is as easy as including the
+corresponding driver module to an application (note that this extra hardware is
+not supported yet).
+
+<img src="https://docs.particle.io/assets/images/xenon/xenon-top.png"
+     alt="pinout" style="height:300px;"/>
+
+### Block diagrams and datasheets
+
+- Xenon: [Datasheet](https://docs.particle.io/assets/pdfs/datasheets/xenon-datasheet.pdf)
+  <img src="https://docs.particle.io/assets/images/xenon/xenon-block-diagram.png"
+     alt="pinout" style="height:800px;"/>
+
+- Argon: [datasheet](https://docs.particle.io/assets/pdfs/datasheets/argon-datasheet.pdf)
+
+- Boron: [datasheet](https://docs.particle.io/assets/pdfs/datasheets/boron-datasheet.pdf)
+
+### Flash the board
+
+Using the [Particle Mesh debugger](https://docs.particle.io/datasheets/accessories/mesh-accessories/#debugger),
+the board can be flashed with PyOCD programmer via a DAPLink.
+
+PyOCD can be installed using Python package manager:
+```
+    pip install pyocd --user -U
+```
+
+To flash the board, use `BOARD=particle-mesh` with the `make` command.<br/>
+Example with `hello-world` application:
+```
+    make BOARD=particle-mesh -C examples/hello-world flash
+```
+
+In this case, OpenOCD can also be used. For the moment, the latest stable
+version of OpenOCD (0.10) doesn't contain any support for nrf52 but versions
+built against the actual development version can be used.
+
+To flash the board with OpenOCD, use the `PROGRAMMER` variable:
+```
+    PROGRAMMER=openocd make BOARD=particle-mesh -C examples/hello-world flash
+```
+
+### Accessing STDIO via UART
+
+The STDIO is not accessible via the USB port.
+
+To access the STDIO of RIOT, a FTDI to USB converter needs to be plugged to
+the RX/TX pins on the board.
+
+ */
