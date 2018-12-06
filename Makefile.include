@@ -511,7 +511,7 @@ distclean:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
 	-@rm -rf $(BINDIRBASE)
 
-define flash-commands
+define flash-recipe
   $(call check_cmd,$(FLASHER),Flash program)
   $(FLASHER) $(FFLAGS)
 endef
@@ -520,10 +520,10 @@ endef
 # with flash-only too
 
 flash: all $(FLASHDEPS)
-	$(flash-commands)
+	$(flash-recipe)
 
 flash-only: $(FLASHDEPS)
-	$(flash-commands)
+	$(flash-recipe)
 
 preflash: $(BUILD_BEFORE_FLASH)
 	$(PREFLASHER) $(PREFFLAGS)
