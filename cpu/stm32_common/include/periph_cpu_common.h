@@ -156,6 +156,11 @@ typedef uint32_t gpio_t;
 #define PERIPH_I2C_NEED_READ_REG
 /** Use write reg function from periph common */
 #define PERIPH_I2C_NEED_WRITE_REG
+#define PERIPH_I2C_NEED_READ_REGS
+#if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32F4)
+#define PERIPH_I2C_NEED_WRITE_REGS
+#endif
 /** @} */
 
 /**
@@ -403,6 +408,14 @@ typedef enum {
 /** @} */
 
 /**
+ * @brief   Pin remap options
+ */
+typedef enum {
+    I2C_DEFAULT_PINS,      /**< Use default sda and scl pins */
+    I2C_ALT_PINS,          /**< Use alternate sda and scl pins */
+} i2c_remap_t;
+
+/**
  * @brief   Structure for I2C configuration data
  */
 typedef struct {
@@ -413,11 +426,15 @@ typedef struct {
 #ifndef CPU_FAM_STM32F1
     gpio_af_t scl_af;       /**< scl pin alternate function value */
     gpio_af_t sda_af;       /**< sda pin alternate function value */
+    i2c_remap_t pin_remap;  /**< use alternate pin mapping for sda and scl */
 #endif
     uint8_t bus;            /**< APB bus */
     uint32_t rcc_mask;      /**< bit in clock enable register */
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
     uint32_t rcc_sw_mask;   /**< bit to switch I2C clock */
+#endif
+#ifdef CPU_FAM_STM32F1
+    i2c_remap_t pin_remap;  /**< use alternate pin mapping for sda and scl */
 #endif
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L1)
