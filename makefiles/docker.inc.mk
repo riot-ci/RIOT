@@ -95,7 +95,13 @@ GIT_WORKTREE_COMMONDIR = $(shell git rev-parse --git-common-dir)
 DOCKER_VOLUMES_AND_ENV += $(if $(_is_git_worktree),-v $(GIT_WORKTREE_COMMONDIR):$(GIT_WORKTREE_COMMONDIR))
 
 # Resolve symlink of /etc/localtime to its real path
-ETC_LOCALTIME := $(shell realpath /etc/localtime)
+# This is a workaround for docker on maOS, for more information see:
+# https://github.com/docker/for-mac/issues/2396
+REALPATH := realpath
+ifneq ($(shell uname -s),Darwin)
+  REALPATH := readlink
+endif
+ETC_LOCALTIME = $(shell $(REALPATH) /etc/localtime)
 
 # This will execute `make $(DOCKER_MAKECMDGOALS)` inside a Docker container.
 # We do not push the regular $(MAKECMDGOALS) to the container's make command in
