@@ -95,7 +95,7 @@ GIT_WORKTREE_COMMONDIR = $(shell git rev-parse --git-common-dir)
 DOCKER_VOLUMES_AND_ENV += $(if $(_is_git_worktree),-v $(GIT_WORKTREE_COMMONDIR):$(GIT_WORKTREE_COMMONDIR))
 
 # Resolve symlink of /etc/localtime to its real path
-# This is a workaround for docker on maOS, for more information see:
+# This is a workaround for docker on macOS, for more information see:
 # https://github.com/docker/for-mac/issues/2396
 ETC_LOCALTIME = $(realpath /etc/localtime)
 
