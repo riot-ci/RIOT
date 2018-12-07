@@ -21,7 +21,6 @@
 #define PERIPH_CONF_COMMON_H
 
 #include "periph_cpu.h"
-#include "cfg_clock_32_1.h"
 
 #ifdef __cplusplus
 extern "C" {
