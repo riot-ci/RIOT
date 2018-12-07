@@ -403,6 +403,14 @@ typedef enum {
 /** @} */
 
 /**
+ * @brief   Pin remap options
+ */
+typedef enum {
+    I2C_DEFAULT_PINS,      /**< Use default sda and scl pins */
+    I2C_ALT_PINS,          /**< Use alternate sda and scl pins */
+} i2c_remap_t;
+
+/**
  * @brief   Structure for I2C configuration data
  */
 typedef struct {
@@ -418,6 +426,9 @@ typedef struct {
     uint32_t rcc_mask;      /**< bit in clock enable register */
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3)
     uint32_t rcc_sw_mask;   /**< bit to switch I2C clock */
+#endif
+#ifdef CPU_FAM_STM32F1
+    i2c_remap_t pin_remap;  /**< use alternate pin mapping for sda and scl */
 #endif
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L1)
