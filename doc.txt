@@ -1,4 +1,9 @@
 /**
+* @defgroup configurations Compile time configurations
+* @brief List of compile-time configurations
+*/
+
+/**
  * @defgroup utils Utilities
  * @brief Utilities and helper functionality
  *
