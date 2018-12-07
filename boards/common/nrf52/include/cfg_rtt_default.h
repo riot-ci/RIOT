@@ -11,38 +11,20 @@
  * @{
  *
  * @file
- * @brief       Common peripheral configuration for nRF52 based boards
+ * @brief       Default RTT configuration for nRF52 based boards
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  */
 
-#ifndef PERIPH_CONF_COMMON_H
-#define PERIPH_CONF_COMMON_H
+#ifndef CFG_RTT_DEFAULT_H
+#define CFG_RTT_DEFAULT_H
 
 #include "periph_cpu.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @name    Timer configuration
- * @{
- */
-static const timer_conf_t timer_config[] = {
-    {
-        .dev      =  NRF_TIMER1,
-        .channels =  3,
-        .bitmode  = TIMER_BITMODE_BITMODE_32Bit,
-        .irqn     = TIMER1_IRQn
-    }
-};
-
-#define TIMER_0_ISR         isr_timer1
-
-#define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
-/** @} */
 
 /**
  * @name    Real time counter configuration
@@ -58,5 +40,5 @@ static const timer_conf_t timer_config[] = {
 }
 #endif
 
-#endif /* PERIPH_CONF_COMMON_H */
+#endif /* CFG_RTT_DEFAULT_H */
 /** @} */
