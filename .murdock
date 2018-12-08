@@ -12,7 +12,7 @@ export ENABLE_TEST_CACHE=${ENABLE_TEST_CACHE:-1}
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
-DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E TEST_HASH"
+DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E ENABLE_TEST_CACHE -E TEST_HASH"
 
 check_label() {
     local label="${1}"
@@ -23,6 +23,10 @@ check_label() {
 
 [ "$RUN_TESTS" != "1" ] && {
     check_label "CI: run tests" && RUN_TESTS=1
+}
+
+[ "$ENABLE_TEST_CACHE" = "1" ] && {
+    check_label "CI: disable test cache" && export ENABLE_TEST_CACHE=0
 }
 
 error() {
@@ -184,7 +188,6 @@ compile() {
                     RES=$?
                 elif is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
                     test_hash=$(test_hash_calc "$appdir" "$BINDIR")
-                    check_label "CI: disable test cache" && ENABLE_TEST_CACHE=0
                     if test_cache_get $test_hash; then
                         echo "-- skipping test due to positive cache hit"
                     else
