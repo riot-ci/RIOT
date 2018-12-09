@@ -9,6 +9,10 @@ export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
 export ENABLE_TEST_CACHE=${ENABLE_TEST_CACHE:-1}
 
+# REMOVEME
+BOARDS=samr21-xpro
+APPS=tests/shell
+
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
@@ -144,7 +148,9 @@ test_hash_calc() {
 }
 
 test_cache_get() {
+    echo " -- debug: test_cache_get(): ENABLE_TEST_CACHE=$ENABLE_TEST_CACHE"
     test "${ENABLE_TEST_CACHE}" = "1" || return 1
+    echo "-- got hash: $(redis-cli get $1)"
     test -n "$(redis-cli get $1)" > /dev/null
 }
 
@@ -188,6 +194,7 @@ compile() {
                     RES=$?
                 elif is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
                     test_hash=$(test_hash_calc "$appdir" "$BINDIR")
+                    echo "-- debug: test_hash=$test_hash"
                     if test_cache_get $test_hash; then
                         echo "-- skipping test due to positive cache hit"
                     else
