@@ -104,9 +104,9 @@ static void _handle_raw_sixlowpan(ble_mac_inbuf_t *inbuf)
         return;
     }
 
-    gnrc_netif_hdr_init(netif_hdr->data, BLE_SIXLOWPAN_L2_ADDR_LEN, BLE_SIXLOWPAN_L2_ADDR_LEN);
-    gnrc_netif_hdr_set_src_addr(netif_hdr->data, inbuf->src, BLE_SIXLOWPAN_L2_ADDR_LEN);
-    gnrc_netif_hdr_set_dst_addr(netif_hdr->data, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
+    gnrc_netif_hdr_init(netif_hdr->data, BLE_L2_ADDR_LEN, BLE_L2_ADDR_LEN);
+    gnrc_netif_hdr_set_src_addr(netif_hdr->data, inbuf->src, BLE_L2_ADDR_LEN);
+    gnrc_netif_hdr_set_dst_addr(netif_hdr->data, _ble_netif->l2addr, BLE_L2_ADDR_LEN);
     ((gnrc_netif_hdr_t *)netif_hdr->data)->if_pid = _ble_netif->pid;
 
     DEBUG("_handle_raw_sixlowpan(): received packet from %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x "
@@ -183,7 +183,7 @@ static int _netdev_init(netdev_t *dev)
     _ble_netif = dev->context;
     ble_stack_init();
     ble_mac_init(_ble_mac_callback);
-    _ble_netif->l2addr_len = BLE_SIXLOWPAN_L2_ADDR_LEN;
+    _ble_netif->l2addr_len = BLE_L2_ADDR_LEN;
     ble_get_mac(_ble_netif->l2addr);
     ble_advertising_init("RIOT BLE");
     ble_advertising_start();
@@ -198,15 +198,15 @@ static int _netdev_get(netdev_t *netdev, netopt_t opt,
 
     (void)netdev;
     switch (opt) {
-        case NETOPT_ADDRESS_LONG:
-            assert(max_len >= BLE_SIXLOWPAN_L2_ADDR_LEN);
-            memcpy(value, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
-            res = BLE_SIXLOWPAN_L2_ADDR_LEN;
+        case NETOPT_ADDRESS:
+            assert(max_len >= BLE_L2_ADDR_LEN);
+            memcpy(value, _ble_netif->l2addr, BLE_L2_ADDR_LEN);
+            res = BLE_L2_ADDR_LEN;
             break;
         case NETOPT_ADDR_LEN:
         case NETOPT_SRC_LEN:
             assert(max_len == sizeof(uint16_t));
-            *((uint16_t *)value) = BLE_SIXLOWPAN_L2_ADDR_LEN;
+            *((uint16_t *)value) = BLE_L2_ADDR_LEN;
             res = sizeof(uint16_t);
             break;
         case NETOPT_PROTO:
@@ -220,9 +220,8 @@ static int _netdev_get(netdev_t *netdev, netopt_t opt,
             res = sizeof(uint16_t);
             break;
         case NETOPT_IPV6_IID:
-            memcpy(value, _ble_netif->l2addr, BLE_SIXLOWPAN_L2_ADDR_LEN);
-            value[0] ^= IPV6_IID_FLIP_VALUE;
-            res = BLE_SIXLOWPAN_L2_ADDR_LEN;
+            ble_eui64_from_eui48(value, _ble_netif->l2addr, true);
+            res = sizeof(uint64_t);
             break;
         default:
             break;
