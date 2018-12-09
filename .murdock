@@ -7,11 +7,12 @@ export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
+export ENABLE_TEST_CACHE=${ENABLE_TEST_CACHE:-1}
 
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
-DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS"
+DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E ENABLE_TEST_CACHE -E TEST_HASH"
 
 check_label() {
     local label="${1}"
@@ -22,6 +23,10 @@ check_label() {
 
 [ "$RUN_TESTS" != "1" ] && {
     check_label "CI: run tests" && RUN_TESTS=1
+}
+
+[ "$ENABLE_TEST_CACHE" = "1" ] && {
+    check_label "CI: disable test cache" && export ENABLE_TEST_CACHE=0
 }
 
 error() {
@@ -131,6 +136,22 @@ print_worker() {
         echo "-- running on worker ${DWQ_WORKER} thread ${DWQ_WORKER_THREAD}, build number $DWQ_WORKER_BUILDNUM."
 }
 
+test_hash_calc() {
+    local appdir=$1
+    local bindir=$2
+
+    md5sum $appdir/tests/* $bindir/*.elf | md5sum | cut -f1 -d' '
+}
+
+test_cache_get() {
+    test "${ENABLE_TEST_CACHE}" = "1" || return 1
+    test -n "$(redis-cli get $1)" > /dev/null
+}
+
+test_cache_put() {
+    redis-cli set "$1" ok
+}
+
 # compile one app for one board with one toolchain. delete intermediates.
 compile() {
     local appdir=$1
@@ -166,8 +187,14 @@ compile() {
                     BOARD=$board make -C${appdir} test
                     RES=$?
                 elif is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
-                    BOARD=$board TOOLCHAIN=$toolchain make -C${appdir} test-murdock
-                    RES=$?
+                    test_hash=$(test_hash_calc "$appdir" "$BINDIR")
+                    if test_cache_get $test_hash; then
+                        echo "-- skipping test due to positive cache hit"
+                    else
+                        BOARD=$board TOOLCHAIN=$toolchain TEST_HASH=$test_hash \
+                            make -C${appdir} test-murdock
+                        RES=$?
+                    fi
                 fi
             fi
         fi
@@ -212,6 +239,14 @@ run_test() {
     echo "-- executing tests for $appdir on $board (compiled with $toolchain toolchain):"
     hook run_test_pre
     BOARD=$board TOOLCHAIN=${toolchain} make -C$appdir flash-only test
+    RES=$?
+
+    if [ $RES -eq 0 -a -n "$TEST_HASH" ]; then
+        echo -n "-- saving test result to cache: "
+        test_cache_put $TEST_HASH
+    fi
+
+    return $RES
 }
 
 # execute static tests
