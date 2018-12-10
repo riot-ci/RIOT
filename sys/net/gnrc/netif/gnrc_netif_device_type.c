@@ -23,6 +23,7 @@
 #include "net/gnrc/netif.h"
 #include "net/eui48.h"
 #include "net/ieee802154.h"
+#include "net/l2util.h"
 
 netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
 {
@@ -131,163 +132,13 @@ int gnrc_netif_ipv6_iid_from_addr(const gnrc_netif_t *netif,
 {
 #if GNRC_NETIF_L2ADDR_MAXLEN > 0
     if (netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR) {
-        switch (netif->device_type) {
-#if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW)
-            case NETDEV_TYPE_ETHERNET:
-            case NETDEV_TYPE_ESP_NOW:
-                if (addr_len == sizeof(eui48_t)) {
-                    eui48_to_ipv6_iid(iid, (const eui48_t *)addr);
-                    return sizeof(eui64_t);
-                }
-                else {
-                    return -EINVAL;
-                }
-#endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) */
-#if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE)
-            case NETDEV_TYPE_IEEE802154:
-                if (ieee802154_get_iid(iid, addr, addr_len) != NULL) {
-                    return sizeof(eui64_t);
-                }
-                else {
-                    return -EINVAL;
-                }
-#endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
-#ifdef MODULE_NORDIC_SOFTDEVICE_BLE
-            case NETDEV_TYPE_BLE:
-                if (addr_len == sizeof(eui64_t)) {
-                    memcpy(iid, addr, sizeof(eui64_t));
-                    iid->uint8[0] ^= 0x02;
-                    return sizeof(eui64_t);
-                }
-                else {
-                    return -EINVAL;
-                }
-#endif  /* MODULE_NORDIC_SOFTDEVICE_BLE */
-#if defined(MODULE_CC110X) || defined(MODULE_NRFMIN)
-            case NETDEV_TYPE_CC110X:
-            case NETDEV_TYPE_NRFMIN:
-                if (addr_len <= 3) {
-                    _create_iid_from_short(addr, addr_len, iid);
-                    return sizeof(eui64_t);
-                }
-                else {
-                    return -EINVAL;
-                }
-#endif  /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
-            default:
-                (void)addr;
-                (void)addr_len;
-                (void)iid;
-#ifdef DEVELHELP
-                LOG_ERROR("gnrc_netif: can't convert hardware address to IID "
-                          "on interface %u\n", netif->pid);
-#endif  /* DEVELHELP */
-                assert(false);
-                break;
-        }
+        return l2util_ipv6_iid_from_addr(netif->device_type,
+                                         addr, addr_len, iid);
     }
 #endif /* GNRC_NETIF_L2ADDR_MAXLEN > 0 */
     return -ENOTSUP;
 }
 
-int gnrc_netif_ipv6_iid_to_addr(const gnrc_netif_t *netif, const eui64_t *iid,
-                                uint8_t *addr)
-{
-    assert(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR);
-    switch (netif->device_type) {
-#if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW)
-        case NETDEV_TYPE_ETHERNET:
-        case NETDEV_TYPE_ESP_NOW:
-            eui48_from_ipv6_iid((eui48_t *)addr, iid);
-            return sizeof(eui48_t);
-#endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) */
-#if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE)
-        case NETDEV_TYPE_IEEE802154:
-            /* assume address was based on EUI-64
-             * (see https://tools.ietf.org/html/rfc6775#section-5.2) */
-            memcpy(addr, iid, sizeof(eui64_t));
-            addr[0] ^= 0x02;
-            return sizeof(eui64_t);
-#endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
-#ifdef MODULE_NRFMIN
-        case NETDEV_TYPE_NRFMIN:
-            addr[0] = iid->uint8[6];
-            addr[1] = iid->uint8[7];
-            return sizeof(uint16_t);
-#endif  /* MODULE_NETDEV_IEEE802154 */
-#ifdef MODULE_NORDIC_SOFTDEVICE_BLE
-        case NETDEV_TYPE_BLE:
-            memcpy(addr, iid, sizeof(eui64_t));
-            addr[0] ^= 0x02;
-            return sizeof(eui64_t);
-#endif  /* MODULE_NORDIC_SOFTDEVICE_BLE */
-#ifdef MODULE_CC110X
-        case NETDEV_TYPE_CC110X:
-            addr[0] = iid->uint8[7];
-            return sizeof(uint8_t);
-#endif  /* MODULE_CC110X */
-        default:
-            (void)iid;
-            (void)addr;
-#ifdef DEVELHELP
-            LOG_ERROR("gnrc_netif: can't convert IID to hardware address "
-                      "on interface %u\n", netif->pid);
-#endif  /* DEVELHELP */
-            assert(false);
-            break;
-    }
-    return -ENOTSUP;
-}
-
-int gnrc_netif_ndp_addr_len_from_l2ao(gnrc_netif_t *netif,
-                                      const ndp_opt_t *opt)
-{
-    assert(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR);
-    switch (netif->device_type) {
-#ifdef MODULE_CC110X
-        case NETDEV_TYPE_CC110X:
-            (void)opt;
-            return sizeof(uint8_t);
-#endif  /* MODULE_CC110X */
-#if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW)
-        case NETDEV_TYPE_ETHERNET:
-        case NETDEV_TYPE_ESP_NOW:
-            /* see https://tools.ietf.org/html/rfc2464#section-6*/
-            if (opt->len == 1U) {
-                return ETHERNET_ADDR_LEN;
-            }
-            else {
-                return -EINVAL;
-            }
-#endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) */
-#ifdef MODULE_NRFMIN
-        case NETDEV_TYPE_NRFMIN:
-            (void)opt;
-            return sizeof(uint16_t);
-#endif  /* MODULE_NRFMIN */
-#if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE)
-        case NETDEV_TYPE_IEEE802154:
-            /* see https://tools.ietf.org/html/rfc4944#section-8 */
-            switch (opt->len) {
-                case 1U:
-                    return IEEE802154_SHORT_ADDRESS_LEN;
-                case 2U:
-                    return IEEE802154_LONG_ADDRESS_LEN;
-                default:
-                    return -EINVAL;
-            }
-#endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
-        default:
-            (void)opt;
-#ifdef DEVELHELP
-            LOG_ERROR("gnrc_netif: can't get address length from NDP link-layer "
-                      "address option on interface %u\n", netif->pid);
-#endif
-            assert(false);
-            break;
-    }
-    return -ENOTSUP;
-}
 #endif /* MODULE_GNRC_IPV6 */
 
 /** @} */
