@@ -207,6 +207,11 @@ extern "C" {
 #include "net/l2filter.h"
 #endif
 
+/**
+ * @name    Network device types
+ * @anchor  net_netdev_type
+ * @{
+ */
 enum {
     NETDEV_TYPE_UNKNOWN,
     NETDEV_TYPE_RAW,
@@ -219,6 +224,7 @@ enum {
     NETDEV_TYPE_SLIP,
     NETDEV_TYPE_ESP_NOW,
 };
+/** @} */
 
 /**
  * @brief   Possible event types that are send from the device driver to the
