@@ -151,7 +151,7 @@ test_cache_get() {
     echo " -- debug: test_cache_get(): ENABLE_TEST_CACHE=$ENABLE_TEST_CACHE"
     test "${ENABLE_TEST_CACHE}" = "1" || return 1
     echo "-- got hash: $(redis-cli get $1)"
-    test -n "$(redis-cli get $1)" > /dev/null
+    test -n "$(command -v redis-cli > /dev/null && redis-cli get $1)" > /dev/null
 }
 
 test_cache_put() {
