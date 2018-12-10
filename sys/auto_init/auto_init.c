@@ -374,6 +374,10 @@ void auto_init(void)
 #ifdef MODULE_SAUL_GPIO
     extern void auto_init_gpio(void);
     auto_init_gpio();
+#ifdef MODULE_PCF857X
+    extern void auto_init_pcf857x(void);
+    auto_init_pcf857x();
+#endif
 #endif
 #ifdef MODULE_SAUL_NRF_TEMPERATURE
     extern void auto_init_nrf_temperature(void);
