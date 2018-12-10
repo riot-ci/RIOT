@@ -208,8 +208,10 @@ extern "C" {
 #endif
 
 /**
- * @name    Network device types
- * @anchor  net_netdev_type
+ * @name        Network device types
+ * @anchor      net_netdev_type
+ * @attention   When implementing a new type that is able to carry IPv6, have
+ *              a look if you need to update @ref net_l2util as well.
  * @{
  */
 enum {
