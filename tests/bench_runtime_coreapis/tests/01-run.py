@@ -12,26 +12,20 @@ from testrunner import run
 
 # The default timeout is not enough for this test on some of the slower boards
 TIMEOUT = 30
-
-BENCHMARK_FUNCS = [
-    "nop loop",
-    r"mutex_init\(\)",
-    "mutex lock/unlock",
-    r"thread_flags_set\(\)",
-    r"thread_flags_clear\(\)",
-    "thread flags set/wait any",
-    "thread flags set/wait all",
-    "thread flags set/wait one",
-    r"msg_try_receive\(\)",
-    r"msg_avail\(\)"
-]
+BENCHMARK_REGEXP = r"\s+{func}:\s+\d+us\s+---\s+\d*\.*\d+us per call\s+---\s+\d+ calls per sec"
 
 
 def testfunc(child):
     child.expect_exact('Runtime of Selected Core API functions')
-    for func in BENCHMARK_FUNCS:
-        child.expect(r"\s+{func}:\s+\d+us\s+---\s+\d*\.*\d+us per call\s+---\s+\d+ calls per sec".format(
-            func=func), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func="nop loop"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func=r"mutex_init\(\)"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func="mutex lock/unlock"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func=r"thread_flags_set\(\)"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func="thread flags set/wait any"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func="thread flags set/wait all"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func="thread flags set/wait one"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func=r"msg_try_receive\(\)"), timeout=TIMEOUT)
+    child.expect(BENCHMARK_REGEXP.format(func=r"msg_avail\(\)"), timeout=TIMEOUT)
     child.expect_exact('[SUCCESS]')
 
 
