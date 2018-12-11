@@ -478,7 +478,7 @@ int gnrc_netif_ipv6_iid_from_addr(const gnrc_netif_t *netif,
  *              instead of returning `-ENOTSUP`
  *
  * @param[in] netif     The network interface @p iid came from (either because
- *                      it is paset on gnrc_netif_t::l2addr or from a packet
+ *                      it is based on its gnrc_netif_t::l2addr or from a packet
  *                      that came over it).
  * @param[in] iid       An IID based on gnrc_netif_t::device_type.
  * @param[out] addr     The hardware address. It is assumed that @p iid was
