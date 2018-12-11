@@ -306,8 +306,7 @@ void _nib_nc_get(const _nib_onl_entry_t *node, gnrc_ipv6_nib_nc_t *nce)
         (void)netif;    /* flag-checkers might evaluate just to constants */
         if (gnrc_netif_is_6ln(netif) && !gnrc_netif_is_rtr(netif) &&
             (_get_l2addr_from_ipv6(netif, node, nce) >= 0)) {
-                return;
-            }
+            return;
         }
     }
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
