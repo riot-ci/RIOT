@@ -6,7 +6,7 @@
 ### Overview
 
 The [Phytec PhyNODE-KW41Z][board-web-page] board is a development platform based
-on the PhyWAVE-KW41z wireless module (populated wih NXP Semiconductor Kinetis
+on the PhyWAVE-KW41z wireless module (populated with NXP Semiconductor Kinetis
 KW41Z microcontroller).
 
 It provides a radio device with Bluetooth Low Energy and/or IEEE
