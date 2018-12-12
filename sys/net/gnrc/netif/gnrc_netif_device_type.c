@@ -21,7 +21,7 @@
 #include "net/ipv6.h"
 #endif
 #include "net/gnrc/netif.h"
-#include "net/eui48.h"
+#include "net/ethernet.h"
 #include "net/ieee802154.h"
 #include "net/l2util.h"
 
