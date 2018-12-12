@@ -113,19 +113,6 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
 #endif
 }
 
-#if defined(MODULE_CC110X) || defined(MODULE_NRFMIN)
-static void _create_iid_from_short(const uint8_t *addr, size_t addr_len,
-                                   eui64_t *iid)
-{
-    const unsigned offset = sizeof(eui64_t) - addr_len;
-
-    memset(iid->uint8, 0, sizeof(iid->uint8));
-    iid->uint8[3] = 0xff;
-    iid->uint8[4] = 0xfe;
-    memcpy(&iid->uint8[offset], addr, addr_len);
-}
-#endif /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
-
 int gnrc_netif_ipv6_iid_from_addr(const gnrc_netif_t *netif,
                                   const uint8_t *addr, size_t addr_len,
                                   eui64_t *iid)
