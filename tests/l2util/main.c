@@ -199,7 +199,7 @@ static void test_iid_to_addr__ENOTSUP(void)
 
 static void test_addr_len_from_l2ao__success(void)
 {
-    ndp_opt_t opt = { 0 };
+    ndp_opt_t opt = { .type = NDP_OPT_SL2A };
 
     /* test Ethernet */
     opt.len = 1;
