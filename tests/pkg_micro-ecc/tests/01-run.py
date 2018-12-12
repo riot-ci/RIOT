@@ -4,6 +4,9 @@ import sys
 from testrunner import run
 
 
+TIMEOUT = 120
+
+
 def testfunc(child):
     child.expect_exact('micro-ecc compiled!')
     child.expect_exact('Testing 16 random private key pairs and signature '
@@ -13,4 +16,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc, timeout=60))
+    sys.exit(run(testfunc, timeout=TIMEOUT))
