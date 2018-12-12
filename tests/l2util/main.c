@@ -234,7 +234,7 @@ static void test_addr_len_from_l2ao__success(void)
 
 static void test_addr_len_from_l2ao__EINVAL(void)
 {
-    ndp_opt_t opt = { 0 };
+    ndp_opt_t opt = { .type = NDP_OPT_SL2A };
 
     /* test Ethernet */
     opt.len = 0;
@@ -255,7 +255,7 @@ static void test_addr_len_from_l2ao__EINVAL(void)
 
 static void test_addr_len_from_l2ao__ENOTSUP(void)
 {
-    ndp_opt_t opt = { 0 };
+    ndp_opt_t opt = { .type = NDP_OPT_SL2A };
 
     opt.len = 1;
     TEST_ASSERT_EQUAL_INT(-ENOTSUP,
