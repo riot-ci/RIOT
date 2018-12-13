@@ -239,6 +239,10 @@ void test3(void)
 #ifdef BOARD_NATIVE
 /* native can sometime take more time to respond as it is not real time */
 #define TEST4_TIMEOUT_EXCEEDED_MARGIN (300)
+#elif CPU_FAM_NRF51
+/* nrf51 based boards needs a slightly higher margin value. Using 120us makes
+ test4 result more reliable. */
+#define TEST4_TIMEOUT_EXCEEDED_MARGIN (120)
 #else
 #define TEST4_TIMEOUT_EXCEEDED_MARGIN (100)
 #endif /* BOARD_NATIVE */
