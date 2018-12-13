@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Unified PyOCD script for RIOT
+# PyOCD script for RIOT. Only versions >= 0.14 are supported.
 #
 # This script is supposed to be called from RIOTs make system,
 # as it depends on certain environment variables.
@@ -49,9 +49,9 @@
 # Default telnet port, set to 0 to disable.
 : ${TELNET_PORT:=4444}
 # Default PyOCD commands.
-: ${PYOCD_TOOL:=pyocd-tool}
-: ${PYOCD_FLASHTOOL:=pyocd-flashtool}
-: ${PYOCD_GDBSERVER:=pyocd-gdbserver}
+: ${PYOCD_CMD:=pyocd}
+: ${PYOCD_FLASH:=${PYOCD_CMD} flash}
+: ${PYOCD_GDBSERVER:=${PYOCD_CMD} gdbserver}
 # The setsid command is needed so that Ctrl+C in GDB doesn't kill PyOCD.
 : ${SETSID:=setsid}
 # GDB command, usually a separate command for each platform (e.g.
@@ -113,7 +113,7 @@ do_flash() {
     HEX_FILE=$1
     test_hexfile
     # flash device
-    sh -c "pyocd-flashtool ${FLASH_TARGET_TYPE} -ce \"${HEX_FILE}\"" &&
+    sh -c "${PYOCD_FLASH} ${FLASH_TARGET_TYPE} \"${HEX_FILE}\"" &&
     echo 'Done flashing'
 }
 
@@ -159,7 +159,7 @@ do_debugserver() {
 
 do_reset() {
     # start PyOCD and invoke board reset
-    sh -c "${PYOCD_TOOL} ${FLASH_TARGET_TYPE} reset"
+    sh -c "${PYOCD_CMD} cmd -c reset ${FLASH_TARGET_TYPE}"
 }
 
 #
