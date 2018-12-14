@@ -6,7 +6,7 @@
  * intended to be modified by the user.
  *
  * These configuration macros are defined within modules like this:
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [.c] 
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [.c]
  * #ifndef SOME_CONFIGURATION_PARAM
  * #define SOME_CONFIGURATION_PARAM DEFAULT_VALUE
  * #endif
