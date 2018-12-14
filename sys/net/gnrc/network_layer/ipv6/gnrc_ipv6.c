@@ -578,10 +578,8 @@ static void _send_multicast(gnrc_pktsnip_t *pkt, bool prep_hdr,
 static void _send_to_self(gnrc_pktsnip_t *pkt, bool prep_hdr,
                           gnrc_netif_t *netif)
 {
-    gnrc_pktsnip_t *ptr = pkt;
-
     if (!_safe_fill_ipv6_hdr(netif, pkt, prep_hdr) &&
-        (gnrc_pktbuf_merge(pkt) != NULL)) {
+        (gnrc_pktbuf_merge(pkt) != 0)) {
         DEBUG("ipv6: error looping packet to sender.\n");
         gnrc_pktbuf_release(pkt);
         return;
