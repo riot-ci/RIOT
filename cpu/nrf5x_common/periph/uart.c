@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2014-2017 Freie Universität Berlin
  *               2015 Jan Wagner <mail@jwagner.eu>
+ *               2018 Inria
  *
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -20,6 +21,7 @@
  * @author      Timo Ziegler <timo.ziegler@fu-berlin.de>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Jan Wagner <mail@jwagner.eu>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  * @}
  */
@@ -61,15 +63,19 @@
  */
 static uart_isr_ctx_t isr_ctx;
 
+#ifdef CPU_MODEL_NRF52840XXAA
+static inline NRF_UARTE_Type *dev(uart_t uart)
+{
+    return uart_config[uart].dev;
+}
+static uint8_t rx_buf[UART_NUMOF];
+#else
 static inline NRF_UART_Type *dev(uart_t uart)
 {
-#ifdef CPU_MODEL_NRF52840XXAA
-    return uart_config[uart].dev;
-#else
     (void)uart;
-    return NRF_UART0;
-#endif
+    return  NRF_UART0;
 }
+#endif
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
@@ -163,15 +169,25 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     }
 
     /* enable the UART device */
+#ifdef CPU_MODEL_NRF52840XXAA
+    dev(uart)->ENABLE = UARTE_ENABLE_ENABLE_Enabled;
+    dev(uart)->RXD.MAXCNT = 1;
+    dev(uart)->RXD.PTR = (uint32_t)&rx_buf[uart];
+#else
     dev(uart)->ENABLE = UART_ENABLE_ENABLE_Enabled;
-    /* enable TX and RX */
+    /* enable TX and RX*/
     dev(uart)->TASKS_STARTTX = 1;
+#endif
 
     if (rx_cb) {
         dev(uart)->TASKS_STARTRX = 1;
         /* enable global and receiving interrupt */
         NVIC_EnableIRQ(UART_IRQN);
+#ifdef CPU_MODEL_NRF52840XXAA
+        dev(uart)->INTENSET = UARTE_INTENSET_RXDRDY_Msk;
+#else
         dev(uart)->INTENSET = UART_INTENSET_RXDRDY_Msk;
+#endif
     }
 
     return UART_OK;
@@ -181,6 +197,17 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     assert(uart < UART_NUMOF);
 
+#ifdef CPU_MODEL_NRF52840XXAA /* nrf52840 uses EasyDMA to transmit data */
+    /* reset endtx flag */
+    dev(uart)->EVENTS_ENDTX = 0;
+    /* set data to transfer to DMA TX pointer */
+    dev(uart)->TXD.PTR = (uint32_t)data;
+    dev(uart)->TXD.MAXCNT = len;
+    /* start transmission */
+    dev(uart)->TASKS_STARTTX = 1;
+    /* wait for the end of transmission */
+    while (dev(uart)->EVENTS_ENDTX == 0) {}
+#else
     for (size_t i = 0; i < len; i++) {
         /* This section of the function is not thread safe:
             - another thread may mess up with the uart at the same time.
@@ -199,6 +226,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
         /* wait for any transmission to be done */
         while (dev(uart)->EVENTS_TXDRDY == 0) {}
     }
+#endif
 }
 
 void uart_poweron(uart_t uart)
@@ -213,18 +241,35 @@ void uart_poweroff(uart_t uart)
 {
     assert(uart < UART_NUMOF);
 
+#ifndef CPU_MODEL_NRF52840XXAA
     dev(uart)->TASKS_SUSPEND;
+#else
+    (void)uart;
+#endif
 }
 
 static inline void irq_handler(uart_t uart)
 {
     assert(uart < UART_NUMOF);
-
+#ifdef CPU_MODEL_NRF52840XXAA /* nrf52840 uses EasyDMA to receive data */
+    if (dev(uart)->EVENTS_RXDRDY == 1) {
+        dev(uart)->EVENTS_RXDRDY = 0;
+        /* RXRDY doesn't mean that received byte is in RAM
+           so wait for ENDRX event */
+        while(dev(uart)->EVENTS_ENDRX == 0) {}
+        dev(uart)->EVENTS_ENDRX = 0;
+        /* Process received byte */
+        isr_ctx.rx_cb(isr_ctx.arg, rx_buf[uart]);
+        /* Restart RX task */
+        dev(uart)->TASKS_STARTRX = 1;
+    }
+#else
     if (dev(uart)->EVENTS_RXDRDY == 1) {
         dev(uart)->EVENTS_RXDRDY = 0;
         uint8_t byte = (uint8_t)(dev(uart)->RXD & 0xff);
         isr_ctx.rx_cb(isr_ctx.arg, byte);
     }
+#endif
     cortexm_isr_end();
 }
 
