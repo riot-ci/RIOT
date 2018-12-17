@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# PyOCD script for RIOT. Only versions >= 0.14 are supported.
+# PyOCD script for RIOT. Only versions >= 0.14.1 are supported.
 #
 # This script is supposed to be called from RIOTs make system,
 # as it depends on certain environment variables.
