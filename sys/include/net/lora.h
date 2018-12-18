@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup net_lora_conf    LoRa modulation default values
+ * @defgroup net_lora_conf     LoRa modulation compile configurations
  * @ingroup  config
  * @{
  */
