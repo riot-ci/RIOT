@@ -30,7 +30,8 @@ extern "C" {
 #endif
 
 /**
- * @name    LoRaMAC default parameters
+ * @defgroup net_loramac_conf    LoRaMAC default parameters
+ * @ingroup config
  * @{
  */
 /**
