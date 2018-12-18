@@ -112,7 +112,7 @@ extern const uint8_t ieee802154_addr_bcast[IEEE802154_ADDR_BCAST_LEN];
 /** @} */
 
 /**
- * @defgroup net_ieee802154_conf     Default values for IEEE802.15.4
+ * @defgroup net_ieee802154_conf     IEEE802.15.4 compile configurations
  * @ingroup  config
  * @{
  */
