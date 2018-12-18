@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -43,6 +45,12 @@ static void _putchar(int c) {
 #define _putchar putchar
 #endif
 #endif
+
+enum READLINE_RESULT {
+    READLINE_HASTEXT,
+    READLINE_EMPTY,
+    READLINE_TOOLONG
+};
 
 static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
 {
@@ -217,14 +225,34 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     }
 }
 
+/**
+ * Read a single line from standard input into a buffer.
+ *
+ * In addition to copying characters, this routine echoes the line back to
+ * stdout and also supports primitive line editing.
+ *
+ * If the input line is too long, the input will still be consumed until the end
+ * to prevent the next line from containing garbage.
+ *
+ * @param   buf     Buffer where the input will be placed.
+ * @param   size    Size of the buffer. The maximum line length will be one less
+ *                  than size, to accommodate for the null terminator.
+ *                  The minimum buffer size is 1.
+ *
+ * @return  READLINE_HASTEXT if the line was not empty
+ * @return  READLINE_EMPTY if the line was empty
+ * @return  READLINE_TOOLONG if the buffer size was exceeded
+ * @return  EOF if the end of the input stream is reached.
+ */
 static int readline(char *buf, size_t size)
 {
     char *line_buf_ptr = buf;
+    bool length_exceeded = false;
 
     while (1) {
-        if ((line_buf_ptr - buf) >= ((int) size) - 1) {
-            return -1;
-        }
+        /* At the beggining of the loop, line_bug_ptr should point inside of
+         * buf. This ensures the terminator can always fit. */
+        assert(line_buf_ptr < buf + size);
 
         int c = getchar();
         if (c < 0) {
@@ -241,17 +269,22 @@ static int readline(char *buf, size_t size)
             _putchar('\n');
 #endif
 
-            /* return 1 if line is empty, 0 otherwise */
-            return line_buf_ptr == buf;
+            return (line_buf_ptr == buf)? READLINE_EMPTY
+                   : (length_exceeded)? READLINE_TOOLONG : READLINE_HASTEXT;
         }
+
         /* QEMU uses 0x7f (DEL) as backspace, while 0x08 (BS) is for most terminals */
-        else if (c == 0x08 || c == 0x7f) {
+        if (c == 0x08 || c == 0x7f) {
             if (line_buf_ptr == buf) {
                 /* The line is empty. */
                 continue;
             }
 
-            *--line_buf_ptr = '\0';
+            /* after we dropped characters do not edit the line, yet keep the
+             * visual effects */
+            if (!length_exceeded) {
+                *--line_buf_ptr = '\0';
+            }
             /* white-tape the character */
 #ifndef SHELL_NO_ECHO
             _putchar('\b');
@@ -260,9 +293,16 @@ static int readline(char *buf, size_t size)
 #endif
         }
         else {
-            *line_buf_ptr++ = c;
+            /* Always consume characters, but do not not always store them */
+            if (line_buf_ptr < buf + size - 1) {
+                *line_buf_ptr++ = c;
+            }
+            else {
+                length_exceeded = true;
+            }
 #ifndef SHELL_NO_ECHO
             _putchar(c);
+            fflush(stdout);
 #endif
         }
     }
@@ -280,6 +320,8 @@ static inline void print_prompt(void)
 #endif
 }
 
+static const char *TOOLONG_MESSAGE = "shell: maximum line length exceeded";
+
 void shell_run(const shell_command_t *shell_commands, char *line_buf, int len)
 {
     print_prompt();
@@ -287,14 +329,22 @@ void shell_run(const shell_command_t *shell_commands, char *line_buf, int len)
     while (1) {
         int res = readline(line_buf, len);
 
-        if (res == EOF) {
-            break;
-        }
-
-        if (!res) {
-            handle_input_line(shell_commands, line_buf);
+        switch (res) {
+            case EOF:
+                goto shell_run_exit;
+            case READLINE_TOOLONG:
+                puts(TOOLONG_MESSAGE);
+                break;
+            case READLINE_HASTEXT:
+                handle_input_line(shell_commands, line_buf);
+                break;
+            default:
+                break;
         }
 
         print_prompt();
     }
+
+shell_run_exit:
+    return;
 }
