@@ -406,7 +406,6 @@ HEXFILE ?= $(ELFFILE:.elf=.hex)
 BINFILE ?= $(ELFFILE:.elf=.bin)
 
 # File used by the flasher (can be overwritten to $(HEXFILE), $(BINFILE))
-# Transition: not all boards use this file for the moment
 FLASHFILE ?= $(ELFFILE)
 
 # Targets to get given file
