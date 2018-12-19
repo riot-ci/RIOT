@@ -405,6 +405,10 @@ ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 HEXFILE ?= $(ELFFILE:.elf=.hex)
 BINFILE ?= $(ELFFILE:.elf=.bin)
 
+# File used by the flasher (can be overwritten to $(HEXFILE), $(BINFILE))
+# Transition: not all boards use this file for the moment
+FLASHFILE ?= $(ELFFILE)
+
 # Targets to get given file
 elffile: $(ELFFILE)
 hexfile: $(HEXFILE)
@@ -443,7 +447,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ifeq (,$(RIOTNOLINK))
-link: ..compiler-check ..build-message $(ELFFILE) $(HEXFILE) print-size
+link: ..compiler-check ..build-message $(ELFFILE) $(FLASHFILE) print-size
 else
 link: ..compiler-check ..build-message $(BASELIBS)
 endif # RIOTNOLINK
@@ -525,7 +529,8 @@ endef
 # Do not add dependencies to "flash" directly, use FLASHDEPS, as this is shared
 # with flash-only too
 
-flash: all $(FLASHDEPS)
+# It currently forces rebuilding '$(FLASHFILE)' as it has `.PHONY` dependencies
+flash: $(FLASHFILE) $(FLASHDEPS)
 	$(flash-recipe)
 
 flash-only: $(FLASHDEPS)

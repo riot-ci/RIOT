@@ -19,16 +19,8 @@ DEVELHELP ?= 1
 QUIET ?= 1
 
 all: riotboot
+# Make 'flash' and 'flash-only' work without specific command.
+FLASHFILE = $(BINDIR_APP)-slot0-combined.bin
 
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
-
-# Make 'flash' and 'flash-only' work without specific command.
-# This is currently hacky as there is no way of specifiying a FLASHFILE
-all: riotboot/combined-slot0
-# openocd
-ELFFILE = $(BINDIR_APP)-slot0-combined.bin
-# edbg
-HEXFILE = $(BINDIR_APP)-slot0-combined.bin
-# murdock uses ':=' to get the flashfile variable so should also be overwritten
-FLASHFILE = $(BINDIR_APP)-slot0-combined.bin
