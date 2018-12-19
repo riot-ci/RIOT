@@ -92,20 +92,12 @@ riotboot/combined-slot0: $(RIOTBOOT_COMBINED_BIN)
 $(RIOTBOOT_COMBINED_BIN): $(BOOTLOADER_BIN)/riotboot.extended.bin $(SLOT0_RIOT_BIN)
 	$(Q)cat $^ > $@
 
-# Flashing rule for edbg to flash combined binaries
-riotboot/flash-combined-slot0: HEXFILE=$(RIOTBOOT_COMBINED_BIN)
-# Flashing rule for openocd to flash combined binaries
-riotboot/flash-combined-slot0: ELFFILE=$(RIOTBOOT_COMBINED_BIN)
 riotboot/flash-combined-slot0: FLASHFILE=$(RIOTBOOT_COMBINED_BIN)
 riotboot/flash-combined-slot0: $(RIOTBOOT_COMBINED_BIN) $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
 
 # Flashing rule for slot 0
 riotboot/flash-slot0: export IMAGE_OFFSET=$(SLOT0_OFFSET)
-# Flashing rule for edbg to flash only slot 0
-riotboot/flash-slot0: HEXFILE=$(SLOT0_RIOT_BIN)
-# openocd
-riotboot/flash-slot0: ELFFILE=$(SLOT0_RIOT_BIN)
 riotboot/flash-slot0: FLASHFILE=$(SLOT0_RIOT_BIN)
 riotboot/flash-slot0: $(SLOT0_RIOT_BIN) $(FLASHDEPS)
 	$(FLASHER) $(FFLAGS)
