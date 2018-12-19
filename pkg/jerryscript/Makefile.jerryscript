@@ -6,6 +6,22 @@ EXT_CFLAGS :=-D__TARGET_RIOT
 
 ifeq ($(TOOLCHAIN)_$(BOARD),llvm_native)
   EXT_CFLAGS :=-D__TARGET_RIOT -Wno-conversion
+else ifeq (esp8266,$(CPU))
+  # TODO COMMENT maybe set version.
+  # The esp8266 C newlib version XXXX has errors when compiling with warnings
+  # that are enabled by jerryscript build system so disable them for this cpu:
+  #  * -Wundef
+  #  * -Wconversion
+  #  * -Wsign-conversion
+  EXT_CFLAGS += -Wno-undef -Wno-error=undef
+  EXT_CFLAGS += -Wno-conversion -Wno-error=conversion
+  EXT_CFLAGS += -Wno-sign-conversion -Wno-error=sign-conversion
+else ifeq (esp32,$(CPU))
+  # TODO COMMENT 'is it newlib?' maybe set version.
+  # The esp32 C newlib version XXXX has errors when compiling with warnings
+  # that are enabled by jerryscript build system so disable them for this cpu:
+  #  * -Wundef
+  EXT_CFLAGS += -Wno-undef -Wno-error=undef
 endif
 
 .PHONY: all libjerry
@@ -25,7 +41,7 @@ libjerry:
 	 -DJERRY_LIBM=OFF \
 	 -DJERRY_CMDLINE=OFF \
 	 -DHAVE_TIME_H=0 \
-	 -DEXTERNAL_COMPILE_FLAGS="$(EXT_CFLAGS)" \
+	 -DEXTERNAL_COMPILE_FLAGS="$(INCLUDES) $(EXT_CFLAGS)" \
 	 -DMEM_HEAP_SIZE_KB=$(JERRYHEAP)
 
 	"$(MAKE)" -C $(BUILD_DIR) jerry-core jerry-ext jerry-port-default-minimal
