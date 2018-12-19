@@ -539,7 +539,11 @@ void thread_print_stack(void);
  */
 static inline int thread_has_msg_queue(const volatile struct _thread *thread)
 {
+#if defined(MODULE_CORE_MSG) || defined(DOXYGEN)
     return (thread->msg_array != NULL);
+#else
+    return 0;
+#endif
 }
 
 #ifdef __cplusplus
