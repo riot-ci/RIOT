@@ -141,12 +141,12 @@ FLASH_SIZE ?= 16m
 export PREFLASHER = $(ESPTOOL)
 export PREFFLAGS  = --chip esp32 elf2image
 export PREFFLAGS += -fm $(FLASH_MODE) -fs $(FLASH_SIZE) -ff $(FLASH_FREQ)
-export PREFFLAGS += -o $(ELFFILE).bin $(ELFFILE);
+export PREFFLAGS += -o $(FLASHFILE).bin $(FLASHFILE);
 export PREFFLAGS += echo "" > $(BINDIR)/partitions.csv;
 export PREFFLAGS += echo "nvs, data, nvs, 0x9000, 0x6000" >> $(BINDIR)/partitions.csv;
 export PREFFLAGS += echo "phy_init, data, phy, 0xf000, 0x1000" >> $(BINDIR)/partitions.csv;
 export PREFFLAGS += echo -n "factory, app, factory, 0x10000, " >> $(BINDIR)/partitions.csv;
-export PREFFLAGS += ls -l $(ELFFILE).bin | awk '{ print $$5 }' >> $(BINDIR)/partitions.csv;
+export PREFFLAGS += ls -l $(FLASHFILE).bin | awk '{ print $$5 }' >> $(BINDIR)/partitions.csv;
 
 export PREFFLAGS += python $(RIOTCPU)/$(CPU)/gen_esp32part.py --disable-sha256sum
 export PREFFLAGS += --verify $(BINDIR)/partitions.csv $(BINDIR)/partitions.bin
@@ -161,7 +161,7 @@ ifeq ($(QEMU), 1)
     export FFLAGS += head -c $$((0x8000)) |
     export FFLAGS += cat - $(BINDIR)/partitions.bin tmp.bin |
     export FFLAGS += head -c $$((0x10000)) |
-    export FFLAGS += cat - $(ELFFILE).bin tmp.bin |
+    export FFLAGS += cat - $(FLASHFILE).bin tmp.bin |
     export FFLAGS += head -c $$((0x400000)) > $(BINDIR)/esp32flash.bin && rm tmp.bin &&
     export FFLAGS += cp $(RIOTCPU)/$(CPU)/bin/rom_0x3ff90000_0x00010000.bin $(BINDIR)/rom1.bin &&
     export FFLAGS += cp $(RIOTCPU)/$(CPU)/bin/rom_0x40000000_0x000c2000.bin $(BINDIR)/rom.bin
@@ -173,5 +173,5 @@ else
     export FFLAGS += -z -fm $(FLASH_MODE) -fs detect -ff $(FLASH_FREQ)
     export FFLAGS += 0x1000 $(RIOTCPU)/$(CPU)/bin/bootloader.bin
     export FFLAGS += 0x8000 $(BINDIR)/partitions.bin
-    export FFLAGS += 0x10000 $(ELFFILE).bin
+    export FFLAGS += 0x10000 $(FLASHFILE).bin
 endif
