@@ -76,6 +76,7 @@ export TERMFLAGS             # Additional parameters to supply to TERMPROG.
 export PORT                  # The port to connect the TERMPROG to.
 export ELFFILE               # The unstripped result of the compilation.
 export HEXFILE               # The stripped result of the compilation.
+export FLASHFILE             # The output file used for flashing.
 export DEBUGGER              # The command to call on "make debug", usually a script starting the GDB front-end.
 export DEBUGGER_FLAGS        # The parameters to supply to DEBUGGER.
 export DEBUGSERVER           # The command to call on "make debug-server", usually a script starting the GDB server.
