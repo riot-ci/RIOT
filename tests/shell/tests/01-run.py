@@ -51,6 +51,17 @@ def testfunc(child):
     # check startup message
     child.expect('test_shell.')
 
+    child.sendline('bufsize')
+    child.expect('INFO # ([0-9]+)')
+
+    bufsize = int(child.match[1])
+
+    # check a long line
+    child.sendline("_"*bufsize + "whatever")
+    # this is dirty hack to work around a bug in pytern (#10634)
+    child.sendline()
+    child.expect('shell: maximum line length exceeded')
+
     # loop other defined commands and expected output
     for cmd, expected in CMDS.items():
         check_cmd(child, cmd, expected)
