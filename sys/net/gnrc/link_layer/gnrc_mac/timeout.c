@@ -91,8 +91,8 @@ void gnrc_mac_set_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type
 
     gnrc_mac_timeout_event_t *timeout_event;
     if ((timeout_event = _gnrc_mac_acquire_timeout(mac_timeout, type))) {
-        DEBUG("[gnrc_mac] Set timeout %s in %" PRIu32 " us\n",
-              gnrc_mac_timeout_names[type], offset);
+        DEBUG("[gnrc_mac] Set timeout type-%d in %" PRIu32 " us\n",
+              type, offset);
         timeout_event->msg_event.event.offset = offset;
         timeout_event->msg_event.msg.type = GNRC_MAC_EVENT_TIMEOUT_TYPE;
         timeout_event->msg_event.msg.content.ptr = (void *) timeout_event;
@@ -100,8 +100,8 @@ void gnrc_mac_set_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type
         evtimer_add(&mac_timeout->evtimer, &timeout_event->msg_event.event);
     }
     else {
-        DEBUG("[gnrc_mac] Cannot set timeout %s, too many concurrent timeouts\n",
-              gnrc_mac_timeout_names[type]);
+        DEBUG("[gnrc_mac] Cannot set timeout type-%d, too many concurrent timeouts\n",
+              type);
     }
 }
 
