@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) 2017 Freie Universität Berlin
+ *               2018 Otto-von-Guericke-Universität Magdeburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup net_gnrc_netif
+ * @{
+ *
+ * @file
+ * @brief   CC110x/CC1200 adaption for @ref net_gnrc_netif
+ *
+ * @author  Martine Lenders <m.lenders@fu-berlin.de>
+ * @author  Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author  Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+ *
+ * Supported Transceivers
+ * ======================
+ *
+ * This adaption layer is written to be used by CC110x and CC1200 transceivers,
+ * but any transceiver using that should transfer 6LoWPAN and uses layer 2
+ * addresses which are 1 byte in size would likely be able to use it.
+ *
+ * Frame Format
+ * ============
+ *
+ * ```
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |  Destination  |    Source     |  Payload...
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ```
+ *
+ * | Field       | Description                     |
+ * |-------------|---------------------------------|
+ * | Destination | The layer 2 destination address |
+ * | Source      | The layer 2 source address      |
+ * | Payload     | The payload (variable size)     |
+ *
+ * Please note that the payload needs to be able to carry 6LoWPAN frames.
+ *
+ * Layer 2 Broadcast
+ * =================
+ *
+ * This adaption layer assumes that the layer 2 address `0x00` is reserved for
+ * layer 2 broadcast, which is true for CC110x and CC1200 transceivers (provided
+ * they are configured accordingly). If more users of this adaption layers are
+ * added, this behaviour might needs to be more generalized.
+ */
+#ifndef NET_GNRC_NETIF_CC1XXX_H
+#define NET_GNRC_NETIF_CC1XXX_H
+
+#include "net/gnrc/netif.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Default protocol for data that is coming in
+ */
+#ifdef MODULE_GNRC_SIXLOWPAN
+#define CC1XXX_DEFAULT_PROTOCOL         (GNRC_NETTYPE_SIXLOWPAN)
+#else
+#define CC1XXX_DEFAULT_PROTOCOL         (GNRC_NETTYPE_UNDEF)
+#endif
+
+/**
+ * @brief Layer 2 header size used
+ *
+ * This includes only the Destination and Source address, as only those have
+ * impact on the Length Filed as expected/set by the transceiver
+ */
+#define CC1XXX_HEADER_SIZE              2
+
+/**
+ * @brief Size of a layer 2 address on CC110x/CC1200 transceivers
+ */
+#define CC1XXX_ADDR_SIZE                1
+
+/**
+ * @brief Layer 2 header used in CC1xxx frames
+ *
+ * This structure has the same memory layout as the data send in the frames.
+ */
+typedef struct __attribute__((packed)) {
+    uint8_t dest_addr;      /**< Destination Layer-2 address */
+    uint8_t src_addr;       /**< Source Layer-2 address */
+} cc1xxx_l2hdr_t;
+
+/**
+ * @brief Users of the CC110x/CC1200 adaption layer have to overlap their
+ *        device handle with this structure.
+ *
+ * The first two fields of the device structure of any transceiver driver using
+ * this adaption layer have to be equal to the `cc1xxx_t` structure. This allows
+ * efficient access to the current layer 2 address of the device from the
+ * adaption layer.
+ */
+typedef struct {
+    netdev_t netdev;        /**< RIOT's interface to this driver */
+    uint8_t addr;           /**< Layer 2 address of this device */
+} cc1xxx_t;
+
+/**
+ * @brief Statistics for one received frame
+ */
+typedef struct netdev_radio_rx_info cc1xxx_rx_info_t;
+
+/**
+ * @brief   Creates a CC110x/CC1200 network interface
+ *
+ * @param[in] stack     The stack for the network interface's thread.
+ * @param[in] stacksize Size of @p stack.
+ * @param[in] priority  Priority for the network interface's thread.
+ * @param[in] name      Name for the network interface. May be NULL.
+ * @param[in] dev       Device for the interface.
+ *
+ * @see @ref gnrc_netif_create()
+ *
+ * @return  The network interface on success.
+ */
+gnrc_netif_t *gnrc_netif_cc1xxx_create(char *stack, int stacksize,
+                                       char priority, char *name,
+                                       netdev_t *dev);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* NET_GNRC_NETIF_CC1XXX_H */
+/** @} */
