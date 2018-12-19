@@ -528,7 +528,8 @@ endef
 # Do not add dependencies to "flash" directly, use FLASHDEPS, as this is shared
 # with flash-only too
 
-flash: all $(FLASHDEPS)
+# It currently forces rebuilding '$(FLASHFILE)' as it has `.PHONY` dependencies
+flash: $(FLASHFILE) $(FLASHDEPS)
 	$(flash-recipe)
 
 flash-only: $(FLASHDEPS)
