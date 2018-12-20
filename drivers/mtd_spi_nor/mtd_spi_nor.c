@@ -299,6 +299,7 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
             thread_yield();
         }
 #else
+        (void)div;
         (void) us;
         thread_yield();
 #endif
