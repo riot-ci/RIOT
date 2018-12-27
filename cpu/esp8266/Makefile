@@ -6,4 +6,8 @@ DIRS += periph
 DIRS += sdk
 DIRS += vendor
 
+ifneq (, $(filter esp_now, $(USEMODULE)))
+    DIRS += esp-now
+endif
+
 include $(RIOTBASE)/Makefile.base
