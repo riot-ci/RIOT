@@ -24,6 +24,22 @@ endif
 
 ifeq ($(ENABLE_GDBSTUB), 1)
     USEMODULE += esp_gdbstub
+endif
+
+# SPECIAL module dependencies
+# cannot be done in Makefile.dep since Makefile.dep is included too late
+
+ifneq (, $(filter esp_sw_timer, $(USEMODULE)))
+    USEMODULE += esp_sdk
+endif
+
+ifneq (, $(filter esp_now, $(USEMODULE)))
+    $(eval GNRC_NETIF_NUMOF=$(shell echo $$(($(GNRC_NETIF_NUMOF)+1))))
+    USEMODULE += esp_sdk
+    USEMODULE += netopt
+endif
+
+ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
     USEMODULE += esp_gdb
 endif
 
@@ -33,7 +49,6 @@ export TARGET_ARCH ?= xtensa-lx106-elf
 
 # ESP8266 pseudomodules
 PSEUDOMODULES += esp_gdb
-PSEUDOMODULES += esp_now
 PSEUDOMODULES += esp_sdk
 PSEUDOMODULES += esp_sdk_int_handling
 PSEUDOMODULES += esp_sw_timer
