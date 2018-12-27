@@ -43,9 +43,22 @@
  * Available values can be found in reference manual, PWR section, register CR.
  */
 #if defined(CPU_FAM_STM32F0)
-#define PM_STOP_CONFIG (PWR_CR_LPDS)
+#define PM_STOP_CONFIG  (PWR_CR_LPDS)
+#elif defined(CPU_FAM_STM32L0)
+#define PM_STOP_CONFIG  (PWR_CR_LPSDSR)
 #else
-#define PM_STOP_CONFIG (PWR_CR_LPDS | PWR_CR_FPDS)
+#define PM_STOP_CONFIG  (PWR_CR_LPDS | PWR_CR_FPDS)
+#endif
+#endif
+
+#ifndef PM_STOP_CLEAR
+/**
+ * @brief Define flags cleared before configuring stop mode
+ */
+#if defined(CPU_FAM_STM32L0)
+#define PM_STOP_CLEAR   (PWR_CR_LPSDSR | PWR_CR_PDDS)
+#else
+#define PM_STOP_CLEAR   (PWR_CR_LPDS | PWR_CR_PDDS)
 #endif
 #endif
 
@@ -104,21 +117,10 @@ void pm_set(unsigned mode)
             deep = 1;
             break;
         case STM32_PM_STOP:
-#if defined(CPU_FAM_STM32L0)
-            /* Clear PDDS to enter stop mode on */
-            /*
-             * Regarding LPSDSR, it's up to the user to configure it :
-             * 0: Voltage regulator on during Deepsleep/Sleep/Low-power run mode
-             * 1: Voltage regulator in low-power mode during
-             *    Deepsleep/Sleep/Low-power run mode
-             */
-            PWR->CR &= ~(PWR_CR_PDDS);
-#else
             /* Clear PDDS and LPDS bits to enter stop mode on */
             /* deepsleep with voltage regulator on */
-            PWR->CR &= ~(PWR_CR_PDDS | PWR_CR_LPDS);
+            PWR->CR &= ~(PM_STOP_CLEAR);
             PWR->CR |= PM_STOP_CONFIG;
-#endif
             /* Set SLEEPDEEP bit of system control block */
             deep = 1;
             break;
