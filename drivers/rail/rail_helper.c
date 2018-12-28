@@ -60,7 +60,9 @@ int rail_event_queue_peek(rail_event_queue_t* queue, rail_event_msg_t* event_msg
 
     unsigned r = ringbuffer_peek(&(queue->ring_buffer), (char *) event_msg, sizeof(rail_event_msg_t));
 
-    assert(r == sizeof(rail_event_msg_t));
+    if (r != sizeof(rail_event_msg_t)) {
+            return -1;
+    }
 
     return 0;
 
@@ -76,11 +78,16 @@ int rail_event_queue_poll(rail_event_queue_t* queue, rail_event_msg_t* event_msg
     if (event_msg != NULL) {
         unsigned r = ringbuffer_get(&(queue->ring_buffer), (char *) event_msg, sizeof(rail_event_msg_t));
 
-        assert(r == sizeof(rail_event_msg_t));
+        if (r != sizeof(rail_event_msg_t)) {
+            return -1;
+        }
     }
     else {
         unsigned r = ringbuffer_remove(&(queue->ring_buffer), sizeof(rail_event_msg_t));
-        assert(r == sizeof(rail_event_msg_t));
+
+        if (r != sizeof(rail_event_msg_t)) {
+            return -1;
+        }
     }
 
     return 0;
@@ -95,26 +102,13 @@ int rail_event_queue_add(rail_event_queue_t* queue, rail_event_msg_t* event_msg)
 
     unsigned r = ringbuffer_add(&(queue->ring_buffer), (char *) event_msg, sizeof(rail_event_msg_t));
 
-    assert(r == sizeof(rail_event_msg_t));
+    if (r != sizeof(rail_event_msg_t)) {
+            return -1;
+    }
 
     return 0;
 }
 
-
-#ifdef DEVELHELP
-
-const char *rail_event2str(RAIL_Events_t event)
-{
-    if (event & RAIL_EVENT_RX_PACKET_RECEIVED) {
-        return "RAIL_EVENT_RX_PACKET_RECEIVED";
-    }
-    if (event & RAIL_EVENT_TX_PACKET_SENT) {
-        return "RAIL_EVENT_TX_PACKET_SENT";
-    }
-
-    return "RAIL EVENT: TODO";
-
-}
 const char *rail_error2str(RAIL_Status_t status)
 {
 
@@ -133,9 +127,27 @@ const char *rail_error2str(RAIL_Status_t status)
     return "Error code unknown";
 }
 
+
+const char *rail_event2str(RAIL_Events_t event)
+{
+#ifdef DEVELHELP
+    if (event & RAIL_EVENT_RX_PACKET_RECEIVED) {
+        return "RAIL_EVENT_RX_PACKET_RECEIVED";
+    }
+    if (event & RAIL_EVENT_TX_PACKET_SENT) {
+        return "RAIL_EVENT_TX_PACKET_SENT";
+    }
+
+    return "RAIL EVENT: TODO";
+#else
+    return "enable DEVELHELP";
+#endif /* DEVELHELP */
+}
+
+
 const char *rail_packetStatus2str(RAIL_RxPacketStatus_t status)
 {
-
+#ifdef DEVELHELP
     switch (status) {
         case (RAIL_RX_PACKET_NONE):
             return "Radio is idle or searching for a packet.";
@@ -158,10 +170,14 @@ const char *rail_packetStatus2str(RAIL_RxPacketStatus_t status)
         default:
             return "Unknown status";
     }
+#else
+    return "enable DEVELHELP";
+#endif /* DEVELHELP */
 }
 
 const char *rail_radioState2str(RAIL_RadioState_t state)
 {
+#ifdef DEVELHELP
     switch (state) {
         case (RAIL_RF_STATE_INACTIVE):
             return "state inactive";
@@ -174,5 +190,7 @@ const char *rail_radioState2str(RAIL_RadioState_t state)
         default:
             return "unknown state";
     }
-}
+#else
+    return "enable DEVELHELP"
 #endif /* DEVELHELP */
+}

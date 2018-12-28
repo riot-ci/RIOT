@@ -19,14 +19,13 @@
 #include "rail.h"
 #include "rail_chip_specific.h"
 #include "pa_conversions_efr32.h"
-#include "pti.h"
-#include "pa.h"
 #include "rail_assert_error_codes.h"
 #include "ieee802154/rail_ieee802154.h"
 
 /* riot os rail driver includes*/
 #include "rail_drv.h"
 #include "rail_netdev.h"
+#include "rail_802154_config.h"
 
 #include "net/ieee802154.h"
 
@@ -345,16 +344,17 @@ int rail_init(rail_t *dev)
     ret = RAIL_IEEE802154_Config2p4GHzRadio(dev->rhandle);
 
 #elif (RAIL_RADIO_BAND == 868) || (RAIL_RADIO_BAND == 915)
-    /* there is no default config, so we have to do it manually (or copied from
-       openthread/mbed)
-       currently the calls are the same, might change if RAIL API functions
-       became available
+    /* from gecko sdk 2.4 there is a official config api for sub ghz radio
+       but it does not support channel 0
+
      */
 #if (RAIL_RADIO_BAND == 868)
     DEBUG("using 868MHz radio band\n");
+    /*ret =     RAIL_IEEE802154_ConfigGB863MHzRadio(dev->rhandle); */
     ret = RAIL_ConfigChannels(dev->rhandle, &_rail_radio_channel_config, NULL);
 #elif (RAIL_RADIO_BAND == 915)
     DEBUG("using 915MHz radio band\n");
+    /*ret =     RAIL_IEEE802154_ConfigGB915MHzRadio(dev->rhandle);*/
     ret = RAIL_ConfigChannels(dev->rhandle, &_rail_radio_channel_config, NULL);
 #endif
 
@@ -386,7 +386,11 @@ int rail_init(rail_t *dev)
     }
 
     /* setup transmitt buffer */
-    ret = RAIL_SetTxFifo(dev->rhandle, _transmit_buffer, 0, sizeof(_transmit_buffer));
+    uint16_t buf_size = RAIL_SetTxFifo(dev->rhandle, _transmit_buffer, 0, sizeof(_transmit_buffer));
+    if (buf_size == 0) {
+        LOG_ERROR("Can not set TxFifo - error msg: %s\n", rail_error2str(ret));
+        return -1;
+    }
 
     /* setup PTI */
 #if (RAIL_PTI_ENABLED == 1)
@@ -417,9 +421,9 @@ int rail_init(rail_t *dev)
 
     netdev->pan = RAIL_DEFAULT_PANID;
 
-    bool bRet = RAIL_IEEE802154_SetPanId(dev->rhandle, RAIL_DEFAULT_PANID, 0);
-    if (bRet != true) {
-        DEBUG("Can not set PAN ID %d\n", RAIL_DEFAULT_PANID);
+    ret = RAIL_IEEE802154_SetPanId(dev->rhandle, RAIL_DEFAULT_PANID, 0);
+    if (ret != RAIL_STATUS_NO_ERROR) {
+        DEBUG("Can not set PAN ID %d - error msg: %s\n", RAIL_DEFAULT_PANID, rail_error2str(ret));
     }
 
     /* set short addr */
@@ -429,9 +433,9 @@ int rail_init(rail_t *dev)
     memcpy(netdev->short_addr, &eui.uint16[3].u16, 2);
 
     /* rail want it in little endian ...*/
-    bRet = RAIL_IEEE802154_SetShortAddress(dev->rhandle, byteorder_ntohs(eui.uint16[3]), 0);
-    if (bRet != true) {
-        DEBUG("Can not set short addr\n");
+    ret = RAIL_IEEE802154_SetShortAddress(dev->rhandle, byteorder_ntohs(eui.uint16[3]), 0);
+    if (ret != RAIL_STATUS_NO_ERROR) {
+        DEBUG("Can not set short addr - error msg: %s", rail_error2str(ret));
     }
 
     /* set long addr aka EUI */
@@ -442,9 +446,9 @@ int rail_init(rail_t *dev)
     /* and for the long address, it have to be little endian aka reversed order */
     uint64_t addr_rev = byteorder_ntohll(eui.uint64);
 
-    bRet = RAIL_IEEE802154_SetLongAddress(dev->rhandle, (uint8_t *)&addr_rev, 0);
-    if (bRet != true) {
-        DEBUG("Can not set long addr\n");
+    ret = RAIL_IEEE802154_SetLongAddress(dev->rhandle, (uint8_t *)&addr_rev, 0);
+    if (ret != RAIL_STATUS_NO_ERROR) {
+        DEBUG("Can not set long addr - error msg: %s", rail_error2str(ret));
     }
 
     /* get transmitt power, TODO only for debug mode */
@@ -532,9 +536,10 @@ int rail_transmit_frame(rail_t *dev, uint8_t *data_ptr, size_t data_length)
                                             NULL);
 
     if (ret != RAIL_STATUS_NO_ERROR) {
-        LOG_ERROR("Can't start transmit - state %s -  error msg: %s \n",
+        LOG_ERROR("Can't start transmit - current state %s - error msg: %s \n",
                   rail_radioState2str(RAIL_GetRadioState(dev->rhandle)),
                   rail_error2str(ret));
+        rail_start_rx(dev);
         return -1;
     }
     DEBUG("Started transmit\n");
@@ -547,6 +552,8 @@ int rail_transmit_frame(rail_t *dev, uint8_t *data_ptr, size_t data_length)
         - or use while (RAIL_GetRadioState(dev->rhandle) & RAIL_RF_STATE_TX );
      */
     while (RAIL_GetRadioState(dev->rhandle) & RAIL_RF_STATE_TX) {}
+
+    rail_start_rx(dev);
     return 0;
 }
 
@@ -575,6 +582,8 @@ int rail_start_rx(rail_t *dev)
     /* set channel to listen to */
     RAIL_StartRx(dev->rhandle, dev->netdev.chan, NULL);
     dev->state = RAIL_TRANSCEIVER_STATE_RX;
+
+    DEBUG("[rail] recv - radio state: %s\n", rail_radioState2str(RAIL_GetRadioState(dev->rhandle)));
     return 0;
 }
 
@@ -671,6 +680,108 @@ static void _rail_radio_event_handler(RAIL_Handle_t rhandle, RAIL_Events_t event
             /* save the size of the packet */
             event_msg.rx_packet_size = event_msg.rx_packet_info.packetBytes;
         }
+    }
+
+    /* debug events */
+
+
+
+    if (event & RAIL_EVENT_TX_START_CCA) {
+
+        DEBUG("RAIL_EVENT_TX_START_CCA\n");
+    }
+    if (event & RAIL_EVENT_TX_CCA_RETRY) {
+
+        DEBUG("RAIL_EVENT_TX_CCA_RETRY\n");
+    }
+    if (event & RAIL_EVENT_TX_CHANNEL_BUSY) {
+
+        DEBUG("RAIL_EVENT_TX_CHANNEL_BUSY\n");
+    }
+    if (event & RAIL_EVENT_TX_CHANNEL_CLEAR) {
+
+        DEBUG("RAIL_EVENT_TX_CHANNEL_CLEAR\n");
+    }
+    if (event & RAIL_EVENT_TXACK_UNDERFLOW) {
+
+        DEBUG("RAIL_EVENT_TXACK_UNDERFLOW\n");
+    }
+    if (event & RAIL_EVENT_TX_UNDERFLOW) {
+
+        DEBUG("RAIL_EVENT_TX_UNDERFLOW\n");
+    }
+    if (event & RAIL_EVENT_TXACK_BLOCKED) {
+
+        DEBUG("RAIL_EVENT_TXACK_BLOCKED\n");
+    }
+    if (event & RAIL_EVENT_TX_BLOCKED) {
+
+        DEBUG("RAIL_EVENT_TX_BLOCKED\n");
+    }
+    if (event & RAIL_EVENT_TXACK_ABORTED) {
+
+        DEBUG("RAIL_EVENT_TXACK_ABORTED\n");
+    }
+
+    if (event & RAIL_EVENT_TXACK_PACKET_SENT) {
+
+        DEBUG("RAIL_EVENT_TXACK_PACKET_SENT\n");
+    }
+    if (event & RAIL_EVENT_TX_PACKET_SENT) {
+
+        DEBUG("RAIL_EVENT_TX_PACKET_SENT\n");
+    }
+    if (event & RAIL_EVENT_TX_FIFO_ALMOST_EMPTY) {
+
+        DEBUG("RAIL_EVENT_TX_FIFO_ALMOST_EMPTY\n");
+    }
+    if (event & RAIL_EVENT_RX_TIMING_DETECT) {
+
+        DEBUG("RAIL_EVENT_RX_TIMING_DETECT\n");
+    }
+    if (event & RAIL_EVENT_RX_TIMING_LOST) {
+
+        DEBUG("RAIL_EVENT_RX_TIMING_LOST\n");
+    }
+    if (event & RAIL_EVENT_RX_FILTER_PASSED) {
+
+        DEBUG("RAIL_EVENT_RX_FILTER_PASSED\n");
+    }
+    if (event & RAIL_EVENT_RX_PACKET_ABORTED) {
+
+        DEBUG("RAIL_EVENT_RX_PACKET_ABORTED\n");
+    }
+    if (event & RAIL_EVENT_RX_SCHEDULED_RX_END) {
+
+        DEBUG("RAIL_EVENT_RX_SCHEDULED_RX_END\n");
+    }
+    if (event & RAIL_EVENT_RX_TIMEOUT) {
+
+        DEBUG("RAIL_EVENT_RX_TIMEOUT\n");
+    }
+    if (event & RAIL_EVENT_RX_ADDRESS_FILTERED) {
+
+        DEBUG("RAIL_EVENT_RX_ADDRESS_FILTERED\n");
+    }
+    if (event & RAIL_EVENT_RX_FRAME_ERROR) {
+
+        DEBUG("RAIL_EVENT_RX_FRAME_ERROR\n");
+    }
+    if (event & RAIL_EVENT_RX_SYNC2_DETECT) {
+
+        DEBUG("RAIL_EVENT_RX_SYNC2_DETECT\n");
+    }
+    if (event & RAIL_EVENT_RX_SYNC1_DETECT) {
+
+        DEBUG("RAIL_EVENT_RX_SYNC1_DETECT\n");
+    }
+    if (event & RAIL_EVENT_RX_PREAMBLE_DETECT) {
+
+        DEBUG("RAIL_EVENT_RX_PREAMBLE_DETECT\n");
+    }
+    if (event & RAIL_EVENT_RX_PREAMBLE_LOST) {
+
+        DEBUG("RAIL_EVENT_RX_PREAMBLE_LOST\n");
     }
 
     /* add event to queue, for netdev to process */
