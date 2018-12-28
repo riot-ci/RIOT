@@ -6,6 +6,16 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     drivers_rail
+ * @{
+ *
+ * @file
+ * @brief       helper functions for EFR32 radio driver
+ *
+ * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
+ */
+
 #ifndef RAIL_HELPER_H
 #define RAIL_HELPER_H
 
@@ -77,7 +87,7 @@ typedef struct {
 /**
  * @brief Initialise an event queue for rail events
  *
- * @param[in] event queue
+ * @param[in,out] queue     event queue
  *
  */
 void rail_event_queue_init(rail_event_queue_t* queue);
@@ -85,8 +95,8 @@ void rail_event_queue_init(rail_event_queue_t* queue);
 /**
  * @brief Peek an event from queue without removing it
  *
- * @param[in] event queue
- * @param[out] the event
+ * @param[in,out] queue     event queue
+ * @param[out] event_msg    the event
  *
  * @return 0 on success
  * @return -1 on failure
@@ -96,8 +106,8 @@ int rail_event_queue_peek(rail_event_queue_t* queue, rail_event_msg_t* event_msg
 /**
  * @brief Polls an event from queue with removing it
  *
- * @param[in] event queue
- * @param[out] the event, if NULL the first event is just removed
+ * @param[in,out] queue     event queue
+ * @param[out] event_msg    the event, if NULL the first event is just removed
  *
  * @return 0 on success
  * @return -1 on failure
@@ -107,8 +117,8 @@ int rail_event_queue_poll(rail_event_queue_t* queue, rail_event_msg_t* event_msg
 /**
  * @brief Adds an event to the end of the queue
  *
- * @param[in] event queue
- * @param[out] the event to add
+ * @param[in,out] queue     event queue
+ * @param[out] event_msg    the event to add
  *
  * @return 0 on success
  * @return -1 on failurePeek an event from queue without removing it
@@ -117,17 +127,56 @@ int rail_event_queue_add(rail_event_queue_t* queue, rail_event_msg_t* event_msg)
 
 /** @} */
 
+/**
+ * @brief maps librail error / status codes to strings
+ *
+ * @param[in] status    error or status code
+ *
+ * @return String describing the status/error
+ */
 const char *rail_error2str(RAIL_Status_t status);
 
+/**
+ * @brief Debug / helper functions for mapping librail stati and
+ * events to strings
+ * Strings are only included with @see DEVELHELP set
+ *
+ * @{
+ */
+
+/**
+ * @brief map rx packet status to string expression
+ *
+ * @param[in] status    status to map
+ *
+ * @return String
+ */
 const char *rail_packetStatus2str(RAIL_RxPacketStatus_t status);
 
+/**
+ * @brief map radio state to string expression
+ *
+ * @param[in] state    status to map
+ *
+ * @return String
+ */
 const char *rail_radioState2str(RAIL_RadioState_t state);
 
+/**
+ * @brief map rail event to string expression
+ *
+ * @param[in] event    event to map
+ *
+ * @return String
+ */
 const char *rail_event2str(RAIL_Events_t event);
 
+
+/** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* RAIL_HELPER_H */
+/** @} */

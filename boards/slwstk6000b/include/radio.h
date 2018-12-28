@@ -64,7 +64,9 @@ extern "C" {
 #define RAIL_PTI_ENABLED      (0)
 #endif
 
-/* c&p from gecko-sdk BSP for EFR32MG1_BRD4154A */
+/**
+ * c&p from gecko-sdk BSP for EFR32MG1_BRD4154A
+ */
 #if !defined(RAIL_PTI_CONFIG)
 #define RAIL_PTI_CONFIG                                                    \
     {                                                                        \

@@ -6,6 +6,17 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     drivers_rail
+ * @{
+ *
+ * @file
+ * @brief       Netdev interface to Silabs EFR32 radio drivers
+ *
+ * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
+ */
+
+
 #ifndef RAIL_NETDEV_H
 #define RAIL_NETDEV_H
 
@@ -15,6 +26,9 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Reference to the netdev device driver struct
+ */
 extern const netdev_driver_t rail_driver;
 
 #ifdef __cplusplus
@@ -22,3 +36,4 @@ extern const netdev_driver_t rail_driver;
 #endif
 
 #endif /* RAIL_NETDEV_H */
+/** @} */
