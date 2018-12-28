@@ -183,8 +183,6 @@ void rail_setup(rail_t *dev, const rail_params_t *params)
 
     dev->event_count = 0;
 
-    /* init the queue for the rail events */
-    rail_event_queue_init(&(dev->event_queue));
 }
 
 /* init Packet Trace (PTI) functionality -> usefull for debugging */
@@ -280,6 +278,9 @@ int rail_init(rail_t *dev)
     DEBUG("rail_init called\n");
 
     dev->state = RAIL_TRANSCEIVER_STATE_UNINITIALIZED;
+
+    /* init the queue for the rail events */
+    rail_event_queue_init(&(dev->event_queue));
 
     /* start with long addr mode. */
     netdev->flags |= NETDEV_IEEE802154_SRC_MODE_LONG;
@@ -404,8 +405,10 @@ int rail_init(rail_t *dev)
        for convenience we read it once and save it in the netdev structure in
        big endianess
      */
-    uint32_t tmp = DEVINFO->UNIQUEL;
-    dev->eui.uint64 = byteorder_htonll((uint64_t)((uint64_t)DEVINFO->UNIQUEH << 32) | tmp);
+    le_uint64_t tmp;
+    tmp.u32[0] = DEVINFO->UNIQUEL;
+    tmp.u32[1] = DEVINFO->UNIQUEH;
+    dev->eui.uint64 = byteorder_ltobll(tmp);
 
     DEBUG("Node EUI: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
           dev->eui.uint8[0],
