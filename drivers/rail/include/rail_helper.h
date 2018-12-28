@@ -25,7 +25,7 @@ extern "C" {
 
 /**
  * @brief Reads and converts the EUI of the transceiver
- * 
+ *
  * @return the EUI
  */
 eui64_t rail_helper_get_hw_EUI(void);

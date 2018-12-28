@@ -30,15 +30,34 @@
 extern "C" {
 #endif
 
-/* only 2.4 GHz possible */
-#define RAIL_RADIO_BAND 2400
+/**
+ * @brief Select radio frequency
+ *
+ * ikea tradfri supports only 2.4 GHz
+ */
+#define RAIL_RADIO_BAND (2400)
 
-/* voltage of the radio PA in mV
-   depends on the module, tradfi modules from lamps are connected to external
-   dc-dc
-*/
-#define RAIL_RADIO_PA_VOLTAGE 3300
+/**
+ * @brief Setting for the radio PA voltage in mV
+ *
+ * voltage of the radio PA in mV
+ *
+ * The setting depends on the module.
+ *
+ * the tradfi modules embedded in lamps are
+ * connected to th external dc-dc, therefore 3.3V
+ */
+#define RAIL_RADIO_PA_VOLTAGE (3300)
 
+/**
+  * @brief Packet Trace Interface
+  *
+  * The Tradfri doesn't support PTI,
+  * so don't enable it.
+  */
+#ifndef RAIL_PTI_ENABLED
+#define RAIL_PTI_ENABLED      (0)
+#endif
 
 #ifdef __cplusplus
 }

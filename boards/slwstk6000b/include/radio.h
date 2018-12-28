@@ -32,34 +32,54 @@
 extern "C" {
 #endif
 
-// posible values, 2400, 868, 915
-#define RAIL_RADIO_BAND 2400
+/**
+ * @brief Select radio frequency
+ *
+ * possible values, 2400, 868, 915
+ * (depends on the module)
+ */
+#define RAIL_RADIO_BAND (2400)
 
-// voltage of the radio PA in mV
-// depends on the module TODO
-#define RAIL_RADIO_PA_VOLTAGE 1800
+/**
+ * @brief Setting for the radio PA voltage in mV
+ *
+ * voltage of the radio PA in mV
+ *
+ * The setting depends on the module.
+ *
+ * The silabs dev modules are connected to
+ * the internal dc/dc -> 1.8V
+ */
+#define RAIL_RADIO_PA_VOLTAGE (1800)
 
-// Packet Trace interface
+
+/**
+  * @brief Packet Trace Interface
+  *
+  * To enable the PTI set vaule to 1.
+  * In RAIL_PTI_CONFIG the correct pins
+  * have to be configured
+  */
 #ifndef RAIL_PTI_ENABLED
-#define RAIL_PTI_ENABLED     (1)
+#define RAIL_PTI_ENABLED      (0)
 #endif
 
-// c&p from gecko-sdk BSP for EFR32MG1_BRD4154A
+/* c&p from gecko-sdk BSP for EFR32MG1_BRD4154A */
 #if !defined(RAIL_PTI_CONFIG)
 #define RAIL_PTI_CONFIG                                                    \
-  {                                                                        \
-    RAIL_PTI_MODE_UART,     /* Only supported output mode for the WSTK*/   \
-    1600000,                /* Choose 1.6 MHz for best the WSTK */         \
-    6,                      /* WSTK uses location 6 for DOUT PB12 */       \
-    gpioPortB,              /* FRC_DOUT#6 is PB12 */                       \
-    12,                     /* FRC_DOUT#6 is PB12 */                       \
-    6,                      /* UNUSED IN UART MODE */                      \
-    gpioPortB,              /* UNUSED IN UART MODE */                      \
-    11,                     /* UNUSED IN UART MODE */                      \
-    6,                      /* WSTK uses location 6 for DFRAME */          \
-    gpioPortB,              /* RC_DOUT#6 is PB13 */                        \
-    13,                     /* RC_DOUT#6 is PB13 */                        \
-  }
+    {                                                                        \
+        RAIL_PTI_MODE_UART, /* Only supported output mode for the WSTK*/   \
+        1600000,            /* Choose 1.6 MHz for best the WSTK */         \
+        6,                  /* WSTK uses location 6 for DOUT PB12 */       \
+        gpioPortB,          /* FRC_DOUT#6 is PB12 */                       \
+        12,                 /* FRC_DOUT#6 is PB12 */                       \
+        6,                  /* UNUSED IN UART MODE */                      \
+        gpioPortB,          /* UNUSED IN UART MODE */                      \
+        11,                 /* UNUSED IN UART MODE */                      \
+        6,                  /* WSTK uses location 6 for DFRAME */          \
+        gpioPortB,          /* RC_DOUT#6 is PB13 */                        \
+        13,                 /* RC_DOUT#6 is PB13 */                        \
+    }
 #endif
 
 
