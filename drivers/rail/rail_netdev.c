@@ -213,7 +213,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
          packet before.
      */
 
-
     /* buf == NULL && len == 0 -> return packet size, no dropping */
     if (buf == NULL && len == 0) {
         /* peek event_msg from queue */
@@ -229,6 +228,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         /* -1 because only payload length, without the packet length byte */
         return event_msg.rx_packet_info.packetBytes - 1;
     }
+
     /* buf == NULL && len > 0 -> return packet size + drop it */
     if (buf == NULL && len > 0) {
         /* get event from queue */
@@ -252,10 +252,17 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
        layer
      */
 
-    /* get and removce the event from the event queue */
+    /* get and remove the event from the event queue */
     rail_event_msg_t event_msg;
     rail_event_queue_poll(&(dev->event_queue), &event_msg);
 
+    /* not enough space in buf */
+    /* len + 1, because packetBytes contains one byte for length */
+    if ((len + 1) < event_msg.rx_packet_info.packetBytes) {
+        /* release packet */
+        RAIL_ReleaseRxPacket(dev->rhandle, event_msg.rx_packet);
+        return -ENOBUFS;
+    }
 
 
     /* get more infos about the packet */
