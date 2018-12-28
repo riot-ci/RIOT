@@ -117,20 +117,17 @@ int rail_event_queue_add(rail_event_queue_t* queue, rail_event_msg_t* event_msg)
 
 /** @} */
 
-#ifdef DEVELHELP
 const char *rail_error2str(RAIL_Status_t status);
+
 const char *rail_packetStatus2str(RAIL_RxPacketStatus_t status);
 
 const char *rail_radioState2str(RAIL_RadioState_t state);
 
 const char *rail_event2str(RAIL_Events_t event);
-#endif /* DEVELHELP*/
-
 
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* RAIL_HELPER_H */
