@@ -103,7 +103,7 @@ static const RAIL_IEEE802154_Config_t _rail_ieee802154_config = {
     .addresses = NULL,
     .ackConfig = {
         .enable = true,                     /* Turn on auto ACK for IEEE 802.15.4 */
-        .ackTimeout = 1200,                 /* (from mbed driver) why 1200? -> docu says 54 symbols * 16 us/symbol = 864 us */
+        .ackTimeout = 864,                 /*  54 symbols * 16 us/symbol = 864 us */
         .rxTransitions = {
             .success = RAIL_RF_STATE_RX,    /* after rx -> state rx */
             .error = RAIL_RF_STATE_RX       /* ignored */
