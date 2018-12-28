@@ -158,7 +158,7 @@ static void _usage(char *cmdname)
     puts("     hoplimit: Set the IP time to life/hoplimit "
               "(default: interface config)");
     puts("     ms timeout: Time to wait for a resonse in milliseconds "
-              "(default: 1000). he option affects only timeout in absence "
+              "(default: 1000). The option affects only timeout in absence "
               "of any responses, otherwise wait for two RTTs");
 }
 
@@ -200,11 +200,11 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                             continue;
                         }
                     }
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 case 'h':
                     res = 1;
                     continue;
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 case 'i':
                     if ((++i) < argc) {
                         data->interval = (uint32_t)atoi(argv[i]) * US_PER_MS;
@@ -212,19 +212,19 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                             continue;
                         }
                     }
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 case 's':
                     if ((++i) < argc) {
                         data->datalen = atoi(argv[i]);
                         continue;
                     }
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 case 't':
                     if ((++i) < argc) {
                         data->hoplimit = atoi(argv[i]);
                         continue;
                     }
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 case 'W':
                     if ((++i) < argc) {
                         data->timeout = (uint32_t)atoi(argv[i]) * US_PER_MS;
@@ -232,7 +232,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                             continue;
                         }
                     }
-                    /* falls through intentionally */
+                    /* intentionally falls through */
                 default:
                     res = 1;
                     break;
