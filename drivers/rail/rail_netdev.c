@@ -190,27 +190,27 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
        TODO rewrite rationale ...
 
        the "receiving of a packet" becomes a bit ugly, since the riot driver api is
-       optimized for low level hardware interaction. Here the silabs driver blob
+       optimized for low level hardware interaction. Here, the silabs driver blob
        already did the whole low level hw interaction. By the time this methode is
        called the whole packet is already read and stored in memory.
        Normally the packet have to be processed within the registered handler of
-       the driver blob. It is possible to hold a packet, to process it later, as in
-       in this methode.
-       With RAIL_RX_PACKET_HANDLE_OLDEST a handle to the oldest not processed
-       packet is accessable, but because the _recv methode is called several times
-       by the upper protocol layer it is possible this reference changes. Therefore
-       it have to be stored, for the next call of _recv().
-       After processing the packet it has to be released with
+       the driver blob. It is possible to hold packets, to process them later.
+
+       If a packet is received the rail driver blob event callback stores the handle
+       for the packet and the basic meta data of the packet in an rail_event_msg_t and
+       adds it to a event queue contained in the netdev structure of this driver.
+       When the _recv methode is called several times to process the frame, it accesses
+       the last occured event.
+       After processing the packet it is removed from the queue and is released with
        RAIL_ReleaseRxPacket().
 
        TODO
-       - What if there are more packets waiting? How to loop through them?
-       - What if this method is called, because a new packet arrived and the stack
-       is still busy processing the first?
-       - Or worst, if it causes a race condition?
+       - could there be a race condition when another event occures and send an new
+         event to the netdev layer?
        - What if for whatever reason the upper layer does only call this methode
-       once for a packet? Than the dev->lastRxPacketHandle would not be reset
-       and the next call for a suppost new packet would yield the packet before.
+         once for a packet? Than the event is not removed from the queue, the packet
+         is not released and the next call for a suppost new packet would yield the
+         packet before.
      */
 
 
