@@ -372,8 +372,12 @@ int rail_init(rail_t *dev)
         return -1;
     }
 
-    /* init radio PA */
+    /* activate auto ack in the layer above */
+    static const netopt_enable_t enable = NETOPT_ENABLE;
+    netdev_ieee802154_set(&dev->netdev, NETOPT_ACK_REQ,
+                          &enable, sizeof(enable));
 
+    /* init radio PA */
     r = _rail_PA_init(dev);
 
     if (r != 0) {
