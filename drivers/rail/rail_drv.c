@@ -400,25 +400,17 @@ int rail_init(rail_t *dev)
 
 
     /* get mac addr from SoC */
-    /* this is a bit messy, because everthing has or what it in different
-       endianess
-       for convenience we read it once and save it in the netdev structure in
-       big endianess
-     */
-    le_uint64_t tmp;
-    tmp.u32[0] = DEVINFO->UNIQUEL;
-    tmp.u32[1] = DEVINFO->UNIQUEH;
-    dev->eui.uint64 = byteorder_ltobll(tmp);
+    eui64_t eui = rail_helper_get_hw_EUI();
 
     DEBUG("Node EUI: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
-          dev->eui.uint8[0],
-          dev->eui.uint8[1],
-          dev->eui.uint8[2],
-          dev->eui.uint8[3],
-          dev->eui.uint8[4],
-          dev->eui.uint8[5],
-          dev->eui.uint8[6],
-          dev->eui.uint8[7]);
+          eui.uint8[0],
+          eui.uint8[1],
+          eui.uint8[2],
+          eui.uint8[3],
+          eui.uint8[4],
+          eui.uint8[5],
+          eui.uint8[6],
+          eui.uint8[7]);
 
     /* TODO provide default PANID / NID by params? */
     DEBUG("Set PanID to 0x%04x\n", RAIL_DEFAULT_PANID);
@@ -431,24 +423,24 @@ int rail_init(rail_t *dev)
     }
 
     /* set short addr */
-    DEBUG("Set ShortAddr 0x%04x\n", ntohs(dev->eui.uint16[3].u16));
+    DEBUG("Set ShortAddr 0x%04x\n", ntohs(eui.uint16[3].u16));
 
     /* yeah riot want it in big endian*/
-    memcpy(netdev->short_addr, &dev->eui.uint16[3].u16, 2);
+    memcpy(netdev->short_addr, &eui.uint16[3].u16, 2);
 
     /* rail want it in little endian ...*/
-    bRet = RAIL_IEEE802154_SetShortAddress(dev->rhandle, byteorder_ntohs(dev->eui.uint16[3]), 0);
+    bRet = RAIL_IEEE802154_SetShortAddress(dev->rhandle, byteorder_ntohs(eui.uint16[3]), 0);
     if (bRet != true) {
         DEBUG("Can not set short addr\n");
     }
 
-    /* set long addr */
-    DEBUG("Set LongAddr 0x%08lx%08lx\n", ntohl(dev->eui.uint64.u32[0]), ntohl(dev->eui.uint64.u32[1]));
+    /* set long addr aka EUI */
+    DEBUG("Set LongAddr 0x%08lx%08lx\n", ntohl(eui.uint64.u32[0]), ntohl(eui.uint64.u32[1]));
 
-    memcpy(netdev->long_addr, &dev->eui.uint8, IEEE802154_LONG_ADDRESS_LEN);
+    memcpy(netdev->long_addr, &eui.uint8, IEEE802154_LONG_ADDRESS_LEN);
 
     /* and for the long address, it have to be little endian aka reversed order */
-    uint64_t addr_rev = byteorder_ntohll(dev->eui.uint64);
+    uint64_t addr_rev = byteorder_ntohll(eui.uint64);
 
     bRet = RAIL_IEEE802154_SetLongAddress(dev->rhandle, (uint8_t *)&addr_rev, 0);
     if (bRet != true) {

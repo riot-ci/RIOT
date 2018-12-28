@@ -14,12 +14,21 @@
 
 #include "rail.h"
 
+#include "byteorder.h"
+#include "net/eui64.h"
 #include "ringbuffer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+/**
+ * @brief Reads and converts the EUI of the transceiver
+ * 
+ * @return the EUI
+ */
+eui64_t rail_helper_get_hw_EUI(void);
 
 
 /**

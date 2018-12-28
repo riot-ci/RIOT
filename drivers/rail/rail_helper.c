@@ -20,6 +20,26 @@
 #include "log.h"
 
 
+eui64_t rail_helper_get_hw_EUI(void)
+{
+    
+    /* this is a bit messy, because everthing has or what it in different
+       endianess
+       for convenience we read it once and save it in the netdev structure in
+       big endianess
+     */
+    le_uint64_t tmp;
+    tmp.u32[0] = DEVINFO->UNIQUEL;
+    tmp.u32[1] = DEVINFO->UNIQUEH;
+
+    eui64_t eui;
+    eui.uint64 = byteorder_ltobll(tmp);
+
+    return eui;
+}
+
+
+
 void rail_event_queue_init(rail_event_queue_t* queue)
 {
     assert(queue != NULL);

@@ -43,9 +43,9 @@ extern "C" {
 #define RAIL_912MHZ_DEFAULT_CHANNEL       (IEEE802154_DEFAULT_SUBGHZ_CHANNEL)
 /* Page 2 is O-QPSK 100 kbit/s (channel 0), or 250 kbit/s (channels 1-10) */
 #define RAIL_SUBGHZ_DEFAULT_PAGE          (IEEE802154_DEFAULT_SUBGHZ_PAGE)
-#define RAIL_2P4GH_MIN_CHANNEL           (IEEE802154_CHANNEL_MIN)
-#define RAIL_2P4GH_MAX_CHANNEL           (IEEE802154_CHANNEL_MAX)
-#define RAIL_2P4GH_DEFAULT_CHANNEL       (IEEE802154_DEFAULT_CHANNEL)
+#define RAIL_2P4GH_MIN_CHANNEL            (IEEE802154_CHANNEL_MIN)
+#define RAIL_2P4GH_MAX_CHANNEL            (IEEE802154_CHANNEL_MAX)
+#define RAIL_2P4GH_DEFAULT_CHANNEL        (IEEE802154_DEFAULT_CHANNEL)
 /* Only page 0 is supported in the 2.4 GHz band */
 
 /** @} */
@@ -106,7 +106,6 @@ typedef struct {
     uint32_t event_count;           /**< stat / debug info, how many rail events have occured */
 
     bool promiscuousMode;           /**< flag if set to promiscuous mode */
-    eui64_t eui;                    /** the EUI of the interface */
 } rail_t;
 
 
