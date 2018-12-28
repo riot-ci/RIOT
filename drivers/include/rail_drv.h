@@ -92,26 +92,21 @@ typedef struct rail_params {
 
 
 typedef struct {
-    netdev_ieee802154_t netdev;
-    rail_params_t params;
+    netdev_ieee802154_t netdev;     /**< inherited from netdev_ieee802154_t */
+    rail_params_t params;           /**< the params for the driver */
 
-    /* handle of the RAIL driver blob instance */
-    RAIL_Handle_t rhandle;
-    /* config of the RAIL driver blob */
-    RAIL_Config_t rconfig;
-    /* config for CSMA */
-    RAIL_CsmaConfig_t csma_config;
-    /* intermediate buffer for last RAIL event, so it can be accessed in the
-       _isr function */
+    RAIL_Handle_t rhandle;          /**< handle of the RAIL driver blob instance */
+    RAIL_Config_t rconfig;          /**< config of the RAIL driver blob */
+    RAIL_CsmaConfig_t csma_config;  /**< config for CSMA */
 
-    uint8_t state;              /* state of radio transceiver */
+    uint8_t state;                  /**< state of the radio transceiver */
 
-    rail_event_queue_t event_queue; /* event queue for the netdev layer */
+    rail_event_queue_t event_queue; /**< event queue for the netdev layer */
 
-    uint32_t event_count;       /* stat / debug info, how many rail events have occured */
+    uint32_t event_count;           /**< stat / debug info, how many rail events have occured */
 
-    bool promiscuousMode;
-    eui64_t eui;
+    bool promiscuousMode;           /**< flag if set to promiscuous mode */
+    eui64_t eui;                    /** the EUI of the interface */
 } rail_t;
 
 
