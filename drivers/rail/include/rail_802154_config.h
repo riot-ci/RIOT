@@ -6,6 +6,16 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     drivers_rail
+ * @{
+ *
+ * @file
+ * @brief       low level radio configuration for IEEE 802.15.4 mode on 868 MHz
+ *
+ * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
+ */
+
 #ifndef RAIL_802154_CONFIG_H
 #define RAIL_802154_CONFIG_H
 
@@ -16,12 +26,14 @@ extern "C" {
 
 /**
  * @brief RAIL Configuration
+ *
  * @copyright Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com
  *
  * Adapted form mbed
  * https://github.com/ARMmbed/mbed-os/blob/master/targets/TARGET_Silicon_Labs/TARGET_SL_RAIL/efr32-rf-driver/rail/TOOLCHAIN_GCC_ARM/TARGET_EFR32MG1/ieee802154_subg_efr32xg1_configurator_out.c
- * */
-
+ *
+ * @{
+ */
 #define RAIL_IEEE802154_CONFIG_868MHZ { \
         0x01010FF4UL, 0x00000000UL, \
         0x01010FF8UL, 0x0003C000UL, \
@@ -160,7 +172,7 @@ extern "C" {
         0xFFFFFFFFUL, \
 }
 
-
+/** @} */
 
 
 #ifdef __cplusplus
@@ -169,3 +181,4 @@ extern "C" {
 
 
 #endif /* RAIL_802154_CONFIG_H */
+/** @} */

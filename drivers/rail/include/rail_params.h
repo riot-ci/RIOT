@@ -6,6 +6,15 @@
  * directory for more details.
  */
 
+/**
+ * @ingroup     drivers_rail
+ * @{
+ * @file
+ * @brief       Default configuration for the Silabs EFR32 radio driver
+ *
+ * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
+ */
+
 #ifndef RAIL_PARAMS_H
 #define RAIL_PARAMS_H
 
@@ -16,14 +25,20 @@
 extern "C" {
 #endif
 
-#define RAIL_PARAMS_DEFAULT { .freq = RAIL_TRANSCEIVER_FREQUENCY_2P4GHZ }
-
-static const rail_params_t rail_params[] = {
-#ifdef RAIL_PARAMS_BOARD
-    RAIL_PARAMS_BOARD,
-#else
-    RAIL_PARAMS_DEFAULT,
+/**
+ * @name    Set default configuration parameters for the AT86RF2xx driver
+ * @{
+ */
+#ifndef RAIL_PARAMS
+#define RAIL_PARAMS { .freq = RAIL_TRANSCEIVER_FREQUENCY_2P4GHZ }
 #endif
+/**@}*/
+
+/**
+ * @brief   EFR32 rail configuration
+ */
+static const rail_params_t rail_params[] = {
+    RAIL_PARAMS
 };
 
 
@@ -31,5 +46,5 @@ static const rail_params_t rail_params[] = {
 }
 #endif
 
-
 #endif /* RAIL_PARAMS_H */
+/** @} */

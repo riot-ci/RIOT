@@ -6,6 +6,23 @@
  * directory for more details.
  */
 
+/**
+ * @defgroup    drivers_rail Silabs EFR32 radio driver
+ * @ingroup     drivers_netdev
+ *
+ * This module contains drivers for the embedded radio transceivers in
+ * Silabs EFR32 SoCs using the probritary librail API.
+ * The driver is aimed to work with all devices of this series.
+ *
+ * @{
+ *
+ * @file
+ * @brief       Interface definition for Silabs EFR32 based drivers
+ *
+ * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
+ */
+
+
 #ifndef RAIL_DRV_H
 #define RAIL_DRV_H
 
@@ -50,7 +67,10 @@ extern "C" {
 
 /** @} */
 
-/* states of the radio transceiver */
+/**
+ * @name radio transceiver states
+ * @{
+ */
 /* TODO
     - use enum?
     - use !
@@ -62,22 +82,38 @@ extern "C" {
 #define RAIL_TRANSCEIVER_STATE_RX               0x04
 #define RAIL_TRANSCEIVER_STATE_TX               0x05
 
+/** @} */
 
 
-
+/**
+ * @brief default panid for rail
+ */
 #define RAIL_DEFAULT_PANID         (IEEE802154_DEFAULT_PANID)
+
+/**
+ * @brief default tx power
+ */
 #define RAIL_DEFAULT_TXPOWER       (IEEE802154_DEFAULT_TXPOWER)
+/**
+ * @brief default CSMA retries
+ */
 #define RAIL_DEFAULT_CSMA_TRIES     5
 
+
+/**
+ * @brief enum for the three supported radio bands
+ */
 enum rail_transceiver_config_frequency {
-    RAIL_TRANSCEIVER_FREQUENCY_2P4GHZ,
-    RAIL_TRANSCEIVER_FREQUENCY_868MHZ,
-    RAIL_TRANSCEIVER_FREQUENCY_912MHZ
+    RAIL_TRANSCEIVER_FREQUENCY_2P4GHZ,  /**< 2.4GHz */
+    RAIL_TRANSCEIVER_FREQUENCY_868MHZ,  /**< EU 868 MHz band */
+    RAIL_TRANSCEIVER_FREQUENCY_912MHZ   /** US 912 MHz band */
 };
 
-
+/**
+ * @brief   struct holding all params needed for device initialization
+ */
 typedef struct rail_params {
-    enum rail_transceiver_config_frequency freq;
+    enum rail_transceiver_config_frequency freq;    /**< radio band to operate */
     /* RAIL_RADIO_PA_VOLTAGE */
     /* RAIL_DEFAULT_TXPOWER */
     /* RAIL_DEFAULT_PANID */
@@ -90,7 +126,11 @@ typedef struct rail_params {
 
 
 
-
+/**
+ * @brief   Device descriptor for Silabs EFR32 rail radio devices
+ *
+ * @extends netdev_ieee802154_t
+ */
 typedef struct {
     netdev_ieee802154_t netdev;     /**< inherited from netdev_ieee802154_t */
     rail_params_t params;           /**< the params for the driver */
@@ -109,14 +149,36 @@ typedef struct {
 } rail_t;
 
 
-
+/**
+ * @brief   Setup an Silabs EFR32 rail based device
+ *
+ * @param[out] dev          device descriptor
+ * @param[in]  params       parameters for device initialization
+ */
 void rail_setup(rail_t *dev, const rail_params_t *params);
 
+
+/**
+ * @brief   configures radio with default values
+ *
+ * @param[in,out] dev       device to reset
+ */
 int rail_init(rail_t *dev);
 
-
+/**
+ * @brief set the radio into receive mode
+ *
+ * @param[in] dev       device
+ */
 int rail_start_rx(rail_t *dev);
 
+/**
+ * @brief transmit a packet
+ *
+ * @param[in] dev           radio device
+ * @param[in] data_ptr      pointer to packet to transmit
+ * @param[in] data_length   size of packet
+ */
 int rail_transmit_frame(rail_t *dev, uint8_t *data_ptr, size_t data_length);
 
 #ifdef __cplusplus
@@ -124,3 +186,5 @@ int rail_transmit_frame(rail_t *dev, uint8_t *data_ptr, size_t data_length);
 #endif
 
 #endif /* RAIL_DRV_H */
+
+/** @} */
