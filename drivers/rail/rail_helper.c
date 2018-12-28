@@ -124,6 +124,7 @@ const char *rail_error2str(RAIL_Status_t status)
         case (RAIL_STATUS_SUSPENDED):
             return "Status suspended";
     }
+    (void) status;
     return "Error code unknown";
 }
 
@@ -140,6 +141,7 @@ const char *rail_event2str(RAIL_Events_t event)
 
     return "RAIL EVENT: TODO";
 #else
+    (void) event;
     return "enable DEVELHELP";
 #endif /* DEVELHELP */
 }
@@ -171,6 +173,7 @@ const char *rail_packetStatus2str(RAIL_RxPacketStatus_t status)
             return "Unknown status";
     }
 #else
+    (void) status;
     return "enable DEVELHELP";
 #endif /* DEVELHELP */
 }
@@ -191,6 +194,7 @@ const char *rail_radioState2str(RAIL_RadioState_t state)
             return "unknown state";
     }
 #else
-    return "enable DEVELHELP"
+    (void) state;
+    return "enable DEVELHELP";
 #endif /* DEVELHELP */
 }
