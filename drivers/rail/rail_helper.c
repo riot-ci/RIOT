@@ -22,7 +22,7 @@
 
 eui64_t rail_helper_get_hw_EUI(void)
 {
-    
+
     /* this is a bit messy, because everthing has or what it in different
        endianess
        for convenience we read it once and save it in the netdev structure in
