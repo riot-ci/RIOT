@@ -354,12 +354,12 @@ Module | Description
 
 </center><br>
 
-For example, to activate the a SPIFFS drive in on-board flash memory, the makefile of application has simply to add the ```esp_spiffs``` module to ```USEMODULE``` make variable:
+For example, to activate the SPIFFS drive in on-board flash memory, the makefile of application has simply to add the ```esp_spiffs``` module to ```USEMODULE``` make variable:
 ```
 USEMODULE += esp_spiffs
 ```
 
-Modules can be also be activated temporarily at the command line when calling the make command:
+Modules can also be activated temporarily at the command line when calling the make command:
 ```
 USEMODULE="esp_spiffs" make BOARD=...
 ```
@@ -642,7 +642,7 @@ The GPIO used as CS signal can be overridden by [application-specific board conf
 \anchor esp8266_app_spec_conf
 # <a name="esp8266_application_specific_configurations"> Application-Specific Configurations </a> &nbsp;[[TOC](#esp8266_toc)]
 
-The board-specific configuration files ```board.h``` and ```periph_conf.h``` as well well as the driver parameter configuration files ```<driver>_params.h``` define the default configurations for peripherals and device driver modules. These are, for example, the GPIOs used, bus interfaces used or available bus speeds. Because there are many possible configurations and many different application requirements, these default configurations are usually only a compromise between different requirements.
+The board-specific configuration files ```board.h``` and ```periph_conf.h``` as well as the driver parameter configuration files ```<driver>_params.h``` define the default configurations for peripherals and device driver modules. These are, for example, the GPIOs used, bus interfaces used or available bus speeds. Because there are many possible configurations and many different application requirements, these default configurations are usually only a compromise between different requirements.
 
 Therefore, it is often necessary to change some of these default configurations for individual applications. For example, while many PWM channels are needed in one application, another application does not need PWM channels, but many ADC channels.
 
