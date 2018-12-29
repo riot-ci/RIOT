@@ -17,8 +17,8 @@
  * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
  **/
 
-#ifndef RADIO_H
-#define RADIO_H
+#ifndef RAIL_RADIO_H
+#define RAIL_RADIO_H
 
 #include "cpu.h"
 
@@ -63,5 +63,5 @@ extern "C" {
 }
 #endif
 
-#endif /* RADIO_H */
+#endif /* RAIL_RADIO_H */
 /** @} */

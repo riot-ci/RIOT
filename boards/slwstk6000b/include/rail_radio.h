@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Hochschule RheinMain
+ * Copyright (C) 2017-2018 Hochschule RheinMain
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,18 +7,20 @@
  */
 
 /**
- * @ingroup     boards_sltb001a
+ * @defgroup    boards_slwstk6000b Silicon Labs SLWSTK6000B starter kit
+ * @ingroup     boards
+ * @brief       Support for the Silicon Labs SLWSTK6000B starter kit
  * @{
  *
  * @file
- * @brief       Board specific definitions for the radio transceiver of the
- *              SLTB001A starter kit
+ * @brief       Board specific definitions for the radio transceicer of the
+ *              SLWSTK6000B starter kit
  *
  * @author      Kai Beckmann <kai.beckmann@hs-rm.de>
  **/
 
-#ifndef RADIO_H
-#define RADIO_H
+#ifndef RAIL_RADIO_H
+#define RAIL_RADIO_H
 
 #include "cpu.h"
 
@@ -33,7 +35,8 @@ extern "C" {
 /**
  * @brief Select radio frequency
  *
- * the SLTB001A supports only 2.4 GHz
+ * possible values, 2400, 868, 915
+ * (depends on the module)
  */
 #define RAIL_RADIO_BAND (2400)
 
@@ -44,10 +47,10 @@ extern "C" {
  *
  * The setting depends on the module.
  *
- * TODO what voltage has the SLTB001A?
+ * The silabs dev modules are connected to
+ * the internal dc/dc -> 1.8V
  */
 #define RAIL_RADIO_PA_VOLTAGE (1800)
-
 
 
 /**
@@ -56,16 +59,14 @@ extern "C" {
   * To enable the PTI set vaule to 1.
   * In RAIL_PTI_CONFIG the correct pins
   * have to be configured
-  *
-  * Enable only for the SLTB001a if external debugger is
-  * used.
   */
 #ifndef RAIL_PTI_ENABLED
 #define RAIL_PTI_ENABLED      (0)
 #endif
 
-/* c&p from gecko-sdk BSP for EFR32MG1_BRD4154A */
-/* should work for sltb001a as well */
+/**
+ * c&p from gecko-sdk BSP for EFR32MG1_BRD4154A
+ */
 #if !defined(RAIL_PTI_CONFIG)
 #define RAIL_PTI_CONFIG                                                    \
     {                                                                        \
@@ -83,9 +84,10 @@ extern "C" {
     }
 #endif
 
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* RADIO_H */
+#endif /* RAIL_RADIO_H */
 /** @} */

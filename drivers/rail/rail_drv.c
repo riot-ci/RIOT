@@ -12,7 +12,7 @@
 
 #include "byteorder.h"
 
-#include "radio.h"
+#include "rail_radio.h"
 
 /* gecko sdk rail lib includes*/
 #include "em_core.h"

@@ -24,7 +24,7 @@
 
 #include "errno.h"
 
-#include "radio.h"
+#include "rail_radio.h"
 
 #include "rail_drv.h"
 #include "rail_netdev.h"
