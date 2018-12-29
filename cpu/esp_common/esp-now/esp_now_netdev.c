@@ -63,7 +63,6 @@
 
 #ifdef MCU_ESP32
 
-#define esp_const_uint8_t        const uint8_t
 #define esp_now_set_self_role(r)
 
 #else
@@ -80,10 +79,6 @@
 #define IRAM_ATTR                IRAM
 #endif
 
-#define esp_const_uint8_t        uint8_t
-
-typedef uint8_t esp_now_send_status_t;
-
 #endif /* MCU_ESP8266 */
 
 
@@ -96,7 +91,11 @@ typedef uint8_t esp_now_send_status_t;
 static esp_now_netdev_t _esp_now_dev;
 static const netdev_driver_t _esp_now_driver;
 
-static bool _esp_now_add_peer(esp_const_uint8_t* bssid, uint8_t channel, uint8_t* key)
+#ifdef MCU_ESP32
+static bool _esp_now_add_peer(const uint8_t* bssid, uint8_t channel, uint8_t* key)
+#else
+static bool _esp_now_add_peer(uint8_t* bssid, uint8_t channel, uint8_t* key)
+#endif
 {
     if (esp_now_is_peer_exist(bssid)) {
         return false;
@@ -334,7 +333,11 @@ static IRAM_ATTR void esp_now_recv_cb(uint8_t *mac, uint8_t *data, uint8_t len)
 
 static volatile int _esp_now_sending = 0;
 
-static void IRAM_ATTR esp_now_send_cb(esp_const_uint8_t *mac, esp_now_send_status_t status)
+#ifdef MCU_ESP32
+static void IRAM_ATTR esp_now_send_cb(const uint8_t *mac, esp_now_send_status_t status)
+#else
+static void IRAM_ATTR esp_now_send_cb(uint8_t *mac, uint8_t status)
+#endif
 {
     DEBUG("%s: sent to %02x:%02x:%02x:%02x:%02x:%02x with status %d\n",
           __func__,
