@@ -124,10 +124,6 @@ static bool _esp_now_add_peer(esp_const_uint8_t* bssid, uint8_t channel, uint8_t
           "added with return value %d\n",
           bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5], ret);
     return (ret == ESP_OK);
-    DEBUG("esp_now_add_peer node %02x:%02x:%02x:%02x:%02x:%02x "
-          "added with return value %d\n",
-          bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5], ret);
-    return (ret == ESP_OK);
 }
 
 #if ESP_NOW_UNICAST
