@@ -208,9 +208,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                 case 'i':
                     if ((++i) < argc) {
                         data->interval = (uint32_t)atoi(argv[i]) * US_PER_MS;
-                        if (data->interval > 0) {
-                            continue;
-                        }
+                        continue;
                     }
                     /* intentionally falls through */
                 case 's':
