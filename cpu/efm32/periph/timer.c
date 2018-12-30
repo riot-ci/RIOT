@@ -46,6 +46,8 @@ static inline bool _is_wtimer(timer_t dev)
 #if defined(WTIMER_COUNT) && WTIMER_COUNT > 0
     return ((uint32_t) timer_config[dev].timer.dev) >= WTIMER0_BASE;
 #else
+    (void) dev;
+
     return false;
 #endif
 }
