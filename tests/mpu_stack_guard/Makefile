@@ -32,7 +32,6 @@ BOARD_WHITELIST += samd21-xpro      # cortex-m0plus
 BOARD_WHITELIST += saml21-xpro      # cortex-m0plus
 BOARD_WHITELIST += samr21-xpro      # cortex-m0plus
 BOARD_WHITELIST += sltb001a         # cortex-m4f
-BOARD_WHITELIST += slwstk6220a      # cortex-m4f
 BOARD_WHITELIST += sodaq-autonomo   # cortex-m0plus
 BOARD_WHITELIST += spark-core       # cortex-m3
 BOARD_WHITELIST += stm32f3discovery # cortex-m4f
