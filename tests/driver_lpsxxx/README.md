@@ -1,7 +1,7 @@
 # About
 
 This is a manual test application for the LPSXXX family of pressure sensors
-driver. This driver can be used with LPS331AP and LPS25HB.
+driver. This driver can be used with LPS331AP, LPS25HB and LPS22HB.
 
 Default driver is `lps331ap`. To use the LPS25HB driver, set the `DRIVER` when
 building the application:
