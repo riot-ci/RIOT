@@ -1,0 +1,5 @@
+USEMODULE += xtimer
+
+FEATURES_REQUIRED += periph_gpio
+
+CFLAGS += -DU8X8_WITH_USER_PTR
