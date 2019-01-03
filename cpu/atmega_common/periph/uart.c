@@ -98,10 +98,10 @@ static void _set_brr(uart_t uart, uint32_t baudrate)
     }
 #endif
 #if defined(UART_DOUBLE_SPEED)
-    brr = (CLOCK_CORECLOCK + 4UL * baudrate) / (8UL * baudrate) - 1UL;
+    brr = (CLOCK_CORECLOCK) / (8UL * baudrate) - 1UL;
     _update_brr(uart, brr, true);
 #else
-    brr = (CLOCK_CORECLOCK + 8UL * baudrate) / (16UL * baudrate) - 1UL;
+    brr = (CLOCK_CORECLOCK) / (16UL * baudrate) - 1UL;
     _update_brr(uart, brr, false);
 #endif
 }
