@@ -13,7 +13,11 @@ import sys
 import subprocess
 import threading
 
-from scapy.all import *
+from scapy.all import Ether, IPv6, UDP, \
+                      IPv6ExtHdrHopByHop, IPv6ExtHdrDestOpt, \
+                      IPv6ExtHdrFragment, IPv6ExtHdrRouting, \
+                      ICMPv6ParamProblem, ICMPv6TimeExceeded, \
+                      sendp, srp1, sniff
 from testrunner import run
 
 
