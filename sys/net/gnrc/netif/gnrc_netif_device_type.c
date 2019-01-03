@@ -22,6 +22,7 @@
 #endif
 #include "net/gnrc/netif.h"
 #include "net/eui48.h"
+#include "net/ethernet.h"
 #include "net/ieee802154.h"
 
 netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
