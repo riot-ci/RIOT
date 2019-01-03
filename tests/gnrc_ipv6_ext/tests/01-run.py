@@ -11,7 +11,11 @@ import os
 import sys
 import subprocess
 
-from scapy.all import *
+from scapy.all import Ether, IPv6, UDP, \
+                      IPv6ExtHdrHopByHop, IPv6ExtHdrDestOpt, \
+                      IPv6ExtHdrFragment, IPv6ExtHdrRouting, \
+                      ICMPv6ParamProblem, \
+                      sendp, srp1
 from testrunner import run
 
 
