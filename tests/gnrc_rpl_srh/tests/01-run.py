@@ -13,7 +13,7 @@ import sys
 import subprocess
 import threading
 
-from scapy.all import Ether, IPv6, UDP, \
+from scapy.all import Ether, IPv6, \
                       IPv6ExtHdrHopByHop, IPv6ExtHdrDestOpt, \
                       IPv6ExtHdrFragment, IPv6ExtHdrRouting, \
                       ICMPv6ParamProblem, ICMPv6TimeExceeded, \
@@ -138,7 +138,7 @@ def register_protnum(child):
 
 def unregister(child):
     child.sendline("ip unreg")
-    child.expect("Unregistered from protocol number \d")
+    child.expect(r"Unregistered from protocol number \d")
 
 
 def get_first_interface(child):
@@ -163,6 +163,7 @@ def add_neighbor(child, iface, ipv6_addr, hw_addr):
     child.expect(r"{} dev #{} lladdr {}".format(ipv6_addr.lower(), iface,
                                                 hw_addr.upper()))
 
+
 def del_neighbor(child, iface, ipv6_addr):
     child.sendline("nib neigh del {} {}".format(iface, ipv6_addr))
 
@@ -173,8 +174,8 @@ def test_wrong_type(child, iface, hw_dst, ll_dst, ll_src):
              iface=iface, timeout=1, verbose=0)
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 0) # erroneous header field encountered
-    assert(p[ICMPv6ParamProblem].ptr == 42) # routing header type field
+    assert(p[ICMPv6ParamProblem].code == 0)     # erroneous header field encountered
+    assert(p[ICMPv6ParamProblem].ptr == 42)     # routing header type field
     pktbuf_empty(child)
 
 
@@ -186,8 +187,8 @@ def test_seg_left_gt_len_addresses(child, iface, hw_dst, ll_dst, ll_src):
              iface=iface, timeout=1, verbose=0)
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 0) # erroneous header field encountered
-    assert(p[ICMPv6ParamProblem].ptr == 43) # segleft field
+    assert(p[ICMPv6ParamProblem].code == 0)     # erroneous header field encountered
+    assert(p[ICMPv6ParamProblem].ptr == 43)     # segleft field
     pktbuf_empty(child)
 
 
@@ -202,8 +203,8 @@ def test_multicast_dst(child, iface, hw_dst, ll_dst, ll_src):
     p = [p for p in ps if ICMPv6ParamProblem in p]
     assert(len(p) > 0)
     p = p[0]
-    assert(p[ICMPv6ParamProblem].code == 0) # erroneous header field encountered
-    assert(p[ICMPv6ParamProblem].ptr == 24) # IPv6 headers destination field
+    assert(p[ICMPv6ParamProblem].code == 0)     # erroneous header field encountered
+    assert(p[ICMPv6ParamProblem].ptr == 24)     # IPv6 headers destination field
     pktbuf_empty(child)
 
 
@@ -214,8 +215,8 @@ def test_multicast_addr(child, iface, hw_dst, ll_dst, ll_src):
              iface=iface, timeout=1, verbose=0)
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 0) # erroneous header field encountered
-    assert(p[ICMPv6ParamProblem].ptr == 48) # first address in routing header
+    assert(p[ICMPv6ParamProblem].code == 0)     # erroneous header field encountered
+    assert(p[ICMPv6ParamProblem].ptr == 48)     # first address in routing header
     pktbuf_empty(child)
 
 
@@ -230,8 +231,8 @@ def test_multiple_addrs_of_mine_uncomp(child, iface, hw_dst, ll_dst, ll_src):
              iface=iface, timeout=1, verbose=0)
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 0) # erroneous header field encountered
-    assert(p[ICMPv6ParamProblem].ptr == 40+8+(2 * 16)) # dummy in routing header
+    assert(p[ICMPv6ParamProblem].code == 0)             # erroneous header field encountered
+    assert(p[ICMPv6ParamProblem].ptr == 40+8+(2 * 16))  # dummy in routing header
     pktbuf_empty(child)
     del_ipv6_address(child, dst_iface, dummy)
 
@@ -329,7 +330,7 @@ def testfunc(child):
     global sniffer
     tap = get_bridge(os.environ["TAP"])
 
-    child.expect(r"OK \((\d+) tests\)") # wait for and check result of unittests
+    child.expect(r"OK \((\d+) tests\)")     # wait for and check result of unittests
     print("." * int(child.match.group(1)), end="", flush=True)
     lladdr_src = get_host_lladdr(tap)
     child.sendline("ifconfig")
