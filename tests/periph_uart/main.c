@@ -133,7 +133,7 @@ static int cmd_init(int argc, char **argv)
     if (dev < 0) {
         return 1;
     }
-    baud = atoi(argv[2]);
+    baud = strtol(argv[2], NULL, 0);
 
     /* initialize UART */
     res = uart_init(UART_DEV(dev), baud, rx_cb, (void *)dev);
