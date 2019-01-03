@@ -47,7 +47,7 @@ def register_protnum(child, protnum):
 
 def unregister(child):
     child.sendline("ip unreg")
-    child.expect("Unregistered from protocol number \d")
+    child.expect(r"Unregistered from protocol number \d")
 
 
 def test_empty_hop_by_hop_opt_wo_register(child, iface, hw_dst, ll_dst, ll_src):
@@ -84,8 +84,8 @@ def test_empty_duplicate_hop_by_hop_opt(child, iface, hw_dst, ll_dst, ll_src):
     # should return parameter problem message
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 1) # unrecognized next header
-    assert(p[ICMPv6ParamProblem].ptr >= 40) # after IPv6 header
+    assert(p[ICMPv6ParamProblem].code == 1)     # unrecognized next header
+    assert(p[ICMPv6ParamProblem].ptr >= 40)     # after IPv6 header
     pktbuf_empty(child)
 
 
@@ -98,8 +98,8 @@ def test_empty_non_first_hop_by_hop_opt(child, iface, hw_dst, ll_dst, ll_src):
     # should return parameter problem message
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 1) # unrecognized next header
-    assert(p[ICMPv6ParamProblem].ptr >= 40) # after IPv6 header
+    assert(p[ICMPv6ParamProblem].code == 1)     # unrecognized next header
+    assert(p[ICMPv6ParamProblem].ptr >= 40)     # after IPv6 header
     pktbuf_empty(child)
 
 
@@ -114,8 +114,8 @@ def test_empty_duplicate_non_first_hop_by_hop_opt(child, iface, hw_dst, ll_dst,
     # should return parameter problem message
     assert(p is not None)
     assert(ICMPv6ParamProblem in p)
-    assert(p[ICMPv6ParamProblem].code == 1) # unrecognized next header
-    assert(p[ICMPv6ParamProblem].ptr >= 48) # after IPv6 header and HopByHopOpt
+    assert(p[ICMPv6ParamProblem].code == 1)     # unrecognized next header
+    assert(p[ICMPv6ParamProblem].ptr >= 48)     # after IPv6 header and HopByHopOpt
     pktbuf_empty(child)
 
 
@@ -212,13 +212,17 @@ def test_empty_mixed1_w_hop_opt_registered(child, iface, hw_dst, ll_dst, ll_src)
     # NH = IPv6ExtHdrDestOpt, len = 0x00, PadN option (0x01) of length 0x04
     # NH = IPv6ExtHdrRouting, len = 0x00, PadN option (0x01) of length 0x04
     child.expect(r"00000000  {:02X}  00  01  04  00  00  00  00  "
-                    r"{:02X}  00  01  04  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrDestOpt], EXT_HDR_NH[IPv6ExtHdrRouting]))
+                 r"{:02X}  00  01  04  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt],
+                        EXT_HDR_NH[IPv6ExtHdrRouting]
+                    ))
     # NH = IPv6ExtHdrFragment, len = 0x00, routing type = 0, segments left = 0
     # NH = IPv6ExtHdrDestOpt, reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000010  {:02X}  00  00  00  00  00  00  00  "
-                           r"{:02X}  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrFragment], EXT_HDR_NH[IPv6ExtHdrDestOpt]))
+                 r"{:02X}  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrFragment],
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt]
+                    ))
     # NH = 17 (UDP), len = 0x00, PadN option (0x01) of length 0x04
     child.expect(r"00000020  11  00  01  04  00  00  00  00")
     # IPv6 header
@@ -246,8 +250,10 @@ def test_empty_mixed1_w_rt_hdr_registered(child, iface, hw_dst, ll_dst, ll_src):
     # NH = IPv6ExtHdrFragment, len = 0x00, routing type = 0, segments left = 0
     # NH = IPv6ExtHdrDestOpt, reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000000  {:02X}  00  00  00  00  00  00  00  "
-                           r"{:02X}  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrFragment], EXT_HDR_NH[IPv6ExtHdrDestOpt]))
+                 r"{:02X}  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrFragment],
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt]
+                    ))
     # NH = 17 (UDP), len = 0x00, PadN option (0x01) of length 0x04
     child.expect(r"00000010  11  00  01  04  00  00  00  00")
     # Destination option 1
@@ -286,8 +292,8 @@ def test_empty_mixed1_w_frag_hdr_registered(child, iface, hw_dst, ll_dst, ll_src
     ipv6_payload_len = int(child.match.group(1))
     # NH = IPv6ExtHdrDestOpt, reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000000  {:02X}  00  00  00  00  00  00  00  "
-                            "11  00  01  04  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrDestOpt]))
+                 "11  00  01  04  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt]))
     child.expect(r"~~ SNIP  1 - size:\s+(\d+) byte, type: NETTYPE_\w+ \(\d+\)")
     ipv6_payload_len += int(child.match.group(1))
     # NH = IPv6ExtHdrFragment, len = 0x00, routing type = 0, segments left = 0
@@ -334,13 +340,16 @@ def test_empty_mixed1_w_dest_opt_registered(child, iface, hw_dst, ll_dst, ll_src
     # NH = IPv6ExtHdrRouting, len = 0x00, PadN option (0x01) of length 0x04
     # NH = IPv6ExtHdrFragment, len = 0x00, routing type = 0, segments left = 0
     child.expect(r"00000000  {:02X}  00  01  04  00  00  00  00  "
-                           r"{:02X}  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrRouting], EXT_HDR_NH[IPv6ExtHdrFragment]))
+                 r"{:02X}  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrRouting],
+                        EXT_HDR_NH[IPv6ExtHdrFragment]
+                    ))
     # NH = IPv6ExtHdrDestOpt, reserved = 0x00, fragment offset = 0, res = 0, M = 0
     # NH = 17 (UDP), len = 0x00, PadN option (0x01) of length 0x04
     child.expect(r"00000010  {:02X}  00  00  00  00  00  00  00  "
-                               r"11  00  01  04  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrDestOpt]))
+                 r"11  00  01  04  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt]
+                    ))
     # Hop-by-hop option
     child.expect(r"~~ SNIP  1 - size:\s+(\d+) byte, type: NETTYPE_\w+ \(\d+\)")
     ipv6_payload_len += int(child.match.group(1))
@@ -354,7 +363,7 @@ def test_empty_mixed1_w_dest_opt_registered(child, iface, hw_dst, ll_dst, ll_src
         ))
     child.expect_exact(r"destination address: {}".format(ll_dst))
 
-    #2nd print parsed up to the second IPv6ExtHdrHopByHop
+    # 2nd print parsed up to the second IPv6ExtHdrHopByHop
     # Destination option 2 with payload
     child.expect(r"~~ SNIP  0 - size:\s+(\d+) byte, type: NETTYPE_\w+ \(\d+\)")
     ipv6_payload_len = int(child.match.group(1))
@@ -409,13 +418,16 @@ def test_empty_mixed2_w_hop_opt_registered(child, iface, hw_dst, ll_dst, ll_src)
     # NH = IPv6ExtHdrRouting, len = 0x00, PadN option (0x01) of length 0x04
     # NH = IPv6ExtHdrDestOpt, len = 0x00, routing type = 0, segments left = 0
     child.expect(r"00000000  {:02X}  00  01  04  00  00  00  00  "
-                           r"{:02X}  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrRouting], EXT_HDR_NH[IPv6ExtHdrDestOpt]))
+                 r"{:02X}  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrRouting],
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt]
+                    ))
     # NH = IPv6ExtHdrFragment, len = 0x00, PadN option (0x01) of length 0x04
     # NH = 17 (UDP), reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000010  {:02X}  00  01  04  00  00  00  00  "
-                               r"11  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrFragment]))
+                 r"11  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrFragment]
+                    ))
     # IPv6 header
     child.expect(r"~~ SNIP  1 - size:\s+40 byte, type: NETTYPE_IPV6 \(\d+\)")
     child.expect_exact(r"length: {}  next header: {}".format(
@@ -441,8 +453,10 @@ def test_empty_mixed2_w_rt_hdr_registered(child, iface, hw_dst, ll_dst, ll_src):
     # NH = IPv6ExtHdrDestOpt, len = 0x00, routing type = 0, segments left = 0
     # NH = IPv6ExtHdrFragment, len = 0x00, PadN option (0x01) of length 0x04
     child.expect(r"00000000  {:02X}  00  00  00  00  00  00  00  "
-                           r"{:02X}  00  01  04  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrDestOpt], EXT_HDR_NH[IPv6ExtHdrFragment]))
+                 r"{:02X}  00  01  04  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrDestOpt],
+                        EXT_HDR_NH[IPv6ExtHdrFragment]
+                    ))
     # NH = 17 (UDP), reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000010  11  00  00  00  00  00  00  00")
     # Hop-by-hop-option
@@ -519,8 +533,8 @@ def test_empty_mixed2_w_dest_opt_registered(child, iface, hw_dst, ll_dst, ll_src
     # NH = IPv6ExtHdrFragment, len = 0x00, PadN option (0x01) of length 0x04
     # NH = 17 (UDP), reserved = 0x00, fragment offset = 0, res = 0, M = 0
     child.expect(r"00000000  {:02X}  00  01  04  00  00  00  00  "
-                               r"11  00  00  00  00  00  00  00".format(
-                 EXT_HDR_NH[IPv6ExtHdrFragment]))
+                 r"11  00  00  00  00  00  00  00".format(
+                        EXT_HDR_NH[IPv6ExtHdrFragment]))
     # Routing header
     child.expect(r"~~ SNIP  1 - size:\s+(\d+) byte, type: NETTYPE_\w+ \(\d+\)")
     ipv6_payload_len += int(child.match.group(1))
@@ -596,7 +610,6 @@ def testfunc(child):
             except Exception as e:
                 print("FAILED")
                 raise e
-
 
     run(test_empty_hop_by_hop_opt_wo_register)
     run(test_empty_hop_by_hop_opt_w_register)
