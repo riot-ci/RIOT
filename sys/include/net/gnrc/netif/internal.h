@@ -494,8 +494,9 @@ int gnrc_netif_ipv6_iid_to_addr(const gnrc_netif_t *netif, const eui64_t *iid,
                                 uint8_t *addr);
 
 /**
- * @brief   Derives the length link-layer address in an NDP link-layer address
- *          option from that option's length field and the given device type.
+ * @brief   Derives the length of the link-layer address in an NDP link-layer
+ *          address option from that option's length field and the given device
+ *          type.
  *
  * @note    If an RFC exists that specifies how IPv6 operates over a link-layer,
  *          this function usually implements the section "Unicast Address
