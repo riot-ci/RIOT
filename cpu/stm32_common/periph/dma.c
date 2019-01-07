@@ -26,10 +26,8 @@
 #include "assert.h"
 #include "pm_layered.h"
 
-#if !(defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7) \
-    || defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32L0) \
-    || defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4))
-#error "DMA is not supported for target CPU"
+#if CPU_FAM_STM32F3
+#error "DMA is not supported on STM32F3"
 #endif
 
 #if (defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7))
