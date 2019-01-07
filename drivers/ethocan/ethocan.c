@@ -391,6 +391,24 @@ static int send_octet(ethocan_t *ctx, uint8_t c)
     return 0;
 }
 
+static int send_data_octet(ethocan_t *ctx, uint8_t c)
+{
+    int rc;
+
+    /* Escape special octets */
+    if (c == ETHOCAN_OCTECT_ESC || c == ETHOCAN_OCTECT_END) {
+        rc = send_octet(ctx, ETHOCAN_OCTECT_ESC);
+        if (rc) {
+            return rc;
+        }
+    }
+
+    /* Send data octet */
+    rc = send_octet(ctx, c);
+
+    return rc;
+}
+
 static int _send(netdev_t *dev, const iolist_t *iolist)
 {
     ethocan_t *ctx = (ethocan_t *) dev;
@@ -415,15 +433,8 @@ send:
         pktlen += n;
         uint8_t *ptr = iol->iol_base;
         while (n--) {
-            /* Escape special octets */
-            if (*ptr == ETHOCAN_OCTECT_ESC || *ptr == ETHOCAN_OCTECT_END) {
-                if (send_octet(ctx, ETHOCAN_OCTECT_ESC)) {
-                    goto collision;
-                }
-            }
-
             /* Send data octet */
-            if (send_octet(ctx, *ptr)) {
+            if (send_data_octet(ctx, *ptr)) {
                 goto collision;
             }
 
@@ -436,10 +447,10 @@ send:
 
     /* Send CRC */
     network_uint16_t crc_nw = byteorder_htons(crc);
-    if (send_octet(ctx, crc_nw.u8[0])) {
+    if (send_data_octet(ctx, crc_nw.u8[0])) {
         goto collision;
     }
-    if (send_octet(ctx, crc_nw.u8[1])) {
+    if (send_data_octet(ctx, crc_nw.u8[1])) {
         goto collision;
     }
 
