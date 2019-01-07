@@ -158,7 +158,7 @@ void cc2420_tx_exec(cc2420_t *dev)
     }
 }
 
-static inline void _flush_fifo(cc2420_t *dev)
+static inline void _flush_rx_fifo(cc2420_t *dev)
 {
     /* as stated in the CC2420 datasheet (section 14.3), the SFLUSHRX command
      * strobe should be issued twice to ensure that the SFD pin goes back to its
@@ -211,7 +211,7 @@ int cc2420_rx(cc2420_t *dev, uint8_t *buf, size_t max_len, void *info)
         }
 
         /* finally flush the FIFO */
-        _flush_fifo(dev);
+        _flush_rx_fifo(dev);
     }
 
     return (int)len;
