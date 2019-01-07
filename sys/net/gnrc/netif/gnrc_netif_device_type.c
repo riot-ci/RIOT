@@ -41,6 +41,7 @@ netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
                 r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
                 assert(r == sizeof(tmp));
                 assert(r <= ((int)UINT8_MAX));
+                (void)r;
                 netif->l2addr_len = (uint8_t)tmp;
                 if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
                     res = NETOPT_ADDRESS_LONG;
