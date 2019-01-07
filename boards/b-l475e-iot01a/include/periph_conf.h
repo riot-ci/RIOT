@@ -75,22 +75,16 @@ extern "C" {
  */
 #ifdef MODULE_PERIPH_DMA
 static const dma_conf_t dma_config[] = {
-    { .stream = 1 },
-    { .stream = 2 },
-    { .stream = 3 },
-    { .stream = 4 },
-    { .stream = 5 },
-    { .stream = 6 },
-    { .stream = 7 },
+    { .stream = 1 },    /* DMA1 Channel 2 - SPI1_RX */
+    { .stream = 2 },    /* DMA1 Channel 3 - SPI1_TX */
+    { .stream = 3 },    /* DMA1 Channel 4 - USART1_TX */
+    { .stream = 10 },   /* DMA2 Channel 3 - UART4_TX */
 };
 
-#define DMA_0_ISR  isr_dma1_channel1
-#define DMA_1_ISR  isr_dma1_channel2
-#define DMA_2_ISR  isr_dma1_channel3
-#define DMA_3_ISR  isr_dma1_channel4
-#define DMA_4_ISR  isr_dma1_channel5
-#define DMA_5_ISR  isr_dma1_channel6
-#define DMA_6_ISR  isr_dma1_channel7
+#define DMA_0_ISR  isr_dma1_channel2
+#define DMA_1_ISR  isr_dma1_channel3
+#define DMA_2_ISR  isr_dma1_channel4
+#define DMA_3_ISR  isr_dma2_channel3
 
 #define DMA_NUMOF           (sizeof(dma_config) / sizeof(dma_config[0]))
 #endif
@@ -132,8 +126,8 @@ static const uart_conf_t uart_config[] = {
         .type       = STM32_USART,
         .clk_src    = 0, /* Use APB clock */
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 1,
-        .dma_chan   = 1
+        .dma        = 2,
+        .dma_chan   = 2
 #endif
     },
     {
@@ -148,7 +142,7 @@ static const uart_conf_t uart_config[] = {
         .type       = STM32_USART,
         .clk_src    = 0, /* Use APB clock */
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 1,
+        .dma        = 3,
         .dma_chan   = 2
 #endif
     }
@@ -215,10 +209,10 @@ static const spi_conf_t spi_config[] = {
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
 #ifdef MODULE_PERIPH_DMA
-        .tx_dma   = 2,
-        .tx_dma_chan = 3,
-        .rx_dma   = 3,
-        .rx_dma_chan = 4,
+        .tx_dma   = 1,
+        .tx_dma_chan = 1,
+        .rx_dma   = 0,
+        .rx_dma_chan = 1,
 #endif
     }
 };
