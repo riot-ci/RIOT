@@ -69,13 +69,6 @@ int ifconfig_list(int idx)
         return 1;
     }
     printf(", Max.Payload: %u", (unsigned)u16_val);
-
-    res = get((netdev_t *)dev, NETOPT_IPV6_IID, array_val, sizeof(array_val));
-    if (res > 0) {
-        printf("\n           IPv6 IID: ");
-        print_addr(array_val, res);
-    }
-
     printf("\n           Channel: %u", dev->chan);
 
     res = get((netdev_t *)dev, NETOPT_CHANNEL_PAGE, &u16_val, sizeof(u16_val));
