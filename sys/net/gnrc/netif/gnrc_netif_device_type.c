@@ -35,11 +35,12 @@ netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_BLE: {
                 netdev_t *dev = netif->dev;
+                int r;
                 uint16_t tmp;
 
-                res = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
-                assert(res == sizeof(tmp));
-                assert(res <= UINT8_MAX);
+                r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
+                assert(r == sizeof(tmp));
+                assert(r <= ((int)UINT8_MAX));
                 netif->l2addr_len = (uint8_t)tmp;
                 if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
                     res = NETOPT_ADDRESS_LONG;
