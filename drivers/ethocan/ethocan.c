@@ -420,12 +420,11 @@ send:
     crc = 0xffff;
     pktlen = 0;
 
-    /* Wait until we are in state IDLE */
-    wait_for_state(ctx, ETHOCAN_STATE_IDLE);
-
     /* Switch to state SEND */
-    state(ctx, ETHOCAN_SIGNAL_SEND);
-    wait_for_state(ctx, ETHOCAN_STATE_SEND);
+    do {
+        wait_for_state(ctx, ETHOCAN_STATE_IDLE);
+        state(ctx, ETHOCAN_SIGNAL_SEND);
+    } while (wait_for_state(ctx, ETHOCAN_STATE_ANY) != ETHOCAN_STATE_SEND);
 
     /* Send packet buffer */
     for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
