@@ -44,6 +44,18 @@ extern "C" {
 #define THREAD_STACKSIZE_MAIN         (3072)
 #endif
 
+#ifndef GNRC_PKTDUMP_STACKSIZE
+#define GNRC_PKTDUMP_STACKSIZE        (THREAD_STACKSIZE_DEFAULT)
+#endif
+
+#ifndef ESP_NOW_STACKSIZE
+#define ESP_NOW_STACKSIZE             (2560)
+#endif
+
+#ifndef ETS_THREAD_STACKSIZE
+#define ETS_THREAD_STACKSIZE          (2048)
+#endif
+
 #else /* MODULE_ESP_SDK_INT_HANDLING */
 
 #ifndef THREAD_EXTRA_STACKSIZE_PRINTF
@@ -57,6 +69,18 @@ extern "C" {
 #endif
 #ifndef THREAD_STACKSIZE_MAIN
 #define THREAD_STACKSIZE_MAIN         (3072)
+#endif
+
+#ifndef GNRC_PKTDUMP_STACKSIZE
+#define GNRC_PKTDUMP_STACKSIZE        (THREAD_STACKSIZE_DEFAULT)
+#endif
+
+#ifndef ESP_NOW_STACKSIZE
+#define ESP_NOW_STACKSIZE             (2560)
+#endif
+
+#ifndef ETS_THREAD_STACKSIZE
+#define ETS_THREAD_STACKSIZE          (1536)
 #endif
 
 #endif /* MODULE_ESP_SDK_INT_HANDLING */
