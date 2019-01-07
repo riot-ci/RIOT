@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
+ * Copyright (C) 2019 Juergen Fitschen <me@jue.yt>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -12,9 +12,9 @@
  * @{
  *
  * @file
- * @brief   Auto initialization for ethernet-over-serial module
+ * @brief   Auto initialization for Ethernet-over-CAN module
  *
- * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ * @author  Juergen Fitschen <me@jue.yt>
  */
 
 #ifdef MODULE_ETHOCAN
@@ -27,7 +27,7 @@
 #include "net/gnrc/netif/ethernet.h"
 
 /**
- * @brief global ethocan object, used by stdio_uart
+ * @brief global ethocan object
  */
 ethocan_t ethocan;
 
