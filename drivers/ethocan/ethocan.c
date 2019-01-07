@@ -91,7 +91,7 @@ static uint8_t state_blocked(ethocan_t *ctx, uint8_t old_state)
     /* The timeout will bring us back into IDLE state by a random time
      * between 0 and the default timeout. Thus, we will block sending
      * frames for a certain time and wait for incoming frames */
-    uint32_t backoff = random_uint32_range(0, ctx->timeout_ticks);
+    uint32_t backoff = random_uint32_range(ctx->timeout_ticks / 10, ctx->timeout_ticks);
     xtimer_set(&ctx->timeout, backoff);
 
     return ETHOCAN_STATE_BLOCKED;
