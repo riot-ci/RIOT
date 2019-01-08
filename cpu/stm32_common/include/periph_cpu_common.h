@@ -759,6 +759,10 @@ static inline void dma_isr_clear(int stream)
 }
 #endif /* MODULE_PERIPH_DMA */
 
+#ifdef MODULE_PERIPH_CAN
+#include "candev_stm32.h"
+#endif
+
 #ifdef __cplusplus
 }
 #endif
