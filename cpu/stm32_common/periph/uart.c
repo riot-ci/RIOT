@@ -56,6 +56,11 @@
  */
 static uart_isr_ctx_t isr_ctx[UART_NUMOF];
 
+/**
+ * @brief   Mask MSB containing parity depending on data length
+ */
+static uint8_t data_mask = 0xff;
+
 static inline USART_TypeDef *dev(uart_t uart)
 {
     return uart_config[uart].dev;
@@ -153,6 +158,96 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     return UART_OK;
 }
+
+#ifdef MODULE_PERIPH_UART_MODECFG
+#if defined(USART_CR1_M1)
+static inline void uart_stop(uart_t uart)
+{
+    uint32_t cr1;
+
+    cr1 = dev(uart)->CR1;
+
+    /* disbale transmit */
+    cr1 &= ~USART_CR1_TE;
+    dev(uart)->CR1 = cr1;
+
+    /* wait for transmission completion */
+    while (!(dev(uart)->ISR & USART_ISR_TC)) {}
+
+    /* disable UART */
+    cr1 &= ~USART_CR1_UE;
+    dev(uart)->CR1 = cr1;
+}
+#endif
+
+int uart_mode(uart_t uart, uart_databits_t databits, uart_parity_t parity, uart_stopbits_t stopbits)
+{
+    assert(uart < UART_NUMOF);
+
+    uint32_t cr1;
+    uint32_t cr2;
+
+#if defined(USART_CR1_M1)
+    if ((databits == 0x02) || (databits == UART_DATABITS_6 && !parity))
+#else
+    if ((databits == 0x02) || (databits == UART_DATABITS_7 && !parity))
+#endif
+        return UART_NOMODE;
+
+    if (parity == 0x02)
+        return UART_NOMODE;
+
+#if defined(USART_CR1_M1)
+    uart_stop(uart);
+#endif
+
+    cr1 = dev(uart)->CR1;
+    cr2 = dev(uart)->CR2;
+
+    if (parity) {
+        /* enable parity */
+        cr1 |= USART_CR1_PCE;
+
+        /* setup parity, databits and databits masking */
+        if (databits == UART_DATABITS_8) {
+            cr1 |= USART_CR1_M;
+            data_mask = 0xff;
+        }
+        else if (databits == UART_DATABITS_7) {
+            data_mask = 0x7f;
+        }
+#if defined(USART_CR1_M1)
+        else if (databits == UART_DATABITS_6) {
+            cr1 |= USART_CR1_M1;
+            data_mask = 0x3f;
+        }
+#endif
+        /* setup odd parity, even parity is the default one */
+        if (parity == UART_PARITY_ODD)
+            cr1 |= parity;
+    }
+#if defined(USART_CR1_M1)
+    else {
+         if (databits == UART_DATABITS_7)
+             cr1 |= USART_CR1_M1;
+    }
+#endif
+
+    if (stopbits)
+        cr2 |= stopbits;
+
+    dev(uart)->CR1 = cr1;
+    dev(uart)->CR2 = cr2;
+
+#if defined(USART_CR1_M1)
+    /* enable UART */
+    cr1 |= (USART_CR1_TE | USART_CR1_UE);
+    dev(uart)->CR1 = cr1;
+#endif
+
+    return UART_OK;
+}
+#endif /* MODULE_PERIPH_UART_MODECFG */
 
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 {
@@ -301,7 +396,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->ISR;
 
     if (status & USART_ISR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR & data_mask);
     }
     if (status & USART_ISR_ORE) {
         dev(uart)->ICR |= USART_ICR_ORECF;    /* simply clear flag on overrun */
@@ -312,7 +407,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->SR;
 
     if (status & USART_SR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR & data_mask);
     }
     if (status & USART_SR_ORE) {
         /* ORE is cleared by reading SR and DR sequentially */
