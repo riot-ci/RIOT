@@ -112,6 +112,42 @@ enum {
 };
 
 /**
+ * @brief   Definition of possible parity modes
+ */
+#ifndef HAVE_UART_PARITY_T
+typedef enum {
+   UART_PARITY_NONE = 0,  /**< no parity */
+   UART_PARITY_EVEN = 1,  /**< even parity */
+   UART_PARITY_ODD = 2,   /**< odd parity */
+   UART_PARITY_MARK = 3,  /**< mark parity */
+   UART_PARITY_SPACE = 4  /**< space parity */
+} uart_parity_t;
+#endif
+
+/**
+ * @brief   Definition of possible databits lengths in a UART frame
+ */
+#ifndef HAVE_UART_DATABITS_T
+typedef enum {
+    UART_DATABITS_8 = 0,  /**< 8 databits */
+    UART_DATABITS_5 = 1,  /**< 5 databits */
+    UART_DATABITS_6 = 2,  /**< 6 databits */
+    UART_DATABITS_7 = 3,  /**< 7 databits */
+    UART_DATABITS_9 = 4   /**< 9 databits */
+} uart_databits_t;
+#endif
+
+/**
+ * @brief   Definition of possible stopbits lengths in a UART frame
+ */
+#ifndef HAVE_UART_STOPBITS_T
+typedef enum {
+   UART_STOPBITS_1 = 0,/**< 1 stopbit */
+   UART_STOPBITS_2 = 1,/**< 2 stopbits */
+} uart_stopbits_t;
+#endif
+
+/**
  * @brief   Initialize a given UART device
  *
  * The UART device will be initialized with the following configuration:
@@ -136,6 +172,20 @@ enum {
  * @return                  UART_INTERR on other errors
  */
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg);
+
+/**
+ * @brief   Setup parity, data and stopbits for a given UART device
+ *
+ * @param[in] uart          UART device to initialize
+ * @param[in] databits      number of databits in a UART frame
+ * @param[in] parity        paritiy mode
+ * @param[in] stopbits      number of stopbits in a UART frame
+ *
+ * @return                  UART_OK on success
+ * @return                  UART_NODEV on invalid UART device
+ * @return                  UART_NOMODE on other errors
+ */
+int uart_mode(uart_t uart, uart_databits_t databits, uart_parity_t parity, uart_stopbits_t stopbits);
 
 /**
  * @brief   Write data from the given buffer to the specified UART device
