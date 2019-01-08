@@ -154,6 +154,43 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
+#ifdef MODULE_PERIPH_UART_MODECFG
+int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity, uart_stop_bits_t stop_bits)
+{
+    assert(uart < UART_NUMOF);
+
+    uint32_t data_bits_holder = data_bits;
+
+    if (parity) {
+        if (data_bits_holder == UART_DATA_BITS_8) {
+            data_bits_holder = USART_CR1_M;
+        }
+        else if (data_bits_holder == UART_DATA_BITS_7) {
+            data_bits_holder = UART_DATA_BITS_8;
+        }
+        else if (data_bits_holder == UART_DATA_BITS_6) {
+            data_bits_holder = UART_DATA_BITS_7;
+        }
+    }
+
+    if (data_bits_holder == UART_INVALID_MODE || parity == UART_INVALID_MODE) {
+        return UART_NOMODE;
+    }
+
+#ifdef USART_CR1_M1
+    if (dev(uart)->ISR & USART_ISR_TC) {
+        return UART_INTERR;
+    }
+    dev(uart)->CR1 &= ~(USART_CR1_UE | USART_CR1_TE);
+#endif
+
+    dev(uart)->CR1 |= (USART_CR1_UE | USART_CR1_TE | data_bits_holder | parity);
+    dev(uart)->CR2 |= stop_bits;
+
+    return UART_OK;
+}
+#endif /* MODULE_PERIPH_UART_MODECFG */
+
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 {
     uint16_t mantissa;
@@ -292,6 +329,19 @@ void uart_poweroff(uart_t uart)
 #endif
 }
 
+uint8_t _data_mask(uart_t uart)
+{
+#if defined(USART_CR1_M1)
+    if ((dev(uart)->CR1 & (USART_CR1_PCE | USART_CR1_M)) == (USART_CR1_PCE | USART_CR1_M1)) {
+        return 0x3F;
+    }
+#endif
+    if ((dev(uart)->CR1 & (USART_CR1_PCE | USART_CR1_M)) == USART_CR1_PCE) {
+        return 0x7F;
+    }
+    return 0xFF;
+}
+
 static inline void irq_handler(uart_t uart)
 {
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) \
@@ -301,7 +351,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->ISR;
 
     if (status & USART_ISR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR & _data_mask(uart));
     }
     if (status & USART_ISR_ORE) {
         dev(uart)->ICR |= USART_ICR_ORECF;    /* simply clear flag on overrun */
@@ -312,7 +362,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->SR;
 
     if (status & USART_SR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR & _data_mask(uart));
     }
     if (status & USART_SR_ORE) {
         /* ORE is cleared by reading SR and DR sequentially */
