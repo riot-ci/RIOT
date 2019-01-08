@@ -24,11 +24,19 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#ifdef TPS6274X_CONFIG
-const tps6274x_config_t converter_config = TPS6274X_CONFIG;
-#else
-#error No config struct for module tps6274x available
+#ifndef TPS6274X_CONFIG
+/* set default device parameters in case they are undefined */
+#define TPS6274X_CONFIG {\
+    .vsel = { GPIO_UNDEF, \
+              GPIO_UNDEF, \
+              GPIO_UNDEF, \
+              GPIO_UNDEF }, \
+    .ctrl_pin = GPIO_UNDEF \
+};
+#pragma message("No config struct for module tps6274x available")
 #endif
+
+const tps6274x_config_t converter_config = TPS6274X_CONFIG;
 
 unsigned int tps6274x_init(unsigned int voltage)
 {
