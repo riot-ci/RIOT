@@ -8,6 +8,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-uno \
                              nucleo-l053r8 stm32f0discovery telosb \
                              waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
 
+CFLAGS += -DLOG_LEVEL=LOG_ALL
 BOARDS_WITH_STM32_CANDEV := nucleo-f072rb \
                             nucleo-f091rc \
                             nucleo-f103rb \
