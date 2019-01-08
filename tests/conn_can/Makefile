@@ -18,7 +18,7 @@ BOARDS_WITH_STM32_CANDEV := nucleo-f072rb \
                             nucleo-f446re \
                             nucleo-f446ze
 
-
+CFLAGS += -DLOG_LEVEL=LOG_ALL
 
 USEMODULE += shell
 USEMODULE += shell_commands
@@ -31,5 +31,6 @@ USEMODULE += can_pm
 USEMODULE += can_trx
 
 FEATURES_OPTIONAL += periph_can
+FEATURES_REQUIRED += periph_gpio_irq
 
 include $(RIOTBASE)/Makefile.include
