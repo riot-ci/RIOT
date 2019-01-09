@@ -127,7 +127,7 @@ static int cc1xxx_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         /* check that destination address is valid */
         assert(netif_hdr->dst_l2addr_len > 0);
         uint8_t *addr = gnrc_netif_hdr_get_dst_addr(netif_hdr);
-        l2hdr.dest_addr = addr[netif_hdr->dst_l2addr_len - 1];
+        l2hdr.dest_addr = addr[0];
         DEBUG("[cc1xxx-gnrc] send: preparing to send unicast %02x --> %02x\n",
               (int)l2hdr.src_addr, (int)l2hdr.dest_addr);
     }
