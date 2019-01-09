@@ -26,7 +26,7 @@
 
 #include "assert.h"
 #include "net/gnrc.h"
-#include "net/gnrc/netif/cc1xxx.h"
+#include "cc1xxx_common.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
