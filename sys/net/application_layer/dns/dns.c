@@ -150,7 +150,9 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
             continue;
         }
         if (((addrlen != INADDRSZ) && (family == AF_INET)) ||
-            ((addrlen != IN6ADDRSZ) && (family == AF_INET6))) {
+            ((addrlen != IN6ADDRSZ) && (family == AF_INET6)) ||
+            ((addrlen != IN6ADDRSZ) && (addrlen != INADDRSZ) &&
+             (family == AF_UNSPEC))) {
             return -EBADMSG;
         }
         bufpos += RR_RDLENGTH_LENGTH;
