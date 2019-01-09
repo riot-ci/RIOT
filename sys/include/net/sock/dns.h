@@ -81,7 +81,7 @@ typedef struct {
  * AAAA are requested, AAAA will be preferred.
  *
  * @note @p addr_out needs to provide space for at least
- *       @ref SOCK_DNS_ADDR_LEN_MAX bytes
+ *       @ref SOCK_DNS_MAX_ADDR_LEN bytes
  *
  * @param[in]   domain_name     DNS name to resolve into address
  * @param[out]  addr_out        buffer to write result into
