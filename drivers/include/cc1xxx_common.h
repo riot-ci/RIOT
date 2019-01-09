@@ -75,14 +75,14 @@ extern "C" {
 #endif
 
 /**
- * @brief Layer 2 header size used
- */
-#define CC1XXX_HEADER_SIZE              2
-
-/**
  * @brief Size of a layer 2 address on CC110x/CC1200 transceivers
  */
-#define CC1XXX_ADDR_SIZE                1
+#define CC1XXX_ADDR_SIZE                (1)
+
+/**
+ * @brief Special layer 2 address reserved for broadcast frames
+ */
+#define CC1XXX_BCAST_ADDR               (0x00)
 
 /**
  * @brief Layer 2 header used in CC1xxx frames

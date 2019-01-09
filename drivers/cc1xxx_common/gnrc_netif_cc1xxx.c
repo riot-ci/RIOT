@@ -69,7 +69,7 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
     l2hdr.src_addr = ((uint8_t *)payload->data)[1];
 
     /* crop the layer 2 header from the payload */
-    hdr = gnrc_pktbuf_mark(payload, CC1XXX_HEADER_SIZE, GNRC_NETTYPE_UNDEF);
+    hdr = gnrc_pktbuf_mark(payload, sizeof(cc1xxx_l2hdr_t), GNRC_NETTYPE_UNDEF);
     if (hdr == NULL) {
         DEBUG("[cc1xxx-gnrc] recv: unable to mark cc1xxx header snip\n");
         gnrc_pktbuf_release(payload);
@@ -89,7 +89,7 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
     netif_hdr->if_pid = netif->pid;
     netif_hdr->rssi = rx_info.rssi;
     netif_hdr->lqi = rx_info.lqi;
-    if (l2hdr.dest_addr == 0x00) {
+    if (l2hdr.dest_addr == CC1XXX_BCAST_ADDR) {
         netif_hdr->flags = GNRC_NETIF_HDR_FLAGS_BROADCAST;
     }
 
@@ -120,7 +120,7 @@ static int cc1xxx_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 
     l2hdr.src_addr = cc1xxx_dev->addr;
     if (netif_hdr->flags & BCAST) {
-        l2hdr.dest_addr = 0x00;
+        l2hdr.dest_addr = CC1XXX_BCAST_ADDR;
         DEBUG("[cc1xxx-gnrc] send: preparing to send broadcast\n");
     }
     else {
