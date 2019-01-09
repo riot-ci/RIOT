@@ -39,8 +39,7 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
     cc1xxx_rx_info_t rx_info;
     int pktlen;
     gnrc_pktsnip_t *payload;
-    gnrc_pktsnip_t *netif_snip;
-    gnrc_pktsnip_t *xhdr_snip;
+    gnrc_pktsnip_t *hdr;
     gnrc_netif_hdr_t *netif_hdr;
     cc1xxx_l2hdr_t l2hdr;
 
@@ -70,23 +69,23 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
     l2hdr.src_addr = ((uint8_t *)payload->data)[1];
 
     /* crop the layer 2 header from the payload */
-    xhdr_snip = gnrc_pktbuf_mark(payload, CC1XXX_HEADER_SIZE, GNRC_NETTYPE_UNDEF);
-    if (xhdr_snip == NULL) {
+    hdr = gnrc_pktbuf_mark(payload, CC1XXX_HEADER_SIZE, GNRC_NETTYPE_UNDEF);
+    if (hdr == NULL) {
         DEBUG("[cc1xxx-gnrc] recv: unable to mark cc1xxx header snip\n");
         gnrc_pktbuf_release(payload);
         return NULL;
     }
-    gnrc_pktbuf_remove_snip(payload, xhdr_snip);
+    gnrc_pktbuf_remove_snip(payload, hdr);
 
     /* create a netif hdr from the obtained data */
-    netif_snip = gnrc_netif_hdr_build(&l2hdr.src_addr, CC1XXX_ADDR_SIZE,
-                                      &l2hdr.dest_addr, CC1XXX_ADDR_SIZE);
-    if (netif_snip == NULL) {
+    hdr = gnrc_netif_hdr_build(&l2hdr.src_addr, CC1XXX_ADDR_SIZE,
+                               &l2hdr.dest_addr, CC1XXX_ADDR_SIZE);
+    if (hdr == NULL) {
         DEBUG("[cc1xxx-gnrc] recv: unable to allocate netif header\n");
         gnrc_pktbuf_release(payload);
         return NULL;
     }
-    netif_hdr = (gnrc_netif_hdr_t *)netif_snip->data;
+    netif_hdr = (gnrc_netif_hdr_t *)hdr->data;
     netif_hdr->if_pid = netif->pid;
     netif_hdr->rssi = rx_info.rssi;
     netif_hdr->lqi = rx_info.lqi;
@@ -97,7 +96,7 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
     DEBUG("[cc1xxx-gnrc] recv: successfully parsed packet\n");
 
     /* and append the netif header */
-    LL_APPEND(payload, netif_snip);
+    LL_APPEND(payload, hdr);
 
     return payload;
 }
