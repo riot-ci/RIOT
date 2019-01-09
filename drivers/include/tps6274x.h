@@ -56,7 +56,7 @@ enum {
 /**
  * @brief   Init converter
  *
- * @param[in] voltage  Initialized device descriptor
+ * @param[in] dev      Initialized device descriptor for TPS6274x device
  * @param[in] params   Initialization parameters
  *
  * @return              set voltage in mV
@@ -66,6 +66,7 @@ int tps6274x_init(tps6274x_t *dev, const tps6274x_params_t *params);
 /**
  * @brief   Switch to different voltage level
  *
+ * @param[in] dev       Device descriptor for TPS6274x device
  * @param[in] voltage   Voltage to set in mV (needs to be between 1.8V-3.3V
  * @return              the voltage that was set in mV
  */
@@ -74,6 +75,7 @@ uint16_t tps6274x_switch_voltage(tps6274x_t *dev, uint16_t voltage);
 /**
  * @brief   Sets ctrl pin high to power a subsystem connected on the load pin
  *
+ * @param[in] dev       Device descriptor for TPS6274x device
  * @param[in] status    0 will disable the load, everything else will activate it
  */
 void tps6274x_load_ctrl(tps6274x_t *dev, int status);
