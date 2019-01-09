@@ -95,6 +95,10 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
 
     /* skip all queries that are part of the reply */
     for (unsigned n = 0; n < ntohs(hdr->qdcount); n++) {
+        if (bufpos >= (buf + len)) {
+            /* out-of-bound */
+            return -EBADMSG;
+        }
         bufpos += _skip_hostname(bufpos);
         bufpos += 4;    /* skip type and class of query */
     }
@@ -108,8 +112,11 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
         bufpos += 4; /* skip ttl */
 
         unsigned addrlen = ntohs(_get_short(bufpos));
+        if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
+            return -EINVAL;
+        }
         bufpos += 2;
-        if ((bufpos + addrlen) > (buf + len)) {
+        if ((bufpos + addrlen) >= (buf + len)) {
             return -EBADMSG;
         }
 
