@@ -73,8 +73,10 @@ static unsigned _get_short(uint8_t *buf)
     return _tmp;
 }
 
-static int _skip_hostname(uint8_t *bufpos, uint8_t *buflim)
+static int _skip_hostname(const uint8_t *buf, size_t len, uint8_t *bufpos)
 {
+    const uint8_t *buflim = buf + len;
+
     if (bufpos >= buflim) {
         /* out-of-bound */
         return -EBADMSG;
@@ -101,7 +103,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
 
     /* skip all queries that are part of the reply */
     for (unsigned n = 0; n < ntohs(hdr->qdcount); n++) {
-        int tmp = _skip_hostname(bufpos, buf + len);
+        int tmp = _skip_hostname(buf, len, bufpos);
         if (tmp < 0) {
             return tmp;
         }
@@ -110,7 +112,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
     }
 
     for (unsigned n = 0; n < ntohs(hdr->ancount); n++) {
-        int tmp = _skip_hostname(bufpos, buf + len);
+        int tmp = _skip_hostname(buf, len, bufpos);
         if (tmp < 0) {
             return tmp;
         }
