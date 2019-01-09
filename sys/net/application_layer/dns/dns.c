@@ -139,7 +139,13 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
                 ((_type == DNS_TYPE_AAAA) && (family == AF_INET)) ||
                 ! ((_type == DNS_TYPE_A) || ((_type == DNS_TYPE_AAAA))
                     )) {
+            if ((bufpos + addrlen) < buf) {
+                /* buffer wraps around memory space */
+                return -EBADMSG;
+            }
             bufpos += addrlen;
+            /* other out-of-bound is checked in `_skip_hostname()` at start 
+             * of loop */
             continue;
         }
         if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
