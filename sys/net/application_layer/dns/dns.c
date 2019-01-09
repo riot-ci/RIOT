@@ -15,6 +15,7 @@
  * @}
  */
 
+#include <arpa/inet.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -148,8 +149,8 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
              * of loop */
             continue;
         }
-        if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
-            return -ERANGE;
+        if ((addrlen != INADDRSZ) || (addrlen != IN6ADDRSZ)) {
+            return -EBADMSG;
         }
         bufpos += RR_RDLENGTH_LENGTH;
         if ((bufpos + addrlen) >= buflim) {

@@ -57,13 +57,6 @@ typedef struct {
 #define SOCK_DNS_PORT           (53)
 #define SOCK_DNS_RETRIES        (2)
 
-/**
- * @brief   Maximum expected address length
- *
- * @note    Derived from the length of an IPv6 address
- */
-#define SOCK_DNS_MAX_ADDR_LEN   (16U)
-
 #define SOCK_DNS_MAX_NAME_LEN   (64U)       /* we're in embedded context. */
 #define SOCK_DNS_QUERYBUF_LEN   (sizeof(sock_dns_hdr_t) + 4 + SOCK_DNS_MAX_NAME_LEN)
 /** @} */
@@ -80,8 +73,8 @@ typedef struct {
  * This function will return the first DNS record it receives. IF both A and
  * AAAA are requested, AAAA will be preferred.
  *
- * @note @p addr_out needs to provide space for at least
- *       @ref SOCK_DNS_MAX_ADDR_LEN bytes
+ * @note @p addr_out needs to provide space for any possible result!
+ *       (4byte when family==AF_INET, 16byte otherwise)
  *
  * @param[in]   domain_name     DNS name to resolve into address
  * @param[out]  addr_out        buffer to write result into
