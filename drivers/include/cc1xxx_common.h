@@ -24,8 +24,12 @@
  * ======================
  *
  * This adaption layer is written to be used by CC110x and CC1200 transceivers,
- * but any transceiver using that should transfer 6LoWPAN and uses layer 2
- * addresses which are 1 byte in size would likely be able to use it.
+ * but any transceiver using layer 2 addresses which are 1 byte in size would
+ * likely be able to use it. Keep in mind that both CC110x and CC1200 are able
+ * to transmit frames of up to 255 bytes (thus 253 bytes of payload, as the
+ * layer 2 header is 2 bytes in size). Other transceivers only supporting
+ * smaller frames may not be able to use all the upper layer protocols supported
+ * by the CC110x and CC1200 transceivers.
  *
  * Frame Format
  * ============
@@ -51,7 +55,7 @@
  *
  * This adaption layer assumes that the layer 2 address `0x00` is reserved for
  * layer 2 broadcast, which is true for CC110x and CC1200 transceivers (provided
- * they are configured accordingly). If more users of this adaption layers are
+ * they are configured accordingly). If more users of this adaption layer are
  * added, this behaviour might needs to be more generalized.
  */
 #ifndef NET_GNRC_NETIF_CC1XXX_H
@@ -74,9 +78,6 @@ extern "C" {
 
 /**
  * @brief Layer 2 header size used
- *
- * This includes only the Destination and Source address, as only those have
- * impact on the Length Filed as expected/set by the transceiver
  */
 #define CC1XXX_HEADER_SIZE              2
 
@@ -91,8 +92,8 @@ extern "C" {
  * This structure has the same memory layout as the data send in the frames.
  */
 typedef struct __attribute__((packed)) {
-    uint8_t dest_addr;      /**< Destination Layer-2 address */
-    uint8_t src_addr;       /**< Source Layer-2 address */
+    uint8_t dest_addr;      /**< Destination layer 2 address */
+    uint8_t src_addr;       /**< Source layer 2 address */
 } cc1xxx_l2hdr_t;
 
 /**
