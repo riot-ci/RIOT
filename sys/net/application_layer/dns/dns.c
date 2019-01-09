@@ -134,7 +134,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
             continue;
         }
         if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
-            return -EINVAL;
+            return -ERANGE;
         }
         bufpos += 2;
         if ((bufpos + addrlen) >= (buf + len)) {
