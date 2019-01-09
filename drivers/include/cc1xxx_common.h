@@ -8,7 +8,9 @@
  */
 
 /**
- * @ingroup net_gnrc_netif
+ * @defgroup    drivers_cc1xxx CC1100/CC1100e/CC1101/CC1200 common code
+ * @ingroup     drivers_netdev
+ * @ingroup     net_gnrc_netif
  * @{
  *
  * @file
