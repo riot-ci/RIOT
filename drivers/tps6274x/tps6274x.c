@@ -24,29 +24,29 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#ifdef TPS6274X_CONFIG
-const tps6274x_config_t converter_config = TPS6274X_CONFIG;
-#else
-/* Default device parameters are undefined */
-#error "No config struct for module tps6274x available"
-#endif
-
-
-
-unsigned int tps6274x_init(unsigned int voltage)
+int tps6274x_init(tps6274x_t *dev, const tps6274x_params_t *params)
 {
+    int ret;
+
+    dev->params = *params;
     for (uint8_t i = 0; i < 4; i++) {
-        if (converter_config.vsel[i] != GPIO_UNDEF) {
-            gpio_init(converter_config.vsel[i], GPIO_OUT);
+        if (dev->params.vsel[i] != GPIO_UNDEF) {
+            ret = gpio_init(dev->params.vsel[i], GPIO_OUT);
+            if(ret < 0) {
+                return TPS6274X_ERR_INIT;
+            }
         }
     }
-    if (converter_config.ctrl_pin != GPIO_UNDEF) {
-        gpio_init(converter_config.ctrl_pin, GPIO_OUT);
+    if (dev->params.ctrl_pin != GPIO_UNDEF) {
+        ret = gpio_init(dev->params.ctrl_pin, GPIO_OUT);
+        if(ret < 0) {
+            return TPS6274X_ERR_INIT;
+        }
     }
-    return tps6274x_switch_voltage(voltage);
+    return TPS6274X_OK;
 }
 
-unsigned int tps6274x_switch_voltage(unsigned int voltage)
+uint16_t tps6274x_switch_voltage(tps6274x_t *dev, uint16_t voltage)
 {
     if (voltage < 1800) {
         voltage = 1800;
@@ -57,24 +57,29 @@ unsigned int tps6274x_switch_voltage(unsigned int voltage)
     uint8_t vsel = (voltage - 1800) / 100;
     uint8_t vsel_set = 0;
     for (uint8_t i = 0; i < 4; i++) {
-        if (converter_config.vsel[i] != GPIO_UNDEF) {
-            gpio_write(converter_config.vsel[i], (vsel & (0x01 << i)));
+        if (dev->params.vsel[i] != GPIO_UNDEF) {
+            gpio_write(dev->params.vsel[i], (vsel & (0x01 << i)));
             /* mark pins that could and had to be set */
             vsel_set |= vsel & (1 << i);
         }
+#if ENABLE_DEBUG
         else {
-            DEBUG("[tps6274x] Pin vsel%u is not connected but is required for selected voltage level\n", i + 1);
+            printf("[tps6274x] Pin vsel%u is not connected but is required for \
+                selected voltage level\n", i + 1);
         }
+#endif
     }
-    return ((unsigned int)vsel_set) * 100 + 1800;
+    return ((uint16_t)vsel_set) * 100 + 1800;
 }
 
-void tps6274x_load_ctrl(unsigned int status)
+void tps6274x_load_ctrl(tps6274x_t *dev, int status)
 {
-    if (converter_config.ctrl_pin != GPIO_UNDEF) {
-        gpio_write(converter_config.ctrl_pin, status);
+    if (dev->params.ctrl_pin != GPIO_UNDEF) {
+        gpio_write(dev->params.ctrl_pin, status);
     }
+#if ENABLE_DEBUG
     else {
-        DEBUG("[TPS6274x] CTRL Pin not defined, no load activation possible\n");
+        printf("[TPS6274x] CTRL Pin not defined, no load activation possible\n");
     }
+#endif
 }

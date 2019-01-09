@@ -34,32 +34,49 @@ extern "C"
  * @brief   TPS6274x Configuration struct
  */
 typedef struct {
-    gpio_t vsel[4];         /**< select line pin mapping */
-    gpio_t ctrl_pin;        /**< ctrl pin  mapping */
-} tps6274x_config_t;
+    gpio_t vsel[4];            /**< select line pin mapping */
+    gpio_t ctrl_pin;           /**< ctrl pin  mapping */
+} tps6274x_params_t;
 
 /**
- * @brief   init converter
+ * @brief   Device descriptor for the TPS6274x
+ */
+typedef struct {
+    tps6274x_params_t  params; /**< device initialization parameters */
+} tps6274x_t;
+
+/**
+ * @brief   Status and error return codes
+ */
+enum {
+    TPS6274X_OK = 0,           /**< everything was fine */
+    TPS6274X_ERR_INIT,         /**< error during init */
+};
+
+/**
+ * @brief   Init converter
  *
- * @param[in] voltage   Voltage to set in mV (needs to be between 1.8V-3.3V
+ * @param[in] voltage  Initialized device descriptor
+ * @param[in] params   Initialization parameters
+ *
  * @return              set voltage in mV
  */
-unsigned int tps6274x_init(unsigned int voltage);
+int tps6274x_init(tps6274x_t *dev, const tps6274x_params_t *params);
 
 /**
- * @brief   switch to different voltage level
+ * @brief   Switch to different voltage level
  *
  * @param[in] voltage   Voltage to set in mV (needs to be between 1.8V-3.3V
  * @return              the voltage that was set in mV
  */
-unsigned int tps6274x_switch_voltage(unsigned int voltage);
+uint16_t tps6274x_switch_voltage(tps6274x_t *dev, uint16_t voltage);
 
 /**
- * @brief   sets ctrl pin high to power a subsystem connected on the load pin
+ * @brief   Sets ctrl pin high to power a subsystem connected on the load pin
  *
  * @param[in] status    0 will disable the load, everything else will activate it
  */
-void tps6274x_load_ctrl(unsigned int status);
+void tps6274x_load_ctrl(tps6274x_t *dev, int status);
 
 #ifdef __cplusplus
 }
