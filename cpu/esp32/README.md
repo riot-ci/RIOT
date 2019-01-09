@@ -74,7 +74,11 @@ Parameter | Short Description                      | Type*
 [SPI0_MOSI](#esp32_spi_interfaces) | GPIO used as MOSI for SPI_DEV(0)       | o
 [SPI0_MISO](#esp32_spi_interfaces) | GPIO used as MISO for SPI_DEV(0)       | o
 [SPI0_CS0](#esp32_spi_interfaces)  | GPIO used as default CS for SPI_DEV(0) | o
-[SPI1_CTRL](#esp32_spi_interfaces)  | SPI Controller used for SPI_DEV(1), can be ```VSPI``` ```HSPI``` | o
+[SPI1_CTRL](#esp32_spi_interfaces) | SPI Controller used for SPI_DEV(1), can be ```VSPI``` ```HSPI``` | o
+[SPI1_SCK](#esp32_spi_interfaces)  | GPIO used as SCK for SPI_DEV(1)        | o	
+[SPI1_MOSI](#esp32_spi_interfaces) | GPIO used as MOSI for SPI_DEV(1)       | o	
+[SPI1_MISO](#esp32_spi_interfaces) | GPIO used as MISO for SPI_DEV(1)       | o	
+[SPI1_CS0](#esp32_spi_interfaces)  | GPIO used as default CS for SPI_DEV(1) | o
 [UART1_TXD](#esp32_uart_interfaces) | GPIO used as TxD for UART_DEV(1) | o
 [UART1_RXD](#esp32_uart_interfaces) | GPIO used as RxD for UART_DEV(1) | o
 [UART2_TXD](#esp32_uart_interfaces) | GPIO used as TxD for UART_DEV(2) | o
