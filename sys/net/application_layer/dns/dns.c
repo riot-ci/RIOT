@@ -140,7 +140,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
                 ((_type == DNS_TYPE_AAAA) && (family == AF_INET)) ||
                 ! ((_type == DNS_TYPE_A) || ((_type == DNS_TYPE_AAAA))
                     )) {
-            if ((bufpos + addrlen) < buf) {
+            if (((bufpos - pos) + addrlen) < (bufpos - pos)) {
                 /* buffer wraps around memory space */
                 return -EBADMSG;
             }
