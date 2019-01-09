@@ -122,14 +122,6 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
         bufpos += 4; /* skip ttl */
 
         unsigned addrlen = ntohs(_get_short(bufpos));
-        if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
-            return -EINVAL;
-        }
-        bufpos += 2;
-        if ((bufpos + addrlen) >= (buf + len)) {
-            return -EBADMSG;
-        }
-
         /* skip unwanted answers */
         if ((class != DNS_CLASS_IN) ||
                 ((_type == DNS_TYPE_A) && (family == AF_INET6)) ||
@@ -138,6 +130,13 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
                     )) {
             bufpos += addrlen;
             continue;
+        }
+        if (addrlen > SOCK_DNS_MAX_ADDR_LEN) {
+            return -EINVAL;
+        }
+        bufpos += 2;
+        if ((bufpos + addrlen) >= (buf + len)) {
+            return -EBADMSG;
         }
 
         memcpy(addr_out, bufpos, addrlen);
