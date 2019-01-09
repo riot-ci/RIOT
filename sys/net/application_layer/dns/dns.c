@@ -73,17 +73,23 @@ static unsigned _get_short(uint8_t *buf)
     return _tmp;
 }
 
-static size_t _skip_hostname(uint8_t *buf)
+static int _skip_hostname(uint8_t *bufpos, uint8_t *buflim)
 {
-    uint8_t *bufpos = buf;
-
+    if (bufpos >= buflim) {
+        /* out-of-bound */
+        return -EBADMSG;
+    }
     /* handle DNS Message Compression */
     if (*bufpos >= 192) {
         return 2;
     }
 
-    while(*bufpos) {
+    while (*bufpos) {
         bufpos += *bufpos + 1;
+        if (bufpos >= buflim) {
+            /* out-of-bound */
+            return -EBADMSG;
+        }
     }
     return (bufpos - buf + 1);
 }
@@ -95,16 +101,20 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
 
     /* skip all queries that are part of the reply */
     for (unsigned n = 0; n < ntohs(hdr->qdcount); n++) {
-        if (bufpos >= (buf + len)) {
-            /* out-of-bound */
-            return -EBADMSG;
+        int tmp = _skip_hostname(bufpos, buf + len);
+        if (tmp < 0) {
+            return tmp;
         }
-        bufpos += _skip_hostname(bufpos);
+        bufpos += tmp;
         bufpos += 4;    /* skip type and class of query */
     }
 
     for (unsigned n = 0; n < ntohs(hdr->ancount); n++) {
-        bufpos += _skip_hostname(bufpos);
+        int tmp = _skip_hostname(bufpos, buf + len);
+        if (tmp < 0) {
+            return tmp;
+        }
+        bufpos += tmp;
         uint16_t _type = ntohs(_get_short(bufpos));
         bufpos += 2;
         uint16_t class = ntohs(_get_short(bufpos));
