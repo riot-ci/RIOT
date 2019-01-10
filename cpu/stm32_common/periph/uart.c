@@ -56,6 +56,8 @@
  */
 static uart_isr_ctx_t isr_ctx[UART_NUMOF];
 
+static uint8_t data_mask = 0xff;
+
 static inline USART_TypeDef *dev(uart_t uart)
 {
     return uart_config[uart].dev;
@@ -150,6 +152,47 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         dev(uart)->CR3 = (USART_CR3_RTSE | USART_CR3_CTSE);
     }
 #endif
+
+    return UART_OK;
+}
+
+int uart_mode(uart_t uart, uart_databits_t databits, uart_parity_t parity, uart_stopbits_t stopbits)
+{
+    assert(uart < UART_NUMOF);
+
+    uint32_t cr1;
+    uint32_t cr2;
+
+    if ((databits == 0x02)
+            || (databits == UART_DATABITS_7 && !parity)
+            || (databits == UART_DATABITS_9 && parity))
+        return UART_NOMODE;
+
+    if (parity == 0x02)
+        return UART_NOMODE;
+
+    cr1 = dev(uart)->CR1;
+    cr2 = dev(uart)->CR2;
+
+    if (parity) {
+	/* enable parity */
+        cr1 |= USART_CR1_PCE;
+        /* enable 9-bit mode for 8 databits or
+           mask the MSB for 7 databits mode */
+        if (databits == UART_DATABITS_8)
+            cr1 |= USART_CR1_M; 
+        else
+            data_mask = 0x7f;
+	/* setup odd parity, even parity is the default one */
+        if (parity == UART_PARITY_ODD)
+            cr1 |= parity;
+    }
+
+    if (stopbits)
+        cr2 |= stopbits;
+
+    dev(uart)->CR1 = cr1;
+    dev(uart)->CR2 = cr2;
 
     return UART_OK;
 }
@@ -301,7 +344,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->ISR;
 
     if (status & USART_ISR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->RDR & data_mask);
     }
     if (status & USART_ISR_ORE) {
         dev(uart)->ICR |= USART_ICR_ORECF;    /* simply clear flag on overrun */
@@ -312,7 +355,7 @@ static inline void irq_handler(uart_t uart)
     uint32_t status = dev(uart)->SR;
 
     if (status & USART_SR_RXNE) {
-        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR);
+        isr_ctx[uart].rx_cb(isr_ctx[uart].arg, (uint8_t)dev(uart)->DR & data_mask);
     }
     if (status & USART_SR_ORE) {
         /* ORE is cleared by reading SR and DR sequentially */

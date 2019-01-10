@@ -371,6 +371,39 @@ typedef enum {
 } uart_type_t;
 
 /**
+ * @brief   Override parity values
+ */
+#define HAVE_UART_PARITY_T
+typedef enum {
+   UART_PARITY_NONE = 0,             /**< no parity */
+   UART_PARITY_EVEN = 1,             /**< even parity */
+   UART_PARITY_ODD = USART_CR1_PS,   /**< odd parity */
+   UART_PARITY_MARK = 0x02,          /**< not supported */
+   UART_PARITY_SPACE = 0x02          /**< not supported */
+} uart_parity_t;
+
+/**
+ * @brief   Override databits length values
+ */
+#define HAVE_UART_DATABITS_T
+typedef enum {
+    UART_DATABITS_8 = 0,        /**< 8 databits */
+    UART_DATABITS_5 = 0x02,     /**< not supported */
+    UART_DATABITS_6 = 0x02,     /**< not supported */
+    UART_DATABITS_7 = 1,        /**< 7 databits */
+    UART_DATABITS_9 = 0x02      /**< not supported */
+} uart_databits_t;
+
+/**
+ * @brief   Override stopbits length values
+ */
+#define HAVE_UART_STOPBITS_T
+typedef enum {
+   UART_STOPBITS_1 = 0,              /**< 1 stopbit */
+   UART_STOPBITS_2 = USART_CR2_STOP, /**< 2 stopbits */
+} uart_stopbits_t;
+
+/**
  * @brief   Structure for UART configuration data
  */
 typedef struct {

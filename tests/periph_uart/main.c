@@ -67,6 +67,85 @@ static int parse_dev(char *arg)
     return dev;
 }
 
+static int parse_databits(char *arg)
+{
+    unsigned databits = atoi(arg);
+    int res;
+
+    switch (databits) {
+        case 5:
+            res = UART_DATABITS_5;
+            break;
+        case 6:
+            res = UART_DATABITS_6;
+            break;
+        case 7:
+            res = UART_DATABITS_7;
+            break;
+        case 8:
+            res = UART_DATABITS_8;
+            break;
+	default:
+            printf("Error: Invalid number of databits (%u).\n", databits);
+            res = -1;
+    }
+
+    return res;
+}
+
+static int parse_stopbits(char *arg)
+{
+    unsigned stopbits = atoi(arg);
+    int res;
+
+    switch (stopbits) {
+        case 1:
+            res = UART_STOPBITS_1;
+            break;
+        case 2:
+            res = UART_STOPBITS_2;
+            break;
+	default:
+            printf("Error: Invalid number of stopbits (%u).\n", stopbits);
+            res = -1;
+    }
+
+    return res;
+}
+
+static int parse_parity(char *arg)
+{
+    int res;
+
+    switch (arg[0]) {
+        case 'n':
+        case 'N':
+            res = UART_PARITY_NONE;
+            break;
+        case 'e':
+        case 'E':
+            res = UART_PARITY_EVEN;
+            break;
+        case 'o':
+        case 'O':
+            res = UART_PARITY_ODD;
+            break;
+        case 'm':
+        case 'M':
+            res = UART_PARITY_MARK;
+            break;
+        case 's':
+        case 'S':
+            res = UART_PARITY_SPACE;
+            break;
+	default:
+            printf("Error: Invalid parity (%c).\n", arg[0]);
+            res = -1;
+    }
+
+    return res;
+}
+
 static void rx_cb(void *arg, uint8_t data)
 {
     uart_t dev = (uart_t)arg;
@@ -154,6 +233,43 @@ static int cmd_init(int argc, char **argv)
     return 0;
 }
 
+static int cmd_mode(int argc, char **argv)
+{
+    int dev, res;
+    int databits, stopbits, parity;
+
+    if (argc < 5) {
+        printf("usage: %s <dev> <databits> <parity> <stopbits>\n", argv[0]);
+        return 1;
+    }
+    /* parse parameters */
+    dev = parse_dev(argv[1]);
+    if (dev < 0) {
+        return 1;
+    }
+    databits = parse_databits(argv[2]);
+    if (databits < 0) {
+        return 1;
+    }
+    parity = parse_parity(argv[3]);
+    if (parity < 0) {
+        return 1;
+    }
+    stopbits = parse_stopbits(argv[4]);
+    if (stopbits < 0) {
+        return 1;
+    }
+    
+    res = uart_mode(dev, databits, parity, stopbits);
+    if (res != UART_OK) {
+        puts("Error: Unable to apply UART settings\n");
+        return 1;
+    }
+    printf("Success: Successfully applied UART_DEV(%i) settings\n", dev);
+
+    return 0;
+}
+
 static int cmd_send(int argc, char **argv)
 {
     int dev;
@@ -177,6 +293,7 @@ static int cmd_send(int argc, char **argv)
 
 static const shell_command_t shell_commands[] = {
     { "init", "Initialize a UART device with a given baudrate", cmd_init },
+    { "mode", "Setup databits, stopbits and parity for a given UART device", cmd_mode },
     { "send", "Send a string through given UART device", cmd_send },
     { NULL, NULL, NULL }
 };
