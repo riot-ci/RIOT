@@ -78,6 +78,7 @@ static unsigned _get_short(uint8_t *buf)
 static ssize_t _skip_hostname(const uint8_t *buf, size_t len, uint8_t *bufpos)
 {
     const uint8_t *buflim = buf + len;
+    unsigned res = 0;
 
     if (bufpos >= buflim) {
         /* out-of-bound */
@@ -91,14 +92,14 @@ static ssize_t _skip_hostname(const uint8_t *buf, size_t len, uint8_t *bufpos)
         return 2;
     }
 
-    while (*bufpos) {
-        bufpos += *bufpos + 1;
-        if (bufpos >= buflim) {
+    while (bufpos[res]) {
+        res += bufpos[res] + 1;
+        if ((&bufpos[res]) >= buflim) {
             /* out-of-bound */
             return -EBADMSG;
         }
     }
-    return (bufpos - buf + 1);
+    return res + 1;
 }
 
 static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family)
