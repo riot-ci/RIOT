@@ -39,13 +39,15 @@ void stdio_init(void)
 ssize_t stdio_read(void* buffer, size_t count)
 {
     (void) buffer;
+    (void) count;
 
-    return count;
+    return 0;
 }
 
 ssize_t stdio_write(const void* buffer, size_t len)
 {
     (void) buffer;
+    (void) len;
 
-    return len;
+    return 0;
 }
