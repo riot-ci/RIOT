@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "embUnit.h"
 
@@ -433,6 +434,31 @@ static void test_nanocoap__server_reply_simple_con(void)
     TEST_ASSERT_EQUAL_INT(COAP_TYPE_ACK, coap_get_type(&pkt));
 }
 
+static void test_nanocoap__server_option_count_overflow_check(void)
+{
+    static uint8_t pkt_data[] = {
+        0x40, 0x01, 0x09, 0x26, 0x01, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
+        0x11, 0x17, 0x11, 0x17 };
+
+    coap_pkt_t pkt;
+    volatile uint32_t guard_value = 0x12345678;
+
+    /* print the pointer values to ensure the data is kept on the stack (not in
+     * registers) */
+    printf("%p %p\n", (void*)&pkt, (void*)&guard_value);
+
+    int res = coap_parse(&pkt, pkt_data, sizeof(pkt_data));
+
+    TEST_ASSERT_EQUAL_INT(-ENOMEM, res);
+    TEST_ASSERT_EQUAL_INT(0x12345678, guard_value);
+}
+
 Test *tests_nanocoap_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -450,6 +476,7 @@ Test *tests_nanocoap_tests(void)
         new_TestFixture(test_nanocoap__server_reply_simple),
         new_TestFixture(test_nanocoap__server_get_req_con),
         new_TestFixture(test_nanocoap__server_reply_simple_con),
+        new_TestFixture(test_nanocoap__server_option_count_overflow_check),
     };
 
     EMB_UNIT_TESTCALLER(nanocoap_tests, NULL, NULL, fixtures);
