@@ -51,7 +51,8 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
 
     if (status < 0 || reg != CONF_TEST_VALUE) {
         i2c_release(I2C);
-        DEBUG("[adcxx1c] init - error: unable to communicate with the device (reg=%x)\n", reg);
+        DEBUG("[adcxx1c] init - error: unable to communicate with the device "
+              "(reg=%x)\n", reg);
         return ADCXX1C_NODEV;
     }
 
@@ -59,8 +60,8 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
     status = i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, reg, 0);
     i2c_release(I2C);
     if (status < 0) {
-        DEBUG("[adcxx1c] init - error: unable to communicate "
-                  "with the device (err=%x)\n", status);
+        DEBUG("[adcxx1c] init - error: unable to communicate with the device "
+              "(err=%x)\n", status);
         return ADCXX1C_NOI2C;
     }
 
@@ -107,8 +108,8 @@ int adcxx1c_enable_alert(adcxx1c_t *dev, adcxx1c_cb_t cb, void *arg)
     status = i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, reg, 0);
     i2c_release(I2C);
     if (status < 0) {
-        DEBUG("[adcxx1c] enable_alert - error: unable to communicate "
-                  "with the device (err=%d)\n", status);
+        DEBUG("[adcxx1c] enable_alert - error: unable to communicate with the "
+              "device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
 
@@ -137,7 +138,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     if (status < 0) {
         i2c_release(I2C);
         DEBUG("[adcxx1c] set_alert (low limit) - error: unable to communicate "
-                  "with the device (err=%d)\n", status);
+              "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
 
@@ -148,7 +149,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     if (status < 0) {
         i2c_release(I2C);
         DEBUG("[adcxx1c] set_alert (high limit) - error: unable to communicate "
-                  "with the device (err=%d)\n", status);
+              "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
 
@@ -159,7 +160,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     if (status < 0) {
         i2c_release(I2C);
         DEBUG("[adcxx1c] set_alert (hysteresis) - error: unable to communicate "
-                  "with the device (err=%d)\n", status);
+              "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
 
