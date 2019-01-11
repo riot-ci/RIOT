@@ -282,9 +282,9 @@ static const uint8_t _esp_now_mac[6] = { 0x82, 0x73, 0x79, 0x84, 0x79, 0x83 }; /
 
 #endif /* ESP_NOW_UNICAST */
 
-#ifdef MCU_ESP32
 static bool _in_recv_cb = false;
 
+#ifdef MCU_ESP32
 static IRAM_ATTR void esp_now_recv_cb(const uint8_t *mac, const uint8_t *data, int len)
 #else
 static IRAM_ATTR void esp_now_recv_cb(uint8_t *mac, uint8_t *data, uint8_t len)
@@ -427,8 +427,6 @@ esp_now_netdev_t *netdev_esp_now_setup(void)
         DEBUG("%s: early returning previously initialized device\n", __func__);
         return dev;
     }
-
-    ringbuffer_init(&dev->rx_buf, (char*)dev->rx_mem, sizeof(dev->rx_mem));
 
 #ifdef MCU_ESP32
     /*
