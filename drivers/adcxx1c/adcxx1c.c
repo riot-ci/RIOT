@@ -59,7 +59,7 @@ int adcxx1c_init(adcxx1c_t *dev, const adcxx1c_params_t *params)
     status = i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, reg, 0);
     i2c_release(I2C);
     if (status < 0) {
-        LOG_DEBUG("[adcxx1c] init - error: unable to communicate "
+        DEBUG("[adcxx1c] init - error: unable to communicate "
                   "with the device (err=%x)\n", status);
         return ADCXX1C_NOI2C;
     }
@@ -107,7 +107,7 @@ int adcxx1c_enable_alert(adcxx1c_t *dev, adcxx1c_cb_t cb, void *arg)
     status = i2c_write_reg(I2C, ADDR, ADCXX1C_CONF_ADDR, reg, 0);
     i2c_release(I2C);
     if (status < 0) {
-        LOG_DEBUG("[adcxx1c] enable_alert - error: unable to communicate "
+        DEBUG("[adcxx1c] enable_alert - error: unable to communicate "
                   "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
@@ -136,7 +136,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     status = i2c_write_regs(I2C, ADDR, ADCXX1C_LOW_LIMIT_ADDR, buf, 2, 0);
     if (status < 0) {
         i2c_release(I2C);
-        LOG_DEBUG("[adcxx1c] set_alert (low limit) - error: unable to communicate "
+        DEBUG("[adcxx1c] set_alert (low limit) - error: unable to communicate "
                   "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
@@ -147,7 +147,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     status = i2c_write_regs(I2C, ADDR, ADCXX1C_HIGH_LIMIT_ADDR, buf, 2, 0);
     if (status < 0) {
         i2c_release(I2C);
-        LOG_DEBUG("[adcxx1c] set_alert (high limit) - error: unable to communicate "
+        DEBUG("[adcxx1c] set_alert (high limit) - error: unable to communicate "
                   "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
@@ -158,7 +158,7 @@ int adcxx1c_set_alert_parameters(const adcxx1c_t *dev, int16_t low_limit,
     status = i2c_write_regs(I2C, ADDR, ADCXX1C_HYSTERESIS_ADDR, buf, 2, 0);
     if (status < 0) {
         i2c_release(I2C);
-        LOG_DEBUG("[adcxx1c] set_alert (hysteresis) - error: unable to communicate "
+        DEBUG("[adcxx1c] set_alert (hysteresis) - error: unable to communicate "
                   "with the device (err=%d)\n", status);
         return ADCXX1C_NOI2C;
     }
