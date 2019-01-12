@@ -16,7 +16,7 @@
  * scope of this driver.
  * Mainly designed for H-bridge, it could also drive some brushless drivers.
  *
- * Some H-bridge handles several motors.
+ * Some H-bridge driver circuits handle several motors.
  * Maximum motor number by H-bridge is set to 2 with MOTOR_DRIVER_MAX macro.
  * This macro can be overiden to provide more motors by H-bridge.
  * However, MOTOR_DRIVER_MAX should not exceed PWM channels number.
