@@ -446,17 +446,26 @@ static void test_nanocoap__server_option_count_overflow_check(void)
         0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17, 0x11, 0x17,
         0x11, 0x17, 0x11, 0x17 };
 
-    coap_pkt_t pkt;
-    volatile uint32_t guard_value = 0x12345678;
+    struct {
+      coap_pkt_t pkt;
+      uint8_t guard_data[42 * sizeof(coap_optpos_t)];
+    } scratch;
 
-    /* print the pointer values to ensure the data is kept on the stack (not in
-     * registers) */
-    printf("%p %p\n", (void*)&pkt, (void*)&guard_value);
+    memset(&scratch, 0, sizeof(scratch));
 
-    int res = coap_parse(&pkt, pkt_data, sizeof(pkt_data));
+    int res = coap_parse(&scratch.pkt, pkt_data, sizeof(pkt_data));
 
+    int dirty = 0;
+    volatile uint8_t *pos = scratch.guard_data;
+    for (size_t i = 0; i < sizeof(scratch.guard_data); i++) {
+        if (*pos) {
+            dirty = 1;
+            break;
+        }
+    }
+
+    TEST_ASSERT_EQUAL_INT(0, dirty);
     TEST_ASSERT_EQUAL_INT(-ENOMEM, res);
-    TEST_ASSERT_EQUAL_INT(0x12345678, guard_value);
 }
 
 Test *tests_nanocoap_tests(void)
