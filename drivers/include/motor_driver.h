@@ -18,7 +18,7 @@
  *
  * Some H-bridge driver circuits handle several motors.
  * Maximum motor number by H-bridge is set to 2 with MOTOR_DRIVER_MAX macro.
- * This macro can be overiden to provide more motors by H-bridge.
+ * This macro can be overridden to support H-bridge drivers with more outputs.
  * However, MOTOR_DRIVER_MAX should not exceed PWM channels number.
  *
  * motor_driver_t structure represents an H-bridge.
