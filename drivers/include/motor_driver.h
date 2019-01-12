@@ -12,7 +12,7 @@
  * @brief       High-level driver for DC motors
  *
  * This API aims to handle DC motor analogic driver.
- * Boards using communition protocols (I2C, UART, etc...) are not in the
+ * Driver boards using serial communication protocols (I2C, UART, etc...) are not in the
  * scope of this driver.
  * Mainly designed for H-bridge, it could also drive some brushless drivers.
  *
