@@ -107,7 +107,7 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
 
             if (option_delta) {
                 if (option_count >= NANOCOAP_NOPTS_MAX) {
-                    DEBUG("nanocoap: max nr of options exceeded");
+                    DEBUG("nanocoap: max nr of options exceeded\n");
                     return -ENOMEM;
                 }
 
