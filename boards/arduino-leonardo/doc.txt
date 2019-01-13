@@ -1,0 +1,38 @@
+/**
+@defgroup    boards_arduino-leonardo Arduino Leonardo
+@ingroup     boards
+@brief       Support for the Arduino Leonardo board
+
+## Overview
+The Arduino Leonardo is a microcontroller board based on the ATmega32u4.
+
+Similar to an Arduino UNO, can be recognized by computer as a mouse or keyboard.
+Otherwise it's the same. Brief descriptions of both boards are available at
+the official [Arduino web site.](https://www.arduino.cc/en/Main/Boards)
+
+It has 20 digital input/output pins (of which 7 can be used as PWM outputs and
+12 as analog inputs), a 16 MHz crystal oscillator, a micro USB connection, a
+power jack, an ICSP header, and a reset button. It contains everything needed
+to support the microcontroller; simply connect it to a computer with a USB
+cable or power it with a AC-to-DC adapter or battery to get started.
+
+For details, please look at the [Leonardo page.](@ref boards_arduino-leonardo)
+
+## Using the shell
+The shell is using the TTL (5V) serial because the USB (CDC) communication is
+not currently supported.
+
+The TTL serial cable must be connected as described below:
+- FTDI RX goes to PIN1 (TX)
+- FTDI TX goes to PIN0 (RX)
+- FTDI GND goes to GND
+
+## Flashing the device
+Flashing RIOT on the Arduino Leonardo is quite straight forward, just
+connect your Arduino Leonardo using the programming port to your host computer,
+push the reset button (the amber led must blink) and type:
+
+`make BOARD=arduino-leonardo flash-only`
+
+This should take care of everything!
+ */
