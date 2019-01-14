@@ -29,13 +29,13 @@ extern "C" {
  * @brief   Stack size configuration
  * @{
  */
-#ifdef MODULE_ESP_SDK_INT_HANDLING
 #define THREAD_EXTRA_STACKSIZE_PRINTF (0)
+
+#ifndef THREAD_STACKSIZE_DEFAULT
 #define THREAD_STACKSIZE_DEFAULT      (2048)
-#define THREAD_STACKSIZE_IDLE         (2048)
-#else
-#define THREAD_EXTRA_STACKSIZE_PRINTF (0)
-#define THREAD_STACKSIZE_DEFAULT      (2048)
+#endif
+
+#ifndef THREAD_STACKSIZE_IDLE
 #define THREAD_STACKSIZE_IDLE         (2048)
 #endif
 /** @} */

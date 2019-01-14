@@ -49,7 +49,14 @@ extern "C" {
 #define THREAD_STACKSIZE_DEFAULT   (512)
 #endif
 
+#ifndef THREAD_STACKSIZE_IDLE
 #define THREAD_STACKSIZE_IDLE      (160)
+#endif
+
+#define ISR_STACKSIZE              (0)
+
+/* this is used to signal ps.c to not try to interpret ISR_STACKSIZE */
+#define ISR_STACKSIZE_INVALID
 /** @} */
 
 /**
