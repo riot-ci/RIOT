@@ -437,12 +437,13 @@ static void test_nanocoap__server_reply_simple_con(void)
 static void test_nanocoap__server_option_count_overflow_check(void)
 {
     /* this test passes a forged CoAP packet containing 42 options (provided by
-     * @nmeum in #10753) to coap_parse().  The used coap_pkt_t is part of a
-     * struct, followed by an array of 42 coap_option_t.  The array is cleared
-     * before the call to coap_parse().  If the overflow protection is working,
-     * the array must still be clear after parsing the packet, and the proper
-     * error code (-ENOMEM) is returned.  Otherwise, the parsing wrote past
-     * scratch.pkt, thus the array is not zeroed anymore.
+     * @nmeum in #10753, 42 is a random number which just needs to be higher
+     * than NANOCOAP_NOPTS_MAX) to coap_parse().  The used coap_pkt_t is part
+     * of a struct, followed by an array of 42 coap_option_t.  The array is
+     * cleared before the call to coap_parse().  If the overflow protection is
+     * working, the array must still be clear after parsing the packet, and the
+     * proper error code (-ENOMEM) is returned.  Otherwise, the parsing wrote
+     * past scratch.pkt, thus the array is not zeroed anymore.
      */
 
      static uint8_t pkt_data[] = {
