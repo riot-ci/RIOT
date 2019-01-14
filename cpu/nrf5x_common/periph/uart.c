@@ -33,38 +33,43 @@
 #include "periph/gpio.h"
 
 #ifdef CPU_MODEL_NRF52840XXAA
-#define PSEL_RXD         dev(uart)->PSEL.RXD
-#define PSEL_TXD         dev(uart)->PSEL.TXD
-#define PSEL_RTS         dev(uart)->PSEL.RTS
-#define PSEL_CTS         dev(uart)->PSEL.CTS
-#define UART_IRQN        uart_config[uart].irqn
-#define UART_PIN_RX      uart_config[uart].rx_pin
-#define UART_PIN_TX      uart_config[uart].tx_pin
-#define UART_PIN_RTS     uart_config[uart].rts_pin
-#define UART_PIN_CTS     uart_config[uart].cts_pin
-#define UART_HWFLOWCTRL  (uart_config[uart].rts_pin != GPIO_UNDEF && \
-                          uart_config[uart].cts_pin != GPIO_UNDEF)
+#define PSEL_RXD        dev(uart)->PSEL.RXD
+#define PSEL_TXD        dev(uart)->PSEL.TXD
+#define PSEL_RTS        dev(uart)->PSEL.RTS
+#define PSEL_CTS        dev(uart)->PSEL.CTS
+#define UART_IRQN       uart_config[uart].irqn
+#define UART_PIN_RX     uart_config[uart].rx_pin
+#define UART_PIN_TX     uart_config[uart].tx_pin
+#define UART_PIN_RTS    uart_config[uart].rts_pin
+#define UART_PIN_CTS    uart_config[uart].cts_pin
+#define UART_HWFLOWCTRL (uart_config[uart].rts_pin != GPIO_UNDEF && \
+                         uart_config[uart].cts_pin != GPIO_UNDEF)
+#define ISR_CTX         isr_ctx[uart]
+/**
+ * @brief Allocate memory for the interrupt context
+ */
+static uart_isr_ctx_t isr_ctx[UART_NUMOF];
 #else
-#define PSEL_RXD         dev(uart)->PSELRXD
-#define PSEL_TXD         dev(uart)->PSELTXD
-#define PSEL_RTS         dev(uart)->PSELRTS
-#define PSEL_CTS         dev(uart)->PSELCTS
-#define UART_0_ISR       isr_uart0
+#define PSEL_RXD        dev(uart)->PSELRXD
+#define PSEL_TXD        dev(uart)->PSELTXD
+#define PSEL_RTS        dev(uart)->PSELRTS
+#define PSEL_CTS        dev(uart)->PSELCTS
+#define UART_0_ISR      isr_uart0
 #ifndef UART_PIN_RTS
-#define UART_PIN_RTS     GPIO_UNDEF
+#define UART_PIN_RTS    GPIO_UNDEF
 #endif
 #ifndef UART_PIN_CTS
-#define UART_PIN_CTS     GPIO_UNDEF
+#define UART_PIN_CTS    GPIO_UNDEF
 #endif
 #ifndef UART_HWFLOWCTRL
-#define UART_HWFLOWCTRL  0
+#define UART_HWFLOWCTRL 0
 #endif
-#endif
-
+#define ISR_CTX         isr_ctx
 /**
  * @brief Allocate memory for the interrupt context
  */
 static uart_isr_ctx_t isr_ctx;
+#endif
 
 #ifdef CPU_MODEL_NRF52840XXAA
 static inline NRF_UARTE_Type *dev(uart_t uart)
@@ -85,8 +90,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     assert(uart < UART_NUMOF);
 
     /* remember callback addresses and argument */
-    isr_ctx.rx_cb = rx_cb;
-    isr_ctx.arg = arg;
+    ISR_CTX.rx_cb = rx_cb;
+    ISR_CTX.arg = arg;
 
 #ifdef CPU_FAM_NRF51
    /* power on the UART device */
@@ -262,7 +267,7 @@ static inline void irq_handler(uart_t uart)
         while(dev(uart)->EVENTS_ENDRX == 0) {}
         dev(uart)->EVENTS_ENDRX = 0;
         /* Process received byte */
-        isr_ctx.rx_cb(isr_ctx.arg, rx_buf[uart]);
+        ISR_CTX.rx_cb(ISR_CTX.arg, rx_buf[uart]);
         /* Restart RX task */
         dev(uart)->TASKS_STARTRX = 1;
     }
@@ -270,7 +275,7 @@ static inline void irq_handler(uart_t uart)
     if (dev(uart)->EVENTS_RXDRDY == 1) {
         dev(uart)->EVENTS_RXDRDY = 0;
         uint8_t byte = (uint8_t)(dev(uart)->RXD & 0xff);
-        isr_ctx.rx_cb(isr_ctx.arg, byte);
+        ISR_CTX.rx_cb(ISR_CTX.arg, byte);
     }
 #endif
     cortexm_isr_end();
