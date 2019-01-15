@@ -568,6 +568,9 @@ test: $(TEST_DEPS)
 		$$t || exit 1; \
 	done
 
+test-input-hash: $(TESTS) $(ELFFILE)
+	sha1sum $^ > $(BINDIR)/test-input-hash.sha1
+
 # Default OBJDUMPFLAGS for platforms which do not specify it:
 OBJDUMPFLAGS ?= -S -D -h
 
