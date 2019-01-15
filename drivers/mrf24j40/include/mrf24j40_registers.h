@@ -313,6 +313,30 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    Bitfiled definitions for the GPIO register (0x33)
+ * @{
+ */
+#define MRF24J40_TRISGPIO_GPIO5         (0x20)
+#define MRF24J40_TRISGPIO_GPIO4         (0x10)
+#define MRF24J40_TRISGPIO_GPIO3         (0x08)
+#define MRF24J40_TRISGPIO_GPIO2         (0x04)
+#define MRF24J40_TRISGPIO_GPIO1         (0x02)
+#define MRF24J40_TRISGPIO_GPIO0         (0x01)
+/** @} */
+
+/**
+ * @name    Bitfiled definitions for the TRISGPIO register (0x34)
+ * @{
+ */
+#define MRF24J40_TRISGPIO_TRISGP5       (0x20)
+#define MRF24J40_TRISGPIO_TRISGP4       (0x10)
+#define MRF24J40_TRISGPIO_TRISGP3       (0x08)
+#define MRF24J40_TRISGPIO_TRISGP2       (0x04)
+#define MRF24J40_TRISGPIO_TRISGP1       (0x02)
+#define MRF24J40_TRISGPIO_TRISGP0       (0x01)
+/** @} */
+
+/**
  * @name    Bitfield definitions for the INTCON register (0x32)
  * @{
  */
