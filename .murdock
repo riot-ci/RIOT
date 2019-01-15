@@ -141,10 +141,9 @@ print_worker() {
 }
 
 test_hash_calc() {
-    local appdir=$1
-    local bindir=$2
+    local bindir=$1
 
-    md5sum $appdir/tests/* $bindir/*.elf | md5sum | cut -f1 -d' '
+    sha1sum ${bindir}/test-input-hash.sha1 | cut -f1 -d' '
 }
 
 test_cache_get() {
@@ -182,7 +181,7 @@ compile() {
 
     # compile
     CCACHE_BASEDIR="$(pwd)" BOARD=$board TOOLCHAIN=$toolchain RIOT_CI_BUILD=1 \
-        make -C${appdir} clean all -j${JOBS:-4}
+        make -C${appdir} clean all test-input-hash -j${JOBS:-4}
     RES=$?
 
     # run tests
@@ -193,7 +192,7 @@ compile() {
                     BOARD=$board make -C${appdir} test
                     RES=$?
                 elif is_in_list "$board" "$TEST_BOARDS_AVAILABLE"; then
-                    test_hash=$(test_hash_calc "$appdir" "$BINDIR")
+                    test_hash=$(test_hash_calc "$BINDIR")
                     echo "-- debug: test_hash=$test_hash"
                     if test_cache_get $test_hash; then
                         echo "-- skipping test due to positive cache hit"
