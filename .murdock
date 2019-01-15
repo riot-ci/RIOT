@@ -143,7 +143,7 @@ print_worker() {
 test_hash_calc() {
     local bindir=$1
 
-    sha1sum ${bindir}/test-input-hash.sha1 | cut -f1 -d' '
+    cat ${bindir}/test-input-hash.sha1 | cut -f1 -d' ' | sha1sum | cut -f1 -d' '
 }
 
 test_cache_get() {
