@@ -143,6 +143,15 @@ print_worker() {
 test_hash_calc() {
     local bindir=$1
 
+    # Why two times cut?
+    # "test-input-hash.sha1" contains a list of lines containing
+    # "<hash> <filename>" on each line.
+    # We need to filter out the filename, as it contains the full path name,
+    # which differs depending on the build machine.
+    #
+    # After piping through sha1sum, we get "<hash> -". " -" has to go so we save the
+    # hassle of escaping the resulting hash.
+
     cat ${bindir}/test-input-hash.sha1 | cut -f1 -d' ' | sha1sum | cut -f1 -d' '
 }
 
