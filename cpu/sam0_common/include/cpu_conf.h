@@ -22,7 +22,7 @@
 #define CPU_CONF_H
 
 #include "cpu_conf_common.h"
-#if defined(CPU_FAM_SAML10) || defined(CPU_FAM_SAML11)
+#if defined(CPU_SAML1X)
 #include "vendor/sam23.h"
 #else
 #include "vendor/sam0.h"

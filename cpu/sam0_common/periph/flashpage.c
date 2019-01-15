@@ -31,11 +31,16 @@
 #include "periph/flashpage.h"
 
 #define NVMCTRL_PAC_BIT     (0x00000002)
+#ifdef CPU_SAML1X
+#define _NVMCTRL NVMCTRL_SEC
+#else
+#define _NVMCTRL NVMCTRL
+#endif
 
 static void _unlock(void)
 {
     /* remove peripheral access lock for the NVMCTRL peripheral */
-#ifdef CPU_FAM_SAML21
+#if defined(CPU_FAM_SAML21) || defined(CPU_SAML1X)
     PAC->WRCTRL.reg = (PAC_WRCTRL_KEY_CLR | ID_NVMCTRL);
 #else
     if (PAC1->WPSET.reg & NVMCTRL_PAC_BIT) {
@@ -47,7 +52,7 @@ static void _unlock(void)
 static void _lock(void)
 {
     /* put peripheral access lock for the NVMCTRL peripheral */
-#ifdef CPU_FAM_SAML21
+#if defined(CPU_FAM_SAML21) || defined(CPU_SAML1X)
     PAC->WRCTRL.reg = (PAC_WRCTRL_KEY_SET | ID_NVMCTRL);
 #else
     if (PAC1->WPCLR.reg & NVMCTRL_PAC_BIT) {
@@ -79,26 +84,30 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
 
     _unlock();
 
-    NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC);
+    _NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC);
     for (unsigned i = 0; i < len; i++) {
         *dst++ = *data_addr++;
     }
-    NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP);
+    _NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP);
 
     _lock();
 }
 
 void flashpage_write(int page, const void *data)
 {
-    assert(page < FLASHPAGE_NUMOF);
+    assert((uint32_t)page < FLASHPAGE_NUMOF);
 
     uint32_t *page_addr = (uint32_t *)flashpage_addr(page);
 
     /* erase given page (the ADDR register uses 16-bit addresses) */
     _unlock();
-    NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1);
-    NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER);
-    while (!NVMCTRL->INTFLAG.bit.READY) {}
+    _NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1);
+    _NVMCTRL->CTRLA.reg = (NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER);
+#ifdef CPU_SAML1X
+    while(!_NVMCTRL->STATUS.bit.READY) {}
+#else
+    while (!_NVMCTRL->INTFLAG.bit.READY) {}
+#endif
     _lock();
 
     /* write data to page */
