@@ -229,6 +229,8 @@ static void *_event_loop(void *args)
 
 static void _send_to_iface(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 {
+    const ipv6_hdr_t *hdr = pkt->next->data;
+
     assert(netif != NULL);
     ((gnrc_netif_hdr_t *)pkt->data)->if_pid = netif->pid;
     if (gnrc_pkt_len(pkt->next) > netif->ipv6.mtu) {
@@ -238,13 +240,10 @@ static void _send_to_iface(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         return;
     }
     DEBUG("ipv6: Sending (src = %s, ",
-          ipv6_addr_to_str(addr_str, &((ipv6_hdr_t *)pkt->next->data)->src,
-                           sizeof(addr_str)));
+          ipv6_addr_to_str(addr_str, &hdr->src, sizeof(addr_str)));
     DEBUG("dst = %s, next header = %u, length = %u)\n",
-          ipv6_addr_to_str(addr_str, &((ipv6_hdr_t *)pkt->next->data)->dst,
-                           sizeof(addr_str)),
-          ((ipv6_hdr_t *)pkt->next->data)->nh,
-          byteorder_ntohs(((ipv6_hdr_t *)pkt->next->data)->len));
+          ipv6_addr_to_str(addr_str, &hdr->dst, sizeof(addr_str)), hdr->nh,
+          byteorder_ntohs(hdr->len));
 #ifdef MODULE_NETSTATS_IPV6
     netif->ipv6.stats.tx_success++;
     netif->ipv6.stats.tx_bytes += gnrc_pkt_len(pkt->next);
