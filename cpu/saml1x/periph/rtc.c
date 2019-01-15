@@ -44,9 +44,7 @@ static uint16_t reference_year = 100;
 void rtc_init(void)
 {
     /* Turn on power manager for RTC */
-    /* Already done in cpu_init() */
-    /* MCLK->APBAMASK.reg |= MCLK_APBAMASK_RTC; */
-
+    MCLK->APBAMASK.reg |= MCLK_APBAMASK_RTC | MCLK_APBAMASK_OSC32KCTRL;
     /* DISABLE RTC MASTER */
     rtc_poweroff();
 

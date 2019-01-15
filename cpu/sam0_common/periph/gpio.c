@@ -27,7 +27,7 @@
 #include "cpu.h"
 #include "periph/gpio.h"
 #include "periph_conf.h"
-
+#include "board.h"
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -40,7 +40,11 @@
 /**
  * @brief   Number of external interrupt lines
  */
+#ifdef CPU_SAML1X
+#define NUMOF_IRQS                  (8U)
+#else
 #define NUMOF_IRQS                  (16U)
+#endif
 
 static gpio_isr_ctx_t gpio_config[NUMOF_IRQS];
 #endif /* MODULE_PERIPH_GPIO_IRQ */
@@ -188,7 +192,13 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     EIC->CONFIG[exti >> 3].reg &= ~(0xf << ((exti & 0x7) * 4));
     EIC->CONFIG[exti >> 3].reg |=  (flank << ((exti & 0x7) * 4));
     /* enable the global EIC interrupt */
+#ifdef CPU_SAML1X
+    /* EXTI[4..7] are binded to EIC_OTHER_IRQn */
+    DEBUG("EXTI is %d\n",exti);
+    NVIC_EnableIRQ((exti > 3 )? EIC_OTHER_IRQn : (EIC_0_IRQn + exti));
+#else
     NVIC_EnableIRQ(EIC_IRQn);
+#endif
     /* clear interrupt flag and enable the interrupt line and line wakeup */
     EIC->INTFLAG.reg = (1 << exti);
     EIC->INTENSET.reg = (1 << exti);
@@ -223,6 +233,59 @@ void gpio_irq_disable(gpio_t pin)
     EIC->INTENCLR.reg = (1 << exti);
 }
 
+#ifdef CPU_SAML1X
+void isr_eic0(void)
+{
+    if (EIC->INTFLAG.reg & (1 << 0)) {
+        EIC->INTFLAG.reg = (1 << 0);
+        gpio_config[0].cb(gpio_config[0].arg);
+    }
+    cortexm_isr_end(); 
+}
+
+void isr_eic1(void)
+{
+    if (EIC->INTFLAG.reg & (1 << 1)) {
+        EIC->INTFLAG.reg = (1 << 1);
+        gpio_config[1].cb(gpio_config[1].arg);
+    }
+    cortexm_isr_end();     
+}
+
+void isr_eic2(void)
+{
+    if (EIC->INTFLAG.reg & (1 << 2)) {
+        EIC->INTFLAG.reg = (1 << 2);
+        gpio_config[2].cb(gpio_config[2].arg);
+    }
+    cortexm_isr_end();     
+}
+
+void isr_eic3(void)
+{
+    if (EIC->INTFLAG.reg & (1 << 3)) {
+        EIC->INTFLAG.reg = (1 << 3);
+        gpio_config[3].cb(gpio_config[3].arg);
+    }
+    cortexm_isr_end();      
+}
+
+void isr_eic_other(void)
+{
+    /* This interrupt only handles EXTI[4..7] so start at 4 */
+    LED0_TOGGLE;
+    for (unsigned i = 4; i < NUMOF_IRQS; i++) {
+        if (EIC->INTFLAG.reg & (1 << i)) {
+            EIC->INTFLAG.reg = (1 << i);
+            gpio_config[i].cb(gpio_config[i].arg);
+        }
+    }
+    cortexm_isr_end();    
+}
+
+
+
+#else
 void isr_eic(void)
 {
     for (unsigned i = 0; i < NUMOF_IRQS; i++) {
@@ -233,4 +296,5 @@ void isr_eic(void)
     }
     cortexm_isr_end();
 }
+#endif /* CPU_SAML1X */
 #endif /* MODULE_PERIPH_GPIO_IRQ */

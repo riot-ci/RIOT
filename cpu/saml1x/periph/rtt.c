@@ -36,6 +36,8 @@ static void* _cmp0_arg;
 void rtt_init(void)
 {
     DEBUG("%s:%d\n", __func__, __LINE__);
+    /* Turn on power manager for RTC */
+    MCLK->APBAMASK.reg |= MCLK_APBAMASK_RTC | MCLK_APBAMASK_OSC32KCTRL;
     rtt_poweron();
 
     /* reset */
