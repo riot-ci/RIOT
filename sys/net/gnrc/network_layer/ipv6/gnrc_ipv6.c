@@ -237,6 +237,14 @@ static void _send_to_iface(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         gnrc_pktbuf_release_error(pkt, EMSGSIZE);
         return;
     }
+    DEBUG("ipv6: Sending (src = %s, ",
+          ipv6_addr_to_str(addr_str, &((ipv6_hdr_t *)pkt->next->data)->src,
+                           sizeof(addr_str)));
+    DEBUG("dst = %s, next header = %u, length = %u)\n",
+          ipv6_addr_to_str(addr_str, &((ipv6_hdr_t *)pkt->next->data)->dst,
+                           sizeof(addr_str)),
+          ((ipv6_hdr_t *)pkt->next->data)->nh,
+          byteorder_ntohs(((ipv6_hdr_t *)pkt->next->data)->len));
 #ifdef MODULE_NETSTATS_IPV6
     netif->ipv6.stats.tx_success++;
     netif->ipv6.stats.tx_bytes += gnrc_pkt_len(pkt->next);
