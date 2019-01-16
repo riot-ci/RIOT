@@ -103,7 +103,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif /* CPU_CONF_H */
+#endif
 
 #endif /* CPU_CONF_H */
 /** @} */
