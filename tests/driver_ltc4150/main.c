@@ -253,9 +253,11 @@ int main(void)
                   busy_thread, NULL, "busy_thread");
 
     puts("This test will put three levels of load on the MCU:\n"
-         " 1. One minute of little to no load (LEDs off)\n"
-         " 2. One minute of about 50% CPU load (LEDs blinking)\n"
-         " 3. One minute of 100% CPU load (LEDs constantly on)\n"
+         " 1. One minute of little to no load (LEDs(*) off)\n"
+         " 2. One minute of about 50% CPU load (LEDs(*) blinking)\n"
+         " 3. One minute of 100% CPU load (LEDs(*) constantly on)\n"
+         "\n"
+         "    (*) LED0 and LED1, if present on your board\n"
          "\n"
          "During this time the charge drawn is measured and printed on every\n"
          "pulse the LTC4150 generates. The expected result is that the\n"
