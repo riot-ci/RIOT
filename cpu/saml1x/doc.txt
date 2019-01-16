@@ -7,4 +7,3 @@
  *
  * @see cpu_saml1x
  */
- 

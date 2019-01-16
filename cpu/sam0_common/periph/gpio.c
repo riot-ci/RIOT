@@ -27,7 +27,7 @@
 #include "cpu.h"
 #include "periph/gpio.h"
 #include "periph_conf.h"
-#include "board.h"
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -245,7 +245,7 @@ void isr_eic0(void)
         _EIC->INTFLAG.reg = (1 << 0);
         gpio_config[0].cb(gpio_config[0].arg);
     }
-    cortexm_isr_end(); 
+    cortexm_isr_end();
 }
 
 void isr_eic1(void)
@@ -254,7 +254,7 @@ void isr_eic1(void)
         _EIC->INTFLAG.reg = (1 << 1);
         gpio_config[1].cb(gpio_config[1].arg);
     }
-    cortexm_isr_end();     
+    cortexm_isr_end();
 }
 
 void isr_eic2(void)
@@ -263,7 +263,7 @@ void isr_eic2(void)
         _EIC->INTFLAG.reg = (1 << 2);
         gpio_config[2].cb(gpio_config[2].arg);
     }
-    cortexm_isr_end();     
+    cortexm_isr_end();
 }
 
 void isr_eic3(void)
@@ -272,7 +272,7 @@ void isr_eic3(void)
         _EIC->INTFLAG.reg = (1 << 3);
         gpio_config[3].cb(gpio_config[3].arg);
     }
-    cortexm_isr_end();      
+    cortexm_isr_end();
 }
 
 void isr_eic_other(void)
@@ -284,7 +284,7 @@ void isr_eic_other(void)
             gpio_config[i].cb(gpio_config[i].arg);
         }
     }
-    cortexm_isr_end();    
+    cortexm_isr_end();
 }
 
 

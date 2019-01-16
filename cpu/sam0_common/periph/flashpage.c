@@ -31,7 +31,7 @@
 #include "periph/flashpage.h"
 
 #define NVMCTRL_PAC_BIT     (0x00000002)
-#ifdef CPU_SAML1X
+#ifdef CPU_FAM_SAML11
 #define _NVMCTRL NVMCTRL_SEC
 #else
 #define _NVMCTRL NVMCTRL

@@ -7,7 +7,8 @@
  */
 
 /**
- * @ingroup     boards_common_saml1x
+ * @defgroup    boards_common_saml1x
+ * @ingroup     boards
  * @{
  *
  * @file
