@@ -64,7 +64,7 @@ int ltc4150_init(ltc4150_dev_t *dev, const ltc4150_params_t *params)
         return -EINVAL;
     }
 
-    memset(dev, 0x00, sizeof(ltc4150_dev_t));
+    memset(dev, 0, sizeof(ltc4150_dev_t));
     dev->params = *params;
 
     if (dev->params.shutdown != GPIO_UNDEF) {
