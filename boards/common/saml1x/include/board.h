@@ -9,6 +9,7 @@
 /**
  * @defgroup    boards_common_saml1x
  * @ingroup     boards
+ * @brief       Support for SAML10 and SAML11 boards
  * @{
  *
  * @file
@@ -27,11 +28,16 @@
 extern "C" {
 #endif
 
+/**
+ * @name    PORT selection macros
+ * @{
+ */
 #ifdef CPU_FAM_SAML11
 #define _PORT PORT_SEC
 #else
 #define _PORT PORT
 #endif
+/** @} */
 
 /**
  * @name    LED pin definitions and handlers

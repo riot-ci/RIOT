@@ -37,6 +37,7 @@
 #define MODE_PINCFG_MASK            (0x06)
 
 #ifdef MODULE_PERIPH_GPIO_IRQ
+
 /**
  * @brief   Number of external interrupt lines
  */
@@ -46,6 +47,9 @@
 #define NUMOF_IRQS                  (16U)
 #endif
 
+/**
+ * @brief   External Interrupts Controller selection macros
+ */
 #ifdef CPU_FAM_SAML11
 #define _EIC EIC_SEC
 #else
