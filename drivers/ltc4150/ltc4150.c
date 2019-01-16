@@ -33,8 +33,7 @@ static void pulse_cb(void *_dev)
     ltc4150_dir_t dir;
     ltc4150_dev_t *dev = _dev;
 
-    if (
-        (dev->params.polarity == GPIO_UNDEF) ||
+    if ((dev->params.polarity == GPIO_UNDEF) ||
         (!gpio_read(dev->params.polarity))
         ) {
         dev->discharged++;
