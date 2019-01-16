@@ -41,7 +41,7 @@ extern "C" {
 #define LTC4150_PARAM_SHUTDOWN        (GPIO_PIN(0, 5))
 #endif
 #ifndef LTC4150_PARAM_PULSES
-#define LTC4150_PARAM_PULSES          (45700)
+#define LTC4150_PARAM_PULSES          (45700U)
 #endif
 #ifndef LTC4150_PARAM_FLAGS
 #define LTC4150_PARAM_FLAGS           LTC4150_EXT_PULL_UP
