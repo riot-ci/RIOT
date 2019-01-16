@@ -418,8 +418,13 @@ static inline bool gnrc_netif_is_6lbr(const gnrc_netif_t *netif)
 /**
  * @brief   Get the default link-layer address option for the given
  *          gnrc_netif_t::device_type of a network interface
+ *
+ * @param[in] netif     The network interface to get the default link-layer
+ *                      address option for.
+ *
+ * @return  Either @ref NETOPT_ADDRESS or @ref NETOPT_ADDRESS_LONG.
  */
-netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif);
+netopt_t gnrc_netif_get_l2addr_opt(const gnrc_netif_t *netif);
 
 #if defined(MODULE_GNRC_IPV6) || defined(DOXYGEN)
 /**

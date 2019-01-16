@@ -25,7 +25,7 @@
 #include "net/ethernet.h"
 #include "net/ieee802154.h"
 
-netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
+netopt_t gnrc_netif_get_l2addr_opt(const gnrc_netif_t *netif)
 {
     netopt_t res = NETOPT_ADDRESS;
 
@@ -42,7 +42,6 @@ netopt_t gnrc_netif_get_l2addr_opt(gnrc_netif_t *netif)
                 assert(r == sizeof(tmp));
                 assert(r <= ((int)UINT8_MAX));
                 (void)r;
-                netif->l2addr_len = (uint8_t)tmp;
                 if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
                     res = NETOPT_ADDRESS_LONG;
                 }
