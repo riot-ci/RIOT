@@ -74,8 +74,8 @@ esp_err_t _esp_wifi_rx_cb(void *buffer, uint16_t len, void *eb)
 {
     DEBUG("%s: buf=%p len=%d eb=%p\n", __func__, buffer, len, eb);
 
-    if (buffer == NULL || len >= ETHERNET_DATA_LEN) {
-        if (eb) {
+    if ((buffer == NULL) || (len >= ETHERNET_DATA_LEN)) {
+        if (eb != NULL) {
             esp_wifi_internal_free_rx_buffer(eb);
         }
         return ESP_ERR_INVALID_ARG;
