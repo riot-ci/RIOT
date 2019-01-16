@@ -527,7 +527,8 @@ static inline int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid)
  * @attention   When `NDEBUG` is not defined, the node fails with an assertion
  *              instead of returning `-ENOTSUP`
  *
- * @param[in] netif The network interface @p opt came over in an NDP message.
+ * @param[in] netif The network interface @p opt was received on within an NDP
+ *                  message.
  * @param[in] opt   An NDP source/target link-layer address option.
  *
  * @return  Length of the link-layer address in @p opt on success
