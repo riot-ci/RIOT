@@ -50,6 +50,7 @@
  * routing is quite short and even when used outside of specification less than
  * 20 ticks per second will occur. Hence, this effect should hopefully be
  * negligible.
+ *
  * @{
  *
  * @file
