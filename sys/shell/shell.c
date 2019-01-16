@@ -321,7 +321,7 @@ static inline void print_prompt(void)
 #endif
 }
 
-static const char *TOOLONG_MESSAGE = "shell: maximum line length exceeded";
+#define TOOLONG_MESSAGE "shell: maximum line length exceeded"
 
 void shell_run(const shell_command_t *shell_commands, char *line_buf, int len)
 {
