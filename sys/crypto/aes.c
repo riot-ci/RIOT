@@ -474,7 +474,7 @@ static const u32 Td0[256] = {
 
     /* helper to prevent the u8 to be promoted to signed int, which would turn
      * left shift by 24 into undefined behaviour */
-    #define Td4u(n) (u32)Td4[n]
+    #define Td4u(n) ((u32)Td4[n])
 
     #define Td4(n)  (Td4u(n) | (Td4u(n) << 8) | (Td4u(n) << 16) | (Td4u(n)  << 24))
 
