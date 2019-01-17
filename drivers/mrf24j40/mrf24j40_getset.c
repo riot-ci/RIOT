@@ -329,6 +329,13 @@ void mrf24j40_set_cca_threshold(mrf24j40_t *dev, int8_t value)
     mrf24j40_reg_write_short(dev, MRF24J40_REG_CCAEDTH, RSSI_value[value]);
 }
 
+int8_t mrf24j40_get_ed_level(mrf24j40_t *dev)
+{
+    uint8_t rssi = mrf24j40_reg_read_long(dev, MRF24J40_REG_RSSI);
+
+    return mrf24j40_dbm_from_reg(rssi);
+}
+
 void mrf24j40_set_option(mrf24j40_t *dev, uint16_t option, bool state)
 {
     uint8_t tmp;
