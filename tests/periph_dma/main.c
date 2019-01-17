@@ -21,7 +21,7 @@
 
 int main(void)
 {
-    puts("DMA dummy test app");
+    puts("DMA is working");
 
     return 0;
 }
