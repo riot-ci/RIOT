@@ -49,14 +49,15 @@
 void periph_init(void)
 {
     /* initialize stdio first to allow DEBUG() during later stages */
-#ifdef MODULE_ATMEGA_COMMON
+#ifdef CPU_NATIVE
+#elif defined(MODULE_ATMEGA_COMMON)
     atmega_stdio_init();
 #else
     stdio_init();
-#ifdef MODULE_NEWLIB_SYSCALLS_FE310
+#ifdef CPU_FE310
     setvbuf(stdout, NULL, _IONBF, 0);
-#endif /* MODULE_NEWLIB_SYSCALLS_FE310 */
-#endif /* MODULE_ATMEGA_COMMON */
+#endif /* CPU_FE310 */
+#endif /* CPU_NATIVE */
 
     /* initialize configured I2C devices */
 #ifdef MODULE_PERIPH_I2C
