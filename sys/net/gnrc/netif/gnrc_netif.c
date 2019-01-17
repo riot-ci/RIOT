@@ -1160,14 +1160,13 @@ static void _configure_netdev(netdev_t *dev)
 /* checks if a device supports all required options and functions */
 static void _test_options(gnrc_netif_t *netif)
 {
-#if (GNRC_NETIF_L2ADDR_MAXLEN > 0) || GNRC_IPV6_NIB_CONF_6LN
     uint8_t dummy_addr[GNRC_NETIF_L2ADDR_MAXLEN];
-#endif
-#ifdef MODULE_GNRC_IPV6
     ndp_opt_t dummy_opt = { .len = 1U };
-    uint64_t tmp64 = 0;
-#endif
+    uint64_t tmp64 = 0ULL;
 
+    (void)dummy_addr;
+    (void)dummy_opt;
+    (void)tmp64;
 #if (GNRC_NETIF_L2ADDR_MAXLEN > 0)
     /* check if address was set in _update_l2addr_from_dev()
      * (NETOPT_DEVICE_TYPE already tested in _configure_netdev()) and
