@@ -20,6 +20,15 @@
  * @}
  */
 
+#ifdef MODULE_NEWLIB_SYSCALLS_FE310
+#include <stdio.h>
+#endif
+
+#ifdef MODULE_ATMEGA_COMMON
+#include "cpu.h"
+#else
+#include "stdio_base.h"
+#endif
 #ifdef MODULE_PERIPH_I2C
 #include "periph/i2c.h"
 #endif
@@ -36,8 +45,19 @@
 #include "periph/hwrng.h"
 #endif
 
+
 void periph_init(void)
 {
+    /* initialize stdio first to allow DEBUG() during later stages */
+#ifdef MODULE_ATMEGA_COMMON
+    atmega_stdio_init();
+#else
+    stdio_init();
+#ifdef MODULE_NEWLIB_SYSCALLS_FE310
+    setvbuf(stdout, NULL, _IONBF, 0);
+#endif /* MODULE_NEWLIB_SYSCALLS_FE310 */
+#endif /* MODULE_ATMEGA_COMMON */
+
     /* initialize configured I2C devices */
 #ifdef MODULE_PERIPH_I2C
     for (unsigned i = 0; i < I2C_NUMOF; i++) {
