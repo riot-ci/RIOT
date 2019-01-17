@@ -135,10 +135,12 @@ json_result_t json_write_finish(json_write_cookie_t *cookie);
 /**
  * @brief   Open an object to serialize.
  *
- * Inside the object call json_write_object_key() to write a key, then invoke
- * any other write function to write the value associated to this key. Repeat
- * until you are done, then call json_write_object_close(). An empty object
- * is valid, too.
+ * Call this function to start serializing an object. Directly after that,
+ * call @ref json_write_object_key() to write a key, followed by any other
+ * write function to write the value associated to this key. Repeat calling
+ * @ref json_write_object_key() followed by the other write functions to add
+ * more key-value-pairs to the object.
+ * Finally, call @ref json_write_object_close(). An empty object is valid, too.
  *
  * @see json_write_object_close()
  * @see json_write_object_key()
@@ -168,7 +170,7 @@ json_result_t json_write_object_close(json_write_cookie_t *cookie);
 /**
  * @brief   Write a key inside an object.
  *
- * Invoke this function multiple times directly to concatenate this substring.
+ * Invoke this function multiple times directly to append this @p string.
  * You could write out a string `"test"` character by character if you want to.
  * An empty key is valid, too.
  *
@@ -188,6 +190,10 @@ json_result_t json_write_object_key(json_write_cookie_t *cookie, const char *str
 /**
  * @brief   Open an array to serialize.
  *
+ * Call this function to start serializing an array. After that, call
+ * @ref json_write_array_next() to add elements to the array and finally call
+ * @ref json_write_array_close().
+ *
  * @see json_write_array_close()
  * @see json_write_array_next()
  *
@@ -205,8 +211,8 @@ json_result_t json_write_array_open(json_write_cookie_t *cookie);
  * Inside the array call opened with json_write_array_open() call
  * json_write_array_next() to separate values. Calling json_write_array_next()
  * directly after opening the array is valid but not needed.
- * Calling json_write_array_next() before closing the array with
- * json_write_array_close() without putting an item is invalid.
+ * Calling json_write_array_next() without putting an item before closing
+ * the array with json_write_array_close() is invalid.
  *
  * @see json_write_object_open()
  * @see json_write_array_next()
@@ -217,7 +223,7 @@ json_result_t json_write_array_open(json_write_cookie_t *cookie);
  * @returns @ref JSON_INVALID_DATA if the stream is inside an invalid state.
  * @returns @ref JSON_PREMATURELY_ENDED if the data could not be written.
  */
-json_result_t json_write_array_close(json_write_cookie_t *cookie);
+json_result_t json_write_array_next(json_write_cookie_t *cookie);
 
 /**
  * @brief   Close an array.
@@ -233,7 +239,7 @@ json_result_t json_write_array_close(json_write_cookie_t *cookie);
  * @returns @ref JSON_INVALID_DATA if the stream is inside an invalid state.
  * @returns @ref JSON_PREMATURELY_ENDED if the data could not be written.
  */
-json_result_t json_write_array_next(json_write_cookie_t *cookie);
+json_result_t json_write_array_close(json_write_cookie_t *cookie);
 
 /**
  * @brief   Write a single integer value.
