@@ -76,7 +76,7 @@ typedef struct json_write_cookie json_write_cookie_t;
  * @param[in] buf               Buffer to write.
  * @param[in] len               Length of the buffer to write.
  *
- * @returns `> 0` number of written bytes.
+ * @returns `> 0` number of written bytes on success.
  * @returns `< 0` to indicate an error.
  */
 typedef ssize_t (*json_write_t)(json_write_cookie_t *cookie, const char *buf, size_t len);
