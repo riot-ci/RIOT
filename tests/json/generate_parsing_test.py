@@ -60,8 +60,8 @@ def main(dest_path='./generated-parsing-tests.c',
                         b'JSON Parsing Test Suite,\n')
         dest_file.write(b' * which has the following license information:\n')
         dest_file.write(b'\n')
-        with open(os.path.join(cwd, source_path, './LICENSE'), 'rb') as license:
-            dest_file.write(license.read())
+        with open(os.path.join(cwd, source_path, './LICENSE'), 'rb') as f_license:
+            dest_file.write(f_license.read())
         dest_file.write(b'\n')
         dest_file.write(b' */\n')
         dest_file.write(b'\n')
@@ -121,5 +121,4 @@ def main(dest_path='./generated-parsing-tests.c',
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    result = main(*sys.argv[1:])
-    sys.exit(0 if result else 1)
+    main(*sys.argv[1:])
