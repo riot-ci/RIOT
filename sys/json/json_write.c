@@ -17,6 +17,7 @@
  */
 
 #include "json.h"
+#include "fmt.h"
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -228,8 +229,7 @@ json_result_t json_write_array_next(json_write_cookie_t *cookie)
     }
 }
 
-static json_result_t _json_write_format(json_write_cookie_t *cookie,
-                                        size_t size, const char *format, ...)
+static json_result_t _json_pre_write(json_write_cookie_t *cookie)
 {
     switch (cookie->state) {
         case JSON_WRITE_STATE_IN_ARRAY:
@@ -249,34 +249,45 @@ static json_result_t _json_write_format(json_write_cookie_t *cookie,
 
     cookie->state = JSON_WRITE_STATE_SOMEWHERE;
 
-    va_list ap;
-    va_start(ap, format);
-    char buffer[size];
-    int len = vsnprintf(buffer, sizeof(buffer), format, ap);
-    va_end(ap);
-
-    if (len < 0) {
-        return JSON_INVALID_DATA;
-    }
-    _WRITE_BUF(buffer, (size_t) len);
     return JSON_OKAY;
 }
 
 json_result_t json_write_int(json_write_cookie_t *cookie, int32_t value)
 {
-    return _json_write_format(cookie, sizeof("-2147483648"), "%" PRId32, value);
+    if (_json_pre_write(cookie) != JSON_OKAY) {
+        return JSON_INVALID_DATA;
+    }
+
+    char buffer[12];
+    size_t len = fmt_s32_dec(buffer, value);
+    _WRITE_BUF(buffer, (size_t) len);
+    return JSON_OKAY;
 }
 
 #ifndef MODULE_ATMEGA_COMMON
 json_result_t json_write_int64(json_write_cookie_t *cookie, int64_t value)
 {
-    return _json_write_format(cookie, sizeof("-9223372036854775808"), "%" PRId64, value);
+    if (_json_pre_write(cookie) != JSON_OKAY) {
+        return JSON_INVALID_DATA;
+    }
+
+    char buffer[24];
+    size_t len = fmt_s64_dec(buffer, value);
+    _WRITE_BUF(buffer, (size_t) len);
+    return JSON_OKAY;
 }
 #endif
 
 json_result_t json_write_float(json_write_cookie_t *cookie, float value)
 {
-    return _json_write_format(cookie, sizeof("-1.797693135e+308"), "%.9e", value);
+    if (_json_pre_write(cookie) != JSON_OKAY) {
+        return JSON_INVALID_DATA;
+    }
+
+    char buffer[21];
+    size_t len = fmt_float(buffer, value, 9);
+    _WRITE_BUF(buffer, (size_t) len);
+    return JSON_OKAY;
 }
 
 json_result_t json_write_string(json_write_cookie_t *cookie,
