@@ -240,7 +240,7 @@ json_result_t json_write_array_next(json_write_cookie_t *cookie);
  *
  * JSON does not differentiate between integers and floating point numbers.
  *
- * @warning JSON is an unframed format. If the data to deliver consists of
+ * @note    JSON is an unframed format. If the data to deliver consists of
  *          a single number, then there is a fair chance that it will not be
  *          processed correctly by the decoder side.
  *
@@ -264,7 +264,7 @@ json_result_t json_write_int(json_write_cookie_t *cookie, int32_t value);
  * @warning The number must be finite, i.e. it must not be NaN, +Inf or -Inf.
  *          Illegal inputs are not caught but the stream will be broken.
  *
- * @warning JSON is an unframed format. If the data to deliver consists of
+ * @note    JSON is an unframed format. If the data to deliver consists of
  *          a single number, then there is a fair chance that it will not be
  *          processed correctly by the decoder side.
  *
@@ -286,7 +286,7 @@ json_result_t json_write_float(json_write_cookie_t *cookie, float value);
  *
  * JSON does not differentiate between integers and floating point numbers.
  *
- * @warning JSON is an unframed format. If the data to deliver consists of
+ * @note    JSON is an unframed format. If the data to deliver consists of
  *          a single number, then there is a fair chance that it will not be
  *          processed correctly by the decoder side.
  *
