@@ -3,11 +3,11 @@
 How To Run
 ==========
 Connect the DUT (device under test) UART6 to the BPT (bluepill tester).
-Information for BPT setup can be found [here](https://github.com/MrKevinWeiss/Testing).
+Information for BPT setup can be found [here](https://github.com/riot-appstore/PHiLIP).
 
 ### Example Test With Nucleo-F401RE
 1. Flash the periph_uart firmware on the nucleo-f401 with `make BOARD=nucleo-f401 flash` in the periph_uart directory
-2. Connect the [BPT](https://github.com/MrKevinWeiss/Testing/blob/master/resources/bptpinout.jpg) to the cpu using a USB to Serial converter</br>
+2. Connect the [BPT](https://github.com/riot-appstore/PHiLIP/blob/master/RESOURCES/PHiLIP-BLUEPILL-PINOUT.jpg) to the cpu using a USB to Serial converter</br>
 (BPT IF_TX = PA9)</br>
 (BPT IF_RX = PA10)
 3. Connect the BPT to the DUT</br>
