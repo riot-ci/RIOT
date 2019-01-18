@@ -155,7 +155,12 @@ unsigned int timer_read(tim_t dev)
     case TIMER_0:
         /* request syncronisation */
         TIMER_0_DEV.CTRLBSET.bit.CMD = TC_CTRLBSET_CMD_READSYNC_Val;
-        while (TIMER_0_DEV.SYNCBUSY.bit.CTRLB) {}
+        while (TIMER_0_DEV.SYNCBUSY.bit.CTRLB) {
+            /* WORKAROUND to prevent being stuck there if timer not init */
+            if(!TIMER_0_DEV.CTRLA.bit.ENABLE) {
+                return 0;
+            }
+        }
         return TIMER_0_DEV.COUNT.reg;
 #endif
     default:
