@@ -39,7 +39,7 @@ mtd_sdcard_t sensebox_sd_dev = {
     .params = &sdcard_spi_params[0]
 };
 
- mtd_dev_t *mtd0 = (mtd_dev_t *)&sensebox_sd_dev;
+mtd_dev_t *mtd0 = (mtd_dev_t *)&sensebox_sd_dev;
 
 void board_init(void)
 {

@@ -165,10 +165,16 @@ extern "C" {
 
 /**
  * @brief MTD device 0 (SD Card) definition. mtd0 is defined in board.c
+ * @{
  */
 extern mtd_dev_t *mtd0;
 #define MTD_0 mtd0
+/** @} */
 
+/**
+ * @brief Attributes for the mtd_sdcard driver
+ * @{
+ */
 #ifndef MTD_SD_CARD_PAGE_SIZE
 #define MTD_SD_CARD_PAGE_SIZE           (512)
 #endif
@@ -180,6 +186,7 @@ extern mtd_dev_t *mtd0;
 #ifndef MTD_SD_CARD_SECTOR_COUNT
 #define MTD_SD_CARD_SECTOR_COUNT        (3921920)
 #endif
+/** @} */
 
 /**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
