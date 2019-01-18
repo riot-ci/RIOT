@@ -1196,12 +1196,12 @@ static void _test_options(gnrc_netif_t *netif)
             break;
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_NRFMIN: {
-            uint16_t tmp16;
+            gnrc_nettype_t tmp;
             assert(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR);
             assert((IEEE802154_SHORT_ADDRESS_LEN == netif->l2addr_len) ||
                    (IEEE802154_LONG_ADDRESS_LEN == netif->l2addr_len));
-            assert(-ENOTSUP == netif->dev->driver->get(netif->dev, NETOPT_PROTO,
-                                                       &tmp16, sizeof(tmp16)));
+            assert(-ENOTSUP != netif->dev->driver->get(netif->dev, NETOPT_PROTO,
+                                                       &tmp, sizeof(tmp)));
 #ifdef MODULE_GNRC_IPV6
 #ifdef MODULE_GNRC_SIXLOWPAN
             assert(netif->ipv6.mtu == IPV6_MIN_MTU);
@@ -1211,10 +1211,11 @@ static void _test_options(gnrc_netif_t *netif)
 #endif  /* MODULE_GNRC_SIXLOWPAN */
 #endif  /* MODULE_GNRC_IPV6 */
 #ifdef MODULE_GNRC_SIXLOWPAN_ND
-            assert(-ENOTSUP == netif->dev->driver->get(netif->dev,
-                                                       NETOPT_ADDRESS_LONG,
-                                                       &dummy_addr,
-                                                       sizeof(dummy_addr)));
+            assert((netif->device_type != NETDEV_TYPE_IEEE802154) ||
+                   (-ENOTSUP != netif->dev->driver->get(netif->dev,
+                                                        NETOPT_ADDRESS_LONG,
+                                                        &dummy_addr,
+                                                        sizeof(dummy_addr))));
 #endif  /* MODULE_GNRC_SIXLOWPAN_ND */
             break;
         }
