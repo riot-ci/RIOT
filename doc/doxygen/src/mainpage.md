@@ -23,6 +23,10 @@ Across all supported hardware (32-bit, 16-bit, and 8-bit platforms). RIOT
 provides a consistent API and enables ANSI C and C++ application programming,
 with  multithreading, IPC, system timers, mutexes etc.
 
+[This article](https://riot-os.org/docs/riot-ieeeiotjournal-2018.pdf), published
+in the IEEE Internet of Things Journal, volume 5 issue 6, provides a good
+high-level overview of RIOT.
+
 Contribute to RIOT                                        {#contribute-to-riot}
 ==================
 RIOT is developed by an open community that anyone is welcome to join:
