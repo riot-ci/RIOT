@@ -163,6 +163,7 @@ extern "C" {
  */
 #define BMX280_PARAM_I2C_ADDR        (0x76)
 
+#if defined(MODULE_MTD_SDCARD) || defined(DOXYGEN)
 /**
  * @brief MTD device 0 (SD Card) definition. mtd0 is defined in board.c
  * @{
@@ -187,6 +188,7 @@ extern mtd_dev_t *mtd0;
 #define MTD_SD_CARD_SECTOR_COUNT        (3921920UL)
 #endif
 /** @} */
+#endif /* MODULE_MTD_SDCARD || DOXYGEN */
 
 /**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO

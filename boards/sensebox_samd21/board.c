@@ -24,6 +24,7 @@
 #include "sdcard_spi_params.h"
 #include "mtd_sdcard.h"
 
+#if defined(MODULE_MTD_SDCARD) || defined(DOXYGEN)
  /* this is provided by the sdcard_spi driver
  * see sys/auto_init/storage/auto_init_sdcard_spi.c */
 extern sdcard_spi_t sdcard_spi_devs[sizeof(sdcard_spi_params) /
@@ -40,6 +41,7 @@ mtd_sdcard_t sensebox_sd_dev = {
 };
 
 mtd_dev_t *mtd0 = (mtd_dev_t *)&sensebox_sd_dev;
+#endif /* MODULE_MTD_SDCARD || DOXYGEN */
 
 void board_init(void)
 {
