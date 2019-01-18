@@ -184,7 +184,7 @@ extern mtd_dev_t *mtd0;
 #endif
 
 #ifndef MTD_SD_CARD_SECTOR_COUNT
-#define MTD_SD_CARD_SECTOR_COUNT        (3921920)
+#define MTD_SD_CARD_SECTOR_COUNT        (3921920UL)
 #endif
 /** @} */
 
