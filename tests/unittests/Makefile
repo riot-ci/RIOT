@@ -58,6 +58,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              remote-pa \
                              remote-reva \
                              remote-revb \
+                             saml10-xpro \
+                             saml11-xpro \
                              saml21-xpro \
                              samd21-xpro \
                              samr21-xpro \
