@@ -41,7 +41,7 @@ typedef struct {
  *
  * @see     [RFC 2464, section 4](https://tools.ietf.org/html/rfc2464#section-4)
  *
- * @param[out] iid      the resulting EUI-64.
+ * @param[out] eui64    the resulting EUI-64.
  * @param[in]  addr     a 48-bit device address
  */
 static inline void eui48_to_eui64(eui64_t *eui64, const eui48_t *addr)
