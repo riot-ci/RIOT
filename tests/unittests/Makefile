@@ -1,6 +1,8 @@
 DEVELHELP ?= 0
 include ../Makefile.tests_common
 
+BOARD_BLACKLIST := saml10-xpro saml11-xpro
+
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-duemilanove \
                              arduino-mega2560 \
@@ -58,6 +60,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              remote-pa \
                              remote-reva \
                              remote-revb \
+                             saml10-xpro \
+                             saml11-xpro \
                              saml21-xpro \
                              samd21-xpro \
                              samr21-xpro \
@@ -170,6 +174,8 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        remote-pa \
                        remote-reva \
                        remote-revb \
+                       saml10-xpro \
+                       saml11-xpro \
                        samd21-xpro \
                        saml21-xpro \
                        samr21-xpro \
