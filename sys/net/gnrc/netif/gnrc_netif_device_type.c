@@ -118,8 +118,8 @@ int gnrc_netif_eui64_from_addr(const gnrc_netif_t *netif,
                 (void)addr_len;
                 (void)eui64;
 #ifdef DEVELHELP
-                LOG_ERROR("gnrc_netif: can't convert hardware address to IID "
-                          "on interface %u\n", netif->pid);
+                LOG_ERROR("gnrc_netif: can't convert hardware address to EUI-64"
+                          " on interface %u\n", netif->pid);
 #endif  /* DEVELHELP */
                 assert(false);
                 break;
