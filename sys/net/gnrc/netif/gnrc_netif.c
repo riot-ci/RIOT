@@ -1171,7 +1171,9 @@ static void _test_options(gnrc_netif_t *netif)
     /* check if address was set in _update_l2addr_from_dev()
      * (NETOPT_DEVICE_TYPE already tested in _configure_netdev()) and
      * if MTU and max. fragment size was set properly by
-     * gnrc_netif_ipv6_init_mtu() */
+     * gnrc_netif_ipv6_init_mtu()
+     * all checked types below have link-layer addresses so we don't need to
+     * check `GNRC_NETIF_FLAGS_HAS_L2ADDR` */
     switch (netif->device_type) {
         case NETDEV_TYPE_BLE:
         case NETDEV_TYPE_ETHERNET:
@@ -1237,15 +1239,19 @@ static void _test_options(gnrc_netif_t *netif)
              * porting new device type */
             assert(false);
     }
-#endif /* (GNRC_NETIF_L2ADDR_MAXLEN > 0) */
+    /* These functions only apply to network devices having link-layers */
+    if (netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR) {
 #ifdef MODULE_GNRC_IPV6
-    assert(-ENOTSUP != gnrc_netif_ipv6_get_iid(netif, (eui64_t *)&tmp64));
-    assert(-ENOTSUP != gnrc_netif_ndp_addr_len_from_l2ao(netif, &dummy_opt));
+        assert(-ENOTSUP != gnrc_netif_ipv6_get_iid(netif, (eui64_t *)&tmp64));
+        assert(-ENOTSUP != gnrc_netif_ndp_addr_len_from_l2ao(netif,
+                                                             &dummy_opt));
 #endif  /* MODULE_GNRC_IPV6 */
-#if GNRC_IPV6_NIB_CONF_6LN && (GNRC_NETIF_L2ADDR_MAXLEN > 0)
-    assert(-ENOTSUP != gnrc_netif_ipv6_iid_to_addr(netif, (eui64_t *)&tmp64,
-                                                   dummy_addr));
+#if GNRC_IPV6_NIB_CONF_6LN
+        assert(-ENOTSUP != gnrc_netif_ipv6_iid_to_addr(netif, (eui64_t *)&tmp64,
+                                                       dummy_addr));
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
+    }
+#endif /* (GNRC_NETIF_L2ADDR_MAXLEN > 0) */
 }
 #endif /* DEVELHELP */
 
