@@ -67,6 +67,87 @@ static int parse_dev(char *arg)
     return dev;
 }
 
+#ifdef MODULE_PERIPH_UART_MODECFG
+static int parse_data_bits(char *arg)
+{
+    unsigned data_bits = atoi(arg);
+    int res;
+
+    switch (data_bits) {
+        case 5:
+            res = UART_DATA_BITS_5;
+            break;
+        case 6:
+            res = UART_DATA_BITS_6;
+            break;
+        case 7:
+            res = UART_DATA_BITS_7;
+            break;
+        case 8:
+            res = UART_DATA_BITS_8;
+            break;
+        default:
+            printf("Error: Invalid number of data_bits (%u).\n", data_bits);
+            res = -1;
+    }
+
+    return res;
+}
+
+static int parse_stop_bits(char *arg)
+{
+    unsigned stop_bits = atoi(arg);
+    int res;
+
+    switch (stop_bits) {
+        case 1:
+            res = UART_STOP_BITS_1;
+            break;
+        case 2:
+            res = UART_STOP_BITS_2;
+            break;
+        default:
+            printf("Error: Invalid number of stop bits (%u).\n", stop_bits);
+            res = -1;
+    }
+
+    return res;
+}
+
+static int parse_parity(char *arg)
+{
+    int res;
+
+    switch (arg[0]) {
+        case 'n':
+        case 'N':
+            res = UART_PARITY_NONE;
+            break;
+        case 'e':
+        case 'E':
+            res = UART_PARITY_EVEN;
+            break;
+        case 'o':
+        case 'O':
+            res = UART_PARITY_ODD;
+            break;
+        case 'm':
+        case 'M':
+            res = UART_PARITY_MARK;
+            break;
+        case 's':
+        case 'S':
+            res = UART_PARITY_SPACE;
+            break;
+        default:
+            printf("Error: Invalid parity (%c).\n", arg[0]);
+            res = -1;
+    }
+
+    return res;
+}
+#endif /* MODULE_PERIPH_UART_MODECFG */
+
 static void rx_cb(void *arg, uint8_t data)
 {
     uart_t dev = (uart_t)arg;
@@ -154,6 +235,45 @@ static int cmd_init(int argc, char **argv)
     return 0;
 }
 
+#ifdef MODULE_PERIPH_UART_MODECFG
+static int cmd_mode(int argc, char **argv)
+{
+    int dev, res;
+    int data_bits, stopbits, parity;
+
+    if (argc < 5) {
+        printf("usage: %s <dev> <data bits> <parity> <stop bits>\n", argv[0]);
+        return 1;
+    }
+    /* parse parameters */
+    dev = parse_dev(argv[1]);
+    if (dev < 0) {
+        return 1;
+    }
+    data_bits = parse_data_bits(argv[2]);
+    if (data_bits < 0) {
+        return 1;
+    }
+    parity = parse_parity(argv[3]);
+    if (parity < 0) {
+        return 1;
+    }
+    stopbits = parse_stop_bits(argv[4]);
+    if (stopbits < 0) {
+        return 1;
+    }
+
+    res = uart_mode(dev, data_bits, parity, stopbits);
+    if (res != UART_OK) {
+        puts("Error: Unable to apply UART settings\n");
+        return 1;
+    }
+    printf("Success: Successfully applied UART_DEV(%i) settings\n", dev);
+
+    return 0;
+}
+#endif /* MODULE_PERIPH_UART_MODECFG */
+
 static int cmd_send(int argc, char **argv)
 {
     int dev;
@@ -177,6 +297,9 @@ static int cmd_send(int argc, char **argv)
 
 static const shell_command_t shell_commands[] = {
     { "init", "Initialize a UART device with a given baudrate", cmd_init },
+#ifdef MODULE_PERIPH_UART_MODECFG
+    { "mode", "Setup data bits, stop bits and parity for a given UART device", cmd_mode },
+#endif
     { "send", "Send a string through given UART device", cmd_send },
     { NULL, NULL, NULL }
 };
