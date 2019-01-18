@@ -31,9 +31,9 @@ extern sdcard_spi_t sdcard_spi_devs[sizeof(sdcard_spi_params) /
 mtd_sdcard_t sensebox_sd_dev = {
     .base = {
         .driver = &mtd_sdcard_driver,
-        .page_size = 512,
-        .pages_per_sector = 128,
-        .sector_count = 3921920
+        .page_size = MTD_SD_CARD_PAGE_SIZE,
+        .pages_per_sector = MTD_SD_CARD_PAGES_PER_SECTOR,
+        .sector_count = MTD_SD_CARD_SECTOR_COUNT
     },
     .sd_card = &sdcard_spi_devs[0],
     .params = &sdcard_spi_params[0]

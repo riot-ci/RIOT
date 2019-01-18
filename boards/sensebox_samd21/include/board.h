@@ -169,6 +169,18 @@ extern "C" {
 extern mtd_dev_t *mtd0;
 #define MTD_0 mtd0
 
+#ifndef MTD_SD_CARD_PAGE_SIZE
+#define MTD_SD_CARD_PAGE_SIZE           (512)
+#endif
+
+#ifndef MTD_SD_CARD_PAGES_PER_SECTOR
+#define MTD_SD_CARD_PAGES_PER_SECTOR    (128)
+#endif
+
+#ifndef MTD_SD_CARD_SECTOR_COUNT
+#define MTD_SD_CARD_SECTOR_COUNT        (3921920)
+#endif
+
 /**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
  */
