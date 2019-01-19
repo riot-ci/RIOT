@@ -26,6 +26,9 @@
 #include "xtimer.h"
 
 #define TIMEOUT_COUNT    3
+#define TIMEOUT_1_DURATION    1000
+#define TIMEOUT_2_DURATION    2538
+#define TIMEOUT_3_DURATION    3471
 static gnrc_mac_timeout_t mac_timeout;
 static gnrc_mac_timeout_event_t test_timeouts[TIMEOUT_COUNT];
 static gnrc_mac_timeout_type_t timeout_1;
@@ -52,17 +55,17 @@ void *worker_thread(void *arg)
 
         if (gnrc_mac_timeout_is_expired(&mac_timeout, timeout_1)) {
             printf("At %6" PRIu32 " ms received msg %i: timeout_1 (set at %" PRIu32 " ms) expired, "
-                   "supposed to be %" PRIu32 "!\n", now, count++, start_time, (1000 + start_time));
+                   "supposed to be %" PRIu32 " ms!\n", now, count++, start_time, (TIMEOUT_1_DURATION + start_time));
         }
 
         if (gnrc_mac_timeout_is_expired(&mac_timeout, timeout_2)) {
             printf("At %6" PRIu32 " ms received msg %i: timeout_2 (set at %" PRIu32 " ms) expired, "
-                   "supposed to be %" PRIu32 "!\n", now, count++, start_time, (2000 + start_time));
+                   "supposed to be %" PRIu32 " ms!\n", now, count++, start_time, (TIMEOUT_2_DURATION + start_time));
         }
 
         if (gnrc_mac_timeout_is_expired(&mac_timeout, timeout_3)) {
             printf("At %6" PRIu32 " ms received msg %i: timeout_3 (set at %" PRIu32 " ms) expired, "
-                   "supposed to be %" PRIu32 "!\n", now, count++, start_time, (3000 + start_time));
+                   "supposed to be %" PRIu32 " ms!\n", now, count++, start_time, (TIMEOUT_3_DURATION + start_time));
         }
 
         if (gnrc_mac_timeout_is_running(&mac_timeout, timeout_1)) {
@@ -102,10 +105,14 @@ int main(void)
 
     start_time = xtimer_now_usec() / US_PER_MS;
     gnrc_mac_init_timeouts(&mac_timeout, test_timeouts, TIMEOUT_COUNT);
-    gnrc_mac_set_timeout(&mac_timeout, timeout_1, 1000, pid);
-    gnrc_mac_set_timeout(&mac_timeout, timeout_2, 2000, pid);
-    gnrc_mac_set_timeout(&mac_timeout, timeout_3, 3000, pid);
+    gnrc_mac_set_timeout(&mac_timeout, timeout_1, TIMEOUT_1_DURATION, pid);
+    gnrc_mac_set_timeout(&mac_timeout, timeout_2, TIMEOUT_2_DURATION, pid);
+    gnrc_mac_set_timeout(&mac_timeout, timeout_3, TIMEOUT_3_DURATION, pid);
     printf("Testing gnrc_mac timeout module (start time = %" PRIu32 " ms)\n", start_time);
+    printf("Set timeout_1, should be expired at %" PRIu32 " ms)\n", TIMEOUT_1_DURATION + start_time);
+    printf("Set timeout_2, should be expired at %" PRIu32 " ms)\n", TIMEOUT_2_DURATION + start_time);
+    printf("Set timeout_3, should be expired at %" PRIu32 " ms)\n", TIMEOUT_3_DURATION + start_time);
+
 
     puts("Are the reception times of all 3 msgs close to the supposed values?\n");
     puts("If yes, the tests were successful");
