@@ -88,6 +88,9 @@ void cpu_init(void)
 
     /*  Set default state of mstatus */
     set_csr(mstatus, MSTATUS_DEFAULT);
+
+    /* trigger static peripheral initialization */
+    periph_init();
 }
 
 /**
