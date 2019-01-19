@@ -1180,6 +1180,11 @@ static void _test_options(gnrc_netif_t *netif)
      * all checked types below have link-layer addresses so we don't need to
      * check `GNRC_NETIF_FLAGS_HAS_L2ADDR` */
     switch (netif->device_type) {
+#ifdef TEST_SUITES
+        case NETDEV_TYPE_TEST:
+            /* make no assumptions about test devices */
+            break;
+#endif
         case NETDEV_TYPE_BLE:
         case NETDEV_TYPE_ETHERNET:
         case NETDEV_TYPE_ESP_NOW:
