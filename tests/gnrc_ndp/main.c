@@ -436,6 +436,9 @@ static void test_nbr_sol_send(const ipv6_addr_t *src)
     gnrc_pktsnip_t *pkt;
     ndp_nbr_sol_t *nbr_sol;
 
+    while (msg_try_receive(&msg) == 1) {
+        /* empty message queue */
+    }
     TEST_ASSERT_NOT_NULL(test_netif);
     gnrc_ndp_nbr_sol_send(&test_tgt, test_netif, src, &test_dst, NULL);
     msg_receive(&msg);
@@ -973,7 +976,7 @@ static int _netdev_test_proto(netdev_t *dev, void *value, size_t max_len)
 {
     (void)dev;
      assert(max_len == sizeof(gnrc_nettype_t));
-     *((gnrc_nettype_t *)value) = sizeof(GNRC_NETTYPE_SIXLOWPAN);
+     *((gnrc_nettype_t *)value) = GNRC_NETTYPE_UNDEF;
      return sizeof(gnrc_nettype_t);
 }
 
