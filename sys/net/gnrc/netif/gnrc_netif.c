@@ -1160,7 +1160,7 @@ static void _configure_netdev(netdev_t *dev)
 /* checks if a device supports all required options and functions */
 static void _test_options(gnrc_netif_t *netif)
 {
-    uint8_t dummy_addr[GNRC_NETIF_L2ADDR_MAXLEN];
+    uint8_t dummy_addr[GNRC_NETIF_L2ADDR_MAXLEN] = { 0 };
     ndp_opt_t dummy_opt = { .len = 1U };
     uint64_t tmp64 = 0ULL;
 
@@ -1231,7 +1231,7 @@ static void _test_options(gnrc_netif_t *netif)
         case NETDEV_TYPE_SLIP:
             assert(!(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR));
             assert(0U == netif->l2addr_len);
-            /* don't check MTU here for now since I'm not sure the current 
+            /* don't check MTU here for now since I'm not sure the current
              * one is correct ^^" "*/
             break;
         default:
