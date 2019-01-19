@@ -1187,9 +1187,6 @@ static void _test_options(gnrc_netif_t *netif)
                     break;
                 case NETDEV_TYPE_ETHERNET:
                     assert(netif->ipv6.mtu == ETHERNET_DATA_LEN);
-#ifdef MODULE_GNRC_SIXLOWPAN_IPHC
-                    assert(netif->flags & GNRC_NETIF_FLAGS_6LO_HC);
-#endif
                     break;
                 case NETDEV_TYPE_ESP_NOW:
                     assert(netif->ipv6.mtu <= ETHERNET_DATA_LEN);
@@ -1199,6 +1196,9 @@ static void _test_options(gnrc_netif_t *netif)
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_NRFMIN: {
             gnrc_nettype_t tmp;
+
+            /* in case assert() evaluates to NOP */
+            (void)tmp;
             assert(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR);
             assert((IEEE802154_SHORT_ADDRESS_LEN == netif->l2addr_len) ||
                    (IEEE802154_LONG_ADDRESS_LEN == netif->l2addr_len));
