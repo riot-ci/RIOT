@@ -52,6 +52,7 @@ static bool init_called = false;
 static inline void _test_init(gnrc_netif_t *netif);
 static inline int _mock_netif_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt);
 static inline gnrc_pktsnip_t *_mock_netif_recv(gnrc_netif_t * netif);
+static int _get_netdev_proto(netdev_t *dev, void *value, size_t max_len);
 static int _get_netdev_address(netdev_t *dev, void *value, size_t max_len);
 static int _set_netdev_address(netdev_t *dev, const void *value,
                                size_t value_len);
@@ -1553,6 +1554,8 @@ int main(void)
                            _get_netdev_address);
     netdev_test_set_set_cb((netdev_test_t *)ethernet_dev, NETOPT_ADDRESS,
                            _set_netdev_address);
+    netdev_test_set_get_cb((netdev_test_t *)ieee802154_dev, NETOPT_PROTO,
+                           _get_netdev_proto);
     netdev_test_set_get_cb((netdev_test_t *)ieee802154_dev, NETOPT_ADDRESS,
                            _get_netdev_address);
     netdev_test_set_set_cb((netdev_test_t *)ieee802154_dev, NETOPT_ADDRESS,
@@ -1607,6 +1610,14 @@ static uint8_t ethernet_l2addr[] = ETHERNET_SRC;
 static uint8_t ieee802154_l2addr_long[] = IEEE802154_LONG_SRC;
 static uint8_t ieee802154_l2addr_short[] = IEEE802154_SHORT_SRC;
 static uint16_t ieee802154_l2addr_len = 8U;
+
+static int _get_netdev_proto(netdev_t *dev, void *value, size_t max_len)
+{
+    assert(dev == ieee802154_dev);
+    assert(max_len == sizeof(gnrc_nettype_t));
+    *((gnrc_nettype_t *)value) = ieee802154_l2addr_len;
+    return sizeof(gnrc_nettype_t);
+}
 
 static int _get_netdev_address(netdev_t *dev, void *value, size_t max_len)
 {
