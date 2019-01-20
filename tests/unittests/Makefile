@@ -1,8 +1,6 @@
 DEVELHELP ?= 0
 include ../Makefile.tests_common
 
-BOARD_BLACKLIST := saml10-xpro saml11-xpro
-
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-duemilanove \
                              arduino-mega2560 \

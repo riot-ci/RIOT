@@ -106,7 +106,8 @@ void flashpage_write(int page, const void *data)
     /* erase given page (the ADDR register uses 16-bit addresses) */
     _unlock();
 #ifdef CPU_SAML1X
-    _NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1) << 1;
+    /* Ensure address alignment */
+    _NVMCTRL->ADDR.reg = (((uint32_t)page_addr) & 0xfffffffe);
 #else
     _NVMCTRL->ADDR.reg = (((uint32_t)page_addr) >> 1);
 #endif
