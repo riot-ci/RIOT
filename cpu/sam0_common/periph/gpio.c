@@ -242,58 +242,6 @@ void gpio_irq_disable(gpio_t pin)
     _EIC->INTENCLR.reg = (1 << exti);
 }
 
-#ifdef CPU_SAML1X
-void isr_eic0(void)
-{
-    if (_EIC->INTFLAG.reg & (1 << 0)) {
-        _EIC->INTFLAG.reg = (1 << 0);
-        gpio_config[0].cb(gpio_config[0].arg);
-    }
-    cortexm_isr_end();
-}
-
-void isr_eic1(void)
-{
-    if (_EIC->INTFLAG.reg & (1 << 1)) {
-        _EIC->INTFLAG.reg = (1 << 1);
-        gpio_config[1].cb(gpio_config[1].arg);
-    }
-    cortexm_isr_end();
-}
-
-void isr_eic2(void)
-{
-    if (_EIC->INTFLAG.reg & (1 << 2)) {
-        _EIC->INTFLAG.reg = (1 << 2);
-        gpio_config[2].cb(gpio_config[2].arg);
-    }
-    cortexm_isr_end();
-}
-
-void isr_eic3(void)
-{
-    if (_EIC->INTFLAG.reg & (1 << 3)) {
-        _EIC->INTFLAG.reg = (1 << 3);
-        gpio_config[3].cb(gpio_config[3].arg);
-    }
-    cortexm_isr_end();
-}
-
-void isr_eic_other(void)
-{
-    /* This interrupt only handles EXTI[4..7] so start at 4 */
-    for (unsigned i = 4; i < NUMOF_IRQS; i++) {
-        if (_EIC->INTFLAG.reg & (1 << i)) {
-            _EIC->INTFLAG.reg = (1 << i);
-            gpio_config[i].cb(gpio_config[i].arg);
-        }
-    }
-    cortexm_isr_end();
-}
-
-
-
-#else
 void isr_eic(void)
 {
     for (unsigned i = 0; i < NUMOF_IRQS; i++) {
@@ -304,5 +252,32 @@ void isr_eic(void)
     }
     cortexm_isr_end();
 }
+
+#ifdef CPU_SAML1X
+void isr_eic0(void)
+{
+    isr_eic();
+}
+
+void isr_eic1(void)
+{
+    isr_eic();
+}
+
+void isr_eic2(void)
+{
+    isr_eic();
+}
+
+void isr_eic3(void)
+{
+    isr_eic();
+}
+
+void isr_eic_other(void)
+{
+    isr_eic();
+}
 #endif /* CPU_SAML1X */
+
 #endif /* MODULE_PERIPH_GPIO_IRQ */
