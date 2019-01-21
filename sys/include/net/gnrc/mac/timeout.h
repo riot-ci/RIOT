@@ -89,6 +89,16 @@ void gnrc_mac_set_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type
                           uint32_t offset, kernel_pid_t pid);
 
 /**
+ * @brief   Find a MAC timeout of @p type.
+ *
+ * @param[in] mac_timeout  gnrc_mac timeout management unit
+ * @param[in] type         the MAC timeout type
+ *
+ * @return                 Return index >= 0 if found timeout, -ENONENT if not found
+ */
+int gnrc_mac_find_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type_t type);
+
+/**
  * @brief   Clear a MAC timeout of @p type.
  *
  * @param[in,out] mac_timeout  gnrc_mac timeout management unit
@@ -105,8 +115,12 @@ void gnrc_mac_clear_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_ty
  * @return                 true, if the time of @p type is running
  * @return                 false, if the time of @p type is not running, or not exist
  */
-bool gnrc_mac_timeout_is_running(gnrc_mac_timeout_t *mac_timeout,
-                                 gnrc_mac_timeout_type_t type);
+static inline bool gnrc_mac_timeout_is_running(gnrc_mac_timeout_t *mac_timeout,
+                                               gnrc_mac_timeout_type_t type)
+{
+    assert(mac_timeout);
+    return (gnrc_mac_find_timeout(mac_timeout, type) >= 0);
+}
 
 /**
  * @brief   Check whether a MAC timeout of @p type has expired or not.

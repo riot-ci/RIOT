@@ -44,8 +44,8 @@ void gnrc_mac_init_timeouts(gnrc_mac_timeout_t *mac_timeout,
     evtimer_init_msg(&mac_timeout->evtimer);
 }
 
-/* Return index >= 0 if found timeout, -ENONENT if not found */
-static int _gnrc_mac_find_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type_t type)
+
+int gnrc_mac_find_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_type_t type)
 {
     assert(mac_timeout);
     assert(mac_timeout->timeout_num);
@@ -56,13 +56,6 @@ static int _gnrc_mac_find_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_time
         }
     }
     return -ENOENT;
-}
-
-static inline bool gnrc_mac_timeout_is_running(gnrc_mac_timeout_t *mac_timeout,
-                                        gnrc_mac_timeout_type_t type)
-{
-    assert(mac_timeout);
-    return (_gnrc_mac_find_timeout(mac_timeout, type) >= 0);
 }
 
 gnrc_mac_timeout_event_t *_gnrc_mac_acquire_timeout(gnrc_mac_timeout_t *mac_timeout,
@@ -109,7 +102,7 @@ void gnrc_mac_clear_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeout_ty
 {
     assert(mac_timeout);
 
-    int index = _gnrc_mac_find_timeout(mac_timeout, type);
+    int index = gnrc_mac_find_timeout(mac_timeout, type);
     if (index >= 0) {
         mac_timeout->timeouts[index].type = GNRC_MAC_TIMEOUT_DISABLED;
         evtimer_del(&mac_timeout->evtimer,
@@ -121,7 +114,7 @@ bool gnrc_mac_timeout_is_expired(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_timeo
 {
     assert(mac_timeout);
 
-    int index = _gnrc_mac_find_timeout(mac_timeout, type);
+    int index = gnrc_mac_find_timeout(mac_timeout, type);
     if (index >= 0) {
         evtimer_event_t *list;
         list = (evtimer_event_t *)&mac_timeout->evtimer.events;
