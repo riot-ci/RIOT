@@ -58,7 +58,7 @@ static int _gnrc_mac_find_timeout(gnrc_mac_timeout_t *mac_timeout, gnrc_mac_time
     return -ENOENT;
 }
 
-inline bool gnrc_mac_timeout_is_running(gnrc_mac_timeout_t *mac_timeout,
+static inline bool gnrc_mac_timeout_is_running(gnrc_mac_timeout_t *mac_timeout,
                                         gnrc_mac_timeout_type_t type)
 {
     assert(mac_timeout);
