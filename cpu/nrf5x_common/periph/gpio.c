@@ -51,6 +51,11 @@
 static uint8_t _gpiote_chan_index = 0;
 
 /**
+ * @brief   Array containing a mapping between GPIOTE channel and pin
+ */
+static gpio_t _exti_pins[GPIOTE_CHAN_NUMOF];
+
+/**
  * @brief   Place to store the interrupt context
  */
 static gpio_isr_ctx_t exti_chan[GPIOTE_CHAN_NUMOF];
@@ -161,6 +166,8 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     /* enable external interrupt */
     NRF_GPIOTE->INTENSET |= GPIOTE_INTENSET_IN0_Msk << _gpiote_chan_index;
 
+    /* associate the current pin with channel index */
+    _exti_pins[_gpiote_chan_index] = pin;
     /* increment channel index for next pin */
     _gpiote_chan_index++;
     return 0;
@@ -168,14 +175,22 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
-    (void) pin;
-    NRF_GPIOTE->INTENSET |= GPIOTE_INTENSET_IN0_Msk;
+    for (unsigned int i = 0; i < _gpiote_chan_index; ++i) {
+        if (_exti_pins[i] == pin) {
+            NRF_GPIOTE->INTENSET |= GPIOTE_INTENSET_IN0_Msk << i;
+            break;
+        }
+    }
 }
 
 void gpio_irq_disable(gpio_t pin)
 {
-    (void) pin;
-    NRF_GPIOTE->INTENCLR |= GPIOTE_INTENSET_IN0_Msk;
+    for (unsigned int i = 0; i < _gpiote_chan_index; ++i) {
+        if (_exti_pins[i] == pin) {
+            NRF_GPIOTE->INTENCLR |= GPIOTE_INTENSET_IN0_Msk << i;
+            break;
+        }
+    }
 }
 
 void isr_gpiote(void)
