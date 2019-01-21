@@ -187,7 +187,7 @@ void gpio_irq_disable(gpio_t pin)
 {
     for (unsigned int i = 0; i < _gpiote_chan_index; ++i) {
         if (_exti_pins[i] == pin) {
-            NRF_GPIOTE->INTENCLR |= GPIOTE_INTENSET_IN0_Msk << i;
+            NRF_GPIOTE->INTENCLR |= GPIOTE_INTENCLR_IN0_Msk << i;
             break;
         }
     }
