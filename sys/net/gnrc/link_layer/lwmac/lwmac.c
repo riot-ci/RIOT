@@ -878,7 +878,7 @@ static void _lwmac_msg_handler(gnrc_netif_t *netif, msg_t *msg)
             uint64_t duty = (uint64_t) rtt_get_counter();
             duty = ((uint64_t) netif->mac.prot.lwmac.awake_duration_sum_ticks) * 100 /
                    (duty - (uint64_t)netif->mac.prot.lwmac.system_start_time_ticks);
-            printf("[LWMAC]: achieved radio duty-cycle: %lu %% \n", (uint32_t)duty);
+            printf("[LWMAC]: achieved radio duty-cycle: %lu %% \n", duty);
             break;
         }
 #endif
