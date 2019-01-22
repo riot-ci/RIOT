@@ -14,7 +14,7 @@
  * # Internal API and sub-modules
  *
  * Internally, @ref net_gnrc_sixlowpan is sub-divided into several sub-modules.
- * This implement certain features of the 6LoWPAN standard. Currently
+ * They implement certain features of the 6LoWPAN standard. Currently
  * implemented are
  *
  * - [Fragmentation](https://tools.ietf.org/html/rfc4944#section-5.3)
@@ -33,14 +33,13 @@
  * void recv(gnrc_pktsnip_t *pkt, void *ctx, uint8_t page);
  * ~~~~~~~~~~~~~~~~~~~~~
  *
- * A 6LoWPAN frame `pkt` is supposed to pass the sub-modules sequentially in
- * the order of its dispatches on receive or the step that makes most sense next
- * on send. After it was passed into another sub-module using the respective
- * `send`/`recv` function a sub-module is not supposed to operate on `pkt`
- * anymore.
+ * A 6LoWPAN frame `pkt` must pass the sub-modules sequentially in the order of
+ * its dispatches on receive or the step that makes most sense next on send.
+ * After it was passed into another sub-module using the respective
+ * `send`/`recv` function a sub-module must not operate on the `pkt` anymore.
  *
  * The `ctx` parameter can be used to provide data structures of a sub-module to
- * the next sub-module that might need to modify them (e.g. reassembly
+ * the next sub-module if that needs to modify or read them (e.g. reassembly
  * buffer state for IPHC).
  *
  * Finally, the `page` parameter is to provide a sub-module the current parsing
