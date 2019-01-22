@@ -40,7 +40,7 @@
  *
  * The `ctx` parameter can be used to provide data structures of a sub-module to
  * the next sub-module if that needs to modify or read them (e.g. reassembly
- * buffer state for IPHC).
+ * buffer state for IPHC) otherwise, leave it `NULL`.
  *
  * Finally, the `page` parameter is to provide a sub-module the current parsing
  * page context according to [RFC 8025](https://tools.ietf.org/html/rfc8025).
