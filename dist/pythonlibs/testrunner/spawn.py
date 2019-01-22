@@ -37,7 +37,7 @@ def find_exc_origin(exc_info):
 
 def setup_child(timeout=10, spawnclass=pexpect.spawnu, env=None, logfile=None):
     child = spawnclass("make term", env=env, timeout=timeout,
-                       codec_errors='replace', echo=(logfile is not None))
+                       codec_errors='replace')
 
     # on many platforms, the termprog needs a short while to be ready...
     time.sleep(MAKE_TERM_STARTED_DELAY)
