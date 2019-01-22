@@ -370,6 +370,51 @@ typedef enum {
     STM32_LPUART,           /**< STM32 Low-power UART (LPUART) module type */
 } uart_type_t;
 
+#ifdef MODULE_PERIPH_UART_MODECFG
+/**
+ * @brief   Override parity values
+ * @{
+ */
+#define HAVE_UART_PARITY_T
+typedef enum {
+   UART_PARITY_NONE = 0,             /**< no parity */
+   UART_PARITY_EVEN = 1,             /**< even parity */
+   UART_PARITY_ODD = USART_CR1_PS,   /**< odd parity */
+   UART_PARITY_MARK = 0x02,          /**< not supported */
+   UART_PARITY_SPACE = 0x02          /**< not supported */
+} uart_parity_t;
+/** @} */
+
+/**
+ * @brief   Override databits length values
+ * @{
+ */
+#define HAVE_UART_DATABITS_T
+typedef enum {
+    UART_DATABITS_8 = 0,        /**< 8 databits */
+    UART_DATABITS_5 = 0x02,     /**< not supported */
+#if defined(USART_CR1_M1)
+    UART_DATABITS_6 = 3,        /**< 6 databits */
+#else
+    UART_DATABITS_6 = 0x02,     /**< not supported */
+#endif
+    UART_DATABITS_7 = 1,        /**< 7 databits */
+    UART_DATABITS_9 = 0x02      /**< not supported */
+} uart_databits_t;
+/** @} */
+
+/**
+ * @brief   Override stopbits length values
+ * @{
+ */
+#define HAVE_UART_STOPBITS_T
+typedef enum {
+   UART_STOPBITS_1 = 0,                  /**< 1 stopbit */
+   UART_STOPBITS_2 = USART_CR2_STOP_1,   /**< 2 stopbits */
+} uart_stopbits_t;
+/** @} */
+#endif /* MODULE_PERIPH_UART_MODECFG */
+
 /**
  * @brief   Structure for UART configuration data
  */
