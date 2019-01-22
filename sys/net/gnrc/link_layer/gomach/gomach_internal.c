@@ -103,10 +103,10 @@ int _gnrc_gomach_transmit(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
             (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
-        netif->dev->stats.tx_mcast_count++;
+        netif->stats.tx_mcast_count++;
     }
     else {
-        netif->dev->stats.tx_unicast_count++;
+        netif->stats.tx_unicast_count++;
     }
 #endif
 #ifdef MODULE_GNRC_MAC
@@ -344,7 +344,6 @@ int gnrc_gomach_send_preamble_ack(gnrc_netif_t *netif, gnrc_gomach_packet_info_t
     assert(info != NULL);
 
     gnrc_pktsnip_t *gomach_pkt = NULL;
-    gnrc_pktsnip_t *pkt = NULL;
     gnrc_netif_hdr_t *nethdr_preamble_ack = NULL;
 
     /* Start assemble the preamble-ACK packet according to preamble packet info. */
@@ -356,7 +355,7 @@ int gnrc_gomach_send_preamble_ack(gnrc_netif_t *netif, gnrc_gomach_packet_info_t
      * This is to allow the preamble sender to deduce the exact phase of the receiver. */
     gomach_preamble_ack_hdr.phase_in_us = gnrc_gomach_phase_now(netif);
 
-    pkt = gnrc_pktbuf_add(NULL, &gomach_preamble_ack_hdr, sizeof(gomach_preamble_ack_hdr),
+    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, &gomach_preamble_ack_hdr, sizeof(gomach_preamble_ack_hdr),
                           GNRC_NETTYPE_GOMACH);
     if (pkt == NULL) {
         LOG_ERROR("ERROR: [GOMACH]: pktbuf add failed in gnrc_gomach_send_preamble_ack().\n");
