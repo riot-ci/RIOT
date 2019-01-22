@@ -57,7 +57,7 @@ typedef struct {
  */
 static inline uint16_t get_unaligned_u16(const void *ptr)
 {
-    const uint16_una_t *tmp = (const uint16_una_t *)ptr;
+    const uint16_una_t *tmp = ptr;
     return tmp->val;
 }
 
