@@ -188,6 +188,8 @@ void gpio_irq_enable(gpio_t pin)
 {
     for (unsigned int i = 0; i < _gpiote_next_index; i++) {
         if (_exti_pins[i] == pin) {
+            /* Clear any pending events */
+            NRF_GPIOTE->EVENTS_IN[i] = 0;
             NRF_GPIOTE->INTENSET |= (GPIOTE_INTENSET_IN0_Msk << i);
             break;
         }
@@ -198,10 +200,7 @@ void gpio_irq_disable(gpio_t pin)
 {
     for (unsigned int i = 0; i < _gpiote_next_index; i++) {
         if (_exti_pins[i] == pin) {
-            uint32_t inten = NRF_GPIOTE->INTENCLR;
             NRF_GPIOTE->INTENCLR = (GPIOTE_INTENCLR_IN0_Msk << i);
-            inten &= ~(GPIOTE_INTENSET_IN0_Msk << i);
-            NRF_GPIOTE->INTENSET = inten;
             break;
         }
     }
