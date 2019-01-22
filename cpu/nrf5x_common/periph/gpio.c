@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2015 Jan Wagner <mail@jwagner.eu>
  *               2015-2016 Freie Universität Berlin
+ *               2019 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -22,6 +23,7 @@
  * @author      Timo Ziegler <timo.ziegler@fu-berlin.de>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Jan Wagner <mail@jwagner.eu>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  * @}
  */
