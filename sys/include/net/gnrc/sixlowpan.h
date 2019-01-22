@@ -11,11 +11,45 @@
  * @ingroup     net_gnrc
  * @brief       GNRC's 6LoWPAN implementation
  *
- * This module is for usage with the @ref net_gnrc_netapi.
+ * # Internal API and submodules
+ *
+ * Internally, @ref net_gnrc_sixlowpan is subdivided into several sub-modules.
+ * This implement certain features of the 6LoWPAN standard. Currently
+ * implemented are
+ *
+ * - [Fragmentation](https://tools.ietf.org/html/rfc4944#section-5.3)
+ *   ([gnrc_sixlowpan_frag](@ref net_gnrc_sixlowpan_frag))
+ * - [Uncompressed IPv6](https://tools.ietf.org/html/rfc4944#section-5.1)
+ *   (as part of the main @ref net_gnrc_sixlowpan module)
+ * - IPv6 datagram compression according to [RFC 6282](https://tools.ietf.org/html/rfc6282)
+ *   aka IPHC ([gnrc_sixlowpan_iphc](@ref net_gnrc_sixlowpan_iphc), IPv6
+ *   extension header NHC currently missing)
+ *
+ * Each submodule has a `send` and `recv` function prefixed by their
+ * respective submodule name with the following signatures
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * void send(gnrc_pktsnip_t *pkt, void *ctx, uint8_t page);
+ * void recv(gnrc_pktsnip_t *pkt, void *ctx, uint8_t page);
+ * ~~~~~~~~~~~~~~~~~~~~~
+ *
+ * A 6LoWPAN frame `pkt` is supposed to pass the submodules sequentially in
+ * the order of its dispatches on receive or the step that makes most sense next
+ * on send. After it was passed into another submodule using the respective
+ * `send`/`recv` function a submodule is not supposed to operate on `pkt`
+ * anymore.
+ *
+ * The `ctx` parameter can be used to provide data structures of a submodule to
+ * the next submodule that might need to modify them (e.g. reassembly
+ * buffer state for IPHC).
+ *
+ * Finally, the `page` parameter is to provide a submodule the current parsing
+ * page context according to [RFC 8025](https://tools.ietf.org/html/rfc8025).
  *
  * # Supported NETAPI commands
  *
- * This module handles the following @ref net_gnrc_netapi message types:
+ * To interact with other modules this module handles the following
+ * @ref net_gnrc_netapi message types:
  *
  * ## `GNRC_NETAPI_MSG_TYPE_RCV`
  *
