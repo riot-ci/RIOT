@@ -11,9 +11,9 @@
  * @ingroup     net_gnrc
  * @brief       GNRC's 6LoWPAN implementation
  *
- * # Internal API and submodules
+ * # Internal API and sub-modules
  *
- * Internally, @ref net_gnrc_sixlowpan is subdivided into several sub-modules.
+ * Internally, @ref net_gnrc_sixlowpan is sub-divided into several sub-modules.
  * This implement certain features of the 6LoWPAN standard. Currently
  * implemented are
  *
@@ -25,25 +25,25 @@
  *   aka IPHC ([gnrc_sixlowpan_iphc](@ref net_gnrc_sixlowpan_iphc), IPv6
  *   extension header NHC currently missing)
  *
- * Each submodule has a `send` and `recv` function prefixed by their
- * respective submodule name with the following signatures
+ * Each sub-module has a `send` and `recv` function prefixed by their
+ * respective sub-module name with the following signatures
  *
  * ~~~~~~~~~~~~~~~~~~~~~ {.c}
  * void send(gnrc_pktsnip_t *pkt, void *ctx, uint8_t page);
  * void recv(gnrc_pktsnip_t *pkt, void *ctx, uint8_t page);
  * ~~~~~~~~~~~~~~~~~~~~~
  *
- * A 6LoWPAN frame `pkt` is supposed to pass the submodules sequentially in
+ * A 6LoWPAN frame `pkt` is supposed to pass the sub-modules sequentially in
  * the order of its dispatches on receive or the step that makes most sense next
- * on send. After it was passed into another submodule using the respective
- * `send`/`recv` function a submodule is not supposed to operate on `pkt`
+ * on send. After it was passed into another sub-module using the respective
+ * `send`/`recv` function a sub-module is not supposed to operate on `pkt`
  * anymore.
  *
- * The `ctx` parameter can be used to provide data structures of a submodule to
- * the next submodule that might need to modify them (e.g. reassembly
+ * The `ctx` parameter can be used to provide data structures of a sub-module to
+ * the next sub-module that might need to modify them (e.g. reassembly
  * buffer state for IPHC).
  *
- * Finally, the `page` parameter is to provide a submodule the current parsing
+ * Finally, the `page` parameter is to provide a sub-module the current parsing
  * page context according to [RFC 8025](https://tools.ietf.org/html/rfc8025).
  *
  * # Supported NETAPI commands
