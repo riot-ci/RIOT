@@ -60,6 +60,8 @@ BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
                                 opencm904 \
                                 pba-d-01-kw2x \
                                 samd21-xpro \
+                                saml10-xpro \
+                                saml11-xpro \
                                 saml21-xpro \
                                 samr21-xpro \
                                 samr30-xpro \
