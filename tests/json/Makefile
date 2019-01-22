@@ -37,6 +37,7 @@ BOARD_INSUFFICIENT_MEMORY :=    airfy-beacon \
                                 lobaro-lorabox \
                                 maple-mini \
                                 microbit \
+                                nrf51dk \
                                 nrf51dongle \
                                 nrf6310 \
                                 nucleo-f030r8 \
