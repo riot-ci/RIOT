@@ -190,8 +190,7 @@ void gpio_irq_enable(gpio_t pin)
 {
     for (unsigned int i = 0; i < _gpiote_next_index; i++) {
         if (_exti_pins[i] == pin) {
-            /* Clear any pending events */
-            NRF_GPIOTE->EVENTS_IN[i] = 0;
+            NRF_GPIOTE->CONFIG[i] |= GPIOTE_CONFIG_MODE_Event;
             NRF_GPIOTE->INTENSET |= (GPIOTE_INTENSET_IN0_Msk << i);
             break;
         }
@@ -202,6 +201,8 @@ void gpio_irq_disable(gpio_t pin)
 {
     for (unsigned int i = 0; i < _gpiote_next_index; i++) {
         if (_exti_pins[i] == pin) {
+            /* Clear mode configuration: 00 = Disabled */
+            NRF_GPIOTE->CONFIG[i] &= ~(GPIOTE_CONFIG_MODE_Msk);
             NRF_GPIOTE->INTENCLR = (GPIOTE_INTENCLR_IN0_Msk << i);
             break;
         }
@@ -211,8 +212,7 @@ void gpio_irq_disable(gpio_t pin)
 void isr_gpiote(void)
 {
     for (unsigned int i = 0; i < _gpiote_next_index; ++i) {
-        if (NRF_GPIOTE->EVENTS_IN[i] == 1 &&
-                (NRF_GPIOTE->INTENSET & (GPIOTE_INTENSET_IN0_Msk << i))) {
+        if (NRF_GPIOTE->EVENTS_IN[i] == 1) {
             NRF_GPIOTE->EVENTS_IN[i] = 0;
             exti_chan[i].cb(exti_chan[i].arg);
             break;
