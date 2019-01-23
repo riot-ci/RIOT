@@ -211,15 +211,9 @@ static const rbuf_t *_first_non_empty_rbuf(void)
     return NULL;
 }
 
-static void test_rbuf_add__success_first_fragment(void)
+static void _test_entry(const rbuf_t *entry, unsigned exp_current_size,
+                        unsigned exp_int_start, unsigned exp_int_end)
 {
-    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, _fragment1, sizeof(_fragment1),
-                                          GNRC_NETTYPE_SIXLOWPAN);
-    const rbuf_t *entry;
-
-    TEST_ASSERT_NOT_NULL(pkt);
-    rbuf_add(&_test_netif_hdr.hdr, pkt, TEST_FRAGMENT1_OFFSET, TEST_PAGE);
-    entry = _first_non_empty_rbuf();
     TEST_ASSERT_NOT_NULL(entry);
     TEST_ASSERT_NOT_NULL(entry->super.pkt);
     TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, entry->super.pkt->size);
@@ -234,16 +228,35 @@ static void test_rbuf_add__success_first_fragment(void)
                                entry->super.dst_len) == 0,
                         "entry->super.dst != TEST_NETIF_HDR_DST");
     TEST_ASSERT_EQUAL_INT(TEST_TAG, entry->super.tag);
-    /* current_size must be the offset of fragment 2, not the size of
-     * fragment 1 (fragment dispatch was removed, IPHC was applied etc.). */
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT2_OFFSET, entry->super.current_size);
+    TEST_ASSERT_EQUAL_INT(exp_current_size, entry->super.current_size);
     TEST_ASSERT_NOT_NULL(entry->ints);
     TEST_ASSERT_NULL(entry->ints->next);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT1_OFFSET, entry->ints->start);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT2_OFFSET - 1, entry->ints->end);
-    gnrc_pktbuf_release(entry->super.pkt);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    TEST_ASSERT_EQUAL_INT(exp_int_start, entry->ints->start);
+    TEST_ASSERT_EQUAL_INT(exp_int_end, entry->ints->end);
+}
+
+static void _check_pktbuf(const rbuf_t *entry)
+{
+    if (entry != NULL) {
+        gnrc_pktbuf_release(entry->super.pkt);
+    }
+    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(), "Packet buffer is not empty");
+}
+
+static void test_rbuf_add__success_first_fragment(void)
+{
+    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, _fragment1, sizeof(_fragment1),
+                                          GNRC_NETTYPE_SIXLOWPAN);
+    const rbuf_t *entry;
+
+    TEST_ASSERT_NOT_NULL(pkt);
+    rbuf_add(&_test_netif_hdr.hdr, pkt, TEST_FRAGMENT1_OFFSET, TEST_PAGE);
+    entry = _first_non_empty_rbuf();
+    /* current_size must be the offset of fragment 2, not the size of
+     * fragment 1 (fragment dispatch was removed, IPHC was applied etc.). */
+    _test_entry(entry, TEST_FRAGMENT2_OFFSET,
+                TEST_FRAGMENT1_OFFSET, TEST_FRAGMENT2_OFFSET - 1);
+    _check_pktbuf(entry);
 }
 
 static void test_rbuf_add__success_subsequent_fragment(void)
@@ -255,31 +268,11 @@ static void test_rbuf_add__success_subsequent_fragment(void)
     TEST_ASSERT_NOT_NULL(pkt);
     rbuf_add(&_test_netif_hdr.hdr, pkt, TEST_FRAGMENT2_OFFSET, TEST_PAGE);
     entry = _first_non_empty_rbuf();
-    TEST_ASSERT_NOT_NULL(entry);
-    TEST_ASSERT_NOT_NULL(entry->super.pkt);
-    TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, entry->super.pkt->size);
-    TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_src),
-                          entry->super.src_len);
-    TEST_ASSERT_MESSAGE(memcmp(entry->super.src, _test_netif_hdr_src,
-                               entry->super.src_len) == 0,
-                        "entry->super.src != TEST_NETIF_HDR_SRC");
-    TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_dst),
-                          entry->super.dst_len);
-    TEST_ASSERT_MESSAGE(memcmp(entry->super.dst, _test_netif_hdr_dst,
-                               entry->super.dst_len) == 0,
-                        "entry->super.dst != TEST_NETIF_HDR_DST");
-    TEST_ASSERT_EQUAL_INT(TEST_TAG, entry->super.tag);
     /* current_size must be the offset of fragment 3, not the size of
      * fragment 2 (fragment dispatch was removed, IPHC was applied etc.). */
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
-                          entry->super.current_size);
-    TEST_ASSERT_NOT_NULL(entry->ints);
-    TEST_ASSERT_NULL(entry->ints->next);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT2_OFFSET, entry->ints->start);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET - 1, entry->ints->end);
-    gnrc_pktbuf_release(entry->super.pkt);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _test_entry(entry, TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
+                TEST_FRAGMENT2_OFFSET, TEST_FRAGMENT3_OFFSET - 1);
+    _check_pktbuf(entry);
 }
 
 static void test_rbuf_add__success_duplicate_fragments(void)
@@ -295,31 +288,11 @@ static void test_rbuf_add__success_duplicate_fragments(void)
     TEST_ASSERT_NOT_NULL(pkt2);
     rbuf_add(&_test_netif_hdr.hdr, pkt2, TEST_FRAGMENT3_OFFSET, TEST_PAGE);
     entry = _first_non_empty_rbuf();
-    TEST_ASSERT_NOT_NULL(entry);
-    TEST_ASSERT_NOT_NULL(entry->super.pkt);
-    TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, entry->super.pkt->size);
-    TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_src),
-                          entry->super.src_len);
-    TEST_ASSERT_MESSAGE(memcmp(entry->super.src, _test_netif_hdr_src,
-                               entry->super.src_len) == 0,
-                        "entry->super.src != TEST_NETIF_HDR_SRC");
-    TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_dst),
-                          entry->super.dst_len);
-    TEST_ASSERT_MESSAGE(memcmp(entry->super.dst, _test_netif_hdr_dst,
-                               entry->super.dst_len) == 0,
-                        "entry->super.dst != TEST_NETIF_HDR_DST");
-    TEST_ASSERT_EQUAL_INT(TEST_TAG, entry->super.tag);
-    /* current_size must be the offset of fragment 3, not the size of
-     * fragment 2 (fragment dispatch was removed, IPHC was applied etc.). */
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT4_OFFSET - TEST_FRAGMENT3_OFFSET,
-                          entry->super.current_size);
-    TEST_ASSERT_NOT_NULL(entry->ints);
-    TEST_ASSERT_NULL(entry->ints->next);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET, entry->ints->start);
-    TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT4_OFFSET - 1, entry->ints->end);
-    gnrc_pktbuf_release(entry->super.pkt);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    /* current_size must be the offset of fragment 4, not the size of
+     * fragment 3 (fragment dispatch was removed, IPHC was applied etc.). */
+    _test_entry(entry, TEST_FRAGMENT4_OFFSET - TEST_FRAGMENT3_OFFSET,
+                TEST_FRAGMENT3_OFFSET, TEST_FRAGMENT4_OFFSET - 1);
+    _check_pktbuf(entry);
 }
 
 static void test_rbuf_add__success_complete(void)
@@ -362,8 +335,7 @@ static void test_rbuf_add__success_complete(void)
                         TEST_DATAGRAM_SIZE) == 0,
                         "Reassembled datagram does not contain expected data");
     gnrc_pktbuf_release(datagram);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_add__full_rbuf(void)
@@ -402,8 +374,7 @@ static void test_rbuf_add__full_rbuf(void)
         /* releasing pkt to check if packet buffer is empty in the end */
         gnrc_pktbuf_release(entry->super.pkt);
     }
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_add__too_big_fragment(void)
@@ -423,8 +394,7 @@ static void test_rbuf_add__too_big_fragment(void)
              TEST_PAGE);
     /* packet buffer is empty*/
     TEST_ASSERT_NULL(_first_non_empty_rbuf());
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_add__overlap_lhs(void)
@@ -448,45 +418,26 @@ static void test_rbuf_add__overlap_lhs(void)
     for (unsigned i = 0; i < RBUF_SIZE; i++) {
         const rbuf_t *entry = &rbuf[i];
         if (!rbuf_entry_empty(entry)) {
+            /* calculate offset from changed offset to safe porting
+             * efforts later ;-) */
+            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET -
+                    (TEST_FRAGMENT2_OFFSET - pkt2_offset) - 1;
+
             rbuf_entries++;
-            /* since _fragment2 should now be the only thing in the reassembly
-             * buffer according to
-             * https://tools.ietf.org/html/rfc4944#section-5.3
-             * we copied the checks from
-             * test_rbuf_add__success_subsequent_fragment() with slight
-             * alterations specific to this test case (marked with XXX) */
-            TEST_ASSERT_NOT_NULL(entry->super.pkt);
-            TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, entry->super.pkt->size);
-            TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_src),
-                                  entry->super.src_len);
-            TEST_ASSERT_MESSAGE(memcmp(entry->super.src, _test_netif_hdr_src,
-                                       entry->super.src_len) == 0,
-                                "entry->super.src != TEST_NETIF_HDR_SRC");
-            TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_dst),
-                                  entry->super.dst_len);
-            TEST_ASSERT_MESSAGE(memcmp(entry->super.dst, _test_netif_hdr_dst,
-                                       entry->super.dst_len) == 0,
-                                "entry->super.dst != TEST_NETIF_HDR_DST");
-            TEST_ASSERT_EQUAL_INT(TEST_TAG, entry->super.tag);
-            /* current_size must be the offset of fragment 3, not the size of
-             * fragment 2 (fragment dispatch was removed, IPHC was applied etc.). */
-            TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
-                                  entry->super.current_size);
-            TEST_ASSERT_NOT_NULL(entry->ints);
-            TEST_ASSERT_NULL(entry->ints->next);
-            /* XXX take modified offset */
-            TEST_ASSERT_EQUAL_INT(pkt2_offset, entry->ints->start);
-            /* XXX we removed 8 byte from fragment 2 offset so we do the same
-             * for fragment 3 offset here */
-            TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET - 8U - 1U,
-                                  entry->ints->end);
+            /* only _fragment2 should now in the reassembly buffer according to
+             * https://tools.ietf.org/html/rfc4944#section-5.3 */
+            _test_entry(entry,
+                        /* current_size must be the offset of fragment 3, not
+                         * the size of fragment 2 (fragment dispatch was
+                         * removed, IPHC was applied etc.). */
+                        TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
+                        (unsigned)pkt2_offset, (unsigned)pkt3_offset);
             /* releasing pkt to check if packet buffer is empty in the end */
             gnrc_pktbuf_release(entry->super.pkt);
         }
     }
     TEST_ASSERT_EQUAL_INT(1U, rbuf_entries);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_add__overlap_rhs(void)
@@ -514,38 +465,20 @@ static void test_rbuf_add__overlap_rhs(void)
     for (unsigned i = 0; i < RBUF_SIZE; i++) {
         const rbuf_t *entry = &rbuf[i];
         if (!rbuf_entry_empty(entry)) {
+            /* calculate offset from changed offset to safe porting
+             * efforts later ;-) */
+            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET -
+                    (TEST_FRAGMENT2_OFFSET - pkt2_offset) - 1;
+
             rbuf_entries++;
-            /* since _fragment2 should now be the only thing in the reassembly
-             * buffer according to
-             * https://tools.ietf.org/html/rfc4944#section-5.3
-             * we copied the checks from
-             * test_rbuf_add__success_subsequent_fragment() with slight
-             * alterations specific to this test case (marked with XXX) */
-            TEST_ASSERT_NOT_NULL(entry->super.pkt);
-            TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, entry->super.pkt->size);
-            TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_src),
-                                  entry->super.src_len);
-            TEST_ASSERT_MESSAGE(memcmp(entry->super.src, _test_netif_hdr_src,
-                                       entry->super.src_len) == 0,
-                                "entry->super.src != TEST_NETIF_HDR_SRC");
-            TEST_ASSERT_EQUAL_INT(sizeof(_test_netif_hdr_dst),
-                                  entry->super.dst_len);
-            TEST_ASSERT_MESSAGE(memcmp(entry->super.dst, _test_netif_hdr_dst,
-                                       entry->super.dst_len) == 0,
-                                "entry->super.dst != TEST_NETIF_HDR_DST");
-            TEST_ASSERT_EQUAL_INT(TEST_TAG, entry->super.tag);
-            /* current_size must be the offset of fragment 3, not the size of
-             * fragment 2 (fragment dispatch was removed, IPHC was applied etc.). */
-            TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
-                                  entry->super.current_size);
-            TEST_ASSERT_NOT_NULL(entry->ints);
-            TEST_ASSERT_NULL(entry->ints->next);
-            /* XXX take modified offset */
-            TEST_ASSERT_EQUAL_INT(pkt2_offset, entry->ints->start);
-            /* XXX we added 8 byte to fragment 2 offset so we do the same
-             * for fragment 3 offset here */
-            TEST_ASSERT_EQUAL_INT(TEST_FRAGMENT3_OFFSET + 8U - 1U,
-                                  entry->ints->end);
+            /* only _fragment2 should now in the reassembly buffer according to
+             * https://tools.ietf.org/html/rfc4944#section-5.3 */
+            _test_entry(entry,
+                        /* current_size must be the offset of fragment 3, not
+                         * the size of fragment 2 (fragment dispatch was
+                         * removed, IPHC was applied etc.). */
+                        TEST_FRAGMENT3_OFFSET - TEST_FRAGMENT2_OFFSET,
+                        (unsigned)pkt2_offset, (unsigned)pkt3_offset);
             /* releasing pkt to check if packet buffer is empty in the end */
             gnrc_pktbuf_release(entry->super.pkt);
         }
@@ -560,7 +493,6 @@ static void test_rbuf_rm(void)
     const rbuf_t *entry;
 
     test_rbuf_add__success_first_fragment();
-    /* entry->super.pkt was released in called test */
     entry = _first_non_empty_rbuf();
     /* entry is however not properly removed yet */
     TEST_ASSERT_NOT_NULL(entry);
