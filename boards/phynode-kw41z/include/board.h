@@ -74,6 +74,16 @@ extern "C"
 /** @} */
 
 /**
+ * @name    Sensors voltage pin definitions (V_PERIPH)
+ * @{
+ */
+#define V_PERIPH_PIN        GPIO_PIN(PORT_C, 19)
+#define V_PERIPH_MASK       (1 << 19)
+#define V_PERIPH_ON         (GPIOC->PSOR = V_PERIPH_MASK)
+#define V_PERIPH_OFF        (GPIOC->PCOR = V_PERIPH_MASK)
+/** @} */
+
+/**
  * @name    xtimer configuration
  * @{
  */
@@ -93,6 +103,18 @@ extern "C"
 #define XTIMER_OVERHEAD             (4)
 #define XTIMER_HZ                   (32768ul)
 #endif
+/** @} */
+
+/**
+ * @name Define the interface for the CCS811 gas sensors
+ * @{
+ */
+#define CCS811_PARAM_I2C_DEV        (I2C_DEV(0))
+#define CCS811_PARAM_I2C_ADDR       (CCS811_I2C_ADDRESS_1)
+#define CCS811_PARAM_RESET_PIN      (GPIO_UNDEF)
+#define CCS811_PARAM_WAKE_PIN       (GPIO_PIN(1, 2))
+#define CCS811_PARAM_INT_PIN        (GPIO_PIN(1, 3))
+#define CCS811_PARAM_INT_MODE       (CCS811_INT_NONE)
 /** @} */
 
 /**
