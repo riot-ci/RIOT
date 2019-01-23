@@ -147,7 +147,7 @@
 
 static const uint8_t _test_netif_hdr_src[] = TEST_NETIF_HDR_SRC;
 static const uint8_t _test_netif_hdr_dst[] = TEST_NETIF_HDR_SRC;
-static struct __attribute__((packed)) {
+static struct {
     gnrc_netif_hdr_t hdr;
     uint8_t src[GNRC_NETIF_HDR_L2ADDR_MAX_LEN];
     uint8_t dst[GNRC_NETIF_HDR_L2ADDR_MAX_LEN];
