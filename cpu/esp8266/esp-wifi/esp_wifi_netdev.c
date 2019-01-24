@@ -173,7 +173,7 @@ void IRAM _esp_wifi_recv_cb(struct pbuf *pb, struct netif *netif)
      * by a mutex because `esp_wifi_recv_cb` would be reentered from same
      * thread context.
      */
-    if (_in_esp_wifi_recv_cb || _in_send) {
+    if (_in_esp_wifi_recv_cb) {
         pbuf_free(pb);
         return;
     }
