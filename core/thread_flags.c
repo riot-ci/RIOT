@@ -26,7 +26,8 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-static thread_flags_t _thread_flags_clear_atomic(thread_t *thread, thread_flags_t mask)
+static thread_flags_t _thread_flags_clear_atomic(thread_t *thread,
+                                                 thread_flags_t mask)
 {
     unsigned state = irq_disable();
 
@@ -36,10 +37,12 @@ static thread_flags_t _thread_flags_clear_atomic(thread_t *thread, thread_flags_
     return mask;
 }
 
-static void _thread_flags_wait(thread_flags_t mask, thread_t *thread, unsigned threadstate, unsigned irqstate)
+static void _thread_flags_wait(thread_flags_t mask, thread_t *thread,
+                               unsigned threadstate, unsigned irqstate)
 {
-    DEBUG("_thread_flags_wait: me->flags=0x%08x me->mask=0x%08x. going blocked.\n",
-          (unsigned)thread->flags, (unsigned)mask);
+    DEBUG(
+        "_thread_flags_wait: me->flags=0x%08x me->mask=0x%08x. going blocked.\n",
+        (unsigned)thread->flags, (unsigned)mask);
 
     thread->wait_data = (void *)(unsigned)mask;
     sched_set_status(thread, threadstate);
@@ -52,7 +55,8 @@ thread_flags_t thread_flags_clear(thread_flags_t mask)
     thread_t *me = (thread_t *)sched_active_thread;
 
     mask = _thread_flags_clear_atomic(me, mask);
-    DEBUG("thread_flags_clear(): pid %" PRIkernel_pid " clearing 0x%08x\n", thread_getpid(), mask);
+    DEBUG("thread_flags_clear(): pid %" PRIkernel_pid " clearing 0x%08x\n",
+          thread_getpid(), mask);
     return mask;
 }
 
@@ -93,7 +97,9 @@ thread_flags_t thread_flags_wait_all(thread_flags_t mask)
     thread_t *me = (thread_t *)sched_active_thread;
 
     if (!((me->flags & mask) == mask)) {
-        DEBUG("thread_flags_wait_all(): pid %" PRIkernel_pid " waiting for %08x\n", thread_getpid(), (unsigned)mask);
+        DEBUG(
+            "thread_flags_wait_all(): pid %" PRIkernel_pid " waiting for %08x\n",
+            thread_getpid(), (unsigned)mask);
         _thread_flags_wait(mask, me, STATUS_FLAG_BLOCKED_ALL, state);
     }
     else {
@@ -118,7 +124,8 @@ inline int __attribute__((always_inline)) thread_flags_wake(thread_t *thread)
     }
 
     if (wakeup) {
-        DEBUG("_thread_flags_wake(): waking up pid %" PRIkernel_pid "\n", thread->pid);
+        DEBUG("_thread_flags_wake(): waking up pid %" PRIkernel_pid "\n",
+              thread->pid);
         sched_set_status(thread, STATUS_PENDING);
         sched_context_switch_request = 1;
     }
@@ -128,7 +135,8 @@ inline int __attribute__((always_inline)) thread_flags_wake(thread_t *thread)
 
 void thread_flags_set(thread_t *thread, thread_flags_t mask)
 {
-    DEBUG("thread_flags_set(): setting 0x%08x for pid %" PRIkernel_pid "\n", mask, thread->pid);
+    DEBUG("thread_flags_set(): setting 0x%08x for pid %" PRIkernel_pid "\n",
+          mask, thread->pid);
     unsigned state = irq_disable();
     thread->flags |= mask;
     if (thread_flags_wake(thread)) {

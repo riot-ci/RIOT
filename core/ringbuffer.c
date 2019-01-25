@@ -140,7 +140,8 @@ int ringbuffer_peek_one(const ringbuffer_t *restrict rb_)
     return ringbuffer_get_one(&rb);
 }
 
-unsigned ringbuffer_peek(const ringbuffer_t *restrict rb_, char *buf, unsigned n)
+unsigned ringbuffer_peek(const ringbuffer_t *restrict rb_, char *buf,
+                         unsigned n)
 {
     ringbuffer_t rb = *rb_;
 

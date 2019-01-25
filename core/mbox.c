@@ -64,7 +64,8 @@ int _mbox_put(mbox_t *mbox, msg_t *msg, int blocking)
     if (next) {
         DEBUG("mbox: Thread %" PRIkernel_pid " mbox 0x%08x: _tryput(): "
               "there's a waiter.\n", sched_active_pid, (unsigned)mbox);
-        thread_t *thread = container_of((clist_node_t *)next, thread_t, rq_entry);
+        thread_t *thread =
+            container_of((clist_node_t *)next, thread_t, rq_entry);
         *(msg_t *)thread->wait_data = *msg;
         _wake_waiter(thread, irqstate);
         return 1;
@@ -102,7 +103,8 @@ int _mbox_get(mbox_t *mbox, msg_t *msg, int blocking)
         *msg = mbox->msg_array[cib_get_unsafe(&mbox->cib)];
         list_node_t *next = list_remove_head(&mbox->writers);
         if (next) {
-            thread_t *thread = container_of((clist_node_t *)next, thread_t, rq_entry);
+            thread_t *thread = container_of((clist_node_t *)next, thread_t,
+                                            rq_entry);
             _wake_waiter(thread, irqstate);
         }
         else {

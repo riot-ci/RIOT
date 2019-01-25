@@ -295,7 +295,8 @@ void __atomic_store_c(size_t size, void *dest, const void *src, int memorder)
  * @param[in]  ret        put the old value from @p ptr in @p ret
  * @param[in]  memorder   memory ordering, ignored in this implementation
  */
-void __atomic_exchange_c(size_t size, void *ptr, void *val, void *ret, int memorder)
+void __atomic_exchange_c(size_t size, void *ptr, void *val, void *ret,
+                         int memorder)
 {
     (void)memorder;
     unsigned int mask = irq_disable();
@@ -337,7 +338,8 @@ void __atomic_exchange_c(size_t size, void *ptr, void *val, void *ret, int memor
  * @return false otherwise
  */
 bool __atomic_compare_exchange_c(size_t len, void *ptr, void *expected,
-                                 void *desired, bool weak, int success_memorder, int failure_memorder)
+                                 void *desired, bool weak, int success_memorder,
+                                 int failure_memorder)
 {
     (void)weak;
     (void)success_memorder;

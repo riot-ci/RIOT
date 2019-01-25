@@ -43,7 +43,9 @@ void lifo_insert(int *array, int i)
 
 #ifdef DEVELHELP
     if ((array[index] != -1) && (array[0] != -1)) {
-        LOG_WARNING("lifo_insert: overwriting array[%i] == %i with %i\n\n\n\t\tThe lifo is broken now.\n\n\n", index, array[index], array[0]);
+        LOG_WARNING(
+            "lifo_insert: overwriting array[%i] == %i with %i\n\n\n\t\tThe lifo is broken now.\n\n\n", index,
+            array[index], array[0]);
     }
 #endif
 

@@ -55,7 +55,8 @@ typedef struct {
  * @param[in]    buffer    Buffer to use by rb.
  * @param[in]    bufsize   `sizeof (buffer)`
  */
-static inline void ringbuffer_init(ringbuffer_t *__restrict rb, char *buffer, unsigned bufsize)
+static inline void ringbuffer_init(ringbuffer_t *__restrict rb, char *buffer,
+                                   unsigned bufsize)
 {
     rb->buf = buffer;
     rb->size = bufsize;
@@ -84,7 +85,8 @@ int ringbuffer_add_one(ringbuffer_t *__restrict rb, char c);
  * @param[in]       n     Maximum number of elements to add.
  * @returns         Number of elements actually added. 0 if rb is full.
  */
-unsigned ringbuffer_add(ringbuffer_t *__restrict rb, const char *buf, unsigned n);
+unsigned ringbuffer_add(ringbuffer_t *__restrict rb, const char *buf,
+                        unsigned n);
 
 /**
  * @brief           Peek and remove oldest element from the ringbuffer.
@@ -154,7 +156,8 @@ int ringbuffer_peek_one(const ringbuffer_t *__restrict rb);
  * @param[in]       n     Read at most n elements.
  * @returns         Same as ringbuffer_get()
  */
-unsigned ringbuffer_peek(const ringbuffer_t *__restrict rb, char *buf, unsigned n);
+unsigned ringbuffer_peek(const ringbuffer_t *__restrict rb, char *buf,
+                         unsigned n);
 
 #ifdef __cplusplus
 }

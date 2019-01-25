@@ -262,7 +262,8 @@ struct _thread {
  * @brief Size of the main task's stack in bytes
  */
 #ifndef THREAD_STACKSIZE_MAIN
-#define THREAD_STACKSIZE_MAIN      (THREAD_STACKSIZE_DEFAULT + THREAD_EXTRA_STACKSIZE_PRINTF)
+#define THREAD_STACKSIZE_MAIN      (THREAD_STACKSIZE_DEFAULT + \
+                                    THREAD_EXTRA_STACKSIZE_PRINTF)
 #endif
 
 /**
@@ -316,7 +317,8 @@ struct _thread {
  * @def THREAD_PRIORITY_MAIN
  * @brief Priority of the main thread
  */
-#define THREAD_PRIORITY_MAIN           (THREAD_PRIORITY_MIN - (SCHED_PRIO_LEVELS / 2))
+#define THREAD_PRIORITY_MAIN           (THREAD_PRIORITY_MIN - \
+                                        (SCHED_PRIO_LEVELS / 2))
 
 /**
  * @name Optional flags for controlling a threads initial state
@@ -462,7 +464,8 @@ static inline kernel_pid_t thread_getpid(void)
  *
  * @return stack pointer
  */
-char *thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_start, int stack_size);
+char *thread_stack_init(thread_task_func_t task_func, void *arg,
+                        void *stack_start, int stack_size);
 
 /**
  * @brief Add thread to list, sorted by priority (internal)

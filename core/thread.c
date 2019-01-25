@@ -118,7 +118,8 @@ void thread_add_to_list(list_node_t *list, thread_t *thread)
     list_node_t *new_node = (list_node_t *)&thread->rq_entry;
 
     while (list->next) {
-        thread_t *list_entry = container_of((clist_node_t *)list->next, thread_t, rq_entry);
+        thread_t *list_entry = container_of((clist_node_t *)list->next,
+                                            thread_t, rq_entry);
         if (list_entry->priority > my_prio) {
             break;
         }
@@ -145,7 +146,9 @@ uintptr_t thread_measure_stack_free(char *stack)
 }
 #endif
 
-kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags, thread_task_func_t function, void *arg, const char *name)
+kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
+                           thread_task_func_t function, void *arg,
+                           const char *name)
 {
     if (priority >= SCHED_PRIO_LEVELS) {
         return -EINVAL;
@@ -216,7 +219,8 @@ kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
     cb->pid = pid;
     cb->sp = thread_stack_init(function, arg, stack, stacksize);
 
-#if defined(DEVELHELP) || defined(SCHED_TEST_STACK) || defined(MODULE_MPU_STACK_GUARD)
+#if defined(DEVELHELP) || defined(SCHED_TEST_STACK) || \
+    defined(MODULE_MPU_STACK_GUARD)
     cb->stack_start = stack;
 #endif
 
@@ -239,7 +243,8 @@ kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
 
     sched_num_threads++;
 
-    DEBUG("Created thread %s. PID: %" PRIkernel_pid ". Priority: %u.\n", name, cb->pid, priority);
+    DEBUG("Created thread %s. PID: %" PRIkernel_pid ". Priority: %u.\n", name,
+          cb->pid, priority);
 
     if (flags & THREAD_CREATE_SLEEPING) {
         sched_set_status(cb, STATUS_SLEEPING);

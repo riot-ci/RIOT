@@ -250,7 +250,8 @@ static inline clist_node_t *clist_rpop(clist_node_t *list)
  * @returns         predecessor of node if found
  * @returns         NULL if node is not a list member
  */
-static inline clist_node_t *clist_find_before(const clist_node_t *list, const clist_node_t *node)
+static inline clist_node_t *clist_find_before(const clist_node_t *list,
+                                              const clist_node_t *node)
 {
     clist_node_t *pos = list->next;
 
@@ -279,7 +280,8 @@ static inline clist_node_t *clist_find_before(const clist_node_t *list, const cl
  * @returns         node if found
  * @returns         NULL if node is not a list member
  */
-static inline clist_node_t *clist_find(const clist_node_t *list, const clist_node_t *node)
+static inline clist_node_t *clist_find(const clist_node_t *list,
+                                       const clist_node_t *node)
 {
     clist_node_t *tmp = clist_find_before(list, node);
 
@@ -339,7 +341,9 @@ static inline clist_node_t *clist_remove(clist_node_t *list, clist_node_t *node)
  * @returns         NULL on empty list or full traversal
  * @returns         node that caused @p func(node, arg) to exit non-zero
  */
-static inline clist_node_t *clist_foreach(clist_node_t *list, int (*func)(clist_node_t *, void *), void *arg)
+static inline clist_node_t *clist_foreach(clist_node_t *list, int (*func)(
+                                              clist_node_t *, void *),
+                                          void *arg)
 {
     clist_node_t *node = list->next;
 
