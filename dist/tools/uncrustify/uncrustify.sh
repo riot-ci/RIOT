@@ -1,11 +1,16 @@
 #!/bin/bash
 RIOTBASE=$(git rev-parse --show-toplevel)
 CURDIR=$(cd "$(dirname "$0")" && pwd)
-BLACKLIST=$CURDIR/blacklist.txt
 UNCRUSTIFY_CFG="$RIOTBASE"/uncrustify-riot.cfg
 
+WHITELIST=$CURDIR/whitelist.txt
+BLACKLIST=$CURDIR/blacklist.txt
+
 . "$RIOTBASE"/dist/tools/ci/changed_files.sh
-FILES=$(changed_files | grep -vf "$BLACKLIST")
+
+# only consider whitelisted stuff, then filter out blacklist
+# note: this also applies changed_files' default filter
+FILES=$(changed_files | grep -f "$WHITELIST" | grep -vf "$BLACKLIST")
 
 check () {
     for F in $FILES
