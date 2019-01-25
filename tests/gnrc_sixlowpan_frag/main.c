@@ -484,8 +484,7 @@ static void test_rbuf_add__overlap_rhs(void)
         }
     }
     TEST_ASSERT_EQUAL_INT(1U, rbuf_entries);
-    TEST_ASSERT_MESSAGE(gnrc_pktbuf_is_empty(),
-                        "Packet buffer is not empty");
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_rm(void)
@@ -501,7 +500,7 @@ static void test_rbuf_rm(void)
     rbuf_rm((rbuf_t *)entry);
     /* reassembly buffer is now empty */
     TEST_ASSERT_NULL(_first_non_empty_rbuf());
-
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_gc__manually(void)
@@ -520,7 +519,7 @@ static void test_rbuf_gc__manually(void)
     rbuf_gc();
     /* reassembly buffer is now empty */
     TEST_ASSERT_NULL(_first_non_empty_rbuf());
-
+    _check_pktbuf(NULL);
 }
 
 static void test_rbuf_gc__timed(void)
@@ -543,7 +542,7 @@ static void test_rbuf_gc__timed(void)
     rbuf_gc();
     /* reassembly buffer is now empty */
     TEST_ASSERT_NULL(_first_non_empty_rbuf());
-
+    _check_pktbuf(NULL);
 }
 
 static void run_unittests(void)
