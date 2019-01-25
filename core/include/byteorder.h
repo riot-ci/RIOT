@@ -31,6 +31,10 @@ extern "C" {
 
 /* ******************************* INTERFACE ******************************* */
 
+/*
+ * keep uncrustify from removing the alignment of the struct members
+ * *INDENT-OFF*
+ */
 
 /**
  * @brief          A 16 bit integer in little endian.
@@ -103,6 +107,8 @@ typedef union __attribute__((packed)) {
     be_uint16_t b16[4]; /**< big endian 16 bit representation */
     be_uint32_t b32[2]; /**< big endian 32 bit representation */
 } be_uint64_t;
+
+/* *INDENT-ON* */
 
 /**
  * @brief A 16 bit integer in network byte order.
