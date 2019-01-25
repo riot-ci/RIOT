@@ -59,13 +59,13 @@ static uint32_t runqueue_bitcache = 0;
 
 /* Needed by OpenOCD to read sched_threads */
 #if defined(__APPLE__) && defined(__MACH__)
- #define FORCE_USED_SECTION __attribute__((used)) __attribute__((section ("__OPENOCD,__openocd")))
+ #define FORCE_USED_SECTION __attribute__((used)) __attribute__((section("__OPENOCD,__openocd")))
 #else
- #define FORCE_USED_SECTION __attribute__((used)) __attribute__((section (".openocd")))
+ #define FORCE_USED_SECTION __attribute__((used)) __attribute__((section(".openocd")))
 #endif
 
 FORCE_USED_SECTION
-const uint8_t max_threads = sizeof(sched_threads) / sizeof(thread_t*);
+const uint8_t max_threads = sizeof(sched_threads) / sizeof(thread_t *);
 
 #ifdef DEVELHELP
 /* OpenOCD can't determine struct offsets and additionally this member is only
@@ -110,7 +110,7 @@ int __attribute__((used)) sched_run(void)
         }
 
 #ifdef SCHED_TEST_STACK
-        if (*((uintptr_t *) active_thread->stack_start) != (uintptr_t) active_thread->stack_start) {
+        if (*((uintptr_t *)active_thread->stack_start) != (uintptr_t)active_thread->stack_start) {
             LOG_WARNING("scheduler(): stack overflow detected, pid=%" PRIkernel_pid "\n", active_thread->pid);
         }
 #endif
@@ -134,14 +134,14 @@ int __attribute__((used)) sched_run(void)
 
     next_thread->status = STATUS_RUNNING;
     sched_active_pid = next_thread->pid;
-    sched_active_thread = (volatile thread_t *) next_thread;
+    sched_active_thread = (volatile thread_t *)next_thread;
 
 #ifdef MODULE_MPU_STACK_GUARD
     mpu_configure(
-        1,                                                /* MPU region 1 */
-        (uintptr_t)sched_active_thread->stack_start + 31, /* Base Address (rounded up) */
-        MPU_ATTR(1, AP_RO_RO, 0, 1, 0, 1, MPU_SIZE_32B)   /* Attributes and Size */
-    );
+        1,                                                  /* MPU region 1 */
+        (uintptr_t)sched_active_thread->stack_start + 31,   /* Base Address (rounded up) */
+        MPU_ATTR(1, AP_RO_RO, 0, 1, 0, 1, MPU_SIZE_32B)     /* Attributes and Size */
+        );
 
     mpu_enable();
 #endif
@@ -185,11 +185,11 @@ void sched_set_status(thread_t *process, unsigned int status)
 
 void sched_switch(uint16_t other_prio)
 {
-    thread_t *active_thread = (thread_t *) sched_active_thread;
+    thread_t *active_thread = (thread_t *)sched_active_thread;
     uint16_t current_prio = active_thread->priority;
     int on_runqueue = (active_thread->status >= STATUS_ON_RUNQUEUE);
 
-    DEBUG("sched_switch: active pid=%" PRIkernel_pid" prio=%" PRIu16 " on_runqueue=%i "
+    DEBUG("sched_switch: active pid=%" PRIkernel_pid " prio=%" PRIu16 " on_runqueue=%i "
           ", other_prio=%" PRIu16 "\n",
           active_thread->pid, current_prio, on_runqueue, other_prio);
 
@@ -212,7 +212,7 @@ NORETURN void sched_task_exit(void)
 {
     DEBUG("sched_task_exit: ending thread %" PRIkernel_pid "...\n", sched_active_thread->pid);
 
-    (void) irq_disable();
+    (void)irq_disable();
     sched_threads[sched_active_pid] = NULL;
     sched_num_threads--;
 
