@@ -453,8 +453,8 @@ int gnrc_netif_eui64_from_addr(const gnrc_netif_t *netif,
 /**
  * @brief   Converts an interface EUI-64 from an interface's hardware address
  *
- * @param[in] netif     The network interface @p iid came from
- * @param[out] iid      The IID based on gnrc_netif_t::device_type
+ * @param[in] netif     The network interface @p eui64 came from
+ * @param[out] eui64    The EUI-64 based on gnrc_netif_t::device_type
  *
  * @note    This wraps around @ref gnrc_netif_eui64_from_addr by using by using
  *          gnrc_netif_t::l2addr and gnrc_netif_t::l2addr_len of @p netif.
