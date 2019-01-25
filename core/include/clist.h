@@ -89,7 +89,7 @@
 #include "list.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -253,6 +253,7 @@ static inline clist_node_t *clist_rpop(clist_node_t *list)
 static inline clist_node_t *clist_find_before(const clist_node_t *list, const clist_node_t *node)
 {
     clist_node_t *pos = list->next;
+
     if (!pos) {
         return NULL;
     }
@@ -281,6 +282,7 @@ static inline clist_node_t *clist_find_before(const clist_node_t *list, const cl
 static inline clist_node_t *clist_find(const clist_node_t *list, const clist_node_t *node)
 {
     clist_node_t *tmp = clist_find_before(list, node);
+
     if (tmp) {
         return tmp->next;
     }
@@ -337,9 +339,10 @@ static inline clist_node_t *clist_remove(clist_node_t *list, clist_node_t *node)
  * @returns         NULL on empty list or full traversal
  * @returns         node that caused @p func(node, arg) to exit non-zero
  */
-static inline clist_node_t *clist_foreach(clist_node_t *list, int(*func)(clist_node_t *, void *), void *arg)
+static inline clist_node_t *clist_foreach(clist_node_t *list, int (*func)(clist_node_t *, void *), void *arg)
 {
     clist_node_t *node = list->next;
+
     if (node) {
         do {
             node = node->next;

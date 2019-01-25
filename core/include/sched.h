@@ -88,7 +88,7 @@
 #include "clist.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -179,10 +179,10 @@ NORETURN void sched_task_exit(void);
  *  Scheduler statistics
  */
 typedef struct {
-    uint32_t laststart;      /**< Time stamp of the last time this thread was
-                                  scheduled to run */
-    unsigned int schedules;  /**< How often the thread was scheduled to run */
-    uint64_t runtime_ticks;  /**< The total runtime of this thread in ticks */
+    uint32_t laststart;         /**< Time stamp of the last time this thread was
+                                     scheduled to run */
+    unsigned int schedules;     /**< How often the thread was scheduled to run */
+    uint64_t runtime_ticks;     /**< The total runtime of this thread in ticks */
 } schedstat_t;
 
 /**
