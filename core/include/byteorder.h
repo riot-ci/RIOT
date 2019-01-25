@@ -31,6 +31,10 @@ extern "C" {
 
 /* ******************************* INTERFACE ******************************* */
 
+/*
+ * keep uncrustify from removing the alignment of the struct members
+ * *INDENT-OFF*
+ */
 
 /**
  * @brief          A 16 bit integer in little endian.
@@ -103,6 +107,8 @@ typedef union __attribute__((packed)) {
     be_uint16_t b16[4]; /**< big endian 16 bit representation */
     be_uint32_t b32[2]; /**< big endian 32 bit representation */
 } be_uint64_t;
+
+/* *INDENT-ON* */
 
 /**
  * @brief A 16 bit integer in network byte order.
@@ -303,7 +309,7 @@ static inline uint64_t ntohll(uint64_t v);
 #ifdef HAVE_NO_BUILTIN_BSWAP16
 static inline unsigned short __builtin_bswap16(unsigned short a)
 {
-    return (a<<8)|(a>>8);
+    return (a << 8) | (a >> 8);
 }
 #endif
 
@@ -333,36 +339,42 @@ static inline uint64_t byteorder_swapll(uint64_t v)
 static inline be_uint16_t byteorder_ltobs(le_uint16_t v)
 {
     be_uint16_t result = { byteorder_swaps(v.u16) };
+
     return result;
 }
 
 static inline be_uint32_t byteorder_ltobl(le_uint32_t v)
 {
     be_uint32_t result = { byteorder_swapl(v.u32) };
+
     return result;
 }
 
 static inline be_uint64_t byteorder_ltobll(le_uint64_t v)
 {
     be_uint64_t result = { byteorder_swapll(v.u64) };
+
     return result;
 }
 
 static inline le_uint16_t byteorder_btols(be_uint16_t v)
 {
     le_uint16_t result = { byteorder_swaps(v.u16) };
+
     return result;
 }
 
 static inline le_uint32_t byteorder_btoll(be_uint32_t v)
 {
     le_uint32_t result = { byteorder_swapl(v.u32) };
+
     return result;
 }
 
 static inline le_uint64_t byteorder_btolll(be_uint64_t v)
 {
     le_uint64_t result = { byteorder_swapll(v.u64) };
+
     return result;
 }
 
@@ -370,7 +382,7 @@ static inline le_uint64_t byteorder_btolll(be_uint64_t v)
  * @brief Swaps the byteorder according to the endianess
  */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#   define _byteorder_swap(V, T) (byteorder_swap##T((V)))
+#   define _byteorder_swap(V, T) (byteorder_swap ## T((V)))
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #   define _byteorder_swap(V, T) (V)
 #else
@@ -380,18 +392,21 @@ static inline le_uint64_t byteorder_btolll(be_uint64_t v)
 static inline network_uint16_t byteorder_htons(uint16_t v)
 {
     network_uint16_t result = { _byteorder_swap(v, s) };
+
     return result;
 }
 
 static inline network_uint32_t byteorder_htonl(uint32_t v)
 {
     network_uint32_t result = { _byteorder_swap(v, l) };
+
     return result;
 }
 
 static inline network_uint64_t byteorder_htonll(uint64_t v)
 {
     network_uint64_t result = { _byteorder_swap(v, ll) };
+
     return result;
 }
 
@@ -428,18 +443,21 @@ static inline uint64_t htonll(uint64_t v)
 static inline uint16_t ntohs(uint16_t v)
 {
     network_uint16_t input = { v };
+
     return byteorder_ntohs(input);
 }
 
 static inline uint32_t ntohl(uint32_t v)
 {
     network_uint32_t input = { v };
+
     return byteorder_ntohl(input);
 }
 
 static inline uint64_t ntohll(uint64_t v)
 {
     network_uint64_t input = { v };
+
     return byteorder_ntohll(input);
 }
 

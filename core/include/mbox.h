@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 /** Static initializer for mbox objects */
-#define MBOX_INIT(queue, queue_size) {{0}, {0}, CIB_INIT(queue_size), queue}
+#define MBOX_INIT(queue, queue_size) { { 0 }, { 0 }, CIB_INIT(queue_size), queue }
 
 /**
  * @brief Mailbox struct definition
@@ -60,6 +60,7 @@ enum {
 static inline void mbox_init(mbox_t *mbox, msg_t *queue, unsigned int queue_size)
 {
     mbox_t m = MBOX_INIT(queue, queue_size);
+
     *mbox = m;
 }
 

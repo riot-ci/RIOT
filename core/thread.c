@@ -41,7 +41,8 @@ volatile thread_t *thread_get(kernel_pid_t pid)
 int thread_getstatus(kernel_pid_t pid)
 {
     volatile thread_t *t = thread_get(pid);
-    return t ? (int) t->status : STATUS_NOT_FOUND;
+
+    return t ? (int)t->status : STATUS_NOT_FOUND;
 }
 
 const char *thread_getname(kernel_pid_t pid)
@@ -73,7 +74,7 @@ int thread_wakeup(kernel_pid_t pid)
 
     unsigned old_state = irq_disable();
 
-    thread_t *other_thread = (thread_t *) thread_get(pid);
+    thread_t *other_thread = (thread_t *)thread_get(pid);
 
     if (!other_thread) {
         DEBUG("thread_wakeup: Thread does not exist!\n");
@@ -100,6 +101,7 @@ void thread_yield(void)
 {
     unsigned old_state = irq_disable();
     thread_t *me = (thread_t *)sched_active_thread;
+
     if (me->status >= STATUS_ON_RUNQUEUE) {
         clist_lpoprpush(&sched_runqueues[me->priority]);
     }
@@ -110,13 +112,13 @@ void thread_yield(void)
 
 void thread_add_to_list(list_node_t *list, thread_t *thread)
 {
-    assert (thread->status < STATUS_ON_RUNQUEUE);
+    assert(thread->status < STATUS_ON_RUNQUEUE);
 
     uint16_t my_prio = thread->priority;
-    list_node_t *new_node = (list_node_t*)&thread->rq_entry;
+    list_node_t *new_node = (list_node_t *)&thread->rq_entry;
 
     while (list->next) {
-        thread_t *list_entry = container_of((clist_node_t*)list->next, thread_t, rq_entry);
+        thread_t *list_entry = container_of((clist_node_t *)list->next, thread_t, rq_entry);
         if (list_entry->priority > my_prio) {
             break;
         }
@@ -134,11 +136,11 @@ uintptr_t thread_measure_stack_free(char *stack)
 
     /* assume that the comparison fails before or after end of stack */
     /* assume that the stack grows "downwards" */
-    while (*stackp == (uintptr_t) stackp) {
+    while (*stackp == (uintptr_t)stackp) {
         stackp++;
     }
 
-    uintptr_t space_free = (uintptr_t) stackp - (uintptr_t) stack;
+    uintptr_t space_free = (uintptr_t)stackp - (uintptr_t)stack;
     return space_free;
 }
 #endif
@@ -152,11 +154,11 @@ kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
 #ifdef DEVELHELP
     int total_stacksize = stacksize;
 #else
-    (void) name;
+    (void)name;
 #endif
 
     /* align the stack on a 16/32bit boundary */
-    uintptr_t misalignment = (uintptr_t) stack % ALIGN_OF(void *);
+    uintptr_t misalignment = (uintptr_t)stack % ALIGN_OF(void *);
     if (misalignment) {
         misalignment = ALIGN_OF(void *) - misalignment;
         stack += misalignment;
@@ -173,22 +175,22 @@ kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
         DEBUG("thread_create: stacksize is too small!\n");
     }
     /* allocate our thread control block at the top of our stackspace */
-    thread_t *cb = (thread_t *) (stack + stacksize);
+    thread_t *cb = (thread_t *)(stack + stacksize);
 
 #if defined(DEVELHELP) || defined(SCHED_TEST_STACK)
     if (flags & THREAD_CREATE_STACKTEST) {
         /* assign each int of the stack the value of it's address */
-        uintptr_t *stackmax = (uintptr_t *) (stack + stacksize);
-        uintptr_t *stackp = (uintptr_t *) stack;
+        uintptr_t *stackmax = (uintptr_t *)(stack + stacksize);
+        uintptr_t *stackp = (uintptr_t *)stack;
 
         while (stackp < stackmax) {
-            *stackp = (uintptr_t) stackp;
+            *stackp = (uintptr_t)stackp;
             stackp++;
         }
     }
     else {
         /* create stack guard */
-        *(uintptr_t *) stack = (uintptr_t) stack;
+        *(uintptr_t *)stack = (uintptr_t)stack;
     }
 #endif
 

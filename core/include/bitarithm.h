@@ -26,7 +26,7 @@
 #include "cpu_conf.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -157,7 +157,7 @@ static inline unsigned bitarithm_lsb(unsigned v)
     while ((v & 0x01) == 0) {
         v >>= 1;
         r++;
-    };
+    }
 
     return r;
 }
