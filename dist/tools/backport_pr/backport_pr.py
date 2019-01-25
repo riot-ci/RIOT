@@ -22,8 +22,8 @@ REPO = "RIOT"
 GITHUBTOKEN_FILE = ".riotgithubtoken"
 WORKTREE_SUBDIR = "backport_temp"
 
-RELEASE_SUFFIX = "-branch"
 RELEASE_PREFIX = ""
+RELEASE_SUFFIX = "-branch"
 
 LABELS_REMOVE = ['Process: needs backport']
 LABELS_ADD = ['Process: release backport']
@@ -39,13 +39,19 @@ def _get_labels(pr):
     return sorted(list(labels))
 
 
-def _branch_name_strip(branch_name):
-    if branch_name.startswith(RELEASE_PREFIX) and \
-       branch_name.endswith(RELEASE_SUFFIX):
-        if len(RELEASE_SUFFIX):
-            branch_name = branch_name.rsplit(RELEASE_SUFFIX, maxsplit=1)[0]
-        if len(RELEASE_PREFIX):
-            branch_name = branch_name.split(RELEASE_PREFIX, maxsplit=1)[0]
+def _branch_name_strip(branch_name, prefix=RELEASE_PREFIX,
+                       suffix=RELEASE_SUFFIX):
+    """Strip suffix and prefix.
+
+    >>> _branch_name_strip('2018.10-branch')
+    '2018.10'
+    """
+    if (branch_name.startswith(prefix) and
+            branch_name.endswith(suffix)):
+        if prefix:
+            branch_name = branch_name.split(prefix, maxsplit=1)[0]
+        if suffix:
+            branch_name = branch_name.rsplit(suffix, maxsplit=1)[0]
     return branch_name
 
 
