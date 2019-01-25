@@ -42,7 +42,7 @@
 #include "irq.h"
 
 /*
- * uncrustify mis-formats the macros in this file, so disable it globally.
+ * uncrustify mis-formats the macros in this file, so disable it for them.
  * *INDENT-OFF*
  */
 
