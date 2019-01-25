@@ -130,7 +130,7 @@
 #endif
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Thread states */
@@ -162,7 +162,7 @@
  * @{
  */
 #define STATUS_ON_RUNQUEUE      STATUS_RUNNING  /**< to check if on run queue:
-                                                 `st >= STATUS_ON_RUNQUEUE`             */
+                                                   `st >= STATUS_ON_RUNQUEUE`             */
 #define STATUS_RUNNING         10               /**< currently running                  */
 #define STATUS_PENDING         11               /**< waiting to be scheduled to run     */
 /** @} */
@@ -262,7 +262,8 @@ struct _thread {
  * @brief Size of the main task's stack in bytes
  */
 #ifndef THREAD_STACKSIZE_MAIN
-#define THREAD_STACKSIZE_MAIN      (THREAD_STACKSIZE_DEFAULT + THREAD_EXTRA_STACKSIZE_PRINTF)
+#define THREAD_STACKSIZE_MAIN      (THREAD_STACKSIZE_DEFAULT + \
+                                    THREAD_EXTRA_STACKSIZE_PRINTF)
 #endif
 
 /**
@@ -304,7 +305,7 @@ struct _thread {
  * @def THREAD_PRIORITY_MIN
  * @brief Least priority a thread can have
  */
-#define THREAD_PRIORITY_MIN            (SCHED_PRIO_LEVELS-1)
+#define THREAD_PRIORITY_MIN            (SCHED_PRIO_LEVELS - 1)
 
 /**
  * @def THREAD_PRIORITY_IDLE
@@ -316,7 +317,8 @@ struct _thread {
  * @def THREAD_PRIORITY_MAIN
  * @brief Priority of the main thread
  */
-#define THREAD_PRIORITY_MAIN           (THREAD_PRIORITY_MIN - (SCHED_PRIO_LEVELS/2))
+#define THREAD_PRIORITY_MAIN           (THREAD_PRIORITY_MIN - \
+                                        (SCHED_PRIO_LEVELS / 2))
 
 /**
  * @name Optional flags for controlling a threads initial state
@@ -340,10 +342,10 @@ struct _thread {
  */
 #define THREAD_CREATE_WOUT_YIELD        (4)
 
- /**
-  * @brief Write markers into the thread's stack to measure stack usage (for
-  *        debugging and profiling purposes)
-  */
+/**
+ * @brief Write markers into the thread's stack to measure stack usage (for
+ *        debugging and profiling purposes)
+ */
 #define THREAD_CREATE_STACKTEST         (8)
 /** @} */
 
@@ -370,14 +372,14 @@ struct _thread {
  * @return              -EINVAL, if @p priority is greater than or equal to
  *                      @ref SCHED_PRIO_LEVELS
  * @return              -EOVERFLOW, if there are too many threads running already
-*/
+ */
 kernel_pid_t thread_create(char *stack,
-                  int stacksize,
-                  char priority,
-                  int flags,
-                  thread_task_func_t task_func,
-                  void *arg,
-                  const char *name);
+                           int stacksize,
+                           char priority,
+                           int flags,
+                           thread_task_func_t task_func,
+                           void *arg,
+                           const char *name);
 
 /**
  * @brief       Retreive a thread control block by PID.
@@ -448,6 +450,7 @@ int thread_wakeup(kernel_pid_t pid);
 static inline kernel_pid_t thread_getpid(void)
 {
     extern volatile kernel_pid_t sched_active_pid;
+
     return sched_active_pid;
 }
 
@@ -461,7 +464,8 @@ static inline kernel_pid_t thread_getpid(void)
  *
  * @return stack pointer
  */
-char *thread_stack_init(thread_task_func_t task_func, void *arg, void *stack_start, int stack_size);
+char *thread_stack_init(thread_task_func_t task_func, void *arg,
+                        void *stack_start, int stack_size);
 
 /**
  * @brief Add thread to list, sorted by priority (internal)
