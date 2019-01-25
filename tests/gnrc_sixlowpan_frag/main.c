@@ -38,6 +38,11 @@
 /* test date taken from an experimental run (uncompressed ICMPv6 echo reply with
  * 300 byte payload)*/
 #define TEST_DATAGRAM_SIZE      (348U)
+#ifdef MODULE_GNRC_IPV6
+#define TEST_DATAGRAM_NETTYPE   (GNRC_NETTYPE_IPV6)
+#else  /* MODULE_GNRC_IPV6 */
+#define TEST_DATAGRAM_NETTYPE   (GNRC_NETTYPE_UNDEF)
+#endif /* MODULE_GNRC_IPV6 */
 #define TEST_FRAGMENT1_OFFSET   (0U)
 #define TEST_FRAGMENT2_OFFSET   (96U)
 #define TEST_FRAGMENT3_OFFSET   (192U)
@@ -312,7 +317,7 @@ static void test_rbuf_add__success_complete(void)
             sched_active_pid
         );
 
-    gnrc_netreg_register(GNRC_NETTYPE_IPV6, &reg);
+    gnrc_netreg_register(TEST_DATAGRAM_NETTYPE, &reg);
     /* Mixing up things. Order decided by fair dice-rolls ;-) */
     TEST_ASSERT_NOT_NULL(pkt2);
     rbuf_add(&_test_netif_hdr.hdr, pkt2, TEST_FRAGMENT2_OFFSET, TEST_PAGE);
@@ -326,11 +331,12 @@ static void test_rbuf_add__success_complete(void)
             xtimer_msg_receive_timeout(&msg, TEST_RECEIVE_TIMEOUT) >= 0,
             "Receiving reassembled datagram timed out"
         );
-    gnrc_netreg_unregister(GNRC_NETTYPE_IPV6, &reg);
+    gnrc_netreg_unregister(TEST_DATAGRAM_NETTYPE, &reg);
     TEST_ASSERT_EQUAL_INT(GNRC_NETAPI_MSG_TYPE_RCV, msg.type);
     TEST_ASSERT_NOT_NULL(msg.content.ptr);
     datagram = msg.content.ptr;
     TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_SIZE, datagram->size);
+    TEST_ASSERT_EQUAL_INT(TEST_DATAGRAM_NETTYPE, datagram->type);
     TEST_ASSERT_MESSAGE(memcmp(_datagram, datagram->data,
                         TEST_DATAGRAM_SIZE) == 0,
                         "Reassembled datagram does not contain expected data");
