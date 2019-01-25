@@ -4,7 +4,7 @@ Pull requests backport script
 This script provides functionality to easily backport a merged pull request to
 a release branch.
 
-It relies of having a `github` API token stored in `~/.riotgithubtoken` by
+It relies on having a `github` API token stored in `~/.riotgithubtoken` by
 default.
 
 
