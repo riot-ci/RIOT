@@ -29,6 +29,11 @@
 #include <string.h>
 #include "irq.h"
 
+/*
+ * uncrustify mis-formats the macros in this file, so disable it globally.
+ * begin{code-style-ignore}
+ */
+
 /* use gcc/clang implementation if available */
 #if defined(__GNUC__) \
     && (__GNUC__ > 4 || \
