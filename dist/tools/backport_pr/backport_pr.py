@@ -9,13 +9,14 @@
 #
 # @author   Koen Zandberg <koen@bergzand.net>
 
-from agithub.GitHub import GitHub
-import git
-import argparse
 import os
 import os.path
-import shutil
 import sys
+import shutil
+import argparse
+
+import git
+from agithub.GitHub import GitHub
 
 ORG = "RIOT-OS"
 REPO = "RIOT"
