@@ -41,6 +41,11 @@
 #include <string.h>
 #include "irq.h"
 
+/*
+ * uncrustify mis-formats the macros in this file, so disable it globally.
+ * *INDENT-OFF*
+ */
+
 /* GCC documentation refers to the types as I1, I2, I4, I8, I16 */
 typedef uint8_t  I1;
 typedef uint16_t I2;
