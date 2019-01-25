@@ -24,7 +24,7 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -39,6 +39,7 @@
  * @param[in]   TYPE     a type name (a struct or union), container of PTR
  * @param[in]   MEMBER   name of the member of TYPE which PTR points to
  * @return      Pointer to the container of PTR.
+ * *INDENT-OFF*
  */
 #if __STDC_VERSION__ >= 201112L
 #   define container_of(PTR, TYPE, MEMBER) \
@@ -58,6 +59,7 @@
 #   define container_of(PTR, TYPE, MEMBER) \
         ((TYPE *) ((char *) (PTR) - offsetof(TYPE, MEMBER)))
 #endif
+/* *INDENT-ON* */
 
 /**
  * @def NORETURN
