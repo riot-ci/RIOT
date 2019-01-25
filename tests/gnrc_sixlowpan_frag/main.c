@@ -418,10 +418,7 @@ static void test_rbuf_add__overlap_lhs(void)
     for (unsigned i = 0; i < RBUF_SIZE; i++) {
         const rbuf_t *entry = &rbuf[i];
         if (!rbuf_entry_empty(entry)) {
-            /* calculate offset from changed offset to safe porting
-             * efforts later ;-) */
-            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET -
-                    (TEST_FRAGMENT2_OFFSET - pkt2_offset) - 1;
+            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET - 8U - 1;
 
             rbuf_entries++;
             /* only _fragment2 should now in the reassembly buffer according to
@@ -465,10 +462,7 @@ static void test_rbuf_add__overlap_rhs(void)
     for (unsigned i = 0; i < RBUF_SIZE; i++) {
         const rbuf_t *entry = &rbuf[i];
         if (!rbuf_entry_empty(entry)) {
-            /* calculate offset from changed offset to safe porting
-             * efforts later ;-) */
-            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET -
-                    (TEST_FRAGMENT2_OFFSET - pkt2_offset) - 1;
+            static const size_t pkt3_offset = TEST_FRAGMENT3_OFFSET + 8U - 1U;
 
             rbuf_entries++;
             /* only _fragment2 should now in the reassembly buffer according to
