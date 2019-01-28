@@ -80,8 +80,8 @@ static void _usage_nib_route(char **argv)
 
 static inline gnrc_netif_t *_get_iface(unsigned iface)
 {
-     /* prevent integer overflow can't use pid_is_valid() since it itself would
-      * cause an overflow due to the cast to `kernel_pid_t` */
+     /* To prevent integer overflow we can't use pid_is_valid() since it
+      * itself would cause an overflow due to the cast to `kernel_pid_t` */
     return (iface <= ((unsigned)KERNEL_PID_LAST))
            ? gnrc_netif_get_by_pid(iface)
            : NULL;
