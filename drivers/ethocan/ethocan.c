@@ -75,6 +75,8 @@ static uint16_t crc16_update(uint16_t crc, uint8_t octet)
 
 static uint8_t state_blocked(ethocan_t *ctx, uint8_t old_state)
 {
+    uint32_t backoff;
+
     /* When we have left the RECV state, the driver's thread has to look
      * if this frame should be processed. By queuing NETDEV_EVENT_ISR,
      * the netif thread will call _isr at some time. */
@@ -88,10 +90,18 @@ static uint8_t state_blocked(ethocan_t *ctx, uint8_t old_state)
      * the falling edge of the start bit */
     gpio_irq_enable(ctx->sense_pin);
 
-    /* The timeout will bring us back into IDLE state by a random time
-     * between 0 and the octet timeout. Thus, we will block sending
-     * frames for a certain time and only wait for incoming frames. */
-    uint32_t backoff = random_uint32_range(ctx->timeout_ticks / 10, ctx->timeout_ticks);
+    /* The timeout will bring us back into IDLE state by a random time.
+     * If we entered this state from RECV state, the random time lays
+     * in the interval [0.1 * timeout, 1.0 * timeout]. If we cam from
+     * SEND state, a time in the interval [1.0 * timeout, 2.0 * timeout]
+     * will be picked. This way, we sure responding nodes get bus preferred
+     * bus access and sending nodes do not overwhelm listening nodes. */
+    if (old_state == ETHOCAN_STATE_SEND) {
+        backoff = random_uint32_range(ctx->timeout_ticks, 2 * ctx->timeout_ticks);
+    }
+    else {
+        backoff = random_uint32_range(ctx->timeout_ticks / 10, ctx->timeout_ticks);
+    }
     xtimer_set(&ctx->timeout, backoff);
 
     return ETHOCAN_STATE_BLOCKED;
