@@ -75,22 +75,22 @@ static uint16_t crc16_update(uint16_t crc, uint8_t octet)
 
 static uint8_t state_blocked(ethocan_t *ctx, uint8_t old_state)
 {
-    /* When we left the RECV state, user land has to look if this frame
-     * should be processed. By queuing NETDEV_EVENT_ISR, the netif thread
-     * will call _isr at some time. But nobody knows when ... */
+    /* When we have left the RECV state, the driver's thread has to look
+     * if this frame should be processed. By queuing NETDEV_EVENT_ISR,
+     * the netif thread will call _isr at some time. */
     if (old_state == ETHOCAN_STATE_RECV) {
         flag_set(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
         flag_clear(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
         ctx->netdev.event_callback((netdev_t *) ctx, NETDEV_EVENT_ISR);
     }
 
-    /* Enable GPIO interrupt for listing to
+    /* Enable GPIO interrupt for listening to
      * the falling edge of the start bit */
     gpio_irq_enable(ctx->sense_pin);
 
     /* The timeout will bring us back into IDLE state by a random time
-     * between 0 and the default timeout. Thus, we will block sending
-     * frames for a certain time and wait for incoming frames */
+     * between 0 and the octet timeout. Thus, we will block sending
+     * frames for a certain time and only wait for incoming frames. */
     uint32_t backoff = random_uint32_range(ctx->timeout_ticks / 10, ctx->timeout_ticks);
     xtimer_set(&ctx->timeout, backoff);
 
@@ -103,13 +103,13 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
 
     if (old_state != ETHOCAN_STATE_RECV) {
         /* We freshly entered this state due to a GPIO interrupt.
-         * Thus we detected the falling edge of the start bit.
+         * Thus, we detected the falling edge of the start bit.
          * Disable GPIO IRQs during the transmission. */
         gpio_irq_disable(ctx->sense_pin);
     }
     else {
-        /* Reentered this state -> a new char has been received from UART.
-         * Handle ESC and END octect ... */
+        /* Reentered this state -> a new octet has been received from UART.
+         * Handle ESC and END octects ... */
         int esc = flag_isset(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
         if (!esc && ctx->uart_octect == ETHOCAN_OCTECT_ESC) {
             flag_set(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
@@ -124,7 +124,7 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
             }
             /* Since the dirty flag is set after the RECV state is left,
              * it indicates that the receive buffer contains unprocessed data
-             * from a previos received frame.
+             * from a previously received frame.
              * Thus, we just ignore new data. */
             if (!flag_isset(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY)
                 && ctx->recv_buf_ptr < ETHOCAN_FRAME_LEN) {
@@ -134,7 +134,7 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
     }
 
     if (next_state == ETHOCAN_STATE_RECV) {
-        /* Start the timeout timer if we are staying in RECV state. */
+        /* Start the octet timeout timer if we are staying in RECV state. */
         xtimer_set(&ctx->timeout, ctx->timeout_ticks);
     }
 
@@ -150,7 +150,7 @@ static uint8_t state_send(ethocan_t *ctx, uint8_t old_state)
 
     /* Don't trance any END octets ... the timeout or the END signal
      * will bring us back to the BLOCKED state after _send has emitted
-     * it's last octect. */
+     * its last octect. */
 
     xtimer_set(&ctx->timeout, ctx->timeout_ticks);
 
@@ -233,7 +233,7 @@ static uint8_t state(ethocan_t *ctx, uint8_t src)
         }
     }
 
-    /* Invalid state has been set in state functions */
+    /* Invalid state has been set in state function */
     if (new_state < ETHOCAN_STATE_BLOCKED || new_state > ETHOCAN_STATE_SEND) {
         goto exit;
     }
@@ -282,12 +282,12 @@ static void clear_recv_buf(ethocan_t *ctx)
 static void _isr(netdev_t *netdev)
 {
     ethocan_t *ctx = (ethocan_t *) netdev;
+    int irq_state, dirty, end;
 
     /* Get current flags */
-    int irq_state = irq_disable();
-    int dirty = flag_isset(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
-    int end = flag_isset(ctx, ETHOCAN_FLAG_END_RECEIVED);
-
+    irq_state = irq_disable();
+    dirty = flag_isset(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
+    end = flag_isset(ctx, ETHOCAN_FLAG_END_RECEIVED);
     irq_restore(irq_state);
 
     /* If the recveive buffer does not contain any data just abort ... */
@@ -497,10 +497,10 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
 static int _init(netdev_t *dev)
 {
     ethocan_t *ctx = (ethocan_t *) dev;
+    int irq_state;
 
     /* Set state machine to defaults */
-    int irq_state = irq_disable();
-
+    irq_state = irq_disable();
     ctx->recv_buf_ptr = 0;
     ctx->flags = 0;
     ctx->state = ETHOCAN_STATE_UNDEF;
