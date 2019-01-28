@@ -337,7 +337,8 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
 
     (void)info;
 
-    size_t pktlen = ctx->recv_buf_ptr;
+    /* The appended CRC16 is not part of the ethernet frame */
+    size_t pktlen = ctx->recv_buf_ptr - 2;
     if (!buf && !len) {
         /* Return the amount of received bytes */
         return pktlen;
