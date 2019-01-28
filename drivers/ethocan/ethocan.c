@@ -191,47 +191,44 @@ static uint8_t state(ethocan_t *ctx, uint8_t src)
     uint8_t old_state = ctx->state;
     uint8_t new_state = ETHOCAN_STATE_UNDEF;
 
-    /* State change based on the input signal */
-    switch (old_state) {
-        case ETHOCAN_STATE_UNDEF:
-            if (src == ETHOCAN_SIGNAL_INIT) {
-                new_state = ETHOCAN_STATE_BLOCKED;
-            }
+    /* State change based on current state and the input signal.
+     * Since the state only occupies the first 4 bits and the signal the
+     * last 4 bits of a uint8_t, they can be added together and hance
+     * be checked together. */
+    switch (old_state + src) {
+        case ETHOCAN_STATE_UNDEF + ETHOCAN_SIGNAL_INIT:
+            new_state = ETHOCAN_STATE_BLOCKED;
             break;
-        case ETHOCAN_STATE_BLOCKED:
-            if (src == ETHOCAN_SIGNAL_GPIO) {
-                new_state = ETHOCAN_STATE_RECV;
-            }
-            if (src == ETHOCAN_SIGNAL_XTIMER) {
-                new_state = ETHOCAN_STATE_IDLE;
-            }
+
+        case ETHOCAN_STATE_BLOCKED + ETHOCAN_SIGNAL_GPIO:
+            new_state = ETHOCAN_STATE_RECV;
             break;
-        case ETHOCAN_STATE_IDLE:
-            if (src == ETHOCAN_SIGNAL_GPIO) {
-                new_state = ETHOCAN_STATE_RECV;
-            }
-            if (src == ETHOCAN_SIGNAL_SEND) {
-                new_state = ETHOCAN_STATE_SEND;
-            }
+        case ETHOCAN_STATE_BLOCKED + ETHOCAN_SIGNAL_XTIMER:
+            new_state = ETHOCAN_STATE_IDLE;
             break;
-        case ETHOCAN_STATE_RECV:
-            if (src == ETHOCAN_SIGNAL_UART) {
-                new_state = ETHOCAN_STATE_RECV;
-            }
-            if (src == ETHOCAN_SIGNAL_XTIMER) {
-                new_state = ETHOCAN_STATE_BLOCKED;
-            }
+
+        case ETHOCAN_STATE_IDLE + ETHOCAN_SIGNAL_GPIO:
+            new_state = ETHOCAN_STATE_RECV;
             break;
-        case ETHOCAN_STATE_SEND:
-            if (src == ETHOCAN_SIGNAL_UART) {
-                new_state = ETHOCAN_STATE_SEND;
-            }
-            if (src == ETHOCAN_SIGNAL_XTIMER) {
-                new_state = ETHOCAN_STATE_BLOCKED;
-            }
-            if (src == ETHOCAN_SIGNAL_END) {
-                new_state = ETHOCAN_STATE_BLOCKED;
-            }
+        case ETHOCAN_STATE_IDLE + ETHOCAN_SIGNAL_SEND:
+            new_state = ETHOCAN_STATE_SEND;
+            break;
+
+        case ETHOCAN_STATE_RECV + ETHOCAN_SIGNAL_UART:
+            new_state = ETHOCAN_STATE_RECV;
+            break;
+        case ETHOCAN_STATE_RECV + ETHOCAN_SIGNAL_XTIMER:
+            new_state = ETHOCAN_STATE_BLOCKED;
+            break;
+
+        case ETHOCAN_STATE_SEND + ETHOCAN_SIGNAL_UART:
+            new_state = ETHOCAN_STATE_SEND;
+            break;
+        case ETHOCAN_STATE_SEND + ETHOCAN_SIGNAL_XTIMER:
+            new_state = ETHOCAN_STATE_BLOCKED;
+            break;
+        case ETHOCAN_STATE_SEND + ETHOCAN_SIGNAL_END:
+            new_state = ETHOCAN_STATE_BLOCKED;
             break;
     }
 
