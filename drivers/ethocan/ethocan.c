@@ -45,6 +45,7 @@ static uint8_t wait_for_state(ethocan_t *ctx, uint8_t state);
 static int send_octet(ethocan_t *ctx, uint8_t c);
 static int _send(netdev_t *dev, const iolist_t *iolist);
 static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len);
+static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t len);
 static int _init(netdev_t *dev);
 void ethocan_setup(ethocan_t *ctx, const ethocan_params_t *params);
 
@@ -61,6 +62,21 @@ static inline void flag_clear(ethocan_t *ctx, uint8_t flag)
 static inline int flag_isset(ethocan_t *ctx, uint8_t flag)
 {
     return (ctx->flags & flag) ? 1 : 0;
+}
+
+static inline void opt_set(ethocan_t *ctx, uint8_t opt)
+{
+    ctx->opts |= opt;
+}
+
+static inline void opt_clear(ethocan_t *ctx, uint8_t opt)
+{
+    ctx->opts &= ~opt;
+}
+
+static inline int opt_isset(ethocan_t *ctx, uint8_t opt)
+{
+    return (ctx->opts & opt) ? 1 : 0;
 }
 
 static uint16_t crc16_update(uint16_t crc, uint8_t octet)
@@ -315,14 +331,16 @@ static void _isr(netdev_t *netdev)
 
     /* The set dirty flag prevents recv_buf or recv_buf_ptr from being
      * touched in ISR context. Thus, it is safe to work with them without
-     * IRQs being disabled or mutexted being locked. */
+     * IRQs being disabled or mutexes being locked. */
 
-    /* This frame is not for us ... just drop it */
-    ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
-    if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr, ETHERNET_ADDR_LEN) != 0) {
-        DEBUG("ethocan _isr(): dst mac not matching frame -> drop\n");
-        clear_recv_buf(ctx);
-        return;
+    /* Check the dst mac addr if the iface is not in promiscous mode */
+    if (!opt_isset(ctx, ETHOCAN_OPT_PROMISCUOUS)) {
+        ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
+        if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr, ETHERNET_ADDR_LEN) != 0) {
+            DEBUG("ethocan _isr(): dst mac not matching -> drop\n");
+            clear_recv_buf(ctx);
+            return;
+        }
     }
 
     /* Check the CRC */
@@ -484,24 +502,54 @@ collision:
 
 static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
 {
-    int res = 0;
+    ethocan_t *ctx = (ethocan_t *) dev;
 
     switch (opt) {
         case NETOPT_ADDRESS:
             if (max_len < ETHERNET_ADDR_LEN) {
-                res = -EINVAL;
+                return -EINVAL;
+            }
+            memcpy(value, ctx->mac_addr, ETHERNET_ADDR_LEN);
+            return ETHERNET_ADDR_LEN;
+        case NETOPT_PROMISCUOUSMODE:
+            if (max_len < sizeof(netopt_enable_t)) {
+                return -EINVAL;
+            }
+            if (opt_isset(ctx, ETHOCAN_OPT_PROMISCUOUS)) {
+                *((netopt_enable_t *)value) = NETOPT_ENABLE;
             }
             else {
-                memcpy(value, ((ethocan_t *) dev)->mac_addr, ETHERNET_ADDR_LEN);
-                res = ETHERNET_ADDR_LEN;
+                *((netopt_enable_t *)value) = NETOPT_DISABLE;
             }
-            break;
+            return sizeof(netopt_enable_t);
         default:
-            res = netdev_eth_get(dev, opt, value, max_len);
-            break;
+            return netdev_eth_get(dev, opt, value, max_len);
     }
 
-    return res;
+    return 0;
+}
+
+static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t len)
+{
+    ethocan_t *ctx = (ethocan_t *) dev;
+
+    switch (opt) {
+        case NETOPT_PROMISCUOUSMODE:
+            if (len < sizeof(netopt_enable_t)) {
+                return -EINVAL;
+            }
+            if (((const bool *)value)[0]) {
+                opt_set(ctx, ETHOCAN_OPT_PROMISCUOUS);
+            }
+            else {
+                opt_clear(ctx, ETHOCAN_OPT_PROMISCUOUS);
+            }
+            return sizeof(netopt_enable_t);
+        default:
+            return netdev_eth_set(dev, opt, value, len);
+    }
+
+    return 0;
 }
 
 static int _init(netdev_t *dev)
@@ -511,6 +559,7 @@ static int _init(netdev_t *dev)
 
     /* Set state machine to defaults */
     irq_state = irq_disable();
+    ctx->opts = 0;
     ctx->recv_buf_ptr = 0;
     ctx->flags = 0;
     ctx->state = ETHOCAN_STATE_UNDEF;
@@ -527,7 +576,7 @@ static const netdev_driver_t netdev_driver_ethocan = {
     .init = _init,
     .isr = _isr,
     .get = _get,
-    .set = netdev_eth_set
+    .set = _set
 };
 
 void ethocan_setup(ethocan_t *ctx, const ethocan_params_t *params)

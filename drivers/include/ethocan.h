@@ -76,6 +76,14 @@ extern "C" {
 #define ETHOCAN_FLAG_ESC_RECEIVED      (0b00000100)     /**< the esc octet has been received */
 /** @} */
 
+/**
+ * @name    Opt definitions
+ * @brief   Hold in ethocan_t.opts
+ * @{
+ */
+#define ETHOCAN_OPT_PROMISCUOUS   (0b00000001)   /**< don't check the destination MAC - pass every frame to upper layers */
+/** @} */
+
 #ifndef ETHOCAN_TIMEOUT_USEC
 #define ETHOCAN_TIMEOUT_USEC (5000)   /**< timeout that brings the driver back into idle state if the remote side died within a transaction */
 #endif
@@ -89,6 +97,7 @@ extern "C" {
 typedef struct {
     netdev_t netdev;                        /**< extended netdev structure */
     uint8_t mac_addr[ETHERNET_ADDR_LEN];    /**< this device's MAC address */
+    uint8_t opts;                           /**< dirver options */
     uint8_t state;                          /**< hold the current state of the driver's state machine */
     mutex_t state_mtx;                      /**< is unlocked everytime a state is (re)entered */
     uint8_t flags;                          /**< several flags */
