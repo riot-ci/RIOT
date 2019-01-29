@@ -230,7 +230,6 @@ int sock_dns_query(const char *domain_name, void *addr_out, int family)
             }
             else {
                 res = -EBADMSG;
-                goto out;
             }
         }
     }
