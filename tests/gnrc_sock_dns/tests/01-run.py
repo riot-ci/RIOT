@@ -8,11 +8,9 @@
 
 import base64
 import os
-import random
 import re
 import sys
 import subprocess
-import time
 import threading
 
 from scapy.all import Ether, IPv6, UDP, \
