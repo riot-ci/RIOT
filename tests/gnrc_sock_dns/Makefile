@@ -15,6 +15,7 @@ USEMODULE += gnrc_ipv6_nib_dns
 USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 
+USEMODULE += shell
 USEMODULE += shell_commands
 
 USEMODULE += posix_inet
