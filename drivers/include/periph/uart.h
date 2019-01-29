@@ -97,6 +97,7 @@ typedef void(*uart_rx_cb_t)(void *arg, uint8_t data);
 typedef struct {
     uart_rx_cb_t rx_cb;     /**< data received interrupt callback */
     void *arg;              /**< argument to both callback routines */
+    uint8_t data_mask;      /**< mask applied to the data register */
 } uart_isr_ctx_t;
 #endif
 
@@ -110,6 +111,41 @@ enum {
     UART_INTERR     = -3,   /**< all other internal errors */
     UART_NOMODE     = -4    /**< given mode is not applicable */
 };
+
+/**
+ * @brief   Definition of possible parity modes
+ */
+#ifndef HAVE_UART_PARITY_T
+typedef enum {
+   UART_PARITY_NONE,   /**< no parity */
+   UART_PARITY_EVEN,   /**< even parity */
+   UART_PARITY_ODD,    /**< odd parity */
+   UART_PARITY_MARK,   /**< mark parity */
+   UART_PARITY_SPACE   /**< space parity */
+} uart_parity_t;
+#endif
+
+/**
+ * @brief   Definition of possible data bits lengths in a UART frame
+ */
+#ifndef HAVE_UART_DATA_BITS_T
+typedef enum {
+    UART_DATA_BITS_5,   /**< 5 data bits */
+    UART_DATA_BITS_6,   /**< 6 data bits */
+    UART_DATA_BITS_7,   /**< 7 data bits */
+    UART_DATA_BITS_8,   /**< 8 data bits */
+} uart_data_bits_t;
+#endif
+
+/**
+ * @brief   Definition of possible stop bits lengths in a UART frame
+ */
+#ifndef HAVE_UART_STOP_BITS_T
+typedef enum {
+   UART_STOP_BITS_1,   /**< 1 stop bit */
+   UART_STOP_BITS_2,   /**< 2 stop bits */
+} uart_stop_bits_t;
+#endif
 
 /**
  * @brief   Initialize a given UART device
@@ -136,6 +172,21 @@ enum {
  * @return                  UART_INTERR on other errors
  */
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg);
+
+/**
+ * @brief   Setup parity, data and stop bits for a given UART device
+ *
+ * @param[in] uart          UART device to initialize
+ * @param[in] data_bits     number of data bits in a UART frame
+ * @param[in] parity        parity mode
+ * @param[in] stop_bits     number of stop bits in a UART frame
+ *
+ * @return                  UART_OK on success
+ * @return                  UART_NODEV on invalid UART device
+ * @return                  UART_NOMODE on other errors
+ */
+int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity,
+              uart_stop_bits_t stop_bits);
 
 /**
  * @brief   Write data from the given buffer to the specified UART device
