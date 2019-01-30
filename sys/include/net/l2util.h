@@ -37,6 +37,27 @@ extern "C" {
 #define L2UTIL_ADDR_MAX_LEN (8U)    /**< maximum expected length for addresses */
 
 /**
+ * @brief   Converts a given hardware address to an EUI-64.
+ *
+ * @attention When the link-layer of the interface has link-layer addresses, and
+ *            `NDEBUG` is not defined, the node fails with an assertion instead
+ *            returning `-ENOTSUP`.
+ *
+ * @param[in] dev_type  The network device type of the device @p addr came from
+ *                      (either because it is the configured address of the
+ *                      device or from a packet that came over it).
+ * @param[in] addr      A hardware address.
+ * @param[in] addr_len  Number of bytes in @p addr.
+ * @param[out] eui64    The EUI-64 based on gnrc_netif_t::device_type
+ *
+ * @return  `sizeof(eui64_t)` on success.
+ * @return  `-ENOTSUP`, when @p dev_type does not support EUI-64 conversion.
+ * @return  `-EINVAL`, when @p addr_len is invalid for the @p dev_type.
+ */
+int l2util_eui64_from_addr(int dev_type, const uint8_t *addr, size_t addr_len,
+                           eui64_t *eui64);
+
+/**
  * @brief   Converts a given hardware address to an IPv6 IID.
  *
  * @attention When the link-layer of the interface has link-layer addresses, and
