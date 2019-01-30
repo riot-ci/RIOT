@@ -170,126 +170,131 @@ def test_success(child):
     assert(successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
+def test_timeout(child):
+    # listen but send no reply
+    server.listen()
+    assert(not successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
+
+
 def test_empty_dns(child):
     server.listen(Ether() / IPv6() / UDP())
-    assert(not successful_dns_request(child, "example.org"))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_qdcount_too_large1(child):
     # as reported in https://github.com/RIOT-OS/RIOT/issues/10739
     server.listen(Ether() / IPv6() / UDP() /
                   base64.b64decode("AACEAwkmAAAAAAAAKioqKioqKioqKioqKioqKioqKio="))
-    assert(not successful_dns_request(child, "example.org"))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_qdcount_too_large2(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=40961, ancount=2,
-                      qd=(DNSQR(qname=b"example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=16, rdata="2001:db8::1") /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(not successful_dns_request(child, "example.org"))
+                  DNS(qr=1, qdcount=40961, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=DNS_RR_TYPE_AAAA_DLEN,
+                                rdata=TEST_AAAA_DATA) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A_DLEN, rdata=TEST_A_DATA))))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_ancount_too_large1(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=2714,
-                      qd=(DNSQR(qname=b"example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=16, rdata="2001:db8::1") /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(successful_dns_request(child, "example.org", "2001:db8::1"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=2714,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=DNS_RR_TYPE_AAAA_DLEN,
+                                rdata=TEST_AAAA_DATA) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A_DLEN, rdata=TEST_A_DATA))))
+    assert(successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
 def test_ancount_too_large2(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=19888,
-                      qd=(DNSQR(qname=b"example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=19888,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
                       an="\0"))
-    assert(not successful_dns_request(child, "example.org"))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_bad_compressed_message_query(child):
     server.listen(Ether() / IPv6() / UDP() /
                   DNS(qr=1, qdcount=1, ancount=1,
-                      qd=b"\xc0",
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=16, rdata="2001:db8::1") /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(not successful_dns_request(child, "example.org"))
+                      qd=DNS_MSG_COMP_MASK))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_bad_compressed_message_answer(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=1,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=DNSRR(rrname="example.org", type=28,
-                               rdlen=16, rdata="2001:db8::1")) / b"\xc0")
-    assert(not successful_dns_request(child, "example.org"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=DNS_MSG_COMP_MASK))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_malformed_hostname_query(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=0,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=0,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
                           b"\xafexample\x03org\x00\x00\x1c\x00\x01")))
-    assert(not successful_dns_request(child, "example.org"))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_malformed_hostname_answer(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=1,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
                       an=(b"\xaftest\x00\x00\x1c\x00\x01\x00\x00\x00\x00\x00\x10"
                           b"\x20\x01\x0d\xb8\x00\x00\x00\x00\x00\x00\x00\x00\x00"
                           b"\x00\x00\x01" /
-                          DNSQR(qname="example.org", qtype=1))))
-    assert(not successful_dns_request(child, "example.org"))
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A))))
+    assert(not successful_dns_request(child, TEST_NAME))
 
 
 def test_addrlen_too_large(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=2,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=18549, rdata="2001:db8::1") /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(not successful_dns_request(child, "example.org", "2001:db8::1"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=18549, rdata=TEST_AAAA_DATA) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A_DLEN, rdata=TEST_A_DATA))))
+    assert(not successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
 def test_addrlen_wrong_ip6(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=2,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=7, rdata=(b"0" * 7)) /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(not successful_dns_request(child, "example.org", "2001:db8::1"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=DNS_RR_TYPE_AAAA_DLEN + 1,
+                                rdata=(TEST_AAAA_DATA)) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A_DLEN, rdata=TEST_A_DATA))))
+    assert(not successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
 def test_addrlen_wrong_ip4(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=2,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=1,
-                                rdlen=3, rdata="0" * 3) /
-                          DNSRR(rrname="example.org", type=28,
-                                rdlen=16, rdata="2001:db8::1"))))
-    assert(not successful_dns_request(child, "example.org", "2001:db8::1"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A - 1, rdata=TEST_A_DATA) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=DNS_RR_TYPE_AAAA_DLEN,
+                                rdata=TEST_AAAA_DATA))))
+    assert(not successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
 def testfunc(child):
@@ -319,6 +324,7 @@ def testfunc(child):
                     raise e
 
         run(test_success)
+        run(test_timeout)
         run(test_empty_dns)
         run(test_qdcount_too_large1)
         run(test_qdcount_too_large2)
