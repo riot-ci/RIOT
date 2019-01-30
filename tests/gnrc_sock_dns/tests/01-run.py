@@ -24,14 +24,26 @@ SERVER_ADDR = "2001:db8:0:d43f:93e5:5fff:fe3a:52ae"
 SERVER_PORT = 53
 
 
+DNS_RR_TYPE_A = 1
+DNS_RR_TYPE_AAAA = 28
+DNS_RR_TYPE_A_DLEN = 4
+DNS_RR_TYPE_AAAA_DLEN = 16
+DNS_MSG_COMP_MASK = b"\xc0"
+
+
+TEST_NAME = "example.org"
+TEST_A_DATA = "10.0.0.1"
+TEST_AAAA_DATA = "2001:db8::1"
+TEST_QDCOUNT = 2
+TEST_ANCOUNT = 2
+
+
 class Server(threading.Thread):
     def __init__(self, iface, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.iface = iface
         self.stopped = False
-        self.ps = []
         self.enter_loop = threading.Event()
-        self.sniff_results = threading.Event()
 
     def run(self):
         while True:
@@ -47,12 +59,15 @@ class Server(threading.Thread):
             assert(p[DNS].qr == 0)
             assert(p[DNS].opcode == 0)
             # has two queries
-            assert(p[DNS].qdcount == 2)
-            # both for "example.org"
-            assert(p[DNS].qd[0].qname == b"example.org.")
-            assert(p[DNS].qd[1].qname == b"example.org.")
-            assert(any(p[DNS].qd[i].qtype == 1 for i in range(2)))      # one is A
-            assert(any(p[DNS].qd[i].qtype == 28 for i in range(2)))     # one is AAAA
+            assert(p[DNS].qdcount == TEST_QDCOUNT)
+            qdcount = p[DNS].qdcount
+            # both for TEST_NAME
+            assert(p[DNS].qd[0].qname == TEST_NAME.encode("utf-8") + b".")
+            assert(p[DNS].qd[1].qname == TEST_NAME.encode("utf-8") + b".")
+            assert(any(p[DNS].qd[i].qtype == DNS_RR_TYPE_A
+                       for i in range(qdcount)))    # one is A
+            assert(any(p[DNS].qd[i].qtype == DNS_RR_TYPE_AAAA
+                       for i in range(qdcount)))    # one is AAAA
             if self.reply is not None:
                 self.reply[Ether].dst = p[Ether].src
                 self.reply[Ether].src = p[Ether].dst
@@ -62,7 +77,6 @@ class Server(threading.Thread):
                 self.reply[UDP].sport = p[UDP].dport
                 sendp(self.reply, iface=self.iface, verbose=0)
                 self.reply = None
-            self.sniff_results.set()
 
     def listen(self, reply=None):
         self.reply = reply
@@ -145,14 +159,15 @@ def successful_dns_request(child, name, exp_addr=None):
 
 def test_success(child):
     server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=2, ancount=2,
-                      qd=(DNSQR(qname="example.org", qtype=28) /
-                          DNSQR(qname="example.org", qtype=1)),
-                      an=(DNSRR(rrname="example.org", type=28,
-                                rdlen=16, rdata="2001:db8::1") /
-                          DNSRR(rrname="example.org", type=1,
-                                rdlen=4, rdata="10.0.0.1"))))
-    assert(successful_dns_request(child, "example.org", "2001:db8::1"))
+                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+                      qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
+                          DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
+                      an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
+                                rdlen=DNS_RR_TYPE_AAAA_DLEN,
+                                rdata=TEST_AAAA_DATA) /
+                          DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_A,
+                                rdlen=DNS_RR_TYPE_A_DLEN, rdata=TEST_A_DATA))))
+    assert(successful_dns_request(child, TEST_NAME, TEST_AAAA_DATA))
 
 
 def test_empty_dns(child):
