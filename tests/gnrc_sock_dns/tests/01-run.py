@@ -9,19 +9,17 @@
 import base64
 import os
 import re
+import socket
 import sys
 import subprocess
 import threading
 
-from scapy.all import Ether, IPv6, UDP, \
-                      DNS, DNSQR, DNSRR, \
-                      sendp, sniff
+from scapy.all import DNS, DNSQR, DNSRR, Raw, raw
 from testrunner import run
 
 
 SERVER_TIMEOUT = 5
-SERVER_ADDR = "2001:db8:0:d43f:93e5:5fff:fe3a:52ae"
-SERVER_PORT = 53
+SERVER_PORT = 5335  # 53 requires root and 5353 is used by e.g. Chrome for MDNS
 
 
 DNS_RR_TYPE_A = 1
@@ -39,9 +37,17 @@ TEST_ANCOUNT = 2
 
 
 class Server(threading.Thread):
-    def __init__(self, iface, *args, **kwargs):
+    def __init__(self, family=socket.AF_INET, type=socket.SOCK_DGRAM,
+                 proto=0, bind_addr=None, bind_port=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.iface = iface
+        self.socket = socket.socket(family, type, proto)
+        if bind_port is not None:
+            if (bind_addr is not None):
+                res = socket.getaddrinfo(bind_addr, bind_port)
+                sockaddr = res[0][4]
+            else:
+                sockaddr = ("", bind_port)
+            self.socket.bind(sockaddr)
         self.stopped = False
         self.enter_loop = threading.Event()
 
@@ -51,11 +57,10 @@ class Server(threading.Thread):
             self.enter_loop.clear()
             if self.stopped:
                 return
-            p = sniff(filter="udp and dst {} and port {:d}".format(
-                    SERVER_ADDR, SERVER_PORT
-                ), iface=self.iface, timeout=SERVER_TIMEOUT, count=1)[0]
+            p, remote = self.socket.recvfrom(1500)
+            p = DNS(raw(p))
             # check received packet for correctness
-            assert(DNS in p)
+            assert(p is not None)
             assert(p[DNS].qr == 0)
             assert(p[DNS].opcode == 0)
             # has two queries
@@ -69,13 +74,7 @@ class Server(threading.Thread):
             assert(any(p[DNS].qd[i].qtype == DNS_RR_TYPE_AAAA
                        for i in range(qdcount)))    # one is AAAA
             if self.reply is not None:
-                self.reply[Ether].dst = p[Ether].src
-                self.reply[Ether].src = p[Ether].dst
-                self.reply[IPv6].dst = p[IPv6].src
-                self.reply[IPv6].src = p[IPv6].dst
-                self.reply[UDP].dport = p[UDP].sport
-                self.reply[UDP].sport = p[UDP].dport
-                sendp(self.reply, iface=self.iface, verbose=0)
+                self.socket.sendto(raw(self.reply), remote)
                 self.reply = None
 
     def listen(self, reply=None):
@@ -85,6 +84,7 @@ class Server(threading.Thread):
     def stop(self):
         self.stopped = True
         self.enter_loop.set()
+        self.socket.close()
         self.join()
 
 
@@ -123,26 +123,6 @@ def get_host_lladdr(tap):
         return res
 
 
-def add_host_addr(tap, addr):
-    subprocess.check_call(["ip", "address", "add", addr, "dev", tap])
-
-
-def del_host_addr(tap, addr):
-    subprocess.check_call(["ip", "address", "del", addr, "dev", tap])
-
-
-def get_first_interface(child):
-    child.sendline("ifconfig")
-    child.expect(r"Iface\s+(\d+)")
-    return int(child.match.group(1))
-
-
-def add_default_route(child, iface, link):
-    child.sendline("nib route add {} :: {}".format(iface, link))
-    child.sendline("nib route")
-    child.expect(r"default\* via {} dev #{}".format(link.lower(), iface))
-
-
 def dns_server(child, server, port=53):
     child.sendline("dns server {} {:d}".format(server, port))
     child.sendline("dns server")
@@ -158,8 +138,7 @@ def successful_dns_request(child, name, exp_addr=None):
 
 
 def test_success(child):
-    server.listen(Ether() / IPv6() / UDP() /
-                  DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
+    server.listen(DNS(qr=1, qdcount=TEST_QDCOUNT, ancount=TEST_ANCOUNT,
                       qd=(DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_AAAA) /
                           DNSQR(qname=TEST_NAME, qtype=DNS_RR_TYPE_A)),
                       an=(DNSRR(rrname=TEST_NAME, type=DNS_RR_TYPE_AAAA,
@@ -301,15 +280,12 @@ def testfunc(child):
     global server
     tap = get_bridge(os.environ["TAP"])
     lladdr = get_host_lladdr(tap)
-    add_host_addr(tap, SERVER_ADDR)
 
     try:
-        iface = get_first_interface(child)
-        add_default_route(child, iface, lladdr)
-        dns_server(child, SERVER_ADDR)
-
-        server = Server(tap)
+        server = Server(family=socket.AF_INET6, type=socket.SOCK_DGRAM,
+                        bind_addr=lladdr + "%" + tap, bind_port=SERVER_PORT)
         server.start()
+        dns_server(child, lladdr, SERVER_PORT)
 
         def run(func):
             if child.logfile == sys.stdout:
@@ -339,15 +315,9 @@ def testfunc(child):
         run(test_addrlen_wrong_ip4)
         print("SUCCESS")
     finally:
-        del_host_addr(tap, SERVER_ADDR)
         if server is not None:
             server.stop()
 
 
 if __name__ == "__main__":
-    if os.geteuid() != 0:
-        print("\x1b[1;31mThis test requires root privileges.\n"
-              "It's constructing and sending Ethernet frames.\x1b[0m\n",
-              file=sys.stderr)
-        sys.exit(1)
     sys.exit(run(testfunc, timeout=1, echo=False))
