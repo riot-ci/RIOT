@@ -28,13 +28,11 @@
 #include "msg.h"
 #include "thread.h"
 
-#define ACTIVE_REPORTING_TEST_DURATION_S         (30U)
+#define ACTIVE_REPORTING_TEST_CNT                (20U)
 #define PUT_TO_QUERY_MODE_RETRIES                (3U)
 #define PUT_TO_QUERY_MODE_RETRY_TIMEOUT_MS       (100U)
 #define MANUAL_QUERY_CNT                         (10U)
 #define WORKING_PERIOD                           (0U)
-
-char print_thread_stack[THREAD_STACKSIZE_MAIN];
 
 /**
  * @brief   Allocate the device descriptor
@@ -77,28 +75,13 @@ static void _print_measurement(sds011_data_t *data)
 
 void measure_cb(sds011_data_t *data, void *ctx)
 {
-    msg_t msg = { .content.value = (data->pm_10 << 16 | data->pm_2_5) };
-    kernel_pid_t target_pid = (uint32_t)ctx;
+    msg_t msg = { .content.value = (((uint32_t)data->pm_10) << 16 | data->pm_2_5) };
+    kernel_pid_t target_pid = (int)ctx;
     msg_send(&msg, target_pid);
-}
-
-void *print_thread(void *arg)
-{
-    (void)arg;
-    msg_t msg;
-    while(true){
-        msg_receive(&msg);
-        sds011_data_t data;
-        data.pm_10 = msg.content.value >> 16;
-        data.pm_2_5 = msg.content.value & 0xFFFF;
-        printf("msg from callback: ");
-        _print_measurement(&data);
-    }
 }
 
 int main(void)
 {
-    kernel_pid_t print_pid;
     unsigned retry_cnt = 0;
     uint8_t year;
     uint8_t month;
@@ -211,14 +194,10 @@ int main(void)
         }
     }
 
-    print_pid = thread_create(print_thread_stack, sizeof(print_thread_stack),
-                              THREAD_PRIORITY_MAIN - 1, THREAD_CREATE_STACKTEST,
-                              print_thread, NULL, "print thread");
+    sds011_register_callback(&dev, measure_cb, (void*)(int)thread_getpid());
 
-    sds011_register_callback(&dev, measure_cb, (void*)(int)print_pid);
-
-    printf("switching to active reporting mode for %u seconds...\n",
-            ACTIVE_REPORTING_TEST_DURATION_S);
+    printf("switching to active reporting mode for %u measurements...\n",
+            ACTIVE_REPORTING_TEST_CNT);
 
     if (sds011_set_reporting_mode(&dev, SDS011_RMODE_ACTIVE) == SDS011_OK) {
         puts("[OK]");
@@ -229,7 +208,15 @@ int main(void)
     }
 
     /* wait a little bit so the callback gets executed a few times */
-    xtimer_sleep(ACTIVE_REPORTING_TEST_DURATION_S);
+    msg_t msg;
+    for(unsigned msg_cnt = 0; msg_cnt < ACTIVE_REPORTING_TEST_CNT; msg_cnt++){
+        msg_receive(&msg);
+        sds011_data_t data;
+        data.pm_10 = msg.content.value >> 16;
+        data.pm_2_5 = msg.content.value & 0xFFFF;
+        printf("msg from callback: ");
+        _print_measurement(&data);
+    }
 
     /* unregister callback */
     sds011_register_callback(&dev, NULL, NULL);
