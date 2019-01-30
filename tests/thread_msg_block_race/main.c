@@ -37,19 +37,30 @@ static char _stack[THREAD_STACKSIZE_DEFAULT];
 
 static kernel_pid_t _pid_main = KERNEL_PID_UNDEF;
 
+/**
+ * @brief   Schedule next timer event in TIMER_TIMEOUT_MIN to TIMER_TIMEOUT_MAX
+ *          ticks.
+ */
 static void _sched_next(void)
 {
     timer_set(TIMER_DEV(0), 0, random_uint32_range(TIMER_TIMEOUT_MIN,
                                                    TIMER_TIMEOUT_MAX));
 }
 
+/**
+ * @brief   The timer interrupt
+ */
 static void _timer(void *arg, int channel)
 {
     (void)arg;
     (void)channel;
+    /* just continue rescheduling interrupt triggering at random time */
     _sched_next();
 }
 
+/**
+ * @brief   The sending thread
+ */
 static void *_thread(void *arg)
 {
     (void) arg;
@@ -58,6 +69,7 @@ static void *_thread(void *arg)
         msg_t msg = { .type = 0U };
 
         write(STDOUT_FILENO, ".", 1U);
+        /* send without blocking */
         msg_try_send(&msg, _pid_main);
         thread_yield();
     }
@@ -74,6 +86,10 @@ int main(void)
     puts("Test is \"successful\" if it runs forever without halting\n"
          "on any of the assertion in this file");
     _pid_main = sched_active_pid;
+
+    /* try to trigger an interrupt at random intervals this caused
+     * the `thread_yield_higher()` function to get confused and never
+     * call `sched_run()` in certain conditions */
     _sched_next();
     pid = thread_create(_stack, sizeof(_stack), THREAD_PRIORITY_MAIN + 1,
                         THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
@@ -83,7 +99,10 @@ int main(void)
     while (1) {
         msg_t msg = { .type = CANARY_TYPE };
 
+        /* receive blocked */
         msg_receive(&msg);
+        /* check msg_receive() returned without blocking (i.e. the sending
+         * thread did not get a chance to copy the message over) */
         assert(msg.type != CANARY_TYPE);
         write(STDOUT_FILENO, "\b", 1U);
     }
