@@ -173,6 +173,7 @@ int _send_recv_cmd(sds011_t *dev, uint8_t *data_bytes, size_t len, uint8_t *recv
  * @param[in]   data_bytes  data bytes to send within the command
  * @param[in]   len         number of data bytes
  * @param[out]  p           pointer for storing single data byte of the reply
+ * @param[out]  p_idx       index of data byte we want to read
  */
 static int _get_property(sds011_t *dev, uint8_t *data_bytes, size_t len,
                          uint8_t *p, uint8_t p_idx)
@@ -246,7 +247,10 @@ int sds011_get_reporting_mode(sds011_t *dev, sds011_reporting_mode_t *mode)
 {
     assert(dev != NULL);
     uint8_t cmd[] = {SDS011_CMD_DB1_SET_DR_MODE, SDS011_CMD_OPT_QUERY};
-    return _get_property(dev, cmd, sizeof(cmd), mode, SDS011_DB3_IDX);
+    uint8_t prop = 0;
+    int res = _get_property(dev, cmd, sizeof(cmd), &prop, SDS011_DB3_IDX);
+    *mode = ((prop == 0) ? SDS011_RMODE_ACTIVE : SDS011_RMODE_QUERY);
+    return res;
 }
 
 int sds011_set_reporting_mode(sds011_t *dev, sds011_reporting_mode_t mode)
@@ -309,7 +313,10 @@ int sds011_get_working_mode(sds011_t *dev, sds011_working_mode_t *mode)
 {
     assert(dev != NULL);
     uint8_t cmd[] = {SDS011_CMD_DB1_SET_SLEEP_WORK, SDS011_CMD_OPT_QUERY};
-    return _get_property(dev, cmd, sizeof(cmd), mode, SDS011_DB3_IDX);
+    uint8_t prop = 0;
+    int res = _get_property(dev, cmd, sizeof(cmd), &prop, SDS011_DB3_IDX);
+    *mode = ((prop == 0) ? SDS011_WMODE_SLEEP : SDS011_WMODE_WORK);
+    return res;
 }
 
 int sds011_set_working_mode(sds011_t *dev, sds011_working_mode_t mode)

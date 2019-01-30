@@ -21,6 +21,8 @@
 #ifndef SDS011_H
 #define SDS011_H
 
+#include <stdbool.h>
+
 #include "periph/gpio.h"
 #include "periph/uart.h"
 #include "mutex.h"
