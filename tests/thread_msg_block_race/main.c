@@ -87,9 +87,11 @@ int main(void)
          "on any of the assertion in this file");
     _pid_main = sched_active_pid;
 
-    /* try to trigger an interrupt at random intervals this caused
-     * the `thread_yield_higher()` function to get confused and never
-     * call `sched_run()` in certain conditions */
+    /* try to trigger an interrupt at random intervals.
+     * When an interrupt is fired while ISR is disable in the
+     * `thread_yield_higher()` function some platform-specific implementations
+     * used to not call `sched_run()` which was the cause of the bug tested
+     * here */
     _sched_next();
     pid = thread_create(_stack, sizeof(_stack), THREAD_PRIORITY_MAIN + 1,
                         THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
