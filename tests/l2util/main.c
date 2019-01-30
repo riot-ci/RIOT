@@ -26,19 +26,125 @@
 
 #include "net/l2util.h"
 
-#define TEST_ADDR       { 0x21, 0x55, 0x31, 0x02, 0x41, 0xfd, 0xfb, 0xfd }
-#define TEST_802154_S   { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x21, 0x55 }
-#define TEST_CC110X     { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x21 }
-#define TEST_EUI48      { 0x23, 0x55, 0x31, 0xff, 0xfe, 0x02, 0x41, 0xfd }
-#define TEST_EUI64      { 0x23, 0x55, 0x31, 0x02, 0x41, 0xfd, 0xfb, 0xfd }
+#define TEST_ADDR           { 0x21, 0x55, 0x31, 0x02, 0x41, 0xfd, 0xfb, 0xfd }
+#define TEST_802154_S_IID   { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x21, 0x55 }
+#define TEST_CC110X_IID     { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x21 }
+#define TEST_EUI48_EUI64    { 0x21, 0x55, 0x31, 0xff, 0xfe, 0x02, 0x41, 0xfd }
+#define TEST_EUI48_IID      { 0x23, 0x55, 0x31, 0xff, 0xfe, 0x02, 0x41, 0xfd }
+#define TEST_EUI64_IID      { 0x23, 0x55, 0x31, 0x02, 0x41, 0xfd, 0xfb, 0xfd }
+
+static void test_eui64_from_addr__success(void)
+{
+    static const uint8_t test_addr[L2UTIL_ADDR_MAX_LEN] = TEST_ADDR;
+    static const eui64_t test_802154_s = { .uint8 = TEST_802154_S_IID };
+    static const eui64_t test_cc110x = { .uint8 = TEST_CC110X_IID };
+    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_EUI64 };
+    static const eui64_t test_eui64 = { .uint8 = TEST_ADDR };
+    eui64_t res;
+
+    /* test Ethernet */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_ETHERNET,
+                                                 test_addr, sizeof(eui48_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui48, &res, sizeof(eui64_t)));
+    /* test IEEE 802.15.4 */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_IEEE802154,
+                                                 test_addr, sizeof(eui64_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui64, &res, sizeof(eui64_t)));
+    /* test (nordic softdevice) BLE */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_BLE,
+                                                 test_addr, sizeof(eui48_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui48, &res, sizeof(eui64_t)));
+    /* test cc110x */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_CC110X,
+                                                 test_addr, sizeof(uint8_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_cc110x, &res, sizeof(eui64_t)));
+    /* test NRFMIN */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_NRFMIN,
+                                                 test_addr, sizeof(uint16_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_802154_s, &res, sizeof(eui64_t)));
+    /* test ESP-Now */
+    res.uint64.u64 = 0;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
+                          l2util_eui64_from_addr(NETDEV_TYPE_ESP_NOW,
+                                                 test_addr, sizeof(eui48_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui48, &res, sizeof(eui64_t)));
+}
+
+static void test_eui64_from_addr__EINVAL(void)
+{
+    static const uint8_t test_addr[L2UTIL_ADDR_MAX_LEN] = TEST_ADDR;
+    eui64_t res = { .uint8 = { 0 } };
+
+    /* test Ethernet */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_ETHERNET,
+                                                 test_addr, sizeof(eui64_t),
+                                                 &res));
+    /* test IEEE 802.15.4 */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_IEEE802154,
+                                                 test_addr, sizeof(uint16_t),
+                                                 &res));
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_IEEE802154,
+                                                 test_addr, sizeof(eui48_t),
+                                                 &res));
+    /* test (nordic softdevice) BLE */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_BLE,
+                                                 test_addr, sizeof(uint16_t),
+                                                 &res));
+    /* test cc110x */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_CC110X,
+                                                 test_addr, sizeof(uint64_t),
+                                                 &res));
+    /* test NRFMIN */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_NRFMIN,
+                                                 test_addr, sizeof(uint64_t),
+                                                 &res));
+    /* test ESP-Now */
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_eui64_from_addr(NETDEV_TYPE_ESP_NOW,
+                                                 test_addr, 0,
+                                                 &res));
+}
+
+static void test_eui64_from_addr__ENOTSUP(void)
+{
+    static const uint8_t test_addr[L2UTIL_ADDR_MAX_LEN] = TEST_ADDR;
+    eui64_t res = { .uint8 = { 0 } };
+
+    TEST_ASSERT_EQUAL_INT(-ENOTSUP,
+                          l2util_eui64_from_addr(NETDEV_TYPE_UNKNOWN,
+                                                 test_addr, 0,
+                                                 &res));
+}
 
 static void test_iid_from_addr__success(void)
 {
     static const uint8_t test_addr[L2UTIL_ADDR_MAX_LEN] = TEST_ADDR;
-    static const eui64_t test_802154_s = { .uint8 = TEST_802154_S };
-    static const eui64_t test_cc110x = { .uint8 = TEST_CC110X };
-    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48 };
-    static const eui64_t test_eui64 = { .uint8 = TEST_EUI64 };
+    static const eui64_t test_802154_s = { .uint8 = TEST_802154_S_IID };
+    static const eui64_t test_cc110x = { .uint8 = TEST_CC110X_IID };
+    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_IID };
+    static const eui64_t test_eui64 = { .uint8 = TEST_EUI64_IID };
     eui64_t res;
 
     /* test Ethernet */
@@ -143,10 +249,10 @@ static void test_iid_from_addr__ENOTSUP(void)
 static void test_iid_to_addr__success(void)
 {
     static const uint8_t test_addr[L2UTIL_ADDR_MAX_LEN] = TEST_ADDR;
-    static const eui64_t test_802154_s = { .uint8 = TEST_802154_S };
-    static const eui64_t test_cc110x = { .uint8 = TEST_CC110X };
-    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48 };
-    static const eui64_t test_eui64 = { .uint8 = TEST_EUI64 };
+    static const eui64_t test_802154_s = { .uint8 = TEST_802154_S_IID };
+    static const eui64_t test_cc110x = { .uint8 = TEST_CC110X_IID };
+    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_IID };
+    static const eui64_t test_eui64 = { .uint8 = TEST_EUI64_IID };
     uint8_t res[L2UTIL_ADDR_MAX_LEN];
 
     /* test Ethernet */
@@ -189,7 +295,7 @@ static void test_iid_to_addr__success(void)
 
 static void test_iid_to_addr__ENOTSUP(void)
 {
-    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48 };
+    static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_IID };
     uint8_t res[L2UTIL_ADDR_MAX_LEN];
 
     TEST_ASSERT_EQUAL_INT(-ENOTSUP,
@@ -266,6 +372,9 @@ static void test_addr_len_from_l2ao__ENOTSUP(void)
 TestRef test_l2util(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
+        new_TestFixture(test_eui64_from_addr__success),
+        new_TestFixture(test_eui64_from_addr__EINVAL),
+        new_TestFixture(test_eui64_from_addr__ENOTSUP),
         new_TestFixture(test_iid_from_addr__success),
         new_TestFixture(test_iid_from_addr__EINVAL),
         new_TestFixture(test_iid_from_addr__ENOTSUP),
