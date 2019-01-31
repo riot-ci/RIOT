@@ -343,6 +343,7 @@ int gnrc_gomach_send_preamble_ack(gnrc_netif_t *netif, gnrc_gomach_packet_info_t
     assert(netif != NULL);
     assert(info != NULL);
 
+    gnrc_pktsnip_t *pkt;
     gnrc_pktsnip_t *gomach_pkt = NULL;
     gnrc_netif_hdr_t *nethdr_preamble_ack = NULL;
 
@@ -355,7 +356,7 @@ int gnrc_gomach_send_preamble_ack(gnrc_netif_t *netif, gnrc_gomach_packet_info_t
      * This is to allow the preamble sender to deduce the exact phase of the receiver. */
     gomach_preamble_ack_hdr.phase_in_us = gnrc_gomach_phase_now(netif);
 
-    gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, &gomach_preamble_ack_hdr, sizeof(gomach_preamble_ack_hdr),
+    pkt = gnrc_pktbuf_add(NULL, &gomach_preamble_ack_hdr, sizeof(gomach_preamble_ack_hdr),
                           GNRC_NETTYPE_GOMACH);
     if (pkt == NULL) {
         LOG_ERROR("ERROR: [GOMACH]: pktbuf add failed in gnrc_gomach_send_preamble_ack().\n");
