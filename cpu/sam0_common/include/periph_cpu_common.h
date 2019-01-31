@@ -392,6 +392,15 @@ typedef struct {
     uint32_t muxpos;       /**< ADC channel pin multiplexer value */
 } adc_conf_chan_t;
 
+/**
+ * @brief USB peripheral parameters
+ */
+typedef struct {
+    gpio_t dm;              /**< D- line gpio                           */
+    gpio_t dp;              /**< D+ line gpio                           */
+    gpio_mux_t d_mux;       /**< alternate function (mux) for data pins */
+    UsbDevice *device;      /**< ptr to the device registers            */
+} sam0_common_usb_config_t;
 
 #ifdef __cplusplus
 }
