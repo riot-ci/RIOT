@@ -15,9 +15,9 @@
  * This is a simple suit manifest parser for RIOT. The high level assumption is
  * that the raw manifest data is stored in a buffered location where raw values
  * or strings can be left during the lifetime of the suit_manifest_t struct.
- * This assumption is valid in the case where gcoap block1 is used to transfer
- * the manifest to the node and an intermediate buffer is necessary to validate
- * the manifest.
+ * This assumption is valid in the case where a (network based) transfer
+ * mechanism is used to transfer the manifest to the node and an intermediate
+ * buffer is necessary to validate the manifest.
  *
  * The parser is based on draft version 1 of the specification.
  *
