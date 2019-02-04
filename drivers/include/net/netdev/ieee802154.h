@@ -114,6 +114,13 @@ typedef struct {
     uint8_t chan;                           /**< channel */
     uint16_t flags;                         /**< flags as defined above */
     /** @} */
+#ifdef MODULE_GNRC_NETIF_DEDUP
+    struct {
+        uint8_t src[IEEE802154_LONG_ADDRESS_LEN];   /**< source address */
+        uint8_t src_len;                            /**< source address length */
+        uint8_t seq;                                /**< sequence number */
+    } last_pkt;                             /**< last received packet information */
+#endif
 } netdev_ieee802154_t;
 
 /**
