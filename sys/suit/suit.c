@@ -32,10 +32,10 @@ static int _advance_x(CborValue *it, unsigned x)
 {
     for(unsigned i=0; i < x; i++)
     {
+        cbor_value_advance(it);
         if (cbor_value_at_end(it)) {
             return -1;
         }
-        cbor_value_advance(it);
     }
     return 0;
 }
@@ -151,14 +151,18 @@ int suit_parse(suit_manifest_t *manifest, const uint8_t *buf, size_t len)
     manifest->buf = buf;
     manifest->len = len;
 
-    /* TODO: return here */
     err = cbor_value_enter_container(&it, &arr);
     if (err != 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
     if(_advance_x(&arr, SUIT_MANIFEST_IDX_PAYLOADINFO) < 0) {
-        return SUIT_ERR_INVALID_MANIFEST;
+        /* If it is impossible to advance to the payloadinfo we assume that
+         * there is no payloadinfo. Length validation is already done by
+         * _validate_manifest, an invalid array length should not be possible
+         * at this point.
+         */
+        return SUIT_OK;
     }
 
     if (_validate_payloadinfo(&arr)) {
@@ -319,13 +323,4 @@ ssize_t suit_get_url(const suit_manifest_t *manifest, char *buf, size_t len)
         cbor_value_copy_text_string(&uri, buf, &len, NULL);
         return uri_len;
     }
-}
-
-bool suit_manifest_isnewer(const suit_manifest_t *old,
-                           const suit_manifest_t *cur)
-{
-    uint32_t old_seq, cur_seq;
-    suit_get_seq_no(old, &old_seq);
-    suit_get_seq_no(cur, &cur_seq);
-    return (old_seq < cur_seq);
 }

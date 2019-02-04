@@ -218,18 +218,6 @@ int suit_payload_get_storid(const suit_manifest_t *manifest, uint8_t *buf, size_
 int suit_payload_get_digest(const suit_manifest_t *manifest,
             suit_digest_type_t digest, uint8_t *buf, size_t *len);
 
-/**
- * Check if a manifest is a valid update compared to the old manifest
- *
- * @param   old     Current manifest to compare
- * @param   new     New manifest to compare
- *
- * @return          True when the new manifest is a newer manifest
- */
-bool suit_manifest_isnewer(const suit_manifest_t *old,
-                           const suit_manifest_t *cur);
-
-
 #ifdef __cplusplus
 }
 #endif
