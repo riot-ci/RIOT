@@ -24,10 +24,8 @@
 
 #include "suit.h"
 #include "cbor.h"
-#include "uuid.h"
-#include "periph/cpuid.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 static int _advance_x(CborValue *it, unsigned x)

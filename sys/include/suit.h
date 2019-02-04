@@ -43,7 +43,6 @@ extern "C" {
 #include <unistd.h>
 
 #include "cbor.h"
-#include "uuid.h"
 
 #define SUIT_MANIFEST_MIN_LENGTH            9
 #define SUIT_MANIFEST_PAYLOADINFO_LENGTH    7
