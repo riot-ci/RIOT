@@ -148,7 +148,7 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
 #endif
             /* intentionally falls through */
         case NETDEV_TYPE_ESP_NOW:
-            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE,
+            res = dev->driver->get(dev, NETOPT_MAX_PDU_SIZE,
                                    &tmp, sizeof(tmp));
             assert(res == sizeof(tmp));
 #ifdef MODULE_GNRC_SIXLOWPAN
@@ -183,7 +183,7 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
             LOG_DEBUG("gnrc_netif: getting MTU from device for interface %i\n",
                       netif->pid);
 #endif
-            res = dev->driver->get(dev, NETOPT_MAX_PACKET_SIZE,
+            res = dev->driver->get(dev, NETOPT_MAX_PDU_SIZE,
                                    &tmp, sizeof(tmp));
             if (res < 0) {
                 /* assume maximum possible transition unit */
