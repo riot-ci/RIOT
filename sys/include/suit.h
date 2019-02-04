@@ -51,7 +51,7 @@ extern "C" {
 #define SUIT_MANIFEST_IDX_MANIFESTVERSION   0
 #define SUIT_MANIFEST_IDX_TEXT              1
 #define SUIT_MANIFEST_IDX_NONCE             2
-#define SUIT_MANIFEST_IDX_TIMESTAMP         3
+#define SUIT_MANIFEST_IDX_SEQ_NO            3
 #define SUIT_MANIFEST_IDX_CONDITIONS        4
 #define SUIT_MANIFEST_IDX_DIRECTIVES        5
 #define SUIT_MANIFEST_IDX_ALIASES           6
@@ -67,6 +67,7 @@ extern "C" {
 #define SUIT_PAYLOADINFO_IDX_DIGESTS        5
 #define SUIT_PAYLOADINFO_IDX_PAYLOAD        6
 
+#define SUIT_CBOR_VALIDATION_MODE           CborValidateStrictMode
 /**
  * @name suit parser error codes
  */
@@ -81,10 +82,10 @@ typedef enum {
  * @name SUIT conditionals
  */
 enum {
-    SUIT_COND_VENDOR_ID     = 1,
-    SUIT_COND_CLASS_ID      = 2,
-    SUIT_COND_DEV_ID        = 3,
-    SUIT_COND_BEST_BEFORE   = 4,
+    SUIT_COND_VENDOR_ID     = 1,    /**< Vendor ID match conditional */
+    SUIT_COND_CLASS_ID      = 2,    /**< Class ID match conditional */
+    SUIT_COND_DEV_ID        = 3,    /**< Device ID match conditional */
+    SUIT_COND_BEST_BEFORE   = 4,    /**< Best before conditional */
 };
 
 /**
@@ -107,37 +108,19 @@ typedef enum {
  * [suit-manifest-generator](https://github.com/ARMmbed/suit-manifest-generator)
  */
 typedef enum {
-    SUIT_DIGEST_TYPE_RAW = 1,
-    SUIT_DIGEST_TYPE_INSTALLED = 2,
-    SUIT_DIGEST_TYPE_CIPHERTEXT = 3,
-    SUIT_DIGEST_TYPE_PREIMAGE = 4
+    SUIT_DIGEST_TYPE_RAW = 1,           /**< Raw payload digest */
+    SUIT_DIGEST_TYPE_INSTALLED = 2,     /**< Installed firmware digest */
+    SUIT_DIGEST_TYPE_CIPHERTEXT = 3,    /**< Ciphertext digest */
+    SUIT_DIGEST_TYPE_PREIMAGE = 4       /**< Pre-image digest */
 } suit_digest_type_t;
 
 /**
  * @brief SUIT manifest struct
  */
 typedef struct {
-    uint32_t version;           /**< Manifest Version field */
-    uint32_t sequence;          /**< Manifest timestamp */
-    uint32_t size;              /**< Manifest payload size */
-    const uint8_t *conditions;  /**< ptr to the conditionals in cbor form */
-    size_t condition_len;       /**< length of the conditionals */
-    const uint8_t *urls;        /**< ptr to the urls in cbor form */
-    size_t url_len;             /**< length of the urls */
-    const uint8_t *digests;     /**< ptr to the digests */
-    size_t digest_len;          /**< length of the digest */
-    uint8_t *identifier;        /**< Storage identifier */
-    suit_digest_t algo;         /**< Digest algorithm used */
+    const uint8_t *buf; /**< ptr to the buffer of the manifest */
+    size_t len;         /**< length of the manifest */
 } suit_manifest_t;
-
-/**
- * @brief Initialize the UUID's for conditionals
- */
-void suit_uuid_init(void);
-
-const uuid_t* suit_get_uuid_vendor(void);
-const uuid_t* suit_get_uuid_class(void);
-const uuid_t* suit_get_uuid_device(void);
 
 /**
  * @brief Parse a buffer containing a cbor encoded manifest into a
@@ -146,9 +129,9 @@ const uuid_t* suit_get_uuid_device(void);
  * @param   manifest    manifest to fill
  * @param   buf         Buffer to read from
  * @param   len         Size of the buffer
- * @param   ct          cn-cbor allocator context
  *
- * return               0 on success
+ * return               @ref SUIT_OK on success
+ * return               negative on parsing error
  */
 int suit_parse(suit_manifest_t *manifest, const uint8_t *buf,
                size_t len);
@@ -156,35 +139,82 @@ int suit_parse(suit_manifest_t *manifest, const uint8_t *buf,
 /**
  * @brief Copy the url from the manifest into the supplied buffer
  *
- * @param   manifest    manifest to retrieve the url from
- * @param   buf         buffer to write into
- * @param   len         size of the buffer
+ * @param       manifest    manifest to retrieve the url from
+ * @param[out]  buf         buffer to write into
+ * @param       len         size of the buffer
  *
- * @return              length of the url
- * @return              negative on error
+ * @return                  Length of the url
+ * @return                  negative on error
  */
 ssize_t suit_get_url(const suit_manifest_t *manifest, char *buf, size_t len);
 
-uint32_t suit_get_version(const suit_manifest_t *manifest);
+/**
+ * @brief Copy the version from the manifest into the supplied uint32_t
+ *
+ * @param       manifest    manifest to retrieve the version from
+ * @param[out]  version     version number to set
+ *
+ * @return                  @ref SUIT_OK on success
+ * @return                  negative on error
+ */
+int suit_get_version(const suit_manifest_t *manifest, uint32_t *version);
 
 /**
  * @brief Retrieve the sequence number of the manifest
  *
- * @param   manifest    manifest to retrieve from
+ * @param       manifest    manifest to retrieve the sequence number from
+ * @param[out]  seq_no      sequence number
  *
- * @return              sequence number
+ * @return                  @ref SUIT_OK on success
+ * @return                  negative on error
  */
-uint32_t suit_get_seq_no(const suit_manifest_t *manifest);
+int suit_get_seq_no(const suit_manifest_t *manifest, uint32_t *seq_no);
 
-int suit_verify_conditions(suit_manifest_t *manifest, uint64_t curtime);
-
-static inline uint32_t suit_payload_get_size(const suit_manifest_t *manifest)
-{
-    return manifest->size;
-}
 /**
- * Retrieve a pointer to the requested digest
+ * @brief Retrieve the size from the payloadinfo in the manifest
  *
+ * @param       manifest    manifest to retrieve the size from
+ * @param[out]  size        Size of the firmware
+ *
+ * @return                  @ref SUIT_OK on success
+ * @return                  negative on error
+ */
+int suit_payload_get_size(const suit_manifest_t *manifest, uint32_t *size);
+
+/**
+ * @brief Retrieve the digest algorithm from the payloadinfo in the manifest
+ *
+ * @param       manifest    manifest to retrieve the algo from
+ * @param[out]  algo        algorithm used
+ *
+ * @return                  @ref SUIT_OK on success
+ * @return                  negative on error
+ */
+int suit_payload_get_digestalgo(const suit_manifest_t *manifest,
+                                suit_digest_t *algo);
+
+/**
+ * @brief Retrieve the storage id from the payloadinfo in the manifest
+ *
+ * @param           manifest    manifest to retrieve the storage id from
+ * @param[inout]    buf         buffer to write the storage id in
+ * @param[inout]    len         size of the buffer and length of the storage id
+ *
+ * @return                      @ref SUIT_OK on success
+ * @return                      negative on error
+ */
+int suit_payload_get_storid(const suit_manifest_t *manifest, uint8_t *buf, size_t *len);
+
+/**
+ * @brief Retrieve the digest from the payloadinfo in the manifest
+ *
+ * @param           manifest    manifest to retrieve the digest from
+ * @param           digest      type of digest to retrieve
+ * @param[inout]    buf         buffer to write the digest in
+ * @param[inout]    len         size of the buffer and length of the digest
+ *
+ * @return                      @ref SUIT_OK on success
+ * @return                      negative on error
  */
 int suit_payload_get_digest(const suit_manifest_t *manifest,
             suit_digest_type_t digest, uint8_t *buf, size_t *len);
@@ -197,10 +227,8 @@ int suit_payload_get_digest(const suit_manifest_t *manifest,
  *
  * @return          True when the new manifest is a newer manifest
  */
-static inline bool suit_isnew(const suit_manifest_t *old, const suit_manifest_t *cur)
-{
-    return (old->sequence < cur->sequence);
-}
+bool suit_manifest_isnewer(const suit_manifest_t *old,
+                           const suit_manifest_t *cur);
 
 
 #ifdef __cplusplus

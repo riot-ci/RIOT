@@ -30,158 +30,68 @@
 #define ENABLE_DEBUG (1)
 #include "debug.h"
 
-static uint8_t vendor_id[16] = { 0 };
-static uint8_t class_id[16] = { 0 };
-static uint8_t device_id[16] = { 0 };
-
-const uint8_t domain[] = "riot-os.org";
-
-static void _set_uuid(uuid_t *uuid, const uuid_t *ns, const uint8_t *name, size_t len)
+static int _advance_x(CborValue *it, unsigned x)
 {
-    if (uuid_version(uuid) == 0) {
-        uuid_v5(uuid, ns, name, len);
-    }
-}
-
-const uuid_t* suit_get_uuid_vendor(void)
-{
-    return (const uuid_t*)vendor_id;
-}
-
-const uuid_t* suit_get_uuid_class(void)
-{
-    return (const uuid_t*)class_id;
-}
-
-const uuid_t* suit_get_uuid_device(void)
-{
-    return (const uuid_t*)device_id;
-}
-
-void suit_uuid_init(void)
-{
-    uint8_t cpuid[CPUID_LEN];
-    cpuid_get(cpuid);
-    _set_uuid((uuid_t*)vendor_id, &uuid_namespace_dns, domain, sizeof(domain) - 1);
-#if ENABLE_DEBUG
-    char uuid_str[UUID_STR_LEN+1];
-    uuid_to_string((uuid_t*)vendor_id, uuid_str);
-    DEBUG("vendor id: %s\n", uuid_str);
-#endif
-    _set_uuid((uuid_t*)class_id, (uuid_t*)vendor_id, (uint8_t*)RIOT_BOARD, sizeof(RIOT_BOARD) - 1);
-#if ENABLE_DEBUG
-    uuid_to_string((uuid_t*)class_id, uuid_str);
-    DEBUG("class id \"%s\": %s\n", RIOT_BOARD, uuid_str);
-#endif
-    _set_uuid((uuid_t*)device_id, (uuid_t*)class_id, cpuid, CPUID_LEN);
-#if ENABLE_DEBUG
-    uuid_to_string((uuid_t*)device_id, uuid_str);
-    DEBUG("device id: %s\n", uuid_str);
-#endif
-}
-
-static int _check_cond_uuid(const CborValue *it, uuid_t *uuid)
-{
-    if (!cbor_value_is_byte_string(it)) {
-        return 0;
-    }
-    size_t len;
-    cbor_value_get_string_length(it, &len);
-    if (len != sizeof(uuid_t)) {
-        return 0;
-    }
-    uuid_t cond;
-    cbor_value_copy_byte_string(it, (uint8_t*)&cond, &len, NULL);
-    return uuid_equal(uuid, &cond);
-}
-
-int _check_cond_time(CborValue *it, uint64_t curtime)
-{
-    uint8_t timestr[32];
-    size_t len;
-    cbor_value_get_string_length(it, &len);
-    if (len > sizeof(timestr)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_copy_byte_string(it, timestr, &len, NULL);
-    CborParser p;
-    CborValue t;
-    /* First grab the time, then verify */
-    CborError err = cbor_parser_init(timestr, len, CborValidateBasic, &p, &t);
-    if (err) {
-        return err;
-    }
-    if (!cbor_value_is_tag(&t)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    CborTag tag;
-    cbor_value_get_tag(&t, &tag);
-    if (tag != CborUnixTime_tTag) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_advance(&t);
-    if (!cbor_value_is_integer(&t)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    uint64_t bestbefore;
-    cbor_value_get_uint64(&t, &bestbefore);
-    return (bestbefore > curtime);
-}
-
-int _check_cond(int num, CborValue *cond, uint64_t curtime)
-{
-    switch(num) {
-        case SUIT_COND_VENDOR_ID:
-            return _check_cond_uuid(cond, (uuid_t*)vendor_id);
-        case SUIT_COND_CLASS_ID:
-            return _check_cond_uuid(cond, (uuid_t*)class_id);
-        case SUIT_COND_DEV_ID:
-           return _check_cond_uuid(cond, (uuid_t*)device_id);
-        case SUIT_COND_BEST_BEFORE:
-           return _check_cond_time(cond, curtime);
+    for(unsigned i=0; i < x; i++)
+    {
+        if (cbor_value_at_end(it)) {
+            return -1;
+        }
+        cbor_value_advance(it);
     }
     return 0;
 }
 
-static int parse_manifest_version(suit_manifest_t *manifest, CborValue *it)
+static int parse_manifest_version(CborValue *it,
+                                  uint32_t *version)
 {
     uint64_t value;
     if (!cbor_value_is_unsigned_integer(it)) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_get_uint64(it, &value);
-    manifest->version = (uint32_t)value;
+    *version = (uint32_t)value;
     return SUIT_OK;
 }
 
-static int parse_manifest_size(suit_manifest_t *manifest, CborValue *it)
+static int parse_manifest_seq_no(CborValue *it, uint32_t *seq_no)
 {
     uint64_t value;
     if (!cbor_value_is_unsigned_integer(it)) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_get_uint64(it, &value);
-    manifest->size = (uint32_t)value;
+    *seq_no = (uint32_t)value;
     return SUIT_OK;
 }
 
-static int parse_manifest_seq_no(suit_manifest_t *manifest, CborValue *it)
+static int parse_payload_size(CborValue *it, uint32_t *size)
 {
     uint64_t value;
     if (!cbor_value_is_unsigned_integer(it)) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_get_uint64(it, &value);
-    manifest->sequence = (uint32_t)value;
+    *size = (uint32_t)value;
     return SUIT_OK;
 }
 
-static int parse_manifest_digestalgo(suit_manifest_t *manifest, CborValue *it)
+static int parse_payload_storage_id(CborValue *it, uint8_t *buf, size_t *len)
+{
+    if (!cbor_value_is_byte_string(it)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_copy_byte_string(it, buf, len, NULL);
+    return SUIT_OK;
+}
+
+static int parse_manifest_digestalgo(CborValue *it,
+                                     suit_digest_t *algo)
 {
     CborValue arr;
     uint64_t value;
     if (cbor_value_is_null(it)) {
-        manifest->algo = SUIT_DIGEST_NONE;
+        *algo = SUIT_DIGEST_NONE;
         return SUIT_OK;
     }
     if (!cbor_value_is_array(it)) {
@@ -195,11 +105,11 @@ static int parse_manifest_digestalgo(suit_manifest_t *manifest, CborValue *it)
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_get_uint64(&arr, &value);
-    manifest->algo = (suit_digest_t)value;
+    *algo = (suit_digest_t)value;
     return SUIT_OK;
 }
 
-int _check_manifest(CborValue *it)
+int _validate_manifest(CborValue *it)
 {
     if (!cbor_value_is_array(it)) {
         return SUIT_ERR_INVALID_MANIFEST;
@@ -212,7 +122,7 @@ int _check_manifest(CborValue *it)
     return SUIT_OK;
 }
 
-int _check_payloadinfo(CborValue *it)
+int _validate_payloadinfo(CborValue *it)
 {
     if (!cbor_value_is_array(it)) {
         return SUIT_ERR_INVALID_MANIFEST;
@@ -225,176 +135,116 @@ int _check_payloadinfo(CborValue *it)
     return SUIT_OK;
 }
 
-int suit_verify_conditions(suit_manifest_t *manifest, uint64_t curtime)
-{
-    CborParser parser;
-    CborValue it, arr;
-    CborError err = cbor_parser_init(manifest->conditions, manifest->condition_len, CborValidateStrictMode, &parser,
-            &it);
-    if (err) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    if (!cbor_value_is_array(&it)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_enter_container(&it, &arr);
-    while (!cbor_value_at_end(&arr)) {
-        CborValue cond;
-        if (!cbor_value_is_array(&arr)) {
-            return SUIT_ERR_INVALID_MANIFEST;
-        }
-        size_t len = 0;
-        cbor_value_get_array_length(&arr, &len);
-        if (len != 2) {
-            return SUIT_ERR_INVALID_MANIFEST;
-        }
-        cbor_value_enter_container(&arr, &cond);
-        int num = 0;
-        cbor_value_get_int(&cond, &num);
-        cbor_value_advance(&cond);
-        int res = _check_cond(num, &cond, curtime);
-        if (res != 1) {
-            return SUIT_ERR_COND;
-        }
-        cbor_value_advance(&arr);
-    }
-    return SUIT_OK;
-}
-
-ssize_t suit_get_url(const suit_manifest_t *manifest, char *buf, size_t len)
-{
-    CborParser parser;
-    CborValue it, arr, uri;
-    cbor_parser_init(manifest->urls, manifest->url_len, CborValidateStrictMode, &parser, &it);
-    if (!cbor_value_is_array(&it)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    size_t arr_len;
-    cbor_value_get_array_length(&it, &arr_len);
-    if (arr_len == 0)
-    {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_enter_container(&it, &arr);
-    if (!cbor_value_is_array(&arr)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_get_array_length(&arr, &arr_len);
-    if (arr_len != 2)
-    {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    cbor_value_enter_container(&arr, &uri);
-    cbor_value_advance(&uri);
-    if (!cbor_value_is_text_string(&uri)) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    size_t uri_len;
-    cbor_value_get_string_length(&uri, &uri_len);
-    if (uri_len > len) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    else {
-        cbor_value_copy_text_string(&uri, buf, &len, NULL);
-        return uri_len;
-    }
-}
-
 int suit_parse(suit_manifest_t *manifest, const uint8_t *buf, size_t len)
 {
     CborParser parser;
-    CborValue it, arr, pi;
-    manifest->size = 0;
-    CborError err = cbor_parser_init(buf, len, CborValidateStrictMode, &parser,
-            &it);
+    CborValue it, arr;
+    CborError err = cbor_parser_init(buf, len, SUIT_CBOR_VALIDATION_MODE,
+                                     &parser, &it);
     if (err != 0) {
-        return err;
+        return SUIT_ERR_INVALID_MANIFEST;
     }
-    if (_check_manifest(&it)) {
+    /* Validate manifest size */
+    if (_validate_manifest(&it)) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
+    /* At this point the manifest should be valid enough */
+    manifest->buf = buf;
+    manifest->len = len;
+
+    /* TODO: return here */
     err = cbor_value_enter_container(&it, &arr);
     if (err != 0) {
-        return err;
-    }
-
-    int res = parse_manifest_version(manifest, &arr);
-    if (res < 0) {
-        return res;
-    }
-
-    /* skip text and nonce */
-    cbor_value_advance(&arr);
-    cbor_value_advance(&arr);
-
-    cbor_value_advance(&arr);
-    res = parse_manifest_seq_no(manifest, &arr);
-    if (res < 0) {
-        return res;
-    }
-
-    /* TODO: parse conditionals */
-    cbor_value_advance(&arr);
-    manifest->conditions = arr.ptr;
-
-    /* Ignore directives, aliases, dependencies and extensions for now */
-    cbor_value_advance(&arr);
-    manifest->condition_len = arr.ptr - manifest->conditions;
-    cbor_value_advance(&arr);
-    cbor_value_advance(&arr);
-    cbor_value_advance(&arr);
-
-
-    if (cbor_value_at_end(&arr)) {
-        /* Manifest parsed, no payloadinfo, but is valid */
-        return SUIT_OK;
-    }
-    cbor_value_advance(&arr);
-    /* arr at payloadinfo */
-    if (_check_payloadinfo(&arr)) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
-    /* Parse payload info */
-    cbor_value_enter_container(&arr, &pi);
 
-    /* Skip format */
-    cbor_value_advance(&pi);
-    parse_manifest_size(manifest, &pi);
-    cbor_value_advance(&pi);
-    cbor_value_advance(&pi);
-    manifest->urls = pi.ptr;
-    cbor_value_advance(&pi);
-    manifest->url_len = pi.ptr - manifest->urls;
-    parse_manifest_digestalgo(manifest, &pi);
-    cbor_value_advance(&pi);
-    manifest->digests = pi.ptr;
-    cbor_value_advance(&pi);
-    manifest->digest_len = pi.ptr - manifest->digests;
+    if(_advance_x(&arr, SUIT_MANIFEST_IDX_PAYLOADINFO) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+
+    if (_validate_payloadinfo(&arr)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
     return SUIT_OK;
 }
 
-uint32_t suit_get_version(const suit_manifest_t *manifest)
+
+static int _init_and_advance(const suit_manifest_t *manifest,
+                             CborParser *parser, CborValue *it,
+                             CborValue *arr, size_t offset)
 {
-    return manifest->version;
+    cbor_parser_init(manifest->buf, manifest->len,
+                     SUIT_CBOR_VALIDATION_MODE, parser, it);
+    cbor_value_enter_container(it, arr);
+    if (_advance_x(arr, offset) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return SUIT_OK;
 }
 
-uint32_t suit_get_seq_no(const suit_manifest_t *manifest)
+static int _init_and_advance_info(const suit_manifest_t *manifest,
+                                  CborParser *parser, CborValue *it,
+                                  CborValue *arr, CborValue *payloadinfo,
+                                  size_t offset)
 {
-    return manifest->sequence;
+    if (_init_and_advance(manifest, parser, it,
+                          arr, SUIT_MANIFEST_IDX_PAYLOADINFO) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_enter_container(arr, payloadinfo);
+    if (_advance_x(payloadinfo, offset) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return SUIT_OK;
+}
+
+int suit_get_version(const suit_manifest_t *manifest, uint32_t *version)
+{
+    CborParser parser;
+    CborValue it, arr;
+    cbor_parser_init(manifest->buf, manifest->len, SUIT_CBOR_VALIDATION_MODE,
+                     &parser, &it);
+    cbor_value_enter_container(&it, &arr);
+    return parse_manifest_version(&arr, version);
+}
+
+int suit_get_seq_no(const suit_manifest_t *manifest, uint32_t *seq_no)
+{
+    CborParser parser;
+    CborValue it, arr;
+    if (_init_and_advance(manifest, &parser, &it,
+                          &arr, SUIT_MANIFEST_IDX_SEQ_NO) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return parse_manifest_seq_no(&arr, seq_no);
+}
+
+int suit_payload_get_digestalgo(const suit_manifest_t *manifest,
+                                suit_digest_t *algo)
+{
+    CborParser parser;
+    CborValue it, arr, payloadinfo;
+    if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
+            SUIT_PAYLOADINFO_IDX_DIGESTALGO) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return parse_manifest_digestalgo(&payloadinfo, algo);
 }
 
 int suit_payload_get_digest(const suit_manifest_t *manifest,
             suit_digest_type_t digest, uint8_t *buf, size_t *len)
 {
     CborParser parser;
-    CborValue it, map;
-    CborError err = cbor_parser_init(manifest->digests, manifest->digest_len, 0, &parser, &it);
-    if (err) {
-        /* FIXME */
-        return err;
+    CborValue it, arr, payloadinfo, map;
+    if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
+            SUIT_PAYLOADINFO_IDX_DIGESTS) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
     }
-    cbor_value_enter_container(&it, &map);
+    if (!cbor_value_is_map(&payloadinfo)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_enter_container(&payloadinfo, &map);
     while(!cbor_value_at_end(&map)) {
         int64_t type;
         cbor_value_get_int64(&map, &type);
@@ -408,11 +258,76 @@ int suit_payload_get_digest(const suit_manifest_t *manifest,
     return 0;
 }
 
-int suit_manifest_get_storid(suit_manifest_t *manifest, uint8_t *buf, size_t len)
+int suit_payload_get_size(const suit_manifest_t *manifest, uint32_t *size)
 {
-    /* Not yet supported */
-    (void)manifest;
-    (void)buf;
-    (void)len;
-    return SUIT_OK;
+    CborParser parser;
+    CborValue it, arr, payloadinfo;
+    if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
+            SUIT_PAYLOADINFO_IDX_SIZE) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return parse_payload_size(&payloadinfo, size);
+}
+
+int suit_payload_get_storid(const suit_manifest_t *manifest,
+                            uint8_t *buf, size_t *len)
+{
+    CborParser parser;
+    CborValue it, arr, payloadinfo;
+    if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
+            SUIT_PAYLOADINFO_IDX_STORID) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return parse_payload_storage_id(&payloadinfo, buf, len);
+}
+
+ssize_t suit_get_url(const suit_manifest_t *manifest, char *buf, size_t len)
+{
+    CborParser parser;
+    CborValue it, arr, payloadinfo, urilist, uri;
+    if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
+            SUIT_PAYLOADINFO_IDX_URIS) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    if (!cbor_value_is_array(&payloadinfo)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    size_t arr_len;
+    cbor_value_get_array_length(&payloadinfo, &arr_len);
+    if (arr_len == 0)
+    {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_enter_container(&payloadinfo, &urilist);
+    if (!cbor_value_is_array(&urilist)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_get_array_length(&urilist, &arr_len);
+    if (arr_len != 2)
+    {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_enter_container(&urilist, &uri);
+    cbor_value_advance(&uri);
+    if (!cbor_value_is_text_string(&uri)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    size_t uri_len = 0;
+    cbor_value_get_string_length(&uri, &uri_len);
+    if (uri_len > len) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    else {
+        cbor_value_copy_text_string(&uri, buf, &len, NULL);
+        return uri_len;
+    }
+}
+
+bool suit_manifest_isnewer(const suit_manifest_t *old,
+                           const suit_manifest_t *cur)
+{
+    uint32_t old_seq, cur_seq;
+    suit_get_seq_no(old, &old_seq);
+    suit_get_seq_no(cur, &cur_seq);
+    return (old_seq < cur_seq);
 }

@@ -17,7 +17,32 @@
 
 static suit_manifest_t manifest;
 
-/* A nice example manifest */
+/* A nice example manifest:
+ *
+ * [
+ *  2,
+ *  None,
+ *  b'\xc4>92\xee.\x15\x10',
+ *  1527518505,
+ *  [[1, b'T}\rtm:Z\x92\x96bH\x81\xaf\xd9@{'],
+ *   [2, b'\xbc\xc9\t\x84\xfe}V+\xb4\xc9\xa2O&\xa3\xa9\xcd'],
+ *   [3, b'T\x8a\xb6\xc8\xdfXS-\xbe\x0e\n\x1d\xc9\r\xcf\xeb']],
+ *  None,
+ *  None,
+ *  None,
+ *  None,
+ *  [
+ *   [1],
+ *   71480,
+ *   b'\x00\01',
+ *   [[1, 'coap://[ff02::1]/fw/test']],
+ *   [1],
+ *   {1: b'\x0e\x06=\xb2\xf3T\xe5\xabG\xcf\xd6\x9a\xbbe\x17e\xcd\x9d\xf3\\6S\\\xf5'
+ *       b'2\xde\xfe\x9c\xe36\x8an'},
+ *   None
+ *  ]
+ * ]
+ */
 static unsigned char test_out_cbor[] = {
   0x8a, 0x02, 0xf6, 0x48, 0xc4, 0x3e, 0x39, 0x32, 0xee, 0x2e, 0x15, 0x10,
   0x1a, 0x5b, 0x0c, 0x15, 0x29, 0x83, 0x82, 0x01, 0x50, 0x54, 0x7d, 0x0d,
@@ -26,13 +51,17 @@ static unsigned char test_out_cbor[] = {
   0xb4, 0xc9, 0xa2, 0x4f, 0x26, 0xa3, 0xa9, 0xcd, 0x82, 0x03, 0x50, 0x54,
   0x8a, 0xb6, 0xc8, 0xdf, 0x58, 0x53, 0x2d, 0xbe, 0x0e, 0x0a, 0x1d, 0xc9,
   0x0d, 0xcf, 0xeb, 0xf6, 0xf6, 0xf6, 0xf6, 0x87, 0x81, 0x01, 0x1a, 0x00,
-  0x01, 0x17, 0x38, 0xf6, 0x81, 0x82, 0x01, 0x78, 0x18, 0x63, 0x6f, 0x61,
-  0x70, 0x3a, 0x2f, 0x2f, 0x5b, 0x66, 0x66, 0x30, 0x32, 0x3a, 0x3a, 0x31,
-  0x5d, 0x2f, 0x66, 0x77, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x81, 0x01, 0xa1,
-  0x01, 0x58, 0x20, 0x0e, 0x06, 0x3d, 0xb2, 0xf3, 0x54, 0xe5, 0xab, 0x47,
-  0xcf, 0xd6, 0x9a, 0xbb, 0x65, 0x17, 0x65, 0xcd, 0x9d, 0xf3, 0x5c, 0x36,
-  0x53, 0x5c, 0xf5, 0x32, 0xde, 0xfe, 0x9c, 0xe3, 0x36, 0x8a, 0x6e, 0xf6
+  0x01, 0x17, 0x38, 0x42, 0x00, 0x01, 0x81, 0x82, 0x01, 0x78, 0x18, 0x63,
+  0x6f, 0x61, 0x70, 0x3a, 0x2f, 0x2f, 0x5b, 0x66, 0x66, 0x30, 0x32, 0x3a,
+  0x3a, 0x31, 0x5d, 0x2f, 0x66, 0x77, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x81,
+  0x01, 0xa1, 0x01, 0x58, 0x20, 0x0e, 0x06, 0x3d, 0xb2, 0xf3, 0x54, 0xe5,
+  0xab, 0x47, 0xcf, 0xd6, 0x9a, 0xbb, 0x65, 0x17, 0x65, 0xcd, 0x9d, 0xf3,
+  0x5c, 0x36, 0x53, 0x5c, 0xf5, 0x32, 0xde, 0xfe, 0x9c, 0xe3, 0x36, 0x8a,
+  0x6e, 0xf6
 };
+
+static const char test_uri[] = "coap://[ff02::1]/fw/test";
+static const uint8_t test_storid[] = {0x00, 0x01};
 
 static char uri_buf[128];
 
@@ -40,21 +69,39 @@ void test_suit_01(void)
 {
     uint8_t digest[64];
     size_t dlen = sizeof(digest);
-    suit_uuid_init();
     TEST_ASSERT_EQUAL_INT(suit_parse(&manifest, test_out_cbor,
             sizeof(test_out_cbor)), 0);
-    TEST_ASSERT_EQUAL_INT(suit_get_version(&manifest), 2);
-    TEST_ASSERT_EQUAL_INT(suit_get_seq_no(&manifest), 1527518505);
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_size(&manifest), 71480);
-    TEST_ASSERT_EQUAL_INT(manifest.algo, SUIT_DIGEST_SHA256);
+
+    uint32_t version = 0;
+    TEST_ASSERT_EQUAL_INT(suit_get_version(&manifest, &version), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(version, 2);
+
+    uint32_t seq_no;
+    TEST_ASSERT_EQUAL_INT(suit_get_seq_no(&manifest, &seq_no), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(seq_no, 1527518505);
+
+    uint32_t size;
+    TEST_ASSERT_EQUAL_INT(suit_payload_get_size(&manifest, &size), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(size, 71480);
+
+    suit_digest_t algo = -1;
+    TEST_ASSERT_EQUAL_INT(suit_payload_get_digestalgo(&manifest, &algo),
+                          SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(algo, SUIT_DIGEST_SHA256);
+    
     TEST_ASSERT_EQUAL_INT(suit_payload_get_digest(&manifest,
                 SUIT_DIGEST_TYPE_RAW, digest, &dlen), 1);
     TEST_ASSERT_EQUAL_INT(suit_payload_get_digest(&manifest,
                 SUIT_DIGEST_TYPE_CIPHERTEXT, digest, &dlen), 0);
-    /* Always fails */
-    TEST_ASSERT_EQUAL_INT(suit_verify_conditions(&manifest, 0), -3);
     TEST_ASSERT_EQUAL_INT(suit_get_url(&manifest, uri_buf, sizeof(uri_buf)), 24);
-    TEST_ASSERT_EQUAL_STRING("coap://[ff02::1]/fw/test", (char*)uri_buf);
+    TEST_ASSERT_EQUAL_STRING((char*)test_uri, (char*)uri_buf);
+
+    uint8_t storid[4];
+    size_t storid_len = sizeof(storid);
+    TEST_ASSERT_EQUAL_INT(suit_payload_get_storid(&manifest, storid,
+                                                  &storid_len), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(storid_len, 2);
+    TEST_ASSERT_EQUAL_INT(memcmp(test_storid, storid, storid_len), 0);
 }
 
 Test *tests_suit_tests(void)
