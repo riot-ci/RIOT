@@ -815,7 +815,6 @@ endif
 
 ifneq (,$(filter suit,$(USEMODULE)))
   USEPKG += tinycbor
-  USEMODULE += uuid
 endif
 
 # Enable periph_gpio when periph_gpio_irq is enabled
