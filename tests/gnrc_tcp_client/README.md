@@ -16,8 +16,8 @@ The test sequence above runs a configurable amount of times.
 Usage (native)
 ==========
 
-Build and run test:
-make clean all term
+Build and run test (don't forget to use different tap device than server):
+make clean all term PORT=tap1
 
 Build and run test, user specified target address:
 make clean all term TCP_TARGET_ADDR=<IPv6-Addr>

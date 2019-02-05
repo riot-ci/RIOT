@@ -2,7 +2,6 @@ include ../Makefile.tests_common
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
-PORT ?= tap0
 
 TCP_LOCAL_ADDR ?= fe80::affe
 TCP_LOCAL_PORT ?= 80
