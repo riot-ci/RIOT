@@ -42,10 +42,8 @@
 /**
  * @brief       A few helper macros
  */
-#define BUS                 (dev->params.i2c_dev)
-#define ADDR                (dev->params.i2c_addr)
-#define MODE                (dev->params.measure_mode)
-#define CRC                 (dev->params.is_crc_enabled)
+#define _BUS                (dev->params.i2c_dev)
+#define _ADDR               (dev->params.i2c_addr)
 
 typedef enum {
     temp_hold_cmd       = 0xE3,     /**< trigger temp measurement, hold master */
@@ -131,12 +129,12 @@ int sht2x_reset(sht2x_t* dev)
     cmd_t command = soft_reset_cmd;
 
     /* Acquire exclusive access */
-    i2c_acquire(BUS);
+    i2c_acquire(_BUS);
 
-    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", ADDR, (uint8_t)command);
-    i2c_result = i2c_write_byte(BUS, ADDR, (uint8_t)command, 0);
+    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", _ADDR, (uint8_t)command);
+    i2c_result = i2c_write_byte(_BUS, _ADDR, (uint8_t)command, 0);
 
-    i2c_release(BUS);
+    i2c_release(_BUS);
 
     if (i2c_result != 0) {
         return SHT2X_ERR_I2C;
@@ -196,10 +194,10 @@ int sht2x_read_ident(const sht2x_t *dev, uint8_t * buffer, size_t buflen)
     size_t ix;
     int res;
 
-    i2c_acquire(BUS);
-    res = i2c_read_regs(BUS, ADDR,
+    i2c_acquire(_BUS);
+    res = i2c_read_regs(_BUS, _ADDR,
                         first_mem_addr, data1, sizeof(data1), I2C_REG16);
-    i2c_release(BUS);
+    i2c_release(_BUS);
     if (res < 0) {
         return res;
     }
@@ -213,10 +211,10 @@ int sht2x_read_ident(const sht2x_t *dev, uint8_t * buffer, size_t buflen)
         }
     }
 
-    i2c_acquire(BUS);
-    res = i2c_read_regs(BUS, ADDR,
+    i2c_acquire(_BUS);
+    res = i2c_read_regs(_BUS, _ADDR,
                         second_mem_addr, data2, sizeof(data2), I2C_REG16);
-    i2c_release(BUS);
+    i2c_release(_BUS);
     if (res < 0) {
         return res;
     }
@@ -261,10 +259,10 @@ int sht2x_read_userreg(const sht2x_t *dev, uint8_t * userreg)
 
     if (userreg) {
         int i2c_result;
-        DEBUG("[SHT2x] read command: addr=%02x cmd=%02x\n", ADDR, (uint8_t)command);
-        i2c_acquire(BUS);
-        i2c_result = i2c_read_reg(BUS, ADDR, (uint8_t)command, userreg, 0);
-        i2c_release(BUS);
+        DEBUG("[SHT2x] read command: addr=%02x cmd=%02x\n", _ADDR, (uint8_t)command);
+        i2c_acquire(_BUS);
+        i2c_result = i2c_read_reg(_BUS, _ADDR, (uint8_t)command, userreg, 0);
+        i2c_release(_BUS);
         if (i2c_result != 0) {
             return SHT2X_ERR_I2C_READ;
         }
@@ -279,11 +277,11 @@ int sht2x_write_userreg(const sht2x_t *dev, uint8_t userreg)
 {
     cmd_t command = write_user_cmd;
     int i2c_result;
-    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", ADDR, (uint8_t)command);
+    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", _ADDR, (uint8_t)command);
 
-    i2c_acquire(BUS);
-    i2c_result = i2c_write_reg(BUS, ADDR, (uint8_t)command, userreg, 0);
-    i2c_release(BUS);
+    i2c_acquire(_BUS);
+    i2c_result = i2c_write_reg(_BUS, _ADDR, (uint8_t)command, userreg, 0);
+    i2c_release(_BUS);
     if (i2c_result != 0) {
         return SHT2X_ERR_I2C;
     }
@@ -314,12 +312,12 @@ static int read_sensor(const sht2x_t* dev, cmd_t command, uint16_t *val)
     int i2c_result;
 
     /* Acquire exclusive access */
-    i2c_acquire(BUS);
+    i2c_acquire(_BUS);
 
-    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", ADDR, (uint8_t)command);
-    (void)i2c_write_byte(BUS, ADDR, (uint8_t)command, 0);
-    i2c_result = i2c_read_bytes(BUS, ADDR, buffer, sizeof(buffer), 0);
-    i2c_release(BUS);
+    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", _ADDR, (uint8_t)command);
+    (void)i2c_write_byte(_BUS, _ADDR, (uint8_t)command, 0);
+    i2c_result = i2c_read_bytes(_BUS, _ADDR, buffer, sizeof(buffer), 0);
+    i2c_release(_BUS);
     if (i2c_result != 0) {
         DEBUG("[Error] Cannot read SHT2x sensor data.\n");
         return SHT2X_ERR_I2C_READ;
@@ -331,7 +329,7 @@ static int read_sensor(const sht2x_t* dev, cmd_t command, uint16_t *val)
         *val &= ~0x0003;            /* clear two low bits (status bits) */
     }
 
-    if (CRC) {
+    if (dev->params.is_crc_enabled) {
         /* byte #3 is the checksum */
         if (sht2x_checkcrc(buffer, 2, buffer[2]) != 0) {
             return SHT2X_ERR_CRC;
@@ -360,10 +358,10 @@ static int read_sensor_poll(const sht2x_t* dev, cmd_t command, uint16_t *val)
     int i2c_result;
 
     /* Acquire exclusive access */
-    i2c_acquire(BUS);
+    i2c_acquire(_BUS);
 
-    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", ADDR, (uint8_t)command);
-    (void)i2c_write_byte(BUS, ADDR, (uint8_t)command, 0);
+    DEBUG("[SHT2x] write command: addr=%02x cmd=%02x\n", _ADDR, (uint8_t)command);
+    (void)i2c_write_byte(_BUS, _ADDR, (uint8_t)command, 0);
     if (command == temp_no_hold_cmd) {
         sleep_during_temp_measurement(dev->params.resolution);
     } else {
@@ -372,13 +370,13 @@ static int read_sensor_poll(const sht2x_t* dev, cmd_t command, uint16_t *val)
 
     uint8_t ix = 0;
     for (; ix < MAX_RETRIES; ix++) {
-        i2c_result = i2c_read_bytes(BUS, ADDR, buffer, sizeof(buffer), 0);
+        i2c_result = i2c_read_bytes(_BUS, _ADDR, buffer, sizeof(buffer), 0);
         if (i2c_result == 0) {
             break;
         }
     }
 
-    i2c_release(BUS);
+    i2c_release(_BUS);
     if (i2c_result != 0) {
         DEBUG("[Error] Cannot read SHT2x sensor data.\n");
         return SHT2X_ERR_I2C_READ;
@@ -391,7 +389,7 @@ static int read_sensor_poll(const sht2x_t* dev, cmd_t command, uint16_t *val)
     }
 
     /* byte #3 is the checksum */
-    if (CRC) {
+    if (dev->params.is_crc_enabled) {
         if (sht2x_checkcrc(buffer, 2, buffer[2]) != 0) {
             return SHT2X_ERR_CRC;
         }
