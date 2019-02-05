@@ -26,6 +26,8 @@
 
 extern void board_init(void);
 
+#define STACK_EXTRA 32
+
 __attribute__((constructor)) static void startup(void)
 {
     /* use putchar so the linker links it in: */
@@ -34,6 +36,11 @@ __attribute__((constructor)) static void startup(void)
     board_init();
 
     LOG_INFO("RIOT MSP430 hardware initialization complete.\n");
+
+    /* save current stack pointer as top of heap before enter the thread mode */
+    extern char *__heap_end;
+    __asm__ __volatile__("mov r1, %0" : "=r"(__heap_end));
+    __heap_end -= STACK_EXTRA;
 
     kernel_init();
 }
