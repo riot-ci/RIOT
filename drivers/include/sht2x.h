@@ -26,6 +26,8 @@
 #ifndef SHT2X_H
 #define SHT2X_H
 
+#include <stdint.h>
+#include <stdbool.h>
 #include "periph/i2c.h"
 
 #ifdef __cplusplus
