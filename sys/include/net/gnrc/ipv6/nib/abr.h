@@ -110,7 +110,6 @@ void gnrc_ipv6_nib_abr_print(gnrc_ipv6_nib_abr_t *abr);
 #define gnrc_ipv6_nib_abr_del(addr)         (void)(addr)
 #define gnrc_ipv6_nib_abr_iter(state, abr)  (false)
 #define gnrc_ipv6_nib_abr_print(abr)        (void)(abr)
-#define
 #endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C || defined(DOXYGEN) */
 
 #ifdef __cplusplus
