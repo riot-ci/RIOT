@@ -141,6 +141,10 @@ extern int _can_handler(int argc, char **argv);
 extern int _cord_ep_handler(int argc, char **argv);
 #endif
 
+#ifdef MODULE_METADATA
+extern int _metadata_get_handler(int argc, char **argv);
+#endif
+
 const shell_command_t _shell_command_list[] = {
     {"reboot", "Reboot the node", _reboot_handler},
 #ifdef MODULE_CONFIG
@@ -230,6 +234,9 @@ const shell_command_t _shell_command_list[] = {
 #endif
 #ifdef MODULE_CORD_EP
     {"cord_ep", "Resource directory endpoint commands", _cord_ep_handler },
+#endif
+#ifdef MODULE_METADATA
+    {"metadata_get", "Returns metadata for the app", _metadata_get_handler },
 #endif
     {NULL, NULL, NULL}
 };
