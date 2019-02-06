@@ -119,6 +119,71 @@ static int check_device(cc110x_t *dev)
     }
 }
 
+static int check_config(cc110x_t *dev)
+{
+    char buf[CC110X_CONF_SIZE];
+
+    /* Verify content of main config registers */
+    cc110x_burst_read(dev, CC110X_CONF_START, buf, sizeof(buf));
+    if (memcmp(buf, cc110x_conf, sizeof(buf))) {
+        DEBUG("[cc110x] ERROR: Verification of main config registers failed\n");
+        return -1;
+    }
+
+    /* Verify content of "magic number" config registers */
+    cc110x_burst_read(dev, CC110X_REG_TEST2, buf,
+                      sizeof(cc110x_magic_registers));
+    if (memcmp(buf, cc110x_magic_registers, sizeof(cc110x_magic_registers))) {
+        DEBUG("[cc110x] ERROR: Verification of \"magic\" registers failed\n");
+        return -1;
+    }
+
+    /* Verify content of PA_TABLE */
+    cc110x_burst_read(dev, CC110X_MULTIREG_PATABLE, buf, CC110X_PATABLE_LEN);
+    if (memcmp(buf, dev->params.patable->data, CC110X_PATABLE_LEN)) {
+        DEBUG("[cc110x] ERROR: Verification of PA_TABLE failed\n");
+        return -1;
+    }
+
+    DEBUG("[cc110x] Content of configuration registers verified\n");
+    return 0;
+}
+
+static int check_gdo_pins(cc110x_t *dev)
+{
+    /* Validate that GDO2 responds to configuration updates */
+    cc110x_write(dev, CC110X_REG_IOCFG2, CC110X_GDO_CONSTANT_HIGH);
+    if (!gpio_read(dev->params.gdo2)) {
+        DEBUG("[cc110x] GDO2 does not respond (check wiring!)\n");
+        return -1;
+    }
+
+    cc110x_write(dev, CC110X_REG_IOCFG2, CC110X_GDO_CONSTANT_LOW);
+    if (gpio_read(dev->params.gdo2)) {
+        DEBUG("[cc110x] GDO2 does not respond (check wiring!)\n");
+        return -1;
+    }
+
+    /* Validate that GDO0 responds to configuration updates */
+    cc110x_write(dev, CC110X_REG_IOCFG0, CC110X_GDO_CONSTANT_HIGH);
+    if (!gpio_read(dev->params.gdo0)) {
+        DEBUG("[cc110x] GDO0 does not respond (check wiring!)\n");
+        return -1;
+    }
+
+    cc110x_write(dev, CC110X_REG_IOCFG0, CC110X_GDO_CONSTANT_LOW);
+    if (gpio_read(dev->params.gdo0)) {
+        DEBUG("[cc110x] GDO0 does not respond (check wiring!)\n");
+        return -1;
+    }
+
+    /* Restore default GDO2 & GDO0 config */
+    cc110x_write(dev, CC110X_REG_IOCFG2, cc110x_conf[CC110X_REG_IOCFG2]);
+    cc110x_write(dev, CC110X_REG_IOCFG0, cc110x_conf[CC110X_REG_IOCFG0]);
+
+    return 0;
+}
+
 static int cc110x_init(netdev_t *netdev)
 {
     cc110x_t *dev = (cc110x_t *)netdev;
@@ -170,6 +235,18 @@ static int cc110x_init(netdev_t *netdev)
     /* Setup the selected PA_TABLE */
     cc110x_burst_write(dev, CC110X_MULTIREG_PATABLE,
                        dev->params.patable->data, CC110X_PATABLE_LEN);
+
+    /* Verify main config, magic numbers and PA_TABLE correctly uploaded */
+    if (check_config(dev)) {
+        cc110x_release(dev);
+        return -EIO;
+    }
+
+    /* Verify that pins GDO2 and GDO0 are correctly connected */
+    if (check_gdo_pins(dev)) {
+        cc110x_release(dev);
+        return -EIO;
+    }
 
     /* Setup the layer 2 address, but do not accept CC110X_L2ADDR_AUTO (which
      * has the value 0x00 and is used for broadcast)
