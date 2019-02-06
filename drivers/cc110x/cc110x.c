@@ -91,7 +91,7 @@ int cc110x_set_tx_power(cc110x_t *dev, cc110x_tx_power_t power)
         return -EINVAL;
     }
 
-    if ((unsigned)power > 7) {
+    if ((unsigned)power >= CC110X_TX_POWER_NUMOF) {
         return -ERANGE;
     }
 

@@ -288,14 +288,15 @@ typedef enum {
  * @brief Enumeration over the possible TX power settings the driver offers
  */
 typedef enum {
-    CC110X_TX_POWER_MINUS_30_DBM    = 0,
-    CC110X_TX_POWER_MINUS_20_DBM    = 1,
-    CC110X_TX_POWER_MINUS_15_DBM    = 2,
-    CC110X_TX_POWER_MINUS_10_DBM    = 3,
-    CC110X_TX_POWER_0_DBM           = 4,
-    CC110X_TX_POWER_PLUS_5_DBM      = 5,
-    CC110X_TX_POWER_PLUS_7_DBM      = 6,
-    CC110X_TX_POWER_PLUS_10_DBM     = 7,
+    CC110X_TX_POWER_MINUS_30_DBM,                   /**< -30 dBm */
+    CC110X_TX_POWER_MINUS_20_DBM,                   /**< -20 dBm */
+    CC110X_TX_POWER_MINUS_15_DBM,                   /**< -15 dBm */
+    CC110X_TX_POWER_MINUS_10_DBM,                   /**< -10 dBm */
+    CC110X_TX_POWER_0_DBM,                          /**< 0 dBm */
+    CC110X_TX_POWER_PLUS_5_DBM,                     /**< 5 dBm */
+    CC110X_TX_POWER_PLUS_7_DBM,                     /**< 7 dBm */
+    CC110X_TX_POWER_PLUS_10_DBM,                    /**< 1 dBm */
+    CC110X_TX_POWER_NUMOF,                          /**< Number of TX power options */
 } cc110x_tx_power_t;
 
 /**
