@@ -8,7 +8,7 @@
 
 
 /**
- * @defgroup    sys_metadata
+ * @defgroup    sys_metadata metadata
  * @ingroup     sys
  * @brief       Shows metadata of the application
  * @{
