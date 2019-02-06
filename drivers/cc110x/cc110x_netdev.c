@@ -43,6 +43,34 @@ static int cc110x_get(netdev_t *netdev, netopt_t opt,
 static int cc110x_set(netdev_t *netdev, netopt_t opt,
                       const void *val, size_t len);
 
+/**
+ * @brief A lookup table to convert from dBm value to the best matching
+ *        @ref cc110x_tx_power_t value
+ */
+static const int8_t tx_power_from_dbm[] = {
+    [CC110X_TX_POWER_MINUS_30_DBM]  = -25,
+    [CC110X_TX_POWER_MINUS_20_DBM]  = -17,
+    [CC110X_TX_POWER_MINUS_15_DBM]  = -12,
+    [CC110X_TX_POWER_MINUS_10_DBM]  = -5,
+    [CC110X_TX_POWER_0_DBM]         = 3,
+    [CC110X_TX_POWER_PLUS_5_DBM]    = 6,
+    [CC110X_TX_POWER_PLUS_7_DBM]    = 9,
+};
+
+/**
+ * @brief A lookup table to convert an @ref cc110x_tx_power_t value to dBm
+ */
+static const int8_t dbm_from_tx_power[] = {
+    [CC110X_TX_POWER_MINUS_30_DBM]  = -30,
+    [CC110X_TX_POWER_MINUS_20_DBM]  = -20,
+    [CC110X_TX_POWER_MINUS_15_DBM]  = -15,
+    [CC110X_TX_POWER_MINUS_10_DBM]  = -10,
+    [CC110X_TX_POWER_0_DBM]         = 0,
+    [CC110X_TX_POWER_PLUS_5_DBM]    = 5,
+    [CC110X_TX_POWER_PLUS_7_DBM]    = 7,
+    [CC110X_TX_POWER_PLUS_10_DBM]   = 10,
+};
+
 const netdev_driver_t cc110x_driver = {
     .init = cc110x_init,
     .recv = cc110x_recv,
@@ -484,6 +512,10 @@ static int cc110x_get(netdev_t *netdev, netopt_t opt,
             assert(max_len == sizeof(uint16_t));
             *((uint16_t *)val) = dev->channel;
             return sizeof(uint16_t);
+        case NETOPT_TX_POWER:
+            assert(max_len == sizeof(uint16_t));
+            *((uint16_t *)val) = dbm_from_tx_power[dev->tx_power];
+            return sizeof(uint16_t);
         default:
             return -ENOTSUP;
     }
@@ -527,6 +559,21 @@ static int cc110x_set(netdev_t *netdev, netopt_t opt,
             }
             if ((retval = cc110x_hop(dev, (uint8_t)channel))) {
                 return retval;
+            }
+        }
+            return sizeof(uint16_t);
+        case NETOPT_TX_POWER:
+        {
+            assert(len == sizeof(int16_t));
+            int16_t dbm = *((int16_t *)val);
+            cc110x_tx_power_t power = CC110X_TX_POWER_MINUS_30_DBM;
+            for ( ; power < CC110X_TX_POWER_PLUS_10_DBM; power++) {
+                if ((int16_t)tx_power_from_dbm[power] >= dbm) {
+                    break;
+                }
+            }
+            if (cc110x_set_tx_power(dev, power)) {
+                return -EINVAL;
             }
         }
             return sizeof(uint16_t);
