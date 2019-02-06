@@ -8,6 +8,9 @@ endif
 ifneq (,$(filter ps,$(USEMODULE)))
   SRC += sc_ps.c
 endif
+ifneq (,$(filter metadata,$(USEMODULE)))
+  SRC += sc_metadata.c
+endif
 ifneq (,$(filter sht1x,$(USEMODULE)))
   SRC += sc_sht1x.c
 endif
@@ -73,5 +76,7 @@ endif
 ifneq (,$(filter periph_rtc,$(USEMODULE)))
   SRC += sc_rtc.c
 endif
+
+
 
 include $(RIOTBASE)/Makefile.base
