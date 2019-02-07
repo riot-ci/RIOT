@@ -141,8 +141,8 @@ extern int _can_handler(int argc, char **argv);
 extern int _cord_ep_handler(int argc, char **argv);
 #endif
 
-#ifdef MODULE_METADATA
-extern int _metadata_get_handler(int argc, char **argv);
+#ifdef MODULE_APP_METADATA
+extern int _app_metadata_handler(int argc, char **argv);
 #endif
 
 const shell_command_t _shell_command_list[] = {
@@ -235,8 +235,8 @@ const shell_command_t _shell_command_list[] = {
 #ifdef MODULE_CORD_EP
     {"cord_ep", "Resource directory endpoint commands", _cord_ep_handler },
 #endif
-#ifdef MODULE_METADATA
-    {"metadata_get", "Returns metadata for the app", _metadata_get_handler },
+#ifdef MODULE_APP_METADATA
+    {"app_metadata", "Returns application metadata", _app_metadata_handler },
 #endif
     {NULL, NULL, NULL}
 };

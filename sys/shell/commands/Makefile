@@ -2,14 +2,14 @@ MODULE = shell_commands
 
 SRC = shell_commands.c sc_sys.c
 
+ifneq (,$(filter app_metadata,$(USEMODULE)))
+  SRC += sc_app_metadata.c
+endif
 ifneq (,$(filter mci,$(USEMODULE)))
   SRC += sc_disk.c
 endif
 ifneq (,$(filter ps,$(USEMODULE)))
   SRC += sc_ps.c
-endif
-ifneq (,$(filter metadata,$(USEMODULE)))
-  SRC += sc_metadata.c
 endif
 ifneq (,$(filter sht1x,$(USEMODULE)))
   SRC += sc_sht1x.c
