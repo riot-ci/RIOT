@@ -32,10 +32,14 @@ EXPECTED_PS = (
 # literal ETX instead of SIGINT.
 # When using a board (with miniterm.py) it is not a problem.
 
+DLE = '\x16'
+
 if os.environ['BOARD'] == 'native':
-    CONTROL_C = '\x16\x03'
+    CONTROL_C = DLE+'\x03'
+    CONTROL_D = DLE+'\x04'
 else:
     CONTROL_C = '\x03'
+    CONTROL_D = '\x04'
 
 CMDS = (
     ('start_test', ('[TEST_START]')),
@@ -49,9 +53,10 @@ CMDS = (
     ('echo a string', ('\"echo\"\"a\"\"string\"')),
     ('ps', EXPECTED_PS),
     ('reboot', ('test_shell.')),
-    (CONTROL_C, ('shell exited (1)')),
+    (CONTROL_D, ('shell exited (1)')),
     ('echo', ('"echo"')),
-    ('\x04', ('shell exited (2)'))
+    ('garbage1234'+CONTROL_C, ('>')), # test cancelling a line
+    ('help', EXPECTED_HELP),
 )
 
 
