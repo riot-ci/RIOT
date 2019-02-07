@@ -137,6 +137,7 @@ typedef struct {
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 /** @} */
 
+#ifndef DOXYGEN
 /**
  * @name   Override the default GPIO mode settings
  * @{
@@ -152,7 +153,7 @@ typedef enum {
     GPIO_OD_PU      = (0xff)                            /**< not supported */
 } gpio_mode_t;
 /** @} */
-
+#endif /* ndef DOXYGEN */
 
 /**
  * @name   UART device configuration

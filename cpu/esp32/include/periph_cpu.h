@@ -100,6 +100,7 @@ extern "C" {
 #define GPIO39      (GPIO_PIN(PORT_GPIO,39))
 /** @} */
 
+#ifndef DOXYGEN
 /**
  * @brief   Override mode flank selection values
  *
@@ -135,6 +136,7 @@ typedef enum {
     GPIO_IN_OD_PU   /**< input and open-drain output */
 } gpio_mode_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @name   ADC configuration
