@@ -227,14 +227,15 @@ static int readline(char *buf, size_t size)
         }
 
         int c = getchar();
-        if (c < 0) {
+        if (c < 0 || c == '\x04') {
             return EOF;
         }
 
         /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r). */
         /* QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio"). */
         /* DOS newlines are handled like hitting enter twice, but empty lines are ignored. */
-        if (c == '\r' || c == '\n') {
+        /* Ctrl-C cancels the current line. */
+        if (c == '\r' || c == '\n' || c == '\x03') {
             *line_buf_ptr = '\0';
 #ifndef SHELL_NO_ECHO
             _putchar('\r');
@@ -242,7 +243,7 @@ static int readline(char *buf, size_t size)
 #endif
 
             /* return 1 if line is empty, 0 otherwise */
-            return line_buf_ptr == buf;
+            return c == '\x03' || line_buf_ptr == buf;
         }
         /* QEMU uses 0x7f (DEL) as backspace, while 0x08 (BS) is for most terminals */
         else if (c == 0x08 || c == 0x7f) {
