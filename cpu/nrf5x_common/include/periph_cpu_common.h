@@ -126,6 +126,7 @@ typedef struct {
     uint8_t irqn;           /**< IRQ number of the timer device */
 } timer_conf_t;
 
+#ifndef DOXYGEN
 /**
  * @brief   Override SPI mode values
  * @{
@@ -152,6 +153,7 @@ typedef enum {
     SPI_CLK_10MHZ  = SPI_FREQUENCY_FREQUENCY_M8     /**< 10MHz */
 } spi_clk_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief  SPI configuration values

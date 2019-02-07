@@ -49,6 +49,7 @@ typedef uint8_t gpio_t;
  */
 #define GPIO_PIN(x, y)          ((x << 4) | y)
 
+#ifndef DOXYGEN
 /**
  * @brief   Override the GPIO flanks
  *
@@ -66,6 +67,7 @@ typedef enum {
     GPIO_RISING,       /**< emit interrupt on rising flank */
 } gpio_flank_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief   Use some common SPI functions
@@ -77,6 +79,7 @@ typedef enum {
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 /** @} */
 
+#ifndef DOXYGEN
 /**
  * @brief   SPI mode select macro
  *
@@ -124,6 +127,7 @@ typedef enum {
     SPI_CLK_10MHZ  = SPI_CLK_SEL(1, 0, 0)       /**< 16/2   -> 8MHz */
 } spi_clk_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief  Bitmasks indicating which are the possible dividers for a timer
