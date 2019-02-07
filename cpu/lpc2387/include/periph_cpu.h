@@ -90,6 +90,7 @@ typedef enum {
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
 /* @} */
 
+#ifndef DOXYGEN
 /**
  * @brief   Override SPI clock speed values
  * @{
@@ -103,6 +104,7 @@ typedef enum {
     SPI_CLK_10MHZ  = 10000  /**< drive the SPI bus with 10MHz */
 } spi_clk_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /* @} */
 #ifdef __cplusplus
