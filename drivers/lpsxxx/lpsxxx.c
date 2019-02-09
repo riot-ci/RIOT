@@ -37,7 +37,7 @@
 /**
  * @brief pressure divider for norming pressure output
  */
-#define PRES_DIVIDER        (4096U)
+#define PRES_DIVIDER        (12U)
 
 /**
  * @brief temperature base value and divider for norming temperature output
@@ -191,8 +191,8 @@ int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pres)
         val |= ((uint32_t)0xff << 24);
     }
 
-    /* compute actual pressure value in mbar */
-    *pres = (uint16_t)(((float)val) / PRES_DIVIDER);
+    /* compute actual pressure value in hPa */
+    *pres = (uint16_t)(val >> PRES_DIVIDER);
 
     return LPSXXX_OK;
 }

@@ -123,10 +123,10 @@ int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t *params);
 int lpsxxx_read_temp(const lpsxxx_t *dev, int16_t *temp);
 
 /**
- * @brief   Read a pressure value from the given sensor, returned in mbar
+ * @brief   Read a pressure value from the given sensor, returned in hPa
  *
  * @param[in] dev       device descriptor of sensor to read from
- * @param[out] pres     pressure value in mbar
+ * @param[out] pres     pressure value in hPa
  *
  * @return              LPSXXX_OK on success
  * @return              -LPSXXX_ERR_I2C on I2C error
