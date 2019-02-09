@@ -47,15 +47,11 @@ int main(void)
         lpsxxx_read_pres(&dev, &pres);
         lpsxxx_disable(&dev);
 
-        int pres_abs = pres / 1000;
-        pres -= pres_abs * 1000;
         int temp_abs = temp / 100;
         temp -= temp_abs * 100;
 
-        printf("Pressure value: %2i.%03i bar - Temperature: %2i.%02i °C\n",
-               pres_abs, pres, temp_abs, temp);
-
-        xtimer_sleep(1);
+        printf("Pressure value: %ihPa - Temperature: %2i.%02i°C\n",
+               pres, temp_abs, temp);
     }
 
     return 0;
