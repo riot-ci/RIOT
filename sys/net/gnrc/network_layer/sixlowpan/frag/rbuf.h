@@ -35,24 +35,6 @@ extern "C" {
 #define RBUF_TIMEOUT        (3U * US_PER_SEC) /**< timeout for reassembly in microseconds */
 
 /**
- * @brief   Fragment intervals to identify limits of fragments.
- *
- * @note    Fragments MUST NOT overlap and overlapping fragments are to be
- *          discarded
- *
- * @see <a href="https://tools.ietf.org/html/rfc4944#section-5.3">
- *          RFC 4944, section 5.3
- *      </a>
- *
- * @internal
- */
-typedef struct rbuf_int {
-    struct rbuf_int *next;  /**< next element in interval list */
-    uint16_t start;         /**< start byte of interval */
-    uint16_t end;           /**< end byte of interval */
-} rbuf_int_t;
-
-/**
  * @brief   Internal representation of the 6LoWPAN reassembly buffer.
  *
  * Additional members help with correct reassembly of the buffer.
@@ -63,7 +45,6 @@ typedef struct rbuf_int {
  */
 typedef struct {
     gnrc_sixlowpan_rbuf_t super;        /**< exposed part of the reassembly buffer */
-    rbuf_int_t *ints;                   /**< intervals of the fragment */
     uint32_t arrival;                   /**< time in microseconds of arrival of
                                          *   last received fragment */
 } rbuf_t;
