@@ -224,7 +224,7 @@ kernel_pid_t thread_create(char *stack, int stacksize, char priority, int flags,
 #endif
 
     cb->priority = priority;
-    cb->status = 0;
+    cb->status = STATUS_STOPPED;
 
     cb->rq_entry.next = NULL;
 
