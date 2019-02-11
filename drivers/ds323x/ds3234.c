@@ -92,8 +92,10 @@ int ds3234_pps_init(const ds3234_params_t *dev)
     }
     uint8_t reg = 0;
     ds3234_read_reg(dev, DS323X_REG_CONTROL, 1, &reg);
-    reg &= ~(DS323X_REG_CONTROL_EOSC_MASK | DS323X_REG_CONTROL_INTCN_MASK |
-        DS323X_REG_CONTROL_RS1_MASK | DS323X_REG_CONTROL_RS2_MASK);
+
+    /* set reg to a non-zero known value to check if device is present */
+    reg |= DS323X_REG_CONTROL_RS1_MASK;
+
     ds3234_write_reg(dev, DS323X_REG_CONTROL, 1, &reg);
     uint8_t readback = 0;
     ds3234_read_reg(dev, DS323X_REG_CONTROL, 1, &readback);
@@ -101,6 +103,10 @@ int ds3234_pps_init(const ds3234_params_t *dev)
         DEBUG("ds3234: readback mismatch: expected %u, actual %u\n", (unsigned)reg, (unsigned)readback);
         return -EIO;
     }
+
+    reg &= ~(DS323X_REG_CONTROL_EOSC_MASK | DS323X_REG_CONTROL_INTCN_MASK |
+        DS323X_REG_CONTROL_RS1_MASK | DS323X_REG_CONTROL_RS2_MASK);
+    ds3234_write_reg(dev, DS323X_REG_CONTROL, 1, &reg);
 
     return 0;
 }
