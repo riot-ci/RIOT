@@ -27,7 +27,7 @@
  * @note Assigning the same priority to two or more threads is usually not a
  *       good idea. A thread in RIOT may run until it yields (@ref
  *       thread_yield) or another thread with higher priority is runnable (@ref
- *       STATUS_ON_RUNQUEUE) again. Multiple threads with the same priority
+ *       sched_is_runnable) again. Multiple threads with the same priority
  *       will therefore be scheduled cooperatively: when one of them is running,
  *       all others with the same priority depend on it to yield (or be interrupted
  *       by a thread with higher priority).
@@ -133,40 +133,6 @@
  extern "C" {
 #endif
 
-/* Thread states */
-/**
- * @name Special meaning thread states
- * @{
- */
-#define STATUS_NOT_FOUND        (-1)    /**< Describes an illegal thread status */
-/** @} */
-
-/**
- * @name Blocked thread states
- * @{
- */
-#define STATUS_STOPPED              0   /**< has terminated                     */
-#define STATUS_SLEEPING             1   /**< sleeping                           */
-#define STATUS_MUTEX_BLOCKED        2   /**< waiting for a locked mutex         */
-#define STATUS_RECEIVE_BLOCKED      3   /**< waiting for a message              */
-#define STATUS_SEND_BLOCKED         4   /**< waiting for message to be delivered*/
-#define STATUS_REPLY_BLOCKED        5   /**< waiting for a message response     */
-#define STATUS_FLAG_BLOCKED_ANY     6   /**< waiting for any flag from flag_mask*/
-#define STATUS_FLAG_BLOCKED_ALL     7   /**< waiting for all flags in flag_mask */
-#define STATUS_MBOX_BLOCKED         8   /**< waiting for get/put on mbox        */
-#define STATUS_COND_BLOCKED         9   /**< waiting for a condition variable   */
-/** @} */
-
-/**
- * @name Queued thread states
- * @{
- */
-#define STATUS_ON_RUNQUEUE      STATUS_RUNNING  /**< to check if on run queue:
-                                                 `st >= STATUS_ON_RUNQUEUE`             */
-#define STATUS_RUNNING         10               /**< currently running                  */
-#define STATUS_PENDING         11               /**< waiting to be scheduled to run     */
-/** @} */
-
 /**
  * @brief Prototype for a thread entry function
  */
@@ -177,7 +143,7 @@ typedef void *(*thread_task_func_t)(void *arg);
  */
 struct _thread {
     char *sp;                       /**< thread's stack pointer         */
-    uint8_t status;                 /**< thread's status                */
+    thread_state_t status;          /**< thread's status                */
     uint8_t priority;               /**< thread's priority              */
 
     kernel_pid_t pid;               /**< thread's process id            */
@@ -391,12 +357,13 @@ volatile thread_t *thread_get(kernel_pid_t pid);
 /**
  * @brief Returns the status of a process
  *
- * @param[in] pid   the PID of the thread to get the status from
+ * @param[out] state    The state of thread identified by @p pid
+ * @param[in] pid       the PID of the thread to get the status from
  *
- * @return          status of the thread
- * @return          `STATUS_NOT_FOUND` if pid is unknown
+ * @retval 0            Success
+ * @retval -ESRCH       Thread not found
  */
-int thread_getstatus(kernel_pid_t pid);
+int thread_getstatus(thread_state_t *state, kernel_pid_t pid);
 
 /**
  * @brief Puts the current thread into sleep mode. Has to be woken up externally.
@@ -435,8 +402,10 @@ void thread_yield_higher(void);
  *
  * @param[in] pid   the PID of the thread to be woken up
  *
- * @return          `1` on success
- * @return          `STATUS_NOT_FOUND` if pid is unknown or not sleeping
+ *
+ * @retval 0        Success
+ * @retval -ESRCH   Thread identified by @p pid not found
+ * @retval -EBUSY   Thread is not sleeping
  */
 int thread_wakeup(kernel_pid_t pid);
 
