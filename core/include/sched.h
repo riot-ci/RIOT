@@ -118,19 +118,25 @@ typedef enum {
 /** @} */
 
 /**
- * @name Helpers to work with thread states
- * @{
- */
-#define STATUS_ON_RUNQUEUE      STATUS_RUNNING  /**< to check if on run queue:
-                                                 `st >= STATUS_ON_RUNQUEUE`   */
-/** @} */
-/**
  * @def SCHED_PRIO_LEVELS
  * @brief The number of thread priority levels
  */
 #ifndef SCHED_PRIO_LEVELS
 #define SCHED_PRIO_LEVELS 16
 #endif
+
+/**
+ * @brief Checks if the given status indicates the corresponding thread is
+ *        runnable
+ *
+ * @param[in] status    Status of the thread to check if being runnable
+ * @retval 1            Thread is runnable
+ * @retval 0            Thread is **NOT** runnable
+ */
+static inline int sched_is_runnable(thread_state_t status)
+{
+    return status >= STATUS_RUNNING;
+}
 
 /**
  * @brief   Triggers the scheduler to schedule the next thread
