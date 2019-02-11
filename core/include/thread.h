@@ -27,7 +27,7 @@
  * @note Assigning the same priority to two or more threads is usually not a
  *       good idea. A thread in RIOT may run until it yields (@ref
  *       thread_yield) or another thread with higher priority is runnable (@ref
- *       STATUS_ON_RUNQUEUE) again. Multiple threads with the same priority
+ *       sched_is_runnable) again. Multiple threads with the same priority
  *       will therefore be scheduled cooperatively: when one of them is running,
  *       all others with the same priority depend on it to yield (or be interrupted
  *       by a thread with higher priority).

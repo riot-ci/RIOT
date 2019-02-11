@@ -96,11 +96,11 @@ void ps(void)
         thread_t *p = (thread_t *)sched_threads[i];
 
         if (p != NULL) {
-            thread_state_t state = p->status;                                      /* copy state */
-            const char *sname = state_names[state];                                /* get state name */
-            const char *queued = &queued_name[(int)(state >= STATUS_ON_RUNQUEUE)]; /* get queued flag */
+            thread_state_t state = p->status;                           /* copy state */
+            const char *sname = state_names[state];                     /* get state name */
+            const char *queued = &queued_name[sched_is_runnable(state)];/* get queued flag */
 #ifdef DEVELHELP
-            int stacksz = p->stack_size;                                           /* get stack size */
+            int stacksz = p->stack_size;                                /* get stack size */
             overall_stacksz += stacksz;
             stacksz -= thread_measure_stack_free(p->stack_start);
             overall_used += stacksz;
