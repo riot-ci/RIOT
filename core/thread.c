@@ -38,10 +38,14 @@ volatile thread_t *thread_get(kernel_pid_t pid)
     return NULL;
 }
 
-int thread_getstatus(kernel_pid_t pid)
+int thread_getstatus(thread_state_t *state, kernel_pid_t pid)
 {
     volatile thread_t *t = thread_get(pid);
-    return t ? (int) t->status : STATUS_NOT_FOUND;
+    if (!t) {
+        return -ESRCH;
+    }
+    *state = t->status;
+    return 0;
 }
 
 const char *thread_getname(kernel_pid_t pid)
@@ -72,10 +76,12 @@ int thread_wakeup(kernel_pid_t pid)
     DEBUG("thread_wakeup: Trying to wakeup PID %" PRIkernel_pid "...\n", pid);
 
     unsigned old_state = irq_disable();
+    int retval = 0;
 
     thread_t *other_thread = (thread_t *) thread_get(pid);
 
     if (!other_thread) {
+        retval = -ESRCH;
         DEBUG("thread_wakeup: Thread does not exist!\n");
     }
     else if (other_thread->status == STATUS_SLEEPING) {
@@ -86,14 +92,15 @@ int thread_wakeup(kernel_pid_t pid)
         irq_restore(old_state);
         sched_switch(other_thread->priority);
 
-        return 1;
+        return 0;
     }
     else {
+        retval = -EBUSY;
         DEBUG("thread_wakeup: Thread is not sleeping!\n");
     }
 
     irq_restore(old_state);
-    return STATUS_NOT_FOUND;
+    return retval;
 }
 
 void thread_yield(void)

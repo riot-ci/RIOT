@@ -41,8 +41,8 @@ void thread::join() {
                        "Joining this leads to a deadlock.");
   }
   if (joinable()) {
-    auto status = thread_getstatus(m_handle);
-    if (status != STATUS_NOT_FOUND && status != STATUS_STOPPED) {
+    thread_state_t status;
+    if (!thread_getstatus(&status, m_handle) && (status != STATUS_STOPPED)) {
       m_data->joining_thread = sched_active_pid;
       thread_sleep();
     }

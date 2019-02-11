@@ -357,12 +357,13 @@ volatile thread_t *thread_get(kernel_pid_t pid);
 /**
  * @brief Returns the status of a process
  *
- * @param[in] pid   the PID of the thread to get the status from
+ * @param[out] state    The state of thread identified by @p pid
+ * @param[in] pid       the PID of the thread to get the status from
  *
- * @return          status of the thread
- * @return          `STATUS_NOT_FOUND` if pid is unknown
+ * @retval 0            Success
+ * @retval -ESRCH       Thread not found
  */
-int thread_getstatus(kernel_pid_t pid);
+int thread_getstatus(thread_state_t *state, kernel_pid_t pid);
 
 /**
  * @brief Puts the current thread into sleep mode. Has to be woken up externally.
@@ -401,8 +402,10 @@ void thread_yield_higher(void);
  *
  * @param[in] pid   the PID of the thread to be woken up
  *
- * @return          `1` on success
- * @return          `STATUS_NOT_FOUND` if pid is unknown or not sleeping
+ *
+ * @retval 0        Success
+ * @retval -ESRCH   Thread identified by @p pid not found
+ * @retval -EBUSY   Thread is not sleeping
  */
 int thread_wakeup(kernel_pid_t pid);
 

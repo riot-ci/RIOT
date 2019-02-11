@@ -123,7 +123,6 @@ typedef enum {
  */
 #define STATUS_ON_RUNQUEUE      STATUS_RUNNING  /**< to check if on run queue:
                                                  `st >= STATUS_ON_RUNQUEUE`   */
-#define STATUS_NOT_FOUND ((thread_state_t)-1)   /**< Describes an illegal thread status */
 /** @} */
 /**
  * @def SCHED_PRIO_LEVELS
