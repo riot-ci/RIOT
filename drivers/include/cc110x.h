@@ -196,6 +196,7 @@
 #include "periph/adc.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
+#include "thread.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -517,6 +518,7 @@ typedef struct {
      * @brief Frequency synthesizer calibration data
      */
     cc110x_fs_calibration_t fscal;
+    thread_signal_t isr_signal;         /**< Signal to use to trigger ISR in TX */
     uint8_t rssi_offset;                /**< dBm to subtract from raw RSSI data */
 } cc110x_t;
 

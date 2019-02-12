@@ -27,6 +27,7 @@
 #include "luid.h"
 #include "net/eui64.h"
 #include "net/netdev.h"
+#include "thread.h"
 #include "xtimer.h"
 
 #include "cc110x.h"
@@ -83,7 +84,12 @@ const netdev_driver_t cc110x_driver = {
 void cc110x_on_gdo(void *_dev)
 {
     cc110x_t *dev = _dev;
-    dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_ISR);
+    if ((dev->state & 0x07) == CC110X_STATE_TX) {
+        thread_signal(&dev->isr_signal);
+    }
+    else {
+        dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_ISR);
+    }
 }
 
 static int check_device(cc110x_t *dev)
@@ -215,6 +221,7 @@ static int check_gdo_pins(cc110x_t *dev)
 static int cc110x_init(netdev_t *netdev)
 {
     cc110x_t *dev = (cc110x_t *)netdev;
+    thread_signal_init(&dev->isr_signal);
 
     /* Make sure the crystal is stable and the chip ready */
     if (cc110x_power_on(dev)) {
@@ -449,6 +456,11 @@ static int cc110x_send(netdev_t *netdev, const iolist_t *iolist)
     /* Restore IRQs */
     gpio_irq_enable(dev->params.gdo0);
     gpio_irq_enable(dev->params.gdo2);
+
+    while ((dev->state & 0x07) == CC110X_STATE_TX) {
+        thread_await_signal(&dev->isr_signal);
+        cc110x_isr(&dev->netdev);
+    }
 
     return (int)size;
 }
