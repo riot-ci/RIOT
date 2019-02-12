@@ -19,4 +19,7 @@ ifeq ($(RIOT_TERMINAL),pyterm)
 else ifeq ($(RIOT_TERMINAL),picocom)
     export TERMPROG  ?= picocom
     export TERMFLAGS ?= --nolock --imap lfcrlf --echo --baud "$(BAUD)" "$(PORT)"
+else ifeq ($(RIOT_TERMINAL),miniterm.py)
+    export TERMPROG  ?= miniterm.py
+    export TERMFLAGS ?= --eol CRLF "$(PORT)" "$(BAUD)"
 endif
