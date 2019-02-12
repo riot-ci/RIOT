@@ -320,6 +320,19 @@ void gnrc_sixlowpan_frag_recv(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     rbuf_add(hdr, pkt, offset, page);
 }
 
+void gnrc_sixlowpan_frag_rbuf_base_rm(gnrc_sixlowpan_rbuf_base_t *entry)
+{
+    while (entry->ints != NULL) {
+        gnrc_sixlowpan_rbuf_int_t *next = entry->ints->next;
+
+        entry->ints->start = 0;
+        entry->ints->end = 0;
+        entry->ints->next = NULL;
+        entry->ints = next;
+    }
+    entry->datagram_size = 0;
+}
+
 void gnrc_sixlowpan_frag_rbuf_gc(void)
 {
     rbuf_gc();
