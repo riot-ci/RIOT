@@ -1,6 +1,7 @@
 DEVELHELP=0
 include ../Makefile.tests_common
 
+USEMODULE += app_metadata
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
@@ -11,5 +12,7 @@ DISABLE_MODULE += auto_init
 BOARD_BLACKLIST += chronos
 
 TEST_ON_CI_WHITELIST += all
+
+APP_SHELL_FMT ?= NONE
 
 include $(RIOTBASE)/Makefile.include

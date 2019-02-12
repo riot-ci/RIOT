@@ -2,6 +2,9 @@ MODULE = shell_commands
 
 SRC = shell_commands.c sc_sys.c
 
+ifneq (,$(filter app_metadata,$(USEMODULE)))
+  SRC += sc_app_metadata.c
+endif
 ifneq (,$(filter mci,$(USEMODULE)))
   SRC += sc_disk.c
 endif
@@ -73,5 +76,7 @@ endif
 ifneq (,$(filter periph_rtc,$(USEMODULE)))
   SRC += sc_rtc.c
 endif
+
+
 
 include $(RIOTBASE)/Makefile.base
