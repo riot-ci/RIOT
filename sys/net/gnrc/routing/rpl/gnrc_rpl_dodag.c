@@ -177,6 +177,8 @@ bool gnrc_rpl_dodag_init(gnrc_rpl_instance_t *instance, ipv6_addr_t *dodag_id, k
 void gnrc_rpl_dodag_remove_all_parents(gnrc_rpl_dodag_t *dodag)
 {
     gnrc_rpl_parent_t *elt, *tmp;
+    /* cppcheck-suppress uninitvar
+     * (reason: Variables are initialized within the `LL_FOREACH_SAFE` macro) */
     LL_FOREACH_SAFE(dodag->parents, elt, tmp) {
         gnrc_rpl_parent_remove(elt);
     }
@@ -344,6 +346,8 @@ static gnrc_rpl_parent_t *_gnrc_rpl_find_preferred_parent(gnrc_rpl_dodag_t *doda
         trickle_reset_timer(&dodag->trickle);
     }
 
+    /* cppcheck-suppress uninitvar
+     * (reason: Variables are initialized within the `LL_FOREACH_SAFE` macro) */
     LL_FOREACH_SAFE(dodag->parents, elt, tmp) {
         if (DAGRANK(dodag->my_rank, dodag->instance->min_hop_rank_inc)
             <= DAGRANK(elt->rank, dodag->instance->min_hop_rank_inc)) {
