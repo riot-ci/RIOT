@@ -382,8 +382,10 @@ void test_entropy(uint32_t samples)
     }
 
     /* print results */
-    /* Use 'fmt/print_float' to work on all platforms (atmega) */
+    /* Use 'fmt/print_float' to work on all platforms (atmega)
+     * Stdout should be flushed before to prevent garbled output. */
     printf("Calculated ");
+    fflush(stdout);
     print_float(entropy, 6);
     printf(" bits of entropy from %" PRIu32 " samples.\n", samples);
 }
