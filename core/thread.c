@@ -93,7 +93,7 @@ int thread_wakeup(kernel_pid_t pid)
     }
 
     irq_restore(old_state);
-    return STATUS_NOT_FOUND;
+    return (int)STATUS_NOT_FOUND;
 }
 
 void thread_yield(void)
