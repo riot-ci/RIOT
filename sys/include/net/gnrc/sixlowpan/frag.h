@@ -78,7 +78,7 @@ typedef struct gnrc_sixlowpan_rbuf_int {
  *
  * 1. the source address,
  * 2. the destination address,
- * 3. the datagram size
+ * 3. the datagram size, and
  * 4. the datagram tag
  *
  * to identify all fragments that belong to the given datagram.
