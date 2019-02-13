@@ -41,7 +41,7 @@ volatile thread_t *thread_get(kernel_pid_t pid)
 int thread_getstatus(kernel_pid_t pid)
 {
     volatile thread_t *t = thread_get(pid);
-    return t ? (int) t->status : STATUS_NOT_FOUND;
+    return t ? (int)t->status : (int)STATUS_NOT_FOUND;
 }
 
 const char *thread_getname(kernel_pid_t pid)
