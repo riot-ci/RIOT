@@ -84,14 +84,13 @@ int main(void)
     timer_init(TIMER_DEV(0), TIMER_FREQ, _timer, NULL);
     random_init(timer_read(TIMER_DEV(0)));
     puts("Test is \"successful\" if it runs forever without halting\n"
-         "on any of the assertion in this file");
+         "on any of the assertion in this file\n");
     _pid_main = sched_active_pid;
 
-    /* try to trigger an interrupt at random intervals.
-     * When an interrupt is fired while ISR is disable in the
-     * `thread_yield_higher()` function some platform-specific implementations
-     * used to not call `sched_run()` which was the cause of the bug tested
-     * here */
+    puts("I will try to trigger an interrupt at random intervals. When an\n"
+         "interrupt is fired while ISR is disable in the thread_yield_higher()\n"
+         "function some platform-specific implementations used to not call\n"
+         "sched_run() which was the cause of the bug tested here");
     _sched_next();
     pid = thread_create(_stack, sizeof(_stack), THREAD_PRIORITY_MAIN + 1,
                         THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
@@ -105,7 +104,10 @@ int main(void)
         msg_receive(&msg);
         /* check msg_receive() returned without blocking (i.e. the sending
          * thread did not get a chance to copy the message over) */
-        assert(msg.type != CANARY_TYPE);
+        if (msg.type == CANARY_TYPE) {
+            puts("Message was not written");
+            return 1;
+        }
         write(STDOUT_FILENO, "\b", 1U);
     }
     return 0;

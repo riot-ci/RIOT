@@ -12,7 +12,7 @@ from pexpect import TIMEOUT
 
 
 def testfunc(child):
-    res = child.expect([TIMEOUT, "FAILED ASSERTION."])
+    res = child.expect([TIMEOUT, "Message was not written"])
     # we actually want the timeout here. The application runs into an assertion
     # pretty quickly when failing and runs forever on success
     assert(res == 0)
