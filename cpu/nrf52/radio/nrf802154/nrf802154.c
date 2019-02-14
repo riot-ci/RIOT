@@ -41,9 +41,6 @@ netdev_ieee802154_t nrf802154_dev = {
         .driver = &nrf802154_netdev_driver,
         .event_callback = NULL,
         .context = NULL,
-#ifdef MODULE_NETSTATS_L2
-        .stats = { 0 }
-#endif
     },
 #ifdef MODULE_GNRC
 #ifdef MODULE_GNRC_SIXLOWPAN
@@ -258,9 +255,6 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
         memcpy(&txbuf[len + 1], iolist->iol_base, iolist->iol_len);
         len += iolist->iol_len;
     }
-#ifdef MODULE_NETSTATS_L2
-        dev->stats.tx_bytes += len;
-#endif
 
     /* specify the length of the package. */
     txbuf[0] = len + IEEE802154_FCS_LEN;
@@ -303,11 +297,6 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
     else {
         DEBUG("[nrf802154] recv: reading packet of length %i\n", pktlen);
         memcpy(buf, &rxbuf[1], pktlen);
-
-#ifdef MODULE_NETSTATS_L2
-        dev->stats.rx_count++;
-        dev->stats.rx_bytes += pktlen;
-#endif
     }
 
     _reset_rx();
