@@ -7,28 +7,20 @@
  */
 
 /**
- * @ingroup     boards_mega-xplained
+ * @ingroup     boards_arduino-uno
  * @{
  *
  * @file
- * @brief       Common configuration of MCU periphery for Mega Xplained
+ * @brief       Peripheral configuration for the Arduino Uno
  *
  * @author      Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+ *
  */
 
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
-/**
- * @name    Clock configuration
- *
- * Frequency of the internal 8MHz RC oscillator.
- *
- * @{
- */
-#define CLOCK_CORECLOCK     (8000000UL)
-/** @} */
-
 #include "periph_conf_atmega_common.h"
 
 #endif /* PERIPH_CONF_H */
+/** @} */
