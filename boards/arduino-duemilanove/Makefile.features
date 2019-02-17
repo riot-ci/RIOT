@@ -1,3 +1,4 @@
+# This board is based on an ATmega CPU, thus import the features from it
 include $(RIOTBOARD)/common/arduino-atmega/Makefile.features
 
 include $(RIOTCPU)/atmega328p/Makefile.features

@@ -1,4 +1,6 @@
-FEATURES_PROVIDED += puf_sram
+# This board is based on an ATmega CPU, thus import the features from it
 include $(RIOTBOARD)/common/arduino-atmega/Makefile.features
+
+FEATURES_PROVIDED += puf_sram
 
 include $(RIOTCPU)/atmega2560/Makefile.features
