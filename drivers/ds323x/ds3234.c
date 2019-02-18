@@ -104,6 +104,11 @@ int ds3234_pps_init(const ds3234_params_t *dev)
         return DS3234_NO_DEV;
     }
 
+    /* The control register is configured to:
+     * - Enable the oscillator
+     * - Enable an square wave output on the SQW pin
+     * - Sets the square wave frequency to 1 Hz
+     */
     reg &= ~(DS323X_REG_CONTROL_EOSC_MASK | DS323X_REG_CONTROL_INTCN_MASK |
         DS323X_REG_CONTROL_RS1_MASK | DS323X_REG_CONTROL_RS2_MASK);
     ds3234_write_reg(dev, DS323X_REG_CONTROL, 1, &reg);
