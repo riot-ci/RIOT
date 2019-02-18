@@ -47,7 +47,7 @@ enum ds3234_return_codes {
     DS3234_OK = 0,
     DS3234_NO_DEV = 1,
     DS3234_NO_SPI = 2
-}
+};
 
 /**
  * @brief   Initialize the DS3234 RTC as a PPS device
