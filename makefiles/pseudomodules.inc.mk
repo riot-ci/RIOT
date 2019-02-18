@@ -87,6 +87,10 @@ PSEUDOMODULES += adc121c
 # full featured version of CCS811 driver as pseudo module
 PSEUDOMODULES += ccs811_full
 
+# DS323x family
+PSEUDOMODULES += ds323x_%
+PSEUDOMODULES += ds3234
+
 # include variants of SX127X drivers as pseudo modules
 PSEUDOMODULES += sx1272
 PSEUDOMODULES += sx1276

@@ -1,0 +1,5 @@
+/**
+ * @defgroup drivers_ds323x DS323X Extremely accurate RTC family
+ * @ingroup drivers_sensors
+ * @see https://www.maximintegrated.com/en/app-notes/index.mvp/id/5143
+ */
