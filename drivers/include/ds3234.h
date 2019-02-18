@@ -9,7 +9,7 @@
 /**
  * @defgroup    drivers_ds3234  DS3234 Extremely Accurate SPI RTC
 
- * @ingroup     drivers_sensors
+ * @ingroup     drivers_ds323x
  * @brief       Driver for Maxim DS3234 Extremely Accurate SPI Bus RTC with
  *              Integrated Crystal and SRAM
 
@@ -66,5 +66,5 @@ int ds3234_pps_init(const ds3234_params_t *params);
 }
 #endif
 
-#endif /* SHT1X_H */
+#endif /* DS3234_H */
 /** @} */

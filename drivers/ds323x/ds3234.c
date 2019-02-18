@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     drivers_ds323x
+ * @ingroup     drivers_ds3234
  * @{
  *
  * @file
