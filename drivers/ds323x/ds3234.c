@@ -25,7 +25,7 @@
 #include "ds323x_regs.h"
 #include "fmt.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    (1)
 #include "debug.h"
 
 /* SPI command byte parameters */
@@ -76,7 +76,7 @@ int ds3234_pps_init(const ds3234_params_t *dev)
     /* initialize CS pin */
     int res = spi_init_cs(dev->spi, dev->cs);
     if (res < 0) {
-        return -EIO;
+        return DS3234_NO_SPI;
     }
     DEBUG("ds3234: init on SPI_DEV(%u)\n", dev->spi);
 
@@ -101,12 +101,12 @@ int ds3234_pps_init(const ds3234_params_t *dev)
     ds3234_read_reg(dev, DS323X_REG_CONTROL, 1, &readback);
     if (reg != readback) {
         DEBUG("ds3234: readback mismatch: expected %u, actual %u\n", (unsigned)reg, (unsigned)readback);
-        return -EIO;
+        return DS3234_NO_DEV;
     }
 
     reg &= ~(DS323X_REG_CONTROL_EOSC_MASK | DS323X_REG_CONTROL_INTCN_MASK |
         DS323X_REG_CONTROL_RS1_MASK | DS323X_REG_CONTROL_RS2_MASK);
     ds3234_write_reg(dev, DS323X_REG_CONTROL, 1, &reg);
 
-    return 0;
+    return DS3234_OK;
 }

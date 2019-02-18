@@ -40,6 +40,14 @@ typedef struct {
     gpio_t cs;              /**< CS pin GPIO handle */
 } ds3234_params_t;
 
+/**
+ * @brief   Return codes for the DS3234 device driver
+ */
+enum ds3234_return_codes {
+    DS3234_OK = 0,
+    DS3234_NO_DEV = 1,
+    DS3234_NO_SPI = 2
+}
 
 /**
  * @brief   Initialize the DS3234 RTC as a PPS device
@@ -48,8 +56,9 @@ typedef struct {
  *
  * @param  params     DS3234 circuit parameters
  *
- * @retval  0         Success
- * @retval -EIO       IO failure (`spi_init_cs()` failed)
+ * @return DS3234_OK        on success
+ * @return DS3234_NO_SPI    if cannot initiate SPI
+ * @return DS3234_NO_DEV    if the device is not found on the bus
  */
 int ds3234_pps_init(const ds3234_params_t *params);
 
