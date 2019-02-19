@@ -445,7 +445,8 @@ static void _handle_rtr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         DEBUG("nib: Received router solicitation is invalid (or interface %i "
               "is not a forwarding interface). Discarding silently\n",
               netif->pid);
-        DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
+        DEBUG("     - IP Hop Limit: %u (should be %u)\n", ipv6->hl,
+              NDP_HOP_LIMIT);
         DEBUG("     - ICMP code: %u (should be 0)\n", rtr_sol->code);
         DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
               (unsigned)sizeof(ndp_rtr_sol_t));
@@ -555,7 +556,8 @@ static void _handle_rtr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
          (byteorder_ntohs(rtr_adv->ltime) > NDP_RTR_ADV_LTIME_SEC_MAX))) {
         DEBUG("nib: Received router advertisement is invalid. "
               "Discarding silently\n");
-        DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
+        DEBUG("     - IP Hop Limit: %u (should be %u)\n", ipv6->hl,
+              NDP_HOP_LIMIT);
         DEBUG("     - ICMP code: %u (should be 0)\n", rtr_adv->code);
         DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
               (unsigned)sizeof(ndp_rtr_adv_t));
@@ -845,7 +847,8 @@ static void _handle_nbr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         (ipv6_addr_is_unspecified(&ipv6->src) &&
          !ipv6_addr_is_solicited_node(&ipv6->dst))) {
         DEBUG("nib: Received neighbor solicitation is invalid. Discarding silently\n");
-        DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
+        DEBUG("     - IP Hop Limit: %u (should be %u)\n", ipv6->hl,
+              NDP_HOP_LIMIT);
         DEBUG("     - ICMP code: %u (should be 0)\n", nbr_sol->code);
         DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
               (unsigned)sizeof(ndp_nbr_sol_t));
@@ -978,7 +981,8 @@ static void _handle_nbr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         (ipv6_addr_is_multicast(&ipv6->dst) &&
          (nbr_adv->flags & NDP_NBR_ADV_FLAGS_S))) {
         DEBUG("nib: Received neighbor advertisement is invalid. Discarding silently\n");
-        DEBUG("     - IP Hop Limit: %u (should be 255)\n", ipv6->hl);
+        DEBUG("     - IP Hop Limit: %u (should be %u)\n", ipv6->hl,
+              NDP_HOP_LIMIT);
         DEBUG("     - ICMP code: %u (should be 0)\n", nbr_adv->code);
         DEBUG("     - ICMP length: %u (should > %u)\n", (unsigned)icmpv6_len,
               (unsigned)sizeof(ndp_nbr_adv_t));
