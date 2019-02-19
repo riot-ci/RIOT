@@ -1,3 +1,5 @@
+FEATURES_REQUIRED += periph_timer
+
 ifneq (,$(filter skald,$(USEMODULE)))
   USEMODULE += nrfble
 endif
