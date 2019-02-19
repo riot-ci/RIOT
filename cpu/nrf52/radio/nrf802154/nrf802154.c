@@ -28,6 +28,7 @@
 #include "mutex.h"
 
 #include "net/ieee802154.h"
+#include "periph/timer.h"
 #include "net/netdev/ieee802154.h"
 #include "nrf802154.h"
 
@@ -59,8 +60,11 @@ netdev_ieee802154_t nrf802154_dev = {
 static uint8_t rxbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 
-#define NRF_RX_COMPLETE (0x1)
-#define NRF_TX_COMPLETE (0x2)
+#define NRF_RX_COMPLETE         (0x1)
+#define NRF_TX_COMPLETE         (0x2)
+#define NRF_LIFS                (40U)
+#define NRF_SIFS                (12U)
+#define NRF_SIFS_MAXPKTSIZE     (18U)
 static volatile uint8_t _state;
 static mutex_t txlock;
 
@@ -175,9 +179,24 @@ static void _set_txpower(int16_t txpower)
     }
 }
 
+static void _timer_cb(void *arg, int chan)
+{
+    (void)arg;
+    (void)chan;
+    mutex_unlock(&txlock);
+    timer_stop(TIMER_DEV(1));
+    timer_clear(TIMER_DEV(1), 0);
+}
+
 static int _init(netdev_t *dev)
 {
     assert(dev);
+    (void)dev;
+
+    if (timer_init(TIMER_DEV(1), 250000UL, _timer_cb, NULL) < 0) {
+        DEBUG("Timer Init failed\n");
+        return -1;
+    }
 
     /* initialize local variables */
     mutex_init(&txlock);
@@ -225,10 +244,6 @@ static int _init(netdev_t *dev)
     NVIC_EnableIRQ(RADIO_IRQn);
     NRF_RADIO->INTENSET = RADIO_INTENSET_END_Msk;
 
-#ifdef MODULE_NETSTATS_L2
-    memset(&dev->stats, 0, sizeof(netstats_t));
-#endif
-
     /* switch to RX mode */
     _enable_rx();
 
@@ -244,6 +259,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
     assert(iolist);
 
     mutex_lock(&txlock);
+
     /* copy packet data into the transmit buffer */
     int len = 0;
     for (; iolist; iolist = iolist->iol_next) {
@@ -263,6 +279,11 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
     _enable_tx();
     DEBUG("[nrf802154] send: putting %i byte into the ether\n", len);
 
+    /* set interframe spacing based on packet size */
+    if ((unsigned int)len > NRF_SIFS_MAXPKTSIZE)
+        timer_set_absolute(TIMER_DEV(1), 0, NRF_LIFS);
+    else
+        timer_set_absolute(TIMER_DEV(1), 0, NRF_SIFS);
     return len;
 }
 
@@ -395,9 +416,9 @@ void isr_radio(void)
             case RADIO_STATE_STATE_Tx:
             case RADIO_STATE_STATE_TxIdle:
             case RADIO_STATE_STATE_TxDisable:
+                timer_start(TIMER_DEV(1));
                 DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
                 _state |= NRF_TX_COMPLETE;
-                mutex_unlock(&txlock);
                 _enable_rx();
                 break;
             default:
