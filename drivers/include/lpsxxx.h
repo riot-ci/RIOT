@@ -112,7 +112,7 @@ typedef struct {
 int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t *params);
 
 /**
- * @brief   Read a temperature value from the given sensor, returned in m°C
+ * @brief   Read a temperature value from the given sensor, returned in c°C
  *
  * @param[in] dev       device descriptor of sensor to read from
  * @param[out] temp     temperature value in c°C
