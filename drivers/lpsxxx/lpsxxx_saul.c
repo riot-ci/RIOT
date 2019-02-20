@@ -28,8 +28,8 @@
 static int read_pres(const void *dev, phydat_t *res)
 {
     if (lpsxxx_read_pres((const lpsxxx_t *)dev, (uint16_t *)&res->val[0]) == LPSXXX_OK) {
-        res->unit = UNIT_BAR;
-        res->scale = -3;
+        res->unit = UNIT_PA;
+        res->scale = 2;
         return 1;
     }
 
