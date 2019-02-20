@@ -39,6 +39,8 @@ void board_init(void)
 #endif
 
     cpu_init();
+#ifdef LED0_ON
     led_init();
+#endif
     irq_enable();
 }
