@@ -7,6 +7,7 @@ import sys
 import pexpect
 from testrunner import run
 
+
 def testfunc(child):
     child.expect_exact("Hello World!")
 
