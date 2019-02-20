@@ -323,7 +323,7 @@ do_reset() {
             -c 'telnet_port 0' \
             -c 'gdb_port 0' \
             -c 'init' \
-            -c 'reset run' \
+            -c "${OPENOCD_CMD_RESET_RUN:-reset run}" \
             -c 'shutdown'"
 }
 
