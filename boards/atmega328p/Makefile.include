@@ -1,0 +1,18 @@
+export CPU = atmega328p
+
+# configure the terminal program
+PORT_LINUX          ?= /dev/ttyUSB0
+PORT_DARWIN         ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+BAUD                ?= 9600
+ATMEGA328P_CLOCK    ?=
+include $(RIOTMAKE)/tools/serial.inc.mk
+
+# ICSP programmer to use for avrdude
+PROGRAMMER ?= usbtiny
+
+ifneq (,$(ATMEGA328P_CLOCK))
+  CFLAGS += -DCLOCK_CORECLOCK=$(ATMEGA328P_CLOCK)
+endif
+
+include $(RIOTMAKE)/tools/avrdude.inc.mk
+include $(RIOTBOARD)/common/atmega/Makefile.include
