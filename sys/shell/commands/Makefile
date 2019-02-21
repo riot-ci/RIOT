@@ -77,6 +77,4 @@ ifneq (,$(filter periph_rtc,$(USEMODULE)))
   SRC += sc_rtc.c
 endif
 
-
-
 include $(RIOTBASE)/Makefile.base
