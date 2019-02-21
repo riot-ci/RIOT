@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Freie Universität Berlin
+ * Copyright (C) 2019 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -45,6 +45,15 @@ extern "C" {
  * @brief   Export the netdev device descriptor
  */
 extern netdev_ieee802154_t nrf802154_dev;
+
+/**
+ * @brief   IEEE 802.15.4 radio timer configuration
+ * @note    this radio relies on a dedicated hardware timer to maintain IFS
+ *          the default timer may be overwritten in the board configuration
+ */
+#ifndef NRF_IEEE802154_TIMER
+#define NRF_IEEE802154_TIMER TIMER_DEV(1)
+#endif
 
 #endif /* NRF802154_H */
 /** @} */
