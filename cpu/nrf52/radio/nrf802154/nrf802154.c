@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Freie Universität Berlin
- *               2018 HAW Hamburg
+ * Copyright (C) 2019 Freie Universität Berlin
+ *               2019 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -65,6 +65,7 @@ static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 #define NRF_LIFS                (40U)
 #define NRF_SIFS                (12U)
 #define NRF_SIFS_MAXPKTSIZE     (18U)
+#define NRF_TIMER_FREQUENCY     (250000UL)
 static volatile uint8_t _state;
 static mutex_t txlock;
 
@@ -184,19 +185,14 @@ static void _timer_cb(void *arg, int chan)
     (void)arg;
     (void)chan;
     mutex_unlock(&txlock);
-    timer_stop(TIMER_DEV(1));
-    timer_clear(TIMER_DEV(1), 0);
+    timer_stop(NRF_IEEE802154_TIMER);
+    timer_clear(NRF_IEEE802154_TIMER, 0);
 }
 
 static int _init(netdev_t *dev)
 {
     assert(dev);
-    (void)dev;
-
-    if (timer_init(TIMER_DEV(1), 250000UL, _timer_cb, NULL) < 0) {
-        DEBUG("Timer Init failed\n");
-        return -1;
-    }
+    assert(timer_init(NRF_IEEE802154_TIMER, NRF_TIMER_FREQUENCY, _timer_cb, NULL) >= 0);
 
     /* initialize local variables */
     mutex_init(&txlock);
@@ -261,7 +257,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
     mutex_lock(&txlock);
 
     /* copy packet data into the transmit buffer */
-    int len = 0;
+    unsigned int len = 0;
     for (; iolist; iolist = iolist->iol_next) {
         if ((IEEE802154_FCS_LEN + len + iolist->iol_len) > (IEEE802154_FRAME_LEN_MAX)) {
             DEBUG("[nrf802154] send: unable to do so, packet is too large!\n");
@@ -280,10 +276,9 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
     DEBUG("[nrf802154] send: putting %i byte into the ether\n", len);
 
     /* set interframe spacing based on packet size */
-    if ((unsigned int)len > NRF_SIFS_MAXPKTSIZE)
-        timer_set_absolute(TIMER_DEV(1), 0, NRF_LIFS);
-    else
-        timer_set_absolute(TIMER_DEV(1), 0, NRF_SIFS);
+    unsigned int ifs = (len > NRF_SIFS_MAXPKTSIZE) ? NRF_LIFS : NRF_SIFS;
+    timer_set_absolute(NRF_IEEE802154_TIMER, 0, ifs);
+
     return len;
 }
 
@@ -416,7 +411,7 @@ void isr_radio(void)
             case RADIO_STATE_STATE_Tx:
             case RADIO_STATE_STATE_TxIdle:
             case RADIO_STATE_STATE_TxDisable:
-                timer_start(TIMER_DEV(1));
+                timer_start(NRF_IEEE802154_TIMER);
                 DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
                 _state |= NRF_TX_COMPLETE;
                 _enable_rx();
