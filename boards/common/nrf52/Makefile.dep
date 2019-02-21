@@ -1,3 +1,5 @@
+include $(RIOTCPU)/$(CPU)/Makefile.dep
+
 ifneq (,$(filter skald,$(USEMODULE)))
   USEMODULE += nrfble
 endif
