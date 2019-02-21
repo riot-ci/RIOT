@@ -11,6 +11,9 @@ DISABLE_MODULE += auto_init
 # chronos is missing a getchar implementation
 BOARD_BLACKLIST += chronos
 
+BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
+                             arduino-uno
+
 TEST_ON_CI_WHITELIST += all
 
 APP_SHELL_FMT ?= NONE
