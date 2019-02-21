@@ -1,4 +1,4 @@
-FEATURES_REQUIRED += periph_timer
+include $(RIOTCPU)/$(CPU)/Makefile.dep
 
 ifneq (,$(filter skald,$(USEMODULE)))
   USEMODULE += nrfble
