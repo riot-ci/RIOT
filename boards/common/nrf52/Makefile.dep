@@ -1,4 +1,4 @@
-include $(RIOTCPU)/$(CPU)/Makefile.dep
+include $(RIOTCPU)/nrf52/Makefile.dep
 
 ifneq (,$(filter skald,$(USEMODULE)))
   USEMODULE += nrfble
