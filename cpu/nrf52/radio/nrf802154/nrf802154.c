@@ -60,12 +60,12 @@ netdev_ieee802154_t nrf802154_dev = {
 static uint8_t rxbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 
-#define NRF_RX_COMPLETE         (0x1)
-#define NRF_TX_COMPLETE         (0x2)
-#define NRF_LIFS                (40U)
-#define NRF_SIFS                (12U)
-#define NRF_SIFS_MAXPKTSIZE     (18U)
-#define NRF_TIMER_FREQUENCY     (250000UL)
+#define RX_COMPLETE         (0x1)
+#define TX_COMPLETE         (0x2)
+#define LIFS                (40U)
+#define SIFS                (12U)
+#define SIFS_MAXPKTSIZE     (18U)
+#define TIMER_FREQ          (250000UL)
 static volatile uint8_t _state;
 static mutex_t txlock;
 
@@ -127,7 +127,7 @@ static void _enable_tx(void)
     }
 
     /* reset RX state and listen for new packets */
-    _state &= ~NRF_RX_COMPLETE;
+    _state &= ~RX_COMPLETE;
     NRF_RADIO->TASKS_START = 1;
  }
 
@@ -191,8 +191,11 @@ static void _timer_cb(void *arg, int chan)
 
 static int _init(netdev_t *dev)
 {
-    assert(dev);
-    assert(timer_init(NRF_IEEE802154_TIMER, NRF_TIMER_FREQUENCY, _timer_cb, NULL) >= 0);
+    (void)dev;
+
+    int result = timer_init(NRF_IEEE802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
+    assert(result >= 0);
+    (void)result;
 
     /* initialize local variables */
     mutex_init(&txlock);
@@ -276,7 +279,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
     DEBUG("[nrf802154] send: putting %i byte into the ether\n", len);
 
     /* set interframe spacing based on packet size */
-    unsigned int ifs = (len > NRF_SIFS_MAXPKTSIZE) ? NRF_LIFS : NRF_SIFS;
+    unsigned int ifs = (len > SIFS_MAXPKTSIZE) ? LIFS : SIFS;
     timer_set_absolute(NRF_IEEE802154_TIMER, 0, ifs);
 
     return len;
@@ -290,7 +293,7 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
     size_t pktlen = (size_t)rxbuf[0] - IEEE802154_FCS_LEN;
 
     /* check if packet data is readable */
-    if (!(_state & NRF_RX_COMPLETE)) {
+    if (!(_state & RX_COMPLETE)) {
         DEBUG("[nrf802154] recv: no packet data available\n");
         return 0;
     }
@@ -325,12 +328,12 @@ static void _isr(netdev_t *dev)
     if (!nrf802154_dev.netdev.event_callback) {
         return;
     }
-    if (_state & NRF_RX_COMPLETE) {
+    if (_state & RX_COMPLETE) {
         nrf802154_dev.netdev.event_callback(dev, NETDEV_EVENT_RX_COMPLETE);
     }
-    if (_state & NRF_TX_COMPLETE) {
+    if (_state & TX_COMPLETE) {
         nrf802154_dev.netdev.event_callback(dev, NETDEV_EVENT_TX_COMPLETE);
-        _state &= ~NRF_TX_COMPLETE;
+        _state &= ~TX_COMPLETE;
     }
 }
 
@@ -402,7 +405,7 @@ void isr_radio(void)
                     (NRF_RADIO->CRCSTATUS == 1) &&
                     (netdev_ieee802154_dst_filter(&nrf802154_dev,
                                                   &rxbuf[1]) == 0)) {
-                    _state |= NRF_RX_COMPLETE;
+                    _state |= RX_COMPLETE;
                 }
                 else {
                     _reset_rx();
@@ -413,7 +416,7 @@ void isr_radio(void)
             case RADIO_STATE_STATE_TxDisable:
                 timer_start(NRF_IEEE802154_TIMER);
                 DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
-                _state |= NRF_TX_COMPLETE;
+                _state |= TX_COMPLETE;
                 _enable_rx();
                 break;
             default:
