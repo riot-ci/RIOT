@@ -49,71 +49,78 @@ def escape_test_name(test_name, index):
     return b'json_parsing_test_%s_%d' % (escaped_str, index)
 
 
+def add_license(dest_file, cwd, source_path):
+    dest_file.write(b'/* This file was generated using the tests in '
+                    b'JSON Parsing Test Suite,\n')
+    dest_file.write(b' * which has the following license information:\n')
+    dest_file.write(b'\n')
+    with open(os.path.join(cwd, source_path, './LICENSE'), 'rb') as f_license:
+        dest_file.write(f_license.read())
+    dest_file.write(b'\n')
+    dest_file.write(b' */\n')
+    dest_file.write(b'\n')
+    dest_file.write(b'/* Upstream version: ???????? */\n')
+    dest_file.write(b'#error "PLEASE EDIT UPSTEAM VERSION HASH MANUALLY AND REMOVE THIS LINE!"\n')
+    dest_file.write(b'\n')
+
+
+def add_includes(dest_file, cwd):
+    dest_file.write(b'#include "tests-json.h"\n')
+    dest_file.write(b'\n')
+    dest_file.write(b'#include <stddef.h>\n')
+    dest_file.write(b'\n')
+    dest_file.write(b'#pragma GCC diagnostic ignored '
+                    b'"-Woverlength-strings"\n')
+    dest_file.write(b'\n')
+
+
+def add_fixtures(dest_file, cwd, source_path, test_names):
+    # strings
+    for index, json_name in enumerate(sorted(glob.glob(
+            os.path.join(cwd, source_path, './test_parsing/*.json')))):
+        test_name = os.path.basename(json_name)
+        test_name = os.path.splitext(test_name)[0]
+        test_name = test_name.encode('ascii')
+        esc_test_name = escape_test_name(test_name, index)
+
+        with open(json_name, 'rb') as input_file:
+            transform_string(dest_file, input_file, test_name,
+                             esc_test_name)
+        test_names.append(esc_test_name)
+    # string array
+    dest_file.write(b'const json_parsing_test_t '
+                    b'tests_json_parsing_tests[] = {\n')
+    for esc_test_name in test_names:
+        dest_file.write(b'    ')        # single tab
+        dest_file.write(b'{\n')
+        dest_file.write(b'        ')    # double tab
+        dest_file.write(esc_test_name)
+        dest_file.write(b',\n')
+        dest_file.write(b'        ')    # double tab
+        dest_file.write(esc_test_name)
+        dest_file.write(b'_name,\n')
+        dest_file.write(b'        ')    # double tab
+        dest_file.write(b'sizeof(')
+        dest_file.write(esc_test_name)
+        dest_file.write(b') - 1\n')
+        dest_file.write(b'    ')        # single tab
+        dest_file.write(b'},\n')
+    dest_file.write(b'    ')        # single tab
+    dest_file.write(b'{ NULL, NULL, 0 }\n')
+    dest_file.write(b'};\n')
+    dest_file.write(b'\n')
+
+
 def main(dest_path='./generated-parsing-tests.c',
          source_path='./JSONTestSuite',
          cwd=os.path.dirname(os.path.realpath(__file__))):
     test_names = []
     cwd = os.path.abspath(cwd)
     with open(os.path.join(cwd, dest_path), 'wb') as dest_file:
-        # License:
-        dest_file.write(b'/* This file was generated using the tests in '
-                        b'JSON Parsing Test Suite,\n')
-        dest_file.write(b' * which has the following license information:\n')
-        dest_file.write(b'\n')
-        with open(os.path.join(cwd, source_path, './LICENSE'), 'rb') as f_license:
-            dest_file.write(f_license.read())
-        dest_file.write(b'\n')
-        dest_file.write(b' */\n')
-        dest_file.write(b'\n')
-        dest_file.write(b'/* Upstream version: ???????? */\n')
-        dest_file.write(b'#error "PLEASE EDIT UPSTEAM VERSION HASH MANUALLY AND REMOVE THIS LINE!"\n')
-        dest_file.write(b'\n')
-
-        # Includes etc.:
-        dest_file.write(b'#include "tests-json.h"\n')
-        dest_file.write(b'\n')
-        dest_file.write(b'#include <stddef.h>\n')
-        dest_file.write(b'\n')
-        dest_file.write(b'#pragma GCC diagnostic ignored '
-                        b'"-Woverlength-strings"\n')
-        dest_file.write(b'\n')
-
-        # Strings:
-        for index, json_name in enumerate(sorted(glob.glob(
-                os.path.join(cwd, source_path, './test_parsing/*.json')))):
-            test_name = os.path.basename(json_name)
-            test_name = os.path.splitext(test_name)[0]
-            test_name = test_name.encode('ascii')
-            esc_test_name = escape_test_name(test_name, index)
-
-            with open(json_name, 'rb') as input_file:
-                transform_string(dest_file, input_file, test_name,
-                                 esc_test_name)
-            test_names.append(esc_test_name)
-
-        # Strings in an array:
-        dest_file.write(b'const json_parsing_test_t '
-                        b'tests_json_parsing_tests[] = {\n')
-        for esc_test_name in test_names:
-            dest_file.write(b'    ')        # single tab
-            dest_file.write(b'{\n')
-            dest_file.write(b'        ')    # double tab
-            dest_file.write(esc_test_name)
-            dest_file.write(b',\n')
-            dest_file.write(b'        ')    # double tab
-            dest_file.write(esc_test_name)
-            dest_file.write(b'_name,\n')
-            dest_file.write(b'        ')    # double tab
-            dest_file.write(b'sizeof(')
-            dest_file.write(esc_test_name)
-            dest_file.write(b') - 1\n')
-            dest_file.write(b'    ')        # single tab
-            dest_file.write(b'},\n')
-        dest_file.write(b'    ')        # single tab
-        dest_file.write(b'{ NULL, NULL, 0 }\n')
-        dest_file.write(b'};\n')
-        dest_file.write(b'\n')
-
+        add_license(dest_file, cwd, source_path)
+        add_includes(dest_file, cwd)
+        add_fixtures(dest_file, cwd, source_path, test_names)
+        # add total number of tests
         dest_file.write(b'const size_t '
                         b'tests_json_parsing_tests_count = %d;\n' %
                         (len(test_names),))
