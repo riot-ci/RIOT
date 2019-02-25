@@ -2,8 +2,6 @@
 
 import glob
 import os
-import os.path
-import sys
 
 
 def transform_string_sub(dest_file, iterator):
