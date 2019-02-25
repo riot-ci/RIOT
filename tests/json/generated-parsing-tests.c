@@ -25,8 +25,7 @@ SOFTWARE.
 
  */
 
-/* Upstream version: ???????? */
-#error "PLEASE EDIT UPSTEAM VERSION HASH MANUALLY AND REMOVE THIS LINE!"
+/* Upstream version: 8118969d91d2877e2d4c00db46dca13c932f3d92 */
 
 #include "tests-json.h"
 
