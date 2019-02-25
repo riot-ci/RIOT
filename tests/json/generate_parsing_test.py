@@ -74,7 +74,8 @@ def add_includes(dest_file, cwd):
     dest_file.write(b'\n')
 
 
-def add_fixtures(dest_file, cwd, source_path, test_names):
+def add_fixtures(dest_file, cwd, source_path):
+    test_names = []
     # strings
     for index, json_name in enumerate(sorted(glob.glob(
             os.path.join(cwd, source_path, './test_parsing/*.json')))):
@@ -109,21 +110,20 @@ def add_fixtures(dest_file, cwd, source_path, test_names):
     dest_file.write(b'{ NULL, NULL, 0 }\n')
     dest_file.write(b'};\n')
     dest_file.write(b'\n')
+    # add total number of tests
+    dest_file.write(b'const size_t '
+                    b'tests_json_parsing_tests_count = %d;\n' %
+                    (len(test_names),))
 
 
 def main(dest_path='./generated-parsing-tests.c',
          source_path='./JSONTestSuite',
          cwd=os.path.dirname(os.path.realpath(__file__))):
-    test_names = []
     cwd = os.path.abspath(cwd)
     with open(os.path.join(cwd, dest_path), 'wb') as dest_file:
         add_license(dest_file, cwd, source_path)
         add_includes(dest_file, cwd)
-        add_fixtures(dest_file, cwd, source_path, test_names)
-        # add total number of tests
-        dest_file.write(b'const size_t '
-                        b'tests_json_parsing_tests_count = %d;\n' %
-                        (len(test_names),))
+        add_fixtures(dest_file, cwd, source_path)
 
 
 if __name__ == '__main__':
