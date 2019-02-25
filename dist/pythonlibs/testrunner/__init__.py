@@ -38,6 +38,7 @@ def find_exc_origin(exc_info):
 
 def run(testfunc, timeout=10, echo=True, traceback=False):
     env = os.environ.copy()
+    env['RIOT_TERMINAL'] = 'socat'
     child = pexpect.spawnu("make term", env=env, timeout=timeout,
                            codec_errors='replace', echo=False)
 
