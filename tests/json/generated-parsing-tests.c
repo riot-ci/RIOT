@@ -25,7 +25,8 @@ SOFTWARE.
 
  */
 
-/* Upstream version: 32b6c1ad8868c11da370925ee4963c201db5efaa */
+/* Upstream version: ???????? */
+#error "PLEASE EDIT UPSTEAM VERSION HASH MANUALLY AND REMOVE THIS LINE!"
 
 #include "tests-json.h"
 
@@ -402,29 +403,29 @@ static const char json_parsing_test_n_5fobject_5fgarbage_5fat_5fend_121_name[] =
 static const char json_parsing_test_n_5fobject_5fkey_5fwith_5fsingle_5fquotes_122[] = "{key: 'value'}";
 static const char json_parsing_test_n_5fobject_5fkey_5fwith_5fsingle_5fquotes_122_name[] = "n_object_key_with_single_quotes";
 
-static const char json_parsing_test_n_5fobject_5fmissing_5fcolon_123[] = "{\042a\042 b}";
-static const char json_parsing_test_n_5fobject_5fmissing_5fcolon_123_name[] = "n_object_missing_colon";
+static const char json_parsing_test_n_5fobject_5flone_5fcontinuation_5fbyte_5fin_5fkey_5fand_5ftrailing_5fcomma_123[] = "{\042\271\042:\0420\042,}";
+static const char json_parsing_test_n_5fobject_5flone_5fcontinuation_5fbyte_5fin_5fkey_5fand_5ftrailing_5fcomma_123_name[] = "n_object_lone_continuation_byte_in_key_and_trailing_comma";
 
-static const char json_parsing_test_n_5fobject_5fmissing_5fkey_124[] = "{:\042b\042}";
-static const char json_parsing_test_n_5fobject_5fmissing_5fkey_124_name[] = "n_object_missing_key";
+static const char json_parsing_test_n_5fobject_5fmissing_5fcolon_124[] = "{\042a\042 b}";
+static const char json_parsing_test_n_5fobject_5fmissing_5fcolon_124_name[] = "n_object_missing_colon";
 
-static const char json_parsing_test_n_5fobject_5fmissing_5fsemicolon_125[] = "{\042a\042 \042b\042}";
-static const char json_parsing_test_n_5fobject_5fmissing_5fsemicolon_125_name[] = "n_object_missing_semicolon";
+static const char json_parsing_test_n_5fobject_5fmissing_5fkey_125[] = "{:\042b\042}";
+static const char json_parsing_test_n_5fobject_5fmissing_5fkey_125_name[] = "n_object_missing_key";
 
-static const char json_parsing_test_n_5fobject_5fmissing_5fvalue_126[] = "{\042a\042:";
-static const char json_parsing_test_n_5fobject_5fmissing_5fvalue_126_name[] = "n_object_missing_value";
+static const char json_parsing_test_n_5fobject_5fmissing_5fsemicolon_126[] = "{\042a\042 \042b\042}";
+static const char json_parsing_test_n_5fobject_5fmissing_5fsemicolon_126_name[] = "n_object_missing_semicolon";
 
-static const char json_parsing_test_n_5fobject_5fno_2dcolon_127[] = "{\042a\042";
-static const char json_parsing_test_n_5fobject_5fno_2dcolon_127_name[] = "n_object_no-colon";
+static const char json_parsing_test_n_5fobject_5fmissing_5fvalue_127[] = "{\042a\042:";
+static const char json_parsing_test_n_5fobject_5fmissing_5fvalue_127_name[] = "n_object_missing_value";
 
-static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_128[] = "{1:1}";
-static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_128_name[] = "n_object_non_string_key";
+static const char json_parsing_test_n_5fobject_5fno_2dcolon_128[] = "{\042a\042";
+static const char json_parsing_test_n_5fobject_5fno_2dcolon_128_name[] = "n_object_no-colon";
 
-static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_129[] = "{9999E9999:1}";
-static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_129_name[] = "n_object_non_string_key_but_huge_number_instead";
+static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_129[] = "{1:1}";
+static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_129_name[] = "n_object_non_string_key";
 
-static const char json_parsing_test_n_5fobject_5fpi_5fin_5fkey_5fand_5ftrailing_5fcomma_130[] = "{\042\271\042:\0420\042,}";
-static const char json_parsing_test_n_5fobject_5fpi_5fin_5fkey_5fand_5ftrailing_5fcomma_130_name[] = "n_object_pi_in_key_and_trailing_comma";
+static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_130[] = "{9999E9999:1}";
+static const char json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_130_name[] = "n_object_non_string_key_but_huge_number_instead";
 
 static const char json_parsing_test_n_5fobject_5frepeated_5fnull_5fnull_131[] = "{null:null,null:null}";
 static const char json_parsing_test_n_5fobject_5frepeated_5fnull_5fnull_131_name[] = "n_object_repeated_null_null";
@@ -876,20 +877,20 @@ static const char json_parsing_test_y_5fstring_5fnbsp_5fuescaped_279_name[] = "y
 static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b10FFFF_280[] = "[\042\364\217\277\277\042]";
 static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b10FFFF_280_name[] = "y_string_nonCharacterInUTF-8_U+10FFFF";
 
-static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b1FFFF_281[] = "[\042\360\233\277\277\042]";
-static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b1FFFF_281_name[] = "y_string_nonCharacterInUTF-8_U+1FFFF";
+static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_281[] = "[\042\357\277\277\042]";
+static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_281_name[] = "y_string_nonCharacterInUTF-8_U+FFFF";
 
-static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_282[] = "[\042\357\277\277\042]";
-static const char json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_282_name[] = "y_string_nonCharacterInUTF-8_U+FFFF";
+static const char json_parsing_test_y_5fstring_5fnull_5fescape_282[] = "[\042\134u0000\042]";
+static const char json_parsing_test_y_5fstring_5fnull_5fescape_282_name[] = "y_string_null_escape";
 
-static const char json_parsing_test_y_5fstring_5fnull_5fescape_283[] = "[\042\134u0000\042]";
-static const char json_parsing_test_y_5fstring_5fnull_5fescape_283_name[] = "y_string_null_escape";
+static const char json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_283[] = "[\042\134u002c\042]";
+static const char json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_283_name[] = "y_string_one-byte-utf-8";
 
-static const char json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_284[] = "[\042\134u002c\042]";
-static const char json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_284_name[] = "y_string_one-byte-utf-8";
+static const char json_parsing_test_y_5fstring_5fpi_284[] = "[\042\317\200\042]";
+static const char json_parsing_test_y_5fstring_5fpi_284_name[] = "y_string_pi";
 
-static const char json_parsing_test_y_5fstring_5fpi_285[] = "[\042\317\200\042]";
-static const char json_parsing_test_y_5fstring_5fpi_285_name[] = "y_string_pi";
+static const char json_parsing_test_y_5fstring_5freservedCharacterInUTF_2d8_5fU_2b1BFFF_285[] = "[\042\360\233\277\277\042]";
+static const char json_parsing_test_y_5fstring_5freservedCharacterInUTF_2d8_5fU_2b1BFFF_285_name[] = "y_string_reservedCharacterInUTF-8_U+1BFFF";
 
 static const char json_parsing_test_y_5fstring_5fsimple_5fascii_286[] = "[\042asd \042]";
 static const char json_parsing_test_y_5fstring_5fsimple_5fascii_286_name[] = "y_string_simple_ascii";
@@ -1604,44 +1605,44 @@ const json_parsing_test_t tests_json_parsing_tests[] = {
         sizeof(json_parsing_test_n_5fobject_5fkey_5fwith_5fsingle_5fquotes_122) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fmissing_5fcolon_123,
-        json_parsing_test_n_5fobject_5fmissing_5fcolon_123_name,
-        sizeof(json_parsing_test_n_5fobject_5fmissing_5fcolon_123) - 1
+        json_parsing_test_n_5fobject_5flone_5fcontinuation_5fbyte_5fin_5fkey_5fand_5ftrailing_5fcomma_123,
+        json_parsing_test_n_5fobject_5flone_5fcontinuation_5fbyte_5fin_5fkey_5fand_5ftrailing_5fcomma_123_name,
+        sizeof(json_parsing_test_n_5fobject_5flone_5fcontinuation_5fbyte_5fin_5fkey_5fand_5ftrailing_5fcomma_123) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fmissing_5fkey_124,
-        json_parsing_test_n_5fobject_5fmissing_5fkey_124_name,
-        sizeof(json_parsing_test_n_5fobject_5fmissing_5fkey_124) - 1
+        json_parsing_test_n_5fobject_5fmissing_5fcolon_124,
+        json_parsing_test_n_5fobject_5fmissing_5fcolon_124_name,
+        sizeof(json_parsing_test_n_5fobject_5fmissing_5fcolon_124) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fmissing_5fsemicolon_125,
-        json_parsing_test_n_5fobject_5fmissing_5fsemicolon_125_name,
-        sizeof(json_parsing_test_n_5fobject_5fmissing_5fsemicolon_125) - 1
+        json_parsing_test_n_5fobject_5fmissing_5fkey_125,
+        json_parsing_test_n_5fobject_5fmissing_5fkey_125_name,
+        sizeof(json_parsing_test_n_5fobject_5fmissing_5fkey_125) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fmissing_5fvalue_126,
-        json_parsing_test_n_5fobject_5fmissing_5fvalue_126_name,
-        sizeof(json_parsing_test_n_5fobject_5fmissing_5fvalue_126) - 1
+        json_parsing_test_n_5fobject_5fmissing_5fsemicolon_126,
+        json_parsing_test_n_5fobject_5fmissing_5fsemicolon_126_name,
+        sizeof(json_parsing_test_n_5fobject_5fmissing_5fsemicolon_126) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fno_2dcolon_127,
-        json_parsing_test_n_5fobject_5fno_2dcolon_127_name,
-        sizeof(json_parsing_test_n_5fobject_5fno_2dcolon_127) - 1
+        json_parsing_test_n_5fobject_5fmissing_5fvalue_127,
+        json_parsing_test_n_5fobject_5fmissing_5fvalue_127_name,
+        sizeof(json_parsing_test_n_5fobject_5fmissing_5fvalue_127) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_128,
-        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_128_name,
-        sizeof(json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_128) - 1
+        json_parsing_test_n_5fobject_5fno_2dcolon_128,
+        json_parsing_test_n_5fobject_5fno_2dcolon_128_name,
+        sizeof(json_parsing_test_n_5fobject_5fno_2dcolon_128) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_129,
-        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_129_name,
-        sizeof(json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_129) - 1
+        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_129,
+        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_129_name,
+        sizeof(json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_129) - 1
     },
     {
-        json_parsing_test_n_5fobject_5fpi_5fin_5fkey_5fand_5ftrailing_5fcomma_130,
-        json_parsing_test_n_5fobject_5fpi_5fin_5fkey_5fand_5ftrailing_5fcomma_130_name,
-        sizeof(json_parsing_test_n_5fobject_5fpi_5fin_5fkey_5fand_5ftrailing_5fcomma_130) - 1
+        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_130,
+        json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_130_name,
+        sizeof(json_parsing_test_n_5fobject_5fnon_5fstring_5fkey_5fbut_5fhuge_5fnumber_5finstead_130) - 1
     },
     {
         json_parsing_test_n_5fobject_5frepeated_5fnull_5fnull_131,
@@ -2394,29 +2395,29 @@ const json_parsing_test_t tests_json_parsing_tests[] = {
         sizeof(json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b10FFFF_280) - 1
     },
     {
-        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b1FFFF_281,
-        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b1FFFF_281_name,
-        sizeof(json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2b1FFFF_281) - 1
+        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_281,
+        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_281_name,
+        sizeof(json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_281) - 1
     },
     {
-        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_282,
-        json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_282_name,
-        sizeof(json_parsing_test_y_5fstring_5fnonCharacterInUTF_2d8_5fU_2bFFFF_282) - 1
+        json_parsing_test_y_5fstring_5fnull_5fescape_282,
+        json_parsing_test_y_5fstring_5fnull_5fescape_282_name,
+        sizeof(json_parsing_test_y_5fstring_5fnull_5fescape_282) - 1
     },
     {
-        json_parsing_test_y_5fstring_5fnull_5fescape_283,
-        json_parsing_test_y_5fstring_5fnull_5fescape_283_name,
-        sizeof(json_parsing_test_y_5fstring_5fnull_5fescape_283) - 1
+        json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_283,
+        json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_283_name,
+        sizeof(json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_283) - 1
     },
     {
-        json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_284,
-        json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_284_name,
-        sizeof(json_parsing_test_y_5fstring_5fone_2dbyte_2dutf_2d8_284) - 1
+        json_parsing_test_y_5fstring_5fpi_284,
+        json_parsing_test_y_5fstring_5fpi_284_name,
+        sizeof(json_parsing_test_y_5fstring_5fpi_284) - 1
     },
     {
-        json_parsing_test_y_5fstring_5fpi_285,
-        json_parsing_test_y_5fstring_5fpi_285_name,
-        sizeof(json_parsing_test_y_5fstring_5fpi_285) - 1
+        json_parsing_test_y_5fstring_5freservedCharacterInUTF_2d8_5fU_2b1BFFF_285,
+        json_parsing_test_y_5fstring_5freservedCharacterInUTF_2d8_5fU_2b1BFFF_285_name,
+        sizeof(json_parsing_test_y_5fstring_5freservedCharacterInUTF_2d8_5fU_2b1BFFF_285) - 1
     },
     {
         json_parsing_test_y_5fstring_5fsimple_5fascii_286,
