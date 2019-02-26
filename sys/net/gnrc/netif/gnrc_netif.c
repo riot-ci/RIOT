@@ -38,7 +38,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#define _NETIF_NETAPI_MSG_QUEUE_SIZE    (8)
+#define _NETIF_NETAPI_MSG_QUEUE_SIZE    (16)
 
 static gnrc_netif_t _netifs[GNRC_NETIF_NUMOF];
 
