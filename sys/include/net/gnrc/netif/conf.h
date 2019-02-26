@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Message queue size for network interface threads
+ * @brief       Message queue size for network interface threads
  *
  * @attention   This has influence on the used stack memory of the thread, so
  *              the thread's stack size might need to be adapted if this is
