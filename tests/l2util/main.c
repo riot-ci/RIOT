@@ -321,6 +321,11 @@ static void test_addr_len_from_l2ao__success(void)
     TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
                           l2util_ndp_addr_len_from_l2ao(NETDEV_TYPE_IEEE802154,
                                                         &opt));
+    /* test BLE */
+    opt.len = 1;
+    TEST_ASSERT_EQUAL_INT(sizeof(eui48_t),
+                          l2util_ndp_addr_len_from_l2ao(NETDEV_TYPE_BLE,
+                                                        &opt));
     /* test cc110x */
     opt.len = 1;
     TEST_ASSERT_EQUAL_INT(sizeof(uint8_t),
@@ -351,6 +356,11 @@ static void test_addr_len_from_l2ao__EINVAL(void)
     opt.len = 0;
     TEST_ASSERT_EQUAL_INT(-EINVAL,
                           l2util_ndp_addr_len_from_l2ao(NETDEV_TYPE_IEEE802154,
+                                                        &opt));
+    /* test BLE */
+    opt.len = 0;
+    TEST_ASSERT_EQUAL_INT(-EINVAL,
+                          l2util_ndp_addr_len_from_l2ao(NETDEV_TYPE_BLE,
                                                         &opt));
     /* test ESP-Now */
     opt.len = 0;
