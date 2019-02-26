@@ -38,8 +38,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#define _NETIF_NETAPI_MSG_QUEUE_SIZE    (16)
-
 static gnrc_netif_t _netifs[GNRC_NETIF_NUMOF];
 
 static void _update_l2addr_from_dev(gnrc_netif_t *netif);
