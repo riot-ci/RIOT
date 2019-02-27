@@ -39,6 +39,7 @@
 #include <unistd.h>
 
 #include "cbor.h"
+#include "uuid.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -233,8 +234,6 @@ int suit_cbor_payload_get_storid(const suit_cbor_manifest_t *manifest, uint8_t *
  */
 int suit_cbor_payload_get_digest(const suit_cbor_manifest_t *manifest,
                                  suit_cbor_digest_type_t digest, uint8_t *buf, size_t *len);
-
-int suit_cbor_validator_verify_conditions(suit_cbor_manifest_t *manifest, uint64_t curtime);
 
 #ifdef __cplusplus
 }
