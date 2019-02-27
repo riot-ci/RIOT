@@ -12,7 +12,7 @@
  * @{
  *
  * @file
- * @brief       SUIT manifest parser library
+ * @brief       SUIT manifest parser library for CBOR based manifests
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "suit.h"
+#include "suit/cbor.h"
 #include "cbor.h"
 
 #define ENABLE_DEBUG (0)
@@ -86,7 +86,7 @@ static int _parse_payload_storage_id(CborValue *it, uint8_t *buf, size_t *len)
 }
 
 static int _parse_manifest_digestalgo(CborValue *it,
-                                      suit_digest_t *algo)
+                                      suit_cbor_digest_t *algo)
 {
     CborValue arr;
     uint64_t value;
@@ -106,7 +106,7 @@ static int _parse_manifest_digestalgo(CborValue *it,
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_get_uint64(&arr, &value);
-    *algo = (suit_digest_t)value;
+    *algo = (suit_cbor_digest_t)value;
     return SUIT_OK;
 }
 
@@ -117,7 +117,7 @@ int _validate_manifest(CborValue *it)
     }
     size_t len;
     CborError err = cbor_value_get_array_length(it, &len);
-    if (err != 0 || len < SUIT_MANIFEST_MIN_LENGTH) {
+    if (err != 0 || len < SUIT_CBOR_MANIFEST_MIN_LENGTH) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return SUIT_OK;
@@ -130,17 +130,17 @@ int _validate_payloadinfo(CborValue *it)
     }
     size_t len;
     CborError err = cbor_value_get_array_length(it, &len);
-    if (err != 0 || len != SUIT_MANIFEST_PAYLOADINFO_LENGTH) {
+    if (err != 0 || len != SUIT_CBOR_MANIFEST_PAYLOADINFO_LENGTH) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return SUIT_OK;
 }
 
-int suit_parse(suit_manifest_t *manifest, const uint8_t *buf, size_t len)
+int suit_cbor_parse(suit_cbor_manifest_t *manifest, const uint8_t *buf, size_t len)
 {
     CborParser parser;
     CborValue it, arr;
-    CborError err = cbor_parser_init(buf, len, SUIT_CBOR_VALIDATION_MODE,
+    CborError err = cbor_parser_init(buf, len, SUIT_TINYCBOR_VALIDATION_MODE,
                                      &parser, &it);
 
     if (err != 0) {
@@ -160,7 +160,7 @@ int suit_parse(suit_manifest_t *manifest, const uint8_t *buf, size_t len)
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
-    if (_advance_x(&arr, SUIT_MANIFEST_IDX_PAYLOADINFO) < 0) {
+    if (_advance_x(&arr, SUIT_CBOR_MANIFEST_IDX_PAYLOADINFO) < 0) {
         /* If it is impossible to advance to the payloadinfo we assume that
          * there is no payloadinfo. Length validation is already done by
          * _validate_manifest, an invalid array length should not be possible
@@ -175,12 +175,12 @@ int suit_parse(suit_manifest_t *manifest, const uint8_t *buf, size_t len)
     return SUIT_OK;
 }
 
-static int _init_and_advance(const suit_manifest_t *manifest,
+static int _init_and_advance(const suit_cbor_manifest_t *manifest,
                              CborParser *parser, CborValue *it,
                              CborValue *arr, size_t offset)
 {
     cbor_parser_init(manifest->buf, manifest->len,
-                     SUIT_CBOR_VALIDATION_MODE, parser, it);
+                     SUIT_TINYCBOR_VALIDATION_MODE, parser, it);
     cbor_value_enter_container(it, arr);
     if (_advance_x(arr, offset) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
@@ -188,13 +188,13 @@ static int _init_and_advance(const suit_manifest_t *manifest,
     return SUIT_OK;
 }
 
-static int _init_and_advance_info(const suit_manifest_t *manifest,
+static int _init_and_advance_info(const suit_cbor_manifest_t *manifest,
                                   CborParser *parser, CborValue *it,
                                   CborValue *arr, CborValue *payloadinfo,
                                   size_t offset)
 {
     if (_init_and_advance(manifest, parser, it,
-                          arr, SUIT_MANIFEST_IDX_PAYLOADINFO) < 0) {
+                          arr, SUIT_CBOR_MANIFEST_IDX_PAYLOADINFO) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     cbor_value_enter_container(arr, payloadinfo);
@@ -204,50 +204,53 @@ static int _init_and_advance_info(const suit_manifest_t *manifest,
     return SUIT_OK;
 }
 
-int suit_get_version(const suit_manifest_t *manifest, uint32_t *version)
+int suit_cbor_get_version(const suit_cbor_manifest_t *manifest,
+                          uint32_t *version)
 {
     CborParser parser;
     CborValue it, arr;
 
-    cbor_parser_init(manifest->buf, manifest->len, SUIT_CBOR_VALIDATION_MODE,
-                     &parser, &it);
+    cbor_parser_init(manifest->buf, manifest->len,
+                     SUIT_TINYCBOR_VALIDATION_MODE, &parser, &it);
     cbor_value_enter_container(&it, &arr);
     return _parse_manifest_version(&arr, version);
 }
 
-int suit_get_seq_no(const suit_manifest_t *manifest, uint32_t *seq_no)
+int suit_cbor_get_seq_no(const suit_cbor_manifest_t *manifest,
+                         uint32_t *seq_no)
 {
     CborParser parser;
     CborValue it, arr;
 
     if (_init_and_advance(manifest, &parser, &it,
-                          &arr, SUIT_MANIFEST_IDX_SEQ_NO) < 0) {
+                          &arr, SUIT_CBOR_MANIFEST_IDX_SEQ_NO) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return _parse_manifest_seq_no(&arr, seq_no);
 }
 
-int suit_payload_get_digestalgo(const suit_manifest_t *manifest,
-                                suit_digest_t *algo)
+int suit_cbor_payload_get_digestalgo(const suit_cbor_manifest_t *manifest,
+                                     suit_cbor_digest_t *algo)
 {
     CborParser parser;
     CborValue it, arr, payloadinfo;
 
     if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
-                               SUIT_PAYLOADINFO_IDX_DIGESTALGO) < 0) {
+                               SUIT_CBOR_PAYLOADINFO_IDX_DIGESTALGO) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return _parse_manifest_digestalgo(&payloadinfo, algo);
 }
 
-int suit_payload_get_digest(const suit_manifest_t *manifest,
-                            suit_digest_type_t digest, uint8_t *buf, size_t *len)
+int suit_cbor_payload_get_digest(const suit_cbor_manifest_t *manifest,
+                                 suit_cbor_digest_type_t digest, uint8_t *buf,
+                                 size_t *len)
 {
     CborParser parser;
     CborValue it, arr, payloadinfo, map;
 
     if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
-                               SUIT_PAYLOADINFO_IDX_DIGESTS) < 0) {
+                               SUIT_CBOR_PAYLOADINFO_IDX_DIGESTS) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     if (!cbor_value_is_map(&payloadinfo)) {
@@ -267,38 +270,40 @@ int suit_payload_get_digest(const suit_manifest_t *manifest,
     return 0;
 }
 
-int suit_payload_get_size(const suit_manifest_t *manifest, uint32_t *size)
+int suit_cbor_payload_get_size(const suit_cbor_manifest_t *manifest,
+                               uint32_t *size)
 {
     CborParser parser;
     CborValue it, arr, payloadinfo;
 
     if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
-                               SUIT_PAYLOADINFO_IDX_SIZE) < 0) {
+                               SUIT_CBOR_PAYLOADINFO_IDX_SIZE) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return _parse_payload_size(&payloadinfo, size);
 }
 
-int suit_payload_get_storid(const suit_manifest_t *manifest,
-                            uint8_t *buf, size_t *len)
+int suit_cbor_payload_get_storid(const suit_cbor_manifest_t *manifest,
+                                 uint8_t *buf, size_t *len)
 {
     CborParser parser;
     CborValue it, arr, payloadinfo;
 
     if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
-                               SUIT_PAYLOADINFO_IDX_STORID) < 0) {
+                               SUIT_CBOR_PAYLOADINFO_IDX_STORID) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return _parse_payload_storage_id(&payloadinfo, buf, len);
 }
 
-ssize_t suit_get_url(const suit_manifest_t *manifest, char *buf, size_t len)
+ssize_t suit_cbor_get_url(const suit_cbor_manifest_t *manifest, char *buf,
+                          size_t len)
 {
     CborParser parser;
     CborValue it, arr, payloadinfo, urilist, uri;
 
     if (_init_and_advance_info(manifest, &parser, &it, &arr, &payloadinfo,
-                               SUIT_PAYLOADINFO_IDX_URIS) < 0) {
+                               SUIT_CBOR_PAYLOADINFO_IDX_URIS) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
     if (!cbor_value_is_array(&payloadinfo)) {

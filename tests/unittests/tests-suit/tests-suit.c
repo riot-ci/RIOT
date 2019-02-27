@@ -10,13 +10,11 @@
 #include <stdio.h>
 #include "embUnit.h"
 
-
 #include "tests-suit.h"
-#include "cbor.h"
-#include "suit.h"
+#include "suit/cbor.h"
 
 /**
- * A nice example manifest:
+ * A nice example CBOR-encoded manifest:
  *
  * [
  *  2,
@@ -42,7 +40,7 @@
  *  ]
  * ]
  */
-static unsigned char test_suit_full[] = {
+static unsigned char test_suit_cbor_full[] = {
     0x8a, 0x02, 0xf6, 0x48, 0xc4, 0x3e, 0x39, 0x32, 0xee, 0x2e, 0x15, 0x10,
     0x1a, 0x5b, 0x0c, 0x15, 0x29, 0x83, 0x82, 0x01, 0x50, 0x54, 0x7d, 0x0d,
     0x74, 0x6d, 0x3a, 0x5a, 0x92, 0x96, 0x62, 0x48, 0x81, 0xaf, 0xd9, 0x40,
@@ -64,42 +62,42 @@ static const uint8_t test_storid[] = {0x00, 0x01};
 
 static char uri_buf[128];
 
-void test_suit_parse(void)
+void test_suit_cbor_parse(void)
 {
-    suit_manifest_t manifest;
+    suit_cbor_manifest_t manifest;
 
     uint8_t digest[64];
     size_t dlen = sizeof(digest);
-    TEST_ASSERT_EQUAL_INT(suit_parse(&manifest, test_suit_full,
-            sizeof(test_suit_full)), 0);
+    TEST_ASSERT_EQUAL_INT(suit_cbor_parse(&manifest, test_suit_cbor_full,
+            sizeof(test_suit_cbor_full)), 0);
 
     uint32_t version = 0;
-    TEST_ASSERT_EQUAL_INT(suit_get_version(&manifest, &version), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(suit_cbor_get_version(&manifest, &version), SUIT_OK);
     TEST_ASSERT_EQUAL_INT(version, 2);
 
     uint32_t seq_no;
-    TEST_ASSERT_EQUAL_INT(suit_get_seq_no(&manifest, &seq_no), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(suit_cbor_get_seq_no(&manifest, &seq_no), SUIT_OK);
     TEST_ASSERT_EQUAL_INT(seq_no, 1527518505);
 
     uint32_t size;
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_size(&manifest, &size), SUIT_OK);
+    TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_size(&manifest, &size), SUIT_OK);
     TEST_ASSERT_EQUAL_INT(size, 71480);
 
-    suit_digest_t algo = -1;
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_digestalgo(&manifest, &algo),
+    suit_cbor_digest_t algo = -1;
+    TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_digestalgo(&manifest, &algo),
                           SUIT_OK);
     TEST_ASSERT_EQUAL_INT(algo, SUIT_DIGEST_SHA256);
     
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_digest(&manifest,
+    TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_digest(&manifest,
                 SUIT_DIGEST_TYPE_RAW, digest, &dlen), 1);
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_digest(&manifest,
+    TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_digest(&manifest,
                 SUIT_DIGEST_TYPE_CIPHERTEXT, digest, &dlen), 0);
-    TEST_ASSERT_EQUAL_INT(suit_get_url(&manifest, uri_buf, sizeof(uri_buf)), 24);
+    TEST_ASSERT_EQUAL_INT(suit_cbor_get_url(&manifest, uri_buf, sizeof(uri_buf)), 24);
     TEST_ASSERT_EQUAL_STRING((char*)test_uri, (char*)uri_buf);
 
     uint8_t storid[4];
     size_t storid_len = sizeof(storid);
-    TEST_ASSERT_EQUAL_INT(suit_payload_get_storid(&manifest, storid,
+    TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_storid(&manifest, storid,
                                                   &storid_len), SUIT_OK);
     TEST_ASSERT_EQUAL_INT(storid_len, 2);
     TEST_ASSERT_EQUAL_INT(memcmp(test_storid, storid, storid_len), 0);
@@ -108,12 +106,12 @@ void test_suit_parse(void)
 Test *tests_suit_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_suit_parse),
+        new_TestFixture(test_suit_cbor_parse),
     };
 
-    EMB_UNIT_TESTCALLER(suit_tests, NULL, NULL, fixtures);
+    EMB_UNIT_TESTCALLER(suit_cbor_tests, NULL, NULL, fixtures);
 
-    return (Test *)&suit_tests;
+    return (Test *)&suit_cbor_tests;
 }
 
 void tests_suit(void)
