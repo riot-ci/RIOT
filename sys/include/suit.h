@@ -32,17 +32,16 @@
 #ifndef SUIT_H
 #define SUIT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "cbor.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define SUIT_MANIFEST_MIN_LENGTH            9
 #define SUIT_MANIFEST_PAYLOADINFO_LENGTH    7
@@ -221,5 +220,6 @@ int suit_payload_get_digest(const suit_manifest_t *manifest,
 #ifdef __cplusplus
 }
 #endif
-/** @} */
+
 #endif /* SUIT_H */
+/** @} */
