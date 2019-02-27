@@ -7,9 +7,9 @@
  */
 
 /**
- * @ingroup usbus_cdc_eem
+ * @ingroup usbus_cdc_ecm
  * @{
- * @file USBUS implementation for ethernet emulation model
+ * @file USBUS implementation for ethernet control model
  *
  * @author  Koen Zandberg <koen@bergzand.net>
  * @}
