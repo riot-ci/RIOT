@@ -59,7 +59,7 @@ void stdio_init(void)
 
 #ifdef MODULE_STDIO_UART_RX
     cb = (uart_rx_cb_t) isrpipe_write_one;
-    arg = &uart_stdio_isrpipe;
+    arg = &stdio_uart_isrpipe;
 #else
     cb = NULL;
     arg = NULL;
