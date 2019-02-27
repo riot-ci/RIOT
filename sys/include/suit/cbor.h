@@ -30,8 +30,8 @@
  * @author      Koen Zandberg <koen@bergzand.net>
  */
 
-#ifndef SUIT_H
-#define SUIT_H
+#ifndef SUIT_CBOR_H
+#define SUIT_CBOR_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -224,5 +224,5 @@ int suit_cbor_validator_verify_conditions(suit_cbor_manifest_t *manifest, uint64
 }
 #endif
 
-#endif /* SUIT_H */
+#endif /* SUIT_CBOR_H */
 /** @} */
