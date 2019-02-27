@@ -24,7 +24,6 @@
 #include "usb/descriptor.h"
 #include "usb/cdc.h"
 #include "usb/usbus.h"
-#include "usb/usbus/cdc.h"
 #include "usb/usbus/cdc/ecm.h"
 
 #include <string.h>
@@ -34,7 +33,7 @@
 
 static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg);
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
-void usbus_cdc_ecm_flush(usbus_cdc_device_t *cdcacm);
+void usbus_cdc_ecm_flush(usbus_cdcecm_device_t *cdcecm);
 
 static size_t _gen_union_descriptor(usbus_t *usbus, void *arg);
 static size_t _gen_union_size(usbus_t *usbus, void *arg);
@@ -62,7 +61,7 @@ static const usbus_hdr_gen_funcs_t _cdc_descriptor = {
 
 static size_t _gen_union_descriptor(usbus_t *usbus, void *arg)
 {
-    usbus_cdc_device_t *cdc = (usbus_cdc_device_t*)arg;
+    usbus_cdcecm_device_t *cdc = (usbus_cdcecm_device_t*)arg;
     usb_desc_union_t uni;
     /* functional union descriptor */
     uni.length = sizeof(usb_desc_union_t);
