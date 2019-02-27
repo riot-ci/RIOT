@@ -26,7 +26,7 @@
  *
  * @{
  *
- * @brief       Decoding functions for a SUIT manifest
+ * @brief       Decoding functions for a CBOR encoded SUIT manifest
  * @author      Koen Zandberg <koen@bergzand.net>
  */
 
@@ -44,31 +44,47 @@
 extern "C" {
 #endif
 
-#define SUIT_CBOR_MANIFEST_MIN_LENGTH            9
-#define SUIT_CBOR_MANIFEST_PAYLOADINFO_LENGTH    7
+#define SUIT_CBOR_MANIFEST_MIN_LENGTH            9  /**< Minimum length of a
+                                                         manifest array */
+#define SUIT_CBOR_MANIFEST_PAYLOADINFO_LENGTH    7  /**< Length of the payload
+                                                         info array   */
 
-#define SUIT_CBOR_MANIFEST_IDX_MANIFESTVERSION   0
-#define SUIT_CBOR_MANIFEST_IDX_TEXT              1
-#define SUIT_CBOR_MANIFEST_IDX_NONCE             2
-#define SUIT_CBOR_MANIFEST_IDX_SEQ_NO            3
-#define SUIT_CBOR_MANIFEST_IDX_CONDITIONS        4
-#define SUIT_CBOR_MANIFEST_IDX_DIRECTIVES        5
-#define SUIT_CBOR_MANIFEST_IDX_ALIASES           6
-#define SUIT_CBOR_MANIFEST_IDX_DEPENDENCIES      7
-#define SUIT_CBOR_MANIFEST_IDX_EXTENSIONS        8
-#define SUIT_CBOR_MANIFEST_IDX_PAYLOADINFO       9
-
-#define SUIT_CBOR_PAYLOADINFO_IDX_FORMAT         0
-#define SUIT_CBOR_PAYLOADINFO_IDX_SIZE           1
-#define SUIT_CBOR_PAYLOADINFO_IDX_STORID         2
-#define SUIT_CBOR_PAYLOADINFO_IDX_URIS           3
-#define SUIT_CBOR_PAYLOADINFO_IDX_DIGESTALGO     4
-#define SUIT_CBOR_PAYLOADINFO_IDX_DIGESTS        5
-#define SUIT_CBOR_PAYLOADINFO_IDX_PAYLOAD        6
-
-#define SUIT_TINYCBOR_VALIDATION_MODE       CborValidateStrictMode
 /**
- * @name suit parser error codes
+ * @name Manifest array member indices
+ * @{
+ */
+#define SUIT_CBOR_MANIFEST_IDX_MANIFESTVERSION   0  /**< Manifest version     */
+#define SUIT_CBOR_MANIFEST_IDX_TEXT              1  /**< Text section         */
+#define SUIT_CBOR_MANIFEST_IDX_NONCE             2  /**< Nonce                */
+#define SUIT_CBOR_MANIFEST_IDX_SEQ_NO            3  /**< Sequence number      */
+#define SUIT_CBOR_MANIFEST_IDX_CONDITIONS        4  /**< Conditionals         */
+#define SUIT_CBOR_MANIFEST_IDX_DIRECTIVES        5  /**< Directives           */
+#define SUIT_CBOR_MANIFEST_IDX_ALIASES           6  /**< Aliases              */
+#define SUIT_CBOR_MANIFEST_IDX_DEPENDENCIES      7  /**< Dependencies         */
+#define SUIT_CBOR_MANIFEST_IDX_EXTENSIONS        8  /**< Extensions           */
+#define SUIT_CBOR_MANIFEST_IDX_PAYLOADINFO       9  /**< Optional PayloadInfo */
+/** @} */
+
+/**
+ * @name Manifest PayloadInfo member indices
+ * @{
+ */
+#define SUIT_CBOR_PAYLOADINFO_IDX_FORMAT         0  /**< Payload format       */
+#define SUIT_CBOR_PAYLOADINFO_IDX_SIZE           1  /**< Firmware size        */
+#define SUIT_CBOR_PAYLOADINFO_IDX_STORID         2  /**< Storage ID           */
+#define SUIT_CBOR_PAYLOADINFO_IDX_URIS           3  /**< URI list             */
+#define SUIT_CBOR_PAYLOADINFO_IDX_DIGESTALGO     4  /**< Digest algorithm     */
+#define SUIT_CBOR_PAYLOADINFO_IDX_DIGESTS        5  /**< Digests              */
+#define SUIT_CBOR_PAYLOADINFO_IDX_PAYLOAD        6  /**< Optional payload     */
+/** @} */
+
+/**
+ * @brief TinyCBOR validation mode to use
+ */
+#define SUIT_TINYCBOR_VALIDATION_MODE       CborValidateStrictMode
+
+/**
+ * @brief suit parser error codes
  */
 typedef enum {
     SUIT_OK                     = 0,    /**< Manifest parsed and validated */
@@ -78,7 +94,7 @@ typedef enum {
 } suit_error_t;
 
 /**
- * @name SUIT conditionals
+ * @brief SUIT conditionals
  */
 enum {
     SUIT_COND_VENDOR_ID     = 1,    /**< Vendor ID match conditional */
@@ -88,7 +104,7 @@ enum {
 };
 
 /**
- * @name SUIT payload digest algorithms
+ * @brief SUIT payload digest algorithms
  *
  * Unofficial list from
  * [suit-manifest-generator](https://github.com/ARMmbed/suit-manifest-generator)
@@ -101,7 +117,7 @@ typedef enum {
 } suit_cbor_digest_t;
 
 /**
- * @name SUIT payload digest types
+ * @brief SUIT payload digest types
  *
  * Unofficial list from
  * [suit-manifest-generator](https://github.com/ARMmbed/suit-manifest-generator)
