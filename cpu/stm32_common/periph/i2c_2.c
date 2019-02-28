@@ -65,6 +65,7 @@ static int _start(I2C_TypeDef *dev, uint8_t address_byte, uint8_t flags,
 static int _stop(I2C_TypeDef *dev);
 static int _is_sr1_mask_set(I2C_TypeDef *i2c, uint32_t mask, uint8_t flags);
 static inline int _wait_for_bus(I2C_TypeDef *i2c);
+static void _init_pins(i2c_t dev);
 
 /**
  * @brief Array holding one pre-initialized mutex for each I2C device
@@ -106,24 +107,7 @@ void i2c_init(i2c_t dev)
     NVIC_SetPriority(i2c_config[dev].irqn, I2C_IRQ_PRIO);
     NVIC_EnableIRQ(i2c_config[dev].irqn);
 
-    /* configure pins */
-    gpio_init(i2c_config[dev].scl_pin, GPIO_OD_PU);
-    gpio_init(i2c_config[dev].sda_pin, GPIO_OD_PU);
-#ifdef CPU_FAM_STM32F1
-    /* This is needed in case the remapped pins are used */
-    if (i2c_config[dev].scl_pin == GPIO_PIN(PORT_B, 8) ||
-        i2c_config[dev].sda_pin == GPIO_PIN(PORT_B, 9)) {
-        /* The remapping periph clock must first be enabled */
-        RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
-        /* Then the remap can occur */
-        AFIO->MAPR |= AFIO_MAPR_I2C1_REMAP;
-    }
-    gpio_init_af(i2c_config[dev].scl_pin, GPIO_AF_OUT_OD);
-    gpio_init_af(i2c_config[dev].sda_pin, GPIO_AF_OUT_OD);
-#else
-    gpio_init_af(i2c_config[dev].scl_pin, i2c_config[dev].scl_af);
-    gpio_init_af(i2c_config[dev].sda_pin, i2c_config[dev].sda_af);
-#endif
+    _init_pins(dev);
 
     /* configure device */
     _i2c_init(i2c, i2c_config[dev].clk, ccr);
@@ -143,16 +127,35 @@ void i2c_init(i2c_t dev)
         gpio_set(i2c_config[dev].sda_pin);
         gpio_set(i2c_config[dev].scl_pin);
         /* reset pins for alternate function */
-        gpio_init(i2c_config[dev].scl_pin, GPIO_OD_PU);
-        gpio_init(i2c_config[dev].sda_pin, GPIO_OD_PU);
-        gpio_init_af(i2c_config[dev].scl_pin, i2c_config[dev].scl_af);
-        gpio_init_af(i2c_config[dev].sda_pin, i2c_config[dev].sda_af);
+        _init_pins(dev);
         /* make peripheral soft reset */
         i2c->CR1 |= I2C_CR1_SWRST;
         i2c->CR1 &= ~I2C_CR1_SWRST;
         /* enable device */
         _i2c_init(i2c, i2c_config[dev].clk, ccr);
     }
+#endif
+}
+
+static void _init_pins(i2c_t dev)
+{
+    /* configure pins */
+    gpio_init(i2c_config[dev].scl_pin, GPIO_OD_PU);
+    gpio_init(i2c_config[dev].sda_pin, GPIO_OD_PU);
+#ifdef CPU_FAM_STM32F1
+    /* This is needed in case the remapped pins are used */
+    if (i2c_config[dev].scl_pin == GPIO_PIN(PORT_B, 8) ||
+        i2c_config[dev].sda_pin == GPIO_PIN(PORT_B, 9)) {
+        /* The remapping periph clock must first be enabled */
+        RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+        /* Then the remap can occur */
+        AFIO->MAPR |= AFIO_MAPR_I2C1_REMAP;
+    }
+    gpio_init_af(i2c_config[dev].scl_pin, GPIO_AF_OUT_OD);
+    gpio_init_af(i2c_config[dev].sda_pin, GPIO_AF_OUT_OD);
+#else
+    gpio_init_af(i2c_config[dev].scl_pin, i2c_config[dev].scl_af);
+    gpio_init_af(i2c_config[dev].sda_pin, i2c_config[dev].sda_af);
 #endif
 }
 
@@ -172,6 +175,39 @@ static void _i2c_init(I2C_TypeDef *i2c, uint32_t clk, uint32_t ccr)
     i2c->SR1 &= ~ERROR_FLAG;
     /* enable device */
     i2c->CR1 |= I2C_CR1_PE;
+}
+
+static void _re_init(i2c_t dev)
+{
+    I2C_TypeDef *i2c = i2c_config[dev].dev;
+
+    uint32_t ccr = 0;
+    /* read speed configuration */
+    switch (i2c_config[dev].speed) {
+        case I2C_SPEED_LOW:
+            /* 10Kbit/s */
+            ccr = i2c_config[dev].clk / 20000;
+            break;
+
+        case I2C_SPEED_NORMAL:
+            /* 100Kbit/s */
+            ccr = i2c_config[dev].clk / 200000;
+            break;
+
+        case I2C_SPEED_FAST:
+            ccr = i2c_config[dev].clk / 800000;
+            break;
+    }
+
+    /* make peripheral soft reset */
+    i2c->CR1 |= I2C_CR1_SWRST;
+
+    _init_pins(dev);
+
+    i2c->CR1 &= ~I2C_CR1_SWRST;
+
+    /* configure device */
+    _i2c_init(i2c, i2c_config[dev].clk, ccr);
 }
 
 int i2c_acquire(i2c_t dev)
@@ -215,6 +251,9 @@ int i2c_read_bytes(i2c_t dev, uint16_t address, void *data, size_t length,
 
     int ret = _start(i2c, (address << 1) | I2C_FLAG_READ, flags, length);
     if (ret < 0) {
+        if (ret == -ETIMEDOUT) {
+            _re_init(dev);
+        }
         return ret;
     }
 
@@ -260,6 +299,9 @@ int i2c_write_bytes(i2c_t dev, uint16_t address, const void *data,
     /* Length is 0 in start since we don't need to preset the stop bit */
     ret = _start(i2c, (address << 1) | I2C_FLAG_WRITE, flags, 0);
     if (ret < 0) {
+        if (ret == -ETIMEDOUT) {
+            _re_init(dev);
+        }
         return ret;
     }
 
