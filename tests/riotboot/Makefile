@@ -18,14 +18,20 @@ DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
+ifneq ($(BUILD_IN_DOCKER),1)
+# HACK: When building with docker, riotboot target must be done only in docker
 all: riotboot
+endif
 
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
 
 # Make 'flash' and 'flash-only' work without specific command.
 # This is currently hacky as there is no way of specifiying a FLASHFILE
+ifneq ($(BUILD_IN_DOCKER),1)
+# HACK: When building with docker, riotboot target must be done only in docker
 all: riotboot/combined-slot0
+endif
 # openocd
 ELFFILE = $(BINDIR_APP)-slot0-combined.bin
 # edbg
