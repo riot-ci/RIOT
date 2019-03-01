@@ -435,6 +435,10 @@ binfile: $(BINFILE)
 # (can be overwritten to $(HEXFILE), $(BINFILE))
 flashfile: $(FLASHFILE)
 
+ifeq (,$(FLASHFILE))
+  $(error FLASHFILE is not defined for this board: $(FLASHFILE))
+endif
+
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
 
