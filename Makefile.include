@@ -418,6 +418,10 @@ binfile: $(BINFILE)
 # (can be overwritten to $(HEXFILE), $(BINFILE))
 flashfile: $(FLASHFILE)
 
+ifeq (,$(FLASHFILE))
+  $(error FLASHFILE is not defined for this board: $(FLASHFILE))
+endif
+
 # variables used to compile and link c++
 CPPMIX ?= $(if $(wildcard *.cpp),1,)
 
@@ -451,7 +455,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ifeq (,$(RIOTNOLINK))
-link: ..compiler-check ..build-message $(ELFFILE) $(FLASHFILE) $(HEXFILE) print-size
+link: ..compiler-check ..build-message $(ELFFILE) $(FLASHFILE) print-size
 else
 link: ..compiler-check ..build-message $(BASELIBS)
 endif # RIOTNOLINK
@@ -533,7 +537,8 @@ endef
 # Do not add dependencies to "flash" directly, use FLASHDEPS, as this is shared
 # with flash-only too
 
-flash: all $(FLASHDEPS)
+# It currently forces rebuilding '$(FLASHFILE)' as it has `.PHONY` dependencies
+flash: $(FLASHFILE) $(FLASHDEPS)
 	$(flash-recipe)
 
 flash-only: $(FLASHDEPS)
