@@ -28,14 +28,17 @@ extern "C" {
  * @brief USB peripheral device vendor ID
  */
 #ifndef USB_CONFIG_VID
-#define USB_CONFIG_VID          (0x046d)
+#error  Please supply your vendor ID by setting USB_CONFIG_VID
 #endif
 
 /**
  * @brief USB peripheral device product ID
+ *
+ * You must provide your own VID/PID combination when manufacturing a device
+ * with USB
  */
 #ifndef USB_CONFIG_PID
-#define USB_CONFIG_PID          (0x5678)
+#error  Please supply your vendor ID by setting USB_CONFIG_PID
 #endif
 
 /**
