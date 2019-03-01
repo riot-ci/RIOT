@@ -37,12 +37,14 @@ extern "C" {
 #define IEEE802154_SFD                      (0xa7)
 
 /**
- * @brief   IEEE 802.15.4 address lengths
+ * @brief IEEE 802.15.4 address lengths
  * @{
  */
 #define IEEE802154_SHORT_ADDRESS_LEN        (2U)    /**< short (16-bit) address */
 #define IEEE802154_LONG_ADDRESS_LEN         (8U)    /**< long address (EUI-64) */
-/** @} */
+/**
+ * @}
+ */
 
 /**
  * @brief IEEE802.15.4 FCF field definitions
@@ -115,33 +117,50 @@ extern const uint8_t ieee802154_addr_bcast[IEEE802154_ADDR_BCAST_LEN];
 /** @} */
 
 /**
- * @brief   Broadcast PAN ID
- */
-#define IEEE802154_PANID_BCAST              { 0xff, 0xff }
-
-/**
+ * @defgroup net_ieee802154_conf    IEEE802.15.4 compile configurations
+ * @ingroup  config
  * @{
- * @name    Default values
- * @brief   Default values for devices to choose
+ */
+/**
+ * @brief IEEE802.15.4 default sub-GHZ channel
  */
 #ifndef IEEE802154_DEFAULT_SUBGHZ_CHANNEL
 #define IEEE802154_DEFAULT_SUBGHZ_CHANNEL   (5U)
 #endif
 
+/**
+ * @brief IEEE802.15.4 default channel
+ */
 #ifndef IEEE802154_DEFAULT_CHANNEL
 #define IEEE802154_DEFAULT_CHANNEL          (26U)
 #endif
 
+/**
+ * @brief IEEE802.15.4 default sub-GHZ page
+ */
 #ifndef IEEE802154_DEFAULT_SUBGHZ_PAGE
 #define IEEE802154_DEFAULT_SUBGHZ_PAGE      (2U)
 #endif
 
+/**
+ * @brief IEEE802.15.4 default PANID
+ */
 #ifndef IEEE802154_DEFAULT_PANID
 #define IEEE802154_DEFAULT_PANID            (0x0023U)
 #endif
 
+/**
+ * @brief IEEE802.15.4 Broadcast PANID
+ */
+#ifndef IEEE802154_PANID_BCAST
+#define IEEE802154_PANID_BCAST              { 0xff, 0xff }
+#endif
+
+/**
+ * @brief IEEE802.15.4 default TX power (in dBm)
+ */
 #ifndef IEEE802154_DEFAULT_TXPOWER
-#define IEEE802154_DEFAULT_TXPOWER          (0) /* in dBm */
+#define IEEE802154_DEFAULT_TXPOWER          (0)
 #endif
 /** @} */
 
