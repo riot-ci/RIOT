@@ -48,7 +48,8 @@ extern netdev_ieee802154_t nrf802154_dev;
 
 /**
  * @brief   IEEE 802.15.4 radio timer configuration
- * @note    this radio relies on a dedicated hardware timer to maintain IFS
+ *
+ *          this radio relies on a dedicated hardware timer to maintain IFS
  *          the default timer may be overwritten in the board configuration
  */
 #ifndef NRF_IEEE802154_TIMER
