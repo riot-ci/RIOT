@@ -21,7 +21,7 @@ CFLAGS += -DOUTPUT=TEXT
 ifeq (native,$(BOARD))
   USEMODULE += netdev_tap
 
-  TERMFLAGS ?= $(TAP)
+  NATIVE_FLAGS ?= $(TAP)
 else
   USEMODULE += ethos
 
