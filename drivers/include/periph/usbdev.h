@@ -6,8 +6,8 @@
  * more details.
  */
 /**
- * @defgroup    drivers_usbdev_api usbdev - USB Device Driver API
- * @ingroup     drivers_usbdev
+ * @defgroup    drivers_periph_usbdev usbdev - USB Device Driver API
+ * @ingroup     drivers_periph
  * @brief       This is a generic low-level USB driver interface
  * @{
  *
