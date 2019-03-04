@@ -36,6 +36,11 @@ def find_exc_origin(exc_info):
 
 
 def setup_child(timeout=10, spawnclass=pexpect.spawnu, env=None, logfile=None):
+    env = env or os.environ
+    env = env.copy()
+    if env.get('RIOT_TERMINAL') == 'picocom':
+        env['TERMFLAGS'] = '--nolock --imap lfcrlf --baud "$(BAUD)" "$(PORT)"'
+
     child = spawnclass("make term", env=env, timeout=timeout,
                        codec_errors='replace', echo=False)
 
