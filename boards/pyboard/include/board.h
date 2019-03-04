@@ -34,7 +34,7 @@ extern "C" {
  * @{
  */
 #define LED0_PIN            GPIO_PIN(PORT_B, 4)
-#define LED0_MASK           (1 << 5)
+#define LED0_MASK           (1 << 4)
 
 #define LED0_ON             (GPIOB->BSRR = LED0_MASK)
 #define LED0_OFF            (GPIOB->BSRR = (LED0_MASK << 16))
