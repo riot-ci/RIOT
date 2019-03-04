@@ -67,7 +67,7 @@ static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 #define SIFS_MAXPKTSIZE     (18U)
 #define TIMER_FREQ          (250000UL)
 static volatile uint8_t _state;
-static mutex_t txlock;
+static mutex_t _txlock;
 
 /**
  * @brief   Set radio into DISABLED state
@@ -184,21 +184,21 @@ static void _timer_cb(void *arg, int chan)
 {
     (void)arg;
     (void)chan;
-    mutex_unlock(&txlock);
-    timer_stop(NRF_IEEE802154_TIMER);
-    timer_clear(NRF_IEEE802154_TIMER, 0);
+    mutex_unlock(&_txlock);
+    timer_stop(NRF802154_TIMER);
+    timer_clear(NRF802154_TIMER, 0);
 }
 
 static int _init(netdev_t *dev)
 {
     (void)dev;
 
-    int result = timer_init(NRF_IEEE802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
+    int result = timer_init(NRF802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
     assert(result >= 0);
     (void)result;
 
     /* initialize local variables */
-    mutex_init(&txlock);
+    mutex_init(&_txlock);
 
     /* reset buffer */
     rxbuf[0] = 0;
@@ -257,14 +257,14 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
 
     assert(iolist);
 
-    mutex_lock(&txlock);
+    mutex_lock(&_txlock);
 
     /* copy packet data into the transmit buffer */
     unsigned int len = 0;
     for (; iolist; iolist = iolist->iol_next) {
         if ((IEEE802154_FCS_LEN + len + iolist->iol_len) > (IEEE802154_FRAME_LEN_MAX)) {
             DEBUG("[nrf802154] send: unable to do so, packet is too large!\n");
-            mutex_unlock(&txlock);
+            mutex_unlock(&_txlock);
             return -EOVERFLOW;
         }
         memcpy(&txbuf[len + 1], iolist->iol_base, iolist->iol_len);
@@ -280,7 +280,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
 
     /* set interframe spacing based on packet size */
     unsigned int ifs = (len > SIFS_MAXPKTSIZE) ? LIFS : SIFS;
-    timer_set_absolute(NRF_IEEE802154_TIMER, 0, ifs);
+    timer_set_absolute(NRF802154_TIMER, 0, ifs);
 
     return len;
 }
@@ -414,7 +414,7 @@ void isr_radio(void)
             case RADIO_STATE_STATE_Tx:
             case RADIO_STATE_STATE_TxIdle:
             case RADIO_STATE_STATE_TxDisable:
-                timer_start(NRF_IEEE802154_TIMER);
+                timer_start(NRF802154_TIMER);
                 DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
                 _state |= TX_COMPLETE;
                 _enable_rx();

@@ -30,6 +30,7 @@
  * @brief       Driver interface for using the nRF52 in IEEE802.15.4 mode
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Semjon Kerner <semjon.kerner@fu-berlin.de>
  */
 
 #ifndef NRF802154_H
@@ -52,8 +53,8 @@ extern netdev_ieee802154_t nrf802154_dev;
  *          this radio relies on a dedicated hardware timer to maintain IFS
  *          the default timer may be overwritten in the board configuration
  */
-#ifndef NRF_IEEE802154_TIMER
-#define NRF_IEEE802154_TIMER TIMER_DEV(1)
+#ifndef NRF802154_TIMER
+#define NRF802154_TIMER TIMER_DEV(1)
 #endif
 
 #endif /* NRF802154_H */
