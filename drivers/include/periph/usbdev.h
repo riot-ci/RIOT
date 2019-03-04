@@ -68,8 +68,8 @@
  * @author      Koen Zandberg <koen@bergzand.net>
  */
 
-#ifndef USB_USBDEV_H
-#define USB_USBDEV_H
+#ifndef PERIPH_USBDEV_H
+#define PERIPH_USBDEV_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -555,5 +555,5 @@ static inline int usbdev_ep_ready(usbdev_ep_t *ep, size_t len)
 }
 #endif
 
-#endif /* USB_USBDEV_H */
+#endif /* PERIPH_USBDEV_H */
 /** @} */
