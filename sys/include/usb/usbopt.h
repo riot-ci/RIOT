@@ -9,7 +9,7 @@
  * @defgroup    usb_usbopt   usbopt - Configuration options for USB APIs
  * @ingroup     usb
  * @brief       List of available configuration options for the
- *              @ref drivers_usbdev_api
+ *              @ref drivers_periph_usbdev
  * @{
  *
  * @file
