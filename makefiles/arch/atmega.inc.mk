@@ -8,6 +8,9 @@ CFLAGS_OPT  ?= -Os
 
 CFLAGS    += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
 ASFLAGS   += $(CFLAGS_CPU) $(CFLAGS_DBG)
+# See https://gcc.gnu.org/onlinedocs/gcc/AVR-Options.html for information on
+# which CPU_FAM corresponds to your CPU
+ILINKFLAGS += -r -m $(CPU_FAM) --unique
 LINKFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG) $(CFLAGS_OPT) -static -lgcc -e reset_handler -Wl,--gc-sections
 OFLAGS    += -j .text -j .data
 
@@ -26,10 +29,6 @@ endif
 
 # the atmel port uses stdio_uart
 USEMODULE += stdio_uart
-
-# explicitly tell the linker to link the syscalls and startup code.
-# without this the interrupt vectors will not be linked correctly!
-UNDEF += $(BINDIR)/atmega_common/startup.o
 
 # Use ROM_LEN and RAM_LEN during link
 $(if $(ROM_LEN),,$(error ROM_LEN is not defined))
