@@ -64,6 +64,87 @@ static int _parse_manifest_seq_no(CborValue *it, uint32_t *seq_no)
     return SUIT_OK;
 }
 
+static ssize_t _parse_manifest_condition(CborValue *it, CborValue *cond,
+                                         CborValue *props, size_t idx)
+{
+    size_t condlen = 0;
+
+    if (!cbor_value_is_array(it)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    cbor_value_enter_container(it, cond);
+
+    /* Conditions array is nonzero in length */
+    if (cbor_value_at_end(cond)) {
+        return SUIT_ERR_COND;
+    }
+
+    /* Iterate to idx and check if it is within the array bounds */
+    if (_advance_x(cond, idx) < 0) {
+        return SUIT_ERR_COND;
+    }
+
+    /* Condition must be a valid array of length 2 */
+    if (!cbor_value_is_array(cond) ||
+        (cbor_value_get_array_length(cond, &condlen) < 0) ||
+        condlen != 2) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+
+    cbor_value_enter_container(cond, props);
+
+    /* First element must be an integer */
+    if (!cbor_value_is_integer(props)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return SUIT_OK;
+}
+
+static ssize_t _parse_manifest_condition_param(CborValue *it, size_t idx,
+                                               uint8_t *buf, size_t *len)
+{
+    CborValue cond, props;
+
+    int res = _parse_manifest_condition(it, &cond, &props, idx);
+    if (res < 0) {
+        return res;
+    }
+    /* At this point props points to the condition type of the condition at
+     * position idx */
+
+    /* Advance to the argument */
+    cbor_value_advance(&props);
+    if (!cbor_value_is_byte_string(&props)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    if (cbor_value_copy_byte_string(&props, buf, len, NULL) < 0) {
+        return SUIT_ERR_COND;
+    }
+    return *len;
+}
+
+static ssize_t _parse_manifest_condition_type(CborValue *it, size_t idx,
+                                              int *type)
+{
+    CborValue cond, props;
+
+    int res = _parse_manifest_condition(it, &cond, &props, idx);
+    if (res < 0) {
+        return res;
+    }
+    /* At this point props points to the condition type of the condition at
+     * position idx */
+
+    cbor_value_get_int(&props, type);
+    cbor_value_advance(&props);
+    if (!cbor_value_is_byte_string(&props)) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    size_t arglen = 0;
+    cbor_value_get_string_length(&props, &arglen);
+    return arglen;
+}
+
 static int _parse_payload_size(CborValue *it, uint32_t *size)
 {
     uint64_t value;
@@ -227,6 +308,32 @@ int suit_cbor_get_seq_no(const suit_cbor_manifest_t *manifest,
         return SUIT_ERR_INVALID_MANIFEST;
     }
     return _parse_manifest_seq_no(&arr, seq_no);
+}
+
+ssize_t suit_cbor_get_condition_type(const suit_cbor_manifest_t *manifest,
+                                     unsigned idx, signed *condition)
+{
+    CborParser parser;
+    CborValue it, arr;
+
+    if (_init_and_advance(manifest, &parser, &it,
+                          &arr, SUIT_CBOR_MANIFEST_IDX_CONDITIONS) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return _parse_manifest_condition_type(&arr, idx, condition);
+}
+
+int suit_cbor_get_condition_parameter(const suit_cbor_manifest_t *manifest,
+                                      unsigned idx, uint8_t *buf, size_t *len)
+{
+    CborParser parser;
+    CborValue it, arr;
+
+    if (_init_and_advance(manifest, &parser, &it,
+                          &arr, SUIT_CBOR_MANIFEST_IDX_CONDITIONS) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    return _parse_manifest_condition_param(&arr, idx, buf, len);
 }
 
 int suit_cbor_payload_get_digestalgo(const suit_cbor_manifest_t *manifest,

@@ -57,10 +57,36 @@ static unsigned char test_suit_cbor_full[] = {
     0x6e, 0xf6
 };
 
+/* Parameters from the conditions belonging to the manifest above */
+static const uint8_t cond[][16] = {
+    { 0x54, 0x7d, 0x0d, 0x74, 0x6d, 0x3a, 0x5a, 0x92, 0x96, 0x62, 0x48, 0x81,
+        0xaf, 0xd9, 0x40, 0x7b },
+    { 0xbc, 0xc9, 0x09, 0x84, 0xfe, 0x7d, 0x56, 0x2b, 0xb4, 0xc9, 0xa2, 0x4f,
+        0x26, 0xa3, 0xa9, 0xcd },
+    { 0x54, 0x8a, 0xb6, 0xc8, 0xdf, 0x58, 0x53, 0x2d, 0xbe, 0x0e, 0x0a, 0x1d,
+        0xc9, 0x0d, 0xcf, 0xeb },
+};
+
 static const char test_uri[] = "coap://[ff02::1]/fw/test";
 static const uint8_t test_storid[] = {0x00, 0x01};
 
 static char uri_buf[128];
+
+static void _test_cond(const suit_cbor_manifest_t *manifest,
+                       size_t idx, int expected_type)
+{
+    int cond_type = 0;
+    uint8_t param[16];
+    TEST_ASSERT(suit_cbor_get_condition_type(manifest, idx, &cond_type) >= 0);
+    TEST_ASSERT_EQUAL_INT(expected_type, cond_type);
+
+    size_t param_len = sizeof(param);
+    size_t res = suit_cbor_get_condition_parameter(manifest, idx, param,
+                                                   &param_len);
+
+    TEST_ASSERT_EQUAL_INT(param_len, res);
+    TEST_ASSERT_EQUAL_INT(0, memcmp(param, cond[idx], res));
+}
 
 void test_suit_cbor_parse(void)
 {
@@ -78,6 +104,17 @@ void test_suit_cbor_parse(void)
     uint32_t seq_no;
     TEST_ASSERT_EQUAL_INT(suit_cbor_get_seq_no(&manifest, &seq_no), SUIT_OK);
     TEST_ASSERT_EQUAL_INT(seq_no, 1527518505);
+
+    /* Test conditional types */
+    _test_cond(&manifest, 0, 1); /* First condition, type 1 */
+    _test_cond(&manifest, 1, 2); /* Second condition, type 2 */
+    _test_cond(&manifest, 2, 3); /* Third condition, type 3 */
+
+
+    /* Nonexisting condition */
+    TEST_ASSERT_EQUAL_INT(SUIT_ERR_COND,
+                          suit_cbor_get_condition_type(&manifest, 3,
+                                                       NULL));
 
     uint32_t size;
     TEST_ASSERT_EQUAL_INT(suit_cbor_payload_get_size(&manifest, &size), SUIT_OK);

@@ -177,6 +177,9 @@ int suit_cbor_get_version(const suit_cbor_manifest_t *manifest, uint32_t *versio
 /**
  * @brief Retrieve the sequence number of the manifest
  *
+ * @note The sequence number is called timestamp in the first version of the
+ *       spec, but called sequence number in later versions.
+ *
  * @param       manifest    manifest to retrieve the sequence number from
  * @param[out]  seq_no      sequence number
  *
@@ -184,6 +187,34 @@ int suit_cbor_get_version(const suit_cbor_manifest_t *manifest, uint32_t *versio
  * @return                  negative on error
  */
 int suit_cbor_get_seq_no(const suit_cbor_manifest_t *manifest, uint32_t *seq_no);
+
+/**
+ * @brief Retrieve the condition type at position \p idx from the manifest
+ *
+ * @param[in]       manifest    manifest to retrieve the condition from
+ * @param[in]       idx         index of the condition in the array
+ * @param[out]      condition   condition type value
+ *
+ * @return                      Length of the parameter
+ * @return                      Negative on error
+ */
+ssize_t suit_cbor_get_condition_type(const suit_cbor_manifest_t *manifest,
+                                     unsigned idx, signed *condition);
+
+/**
+ * @brief Retrieve the condition parameter at position \p idx from the manifest
+ *
+ * @param[in]       manifest    manifest to retrieve the condition from
+ * @param[in]       idx         index of the condition in the array
+ * @param[out]      buf         buffer to store the parameter in
+ * @param[inout]    len         length of the buffer and length of the returned
+ *                              parameter
+ *
+ * @return                      Length of the parameter
+ * @return                      Negative on error
+ */
+int suit_cbor_get_condition_parameter(const suit_cbor_manifest_t *manifest,
+                                      unsigned idx, uint8_t *buf, size_t *len);
 
 /**
  * @brief Retrieve the size from the payloadinfo in the manifest
