@@ -327,7 +327,7 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
             /* Convert to 802.15.4 LQI (page 319 of the datasheet) */
             radio_info->lqi = (uint8_t)(hwlqi > UINT8_MAX/ED_RSSISCALE
                                        ? UINT8_MAX
-                                       : hwlqi * ED_RSSISCALE); 
+                                       : hwlqi * ED_RSSISCALE);
             /* Calculate RSSI by substracting the offset from the datasheet */
             radio_info->rssi = (int16_t)hwlqi - ED_RSSIOFFS;
         }
