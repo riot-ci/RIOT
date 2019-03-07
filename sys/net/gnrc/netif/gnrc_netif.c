@@ -1244,6 +1244,10 @@ static void _test_options(gnrc_netif_t *netif)
             /* don't check MTU here for now since I'm not sure the current
              * one is correct ^^" "*/
             break;
+        case NETDEV_TYPE_LORA:
+            assert(!(netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR));
+            assert(0U == netif->l2addr_len);
+            break;
         default:
             /* device type not supported yet, please amend case above when
              * porting new device type */
