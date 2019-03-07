@@ -60,6 +60,9 @@ netdev_ieee802154_t nrf802154_dev = {
 static uint8_t rxbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 
+#define ED_RSSISCALE 4
+#define ED_RSSIOFFS  92
+
 #define RX_COMPLETE         (0x1)
 #define TX_COMPLETE         (0x2)
 #define LIFS                (40U)
@@ -317,6 +320,17 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
     else {
         DEBUG("[nrf802154] recv: reading packet of length %i\n", pktlen);
         memcpy(buf, &rxbuf[1], pktlen);
+        if (info != NULL) {
+            netdev_ieee802154_rx_info_t *radio_info = info;
+            /* Hardware link quality indicator */
+            uint8_t hwlqi = rxbuf[pktlen + 1];
+            /* Convert to 802.15.4 LQI (page 319 of the datasheet) */
+            radio_info->lqi = (uint8_t)(hwlqi > UINT8_MAX/ED_RSSISCALE
+                                       ? UINT8_MAX
+                                       : hwlqi * ED_RSSISCALE); 
+            /* Calculate RSSI by substracting the offset from the datasheet */
+            radio_info->rssi = (int16_t)hwlqi - ED_RSSIOFFS;
+        }
     }
 
     _reset_rx();
