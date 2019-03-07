@@ -96,6 +96,15 @@ unsigned int timer_read(tim_t tim)
     return (unsigned int)dev(tim)->CNT;
 }
 
+unsigned int timer_max(tim_t tim)
+{
+    /* check if device is valid */
+    if (tim >= TIMER_NUMOF) {
+        return 0;
+    }
+    return timer_config[tim].max;
+}
+
 void timer_start(tim_t tim)
 {
     dev(tim)->CR1 |= TIM_CR1_CEN;
