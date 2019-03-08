@@ -41,7 +41,7 @@ extern saul_driver_t nrf_temperature_saul_driver;
  */
 extern saul_reg_info_t nrf_temperature_saul_info;
 
-void auto_init_temperature(void)
+void auto_init_nrf_temperature(void)
 {
     saul_reg_entry.dev = NULL;
     saul_reg_entry.name = nrf_temperature_saul_info.name;
