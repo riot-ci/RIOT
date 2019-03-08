@@ -51,11 +51,11 @@ static int _read_temperature(const void *dev, phydat_t *res)
     return 1;
 }
 
-const saul_reg_info_t temperature_saul_info = {
+const saul_reg_info_t nrf_temperature_saul_info = {
     .name = "NRF_TEMP"
 };
 
-const saul_driver_t temperature_saul_driver = {
+const saul_driver_t nrf_temperature_saul_driver = {
     .read = _read_temperature,
     .write = saul_notsup,
     .type = SAUL_SENSE_TEMP,
