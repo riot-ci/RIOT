@@ -326,9 +326,9 @@ void auto_init(void)
     extern void auto_init_gpio(void);
     auto_init_gpio();
 #endif
-#ifdef MODULE_SAUL_TEMPERATURE
-    extern void auto_init_temperature(void);
-    auto_init_temperature();
+#ifdef MODULE_SAUL_NRF_TEMPERATURE
+    extern void auto_init_nrf_temperature(void);
+    auto_init_nrf_temperature();
 #endif
 #ifdef MODULE_AD7746
     extern void auto_init_ad7746(void);

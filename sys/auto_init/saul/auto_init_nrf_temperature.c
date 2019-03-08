@@ -19,7 +19,7 @@
  * @}
  */
 
-#ifdef MODULE_SAUL_TEMPERATURE
+#ifdef MODULE_SAUL_NRF_TEMPERATURE
 
 #include "cpu.h"
 #include "log.h"
@@ -34,22 +34,22 @@ static saul_reg_t saul_reg_entry;
 /**
  * @brief   Reference the driver struct
  */
-extern saul_driver_t temperature_saul_driver;
+extern saul_driver_t nrf_temperature_saul_driver;
 
 /**
  * @brief   Reference the information for saul registry
  */
-extern saul_reg_info_t temperature_saul_info;
+extern saul_reg_info_t nrf_temperature_saul_info;
 
 void auto_init_temperature(void)
 {
     saul_reg_entry.dev = NULL;
-    saul_reg_entry.name = temperature_saul_info.name;
-    saul_reg_entry.driver = &temperature_saul_driver;
+    saul_reg_entry.name = nrf_temperature_saul_info.name;
+    saul_reg_entry.driver = &nrf_temperature_saul_driver;
     /* add to registry */
     saul_reg_add(&(saul_reg_entry));
 }
 
 #else
 typedef int dont_be_pedantic;
-#endif /* MODULE_SAUL_TEMPERATURE */
+#endif /* MODULE_SAUL_NRF_TEMPERATURE */
