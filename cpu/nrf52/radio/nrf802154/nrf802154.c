@@ -186,7 +186,6 @@ static void _timer_cb(void *arg, int chan)
     (void)chan;
     mutex_unlock(&_txlock);
     timer_stop(NRF802154_TIMER);
-    timer_clear(NRF802154_TIMER, 0);
 }
 
 static int _init(netdev_t *dev)
@@ -196,6 +195,7 @@ static int _init(netdev_t *dev)
     int result = timer_init(NRF802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
     assert(result >= 0);
     (void)result;
+    timer_stop(NRF802154_TIMER);
 
     /* initialize local variables */
     mutex_init(&_txlock);
@@ -281,7 +281,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
 
     /* set interframe spacing based on packet size */
     unsigned int ifs = (len > SIFS_MAXPKTSIZE) ? LIFS : SIFS;
-    timer_set_absolute(NRF802154_TIMER, 0, ifs);
+    timer_set(NRF802154_TIMER, 0, ifs);
 
     return len;
 }
