@@ -4,5 +4,10 @@ USEMODULE += atmega_common
 RAM_LEN = 16K
 ROM_LEN = 128K
 
+# atmega1284p additionally has PCINT2 and PCINT3
+ifneq (,$(filter atmega_pcint,$(USEMODULE)))
+  USEMODULE += atmega_pcint2 atmega_pcint3
+endif
+
 # CPU depends on the atmega common module, so include it
 include $(RIOTCPU)/atmega_common/Makefile.include
