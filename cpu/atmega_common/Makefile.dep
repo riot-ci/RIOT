@@ -22,4 +22,3 @@ endif
 ifneq (,$(filter atmega_pcint3,$(USEMODULE)))
     FEATURES_REQUIRED += atmega_pcint3
 endif
-

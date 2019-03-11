@@ -1,2 +1,1 @@
 include $(RIOTCPU)/atmega_common/Makefile.dep
-

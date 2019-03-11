@@ -2,4 +2,3 @@ INCLUDES += -I$(RIOTBOARD)/common/atmega/include
 
 # require Makefile.dep for correct dependency management of atmega PCINTs
 include $(RIOTCPU)/$(CPU)/Makefile.dep
-
