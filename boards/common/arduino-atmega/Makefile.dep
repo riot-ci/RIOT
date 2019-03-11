@@ -5,3 +5,4 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
 endif
 
 include $(RIOTBOARD)/common/atmega/Makefile.dep
+

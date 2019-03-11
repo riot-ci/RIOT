@@ -4,5 +4,5 @@ ifneq (,$(filter atmega_pcint,$(USEMODULE)))
 endif
 
 # FEATURE_REQUIRED for atmega_pcint3 centralized in atmega_common for future use cases!
+include $(RIOTCPU)/atmega_common/Makefile.dep
 
--include $(RIOTCPU)/atmega_common/Makefile.dep
