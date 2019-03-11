@@ -323,7 +323,15 @@ ssize_t coap_handle_req(coap_pkt_t *pkt, uint8_t *resp_buf, unsigned resp_buf_le
             continue;
         }
 
-        int res = strcmp((char *)uri, resource->path);
+        int res;
+        if (resource->methods & COAP_MATCH_SUBTREE) {
+            int len = strlen(resource->path);
+            res = strncmp(resource->path, (char *)uri, len);
+        }
+        else {
+            res = strcmp((char *)uri, resource->path);
+        }
+
         if (res > 0) {
             continue;
         }

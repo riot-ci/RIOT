@@ -399,7 +399,15 @@ static int _find_resource(coap_pkt_t *pdu, const coap_resource_t **resource_ptr,
                 resource++;
             }
 
-            int res = strcmp((char *)&uri[0], resource->path);
+            int res;
+            if (resource->methods & COAP_MATCH_SUBTREE) {
+                int len = strlen(resource->path);
+                res = strncmp(resource->path, (char *)uri, len);
+            }
+            else {
+                res = strcmp((char *)uri, resource->path);
+            }
+
             if (res > 0) {
                 continue;
             }
