@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "net/nanocoap.h"
+#include "net/nanocoap_private.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -323,7 +324,7 @@ ssize_t coap_handle_req(coap_pkt_t *pkt, uint8_t *resp_buf, unsigned resp_buf_le
             continue;
         }
 
-        int res = strcmp((char *)uri, resource->path);
+        int res = coap_match_path(resource, uri);
         if (res > 0) {
             continue;
         }
