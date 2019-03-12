@@ -88,7 +88,7 @@ void spi_init(spi_t bus)
     GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 |
                          (SERCOM0_GCLK_ID_CORE + sercom_id(dev(bus))));
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
-#elif defined(CPU_SAML21) || defined(CPU_SAML1X)
+#elif defined(CPU_SAML21) || defined(CPU_SAML1X) || defined(CPU_SAMD5X)
     GCLK->PCHCTRL[SERCOM0_GCLK_ID_CORE + sercom_id(dev(bus))].reg =
                                 (GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0);
 #endif
