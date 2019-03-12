@@ -9,7 +9,7 @@ export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
 
 export BOARDS=native
-export APPS=examples/hello-world
+export APPS="examples/hello-world tests/minimal"
 
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
