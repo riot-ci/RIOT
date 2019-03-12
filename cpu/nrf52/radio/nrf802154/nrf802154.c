@@ -195,6 +195,7 @@ static int _init(netdev_t *dev)
     int result = timer_init(NRF802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
     assert(result >= 0);
     (void)result;
+    timer_stop(NRF802154_TIMER);
 
     /* initialize local variables */
     mutex_init(&_txlock);
