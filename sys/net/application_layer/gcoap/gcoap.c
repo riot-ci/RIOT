@@ -26,6 +26,7 @@
 #include "assert.h"
 #include "net/gcoap.h"
 #include "net/sock/util.h"
+#include "net/nanocoap_private.h"
 #include "mutex.h"
 #include "random.h"
 #include "thread.h"
@@ -399,15 +400,7 @@ static int _find_resource(coap_pkt_t *pdu, const coap_resource_t **resource_ptr,
                 resource++;
             }
 
-            int res;
-            if (resource->methods & COAP_MATCH_SUBTREE) {
-                int len = strlen(resource->path);
-                res = strncmp(resource->path, (char *)uri, len);
-            }
-            else {
-                res = strcmp((char *)uri, resource->path);
-            }
-
+            int res = coap_match_path(resource, uri);
             if (res > 0) {
                 continue;
             }
