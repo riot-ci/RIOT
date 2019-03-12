@@ -673,11 +673,12 @@ void gnrc_sixlowpan_iphc_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     dispatch = NULL;    /* use dispatch as temporary pointer for prev */
     /* determine maximum dispatch size and write protect all headers until
      * then because they will be removed */
-    while (_compressible(ptr)) {
+    while ((ptr != NULL) && _compressible(ptr)) {
         gnrc_pktsnip_t *tmp = gnrc_pktbuf_start_write(ptr);
 
         if (tmp == NULL) {
-            DEBUG("6lo iphc: unable to write protect compressible header\n");
+            DEBUG("6lo iphc: unable to write protect compressible header (ptr == %p)\n",
+                  (void *)ptr);
             if (addr_comp) {    /* addr_comp was used as release indicator */
                 gnrc_pktbuf_release(pkt);
             }
