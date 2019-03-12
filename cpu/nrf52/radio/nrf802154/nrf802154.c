@@ -65,7 +65,7 @@ static uint8_t txbuf[IEEE802154_FRAME_LEN_MAX + 3]; /* len PHR + PSDU + LQI */
 #define LIFS                (40U)
 #define SIFS                (12U)
 #define SIFS_MAXPKTSIZE     (18U)
-#define TIMER_FREQ          (250000UL)
+#define TIMER_FREQ          (62500UL)
 static volatile uint8_t _state;
 static mutex_t _txlock;
 
@@ -186,7 +186,6 @@ static void _timer_cb(void *arg, int chan)
     (void)chan;
     mutex_unlock(&_txlock);
     timer_stop(NRF802154_TIMER);
-    timer_clear(NRF802154_TIMER, 0);
 }
 
 static int _init(netdev_t *dev)
@@ -196,6 +195,7 @@ static int _init(netdev_t *dev)
     int result = timer_init(NRF802154_TIMER, TIMER_FREQ, _timer_cb, NULL);
     assert(result >= 0);
     (void)result;
+    timer_stop(NRF802154_TIMER);
 
     /* initialize local variables */
     mutex_init(&_txlock);
@@ -228,6 +228,9 @@ static int _init(netdev_t *dev)
                          (RADIO_CRCCNF_SKIPADDR_Ieee802154 << RADIO_CRCCNF_SKIPADDR_Pos));
     NRF_RADIO->CRCPOLY = 0x011021;
     NRF_RADIO->CRCINIT = 0;
+
+    /* Disable the hardware IFS handling  */
+    NRF_RADIO->MODECNF0 |= RADIO_MODECNF0_RU_Msk;
 
     /* assign default addresses */
     luid_get(nrf802154_dev.long_addr, IEEE802154_LONG_ADDRESS_LEN);
@@ -281,7 +284,7 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
 
     /* set interframe spacing based on packet size */
     unsigned int ifs = (len > SIFS_MAXPKTSIZE) ? LIFS : SIFS;
-    timer_set_absolute(NRF802154_TIMER, 0, ifs);
+    timer_set(NRF802154_TIMER, 0, ifs);
 
     return len;
 }
