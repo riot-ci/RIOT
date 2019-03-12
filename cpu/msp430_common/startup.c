@@ -26,6 +26,11 @@
 
 extern void board_init(void);
 
+/**
+ * Leave some extra space in the stack to allows us to finish the kernel
+ * initialization procedure. __heap_end is set the current stack, minus
+ * STACK_EXTRA since there is still code to execute.
+ */
 #define STACK_EXTRA 32
 
 __attribute__((constructor)) static void startup(void)
