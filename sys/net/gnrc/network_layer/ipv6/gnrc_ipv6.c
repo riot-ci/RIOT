@@ -345,27 +345,29 @@ static int _fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *ipv6)
         }
     }
 
-    DEBUG("ipv6: write protect up to payload to calculate checksum\n");
-    payload = ipv6;
-    prev = ipv6;
-    do {
-        /* IPv6 header itself was already write-protected in caller function,
-         * just write protect extension headers and payload header */
-        if ((payload = gnrc_pktbuf_start_write(payload->next)) == NULL) {
-            DEBUG("ipv6: unable to get write access to IPv6 extension or payload header\n");
-            /* packet duplicated to this point will be released by caller,
-             * original packet by other subscriber */
-            return -ENOMEM;
-        }
-        prev->next = payload;
-        prev = payload;
-    } while (_is_ipv6_hdr(payload) && (payload->next != NULL));
-    DEBUG("ipv6: calculate checksum for upper header.\n");
-    if ((res = gnrc_netreg_calc_csum(payload, ipv6)) < 0) {
-        if (res != -ENOENT) {   /* if there is no checksum we are okay */
-            DEBUG("ipv6: checksum calculation failed.\n");
-            /* packet will be released by caller */
-            return res;
+    if (ipv6->next != NULL) {
+        DEBUG("ipv6: write protect up to payload to calculate checksum\n");
+        payload = ipv6;
+        prev = ipv6;
+        do {
+            /* IPv6 header itself was already write-protected in caller function,
+             * just write protect extension headers and payload header */
+            if ((payload = gnrc_pktbuf_start_write(payload->next)) == NULL) {
+                DEBUG("ipv6: unable to get write access to IPv6 extension or payload header\n");
+                /* packet duplicated to this point will be released by caller,
+                 * original packet by other subscriber */
+                return -ENOMEM;
+            }
+            prev->next = payload;
+            prev = payload;
+        } while (_is_ipv6_hdr(payload) && (payload->next != NULL));
+        DEBUG("ipv6: calculate checksum for upper header.\n");
+        if ((res = gnrc_netreg_calc_csum(payload, ipv6)) < 0) {
+            if (res != -ENOENT) {   /* if there is no checksum we are okay */
+                DEBUG("ipv6: checksum calculation failed.\n");
+                /* packet will be released by caller */
+                return res;
+            }
         }
     }
 
