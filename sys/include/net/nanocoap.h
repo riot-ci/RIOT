@@ -26,6 +26,25 @@
  * capital precede lower case). nanocoap provides the
  * COAP_WELL_KNOWN_CORE_DEFAULT_HANDLER entry for `/.well-known/core`.
  *
+ * ### Path matching ###
+ * By default the URI-path of an incoming request should match exactly one of
+ * the registered resources. But also, a resource can be configured to
+ * match just a prefix of the URI-path of the request by adding the
+ * @ref COAP_MATCH_SUBTREE option to coap_resource_t::methods.
+ *
+ * For example, if a resource is configured with a
+ * @ref coap_resource_t::path "path" `/resource01` and the
+ * @ref COAP_MATCH_SUBTREE option is used it would match any of `/resource01/`,
+ * `/resource01/sub/path`, `/resource01alt`.
+ *
+ * If the behavior of matching `/resource01alt` is not wanted and only subtrees
+ * are wanted to match, the path should be `/resource01/`.
+ *
+ * If in addition just `/resource01` is wanted to match, together with any
+ * subtrees of `/resource01/`, then a first resource with the path `/resource01`
+ * and exact matching should be register, and then a second one with the path
+ * `/resource01/` and subtree matching.
+ *
  * ### Handler functions ###
  *
  * For each resource, you must implement a ::coap_handler_t handler function.
@@ -170,6 +189,8 @@ extern "C" {
 #define COAP_POST               (0x2)
 #define COAP_PUT                (0x4)
 #define COAP_DELETE             (0x8)
+#define COAP_MATCH_SUBTREE      (0x8000) /**< Path is considered as a prefix
+                                              when matching */
 /** @} */
 
 /**
