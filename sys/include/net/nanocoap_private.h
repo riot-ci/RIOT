@@ -38,20 +38,7 @@ extern "C" {
  * @return <0 if the resource path is less than the URI
  * @return >0 if the URI is les than the resource path
  */
-static inline int coap_match_path(const coap_resource_t *resource, uint8_t *uri)
-{
-    assert(resource && uri);
-    int res;
-
-    if (resource->methods & COAP_MATCH_SUBTREE) {
-        int len = strlen(resource->path);
-        res = strncmp((char *)uri, resource->path, len);
-    }
-    else {
-        res = strcmp((char *)uri, resource->path);
-    }
-    return res;
-}
+int coap_match_path(const coap_resource_t *resource, uint8_t *uri);
 
 #ifdef __cplusplus
 }
