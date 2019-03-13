@@ -27,7 +27,7 @@
 #include "periph/pm.h"
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0) || \
-    defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
 #include "stmclk.h"
 #endif
 
@@ -51,9 +51,18 @@ void pm_set(unsigned mode)
  * others... /KS */
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0) || \
-    defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
     switch (mode) {
         case STM32_PM_STANDBY:
+#if defined(CPU_FAM_STM32L4)
+            /* Enable Standby mode */
+            PWR->CR1 &= ~PWR_CR1_LPMS;
+            PWR->CR1 |= PWR_CR1_LPMS_STANDBY;
+            /* Disable SRAM2 retention */
+            PWR->CR3 &= ~PWR_CR3_RRS;
+            /* Clear flags */
+            PWR->SCR |= PWR_SCR_CSBF;
+#else
             /* Set PDDS to enter standby mode on deepsleep and clear flags */
             PWR->CR |= (PWR_CR_PDDS | PWR_CR_CWUF | PWR_CR_CSBF);
             /* Enable WKUP pin to use for wakeup from standby mode */
@@ -69,11 +78,16 @@ void pm_set(unsigned mode)
 #else
             PWR->CSR |= PWR_CSR_EWUP;
 #endif
+#endif /* CPU_FAM_STM32L4 */
             /* Set SLEEPDEEP bit of system control block */
             deep = 1;
             break;
         case STM32_PM_STOP:
-#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+#if defined(CPU_FAM_STM32L4)
+            /* Enable Stop 1 mode */
+            PWR->CR1 &= ~PWR_CR1_LPMS;
+            PWR->CR1 |= PWR_CR1_LPMS_STOP1;
+#elif defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
             /* Clear Wakeup flag */
             PWR->CR |= PWR_CR_CWUF;
             /* Clear PDDS to enter stop mode on  */
@@ -101,7 +115,7 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0) || \
-    defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
     if (deep) {
         /* Re-init clock after STOP */
         stmclk_init_sysclk();
@@ -111,7 +125,7 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || \
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32L0) || \
-    defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
 void pm_off(void)
 {
     irq_disable();
