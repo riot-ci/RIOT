@@ -85,7 +85,7 @@ typedef struct gnrc_sixlowpan_rbuf_int {
  * to identify all fragments that belong to the given datagram.
  *
  * @see [RFC 4944, section 5.3](https://tools.ietf.org/html/rfc4944#section-5.3)
- * @see https://tools.ietf.org/html/draft-ietf-lwig-6lowpan-virtual-reassembly-00
+ * @see https://tools.ietf.org/html/draft-ietf-lwig-6lowpan-virtual-reassembly-01
  */
 typedef struct {
     gnrc_sixlowpan_rbuf_int_t *ints;            /**< intervals of already received fragments */
