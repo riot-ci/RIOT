@@ -3,6 +3,7 @@
  *               2015 Freie Universität Berlin
  *               2015 Engineering-Spirit
  *               2017-2018 OTA keys S.A.
+ *               2019 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -21,6 +22,7 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Fabian Nack <nack@inf.fu-berlin.de>
  * @author      Vincent Dupont <vincent@otakeys.com>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *
  * @}
  */
@@ -29,7 +31,8 @@
 #include "periph/pm.h"
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
+    defined(CPU_FAM_STM32L4)
 #include "stmclk.h"
 #endif
 
@@ -46,6 +49,8 @@
 #define PM_STOP_CONFIG  (PWR_CR_LPDS)
 #elif defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
 #define PM_STOP_CONFIG  (PWR_CR_LPSDSR | PWR_CR_ULP)
+#elif defined(CPU_FAM_STM32L4)
+#define PM_STOP_CONFIG  (PWR_CR1_LPMS_STOP1)
 #else
 #define PM_STOP_CONFIG  (PWR_CR_LPDS | PWR_CR_FPDS)
 #endif
@@ -57,9 +62,19 @@
  */
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
 #define PM_STOP_CLEAR   (PWR_CR_LPSDSR | PWR_CR_PDDS)
+#elif defined(CPU_FAM_STM32L4)
+#define PM_STOP_CLEAR   (PWR_CR1_LPMS)
 #else
 #define PM_STOP_CLEAR   (PWR_CR_LPDS | PWR_CR_PDDS)
 #endif
+#endif
+
+#if defined(CPU_FAM_STM32L4)
+#define PWR_CR_REG     PWR->CR1
+#define PWR_WUP_REG    PWR->CR3
+#else
+#define PWR_CR_REG     PWR->CR
+#define PWR_WUP_REG    PWR->CSR
 #endif
 
 static inline uint32_t _ewup_config(void)
@@ -69,6 +84,8 @@ static inline uint32_t _ewup_config(void)
     tmp |= PM_EWUP_CONFIG;
 #elif defined(PWR_CSR_EWUP)
     tmp |= PWR_CSR_EWUP;
+#elif defined(PWR_CR3_EWUP)
+    tmp |= PWR_CR3_EWUP;
 #else
 #if defined(PWR_CSR_EWUP8)
     tmp |= PWR_CSR_EWUP8;
@@ -106,9 +123,19 @@ void pm_set(unsigned mode)
  * others... /KS */
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
+    defined(CPU_FAM_STM32L4)
     switch (mode) {
         case STM32_PM_STANDBY:
+#if defined(CPU_FAM_STM32L4)
+            /* Enable Standby mode */
+            PWR->CR1 &= ~PWR_CR1_LPMS;
+            PWR->CR1 |= PWR_CR1_LPMS_STANDBY;
+            /* Disable SRAM2 retention */
+            PWR->CR3 &= ~PWR_CR3_RRS;
+            /* Clear flags */
+            PWR->SCR |= PWR_SCR_CSBF;
+#else /* CPU_FAM_STM32L4 */
             /* Set PDDS to enter standby mode on deepsleep and clear flags */
             PWR->CR |= (PWR_CR_PDDS | PWR_CR_CWUF | PWR_CR_CSBF);
             /* Enable WKUP pin to use for wakeup from standby mode */
@@ -116,15 +143,16 @@ void pm_set(unsigned mode)
             /* Enable Ultra Low Power mode */
             PWR->CR |= PWR_CR_ULP;
 #endif
-            PWR->CSR |= _ewup_config();
+#endif /* CPU_FAM_STM32L4 */
+            PWR_WUP_REG |= _ewup_config();
             /* Set SLEEPDEEP bit of system control block */
             deep = 1;
             break;
         case STM32_PM_STOP:
             /* Clear PDDS and LPDS bits to enter stop mode on */
             /* deepsleep with voltage regulator on */
-            PWR->CR &= ~(PM_STOP_CLEAR);
-            PWR->CR |= PM_STOP_CONFIG;
+            PWR_CR_REG &= ~(PM_STOP_CLEAR);
+            PWR_CR_REG |= PM_STOP_CONFIG;
             /* Set SLEEPDEEP bit of system control block */
             deep = 1;
             break;
@@ -137,7 +165,8 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
+    defined(CPU_FAM_STM32L4)
     if (deep) {
         /* Re-init clock after STOP */
         stmclk_init_sysclk();
@@ -147,7 +176,8 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
+    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) ||\
+    defined(CPU_FAM_STM32L4)
 void pm_off(void)
 {
     irq_disable();
