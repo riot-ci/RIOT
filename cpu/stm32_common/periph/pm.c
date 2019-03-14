@@ -31,8 +31,8 @@
 #include "periph/pm.h"
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
-    defined(CPU_FAM_STM32L4)
+    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32L0) || \
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
 #include "stmclk.h"
 #endif
 
@@ -51,6 +51,8 @@
 #define PM_STOP_CONFIG  (PWR_CR_LPSDSR | PWR_CR_ULP)
 #elif defined(CPU_FAM_STM32L4)
 #define PM_STOP_CONFIG  (PWR_CR1_LPMS_STOP1)
+#elif defined(CPU_FAM_STM32F7)
+#define PM_STOP_CONFIG  (PWR_CR1_LPDS | PWR_CR1_FPDS | PWR_CR1_LPUDS)
 #else
 #define PM_STOP_CONFIG  (PWR_CR_LPDS | PWR_CR_FPDS)
 #endif
@@ -64,6 +66,8 @@
 #define PM_STOP_CLEAR   (PWR_CR_LPSDSR | PWR_CR_PDDS)
 #elif defined(CPU_FAM_STM32L4)
 #define PM_STOP_CLEAR   (PWR_CR1_LPMS)
+#elif defined(CPU_FAM_STM32F7)
+#define PM_STOP_CLEAR   (PWR_CR1_LPDS | PWR_CR1_PDDS)
 #else
 #define PM_STOP_CLEAR   (PWR_CR_LPDS | PWR_CR_PDDS)
 #endif
@@ -72,6 +76,9 @@
 #if defined(CPU_FAM_STM32L4)
 #define PWR_CR_REG     PWR->CR1
 #define PWR_WUP_REG    PWR->CR3
+#elif defined(CPU_FAM_STM32F7)
+#define PWR_CR_REG     PWR->CR1
+#define PWR_WUP_REG    PWR->CSR2
 #else
 #define PWR_CR_REG     PWR->CR
 #define PWR_WUP_REG    PWR->CSR
@@ -123,8 +130,8 @@ void pm_set(unsigned mode)
  * others... /KS */
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
-    defined(CPU_FAM_STM32L4)
+    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32L0) || \
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
     switch (mode) {
         case STM32_PM_STANDBY:
 #if defined(CPU_FAM_STM32L4)
@@ -135,7 +142,10 @@ void pm_set(unsigned mode)
             PWR->CR3 &= ~PWR_CR3_RRS;
             /* Clear flags */
             PWR->SCR |= PWR_SCR_CSBF;
-#else /* CPU_FAM_STM32L4 */
+#elif defined(CPU_FAM_STM32F7)
+            /* Set PDDS to enter standby mode on deepsleep and clear flags */
+            PWR->CR1 |= (PWR_CR1_PDDS | PWR_CR1_CSBF);
+#else
             /* Set PDDS to enter standby mode on deepsleep and clear flags */
             PWR->CR |= (PWR_CR_PDDS | PWR_CR_CWUF | PWR_CR_CSBF);
             /* Enable WKUP pin to use for wakeup from standby mode */
@@ -165,8 +175,8 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
-    defined(CPU_FAM_STM32L4)
+    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32L0) || \
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
     if (deep) {
         /* Re-init clock after STOP */
         stmclk_init_sysclk();
@@ -176,8 +186,8 @@ void pm_set(unsigned mode)
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
     defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) ||\
-    defined(CPU_FAM_STM32L4)
+    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32L0) || \
+    defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32L4)
 void pm_off(void)
 {
     irq_disable();
