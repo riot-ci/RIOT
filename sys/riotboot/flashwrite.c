@@ -95,9 +95,9 @@ int riotboot_flashwrite_finish_raw(riotboot_flashwrite_t *state,
 
     int res = -1;
 
-    const void *slot_start = riotboot_slot_get_hdr(state->target_slot);
+    const char *slot_start = riotboot_slot_get_hdr(state->target_slot);
 
-    void *firstpage;
+    char *firstpage;
 
     if (len < FLASHPAGE_SIZE) {
         firstpage = state->flashpage_buf;
