@@ -67,7 +67,7 @@ typedef struct {
 /**
  * @brief Amount of bytes to skip at initial write of first page
  */
-#define RIOTBOOT_FLASHWRITE_SKIPLEN 4
+#define RIOTBOOT_FLASHWRITE_SKIPLEN     sizeof(RIOTBOOT_MAGIC)
 
 /**
  * @brief   Initialize firmware update (raw version)
