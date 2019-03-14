@@ -3,7 +3,8 @@ export DEBUGGER = $(RIOTBASE)/dist/tools/pyocd/pyocd.sh
 export DEBUGSERVER = $(RIOTBASE)/dist/tools/pyocd/pyocd.sh
 export RESET ?= $(RIOTBASE)/dist/tools/pyocd/pyocd.sh
 
-export FFLAGS ?= flash $(HEXFILE)
+$(FLASHFILE) ?= $(HEXFILE)
+export FFLAGS ?= flash $(FLASHFILE)
 export DEBUGGER_FLAGS ?= debug $(ELFFILE)
 export DEBUGSERVER_FLAGS ?= debug-server
 export RESET_FLAGS ?= reset
