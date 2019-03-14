@@ -46,6 +46,8 @@ size_t riotboot_flashwrite_slotsize(const riotboot_flashwrite_t *state)
 int riotboot_flashwrite_init_raw(riotboot_flashwrite_t *state, int target_slot,
                              size_t offset)
 {
+    assert(offset <= FLASHPAGE_SIZE);
+
     LOG_INFO(LOG_PREFIX "initializing update to target slot %i\n",
              target_slot);
 
