@@ -79,7 +79,7 @@ typedef struct {
  * @note offset *should* be <= FLASHPAGE_SIZE, otherwise the results are
  *       undefined.
  *
- * @param[in/out]   state       ptr to preallocated state structure
+ * @param[in,out]   state       ptr to preallocated state structure
  * @param[in]       target_slot slot to write update into
  * @param[in]       offset      Bytes offset to start write at
  *
@@ -97,7 +97,7 @@ int riotboot_flashwrite_init_raw(riotboot_flashwrite_t *state, int target_slot,
  * ignore the slot until the magic number has been restored, e.g., through @ref
  * riotboot_flashwrite_finish().
  *
- * @param[in/out]   state       ptr to preallocated state structure
+ * @param[in,out]   state       ptr to preallocated state structure
  * @param[in]       target_slot slot to write update into
  *
  * @returns         0 on success, <0 otherwise
@@ -117,7 +117,7 @@ static inline int riotboot_flashwrite_init(riotboot_flashwrite_t *state,
  *          riotboot_flashwrite_init(), make sure to skip the first
  *          RIOTBOOT_FLASHWRITE_SKIPLEN bytes.
  *
- * @param[in/out]   state   ptr to previously used update state
+ * @param[in,out]   state   ptr to previously used update state
  * @param[in]       bytes   ptr to data
  * @param[in]       len     len of data
  * @param[in]       more    whether more data is comming
@@ -157,6 +157,13 @@ static inline int riotboot_flashwrite_finish(riotboot_flashwrite_t *state)
                                           RIOTBOOT_FLASHWRITE_SKIPLEN);
 }
 
+/**
+ * @brief       Get a slot's size
+ *
+ * @param[in]   state   ptr to state struct
+ *
+ * @returns     the size of the slot that @p state is configured to update to
+ */
 size_t riotboot_flashwrite_slotsize(const riotboot_flashwrite_t *state);
 
 #ifdef __cplusplus
