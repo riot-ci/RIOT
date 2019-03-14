@@ -53,7 +53,7 @@ ssize_t _flashwrite_handler(coap_pkt_t* pkt, uint8_t *buf, size_t len, void *con
         riotboot_flashwrite_putbytes(writer, payload_start, payload_len, block1.more);
     }
     else {
-        printf("_flashwrite_handler(): skipping invalid offset (data=%u, writer=%u)\n", offset, writer->offset);
+        printf("_flashwrite_handler(): skipping invalid offset (data=%u, writer=%u)\n", (unsigned)offset, (unsigned)writer->offset);
     }
 
     if (block1.more == 1) {
