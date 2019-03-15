@@ -23,14 +23,17 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 # (ground) GPIO B1.
 ifeq ($(PROGRAMMER),dfu-util)
   export ROM_OFFSET ?= 0x2000 # Skip the space needed by the embedded bootloader
-  FLASHER = dfu-util
-  DEBUGGER = # no debugger
-  RESET ?= # dfu-util has no support for resetting the device
+  # flash the board using DFU
+  # Set ALT to 2
+  DFU_ALT = 2
 
-  FLASHFILE ?= $(BINFILE)
-  FFLAGS = -d 1eaf:0003 -a 2 -D $(FLASHFILE)
+  DFU_ID = 1eaf:0003
+
   # for older bootloader versions use this:
-  # FFLAGS = -d 1d50:6017 -s 0x08002000:leave -D $(FLASHFILE)
+  # DFU_ID = 1d50:6017
+  # ROM_START_ADDR = 0x08002000
+
+  include $(RIOTMAKE)/tools/dfu.inc.mk
 else
 
   # this board uses openocd by default
