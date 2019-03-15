@@ -268,6 +268,8 @@ static int _send(netdev_t *dev,  const iolist_t *iolist)
             mutex_unlock(&_txlock);
             return -EOVERFLOW;
         }
+        /* Check if there is data to copy, prevents undefined behaviour with
+         * memcpy when iolist->iol_base == NULL */
         if (iolist->iol_len) {
             memcpy(&txbuf[len + 1], iolist->iol_base, iolist->iol_len);
             len += iolist->iol_len;
