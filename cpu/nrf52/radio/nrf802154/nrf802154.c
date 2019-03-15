@@ -131,6 +131,26 @@ static void _enable_tx(void)
     NRF_RADIO->TASKS_START = 1;
  }
 
+/**
+ * @brief basic ieee802.15.4 data frame validation
+ */
+static bool _data_frame_filter(void)
+{
+    size_t psdu_len = rxbuf[0];
+    if (psdu_len < IEEE802154_FCF_LEN) {
+        return false;
+    }
+    size_t expected_len = ieee802154_get_frame_hdr_len(&rxbuf[1]);
+    if (!expected_len) {
+        return false;
+    }
+    /* Check CRC, data type, length and destination filter */
+    return ((NRF_RADIO->CRCSTATUS == 1) &&
+            ((rxbuf[1] & IEEE802154_FCF_TYPE_MASK) == IEEE802154_FCF_TYPE_DATA) &&
+            (psdu_len > expected_len) &&
+            (netdev_ieee802154_dst_filter(&nrf802154_dev,  &rxbuf[1]) == 0));
+}
+
 static void _set_chan(uint16_t chan)
 {
     assert((chan >= IEEE802154_CHANNEL_MIN) && (chan <= IEEE802154_CHANNEL_MAX));
@@ -403,9 +423,7 @@ void isr_radio(void)
             case RADIO_STATE_STATE_RxIdle:
                 /* only process packet if event callback is set and CRC is valid */
                 if ((nrf802154_dev.netdev.event_callback) &&
-                    (NRF_RADIO->CRCSTATUS == 1) &&
-                    (netdev_ieee802154_dst_filter(&nrf802154_dev,
-                                                  &rxbuf[1]) == 0)) {
+                    _data_frame_filter()) {
                     _state |= RX_COMPLETE;
                 }
                 else {
