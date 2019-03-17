@@ -1069,6 +1069,23 @@ static inline unsigned coap_method2flag(unsigned code)
     return (1 << (code - 1));
 }
 
+/**
+ * @brief   Checks if a CoAP resource path matches a given URI
+ *
+ * Builds on strcmp() with rules specific to URI path matching
+ *
+ * @note This function is not intended for application use.
+ * @internal
+ *
+ * @param[in] resource CoAP resource to check
+ * @param[in] uri Null-terminated string URI to compare
+ *
+ * @return 0  if the resource path matches the URI
+ * @return <0 if the resource path sorts before the URI
+ * @return >0 if the resource path sorts after the URI
+ */
+int coap_match_path(const coap_resource_t *resource, uint8_t *uri);
+
 #if defined(MODULE_GCOAP) || defined(DOXYGEN)
 /**
  * @brief   Identifies a packet containing an observe option

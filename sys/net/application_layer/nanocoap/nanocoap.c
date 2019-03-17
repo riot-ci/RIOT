@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "net/nanocoap.h"
-#include "net/nanocoap_private.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
