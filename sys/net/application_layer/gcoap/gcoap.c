@@ -26,7 +26,6 @@
 #include "assert.h"
 #include "net/gcoap.h"
 #include "net/sock/util.h"
-#include "net/nanocoap_private.h"
 #include "mutex.h"
 #include "random.h"
 #include "thread.h"
