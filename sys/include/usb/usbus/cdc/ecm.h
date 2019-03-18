@@ -22,6 +22,31 @@ extern "c" {
 #include "mutex.h"
 
 /**
+ * @brief Link throughput as reported by the peripheral
+ *
+ * This defines a common up and down link throughput in bits/second. The USB
+ * peripheral will report this to the host. This doesn't affect the actual
+ * throughput, only what the peripheral reports.
+ */
+#ifndef USBUS_CDC_ECM_CONFIG_SPEED
+#define USBUS_CDC_ECM_CONFIG_SPEED  1000000
+#endif
+
+/**
+ * @brief Link download speed as reported by the peripheral
+ */
+#ifndef USBUS_CDC_ECM_CONFIG_SPEED_DOWNSTREAM
+#define USBUS_CDC_ECM_CONFIG_SPEED_DOWNSTREAM USBUS_CDC_ECM_CONFIG_SPEED
+#endif
+
+/**
+ * @brief Link upload speed as reported by the peripheral
+ */
+#ifndef USBUS_CDC_ECM_CONFIG_SPEED_UPSTREAM
+#define USBUS_CDC_ECM_CONFIG_SPEED_UPSTREAM   USBUS_CDC_ECM_CONFIG_SPEED
+#endif
+
+/**
  * @brief Signal that the RX buffer can be flushed
  */
 #define USBUS_MSG_CDCECM_RX_FLUSH (USBUS_MSG_TYPE_HANDLER | 0x01)
@@ -32,7 +57,8 @@ extern "c" {
 
 typedef enum {
     USBUS_CDCECM_NOTIF_NONE,
-    USBUS_CDCECM_NOTIF_UP,
+    USBUS_CDCECM_NOTIF_LINK_UP,
+    USBUS_CDCECM_NOTIF_SPEED,
 } usbus_cdcecm_notif_t;
 
 typedef struct __attribute__((packed)) {
@@ -45,6 +71,7 @@ typedef struct usbus_cdceem_device {
     usbus_handler_t handler_ctrl;
     usbus_interface_t iface_data;
     usbus_interface_t iface_ctrl;
+    usbus_interface_alt_t iface_data_alt;
     usbus_endpoint_t ep_in;
     usbus_endpoint_t ep_out;
     usbus_endpoint_t ep_ctrl;
@@ -62,6 +89,7 @@ typedef struct usbus_cdceem_device {
     uint8_t in_buf[ETHERNET_FRAME_LEN];
     size_t len;                     /**< Length of the current frame */
     usbus_cdcecm_notif_t notif;   /**< Startup notification tracker */
+    unsigned active_iface;
 } usbus_cdcecm_device_t;
 
 int usbus_cdcecm_init(usbus_t *usbus, usbus_cdcecm_device_t *handler);
