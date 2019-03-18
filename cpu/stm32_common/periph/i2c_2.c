@@ -59,6 +59,7 @@
 #define ERROR_FLAG          (I2C_SR1_AF | I2C_SR1_ARLO | I2C_SR1_BERR)
 
 /* static function definitions */
+static void _init(i2c_t dev);
 static void _i2c_init(I2C_TypeDef *i2c, uint32_t clk, uint32_t ccr);
 static int _start(I2C_TypeDef *dev, uint8_t address_byte, uint8_t flags,
                   size_t length);
@@ -82,35 +83,11 @@ void i2c_init(i2c_t dev)
 
     assert(i2c != NULL);
 
-    uint32_t ccr;
-    /* read speed configuration */
-    switch (i2c_config[dev].speed) {
-        case I2C_SPEED_LOW:
-            /* 10Kbit/s */
-            ccr = i2c_config[dev].clk / 20000;
-            break;
-
-        case I2C_SPEED_NORMAL:
-            /* 100Kbit/s */
-            ccr = i2c_config[dev].clk / 200000;
-            break;
-
-        case I2C_SPEED_FAST:
-            ccr = i2c_config[dev].clk / 800000;
-            break;
-
-        default:
-            return;
-    }
-
     periph_clk_en(i2c_config[dev].bus, i2c_config[dev].rcc_mask);
     NVIC_SetPriority(i2c_config[dev].irqn, I2C_IRQ_PRIO);
     NVIC_EnableIRQ(i2c_config[dev].irqn);
 
-    _init_pins(dev);
-
-    /* configure device */
-    _i2c_init(i2c, i2c_config[dev].clk, ccr);
+    _init(dev);
 
 #if defined(CPU_FAM_STM32F4)
     /* make sure the analog filters don't hang -> see errata sheet 2.14.7 */
@@ -126,13 +103,7 @@ void i2c_init(i2c_t dev)
         gpio_clear(i2c_config[dev].scl_pin);
         gpio_set(i2c_config[dev].sda_pin);
         gpio_set(i2c_config[dev].scl_pin);
-        /* reset pins for alternate function */
-        _init_pins(dev);
-        /* make peripheral soft reset */
-        i2c->CR1 |= I2C_CR1_SWRST;
-        i2c->CR1 &= ~I2C_CR1_SWRST;
-        /* enable device */
-        _i2c_init(i2c, i2c_config[dev].clk, ccr);
+        _init(dev);
     }
 #endif
 }
@@ -177,7 +148,7 @@ static void _i2c_init(I2C_TypeDef *i2c, uint32_t clk, uint32_t ccr)
     i2c->CR1 |= I2C_CR1_PE;
 }
 
-static void _re_init(i2c_t dev)
+static void _init(i2c_t dev)
 {
     I2C_TypeDef *i2c = i2c_config[dev].dev;
 
@@ -252,7 +223,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t address, void *data, size_t length,
     int ret = _start(i2c, (address << 1) | I2C_FLAG_READ, flags, length);
     if (ret < 0) {
         if (ret == -ETIMEDOUT) {
-            _re_init(dev);
+            _init(dev);
         }
         return ret;
     }
@@ -300,7 +271,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t address, const void *data,
     ret = _start(i2c, (address << 1) | I2C_FLAG_WRITE, flags, 0);
     if (ret < 0) {
         if (ret == -ETIMEDOUT) {
-            _re_init(dev);
+            _init(dev);
         }
         return ret;
     }
