@@ -32,7 +32,7 @@
 #include "thread.h"
 
 #include "usb.h"
-#include "usb/usbdev.h"
+#include "periph/usbdev.h"
 #include "usb/descriptor.h"
 
 #ifdef __cplusplus
@@ -105,6 +105,8 @@ extern "C" {
 
 #define USBUS_MSG_TYPE_SETUP_RQ     (0x0600) /**< Setup request received event */
 #define USBUS_MSG_TYPE_HANDLER      (0x0700) /**< Generic handler request */
+#define USBUS_MSG_TYPE_HOST_CONNECT     (0x0800) /**< host connected detected */
+#define USBUS_MSG_TYPE_HOST_DISCONNECT  (0x0900) /**< host disconnect detected */
 /** @} */
 
 /**
@@ -112,12 +114,14 @@ extern "C" {
  *
  * @{
  */
-#define USBUS_HANDLER_FLAG_RESET    (0x0001) /**< Report reset event */
-#define USBUS_HANDLER_FLAG_SOF      (0x0002) /**< Report SOF events */
-#define USBUS_HANDLER_FLAG_SUSPEND  (0x0004) /**< Report suspend events */
-#define USBUS_HANDLER_FLAG_RESUME   (0x0008) /**< Report resume from suspend */
-#define USBUS_HANDLER_FLAG_TR_FAIL  (0x0010) /**< Report transfer fail */
-#define USBUS_HANDLER_FLAG_TR_STALL (0x0020) /**< Report transfer stall complete */
+#define USBUS_HANDLER_FLAG_RESET            (0x0001) /**< Report reset event */
+#define USBUS_HANDLER_FLAG_SOF              (0x0002) /**< Report SOF events */
+#define USBUS_HANDLER_FLAG_SUSPEND          (0x0004) /**< Report suspend events */
+#define USBUS_HANDLER_FLAG_RESUME           (0x0008) /**< Report resume from suspend */
+#define USBUS_HANDLER_FLAG_TR_FAIL          (0x0010) /**< Report transfer fail */
+#define USBUS_HANDLER_FLAG_TR_STALL         (0x0020) /**< Report transfer stall complete */
+#define USBUS_HANDLER_FLAG_HOST_CONNECT     (0x0040) /**< Report host connect */
+#define USBUS_HANDLER_FLAG_HOST_DISCONNECT  (0x0080) /**< Report host disconnect */
 /** @} */
 
 /**

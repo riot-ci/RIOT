@@ -815,7 +815,7 @@ ifneq (,$(filter tlsf-malloc,$(USEMODULE)))
 endif
 
 ifneq (,$(filter usbus,$(USEMODULE)))
-  USEMODULE += usbdev
+  FEATURES_REQUIRED += periph_usbdev
   USEMODULE += xtimer
 endif
 

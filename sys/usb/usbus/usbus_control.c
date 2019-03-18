@@ -15,7 +15,7 @@
  * @author  Koen Zandberg <koen@bergzand.net>
  * @}
  */
-#include "usb/usbdev.h"
+#include "periph/usbdev.h"
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
 #include "usb/usbus/fmt.h"
@@ -108,7 +108,8 @@ static void _activate_endpoints(usbus_t *usbus)
                 static const usbopt_enable_t enable = USBOPT_ENABLE;
                 usbdev_ep_set(ep->ep, USBOPT_EP_ENABLE, &enable,
                                     sizeof(usbopt_enable_t));
-                DEBUG("activated endpoint %d, dir %s\n", ep->ep->num,
+                DEBUG("usbus_control: activated endpoint %d, dir %s\n",
+                      ep->ep->num,
                       ep->ep->dir == USB_EP_DIR_OUT? "out" : "in");
             }
         }
@@ -118,7 +119,8 @@ static void _activate_endpoints(usbus_t *usbus)
                     static const usbopt_enable_t enable = USBOPT_ENABLE;
                     usbdev_ep_set(ep->ep, USBOPT_EP_ENABLE, &enable,
                                         sizeof(usbopt_enable_t));
-                    DEBUG("activated endpoint %d, dir %s\n", ep->ep->num,
+                    DEBUG("usbus_control: activated endpoint %d, dir %s\n",
+                          ep->ep->num,
                           ep->ep->dir == USB_EP_DIR_OUT? "out" : "in");
                 }
             }
@@ -252,7 +254,7 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
     else{
         switch (pkt->request) {
             case USB_SETUP_REQ_SET_ADDRESS:
-                DEBUG("Setting address\n");
+                DEBUG("usbus_control: Setting address\n");
                 usbus->addr = (uint8_t)pkt->value;
                 break;
             case USB_SETUP_REQ_SET_CONFIGURATION:
@@ -285,18 +287,17 @@ static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
 static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
 {
     usb_setup_t *pkt = &handler->setup;
-    DEBUG("Received setup %x %x @ %d\n", pkt->type, pkt->request, pkt->length);
+    DEBUG("usbus_control: Received setup %x %x @ %d\n", pkt->type,
+          pkt->request, pkt->length);
     if (usb_setup_is_read(pkt)) {
         handler->setup_state = USBUS_SETUPRQ_INDATA;
     }
     else {
         if (pkt->length) {
-            DEBUG("Pkt with length %d\n", pkt->length);
             handler->setup_state = USBUS_SETUPRQ_OUTDATA;
             usbdev_ep_ready(usbus->out, 0);
         }
         else {
-            DEBUG("Pkt with no length\n");
             handler->setup_state = USBUS_SETUPRQ_INACK;
             usbdev_ep_ready(usbus->in, 0);
         }
@@ -311,7 +312,7 @@ static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
             res = _recv_interface_setup(usbus, pkt);
             break;
         default:
-            DEBUG("usbus: Unhandled setup request\n");
+            DEBUG("usbus_control: Unhandled setup request\n");
     }
     if (res < 0) {
         /* Signal stall to indicate unsupported (USB 2.0 spec 9.6.2 */
@@ -326,6 +327,7 @@ static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
 
 static void _usbus_config_ep0(usbus_t *usbus)
 {
+    DEBUG("usbus_control: Enabling EP0\n");
     static const usbopt_enable_t enable = USBOPT_ENABLE;
     usbdev_ep_init(usbus->in);
     usbdev_ep_init(usbus->out);
@@ -336,15 +338,13 @@ static void _usbus_config_ep0(usbus_t *usbus)
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler)
 {
-    DEBUG("Initializing EP0\n");
+    DEBUG("usbus_control: Initializing EP0\n");
     usbus_ep0_handler_t *ep0_handler = (usbus_ep0_handler_t*)handler;
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
     ep0_handler->setup_state = USBUS_SETUPRQ_READY;
 
     usbus->in = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL, USB_EP_DIR_IN, USBUS_EP0_SIZE);
     usbus->out = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL, USB_EP_DIR_OUT, USBUS_EP0_SIZE);
-
-    DEBUG("initialized EP0 at 0x%x (IN) and 0x%x (OUT)\n", usbus->in->num, usbus->out->num);
 }
 
 static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler, usbdev_ep_t *ep)
@@ -394,20 +394,18 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler,
                 usbdev_ep_ready(usbus->out, 0);
             }
             else {
-                DEBUG("Invalid state OUTDATA with IN\n");
+                DEBUG("usbus_control: Invalid state OUTDATA with IN\n");
             }
             break;
         case USBUS_SETUPRQ_READY:
-            DEBUG("READY\n");
             if (ep->dir == USB_EP_DIR_OUT) {
-                DEBUG("setup received\n");
                 memset(&usbus->slicer, 0, sizeof(usbus_controlslicer_t));
                 memcpy(&ep0_handler->setup, usbus->out->buf, sizeof(usb_setup_t));
                 usbus->slicer.reqlen = ep0_handler->setup.length;
                 _recv_setup(usbus, ep0_handler);
             }
             else {
-                DEBUG("invalid state, READY with IN\n");
+                DEBUG("usbus_control: invalid state, READY with IN\n");
             }
             break;
     }
@@ -424,7 +422,7 @@ static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t
             _handle_tr_complete(usbus, ep0_handler, ep);
             break;
         case USBUS_MSG_TYPE_RESET:
-            DEBUG("Reset, re-enabling EP0\n");
+            DEBUG("usbus_control: Reset event triggered\n");
             ep0_handler->setup_state = USBUS_SETUPRQ_READY;
             _usbus_config_ep0(usbus);
             break;

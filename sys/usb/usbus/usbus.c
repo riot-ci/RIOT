@@ -18,7 +18,7 @@
 
 #include "thread.h"
 #include "byteorder.h"
-#include "usb/usbdev.h"
+#include "periph/usbdev.h"
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
 #include "usb/usbus/fmt.h"
@@ -74,7 +74,7 @@ void usbus_add_conf_descriptor(usbus_t *usbus, usbus_hdr_gen_t* hdr_gen)
     usbus->hdr_gen = hdr_gen;
 }
 
-usbus_handler_t *_ep_to_handler(usbus_t *usbus, usbdev_ep_t *ep)
+static usbus_handler_t *_ep_to_handler(usbus_t *usbus, usbdev_ep_t *ep)
 {
     if (ep->num == 0) {
         return usbus->handlers;
@@ -133,7 +133,9 @@ void usbus_register_event_handler(usbus_t *usbus, usbus_handler_t *handler)
     }
 }
 
-int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface, usbus_endpoint_t* ep, usb_ep_type_t type, usb_ep_dir_t dir, size_t len)
+int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
+                       usbus_endpoint_t* ep, usb_ep_type_t type,
+                       usb_ep_dir_t dir, size_t len)
 {
     int res = -ENOMEM;
     usbdev_ep_t* usbdev_ep = usbdev_new_ep(usbus->dev, type, dir, len);
@@ -147,9 +149,15 @@ int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface, usbus_endpoint_
     return res;
 }
 
-static inline size_t usbus_pkt_maxlen(usbus_t *usbus, usb_setup_t *pkt)
+static void _signal_handlers(usbus_t *usbus, uint16_t flag,
+                             uint16_t msg, void *arg)
 {
-    return pkt->length > usbus->in->len ? usbus->in->len : pkt->length;
+    for (usbus_handler_t *handler = usbus->handlers;
+         handler; handler = handler->next) {
+        if (handler->flags & flag) {
+            handler->driver->event_handler(usbus, handler, msg, arg);
+        }
+    }
 }
 
 static void _usbus_init_handlers(usbus_t *usbus)
@@ -160,7 +168,7 @@ static void _usbus_init_handlers(usbus_t *usbus)
     }
 }
 
-static int ep0_init(usbus_t *usbus, usbus_ep0_handler_t *handler)
+static int _ep0_init(usbus_t *usbus, usbus_ep0_handler_t *handler)
 {
     handler->handler.driver = &_ep0_driver;
 
@@ -175,7 +183,7 @@ static void *_usbus_thread(void *args)
     usbus_t *usbus = (usbus_t*)args;
     usbus_ep0_handler_t ep0_handler;
 
-    ep0_init(usbus, &ep0_handler);
+    _ep0_init(usbus, &ep0_handler);
 
     usbdev_t *dev = usbus->dev;
     usbus->pid = sched_active_pid;
@@ -190,8 +198,8 @@ static void *_usbus_thread(void *args)
     dev->cb = _event_cb;
     dev->epcb = _event_ep_cb;
     /* initialize low-level driver */
-    usbdev_init(dev);
     dev->context = usbus;
+    usbdev_init(dev);
 
     usbus_add_string_descriptor(usbus, &usbus->config, USB_CONFIG_CONFIGURATION_STR);
     usbus_add_string_descriptor(usbus, &usbus->product, USB_CONFIG_PRODUCT_STR);
@@ -202,10 +210,6 @@ static void *_usbus_thread(void *args)
     /* Initialize handlers */
     _usbus_init_handlers(usbus);
 
-#if(USBUS_AUTO_ATTACH)
-    usbopt_enable_t enable = USBOPT_ENABLE;
-    usbdev_set(dev, USBOPT_ATTACH, &enable, sizeof(usbopt_enable_t));
-#endif
 
     while (1) {
         msg_receive(&msg);
@@ -250,19 +254,38 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
         switch (event) {
             case USBDEV_EVENT_RESET:
                 {
-                usbus->state = USBUS_STATE_RESET;
-                usbus->addr = 0;
-                usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(uint8_t));
-
-                for (usbus_handler_t *handler = usbus->handlers; handler; handler = handler->next) {
-                    if (handler->flags & USBUS_HANDLER_FLAG_RESET) {
-                        handler->driver->event_handler(usbus, handler,
-                                USBUS_MSG_TYPE_RESET, NULL);
-                    }
-                }
-                DEBUG("USB reset condition detected\n");
+                    usbus->state = USBUS_STATE_RESET;
+                    usbus->addr = 0;
+                    usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(uint8_t));
+                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_RESET,
+                                     USBUS_MSG_TYPE_RESET, NULL);
                 }
                 break;
+            case USBDEV_EVENT_HOST_CONNECT:
+                {
+                    DEBUG("usbus: host connection detected\n");
+#if(USBUS_AUTO_ATTACH)
+                    static const usbopt_enable_t _enable = USBOPT_ENABLE;
+                    usbdev_set(usbdev, USBOPT_ATTACH, &_enable,
+                               sizeof(usbopt_enable_t));
+#endif
+                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_HOST_CONNECT,
+                                     USBUS_MSG_TYPE_HOST_CONNECT, NULL);
+                    break;
+                }
+            case USBDEV_EVENT_HOST_DISCONNECT:
+                {
+                    DEBUG("usbus: host disconnect detected\n");
+#if(USBUS_AUTO_ATTACH)
+                    static const usbopt_enable_t _enable = USBOPT_DISABLE;
+                    usbdev_set(usbdev, USBOPT_ATTACH, &_enable,
+                               sizeof(usbopt_enable_t));
+#endif
+
+                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_HOST_DISCONNECT,
+                                     USBUS_MSG_TYPE_HOST_DISCONNECT, NULL);
+                    break;
+                }
             default:
                 DEBUG("usbus: unhandled event %x\n", event);
                 break;
