@@ -66,19 +66,17 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     uint8_t *buf = cdcecm->ep_in.ep->buf;
     const iolist_t *iolist_start = iolist;
     size_t len = iolist_size(iolist);
-    DEBUG("CDC_ECM: sending %u bytes\n", len);
+    DEBUG("CDC_ECM_netdev: sending %u bytes\n", len);
     /* load packet data into FIFO */
     size_t iol_offset = 0;
     size_t usb_offset = 0;
     size_t usb_remain = cdcecm->ep_in.ep->len;
-    DEBUG("CDC_ECM: cur iol: %d\n", iolist->iol_len);
+    DEBUG("CDC_ECM_netdev: cur iol: %d\n", iolist->iol_len);
     while (len) {
         mutex_lock(&cdcecm->out_lock);
         if (iolist->iol_len - iol_offset > usb_remain) {
             /* Only part of the iolist can be copied, usb_remain bytes */
-            memcpy((uint8_t*)buf + usb_offset,
-                    (uint8_t*)iolist->iol_base + iol_offset,
-                    usb_remain);
+            memcpy(buf + usb_offset, iolist->iol_base + iol_offset, usb_remain);
 
             usb_offset =  cdcecm->ep_in.ep->len;
             len -= usb_remain;
@@ -88,9 +86,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         else {
             size_t bytes_copied = iolist->iol_len - iol_offset;
             /* Full iolist can be copied */
-            memcpy((uint8_t*)buf + usb_offset,
-                    (uint8_t*)iolist->iol_base + iol_offset,
-                    bytes_copied);
+            memcpy(buf + usb_offset, iolist->iol_base + iol_offset, bytes_copied);
             len -= bytes_copied;
             usb_offset += bytes_copied;
             usb_remain -= bytes_copied;
@@ -101,9 +97,6 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
             iolist = iolist->iol_next;
             if (iolist) {
                 DEBUG("CDC_ECM: cur iol: %d\n", iolist->iol_len);
-            }
-            else {
-                DEBUG("No more iol\n");
             }
             iol_offset = 0;
         }
