@@ -28,6 +28,7 @@ static char _stack[USBUS_STACKSIZE];
 
 static usbus_t usbus;
 /* TODO: remove as soon as we have decent auto_init */
+#include "periph_conf.h"
 #include "sam_usb.h"
 static sam0_common_usb_t usbdev;
 
@@ -38,9 +39,9 @@ int main(void)
 {
     msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
     puts("RIOT USB stack example application");
-    
+
     /* TODO: remove as soon as we have decent auto_init */
-    sam_usbdev_setup(&usbdev);
+    sam_usbdev_setup(&usbdev, &sam_usbdev_config[0]);
     /* start usb stack */
     usbus_init(&usbus, (usbdev_t*)&usbdev);
     usbus_create(_stack, sizeof(_stack), USBUS_PRIO, USBUS_TNAME, &usbus);
