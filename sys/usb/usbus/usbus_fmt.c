@@ -182,11 +182,11 @@ static size_t _hdrs_fmt_iface_alts(usbus_t *usbus, usbus_interface_t *iface)
             alt = alt->next) {
         usb_descriptor_interface_t usb_iface;
         _hdrs_fmt_iface(iface, &usb_iface);
+        usb_iface.alternate_setting = alts++;
         usb_iface.num_endpoints = _num_endpoints_alt(alt);
         usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&usb_iface, sizeof(usb_descriptor_interface_t));
         len += _hdrs_fmt_additional(usbus, alt->hdr_gen);
         len += _hdrs_fmt_endpoints(usbus, alt->ep);
-        usb_iface.alternate_setting = alts++;
     }
     return len;
 }

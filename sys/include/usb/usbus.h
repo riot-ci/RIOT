@@ -246,12 +246,12 @@ typedef struct usbus_interface_alt {
 typedef struct usbus_interface {
     struct usbus_interface *next;     /**< Next interface (set by USBUS during
                                            registration)                     */
-    struct usbus_interface_alt *alts; /**< List of alt settings              */
-    usbus_handler_t* handler;         /**< Handlers for this interface       */
     usbus_hdr_gen_t *hdr_gen;         /**< Optional additional header
                                            generators                        */
     usbus_endpoint_t *ep;             /**< Linked list of endpoints belonging
                                            to this interface                 */
+    struct usbus_interface_alt *alts; /**< List of alt settings              */
+    usbus_handler_t* handler;         /**< Handlers for this interface       */
     usbus_string_t *descr;            /**< Descriptor string                 */
     uint16_t idx;                     /**< Interface index, (set by USBUS
                                            during registration               */
