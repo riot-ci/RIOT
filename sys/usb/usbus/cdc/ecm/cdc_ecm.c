@@ -7,9 +7,9 @@
  */
 
 /**
- * @ingroup usbus_cdc_ecm
+ * @ingroup usbus_cdc_eem
  * @{
- * @file USBUS implementation for ethernet control model
+ * @file USBUS implementation for ethernet emulation model
  *
  * @author  Koen Zandberg <koen@bergzand.net>
  * @}
@@ -28,7 +28,7 @@
 
 #include <string.h>
 
-#define ENABLE_DEBUG    (1)
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg);
@@ -66,7 +66,7 @@ static size_t _gen_union_descriptor(usbus_t *usbus, void *arg)
     /* functional union descriptor */
     uni.length = sizeof(usb_desc_union_t);
     uni.type = USB_TYPE_DESCRIPTOR_CDC;
-    uni.subtype = 0x6;
+    uni.subtype = USB_CDC_DESCR_SUBTYPE_UNION;
     uni.master_if = cdc->iface_ctrl.idx;
     uni.slave_if = cdc->iface_data.idx;
     usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&uni, sizeof(uni));
@@ -87,7 +87,7 @@ static size_t _gen_ecm_descriptor(usbus_t *usbus, void *arg)
     /* functional cdc ecm descriptor */
     ecm.length = sizeof(usb_desc_ecm_t);
     ecm.type = USB_TYPE_DESCRIPTOR_CDC;
-    ecm.subtype = 0x0f;
+    ecm.subtype = USB_CDC_DESCR_SUBTYPE_ETH_NET;
     ecm.macaddress = cdcecm->mac_str.idx;
     ecm.ethernetstatistics = 0;
     ecm.maxsegmentsize = ETHERNET_FRAME_LEN;
@@ -110,7 +110,7 @@ static size_t _gen_cdc_descriptor(usbus_t *usbus, void *arg)
     usb_desc_cdc_t cdc;
     /* functional cdc descriptor */
     cdc.length = sizeof(usb_desc_cdc_t);
-    cdc.bcd_hid = 0x0120;
+    cdc.bcd_hid = USB_CDC_VERSION_BCD;
     cdc.type = USB_TYPE_DESCRIPTOR_CDC;
     cdc.subtype = 0x00;
     usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&cdc, sizeof(cdc));
@@ -124,6 +124,39 @@ static size_t _gen_cdc_size(usbus_t *usbus, void *arg)
     return sizeof(usb_desc_cdc_t);
 }
 
+static void _notify_link_speed(usbus_cdcecm_device_t *cdcecm)
+{
+    DEBUG("CDC ECM: sending link speed indication\n");
+    usb_setup_t *notification = (usb_setup_t*)cdcecm->ep_ctrl.ep->buf;
+    notification->type = USB_SETUP_REQUEST_DEVICE2HOST |
+                         USB_SETUP_REQUEST_TYPE_CLASS |
+                         USB_SETUP_REQUEST_RECIPIENT_INTERFACE;
+    notification->request = USB_CDC_MGNT_NOTIF_CONN_SPEED_CHANGE;
+    notification->value = 0;
+    notification->index = cdcecm->iface_ctrl.idx;
+    notification->length = 8;
+
+    uint32_t *speed = (uint32_t*)(cdcecm->ep_ctrl.ep->buf + sizeof(usb_setup_t));
+    *speed++ = USBUS_CDC_ECM_CONFIG_SPEED_DOWNSTREAM;
+    *speed = USBUS_CDC_ECM_CONFIG_SPEED_UPSTREAM;
+    usbdev_ep_ready(cdcecm->ep_ctrl.ep, sizeof(usb_setup_t) + 2 * sizeof(uint32_t));
+    cdcecm->notif = USBUS_CDCECM_NOTIF_SPEED;
+}
+
+static void _notify_link_up(usbus_cdcecm_device_t *cdcecm)
+{
+    DEBUG("CDC ECM: sending link up indication\n");
+    usb_setup_t *notification = (usb_setup_t*)cdcecm->ep_ctrl.ep->buf;
+    notification->type = USB_SETUP_REQUEST_DEVICE2HOST |
+                         USB_SETUP_REQUEST_TYPE_CLASS |
+                         USB_SETUP_REQUEST_RECIPIENT_INTERFACE;
+    notification->request = USB_CDC_MGNT_NOTIF_NETWORK_CONNECTION;
+    notification->value = 1;
+    notification->index = cdcecm->iface_ctrl.idx;
+    notification->length = 0;
+    usbdev_ep_ready(cdcecm->ep_ctrl.ep, sizeof(usb_setup_t));
+    cdcecm->notif = USBUS_CDCECM_NOTIF_LINK_UP;
+}
 
 static const usbus_handler_driver_t cdcecm_driver = {
     .init = _init,
@@ -143,7 +176,6 @@ int usbus_cdcecm_init(usbus_t *usbus, usbus_cdcecm_device_t *handler)
 {
     memset(handler, 0 , sizeof(usbus_cdcecm_device_t));
     mutex_init(&handler->out_lock);
-    mutex_lock(&handler->out_lock);
     _fill_ethernet(handler);
     handler->usbus = usbus;
     handler->handler_ctrl.driver = &cdcecm_driver;
@@ -189,12 +221,12 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
                        USB_EP_DIR_IN,
                        USBUS_CDCECM_EP_CTRL_SIZE);
     cdcecm->ep_ctrl.interval = 0x10;
-    usbus_add_endpoint(usbus, &cdcecm->iface_data, &cdcecm->ep_out,
+    usbus_add_endpoint(usbus, (usbus_interface_t*)&cdcecm->iface_data_alt, &cdcecm->ep_out,
                        USB_EP_TYPE_BULK,
                        USB_EP_DIR_OUT,
                        USBUS_CDCECM_EP_DATA_SIZE);
     cdcecm->ep_out.interval = 0;
-    usbus_add_endpoint(usbus, &cdcecm->iface_data,
+    usbus_add_endpoint(usbus, (usbus_interface_t*)&cdcecm->iface_data_alt,
                        &cdcecm->ep_in,
                        USB_EP_TYPE_BULK,
                        USB_EP_DIR_IN,
@@ -204,22 +236,42 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
     usbus_add_interface(usbus, &cdcecm->iface_ctrl);
     usbus_add_interface(usbus, &cdcecm->iface_data);
 
+    cdcecm->iface_data.alts = &cdcecm->iface_data_alt;
+
     //cdc->ep_data_in.ep->driver->ready(cdc->ep_data_in.ep, 0);
     usbus_enable_endpoint(&cdcecm->ep_out);
     usbus_enable_endpoint(&cdcecm->ep_in);
     usbus_enable_endpoint(&cdcecm->ep_ctrl);
     usbdev_ep_ready(cdcecm->ep_out.ep, 0);
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
+    usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_HOST_DISCONNECT);
 }
 
 static int _handle_setup(usbus_t *usbus, usbus_handler_t *handler, usb_setup_t *pkt)
 {
     (void)usbus;
-    (void)handler;
-    (void)pkt;
+    usbus_cdcecm_device_t *cdcecm = (usbus_cdcecm_device_t*)handler;
     DEBUG("CDC ECM: Request: 0x%x\n", pkt->request);
+    switch(pkt->request) {
+        case USB_SETUP_REQ_SET_INTERFACE:
+            DEBUG("CDC ECM: Changing active interface to alt %d\n", pkt->value);
+            cdcecm->active_iface = (uint8_t)pkt->value;
+            if (cdcecm->active_iface == 1) {
+                _notify_link_up(cdcecm);
+            }
+            break;
 
-    return 0;
+        case USB_CDC_MGNT_REQUEST_SET_ETH_PACKET_FILTER:
+            /* While we do answer the request, CDC ECM filters are not really
+             * implemented */
+            DEBUG("CDC ECM: Not modifying filter to 0x%x\n", pkt->value);
+            break;
+
+        default:
+            return -1;
+    }
+
+    return 1;
 }
 
 static int _handle_in_complete(usbus_t *usbus, usbus_handler_t *handler)
@@ -233,7 +285,8 @@ static int _handle_in_complete(usbus_t *usbus, usbus_handler_t *handler)
 static int _handle_tx_xmit(usbus_t *usbus, usbus_handler_t *handler)
 {
     usbus_cdcecm_device_t *cdcecm = (usbus_cdcecm_device_t*)handler;
-    if (usbus->state != USBUS_STATE_CONFIGURED) {
+    DEBUG("CDC_ECM: Handling TX xmit from netdev\n");
+    if (usbus->state != USBUS_STATE_CONFIGURED || cdcecm->active_iface == 0) {
         DEBUG("CDC ECM: not configured, unlocking\n");
         mutex_unlock(&cdcecm->out_lock);
         return 0;
@@ -264,21 +317,6 @@ static void _store_frame_chunk(usbus_cdcecm_device_t *cdcecm)
     }
 }
 
-static void _notify_link_up(usbus_cdcecm_device_t *cdcecm)
-{
-    DEBUG("CDC ECM: sending link up indication\n");
-    usb_setup_t *notification = (usb_setup_t*)cdcecm->ep_ctrl.ep->buf;
-    notification->type = USB_SETUP_REQUEST_DEVICE2HOST |
-                         USB_SETUP_REQUEST_TYPE_CLASS |
-                         USB_SETUP_REQUEST_RECIPIENT_INTERFACE;
-    notification->request = 0;
-    notification->value = 1;
-    notification->index = cdcecm->iface_ctrl.idx;
-    notification->length = 0;
-    usbdev_ep_ready(cdcecm->ep_ctrl.ep, sizeof(usb_setup_t));
-    cdcecm->notif = USBUS_CDCECM_NOTIF_UP;
-}
-
 static int _handle_tr_complete(usbus_t *usbus, usbus_handler_t *handler, usbdev_ep_t *ep)
 {
     (void)usbus;
@@ -299,6 +337,9 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_handler_t *handler, usbdev_
     else if (ep == cdcecm->ep_in.ep) {
         _handle_in_complete(usbus, handler);
     }
+    else if (ep == cdcecm->ep_ctrl.ep && cdcecm->notif == USBUS_CDCECM_NOTIF_LINK_UP) {
+        _notify_link_speed(cdcecm);
+    }
     return 0;
 }
 
@@ -309,6 +350,8 @@ static void _handle_reset(usbus_t *usbus, usbus_handler_t *handler)
     _handle_rx_flush(usbus, handler);
     _handle_in_complete(usbus, handler);
     cdcecm->notif = USBUS_CDCECM_NOTIF_NONE;
+    cdcecm->active_iface = 0;
+    mutex_unlock(&cdcecm->out_lock);
 }
 
 static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg)
@@ -327,6 +370,11 @@ static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t even
             return _handle_tx_xmit(usbus, handler);
 
         case USBUS_MSG_TYPE_RESET:
+            _handle_reset(usbus, handler);
+            break;
+
+        case USBUS_MSG_TYPE_HOST_DISCONNECT:
+            DEBUG("CDC_ECM: host disconnect received\n");
             _handle_reset(usbus, handler);
             break;
 
