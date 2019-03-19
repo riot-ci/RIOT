@@ -8,6 +8,9 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-nano \
                              nucleo-l053r8 nucleo-l031k6 stm32f0discovery \
                              waspmote-pro z1
 
+# hamilton doesn't support ethos
+BOARD_BLACKLIST := hamilton
+
 USEMODULE += sock_dns
 USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_ipv6_default
