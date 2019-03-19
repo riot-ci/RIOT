@@ -105,8 +105,8 @@ extern "C" {
 
 #define USBUS_MSG_TYPE_SETUP_RQ     (0x0600) /**< Setup request received event */
 #define USBUS_MSG_TYPE_HANDLER      (0x0700) /**< Generic handler request */
-#define USBUS_MSG_TYPE_HOST_CONNECT     (0x0800) /**< host connected detected */
-#define USBUS_MSG_TYPE_HOST_DISCONNECT  (0x0900) /**< host disconnect detected */
+#define USBUS_MSG_TYPE_SUSPEND      (0x0800) /**< host connected detected */
+#define USBUS_MSG_TYPE_RESUME       (0x0900) /**< host disconnect detected */
 /** @} */
 
 /**
@@ -120,8 +120,6 @@ extern "C" {
 #define USBUS_HANDLER_FLAG_RESUME           (0x0008) /**< Report resume from suspend */
 #define USBUS_HANDLER_FLAG_TR_FAIL          (0x0010) /**< Report transfer fail */
 #define USBUS_HANDLER_FLAG_TR_STALL         (0x0020) /**< Report transfer stall complete */
-#define USBUS_HANDLER_FLAG_HOST_CONNECT     (0x0040) /**< Report host connect */
-#define USBUS_HANDLER_FLAG_HOST_DISCONNECT  (0x0080) /**< Report host disconnect */
 /** @} */
 
 /**
@@ -332,6 +330,7 @@ struct usbus {
     kernel_pid_t pid;             /**< PID of the usb manager's thread       */
     uint16_t str_idx;             /**< Number of strings registered          */
     usbus_state_t state;          /**< Current state                         */
+    usbus_state_t pstate;         /**< state to recover to from suspend      */
     uint8_t addr;                 /**< Address of the USB peripheral         */
 };
 

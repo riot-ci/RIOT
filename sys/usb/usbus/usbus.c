@@ -210,6 +210,11 @@ static void *_usbus_thread(void *args)
     /* Initialize handlers */
     _usbus_init_handlers(usbus);
 
+#if(USBUS_AUTO_ATTACH)
+    static const usbopt_enable_t _enable = USBOPT_ENABLE;
+    usbdev_set(dev, USBOPT_ATTACH, &_enable,
+               sizeof(usbopt_enable_t));
+#endif
 
     while (1) {
         msg_receive(&msg);
@@ -261,29 +266,21 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
                                      USBUS_MSG_TYPE_RESET, NULL);
                 }
                 break;
-            case USBDEV_EVENT_HOST_CONNECT:
+            case USBDEV_EVENT_SUSPEND:
                 {
-                    DEBUG("usbus: host connection detected\n");
-#if(USBUS_AUTO_ATTACH)
-                    static const usbopt_enable_t _enable = USBOPT_ENABLE;
-                    usbdev_set(usbdev, USBOPT_ATTACH, &_enable,
-                               sizeof(usbopt_enable_t));
-#endif
-                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_HOST_CONNECT,
-                                     USBUS_MSG_TYPE_HOST_CONNECT, NULL);
+                    DEBUG("usbus: USB suspend detected\n");
+                    usbus->pstate = usbus->state;
+                    usbus->state = USBUS_STATE_SUSPEND;
+                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_SUSPEND,
+                                     USBUS_MSG_TYPE_SUSPEND, NULL);
                     break;
                 }
-            case USBDEV_EVENT_HOST_DISCONNECT:
+            case USBDEV_EVENT_RESUME:
                 {
-                    DEBUG("usbus: host disconnect detected\n");
-#if(USBUS_AUTO_ATTACH)
-                    static const usbopt_enable_t _enable = USBOPT_DISABLE;
-                    usbdev_set(usbdev, USBOPT_ATTACH, &_enable,
-                               sizeof(usbopt_enable_t));
-#endif
-
-                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_HOST_DISCONNECT,
-                                     USBUS_MSG_TYPE_HOST_DISCONNECT, NULL);
+                    DEBUG("usbus: USB resume detected\n");
+                    usbus->state = usbus->pstate;
+                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_RESUME,
+                                     USBUS_MSG_TYPE_RESUME, NULL);
                     break;
                 }
             default:
