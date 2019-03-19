@@ -133,7 +133,7 @@ static void test_gcoap__client_get_resp(void)
  */
 static void test_gcoap__client_put_req(void)
 {
-    uint8_t buf[GCOAP_PDU_BUF_SIZE]; /* header 4, token 2, path 11*/
+    uint8_t buf[GCOAP_PDU_BUF_SIZE]; /* header 4, token 2, path 11 */
     coap_pkt_t pdu;
     size_t len;
     char path[] = "/riot/value";
@@ -156,13 +156,13 @@ static void test_gcoap__client_put_req(void)
  */
 static void test_gcoap__client_put_req_overfill(void)
 {
-    /* header 4, token 2, path 11, format 1, marker 1 = 19*/
+    /* header 4, token 2, path 11, format 1, marker 1 = 19 */
     uint8_t buf[18+GCOAP_REQ_OPTIONS_BUF];
     coap_pkt_t pdu;
     ssize_t len;
     char path[] = "/riot/value";
 
-    gcoap_req_init(&pdu, buf, 18+GCOAP_REQ_OPTIONS_BUF, COAP_METHOD_PUT, path);
+    gcoap_req_init(&pdu, buf, sizeof(buf), COAP_METHOD_PUT, path);
     TEST_ASSERT_EQUAL_INT(1, pdu.payload_len);
 
     coap_opt_add_format(&pdu, COAP_FORMAT_TEXT);
