@@ -12,7 +12,7 @@
  * @{
  *
  * @file
- * @brief       Peripheral configuration for the nRF52 DK
+ * @brief       Common peripheral configuration for the nRF52DK/nRF52840DK
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
@@ -30,16 +30,20 @@
 extern "C" {
 #endif
 
+#ifndef SPI_PORT
+#define SPI_PORT 0
+#endif
+
 /**
  * @name    SPI configuration
  * @{
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev  = NRF_SPI0,
-        .sclk = 15,
-        .mosi = 13,
-        .miso = 14
+        .dev = NRF_SPI0,
+        .sclk = GPIO_PIN(SPI_PORT, 15),
+        .mosi = GPIO_PIN(SPI_PORT, 13),
+        .miso = GPIO_PIN(SPI_PORT, 14),
     }
 };
 
@@ -53,8 +57,8 @@ static const spi_conf_t spi_config[] = {
 static const i2c_conf_t i2c_config[] = {
     {
         .dev = NRF_TWIM1,
-        .scl = 27,
-        .sda = 26,
+        .scl = GPIO_PIN(0, 27),
+        .sda = GPIO_PIN(0, 26),
         .speed = I2C_SPEED_NORMAL
     }
 };
@@ -66,7 +70,12 @@ static const i2c_conf_t i2c_config[] = {
  * @{
  */
 static const pwm_conf_t pwm_config[] = {
-    { NRF_PWM0, { 28, 29, 30, 31 } }
+    {
+        NRF_PWM0, {
+            GPIO_PIN(0, 28), GPIO_PIN(0, 29), GPIO_PIN(0, 30),
+            GPIO_PIN(0, 31)
+        }
+    }
 };
 #define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
 /** @} */
