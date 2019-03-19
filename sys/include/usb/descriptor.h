@@ -38,6 +38,8 @@ extern "C" {
 #define USB_SETUP_REQ_SET_DESCRIPTOR        0x07 /**< Set descriptor        */
 #define USB_SETUP_REQ_GET_CONFIGURATION     0x08 /**< Get configuration     */
 #define USB_SETUP_REQ_SET_CONFIGURATION     0x09 /**< Set configuration     */
+#define USB_SETUP_REQ_GET_INTERFACE         0x0a /**< Get interface         */
+#define USB_SETUP_REQ_SET_INTERFACE         0x0b /**< Set interface         */
 /** @} */
 
 /**
@@ -69,7 +71,7 @@ extern "C" {
  * @name USB setup packet requests types
  * @{
  */
-#define USB_SETUP_REQUEST_DEVICE2HOST           0x80 /**< Request direction 
+#define USB_SETUP_REQUEST_DEVICE2HOST           0x80 /**< Request direction
                                                           From device to host if
                                                           the bit is set          */
 
