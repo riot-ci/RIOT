@@ -530,6 +530,13 @@ void print_byte_hex(uint8_t byte)
     print(buf, sizeof(buf));
 }
 
+void print_byte_dec(uint8_t byte)
+{
+    char buf[3]; /* "255" */
+    size_t len = fmt_u32_dec(buf, byte);
+    print(buf, len);
+}
+
 void print_u32_hex(uint32_t val)
 {
     char buf[8];
