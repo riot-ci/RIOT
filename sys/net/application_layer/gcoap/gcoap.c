@@ -661,11 +661,9 @@ int gcoap_req_init(coap_pkt_t *pdu, uint8_t *buf, size_t len,
                                  code, msgid);
 #endif
 
-    if (res > 0) {
-        coap_pkt_init(pdu, buf, len - GCOAP_REQ_OPTIONS_BUF, res);
-        if (path != NULL) {
-            res = coap_opt_add_string(pdu, COAP_OPT_URI_PATH, path, '/');
-        }
+    coap_pkt_init(pdu, buf, len - GCOAP_REQ_OPTIONS_BUF, res);
+    if (path != NULL) {
+        res = coap_opt_add_string(pdu, COAP_OPT_URI_PATH, path, '/');
     }
     return (res > 0) ? 0 : res;
 }

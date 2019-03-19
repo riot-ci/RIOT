@@ -716,13 +716,13 @@ size_t coap_opt_put_string(uint8_t *buf, uint16_t lastonum, uint16_t optnum,
 static ssize_t _add_opt_pkt(coap_pkt_t *pkt, uint16_t optnum, uint8_t *val,
                             size_t val_len)
 {
-    uint16_t lastonum = (pkt->options_len)
-            ? pkt->options[pkt->options_len - 1].opt_num : 0;
-    assert(optnum >= lastonum);
-
     if (pkt->options_len >= NANOCOAP_NOPTS_MAX) {
         return -ENOSPC;
     }
+
+    uint16_t lastonum = (pkt->options_len)
+            ? pkt->options[pkt->options_len - 1].opt_num : 0;
+    assert(optnum >= lastonum);
 
     /* calculate option length */
     uint8_t dummy[3];
