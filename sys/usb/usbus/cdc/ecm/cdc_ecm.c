@@ -244,7 +244,6 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
     usbus_enable_endpoint(&cdcecm->ep_ctrl);
     usbdev_ep_ready(cdcecm->ep_out.ep, 0);
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
-    usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_HOST_DISCONNECT);
 }
 
 static int _handle_setup(usbus_t *usbus, usbus_handler_t *handler, usb_setup_t *pkt)
@@ -370,11 +369,6 @@ static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t even
             return _handle_tx_xmit(usbus, handler);
 
         case USBUS_MSG_TYPE_RESET:
-            _handle_reset(usbus, handler);
-            break;
-
-        case USBUS_MSG_TYPE_HOST_DISCONNECT:
-            DEBUG("CDC_ECM: host disconnect received\n");
             _handle_reset(usbus, handler);
             break;
 
