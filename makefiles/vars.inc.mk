@@ -70,11 +70,11 @@ export WERROR                # Treat all compiler warnings as errors if set to 1
 export GITCACHE              # path to git-cache executable
 export GIT_CACHE_DIR         # path to git-cache cache directory
 export FLASHER               # The command to call on "make flash".
-export FFLAGS                # The parameters to supply to FLASHER.
+# FFLAGS                     # The parameters to supply to FLASHER.
 export FLASH_ADDR            # Define an offset to flash code into ROM memory.
 # TERMPROG                   # The command to call on "make term".
 # TERMFLAGS                  # Additional parameters to supply to TERMPROG.
-export PORT                  # The port to connect the TERMPROG to.
+# PORT                       # The port to connect the TERMPROG to.
 export ELFFILE               # The unstripped result of the compilation.
 export HEXFILE               # The stripped result of the compilation.
 # FLASHFILE                  # The output file used for flashing (transition phase: only if defined)
