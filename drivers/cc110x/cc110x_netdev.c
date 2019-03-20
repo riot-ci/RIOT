@@ -412,16 +412,18 @@ static int cc110x_send(netdev_t *netdev, const iolist_t *iolist)
     memcpy(dev->buf.data, iolist->iol_base, sizeof(cc1xxx_l2hdr_t));
 
     for (const iolist_t *iol = iolist->iol_next; iol; iol = iol->iol_next) {
-        if (size + iol->iol_len > CC110X_MAX_FRAME_SIZE) {
-            cc110x_release(dev);
-            DEBUG("[cc110x] netdev_driver_t::send(): Frame size of %uB exceeds "
-                  "maximum supported size of %uB\n",
-                  (unsigned)(size + iol->iol_len),
-                  (unsigned)CC110X_MAX_FRAME_SIZE);
-            return -1;
+        if (iol->iol_len) {
+            if (size + iol->iol_len > CC110X_MAX_FRAME_SIZE) {
+                cc110x_release(dev);
+                DEBUG("[cc110x] netdev_driver_t::send(): Frame size of %uB "
+                      "exceeds maximum supported size of %uB\n",
+                      (unsigned)(size + iol->iol_len),
+                      (unsigned)CC110X_MAX_FRAME_SIZE);
+                return -1;
+            }
+            memcpy(dev->buf.data + size, iol->iol_base, iol->iol_len);
+            size += iol->iol_len;
         }
-        memcpy(dev->buf.data + size, iol->iol_base, iol->iol_len);
-        size += iol->iol_len;
     }
 
     dev->buf.len = (uint8_t)size;
