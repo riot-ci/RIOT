@@ -36,7 +36,7 @@ export LINKFLAGS += -Wl,--gc-sections
 # use the nano-specs of Newlib when available
 USEMODULE += newlib_nano
 
-FLASHFILE = $(HEXFILE)
+FLASHFILE ?= $(HEXFILE)
 FFLAGS = $(PORT) $(FLASHFILE)
 
 INCLUDES += -I$(RIOTBOARD)/common/msba2/include
