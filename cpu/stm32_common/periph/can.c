@@ -719,6 +719,19 @@ static void turn_on(can_t *dev)
     irq_restore(irq);
 }
 
+static int _wake_up(can_t *dev)
+{
+    turn_on(dev);
+    return set_mode(dev->conf->can, MODE_NORMAL);
+}
+
+static int _sleep(can_t *dev)
+{
+    int res = set_mode(dev->conf->can, MODE_SLEEP);
+    turn_off(dev);
+    return res;
+}
+
 static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
 {
     can_t *dev = (can_t *)candev;
@@ -734,12 +747,24 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
             else {
                 memcpy(&dev->candev.bittiming, value, sizeof(dev->candev.bittiming));
                 mode = get_mode(can);
+                if (mode == MODE_SLEEP) {
+                    res = _wake_up(dev);
+                    if (res != 0) {
+                        res = -EBUSY;
+                        break;
+                    }
+                }
                 res = set_mode(can, MODE_INIT);
                 if (res == 0) {
                     set_bit_timing(dev);
                     res = sizeof(dev->candev.bittiming);
                 }
-                if (set_mode(can, mode) < 0) {
+                if (mode == MODE_SLEEP) {
+                    if (_sleep(dev) < 0) {
+                        res = -EBUSY;
+                    }
+                }
+                else if (set_mode(can, mode) < 0) {
                     res = -EBUSY;
                 }
             }
@@ -753,13 +778,11 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
                     case CANOPT_STATE_OFF:
                     case CANOPT_STATE_SLEEP:
                         DEBUG("candev_stm32 %p: power down\n", (void *)dev);
-                        res = set_mode(dev->conf->can, MODE_SLEEP);
-                        turn_off(dev);
+                        res = _sleep(dev);
                         break;
                     case CANOPT_STATE_ON:
                         DEBUG("candev_stm32 %p: power up\n", (void *)dev);
-                        turn_on(dev);
-                        res = set_mode(dev->conf->can, MODE_NORMAL);
+                        res = _wake_up(dev);
                         break;
                     case CANOPT_STATE_LISTEN_ONLY:
                         mode = get_mode(can);
