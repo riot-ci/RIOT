@@ -1150,28 +1150,28 @@ void isr_cec_can(void)
     cortexm_isr_end();
 }
 #else
-void isr_can1_tx(void)
+void ISR_CAN1_TX(void)
 {
     tx_irq_handler(_can[0]);
 
     cortexm_isr_end();
 }
 
-void isr_can1_rx0(void)
+void ISR_CAN1_RX0(void)
 {
     rx_irq_handler(_can[0], 0);
 
     cortexm_isr_end();
 }
 
-void isr_can1_rx1(void)
+void ISR_CAN1_RX1(void)
 {
     rx_irq_handler(_can[0], 1);
 
     cortexm_isr_end();
 }
 
-void isr_can1_sce(void)
+void ISR_CAN1_SCE(void)
 {
     sce_irq_handler(_can[0]);
 
@@ -1179,28 +1179,28 @@ void isr_can1_sce(void)
 }
 
 #if CANDEV_STM32_CHAN_NUMOF > 1
-void isr_can2_tx(void)
+void ISR_CAN2_TX(void)
 {
     tx_irq_handler(_can[1]);
 
     cortexm_isr_end();
 }
 
-void isr_can2_rx0(void)
+void ISR_CAN2_RX0(void)
 {
     rx_irq_handler(_can[1], 0);
 
     cortexm_isr_end();
 }
 
-void isr_can2_rx1(void)
+void ISR_CAN2_RX1(void)
 {
     rx_irq_handler(_can[1], 1);
 
     cortexm_isr_end();
 }
 
-void isr_can2_sce(void)
+void ISR_CAN2_SCE(void)
 {
     sce_irq_handler(_can[1]);
 
@@ -1209,28 +1209,28 @@ void isr_can2_sce(void)
 #endif
 
 #if CANDEV_STM32_CHAN_NUMOF > 2
-void isr_can3_tx(void)
+void ISR_CAN3_TX(void)
 {
     tx_irq_handler(_can[2]);
 
     cortexm_isr_end();
 }
 
-void isr_can3_rx0(void)
+void ISR_CAN3_RX0(void)
 {
     rx_irq_handler(_can[2], 0);
 
     cortexm_isr_end();
 }
 
-void isr_can3_rx1(void)
+void ISR_CAN3_RX1(void)
 {
     rx_irq_handler(_can[2], 1);
 
     cortexm_isr_end();
 }
 
-void isr_can3_sce(void)
+void ISR_CAN3_SCE(void)
 {
     sce_irq_handler(_can[2]);
 

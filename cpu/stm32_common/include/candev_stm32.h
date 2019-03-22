@@ -45,6 +45,26 @@ extern "C" {
 #error "CAN STM32: CPU not supported"
 #endif
 
+#if defined(CPU_FAM_STM32F1)
+#define ISR_CAN1_TX     isr_usb_hp_can1_tx
+#define ISR_CAN1_RX0    isr_usb_lp_can1_rx0
+#define ISR_CAN1_RX1    isr_can1_rx1
+#define ISR_CAN1_SCE    isr_can1_sce
+#else
+#define ISR_CAN1_TX     isr_can1_tx
+#define ISR_CAN1_RX0    isr_can1_rx0
+#define ISR_CAN1_RX1    isr_can1_rx1
+#define ISR_CAN1_SCE    isr_can1_sce
+#define ISR_CAN2_TX     isr_can2_tx
+#define ISR_CAN2_RX0    isr_can2_rx0
+#define ISR_CAN2_RX1    isr_can2_rx1
+#define ISR_CAN2_SCE    isr_can2_sce
+#define ISR_CAN3_TX     isr_can3_tx
+#define ISR_CAN3_RX0    isr_can3_rx0
+#define ISR_CAN3_RX1    isr_can3_rx1
+#define ISR_CAN3_SCE    isr_can3_sce
+#endif
+
 #if CANDEV_STM32_CHAN_NUMOF > 1 || DOXYGEN
 /** The maximum number of filters: 28 for dual channel, 14 for single channel */
 #define CAN_STM32_NB_FILTER     28
