@@ -7,9 +7,19 @@ BOARD ?= b-l072z-lrwan1
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-DEVEUI ?= 0000000000000000
-APPEUI ?= 0000000000000000
-APPKEY ?= 00000000000000000000000000000000
+ifeq (otaa,$(ACTIVATION_MODE))
+  DEVEUI ?= 0000000000000000
+  APPEUI ?= 0000000000000000
+  APPKEY ?= 00000000000000000000000000000000
+else ifeq (abp,$(ACTIVATION_MODE))
+  DEVADDR ?= 00000000
+  NWKSKEY ?= 00000000000000000000000000000000
+  APPSKEY ?= 00000000000000000000000000000000
+  RX2_FREQ ?= 869525000
+  RX2_DR ?= 3
+else
+  $(error Unsupported activation mode '$(ACTIVATION_MODE)')
+endif
 
 # Default radio driver is Semtech SX1276 (used by the B-L072Z-LRWAN1 board)
 DRIVER ?= sx1276
@@ -23,6 +33,16 @@ USEPKG += semtech-loramac
 USEMODULE += $(DRIVER)
 USEMODULE += fmt
 FEATURES_REQUIRED += periph_rtc
+FEATURES_REQUIRED += periph_eeprom
+
+ifeq (otaa,$(ACTIVATION_MODE))
+  CFLAGS += -DUSE_OTAA
+else ifeq (abp,$(ACTIVATION_MODE))
+  CFLAGS += -DUSE_ABP
+endif
+
+# Enable lowest possible power mode (e.g. STANDBY mode on STM32)
+CFLAGS += -DPM_BLOCKER_INITIAL=0x01010100
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
@@ -47,8 +67,15 @@ endif
 include $(RIOTBASE)/Makefile.include
 
 ifndef CONFIG_KCONFIG_USEMODULE_LORAWAN
-  # OTAA compile time configuration keys
-  CFLAGS += -DCONFIG_LORAMAC_APP_KEY_DEFAULT=\"$(APPKEY)\"
-  CFLAGS += -DCONFIG_LORAMAC_APP_EUI_DEFAULT=\"$(APPEUI)\"
-  CFLAGS += -DCONFIG_LORAMAC_DEV_EUI_DEFAULT=\"$(DEVEUI)\"
+  ifeq (otaa,$(ACTIVATION_MODE))
+    # OTAA compile time configuration keys
+    CFLAGS += -DCONFIG_LORAMAC_APP_KEY_DEFAULT=\"$(APPKEY)\"
+    CFLAGS += -DCONFIG_LORAMAC_APP_EUI_DEFAULT=\"$(APPEUI)\"
+    CFLAGS += -DCONFIG_LORAMAC_DEV_EUI_DEFAULT=\"$(DEVEUI)\"
+  else ifeq (abp,$(ACTIVATION_MODE))
+    CFLAGS += -DCONFIG_LORAMAC_DEV_ADDR_DEFAULT=\"$(DEVADDR)\"
+    CFLAGS += -DCONFIG_LORAMAC_APP_SKEY_DEFAULT=\"$(APPSKEY)\"
+    CFLAGS += -DCONFIG_LORAMAC_NWK_SKEY_DEFAULT=\"$(NWKSKEY)\"
+    CFLAGS += -DCONFIG_LORAMAC_DEFAULT_RX2_FREQ=$(RX2_FREQ)
+    CFLAGS += -DCONFIG_LORAMAC_DEFAULT_RX2_DR=$(RX2_DR)
 endif
