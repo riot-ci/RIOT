@@ -51,7 +51,6 @@ RIOT is developed by an open community that anyone is welcome to join:
  - Contact us on IRC for live support and discussions:
    [irc.freenode.org \#riot-os](irc://irc.freenode.org/riot-os)
 
-
 The quickest start                                        {#the-quickest-start}
 ==================
 You can run RIOT on most IoT devices, on open-access testbed hardware (e.g.
