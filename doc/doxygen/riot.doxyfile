@@ -760,6 +760,7 @@ INPUT                  = ../../doc.txt \
                          ../../drivers \
                          ../../pkg \
                          ../../sys \
+                         ../../tests/README.md \
                          src/ \
                          src/mainpage.md \
                          src/creating-modules.md \
