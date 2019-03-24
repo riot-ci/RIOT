@@ -2,7 +2,14 @@ DFU ?= dfu-util
 FLASHER ?= $(DFU)
 HEXFILE = $(BINFILE)
 
-FFLAGS ?= -D $(HEXFILE) --reset $(DFU_ARGS)
+ifdef ROM_OFFSET
+  FLASH_ADDR = $(shell printf "0x%x" $$(($(ROM_START_ADDR) + $(ROM_OFFSET))))
+else
+  FLASH_ADDR = $(ROM_START_ADDR)
+endif
 
-RESET ?= $(DFU)
-RESET_FLAGS ?= $(DFU_ARGS) -t $(DFU_DEVICE_TYPE)
+FFLAGS ?= --device $(DFU_ID) \
+          --alt $(DFU_ALT) \
+          --dfuse-address $(FLASH_ADDR):leave \
+          --download $(HEXFILE) \
+          --reset
