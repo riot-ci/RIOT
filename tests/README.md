@@ -10,7 +10,7 @@ usage.
 Running automated tests
 -----------------------
 
-Some tests can be preformed automatically. The test automation scripts are
+Some tests can be performed automatically. The test automation scripts are
 defined in the `<test_application>/tests/` folder. They are written in python
 and interact with the test application code to do the validation. It is
 recommended to flash the board with the test just before running it because
