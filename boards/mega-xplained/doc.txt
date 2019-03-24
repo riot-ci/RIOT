@@ -14,10 +14,9 @@ You can change the fuses and flash the board using an SPI ISP programmer such
 as the Bus Pirate, or using a JTAG programmer such as the Atmel-ICE with a
 JTAG adapter.
 
-If using the Atmel-ICE as a JTAG programmer, connect the adapter as shown in
-the image below.
-
-   [photo](https://photo.jpg)
+If using the Atmel-ICE as a JTAG programmer, connect the adapter in the
+orientation shown
+[here](https://gearfoxblog.files.wordpress.com/2016/12/img_20161221_172753.jpg?w=1000).
 
 1. First, make sure the default fuse settings are correct.<br/>
 
@@ -35,7 +34,7 @@ the image below.
 
 ```
      avrdude -p m1284p -c atmelice -U efuse:w:0xFF:m
-     avrdude -p m1284p -c atmelice -U lfuse:w:0x99:m
+     avrdude -p m1284p -c atmelice -U hfuse:w:0x99:m
      avrdude -p m1284p -c atmelice -U lfuse:w:0xE2:m
 ```
 
