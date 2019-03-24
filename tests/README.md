@@ -12,9 +12,10 @@ Running automated tests
 
 Some tests can be performed automatically. The test automation scripts are
 defined in the `<test_application>/tests/` folder. They are written in python
-and interact through the uart with the test application code running on a board to do the validation. It is
-recommended to flash the board with the test just before running it because
-some platforms cannot be reset while testing.
+and interact through the uart with the test application code running on a 
+board to do the validation. It is recommended to flash the board with the 
+test just before running it because some platforms cannot be reset while 
+testing.
 
 From the test application directory run:
 
