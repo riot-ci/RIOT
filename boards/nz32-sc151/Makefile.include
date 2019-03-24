@@ -6,11 +6,13 @@ export CPU_MODEL = stm32l151rc
 PORT_LINUX ?= /dev/ttyUSB0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 
+# this board is flashed using DFU
 # set the default id
 DFU_ID ?= 0483:df11
 
-# this board is flashed using DFU
-DFU_ARGS += -d $(DFU_ID) -a 0 -s 0x08000000:leave
+# Set ALT to 0
+DFU_ALT = 0
+
 include $(RIOTMAKE)/tools/dfu.inc.mk
 
 # setup serial terminal

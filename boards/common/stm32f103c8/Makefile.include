@@ -24,9 +24,15 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 ifeq ($(PROGRAMMER),dfu-util)
   export ROM_OFFSET ?= 0x2000 # Skip the space needed by the embedded bootloader
   # flash the board using DFU
-  DFU_ARGS += -d 1eaf:0003 -a 2
+  # Set ALT to 2
+  DFU_ALT = 2
+
+  DFU_ID = 1eaf:0003
+
   # for older bootloader versions use this:
-  #DFU_ARGS += -d 1d50:6017 -s 0x08002000:leave
+  # DFU_ID = 1d50:6017
+  # ROM_START_ADDR = 0x08002000
+
   include $(RIOTMAKE)/tools/dfu.inc.mk
 else
 
