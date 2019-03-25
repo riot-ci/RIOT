@@ -43,6 +43,13 @@ static int get_dev(i2c_t *dev, int argc, char **argv)
     return -1;
 }
 
+static inline int is_addr_reserved(uint16_t addr)
+{
+    if ((addr < 0x0e) || (addr > 0x77))
+        return 1;
+
+    return 0;
+}
 
 int _i2c_scan(int argc, char **argv)
 {
@@ -58,7 +65,7 @@ int _i2c_scan(int argc, char **argv)
     }
 
     puts(
-        "Legend: no device = \"-\", device responded = \"X\", error = \"E\"\n"
+        "addr not ack'ed = \"-\", addr ack'ed = \"X\", addr reserved = \"R\", error = \"E\"\n"
         "     0 1 2 3 4 5 6 7 8 9 a b c d e f"
     );
 
@@ -71,22 +78,27 @@ int _i2c_scan(int argc, char **argv)
             char str[] = { ' ', '-', '\0' };
             char dummy[1];
             int retval;
-            while (-EAGAIN == (retval = i2c_read_byte(dev, addr, dummy, 0))) {
-                /* retry until bus arbitration succeeds */
+            if (is_addr_reserved(addr)) {
+                str[1] = 'R';
             }
+            else {
+                while (-EAGAIN == (retval = i2c_read_byte(dev, addr, dummy, 0))) {
+                    /* retry until bus arbitration succeeds */
+                }
 
-            switch (retval) {
-                case 0:
-                    /* success: Device did respond */
-                    str[1] = 'X';
-                    break;
-                case -ENXIO:
-                    /* No ACK --> no device */
-                    break;
-                default:
-                    /* Some unexpected error */
-                    str[1] = 'E';
-                    break;
+                switch (retval) {
+                    case 0:
+                        /* success: Device did respond */
+                        str[1] = 'X';
+                        break;
+                    case -ENXIO:
+                        /* No ACK --> no device */
+                        break;
+                    default:
+                        /* Some unexpected error */
+                        str[1] = 'E';
+                        break;
+                }
             }
 
             fputs(str, stdout);
