@@ -20,7 +20,9 @@
 #include <errno.h>
 
 #include "isrpipe.h"
+#ifdef MODULE_ISRPIPE_READ_TIMEOUT
 #include "xtimer.h"
+#endif
 
 void isrpipe_init(isrpipe_t *isrpipe, char *buf, size_t bufsize)
 {
@@ -50,6 +52,7 @@ int isrpipe_read(isrpipe_t *isrpipe, char *buffer, size_t count)
     return res;
 }
 
+#ifdef MODULE_ISRPIPE_READ_TIMEOUT
 typedef struct {
     mutex_t *mutex;
     int flag;
@@ -102,3 +105,4 @@ int isrpipe_read_all_timeout(isrpipe_t *isrpipe, char *buffer, size_t count, uin
 
     return pos - buffer;
 }
+#endif
