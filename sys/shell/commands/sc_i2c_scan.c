@@ -76,12 +76,12 @@ int _i2c_scan(int argc, char **argv)
         addr <<= 4;
         for (unsigned j = 0; j < 16; j++) {
             char str[] = { ' ', '-', '\0' };
-            char dummy[1];
-            int retval;
             if (is_addr_reserved(addr)) {
                 str[1] = 'R';
             }
             else {
+                char dummy[1];
+                int retval;
                 while (-EAGAIN == (retval = i2c_read_byte(dev, addr, dummy, 0))) {
                     /* retry until bus arbitration succeeds */
                 }
