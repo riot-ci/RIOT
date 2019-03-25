@@ -98,6 +98,12 @@ void rtt_init(void)
     LPTIM1->ARR = RTT_MAX_VALUE;
     /* start the timer */
     LPTIM1->CR |= LPTIM_CR_CNTSTRT;
+#ifdef CPU_FAM_STM32L0
+    /* Wait for the counter to be above 0 this avoid the alarm to be
+       triggered immediately when setting an alarm too early after
+       initialization */
+    while (!LPTIM1->CNT) {};
+#endif
 }
 
 uint32_t rtt_get_counter(void)
