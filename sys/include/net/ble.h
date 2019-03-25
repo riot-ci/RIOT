@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    net_ble BLE defines
- * @ingroup     net
+ * @defgroup    net_ble_defs Generic BLE defines
+ * @ingroup     net_ble
  * @brief       General values defined by the BT standard
  * @{
  *

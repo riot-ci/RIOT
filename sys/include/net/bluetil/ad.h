@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    net_bluetil_ad BLE Advertising Data (AD) Processing
- * @ingroup     net
+ * @defgroup    net_ble_bluetil_ad BLE Advertising Data (AD) Processing
+ * @ingroup     net_ble_bluetil
  * @brief       Generic BLE advertising and scan request data processing
  *
  * This module provides functionality for user friendly reading and writing of
