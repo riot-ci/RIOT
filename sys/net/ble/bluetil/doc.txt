@@ -1,0 +1,7 @@
+/**
+@defgroup    net_ble_bluetil Bluetil
+@ingroup     net_ble
+@brief       Collection of generic BLE utility modules
+
+
+*/
