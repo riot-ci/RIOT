@@ -51,5 +51,9 @@ extern "C" {
 #define CLOCK_PLL_P          (2)
 #define CLOCK_PLL_Q          (9)
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* F7_CFG_CLOCK_216_8_1_H */
 /** @} */
