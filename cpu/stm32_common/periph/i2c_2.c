@@ -79,9 +79,7 @@ void i2c_init(i2c_t dev)
 
     mutex_init(&locks[dev]);
 
-    I2C_TypeDef *i2c = i2c_config[dev].dev;
-
-    assert(i2c != NULL);
+    assert(i2c_config[dev].dev != NULL);
 
     periph_clk_en(i2c_config[dev].bus, i2c_config[dev].rcc_mask);
     NVIC_SetPriority(i2c_config[dev].irqn, I2C_IRQ_PRIO);
