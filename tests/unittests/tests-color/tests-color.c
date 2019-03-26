@@ -20,6 +20,8 @@
 
 #include "tests-color.h"
 
+#define HSV_EPSILON     (1E-10f)
+
 static void test_str2rgb_upper_case__success(void)
 {
     const char *color_str = "F09A1D";
@@ -81,13 +83,13 @@ static void test_rgb2hsv__black(void)
     color_rgb2hsv(&rgb, &hsv);
 
     /* XXX floats should never be compared for equality, so we check if we
-     * are within 0.01% of tolerance */
-    TEST_ASSERT(-0.0001f <= hsv.h);
-    TEST_ASSERT(-0.0001f <= hsv.s);
-    TEST_ASSERT(-0.0001f <= hsv.v);
-    TEST_ASSERT(0.0001f >= hsv.h);
-    TEST_ASSERT(0.0001f >= hsv.s);
-    TEST_ASSERT(0.0001f >= hsv.v);
+     * are within HSV_EPSILON of tolerance */
+    TEST_ASSERT(-HSV_EPSILON <= hsv.h);
+    TEST_ASSERT(-HSV_EPSILON <= hsv.s);
+    TEST_ASSERT(-HSV_EPSILON <= hsv.v);
+    TEST_ASSERT( HSV_EPSILON >= hsv.h);
+    TEST_ASSERT( HSV_EPSILON >= hsv.s);
+    TEST_ASSERT( HSV_EPSILON >= hsv.v);
 }
 
 static void test_rgb_invert__success(void)
