@@ -29,11 +29,14 @@
 #include "debug.h"
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg);
+static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event);
+static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
+                                 usbdev_ep_t *ep, usbus_event_transfer_t event);
 
 const usbus_handler_driver_t _ep0_driver = {
     .init = _init,
     .event_handler = _handler_ep0_event,
+    .transfer_handler = _handler_ep0_transfer,
 };
 
 int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler)
@@ -213,7 +216,7 @@ static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
     /* Find interface handler */
     for (usbus_interface_t *iface = usbus->iface; iface; iface = iface->next) {
         if (destination == iface->idx) {
-            return iface->handler->driver->event_handler(usbus, iface->handler, USBUS_MSG_TYPE_SETUP_RQ, pkt);
+            return iface->handler->driver->setup_handler(usbus, iface->handler, USBUS_MSG_TYPE_SETUP_RQ, pkt);
         }
     }
     return 0;
@@ -353,26 +356,15 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_hand
 }
 
 /* USB endpoint 0 callback */
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg)
+static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event)
 {
     usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
-    usbdev_ep_t *ep = (usbdev_ep_t *)arg;
+    (void)usbus;
     switch (event) {
-        case USBUS_MSG_TYPE_TR_COMPLETE:
-            _handle_tr_complete(usbus, ep0_handler, ep);
-            break;
         case USBUS_MSG_TYPE_RESET:
             DEBUG("usbus_control: Reset event triggered\n");
             ep0_handler->setup_state = USBUS_SETUPRQ_READY;
             _usbus_config_ep0(ep0_handler);
-            break;
-        case USBUS_MSG_TYPE_TR_FAIL:
-            break;
-        case USBUS_MSG_TYPE_TR_STALL:
-            {
-                static const usbopt_enable_t disable = USBOPT_DISABLE;
-                usbdev_ep_set(ep, USBOPT_EP_STALL, &disable, sizeof(usbopt_enable_t));
-            }
             break;
         default:
             break;
@@ -380,3 +372,14 @@ static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t
     return 0;
 }
 
+static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
+                                 usbdev_ep_t *ep, usbus_event_transfer_t event)
+{
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
+    switch (event) {
+        case USBUS_EVENT_TRANSFER_COMPLETE:
+            return _handle_tr_complete(usbus, ep0_handler, ep);
+        default:
+            return -1;
+    }
+}

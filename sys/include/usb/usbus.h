@@ -99,9 +99,9 @@ extern "C" {
 #define USBUS_MSG_TYPE_SOF          (0x0400) /**< Start of Frame event */
 
 #define USBUS_MSG_TYPE_TR           (0x0500) /**< Generic transfer response event */
-#define USBUS_MSG_TYPE_TR_COMPLETE  (0x0501) /**< Transfer succesfully completed */
-#define USBUS_MSG_TYPE_TR_FAIL      (0x0502) /**< Transfer nack replied by peripheral */
-#define USBUS_MSG_TYPE_TR_STALL     (0x0503) /**< Transfer stall replied by peripheral */
+#define USBUS_MSG_TYPE_TR_COMPLETE  (0x0501)
+#define USBUS_MSG_TYPE_TR_FAIL      (0x0502)
+#define USBUS_MSG_TYPE_TR_STALL     (0x0503)
 
 #define USBUS_MSG_TYPE_SETUP_RQ     (0x0600) /**< Setup request received event */
 #define USBUS_MSG_TYPE_HANDLER      (0x0700) /**< Generic handler request */
@@ -122,6 +122,12 @@ extern "C" {
 #define USBUS_HANDLER_FLAG_TR_STALL         (0x0020) /**< Report transfer stall complete */
 /** @} */
 
+typedef enum {
+    USBUS_EVENT_TRANSFER_COMPLETE, /**< Transfer succesfully completed */
+    USBUS_EVENT_TRANSFER_FAIL,     /**< Transfer nack replied by peripheral */
+    USBUS_EVENT_TRANSFER_STALL,    /**< Transfer stall replied by peripheral */
+} usbus_event_transfer_t;
+
 /**
  * @brief state machine states for the global USBUS thread
  */
@@ -139,8 +145,9 @@ typedef enum {
 typedef enum {
     USBUS_SETUPRQ_READY,      /**< Ready for new setup request */
     USBUS_SETUPRQ_INDATA,     /**< Request received with expected DATA IN stage */
-    USBUS_SETUPRQ_OUTACK,     /**< Expecting a zero-length ack out from host */
-    USBUS_SETUPRQ_OUTDATA,    /**< Data out expected */
+    USBUS_SETUPRQ_OUTACK,     /**< Expecting a zero-length ack out request
+                                   from the host */
+    USBUS_SETUPRQ_OUTDATA,    /**< Data OUT expected */
     USBUS_SETUPRQ_INACK,      /**< Expecting a zero-length ack in request
                                    from the host */
 } usbus_setuprq_state_t;
@@ -296,7 +303,33 @@ typedef struct usbus_handler_driver{
      * @param event     @ref USBUS_MSG_TYPES "event" to handle
      * @param arg       Additional argument
      */
-    int (*event_handler)(usbus_t *usbus, struct usbus_handler *handler, uint16_t event, void *arg);
+    int (*event_handler)(usbus_t *usbus, struct usbus_handler *handler, uint16_t event);
+
+    /**
+     * @brief transfer handler function
+     *
+     * This function receives transfer based events
+     *
+     * @param usbus     USBUS context
+     * @param handler   handler context
+     * @param ep        usbdev endpoint that triggered the event
+     * @param event     event to handle
+     */
+    int (*transfer_handler)(usbus_t *usbus, struct usbus_handler *handler,
+                            usbdev_ep_t *ep, usbus_event_transfer_t event);
+
+    /**
+     * @brief setup request handler function
+     *
+     * This function receives setup request based events
+     *
+     * @param usbus     USBUS context
+     * @param handler   handler context
+     * @param ep        usbdev endpoint that triggered the event
+     * @param event     event to handle
+     */
+    int (*setup_handler)(usbus_t *usbus, struct usbus_handler *handler,
+                             uint16_t event, usb_setup_t *request);
 } usbus_handler_driver_t;
 
 /**

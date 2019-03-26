@@ -35,7 +35,6 @@
 #include "debug.h"
 
 #define _USBUS_MSG_QUEUE_SIZE    (16)
-extern const usbus_handler_driver_t _ep0_driver;
 
 /* Forward declaration of the generic USBUS event callback */
 static void _event_cb(usbdev_t *usbdev, usbdev_event_t event);
@@ -151,12 +150,12 @@ int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
 }
 
 static void _signal_handlers(usbus_t *usbus, uint16_t flag,
-                             uint16_t msg, void *arg)
+                             uint16_t msg)
 {
     for (usbus_handler_t *handler = usbus->handlers;
          handler; handler = handler->next) {
         if (handler->flags & flag) {
-            handler->driver->event_handler(usbus, handler, msg, arg);
+            handler->driver->event_handler(usbus, handler, msg);
         }
     }
 }
@@ -224,7 +223,7 @@ static void *_usbus_thread(void *args)
             case USBUS_MSG_TYPE_HANDLER:
                 {
                     usbus_handler_t *handler = (usbus_handler_t*)msg.content.ptr;
-                    handler->driver->event_handler(usbus, handler, msg.type, handler);
+                    handler->driver->event_handler(usbus, handler, msg.type);
                 }
               break;
             default:
@@ -248,37 +247,33 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
         }
     }
     else {
+        uint16_t flag = 0, msg;
         switch (event) {
             case USBDEV_EVENT_RESET:
-                {
-                    usbus->state = USBUS_STATE_RESET;
-                    usbus->addr = 0;
-                    usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(uint8_t));
-                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_RESET,
-                                     USBUS_MSG_TYPE_RESET, NULL);
-                }
+                usbus->state = USBUS_STATE_RESET;
+                usbus->addr = 0;
+                usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(uint8_t));
+                flag = USBUS_HANDLER_FLAG_RESET;
+                msg = USBUS_MSG_TYPE_RESET;
                 break;
             case USBDEV_EVENT_SUSPEND:
-                {
-                    DEBUG("usbus: USB suspend detected\n");
-                    usbus->pstate = usbus->state;
-                    usbus->state = USBUS_STATE_SUSPEND;
-                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_SUSPEND,
-                                     USBUS_MSG_TYPE_SUSPEND, NULL);
-                    break;
-                }
+                DEBUG("usbus: USB suspend detected\n");
+                usbus->pstate = usbus->state;
+                usbus->state = USBUS_STATE_SUSPEND;
+                flag = USBUS_HANDLER_FLAG_SUSPEND;
+                msg = USBUS_MSG_TYPE_SUSPEND;
+                break;
             case USBDEV_EVENT_RESUME:
-                {
-                    DEBUG("usbus: USB resume detected\n");
-                    usbus->state = usbus->pstate;
-                    _signal_handlers(usbus, USBUS_HANDLER_FLAG_RESUME,
-                                     USBUS_MSG_TYPE_RESUME, NULL);
-                    break;
-                }
+                DEBUG("usbus: USB resume detected\n");
+                usbus->state = usbus->pstate;
+                flag = USBUS_HANDLER_FLAG_RESUME;
+                msg = USBUS_MSG_TYPE_RESUME;
+                break;
             default:
                 DEBUG("usbus: unhandled event %x\n", event);
-                break;
+                return;
         }
+        _signal_handlers(usbus, flag, msg);
     }
 }
 
@@ -295,36 +290,28 @@ static void _event_ep_cb(usbdev_ep_t *ep, usbdev_event_t event)
         }
     }
     else {
-        switch (event) {
-            case USBDEV_EVENT_TR_COMPLETE:
-                {
-                    usbus_handler_t *handler = _ep_to_handler(usbus, ep);
-                    if (handler) {
-                        handler->driver->event_handler(usbus, handler, USBUS_MSG_TYPE_TR_COMPLETE, ep);
+        usbus_handler_t *handler = _ep_to_handler(usbus, ep);
+        if (handler) {
+            switch (event) {
+                case USBDEV_EVENT_TR_COMPLETE:
+                    handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_COMPLETE);
+                    break;
+                case USBDEV_EVENT_TR_FAIL:
+                    if (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_FAIL)) {
+                        handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_FAIL);
                     }
-                }
-                break;
-            case USBDEV_EVENT_TR_FAIL:
-                {
-                    usbus_handler_t *handler = _ep_to_handler(usbus, ep);
-                    if (handler && (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_FAIL))) {
-                        handler->driver->event_handler(usbus, handler, USBUS_MSG_TYPE_TR_FAIL, ep);
+                    break;
+                case USBDEV_EVENT_TR_STALL:
+                    if (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_STALL)) {
+                        handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_STALL);
+                        static const usbopt_enable_t disable = USBOPT_DISABLE;
+                        usbdev_ep_set(ep, USBOPT_EP_STALL, &disable, sizeof(usbopt_enable_t));
                     }
-                }
-                break;
-            case USBDEV_EVENT_TR_STALL:
-                {
-                    usbus_handler_t *handler = _ep_to_handler(usbus, ep);
-                    if (handler && (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_STALL))) {
-                        handler->driver->event_handler(usbus, handler, USBUS_MSG_TYPE_TR_STALL, ep);
-                    }
-                    static const usbopt_enable_t disable = USBOPT_DISABLE;
-                    usbdev_ep_set(ep, USBOPT_EP_STALL, &disable, sizeof(usbopt_enable_t));
-                }
-                break;
-            default:
-                DEBUG("unhandled event: %x\n", event);
-                break;
+                    break;
+                default:
+                    DEBUG("unhandled event: %x\n", event);
+                    break;
+            }
         }
     }
 }
