@@ -50,7 +50,7 @@ void bluetil_addr_print(const uint8_t *addr)
     printf("%s", str);
 }
 
-void bluetil_addr_ipv6_iid_sprint(char *out, const uint8_t *addr)
+void bluetil_addr_ipv6_l2ll_sprint(char *out, const uint8_t *addr)
 {
     assert(out);
     assert(addr);
@@ -70,11 +70,11 @@ void bluetil_addr_ipv6_iid_sprint(char *out, const uint8_t *addr)
     *out = '\0';
 }
 
-void bluetil_addr_ipv6_iid_print(const uint8_t *addr)
+void bluetil_addr_ipv6_l2ll_print(const uint8_t *addr)
 {
     assert(addr);
 
     char tmp[BLUETIL_IPV6_IID_STRLEN];
-    bluetil_addr_ipv6_iid_sprint(tmp, addr);
+    bluetil_addr_ipv6_l2ll_sprint(tmp, addr);
     printf("%s", tmp);
 }

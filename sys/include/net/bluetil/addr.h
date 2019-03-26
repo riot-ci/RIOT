@@ -63,14 +63,15 @@ void bluetil_addr_print(const uint8_t *addr);
  *                      BLUETIL_IPV6_IID_STRLEN bytes
  * @param[in]  addr     address to convert, , *must* hold BLE_ADDR_LEN bytes
  */
-void bluetil_addr_ipv6_iid_sprint(char *out, const uint8_t *addr);
+void bluetil_addr_ipv6_l2ll_sprint(char *out, const uint8_t *addr);
 
 /**
- * @brief   Print the IPv6 IID generated for the given BLE address
+ * @brief   Dump the given BLE addresses IPv6 IID-based link local address to
+ *          STDIO
  *
  * @param[in] addr      generate IID for this address
  */
-void bluetil_addr_ipv6_iid_print(const uint8_t *addr);
+void bluetil_addr_ipv6_l2ll_print(const uint8_t *addr);
 
 #ifdef __cplusplus
 }
