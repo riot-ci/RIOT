@@ -57,14 +57,6 @@ typedef struct {
     bool suspended;                                 /**< Suspend active          */
 } sam0_common_usb_t;
 
-/**
- * @brief sam0 common device state setup function
- *
- * @param usbdev    usb device context to initialize
- */
-void sam_usbdev_setup(sam0_common_usb_t *usbdev,
-                      const sam0_common_usb_config_t *config);
-
 #ifdef __cplusplus
 }
 #endif
