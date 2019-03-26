@@ -155,6 +155,14 @@ typedef struct usbus_string {
 } usbus_string_t;
 
 /**
+ * @brief Header length types for USB descriptor generators
+ */
+typedef enum {
+    USBUS_HDR_LEN_FIXED, /**< Header always generates a fixed length */
+    USBUS_HDR_LEN_FUNC,  /**< Header length is calculated by a function */
+} usbus_hdr_len_type_t;
+
+/**
  * @brief USBUS context forward declaration
  */
 typedef struct usbus usbus_t;
@@ -191,7 +199,11 @@ typedef size_t (*hdr_len)(usbus_t *usbus, void *arg);
  */
 typedef struct {
     gen_hdr get_header;         /**< function ptr to retrieve the header */
-    hdr_len get_header_len;     /**< function ptr to retrieve the header len */
+    union {
+        hdr_len get_header_len;     /**< function ptr to retrieve the header len */
+        size_t  fixed_len;          /**< length of the header if it is a fixed length */
+    } len;
+    usbus_hdr_len_type_t len_type;  /**< Either USBUS_HDR_LEN_FIXED or USBUS_HDR_LEN_FUNC */
 } usbus_hdr_gen_funcs_t;
 
 /**
@@ -206,8 +218,8 @@ typedef struct {
 typedef struct usbus_hdr_gen {
     struct usbus_hdr_gen *next;         /**< ptr to the next header generator */
     const usbus_hdr_gen_funcs_t *funcs; /**< Function pointers */
-    void *arg;                          /**< Extra argument for the headers
-                                            functions */
+    void *arg;                          /**< Extra context argument for the
+                                             headers functions */
 } usbus_hdr_gen_t;
 
 /**
@@ -302,27 +314,14 @@ struct usbus_handler {
 };
 
 /**
- * @brief helper struct to divide control messages in multiple parts
- */
-typedef struct {
-    size_t start;                   /**< Start offset of the current part */
-    size_t cur;                     /**< Current position in the message  */
-    size_t len;                     /**< Length of the full message       */
-    size_t transfered;              /**< Number of bytes transfered       */
-    size_t reqlen;                  /**< Maximum length of the request    */
-} usbus_controlslicer_t;
-
-/**
  * @brief USBUS context struct
  */
 struct usbus {
     usbus_string_t manuf;         /**< Manufacturer string                   */
     usbus_string_t product;       /**< Product string                        */
     usbus_string_t config;        /**< Configuration string                  */
-    usbus_controlslicer_t slicer; /**< Slicer for multipart control messages */
     usbdev_t *dev;                /**< usb phy device of the usb manager     */
-    usbdev_ep_t *out;             /**< EP0 out endpoint                      */
-    usbdev_ep_t *in;              /**< EP0 in endpoint                       */
+    usbus_handler_t *control;     /**< Ptr to the control endpoint handler   */
     usbus_hdr_gen_t *hdr_gen;     /**< Top level header generators           */
     usbus_string_t *strings;      /**< List of descriptor strings            */
     usbus_interface_t *iface;     /**< List of USB interfaces                */
@@ -333,15 +332,6 @@ struct usbus {
     usbus_state_t pstate;         /**< state to recover to from suspend      */
     uint8_t addr;                 /**< Address of the USB peripheral         */
 };
-
-/**
- * @brief Endpoint zero event handler
- */
-typedef struct {
-    usbus_handler_t handler;           /**< Inherited generic handler        */
-    usb_setup_t setup;                 /**< Last received setup packet       */
-    usbus_setuprq_state_t setup_state; /**< Setup request state machine      */
-} usbus_ep0_handler_t;
 
 /**
  * @brief Add a string descriptor to the USBUS thread context
@@ -421,35 +411,6 @@ void usbus_create(char *stack, int stacksize, char priority,
                    const char *name, usbus_t *usbus);
 
 /**
- * @brief Helper function for adding bytes to the current control message part
- *
- * @param[in] usbus     USBUS context
- * @param[in] buf       Buffer to add bytes from
- * @param[in] len       Length of @p buf
- *
- * @return              Actual number of bytes written
- */
-size_t usbus_ctrlslicer_put_bytes(usbus_t *usbus, const uint8_t *buf, size_t len);
-
-/**
- * @brief Helper function for adding single bytes to the current control
- * message part
- *
- * @param[in] usbus     USBUS context
- * @param[in] c         byte to add
- *
- * @return              Actual number of bytes written
- */
-size_t usbus_ctrlslicer_put_char(usbus_t *usbus, char c);
-
-/**
- * @brief Helper function to signal the end of the control message
- *
- * @param[in] usbus     USBUS context
- */
-void usbus_ctrlslicer_ready(usbus_t *usbus);
-
-/**
  * @brief Enable an endpoint
  *
  * @note must only be used before the usb peripheral is attached to the host
@@ -510,6 +471,7 @@ static inline bool usbus_handler_isset_flag(usbus_handler_t *handler,
 {
     return handler->flags & flag;
 }
+
 
 #ifdef __cplusplus
 }

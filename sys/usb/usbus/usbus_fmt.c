@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include "usb/descriptor.h"
 #include "usb/usbus/fmt.h"
+#include "usb/usbus/control.h"
 
 static size_t _num_ifaces(usbus_t *usbus)
 {
@@ -70,7 +71,9 @@ static size_t _num_endpoints_alt(usbus_interface_alt_t *alt)
 
 static inline size_t call_get_header_len(usbus_t *usbus, usbus_hdr_gen_t *hdr)
 {
-    return hdr->funcs->get_header_len(usbus, hdr->arg);
+    return hdr->funcs->len_type == USBUS_HDR_LEN_FIXED ?
+           hdr->funcs->len.fixed_len :
+           hdr->funcs->len.get_header_len(usbus, hdr->arg);
 }
 
 static size_t _hdr_gen_size(usbus_t *usbus, usbus_hdr_gen_t *hdr)
@@ -103,7 +106,7 @@ size_t _alt_size(usbus_t *usbus, usbus_interface_alt_t *alt)
     return len;
 }
 
-static size_t usbus_hdrs_config_size(usbus_t *usbus)
+static size_t _hdrs_config_size(usbus_t *usbus)
 {
     size_t len = sizeof(usb_descriptor_configuration_t);
     len += _hdr_gen_size(usbus, usbus->hdr_gen);
@@ -152,7 +155,7 @@ size_t _hdrs_fmt_endpoints(usbus_t *usbus, usbus_endpoint_t *ep)
         usb_ep.attributes = _type_to_attribute(ep);
         usb_ep.max_packet_size = ep->maxpacketsize;
         usb_ep.interval = ep->interval;
-        usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&usb_ep, sizeof(usb_descriptor_endpoint_t));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&usb_ep, sizeof(usb_descriptor_endpoint_t));
         _hdrs_fmt_additional(usbus, ep->hdr_gen);
         len += usb_ep.length;
         /* iterate to next endpoint */
@@ -184,7 +187,7 @@ static size_t _hdrs_fmt_iface_alts(usbus_t *usbus, usbus_interface_t *iface)
         _hdrs_fmt_iface(iface, &usb_iface);
         usb_iface.alternate_setting = alts++;
         usb_iface.num_endpoints = _num_endpoints_alt(alt);
-        usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&usb_iface, sizeof(usb_descriptor_interface_t));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&usb_iface, sizeof(usb_descriptor_interface_t));
         len += _hdrs_fmt_additional(usbus, alt->hdr_gen);
         len += _hdrs_fmt_endpoints(usbus, alt->ep);
     }
@@ -206,7 +209,7 @@ static size_t _hdrs_fmt_ifaces(usbus_t *usbus)
         else {
             usb_iface.idx = 0;
         }
-        usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&usb_iface, sizeof(usb_descriptor_interface_t));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&usb_iface, sizeof(usb_descriptor_interface_t));
         len += sizeof(usb_descriptor_interface_t);
         len += _hdrs_fmt_additional(usbus, iface->hdr_gen);
         len += _hdrs_fmt_endpoints(usbus, iface->ep);
@@ -215,7 +218,7 @@ static size_t _hdrs_fmt_ifaces(usbus_t *usbus)
     return len;
 }
 
-size_t usbus_hdrs_fmt_conf(usbus_t *usbus)
+size_t usbus_fmt_hdr_conf(usbus_t *usbus)
 {
     size_t len = 0;
     usb_descriptor_configuration_t conf;
@@ -232,11 +235,28 @@ size_t usbus_hdrs_fmt_conf(usbus_t *usbus)
     conf.max_power = USB_CONFIG_MAX_POWER/2;
     conf.num_interfaces = _num_ifaces(usbus);
     len += sizeof(usb_descriptor_configuration_t);
-    conf.total_length = usbus_hdrs_config_size(usbus);
+    conf.total_length = _hdrs_config_size(usbus);
     conf.idx = usbus->config.idx;
-    usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&conf, sizeof(conf));
+    usbus_control_slicer_put_bytes(usbus, (uint8_t*)&conf, sizeof(conf));
     len += _hdrs_fmt_hdrs(usbus);
     len += _hdrs_fmt_ifaces(usbus);
     return len;
 }
 
+size_t usbus_fmt_hdr_dev(usbus_t *usbus)
+{
+    usb_descriptor_device_t desc;
+    memset(&desc, 0, sizeof(usb_descriptor_device_t));
+    desc.length = sizeof(usb_descriptor_device_t);
+    desc.type = USB_TYPE_DESCRIPTOR_DEVICE;
+    desc.bcd_usb = USB_CONFIG_SPEC_BCDVERSION;
+    desc.max_packet_size = USBUS_EP0_SIZE;
+    desc.vendor_id = USB_CONFIG_VID;
+    desc.product_id = USB_CONFIG_PID;
+    desc.manufacturer_idx = usbus->manuf.idx;
+    desc.product_idx = usbus->product.idx;
+    /* USBUS supports only a single config at the moment */
+    desc.num_configurations = 1;
+    usbus_control_slicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(usb_descriptor_device_t));
+    return sizeof(usb_descriptor_device_t);
+}

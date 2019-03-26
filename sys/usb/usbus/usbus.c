@@ -22,6 +22,7 @@
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
 #include "usb/usbus/fmt.h"
+#include "usb/usbus/control.h"
 
 #include "usb.h"
 #include "cpu.h"
@@ -168,22 +169,13 @@ static void _usbus_init_handlers(usbus_t *usbus)
     }
 }
 
-static int _ep0_init(usbus_t *usbus, usbus_ep0_handler_t *handler)
-{
-    handler->handler.driver = &_ep0_driver;
-
-    /* Ensure that ep0 is the first handler */
-    handler->handler.next = usbus->handlers;
-    usbus->handlers = &handler->handler;
-    return 0;
-}
-
 static void *_usbus_thread(void *args)
 {
     usbus_t *usbus = (usbus_t*)args;
-    usbus_ep0_handler_t ep0_handler;
+    usbus_control_handler_t ep0_handler;
+    usbus->control = &ep0_handler.handler;
 
-    _ep0_init(usbus, &ep0_handler);
+    usbus_control_init(usbus, &ep0_handler);
 
     usbdev_t *dev = usbus->dev;
     usbus->pid = sched_active_pid;

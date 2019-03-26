@@ -19,6 +19,7 @@
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
 #include "usb/usbus/fmt.h"
+#include "usb/usbus/control.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -29,75 +30,20 @@
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
 static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg);
+
 const usbus_handler_driver_t _ep0_driver = {
     .init = _init,
     .event_handler = _handler_ep0_event,
 };
 
-int usbus_ctrlslicer_nextslice(usbus_t *usbus)
+int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler)
 {
-    usbus_controlslicer_t *bldr = &usbus->slicer;
-    size_t end = bldr->start + usbus->in->len;
-    if (bldr->cur > end && bldr->start < bldr->reqlen && bldr->transfered < bldr->reqlen) {
-        bldr->start += usbus->in->len;
-        bldr->cur = 0;
-        bldr->len = 0;
-        return 1;
-    }
+    handler->handler.driver = &_ep0_driver;
+
+    /* Ensure that ep0 is the first handler */
+    handler->handler.next = usbus->handlers;
+    usbus->handlers = &handler->handler;
     return 0;
-}
-
-size_t usbus_ctrlslicer_put_bytes(usbus_t *usbus, const uint8_t *buf, size_t len)
-{
-    usbus_controlslicer_t *builder = &usbus->slicer;
-    size_t end = builder->start + usbus->in->len;
-    size_t byte_len = 0;    /* Length of the string to copy */
-
-    /* Calculate start offset of the supplied bytes */
-    size_t byte_offset = (builder->start > builder->cur) ? builder->start - builder->cur : 0;
-
-    /* Check for string before or beyond window */
-    if ((builder->cur >= end) || (byte_offset > len)) {
-        builder->cur += len;
-        return 0;
-    }
-    /* Check if string is over the end of the window */
-    if ((builder->cur + len) >= end) {
-        byte_len = end - (builder->cur + byte_offset);
-    }
-    else {
-        byte_len = len - byte_offset;
-    }
-    size_t start_offset = builder->cur - builder->start + byte_offset;
-    builder->cur += len;
-    builder->len += byte_len;
-    memcpy(usbus->in->buf + start_offset , buf + byte_offset, byte_len);
-    return byte_len;
-}
-
-size_t usbus_ctrlslicer_put_char(usbus_t *usbus, char c)
-{
-    usbus_controlslicer_t *builder = &usbus->slicer;
-    size_t end = builder->start + usbus->in->len;
-    /* Only copy the char if it is within the window */
-    if ((builder->start <=  builder->cur) && (builder->cur < end)) {
-        uint8_t *pos = usbus->in->buf + builder->cur - builder->start;
-        *pos = c;
-        builder->cur++;
-        builder->len++;
-        return 1;
-    }
-    builder->cur++;
-    return 0;
-}
-
-void usbus_ctrlslicer_ready(usbus_t *usbus)
-{
-    usbus_controlslicer_t *bldr = &usbus->slicer;
-    size_t len = bldr->len;
-    len = len < bldr->reqlen - bldr->start ? len : bldr->reqlen - bldr->start;
-    bldr->transfered += len;
-    usbdev_ep_ready(usbus->in, len);
 }
 
 static void _activate_endpoints(usbus_t *usbus)
@@ -132,8 +78,8 @@ static size_t usbus_cpy_str_to_utf16(usbus_t *usbus, const char *str)
 {
     size_t len = 0;
     while(*str) {
-        usbus_ctrlslicer_put_char(usbus, *str);
-        usbus_ctrlslicer_put_char(usbus, 0);
+        usbus_control_slicer_put_char(usbus, *str);
+        usbus_control_slicer_put_char(usbus, 0);
         len += 2; /* Two bytes added each iteration */
         str++;
     }
@@ -154,7 +100,7 @@ static int _req_status(usbus_t *usbus)
 {
     uint8_t status[2];
     memset(status, 0, sizeof(status));
-    usbus_ctrlslicer_put_bytes(usbus, status, sizeof(status));
+    usbus_control_slicer_put_bytes(usbus, status, sizeof(status));
     return sizeof(status);
 }
 
@@ -164,10 +110,10 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
         usb_descriptor_string_t desc;
         desc.type = USB_TYPE_DESCRIPTOR_STRING;
         desc.length = sizeof(uint16_t)+sizeof(usb_descriptor_string_t);
-        usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
         /* Only one language ID supported */
         uint16_t us = USB_CONFIG_DEFAULT_LANGID;
-        usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&us, sizeof(uint16_t));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&us, sizeof(uint16_t));
     }
     else {
         usb_descriptor_string_t desc;
@@ -176,7 +122,7 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
         if (str) {
             desc.length = sizeof(usb_descriptor_string_t);
             desc.length += 2*strlen(str->str); /* USB strings are UTF-16 */
-            usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
+            usbus_control_slicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
             usbus_cpy_str_to_utf16(usbus, str->str);
         }
     }
@@ -185,24 +131,12 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
 
 static int _req_dev(usbus_t *usbus)
 {
-    usb_descriptor_device_t desc;
-    memset(&desc, 0, sizeof(usb_descriptor_device_t));
-    desc.length = sizeof(usb_descriptor_device_t);
-    desc.type = USB_TYPE_DESCRIPTOR_DEVICE;
-    desc.bcd_usb = 0x0200;
-    desc.max_packet_size = USBUS_EP0_SIZE;
-    desc.vendor_id = USB_CONFIG_VID;
-    desc.product_id = USB_CONFIG_PID;
-    desc.manufacturer_idx = usbus->manuf.idx;
-    desc.product_idx = usbus->product.idx;
-    desc.num_configurations = 1;
-    usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(usb_descriptor_device_t));
-    return 1;
+    return usbus_fmt_hdr_dev(usbus);
 }
 
 static int _req_config(usbus_t *usbus)
 {
-    usbus_hdrs_fmt_conf(usbus);
+    usbus_fmt_hdr_conf(usbus);
     return 1;
 }
 
@@ -238,6 +172,7 @@ static int _req_descriptor(usbus_t *usbus, usb_setup_t *pkt)
 
 static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
 {
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
     int res = 0;
     if (usb_setup_is_read(pkt)) {
         switch (pkt->request) {
@@ -267,7 +202,7 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
                 break;
         }
         /* Signal zero-length packet */
-        usbdev_ep_ready(usbus->in, 0);
+        usbdev_ep_ready(ep0->in, 0);
     }
     return res;
 }
@@ -284,7 +219,7 @@ static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
     return 0;
 }
 
-static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
+static void _recv_setup(usbus_t *usbus, usbus_control_handler_t *handler)
 {
     usb_setup_t *pkt = &handler->setup;
     DEBUG("usbus_control: Received setup %x %x @ %d\n", pkt->type,
@@ -295,11 +230,11 @@ static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
     else {
         if (pkt->length) {
             handler->setup_state = USBUS_SETUPRQ_OUTDATA;
-            usbdev_ep_ready(usbus->out, 0);
+            usbdev_ep_ready(handler->out, 0);
         }
         else {
             handler->setup_state = USBUS_SETUPRQ_INACK;
-            usbdev_ep_ready(usbus->in, 0);
+            usbdev_ep_ready(handler->in, 0);
         }
     }
     uint8_t destination = pkt->type & USB_SETUP_REQUEST_RECIPIENT_MASK;
@@ -317,37 +252,42 @@ static void _recv_setup(usbus_t *usbus, usbus_ep0_handler_t *handler)
     if (res < 0) {
         /* Signal stall to indicate unsupported (USB 2.0 spec 9.6.2 */
         static const usbopt_enable_t enable = USBOPT_ENABLE;
-        usbdev_ep_set(usbus->in, USBOPT_EP_STALL, &enable, sizeof(usbopt_enable_t));
+        usbdev_ep_set(handler->in, USBOPT_EP_STALL, &enable,
+                      sizeof(usbopt_enable_t));
         handler->setup_state = USBUS_SETUPRQ_READY;
     }
     else if (res) {
-        usbus_ctrlslicer_ready(usbus);
+        usbus_control_slicer_ready(usbus);
     }
 }
 
-static void _usbus_config_ep0(usbus_t *usbus)
+static void _usbus_config_ep0(usbus_control_handler_t *ep0_handler)
 {
     DEBUG("usbus_control: Enabling EP0\n");
     static const usbopt_enable_t enable = USBOPT_ENABLE;
-    usbdev_ep_init(usbus->in);
-    usbdev_ep_init(usbus->out);
-    usbdev_ep_set(usbus->in, USBOPT_EP_ENABLE, &enable, sizeof(usbopt_enable_t));
-    usbdev_ep_set(usbus->out, USBOPT_EP_ENABLE, &enable, sizeof(usbopt_enable_t));
-    usbdev_ep_ready(usbus->out, 0);
+    usbdev_ep_init(ep0_handler->in);
+    usbdev_ep_init(ep0_handler->out);
+    usbdev_ep_set(ep0_handler->in, USBOPT_EP_ENABLE, &enable,
+                  sizeof(usbopt_enable_t));
+    usbdev_ep_set(ep0_handler->out, USBOPT_EP_ENABLE, &enable,
+                  sizeof(usbopt_enable_t));
+    usbdev_ep_ready(ep0_handler->out, 0);
 }
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler)
 {
     DEBUG("usbus_control: Initializing EP0\n");
-    usbus_ep0_handler_t *ep0_handler = (usbus_ep0_handler_t*)handler;
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
     ep0_handler->setup_state = USBUS_SETUPRQ_READY;
 
-    usbus->in = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL, USB_EP_DIR_IN, USBUS_EP0_SIZE);
-    usbus->out = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL, USB_EP_DIR_OUT, USBUS_EP0_SIZE);
+    ep0_handler->in = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL,
+                                    USB_EP_DIR_IN, USBUS_EP0_SIZE);
+    ep0_handler->out = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL,
+                                     USB_EP_DIR_OUT, USBUS_EP0_SIZE);
 }
 
-static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler, usbdev_ep_t *ep)
+static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_handler, usbdev_ep_t *ep)
 {
     switch(ep0_handler->setup_state) {
         case USBUS_SETUPRQ_INACK:
@@ -362,19 +302,19 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler,
             break;
         case USBUS_SETUPRQ_OUTACK:
             if (ep->dir == USB_EP_DIR_OUT) {
-                memset(&usbus->slicer, 0, sizeof(usbus_controlslicer_t));
+                memset(&ep0_handler->slicer, 0, sizeof(usbus_control_slicer_t));
                 ep0_handler->setup_state = USBUS_SETUPRQ_READY;
             }
             break;
         case USBUS_SETUPRQ_INDATA:
             if (ep->dir == USB_EP_DIR_IN) {
-                if (usbus_ctrlslicer_nextslice(usbus)) {
+                if (usbus_control_slicer_nextslice(usbus)) {
                     _recv_setup(usbus, ep0_handler);
                     ep0_handler->setup_state = USBUS_SETUPRQ_INDATA;
                 }
                 else {
                     /* Ready out ZLP */
-                    usbdev_ep_ready(usbus->out, 0);
+                    usbdev_ep_ready(ep0_handler->out, 0);
                     ep0_handler->setup_state = USBUS_SETUPRQ_OUTACK;
                 }
             }
@@ -388,24 +328,24 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler,
                 DEBUG("Expected len: %d, received: %d\n", ep0_handler->setup.length, len);
                 if (ep0_handler->setup.length == len) {
                     DEBUG("DATA complete\n");
-                    usbdev_ep_ready(usbus->in, 0);
+                    usbdev_ep_ready(ep0_handler->in, 0);
                 }
                 /* Flush OUT buffer */
-                usbdev_ep_ready(usbus->out, 0);
+                usbdev_ep_ready(ep0_handler->out, 0);
             }
             else {
-                DEBUG("usbus_control: Invalid state OUTDATA with IN\n");
+                DEBUG("usbus_control: Invalid state OUTDATA with IN request\n");
             }
             break;
         case USBUS_SETUPRQ_READY:
             if (ep->dir == USB_EP_DIR_OUT) {
-                memset(&usbus->slicer, 0, sizeof(usbus_controlslicer_t));
-                memcpy(&ep0_handler->setup, usbus->out->buf, sizeof(usb_setup_t));
-                usbus->slicer.reqlen = ep0_handler->setup.length;
+                memset(&ep0_handler->slicer, 0, sizeof(usbus_control_slicer_t));
+                memcpy(&ep0_handler->setup, ep0_handler->out->buf, sizeof(usb_setup_t));
+                ep0_handler->slicer.reqlen = ep0_handler->setup.length;
                 _recv_setup(usbus, ep0_handler);
             }
             else {
-                DEBUG("usbus_control: invalid state, READY with IN\n");
+                DEBUG("usbus_control: invalid state, READY with IN request\n");
             }
             break;
     }
@@ -415,7 +355,7 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_ep0_handler_t *ep0_handler,
 /* USB endpoint 0 callback */
 static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg)
 {
-    usbus_ep0_handler_t *ep0_handler = (usbus_ep0_handler_t*)handler;
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
     usbdev_ep_t *ep = (usbdev_ep_t *)arg;
     switch (event) {
         case USBUS_MSG_TYPE_TR_COMPLETE:
@@ -424,7 +364,7 @@ static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t
         case USBUS_MSG_TYPE_RESET:
             DEBUG("usbus_control: Reset event triggered\n");
             ep0_handler->setup_state = USBUS_SETUPRQ_READY;
-            _usbus_config_ep0(usbus);
+            _usbus_config_ep0(ep0_handler);
             break;
         case USBUS_MSG_TYPE_TR_FAIL:
             break;
