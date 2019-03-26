@@ -20,6 +20,11 @@
  * @}
  */
 
+#include "cpu.h"
+
+#ifndef HAVE_ARCH_STDIO_INIT
+#include "stdio_base.h"
+#endif
 #ifdef MODULE_PERIPH_I2C
 #include "periph/i2c.h"
 #endif
@@ -39,8 +44,27 @@
 #include "periph/usbdev.h"
 #endif
 
+#ifndef HAVE_ARCH_STDIO_INIT
+/**
+ * @brief Initializes stdio
+ *
+ * @details This function can be overwritten by `#define`ing
+ * `HAVE_ARCH_STDIO_INIT` in cpu.h and declaring a function with the same
+ * signature there. This allows handling architecture specific stuff if needed.
+ */
+static inline void arch_stdio_init(void)
+{
+    stdio_init();
+}
+#endif /* HAVE_ARCH_STDIO_INIT */
+
 void periph_init(void)
 {
+    /* initialize stdio first to allow DEBUG() during later stages */
+#if defined(MODULE_STDIO_UART) || defined(MODULE_STDIO_RTT)
+    arch_stdio_init();
+#endif
+
     /* initialize configured I2C devices */
 #ifdef MODULE_PERIPH_I2C
     for (unsigned i = 0; i < I2C_NUMOF; i++) {
