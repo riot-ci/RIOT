@@ -6,7 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-nano \
                              arduino-uno chronos telosb nucleo-f042k6 \
                              nucleo-f031k6 nucleo-f030r8 nucleo-f303k8 \
                              nucleo-l053r8 nucleo-l031k6 stm32f0discovery \
-                             waspmote-pro z1
+                             waspmote-pro telosb z1
 # chronos, mips-malta, and ruuvitag boards don't support ethos
 BOARD_BLACKLIST := chronos mips-malta ruuvitag
 
