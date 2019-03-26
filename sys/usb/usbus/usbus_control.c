@@ -212,11 +212,13 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
 
 static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
 {
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)usbus->control;
     uint16_t destination = pkt->index & 0x0f;
     /* Find interface handler */
     for (usbus_interface_t *iface = usbus->iface; iface; iface = iface->next) {
-        if (destination == iface->idx) {
-            return iface->handler->driver->setup_handler(usbus, iface->handler, USBUS_MSG_TYPE_SETUP_RQ, pkt);
+        if (destination == iface->idx && iface->handler->driver->setup_handler) {
+            return iface->handler->driver->setup_handler(usbus, iface->handler,
+                    ep0_handler->setup_state, pkt);
         }
     }
     return 0;

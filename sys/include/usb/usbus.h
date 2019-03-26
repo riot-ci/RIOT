@@ -325,11 +325,11 @@ typedef struct usbus_handler_driver{
      *
      * @param usbus     USBUS context
      * @param handler   handler context
-     * @param ep        usbdev endpoint that triggered the event
-     * @param event     event to handle
+     * @param state     setup request state
+     * @param setup     setup packet
      */
     int (*setup_handler)(usbus_t *usbus, struct usbus_handler *handler,
-                             uint16_t event, usb_setup_t *request);
+                         usbus_setuprq_state_t state, usb_setup_t *request);
 } usbus_handler_driver_t;
 
 /**
