@@ -24,6 +24,7 @@
 #include "usb/descriptor.h"
 #include "usb/cdc.h"
 #include "usb/usbus.h"
+#include "usb/usbus/control.h"
 #include "usb/usbus/cdc/ecm.h"
 
 #include <string.h>
@@ -31,32 +32,39 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg);
+static int _event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event);
+static int _setup_handler(usbus_t *usbus, usbus_handler_t *handler, usbus_setuprq_state_t state, usb_setup_t *setup);
+static int _transfer_handler(usbus_t *usbus, usbus_handler_t *handler, usbdev_ep_t *ep, usbus_event_transfer_t event);
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
-void usbus_cdc_ecm_flush(usbus_cdcecm_device_t *cdcecm);
 
 static size_t _gen_union_descriptor(usbus_t *usbus, void *arg);
-static size_t _gen_union_size(usbus_t *usbus, void *arg);
 
 static const usbus_hdr_gen_funcs_t _union_descriptor = {
     .get_header = _gen_union_descriptor,
-    .get_header_len = _gen_union_size
+    .len = {
+        .fixed_len = sizeof(usb_desc_union_t),
+    },
+    .len_type = USBUS_HDR_LEN_FIXED,
 };
 
 static size_t _gen_ecm_descriptor(usbus_t *usbus, void *arg);
-static size_t _gen_ecm_size(usbus_t *usbus, void *arg);
 
 static const usbus_hdr_gen_funcs_t _ecm_descriptor = {
     .get_header = _gen_ecm_descriptor,
-    .get_header_len = _gen_ecm_size
+    .len = {
+        .fixed_len = sizeof(usb_desc_ecm_t),
+    },
+    .len_type = USBUS_HDR_LEN_FIXED,
 };
 
 static size_t _gen_cdc_descriptor(usbus_t *usbus, void *arg);
-static size_t _gen_cdc_size(usbus_t *usbus, void *arg);
 
 static const usbus_hdr_gen_funcs_t _cdc_descriptor = {
     .get_header = _gen_cdc_descriptor,
-    .get_header_len = _gen_cdc_size
+    .len = {
+        .fixed_len = sizeof(usb_desc_cdc_t),
+    },
+    .len_type = USBUS_HDR_LEN_FIXED,
 };
 
 static size_t _gen_union_descriptor(usbus_t *usbus, void *arg)
@@ -69,14 +77,7 @@ static size_t _gen_union_descriptor(usbus_t *usbus, void *arg)
     uni.subtype = USB_CDC_DESCR_SUBTYPE_UNION;
     uni.master_if = cdc->iface_ctrl.idx;
     uni.slave_if = cdc->iface_data.idx;
-    usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&uni, sizeof(uni));
-    return sizeof(usb_desc_union_t);
-}
-
-static size_t _gen_union_size(usbus_t *usbus, void *arg)
-{
-    (void)usbus;
-    (void)arg;
+    usbus_control_slicer_put_bytes(usbus, (uint8_t*)&uni, sizeof(uni));
     return sizeof(usb_desc_union_t);
 }
 
@@ -93,14 +94,7 @@ static size_t _gen_ecm_descriptor(usbus_t *usbus, void *arg)
     ecm.maxsegmentsize = ETHERNET_FRAME_LEN;
     ecm.numbermcfilters = 0x0000; /* No filtering */
     ecm.numberpowerfilters = 0;
-    usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&ecm, sizeof(ecm));
-    return sizeof(usb_desc_ecm_t);
-}
-
-static size_t _gen_ecm_size(usbus_t *usbus, void *arg)
-{
-    (void)usbus;
-    (void)arg;
+    usbus_control_slicer_put_bytes(usbus, (uint8_t*)&ecm, sizeof(ecm));
     return sizeof(usb_desc_ecm_t);
 }
 
@@ -113,14 +107,7 @@ static size_t _gen_cdc_descriptor(usbus_t *usbus, void *arg)
     cdc.bcd_hid = USB_CDC_VERSION_BCD;
     cdc.type = USB_TYPE_DESCRIPTOR_CDC;
     cdc.subtype = 0x00;
-    usbus_ctrlslicer_put_bytes(usbus, (uint8_t*)&cdc, sizeof(cdc));
-    return sizeof(usb_desc_cdc_t);
-}
-
-static size_t _gen_cdc_size(usbus_t *usbus, void *arg)
-{
-    (void)usbus;
-    (void)arg;
+    usbus_control_slicer_put_bytes(usbus, (uint8_t*)&cdc, sizeof(cdc));
     return sizeof(usb_desc_cdc_t);
 }
 
@@ -160,7 +147,9 @@ static void _notify_link_up(usbus_cdcecm_device_t *cdcecm)
 
 static const usbus_handler_driver_t cdcecm_driver = {
     .init = _init,
-    .event_handler = event_handler,
+    .event_handler = _event_handler,
+    .transfer_handler = _transfer_handler,
+    .setup_handler = _setup_handler,
 };
 
 static void _fill_ethernet(usbus_cdcecm_device_t *cdcecm)
@@ -246,15 +235,16 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
 }
 
-static int _handle_setup(usbus_t *usbus, usbus_handler_t *handler, usb_setup_t *pkt)
+static int _setup_handler(usbus_t *usbus, usbus_handler_t *handler, usbus_setuprq_state_t state, usb_setup_t *setup)
 {
     (void)usbus;
+    (void)state;
     usbus_cdcecm_device_t *cdcecm = (usbus_cdcecm_device_t*)handler;
-    DEBUG("CDC ECM: Request: 0x%x\n", pkt->request);
-    switch(pkt->request) {
+    DEBUG("CDC ECM: Request: 0x%x\n", setup->request);
+    switch(setup->request) {
         case USB_SETUP_REQ_SET_INTERFACE:
-            DEBUG("CDC ECM: Changing active interface to alt %d\n", pkt->value);
-            cdcecm->active_iface = (uint8_t)pkt->value;
+            DEBUG("CDC ECM: Changing active interface to alt %d\n", setup->value);
+            cdcecm->active_iface = (uint8_t)setup->value;
             if (cdcecm->active_iface == 1) {
                 _notify_link_up(cdcecm);
             }
@@ -263,7 +253,7 @@ static int _handle_setup(usbus_t *usbus, usbus_handler_t *handler, usb_setup_t *
         case USB_CDC_MGNT_REQUEST_SET_ETH_PACKET_FILTER:
             /* While we do answer the request, CDC ECM filters are not really
              * implemented */
-            DEBUG("CDC ECM: Not modifying filter to 0x%x\n", pkt->value);
+            DEBUG("CDC ECM: Not modifying filter to 0x%x\n", setup->value);
             break;
 
         default:
@@ -353,15 +343,9 @@ static void _handle_reset(usbus_t *usbus, usbus_handler_t *handler)
     mutex_unlock(&cdcecm->out_lock);
 }
 
-static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event, void *arg)
+static int _event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t event)
 {
     switch(event) {
-        case USBUS_MSG_TYPE_SETUP_RQ:
-            return _handle_setup(usbus, handler, (usb_setup_t*)arg);
-
-        case USBUS_MSG_TYPE_TR_COMPLETE:
-            return _handle_tr_complete(usbus, handler, (usbdev_ep_t*)arg);
-
         case USBUS_MSG_CDCECM_RX_FLUSH:
             return _handle_rx_flush(usbus, handler);
 
@@ -371,6 +355,19 @@ static int event_handler(usbus_t *usbus, usbus_handler_t *handler, uint16_t even
         case USBUS_MSG_TYPE_RESET:
             _handle_reset(usbus, handler);
             break;
+
+        default:
+            DEBUG("Unhandled event :0x%x\n", event);
+            return -1;
+    }
+    return 0;
+}
+
+static int _transfer_handler(usbus_t *usbus, usbus_handler_t *handler, usbdev_ep_t *ep, usbus_event_transfer_t event)
+{
+    switch(event) {
+        case USBUS_EVENT_TRANSFER_COMPLETE:
+            return _handle_tr_complete(usbus, handler, ep);
 
         default:
             DEBUG("Unhandled event :0x%x\n", event);
