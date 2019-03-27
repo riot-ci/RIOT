@@ -30,31 +30,31 @@ extern "C" {
  * @name USB standard device request codes (USB 2.0 spec table 9-4)
  * @{
  */
-#define USB_SETUP_REQ_GET_STATUS            0x00 /**< Status request        */
-#define USB_SETUP_REQ_CLEAR_FEATURE         0x01 /**< Clear feature         */
-#define USB_SETUP_REQ_SET_FEATURE           0x03 /**< Set feature           */
-#define USB_SETUP_REQ_SET_ADDRESS           0x05 /**< Set address           */
-#define USB_SETUP_REQ_GET_DESCRIPTOR        0x06 /**< Get descriptor        */
-#define USB_SETUP_REQ_SET_DESCRIPTOR        0x07 /**< Set descriptor        */
-#define USB_SETUP_REQ_GET_CONFIGURATION     0x08 /**< Get configuration     */
-#define USB_SETUP_REQ_SET_CONFIGURATION     0x09 /**< Set configuration     */
-#define USB_SETUP_REQ_GET_INTERFACE         0x0a /**< Get interface         */
-#define USB_SETUP_REQ_SET_INTERFACE         0x0b /**< Set interface         */
+#define USB_SETUP_REQ_GET_STATUS            0x00    /**< Status request        */
+#define USB_SETUP_REQ_CLEAR_FEATURE         0x01    /**< Clear feature         */
+#define USB_SETUP_REQ_SET_FEATURE           0x03    /**< Set feature           */
+#define USB_SETUP_REQ_SET_ADDRESS           0x05    /**< Set address           */
+#define USB_SETUP_REQ_GET_DESCRIPTOR        0x06    /**< Get descriptor        */
+#define USB_SETUP_REQ_SET_DESCRIPTOR        0x07    /**< Set descriptor        */
+#define USB_SETUP_REQ_GET_CONFIGURATION     0x08    /**< Get configuration     */
+#define USB_SETUP_REQ_SET_CONFIGURATION     0x09    /**< Set configuration     */
+#define USB_SETUP_REQ_GET_INTERFACE         0x0a    /**< Get interface         */
+#define USB_SETUP_REQ_SET_INTERFACE         0x0b    /**< Set interface         */
 /** @} */
 
 /**
  * @name USB descriptor types (USB 2.0 spec table 9-5)
  * @{
  */
-#define USB_TYPE_DESCRIPTOR_DEVICE          0x01 /**< Device descriptor         */
-#define USB_TYPE_DESCRIPTOR_CONFIGURATION   0x02 /**< Configuration Descriptor  */
-#define USB_TYPE_DESCRIPTOR_STRING          0x03 /**< String descriptor         */
-#define USB_TYPE_DESCRIPTOR_INTERFACE       0x04 /**< Interface descriptor      */
-#define USB_TYPE_DESCRIPTOR_ENDPOINT        0x05 /**< Endpoint descriptor       */
-#define USB_TYPE_DESCRIPTOR_DEV_QUALIFIER   0x06 /**< Device qualifier          */
-#define USB_TYPE_DESCRIPTOR_SPEED_CONFIG    0x07 /**< Other speed configuration */
-#define USB_TYPE_DESCRIPTOR_IFACE_POWER     0x08 /**< Interface power           */
-#define USB_TYPE_DESCRIPTOR_INTERFACE_ASSOC 0x0B /**< Interface association     */
+#define USB_TYPE_DESCRIPTOR_DEVICE          0x01    /**< Device descriptor         */
+#define USB_TYPE_DESCRIPTOR_CONFIGURATION   0x02    /**< Configuration Descriptor  */
+#define USB_TYPE_DESCRIPTOR_STRING          0x03    /**< String descriptor         */
+#define USB_TYPE_DESCRIPTOR_INTERFACE       0x04    /**< Interface descriptor      */
+#define USB_TYPE_DESCRIPTOR_ENDPOINT        0x05    /**< Endpoint descriptor       */
+#define USB_TYPE_DESCRIPTOR_DEV_QUALIFIER   0x06    /**< Device qualifier          */
+#define USB_TYPE_DESCRIPTOR_SPEED_CONFIG    0x07    /**< Other speed configuration */
+#define USB_TYPE_DESCRIPTOR_IFACE_POWER     0x08    /**< Interface power           */
+#define USB_TYPE_DESCRIPTOR_INTERFACE_ASSOC 0x0B    /**< Interface association     */
 /** @} */
 
 /**
@@ -62,29 +62,29 @@ extern "C" {
  * @anchor USB_CONF_ATTR
  * @{
  */
-#define USB_CONF_ATTR_RESERVED              0x80 /**< Reserved bit (always 1)   */
-#define USB_CONF_ATTR_SELF_POWERED          0x40 /**< Self powered device flag  */
-#define USB_CONF_ATTR_REM_WAKEUP            0x20 /**< Remote wake-up flag       */
+#define USB_CONF_ATTR_RESERVED              0x80    /**< Reserved bit (always 1)   */
+#define USB_CONF_ATTR_SELF_POWERED          0x40    /**< Self powered device flag  */
+#define USB_CONF_ATTR_REM_WAKEUP            0x20    /**< Remote wake-up flag       */
 /** @} */
 
 /**
  * @name USB setup packet requests types
  * @{
  */
-#define USB_SETUP_REQUEST_DEVICE2HOST           0x80 /**< Request direction
-                                                          From device to host if
-                                                          the bit is set          */
+#define USB_SETUP_REQUEST_DEVICE2HOST           0x80    /**< Request direction
+                                                             From device to host if
+                                                             the bit is set          */
 
-#define USB_SETUP_REQUEST_RECIPIENT_MASK        0x1f /**< Recipient mask          */
-#define USB_SETUP_REQUEST_RECIPIENT_DEVICE      0x00 /**< Device request          */
-#define USB_SETUP_REQUEST_RECIPIENT_INTERFACE   0x01 /**< Interface request       */
-#define USB_SETUP_REQUEST_RECIPIENT_ENDPOINT    0x02 /**< Endpoint request        */
-#define USB_SETUP_REQUEST_RECIPIENT_OTHER       0x03 /**< Other type request      */
+#define USB_SETUP_REQUEST_RECIPIENT_MASK        0x1f    /**< Recipient mask          */
+#define USB_SETUP_REQUEST_RECIPIENT_DEVICE      0x00    /**< Device request          */
+#define USB_SETUP_REQUEST_RECIPIENT_INTERFACE   0x01    /**< Interface request       */
+#define USB_SETUP_REQUEST_RECIPIENT_ENDPOINT    0x02    /**< Endpoint request        */
+#define USB_SETUP_REQUEST_RECIPIENT_OTHER       0x03    /**< Other type request      */
 
-#define USB_SETUP_REQUEST_TYPE_MASK             0x60 /**< Mask to select the type */
-#define USB_SETUP_REQUEST_TYPE_STANDARD         0x00 /**< Standard request        */
-#define USB_SETUP_REQUEST_TYPE_CLASS            0x20 /**< Class request           */
-#define USB_SETUP_REQUEST_TYPE_VENDOR           0x40 /**< Vendor specific request */
+#define USB_SETUP_REQUEST_TYPE_MASK             0x60    /**< Mask to select the type */
+#define USB_SETUP_REQUEST_TYPE_STANDARD         0x00    /**< Standard request        */
+#define USB_SETUP_REQUEST_TYPE_CLASS            0x20    /**< Class request           */
+#define USB_SETUP_REQUEST_TYPE_VENDOR           0x40    /**< Vendor specific request */
 /** @} */
 
 /**
