@@ -347,6 +347,17 @@ typedef struct __attribute__((packed)) {
     ipv6_addr_t addrs[];    /**< addresses of IPv6 recursive DNS servers */
 } ndp_opt_rdnss_t;
 
+/**
+ * @brief   Get the start of addresses array in the recursive DNS server option
+ *
+ * @param[in]   opt   Recursive DNS server option in contiguous memory
+ *
+ * @returns     pointer to first address
+ */
+static inline ipv6_addr_t *ndp_opt_rdnss_addrs_ptr(ndp_opt_rdnss_t *opt) {
+	return (ipv6_addr_t *) (((uint8_t *)opt) + sizeof(ndp_opt_rdnss_t));
+}
+
 #ifdef __cplusplus
 }
 #endif
