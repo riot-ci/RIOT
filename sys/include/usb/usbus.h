@@ -91,22 +91,22 @@ extern "C" {
  * argument to the message.
  * @{
  */
-#define USBUS_MSG_TYPE_EVENT        (0x0100) /**< usbdev event received */
-#define USBUS_MSG_TYPE_EP_EVENT     (0x0200) /**< usbdev Endpoint event
-                                                  received */
+#define USBUS_MSG_TYPE_EVENT        (0x0100)    /**< usbdev event received */
+#define USBUS_MSG_TYPE_EP_EVENT     (0x0200)    /**< usbdev Endpoint event
+                                                     received */
 
-#define USBUS_MSG_TYPE_RESET        (0x0300) /**< Reset event */
-#define USBUS_MSG_TYPE_SOF          (0x0400) /**< Start of Frame event */
+#define USBUS_MSG_TYPE_RESET        (0x0300)    /**< Reset event */
+#define USBUS_MSG_TYPE_SOF          (0x0400)    /**< Start of Frame event */
 
-#define USBUS_MSG_TYPE_TR           (0x0500) /**< Generic transfer response event */
+#define USBUS_MSG_TYPE_TR           (0x0500)    /**< Generic transfer response event */
 #define USBUS_MSG_TYPE_TR_COMPLETE  (0x0501)
 #define USBUS_MSG_TYPE_TR_FAIL      (0x0502)
 #define USBUS_MSG_TYPE_TR_STALL     (0x0503)
 
-#define USBUS_MSG_TYPE_SETUP_RQ     (0x0600) /**< Setup request received event */
-#define USBUS_MSG_TYPE_HANDLER      (0x0700) /**< Generic handler request */
-#define USBUS_MSG_TYPE_SUSPEND      (0x0800) /**< host connected detected */
-#define USBUS_MSG_TYPE_RESUME       (0x0900) /**< host disconnect detected */
+#define USBUS_MSG_TYPE_SETUP_RQ     (0x0600)    /**< Setup request received event */
+#define USBUS_MSG_TYPE_HANDLER      (0x0700)    /**< Generic handler request */
+#define USBUS_MSG_TYPE_SUSPEND      (0x0800)    /**< host connected detected */
+#define USBUS_MSG_TYPE_RESUME       (0x0900)    /**< host disconnect detected */
 /** @} */
 
 /**
@@ -114,18 +114,18 @@ extern "C" {
  *
  * @{
  */
-#define USBUS_HANDLER_FLAG_RESET            (0x0001) /**< Report reset event */
-#define USBUS_HANDLER_FLAG_SOF              (0x0002) /**< Report SOF events */
-#define USBUS_HANDLER_FLAG_SUSPEND          (0x0004) /**< Report suspend events */
-#define USBUS_HANDLER_FLAG_RESUME           (0x0008) /**< Report resume from suspend */
-#define USBUS_HANDLER_FLAG_TR_FAIL          (0x0010) /**< Report transfer fail */
-#define USBUS_HANDLER_FLAG_TR_STALL         (0x0020) /**< Report transfer stall complete */
+#define USBUS_HANDLER_FLAG_RESET            (0x0001)    /**< Report reset event */
+#define USBUS_HANDLER_FLAG_SOF              (0x0002)    /**< Report SOF events */
+#define USBUS_HANDLER_FLAG_SUSPEND          (0x0004)    /**< Report suspend events */
+#define USBUS_HANDLER_FLAG_RESUME           (0x0008)    /**< Report resume from suspend */
+#define USBUS_HANDLER_FLAG_TR_FAIL          (0x0010)    /**< Report transfer fail */
+#define USBUS_HANDLER_FLAG_TR_STALL         (0x0020)    /**< Report transfer stall complete */
 /** @} */
 
 typedef enum {
-    USBUS_EVENT_TRANSFER_COMPLETE, /**< Transfer succesfully completed */
-    USBUS_EVENT_TRANSFER_FAIL,     /**< Transfer nack replied by peripheral */
-    USBUS_EVENT_TRANSFER_STALL,    /**< Transfer stall replied by peripheral */
+    USBUS_EVENT_TRANSFER_COMPLETE,  /**< Transfer succesfully completed */
+    USBUS_EVENT_TRANSFER_FAIL,      /**< Transfer nack replied by peripheral */
+    USBUS_EVENT_TRANSFER_STALL,     /**< Transfer stall replied by peripheral */
 } usbus_event_transfer_t;
 
 /**
@@ -143,13 +143,13 @@ typedef enum {
  * @brief USBUS setup request state machine
  */
 typedef enum {
-    USBUS_SETUPRQ_READY,      /**< Ready for new setup request */
-    USBUS_SETUPRQ_INDATA,     /**< Request received with expected DATA IN stage */
-    USBUS_SETUPRQ_OUTACK,     /**< Expecting a zero-length ack out request
-                                   from the host */
-    USBUS_SETUPRQ_OUTDATA,    /**< Data OUT expected */
-    USBUS_SETUPRQ_INACK,      /**< Expecting a zero-length ack in request
-                                   from the host */
+    USBUS_SETUPRQ_READY,        /**< Ready for new setup request */
+    USBUS_SETUPRQ_INDATA,       /**< Request received with expected DATA IN stage */
+    USBUS_SETUPRQ_OUTACK,       /**< Expecting a zero-length ack out request
+                                     from the host */
+    USBUS_SETUPRQ_OUTDATA,      /**< Data OUT expected */
+    USBUS_SETUPRQ_INACK,        /**< Expecting a zero-length ack in request
+                                     from the host */
 } usbus_setuprq_state_t;
 
 /**
@@ -165,8 +165,8 @@ typedef struct usbus_string {
  * @brief Header length types for USB descriptor generators
  */
 typedef enum {
-    USBUS_HDR_LEN_FIXED, /**< Header always generates a fixed length */
-    USBUS_HDR_LEN_FUNC,  /**< Header length is calculated by a function */
+    USBUS_HDR_LEN_FIXED,    /**< Header always generates a fixed length */
+    USBUS_HDR_LEN_FUNC,     /**< Header length is calculated by a function */
 } usbus_hdr_len_type_t;
 
 /**
@@ -205,10 +205,10 @@ typedef size_t (*hdr_len)(usbus_t *usbus, void *arg);
  * @brief USBUS header generator function pointers
  */
 typedef struct {
-    gen_hdr get_header;         /**< function ptr to retrieve the header */
+    gen_hdr get_header;             /**< function ptr to retrieve the header */
     union {
         hdr_len get_header_len;     /**< function ptr to retrieve the header len */
-        size_t  fixed_len;          /**< length of the header if it is a fixed length */
+        size_t fixed_len;           /**< length of the header if it is a fixed length */
     } len;
     usbus_hdr_len_type_t len_type;  /**< Either USBUS_HDR_LEN_FIXED or USBUS_HDR_LEN_FUNC */
 } usbus_hdr_gen_funcs_t;
@@ -233,15 +233,15 @@ typedef struct usbus_hdr_gen {
  * @brief USBUS endpoint context
  */
 typedef struct usbus_endpoint {
-    struct usbus_endpoint *next; /**< Next endpoint in the
-                                      @ref usbus_interface_t list of
-                                      endpoints */
-    usbus_hdr_gen_t *hdr_gen;    /**< Optional additional header generator */
-    usbdev_ep_t *ep;             /**< ptr to the matching usbdev endpoint */
-    uint16_t maxpacketsize;      /**< Max packet size of this endpoint */
-    uint8_t interval;            /**< Poll interval for interrupt endpoints */
-    bool active;                 /**< If the endpoint should be activated after
-                                      reset */
+    struct usbus_endpoint *next;    /**< Next endpoint in the
+                                         @ref usbus_interface_t list of
+                                         endpoints */
+    usbus_hdr_gen_t *hdr_gen;       /**< Optional additional header generator */
+    usbdev_ep_t *ep;                /**< ptr to the matching usbdev endpoint */
+    uint16_t maxpacketsize;         /**< Max packet size of this endpoint */
+    uint8_t interval;               /**< Poll interval for interrupt endpoints */
+    bool active;                    /**< If the endpoint should be activated after
+                                         reset */
 } usbus_endpoint_t;
 
 /**
@@ -250,37 +250,37 @@ typedef struct usbus_endpoint {
  * Used for specifying alternative interfaces for an @ref usbus_interface_t
  */
 typedef struct usbus_interface_alt {
-    struct usbus_interface_alt *next; /**< Next alternative setting */
-    usbus_hdr_gen_t *hdr_gen;         /**< Optional additional header
-                                           generator */
-    usbus_endpoint_t *ep;             /**< List of associated endpoints for
-                                           this alternative setting */
+    struct usbus_interface_alt *next;   /**< Next alternative setting */
+    usbus_hdr_gen_t *hdr_gen;           /**< Optional additional header
+                                             generator */
+    usbus_endpoint_t *ep;               /**< List of associated endpoints for
+                                             this alternative setting */
 } usbus_interface_alt_t;
 
 /**
  * @brief USBUS interface
  */
 typedef struct usbus_interface {
-    struct usbus_interface *next;     /**< Next interface (set by USBUS during
-                                           registration)                     */
-    usbus_hdr_gen_t *hdr_gen;         /**< Optional additional header
-                                           generators                        */
-    usbus_endpoint_t *ep;             /**< Linked list of endpoints belonging
-                                           to this interface                 */
-    struct usbus_interface_alt *alts; /**< List of alt settings              */
-    usbus_handler_t* handler;         /**< Handlers for this interface       */
-    usbus_string_t *descr;            /**< Descriptor string                 */
-    uint16_t idx;                     /**< Interface index, (set by USBUS
-                                           during registration               */
-    uint8_t class;                    /**< USB interface class               */
-    uint8_t subclass;                 /**< USB interface subclass            */
-    uint8_t protocol;                 /**< USB interface protocol            */
+    struct usbus_interface *next;       /**< Next interface (set by USBUS during
+                                             registration)                     */
+    usbus_hdr_gen_t *hdr_gen;           /**< Optional additional header
+                                             generators                        */
+    usbus_endpoint_t *ep;               /**< Linked list of endpoints belonging
+                                             to this interface                 */
+    struct usbus_interface_alt *alts;   /**< List of alt settings              */
+    usbus_handler_t *handler;           /**< Handlers for this interface       */
+    usbus_string_t *descr;              /**< Descriptor string                 */
+    uint16_t idx;                       /**< Interface index, (set by USBUS
+                                             during registration               */
+    uint8_t class;                      /**< USB interface class               */
+    uint8_t subclass;                   /**< USB interface subclass            */
+    uint8_t protocol;                   /**< USB interface protocol            */
 } usbus_interface_t;
 
 /**
  * @brief USBUS event handler function pointers
  */
-typedef struct usbus_handler_driver{
+typedef struct usbus_handler_driver {
 
     /**
      * @brief Initialize the event handler
@@ -291,7 +291,7 @@ typedef struct usbus_handler_driver{
      * @param usbus     USBUS context
      * @param handler   handler context
      */
-    void (*init)(usbus_t *usbus, struct usbus_handler *handler);
+    void (*init)(usbus_t * usbus, struct usbus_handler *handler);
 
     /**
      * @brief event handler function
@@ -303,7 +303,8 @@ typedef struct usbus_handler_driver{
      * @param event     @ref USBUS_MSG_TYPES "event" to handle
      * @param arg       Additional argument
      */
-    int (*event_handler)(usbus_t *usbus, struct usbus_handler *handler, uint16_t event);
+    int (*event_handler)(usbus_t * usbus, struct usbus_handler *handler,
+                         uint16_t event);
 
     /**
      * @brief transfer handler function
@@ -315,7 +316,7 @@ typedef struct usbus_handler_driver{
      * @param ep        usbdev endpoint that triggered the event
      * @param event     event to handle
      */
-    int (*transfer_handler)(usbus_t *usbus, struct usbus_handler *handler,
+    int (*transfer_handler)(usbus_t * usbus, struct usbus_handler *handler,
                             usbdev_ep_t *ep, usbus_event_transfer_t event);
 
     /**
@@ -328,7 +329,7 @@ typedef struct usbus_handler_driver{
      * @param state     setup request state
      * @param setup     setup packet
      */
-    int (*setup_handler)(usbus_t *usbus, struct usbus_handler *handler,
+    int (*setup_handler)(usbus_t * usbus, struct usbus_handler *handler,
                          usbus_setuprq_state_t state, usb_setup_t *request);
 } usbus_handler_driver_t;
 
@@ -338,32 +339,32 @@ typedef struct usbus_handler_driver{
  * Inherit from this struct for custom USB functionality
  */
 struct usbus_handler {
-    struct usbus_handler *next;           /**< List of handlers (to be used by
-                                               @ref usbus_t) */
-    const usbus_handler_driver_t *driver; /**< driver for this handler */
-    usbus_interface_t *iface;             /**< Interface this handler belongs
-                                               to */
-    uint32_t flags;                       /**< Report flags */
+    struct usbus_handler *next;             /**< List of handlers (to be used by
+                                                 @ref usbus_t) */
+    const usbus_handler_driver_t *driver;   /**< driver for this handler */
+    usbus_interface_t *iface;               /**< Interface this handler belongs
+                                                 to */
+    uint32_t flags;                         /**< Report flags */
 };
 
 /**
  * @brief USBUS context struct
  */
 struct usbus {
-    usbus_string_t manuf;         /**< Manufacturer string                   */
-    usbus_string_t product;       /**< Product string                        */
-    usbus_string_t config;        /**< Configuration string                  */
-    usbdev_t *dev;                /**< usb phy device of the usb manager     */
-    usbus_handler_t *control;     /**< Ptr to the control endpoint handler   */
-    usbus_hdr_gen_t *hdr_gen;     /**< Top level header generators           */
-    usbus_string_t *strings;      /**< List of descriptor strings            */
-    usbus_interface_t *iface;     /**< List of USB interfaces                */
-    usbus_handler_t *handlers;    /**< List of event callback handlers       */
-    kernel_pid_t pid;             /**< PID of the usb manager's thread       */
-    uint16_t str_idx;             /**< Number of strings registered          */
-    usbus_state_t state;          /**< Current state                         */
-    usbus_state_t pstate;         /**< state to recover to from suspend      */
-    uint8_t addr;                 /**< Address of the USB peripheral         */
+    usbus_string_t manuf;           /**< Manufacturer string                   */
+    usbus_string_t product;         /**< Product string                        */
+    usbus_string_t config;          /**< Configuration string                  */
+    usbdev_t *dev;                  /**< usb phy device of the usb manager     */
+    usbus_handler_t *control;       /**< Ptr to the control endpoint handler   */
+    usbus_hdr_gen_t *hdr_gen;       /**< Top level header generators           */
+    usbus_string_t *strings;        /**< List of descriptor strings            */
+    usbus_interface_t *iface;       /**< List of USB interfaces                */
+    usbus_handler_t *handlers;      /**< List of event callback handlers       */
+    kernel_pid_t pid;               /**< PID of the usb manager's thread       */
+    uint16_t str_idx;               /**< Number of strings registered          */
+    usbus_state_t state;            /**< Current state                         */
+    usbus_state_t pstate;           /**< state to recover to from suspend      */
+    uint8_t addr;                   /**< Address of the USB peripheral         */
 };
 
 /**
@@ -375,7 +376,8 @@ struct usbus {
  *
  * @return            Index of the string descriptor
  */
-uint16_t usbus_add_string_descriptor(usbus_t *usbus, usbus_string_t *desc, const char *str);
+uint16_t usbus_add_string_descriptor(usbus_t *usbus, usbus_string_t *desc,
+                                     const char *str);
 
 /**
  * @brief Add an interface to the USBUS thread context
@@ -400,7 +402,9 @@ uint16_t usbus_add_interface(usbus_t *usbus, usbus_interface_t *iface);
  * @param[in] dir   USB endpoint direction
  * @param[in] len   Buffer space for the endpoint to allocate
  */
-int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface, usbus_endpoint_t* ep, usb_ep_type_t type, usb_ep_dir_t dir, size_t len);
+int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
+                       usbus_endpoint_t *ep, usb_ep_type_t type,
+                       usb_ep_dir_t dir, size_t len);
 
 /**
  * @brief Add a generator for generating additional top level USB descriptor
@@ -409,7 +413,7 @@ int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface, usbus_endpoint_
  * @param[in] usbus     USBUS context
  * @param[in] hdr_gen   Header generator to add
  */
-void usbus_add_conf_descriptor(usbus_t *usbus, usbus_hdr_gen_t* hdr_gen);
+void usbus_add_conf_descriptor(usbus_t *usbus, usbus_hdr_gen_t *hdr_gen);
 
 /**
  * @brief Add an event handler to the USBUS context
@@ -441,7 +445,7 @@ void usbus_init(usbus_t *usbus, usbdev_t *usbdev);
  * @param[in] usbus     context to start the thread for
  */
 void usbus_create(char *stack, int stacksize, char priority,
-                   const char *name, usbus_t *usbus);
+                  const char *name, usbus_t *usbus);
 
 /**
  * @brief Enable an endpoint

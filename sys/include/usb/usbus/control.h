@@ -43,13 +43,13 @@ typedef struct {
  * @brief Endpoint zero event handler
  */
 typedef struct {
-    usbus_handler_t handler;           /**< Inherited generic handler        */
-    usb_setup_t setup;                 /**< Last received setup packet       */
-    usbus_setuprq_state_t setup_state; /**< Setup request state machine      */
+    usbus_handler_t handler;            /**< Inherited generic handler        */
+    usb_setup_t setup;                  /**< Last received setup packet       */
+    usbus_setuprq_state_t setup_state;  /**< Setup request state machine      */
     usbus_control_slicer_t slicer;      /**< Slicer for multipart control
                                             messages */
-    usbdev_ep_t *out;                  /**< EP0 out endpoint                 */
-    usbdev_ep_t *in;                   /**< EP0 in endpoint                  */
+    usbdev_ep_t *out;                   /**< EP0 out endpoint                 */
+    usbdev_ep_t *in;                    /**< EP0 in endpoint                  */
 } usbus_control_handler_t;
 
 int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler);
@@ -62,7 +62,8 @@ int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler);
  *
  * @return              Actual number of bytes written
  */
-size_t usbus_control_slicer_put_bytes(usbus_t *usbus, const uint8_t *buf, size_t len);
+size_t usbus_control_slicer_put_bytes(usbus_t *usbus, const uint8_t *buf,
+                                      size_t len);
 
 /**
  * @brief Helper function for adding single bytes to the current control
@@ -89,4 +90,3 @@ int usbus_control_slicer_nextslice(usbus_t *usbus);
 #endif
 #endif /* USB_USBUS_CONTROL_H */
 /** @} */
-

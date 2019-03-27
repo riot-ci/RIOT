@@ -29,7 +29,8 @@
 #include "debug.h"
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event);
+static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
+                              uint16_t event);
 static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
                                  usbdev_ep_t *ep, usbus_event_transfer_t event);
 
@@ -56,10 +57,10 @@ static void _activate_endpoints(usbus_t *usbus)
             if (ep->active) {
                 static const usbopt_enable_t enable = USBOPT_ENABLE;
                 usbdev_ep_set(ep->ep, USBOPT_EP_ENABLE, &enable,
-                                    sizeof(usbopt_enable_t));
+                              sizeof(usbopt_enable_t));
                 DEBUG("usbus_control: activated endpoint %d, dir %s\n",
                       ep->ep->num,
-                      ep->ep->dir == USB_EP_DIR_OUT? "out" : "in");
+                      ep->ep->dir == USB_EP_DIR_OUT ? "out" : "in");
             }
         }
         for (usbus_interface_alt_t *alt = iface->alts; alt; alt = alt->next) {
@@ -67,10 +68,10 @@ static void _activate_endpoints(usbus_t *usbus)
                 if (ep->active) {
                     static const usbopt_enable_t enable = USBOPT_ENABLE;
                     usbdev_ep_set(ep->ep, USBOPT_EP_ENABLE, &enable,
-                                        sizeof(usbopt_enable_t));
+                                  sizeof(usbopt_enable_t));
                     DEBUG("usbus_control: activated endpoint %d, dir %s\n",
                           ep->ep->num,
-                          ep->ep->dir == USB_EP_DIR_OUT? "out" : "in");
+                          ep->ep->dir == USB_EP_DIR_OUT ? "out" : "in");
                 }
             }
         }
@@ -80,7 +81,8 @@ static void _activate_endpoints(usbus_t *usbus)
 static size_t usbus_cpy_str_to_utf16(usbus_t *usbus, const char *str)
 {
     size_t len = 0;
-    while(*str) {
+
+    while (*str) {
         usbus_control_slicer_put_char(usbus, *str);
         usbus_control_slicer_put_char(usbus, 0);
         len += 2; /* Two bytes added each iteration */
@@ -91,7 +93,7 @@ static size_t usbus_cpy_str_to_utf16(usbus_t *usbus, const char *str)
 
 static usbus_string_t *_get_descriptor(usbus_t *usbus, uint16_t idx)
 {
-    for (usbus_string_t * str = usbus->strings; str; str = str->next) {
+    for (usbus_string_t *str = usbus->strings; str; str = str->next) {
         if (str->idx == idx) {
             return str;
         }
@@ -102,6 +104,7 @@ static usbus_string_t *_get_descriptor(usbus_t *usbus, uint16_t idx)
 static int _req_status(usbus_t *usbus)
 {
     uint8_t status[2];
+
     memset(status, 0, sizeof(status));
     usbus_control_slicer_put_bytes(usbus, status, sizeof(status));
     return sizeof(status);
@@ -112,11 +115,11 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
     if (idx == 0) {
         usb_descriptor_string_t desc;
         desc.type = USB_TYPE_DESCRIPTOR_STRING;
-        desc.length = sizeof(uint16_t)+sizeof(usb_descriptor_string_t);
-        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
+        desc.length = sizeof(uint16_t) + sizeof(usb_descriptor_string_t);
+        usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc, sizeof(desc));
         /* Only one language ID supported */
         uint16_t us = USB_CONFIG_DEFAULT_LANGID;
-        usbus_control_slicer_put_bytes(usbus, (uint8_t*)&us, sizeof(uint16_t));
+        usbus_control_slicer_put_bytes(usbus, (uint8_t *)&us, sizeof(uint16_t));
     }
     else {
         usb_descriptor_string_t desc;
@@ -124,8 +127,9 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
         usbus_string_t *str = _get_descriptor(usbus, idx);
         if (str) {
             desc.length = sizeof(usb_descriptor_string_t);
-            desc.length += 2*strlen(str->str); /* USB strings are UTF-16 */
-            usbus_control_slicer_put_bytes(usbus, (uint8_t*)&desc, sizeof(desc));
+            desc.length += 2 * strlen(str->str); /* USB strings are UTF-16 */
+            usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc,
+                                           sizeof(desc));
             usbus_cpy_str_to_utf16(usbus, str->str);
         }
     }
@@ -146,7 +150,9 @@ static int _req_config(usbus_t *usbus)
 static int _req_dev_qualifier(usbus_t *usbus)
 {
     usb_speed_t speed = USB_SPEED_LOW;
-    usbus->dev->driver->get(usbus->dev, USBOPT_MAX_SPEED, &speed, sizeof(usb_speed_t));
+
+    usbus->dev->driver->get(usbus->dev, USBOPT_MAX_SPEED, &speed,
+                            sizeof(usb_speed_t));
     if (speed == USB_SPEED_HIGH) {
         /* TODO: implement device qualifier support (only required
          * for High speed) */
@@ -158,6 +164,7 @@ static int _req_descriptor(usbus_t *usbus, usb_setup_t *pkt)
 {
     uint8_t type = pkt->value >> 8;
     uint8_t idx = (uint8_t)pkt->value;
+
     /* Decode descriptor type */
     switch (type) {
         case USB_TYPE_DESCRIPTOR_DEVICE:
@@ -175,8 +182,9 @@ static int _req_descriptor(usbus_t *usbus, usb_setup_t *pkt)
 
 static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
 {
-    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
     int res = 0;
+
     if (usb_setup_is_read(pkt)) {
         switch (pkt->request) {
             case USB_SETUP_REQ_GET_STATUS:
@@ -189,7 +197,7 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
                 break;
         }
     }
-    else{
+    else {
         switch (pkt->request) {
             case USB_SETUP_REQ_SET_ADDRESS:
                 DEBUG("usbus_control: Setting address\n");
@@ -198,7 +206,7 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
             case USB_SETUP_REQ_SET_CONFIGURATION:
                 /* Nothing configuration dependent to do here, only one
                  * configuration supported */
-                 usbus->state = USBUS_STATE_CONFIGURED;
+                usbus->state = USBUS_STATE_CONFIGURED;
                 _activate_endpoints(usbus);
                 break;
             default:
@@ -212,13 +220,17 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
 
 static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
 {
-    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0_handler =
+        (usbus_control_handler_t *)usbus->control;
     uint16_t destination = pkt->index & 0x0f;
+
     /* Find interface handler */
     for (usbus_interface_t *iface = usbus->iface; iface; iface = iface->next) {
-        if (destination == iface->idx && iface->handler->driver->setup_handler) {
+        if (destination == iface->idx &&
+            iface->handler->driver->setup_handler) {
             return iface->handler->driver->setup_handler(usbus, iface->handler,
-                    ep0_handler->setup_state, pkt);
+                                                         ep0_handler->setup_state,
+                                                         pkt);
         }
     }
     return 0;
@@ -227,6 +239,7 @@ static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
 static void _recv_setup(usbus_t *usbus, usbus_control_handler_t *handler)
 {
     usb_setup_t *pkt = &handler->setup;
+
     DEBUG("usbus_control: Received setup %x %x @ %d\n", pkt->type,
           pkt->request, pkt->length);
     if (usb_setup_is_read(pkt)) {
@@ -244,7 +257,7 @@ static void _recv_setup(usbus_t *usbus, usbus_control_handler_t *handler)
     }
     uint8_t destination = pkt->type & USB_SETUP_REQUEST_RECIPIENT_MASK;
     int res = 0;
-    switch(destination) {
+    switch (destination) {
         case USB_SETUP_REQUEST_RECIPIENT_DEVICE:
             res = _recv_dev_setup(usbus, pkt);
             break;
@@ -282,7 +295,7 @@ static void _usbus_config_ep0(usbus_control_handler_t *ep0_handler)
 static void _init(usbus_t *usbus, usbus_handler_t *handler)
 {
     DEBUG("usbus_control: Initializing EP0\n");
-    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
     ep0_handler->setup_state = USBUS_SETUPRQ_READY;
 
@@ -292,13 +305,16 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
                                      USB_EP_DIR_OUT, USBUS_EP0_SIZE);
 }
 
-static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_handler, usbdev_ep_t *ep)
+static int _handle_tr_complete(usbus_t *usbus,
+                               usbus_control_handler_t *ep0_handler,
+                               usbdev_ep_t *ep)
 {
-    switch(ep0_handler->setup_state) {
+    switch (ep0_handler->setup_state) {
         case USBUS_SETUPRQ_INACK:
             if (ep->dir == USB_EP_DIR_IN) {
                 if (usbus->addr && usbus->state == USBUS_STATE_RESET) {
-                    usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(usbus->addr));
+                    usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr,
+                               sizeof(usbus->addr));
                     /* Address configured */
                     usbus->state = USBUS_STATE_ADDR;
                 }
@@ -330,7 +346,8 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_hand
                 ep0_handler->setup_state = USBUS_SETUPRQ_INACK;
                 size_t len = 0;
                 usbdev_ep_get(ep, USBOPT_EP_AVAILABLE, &len, sizeof(size_t));
-                DEBUG("Expected len: %d, received: %d\n", ep0_handler->setup.length, len);
+                DEBUG("Expected len: %d, received: %d\n",
+                      ep0_handler->setup.length, len);
                 if (ep0_handler->setup.length == len) {
                     DEBUG("DATA complete\n");
                     usbdev_ep_ready(ep0_handler->in, 0);
@@ -345,7 +362,8 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_hand
         case USBUS_SETUPRQ_READY:
             if (ep->dir == USB_EP_DIR_OUT) {
                 memset(&ep0_handler->slicer, 0, sizeof(usbus_control_slicer_t));
-                memcpy(&ep0_handler->setup, ep0_handler->out->buf, sizeof(usb_setup_t));
+                memcpy(&ep0_handler->setup, ep0_handler->out->buf,
+                       sizeof(usb_setup_t));
                 ep0_handler->slicer.reqlen = ep0_handler->setup.length;
                 _recv_setup(usbus, ep0_handler);
             }
@@ -358,9 +376,11 @@ static int _handle_tr_complete(usbus_t *usbus, usbus_control_handler_t *ep0_hand
 }
 
 /* USB endpoint 0 callback */
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t event)
+static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
+                              uint16_t event)
 {
-    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
+
     (void)usbus;
     switch (event) {
         case USBUS_MSG_TYPE_RESET:
@@ -377,7 +397,8 @@ static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler, uint16_t
 static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
                                  usbdev_ep_t *ep, usbus_event_transfer_t event)
 {
-    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t*)handler;
+    usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
+
     switch (event) {
         case USBUS_EVENT_TRANSFER_COMPLETE:
             return _handle_tr_complete(usbus, ep0_handler, ep);

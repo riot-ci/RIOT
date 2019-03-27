@@ -26,10 +26,12 @@
 
 int usbus_control_slicer_nextslice(usbus_t *usbus)
 {
-    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
     usbus_control_slicer_t *bldr = &ep0->slicer;
     size_t end = bldr->start + ep0->in->len;
-    if (bldr->cur > end && bldr->start < bldr->reqlen && bldr->transfered < bldr->reqlen) {
+
+    if (bldr->cur > end && bldr->start < bldr->reqlen &&
+        bldr->transfered < bldr->reqlen) {
         bldr->start += ep0->in->len;
         bldr->cur = 0;
         bldr->len = 0;
@@ -38,15 +40,17 @@ int usbus_control_slicer_nextslice(usbus_t *usbus)
     return 0;
 }
 
-size_t usbus_control_slicer_put_bytes(usbus_t *usbus, const uint8_t *buf, size_t len)
+size_t usbus_control_slicer_put_bytes(usbus_t *usbus, const uint8_t *buf,
+                                      size_t len)
 {
-    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
     usbus_control_slicer_t *bldr = &ep0->slicer;
     size_t end = bldr->start + ep0->in->len;
     size_t byte_len = 0;    /* Length of the string to copy */
 
     /* Calculate start offset of the supplied bytes */
-    size_t byte_offset = (bldr->start > bldr->cur) ? bldr->start - bldr->cur : 0;
+    size_t byte_offset =
+        (bldr->start > bldr->cur) ? bldr->start - bldr->cur : 0;
 
     /* Check for string before or beyond window */
     if ((bldr->cur >= end) || (byte_offset > len)) {
@@ -63,15 +67,16 @@ size_t usbus_control_slicer_put_bytes(usbus_t *usbus, const uint8_t *buf, size_t
     size_t start_offset = bldr->cur - bldr->start + byte_offset;
     bldr->cur += len;
     bldr->len += byte_len;
-    memcpy(ep0->in->buf + start_offset , buf + byte_offset, byte_len);
+    memcpy(ep0->in->buf + start_offset, buf + byte_offset, byte_len);
     return byte_len;
 }
 
 size_t usbus_control_slicer_put_char(usbus_t *usbus, char c)
 {
-    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
     usbus_control_slicer_t *bldr = &ep0->slicer;
     size_t end = bldr->start + ep0->in->len;
+
     /* Only copy the char if it is within the window */
     if ((bldr->start <=  bldr->cur) && (bldr->cur < end)) {
         uint8_t *pos = ep0->in->buf + bldr->cur - bldr->start;
@@ -86,9 +91,10 @@ size_t usbus_control_slicer_put_char(usbus_t *usbus, char c)
 
 void usbus_control_slicer_ready(usbus_t *usbus)
 {
-    usbus_control_handler_t *ep0 = (usbus_control_handler_t*)usbus->control;
+    usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
     usbus_control_slicer_t *bldr = &ep0->slicer;
     size_t len = bldr->len;
+
     len = len < bldr->reqlen - bldr->start ? len : bldr->reqlen - bldr->start;
     bldr->transfered += len;
     usbdev_ep_ready(ep0->in, len);

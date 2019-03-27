@@ -50,25 +50,28 @@ void usbus_init(usbus_t *usbus, usbdev_t *usbdev)
 }
 
 void usbus_create(char *stack, int stacksize, char priority,
-                   const char *name, usbus_t *usbus)
+                  const char *name, usbus_t *usbus)
 {
     int res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
-                        _usbus_thread, (void *)usbus, name);
+                            _usbus_thread, (void *)usbus, name);
+
     (void)res;
     assert(res > 0);
 }
 
-uint16_t usbus_add_string_descriptor(usbus_t *usbus, usbus_string_t *desc, const char *str)
+uint16_t usbus_add_string_descriptor(usbus_t *usbus, usbus_string_t *desc,
+                                     const char *str)
 {
     desc->next = usbus->strings;
     usbus->strings = desc;
     desc->idx = usbus->str_idx++;
     desc->str = str;
-    DEBUG("usbus: Adding string descriptor number %u for: \"%s\"\n", desc->idx, str);
+    DEBUG("usbus: Adding string descriptor number %u for: \"%s\"\n", desc->idx,
+          str);
     return desc->idx;
 }
 
-void usbus_add_conf_descriptor(usbus_t *usbus, usbus_hdr_gen_t* hdr_gen)
+void usbus_add_conf_descriptor(usbus_t *usbus, usbus_hdr_gen_t *hdr_gen)
 {
     hdr_gen->next = usbus->hdr_gen;
     usbus->hdr_gen = hdr_gen;
@@ -103,6 +106,7 @@ uint16_t usbus_add_interface(usbus_t *usbus, usbus_interface_t *iface)
      * only used at init */
     uint16_t idx = 0;
     usbus_interface_t *last = usbus->iface;
+
     if (last) {
         idx++;
         while (last->next) {
@@ -122,6 +126,7 @@ void usbus_register_event_handler(usbus_t *usbus, usbus_handler_t *handler)
 {
     /* See note above for reasons against clist.h */
     usbus_handler_t *last = usbus->handlers;
+
     if (last) {
         while (last->next) {
             last = last->next;
@@ -134,11 +139,12 @@ void usbus_register_event_handler(usbus_t *usbus, usbus_handler_t *handler)
 }
 
 int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
-                       usbus_endpoint_t* ep, usb_ep_type_t type,
+                       usbus_endpoint_t *ep, usb_ep_type_t type,
                        usb_ep_dir_t dir, size_t len)
 {
     int res = -ENOMEM;
-    usbdev_ep_t* usbdev_ep = usbdev_new_ep(usbus->dev, type, dir, len);
+    usbdev_ep_t *usbdev_ep = usbdev_new_ep(usbus->dev, type, dir, len);
+
     if (usbdev_ep) {
         ep->maxpacketsize = usbdev_ep->len;
         ep->ep = usbdev_ep;
@@ -163,15 +169,16 @@ static void _signal_handlers(usbus_t *usbus, uint16_t flag,
 static void _usbus_init_handlers(usbus_t *usbus)
 {
     for (usbus_handler_t *handler = usbus->handlers;
-            handler; handler = handler->next) {
+         handler; handler = handler->next) {
         handler->driver->init(usbus, handler);
     }
 }
 
 static void *_usbus_thread(void *args)
 {
-    usbus_t *usbus = (usbus_t*)args;
+    usbus_t *usbus = (usbus_t *)args;
     usbus_control_handler_t ep0_handler;
+
     usbus->control = &ep0_handler.handler;
 
     usbus_control_init(usbus, &ep0_handler);
@@ -192,7 +199,8 @@ static void *_usbus_thread(void *args)
     dev->context = usbus;
     usbdev_init(dev);
 
-    usbus_add_string_descriptor(usbus, &usbus->config, USB_CONFIG_CONFIGURATION_STR);
+    usbus_add_string_descriptor(usbus, &usbus->config,
+                                USB_CONFIG_CONFIGURATION_STR);
     usbus_add_string_descriptor(usbus, &usbus->product, USB_CONFIG_PRODUCT_STR);
     usbus_add_string_descriptor(usbus, &usbus->manuf, USB_CONFIG_MANUF_STR);
 
@@ -201,7 +209,7 @@ static void *_usbus_thread(void *args)
     /* Initialize handlers */
     _usbus_init_handlers(usbus);
 
-#if(USBUS_AUTO_ATTACH)
+#if (USBUS_AUTO_ATTACH)
     static const usbopt_enable_t _enable = USBOPT_ENABLE;
     usbdev_set(dev, USBOPT_ATTACH, &_enable,
                sizeof(usbopt_enable_t));
@@ -215,17 +223,17 @@ static void *_usbus_thread(void *args)
                 usbdev_esr(dev);
                 break;
             case USBUS_MSG_TYPE_EP_EVENT:
-                {
-                    usbdev_ep_t *ep = (usbdev_ep_t*)msg.content.ptr;
-                    usbdev_ep_esr(ep);
-                }
-              break;
+            {
+                usbdev_ep_t *ep = (usbdev_ep_t *)msg.content.ptr;
+                usbdev_ep_esr(ep);
+            }
+            break;
             case USBUS_MSG_TYPE_HANDLER:
-                {
-                    usbus_handler_t *handler = (usbus_handler_t*)msg.content.ptr;
-                    handler->driver->event_handler(usbus, handler, msg.type);
-                }
-              break;
+            {
+                usbus_handler_t *handler = (usbus_handler_t *)msg.content.ptr;
+                handler->driver->event_handler(usbus, handler, msg.type);
+            }
+            break;
             default:
                 DEBUG("usbus: unhandled event %x\n", msg.type);
                 break;
@@ -238,6 +246,7 @@ static void *_usbus_thread(void *args)
 static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
 {
     usbus_t *usbus = (usbus_t *)usbdev->context;
+
     if (event == USBDEV_EVENT_ESR) {
         msg_t msg = { .type = USBUS_MSG_TYPE_EVENT,
                       .content = { .ptr = usbdev } };
@@ -252,7 +261,8 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
             case USBDEV_EVENT_RESET:
                 usbus->state = USBUS_STATE_RESET;
                 usbus->addr = 0;
-                usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr, sizeof(uint8_t));
+                usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr,
+                           sizeof(uint8_t));
                 flag = USBUS_HANDLER_FLAG_RESET;
                 msg = USBUS_MSG_TYPE_RESET;
                 break;
@@ -281,9 +291,10 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
 static void _event_ep_cb(usbdev_ep_t *ep, usbdev_event_t event)
 {
     usbus_t *usbus = (usbus_t *)ep->dev->context;
+
     if (event == USBDEV_EVENT_ESR) {
         msg_t msg = { .type = USBUS_MSG_TYPE_EP_EVENT,
-                      .content = { .ptr = ep} };
+                      .content = { .ptr = ep } };
 
         if (msg_send(&msg, usbus->pid) <= 0) {
             puts("usbus_ep: possibly lost interrupt.");
@@ -294,18 +305,24 @@ static void _event_ep_cb(usbdev_ep_t *ep, usbdev_event_t event)
         if (handler) {
             switch (event) {
                 case USBDEV_EVENT_TR_COMPLETE:
-                    handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_COMPLETE);
+                    handler->driver->transfer_handler(usbus, handler, ep,
+                                                      USBUS_EVENT_TRANSFER_COMPLETE);
                     break;
                 case USBDEV_EVENT_TR_FAIL:
-                    if (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_FAIL)) {
-                        handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_FAIL);
+                    if (usbus_handler_isset_flag(handler,
+                                                 USBUS_HANDLER_FLAG_TR_FAIL)) {
+                        handler->driver->transfer_handler(usbus, handler, ep,
+                                                          USBUS_EVENT_TRANSFER_FAIL);
                     }
                     break;
                 case USBDEV_EVENT_TR_STALL:
-                    if (usbus_handler_isset_flag(handler, USBUS_HANDLER_FLAG_TR_STALL)) {
-                        handler->driver->transfer_handler(usbus, handler, ep, USBUS_EVENT_TRANSFER_STALL);
+                    if (usbus_handler_isset_flag(handler,
+                                                 USBUS_HANDLER_FLAG_TR_STALL)) {
+                        handler->driver->transfer_handler(usbus, handler, ep,
+                                                          USBUS_EVENT_TRANSFER_STALL);
                         static const usbopt_enable_t disable = USBOPT_DISABLE;
-                        usbdev_ep_set(ep, USBOPT_EP_STALL, &disable, sizeof(usbopt_enable_t));
+                        usbdev_ep_set(ep, USBOPT_EP_STALL, &disable,
+                                      sizeof(usbopt_enable_t));
                     }
                     break;
                 default:
