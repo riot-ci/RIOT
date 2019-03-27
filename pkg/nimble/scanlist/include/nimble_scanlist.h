@@ -10,6 +10,10 @@
  * @defgroup    ble_nimble_scanlist Scan Result List
  * @ingroup     ble_nimble
  * @brief       List for storing and printing BLE scan results
+ *
+ * @note        This scanlist implementation is not thread safe. So calling
+ *              nimble_scanlist_update() in between nimble_scanlist_get*()
+ *              calls is not a good idea.
  * @{
  *
  * @file
