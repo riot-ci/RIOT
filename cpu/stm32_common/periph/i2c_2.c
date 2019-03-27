@@ -89,9 +89,9 @@ void i2c_init(i2c_t dev)
 
 #if defined(CPU_FAM_STM32F4)
     /* make sure the analog filters don't hang -> see errata sheet 2.14.7 */
-    if (i2c->SR2 & I2C_SR2_BUSY) {
+    if (i2c_config[dev].dev->SR2 & I2C_SR2_BUSY) {
         /* disable peripheral */
-        i2c->CR1 &= ~I2C_CR1_PE;
+        i2c_config[dev].dev->CR1 &= ~I2C_CR1_PE;
         /* toggle both pins to reset analog filter */
         gpio_init(i2c_config[dev].scl_pin, GPIO_OD);
         gpio_init(i2c_config[dev].sda_pin, GPIO_OD);
