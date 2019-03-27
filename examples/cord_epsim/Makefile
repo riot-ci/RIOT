@@ -43,7 +43,7 @@ CFLAGS += -DRD_PORT=$(RD_PORT)
 # the RD_ADDR environment variable. Per default, this value is set to the
 # loopback address for enabling the build tests to successfully build this
 # example.
-RD_ADDR ?= \"::1\"
+RD_ADDR ?= \"affe::1\"
 CFLAGS += -DRD_ADDR=$(RD_ADDR)
 
 include $(RIOTBASE)/Makefile.include

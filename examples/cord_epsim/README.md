@@ -10,6 +10,9 @@ statically, using the `RD_ADDR` environment variable:
 ```
 RD_ADDR=\\\"abc:0815::123\\\" make all
 ```
+Per default, this is set to some random global address (`affe::1`) for compile
+test reasons. So change it!
+
 Additionally, you can change the RD server's port by overriding the `RD_PORT`
 variable:
 ```
