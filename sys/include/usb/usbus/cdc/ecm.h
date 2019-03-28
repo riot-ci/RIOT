@@ -72,13 +72,15 @@ typedef struct usbus_cdceem_device {
     usbus_interface_t iface_data;
     usbus_interface_t iface_ctrl;
     usbus_interface_alt_t iface_data_alt;
-    usbus_endpoint_t ep_in;
-    usbus_endpoint_t ep_out;
-    usbus_endpoint_t ep_ctrl;
+    usbus_endpoint_t *ep_in;
+    usbus_endpoint_t *ep_out;
+    usbus_endpoint_t *ep_ctrl;
     usbus_hdr_gen_t cdc_hdr;
     usbus_hdr_gen_t ecm_hdr;
     usbus_hdr_gen_t union_hdr;
     usbus_hdr_gen_t call_mngt_hdr;
+    event_t rx_flush;
+    event_t tx_xmit;
     netdev_t netdev;
     uint8_t mac_netdev[6]; /**< this device's MAC address */
     char mac_host[13];     /**< host side's MAC address as string */
