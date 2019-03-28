@@ -816,7 +816,8 @@ endif
 
 ifneq (,$(filter usbus,$(USEMODULE)))
   FEATURES_REQUIRED += periph_usbdev
-  USEMODULE += xtimer
+  USEMODULE += core_thread_flags
+  USEMODULE += event
 endif
 
 ifneq (,$(filter uuid,$(USEMODULE)))

@@ -16,8 +16,10 @@
  * @}
  */
 
+#include "bitarithm.h"
+#include "event.h"
 #include "thread.h"
-#include "byteorder.h"
+#include "thread_flags.h"
 #include "periph/usbdev.h"
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
@@ -138,20 +140,39 @@ void usbus_register_event_handler(usbus_t *usbus, usbus_handler_t *handler)
     }
 }
 
-int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
-                       usbus_endpoint_t *ep, usb_ep_type_t type,
-                       usb_ep_dir_t dir, size_t len)
+usbus_endpoint_t *usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
+                                     usb_ep_type_t type, usb_ep_dir_t dir,
+                                     size_t len)
 {
-    int res = -ENOMEM;
+    usbus_endpoint_t *ep = NULL;
     usbdev_ep_t *usbdev_ep = usbdev_new_ep(usbus->dev, type, dir, len);
 
     if (usbdev_ep) {
+        ep = dir == USB_EP_DIR_IN ? &usbus->ep_in[usbdev_ep->num]
+                                  : &usbus->ep_out[usbdev_ep->num];
         ep->maxpacketsize = usbdev_ep->len;
         ep->ep = usbdev_ep;
-        ep->next = iface->ep;
-        iface->ep = ep;
-        res = 0;
+        if (iface) {
+            ep->next = iface->ep;
+            iface->ep = ep;
+        }
     }
+    return ep;
+}
+
+static inline uint32_t _get_ep_bitflag(usbdev_ep_t *ep)
+{
+    /* Bit flag, lower half are OUT endpoints, upper half are IN endpoints */
+    return 1 << ((ep->dir == USB_EP_DIR_IN ? 0x10 : 0x00) + ep->num);
+}
+
+static uint32_t _get_and_reset_ep_events(usbus_t *usbus)
+{
+    unsigned state = irq_disable();
+    uint32_t res = usbus->ep_events;
+
+    usbus->ep_events = 0;
+    irq_restore(state);
     return res;
 }
 
@@ -179,6 +200,8 @@ static void *_usbus_thread(void *args)
     usbus_t *usbus = (usbus_t *)args;
     usbus_control_handler_t ep0_handler;
 
+    event_queue_init(&usbus->queue);
+
     usbus->control = &ep0_handler.handler;
 
     usbus_control_init(usbus, &ep0_handler);
@@ -188,10 +211,8 @@ static void *_usbus_thread(void *args)
     usbus->addr = 0;
     usbus->iface = NULL;
     usbus->str_idx = 1;
-    msg_t msg, msg_queue[_USBUS_MSG_QUEUE_SIZE];
     DEBUG("usbus: starting thread %i\n", sched_active_pid);
     /* setup the link-layer's message queue */
-    msg_init_queue(msg_queue, _USBUS_MSG_QUEUE_SIZE);
     /* register the event callback with the device driver */
     dev->cb = _event_cb;
     dev->epcb = _event_ep_cb;
@@ -216,28 +237,37 @@ static void *_usbus_thread(void *args)
 #endif
 
     while (1) {
-        msg_receive(&msg);
-        /* dispatch USBUS messages */
-        switch (msg.type & 0xFF00) {
-            case USBUS_MSG_TYPE_EVENT:
-                usbdev_esr(dev);
-                break;
-            case USBUS_MSG_TYPE_EP_EVENT:
-            {
-                usbdev_ep_t *ep = (usbdev_ep_t *)msg.content.ptr;
-                usbdev_ep_esr(ep);
-            }
-            break;
-            case USBUS_MSG_TYPE_HANDLER:
-            {
-                usbus_handler_t *handler = (usbus_handler_t *)msg.content.ptr;
-                handler->driver->event_handler(usbus, handler, msg.type);
-            }
-            break;
-            default:
-                DEBUG("usbus: unhandled event %x\n", msg.type);
-                break;
+        thread_flags_t flags = thread_flags_wait_any(
+            USBUS_THREAD_FLAG_USBDEV |
+            USBUS_THREAD_FLAG_USBDEV_EP
+            );
+        if (flags & USBUS_THREAD_FLAG_USBDEV) {
+            usbdev_esr(dev);
         }
+        if (flags & USBUS_THREAD_FLAG_USBDEV_EP) {
+            uint32_t events = _get_and_reset_ep_events(usbus);
+            while (events) {
+                unsigned num = bitarithm_lsb(events);
+                events &= ~(1 << num);
+                if (num >= 0x10) {
+                    /* IN endpoint */
+                    assert(num - 0x10 < USBDEV_NUM_ENDPOINTS);
+                    usbdev_ep_esr(usbus->ep_in[num - 0x10].ep);
+                }
+                else {
+                    assert(num < USBDEV_NUM_ENDPOINTS);
+                    usbdev_ep_esr(usbus->ep_out[num].ep);
+                }
+            }
+
+        }
+        if (flags & THREAD_FLAG_EVENT) {
+            event_t *event = event_get(&usbus->queue);
+            if (event) {
+                event->handler(event);
+            }
+        }
+
     }
     return NULL;
 }
@@ -248,15 +278,20 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
     usbus_t *usbus = (usbus_t *)usbdev->context;
 
     if (event == USBDEV_EVENT_ESR) {
+        thread_flags_set((thread_t *)thread_get(usbus->pid),
+                         USBUS_THREAD_FLAG_USBDEV);
+#if 0
         msg_t msg = { .type = USBUS_MSG_TYPE_EVENT,
                       .content = { .ptr = usbdev } };
 
         if (msg_send(&msg, usbus->pid) <= 0) {
             puts("usbus: possibly lost interrupt.");
         }
+#endif
     }
     else {
-        uint16_t flag = 0, msg;
+        usbus_event_usb_t msg;
+        uint16_t flag;
         switch (event) {
             case USBDEV_EVENT_RESET:
                 usbus->state = USBUS_STATE_RESET;
@@ -264,20 +299,20 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
                 usbdev_set(usbus->dev, USBOPT_ADDRESS, &usbus->addr,
                            sizeof(uint8_t));
                 flag = USBUS_HANDLER_FLAG_RESET;
-                msg = USBUS_MSG_TYPE_RESET;
+                msg = USBUS_EVENT_USB_RESET;
                 break;
             case USBDEV_EVENT_SUSPEND:
                 DEBUG("usbus: USB suspend detected\n");
                 usbus->pstate = usbus->state;
                 usbus->state = USBUS_STATE_SUSPEND;
                 flag = USBUS_HANDLER_FLAG_SUSPEND;
-                msg = USBUS_MSG_TYPE_SUSPEND;
+                msg = USBUS_EVENT_USB_SUSPEND;
                 break;
             case USBDEV_EVENT_RESUME:
                 DEBUG("usbus: USB resume detected\n");
                 usbus->state = usbus->pstate;
                 flag = USBUS_HANDLER_FLAG_RESUME;
-                msg = USBUS_MSG_TYPE_RESUME;
+                msg = USBUS_EVENT_USB_RESUME;
                 break;
             default:
                 DEBUG("usbus: unhandled event %x\n", event);
@@ -293,12 +328,10 @@ static void _event_ep_cb(usbdev_ep_t *ep, usbdev_event_t event)
     usbus_t *usbus = (usbus_t *)ep->dev->context;
 
     if (event == USBDEV_EVENT_ESR) {
-        msg_t msg = { .type = USBUS_MSG_TYPE_EP_EVENT,
-                      .content = { .ptr = ep } };
-
-        if (msg_send(&msg, usbus->pid) <= 0) {
-            puts("usbus_ep: possibly lost interrupt.");
-        }
+        assert(irq_is_in());
+        usbus->ep_events |= _get_ep_bitflag(ep);
+        thread_flags_set((thread_t *)thread_get(usbus->pid),
+                         USBUS_THREAD_FLAG_USBDEV_EP);
     }
     else {
         usbus_handler_t *handler = _ep_to_handler(usbus, ep);

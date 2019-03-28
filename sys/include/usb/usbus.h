@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "clist.h"
+#include "event.h"
 #include "kernel_types.h"
 #include "msg.h"
 #include "thread.h"
@@ -81,32 +82,15 @@ extern "C" {
 #endif
 
 /**
- * @name USBUS message types
+ * @name USBUS thread flags
  *
- * @anchor USBUS_MSG_TYPES
- *
- * The @ref USBUS_MSG_TYPE_HANDLER can be used by the application to transmit
- * messages to a specific handler. Define handler specific requests in the
- * lower 8 bit of the message number (e.g. 0x0702) and supply the handler as
- * argument to the message.
+ * Thread flags used by the USBUS thread. @ref THREAD_FLAG_EVENT is also used,
+ * but defined elsewhere
  * @{
  */
-#define USBUS_MSG_TYPE_EVENT        (0x0100)    /**< usbdev event received */
-#define USBUS_MSG_TYPE_EP_EVENT     (0x0200)    /**< usbdev Endpoint event
-                                                     received */
-
-#define USBUS_MSG_TYPE_RESET        (0x0300)    /**< Reset event */
-#define USBUS_MSG_TYPE_SOF          (0x0400)    /**< Start of Frame event */
-
-#define USBUS_MSG_TYPE_TR           (0x0500)    /**< Generic transfer response event */
-#define USBUS_MSG_TYPE_TR_COMPLETE  (0x0501)
-#define USBUS_MSG_TYPE_TR_FAIL      (0x0502)
-#define USBUS_MSG_TYPE_TR_STALL     (0x0503)
-
-#define USBUS_MSG_TYPE_SETUP_RQ     (0x0600)    /**< Setup request received event */
-#define USBUS_MSG_TYPE_HANDLER      (0x0700)    /**< Generic handler request */
-#define USBUS_MSG_TYPE_SUSPEND      (0x0800)    /**< host connected detected */
-#define USBUS_MSG_TYPE_RESUME       (0x0900)    /**< host disconnect detected */
+#define USBUS_THREAD_FLAG_USBDEV    (0x02) /**< usbdev esr needs handling */
+#define USBUS_THREAD_FLAG_USBDEV_EP (0x04) /**< One or more endpoints requires
+                                                servicing */
 /** @} */
 
 /**
@@ -114,14 +98,27 @@ extern "C" {
  *
  * @{
  */
-#define USBUS_HANDLER_FLAG_RESET            (0x0001)    /**< Report reset event */
-#define USBUS_HANDLER_FLAG_SOF              (0x0002)    /**< Report SOF events */
-#define USBUS_HANDLER_FLAG_SUSPEND          (0x0004)    /**< Report suspend events */
-#define USBUS_HANDLER_FLAG_RESUME           (0x0008)    /**< Report resume from suspend */
-#define USBUS_HANDLER_FLAG_TR_FAIL          (0x0010)    /**< Report transfer fail */
-#define USBUS_HANDLER_FLAG_TR_STALL         (0x0020)    /**< Report transfer stall complete */
+#define USBUS_HANDLER_FLAG_RESET    (0x0001)    /**< Report reset event */
+#define USBUS_HANDLER_FLAG_SOF      (0x0002)    /**< Report SOF events */
+#define USBUS_HANDLER_FLAG_SUSPEND  (0x0004)    /**< Report suspend events */
+#define USBUS_HANDLER_FLAG_RESUME   (0x0008)    /**< Report resume from suspend */
+#define USBUS_HANDLER_FLAG_TR_FAIL  (0x0010)    /**< Report transfer fail */
+#define USBUS_HANDLER_FLAG_TR_STALL (0x0020)    /**< Report transfer stall complete */
 /** @} */
 
+/**
+ * @brief USB handler events
+ */
+typedef enum {
+    USBUS_EVENT_USB_RESET,      /**< USB reset event                */
+    USBUS_EVENT_USB_SOF,        /**< USB start of frame received    */
+    USBUS_EVENT_USB_SUSPEND,    /**< USB suspend condition detected */
+    USBUS_EVENT_USB_RESUME,     /**< USB resume condition detected  */
+} usbus_event_usb_t;
+
+/**
+ * @brief USB endpoint transfer status events
+ */
 typedef enum {
     USBUS_EVENT_TRANSFER_COMPLETE,  /**< Transfer succesfully completed */
     USBUS_EVENT_TRANSFER_FAIL,      /**< Transfer nack replied by peripheral */
@@ -301,10 +298,9 @@ typedef struct usbus_handler_driver {
      * @param usbus     USBUS context
      * @param handler   handler context
      * @param event     @ref USBUS_MSG_TYPES "event" to handle
-     * @param arg       Additional argument
      */
     int (*event_handler)(usbus_t * usbus, struct usbus_handler *handler,
-                         uint16_t event);
+                         usbus_event_usb_t event);
 
     /**
      * @brief transfer handler function
@@ -314,7 +310,7 @@ typedef struct usbus_handler_driver {
      * @param usbus     USBUS context
      * @param handler   handler context
      * @param ep        usbdev endpoint that triggered the event
-     * @param event     event to handle
+     * @param event     @ref usbus_event_transfer_t event
      */
     int (*transfer_handler)(usbus_t * usbus, struct usbus_handler *handler,
                             usbdev_ep_t *ep, usbus_event_transfer_t event);
@@ -322,12 +318,17 @@ typedef struct usbus_handler_driver {
     /**
      * @brief setup request handler function
      *
-     * This function receives setup request based events
+     * This function receives USB setup requests from the USBUS stack.
      *
      * @param usbus     USBUS context
      * @param handler   handler context
      * @param state     setup request state
      * @param setup     setup packet
+     *
+     * @returns         Size of the returned data when the request is handled
+     * @returns         negative to have the stack return an USB stall to the
+     *                  host
+     * @returns         zero when the request is not handled by this handler
      */
     int (*setup_handler)(usbus_t * usbus, struct usbus_handler *handler,
                          usbus_setuprq_state_t state, usb_setup_t *request);
@@ -354,12 +355,16 @@ struct usbus {
     usbus_string_t manuf;           /**< Manufacturer string                   */
     usbus_string_t product;         /**< Product string                        */
     usbus_string_t config;          /**< Configuration string                  */
+    usbus_endpoint_t ep_out[USBDEV_NUM_ENDPOINTS];
+    usbus_endpoint_t ep_in[USBDEV_NUM_ENDPOINTS];
+    event_queue_t queue;            /**< Event queue */
     usbdev_t *dev;                  /**< usb phy device of the usb manager     */
     usbus_handler_t *control;       /**< Ptr to the control endpoint handler   */
     usbus_hdr_gen_t *hdr_gen;       /**< Top level header generators           */
     usbus_string_t *strings;        /**< List of descriptor strings            */
     usbus_interface_t *iface;       /**< List of USB interfaces                */
     usbus_handler_t *handlers;      /**< List of event callback handlers       */
+    uint32_t ep_events;             /**< bitflags with endpoint event state    */
     kernel_pid_t pid;               /**< PID of the usb manager's thread       */
     uint16_t str_idx;               /**< Number of strings registered          */
     usbus_state_t state;            /**< Current state                         */
@@ -367,6 +372,20 @@ struct usbus {
     uint8_t addr;                   /**< Address of the USB peripheral         */
 };
 
+typedef struct {
+    event_t super;                  /**< generic event object */
+    usbus_handler_t handler;        /**< Handler context */
+    union {
+        void *ptr;
+        uint32_t arg;
+    } content;
+} usbus_event_t;
+
+
+static inline void usbus_submit_event(usbus_t *usbus, usbus_event_t *event)
+{
+    event_post(&usbus->queue, &event->super);
+}
 /**
  * @brief Add a string descriptor to the USBUS thread context
  *
@@ -402,9 +421,8 @@ uint16_t usbus_add_interface(usbus_t *usbus, usbus_interface_t *iface);
  * @param[in] dir   USB endpoint direction
  * @param[in] len   Buffer space for the endpoint to allocate
  */
-int usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
-                       usbus_endpoint_t *ep, usb_ep_type_t type,
-                       usb_ep_dir_t dir, size_t len);
+usbus_endpoint_t *usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
+                       usb_ep_type_t type, usb_ep_dir_t dir, size_t len);
 
 /**
  * @brief Add a generator for generating additional top level USB descriptor

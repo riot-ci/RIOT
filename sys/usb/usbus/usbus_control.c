@@ -30,7 +30,7 @@
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
 static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
-                              uint16_t event);
+                              usbus_event_usb_t event);
 static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
                                  usbdev_ep_t *ep, usbus_event_transfer_t event);
 
@@ -299,10 +299,10 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
     usbus_handler_set_flag(handler, USBUS_HANDLER_FLAG_RESET);
     ep0_handler->setup_state = USBUS_SETUPRQ_READY;
 
-    ep0_handler->in = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL,
-                                    USB_EP_DIR_IN, USBUS_EP0_SIZE);
-    ep0_handler->out = usbdev_new_ep(usbus->dev, USB_EP_TYPE_CONTROL,
-                                     USB_EP_DIR_OUT, USBUS_EP0_SIZE);
+    ep0_handler->in = usbus_add_endpoint(usbus, NULL, USB_EP_TYPE_CONTROL,
+                                         USB_EP_DIR_IN, USBUS_EP0_SIZE)->ep;
+    ep0_handler->out = usbus_add_endpoint(usbus, NULL, USB_EP_TYPE_CONTROL,
+                                          USB_EP_DIR_OUT, USBUS_EP0_SIZE)->ep;
 }
 
 static int _handle_tr_complete(usbus_t *usbus,
@@ -377,13 +377,13 @@ static int _handle_tr_complete(usbus_t *usbus,
 
 /* USB endpoint 0 callback */
 static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
-                              uint16_t event)
+                              usbus_event_usb_t event)
 {
     usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
 
     (void)usbus;
     switch (event) {
-        case USBUS_MSG_TYPE_RESET:
+        case USBUS_EVENT_USB_RESET:
             DEBUG("usbus_control: Reset event triggered\n");
             ep0_handler->setup_state = USBUS_SETUPRQ_READY;
             _usbus_config_ep0(ep0_handler);
