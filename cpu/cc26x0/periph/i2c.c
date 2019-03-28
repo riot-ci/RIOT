@@ -42,6 +42,8 @@
  */
 static mutex_t _locks[I2C_NUMOF];
 
+static int _check_errors(void);
+
 void i2c_init(i2c_t devnum)
 {
     (void)devnum;
@@ -67,12 +69,12 @@ void i2c_init(i2c_t devnum)
                              | IOCFG_PULLCTL_UP);
 
     /* initialize I2C master */
-    I2C->MCR = 0x00000010;
+    I2C->MCR = MCR_MFE;
 
     /* configure clock speed */
     /*{PERDMACLK / [2 × (SCL_LP + SCL_HP) × SCL_CLK]} – 1*/
     /* with SCL_LP==6 && SCL_HP==4 use 0x17 for 100kHZ with 48MHZ CPU clock */
-    I2C->MTPR = 0x00000017;
+    I2C->MTPR = MTPR_TPR_100KHZ;
 }
 
 int i2c_acquire(i2c_t dev)
@@ -93,8 +95,8 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
                    void *data, size_t len, uint8_t flags)
 {
     (void)dev;
-    DEBUG("i2c_read_bytes() %u\n", len);
     int ret = 0;
+    DEBUG("i2c_read_bytes() %u\n", len);
     assert(dev < I2C_NUMOF);
 
     /* Check for unsupported operations */
@@ -109,15 +111,18 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
 
     char *bufpos = data;
 
-    I2C->MSA = ((uint32_t)addr << 1) | 0x1;
+    /* Sequence may be omitted in a single master system */
+    while (I2C->MSTAT & MSTAT_BUSY);
+
+    I2C->MSA = ((uint32_t)addr << 1) | MSA_RS;
 
     while (len--) {
         DEBUG("LOOP %u\n", len);
         /* setup transfer */
-        uint32_t mctrl = 0x1;        /* RUN */
+        uint32_t mctrl = MCTRL_RUN;
         if (!(flags & I2C_NOSTART)) {
             DEBUG("START\n");
-            mctrl |= 0x2;   /* START */
+            mctrl |= MCTRL_START;
 
             /* make note not to generate START from second byte onwards */
             flags |= I2C_NOSTART;
@@ -126,25 +131,24 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
         /* after last byte, generate STOP unless told not to */
         if (!len && !(flags & I2C_NOSTOP)) {
             DEBUG("STOP\n");
-            mctrl |= 0x4;
+            mctrl |= MCTRL_STOP;
         }
         else {
             DEBUG("ACK\n");
-            mctrl |= 0x8; /* ACK */
+            mctrl |= MCTRL_ACK;
         }
 
         /* initiate transfer */
         I2C->MCTRL = mctrl;
 
         /* wait for transfer to be complete */
-        while (I2C->MSTAT & 0x20) {}    /* BUSBSY */
-        while (I2C->MSTAT & 0x1) {}     /* BUSY */
+        while (I2C->MSTAT & MSTAT_IDLE);
+        while (I2C->MSTAT & MSTAT_BUSY);
 
         /* check if there was an error */
-        if (I2C->MSTAT & 0x2) { /* ERR */
-            DEBUG("EIO\n");
-            PREG(I2C->MSTAT);
-            return -EIO;
+        ret = _check_errors();
+        if (ret != 0) {
+            return ret;
         }
         /* copy next byte from I2C data register */
         DEBUG("IN=0x%02x\n", (unsigned)I2C->MDR);
@@ -158,6 +162,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
                     uint8_t flags)
 {
     (void)dev;
+    int ret = 0;
     DEBUG("i2c_write_bytes() %u\n", len);
     assert(dev < I2C_NUMOF);
 
@@ -175,6 +180,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
 
     PREG(I2C->MSTAT);
 
+    /* Since write is 0 we just need shift the address in */
     I2C->MSA = (uint32_t)addr << 1;
 
     while (len--) {
@@ -182,11 +188,14 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
         /* copy next byte into I2C data register */
         I2C->MDR = *bufpos++;
 
+        /* Sequence may be omitted in a single master system. */
+        while (I2C->MSTAT & MSTAT_BUSY);
+
         /* setup transfer */
-        uint32_t mctrl = 0x1;        /* RUN */
+        uint32_t mctrl = MCTRL_RUN;
         if (!(flags & I2C_NOSTART)) {
             DEBUG("START\n");
-            mctrl |= 0x2;   /* START */
+            mctrl |= MCTRL_START;
 
             /* make note not to generate START from second byte onwards */
             flags |= I2C_NOSTART;
@@ -195,7 +204,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
         /* after last byte, generate STOP unless told not to */
         if (!len && !(flags & I2C_NOSTOP)) {
             DEBUG("STOP\n");
-            mctrl |= 0x4;
+            mctrl |= MCTRL_STOP;
         }
 
         /* initiate transfer */
@@ -209,20 +218,47 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
          *
          * (3. 21.5.1.10 says BUSY is only valid after 4 SYSBUS clock cycles)
          *
-         * Waiting first for cleared BUSBUSY and then for cleared BUSY works fine.
+         * Waiting first for cleared IDLE and then for cleared BUSY works fine.
          */
 
         /* wait for transfer to be complete */
-        while (I2C->MSTAT & 0x20) {}    /* BUSBSY */
-        while (I2C->MSTAT & 0x1) {}     /* BUSY */
+        while (I2C->MSTAT & MSTAT_IDLE);
+        while (I2C->MSTAT & MSTAT_BUSY);
 
         /* check if there was an error */
-        if (I2C->MSTAT & 0x2) { /* ERR */
-            DEBUG("EIO\n");
-            PREG(I2C->MSTAT);
-            return -EIO;
+        ret = _check_errors();
+        if (ret != 0) {
+            return ret;
         }
     }
 
+    return ret;
+}
+
+static int _check_errors(void)
+{
+    /* check if there was an error */
+    if (I2C->MSTAT & MSTAT_ERR) {
+        PREG(I2C->MSTAT);
+        if (I2C->MSTAT & MSTAT_ADRACK_N) {
+            DEBUG("ADDRESS NACK\n");
+            return -ENXIO;
+        }
+        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+            DEBUG("DATA NACK\n");
+            return -EIO;
+        }
+        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+            DEBUG("ARBITRATION LOSS\n");
+            return -EAGAIN;
+        }
+        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+            /* Accroding to data sheet we should send stop */
+            I2C->MCTRL = MCTRL_STOP;
+            DEBUG("ARBITRATION LOSS\n");
+            return -EAGAIN;
+        }
+        return -ETIMEDOUT;
+    }
     return 0;
 }
