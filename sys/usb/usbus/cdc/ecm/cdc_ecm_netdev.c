@@ -33,20 +33,12 @@ static const netdev_driver_t netdev_driver_cdcecm;
 
 static void _signal_rx_flush(usbus_cdcecm_device_t *cdcecm)
 {
-    msg_t msg = { .type = USBUS_MSG_CDCECM_RX_FLUSH,
-                 .content = { .ptr = cdcecm } };
-    if (msg_send(&msg, cdcecm->usbus->pid) <= 0) {
-        puts("CDC ECM netdev: possibly lost message when rx flushing.");
-    }
+    usbus_event_post(cdcecm->usbus, &cdcecm->rx_flush);
 }
 
 static void _signal_tx_xmit(usbus_cdcecm_device_t *cdcecm)
 {
-    msg_t msg = { .type = USBUS_MSG_CDCECM_TX_XMIT,
-                 .content = { .ptr = cdcecm } };
-    if (msg_send(&msg, cdcecm->usbus->pid) <= 0) {
-        puts("CDC ECM netdev: possibly lost message when tx flushing.");
-    }
+    usbus_event_post(cdcecm->usbus, &cdcecm->tx_xmit);
 }
 
 static usbus_cdcecm_device_t *_netdev_to_cdcecm(netdev_t *netdev)
@@ -63,22 +55,23 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     assert(iolist);
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(netdev);
-    uint8_t *buf = cdcecm->ep_in.ep->buf;
+    uint8_t *buf = cdcecm->ep_in->ep->buf;
     const iolist_t *iolist_start = iolist;
     size_t len = iolist_size(iolist);
     DEBUG("CDC_ECM_netdev: sending %u bytes\n", len);
     /* load packet data into FIFO */
     size_t iol_offset = 0;
     size_t usb_offset = 0;
-    size_t usb_remain = cdcecm->ep_in.ep->len;
+    size_t usb_remain = cdcecm->ep_in->ep->len;
     DEBUG("CDC_ECM_netdev: cur iol: %d\n", iolist->iol_len);
     while (len) {
         mutex_lock(&cdcecm->out_lock);
         if (iolist->iol_len - iol_offset > usb_remain) {
             /* Only part of the iolist can be copied, usb_remain bytes */
-            memcpy(buf + usb_offset, (uint8_t*)iolist->iol_base + iol_offset, usb_remain);
+            memcpy(buf + usb_offset, (uint8_t *)iolist->iol_base + iol_offset,
+                   usb_remain);
 
-            usb_offset =  cdcecm->ep_in.ep->len;
+            usb_offset =  cdcecm->ep_in->maxpacketsize;
             len -= usb_remain;
             iol_offset += usb_remain;
             usb_remain = 0;
@@ -86,14 +79,15 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         else {
             size_t bytes_copied = iolist->iol_len - iol_offset;
             /* Full iolist can be copied */
-            memcpy(buf + usb_offset, (uint8_t*)iolist->iol_base + iol_offset, bytes_copied);
+            memcpy(buf + usb_offset, (uint8_t *)iolist->iol_base + iol_offset,
+                   bytes_copied);
             len -= bytes_copied;
             usb_offset += bytes_copied;
             usb_remain -= bytes_copied;
             iol_offset = iolist->iol_len;
         }
         if (iol_offset == iolist->iol_len) {
-        /* Current iolist exhausted */
+            /* Current iolist exhausted */
             iolist = iolist->iol_next;
             if (iolist) {
                 DEBUG("CDC_ECM: cur iol: %d\n", iolist->iol_len);
@@ -104,9 +98,10 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
             cdcecm->tx_len = usb_offset;
             /* USB frame full or last frame, flush! */
 
-            DEBUG("CDC_ECM_NETDEV: triggering xmit with len %d\n", cdcecm->tx_len);
+            DEBUG("CDC_ECM_NETDEV: triggering xmit with len %d\n",
+                  cdcecm->tx_len);
             _signal_tx_xmit(cdcecm);
-            usb_remain = cdcecm->ep_in.ep->len;
+            usb_remain = cdcecm->ep_in->maxpacketsize;
             usb_offset = 0;
         }
         else {
@@ -114,7 +109,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         }
     }
     /* Zero length USB packet required */
-    if ((iolist_size(iolist_start) % cdcecm->ep_in.ep->len) == 0) {
+    if ((iolist_size(iolist_start) % cdcecm->ep_in->maxpacketsize) == 0) {
         mutex_lock(&cdcecm->out_lock);
         DEBUG("CDC ECM netdev: Zero length USB packet required\n");
         cdcecm->tx_len = 0;
@@ -126,6 +121,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 static int _recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 {
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(netdev);
+
     (void)info;
     if (max_len == 0 && buf == NULL) {
         return cdcecm->len;
@@ -142,6 +138,7 @@ static int _recv(netdev_t *netdev, void *buf, size_t max_len, void *info)
 static int _init(netdev_t *netdev)
 {
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(netdev);
+
     luid_get(cdcecm->mac_netdev, ETHERNET_ADDR_LEN);
     cdcecm->mac_netdev[0] |= 0x02;      /* locally administered address */
     cdcecm->mac_netdev[0] &= ~0x01;     /* unicast address */
@@ -151,6 +148,7 @@ static int _init(netdev_t *netdev)
 static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 {
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(netdev);
+
     (void)max_len;
 
     switch (opt) {
@@ -163,9 +161,11 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
     }
 }
 
-static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_len)
+static int _set(netdev_t *netdev, netopt_t opt, const void *value,
+                size_t value_len)
 {
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(netdev);
+
     (void)cdcecm;
 
     switch (opt) {
@@ -181,8 +181,10 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_
 static void _isr(netdev_t *dev)
 {
     usbus_cdcecm_device_t *cdcecm = _netdev_to_cdcecm(dev);
+
     if (cdcecm->len) {
-        cdcecm->netdev.event_callback(&cdcecm->netdev, NETDEV_EVENT_RX_COMPLETE);
+        cdcecm->netdev.event_callback(&cdcecm->netdev,
+                                      NETDEV_EVENT_RX_COMPLETE);
     }
 }
 
