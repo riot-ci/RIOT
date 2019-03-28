@@ -15,8 +15,9 @@ import unittest
 class TestMessageNotWritten(PexpectTestCase):
     def test_message_not_written(self):
         with self.assertRaises(TIMEOUT):
-            # we actually want the timeout here. The application runs into an
-            # assertion pretty quickly when failing and runs forever on success
+            # we actually want the timeout here. The application runs into the
+            # error output pretty quickly when failing and runs forever on
+            # success
             self.spawn.expect("Message was not written")
 
 
