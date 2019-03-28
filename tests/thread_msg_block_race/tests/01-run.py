@@ -7,16 +7,18 @@
 # directory for more details.
 
 import sys
-from testrunner import run
+from testrunner.unittest import PexpectTestCase
 from pexpect import TIMEOUT
+import unittest
 
 
-def testfunc(child):
-    res = child.expect([TIMEOUT, "Message was not written"])
-    # we actually want the timeout here. The application runs into an assertion
-    # pretty quickly when failing and runs forever on success
-    assert(res == 0)
+class TestMessageNotWritten(PexpectTestCase):
+    def test_message_not_written(self):
+        with self.assertRaises(TIMEOUT):
+            # we actually want the timeout here. The application runs into an
+            # assertion pretty quickly when failing and runs forever on success
+            self.spawn.expect("Message was not written")
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc, timeout=10))
+    unittest.main()
