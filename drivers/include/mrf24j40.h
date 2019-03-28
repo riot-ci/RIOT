@@ -116,7 +116,7 @@ extern "C" {
 #define MRF24J40_MAX_FRAME_RETRIES      (3U)        /**< Number of frame retries (fixed) */
 
 #ifndef MRF24J40_USE_EXT_PA_LNA
-#define MRF24J40_USE_EXT_PA_LNA         (0U)        /**< Enable external PA/LNA control (Section 4.2 of datasheet) */
+#define MRF24J40_USE_EXT_PA_LNA         (0U)        /**< Enable external PA/LNA control (Section 4.2 of datasheet) for MRF24J40MC/MD/ME */
 #endif
 
 /**
