@@ -10,6 +10,3 @@ FFLAGS ?= --device $(DFU_ID) \
           --dfuse-address $(FLASH_ADDR):leave \
           --download $(FLASHFILE) \
           --reset
-
-RESET ?= $(DFU)
-RESET_FLAGS ?= $(DFU_ARGS) -t $(DFU_DEVICE_TYPE)
