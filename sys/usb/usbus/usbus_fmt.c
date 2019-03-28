@@ -48,7 +48,6 @@ static size_t _num_endpoints(usbus_interface_t *iface)
 static uint8_t _type_to_attribute(usbus_endpoint_t *ep)
 {
     switch (ep->ep->type) {
-        case USB_EP_TYPE_NONE:
         case USB_EP_TYPE_CONTROL:
             return 0x00;
         case USB_EP_TYPE_ISOCHRONOUS:
@@ -57,6 +56,9 @@ static uint8_t _type_to_attribute(usbus_endpoint_t *ep)
             return 0x02;
         case USB_EP_TYPE_INTERRUPT:
             return 0x03;
+        default:
+            assert(false);
+            break;
     }
     return 0x00;
 }
@@ -100,7 +102,7 @@ static size_t _ep_size(usbus_t *usbus, usbus_endpoint_t *ep)
     return len;
 }
 
-size_t _alt_size(usbus_t *usbus, usbus_interface_alt_t *alt)
+static size_t _alt_size(usbus_t *usbus, usbus_interface_alt_t *alt)
 {
     size_t len = 0;
 
@@ -148,7 +150,7 @@ static size_t _hdrs_fmt_hdrs(usbus_t *usbus)
     return _hdrs_fmt_additional(usbus, usbus->hdr_gen);
 }
 
-size_t _hdrs_fmt_endpoints(usbus_t *usbus, usbus_endpoint_t *ep)
+static size_t _hdrs_fmt_endpoints(usbus_t *usbus, usbus_endpoint_t *ep)
 {
     size_t len = 0;
 
@@ -246,7 +248,8 @@ size_t usbus_fmt_hdr_conf(usbus_t *usbus)
     if (USB_CONFIG_SELF_POWERED) {
         conf.attributes |= USB_CONF_ATTR_SELF_POWERED;
     }
-    /* Todo: upper bound */
+    /* TODO: upper bound */
+    /* USB max power is reported in increments of 2 mA */
     conf.max_power = USB_CONFIG_MAX_POWER / 2;
     conf.num_interfaces = _num_ifaces(usbus);
     len += sizeof(usb_descriptor_configuration_t);

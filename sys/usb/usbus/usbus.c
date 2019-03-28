@@ -239,7 +239,8 @@ static void *_usbus_thread(void *args)
     while (1) {
         thread_flags_t flags = thread_flags_wait_any(
             USBUS_THREAD_FLAG_USBDEV |
-            USBUS_THREAD_FLAG_USBDEV_EP
+            USBUS_THREAD_FLAG_USBDEV_EP |
+            THREAD_FLAG_EVENT
             );
         if (flags & USBUS_THREAD_FLAG_USBDEV) {
             usbdev_esr(dev);
@@ -280,14 +281,6 @@ static void _event_cb(usbdev_t *usbdev, usbdev_event_t event)
     if (event == USBDEV_EVENT_ESR) {
         thread_flags_set((thread_t *)thread_get(usbus->pid),
                          USBUS_THREAD_FLAG_USBDEV);
-#if 0
-        msg_t msg = { .type = USBUS_MSG_TYPE_EVENT,
-                      .content = { .ptr = usbdev } };
-
-        if (msg_send(&msg, usbus->pid) <= 0) {
-            puts("usbus: possibly lost interrupt.");
-        }
-#endif
     }
     else {
         usbus_event_usb_t msg;

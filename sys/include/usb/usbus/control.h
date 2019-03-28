@@ -52,7 +52,14 @@ typedef struct {
     usbdev_ep_t *in;                    /**< EP0 in endpoint                  */
 } usbus_control_handler_t;
 
-int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler);
+/**
+ * @brief Initialize the control endpoint handler
+ *
+ * @param[in] usbus     USBUS context
+ * @param[in] handler   control handler to initialize
+ */
+void usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler);
+
 /**
  * @brief Helper function for adding bytes to the current control message part
  *
@@ -83,6 +90,14 @@ size_t usbus_control_slicer_put_char(usbus_t *usbus, char c);
  */
 void usbus_control_slicer_ready(usbus_t *usbus);
 
+/**
+ * @brief Initialize the next slice of the control message
+ *
+ * @param[in] usbus     USBUS context
+ *
+ * @return              1 when there is a next slice
+ * @return              0 when the data is fully transfered
+ */
 int usbus_control_slicer_nextslice(usbus_t *usbus);
 
 #ifdef __cplusplus

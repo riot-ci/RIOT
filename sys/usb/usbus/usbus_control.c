@@ -29,10 +29,10 @@
 #include "debug.h"
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler);
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
-                              usbus_event_usb_t event);
-static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
-                                 usbdev_ep_t *ep, usbus_event_transfer_t event);
+static void _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
+                               usbus_event_usb_t event);
+static void _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
+                                  usbdev_ep_t *ep, usbus_event_transfer_t event);
 
 const usbus_handler_driver_t _ep0_driver = {
     .init = _init,
@@ -40,14 +40,13 @@ const usbus_handler_driver_t _ep0_driver = {
     .transfer_handler = _handler_ep0_transfer,
 };
 
-int usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler)
+void usbus_control_init(usbus_t *usbus, usbus_control_handler_t *handler)
 {
     handler->handler.driver = &_ep0_driver;
 
     /* Ensure that ep0 is the first handler */
     handler->handler.next = usbus->handlers;
     usbus->handlers = &handler->handler;
-    return 0;
 }
 
 static void _activate_endpoints(usbus_t *usbus)
@@ -78,7 +77,7 @@ static void _activate_endpoints(usbus_t *usbus)
     }
 }
 
-static size_t usbus_cpy_str_to_utf16(usbus_t *usbus, const char *str)
+static size_t _cpy_str_to_utf16(usbus_t *usbus, const char *str)
 {
     size_t len = 0;
 
@@ -130,7 +129,7 @@ static int _req_str(usbus_t *usbus, uint16_t idx)
             desc.length += 2 * strlen(str->str); /* USB strings are UTF-16 */
             usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc,
                                            sizeof(desc));
-            usbus_cpy_str_to_utf16(usbus, str->str);
+            _cpy_str_to_utf16(usbus, str->str);
         }
     }
     return 1;
@@ -143,8 +142,7 @@ static int _req_dev(usbus_t *usbus)
 
 static int _req_config(usbus_t *usbus)
 {
-    usbus_fmt_hdr_conf(usbus);
-    return 1;
+    return usbus_fmt_hdr_conf(usbus);
 }
 
 static int _req_dev_qualifier(usbus_t *usbus)
@@ -157,6 +155,7 @@ static int _req_dev_qualifier(usbus_t *usbus)
         /* TODO: implement device qualifier support (only required
          * for High speed) */
     }
+    /* Signal a stall condition */
     return -1;
 }
 
@@ -176,6 +175,8 @@ static int _req_descriptor(usbus_t *usbus, usb_setup_t *pkt)
         case USB_TYPE_DESCRIPTOR_DEV_QUALIFIER:
             return _req_dev_qualifier(usbus);
         default:
+            DEBUG("usbus: unknown descriptor request %u, signalling stall\n",
+                  type);
             return -1;
     }
 }
@@ -183,7 +184,7 @@ static int _req_descriptor(usbus_t *usbus, usb_setup_t *pkt)
 static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
 {
     usbus_control_handler_t *ep0 = (usbus_control_handler_t *)usbus->control;
-    int res = 0;
+    int res = -1;
 
     if (usb_setup_is_read(pkt)) {
         switch (pkt->request) {
@@ -194,6 +195,7 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
                 res = _req_descriptor(usbus, pkt);
                 break;
             default:
+                DEBUG("usbus: Unknown read request %u\n", pkt->request);
                 break;
         }
     }
@@ -202,14 +204,17 @@ static int _recv_dev_setup(usbus_t *usbus, usb_setup_t *pkt)
             case USB_SETUP_REQ_SET_ADDRESS:
                 DEBUG("usbus_control: Setting address\n");
                 usbus->addr = (uint8_t)pkt->value;
+                res = 0;
                 break;
             case USB_SETUP_REQ_SET_CONFIGURATION:
                 /* Nothing configuration dependent to do here, only one
                  * configuration supported */
                 usbus->state = USBUS_STATE_CONFIGURED;
                 _activate_endpoints(usbus);
+                res = 0;
                 break;
             default:
+                DEBUG("usbus: Unknown write request %u\n", pkt->request);
                 break;
         }
         /* Signal zero-length packet */
@@ -233,7 +238,7 @@ static int _recv_interface_setup(usbus_t *usbus, usb_setup_t *pkt)
                                                          pkt);
         }
     }
-    return 0;
+    return -1;
 }
 
 static void _recv_setup(usbus_t *usbus, usbus_control_handler_t *handler)
@@ -371,12 +376,16 @@ static int _handle_tr_complete(usbus_t *usbus,
                 DEBUG("usbus_control: invalid state, READY with IN request\n");
             }
             break;
+        default:
+            DEBUG("usbus_control: Invalid state\n");
+            assert(false);
+            break;
     }
     return 0;
 }
 
 /* USB endpoint 0 callback */
-static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
+static void _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
                               usbus_event_usb_t event)
 {
     usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
@@ -391,18 +400,18 @@ static int _handler_ep0_event(usbus_t *usbus, usbus_handler_t *handler,
         default:
             break;
     }
-    return 0;
 }
 
-static int _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
+static void _handler_ep0_transfer(usbus_t *usbus, usbus_handler_t *handler,
                                  usbdev_ep_t *ep, usbus_event_transfer_t event)
 {
     usbus_control_handler_t *ep0_handler = (usbus_control_handler_t *)handler;
 
     switch (event) {
         case USBUS_EVENT_TRANSFER_COMPLETE:
-            return _handle_tr_complete(usbus, ep0_handler, ep);
+            _handle_tr_complete(usbus, ep0_handler, ep);
+            break;
         default:
-            return -1;
+            break;
     }
 }
