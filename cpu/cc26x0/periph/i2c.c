@@ -36,12 +36,56 @@
 #define PREG(x) DEBUG("%s=0x%08x\n", #x, (unsigned)x);
 
 /**
- * @brief Array holding one pre-initialized mutex for each I2C device
+ * @brief Mutex lock for the only available I2C periph
  * @note  If multiple I2C devices are added locks must be an array for each one.
  */
 static mutex_t _lock;
 
-static int _check_errors(void);
+static int _check_errors(void)
+{
+    int ret = 0;
+
+    /* The reference manual (SWCU117H) is ambiguous on how to wait:
+     *
+     * 1. 21.4 8. says "wait until BUSBUSY is cleared"
+     * 2. command flow diagrams (e.g., 21.3.5.1) indicate to wait while
+     *    BUSY is set
+     *
+     * (3. 21.5.1.10 says BUSY is only valid after 4 SYSBUS clock cycles)
+     *
+     * Waiting first for cleared IDLE and then for cleared BUSY works fine.
+     */
+
+    /* wait for transfer to be complete, this also could be a few nops... */
+    while (I2C->MSTAT & MSTAT_IDLE) {}
+    while (I2C->MSTAT & MSTAT_BUSY) {}
+    /* check if there was an error */
+    if (I2C->MSTAT & MSTAT_ERR) {
+        DEBUG("%s\n", __FUNCTION__);
+        PREG(I2C->MSTAT);
+        ret = -ETIMEDOUT;
+        if (I2C->MSTAT & MSTAT_ADRACK_N) {
+            DEBUG("ADDRESS NACK\n");
+            return -ENXIO;
+        }
+        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+            DEBUG("DATA NACK\n");
+            ret = -EIO;
+        }
+        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+            DEBUG("ARBITRATION LOSS\n");
+            ret = -EAGAIN;
+        }
+        /*
+         * If an error if a non-NACK error occurs we must reinit or get stuck.
+         * dev is 0 since it is the only one, if more are added it should be
+         * the dev num.
+         */
+        i2c_init(0);
+        return ret;
+    }
+    return ret;
+}
 
 void i2c_init(i2c_t devnum)
 {
@@ -230,51 +274,5 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
         }
     }
 
-    return ret;
-}
-
-static int _check_errors(void)
-{
-    int ret = 0;
-
-    /* The reference manual (SWCU117H) is ambiguous on how to wait:
-     *
-     * 1. 21.4 8. says "wait until BUSBUSY is cleared"
-     * 2. command flow diagrams (e.g., 21.3.5.1) indicate to wait while
-     *    BUSY is set
-     *
-     * (3. 21.5.1.10 says BUSY is only valid after 4 SYSBUS clock cycles)
-     *
-     * Waiting first for cleared IDLE and then for cleared BUSY works fine.
-     */
-
-    /* wait for transfer to be complete, this also could be a few nops... */
-    while (I2C->MSTAT & MSTAT_IDLE) {}
-    while (I2C->MSTAT & MSTAT_BUSY) {}
-    /* check if there was an error */
-    if (I2C->MSTAT & MSTAT_ERR) {
-        DEBUG("%s\n", __FUNCTION__);
-        PREG(I2C->MSTAT);
-        ret = -ETIMEDOUT;
-        if (I2C->MSTAT & MSTAT_ADRACK_N) {
-            DEBUG("ADDRESS NACK\n");
-            return -ENXIO;
-        }
-        else if (I2C->MSTAT & MSTAT_DATACK_N) {
-            DEBUG("DATA NACK\n");
-            ret = -EIO;
-        }
-        else if (I2C->MSTAT & MSTAT_DATACK_N) {
-            DEBUG("ARBITRATION LOSS\n");
-            ret = -EAGAIN;
-        }
-        /*
-         * If an error if a non-NACK error occurs we must reinit or get stuck.
-         * dev is 0 since it is the only one, if more are added it should be
-         * the dev num.
-         */
-        i2c_init(0);
-        return ret;
-    }
     return ret;
 }
