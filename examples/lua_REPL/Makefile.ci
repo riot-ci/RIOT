@@ -23,6 +23,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     feather-m0 \
     firefly \
     hamilton \
+    im880b \
     i-nucleo-lrwan1 \
     ikea-tradfri \
     limifrog-v1 \
