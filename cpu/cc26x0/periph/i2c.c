@@ -13,6 +13,8 @@
  *
  * @file
  * @brief       Low-level I2C driver implementation
+ * @note        This CPU has weak pullups, external pullup resistors may be
+ *              required.
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
@@ -31,16 +33,13 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-#if ENABLE_DEBUG
 #define PREG(x) DEBUG("%s=0x%08x\n", #x, (unsigned)x);
-#else
-#define PREG(x)
-#endif
 
 /**
  * @brief Array holding one pre-initialized mutex for each I2C device
+ * @note  If multiple I2C devices are added locks must be an array for each one.
  */
-static mutex_t _locks[I2C_NUMOF];
+static mutex_t _lock;
 
 static int _check_errors(void);
 
@@ -49,14 +48,21 @@ void i2c_init(i2c_t devnum)
     (void)devnum;
     assert(devnum < I2C_NUMOF);
 
+    /* Make sure everything is shut off in case of reinit */
+    PRCM->PDCTL0SERIAL = 0;
+    I2C->MCR = 0;
+    PRCM->I2CCLKGR = 0;
+
     /* enable SERIAL power domain */
     PRCM->PDCTL0SERIAL = 1;
-    while (!(PRCM->PDSTAT0 & PDSTAT0_SERIAL_ON)) {}
+    while (!(PRCM->PDSTAT0 & PDSTAT0_SERIAL_ON)) {};
+
+
 
     /* enable i2c clock in run mode */
     PRCM->I2CCLKGR = 1;
     PRCM->CLKLOADCTL |= CLKLOADCTL_LOAD;
-    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {}
+    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {};
 
     /* configure pins */
     IOC->CFG[I2C_SDA_PIN] = (IOCFG_PORTID_I2C_MSSDA
@@ -71,23 +77,23 @@ void i2c_init(i2c_t devnum)
     /* initialize I2C master */
     I2C->MCR = MCR_MFE;
 
-    /* configure clock speed */
-    /*{PERDMACLK / [2 × (SCL_LP + SCL_HP) × SCL_CLK]} – 1*/
-    /* with SCL_LP==6 && SCL_HP==4 use 0x17 for 100kHZ with 48MHZ CPU clock */
+    /* configure clock speed
+     * {PERDMACLK / [2 × (SCL_LP + SCL_HP) × SCL_CLK]} – 1
+     * with SCL_LP==6 && SCL_HP==4 use 0x17 for 100kHZ with 48MHZ CPU clock */
     I2C->MTPR = MTPR_TPR_100KHZ;
 }
 
 int i2c_acquire(i2c_t dev)
 {
     assert(dev < I2C_NUMOF);
-    mutex_lock(&_locks[dev]);
+    mutex_lock(&_lock);
     return 0;
 }
 
 int i2c_release(i2c_t dev)
 {
     assert(dev < I2C_NUMOF);
-    mutex_unlock(&_locks[dev]);
+    mutex_unlock(&_lock);
     return 0;
 }
 
@@ -96,8 +102,13 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
 {
     (void)dev;
     int ret = 0;
-    DEBUG("i2c_read_bytes() %u\n", len);
+    char *bufpos = data;
+
+    DEBUG("%s %u\n", __FUNCTION__, len);
+    PREG(I2C->MSTAT);
+
     assert(dev < I2C_NUMOF);
+    assert(data != NULL);
 
     /* Check for unsupported operations */
     if (flags & I2C_ADDR10) {
@@ -105,14 +116,15 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
     }
 
     /* Check for wrong arguments given */
-    if (data == NULL || len == 0) {
+    if (len == 0) {
+        return -EINVAL;
+    }
+    if (!(I2C->MSTAT & MSTAT_BUSBSY) && (flags & I2C_NOSTART)) {
         return -EINVAL;
     }
 
-    char *bufpos = data;
-
     /* Sequence may be omitted in a single master system */
-    while (I2C->MSTAT & MSTAT_BUSY);
+    while (I2C->MSTAT & MSTAT_BUSY) {};
 
     I2C->MSA = ((uint32_t)addr << 1) | MSA_RS;
 
@@ -138,12 +150,9 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
             mctrl |= MCTRL_ACK;
         }
 
+        while (I2C->MSTAT & MSTAT_BUSY) {};
         /* initiate transfer */
         I2C->MCTRL = mctrl;
-
-        /* wait for transfer to be complete */
-        while (I2C->MSTAT & MSTAT_IDLE);
-        while (I2C->MSTAT & MSTAT_BUSY);
 
         /* check if there was an error */
         ret = _check_errors();
@@ -163,10 +172,13 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
 {
     (void)dev;
     int ret = 0;
-    DEBUG("i2c_write_bytes() %u\n", len);
-    assert(dev < I2C_NUMOF);
-
     const unsigned char *bufpos = data;
+
+    DEBUG("%s %u\n", __FUNCTION__, len);
+    PREG(I2C->MSTAT);
+
+    assert(dev < I2C_NUMOF);
+    assert(data != NULL);
 
     /* Check for unsupported operations */
     if (flags & I2C_ADDR10) {
@@ -174,22 +186,23 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
     }
 
     /* Check for wrong arguments given */
-    if (data == NULL || len == 0) {
+    if (len == 0) {
+        return -EINVAL;
+    }
+    if (!(I2C->MSTAT & MSTAT_BUSBSY) && (flags & I2C_NOSTART)) {
         return -EINVAL;
     }
 
-    PREG(I2C->MSTAT);
-
     /* Since write is 0 we just need shift the address in */
     I2C->MSA = (uint32_t)addr << 1;
+
+    /* Sequence may be omitted in a single master system. */
+    while (I2C->MSTAT & MSTAT_BUSY) {};
 
     while (len--) {
         DEBUG("LOOP %u 0x%2x\n", len, (unsigned)*bufpos);
         /* copy next byte into I2C data register */
         I2C->MDR = *bufpos++;
-
-        /* Sequence may be omitted in a single master system. */
-        while (I2C->MSTAT & MSTAT_BUSY);
 
         /* setup transfer */
         uint32_t mctrl = MCTRL_RUN;
@@ -210,21 +223,6 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
         /* initiate transfer */
         I2C->MCTRL = mctrl;
 
-        /* The reference manual (SWCU117H) is ambiguous on how to wait:
-         *
-         * 1. 21.4 8. says "wait until BUSBUSY is cleared"
-         * 2. command flow diagrams (e.g., 21.3.5.1) indicate to wait while
-         *    BUSY is set
-         *
-         * (3. 21.5.1.10 says BUSY is only valid after 4 SYSBUS clock cycles)
-         *
-         * Waiting first for cleared IDLE and then for cleared BUSY works fine.
-         */
-
-        /* wait for transfer to be complete */
-        while (I2C->MSTAT & MSTAT_IDLE);
-        while (I2C->MSTAT & MSTAT_BUSY);
-
         /* check if there was an error */
         ret = _check_errors();
         if (ret != 0) {
@@ -237,28 +235,45 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
 
 static int _check_errors(void)
 {
+    int ret = 0;
+    /* The reference manual (SWCU117H) is ambiguous on how to wait:
+     *
+     * 1. 21.4 8. says "wait until BUSBUSY is cleared"
+     * 2. command flow diagrams (e.g., 21.3.5.1) indicate to wait while
+     *    BUSY is set
+     *
+     * (3. 21.5.1.10 says BUSY is only valid after 4 SYSBUS clock cycles)
+     *
+     * Waiting first for cleared IDLE and then for cleared BUSY works fine.
+     */
+
+    /* wait for transfer to be complete, this also could be a few nops... */
+    while (I2C->MSTAT & MSTAT_IDLE) {};
+    while (I2C->MSTAT & MSTAT_BUSY) {};
     /* check if there was an error */
     if (I2C->MSTAT & MSTAT_ERR) {
+        DEBUG("%s\n", __FUNCTION__);
         PREG(I2C->MSTAT);
+        ret = -ETIMEDOUT;
         if (I2C->MSTAT & MSTAT_ADRACK_N) {
             DEBUG("ADDRESS NACK\n");
             return -ENXIO;
         }
         else if (I2C->MSTAT & MSTAT_DATACK_N) {
             DEBUG("DATA NACK\n");
-            return -EIO;
+            ret = -EIO;
         }
         else if (I2C->MSTAT & MSTAT_DATACK_N) {
             DEBUG("ARBITRATION LOSS\n");
-            return -EAGAIN;
+            ret = -EAGAIN;
         }
-        else if (I2C->MSTAT & MSTAT_DATACK_N) {
-            /* Accroding to data sheet we should send stop */
-            I2C->MCTRL = MCTRL_STOP;
-            DEBUG("ARBITRATION LOSS\n");
-            return -EAGAIN;
-        }
-        return -ETIMEDOUT;
+        /*
+         * If an error if a non-NACK error occurs we must reinit or get stuck.
+         * dev is 0 since it is the only one, if more are added it should be
+         * the dev num.
+         */
+        i2c_init(0);
+        return ret;
     }
-    return 0;
+    return ret;
 }
