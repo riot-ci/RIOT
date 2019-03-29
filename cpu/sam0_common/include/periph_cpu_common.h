@@ -326,23 +326,42 @@ void gpio_init_mux(gpio_t pin, gpio_mux_t mux);
  */
 static inline int sercom_id(void *sercom)
 {
-#if defined(CPU_FAM_SAMD21)
-    return ((((uint32_t)sercom) >> 10) & 0x7) - 2;
-#elif defined (CPU_FAM_SAML10) || defined (CPU_FAM_SAML11)
-    return ((((uint32_t)sercom) >> 10) & 0x7) - 1;
-#elif defined(CPU_FAM_SAML21) || defined(CPU_FAM_SAMR30)
-    /* Left side handles SERCOM0-4 while right side handles unaligned address of SERCOM5 */
-    return ((((uint32_t)sercom) >> 10) & 0x7) + ((((uint32_t)sercom) >> 22) & 0x04);
-#elif defined(CPU_FAM_SAMD5X)
-    if (sercom < (void*)SERCOM2)
-        return ((((uint32_t)sercom) >> 10) & 0x7) - 4;
-    if (sercom < (void*)SERCOM3)
-        return 2;
-    if (sercom < (void*)SERCOM4)
-        return 3;
-    else
-        return ((((uint32_t)sercom) >> 10) & 0x7) + 4;
+    switch ((intptr_t)sercom) {
+#ifdef SERCOM0
+        case ((intptr_t) SERCOM0):
+            return 0;
 #endif
+#ifdef SERCOM1
+        case ((intptr_t) SERCOM1):
+            return 1;
+#endif
+#ifdef SERCOM2
+        case ((intptr_t) SERCOM2):
+            return 2;
+#endif
+#ifdef SERCOM3
+        case ((intptr_t) SERCOM3):
+            return 3;
+#endif
+#ifdef SERCOM4
+        case ((intptr_t) SERCOM4):
+            return 4;
+#endif
+#ifdef SERCOM5
+        case ((intptr_t) SERCOM5):
+            return 5;
+#endif
+#ifdef SERCOM6
+        case ((intptr_t) SERCOM6):
+            return 6;
+#endif
+#ifdef SERCOM7
+        case ((intptr_t) SERCOM7):
+            return 7;
+#endif
+    }
+
+    return -1;
 }
 
 /**
