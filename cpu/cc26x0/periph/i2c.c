@@ -55,14 +55,14 @@ void i2c_init(i2c_t devnum)
 
     /* enable SERIAL power domain */
     PRCM->PDCTL0SERIAL = 1;
-    while (!(PRCM->PDSTAT0 & PDSTAT0_SERIAL_ON)) {};
+    while (!(PRCM->PDSTAT0 & PDSTAT0_SERIAL_ON)) {}
 
 
 
     /* enable i2c clock in run mode */
     PRCM->I2CCLKGR = 1;
     PRCM->CLKLOADCTL |= CLKLOADCTL_LOAD;
-    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {};
+    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {}
 
     /* configure pins */
     IOC->CFG[I2C_SDA_PIN] = (IOCFG_PORTID_I2C_MSSDA
@@ -124,7 +124,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
     }
 
     /* Sequence may be omitted in a single master system */
-    while (I2C->MSTAT & MSTAT_BUSY) {};
+    while (I2C->MSTAT & MSTAT_BUSY) {}
 
     I2C->MSA = ((uint32_t)addr << 1) | MSA_RS;
 
@@ -150,7 +150,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
             mctrl |= MCTRL_ACK;
         }
 
-        while (I2C->MSTAT & MSTAT_BUSY) {};
+        while (I2C->MSTAT & MSTAT_BUSY) {}
         /* initiate transfer */
         I2C->MCTRL = mctrl;
 
@@ -197,7 +197,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
     I2C->MSA = (uint32_t)addr << 1;
 
     /* Sequence may be omitted in a single master system. */
-    while (I2C->MSTAT & MSTAT_BUSY) {};
+    while (I2C->MSTAT & MSTAT_BUSY) {}
 
     while (len--) {
         DEBUG("LOOP %u 0x%2x\n", len, (unsigned)*bufpos);
@@ -236,6 +236,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
 static int _check_errors(void)
 {
     int ret = 0;
+
     /* The reference manual (SWCU117H) is ambiguous on how to wait:
      *
      * 1. 21.4 8. says "wait until BUSBUSY is cleared"
@@ -248,8 +249,8 @@ static int _check_errors(void)
      */
 
     /* wait for transfer to be complete, this also could be a few nops... */
-    while (I2C->MSTAT & MSTAT_IDLE) {};
-    while (I2C->MSTAT & MSTAT_BUSY) {};
+    while (I2C->MSTAT & MSTAT_IDLE) {}
+    while (I2C->MSTAT & MSTAT_BUSY) {}
     /* check if there was an error */
     if (I2C->MSTAT & MSTAT_ERR) {
         DEBUG("%s\n", __FUNCTION__);
