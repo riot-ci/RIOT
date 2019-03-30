@@ -39,6 +39,14 @@
 #include "soc/sens_reg.h"
 #include "soc/sens_struct.h"
 
+#if defined(MODULE_PERIPH_ADC) && defined(ADC_GPIOS)
+#define ADC_USED     1
+#endif
+
+#if defined(MODULE_PERIPH_DAC) && defined(DAC_GPIOS)
+#define DAC_USED     1
+#endif
+
 #define ADC1_CTRL    0
 #define ADC2_CTRL    1
 
@@ -153,17 +161,17 @@ static const uint32_t dac_pins[] = DAC_GPIOS;
 
 const unsigned dac_chn_num = (sizeof(dac_pins) / sizeof(dac_pins[0]));
 
-#if defined(ADC_GPIOS) || defined(DAC_GPIOS)
 /* forward declaration of internal functions */
+#if ADC_USED
 static void _adc1_ctrl_init(void);
-static void _adc2_ctrl_init(void);
-
 static bool _adc1_ctrl_initialized = false;
+#endif /* ADC_USED */
+#if ADC_USED || DAC_USED
+static void _adc2_ctrl_init(void);
 static bool _adc2_ctrl_initialized = false;
-#endif /* defined(ADC_GPIOS) || defined(DAC_GPIOS) */
+#endif /* ADC_USED || DAC_USED */
 
-#if defined(ADC_GPIOS)
-
+#if ADC_USED
 static bool _adc_conf_check(void);
 static void _adc_module_init(void);
 static bool _adc_module_initialized  = false;
@@ -389,11 +397,9 @@ static void _adc_module_init(void)
     SENS.sar_tctrl.tsens_power_up_force = 1; /* controlled by SW */
     SENS.sar_tctrl.tsens_power_up = 0;       /* power down */
 }
+#endif /* ADC_USED */
 
-#endif /* defined(ADC_GPIOS) */
-
-#if defined(DAC_GPIOS)
-
+#if DAC_USED
 static bool _dac_conf_check(void);
 static bool _dac_module_initialized  = false;
 
@@ -487,11 +493,9 @@ static bool _dac_conf_check(void)
 
     return true;
 }
+#endif /* DAC_USED */
 
-#endif /* defined(DAC_GPIOS) */
-
-#if defined(ADC_GPIOS) || defined(DAC_GPIOS)
-
+#if ADC_USED
 static void _adc1_ctrl_init(void)
 {
     /* always power on */
@@ -525,7 +529,9 @@ static void _adc1_ctrl_init(void)
 
     _adc1_ctrl_initialized = true;
 }
+#endif /* ADC_USED */
 
+#if ADC_USED || DAC_USED
 static void _adc2_ctrl_init(void)
 {
     /* SAR ADC2 controller configuration */
@@ -541,8 +547,7 @@ static void _adc2_ctrl_init(void)
 
     _adc2_ctrl_initialized = true;
 }
-
-#endif /* defined(ADC_GPIOS) || defined(DAC_GPIOS) */
+#endif /* ADC_USED || DAC_USED */
 
 extern const gpio_t _gpio_rtcio_map[];
 
@@ -630,18 +635,18 @@ int rtcio_config_sleep_mode (gpio_t pin, bool mode, bool input)
 
 void adc_print_config(void) {
     ets_printf("\tADC\t\tpins=[ ");
-    #if defined(ADC_GPIOS)
+    #if ADC_USED
     for (unsigned i = 0; i < ADC_NUMOF; i++) {
         ets_printf("%d ", adc_channels[i]);
     }
-    #endif /* defined(ADC_GPIOS) */
+    #endif /* ADC_USED */
     ets_printf("]\n");
 
     ets_printf("\tDAC\t\tpins=[ ");
-    #if defined(DAC_GPIOS)
+    #if DAC_USED
     for (unsigned i = 0; i < dac_chn_num; i++) {
         ets_printf("%d ", dac_pins[i]);
     }
-    #endif /* defined(DAC_GPIOS) */
+    #endif /* DAC_USED */
     ets_printf("]\n");
 }
