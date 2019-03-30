@@ -39,6 +39,14 @@
 #include "soc/sens_reg.h"
 #include "soc/sens_struct.h"
 
+#if defined(MODULE_PERIPH_ADC) && defined(ADC_GPIOS)
+#define ADC_USED
+#endif
+
+#if defined(MODULE_PERIPH_DAC) && defined(DAC_GPIOS)
+#define DAC_USED
+#endif
+
 #define ADC1_CTRL    0
 #define ADC2_CTRL    1
 
@@ -149,31 +157,28 @@ const gpio_t _gpio_rtcio_map[] = {
     RTCIO_SENSOR_SENSE4, /* GPIO39 SENSOR_VN */
 };
 
-/** Map of RIOT ADC and DAC lines to GPIOs */
-static const uint32_t adc_pins[] = ADC_GPIOS;
 static const uint32_t dac_pins[] = DAC_GPIOS;
 
-/** number of ADC and DAC channels */
-const unsigned adc_chn_num = (sizeof(adc_pins) / sizeof(adc_pins[0]));
 const unsigned dac_chn_num = (sizeof(dac_pins) / sizeof(dac_pins[0]));
 
-#if defined(ADC_GPIOS) || defined(DAC_GPIOS)
+#if defined(ADC_USED) || defined(DAC_USED)
 /* forward declaration of internal functions */
 static void _adc1_ctrl_init(void);
 static void _adc2_ctrl_init(void);
 
 static bool _adc1_ctrl_initialized = false;
 static bool _adc2_ctrl_initialized = false;
-#endif /* defined(ADC_GPIOS) || defined(DAC_GPIOS) */
+#endif /* defined(ADC_USED) || defined(DAC_USED) */
 
-#if defined(ADC_GPIOS)
+#if defined(ADC_USED)
+
 static bool _adc_conf_check(void);
 static void _adc_module_init(void);
 static bool _adc_module_initialized  = false;
 
 int adc_init(adc_t line)
 {
-    CHECK_PARAM_RET (line < adc_chn_num, -1)
+    CHECK_PARAM_RET (line < ADC_NUMOF, -1)
 
     if (!_adc_module_initialized) {
         /* do some configuration checks */
@@ -184,7 +189,7 @@ int adc_init(adc_t line)
         _adc_module_initialized = true;
     }
 
-    uint8_t rtcio = _gpio_rtcio_map[adc_pins[line]];
+    uint8_t rtcio = _gpio_rtcio_map[adc_channels[line]];
 
     if (_adc_hw[rtcio].adc_ctrl == ADC1_CTRL && !_adc1_ctrl_initialized) {
         _adc1_ctrl_init();
@@ -276,10 +281,10 @@ int adc_init(adc_t line)
 
 int adc_sample(adc_t line, adc_res_t res)
 {
-    CHECK_PARAM_RET (line < adc_chn_num, -1)
+    CHECK_PARAM_RET (line < ADC_NUMOF, -1)
     CHECK_PARAM_RET (res <= ADC_RES_12BIT, -1)
 
-    uint8_t rtcio = _gpio_rtcio_map[adc_pins[line]];
+    uint8_t rtcio = _gpio_rtcio_map[adc_channels[line]];
 
     if (_adc_hw[rtcio].adc_ctrl == ADC1_CTRL) {
         /* set the resolution for the measurement */
@@ -320,9 +325,9 @@ int adc_sample(adc_t line, adc_res_t res)
 
 int adc_set_attenuation(adc_t line, adc_attenuation_t atten)
 {
-    CHECK_PARAM_RET (line < adc_chn_num, -1)
+    CHECK_PARAM_RET (line < ADC_NUMOF, -1)
 
-    uint8_t rtcio = _gpio_rtcio_map[adc_pins[line]];
+    uint8_t rtcio = _gpio_rtcio_map[adc_channels[line]];
 
     if (_adc_hw[rtcio].adc_ctrl == ADC1_CTRL) {
         SENS.sar_atten1 &= ~(0x3 << (_adc_hw[rtcio].adc_channel << 1));
@@ -339,8 +344,8 @@ int adc_vref_to_gpio25 (void)
 {
     /* determine ADC line for GPIO25 */
     adc_t line = ADC_UNDEF;
-    for (unsigned i = 0; i < adc_chn_num; i++) { \
-        if (adc_pins[i] == GPIO25) { \
+    for (unsigned i = 0; i < ADC_NUMOF; i++) { \
+        if (adc_channels[i] == GPIO25) { \
             line = i;
             break;
         }
@@ -353,7 +358,7 @@ int adc_vref_to_gpio25 (void)
 
     if (adc_init(line) == 0)
     {
-        uint8_t rtcio = _gpio_rtcio_map[adc_pins[line]];
+        uint8_t rtcio = _gpio_rtcio_map[adc_channels[line]];
         RTCCNTL.bias_conf.dbg_atten = 0;
         RTCCNTL.test_mux.dtest_rtc = 1;
         RTCCNTL.test_mux.ent_rtc = 1;
@@ -370,10 +375,10 @@ int adc_vref_to_gpio25 (void)
 
 static bool _adc_conf_check(void)
 {
-    for (unsigned i = 0; i < adc_chn_num; i++) {
-        if (_gpio_rtcio_map[adc_pins[i]] == RTCIO_NA) {
+    for (unsigned i = 0; i < ADC_NUMOF; i++) {
+        if (_gpio_rtcio_map[adc_channels[i]] == RTCIO_NA) {
             LOG_TAG_ERROR("adc", "GPIO%d cannot be used as ADC line\n",
-                          adc_pins[i]);
+                          adc_channels[i]);
             return false;
         }
     }
@@ -393,9 +398,9 @@ static void _adc_module_init(void)
     SENS.sar_tctrl.tsens_power_up = 0;       /* power down */
 }
 
-#endif /* defined(ADC_GPIOS) */
+#endif /* defined(ADC_USED) */
 
-#if defined(DAC_GPIOS)
+#if defined(DAC_USED)
 
 static bool _dac_conf_check(void);
 static bool _dac_module_initialized  = false;
@@ -491,9 +496,9 @@ static bool _dac_conf_check(void)
     return true;
 }
 
-#endif /* defined(DAC_GPIOS) */
+#endif /* defined(DAC_USED) */
 
-#if defined(ADC_GPIOS) || defined(DAC_GPIOS)
+#if defined(ADC_USED) || defined(DAC_USED)
 
 static void _adc1_ctrl_init(void)
 {
@@ -545,7 +550,7 @@ static void _adc2_ctrl_init(void)
     _adc2_ctrl_initialized = true;
 }
 
-#endif /* defined(ADC_GPIOS) || defined(DAC_GPIOS) */
+#endif /* defined(ADC_USED) || defined(DAC_USED) */
 
 extern const gpio_t _gpio_rtcio_map[];
 
@@ -633,18 +638,18 @@ int rtcio_config_sleep_mode (gpio_t pin, bool mode, bool input)
 
 void adc_print_config(void) {
     ets_printf("\tADC\t\tpins=[ ");
-    #if defined(ADC_GPIOS)
-    for (unsigned i = 0; i < adc_chn_num; i++) {
-        ets_printf("%d ", adc_pins[i]);
+    #if defined(ADC_USED)
+    for (unsigned i = 0; i < ADC_NUMOF; i++) {
+        ets_printf("%d ", adc_channels[i]);
     }
-    #endif /* defined(ADC_GPIOS) */
+    #endif /* defined(ADC_USED) */
     ets_printf("]\n");
 
     ets_printf("\tDAC\t\tpins=[ ");
-    #if defined(DAC_GPIOS)
+    #if defined(DAC_USED)
     for (unsigned i = 0; i < dac_chn_num; i++) {
         ets_printf("%d ", dac_pins[i]);
     }
-    #endif /* defined(DAC_GPIOS) */
+    #endif /* defined(DAC_USED) */
     ets_printf("]\n");
 }
