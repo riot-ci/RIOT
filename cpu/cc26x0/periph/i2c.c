@@ -72,7 +72,7 @@ static int _check_errors(void)
             DEBUG("DATA NACK\n");
             ret = -EIO;
         }
-        else if (I2C->MSTAT & MSTAT_DATACK_N) {
+        else if (I2C->MSTAT & MSTAT_ARBLST) {
             DEBUG("ARBITRATION LOSS\n");
             ret = -EAGAIN;
         }
