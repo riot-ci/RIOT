@@ -77,9 +77,10 @@ static int _check_errors(void)
             ret = -EAGAIN;
         }
         /*
-         * If an error if a non-NACK error occurs we must reinit or get stuck.
-         * dev is 0 since it is the only one, if more are added it should be
-         * the dev num.
+         * If a non-NACK error occurs we must reinit or lock up.
+         * dev = 0 since it is the only one, if more are added it should be
+         * the dev num, this is done to avoid passing in arguments and
+         * increasing code size.
          */
         i2c_init(0);
         return ret;
@@ -100,8 +101,6 @@ void i2c_init(i2c_t devnum)
     /* enable SERIAL power domain */
     PRCM->PDCTL0SERIAL = 1;
     while (!(PRCM->PDSTAT0 & PDSTAT0_SERIAL_ON)) {}
-
-
 
     /* enable i2c clock in run mode */
     PRCM->I2CCLKGR = 1;
