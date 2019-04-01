@@ -201,31 +201,33 @@ static void reg_clear_bits(encx24j600_t *dev, uint8_t reg, uint16_t mask)
  */
 static void sram_op(encx24j600_t *dev, uint16_t cmd, uint16_t addr, char *ptr, int len)
 {
-    uint16_t reg;
-    char* in = NULL;
-    char* out = NULL;
+    if (len) {
+        uint16_t reg;
+        char* in = NULL;
+        char* out = NULL;
 
-    /* determine pointer addr
-     *
-     * all SRAM access commands have an
-     * offset 0x5e to their pointer registers
-     * */
-    reg = cmd + 0x5e;
+        /* determine pointer addr
+         *
+         * all SRAM access commands have an
+         * offset 0x5e to their pointer registers
+         * */
+        reg = cmd + 0x5e;
 
-    /* read or write? bit 1 tells us */
-    if (reg & 0x2) {
-        out = ptr;
-    } else {
-        in = ptr;
+        /* read or write? bit 1 tells us */
+        if (reg & 0x2) {
+            out = ptr;
+        } else {
+            in = ptr;
+        }
+
+        /* set pointer */
+        if (addr != 0xFFFF) {
+            reg_set(dev, reg, addr);
+        }
+
+        /* copy data */
+        cmdn(dev, cmd, in, out, len);
     }
-
-    /* set pointer */
-    if (addr != 0xFFFF) {
-        reg_set(dev, reg, addr);
-    }
-
-    /* copy data */
-    cmdn(dev, cmd, in, out, len);
 }
 
 static int _init(netdev_t *encdev)
