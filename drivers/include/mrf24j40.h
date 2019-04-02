@@ -115,8 +115,14 @@ extern "C" {
 
 #define MRF24J40_MAX_FRAME_RETRIES      (3U)        /**< Number of frame retries (fixed) */
 
+/**
+ * @brief Enable external PA/LNA control
+ *
+ * Increase RSSI for MRF24J40MC/MD/ME devices. No effect on MRF24J40MA.
+ * For more information, please refer to section 4.2 of MRF24J40 datasheet.
+ */
 #ifndef MRF24J40_USE_EXT_PA_LNA
-#define MRF24J40_USE_EXT_PA_LNA         (0U)        /**< Enable external PA/LNA control (Section 4.2 of datasheet) for MRF24J40MC/MD/ME */
+#define MRF24J40_USE_EXT_PA_LNA         (0U)
 #endif
 
 /**
