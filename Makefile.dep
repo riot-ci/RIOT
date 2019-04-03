@@ -397,11 +397,9 @@ ifneq (,$(filter stdio_rtt,$(USEMODULE)))
 endif
 
 ifneq (,$(filter shell,$(USEMODULE)))
-  USEMODULE += stdio_uart_rx
-endif
-
-ifneq (,$(filter rtt_stdio,$(USEMODULE)))
-  USEMODULE += xtimer
+  ifneq (,$(filter stdio_uart,$(USEMODULE)))
+    USEMODULE += stdio_uart_rx
+  endif
 endif
 
 ifneq (,$(filter stdio_uart_rx,$(USEMODULE)))
