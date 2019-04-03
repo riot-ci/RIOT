@@ -13,6 +13,9 @@ BOARD_BLACKLIST := chronos mips-malta ruuvitag
 
 export TAP ?= tap0
 
+# hamilton doesn't support ethos
+BOARD_BLACKLIST := hamilton
+
 USEMODULE += sock_dns
 USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_ipv6_default
