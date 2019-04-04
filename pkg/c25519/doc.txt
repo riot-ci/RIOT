@@ -15,19 +15,19 @@
  *
  * C25519 requires around 1K of stack, so beware that you're allocating at
  * least `THREAD_STACKSIZE_DEFAULT + 1K` bytes.
- * 
+ *
  * You can do it easily by adding:
- * 
+ *
  * ```makefile
  * CFLAGS += '-DTHREAD_STACKSIZE_MAIN=(THREAD_STACKSIZE_DEFAULT + 1024)'
  * ```
- * 
+ *
  * to your makefile.
- * 
+ *
  * ## Usage
  *
  * Just add it as a package in your application:
- * 
+ *
  * ```makefile
  * USEPKG += c25519
  * ```
