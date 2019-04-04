@@ -4,6 +4,8 @@ USEMODULE += embunit
 USEMODULE += random
 USEPKG += c25519
 
+BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-nano arduino-uno
+
 TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
