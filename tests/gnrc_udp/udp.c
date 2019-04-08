@@ -17,6 +17,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
 
 #include "msg.h"
@@ -78,10 +79,21 @@ static void *_eventloop(void *arg)
     return NULL;
 }
 
+/**
+ * Check if "port" is a valid port number.
+ *
+ * @return  port if the port falls in the range 1-65535 or zero otherwise.
+ */
+static uint16_t valid_port(unsigned long port)
+{
+    return (port > 0 && port < UINT16_MAX)? port : 0;
+}
+
 static void send(char *addr_str, char *port_str, char *data_len_str, unsigned int num,
                  unsigned int delay)
 {
     int iface;
+    char *conversion_end;
     uint16_t port;
     ipv6_addr_t addr;
     size_t data_len;
@@ -97,14 +109,14 @@ static void send(char *addr_str, char *port_str, char *data_len_str, unsigned in
         return;
     }
     /* parse port */
-    port = atoi(port_str);
-    if (port == 0) {
+    port = valid_port(strtoul(port_str, &conversion_end, 0));
+    if (*conversion_end != '\0' && port != 0) {
         puts("Error: unable to parse destination port");
         return;
     }
 
-    data_len = atoi(data_len_str);
-    if (data_len == 0) {
+    data_len = strtoul(data_len_str, &conversion_end, 0);
+    if (*conversion_end != '\0') {
         puts("Error: unable to parse data_len");
         return;
     }
@@ -155,6 +167,7 @@ static void send(char *addr_str, char *port_str, char *data_len_str, unsigned in
 
 static void start_server(char *port_str)
 {
+    char *conversion_end;
     uint16_t port;
 
     /* check if server is already running */
@@ -164,8 +177,8 @@ static void start_server(char *port_str)
         return;
     }
     /* parse port */
-    port = atoi(port_str);
-    if (port == 0) {
+    port = valid_port(strtoul(port_str, &conversion_end, 0));
+    if (*conversion_end != '\0' && port != 0) {
         puts("Error: invalid port specified");
         return;
     }
@@ -208,18 +221,26 @@ int udp_cmd(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "send") == 0) {
+        char *conversion_end;
         uint32_t num = 1;
         uint32_t delay = 1000000LU;
+        if (argc > 5) {
+            num = strtol(argv[5], &conversion_end, 0);
+            if (*conversion_end != '\0') {
+                goto send_syntax_err;
+            }
+        }
+        if (argc > 6) {
+            delay = strtol(argv[6], &conversion_end, 0);
+            if (*conversion_end != '\0') {
+                goto send_syntax_err;
+            }
+        }
         if (argc < 5) {
+send_syntax_err:
             printf("usage: %s send <addr> <port> <bytes> [<num> [<delay in us>]]\n",
                    argv[0]);
             return 1;
-        }
-        if (argc > 5) {
-            num = atoi(argv[5]);
-        }
-        if (argc > 6) {
-            delay = atoi(argv[6]);
         }
         send(argv[2], argv[3], argv[4], num, delay);
     }
