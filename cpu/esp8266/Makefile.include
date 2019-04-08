@@ -57,7 +57,6 @@ PSEUDOMODULES += esp_spiffs
 USEMODULE += esp
 USEMODULE += mtd
 USEMODULE += periph
-USEMODULE += periph_common
 USEMODULE += ps
 USEMODULE += random
 USEMODULE += sdk
