@@ -21,6 +21,22 @@
 
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
+#include "periph_cpu.h"
+
+/**
+ * @name    SPI configuration
+ * @{
+ */
+static const spi_conf_t spi_config[] = {
+    {
+        .dev  = NRF_SPI0,
+        .sclk = GPIO_PIN(0, 25),
+        .mosi = GPIO_PIN(0, 23),
+        .miso = GPIO_PIN(0, 24),
+    }
+};
+#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+/** @} */
 
 #include "periph_conf_common.h"
 
