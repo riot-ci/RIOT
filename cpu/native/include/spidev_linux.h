@@ -119,7 +119,6 @@ int spidev_linux_setup(spi_t bus, spi_cs_t cs, const char *name);
  */
 void spidev_linux_teardown(void);
 
-
 #ifdef __cplusplus
 }
 #endif
