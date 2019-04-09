@@ -34,16 +34,18 @@ extern "C" {
  * @name    SPI configuration
  * @{
  */
+#ifndef SPI_NUMOF /* <-- Allow overwriting SPI_NUMOF from periph_conf */
 static const spi_conf_t spi_config[] = {
     {
         .dev  = NRF_SPI0,
-        .sclk = 15,
-        .mosi = 13,
-        .miso = 14
+        .sclk = GPIO_PIN(0, 15),
+        .mosi = GPIO_PIN(0, 13),
+        .miso = GPIO_PIN(0, 14),
     }
 };
 
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+#endif
 /** @} */
 
 /**
