@@ -41,6 +41,10 @@ void cpu_init(void)
     /* initialize the CPU clocking provided by the MCG module */
     kinetis_mcg_init();
 #endif
+
+    /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
+    stdio_init();
+
     /* trigger static peripheral initialization */
     periph_init();
 }

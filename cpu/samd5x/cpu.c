@@ -20,6 +20,7 @@
 #include "cpu.h"
 #include "periph_conf.h"
 #include "periph/init.h"
+#include "stdio_base.h"
 
 static void xosc32k_init(void)
 {
@@ -121,6 +122,9 @@ void cpu_init(void)
 #ifdef MODULE_PERIPH_FLASHPAGE
     MCLK->APBBMASK.reg |= MCLK_APBBMASK_NVMCTRL;
 #endif
+
+    /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
+    stdio_init();
 
     /* trigger static peripheral initialization */
     periph_init();
