@@ -92,8 +92,7 @@ bool cpu_check_address(volatile const char *address)
 
     *address;
     /* Check BFARVALID flag */
-    if ((SCB->CFSR & BFARVALID_MASK) != 0)
-    {
+    if ((SCB->CFSR & BFARVALID_MASK) != 0) {
         /* Bus Fault occured reading the address */
         is_valid = false;
     }
