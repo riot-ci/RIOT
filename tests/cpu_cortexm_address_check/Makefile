@@ -1,8 +1,4 @@
-BOARD_WHITELIST := samr21-xpro iotlab-m3 nucleo-l152re nucleo-l073rz \
-                   nucleo-l031k6 nucleo-l053r8 b-l072z-lrwan1 \
-                   b-l475e-iot01a nucleo-f091rc nucleo-f103rb \
-                   nucleo-f207zg nucleo-f303k8 nucleo-f446re \
-                   nucleo-f746zg nucleo-l476rg
+FEATURES_REQUIRED += cpu_check_address
 
 BOARD ?= nucleo-l152re
 
