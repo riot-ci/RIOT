@@ -101,6 +101,7 @@ void TestRunner_runTest(Test* test)
 
 void TestRunner_end(void)
 {
+    puts("FOOOOOBAR");
     char buf[16];
     if (result_.failureCount) {
         stdimpl_print("\nrun ");
