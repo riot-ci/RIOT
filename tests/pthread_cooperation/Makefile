@@ -6,7 +6,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-nano \
 # jiminy-mega256rfr2: unknown type name: clockid_t
 # mega-xplained: unknown type name: clockid_t
 
-BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6
+BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6 hifive1
 
 USEMODULE += posix_headers
 USEMODULE += pthread
