@@ -61,6 +61,9 @@ void stdio_init(void)
     cb = (uart_rx_cb_t) isrpipe_write_one;
     arg = &stdio_uart_isrpipe;
 #else
+#ifdef USE_ETHOS_FOR_STDIO
+#error "ethos needs stdio_uart_rx"
+#endif
     cb = NULL;
     arg = NULL;
 #endif
