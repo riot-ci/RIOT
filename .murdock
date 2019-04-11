@@ -1,7 +1,10 @@
 #!/bin/sh
 
-: ${TEST_BOARDS_AVAILABLE:="nrf52dk samr21-xpro"}
+: ${TEST_BOARDS_AVAILABLE:="hifive1 nrf52dk samr21-xpro"}
 : ${TEST_BOARDS_LLVM_COMPILE:="iotlab-m3 native nrf52dk mulle nucleo-f401re samr21-xpro slstk3402a"}
+
+# REMOVEME
+export BOARDS=hifive1
 
 export RIOT_CI_BUILD=1
 export STATIC_TESTS=${STATIC_TESTS:-1}

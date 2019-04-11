@@ -16,6 +16,7 @@ TIMEOUT = 30
 
 
 def testfunc(child):
+    child.logfile = sys.stdout
     child.expect('OK \(\d+ tests\)', timeout=TIMEOUT)
 
 
