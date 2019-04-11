@@ -199,7 +199,7 @@ compile() {
 
     # compile
     CCACHE_BASEDIR="$(pwd)" BOARD=$board TOOLCHAIN=$toolchain RIOT_CI_BUILD=1 \
-        make -C${appdir} clean all test-input-hash -j${JOBS:-4}
+        OUTPUT=TEXT make -C${appdir} clean all test-input-hash -j${JOBS:-4}
     RES=$?
 
     # run tests
