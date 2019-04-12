@@ -91,6 +91,14 @@ extern "C" {
 #define STM32_PM_STANDBY      (0U)
 /** @} */
 
+#ifndef PM_BLOCKER_INITIAL
+/**
+ * @brief   Default initial PM blocker
+ * @todo    All modes are blocked per default, until PM is cleanly implemented
+ */
+#define PM_BLOCKER_INITIAL  { .val_u32 = 0x01010101 }
+#endif
+
 #ifndef PM_EWUP_CONFIG
 /**
  * @brief   Wake-up pins configuration (CSR register)
