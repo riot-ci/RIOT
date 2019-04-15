@@ -106,19 +106,19 @@ bool cpu_check_address(volatile const char *address)
     /* Cortex-M0 doesn't have BusFault so we need to catch HardFault */
     (void)address;
 
-    __asm__ volatile (
-        "ldr  r5, =0x1   \n" /* load r5 with 1 to set result    */
-    );
-
-    /* R5 will be set to 0 by HardFault handler */
-    /* to indicate HardFault has occured */
-    register uint32_t result __asm("r5");
+    bool result;
 
     __asm__ volatile (
+        "movs r5, #1            \n" /* R5 will be set to 0 by HardFault handler */
+                                    /* to indicate HardFault has occured */
         "ldr  r1, =0xDEADF00D   \n" /* set magic number     */
         "ldr  r2, =0xCAFEBABE   \n" /* 2nd magic to be sure */
-        "ldrb r3, [r0]          \n" /* probe address        */
-    );
+        "ldrb r3, %1            \n" /* probe address        */
+        "mov  %0, r5            \n" /* store result */
+        : "=r"(result)
+        : "m"(*address)
+        : "r1", "r2", "r3", "r5", "cc"
+     );
 
     return result;
 #endif
