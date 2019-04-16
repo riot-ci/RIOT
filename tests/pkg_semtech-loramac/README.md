@@ -206,3 +206,4 @@ The node will also print the data received:
 
     > loramac tx test
     Data received: This is RIOT!
+

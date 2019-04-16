@@ -14,6 +14,7 @@ LORA_REGION ?= EU868
 USEPKG += semtech-loramac
 USEMODULE += $(LORA_DRIVER)
 
+USEMODULE += auto_init_gnrc_netif
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += fmt

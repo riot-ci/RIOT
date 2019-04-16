@@ -277,8 +277,13 @@ void auto_init(void)
 #endif
 
 #ifdef MODULE_SX127X
+#ifdef MODULE_SEMTECH_LORAMAC
+    extern void auto_init_loramac(void);
+    auto_init_loramac();
+#else
     extern void auto_init_sx127x(void);
     auto_init_sx127x();
+#endif
 #endif
 
 #ifdef MODULE_NRF802154
