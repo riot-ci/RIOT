@@ -20,17 +20,12 @@
 #include <stdio.h>
 
 #include "shell.h"
-#include "semtech_loramac.h"
-
-extern semtech_loramac_t loramac;
 
 /* loramac shell command handler is implemented in
    sys/shell/commands/sc_loramac.c */
 
 int main(void)
 {
-    semtech_loramac_init(&loramac);
-
     puts("All up, running the shell now");
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
