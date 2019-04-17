@@ -17,7 +17,9 @@ ifeq (fscopy,$(PROGRAMMER))
   export DEBUGGER =
   export DEBUGSERVER =
 else ifeq (openocd,$(PROGRAMMER))
-  DEBUG_ADAPTER = jlink
+  DEBUG_ADAPTER = dap
+else ifeq (pyocd,$(PROGRAMMER))
+  include $(RIOTMAKE)/tools/pyocd.inc.mk
 endif
 
 # include nrf51 boards common configuration
