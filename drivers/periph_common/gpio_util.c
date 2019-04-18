@@ -7,6 +7,7 @@
  */
 
 #include "periph/gpio.h"
+#include <stdint.h>
 
 #ifdef MODULE_PERIPH_GPIO
 
