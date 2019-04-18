@@ -101,9 +101,9 @@ void rbuf_gc(void);
  *
  * This functions sets rbuf_t::super::pkt to NULL and removes all rbuf::ints.
  *
- * @internal
- *
  * @param[in] rbuf  A reassembly buffer entry
+ *
+ * @internal
  */
 void rbuf_rm(rbuf_t *rbuf);
 
@@ -112,10 +112,10 @@ void rbuf_rm(rbuf_t *rbuf);
  *
  * @param[in] rbuf  A reassembly buffer entry
  *
- * @internal
- *
  * @return  true, if @p rbuf is empty (i.e. rbuf->super.pkt is NULL).
  * @return  false, if @p rbuf is in use.
+ *
+ * @internal
  */
 static inline bool rbuf_entry_empty(const rbuf_t *rbuf) {
     return (rbuf->super.pkt == NULL);
