@@ -25,6 +25,7 @@
 #include "net/gnrc/netif/hdr.h"
 #include "net/gnrc/pkt.h"
 
+#include "net/gnrc/sixlowpan/config.h"
 #include "net/gnrc/sixlowpan/frag.h"
 #ifdef __cplusplus
 
