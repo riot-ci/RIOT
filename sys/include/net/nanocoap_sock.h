@@ -24,8 +24,11 @@
  * which it responds. See the declarations of `coap_resources` and
  * `coap_resources_numof`. The array contents must be ordered by the resource
  * path, specifically the ASCII encoding of the path characters (digit and
- * capital precede lower case). nanocoap provides the
- * COAP_WELL_KNOWN_CORE_DEFAULT_HANDLER entry for `/.well-known/core`.
+ * capital precede lower case). Also see _Server path matching_ in the base
+ * [nanocoap](group__net__nanocoap.html) documentation.
+ *
+ * nanocoap itself provides the COAP_WELL_KNOWN_CORE_DEFAULT_HANDLER entry for
+ * `/.well-known/core`.
  *
  * ### Handler functions ###
  *

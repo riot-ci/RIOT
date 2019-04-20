@@ -44,6 +44,26 @@
  * option as it is written and prepare for any payload. The caller must monitor
  * space remaining in the buffer; however, the API *will not* write past the
  * end of the buffer, and returns -ENOSPC when it is full.
+ * 
+ * ## Server path matching
+ * 
+ * By default the URI-path of an incoming request should match exactly one of
+ * the registered resources. But also, a resource can be configured to
+ * match just a prefix of the URI-path of the request by adding the
+ * @ref COAP_MATCH_SUBTREE option to coap_resource_t::methods.
+ *
+ * For example, if a resource is configured with a
+ * @ref coap_resource_t::path "path" `/resource01` and the
+ * @ref COAP_MATCH_SUBTREE option is used it would match any of `/resource01/`,
+ * `/resource01/sub/path`, `/resource01alt`.
+ *
+ * If the behavior of matching `/resource01alt` is not wanted and only subtrees
+ * are wanted to match, the path should be `/resource01/`.
+ *
+ * If in addition just `/resource01` is wanted to match, together with any
+ * subtrees of `/resource01/`, then a first resource with the path `/resource01`
+ * and exact matching should be register, and then a second one with the path
+ * `/resource01/` and subtree matching.
  *
  * @{
  *
