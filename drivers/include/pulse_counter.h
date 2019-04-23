@@ -26,6 +26,7 @@
 #define PULSE_COUNTER_H
 
 #include <stdint.h>
+#include <stdatomic.h>
 #include "periph/gpio.h"
 
 #ifdef __cplusplus
@@ -44,7 +45,7 @@ typedef struct {
   * @brief   Device descriptor for a pulse counter device
   */
 typedef struct {
-    int16_t pulse_count;       /**< pulse counter */
+    atomic_uint_least16_t pulse_count;  /**< pulse counter */
 } pulse_counter_t;
 
 /**
