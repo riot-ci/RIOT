@@ -191,7 +191,7 @@ def main():
         origin = _find_remote(repo, username, REPO)
         print("Pushing branch {} to {}".format(new_branch, origin))
         if not args.noop:
-            repo.git.push(origin, '{0}:{0}'.format(new_branch))
+            push_info = origin.push('{0}:{0}'.format(new_branch))
     except Exception as exc:
         # Delete worktree
         print("Pruning temporary workdir at {}".format(worktree_dir))
@@ -204,6 +204,7 @@ def main():
         # Delete worktree
         print("Pruning temporary workdir at {}".format(worktree_dir))
         _delete_worktree(repo, worktree_dir)
+    repo.branches[new_branch].set_tracking_branch(push_info[0].remote_ref)
 
     labels = _get_labels(pulldata)
     merger = pulldata['merged_by']['login']
