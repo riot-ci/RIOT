@@ -1,1 +1,6 @@
+# samr30 does not contain a TRNG
+ifeq (,$(findstring samr30,$(CPU_MODEL)))
+  FEATURES_PROVIDED += periph_hwrng
+endif
+
 -include $(RIOTCPU)/sam0_common/Makefile.features
