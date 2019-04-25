@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @name        Peripheral MCU configuration for the FRDM-KW41Z
+ * @name        Common peripheral MCU configuration for KW41Z based boards
  *
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
@@ -123,7 +123,7 @@ static const uart_conf_t uart_config[] = {
 /** @} */
 
 /**
- * @name   SPI configuration
+ * @name   SPI clock configuration
  *
  * Clock configuration values based on the configured 16Mhz module clock.
  *
@@ -164,61 +164,6 @@ static const uint32_t spi_clk_config[] = {
         SPI_CTAR_PDT(0) | SPI_CTAR_DT(0)
     )
 };
-
-static const spi_conf_t spi_config[] = {
-    {
-        .dev      = SPI0,
-        .pin_miso = GPIO_PIN(PORT_C, 18),
-        .pin_mosi = GPIO_PIN(PORT_C, 17),
-        .pin_clk  = GPIO_PIN(PORT_C, 16),
-        .pin_cs   = {
-            GPIO_PIN(PORT_C, 19),
-            GPIO_UNDEF,
-            GPIO_UNDEF,
-            GPIO_UNDEF,
-            GPIO_UNDEF
-        },
-        .pcr      = GPIO_AF_2,
-        .simmask  = SIM_SCGC6_SPI0_MASK
-    },
-    {
-        .dev      = SPI1,
-        .pin_miso = GPIO_PIN(PORT_A, 17),
-        .pin_mosi = GPIO_PIN(PORT_A, 16),
-        .pin_clk  = GPIO_PIN(PORT_A, 18),
-        .pin_cs   = {
-            GPIO_PIN(PORT_A, 19),
-            GPIO_UNDEF,
-            GPIO_UNDEF,
-            GPIO_UNDEF,
-            GPIO_UNDEF
-        },
-        .pcr      = GPIO_AF_2,
-        .simmask  = SIM_SCGC6_SPI1_MASK
-    }
-};
-#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
-/** @} */
-
-
-/**
-* @name I2C configuration
-* @{
-*/
-static const i2c_conf_t i2c_config[] = {
-    {
-        .i2c = I2C1,
-        .scl_pin = GPIO_PIN(PORT_C, 2),
-        .sda_pin = GPIO_PIN(PORT_C, 3),
-        .freq = CLOCK_CORECLOCK,
-        .speed = I2C_SPEED_FAST,
-        .irqn = I2C1_IRQn,
-        .scl_pcr = (PORT_PCR_MUX(3)),
-        .sda_pcr = (PORT_PCR_MUX(3)),
-    },
-};
-#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
-#define I2C_0_ISR           (isr_i2c1)
 /** @} */
 
 /**
