@@ -23,6 +23,8 @@
 
 #include "periph_cpu.h"
 #include "periph_conf_common.h"
+#include "cfg_i2c_default.h"
+#include "cfg_spi_default.h"
 
 #ifdef __cplusplus
 extern "C"
