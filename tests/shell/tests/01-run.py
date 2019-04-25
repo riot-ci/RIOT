@@ -41,7 +41,8 @@ CMDS = {
     'reboot': ('test_shell.')
 }
 
-CMDS_REGEX = { "ps" }
+CMDS_REGEX = {"ps"}
+
 
 def check_cmd(child, cmd, expected):
     child.sendline(cmd)
