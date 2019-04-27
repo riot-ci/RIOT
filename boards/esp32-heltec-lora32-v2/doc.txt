@@ -204,7 +204,7 @@ The corresponding board schematics can be found
 
 Flashing RIOT is quite easy. The board has a Micro-USB connector with reset/boot/flash logic. Just connect the board to your host computer and type using the programming port:
 ```
-make flash BOARD=esp32-heltec-lora-32-v2 ...
+make flash BOARD=esp32-heltec-lora32-v2 ...
 ```
 For detailed information about ESP32 as well as configuring and compiling RIOT for ESP32 boards, see \ref esp32_riot.
  */
