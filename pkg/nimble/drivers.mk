@@ -1,3 +1,3 @@
-MODULE = nimble_drivers_nrf52
+MODULE = nimble_drivers
 
 include $(RIOTBASE)/Makefile.base
