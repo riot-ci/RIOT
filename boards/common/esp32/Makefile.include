@@ -9,9 +9,9 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 
 # reset tool configuration
 ifeq (1,$(ESP_RESET_DTRTOGGLE))
-  # use dtr tool from https://github.com/kaspar030/rtsdtr for reset
+  # use dtr tool from https://github.com/kaspar030/rtsdtr for reset to usermode.
   # used by Murdock
-  export RESET = dtr $(PORT) 0 && dtr $(PORT) 1
+  export RESET = dtr $(PORT) 0 && rts $(PORT) 0 && rts $(PORT) 1
 else
   export RESET ?= esptool.py
   export RESET_FLAGS ?= --port $(PORT) --before default_reset run
