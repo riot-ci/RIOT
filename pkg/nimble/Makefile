@@ -64,8 +64,8 @@ nimble_transport_ram:
 nimble_controller:
 	"$(MAKE)" -C $(PDIR)/nimble/controller/src/ -f $(TDIR)/controller.mk
 
-nimble_drivers:
-	"$(MAKE)" -C $(PDIR)/nimble/drivers/$(CPU_FAM)/src/ -f $(TDIR)/drivers.mk
+nimble_drivers_nrf5x:
+	"$(MAKE)" -C $(PDIR)/nimble/drivers/$(CPU_FAM)/src/ -f $(TDIR)/drivers.nrf5x.mk
 
 # additional, RIOT specific nimble modules
 nimble_addr:

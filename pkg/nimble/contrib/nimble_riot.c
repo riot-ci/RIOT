@@ -36,7 +36,9 @@
 #endif
 
 #ifdef MODULE_NIMBLE_CONTROLLER
+#if defined(CPU_FAM_NRF52) || defined(CPU_FAM_NRF51)
 #include "nrf_clock.h"
+#endif
 
 static char _stack_controller[NIMBLE_CONTROLLER_STACKSIZE];
 #endif
@@ -54,7 +56,9 @@ static void *_host_thread(void *arg)
 
 #ifdef MODULE_NIMBLE_CONTROLLER
     /* XXX: NimBLE needs the nRF5x's LF clock to run */
+#if defined(CPU_FAM_NRF52) || defined(CPU_FAM_NRF51)
     clock_start_lf();
+#endif
 
     /* Run the controller
      *
