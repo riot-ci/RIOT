@@ -39,7 +39,7 @@ def testfunc(child):
     packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
                          ZEP_V2_TYPE_DATA, 26, 1, 1, 0xff,
                          now, 0, 1, len(payload)) + payload
-    the_socket.sendto(packet, ("localhost", 17755))
+    the_socket.sendto(packet, ("::1", 17755))
     res = child.expect([TIMEOUT, EOF, "PKTDUMP: data received:"])
     # we actually want the timeout here. The application either receives a
     # bogus packet or crashes in an error case case
@@ -47,7 +47,7 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+    with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
         the_socket = s
         s.bind(("", 17754))
         sys.exit(run(testfunc, timeout=1))

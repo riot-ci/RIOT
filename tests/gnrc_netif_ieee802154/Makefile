@@ -2,7 +2,7 @@ BOARD_WHITELIST = native
 
 include ../Makefile.tests_common
 
-TERMFLAGS ?= -z "0.0.0.0:17755,localhost:17754"
+TERMFLAGS ?= -z "[::]:17755,[::1]:17754"
 
 USEMODULE += socket_zep
 USEMODULE += auto_init_gnrc_netif
