@@ -33,7 +33,7 @@
 #endif
 
 #ifdef MODULE_NIMBLE_CONTROLLER
-#ifdef CPU_FAM_NRF52
+#if defined(CPU_FAM_NRF52) || defined(CPU_FAM_NRF51)
 #include "nrf_clock.h"
 #endif
 
@@ -53,9 +53,10 @@ static void *_host_thread(void *arg)
 
 #ifdef MODULE_NIMBLE_CONTROLLER
     /* XXX: NimBLE needs the nRF5x's LF clock to run */
-#ifdef CPU_FAM_NRF52
+#if defined(CPU_FAM_NRF52) || defined(CPU_FAM_NRF51)
     clock_start_lf();
 #endif
+
     /* Run the controller
      *
      * Create task where NimBLE LL will run. This one is required as LL has its
