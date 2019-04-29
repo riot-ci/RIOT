@@ -24,12 +24,35 @@
 #include "periph_cpu.h"
 #include "periph_conf_common.h"
 #include "cfg_i2c_default.h"
-#include "cfg_spi_default.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+/**
+ * @name SPI configuration
+ * @{
+ */
+static const spi_conf_t spi_config[] = {
+    {
+        .dev      = SPI1,
+        .pin_miso = GPIO_PIN(PORT_A, 17),
+        .pin_mosi = GPIO_PIN(PORT_A, 16),
+        .pin_clk  = GPIO_PIN(PORT_A, 18),
+        .pin_cs   = {
+            GPIO_PIN(PORT_A, 19),
+            GPIO_UNDEF,
+            GPIO_UNDEF,
+            GPIO_UNDEF,
+            GPIO_UNDEF
+        },
+        .pcr      = GPIO_AF_2,
+        .simmask  = SIM_SCGC6_SPI1_MASK
+    }
+};
+#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+/** @} */
 
 /**
  * @name ADC configuration
