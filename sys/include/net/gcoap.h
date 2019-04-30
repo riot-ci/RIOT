@@ -610,9 +610,9 @@ size_t gcoap_req_send(const uint8_t *buf, size_t len,
  * @return  length of the packet
  * @return  0 if cannot send
  */
-size_t gcoap_req_send2(const uint8_t *buf, size_t len,
-                       const sock_udp_ep_t *remote,
-                       gcoap_resp_handler_t resp_handler)
+static inline size_t gcoap_req_send2(const uint8_t *buf, size_t len,
+                                     const sock_udp_ep_t *remote,
+                                     gcoap_resp_handler_t resp_handler)
 {
     return gcoap_req_send(buf, len, remote, resp_handler);
 }
