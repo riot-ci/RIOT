@@ -220,6 +220,9 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
+    /* clear event mask */
+    EXTI->EMR &= ~(1 << _pin_num(pin));
+    /* unmask the pins interrupt channel */
     EXTI->IMR |= (1 << _pin_num(pin));
 }
 
