@@ -19,7 +19,7 @@ ZEP_V2_TYPE_DATA = 1
 
 
 def testfunc(child):
-    with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.bind(("", 17754))
         # first send valid packet to check if communication is set up correctly
         # generated with udp send <link-local> 61616 0 in tests/gnrc_udp
@@ -28,7 +28,7 @@ def testfunc(child):
         packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
                              ZEP_V2_TYPE_DATA, 26, 1, 1, 0xff,
                              0, 0, 1, len(payload)) + payload
-        s.sendto(packet, ("::1", 17755))
+        s.sendto(packet, ("localhost", 17755))
         child.expect("PKTDUMP: data received:")
         child.expect("00000000  7E  33  F3  00")
         child.expect("~~ PKT    -  2 snips, total size:  28 byte")
@@ -37,7 +37,7 @@ def testfunc(child):
         packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
                              ZEP_V2_TYPE_DATA, 26, 1, 1, 0xff,
                              0, 0, 2, len(payload)) + payload
-        s.sendto(packet, ("::1", 17755))
+        s.sendto(packet, ("localhost", 17755))
         res = child.expect([TIMEOUT, EOF, "PKTDUMP: data received:"])
         # we actually want the timeout here. The application either
         # receives a bogus packet or crashes in an error case case
