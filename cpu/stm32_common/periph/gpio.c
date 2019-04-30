@@ -143,6 +143,9 @@ void gpio_init_analog(gpio_t pin)
 
 void gpio_irq_enable(gpio_t pin)
 {
+    /* clear any pending requests */
+    EXTI->PR = (1 << _pin_num(pin));
+    /* unmask the pins interrupt channel */
     EXTI->IMR |= (1 << _pin_num(pin));
 }
 
