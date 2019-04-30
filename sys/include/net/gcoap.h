@@ -600,7 +600,7 @@ size_t gcoap_req_send(const uint8_t *buf, size_t len,
  * @brief   Sends a buffer containing a CoAP request to the provided endpoint
  *
  * @deprecated  Migration alias for @ref gcoap_req_send(). Will be removed after
- *              the 2019.10 release.
+ *              the 2020.01 release.
  *
  * @param[in] buf           Buffer containing the PDU
  * @param[in] len           Length of the buffer
