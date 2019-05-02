@@ -41,11 +41,27 @@ check_not_parsing_features() {
     git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}"
 }
 
+# Makefile.features for cpu/ must not be included by the board anymore
+# They are included by the main Makefile.features
+check_board_do_not_include_cpu_features() {
+    local patterns=()
+    local pathspec=()
+
+    # shellcheck disable=SC2016
+    # Single quotes are used to not expand expressions
+    patterns+=(-e 'include $(RIOTCPU)/.*/Makefile.features')
+
+    pathspec+=('boards/')
+
+    git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}"
+}
+
 
 main() {
     local errors=''
 
     errors+="$(check_not_parsing_features)"
+    errors+="$(check_board_do_not_include_cpu_features)"
 
     if [ -n "${errors}" ]
     then
