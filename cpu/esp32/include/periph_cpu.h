@@ -277,9 +277,6 @@ extern const unsigned adc_chn_num;
  */
 #define DAC_NUMOF_MAX   2
 
-/** Number of DAC channels determined from DAC_GPIOS */
-extern const unsigned dac_chn_num;
-
 /** @} */
 
 /**
