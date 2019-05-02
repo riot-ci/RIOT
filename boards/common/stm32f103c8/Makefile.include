@@ -1,7 +1,6 @@
 ## the cpu to build for
 export CPU = stm32f1
-STM32F103C8_FLASH_HACK ?= 0
-ifneq ($(STM32F103C8_FLASH_HACK),0)
+ifeq ($(STM32F103C8_FLASH_HACK),1)
   export CPU_MODEL = stm32f103cb
 else
   export CPU_MODEL = stm32f103c8
