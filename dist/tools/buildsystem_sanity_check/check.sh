@@ -56,12 +56,28 @@ check_board_do_not_include_cpu_features() {
     git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}"
 }
 
+# CPU and CPU_MODEL definition have been moved to 'BOARD/Makefile.features'
+check_cpu_cpu_model_defined_in_makefile_features() {
+    local patterns=()
+    local pathspec=()
+
+    # With our without space and with or without ?=
+    patterns+=(-e '^ *\(export\)\? *CPU \??\?=')
+    patterns+=(-e '^ *\(export\)\? *CPU_MODEL \??\?=')
+    pathspec+=(':!boards/**/Makefile.features') # ':!makefiles/info-global.inc.mk')
+
+    # Ignore this file when matching as it self matches
+    pathspec+=(":!${SCRIPT_PATH}")
+    git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}"
+}
+
 
 main() {
     local errors=''
 
     errors+="$(check_not_parsing_features)"
     errors+="$(check_board_do_not_include_cpu_features)"
+    errors+="$(check_cpu_cpu_model_defined_in_makefile_features)"
 
     if [ -n "${errors}" ]
     then
