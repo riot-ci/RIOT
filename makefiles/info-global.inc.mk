@@ -15,8 +15,17 @@ define board_missing_features
   FEATURES_REQUIRED := $(FEATURES_REQUIRED_GLOBAL)
   FEATURES_OPTIONAL := $(FEATURES_OPTIONAL_GLOBAL)
   FEATURES_MISSING  :=
+
+  # Remove board specific variables set by Makefile.features/Makefile.dep
   FEATURES_PROVIDED :=
-  include $$(RIOTBOARD)/$(1)/Makefile.features
+
+  # Undefine variables that must not be defined when starting.
+  # Some are sometime set as `?=`
+  undefine CPU
+  undefine CPU_MODEL
+
+  include $(RIOTBASE)/Makefile.features
+
   ifdef BUILDTEST_MCU_GROUP
     ifneq ($(BUILDTEST_MCU_GROUP), $$(FEATURES_MCU_GROUP))
       BOARDS_FEATURES_MISSING += "$(1) $(BUILDTEST_MCU_GROUP)"
