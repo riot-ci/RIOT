@@ -10,3 +10,8 @@
 #   reflect the state of all boards for the moment.
 
 include $(RIOTBOARD)/$(BOARD)/Makefile.features
+
+# Transitional conditional include until all boards define 'CPU'
+ifneq (,$(CPU))
+  include $(RIOTCPU)/$(CPU)/Makefile.features
+endif
