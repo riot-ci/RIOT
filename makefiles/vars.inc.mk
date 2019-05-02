@@ -8,7 +8,7 @@ export QUIET                 # The parameter to use whether to show verbose make
 export APPLICATION           # The application, set in the Makefile which is run by the user.
 export APPLICATION_MODULE    # The application module name.
 export BOARD                 # The board to compile the application for.
-export CPU                   # The CPU, set by the board's Makefile.include.
+export CPU                   # The CPU, set by the board's Makefile.features.
 export CPU_MODEL             # The specific identifier of the used CPU, used for some CPU implementations to differentiate between different memory layouts
 export MCU                   # The MCU, set by the board's Makefile.include, or defaulted to the same value as CPU.
 export INCLUDES              # The extra include paths, set by the various Makefile.include files.
