@@ -1,3 +1,6 @@
+CPU = kinetis
+CPU_MODEL = mkw41z512vht4
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
 FEATURES_PROVIDED += periph_i2c
@@ -9,7 +12,3 @@ FEATURES_PROVIDED += periph_uart
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = cortex_m0_2
-
-include $(RIOTCPU)/kinetis/Makefile.features
-# Remove this line after TRNG driver is implemented
-FEATURES_PROVIDED := $(filter-out periph_hwrng,$(FEATURES_PROVIDED))

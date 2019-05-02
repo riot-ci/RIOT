@@ -1,3 +1,6 @@
+CPU = kinetis
+CPU_MODEL = mk20dx256vlh7
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_pwm
 FEATURES_PROVIDED += periph_rtc
@@ -7,7 +10,3 @@ FEATURES_PROVIDED += periph_uart
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = cortex_m4_2
-
-include $(RIOTCPU)/kinetis/Makefile.features
-# No HWRNG in MK20D7 devices
-FEATURES_PROVIDED := $(filter-out periph_hwrng,$(FEATURES_PROVIDED))

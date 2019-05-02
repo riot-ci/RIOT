@@ -1,3 +1,6 @@
+CPU = stm32l1
+CPU_MODEL = stm32l151rc
+
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
 FEATURES_PROVIDED += periph_dac
@@ -10,5 +13,3 @@ FEATURES_PROVIDED += periph_uart
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = cortex_m3_2
-
-include $(RIOTCPU)/stm32l1/Makefile.features
