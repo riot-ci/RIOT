@@ -55,7 +55,7 @@ check_not_exporting_variables() {
     local pathspec=()
 
     for variable in "${UNEXPORTED_VARIABLES[@]}"; do
-        patterns+=(-e "export ${variable}")
+        patterns+=(-e "export[[:blank:]]\+${variable}")
     done
 
     pathspec+=('*')
