@@ -320,7 +320,10 @@ static int nrfmin_send(netdev_t *dev, const iolist_t *iolist)
 {
     (void)dev;
 
-    assert((iolist) && (state != STATE_OFF));
+    assert(iolist);
+    if (state == STATE_OFF) {
+        return -ENETDOWN;
+    }
 
     /* wait for any ongoing transmission to finish and go into idle state */
     while (state == STATE_TX) {}
