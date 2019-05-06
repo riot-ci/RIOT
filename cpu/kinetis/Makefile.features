@@ -1,7 +1,8 @@
 FEATURES_PROVIDED += periph_cpuid
 
 # HACK Do not define 'hwrng' if the board does not supports it
-# I prefer a whitelist on CPU_MODEL but the information is not available yet
+# A whitelist on CPU_MODEL would be better but this information/variable is not
+# available yet.
 # HACK the board/cpu_model currently uses the wrong hwrng register
 # Remove this line when fixed
 _KINETIS_BOARDS_WITHOUT_HWRNG += frdm-k64f
