@@ -855,6 +855,9 @@ FEATURES_OPTIONAL += periph_pm
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
+# always select provided architecture features
+FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
+
 # remove required features from optional features
 FEATURES_OPTIONAL := $(filter-out $(FEATURES_REQUIRED),$(FEATURES_OPTIONAL))
 
