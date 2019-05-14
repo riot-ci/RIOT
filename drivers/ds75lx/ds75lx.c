@@ -41,7 +41,8 @@ static const uint8_t _max_conversion_times[4] = {
     [DS75LX_RESOLUTION_12] = DS75LX_MAX_CONVERSION_250,
 };
 
-static int _set_configuration_bit(const ds75lx_t *dev, uint8_t bit, bool enable)
+static int _update_configuration_bits(const ds75lx_t *dev, uint8_t bit,
+                                      uint8_t mask, bool set)
 {
     /* Acquire exclusive access */
     i2c_acquire(DEV_I2C);
@@ -57,11 +58,12 @@ static int _set_configuration_bit(const ds75lx_t *dev, uint8_t bit, bool enable)
 
     DEBUG("[ds75lx] initial configuration register value: 0x%02X\n", config);
 
-    if (enable) {
+    /* clear bits */
+    config &= ~mask;
+
+    /* set bits if required */
+    if (set) {
         config |= bit;
-    }
-    else {
-        config &= ~bit;
     }
 
     DEBUG("[ds75lx] configuration register value: 0x%02X\n", config);
@@ -84,27 +86,14 @@ int ds75lx_init(ds75lx_t *dev, const ds75lx_params_t *params)
 {
     dev->params = *params;
 
-    /* Acquire exclusive access */
-    i2c_acquire(DEV_I2C);
+    int ret = _update_configuration_bits(
+        dev, (dev->params.resolution << DS75LX_CONF_R0_POS),
+        DS75LX_CONF_R0_MASK, true);
 
-    uint8_t config = (dev->params.resolution << DS75LX_CONF_R0_POS);
-    /* force shutdown of the sensor */
-    config |= (1 << DS75LX_CONF_SD_POS);
+    /* force sensor shutdown by default */
+    ret += ds75lx_shutdown(dev);
 
-    DEBUG("[ds75lx] configuration register value: 0x%02X\n", config);
-
-    if (i2c_write_reg(DEV_I2C, DEV_ADDR, DS75LX_REG_CONFIGURATION, config, 0) < 0) {
-        DEBUG("[ds75lx] error writing configuration register\n");
-        /* Release I2C device */
-        i2c_release(DEV_I2C);
-
-        return -DS75LX_ERR_I2C;
-    }
-
-    /* Release I2C device */
-    i2c_release(DEV_I2C);
-
-    return DS75LX_OK;
+    return ret;
 }
 
 int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
@@ -147,7 +136,8 @@ int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
 int ds75lx_wakeup(const ds75lx_t *dev)
 {
     /* disable shutdown bit in configuration register */
-    int ret = _set_configuration_bit(dev, (1 << DS75LX_CONF_SD_POS), false);
+    int ret = _update_configuration_bits(dev, (1 << DS75LX_CONF_SD_POS),
+                                         (1 << DS75LX_CONF_SD_POS), false);
 
     if (ret == DS75LX_OK) {
         /* Wait max conversion time (depends on resolution) */
@@ -160,5 +150,6 @@ int ds75lx_wakeup(const ds75lx_t *dev)
 int ds75lx_shutdown(const ds75lx_t *dev)
 {
     /* enable shutdown bit in configuration register */
-    return _set_configuration_bit(dev, (1 << DS75LX_CONF_SD_POS), true);
+    return _update_configuration_bits(dev, (1 << DS75LX_CONF_SD_POS),
+                                      (1 << DS75LX_CONF_SD_POS), true);
 }
