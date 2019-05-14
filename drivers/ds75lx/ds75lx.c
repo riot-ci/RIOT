@@ -33,11 +33,12 @@
 #define DEV_I2C      (dev->params.i2c)
 #define DEV_ADDR     (dev->params.addr)
 
+/* Mapping table between temperature resolution and max conversion time. */
 static const uint8_t _max_conversion_times[4] = {
-    DS75LX_MAX_CONVERSION_25,
-    DS75LX_MAX_CONVERSION_50,
-    DS75LX_MAX_CONVERSION_100,
-    DS75LX_MAX_CONVERSION_250,
+    [DS75LX_RESOLUTION_9]  = DS75LX_MAX_CONVERSION_25,
+    [DS75LX_RESOLUTION_10] = DS75LX_MAX_CONVERSION_50,
+    [DS75LX_RESOLUTION_11] = DS75LX_MAX_CONVERSION_100,
+    [DS75LX_RESOLUTION_12] = DS75LX_MAX_CONVERSION_250,
 };
 
 static int _set_configuration_bit(const ds75lx_t *dev, uint8_t bit, bool enable)
@@ -108,9 +109,6 @@ int ds75lx_init(ds75lx_t *dev, const ds75lx_params_t *params)
 
 int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
 {
-    /* Wait max conversion time (depends on resolution) */
-    xtimer_usleep(_max_conversion_times[dev->params.resolution] * US_PER_MS);
-
     /* Acquire exclusive access */
     i2c_acquire(DEV_I2C);
 
@@ -126,14 +124,14 @@ int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
     }
 
     temp = (tmp[0] << 8) | tmp[1];
+    DEBUG("[ds75lx] temperature register content 0x%04X\n", temp);
 
+    /* Manage sign bit */
     bool negative = false;
     if (temp & 0x8000) {
         negative = true;
         temp &= ~0x8000;
     }
-
-    DEBUG("[ds75lx] temperature register content 0x%04X\n", temp);
 
     *temperature = (temp >> 5);
     if (negative) {
@@ -149,7 +147,14 @@ int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
 int ds75lx_wakeup(const ds75lx_t *dev)
 {
     /* disable shutdown bit in configuration register */
-    return _set_configuration_bit(dev, (1 << DS75LX_CONF_SD_POS), false);
+    int ret = _set_configuration_bit(dev, (1 << DS75LX_CONF_SD_POS), false);
+
+    if (ret == DS75LX_OK) {
+        /* Wait max conversion time (depends on resolution) */
+        xtimer_usleep(_max_conversion_times[dev->params.resolution] * US_PER_MS);
+    }
+
+    return ret;
 }
 
 int ds75lx_shutdown(const ds75lx_t *dev)

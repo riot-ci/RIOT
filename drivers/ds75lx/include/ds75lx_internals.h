@@ -8,7 +8,6 @@
 
 /**
  * @ingroup     drivers_ds75lx
- * @brief       Internal addresses, registers, constants for the DS75LX sensor.
  * @{
  *
  * @file
@@ -25,11 +24,9 @@ extern "C" {
 #endif
 
 /**
- * @name    DS75LX I2C address
- * @{
+ * @brief   DS75LX I2C address (7 bit address)
  */
-#define DS75LX_ADDR                     (0x48) /* 7 bit address */
-/** @} */
+#define DS75LX_ADDR                     (0x48)
 
 /**
  * @name    DS75LX registers
