@@ -76,7 +76,7 @@ int ds75lx_init(ds75lx_t *dev, const ds75lx_params_t *params);
 /**
  * @brief   Read temperature value from the given DS75LX device, returned in d°C
  *
- * @param[in] dev           Device descriptor of DS75LX device to read from
+ * @param[in] dev           Device descriptor of DS75LX device
  * @param[out] temperature  Temperature in d°C
  *
  * @return                  DS75LX_OK on success
@@ -87,7 +87,7 @@ int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature);
 /**
  * @brief   Wakeup the sensor
  *
- * @param[in] dev           Device descriptor of DS75LX device to read from
+ * @param[in] dev           Device descriptor of DS75LX device
  *
  * @return                  DS75LX_OK on success
  * @return                  -DS75LX_ERR_I2C if an error occured when reading/writing
@@ -97,7 +97,7 @@ int ds75lx_wakeup(const ds75lx_t *dev);
 /**
  * @brief   Shutdown the sensor
  *
- * @param[in] dev           Device descriptor of DS75LX device to read from
+ * @param[in] dev           Device descriptor of DS75LX device
  *
  * @return                  DS75LX_OK on success
  * @return                  -DS75LX_ERR_I2C if an error occured when reading/writing
