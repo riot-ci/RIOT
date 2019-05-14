@@ -86,14 +86,10 @@ int ds75lx_init(ds75lx_t *dev, const ds75lx_params_t *params)
 {
     dev->params = *params;
 
-    int ret = _update_configuration_bits(
-        dev, (dev->params.resolution << DS75LX_CONF_R0_POS),
-        DS75LX_CONF_R0_MASK, true);
-
-    /* force sensor shutdown by default */
-    ret += ds75lx_shutdown(dev);
-
-    return ret;
+    /* Set resolution bits + force shutdown of sensor */
+    return _update_configuration_bits(dev,
+        (dev->params.resolution << DS75LX_CONF_R0_POS) | (1 << DS75LX_CONF_SD_POS),
+        (DS75LX_CONF_R0_MASK | (1 << DS75LX_CONF_SD_POS)), true);
 }
 
 int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
