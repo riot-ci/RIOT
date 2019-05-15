@@ -74,10 +74,10 @@ enum {
 int ds75lx_init(ds75lx_t *dev, const ds75lx_params_t *params);
 
 /**
- * @brief   Read temperature value from the given DS75LX device, returned in d°C
+ * @brief   Read temperature value from the given DS75LX device, returned in c°C
  *
  * @param[in] dev           Device descriptor of DS75LX device
- * @param[out] temperature  Temperature in d°C
+ * @param[out] temperature  Temperature in c°C
  *
  * @return                  DS75LX_OK on success
  * @return                  -DS75LX_ERR_I2C if an error occured when reading/writing
