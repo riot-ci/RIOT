@@ -56,8 +56,8 @@ int main(void)
 
         printf("Temperature [°C]: %c%d.%d\n",
                negative ? '-': ' ',
-               (int)(temperature / 10),
-               (int)(temperature % 10));
+               (int)(temperature / 100),
+               (int)(temperature % 100));
 
         xtimer_sleep(2);
     }
