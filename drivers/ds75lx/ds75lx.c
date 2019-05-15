@@ -108,23 +108,20 @@ int ds75lx_read_temperature(const ds75lx_t *dev, int16_t *temperature)
         return -DS75LX_ERR_I2C;
     }
 
+    /* Release I2C device */
+    i2c_release(DEV_I2C);
+
     temp = (tmp[0] << 8) | tmp[1];
     DEBUG("[ds75lx] temperature register content 0x%04X\n", temp);
 
-    /* Manage sign bit */
-    bool negative = false;
-    if (temp & 0x8000) {
-        negative = true;
-        temp &= ~0x8000;
-    }
+    /* isolate integer part of the temperature */
+    int8_t temp_int = (temp & 0xff00) >> 8;
+    /* compute fractional part of the temperature, the LSB bits 3 to 0 are
+    always zero and not used in the conversion */
+    uint8_t temp_frac = (temp & 0x00f0) >> 4;
 
-    *temperature = (temp >> 5);
-    if (negative) {
-        *temperature = -*temperature;
-    }
-
-    /* Release I2C device */
-    i2c_release(DEV_I2C);
+    /* fractional part is a multiple of 0.0625. Temperature is returned in c°C */
+    *temperature  = (temp_int * 100 + ((uint16_t)temp_frac * 100 >> 4));
 
     return DS75LX_OK;
 }
