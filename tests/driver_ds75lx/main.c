@@ -54,7 +54,7 @@ int main(void)
             temperature = -temperature;
         }
 
-        printf("Temperature [°C]: %c%d.%d\n",
+        printf("Temperature [°C]: %c%d.%02d\n",
                negative ? '-': ' ',
                (int)(temperature / 100),
                (int)(temperature % 100));
