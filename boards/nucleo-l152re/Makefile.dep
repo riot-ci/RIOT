@@ -1,1 +1,4 @@
+# Use custom SPI pin modes to minimize power consumption
+FEATURES_REQUIRED += periph_spi_gpio_mode
+
 include $(RIOTBOARD)/common/nucleo/Makefile.dep
