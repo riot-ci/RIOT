@@ -226,6 +226,11 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_UNDEF,
+#ifdef MODULE_PERIPH_SPI_GPIO_MODE
+        .mosi_pin_mode = (GPIO_OUT | GPIO_IN_PD),
+        .miso_pin_mode = (GPIO_IN_PD),
+        .sclk_pin_mode = (GPIO_OUT | GPIO_IN_PD),
+#endif
         .af       = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
