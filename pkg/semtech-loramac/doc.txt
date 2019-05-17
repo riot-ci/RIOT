@@ -95,12 +95,6 @@
  *         return 1;
  *     }
  *
- *     /* 5. wait for any potentially received data */
- *     if (semtech_loramac_recv(&loramac) == SEMTECH_LORAMAC_DATA_RECEIVED) {
- *         loramac.rx_data.payload[loramac.rx_data.payload_len] = 0;
- *         printf("Data received: %s, port: %d\n",
- *                (char *)loramac.rx_data.payload, loramac.rx_data.port);
- *     }
  * }
  * ```
  *
