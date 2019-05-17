@@ -24,8 +24,11 @@ Detailed schematics are available on GitHub:
 
 ### Flashing the board
 
-To flash the board, use an external ST-Link programmer/debugger. Then use
-the following command:
+To flash the board, use an external ST-Link programmer/debugger, plugged on
+available SWD pins: PA13 (SWDIO), PA14 (SWCLK) and NRST (this pin is not
+exposed with v1.0).
+Ensure SW1 is on `flash` position.
+Then use the following command:
 
     make BOARD=lsn50 -C examples/hello-world flash
 
