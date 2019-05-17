@@ -5,9 +5,14 @@
 
 ## Description
 
-This board provides LoRa connectivity with an SX1272 radio connected via SPI
+<img src="https://www.st.com/content/ccc/fragment/product_related/rpn_information/board_photo/group0/d0/d8/be/59/bb/0f/42/d9/i-nucleo-lrwan1.jpg/files/i-nucleo-lrwan1.jpg/_jcr_content/translations/en.i-nucleo-lrwan1.jpg"
+     alt="I-NUCLEO-LRWAN1" style="width:400px;"/>
+
+The [I-NUCLEO-LRWAN1](https://www.st.com/en/evaluation-tools/i-nucleo-lrwan1.html)
+board provides LoRa connectivity with an SX1272 radio connected via SPI
 to an ultra-low power
-[STM32L052T8 microcontroller](https://www.st.com/en/microcontrollers-microprocessors/stm32l052t8.html).
+[STM32L052T8](https://www.st.com/en/microcontrollers-microprocessors/stm32l052t8.html).
+microcontroller.
 
 For details, the
 [schematics are available on GitHub](https://github.com/USIWP1Module/USI_I-NUCLEO-LRWAN1/blob/master/Schematics/USI%20LoRa%20Arduino%20shield_SCH_20161115-1.pdf).
@@ -45,6 +50,8 @@ index c59a1939a2..0c359e438c 100755
 ```sh
 make BOARD=i-nucleo-lrwan1 -C examples/hello-world flash
 ```
+  The command will fail but after that the memory will be unlocked after a
+  power cycle. The line added above in `openocd.sh` can also be removed.
 - Unplug the board and replug-it: the board is now flashable normally.
 
 Note that this unlock procedure only needs to be done once.
