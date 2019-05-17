@@ -249,7 +249,7 @@ static void _mutex_timeout(void *arg)
     unsigned irqstate = irq_disable();
 
     mutex_thread_t *mt = (mutex_thread_t *)arg;
-
+    assert(mt->mutex->queue.next != MUTEX_LOCKED);
     mt->timeout = 1;
     list_node_t *node = list_remove(&mt->mutex->queue,
                                     (list_node_t *)&mt->thread->rq_entry);
@@ -279,6 +279,8 @@ int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t timeout)
     }
 
     mutex_lock(mutex);
+    /* DEBUG: simulate callback call between lock and remove */
+    xtimer_spin(xtimer_ticks_from_usec(timeout*2));
     xtimer_remove(&t);
     return -mt.timeout;
 }
