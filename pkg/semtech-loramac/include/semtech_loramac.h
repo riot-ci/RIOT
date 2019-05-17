@@ -110,6 +110,7 @@ typedef struct {
 typedef struct {
     mutex_t lock;                                /**< loramac access lock */
     uint8_t caller_pid;                          /**< pid of caller thread */
+    uint8_t rx_pid;                              /**< pid of receiver thread */
     uint8_t port;                                /**< application TX port */
     uint8_t cnf;                                 /**< enable/disable confirmable messages */
     uint8_t deveui[LORAMAC_DEVEUI_LEN];          /**< device EUI */
@@ -184,8 +185,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  *
  * @param[in] mac          Pointer to the mac
  *
- * @return SEMTECH_LORAMAC_TX_DONE when TX has completed, no data received
- * @return SEMTECH_LORAMAC_DATA_RECEIVED when TX has completed and data is received
+ * @return SEMTECH_LORAMAC_DATA_RECEIVED when data is received
  */
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac);
 
