@@ -282,8 +282,6 @@ int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t timeout)
     }
 
     mutex_lock(mutex);
-    /* DEBUG: simulate callback call between lock and remove */
-    xtimer_spin(xtimer_ticks_from_usec(timeout*2));
     xtimer_remove(&t);
     return -mt.timeout;
 }
