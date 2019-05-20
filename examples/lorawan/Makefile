@@ -49,10 +49,10 @@ else ifeq (abp,$(ACTIVATION_MODE))
   CFLAGS += -DDEVADDR=\"$(DEVADDR)\" -DNWKSKEY=\"$(NWKSKEY)\" -DAPPSKEY=\"$(APPSKEY)\"
   CFLAGS += -DRX2_FREQ=$(RX2_FREQ) -DRX2_DR=$(RX2_DR)
   CFLAGS += -DUSE_ABP
-  # With ABP, just keep STOP power management mode locked. STANDBY is unlocked
-  # by default.
-  CFLAGS += '-DPM_BLOCKER_INITIAL={ .val_u32 = 0x01010100 }'
 endif
+
+# Enable lowest possible power mode (e.g. STANDBY mode on STM32)
+CFLAGS += '-DPM_BLOCKER_INITIAL={ .val_u32 = 0x01010100 }'
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
