@@ -36,7 +36,7 @@ git-download: $(PKG_PREPARED)
 # Create the makefile include file only on request
 # It ensures rebuild of '.git-prepared' on patches/ deletion
 .PHONY: _pkg_inc_file
-_pkg_inc_file:
+_pkg_inc_file: | $(PKG_BUILDDIR)/.git
 	@echo "$(PKG_BUILDDIR)/.git-prepared: $(PKG_PATCHES)" > $(PKG_PATCH_DEP_INC)
 	@for patch in $(PKG_PATCHES); do echo "$(patch):" >> $(PKG_PATCH_DEP_INC); done
 
