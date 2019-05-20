@@ -472,11 +472,6 @@ typedef struct {
     gpio_t miso_pin;        /**< MISO pin */
     gpio_t sclk_pin;        /**< SCLK pin */
     gpio_t cs_pin;          /**< HWCS pin, set to GPIO_UNDEF if not mapped */
-#ifdef MODULE_PERIPH_SPI_GPIO_MODE
-    gpio_mode_t mosi_pin_mode;  /**< MOSI pin ouput custom mode */
-    gpio_mode_t miso_pin_mode;  /**< MISO pin ouput custom mode */
-    gpio_mode_t sclk_pin_mode;  /**< SCLK pin ouput custom mode */
-#endif
 #ifndef CPU_FAM_STM32F1
     gpio_af_t af;           /**< pin alternate function */
 #endif
