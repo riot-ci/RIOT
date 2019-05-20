@@ -78,6 +78,11 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 {
     const tc32_conf_t *cfg = &timer_config[tim];
 
+    /* make sure given device is valid */
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
+
     /* at the moment, the timer can only run at 1MHz */
     if (freq != 1000000ul) {
         return -1;
