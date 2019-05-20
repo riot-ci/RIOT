@@ -51,13 +51,13 @@ $(PKG_BUILDDIR)/.git-prepared: $(PKG_PATCHES) $(PKG_BUILDDIR)/.git-downloaded $(
 	@touch $@
 
 $(PKG_BUILDDIR)/.git-downloaded: $(MAKEFILE_LIST) | $(PKG_BUILDDIR)/.git
-	git -C $(PKG_BUILDDIR) fetch "$(PKG_URL)" "$(PKG_VERSION)"
+	git -C $(PKG_BUILDDIR) fetch $(PKG_URL) $(PKG_VERSION)
 	echo $(PKG_VERSION) > $@
 
 $(PKG_BUILDDIR)/.git: $(MAKEFILE_LIST)
 	rm -Rf $(PKG_BUILDDIR)
 	mkdir -p $(PKG_BUILDDIR)
-	$(GITCACHE) clone "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
+	$(GITCACHE) clone $(PKG_URL) $(PKG_VERSION) $(PKG_BUILDDIR)
 
 clean::
 	@test -d $(PKG_BUILDDIR) && \
@@ -65,7 +65,7 @@ clean::
 		true
 
 distclean::
-	rm -rf "$(PKG_BUILDDIR)"
+	rm -rf $(PKG_BUILDDIR)
 
 -include $(PKG_PATCH_DEP_INC)
 
