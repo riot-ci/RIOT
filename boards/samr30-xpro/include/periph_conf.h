@@ -37,13 +37,13 @@ extern "C" {
 static const tc32_conf_t timer_config[] = {
     {   /* Timer 0 - System Clock */
         .dev            = TC0,
-        .flags          = TC_CTRLA_MODE_COUNT32,
         .irq            = TC0_IRQn,
         .mclk           = &MCLK->APBCMASK.reg,
         .mclk_mask      = MCLK_APBCMASK_TC0 | MCLK_APBCMASK_TC1,
         .gclk_id        = TC0_GCLK_ID,
         .gclk_src       = GCLK_PCHCTRL_GEN(0),
         .prescaler      = TC_CTRLA_PRESCALER(4),
+        .flags          = TC_CTRLA_MODE_COUNT32,
     }
 };
 

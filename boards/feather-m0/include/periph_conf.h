@@ -81,7 +81,6 @@ extern "C" {
 static const tc32_conf_t timer_config[] = {
     {   /* Timer 0 - System Clock */
         .dev            = TC3,
-        .flags          = TC_CTRLA_MODE_COUNT16,
         .irq            = TC3_IRQn,
         .pm_mask        = PM_APBCMASK_TC3,
         .gclk_ctrl      = GCLK_CLKCTRL_ID_TCC2_TC3,
@@ -92,10 +91,10 @@ static const tc32_conf_t timer_config[] = {
         .gclk_src       = GCLK_CLKCTRL_GEN(0),
         .prescaler      = TC_CTRLA_PRESCALER_DIV8,
 #endif
+        .flags          = TC_CTRLA_MODE_COUNT16,
     },
     {   /* Timer 1 */
         .dev            = TC4,
-        .flags          = TC_CTRLA_MODE_COUNT32,
         .irq            = TC4_IRQn,
         .pm_mask        = PM_APBCMASK_TC4 | PM_APBCMASK_TC5,
         .gclk_ctrl      = GCLK_CLKCTRL_ID_TC4_TC5,
@@ -106,6 +105,7 @@ static const tc32_conf_t timer_config[] = {
         .gclk_src       = GCLK_CLKCTRL_GEN(0),
         .prescaler      = TC_CTRLA_PRESCALER_DIV8,
 #endif
+        .flags          = TC_CTRLA_MODE_COUNT32,
     }
 };
 
