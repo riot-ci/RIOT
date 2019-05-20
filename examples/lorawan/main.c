@@ -143,14 +143,20 @@ int main(void)
     /* Use a fast datarate, e.g. BW125/SF7 in EU868 */
     semtech_loramac_set_dr(&loramac, LORAMAC_DR_5);
 
-    /* Start the Over-The-Air Activation (OTAA) procedure to retrieve the
-     * generated device address and to get the network and application session
-     * keys.
-     */
-    puts("Starting join procedure");
-    if (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
-        puts("Join procedure failed");
-        return 1;
+    /* Join the network if not already joined */
+    if (!semtech_loramac_is_mac_joined(&loramac)) {
+        /* Start the Over-The-Air Activation (OTAA) procedure to retrieve the
+         * generated device address and to get the network and application session
+         * keys.
+         */
+        puts("Starting join procedure");
+        if (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
+            puts("Join procedure failed");
+            return 1;
+        }
+
+        /* Save current MAC state to EEPROM */
+        semtech_loramac_save_config(&loramac);
     }
 #endif
 
