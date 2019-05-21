@@ -40,7 +40,7 @@ static const dma_conf_t dma_config[] = {
     { .stream = 4 },    /* DMA1 Stream 4 - USART3_TX */
     { .stream = 14 },   /* DMA2 Stream 6 - USART6_TX */
     { .stream = 6 },    /* DMA1 Stream 6 - USART2_TX */
-    { .stream = 8 },    /* DMA2 Stream 8 - ETH_TX    */
+    { .stream = 8 },    /* DMA2 Stream 0 - ETH_TX    */
 };
 
 #define DMA_0_ISR  isr_dma1_stream4
@@ -160,7 +160,7 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 /** @} */
 
-
+#ifdef MODULE_STM32_ETH
 /**
  * @name ETH configuration
  * @{
@@ -178,8 +178,8 @@ static const eth_conf_t eth_config = {
     .mode = RMII,
     .mac = { 0 },
     .speed = ETH_SPEED_100TX_FD,
-    .dma_chan = 0,
-    .dma_stream = 8,
+    .dma = 3,
+    .dma_chan = 8,
     .phy_addr = 0x01,
     .pins = {
         GPIO_PIN(PORT_G, 13),
@@ -194,6 +194,7 @@ static const eth_conf_t eth_config = {
     }
 };
 /** @} */
+#endif /* MODULE_STM32_ETH */
 
 #ifdef __cplusplus
 }
