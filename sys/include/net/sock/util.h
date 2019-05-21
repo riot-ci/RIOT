@@ -29,6 +29,7 @@
 #include <stdint.h>
 
 #include "net/sock/udp.h"
+#include "net/sock/config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,36 +95,6 @@ int sock_udp_str2ep(sock_udp_ep_t *ep_out, const char *str);
  *          destination, or if the address family is unknown
  */
 bool sock_udp_ep_equal(const sock_udp_ep_t *a, const sock_udp_ep_t *b);
-
-/**
- * @name helper definitions
- * @{
- */
-
-/**
- * @brief maximum length of the scheme part for sock_urlsplit.
- *
- * Ensures a hard limit on the string iterator
- * */
-#ifndef SOCK_SCHEME_MAXLEN
-#define SOCK_SCHEME_MAXLEN      (16U)
-#endif
-
-/**
- * @brief maximum length of host:port part for sock_urlsplit()
- */
-#ifndef SOCK_HOSTPORT_MAXLEN
-#define SOCK_HOSTPORT_MAXLEN    (64U)
-#endif
-
-/**
- * @brief maximum length path for sock_urlsplit()
- */
-#ifndef SOCK_URLPATH_MAXLEN
-#define SOCK_URLPATH_MAXLEN     (64U)
-#endif
-
-/** @} */
 
 #ifdef __cplusplus
 }
