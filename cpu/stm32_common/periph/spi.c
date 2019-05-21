@@ -116,6 +116,23 @@ int spi_init_cs(spi_t bus, spi_cs_t cs)
     return SPI_OK;
 }
 
+#ifdef MODULE_PERIPH_SPI_GPIO_MODE
+int spi_init_gpio_mode(spi_t bus, spi_gpio_mode_t mode)
+{
+    int ret = 0;
+
+#ifdef CPU_FAM_STM32F1
+    /* This has no effect on STM32F1 */
+    return ret;
+#else
+    ret += gpio_init(spi_config[bus].mosi_pin, mode.mosi);
+    ret += gpio_init(spi_config[bus].miso_pin, mode.miso);
+    ret += gpio_init(spi_config[bus].sclk_pin, mode.sclk);
+    return ret;
+#endif
+}
+#endif
+
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 {
     /* lock bus */
