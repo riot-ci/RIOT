@@ -37,7 +37,7 @@ typedef enum {
     DS75LX_RESOLUTION_9 = 0,        /**< 9 bits resolution, 25ms max conversion time */
     DS75LX_RESOLUTION_10,           /**< 10 bits resolution, 50ms max conversion time */
     DS75LX_RESOLUTION_11,           /**< 11 bits resolution, 100ms max conversion time */
-    DS75LX_RESOLUTION_12,           /**< 12 bits resolution, 250ms max conversion time */
+    DS75LX_RESOLUTION_12,           /**< 12 bits resolution, 200ms max conversion time */
 } ds75lx_resolution_t;
 
 /**

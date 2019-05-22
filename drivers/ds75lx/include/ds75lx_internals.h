@@ -52,14 +52,9 @@ extern "C" {
 /** @} */
 
 /**
- * @name    Max conversion times (ms)
- * @{
+ * @brief   Max conversion time unit (ms)
  */
-#define DS75LX_MAX_CONVERSION_25        (25U)
-#define DS75LX_MAX_CONVERSION_50        (50U)
-#define DS75LX_MAX_CONVERSION_100       (100U)
-#define DS75LX_MAX_CONVERSION_250       (250U)
-/** @} */
+#define DS75LX_MAX_CONVERSION_TIME      (25U)
 
 #ifdef __cplusplus
 }

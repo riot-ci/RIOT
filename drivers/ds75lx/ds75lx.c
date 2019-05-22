@@ -33,14 +33,6 @@
 #define DEV_I2C      (dev->params.i2c)
 #define DEV_ADDR     (dev->params.addr)
 
-/* Mapping table between temperature resolution and max conversion time. */
-static const uint8_t _max_conversion_times[4] = {
-    [DS75LX_RESOLUTION_9]  = DS75LX_MAX_CONVERSION_25,
-    [DS75LX_RESOLUTION_10] = DS75LX_MAX_CONVERSION_50,
-    [DS75LX_RESOLUTION_11] = DS75LX_MAX_CONVERSION_100,
-    [DS75LX_RESOLUTION_12] = DS75LX_MAX_CONVERSION_250,
-};
-
 static int _update_configuration_bits(const ds75lx_t *dev, uint8_t bit,
                                       uint8_t mask, bool set)
 {
@@ -134,7 +126,7 @@ int ds75lx_wakeup(const ds75lx_t *dev)
 
     if (ret == DS75LX_OK) {
         /* Wait max conversion time (depends on resolution) */
-        xtimer_usleep(_max_conversion_times[dev->params.resolution] * US_PER_MS);
+        xtimer_usleep((DS75LX_MAX_CONVERSION_TIME << dev->params.resolution) * US_PER_MS);
     }
 
     return ret;
