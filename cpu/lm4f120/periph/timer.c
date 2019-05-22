@@ -80,7 +80,7 @@ int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
     unsigned int timer_base;
     unsigned int timer_side = TIMER_A;
     unsigned int timer_cfg = TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PERIODIC_UP | TIMER_TAMR_TAMIE;
-    unsigned int timer_max_val;
+    unsigned int timer_max_val = 0;
     unsigned int timer_intbit = TIMER_TIMA_TIMEOUT | TIMER_TIMA_MATCH;
 
     switch(dev){
@@ -239,6 +239,14 @@ unsigned int timer_read(tim_t dev)
     scaled_value = _llvalue_to_scaled_value(total, config[dev].divisor);
 
     return scaled_value;
+}
+
+unsigned int timer_max(tim_t dev)
+{
+    if (dev < TIMER_NUMOF) {
+        return UINT32_MAX;
+    }
+    return 0;
 }
 
 void timer_start(tim_t dev)
