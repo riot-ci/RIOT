@@ -602,9 +602,9 @@ void gpio_init_af(gpio_t pin, gpio_af_t af);
 void gpio_init_analog(gpio_t pin);
 
 
-#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F2) || \
-    defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32F4) || \
-    defined(CPU_FAM_STM32F7)
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F3) || \
+    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
 /**
  * @brief   Initialize gpio to AIN
  *
