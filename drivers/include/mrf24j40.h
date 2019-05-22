@@ -310,6 +310,15 @@ int8_t mrf24j40_get_cca_threshold(mrf24j40_t *dev);
 void mrf24j40_set_cca_threshold(mrf24j40_t *dev, int8_t value);
 
 /**
+ * @brief   Get the last ED level measurement
+ *
+ * @param[in] dev           device to read value from
+ *
+ * @return                  the last ED level
+ */
+int8_t mrf24j40_get_ed_level(mrf24j40_t *dev);
+
+/**
  * @brief   Enable or disable driver specific options
  *
  * @param[in] dev           device to set/clear option flag for
