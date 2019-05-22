@@ -288,6 +288,16 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             res = sizeof(netopt_enable_t);
             break;
 
+        case NETOPT_LAST_ED_LEVEL:
+            if (max_len < sizeof(int8_t)) {
+                res = -EOVERFLOW;
+            }
+            else {
+              *((int8_t *)val) = mrf24j40_get_ed_level(dev);
+              res = sizeof(int8_t);
+            }
+            break;
+
         case NETOPT_CSMA_RETRIES:
             if (max_len < sizeof(uint8_t)) {
                 res = -EOVERFLOW;
@@ -307,6 +317,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
                 res = sizeof(int8_t);
             }
             break;
+
         case NETOPT_TX_RETRIES_NEEDED:
             if (max_len < sizeof(uint8_t)) {
                 res = -EOVERFLOW;

@@ -329,6 +329,55 @@ void mrf24j40_set_cca_threshold(mrf24j40_t *dev, int8_t value)
     mrf24j40_reg_write_short(dev, MRF24J40_REG_CCAEDTH, RSSI_value[value]);
 }
 
+int8_t mrf24j40_get_ed_level(mrf24j40_t *dev)
+{
+#if MRF24J40_USE_EXT_PA_LNA
+    /* MRF24J40MC section 1.3.2 and MRF24J40MD/ME section 1.4.2 */
+    uint8_t test_mode = mrf24j40_reg_read_long(dev, MRF24J40_REG_TESTMODE);
+    mrf24j40_reg_write_long(dev, MRF24J40_REG_TESTMODE,
+                            test_mode &
+                            (MRF24J40_TESTMODE_TESTMODE2 |
+                             MRF24J40_TESTMODE_TESTMODE1 |
+                             MRF24J40_TESTMODE_TESTMODE0));
+    uint8_t tris_gpio = mrf24j40_reg_read_short(dev, MRF24J40_REG_TRISGPIO);
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_TRISGPIO,
+                            tris_gpio |
+                            MRF24J40_TRISGPIO_TRISGP2 |
+                            MRF24J40_TRISGPIO_TRISGP1);
+    uint8_t gpio = mrf24j40_reg_read_short(dev, MRF24J40_REG_GPIO);
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_GPIO,
+                            gpio |
+                            MRF24J40_TRISGPIO_GPIO2 |
+                            MRF24J40_TRISGPIO_GPIO1);
+#endif
+
+    /* MRF24J40 section 3.6.1 */
+    uint8_t bbreg6 = mrf24j40_reg_read_short(dev, MRF24J40_REG_BBREG6);
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_BBREG6, bbreg6 | MRF24J40_BBREG6_RSSIMODE1);
+
+    uint8_t rssi_rdy = 0;
+    while (rssi_rdy != MRF24J40_BBREG2_RSSIRDY)
+    {
+        rssi_rdy = mrf24j40_reg_read_short(dev, MRF24J40_REG_BBREG6);
+        rssi_rdy &= MRF24J40_BBREG2_RSSIRDY;
+    }
+
+    uint8_t rssi = mrf24j40_reg_read_long(dev, MRF24J40_REG_RSSI);
+
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_BBREG6, bbreg6);
+
+#if MRF24J40_USE_EXT_PA_LNA
+    /* Back to normal operation */
+    mrf24j40_reg_write_long(dev, MRF24J40_REG_TESTMODE, test_mode);
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_TRISGPIO, tris_gpio);
+    mrf24j40_reg_write_short(dev, MRF24J40_REG_GPIO, gpio);
+#endif
+
+    DEBUG("[mrf24j40] RSSI : %d\n", rssi);
+
+    return mrf24j40_dbm_from_reg(rssi);
+}
+
 void mrf24j40_set_option(mrf24j40_t *dev, uint16_t option, bool state)
 {
     uint8_t tmp;
@@ -406,7 +455,6 @@ void mrf24j40_set_option(mrf24j40_t *dev, uint16_t option, bool state)
         }
     }
 }
-
 
 void mrf24j40_set_state(mrf24j40_t *dev, uint8_t state)
 {
