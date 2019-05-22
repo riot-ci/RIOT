@@ -27,6 +27,7 @@ static int read_temperature(const void *dev, phydat_t *res)
 {
     ds75lx_wakeup((const ds75lx_t *)dev);
     if (ds75lx_read_temperature((const ds75lx_t *)dev, &res->val[0]) != DS75LX_OK) {
+        ds75lx_shutdown((const ds75lx_t *)dev);
         return -ECANCELED;
     }
     ds75lx_shutdown((const ds75lx_t *)dev);
