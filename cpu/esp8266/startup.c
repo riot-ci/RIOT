@@ -65,6 +65,14 @@ extern uint8_t _eheap;
 
 #include "sdk/ets_task.h"
 
+/* EST Task priority */
+#define ETS_TASK_PRIORITY   (1)
+
+/* stack for the ETS task */
+static char ets_task_stack[ETS_THREAD_STACKSIZE];
+/* ETS task code */
+extern void *ets_task_func(void *arg);
+
 /**
  * @brief System main loop called by the ETS
  *
@@ -94,11 +102,9 @@ void ets_run(void)
     ets_tasks_init();
 
     /* enable interrupts used by ETS/SDK */
-    #ifndef MODULE_ESP_SDK_INT_HANDLING
     ets_isr_unmask(BIT(ETS_FRC2_INUM));
     ets_isr_unmask(BIT(ETS_WDEV_INUM));
     ets_isr_unmask(BIT(ETS_WDT_INUM));
-    #endif
 
     #ifdef MODULE_ESP_GDBSTUB
     gdbstub_init();
@@ -114,6 +120,16 @@ void ets_run(void)
     ets_isr_attach(ETS_SOFT_INUM, thread_yield_isr, NULL);
     ets_isr_unmask(BIT(ETS_SOFT_INUM));
     #endif
+
+    /* initialize dummy lwIP library to link it even if esp_wifi is not used */
+    extern void esp_lwip_init(void);
+    esp_lwip_init();
+
+    thread_create(ets_task_stack, sizeof(ets_task_stack),
+            ETS_TASK_PRIORITY,
+            THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
+            ets_task_func, NULL, "ets");
+
 
     /* does not return */
     kernel_init();

@@ -7,6 +7,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-mkr1000 \
                              arduino-mkrfox1200 \
                              arduino-mkrzero \
+                             arduino-nano \
                              arduino-uno \
                              arduino-zero \
                              avsextrem \
@@ -21,9 +22,12 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              ek-lm4f120xl \
                              feather-m0 \
                              firefly \
+                             hamilton \
+                             i-nucleo-lrwan1 \
                              ikea-tradfri \
                              limifrog-v1 maple-mini \
                              lobaro-lorabox \
+                             lsn50 \
                              mbed_lpc1768 \
                              mega-xplained \
                              microbit \
@@ -58,6 +62,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              remote-pa \
                              remote-reva \
                              remote-revb \
+                             saml10-xpro \
+                             saml11-xpro \
                              saml21-xpro \
                              samd21-xpro \
                              samr21-xpro \
@@ -117,10 +123,12 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        frdm-k22f \
                        frdm-k64f \
                        frdm-kw41z \
+                       i-nucleo-lrwan1 \
                        ikea-tradfri \
                        iotlab-a8-m3 \
                        iotlab-m3 \
                        limifrog-v1 \
+                       lsn50 \
                        maple-mini \
                        mbed_lpc1768 \
                        microbit \
@@ -170,6 +178,8 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        remote-pa \
                        remote-reva \
                        remote-revb \
+                       saml10-xpro \
+                       saml11-xpro \
                        samd21-xpro \
                        saml21-xpro \
                        samr21-xpro \

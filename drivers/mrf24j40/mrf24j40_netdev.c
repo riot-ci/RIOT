@@ -57,9 +57,6 @@ static int _init(netdev_t *netdev)
     gpio_set(dev->params.reset_pin);
     gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_RISING, _irq_handler, dev);
 
-#ifdef MODULE_NETSTATS_L2
-    memset(&netdev->stats, 0, sizeof(netstats_t));
-#endif
     /* reset device to default values and put it into RX state */
     mrf24j40_reset(dev);
     return 0;
@@ -74,17 +71,17 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
 
     /* load packet data into FIFO */
     for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
-        /* current packet data + FCS too long */
-        if ((len + iol->iol_len + 2) > IEEE802154_FRAME_LEN_MAX) {
-            DEBUG("[mrf24j40] error: packet too large (%u byte) to be send\n",
-                  (unsigned)len + 2);
-            return -EOVERFLOW;
+        /* Check if there is data to copy, prevents assertion failure in the
+         * SPI peripheral if there is no data to copy */
+        if (iol->iol_len) {
+            /* current packet data + FCS too long */
+            if ((len + iol->iol_len + 2) > IEEE802154_FRAME_LEN_MAX) {
+                DEBUG("[mrf24j40] error: packet too large (%u byte) to be send\n",
+                      (unsigned)len + 2);
+                return -EOVERFLOW;
+            }
+            len = mrf24j40_tx_load(dev, iol->iol_base, iol->iol_len, len);
         }
-
-#ifdef MODULE_NETSTATS_L2
-        netdev->stats.tx_bytes += len;
-#endif
-        len = mrf24j40_tx_load(dev, iol->iol_base, iol->iol_len, len);
         /* only on first iteration: */
         if (iol == iolist) {
             dev->header_len = len;
@@ -136,10 +133,6 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
             mrf24j40_rx_fifo_read(dev, phr + 2, &(rssi_scalar), 1);
             radio_info->rssi = mrf24j40_dbm_from_reg(rssi_scalar);
         }
-#ifdef MODULE_NETSTATS_L2
-        netdev->stats.rx_count++;
-        netdev->stats.rx_bytes += pkt_len;
-#endif
         res = pkt_len;
     }
     /* Turn on reception of packets off the air */
