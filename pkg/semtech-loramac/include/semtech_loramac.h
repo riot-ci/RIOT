@@ -109,7 +109,7 @@ typedef struct {
  */
 typedef struct {
     mutex_t lock;                                /**< loramac access lock */
-    uint8_t caller_pid;                          /**< pid of caller thread */
+    uint8_t tx_pid;                              /**< pid of sender thread */
     uint8_t rx_pid;                              /**< pid of receiver thread */
     uint8_t port;                                /**< application TX port */
     uint8_t cnf;                                 /**< enable/disable confirmable messages */

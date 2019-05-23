@@ -692,7 +692,7 @@ void *_semtech_loramac_event_loop(void *arg)
                     DEBUG("[semtech-loramac] loramac join notification msg\n");
                     msg_t msg_ret;
                     msg_ret.content.value = msg.content.value;
-                    msg_send(&msg_ret, mac->caller_pid);
+                    msg_send(&msg_ret, mac->tx_pid);
                     break;
                 }
                 case MSG_TYPE_LORAMAC_LINK_CHECK:
@@ -729,7 +729,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         msg_t msg_ret;
                         msg_ret.type = msg.type;
                         msg_ret.content.value = msg.content.value;
-                        msg_send(&msg_ret, mac->caller_pid);
+                        msg_send(&msg_ret, mac->tx_pid);
                     }
                     break;
                 }
@@ -804,7 +804,7 @@ uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type)
         return SEMTECH_LORAMAC_ALREADY_JOINED;
     }
 
-    mac->caller_pid = thread_getpid();
+    mac->tx_pid = thread_getpid();
 
     _semtech_loramac_call(_join, &type);
 
@@ -838,7 +838,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
     }
 
     /* Correctly set the sender thread pid */
-    mac->caller_pid = thread_getpid();
+    mac->tx_pid = thread_getpid();
 
     loramac_send_params_t params;
     params.payload = data;
