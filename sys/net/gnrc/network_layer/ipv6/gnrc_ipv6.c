@@ -32,6 +32,10 @@
 #include "net/gnrc/ipv6/whitelist.h"
 #include "net/gnrc/ipv6/blacklist.h"
 
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+#include "net/gnrc/ipv6/ext/frag.h"
+#endif
+
 #include "net/gnrc/ipv6.h"
 
 #define ENABLE_DEBUG    (0)
@@ -69,6 +73,10 @@ static void _receive(gnrc_pktsnip_t *pkt);
  * prep_hdr: prepare header for sending (call to _fill_ipv6_hdr()), otherwise
  * assume it is already prepared */
 static void _send(gnrc_pktsnip_t *pkt, bool prep_hdr);
+
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+static void _send_by_netif_hdr(gnrc_pktsnip_t *pkt);
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
 /* Main event loop for IPv6 */
 static void *_event_loop(void *args);
 
@@ -171,6 +179,10 @@ static void *_event_loop(void *args)
     (void)args;
     msg_init_queue(msg_q, GNRC_IPV6_MSG_QUEUE_SIZE);
 
+    /* initialize fragmentation data-structures */
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+    gnrc_ipv6_ext_frag_init();
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
     /* register interest in all IPv6 packets */
     gnrc_netreg_register(GNRC_NETTYPE_IPV6, &me_reg);
 
@@ -200,6 +212,16 @@ static void *_event_loop(void *args)
                 msg_reply(&msg, &reply);
                 break;
 
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+            case GNRC_IPV6_EXT_FRAG_SEND:
+                DEBUG("ipv6: continue fragmenting packet\n");
+                gnrc_ipv6_ext_frag_send(msg.content.ptr);
+                break;
+            case GNRC_IPV6_EXT_FRAG_SEND_FRAG:
+                DEBUG("ipv6: send fragment\n");
+                _send_by_netif_hdr(msg.content.ptr);
+                break;
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
             case GNRC_IPV6_NIB_SND_UC_NS:
             case GNRC_IPV6_NIB_SND_MC_NS:
             case GNRC_IPV6_NIB_SND_NA:
@@ -391,6 +413,16 @@ static bool _safe_fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt,
 }
 
 /* functions for sending */
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+static void _send_by_netif_hdr(gnrc_pktsnip_t *pkt)
+{
+    assert(pkt->type == GNRC_NETTYPE_NETIF);
+    gnrc_netif_t *netif = gnrc_netif_hdr_get_netif(pkt->data);
+
+    _send_to_iface(netif, pkt);
+}
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
+
 static void _send_unicast(gnrc_pktsnip_t *pkt, bool prep_hdr,
                           gnrc_netif_t *netif, ipv6_hdr_t *ipv6_hdr,
                           uint8_t netif_hdr_flags)
