@@ -21,12 +21,19 @@
 
 #include <stdio.h>
 
+#include "xtimer.h"
+#include "log.h"
+
+
 int main(void)
 {
-    puts("Hello World!");
+    xtimer_sleep(1);
+    LOG_ERROR("Hello World!\n");
+    LOG_WARNING("Hello World!\n");
+    LOG_DEBUG("Hello World!\n");
 
     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
-    printf("This board features a(n) %s MCU.\n", RIOT_MCU);
+    LOG_WARNING("This board features a(n) %s MCU.\n", RIOT_MCU);
 
     return 0;
 }
