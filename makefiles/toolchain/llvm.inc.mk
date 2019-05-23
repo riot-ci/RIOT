@@ -25,7 +25,7 @@ ifeq ($(OBJCOPY),)
 $(warning objcopy not found. Hex file will not be created.)
 export OBJCOPY     = true
 endif
-export OBJDUMP     = $(LLVMPREFIX)objdump
+export OBJDUMP    ?= $(shell command -v $(LLVMPREFIX)objdump || command -v objdump || command -v false)
 export SIZE        = $(LLVMPREFIX)size
 # LLVM lacks a binutils strip tool as well...
 #export STRIP      = $(LLVMPREFIX)strip

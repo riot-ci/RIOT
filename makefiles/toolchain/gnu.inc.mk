@@ -18,6 +18,6 @@ ifeq ($(OBJCOPY),)
 $(warning objcopy not found. Hex file will not be created.)
 export OBJCOPY    = true
 endif
-export OBJDUMP    = $(PREFIX)objdump
+export OBJDUMP   ?= $(shell command -v $(PREFIX)objdump || command -v objdump || command -v false)
 # We use GDB for debugging
 include $(RIOTMAKE)/tools/gdb.inc.mk
