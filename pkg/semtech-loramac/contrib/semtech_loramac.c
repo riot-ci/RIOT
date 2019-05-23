@@ -50,7 +50,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define SEMTECH_LORAMAC_MSG_QUEUE                   (16U)
+#define SEMTECH_LORAMAC_MSG_QUEUE                   (4U)
 #define SEMTECH_LORAMAC_LORAMAC_STACKSIZE           (THREAD_STACKSIZE_DEFAULT)
 static msg_t _semtech_loramac_msg_queue[SEMTECH_LORAMAC_MSG_QUEUE];
 static char _semtech_loramac_stack[SEMTECH_LORAMAC_LORAMAC_STACKSIZE];
@@ -149,35 +149,39 @@ static void mcps_confirm(McpsConfirm_t *confirm)
     if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
         DEBUG("[semtech-loramac] MCPS confirm event OK\n");
 
-        switch (confirm->McpsRequest) {
-            case MCPS_UNCONFIRMED:
-            {
-                /* Check Datarate
-                   Check TxPower */
-                DEBUG("[semtech-loramac] MCPS confirm event: UNCONFIRMED\n");
-                msg_t msg;
-                msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-                msg.content.value = SEMTECH_LORAMAC_TX_DONE;
-                msg_send(&msg, semtech_loramac_pid);
-                break;
+        if (ENABLE_DEBUG) {
+            switch (confirm->McpsRequest) {
+                case MCPS_UNCONFIRMED:
+                {
+                    /* Check Datarate
+                       Check TxPower */
+                    DEBUG("[semtech-loramac] MCPS confirm event: UNCONFIRMED\n");
+                    break;
+                }
+
+                case MCPS_CONFIRMED:
+                    /* Check Datarate
+                       Check TxPower
+                       Check AckReceived
+                       Check NbTrials */
+                    DEBUG("[semtech-loramac] MCPS confirm event: CONFIRMED\n");
+                    break;
+
+                case MCPS_PROPRIETARY:
+                    DEBUG("[semtech-loramac] MCPS confirm event: PROPRIETARY\n");
+                    break;
+
+                default:
+                    DEBUG("[semtech-loramac] MCPS confirm event: UNKNOWN\n");
+                    break;
             }
-
-            case MCPS_CONFIRMED:
-                /* Check Datarate
-                   Check TxPower
-                   Check AckReceived
-                   Check NbTrials */
-                DEBUG("[semtech-loramac] MCPS confirm event: CONFIRMED\n");
-                break;
-
-            case MCPS_PROPRIETARY:
-                DEBUG("[semtech-loramac] MCPS confirm event: PROPRIETARY\n");
-                break;
-
-            default:
-                DEBUG("[semtech-loramac] MCPS confirm event: UNKNOWN\n");
-                break;
         }
+
+        msg_t msg;
+        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
+        msg.content.value = SEMTECH_LORAMAC_TX_DONE;
+        msg_send(&msg, semtech_loramac_pid);
+
     }
     else {
         msg_t msg;
@@ -223,29 +227,21 @@ static void mcps_indication(McpsIndication_t *indication)
        Check Port
        Check Datarate
        Check FramePending */
+    msg_t msg;
     if (indication->FramePending == true) {
         /* The server signals that it has pending data to be sent.
            We schedule an uplink as soon as possible to flush the server. */
         DEBUG("[semtech-loramac] MCPS indication: pending data, schedule an "
               "uplink\n");
-        msg_t msg;
         msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
         msg.content.value = SEMTECH_LORAMAC_TX_SCHEDULE;
         msg_send(&msg, semtech_loramac_pid);
-    }
-
-    msg_t msg;
-    if (indication->RxData) {
+    } else if (indication->RxData) {
         DEBUG("[semtech-loramac] MCPS indication: data received\n");
         msg.type = MSG_TYPE_LORAMAC_RX;
         msg.content.ptr = indication;
+        msg_send(&msg, semtech_loramac_pid);
     }
-    else {
-        DEBUG("[semtech-loramac] MCPS indication: TX done\n");
-        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-        msg.content.value = SEMTECH_LORAMAC_TX_DONE;
-    }
-    msg_send(&msg, semtech_loramac_pid);
 }
 
 /* MLME-Confirm event function */
@@ -558,16 +554,12 @@ static void _send(semtech_loramac_t *mac, void *arg)
 {
     loramac_send_params_t params = *(loramac_send_params_t *)arg;
     uint8_t status = _semtech_loramac_send(mac, params.payload, params.len);
-#ifdef MODULE_PERIPH_EEPROM
-    if (status == SEMTECH_LORAMAC_TX_OK) {
-        /* save the uplink counter */
-        _save_uplink_counter(mac);
+    if (status != SEMTECH_LORAMAC_TX_OK) {
+        msg_t msg;
+        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
+        msg.content.value = (uint8_t)status;
+        msg_send(&msg, semtech_loramac_pid);
     }
-#endif
-    msg_t msg;
-    msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-    msg.content.value = (uint8_t)status;
-    msg_send(&msg, semtech_loramac_pid);
 }
 
 static void _semtech_loramac_call(semtech_loramac_func_t func, void *arg)
@@ -727,7 +719,13 @@ void *_semtech_loramac_event_loop(void *arg)
                         mac->port = prev_port;
                     }
                     else {
-                        DEBUG("[semtech-loramac] forward TX status to caller thread\n");
+#ifdef MODULE_PERIPH_EEPROM
+                        if (msg.content.value == SEMTECH_LORAMAC_TX_DONE) {
+                            /* save the uplink counter */
+                            _save_uplink_counter(mac);
+                        }
+#endif
+                        DEBUG("[semtech-loramac] forward TX status to sender thread\n");
                         msg_t msg_ret;
                         msg_ret.type = msg.type;
                         msg_ret.content.value = msg.content.value;
@@ -751,7 +749,7 @@ void *_semtech_loramac_event_loop(void *arg)
                           (char *)mac->rx_data.payload,
                           mac->rx_data.payload_len,
                           mac->rx_data.port);
-                    msg_send(&msg_ret, mac->caller_pid);
+                    msg_send(&msg_ret, mac->rx_pid);
                     break;
                 }
                 default:
@@ -839,7 +837,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
         return SEMTECH_LORAMAC_NOT_JOINED;
     }
 
-    /* Correctly set the caller pid */
+    /* Correctly set the sender thread pid */
     mac->caller_pid = thread_getpid();
 
     loramac_send_params_t params;
@@ -860,25 +858,13 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
 
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac)
 {
-    mac->caller_pid = thread_getpid();
+    /* Correctly set the receiver thread pid */
+    mac->rx_pid = thread_getpid();
 
     /* Wait until the mac receive some information */
     msg_t msg;
     msg_receive(&msg);
-    uint8_t ret;
-    switch (msg.type) {
-        case MSG_TYPE_LORAMAC_RX:
-            ret = SEMTECH_LORAMAC_DATA_RECEIVED;
-            break;
-        case MSG_TYPE_LORAMAC_TX_STATUS:
-            ret = (uint8_t)msg.content.value;
-            break;
-        default:
-            ret = SEMTECH_LORAMAC_TX_ERROR;
-            break;
-    }
+    DEBUG("[semtech-loramac] data received\n");
 
-    DEBUG("[semtech-loramac] MAC reply received: %d\n", ret);
-
-    return ret;
+    return SEMTECH_LORAMAC_DATA_RECEIVED;
 }
