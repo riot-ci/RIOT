@@ -188,7 +188,9 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  *
  * @param[in] mac          Pointer to the mac
  *
- * @return SEMTECH_LORAMAC_DATA_RECEIVED when data is received
+ * @return SEMTECH_LORAMAC_RX_DATA when data is received
+ * @return SEMTECH_LORAMAC_RX_LINK_CHECK when link check information is received
+ * @return SEMTECH_LORAMAC_RX_CONFIRMED when an ACK is received from the network
  */
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac);
 
