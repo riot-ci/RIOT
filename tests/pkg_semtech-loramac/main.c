@@ -62,7 +62,7 @@ static void *_wait_recv(void *arg)
                 break;
 
             case SEMTECH_LORAMAC_RX_CONFIRMED:
-                puts("Received confirmed reception from network");
+                puts("Received ACK from network");
                 break;
 
             default:
