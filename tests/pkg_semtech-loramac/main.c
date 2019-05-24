@@ -45,20 +45,29 @@ static void *_wait_recv(void *arg)
 
     (void)arg;
     while (1) {
-        /* blocks until some data is received */
-        semtech_loramac_recv(&loramac);
-        loramac.rx_data.payload[loramac.rx_data.payload_len] = 0;
-        printf("Data received: %s, port: %d\n",
-               (char *)loramac.rx_data.payload, loramac.rx_data.port);
+        /* blocks until something is received */
+        switch (semtech_loramac_recv(&loramac)) {
+            case SEMTECH_LORAMAC_RX_DATA:
+                loramac.rx_data.payload[loramac.rx_data.payload_len] = 0;
+                printf("Data received: %s, port: %d\n",
+                (char *)loramac.rx_data.payload, loramac.rx_data.port);
+                break;
 
-        if (loramac.link_chk.available) {
-            printf("Link check information:\n"
+            case SEMTECH_LORAMAC_RX_LINK_CHECK:
+                printf("Link check information:\n"
                    "  - Demodulation margin: %d\n"
                    "  - Number of gateways: %d\n",
                    loramac.link_chk.demod_margin,
                    loramac.link_chk.nb_gateways);
-        }
+                break;
 
+            case SEMTECH_LORAMAC_RX_CONFIRMED:
+                puts("Received confirmed reception from network");
+                break;
+
+            default:
+                break;
+        }
     }
     return NULL;
 }
