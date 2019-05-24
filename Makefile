@@ -37,6 +37,10 @@ welcome:
 	@echo "Or ask questions on our mailing list:"
 	@echo "    users@riot-os.org (http://lists.riot-os.org/mailman/listinfo/users)"
 
+.PHONY: print-versions
+print-versions:
+	@./dist/tools/ci/print_toolchain_versions.sh
+
 include makefiles/app_dirs.inc.mk
 
 -include makefiles/tests.inc.mk
