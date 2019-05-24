@@ -146,158 +146,40 @@ static uint8_t _semtech_loramac_send(semtech_loramac_t *mac,
 static void mcps_confirm(McpsConfirm_t *confirm)
 {
     DEBUG("[semtech-loramac] MCPS confirm event\n");
-    if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
-        DEBUG("[semtech-loramac] MCPS confirm event OK\n");
-
-        if (ENABLE_DEBUG) {
-            switch (confirm->McpsRequest) {
-                case MCPS_UNCONFIRMED:
-                {
-                    /* Check Datarate
-                       Check TxPower */
-                    DEBUG("[semtech-loramac] MCPS confirm event: UNCONFIRMED\n");
-                    break;
-                }
-
-                case MCPS_CONFIRMED:
-                    /* Check Datarate
-                       Check TxPower
-                       Check AckReceived
-                       Check NbTrials */
-                    DEBUG("[semtech-loramac] MCPS confirm event: CONFIRMED\n");
-                    break;
-
-                case MCPS_PROPRIETARY:
-                    DEBUG("[semtech-loramac] MCPS confirm event: PROPRIETARY\n");
-                    break;
-
-                default:
-                    DEBUG("[semtech-loramac] MCPS confirm event: UNKNOWN\n");
-                    break;
-            }
-        }
-
-        msg_t msg;
-        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-        msg.content.value = SEMTECH_LORAMAC_TX_DONE;
-        msg_send(&msg, semtech_loramac_pid);
-
-    }
-    else {
-        msg_t msg;
-        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-        msg.content.value = SEMTECH_LORAMAC_TX_CNF_FAILED;
-        msg_send(&msg, semtech_loramac_pid);
-    }
+    msg_t msg;
+    msg.type = MSG_TYPE_LORAMAC_MCPS_CONFIRM;
+    msg.content.ptr = confirm;
+    msg_send(&msg, semtech_loramac_pid);
 }
 
 /* MCPS-Indication event function */
 static void mcps_indication(McpsIndication_t *indication)
 {
     DEBUG("[semtech-loramac] MCPS indication event\n");
-    if (indication->Status != LORAMAC_EVENT_INFO_STATUS_OK) {
-        DEBUG("[semtech-loramac] MCPS indication no OK\n");
-        return;
-    }
-
-    if (ENABLE_DEBUG) {
-        switch (indication->McpsIndication) {
-            case MCPS_UNCONFIRMED:
-                DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");
-                break;
-
-            case MCPS_CONFIRMED:
-                DEBUG("[semtech-loramac] MCPS indication Confirmed\n");
-                break;
-
-            case MCPS_PROPRIETARY:
-                DEBUG("[semtech-loramac] MCPS indication Proprietary\n");
-                break;
-
-            case MCPS_MULTICAST:
-                DEBUG("[semtech-loramac] MCPS indication Multicast\n");
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /* Check Multicast
-       Check Port
-       Check Datarate
-       Check FramePending */
     msg_t msg;
-    if (indication->FramePending == true) {
-        /* The server signals that it has pending data to be sent.
-           We schedule an uplink as soon as possible to flush the server. */
-        DEBUG("[semtech-loramac] MCPS indication: pending data, schedule an "
-              "uplink\n");
-        msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-        msg.content.value = SEMTECH_LORAMAC_TX_SCHEDULE;
-        msg_send(&msg, semtech_loramac_pid);
-    } else if (indication->RxData) {
-        DEBUG("[semtech-loramac] MCPS indication: data received\n");
-        msg.type = MSG_TYPE_LORAMAC_RX;
-        msg.content.ptr = indication;
-        msg_send(&msg, semtech_loramac_pid);
-    }
+    msg.type = MSG_TYPE_LORAMAC_MCPS_INDICATION;
+    msg.content.ptr = indication;
+    msg_send(&msg, semtech_loramac_pid);
 }
 
 /* MLME-Confirm event function */
 static void mlme_confirm(MlmeConfirm_t *confirm)
 {
     DEBUG("[semtech-loramac] MLME confirm event\n");
-    switch (confirm->MlmeRequest) {
-        case MLME_JOIN:
-            if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
-                /* Status is OK, node has joined the network */
-                DEBUG("[semtech-loramac] join succeeded\n");
-                msg_t msg;
-                msg.type = MSG_TYPE_LORAMAC_JOIN;
-                msg.content.value = SEMTECH_LORAMAC_JOIN_SUCCEEDED;
-                msg_send(&msg, semtech_loramac_pid);
-            }
-            else {
-                DEBUG("[semtech-loramac] join not successful\n");
-                /* Join was not successful. */
-                msg_t msg;
-                msg.type = MSG_TYPE_LORAMAC_JOIN;
-                msg.content.value = SEMTECH_LORAMAC_JOIN_FAILED;
-                msg_send(&msg, semtech_loramac_pid);
-            }
-            break;
-
-        case MLME_LINK_CHECK:
-            if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
-                DEBUG("[semtech-loramac] link check received\n");
-                msg_t msg;
-                msg.type = MSG_TYPE_LORAMAC_LINK_CHECK;
-                msg.content.ptr = confirm;
-                msg_send(&msg, semtech_loramac_pid);
-            }
-
-        default:
-            break;
-    }
+    msg_t msg;
+    msg.type = MSG_TYPE_LORAMAC_MLME_CONFIRM;
+    msg.content.ptr = confirm;
+    msg_send(&msg, semtech_loramac_pid);
 }
 
 /* MLME-Indication event function */
 static void mlme_indication(MlmeIndication_t *indication)
 {
-    switch (indication->MlmeIndication) {
-        case MLME_SCHEDULE_UPLINK:
-            /* The MAC signals that we shall provide an uplink
-               as soon as possible */
-            DEBUG("[semtech-loramac] MLME indication: schedule an uplink\n");
-            msg_t msg;
-            msg.type = MSG_TYPE_LORAMAC_TX_STATUS;
-            msg.content.value = SEMTECH_LORAMAC_TX_SCHEDULE;
-            msg_send(&msg, semtech_loramac_pid);
-            break;
-        default:
-            break;
-    }
+    DEBUG("[semtech-loramac] MLME indication event\n");
+    msg_t msg;
+    msg.type = MSG_TYPE_LORAMAC_MLME_INDICATION;
+    msg.content.ptr = indication;
+    msg_send(&msg, semtech_loramac_pid);
 }
 
 #ifdef MODULE_PERIPH_EEPROM
@@ -438,7 +320,6 @@ void _init_loramac(semtech_loramac_t *mac,
     semtech_loramac_set_system_max_rx_error(mac,
             LORAMAC_DEFAULT_SYSTEM_MAX_RX_ERROR);
     semtech_loramac_set_min_rx_symbols(mac, LORAMAC_DEFAULT_MIN_RX_SYMBOLS);
-    mac->link_chk.available = false;
 #ifdef MODULE_PERIPH_EEPROM
     _read_loramac_config(mac);
 #endif
@@ -474,7 +355,7 @@ static void _join_otaa(semtech_loramac_t *mac)
             DEBUG("[semtech-loramac] join otaa: duty cycle restricted\n");
             /* Cannot join. */
             msg_t msg;
-            msg.type = MSG_TYPE_LORAMAC_JOIN;
+            msg.type = MSG_TYPE_LORAMAC_JOIN_STATUS;
             msg.content.value = SEMTECH_LORAMAC_DUTYCYCLE_RESTRICTED;
             msg_send(&msg, semtech_loramac_pid);
             return;
@@ -484,7 +365,7 @@ static void _join_otaa(semtech_loramac_t *mac)
             DEBUG("[semtech-loramac] join otaa: mac is busy\n");
             /* Cannot join. */
             msg_t msg;
-            msg.type = MSG_TYPE_LORAMAC_JOIN;
+            msg.type = MSG_TYPE_LORAMAC_JOIN_STATUS;
             msg.content.value = SEMTECH_LORAMAC_BUSY;
             msg_send(&msg, semtech_loramac_pid);
             return;
@@ -494,7 +375,7 @@ static void _join_otaa(semtech_loramac_t *mac)
             DEBUG("[semtech-loramac] join otaa: failed with status %d\n", ret);
             /* Cannot join. */
             msg_t msg;
-            msg.type = MSG_TYPE_LORAMAC_JOIN;
+            msg.type = MSG_TYPE_LORAMAC_JOIN_STATUS;
             msg.content.value = SEMTECH_LORAMAC_JOIN_FAILED;
             msg_send(&msg, semtech_loramac_pid);
             return;
@@ -687,69 +568,194 @@ void *_semtech_loramac_event_loop(void *arg)
                     msg_reply(&msg, &msg_resp);
                     break;
                 }
-                case MSG_TYPE_LORAMAC_JOIN:
+                case MSG_TYPE_LORAMAC_JOIN_STATUS:
                 {
-                    DEBUG("[semtech-loramac] loramac join notification msg\n");
+                    DEBUG("[semtech-loramac] join status msg received\n");
                     msg_t msg_ret;
                     msg_ret.content.value = msg.content.value;
                     msg_send(&msg_ret, mac->tx_pid);
                     break;
                 }
-                case MSG_TYPE_LORAMAC_LINK_CHECK:
-                {
-                    MlmeConfirm_t *confirm = (MlmeConfirm_t *)msg.content.ptr;
-                    mac->link_chk.demod_margin = confirm->DemodMargin;
-                    mac->link_chk.nb_gateways = confirm->NbGateways;
-                    mac->link_chk.available = true;
-                    DEBUG("[semtech-loramac] link check info received:\n"
-                          "  - Demodulation marging: %d\n"
-                          "  - Number of gateways: %d\n",
-                          mac->link_chk.demod_margin,
-                          mac->link_chk.nb_gateways);
-                    break;
-                }
                 case MSG_TYPE_LORAMAC_TX_STATUS:
                 {
-                    DEBUG("[semtech-loramac] received TX status\n");
-                    if (msg.content.value == SEMTECH_LORAMAC_TX_SCHEDULE) {
-                        DEBUG("[semtech-loramac] schedule immediate TX\n");
+                    DEBUG("[semtech-loramac] TX status msg received\n");
+                    msg_t msg_ret;
+                    msg_ret.content.value = msg.content.value;
+                    msg_send(&msg_ret, mac->tx_pid);
+                    break;
+                }
+                case MSG_TYPE_LORAMAC_MLME_CONFIRM:
+                {
+                    DEBUG("[semtech-loramac] MLME confirm msg received\n");
+                    MlmeConfirm_t *confirm = (MlmeConfirm_t *)msg.content.ptr;
+                    switch (confirm->MlmeRequest) {
+                        case MLME_JOIN:
+                        {
+                            msg_t msg_ret;
+                            msg_ret.type = MSG_TYPE_LORAMAC_JOIN_STATUS;
+                            if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
+                                /* Status is OK, node has joined the network */
+                                DEBUG("[semtech-loramac] join succeeded\n");
+                                msg_ret.content.value = SEMTECH_LORAMAC_JOIN_SUCCEEDED;
+                            }
+                            else {
+                                DEBUG("[semtech-loramac] join not successful\n");
+                                /* Join was not successful. */
+                                msg_ret.content.value = SEMTECH_LORAMAC_JOIN_FAILED;
+                            }
+                            msg_send(&msg_ret, mac->tx_pid);
+                            break;
+                        }
+                        case MLME_LINK_CHECK:
+                            if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
+                                mac->link_chk.demod_margin = confirm->DemodMargin;
+                                mac->link_chk.nb_gateways = confirm->NbGateways;
+                                DEBUG("[semtech-loramac] link check info received:\n"
+                                      "  - Demodulation marging: %d\n"
+                                      "  - Number of gateways: %d\n",
+                                      mac->link_chk.demod_margin,
+                                      mac->link_chk.nb_gateways);
+                                msg_t msg_ret;
+                                msg_ret.content.value = SEMTECH_LORAMAC_RX_LINK_CHECK;
+                                msg_send(&msg_ret, mac->rx_pid);
+                            }
+                        default:
+                            break;
+                    }
+
+                    break;
+                }
+                case MSG_TYPE_LORAMAC_MLME_INDICATION:
+                {
+                    DEBUG("[semtech-loramac] MLME indication msg received\n");
+                    MlmeIndication_t *indication = (MlmeIndication_t *)msg.content.ptr;
+                    if (indication->MlmeIndication == MLME_SCHEDULE_UPLINK) {
+                        DEBUG("[semtech-loramac] MLME indication: schedule an uplink\n");
                         uint8_t prev_port = mac->port;
                         mac->port = 0;
                         _semtech_loramac_send(mac, NULL, 0);
                         mac->port = prev_port;
                     }
-                    else {
-#ifdef MODULE_PERIPH_EEPROM
-                        if (msg.content.value == SEMTECH_LORAMAC_TX_DONE) {
-                            /* save the uplink counter */
-                            _save_uplink_counter(mac);
-                        }
-#endif
-                        DEBUG("[semtech-loramac] forward TX status to sender thread\n");
-                        msg_t msg_ret;
-                        msg_ret.type = msg.type;
-                        msg_ret.content.value = msg.content.value;
-                        msg_send(&msg_ret, mac->tx_pid);
-                    }
                     break;
                 }
-                case MSG_TYPE_LORAMAC_RX:
+                case MSG_TYPE_LORAMAC_MCPS_CONFIRM:
                 {
+                    DEBUG("[semtech-loramac] MCPS confirm msg received\n");
+                    McpsConfirm_t *confirm = (McpsConfirm_t *)msg.content.ptr;
                     msg_t msg_ret;
-                    msg_ret.type = MSG_TYPE_LORAMAC_RX;
+                    msg_ret.type = MSG_TYPE_LORAMAC_TX_STATUS;
+                    uint8_t status = SEMTECH_LORAMAC_TX_CNF_FAILED;
+                    if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
+                        DEBUG("[semtech-loramac] MCPS confirm event OK\n");
+                        status = SEMTECH_LORAMAC_TX_DONE;
+#ifdef MODULE_PERIPH_EEPROM
+                        /* save the uplink counter */
+                        _save_uplink_counter(mac);
+#endif
+                        if (ENABLE_DEBUG) {
+                            switch (confirm->McpsRequest) {
+                                case MCPS_UNCONFIRMED:
+                                {
+                                    /* Check Datarate
+                                       Check TxPower */
+                                    DEBUG("[semtech-loramac] MCPS confirm event: UNCONFIRMED\n");
+                                    break;
+                                }
+
+                                case MCPS_CONFIRMED:
+                                    /* Check Datarate
+                                       Check TxPower
+                                       Check AckReceived
+                                       Check NbTrials */
+                                    DEBUG("[semtech-loramac] MCPS confirm event: CONFIRMED\n");
+                                    break;
+
+                                case MCPS_PROPRIETARY:
+                                    DEBUG("[semtech-loramac] MCPS confirm event: PROPRIETARY\n");
+                                    break;
+
+                                default:
+                                    DEBUG("[semtech-loramac] MCPS confirm event: UNKNOWN\n");
+                                    break;
+                            }
+                        }
+                    }
+
+                    DEBUG("[semtech-loramac] forward TX status to sender thread\n");
+                    msg_ret.content.value = status;
+                    msg_send(&msg_ret, mac->tx_pid);
+                    break;
+                }
+                case MSG_TYPE_LORAMAC_MCPS_INDICATION:
+                {
+                    DEBUG("[semtech-loramac] MCPS indication msg received\n");
                     McpsIndication_t *indication = (McpsIndication_t *)msg.content.ptr;
-                    memcpy(mac->rx_data.payload,
-                           indication->Buffer, indication->BufferSize);
-                    mac->rx_data.payload_len = indication->BufferSize;
-                    mac->rx_data.port = indication->Port;
-                    DEBUG("[semtech-loramac] loramac RX data:\n"
-                          "  - Payload: %s\n"
-                          "  - Size: %d\n"
-                          "  - Port: %d\n",
-                          (char *)mac->rx_data.payload,
-                          mac->rx_data.payload_len,
-                          mac->rx_data.port);
-                    msg_send(&msg_ret, mac->rx_pid);
+                    if (indication->Status != LORAMAC_EVENT_INFO_STATUS_OK) {
+                        DEBUG("[semtech-loramac] MCPS indication no OK\n");
+                        break;
+                    }
+
+                    if (ENABLE_DEBUG) {
+                        switch (indication->McpsIndication) {
+                            case MCPS_UNCONFIRMED:
+                                DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");
+                                break;
+
+                            case MCPS_CONFIRMED:
+                                DEBUG("[semtech-loramac] MCPS indication Confirmed\n");
+                                break;
+
+                            case MCPS_PROPRIETARY:
+                                DEBUG("[semtech-loramac] MCPS indication Proprietary\n");
+                                break;
+
+                            case MCPS_MULTICAST:
+                                DEBUG("[semtech-loramac] MCPS indication Multicast\n");
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+
+                    /* Check Multicast
+                       Check Port
+                       Check Datarate
+                       Check FramePending */
+                    if (indication->FramePending) {
+                        /* The server signals that it has pending data to be sent.
+                           We schedule an uplink as soon as possible to flush the server. */
+                        DEBUG("[semtech-loramac] MCPS indication: pending data, schedule an "
+                              "uplink\n");
+                        uint8_t prev_port = mac->port;
+                        mac->port = 0;
+                        _semtech_loramac_send(mac, NULL, 0);
+                        mac->port = prev_port;
+                    }
+                    else if (indication->RxData) {
+                        DEBUG("[semtech-loramac] MCPS indication: data received\n");
+                        memcpy(mac->rx_data.payload,
+                               indication->Buffer, indication->BufferSize);
+                        mac->rx_data.payload_len = indication->BufferSize;
+                        mac->rx_data.port = indication->Port;
+                        DEBUG("[semtech-loramac] loramac RX data:\n"
+                              "  - Payload: %s\n"
+                              "  - Size: %d\n"
+                              "  - Port: %d\n",
+                              (char *)mac->rx_data.payload,
+                              mac->rx_data.payload_len,
+                              mac->rx_data.port);
+                        msg_t msg_ret;
+                        msg_ret.content.value = SEMTECH_LORAMAC_RX_DATA;
+                        msg_send(&msg_ret, mac->rx_pid);
+                    }
+                    else if (indication->AckReceived) {
+                        DEBUG("[semtech-loramac] MCPS indication: ACK received\n");
+                        msg_t msg_ret;
+                        msg_ret.content.value = SEMTECH_LORAMAC_RX_CONFIRMED;
+                        msg_send(&msg_ret, mac->rx_pid);
+                    }
+
                     break;
                 }
                 default:
@@ -822,7 +828,6 @@ uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type)
 void semtech_loramac_request_link_check(semtech_loramac_t *mac)
 {
     mutex_lock(&mac->lock);
-    mac->link_chk.available = false;
     MlmeReq_t mlmeReq;
     mlmeReq.Type = MLME_LINK_CHECK;
     LoRaMacMlmeRequest(&mlmeReq);
@@ -831,7 +836,6 @@ void semtech_loramac_request_link_check(semtech_loramac_t *mac)
 
 uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
 {
-    mac->link_chk.available = false;
     if (!_is_mac_joined(mac)) {
         DEBUG("[semtech-loramac] network is not joined\n");
         return SEMTECH_LORAMAC_NOT_JOINED;
@@ -849,10 +853,6 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
     /* Wait for TX status information from the MAC */
     msg_t msg;
     msg_receive(&msg);
-    if (msg.type != MSG_TYPE_LORAMAC_TX_STATUS) {
-        return SEMTECH_LORAMAC_TX_ERROR;
-    }
-
     return (uint8_t)msg.content.value;
 }
 
@@ -864,7 +864,7 @@ uint8_t semtech_loramac_recv(semtech_loramac_t *mac)
     /* Wait until the mac receive some information */
     msg_t msg;
     msg_receive(&msg);
-    DEBUG("[semtech-loramac] data received\n");
+    DEBUG("[semtech-loramac] received something\n");
 
-    return SEMTECH_LORAMAC_DATA_RECEIVED;
+    return (uint8_t)msg.content.value;
 }
