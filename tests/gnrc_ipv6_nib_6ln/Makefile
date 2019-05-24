@@ -1,15 +1,9 @@
 include ../Makefile.tests_common
 
-<<<<<<< HEAD
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-nano \
-                             arduino-uno chronos i-nucleo-lrwan1 nucleo-f030r8 \
-                             nucleo-l053r8 nucleo-f031k6 nucleo-l031k6 nucleo-f042k6 \
-=======
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
-                             arduino-mega2560 arduino-nano \
-                             arduino-uno chronos nucleo-f030r8 nucleo-l053r8 \
+                             arduino-mega2560 arduino-nano arduino-uno chronos \
+                             i-nucleo-lrwan1 nucleo-f030r8 nucleo-l053r8 \
                              nucleo-f031k6 nucleo-l031k6 nucleo-f042k6 \
->>>>>>> tests: Updated BOARD_INSUFFICIENT_MEMORY
                              stm32f0discovery telosb waspmote-pro wsn430-v1_3b \
                              wsn430-v1_4
 
