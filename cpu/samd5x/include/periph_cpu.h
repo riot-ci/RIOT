@@ -62,5 +62,9 @@ static const int8_t exti_config[4][32] = {
  */
 #define SPI_HWCS(x)     (UINT_MAX - 1)
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* PERIPH_CPU_H */
 /** @} */
