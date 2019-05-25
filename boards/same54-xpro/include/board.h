@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Board specific definitions for the Atmel SAM E54 Xplained Pro
+ * @brief       Board specific definitions for the Microchip SAM E54 Xplained Pro
  *              board
  *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
@@ -21,8 +21,6 @@
 #define BOARD_H
 
 #include "cpu.h"
-#include "periph_conf.h"
-#include "periph_cpu.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Configuration of CPU peripherals for the Atmel SAM E54 Xplained
+ * @brief       Configuration of CPU peripherals for the Microchip SAM E54 Xplained
  *              Pro board
  *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>

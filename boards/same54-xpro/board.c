@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Board specific implementations for the Atmel SAM E54 Xplained
+ * @brief       Board specific implementations for the Microchip SAM E54 Xplained
  *              Pro board
  *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
