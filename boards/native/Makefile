@@ -4,4 +4,4 @@ DIRS = drivers
 
 include $(RIOTBASE)/Makefile.base
 
-INCLUDES = $(NATIVEINCLUDES)
+INCLUDES += $(NATIVEINCLUDES)
