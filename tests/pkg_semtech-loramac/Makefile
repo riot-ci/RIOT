@@ -15,13 +15,11 @@ LORA_REGION ?= EU868
 USEPKG += semtech-loramac
 USEMODULE += $(LORA_DRIVER)
 
+USEMODULE += auto_init_loramac
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += fmt
 
 FEATURES_OPTIONAL += periph_eeprom
-
-CFLAGS += -DREGION_$(LORA_REGION)
-CFLAGS += -DLORAMAC_ACTIVE_REGION=LORAMAC_REGION_$(LORA_REGION)
 
 include $(RIOTBASE)/Makefile.include
