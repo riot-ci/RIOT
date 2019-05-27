@@ -19,6 +19,6 @@ $(warning objcopy not found. Hex file will not be created.)
 export OBJCOPY    = true
 endif
 # Default to the native (g)objdump, helps when using toolchain from docker
-export OBJDUMP   ?= $(or $(shell command -v $(PREFIX)objdump || command -v gobjdump),objump)
+export OBJDUMP   ?= $(or $(shell command -v $(PREFIX)objdump || command -v gobjdump),objdump)
 # We use GDB for debugging
 include $(RIOTMAKE)/tools/gdb.inc.mk
