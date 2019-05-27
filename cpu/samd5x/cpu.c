@@ -28,47 +28,27 @@ static void xosc32k_init(void)
                 | OSC32KCTRL_XOSC32K_STARTUP(7);
 
     while (!OSC32KCTRL->STATUS.bit.XOSC32KRDY) {}
-
-    GCLK->GENCTRL[1].reg = GCLK_GENCTRL_SRC(GCLK_SOURCE_XOSC32K)
-                 | GCLK_GENCTRL_RUNSTDBY | GCLK_GENCTRL_GENEN;
 }
 
 static void fdpll0_init(uint32_t f_cpu)
 {
-    uint32_t mul = f_cpu << 4;
-    mul += 32768 / 2;
-    mul /= 32768;
+    const uint32_t LDR = ((f_cpu << 5) / 32768);
 
-    OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(mul & 0xF)
-                       | OSCCTRL_DPLLRATIO_LDR((mul >> 4) - 1);
+    OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(LDR & 0xF)
+                       | OSCCTRL_DPLLRATIO_LDR((LDR >> 5) - 1);
 
     OSCCTRL->Dpll[0].DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK_XOSC32
                        | OSCCTRL_DPLLCTRLB_WUF
                        | OSCCTRL_DPLLCTRLB_LBYPASS;
 
-    GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL0].reg = GCLK_PCHCTRL_GEN(1)
-                          | GCLK_PCHCTRL_CHEN;
-    while (!(GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL0].reg & GCLK_PCHCTRL_CHEN)) {}
-
-    GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL032K].reg = GCLK_PCHCTRL_GEN(1)
-                             | GCLK_PCHCTRL_CHEN;
-    while (!(GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL032K].reg & GCLK_PCHCTRL_CHEN)) {}
-
     OSCCTRL->Dpll[0].DPLLCTRLA.reg = OSCCTRL_DPLLCTRLA_ENABLE;
 
     while (!(OSCCTRL->Dpll[0].DPLLSTATUS.bit.CLKRDY &&
              OSCCTRL->Dpll[0].DPLLSTATUS.bit.LOCK)) {}
-
-    GCLK->GENCTRL[0].reg = GCLK_GENCTRL_SRC(GCLK_SOURCE_DPLL0)
-                         | GCLK_GENCTRL_GENEN;
 }
 
-/* clock used by xtimer */
-static void gclk_1mhz_init(uint32_t f_cpu) {
-
-    GCLK->GENCTRL[5].reg = GCLK_GENCTRL_SRC(GCLK_SOURCE_DPLL0)
-                         | GCLK_GENCTRL_DIV(f_cpu / 1000000)
-                         | GCLK_GENCTRL_GENEN;
+static void gclk_connect(uint8_t id, uint8_t src, uint32_t flags) {
+    GCLK->GENCTRL[id].reg = GCLK_GENCTRL_SRC(src) | GCLK_GENCTRL_GENEN | flags;
 }
 
 /**
@@ -101,8 +81,15 @@ void cpu_init(void)
     while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SWRST) {}
 
     xosc32k_init();
+    gclk_connect(1, GCLK_SOURCE_XOSC32K, 0);
+
     fdpll0_init(CLOCK_CORECLOCK);
-    gclk_1mhz_init(CLOCK_CORECLOCK);
+
+    /* clock used by xtimer */
+    gclk_connect(5, GCLK_SOURCE_DPLL0, GCLK_GENCTRL_DIV(CLOCK_CORECLOCK / 1000000));
+
+    /* main clock */
+    gclk_connect(0, GCLK_SOURCE_DPLL0, 0);
 
     while (GCLK->SYNCBUSY.reg) {}
 
