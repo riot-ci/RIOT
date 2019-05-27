@@ -26,7 +26,7 @@ $(warning objcopy not found. Hex file will not be created.)
 export OBJCOPY     = true
 endif
 # Default to the native (g)objdump, helps when using toolchain from docker
-export OBJDUMP    ?= $(or $(shell command -v $(LLVMPREFIX)objdump || command -v gobjdump),objump)
+export OBJDUMP    ?= $(or $(shell command -v $(LLVMPREFIX)objdump || command -v gobjdump),objdump)
 export SIZE        = $(LLVMPREFIX)size
 # LLVM lacks a binutils strip tool as well...
 #export STRIP      = $(LLVMPREFIX)strip
