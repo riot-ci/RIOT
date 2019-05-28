@@ -141,6 +141,11 @@ ifeq ($(DEVELHELP),1)
   CFLAGS += -DDEVELHELP
 endif
 
+# Override LOG_LEVEL if variable is set
+ifdef LOG_LEVEL
+  CFLAGS += -DLOG_LEVEL=$(LOG_LEVEL)
+endif
+
 # Fail on warnings. Can be overridden by `make WERROR=0`.
 WERROR ?= 1
 export WERROR
