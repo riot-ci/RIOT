@@ -398,6 +398,10 @@ ifneq (,$(filter stdio_rtt,$(USEMODULE)))
 endif
 
 ifneq (,$(filter shell,$(USEMODULE)))
+  USEMODULE += stdio_rx
+endif
+
+ifneq (,$(filter stdio_rx,$(USEMODULE)))
   ifneq (,$(filter stdio_uart,$(USEMODULE)))
     USEMODULE += stdio_uart_rx
   endif
