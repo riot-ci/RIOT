@@ -5,9 +5,6 @@ ifeq ($(OS),Linux)
 else ifeq ($(OS),Darwin)
   PORT ?= $(PORT_DARWIN)
 endif
-ifeq ($(PORT),)
-  $(info Warning: no PORT set!)
-endif
 
 export BAUD ?= 115200
 
