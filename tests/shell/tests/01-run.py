@@ -50,7 +50,18 @@ def check_cmd(child, cmd, expected):
 
 def testfunc(child):
     # check startup message
-    child.expect('test_shell.')
+    child.expect('test_shell.\r')
+
+    child.sendline('bufsize')
+    child.expect('([0-9]+)')
+
+    bufsize = int(child.match[1])
+
+    # check a long line
+    child.sendline("_"*bufsize + "whatever")
+    # this is dirty hack to work around a bug in the uart (#10634)
+    child.sendline()
+    child.expect('shell: maximum line length exceeded')
 
     # loop other defined commands and expected output
     for cmd, expected in CMDS.items():
