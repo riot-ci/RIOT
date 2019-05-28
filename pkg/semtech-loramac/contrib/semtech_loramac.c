@@ -732,7 +732,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         _semtech_loramac_send(mac, NULL, 0);
                         mac->port = prev_port;
                     }
-                    else if (indication->RxData) {
+                    if (indication->RxData) {
                         DEBUG("[semtech-loramac] MCPS indication: data received\n");
                         memcpy(mac->rx_data.payload,
                                indication->Buffer, indication->BufferSize);
@@ -749,7 +749,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         msg_ret.content.value = SEMTECH_LORAMAC_RX_DATA;
                         msg_send(&msg_ret, mac->rx_pid);
                     }
-                    else if (indication->AckReceived) {
+                    if (indication->AckReceived) {
                         DEBUG("[semtech-loramac] MCPS indication: ACK received\n");
                         msg_t msg_ret;
                         msg_ret.content.value = SEMTECH_LORAMAC_RX_CONFIRMED;
