@@ -88,14 +88,6 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt);
 void gnrc_ipv6_ext_frag_rbuf_init(void);
 
 /**
- * @brief   Frees a reassembly buffer entry (but does not release its
- *          gnrc_ipv6_ext_frag_rbuf_t::pkt)
- *
- * @param[in] rbuf  A reassembly buffer entry.
- */
-void gnrc_ipv6_ext_frag_rbuf_free(gnrc_ipv6_ext_frag_rbuf_t *rbuf);
-
-/**
  * @brief   Get a reassembly buffer by the identifying parameters
  *
  * @internal
@@ -110,6 +102,14 @@ void gnrc_ipv6_ext_frag_rbuf_free(gnrc_ipv6_ext_frag_rbuf_t *rbuf);
  */
 gnrc_ipv6_ext_frag_rbuf_t *gnrc_ipv6_ext_frag_rbuf_get(ipv6_hdr_t *ipv6,
                                                        uint32_t id);
+
+/**
+ * @brief   Frees a reassembly buffer entry (but does not release its
+ *          gnrc_ipv6_ext_frag_rbuf_t::pkt)
+ *
+ * @param[in] rbuf  A reassembly buffer entry.
+ */
+void gnrc_ipv6_ext_frag_rbuf_free(gnrc_ipv6_ext_frag_rbuf_t *rbuf);
 
 /**
  * @brief   Delete a reassembly buffer entry (and release its
