@@ -18,6 +18,7 @@
 
 #include "net/ipv6/addr.h"
 #include "net/ipv6/hdr.h"
+#include "net/ipv6/ext/frag.h"
 #include "net/gnrc/pktbuf.h"
 #include "net/protnum.h"
 #include "net/inet_csum.h"
@@ -297,7 +298,52 @@ static void test_ipv6_hdr_inet_csum__initial_sum_0(void)
     TEST_ASSERT_EQUAL_INT(0xab32, res);
 }
 
-Test *tests_ipv6_hdr_tests(void)
+static void test_ipv6_ext_frag_get(void)
+{
+    static const uint8_t fix_data1[] = {
+        PROTNUM_SNP, 0x00, 0x12, 0x29, 0xAB, 0x4A, 0x2D, 0xF3
+    };
+    static const uint8_t fix_data2[] = {
+        PROTNUM_WB_EXPAK, 0x00, 0x1D, 0x78, 0xAE, 0x49, 0x01, 0x9F
+    };
+    static const ipv6_ext_frag_t *frag_hdr;
+
+    frag_hdr = (ipv6_ext_frag_t *)fix_data1;
+    TEST_ASSERT_EQUAL_INT(PROTNUM_SNP, frag_hdr->nh);
+    TEST_ASSERT_EQUAL_INT(0U, frag_hdr->resv);
+    TEST_ASSERT_EQUAL_INT(4648, ipv6_ext_frag_get_offset(frag_hdr));
+    TEST_ASSERT(ipv6_ext_frag_more(frag_hdr));
+    TEST_ASSERT_EQUAL_INT(0xAB4A2DF3, byteorder_ntohl(frag_hdr->id));
+
+    frag_hdr = (ipv6_ext_frag_t *)fix_data2;
+    TEST_ASSERT_EQUAL_INT(PROTNUM_WB_EXPAK, frag_hdr->nh);
+    TEST_ASSERT_EQUAL_INT(0U, frag_hdr->resv);
+    TEST_ASSERT_EQUAL_INT(7544, ipv6_ext_frag_get_offset(frag_hdr));
+    TEST_ASSERT(!ipv6_ext_frag_more(frag_hdr));
+    TEST_ASSERT_EQUAL_INT(0xAE49019F, byteorder_ntohl(frag_hdr->id));
+}
+
+static void test_ipv6_ext_frag_set(void)
+{
+    ipv6_ext_frag_t frag_hdr = { .nh = PROTNUM_TPPLUSPLUS,
+                                 .id = { .u8 = { 0xA7, 0xE8, 0x3D, 0x35 } } };
+
+    ipv6_ext_frag_set_offset_more(&frag_hdr, 0, true);
+    TEST_ASSERT_EQUAL_INT(PROTNUM_TPPLUSPLUS, frag_hdr.nh);
+    TEST_ASSERT_EQUAL_INT(0U, frag_hdr.resv);
+    TEST_ASSERT_EQUAL_INT(0, ipv6_ext_frag_get_offset(&frag_hdr));
+    TEST_ASSERT(ipv6_ext_frag_more(&frag_hdr));
+    TEST_ASSERT_EQUAL_INT(0xA7E83D35, byteorder_ntohl(frag_hdr.id));
+
+    ipv6_ext_frag_set_offset_more(&frag_hdr, 504, false);
+    TEST_ASSERT_EQUAL_INT(PROTNUM_TPPLUSPLUS, frag_hdr.nh);
+    TEST_ASSERT_EQUAL_INT(0U, frag_hdr.resv);
+    TEST_ASSERT_EQUAL_INT(504, ipv6_ext_frag_get_offset(&frag_hdr));
+    TEST_ASSERT(!ipv6_ext_frag_more(&frag_hdr));
+    TEST_ASSERT_EQUAL_INT(0xA7E83D35, byteorder_ntohl(frag_hdr.id));
+}
+
+static Test *tests_ipv6_hdr_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_ipv6_hdr_set_version),
@@ -321,8 +367,21 @@ Test *tests_ipv6_hdr_tests(void)
     return (Test *)&ipv6_hdr_tests;
 }
 
+static Test *tests_ipv6_ext_frag_tests(void)
+{
+    EMB_UNIT_TESTFIXTURES(fixtures) {
+        new_TestFixture(test_ipv6_ext_frag_get),
+        new_TestFixture(test_ipv6_ext_frag_set),
+    };
+
+    EMB_UNIT_TESTCALLER(ipv6_ext_frag_tests, NULL, NULL, fixtures);
+
+    return (Test *)&ipv6_ext_frag_tests;
+}
+
 void tests_ipv6_hdr(void)
 {
     TESTS_RUN(tests_ipv6_hdr_tests());
+    TESTS_RUN(tests_ipv6_ext_frag_tests());
 }
 /** @} */
