@@ -1,3 +1,10 @@
+MATCH_MAKE_VERSION = 5.%
+
+ifeq (,$(filter $(MATCH_MAKE_VERSION),$(MAKE_VERSION)))
+  $(warning RIOT requires GNU Make version at least $(MATCH_MAKE_VERSION) \
+	    but your system has $(MAKE_VERSION).)
+endif
+
 # 'Makefile.include' directory, must be evaluated before other 'include'
 _riotbase := $(dir $(lastword $(MAKEFILE_LIST)))
 
