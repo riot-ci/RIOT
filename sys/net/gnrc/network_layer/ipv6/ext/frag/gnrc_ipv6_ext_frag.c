@@ -94,22 +94,20 @@ static gnrc_pktsnip_t *_completed(gnrc_ipv6_ext_frag_rbuf_t *rbuf);
 
 gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
 {
-    gnrc_ipv6_ext_frag_rbuf_t *rbuf = NULL;
+    gnrc_ipv6_ext_frag_rbuf_t *rbuf;
     gnrc_pktsnip_t *fh_snip, *ipv6_snip;
     ipv6_hdr_t *ipv6;
     ipv6_ext_frag_t *fh;
     unsigned offset;
-    uint16_t pkt_len;
     uint8_t nh;
 
     fh_snip = gnrc_pktbuf_mark(pkt, sizeof(ipv6_ext_frag_t),
                                GNRC_NETTYPE_IPV6_EXT);
     if (fh_snip == NULL) {
         DEBUG("ipv6_ext_frag: unable to mark fragmentation header\n");
-        goto error_exit;
+        goto error_release;
     }
     fh = fh_snip->data;
-    pkt_len = gnrc_pkt_len(pkt);
     /* search IPv6 header */
     ipv6_snip = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_IPV6);
     assert(ipv6_snip != NULL);
@@ -117,14 +115,14 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
     rbuf = gnrc_ipv6_ext_frag_rbuf_get(ipv6, byteorder_ntohl(fh->id));
     if (rbuf == NULL) {
         DEBUG("ipv6_ext_frag: reassembly buffer full\n");
-        goto error_exit;
+        goto error_release;
     }
     rbuf->arrival = xtimer_now_usec();
     xtimer_set_msg(&_gc_xtimer, GNRC_IPV6_EXT_FRAG_RBUF_TIMEOUT_US, &_gc_msg,
                    sched_active_pid);
     nh = fh->nh;
     offset = ipv6_ext_frag_get_offset(fh);
-    switch (_overlaps(rbuf, offset, pkt_len)) {
+    switch (_overlaps(rbuf, offset, pkt->size)) {
         case FRAG_LIMITS_NEW:
             break;
         case FRAG_LIMITS_DUPLICATE:
@@ -139,16 +137,32 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
             goto error_exit;
     }
     if (offset > 0) {
+        size_t size_until = offset + pkt->size;
+
         /* use IPv6 header in reassembly buffer from here on */
         ipv6 = rbuf->ipv6;
         /* subsequent fragment */
         if (!ipv6_ext_frag_more(fh)) {
             /* last fragment; add to rbuf->pkt_len */
             rbuf->last++;
-            rbuf->pkt_len += (offset + pkt_len);
+            rbuf->pkt_len += size_until;
         }
-        if (rbuf->pkt->size < pkt_len) {
-            if (gnrc_pktbuf_realloc_data(rbuf->pkt, rbuf->pkt_len) != 0) {
+        /* not divisible by 8*/
+        else if ((pkt->size & 0x7)) {
+            DEBUG("ipv6_ext_frag: fragment length not divisible by 8");
+            goto error_exit;
+        }
+        if (rbuf->pkt == NULL) {
+            rbuf->pkt = gnrc_pktbuf_add(fh_snip->next, NULL, size_until,
+                                        GNRC_NETTYPE_UNDEF);
+            if (rbuf->pkt == NULL) {
+                DEBUG("ipv6_ext_frag: unable to create space for reassembled "
+                      "packet\n");
+                goto error_exit;
+            }
+        }
+        else if (rbuf->pkt->size < size_until) {
+            if (gnrc_pktbuf_realloc_data(rbuf->pkt, size_until) != 0) {
                 DEBUG("ipv6_ext_frag: unable to allocate space for reassembled "
                       "packet\n");
                 goto error_exit;
@@ -161,9 +175,9 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
     }
     else if (!ipv6_ext_frag_more(fh)) {
         /* first fragment but actually not fragmented */
+        _set_nh(fh_snip->next, nh);
         gnrc_pktbuf_remove_snip(pkt, fh_snip);
         gnrc_ipv6_ext_frag_rbuf_del(rbuf);
-        _set_nh(fh_snip->next, nh);
         ipv6->len = byteorder_htons(byteorder_ntohs(ipv6->len) -
                                     sizeof(ipv6_ext_frag_t));
         return pkt;
@@ -172,11 +186,16 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
         /* first fragment */
         uint16_t ipv6_len = byteorder_ntohs(ipv6->len);
 
+        /* not divisible by 8*/
+        if ((pkt->size & 0x7)) {
+            DEBUG("ipv6_ext_frag: fragment length not divisible by 8");
+            goto error_exit;
+        }
+        _set_nh(fh_snip->next, nh);
         gnrc_pktbuf_remove_snip(pkt, fh_snip);
         /* TODO: RFC 8200 says "- 8"; determine if `sizeof(ipv6_ext_frag_t)` is
          * really needed*/
-        rbuf->pkt_len += ipv6_len - gnrc_pkt_len(pkt) - sizeof(ipv6_ext_frag_t);
-        _set_nh(fh_snip->next, nh);
+        rbuf->pkt_len += ipv6_len - pkt->size - sizeof(ipv6_ext_frag_t);
         if (rbuf->pkt != NULL) {
             /* first fragment but not first arriving */
             memcpy(rbuf->pkt->data, pkt->data, pkt->size);
@@ -194,9 +213,8 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
     }
     return NULL;
 error_exit:
-    if (rbuf == NULL) {
-        gnrc_ipv6_ext_frag_rbuf_del(rbuf);
-    }
+    gnrc_ipv6_ext_frag_rbuf_del(rbuf);
+error_release:
     gnrc_pktbuf_release(pkt);
     return NULL;
 }
@@ -300,10 +318,15 @@ static _limits_res_t _overlaps(gnrc_ipv6_ext_frag_rbuf_t *rbuf,
 {
     _check_limits_t limits = { .start = offset >> 3U,
                                .end = (offset + pkt_len) >> 3U };
-    gnrc_ipv6_ext_frag_limits_t *res =
-        (gnrc_ipv6_ext_frag_limits_t *)clist_foreach(&rbuf->limits,
-                                                     _check_overlap,
-                                                     &limits);
+    gnrc_ipv6_ext_frag_limits_t *res;
+
+    if (limits.start == limits.end) {
+        /* might happen with last fragment */
+        limits.end++;
+    }
+    res = (gnrc_ipv6_ext_frag_limits_t *)clist_foreach(&rbuf->limits,
+                                                       _check_overlap,
+                                                       &limits);
     if (res == NULL) {
         res = (gnrc_ipv6_ext_frag_limits_t *)clist_lpop(&_free_limits);
         if (res != NULL) {
@@ -327,7 +350,7 @@ static _limits_res_t _overlaps(gnrc_ipv6_ext_frag_rbuf_t *rbuf,
 
 static inline void _set_nh(gnrc_pktsnip_t *hdr_snip, uint8_t nh)
 {
-    switch (nh) {
+    switch (hdr_snip->type) {
         case GNRC_NETTYPE_IPV6: {
             ipv6_hdr_t *hdr = hdr_snip->data;
             hdr->nh = nh;
@@ -347,11 +370,12 @@ static inline void _set_nh(gnrc_pktsnip_t *hdr_snip, uint8_t nh)
 
 static gnrc_pktsnip_t *_completed(gnrc_ipv6_ext_frag_rbuf_t *rbuf)
 {
-    gnrc_ipv6_ext_frag_limits_t *ptr =
-            (gnrc_ipv6_ext_frag_limits_t *)rbuf->limits.next;
     assert(rbuf->limits.next != NULL);    /* this function is only called when
                                            * at least one fragment was already
                                            * added */
+    /* clist: first element is second element ;-) (from next of head) */
+    gnrc_ipv6_ext_frag_limits_t *ptr =
+            (gnrc_ipv6_ext_frag_limits_t *)rbuf->limits.next->next;
     if (rbuf->last && (ptr->start == 0)) {
         gnrc_pktsnip_t *res = NULL;
 
@@ -362,8 +386,11 @@ static gnrc_pktsnip_t *_completed(gnrc_ipv6_ext_frag_rbuf_t *rbuf)
             if (ptr->end < next->start) {
                 return NULL;
             }
-        } while (ptr == NULL);
+            ptr = next;
+        } while (((clist_node_t *)ptr) != rbuf->limits.next);
         res = rbuf->pkt;
+        /* rewrite length */
+        rbuf->ipv6->len = byteorder_htons(rbuf->pkt_len);
         rbuf->pkt = NULL;
         gnrc_ipv6_ext_frag_rbuf_free(rbuf);
         return res;
