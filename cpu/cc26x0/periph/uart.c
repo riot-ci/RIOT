@@ -91,6 +91,81 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     return UART_OK;
 }
 
+
+#ifdef MODULE_PERIPH_UART_MODECFG
+int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity,
+              uart_stop_bits_t stop_bits)
+{
+    uint8_t cc26x0_data_bits;
+    uint8_t cc26x0_parity;
+    uint8_t cc26x0_stop_bits;
+
+    /* make sure the uart device is valid */
+    if (uart != 0) {
+        return UART_NODEV;
+    }
+
+    /* Disable UART and clear old settings */
+    UART->CTL = 0;
+    UART->LCRH = 0;
+
+    switch (data_bits) {
+        case UART_DATA_BITS_5:
+            cc26x0_data_bits = UART_LCRH_WLEN_5;
+            break;
+        case UART_DATA_BITS_6:
+            cc26x0_data_bits = UART_LCRH_WLEN_6;
+            break;
+        case UART_DATA_BITS_7:
+            cc26x0_data_bits = UART_LCRH_WLEN_7;
+            break;
+        case UART_DATA_BITS_8:
+            cc26x0_data_bits = UART_LCRH_WLEN_8;
+            break;
+        default:
+            return UART_NOMODE;
+    }
+
+    switch (parity) {
+        case UART_PARITY_NONE:
+            cc26x0_parity = 0; // Default register value, no change required
+            break;
+        case UART_PARITY_EVEN:
+            cc26x0_parity = UART_LCRH_EPS | UART_LCRH_PEN;
+            break;
+        case UART_PARITY_ODD:
+            cc26x0_parity = UART_LCRH_PEN;
+            break;
+        case UART_PARITY_MARK:
+            return UART_NOMODE;
+            break;
+        case UART_PARITY_SPACE:
+            return UART_NOMODE;
+            break;
+        default:
+            return UART_NOMODE;
+    }
+
+    switch (stop_bits) {
+        case UART_STOP_BITS_1:
+            cc26x0_stop_bits = 0;  // Default register value, no change required
+            break;
+        case UART_STOP_BITS_2:
+            cc26x0_stop_bits = UART_LCRH_STP2;
+            break;
+        default:
+            return UART_NOMODE;
+            break;
+    }
+
+    /* Apply setting and enable UART */
+    UART->LCRH = cc26x0_data_bits | cc26x0_parity | cc26x0_stop_bits;
+    UART->CTL = ENABLE_MASK;
+
+    return UART_OK;
+}
+#endif
+
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     (void) uart;
