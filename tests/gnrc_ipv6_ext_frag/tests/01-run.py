@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2018 Freie Universität Berlin
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+
+import re
+import os
+import socket
+import sys
+import subprocess
+
+from scapy.all import Ether, IPv6, IPv6ExtHdrFragment, sendp
+from testrunner import run
+
+
+EXT_HDR_NH = {
+    IPv6ExtHdrFragment: 44,
+  }
+
+
+def pktbuf_empty(child):
+    child.sendline("pktbuf")
+    child.expect(r"packet buffer: first byte: (?P<first_byte>0x[0-9a-fA-F]+), "
+                 r"last byte: 0x[0-9a-fA-F]+ \(size: (?P<size>\d+)\)")
+    first_byte = child.match.group("first_byte")
+    size = child.match.group("size")
+    child.expect(
+            r"~ unused: {} \(next: (\(nil\)|0), size: {}\) ~".format(
+                first_byte, size))
+
+
+def pktbuf_size(child):
+    child.sendline("pktbuf")
+    child.expect(r"packet buffer: first byte: (?P<first_byte>0x[0-9a-fA-F]+), "
+                 r"last byte: 0x[0-9a-fA-F]+ \(size: (?P<size>\d+)\)")
+    size = child.match.group("size")
+    return int(size)
+
+
+def start_udp_server(child, port):
+    child.sendline("udp server start {}".format(port))
+    child.expect_exact("Success: started UDP server on port {}".format(port))
+
+
+def stop_udp_server(child):
+    child.sendline("udp server stop")
+    # either way: it is stopped
+    child.expect(["Success: stopped UDP server",
+                  "Error: server was not running"])
+
+
+def check_and_search_output(cmd, pattern, res_group, *args, **kwargs):
+    output = subprocess.check_output(cmd, *args, **kwargs).decode("utf-8")
+    for line in output.splitlines():
+        m = re.search(pattern, line)
+        if m is not None:
+            return m.group(res_group)
+    return None
+
+
+def get_bridge(tap):
+    res = check_and_search_output(
+            ["bridge", "link"],
+            r"{}.+master\s+(?P<master>[^\s]+)".format(tap),
+            "master"
+        )
+    return tap if res is None else res
+
+
+def get_host_lladdr(tap):
+    res = check_and_search_output(
+            ["ip", "addr", "show", "dev", tap, "scope", "link"],
+            r"inet6 (?P<lladdr>[0-9A-Fa-f:]+)/64",
+            "lladdr"
+        )
+    if res is None:
+        raise AssertionError(
+                "Can't find host link-local address on interface {}".format(tap)
+            )
+    else:
+        return res
+
+
+def get_host_mtu(tap):
+    res = check_and_search_output(
+            ["ip", "link", "show", tap],
+            r"mtu (?P<mtu>1500)",
+            "mtu"
+        )
+    if res is None:
+        raise AssertionError(
+                "Can't find host link-local address on interface {}".format(tap)
+            )
+    else:
+        return int(res)
+
+
+def test_reass_successful_udp(child, iface, hw_dst, ll_dst, ll_src):
+    port = 1337
+    mtu = get_host_mtu(iface)
+    byte_max = 0xff
+    payload_len = (byte_max * ((mtu // byte_max) + 1))
+    if not (mtu % byte_max):
+        payload_len += 1
+    start_udp_server(child, port)
+    with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE,
+                     str(iface + '\0').encode())
+        s.sendto(bytes(i for i in range(byte_max)) * (payload_len // byte_max),
+                 (ll_dst, port))
+        child.expect(
+                "~~ SNIP  0 - size: {} byte, type: NETTYPE_UNDEF \(\d+\)"
+                .format(payload_len)
+            )
+        # 4 snips: payload, UDP header, IPv6 header, netif header
+        # (fragmentation header was removed)
+        child.expect(
+                "~~ PKT    -  4 snips, total size: (\d+) byte"
+            )
+        size = int(child.match.group(1))
+        # 40 = IPv6 header length; 8 = UDP header length
+        # >=  since netif header also has a length
+        assert size >= (payload_len + 40 + 8)
+    stop_udp_server(child)
+    pktbuf_empty(child)
+
+
+def test_reass_too_short_header(child, iface, hw_dst, ll_dst, ll_src):
+    sendp(Ether(dst=hw_dst) / IPv6(dst=ll_dst, src=ll_src,
+          nh=EXT_HDR_NH[IPv6ExtHdrFragment]) / "\x11",
+          iface=iface, verbose=0)
+    pktbuf_empty(child)
+
+
+def test_reass_offset_too_large(child, iface, hw_dst, ll_dst, ll_src):
+    size = pktbuf_size(child)
+    sendp(Ether(dst=hw_dst) / IPv6(dst=ll_dst, src=ll_src) /
+          IPv6ExtHdrFragment(offset=((size * 2) // 8)) / "x" * 128,
+          iface=iface, verbose=0)
+    pktbuf_empty(child)
+
+
+def testfunc(child):
+    tap = get_bridge(os.environ["TAP"])
+
+    child.expect(r"OK \((\d+) tests\)")     # wait for and check result of unittests
+    print("." * int(child.match.group(1)), end="", flush=True)
+
+    lladdr_src = get_host_lladdr(tap)
+    child.sendline("ifconfig")
+    child.expect("HWaddr: (?P<hwaddr>[A-Fa-f:0-9]+)")
+    hwaddr_dst = child.match.group("hwaddr").lower()
+    child.expect("(?P<lladdr>fe80::[A-Fa-f:0-9]+)")
+    lladdr_dst = child.match.group("lladdr").lower()
+
+    def run(func):
+        if child.logfile == sys.stdout:
+            func(child, tap, hwaddr_dst, lladdr_dst, lladdr_src)
+        else:
+            try:
+                func(child, tap, hwaddr_dst, lladdr_dst, lladdr_src)
+                print(".", end="", flush=True)
+            except Exception as e:
+                print("FAILED")
+                raise e
+
+    run(test_reass_successful_udp)
+    run(test_reass_too_short_header)
+    run(test_reass_offset_too_large)
+    print("SUCCESS")
+
+
+if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print("\x1b[1;31mThis test requires root privileges.\n"
+              "It's constructing and sending Ethernet frames.\x1b[0m\n",
+              file=sys.stderr)
+        sys.exit(1)
+    sys.exit(run(testfunc, timeout=1, echo=False))
