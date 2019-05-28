@@ -97,8 +97,10 @@ void gnrc_ipv6_ext_frag_rbuf_init(void);
  * @param[in] id    The identification from the fragment header.
  *
  * @return  A reassembly buffer matching @p id ipv6_hdr_t::src and ipv6_hdr::dst
- *          of @p hdr or first free reassembly buffer.
- * @return  NULL, if no entry can be found or reassembly buffer is full.
+ *          of @p hdr or first free reassembly buffer. Will never be NULL, as
+ *          in the case of the reassembly buffer being full, the entry with the
+ *          lowest gnrc_ipv6_ext_frag_rbuf_t::arrival (serial-number-like) is
+ *          removed.
  */
 gnrc_ipv6_ext_frag_rbuf_t *gnrc_ipv6_ext_frag_rbuf_get(ipv6_hdr_t *ipv6,
                                                        uint32_t id);
