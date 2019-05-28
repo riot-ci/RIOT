@@ -141,9 +141,8 @@ ifeq ($(DEVELHELP),1)
   CFLAGS += -DDEVELHELP
 endif
 
-# If not already set in CFLAGS, set logging level by default to INFO, e.g. 3.
-LOG_LEVEL ?= 3
-ifeq (,$(filter -DLOG_LEVEL=%,$(CFLAGS)))
+# Override LOG_LEVEL if variable is set
+ifdef LOG_LEVEL
   CFLAGS += -DLOG_LEVEL=$(LOG_LEVEL)
 endif
 
