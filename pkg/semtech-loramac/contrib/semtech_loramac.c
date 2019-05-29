@@ -732,6 +732,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         _semtech_loramac_send(mac, NULL, 0);
                         mac->port = prev_port;
                     }
+#ifdef MODULE_SEMTECH_LORAMAC_RX
                     if (indication->RxData) {
                         DEBUG("[semtech-loramac] MCPS indication: data received\n");
                         memcpy(mac->rx_data.payload,
@@ -755,6 +756,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         msg_ret.content.value = SEMTECH_LORAMAC_RX_CONFIRMED;
                         msg_send(&msg_ret, mac->rx_pid);
                     }
+#endif
 
                     break;
                 }
@@ -856,6 +858,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
     return (uint8_t)msg.content.value;
 }
 
+#ifdef MODULE_SEMTECH_LORAMAC_RX
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac)
 {
     /* Correctly set the receiver thread pid */
@@ -868,3 +871,4 @@ uint8_t semtech_loramac_recv(semtech_loramac_t *mac)
 
     return (uint8_t)msg.content.value;
 }
+#endif
