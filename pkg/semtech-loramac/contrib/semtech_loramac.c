@@ -606,6 +606,7 @@ void *_semtech_loramac_event_loop(void *arg)
                             msg_send(&msg_ret, mac->tx_pid);
                             break;
                         }
+#ifdef MODULE_SEMTECH_LORAMAC_RX
                         case MLME_LINK_CHECK:
                             if (confirm->Status == LORAMAC_EVENT_INFO_STATUS_OK) {
                                 mac->link_chk.demod_margin = confirm->DemodMargin;
@@ -619,6 +620,7 @@ void *_semtech_loramac_event_loop(void *arg)
                                 msg_ret.content.value = SEMTECH_LORAMAC_RX_LINK_CHECK;
                                 msg_send(&msg_ret, mac->rx_pid);
                             }
+#endif
                         default:
                             break;
                     }
@@ -827,6 +829,7 @@ uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type)
     return SEMTECH_LORAMAC_JOIN_SUCCEEDED;
 }
 
+#ifdef MODULE_SEMTECH_LORAMAC_RX
 void semtech_loramac_request_link_check(semtech_loramac_t *mac)
 {
     mutex_lock(&mac->lock);
@@ -835,6 +838,7 @@ void semtech_loramac_request_link_check(semtech_loramac_t *mac)
     LoRaMacMlmeRequest(&mlmeReq);
     mutex_unlock(&mac->lock);
 }
+#endif
 
 uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
 {
