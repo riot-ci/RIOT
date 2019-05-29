@@ -172,6 +172,7 @@ uint8_t semtech_loramac_join(semtech_loramac_t *mac, uint8_t type);
  */
 uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len);
 
+#if defined(MODULE_SEMTECH_LORAMAC_RX) || DOXYGEN
 /**
  * @brief   Wait for a message sent by the LoRaWAN network
  *
@@ -184,6 +185,9 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  * Be sure to call this function before the end of the RX windows otherwise it
  * may block the calling thread.
  *
+ * By default this feature is not available to the user application, enable it
+ * by adding `USEMODULE += semtech_loramac_rx` to the application Makefile.
+ *
  * @see semtech_loramac_send
  *
  * @param[in] mac          Pointer to the mac
@@ -193,6 +197,7 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  * @return SEMTECH_LORAMAC_RX_CONFIRMED when an ACK is received from the network
  */
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac);
+#endif
 
 /**
  * @brief   Requests a LoRaWAN link check
