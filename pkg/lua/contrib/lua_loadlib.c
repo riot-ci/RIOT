@@ -44,10 +44,16 @@
 
 static int _ll_searcher_builtin_lua(lua_State *L, const char *name)
 {
-    const struct lua_riot_builtin_lua *lmodule =
-        BINSEARCH_STR_P(lua_riot_builtin_lua_table,
-                        lua_riot_builtin_lua_table_len,
-                        name, name, LUAR_MAX_MODULE_NAME);
+    const struct lua_riot_builtin_lua *lmodule;
+
+    /* A null address for table_len means the weak symbol was not overridden */
+    if (&lua_riot_builtin_lua_table_len == NULL) {
+        lmodule = NULL;
+    } else {
+        lmodule = BINSEARCH_STR_P(lua_riot_builtin_lua_table,
+                                  lua_riot_builtin_lua_table_len,
+                                  name, name, LUAR_MAX_MODULE_NAME);
+    }
 
     if (lmodule != NULL) {
         int load_result = luaL_loadbuffer(L, (const char *)lmodule->code,
@@ -79,8 +85,8 @@ static int searcher_builtin_lua(lua_State *L)
         case LUA_OK:
             return 2; /* there are two elements in the stack */
         case LUAR_MODULE_NOTFOUND:
-            return luaL_error(L, "Module '%s' not found in Lua-builtins",
-                              lua_tostring(L, 1));
+            lua_pushliteral(L, "Module not found in Lua-builtins");
+            return 1;
         default:
             return luaL_error(L, "error loading module '%s' from Lua-builtins: \n%s",
                               lua_tostring(L, 1), lua_tostring(L, 2));
@@ -89,10 +95,16 @@ static int searcher_builtin_lua(lua_State *L)
 
 static int _ll_searcher_builtin_c(lua_State *L, const char *name)
 {
-    const struct lua_riot_builtin_c *cmodule =
-        BINSEARCH_STR_P(lua_riot_builtin_c_table,
-                        lua_riot_builtin_c_table_len,
-                        name, name, LUAR_MAX_MODULE_NAME);
+    const struct lua_riot_builtin_c *cmodule;
+
+    /* A null address for table_len means the weak symbol was not overridden */
+    if (&lua_riot_builtin_lua_table_len == NULL) {
+        cmodule = NULL;
+    } else {
+        cmodule = BINSEARCH_STR_P(lua_riot_builtin_c_table,
+                                  lua_riot_builtin_c_table_len,
+                                  name, name, LUAR_MAX_MODULE_NAME);
+    }
 
     if (cmodule != NULL) {
         lua_pushcfunction(L, cmodule->luaopen);
@@ -119,8 +131,8 @@ static int searcher_builtin_c(lua_State *L)
         return 2;
     }
     else {
-        return luaL_error(L, "Module '%s' not found in C-builtins",
-                          lua_tostring(L, 1));
+        lua_pushliteral(L, "Module not found in C-builtins");
+        return 1;
     }
 }
 
