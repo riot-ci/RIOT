@@ -20,16 +20,15 @@
 #include <string.h>
 #include <inttypes.h>
 
+#ifdef MODULE_SEMTECH_LORAMAC_RX
 #include "thread.h"
-#include "msg.h"
+#endif
+
 #include "shell.h"
 #include "fmt.h"
 
 #include "net/loramac.h"
 #include "semtech_loramac.h"
-
-#define LORAMAC_RECV_MSG_QUEUE                   (4U)
-static msg_t _loramac_recv_queue[LORAMAC_RECV_MSG_QUEUE];
 
 semtech_loramac_t loramac;
 
@@ -37,6 +36,9 @@ semtech_loramac_t loramac;
    possible size (with application session and network session keys) */
 static char print_buf[LORAMAC_APPKEY_LEN * 2 + 1];
 
+#ifdef MODULE_SEMTECH_LORAMAC_RX
+#define LORAMAC_RECV_MSG_QUEUE                   (4U)
+static msg_t _loramac_recv_queue[LORAMAC_RECV_MSG_QUEUE];
 static char _recv_stack[THREAD_STACKSIZE_DEFAULT];
 
 static void *_wait_recv(void *arg)
@@ -71,10 +73,14 @@ static void *_wait_recv(void *arg)
     }
     return NULL;
 }
+#endif
 
 static void _loramac_usage(void)
 {
-    puts("Usage: loramac <get|set|join|tx|link_check"
+    puts("Usage: loramac <get|set|join|tx"
+#ifdef MODULE_SEMTECH_LORAMAC_RX
+         "|link_check"
+#endif
 #ifdef MODULE_PERIPH_EEPROM
          "|save|erase"
 #endif
@@ -472,6 +478,7 @@ static int _cmd_loramac(int argc, char **argv)
         puts("Message sent with success");
         return 0;
     }
+#ifdef MODULE_SEMTECH_LORAMAC_RX
     else if (strcmp(argv[1], "link_check") == 0) {
         if (argc > 2) {
             _loramac_usage();
@@ -481,6 +488,7 @@ static int _cmd_loramac(int argc, char **argv)
         semtech_loramac_request_link_check(&loramac);
         puts("Link check request scheduled");
     }
+#endif
 #ifdef MODULE_PERIPH_EEPROM
     else if (strcmp(argv[1], "save") == 0) {
         if (argc > 2) {
@@ -516,8 +524,10 @@ int main(void)
 {
     semtech_loramac_init(&loramac);
 
+#ifdef MODULE_SEMTECH_LORAMAC_RX
     thread_create(_recv_stack, sizeof(_recv_stack),
                   THREAD_PRIORITY_MAIN - 1, 0, _wait_recv, NULL, "recv thread");
+#endif
 
     puts("All up, running the shell now");
     char line_buf[SHELL_DEFAULT_BUFSIZE];
