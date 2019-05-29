@@ -75,7 +75,10 @@ static void *_wait_recv(void *arg)
 
 static void _loramac_usage(void)
 {
-    puts("Usage: loramac <get|set|join|tx|link_check"
+    puts("Usage: loramac <get|set|join|tx"
+#ifdef MODULE_SEMTECH_LORAMAC_RX
+    "|link_check"
+#endif
 #ifdef MODULE_PERIPH_EEPROM
          "|save|erase"
 #endif
@@ -473,6 +476,7 @@ static int _cmd_loramac(int argc, char **argv)
         puts("Message sent with success");
         return 0;
     }
+#ifdef MODULE_SEMTECH_LORAMAC_RX
     else if (strcmp(argv[1], "link_check") == 0) {
         if (argc > 2) {
             _loramac_usage();
@@ -482,6 +486,7 @@ static int _cmd_loramac(int argc, char **argv)
         semtech_loramac_request_link_check(&loramac);
         puts("Link check request scheduled");
     }
+#endif
 #ifdef MODULE_PERIPH_EEPROM
     else if (strcmp(argv[1], "save") == 0) {
         if (argc > 2) {
