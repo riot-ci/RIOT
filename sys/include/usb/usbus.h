@@ -323,10 +323,10 @@ typedef struct usbus_handler_driver {
      * @param state     setup request state
      * @param setup     setup packet
      *
-     * @returns         Size of the returned data when the request is handled
-     * @returns         negative to have the stack return an USB stall to the
+     * @return          Size of the returned data when the request is handled
+     * @return          negative to have the stack return an USB stall to the
      *                  host
-     * @returns         zero when the request is not handled by this handler
+     * @return          zero when the request is not handled by this handler
      */
     int (*setup_handler)(usbus_t * usbus, struct usbus_handler *handler,
                          usbus_setuprq_state_t state, usb_setup_t *request);

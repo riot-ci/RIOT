@@ -111,28 +111,37 @@ static int _req_status(usbus_t *usbus)
 
 static int _req_str(usbus_t *usbus, uint16_t idx)
 {
-    if (idx == 0) {
-        usb_descriptor_string_t desc;
-        desc.type = USB_TYPE_DESCRIPTOR_STRING;
-        desc.length = sizeof(uint16_t) + sizeof(usb_descriptor_string_t);
-        usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc, sizeof(desc));
-        /* Only one language ID supported */
-        uint16_t us = USB_CONFIG_DEFAULT_LANGID;
-        usbus_control_slicer_put_bytes(usbus, (uint8_t *)&us, sizeof(uint16_t));
-    }
-    else {
-        usb_descriptor_string_t desc;
-        desc.type = USB_TYPE_DESCRIPTOR_STRING;
-        usbus_string_t *str = _get_descriptor(usbus, idx);
-        if (str) {
-            desc.length = sizeof(usb_descriptor_string_t);
-            desc.length += 2 * strlen(str->str); /* USB strings are UTF-16 */
-            usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc,
-                                           sizeof(desc));
-            _cpy_str_to_utf16(usbus, str->str);
+    /* Return an error condition by default */
+    int res = -1;
+
+    /* Language ID must only be supported if there are string descriptors
+     * available */
+    if (usbus->strings) {
+        if (idx == 0) {
+            usb_descriptor_string_t desc;
+            desc.type = USB_TYPE_DESCRIPTOR_STRING;
+            desc.length = sizeof(uint16_t) + sizeof(usb_descriptor_string_t);
+            usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc, sizeof(desc));
+            /* Only one language ID supported */
+            uint16_t us = USB_CONFIG_DEFAULT_LANGID;
+            usbus_control_slicer_put_bytes(usbus, (uint8_t *)&us, sizeof(uint16_t));
+            res = 1;
+        }
+        else {
+            usb_descriptor_string_t desc;
+            desc.type = USB_TYPE_DESCRIPTOR_STRING;
+            usbus_string_t *str = _get_descriptor(usbus, idx);
+            if (str) {
+                desc.length = sizeof(usb_descriptor_string_t);
+                desc.length += 2 * strlen(str->str); /* USB strings are UTF-16 */
+                usbus_control_slicer_put_bytes(usbus, (uint8_t *)&desc,
+                                               sizeof(desc));
+                _cpy_str_to_utf16(usbus, str->str);
+                res = 1;
+            }
         }
     }
-    return 1;
+    return res;
 }
 
 static int _req_dev(usbus_t *usbus)
