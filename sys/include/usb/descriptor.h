@@ -54,7 +54,7 @@ extern "C" {
 #define USB_TYPE_DESCRIPTOR_DEV_QUALIFIER   0x06    /**< Device qualifier          */
 #define USB_TYPE_DESCRIPTOR_SPEED_CONFIG    0x07    /**< Other speed configuration */
 #define USB_TYPE_DESCRIPTOR_IFACE_POWER     0x08    /**< Interface power           */
-#define USB_TYPE_DESCRIPTOR_INTERFACE_ASSOC 0x0B    /**< Interface association     */
+#define USB_TYPE_DESCRIPTOR_INTERFACE_ASSOC 0x0b    /**< Interface association     */
 /** @} */
 
 /**
@@ -131,14 +131,14 @@ typedef struct __attribute__((packed)) {
  * @brief USB configuration descriptor (USB 2.0 spec table 9-10)
  */
 typedef struct __attribute__((packed)) {
-    uint8_t length;             /**< Size of this descriptor                                 */
-    uint8_t type;               /**< Descriptor type (@ref USB_TYPE_DESCRIPTOR_CONFIGURATION */
-    uint16_t total_length;      /**< Total length of the configuration                       */
-    uint8_t num_interfaces;     /**< Number of interfaces supported by this configuration    */
-    uint8_t val;                /**< Value to select this configuration by                   */
-    uint8_t idx;                /**< Configuration descriptor string index                   */
-    uint8_t attributes;         /**< Configuration attributes (@ref USB_CONF_ATTR)           */
-    uint8_t max_power;          /**< Maximum power consumption in 2mA steps                  */
+    uint8_t length;             /**< Size of this descriptor                                  */
+    uint8_t type;               /**< Descriptor type (@ref USB_TYPE_DESCRIPTOR_CONFIGURATION) */
+    uint16_t total_length;      /**< Total length of the configuration                        */
+    uint8_t num_interfaces;     /**< Number of interfaces supported by this configuration     */
+    uint8_t val;                /**< Value to select this configuration by                    */
+    uint8_t idx;                /**< Configuration descriptor string index                    */
+    uint8_t attributes;         /**< Configuration attributes (@ref USB_CONF_ATTR)            */
+    uint8_t max_power;          /**< Maximum power consumption in 2mA steps                   */
 } usb_descriptor_configuration_t;
 
 /**
