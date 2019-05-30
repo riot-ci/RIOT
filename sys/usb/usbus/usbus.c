@@ -162,8 +162,10 @@ usbus_endpoint_t *usbus_add_endpoint(usbus_t *usbus, usbus_interface_t *iface,
 
 static inline uint32_t _get_ep_bitflag(usbdev_ep_t *ep)
 {
-    /* Bit flag, lower half are OUT endpoints, upper half are IN endpoints */
-    return 1 << ((ep->dir == USB_EP_DIR_IN ? 0x10 : 0x00) + ep->num);
+    /* Endpoint activity bit flag, lower USBDEV_NUM_ENDPOINTS bits are
+     * useb as OUT endpoint flags, upper bit are IN endpoints */
+    return 1 << ((ep->dir == USB_EP_DIR_IN ? USBDEV_NUM_ENDPOINTS
+                                           : 0x00) + ep->num);
 }
 
 static uint32_t _get_and_reset_ep_events(usbus_t *usbus)
@@ -250,14 +252,13 @@ static void *_usbus_thread(void *args)
             while (events) {
                 unsigned num = bitarithm_lsb(events);
                 events &= ~(1 << num);
-                if (num >= 0x10) {
-                    /* IN endpoint */
-                    assert(num - 0x10 < USBDEV_NUM_ENDPOINTS);
-                    usbdev_ep_esr(usbus->ep_in[num - 0x10].ep);
+                if (num < USBDEV_NUM_ENDPOINTS) {
+                    /* OUT endpoint */
+                    usbdev_ep_esr(usbus->ep_out[num].ep);
                 }
                 else {
-                    assert(num < USBDEV_NUM_ENDPOINTS);
-                    usbdev_ep_esr(usbus->ep_out[num].ep);
+                    /* IN endpoint */
+                    usbdev_ep_esr(usbus->ep_in[num - USBDEV_NUM_ENDPOINTS].ep);
                 }
             }
 
