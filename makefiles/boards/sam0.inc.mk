@@ -13,7 +13,7 @@ ifneq (,$(SERIAL))
     $(error Did not find a device with serial $(SERIAL))
   endif
   PORT_LINUX := $(SERIAL_TTY)
-  export DEBUG_ADAPTER_ID ?= $(SERIAL)
+  DEBUG_ADAPTER_ID ?= $(SERIAL)
 endif
 
 # setup serial terminal
