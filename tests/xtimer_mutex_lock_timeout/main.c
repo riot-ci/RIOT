@@ -28,6 +28,8 @@
  */
 static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
                                                               char **argv);
+static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked(int argc,
+                                                                     char **argv);
 
 /**
  * @brief   List of command for this application.
@@ -35,6 +37,8 @@ static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
 static const shell_command_t shell_commands[] = {
     { "mutex_timeout_n_spin_unlocked", "unlocked mutex and without spinning",
       cmd_test_xtimer_mutex_lock_timeout_greater_backoff, },
+    { "mutex_timeout_n_spin_locked", "locked mutex and without spinning",
+      cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked, },
     { NULL, NULL, NULL }
 };
 
@@ -65,6 +69,37 @@ static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
     }
 
     return 0;
+}
+
+/**
+ * @brief   shell command to test xtimer_mutex_lock_timeout
+ *
+ * the mutex is locked before the function call and
+ * the timeout is greater than XTIMER_BACKOFF (no spinning)
+ *
+ * @param[in] argc  Number of arguments
+ * @param[in] argv  Array of arguments
+ *
+ * @return 0 on success
+ */
+static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked(int argc,
+                                                                     char **argv)
+{
+    (void)argc;
+    (void)argv;
+    puts("starting test: xtimer mutex lock timeout");
+    mutex_t test_mutex = MUTEX_INIT;
+    mutex_lock(&test_mutex);
+
+    if (xtimer_mutex_lock_timeout(&test_mutex, XTIMER_BACKOFF * 3) == 0) {
+        puts("Error: mutex taken");
+    }
+    else {
+        puts("OK");
+    }
+
+    return 0;
+
 }
 
 /**
