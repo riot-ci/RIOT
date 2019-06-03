@@ -32,6 +32,12 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Initializes IPv6 fragmentation and reassembly
+ * @internal
+ */
+void gnrc_ipv6_ext_frag_init(void);
+
+/**
  * @brief   Message type to time reassembly buffer garbage collection
  */
 #define GNRC_IPV6_EXT_FRAG_RBUF_GC  (0xfe00U)
@@ -81,12 +87,6 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt);
  * @name    Reassembly buffer operations
  * @{
  */
-/**
- * @brief   Initializes the reassembly buffer
- * @internal
- */
-void gnrc_ipv6_ext_frag_rbuf_init(void);
-
 /**
  * @brief   Get a reassembly buffer by the identifying parameters
  *

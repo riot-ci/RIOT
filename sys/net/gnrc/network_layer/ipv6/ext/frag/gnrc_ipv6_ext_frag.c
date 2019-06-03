@@ -41,6 +41,16 @@ typedef enum {
     FRAG_LIMITS_FULL,           /**< no free gnrc_ipv6_ext_frag_limits_t object */
 } _limits_res_t;
 
+void gnrc_ipv6_ext_frag_init(void)
+{
+#ifdef TEST_SUITES
+    memset(_rbuf, 0, sizeof(_rbuf));
+#endif
+    for (unsigned i = 0; i < GNRC_IPV6_EXT_FRAG_LIMITS_POOL_SIZE; i++) {
+        clist_rpush(&_free_limits, (clist_node_t *)&_limits_pool[i]);
+    }
+}
+
 /*
  * ===============
  * IPv6 reassembly
@@ -217,16 +227,6 @@ error_exit:
 error_release:
     gnrc_pktbuf_release(pkt);
     return NULL;
-}
-
-void gnrc_ipv6_ext_frag_rbuf_init(void)
-{
-#ifdef TEST_SUITES
-    memset(_rbuf, 0, sizeof(_rbuf));
-#endif
-    for (unsigned i = 0; i < GNRC_IPV6_EXT_FRAG_LIMITS_POOL_SIZE; i++) {
-        clist_rpush(&_free_limits, (clist_node_t *)&_limits_pool[i]);
-    }
 }
 
 gnrc_ipv6_ext_frag_rbuf_t *gnrc_ipv6_ext_frag_rbuf_get(ipv6_hdr_t *ipv6,

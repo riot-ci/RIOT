@@ -175,6 +175,10 @@ static void *_event_loop(void *args)
     (void)args;
     msg_init_queue(msg_q, GNRC_IPV6_MSG_QUEUE_SIZE);
 
+    /* initialize fragmentation data-structures */
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
+    gnrc_ipv6_ext_frag_init();
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
     /* register interest in all IPv6 packets */
     gnrc_netreg_register(GNRC_NETTYPE_IPV6, &me_reg);
 
@@ -208,7 +212,7 @@ static void *_event_loop(void *args)
             case GNRC_IPV6_EXT_FRAG_RBUF_GC:
                 gnrc_ipv6_ext_frag_rbuf_gc();
                 break;
-#endif
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
             case GNRC_IPV6_NIB_SND_UC_NS:
             case GNRC_IPV6_NIB_SND_MC_NS:
             case GNRC_IPV6_NIB_SND_NA:
