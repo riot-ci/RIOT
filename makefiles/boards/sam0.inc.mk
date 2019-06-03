@@ -13,14 +13,14 @@ ifneq (,$(SERIAL))
     $(error Did not find a device with serial $(SERIAL))
   endif
   PORT_LINUX := $(SERIAL_TTY)
-  export DEBUG_ADAPTER_ID ?= $(SERIAL)
+  DEBUG_ADAPTER_ID ?= $(SERIAL)
 endif
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 # Default for these boards is to use a CMSIS-DAP programmer
-export DEBUG_ADAPTER ?= dap
+DEBUG_ADAPTER ?= dap
 
 # EDBG can only be used with a compatible Atmel programmer
 ifeq ($(DEBUG_ADAPTER),dap)
