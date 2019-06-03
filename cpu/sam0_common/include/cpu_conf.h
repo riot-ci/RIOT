@@ -54,11 +54,17 @@ extern "C" {
  * @{
  */
 /* a flashpage in RIOT is mapped to a flash row on the SAM0s */
-#define FLASHPAGE_SIZE             (256U)
+#if defined(NVMCTRL_ROW_SIZE)
+#define FLASHPAGE_SIZE             (NVMCTRL_ROW_SIZE)
+#elif defined(NVMCTRL_BLOCK_SIZE)
+#define FLASHPAGE_SIZE             (NVMCTRL_BLOCK_SIZE)
+#else
+#error "Unsupported Device"
+#endif
 /* one SAM0 row contains 4 SAM0 pages, so 4 SAM0 pages contain
  * the amount of a RIOT flashpage
  */
-#define FLASHPAGE_PAGES_PER_ROW    (4)
+#define FLASHPAGE_PAGES_PER_ROW    (FLASHPAGE_SIZE/FLASH_PAGE_SIZE)
 /* number of RIOT flashpages on device */
 #define FLASHPAGE_NUMOF            (FLASH_NB_OF_PAGES / FLASHPAGE_PAGES_PER_ROW)
 /* The minimum block size which can be written is 16B. However, the erase
