@@ -28,7 +28,7 @@ else
 endif
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6
-USEMODULE += gnrc_ipv6_default
+USEMODULE += gnrc_ipv6_router_default
 USEMODULE += gnrc_icmpv6_error
 USEMODULE += gnrc_pktdump
 USEMODULE += gnrc_pktbuf_cmd
