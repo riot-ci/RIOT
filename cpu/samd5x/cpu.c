@@ -34,10 +34,12 @@ static void fdpll0_init(uint32_t f_cpu)
 {
     const uint32_t LDR = ((f_cpu << 5) / 32768);
 
-    OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(LDR & 0xF)
+    GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL0].reg = GCLK_PCHCTRL_GEN(1) | GCLK_PCHCTRL_CHEN;
+
+    OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(LDR & 0x1F)
                        | OSCCTRL_DPLLRATIO_LDR((LDR >> 5) - 1);
 
-    OSCCTRL->Dpll[0].DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK_XOSC32
+    OSCCTRL->Dpll[0].DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK_GCLK
                        | OSCCTRL_DPLLCTRLB_WUF
                        | OSCCTRL_DPLLCTRLB_LBYPASS;
 
@@ -48,7 +50,7 @@ static void fdpll0_init(uint32_t f_cpu)
 }
 
 static void gclk_connect(uint8_t id, uint8_t src, uint32_t flags) {
-    GCLK->GENCTRL[id].reg = GCLK_GENCTRL_SRC(src) | GCLK_GENCTRL_GENEN | flags;
+    GCLK->GENCTRL[id].reg = GCLK_GENCTRL_SRC(src) | GCLK_GENCTRL_GENEN | flags | GCLK_GENCTRL_IDC;
 }
 
 /**
@@ -85,11 +87,11 @@ void cpu_init(void)
 
     fdpll0_init(CLOCK_CORECLOCK);
 
-    /* clock used by xtimer */
-    gclk_connect(5, GCLK_SOURCE_DPLL0, GCLK_GENCTRL_DIV(CLOCK_CORECLOCK / 1000000));
-
     /* main clock */
     gclk_connect(0, GCLK_SOURCE_DPLL0, 0);
+
+    /* clock used by xtimer */
+    gclk_connect(5, GCLK_SOURCE_DPLL0, GCLK_GENCTRL_DIV(CLOCK_CORECLOCK / 8000000));
 
     while (GCLK->SYNCBUSY.reg) {}
 

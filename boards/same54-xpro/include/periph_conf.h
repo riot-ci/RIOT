@@ -43,7 +43,7 @@ static const tc32_conf_t timer_config[] = {
         .mclk_mask      = MCLK_APBAMASK_TC0 | MCLK_APBAMASK_TC1,
         .gclk_id        = TC0_GCLK_ID,
         .gclk_src       = GCLK_PCHCTRL_GEN(5),
-        .prescaler      = TC_CTRLA_PRESCALER_DIV1,
+        .prescaler      = TC_CTRLA_PRESCALER_DIV8,
         .flags          = TC_CTRLA_MODE_COUNT32,
     }
 };
