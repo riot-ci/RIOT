@@ -110,7 +110,6 @@ def test_reass_successful_udp(child, iface, hw_dst, ll_dst, ll_src):
         payload_len += 1
     start_udp_server(child, port)
     with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
-        print(ll_dst, port)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE,
                      str(iface + '\0').encode())
         s.sendto(bytes(i for i in range(byte_max)) * (payload_len // byte_max),

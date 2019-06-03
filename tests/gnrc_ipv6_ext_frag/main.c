@@ -70,9 +70,9 @@ static const shell_command_t shell_commands[] = {
     { NULL, NULL, NULL }
 };
 
-static void set_up_tests(void)
+static void tear_down_tests(void)
 {
-    gnrc_ipv6_ext_frag_rbuf_init();
+    gnrc_ipv6_ext_frag_init();
     gnrc_pktbuf_init();
 }
 
@@ -433,7 +433,7 @@ static void run_unittests(void)
         new_TestFixture(test_ipv6_ext_frag_reass_one_frag),
     };
 
-    EMB_UNIT_TESTCALLER(ipv6_ext_frag_tests, set_up_tests, NULL, fixtures);
+    EMB_UNIT_TESTCALLER(ipv6_ext_frag_tests, NULL, tear_down_tests, fixtures);
     TESTS_START();
     TESTS_RUN((Test *)&ipv6_ext_frag_tests);
     TESTS_END();
