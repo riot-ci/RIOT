@@ -1,10 +1,3 @@
-_LOG_SUBMODULES_INCLUDES =
-
 ifneq (,$(filter log_printfnoformat,$(USEMODULE)))
-  _LOG_SUBMODULES_INCLUDES += $(RIOTBASE)/sys/log/log_printfnoformat
-endif
-
-USEMODULE_INCLUDES += $(_LOG_SUBMODULES_INCLUDES)
-ifeq ($(BOARD),native)
-  NATIVEINCLUDES += $(_LOG_SUBMODULES_INCLUDES:%=-I%)
+  USEMODULE_INCLUDES += $(RIOTBASE)/sys/log/log_printfnoformat
 endif
