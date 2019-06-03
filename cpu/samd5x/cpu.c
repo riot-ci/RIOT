@@ -99,6 +99,9 @@ void cpu_init(void)
     /* enable power managemet module */
     MCLK->APBAMASK.reg |= MCLK_APBAMASK_PM;
 #endif
+#ifdef MODULE_PERIPH_FLASHPAGE
+    MCLK->APBBMASK.reg |= MCLK_APBBMASK_NVMCTRL;
+#endif
 
     /* trigger static peripheral initialization */
     periph_init();
