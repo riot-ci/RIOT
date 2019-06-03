@@ -307,7 +307,7 @@ static void test_ipv6_ext_frag_get(void)
     static const uint8_t fix_data2[] = {
         PROTNUM_WB_EXPAK, 0x00, 0x1D, 0x78, 0xAE, 0x49, 0x01, 0x9F
     };
-    static const ipv6_ext_frag_t *frag_hdr;
+    const ipv6_ext_frag_t *frag_hdr;
 
     frag_hdr = (ipv6_ext_frag_t *)fix_data1;
     TEST_ASSERT_EQUAL_INT(PROTNUM_SNP, frag_hdr->nh);
