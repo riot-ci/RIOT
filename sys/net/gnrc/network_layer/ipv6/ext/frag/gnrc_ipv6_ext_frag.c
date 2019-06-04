@@ -100,17 +100,25 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
     }
     /* first add per-fragment headers */
     while (ptr) {
-        ptr = gnrc_pktbuf_start_write(ptr);
-        if (ptr == NULL) {
+        gnrc_pktsnip_t *tmp = gnrc_pktbuf_start_write(ptr);
+        if (tmp == NULL) {
             DEBUG("ipv6_ext_frag: packet buffer full, canceling fragmentation\n");
-            if (snd_buf->per_frag != NULL) {
+            if (ptr->users > 1) {
                 /* we are not the last fragment, so we need to also release
-                 * our hold on the per-fragment headers */
-                gnrc_pktbuf_release(snd_buf->per_frag);
+                 * our hold on the snips we did not duplicate so far
+                 * and all also release all the snips we did duplicated so far
+                 */
+                if (to_send != NULL) {
+                    gnrc_pktbuf_release(to_send);
+                }
+                else {
+                    gnrc_pktbuf_release(ptr);
+                }
             }
             _snd_buf_free(snd_buf);
             return;
         }
+        ptr = tmp;
         if (to_send == NULL) {
             to_send = ptr;
         }
