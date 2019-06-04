@@ -19,10 +19,7 @@
  */
 
 #include <stdio.h>
-
 #include "usb/usbus.h"
-#include "shell.h"
-#include "msg.h"
 
 static char _stack[USBUS_STACKSIZE];
 
@@ -31,12 +28,8 @@ static usbus_t usbus;
 #include "periph_conf.h"
 #include "sam_usb.h"
 
-#define MAIN_QUEUE_SIZE     (8)
-static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
-
 int main(void)
 {
-    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
     puts("RIOT USB stack example application");
 
     /* TODO: remove as soon as we have decent auto_init */
@@ -46,10 +39,6 @@ int main(void)
     usbus_create(_stack, sizeof(_stack), USBUS_PRIO, USBUS_TNAME, &usbus);
 
     /* start shell */
-    puts("All up, running the shell now");
-    char line_buf[SHELL_DEFAULT_BUFSIZE];
-    shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
-
-    /* should be never reached */
+    puts("Started USB stack!");
     return 0;
 }
