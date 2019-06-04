@@ -39,6 +39,22 @@ extern "C" {
 #endif
 
 /**
+ * @defgroup    net_gnrc_ipv6_ext_conf IPv6 extension header compile configurations
+ * @ingroup     net_gnrc_ipv6_ext
+ * @ingroup     config
+ * @{
+ */
+/**
+ * @brief   IPv6 fragmentation send buffer size
+ *
+ * @note    Only applicable with [gnrc_ipv6_ext_frag](@ref net_gnrc_ipv6_ext_frag) module
+ */
+#ifndef GNRC_IPV6_EXT_FRAG_SEND_SIZE
+#define GNRC_IPV6_EXT_FRAG_SEND_SIZE    (1U)
+#endif
+/** @} **/
+
+/**
  * @brief   Builds an extension header for sending.
  *
  * @param[in] ipv6  The IPv6 header. Can be NULL.
