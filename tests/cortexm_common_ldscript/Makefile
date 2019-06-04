@@ -4,9 +4,15 @@ include ../Makefile.tests_common
 
 # Normally all boards using `cortexm_common/ldscripts/cortexm.ld` linkerscript
 # Only tested on these ones for the moment
+BOARD_WHITELIST += frdm-kw41z
+BOARD_WHITELIST += frdm-k64f
+BOARD_WHITELIST += frdm-k22f
 BOARD_WHITELIST += iotlab-a8-m3
 BOARD_WHITELIST += iotlab-m3
+BOARD_WHITELIST += mulle
+BOARD_WHITELIST += pba-d-01-kw2x
 BOARD_WHITELIST += samr21-xpro
+BOARD_WHITELIST += teensy31
 # Boards using a bootloader and ROM_OFFSET by default
 BOARD_WHITELIST += arduino-mkr1000
 BOARD_WHITELIST += arduino-mkrfox1200
