@@ -329,14 +329,20 @@ static void test_ipv6_ext_frag_set(void)
     ipv6_ext_frag_t frag_hdr = { .nh = PROTNUM_TPPLUSPLUS,
                                  .id = { .u8 = { 0xA7, 0xE8, 0x3D, 0x35 } } };
 
-    ipv6_ext_frag_set_offset_more(&frag_hdr, 0, true);
+    ipv6_ext_frag_set_offset(&frag_hdr, 0);
+    TEST_ASSERT_EQUAL_INT(PROTNUM_TPPLUSPLUS, frag_hdr.nh);
+    TEST_ASSERT_EQUAL_INT(0U, frag_hdr.resv);
+    TEST_ASSERT_EQUAL_INT(0, ipv6_ext_frag_get_offset(&frag_hdr));
+    TEST_ASSERT(!ipv6_ext_frag_more(&frag_hdr));
+    TEST_ASSERT_EQUAL_INT(0xA7E83D35, byteorder_ntohl(frag_hdr.id));
+    ipv6_ext_frag_set_more(&frag_hdr);
     TEST_ASSERT_EQUAL_INT(PROTNUM_TPPLUSPLUS, frag_hdr.nh);
     TEST_ASSERT_EQUAL_INT(0U, frag_hdr.resv);
     TEST_ASSERT_EQUAL_INT(0, ipv6_ext_frag_get_offset(&frag_hdr));
     TEST_ASSERT(ipv6_ext_frag_more(&frag_hdr));
     TEST_ASSERT_EQUAL_INT(0xA7E83D35, byteorder_ntohl(frag_hdr.id));
 
-    ipv6_ext_frag_set_offset_more(&frag_hdr, 504, false);
+    ipv6_ext_frag_set_offset(&frag_hdr, 504);
     TEST_ASSERT_EQUAL_INT(PROTNUM_TPPLUSPLUS, frag_hdr.nh);
     TEST_ASSERT_EQUAL_INT(0U, frag_hdr.resv);
     TEST_ASSERT_EQUAL_INT(504, ipv6_ext_frag_get_offset(&frag_hdr));
