@@ -29,6 +29,7 @@
 
 #include "clist.h"
 #include "net/ble.h"
+#include "net/ipv6.h"
 
 #include "host/ble_hs.h"
 
@@ -41,6 +42,13 @@ extern "C" {
  */
 #ifndef NIMBLE_NETIF_CID
 #define NIMBLE_NETIF_CID            (BLE_L2CAP_CID_IPSP)
+#endif
+
+/**
+ * @brief   Default MTU size supported by the NimBLE netif wrapper
+ */
+#ifndef NIMBLE_NETIF_MTU
+#define NIMBLE_NETIF_MTU            (IPV6_MIN_MTU)
 #endif
 
 /**

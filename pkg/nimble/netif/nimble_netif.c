@@ -24,6 +24,7 @@
  */
 
 #include <limits.h>
+#include <errno.h>
 
 #include "assert.h"
 #include "thread.h"
@@ -48,18 +49,15 @@
 
 #ifdef MODULE_GNRC_SIXLOWPAN
 #define NETTYPE                 GNRC_NETTYPE_SIXLOWPAN
+#elif defined(MODULE_GNRC_IPV6)
+#define NETTYPE                 GNRC_NETTYPE_IPV6
 #else
 #define NETTYPE                 GNRC_NETTYPE_UNDEF
 #endif
 
-/* maximum packet size for IPv6 packets */
-#ifndef NIMBLE_NETIF_IPV6_MTU
-#define NIMBLE_NETIF_IPV6_MTU    (1280U)    /* as specified in RFC7668 */
-#endif
-
 /* buffer configuration
  * - we need one RX and one TX buffer per connection */
-#define MTU_SIZE                (NIMBLE_NETIF_IPV6_MTU)
+#define MTU_SIZE                (NIMBLE_NETIF_MTU)
 #define MBUF_OVHD               (sizeof(struct os_mbuf) + \
                                  sizeof(struct os_mbuf_pkthdr))
 #define MBUF_SIZE               (MBUF_OVHD + MYNEWT_VAL_BLE_L2CAP_COC_MPS)
@@ -112,20 +110,20 @@ static int _send_pkt(nimble_netif_conn_t *conn, gnrc_pktsnip_t *pkt)
     int res;
     int num_bytes = 0;
 
-    if (conn->coc == NULL) {
-        return NIMBLE_NETIF_DEVERR;
+    if (conn == NULL || conn->coc == NULL) {
+        return -ENOTCONN;
     }
 
     /* copy the data into a newly allocated mbuf */
     struct os_mbuf *sdu = os_mbuf_get_pkthdr(&_mbuf_pool, 0);
     if (sdu == NULL) {
-        return NIMBLE_NETIF_NOMEM;
+        return -ENOBUFS;
     }
     while (pkt) {
         res = os_mbuf_append(sdu, pkt->data, pkt->size);
         if (res != 0) {
             os_mbuf_free_chain(sdu);
-            return NIMBLE_NETIF_NOMEM;
+            return -ENOBUFS;
         }
         num_bytes += (int)pkt->size;
         pkt = pkt->next;
@@ -141,7 +139,7 @@ static int _send_pkt(nimble_netif_conn_t *conn, gnrc_pktsnip_t *pkt)
 
     if ((res != 0) && (res != BLE_HS_ESTALLED)) {
         os_mbuf_free_chain(sdu);
-        return NIMBLE_NETIF_DEVERR;
+        return -ENOBUFS;
     }
 
     return num_bytes;
@@ -157,12 +155,10 @@ static int _netif_send_iter(nimble_netif_conn_t *conn,
 
 static int _netif_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 {
+    assert(pkt->type == GNRC_NETTYPE_NETIF);
+
     (void)netif;
     int res;
-
-    if (pkt->type != GNRC_NETTYPE_NETIF) {
-        return NIMBLE_NETIF_DEVERR;
-    }
 
     gnrc_netif_hdr_t *hdr = (gnrc_netif_hdr_t *)pkt->data;
     /* if packet is bcast or mcast, we send it to every connected node */
@@ -177,12 +173,7 @@ static int _netif_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         int handle = nimble_netif_conn_get_by_addr(
             gnrc_netif_hdr_get_dst_addr(hdr));
         nimble_netif_conn_t *conn = nimble_netif_conn_get(handle);
-        if (conn) {
-            res = _send_pkt(conn, pkt->next);
-        }
-        else {
-            res = NIMBLE_NETIF_NOTCONN;
-        }
+        res = _send_pkt(conn, pkt->next);
     }
 
     /* release the packet in GNRC's packet buffer */
@@ -291,9 +282,8 @@ static netdev_t _nimble_netdev_dummy = {
 };
 
 
-static int _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
+static void _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
 {
-    int ret = 0;
     struct os_mbuf *rxb = event->receive.sdu_rx;
     size_t rx_len = (size_t)OS_MBUF_PKTLEN(rxb);
 
@@ -302,7 +292,6 @@ static int _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
                                                    _nimble_netif->l2addr,
                                                    BLE_ADDR_LEN);
     if (if_snip == NULL) {
-        ret = NIMBLE_NETIF_NOMEM;
         goto end;
     }
 
@@ -314,7 +303,6 @@ static int _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
     gnrc_pktsnip_t *payload = gnrc_pktbuf_add(if_snip, NULL, rx_len, _nettype);
     if (payload == NULL) {
         gnrc_pktbuf_release(if_snip);
-        ret = NIMBLE_NETIF_NOMEM;
         goto end;
     }
 
@@ -322,7 +310,6 @@ static int _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
     int res = os_mbuf_copydata(rxb, 0, rx_len, payload->data);
     if (res != 0) {
         gnrc_pktbuf_release(payload);
-        ret = NIMBLE_NETIF_DEVERR;
         goto end;
     }
 
@@ -333,15 +320,12 @@ static int _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
     }
 
 end:
-    /* copy the receive data and free the mbuf */
-    os_mbuf_free_chain(rxb);
     /* free the mbuf and allocate a new one for receiving new data */
+    os_mbuf_free_chain(rxb);
     rxb = os_mbuf_get_pkthdr(&_mbuf_pool, 0);
     /* due to buffer provisioning, there should always be enough space */
     assert(rxb != NULL);
     ble_l2cap_recv_ready(event->receive.chan, rxb);
-
-    return ret;
 }
 
 static int _on_l2cap_client_evt(struct ble_l2cap_event *event, void *arg)
