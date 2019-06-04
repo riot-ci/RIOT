@@ -173,7 +173,7 @@ void nimble_netif_conn_foreach(uint16_t filter,
     assert(cb);
 
     DEBUG("nimble_netif_conn_foreach 0x%04x\n", (int)filter);
-    // mutex_lock(&_lock);
+    mutex_lock(&_lock);
     for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
         if (_conn[i].state & filter) {
             int res = cb(&_conn[i], (int)i, arg);
@@ -182,7 +182,7 @@ void nimble_netif_conn_foreach(uint16_t filter,
             }
         }
     }
-    // mutex_unlock(&_lock);
+    mutex_unlock(&_lock);
 }
 
 unsigned nimble_netif_conn_count(uint16_t filter)
