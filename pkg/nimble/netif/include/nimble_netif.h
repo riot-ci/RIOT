@@ -7,27 +7,67 @@
  */
 
 /**
- * @defgroup    pkg_nimble_netif NimBLE to GNRC netif wrapper
+ * @defgroup    pkg_nimble_netif GNRC netif Implementation
  * @ingroup     pkg_nimble
- * @brief       This module provides GNRC netif support for NimBLE
+ * @brief       GNRC netif implementation for NimBLE, enabling the integration
+ *              of NimBLE into GNRC
  *
- * # High-level doc
- * todo...
+ * # About
+ * This NimBLE submodule provides a GNRC netif wrapper for integrating NimBLE
+ * with GNRC and other network stacks using netif (e.g. CCNlite).
+ *
+ * # Concept
+ * According to the IPv6-over-BLE standards (RFC7668 and IPSP), this module
+ * exposes a (configurable) number of point-to-point BLE connections as a single
+ * network device to BLE. Unicast traffic is only send using the corresponding
+ * BLE connection. Multicast and Broadcast packets are duplicated and send via
+ * each open BLE connection.
+ *
+ * # Structure
+ * The netif implementation is able to handle multiple connections
+ * simultaneously. The maximum number of concurrent connections is configured
+ * during compile time, using NimBLEs MYNEWT_VAL_BLE_MAX_CONNECTIONS option.
+ * Dependent on this value, the netif implementation takes care of allocation
+ * all the memory needed. The API of this submodule uses simply integer values
+ * to reference the used connection context (like file descriptors in linux).
+ *
+ * Like any other GNRC network device, the NimBLE netif wrapper runs in its own
+ * thread. This thread is started and configured by the common netif code. All
+ * send and get/set operations are handled by this thread. For efficiency
+ * reasons, receiving of data is however handled completely in the NimBLE host
+ * thread, from where the received data is directly passed on to the
+ * corresponding GNRC thread.
+ *
+ * Although the wrapper hooks into GNRC using the netif interface, it does need
+ * to implement parts of the netdev interface as well. This is done where
+ * needed.
+ *
+ * # Usage
+ * This submodule is designed to work fully asynchronous, in the same way as the
+ * NimBLE interfaces are designed. All functions in this submodule will only
+ * trigger the intended action. Once this action is complete, the module will
+ * report the result asynchronously using the configured callback.
+ *
+ * So before using this module, make sure to register a callback using the
+ * nimble_netif_eventcb() function.
+ *
+ * After this, this module provides functions for managing BLE connections to
+ * other devices. Once these connections are established, this module takes care
+ * of mapping IP packets to the corresponding connections.
  *
  * @{
  *
  * @file
- * @brief       GNRC netif integration for NimBLE
+ * @brief       GNRC netif implementation for NimBLE
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef PKG_NIMBLE_NETIF_H
-#define PKG_NIMBLE_NETIF_H
+#ifndef NIMBLE_NETIF_H
+#define NIMBLE_NETIF_H
 
 #include <stdint.h>
 
-#include "clist.h"
 #include "net/ble.h"
 #include "net/ipv6.h"
 
@@ -91,28 +131,39 @@ enum {
     NIMBLE_NETIF_UNUSED             = 0x8000,   /**< context unused */
 };
 
+/**
+ * @brief   Event callback signature used for asynchronous event signaling
+ *
+ * @note    The event callback is always executed in NimBLEs host thread
+ *
+ * @param[in] handle        handle to the connection that triggered the event
+ * @param[in] event         type of the event
+ */
 typedef void(*nimble_netif_eventcb_t)(int handle, nimble_netif_event_t event);
 
-
-/* to be called from: system init (auto_init) */
+/**
+ * @brief   Initialize the netif implementation, spawns the netif thread
+ *
+ * This function is meant to be called once during system initialization, i.e.
+ * auto-init.
+ */
 void nimble_netif_init(void);
 
 /**
  * @brief   Register a global event callback, servicing all NimBLE connections
  *
- * @warning     This function **must** be called before and other action
+ * @note    The event callback is always executed in NimBLEs host thread
  *
- * @params[in] cb       event callback to register, may be NULL
+ * @params[in] cb           event callback to register, may be NULL
  */
-// TODO: move this into the _init() function? But what about auto_init?
-int nimble_netif_eventcb(nimble_netif_eventcb_t cb);
+void nimble_netif_eventcb(nimble_netif_eventcb_t cb);
 
 /**
- * @brief      { function_description }
+ * @brief   Open a BLE connection as BLE master
  *
- * @param[in]  addr         address
- * @param[in]  conn_params  connection parameters
- * @param[in]  timeout      connect timeout
+ * @param[in] addr          address of the advertising BLE slave
+ * @param[in] conn_params   connection (timing) parameters
+ * @param[in] timeout       connect timeout
  *
  * @return  the used connection handle on success
  * @return  NIMBLE_NETIF_BUSY if already connected to the given address or if
@@ -126,18 +177,20 @@ int nimble_netif_connect(const ble_addr_t *addr,
 /**
  * @brief   Close the connection with the given handle
  *
- * @param[in] handle        connection handle
+ * @param[in] handle        handle for the connection to be closed
  *
- * @return [description]
+ * @return  NIMBLE_NETIF_OK on success
+ * @return  NIMBLE_NETIF_NOTFOUND if the handle is invalid
+ * @return  NIMBLE_NETIF_NOTCONN if context for given handle is not connected
  */
 int nimble_netif_close(int handle);
 
 /**
  * @brief   Accept incoming connections by starting to advertise this node
  *
- * @param[in] ad
- * @param[in] ad_len
- * @param[in] adv_params
+ * @param[in] ad            advertising data (in BLE AD format)
+ * @param[in] ad_len        length of @p ad in bytes
+ * @param[in] adv_params    advertising (timing) parameters to use
  *
  * @return  NIMBLE_NETIF_OK on success
  * @return  NIMBLE_NETIF_BUSY if already advertising
@@ -147,10 +200,10 @@ int nimble_netif_accept(const uint8_t *ad, size_t ad_len,
                         const struct ble_gap_adv_params *adv_params);
 
 /**
- * @brief   Stop accepting incoming connections (and stop advertising)
+ * @brief   Stop accepting incoming connections (stop advertising)
  * *
  * @return  NIMBLE_NETIF_OK on success
- * @return  NIMBLE_NETIF_NOTADV if no advertising context is set
+ * @return  NIMBLE_NETIF_NOTADV if not currently advertising
  */
 int nimble_netif_accept_stop(void);
 
@@ -160,13 +213,16 @@ int nimble_netif_accept_stop(void);
  * @param t [description]
  * @param ble_gap_conn_params [description]
  *
- * @return [description]
+ * @return  NIMBLE_NETIF_OK on success
+ * @return  NIMBLE_NETIF_NOTCONN if handle does not point to a connection
+ * @return  NIMBLE_NETIF_DEVERR if applying the given parameters failed
  */
-int nimble_netif_update(int handle, struct ble_gap_conn_params *conn_params);
+int nimble_netif_update(int handle,
+                        const struct ble_gap_upd_params *conn_params);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* PKG_NIMBLE_NETIF_H */
+#endif /* NIMBLE_NETIF_H */
 /** @} */

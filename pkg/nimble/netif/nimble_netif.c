@@ -448,6 +448,10 @@ static int _on_gap_master_evt(struct ble_gap_event *event, void *arg)
             nimble_netif_conn_free(handle);
             _notify(handle, NIMBLE_NETIF_CLOSED_MASTER);
             break;
+        case BLE_GAP_EVENT_CONN_UPDATE:
+            _notify(handle, NIMBLE_NETIF_CONN_UPDATED);
+            break;
+        case BLE_GAP_EVENT_CONN_UPDATE_REQ:
         case BLE_GAP_EVENT_MTU:
             /* nothing to do here */
             break;
@@ -480,6 +484,12 @@ static int _on_gap_slave_evt(struct ble_gap_event *event, void *arg)
             nimble_netif_conn_free(handle);
             _notify(handle, NIMBLE_NETIF_CLOSED_SLAVE);
             break;
+        case BLE_GAP_EVENT_CONN_UPDATE:
+            _notify(handle, NIMBLE_NETIF_CONN_UPDATED);
+            break;
+        case BLE_GAP_EVENT_CONN_UPDATE_REQ:
+            /* nothing to do here */
+            break;
         default:
             break;
     }
@@ -510,10 +520,9 @@ void nimble_netif_init(void)
                       "nimble_netif", &_nimble_netdev_dummy, &_nimble_netif_ops);
 }
 
-int nimble_netif_eventcb(nimble_netif_eventcb_t cb)
+void nimble_netif_eventcb(nimble_netif_eventcb_t cb)
 {
     _eventcb = cb;
-    return NIMBLE_NETIF_OK;
 }
 
 int nimble_netif_connect(const ble_addr_t *addr,
@@ -545,12 +554,11 @@ int nimble_netif_connect(const ble_addr_t *addr,
 
 int nimble_netif_close(int handle)
 {
-    if ((handle < 0) || (handle > MYNEWT_VAL_BLE_MAX_CONNECTIONS)) {
+    nimble_netif_conn_t *conn = nimble_netif_conn_get(handle);
+    if (conn == NULL) {
         return NIMBLE_NETIF_NOTFOUND;
     }
-
-    nimble_netif_conn_t *conn = nimble_netif_conn_get(handle);
-    if (!(conn->state & NIMBLE_NETIF_L2CAP_CONNECTED)) {
+    else if (!(conn->state & NIMBLE_NETIF_L2CAP_CONNECTED)) {
         return NIMBLE_NETIF_NOTCONN;
     }
 
@@ -600,6 +608,22 @@ int nimble_netif_accept_stop(void)
     assert(res == 0);
     (void)res;
     nimble_netif_conn_free(handle);
+
+    return NIMBLE_NETIF_OK;
+}
+
+int nimble_netif_update(int handle,
+                        const struct ble_gap_upd_params *conn_params)
+{
+    nimble_netif_conn_t *conn = nimble_netif_conn_get(handle);
+    if (conn == NULL) {
+        return NIMBLE_NETIF_NOTCONN;
+    }
+
+    int res = ble_gap_update_params(conn->gaphandle, conn_params);
+    if (res != 0) {
+        return NIMBLE_NETIF_DEVERR;
+    }
 
     return NIMBLE_NETIF_OK;
 }

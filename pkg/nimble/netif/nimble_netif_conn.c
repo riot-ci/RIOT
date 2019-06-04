@@ -149,6 +149,9 @@ int nimble_netif_conn_start_adv(void)
         if (handle != NIMBLE_NETIF_CONN_INVALID) {
             _conn[handle].state = NIMBLE_NETIF_ADV;
         }
+        else {
+            handle = NIMBLE_NETIF_NOMEM;
+        }
 
     }
     mutex_unlock(&_lock);

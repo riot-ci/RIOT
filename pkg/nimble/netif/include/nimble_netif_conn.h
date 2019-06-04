@@ -7,19 +7,20 @@
  */
 
 /**
- * @defgroup    pkg_nimble_netif_conn Nimble Netif Connection Allocation
+ * @defgroup    pkg_nimble_netif_conn Connection State Management for netif
  * @ingroup     pkg_nimble_netif
- * @brief       TODO
+ * @brief       Helper module for managing the memory needed to store the
+ *              BLE connection state for the netif wrapper
  * @{
  *
  * @file
- * @brief       Connection allocation and maintenance for Nimble netif
+ * @brief       Connection allocation and maintenance for NimBLE netif
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
 
-#ifndef PKG_NIMBLE_NETIF_CONN_H
-#define PKG_NIMBLE_NETIF_CONN_H
+#ifndef NIMBLE_NETIF_CONN_H
+#define NIMBLE_NETIF_CONN_H
 
 #include <stdint.h>
 
@@ -34,28 +35,79 @@ extern "C" {
 #define NIMBLE_NETIF_CONN_NUMOF         MYNEWT_VAL_BLE_MAX_CONNECTIONS
 
 /**
- * @brief   TODO
+ * @brief   Memory layout for holding the relevant connection information
  */
 typedef struct {
-    struct ble_l2cap_chan *coc;
-    uint16_t gaphandle;
-    uint16_t state;
-    uint8_t addr[BLE_ADDR_LEN];
+    struct ble_l2cap_chan *coc;     /**< l2cap context as exposed by NimBLE */
+    uint16_t gaphandle;             /**< GAP handle exposed by NimBLE */
+    uint16_t state;                 /**< the current state of the context */
+    uint8_t addr[BLE_ADDR_LEN];     /**< BLE address of connected peer */
 } nimble_netif_conn_t;
 
+/**
+ * @brief   Iterator function signature used by nimble_netif_conn_foreach()
+ *
+ * @param[in] conn          connection context of the current entry
+ * @param[in] handle        handle of the current entry
+ * @param[in] arg           user supplied argument
+ *
+ * @return  0 to continue
+ * @return  != 0 to stop iterating
+ */
 typedef int (*nimble_netif_conn_iter_t)(nimble_netif_conn_t *conn,
                                         int handle, void *arg);
 
+/**
+ * @brief   Initialize the connection state manager
+ *
+ * This functions is typically called by nimble_netif_init().
+ */
 void nimble_netif_conn_init(void);
 
+/**
+ * @brief   Get the connection context corresponding to the given handle
+ *
+ * @param[in] handle        handle to a connection context
+ *
+ * @return  pointer to the corresponding connection context
+ * @return  NULL if handle in invalid
+ */
 nimble_netif_conn_t *nimble_netif_conn_get(int handle);
 
+/**
+ * @brief   Get the handle to the context that is currently advertising
+ *
+ * @return  handle to the currently advertising context
+ * @return  NIMBLE_NETIF_CONN_INVALID if not advertising
+ */
 int nimble_netif_conn_get_adv(void);
 
+/**
+ * @brief   Get the handle to the context that is busy connecting
+ *
+ * @return  handle to the busy context
+ * @return  NIMBLE_NETIF_CONN_INVALID if not busy connecting
+ */
 int nimble_netif_conn_get_connecting(void);
 
+/**
+ * @brief   Find the connection to the peer with the given BLE address
+ *
+ * @param[in] addr          BLE address
+ *
+ * @return  handle to the matching connection context
+ * @return  NIMBLE_NETIF_CONN_INVALID if no matching connection was found
+ */
 int nimble_netif_conn_get_by_addr(const uint8_t *addr);
 
+/**
+ * @brief   Find the connection using the given NimBLE GAP handle
+ *
+ * @param[in] gaphandle     GAP handle as exposed by NimBLE
+ *
+ * @return  handle to the matching connection context
+ * @return  NIMBLE_NETIF_CONN_INVALID if no matching connection was found
+ */
 int nimble_netif_conn_get_by_gaphandle(uint16_t gaphandle);
 
 /* @note: everything done in the @p cb should be read only... */
@@ -96,5 +148,5 @@ static inline int nimble_netif_conn_is_adv(void)
 }
 #endif
 
-#endif /* PKG_NIMBLE_NETIF_CONN_H */
+#endif /* NIMBLE_NETIF_CONN_H */
 /** @} */
