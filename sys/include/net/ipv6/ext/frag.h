@@ -81,26 +81,34 @@ static inline bool ipv6_ext_frag_more(const ipv6_ext_frag_t *frag)
 }
 
 /**
- * @brief   Sets the offset and M flag field of a fragment header
+ * @brief   Sets the offset field of a fragment header
  *
- * @param[in,out] frag          A fragment header
- * @param[in] offset            The offset of the fragment in bytes.
- *                              Is assumed to be a multiple of 8.
- *                              Is assumed to be lesser or equal to 65528.
- * @param[in] more_fragments    true, when there will be more fragment after
- *                              the given one. false, otherwise.
+ * @note    Must be called before @ref ipv6_ext_frag_set_more()
+ *
+ * @param[in,out] frag  A fragment header
+ * @param[in] offset    The offset of the fragment in bytes.
+ *                      Is assumed to be a multiple of 8.
+ *                      Is assumed to be lesser or equal to 65528.
  */
-static inline void ipv6_ext_frag_set_offset_more(ipv6_ext_frag_t *frag,
-                                                 unsigned offset,
-                                                 bool more_fragments)
+static inline void ipv6_ext_frag_set_offset(ipv6_ext_frag_t *frag,
+                                            unsigned offset)
 {
     /* The offset is left-shifted by 3 bytes in the header * (equivalent to
      * multiplication with 8), and the offset is a multiple of 8 bytes
      * so no shifting or division necessary to set offset in units of 8 bytes */
     frag->offset_flags = byteorder_htons(offset & IPV6_EXT_FRAG_OFFSET_MASK);
-    if (more_fragments) {
-        frag->offset_flags.u8[1] |= IPV6_EXT_FRAG_M;
-    }
+}
+
+/**
+ * @brief   Sets the M flag of a fragment header
+ *
+ * @note    Must be called after @ref ipv6_ext_frag_set_offset()
+ *
+ * @param[in,out] frag      A fragment header
+ */
+static inline void ipv6_ext_frag_set_more(ipv6_ext_frag_t *frag)
+{
+    frag->offset_flags.u8[1] |= IPV6_EXT_FRAG_M;
 }
 
 #ifdef __cplusplus
