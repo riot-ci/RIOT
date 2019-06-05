@@ -98,6 +98,8 @@ void rtc_init(void)
 {
     _rtc_clock_setup();
     rtc_poweron();
+    /* WORKAROUND: prevent from being stuck in CLOCK SYNCBUSY if RTC disabled */
+    RTC->MODE2.CTRLA.bit.CLOCKSYNC = 0;
     _rtc_set_enabled(0);
 
     /* RTC config with RTC_MODE2_CTRL_CLKREP = 0 (24h) */
