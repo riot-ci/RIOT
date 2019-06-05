@@ -41,7 +41,7 @@ int isrpipe_read(isrpipe_t *isrpipe, char *buffer, size_t count)
 {
     int res;
 
-    while (!(res = tsrb_get(&isrpipe->tsrb, buffer, count))) {
+    while (!(res = tsrb_get(&isrpipe->tsrb, (uint8_t *)buffer, count))) {
         mutex_lock(&isrpipe->mutex);
     }
     return res;

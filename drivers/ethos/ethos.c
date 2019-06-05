@@ -127,7 +127,7 @@ static void _end_of_frame(ethos_t *dev)
             /* fall through */
         case ETHOS_FRAME_TYPE_HELLO_REPLY:
             if (dev->framesize == 6) {
-                tsrb_get(&dev->inbuf, (char*)dev->remote_mac_addr, 6);
+                tsrb_get(&dev->inbuf, dev->remote_mac_addr, 6);
             }
             break;
     }
