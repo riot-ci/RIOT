@@ -19,10 +19,11 @@
 #include "tsrb.h"
 #include "tests-tsrb.h"
 
+#define TEST_CHAR           '\xdb'
 #define TEST_DROP_NUM       (4U)
 #define BUFFER_SIZE         (16)    /* intentionally not unsigned to easier
                                      * check for implicit casting problems */
-#define IO_BUFFER_CANARY    ((char)0xb8)
+#define IO_BUFFER_CANARY    ('\xb8')
 
 static char _tsrb_buffer[BUFFER_SIZE];
 static char _io_buffer[BUFFER_SIZE * 2];
@@ -39,7 +40,7 @@ static void test_empty(void)
 {
     TEST_ASSERT_EQUAL_INT(1, tsrb_empty(&_tsrb));
 
-    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
     TEST_ASSERT_EQUAL_INT(0, tsrb_empty(&_tsrb));
 }
 
@@ -48,7 +49,7 @@ static void test_avail(void)
     TEST_ASSERT_EQUAL_INT(0, tsrb_avail(&_tsrb));
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
         TEST_ASSERT_EQUAL_INT(i + 1, tsrb_avail(&_tsrb));
     }
 }
@@ -58,10 +59,10 @@ static void test_full(void)
     TEST_ASSERT_EQUAL_INT(0, tsrb_full(&_tsrb));
 
     for (int i = 0; i < (BUFFER_SIZE - 1); i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
         TEST_ASSERT_EQUAL_INT(0, tsrb_full(&_tsrb));
     }
-    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
     TEST_ASSERT_EQUAL_INT(1, tsrb_full(&_tsrb));
 }
 
@@ -70,22 +71,26 @@ static void test_free(void)
     TEST_ASSERT_EQUAL_INT(BUFFER_SIZE, tsrb_free(&_tsrb));
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
         TEST_ASSERT_EQUAL_INT(BUFFER_SIZE - (i + 1), tsrb_free(&_tsrb));
     }
 }
 
 static void test_get_one(void)
 {
+    int res;
+
     TEST_ASSERT_EQUAL_INT(-1, tsrb_get_one(&_tsrb));
-    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
-    TEST_ASSERT_EQUAL_INT(TEST_INT8, tsrb_get_one(&_tsrb));
+    TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
+    TEST_ASSERT_EQUAL_INT(TEST_CHAR, tsrb_get_one(&_tsrb));
     TEST_ASSERT_EQUAL_INT(-1, tsrb_get_one(&_tsrb));
     TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, '\x0'));
-    TEST_ASSERT(-1 != tsrb_get_one(&_tsrb));
+    TEST_ASSERT_EQUAL_INT('\x0', tsrb_get_one(&_tsrb));
     TEST_ASSERT_EQUAL_INT(-1, tsrb_get_one(&_tsrb));
     TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, '\xff'));
-    TEST_ASSERT(-1 != tsrb_get_one(&_tsrb));
+    res = tsrb_get_one(&_tsrb);
+    TEST_ASSERT_EQUAL_INT('\xff', res);
+    TEST_ASSERT(-1 != res);
     TEST_ASSERT_EQUAL_INT(-1, tsrb_get_one(&_tsrb));
 }
 
@@ -96,15 +101,15 @@ static void test_get(void)
                                       sizeof(_io_buffer)));
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8 + i));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR + i));
     }
     TEST_ASSERT_EQUAL_INT(BUFFER_SIZE, tsrb_get(&_tsrb, _io_buffer,
                                                 sizeof(_io_buffer)));
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT((TEST_INT8 + i) == _io_buffer[i]);
+        TEST_ASSERT_EQUAL_INT((TEST_CHAR + i), _io_buffer[i]);
     }
     for (int i = BUFFER_SIZE; i < (int)sizeof(_io_buffer); i++) {
-        TEST_ASSERT(IO_BUFFER_CANARY == _io_buffer[i]);
+        TEST_ASSERT_EQUAL_INT(IO_BUFFER_CANARY, _io_buffer[i]);
     }
 }
 
@@ -114,18 +119,19 @@ static void test_drop(void)
     TEST_ASSERT_EQUAL_INT(0, tsrb_drop(&_tsrb, sizeof(_io_buffer)));
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8 + i));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR + i));
     }
     TEST_ASSERT_EQUAL_INT(TEST_DROP_NUM, tsrb_drop(&_tsrb, TEST_DROP_NUM));
     TEST_ASSERT_EQUAL_INT(BUFFER_SIZE - TEST_DROP_NUM, tsrb_avail(&_tsrb));
     TEST_ASSERT_EQUAL_INT(BUFFER_SIZE - TEST_DROP_NUM,
                           tsrb_get(&_tsrb, _io_buffer, sizeof(_io_buffer)));
     for (int i = 0; i < (int)(BUFFER_SIZE - TEST_DROP_NUM); i++) {
-        TEST_ASSERT((char)(TEST_INT8 + TEST_DROP_NUM + i) == _io_buffer[i]);
+        TEST_ASSERT_EQUAL_INT((TEST_CHAR + (char)TEST_DROP_NUM + (char)i),
+                              _io_buffer[i]);
     }
     for (int i = BUFFER_SIZE - TEST_DROP_NUM;
          i < (int)sizeof(_io_buffer); i++) {
-        TEST_ASSERT(IO_BUFFER_CANARY == _io_buffer[i]);
+        TEST_ASSERT_EQUAL_INT(IO_BUFFER_CANARY, _io_buffer[i]);
     }
 }
 
@@ -135,22 +141,22 @@ static void test_add_one(void)
                          * tsrb_add_one */
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_INT8));
+        TEST_ASSERT_EQUAL_INT(0, tsrb_add_one(&_tsrb, TEST_CHAR));
     }
-    TEST_ASSERT_EQUAL_INT(-1, tsrb_add_one(&_tsrb, TEST_INT8));
+    TEST_ASSERT_EQUAL_INT(-1, tsrb_add_one(&_tsrb, TEST_CHAR));
 }
 
 static void test_add(void)
 {
     for (int i = 0; i < (int)sizeof(_io_buffer); i++) {
-        _io_buffer[i] = TEST_INT8 + i;
+        _io_buffer[i] = TEST_CHAR + i;
     }
     TEST_ASSERT_EQUAL_INT(0, tsrb_add(&_tsrb, _io_buffer, 0));
     TEST_ASSERT_EQUAL_INT(BUFFER_SIZE, tsrb_add(&_tsrb, _io_buffer,
                                                 sizeof(_io_buffer)));
     TEST_ASSERT_EQUAL_INT(1, tsrb_full(&_tsrb));
     for (int i = 0; i < BUFFER_SIZE; i++) {
-        TEST_ASSERT((TEST_INT8 + i) == tsrb_get_one(&_tsrb));
+        TEST_ASSERT_EQUAL_INT((TEST_CHAR + i), tsrb_get_one(&_tsrb));
     }
 }
 
