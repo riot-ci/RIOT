@@ -33,13 +33,23 @@ psk_params_t exp_psk_params = {
     },
 };
 
-static void set_up(void)
+static int _compare_credentials(const credman_credential_t *a,
+                               const credman_credential_t *b)
 {
-    /* empty/reinit system buffer after every test */
-    credman_init();
+    if ((a->tag == b->tag) && (a->type == b->type) &&
+        (a->params.psk == b->params.psk)) {
+        return 0;
+    }
+    return -1;
 }
 
-static void test_credman_add_credential(void)
+static void set_up(void)
+{
+    /* reset system pool before every test */
+    credman_reset();
+}
+
+static void test_credman_add(void)
 {
     int ret;
     unsigned exp_count = 0;
@@ -53,11 +63,11 @@ static void test_credman_add_credential(void)
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* add one credential */
-    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add_credential(&credential));
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&credential));
     TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
 
     /* add duplicate credential */
-    ret = credman_add_credential(&credential);
+    ret = credman_add(&credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_EXIST, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
@@ -72,13 +82,13 @@ static void test_credman_add_credential(void)
     while (credman_get_used_count() < CREDMAN_MAX_CREDENTIALS) {
         /* increase tag number so that it is not recognized as duplicate */
         credential.tag++;
-        TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add_credential(&credential));
+        TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&credential));
         TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
     }
 
     /* add to full system credential buffer */
     credential.tag++;
-    ret = credman_add_credential(&credential);
+    ret = credman_add(&credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NO_SPACE, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 }
@@ -87,64 +97,94 @@ static void test_credman_get_credential(void)
 {
     int ret;
     credman_credential_t out_credential;
-    credman_credential_t exp_credential = {
+    credman_credential_t in_credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_ECDSA,
         .params = { .ecdsa = &exp_ecdsa_params }
     };
 
     /* get non-existing credential */
-    ret = credman_get_credential(&out_credential, exp_credential.tag,
-                                 exp_credential.type);
+    ret = credman_get(&out_credential, in_credential.tag,
+                                 in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
 
-    ret = credman_add_credential(&exp_credential);
+    ret = credman_add(&in_credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
 
-    ret = credman_get_credential(&out_credential, exp_credential.tag,
-                                 exp_credential.type);
+    ret = credman_get(&out_credential, in_credential.tag,
+                                 in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
-    TEST_ASSERT_EQUAL_INT(0, memcmp(&out_credential, &exp_credential,
-                                 sizeof(exp_credential)));
+    TEST_ASSERT(!_compare_credentials(&in_credential, &out_credential));
 }
 
-static void test_credman_delete_credential(void)
+static void test_credman_delete(void)
 {
     int ret;
     unsigned exp_count = 0;
-    credman_credential_t exp_credential = {
+    credman_credential_t out_credential;
+    credman_credential_t in_credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_ECDSA,
         .params = { .ecdsa = &exp_ecdsa_params }
     };
 
     /* delete non-existing credential */
-    ret = credman_delete_credential(exp_credential.tag, exp_credential.type);
+    ret = credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* add a credential */
-    ret = credman_add_credential(&exp_credential);
+    ret = credman_add(&in_credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
     TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
 
     /* delete a credential from system buffer */
-    ret = credman_delete_credential(exp_credential.tag, exp_credential.type);
+    ret = credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
     TEST_ASSERT_EQUAL_INT(--exp_count, credman_get_used_count());
 
+    /* get the deleted credential */
+    ret = credman_get(&out_credential, in_credential.tag, in_credential.type);
+    TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
+
     /* delete a deleted credential */
-    ret = credman_delete_credential(exp_credential.tag, exp_credential.type);
+    ret = credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
+}
+
+static void test_credman_delete_random_order(void)
+{
+    credman_tag_t tag1 = CREDMAN_TEST_TAG;
+    credman_tag_t tag2 = CREDMAN_TEST_TAG + 1;
+
+    credman_credential_t out_credential;
+    credman_credential_t in_credential = {
+        .tag = tag1,
+        .type = CREDMAN_TYPE_ECDSA,
+        .params = { .ecdsa = &exp_ecdsa_params }
+    };
+
+    // fill the system pool, assume CREDMAN_MAX_CREDENTIALS is 2
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    in_credential.tag = tag2;
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+
+    // delete the first credential
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag1, in_credential.type));
+
+    // get the second credential
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_get(&out_credential, tag2, in_credential.type));
+    TEST_ASSERT(!_compare_credentials(&in_credential, &out_credential));
 }
 
 Test *tests_credman_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_credman_add_credential),
-        new_TestFixture(test_credman_get_credential),
-        new_TestFixture(test_credman_delete_credential),
+        new_TestFixture(test_credman_add),
+        new_TestFixture(test_credman_get),
+        new_TestFixture(test_credman_delete),
+        new_TestFixture(test_credman_delete_random_order),
     };
 
     EMB_UNIT_TESTCALLER(credman_tests,
