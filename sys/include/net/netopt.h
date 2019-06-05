@@ -68,6 +68,7 @@ typedef enum {
      * Ethernet      | 6      | device MAC address
      * nrfmin        | 2      | device short address
      * CC110x        | 1      | device address
+     * LoRaWAN       | 4      | device address
      */
     NETOPT_ADDRESS,
 
@@ -79,6 +80,7 @@ typedef enum {
      * IEEE 802.15.4 | 8        | device long address (EUI-64), @ref eui64_t
      * nrfmin        | 8        | device long address (based on short address)
      * BLE           | 8        | device long address (EUI-64), @ref eui64_t
+     * LoRaWAN       | 8        | Device EUI
      */
     NETOPT_ADDRESS_LONG,
     /**
@@ -92,7 +94,8 @@ typedef enum {
     /**
      * @brief   (uint16_t) network ID
      *
-     * Examples for this include the PAN ID in IEEE 802.15.4
+     * Examples for this include the PAN ID in IEEE 802.15.4 and netid in
+     * LoRaWAN (uint32_t in this case)
      */
     NETOPT_NID,
 
@@ -580,11 +583,6 @@ typedef enum {
     NETOPT_LORAWAN_DEVEUI,
 
     /**
-     * @brief   (uint8_t*) LoRaWAN device address (4 bytes length)
-     */
-    NETOPT_LORAWAN_DEVADDR,
-
-    /**
      * @brief   (uint8_t*) LoRaWAN application EUI (8 bytes length)
      */
     NETOPT_LORAWAN_APPEUI,
@@ -629,11 +627,6 @@ typedef enum {
      * @brief   (@ref netopt_enable_t) LoRaWAN public network
      */
     NETOPT_PUBLIC_NETWORK,
-
-    /**
-     * @brief   (uint32_t) LoRaWAN network id
-     */
-    NETOPT_LORAWAN_NETID,
 
     /**
      * @brief   (uint8_t) LoRaWAN TX application port
