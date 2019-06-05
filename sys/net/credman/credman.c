@@ -81,7 +81,7 @@ int credman_add(const credman_credential_t *credential)
         goto end;
     }
 
-    credentials[pos] = *credential;
+    memcpy(&credentials[pos], credential, sizeof(*credential));
     used++;
     ret = CREDMAN_OK;
 end:
