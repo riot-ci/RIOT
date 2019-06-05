@@ -129,6 +129,7 @@ enum {
     NIMBLE_NETIF_ADV                = 0x0100,   /**< currently advertising */
     NIMBLE_NETIF_CONNECTING         = 0x4000,   /**< connection in progress */
     NIMBLE_NETIF_UNUSED             = 0x8000,   /**< context unused */
+    NIMBLE_NETIF_ANY                = 0xffff,   /**< match any state */
 };
 
 /**
@@ -154,7 +155,7 @@ void nimble_netif_init(void);
  *
  * @note    The event callback is always executed in NimBLEs host thread
  *
- * @params[in] cb           event callback to register, may be NULL
+ * @param[in] cb            event callback to register, may be NULL
  */
 void nimble_netif_eventcb(nimble_netif_eventcb_t cb);
 
@@ -210,8 +211,8 @@ int nimble_netif_accept_stop(void);
 /**
  * @brief   Update the connection parameters for the given connection
  *
- * @param t [description]
- * @param ble_gap_conn_params [description]
+ * @param[in] handle        connection handle
+ * @param[in] conn_params   new connection parameters to apply
  *
  * @return  NIMBLE_NETIF_OK on success
  * @return  NIMBLE_NETIF_NOTCONN if handle does not point to a connection

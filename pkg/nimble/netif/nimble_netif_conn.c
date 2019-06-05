@@ -28,12 +28,14 @@
 #define ENABLE_DEBUG            (0)
 #include "debug.h"
 
+#define CONN_CNT                MYNEWT_VAL_BLE_MAX_CONNECTIONS
+
 static mutex_t _lock = MUTEX_INIT;
-static nimble_netif_conn_t _conn[NIMBLE_NETIF_CONN_NUMOF];
+static nimble_netif_conn_t _conn[CONN_CNT];
 
 static int _find_by_state(uint16_t filter)
 {
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         if (_conn[i].state & filter) {
             return (int)i;
         }
@@ -45,14 +47,14 @@ void nimble_netif_conn_init(void)
 {
     DEBUG("conn_init\n");
     memset(_conn, 0, sizeof(_conn));
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         _conn[i].state = NIMBLE_NETIF_UNUSED;
     }
 }
 
 nimble_netif_conn_t *nimble_netif_conn_get(int handle)
 {
-    if ((handle < 0) || (handle >= NIMBLE_NETIF_CONN_NUMOF)) {
+    if ((handle < 0) || (handle >= CONN_CNT)) {
         return NULL;
     }
     return &_conn[handle];
@@ -86,7 +88,7 @@ int nimble_netif_conn_get_by_addr(const uint8_t *addr)
 
     DEBUG("nimble_netif_conn_get_by_addr %02x\n", (int)addr[5]);
     mutex_lock(&_lock);
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         if ((_conn[i].state & NIMBLE_NETIF_L2CAP_CONNECTED) &&
             memcmp(_conn[i].addr, addr, BLE_ADDR_LEN) == 0) {
             handle = (int)i;
@@ -105,7 +107,7 @@ int nimble_netif_conn_get_by_gaphandle(uint16_t gaphandle)
 
     DEBUG("nimble_netif_conn_get_by_gaphandle %i\n", (int)gaphandle);
     mutex_lock(&_lock);
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         if (_conn[i].gaphandle == gaphandle) {
             handle = (int)i;
             break;
@@ -161,7 +163,7 @@ int nimble_netif_conn_start_adv(void)
 
 void nimble_netif_conn_free(int handle)
 {
-    assert((handle >= 0) && (handle < NIMBLE_NETIF_CONN_NUMOF));
+    assert((handle >= 0) && (handle < CONN_CNT));
 
     DEBUG("nimble_netif_conn_free, handle %i\n", handle);
     mutex_lock(&_lock);
@@ -177,7 +179,7 @@ void nimble_netif_conn_foreach(uint16_t filter,
 
     DEBUG("nimble_netif_conn_foreach 0x%04x\n", (int)filter);
     mutex_lock(&_lock);
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         if (_conn[i].state & filter) {
             int res = cb(&_conn[i], (int)i, arg);
             if (res != 0) {
@@ -194,7 +196,7 @@ unsigned nimble_netif_conn_count(uint16_t filter)
 
     DEBUG("nimble_netif_conn_count, filter 0x%04x\n", (int)filter);
     mutex_lock(&_lock);
-    for (unsigned i = 0; i < NIMBLE_NETIF_CONN_NUMOF; i++) {
+    for (unsigned i = 0; i < CONN_CNT; i++) {
         if (_conn[i].state & filter) {
             ++cnt;
         }

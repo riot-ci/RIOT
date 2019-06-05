@@ -30,9 +30,10 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Value for marking a handle invalid
+ */
 #define NIMBLE_NETIF_CONN_INVALID       (-1)
-
-#define NIMBLE_NETIF_CONN_NUMOF         MYNEWT_VAL_BLE_MAX_CONNECTIONS
 
 /**
  * @brief   Memory layout for holding the relevant connection information
@@ -110,35 +111,103 @@ int nimble_netif_conn_get_by_addr(const uint8_t *addr);
  */
 int nimble_netif_conn_get_by_gaphandle(uint16_t gaphandle);
 
-/* @note: everything done in the @p cb should be read only... */
+
+/**
+ * @brief   Iterate all connection contexts that match the filter condition
+ *
+ * @warning Do not call any other nimble_netif_conn function from within the
+ *          callback, this will lead to a deadlock!
+ *
+ * @param[in] filter        filter mask
+ * @param[in] cb            callback called on each filtered entry
+ * @param[in] arg           user argument
+ */
 void nimble_netif_conn_foreach(uint16_t filter,
                                nimble_netif_conn_iter_t cb, void *arg);
 
+/**
+ * @brief   Count the number of connections contexts for which the given filter
+ *          applies
+ *
+ * @param[in] filter        filter mask
+ *
+ * @return  number of contexts for which the filter applied
+ */
+
 unsigned nimble_netif_conn_count(uint16_t filter);
 
-
-int nimble_netif_conn_start_adv(void);
-
+/**
+ * @brief   Allocate an unused context for starting a connection
+ *
+ * @param[in] addr          the BLE address of the peer node
+ *
+ * @return
+ */
 int nimble_netif_conn_start_connection(const uint8_t *addr);
 
+/**
+ * @brief   Reserve a unused context for the purpose of accepting a new
+ *          connection
+ *
+ * @return  handle of the reserved context
+ * @return  NIMBLE_NETIF_CONN_INVALID if no unused context was available
+ */
+int nimble_netif_conn_start_adv(void);
+
+/**
+ * @brief   Free the connection context with the given handle
+ */
 void nimble_netif_conn_free(int handle);
 
+/**
+ * @brief   Find the connection context with a given GAP handle and return a
+ *          pointer to it
+ *
+ * @param[in] gh [description]
+ *
+ * @return  Pointer to the selected context
+ * @return  NULL if no fitting context was found
+ */
 static inline
 nimble_netif_conn_t *nimble_netif_conn_from_gaphandle(uint16_t gh)
 {
     return nimble_netif_conn_get(nimble_netif_conn_get_by_gaphandle(gh));
 }
 
+/**
+ * @brief   Convenience function to check if any context is currently in the
+ *          connecting state (NIMBLE_NETIF_CONNECTING)
+ *
+ * @return  != 0 if true
+ * @return  0 if false
+ */
 static inline int nimble_netif_conn_connecting(void)
 {
     return (nimble_netif_conn_get_connecting() != NIMBLE_NETIF_CONN_INVALID);
 }
 
+/**
+ * @brief   Convenience function to check if we are currently connected to a
+ *          peer with the given address
+ *
+ * @param[in] addr          BLE address
+ *
+ * @return  != 0 if true
+ * @return  0 if false
+ */
 static inline int nimble_netif_conn_connected(const uint8_t *addr)
 {
     return (nimble_netif_conn_get_by_addr(addr) != NIMBLE_NETIF_CONN_INVALID);
 }
 
+
+/**
+ * @brief   Convenience function to check if any context is currently in the
+ *          advertising state (NIMBLE_NETIF_ADV)
+ *
+ * @return  != 0 if true
+ * @return  0 if false
+ */
 static inline int nimble_netif_conn_is_adv(void)
 {
     return (nimble_netif_conn_get_adv() != NIMBLE_NETIF_CONN_INVALID);
