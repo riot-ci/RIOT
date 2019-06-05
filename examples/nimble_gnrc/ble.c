@@ -218,6 +218,25 @@ static void _cmd_close(int handle)
     }
 }
 
+static void _cmd_update(int handle, int itvl, int timeout)
+{
+    struct ble_gap_upd_params params;
+    params.itvl_min = (uint16_t)((itvl * 1000) / BLE_HCI_CONN_ITVL);
+    params.itvl_max = (uint16_t)((itvl * 1000) / BLE_HCI_CONN_ITVL);
+    params.latency = 0;
+    params.supervision_timeout = (uint16_t)(timeout / 10);
+    params.min_ce_len = BLE_GAP_INITIAL_CONN_MIN_CE_LEN;
+    params.max_ce_len = BLE_GAP_INITIAL_CONN_MAX_CE_LEN;
+
+    int res = nimble_netif_update(handle, &params);
+    if (res != NIMBLE_NETIF_OK) {
+        puts("err: unable to update connection parameters for given handle");
+    }
+    else {
+        puts("success: connection parameters updated");
+    }
+}
+
 static int _ishelp(char *argv)
 {
     return memcmp(argv, "help", 4) == 0;
@@ -239,10 +258,10 @@ int app_ble_cmd(int argc, char **argv)
         printf("usage: %s [help|info|adv|scan|connect|close]\n", argv[0]);
         return 0;
     }
-    if ((memcmp(argv[1], "info", 4) == 0)) {
+    if (memcmp(argv[1], "info", 4) == 0) {
         _cmd_info();
     }
-    else if ((memcmp(argv[1], "adv", 3) == 0)) {
+    else if (memcmp(argv[1], "adv", 3) == 0) {
         char *name = NULL;
         if (argc > 2) {
             if (_ishelp(argv[2])) {
@@ -257,7 +276,7 @@ int app_ble_cmd(int argc, char **argv)
         }
         _cmd_adv(name);
     }
-    else if ((memcmp(argv[1], "scan", 4) == 0)) {
+    else if (memcmp(argv[1], "scan", 4) == 0) {
         uint32_t duration = APP_SCAN_DUR_DEFAULT;
         if (argc > 2) {
             if (_ishelp(argv[2])) {
@@ -272,7 +291,7 @@ int app_ble_cmd(int argc, char **argv)
         }
         _cmd_scan(duration * 1000);
     }
-    else if ((memcmp(argv[1], "connect", 7) == 0)) {
+    else if (memcmp(argv[1], "connect", 7) == 0) {
         if ((argc < 3) || _ishelp(argv[2])) {
             printf("usage: %s connect [help|list|<scanlist entry #>]\n", argv[0]);
         }
@@ -283,7 +302,7 @@ int app_ble_cmd(int argc, char **argv)
         unsigned pos = (unsigned)atoi(argv[2]);
         _cmd_connect(pos);
     }
-    else if ((memcmp(argv[1], "close", 5) == 0)) {
+    else if (memcmp(argv[1], "close", 5) == 0) {
         if ((argc < 3) || _ishelp(argv[2])) {
             printf("usage: %s close [help|list|<conn #>]\n", argv[0]);
             return 0;
@@ -294,6 +313,17 @@ int app_ble_cmd(int argc, char **argv)
         }
         int handle = atoi(argv[2]);
         _cmd_close(handle);
+    }
+    else if ((memcmp(argv[1], "update", 6) == 0)) {
+        if ((argc < 5) || _ishelp(argv[2])) {
+            printf("usage: %s update [help|<handle> <itvl> <timeout>]\n",
+                   argv[0]);
+            return 0;
+        }
+        int handle = atoi(argv[2]);
+        int itvl = atoi(argv[3]);
+        int timeout = atoi(argv[4]);
+        _cmd_update(handle, itvl, timeout);
     }
     else {
         printf("unable to parse the command. Use '%s help' for more help\n",
