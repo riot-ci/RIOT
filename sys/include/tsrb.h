@@ -57,7 +57,7 @@ typedef struct tsrb {
  * @param[in]    buffer    Buffer to use by tsrb.
  * @param[in]    bufsize   `sizeof (buffer)`, must be power of 2.
  */
-static inline void tsrb_init(tsrb_t *rb, void *buffer, unsigned bufsize)
+static inline void tsrb_init(tsrb_t *rb, uint8_t *buffer, unsigned bufsize)
 {
     /* make sure bufsize is a power of two.
      * http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two-in-c/
