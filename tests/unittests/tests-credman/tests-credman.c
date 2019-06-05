@@ -178,6 +178,29 @@ static void test_credman_delete_random_order(void)
     TEST_ASSERT(!_compare_credentials(&in_credential, &out_credential));
 }
 
+static void test_credman_add_delete_all(void)
+{
+    credman_tag_t tag1 = CREDMAN_TEST_TAG;
+    credman_tag_t tag2 = CREDMAN_TEST_TAG + 1;
+
+    credman_credential_t in_credential = {
+        .tag = tag1,
+        .type = CREDMAN_TYPE_ECDSA,
+        .params = { .ecdsa = &exp_ecdsa_params }
+    };
+
+    // add credentials
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    in_credential.tag = tag2;
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
+
+    // delete starting from first added credential
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag1, in_credential.type));
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag2, in_credential.type));
+    TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
+}
+
 Test *tests_credman_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -185,6 +208,7 @@ Test *tests_credman_tests(void)
         new_TestFixture(test_credman_get),
         new_TestFixture(test_credman_delete),
         new_TestFixture(test_credman_delete_random_order),
+        new_TestFixture(test_credman_add_delete_all),
     };
 
     EMB_UNIT_TESTCALLER(credman_tests,
