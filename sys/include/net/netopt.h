@@ -645,6 +645,16 @@ typedef enum {
      */
     NETOPT_LORAWAN_RX2_FREQ,
 
+    /**
+     * @brief   (uint32_t) LoRaWAN maximum system overall timing error (ms)
+     */
+    NETOPT_LORAWAN_MAX_RX_ERROR,
+
+    /**
+     * @brief   (uint8_t) LoRaWAN maximum system overall timing error (symbols)
+     */
+    NETOPT_LORAWAN_MIN_RX_SYMBOL,
+
     /* add more options if needed */
 
     /**
