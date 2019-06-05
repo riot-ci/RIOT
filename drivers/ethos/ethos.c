@@ -60,7 +60,7 @@ void ethos_setup(ethos_t *dev, const ethos_params_t *params)
     dev->last_framesize = 0;
     dev->accept_new = true;
 
-    tsrb_init(&dev->inbuf, (char*)params->buf, params->bufsize);
+    tsrb_init(&dev->inbuf, params->buf, params->bufsize);
     mutex_init(&dev->out_mutex);
 
     uint32_t a = random_uint32();
