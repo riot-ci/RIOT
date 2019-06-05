@@ -58,6 +58,10 @@ extern "C" {
 #define FLASHPAGE_SIZE             (NVMCTRL_ROW_SIZE)
 #elif defined(NVMCTRL_BLOCK_SIZE)
 #define FLASHPAGE_SIZE             (NVMCTRL_BLOCK_SIZE)
+#elif defined(NVMCTRL_PAGE_SIZE)
+/* saml1x: The NVM is organized into rows, where each row contains four pages,
+as shown in the NVM Row Organization figure. */
+#define FLASHPAGE_SIZE             (4 * NVMCTRL_PAGE_SIZE)
 #else
 #error "Unsupported Device"
 #endif
