@@ -17,11 +17,14 @@
  */
 
 #include "net/credman.h"
+#include "mutex.h"
 
 #include <string.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+static mutex_t _mutex = MUTEX_INIT;
 
 static credman_credential_t credentials[CREDMAN_MAX_CREDENTIALS];
 static unsigned used = 0;
@@ -32,78 +35,100 @@ static int _find_next_free_pos(void);
 int credman_add(const credman_credential_t *credential)
 {
     assert(credential);
+    mutex_lock(&_mutex);
     int pos = -1;
+    int ret = CREDMAN_ERROR;
 
     if ((credential->type == CREDMAN_TYPE_EMPTY) ||
         (credential->tag == CREDMAN_TAG_EMPTY)) {
         DEBUG("credman: invalid credential type/tag\n");
-        return CREDMAN_INVALID;
+        ret = CREDMAN_INVALID;
+        goto end;
     }
     switch (credential->type) {
     case CREDMAN_TYPE_PSK:
-        if (credential->params.psk == NULL) {
-            DEBUG("credman: no PSK credential found\n");
-            return CREDMAN_INVALID;
+        if ((credential->params.psk == NULL) ||
+            (credential->params.psk->key.s == NULL) ||
+            (credential->params.psk->key.len == 0)) {
+            DEBUG("credman: invalid PSK parameters\n");
+            ret = CREDMAN_INVALID;
+            goto end;
         }
         break;
     case CREDMAN_TYPE_ECDSA:
-        if (credential->params.ecdsa == NULL) {
-            DEBUG("credman: no ECDSA credential found\n");
-            return CREDMAN_ERROR;
-        }
-        if ((credential->params.ecdsa->private_key == NULL) ||
+        if ((credential->params.ecdsa == NULL) ||
+            (credential->params.ecdsa->private_key == NULL) ||
             (credential->params.ecdsa->public_key.x == NULL) ||
             (credential->params.ecdsa->public_key.y == NULL)) {
             DEBUG("credman: invalid ECDSA parameters\n");
-            return CREDMAN_INVALID;
+            ret = CREDMAN_INVALID;
+            goto end;
         }
         break;
     default:
-        return CREDMAN_TYPE_UNKNOWN;
+        ret = CREDMAN_TYPE_UNKNOWN;
+        goto end;
     }
     pos = _find_credential_pos(credential->tag, credential->type);
     if (pos >= 0) {
         DEBUG("credman: credential with tag %d and type %d already exist\n",
               credential->tag, credential->type);
-        return CREDMAN_EXIST;
+        ret = CREDMAN_EXIST;
+        goto end;
     }
     pos = _find_next_free_pos();
     if (pos < 0) {
         DEBUG("credman: no space for new credential\n");
-        return CREDMAN_NO_SPACE;
+        ret = CREDMAN_NO_SPACE;
+        goto end;
     }
 
     credentials[pos] = *credential;
     used++;
-    return CREDMAN_OK;
+    ret = CREDMAN_OK;
+end:
+    mutex_unlock(&_mutex);
+    return ret;
 }
 
 int credman_get(credman_credential_t *credential,credman_tag_t tag,
                 credman_type_t type)
 {
     assert(credential);
+    mutex_lock(&_mutex);
+    int ret = CREDMAN_ERROR;
 
     int pos = _find_credential_pos(tag, type);
     if (pos < 0) {
         DEBUG("credman: credential with tag %d and type %d not found\n",
                tag, type);
-        return CREDMAN_NOT_FOUND;
+        ret = CREDMAN_NOT_FOUND;
+        goto end;
     }
     memcpy(credential, &credentials[pos], sizeof(credman_credential_t));
-    return CREDMAN_OK;
+    ret = CREDMAN_OK;
+end:
+    mutex_unlock(&_mutex);
+    return ret;
 }
 
 int credman_delete(credman_tag_t tag, credman_type_t type)
 {
+    mutex_lock(&_mutex);
+    int ret = CREDMAN_ERROR;
     int pos = _find_credential_pos(tag, type);
     if (pos < 0) {
         DEBUG("credman: credential with tag %d and type %d not found\n",
                tag, type);
-        return CREDMAN_NOT_FOUND;
+        ret = CREDMAN_NOT_FOUND;
+        goto end;
     }
     memset(&credentials[pos], 0, sizeof(credman_credential_t));
     used--;
-    return CREDMAN_OK;
+    ret = CREDMAN_OK;
+end:
+    mutex_unlock(&_mutex);
+    return ret;
 }
 
 int credman_get_used_count(void)
