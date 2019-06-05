@@ -73,8 +73,8 @@ static void test_credman_add(void)
 
     /* add invalid credential params */
     credential.params.psk = NULL;
-    ret = credman_add_credential(&credential);
-    TEST_ASSERT_EQUAL_INT(CREDMAN_ERROR, ret);
+    ret = credman_add(&credential);
+    TEST_ASSERT_EQUAL_INT(CREDMAN_INVALID, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* fill the system credential buffer */
@@ -93,7 +93,7 @@ static void test_credman_add(void)
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 }
 
-static void test_credman_get_credential(void)
+static void test_credman_get(void)
 {
     int ret;
     credman_credential_t out_credential;
