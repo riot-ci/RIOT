@@ -28,6 +28,7 @@
 #define NET_CREDMAN_H
 
 #include <unistd.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,7 +79,7 @@ typedef struct {
 /**
  * @brief Tag of the credential. Must be bigger than 0.
  */
-typedef unsigned credman_tag_t;
+typedef uint16_t credman_tag_t;
 
 /**
  * @brief Used to identify credentials for application libraries.
@@ -115,17 +116,14 @@ typedef struct {
  * @brief Return values
  */
 enum {
-    CREDMAN_OK          = 0,
-    CREDMAN_EXIST       = -1,
-    CREDMAN_NO_SPACE    = -2,
-    CREDMAN_NOT_FOUND   = -3,
-    CREDMAN_ERROR       = -4,
+    CREDMAN_OK              = 0,    /**< No error */
+    CREDMAN_EXIST           = -1,   /**< Credential already exist in system pool */
+    CREDMAN_NO_SPACE        = -2,   /**< No space in system pool for new credential */
+    CREDMAN_NOT_FOUND       = -3,   /**< Credential not found in the system pool */
+    CREDMAN_INVALID         = -4,   /**< Invalid input parameter(s) */
+    CREDMAN_TYPE_UNKNOWN    = -5,   /**< Unknown credential type */
+    CREDMAN_ERROR           = -6,   /**< Other errors */
 };
-
-/**
- * @brief Initialize system credentials pool. Called from autoinit.
- */
-void credman_init(void);
 
 /**
  * @brief Add a credential to system
@@ -137,7 +135,7 @@ void credman_init(void);
  * @return CREDMAN_NO_SPACE if system buffer full
  * @return CREDMAN_ERROR on other errors
  */
-int credman_add_credential(const credman_credential_t *credential);
+int credman_add(const credman_credential_t *credential);
 
 /**
  * @brief Get a credential from system
@@ -149,8 +147,8 @@ int credman_add_credential(const credman_credential_t *credential);
  * @return CREDMAN_OK on success
  * @return CREDMAN_NOT_FOUND if no credential with @p tag and @p type found
  */
-int credman_get_credential(credman_credential_t *credential,
-                           credman_tag_t tag, credman_type_t type);
+int credman_get(credman_credential_t *credential, credman_tag_t tag,
+                credman_type_t type);
 
 /**
  * @brief Delete a credential from the system
@@ -161,7 +159,7 @@ int credman_get_credential(credman_credential_t *credential,
  * @return CREDMAN_OK on success
  * @return CREDMAN_NOT_FOUND if no credential with @p tag and @p type found
  */
-int credman_delete_credential(credman_tag_t tag, credman_type_t type);
+int credman_delete(credman_tag_t tag, credman_type_t type);
 
 /**
  * @brief Get number of credentials added to system
@@ -171,6 +169,13 @@ int credman_delete_credential(credman_tag_t tag, credman_type_t type);
  * @return number of credentials added to system
  */
 int credman_get_used_count(void);
+
+#ifdef TEST_SUITES
+/**
+ * @brief Resets system credentials pool to empty.
+ */
+void credman_reset(void);
+#endif /*TEST_SUITES */
 
 #ifdef __cplusplus
 }

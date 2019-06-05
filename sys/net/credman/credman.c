@@ -29,7 +29,7 @@ static unsigned used = 0;
 static int _find_credential_pos(credman_tag_t tag, credman_type_t type);
 static int _find_next_free_pos(void);
 
-int credman_add_credential(const credman_credential_t *credential)
+int credman_add(const credman_credential_t *credential)
 {
     assert(credential);
     int pos = -1;
@@ -37,13 +37,13 @@ int credman_add_credential(const credman_credential_t *credential)
     if ((credential->type == CREDMAN_TYPE_EMPTY) ||
         (credential->tag == CREDMAN_TAG_EMPTY)) {
         DEBUG("credman: invalid credential type/tag\n");
-        return CREDMAN_ERROR;
+        return CREDMAN_INVALID;
     }
     switch (credential->type) {
     case CREDMAN_TYPE_PSK:
         if (credential->params.psk == NULL) {
             DEBUG("credman: no PSK credential found\n");
-            return CREDMAN_ERROR;
+            return CREDMAN_INVALID;
         }
         break;
     case CREDMAN_TYPE_ECDSA:
@@ -55,11 +55,11 @@ int credman_add_credential(const credman_credential_t *credential)
             (credential->params.ecdsa->public_key.x == NULL) ||
             (credential->params.ecdsa->public_key.y == NULL)) {
             DEBUG("credman: invalid ECDSA parameters\n");
-            return CREDMAN_ERROR;
+            return CREDMAN_INVALID;
         }
         break;
     default:
-        return CREDMAN_ERROR;
+        return CREDMAN_TYPE_UNKNOWN;
     }
     pos = _find_credential_pos(credential->tag, credential->type);
     if (pos >= 0) {
@@ -73,19 +73,13 @@ int credman_add_credential(const credman_credential_t *credential)
         return CREDMAN_NO_SPACE;
     }
 
-    credman_credential_t *c = &credentials[pos];
-    c->tag = credential->tag;
-    c->type = credential->type;
-    /* unions only point to one address at a time,
-     * so it doesn't matter which entry in the union
-     * we copied here, as all of them are the same */
-    c->params.psk = credential->params.psk;
+    credentials[pos] = *credential;
     used++;
     return CREDMAN_OK;
 }
 
-int credman_get_credential(credman_credential_t *credential,
-                           credman_tag_t tag, credman_type_t type)
+int credman_get(credman_credential_t *credential,credman_tag_t tag,
+                credman_type_t type)
 {
     assert(credential);
 
@@ -99,7 +93,7 @@ int credman_get_credential(credman_credential_t *credential,
     return CREDMAN_OK;
 }
 
-int credman_delete_credential(credman_tag_t tag, credman_type_t type)
+int credman_delete(credman_tag_t tag, credman_type_t type)
 {
     int pos = _find_credential_pos(tag, type);
     if (pos < 0) {
@@ -117,15 +111,9 @@ int credman_get_used_count(void)
     return used;
 }
 
-void credman_init(void)
-{
-    memset(credentials, 0, sizeof(credman_credential_t) * CREDMAN_MAX_CREDENTIALS);
-    used = 0;
-}
-
 static int _find_credential_pos(credman_tag_t tag, credman_type_t type)
 {
-    for (unsigned i = 0; i < used; i++) {
+    for (unsigned i = 0; i < CREDMAN_MAX_CREDENTIALS; i++) {
         credman_credential_t *c = &credentials[i];
         if ((c->tag == tag) && (c->type == type)) {
             return i;
@@ -145,3 +133,12 @@ static int _find_next_free_pos(void)
     }
     return (used == 0) ? 0 : -1;
 }
+
+#ifdef TEST_SUITES
+void credman_reset(void)
+{
+    memset(credentials, 0,
+           sizeof(credman_credential_t) * CREDMAN_MAX_CREDENTIALS);
+    used = 0;
+}
+#endif /* TEST_SUITES */
