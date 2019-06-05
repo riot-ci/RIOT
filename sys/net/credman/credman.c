@@ -89,7 +89,7 @@ end:
     return ret;
 }
 
-int credman_get(credman_credential_t *credential,credman_tag_t tag,
+int credman_get(credman_credential_t *credential, credman_tag_t tag,
                 credman_type_t type)
 {
     assert(credential);
@@ -99,7 +99,7 @@ int credman_get(credman_credential_t *credential,credman_tag_t tag,
     int pos = _find_credential_pos(tag, type, NULL);
     if (pos < 0) {
         DEBUG("credman: credential with tag %d and type %d not found\n",
-               tag, type);
+              tag, type);
         ret = CREDMAN_NOT_FOUND;
     }
     else {
