@@ -56,10 +56,32 @@ static int _conn_dump(nimble_netif_conn_t *conn, int handle, void *arg)
     return 0;
 }
 
-static int _tmp_dump(nimble_netif_conn_t *conn, int handle, void *arg)
+static int _conn_state_dump(nimble_netif_conn_t *conn, int handle, void *arg)
 {
     (void)arg;
-    printf("[%2i] state: 0x%04x\n", handle, conn->state);
+    printf("[%2i] state: 0x%04x -", handle, conn->state);
+    if (conn->state & NIMBLE_NETIF_UNUSED) {
+        printf(" unused");
+    }
+    if (conn->state & NIMBLE_NETIF_CONNECTING) {
+        printf(" connecting");
+    }
+    if (conn->state & NIMBLE_NETIF_ADV) {
+        printf(" advertising");
+    }
+    if (conn->state & NIMBLE_NETIF_GAP_SLAVE) {
+        printf(" GAP-slave");
+    }
+    if (conn->state & NIMBLE_NETIF_GAP_MASTER) {
+        printf(" GAP-master");
+    }
+    if (conn->state & NIMBLE_NETIF_L2CAP_SERVER) {
+        printf(" L2CAP-server");
+    }
+    if (conn->state & NIMBLE_NETIF_L2CAP_CLIENT) {
+        printf(" L2CAP-client");
+    }
+    puts("");
     return 0;
 }
 
@@ -83,14 +105,16 @@ static void _cmd_info(void)
     else {
         puts("no");
     }
+
     if (active > 0) {
         printf("Connections: %u\n", active);
         _conn_list();
     }
-    puts("");
 
-    // REMOVE
-    nimble_netif_conn_foreach(0xffff, _tmp_dump, NULL);
+    puts("   Contexts:");
+    nimble_netif_conn_foreach(NIMBLE_NETIF_ANY, _conn_state_dump, NULL);
+
+    puts("");
 }
 
 static void _cmd_adv(const char *name)
@@ -171,7 +195,7 @@ static void _cmd_connect(unsigned pos)
         return;
     }
 
-    // TODO: for now we use default parameters
+    /* simply use NimBLEs default connection parameters */
     int res = nimble_netif_connect(&sle->addr, NULL, APP_CONN_TIMEOUT);
     if (res < 0) {
         printf("err: unable to trigger connection sequence (%i)\n", res);
