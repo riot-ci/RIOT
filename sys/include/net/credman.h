@@ -107,8 +107,8 @@ typedef struct {
     credman_type_t type;        /**< Type of the credential */
     credman_tag_t tag;          /**< Tag of the credential */
     union {
-        psk_params_t *psk;      /**< PSK credential parameters */
-        ecdsa_params_t *ecdsa;  /**< ECDSA credential parameters */
+        psk_params_t psk;      /**< PSK credential parameters */
+        ecdsa_params_t ecdsa;  /**< ECDSA credential parameters */
     } params;                   /**< Credential parameters */
 } credman_credential_t;
 

@@ -47,19 +47,17 @@ int credman_add(const credman_credential_t *credential)
     }
     switch (credential->type) {
     case CREDMAN_TYPE_PSK:
-        if ((credential->params.psk == NULL) ||
-            (credential->params.psk->key.s == NULL) ||
-            (credential->params.psk->key.len == 0)) {
+        if ((credential->params.psk.key.s == NULL) ||
+            (credential->params.psk.key.len == 0)) {
             DEBUG("credman: invalid PSK parameters\n");
             ret = CREDMAN_INVALID;
             goto end;
         }
         break;
     case CREDMAN_TYPE_ECDSA:
-        if ((credential->params.ecdsa == NULL) ||
-            (credential->params.ecdsa->private_key == NULL) ||
-            (credential->params.ecdsa->public_key.x == NULL) ||
-            (credential->params.ecdsa->public_key.y == NULL)) {
+        if ((credential->params.ecdsa.private_key == NULL) ||
+            (credential->params.ecdsa.public_key.x == NULL) ||
+            (credential->params.ecdsa.public_key.y == NULL)) {
             DEBUG("credman: invalid ECDSA parameters\n");
             ret = CREDMAN_INVALID;
             goto end;
