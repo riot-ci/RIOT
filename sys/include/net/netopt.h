@@ -575,83 +575,82 @@ typedef enum {
     NETOPT_PHY_BUSY,
 
     /**
-     * @brief   (uint8_t*) device EUI (8 bytes length)
+     * @brief   (uint8_t*) LoRaWAN device EUI (8 bytes length)
      */
-    NETOPT_DEVEUI,
+    NETOPT_LORAWAN_DEVEUI,
 
     /**
-     * @brief   (uint8_t*) device EUI (4 bytes length)
+     * @brief   (uint8_t*) LoRaWAN device address (4 bytes length)
      */
-    NETOPT_DEVADDR,
+    NETOPT_LORAWAN_DEVADDR,
 
     /**
-     * @brief   (uint8_t*) application EUI (8 bytes length)
+     * @brief   (uint8_t*) LoRaWAN application EUI (8 bytes length)
      */
-    NETOPT_APPEUI,
+    NETOPT_LORAWAN_APPEUI,
 
     /**
-     * @brief   (uint8_t*) application key (16 bytes length)
+     * @brief   (uint8_t*) LoRaWAN application key (16 bytes length)
      */
-    NETOPT_APPKEY,
+    NETOPT_LORAWAN_APPKEY,
 
     /**
-     * @brief   (uint8_t*) application session key (16 bytes length)
+     * @brief   (uint8_t*) LoRaWAN network session key (16 bytes length)
      */
-    NETOPT_APPSKEY,
+    NETOPT_LORAWAN_NWKSKEY,
+    /**
+     * @brief   (uint8_t*) LoRaWAN application session key (16 bytes length)
+     */
+    NETOPT_LORAWAN_APPSKEY,
 
     /**
-     * @brief   (uint8_t*) network session key (16 bytes length)
+     * @brief   (@ref netopt_enable_t) LoRaWAN join state
      */
-    NETOPT_NWKSKEY,
+    NETOPT_LORAWAN_JOIN_STATE,
 
      /**
-     * @brief   (loramac_class_t) device class
+     * @brief   (uint8_t) LoRaWAN device class (A, B, C)
      * - LoRaWAN: @ref loramac_class_t
      */
-    NETOPT_DEVICE_CLASS,
+    NETOPT_LORAWAN_DEVICE_CLASS,
 
     /**
-     * @brief   (loramac_dr_idx_t) radio communication datarate
+     * @brief   (uint8_t) LoRaWAN datarate
      * - LoRaWAN: @ref loramac_dr_idx_t
      */
-    NETOPT_DATARATE,
+    NETOPT_LORAWAN_DATARATE,
 
     /**
-     * @brief   (@ref netopt_enable_t) adaptive datarate
+     * @brief   (@ref netopt_enable_t) LoRaWAN adaptive datarate
      */
-    NETOPT_ADAPTIVE_DATARATE,
+    NETOPT_LORAWAN_ADAPTIVE_DATARATE,
 
     /**
-     * @brief   (@ref netopt_enable_t) public network
+     * @brief   (@ref netopt_enable_t) LoRaWAN public network
      */
     NETOPT_PUBLIC_NETWORK,
 
     /**
-     * @brief   (uint8_t) network id
+     * @brief   (uint32_t) LoRaWAN network id
      */
-    NETOPT_NETID,
+    NETOPT_LORAWAN_NETID,
 
     /**
-     * @brief   (uint8_t) TX port
+     * @brief   (uint8_t) LoRaWAN TX application port
      * - LoRaWAN: between 1 and 223 (included)
      */
-    NETOPT_TX_PORT,
+    NETOPT_LORAWAN_TX_PORT,
 
     /**
-     * @brief   (@ref netopt_enable_t) use confirmable TX
-     */
-    NETOPT_TX_CONFIRMABLE,
-
-    /**
-     * @brief   (loramac_dr_idx_t) datarate for second RX window
+     * @brief   (loramac_dr_idx_t) LoRaWAN datarate for second RX window
      * - LoRaWAN: @ref loramac_dr_idx_t
      */
-    NETOPT_RX2_DATARATE,
+    NETOPT_LORAWAN_RX2_DATARATE,
 
     /**
-     * @brief   (uint32_t) frequency used for second RX window
+     * @brief   (uint32_t) LoRaWAN frequency used for second RX window
      */
-    NETOPT_RX2_FREQ,
+    NETOPT_LORAWAN_RX2_FREQ,
 
     /* add more options if needed */
 
