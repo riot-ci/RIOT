@@ -47,7 +47,7 @@ typedef struct tsrb {
 /**
  * @brief Static initializer
  */
-#define TSRB_INIT(BUF) { (BUF), sizeof (BUF), 0, 0 }
+#define TSRB_INIT(BUF) { (uint8_t *)(BUF), sizeof (BUF), 0, 0 }
 
 /**
  * @brief        Initialize a tsrb.
