@@ -36,8 +36,8 @@ psk_params_t exp_psk_params = {
 static int _compare_credentials(const credman_credential_t *a,
                                const credman_credential_t *b)
 {
-    if ((a->tag == b->tag) && (a->type == b->type) &&
-        (a->params.psk == b->params.psk)) {
+    if ((a->tag == b->tag) && (a->type == b->type)) {
+        // TODO: deep compare
         return 0;
     }
     return -1;
@@ -57,7 +57,18 @@ static void test_credman_add(void)
     credman_credential_t credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_PSK,
-        .params = { .psk = &exp_psk_params }
+        .params = {
+            .psk = {
+                .id =  {
+                    .s = (void *)"RIOTer",
+                    .len = sizeof("RIOTer") - 1,
+                },
+                .key = {
+                    .s = (void *)"LGPLisyourfriend",
+                    .len = sizeof("LGPLisyourfriend") - 1,
+                },
+            },
+        },
     };
 
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
@@ -72,13 +83,13 @@ static void test_credman_add(void)
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* add invalid credential params */
-    credential.params.psk = NULL;
+    memset(&credential.params.psk, 0, sizeof(psk_params_t));
     ret = credman_add(&credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_INVALID, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* fill the system credential buffer */
-    credential.params.psk = &exp_psk_params;
+    memcpy(&credential.params.psk, &exp_psk_params, sizeof(psk_params_t));
     while (credman_get_used_count() < CREDMAN_MAX_CREDENTIALS) {
         /* increase tag number so that it is not recognized as duplicate */
         credential.tag++;
@@ -100,7 +111,14 @@ static void test_credman_get(void)
     credman_credential_t in_credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_ECDSA,
-        .params = { .ecdsa = &exp_ecdsa_params }
+        .params = {
+            .ecdsa = {
+                .private_key = ecdsa_priv_key,
+                .public_key = { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
+                .client_keys = NULL,
+                .client_keys_size = 0,
+            },
+        },
     };
 
     /* get non-existing credential */
@@ -125,7 +143,14 @@ static void test_credman_delete(void)
     credman_credential_t in_credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_ECDSA,
-        .params = { .ecdsa = &exp_ecdsa_params }
+        .params = {
+            .ecdsa = {
+                .private_key = ecdsa_priv_key,
+                .public_key = { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
+                .client_keys = NULL,
+                .client_keys_size = 0,
+            },
+        },
     };
 
     /* delete non-existing credential */
@@ -162,7 +187,14 @@ static void test_credman_delete_random_order(void)
     credman_credential_t in_credential = {
         .tag = tag1,
         .type = CREDMAN_TYPE_ECDSA,
-        .params = { .ecdsa = &exp_ecdsa_params }
+        .params = {
+            .ecdsa = {
+                .private_key = ecdsa_priv_key,
+                .public_key = { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
+                .client_keys = NULL,
+                .client_keys_size = 0,
+            },
+        },
     };
 
     // fill the system pool, assume CREDMAN_MAX_CREDENTIALS is 2
@@ -186,7 +218,14 @@ static void test_credman_add_delete_all(void)
     credman_credential_t in_credential = {
         .tag = tag1,
         .type = CREDMAN_TYPE_ECDSA,
-        .params = { .ecdsa = &exp_ecdsa_params }
+        .params = {
+            .ecdsa = {
+                .private_key = ecdsa_priv_key,
+                .public_key = { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
+                .client_keys = NULL,
+                .client_keys_size = 0,
+            },
+        },
     };
 
     // add credentials
