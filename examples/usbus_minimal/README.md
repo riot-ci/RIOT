@@ -1,7 +1,7 @@
 # usbus_minimal example
 
 This is a minimalistic example for RIOT's USB stack. The application will
-initialize and start the USB stack. the stack is started without any USB
+initialize and start the USB stack. The stack is started without any USB
 handlers, it should show up as an empty USB device on the host.
 
 RIOT doesn't own any USB vendor and product ID. To compile this example, add
