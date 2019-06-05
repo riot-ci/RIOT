@@ -75,7 +75,7 @@ static void _cmd_info(void)
     unsigned free = nimble_netif_conn_count(NIMBLE_NETIF_UNUSED);
     unsigned active = nimble_netif_conn_count(NIMBLE_NETIF_L2CAP_CONNECTED);
 
-    printf(" Free slots: %u/%u\n", free, NIMBLE_NETIF_CONN_NUMOF);
+    printf(" Free slots: %u/%u\n", free, MYNEWT_VAL_BLE_MAX_CONNECTIONS);
     printf("Advertising: ");
     if (nimble_netif_conn_get_adv() != NIMBLE_NETIF_CONN_INVALID) {
         puts("yes");
