@@ -46,25 +46,34 @@ static void dfll_init(void)
 
 static void fdpll0_init(uint32_t f_cpu)
 {
+    /* We source the DPLL from 32kHz GCLK1 */
     const uint32_t LDR = ((f_cpu << 5) / 32768);
 
+    /* disable the DPLL before changing the configuration */
+    OSCCTRL->Dpll[0].DPLLCTRLA.bit.ENABLE = 0;
+    while (OSCCTRL->Dpll[0].DPLLSYNCBUSY.reg) {}
+
+    /* set DPLL clock source */
     GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL0].reg = GCLK_PCHCTRL_GEN(1) | GCLK_PCHCTRL_CHEN;
+    while (!(GCLK->PCHCTRL[OSCCTRL_GCLK_ID_FDPLL0].reg & GCLK_PCHCTRL_CHEN)) {}
 
     OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(LDR & 0x1F)
-                       | OSCCTRL_DPLLRATIO_LDR((LDR >> 5) - 1);
+                                   | OSCCTRL_DPLLRATIO_LDR((LDR >> 5) - 1);
 
+    /* Without LBYPASS, startup takes very long, reson unknown. */
     OSCCTRL->Dpll[0].DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK_GCLK
-                       | OSCCTRL_DPLLCTRLB_WUF
-                       | OSCCTRL_DPLLCTRLB_LBYPASS;
+                                   | OSCCTRL_DPLLCTRLB_LBYPASS;
 
     OSCCTRL->Dpll[0].DPLLCTRLA.reg = OSCCTRL_DPLLCTRLA_ENABLE;
 
     while (!(OSCCTRL->Dpll[0].DPLLSTATUS.bit.CLKRDY &&
-             OSCCTRL->Dpll[0].DPLLSTATUS.bit.LOCK)) {}
+             OSCCTRL->Dpll[0].DPLLSTATUS.bit.LOCK) ||
+             OSCCTRL->Dpll[0].DPLLSYNCBUSY.reg) {}
 }
 
 static void gclk_connect(uint8_t id, uint8_t src, uint32_t flags) {
     GCLK->GENCTRL[id].reg = GCLK_GENCTRL_SRC(src) | GCLK_GENCTRL_GENEN | flags | GCLK_GENCTRL_IDC;
+    while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_GENCTRL(id)) {}
 }
 
 /**
@@ -80,13 +89,22 @@ void cpu_init(void)
                          | MCLK_APBAMASK_OSCCTRL
                          | MCLK_APBAMASK_OSC32KCTRL
                          | MCLK_APBAMASK_GCLK
+                         | MCLK_APBAMASK_SUPC
+                         | MCLK_APBAMASK_PAC
+                         | MCLK_APBAMASK_PM
 #ifdef MODULE_PERIPH_GPIO_IRQ
                          | MCLK_APBAMASK_EIC
 #endif
                          ;
+
+    MCLK->APBCMASK.reg = 0
 #ifdef MODULE_PERIPH_GPIO
-    MCLK->APBBMASK.reg = MCLK_APBBMASK_PORT;
+                         | MCLK_APBBMASK_PORT
 #endif
+                         ;
+
+    MCLK->APBCMASK.reg = 0;
+    MCLK->APBDMASK.reg = 0;
 
     /* enable the Cortex M Cache Controller */
     CMCC->CTRL.bit.CEN = 1;
