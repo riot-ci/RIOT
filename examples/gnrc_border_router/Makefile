@@ -28,7 +28,7 @@ BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker ruuvitag thingy52
 # UART, but not on native, as native has a tap interface towards the host.
 ifeq (,$(filter native,$(BOARD)))
   GNRC_NETIF_NUMOF := 2
-  USEMODULE += ethos stdio_ethos
+  USEMODULE += stdio_ethos
 
   # ethos baudrate can be configured from make command
   ETHOS_BAUDRATE ?= 115200
