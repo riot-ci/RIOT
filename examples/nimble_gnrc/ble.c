@@ -4,6 +4,7 @@
 #include "clist.h"
 #include "mutex.h"
 #include "xtimer.h"
+#include "nimble_riot.h"
 #include "nimble_netif.h"
 #include "nimble_netif_conn.h"
 #include "net/bluetil/ad.h"
@@ -96,6 +97,14 @@ static void _cmd_info(void)
 
     unsigned free = nimble_netif_conn_count(NIMBLE_NETIF_UNUSED);
     unsigned active = nimble_netif_conn_count(NIMBLE_NETIF_L2CAP_CONNECTED);
+
+    uint8_t own_addr[BLE_ADDR_LEN];
+    ble_hs_id_copy_addr(nimble_riot_own_addr_type, own_addr, NULL);
+    printf("Own Address: ");
+    bluetil_addr_print(own_addr);
+    printf(" -> ");
+    bluetil_addr_ipv6_l2ll_print(own_addr);
+    puts("");
 
     printf(" Free slots: %u/%u\n", free, MYNEWT_VAL_BLE_MAX_CONNECTIONS);
     printf("Advertising: ");
