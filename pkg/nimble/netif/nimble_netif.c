@@ -8,11 +8,6 @@
 
 /**
  * @ingroup     pkg_nimble_gnrc
- *
- * # TODO
- * - many many things...
- *
- *
  * @{
  *
  * @file
