@@ -8,7 +8,7 @@
 
 /**
  * @file
- * @brief       Shows that stdio_rx module is required when one wants to use getchar
+ * @brief       Shows that stdin module is required when one wants to use getchar
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  *

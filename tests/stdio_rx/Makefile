@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-USEMODULE += stdio_rx
+USEMODULE += stdin
 
 TEST_ON_CI_WHITELIST += all
 
