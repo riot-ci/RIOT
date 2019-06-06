@@ -21,7 +21,7 @@ ifeq (native,$(BOARD))
 
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += ethos stdio_ethos
+  USEMODULE += stdio_ethos
 
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
