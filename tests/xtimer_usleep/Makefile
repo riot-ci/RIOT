@@ -6,7 +6,7 @@ USEMODULE += xtimer
 TEST_ON_CI_WHITELIST += samr21-xpro
 
 # This application uses getchar and thus expect input from stdio
-USEMODULE += stdio_rx
+USEMODULE += stdin
 
 # Port and pin configuration for probing with oscilloscope
 # Port number should be found in port enum e.g in cpu/include/periph_cpu.h
