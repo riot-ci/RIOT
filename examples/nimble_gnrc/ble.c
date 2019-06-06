@@ -93,8 +93,6 @@ static void _conn_list(void)
 
 static void _cmd_info(void)
 {
-    puts("Connection status:");
-
     unsigned free = nimble_netif_conn_count(NIMBLE_NETIF_UNUSED);
     unsigned active = nimble_netif_conn_count(NIMBLE_NETIF_L2CAP_CONNECTED);
 
@@ -196,6 +194,34 @@ static void _cmd_scan(unsigned duration)
     nimble_scanlist_print();
 }
 
+static void _cmd_connect_addr(ble_addr_t *addr)
+{
+    /* simply use NimBLEs default connection parameters */
+    int res = nimble_netif_connect(addr, NULL, APP_CONN_TIMEOUT);
+    if (res < 0) {
+        printf("err: unable to trigger connection sequence (%i)\n", res);
+        return;
+    }
+
+    printf("initiated connection procedure with ");
+    bluetil_addr_print(addr->val);
+    puts("");
+
+}
+
+static void _cmd_connect_addstr(const char *addr_str)
+{
+    /* RANDOM is the most common type, has no noticeable effect when connecting
+       anyhow... */
+    ble_addr_t addr = { .type = BLE_ADDR_RANDOM };
+
+    if (bluetil_addr_from_str(addr.val, addr_str) == NULL) {
+        puts("err: unable to parse address");
+        return;
+    }
+    _cmd_connect_addr(&addr);
+}
+
 static void _cmd_connect(unsigned pos)
 {
     nimble_scanlist_entry_t *sle = nimble_scanlist_get_by_pos(pos);
@@ -203,17 +229,7 @@ static void _cmd_connect(unsigned pos)
         puts("err: unable to find given entry in scanlist");
         return;
     }
-
-    /* simply use NimBLEs default connection parameters */
-    int res = nimble_netif_connect(&sle->addr, NULL, APP_CONN_TIMEOUT);
-    if (res < 0) {
-        printf("err: unable to trigger connection sequence (%i)\n", res);
-        return;
-    }
-
-    printf("initiated connection procedure with ");
-    bluetil_addr_print(sle->addr.val);
-    puts("");
+    _cmd_connect_addr(&sle->addr);
 }
 
 static void _cmd_close(int handle)
@@ -302,10 +318,15 @@ int app_ble_cmd(int argc, char **argv)
     }
     else if (memcmp(argv[1], "connect", 7) == 0) {
         if ((argc < 3) || _ishelp(argv[2])) {
-            printf("usage: %s connect [help|list|<scanlist entry #>]\n", argv[0]);
+            printf("usage: %s connect [help|list|<scanlist entry #>|<BLE addr>]\n",
+                   argv[0]);
         }
         if (memcmp(argv[2], "list", 4) == 0) {
             _conn_list();
+            return 0;
+        }
+        if (strlen(argv[2]) == (BLUETIL_ADDR_STRLEN - 1)) {
+            _cmd_connect_addstr(argv[2]);
             return 0;
         }
         unsigned pos = (unsigned)atoi(argv[2]);
