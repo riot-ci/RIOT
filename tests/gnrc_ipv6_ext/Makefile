@@ -21,13 +21,10 @@ ifeq (native,$(BOARD))
 
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += ethos
-
-  # This application uses ethos so it expects input from stdio
-  USEMODULE += stdin
+  USEMODULE += ethos stdio_ethos
 
   ETHOS_BAUDRATE ?= 115200
-  CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE) -DUSE_ETHOS_FOR_STDIO
+  CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMDEPS += ethos
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
