@@ -23,6 +23,9 @@ ifeq (native,$(BOARD))
 else
   USEMODULE += ethos
 
+  # This application uses ethos so it expects input from stdio
+  USEMODULE += stdin
+
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE) -DUSE_ETHOS_FOR_STDIO
   TERMDEPS += ethos
