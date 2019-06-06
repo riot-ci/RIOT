@@ -4,6 +4,13 @@ ifeq (,$(KINETIS_SERIES))
   include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/kinetis-info.mk
 endif
 
+# Slot size is determined by "((total_flash_size - RIOTBOOT_LEN) / 2)".
+# If RIOTBOOT_LEN uses an uneven number of flashpages, the remainder of the
+# flash cannot be divided by two slots while staying FLASHPAGE_SIZE aligned.
+ifeq (K, $(KINETIS_SERIES))
+RIOTBOOT_LEN ?= 0x2000
+endif
+
 # Add search path for linker scripts
 LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts
 
