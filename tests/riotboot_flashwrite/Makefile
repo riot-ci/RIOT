@@ -44,6 +44,9 @@ GNRC_NETIF_NUMOF := 2
 ## ethos baudrate can be configured from make command
 #ETHOS_BAUDRATE ?= 115200
 #CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE) -DUSE_ETHOS_FOR_STDIO
+#
+## This application uses ethos so it expects input from stdio
+#USEMODULE += stdin
 
 ifneq (,$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
   $(info Using low-memory configuration for microcoap_server.)
