@@ -30,6 +30,20 @@ static void xosc32k_init(void)
     while (!OSC32KCTRL->STATUS.bit.XOSC32KRDY) {}
 }
 
+#ifdef MODULE_PERIPH_USBDEV
+static void dfll_init(void)
+{
+    uint32_t reg = OSCCTRL_DFLLCTRLB_QLDIS
+#ifdef OSCCTRL_DFLLCTRLB_WAITLOCK
+          | OSCCTRL_DFLLCTRLB_WAITLOCK
+#endif
+    ;
+
+    OSCCTRL->DFLLCTRLB.reg = reg;
+    OSCCTRL->DFLLCTRLA.reg = OSCCTRL_DFLLCTRLA_ENABLE;
+}
+#endif
+
 static void fdpll0_init(uint32_t f_cpu)
 {
     const uint32_t LDR = ((f_cpu << 5) / 32768);
@@ -92,6 +106,11 @@ void cpu_init(void)
 
     /* clock used by xtimer */
     gclk_connect(5, GCLK_SOURCE_DPLL0, GCLK_GENCTRL_DIV(CLOCK_CORECLOCK / 8000000));
+
+#ifdef MODULE_PERIPH_USBDEV
+    dfll_init();
+    gclk_connect(6, GCLK_SOURCE_DFLL, 0);
+#endif
 
     while (GCLK->SYNCBUSY.reg) {}
 
