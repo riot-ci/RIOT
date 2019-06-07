@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <stdbool.h>
 
 #include "byteorder.h"
 #include "net/ipv6/ext/frag.h"
@@ -82,14 +83,15 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
     uint8_t *nh = NULL;
     network_uint16_t *len = NULL;
     msg_t msg;
+    /* see if fragment to send fits into the path MTU */
+    bool last_fragment = (snd_buf->path_mtu >
+                          (gnrc_pkt_len(snd_buf->per_frag->next) +
+                           sizeof(ipv6_ext_frag_t) +
+                           gnrc_pkt_len(snd_buf->pkt)));
     uint16_t remaining = snd_buf->path_mtu & 0xfff8; /* lower multiple of 8 */
-    uint16_t slack = snd_buf->path_mtu - remaining;
 
     ptr = snd_buf->per_frag;
-    /* see if fragment to send fits into the path MTU */
-    if (snd_buf->path_mtu < (gnrc_pkt_len(snd_buf->per_frag->next) +
-                             sizeof(ipv6_ext_frag_t) +
-                             gnrc_pkt_len(snd_buf->pkt))) {
+    if (!last_fragment) {
         /* this won't be the last fragment
          * => we need to duplicate the per-fragment headers */
         gnrc_pktbuf_hold(ptr, 1);
@@ -158,15 +160,16 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
     remaining -= sizeof(ipv6_ext_frag_t);
     frag_hdr = ptr->data;
     ipv6_ext_frag_set_offset(frag_hdr, snd_buf->offset);
+    if (!last_fragment) {
+        ipv6_ext_frag_set_more(frag_hdr);
+    }
     frag_hdr->id = byteorder_htonl(snd_buf->id);
     *nh = PROTNUM_IPV6_EXT_FRAG;
     last = ptr;
     /* then the rest */
     while (remaining && snd_buf->pkt) {
-        if ((snd_buf->pkt->size <= remaining) ||
-            /* last fragment and remaining packet fits into slack */
-            ((snd_buf->pkt->next == NULL) &&
-             (snd_buf->pkt->size <= (remaining + slack)))) {
+        if (last_fragment ||
+            (snd_buf->pkt->size <= remaining)) {
             ptr = snd_buf->pkt;
             snd_buf->pkt = ptr->next;
             ptr->next = NULL;
@@ -192,19 +195,16 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
     assert(len != NULL);
     /* adapt IPv6 header length field */
     *len = byteorder_htons(gnrc_pkt_len(to_send->next->next));
-    if (snd_buf->pkt) {
-        ipv6_ext_frag_set_more(frag_hdr);
-    }
     msg.type = GNRC_IPV6_EXT_FRAG_SEND_FRAG;
     msg.content.ptr = to_send;
     msg_try_send(&msg, gnrc_ipv6_pid);
-    if (snd_buf->pkt) {
+    if (last_fragment) {
+        _snd_buf_del(snd_buf);
+    }
+    else {
         msg.type = GNRC_IPV6_EXT_FRAG_SEND;
         msg.content.ptr = snd_buf;
         msg_try_send(&msg, gnrc_ipv6_pid);
-    }
-    else {
-        _snd_buf_del(snd_buf);
     }
 }
 
