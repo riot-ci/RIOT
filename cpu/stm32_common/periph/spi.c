@@ -81,9 +81,9 @@ void spi_init_pins(spi_t bus)
     gpio_init(spi_config[bus].mosi_pin, GPIO_OUT);
     gpio_init(spi_config[bus].miso_pin, GPIO_IN);
     gpio_init(spi_config[bus].sclk_pin, GPIO_OUT);
-    gpio_init_af(spi_config[bus].mosi_pin, spi_config[bus].af);
-    gpio_init_af(spi_config[bus].miso_pin, spi_config[bus].af);
-    gpio_init_af(spi_config[bus].sclk_pin, spi_config[bus].af);
+    gpio_init_af(spi_config[bus].mosi_pin, spi_config[bus].mosi_af);
+    gpio_init_af(spi_config[bus].miso_pin, spi_config[bus].miso_af);
+    gpio_init_af(spi_config[bus].sclk_pin, spi_config[bus].sclk_af);
 #endif
 }
 
@@ -105,7 +105,7 @@ int spi_init_cs(spi_t bus, spi_cs_t cs)
         gpio_init_af(spi_config[bus].cs_pin, GPIO_AF_OUT_PP);
 #else
         gpio_init(spi_config[bus].cs_pin, GPIO_OUT);
-        gpio_init_af(spi_config[bus].cs_pin, spi_config[bus].af);
+        gpio_init_af(spi_config[bus].cs_pin, spi_config[bus].cs_af);
 #endif
     }
     else {
