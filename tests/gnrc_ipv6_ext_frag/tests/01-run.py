@@ -107,8 +107,8 @@ def test_reass_successful_udp(child, iface, hw_dst, ll_dst, ll_src):
         payload_len += 1
     start_udp_server(child, port)
     with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE,
-                     str(iface + '\0').encode())
+        res = socket.getaddrinfo("{}%{}".format(ll_src, iface), None)
+        s.bind(res[0][4])
         s.sendto(bytes(i for i in range(byte_max)) * (payload_len // byte_max),
                  (ll_dst, port))
         child.expect(
@@ -163,6 +163,9 @@ def testfunc(child):
             try:
                 func(child, tap, hwaddr_dst, lladdr_dst, lladdr_src)
                 print(".", end="", flush=True)
+            except PermissionError:
+                print("\n\x1b[1;33mSkipping {} because of missing "
+                      "privileges\x1b[0m".format(func.__name__))
             except Exception as e:
                 print("FAILED")
                 raise e
@@ -174,9 +177,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    if os.geteuid() != 0:
-        print("\x1b[1;31mThis test requires root privileges.\n"
-              "It's constructing and sending Ethernet frames.\x1b[0m\n",
-              file=sys.stderr)
-        sys.exit(1)
     sys.exit(run(testfunc, timeout=1, echo=False))
