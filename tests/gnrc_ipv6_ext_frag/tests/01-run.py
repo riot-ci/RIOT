@@ -204,9 +204,9 @@ def testfunc(child):
     child.expect(r"Sending UDP test packets to port (\d+)")
     port = int(child.match.group(1))
     with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
-        s.bind(("", port))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE,
-                     str(tap + '\0').encode())
+        res = socket.getaddrinfo("{}%{}".format(lladdr_src, tap), port)
+        print(res[0][4])
+        s.bind(res[0][4])
         s.settimeout(.3)
         run_sock_test(test_ipv6_ext_frag_shell_test_0, s)
         run_sock_test(test_ipv6_ext_frag_shell_test_1, s)
@@ -218,9 +218,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    if os.geteuid() != 0:
-        print("\x1b[1;31mThis test requires root privileges.\n"
-              "It's constructing and sending Ethernet frames.\x1b[0m\n",
-              file=sys.stderr)
-        sys.exit(1)
     sys.exit(run(testfunc, timeout=2, echo=False))
