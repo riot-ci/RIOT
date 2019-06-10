@@ -57,4 +57,3 @@ void auto_init_netdev_cdcecm(void)
 typedef int dont_be_pedantic;
 #endif /* MODULE_CDC_ECM */
 /** @} */
-
