@@ -20,8 +20,6 @@
 #ifdef MODULE_USBUS_CDC_ECM
 
 #include "log.h"
-#include "debug.h"
-#include "periph/uart.h"
 #include "usb/usbus/cdc/ecm.h"
 #include "net/gnrc/netif/ethernet.h"
 
@@ -47,7 +45,7 @@ extern void cdcecm_netdev_setup(usbus_cdcecm_device_t *cdceem);
 
 void auto_init_netdev_cdcecm(void)
 {
-    LOG_DEBUG("[auto_init_netif] initializing cdc eem #0\n");
+    LOG_DEBUG("[auto_init_netif] initializing cdc ecm #0\n");
 
     cdcecm_netdev_setup(&cdcecm);
     /* initialize netdev<->gnrc adapter state */
