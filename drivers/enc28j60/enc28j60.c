@@ -427,8 +427,8 @@ static int nd_init(netdev_t *netdev)
     /* set default MAC address */
     uint8_t macbuf[ETHERNET_ADDR_LEN];
     luid_get(macbuf, ETHERNET_ADDR_LEN);
-    macbuf[0] |= 0x02;      /* locally administered address */
-    macbuf[0] &= ~0x01;     /* unicast address */
+    ethernet_set_locally_admin(macbuf);      /* locally administered address */
+    ethernet_set_individual_addr(macbuf);    /* unicast address */
     mac_set(dev, macbuf);
 
     /* PHY configuration */
