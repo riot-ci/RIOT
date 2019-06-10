@@ -47,31 +47,6 @@ extern "C" {
  */
 #define ETHERNET_MAX_LEN        (ETHERNET_FRAME_LEN + ETHERNET_FCS_LEN)
 
-/**
- * @brief Set the locally administrated bit in the ethernet address.
- *
- * @see ieee 802-2001 section 9.2
- *
- * @param   addr    ethernet address
- */
-static inline void ethernet_set_locally_admin(uint8_t *addr)
-{
-    addr[0] |= ETHERNET_ADDR_LOCAL_ADMIN;
-}
-
-/**
- * @brief Clear the group address bit to signal the address as individual
- * address
- *
- * @see ieee 802-2001 section 9.2
- *
- * @param   addr    ethernet address
- */
-static inline void ethernet_set_individual_addr(uint8_t *addr)
-{
-    addr[0] &= ~ETHERNET_ADDR_GROUP;
-}
-
 #ifdef __cplusplus
 }
 #endif

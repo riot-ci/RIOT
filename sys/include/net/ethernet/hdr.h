@@ -39,22 +39,6 @@ extern "C" {
 #endif
 
 /**
- * @name Ethernet address bit flags set in the first octet of an address
- * @{
- */
-
-/**
- * @brief Locally administered address.
- */
-#define ETHERNET_ADDR_LOCAL_ADMIN   0x02
-
-/**
- * @brief Group type ethernet address.
- */
-#define ETHERNET_ADDR_GROUP         0x01
-/** @} */
-
-/**
  * @brief   Ethernet header
  */
 typedef struct __attribute__((packed)) {
