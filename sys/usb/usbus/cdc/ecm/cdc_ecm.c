@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup usbus_cdc_eem
+ * @ingroup usbus_cdc_ecm
  * @{
  * @file USBUS implementation for ethernet emulation model
  *
@@ -242,7 +242,6 @@ static void _init(usbus_t *usbus, usbus_handler_t *handler)
 
     cdcecm->iface_data.alts = &cdcecm->iface_data_alt;
 
-    //cdc->ep_data_in.ep->driver->ready(cdc->ep_data_in.ep, 0);
     usbus_enable_endpoint(cdcecm->ep_out);
     usbus_enable_endpoint(cdcecm->ep_in);
     usbus_enable_endpoint(cdcecm->ep_ctrl);
