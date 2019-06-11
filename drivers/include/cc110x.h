@@ -197,6 +197,7 @@
 #include <stdint.h>
 
 #include "cc1xxx_common.h"
+#include "mutex.h"
 #include "net/gnrc/nettype.h"
 #include "net/netdev.h"
 #include "periph/adc.h"
@@ -524,6 +525,14 @@ typedef struct {
      * @brief Frequency synthesizer calibration data
      */
     cc110x_fs_calibration_t fscal;
+    /**
+     * @brief   Use mutex to block during TX and unblock from ISR when ISR
+     *          needs to be handled from thread-context
+     *
+     * Blocking during TX within the driver prevents the upper layers from
+     * calling @ref netdev_driver_t::send while already transmitting a frame.
+     */
+    mutex_t isr_signal;
     uint8_t rssi_offset;                /**< dBm to subtract from raw RSSI data */
 } cc110x_t;
 

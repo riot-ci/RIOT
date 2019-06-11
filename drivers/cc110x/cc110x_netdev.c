@@ -25,6 +25,7 @@
 #include "iolist.h"
 #include "irq.h"
 #include "luid.h"
+#include "mutex.h"
 #include "net/eui64.h"
 #include "net/netdev.h"
 #include "xtimer.h"
@@ -83,7 +84,13 @@ const netdev_driver_t cc110x_driver = {
 void cc110x_on_gdo(void *_dev)
 {
     cc110x_t *dev = _dev;
-    dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_ISR);
+    if ((dev->state & 0x07) == CC110X_STATE_TX_MODE) {
+        /* Unlock mutex to unblock netdev thread */
+        mutex_unlock(&dev->isr_signal);
+    }
+    else {
+        dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_ISR);
+    }
 }
 
 static int identify_device(cc110x_t *dev)
@@ -234,6 +241,9 @@ static int check_gdo_pins(cc110x_t *dev)
 static int cc110x_init(netdev_t *netdev)
 {
     cc110x_t *dev = (cc110x_t *)netdev;
+    /* Use locked mutex to block thread on TX and un-block from ISR */
+    mutex_init(&dev->isr_signal);
+    mutex_lock(&dev->isr_signal);
 
     /* Make sure the crystal is stable and the chip ready. This is needed as
      * the reset is done via an SPI command, but the SPI interface must not be
@@ -475,6 +485,12 @@ static int cc110x_send(netdev_t *netdev, const iolist_t *iolist)
     /* Restore IRQs */
     gpio_irq_enable(dev->params.gdo0);
     gpio_irq_enable(dev->params.gdo2);
+
+    while ((dev->state & 0x07) == CC110X_STATE_TX_MODE) {
+        /* Block until mutex is unlocked from ISR */
+        mutex_lock(&dev->isr_signal);
+        cc110x_isr(&dev->netdev);
+    }
 
     return (int)size;
 }
