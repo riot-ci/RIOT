@@ -4,11 +4,11 @@ APPLICATION = nimble_gatt
 # If no BOARD is found in the environment, use this default:
 BOARD ?= nrf52dk
 
-# So far, NimBLE only works on nRF52 based platforms
-BOARD_WHITELIST := nrf52dk nrf52840dk nrf52832-mdk
-
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
+
+# Requires nRF BLE radio
+FEATURES_REQUIRED += radio_nrfble
 
 # Include NimBLE
 USEPKG += nimble
