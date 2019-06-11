@@ -87,12 +87,31 @@ check_not_exporting_variables() {
     fi
 }
 
+# Deprecated variables or patterns
+# Prevent deprecated variables or patterns to re-appear after cleanup
+check_deprecated_vars_patterns() {
+    local patterns=()
+    local pathspec=()
+
+    patterns+=(-e 'FEATURES_MCU_GROUP')
+
+    # Pathspec with exclude should start by an inclusive pathspec in git 2.7.4
+    pathspec+=('*')
+
+    # Ignore this file when matching as it self matches
+    pathspec+=(":!${SCRIPT_PATH}")
+
+    git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}" \
+        | sed '1i \\nDeprecated variables or patterns:'
+}
+
 
 main() {
     local errors=''
 
     errors+="$(check_not_parsing_features)"
     errors+="$(check_not_exporting_variables)"
+    errors+="$(check_deprecated_vars_patterns)"
 
     if [ -n "${errors}" ]
     then
