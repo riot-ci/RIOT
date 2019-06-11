@@ -37,14 +37,21 @@ USEMODULE += ps
 # include and auto-initialize all available sensors
 USEMODULE += saul_default
 
-BOARD_PROVIDES_NETIF := acd52832 airfy-beacon b-l072z-lrwan1 cc2538dk fox \
-        iotlab-m3 iotlab-a8-m3 lsn50 mulle microbit native nrf51dk \
-        nrf51dongle nrf52dk nrf52840dk nrf52840-mdk nrf6310 \
-        openmote-cc2538 pba-d-01-kw2x remote-pa remote-reva samr21-xpro \
-        spark-core telosb yunjia-nrf51822 z1
+BOARD_PROVIDES_NETIF := acd52832 airfy-beacon b-l072z-lrwan1 calliope-mini \
+                        cc2538dk esp32-mh-et-live-minikit esp32-olimex-evb \
+                        esp32-wemos-lolin-d32-pro esp32-wroom-32 \
+                        esp32-wrover-kit firefly fox i-nucleo-lrwan1 \
+                        iotlab-a8-m3 iotlab-m3 lsn50 microbit mulle native \
+                        nrf51dk nrf51dongle nrf52832-mdk nrf52840-mdk \
+                        nrf52840dk nrf52dk nrf6310 openmote-cc2538 \
+                        particle-argon particle-boron particle-xenon \
+                        pba-d-01-kw2x reel remote-pa remote-reva remote-revb \
+                        ruuvitag samr21-xpro samr30-xpro telosb thingy52 \
+                        yunjia-nrf51822 z1
 
 ifneq (,$(filter $(BOARD),$(BOARD_PROVIDES_NETIF)))
   # Use modules for networking
+  FEATURES_REQUIRED += netif
   # gnrc is a meta module including all required, basic gnrc networking modules
   USEMODULE += gnrc
   # use the default network interface for the board
