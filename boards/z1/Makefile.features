@@ -5,5 +5,6 @@ FEATURES_PROVIDED += periph_timer
 FEATURES_PROVIDED += periph_uart
 
 # Various other features (if any)
+FEATURES_PROVIDED += netif
 
 include $(RIOTCPU)/msp430fxyz/Makefile.features

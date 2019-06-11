@@ -9,5 +9,6 @@ FEATURES_PROVIDED += periph_qdec
 # Various other features (if any)
 FEATURES_PROVIDED += ethernet
 FEATURES_PROVIDED += motor_driver
+FEATURES_PROVIDED += netif
 
 include $(RIOTCPU)/native/Makefile.features
