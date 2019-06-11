@@ -15,7 +15,14 @@ define board_missing_features
   FEATURES_REQUIRED := $(FEATURES_REQUIRED_GLOBAL)
   FEATURES_OPTIONAL := $(FEATURES_OPTIONAL_GLOBAL)
   FEATURES_MISSING  :=
+
+  # Remove board specific variables set by Makefile.features/Makefile.dep
   FEATURES_PROVIDED :=
+
+  # Undefine variables that must not be defined when starting.
+  # Some are sometime set as `?=`
+  undefine CPU
+  undefine CPU_MODEL
 
   include $(RIOTBASE)/Makefile.features
 
