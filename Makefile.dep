@@ -117,7 +117,6 @@ ifneq (,$(filter gnrc_netapi_mbox,$(USEMODULE)))
 endif
 
 ifneq (,$(filter netdev_tap,$(USEMODULE)))
-  USEMODULE += netif
   USEMODULE += netdev_eth
   USEMODULE += iolist
 endif
@@ -145,7 +144,6 @@ ifneq (,$(filter trickle,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_netif,$(USEMODULE)))
-  USEMODULE += netif
   USEMODULE += l2util
   USEMODULE += fmt
   ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
