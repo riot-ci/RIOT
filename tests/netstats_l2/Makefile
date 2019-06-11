@@ -1,5 +1,7 @@
 include ../Makefile.tests_common
 
+BOARD_INSUFFICIENT_MEMORY := i-nucleo-lrwan1
+
 # This application runs by default on boards providing the netif feature
 FEATURES_REQUIRED += netif
 
