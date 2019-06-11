@@ -9,6 +9,7 @@ FEATURES_PROVIDED += periph_qdec
 # Various other features (if any)
 FEATURES_PROVIDED += ethernet
 FEATURES_PROVIDED += motor_driver
+FEATURES_PROVIDED += netif
 
 # The board MPU family (used for grouping by the CI system)
 FEATURES_MCU_GROUP = x86
