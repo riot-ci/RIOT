@@ -8,7 +8,8 @@ OLD_USEPKG := $(sort $(USEPKG))
 # Transitional conditional include until all boards define 'CPU' in
 # Makefile.features
 ifneq (,$(CPU))
-  include $(RIOTCPU)/$(CPU)/Makefile.dep
+  # include cpu dependencies
+  -include $(RIOTCPU)/$(CPU)/Makefile.dep
 endif
 
 # include external modules dependencies
