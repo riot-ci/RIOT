@@ -3,6 +3,9 @@ USEMODULE += posix_semaphore
 USEMODULE += event_callback
 USEMODULE += xtimer
 
+# Requires nRF BLE radio
+FEATURES_REQUIRED += radio_nrfble
+
 # glue code
 USEMODULE += nimble_riot_contrib
 
