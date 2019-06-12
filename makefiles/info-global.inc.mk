@@ -28,6 +28,9 @@ define board_missing_features
 
   include $(RIOTBASE)/Makefile.dep
 
+  # Include provided features from drivers after all dependencies are known
+  include $(RIOTBASE)/drivers/Makefile.features
+
   FEATURES_MISSING := $$(sort $$(filter-out $$(FEATURES_PROVIDED), $$(FEATURES_REQUIRED)))
   ifneq (, $$(FEATURES_MISSING))
     BOARDS_FEATURES_MISSING += "$(1) $$(FEATURES_MISSING)"
