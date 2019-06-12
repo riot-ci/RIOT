@@ -40,7 +40,7 @@ static int cmd_test_xtimer_mutex_lock_timeout_long_locked(int argc,
 static const shell_command_t shell_commands[] = {
     { "mutex_timeout_long_unlocked", "unlocked mutex with long timeout",
       cmd_test_xtimer_mutex_lock_timeout_long_unlocked, },
-    { "mutex_timeout_long_locked", "locked mutex and with long timeout",
+    { "mutex_timeout_long_locked", "locked mutex with long timeout",
       cmd_test_xtimer_mutex_lock_timeout_long_locked, },
     { NULL, NULL, NULL }
 };
