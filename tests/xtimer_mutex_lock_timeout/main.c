@@ -23,10 +23,13 @@
 #include "shell.h"
 #include "xtimer.h"
 
+/* timeout at one millisecond (1000 us) to make sure it does not spin. */
+#define LONG_MUTEX_TIMEOUT 1000
+
 /**
  * Foward declarations
  */
-static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
+static int cmd_test_xtimer_mutex_lock_timeout_long_unlocked(int argc,
                                                               char **argv);
 static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked(int argc,
                                                                      char **argv);
@@ -36,7 +39,7 @@ static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked(int argc,
  */
 static const shell_command_t shell_commands[] = {
     { "mutex_timeout_n_spin_unlocked", "unlocked mutex and without spinning",
-      cmd_test_xtimer_mutex_lock_timeout_greater_backoff, },
+      cmd_test_xtimer_mutex_lock_timeout_long_unlocked, },
     { "mutex_timeout_n_spin_locked", "locked mutex and without spinning",
       cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked, },
     { NULL, NULL, NULL }
@@ -46,14 +49,15 @@ static const shell_command_t shell_commands[] = {
  * @brief   shell command to test xtimer_mutex_lock_timeout
  *
  * the mutex is not locked before the function call and
- * the timeout is greater than XTIMER_BACKOFF (no spinning)
+ * the timer long. Meaning the timer will get removed 
+ * before the triggering.
  *
  * @param[in] argc  Number of arguments
  * @param[in] argv  Array of arguments
  *
  * @return 0 on success
  */
-static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
+static int cmd_test_xtimer_mutex_lock_timeout_long_unlocked(int argc,
                                                               char **argv)
 {
     (void)argc;
@@ -61,8 +65,7 @@ static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
     puts("starting test: xtimer mutex lock timeout");
     mutex_t test_mutex = MUTEX_INIT;
 
-    /* timeout at one millisecond (1000 us) to make sure it does not spin. */
-    if (xtimer_mutex_lock_timeout(&test_mutex, 1000) == 0) {
+    if (xtimer_mutex_lock_timeout(&test_mutex, LONG_MUTEX_TIMEOUT) == 0) {
         puts("OK");
     }
     else {
