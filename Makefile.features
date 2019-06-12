@@ -1,3 +1,4 @@
 # Process FEATURES variables
 
 include $(RIOTBOARD)/$(BOARD)/Makefile.features
+include $(RIOTBASE)/drivers/Makefile.features

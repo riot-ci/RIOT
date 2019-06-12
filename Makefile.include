@@ -255,9 +255,6 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 # Add standard include directories
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 
-# process provided features
-include $(RIOTBASE)/Makefile.features
-
 # mandatory includes!
 include $(RIOTMAKE)/pseudomodules.inc.mk
 include $(RIOTMAKE)/defaultmodules.inc.mk
@@ -267,6 +264,15 @@ INCLUDES += $(addprefix -I,$(wildcard $(RIOTBOARD)/$(BOARD)/include))
 include $(RIOTBOARD)/$(BOARD)/Makefile.include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
 include $(RIOTCPU)/$(CPU)/Makefile.include
+
+# handle removal of default modules
+USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
+
+# process dependencies
+include $(RIOTBASE)/Makefile.dep
+
+# process provided features only once all dependencies are known
+include $(RIOTBASE)/Makefile.features
 
 # Sanity check
 # The check is only done after 'include $(RIOTBOARD)/$(BOARD)/Makefile.include'
@@ -297,15 +303,6 @@ GNRC_NETIF_NUMOF ?= 1
 ifneq ($(GNRC_NETIF_NUMOF),1)
   CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
 endif
-
-# handle removal of default modules
-USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
-
-# process dependencies
-include $(RIOTBASE)/Makefile.dep
-
-# Include provided features from drivers after all dependencies are known
-include $(RIOTBASE)/drivers/Makefile.features
 
 ifeq ($(strip $(MCU)),)
 	MCU = $(CPU)
