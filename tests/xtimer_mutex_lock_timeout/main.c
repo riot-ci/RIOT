@@ -30,7 +30,7 @@
  * Foward declarations
  */
 static int cmd_test_xtimer_mutex_lock_timeout_long_unlocked(int argc,
-                                                              char **argv);
+                                                            char **argv);
 static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff_locked(int argc,
                                                                      char **argv);
 
@@ -49,7 +49,7 @@ static const shell_command_t shell_commands[] = {
  * @brief   shell command to test xtimer_mutex_lock_timeout
  *
  * the mutex is not locked before the function call and
- * the timer long. Meaning the timer will get removed 
+ * the timer long. Meaning the timer will get removed
  * before the triggering.
  *
  * @param[in] argc  Number of arguments
@@ -58,7 +58,7 @@ static const shell_command_t shell_commands[] = {
  * @return 0 on success
  */
 static int cmd_test_xtimer_mutex_lock_timeout_long_unlocked(int argc,
-                                                              char **argv)
+                                                            char **argv)
 {
     (void)argc;
     (void)argv;
