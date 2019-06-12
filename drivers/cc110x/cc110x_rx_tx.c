@@ -31,7 +31,7 @@
 
 void cc110x_rx(cc110x_t *dev)
 {
-    //DEBUG("[cc110x] Going to RX\n");
+    DEBUG("[cc110x] Going to RX\n");
     /* bring device to IDLE state and flush FIFOs (just in case) */
     gpio_irq_disable(dev->params.gdo0);
     gpio_irq_disable(dev->params.gdo2);
