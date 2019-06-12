@@ -40,18 +40,16 @@ USEMODULE += saul_default
 BOARD_PROVIDES_NETIF := acd52832 airfy-beacon b-l072z-lrwan1 calliope-mini \
                         cc2538dk esp32-mh-et-live-minikit esp32-olimex-evb \
                         esp32-wemos-lolin-d32-pro esp32-wroom-32 \
-                        esp32-wrover-kit firefly fox i-nucleo-lrwan1 \
-                        iotlab-a8-m3 iotlab-m3 lobaro-lorabox lsn50 microbit mulle native \
-                        nrf51dk nrf51dongle nrf52832-mdk nrf52840-mdk \
-                        nrf52840dk nrf52dk nrf6310 openmote-cc2538 \
-                        particle-argon particle-boron particle-xenon \
-                        pba-d-01-kw2x reel remote-pa remote-reva remote-revb \
-                        ruuvitag samr21-xpro samr30-xpro telosb thingy52 \
-                        yunjia-nrf51822 z1
+                        esp32-wrover-kit firefly fox hamilton i-nucleo-lrwan1 \
+                        iotlab-a8-m3 iotlab-m3 lobaro-lorabox lsn50 microbit msba2 msbiot \
+                        mulle native nrf51dk nrf51dongle nrf52832-mdk \
+                        nrf52840-mdk nrf52840dk nrf52dk nrf6310 openmote-b \
+                        openmote-cc2538 particle-argon particle-boron \
+                        particle-xenon pba-d-01-kw2x reel remote-pa \
+                        remote-reva remote-revb ruuvitag samr21-xpro \
+                        samr30-xpro telosb thingy52 yunjia-nrf51822 z1
 
 ifneq (,$(filter $(BOARD),$(BOARD_PROVIDES_NETIF)))
-  # Use modules for networking
-  FEATURES_REQUIRED += netif
   # gnrc is a meta module including all required, basic gnrc networking modules
   USEMODULE += gnrc
   # use the default network interface for the board
