@@ -38,7 +38,7 @@ static int cmd_test_xtimer_mutex_lock_timeout_long_locked(int argc,
  * @brief   List of command for this application.
  */
 static const shell_command_t shell_commands[] = {
-    { "mutex_timeout_n_spin_unlocked", "unlocked mutex and without spinning",
+    { "mutex_timeout_long_unlocked", "unlocked mutex with long timeout",
       cmd_test_xtimer_mutex_lock_timeout_long_unlocked, },
     { "mutex_timeout_long_locked", "locked mutex and with long timeout",
       cmd_test_xtimer_mutex_lock_timeout_long_locked, },
