@@ -1,9 +1,11 @@
-# Configure default and allowed boards
+# Configure nrf52dk as default board
 BOARD ?= nrf52dk
-BOARD_WHITELIST := nrf52dk nrf52840dk
 
 # load the default test environment
 include ../Makefile.tests_common
+
+# Requires nRF BLE radio
+FEATURES_REQUIRED += radio_nrfble
 
 # RIOT modules used in for this test
 USEMODULE += xtimer
