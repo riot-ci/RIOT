@@ -17,6 +17,9 @@ define board_missing_features
   FEATURES_MISSING  :=
   FEATURES_PROVIDED :=
 
+  include $(RIOTBASE)/Makefile.dep
+
+  # Include features only once all dependencies are known
   include $(RIOTBASE)/Makefile.features
 
   ifdef BUILDTEST_MCU_GROUP
@@ -25,8 +28,6 @@ define board_missing_features
     BOARDS_WITH_MISSING_FEATURES += $(1)
     endif
   endif
-
-  include $(RIOTBASE)/Makefile.dep
 
   FEATURES_MISSING := $$(sort $$(filter-out $$(FEATURES_PROVIDED), $$(FEATURES_REQUIRED)))
   ifneq (, $$(FEATURES_MISSING))
