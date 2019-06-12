@@ -61,7 +61,7 @@ void cpu_init(void)
     while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SWRST) {}
 
     PM->PLCFG.reg = PM_PLCFG_PLSEL_PL2;
-    while (0 == PM->INTFLAG.bit.PLRDY) {}
+    while (!PM->INTFLAG.bit.PLRDY) {}
 
     MCLK->APBBMASK.reg |= MCLK_APBBMASK_NVMCTRL;
     _NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS(1);
