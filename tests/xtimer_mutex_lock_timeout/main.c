@@ -61,6 +61,7 @@ static int cmd_test_xtimer_mutex_lock_timeout_greater_backoff(int argc,
     puts("starting test: xtimer mutex lock timeout");
     mutex_t test_mutex = MUTEX_INIT;
 
+    /* timeout at one millisecond (1000 us) to make sure it does not spin. */
     if (xtimer_mutex_lock_timeout(&test_mutex, 1000) == 0) {
         puts("OK");
     }
