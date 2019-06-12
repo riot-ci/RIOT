@@ -50,6 +50,9 @@ ifeq ($(BOARD),$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
 endif
 
 # TEST_ON_CI_WHITELIST += all
+# The test requires some setup and to be run as root
+# So it cannot currently be run
+TEST_ON_CI_BLACKLIST += all
 
 .PHONY: ethos
 
