@@ -28,5 +28,6 @@ def testfunc(child):
     child.expect("OK")
     child.expect_exact("> ")
 
+
 if __name__ == "__main__":
     sys.exit(run(testfunc))
