@@ -152,6 +152,7 @@ ifneq (,$(filter trickle,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_netif,$(USEMODULE)))
+  FEATURES_REQUIRED += netif
   USEMODULE += l2util
   USEMODULE += fmt
   ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
