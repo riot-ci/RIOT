@@ -17,4 +17,6 @@ BOARD_INSUFFICIENT_MEMORY += chronos i-nucleo-lrwan1 \
                              nucleo-f303k8 nucleo-f334r8 nucleo-l053r8 \
                              stm32f0discovery
 
+TEST_ON_CI_WHITELIST += all
+
 include $(RIOTBASE)/Makefile.include
