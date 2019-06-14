@@ -3,4 +3,4 @@ export CPU = mips32r2_generic
 export USE_DSP = 1
 export USE_UHI_SYSCALLS = 1
 
-HEXFILE = $(BINFILE)
+FLASHFILE ?= $(BINFILE)
