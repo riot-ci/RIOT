@@ -122,10 +122,6 @@ def testfunc(child):
 
     for line in EXPECTED_STDOUT:
         child.expect_exact(line)
-    import os
-    # Make it fail for one of the cases
-    if os.environ.get('TOOLCHAIN', 'llvm'):
-        assert(0)
 
 
 if __name__ == "__main__":
