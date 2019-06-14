@@ -9,4 +9,7 @@ FEATURES_PROVIDED += periph_uart
 # load the common Makefile.features for Nucleo-32 boards
 include $(RIOTBOARD)/common/nucleo32/Makefile.features
 
+# Put other features for this board (in alphabetical order)
+FEATURES_PROVIDED += riotboot
+
 include $(RIOTCPU)/stm32l4/Makefile.features
