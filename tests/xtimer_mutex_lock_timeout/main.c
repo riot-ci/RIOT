@@ -66,7 +66,14 @@ static int cmd_test_xtimer_mutex_lock_timeout_long_unlocked(int argc,
     mutex_t test_mutex = MUTEX_INIT;
 
     if (xtimer_mutex_lock_timeout(&test_mutex, LONG_MUTEX_TIMEOUT) == 0) {
-        puts("OK");
+        /* mutex has to be locked */
+        if (mutex_trylock(&test_mutex) == 0) {
+            puts("OK");
+        }
+        else {
+            puts("error mutex not locked");
+        }
+
     }
     else {
         puts("error: mutex timed out");
@@ -100,7 +107,10 @@ static int cmd_test_xtimer_mutex_lock_timeout_long_locked(int argc,
         puts("Error: mutex taken");
     }
     else {
-        puts("OK");
+        /* mutex has to be locked */
+        if (mutex_trylock(&test_mutex) == 0) {
+            puts("OK");
+        }
     }
 
     return 0;
