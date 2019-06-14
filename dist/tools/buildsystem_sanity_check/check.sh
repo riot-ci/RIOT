@@ -110,7 +110,7 @@ check_not_exporting_variables() {
 
 
 error_on_input() {
-    grep '' && return 1
+    ! grep ''
 }
 
 all_checks() {
@@ -119,7 +119,7 @@ all_checks() {
 }
 
 main() {
-    all_checks | prepend 'Invalid build system patterns found by '"${0}:"  || error_on_input >&2
+    all_checks | prepend 'Invalid build system patterns found by '"${0}:" | error_on_input >&2
     exit $?
 }
 
