@@ -111,6 +111,10 @@ static int cmd_test_xtimer_mutex_lock_timeout_long_locked(int argc,
         if (mutex_trylock(&test_mutex) == 0) {
             puts("OK");
         }
+        else {
+            puts("error mutex not locked");
+        }
+
     }
 
     return 0;
