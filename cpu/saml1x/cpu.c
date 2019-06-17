@@ -20,6 +20,7 @@
 
 #include "cpu.h"
 #include "periph/init.h"
+#include "periph_conf.h"
 #include "board.h"
 
 #ifdef CPU_FAM_SAML11
@@ -79,6 +80,7 @@ void cpu_init(void)
     /* turn on only needed APB peripherals */
     MCLK->APBAMASK.reg = MCLK_APBAMASK_MCLK
                          | MCLK_APBAMASK_OSCCTRL
+                         | MCLK_APBAMASK_OSC32KCTRL
                          | MCLK_APBAMASK_GCLK
                          | MCLK_APBAMASK_PM
 #ifdef MODULE_PERIPH_GPIO_IRQ

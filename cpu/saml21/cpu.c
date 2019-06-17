@@ -20,6 +20,7 @@
 
 #include "cpu.h"
 #include "periph/init.h"
+#include "periph_conf.h"
 
 static void _gclk_setup(int gclk, uint32_t reg)
 {
