@@ -67,17 +67,18 @@ static void _rtt_clock_setup(void)
 #if EXTERNAL_OSC32_SOURCE
     OSC32KCTRL->XOSC32K.bit.EN1K = 1; /* needed at least on SAME54 */
     OSC32KCTRL->RTCCTRL.reg = OSC32KCTRL_RTCCTRL_RTCSEL_XOSC32K;
-#endif /* EXTERNAL_OSC32_SOURCE */
 
     /* RTC uses internal 32,768KHz Oscillator */
-#if INTERNAL_OSC32_SOURCE
+#elif INTERNAL_OSC32_SOURCE
     OSC32KCTRL->RTCCTRL.reg = OSC32KCTRL_RTCCTRL_RTCSEL_OSC32K;
-#endif /* INTERNAL_OSC32_SOURCE */
 
     /* RTC uses Ultra Low Power internal 32,768KHz Oscillator */
-#if ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE
+#elif ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE
     OSC32KCTRL->RTCCTRL.reg = OSC32KCTRL_RTCCTRL_RTCSEL_ULP32K;
-#endif /* ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE */
+
+#else
+#error "No clock source for RTT selected. "
+#endif
 }
 #endif /* !CPU_SAMD21 - Clock Setup */
 
