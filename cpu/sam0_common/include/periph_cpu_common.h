@@ -179,6 +179,20 @@ typedef enum {
 } uart_flag_t;
 
 /**
+ * @brief   Available SERCOM UART data size selections
+ * @{
+ */
+#define HAVE_UART_DATA_BITS_T
+typedef enum {
+    UART_DATA_BITS_5 = 0x5,   /**< 5 data bits */
+    UART_DATA_BITS_6 = 0x6,   /**< 6 data bits */
+    UART_DATA_BITS_7 = 0x7,   /**< 7 data bits */
+    UART_DATA_BITS_8 = 0x0,   /**< 8 data bits */
+    UART_DATA_BITS_9 = 0x1,   /**< 9 data bits */
+} uart_data_bits_t;
+/** @} */
+
+/**
  * @brief   UART device configuration
  */
 typedef struct {
