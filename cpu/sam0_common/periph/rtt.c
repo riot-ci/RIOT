@@ -65,7 +65,7 @@ static void _rtt_clock_setup(void)
 {
     /* RTC source clock is external oscillator at 32kHz */
 #if EXTERNAL_OSC32_SOURCE
-    OSC32KCTRL->XOSC32K.bit.EN1K = 1; /* needed at least on SAME54 */
+    OSC32KCTRL->XOSC32K.bit.EN32K = 1;
     OSC32KCTRL->RTCCTRL.reg = OSC32KCTRL_RTCCTRL_RTCSEL_XOSC32K;
 
     /* RTC uses internal 32,768KHz Oscillator */
