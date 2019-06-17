@@ -35,11 +35,9 @@ FLASHFILE ?= $(HEXFILE)
 FLASHER ?= $(PIC32PROG)
 FFLAGS  ?= $(FLASHFILE)
 
-# No reset command
+# No reset command, but the board resets on terminal open
 RESET ?=
 RESET_FLAGS ?=
 
 # Compile pic32prog if using the one provided in RIOT
-ifeq ($(PIC32PROG),$(FLASHER))
-  FLASHDEPS += $(PIC32PROG)
-endif
+FLASHDEPS += $(if $(findstring $(PIC32PROG),$(FLASHER)),$(PIC32PROG))
