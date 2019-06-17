@@ -110,7 +110,7 @@ then slot 1. tests/riotboot prints out the current booted slot in the shell.
 
 To test building, flashing and booting the first slot:
 
-`BOARD=samr21-xpro APP_VER=$(date +%s) make -C tests/riotboot/ riotboot/flash-combined-slot0 test`
+`BOARD=samr21-xpro APP_VER=$(date +%s) make -C tests/riotboot/ flash test`
 
 For the second slot:
 
