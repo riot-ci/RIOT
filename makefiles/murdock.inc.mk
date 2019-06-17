@@ -17,7 +17,7 @@ FLASHFILE ?= $(filter $(HEXFILE) $(ELFFILE:.elf=.bin) $(ELFFILE),$(FFLAGS))
 # If the test needs any extra files, they can be added to the TEST_EXTRA_FILES
 # variable. They will also be sent to the test worker *and placed in the
 # application's BINDIR*.
-test-murdock:
+test-murdock: $(TEST_EXTRA_FILES)
 	cd $(RIOTBASE) && \
 		./.murdock test_job \
 		$$(realpath --relative-to $(RIOTBASE) $(APPDIR)) \
