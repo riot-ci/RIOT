@@ -188,7 +188,6 @@ typedef enum {
     UART_DATA_BITS_6 = 0x6,   /**< 6 data bits */
     UART_DATA_BITS_7 = 0x7,   /**< 7 data bits */
     UART_DATA_BITS_8 = 0x0,   /**< 8 data bits */
-    UART_DATA_BITS_9 = 0x1,   /**< 9 data bits */
 } uart_data_bits_t;
 /** @} */
 

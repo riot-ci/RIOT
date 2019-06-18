@@ -157,11 +157,6 @@ int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity,
         return UART_NOMODE;
     }
 
-    if (data_bits != UART_DATA_BITS_5 && data_bits != UART_DATA_BITS_6 &&
-            data_bits != UART_DATA_BITS_7 && data_bits != UART_DATA_BITS_8) {
-        return UART_NOMODE;
-    }
-
     /* Disable UART first to remove write protect */
     dev(uart)->CTRLA.bit.ENABLE = 0;
     while (dev(uart)->SYNCBUSY.bit.ENABLE) {}
