@@ -585,7 +585,7 @@ reset:
 .PHONY: test test/available
 TESTS ?= $(foreach file,$(wildcard $(APPDIR)/tests/*[^~]),\
                         $(shell test -f $(file) -a -x $(file) && echo $(file)))
-test: $(TEST_DEPS)
+test: $(TEST_DEPS) $(TEST_EXTRA_FILES)
 	$(Q) for t in $(TESTS); do \
 		$$t || exit 1; \
 	done
