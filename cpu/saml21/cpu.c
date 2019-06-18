@@ -55,6 +55,7 @@ static void _xosc32k_setup(void)
     /* RTC uses External 32,768KHz Oscillator */
     OSC32KCTRL->XOSC32K.reg = OSC32KCTRL_XOSC32K_XTALEN
                             | OSC32KCTRL_XOSC32K_RUNSTDBY
+                            | OSC32KCTRL_XOSC32K_EN32K
                             | OSC32KCTRL_XOSC32K_ENABLE;
 
     /* Wait XOSC32K Ready */
