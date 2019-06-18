@@ -60,8 +60,9 @@ static void fdpll0_init(uint32_t f_cpu)
     OSCCTRL->Dpll[0].DPLLRATIO.reg = OSCCTRL_DPLLRATIO_LDRFRAC(LDR & 0x1F)
                                    | OSCCTRL_DPLLRATIO_LDR((LDR >> 5) - 1);
 
-    /* Without LBYPASS, startup takes very long, reson unknown. */
+    /* Without LBYPASS, startup takes very long, see errata section 2.13. */
     OSCCTRL->Dpll[0].DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK_GCLK
+                                   | OSCCTRL_DPLLCTRLB_WUF
                                    | OSCCTRL_DPLLCTRLB_LBYPASS;
 
     OSCCTRL->Dpll[0].DPLLCTRLA.reg = OSCCTRL_DPLLCTRLA_ENABLE;
