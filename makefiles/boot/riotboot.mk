@@ -129,9 +129,7 @@ riotboot/flash: riotboot/flash-slot0 riotboot/flash-bootloader
 # make applications that use the riotboot feature default to actually using it
 # Target 'all' will generate the combined file directly.
 # It also makes 'flash' and 'flash-only' work without specific command.
-ifneq (,$(filter riotboot, $(FEATURES_USED)))
-  FLASHFILE = $(RIOTBOOT_EXTENDED_BIN)
-endif
+FLASHFILE = $(RIOTBOOT_EXTENDED_BIN)
 
 else
 riotboot:
