@@ -186,6 +186,17 @@ static int check_config(cc110x_t *dev)
 
 static int check_gdo_pins(cc110x_t *dev)
 {
+    /* GPIOs connected to GDOs are not yet configured, so we do this now */
+    if (gpio_init(dev->params.gdo2, GPIO_IN)) {
+        DEBUG("[cc110x] Configuring GDO2 failed");
+        return -1;
+    }
+
+    if (gpio_init(dev->params.gdo0, GPIO_IN)) {
+        DEBUG("[cc110x] Configuring GDO0 failed");
+        return -1;
+    }
+
     /* Validate that GDO2 responds to configuration updates */
     cc110x_write(dev, CC110X_REG_IOCFG2, CC110X_GDO_CONSTANT_HIGH);
     if (!gpio_read(dev->params.gdo2)) {
