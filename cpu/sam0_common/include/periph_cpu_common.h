@@ -180,6 +180,9 @@ typedef enum {
 
 /**
  * @brief   Available SERCOM UART data size selections
+ *
+ * 9 bit UART mode is currently unavailable as it is not supported by the common
+ * RIOT UART peripheral API.
  * @{
  */
 #define HAVE_UART_DATA_BITS_T
