@@ -363,6 +363,11 @@ static int cc110x_recv(netdev_t *netdev, void *buf, size_t len, void *info)
         return -EIO;
     }
 
+    /* Copy RX info on last frame (if requested) */
+    if (info != NULL) {
+        *((cc1xxx_rx_info_t *)info) = dev->rx_info;
+    }
+
     if (!buf) {
         /* Get the size of the frame; if len > 0 then also drop the frame */
         if (len > 0) {
@@ -381,11 +386,6 @@ static int cc110x_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     }
 
     memcpy(buf, dev->buf.data, (size_t)size);
-
-    /* Copy RX info (if requested) on last frame before entering RX again */
-    if (info != NULL) {
-        *((cc1xxx_rx_info_t *)info) = dev->rx_info;
-    }
 
     cc110x_rx(dev);
     cc110x_release(dev);
