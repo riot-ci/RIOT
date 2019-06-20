@@ -30,9 +30,11 @@
 #define MAIN_QUEUE_SIZE     (8)
 
 static int sc_dump(int argc, char **argv);
+int sc_cc110x(int argc, char **argv);
 
 static const shell_command_t shell_commands[] = {
     { "dump", "Enable/disable dumping of frames", sc_dump },
+    { "cc110x", "Print the low level state of an CC110x device", sc_cc110x },
     { NULL, NULL, NULL }
 };
 
@@ -120,7 +122,11 @@ int main(void)
          "      fragmentation. The driver supports frames of up to 255 bytes\n"
          "- Using \"txtsnd\":\n"
          "    - Turn on packet dumping using the command \"dump y\" on node A\n"
-         "    - Send both unicast and broadcast frame from node B to A\n");
+         "    - Send both unicast and broadcast frame from node B to A\n"
+         "- Using \"cc110x\":\n"
+         "    - This tool will print low level details for all CC110x devices\n"
+         "      attached\n"
+         "    - This will be mostly useful for debugging, not for testing\n");
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
 
