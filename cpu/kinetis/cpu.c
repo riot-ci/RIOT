@@ -19,6 +19,7 @@
 
 #include "cpu.h"
 #include "periph/init.h"
+#include "stdio_base.h"
 #ifdef MODULE_PERIPH_MCG
 #include "mcg.h"
 #endif
