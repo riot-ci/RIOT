@@ -379,6 +379,8 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, uint8_t fla
         bit_set8(&i2c->C1, I2C_C1_IICIE_SHIFT);
         /* Initiate master receive mode by reading the data register once when
          * the C1[TX] bit is cleared and C1[MST] is set */
+         /* cppcheck-suppress unreadVariable
+          * (reason: needed to empty D register) */
         volatile uint8_t dummy;
         dummy = i2c->D;
         ++dummy;
