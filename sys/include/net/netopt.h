@@ -578,11 +578,6 @@ typedef enum {
     NETOPT_PHY_BUSY,
 
     /**
-     * @brief   (uint8_t*) LoRaWAN device EUI (8 bytes length)
-     */
-    NETOPT_LORAWAN_DEVEUI,
-
-    /**
      * @brief   (uint8_t*) LoRaWAN application EUI (8 bytes length)
      */
     NETOPT_LORAWAN_APPEUI,
@@ -601,11 +596,6 @@ typedef enum {
      */
     NETOPT_LORAWAN_APPSKEY,
 
-    /**
-     * @brief   (@ref netopt_enable_t) LoRaWAN join state
-     */
-    NETOPT_LORAWAN_JOIN_STATE,
-
      /**
      * @brief   (uint8_t) LoRaWAN device class (A, B, C)
      * - LoRaWAN: @ref loramac_class_t
@@ -616,17 +606,17 @@ typedef enum {
      * @brief   (uint8_t) LoRaWAN datarate
      * - LoRaWAN: @ref loramac_dr_idx_t
      */
-    NETOPT_LORAWAN_DATARATE,
+    NETOPT_LORAWAN_DR,
 
     /**
      * @brief   (@ref netopt_enable_t) LoRaWAN adaptive datarate
      */
-    NETOPT_LORAWAN_ADAPTIVE_DATARATE,
+    NETOPT_LORAWAN_ADR,
 
     /**
      * @brief   (@ref netopt_enable_t) LoRaWAN public network
      */
-    NETOPT_PUBLIC_NETWORK,
+    NETOPT_LORAWAN_PUBLIC_NETWORK,
 
     /**
      * @brief   (uint8_t) LoRaWAN TX application port
@@ -638,7 +628,7 @@ typedef enum {
      * @brief   (loramac_dr_idx_t) LoRaWAN datarate for second RX window
      * - LoRaWAN: @ref loramac_dr_idx_t
      */
-    NETOPT_LORAWAN_RX2_DATARATE,
+    NETOPT_LORAWAN_RX2_DR,
 
     /**
      * @brief   (uint32_t) LoRaWAN frequency used for second RX window
