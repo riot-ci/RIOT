@@ -1,0 +1,5 @@
+/**
+ * @defgroup    boards_stm32l0538-disco STM32L0538-DISCO
+ * @ingroup     boards
+ * @brief       Support for the STM32L0538-DISCO board
+ */
