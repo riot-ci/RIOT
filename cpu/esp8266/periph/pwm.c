@@ -204,10 +204,10 @@ void pwm_set(pwm_t pwm, uint8_t channel, uint16_t value)
     next_off = next_on + value;
 
     if (_pwm_dev.cycles < next_on) {
-        next_on = next_on + _pwm_dev.res;
+        next_on += _pwm_dev.res;
     }
     if (_pwm_dev.cycles < next_off) {
-        next_off = next_off + _pwm_dev.res;
+        next_off += _pwm_dev.res;
     }
 
     _pwm_dev.chn[channel].next_on = next_on;
