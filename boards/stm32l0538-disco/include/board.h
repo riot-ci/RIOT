@@ -7,15 +7,13 @@
  */
 
 /**
- * @defgroup    boards_stm32l0538-disco STM32L0538-DISCO
- * @ingroup     boards
- * @brief       Support for the STM32L0538-DISCO board
+ * @ingroup     boards_stm32l0538-disco
  * @{
  *
  * @file
  * @brief       Board specific definitions for the STM32L0538-DISCO evaluation board.
  *
- * @author      Alexabdre Abadie <alexandre.abadie@inria.fr>
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
 #ifndef BOARD_H
