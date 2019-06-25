@@ -13,6 +13,7 @@ ifneq ($(BOARD),native)
   CFLAGS += -DTHREAD_STACKSIZE_MAIN='(THREAD_STACKSIZE_DEFAULT+2048)'
 endif
 
-TEST_ON_CI_WHITELIST += all
+# Blacklist native as `murdock` fails on utf-8 characters for native tests
+TEST_ON_CI_WHITELIST += samr21-xpro
 
 include $(RIOTBASE)/Makefile.include
