@@ -17,4 +17,7 @@ BOARD_INSUFFICIENT_MEMORY += chronos i-nucleo-lrwan1 \
                              nucleo-f303k8 nucleo-f334r8 nucleo-l053r8 \
                              stm32f0discovery
 
+# HACK Blacklist native as `murdock` fails on utf-8 characters for native tests
+TEST_ON_CI_WHITELIST += nrf52dk samr21-xpro
+
 include $(RIOTBASE)/Makefile.include
