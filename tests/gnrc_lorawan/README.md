@@ -70,7 +70,7 @@ CFLAGS += -DLORAMAC_DEV_ADDR_DEFAULT=\{0xFF\,0xFF\,0xFF\,0xFF\}
 
 ## Send data
 
-After join, send data using `send` comand. E.g to send "Hello RIOT!" to port 2:
+After join, send data using `send` command. E.g to send "Hello RIOT!" to port 2:
 
 ```
 send 3 "Hello RIOT!" 2
