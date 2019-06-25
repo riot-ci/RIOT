@@ -1,4 +1,4 @@
-GNRC LoRaWAN test application
+GNRC LoRaWAN application
 =============================
 
 This application is a showcase for testing GNRC LoRaWAN stack. You should be

@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+# name of your application
+APPLICATION = gnrc_lorawan
 
 USEMODULE += shell
 USEMODULE += shell_commands
@@ -7,16 +8,12 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_lorawan
 USEMODULE += gnrc_netapi_callbacks
 
-# GNRC LoRaWAN has been tested in the following boards. Eventually this list will
-# be expanded.
-BOARD_WHITELIST := b-l072z-lrwan1 lobaro-lorabox
-
 # Turn on developer helpers
 DEVELHELP ?= 1
 
+# use SX1276 by default
 DRIVER ?= sx1276
 
-# use SX1276 by default
 USEMODULE += $(DRIVER)
 
 # Required for the cipher module */
