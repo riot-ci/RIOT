@@ -31,15 +31,10 @@
 #include "sx127x.h"
 #include "sx127x_params.h"
 
-#if !defined(MODULE_GNRC_LORAWAN) || doxygen
 /**
  * @brief   Calculate the number of configured SX127x devices
  */
 #define SX127X_NUMOF        (sizeof(sx127x_params) / sizeof(sx127x_params_t))
-#else
-/* GNRC LoRaWAN only supports one interface so far */
-#define SX127X_NUMOF        (1)
-#endif
 
 /**
  * @brief   Define stack parameters for the MAC layer thread
@@ -66,6 +61,9 @@ void auto_init_sx127x(void)
 
         sx127x_setup(&sx127x_devs[i], &sx127x_params[i]);
 #ifdef MODULE_GNRC_LORAWAN
+        /* Currently only one lora device is supported */
+        assert(SX127X_NUMOF == 1);
+
         gnrc_netif_lorawan_create(sx127x_stacks[i], SX127X_STACKSIZE, SX127X_PRIO,
                               "sx127x", (netdev_t *)&sx127x_devs[i]);
 #else
