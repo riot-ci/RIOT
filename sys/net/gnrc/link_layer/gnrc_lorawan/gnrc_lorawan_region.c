@@ -15,10 +15,10 @@
 #include "net/gnrc/netif.h"
 #include "net/gnrc/lorawan/region.h"
 
-#define GNRC_LORAWAN_NUMOF_DATARATES 6
+#define GNRC_LORAWAN_DATARATES_NUMOF 6
 
-static uint8_t dr_sf[GNRC_LORAWAN_NUMOF_DATARATES] = { LORA_SF12, LORA_SF11, LORA_SF10, LORA_SF9, LORA_SF8, LORA_SF7 };
-static uint8_t dr_bw[GNRC_LORAWAN_NUMOF_DATARATES] = { LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ };
+static uint8_t dr_sf[GNRC_LORAWAN_DATARATES_NUMOF] = { LORA_SF12, LORA_SF11, LORA_SF10, LORA_SF9, LORA_SF8, LORA_SF7 };
+static uint8_t dr_bw[GNRC_LORAWAN_DATARATES_NUMOF] = { LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ };
 
 int gnrc_lorawan_set_dr(gnrc_lorawan_t *mac, uint8_t datarate)
 {
@@ -116,7 +116,7 @@ uint8_t gnrc_lorawan_region_mac_payload_max(uint8_t datarate)
 
 int gnrc_lorawan_validate_dr(uint8_t dr)
 {
-    if (dr < GNRC_LORAWAN_NUMOF_DATARATES) {
+    if (dr < GNRC_LORAWAN_DATARATES_NUMOF) {
         return true;
     }
     return false;
