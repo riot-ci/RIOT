@@ -78,10 +78,6 @@ static void *_dumper_thread(void *arg)
 {
     (void)arg;
     msg_init_queue(_dumper_queue, DUMPER_QUEUE_SIZE);
-    /* subscribe for any IPv6 packets */
-    gnrc_netreg_entry_init_pid(&_dumper, GNRC_NETREG_DEMUX_CTX_ALL,
-                               sched_active_pid);
-    gnrc_netreg_register(GNRC_NETTYPE_IPV6, &_dumper);
 
     while (1) {
         msg_t msg;
@@ -149,23 +145,35 @@ static gnrc_pktsnip_t *_build_recvd_pkt(void)
 
 static int _run_test(int argc, char **argv)
 {
-    gnrc_pktsnip_t *pkt = _build_recvd_pkt();
     int subscribers;
     (void)argc;
     (void)argv;
     if (_dumper.target.pid <= KERNEL_PID_UNDEF) {
-        _dumper.target.pid = thread_create(_dumper_stack, sizeof(_dumper_stack),
-                                           THREAD_PRIORITY_MAIN - 1, 0,
-                                           _dumper_thread, NULL, "dumper");
+        gnrc_netreg_entry_init_pid(&_dumper, GNRC_NETREG_DEMUX_CTX_ALL,
+                                   thread_create(_dumper_stack,
+                                                 sizeof(_dumper_stack),
+                                                 THREAD_PRIORITY_MAIN - 1, 0,
+                                                 _dumper_thread, NULL,
+                                                 "dumper"));
+        assert(_dumper.target.pid > KERNEL_PID_UNDEF);
         /* give dumper thread time to run */
-        xtimer_sleep(1);
+        xtimer_usleep(200);
     }
     /* activate dumping of sent ethernet frames */
     netdev_test_set_send_cb((netdev_test_t *)_mock_netif->dev,
                             _dump_etherframe);
+    /* first, test forwarding without subscription */
     subscribers = gnrc_netapi_dispatch_receive(GNRC_NETTYPE_IPV6,
                                                GNRC_NETREG_DEMUX_CTX_ALL,
-                                               pkt);
+                                               _build_recvd_pkt());
+    /* only IPv6 should be subscribed at the moment */
+    assert(subscribers == 1);
+    /* subscribe dumper thread for any IPv6 packets */
+    gnrc_netreg_register(GNRC_NETTYPE_IPV6, &_dumper);
+    /* now test forwarding with subscription */
+    subscribers = gnrc_netapi_dispatch_receive(GNRC_NETTYPE_IPV6,
+                                               GNRC_NETREG_DEMUX_CTX_ALL,
+                                               _build_recvd_pkt());
     /* assert 2 subscribers: IPv6 and gnrc_pktdump as registered above */
     assert(subscribers == 2);
     return 0;
