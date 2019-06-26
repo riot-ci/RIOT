@@ -10,6 +10,7 @@ import sys
 
 from testrunner import run
 
+
 def testfunc(child):
     child.sendline("run_test")
     child.expect(r"Forwarded Ethernet frame:")
