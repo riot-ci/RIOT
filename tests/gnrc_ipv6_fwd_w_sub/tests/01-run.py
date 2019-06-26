@@ -29,7 +29,7 @@ def testfunc(child):
     start_addr = child.match.group(1)
     size = child.match.group(2)
     child.expect(r"  position of last byte used: \d+")
-    child.expect(r"~ unused: {} \(next: (\(nil\)|0x0+), size: {}\) ~"
+    child.expect(r"~ unused: {} \(next: (\(nil\)|0(x0+)?), size: +{}\) ~"
                  .format(start_addr, size))
 
 
