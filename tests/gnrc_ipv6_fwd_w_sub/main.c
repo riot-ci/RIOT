@@ -115,8 +115,9 @@ static int _dump_etherframe(netdev_t *dev, const iolist_t *iolist)
     (void)dev;
     while (iolist) {
         if ((outbuf_len + iolist->iol_len) > sizeof(outbuf)) {
-            printf("Ignoring packet: %u > %u\n",
-                   (outbuf_len + iolist->iol_len), sizeof(outbuf));
+            printf("Ignoring packet: %lu > %u\n",
+                  (long unsigned)(outbuf_len + iolist->iol_len),
+                  sizeof(outbuf));
             /* ignore larger packets */
             return outbuf_len;
         }
