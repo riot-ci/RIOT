@@ -22,7 +22,7 @@ all: $(EMB6_SUBMODULES)
 	"$(MAKE)" -C $(PKG_BUILDDIR)
 
 # Rule for all submodules
-emb6_%: git-download
+emb6_%:
 	"$(MAKE)" -C $(dir $(shell grep -lR "MODULE.*=.*\<$@\>" $(PKG_BUILDDIR)))
 
 include $(RIOTBASE)/pkg/pkg.mk
