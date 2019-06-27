@@ -62,13 +62,17 @@ application.
 
 #### 3 user controllable LEDs
 
-| NAME  | LED_RED   | LED_YELLOW    | LED_GREEN |
-| ----- | --------- | ------------- | --------- |
-| Color | red       | yellow        | green     |
-| Pin   | PB8       | PB14          | PB15      |
+| NAME      | LED_RED           | LED_YELLOW        | LED_GREEN         |
+| --------- | ----------------- | ----------------- | ----------------- |
+| Color     | red               | yellow            | green             |
+| Pin       | PB8               | PB14              | PB15              |
+| Pin Alias | @ref LED0_PIN     | @ref LED1_PIN     | @ref LED2_PIN     |
+| Macros    | @ref LED0_ON, ... | @ref LED1_ON, ... | @ref LED2_ON, ... |
 
 The LEDs can be controlled inside your RIOT application by using the LED
-macros provided in @ref boards_msbiot.
+macros @ref LED0_ON, @ref LED0_OFF, and @ref LED0_TOGGLE for the red LED,
+@ref LED1_ON, @ref LED1_OFF, and @ref LED1_TOGGLE for the yellow LED, and
+@ref LED2_ON, @ref LED2_OFF, and @ref LED2_TOGGLE for the green LED.
 
 There is also a yellow charge LED on the board indicating the charging
 process of the battery.
