@@ -1,0 +1,2 @@
+CFLAGS += -Wno-strict-prototypes
+INCLUDES += -I$(PKGDIRBASE)/wac

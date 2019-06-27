@@ -1,0 +1,10 @@
+CFLAGS += -DPLATFORM=3
+CFLAGS += -Wno-old-style-definition
+CFLAGS += -Wno-cast-function-type
+CFLAGS += -Wno-sign-compare
+CFLAGS += -Wno-pedantic
+CFLAGS += -Wno-format
+
+SRC := util.c thunk.c wa.c platform_riot.c
+
+include $(RIOTBASE)/Makefile.base
