@@ -708,8 +708,6 @@ int dma_configure(dma_t dma, int chan, const volatile void *src, volatile void *
 #include "candev_stm32.h"
 #endif
 
-#ifdef MODULE_STM32_ETH
-
 /**
  * @brief   Ethernet Peripheral configuration
  */
@@ -848,6 +846,7 @@ typedef struct {
 #define ANER_LP_AN_ABLE                    (0x0001)
 /** @} */
 
+#ifdef MODULE_STM32_ETH
 /**
  * @brief Read a PHY register
  *
