@@ -160,20 +160,10 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
 /** @} */
 
-#ifdef MODULE_STM32_ETH
 /**
  * @name ETH configuration
  * @{
  */
-#define ETH_NUMOF           (1)
-#define ETH_RX_BUFFER_COUNT (4)
-#define ETH_TX_BUFFER_COUNT (4)
-
-#define ETH_RX_BUFFER_SIZE (1524)
-#define ETH_TX_BUFFER_SIZE (1524)
-
-#define ETH_DMA_ISR        isr_dma2_stream0
-
 static const eth_conf_t eth_config = {
     .mode = RMII,
     .mac = { 0 },
@@ -193,8 +183,16 @@ static const eth_conf_t eth_config = {
         GPIO_PIN(PORT_A, 1),
     }
 };
+
+#define ETH_RX_BUFFER_COUNT (4)
+#define ETH_TX_BUFFER_COUNT (4)
+
+#define ETH_RX_BUFFER_SIZE (1524)
+#define ETH_TX_BUFFER_SIZE (1524)
+
+#define ETH_DMA_ISR        isr_dma2_stream0
+
 /** @} */
-#endif /* MODULE_STM32_ETH */
 
 #ifdef __cplusplus
 }
