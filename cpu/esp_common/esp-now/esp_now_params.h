@@ -28,8 +28,7 @@
 
 /**
  * @brief   The size of the stack used for the ESP-NOW netdev driver thread.
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  */
 #ifndef ESP_NOW_STACKSIZE
 #define ESP_NOW_STACKSIZE       (THREAD_STACKSIZE_DEFAULT)
@@ -38,8 +37,7 @@
 /**
  * @brief   The priority of the ESP-NOW netdev driver thread. Should not be
  *          changed.
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  */
 #ifndef ESP_NOW_PRIO
 #define ESP_NOW_PRIO            (GNRC_NETIF_PRIO)
@@ -48,8 +46,7 @@
 /**
  * @brief   Period in microseconds at which an ESP-NOW node scans for other
  *          ESP-NOW nodes in its range.
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  */
 #ifndef ESP_NOW_SCAN_PERIOD
 #define ESP_NOW_SCAN_PERIOD     (10000000UL)
@@ -57,8 +54,7 @@
 
 /**
  * @brief   Passphrase used for the SoftAP interface of for all ESP-NOW nodes.
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  */
 #ifndef ESP_NOW_SOFT_AP_PASS
 #define ESP_NOW_SOFT_AP_PASS    "ThisistheRIOTporttoESP"
@@ -66,8 +62,7 @@
 
 /**
  * @brief   Channel used as broadcast medium by all ESP-NOW nodes together
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  */
 #ifndef ESP_NOW_CHANNEL
 #define ESP_NOW_CHANNEL         (6)
@@ -75,8 +70,7 @@
 
 /**
  * @brief   Key used for the communication between ESP-NOW nodes
- * @ingroup cpu_esp32_conf
- * @ingroup cpu_esp8266_conf
+ * @ingroup cpu_esp_common_conf
  *
  * The key has to be defined to enable encrypted communication between ESP-NOW
  * nodes. The key has to be of type *uint8_t [16]* and has to be exactly
