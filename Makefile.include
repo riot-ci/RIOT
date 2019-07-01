@@ -320,7 +320,7 @@ endif
 
 # set some settings useful for continuous integration builds
 ifeq ($(RIOT_CI_BUILD),1)
-    RIOT_VERSION_OVERRIDE:=buildtest
+    RIOT_VERSION ?= buildtest
     ifneq ($(filter $(BOARD_INSUFFICIENT_MEMORY), $(BOARD)),)
         $(info CI-build: skipping link step)
         RIOTNOLINK:=1
