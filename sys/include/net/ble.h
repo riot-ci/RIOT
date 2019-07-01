@@ -119,19 +119,6 @@ extern "C" {
 /** @} */
 
 /**
- * @name    16-bit service identifiers for services defined by the BT SIG
- *
- * @see https://www.bluetooth.com/specifications/gatt/services
- * @{
- */
-#define BLE_SVC_GAP                         (0x1800)
-#define BLE_SVC_GATT                        (0x1801)
-#define BLE_SVC_ENVSS                       (0x181a)
-#define BLE_SVC_IPSS                        (0x1820)
-/* add more on demand */
-/** @} */
-
-/**
  * @name    Characteristic format types (8-bit)
  *
  * @see https://www.bluetooth.com/specifications/assigned-numbers/format-types
