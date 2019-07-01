@@ -560,9 +560,8 @@ preflash: $(BUILD_BEFORE_FLASH)
 	$(PREFLASHER) $(PREFFLAGS)
 
 termdeps: $(TERMDEPS)
-	@true
 
-term: $(filter flash, $(MAKECMDGOALS)) termdeps
+term: $(filter flash, $(MAKECMDGOALS)) $(TERMDEPS)
 	$(call check_cmd,$(TERMPROG),Terminal program)
 	$(TERMPROG) $(TERMFLAGS)
 
@@ -599,7 +598,7 @@ TESTS ?= $(foreach file,$(wildcard $(APPDIR)/tests/*[^~]),\
 # Murdock builds the term dependencies before running "make test" to circumvent
 # this. In order to make local builds behave similar, add the term deps here.
 # See #11762.
-TEST_DEPS += termdeps
+TEST_DEPS += $(TERMDEPS)
 
 test: $(TEST_DEPS)
 	$(Q) for t in $(TESTS); do \
