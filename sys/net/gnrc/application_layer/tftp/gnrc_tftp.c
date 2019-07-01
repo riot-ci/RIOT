@@ -405,11 +405,13 @@ int gnrc_tftp_server(tftp_data_cb_t data_cb, tftp_start_cb_t start_cb, tftp_stop
     }
 
     /* context will be initialized when a connection is established */
-    tftp_context_t ctxt;
-    ctxt.data_cb = data_cb;
-    ctxt.start_cb = start_cb;
-    ctxt.stop_cb = stop_cb;
-    ctxt.enable_options = use_options;
+    tftp_context_t ctxt = {
+        .src_port = GNRC_TFTP_DEFAULT_DST_PORT,
+        .data_cb = data_cb,
+        .start_cb = start_cb,
+        .stop_cb = stop_cb,
+        .enable_options = use_options,
+    };
 
     /* validate our arguments */
     assert(data_cb);
@@ -606,6 +608,7 @@ tftp_state _tftp_state_processes(tftp_context_t *ctxt, msg_t *m)
     tmp = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_IPV6);
     ipv6_hdr_t *ip = (ipv6_hdr_t *)tmp->data;
     uint8_t *data = (uint8_t *)pkt->data;
+    ctxt->dst_port = byteorder_ntohs(udp->src_port);
 
     xtimer_remove(&(ctxt->timer));
 
