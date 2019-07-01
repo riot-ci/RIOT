@@ -608,6 +608,7 @@ tftp_state _tftp_state_processes(tftp_context_t *ctxt, msg_t *m)
     tmp = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_IPV6);
     ipv6_hdr_t *ip = (ipv6_hdr_t *)tmp->data;
     uint8_t *data = (uint8_t *)pkt->data;
+    ctxt->dst_port = byteorder_ntohs(udp->src_port);
 
     xtimer_remove(&(ctxt->timer));
 
