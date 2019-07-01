@@ -601,6 +601,21 @@ void gpio_init_af(gpio_t pin, gpio_af_t af);
  */
 void gpio_init_analog(gpio_t pin);
 
+
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F3) || \
+    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
+/**
+ * @brief   Initialize gpio to AIN
+ *
+ * stm32f need to have all there pins initialized to AIN so the consumption
+ * of the input Schmitt trigger is saved when running in STOP mode.
+ *
+ * @see https://comm.eefocus.com/media/download/index/id-1013834
+ */
+void gpio_pm_init_ain(void);
+#endif
+
 #ifdef MODULE_PERIPH_DMA
 /**
  * @brief   DMA stream not defined

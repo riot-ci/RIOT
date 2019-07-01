@@ -49,6 +49,11 @@ void cpu_init(void)
     periph_clk_en(APB1, BIT_APB_PWREN);
     /* initialize the system clock as configured in the periph_conf.h */
     stmclk_init_sysclk();
+#if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
+    defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F3) || \
+    defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7)
+    gpio_pm_init_ain();
+#endif
 #ifdef MODULE_PERIPH_DMA
     /*  initialize DMA streams */
     dma_init();
