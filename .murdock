@@ -120,6 +120,8 @@ get_supported_toolchains() {
 # supported board and toolchain. Only print for boards in $BOARDS.
 # if extra args are given, they will be prepended to each output line.
 get_app_board_toolchain_pairs() {
+    echo "$@"
+    return
     local appdir=$1
     local boards="$(get_supported_boards $appdir)"
 
