@@ -64,6 +64,10 @@
 #define GPIO_CLK_ENR_MASK     (0x000001FC)
 #endif
 
+#ifndef DISABLE_JTAG
+#define DISABLE_JTAG 0
+#endif
+
 /**
  * @brief   Initialize gpio to AIN
  *
@@ -72,7 +76,7 @@
  *
  * @see https://comm.eefocus.com/media/download/index/id-1013834
  */
-void _gpio_init_ain(void)
+static void _gpio_init_ain(void)
 {
     uint32_t ahb_gpio_clocks;
 
@@ -85,45 +89,46 @@ void _gpio_init_ain(void)
         GPIO_TypeDef *port;
         port = (GPIO_TypeDef *)(GPIOA_BASE + i*(GPIOB_BASE - GPIOA_BASE));
         if (IS_GPIO_ALL_INSTANCE(port)) {
-#if !defined (DISABLE_JTAG)
-            switch (i) {
-                /* preserve JTAG pins on PORTA and PORTB */
-                case 0:
+            if (!DISABLE_JTAG) {
 #if defined(CPU_FAM_STM32F1)
-                    port->CR[0] = GPIO_CRL_CNF;
-                    port->CR[1] = GPIO_CRH_CNF & 0x000FFFFF;
-#else
-                    port->MODER = 0xABFFFFFF;
-#endif
-                    break;
-                case 1:
-#if defined(CPU_FAM_STM32F1)
-                    port->CR[0] = GPIO_CRL_CNF & 0xFFF00FFF;
-                    port->CR[1] = GPIO_CRH_CNF;
-#else
-                    port->MODER = 0xFFFFFEBF;
-#endif
-                    break;
-                default:
-#if defined(CPU_FAM_STM32F1)
-                    port->CR[0] = GPIO_CRL_CNF;
-                    port->CR[1] = GPIO_CRH_CNF;
-#else
-                    port->MODER = 0xFFFFFFFF;
-#endif
-                    break;
+                switch (i) {
+                    /* preserve JTAG pins on PORTA and PORTB */
+                    case 0:
+                        port->CR[0] = GPIO_CRL_CNF;
+                        port->CR[1] = GPIO_CRH_CNF & 0x000FFFFF;
+                        break;
+                    case 1:
+                        port->CR[0] = GPIO_CRL_CNF & 0xFFF00FFF;
+                        port->CR[1] = GPIO_CRH_CNF;
+                        break;
+                    default:
+                        port->CR[0] = GPIO_CRL_CNF;
+                        port->CR[1] = GPIO_CRH_CNF;
+                        break;
+                }
+#else /* ! defined(CPU_FAM_STM32F1) */
+                switch (i) {
+                    /* preserve JTAG pins on PORTA and PORTB */
+                    case 0:
+                        port->MODER = 0xABFFFFFF;
+                        break;
+                    case 1:
+                        port->MODER = 0xFFFFFEBF;
+                        break;
+                    default:
+                        port->MODER = 0xFFFFFFFF;
+                        break;
+                }
+#endif /* defined(CPU_FAM_STM32F1) */
             }
-#else
+            else {
 #if defined(CPU_FAM_STM32F1)
-                    port->CR[0] = GPIO_CRL_CNF;
-                    port->CR[1] = GPIO_CRH_CNF;
+                port->CR[0] = GPIO_CRL_CNF;
+                port->CR[1] = GPIO_CRH_CNF;
 #else
-                    port->MODER = 0xFFFFFFFF;
+                port->MODER = 0xFFFFFFFF;
 #endif
-#endif
-        }
-        else {
-            break;
+            }
         }
     }
 
