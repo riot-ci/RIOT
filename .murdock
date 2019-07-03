@@ -315,7 +315,7 @@ pre_checks() {
 }
 
 get_jobs() {
-    pre_check || return 0
+    pre_checks || return 0
 
     get_non_compile_jobs
     get_compile_jobs
