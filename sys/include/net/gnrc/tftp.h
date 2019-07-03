@@ -29,6 +29,10 @@
  *  - https://tools.ietf.org/html/rfc2349
  *     (RFC2349 TFTP Timeout Interval and Transfer Size Options)
  *
+ * @deprecated  This module has serious quality defects and is not in a
+ *              maintainable state. It will be removed after the 2020.04 release
+ *              at the latest.
+ *
  * @author      Nick van IJzendoorn <nijzendoorn@engineering-spirit.nl>
  */
 
