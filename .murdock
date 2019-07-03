@@ -303,7 +303,20 @@ get_non_compile_jobs() {
         echo "$0 static_tests###{ \"jobdir\" : \"exclusive\" }"
 }
 
+# this function will be called first when building a pull request.
+pre_checks() {
+    if [ -n "${CI_BASE_BRANCH}" ]; then
+        if git log --pretty=oneline ${CI_BASE_BRANCH}..HEAD | grep -s '[skip]'; then
+            echo "echo Skipping build: [skip] found in commits.; false;"
+            return 1;
+        fi
+    fi
+    return 0
+}
+
 get_jobs() {
+    pre_checks || return 0
+
     get_non_compile_jobs
     get_compile_jobs
 }
