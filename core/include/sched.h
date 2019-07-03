@@ -225,6 +225,12 @@ extern schedstat_t sched_pidlist[KERNEL_PID_LAST + 1];
  *  @param[in] callback The callback functions the will be called
  */
 void sched_register_cb(void (*callback)(uint32_t, uint32_t));
+
+/**
+ *  @brief  Registers the sched statistics callback and sets laststart for
+ *          caller thread
+ */
+void init_schedstatistics(void);
 #endif /* MODULE_SCHEDSTATISTICS */
 
 #ifdef __cplusplus

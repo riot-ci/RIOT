@@ -75,7 +75,7 @@ const uint8_t _tcb_name_offset = offsetof(thread_t, name);
 #endif
 
 #ifdef MODULE_SCHEDSTATISTICS
-static void (*sched_cb) (uint32_t timestamp, uint32_t value) = NULL;
+static void (*sched_cb) (uint32_t value_1, uint32_t value_2) = NULL;
 schedstat_t sched_pidlist[KERNEL_PID_LAST + 1];
 #endif
 
@@ -100,10 +100,6 @@ int __attribute__((used)) sched_run(void)
         return 0;
     }
 
-#ifdef MODULE_SCHEDSTATISTICS
-    uint32_t now = xtimer_now().ticks32;
-#endif
-
     if (active_thread) {
         if (active_thread->status == STATUS_RUNNING) {
             active_thread->status = STATUS_PENDING;
@@ -114,21 +110,11 @@ int __attribute__((used)) sched_run(void)
             LOG_WARNING("scheduler(): stack overflow detected, pid=%" PRIkernel_pid "\n", active_thread->pid);
         }
 #endif
-
-#ifdef MODULE_SCHEDSTATISTICS
-        schedstat_t *active_stat = &sched_pidlist[active_thread->pid];
-        if (active_stat->laststart) {
-            active_stat->runtime_ticks += now - active_stat->laststart;
-        }
-#endif
     }
 
 #ifdef MODULE_SCHEDSTATISTICS
-    schedstat_t *next_stat = &sched_pidlist[next_thread->pid];
-    next_stat->laststart = now;
-    next_stat->schedules++;
     if (sched_cb) {
-        sched_cb(now, next_thread->pid);
+        sched_cb(active_thread->pid, next_thread->pid);
     }
 #endif
 
@@ -150,13 +136,6 @@ int __attribute__((used)) sched_run(void)
 
     return 1;
 }
-
-#ifdef MODULE_SCHEDSTATISTICS
-void sched_register_cb(void (*callback)(uint32_t, uint32_t))
-{
-    sched_cb = callback;
-}
-#endif
 
 void sched_set_status(thread_t *process, thread_status_t status)
 {
@@ -221,3 +200,34 @@ NORETURN void sched_task_exit(void)
     sched_active_thread = NULL;
     cpu_switch_context_exit();
 }
+
+#ifdef MODULE_SCHEDSTATISTICS
+void sched_register_cb(void (*callback)(uint32_t, uint32_t))
+{
+    sched_cb = callback;
+}
+
+void sched_statistics_cb(uint32_t active_thread, uint32_t next_thread) {
+
+    uint32_t now = xtimer_now().ticks32;
+
+    if((thread_getstatus(active_thread) != STATUS_STOPPED) && \
+       (thread_getstatus(active_thread) != STATUS_NOT_FOUND)) {
+        schedstat_t *active_stat = &sched_pidlist[active_thread];
+        if (active_stat->laststart) {
+            active_stat->runtime_ticks += now - active_stat->laststart;
+        }
+    }
+
+    schedstat_t *next_stat = &sched_pidlist[next_thread];
+    next_stat->laststart = now;
+    next_stat->schedules++;
+}
+
+void init_schedstatistics(void) {
+    schedstat_t *ss = &sched_pidlist[thread_getpid()];
+    ss->laststart = 0;
+
+    sched_register_cb(sched_statistics_cb);
+}
+#endif

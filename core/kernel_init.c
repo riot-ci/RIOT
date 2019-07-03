@@ -50,8 +50,7 @@ static void *main_trampoline(void *arg)
 #endif
 
 #ifdef MODULE_SCHEDSTATISTICS
-    schedstat_t *ss = &sched_pidlist[thread_getpid()];
-    ss->laststart = 0;
+    init_schedstatistics();
 #endif
 
     LOG_INFO("main(): This is RIOT! (Version: " RIOT_VERSION ")\n");
