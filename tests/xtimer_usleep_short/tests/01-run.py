@@ -18,7 +18,7 @@ def testfunc(child):
 
     while (i >= 0):
         try:
-            child.expect(u"going to sleep \\d+ usecs...$", timeout=3)
+            child.expect(u"going to sleep \\d+ usecs...", timeout=3)
         except pexpect.TIMEOUT:
             print("xtimer stuck when trying to sleep %d usecs" % (i+1))
             print("[FAILED]")
