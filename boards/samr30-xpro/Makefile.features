@@ -7,8 +7,5 @@ FEATURES_PROVIDED += periph_spi
 FEATURES_PROVIDED += periph_timer
 FEATURES_PROVIDED += periph_uart
 
-# Various other features (if any)
-FEATURES_PROVIDED += netif
-
 # samr30 is a specific flavor of saml21
 include $(RIOTCPU)/saml21/Makefile.features
