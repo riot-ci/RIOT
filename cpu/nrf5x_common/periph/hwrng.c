@@ -88,5 +88,6 @@ void hwrng_read(void *buf, unsigned int num)
 
     ret = sd_rand_application_vector_get((uint8_t *)buf, (uint8_t)num);
     assert(ret == NRF_SUCCESS);
+    (void)ret;
 }
 #endif /* MODULE_NORDIC_SOFTDEVICE_BLE */
