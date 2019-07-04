@@ -12,7 +12,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect(u"This test will call xtimer_usleep for values from \\d+ down to \\d+$")
+    child.expect(u"This test will call xtimer_usleep for values from \\d+ down to \\d+")
 
     i = 500
 
