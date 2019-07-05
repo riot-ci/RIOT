@@ -78,6 +78,7 @@ WEAK_DEFAULT void isr_lptim1(void);
 WEAK_DEFAULT void isr_lptim2(void);
 WEAK_DEFAULT void isr_lpuart1(void);
 WEAK_DEFAULT void isr_octospi1(void);
+WEAK_DEFAULT void isr_octospi2(void);
 WEAK_DEFAULT void isr_otg_fs(void);
 WEAK_DEFAULT void isr_pvd_pvm(void);
 WEAK_DEFAULT void isr_quadspi(void);
@@ -266,9 +267,9 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [DFSDM1_FLT1_IRQn        ] = isr_dfsdm1_flt1,          /* [62] DFSDM1 Filter 1 global Interrupt */
     [DFSDM1_FLT2_IRQn        ] = isr_dfsdm1_flt2,          /* [63] DFSDM1 Filter 2 global Interrupt */
     [OTG_FS_IRQn             ] = isr_otg_fs,               /* [67] USB OTG FS global Interrupt */
-    [QUADSPI_IRQn            ] = isr_quadspi,              /* [71] Quad SPI global interrupt */
+    [OCTOSPI1_IRQn           ] = isr_octospi1,             /* [71] OctoSPI1 global interrupt */
     [SAI2_IRQn               ] = isr_sai2,                 /* [75] Serial Audio Interface 2 global interrupt */
-    [OCTOSPI2_IRQn           ] = isr_octospi1,             /* [76] OctoSPI2 global interrupt */
+    [OCTOSPI2_IRQn           ] = isr_octospi2,             /* [76] OctoSPI2 global interrupt */
     [CRS_IRQn                ] = isr_crs,                  /* [82] CRS global interrupt */
     [I2C4_EV_IRQn            ] = isr_i2c4_ev,              /* [83] I2C4 Event interrupt */
     [I2C4_ER_IRQn            ] = isr_i2c4_er,              /* [84] I2C4 Error interrupt */
