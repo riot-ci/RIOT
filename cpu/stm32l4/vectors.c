@@ -266,6 +266,7 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     [DFSDM1_FLT1_IRQn        ] = isr_dfsdm1_flt1,          /* [62] DFSDM1 Filter 1 global Interrupt */
     [DFSDM1_FLT2_IRQn        ] = isr_dfsdm1_flt2,          /* [63] DFSDM1 Filter 2 global Interrupt */
     [OTG_FS_IRQn             ] = isr_otg_fs,               /* [67] USB OTG FS global Interrupt */
+    [QUADSPI_IRQn            ] = isr_quadspi,              /* [71] Quad SPI global interrupt */
     [SAI2_IRQn               ] = isr_sai2,                 /* [75] Serial Audio Interface 2 global interrupt */
     [OCTOSPI2_IRQn           ] = isr_octospi1,             /* [76] OctoSPI2 global interrupt */
     [CRS_IRQn                ] = isr_crs,                  /* [82] CRS global interrupt */
