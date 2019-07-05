@@ -1,0 +1,5 @@
+/**
+@defgroup    boards_stm32f723e-disco STM32F723E-DISCO board
+@ingroup     boards
+@brief       Support for the STM32F723E-DISCO board
+ */
