@@ -47,4 +47,10 @@ endif
 ifneq (,$(filter nimble_netif,$(USEMODULE)))
   USEMODULE += l2util
   USEMODULE += nimble_svc_ipss
+  ifneq (,$(filter gnrc_ipv6_router_default,$(USEMODULE)))
+    USEMODULE += gnrc_sixlowpan_router_default
+  endif
+  ifneq (,$(filter gnrc_ipv6_default,$(USEMODULE)))
+    USEMODULE += gnrc_sixlowpna_default
+  endif
 endif
