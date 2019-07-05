@@ -72,13 +72,17 @@ PSEUDOMODULES += scanf_float
 PSEUDOMODULES += schedstatistics
 PSEUDOMODULES += semtech_loramac_rx
 PSEUDOMODULES += sock
+PSEUDOMODULES += sock_dtls
 PSEUDOMODULES += sock_ip
 PSEUDOMODULES += sock_tcp
 PSEUDOMODULES += sock_udp
 PSEUDOMODULES += stdin
 PSEUDOMODULES += stdio_ethos
 PSEUDOMODULES += stdio_uart_rx
-PSEUDOMODULES += sock_dtls
+PSEUDOMODULES += suit_%
+
+# handle suit_v4 being a distinct module
+NO_PSEUDOMODULES += suit_v4
 
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
