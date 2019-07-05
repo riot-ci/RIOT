@@ -7,9 +7,7 @@
  */
 
 /**
- * @defgroup    boards_nucleo144-l4r5 STM32 Nucleo-L4R5ZI
- * @ingroup     boards_common_nucleo144
- * @brief       Support for the STM32 Nucleo-L4R5ZI
+ * @ingroup     boards_nucleo144-l4r5
  * @{
  *
  * @file
@@ -23,6 +21,7 @@
 
 #include "periph_cpu.h"
 #include "cfg_i2c1_pb8_pb9.h"
+#include "cfg_rtt_default.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,11 +37,8 @@ extern "C" {
 
 #ifndef CLOCK_LSE
 /* 0: no external low speed crystal available,
- * 1: external crystal available (always 32.768kHz)
- * This defaults to 0 because hardware revision 'MB1136 C-01' of the nucleo-64
- * board disconnects LSE by default. You may safely set this to 1 on revisions
- * newer than 'MB1136 C-01' */
-#define CLOCK_LSE           (0)
+ * 1: external crystal available (always 32.768kHz) */
+#define CLOCK_LSE           (1)
 #endif
 
 /* 0: enable MSI only if HSE isn't available
