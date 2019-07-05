@@ -20,7 +20,6 @@
 #define PERIPH_CONF_H
 
 #include "periph_cpu.h"
-#include "cfg_rtt_default.h"
 
 #ifdef __cplusplus
 extern "C" {
