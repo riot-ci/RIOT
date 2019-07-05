@@ -15,11 +15,11 @@ The board also provides an on-board 2.04" E-paper display (not supported yet).
 
 ### Supported features
 
-| Peripheral            | Configuration                             |
-|:--------------------- |:----------------------------------------- |
-| TIMs                  | TIM2                                      |
-| UARTs                 | USART1 on PA10 (RX), PA9 (TX)             |
-| SPIs                  | SPI1 and SPI2                             |
+| Peripheral            | Configuration                                                                             | 
+|:--------------------- |:----------------------------------------------------------------------------------------- |
+| TIMs                  | TIM2                                                                                      |
+| UARTs                 | USART1 on PA10 (RX), PA9 (TX)                                                             |
+| SPIs                  | SPI1 on PB5 (MOSI), PB4 (MISO), PB3 (SCLK); SPI2 on PB15 (MOSI), PB14 (MISO), PB13 (SCLK) |
 
 ### Flashing the board
 
