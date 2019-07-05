@@ -94,26 +94,6 @@ static const uart_conf_t uart_config[] = {
 /** @} */
 
 /**
- * @name    PWM configuration
- * @{
- */
-static const pwm_conf_t pwm_config[] = {
-    {
-        .dev      = TIM22,
-        .rcc_mask = RCC_APB2ENR_TIM22EN,
-        .chan     = { { .pin = GPIO_PIN(PORT_A, 6), .cc_chan = 0 },
-                      { .pin = GPIO_PIN(PORT_A, 7), .cc_chan = 1 },
-                      { .pin = GPIO_UNDEF,          .cc_chan = 0 },
-                      { .pin = GPIO_UNDEF,          .cc_chan = 0 } },
-        .af       = GPIO_AF5,
-        .bus      = APB2
-    }
-};
-
-#define PWM_NUMOF           (sizeof(pwm_config) / sizeof(pwm_config[0]))
-/** @} */
-
-/**
  * @name    SPI configuration
  *
  * @note    The spi_divtable is auto-generated from
