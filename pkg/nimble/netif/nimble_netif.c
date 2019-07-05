@@ -407,6 +407,7 @@ static void _on_gap_connected(nimble_netif_conn_t *conn, uint16_t conn_handle)
     struct ble_gap_conn_desc desc;
     int res = ble_gap_conn_find(conn_handle, &desc);
     assert(res == 0);
+    (void)res;
 
     conn->gaphandle = conn_handle;
     memcpy(conn->addr, desc.peer_id_addr.val, BLE_ADDR_LEN);
