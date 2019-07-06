@@ -44,14 +44,16 @@ exclude_filter() {
 DEFINED_GROUPS=$(git grep @defgroup -- '*.h' '*.c' '*.txt' | \
                     exclude_filter | \
                     grep -oE '@defgroup[ ]+[^ ]+' | \
-                    grep -oE '[^ ]+$' | sort -u)
+                    grep -oE '[^ ]+$' | sort)
+
+DEFINED_GROUPS_UNIQUE=$(echo "${DEFINED_GROUPS}" | sort -u)
 
 UNDEFINED_GROUPS=$( \
     for group in $(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | \
                     exclude_filter | \
                     grep -oE '[^ ]+$' | sort -u); \
     do \
-        echo "${DEFINED_GROUPS}" | grep -xq "${group}" || echo "${group}"; \
+        echo "${DEFINED_GROUPS_UNIQUE}" | grep -xq "${group}" || echo "${group}"; \
     done \
     )
 
@@ -73,4 +75,48 @@ then
     echo -e "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups:"
     echo "${UNDEFINED_GROUPS_PRINT}"
     exit 2
+fi
+
+# Check for groups defined multiple times
+MULTIPLE_DEFINED_GROUPS=$( \
+    for group in $(echo ${DEFINED_GROUPS_UNIQUE} | tr ' ' '\n'); \
+    do \
+        # For each group, generate a line with the pattern:
+        # <number of group definitions>:<group name>
+        # Exclude valid groups (e.g. those defined one time)
+        echo $(echo ${DEFINED_GROUPS} | tr ' ' '\n' | grep -cw "^${group}"):${group} | \
+            grep -v "^1:"; \
+    done
+    )
+
+# Remove the group description from each line containing a group definition.
+# Examples of input lines:
+# boards/nucleo-l152re/doc.txt:@defgroup boards_nucleo-l152re STM32 Nucleo-L152RE
+# boards/nucleo-l152re/include/periph_conf.h: * @defgroup boards_nucleo-l152re
+# Expected output lines patterns:
+# <filepath>: * <group name>
+# <filepath>:<group name>
+ALL_RAW_DEFGROUP=$(git grep '@defgroup' -- '*.h' '*.c' '*.txt' | exclude_filter | \
+    awk -F@ '{ split($2, end, " "); printf("%s%s\n",$1,end[2]) }')
+
+MULTIPLE_GROUPS_PRINT=$( \
+    for group in ${MULTIPLE_DEFINED_GROUPS}; \
+    do \
+        _group_name=$(echo ${group} | awk -F: '{ printf ("%s\n",$2) }')
+        _group_count=$(echo ${group} | awk -F: '{ printf ("%s\n",$1) }')
+        echo -e "\n${CWARN}${_group_name}${CRESET} defined ${CWARN}${_group_count}${CRESET} times in:"; \
+        echo "${ALL_RAW_DEFGROUP}" | grep "\<${_group_name}\>$" | sort -u | \
+        awk -F: '{ print "\t" $1 }'; \
+    done \
+    )
+
+if [ -n "${MULTIPLE_DEFINED_GROUPS}" ]
+then
+    COUNT=$(echo "${MULTIPLE_DEFINED_GROUPS}" | wc -l)
+    # TODO: Change this to ERROR when all problems are fixed
+    echo -ne "${CWARN}WARNING${CRESET} "
+    echo -e "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times:"
+    echo "${MULTIPLE_GROUPS_PRINT}"
+    # TODO: uncomment when all problems are fixed
+    # exit 2
 fi
