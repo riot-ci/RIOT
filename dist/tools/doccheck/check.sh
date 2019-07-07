@@ -113,10 +113,8 @@ MULTIPLE_GROUPS_PRINT=$( \
 if [ -n "${MULTIPLE_DEFINED_GROUPS}" ]
 then
     COUNT=$(echo "${MULTIPLE_DEFINED_GROUPS}" | wc -l)
-    # TODO: Change this to ERROR when all problems are fixed
-    echo -ne "${CWARN}WARNING${CRESET} "
+    echo -ne "${CERROR}ERROR${CRESET} "
     echo -e "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times:"
     echo "${MULTIPLE_GROUPS_PRINT}"
-    # TODO: uncomment when all problems are fixed
-    # exit 2
+    exit 2
 fi
