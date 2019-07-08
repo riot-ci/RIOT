@@ -718,6 +718,11 @@ $(RIOTBUILD_CONFIG_HEADER_C): FORCE
 
 CFLAGS_WITH_MACROS := $(CFLAGS)
 
+# Deprecate using RIOT_VERSION_OVERRIDE but currently keep the behavior
+ifneq (,$(RIOT_VERSION_OVERRIDE))
+  $(warning 'RIOT_VERSION_OVERRIDE' is deprecated, it can now be set with 'RIOT_VERSION' directly.)
+  RIOT_VERSION = $(RIOT_VERSION_OVERRIDE)
+endif
 export CFLAGS_WITH_MACROS += -DRIOT_VERSION=\"$(RIOT_VERSION)\"
 
 CFLAGS := $(patsubst -D%,,$(CFLAGS))
