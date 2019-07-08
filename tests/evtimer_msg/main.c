@@ -27,7 +27,7 @@
 
 static char worker_stack[THREAD_STACKSIZE_MAIN];
 static evtimer_t evtimer;
-#define NEVENTS (4)
+#define NEVENTS (unsigned)(4)
 /*
  * The events (.offset) are modified by evtimer_add.
  * This list of offsets is used to populate the events
