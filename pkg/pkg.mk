@@ -19,7 +19,7 @@ else
 GITFLAGS ?= -c user.email=buildsystem@riot -c user.name="RIOT buildsystem"
 GITAMFLAGS ?= --no-gpg-sign --ignore-whitespace
 
-.PHONY: all prepare git-download clean distclean
+.PHONY: all prepare git-download clean distclean FORCE
 
 PKG_PATCHES = $(sort $(wildcard $(PKG_DIR)/patches/*.patch))
 
