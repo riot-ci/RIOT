@@ -105,4 +105,4 @@ flash` if the `riotboot` feature is used.
 
 ## Testing riotboot
 
-See tests/riotboot/README.md.
+See [tests/riotboot/README.md](https://github.com/RIOT-OS/RIOT/blob/master/tests/riotboot/README.md).
