@@ -1,11 +1,31 @@
+/*
+ * Copyright (C) 2019 Inria
+ *               2019 Freie Universität Berlin
+ *               2019 Kaspar Schleiser <kaspar@schleiser.de>
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     sys_riotboot_flashwrite
+ * @{
+ *
+ * @file
+ * @brief       Firmware update sha256 verification helper functions
+ *
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ *
+ * @}
+ */
+
 #include <stdint.h>
 #include <string.h>
 
 #include "hashes/sha256.h"
-
-#include "riotboot/slot.h"
-
 #include "log.h"
+#include "riotboot/slot.h"
 
 int riotboot_flashwrite_verify_sha256(const uint8_t *sha256_digest, size_t img_len, int target_slot)
 {
