@@ -313,7 +313,7 @@ endif
 
 # set some settings useful for continuous integration builds
 ifeq ($(RIOT_CI_BUILD),1)
-    RIOT_VERSION_OVERRIDE:=buildtest
+    RIOT_VERSION ?= buildtest
     ifneq ($(filter $(BOARD_INSUFFICIENT_MEMORY), $(BOARD)),)
         $(info CI-build: skipping link step)
         RIOTNOLINK:=1
@@ -730,11 +730,12 @@ $(RIOTBUILD_CONFIG_HEADER_C): FORCE
 
 CFLAGS_WITH_MACROS := $(CFLAGS)
 
+# Deprecate using RIOT_VERSION_OVERRIDE but currently keep the behavior
 ifneq (,$(RIOT_VERSION_OVERRIDE))
-export CFLAGS_WITH_MACROS += -DRIOT_VERSION=\"$(RIOT_VERSION_OVERRIDE)\"
-else
-export CFLAGS_WITH_MACROS += -DRIOT_VERSION=\"$(RIOT_VERSION)\"
+  $(warning 'RIOT_VERSION_OVERRIDE' is deprecated, it can now be set with 'RIOT_VERSION' directly.)
+  RIOT_VERSION = $(RIOT_VERSION_OVERRIDE)
 endif
+export CFLAGS_WITH_MACROS += -DRIOT_VERSION=\"$(RIOT_VERSION)\"
 
 CFLAGS := $(patsubst -D%,,$(CFLAGS))
 CFLAGS := $(patsubst -U%,,$(CFLAGS))
