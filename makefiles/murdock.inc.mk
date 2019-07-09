@@ -15,6 +15,11 @@ test-murdock:
 		"$(BOARD):$(TOOLCHAIN)" \
 		$(FLASHFILE)
 
+# TEST CHANGE
+# Enable all tests by default, if there are tests
+TEST_ON_CI_WHITELIST ?= $(if $(TESTS),all)
+# TEST CHANGE
+
 # don't whitelist tests if there's no binary
 ifeq (1,$(RIOTNOLINK))
   TEST_ON_CI_WHITELIST:=
