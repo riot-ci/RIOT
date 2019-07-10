@@ -192,6 +192,12 @@ class MQTTSNServer(Automaton):
         return self.res
 
     @ATMT.state(error=1)
+    def UNEXPECTED_PARAMETERS(self, pkt):
+        self.res += "\nUnexpected parameters \n" \
+            " {}".format(repr(pkt))
+        return self.res
+
+    @ATMT.state(error=1)
     def MESSAGE_TIMEOUT(self, exp_type):
         self.res += "\n{} timed out".format(mqttsn.PACKET_TYPE[exp_type])
         return self.res
@@ -229,30 +235,49 @@ class MQTTSNServer(Automaton):
             raise self.UNEXPECTED_MESSAGE_TYPE(pkt.type, pkt.qos)
 
     @ATMT.receive_condition(WAITING, prio=2)
-    def receive_CONNECT(self, pkt, args):
-        if pkt.type == mqttsn.CONNECT:
-            if self.mode in ["pub", "sub_w_reg"]:
-                raise self.REGISTER_FROM_NODE()
-            elif self.mode in ["sub"]:
-                raise self.SUBSCRIBE_FROM_NODE()
+    def receive_unexpected_parameters(self, pkt, args):
+        if pkt.type == mqttsn.PUBLISH:
+            if self.data_len != len(pkt.data):
+                raise self.UNEXPECTED_PARAMETERS(pkt)
+        elif pkt.type == mqttsn.PUBACK:
+            exp_mid = args[1]
+            exp_tid = args[2]
+            if (exp_tid != pkt.tid) or (exp_mid != pkt.mid) or \
+               (mqttsn.ACCEPTED != pkt.return_code):
+                raise self.UNEXPECTED_PARAMETERS(pkt)
+
 
     @ATMT.receive_condition(WAITING, prio=2)
-    def receive_REGISTER(self, pkt, args):
+    def receive_CONNECT_mode_sub(self, pkt, args):
+        if pkt.type == mqttsn.CONNECT and self.mode == "sub":
+            raise self.SUBSCRIBE_FROM_NODE()
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_CONNECT_mode_pub_or_sub_w_reg(self, pkt, args):
+        if pkt.type == mqttsn.CONNECT and self.mode in ["pub", "sub_w_reg"]:
+            raise self.REGISTER_FROM_NODE()
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_REGISTER_mode_pub(self, pkt, args):
         if pkt.type == mqttsn.REGISTER:
             topic_name = pkt.topic_name.decode()
             if self.mode in ["pub"]:
                 raise self.PUBLISH_FROM_NODE(topic_name) \
                     .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
-            else:
+
+    @ATMT.receive_condition(WAITING, prio=3)
+    def receive_REGISTER_mode_sub_w_reg(self, pkt, args):
+        if pkt.type == mqttsn.REGISTER:
+            topic_name = pkt.topic_name.decode()
+            if self.mode in ["sub_w_reg"]:
                 raise self.SUBSCRIBE_FROM_NODE() \
                     .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
 
-    @ATMT.receive_condition(WAITING, prio=2)
+    @ATMT.receive_condition(WAITING, prio=3)
     def receive_PUBLISH(self, pkt, args):
         if pkt.type == mqttsn.PUBLISH:
-            assert self.data_len == len(pkt.data)
             topic_name = self._get_topic_name(pkt.tid)
             self.res += ":".join("{:02x}".format(c) for c in pkt.data)
             self.data_len += self.data_len_step
@@ -280,11 +305,6 @@ class MQTTSNServer(Automaton):
     @ATMT.receive_condition(WAITING, prio=2)
     def receive_PUBACK(self, pkt, args):
         if pkt.type == mqttsn.PUBACK:
-            mid = args[1]
-            tid = args[2]
-            assert tid == pkt.tid
-            assert mid == pkt.mid
-            assert mqttsn.ACCEPTED == pkt.return_code
             self.data_len += self.data_len_step
             time.sleep(self.pub_interval)
             raise self.PUBLISH_TO_NODE({
@@ -292,7 +312,8 @@ class MQTTSNServer(Automaton):
                 "topic_name": self._get_topic_name(pkt.tid)
             })
 
-    @ATMT.action(receive_CONNECT)
+    @ATMT.action(receive_CONNECT_mode_sub)
+    @ATMT.action(receive_CONNECT_mode_pub_or_sub_w_reg)
     def send_CONNACK(self):
         # send deliberately broken length packets (too small len)
         self.last_packet = mqttsn.MQTTSN(len=2) / mqttsn.MQTTSNConnack()
@@ -309,7 +330,8 @@ class MQTTSNServer(Automaton):
         self.spawn.expect_exact("success: connected to gateway at {}"
                                 .format(self.gw_addr))
 
-    @ATMT.action(receive_REGISTER)
+    @ATMT.action(receive_REGISTER_mode_pub)
+    @ATMT.action(receive_REGISTER_mode_sub_w_reg)
     def send_REGACK(self, topic_name, mid):
         tid = self._get_tid(topic_name)
         if topic_name not in self.registered_topics:
