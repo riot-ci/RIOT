@@ -391,6 +391,7 @@ def testfunc(child):
     tap = get_bridge(os.environ["TAP"])
     lladdr = get_host_lladdr(tap)
 
+    time.sleep(1)
     DATA_MAX_LEN = 512 - 9  # PUBLISH + 2 byte extra for length
     TOPIC_MAX_LEN = 249     # see Makefile
     for test_params in [

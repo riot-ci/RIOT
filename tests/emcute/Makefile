@@ -42,6 +42,7 @@ else
 endif
 
 CFLAGS += -DEMCUTE_TOPIC_MAXLEN="249"   # 256 - 7
+CFLAGS += -DSTDIO_UART_RX_BUFSIZE="512" # Adapt to SHELL_BUFSIZE in app
 
 # TEST_ON_CI_WHITELIST += all
 
