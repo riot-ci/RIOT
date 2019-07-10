@@ -110,78 +110,6 @@ class MQTTSNServer(Automaton):
         time.sleep(self.pub_interval)
         raise self.PUBLISH_TO_SUBSCRIBER(subscription)
 
-    # >>> reply send methods <<< #
-    def send_connack(self):
-        # send deliberately broken length packets (too small len)
-        self.last_packet = mqttsn.MQTTSN(len=2) / mqttsn.MQTTSNConnack()
-        self.send(self.last_packet)
-        # send deliberately broken length packets (too large len)
-        self.last_packet = mqttsn.MQTTSN(len=3, type=mqttsn.CONNACK)
-        self.send(self.last_packet)
-        # send deliberately broken length packets (garbage payload)
-        self.last_packet = mqttsn.MQTTSN(len=128) / \
-            mqttsn.MQTTSNConnack() / b"this is garbage"
-        self.send(self.last_packet)
-        self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNConnack()
-        self.send(self.last_packet)
-        self.spawn.expect_exact("success: connected to gateway at {}"
-                                .format(self.gw_addr))
-
-    def send_regack(self, topic_name, mid):
-        tid = self._get_tid(topic_name)
-        if topic_name not in self.registered_topics:
-            self.registered_topics.append(topic_name)
-        # send deliberately broken length packets (too small len)
-        self.last_packet = mqttsn.MQTTSN(len=4) / \
-            mqttsn.MQTTSNRegack(mid=mid, tid=tid)
-        self.send(self.last_packet)
-        # send deliberately broken length packets (too large len)
-        # include valid MID for extra confusion
-        self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.REGACK) / \
-            bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
-        self.send(self.last_packet)
-        # send deliberately broken length packets (garbage payload)
-        self.last_packet = mqttsn.MQTTSN(len=128) / \
-            mqttsn.MQTTSNRegack(mid=mid, tid=tid) / b"this is garbage"
-        self.send(self.last_packet)
-        self.last_packet = mqttsn.MQTTSN() / \
-            mqttsn.MQTTSNRegack(mid=mid, tid=tid)
-        self.send(self.last_packet)
-        self.spawn.expect_exact("success: registered to topic '{} [{:d}]'"
-                                .format(topic_name, tid))
-
-    def send_puback_if_required(self, qos, topic_name, mid, tid):
-        if qos in (mqttsn.QOS_1, mqttsn.QOS_2):
-            # send deliberately broken length packets (too small len)
-            self.last_packet = mqttsn.MQTTSN(len=4) / \
-                mqttsn.MQTTSNPuback(mid=mid, tid=tid)
-            self.send(self.last_packet)
-            # send deliberately broken length packets (too large len)
-            # include valid MID for extra confusion
-            self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.PUBACK) / \
-                bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
-            self.send(self.last_packet)
-            # send deliberately broken length packets (garbage payload)
-            self.last_packet = mqttsn.MQTTSN(len=128) / \
-                mqttsn.MQTTSNPuback(mid=mid, tid=tid) / b"this is garbage"
-            self.send(self.last_packet)
-            self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPuback(mid=mid,
-                                                                     tid=tid)
-            self.send(self.last_packet)
-        self.spawn.expect_exact(
-            "success: published {:d} bytes to topic '{} [{:d}]'"
-            .format(self.data_len - self.data_len_step, topic_name, tid)
-        )
-        time.sleep(self.pub_interval)
-
-    def send_suback(self, mid, tid):
-        self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNSuback(
-            tid=tid, mid=mid
-        )
-        self.send(self.last_packet)
-        self.spawn.expect_exact("success: now subscribed to {}"
-                                .format(self._get_topic_name(tid).decode()))
-
     # >>> automaton states <<< #
     @ATMT.state(initial=1)
     def BEGIN(self):
@@ -298,36 +226,40 @@ class MQTTSNServer(Automaton):
             raise self.UNEXPECTED_MESSAGE_TYPE(pkt.type, pkt.qos)
 
     @ATMT.receive_condition(WAITING, prio=2)
-    def receive_message(self, pkt, args):
+    def receive_CONNECT(self, pkt, args):
         if pkt.type == mqttsn.CONNECT:
             if self.mode in ["pub", "sub_w_reg"]:
-                raise self.REGISTERING() \
-                    .action_parameters(reply_type=mqttsn.CONNACK)
+                raise self.REGISTERING()
             elif self.mode in ["sub"]:
-                raise self.SUBSCRIBING() \
-                    .action_parameters(reply_type=mqttsn.CONNACK)
-        elif pkt.type == mqttsn.REGISTER:
+                raise self.SUBSCRIBING()
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_REGISTER(self, pkt, args):
+        if pkt.type == mqttsn.REGISTER:
             topic_name = pkt.topic_name.decode()
             if self.mode in ["pub"]:
                 raise self.PUBLISHING(topic_name) \
-                    .action_parameters(reply_type=mqttsn.REGACK,
-                                       topic_name=topic_name,
+                    .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
             else:
                 raise self.SUBSCRIBING() \
-                    .action_parameters(reply_type=mqttsn.REGACK,
-                                       topic_name=topic_name,
+                    .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
-        elif pkt.type == mqttsn.PUBLISH:
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_PUBLISH(self, pkt, args):
+        if pkt.type == mqttsn.PUBLISH:
             assert self.data_len == len(pkt.data)
             topic_name = self._get_topic_name(pkt.tid)
             self.res += ":".join("{:02x}".format(c) for c in pkt.data)
             self.data_len += self.data_len_step
             raise self.PUBLISHING(topic_name) \
-                .action_parameters(reply_type=mqttsn.PUBACK,
-                                   topic_name=topic_name,
+                .action_parameters(topic_name=topic_name,
                                    qos=pkt.qos, mid=pkt.mid, tid=pkt.tid)
-        elif pkt.type == mqttsn.SUBSCRIBE:
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_SUBSCRIBE(self, pkt, args):
+        if pkt.type == mqttsn.SUBSCRIBE:
             if pkt.tid_type in [mqttsn.TID_NORMAL, mqttsn.TID_SHORT]:
                 topic_name = pkt.topic_name
                 tid = self._get_tid(pkt.topic_name)
@@ -340,9 +272,11 @@ class MQTTSNServer(Automaton):
             if subscription not in self.subscriptions:
                 self.subscriptions.append(subscription)
             raise self.PUBLISH_TO_SUBSCRIBER(subscription) \
-                .action_parameters(reply_type=mqttsn.SUBACK,
-                                   mid=pkt.mid, tid=tid)
-        elif pkt.type == mqttsn.PUBACK:
+                .action_parameters(mid=pkt.mid, tid=tid)
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_PUBACK(self, pkt, args):
+        if pkt.type == mqttsn.PUBACK:
             mid = args[1]
             tid = args[2]
             assert tid == pkt.tid
@@ -353,16 +287,80 @@ class MQTTSNServer(Automaton):
                  "topic_name": self._get_topic_name(pkt.tid)}
             )
 
-    @ATMT.action(receive_message)
-    def send_reply(self, reply_type=None, *args, **kwargs):
-        if reply_type == mqttsn.CONNACK:
-            self.send_connack(*args, **kwargs)
-        elif reply_type == mqttsn.REGACK:
-            self.send_regack(*args, **kwargs)
-        elif reply_type == mqttsn.PUBACK:
-            self.send_puback_if_required(*args, **kwargs)
-        elif reply_type == mqttsn.SUBACK:
-            self.send_suback(*args, **kwargs)
+    @ATMT.action(receive_CONNECT)
+    def send_CONNACK(self):
+        # send deliberately broken length packets (too small len)
+        self.last_packet = mqttsn.MQTTSN(len=2) / mqttsn.MQTTSNConnack()
+        self.send(self.last_packet)
+        # send deliberately broken length packets (too large len)
+        self.last_packet = mqttsn.MQTTSN(len=3, type=mqttsn.CONNACK)
+        self.send(self.last_packet)
+        # send deliberately broken length packets (garbage payload)
+        self.last_packet = mqttsn.MQTTSN(len=128) / \
+            mqttsn.MQTTSNConnack() / b"this is garbage"
+        self.send(self.last_packet)
+        self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNConnack()
+        self.send(self.last_packet)
+        self.spawn.expect_exact("success: connected to gateway at {}"
+                                .format(self.gw_addr))
+
+    @ATMT.action(receive_REGISTER)
+    def send_REGACK(self, topic_name, mid):
+        tid = self._get_tid(topic_name)
+        if topic_name not in self.registered_topics:
+            self.registered_topics.append(topic_name)
+        # send deliberately broken length packets (too small len)
+        self.last_packet = mqttsn.MQTTSN(len=4) / \
+            mqttsn.MQTTSNRegack(mid=mid, tid=tid)
+        self.send(self.last_packet)
+        # send deliberately broken length packets (too large len)
+        # include valid MID for extra confusion
+        self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.REGACK) / \
+            bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
+        self.send(self.last_packet)
+        # send deliberately broken length packets (garbage payload)
+        self.last_packet = mqttsn.MQTTSN(len=128) / \
+            mqttsn.MQTTSNRegack(mid=mid, tid=tid) / b"this is garbage"
+        self.send(self.last_packet)
+        self.last_packet = mqttsn.MQTTSN() / \
+            mqttsn.MQTTSNRegack(mid=mid, tid=tid)
+        self.send(self.last_packet)
+        self.spawn.expect_exact("success: registered to topic '{} [{:d}]'"
+                                .format(topic_name, tid))
+
+    @ATMT.action(receive_PUBLISH)
+    def send_PUBACK_if_required(self, qos, topic_name, mid, tid):
+        if qos in (mqttsn.QOS_1, mqttsn.QOS_2):
+            # send deliberately broken length packets (too small len)
+            self.last_packet = mqttsn.MQTTSN(len=4) / \
+                mqttsn.MQTTSNPuback(mid=mid, tid=tid)
+            self.send(self.last_packet)
+            # send deliberately broken length packets (too large len)
+            # include valid MID for extra confusion
+            self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.PUBACK) / \
+                bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
+            self.send(self.last_packet)
+            # send deliberately broken length packets (garbage payload)
+            self.last_packet = mqttsn.MQTTSN(len=128) / \
+                mqttsn.MQTTSNPuback(mid=mid, tid=tid) / b"this is garbage"
+            self.send(self.last_packet)
+            self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPuback(mid=mid,
+                                                                     tid=tid)
+            self.send(self.last_packet)
+        self.spawn.expect_exact(
+            "success: published {:d} bytes to topic '{} [{:d}]'"
+            .format(self.data_len - self.data_len_step, topic_name, tid)
+        )
+        time.sleep(self.pub_interval)
+
+    @ATMT.action(receive_SUBSCRIBE)
+    def send_SUBACK(self, mid, tid):
+        self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNSuback(
+            tid=tid, mid=mid
+        )
+        self.send(self.last_packet)
+        self.spawn.expect_exact("success: now subscribed to {}"
+                                .format(self._get_topic_name(tid).decode()))
 
 
 def check_and_search_output(cmd, pattern, res_group, *args, **kwargs):
