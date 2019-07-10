@@ -87,6 +87,9 @@ class MQTTSNServer(Automaton):
             qos = mqttsn.QOS_NEG1
         return qos
 
+    def _check_pkt_qos(self, pkt):
+        return pkt.qos == self._qos_flags
+
     def _get_tid(self, topic_name):
         if topic_name not in self.topics:
             self.topics.append(topic_name)
@@ -310,9 +313,7 @@ class MQTTSNServer(Automaton):
                         .action_parameters(reply_type=mqttsn.REGACK,
                                            topic_name=topic_name,
                                            mid=pkt.mid)
-            elif pkt.type == mqttsn.PUBLISH and \
-                (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
-                 (pkt.qos == self.qos_level)):
+            elif pkt.type == mqttsn.PUBLISH and self._check_pkt_qos(pkt):
                 assert self.data_len == len(pkt.data)
                 topic_name = self._get_topic_name(pkt.tid)
                 self.res += ":".join("{:02x}".format(c) for c in pkt.data)
@@ -321,9 +322,7 @@ class MQTTSNServer(Automaton):
                     .action_parameters(reply_type=mqttsn.PUBACK,
                                        topic_name=topic_name,
                                        qos=pkt.qos, mid=pkt.mid, tid=pkt.tid)
-            elif pkt.type == mqttsn.SUBSCRIBE and \
-                (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
-                 (pkt.qos == self.qos_level)):
+            elif pkt.type == mqttsn.SUBSCRIBE and self._check_pkt_qos(pkt):
                 if pkt.tid_type in [mqttsn.TID_NORMAL, mqttsn.TID_SHORT]:
                     topic_name = pkt.topic_name
                     tid = self._get_tid(pkt.topic_name)
