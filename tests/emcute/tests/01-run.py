@@ -186,8 +186,8 @@ class MQTTSNServer(Automaton):
     @ATMT.receive_condition(WAITING_PUBLISH)
     def receive_PUBLISH(self, pkt):
         if pkt.type == mqttsn.PUBLISH and \
-           (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
-            (pkt.qos == self.qos_level)):
+            (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
+             (pkt.qos == self.qos_level)):
             assert self.data_len == len(pkt.data)
             topic_name = self._get_topic_name(pkt.tid)
             self.res += ":".join("{:02x}".format(c) for c in pkt.data)
@@ -228,8 +228,8 @@ class MQTTSNServer(Automaton):
     @ATMT.receive_condition(WAITING_SUBSCRIBE)
     def receive_SUBSCRIBE(self, pkt):
         if pkt.type == mqttsn.SUBSCRIBE and \
-           (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
-            (pkt.qos == self.qos_level)):
+            (((pkt.qos == mqttsn.QOS_NEG1) and (self.qos_level == -1)) or
+             (pkt.qos == self.qos_level)):
             if pkt.tid_type in [mqttsn.TID_NORMAL, mqttsn.TID_SHORT]:
                 topic_name = pkt.topic_name
                 tid = self._get_tid(pkt.topic_name)
@@ -394,24 +394,24 @@ def testfunc(child):
     DATA_MAX_LEN = 512 - 9  # PUBLISH + 2 byte extra for length
     TOPIC_MAX_LEN = 249     # see Makefile
     for test_params in [
-            {"qos_level": 0, "mode": "sub", "topic_name": "/test",
-             "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
-             "data_len_step": 50},
-            {"qos_level": 1, "mode": "sub", "topic_name": "/test",
-             "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
-             "data_len_step": 50},
-            {"qos_level": 1, "mode": "sub",
-             "topic_name": "/" + ("x" * (TOPIC_MAX_LEN - 1)),
-             "data_len_start": 8, "data_len_end": 9},
-            {"qos_level": 1, "mode": "sub_w_reg", "topic_name": "/test",
-             "data_len_start": 8, "data_len_end": 9},
-            {"qos_level": 0, "mode": "pub", "topic_name": "/test",
-             "data_len_start": 1, "data_len_end": DATA_MAX_LEN,
-             "data_len_step": 50},
-            {"qos_level": 1, "mode": "pub", "topic_name": "/test",
-             "data_len_start": 1, "data_len_end": DATA_MAX_LEN,
-             "data_len_step": 50}
-        ]:
+        {"qos_level": 0, "mode": "sub", "topic_name": "/test",
+         "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
+         "data_len_step": 50},
+        {"qos_level": 1, "mode": "sub", "topic_name": "/test",
+         "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
+         "data_len_step": 50},
+        {"qos_level": 1, "mode": "sub",
+         "topic_name": "/" + ("x" * (TOPIC_MAX_LEN - 1)),
+         "data_len_start": 8, "data_len_end": 9},
+        {"qos_level": 1, "mode": "sub_w_reg", "topic_name": "/test",
+         "data_len_start": 8, "data_len_end": 9},
+        {"qos_level": 0, "mode": "pub", "topic_name": "/test",
+         "data_len_start": 1, "data_len_end": DATA_MAX_LEN,
+         "data_len_step": 50},
+        {"qos_level": 1, "mode": "pub", "topic_name": "/test",
+         "data_len_start": 1, "data_len_end": DATA_MAX_LEN,
+         "data_len_step": 50}
+    ]:
         print("Run test case")
         pprint.pprint(test_params, compact=False)
         server = MQTTSNServer(child, pub_interval=.001,
