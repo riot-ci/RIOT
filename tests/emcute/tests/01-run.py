@@ -124,6 +124,16 @@ class MQTTSNServer(Automaton):
 
     @ATMT.action(receive_CONNECT)
     def send_CONACK(self):
+        # send deliberately broken length packets (too small len)
+        self.last_packet = mqttsn.MQTTSN(len=2) / mqttsn.MQTTSNConnack()
+        self.send(self.last_packet)
+        # send deliberately broken length packets (too large len)
+        self.last_packet = mqttsn.MQTTSN(len=3, type=mqttsn.CONNACK)
+        self.send(self.last_packet)
+        # send deliberately broken length packets (garbage payload)
+        self.last_packet = mqttsn.MQTTSN(len=128) / mqttsn.MQTTSNConnack() / \
+            b"this is garbage"
+        self.send(self.last_packet)
         self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNConnack()
         self.send(self.last_packet)
         self.spawn.expect_exact("success: connected to gateway at {}"
@@ -159,6 +169,19 @@ class MQTTSNServer(Automaton):
         tid = self._get_tid(topic_name)
         if topic_name not in self.registered_topics:
             self.registered_topics.append(topic_name)
+        # send deliberately broken length packets (too small len)
+        self.last_packet = mqttsn.MQTTSN(len=4) / \
+            mqttsn.MQTTSNRegack(mid=mid, tid=tid)
+        self.send(self.last_packet)
+        # send deliberately broken length packets (too large len)
+        # include valid MID for extra confusion
+        self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.REGACK) / \
+            bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
+        self.send(self.last_packet)
+        # send deliberately broken length packets (garbage payload)
+        self.last_packet = mqttsn.MQTTSN(len=128) / \
+            mqttsn.MQTTSNRegack(mid=mid, tid=tid) / b"this is garbage"
+        self.send(self.last_packet)
         self.last_packet = mqttsn.MQTTSN() / \
             mqttsn.MQTTSNRegack(mid=mid, tid=tid)
         self.send(self.last_packet)
@@ -202,6 +225,19 @@ class MQTTSNServer(Automaton):
     @ATMT.action(receive_PUBLISH)
     def send_PUBACK(self, qos_level, mid, topic_name, tid):
         if qos_level in (mqttsn.QOS_1, mqttsn.QOS_2):
+            # send deliberately broken length packets (too small len)
+            self.last_packet = mqttsn.MQTTSN(len=4) / \
+                mqttsn.MQTTSNPuback(mid=mid, tid=tid)
+            self.send(self.last_packet)
+            # send deliberately broken length packets (too large len)
+            # include valid MID for extra confusion
+            self.last_packet = mqttsn.MQTTSN(len=7, type=mqttsn.PUBACK) / \
+                bytes([tid >> 8, tid & 0xff, mid >> 8, mid & 0xff])
+            self.send(self.last_packet)
+            # send deliberately broken length packets (garbage payload)
+            self.last_packet = mqttsn.MQTTSN(len=128) / \
+                mqttsn.MQTTSNPuback(mid=mid, tid=tid) / b"this is garbage"
+            self.send(self.last_packet)
             self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPuback(mid=mid,
                                                                      tid=tid)
             self.send(self.last_packet)
