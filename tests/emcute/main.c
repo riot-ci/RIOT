@@ -225,7 +225,7 @@ static int _pub(int argc, char **argv)
     t = &_topics[idx];
     len = atoi(argv[2]);
     if ((unsigned)len > sizeof(_pub_buf)) {
-        printf("error: len %u > %u\n", len, sizeof(_pub_buf));
+        printf("error: len %d > %lu\n", len, (unsigned long)sizeof(_pub_buf));
         return 1;
     }
     memset(_pub_buf, 92, len);
