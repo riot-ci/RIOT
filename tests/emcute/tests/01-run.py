@@ -88,7 +88,8 @@ class MQTTSNServer(Automaton):
         return qos
 
     def _check_pkt_qos(self, pkt):
-        return pkt.qos == self._qos_flags
+        qos_types = [mqttsn.PUBLISH, mqttsn.SUBSCRIBE]
+        return (pkt.type not in qos_types) or (pkt.qos == self._qos_flags)
 
     def _get_tid(self, topic_name):
         if topic_name not in self.topics:
@@ -276,78 +277,81 @@ class MQTTSNServer(Automaton):
     def UNEXPECTED_MESSAGE_TYPE(self, type, qos=None):
         self.res += "\nUnexpected message type {} [{}]".format(
             mqttsn.PACKET_TYPE[type],
-            mqttsn.QOS_LEVELS[qos],
+            mqttsn.QOS_LEVELS[qos] if qos is not None else "-",
         )
         return self.res
 
     @ATMT.state(error=1)
-    def MESSAGE_TIMEOUT(self, state):
-        self.res += "\n{} timed out".format(state)
+    def MESSAGE_TIMEOUT(self, exp_type):
+        self.res += "\n{} timed out".format(mqttsn.PACKET_TYPE[exp_type])
         return self.res
 
     # >>> automaton timeouts, conditions and actions <<< #
     @ATMT.timeout(WAITING, TIMEOUT)
-    def timeout_message(self, exp_type, *args, **kwargs):
-        raise self.MESSAGE_TIMEOUT(mqttsn.PACKET_TYPE[exp_type])
+    def timeout_message(self, args):
+        raise self.MESSAGE_TIMEOUT(args[0])
 
-    @ATMT.receive_condition(WAITING)
-    def receive_message(self, pkt, args):
+    @ATMT.receive_condition(WAITING, prio=1)
+    def receive_wrong_message(self, pkt, args):
         exp_type = args[0]
-        if pkt.type == exp_type:
-            if pkt.type == mqttsn.CONNECT:
-                if self.mode in ["pub", "sub_w_reg"]:
-                    raise self.REGISTERING() \
-                        .action_parameters(reply_type=mqttsn.CONNACK)
-                elif self.mode in ["sub"]:
-                    raise self.SUBSCRIBING() \
-                        .action_parameters(reply_type=mqttsn.CONNACK)
-            elif pkt.type == mqttsn.REGISTER:
-                topic_name = pkt.topic_name.decode()
-                if self.mode in ["pub"]:
-                    raise self.PUBLISHING(topic_name) \
-                        .action_parameters(reply_type=mqttsn.REGACK,
-                                           topic_name=topic_name,
-                                           mid=pkt.mid)
-                else:
-                    raise self.SUBSCRIBING() \
-                        .action_parameters(reply_type=mqttsn.REGACK,
-                                           topic_name=topic_name,
-                                           mid=pkt.mid)
-            elif pkt.type == mqttsn.PUBLISH and self._check_pkt_qos(pkt):
-                assert self.data_len == len(pkt.data)
-                topic_name = self._get_topic_name(pkt.tid)
-                self.res += ":".join("{:02x}".format(c) for c in pkt.data)
-                self.data_len += self.data_len_step
+        if pkt.type != exp_type or not self._check_pkt_qos(pkt):
+            raise self.UNEXPECTED_MESSAGE_TYPE(pkt.type, pkt.qos)
+
+    @ATMT.receive_condition(WAITING, prio=2)
+    def receive_message(self, pkt, args):
+        if pkt.type == mqttsn.CONNECT:
+            if self.mode in ["pub", "sub_w_reg"]:
+                raise self.REGISTERING() \
+                    .action_parameters(reply_type=mqttsn.CONNACK)
+            elif self.mode in ["sub"]:
+                raise self.SUBSCRIBING() \
+                    .action_parameters(reply_type=mqttsn.CONNACK)
+        elif pkt.type == mqttsn.REGISTER:
+            topic_name = pkt.topic_name.decode()
+            if self.mode in ["pub"]:
                 raise self.PUBLISHING(topic_name) \
-                    .action_parameters(reply_type=mqttsn.PUBACK,
+                    .action_parameters(reply_type=mqttsn.REGACK,
                                        topic_name=topic_name,
-                                       qos=pkt.qos, mid=pkt.mid, tid=pkt.tid)
-            elif pkt.type == mqttsn.SUBSCRIBE and self._check_pkt_qos(pkt):
-                if pkt.tid_type in [mqttsn.TID_NORMAL, mqttsn.TID_SHORT]:
-                    topic_name = pkt.topic_name
-                    tid = self._get_tid(pkt.topic_name)
-                elif pkt.tid_type == mqttsn.TID_PREDEF:
-                    tid = pkt.tid
-                    topic_name = self._get_topic_name(tid)
-                else:
-                    assert(False)
-                subscription = {"tid": tid, "topic_name": topic_name}
-                if subscription not in self.subscriptions:
-                    self.subscriptions.append(subscription)
-                raise self.PUBLISH_TO_SUBSCRIBER(subscription) \
-                    .action_parameters(reply_type=mqttsn.SUBACK,
-                                       mid=pkt.mid, tid=tid)
-            elif pkt.type == mqttsn.PUBACK:
-                mid = args[1]
-                tid = args[2]
-                assert tid == pkt.tid
-                assert mid == pkt.mid
-                assert mqttsn.ACCEPTED == pkt.return_code
-                self._publish_to_subscriber(
-                    {"tid": pkt.tid,
-                     "topic_name": self._get_topic_name(pkt.tid)}
-                )
-        raise self.UNEXPECTED_MESSAGE_TYPE(pkt.type, pkt.qos)
+                                       mid=pkt.mid)
+            else:
+                raise self.SUBSCRIBING() \
+                    .action_parameters(reply_type=mqttsn.REGACK,
+                                       topic_name=topic_name,
+                                       mid=pkt.mid)
+        elif pkt.type == mqttsn.PUBLISH:
+            assert self.data_len == len(pkt.data)
+            topic_name = self._get_topic_name(pkt.tid)
+            self.res += ":".join("{:02x}".format(c) for c in pkt.data)
+            self.data_len += self.data_len_step
+            raise self.PUBLISHING(topic_name) \
+                .action_parameters(reply_type=mqttsn.PUBACK,
+                                   topic_name=topic_name,
+                                   qos=pkt.qos, mid=pkt.mid, tid=pkt.tid)
+        elif pkt.type == mqttsn.SUBSCRIBE:
+            if pkt.tid_type in [mqttsn.TID_NORMAL, mqttsn.TID_SHORT]:
+                topic_name = pkt.topic_name
+                tid = self._get_tid(pkt.topic_name)
+            elif pkt.tid_type == mqttsn.TID_PREDEF:
+                tid = pkt.tid
+                topic_name = self._get_topic_name(tid)
+            else:
+                assert(False)
+            subscription = {"tid": tid, "topic_name": topic_name}
+            if subscription not in self.subscriptions:
+                self.subscriptions.append(subscription)
+            raise self.PUBLISH_TO_SUBSCRIBER(subscription) \
+                .action_parameters(reply_type=mqttsn.SUBACK,
+                                   mid=pkt.mid, tid=tid)
+        elif pkt.type == mqttsn.PUBACK:
+            mid = args[1]
+            tid = args[2]
+            assert tid == pkt.tid
+            assert mid == pkt.mid
+            assert mqttsn.ACCEPTED == pkt.return_code
+            self._publish_to_subscriber(
+                {"tid": pkt.tid,
+                 "topic_name": self._get_topic_name(pkt.tid)}
+            )
 
     @ATMT.action(receive_message)
     def send_reply(self, reply_type=None, *args, **kwargs):
