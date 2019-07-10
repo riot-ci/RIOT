@@ -105,6 +105,67 @@ class MQTTSNServer(Automaton):
         raise self.WAITING_CONNECT()
 
     @ATMT.state()
+    def REGISTERING(self):
+        self.spawn.sendline("reg {}".format(self.topic_name))
+        raise self.WAITING_REGISTER()
+
+    @ATMT.state()
+    def PUBLISHING(self, topic_name):
+        if self.data_len < self.data_len_end:
+            self.spawn.sendline("pub {} {:d} {:d}" .format(topic_name,
+                                                           self.data_len,
+                                                           self.qos_level))
+            raise self.WAITING_PUBLISH()
+        else:
+            raise self.END()
+
+    @ATMT.state()
+    def SUBSCRIBING(self):
+        self.spawn.sendline("sub {} {}".format(self.topic_name,
+                                               self.qos_level))
+        raise self.WAITING_SUBSCRIBE()
+
+    @ATMT.state()
+    def PUBLISH_TO_SUBSCRIBER(self, subscription):
+        tid = subscription["tid"]
+        self.last_mid += 1
+        mid = self.last_mid
+        if self.data_len == 0:
+            # send deliberately broken length packets
+            # (to small payload, len field < 256)
+            self.last_packet = mqttsn.MQTTSN(len=128) / mqttsn.MQTTSNPublish(
+                qos=self._qos_flags, tid=tid, mid=mid, data="128"
+            )
+            self.send(self.last_packet)
+            # send deliberately broken length packets
+            # (to small payload, len field >= 256)
+            self.last_packet = mqttsn.MQTTSN(len=400) / mqttsn.MQTTSNPublish(
+                qos=self._qos_flags, tid=tid, mid=mid, data="400"
+            )
+            self.send(self.last_packet)
+            # send deliberately broken length packets (too large payload)
+            self.last_packet = mqttsn.MQTTSN(len=10) / mqttsn.MQTTSNPublish(
+                qos=self._qos_flags, tid=tid, mid=mid, data="X" * 20
+            )
+            self.send(self.last_packet)
+            # last message should be received truncated
+            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
+                raise self.WAITING_PUBACK(tid, mid)
+            else:
+                self._publish_to_subscriber(subscription)
+        if self.data_len < self.data_len_end:
+            self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPublish(
+                qos=self._qos_flags, tid=tid, mid=mid, data="X" * self.data_len
+            )
+            self.send(self.last_packet)
+            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
+                raise self.WAITING_PUBACK(tid, mid)
+            else:
+                self._publish_to_subscriber(subscription)
+        else:
+            raise self.END()
+
+    @ATMT.state()
     def WAITING_CONNECT(self):
         pass
 
@@ -138,11 +199,6 @@ class MQTTSNServer(Automaton):
         self.send(self.last_packet)
         self.spawn.expect_exact("success: connected to gateway at {}"
                                 .format(self.gw_addr))
-
-    @ATMT.state()
-    def REGISTERING(self):
-        self.spawn.sendline("reg {}".format(self.topic_name))
-        raise self.WAITING_REGISTER()
 
     @ATMT.state()
     def WAITING_REGISTER(self):
@@ -187,16 +243,6 @@ class MQTTSNServer(Automaton):
         self.send(self.last_packet)
         self.spawn.expect_exact("success: registered to topic '{} [{:d}]'"
                                 .format(topic_name, tid))
-
-    @ATMT.state()
-    def PUBLISHING(self, topic_name):
-        if self.data_len < self.data_len_end:
-            self.spawn.sendline("pub {} {:d} {:d}" .format(topic_name,
-                                                           self.data_len,
-                                                           self.qos_level))
-            raise self.WAITING_PUBLISH()
-        else:
-            raise self.END()
 
     @ATMT.state()
     def WAITING_PUBLISH(self):
@@ -248,12 +294,6 @@ class MQTTSNServer(Automaton):
         time.sleep(self.pub_interval)
 
     @ATMT.state()
-    def SUBSCRIBING(self):
-        self.spawn.sendline("sub {} {}".format(self.topic_name,
-                                               self.qos_level))
-        raise self.WAITING_SUBSCRIBE()
-
-    @ATMT.state()
     def WAITING_SUBSCRIBE(self):
         pass
 
@@ -302,46 +342,6 @@ class MQTTSNServer(Automaton):
         self.data_len += self.data_len_step
         time.sleep(self.pub_interval)
         raise self.PUBLISH_TO_SUBSCRIBER(subscription)
-
-    @ATMT.state()
-    def PUBLISH_TO_SUBSCRIBER(self, subscription):
-        tid = subscription["tid"]
-        self.last_mid += 1
-        mid = self.last_mid
-        if self.data_len == 0:
-            # send deliberately broken length packets
-            # (to small payload, len field < 256)
-            self.last_packet = mqttsn.MQTTSN(len=128) / mqttsn.MQTTSNPublish(
-                qos=self._qos_flags, tid=tid, mid=mid, data="128"
-            )
-            self.send(self.last_packet)
-            # send deliberately broken length packets
-            # (to small payload, len field >= 256)
-            self.last_packet = mqttsn.MQTTSN(len=400) / mqttsn.MQTTSNPublish(
-                qos=self._qos_flags, tid=tid, mid=mid, data="400"
-            )
-            self.send(self.last_packet)
-            # send deliberately broken length packets (too large payload)
-            self.last_packet = mqttsn.MQTTSN(len=10) / mqttsn.MQTTSNPublish(
-                qos=self._qos_flags, tid=tid, mid=mid, data="X" * 20
-            )
-            self.send(self.last_packet)
-            # last message should be received truncated
-            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
-                raise self.WAITING_PUBACK(tid, mid)
-            else:
-                self._publish_to_subscriber(subscription)
-        if self.data_len < self.data_len_end:
-            self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPublish(
-                qos=self._qos_flags, tid=tid, mid=mid, data="X" * self.data_len
-            )
-            self.send(self.last_packet)
-            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
-                raise self.WAITING_PUBACK(tid, mid)
-            else:
-                self._publish_to_subscriber(subscription)
-        else:
-            raise self.END()
 
     @ATMT.state()
     def WAITING_PUBACK(self, tid, mid):
