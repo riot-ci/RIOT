@@ -13,16 +13,27 @@ BINDIR_APP = $(BINDIR)/$(APPLICATION)
 #
 export SLOT0_OFFSET SLOT0_LEN SLOT1_OFFSET SLOT1_LEN
 
-# Mandatory APP_VER, set to epoch by default
-APP_VER ?= $(shell date +%s)
+# Mandatory APP_VER, set to epoch by default, or "0" for CI build
+ifeq (1, RIOT_CI_BUILD)
+  APP_VER ?= 0
+else
+  EPOCH := $(shell date +%s)
+  APP_VER ?= $(EPOCH)
+endif
 
 # Final target for slot 0 with riot_hdr
-SLOT0_RIOT_BIN = $(BINDIR_APP)-slot0.riot.bin
-SLOT1_RIOT_BIN = $(BINDIR_APP)-slot1.riot.bin
+SLOT0_RIOT_BIN = $(BINDIR_APP)-slot0.$(APP_VER).riot.bin
+SLOT1_RIOT_BIN = $(BINDIR_APP)-slot1.$(APP_VER).riot.bin
 SLOT_RIOT_BINS = $(SLOT0_RIOT_BIN) $(SLOT1_RIOT_BIN)
 
+# if RIOTBOOT_SKIP_COMPILE is set to 1, "make riotboot/slot[01](-flash)"
+# will not depend on the base elf files, thus skipping the compilation step.
+# This results in the equivalent to "make flash-only" for
+# "make riotboot/flash-slot[01]".
+ifneq (1, $(RIOTBOOT_SKIP_COMPILE))
 $(BINDIR_APP)-%.elf: $(BASELIBS)
 	$(Q)$(_LINK) -o $@
+endif
 
 # Slot 0 and 1 firmware offset, after header
 SLOT0_IMAGE_OFFSET := $$(($(SLOT0_OFFSET) + $(RIOTBOOT_HDR_LEN)))
@@ -33,9 +44,17 @@ $(BINDIR_APP)-slot0.elf: FW_ROM_LEN=$$((SLOT0_LEN - $(RIOTBOOT_HDR_LEN)))
 $(BINDIR_APP)-slot0.elf: ROM_OFFSET=$(SLOT0_IMAGE_OFFSET)
 $(BINDIR_APP)-slot1.elf: FW_ROM_LEN=$$((SLOT1_LEN - $(RIOTBOOT_HDR_LEN)))
 $(BINDIR_APP)-slot1.elf: ROM_OFFSET=$(SLOT1_IMAGE_OFFSET)
+SLOT_RIOT_ELFS = $(BINDIR_APP)-slot0.elf $(BINDIR_APP)-slot1.elf
+
+# ensure both slot elf files are always linked
+# this ensures that both "make test" and "make test-murdock" can rely on them
+# being present without having to trigger re-compilation.
+ifneq (1, $(RIOTNOLINK))
+link: $(SLOT_RIOT_ELFS)
+endif
 
 # Create binary target with RIOT header
-$(SLOT_RIOT_BINS): %.riot.bin: %.hdr %.bin
+$(SLOT_RIOT_BINS): %.$(APP_VER).riot.bin: %.hdr %.bin
 	@echo "creating $@..."
 	$(Q)cat $^ > $@
 
@@ -88,8 +107,8 @@ riotboot/combined-slot0: $(RIOTBOOT_COMBINED_BIN)
 $(RIOTBOOT_COMBINED_BIN): $(BOOTLOADER_BIN)/riotboot.extended.bin $(SLOT0_RIOT_BIN)
 	$(Q)cat $^ > $@
 
-RIOTBOOT_EXTENDED_BIN = $(BINDIR_APP)-slot0-extended.bin
 
+RIOTBOOT_EXTENDED_BIN = $(BINDIR_APP)-slot0-extended.bin
 # Generate a binary file from slot 0 which covers slot 1 riot_hdr
 # in order to invalidate slot 1
 $(RIOTBOOT_EXTENDED_BIN): $(RIOTBOOT_COMBINED_BIN)
@@ -130,6 +149,11 @@ riotboot/flash: riotboot/flash-slot0 riotboot/flash-bootloader
 # Target 'all' will generate the combined file directly.
 # It also makes 'flash' and 'flash-only' work without specific command.
 FLASHFILE = $(RIOTBOOT_EXTENDED_BIN)
+
+# include suit targets
+ifneq (,$(filter suit_v4, $(USEMODULE)))
+include $(RIOTMAKE)/suit.v4.inc.mk
+endif
 
 else
 riotboot:
