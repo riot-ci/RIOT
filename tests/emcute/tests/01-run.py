@@ -99,35 +99,24 @@ class MQTTSNServer(Automaton):
     def _get_topic_name(self, tid):
         return self.topics[tid - 1]
 
-    def _publish_to_subscriber(self, subscription):
-        if self.data_len > 0:
-            self.spawn.expect_exact(
-                    "### got publication of {:d} bytes for topic "
-                    "'{}' [{:d}] ###"
-                    .format(self.data_len, subscription["topic_name"].decode(),
-                            subscription["tid"]))
-        self.data_len += self.data_len_step
-        time.sleep(self.pub_interval)
-        raise self.PUBLISH_TO_SUBSCRIBER(subscription)
-
     # >>> automaton states <<< #
     @ATMT.state(initial=1)
     def BEGIN(self):
         self.spawn.expect_exact("success: starting test application")
-        raise self.CONNECTING()
+        raise self.CONNECT_FROM_NODE()
 
     @ATMT.state()
-    def CONNECTING(self):
+    def CONNECT_FROM_NODE(self):
         self.spawn.sendline("con {}".format(self.gw_addr))
         raise self.WAITING(mqttsn.CONNECT)
 
     @ATMT.state()
-    def REGISTERING(self):
+    def REGISTER_FROM_NODE(self):
         self.spawn.sendline("reg {}".format(self.topic_name))
         raise self.WAITING(mqttsn.REGISTER)
 
     @ATMT.state()
-    def PUBLISHING(self, topic_name):
+    def PUBLISH_FROM_NODE(self, topic_name):
         if self.data_len < self.data_len_end:
             self.spawn.sendline("pub {} {:d} {:d}" .format(topic_name,
                                                            self.data_len,
@@ -137,13 +126,13 @@ class MQTTSNServer(Automaton):
             raise self.END()
 
     @ATMT.state()
-    def SUBSCRIBING(self):
+    def SUBSCRIBE_FROM_NODE(self):
         self.spawn.sendline("sub {} {}".format(self.topic_name,
                                                self.qos_level))
         raise self.WAITING(mqttsn.SUBSCRIBE)
 
     @ATMT.state()
-    def PUBLISH_TO_SUBSCRIBER(self, subscription):
+    def PUBLISH_TO_NODE(self, subscription):
         tid = subscription["tid"]
         self.last_mid += 1
         mid = self.last_mid
@@ -165,20 +154,13 @@ class MQTTSNServer(Automaton):
                 qos=self._qos_flags, tid=tid, mid=mid, data="X" * 20
             )
             self.send(self.last_packet)
-            # last message should be received truncated
-            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
-                raise self.WAITING(mqttsn.PUBACK, tid, mid)
-            else:
-                self._publish_to_subscriber(subscription)
+            return subscription, mid
         if self.data_len < self.data_len_end:
             self.last_packet = mqttsn.MQTTSN() / mqttsn.MQTTSNPublish(
                 qos=self._qos_flags, tid=tid, mid=mid, data="X" * self.data_len
             )
             self.send(self.last_packet)
-            if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
-                raise self.WAITING(mqttsn.PUBACK, tid, mid)
-            else:
-                self._publish_to_subscriber(subscription)
+            return subscription, mid
         else:
             raise self.END()
 
@@ -219,6 +201,27 @@ class MQTTSNServer(Automaton):
     def timeout_message(self, args):
         raise self.MESSAGE_TIMEOUT(args[0])
 
+    @ATMT.condition(PUBLISH_TO_NODE, prio=1)
+    def PUBLISH_asks_for_PUBACK(self, args):
+        subscription = args[0]
+        tid = subscription["tid"]
+        mid = args[1]
+        if self.last_packet.qos in [mqttsn.QOS_1, mqttsn.QOS_2]:
+            raise self.WAITING(mqttsn.PUBACK, tid, mid)
+
+    @ATMT.condition(PUBLISH_TO_NODE, prio=2)
+    def wait_for_PUBLISH_on_node(self, args):
+        subscription = args[0]
+        if self.data_len > 0:
+            self.spawn.expect_exact(
+                    "### got publication of {:d} bytes for topic "
+                    "'{}' [{:d}] ###"
+                    .format(self.data_len, subscription["topic_name"].decode(),
+                            subscription["tid"]))
+        self.data_len += self.data_len_step
+        time.sleep(self.pub_interval)
+        raise self.PUBLISH_TO_NODE(subscription)
+
     @ATMT.receive_condition(WAITING, prio=1)
     def receive_wrong_message(self, pkt, args):
         exp_type = args[0]
@@ -229,20 +232,20 @@ class MQTTSNServer(Automaton):
     def receive_CONNECT(self, pkt, args):
         if pkt.type == mqttsn.CONNECT:
             if self.mode in ["pub", "sub_w_reg"]:
-                raise self.REGISTERING()
+                raise self.REGISTER_FROM_NODE()
             elif self.mode in ["sub"]:
-                raise self.SUBSCRIBING()
+                raise self.SUBSCRIBE_FROM_NODE()
 
     @ATMT.receive_condition(WAITING, prio=2)
     def receive_REGISTER(self, pkt, args):
         if pkt.type == mqttsn.REGISTER:
             topic_name = pkt.topic_name.decode()
             if self.mode in ["pub"]:
-                raise self.PUBLISHING(topic_name) \
+                raise self.PUBLISH_FROM_NODE(topic_name) \
                     .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
             else:
-                raise self.SUBSCRIBING() \
+                raise self.SUBSCRIBE_FROM_NODE() \
                     .action_parameters(topic_name=topic_name,
                                        mid=pkt.mid)
 
@@ -253,7 +256,7 @@ class MQTTSNServer(Automaton):
             topic_name = self._get_topic_name(pkt.tid)
             self.res += ":".join("{:02x}".format(c) for c in pkt.data)
             self.data_len += self.data_len_step
-            raise self.PUBLISHING(topic_name) \
+            raise self.PUBLISH_FROM_NODE(topic_name) \
                 .action_parameters(topic_name=topic_name,
                                    qos=pkt.qos, mid=pkt.mid, tid=pkt.tid)
 
@@ -271,7 +274,7 @@ class MQTTSNServer(Automaton):
             subscription = {"tid": tid, "topic_name": topic_name}
             if subscription not in self.subscriptions:
                 self.subscriptions.append(subscription)
-            raise self.PUBLISH_TO_SUBSCRIBER(subscription) \
+            raise self.PUBLISH_TO_NODE(subscription) \
                 .action_parameters(mid=pkt.mid, tid=tid)
 
     @ATMT.receive_condition(WAITING, prio=2)
@@ -282,10 +285,12 @@ class MQTTSNServer(Automaton):
             assert tid == pkt.tid
             assert mid == pkt.mid
             assert mqttsn.ACCEPTED == pkt.return_code
-            self._publish_to_subscriber(
-                {"tid": pkt.tid,
-                 "topic_name": self._get_topic_name(pkt.tid)}
-            )
+            self.data_len += self.data_len_step
+            time.sleep(self.pub_interval)
+            raise self.PUBLISH_TO_NODE({
+                "tid": pkt.tid,
+                "topic_name": self._get_topic_name(pkt.tid)
+            })
 
     @ATMT.action(receive_CONNECT)
     def send_CONNACK(self):
@@ -403,7 +408,6 @@ def testfunc(child):
     time.sleep(1)
     DATA_MAX_LEN = 512 - 9  # PUBLISH + 2 byte extra for length
     TOPIC_MAX_LEN = 249     # see Makefile
-    MQTTSNServer.graph()
     for test_params in [
         {"qos_level": 0, "mode": "sub", "topic_name": "/test",
          "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
