@@ -285,7 +285,7 @@ class MQTTSNServer(Automaton):
                 qos=self._qos_flags, tid=tid, mid=mid, data="400"
             )
             self.send(self.last_packet)
-            # send deliberately broken length packets (to large payload)
+            # send deliberately broken length packets (too large payload)
             self.last_packet = mqttsn.MQTTSN(len=10) / mqttsn.MQTTSNPublish(
                 qos=self._qos_flags, tid=tid, mid=mid, data="X" * 20
             )
@@ -400,7 +400,8 @@ def testfunc(child):
             {"qos_level": 1, "mode": "sub", "topic_name": "/test",
              "data_len_start": 0, "data_len_end": DATA_MAX_LEN,
              "data_len_step": 50},
-            {"qos_level": 1, "mode": "sub", "topic_name": "/" + ("x" * (TOPIC_MAX_LEN - 1)),
+            {"qos_level": 1, "mode": "sub",
+             "topic_name": "/" + ("x" * (TOPIC_MAX_LEN - 1)),
              "data_len_start": 8, "data_len_end": 9},
             {"qos_level": 1, "mode": "sub_w_reg", "topic_name": "/test",
              "data_len_start": 8, "data_len_end": 9},
