@@ -323,7 +323,7 @@ get_jobs() {
     pre_checks || return 0
 
     get_non_compile_jobs
-    get_compile_jobs
+#    get_compile_jobs
 }
 
 $*
