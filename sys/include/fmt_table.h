@@ -7,16 +7,10 @@
  */
 
 /**
- * @defgroup    sys_fmt_table String formatting (fmt)
+ * @defgroup    sys_fmt_table Table extension of the string formatting API
+ *                            (fmt_table)
  * @ingroup     sys_fmt
- * @brief       Provides simple string formatting functions
- *
- * The goal of this API is to provide a string formatting interface which has a
- * reduced code size footprint compared to the libc provided stdio.h functionality.
- *
- * This library provides a set of formatting and printing functions for 64 bit
- * integers, even when the C library was built without support for 64 bit
- * formatting (newlib-nano).
+ * @brief       Provides utilities to print tables.
  *
  * \note The print functions in this library do not buffer any output.
  * Mixing calls to standard @c printf from stdio.h with the @c print_xxx
