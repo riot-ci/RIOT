@@ -306,7 +306,7 @@ get_non_compile_jobs() {
 # this function will be called first when building a pull request.
 pre_checks() {
     if [ -n "${CI_BASE_BRANCH}" ]; then
-        if git log --pretty=oneline ${CI_BASE_BRANCH}.. | grep -q -s '[skip]'; then
+        if git log --pretty=oneline ${CI_BASE_BRANCH}..HEAD -- 2>/dev/null | grep -q -s '[skip]'; then
             echo "$0 error \"Skipping build: [skip] found in PR commits.\""
             return 1;
         fi
