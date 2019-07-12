@@ -10,3 +10,5 @@ ${APPDIR}/tests/common/assert_slotnum.py 1 1
 
 APP_VER=2 make -C${APPDIR} riotboot/flash-slot0
 ${APPDIR}/tests/common/assert_slotnum.py 0 2
+
+echo "[TEST PASSED]"
