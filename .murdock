@@ -267,7 +267,7 @@ test_job() {
           # get relative (to $(BINDIR) path
           local relpath="$(realpath --relative-to ${BINDIR} ${filename})"
         else
-          local relpath="$(basename ${filename})"
+          error "$0: error: extra test files not within \${BINDIR}!"
         fi
 
         # set remote file path.
