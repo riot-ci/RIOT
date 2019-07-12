@@ -307,7 +307,7 @@ get_non_compile_jobs() {
 pre_checks() {
     if [ -n "${CI_BASE_BRANCH}" ]; then
         if git log --pretty=oneline ${CI_BASE_BRANCH}..HEAD | grep -s '[skip]'; then
-            echo "echo Skipping build: [skip] found in commits.; false;"
+            echo "./.murdock error Skipping build: [skip] found in commits."
             return 1;
         fi
     fi
