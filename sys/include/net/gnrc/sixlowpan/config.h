@@ -142,9 +142,9 @@ extern "C" {
  * @note    Only applicable with
  *          [gnrc_sixlowpan_frag_vrb](@ref net_gnrc_sixlowpan_frag_vrb) module.
  */
-#ifndef GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_MS
-#define GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_MS  (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_MS)
-#endif  /* GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_MS */
+#ifndef GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_US
+#define GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_US  (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US)
+#endif  /* GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_US */
 
 #ifdef __cplusplus
 }
