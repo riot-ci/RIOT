@@ -296,10 +296,14 @@ static_tests() {
     fi
 
     #BUILDTEST_MCU_GROUP=static-tests ./dist/tools/ci/build_and_test.sh
+    echo status:
+    git status
     echo branch:
     git branch
     echo log:
     git log -n100
+    echo log2:
+    git log ${CI_BASE_BRANCH}..HEAD --
 
 }
 
