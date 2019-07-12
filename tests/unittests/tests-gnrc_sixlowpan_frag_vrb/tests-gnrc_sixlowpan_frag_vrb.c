@@ -243,7 +243,7 @@ static void test_vrb_gc(void)
         .tag = TEST_TAG,
         .datagram_size = 1156U,
         .current_size = 116U,
-        .arrival = xtimer_now_usec() - GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_MS - 1000,
+        .arrival = xtimer_now_usec() - GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_US - 1000,
     };
     static uint8_t out_dst[] = TEST_OUT_DST;
     gnrc_sixlowpan_frag_vrb_t *res;
