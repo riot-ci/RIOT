@@ -26,7 +26,7 @@ else ifeq ($(PROGRAMMER),jlink)
   RESET ?= $(RIOTBOARD)/$(BOARD)/dist/reset.sh
 endif
 
-FLASHFILE ?= $(BINFILE)
+FLASHFILE ?= $(HEXFILE)
 DEBUGGER_FLAGS = $(BINDIR) $(ELFFILE)
 RESET_FLAGS ?= $(BINDIR)
 export OBJDUMPFLAGS += --disassemble --source --disassembler-options=force-thumb
