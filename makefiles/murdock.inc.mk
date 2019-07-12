@@ -11,8 +11,8 @@
 #
 # By default, $(FLASHFILE) is copied to the test worker along with the job.
 # If the test needs any extra files, they can be added to the TEST_EXTRA_FILES
-# variable. They will also be sent to the test worker *and placed in the
-# application's BINDIR*.
+# variable. They will also be sent to the test worker.
+# Note: *any TEST_EXTRA_FILES has to reside in ${BINDIR}*.
 test-murdock:
 	cd $(RIOTBASE) && \
 		./.murdock test_job \
