@@ -15,24 +15,6 @@
 
 #define CREDMAN_TEST_TAG (1)
 
-ecdsa_params_t exp_ecdsa_params = {
-    .private_key = ecdsa_priv_key,
-    .public_key = { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
-    .client_keys = NULL,
-    .client_keys_size = 0,
-};
-
-psk_params_t exp_psk_params = {
-    .id =  {
-        .s = (void *)"RIOTer",
-        .len = sizeof("RIOTer") - 1,
-    },
-    .key = {
-        .s = (void *)"LGPLisyourfriend",
-        .len = sizeof("LGPLisyourfriend") - 1,
-    },
-};
-
 static int _compare_credentials(const credman_credential_t *a,
                                const credman_credential_t *b)
 {
@@ -54,20 +36,22 @@ static void test_credman_add(void)
     int ret;
     unsigned exp_count = 0;
 
+    psk_params_t exp_psk_params = {
+        .id =  {
+            .s = (void *)"RIOTer",
+            .len = sizeof("RIOTer") - 1,
+        },
+        .key = {
+            .s = (void *)"LGPLisyourfriend",
+            .len = sizeof("LGPLisyourfriend") - 1,
+        },
+    };
+
     credman_credential_t credential = {
         .tag = CREDMAN_TEST_TAG,
         .type = CREDMAN_TYPE_PSK,
         .params = {
-            .psk = {
-                .id =  {
-                    .s = (void *)"RIOTer",
-                    .len = sizeof("RIOTer") - 1,
-                },
-                .key = {
-                    .s = (void *)"LGPLisyourfriend",
-                    .len = sizeof("LGPLisyourfriend") - 1,
-                },
-            },
+            .psk = exp_psk_params,
         },
     };
 
