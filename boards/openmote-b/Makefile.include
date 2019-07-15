@@ -18,10 +18,11 @@ ifeq ($(PROGRAMMER),cc2538-bsl)
   endif
   FLASHER = $(RIOTBASE)/dist/tools/cc2538-bsl/cc2538-bsl.py
   FFLAGS  = -p "$(PORT_BSL)" --bootloader-invert-lines -e -w -v -b 460800 $(FLASHFILE)
+  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py -p "$(PORT_BSL)" --bootloader-invert-lines
 else ifeq ($(PROGRAMMER),jlink)
-  FLASHER = $(RIOTBOARD)/common/remote/dist/flash.sh
+  FLASHER = $(RIOTBOARD)/$(BOARD)/dist/flash.sh
   FFLAGS  = $(BINDIR) $(FLASHFILE)
-  DEBUGGER = $(RIOTBOARD)/common/remote/dist/flash.sh
+  DEBUGGER = $(RIOTBOARD)/$(BOARD)/dist/debug.sh
   DEBUGSERVER = JLinkGDBServer -device CC2538SF53
   RESET ?= $(RIOTBOARD)/$(BOARD)/dist/reset.sh
 endif
