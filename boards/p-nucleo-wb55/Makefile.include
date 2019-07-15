@@ -1,0 +1,10 @@
+# CPU2 defines a restricted memory region. This is not available for
+# CPU1 linking or general access, for now we define it by its default
+# value.
+CPU2_ROM_LEN = 216K
+
+# include shared global Nucleo Makefile
+include $(RIOTBOARD)/common/nucleo/Makefile.include
+
+# include shared global Nucleo Makefile
+include $(RIOTBOARD)/common/nucleo/Makefile.include
