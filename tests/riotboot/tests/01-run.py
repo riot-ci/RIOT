@@ -7,18 +7,22 @@
 # directory for more details.
 
 import sys
+import subprocess
 from testrunner import run
 
-slotnum = int(sys.argv[1])
-app_ver = int(sys.argv[2])
-print("expecting slot number %s, app_ver %s" % (slotnum, app_ver))
+
+def flash_slot(slotnum, version):
+    cmd = [
+        "make",
+        "RIOTBOOT_SKIP_COMPILE=1",
+        "riotboot/flash-slot{}".format(slotnum),
+        "APP_VER={}".format(version),
+    ]
+    assert not subprocess.call(cmd)
 
 
-def testfunc(child):
-    global slotnum
-    global app_ver
-
-    # Ask for current slot, should be 0 or 1
+def assert_slot_num(child, slotnum, version):
+    # Check if its runing on the expected slot
     child.sendline("curslotnr")
     child.expect("Current slot=%s" % (slotnum))
     child.expect('>')
@@ -28,7 +32,7 @@ def testfunc(child):
     # Magic number is "RIOT" (always in little endian)
     child.expect_exact("Image magic_number: 0x544f4952")
     # Other info is hardware/app dependant so we just check basic compliance
-    child.expect("Image Version: %s" % ("{0:#0{1}x}".format(app_ver, 10)))
+    child.expect("Image Version: %s" % ("{0:#0{1}x}".format(version, 10)))
     child.expect("Image start address: 0x[0-9a-fA-F]{8}")
     child.expect("Header chksum: 0x[0-9a-fA-F]{8}")
     child.expect('>')
@@ -42,6 +46,29 @@ def testfunc(child):
     child.sendline("dumpaddrs")
     child.expect("slot 0: metadata: 0x[0-9a-fA-F]{1,8} image: 0x[0-9a-fA-F]{8}")
     child.expect('>')
+
+
+def testfunc(child):
+
+    # Ask for current slot, should be 0 or 1
+    child.sendline("curslotnr")
+    child.expect(r"Current slot=([0-1])")
+    slotnum = int(child.match.group(1))
+    child.expect('>')
+
+    # Ask for current APP_VER
+    child.sendline("curslothdr")
+    child.expect(r"Image Version: (?P<app_ver>0x[0-9a-fA-F]{8}$)")
+    current_app_ver = int(child.match.group("app_ver"), 16)
+    child.expect('>')
+
+    # Flash to both slots and verify basic functions
+    for version in [current_app_ver + 1, current_app_ver + 2]:
+        slotnum = slotnum ^ 1
+        flash_slot(slotnum, version)
+        assert_slot_num(child, slotnum, version)
+
+    print("TEST PASSED")
 
 
 if __name__ == "__main__":
