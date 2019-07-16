@@ -1,3 +1,6 @@
 INCLUDES += -I$(RIOTBASE)/pkg/micropython/include
 INCLUDES += -I$(PKGDIRBASE)/micropython
 INCLUDES += -I$(PKGDIRBASE)/micropython/ports/riot
+
+# The port currently doesn't build with llvm
+TOOLCHAINS_BLACKLIST += llvm
