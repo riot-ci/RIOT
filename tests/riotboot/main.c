@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+#include "irq.h"
 #include "riotboot/slot.h"
 #include "shell.h"
 
@@ -41,8 +42,14 @@ static int cmd_print_slot_hdr(int argc, char **argv)
     (void)argc;
     (void)argv;
 
+    /* Sometimes, udhcp output messes up the following printfs.  That
+     * confuses the test script. As a workaround, just disable interrupts
+     * for a while.
+     */
+    irq_disable();
     int current_slot = riotboot_slot_current();
     riotboot_slot_print_hdr(current_slot);
+    irq_enable();
     return 0;
 }
 
