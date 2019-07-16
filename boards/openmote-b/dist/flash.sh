@@ -12,9 +12,10 @@ FLASHFILE=$2
 FLASHADDR=200000
 
 # setup JLink command file
-echo "speed 1000" >> $BINDIR/burn.seg
+echo "speed 1000" > $BINDIR/burn.seg
 echo "loadfile $FLASHFILE $FLASHADDR" >> $BINDIR/burn.seg
 echo "J" >> $BINDIR/burn.seg
+echo "" >> $BINDIR/burn.seg
 echo "exit" >> $BINDIR/burn.seg
 
 echo "speed 1000" > $BINDIR/reset_active.seg
