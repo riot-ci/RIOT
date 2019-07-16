@@ -179,14 +179,13 @@ uint8_t *coap_find_option(const coap_pkt_t *pkt, unsigned opt_num)
 /*
  * Parse option attributes
  *
- * pkt[in]           coap_pkt_t for buffer
- * pkt_pos[in,out]   in: first byte of option in buffer
- *                   out: next byte in buffer after the option header
- * delta[out]        option delta from previous option
- * opt_len[out]      length of option value
+ * pkt[in]        coap_pkt_t for buffer
+ * pkt_pos[in]    first byte of option in buffer
+ * delta[out]     option delta from previous option
+ * opt_len[out]   length of option value
  *
- * return            next byte after option header, usually the option value
- * return            NULL if initial pkt_pos is past options
+ * return         next byte after option header, usually the option value
+ * return         NULL if initial pkt_pos is past options
  */
 static uint8_t *_parse_option(const coap_pkt_t *pkt,
                               uint8_t *pkt_pos, uint16_t *delta, int *opt_len)
