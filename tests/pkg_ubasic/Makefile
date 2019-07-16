@@ -28,8 +28,6 @@ BOARD_BLACKLIST := \
                    z1 \
                    #
 
-TEST_ON_CI_WHITELIST += all
-
 USEPKG += ubasic
 USEMODULE += ubasic_tests
 
