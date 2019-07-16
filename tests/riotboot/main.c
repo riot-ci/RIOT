@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+#include "irq.h"
 #include "riotboot/slot.h"
 #include "shell.h"
 
