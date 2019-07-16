@@ -451,7 +451,7 @@ void coap_pkt_init(coap_pkt_t *pkt, uint8_t *buf, size_t len, size_t header_len)
  * Decodes a field value in an Option header, either option delta or length.
  *
  * val[in]               Value of a nybble of the first byte of the option
- *                       header. Lower nybble is coded length of delta; upper
+ *                       header. Upper nybble is coded length of delta; lower
  *                       nybble is coded length of value.
  * pkt_pos_ptr[in,out]   in: commonly, first byte of the option's value;
  *                       otherwise, first byte of extended delta/length header
