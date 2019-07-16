@@ -18,6 +18,7 @@ ifeq ($(PROGRAMMER),cc2538-bsl)
   endif
   FLASHER = $(RIOTBASE)/dist/tools/cc2538-bsl/cc2538-bsl.py
   FFLAGS  = -p "$(PORT_BSL)" --bootloader-invert-lines -e -w -v -b 460800 $(FLASHFILE)
+  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py -p "$(PORT_BSL)" --bootloader-invert-lines
 else ifeq ($(PROGRAMMER),jlink)
   FLASHER = $(RIOTBOARD)/$(BOARD)/dist/flash.sh
   FFLAGS  = $(BINDIR) $(FLASHFILE)
@@ -26,7 +27,7 @@ else ifeq ($(PROGRAMMER),jlink)
   RESET ?= $(RIOTBOARD)/$(BOARD)/dist/reset.sh
 endif
 
-FLASHFILE ?= $(BINFILE)
+FLASHFILE ?= $(HEXFILE)
 DEBUGGER_FLAGS = $(BINDIR) $(ELFFILE)
 RESET_FLAGS ?= $(BINDIR)
 export OBJDUMPFLAGS += --disassemble --source --disassembler-options=force-thumb
