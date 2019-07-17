@@ -54,6 +54,7 @@
 
 # Set IMAGE_OFFSET to zero by default.
 : ${IMAGE_OFFSET:=0}
+: ${JLINK_RESET_FILE:=${RIOTTOOLS}/jlink/reset.seg}
 
 # default GDB port
 _GDB_PORT=3333
@@ -167,7 +168,7 @@ do_flash() {
     if [ ! -z "${JLINK_POST_FLASH}" ]; then
         printf "${JLINK_POST_FLASH}\n" >> ${BINDIR}/burn.seg
     fi
-    cat ${RIOTTOOLS}/jlink/reset.seg >> ${BINDIR}/burn.seg
+    cat ${JLINK_RESET_FILE} >> ${BINDIR}/burn.seg
     # flash device
     sh -c "${JLINK} ${JLINK_SERIAL} \
                     -ExitOnError 1 \
@@ -224,7 +225,7 @@ do_reset() {
                     -speed '${JLINK_SPEED}' \
                     -if '${JLINK_IF}' \
                     -jtagconf -1,-1 \
-                    -commandfile '${RIOTTOOLS}/jlink/reset.seg'"
+                    -commandfile '${JLINK_RESET_FILE}'"
 }
 
 do_term() {
