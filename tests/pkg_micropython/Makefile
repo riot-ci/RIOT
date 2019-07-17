@@ -10,8 +10,7 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
 # arm7, risc-v, pic32
 BOARD_BLACKLIST += avsextrem msba2
 BOARD_BLACKLIST += hifive1
-BOARD_BLACKLIST += pic32-clicker
-BOARD_BLACKLIST += pic32-wifire
+BOARD_BLACKLIST += pic32-clicker pic32-wifire
 
 BOARD_INSUFFICIENT_MEMORY := blackpill bluepill i-nucleo-lrwan1 nucleo-f030r8 \
                              nucleo-f031k6 nucleo-f042k6 nucleo-f302r8 \
