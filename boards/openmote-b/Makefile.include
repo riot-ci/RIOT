@@ -20,7 +20,7 @@ ifeq ($(PROGRAMMER),cc2538-bsl)
   FLASHER = $(RIOTBASE)/dist/tools/cc2538-bsl/cc2538-bsl.py
   FFLAGS  = -p "$(PORT_BSL)" --bootloader-invert-lines -e -w -v -b 460800 $(FLASHFILE)
   RESET_FLAGS ?= -p "$(PORT_BSL)" --bootloader-invert-lines
-  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py ${RESET_FLAGS}
+  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py
 else ifeq ($(PROGRAMMER),jlink)
   # Special flashing and reset scripts are required due to board hardware
   export JLINK_DEVICE = CC2538SF53
