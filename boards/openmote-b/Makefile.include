@@ -9,6 +9,10 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
 # Set default flash tool
 export PROGRAMMER ?= cc2538-bsl
 
+FLASHFILE ?= $(HEXFILE)
+RESET_FLAGS ?= $(BINDIR)
+export OBJDUMPFLAGS += --disassemble --source --disassembler-options=force-thumb
+
 ifeq ($(PROGRAMMER),cc2538-bsl)
   OS := $(shell uname)
   ifeq ($(OS),Linux)
@@ -16,21 +20,21 @@ ifeq ($(PROGRAMMER),cc2538-bsl)
   else ifeq ($(OS),Darwin)
     PORT_BSL ?= $(PORT_DARWIN)
   endif
-  FLASHER = $(RIOTBASE)/dist/tools/cc2538-bsl/cc2538-bsl.py
-  FFLAGS  = -p "$(PORT_BSL)" --bootloader-invert-lines -e -w -v -b 460800 $(FLASHFILE)
+  FLASHER ?= $(RIOTBASE)/dist/tools/cc2538-bsl/cc2538-bsl.py
+  FFLAGS  ?= -p "$(PORT_BSL)" --bootloader-invert-lines -e -w -v -b 460800 $(FLASHFILE)
   RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py -p "$(PORT_BSL)" --bootloader-invert-lines
 else ifeq ($(PROGRAMMER),jlink)
-  FLASHER = $(RIOTBOARD)/$(BOARD)/dist/flash.sh
-  FFLAGS  = $(BINDIR) $(FLASHFILE)
-  DEBUGGER = $(RIOTBOARD)/$(BOARD)/dist/debug.sh
-  DEBUGSERVER = JLinkGDBServer -device CC2538SF53
+  FLASHER ?= $(RIOTBOARD)/$(BOARD)/dist/flash.sh
+  FFLAGS  ?= $(BINDIR) $(FLASHFILE)
   RESET ?= $(RIOTBOARD)/$(BOARD)/dist/reset.sh
-endif
 
-FLASHFILE ?= $(HEXFILE)
-DEBUGGER_FLAGS = $(BINDIR) $(ELFFILE)
-RESET_FLAGS ?= $(BINDIR)
-export OBJDUMPFLAGS += --disassemble --source --disassembler-options=force-thumb
+  export JLINK_DEVICE = CC2538SF53
+  export JLINK_IF = JTAG
+  DEBUGGER ?= $(RIOTTOOLS)/jlink/jlink.sh
+  DEBUGSERVER ?= $(RIOTTOOLS)/jlink/jlink.sh
+  DEBUGGER_FLAGS ?= debug $(ELFFILE)
+  DEBUGSERVER_FLAGS ?= debug-server
+endif
 
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
