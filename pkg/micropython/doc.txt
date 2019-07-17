@@ -1,0 +1,41 @@
+/**
+ * @defgroup pkg_micropython MicroPython RIOT port
+ * @ingroup  pkg
+ * @brief    MicroPython - Python for microcontrollers
+ *
+ * # MicroPython RIOT package
+ *
+ * "MicroPython is a lean and efficient implementation of the Python 3
+ *  programming language that includes a small subset of the Python standard
+ *  library and is optimised to run on microcontrollers and in constrained
+ *  environments."
+ *
+ * @see https://micropython.org
+ *
+ * ## Status
+ *
+ * MicroPython on RIOT has to be considered experimental. While the basic
+ * interpreter works fairly well on native an Cortex-M, it has not seen much
+ * testing. Especially GC and interrupt handling need some work.
+ *
+ * ## Available modules
+ *
+ * Currently, only these are implemented:
+ *
+ * ### thread_getpid()
+ *
+ *     $ import riot
+ *     $ print(riot.thread_getpid())
+ * ### xtimer
+ *
+ *     $ import xtimer
+ *     $ t = xtimer.xtimer(lambda: print("timer triggered"))
+ *     $ t.set(100000)
+ *
+ * (this fails on ARM for lack of ISR stack)
+ *
+ * ## Example
+ *
+ * See tests/pkg_micropython for example code.
+ *
+ */
