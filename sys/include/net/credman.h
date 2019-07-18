@@ -159,16 +159,14 @@ int credman_get(credman_credential_t *credential, credman_tag_t tag,
                 credman_type_t type);
 
 /**
- * @brief Deletes a credential from the credential pool
+ * @brief Delete a credential from the system. Does nothing if
+ *        credential with credman_credential_t::tag @p tag and
+ *        credman_credential_t::type @p type is not found.
  *
  * @param[in] tag           Tag of the credential
  * @param[in] type          Type of the credential
- *
- * @return CREDMAN_OK on success
- * @return CREDMAN_NOT_FOUND if no credential with @p tag and @p type found
- * @return CREDMAN_ERROR on other errors
  */
-int credman_delete(credman_tag_t tag, credman_type_t type);
+void credman_delete(credman_tag_t tag, credman_type_t type);
 
 /**
  * @brief Gets the number of credentials currently in credential pool

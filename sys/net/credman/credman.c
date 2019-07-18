@@ -110,23 +110,15 @@ int credman_get(credman_credential_t *credential,credman_tag_t tag,
     return ret;
 }
 
-int credman_delete(credman_tag_t tag, credman_type_t type)
+void credman_delete(credman_tag_t tag, credman_type_t type)
 {
     mutex_lock(&_mutex);
-    int ret = CREDMAN_ERROR;
     int pos = _find_credential_pos(tag, type);
-    if (pos < 0) {
-        DEBUG("credman: credential with tag %d and type %d not found\n",
-               tag, type);
-        ret = CREDMAN_NOT_FOUND;
-        goto end;
+    if (pos >= 0) {
+        memset(&credentials[pos], 0, sizeof(credman_credential_t));
+        used--;
     }
-    memset(&credentials[pos], 0, sizeof(credman_credential_t));
-    used--;
-    ret = CREDMAN_OK;
-end:
     mutex_unlock(&_mutex);
-    return ret;
 }
 
 int credman_get_used_count(void)
