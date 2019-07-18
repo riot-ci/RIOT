@@ -32,6 +32,8 @@ static char mp_heap[MP_RIOT_HEAPSIZE];
 
 int main(void)
 {
+    int coldboot = 1;
+
     /* let MicroPython know the top of this thread's stack */
     uint32_t stack_dummy;
     mp_stack_set_top((char*)&stack_dummy);
@@ -39,19 +41,36 @@ int main(void)
     /* Make MicroPython's stack limit somewhat smaller than actual stack limit */
     mp_stack_set_limit(THREAD_STACKSIZE_MAIN - 128);
 
-    /* configure MicroPython's heap */
-    mp_riot_init(mp_heap, sizeof(mp_heap));
-
-    /* execute boot.py */
-    printf("-- Executing boot.py\n");
-    mp_do_str((const char *)boot_py, boot_py_len);
-    printf("-- boot.py exited. Starting REPL..\n");
-
-    /* loop over REPL input */
     while (1) {
-        if (pyexec_friendly_repl() != 0) {
-            break;
+        /* configure MicroPython's heap */
+        mp_riot_init(mp_heap, sizeof(mp_heap));
+
+        /* execute boot.py
+         *
+         * MicroPython's test suite gets confused by extra output, so only do
+         * this the first time after the node boots up, not on following soft
+         * reboots.
+         */
+        if (coldboot) {
+            printf("-- Executing boot.py\n");
+            mp_do_str((const char *)boot_py, boot_py_len);
+            printf("-- boot.py exited. Starting REPL..\n");
+            coldboot = 0;
         }
+
+        /* loop over REPL input */
+        while (1) {
+            if (pyexec_mode_kind == PYEXEC_MODE_RAW_REPL) {
+                if (pyexec_raw_repl() != 0) {
+                    break;
+                }
+            } else {
+                if (pyexec_friendly_repl() != 0) {
+                    break;
+                }
+            }
+        }
+        printf("soft reboot\r\n");
     }
 
     return 0;
