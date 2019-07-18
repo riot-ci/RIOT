@@ -31,7 +31,7 @@ extern "C" {
 /**
  * @brief   Internal macro to calculate *_NUMOF based on config.
  */
-#define PERIPH_NUMOF(config)    (sizeof(config) / sizeof(config[0]))
+#define PERIPH_NUMOF(config)    ARRAY_SIZE(config)
 
 /**
  * @name    Clock configuration
