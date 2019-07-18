@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 #ifndef MP_RIOT_HEAPSIZE
-#define MP_RIOT_HEAPSIZE (8U*1024)
+#define MP_RIOT_HEAPSIZE (16U*1024)
 #endif
 
 /**
