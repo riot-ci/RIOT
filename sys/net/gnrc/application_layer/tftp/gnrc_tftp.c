@@ -53,7 +53,7 @@ static kernel_pid_t _tftp_kernel_pid;
 #endif
 
 #define MIN(a, b)                   ((a) > (b) ? (b) : (a))
-#define ARRAY_LEN(x)                (sizeof(x) / sizeof(x[0]))
+#define ARRAY_LEN(x)                ARRAY_SIZE(x)
 
 #define TFTP_TIMEOUT_MSG            0x4000
 #define TFTP_STOP_SERVER_MSG        0x4001

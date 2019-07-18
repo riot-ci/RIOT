@@ -47,7 +47,7 @@
 /**
  * @brief   Determine length of array in elements
  */
-#define _ARRAY_LEN(x)                   (sizeof(x) / sizeof(x[0]))
+#define _ARRAY_LEN(x)                   ARRAY_SIZE(x)
 
 /**
  * @brief   Flag command mapping

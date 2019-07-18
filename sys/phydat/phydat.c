@@ -60,7 +60,7 @@ static const uint32_t divisors[] = {
 
 void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
 {
-    assert(dim <= (sizeof(dat->val) / sizeof(dat->val[0])));
+    assert(dim <= ARRAY_SIZE(dat->val));
     uint32_t divisor = 0;
     uint32_t max = 0;
     const uint32_t *lookup = lookup_table_positive;
