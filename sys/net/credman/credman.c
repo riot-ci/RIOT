@@ -101,11 +101,11 @@ int credman_get(credman_credential_t *credential,credman_tag_t tag,
         DEBUG("credman: credential with tag %d and type %d not found\n",
                tag, type);
         ret = CREDMAN_NOT_FOUND;
-        goto end;
     }
-    memcpy(credential, &credentials[pos], sizeof(credman_credential_t));
-    ret = CREDMAN_OK;
-end:
+    else {
+        memcpy(credential, &credentials[pos], sizeof(credman_credential_t));
+        ret = CREDMAN_OK;
+    }
     mutex_unlock(&_mutex);
     return ret;
 }
