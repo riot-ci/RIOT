@@ -105,7 +105,7 @@ static void test_credman_get(void)
     };
 
     /* get non-existing credential */
-    ret = credman_get(&out_credential, in_credential.tag, n_credential.type);
+    ret = credman_get(&out_credential, in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
 
     ret = credman_add(&in_credential);
