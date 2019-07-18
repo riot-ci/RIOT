@@ -16,7 +16,7 @@
  * @file
  * @brief       (D)TLS credentials management module definitions
  *
- * @note        This module DOES NOT copy the credentials into the system. It
+ * @note        This module DOES NOT copies the credentials into the system. It
  *              just holds the pointers to the credentials given by the user.
  *              The user must make sure that these pointers are valid during the
  *              lifetime of the application.
@@ -35,14 +35,14 @@ extern "C" {
 #endif
 
 /**
- * @brief Maximum number of credentials in system buffer
+ * @brief Maximum number of credentials in credential pool
  */
 #ifndef CREDMAN_MAX_CREDENTIALS
 #define CREDMAN_MAX_CREDENTIALS  (2)
 #endif
 
 /**
- * @brief Buffer to the credential
+ * @brief Buffer of the credential
  */
 typedef struct {
     void *s;                /**< Pointer to the buffer */
@@ -77,7 +77,7 @@ typedef struct {
 } ecdsa_params_t;
 
 /**
- * @brief Tag of the credential. Must be bigger than 0.
+ * @brief Tag of the credential.
  */
 typedef uint16_t credman_tag_t;
 
@@ -107,8 +107,8 @@ typedef struct {
     credman_type_t type;        /**< Type of the credential */
     credman_tag_t tag;          /**< Tag of the credential */
     union {
-        psk_params_t psk;      /**< PSK credential parameters */
-        ecdsa_params_t ecdsa;  /**< ECDSA credential parameters */
+        psk_params_t psk;       /**< PSK credential parameters */
+        ecdsa_params_t ecdsa;   /**< ECDSA credential parameters */
     } params;                   /**< Credential parameters */
 } credman_credential_t;
 
@@ -126,7 +126,7 @@ enum {
 };
 
 /**
- * @brief Add a credential to system
+ * @brief Adds a credential to the credential pool
  *
  * @param[in] credential    Credential to add.
  *
@@ -145,7 +145,7 @@ enum {
 int credman_add(const credman_credential_t *credential);
 
 /**
- * @brief Get a credential from system
+ * @brief Gets a credential from credential pool
  *
  * @param[out] credential   Found credential
  * @param[in] tag           Tag of credential to get
@@ -153,33 +153,35 @@ int credman_add(const credman_credential_t *credential);
  *
  * @return CREDMAN_OK on success
  * @return CREDMAN_NOT_FOUND if no credential with @p tag and @p type found
+ * @return CREDMAN_ERROR on other errors
  */
 int credman_get(credman_credential_t *credential, credman_tag_t tag,
                 credman_type_t type);
 
 /**
- * @brief Delete a credential from the system
+ * @brief Deletes a credential from the credential pool
  *
  * @param[in] tag           Tag of the credential
  * @param[in] type          Type of the credential
  *
  * @return CREDMAN_OK on success
  * @return CREDMAN_NOT_FOUND if no credential with @p tag and @p type found
+ * @return CREDMAN_ERROR on other errors
  */
 int credman_delete(credman_tag_t tag, credman_type_t type);
 
 /**
- * @brief Get number of credentials added to system
+ * @brief Gets the number of credentials currently in credential pool
  *
  * Maximum number of allowed credentials is defined by CREDMAN_MAX_CREDENTIALS
  *
- * @return number of credentials added to system
+ * @return number of credentials currently in credential pool
  */
 int credman_get_used_count(void);
 
 #ifdef TEST_SUITES
 /**
- * @brief Resets system credentials pool to empty.
+ * @brief Empties the credential pool
  */
 void credman_reset(void);
 #endif /*TEST_SUITES */

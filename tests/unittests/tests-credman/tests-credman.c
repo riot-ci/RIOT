@@ -16,7 +16,7 @@
 #define CREDMAN_TEST_TAG (1)
 
 static int _compare_credentials(const credman_credential_t *a,
-                               const credman_credential_t *b)
+                                const credman_credential_t *b)
 {
     if ((a->tag == b->tag) && (a->type == b->type)) {
         // TODO: deep compare
