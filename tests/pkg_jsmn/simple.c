@@ -57,7 +57,7 @@ int main(void)
     jsmntok_t t[16]; /* We expect no more than 16 tokens */
 
     jsmn_init(&p);
-    r = jsmn_parse(&p, JSON_STRING, strlen(JSON_STRING), t, sizeof(t) / sizeof(t[0]));
+    r = jsmn_parse(&p, JSON_STRING, strlen(JSON_STRING), t, ARRAY_SIZE(t));
     if (r < 0) {
         printf("Failed to parse JSON: %d\n", r);
         return 1;
