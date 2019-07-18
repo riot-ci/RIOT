@@ -21,7 +21,7 @@ BOARD_INSUFFICIENT_MEMORY := blackpill bluepill i-nucleo-lrwan1 nucleo-f030r8 \
 USEPKG += micropython
 
 # MicroPython needs a larger stack
-CFLAGS += -DTHREAD_STACKSIZE_MAIN=4096
+CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
 
 #
 include $(RIOTBASE)/Makefile.include
