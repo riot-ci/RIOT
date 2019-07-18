@@ -82,11 +82,6 @@ typedef struct {
 typedef uint16_t credman_tag_t;
 
 /**
- * @brief Used to identify credentials for application libraries.
- */
-#define CREDMAN_TAG_GLOBAL  (999)
-
-/**
  * @brief Used to signal empty/no tag
  */
 #define CREDMAN_TAG_EMPTY   (0)
