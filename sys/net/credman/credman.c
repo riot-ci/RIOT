@@ -30,7 +30,6 @@ static credman_credential_t credentials[CREDMAN_MAX_CREDENTIALS];
 static unsigned used = 0;
 
 static int _find_credential_pos(credman_tag_t tag, credman_type_t type);
-static int _find_next_free_pos(void);
 
 int credman_add(const credman_credential_t *credential)
 {
@@ -74,7 +73,8 @@ int credman_add(const credman_credential_t *credential)
         ret = CREDMAN_EXIST;
         goto end;
     }
-    pos = _find_next_free_pos();
+    /* find the next free position in credential pool */
+    pos = _find_credential_pos(CREDMAN_TAG_EMPTY, CREDMAN_TYPE_EMPTY);
     if (pos < 0) {
         DEBUG("credman: no space for new credential\n");
         ret = CREDMAN_NO_SPACE;
@@ -143,18 +143,6 @@ static int _find_credential_pos(credman_tag_t tag, credman_type_t type)
         }
     }
     return -1;
-}
-
-static int _find_next_free_pos(void)
-{
-    for (int i = 0; i < CREDMAN_MAX_CREDENTIALS; i++) {
-        credman_credential_t *c = &credentials[i];
-        if ((c->type == CREDMAN_TYPE_EMPTY) &&
-            (c->tag == CREDMAN_TAG_EMPTY)) {
-            return i;
-        }
-    }
-    return (used == 0) ? 0 : -1;
 }
 
 #ifdef TEST_SUITES
