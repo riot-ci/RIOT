@@ -49,7 +49,7 @@ static const char *_link_params[] = {
 
 static gcoap_listener_t _listener = {
     &_resources[0],
-    sizeof(_resources) / sizeof(_resources[0]),
+    ARRAY_SIZE(_resources),
     _encode_link,
     NULL
 };
