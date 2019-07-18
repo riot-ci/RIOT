@@ -138,8 +138,7 @@ static void test_credman_delete(void)
     };
 
     /* delete non-existing credential */
-    ret = credman_delete(in_credential.tag, in_credential.type);
-    TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
+    credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
     /* add a credential */
@@ -148,8 +147,7 @@ static void test_credman_delete(void)
     TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
 
     /* delete a credential from system buffer */
-    ret = credman_delete(in_credential.tag, in_credential.type);
-    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
+    credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(--exp_count, credman_get_used_count());
 
     /* get the deleted credential */
@@ -157,8 +155,7 @@ static void test_credman_delete(void)
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
 
     /* delete a deleted credential */
-    ret = credman_delete(in_credential.tag, in_credential.type);
-    TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
+    credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 }
 
@@ -180,14 +177,17 @@ static void test_credman_delete_random_order(void)
             },
         },
     };
+    TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
 
     // fill the system pool, assume CREDMAN_MAX_CREDENTIALS is 2
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     in_credential.tag = tag2;
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
 
     // delete the first credential
-    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag1, in_credential.type));
+    credman_delete(tag1, in_credential.type);
+    TEST_ASSERT_EQUAL_INT(1, credman_get_used_count());
 
     // get the second credential
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_get(&out_credential, tag2, in_credential.type));
@@ -219,8 +219,8 @@ static void test_credman_add_delete_all(void)
     TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
 
     // delete starting from first added credential
-    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag1, in_credential.type));
-    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag2, in_credential.type));
+    credman_delete(tag1, in_credential.type);
+    credman_delete(tag2, in_credential.type);
     TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
 
     // re-add the credentials after deletion
