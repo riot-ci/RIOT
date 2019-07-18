@@ -16,7 +16,7 @@
  * @file
  * @brief       (D)TLS credentials management module definitions
  *
- * @note        This module DOES NOT copies the credentials into the system. It
+ * @note        This module DOES NOT copy the credentials into the system. It
  *              just holds the pointers to the credentials given by the user.
  *              The user must make sure that these pointers are valid during the
  *              lifetime of the application.
@@ -46,7 +46,7 @@ extern "C" {
  */
 typedef struct {
     void *s;                /**< Pointer to the buffer */
-    size_t len;             /**< Length of s */
+    size_t len;             /**< Length of credman_buffer_t::s */
 } credman_buffer_t;
 
 /**
@@ -54,7 +54,7 @@ typedef struct {
  */
 typedef struct {
     credman_buffer_t key;   /**< Key buffer */
-    credman_buffer_t id;    /**< Id buffer */
+    credman_buffer_t id;    /**< ID buffer */
     credman_buffer_t hint;  /**< Hint buffer */
 } psk_params_t;
 
@@ -70,10 +70,10 @@ typedef struct {
  * @brief ECDSA parameters
  */
 typedef struct {
-    const void * private_key;           /**< Pointer to the private key */
+    const void *private_key;            /**< Pointer to the private key */
     ecdsa_public_key_t public_key;      /**< Public key */
     ecdsa_public_key_t *client_keys;    /**< Array of clients public keys */
-    size_t client_keys_size;            /**< Size of clients_keys */
+    size_t client_keys_size;            /**< Size of ecdsa_params_t::clients_keys */
 } ecdsa_params_t;
 
 /**
@@ -101,7 +101,7 @@ typedef enum {
 } credman_type_t;
 
 /**
- * @brief Credential informations
+ * @brief Credential information
  */
 typedef struct {
     credman_type_t type;        /**< Type of the credential */
@@ -136,10 +136,12 @@ enum {
  * @return CREDMAN_TYPE_UNKNOWN if @p credential has unknown
  *         credman_credential_t::type
  * @return CREDMAN_INVALID if @p credential has
- *         credman_credential_t::tag with the value of CREDMAN_TAG_EMPTY OR
- *         credman_credential_t::type with the value of CREDMAN_TYPE_EMPTY OR
- *         credman_credential_t::params with invalid credential parameters i.e.
- *         the key points to NULL or has a length of 0.
+ * @return CREDMAN_INVALID credman_credential_t::tag with the value of
+ *         CREDMAN_TAG_EMPTY
+ * @return CREDMAN_INVALID credman_credential_t::type with the value of
+ *         CREDMAN_TYPE_EMPTY
+ * @return CREDMAN_INVALID credman_credential_t::params with invalid credential
+ *         parameters i.e. the key points to NULL or has a length of 0
  * @return CREDMAN_ERROR on other errors
  */
 int credman_add(const credman_credential_t *credential);
@@ -159,7 +161,7 @@ int credman_get(credman_credential_t *credential, credman_tag_t tag,
                 credman_type_t type);
 
 /**
- * @brief Delete a credential from the system. Does nothing if
+ * @brief Delete a credential from the credential pool. Does nothing if
  *        credential with credman_credential_t::tag @p tag and
  *        credman_credential_t::type @p type is not found.
  *
@@ -169,11 +171,11 @@ int credman_get(credman_credential_t *credential, credman_tag_t tag,
 void credman_delete(credman_tag_t tag, credman_type_t type);
 
 /**
- * @brief Gets the number of credentials currently in credential pool
+ * @brief Gets the number of credentials currently in the credential pool
  *
  * Maximum number of allowed credentials is defined by CREDMAN_MAX_CREDENTIALS
  *
- * @return number of credentials currently in credential pool
+ * @return number of credentials currently in the credential pool
  */
 int credman_get_used_count(void);
 
