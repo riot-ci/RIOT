@@ -132,7 +132,14 @@ enum {
  *
  * @return CREDMAN_OK on success
  * @return CREDMAN_EXIST if credential of @p tag and @p type already exist
- * @return CREDMAN_NO_SPACE if system buffer full
+ * @return CREDMAN_NO_SPACE if credential pool is full
+ * @return CREDMAN_TYPE_UNKNOWN if @p credential has unknown
+ *         credman_credential_t::type
+ * @return CREDMAN_INVALID if @p credential has
+ *         credman_credential_t::tag with the value of CREDMAN_TAG_EMPTY OR
+ *         credman_credential_t::type with the value of CREDMAN_TYPE_EMPTY OR
+ *         credman_credential_t::params with invalid credential parameters i.e.
+ *         the key points to NULL or has a length of 0.
  * @return CREDMAN_ERROR on other errors
  */
 int credman_add(const credman_credential_t *credential);
