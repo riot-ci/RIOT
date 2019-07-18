@@ -206,3 +206,59 @@ The node will also print the data received:
 
     > loramac tx test
     Data received: This is RIOT!
+
+## Automatic test
+
+The automatic test replicates 11-lorawan release specs tests:
+
+- [11-lorawan](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md)
+  - [Task #02 - OTAA join procedure](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-02---otaa-join-procedure)
+  - [Task #03 - ABP join procedure](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-03---abp-join-procedure)
+  - [Task #04 - LoRaWAN device parameters persistence](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-03---lorawan-device-parameters-persistence)
+
+It is recommended to test using iotlab-nodes. The default configuration is already
+set on tha application Makefile.
+
+### Requirements
+
+- The tests assumes that there is a gateway in all DR distance to the device and the
+device was flashed with the correct keys. The APPEUI is assumed to be the same for OTAA
+and ABP.
+
+- The DR duty cycling time-offs values are for EU863-870
+
+- To use iotlab it is required to have a valid account for the FIT IoT-LAB 
+(registration there is open for everyone) and the [iot-lab/cli-tools](https://github.com/iot-lab/cli-tools) need to be installed.
+
+- The frame counters must be reset on the LoRaWAN backend at the beginning of the
+test.
+
+- iotlab uses TTN lorawan gateways, to run the test you will need to create an
+[account](https://account.thethingsnetwork.org/) add an [application](https://www.thethingsnetwork.org/docs/applications/add.html) and [register](https://www.thethingsnetwork.org/docs/devices/registration.html) a device. For this
+test you need to take note of the Device EUI, Application EUI & Application Key
+for that device.
+
+### Usage
+
+1. flash device, set appropriate keys and test
+
+    $ DEVEUI_OTA=<...> DEVEUI_ABP=<...> APPEUI=<...> APPKEY=<...> DEVADDR=<...> NWKSKEY=<...> APPSKEY=<...> RX2_DR=<...> make BOARD=b-l072z-lrwan1 -C tests/pkg_semtech-loramac test
+
+#### With iotlab
+
+1. setup the iotlab experiment:
+
+    $ make -C tests/pkg_semtech-loramac iotlab-exp
+
+2. flash device with set appropriate keys and test
+
+    $ DEVEUI=<...> APPEUI=<...> APPKEY=<...> DEVADDR=<...> NWKSKEY=<...> APPSKEY=<...> RX2_DR=<...> IOTLAB_NODE=auto-ssh make -C tests/pkg_semtech-loramac flash test
+
+3. stop the iotlab experiment:
+
+    $ make -C examples/lorawan/ iotlab-stop
+
+_note_: if you have multiple running experiments you will need to set `IOTLAB_EXP_ID`
+        to the appropriate experiment, when using the `iotlab-exp` you will see a:
+        `Waiting that experiment 175694 gets in state Running`. That number matches
+        the experiment id you started.
