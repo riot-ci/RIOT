@@ -222,6 +222,13 @@ static void test_credman_add_delete_all(void)
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag1, in_credential.type));
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_delete(tag2, in_credential.type));
     TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
+
+    // re-add the credentials after deletion
+    in_credential.tag = tag1;
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    in_credential.tag = tag2;
+    TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
+    TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
 }
 
 Test *tests_credman_tests(void)
