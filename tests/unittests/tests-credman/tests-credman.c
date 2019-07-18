@@ -1,10 +1,10 @@
 /*
-* Copyright (C) 2019 HAW Hamburg
-*
-* This file is subject to the terms and conditions of the GNU Lesser
-* General Public License v2.1. See the file LICENSE in the top level
-* directory for more details.
-*/
+ * Copyright (C) 2019 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
 
 #include <string.h>
 #include "embUnit.h"
@@ -19,7 +19,6 @@ static int _compare_credentials(const credman_credential_t *a,
                                 const credman_credential_t *b)
 {
     if ((a->tag == b->tag) && (a->type == b->type)) {
-        // TODO: deep compare
         return 0;
     }
     return -1;
@@ -27,7 +26,7 @@ static int _compare_credentials(const credman_credential_t *a,
 
 static void set_up(void)
 {
-    /* reset system pool before every test */
+    /* reset credential pool before every test */
     credman_reset();
 }
 
@@ -72,7 +71,7 @@ static void test_credman_add(void)
     TEST_ASSERT_EQUAL_INT(CREDMAN_INVALID, ret);
     TEST_ASSERT_EQUAL_INT(exp_count, credman_get_used_count());
 
-    /* fill the system credential buffer */
+    /* fill the pool */
     memcpy(&credential.params.psk, &exp_psk_params, sizeof(psk_params_t));
     while (credman_get_used_count() < CREDMAN_MAX_CREDENTIALS) {
         /* increase tag number so that it is not recognized as duplicate */
@@ -81,7 +80,7 @@ static void test_credman_add(void)
         TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
     }
 
-    /* add to full system credential buffer */
+    /* add to full pool */
     credential.tag++;
     ret = credman_add(&credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NO_SPACE, ret);
@@ -106,15 +105,13 @@ static void test_credman_get(void)
     };
 
     /* get non-existing credential */
-    ret = credman_get(&out_credential, in_credential.tag,
-                                 in_credential.type);
+    ret = credman_get(&out_credential, in_credential.tag, n_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_NOT_FOUND, ret);
 
     ret = credman_add(&in_credential);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
 
-    ret = credman_get(&out_credential, in_credential.tag,
-                                 in_credential.type);
+    ret = credman_get(&out_credential, in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
     TEST_ASSERT(!_compare_credentials(&in_credential, &out_credential));
 }
@@ -146,7 +143,7 @@ static void test_credman_delete(void)
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, ret);
     TEST_ASSERT_EQUAL_INT(++exp_count, credman_get_used_count());
 
-    /* delete a credential from system buffer */
+    /* delete a credential from credential pool */
     credman_delete(in_credential.tag, in_credential.type);
     TEST_ASSERT_EQUAL_INT(--exp_count, credman_get_used_count());
 
@@ -179,17 +176,17 @@ static void test_credman_delete_random_order(void)
     };
     TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
 
-    // fill the system pool, assume CREDMAN_MAX_CREDENTIALS is 2
+    /* fill the credential pool, assume CREDMAN_MAX_CREDENTIALS is 2 */
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     in_credential.tag = tag2;
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
 
-    // delete the first credential
+    /* delete the first credential */
     credman_delete(tag1, in_credential.type);
     TEST_ASSERT_EQUAL_INT(1, credman_get_used_count());
 
-    // get the second credential
+    /* get the second credential */
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_get(&out_credential, tag2, in_credential.type));
     TEST_ASSERT(!_compare_credentials(&in_credential, &out_credential));
 }
@@ -212,18 +209,18 @@ static void test_credman_add_delete_all(void)
         },
     };
 
-    // add credentials
+    /* add credentials */
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     in_credential.tag = tag2;
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     TEST_ASSERT_EQUAL_INT(2, credman_get_used_count());
 
-    // delete starting from first added credential
+    /* delete starting from first added credential */
     credman_delete(tag1, in_credential.type);
     credman_delete(tag2, in_credential.type);
     TEST_ASSERT_EQUAL_INT(0, credman_get_used_count());
 
-    // re-add the credentials after deletion
+    /* re-add the credentials after deletion */
     in_credential.tag = tag1;
     TEST_ASSERT_EQUAL_INT(CREDMAN_OK, credman_add(&in_credential));
     in_credential.tag = tag2;

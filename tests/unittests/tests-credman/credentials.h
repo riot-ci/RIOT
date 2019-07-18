@@ -11,9 +11,7 @@
  * @{
  *
  * @file
- * @brief       credman test application (PSK and ECC keys)
- *
- * Test credentials for credman.
+ * @brief       Test credentials for credman
  *
  * @author      Raul Fuentes <raul.fuentes-samaniego@inria.fr>
  * @author      Aiman Ismail <muhammadaimanbin.ismail@haw-hamburg.de>

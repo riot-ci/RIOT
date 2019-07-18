@@ -25,8 +25,8 @@ extern "C" {
 #endif
 
 /**
-*  @brief   The entry point of this test suite.
-*/
+ *  @brief   The entry point of this test suite.
+ */
 void tests_credman(void);
 
 /**
