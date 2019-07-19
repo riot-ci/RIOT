@@ -38,5 +38,8 @@ CFLAGS += 'MP_RIOT_HEAPSIZE (8U*1024)'
 # MicroPython needs a larger stack
 CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
 
+# enable CI testing
+TEST_ON_CI_WHITELIST += all
+
 #
 include $(RIOTBASE)/Makefile.include
