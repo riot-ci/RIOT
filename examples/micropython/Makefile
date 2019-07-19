@@ -1,6 +1,12 @@
 # name of your application
 APPLICATION = micropython
 
+# If no BOARD is found in the environment, use this default:
+BOARD ?= native
+
+# This has to be the absolute path to the RIOT base directory:
+RIOTBASE ?= $(CURDIR)/../..
+
 # the MicroPython port currently only supports 32bit architectures
 BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
                    arduino-mega2560 arduino-nano arduino-uno chronos \
@@ -20,6 +26,7 @@ BOARD_INSUFFICIENT_MEMORY := blackpill bluepill i-nucleo-lrwan1 nucleo-f030r8 \
                              nucleo-l053r8 opencm904 saml10-xpro saml11-xpro \
                              stm32f0discovery spark-core stm32l0538-disco
 
+# select MicroPython package
 USEPKG += micropython
 
 # MicroPython needs a larger stack
