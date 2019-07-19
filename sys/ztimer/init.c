@@ -43,6 +43,20 @@
  *   - if CONFIG_ZTIMER_USEC_WIDTH is given, extend accordingly. Take conversion
  *     into account
  *
+ * - if ztimer_msec is selected:
+ *   - if CONFIG_ZTIMER_USEC_TYPE is given
+ *      - set up accordingly
+ *   - if MODULE_RTT is available and RTT_FREQUENCY >= 1000, use that
+ *   - otherwise, use ZTIMER_MSEC, convert & extend to ms
+ *
+ * - if ztimer_sec is selected:
+ *   - if CONFIG_ZTIMER_SEC_TYPE is given
+ *      - set up accordingly
+ *   - if ztimer_msec is using rtt or rtc, use that (convert & extend to seconds)
+ *   - if MODULE_RTT is available, use that
+ *   - if MODULE_RTC is available, use that
+ *   - use ZTIMER_MSEC
+ *
  * Nested ifdefs are used here as this is all compile-time logic.
  * This would benefit a lot from code generation...
  */
@@ -77,6 +91,14 @@
 #      define ZTIMER_USEC_DIV           4
 #      define ZTIMER_USEC_MUL           0
 #      define ZTIMER_USEC_CONVERT_BITS  2
+#    elif CONFIG_ZTIMER_USEC_FREQ == 125000
+#      define ZTIMER_USEC_DIV           16
+#      define ZTIMER_USEC_MUL           0
+#      define ZTIMER_USEC_CONVERT_BITS  3
+#    elif CONFIG_ZTIMER_USEC_FREQ == 62500
+#      define ZTIMER_USEC_DIV           16
+#      define ZTIMER_USEC_MUL           0
+#      define ZTIMER_USEC_CONVERT_BITS  4
 #    else
 #      error unhandled CONFIG_ZTIMER_USEC_FREQ!
 #    endif
