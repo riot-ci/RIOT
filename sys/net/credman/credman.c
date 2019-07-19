@@ -29,10 +29,12 @@ static mutex_t _mutex = MUTEX_INIT;
 static credman_credential_t credentials[CREDMAN_MAX_CREDENTIALS];
 static unsigned used = 0;
 
-static int _find_credential_pos(credman_tag_t tag, credman_type_t type);
+static int _find_credential_pos(credman_tag_t tag, credman_type_t type,
+                                credman_credential_t **empty);
 
 int credman_add(const credman_credential_t *credential)
 {
+    credman_credential_t *entry = NULL;
     assert(credential);
     mutex_lock(&_mutex);
     int pos = -1;
@@ -66,24 +68,22 @@ int credman_add(const credman_credential_t *credential)
         ret = CREDMAN_TYPE_UNKNOWN;
         goto end;
     }
-    pos = _find_credential_pos(credential->tag, credential->type);
+
+    pos = _find_credential_pos(credential->tag, credential->type, &entry);
     if (pos >= 0) {
         DEBUG("credman: credential with tag %d and type %d already exist\n",
               credential->tag, credential->type);
         ret = CREDMAN_EXIST;
-        goto end;
     }
-    /* find the next free position in credential pool */
-    pos = _find_credential_pos(CREDMAN_TAG_EMPTY, CREDMAN_TYPE_EMPTY);
-    if (pos < 0) {
+    else if (entry == NULL) {
         DEBUG("credman: no space for new credential\n");
         ret = CREDMAN_NO_SPACE;
-        goto end;
     }
-
-    memcpy(&credentials[pos], credential, sizeof(*credential));
-    used++;
-    ret = CREDMAN_OK;
+    else {
+        memcpy(entry, credential, sizeof(credman_credential_t));
+        used++;
+        ret = CREDMAN_OK;
+    }
 end:
     mutex_unlock(&_mutex);
     return ret;
@@ -96,7 +96,7 @@ int credman_get(credman_credential_t *credential, credman_tag_t tag,
     mutex_lock(&_mutex);
     int ret = CREDMAN_ERROR;
 
-    int pos = _find_credential_pos(tag, type);
+    int pos = _find_credential_pos(tag, type, NULL);
     if (pos < 0) {
         DEBUG("credman: credential with tag %d and type %d not found\n",
               tag, type);
@@ -113,7 +113,7 @@ int credman_get(credman_credential_t *credential, credman_tag_t tag,
 void credman_delete(credman_tag_t tag, credman_type_t type)
 {
     mutex_lock(&_mutex);
-    int pos = _find_credential_pos(tag, type);
+    int pos = _find_credential_pos(tag, type, NULL);
     if (pos >= 0) {
         memset(&credentials[pos], 0, sizeof(credman_credential_t));
         used--;
@@ -126,12 +126,18 @@ int credman_get_used_count(void)
     return used;
 }
 
-static int _find_credential_pos(credman_tag_t tag, credman_type_t type)
+static int _find_credential_pos(credman_tag_t tag, credman_type_t type,
+                                credman_credential_t **empty)
 {
     for (unsigned i = 0; i < CREDMAN_MAX_CREDENTIALS; i++) {
         credman_credential_t *c = &credentials[i];
         if ((c->tag == tag) && (c->type == type)) {
             return i;
+        }
+        /* only check until empty position found */
+        if ((empty) && (*empty == NULL) &&
+            (c->tag == CREDMAN_TAG_EMPTY) && (c->type == CREDMAN_TYPE_EMPTY)) {
+            *empty = c;
         }
     }
     return -1;
