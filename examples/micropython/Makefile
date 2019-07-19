@@ -29,6 +29,9 @@ BOARD_INSUFFICIENT_MEMORY := blackpill bluepill i-nucleo-lrwan1 nucleo-f030r8 \
 # select MicroPython package
 USEPKG += micropython
 
+# include blop.py as header
+BLOBS += boot.py
+
 # configure MicroPython's heap size
 CFLAGS += 'MP_RIOT_HEAPSIZE (8U*1024)'
 
