@@ -71,8 +71,10 @@ void ztimer_convert_init(ztimer_convert_t *ztimer_convert, ztimer_dev_t *parent,
     ztimer_convert_t tmp = {
         .super.ops=&_ztimer_convert_ops,
         .parent=parent,
-        .parent_entry.callback=(void (*)(void *))ztimer_handler,
-        .parent_entry.arg=ztimer_convert,
+        .parent_entry = {
+            .callback=(void (*)(void *))ztimer_handler,
+            .arg = ztimer_convert,
+        },
         .mul = mul,
         .div = div
     };
