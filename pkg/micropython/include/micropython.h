@@ -43,6 +43,8 @@ void mp_riot_init(char* heap, size_t heap_size);
 /**
  * @brief   Execute a string as MicroPython code
  *
+ * The string will be executed on the global MicroPython instance.
+ *
  * @param[in]   src pointer to Python code
  * @param[in]   len length of src
  */
