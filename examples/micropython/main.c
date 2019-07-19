@@ -26,7 +26,7 @@
 #include "py/stackctrl.h"
 #include "lib/utils/pyexec.h"
 
-#include "boot.py.h"
+#include "blob/boot.py.h"
 
 static char mp_heap[MP_RIOT_HEAPSIZE];
 
