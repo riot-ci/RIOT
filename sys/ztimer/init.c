@@ -79,6 +79,8 @@
 #    ifndef CONFIG_ZTIMER_USEC_WIDTH
 #      ifdef XTIMER_WIDTH
 #        define CONFIG_ZTIMER_USEC_WIDTH XTIMER_WIDTH
+#      else
+#        define CONFIG_ZTIMER_USEC_WIDTH (32)
 #      endif
 #    endif
 #    ifndef CONFIG_ZTIMER_USEC_CHAN     /* currently unused! */
@@ -86,6 +88,8 @@
 #    endif
 
 #    if CONFIG_ZTIMER_USEC_FREQ == 1000000
+#      define ZTIMER_USEC_DIV           0
+#      define ZTIMER_USEC_MUL           0
 #      define ZTIMER_USEC_CONVERT_BITS  0
 #    elif CONFIG_ZTIMER_USEC_FREQ == 250000
 #      define ZTIMER_USEC_DIV           4
@@ -99,6 +103,14 @@
 #      define ZTIMER_USEC_DIV           16
 #      define ZTIMER_USEC_MUL           0
 #      define ZTIMER_USEC_CONVERT_BITS  4
+#    elif CONFIG_ZTIMER_USEC_FREQ == 32768
+#      define ZTIMER_USEC_DIV           15625
+#      define ZTIMER_USEC_MUL           512
+#      if CONFIG_ZTIMER_USEC_WIDTH == 16
+#        define ZTIMER_USEC_CONVERT_BITS  0
+#      else
+#        define ZTIMER_USEC_CONVERT_BITS  9
+#      endif
 #    else
 #      error unhandled CONFIG_ZTIMER_USEC_FREQ!
 #    endif
@@ -112,10 +124,10 @@
 #    error unknown CONFIG_ZTIMER_USEC_TYPE!
 #  endif /* CONFIG_ZTIMER_USEC_TYPE == ZTIMER_TYPE_PERIPH */
 
-# ifndef CONFIG_ZTIMER_USEC_WIDTH
+# if (CONFIG_ZTIMER_USEC_WIDTH == 32) && (ZTIMER_USEC_CONVERT_BITS == 0)
     ztimer_dev_t *const ZTIMER_USEC = (ztimer_dev_t *) &_ZTIMER_USEC_DEV;
 # else
-#   if ZTIMER_USEC_CONVERT_BITS > 0
+#   if (ZTIMER_USEC_DIV != 0) || (ZTIMER_USEC_MUL != 0)
       static ztimer_convert_t _ztimer_usec_convert;
 #     define ZTIMER_USEC_INIT_CONVERT() \
           ztimer_convert_init(&_ztimer_usec_convert, \
