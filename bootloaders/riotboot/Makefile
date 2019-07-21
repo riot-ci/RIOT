@@ -8,7 +8,7 @@ BOARD ?= samr21-xpro
 FEATURES_REQUIRED += riotboot
 
 # Disable unused modules
-CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
+CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE -DRIOTBOOT
 DISABLE_MODULE += auto_init
 
 # Include riotboot flash partition functionality
