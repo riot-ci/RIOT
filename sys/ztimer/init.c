@@ -94,23 +94,19 @@
 #    elif CONFIG_ZTIMER_USEC_FREQ == 250000
 #      define ZTIMER_USEC_DIV           4
 #      define ZTIMER_USEC_MUL           0
-#      define ZTIMER_USEC_CONVERT_BITS  2
+#      define ZTIMER_USEC_CONVERT_BITS  0
 #    elif CONFIG_ZTIMER_USEC_FREQ == 125000
 #      define ZTIMER_USEC_DIV           16
 #      define ZTIMER_USEC_MUL           0
-#      define ZTIMER_USEC_CONVERT_BITS  3
+#      define ZTIMER_USEC_CONVERT_BITS  0
 #    elif CONFIG_ZTIMER_USEC_FREQ == 62500
 #      define ZTIMER_USEC_DIV           16
 #      define ZTIMER_USEC_MUL           0
-#      define ZTIMER_USEC_CONVERT_BITS  4
+#      define ZTIMER_USEC_CONVERT_BITS  0
 #    elif CONFIG_ZTIMER_USEC_FREQ == 32768
 #      define ZTIMER_USEC_DIV           15625
 #      define ZTIMER_USEC_MUL           512
-#      if CONFIG_ZTIMER_USEC_WIDTH == 16
-#        define ZTIMER_USEC_CONVERT_BITS  0
-#      else
-#        define ZTIMER_USEC_CONVERT_BITS  9
-#      endif
+       define ZTIMER_USEC_CONVERT_BITS  9
 #    else
 #      error unhandled CONFIG_ZTIMER_USEC_FREQ!
 #    endif
