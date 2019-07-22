@@ -50,7 +50,7 @@ static const tc32_conf_t timer_config[] = {
 /* Timer 0 configuration */
 #define TIMER_0_CHANNELS    2
 #define TIMER_0_ISR         isr_tc0
-#define TIMER_NUMOF         (sizeof(timer_config)/sizeof(timer_config[0]))
+#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
 /** @} */
 
 /**
