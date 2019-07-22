@@ -1,3 +1,4 @@
-include $(RIOTCPU)/arm7_common/Makefile.include
+include $(RIOTMAKE)/arch/arm7.inc.mk
 
-USEMODULE += arm7_common periph bitfield newlib
+USEMODULE += arm7_common
+USEMODULE += bitfield # <-- used by GPIO driver
