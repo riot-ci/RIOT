@@ -56,7 +56,7 @@ static const uint32_t divisors[] = {
     10,
 };
 
-#define LOOKUP_LEN (sizeof(lookup_table_positive) / sizeof(int32_t))
+#define LOOKUP_LEN ARRAY_SIZE(lookup_table_positive)
 
 void phydat_fit(phydat_t *dat, const int32_t *values, unsigned int dim)
 {
