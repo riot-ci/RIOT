@@ -66,9 +66,9 @@ static inline void _reset(dht_t *dev)
  * @retval  0       Success
  * @retval  -1      Timeout occurred before level was reached
  */
-static inline int _wait_for_level(gpio_t pin, int expect, unsigned timeout)
+static inline int _wait_for_level(gpio_t pin, bool expect, unsigned timeout)
 {
-    while ((gpio_read(pin) != expect) && timeout) {
+    while (((gpio_read(pin) > 0) != expect) && timeout) {
         xtimer_usleep(1);
         timeout--;
     }
