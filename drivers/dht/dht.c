@@ -43,13 +43,32 @@
 /* If an expected pulse is not detected within 1000µs, something is wrong */
 #define TIMEOUT                     (1000U)
 /* The DHT sensor cannot measure more than once a second */
-#define DATA_HOLD_TIME              (1000U * US_PER_MS)
+#define DATA_HOLD_TIME              (US_PER_SEC)
 
 static inline void _reset(dht_t *dev)
 {
     gpio_init(dev->params.pin, GPIO_OUT);
     gpio_set(dev->params.pin);
+}
 
+/**
+ * @brief   Wait until the pin @p pin has level @p expect
+ *
+ * @param   pin     GPIO pin to wait for
+ * @param   expect  Wait until @p pin has this logic level
+ * @param   timeout Timeout in µs
+ *
+ * @retval  0       Success
+ * @retval  -1      Timeout occurred before level was reached
+ */
+static inline int _wait_for_level(gpio_t pin, int expect, unsigned timeout)
+{
+    while ((gpio_read(pin) != expect) && timeout) {
+        xtimer_usleep(1);
+        timeout--;
+    }
+
+    return (timeout > 0) ? 0 : -1;
 }
 
 static int _read(uint16_t *dest, gpio_t pin, int bits)
@@ -62,23 +81,16 @@ static int _read(uint16_t *dest, gpio_t pin, int bits)
         res <<= 1;
         /* measure the length between the next rising and falling flanks (the
          * time the pin is high - smoke up :-) */
-        unsigned counter = 0;
-        while (!gpio_read(pin)) {
-            if (counter++ >= TIMEOUT) {
-                return -1;
-            }
-            xtimer_usleep(1);
+        if (_wait_for_level(pin, 1, TIMEOUT)) {
+            return -1;
         }
         start = xtimer_now_usec();
 
-        counter = 0;
-        while (gpio_read(pin)) {
-            if (counter++ >= TIMEOUT) {
-                return -1;
-            }
-            xtimer_usleep(1);
+        if (_wait_for_level(pin, 0, TIMEOUT)) {
+            return -1;
         }
         end = xtimer_now_usec();
+
         /* if the high phase was more than 40us, we got a 1 */
         if ((end - start) > PULSE_WIDTH_THRESHOLD) {
             res |= 0x0001;
@@ -125,22 +137,14 @@ int dht_read(dht_t *dev, int16_t *temp, int16_t *hum)
 
         /* sync on device */
         gpio_init(dev->params.pin, dev->params.in_mode);
-        unsigned counter = 0;
-        while (!gpio_read(dev->params.pin)) {
-            if (counter++ > TIMEOUT) {
-                _reset(dev);
-                return DHT_TIMEOUT;
-            }
-            xtimer_usleep(1);
+        if (_wait_for_level(dev->params.pin, 1, TIMEOUT)) {
+            _reset(dev);
+            return DHT_TIMEOUT;
         }
 
-        counter = 0;
-        while (gpio_read(dev->params.pin)) {
-            if (counter++ > TIMEOUT) {
-                _reset(dev);
-                return DHT_TIMEOUT;
-            }
-            xtimer_usleep(1);
+        if (_wait_for_level(dev->params.pin, 0, TIMEOUT)) {
+            _reset(dev);
+            return DHT_TIMEOUT;
         }
 
         /*
