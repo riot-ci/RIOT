@@ -111,8 +111,8 @@ int dht_init(dht_t *dev, const dht_params_t *params)
     DEBUG("dht_init\n");
 
     /* check parameters and configuration */
-    assert(dev && params &&
-           ((params->type == DHT11) || (params->type == DHT22) || (params->type == DHT21)));
+    assert(dev && params);
+    assert((params->type == DHT11) || (params->type == DHT22) || (params->type == DHT21));
 
     memset(dev, 0, sizeof(dht_t));
     dev->params = *params;
