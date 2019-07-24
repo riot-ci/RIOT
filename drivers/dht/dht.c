@@ -180,7 +180,7 @@ int dht_read(dht_t *dev, int16_t *temp, int16_t *hum)
 
         /* validate the checksum */
         sum = (raw_temp >> 8) + (raw_temp & 0xff) + (raw_hum >> 8) + (raw_hum & 0xff);
-        if (sum != csum)) {
+        if (sum != csum) {
             DEBUG("error: checksum doesn't match\n");
             return DHT_NOCSUM;
         }
