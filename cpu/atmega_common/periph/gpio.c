@@ -445,14 +445,14 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
             gpio_t pin = pcint_mapping[ bank * 8 + pin_num ];
             uint8_t port_value = (_SFR_MEM8(_pin_addr( pin )));
             uint8_t pin_value = ((port_value & pin_mask) != 0);
-            uint8_t old_state = ((pcint_state[ bank ] & pin_mask) != 0);
+            uint8_t old_state = ((pcint_state[bank] & pin_mask) != 0);
             gpio_isr_ctx_pcint_t *conf = &pcint_config[ bank * 8 + pin_num ];
             if (old_state != pin_value) {
                 if (pin_value) {
-                    pcint_state[ bank ] |= (pin_mask);
+                    pcint_state[bank] |= (pin_mask);
                 }
                 else {
-                    pcint_state[ bank ] &= ~(pin_mask);
+                    pcint_state[bank] &= ~(pin_mask);
                 }
                 if ((conf->flank == GPIO_BOTH ||
                      (pin_value && conf->flank == GPIO_RISING) ||
