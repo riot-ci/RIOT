@@ -44,7 +44,7 @@
 #define TIMEOUT                     (1000U)
 /* The DHT sensor cannot measure more than once a second */
 #define DATA_HOLD_TIME              (US_PER_SEC)
-/* The start signal by pulling data low for at least 18ms and than up for
+/* The start signal by pulling data low for at least 18ms and then up for
  * 20-40µs*/
 #define START_LOW_TIME              (20U * US_PER_MS)
 #define START_HIGH_TIME             (40U)
@@ -180,8 +180,8 @@ int dht_read(dht_t *dev, int16_t *temp, int16_t *hum)
 
         /* validate the checksum */
         sum = (raw_temp >> 8) + (raw_temp & 0xff) + (raw_hum >> 8) + (raw_hum & 0xff);
-        if ((sum != csum) || (csum == 0)) {
-            DEBUG("error: checksum invalid\n");
+        if (sum != csum)) {
+            DEBUG("error: checksum doesn't match\n");
             return DHT_NOCSUM;
         }
 
