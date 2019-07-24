@@ -13,7 +13,8 @@ import sys
 import subprocess
 import time
 
-from scapy.all import IPv6, IPv6ExtHdrFragment, UDP
+from scapy.all import Ether, ICMPv6PacketTooBig, IPv6, IPv6ExtHdrFragment, \
+                      UDP, raw, sendp, srp1
 from testrunner import run
 
 
@@ -185,6 +186,75 @@ def test_ipv6_ext_frag_send_full_pktbuf(child, s, iface, ll_dst):
     assert(count > 1)
 
 
+def _fwd_setup(child, ll_dst, g_src, g_dst):
+    # check if interface is configured properly
+    child.sendline("ifconfig 7")
+    child.expect(r"MTU:(\d+)")
+    mtu = int(child.match.group(1))
+    # configure routes
+    child.sendline("nib route add 7 {}/128 fe80::1".format(g_dst))
+    child.sendline("nib route add 6 {}/128 {}".format(g_src, ll_dst))
+    child.sendline("nib route")
+    child.expect(r"{}/128 via fe80::1 dev #7".format(g_dst))
+    child.expect(r"{}/128 via {} dev #6".format(g_src, ll_dst))
+    child.sendline("nib neigh add 7 fe80::1")
+    child.sendline("nib neigh")
+    child.expect(r"fe80::1 dev #7 lladdr\s+-")
+    # get TAP MAC address
+    child.sendline("ifconfig 6")
+    child.expect("HWaddr: ([0-9A-F:]+)")
+    hwaddr = child.match.group(1)
+    # consume MTU for later calls of `ifconfig 7`
+    child.expect(r"MTU:(\d+)")
+    return mtu, hwaddr
+
+def _fwd_teardown(child):
+    # remove route
+    child.sendline("nib neigh del 7 fe80::1")
+    child.sendline("nib route del 7 affe::/64")
+
+def test_ipv6_ext_frag_fwd_success(child, s, iface, ll_dst):
+    mtu, dst_mac = _fwd_setup(child, ll_dst, "beef::1", "affe::1")
+    payload_fit = mtu - len(IPv6() / IPv6ExtHdrFragment() / UDP())
+    pkt = Ether(dst=dst_mac) / IPv6(src="beef::1", dst="affe::1") / \
+          IPv6ExtHdrFragment(m=True, id=0x477384a9) / \
+          UDP(sport=1337, dport=1337) / ("x" * payload_fit)
+    # fill missing fields
+    pkt = Ether(raw(pkt))
+    sendp(pkt, verbose=0, iface=iface)
+    # check hexdump of mock device
+    ipv6 = pkt[IPv6]
+    ipv6.hlim -= 1  # the packet will have passed a hop
+    # segment packet as GNRC does
+    segments = [bytes(ipv6)[:40], bytes(ipv6.payload)]
+    for seg in segments:
+        addr = 0
+        for i in range(0, len(seg), 16):
+            bs = seg[i:i+16]
+            exp_str = ("{:08X}" + ("  {:02X}") * len(bs)).format(addr, *bs)
+            child.expect_exact(exp_str)
+            addr += 16
+    _fwd_teardown(child)
+
+
+def test_ipv6_ext_frag_fwd_too_big(child, s, iface, ll_dst):
+    mtu, dst_mac = _fwd_setup(child, ll_dst, "beef::1", "affe::1")
+    assert(get_host_mtu(iface) > mtu)
+    payload_fit = get_host_mtu(iface) - len(IPv6() / IPv6ExtHdrFragment() /
+                                            UDP())
+    pkt = srp1(Ether(dst=dst_mac) / IPv6(src="beef::1", dst="affe::1") /
+               IPv6ExtHdrFragment(m=True, id=0x477384a9) /
+               UDP(sport=1337, dport=1337) / ("x" * payload_fit),
+               timeout=2, verbose=0, iface=iface)
+    # packet should not be fragmented further but an ICMPv6 error should be
+    # returned instead
+    assert(pkt is not None)
+    assert(ICMPv6PacketTooBig in pkt)
+    assert(IPv6ExtHdrFragment in pkt)
+    assert(pkt[IPv6ExtHdrFragment].id == 0x477384a9)
+    _fwd_teardown(child)
+
+
 def testfunc(child):
     tap = get_bridge(os.environ["TAP"])
 
@@ -214,8 +284,15 @@ def testfunc(child):
         run_sock_test(test_ipv6_ext_frag_send_last_fragment_filled, s)
         run_sock_test(test_ipv6_ext_frag_send_last_fragment_only_one_byte, s)
         run_sock_test(test_ipv6_ext_frag_send_full_pktbuf, s)
+        run_sock_test(test_ipv6_ext_frag_fwd_success, s)
+        run_sock_test(test_ipv6_ext_frag_fwd_too_big, s)
     print("SUCCESS")
 
 
 if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print("\x1b[1;31mThis test requires root privileges.\n"
+              "It's constructing and sending Ethernet frames.\x1b[0m\n",
+              file=sys.stderr)
+        sys.exit(1)
     sys.exit(run(testfunc, timeout=2, echo=False))
