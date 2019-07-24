@@ -127,7 +127,8 @@ int dht_init(dht_t *dev, const dht_params_t *params)
 
 int dht_read(dht_t *dev, int16_t *temp, int16_t *hum)
 {
-    uint16_t csum, sum;
+    uint16_t csum;
+    uint8_t sum;
     uint16_t raw_hum, raw_temp;
 
     assert(dev);
