@@ -46,7 +46,7 @@ def pktbuf_size(child):
 
 
 def udp_send(child, addr, port, length, num=1, delay=1000000):
-    child.sendline("udp send {addr} {port} {length} {num} {delay}"
+    child.sendline("udp send {addr}%6 {port} {length} {num} {delay}"
                    .format(**vars()))
     child.expect("Success: send {length} byte to \[[0-9a-f:]+\]:{port}"
                  .format(**vars()))
