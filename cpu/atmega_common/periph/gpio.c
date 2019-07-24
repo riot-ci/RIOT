@@ -430,12 +430,11 @@ static inline void irq_handler(uint8_t int_num)
 
 #ifdef PCINT_NUM_BANKS
 /* inline function that is used by the PCINT ISR */
-static inline void pcint_handler(uint8_t bank, volatile uint8_t *mask_reg)
+static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
 {
     __enter_isr();
     /* Find right item */
     uint8_t pin_num = 0;
-    uint8_t enabled_pcints = *mask_reg;
 
     while (enabled_pcints > 0) {
         /* check if this pin is enabled & has changed */
@@ -472,28 +471,28 @@ static inline void pcint_handler(uint8_t bank, volatile uint8_t *mask_reg)
 #if defined(PCINT0_IDX)
 ISR(PCINT0_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT0_IDX, &PCMSK0);
+    pcint_handler(PCINT0_IDX, PCMSK0);
 }
 #endif /* PCINT0_IDX */
 
 #if defined(PCINT1_IDX)
 ISR(PCINT1_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT1_IDX, &PCMSK1);
+    pcint_handler(PCINT1_IDX, PCMSK1);
 }
 #endif  /* PCINT1_IDX */
 
 #if defined(PCINT2_IDX)
 ISR(PCINT2_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT2_IDX, &PCMSK2);
+    pcint_handler(PCINT2_IDX, PCMSK2);
 }
 #endif  /* PCINT2_IDX */
 
 #if defined(PCINT3_IDX)
 ISR(PCINT3_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT3_IDX, &PCMSK3);
+    pcint_handler(PCINT3_IDX, PCMSK3);
 }
 #endif  /* PCINT3_IDX */
 
