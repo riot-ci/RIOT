@@ -363,10 +363,10 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
         uint8_t pin_mask = (1 << pin_num);
         uint8_t pin_value = ((port_value & pin_mask) != 0);
         if (pin_value) {
-            pcint_state[ bank ] |= pin_mask;
+            pcint_state[bank] |= pin_mask;
         }
         else {
-            pcint_state[ bank ] &= ~pin_mask;
+            pcint_state[bank] &= ~pin_mask;
         }
         sei();
         return 0;
