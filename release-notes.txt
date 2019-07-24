@@ -19,11 +19,10 @@ About this release:
 ===================
 
 The 2019.07 release includes a number of new features including many new
-boards and cpu, riotboot added to many new and old boards, usb is now available,
-ble improvements, ethernet on stm32 platforms, progress in gnrf fragmentation,
-as well as many bug fixed and documentation updates.  Testing has also improved
-with both On-Target testing increasing and now Hardware Assisted automated tests
-being run.
+boards and cpu, riotboot added to many new and old boards, USB is now available,
+BLE improvements, Ethernet on stm32 platforms, as well as many bug fixed and
+documentation updates.  Testing has also improved with both On-Target Testing
+increasing and now Hardware Assisted Automated Tests being run.
 
 About 300 pull requests with about 659 commits have been merged since the last
 release and about 50 issues have been solved. 26 people contributed with code
@@ -51,8 +50,6 @@ System libraries
     + sys/event: add event_wait_until()
     + sys/bluetil: add bluetil_addr_from_str()
     + usbus: Add CDC-ECM (Ethernet Control Model) function
-    * sys/ubjson: Do not invert bool when writing it
-    * sys/ubjson: Write missing marker for i64
     * usbus: simplify adding entry to list
     * sys/stdio_ethos: replace USE_ETHOS_FOR_STDIO by stdio_ethos pseudomodule
 
@@ -60,7 +57,6 @@ Networking
 ----------
     * gnrc_ipv6_nib: add address from netif to address validation timer
     + netdev_ieee802154: add txpower and page
-    * gnrc: fix several issues found with LLVM's static code analyzer
     * gnrc_sixlowpan_frag: allow send of multiple datagrams simultaneously
     + gnrc_sixlowpan_frag: Initial import of a fragment size hint feature
     + net/lorawan/hdr: add lorawan header helpers
@@ -68,18 +64,15 @@ Networking
     * pkg/semtech-loramac: rework interaction with the MAC
     * pkg/semtech-loramac: provide basic persistence for MAC state
     * RPL: API update suggestions
-    * gnrc_sixlowpan_frag: fix timeout config macro name
     + ipv6_ext: add fragmentation extension definitions
     * net/sock_util: Accept NULL pointers in urlsplit
     + sys/net: add netopt options for lorawan
     * gnrc_tftp: Fix out-of-bounds memory access when comparing modes
-    * gnrc_tftp: initialize unititialized 'tftp_context_t'
     - gnrc_pktbuf: remove gnrc_pktbuf_duplicate_upto
     - gnrc_ipv6: remove obsolete and harmful reception code
-    * gnrc_tftp: set port on server ini
+    * gnrc_tftp: set port on server init
     + ble/softdevice: add ble_nordic_softdevice feature
     * net/mqttsn: fix client ID length to comply to the standard
-    - gnrc/pktbuf: remove obsolete sys/uio.h include
     + gnrc_tftp: Add minimum packet length check
 
 Packages
@@ -88,9 +81,7 @@ Packages
     * ble/nimble: bump version to 9d4bda2
     * openthread: update to release 20180926
     * minmea: bump version to current master
-    - pkg: remove not needed git-downloaded dependencies
     + nanocbor: Initial support for the nanocbor package
-    * pkg/semtech_loramac: fix memcpy to uninitialized pointer
     * pkg/lua: Make the module searchers conform to the API
 
 Boards
@@ -111,13 +102,11 @@ Boards
     * boards/stm32l0: introduce common clock configuration and apply it to
       related boards
     * boards/b-l072z-lrwan1: use STM32 common i2C configuration
-    * board/microbit: use openocd and remove fscopy
     + Add usbdev feature to Sodaq boards
     + boards/pba-d-01-kw2x: add riotboot support
     + sensebox: add usbdev feature
     + boards/stm32f429i-disc1: add i2c configuration
     + boards/nucleo-l476rg: add riotboot
-    - boards: remove unused FEATURES_MCU_GROUP variable
     + boards/same54-xpro: add riotboot support
     + boards: Add FLASHFILE support
     + boards/nucleo-l476rg: Add DMA support
@@ -130,32 +119,19 @@ Boards
     + boards/microbit: add QEMU emulation
     + boards/frdm-kw41z-k64f: add riotboot
     * boards/sltb001a: reset before flashing
-    * boards/native: remove toolchain variables duplication
 
 CPU
 ---
     * cpu/esp8266: added/changed helper functions
-    * boards/esp32: changes the approach for configurations of periphs in
-      board def
-    * cpu/esp32: fix of periph_* submodule compilation
-    * cpu/saml21: set PL2 by default
     + cpu/cc2538: Add periph_uart_mode implementation
     * saml1x: enable pm_layered by default
     + cpu/cc26x0: implement uart_mode()
     + cpu/sam0: add support for SAMD5x/SAME5x
-    * cpu/sam0_common: RTC & RTT cleanup
-    + cpu/samd5x: CPU init fixes
     + sam0_common: add uart modecfg support
-    * cpu/kinetis/i2c: Fix false positive for expected EIO during i2c write
-    * cpu/esp8266: fix pwm_set func
-    * cpu/efm32/periph_gpio: fix NUMOF_IRQS off-by-one error
     + cpu/stm32f3: add support for flashpage and flashpage_raw
     * cpu/stm32l{1,4}: refactor flashpage numof macros
     * cpu/stm32: optimize stop mode for stm32f*
-    * stm32_common/flashpage: fix stm32l4 erase error
-    * stm32_common/flash_common: fix _wait_for_pending_isr()
     * cpu/nrf5x_common: map hwrng to SoC library if SoftDevice is present
-    * cpu/stm32l1: fix issue when  writing NULL bytes to eeprom
 
 Device Drivers
 --------------
@@ -167,12 +143,9 @@ Device Drivers
     + drivers/ds75lx: add basic driver for temperature sensor
     + drivers/include: add header definition for wdt
     + drivers/at: Add 'at_recv_bytes_until_string' function
-    * drivers/ds18: fix `ds18_read` for negative temperatures
-    * drivers/sx127x: uncrustify main file
     + sx127x: add several NETOPT for GNRC LoRaWAN
     * drivers/sx127x: fix device reset
     + drivers: stm32 eth peripheral driver
-    - sx127x: remove MULTIDIO and fix missing interrupt handling
     + drivers/periph/gpio_util: add gpio_util_shiftin()
 
 Build System / Tooling
@@ -197,8 +170,6 @@ Build System / Tooling
     + Makefile.features: add declarative FEATURES_ variables definition
     + makefiles/utils/variables: add functions to help managing variables
     * Migrate all boards to define FLASHFILE
-    * make: remove exports for flash debug reset
-    * board: remove exporting PORT_LINUX|PORT_DARWIN
     * tools/openocd.sh: try to probe the board for real flash address
 
 Testing
@@ -210,7 +181,6 @@ Testing
     * tests/periph_timer: include kw41z boards in low-power timer boards
     * tests/pkg_c25519: increase timeout for arduino-mega2560
     + tests/xtimer_usleep: fail with negative offsets
-    * tests/unittests: remove unused LARGE_STACK_TESTS
     + unittests: add tsrb tests
     + tests/stdin: add non regression test for stdin module
     + tests/xtimer_mutex_lock_timeout: add simple case test
@@ -510,7 +480,7 @@ Fixed Issues from the last release (2019.04)
 
 Acknowledgements
 ================
-We would like to thank all companies (vendors) that provided us with (their)
+We would like to thank all companies that provided us with
 hardware for porting and testing RIOT-OS. Further thanks go to companies and
 institutions that directly sponsored development time. And finally, big thanks
 to all of you contributing in so many different ways to make RIOT worthwhile!
