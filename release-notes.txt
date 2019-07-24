@@ -480,10 +480,10 @@ Fixed Issues from the last release (2019.04)
 
 Acknowledgements
 ================
-We would like to thank all companies that provided us with
-hardware for porting and testing RIOT-OS. Further thanks go to companies and
-institutions that directly sponsored development time. And finally, big thanks
-to all of you contributing in so many different ways to make RIOT worthwhile!
+We would like to thank all companies that provided us with hardware for porting
+and testing RIOT-OS. Further thanks go to companies and institutions that
+directly sponsored development time. And finally, big thanks to all of you
+contributing in so many different ways to make RIOT worthwhile!
 A special thanks to @fjmolinas, @leandrolanzieri, @cladmi, @jia200x, @miri64
 for helping run the release tests
 
