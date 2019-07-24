@@ -35,6 +35,9 @@
 #include "periph_conf.h"
 #include "periph_cpu.h"
 
+#define ENABLE_DEBUG            (0)
+#include "debug.h"
+
 #define GPIO_BASE_PORT_A        (0x20)
 #define GPIO_OFFSET_PORT_H      (0xCB)
 #define GPIO_OFFSET_PIN_PORT    (0x02)
@@ -319,6 +322,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
         }
 
         unsigned bank = offset / 8;
+        DEBUG("PCINT enabled for bank %u offset %u\n", bank, (unsigned)offset);
 
         /* save configuration for pin change interrupt */
         pcint_config[offset].flank = flank;
@@ -434,26 +438,22 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
 {
     __enter_isr();
     /* Find right item */
-    uint8_t pin_num = 0;
+    uint8_t idx = 0;
 
     while (enabled_pcints > 0) {
         /* check if this pin is enabled & has changed */
         if (enabled_pcints & 0x1) {
-            /* re-construct mask from pin number*/
-            uint8_t pin_mask = (1 << pin_num);
             /* get pin from mapping (assumes 8 entries per bank!) */
-            gpio_t pin = pcint_mapping[ bank * 8 + pin_num ];
+            gpio_t pin = pcint_mapping[ bank * 8 + idx ];
+            /* re-construct mask from pin */
+            uint8_t pin_mask = (1 << (_pin_num(pin)));
+            uint8_t idx_mask = (1 << idx);
             uint8_t port_value = (_SFR_MEM8(_pin_addr( pin )));
             uint8_t pin_value = ((port_value & pin_mask) != 0);
-            uint8_t old_state = ((pcint_state[bank] & pin_mask) != 0);
-            gpio_isr_ctx_pcint_t *conf = &pcint_config[ bank * 8 + pin_num ];
+            uint8_t old_state = ((pcint_state[ bank ] & idx_mask) != 0);
+            gpio_isr_ctx_pcint_t *conf = &pcint_config[ bank * 8 + idx ];
             if (old_state != pin_value) {
-                if (pin_value) {
-                    pcint_state[bank] |= (pin_mask);
-                }
-                else {
-                    pcint_state[bank] &= ~(pin_mask);
-                }
+                pcint_state[ bank] ^= idx_mask;
                 if ((conf->flank == GPIO_BOTH ||
                      (pin_value && conf->flank == GPIO_RISING) ||
                      (!pin_value && conf->flank == GPIO_FALLING))) {
@@ -463,7 +463,7 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
             }
         }
         enabled_pcints = enabled_pcints >> 1;
-        pin_num++;
+        idx++;
     }
 
     __exit_isr();
@@ -471,28 +471,28 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
 #if defined(PCINT0_IDX)
 ISR(PCINT0_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT0_IDX, PCMSK0);
+    pcint_handler(PCINT0_IDX, &PCMSK0);
 }
 #endif /* PCINT0_IDX */
 
 #if defined(PCINT1_IDX)
 ISR(PCINT1_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT1_IDX, PCMSK1);
+    pcint_handler(PCINT1_IDX, &PCMSK1);
 }
 #endif  /* PCINT1_IDX */
 
 #if defined(PCINT2_IDX)
 ISR(PCINT2_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT2_IDX, PCMSK2);
+    pcint_handler(PCINT2_IDX, &PCMSK2);
 }
 #endif  /* PCINT2_IDX */
 
 #if defined(PCINT3_IDX)
 ISR(PCINT3_vect, ISR_BLOCK)
 {
-    pcint_handler(PCINT3_IDX, PCMSK3);
+    pcint_handler(PCINT3_IDX, &PCMSK3);
 }
 #endif  /* PCINT3_IDX */
 
