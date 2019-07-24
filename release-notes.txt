@@ -20,7 +20,7 @@ About this release:
 
 The 2019.07 release includes a number of new features including many new
 boards and cpu, riotboot added to many new and old boards, USB is now available,
-BLE improvements, Ethernet on stm32 platforms, as well as many bug fixed and
+BLE improvements, Ethernet on stm32 platforms, as well as many bug fixes and
 documentation updates.  Testing has also improved with both On-Target Testing
 increasing and now Hardware Assisted Automated Tests being run.
 
@@ -58,7 +58,6 @@ Networking
     * gnrc_ipv6_nib: add address from netif to address validation timer
     + netdev_ieee802154: add txpower and page
     * gnrc_sixlowpan_frag: allow send of multiple datagrams simultaneously
-    + gnrc_sixlowpan_frag: Initial import of a fragment size hint feature
     + net/lorawan/hdr: add lorawan header helpers
     + ble/nimble: add support for build-in IPSS service
     * pkg/semtech-loramac: rework interaction with the MAC
@@ -454,8 +453,6 @@ Other issues
 Fixed Issues from the last release (2019.04)
 ============================================
 
-#11811: asymcute die because of dead lock?
-#11684: openmote-b: Cannot flash board with USB more than once
 #11626: tests/pkg_semtech-loramac: hardfault on lobaro-lorabox
 #11605: ruuvitag: Shell test fails without auto_init
 #11530: pkg/semtech_loramac: deadlock with UNCONFIRMED messages
@@ -469,14 +466,11 @@ Fixed Issues from the last release (2019.04)
 #11059: board/sltb001a: cannot flash with JLink when 'hello-world' is running
         and no error
 #11043: boards/z1: tests/rng resets board
-#10927: gnrc_tftp: Missing minimum length check
 #10878: nrfmin can get stuck and never reach RX (while TX works)
 #10800: iotlab-m3: thread tests failing
 #10559: I2C API write_regs does not fit implementation
 #10468: Tinycryt upstream rewrote history in master branch
 #8653: msba2: default example fails on assert
-#6874: SAMD21: possible CMSIS bug ?
-#4612: pkg: TLSF does not build for 16 bit platforms
 
 Acknowledgements
 ================
