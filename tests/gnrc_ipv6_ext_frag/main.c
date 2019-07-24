@@ -31,7 +31,11 @@
 #include "net/gnrc.h"
 #include "net/gnrc/ipv6/ext/frag.h"
 #include "net/gnrc/ipv6/hdr.h"
+#include "net/gnrc/ipv6/nib.h"
+#include "net/gnrc/netif/raw.h"
 #include "net/gnrc/udp.h"
+#include "net/netdev_test.h"
+#include "od.h"
 #include "random.h"
 #include "shell.h"
 #include "xtimer.h"
@@ -45,8 +49,10 @@ extern int udp_cmd(int argc, char **argv);
  * the rest can just use udp_cmd */
 static int shell_test_cmd(int argc, char **argv);
 
-static gnrc_netif_t *netif;
+static netdev_test_t mock_netdev;
+static gnrc_netif_t *eth_netif, *mock_netif;
 static ipv6_addr_t *local_addr;
+static char mock_netif_stack[THREAD_STACKSIZE_DEFAULT];
 static char line_buf[SHELL_DEFAULT_BUFSIZE];
 static const shell_command_t shell_commands[] = {
     { "udp", "send data over UDP and listen on UDP ports", udp_cmd },
@@ -108,7 +114,7 @@ static gnrc_pktsnip_t *_build_udp_packet(const ipv6_addr_t *dst,
         return NULL;
     }
     netif_hdr = hdr->data;
-    netif_hdr->if_pid = netif->pid;
+    netif_hdr->if_pid = eth_netif->pid;
     netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_MULTICAST;
     hdr->next = payload;
     return hdr;
@@ -121,7 +127,7 @@ static void test_ipv6_ext_frag_send_pkt_single_frag(const ipv6_addr_t *dst)
     TEST_ASSERT_NOT_NULL(local_addr);
     pkt = _build_udp_packet(dst, sizeof(TEST_SAMPLE) - 1, NULL);
     TEST_ASSERT_NOT_NULL(pkt);
-    gnrc_ipv6_ext_frag_send_pkt(pkt, netif->ipv6.mtu);
+    gnrc_ipv6_ext_frag_send_pkt(pkt, eth_netif->ipv6.mtu);
 }
 
 static void test_ipv6_ext_frag_payload_snips_not_divisible_of_8(const ipv6_addr_t *dst)
@@ -133,7 +139,7 @@ static void test_ipv6_ext_frag_payload_snips_not_divisible_of_8(const ipv6_addr_
     /* TEST_SAMPLE's string length is not a multiple of 8*/
     TEST_ASSERT((sizeof(TEST_SAMPLE) - 1) & 0x7);
 
-    while (payload_size <= netif->ipv6.mtu) {
+    while (payload_size <= eth_netif->ipv6.mtu) {
         pkt = gnrc_pktbuf_add(payload, TEST_SAMPLE, sizeof(TEST_SAMPLE) - 1,
                               GNRC_NETTYPE_UNDEF);
         TEST_ASSERT_NOT_NULL(pkt);
@@ -142,7 +148,7 @@ static void test_ipv6_ext_frag_payload_snips_not_divisible_of_8(const ipv6_addr_
     }
     pkt = _build_udp_packet(dst, 0, payload);
     TEST_ASSERT_NOT_NULL(pkt);
-    gnrc_ipv6_ext_frag_send_pkt(pkt, netif->ipv6.mtu);
+    gnrc_ipv6_ext_frag_send_pkt(pkt, eth_netif->ipv6.mtu);
 }
 
 static int shell_test_cmd(int argc, char **argv)
@@ -172,14 +178,54 @@ static int shell_test_cmd(int argc, char **argv)
 
 /* TODO: test if forwarded packet is not fragmented */
 
+static int mock_get_device_type(netdev_t *dev, void *value, size_t max_len)
+{
+    (void)dev;
+    assert(max_len == sizeof(uint16_t));
+    *((uint16_t *)value) = NETDEV_TYPE_TEST;
+    return sizeof(uint16_t);
+}
+
+static int mock_get_max_packet_size(netdev_t *dev, void *value, size_t max_len)
+{
+    (void)dev;
+    assert(max_len == sizeof(uint16_t));
+    assert(eth_netif != NULL);
+    *((uint16_t *)value) = eth_netif->ipv6.mtu - 8;
+    return sizeof(uint16_t);
+}
+
+static int mock_send(netdev_t *dev, const iolist_t *iolist)
+{
+    (void)dev;
+    int res = 0;
+    while(iolist != NULL) {
+        od_hex_dump(iolist->iol_base, iolist->iol_len,
+                    OD_WIDTH_DEFAULT);
+        res += iolist->iol_len;
+        iolist = iolist->iol_next;
+    }
+    return res;
+}
+
 int main(void)
 {
-    netif = gnrc_netif_iter(NULL);
-
+    eth_netif = gnrc_netif_iter(NULL);
+    /* create mock netif to test forwarding too large fragments */
+    netdev_test_setup(&mock_netdev, 0);
+    netdev_test_set_get_cb(&mock_netdev, NETOPT_DEVICE_TYPE,
+                            mock_get_device_type);
+    netdev_test_set_get_cb(&mock_netdev, NETOPT_MAX_PDU_SIZE,
+                           mock_get_max_packet_size);
+    netdev_test_set_send_cb(&mock_netdev, mock_send);
+    mock_netif = gnrc_netif_raw_create(mock_netif_stack,
+                                       sizeof(mock_netif_stack),
+                                       GNRC_NETIF_PRIO, "mock_netif",
+                                       (netdev_t *)&mock_netdev);
     printf("Sending UDP test packets to port %u\n", TEST_PORT);
     for (unsigned i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
-        if (ipv6_addr_is_link_local(&netif->ipv6.addrs[i])) {
-            local_addr = &netif->ipv6.addrs[i];
+        if (ipv6_addr_is_link_local(&eth_netif->ipv6.addrs[i])) {
+            local_addr = &eth_netif->ipv6.addrs[i];
         }
     }
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
