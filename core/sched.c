@@ -217,10 +217,13 @@ void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
 
     /* There is no active thread the first time the callback is executed */
     if (pid_is_valid(active_thread)) {
-        /* Don't update the runtime if its the first time the thread gets scheduled */
+        /* Set runtime to 0 if it is the first time the thread is scheduled */
         schedstat_t *active_stat = &sched_pidlist[active_thread];
         if (active_stat->laststart) {
             active_stat->runtime_ticks += now - active_stat->laststart;
+        }
+        else {
+            active_stat->runtime_ticks = 0;
         }
     }
     /* Update next_thread stats */
