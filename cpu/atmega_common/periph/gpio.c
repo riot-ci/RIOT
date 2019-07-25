@@ -453,7 +453,7 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
             uint8_t old_state = ((pcint_state[ bank ] & idx_mask) != 0);
             gpio_isr_ctx_pcint_t *conf = &pcint_config[ bank * 8 + idx ];
             if (old_state != pin_value) {
-                pcint_state[ bank] ^= idx_mask;
+                pcint_state[bank] ^= idx_mask;
                 if ((conf->flank == GPIO_BOTH ||
                      (pin_value && conf->flank == GPIO_RISING) ||
                      (!pin_value && conf->flank == GPIO_FALLING))) {
