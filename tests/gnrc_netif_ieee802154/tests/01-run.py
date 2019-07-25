@@ -8,12 +8,10 @@
 
 import sys
 import socket
-import struct
 from testrunner import run
 from pexpect import EOF, TIMEOUT
+from scapy.all import ZEP2, Dot15d4, Dot15d4Data, Dot15d4FCS, SixLoWPAN, raw
 
-# ZEP v2 data header (see `sys/include/net/zep.h`)
-ZEP_HDR = "!2sBBBHBBLLL10xB"
 ZEP_V2_VERSION = 2
 ZEP_V2_TYPE_DATA = 1
 
@@ -22,26 +20,35 @@ def testfunc(child):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.bind(("", 17754))
         child.expect("l2_addr: ([0-9A-F:]+)")
-        dst = child.match.group(1).split(':')
-        dst = [int(b, base=16) for b in reversed(dst)]
-        dst = bytes(dst)
+        dst = int(child.match.group(1).replace(':', ''), base=16)
 
         # first send valid packet to check if communication is set up correctly
         # generated with udp send <link-local> 61616 0 in tests/gnrc_udp
-        payload = b"\x61\xd8\x85\x23\x00" + dst + b"\x2a\xab\xdc" \
-                  b"\x15\x54\x01\x64\x79\x7e\x33\xf3\x00\x54\x2e"
-        packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
-                             ZEP_V2_TYPE_DATA, 26, 1, 1, 0xff,
-                             0, 0, 1, len(payload)) + payload
+        payload = b"\x7e\x33\xf3\x00"
+        payload = (
+            Dot15d4FCS(fcf_srcaddrmode=2, fcf_panidcompress=True,
+                       fcf_frametype="Data") /
+            Dot15d4Data(dest_addr=dst, dest_panid=0x23, src_addr=dst-1) /
+            payload
+        )
+        packet = raw(
+            ZEP2(ver=ZEP_V2_VERSION, type=ZEP_V2_TYPE_DATA, channel=26,
+                 length=len(payload)) / payload
+        )
         s.sendto(packet, ("localhost", 17755))
         child.expect("PKTDUMP: data received:")
         child.expect("00000000  7E  33  F3  00")
-        child.expect("~~ PKT    -  2 snips, total size:  22 byte")
-        payload = b"\x61\xd8\x00\x23\x00" + dst
-        # child.expect("PKTDUMP: data received:")
-        packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
-                             ZEP_V2_TYPE_DATA, 26, 1, 1, 0xff,
-                             0, 0, 2, len(payload)) + payload
+        child.expect("~~ PKT    -  2 snips, total size:  16 byte")
+        payload = (
+            Dot15d4FCS(fcf_srcaddrmode=2, fcf_panidcompress=True,
+                       fcf_frametype="Data") /
+            # just append destination PAN ID and address
+            bytes([0x23, 0x23, dst & 0xff, dst >> 8])
+        )
+        packet = raw(
+            ZEP2(ver=ZEP_V2_VERSION, type=ZEP_V2_TYPE_DATA, channel=26,
+                 length=len(payload)) / payload
+        )
         s.sendto(packet, ("localhost", 17755))
         res = child.expect([TIMEOUT, EOF, "PKTDUMP: data received:"])
         # we actually want the timeout here. The application either
