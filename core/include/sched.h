@@ -232,7 +232,7 @@ void init_schedstatistics(void);
  *
  *  @param[in] callback The callback functions the will be called
  */
-void sched_register_cb(void (*callback)(uint32_t, uint32_t));
+void sched_register_cb(void (*callback)(kernel_pid_t, kernel_pid_t));
 #endif /* MODULE_SCHED_CB */
 
 #ifdef __cplusplus

@@ -75,7 +75,7 @@ const uint8_t _tcb_name_offset = offsetof(thread_t, name);
 #endif
 
 #ifdef MODULE_SCHED_CB
-static void (*sched_cb) (uint32_t value_1, uint32_t value_2) = NULL;
+static void (*sched_cb) (kernel_pid_t active_thread, kernel_pid_t next_thread) = NULL;
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
 schedstat_t sched_pidlist[KERNEL_PID_LAST + 1];
@@ -204,14 +204,14 @@ NORETURN void sched_task_exit(void)
 }
 
 #ifdef MODULE_SCHED_CB
-void sched_register_cb(void (*callback)(uint32_t, uint32_t))
+void sched_register_cb(void (*callback)(kernel_pid_t, kernel_pid_t))
 {
     sched_cb = callback;
 }
 #endif
 
 #ifdef MODULE_SCHEDSTATISTICS
-void sched_statistics_cb(uint32_t active_thread, uint32_t next_thread) {
+void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
 
     uint32_t now = xtimer_now().ticks32;
 
