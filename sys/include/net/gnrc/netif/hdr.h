@@ -304,7 +304,7 @@ static inline gnrc_netif_t *gnrc_netif_hdr_get_netif(const gnrc_netif_hdr_t *hdr
 static inline void gnrc_netif_hdr_set_netif(gnrc_netif_hdr_t *hdr,
                                             gnrc_netif_t *netif)
 {
-    hdr->if_pid = (netif != NULL) ? KERNEL_PID_UNDEF : netif->pid;
+    hdr->if_pid = (netif != NULL) ? netif->pid : KERNEL_PID_UNDEF;
 }
 
 /**
