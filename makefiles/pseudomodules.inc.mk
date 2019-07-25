@@ -1,4 +1,5 @@
 PSEUDOMODULES += at_urc
+PSEUDOMODULES += auto_init_dhcpv6_client
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
@@ -10,9 +11,11 @@ PSEUDOMODULES += core_%
 PSEUDOMODULES += cortexm_fpu
 PSEUDOMODULES += cpu_check_address
 PSEUDOMODULES += devfs_%
+PSEUDOMODULES += dhcpv6_%
 PSEUDOMODULES += ecc_%
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += event_%
+PSEUDOMODULES += gnrc_dhcpv6_%
 PSEUDOMODULES += gnrc_ipv6_default
 PSEUDOMODULES += gnrc_ipv6_router
 PSEUDOMODULES += gnrc_ipv6_router_default
