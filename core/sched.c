@@ -116,7 +116,7 @@ int __attribute__((used)) sched_run(void)
 
 #ifdef MODULE_SCHED_CB
     if (sched_cb) {
-        sched_cb(active_thread->pid, next_thread->pid);
+        sched_cb(sched_active_pid, next_thread->pid);
     }
 #endif
 
@@ -215,23 +215,21 @@ void sched_statistics_cb(uint32_t active_thread, uint32_t next_thread) {
 
     uint32_t now = xtimer_now().ticks32;
 
-    if((thread_getstatus(active_thread) != STATUS_STOPPED) && \
-       (thread_getstatus(active_thread) != STATUS_NOT_FOUND)) {
+    /* There is no active thread the first time the callback is executed */
+    if (pid_is_valid(active_thread)) {
+        /* Don't update the runtime if its the first time the thread gets scheduled */
         schedstat_t *active_stat = &sched_pidlist[active_thread];
         if (active_stat->laststart) {
             active_stat->runtime_ticks += now - active_stat->laststart;
         }
     }
-
+    /* Update next_thread stats */
     schedstat_t *next_stat = &sched_pidlist[next_thread];
     next_stat->laststart = now;
     next_stat->schedules++;
 }
 
 void init_schedstatistics(void) {
-    schedstat_t *ss = &sched_pidlist[thread_getpid()];
-    ss->laststart = 0;
-
     sched_register_cb(sched_statistics_cb);
 }
 #endif
