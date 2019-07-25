@@ -36,7 +36,7 @@ def testfunc(child):
         s.sendto(packet, ("localhost", 17755))
         child.expect("PKTDUMP: data received:")
         child.expect("00000000  7E  33  F3  00")
-        child.expect("~~ PKT    -  2 snips, total size:  23 byte")
+        child.expect("~~ PKT    -  2 snips, total size:  22 byte")
         payload = b"\x61\xd8\x00\x23\x00" + dst
         # child.expect("PKTDUMP: data received:")
         packet = struct.pack(ZEP_HDR, b"EX", ZEP_V2_VERSION,
