@@ -21,4 +21,4 @@ FLAG - Flags set for the I2C, more information is available in driver/include/pe
 
 _note: Automated tests can be found in the
 [RobotFW-tests](https://github.com/RIOT-OS/RobotFW-tests/tree/master/tests/periph_i2c)
-repository
+repository_
