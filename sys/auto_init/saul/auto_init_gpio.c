@@ -26,6 +26,7 @@
 #include "saul/periph.h"
 #include "gpio_params.h"
 #include "periph/gpio.h"
+#include "kernel_defines.h"
 
 /**
  * @brief   Define the number of configured sensors
