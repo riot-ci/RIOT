@@ -25,6 +25,7 @@
 
 /* include periph_cpu.h to make it visible in any case */
 #include "periph_cpu.h"
+#include "kernel_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
