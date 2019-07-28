@@ -43,7 +43,7 @@ extern "C" {
     static const TestCase   ca = new_TestCase(#ca,sup,tdw,run)
 
 #define EMB_UNIT_TESTSUITE(su,array) \
-    static const TestSuite  su = new_TestSuite(#su,(Test**)array,ARRAY_SIZE(array))
+    static const TestSuite  su = new_TestSuite(#su,(Test**)array,sizeof(array)/sizeof(array[0]))
 
 #define EMB_UNIT_TESTREFS(tests) \
     static Test* const tests[] =
@@ -52,7 +52,7 @@ extern "C" {
                 (Test*) testref
 
 #define EMB_UNIT_TESTCALLER(caller,sup,tdw,fixtures) \
-    static const TestCaller caller = new_TestCaller(#caller,sup,tdw,ARRAY_SIZE(fixtures),(TestFixture*)fixtures)
+    static const TestCaller caller = new_TestCaller(#caller,sup,tdw,sizeof(fixtures)/sizeof(fixtures[0]),(TestFixture*)fixtures)
 
 #define EMB_UNIT_TESTFIXTURES(fixtures) \
     static const TestFixture    fixtures[] =
