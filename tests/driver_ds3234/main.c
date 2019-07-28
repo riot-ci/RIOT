@@ -28,7 +28,7 @@ int main(void)
 {
     puts("DS3234 RTC PPS test application\n");
 
-    for (unsigned k = 0; k < (sizeof(ds3234_params) / sizeof(ds3234_params[0])); ++k) {
+    for (unsigned k = 0; k < ARRAY_SIZE(ds3234_params); ++k) {
         printf("Init #%u... ", k);
         int res = ds3234_pps_init(&ds3234_params[k]);
         if (res == 0) {
