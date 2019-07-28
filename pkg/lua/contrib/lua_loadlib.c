@@ -30,6 +30,7 @@
 #define LUA_LIB
 
 #include "lprefix.h"
+#include "kernel_defines.h"
 
 #include "lua.h"
 #include "lauxlib.h"
