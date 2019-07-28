@@ -23,6 +23,7 @@
 #include "board.h"
 #include "ds3234.h"
 #include "ds3234_params.h"
+#include "kernel_defines.h"
 
 int main(void)
 {
