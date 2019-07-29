@@ -31,6 +31,9 @@ USEMODULE += gnrc_icmpv6_echo
 USEMODULE += shell
 USEMODULE += shell_commands
 
+# Optional feature to trigger update through gpio
+FEATURES_OPTIONAL += periph_gpio_irq
+
 # Set this to 1 to enable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
@@ -81,6 +84,9 @@ endif
 TEST_EXTRA_FILES += $(SLOT_RIOT_ELFS) $(SUIT_SEC) $(SUIT_PUB)
 
 include $(RIOTBASE)/Makefile.include
+
+# Export default path to fetch an update
+CFLAGS += -DSUIT_MANIFEST_RESOURCE=\"$(SUIT_COAP_ROOT)/$(SUIT_NOTIFY_MANIFEST)\"
 
 .PHONY: host-tools
 
