@@ -4,4 +4,33 @@
  * @ingroup  net
  * @brief    Provides the Eclipse TinyDTLS to RIOT
  * @see      https://projects.eclipse.org/projects/iot.tinydtls
+ *
+ * Usage
+ * -----
+ *
+ * Add as a package in your application Makefile:
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
+ * USEPKG += tinydtls
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * Supported Cipher Suites
+ * -----------------------
+ *
+ * TinyDTLS only has support for `TLS_PSK_WITH_AES_128_CCM_8` and
+ * `TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8`. The cipher suites to be used can be
+ * chosen at compile time by adding `DTLS_PSK` or `DTLS_ECC` to the CFLAGS as
+ * follows:
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.mk}
+ * # Uncomment to enable
+ * # This adds support for TLS_PSK_WITH_AES_128_CCM_8
+ * # CFLAGS += -DDTLS_PSK
+ * # This adds support for TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8
+ * # CFLAGS += -DDTLS_ECC
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * If neither `DTLS_PSK` nor `DTLS_ECC` are specified, then tinyDTLS will
+ * enable `DTLS_PSK` by default.
+ *
  */
