@@ -541,17 +541,63 @@ static inline ssize_t coap_get_uri_query(const coap_pkt_t *pkt, uint8_t *target)
  */
 /**@{*/
 /**
+ * @brief Initialize a block struct from content information
+ *
+ * @param[out]   block      block struct to initialize
+ * @param[in]    blknum     offset from the beginning of content, in terms of
+                            @p blksize byte blocks
+ * @param[in]    blksize    size of each block; must be a power of 2 between 16
+ *                          and 2 raised to #NANOCOAP_BLOCK_SIZE_EXP_MAX
+ * @param[in]    more       more blocks? use 1 if yes; 0 if no or unknown
+ */
+void coap_block_object_init(coap_block1_t *block, size_t blknum, size_t blksize,
+                            int more);
+
+/**
+ * @brief Finish a block request (block1 or block2)
+ *
+ * This function finalizes the block response header
+ *
+ * Checks whether the `more` bit should be set in the block option and
+ * sets/clears it if required.  Doesn't return the number of bytes, as this
+ * function overwrites bytes in the packet rather than adding new.
+ *
+ * @param[in]     slicer      Preallocated slicer struct to use
+ * @param[in]     option      option number (block1 or block2)
+ */
+void coap_block_finish(coap_block_slicer_t *slicer, uint16_t option);
+
+/**
+ * @brief Finish a block1 request
+ *
+ * This function finalizes the block1 response header
+ *
+ * Checks whether the `more` bit should be set in the block1 option and
+ * sets/clears it if required.  Doesn't return the number of bytes, as this
+ * function overwrites bytes in the packet rather than adding new.
+ *
+ * @param[in]     slicer      Preallocated slicer struct to use
+ */
+static inline void coap_block1_finish(coap_block_slicer_t *slicer)
+{
+    coap_block_finish(slicer, COAP_OPT_BLOCK1);
+}
+
+/**
  * @brief Finish a block2 response
  *
  * This function finalizes the block2 response header
  *
  * Checks whether the `more` bit should be set in the block2 option and
- * sets/clears it if required.  Doesn't return the number of bytes as this
- * overwrites bytes in the packet, it doesn't add new bytes to the packet.
+ * sets/clears it if required.  Doesn't return the number of bytes, as this
+ * function overwrites bytes in the packet rather than adding new.
  *
- * @param[inout]  slicer      Preallocated slicer struct to use
+ * @param[in]     slicer      Preallocated slicer struct to use
  */
-void coap_block2_finish(coap_block_slicer_t *slicer);
+static inline void coap_block2_finish(coap_block_slicer_t *slicer)
+{
+    coap_block_finish(slicer, COAP_OPT_BLOCK2);
+}
 
 /**
  * @brief Initialize a block2 slicer struct for writing the payload
@@ -563,6 +609,18 @@ void coap_block2_finish(coap_block_slicer_t *slicer);
  * @param[out]  slicer      Preallocated slicer struct to fill
  */
 void coap_block2_init(coap_pkt_t *pkt, coap_block_slicer_t *slicer);
+
+/**
+ * @brief Initialize a block slicer struct from content information
+ *
+ * @param[out]   slicer     slicer struct to initialize
+ * @param[in]    blknum     offset from the beginning of content, in terms of
+                            @p blksize byte blocks
+ * @param[in]    blksize    size of each block; must be a power of 2 between 16
+ *                          and 2 raised to #NANOCOAP_BLOCK_SIZE_EXP_MAX
+ */
+void coap_block_slicer_init(coap_block_slicer_t *slicer, size_t blknum,
+                            size_t blksize);
 
 /**
  * @brief Add a byte array to a block2 reply.
@@ -752,6 +810,45 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags);
  */
 /**@{*/
 /**
+ * @brief   Insert block option into buffer
+ *
+ * When calling this function to initialize a packet with a block option, the
+ * more flag must be set to prevent the creation of an option with a length too
+ * small to contain the size bit.
+ *
+ * @param[out]  buf         buffer to write to
+ * @param[in]   lastonum    number of previous option, must be < @p option
+ * @param[in]   slicer      coap blockwise slicer helper struct
+ * @param[in]   more        more flag (1 or 0)
+ * @param[in]   option      option number (block1 or block2)
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+size_t coap_opt_put_block(uint8_t *buf, uint16_t lastonum, coap_block_slicer_t *slicer,
+                          bool more, uint16_t option);
+
+/**
+ * @brief   Insert block1 option into buffer
+ *
+ * When calling this function to initialize a packet with a block1 option, the
+ * more flag must be set to prevent the creation of an option with a length too
+ * small to contain the size bit.
+ *
+ * @param[out]  buf         buffer to write to
+ * @param[in]   lastonum    number of previous option (for delta calculation),
+ *                          must be < 27
+ * @param[in]   slicer      coap blockwise slicer helper struct
+ * @param[in]   more        more flag (1 or 0)
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+static inline size_t coap_opt_put_block1(uint8_t *buf, uint16_t lastonum,
+                                         coap_block_slicer_t *slicer, bool more)
+{
+    return coap_opt_put_block(buf, lastonum, slicer, more, COAP_OPT_BLOCK1);
+}
+
+/**
  * @brief   Insert block2 option into buffer
  *
  * When calling this function to initialize a packet with a block2 option, the
@@ -766,7 +863,57 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags);
  *
  * @returns     amount of bytes written to @p buf
  */
-size_t coap_opt_put_block2(uint8_t *buf, uint16_t lastonum, coap_block_slicer_t *slicer, bool more);
+static inline size_t coap_opt_put_block2(uint8_t *buf, uint16_t lastonum,
+                                         coap_block_slicer_t *slicer, bool more)
+{
+    return coap_opt_put_block(buf, lastonum, slicer, more, COAP_OPT_BLOCK2);
+}
+
+/**
+ * @brief   Insert block option into buffer from block struct
+ *
+ * @param[in]   buf         buffer to write to
+ * @param[in]   lastonum    last option number (must be < @p option)
+ * @param[in]   block       block option attribute struct
+ * @param[in]   option      option number (block1 or block2)
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+size_t coap_opt_put_block_object(uint8_t *buf, uint16_t lastonum,
+                                 coap_block1_t *block, uint16_t option);
+
+/**
+ * @brief   Insert block1 option into buffer in control usage
+ *
+ * @param[in]   buf         buffer to write to
+ * @param[in]   lastonum    last option number (must be < 27)
+ * @param[in]   block       block option attribute struct
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+static inline size_t coap_opt_put_block1_control(uint8_t *buf, uint16_t lastonum,
+                                                 coap_block1_t *block)
+{
+    return coap_opt_put_block_object(buf, lastonum, block, COAP_OPT_BLOCK1);
+}
+
+/**
+ * @brief   Insert block2 option into buffer in control usage
+ *
+ * Forces value of block 'more' attribute to zero, per spec.
+ *
+ * @param[in]   buf         buffer to write to
+ * @param[in]   lastonum    last option number (must be < 27)
+ * @param[in]   block       block option attribute struct
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+static inline size_t coap_opt_put_block2_control(uint8_t *buf, uint16_t lastonum,
+                                                 coap_block1_t *block)
+{
+    block->more = 0;
+    return coap_opt_put_block_object(buf, lastonum, block, COAP_OPT_BLOCK2);
+}
 
 /**
  * @brief   Encode the given string as multi-part option into buffer
