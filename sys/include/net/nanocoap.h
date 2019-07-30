@@ -548,7 +548,7 @@ static inline ssize_t coap_get_uri_query(const coap_pkt_t *pkt, uint8_t *target)
                             @p blksize byte blocks
  * @param[in]    blksize    size of each block; must be a power of 2 between 16
  *                          and 2 raised to #NANOCOAP_BLOCK_SIZE_EXP_MAX
- * @param[in]    more       more blocks? use 0 if unknown
+ * @param[in]    more       more blocks? use 1 if yes; 0 if no or unknown
  */
 void coap_block_object_init(coap_block1_t *block, size_t blknum, size_t blksize,
                             int more);
