@@ -211,7 +211,8 @@ void sched_register_cb(void (*callback)(kernel_pid_t, kernel_pid_t))
 #endif
 
 #ifdef MODULE_SCHEDSTATISTICS
-void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
+void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread)
+{
 
     uint32_t now = xtimer_now().ticks32;
 
@@ -226,7 +227,8 @@ void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
     next_stat->schedules++;
 }
 
-void init_schedstatistics(void) {
+void init_schedstatistics(void)
+{
     /* Init laststart for the thread starting schedstatistics since the callback
        wasn't registered when it was first scheduled */
     schedstat_t *active_stat = &sched_pidlist[sched_active_pid];
