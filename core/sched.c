@@ -213,7 +213,6 @@ void sched_register_cb(void (*callback)(kernel_pid_t, kernel_pid_t))
 #ifdef MODULE_SCHEDSTATISTICS
 void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread)
 {
-
     uint32_t now = xtimer_now().ticks32;
 
     /* Update active thread runtime, there is allways an active thread since
