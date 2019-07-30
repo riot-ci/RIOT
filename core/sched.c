@@ -215,17 +215,11 @@ void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
 
     uint32_t now = xtimer_now().ticks32;
 
-    /* There is no active thread the first time the callback is executed */
-    if (pid_is_valid(active_thread)) {
-        /* Set runtime to 0 if it is the first time the thread is scheduled */
-        schedstat_t *active_stat = &sched_pidlist[active_thread];
-        if (active_stat->laststart) {
-            active_stat->runtime_ticks += now - active_stat->laststart;
-        }
-        else {
-            active_stat->runtime_ticks = 0;
-        }
-    }
+    /* Update active thread runtime, there is allways an active thread since
+       first sched_run happens when main_trampoline gets scheduled */
+    schedstat_t *active_stat = &sched_pidlist[active_thread];
+    active_stat->runtime_ticks += now - active_stat->laststart;
+
     /* Update next_thread stats */
     schedstat_t *next_stat = &sched_pidlist[next_thread];
     next_stat->laststart = now;
@@ -233,6 +227,11 @@ void sched_statistics_cb(kernel_pid_t active_thread, kernel_pid_t next_thread) {
 }
 
 void init_schedstatistics(void) {
+    /* Init laststart for the thread starting schedstatistics since the callback
+       wasn't registered when it was first scheduled */
+    schedstat_t *active_stat = &sched_pidlist[sched_active_pid];
+    active_stat->laststart = xtimer_now().ticks32;
+    active_stat->schedules = 1;
     sched_register_cb(sched_statistics_cb);
 }
 #endif

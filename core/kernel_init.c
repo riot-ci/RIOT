@@ -29,10 +29,6 @@
 
 #include "periph/pm.h"
 
-#ifdef MODULE_SCHEDSTATISTICS
-#include "sched.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -47,10 +43,6 @@ static void *main_trampoline(void *arg)
 
 #ifdef MODULE_AUTO_INIT
     auto_init();
-#endif
-
-#ifdef MODULE_SCHEDSTATISTICS
-    init_schedstatistics();
 #endif
 
     LOG_INFO("main(): This is RIOT! (Version: " RIOT_VERSION ")\n");
