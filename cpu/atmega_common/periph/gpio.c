@@ -130,7 +130,7 @@ static gpio_isr_ctx_t config[GPIO_EXT_INT_NUMOF];
 /**
  * @brief stores the last pcint state of each port
  */
-static uint8_t pcint_state[ PCINT_NUM_BANKS ];
+static uint8_t pcint_state[PCINT_NUM_BANKS];
 
 /**
  * @brief stores all cb and args for all defined pcint.
@@ -161,7 +161,7 @@ static const gpio_t pcint_mapping[] = {
 /**
  * @brief
  */
-static gpio_isr_ctx_pcint_t pcint_config[ 8 * PCINT_NUM_BANKS ];
+static gpio_isr_ctx_pcint_t pcint_config[8 * PCINT_NUM_BANKS];
 #endif  /* MODULE_ATMEGA_PCINTn */
 
 #endif  /* MODULE_PERIPH_GPIO_IRQ */
@@ -324,7 +324,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
         uint8_t bank = offset / 8;
         uint8_t bank_idx = offset % 8;
         DEBUG("PCINT enabled for bank %u offset %u\n",
-              (unsigned) bank, (unsigned)offset);
+              (unsigned)bank, (unsigned)offset);
 
         /* save configuration for pin change interrupt */
         pcint_config[offset].flank = flank;
@@ -446,14 +446,14 @@ static inline void pcint_handler(uint8_t bank, uint8_t enabled_pcints)
         /* check if this pin is enabled & has changed */
         if (enabled_pcints & 0x1) {
             /* get pin from mapping (assumes 8 entries per bank!) */
-            gpio_t pin = pcint_mapping[ bank * 8 + idx ];
+            gpio_t pin = pcint_mapping[bank * 8 + idx];
             /* re-construct mask from pin */
             uint8_t pin_mask = (1 << (_pin_num(pin)));
             uint8_t idx_mask = (1 << idx);
             uint8_t port_value = (_SFR_MEM8(_pin_addr( pin )));
             uint8_t pin_value = ((port_value & pin_mask) != 0);
-            uint8_t old_state = ((pcint_state[ bank ] & idx_mask) != 0);
-            gpio_isr_ctx_pcint_t *conf = &pcint_config[ bank * 8 + idx ];
+            uint8_t old_state = ((pcint_state[bank] & idx_mask) != 0);
+            gpio_isr_ctx_pcint_t *conf = &pcint_config[bank * 8 + idx];
             if (old_state != pin_value) {
                 pcint_state[bank] ^= idx_mask;
                 if ((conf->flank == GPIO_BOTH ||
