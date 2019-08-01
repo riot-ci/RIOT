@@ -31,6 +31,10 @@
 
 #include "jsmn.h"
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof(*a))
+#endif
+
 /*
  * A small example of jsmn parsing when JSON structure is known and number of
  * tokens is predictable.

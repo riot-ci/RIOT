@@ -23,6 +23,7 @@
 #include "at86rf2xx.h"
 #include "at86rf2xx_params.h"
 #include "net/netdev.h"
+#include "kernel_defines.h"
 
 #ifdef __cplusplus
 extern "C" {

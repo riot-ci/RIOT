@@ -26,6 +26,8 @@
 #include "vfs.h"
 #include "mtd.h"
 
+#include "kernel_defines.h"
+
 #ifdef MODULE_MTD_SDCARD
 #include "mtd_sdcard.h"
 #include "sdcard_spi.h"
