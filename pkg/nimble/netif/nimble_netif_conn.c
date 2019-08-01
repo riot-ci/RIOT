@@ -7,16 +7,11 @@
  */
 
 /**
- * @ingroup     pkg_nimble_netif
- *
- * # TODO
- * - many many things...
- *
- *
+ * @ingroup     pkg_nimble_netif_conn
  * @{
  *
  * @file
- * @brief       Connection context table handling for nimble netif
+ * @brief       Connection context handling for NimBLE netif
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  *
