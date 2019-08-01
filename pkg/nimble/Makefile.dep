@@ -55,6 +55,6 @@ ifneq (,$(filter nimble_netif,$(USEMODULE)))
   ifneq (,$(filter gnrc_ipv6_default,$(USEMODULE)))
     USEMODULE += gnrc_ipv6_nib_6ln
     USEMODULE += gnrc_sixlowpan
-    USEMODULE += gnrc_sixlowpan_iph
+    USEMODULE += gnrc_sixlowpan_iphc
   endif
 endif
