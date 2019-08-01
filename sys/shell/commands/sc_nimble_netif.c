@@ -305,7 +305,7 @@ void sc_nimble_netif_init(void)
 int _nimble_netif_handler(int argc, char **argv)
 {
     if ((argc == 1) || _ishelp(argv[1])) {
-        printf("usage: %s [help|info|adv|scan|connect|close]\n", argv[0]);
+        printf("usage: %s [help|info|adv|scan|connect|close|update]\n", argv[0]);
         return 0;
     }
     if (memcmp(argv[1], "info", 4) == 0) {
