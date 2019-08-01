@@ -87,7 +87,7 @@ static mrf24j40_t mrf24j40_devs[LWIP_NETIF_NUMOF];
 static socket_zep_t socket_zep_devs[LWIP_NETIF_NUMOF];
 #endif
 
-#ifdef MODULE_ESP_WIFI
+#if defined(MODULE_ESP_WIFI) && defined(CPU_ESP32)
 extern esp_wifi_netdev_t _esp_wifi_dev;
 extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
 #endif
