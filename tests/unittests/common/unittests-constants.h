@@ -14,10 +14,6 @@
 extern "C" {
 #endif
 
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof((a))/sizeof(*(a)))
-#endif
-
 /* Some randomly generated but still deterministic values for testing */
 #ifndef TEST_STRING4
 #define TEST_STRING4 "J&(d"
