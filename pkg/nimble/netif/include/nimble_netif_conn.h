@@ -141,7 +141,7 @@ unsigned nimble_netif_conn_count(uint16_t filter);
  *
  * @param[in] addr          the BLE address of the peer node
  *
- * @return
+ * @return handle used for the new connection
  */
 int nimble_netif_conn_start_connection(const uint8_t *addr);
 
@@ -163,7 +163,7 @@ void nimble_netif_conn_free(int handle);
  * @brief   Find the connection context with a given GAP handle and return a
  *          pointer to it
  *
- * @param[in] gh [description]
+ * @param[in] gh            GAP handle used by NimBLE
  *
  * @return  Pointer to the selected context
  * @return  NULL if no fitting context was found

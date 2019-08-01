@@ -120,9 +120,9 @@ typedef enum {
  * @brief   Flags describing the state of a single connection context
  */
 enum {
-    NIMBLE_NETIF_L2CAP_CLIENT       = 0x0001,   /**< l2cap client */
-    NIMBLE_NETIF_L2CAP_SERVER       = 0x0002,   /**< l2cap server */
-    NIMBLE_NETIF_L2CAP_CONNECTED    = 0x0003,   /**< l2cap is connected */
+    NIMBLE_NETIF_L2CAP_CLIENT       = 0x0001,   /**< L2CAP client */
+    NIMBLE_NETIF_L2CAP_SERVER       = 0x0002,   /**< L2CAP server */
+    NIMBLE_NETIF_L2CAP_CONNECTED    = 0x0003,   /**< L2CAP is connected */
     NIMBLE_NETIF_GAP_MASTER         = 0x0010,   /**< GAP master */
     NIMBLE_NETIF_GAP_SLAVE          = 0x0020,   /**< GAP slave */
     NIMBLE_NETIF_GAP_CONNECTED      = 0x0030,   /**< GAP is connected */
@@ -135,7 +135,7 @@ enum {
 /**
  * @brief   Event callback signature used for asynchronous event signaling
  *
- * @note    The event callback is always executed in NimBLEs host thread
+ * @note    The event callback is always executed in NimBLE's host thread
  *
  * @param[in] handle        handle to the connection that triggered the event
  * @param[in] event         type of the event
@@ -153,7 +153,7 @@ void nimble_netif_init(void);
 /**
  * @brief   Register a global event callback, servicing all NimBLE connections
  *
- * @note    The event callback is always executed in NimBLEs host thread
+ * @note    The event callback is always executed in NimBLE's host thread
  *
  * @param[in] cb            event callback to register, may be NULL
  */
