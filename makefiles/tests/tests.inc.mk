@@ -28,3 +28,29 @@ else
 test-input-hash:
 	true
 endif
+
+# Tests that require root privileges
+.PHONY: test-as-root test-as-root/available
+TESTS_AS_ROOT ?= $(foreach file,$(wildcard $(APPDIR)/tests-as-root/*[^~]),\
+                    $(shell test -f $(file) -a -x $(file) && echo $(file)))
+
+test-as-root: $(TEST_DEPS)
+	$(Q) for t in $(TESTS_AS_ROOT); do \
+		sudo -E PYTHONPATH=$(PYTHONPATH) $$t || exit 1; \
+	done
+
+test-as-root/available:
+	$(Q)test -n "$(strip $(TESTS_AS_ROOT))"
+
+# Tests that require specific configuration
+.PHONY: test-with-config test-with-config/available
+TESTS_WITH_CONFIG ?= $(foreach file,$(wildcard $(APPDIR)/tests-with-config/*[^~]),\
+                        $(shell test -f $(file) -a -x $(file) && echo $(file)))
+
+test-with-config: $(TEST_DEPS)
+	$(Q) for t in $(TESTS_WITH_CONFIG); do \
+		$$t || exit 1; \
+	done
+
+test-with-config/available:
+	$(Q)test -n "$(strip $(TESTS_WITH_CONFIG))"
