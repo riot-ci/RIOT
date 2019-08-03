@@ -138,7 +138,7 @@ static void _resp_handler(unsigned req_state, coap_pkt_t* pdu,
             block.blknum++;
             coap_opt_add_block2_control(pdu, &block);
             int len = coap_opt_finish(pdu, COAP_OPT_FINISH_NONE);
-            gcoap_req_send2((uint8_t *)pdu->hdr, len, remote, _resp_handler);
+            gcoap_req_send((uint8_t *)pdu->hdr, len, remote, _resp_handler);
         }
         else {
             puts("--- blockwise complete ---");
