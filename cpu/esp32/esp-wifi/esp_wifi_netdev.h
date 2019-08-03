@@ -48,8 +48,6 @@ typedef struct
 
     gnrc_netif_t* netif;               /**< reference to the corresponding netif */
 
-    mutex_t dev_lock;                  /**< device is already in use */
-
 } esp_wifi_netdev_t;
 
 #ifdef __cplusplus
