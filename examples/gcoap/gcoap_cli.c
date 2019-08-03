@@ -129,6 +129,10 @@ static void _resp_handler(unsigned req_state, coap_pkt_t* pdu,
     if (coap_get_block2(pdu, &block)) {
         if (block.more) {
             unsigned msg_type = coap_get_type(pdu);
+            if (block.blknum == 0 && !strlen(_last_req_path)) {
+                puts("Path too long; can't complete blockwise");
+                return;
+            }
 
             gcoap_req_init(pdu, (uint8_t *)pdu->hdr, GCOAP_PDU_BUF_SIZE,
                            COAP_METHOD_GET, _last_req_path);
