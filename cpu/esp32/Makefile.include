@@ -122,10 +122,6 @@ ifeq ($(QEMU), 1)
     CFLAGS += -DQEMU
 endif
 
-ifneq (,$(filter lwip,$(USEMODULE)))
-    CFLAGS += -DTCPIP_THREAD_PRIO=2
-endif
-
 # LINKFLAGS += -Wl,--verbose
 
 LINKFLAGS += -L$(ESP32_SDK_DIR)/components/esp32
