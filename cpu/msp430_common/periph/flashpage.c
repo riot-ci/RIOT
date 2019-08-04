@@ -99,4 +99,7 @@ void flashpage_write(int page, const void *data)
     if (data != NULL) {
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
+
+    /* lock flash and re-enable interrupts */
+    _lock(state);
 }
