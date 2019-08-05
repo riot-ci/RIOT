@@ -75,7 +75,7 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
 
    /* enable write access, and write*/
     FCTL1 = (FWKEY | WRT);
-    for (unsigned i = 0; i < FLASHPAGE_SIZE; i++) {
+    for (unsigned i = 0; i < len; i++) {
         *(page_addr++) = *(data_addr++);
         while (!(FCTL3 & WAIT)) {}
     }
