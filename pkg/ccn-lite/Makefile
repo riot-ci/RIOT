@@ -36,3 +36,6 @@ include $(RIOTBASE)/pkg/pkg.mk
 ifneq (,$(filter -Wformat-nonliteral -Wformat=2, $(CFLAGS)))
   CFLAGS += -Wno-format-nonliteral
 endif
+ifeq (llvm,$(TOOLCHAIN))
+  CFLAGS += -Wno-char-subscripts
+endif
