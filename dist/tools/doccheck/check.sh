@@ -20,21 +20,21 @@ else
     CRESET=
 fi
 
-# DOXY_OUTPUT=$(make -C "${RIOTBASE}" doc 2>&1)
-# DOXY_ERRCODE=$?
+DOXY_OUTPUT=$(make -C "${RIOTBASE}" doc 2>&1)
+DOXY_ERRCODE=$?
 
-# if [ "${DOXY_ERRCODE}" -ne 0 ] ; then
-#     echo "'make doc' exited with non-zero code (${DOXY_ERRCODE})"
-#     echo "${DOXY_OUTPUT}"
-#     exit 2
-# else
-#     ERRORS=$(echo "${DOXY_OUTPUT}" | grep '.*warning' | sed "s#${PWD}/\([^:]*\)#\1#g")
-#     if [ -n "${ERRORS}" ] ; then
-#         echo -e "${CERROR}ERROR: Doxygen generates the following warnings:${CRESET}"
-#         echo "${ERRORS}"
-#         exit 2
-#     fi
-# fi
+if [ "${DOXY_ERRCODE}" -ne 0 ] ; then
+    echo "'make doc' exited with non-zero code (${DOXY_ERRCODE})"
+    echo "${DOXY_OUTPUT}"
+    exit 2
+else
+    ERRORS=$(echo "${DOXY_OUTPUT}" | grep '.*warning' | sed "s#${PWD}/\([^:]*\)#\1#g")
+    if [ -n "${ERRORS}" ] ; then
+        echo -e "${CERROR}ERROR: Doxygen generates the following warnings:${CRESET}"
+        echo "${ERRORS}"
+        exit 2
+    fi
+fi
 
 exclude_filter() {
     grep -v -e vendor -e examples -e tests -e "\<dist/tools\>"
