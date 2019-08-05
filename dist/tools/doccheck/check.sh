@@ -76,17 +76,12 @@ then
     exit 2
 fi
 
-# Check for groups defined multiple times
-MULTIPLE_DEFINED_GROUPS=$( \
-    for group in ${DEFINED_GROUPS_UNIQUE}; \
-    do \
-        # For each group, generate a line with the pattern:
-        # <number of group definitions>:<group name>
-        # Exclude valid groups (e.g. those defined one time)
-        echo $(echo "${DEFINED_GROUPS}" | grep -cw "^${group}"):${group} | \
-            grep -v "^1:"; \
-    done
-    )
+# Check for groups defined multiple times:
+# - remove empty spaces from the beginning of the line
+# - replace spaces with ':' for easily looping on the result when printing
+# - lines starting with '1:' are excluded
+MULTIPLE_DEFINED_GROUPS=$(echo "${DEFINED_GROUPS}" | uniq -c | \
+    sed 's/^ *//' | tr ' ' ':' | grep -v "^1:")
 
 # Remove the group description from each line containing a group definition.
 # Examples of input lines:
