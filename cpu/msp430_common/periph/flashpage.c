@@ -64,7 +64,7 @@ void flashpage_write_raw(void *target_addr, const void *data, size_t len)
             ((unsigned)data % FLASHPAGE_RAW_ALIGNMENT)));
 
     /* ensure the length doesn't exceed the actual flash size */
-    assert((unsigned)(target_addr + len) <=
+    assert(((unsigned)target_addr + len) <=
            (CPU_FLASH_BASE + (FLASHPAGE_SIZE * FLASHPAGE_NUMOF)));
 
     uint8_t *page_addr = target_addr;
@@ -99,7 +99,4 @@ void flashpage_write(int page, const void *data)
     if (data != NULL) {
         flashpage_write_raw(page_addr, data, FLASHPAGE_SIZE);
     }
-
-    /* lock flash and re-enable interrupts */
-    _lock(state);
 }
