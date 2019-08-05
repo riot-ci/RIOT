@@ -196,7 +196,7 @@ static uint32_t getaddr(const char *str)
 
 static int cmd_write_raw(int argc, char **argv)
 {
-#ifdef CPU_MSP430FXYZ
+#if (__SIZEOF_POINTER__ == 2)
     uint16_t addr;
 #else
     uint32_t addr;
@@ -207,7 +207,7 @@ static int cmd_write_raw(int argc, char **argv)
         return 1;
     }
 
-#ifdef CPU_MSP430FXYZ
+#if (__SIZEOF_POINTER__ == 2)
     addr = (uint16_t) getaddr(argv[1]);
 #else
     addr = getaddr(argv[1]);
@@ -216,7 +216,7 @@ static int cmd_write_raw(int argc, char **argv)
     memcpy(raw_buf, argv[2], strlen(argv[2]));
 
     flashpage_write_raw((void*)addr, raw_buf, strlen(raw_buf));
-#ifdef CPU_MSP430FXYZ
+#if (__SIZEOF_POINTER__ == 2)
     printf("wrote local data to flash address %#" PRIx16 " of len %u\n",
            addr, strlen(raw_buf));
 #else
