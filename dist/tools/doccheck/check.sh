@@ -47,7 +47,6 @@ ALL_RAW_INGROUP=$(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | exclude_filter)
 DEFINED_GROUPS=$(echo "${ALL_RAW_DEFGROUP}" | \
                     grep -oE '@defgroup[ ]+[^ ]+' | \
                     grep -oE '[^ ]+$' | \
-                    sed -e 's/\t.*$//' | \
                     sort)
 DEFINED_GROUPS_UNIQUE=$(echo "${DEFINED_GROUPS}" | sort -u)
 
