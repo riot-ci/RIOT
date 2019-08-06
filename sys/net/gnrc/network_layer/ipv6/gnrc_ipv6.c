@@ -351,6 +351,20 @@ static int _fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *ipv6)
             /* Otherwise leave unspecified */
         }
     }
+    else {
+        bool invalid_src;
+        int idx;
+
+        gnrc_netif_acquire(netif);
+        invalid_src = ((idx = gnrc_netif_ipv6_addr_idx(netif, &hdr->src)) == -1) ||
+            (gnrc_netif_ipv6_addr_get_state(netif, idx) != GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID);
+        gnrc_netif_release(netif);
+        if (invalid_src) {
+            DEBUG("ipv6: preset packet source address %s is invalid\n",
+                  ipv6_addr_to_str(addr_str, &hdr->src, sizeof(addr_str)));
+            return -EADDRNOTAVAIL;
+        }
+    }
 
     DEBUG("ipv6: write protect up to payload to calculate checksum\n");
     payload = ipv6;
