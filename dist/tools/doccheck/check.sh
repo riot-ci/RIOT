@@ -83,7 +83,7 @@ then
     echo -e "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times:"
     for group in ${MULTIPLE_DEFINED_GROUPS};
     do
-        echo -e "\n${CWARN}${group}${CRESET} defined multiple times in:";
+        echo -e "\n${CWARN}${group}${CRESET} defined in:";
         echo "${ALL_RAW_DEFGROUP}" | \
             awk -F@ '{ split($2, end, " "); printf("%s%s\n",$1,end[2]) }' |
             grep "\<${group}\>$" | sort -u |
