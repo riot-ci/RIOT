@@ -58,7 +58,7 @@ int irq_event_add(irq_event_t * irq)
     if (irq->pending) {
         DEBUG("[%s] interrupt event %p is already pending\n",
               __func__, (void *)irq);
-        return -EINVAL;
+        return -EALREADY;
     }
 
     /* disable interrupts */
