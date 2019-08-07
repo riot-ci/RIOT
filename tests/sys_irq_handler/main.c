@@ -29,15 +29,16 @@
  * @}
  */
 
+#include <errno.h>
 #include <stdio.h>
+#include <stdatomic.h>
 
 #include "irq_handler.h"
 #include "thread.h"
 #include "xtimer.h"
 
 static char some_stack[THREAD_STACKSIZE_MAIN];
-static volatile int i = 0;
-static volatile int k = 10;
+static atomic_int i = 0;
 
 /* preallocated and initialized interrupt event objects */
 static irq_event_t _int1_event = IRQ_EVENT_INIT;
@@ -49,7 +50,7 @@ void _int1_service (void *arg)
     (void)arg;
     puts("int1 triggered");
     /* registers just the interrupt event and returns */
-    if (irq_event_add(&_int1_event) == -1) {
+    if (irq_event_add(&_int1_event) == -EALREADY) {
         puts("int1 is already pending");
     }
 }
@@ -67,7 +68,7 @@ void _int2_service (void *arg)
     (void)arg;
     puts("int2 triggered");
     /* registers just the interrupt event and returns */
-    if (irq_event_add(&_int2_event) == -1) {
+    if (irq_event_add(&_int2_event) == -EALREADY) {
         puts("int2 is already pending");
     }
 }
@@ -94,6 +95,8 @@ void *some_thread(void *arg)
 
 int main(void)
 {
+    int k = 10;
+
     _int1_event.isr = _int1_handler;
     _int1_event.ctx = (void*)sched_active_thread;
 
