@@ -240,8 +240,8 @@ static inline void irq_event_init(irq_event_t *irq)
  *
  * @param[in]   irq     Preallocated interrupt event
  *
- * @retval 0        on success
- * @retval -EINVAL  if the given interrupt event is already pending
+ * @retval 0            on success
+ * @retval -EALREADY    if the given interrupt event is already pending
  */
 int irq_event_add(irq_event_t *irq);
 
