@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Representation of the virtual reassembly buffer
+ * @brief   Representation of the virtual reassembly buffer entry
  */
 typedef struct {
     gnrc_sixlowpan_rbuf_base_t super;   /**< base type */
