@@ -372,8 +372,8 @@ static int _fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *ipv6)
                  (icmpv6_hdr->type != ICMPV6_NBR_SOL))) {
                 DEBUG("ipv6: preset packet source address %s is invalid\n",
                       ipv6_addr_to_str(addr_str, &hdr->src, sizeof(addr_str)));
+                return -EADDRNOTAVAIL;
             }
-            return -EADDRNOTAVAIL;
         }
     }
 
