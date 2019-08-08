@@ -56,7 +56,7 @@ memory. In addition, this SoC features the ARM TrustZone technology.
 |        | USB       | no        | |
 |        | RTT       | yes       | |
 |        | RTC       | yes      |  |
-|        | RNG       | no        |  |
+|        | RNG       | yes        |  |
 |        | Timer     | yes           | |
 |        | ADC       | yes         | |
 
