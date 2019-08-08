@@ -31,14 +31,13 @@
 
 #include <errno.h>
 #include <stdio.h>
-#include <stdatomic.h>
 
 #include "irq_handler.h"
 #include "thread.h"
 #include "xtimer.h"
 
 static char some_stack[THREAD_STACKSIZE_MAIN];
-static atomic_int i = 0;
+static int i = 0;
 
 /* preallocated and initialized interrupt event objects */
 static irq_event_t _int1_event = IRQ_EVENT_INIT;
