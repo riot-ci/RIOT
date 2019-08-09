@@ -138,7 +138,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Amount of microseconds to wait at minimum after a send operation
+ * @brief   Minimum wait time in microseconds after a send operation
  *
  * @experimental
  *
