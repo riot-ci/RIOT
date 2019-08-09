@@ -10,6 +10,8 @@
  * @defgroup    nhdp NHDP
  * @ingroup     net
  * @brief       The MANET Neighborhood Discovery Protocol (RFC 6130)
+ * @deprecated  Unmaintained for 5 years and uncertain if it still works.
+ *              Will be removed after the 2020.04 release.
  * @{
  *
  * @file
