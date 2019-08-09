@@ -7,10 +7,6 @@ DIRS += periph
 DIRS += freertos
 DIRS += vendor
 
-ifneq (, $(filter esp_can, $(USEMODULE)))
-    DIRS += esp-can
-endif
-
 ifneq (, $(filter esp_eth, $(USEMODULE)))
     DIRS += esp-eth
 endif
