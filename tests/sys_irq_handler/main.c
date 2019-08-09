@@ -44,7 +44,7 @@ static irq_event_t _int1_event = IRQ_EVENT_INIT;
 static irq_event_t _int2_event = IRQ_EVENT_INIT;
 
 /* interrupt service routine for a simulated interrupt from source 1 */
-void _int1_service (void *arg)
+static void _int1_service (void *arg)
 {
     (void)arg;
     puts("int1 triggered");
@@ -55,14 +55,14 @@ void _int1_service (void *arg)
 }
 
 /* interrupt handler for interrupts from source 1 */
-void _int1_handler(void *ctx)
+static void _int1_handler(void *ctx)
 {
     (void)ctx;
     puts("int1 handled");
 }
 
 /* interrupt service routine for a simulated interrupt from source 2 */
-void _int2_service (void *arg)
+static void _int2_service (void *arg)
 {
     (void)arg;
     puts("int2 triggered");
@@ -73,13 +73,13 @@ void _int2_service (void *arg)
 }
 
 /* interrupt handler for interrupts from source 2 */
-void _int2_handler(void *ctx)
+static void _int2_handler(void *ctx)
 {
     (void)ctx;
     puts("int2 handled");
 }
 
-void *some_thread(void *arg)
+static void *some_thread(void *arg)
 {
     (void)arg;
 
