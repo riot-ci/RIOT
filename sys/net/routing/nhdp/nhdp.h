@@ -115,7 +115,7 @@ enum nhdp_address_type_t {
  * and registering interfaces.
  */
 void nhdp_init(void) __attribute__
-        ((deprecate("The nhdp module will be removed after 2020.04")));
+        ((deprecated("The nhdp module will be removed after 2020.04")));
 
 /**
  * @brief                   Start NHDP's operational thread
