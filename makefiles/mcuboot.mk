@@ -1,7 +1,6 @@
 ifdef MCUBOOT_SLOT0_SIZE
 
 IMGTOOL ?= $(RIOTTOOLS)/mcuboot/imgtool.py
-override IMGTOOL := $(abspath $(IMGTOOL))
 
 BINFILE ?= $(BINDIR)/$(APPLICATION).bin
 SIGN_BINFILE = $(BINDIR)/signed-$(APPLICATION).bin
@@ -19,7 +18,7 @@ mcuboot-create-key: $(MCUBOOT_KEYFILE)
 ifeq ($(BINDIR)/key.pem,$(MCUBOOT_KEYFILE))
 $(MCUBOOT_KEYFILE):
 	$(Q)mkdir -p $(BINDIR)
-	$(Q)$(IMGTOOL) keygen -k $@ -t rsa-2048
+	$(Q)$(IMGTOOL) keygen -k $@ -t ecdsa-p256
 endif
 
 mcuboot: ROM_OFFSET=$$(($(MCUBOOT_SLOT0_SIZE) + $(IMAGE_HDR_SIZE)))
