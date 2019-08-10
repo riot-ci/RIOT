@@ -29,6 +29,11 @@
 static int read_adc(const void *dev, phydat_t *res)
 {
     const saul_adc_params_t *params = *((const saul_adc_params_t **)dev);
+
+    /* SAUL supports 16 bit only */
+    assert((params->res != ADC_RES_18BIT) && (params->res != ADC_RES_20BIT) &&
+           (params->res != ADC_RES_22BIT) && (params->res != ADC_RES_24BIT))
+
     res->val[0] = adc_sample(params->line, params->res);
     res->val[1] = 0;
     res->val[2] = 0;
