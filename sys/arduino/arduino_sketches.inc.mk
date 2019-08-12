@@ -22,7 +22,7 @@ $(SKETCH_MODULE_DIR)/Makefile: $(SKETCH_MODULE_DIR)/$(SKETCH_CPP)
 	$(Q)echo 'SRCXX = $(SKETCH_CPP)'               > $@
 	$(Q)echo 'include $$(RIOTBASE)/Makefile.base' >> $@
 $(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(SKETCHES_ALL)
-	@mkdir -p $@
+	@mkdir -p $(@D)
 	$(Q)cat $(SKETCHES_ALL) > $@
 
 # Make everything rebuild if current makefile changes
