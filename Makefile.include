@@ -604,9 +604,7 @@ test/available:
 # this target only makes sense if an ELFFILE is actually created, thus guard by
 # RIOTNOLINK="".
 ifeq (,$(RIOTNOLINK))
-# Use `FLASHFILE` as order-only target to handle files in 'TEST_EXTRA_FILES'
-# created during compilation that do not have an explicit target
-test-input-hash: $(TESTS) $(ELFFILE) $(TEST_EXTRA_FILES) | $(FLASHFILE)
+test-input-hash: $(TESTS) $(ELFFILE) $(TEST_EXTRA_FILES)
 	sha1sum $^ > $(BINDIR)/test-input-hash.sha1
 else
 test-input-hash:
