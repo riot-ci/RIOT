@@ -33,11 +33,34 @@
 #include <stdio.h>
 
 #include "irq_handler.h"
+#include "mutex.h"
 #include "thread.h"
 #include "xtimer.h"
 
+#define TEST_TIME                   (100 * US_PER_MS)
+#define TEST_REPETITIONS            (10)
+
+static void _int1_service (void *arg);
+static void _int2_service (void *arg);
+
 static char some_stack[THREAD_STACKSIZE_MAIN];
 static int i = 0;
+static int n_int1_handled = 0;
+static int n_int2_handled = 0;
+static int n_already_pending = 0;
+static mutex_t mutex = MUTEX_INIT;
+xtimer_t timer1a = {
+    .callback = _int1_service,
+    .arg = &timer1a
+};
+xtimer_t timer1b = {
+    .callback = _int1_service,
+    .arg = &timer1b
+};
+xtimer_t timer2 = {
+    .callback = _int2_service,
+    .arg = &timer2
+};
 
 /* preallocated and initialized interrupt event objects */
 static irq_event_t _int1_event = IRQ_EVENT_INIT;
@@ -51,14 +74,19 @@ static void _int1_service (void *arg)
     /* registers just the interrupt event and returns */
     if (irq_event_add(&_int1_event) == -EALREADY) {
         puts("int1 is already pending");
+        n_already_pending++;
     }
 }
 
 /* interrupt handler for interrupts from source 1 */
 static void _int1_handler(void *ctx)
 {
-    (void)ctx;
+    xtimer_t *timer = ctx;
+    xtimer_set(timer, TEST_TIME);
     puts("int1 handled");
+    mutex_lock(&mutex);
+    n_int1_handled++;
+    mutex_unlock(&mutex);
 }
 
 /* interrupt service routine for a simulated interrupt from source 2 */
@@ -69,14 +97,19 @@ static void _int2_service (void *arg)
     /* registers just the interrupt event and returns */
     if (irq_event_add(&_int2_event) == -EALREADY) {
         puts("int2 is already pending");
+        n_already_pending++;
     }
 }
 
 /* interrupt handler for interrupts from source 2 */
 static void _int2_handler(void *ctx)
 {
-    (void)ctx;
+    xtimer_t *timer = ctx;
+    xtimer_set(timer, TEST_TIME);
     puts("int2 handled");
+    mutex_lock(&mutex);
+    n_int2_handled++;
+    mutex_unlock(&mutex);
 }
 
 static void *some_thread(void *arg)
@@ -86,7 +119,9 @@ static void *some_thread(void *arg)
     puts("some_thread is starting");
 
     while (1) {
+        mutex_lock(&mutex);
         i++;
+        mutex_unlock(&mutex);
         xtimer_usleep(US_PER_MS);
     }
     return NULL;
@@ -94,13 +129,11 @@ static void *some_thread(void *arg)
 
 int main(void)
 {
-    int k = 10;
-
     _int1_event.isr = _int1_handler;
-    _int1_event.ctx = (void*)sched_active_thread;
+    _int1_event.ctx = &timer1a;
 
     _int2_event.isr = _int2_handler;
-    _int2_event.ctx = (void*)sched_active_thread;
+    _int2_event.ctx = &timer2;
 
     puts("START");
 
@@ -114,25 +147,24 @@ int main(void)
 
     i = 0;
 
-    while (k--) {
-        /*
-         * Simulate two interrupt sources where one interrupt source generates
-         * two interrupts.
-         */
-        _int1_service(0);
-        _int2_service(0);
-        _int1_service(0);
+    xtimer_set(&timer1a, TEST_TIME);
+    xtimer_set(&timer1b, TEST_TIME);
+    xtimer_set(&timer2, TEST_TIME);
 
-        /*
-         * Suspend the main thread, interrupts should be handled. After handling
-         * the interrupts, some thread should be executed and should increment
-         * i.
-         */
-        xtimer_usleep(500 * US_PER_MS);
-    }
-    if (i > 0) {
+    xtimer_usleep(TEST_TIME * TEST_REPETITIONS + TEST_TIME/2);
+
+    xtimer_remove(&timer1a);
+    xtimer_remove(&timer1b);
+    xtimer_remove(&timer2);
+
+    mutex_lock(&mutex);
+    if ((i > 0) &&
+        (n_int1_handled == TEST_REPETITIONS) &&
+        (n_int2_handled == TEST_REPETITIONS) &&
+        (n_already_pending == 1)) {
         puts("[SUCCESS]");
     }
+    mutex_unlock(&mutex);
 
     return 0;
 }
