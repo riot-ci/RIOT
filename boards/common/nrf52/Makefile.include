@@ -28,6 +28,8 @@ ifeq (jlink,$(PROGRAMMER))
     # It must be taken into account for the test input hash and
     # be sent to the separated testing boards
     TEST_EXTRA_FILES += $(BINDIR)/softdevice.hex
+    # Files in TEST_EXTRA_FILES need to have an explicit target
+    $(BINDIR)/softdevice.hex: | $(ELFFILE)
   endif
   include $(RIOTMAKE)/tools/jlink.inc.mk
 else ifeq (openocd,$(PROGRAMMER))
