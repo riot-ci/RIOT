@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 
+#include "kernel_defines.h"
 #include "fix16.h"
 #include "test_utils/interactive_sync.h"
 
