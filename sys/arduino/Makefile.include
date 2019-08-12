@@ -9,7 +9,7 @@ include $(RIOTBASE)/sys/arduino/arduino_sketches.inc.mk
 # Depends on module
 USEMODULE += $(SKETCH_MODULE)
 DIRS      += $(SKETCH_MODULE_DIR)
-BUILDDEPS += $(SKETCH_MODULE_DIR)/Makefile
+BUILDDEPS += $(SKETCH_GENERATED_FILES)
 
 # include the Arduino headers
 INCLUDES += -I$(RIOTBASE)/sys/arduino/include

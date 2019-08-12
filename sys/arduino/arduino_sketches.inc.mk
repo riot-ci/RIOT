@@ -14,16 +14,16 @@ endif
 SNIPDIR         = $(RIOTBASE)/sys/arduino
 SKETCHES_ALL    = $(SNIPDIR)/pre.snip $(SKETCHES) $(SNIPDIR)/post.snip
 SKETCH_CPP     ?= arduino_sketches.cpp
+SKETCH_GENERATED_FILES = $(SKETCH_MODULE_DIR)/Makefile $(SKETCH_MODULE_DIR)/$(SKETCH_CPP)
 
 # Building the module files
 #   Do not use $^ in receipes as Makefile is also a prerequisite
 $(SKETCH_MODULE_DIR)/Makefile: $(SKETCH_MODULE_DIR)/$(SKETCH_CPP)
 	$(Q)echo 'SRCXX = $(SKETCH_CPP)'               > $@
 	$(Q)echo 'include $$(RIOTBASE)/Makefile.base' >> $@
-$(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(SKETCHES_ALL) | $(SKETCH_MODULE_DIR)
-	$(Q)cat $(SKETCHES_ALL) > $@
-$(SKETCH_MODULE_DIR):
+$(SKETCH_MODULE_DIR)/$(SKETCH_CPP): $(SKETCHES_ALL)
 	@mkdir -p $@
+	$(Q)cat $(SKETCHES_ALL) > $@
 
 # Make everything rebuild if current makefile changes
 _ARDUINO_SKETCHES_MAKEFILE := $(lastword $(MAKEFILE_LIST))
