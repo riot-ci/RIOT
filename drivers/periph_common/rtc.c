@@ -95,16 +95,19 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_year += d.quot;
     t->tm_mon   = d.rem;
 
-    days = month_length(t->tm_mon + 1, t->tm_year + 1900);
+    while (1) {
+        days = month_length(t->tm_mon + 1, t->tm_year + 1900);
 
-    while (t->tm_mday > days) {
+        if (t->tm_mday <= days) {
+            break;
+        }
+
         if (++t->tm_mon > 11) {
             t->tm_mon = 0;
             ++t->tm_year;
         }
 
         t->tm_mday -= days;
-        days = month_length(t->tm_mon + 1, t->tm_year + 1900);
     }
 
 #if RTC_NORMALIZE_COMPAT
