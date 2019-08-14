@@ -73,7 +73,6 @@ static int _yday(int day, int month, int year)
 
 void rtc_tm_normalize(struct tm *t)
 {
-    int days;
     div_t d;
 
     d = div(t->tm_sec, 60);
@@ -93,7 +92,7 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_mon   = d.rem;
 
     while (1) {
-        days = _month_length(t->tm_mon, t->tm_year + 1900);
+        int days = _month_length(t->tm_mon, t->tm_year + 1900);
 
         if (t->tm_mday <= days) {
             break;
