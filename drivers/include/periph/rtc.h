@@ -109,10 +109,12 @@ void rtc_poweroff(void);
  * @brief Normalize the time struct
  *
  * @note  The function modifies the fields of the tm structure as follows:
- *        tm_wday and tm_yday are set to values determined from the contents
- *        of the other fields; if structure members are outside their valid
- *        interval, they will be normalized.
+ *        If structure members are outside their valid interval,
+ *        they will be normalized.
  *        So that, for example, 40 October is changed into 9 November.
+ *
+ *        If RTC_NORMALIZE_COMPAT is 1 `tm_wday` and `tm_yday` are set
+ *        to values determined from the contents of the other fields.
  *
  * @param time        Pointer to the struct to normalize.
  */
