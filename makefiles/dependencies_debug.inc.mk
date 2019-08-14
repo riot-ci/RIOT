@@ -21,9 +21,15 @@
 # And when comparing two revisions, include the revision in the file names
 
 .PHONY: dependency_debug
+# Only generate the dependencies when the board is not disabled
+# This will allow comparing with the output of `info-boards-supported` more easily
 dependency_debug:
+ifneq (,$(filter-out $(BOARD_BLACKLIST),$(filter $(if $(BOARD_WHITELIST),$(BOARD_WHITELIST), %),$(BOARD))))
 	$(call file_save_dependencies_variables,dependencies_info)
 	@:
+else
+	@echo Skipping $(BOARD) is not whitelisted or blacklisted
+endif
 
 DEPENDENCY_DEBUG_OUTPUT_DIR ?= $(CURDIR)
 
