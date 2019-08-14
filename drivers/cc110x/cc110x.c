@@ -176,3 +176,45 @@ int cc110x_set_channel(cc110x_t *dev, uint8_t channel)
     dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_FHSS_CHANGE_CHANNEL);
     return 0;
 }
+
+int cc110x_wakeup(cc110x_t *dev)
+{
+    cc110x_power_on(dev);
+
+    if (cc110x_acquire(dev) != SPI_OK) {
+        return -EIO;
+    }
+
+    /* PA_TABLE is lost on SLEEP, see 10.6 in the CC1101 data sheet */
+    cc110x_burst_write(dev, CC110X_MULTIREG_PATABLE,
+                       dev->params.patable->data, CC110X_PATABLE_LEN);
+
+    cc110x_enter_rx_mode(dev);
+    cc110x_release(dev);
+    return 0;
+}
+
+void cc110x_sleep(cc110x_t *dev)
+{
+    cc110x_acquire(dev);
+    if (dev->state == CC110X_STATE_OFF) {
+        cc110x_release(dev);
+        return;
+    }
+
+    /*
+     * Datasheet page 9 table 4.
+     *
+     * To achieve the lowest power consumption GDO's must
+     * be programmed to 0x2F
+     */
+    cc110x_write(dev, CC110X_REG_IOCFG2, CC110X_GDO_CONSTANT_LOW);
+    cc110x_write(dev, CC110X_REG_IOCFG1, CC110X_GDO_CONSTANT_LOW);
+    cc110x_write(dev, CC110X_REG_IOCFG0, CC110X_GDO_CONSTANT_LOW);
+
+    /* transition to SLEEP only from state IDLE possible */
+    cc110x_cmd(dev, CC110X_STROBE_IDLE);
+    /* go to SLEEP */
+    cc110x_cmd(dev, CC110X_STROBE_OFF);
+    cc110x_release(dev);
+}
