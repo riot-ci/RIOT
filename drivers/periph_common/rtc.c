@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include "periph/rtc.h"
 
 #ifndef RTC_NORMALIZE_COMPAT
@@ -76,18 +77,23 @@ static int _yday(int day, int month, int year)
 void rtc_tm_normalize(struct tm *t)
 {
     int days;
+    div_t d;
 
-    t->tm_min += t->tm_sec / 60;
-    t->tm_sec %= 60;
+    d = div(t->tm_sec, 60);
+    t->tm_min += d.quot;
+    t->tm_sec  = d.rem;
 
-    t->tm_hour += t->tm_min / 60;
-    t->tm_min  %= 60;
+    d = div(t->tm_min, 60);
+    t->tm_hour += d.quot;
+    t->tm_min   = d.rem;
 
-    t->tm_mday += t->tm_hour / 24;
-    t->tm_hour %= 24;
+    d = div(t->tm_hour, 24);
+    t->tm_mday += d.quot;
+    t->tm_hour  = d.rem;
 
-    t->tm_year += t->tm_mon / 12;
-    t->tm_mon  %= 12;
+    d = div(t->tm_mon, 12);
+    t->tm_year += d.quot;
+    t->tm_mon   = d.rem;
 
     days = month_length(t->tm_mon + 1, t->tm_year + 1900);
 
