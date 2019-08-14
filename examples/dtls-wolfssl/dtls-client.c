@@ -39,6 +39,46 @@ static void usage(const char *cmd_name)
     printf("Usage: %s <server-address>\n", cmd_name);
 }
 
+#ifdef MODULE_WOLFSSL_PSK
+/* identity is OpenSSL testing default for openssl s_client, keep same */
+static const char* kIdentityStr = "Client_identity";
+
+static inline unsigned int my_psk_client_cb(WOLFSSL* ssl, const char* hint,
+        char* identity, unsigned int id_max_len, unsigned char* key,
+        unsigned int key_max_len)
+{
+    (void)ssl;
+    (void)hint;
+    (void)key_max_len;
+
+    /* see internal.h MAX_PSK_ID_LEN for PSK identity limit */
+    strncpy(identity, kIdentityStr, id_max_len);
+
+    if (wolfSSL_GetVersion(ssl) < WOLFSSL_TLSV1_3) {
+        /* test key in hex is 0x1a2b3c4d , in decimal 439,041,101 , we're using
+           unsigned binary */
+        key[0] = 0x1a;
+        key[1] = 0x2b;
+        key[2] = 0x3c;
+        key[3] = 0x4d;
+
+        return 4;   /* length of key in octets or 0 for error */
+    }
+    else {
+        int i;
+        int b = 0x01;
+
+        for (i = 0; i < 32; i++, b += 0x22) {
+            if (b >= 0x100)
+                b = 0x01;
+            key[i] = b;
+        }
+
+        return 32;   /* length of key in octets or 0 for error */
+    }
+}
+#endif
+
 #define APP_DTLS_BUF_SIZE 64
 int dtls_client(int argc, char **argv)
 {
@@ -85,6 +125,7 @@ int dtls_client(int argc, char **argv)
         return -1;
     }
 
+#ifdef MODULE_WOLFCRYPT_ECC
     /* Disable certificate validation from the client side */
     wolfSSL_CTX_set_verify(sk->ctx, SSL_VERIFY_NONE, 0);
 
@@ -95,6 +136,11 @@ int dtls_client(int argc, char **argv)
         printf("Error loading cert buffer\n");
         return -1;
     }
+#endif /* MODULE_WOLFCRYPT_ECC */
+
+#ifdef MODULE_WOLFSSL_PSK
+    wolfSSL_CTX_set_psk_client_callback(sk->ctx, my_psk_client_cb);
+#endif
 
     if (sock_dtls_session_create(sk) < 0)
         return -1;

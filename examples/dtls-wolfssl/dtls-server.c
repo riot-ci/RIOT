@@ -41,7 +41,47 @@ static sock_tls_t *sk = &skv;
 
 static const char Test_dtls_string[] = "DTLS OK!";
 
+#ifdef MODULE_WOLFSSL_PSK
+/* identity is OpenSSL testing default for openssl s_client, keep same */
+static const char* kIdentityStr = "Client_identity";
+
+static inline unsigned int my_psk_server_cb(WOLFSSL* ssl, const char* identity,
+        unsigned char* key, unsigned int key_max_len)
+{
+    (void)ssl;
+    (void)key_max_len;
+
+    /* see internal.h MAX_PSK_ID_LEN for PSK identity limit */
+    if (strncmp(identity, kIdentityStr, strlen(kIdentityStr)) != 0)
+        return 0;
+
+    if (wolfSSL_GetVersion(ssl) < WOLFSSL_TLSV1_3) {
+        /* test key in hex is 0x1a2b3c4d , in decimal 439,041,101 , we're using
+           unsigned binary */
+        key[0] = 0x1a;
+        key[1] = 0x2b;
+        key[2] = 0x3c;
+        key[3] = 0x4d;
+
+        return 4;   /* length of key in octets or 0 for error */
+    }
+    else {
+        int i;
+        int b = 0x01;
+
+        for (i = 0; i < 32; i++, b += 0x22) {
+            if (b >= 0x100)
+                b = 0x01;
+            key[i] = b;
+        }
+
+        return 32;   /* length of key in octets or 0 for error */
+    }
+}
+#endif /* MODULE_WOLFSSL_PSK */
+
 #define APP_DTLS_BUF_SIZE 64
+
 int dtls_server(int argc, char **argv)
 {
     char buf[APP_DTLS_BUF_SIZE];
@@ -57,6 +97,7 @@ int dtls_server(int argc, char **argv)
         return -1;
     }
 
+#ifdef MODULE_WOLFCRYPT_ECC
     /* Load certificate file for the DTLS server */
     if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
                 server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
@@ -72,6 +113,12 @@ int dtls_server(int argc, char **argv)
         printf("Failed to load private key from memory.\r\n");
         return -1;
     }
+#endif /* MODULE_WOLFCRYPT_ECC */
+
+#ifdef MODULE_WOLFSSL_PSK
+    wolfSSL_CTX_set_psk_server_callback(sk->ctx, my_psk_server_cb);
+    wolfSSL_CTX_use_psk_identity_hint(sk->ctx, "hint");
+#endif /* MODULE_WOLFSSL_PSK */
 
     /* Create the DTLS session */
     ret = sock_dtls_session_create(sk);
