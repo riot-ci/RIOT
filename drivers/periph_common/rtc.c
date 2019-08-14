@@ -18,6 +18,7 @@
  * @}
  */
 
+#include <stdint.h>
 #include "periph/rtc.h"
 
 #ifndef RTC_NORMALIZE_COMPAT
@@ -56,17 +57,19 @@ static int _wday(int day, int month, int year)
 
 static int _yday(int day, int month, int year)
 {
-    static const uint16_t d[] = {31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-
-    if (month == 0) {
-        return day;
-    }
+    static const uint8_t d[] = { 0,  31,  59, 90, 120, 151,
+                               181, 212, 243, 17,  48,  78};
 
     if (month > 1) {
         day += is_leap_year(year);
     }
 
-    return d[month - 1] + day;
+    /* at this point we can be sure that month <= 31 */
+    if (month > 8) {
+        day |= 0x100;
+    }
+
+    return d[month] + day - 1;
 }
 #endif /* RTC_NORMALIZE_COMPAT */
 
@@ -99,7 +102,7 @@ void rtc_tm_normalize(struct tm *t)
     }
 
 #if RTC_NORMALIZE_COMPAT
-    t->tm_yday = _yday(t->tm_mday, t->tm_mon, t->tm_year + 1900) - 1;
+    t->tm_yday = _yday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
     t->tm_wday = _wday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
 #endif
 }
