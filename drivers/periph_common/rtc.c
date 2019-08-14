@@ -23,12 +23,10 @@
 #include "periph/rtc.h"
 
 #ifndef RTC_NORMALIZE_COMPAT
-#define RTC_NORMALIZE_COMPAT (0)
+#define RTC_NORMALIZE_COMPAT (1)
 #endif
 
-/* avr_time provides these functions already. */
-#ifndef ATMEGA_INCOMPATIBLE_TIME_H
-static int is_leap_year(int year)
+static int _is_leap_year(int year)
 {
     if (year & 0x3) {
         return 0;
@@ -37,15 +35,14 @@ static int is_leap_year(int year)
     return !!(year % 25) || !(year & 15);
 }
 
-static int month_length(int month, int year)
+static int _month_length(int month, int year)
 {
-    if (month == 2) {
-        return 28 + is_leap_year(year);
+    if (month == 1) {
+        return 28 + _is_leap_year(year);
     }
 
-    return 31 - (month - 1) % 7 % 2;
+    return 31 - ((month % 7) & 1);
 }
-#endif /* ATMEGA_INCOMPATIBLE_TIME_H */
 
 #if RTC_NORMALIZE_COMPAT
 static int _wday(int day, int month, int year)
@@ -62,10 +59,10 @@ static int _yday(int day, int month, int year)
                                181, 212, 243, 17,  48,  78};
 
     if (month > 1) {
-        day += is_leap_year(year);
+        day += _is_leap_year(year);
     }
 
-    /* at this point we can be sure that month <= 31 */
+    /* at this point we can be sure that day <= 31 */
     if (month > 8) {
         day |= 0x100;
     }
@@ -96,7 +93,7 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_mon   = d.rem;
 
     while (1) {
-        days = month_length(t->tm_mon + 1, t->tm_year + 1900);
+        days = _month_length(t->tm_mon, t->tm_year + 1900);
 
         if (t->tm_mday <= days) {
             break;
