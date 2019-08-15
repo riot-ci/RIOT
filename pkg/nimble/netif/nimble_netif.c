@@ -197,10 +197,12 @@ static inline int _netdev_init(netdev_t *dev)
     _nimble_netif = dev->context;
 
     /* get our own address from the controller */
-    int res = ble_hs_id_copy_addr(nimble_riot_own_addr_type,
-                                  _nimble_netif->l2addr, NULL);
+    uint8_t tmp[6];
+    int res = ble_hs_id_copy_addr(nimble_riot_own_addr_type, tmp, NULL);
     assert(res == 0);
     (void)res;
+
+    bluetil_addr_swapped_cp(tmp, _nimble_netif->l2addr);
     return 0;
 }
 
@@ -275,7 +277,6 @@ static const netdev_driver_t _nimble_netdev_driver = {
 static netdev_t _nimble_netdev_dummy = {
     .driver = &_nimble_netdev_driver,
 };
-
 
 static void _on_data(nimble_netif_conn_t *conn, struct ble_l2cap_event *event)
 {
@@ -410,7 +411,7 @@ static void _on_gap_connected(nimble_netif_conn_t *conn, uint16_t conn_handle)
     (void)res;
 
     conn->gaphandle = conn_handle;
-    memcpy(conn->addr, desc.peer_id_addr.val, BLE_ADDR_LEN);
+    bluetil_addr_swapped_cp(desc.peer_id_addr.val, conn->addr);
 }
 
 static int _on_gap_master_evt(struct ble_gap_event *event, void *arg)
