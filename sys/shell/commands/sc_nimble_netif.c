@@ -18,25 +18,22 @@
  * @}
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 
-#include "clist.h"
-#include "mutex.h"
 #include "xtimer.h"
 #include "nimble_riot.h"
+#include "nimble_scanlist.h"
+#include "nimble_scanner.h"
 #include "nimble_netif.h"
 #include "nimble_netif_conn.h"
 #include "net/bluetil/ad.h"
 #include "net/bluetil/addr.h"
 
-#include "nimble_scanlist.h"
-#include "nimble_scanner.h"
-
 #define DEFAULT_NODE_NAME           "RIOT-GNRC"
 #define DEFAULT_SCAN_DURATION       (500U)      /* 500ms */
 #define DEFAULT_CONN_TIMEOUT        (500U)      /* 500ms */
 
-#ifndef MODULE_NIMBLE_AUTOCONN
 static void _on_ble_evt(int handle, nimble_netif_event_t event)
 {
     switch (event) {
@@ -64,7 +61,6 @@ static void _on_ble_evt(int handle, nimble_netif_event_t event)
             break;
     }
 }
-#endif
 
 static int _conn_dump(nimble_netif_conn_t *conn, int handle, void *arg)
 {
@@ -120,7 +116,9 @@ static void _cmd_info(void)
     unsigned active = nimble_netif_conn_count(NIMBLE_NETIF_L2CAP_CONNECTED);
 
     uint8_t own_addr[BLE_ADDR_LEN];
-    ble_hs_id_copy_addr(nimble_riot_own_addr_type, own_addr, NULL);
+    uint8_t tmp_addr[BLE_ADDR_LEN];
+    ble_hs_id_copy_addr(nimble_riot_own_addr_type, tmp_addr, NULL);
+    bluetil_addr_swapped_cp(tmp_addr, own_addr);
     printf("Own Address: ");
     bluetil_addr_print(own_addr);
     printf(" -> ");
@@ -296,10 +294,8 @@ void sc_nimble_netif_init(void)
     nimble_scanlist_init();
     nimble_scanner_init(NULL, nimble_scanlist_update);
 
-#ifndef MODULE_NIMBLE_AUTOCONN
     /* register event callback with the netif wrapper */
     nimble_netif_eventcb(_on_ble_evt);
-#endif
 }
 
 int _nimble_netif_handler(int argc, char **argv)
