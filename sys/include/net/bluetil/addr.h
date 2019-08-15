@@ -51,6 +51,8 @@ void bluetil_addr_swapped_cp(const uint8_t *src, uint8_t *dst);
 /**
  * @brief   Convert the given BLE address to a human readable string
  *
+ * @note    The address is expected to be in network byte order
+ *
  * @param[out] out      '\0' terminated address string, *must* be able to hold
  *                      BLUETIL_ADDR_STRLEN bytes
  * @param[in] addr      address buffer, *must* hold BLE_ADDR_LEN bytes
@@ -59,6 +61,8 @@ void bluetil_addr_sprint(char *out, const uint8_t *addr);
 
 /**
  * @brief   Print the given BLE address to STDOUT
+ *
+ * @note    The address is expected to be in network byte order
  *
  * @param[in] addr      address to print, is expected to hold BLE_ADDR_LEN bytes
  */
@@ -81,6 +85,8 @@ uint8_t *bluetil_addr_from_str(uint8_t *addr, const char *addr_str);
  * @brief   Get a string representation of the given BLE addresses IID-based
  *          link local address
  *
+ * @note    The address is expected to be in network byte order
+ *
  * @param[out] out      '\0' terminated string, *must* be able to hold
  *                      BLUETIL_IPV6_IID_STRLEN bytes
  * @param[in]  addr     address to convert, , *must* hold BLE_ADDR_LEN bytes
@@ -90,6 +96,8 @@ void bluetil_addr_ipv6_l2ll_sprint(char *out, const uint8_t *addr);
 /**
  * @brief   Dump the given BLE addresses IPv6 IID-based link local address to
  *          STDIO
+ *
+ * @note    The address is expected to be in network byte order
  *
  * @param[in] addr      generate IID for this address
  */
