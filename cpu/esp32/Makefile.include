@@ -35,6 +35,9 @@ include $(RIOTCPU)/esp_common/Makefile.include
 # regular Makefile
 
 TARGET_ARCH ?= xtensa-esp32-elf
+ifneq (,$(filter esp_wifi_enterprise,$(USEMODULE)))
+    USEMODULE += esp_wifi
+endif
 
 PSEUDOMODULES += esp_eth_hw
 PSEUDOMODULES += esp_gdbstub
@@ -44,6 +47,7 @@ PSEUDOMODULES += esp_idf_newlib
 PSEUDOMODULES += esp_rtc_timer
 PSEUDOMODULES += esp_rtc_timer_32k
 PSEUDOMODULES += esp_spi_ram
+PSEUDOMODULES += esp_wifi_enterprise
 
 USEMODULE += esp_idf_driver
 USEMODULE += esp_idf_esp32
