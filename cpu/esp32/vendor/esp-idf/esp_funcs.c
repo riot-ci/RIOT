@@ -136,6 +136,10 @@ void IRAM_ATTR esp_log_write(esp_log_level_t level,
     va_end(arglist);
 
     if (ret > 0) {
+        /* remove double \n produced by some esp-idf binary libs */
+        if (ret > 1 && _printf_buf[ret - 1] == '\n' && _printf_buf[ret - 2] == '\n') {
+            _printf_buf[ret - 1] = 0;
+        }
         printf ("%s", _printf_buf);
     }
 
