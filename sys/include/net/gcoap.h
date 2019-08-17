@@ -196,7 +196,7 @@
  * requests and responses. This section outlines how to write a message for
  * each situation.
  *
- * ### CoAP server GET handling
+ * ### CoAP server GET handling ###
  *
  * The server must slice the full response body into smaller payloads, and
  * identify the slice with a Block2 option. This implementation toggles the
@@ -222,7 +222,7 @@
  * - Finally, use coap_block2_finish() to finalize the block option with the
  *   proper value for the _more_ parameter.
  *
- * ### CoAP server PUT/POST handling
+ * ### CoAP server PUT/POST handling ###
  *
  * The server must ack each blockwise portion of the response body received
  * from the client by writing a Block1 option in the response. See the
@@ -239,7 +239,7 @@
  * - Use coap_opt_finish() to determine the length of the PDU. If appropriate,
  *   use the COAP_OPT_FINISH_PAYLOAD parameter and then write the payload.
  *
- * ### CoAP client GET request
+ * ### CoAP client GET request ###
  *
  * The client requests a specific blockwise payload from the overall body by
  * writing a Block2 option in the request. See _resp_handler() in the
@@ -263,7 +263,7 @@
  *   request.
  * - Use coap_opt_finish() to determine the length of the PDU.
  *
- * ### CoAP client PUT/POST request
+ * ### CoAP client PUT/POST request ###
  *
  * The client pushes a specific blockwise payload from the overall body to the
  * server by writing a Block1 option in the request. See _do_block_post() in
