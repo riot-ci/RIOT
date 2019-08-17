@@ -54,7 +54,9 @@ static gcoap_listener_t _listener = {
     NULL
 };
 
-/* retain request path to re-request if response includes block */
+/* Retain request path to re-request if response includes block. User must not
+ * start a new request (with a new path) until any blockwise transfer
+ * completes or times out. */
 #define _LAST_REQ_PATH_MAX (32)
 static char _last_req_path[_LAST_REQ_PATH_MAX];
 
