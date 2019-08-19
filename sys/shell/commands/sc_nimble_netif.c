@@ -232,14 +232,17 @@ static void _cmd_connect_addr(ble_addr_t *addr)
 
 static void _cmd_connect_addstr(const char *addr_str)
 {
+    uint8_t tmp[BLE_ADDR_LEN];
     /* RANDOM is the most common type, has no noticeable effect when connecting
        anyhow... */
     ble_addr_t addr = { .type = BLE_ADDR_RANDOM };
 
-    if (bluetil_addr_from_str(addr.val, addr_str) == NULL) {
+    if (bluetil_addr_from_str(tmp, addr_str) == NULL) {
         puts("err: unable to parse address");
         return;
     }
+    /* NimBLE expects address in little endian, so swap */
+    bluetil_addr_swapped_cp(tmp, addr.val);
     _cmd_connect_addr(&addr);
 }
 
