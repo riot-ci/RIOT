@@ -69,7 +69,6 @@
 #include <stdint.h>
 
 #include "net/ble.h"
-#include "net/ipv6.h"
 
 #include "host/ble_hs.h"
 
@@ -87,8 +86,11 @@ extern "C" {
 /**
  * @brief   Default MTU size supported by the NimBLE netif wrapper
  */
+/* NOTE: We do not use the IPV6_MIN_MTU define here, as the iov6.h header pulls
+ *       in some other RIOT headers that clash with NimBLE header (e.g.
+ *       byteorder.h vs. endian.h) */
 #ifndef NIMBLE_NETIF_MTU
-#define NIMBLE_NETIF_MTU            (IPV6_MIN_MTU)
+#define NIMBLE_NETIF_MTU            (1280U)
 #endif
 
 /**
