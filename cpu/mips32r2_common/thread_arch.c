@@ -182,12 +182,8 @@ mem_rw(const void *vaddr)
 extern int _dsp_save(struct dspctx *ctx);
 extern int _dsp_load(struct dspctx *ctx);
 #endif
-/*
- * The nomips16 attribute should not really be needed, it works around a toolchain
- * issue in 2016.05-03.
- */
-void __attribute__((nomips16))
-_mips_handle_exception(struct gpctx *ctx, int exception)
+
+void _mips_handle_exception(struct gpctx *ctx, int exception)
 {
     unsigned int syscall_num = 0;
 #ifdef MIPS_DSP
