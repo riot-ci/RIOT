@@ -42,7 +42,8 @@ typedef struct {
     struct ble_l2cap_chan *coc;     /**< l2cap context as exposed by NimBLE */
     uint16_t gaphandle;             /**< GAP handle exposed by NimBLE */
     uint16_t state;                 /**< the current state of the context */
-    uint8_t addr[BLE_ADDR_LEN];     /**< BLE address of connected peer */
+    uint8_t addr[BLE_ADDR_LEN];     /**< BLE address of connected peer
+                                         (in network byte order) */
 } nimble_netif_conn_t;
 
 /**
@@ -94,7 +95,7 @@ int nimble_netif_conn_get_connecting(void);
 /**
  * @brief   Find the connection to the peer with the given BLE address
  *
- * @param[in] addr          BLE address
+ * @param[in] addr          BLE address, in network byte order
  *
  * @return  handle to the matching connection context
  * @return  NIMBLE_NETIF_CONN_INVALID if no matching connection was found
@@ -139,7 +140,8 @@ unsigned nimble_netif_conn_count(uint16_t filter);
 /**
  * @brief   Allocate an unused context for starting a connection
  *
- * @param[in] addr          the BLE address of the peer node
+ * @param[in] addr          the BLE address of the peer node, in network byte
+ *                          order
  *
  * @return handle used for the new connection
  */
@@ -190,7 +192,7 @@ static inline int nimble_netif_conn_connecting(void)
  * @brief   Convenience function to check if we are currently connected to a
  *          peer with the given address
  *
- * @param[in] addr          BLE address
+ * @param[in] addr          BLE address, in network byte order
  *
  * @return  != 0 if true
  * @return  0 if false

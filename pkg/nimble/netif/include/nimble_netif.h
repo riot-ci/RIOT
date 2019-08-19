@@ -164,7 +164,8 @@ void nimble_netif_eventcb(nimble_netif_eventcb_t cb);
 /**
  * @brief   Open a BLE connection as BLE master
  *
- * @param[in] addr          address of the advertising BLE slave
+ * @param[in] addr          address of the advertising BLE slave, in the NimBLE
+ *                          addr format (little endian)
  * @param[in] conn_params   connection (timing) parameters
  * @param[in] timeout       connect timeout
  *

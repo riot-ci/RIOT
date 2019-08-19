@@ -529,14 +529,18 @@ int nimble_netif_connect(const ble_addr_t *addr,
     assert(addr);
     assert(_eventcb);
 
+    /* the netif_conn module expects addresses in network byte order */
+    uint8_t addrn[BLE_ADDR_LEN];
+    bluetil_addr_swapped_cp(addr->val, addrn);
+
     /* check that there is no open connection with the given address */
-    if (nimble_netif_conn_connected(addr->val) ||
+    if (nimble_netif_conn_connected(addrn) ||
         nimble_netif_conn_connecting()) {
         return NIMBLE_NETIF_BUSY;
     }
 
     /* get empty connection context */
-    int handle = nimble_netif_conn_start_connection(addr->val);
+    int handle = nimble_netif_conn_start_connection(addrn);
     if (handle == NIMBLE_NETIF_CONN_INVALID) {
         return NIMBLE_NETIF_NOMEM;
     }
