@@ -1,0 +1,7 @@
+ifneq (,$(filter tlsf-malloc,$(USEMODULE)))
+  ifneq (,$(filter newlib,$(USEMODULE)))
+    USEMODULE += tlsf-malloc_newlib
+  else
+    USEMODULE += tlsf-malloc_native
+  endif
+endif
