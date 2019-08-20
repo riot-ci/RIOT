@@ -3,6 +3,29 @@ include ../Makefile.tests_common
 
 DEVICE ?= cc1100 # The MSB-A2 uses the CC1100. New boards use CC1101
 
+BOARD_INSUFFICIENT_MEMORY += arduino-duemilanove
+BOARD_INSUFFICIENT_MEMORY += arduino-leonardo
+BOARD_INSUFFICIENT_MEMORY += arduino-mega2560
+BOARD_INSUFFICIENT_MEMORY += arduino-nano
+BOARD_INSUFFICIENT_MEMORY += arduino-uno
+BOARD_INSUFFICIENT_MEMORY += blackpill
+BOARD_INSUFFICIENT_MEMORY += bluepill
+BOARD_INSUFFICIENT_MEMORY += i-nucleo-lrwan1
+BOARD_INSUFFICIENT_MEMORY += mega-xplained
+BOARD_INSUFFICIENT_MEMORY += nucleo-f031k6
+BOARD_INSUFFICIENT_MEMORY += nucleo-f042k6
+BOARD_INSUFFICIENT_MEMORY += nucleo-f072rb
+BOARD_INSUFFICIENT_MEMORY += nucleo-f302r8
+BOARD_INSUFFICIENT_MEMORY += nucleo-f303k8
+BOARD_INSUFFICIENT_MEMORY += nucleo-f334r8
+BOARD_INSUFFICIENT_MEMORY += nucleo-l031k6
+BOARD_INSUFFICIENT_MEMORY += nucleo-l053r8
+BOARD_INSUFFICIENT_MEMORY += saml10-xpro
+BOARD_INSUFFICIENT_MEMORY += saml11-xpro
+BOARD_INSUFFICIENT_MEMORY += stm32f0discovery
+BOARD_INSUFFICIENT_MEMORY += stm32l0538-disco
+BOARD_INSUFFICIENT_MEMORY += waspmote-pro
+
 # This test will rely on a human interacting with the shell, so we better add
 # the shell and some commands
 USEMODULE += shell
