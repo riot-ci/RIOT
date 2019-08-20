@@ -19,19 +19,6 @@
 #define TESTS_CPP_CTORS_H
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * @brief   The entry point of this test suite.
- */
-void tests_cpp(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
 namespace RIOTTestCPP {
     /**
      * @brief Simple class used for testing constructor calls
