@@ -5,13 +5,15 @@ USEMODULE_GLOBAL := $(USEMODULE)
 USEPKG_GLOBAL := $(USEPKG)
 FEATURES_REQUIRED_GLOBAL := $(FEATURES_REQUIRED)
 FEATURES_OPTIONAL_GLOBAL := $(FEATURES_OPTIONAL)
-DISABLE_MODULE_GLOBAL := $(DISABLE_MODULE_GLOBAL)
+DISABLE_MODULE_GLOBAL := $(DISABLE_MODULE)
+DEFAULT_MODULE_GLOBAL := $(DEFAULT_MODULE)
 
 define board_missing_features
   BOARD             := $(1)
   USEMODULE         := $(USEMODULE_GLOBAL)
   USEPKG            := $(USEPKG_GLOBAL)
   DISABLE_MODULE    := $(DISABLE_MODULE_GLOBAL)
+  DEFAULT_MODULE    := $(DEFAULT_MODULE_GLOBAL)
   FEATURES_REQUIRED := $(FEATURES_REQUIRED_GLOBAL)
   FEATURES_OPTIONAL := $(FEATURES_OPTIONAL_GLOBAL)
 
@@ -25,11 +27,18 @@ define board_missing_features
 
   include $(RIOTBASE)/Makefile.features
 
+  include $(RIOTMAKE)/defaultmodules.inc.mk
+  USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
+
   include $(RIOTBASE)/Makefile.dep
 
   ifneq (,$$(FEATURES_MISSING))
     BOARDS_FEATURES_MISSING += "$(1) $$(FEATURES_MISSING)"
     BOARDS_WITH_MISSING_FEATURES += $(1)
+  endif
+
+  ifneq (,$$(DEPENDENCY_DEBUG))
+    $$(call file_save_dependencies_variables,dependencies_info-boards-supported)
   endif
 endef
 
