@@ -26,6 +26,9 @@ BOARD_INSUFFICIENT_MEMORY += stm32f0discovery
 BOARD_INSUFFICIENT_MEMORY += stm32l0538-disco
 BOARD_INSUFFICIENT_MEMORY += waspmote-pro
 
+# stdlib.h for msp430 does not provide EXIT_FAILURE and EXIT_SUCCESS
+BOARD_BLACKLIST += msb-430 msb-430h telosb wsn430-v1_3b wsn430-v1_4 z1
+
 # This test will rely on a human interacting with the shell, so we better add
 # the shell and some commands
 USEMODULE += shell
