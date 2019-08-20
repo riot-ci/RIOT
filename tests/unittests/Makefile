@@ -91,7 +91,7 @@ endif
 ARM7_BOARDS := avsextrem \
                msba2 \
                #
-DISABLE_TEST_FOR_ARM7 := tests-cpp_%
+DISABLE_TEST_FOR_ARM7 :=
 
 ARM_CORTEX_M_BOARDS := airfy-beacon \
                        arduino-due \
@@ -202,7 +202,7 @@ AVR_BOARDS := arduino-duemilanove \
               arduino-uno \
               waspmote-pro \
               #
-DISABLE_TEST_FOR_AVR := tests-cpp_%
+DISABLE_TEST_FOR_AVR :=
 
 MSP430_BOARDS := chronos \
                  msb-430 \
@@ -212,7 +212,7 @@ MSP430_BOARDS := chronos \
                  wsn430-v1_4 \
                  z1 \
                  #
-DISABLE_TEST_FOR_MSP430 := tests-cpp_%
+DISABLE_TEST_FOR_MSP430 :=
 
 ifneq (, $(filter $(ARM7_BOARDS), $(BOARD)))
   UNIT_TESTS := $(filter-out $(DISABLE_TEST_FOR_ARM7), $(UNIT_TESTS))
@@ -228,12 +228,6 @@ endif
 
 ifneq (, $(filter $(MSP430_BOARDS), $(BOARD)))
   UNIT_TESTS := $(filter-out $(DISABLE_TEST_FOR_MSP430), $(UNIT_TESTS))
-endif
-
-ifneq (,$(filter tests-cpp_%, $(UNIT_TESTS)))
-  # We need to tell the build system to use the C++ compiler for linking
-  export FEATURES_REQUIRED += cpp
-  export CPPMIX := 1
 endif
 
 DISABLE_MODULE += auto_init
