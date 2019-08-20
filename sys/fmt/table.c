@@ -29,7 +29,18 @@
 
 static const char fmt_table_spaces[16] = "                ";
 
-void print_pattern(const char *pat, size_t pat_size, size_t fill_size)
+/**
+ * @brief Prints @p fill_size bytes of the given pattern, repeating the
+ *        pattern if needed
+ * @param pat       Pattern to print
+ * @param pat_size  Size of the pattern in bytes
+ * @param fill_size Number of bytes to print (if bigger than @p pat_size, the
+ *                  pattern will be repeated)
+ *
+ * E.g. `print_pattern("ab", 2, 5);` will print `ababa` to the console.
+ * This can be used to fill table columns with spaces, draw lines, etc.
+ */
+static void print_pattern(const char *pat, size_t pat_size, size_t fill_size)
 {
     while (fill_size > pat_size) {
         print(pat, pat_size);
