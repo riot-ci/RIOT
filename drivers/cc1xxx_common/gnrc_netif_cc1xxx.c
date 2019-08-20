@@ -86,7 +86,7 @@ static gnrc_pktsnip_t *cc1xxx_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     netif_hdr = (gnrc_netif_hdr_t *)hdr->data;
-    netif_hdr->if_pid = netif->pid;
+    gnrc_netif_hdr_set_netif(netif_hdr, netif);
     netif_hdr->rssi = rx_info.rssi;
     netif_hdr->lqi = rx_info.lqi;
     if (l2hdr.dest_addr == CC1XXX_BCAST_ADDR) {
