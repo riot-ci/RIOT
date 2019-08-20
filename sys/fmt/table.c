@@ -27,7 +27,7 @@
 
 #include "fmt.h"
 
-const char fmt_table_spaces[16] = "                ";
+static const char fmt_table_spaces[16] = "                ";
 
 void print_pattern(const char *pat, size_t pat_size, size_t fill_size)
 {

@@ -35,11 +35,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   16 bytes of read-only spaces, useful for @ref print_pattern
- */
-extern const char fmt_table_spaces[16];
-
-/**
  * @brief Prints @p fill_size bytes of the given pattern, repeating the
  *        pattern if needed
  * @param pat       Pattern to print
