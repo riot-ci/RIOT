@@ -8,11 +8,12 @@ BOARD ?= samr21-xpro
 RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-mega2560 arduino-nano \
-                             arduino-uno chronos msb-430 msb-430h \
-                             nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 \
-                             nucleo-f030r8 nucleo-f303k8 nucleo-l053r8 \
-                             stm32f0discovery telosb waspmote-pro wsn430-v1_3b \
-                             wsn430-v1_4 z1
+                             arduino-uno b-l072z-lrwan1 chronos lsn50 msb-430 \
+                             msb-430h nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 \
+                             nucleo-f030r8 nucleo-f302r8 nucleo-f303k8 \
+                             nucleo-f334r8 nucleo-l053r8 nucleo-l073rz ruuvitag \
+                             saml10-xpro saml11-xpro stm32f0discovery thingy52 \
+                             telosb waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
 
 # lower pktbuf size a little
 CFLAGS += -DGNRC_PKTBUF_SIZE=2000
@@ -94,6 +95,8 @@ TEST_EXTRA_FILES += $(SLOT_RIOT_ELFS) $(SUIT_SEC) $(SUIT_PUB)
 ifeq (nrf52dk,$(BOARD))
   USEMODULE += nrfmin
 endif
+
+TEST_ON_CI_WHITELIST += all
 
 include $(RIOTBASE)/Makefile.include
 
