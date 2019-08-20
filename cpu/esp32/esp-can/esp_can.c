@@ -30,7 +30,6 @@
 
 #include "can/device.h"
 #include "driver/periph_ctrl.h"
-#include "freertos/FreeRTOS.h"
 #include "rom/ets_sys.h"
 
 #include "periph/gpio.h"
@@ -1017,9 +1016,9 @@ void auto_init_esp_can(void)
 
 void can_print_config(void)
 {
-    #ifdef MODULE_ESP_CAN
-    ets_printf("\tCAN_DEV(0)\ttxd=%d rxd=%d\n", CAN_TX, CAN_RX);
-    #endif
+#ifdef MODULE_ESP_CAN
+    printf("\tCAN_DEV(0)\ttxd=%d rxd=%d\n", CAN_TX, CAN_RX);
+#endif
 }
 
 /**@}*/
