@@ -22,7 +22,7 @@ def str2int(x):
     if x.startswith("0x"):
         return int(x, 16)
     else:
-        return x
+        return int(x)
 
 
 def sha256_from_file(filepath):
