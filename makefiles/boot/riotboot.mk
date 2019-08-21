@@ -150,7 +150,7 @@ FLASHFILE = $(RIOTBOOT_EXTENDED_BIN)
 
 # include suit targets
 ifneq (,$(filter suit_v4, $(USEMODULE)))
-include $(RIOTMAKE)/suit.v4.inc.mk
+  include $(RIOTMAKE)/suit.v4.inc.mk
 endif
 
 else
