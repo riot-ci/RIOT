@@ -92,8 +92,6 @@ ifeq (nrf52dk,$(BOARD))
   USEMODULE += nrfmin
 endif
 
-TEST_ON_CI_WHITELIST += all
-
 include $(RIOTBASE)/Makefile.include
 
 .PHONY: host-tools
