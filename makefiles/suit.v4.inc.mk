@@ -18,7 +18,7 @@ export CFLAGS += -DSOCK_URLPATH_MAXLEN=128
 
 SUIT_VENDOR ?= "riot-os.org"
 SUIT_SEQNR ?= $(APP_VER)
-SUIT_DEVICE_ID ?= $(BOARD)
+SUIT_CLASS ?= $(BOARD)
 
 #
 # SUIT encryption keys
@@ -66,7 +66,7 @@ $(SUIT_MANIFEST): $(SLOT0_RIOT_BIN) $(SLOT1_RIOT_BIN)
 	  --urlroot $(SUIT_COAP_ROOT) \
 	  --seqnr $(SUIT_SEQNR) \
 	  --uuid-vendor $(SUIT_VENDOR) \
-	  --uuid-class $(SUIT_DEVICE_ID) \
+	  --uuid-class $(SUIT_CLASS) \
 	  --offsets $(SLOT0_OFFSET),$(SLOT1_OFFSET) \
 	  -o $@ \
 	  $^
