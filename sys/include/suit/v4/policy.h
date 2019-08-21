@@ -36,12 +36,12 @@ extern "C" {
  * @brief bitfield of required policies
  * @{
  */
-#define SUIT_VALIDATED_AUTH         0x1
-#define SUIT_VALIDATED_VERSION      0x2
-#define SUIT_VALIDATED_SEQ_NR       0x4
-#define SUIT_VALIDATED_VENDOR       0x8
-#define SUIT_VALIDATED_CLASS        0x10
-#define SUIT_VALIDATED_DEVICE       0x20
+#define SUIT_VALIDATED_AUTH         0x1     /* currently unused */
+#define SUIT_VALIDATED_VERSION      0x2     /* SUIT format version */
+#define SUIT_VALIDATED_SEQ_NR       0x4     /* new seq nr > old seq nr */
+#define SUIT_VALIDATED_VENDOR       0x8     /* vendor UUID matches */
+#define SUIT_VALIDATED_CLASS        0x10    /* class UUID matches */
+#define SUIT_VALIDATED_DEVICE       0x20    /* device UUID matches */
 /** @} */
 
 /**
