@@ -473,7 +473,7 @@ The following default values are using for generating the manifest:
 
     SUIT_VENDOR ?= RIOT
     SUIT_VERSION ?= $(APP_VER)
-    SUIT_DEVICE_ID ?= $(BOARD)
+    SUIT_CLASS ?= $(BOARD)
     SUIT_KEY ?= default
     SUIT_KEY_DIR ?= $(RIOTBASE)/keys
     SUIT_SEC ?= $(SUIT_KEY_DIR)/$(SUIT_KEY)
@@ -496,7 +496,7 @@ suit/manifest: creates a non signed and signed manifest, and also a latest tag f
 
     - $(SUIT_KEY): name of keypair to sign the manifest
     - $(SUIT_COAP_ROOT): coap root address
-    - $(SUIT_DEVICE_ID)
+    - $(SUIT_CLASS)
     - $(SUIT_VERSION)
     - $(SUIT_VENDOR)
 
