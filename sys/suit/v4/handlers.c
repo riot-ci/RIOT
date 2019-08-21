@@ -220,7 +220,7 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, CborValue *_it)
         CborParser parser;
         CborValue it;
 
-        /* open sequence qith cbor parser */
+        /* open sequence with cbor parser */
         int err = suit_cbor_subparse(&parser, &manifest->components[0].url, &it);
         if (err < 0) {
             LOG_DEBUG("subparse failed\n)");
@@ -244,7 +244,7 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, CborValue *_it)
         CborValue url_value_it;
         cbor_value_enter_container(&url_it, &url_value_it);
 
-        /* check that first array entry is an int (the priotity of the url) */
+        /* check that first array entry is an int (the priority of the url) */
         if (cbor_value_get_type(&url_value_it) != CborIntegerType) {
             return -1;
         }
