@@ -90,10 +90,10 @@ extern void spi_ram_init(void);
 extern void spi_ram_heap_init(void);
 extern uint32_t hwrand (void);
 extern void bootloader_clock_configure(void);
+extern void do_global_ctors(void);
 
 /* forward declarations */
 static void system_init(void);
-static void do_global_ctors(void);
 static void intr_matrix_clear(void);
 
 typedef int32_t esp_err_t;
@@ -343,18 +343,6 @@ static NORETURN void IRAM system_init (void)
     ets_printf("Starting RIOT kernel on PRO cpu\n");
     kernel_init();
     UNREACHABLE();
-}
-
-static void do_global_ctors(void)
-{
-    #if 0 /* TODO when real ctors are used exist */
-    extern uint32_t* __init_array_start;
-    extern uint32_t* __init_array_end;
-    for (uint32_t* up = __init_array_end - 1; up >= __init_array_start; --up) {
-        void (*fp)(void) = (void (*)(void))up;
-        fp();
-    }
-    #endif
 }
 
 static void intr_matrix_clear(void)
