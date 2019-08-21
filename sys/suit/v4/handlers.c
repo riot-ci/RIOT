@@ -395,7 +395,7 @@ static int _component_handler(suit_v4_manifest_t *manifest, int key,
         suit_v4_component_t *current = &manifest->components[n];
 
         while (suit_cbor_map_iterate(&map, &key, &value)) {
-            // handle key, value
+            /* handle key, value */
             int integer_key;
             if (suit_cbor_get_int(&key, &integer_key)) {
                 return SUIT_ERR_INVALID_MANIFEST;
@@ -407,7 +407,6 @@ static int _component_handler(suit_v4_manifest_t *manifest, int key,
                     break;
                 case SUIT_COMPONENT_SIZE:
                     LOG_DEBUG("skipping SUIT_COMPONENT_SIZE");
-                    //current->size = value;
                     break;
                 case SUIT_COMPONENT_DIGEST:
                     current->digest = value;
@@ -455,12 +454,12 @@ static suit_manifest_handler_t _sequence_handlers[] = {
     [10] = _cond_comp_offset,
     /* Directives */
     [11] = _dtv_set_comp_idx,
-//    [12] = _dtv_set_man_idx,
-//    [13] = _dtv_run_seq,
+    /* [12] = _dtv_set_man_idx, */
+    /* [13] = _dtv_run_seq, */
     [14] = _dtv_run_seq_cond,
     [16] = _dtv_set_param,
     [20] = _dtv_fetch,
-//    [22] = _dtv_run,
+    /* [22] = _dtv_run, */
 };
 /* end{code-style-ignore} */
 
