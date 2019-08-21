@@ -266,17 +266,17 @@ int suit_coap_get_blockwise_url(const char *url,
     sock_udp_ep_t remote;
 
     if (strncmp(url, "coap://", 7)) {
-        puts("no coap");
+        LOG_INFO("suit: URL doesn't start with \"coap://\"\n");
         return -EINVAL;
     }
 
     if (sock_urlsplit(url, hostport, urlpath) < 0) {
-        puts("urlsplit");
+        LOG_INFO("suit: invalid URL\n");
         return -EINVAL;
     }
 
     if (sock_udp_str2ep(&remote, hostport) < 0) {
-        puts("str2ep");
+        LOG_INFO("suit: invalid URL\n");
         return -EINVAL;
     }
 
