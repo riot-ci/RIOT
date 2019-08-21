@@ -905,7 +905,6 @@ endif
 
 ifneq (,$(filter suit_%,$(USEMODULE)))
   USEMODULE += suit
->>>>>>> sys/suit: add SUIT draft v4 firmware upgrade module
 endif
 
 # Enable periph_gpio when periph_gpio_irq is enabled
