@@ -201,6 +201,20 @@ void spi_ram_heap_init(void)
     #endif /* CONFIG_SPIRAM_SUPPORT */
 }
 
+/*
+ * source: /path/to/esp-idf/component/esp32/cpu_start.c
+ */
+void do_global_ctors(void)
+{
+    extern void (*__init_array_start)(void);
+    extern void (*__init_array_end)(void);
+
+    void (**p)(void);
+    for (p = &__init_array_end - 1; p >= &__init_array_start; --p) {
+        (*p)();
+    }
+}
+
 static const char* TAG = "system_api";
 static uint8_t base_mac_addr[6] = { 0 };
 
