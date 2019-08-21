@@ -7,6 +7,14 @@ ifneq (,$(filter arduino,$(USEMODULE)))
   USEMODULE += $(SKETCH_MODULE)
 endif
 
+ifneq (,$(filter auto_init_actuators_sensors_%,$(USEMODULE)))
+  USEMODULE += auto_init_actuators_sensors
+endif
+
+ifneq (,$(filter auto_init_saul,$(USEMODULE)))
+  USEMODULE += auto_init_actuators_sensors_default
+endif
+
 ifneq (,$(filter eepreg,$(USEMODULE)))
   FEATURES_REQUIRED += periph_eeprom
 endif
