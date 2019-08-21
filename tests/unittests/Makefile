@@ -18,9 +18,14 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              cc2650-launchpad \
                              cc2650stk \
                              chronos \
+                             csp8266-esp-12x \
+                             esp8266-olimex-mod \
+                             esp8266-sparkfun-thing \
                              ek-lm4f120xl \
                              feather-m0 \
                              hamilton \
+                             hifive1 \
+                             hifive1b \
                              i-nucleo-lrwan1 \
                              ikea-tradfri \
                              limifrog-v1 maple-mini \
