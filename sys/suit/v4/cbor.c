@@ -117,11 +117,7 @@ int suit_cbor_get_uint32(const CborValue *it, uint32_t *out)
 
 int suit_cbor_get_uint(const CborValue *it, unsigned *out)
 {
-#if 1
     return suit_cbor_get_uint32(it, (uint32_t *)out);
-#else
-#error suit_cbor_get_uint only implemented for sizeof(unsigned) == 4
-#endif
 }
 
 int suit_cbor_subparse(CborParser *parser, CborValue *bseq, CborValue *it)
