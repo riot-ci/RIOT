@@ -155,8 +155,10 @@ int main(void)
             return 1;
         }
 
+#ifdef MODULE_PERIPH_EEPROM
         /* Save current MAC state to EEPROM */
         semtech_loramac_save_config(&loramac);
+#endif
     }
 #endif
 
@@ -173,8 +175,10 @@ int main(void)
     semtech_loramac_set_rx2_freq(&loramac, RX2_FREQ);
     semtech_loramac_set_rx2_dr(&loramac, RX2_DR);
 
+#ifdef MODULE_PERIPH_EEPROM
     /* Store ABP parameters to EEPROM */
     semtech_loramac_save_config(&loramac);
+#endif
 
     /* Use a fast datarate, e.g. BW125/SF7 in EU868 */
     semtech_loramac_set_dr(&loramac, LORAMAC_DR_5);
