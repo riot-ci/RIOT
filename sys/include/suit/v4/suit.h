@@ -138,7 +138,6 @@ typedef struct {
 
     /** List of components in the manifest */
     suit_v4_component_t components[SUIT_V4_COMPONENT_MAX];
-    //CborValue components[SUIT_V4_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */
     int component_current;          /**< Current component index */
     riotboot_flashwrite_t *writer;  /**< Pointer to the riotboot flash writer */
