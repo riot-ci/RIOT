@@ -53,10 +53,6 @@ USEMODULE += suit suit_coap
 # SUIT draft v4 support:
 USEMODULE += suit_v4
 
-# SUIT depends on riotboot support and some extra riotboot modules
-FEATURES_REQUIRED += riotboot
-USEMODULE += riotboot_slot riotboot_flashwrite riotboot_flashwrite_verify_sha256
-
 # Change this to 0 to not use ethos
 USE_ETHOS ?= 1
 
