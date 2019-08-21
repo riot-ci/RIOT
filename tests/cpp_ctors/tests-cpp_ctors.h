@@ -19,6 +19,12 @@
 #define TESTS_CPP_CTORS_H
 
 #ifdef __cplusplus
+extern "C" {
+    /* static test complains if this is not there */
+}
+#endif
+
+#ifdef __cplusplus
 namespace RIOTTestCPP {
     /**
      * @brief Simple class used for testing constructor calls
