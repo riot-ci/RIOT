@@ -46,6 +46,7 @@
 #include "debug.h"
 
 #ifndef SUIT_COAP_STACKSIZE
+/* allocate stack needed to keep a page buffer and do manifest validation */
 #define SUIT_COAP_STACKSIZE (3*THREAD_STACKSIZE_LARGE + FLASHPAGE_SIZE)
 #endif
 
@@ -53,8 +54,14 @@
 #define SUIT_COAP_PRIO THREAD_PRIORITY_MAIN - 1
 #endif
 
+#ifndef SUIT_URL_MAX
 #define SUIT_URL_MAX            128
+#endif
+
+#ifndef SUIT_MANIFEST_BUFSIZE
 #define SUIT_MANIFEST_BUFSIZE   640
+#endif
+
 #define SUIT_MSG_TRIGGER        0x12345
 
 static char _stack[SUIT_COAP_STACKSIZE];
@@ -73,7 +80,6 @@ ssize_t coap_subtree_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len,
     if (coap_get_uri_path(pkt, uri) > 0) {
         coap_resource_subtree_t *subtree = context;
 
-        /* TODO: refactor into function, use both here and above */
         for (unsigned i = 0; i < subtree->resources_numof; i++) {
             const coap_resource_t *resource = &subtree->resources[i];
 
