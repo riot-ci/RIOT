@@ -71,7 +71,7 @@ $(SUIT_MANIFEST): $(SLOT0_RIOT_BIN) $(SLOT1_RIOT_BIN)
 	  -o $@ \
 	  $^
 
-$(SUIT_MANIFEST_SIGNED): $(SUIT_MANIFEST)
+$(SUIT_MANIFEST_SIGNED): $(SUIT_MANIFEST) $(SUIT_SEC) $(SUIT_PUB)
 	$(RIOTBASE)/dist/tools/suit_v4/sign-04.py \
 	  $(SUIT_SEC) $(SUIT_PUB) $< $@
 
