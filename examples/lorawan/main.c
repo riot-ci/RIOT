@@ -48,7 +48,9 @@
 #include "sx126x_params.h"
 #endif
 
-/* Messages are sent every 20s to respect the duty cycle on each channel */
+/* By default, messages are sent every 20s to respect the duty cycle
+   on each channel */
+#ifndef SEND_PERIOD
 #ifndef
 #define SEND_PERIOD         (20U)
 #endif
