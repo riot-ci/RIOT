@@ -9,7 +9,7 @@ application also shows how to program a LoRaWAN Class A device using RIOT.
 
 By default, the application uses the Over-The-Air Activation (OTAA) procedure.
 
-### Usage
+### Configuration
 
 To join a LoRaWAN network using OTAA activation, edit the application
 `Makefile` and set your device information:
@@ -29,9 +29,11 @@ To join a LoRaWAN network using ABP activation, edit the application
     RX2_FREQ ?= 869525000
     RX2_DR ?= 3
 
-Simply build and flash the application for a ST B-L072Z-LRWAN1 board:
-
-    make flash term
+Note that rx2 frequency (`RX2_FREQ`) and datarate (`RX2_DR`) variables must be
+set explicitly at compile time when using ABP activation because they are
+supposed to be known in advance by the network and the device. In this example,
+the values used are compatible with TheThingsNetwork provider network.
+They might change depending on the network provider used.
 
 Use the `BOARD`, `DRIVER` and `LORA_REGION` variables to adapt the application
 to your hardware setup and region of use:
@@ -40,6 +42,15 @@ to your hardware setup and region of use:
 - `DRIVER` can be either `sx1276` or `sx1272`
 - `LORA_REGION` can be `EU868`, `US915`, etc (see LoRaWAN regional parameters for
   details).
+
+The `SEND_PERIOD` variable can also be adapted to change the time period (in
+seconds) between each message sent by the device.
+
+### Usage
+
+Simply build and flash the application for a ST B-L072Z-LRWAN1 board:
+
+    make flash term
 
 ST Nucleo-64 can be used as-is with mbed LoRa shields: there's one based on
 [the sx1276 radio](https://os.mbed.com/components/SX1276MB1xAS/) and one based
