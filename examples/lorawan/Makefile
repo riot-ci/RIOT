@@ -76,13 +76,14 @@ ifneq (,$(filter $(BOARD), $(BOARD_PROVIDING_EEPROM)))
   CFLAGS += '-DPM_BLOCKER_INITIAL={ .val_u32 = 0x01010100 }'
 else
   # WARNING: the next line disables the dutycycle restriction from the MAC. This
-  # means that sending period must be greater than the allowed dutycycle. Check
-  # your LoRaWAN regional parameters and use a valid SEND_PERIOD value.
-  # Note that this is used as a workaround for the internal use of xtimer in
-  # the semtech-loramac adaption code for RIOT. Indeed, during a sleep mode with
-  # RAM retention the hardware timer used by default are stop and thus, when
-  # waking up the dutycycle timer time has not changed. This prevents more than
-  # one message to be sent.
+  # means that the sending period must be greater than the allowed dutycycle.
+  # Check your LoRaWAN regional parameters and use a valid SEND_PERIOD value.
+  #
+  # Note that this is used as a workaround for issues with the internal use
+  # of xtimer in the semtech-loramac adaption code for RIOT. Indeed, during a
+  # sleep mode with RAM retention the hardware timer used by default are stop
+  # and thus, when waking up the dutycycle timer time has not changed. This
+  # prevents more than one message to be sent.
   # This is a known limitation of xtimer and should be fixed in the future by
   # using low power timer (based on 32.768kHz external oscillator).
   CFLAGS+=-DDISABLE_LORAMAC_DUTYCYCLE
