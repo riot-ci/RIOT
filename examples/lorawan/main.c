@@ -36,8 +36,9 @@
 #include "net/loramac.h"
 #include "semtech_loramac.h"
 
-/* Messages are sent every 20s to respect the duty cycle on each channel */
-#ifndef
+/* By default, messages are sent every 20s to respect the duty cycle
+   on each channel */
+#ifndef SEND_PERIOD
 #define SEND_PERIOD         (20U)
 #endif
 
