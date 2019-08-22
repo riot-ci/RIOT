@@ -26,7 +26,8 @@
 #include "msg.h"
 #include "thread.h"
 #include "fmt.h"
-#ifdef MODULE_PM_LAYERED
+
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
 #include "pm_layered.h"
 #endif
 
@@ -48,7 +49,9 @@
 #endif
 
 /* Messages are sent every 20s to respect the duty cycle on each channel */
-#define PERIOD              (20U)
+#ifndef
+#define SEND_PERIOD         (20U)
+#endif
 
 /* Low-power mode level */
 #define PM_LOCK_LEVEL       (1)
@@ -83,7 +86,7 @@ static void rtc_cb(void *arg)
 {
     (void) arg;
 
-#ifdef MODULE_PM_LAYERED
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
     /* block sleep level mode until the next sending cycle has completed */
     pm_block(PM_LOCK_LEVEL);
 #endif
@@ -131,7 +134,7 @@ static void *sender(void *arg)
         /* Schedule the next wake-up alarm */
         _prepare_next_alarm();
 
-#ifdef MODULE_PM_LAYERED
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
         /* go back to sleep */
         pm_unblock(PM_LOCK_LEVEL);
 #endif
