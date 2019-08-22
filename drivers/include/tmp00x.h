@@ -89,39 +89,6 @@ extern "C"
 {
 #endif
 
-#define TMP00X_CONFIG_RST           (1 << 15) /**< Reset register */
-
-#define TMP00X_CONFIG_MOD_SHIFT     (12U) /**< Mode of operation shift */
-#define TMP00X_CONFIG_MOD_MASK      (0x7000) /**< Mode of operation mask */
-#define TMP00X_CONFIG_MOD(x)        (((uint16_t)(((uint16_t)(x)) \
-                                    << TMP00X_CONFIG_MOD_SHIFT)) \
-                                    & TMP00X_CONFIG_MOD_MASK) /**< Mode of operation */
-#define TMP00X_CONFIG_MOD_CC        (0x07) /**< Sensor and ambient continuous conversion */
-#define TMP00X_CONFIG_MOD_OFF       (0x00) /**< Power-down */
-
-#define TMP00X_CONFIG_CR_SHIFT      (9U) /**< ADC conversion rate shift */
-#define TMP00X_CONFIG_CR_MASK       (0x0E00) /**< ADC conversion rate mask */
-#define TMP00X_CONFIG_CR(x)         (((uint16_t)(((uint16_t)(x)) \
-                                    << TMP00X_CONFIG_CR_SHIFT)) \
-                                     & TMP00X_CONFIG_CR_MASK) /**< ADC conversion rate */
-
-#define TMP00X_DRDY_PIN_EN   (1 << 8) /**< EN: DRDY enable bit */
-
-/**
- * @ingroup  config
- * @{
- */
-#if defined (MODULE_TMP006)
-#define TMP00X_DRDY       (1 << 7) /**< DRDY: Data ready bit */
-#define TMP00X_DID_VALUE  (0x0067) /**< Device ID */
-#else
-#define TMP00X_DRDY       (1 << 14) /**< DRDY: Data ready bit */
-#define TMP00X_DID_VALUE  (0x0078) /**< Device ID */
-#endif
-/** @} */
-
-#define TMP00X_MID_VALUE            (0x5449) /**< Manufacturer ID */
-
 #define BUS                         (dev->p.i2c) /**< BUS */
 #define ADDR                        (dev->p.addr) /**< ADDR */
 

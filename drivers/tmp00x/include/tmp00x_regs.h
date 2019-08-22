@@ -28,20 +28,46 @@ extern "C" {
  * @name    TMP00x registers
  * @{
  */
- #define TMP00X_REGS_V_OBJECT               0x00 /**< Sensor Voltage Register */
- #define TMP00X_REGS_T_AMBIENT              0x01 /**< Ambient Temperature Register */
- #define TMP00X_REGS_CONFIG                 0x02 /**< Configuration Register */
+ #define TMP00X_REGS_V_OBJECT        0x00 /**< Sensor Voltage Register */
+ #define TMP00X_REGS_T_AMBIENT       0x01 /**< Ambient Temperature Register */
+ #define TMP00X_REGS_CONFIG          0x02 /**< Configuration Register */
+
+ #define TMP00X_CONFIG_RST           (1 << 15) /**< Reset register */
+
+ #define TMP00X_CONFIG_MOD_SHIFT     (12U) /**< Mode of operation shift */
+ #define TMP00X_CONFIG_MOD_MASK      (0x7000) /**< Mode of operation mask */
+ #define TMP00X_CONFIG_MOD(x)        (((uint16_t)(((uint16_t)(x)) \
+                                     << TMP00X_CONFIG_MOD_SHIFT)) \
+                                     & TMP00X_CONFIG_MOD_MASK) /**< Mode of operation */
+ #define TMP00X_CONFIG_MOD_CC        (0x07) /**< Sensor and ambient continuous conversion */
+ #define TMP00X_CONFIG_MOD_OFF       (0x00) /**< Power-down */
+
+ #define TMP00X_CONFIG_CR_SHIFT      (9U) /**< ADC conversion rate shift */
+ #define TMP00X_CONFIG_CR_MASK       (0x0E00) /**< ADC conversion rate mask */
+ #define TMP00X_CONFIG_CR(x)         (((uint16_t)(((uint16_t)(x)) \
+                                     << TMP00X_CONFIG_CR_SHIFT)) \
+                                     & TMP00X_CONFIG_CR_MASK) /**< ADC conversion rate */
+
+ #define TMP00X_DRDY_PIN_EN          (1 << 8) /**< EN: DRDY enable bit */
 
  /**
   * @ingroup  config
   * @{
   */
+ #if defined (MODULE_TMP006)
+ #define TMP00X_DRDY              (1 << 7)  /**< DRDY: Data ready bit */
+ #define TMP00X_DID_VALUE         (0x0067)  /**< Device ID */
+ #else
+ #define TMP00X_DRDY              (1 << 14) /**< DRDY: Data ready bit */
+ #define TMP00X_DID_VALUE         (0x0078)  /**< Device ID */
+ #endif
+
  #ifdef MODULE_TMP006
- #define TMP00X_REGS_DEVICE_ID              0xFF /**< Device ID Register */
- #define TMP00X_REGS_READ_STATUS            TMP00X_REGS_CONFIG
+ #define TMP00X_REGS_DEVICE_ID    0xFF /**< Device ID Register */
+ #define TMP00X_REGS_READ_STATUS  TMP00X_REGS_CONFIG
  #elif defined(MODULE_TMP007)
- #define TMP00X_REGS_DEVICE_ID              0x1F /**< Device ID Register */
- #define TMP00X_REGS_READ_STATUS            TMP007_REGS_STATUS
+ #define TMP00X_REGS_DEVICE_ID    0x1F /**< Device ID Register */
+ #define TMP00X_REGS_READ_STATUS  TMP007_REGS_STATUS
  #else
  #error "TMP00X DRIVER not selected or supported"
  #endif
