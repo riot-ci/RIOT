@@ -225,7 +225,9 @@ static void _cmd_connect_addr(ble_addr_t *addr)
     }
 
     printf("initiated connection procedure with ");
-    bluetil_addr_print(addr->val);
+    uint8_t addrn[BLE_ADDR_LEN];
+    bluetil_addr_swapped_cp(addr->val, addrn);
+    bluetil_addr_print(addrn);
     puts("");
 
 }
