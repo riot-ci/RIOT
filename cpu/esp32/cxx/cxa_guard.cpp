@@ -55,7 +55,7 @@ typedef struct {
 namespace __cxxabiv1
 {
     extern "C"
-    int __wrap___cxa_guard_acquire (__guard *g)
+    int __cxa_guard_acquire (__guard *g)
     {
         guard_t *_gt = (guard_t *)g;
 
@@ -83,7 +83,7 @@ namespace __cxxabiv1
     }
 
     extern "C"
-    void __wrap___cxa_guard_release (__guard *g)
+    void __cxa_guard_release (__guard *g)
     {
         guard_t *_gt = (guard_t *)g;
 
@@ -99,7 +99,7 @@ namespace __cxxabiv1
     }
 
     extern "C"
-    void __wrap___cxa_guard_abort (__guard *g)
+    void __cxa_guard_abort (__guard *g)
     {
         guard_t *_gt = (guard_t *)g;
 

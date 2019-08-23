@@ -147,9 +147,7 @@ LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp32.rom.nanofmt.ld
 LINKFLAGS += -nostdlib -lgcc -Wl,-gc-sections
 
 ifneq (,$(filter esp_cxx,$(USEMODULE)))
-    LINKFLAGS += -Wl,-wrap,__cxa_guard_acquire
-    LINKFLAGS += -Wl,-wrap,__cxa_guard_release
-    LINKFLAGS += -Wl,-wrap,__cxa_guard_abort
+    UNDEF += $(BINDIR)/esp_cxx/cxa_guard.o
 endif
 
 # The ELFFILE is the base one used for flashing
