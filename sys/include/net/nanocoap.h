@@ -1019,7 +1019,7 @@ static inline void coap_hdr_set_type(coap_hdr_t *hdr, unsigned type)
  *
  * @returns     bit field corresponding to the given request method
  */
-static inline unsigned coap_method2flag(unsigned code)
+static inline coap_method_flags_t coap_method2flag(unsigned code)
 {
     return (1 << (code - 1));
 }
