@@ -83,7 +83,7 @@ static void _prepare_next_alarm(void)
     struct tm time;
     rtc_get_time(&time);
     /* set initial alarm */
-    time.tm_sec += PERIOD;
+    time.tm_sec += SEND_PERIOD;
     mktime(&time);
     rtc_set_alarm(&time, rtc_cb, NULL);
 }
