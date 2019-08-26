@@ -82,7 +82,7 @@ void hwrng_init(void)
 uint32_t hwrng_uint32(void)
 {
     union {
-        uint16_t half[2],
+        uint16_t half[2];
         uint32_t val;
     } rnd;
 
