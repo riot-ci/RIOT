@@ -254,9 +254,9 @@ static inline int _netdev_set(netdev_t *dev, netopt_t opt,
 
     switch (opt) {
         case NETOPT_PROTO:
-            assert(val_len == sizeof(gnrc_nettype_t));
-            memcpy(&_nettype, value, sizeof(gnrc_nettype_t));
-            res = sizeof(gnrc_nettype_t);
+            assert(val_len == sizeof(_nettype));
+            memcpy(&_nettype, value, sizeof(_nettype));
+            res = sizeof(_nettype);
             break;
         default:
             break;

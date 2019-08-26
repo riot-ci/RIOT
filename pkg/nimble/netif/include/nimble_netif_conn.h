@@ -47,7 +47,7 @@ typedef struct {
 } nimble_netif_conn_t;
 
 /**
- * @brief   Iterator function signature used by nimble_netif_conn_foreach()
+ * @brief   Iterator function signature used by @ref nimble_netif_conn_foreach()
  *
  * @param[in] conn          connection context of the current entry
  * @param[in] handle        handle of the current entry
@@ -62,7 +62,7 @@ typedef int (*nimble_netif_conn_iter_t)(nimble_netif_conn_t *conn,
 /**
  * @brief   Initialize the connection state manager
  *
- * This functions is typically called by nimble_netif_init().
+ * This functions is typically called by @ref nimble_netif_init().
  */
 void nimble_netif_conn_init(void);
 
@@ -114,7 +114,7 @@ int nimble_netif_conn_get_by_gaphandle(uint16_t gaphandle);
 
 
 /**
- * @brief   Iterate all connection contexts that match the filter condition
+ * @brief   Iterate over all connection contexts that match the filter condition
  *
  * @warning Do not call any other nimble_netif_conn function from within the
  *          callback, this will lead to a deadlock!
@@ -178,7 +178,7 @@ nimble_netif_conn_t *nimble_netif_conn_from_gaphandle(uint16_t gh)
 
 /**
  * @brief   Convenience function to check if any context is currently in the
- *          connecting state (NIMBLE_NETIF_CONNECTING)
+ *          connecting state (@ref NIMBLE_NETIF_CONNECTING)
  *
  * @return  != 0 if true
  * @return  0 if false
@@ -205,7 +205,7 @@ static inline int nimble_netif_conn_connected(const uint8_t *addr)
 
 /**
  * @brief   Convenience function to check if any context is currently in the
- *          advertising state (NIMBLE_NETIF_ADV)
+ *          advertising state (@ref NIMBLE_NETIF_ADV)
  *
  * @return  != 0 if true
  * @return  0 if false

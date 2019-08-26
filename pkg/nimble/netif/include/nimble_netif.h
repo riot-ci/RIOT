@@ -26,7 +26,7 @@
  * # Structure
  * The netif implementation is able to handle multiple connections
  * simultaneously. The maximum number of concurrent connections is configured
- * during compile time, using NimBLEs MYNEWT_VAL_BLE_MAX_CONNECTIONS option.
+ * during compile time, using NimBLEs @ref MYNEWT_VAL_BLE_MAX_CONNECTIONS option.
  * Dependent on this value, the netif implementation takes care of allocation
  * all the memory needed. The API of this submodule uses simply integer values
  * to reference the used connection context (like file descriptors in linux).
@@ -49,7 +49,7 @@
  * report the result asynchronously using the configured callback.
  *
  * So before using this module, make sure to register a callback using the
- * nimble_netif_eventcb() function.
+ * @ref nimble_netif_eventcb() function.
  *
  * After this, this module provides functions for managing BLE connections to
  * other devices. Once these connections are established, this module takes care
@@ -86,8 +86,8 @@ extern "C" {
 /**
  * @brief   Default MTU size supported by the NimBLE netif wrapper
  */
-/* NOTE: We do not use the IPV6_MIN_MTU define here, as the iov6.h header pulls
- *       in some other RIOT headers that clash with NimBLE header (e.g.
+/* NOTE: We do not use the @ref IPV6_MIN_MTU define here, as the iov6.h header
+         pulls in some other RIOT headers that clash with NimBLE header (e.g.
  *       byteorder.h vs. endian.h) */
 #ifndef NIMBLE_NETIF_MTU
 #define NIMBLE_NETIF_MTU            (1280U)
