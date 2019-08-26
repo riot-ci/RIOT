@@ -1,6 +1,7 @@
 PSEUDOMODULES += at_urc
 PSEUDOMODULES += at24c128
 PSEUDOMODULES += at24c256%
+PSEUDOMODULES += at24cxxx_eeprom_wrapper
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
