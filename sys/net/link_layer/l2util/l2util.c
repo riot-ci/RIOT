@@ -131,6 +131,7 @@ int l2util_ipv6_iid_from_addr(int dev_type,
 #if defined(MODULE_NIMBLE_NETIF)
         case NETDEV_TYPE_BLE:
             l2util_eui64_from_addr(dev_type, addr, addr_len, iid);
+            /* for BLE we don't flip the universal local flag... */
             return sizeof(eui64_t);
 #endif
         default: {
