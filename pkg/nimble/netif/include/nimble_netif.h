@@ -26,7 +26,7 @@
  * # Structure
  * The netif implementation is able to handle multiple connections
  * simultaneously. The maximum number of concurrent connections is configured
- * during compile time, using NimBLEs @ref MYNEWT_VAL_BLE_MAX_CONNECTIONS option.
+ * during compile time, using NimBLEs MYNEWT_VAL_BLE_MAX_CONNECTIONS option.
  * Dependent on this value, the netif implementation takes care of allocation
  * all the memory needed. The API of this submodule uses simply integer values
  * to reference the used connection context (like file descriptors in linux).
