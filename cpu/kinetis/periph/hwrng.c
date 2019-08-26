@@ -29,16 +29,8 @@
 
 #ifdef KINETIS_RNGA
 
-void hwrng_init(void)
+void hwrng_poweron(void)
 {
-    /* nothing to do here */
-}
-
-void hwrng_read(void *buf, unsigned int num)
-{
-    unsigned int count = 0;
-    uint8_t *b = (uint8_t *)buf;
-
     /* power on and enable the device */
     HWRNG_CLKEN();
     KINETIS_RNGA->CR = RNG_CR_INTM_MASK | RNG_CR_HA_MASK | RNG_CR_GO_MASK;
@@ -46,24 +38,22 @@ void hwrng_read(void *buf, unsigned int num)
     /* self-seeding */
     while (!(KINETIS_RNGA->SR & RNG_SR_OREG_LVL_MASK));
 
-    KINETIS_RNGA->ER = KINETIS_RNGA->OR ^ (uint32_t)buf;
+    /* seed the HWRNG  */
+    KINETIS_RNGA->ER = KINETIS_RNGA->OR ^ (uint32_t) &hwrng_poweron;
+}
 
-    while (count < num) {
-        /* wait for random data to be ready to read */
-        while (!(KINETIS_RNGA->SR & RNG_SR_OREG_LVL_MASK));
-
-        uint32_t tmp = KINETIS_RNGA->OR;
-
-        /* copy data into result vector */
-        for (int i = 0; i < 4 && count < num; i++) {
-            b[count++] = (uint8_t)tmp;
-            tmp = tmp >> 8;
-        }
-    }
-
+void hwrng_poweroff(void)
+{
     /* power off the device */
     KINETIS_RNGA->CR = 0;
     HWRNG_CLKDIS();
+}
+
+uint32_t hwrng_uint32(void)
+{
+    /* wait for random data to be ready to read */
+    while (!(KINETIS_RNGA->SR & RNG_SR_OREG_LVL_MASK));
+    return KINETIS_RNGA->OR;
 }
 
 #endif /* KINETIS_RNGA */
