@@ -42,9 +42,10 @@ extern "C" {
 /**
  * @brief   Copy address and swap the byte order in the target buffer
  *
- * @param[in] src       buffer with source address, *must* hold BLE_ADDR_LEN
+ * @param[in] src       buffer with source address, *must* hold
+ *                      @ref BLE_ADDR_LEN bytes
+ * @param[out] dst      target buffer, *must* be able to hold @ref BLE_ADDR_LEN
  *                      bytes
- * @param[out] dst      target buffer, *must* be able to hold BLE_ADDR_LEN bytes
  */
 void bluetil_addr_swapped_cp(const uint8_t *src, uint8_t *dst);
 
@@ -54,8 +55,8 @@ void bluetil_addr_swapped_cp(const uint8_t *src, uint8_t *dst);
  * @note    The address is expected to be in network byte order
  *
  * @param[out] out      '\0' terminated address string, *must* be able to hold
- *                      BLUETIL_ADDR_STRLEN bytes
- * @param[in] addr      address buffer, *must* hold BLE_ADDR_LEN bytes
+ *                      @ref BLUETIL_ADDR_STRLEN bytes
+ * @param[in] addr      address buffer, *must* hold @ref BLE_ADDR_LEN bytes
  */
 void bluetil_addr_sprint(char *out, const uint8_t *addr);
 
@@ -64,7 +65,8 @@ void bluetil_addr_sprint(char *out, const uint8_t *addr);
  *
  * @note    The address is expected to be in network byte order
  *
- * @param[in] addr      address to print, is expected to hold BLE_ADDR_LEN bytes
+ * @param[in] addr      address to print, is expected to hold @ref BLE_ADDR_LEN
+ *                      bytes
  */
 void bluetil_addr_print(const uint8_t *addr);
 
@@ -75,9 +77,9 @@ void bluetil_addr_print(const uint8_t *addr);
  *          to @p addr in network byte order
  *
  * @param[out] addr     buffer to write the BLE address, *must* be able to hold
- *                      BLE_ADDR_LEN bytes
+ *                      @ref BLE_ADDR_LEN bytes
  * @param[in] addr_str  address string, must be at least of length
- *                      (BLUETIL_ADDR_STRLEN - 1)
+ *                      (@ref BLUETIL_ADDR_STRLEN - 1)
  *
  * @return  a pointer to the resulting address on success
  * @return  NULL on parsing error
@@ -91,8 +93,8 @@ uint8_t *bluetil_addr_from_str(uint8_t *addr, const char *addr_str);
  * @note    The address is expected to be in network byte order
  *
  * @param[out] out      '\0' terminated string, *must* be able to hold
- *                      BLUETIL_IPV6_IID_STRLEN bytes
- * @param[in]  addr     address to convert, , *must* hold BLE_ADDR_LEN bytes
+ *                      @ref BLUETIL_IPV6_IID_STRLEN bytes
+ * @param[in]  addr     address to convert, , *must* hold @ref BLE_ADDR_LEN bytes
  */
 void bluetil_addr_ipv6_l2ll_sprint(char *out, const uint8_t *addr);
 
