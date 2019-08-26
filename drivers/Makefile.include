@@ -18,6 +18,14 @@ ifneq (,$(filter apa102,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/apa102/include
 endif
 
+ifneq (,$(filter at24cxxx,$(USEMODULE)))
+  USEMODULE_INCLUDES += $(RIOTBASE)/drivers/at24cxxx/include
+endif
+
+ifneq (,$(filter at24cxxx_eeprom_wrapper,$(USEMODULE)))
+  CFLAGS += -DEEPROM_SIZE=0x8000
+endif
+
 ifneq (,$(filter at86rf2xx,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/at86rf2xx/include
 endif
