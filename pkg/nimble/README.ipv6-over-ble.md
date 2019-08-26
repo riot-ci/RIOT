@@ -24,10 +24,11 @@ Once the firmware is running, you can verify it by typing
 
     ble info
 
-This should give you some information about your devices BLE address and status
-information about open connections. It should look similar to the following:
+This should give you some information about your device's BLE address and
+status information about open connections. It should look similar to the
+following:
 
-    Own Address: AA:BB:CC:XX:YY:ZZ -> [FE80::AABB:CCFF:FEXX:YYZZ]
+    Own Address: UU:VV:WW:XX:YY:ZZ -> [FE80::UUVV:WWFF:FEXX:YYZZ]
      Free slots: 3/3
     Advertising: no
        Contexts:
@@ -35,7 +36,7 @@ information about open connections. It should look similar to the following:
     [ 1] state: 0x8000 - unused
     [ 2] state: 0x8000 - unused
 
-Once this if working, you need to tell the node to accept incoming connections
+Once this is working, you need to tell the node to accept incoming connections
 and start advertising itself:
 
     ble adv
@@ -92,7 +93,7 @@ command:
     # Put your device address here...
     # Note: the 2 after the address denotes a BLE public random address, default
     #       used by `nimble_netif`
-    echo "connect 00:AA:BB:XX:YY:ZZ 2" > /sys/kernel/debug/bluetooth/6lowpan_control
+    echo "connect UU:VV:WW:XX:YY:ZZ 2" > /sys/kernel/debug/bluetooth/6lowpan_control
 
 Thats it, you now have a IPv6 connection to your RIOT node. You can verify this
 using `ifconfig`, where something like the following should be visible:
@@ -109,21 +110,23 @@ You should also be able to ping your RIOT node. The devices link local address
 is also printed when running `ble info` on your RIOT device.
 
     # Substitute the actual device address,
-    ping6 fe80::00aa:bbff:fexx:yyzz%bt0
+    ping6 fe80::uuvv:wwff:fexx:yyzz%bt0
 
 Now everything should be fine :-)
 
 
 ## [optional] Distributing a routeable Prefix
 
-You can use the Rout Advertisement Deamon (`radvd`) in Linux to automatically
-distribute prefixes in your BLE network. For the following, you need to make sure that `radvd` is installed on your Linux host.
+You can use the Router Advertisement Deamon (`radvd`) in Linux to automatically
+distribute prefixes in your BLE network. For the following, you need to make
+sure that `radvd` is installed on your Linux host.
 
 As a first step, we need to enable IPv6 forwarding in Linux:
 
     sudo echo 1 > /proc/sys/net/ipv6/conf/all/forwarding
 
-Next, we configure `radvd` (`etc/radvc.con`) by using a configuration like this:
+Next, we configure `radvd` (`etc/radvc.conf`) by using a configuration like
+this:
 
     interface bt0
     {
@@ -141,10 +144,14 @@ This will tell Linux to advertise the prefix `2001:db8::/64`. With this, simply
 
     sudo service radvd restart
 
+or
+
+    sudo systemctl restart radvd
+
 Again, thats it. Your RIOT node should now have an address using the above
 prefix assigned. Simply verify with `ifconfig` on the RIOT node.
 
 Also you should be able to ping the RIOT node from Linux:
 
     # make sure to use the actual devices address here...
-    ping6 -I bt0 2001:db8::aabb:ccff:fexx:yyzz
+    ping6 -I bt0 2001:db8::uuvv:wwff:fexx:yyzz
