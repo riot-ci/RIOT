@@ -338,7 +338,7 @@ int _nimble_netif_handler(int argc, char **argv)
                 nimble_scanlist_print();
                 return 0;
             }
-            duration = (uint32_t)atoi(argv[2]);
+            duration = atoi(argv[2]);
         }
         _cmd_scan(duration * 1000);
     }
@@ -355,7 +355,7 @@ int _nimble_netif_handler(int argc, char **argv)
             _cmd_connect_addstr(argv[2]);
             return 0;
         }
-        unsigned pos = (unsigned)atoi(argv[2]);
+        unsigned pos = atoi(argv[2]);
         _cmd_connect(pos);
     }
     else if (memcmp(argv[1], "close", 5) == 0) {
