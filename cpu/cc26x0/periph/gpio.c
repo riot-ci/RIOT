@@ -110,6 +110,19 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     return 0;
 }
 
+int gpio_set_cb(gpio_t pin, gpio_cb_t cb, void *arg)
+{
+    if (cb) {
+        gpio_chan[pin].cb = cb;
+    }
+
+    if (arg) {
+        gpio_chan[pin].arg = arg;
+    }
+
+    return 0;
+}
+
 void gpio_irq_enable(gpio_t pin)
 {
     IOC->CFG[pin] |= IOCFG_EDGEIRQ_ENABLE;
@@ -124,8 +137,8 @@ void isr_edge(void)
 {
     for (unsigned pin = 0; pin < GPIO_ISR_CHAN_NUMOF; pin++) {
         /* doc claims EVFLAGS will only be set for pins that have edge detection enabled */
-        if (GPIO->EVFLAGS & (1 << pin)) {
-            GPIO->EVFLAGS |= (1 << pin);
+        if (GPIO->EVFLAGS & (1U << pin)) {
+            GPIO->EVFLAGS |= (1U << pin);
             gpio_chan[pin].cb(gpio_chan[pin].arg);
         }
     }
