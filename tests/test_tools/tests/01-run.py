@@ -37,6 +37,14 @@ def _test_no_local_echo(child):
     res = child.expect_exact([pexpect.TIMEOUT, msg], timeout=1)
     assert res == 0, "There should have been a timeout and not match stdin"
 
+def _test_sending_newline(child):
+    """Verify that a empty line can be send to the node.
+
+    The local terminal must NOT repeat the previous command.
+    """
+    child.sendline('getchar')
+    child.sendline('')  # send only one newline character
+    child.expect_exact('getchar 0x0a\r\n')
 
 def _test_clean_output(child):
     """Verify that only what the nodes sends is received."""
@@ -65,6 +73,9 @@ def testfunc(child):
 
     # Check that the output is clean without extra terminal output
     _test_clean_output(child)
+
+    # It is possible to send an empty newline
+    _test_sending_newline(child)
 
 
 if __name__ == "__main__":
