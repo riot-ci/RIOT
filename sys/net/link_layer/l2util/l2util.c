@@ -40,11 +40,9 @@ int l2util_eui64_from_addr(int dev_type, const uint8_t *addr, size_t addr_len,
                            eui64_t *eui64)
 {
     switch (dev_type) {
-#if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) || \
-defined(MODULE_NORDIC_SOFTDEVICE_BLE)
+#if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW)
         case NETDEV_TYPE_ETHERNET:
         case NETDEV_TYPE_ESP_NOW:
-        case NETDEV_TYPE_BLE:
             if (addr_len == sizeof(eui48_t)) {
                 eui48_to_eui64(eui64, (const eui48_t *)addr);
                 return sizeof(eui64_t);
@@ -53,6 +51,18 @@ defined(MODULE_NORDIC_SOFTDEVICE_BLE)
                 return -EINVAL;
             }
 #endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) */
+#if defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
+        case NETDEV_TYPE_BLE:
+            eui64->uint8[0] = addr[0];
+            eui64->uint8[1] = addr[1];
+            eui64->uint8[2] = addr[2];
+            eui64->uint8[3] = 0xff;
+            eui64->uint8[4] = 0xfe;
+            eui64->uint8[5] = addr[3];
+            eui64->uint8[6] = addr[4];
+            eui64->uint8[7] = addr[5];
+            return sizeof(eui64_t);
+#endif  /* defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF) */
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE)
         case NETDEV_TYPE_IEEE802154:
             switch (addr_len) {
@@ -118,6 +128,12 @@ int l2util_ipv6_iid_from_addr(int dev_type,
                 return -EINVAL;
             }
 #endif  /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
+#if defined(MODULE_NIMBLE_NETIF)
+        case NETDEV_TYPE_BLE:
+            l2util_eui64_from_addr(dev_type, addr, addr_len, iid);
+            /* for BLE we don't flip the universal/local flag... */
+            return sizeof(eui64_t);
+#endif
         default: {
             int res = l2util_eui64_from_addr(dev_type, addr, addr_len, iid);
             if (res == sizeof(eui64_t)) {
@@ -133,14 +149,22 @@ int l2util_ipv6_iid_to_addr(int dev_type, const eui64_t *iid, uint8_t *addr)
 {
     switch (dev_type) {
 #if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) || \
-    defined(MODULE_NORDIC_SOFTDEVICE_BLE)
+    defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
         case NETDEV_TYPE_ETHERNET:
         case NETDEV_TYPE_ESP_NOW:
-        case NETDEV_TYPE_BLE:
             eui48_from_ipv6_iid((eui48_t *)addr, iid);
             return sizeof(eui48_t);
-#endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) || \
-         * defined(MODULE_NORDIC_SOFTDEVICE_BLE) */
+#endif  /* defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) */
+#if defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
+        case NETDEV_TYPE_BLE:
+            addr[0] = iid->uint8[0];
+            addr[1] = iid->uint8[1];
+            addr[2] = iid->uint8[2];
+            addr[3] = iid->uint8[5];
+            addr[4] = iid->uint8[6];
+            addr[5] = iid->uint8[7];
+            return sizeof(eui48_t);
+#endif  /* defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF) */
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE)
         case NETDEV_TYPE_IEEE802154:
             /* assume address was based on EUI-64
@@ -183,7 +207,7 @@ int l2util_ndp_addr_len_from_l2ao(int dev_type,
             return sizeof(uint8_t);
 #endif  /* MODULE_CC110X */
 #if defined(MODULE_NETDEV_ETH) || defined(MODULE_ESP_NOW) || \
-    defined(MODULE_NORDIC_SOFTDEVICE_BLE)
+    defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
         case NETDEV_TYPE_ETHERNET:
         case NETDEV_TYPE_ESP_NOW:
         case NETDEV_TYPE_BLE:
