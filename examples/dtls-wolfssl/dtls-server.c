@@ -97,7 +97,7 @@ int dtls_server(int argc, char **argv)
         return -1;
     }
 
-#ifdef MODULE_WOLFCRYPT_ECC
+#ifndef MODULE_WOLFSSL_PSK
     /* Load certificate file for the DTLS server */
     if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
                 server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
@@ -113,9 +113,7 @@ int dtls_server(int argc, char **argv)
         printf("Failed to load private key from memory.\r\n");
         return -1;
     }
-#endif /* MODULE_WOLFCRYPT_ECC */
-
-#ifdef MODULE_WOLFSSL_PSK
+#else
     wolfSSL_CTX_set_psk_server_callback(sk->ctx, my_psk_server_cb);
     wolfSSL_CTX_use_psk_identity_hint(sk->ctx, "hint");
 #endif /* MODULE_WOLFSSL_PSK */
@@ -129,11 +127,16 @@ int dtls_server(int argc, char **argv)
     }
 
     printf("Listening on %d\n", SERVER_PORT);
+//    wolfSSL_dtls_set_timeout_init(sk->ssl, 4);
     while(1) {
-
         /* Wait until a new client connects */
         ret = wolfSSL_accept(sk->ssl);
         if (ret != SSL_SUCCESS) {
+            if (wolfSSL_get_error(sk->ssl, ret) != WOLFSSL_ERROR_WANT_READ) {
+                sock_dtls_session_destroy(sk);
+                if (sock_dtls_session_create(sk) < 0)
+                    return -1;
+            }
             continue;
         }
 

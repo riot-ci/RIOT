@@ -125,7 +125,7 @@ int dtls_client(int argc, char **argv)
         return -1;
     }
 
-#ifdef MODULE_WOLFCRYPT_ECC
+#ifndef MODULE_WOLFSSL_PSK
     /* Disable certificate validation from the client side */
     wolfSSL_CTX_set_verify(sk->ctx, SSL_VERIFY_NONE, 0);
 
@@ -136,9 +136,8 @@ int dtls_client(int argc, char **argv)
         printf("Error loading cert buffer\n");
         return -1;
     }
-#endif /* MODULE_WOLFCRYPT_ECC */
 
-#ifdef MODULE_WOLFSSL_PSK
+#else /* !def MODULE_WOLFSSL_PSK */
     wolfSSL_CTX_set_psk_client_callback(sk->ctx, my_psk_client_cb);
 #endif
 

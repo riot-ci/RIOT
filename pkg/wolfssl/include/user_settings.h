@@ -21,12 +21,17 @@ extern "C" {
 #define NO_MAIN_DRIVER
 #define NO_SIG_WRAPPER
 #define NO_OLD_RNGNAME
-#define WOLFSSL_SMALL_STACK
+
+/* Uncomment the next two lines to enable wolfSSL debug */
+/* #define DEBUG_WOLFSSL */
+/* #define WOLFSSL_LOG_PRINTF */
 
 /* Single precision math */
 #define WOLFSSL_SP_MATH
 #define WOLFSSL_SP_SMALL
 #define SP_WORD_SIZE 32
+#define WOLFSSL_SP
+
 
 /* GNRC support enabled if not
  * using sockets
@@ -164,6 +169,7 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
   #define HAVE_ECC
   #define FP_ECC
   #define WOLFSSL_HAVE_SP_ECC
+  #define WOLFSSL_HAVE_SP_ECC
   #define ECC_TIMING_RESISTANT
 #endif
 
@@ -216,6 +222,10 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
 #   define HAVE_RSA
 #   define RSA_LOW_MEM
 #   define WC_RSA_BLINDING
+#   define WOLFSSL_STATIC_RSA
+#   define WOLFSSL_RSA_VERIFY_INLINE
+#   define WOLFSSL_HAVE_SP_DH
+#   define WOLFSSL_HAVE_SP_RSA
 #else
 #	define NO_RSA
 #endif

@@ -40,14 +40,13 @@ USEMODULE += wolfssl_dtls
 
 # Select public key algorithm (or PSK) support fot ciphersuite(s):
 USEMODULE += wolfcrypt_ecc
-#USEMODULE += wolfcrypt_ed25519 wolfcrypt_dh
 #USEMODULE += wolfcrypt_rsa wolfcrypt_dh
 #USEMODULE += wolfssl_psk
 
 # Uncomment the following line to add debug symbols
 #CFLAGS+=-g -ggdb3
 
-CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT) -DDTLS_WOLFSSL -Wno-unused-parameter
+CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT) -DDTLS_WOLFSSL -Wno-unused-parameter -Wno-unused-variable
 
 # FIXME: This is a temporary patch taken from the TinyDTLS example to ensure proper stack allocation
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(3*THREAD_STACKSIZE_DEFAULT\)
