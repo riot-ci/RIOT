@@ -3,6 +3,12 @@
 This README contains information how to establish an IPv6-over-BLE connection
 between Linux and RIOT (using GNRC and NimBLE).
 
+**NOTE 1:** IPv6-over-BLE between RIOT and Linux is **highly experimental** at the moment and does suffer stability issues!
+
+**NOTE 2:** currently, Linux does not support 6LoWPAN neighbor discovery (which
+RIOT uses per default), so RIOT needs to be compiled to use stateless address
+auto configuration (SLAAC) -> `CFLAGS=-DGNRC_IPV6_NIB_CONF_SLAAC=1`.
+
 ## Prerequisites
 
 You need a BLE (NimBLE) capable RIOT board (currently only `nrf52`-based boards
@@ -18,7 +24,9 @@ following:
 
 ## Preparing the RIOT node
 
-Simply flash the `examples/gnrc_networking` application to your RIOT device.
+First, you compile and flash the `examples/gnrc_networking` application to your
+RIOT device. When doing this, make sure to enable SLAAC
+(`CFLAGS=-DGNRC_IPV6_NIB_CONF_SLAAC=1`), see note above.
 
 Once the firmware is running, you can verify it by typing
 
@@ -137,10 +145,23 @@ this:
             AdvAutonomous on;
             AdvRouterAddr on;
         };
+        abro 2001:db8::zzyy:xxff:feuu:vvww
+        {
+            AdvVersionLow 10;
+            AdvVersionHigh 2;
+            AdvValidLifeTime 2;
+        };
     };
 
-This will tell Linux to advertise the prefix `2001:db8::/64`. With this, simply
-(re-)start the deamon:
+This will tell Linux to advertise the prefix `2001:db8::/64`. Do not forget to
+substitute the device identifier for the address given in the `abro` section
+with the one of the BLE device on your Linux host.
+
+*NOTE:* the `abro` section is needed as otherwise the RIOT node will discard
+router advertisements, as it is in 6LN configuration
+(see https://tools.ietf.org/html/rfc6775#section-4.3).
+
+With this, simply (re-)start the deamon:
 
     sudo service radvd restart
 
