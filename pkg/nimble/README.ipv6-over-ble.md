@@ -3,7 +3,8 @@
 This README contains information how to establish an IPv6-over-BLE connection
 between Linux and RIOT (using GNRC and NimBLE).
 
-**NOTE 1:** IPv6-over-BLE between RIOT and Linux is **highly experimental** at the moment and does suffer stability issues!
+**NOTE 1:** IPv6-over-BLE between RIOT and Linux is **highly experimental** at
+the moment and does suffer stability issues!
 
 **NOTE 2:** currently, Linux does not support 6LoWPAN neighbor discovery (which
 RIOT uses per default), so RIOT needs to be compiled to use stateless address
@@ -157,7 +158,7 @@ This will tell Linux to advertise the prefix `2001:db8::/64`. Do not forget to
 substitute the device identifier for the address given in the `abro` section
 with the one of the BLE device on your Linux host.
 
-*NOTE:* the `abro` section is needed as otherwise the RIOT node will discard
+**NOTE:** the `abro` section is needed as otherwise the RIOT node will discard
 router advertisements, as it is in 6LN configuration
 (see https://tools.ietf.org/html/rfc6775#section-4.3).
 
