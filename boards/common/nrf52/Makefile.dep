@@ -9,7 +9,7 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_netdev_default,$(USEMODULE)))
-  ifeq (,$(filter nordic_softdevice_ble nrfmin nrf802154,$(USEMODULE)))
+  ifeq (,$(filter nordic_softdevice_ble nrfmin nrf802154,$(USEMODULE) $(USEPKG)))
     USEMODULE += nimble_netif
   endif
 endif
