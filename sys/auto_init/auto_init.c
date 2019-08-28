@@ -180,6 +180,10 @@ void auto_init(void)
     DEBUG("Auto init NimBLE\n");
     extern void nimble_riot_init(void);
     nimble_riot_init();
+#ifdef MODULE_SHELL_COMMANDS
+    extern void sc_nimble_netif_init(void);
+    sc_nimble_netif_init();
+#endif
 #endif
 #ifdef MODULE_AUTO_INIT_LORAMAC
     extern void auto_init_loramac(void);
