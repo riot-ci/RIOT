@@ -53,7 +53,7 @@ typedef struct rmutex_t {
     /**
      * @brief   Owner thread of the mutex.
      * @details Owner is written by the mutex holder, and read
-     *          in critical section to ensure consistency,
+     *          in critical section to ensure consistency.
      * @internal
      */
     kernel_pid_t owner;
