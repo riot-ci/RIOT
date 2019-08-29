@@ -353,13 +353,25 @@ static int cc110x_init(netdev_t *netdev)
         gpio_irq_disable(dev->params.gdo2);
         DEBUG("[cc110x] netdev_driver_t::init(): cc110x_apply_config() "
               "failed\n");
-        /* Pass through received error code  */
+        /* Pass through received error code */
         return retval;
     }
     else {
-        DEBUG("[cc110x] netdev_driver_t::init(): Success\n");
     }
 
+    if (CC110X_DEFAULT_CHANNEL) {
+        retval = cc110x_set_channel(dev, CC110X_DEFAULT_CHANNEL);
+        if (retval) {
+            gpio_irq_disable(dev->params.gdo0);
+            gpio_irq_disable(dev->params.gdo2);
+            DEBUG("[cc110x] netdev_driver_t::init(): Setting default channel "
+                  "failed\n");
+            /* Pass through received error code */
+            return retval;
+        }
+    }
+
+    DEBUG("[cc110x] netdev_driver_t::init(): Success\n");
     return 0;
 }
 
