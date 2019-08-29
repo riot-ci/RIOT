@@ -84,14 +84,6 @@ endif
 # files here so they will be submitted along with the test jobs.
 TEST_EXTRA_FILES += $(SLOT_RIOT_ELFS) $(SUIT_SEC) $(SUIT_PUB)
 
-# riotboot is currently incompatible with the NRF softdevice.
-# That gets automatically selected on boards that support it, unless nrfmin is
-# used.
-# So use that here in order to prevent the softdevice from being used.
-ifeq (nrf52dk,$(BOARD))
-  USEMODULE += nrfmin
-endif
-
 include $(RIOTBASE)/Makefile.include
 
 .PHONY: host-tools
