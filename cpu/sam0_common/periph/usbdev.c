@@ -246,6 +246,12 @@ static inline void _poweron(sam0_common_usb_t *dev)
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN
                       | GCLK_CLKCTRL_GEN(dev->config->gclk_src)
                       | GCLK_CLKCTRL_ID(USB_GCLK_ID);
+#elif defined(CPU_FAM_SAML21)
+    GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_CHEN |
+                                     GCLK_PCHCTRL_GEN(dev->config->gclk_src);
+#elif defined(CPU_FAM_SAMD5X)
+    GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_CHEN |
+                                     GCLK_PCHCTRL_GEN_GCLK6;
 #else
     GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_CHEN
                                    | GCLK_PCHCTRL_GEN(dev->config->gclk_src);
