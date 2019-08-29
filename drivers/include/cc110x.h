@@ -240,6 +240,13 @@ extern "C" {
 #define CC110X_DEFAULT_PROTOCOL         (GNRC_NETTYPE_UNDEF)
 #endif
 
+#ifndef CC110X_DEFAULT_CHANNEL
+/**
+ * @brief The default channel to set up after initializing the device
+ */
+#define CC110X_DEFAULT_CHANNEL      (0U)
+#endif
+
 /**
  * @brief The state of the CC1100/CC1101 transceiver
  *
