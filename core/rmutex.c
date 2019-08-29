@@ -54,7 +54,7 @@ static int _lock(rmutex_t *rmutex, int trylock)
          *     holding the lock (e.g.: holder unlocks the mutex, new
          *     holder aquired the lock). Enclosing the access within
          *     irq_disable()/irq_restore() ensures that the value of
-         *     rmutex->owner is read correctly WRT rad/modify/write of the
+         *     rmutex->owner is read correctly WRT read/modify/write of the
          *     shared 16bit memory.
          *
          *     It is not necessary to synchronize (make written values
