@@ -347,13 +347,13 @@ static void _suit_handle_url(const char *url)
 
         int res;
         if ((res = suit_v4_parse(&manifest, _manifest_buf, size)) != SUIT_OK) {
-            printf("suit_v4_parse() failed. res=%i\n", res);
+            LOG_INFO("suit_v4_parse() failed. res=%i\n", res);
             return;
         }
 
-        printf("suit_v4_parse() success\n");
+        LOG_INFO("suit_v4_parse() success\n");
         if (!(manifest.state & SUIT_MANIFEST_HAVE_IMAGE)) {
-            puts("manifest parsed, but no image fetched");
+            LOG_INFO("manifest parsed, but no image fetched\n");
             return;
         }
 
