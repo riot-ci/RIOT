@@ -347,7 +347,8 @@ static int cc110x_init(netdev_t *netdev)
     /* Apply configuration (if non-NULL) and channel map, which also calls
      * cc110x_full_calibration
      */
-    retval = cc110x_apply_config(dev, dev->params.config, dev->params.channels);
+    retval = cc110x_apply_config(dev, dev->params.config, dev->params.channels,
+                                 CC110X_DEFAULT_CHANNEL);
     if (retval) {
         gpio_irq_disable(dev->params.gdo0);
         gpio_irq_disable(dev->params.gdo2);
@@ -355,18 +356,6 @@ static int cc110x_init(netdev_t *netdev)
               "failed\n");
         /* Pass through received error code */
         return retval;
-    }
-
-    if (CC110X_DEFAULT_CHANNEL) {
-        retval = cc110x_set_channel(dev, CC110X_DEFAULT_CHANNEL);
-        if (retval) {
-            gpio_irq_disable(dev->params.gdo0);
-            gpio_irq_disable(dev->params.gdo2);
-            DEBUG("[cc110x] netdev_driver_t::init(): Setting default channel "
-                  "failed\n");
-            /* Pass through received error code */
-            return retval;
-        }
     }
 
     DEBUG("[cc110x] netdev_driver_t::init(): Success\n");
