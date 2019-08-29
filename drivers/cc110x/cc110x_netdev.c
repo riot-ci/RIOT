@@ -356,8 +356,6 @@ static int cc110x_init(netdev_t *netdev)
         /* Pass through received error code */
         return retval;
     }
-    else {
-    }
 
     if (CC110X_DEFAULT_CHANNEL) {
         retval = cc110x_set_channel(dev, CC110X_DEFAULT_CHANNEL);
