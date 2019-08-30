@@ -39,7 +39,7 @@ $ PORT=tap0 make term
 
 ### Certificate/key
 
-This example uses fixed certificates and keys from `wolfssl/wolfssl/certs_test.h`.
+This example uses fixed certificates and keys from `cert.c`.
 
 ### Testing against host endpoints
 

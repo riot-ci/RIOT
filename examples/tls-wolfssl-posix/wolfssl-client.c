@@ -34,8 +34,10 @@
 #include <wolfssl/certs_test.h>
 
 #define SERVER_PORT 11111
-#define SERVER_ADDRESS 
+#define CIPHER_LIST "ECDHE-ECDSA-CHACHA20-POLY1305"
 
+extern const unsigned char client_cert[], ca_cert[], client_key[];
+extern const unsigned long client_cert_len, ca_cert_len, client_key_len;
 
 int tls_client(int argc, char *argv[])
 {
@@ -93,9 +95,6 @@ int tls_client(int argc, char *argv[])
 /* END TCP SETUP, BEGIN TLS */
 /*----------------------------------------------------------------------------*/
 
-    /* Initialize wolfSSL */
-    wolfSSL_Init();
-
     /* Create and initialize WOLFSSL_CTX */
     if ((ctx = wolfSSL_CTX_new(wolfTLSv1_2_client_method())) == NULL) {
         fprintf(stderr, "ERROR: failed to create WOLFSSL_CTX\n");
@@ -103,8 +102,29 @@ int tls_client(int argc, char *argv[])
     }
 
     /* Load client certificates into WOLFSSL_CTX */
-    if (wolfSSL_CTX_load_verify_buffer(ctx, ca_cert_der_2048,
-                                       sizeof_ca_cert_der_2048,
+    if (wolfSSL_CTX_use_certificate_chain_buffer(ctx, client_cert,
+                                       client_cert_len
+                                       ) != SSL_SUCCESS) {
+        fprintf(stderr, "ERROR: failed to load client crt buffer\n");
+        return -1;
+    }
+    /* Load client key into WOLFSSL_CTX */
+    if (wolfSSL_CTX_use_PrivateKey_buffer(ctx, client_key,
+                                        client_key_len,
+                                        SSL_FILETYPE_ASN1) != SSL_SUCCESS) {
+        fprintf(stderr, "ERROR: failed to load client_key8\n");
+        return -1;
+    }
+
+    /* Set cipher list */
+    if (wolfSSL_CTX_set_cipher_list(ctx, CIPHER_LIST) != SSL_SUCCESS) {
+        fprintf(stderr, "ERROR: failed to set cipher list\n");
+        return -1;
+    }
+
+    /* Load CA certificates into WOLFSSL_CTX */
+    if (wolfSSL_CTX_load_verify_buffer(ctx, ca_cert,
+                                       ca_cert_len,
                                        SSL_FILETYPE_ASN1) != SSL_SUCCESS) {
         fprintf(stderr, "ERROR: failed to load ca buffer\n");
         return -1;

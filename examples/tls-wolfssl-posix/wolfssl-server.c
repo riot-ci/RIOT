@@ -31,9 +31,12 @@
 /* wolfSSL */
 #include "application_user_settings.h"
 #include <wolfssl/ssl.h>
-#include <wolfssl/certs_test.h>
 
 #define DEFAULT_PORT 11111
+#define CIPHER_LIST "ECDHE-ECDSA-CHACHA20-POLY1305"
+
+extern const unsigned char server_cert[], ca_cert[], server_key[];
+extern const unsigned long server_cert_len, ca_cert_len, server_key_len;
 
 
 int tls_server(int argc, char *argv[])
@@ -88,8 +91,6 @@ int tls_server(int argc, char *argv[])
 /* END TCP SETUP, BEGIN TLS */
 /*----------------------------------------------------------------------------*/
 
-    /* Initialize wolfSSL */
-    wolfSSL_Init();
 
     /* Create and initialize WOLFSSL_CTX */
     if ((ctx = wolfSSL_CTX_new(wolfTLSv1_2_server_method())) == NULL) {
@@ -98,18 +99,23 @@ int tls_server(int argc, char *argv[])
     }
 
     /* Load server certificates into WOLFSSL_CTX */
-    if (wolfSSL_CTX_use_certificate_buffer(ctx, serv_ecc_comp_der_256,
-                                         sizeof_serv_ecc_comp_der_256,
+    if (wolfSSL_CTX_use_certificate_buffer(ctx, server_cert,
+                                         server_cert_len,
                                          SSL_FILETYPE_ASN1) != SSL_SUCCESS) {
-        fprintf(stderr, "ERROR: failed to load server_cert_der_2048\n");
+        fprintf(stderr, "ERROR: failed to load server_certificate\n");
+        return -1;
+    }
+    /* Load server key into WOLFSSL_CTX */
+    if (wolfSSL_CTX_use_PrivateKey_buffer(ctx, server_key,
+                                        server_key_len,
+                                        SSL_FILETYPE_ASN1) != SSL_SUCCESS) {
+        fprintf(stderr, "ERROR: failed to load server_key8\n");
         return -1;
     }
 
-    /* Load server key into WOLFSSL_CTX */
-    if (wolfSSL_CTX_use_PrivateKey_buffer(ctx, ecc_key_der_256,
-                                        sizeof_ecc_key_der_256,
-                                        SSL_FILETYPE_ASN1) != SSL_SUCCESS) {
-        fprintf(stderr, "ERROR: failed to load server_key_der_2048\n");
+    /* Set cipher list */
+    if (wolfSSL_CTX_set_cipher_list(ctx, CIPHER_LIST) != SSL_SUCCESS) {
+        fprintf(stderr, "ERROR: failed to set cipher list\n");
         return -1;
     }
 
@@ -121,10 +127,10 @@ int tls_server(int argc, char *argv[])
         printf("Waiting for a connection...\n");
 
         /* Accept client connections */
-        if ((connd = accept(sockfd, (struct sockaddr*)&clientAddr, &size))
-            == -1) {
+        connd = accept(sockfd, (struct sockaddr *)&clientAddr, &size);
+        if (connd < 0)  {
             fprintf(stderr, "ERROR: failed to accept the connection\n\n");
-            return -1;
+            continue;
         }
 
         /* Create a WOLFSSL object */

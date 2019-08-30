@@ -23,14 +23,15 @@ extern "C" {
 #define NO_OLD_RNGNAME
 
 /* Uncomment the next two lines to enable wolfSSL debug */
-/* #define DEBUG_WOLFSSL */
-/* #define WOLFSSL_LOG_PRINTF */
+// #define DEBUG_WOLFSSL 
+// #define WOLFSSL_LOG_PRINTF 
 
 /* Single precision math */
 #define WOLFSSL_SP_MATH
 #define WOLFSSL_SP_SMALL
 #define SP_WORD_SIZE 32
 #define WOLFSSL_SP
+
 
 
 /* GNRC support enabled if not
@@ -51,7 +52,16 @@ extern "C" {
 #       define WOLFCRYPT_ONLY
 #   else
 #       define NO_OLD_TLS
+#       define HAVE_TLS_EXTENSIONS
+#       define HAVE_AES_DECRYPT
+#       define HAVE_AESGCM
+#       define GCM_SMALL
+#       define HAVE_AESCCM
+#       define WOLFSSL_AES_COUNTER
+#       define WOLFSSL_AES_DIRECT
 #   endif
+#else
+#   define HAVE_TLS_EXTENSIONS
 #endif
 
 /* Align on 32-bit (exc. native,
@@ -171,6 +181,7 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
   #define WOLFSSL_HAVE_SP_ECC
   #define WOLFSSL_HAVE_SP_ECC
   #define ECC_TIMING_RESISTANT
+  #define HAVE_SUPPORTED_CURVES
 #endif
 
 #undef HAVE_BLAKE2B
@@ -294,7 +305,6 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
 #ifdef MODULE_WOLFSSL_TLS13
     #define HAVE_TLS13
     #define WOLFSSL_TLS13
-    #define HAVE_TLS_EXTENSIONS
     #define BUILD_TLS_AES_128_GCM_SHA256
 #endif
 

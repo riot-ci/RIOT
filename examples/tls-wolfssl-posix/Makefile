@@ -27,28 +27,35 @@ ifneq (0, $(LWIP_IPV4))
   USEMODULE += ipv4_addr
   USEMODULE += lwip_arp
   USEMODULE += lwip_ipv4
-  CFLAGS += -DETHARP_SUPPORT_STATIC_ENTRIES=1 
+  CFLAGS += -DETHARP_SUPPORT_STATIC_ENTRIES=1
   LWIP_IPV6 ?= 0
 else
   LWIP_IPV6 ?= 1
   USEMODULE += ipv6_addr
   USEMODULE += lwip_ipv6_autoconfig
-  USEMODULE += lwip lwip_ipv6_autoconfig
   USEMODULE += lwip_tcp lwip_sock_tcp
 endif
+
+USEMODULE += lwip_netdev
+USEMODULE += lwip_tcp lwip_sock_tcp
+USEMODULE += netdev_default
 
 USEMODULE += inet_csum
 USEMODULE += lwip_netdev
 USEMODULE += lwip_sock_tcp
 USEMODULE += netdev_eth
-USEMODULE += netdev_test
 USEMODULE += ps
-USEMODULE += netdev_default
 
+DISABLE_MODULE += auto_init
 ifeq ($(BOARD),native)
   USEMODULE += lwip_ethernet
 endif
 
+CFLAGS += -DSO_REUSE
+CFLAGS += -DLWIP_SO_RCVTIMEO
+CFLAGS += -DLWIP_SOCK_TCP_ACCEPT_TIMEOUT=500
+CFLAGS += -DLWIP_NETIF_LOOPBACK=1
+CFLAGS += -DLWIP_HAVE_LOOPIF=1
 
 # Add also the shell, some shell commands
 USEMODULE += shell
@@ -62,12 +69,13 @@ CFLAGS+=-Wno-unused-parameter -Wno-unused-variable
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-# May need these for seeding wolfCrypt DRBG
-#USEMODULE += random
-#USEMODULE += prng_minstd
+# need these for seeding wolfCrypt DRBG
+USEMODULE += random
+USEMODULE += prng_minstd
 
 USEPKG += wolfssl
-USEMODULE += wolfssl_socket wolfcrypt_ecc wolfcrypt_dh
+USEMODULE += wolfssl_socket wolfcrypt_ecc wolfssl_dh
+USEMODULE += wolfcrypt_poly1305 wolfcrypt_chacha
 
 
 include $(RIOTBASE)/Makefile.include
