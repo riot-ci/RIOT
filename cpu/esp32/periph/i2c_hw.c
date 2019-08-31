@@ -288,23 +288,49 @@ int i2c_release(i2c_t dev)
     return 0;
 }
 
-#define _i2c_return_on_error(dev) \
+#define _i2c_return_on_error_read(dev) \
     if (_i2c_bus[dev].results & I2C_ARBITRATION_LOST_INT_ENA) { \
-        LOG_TAG_ERROR("i2c", "arbitration lost dev=%u\n", dev); \
+        LOG_TAG_DEBUG("i2c", "arbitration lost dev=%u\n", dev); \
         _i2c_reset_hw (dev); \
-__asm__ volatile ("isync"); \
+        __asm__ volatile ("isync"); \
         return -EAGAIN; \
     } \
     else if (_i2c_bus[dev].results & I2C_ACK_ERR_INT_ENA) { \
-        LOG_TAG_ERROR("i2c", "ack error dev=%u\n", dev); \
+        LOG_TAG_DEBUG("i2c", "ack error dev=%u\n", dev); \
         _i2c_reset_hw (dev); \
-__asm__ volatile ("isync"); \
-        return -EIO; \
+        __asm__ volatile ("isync"); \
+        return -ENXIO; \
     } \
     else if (_i2c_bus[dev].results & I2C_TIME_OUT_INT_ENA) { \
-        LOG_TAG_ERROR("i2c", "bus timeout dev=%u\n", dev); \
+        LOG_TAG_DEBUG("i2c", "bus timeout dev=%u\n", dev); \
         _i2c_reset_hw (dev); \
-__asm__ volatile ("isync"); \
+        __asm__ volatile ("isync"); \
+        return -ETIMEDOUT; \
+    }
+
+#define _i2c_return_on_error_write(dev) \
+    if (_i2c_bus[dev].results & I2C_ARBITRATION_LOST_INT_ENA) { \
+        LOG_TAG_DEBUG("i2c", "arbitration lost dev=%u\n", dev); \
+        _i2c_reset_hw (dev); \
+        __asm__ volatile ("isync"); \
+        return -EAGAIN; \
+    } \
+    else if (_i2c_bus[dev].results & I2C_ACK_ERR_INT_ENA) { \
+        LOG_TAG_DEBUG("i2c", "ack error dev=%u\n", dev); \
+        uint32_t _tx_fifo_cnt = _i2c_hw[dev].regs->status_reg.tx_fifo_cnt; \
+        _i2c_reset_hw (dev); \
+        __asm__ volatile ("isync"); \
+        if (_tx_fifo_cnt >= len) { \
+            return -ENXIO; \
+        } \
+        else { \
+            return -EIO; \
+        } \
+    } \
+    else if (_i2c_bus[dev].results & I2C_TIME_OUT_INT_ENA) { \
+        LOG_TAG_DEBUG("i2c", "bus timeout dev=%u\n", dev); \
+        _i2c_reset_hw (dev); \
+        __asm__ volatile ("isync"); \
         return -ETIMEDOUT; \
     }
 
@@ -350,7 +376,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, uint8_t fla
         _i2c_read_cmd (dev, data, I2C_MAX_DATA, false);
         _i2c_end_cmd (dev);
         _i2c_transfer (dev);
-        _i2c_return_on_error (dev);
+        _i2c_return_on_error_read (dev);
 
         /* if transfer was successful, fetch the data from I2C RAM */
         for (unsigned i = 0; i < I2C_MAX_DATA; i++) {
@@ -380,7 +406,7 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, uint8_t fla
 
     /* finish operation by executing the command pipeline */
     _i2c_transfer (dev);
-    _i2c_return_on_error (dev);
+    _i2c_return_on_error_read (dev);
 
     /* if transfer was successful, fetch data from I2C RAM */
     for (unsigned i = 0; i < len; i++) {
@@ -437,7 +463,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len, uint
         _i2c_write_cmd (dev, ((uint8_t*)data) + off, I2C_MAX_DATA);
         _i2c_end_cmd (dev);
         _i2c_transfer (dev);
-        _i2c_return_on_error (dev);
+        _i2c_return_on_error_write (dev);
 
         len -= I2C_MAX_DATA;
         off += I2C_MAX_DATA;
@@ -458,7 +484,7 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len, uint
 
     /* finish operation by executing the command pipeline */
     _i2c_transfer (dev);
-    _i2c_return_on_error (dev);
+    _i2c_return_on_error_write (dev);
 
     /* return 0 on success */
     return 0;
