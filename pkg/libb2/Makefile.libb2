@@ -2,6 +2,7 @@ MODULE = libb2
 
 # Compiling for native triggers this warning
 CFLAGS += -Wno-unused-function
+CFLAGS += -DSUFFIX=
 
 SRC := blake2s-ref.c \
        blake2b-ref.c \
