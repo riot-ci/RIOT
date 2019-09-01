@@ -81,7 +81,7 @@ else
   #
   # Note that this is used as a workaround for issues with the internal use
   # of xtimer in the semtech-loramac adaption code for RIOT. Indeed, during a
-  # sleep mode with RAM retention the hardware timer used by default are stop
+  # sleep mode with RAM retention the hardware timer used by default are stopped
   # and thus, when waking up the dutycycle timer time has not changed. This
   # prevents more than one message to be sent.
   # This is a known limitation of xtimer and should be fixed in the future by
