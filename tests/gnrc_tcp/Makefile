@@ -19,7 +19,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo a
                              yunjia-nrf51822 z1 thingy52
 
 # unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag 
+BOARD_BLACKLIST := chronos hamilton ruuvitag
 
 # This test depends on tap device setup (only allowed by root)
 # Suppress test execution to avoid CI errors
