@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef PKG_LIBB2_CONFIG_H
+#define PKG_LIBB2_CONFIG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,4 +21,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* CONFIG_H */
+#endif /* PKG_LIBB2_CONFIG_H */
