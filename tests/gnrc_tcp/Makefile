@@ -16,10 +16,14 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo a
                              saml10-xpro saml11-xpro stm32f0discovery stm32l0538-disco telosb \
                              nucleo-f072rb nucleo-f303k8 nucleo-f334r8 nucleo-l031k6 \
                              nucleo-l053r8 mega-xplained waspmote-pro wsn430-v1_3b wsn430-v1_4 \
-                             yunjia-nrf51822 z1
+                             yunjia-nrf51822 z1 thingy52
 
 # unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag thingy52
+BOARD_BLACKLIST := chronos hamilton ruuvitag 
+
+# This test depends on tap device setup (only allowed by root)
+# Suppress test execution to avoid CI errors
+TEST_ON_CI_BLACKLIST += all
 
 CFLAGS += -DSHELL_NO_ECHO
 CFLAGS += -DGNRC_TCP_MSL=$(MSL_US)
