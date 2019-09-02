@@ -46,6 +46,16 @@
 static gpio_isr_ctx_t isr_ctx[EXTI_NUMOF];
 #endif /* MODULE_PERIPH_GPIO_IRQ */
 
+/* L412KB specifics */
+#if !defined(IMR) && defined(IMR1)
+
+/**
+ * @brief   Alias IMR1 as IMR
+ */
+#define IMR IMR1
+
+#endif
+
 /**
  * @brief   Extract the port base address from the given pin identifier
  */
