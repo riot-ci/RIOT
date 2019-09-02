@@ -63,6 +63,10 @@ int main(void)
     while (1) {
         /* Get temperature in deci degrees celsius */
         int16_t temperature = bmp180_read_temperature(&dev);
+        bool negative = (temperature < 0);
+        if (negative) {
+            temperature = -temperature;
+        }
 
         /* Get pressure in Pa */
         uint32_t pressure = bmp180_read_pressure(&dev);
@@ -73,11 +77,12 @@ int main(void)
         /* Get altitude in meters */
         int16_t altitude = bmp180_altitude(&dev, pressure_0);
 
-        printf("Temperature [°C]: %d.%d\n"
+        printf("Temperature [°C]: %c%d.%d\n"
                "Pressure [hPa]: %lu.%d\n"
                "Pressure at see level [hPa]: %lu.%d\n"
               "Altitude [m]: %i\n"
                "\n+-------------------------------------+\n",
+               (negative ? '-' : ' '),
                (int)(temperature / 10), (int)(temperature % 10),
                (unsigned long)pressure / 100, (int)(pressure % 100),
                (unsigned long)pressure_0 / 100, (int)(pressure_0 % 100),
