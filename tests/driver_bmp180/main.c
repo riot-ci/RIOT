@@ -74,7 +74,7 @@ int main(void)
         /* Get altitude in meters */
         int16_t altitude = bmp180_altitude(&dev, pressure_0);
 
-        printf("Temperature [°C]: %d.%d\n"
+        printf("Temperature [°C]: %i.%d\n"
                "Pressure [hPa]: %lu.%d\n"
                "Pressure at see level [hPa]: %lu.%d\n"
               "Altitude [m]: %i\n"
