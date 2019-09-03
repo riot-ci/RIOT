@@ -285,7 +285,7 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
                    val2bcd(time->tm_sec,  RTC_ALRMAR_SU_Pos, ALRM_S_MASK));
 
     /* Enable Alarm A */
-    RTC->ISR &= ~(RTC_ISR_ALRAF);
+    RTC->ISR &= ~(RTC_SR_ALRAF);
     RTC->CR |= (RTC_CR_ALRAE | RTC_CR_ALRAIE);
 
     rtc_lock();
@@ -333,11 +333,11 @@ void rtc_poweroff(void)
 
 void ISR_NAME(void)
 {
-    if (RTC->ISR & RTC_ISR_ALRAF) {
+    if (RTC->ISR & RTC_SR_ALRAF) {
         if (isr_ctx.cb != NULL) {
             isr_ctx.cb(isr_ctx.arg);
         }
-        RTC->ISR &= ~RTC_ISR_ALRAF;
+        RTC->ISR &= ~RTC_SR_ALRAF;
     }
     EXTI->PR |= EXTI_PR_BIT;
     cortexm_isr_end();
