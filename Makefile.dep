@@ -666,7 +666,6 @@ endif
 ifneq (,$(filter puf_sram,$(USEMODULE)))
   USEMODULE += hashes
   USEMODULE += random
-  FEATURES_REQUIRED += puf_sram
 endif
 
 ifneq (,$(filter random,$(USEMODULE)))
@@ -691,9 +690,8 @@ ifneq (,$(filter random,$(USEMODULE)))
     USEMODULE += hashes
   endif
 
-  ifeq (,$(filter puf_sram,$(USEMODULE)))
-    FEATURES_OPTIONAL += periph_hwrng
-  endif
+  FEATURES_OPTIONAL += puf_sram
+  FEATURES_OPTIONAL += periph_hwrng
 
   USEMODULE += luid
 endif
@@ -886,6 +884,9 @@ USEMODULE += $(filter periph_%,$(FEATURES_USED))
 
 # select cpu_check_address pseudomodule if the corresponding feature is used
 USEMODULE += $(filter cpu_check_address, $(FEATURES_USED))
+
+# include puf_sram if used
+USEMODULE += $(filter puf_sram, $(FEATURES_USED))
 
 # include periph_common if any periph_* driver is used
 ifneq (,$(filter periph_%, $(USEMODULE)))
