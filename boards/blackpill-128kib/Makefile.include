@@ -1,6 +1,6 @@
 ## the cpu to build for
 export CPU = stm32f1
-export CPU_MODEL = stm32f103c8
+export CPU_MODEL = stm32f103cb
 
 USEMODULE += boards_common_stm32f103c8
 
