@@ -10,7 +10,8 @@ RIOTBASE ?= $(CURDIR)/../..
 BOARD_INSUFFICIENT_MEMORY := nucleo-f031k6 nucleo-f042k6 nucleo-l031k6
 
 # For boards providing an EEPROM (e.g. STM32 L0 and L1 for the moment), the
-# low-power modes are enabled
+# lowest possible power mode is enabled (assuming no RAM retention is available
+# in this mode, this is the case for STANDBY mode on STM32).
 BOARD_PROVIDING_EEPROM := b-l072z-lrwan1 \
                           lobaro-lorabox \
                           lsn50 \
