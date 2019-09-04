@@ -116,6 +116,9 @@ int __attribute__((used)) sched_run(void)
 
 #ifdef MODULE_SCHED_CB
     if (sched_cb) {
+        /* Use `sched_active_pid` instead of `active_thread` since after `sched_task_exit()` is
+           called `active_thread` is set to NULL while `sched_active_thread` isn't updated until
+           `next_thread` is scheduled*/
         sched_cb(sched_active_pid, next_thread->pid);
     }
 #endif
