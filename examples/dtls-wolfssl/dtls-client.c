@@ -27,6 +27,7 @@
 #include <string.h>
 
 #define SERVER_PORT 11111
+#define APP_DTLS_BUF_SIZE 64
 
 extern const unsigned char server_cert[];
 extern const unsigned long server_cert_len;
@@ -79,7 +80,6 @@ static inline unsigned int my_psk_client_cb(WOLFSSL* ssl, const char* hint,
 }
 #endif
 
-#define APP_DTLS_BUF_SIZE 64
 int dtls_client(int argc, char **argv)
 {
     int ret = 0;
@@ -87,7 +87,7 @@ int dtls_client(int argc, char **argv)
     int iface;
     char *addr_str;
     int connect_timeout = 0;
-    const int max_connect_timeouts = 5;
+    const int max_connect_timeouts = 20;
 
     if (argc != 2) {
         usage(argv[0]);

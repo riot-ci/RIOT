@@ -35,13 +35,12 @@ USEMODULE += shell_commands
 USEPKG += wolfssl
 USEMODULE += wolfcrypt
 USEMODULE += wolfssl
-USEMODULE += wolfcrypt-test
 USEMODULE += wolfssl_dtls
 
 # Select public key algorithm (or PSK) support fot ciphersuite(s):
-USEMODULE += wolfcrypt_ecc
+#USEMODULE += wolfcrypt_ecc
 #USEMODULE += wolfcrypt_rsa wolfcrypt_dh
-#USEMODULE += wolfssl_psk
+USEMODULE += wolfssl_psk
 
 # Uncomment the following line to add debug symbols
 #CFLAGS+=-g -ggdb3

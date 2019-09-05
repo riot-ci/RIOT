@@ -23,6 +23,9 @@ DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
+# Ensure there is enough stack space
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_LARGE
+
 CFLAGS+=-DNO_ED25519_SIGN -DNO_ED25519_KEY_EXPORT
 
 USEPKG +=wolfssl
