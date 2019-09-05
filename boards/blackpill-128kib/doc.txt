@@ -1,0 +1,10 @@
+/**
+@defgroup    boards_blackpill_128kib Blackpill board
+@ingroup     boards
+@brief       Support for the stm32f103cb based blackpill board.
+
+This is the 128KiB version of the @ref boards_blackpill. Intentionally no
+documentation is provided here, please refer to the @ref boards_blackpill
+instead.
+
+ */

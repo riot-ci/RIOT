@@ -63,22 +63,17 @@ the debugger and OpenOCD is installed, you can flash the device with:
 
 ### Additional Flash
 
-To make use of the entire 128 KB flash, compile your application with:
+To make use of the entire 128 KB flash, compile and flash your application with:
 
-    $ make STM32F103C8_FLASH_HACK=1 BOARD=bluepill
+    $ make BOARD=bluepill-128kib flash
 
 This sets the `CPU_MODEL` make variable to `stm32f103cb`, the default
 value is `stm32f103c8`. These two CPU models basically only have one
 major difference, the latter has 128 KB flash while the former has 64
-KB. You may also set `STM32F103C8_FLASH_HACK` as environment variable.
+KB.
 
-If you want to flash a binary compiled this way you either need to
-figure out how to adjust the OpenOCD configuration to make it use 128 KB
-flash or use this [stlink fork][caboStlink] which has a
-[patch][caboPatch] to make use of the entire 128 KB flash using:
-
-    $ C8T6HACK=1 st-flash write /dev/sgX $pathToHexFile 0x8000000
-
+Flashing for the 128KiB version  currently (as of September 2019) requires the
+development version of OpenOCD.
 
 ## Connecting via Serial
 
@@ -152,7 +147,4 @@ http://wiki.stm32duino.com/index.php?title=Blue_Pill#Hardware_installation
 [imgTop]:
 http://wiki.stm32duino.com/images/thumb/1/19/STM32_Blue_Pill_top.jpg/800px-
 STM32_Blue_Pill_top.jpg
-[caboStlink]: https://github.com/cabo/stlink
-[caboPatch]:
-https://github.com/cabo/stlink/commit/e2ff1710ca6caeb55b5b99f7bd8a29181ccf533d
  */

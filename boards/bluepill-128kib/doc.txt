@@ -1,0 +1,16 @@
+/**
+@defgroup    boards_bluepill_128kib Bluepill board (with 128KiB Flash Hack
+@ingroup     boards
+@brief       Support for the stm32f103cb based bluepill board.
+
+This board is identical to the @ref boards_bluepill, but it allows you to flash
+128KiB. The Bluepill is equipped with an STM32F103C8 which officially only has
+64KiB flash. However, it appears that most STM32F103C8 seem to be an
+STM32F103CB with only a fuse blown and therefore have fully function 128KiB
+flash. So - on your own risk - this boards provides you with a way to use the
+full 128KiB.
+
+In order to avoid duplication of the documentation, please refer to the
+documentation of the regular @ref boards_bluepill instead.
+
+ */

@@ -1,0 +1,24 @@
+/**
+@defgroup    boards_blackpill Blackpill board
+@ingroup     boards
+@brief       Support for the stm32f103c8 based blackpill board.
+
+## Overview
+This board can be bought very cheaply on sides like eBay or
+AliExpress. Although the MCU nominally has 64 KiB ROM, most of them
+have 128 KiB ROM. This board is almost identical to the @ref boards_bluepill
+except for the pin layout and the on board LED is connected to PB12 instead
+of PC13. For more information see:
+http://wiki.stm32duino.com/index.php?title=Black_Pill
+
+To avoid duplication of the documentation, please refer to the documentation of
+the @ref boards_bluepill instead.
+
+## Using 128KiB Flash
+
+Similar to the @ref boards_bluepill, the full 128KiB flash can be used (at your
+on risk) using:
+
+    make BOARD=blackpill-128kib flash
+
+ */

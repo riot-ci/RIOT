@@ -9,16 +9,8 @@
  */
 
 /**
- * @defgroup    boards_blackpill Black pill
- * @ingroup     boards
+ * @ingroup     boards_blackpill
  * @brief       Support for the stm32f103c8 based Black pill.
- *
- * This board can be bought very cheaply on sides like eBay or
- * AliExpress. Although the MCU nominally has 64 KiB ROM, most of them
- * have 128 KiB ROM. This board is almost identical to the bluepill board,
- * except for the pin layout and the on board LED is connected to PB12 instead
- * of PC13. For more information see:
- * http://wiki.stm32duino.com/index.php?title=Black_Pill
  *
  * @{
  *
