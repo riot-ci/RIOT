@@ -390,7 +390,7 @@ static int _esp_wifi_send(netdev_t *netdev, const iolist_t *iolist)
     }
     else {
         ESP_WIFI_DEBUG("sending WiFi packet failed");
-        return EIO;
+        return -EIO;
     }
 }
 
