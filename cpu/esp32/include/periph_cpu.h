@@ -325,6 +325,11 @@ typedef struct {
     gpio_t sda;             /**< GPIO used as SDA pin */
 } i2c_conf_t;
 
+/**
+ * @brief   Maximum number of I2C interfaces that can be used by board definitions
+ */
+#define I2C_NUMOF_MAX   (2)
+
 #define PERIPH_I2C_NEED_READ_REG    /**< i2c_read_reg required */
 #define PERIPH_I2C_NEED_READ_REGS   /**< i2c_read_regs required */
 #define PERIPH_I2C_NEED_WRITE_REG   /**< i2c_write_reg required */
@@ -333,7 +338,6 @@ typedef struct {
 
 /**
  * @name   PWM configuration
- * @{
  *
  * PWM implementation uses ESP32's high-speed MCPWM modules. ESP32 has 2 such
  * modules, each with up to 6 channels (PWM_CHANNEL_NUM_DEV_MAX). Thus, the
@@ -355,6 +359,8 @@ typedef struct {
  * @note As long as the GPIOs listed in PWM0_GPIOS and PMW1_GPIOS are not
  * initialized as PWM channels with the *pwm_init* function, they can be used
  * other purposes.
+ *
+ * @{
  */
 
 /**
@@ -402,6 +408,8 @@ typedef struct {
  *
  * SPI_NUMOF is determined automatically from the board-specific peripheral
  * definitions of SPIn_*.
+ *
+ * @{
  */
 
 /**
@@ -422,6 +430,11 @@ typedef struct {
     gpio_t miso;            /**< GPIO used as MISO pin */
     gpio_t cs;              /**< GPIO used as CS0 pin */
 } spi_conf_t;
+
+/**
+ * @brief   Maximum number of SPI interfaces that can be used by board definitions
+ */
+#define SPI_NUMOF_MAX   2
 
 #define PERIPH_SPI_NEEDS_TRANSFER_BYTE  /**< requires function spi_transfer_byte */
 #define PERIPH_SPI_NEEDS_TRANSFER_REG   /**< requires function spi_transfer_reg */
