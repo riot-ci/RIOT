@@ -6,8 +6,8 @@ This example shows how to use DTLS with wolfSSL
 
 This example is configured to use socks instead of sockets (over GNRC).
 It's possible to use POSIX sockets, which give a more similar approach to the
-UNIX version of wolfSSL. For more information on the POSIX sockets approach, see
-`examples/tls-wolfssl-posix`
+UNIX version of wolfSSL. POSIX sockets are supported by RIOT-OS via lwIP, but
+no example is available at this time.
 
 ## Fast configuration (Between RIOT instances)
 
