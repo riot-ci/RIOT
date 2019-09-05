@@ -119,7 +119,11 @@ endif
 ifneq (, $(filter esp_gdb, $(USEMODULE)))
     CFLAGS += -Og -ggdb -g3
 else
-    CFLAGS += -Os
+    # TODO should be -Os
+    # With -Os char arrays have not to be 32-bit word aligned. This leads to
+    # an alignment exception when the address of an char array is assigned to
+    # an uint32_t pointer and the pointer is used for the access.
+    CFLAGS += -O2
 endif
 
 ifeq ($(QEMU), 1)

@@ -70,6 +70,19 @@ int pthread_setcancelstate(int state, int *oldstate)
 }
 #endif /*  MODULE_PTHREAD */
 
+/*
+ * TODO: When the lock functions in this section are enabled, an application
+ * crashes when an ISR calls a `newlib` function that uses `_lock_acquire`
+ * or `_log_acquire_recursive` to be thread-safe, for example, `puts` in
+ * `tests/isr_yield_higher`. The reason is that the implementation of these
+ * functions uses `mutex` and `rmutex` that do not work in the interrupt
+ * context. Therefore, the lock functions are disabled for the moment, and
+ * instead `newlib`'s dummy lock functions are used which do not guarantee
+ * thread safety.
+ */
+
+#if 0
+
 /**
  * @name Locking functions
  *
@@ -252,6 +265,8 @@ void IRAM _lock_release_recursive(_lock_t *lock)
 
     rmutex_unlock((rmutex_t*)*lock);
 }
+
+#endif
 
 /**
  * @name Memory allocation functions
