@@ -1,4 +1,4 @@
-APPLICATION = wolfssl-test
+include ../Makefile.tests_common
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
@@ -41,6 +41,9 @@ USEPKG += wolfssl
 USEMODULE += wolfcrypt wolfcrypt-test wolfcrypt_sha512 wolfcrypt_curve25519  \
 			 wolfcrypt_ed25519 wolfcrypt_chacha wolfcrypt_poly1305 wolfcrypt_aes \
 			 wolfcrypt_ecc wolfcrypt_asn wolfcrypt_random
+
+# Comment the following line to disable RSA tests (e.g. on low-memory devices)
+USEMODULE += wolfcrypt_rsa wolfcrypt_dh
 
 # Comment the following line to disable full-benchmark test
 USEMODULE += wolfcrypt-benchmark

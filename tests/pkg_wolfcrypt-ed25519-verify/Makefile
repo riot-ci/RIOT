@@ -1,5 +1,4 @@
-# name of your application
-APPLICATION = wolfcrypt-ed25519-verify
+include ../Makefile.tests_common
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native

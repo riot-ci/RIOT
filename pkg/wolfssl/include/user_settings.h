@@ -234,7 +234,6 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
 #   define RSA_LOW_MEM
 #   define WC_RSA_BLINDING
 #   define WOLFSSL_STATIC_RSA
-#   define WOLFSSL_RSA_VERIFY_INLINE
 #   define WOLFSSL_HAVE_SP_DH
 #   define WOLFSSL_HAVE_SP_RSA
 #else
