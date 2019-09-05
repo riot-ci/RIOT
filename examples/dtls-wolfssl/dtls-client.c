@@ -87,7 +87,7 @@ int dtls_client(int argc, char **argv)
     int iface;
     char *addr_str;
     int connect_timeout = 0;
-    const int max_connect_timeouts = 20;
+    const int max_connect_timeouts = 5;
 
     if (argc != 2) {
         usage(argv[0]);
@@ -143,6 +143,7 @@ int dtls_client(int argc, char **argv)
 
     if (sock_dtls_session_create(sk) < 0)
         return -1;
+    wolfSSL_dtls_set_timeout_init(sk->ssl, 5);
     printf("connecting to server...");
     /* attempt to connect until the connection is successful */
     do {
