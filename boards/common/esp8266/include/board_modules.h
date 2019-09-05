@@ -109,14 +109,14 @@ extern "C" {
  * If not defined, the default CS signal of SPI_DEV(0) is used.
  * @{
  */
-#define SDCARD_SPI_PARAM_SPI    SPI_DEV(0)      /**< SPI_DEV(0) is used (fixed) */
-#define SDCARD_SPI_PARAM_CLK    SPI0_SCK_GPIO   /**< SPI_DEV(0) SCK  is used (fixed) */
-#define SDCARD_SPI_PARAM_MOSI   SPI0_MOSI_GPIO  /**< SPI_DEV(0) MOSI is used (fixed) */
-#define SDCARD_SPI_PARAM_MISO   SPI0_MISO_GPIO  /**< SPI_DEV(0) MISO is used (fixed) */
-#define SDCARD_SPI_PARAM_POWER  GPIO_UNDEF      /**< power control is not used (fixed) */
+#define SDCARD_SPI_PARAM_SPI    SPI_DEV(0)  /**< SPI_DEV(0) is used (fixed) */
+#define SDCARD_SPI_PARAM_CLK    SPI0_SCK    /**< SPI_DEV(0) SCK  is used (fixed) */
+#define SDCARD_SPI_PARAM_MOSI   SPI0_MOSI   /**< SPI_DEV(0) MOSI is used (fixed) */
+#define SDCARD_SPI_PARAM_MISO   SPI0_MISO   /**< SPI_DEV(0) MISO is used (fixed) */
+#define SDCARD_SPI_PARAM_POWER  GPIO_UNDEF  /**< power control is not used (fixed) */
 
 #ifndef SDCARD_SPI_PARAM_CS
-#define SDCARD_SPI_PARAM_CS     SPI0_CS0_GPIO   /**< SD-Card CS signal (can be overridden) */
+#define SDCARD_SPI_PARAM_CS     SPI0_CS0    /**< SD-Card CS signal (can be overridden) */
 #endif
 /** @} */
 #endif /* defined(MODULE_SDCARD_SPI) || defined(DOXYGEN) */
