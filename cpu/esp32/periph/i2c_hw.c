@@ -288,6 +288,15 @@ int i2c_release(i2c_t dev)
     return 0;
 }
 
+/*
+ * This macro checks the result of a read transfer. In case of an error,
+ * the hardware is reset and returned with a corresponding error code.
+ *
+ * @note:
+ * In a read transfer, an ACK is only expected for the address field. Thus,
+ * an ACK error can only happen for the address field. Therefore, we always
+ * return -ENXIO in case of an ACK error.
+ */
 #define _i2c_return_on_error_read(dev) \
     if (_i2c_bus[dev].results & I2C_ARBITRATION_LOST_INT_ENA) { \
         LOG_TAG_DEBUG("i2c", "arbitration lost dev=%u\n", dev); \
@@ -308,6 +317,17 @@ int i2c_release(i2c_t dev)
         return -ETIMEDOUT; \
     }
 
+/*
+ * This macro checks the result of a write transfer. In case of an error,
+ * the hardware is reset and returned with a corresponding error code.
+ *
+ * @note:
+ * In a write transfer, an ACK error can happen for the address field
+ * as well as for data. If the FIFO still contains all data bytes,
+ * (i.e. _i2c_hw[dev].regs->status_reg.tx_fifo_cnt >= len), the ACK error
+ * happened in address field and we have to returen -ENXIO. Otherwise, the
+ * ACK error happened in data field and we have to return -EIO.
+ */
 #define _i2c_return_on_error_write(dev) \
     if (_i2c_bus[dev].results & I2C_ARBITRATION_LOST_INT_ENA) { \
         LOG_TAG_DEBUG("i2c", "arbitration lost dev=%u\n", dev); \
@@ -317,10 +337,9 @@ int i2c_release(i2c_t dev)
     } \
     else if (_i2c_bus[dev].results & I2C_ACK_ERR_INT_ENA) { \
         LOG_TAG_DEBUG("i2c", "ack error dev=%u\n", dev); \
-        uint32_t _tx_fifo_cnt = _i2c_hw[dev].regs->status_reg.tx_fifo_cnt; \
         _i2c_reset_hw (dev); \
         __asm__ volatile ("isync"); \
-        if (_tx_fifo_cnt >= len) { \
+        if (_i2c_hw[dev].regs->status_reg.tx_fifo_cnt >= len) { \
             return -ENXIO; \
         } \
         else { \
