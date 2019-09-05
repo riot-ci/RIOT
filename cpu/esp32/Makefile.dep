@@ -23,6 +23,13 @@ ifneq (,$(filter esp_now,$(USEMODULE)))
     USEMODULE += netopt
 endif
 
+ifneq (,$(filter esp_wifi_enterprise,$(USEMODULE)))
+    USEMODULE += esp_wifi
+    USEMODULE += esp_idf_wpa_supplicant_wpa2_eap_peer
+    USEMODULE += esp_idf_wpa_supplicant_wpa2_tls
+    USEMODULE += esp_idf_wpa_supplicant_wpa2_utils
+endif
+
 ifneq (,$(filter esp_wifi,$(USEMODULE)))
     $(eval GNRC_NETIF_NUMOF=$(shell echo $$(($(GNRC_NETIF_NUMOF)+1))))
     USEMODULE += esp_wifi_any
