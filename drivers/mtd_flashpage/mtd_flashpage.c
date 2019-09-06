@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "cpu_conf.h"
 #include "mtd_flashpage.h"
