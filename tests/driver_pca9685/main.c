@@ -34,15 +34,11 @@
  * `$(RIOTBASE)/drivers/pca9685/include/pca9685_params.h` and adopt them
  * if necessary.
  *
- * To use it with the PWM extension API, use module `extend_pwm` as following
- *
- *      USEMODULE=extend_pwm make -C tests/driver_pca9685 BOARD=...
- *
  * If the active LOW output enable pin /OE is used, the GPIO has to be defined
  * as parameter, e.g.
  *
  *      CFLAGS="-DPCA9685_PARAM_INT_PIN=\(GPIO\(0,6\)\)" \
- *      USEMODULE=extend_pwm make -C tests/driver_pca9685 BOARD=...
+ *      make -C tests/driver_pca9685 BOARD=...
  */
 
 #include <stdio.h>
@@ -57,11 +53,6 @@
 #include "pca9685.h"
 #include "pca9685_params.h"
 
-#if MODULE_EXTEND_PWM
-#include "extend/pwm.h"
-#include "pwm_ext_conf.h"
-#endif
-
 #define OSC_INTERVAL    (10LU * US_PER_MS) /* 10 ms */
 #define OSC_STEP        (10)
 #define OSC_MODE        PWM_LEFT
@@ -70,34 +61,18 @@
 #define PWR_SLEEP       (1U)
 
 /* Number of configured PCA9685 I/O expander devices */
-#define PCA9685_NUMOF    (sizeof(pca9685_params) / sizeof(pca9685_params[0]))
+#define PCA9685_NUMOF   ARRAY_SIZE(pca9685_params)
 
 /* PCA9685 devices allocation */
 pca9685_t pca9685_dev[PCA9685_NUMOF];
-
-#if MODULE_EXTEND_PWM
-/* PCA9685 PWM extension driver definition */
-const pwm_ext_driver_t pca9685_extend_pwm_driver = {
-    .init = (pwm_ext_init_t)pca9685_pwm_init,
-    .channels = (pwm_ext_channels_t)pca9685_pwm_channels,
-    .set = (pwm_ext_set_t)pca9685_pwm_set,
-    .poweron = (pwm_ext_poweron_t)pca9685_pwm_poweron,
-    .poweroff = (pwm_ext_poweroff_t)pca9685_pwm_poweroff,
-};
-#endif /* MODULE_EXTEND_PWM */
 
 static uint32_t initiated;
 
 static unsigned _get_dev(const char *dev_str)
 {
     unsigned dev = atoi(dev_str);
-#if MODULE_EXTEND_PWM
-    if (dev >= PWM_EXT_NUMOF) {
-        printf("Error: device PWM_EXT_DEV(%u) is unknown\n", dev);
-#else
     if (dev >= PCA9685_NUMOF) {
-        printf("Error: device PWM_DEV(%u) is unknown\n", dev);
-#endif
+        printf("Error: PWM device %u is unknown\n", dev);
         return UINT_MAX;
     }
 
@@ -108,7 +83,7 @@ static int _init(int argc, char** argv)
 {
     if (argc != 5) {
         printf("usage: %s <dev> <mode> <frequency> <resolution>\n", argv[0]);
-        printf("\tdev: device by number between 0 and %u\n", PWM_NUMOF - 1);
+        printf("\tdev: device by number between 0 and %u\n", PCA9685_NUMOF - 1);
         puts("\tmode:\n");
         puts("\t\t0: left aligned\n");
         puts("\t\t1: right aligned\n");
@@ -139,11 +114,7 @@ static int _init(int argc, char** argv)
             return 1;
     }
 
-#if MODULE_EXTEND_PWM
-    uint32_t pwm_freq = pwm_init(PWM_EXT_DEV(dev), pwm_mode,
-#else
     uint32_t pwm_freq = pca9685_pwm_init(&pca9685_dev[dev], pwm_mode,
-#endif
                                          (uint32_t)atoi(argv[3]),
                                          (uint16_t)atoi(argv[4]));
     if (pwm_freq != 0) {
@@ -160,7 +131,7 @@ static int _set(int argc, char**argv)
 {
     if (argc != 4) {
         printf("usage: %s <dev> <ch> <val>\n", argv[0]);
-        printf("\tdev: device by number between 0 and %d\n", PWM_NUMOF - 1);
+        printf("\tdev: device by number between 0 and %d\n", PCA9685_NUMOF - 1);
         puts("\tch: channel of device (if 16, all channels are set)\n");
         puts("\tval: duty cycle\n");
         return 1;
@@ -178,20 +149,12 @@ static int _set(int argc, char**argv)
     }
 
     uint8_t chan = atoi(argv[2]);
-#if MODULE_EXTEND_PWM
-    if (chan > pwm_channels(PWM_EXT_DEV(dev))) {
-#else
     if (chan > pca9685_pwm_channels(&pca9685_dev[dev])) {
-#endif
         printf("Error: channel %d is unknown.\n", chan);
         return 1;
     }
 
-#if MODULE_EXTEND_PWM
-    pwm_set(PWM_EXT_DEV(dev), chan, (uint16_t)atoi(argv[3]));
-#else
     pca9685_pwm_set(&pca9685_dev[dev], chan, (uint16_t)atoi(argv[3]));
-#endif
     return 0;
 }
 
@@ -207,34 +170,23 @@ static int _oscillate(int argc, char** argv)
     puts("\nRIOT PWM test");
     puts("Connect an LED or scope to PWM pins to see something.\n");
 
-    printf("Available PWM device between 0 and %d\n", PWM_NUMOF - 1);
-#if MODULE_EXTEND_PWM
-    for (unsigned i = 0; i < PWM_NUMOF; i++) {
-        uint32_t real_f = pwm_init(PWM_EXT_DEV(i), OSC_MODE, OSC_FREQU, OSC_STEPS);
-#else
+    printf("Available PWM device between 0 and %d\n", PCA9685_NUMOF - 1);
     for (unsigned i = 0; i < PCA9685_NUMOF; i++) {
         uint32_t real_f = pca9685_pwm_init(&pca9685_dev[i], OSC_MODE, OSC_FREQU, OSC_STEPS);
-#endif
         if (real_f == 0) {
-            printf("Error: initializing PWM_%u.\n", i);
+            printf("Error: initializing PWM device %u.\n", i);
             return 1;
         }
         else {
-            printf("Initialized PWM_%u @ %" PRIu32 "Hz.\n", i, real_f);
+            printf("Initialized PWM device %u @ %" PRIu32 "Hz.\n", i, real_f);
         }
     }
 
     puts("\nLetting the PWM pins oscillate now...");
     while (1) {
-#if MODULE_EXTEND_PWM
-        for (unsigned i = 0; i < PWM_EXT_NUMOF; i++) {
-            for (uint8_t chan = 0; chan < pwm_channels(PWM_EXT_DEV(i)); chan++) {
-                pwm_set(PWM_EXT_DEV(i), chan, state);
-#else
         for (unsigned i = 0; i < PCA9685_NUMOF; i++) {
             for (uint8_t chan = 0; chan < pca9685_pwm_channels(&pca9685_dev[i]); chan++) {
                 pca9685_pwm_set(&pca9685_dev[i], chan, state);
-#endif
             }
         }
 
@@ -253,7 +205,7 @@ static int _power(int argc, char** argv)
 {
     if (argc != 3) {
         printf("usage: %s <dev> <state>\n", argv[0]);
-        printf("\tdev: device by number between 0 and %d\n", PWM_NUMOF - 1);
+        printf("\tdev: device by number between 0 and %d\n", PCA9685_NUMOF - 1);
         puts("\tstate:\n");
         puts("\t\t0: power off\n");
         puts("\t\t1: power on\n");
@@ -268,19 +220,11 @@ static int _power(int argc, char** argv)
     switch (atoi(argv[2])) {
         case (0):
             puts("Powering down PWM device.\n");
-#if MODULE_EXTEND_PWM
-            pwm_poweroff(PWM_EXT_DEV(dev));
-#else
             pca9685_pwm_poweroff(&pca9685_dev[dev]);
-#endif
             break;
         case (1):
             puts("Powering up PWM device.\n");
-#if MODULE_EXTEND_PWM
-            pwm_poweron(PWM_EXT_DEV(dev));
-#else
             pca9685_pwm_poweron(&pca9685_dev[dev]);
-#endif
             break;
         default:
             puts("Error: power state not available.\n");
@@ -293,7 +237,7 @@ static int _power_test(int argc, char** argv)
 {
     if (argc != 2) {
         printf("usage: %s <dev>\n", argv[0]);
-        printf("\tdev: device by number between 0 and %d\n", PWM_NUMOF - 1);
+        printf("\tdev: device by number between 0 and %d\n", PCA9685_NUMOF - 1);
         return 1;
     }
 
@@ -304,20 +248,12 @@ static int _power_test(int argc, char** argv)
 
     printf("Powering down PWM device and sleeping for %u second(s)...\n",
            PWR_SLEEP);
-#if MODULE_EXTEND_PWM
-    pwm_poweroff(PWM_EXT_DEV(dev));
-#else
     pca9685_pwm_poweroff(&pca9685_dev[dev]);
-#endif
 
     xtimer_sleep(PWR_SLEEP);
 
     puts("Powering up PWM device.\n");
-#if MODULE_EXTEND_PWM
-    pwm_poweron(PWM_EXT_DEV(dev));
-#else
     pca9685_pwm_poweron(&pca9685_dev[dev]);
-#endif
 
     return 0;
 }

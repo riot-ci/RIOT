@@ -38,13 +38,8 @@
  * - functions require an additional parameter, the pointer to the PWM
  *   device of type #pca9685_t.
  *
- * The driver is also compatible with the PWM extension API so that PCA9685
- * PWM devices can be used as PWM extensions with the standard peripheral
- * PWM interface.
- *
  * Please refer the test application in `tests/driver_pca9685` for an example
- * on how to use the driver either directly or through the PWM extension
- * interface.
+ * on how to use the driver.
  *
  * ## SAUL Capabilities
  *
