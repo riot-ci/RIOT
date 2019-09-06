@@ -90,7 +90,6 @@ static int _read(const pca9685_t *dev, uint8_t reg, uint8_t *data, uint32_t len)
 static int _write(const pca9685_t *dev, uint8_t reg, const uint8_t *data, uint32_t len);
 static int _update(const pca9685_t *dev, uint8_t reg, uint8_t mask, uint8_t data);
 
-inline static int _read_word(const pca9685_t *dev, uint8_t reg, uint16_t *word);
 inline static int _write_word(const pca9685_t *dev, uint8_t reg, uint16_t word);
 
 int pca9685_init(pca9685_t *dev, const pca9685_params_t *params)
@@ -316,15 +315,6 @@ static int _read(const pca9685_t *dev, uint8_t reg, uint8_t *data, uint32_t len)
 
     /* release the I2C device */
     i2c_release(dev->params.i2c_dev);
-
-    return PCA9685_OK;
-}
-
-inline static int _read_word(const pca9685_t *dev, uint8_t reg, uint16_t *word)
-{
-    uint8_t bytes[2];
-    EXEC_RET(_read (dev, reg, bytes, 2));
-    *word = (bytes[1] << 8) + (bytes[0]);
 
     return PCA9685_OK;
 }
