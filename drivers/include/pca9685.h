@@ -177,8 +177,8 @@ typedef enum {
  */
 typedef struct {
 
-    unsigned i2c_dev;   /**< I2C device, default I2C_DEV(0) */
-    uint8_t  i2c_addr;  /**< I2C slave address */
+    i2c_t i2c_dev;     /**< I2C device, default I2C_DEV(0) */
+    uint8_t i2c_addr;  /**< I2C slave address */
 
     pwm_mode_t mode;    /**< PWM mode for all channels: #PWM_LEFT, #PWM_CENTER,
                              #PWM_RIGHT supported, (default PWM_CENTER) */

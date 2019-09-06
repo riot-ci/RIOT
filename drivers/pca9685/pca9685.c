@@ -140,10 +140,10 @@ uint32_t pca9685_pwm_init(pca9685_t *dev, pwm_mode_t mode, uint32_t freq,
     }
 
     /* prescale = round(clk / (PCA9685_RESOLUTION * freq)) - 1; */
-    float clk = (float)(dev->params.ext_freq ? dev->params.ext_freq
-                                             : PCA9685_OSC_FREQ);
-    float prescale = clk / PCA9685_RESOLUTION / freq;
-    uint8_t byte = round(prescale) - 1;
+    uint32_t div = PCA9685_RESOLUTION * freq;
+    uint8_t byte = ((dev->params.ext_freq ? dev->params.ext_freq
+                                          : PCA9685_OSC_FREQ) + div/2) / div - 1;
+
     EXEC_RET(_write(dev, PCA9685_REG_PRE_SCALE, &byte, 1));
 
     if (!dev->powered_on) {
@@ -177,8 +177,8 @@ void pca9685_pwm_set(pca9685_t *dev, uint8_t chn, uint16_t val)
         off = 0;
     }
     else {
-        /* duty = scale * val, with scale = 4096 / resolution; */
-        uint16_t duty = round((float)PCA9685_RESOLUTION / dev->params.res * val);
+        /* duty = scale(2^12) / resolution * value */
+        uint32_t duty = PCA9685_RESOLUTION * val / dev->params.res;
         switch (dev->params.mode) {
             case PWM_LEFT: on = 0;
                            off = on + duty;
@@ -274,7 +274,7 @@ static int _init(pca9685_t *dev)
 
     /* set Auto-Increment flag */
     uint8_t byte = 0;
-    _set_reg_bit(&byte, PCA9685_MODE2_OUTDRV, dev->params.inv);
+    _set_reg_bit(&byte, PCA9685_MODE2_INVERT, dev->params.inv);
     _set_reg_bit(&byte, PCA9685_MODE2_OUTDRV, dev->params.out_drv);
     _set_reg_bit(&byte, PCA9685_MODE2_OUTNE, dev->params.out_ne);
     EXEC_RET(_write(dev, PCA9685_REG_MODE2, &byte, 1));
@@ -362,7 +362,7 @@ static int _update(const pca9685_t *dev, uint8_t reg, uint8_t mask, uint8_t data
     EXEC_RET(_read(dev, reg, &byte, 1));
 
     /* set masked bits to the given value  */
-    byte = (byte & ~mask) | ((data << shift) & mask);
+    byte = data ? (byte | mask) : (byte & ~mask);
 
     /* write back new register value */
     EXEC_RET(_write(dev, reg, &byte, 1));
