@@ -19,9 +19,9 @@
  * @}
  */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <wolfssl/wolfcrypt/ed25519.h>
+#include "log.h"
 
 const uint8_t ed_public_key[ED25519_KEY_SIZE] = {
     0x9A, 0xBC, 0xA2, 0xE2, 0x4D, 0x19, 0x9E, 0x02,
@@ -49,21 +49,20 @@ int main(void)
     int stat;
     int ret;
     ed25519_key key;
-    printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
-    printf("This board features a(n) %s MCU.\n", RIOT_MCU);
-    printf("\n\n\n");
+    LOG(LOG_INFO, "You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
+    LOG(LOG_INFO, "This board features a(n) %s MCU.\n", RIOT_MCU);
     wc_ed25519_init(&key);
-    puts("Starting ed25519 test.");
+    LOG(LOG_INFO, "Starting ed25519 test.");
 
     ret = wc_ed25519_import_public(ed_public_key, ED25519_KEY_SIZE, &key);
     if (ret != 0) {
-        printf("Error importing public key for signature verification (%d)\n", ret);
+        LOG(LOG_ERROR, "Error importing public key for signature verification (%d)\n", ret);
         return 1;
     }
     if ((wc_ed25519_verify_msg(msg_signature, ED25519_SIG_SIZE, msg, 12, &stat, &key) < 0) || (stat == 0)) {
-        printf("The signature is not valid!\n");
+        LOG(LOG_WARNING, "The signature is not valid!\n");
     } else {
-        printf("The signature is valid!\n");
+        LOG(LOG_INFO, "The signature is valid!\n");
     }
 
     return 0;

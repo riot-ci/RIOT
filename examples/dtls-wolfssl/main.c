@@ -20,7 +20,6 @@
  * @}
  */
 
-#include <stdio.h>
 #include <wolfssl/ssl.h>
 
 #include "shell.h"

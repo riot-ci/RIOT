@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "log.h"
+
 #define SERVER_PORT 11111
 #define APP_DTLS_BUF_SIZE 64
 
@@ -37,7 +39,7 @@ static sock_tls_t *sk = &skv;
 
 static void usage(const char *cmd_name)
 {
-    printf("Usage: %s <server-address>\n", cmd_name);
+    LOG(LOG_ERROR, "Usage: %s <server-address>\n", cmd_name);
 }
 
 #ifdef MODULE_WOLFSSL_PSK
@@ -133,7 +135,7 @@ int dtls_client(int argc, char **argv)
     if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
                 server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
     {
-        printf("Error loading cert buffer\n");
+        LOG(LOG_ERROR, "Error loading cert buffer\n");
         return -1;
     }
 
@@ -144,13 +146,13 @@ int dtls_client(int argc, char **argv)
     if (sock_dtls_session_create(sk) < 0)
         return -1;
     wolfSSL_dtls_set_timeout_init(sk->ssl, 5);
-    printf("connecting to server...");
+    LOG(LOG_INFO, "connecting to server...");
     /* attempt to connect until the connection is successful */
     do {
         ret = wolfSSL_connect(sk->ssl);
         if ((ret != SSL_SUCCESS)) {
             if(wolfSSL_get_error(sk->ssl, ret) == SOCKET_ERROR_E) {
-                printf("Socket error: reconnecting...\n");
+                LOG(LOG_WARNING, "Socket error: reconnecting...\n");
                 sock_dtls_session_destroy(sk);
                 connect_timeout = 0;
                 if (sock_dtls_session_create(sk) < 0)
@@ -158,7 +160,7 @@ int dtls_client(int argc, char **argv)
             }
             if ((wolfSSL_get_error(sk->ssl, ret) == WOLFSSL_ERROR_WANT_READ) &&
                     (connect_timeout++ >= max_connect_timeouts)) {
-                printf("Server not responding: reconnecting...\n");
+                LOG(LOG_WARNING, "Server not responding: reconnecting...\n");
                 sock_dtls_session_destroy(sk);
                 connect_timeout = 0;
                 if (sock_dtls_session_create(sk) < 0)
@@ -176,13 +178,13 @@ int dtls_client(int argc, char **argv)
     /* wait for a reply, indefinitely */
     do {
         ret = wolfSSL_read(sk->ssl, buf, APP_DTLS_BUF_SIZE - 1);
-        printf("wolfSSL_read returned %d\r\n", ret);
+        LOG(LOG_INFO, "wolfSSL_read returned %d\r\n", ret);
     } while (ret <= 0);
     buf[ret] = (char)0;
-    printf("Received: '%s'\r\n", buf);
+    LOG(LOG_INFO, "Received: '%s'\r\n", buf);
 
     /* Clean up and exit. */
-    printf("Closing connection.\r\n");
+    LOG(LOG_INFO, "Closing connection.\r\n");
     sock_dtls_session_destroy(sk);
     sock_dtls_close(sk);
     return 0;

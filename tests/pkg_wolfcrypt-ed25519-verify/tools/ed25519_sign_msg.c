@@ -7,37 +7,23 @@
  *
  */
 #include <stdint.h>
+#include <stdio.h>
 
 #include <wolfssl/wolfcrypt/settings.h>
 #include <wolfssl/wolfcrypt/ed25519.h>
 
-void print_buf(uint8_t *buf, int len)
-{
-    int i;
-    for (i = 0; i < len; i++) {
-        int p = i % 8;
-        if (p == 0)
-            printf("\t");
-        printf("0x%02X", buf[i]);
-        if (i < len - 1)
-            printf(",");
-        if (p == 7)
-            printf("\n");
-        else
-            printf(" ");
-    }
-}
+#include "od.h"
 
 void print_key(void *key_in)
 {
     uint8_t * key = key_in;
-    print_buf(key, ED25519_KEY_SIZE);
+    od_hex_dump(key, ED25519_KEY_SIZE, 8);
 }
 
 void print_sig(void *sig_in)
 {
     uint8_t * sig = sig_in;
-    print_buf(sig, ED25519_SIG_SIZE);
+    od_hex_dump(sig, ED25519_SIG_SIZE, 8);
 }
 
 
@@ -52,7 +38,7 @@ int main(void)
     wc_ed25519_init(&key);
     wc_InitRng(&rng);
     if (wc_ed25519_make_key(&rng, ED25519_KEY_SIZE, &key) != 0) {
-        printf("Failed to create ED25519 key!\n");
+        LOG(LOG_ERROR, "Failed to create ED25519 key!\n");
         exit(1);
     }
 

@@ -9,11 +9,12 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include <net/sock.h>
 #include <wolfssl/ssl.h>
 #include <wolfssl/internal.h>
+
+#include <log.h>
 
 void sock_dtls_close(sock_tls_t *sk)
 {
@@ -22,8 +23,8 @@ void sock_dtls_close(sock_tls_t *sk)
 
 void sock_dtls_set_endpoint(sock_tls_t *sk, const sock_udp_ep_t *addr)
 {
-    printf("wolfSSL: Setting peer address and port\n");
-    memcpy(&sk->peer_addr, addr, sizeof (sock_udp_ep_t));
+    LOG(LOG_INFO, "wolfSSL: Setting peer address and port\n");
+    XMEMCPY(&sk->peer_addr, addr, sizeof (sock_udp_ep_t));
 }
 
 int sock_dtls_create(sock_tls_t *sock, const sock_udp_ep_t *local, const sock_udp_ep_t *remote, uint16_t flags, WOLFSSL_METHOD *method)
@@ -53,7 +54,7 @@ static int tls_session_create(sock_tls_t *sk)
         return -EINVAL;
     sk->ssl = wolfSSL_new(sk->ctx);
     if (sk->ssl == NULL) {
-        printf("Error allocating ssl session\n");
+        LOG(LOG_ERROR, "Error allocating ssl session\n");
         return -ENOMEM;
     }
     wolfSSL_SetIOReadCtx(sk->ssl, sk);

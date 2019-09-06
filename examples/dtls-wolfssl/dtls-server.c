@@ -20,7 +20,6 @@
 #include <wolfssl/ssl.h>
 #include <sock_tls.h>
 
-#include <stdio.h>
 #include <inttypes.h>
 
 #include <net/sock/udp.h>
@@ -28,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "log.h"
 
 #define SERVER_PORT 11111
 #define DEBUG 1
@@ -93,7 +94,7 @@ int dtls_server(int argc, char **argv)
     (void)argv;
 
     if (sock_dtls_create(sk, &local, NULL, 0, wolfDTLSv1_2_server_method()) != 0) {
-        printf("ERROR: Unable to create DTLS sock\r\n");
+        LOG(LOG_ERROR, "ERROR: Unable to create DTLS sock\r\n");
         return -1;
     }
 
@@ -102,7 +103,7 @@ int dtls_server(int argc, char **argv)
     if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
                 server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
     {
-        printf("Failed to load certificate from memory.\r\n");
+        LOG(LOG_ERROR, "Failed to load certificate from memory.\r\n");
         return -1;
     }
 
@@ -110,7 +111,7 @@ int dtls_server(int argc, char **argv)
     if (wolfSSL_CTX_use_PrivateKey_buffer(sk->ctx, server_key,
                 server_key_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
     {
-        printf("Failed to load private key from memory.\r\n");
+        LOG(LOG_ERROR, "Failed to load private key from memory.\r\n");
         return -1;
     }
 #else
@@ -122,12 +123,11 @@ int dtls_server(int argc, char **argv)
     ret = sock_dtls_session_create(sk);
     if (ret < 0)
     {
-        printf("Failed to create DTLS session (err: %s)\r\n", strerror(-ret));
+        LOG(LOG_ERROR, "Failed to create DTLS session (err: %s)\r\n", strerror(-ret));
         return -1;
     }
 
-    printf("Listening on %d\n", SERVER_PORT);
-//    wolfSSL_dtls_set_timeout_init(sk->ssl, 4);
+    LOG(LOG_INFO, "Listening on %d\n", SERVER_PORT);
     while(1) {
         /* Wait until a new client connects */
         ret = wolfSSL_accept(sk->ssl);
@@ -141,19 +141,19 @@ int dtls_server(int argc, char **argv)
         }
 
         /* Wait until data is received */
-        printf("Connection accepted\r\n");
+        LOG(LOG_INFO, "Connection accepted\r\n");
         ret = wolfSSL_read(sk->ssl, buf, APP_DTLS_BUF_SIZE);
         if (ret > 0) {
             buf[ret] = (char)0;
-            printf("Received '%s'\r\n", buf);
+            LOG(LOG_INFO, "Received '%s'\r\n", buf);
         }
 
         /* Send reply */
-        printf("Sending 'DTLS OK'...\r\n");
+        LOG(LOG_INFO, "Sending 'DTLS OK'...\r\n");
         wolfSSL_write(sk->ssl, Test_dtls_string, sizeof(Test_dtls_string));
 
         /* Cleanup/shutdown */
-        printf("Closing connection.\r\n");
+        LOG(LOG_INFO, "Closing connection.\r\n");
         sock_dtls_session_destroy(sk);
         sock_dtls_close(sk);
         break;
