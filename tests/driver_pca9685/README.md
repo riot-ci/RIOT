@@ -22,13 +22,9 @@ Please check the default configuration parameters in
 `$(RIOTBASE)/drivers/pca9685/include/pca9685_params.h` and adopt them
 if necessary.
 
-To use it with the PWM extension API, use module `extend_pwm` as following
-```
-     USEMODULE=extend_pwm make -C tests/driver_pca9685 BOARD=...
-```
 If the active LOW output enable pin /OE is used, the GPIO has to be defined
 as parameter, e.g.
 ```
      CFLAGS="-DPCA9685_PARAM_INT_PIN=\(GPIO\(0,6\)\)" \
-     USEMODULE=extend_pwm make -C tests/driver_pca9685 BOARD=...
+     make -C tests/driver_pca9685 BOARD=...
 ```
