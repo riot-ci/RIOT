@@ -150,8 +150,11 @@ Test *tests_mtd_flashpage_tests(void)
     return (Test *)&mtd_flashpage_tests;
 }
 
-void tests_mtd_flashpage(void)
+int main(void)
 {
+    TESTS_START();
     TESTS_RUN(tests_mtd_flashpage_tests());
+    TESTS_END();
+    return 0;
 }
 /** @} */
