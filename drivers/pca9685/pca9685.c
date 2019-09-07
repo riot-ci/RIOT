@@ -346,23 +346,18 @@ static int _write(const pca9685_t *dev, uint8_t reg, const uint8_t *data, uint32
 inline static int _write_word(const pca9685_t *dev, uint8_t reg, uint16_t data)
 {
     uint8_t bytes[2] = { data & 0xff, (data >> 8) & 0xff };
-    return _write (dev, reg, (uint8_t*)&bytes, 2);
+    return _write (dev, reg, bytes, 2);
 }
 
 static int _update(const pca9685_t *dev, uint8_t reg, uint8_t mask, uint8_t data)
 {
     uint8_t byte;
-    uint8_t shift = 0;
-
-    while (!((mask >> shift) & 0x01)) {
-        shift++;
-    }
 
     /* read current register value */
     EXEC_RET(_read(dev, reg, &byte, 1));
 
     /* set masked bits to the given value  */
-    byte = data ? (byte | mask) : (byte & ~mask);
+    _set_reg_bit(&byte, mask, data);
 
     /* write back new register value */
     EXEC_RET(_write(dev, reg, &byte, 1));
