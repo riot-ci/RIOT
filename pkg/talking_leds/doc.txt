@@ -1,0 +1,6 @@
+/**
+ * @defgroup pkg_talking_leds Talking LEDs - Ardunio library for demonstration
+ * @ingroup  pkg
+ * @brief    Demonstrates the usage of Ardunio libraries as packages
+ * @see      https://github.com/fabriziop/TalkingLED
+ */
