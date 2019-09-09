@@ -16,7 +16,16 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
 # that you do not plan to use, by removing the associated wolfcrypt_* modules
 # from USEMODULE list below.
 #
-# BOARD_INSUFFICIENT_MEMORY :=
+# You may be able to remove your target from the list below by selecting a
+# smaller set of modules.
+#
+# Targets not included in the BOARD_INSUFFICIENT_MEMORY are capable of
+# running all the benchmarks selected by default.
+#
+BOARD_INSUFFICIENT_MEMORY := nucleo-f042k6 stm32f0discovery nucleo-f334r8 \
+                             i-nucleo-lrwan1 nucleo-f302r8 nucleo-l053r8 saml11-xpro \
+                             nucleo-l031k6 bluepill stm32l0538-disco saml10-xpro \
+                             nucleo-f030r8 nucleo-f031k6 nucleo-f303k8 blackpill
 
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
@@ -41,7 +50,7 @@ USEMODULE += wolfcrypt wolfcrypt-test wolfcrypt_sha512 wolfcrypt_curve25519  \
 			 wolfcrypt_ed25519 wolfcrypt_chacha wolfcrypt_poly1305 wolfcrypt_aes \
 			 wolfcrypt_ecc wolfcrypt_asn wolfcrypt_random
 
-# Uncomment the following line to enable RSA tests 
+# Uncomment the following line to enable RSA tests
 # (e.g. when enough resources are available on platform)
 #USEMODULE += wolfcrypt_rsa wolfcrypt_dh
 
