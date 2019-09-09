@@ -11,7 +11,9 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
                    msb-430 msb-430h telosb waspmote-pro \
                    wsn430-v1_3b wsn430-v1_4 z1
 
-# BOARD_INSUFFICIENT_MEMORY:= None known :)
+BOARD_INSUFFICIENT_MEMORY:= bluepill nucleo-f303k8 calliope-mini nucleo-l031k6
+                   nucleo-f334r8 nucleo-f042k6 stm32l0538-disco
+
 #
 # If the test fails to run on a target, disable the algorithms
 # that you do not plan to use, by removing the associated wolfcrypt_* modules
