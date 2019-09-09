@@ -110,20 +110,20 @@ int dtls_client(int argc, char **argv)
     }
     else {
         if (gnrc_netif_get_by_pid(iface) == NULL) {
-            puts("ERROR: interface not valid");
+            LOG(LOG_ERROR, "ERROR: interface not valid");
             usage(argv[0]);
             return -1;
         }
         remote.netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
     }
     if (ipv6_addr_from_str((ipv6_addr_t *)remote.addr.ipv6, addr_str) == NULL) {
-        puts("ERROR: unable to parse destination address");
+        LOG(LOG_ERROR, "ERROR: unable to parse destination address");
         usage(argv[0]);
         return -1;
     }
     remote.port = SERVER_PORT;
     if (sock_dtls_create(sk, &local, &remote, 0, wolfDTLSv1_2_client_method()) != 0) {
-        puts("ERROR: Unable to create DTLS sock");
+        LOG(LOG_ERROR, "ERROR: Unable to create DTLS sock");
         return -1;
     }
 

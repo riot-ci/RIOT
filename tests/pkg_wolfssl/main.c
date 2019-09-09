@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include "xtimer.h"
+#include "log.h"
 
 #include <wolfssl/wolfcrypt/settings.h>
 #include <wolfcrypt/test/test.h>
@@ -31,14 +32,14 @@
 
 int main(void)
 {
-    puts("wolfSSL Crypto Test!");
+    LOG(LOG_INFO, "wolfSSL Crypto Test!");
     /* Wait to work around a failing tests
      * on platforms that don't have RTC synchronized
      */
     xtimer_sleep(1);
     wolfcrypt_test(NULL);
 #ifdef MODULE_WOLFCRYPT_BENCHMARK
-    puts("wolfSSL Benchmark!");
+    LOG(LOG_INFO, "wolfSSL Benchmark!");
     benchmark_test(NULL);
 #endif
     return 0;

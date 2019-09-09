@@ -301,4 +301,8 @@ const unsigned char server_key[] = {
 const unsigned int server_key_len = 1193;
 #endif
 
-static int c;
+#ifdef MODULE_WOLFSSL_PSK
+const unsigned char server_key[1] = { 0 };
+const unsigned int server_key_len = 0;
+#endif
+

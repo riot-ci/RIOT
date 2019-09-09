@@ -93,7 +93,9 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz)
     unsigned int i;
     for( i = 0; i < sz; i++) {
         int res;
-        res = toupper(s1[i]) - toupper(s2[i]);
+        const unsigned char *us1 = (const unsigned char *)s1;
+        const unsigned char *us2 = (const unsigned char *)s2;
+        res = toupper(us1[i]) - toupper(us2[i]);
         if (res != 0)
             return res;
     }
