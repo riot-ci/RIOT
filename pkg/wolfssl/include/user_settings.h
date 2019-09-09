@@ -311,4 +311,10 @@ int strncasecmp(const char *s1, const char * s2, unsigned int sz);
 }
 #endif
 
+/* The following defines should prevent declaration of name-colliding "Aes"
+ * structure on SAML21, SAME54 platform code
+ */
+#define _SAML21_AES_COMPONENT_
+#define _SAME54_AES_COMPONENT_
+
 #endif /* USER_SETTINGS_H */
