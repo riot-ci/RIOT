@@ -11,9 +11,6 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
                    msb-430 msb-430h telosb waspmote-pro \
                    wsn430-v1_3b wsn430-v1_4 z1
 
-BOARD_INSUFFICIENT_MEMORY:= bluepill nucleo-f303k8 calliope-mini nucleo-l031k6 \
-                            nucleo-f334r8 nucleo-f042k6 stm32l0538-disco
-
 #
 # If the test fails to run on a target, disable the algorithms
 # that you do not plan to use, by removing the associated wolfcrypt_* modules
@@ -44,8 +41,9 @@ USEMODULE += wolfcrypt wolfcrypt-test wolfcrypt_sha512 wolfcrypt_curve25519  \
 			 wolfcrypt_ed25519 wolfcrypt_chacha wolfcrypt_poly1305 wolfcrypt_aes \
 			 wolfcrypt_ecc wolfcrypt_asn wolfcrypt_random
 
-# Comment the following line to disable RSA tests (e.g. on low-memory devices)
-USEMODULE += wolfcrypt_rsa wolfcrypt_dh
+# Uncomment the following line to enable RSA tests 
+# (e.g. when enough resources are available on platform)
+#USEMODULE += wolfcrypt_rsa wolfcrypt_dh
 
 # Comment the following line to disable full-benchmark test
 USEMODULE += wolfcrypt-benchmark
