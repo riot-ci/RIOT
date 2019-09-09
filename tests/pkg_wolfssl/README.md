@@ -8,6 +8,3 @@ port to a specific target.
 Specific modules can be enabled/disabled using the `USEMODULE` variable in `Makefile`.
 
 To disable full-benchmark test, comment out the line `USEMODULE += wolfssl-benchmarks`.
-
-## Running
-

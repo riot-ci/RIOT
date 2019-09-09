@@ -90,8 +90,12 @@ void sock_dtls_session_destroy(sock_tls_t *sk)
 #include <ctype.h>
 int strncasecmp(const char *s1, const char * s2, unsigned int sz)
 {
-    for( ; sz>0; sz--)
-        if(toupper(*s1++) != toupper(*s2++))
-            return 1;
+    unsigned int i;
+    int res;
+    for( i = 0; i < sz; i++) {
+        res = toupper(s1[i]) - toupper(s2[i]);
+        if (res != 0)
+            return res;
+    }
     return 0;
 }
