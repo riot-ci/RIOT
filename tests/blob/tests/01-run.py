@@ -11,7 +11,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect(u"Hello blob!")
+    child.expect_exact("Hello blob!")
 
 
 if __name__ == "__main__":
