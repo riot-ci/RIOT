@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2019 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     drivers_opt3001
+ *
+ * @{
+ * @file
+ * @brief       Default configuration for OPT3001 devices
+ *
+ * @author      Jannes Volkens <jannes.volkens@haw-hamburg.de>
+ */
+
 #ifndef OPT3001_PARAMS_H
 #define OPT3001_PARAMS_H
 
@@ -10,7 +28,8 @@ extern "C" {
 #endif
 
 /**
- * @brief   Set default configuration parameters fot the opt3001
+ * @name   Set default configuration parameters fot the opt3001
+ * @ingroup config
  * @{
  */
  #ifndef OPT3001_PARAM_I2C_DEV

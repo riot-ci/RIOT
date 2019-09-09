@@ -1,9 +1,31 @@
+/*
+ * Copyright (C) 2019 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup tests
+ * @{
+ *
+ * @file
+ * @brief       Test application for the OPT3001 sensor driver.
+ *
+ * @author      Jannes Volkens <jannes.volkens@haw-hamburg.de>
+ *
+ * @}
+ */
+
 #include <stdio.h>
 #include <inttypes.h>
 
 #include "opt3001_params.h"
 #include "opt3001.h"
 #include "xtimer.h"
+
+#define OPT3001_TEST_TIME 1000000
 
 int main(void){
 
@@ -27,17 +49,9 @@ int main(void){
 
   puts("[SUCCESS]\n");
 
-  //int pre, now;
-
+  printf("\n+--------Starting Measurements--------+\n");
   while(1){
-
-      //pre = xtimer_now_usec();
-
       opt3001_read(&dev, &crf, &rawlux);
-
-      //now = xtimer_now_usec();
-
-      //printf("TIME: %d\n", (now-pre));
 
       if (crf) {
           printf("Raw lux data: %5d\n", rawlux);
@@ -46,6 +60,10 @@ int main(void){
       } else {
           puts("conversion in progress ...");
       }
+
+      printf("\n+-------------------------------------+\n");
+
+      xtimer_usleep(OPT3001_TEST_TIME);
 
   }
 
