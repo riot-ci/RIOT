@@ -10,7 +10,7 @@ import sys
 import socket
 from testrunner import run
 from pexpect import EOF, TIMEOUT
-from scapy.all import ZEP2, Dot15d4, Dot15d4Data, Dot15d4FCS, SixLoWPAN, raw
+from scapy.all import ZEP2, Dot15d4Data, Dot15d4FCS, raw
 
 ZEP_V2_VERSION = 2
 ZEP_V2_TYPE_DATA = 1
