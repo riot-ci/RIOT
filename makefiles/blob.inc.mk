@@ -18,8 +18,8 @@ BLOB_HDR_DIR ?= $(BINDIR)/$(MODULE)/blobs/blob
 BLOB_H := $(BLOBS:%=$(BLOB_HDR_DIR)/%.h)
 
 ifneq (, $(BLOB_H))
-	# add $(BINDIR)/$(MODULE)/blobs to include path
-	CFLAGS += -I$(dir $(BLOB_HDR_DIR))
+  # add $(BINDIR)/$(MODULE)/blobs to include path
+  CFLAGS += -I$(dir $(BLOB_HDR_DIR))
 endif
 
 $(BLOB_HDR_DIR):
