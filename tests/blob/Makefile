@@ -5,6 +5,4 @@ USEMODULE += fmt
 
 BLOBS += blobtest.txt
 
-TEST_ON_CI_WHITELIST += all
-
 include $(RIOTBASE)/Makefile.include
