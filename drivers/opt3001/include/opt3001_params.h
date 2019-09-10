@@ -3,7 +3,7 @@
 
 #include "board.h"
 #include "opt3001.h"
-#include "opt3001_regs.h"
+#include "saul_reg.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +36,14 @@ extern "C" {
  static const opt3001_params_t opt3001_params[] =
  {
      OPT3001_PARAMS
+ };
+
+ /**
+  * @brief   Additional meta information to keep in the SAUL registry
+  */
+ static const saul_reg_info_t opt3001_saul_info[] =
+ {
+     OPT3001_SAUL_INFO
  };
 
 #ifdef __cplusplus
