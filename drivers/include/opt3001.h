@@ -71,7 +71,11 @@ int opt3001_reset(const opt3001_t *dev);
  * @return                  0 on success
  * @return                  -1 on error
  */
+<<<<<<< HEAD
 int opt3001_set_active(const opt3001_t *dev);
+=======
+int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl);
+>>>>>>> e8bc7e708... driver/opt3001: Saul implementation
 
 /**
  * @brief   Read sensor's data.
