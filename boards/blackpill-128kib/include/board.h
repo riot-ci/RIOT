@@ -37,16 +37,15 @@ extern "C" {
  * @{
  */
 #define LED0_PORT           GPIOB   /**< GPIO-Port the LED is connected to */
+#define LED0_PORTNUM        PORT_B  /**< GPIO Port number the LED is connected to */
 #define LED0_PINNUM         (12)    /**< Pin number the LED is connected to */
 /** @} */
-
 
 #ifdef __cplusplus
 }
 #endif
 
-/* Beware: This include must come *after* LED0_PORT and LED0_PINNUM have been
- * defined */
+/* Beware: This include must come *after* LED0 paramters have been defined */
 #include "board_common.h"
 
 #endif /* BOARD_H */
