@@ -160,16 +160,15 @@ ssize_t gnrc_sock_send(gnrc_pktsnip_t *payload, sock_ip_ep_t *local,
         iface = (kernel_pid_t)remote->netif;
     }
     if (iface != KERNEL_PID_UNDEF) {
-        gnrc_pktsnip_t *netif = gnrc_netif_hdr_build(NULL, 0, NULL, 0);
-        gnrc_netif_hdr_t *netif_hdr;
+        gnrc_pktsnip_t *netif_hdr = gnrc_netif_hdr_build(NULL, 0, NULL, 0);
+        gnrc_netif_t *netif = gnrc_netif_get_by_pid(iface);
 
-        if (netif == NULL) {
+        if (netif_hdr == NULL) {
             gnrc_pktbuf_release(pkt);
             return -ENOMEM;
         }
-        netif_hdr = netif->data;
-        netif_hdr->if_pid = iface;
-        LL_PREPEND(pkt, netif);
+        gnrc_netif_hdr_set_netif(netif_hdr, netif);
+        LL_PREPEND(pkt, netif_hdr);
     }
 #ifdef MODULE_GNRC_NETERR
     gnrc_neterr_reg(pkt);   /* no error should occur since pkt was created here */
