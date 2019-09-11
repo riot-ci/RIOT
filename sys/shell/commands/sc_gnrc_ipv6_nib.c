@@ -297,10 +297,14 @@ static int _nib_route(int argc, char **argv)
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
 static void _usage_nib_abr(char **argv)
 {
+#if GNRC_IPV6_NIB_CONF_6LBR
     printf("usage: %s %s [show|add|del|help]\n", argv[0], argv[1]);
     printf("       %s %s add <ipv6 global addr>\n",
            argv[0], argv[1]);
     printf("       %s %s del <ipv6 global addr>\n", argv[0], argv[1]);
+#else
+    printf("usage: %s %s [show|help]\n", argv[0], argv[1]);
+#endif
     printf("       %s %s show\n", argv[0], argv[1]);
 }
 
@@ -350,11 +354,6 @@ static int _nib_abr(int argc, char **argv)
             printf("unable to add border router %s\n", argv[3]);
             return 1;
         }
-    }
-#else   /* GNRC_IPV6_NIB_CONF_6LBR */
-    else if ((argc > 2) &&
-             ((strcmp(argv[2], "add") == 0)) || (strcmp(argv[2], "del") == 0)) {
-        puts("Operation not supported");
     }
 #endif   /* GNRC_IPV6_NIB_CONF_6LBR */
     else {
