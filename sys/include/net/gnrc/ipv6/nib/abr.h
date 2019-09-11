@@ -92,8 +92,8 @@ void gnrc_ipv6_nib_abr_del(const ipv6_addr_t *addr);
  * @note    The list may change during iteration.
  *
  * @return  true, if iteration can be continued.
- * @return  false, if @p ple is the last authoritative border router entry in the
- *          NIB.
+ * @return  false, if @p abr is the last authoritative border router entry in
+ *          the NIB.
  */
 bool gnrc_ipv6_nib_abr_iter(void **state, gnrc_ipv6_nib_abr_t *abr);
 
