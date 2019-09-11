@@ -148,10 +148,6 @@
  * DTLS example over GNRC UDP/IP stack.
  * See documentation in `examples/dtls-wolfssl/README.md`
  *
- * TLS Client and server Example
- * TLS over TCP/IPv6, in this example provided via the lwip module.
- * See documentation in `examples/tls-wolfssl-posix/README.md`
- *
  * QUESTIONS / CONCERNS / FEEDBACK:
  *
  * For any questions, concerns, or other feedback please contact

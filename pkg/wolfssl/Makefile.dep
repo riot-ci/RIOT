@@ -18,20 +18,20 @@ ifneq (,$(filter wolfcrypt_poly1305,$(USEMODULE)))
 endif
 
 ifneq (,$(filter wolfcrypt_ed25519,$(USEMODULE)))
-    USEMODULE += wolfcrypt_sha512
+  USEMODULE += wolfcrypt_sha512
 endif
 
 ifneq (,$(filter wolfcrypt_aes,$(USEMODULE)))
-    USEMODULE += wolfcrypt_cmac
-    USEMODULE += wolfcrypt_coding
+  USEMODULE += wolfcrypt_cmac
+  USEMODULE += wolfcrypt_coding
 endif
 
 ifneq (,$(filter wolfcrypt_pwdbased,$(USEMODULE)))
-    USEMODULE += wolfcrypt_pkcs12
+  USEMODULE += wolfcrypt_pkcs12
 endif
 
 ifneq (,$(filter wolfcrypt_asn,$(USEMODULE)))
-    USEMODULE += wolfcrypt_pkcs12
+  USEMODULE += wolfcrypt_pkcs12
 endif
 
 ifneq (,$(filter wolfssl_tls13,$(USEMODULE)))
