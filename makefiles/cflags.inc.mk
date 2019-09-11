@@ -39,9 +39,10 @@ endif
 CFLAGS += -fno-common
 
 # Compress debug info. This saves approximately 50% of disk usage.
-# It has no effect if debugging information is not emitted, so it can be left
-# on unconditionally.
-OPTIONAL_CFLAGS += -gz
+# This makes ccache less effective, so disable for CI builds.
+ifneq (1, $(RIOT_CI_BUILD))
+  OPTIONAL_CFLAGS += -gz
+endif
 
 # Enable all default warnings and all extra warnings
 CFLAGS += -Wall -Wextra
