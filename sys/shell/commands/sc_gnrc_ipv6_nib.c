@@ -302,9 +302,9 @@ static void _usage_nib_abr(char **argv)
     printf("       %s %s add <ipv6 global addr>\n",
            argv[0], argv[1]);
     printf("       %s %s del <ipv6 global addr>\n", argv[0], argv[1]);
-#else
+#else   /* GNRC_IPV6_NIB_CONF_6LBR */
     printf("usage: %s %s [show|help]\n", argv[0], argv[1]);
-#endif
+#endif  /* GNRC_IPV6_NIB_CONF_6LBR */
     printf("       %s %s show\n", argv[0], argv[1]);
 }
 
@@ -355,7 +355,7 @@ static int _nib_abr(int argc, char **argv)
             return 1;
         }
     }
-#endif   /* GNRC_IPV6_NIB_CONF_6LBR */
+#endif  /* GNRC_IPV6_NIB_CONF_6LBR */
     else {
         _usage_nib_abr(argv);
         return 1;
