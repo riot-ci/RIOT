@@ -58,9 +58,9 @@ int _gnrc_ipv6_nib(int argc, char **argv)
 static void _usage(char **argv)
 {
 #if GNRC_IPV6_NIB_CONF_MULTIHOP_P6C
-    printf("usage: %s {neigh|prefix|route|help} ...\n", argv[0]);
-#else   /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
     printf("usage: %s {neigh|prefix|route|abr|help} ...\n", argv[0]);
+#else   /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
+    printf("usage: %s {neigh|prefix|route|help} ...\n", argv[0]);
 #endif  /* GNRC_IPV6_NIB_CONF_MULTIHOP_P6C */
 }
 
