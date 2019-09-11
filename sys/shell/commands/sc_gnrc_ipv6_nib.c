@@ -317,6 +317,7 @@ static int _nib_abr(int argc, char **argv)
     else if ((argc > 2) && (strcmp(argv[2], "help") == 0)) {
         _usage_nib_abr(argv);
     }
+#if GNRC_IPV6_NIB_CONF_6LBR
     else if ((argc > 3) && (strcmp(argv[2], "del") == 0)) {
         ipv6_addr_t addr = IPV6_ADDR_UNSPECIFIED;
 
@@ -326,7 +327,6 @@ static int _nib_abr(int argc, char **argv)
         }
         gnrc_ipv6_nib_abr_del(&addr);
     }
-#if GNRC_IPV6_NIB_CONF_6LBR
     else if ((argc > 3) && (strcmp(argv[2], "add") == 0)) {
         gnrc_netif_t *netif;
         ipv6_addr_t addr = IPV6_ADDR_UNSPECIFIED;
@@ -352,7 +352,8 @@ static int _nib_abr(int argc, char **argv)
         }
     }
 #else   /* GNRC_IPV6_NIB_CONF_6LBR */
-    else if ((argc > 2) && (strcmp(argv[2], "add") == 0)) {
+    else if ((argc > 2) &&
+             ((strcmp(argv[2], "add") == 0)) || (strcmp(argv[2], "del") == 0)) {
         puts("Operation not supported");
     }
 #endif   /* GNRC_IPV6_NIB_CONF_6LBR */
