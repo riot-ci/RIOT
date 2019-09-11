@@ -344,8 +344,8 @@ static int _nib_abr(int argc, char **argv)
             printf("address %s must be global\n", argv[3]);
             return 1;
         }
-        if (((netif = gnrc_netif_get_by_ipv6_addr(&addr)) == NULL) ||
-            gnrc_netif_is_6lbr(netif)) {
+        if (!(((netif = gnrc_netif_get_by_ipv6_addr(&addr)) != NULL) &&
+              gnrc_netif_is_6lbr(netif))) {
             printf("address %s is not assigned to a 6LBR interface\n",
                    argv[3]);
             return 1;
