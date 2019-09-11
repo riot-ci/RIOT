@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Kaleb J. Himes
+ * Copyright (C) 2019 Kaleb J. Himes, Daniele Lacamera
  *
  *
  * This file is subject to the terms and conditions of the GNU Lesser
@@ -16,6 +16,7 @@
  * @brief       wolfSSL cryptographic library test
  *
  * @author      Kaleb J. Himes <kaleb@wolfssl.com>
+ *              Daniele Lacamera <daniele@wolfssl.com>
  *
  * @}
  */

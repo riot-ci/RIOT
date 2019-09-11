@@ -49,7 +49,7 @@ USEMODULE += wolfssl_psk
 
 CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT) -DDTLS_WOLFSSL -Wno-unused-parameter -Wno-unused-variable
 
-# FIXME: This is a temporary patch taken from the TinyDTLS example to ensure proper stack allocation
+# A larger stack size is required if using ECC or RSA
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(3*THREAD_STACKSIZE_DEFAULT\)
 
 # Comment this out to disable code in RIOT that does safety checking

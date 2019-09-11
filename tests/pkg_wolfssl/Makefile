@@ -30,11 +30,6 @@ BOARD_INSUFFICIENT_MEMORY := nucleo-f042k6 stm32f0discovery nucleo-f334r8 \
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-# Used for inserting debug symbols into library for portability
-# testing on Ubuntu 16.04 LTS w/ gcc v 5.4.0
-#CFLAGS += -g
-#LDFLAGS += -g
-
 # Necessary to set the stacksize on Ubuntu Native device when using
 # gcc v 5.4.0 on 16.04 LTS
 # This is an optimized stack value based on testing, if you observe
