@@ -64,7 +64,7 @@ bool gnrc_ipv6_nib_abr_iter(void **state, gnrc_ipv6_nib_abr_t *entry)
     mutex_lock(&_nib_mutex);
     while ((abr = _nib_abr_iter(abr)) != NULL) {
         if (!ipv6_addr_is_unspecified(&abr->addr)) {
-            memcpy(&entry->addr, &abr->addr, sizeof(abr->addr));
+            memcpy(&entry->addr, &abr->addr, sizeof(entry->addr));
             entry->version = abr->version;
             entry->valid_until = abr->valid_until;
             break;
