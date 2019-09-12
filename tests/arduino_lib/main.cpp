@@ -21,20 +21,21 @@
 #include <stdint.h>
 #include <TalkingLED.h>
 
-#include "board.h"
+#include "arduino_board.h"
 
 TalkingLED tled;
 
-uint16_t sequence1[] = {500, 500, 500, 500, 0};
-uint16_t Sequence2[] = {250, 250, 250, 250, 0};
-
 int main(void)
 {
-    tled.begin(LED0_PIN);
+    tled.begin(ARDUINO_LED);
 
     while (1) {
-        tled.sequence(sequence1);
-        tled.sequence(Sequence2);
+        /* message 2: short short */
+        tled.message(2);
+        tled.waitEnd();
+        /* message 8: long long */
+        tled.message(8);
+        tled.waitEnd();
     }
 
     return 0;
