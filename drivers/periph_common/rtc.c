@@ -26,12 +26,29 @@
 #define RTC_NORMALIZE_COMPAT (0)
 #endif
 
+/*
+ * The rules here are (to be checked in that explicit order):
+ *  1. If the year is not a multiple of four, it is not a leap year.
+ *  2. If the year is a multiple of 400, it is a leap year
+ *  3. If the year is a multiple of 100, it is not a leap year.
+ */
 static int _is_leap_year(int year)
 {
+    /* not a multiple of four, so not a leap year */
     if (year & 0x3) {
         return 0;
     }
 
+    /*
+     * We know that year is a multiple of four by now. If it is also a multiple of 25,
+     * it is therefore a multiple of hundred. Thus (with year being a multiple of
+     * four), !!(year %25) is 0 if and only if year is a multiple of 100. !(year & 15)
+     * is 0 for all year that are not a multiple of 16.
+     *
+     * As !!(year %25) only returns 0 for years that are a multiple of 100 (out of all
+     * the multiples of four), || !(year &15) is only evaluated for these. Out of all
+     * multiples of 100, !(year &15) is 0 except for those that are a multiple of 400.
+     */
     return !!(year % 25) || !(year & 15);
 }
 
@@ -41,13 +58,25 @@ static int _month_length(int month, int year)
         return 28 + _is_leap_year(year);
     }
 
+   /*
+    * From January (0) to July (6), with the exception of the already handled February
+    * (month == 1), the months have 31 and 30 days in turns. Thus, subtracting 1 da
+    * if the month is odd works here.
+    *
+    * From August (7) to December (11) again we have 31 and 30 days in turns. If we
+    * reset the counter at August (7) to 0, we can therefore again subtract 1 day if
+    * the month counter is odd. (month % 7) here is used to reset the counter to zero
+    * at August (7).
+    */
     return 31 - ((month % 7) & 1);
 }
 
 #if RTC_NORMALIZE_COMPAT
 static int _wday(int day, int month, int year)
 {
-    /* Tomohiko Sakamoto's Algorithm */
+    /* Tomohiko Sakamoto's Algorithm
+     * https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Sakamoto's_methods
+     */
     static const uint8_t t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     year -= month < 2;
     return (year + year/4 - year/100 + year/400 + t[month] + day) % 7;
@@ -55,18 +84,24 @@ static int _wday(int day, int month, int year)
 
 static int _yday(int day, int month, int year)
 {
+    /* Cumulative number of days since start of the year. In order to squeeze this into
+       8 bits, we wrap around at 255 and handle this later. */
     static const uint8_t d[] = { 0,  31,  59, 90, 120, 151,
                                181, 212, 243, 17,  48,  78};
 
+    /* If year is a leap year, February (1) has an extra day. */
     if (month > 1) {
         day += _is_leap_year(year);
     }
 
-    /* at this point we can be sure that day <= 31 */
+    /* For months October (9), November (10), and December (11) number in d was wrapped
+       around to fit into 8 bits. We undo this now. */
     if (month > 8) {
         day |= 0x100;
     }
 
+    /* subtract 1 as counting starts at zero, e.g.
+       2019-01-01 will be be day 0 in year 2019 */
     return d[month] + day - 1;
 }
 #endif /* RTC_NORMALIZE_COMPAT */
@@ -91,6 +126,7 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_year += d.quot;
     t->tm_mon   = d.rem;
 
+    /* Loop to handle days overflowing the month. */
     while (1) {
         int days = _month_length(t->tm_mon, t->tm_year + 1900);
 
