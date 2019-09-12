@@ -59,7 +59,7 @@ typedef struct {
      * @note    Members of this list can be cast to gnrc_ipv6_ext_frag_limits_t.
      */
     clist_node_t limits;
-    uint32_t id;            /**< The identification from the fragment headers */
+    uint32_t id;            /**< the identification from the fragment headers */
     uint32_t arrival;       /**< arrival time of last received fragment */
     uint16_t pkt_len;       /**< length of gnrc_ipv6_ext_frag_rbuf_t::pkt */
     uint8_t last;           /**< received last fragment */
