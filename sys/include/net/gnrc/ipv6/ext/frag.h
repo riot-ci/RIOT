@@ -42,7 +42,7 @@ typedef struct {
     gnrc_pktsnip_t *pkt;            /**< the IPv6 packet to fragment */
     gnrc_pktsnip_t *per_frag;       /**< per fragment headers */
     uint32_t id;                    /**< the identification for the fragment header */
-    uint16_t path_mtu;              /**< Path MTU to destination of
+    uint16_t path_mtu;              /**< path MTU to destination of
                                      *   gnrc_ipv6_ext_frag_send_t::pkt */
     uint16_t offset;                /**< current fragmentation offset */
 } gnrc_ipv6_ext_frag_send_t;
