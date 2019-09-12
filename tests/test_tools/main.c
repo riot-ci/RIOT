@@ -87,7 +87,9 @@ static int cmd_toupper(int argc, char **argv)
 
     size_t len = strlen(argv[1]);
     for (size_t i = 0; i < len; i++) {
-        char c = toupper(argv[1][i]);
+        /* Cast to 'int' as llvm and some compilers complain about
+         *     array subscript has type 'char' */
+        char c = toupper((int)argv[1][i]);
         putchar(c);
     }
     putchar('\n');
