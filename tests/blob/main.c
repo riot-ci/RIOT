@@ -20,10 +20,15 @@
 
 #include "fmt.h"
 #include "blob/blobtest.txt.h"
+#include "blob/blob_subdir/blobtest_subdir.txt.h"
 
 int main(void)
 {
     print((char *)blobtest_txt, blobtest_txt_len);
     print("\n", 1);
+
+    print((char *)blobtest_subdir_txt, blobtest_subdir_txt_len);
+    print("\n", 1);
+
     return 0;
 }
