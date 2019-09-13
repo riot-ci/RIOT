@@ -87,7 +87,7 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
     NRF_WDT->CONFIG |= (NRF_WDT_HALT_MODE << WDT_CONFIG_HALT_Pos);
 
     /* timeout (s) = (CRV + 1) / 32768 */
-    uint32_t crv = (uint32_t)(max_time * 32.768) - 1;
+    uint32_t crv = (uint32_t)((max_time << 15) / 1000) - 1;
     DEBUG("[wdt] setting CRV to %"PRIu32"\n", crv);
     NRF_WDT->CRV = crv;
 

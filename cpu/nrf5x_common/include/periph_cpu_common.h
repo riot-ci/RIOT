@@ -171,7 +171,7 @@ typedef struct {
  */
 #define NWDT_TIME_LOWER_LIMIT          (1)
 /* Set upper limit to the maximum possible value that could go in CRV register */
-#define NWDT_TIME_UPPER_LIMIT          ((UINT32_MAX / 32.768) + 1)
+#define NWDT_TIME_UPPER_LIMIT          ((UINT32_MAX >> 15) * US_PER_MS + 1)
 /** @} */
 
 #ifdef __cplusplus
