@@ -13,6 +13,11 @@ from testrunner import run
 def testfunc(child):
     child.expect_exact("Hello blob!")
     child.expect_exact("Hello blob_subdir!")
+    child.expect_exact("0x00")
+    child.expect_exact("0x01")
+    child.expect_exact("0x02")
+    child.expect_exact("0x03")
+    child.expect_exact("0xFF")
 
 
 if __name__ == "__main__":

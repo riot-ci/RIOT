@@ -3,6 +3,6 @@ include ../Makefile.tests_common
 
 USEMODULE += fmt
 
-BLOBS += blobtest.txt blob_subdir/blobtest_subdir.txt
+BLOBS += blobtest.txt blobtest.bin blob_subdir/blobtest_subdir.txt
 
 include $(RIOTBASE)/Makefile.include
