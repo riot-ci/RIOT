@@ -165,6 +165,14 @@ typedef struct {
     uint8_t miso;       /**< MISO pin */
 } spi_conf_t;
 
+/**
+ * @name    WDT upper and lower bound times in ms
+ * @{
+ */
+#define NWDT_TIME_LOWER_LIMIT          (1)
+#define NWDT_TIME_UPPER_LIMIT          ((uint32_t)(UINT32_MAX + 1 / 32.768))
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
