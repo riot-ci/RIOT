@@ -34,16 +34,16 @@ endif
 .PRECIOUS: $(BLOB_HDR_DIR)/. $(BLOB_HDR_DIR)%/.
 
 $(BLOB_HDR_DIR)/.:
-	mkdir -p $@
+	@mkdir -p $@
 
 $(BLOB_HDR_DIR)%/.:
-	mkdir -p $@
+	@mkdir -p $@
 
 .SECONDEXPANSION:
 
 $(BLOB_H): $(BLOB_HDR_DIR)/.
 $(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS) | $$(@D)/.
-	cd $(dir $<); xxd -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $@
+	${Q}cd $(dir $<); xxd -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $@
 
 # make C and C++ objects of this module depend on generated headers, so they
 # get re-build on changes to the blob files.
