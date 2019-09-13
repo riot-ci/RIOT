@@ -48,6 +48,8 @@ extern "C" {
 /**
  * @brief   IPv6 fragmentation reassembly buffer size
  *
+ * This limits the total amount of datagrams that can be reassembled at the same time.
+ *
  * @note    Only applicable with [gnrc_ipv6_ext_frag](@ref net_gnrc_ipv6_ext_frag) module
  */
 #ifndef GNRC_IPV6_EXT_FRAG_RBUF_SIZE
@@ -56,6 +58,8 @@ extern "C" {
 
 /**
  * @brief   The number of total allocatable @ref gnrc_ipv6_ext_frag_limits_t objects
+ * 
+ * This limits the total upper bound of of receivable fragments over all datagrams.
  *
  * @note    Only applicable with [gnrc_ipv6_ext_frag](@ref net_gnrc_ipv6_ext_frag) module
  */
