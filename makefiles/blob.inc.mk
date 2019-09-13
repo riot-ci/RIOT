@@ -22,11 +22,27 @@ ifneq (, $(BLOB_H))
   CFLAGS += -I$(dir $(BLOB_HDR_DIR))
 endif
 
-$(BLOB_HDR_DIR):
-	@mkdir -p $@
+# In order to allow automatic folder creation in subtrees,
+# this Makefile makes use SECONDEXPANSION, PRECIOUS and
+# order only prerequisites.
+# Folder targets are "tagged" by appending "/."
+# The final recipe uses "| $$(@D)/." to create necessary trees.
+#
+# Inspiration from:
+# http://ismail.badawi.io/blog/2017/03/28/automatic-directory-creation-in-make/
+#
+.PRECIOUS: $(BLOB_HDR_DIR)/. $(BLOB_HDR_DIR)%/.
 
-$(BLOB_H): $(BLOB_HDR_DIR)
-$(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS)
+$(BLOB_HDR_DIR)/.:
+	mkdir -p $@
+
+$(BLOB_HDR_DIR)%/.:
+	mkdir -p $@
+
+.SECONDEXPANSION:
+
+$(BLOB_H): $(BLOB_HDR_DIR)/.
+$(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS) | $$(@D)/.
 	cd $(dir $<); xxd -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $@
 
 # make C and C++ objects of this module depend on generated headers, so they
