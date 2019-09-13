@@ -32,7 +32,7 @@ int get_range(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-    printf("lower_bound: %d upper_bound: %d \n", NWDT_TIME_LOWER_LIMIT,
+    printf("lower_bound: %d upper_bound: %"PRIu32" \n", NWDT_TIME_LOWER_LIMIT,
            NWDT_TIME_UPPER_LIMIT);
     return 0;
 }
