@@ -12,6 +12,7 @@ from testrunner import run
 
 def testfunc(child):
     child.expect_exact("Hello blob!")
+    child.expect_exact("Hello blob_subdir!")
 
 
 if __name__ == "__main__":
