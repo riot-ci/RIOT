@@ -157,7 +157,7 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_frag_reass(gnrc_pktsnip_t *pkt)
             rbuf->last++;
             rbuf->pkt_len += size_until;
         }
-        /* not divisible by 8*/
+        /* not divisible by 8 */
         else if ((pkt->size & 0x7)) {
             DEBUG("ipv6_ext_frag: fragment length not divisible by 8");
             goto error_exit;
