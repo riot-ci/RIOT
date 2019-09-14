@@ -17,19 +17,19 @@
  * @}
  */
 
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
 
-#include "thread.h"
-#include "irq.h"
-#include "sched.h"
-#include "thread.h"
-#include "irq.h"
-#include "cpu.h"
 #include "context_frame.h"
-#include "periph_cpu.h"
-#include "periph/init.h"
+#include "cpu.h"
+#include "irq.h"
+#include "irq.h"
 #include "panic.h"
+#include "periph/init.h"
+#include "periph_cpu.h"
+#include "sched.h"
+#include "stdio_base.h"
+#include "thread.h"
 #include "vendor/encoding.h"
 #include "vendor/platform.h"
 #include "vendor/plic_driver.h"
@@ -89,6 +89,9 @@ void cpu_init(void)
 
     /*  Set default state of mstatus */
     set_csr(mstatus, MSTATUS_DEFAULT);
+
+    /* initialize stdio */
+    stdio_init();
 
     /* trigger static peripheral initialization */
     periph_init();
