@@ -58,8 +58,9 @@ extern "C" {
 
 /**
  * @brief   The number of total allocatable @ref gnrc_ipv6_ext_frag_limits_t objects
- * 
- * This limits the total upper bound of of receivable fragments over all datagrams.
+ *
+ * This is the maximum number of receivable fragments, shared between all
+ * fragmented datagrams
  *
  * @note    Only applicable with [gnrc_ipv6_ext_frag](@ref net_gnrc_ipv6_ext_frag) module
  */
