@@ -133,8 +133,10 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 #endif
 
     /* enable the interrupt */
-    NVIC_ClearPendingIRQ(uart_config[dev].irq);
-    NVIC_EnableIRQ(uart_config[dev].irq);
+    if (isr_ctx[dev].rx_cb) {
+        NVIC_ClearPendingIRQ(uart_config[dev].irq);
+        NVIC_EnableIRQ(uart_config[dev].irq);
+    }
 
     uart_poweron(dev);
 
@@ -164,11 +166,29 @@ void uart_poweron(uart_t dev)
 
     if (_is_usart(dev)) {
         USART_TypeDef *usart = uart_config[dev].dev;
-        USART_Enable(usart, usartEnable);
+
+        /* enable tx */
+        usart->CMD = USART_CMD_TXEN;
+
+        /* enable rx if needed */
+        if (isr_ctx[dev].rx_cb) {
+            usart->CMD = USART_CMD_RXEN;
+        }
     }
     else {
         LEUART_TypeDef *leuart = uart_config[dev].dev;
-        LEUART_Enable(leuart, leuartEnable);
+
+        /* enable tx */
+        /* LF register about to be modified requires sync; busy check. */
+        while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+        leuart->CMD = LEUART_CMD_TXEN;
+
+        /* enable rx if needed */
+        if (isr_ctx[dev].rx_cb) {
+            /* LF register about to be modified requires sync; busy check. */
+            while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+            leuart->CMD = LEUART_CMD_RXEN;
+        }
     }
 }
 
@@ -176,11 +196,27 @@ void uart_poweroff(uart_t dev)
 {
     if (_is_usart(dev)) {
         USART_TypeDef *usart = uart_config[dev].dev;
-        USART_Enable(usart, usartDisable);
+
+        /* disable tx */
+        usart->CMD = USART_CMD_TXDIS;
+
+        /* disable rx if enabled */
+        if (usart->STATUS & USART_STATUS_RXENS) {
+            usart->CMD = USART_CMD_RXDIS;
+        }
     }
     else {
         LEUART_TypeDef *leuart = uart_config[dev].dev;
-        LEUART_Enable(leuart, leuartDisable);
+
+        /* disable tx */
+        leuart->CMD = LEUART_CMD_TXDIS;
+
+        /* disable rx if enabled */
+        if (leuart->STATUS & LEUART_STATUS_RXENS) {
+            /* LF register about to be modified requires sync; busy check. */
+            while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+            leuart->CMD = LEUART_CMD_RXDIS;
+        }
     }
 
     CMU_ClockEnable(uart_config[dev].cmu, false);
