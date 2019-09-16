@@ -2,7 +2,13 @@ DEVELHELP := 1
 # name of your application
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY :=
+BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
+                             arduino-mega2560 arduino-nano arduino-uno chronos \
+                             i-nucleo-lrwan1 mega-xplained msb-430 msb-430h \
+                             nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 \
+                             nucleo-f303k8 nucleo-f334r8 nucleo-l031k6 \
+                             nucleo-l053r8 stm32f0discovery stm32l0538-disco \
+                             telosb waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
 
 export TAP ?= tap0
 
