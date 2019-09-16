@@ -8,6 +8,7 @@
 
 import re
 import os
+import pexpect
 import socket
 import sys
 import subprocess
@@ -150,10 +151,22 @@ def testfunc(child):
     print("." * int(child.match.group(1)), end="", flush=True)
 
     lladdr_src = get_host_lladdr(tap)
-    child.sendline("ifconfig")
-    child.expect("HWaddr: (?P<hwaddr>[A-Fa-f:0-9]+)")
-    hwaddr_dst = child.match.group("hwaddr").lower()
-    child.expect("(?P<lladdr>fe80::[A-Fa-f:0-9]+)")
+    res = 1
+    count = 0
+    while res:
+        # check `ifconfig` and also get addresses from it until
+        # link-local address becomes valid
+        time.sleep(1)
+        child.sendline("ifconfig")
+        child.expect("HWaddr: (?P<hwaddr>[A-Fa-f:0-9]+)")
+        hwaddr_dst = child.match.group("hwaddr").lower()
+        res = child.expect([
+            r"(?P<lladdr>fe80::[A-Fa-f:0-9]+)\s+scope:\s+local\s+VAL",
+            pexpect.TIMEOUT
+        ])
+        count += 1
+        if res and (count > 5):
+            raise pexpect.TIMEOUT("Link-local address did not become valid")
     lladdr_dst = child.match.group("lladdr").lower()
 
     def run(func):
