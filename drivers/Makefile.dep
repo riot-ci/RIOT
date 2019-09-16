@@ -408,10 +408,6 @@ ifneq (,$(filter pca9685,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-  FEATURES_REQUIRED += periph_i2c
-  USEMODULE += xtimer
-endif
-
 ifneq (,$(filter pcd8544,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_spi
