@@ -10,7 +10,6 @@
  * @ingroup     tests
  * @brief       Test application for the DCF77 device driver
  * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
- * @file
  *
  * The test application demonstrates the use of the DCF77 using
  *
@@ -37,25 +36,22 @@ int main(void)
     uint8_t mesz;
 
 
-    puts("DCF77 test application\n");
-
-    printf("+------------Initializing------------+\n");
+    printf("DCF77 test application\n");
 
     /* initialize the sensor with default configuration parameters */
     if (dcf77_init (&sensor, &dcf77_params[0]) != DCF77_OK) {
         puts("Initialization failed\n");
         return -1;
     }
+    printf("DCF77 Module initialized \n");
 
 while(1){
     gpio_init(sensor.params.pin, sensor.params.in_mode);
-
 
     printf("\n+--------Starting Measurements--------+\n");
     if(dcf77_read(&sensor, &minute, &hour, &weekday,
       &calenderday,&month, &year, &mesz)!= DCF77_OK){
       puts("###Error### Poor reception...? Cables checked...?");
-      //continue;
     }else{
       printf("Received Minutes: %d\n",minute);
       printf("Received Hours: %d\n",hour);
