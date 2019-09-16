@@ -124,6 +124,9 @@ void cpu_init(void)
     /* set up GPIOs */
     gpio_init_ports();
 
+    /* board specific setup of i/o pins */
+    board_init();
+
     /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
     stdio_init();
 
