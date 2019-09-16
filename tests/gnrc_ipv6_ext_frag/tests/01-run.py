@@ -12,6 +12,7 @@ import pexpect
 import socket
 import sys
 import subprocess
+import time
 
 from scapy.all import Ether, IPv6, IPv6ExtHdrFragment, sendp
 from testrunner import run
