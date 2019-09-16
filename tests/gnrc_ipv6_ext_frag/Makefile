@@ -20,21 +20,15 @@ CFLAGS += -DOUTPUT=TEXT
 CFLAGS += -DTEST_SUITES="gnrc_ipv6_ext_frag"
 CFLAGS += -DGNRC_IPV6_EXT_FRAG_LIMITS_POOL_SIZE=3
 
-# use Ethernet as link-layer protocol
+# use Ethernet as link-layer protocol for native
+# The only current general option for non-native boards, ethos, performs poorly
+# with the rapidly sent, large packets sent by the Linux kernel.
 ifeq (native,$(BOARD))
   USEMODULE += netdev_tap
-
   TERMFLAGS ?= $(TAP)
-else
-  USEMODULE += stdio_ethos
 
-  ETHOS_BAUDRATE ?= 115200
-  CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
-  TERMDEPS += ethos
-  TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
-  TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
+  USEMODULE += auto_init_gnrc_netif
 endif
-USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6
 USEMODULE += gnrc_ipv6_router_default
 USEMODULE += gnrc_icmpv6_error
@@ -52,11 +46,8 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
 
-# TEST_ON_CI_WHITELIST += all
-
-.PHONY: ethos
-
-ethos:
-	$(Q)env -u CC -u CFLAGS make -C $(RIOTTOOLS)/ethos
+# native requires sudo for the `scapy` tests, but those are not executed for
+# non-native boards
+TEST_ON_CI_BLACKLIST += native
 
 include $(RIOTBASE)/Makefile.include
