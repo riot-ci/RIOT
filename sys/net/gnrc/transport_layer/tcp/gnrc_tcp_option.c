@@ -22,6 +22,9 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+/* Mimimum amount of bytes needed for an option with a length field. */
+#define MIN_OPT_LENGTH 2U
+
 int _option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
 {
     /* Extract offset value. Return if no options are set */
@@ -51,7 +54,7 @@ int _option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
                 continue;
 
             case TCP_OPTION_KIND_MSS:
-                if (option->length != TCP_OPTION_LENGTH_MSS) {
+                if (opt_left < MIN_OPT_LENGTH || option->length != TCP_OPTION_LENGTH_MSS) {
                     DEBUG("gnrc_tcp_option.c : _option_parse() : invalid MSS Option length.\n");
                     return -1;
                 }
@@ -66,7 +69,7 @@ int _option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
                 return -1;
         }
 
-        if (option->length > opt_left) {
+        if (opt_left < MIN_OPT_LENGTH || option->length > opt_left) {
             DEBUG("gnrc_tcp_option.c : _option_parse() : invalid option length\n");
             return 0;
         }
