@@ -72,7 +72,7 @@ $(BINDIR)/$(MODULE).a $(OBJ): | $(BINDIR)/$(MODULE)/
 $(BINDIR)/$(MODULE).a: $(OBJ) | $(DIRS:%=ALL--%)
 	@# Recreate archive to cleanup deleted/non selected source files objects
 	$(Q)$(RM) $@
-	$(Q)cd $(BINDIR) && $(AR) $(ARFLAGS) $(@F) $(addprefix $(MODULE)/,$(^F))
+	$(Q)cd $(@D) && $(AR) $(ARFLAGS) $(@F) $(subst $(@D)/,,$^)
 
 CXXFLAGS = $(filter-out $(CXXUWFLAGS), $(CFLAGS)) $(CXXEXFLAGS)
 CCASFLAGS = $(filter-out $(CCASUWFLAGS), $(CFLAGS)) $(CCASEXFLAGS)
