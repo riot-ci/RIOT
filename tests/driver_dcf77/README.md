@@ -8,5 +8,3 @@ sensor can be used for periodic polling.
 ## Usage
 
 The test application demonstrates the use of the DCF77 using
-
-
