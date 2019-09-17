@@ -1,3 +1,5 @@
+export CPU = mips_pic32mz
+export CPU_MODEL=p32mz2048efg100
 export APPDEPS += $(RIOTCPU)/$(CPU)/$(CPU_MODEL)/$(CPU_MODEL).S
 export USE_UHI_SYSCALLS = 1
 
@@ -15,3 +17,11 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 # * The triangle `▶` goes into the port number 1 (a hole with a square around it)
 #   opposite side of the JP1 ICSP text.
 include $(RIOTMAKE)/tools/pic32prog.inc.mk
+
+
+ifeq ($(PROGRAMMER),jlink)
+  FLASHFILE ?= $(HEXFILE)
+  export JLINK_DEVICE := PIC32MZ2048EFG100
+  export JLINK_IF := JTAG
+  include $(RIOTMAKE)/tools/jlink.inc.mk
+endif
