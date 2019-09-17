@@ -447,11 +447,11 @@ static bool _safe_fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt,
 }
 
 /* functions for sending */
-#ifdef MODULE_GNRC_IPV6_EXT_FRAG
 static bool _fragment_pkt_if_needed(gnrc_pktsnip_t *pkt,
                                     gnrc_netif_t *netif,
                                     bool from_me)
 {
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
     /* TODO: get path MTU when PMTU discovery is implemented */
     unsigned path_mtu = netif->ipv6.mtu;
 
@@ -461,9 +461,15 @@ static bool _fragment_pkt_if_needed(gnrc_pktsnip_t *pkt,
         gnrc_ipv6_ext_frag_send_pkt(pkt, path_mtu);
         return true;
     }
+#else   /* MODULE_GNRC_IPV6_EXT_FRAG */
+    (void)pkt;
+    (void)netif;
+    (void)from_me;
+#endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
     return false;
 }
 
+#ifdef MODULE_GNRC_IPV6_EXT_FRAG
 static void _send_by_netif_hdr(gnrc_pktsnip_t *pkt)
 {
     assert(pkt->type == GNRC_NETTYPE_NETIF);
@@ -471,8 +477,6 @@ static void _send_by_netif_hdr(gnrc_pktsnip_t *pkt)
 
     _send_to_iface(netif, pkt);
 }
-#else   /* MODULE_GNRC_IPV6_EXT_FRAG */
-#define _fragment_pkt_if_needed(pkt, netif, from_me)    (false)
 #endif  /* MODULE_GNRC_IPV6_EXT_FRAG */
 
 static void _send_unicast(gnrc_pktsnip_t *pkt, bool prep_hdr,
