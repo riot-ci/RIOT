@@ -47,6 +47,7 @@ flash][Flashsize].
 | USB   | no        |
 | Timer | yes       |
 | CAN   | no        |
+| RTC   | yes       |
 
 
 ## Flashing
