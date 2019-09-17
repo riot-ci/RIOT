@@ -13,7 +13,7 @@
  * @file
  * @brief       Default configuration for DCF77 devices
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
  */
 
 #ifndef DCF77_PARAMS_H
@@ -47,7 +47,7 @@ extern "C" {
 /**@}*/
 
 /**
- * @brief   Configure DHT devices
+ * @brief   Configure DCF77 devices
  */
 static const dcf77_params_t dcf77_params[] =
 {

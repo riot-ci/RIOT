@@ -1,7 +1,5 @@
 /*
- * Copyright 2015 Ludwig Knüpfer,
- *           2015 Christian Mehlis
- *           2016-2017 Freie Universität Berlin
+ * Copyright 2019 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -9,23 +7,19 @@
  */
 
 /**
- * @defgroup    drivers_dht DHT Family of Humidity and Temperature Sensors
+ * @defgroup    drivers_dcf77 DCF77 long wave receiver with 77,5 kHz
  * @ingroup     drivers_sensors
  * @ingroup     drivers_saul
- * @brief       Device driver for the DHT Family of humidity
- *              and temperature sensors
+ * @brief       Device driver long wave receiver with 77,5 kHz
  *
  * This driver provides @ref drivers_saul capabilities.
  *
  * @{
  *
  * @file
- * @brief       Device driver interface for the DHT family of humidity
- *              and temperature sensors
+ * @brief       Interface definition for the dcf77 sensor driver
  *
- * @author      Ludwig Knüpfer <ludwig.knuepfer@fu-berlin.de
- * @author      Christian Mehlis <mehlis@inf.fu-berlin.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
  */
 
 #ifndef DCF77_H
@@ -131,7 +125,7 @@ typedef struct {
 
 
 /**
- * @brief   Configuration parameters for DHT devices
+ * @brief   Configuration parameters for DCF77 devices
  */
 typedef struct {
     gpio_t pin;             /**< GPIO pin of the device's data pin */
@@ -141,7 +135,7 @@ typedef struct {
 } dcf77_params_t;
 
 /**
- * @brief   Device descriptor for DHT sensor devices
+ * @brief   Device descriptor for DCF77 sensor devices
  */
 typedef struct {
     dcf77_params_t params;    /**< Device parameters */
@@ -150,7 +144,7 @@ typedef struct {
 } dcf77_t;
 
 /**
- * @brief   Initialize a new DCF device
+ * @brief   Initialize a new DCF77 device
  *
  * @param[out] dev      device descriptor of a DCF device
  * @param[in]  params   configuration parameters
@@ -167,8 +161,14 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
  * @note    if reading fails or checksum is invalid, no new values will be
  *          written into the result values
  *
- * @param[in]  dev      device descriptor of a DCF device
- * @param[out] time     timestruct
+ * @param[in]  dev          device descriptor of a DCF device
+ * @param[out] minute       minute
+ * @param[out] hour         hour
+ * @param[out] weekday      weekday
+ * @param[out] calenderday  calenderday
+ * @param[out] month        month
+ * @param[out] year         year
+ * @param[out] mesz         mesz
  *
  * @retval `DCF_OK`         Success
  * @retval `DCF_NOCSUM`     Checksum error

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Freie Universität Berlin
+ * Copyright (C) 2019 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -21,7 +21,7 @@
  * meaning that if you read from both endpoints after each other, both values
  * are from the same sensor reading.
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
  *
  * @}
  */
@@ -31,22 +31,12 @@
 #include "saul.h"
 #include "dcf77.h"
 
-// static int read_time(const void *dev, phydat_t *res)
-// {
-//     if (dcf77_read((dcf77_t *)dev, NULL)) {
-//         return -ECANCELED;
-//     }
-//     //res->unit = UNIT_TEMP_C;
-//     res->scale = -1;
-//     return 1;
-// }
 
 static int read_data(const void *dev, phydat_t *res)
 {
     if (dcf77_read((dcf77_t *)dev, NULL, NULL, NULL, NULL, NULL, NULL,NULL)) {
         return -ECANCELED;
     }
-    // res->unit = UNIT_PERCENT;
     res->scale = -1;
     return 1;
 }
