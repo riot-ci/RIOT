@@ -81,6 +81,12 @@ extern "C" {
  */
 void board_init(void);
 
+
+/**
+ * @brief   Use the 2nd UART for STDIO on this board
+ */
+#define STDIO_UART_DEV      UART_DEV(4)
+
 #ifdef __cplusplus
 }
 #endif
