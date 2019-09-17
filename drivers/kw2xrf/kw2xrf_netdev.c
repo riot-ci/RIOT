@@ -705,6 +705,9 @@ static void _isr_event_seq_tr(netdev_t *netdev, uint8_t *dregs)
             kw2xrf_timer3_seq_abort_off(dev);
             kw2xrf_abort_rx_ops_disable(dev);
             kw2xrf_set_sequence(dev, dev->idle_state);
+
+            /* reset TMR3IRQ */
+            kw2xrf_write_dreg(dev, MKW2XDM_IRQSTS3, MKW2XDM_IRQSTS3_TMR3IRQ);
         } else {
             DEBUG("[kw2xrf] SEQIRQ\n");
             irqsts1 |= MKW2XDM_IRQSTS1_SEQIRQ;
