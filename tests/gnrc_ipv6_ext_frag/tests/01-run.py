@@ -352,9 +352,11 @@ def testfunc(child):
     if os.environ.get("BOARD", "") != "native":
         # ethos currently can't handle the larger, rapidly sent packets by the
         # IPv6 fragmentation of the Linux Kernel
-        print("SUCCESS for unittests.")
-        print("Skipping interaction tests due to ethos bug.")
+        print("SUCCESS")
+        print("Skipping datagram reception tests due to ethos bug.")
         return
+
+    # datagram reception tests
     res = 1
     count = 0
     while res:
