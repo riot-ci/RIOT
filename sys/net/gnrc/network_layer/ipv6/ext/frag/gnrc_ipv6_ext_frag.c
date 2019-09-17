@@ -71,9 +71,40 @@ void gnrc_ipv6_ext_frag_init(void)
  * IPv6 fragmentation
  * ==================
  */
+/**
+ * @brief   Allocates a fragmentation send buffer entry from pool
+ *
+ * @return  A free fragmentation send buffer entry.
+ */
 static gnrc_ipv6_ext_frag_send_t *_snd_buf_alloc(void);
+
+/**
+ * @brief   Removes a fragmentation send buffer and releases the stored
+ *          datagrams and fragments.
+ *
+ * @param[in] snd_buf   A fragmentation send buffer entry
+ */
 static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf);
+
+/**
+ * @brief   Removes a fragmentation send buffer without releasing the stored
+ *          datagrams and fragments.
+ *
+ * @param[in] snd_buf   A fragmentation send buffer entry
+ */
 static void _snd_buf_del(gnrc_ipv6_ext_frag_send_t *snd_buf);
+
+/**
+ * @brief   Dermines the last Per-Fragment extension header of a datagram.
+ *
+ * @see [RFC 8200, section 4.5](https://tools.ietf.org/html/rfc8200#section-4.5)
+ *      for definition of _Per-Fragment extension header_
+ *
+ * @param[in] pkt   An IPv6 datagram
+ *
+ * @return  The last Per-Fragment extension header in @p pkt.
+ * @return  NULL, unexpected error. Should never be reached.
+ */
 static gnrc_pktsnip_t *_determine_last_per_frag(gnrc_pktsnip_t *pkt);
 
 void gnrc_ipv6_ext_frag_send_pkt(gnrc_pktsnip_t *pkt, unsigned path_mtu)
@@ -114,6 +145,7 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
                            gnrc_pkt_len(snd_buf->pkt)));
     uint16_t remaining = snd_buf->path_mtu & 0xfff8; /* lower multiple of 8 */
 
+    /* prepare fragment for sending */
     ptr = snd_buf->per_frag;
     if (!last_fragment) {
         /* this won't be the last fragment
@@ -196,7 +228,6 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
             (snd_buf->pkt->size <= remaining)) {
             ptr = snd_buf->pkt;
             snd_buf->pkt = ptr->next;
-            ptr->next = NULL;
         }
         else {
             ptr = gnrc_pktbuf_mark(snd_buf->pkt, remaining,
@@ -209,8 +240,8 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
             }
             assert(snd_buf->pkt->next == ptr);  /* we just created it with mark */
             snd_buf->pkt->next = snd_buf->pkt->next->next;
-            ptr->next = NULL;
         }
+        ptr->next = NULL;
         last->next = ptr;
         last = ptr;
         remaining -= ptr->size;
@@ -219,14 +250,20 @@ void gnrc_ipv6_ext_frag_send(gnrc_ipv6_ext_frag_send_t *snd_buf)
     assert(len != NULL);
     /* adapt IPv6 header length field */
     *len = byteorder_htons(gnrc_pkt_len(to_send->next->next));
-    msg.type = GNRC_IPV6_EXT_FRAG_SEND_FRAG;
+    /* tell gnrc_ipv6 to send the above prepared fragment */
+    msg.type = GNRC_IPV6_EXT_FRAG_SEND;
     msg.content.ptr = to_send;
     msg_try_send(&msg, gnrc_ipv6_pid);
     if (last_fragment) {
+        /* last fragment => we don't need the send buffer anymore.
+         * But as we just sent it to gnrc_ipv6 we still need the packet
+         * allocated, so not _snd_buf_free()! */
         _snd_buf_del(snd_buf);
     }
     else {
-        msg.type = GNRC_IPV6_EXT_FRAG_SEND;
+        /* tell gnrc_ipv6 to continue fragmenting the datagram in snd_buf
+         * later */
+        msg.type = GNRC_IPV6_EXT_FRAG_CONTINUE;
         msg.content.ptr = snd_buf;
         msg_try_send(&msg, gnrc_ipv6_pid);
     }

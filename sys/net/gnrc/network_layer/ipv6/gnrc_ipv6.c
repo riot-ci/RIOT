@@ -216,11 +216,11 @@ static void *_event_loop(void *args)
             case GNRC_IPV6_EXT_FRAG_RBUF_GC:
                 gnrc_ipv6_ext_frag_rbuf_gc();
                 break;
-            case GNRC_IPV6_EXT_FRAG_SEND:
+            case GNRC_IPV6_EXT_FRAG_CONTINUE:
                 DEBUG("ipv6: continue fragmenting packet\n");
                 gnrc_ipv6_ext_frag_send(msg.content.ptr);
                 break;
-            case GNRC_IPV6_EXT_FRAG_SEND_FRAG:
+            case GNRC_IPV6_EXT_FRAG_SEND:
                 DEBUG("ipv6: send fragment\n");
                 _send_by_netif_hdr(msg.content.ptr);
                 break;

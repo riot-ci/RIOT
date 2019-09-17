@@ -48,6 +48,8 @@ extern "C" {
 /**
  * @brief   IPv6 fragmentation send buffer size
  *
+ * This limits the total amount of datagrams that can be fragmented at the same time.
+ *
  * @note    Only applicable with [gnrc_ipv6_ext_frag](@ref net_gnrc_ipv6_ext_frag) module
  */
 #ifndef GNRC_IPV6_EXT_FRAG_SEND_SIZE

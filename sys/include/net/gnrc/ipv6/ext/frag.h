@@ -38,14 +38,19 @@ extern "C" {
 #define GNRC_IPV6_EXT_FRAG_RBUF_GC      (0xfe00U)
 
 /**
- * @brief   Message type to send further fragments of a IPv6 packet
+ * @brief   Message type to continue fragmenting a datagram from a given
+ *          fragmentation send buffer
+ *
+ * Expected type: @ref gnrc_ipv6_ext_frag_send_t
  */
-#define GNRC_IPV6_EXT_FRAG_SEND         (0xfe01U)
+#define GNRC_IPV6_EXT_FRAG_CONTINUE     (0xfe01U)
 
 /**
- * @brief   Message type to send a fragment via the IPv6 layer
+ * @brief   Message type to send a fragment of an IPv6 datagram.
+ *
+ * Expected type: @ref gnrc_pktsnip_t
  */
-#define GNRC_IPV6_EXT_FRAG_SEND_FRAG    (0xfe02U)
+#define GNRC_IPV6_EXT_FRAG_SEND         (0xfe02U)
 
 /**
  * @brief   Data type to describe limits of a single fragment in the reassembly
@@ -106,7 +111,7 @@ void gnrc_ipv6_ext_frag_init(void);
 void gnrc_ipv6_ext_frag_send_pkt(gnrc_pktsnip_t *pkt, unsigned path_mtu);
 
 /**
- * @brief   Fragment packet already in fragmentation send buffer
+ * @brief   (Continue to) fragment packet already in fragmentation send buffer
  *
  * @pre `snd_buf != NULL`
  *
