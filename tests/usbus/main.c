@@ -59,7 +59,7 @@ typedef enum {
 } test_req_phase_t;
 
 testphase_t phase = TESTPHASE_START;
-test_req_phase_t req_phase = TESTPHASE_START;
+test_req_phase_t req_phase = TESTPHASE_IDLE;
 
 static usbus_t usbus;
 static char _stack[USBUS_STACKSIZE];
