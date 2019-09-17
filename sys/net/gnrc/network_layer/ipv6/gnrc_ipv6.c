@@ -531,7 +531,6 @@ static inline void _send_multicast_over_iface(gnrc_pktsnip_t *pkt,
         DEBUG("ipv6: packet is fragmented\n");
         return;
     }
-    (void)prep_hdr;
     DEBUG("ipv6: send multicast over interface %" PRIkernel_pid "\n", netif->pid);
 #ifdef MODULE_NETSTATS_IPV6
     netif->ipv6.stats.tx_mcast_count++;
