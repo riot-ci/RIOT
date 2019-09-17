@@ -569,10 +569,9 @@ static int shell_test_cmd(int argc, char **argv)
         return 1;
     }
     test_num = atoi(argv[2]);
-    if ((unsigned)test_num >=
-        (sizeof(_shell_tests) / sizeof(_shell_tests[0]))) {
+    if ((unsigned)test_num >= ARRAY_SIZE(_shell_tests)) {
         printf("<num> must be between 0 and %u\n",
-               (unsigned)(sizeof(_shell_tests) / sizeof(_shell_tests[0])) - 1);
+               (unsigned)ARRAY_SIZE(_shell_tests) - 1);
         return 1;
     }
     printf("Running test %d\n", test_num);

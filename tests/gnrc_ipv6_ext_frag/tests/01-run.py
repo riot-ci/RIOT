@@ -57,6 +57,7 @@ def stop_udp_server(child):
     child.expect(["Success: stopped UDP server",
                   "Error: server was not running"])
 
+
 def udp_send(child, addr, port, length, num=1, delay=1000000):
     child.sendline("udp send {addr}%6 {port} {length} {num} {delay}"
                    .format(**vars()))
@@ -153,6 +154,7 @@ def test_reass_offset_too_large(child, iface, hw_dst, ll_dst, ll_src):
           IPv6ExtHdrFragment(offset=((size * 2) // 8)) / "x" * 128,
           iface=iface, verbose=0)
     pktbuf_empty(child)
+
 
 def test_ipv6_ext_frag_shell_test_0(child, s, iface, ll_dst):
     child.sendline("test {} 0".format(ll_dst))
@@ -264,17 +266,19 @@ def _fwd_setup(child, ll_dst, g_src, g_dst):
     child.expect(r"MTU:(\d+)")
     return mtu, hwaddr
 
+
 def _fwd_teardown(child):
     # remove route
     child.sendline("nib neigh del 7 fe80::1")
     child.sendline("nib route del 7 affe::/64")
 
+
 def test_ipv6_ext_frag_fwd_success(child, s, iface, ll_dst):
     mtu, dst_mac = _fwd_setup(child, ll_dst, "beef::1", "affe::1")
     payload_fit = mtu - len(IPv6() / IPv6ExtHdrFragment() / UDP())
     pkt = Ether(dst=dst_mac) / IPv6(src="beef::1", dst="affe::1") / \
-          IPv6ExtHdrFragment(m=True, id=0x477384a9) / \
-          UDP(sport=1337, dport=1337) / ("x" * payload_fit)
+        IPv6ExtHdrFragment(m=True, id=0x477384a9) / \
+        UDP(sport=1337, dport=1337) / ("x" * payload_fit)
     # fill missing fields
     pkt = Ether(raw(pkt))
     sendp(pkt, verbose=0, iface=iface)
