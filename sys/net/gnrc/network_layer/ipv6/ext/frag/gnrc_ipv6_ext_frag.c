@@ -71,6 +71,7 @@ void gnrc_ipv6_ext_frag_init(void)
  * IPv6 fragmentation
  * ==================
  */
+
 /**
  * @brief   Allocates a fragmentation send buffer entry from pool
  *
@@ -347,6 +348,7 @@ static gnrc_pktsnip_t *_determine_last_per_frag(gnrc_pktsnip_t *ptr)
  * IPv6 reassembly
  * ===============
  */
+
 /**
  * @brief   Initializes a reassembly buffer entry
  *
