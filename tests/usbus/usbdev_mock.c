@@ -36,7 +36,9 @@ static usbdev_mock_t *_ep2dev(usbdev_ep_t *ep)
 }
 
 void usbdev_init_lowlevel(void)
-{}
+{
+
+}
 
 usbdev_t *usbdev_get_ctx(unsigned num)
 {
@@ -60,9 +62,7 @@ static void _init(usbdev_t *usbdev)
 {
     usbdev_mock_t *dev = (usbdev_mock_t *)usbdev;
 
-    /* Init fake usbdev */
-
-    /* Throw first IRQ to start */
+    /* Throw first event to start the test sequence */
     dev->usbdev.cb(usbdev, USBDEV_EVENT_ESR);
 }
 

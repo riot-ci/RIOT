@@ -56,14 +56,14 @@ typedef struct usbdev_mock usbdev_mock_t;
 /**
  * @brief usbdev mock device callback for esr event checking
  *
- * @param dev   usbdev mock device state
+ * @param dev   usbdev mock device descriptor
  */
 typedef void (*usbdev_mock_esr_cb_t)(usbdev_mock_t *dev);
 
 /**
  * @brief usbdev mock device callback for endpoint event checking
  *
- * @param dev   usbdev mock device state
+ * @param dev   usbdev mock device descriptor
  * @param ep    usbdev mock device endpoint
  */
 typedef void (*usbdev_mock_ep_esr_cb_t)(usbdev_mock_t *dev,
@@ -72,7 +72,7 @@ typedef void (*usbdev_mock_ep_esr_cb_t)(usbdev_mock_t *dev,
 /**
  * @brief usbdev mock device callback for endpoint ready call checking
  *
- * @param dev   usbdev mock device state
+ * @param dev   usbdev mock device descriptor
  * @param ep    usbdev mock device endpoint
  * @param len   length supplied to the ready call
  */
