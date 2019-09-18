@@ -131,7 +131,7 @@ int usbus_control_slicer_nextslice(usbus_t *usbus);
 /**
  * @brief Retrieve the data from the OUT pipe of the control endpoint
  *
- * @pre usbus->state == USBUS_SETUPRQ_OUTDATA
+ * @pre usbus->state == USBUS_CONTROL_REQUEST_STATE_OUTDATA
  *
  * @param[in]   usbus       USBUS context
  * @param[out]  len         Length of the data part
