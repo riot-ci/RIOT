@@ -309,9 +309,11 @@ static void _usbus_config_ep0(usbus_control_handler_t *ep0_handler)
 
 uint8_t *usbus_control_get_out_data(usbus_t *usbus, size_t *len)
 {
-    assert((int)usbus->state == (int)USBUS_CONTROL_REQUEST_STATE_OUTDATA);
-    assert(len);
     usbus_control_handler_t *handler = (usbus_control_handler_t*)usbus->control;
+
+    assert(len);
+    assert(handler->control_request_state == USBUS_CONTROL_REQUEST_STATE_OUTDATA);
+
     usbdev_ep_t *ep_out = handler->out;
     usbdev_ep_get(ep_out, USBOPT_EP_AVAILABLE,
                   len, sizeof(size_t));
