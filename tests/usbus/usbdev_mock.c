@@ -104,6 +104,7 @@ int _get(usbdev_t *usbdev, usbopt_t opt,
     (void)opt;
     (void)value;
     (void)max_len;
+    DEBUG("[mock]: Unhandled get call: 0x%x\n", opt);
     return -ENOTSUP;
 }
 
@@ -112,7 +113,6 @@ int _set(usbdev_t *usbdev, usbopt_t opt,
 {
     usbdev_mock_t *testdev = (usbdev_mock_t *)usbdev;
 
-    (void)value;
     (void)value_len;
     int res = -ENOTSUP;
     switch (opt) {
@@ -154,6 +154,7 @@ int _ep_get(usbdev_ep_t *ep, usbopt_ep_t opt,
             *((size_t *)value) = testep->available;
             return sizeof(size_t);
         default:
+            DEBUG("[mock]: Unhandled endpoint get call: 0x%x\n", opt);
             break;
     }
     return -ENOTSUP;
