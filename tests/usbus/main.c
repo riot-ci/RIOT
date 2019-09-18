@@ -305,6 +305,11 @@ static void _ep0_validation(usbdev_mock_t *dev, usbdev_mock_ep_t *ep,
             _validate_in_ack(dev, ep, len);
             break;
         default:
+            /* Nothing is validated at the moment for the cases of:
+             * - TEST_REQ_PHASE_IDLE
+             * - TEST_REQ_PHASE_INDATA
+             * - TEST_REQ_PHASE_OUTDATA
+             */
             break;
     }
 
