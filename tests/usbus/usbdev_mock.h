@@ -26,6 +26,11 @@ extern "C" {
 #endif
 
 /**
+ * @brief Number of IN and OUT endpoints available in the mock usbdev device
+ */
+#define USBDEV_MOCK_NUM_EP      (1)
+
+/**
  * @name usbdev mock device endpoint states
  */
 typedef enum {
@@ -79,14 +84,18 @@ typedef void (*usbdev_mock_ready_cb_t)(usbdev_mock_t *dev,
  * @brief usbdev mock device
  */
 struct usbdev_mock {
-    usbdev_t usbdev;                    /**< Generic usbdev device          */
-    usbdev_mock_ep_t in[1];             /**< IN endpoints                   */
-    usbdev_mock_ep_t out[1];            /**< OUT endpoints                  */
-    uint8_t config_addr;                /**< Configured address             */
-    size_t req_len;                     /**< Length of the current request  */
-    usbdev_mock_esr_cb_t esr_cb;        /**< ESR callback for validation    */
-    usbdev_mock_ep_esr_cb_t ep_esr_cb;  /**< Endpoint ESR cb for validation */
-    usbdev_mock_ready_cb_t ready_cb;    /**< Endpoint ready cb for checking */
+    usbdev_t usbdev;                          /**< Generic usbdev device      */
+    usbdev_mock_ep_t in[USBDEV_MOCK_NUM_EP];  /**< IN endpoints               */
+    usbdev_mock_ep_t out[USBDEV_MOCK_NUM_EP]; /**< OUT endpoints              */
+    uint8_t config_addr;                      /**< Configured address         */
+    size_t req_len;                           /**< Length of the current
+                                                *  request                    */
+    usbdev_mock_esr_cb_t esr_cb;              /**< ESR callback for
+                                                *  validation                 */
+    usbdev_mock_ep_esr_cb_t ep_esr_cb;        /**< Endpoint ESR cb for
+                                                *  validation                 */
+    usbdev_mock_ready_cb_t ready_cb;          /**< Endpoint ready cb for
+                                                *  validation                 */
 };
 
 /**
