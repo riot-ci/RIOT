@@ -84,7 +84,7 @@ static char *_state2str(test_req_phase_t state)
         case TEST_REQ_PHASE_INACK:
             return "IN Ack";
     }
-    return "";
+    return "unknown control request state";
 }
 
 static void _build_conf_req(uint8_t *buf, size_t reqlen)
