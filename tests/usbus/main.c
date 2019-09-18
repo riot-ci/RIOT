@@ -283,8 +283,8 @@ static void _ep_esr_validation(usbdev_mock_t *dev, usbdev_mock_ep_t *ep)
     ep->ep.dev->epcb(&ep->ep, USBDEV_EVENT_TR_COMPLETE);
 }
 
-/* Handles Control endpoint validation from the usbdev side  */
-/* Called as part of the endpoint ready function             */
+/* Handles Control endpoint validation from the usbdev side. *
+ * Called as part of the endpoint ready function.            */
 static void _ep0_validation(usbdev_mock_t *dev, usbdev_mock_ep_t *ep,
                             size_t len)
 {
