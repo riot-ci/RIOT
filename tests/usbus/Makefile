@@ -4,9 +4,10 @@ USEMODULE += usbus
 FEATURES_PROVIDED += periph_usbdev
 
 # USB device vendor and product ID
-# pid.codes test VID/PID, not globally unique
-USB_VID ?= 1209
-USB_PID ?= 0001
+DEFAULT_VID = 1209
+DEFAULT_PID = 0001
+USB_VID ?= $(DEFAULT_VID)
+USB_PID ?= $(DEFAULT_PID)
 
 CFLAGS += -DUSB_CONFIG_VID=0x$(USB_VID) -DUSB_CONFIG_PID=0x$(USB_PID)
 
