@@ -98,18 +98,21 @@ typedef int (*usbus_cdcacm_coding_cb_t)(usbus_cdcacm_device_t *cdcacm,
                                         uint32_t baud, uint8_t bits,
                                         uint8_t parity, uint8_t stop);
 
+/**
+ * @brief USBUS CDC ACM context struct
+ */
 struct usbus_cdcacm_device {
-    usbus_handler_t handler_ctrl;
-    usbus_interface_t iface_ctrl;
-    usbus_interface_t iface_data;
-    usbus_hdr_gen_t cdcacm_hdr;
-    usbus_cdcacm_cb_t cb;
-    usbus_cdcacm_coding_cb_t coding_cb;
-    tsrb_t tsrb;
-    usbus_t *usbus;
-    size_t occupied;
-    usbus_cdcacm_line_state_t state;
-    event_t flush;
+    usbus_handler_t handler_ctrl;       /**< control handler                 */
+    usbus_interface_t iface_ctrl;       /**< CDC control interface           */
+    usbus_interface_t iface_data;       /**< CDC data interface              */
+    usbus_hdr_gen_t cdcacm_hdr;         /**< CDC header generator            */
+    usbus_cdcacm_cb_t cb;               /**< Callback for data handlers      */
+    usbus_cdcacm_coding_cb_t coding_cb; /**< Callback for ACM coding changes */
+    tsrb_t tsrb;                        /**< TSRB for data to the host       */
+    usbus_t *usbus;                     /**< USBUS reference                 */
+    size_t occupied;                    /**< Number of bytes for the host    */
+    usbus_cdcacm_line_state_t state;    /**< Current line state              */
+    event_t flush;                      /**< device2host forced flush event  */
 };
 
 /**
