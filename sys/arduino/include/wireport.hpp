@@ -21,7 +21,7 @@
  * that are documented in the official [Arduino Reference]
  * (https://www.arduino.cc/en/Reference/Wire) of this library.
  *
- * The implementation is an adoption of the original Arduino Wire Library
+ * The implementation is an adaptation of the original Arduino Wire Library
  * which is published under the following copyright:
  *
  * ```

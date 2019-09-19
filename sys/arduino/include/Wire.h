@@ -8,7 +8,7 @@
 
 /**
  * @ingroup     sys_arduino
- * @brief       Wrapper to keep source code compatibility for Arduino.h
+ * @brief       Wrapper to keep source code compatibility for Wire.h
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @file
  * @{
