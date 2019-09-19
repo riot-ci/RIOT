@@ -25,4 +25,14 @@ RESET ?= false
 
 endif
 
+# In the .dep stage we may have added a second netdev; make sure there's room
+# for that.
+ifneq (,$(filter gnrc_netdev_default,$(USEMODULE)))
+    GNRC_NETIF_NUMOF ?= 1
+    $(eval GNRC_NETIF_NUMOF=$(shell echo $$(($(GNRC_NETIF_NUMOF)+1))))
+
+    # Workaround for https://github.com/RIOT-OS/RIOT/issues/12545
+    CFLAGS += -DGNRC_IPV6_NIB_CONF_SLAAC -DGNRC_IPV6_NIB_CONF_ARSM
+endif
+
 include $(RIOTBOARD)/common/nrf52/Makefile.include
