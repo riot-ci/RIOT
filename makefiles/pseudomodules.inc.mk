@@ -82,7 +82,6 @@ PSEUDOMODULES += stdio_ethos
 PSEUDOMODULES += stdio_cdc_acm
 PSEUDOMODULES += stdio_uart_rx
 PSEUDOMODULES += sock_dtls
-PSEUDOMODULES += usbus_cdc_acm_uart
 
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
