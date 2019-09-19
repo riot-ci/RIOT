@@ -18,31 +18,31 @@
  * @}
  */
 
- #include <string.h>
+#include <string.h>
 
- #include "saul.h"
- #include "opt3001.h"
+#include "saul.h"
+#include "opt3001.h"
 
- static int read_lux(const void *dev, phydat_t *res)
- {
-    if (opt3001_read_lux((const opt3001_t *)dev, &res->val[0]) != OPT3001_OK) {
+static int read_lux(const void *dev, phydat_t *res)
+{
+    uint32_t convlux;
+
+    if (opt3001_read_lux((const opt3001_t *)dev, &convlux) != OPT3001_OK) {
         return -ECANCELED;
     }
 
+    res->val[0] = convlux / 1000;
     res->val[1] = 0;
+    res->val[2] = 0;
 
- #if OPT3001_USE_RAW_VALUES
-     res->unit = UNIT_NONE;
-     res->scale = 0;
- #else
-     res->unit = UNIT_LUX;
-     res->scale = -2;
- #endif
-     return 2;
+    res->unit = UNIT_LUX;
+    res->scale = 0;
+
+     return 1;
  }
 
- const saul_driver_t opt3001_saul_driver = {
-      .read = read_lux,
-      .write = saul_notsup,
-      .type = SAUL_SENSE_LIGHT,
- };
+const saul_driver_t opt3001_saul_driver = {
+    .read = read_lux,
+    .write = saul_notsup,
+    .type = SAUL_SENSE_LIGHT,
+};

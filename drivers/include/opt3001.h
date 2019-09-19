@@ -49,9 +49,6 @@
 extern "C" {
 #endif
 
-#define DEV_I2C     (dev->params.i2c_dev) /**< BUS */
-#define DEV_ADDR    (dev->params.i2c_addr) /**< ADDR */
-
 /**
  * @brief   OPT3001 Default Address
  *
@@ -80,22 +77,11 @@ extern "C" {
 #endif
 
 /**
- * @brief   Default raw value mode
- *
- * If set to 0, measurements will be converted to lux.
- * If set to 1, raw readings will be returned.
- */
-#ifndef OPT3001_USE_RAW_VALUES
-#define OPT3001_USE_RAW_VALUES (0)
-#endif
-
-/**
  * @brief   Parameters needed for device initialization
  */
 typedef struct {
     i2c_t i2c_dev; /**< I2C device, the sensor is connected to */
     uint8_t i2c_addr; /**< The sensor's slave address on the I2C bus */
-    uint16_t conversion_time; /**< Conversion time */
 } opt3001_params_t;
 
 /**
@@ -128,7 +114,8 @@ enum {
 int opt3001_init(opt3001_t *dev, const opt3001_params_t *params);
 
 /**
- * @brief   Reset the OPT3001 sensor, afterwards it should be reinitialized.
+ * @brief   Reset the OPT3001 sensor while simultaneous deactivating measurements.
+ *          Afterwards the sensor should be idle.
  *
  * @param[out] dev          device descriptor of sensor
  *
@@ -148,36 +135,15 @@ int opt3001_reset(const opt3001_t *dev);
 int opt3001_set_active(const opt3001_t *dev);
 
 /**
- * @brief   Read sensor's data.
+ * @brief   Read sensor's raw data and convert it to milliLux.
  *
  * @param[in]  dev          device descriptor of sensor
- * @param[out] rawl         raw lux value
- * @param[out] crf          conversion ready, 0 if a conversion is in progress
+ * @param[out] convl        ambient light in milliLux
  *
  * @return                  0 on success
  * @return                  -1 on error
  */
-int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl);
-
-/**
- * @brief   Convert raw sensor values to lux.
- *
- * @param[in]  rawl         raw lux value
- * @param[out] convl        converted lux value
- */
-void opt3001_convert(int16_t rawl, float *convl);
-
-/**
- * @brief   Convenience function to get the converted lux values
- *
- *
- * @param[in]  dev          device descriptor of sensor
- * @param[out] convl        converted lux value
- *
- * @return                  0 on success
- * @return                  -1 on error
- */
-int opt3001_read_lux(const opt3001_t *dev, int16_t *convl);
+int opt3001_read_lux(const opt3001_t *dev, uint32_t *convl);
 
 #ifdef __cplusplus
 }
