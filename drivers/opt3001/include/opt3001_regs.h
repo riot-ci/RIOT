@@ -39,12 +39,7 @@
 
  #define OPT3001_CONFIG_RESET (0xC810) /**< Reset value */
 
- #define OPT3001_CONFIG_RN_FSR      (0xC)     /**< Automatic full-scale setting mode */
- #define OPT3001_CONFIG_RN_SHIFT	  (12U)     /**< Range number field shift */
- #define OPT3001_CONFIG_RN_MASK	    (0xF000)  /**< Range number field mask */
- #define OPT3001_REGS_CONFIG_RN(x)  (((uint16_t)(((uint16_t)(x)) \
-                                    << OPT3001_CONFIG_RN_SHIFT)) \
-                                    & OPT3001_CONFIG_RN_MASK) /**< Range number field */
+ #define OPT3001_CONFIG_RN_FSR      (0xC000)     /**< Automatic full-scale setting mode */
 
  #define OPT3001_REGS_CONFIG_CT_SHIFT  (11U)    /**< Conversion time shift */
  #define OPT3001_REGS_CONFIG_CT_MASK   (0x0800) /**< Conversion time mask */
@@ -53,7 +48,7 @@
                                        & OPT3001_REGS_CONFIG_CT_MASK) /**< Conversion time field */
 
  #define OPT3001_CONFIG_M_SHUTDOWN     (0x0) /**< Shutdown mode */
- #define OPT3001_CONFIG_M_SINGLE	     (0x1) /**< Single-shot mode */
+ #define OPT3001_CONFIG_M_SINGLE       (0x1) /**< Single-shot mode */
  #define OPT3001_CONFIG_M_CONTINUOUS   (0x2) /**< Continuous mode (also 0x3) */
  #define OPT3001_CONFIG_MOC_SHIFT      (9U)  /**< Mode of conversion shift */
  #define OPT3001_CONFIG_MOC_MASK       (0x0600) /**< Mode of conversion mask */
@@ -81,8 +76,8 @@
  * The data sheet of the device (sect. 6.5) indicates that the conversion time is the integration time plus 3 ms.
  * It has been added a bit more time just to be safe.
  */
- #define OPT3001_REGS_INT_TIME_SHORT	100000 /**< Integration time of 100ms */
- #define OPT3001_REGS_INT_TIME_LONG		800000 /**< Integration time of 800ms */
+ #define OPT3001_REGS_INT_TIME_SHORT  100000 /**< Integration time of 100ms */
+ #define OPT3001_REGS_INT_TIME_LONG   800000 /**< Integration time of 800ms */
 
  #define OPT3001_CONVERSION_TIME_OFFSET	4000 /**< Conversion time offset */
 

@@ -49,9 +49,6 @@
 extern "C" {
 #endif
 
-#define DEV_I2C     (dev->params.i2c_dev) /**< BUS */
-#define DEV_ADDR    (dev->params.i2c_addr) /**< ADDR */
-
 /**
  * @brief   OPT3001 Default Address
  *
@@ -80,22 +77,11 @@ extern "C" {
 #endif
 
 /**
- * @brief   Default raw value mode
- *
- * If set to 0, measurements will be converted to lux.
- * If set to 1, raw readings will be returned.
- */
-#ifndef OPT3001_USE_RAW_VALUES
-#define OPT3001_USE_RAW_VALUES (0)
-#endif
-
-/**
  * @brief   Parameters needed for device initialization
  */
 typedef struct {
     i2c_t i2c_dev; /**< I2C device, the sensor is connected to */
     uint8_t i2c_addr; /**< The sensor's slave address on the I2C bus */
-    uint16_t conversion_time; /**< Conversion time */
 } opt3001_params_t;
 
 /**
@@ -165,7 +151,7 @@ int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl);
  * @param[in]  rawl         raw lux value
  * @param[out] convl        converted lux value
  */
-void opt3001_convert(int16_t rawl, float *convl);
+void opt3001_convert(int16_t rawl, uint16_t *convl);
 
 /**
  * @brief   Convenience function to get the converted lux values

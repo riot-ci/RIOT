@@ -31,13 +31,9 @@
 
     res->val[1] = 0;
 
- #if OPT3001_USE_RAW_VALUES
-     res->unit = UNIT_NONE;
-     res->scale = 0;
- #else
-     res->unit = UNIT_LUX;
-     res->scale = -2;
- #endif
+    res->unit = UNIT_LUX;
+    res->scale = -2;
+
      return 2;
  }
 
