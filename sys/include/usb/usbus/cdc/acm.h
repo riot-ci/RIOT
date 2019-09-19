@@ -122,7 +122,7 @@ struct usbus_cdcacm_device {
  * @brief Initialize an USBUS CDC ACM interface
  *
  * @param[in]   usbus       USBUS context to register with
- * @param[in]   handler     USBUS CDC ACM handler
+ * @param[in]   cdcacm      USBUS CDC ACM handler
  * @param[in]   cb          Callback for data from the USB interface
  * @param[in]   coding_cb   Callback for control settings
  * @param[in]   buf         Buffer for data to the USB interface
