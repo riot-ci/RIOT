@@ -529,9 +529,11 @@ static void _handle_rtr_sol(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
         _snd_rtr_advs(netif, &ipv6->src, false);
     }
 #endif  /* GNRC_IPV6_NIB_CONF_6LR */
+#if GNRC_IPV6_NIB_CONF_6LN
     else {
         (void)nce;  /* NCE is not used */
     }
+#endif
 }
 #endif  /* GNRC_IPV6_NIB_CONF_ROUTER */
 
