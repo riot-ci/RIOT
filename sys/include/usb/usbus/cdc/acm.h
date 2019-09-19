@@ -66,6 +66,9 @@ typedef enum {
     USBUS_CDCACM_LINE_STATE_DTE
 } usbus_cdcacm_line_state_t;
 
+/**
+ * @brief USBUS CDC ACM context struct forward declaration
+ */
 typedef struct usbus_cdcacm_device usbus_cdcacm_device_t;
 
 /**
