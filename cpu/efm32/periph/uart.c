@@ -96,8 +96,6 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         /* enable receive interrupt */
         USART_IntEnable(uart, USART_IEN_RXDATAV);
 
-        /* enable peripheral */
-        USART_Enable(uart, usartEnable);
 #if LOW_POWER_ENABLED && defined(LEUART_COUNT) && LEUART_COUNT > 0
     } else {
         LEUART_TypeDef *leuart = (LEUART_TypeDef *) uart_config[dev].dev;
@@ -131,15 +129,16 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
         /* enable receive interrupt */
         LEUART_IntEnable(leuart, LEUART_IEN_RXDATAV);
-
-        /* enable peripheral */
-        LEUART_Enable(leuart, leuartEnable);
     }
 #endif
 
     /* enable the interrupt */
-    NVIC_ClearPendingIRQ(uart_config[dev].irq);
-    NVIC_EnableIRQ(uart_config[dev].irq);
+    if (isr_ctx[dev].rx_cb) {
+        NVIC_ClearPendingIRQ(uart_config[dev].irq);
+        NVIC_EnableIRQ(uart_config[dev].irq);
+    }
+
+    uart_poweron(dev);
 
     return 0;
 }
@@ -164,10 +163,62 @@ void uart_write(uart_t dev, const uint8_t *data, size_t len)
 void uart_poweron(uart_t dev)
 {
     CMU_ClockEnable(uart_config[dev].cmu, true);
+
+    if (_is_usart(dev)) {
+        USART_TypeDef *usart = uart_config[dev].dev;
+
+        /* enable tx */
+        usart->CMD = USART_CMD_TXEN;
+
+        /* enable rx if needed */
+        if (isr_ctx[dev].rx_cb) {
+            usart->CMD = USART_CMD_RXEN;
+        }
+    }
+    else {
+        LEUART_TypeDef *leuart = uart_config[dev].dev;
+
+        /* enable tx */
+        /* LF register about to be modified requires sync; busy check. */
+        while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+        leuart->CMD = LEUART_CMD_TXEN;
+
+        /* enable rx if needed */
+        if (isr_ctx[dev].rx_cb) {
+            /* LF register about to be modified requires sync; busy check. */
+            while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+            leuart->CMD = LEUART_CMD_RXEN;
+        }
+    }
 }
 
 void uart_poweroff(uart_t dev)
 {
+    if (_is_usart(dev)) {
+        USART_TypeDef *usart = uart_config[dev].dev;
+
+        /* disable tx */
+        usart->CMD = USART_CMD_TXDIS;
+
+        /* disable rx if enabled */
+        if (usart->STATUS & USART_STATUS_RXENS) {
+            usart->CMD = USART_CMD_RXDIS;
+        }
+    }
+    else {
+        LEUART_TypeDef *leuart = uart_config[dev].dev;
+
+        /* disable tx */
+        leuart->CMD = LEUART_CMD_TXDIS;
+
+        /* disable rx if enabled */
+        if (leuart->STATUS & LEUART_STATUS_RXENS) {
+            /* LF register about to be modified requires sync; busy check. */
+            while (leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) {}
+            leuart->CMD = LEUART_CMD_RXDIS;
+        }
+    }
+
     CMU_ClockEnable(uart_config[dev].cmu, false);
 }
 
@@ -177,12 +228,18 @@ static void rx_irq(uart_t dev)
     if (_is_usart(dev)) {
 #endif
         if (USART_IntGet(uart_config[dev].dev) & USART_IF_RXDATAV) {
-            isr_ctx[dev].rx_cb(isr_ctx[dev].arg, USART_RxDataGet(uart_config[dev].dev));
+            uint8_t c = USART_RxDataGet(uart_config[dev].dev);
+            if (isr_ctx[dev].rx_cb) {
+                isr_ctx[dev].rx_cb(isr_ctx[dev].arg, c);
+            }
         }
 #if LOW_POWER_ENABLED && defined(LEUART_COUNT) && LEUART_COUNT > 0
     } else {
         if (LEUART_IntGet(uart_config[dev].dev) & LEUART_IF_RXDATAV) {
-            isr_ctx[dev].rx_cb(isr_ctx[dev].arg, LEUART_RxDataGet(uart_config[dev].dev));
+            uint8_t c = LEUART_RxDataGet(uart_config[dev].dev);
+            if (isr_ctx[dev].rx_cb) {
+                isr_ctx[dev].rx_cb(isr_ctx[dev].arg, c);
+            }
         }
     }
 #endif
