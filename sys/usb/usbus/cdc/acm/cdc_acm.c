@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup usbusb_cdc_acm
+ * @ingroup usbus_cdc_acm
  * @{
  * @file
  *
