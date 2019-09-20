@@ -58,15 +58,6 @@ static inline void _set_enable(bool on)
 #endif
 }
 
-static inline bool _is_enabled(void)
-{
-#ifdef WDT_CTRLA_ENABLE
-    return WDT->CTRLA.bit.ENABLE;
-#else
-    return WDT->CTRL.bit.ENABLE;
-#endif
-}
-
 static inline void _wait_syncbusy(void)
 {
 #ifdef WDT_STATUS_SYNCBUSY
