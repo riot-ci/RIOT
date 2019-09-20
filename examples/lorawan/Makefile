@@ -87,6 +87,9 @@ else
   # prevents more than one message to be sent.
   # This is a known limitation of xtimer and should be fixed in the future by
   # using low power timer (based on 32.768kHz external oscillator).
+  $(warning You are disabling dutycycle restriction, make sure your sending \
+            period is greater than the allowed dutycycle in your geographic \
+            region)
   CFLAGS+=-DDISABLE_LORAMAC_DUTYCYCLE
 endif
 
