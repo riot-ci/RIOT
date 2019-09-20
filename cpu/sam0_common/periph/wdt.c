@@ -24,7 +24,6 @@
 #include "pm_layered.h"
 #include "board.h"
 
-#define ENABLE_DEBUG 0
 #include "debug.h"
 
 #ifndef WDT_CLOCK_HZ
@@ -132,14 +131,14 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
     uint32_t per, win;
 
     if (max_time == 0) {
-        DEBUG("invalid period: max_time = %lu\n", max_time);
+        DEBUG("invalid period: max_time = %"PRIu32"\n", max_time);
         return;
     }
 
     per = ms_to_per(max_time);
 
     if (per > WDT_CONFIG_PER_16K_Val) {
-        DEBUG("invalid period: max_time = %lu\n", max_time);
+        DEBUG("invalid period: max_time = %"PRIu32"\n", max_time);
         return;
     }
 
@@ -147,7 +146,7 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
         win = ms_to_per(min_time);
 
         if (win > WDT_CONFIG_PER_8K_Val) {
-            DEBUG("invalid period: min_time = %lu\n", min_time);
+            DEBUG("invalid period: min_time = %"PRIu32"\n", min_time);
             return;
         }
 
@@ -171,7 +170,7 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
 
     WDT->INTFLAG.reg = WDT_INTFLAG_EW;
 
-    DEBUG("watchdog window: %lx, period: %lx\n", win, per);
+    DEBUG("watchdog window: %"PRIu32", period: %"PRIu32"\n", win, per);
 
     WDT->CONFIG.reg = WDT_CONFIG_WINDOW(win) | WDT_CONFIG_PER(per);
     _wait_syncbusy();
