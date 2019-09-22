@@ -148,14 +148,25 @@ void uart_write(uart_t dev, const uint8_t *data, size_t len)
 #if LOW_POWER_ENABLED && defined(LEUART_COUNT) && LEUART_COUNT > 0
     if (_is_usart(dev)) {
 #endif
+        USART_TypeDef *usart = uart_config[dev].dev;
+
         while (len--) {
-            USART_Tx(uart_config[dev].dev, *(data++));
+            USART_Tx(usart, *(data++));
         }
+
+        /* spin until transmission is complete */
+        while (!(usart->STATUS & USART_STATUS_TXC)) {}
+
 #if LOW_POWER_ENABLED && defined(LEUART_COUNT) && LEUART_COUNT > 0
     } else {
+        LEUART_TypeDef *leuart = uart_config[dev].dev;
+
         while (len--) {
-            LEUART_Tx(uart_config[dev].dev, *(data++));
+            LEUART_Tx(leuart, *(data++));
         }
+
+        /* spin until transmission is complete */
+        while (!(leuart->STATUS & LEUART_STATUS_TXC)) {}
     }
 #endif
 }
