@@ -28,7 +28,7 @@ Table of contents:
 
 - Install python dependencies (only Python3.6 and later is supported):
 
-      $ pip3 install --user ed25519 pyasn1 cbor click
+      $ pip3 install --user ed25519 pyasn1 cbor
 
 - Install aiocoap from the source
 
@@ -36,11 +36,6 @@ Table of contents:
 
   See the [aiocoap installation instructions](https://aiocoap.readthedocs.io/en/latest/installation.html)
   for more details.
-
-- Install aiocoap-fileserver
-
-      $ wget https://github.com/chrysn/aiocoap/raw/master/contrib/aiocoap-fileserver -O ~/.local/bin/aiocoap-fileserver
-      $ chmod a+x ~/.local/bin/aiocoap-fileserver
 
 - add `~/.local/bin` to PATH
 
