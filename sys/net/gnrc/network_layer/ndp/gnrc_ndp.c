@@ -243,9 +243,10 @@ gnrc_pktsnip_t *gnrc_ndp_opt_rdnss_build(uint32_t ltime, ipv6_addr_t *addrs,
         ndp_opt_rdnss_t *rdnss_opt = pkt->data;
         rdnss_opt->resv.u16 = 0;
         rdnss_opt->ltime = byteorder_htonl(ltime);
+        ipv6_addr_t *rdnss_opt_addrs = ((ndp_opt_rdnss_aux_t *)rdnss_opt)->addrs;
         for (unsigned i = 0; i < addrs_num; i++) {
-            memcpy(&rdnss_opt->addrs[i], &addrs[i],
-                   sizeof(rdnss_opt->addrs[i]));
+            memcpy(&rdnss_opt_addrs[i], &addrs[i],
+                   sizeof(rdnss_opt_addrs[i]));
         }
     }
     return pkt;
