@@ -210,8 +210,9 @@ void handle_trap(unsigned int mcause, unsigned int mepc, unsigned int mtval)
     }
 
     /* Check if context change was requested */
-    if( sched_context_switch_request )
+    if( sched_context_switch_request ) {
         sched_run();
+    }
 
     /* ISR done - no more changes to thread states */
     __in_isr = 0;
@@ -301,6 +302,8 @@ char *thread_stack_init(thread_task_func_t task_func,
     /* set initial reg values */
     sf->pc = (uint32_t) task_func;
     sf->a0 = (uint32_t) arg;
+
+    /* if the thread exits go to sched_task_exit() */
     sf->ra = (uint32_t) sched_task_exit;
 
     return (char *) stk_top;
@@ -311,8 +314,9 @@ void thread_print_stack(void)
     int count = 0;
     uint32_t *sp = (uint32_t *) ((sched_active_thread) ? sched_active_thread->sp : NULL);
 
-    if( sp == NULL )
+    if( sp == NULL ) {
         return;
+    }
 
     printf("printing the current stack of thread %" PRIkernel_pid "\n",
            thread_getpid());
