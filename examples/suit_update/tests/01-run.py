@@ -94,6 +94,10 @@ def testfunc(child):
         # Get device local address
         client = "[fe80::2%{}]".format(TAP)
 
+        # work around ethos sometimes dropping the first (initial) packet
+        # See #11988.
+        subprocess.call(["ping", "-c1", "-w1", client])
+
     for version in [current_app_ver + 1, current_app_ver + 2]:
         # Wait for suit_coap thread to start
         child.expect_exact("suit_coap: started.")
