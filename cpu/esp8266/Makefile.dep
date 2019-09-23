@@ -22,6 +22,10 @@ endif
 ifneq (, $(filter esp_wifi, $(USEMODULE)))
     CFLAGS += -DLWIP_OPEN_SRC
     LINKFLAGS += -Wl,-wrap=ethernet_input
+
+    # thin archives trigger a reboot loop - see #12258
+    ARFLAGS = rcs
+
     USEMODULE += netdev_eth
 endif
 
