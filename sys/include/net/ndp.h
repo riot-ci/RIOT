@@ -344,7 +344,6 @@ typedef struct __attribute__((packed)) {
     uint8_t len;            /**< length in units of 8 octets */
     network_uint16_t resv;  /**< reserved field */
     network_uint32_t ltime; /**< lifetime in seconds */
-    ipv6_addr_t addrs[];    /**< addresses of IPv6 recursive DNS servers */
 } ndp_opt_rdnss_t;
 
 #ifdef __cplusplus
