@@ -26,11 +26,6 @@ or by executing the following commands:
     sudo ip tuntap add tap0 mode tap user ${USER}
     sudo ip link set tap0 up
 
-Usage (native)
-==========
-
-    make all test
-
-Usage (non-native)
+Usage
 ==========
     make BOARD=<BOARD_NAME> all flash test

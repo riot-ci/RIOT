@@ -35,7 +35,8 @@ int get_af_family(char *family)
 {
     if (memcmp(family, "AF_INET6", sizeof("AF_INET6")) == 0) {
         return AF_INET6;
-    } else if (memcmp(family, "AF_INET", sizeof("AF_INET")) == 0) {
+    }
+    else if (memcmp(family, "AF_INET", sizeof("AF_INET")) == 0) {
         return AF_INET;
     }
     return AF_UNSPEC;
@@ -105,7 +106,8 @@ int gnrc_tcp_open_active_cmd(int argc, char **argv)
     uint16_t target_port = atol(argv[3]);
     uint16_t local_port = atol(argv[4]);
 
-    int err = gnrc_tcp_open_active(&tcb, af_family, target_addr, target_port, local_port);
+    int err = gnrc_tcp_open_active(&tcb, af_family, target_addr, target_port,
+                                   local_port);
     switch (err) {
         case -EAFNOSUPPORT:
             printf("%s: returns -EAFNOSUPPORT\n", argv[0]);
@@ -150,7 +152,8 @@ int gnrc_tcp_open_passive_cmd(int argc, char **argv)
 
     if (argc == 3) {
         local_port = atol(argv[2]);
-    } else if (argc == 4) {
+    }
+    else if (argc == 4) {
         local_addr = argv[2];
         local_port = atol(argv[3]);
     }
@@ -209,7 +212,7 @@ int gnrc_tcp_send_cmd(int argc, char **argv)
         sent += ret;
     }
 
-    printf("%s: sent %u\n", argv[0], (unsigned) sent);
+    printf("%s: sent %u\n", argv[0], (unsigned)sent);
     return sent;
 }
 
@@ -222,7 +225,8 @@ int gnrc_tcp_recv_cmd(int argc, char **argv)
     size_t rcvd = 0;
 
     while (rcvd < to_receive) {
-        int ret = gnrc_tcp_recv(&tcb, buffer + rcvd, to_receive - rcvd, timeout);
+        int ret = gnrc_tcp_recv(&tcb, buffer + rcvd, to_receive - rcvd,
+                                timeout);
         switch (ret) {
             case -EAGAIN:
                 printf("%s: returns -EAGAIN\n", argv[0]);
@@ -247,7 +251,7 @@ int gnrc_tcp_recv_cmd(int argc, char **argv)
         rcvd += ret;
     }
 
-    printf("%s: received %u\n", argv[0], (unsigned) rcvd);
+    printf("%s: received %u\n", argv[0], (unsigned)rcvd);
     return 0;
 }
 
@@ -268,14 +272,21 @@ int gnrc_tcp_abort_cmd(int argc, char **argv)
 /* Exporting GNRC TCP Api to for shell usage */
 static const shell_command_t shell_commands[] = {
     {"gnrc_tcp_tcb_init", "gnrc_tcp: init tcb", gnrc_tcp_tcb_init_cmd},
-    {"gnrc_tcp_open_active", "gnrc_tcp: open active connection", gnrc_tcp_open_active_cmd},
-    {"gnrc_tcp_open_passive", "gnrc_tcp: open passive connection", gnrc_tcp_open_passive_cmd},
-    {"gnrc_tcp_send", "gnrc_tcp: send data to connected peer", gnrc_tcp_send_cmd},
-    {"gnrc_tcp_recv", "gnrc_tcp: recv data from connected peer", gnrc_tcp_recv_cmd},
-    {"gnrc_tcp_close", "gnrc_tcp: close connection gracefully", gnrc_tcp_close_cmd},
-    {"gnrc_tcp_abort", "gnrc_tcp: close connection forcefully", gnrc_tcp_abort_cmd},
+    {"gnrc_tcp_open_active", "gnrc_tcp: open active connection",
+     gnrc_tcp_open_active_cmd},
+    {"gnrc_tcp_open_passive", "gnrc_tcp: open passive connection",
+     gnrc_tcp_open_passive_cmd},
+    {"gnrc_tcp_send", "gnrc_tcp: send data to connected peer",
+     gnrc_tcp_send_cmd},
+    {"gnrc_tcp_recv", "gnrc_tcp: recv data from connected peer",
+     gnrc_tcp_recv_cmd},
+    {"gnrc_tcp_close", "gnrc_tcp: close connection gracefully",
+     gnrc_tcp_close_cmd},
+    {"gnrc_tcp_abort", "gnrc_tcp: close connection forcefully",
+     gnrc_tcp_abort_cmd},
     {"buffer_init", "init internal buffer", buffer_init_cmd},
-    {"buffer_get_max_size", "get max size of internal buffer", buffer_get_max_size_cmd},
+    {"buffer_get_max_size", "get max size of internal buffer",
+     buffer_get_max_size_cmd},
     {"buffer_write", "write data into internal buffer", buffer_write_cmd},
     {"buffer_read", "read data from internal buffer", buffer_read_cmd},
     {NULL, NULL, NULL}
