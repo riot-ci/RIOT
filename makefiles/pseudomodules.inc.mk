@@ -28,6 +28,7 @@ PSEUDOMODULES += gnrc_netapi_callbacks
 PSEUDOMODULES += gnrc_netapi_mbox
 PSEUDOMODULES += gnrc_pktbuf_cmd
 PSEUDOMODULES += gnrc_netif_dedup
+PSEUDOMODULES += gnrc_netif_phy_%
 PSEUDOMODULES += gnrc_sixloenc
 PSEUDOMODULES += gnrc_sixlowpan_border_router_default
 PSEUDOMODULES += gnrc_sixlowpan_default
@@ -87,7 +88,7 @@ PSEUDOMODULES += od_string
 
 # include variants of the AT86RF2xx drivers as pseudo modules
 PSEUDOMODULES += at86rf23%
-PSEUDOMODULES += at86rf21%
+PSEUDOMODULES += at86rf212b
 
 # include variants of the BMX280 drivers as pseudo modules
 PSEUDOMODULES += bmp280
