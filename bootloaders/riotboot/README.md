@@ -62,7 +62,9 @@ the riotboot test in tests/.
 
 When building the bootloader, the global define `RIOTBOOT` is available. You
 can use this define to skip certain parts in `board_init()` (or `cpu_init()`)
-that should not be executed during boot.
+that should not be executed during boot. Note that this define is different
+from `MODULE_RIOTBOOT`, which is also defined when building an application that
+utilizes riotboot.
 
 # Single Slot
 Just compile your application with `FEATURES_REQUIRED += riotboot`. The header
