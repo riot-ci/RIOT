@@ -521,6 +521,7 @@ ifneq (,$(filter sx127%,$(USEMODULE)))
   USEMODULE += sx127x
   USEMODULE += netif
   USEMODULE += lora
+  USEMODULE += netif_cfg_lora
 endif
 
 ifneq (,$(filter tcs37727,$(USEMODULE)))
