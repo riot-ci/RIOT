@@ -9,17 +9,17 @@ MSL_US ?= 1000000
 TIMEOUT_US ?= 3000000
 
 # Mark Boards with insufficient memory
-BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo arduino-mega2560 \
-                             arduino-nano arduino-uno arduino-duemilanove b-l072z-lrwan1 hifive1 \
-                             hifive1b i-nucleo-lrwan1 lsn50 microbit msb-430 msb-430h nrf51dongle \
-                             nrf6310 nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 nucleo-f070rb \
-                             saml10-xpro saml11-xpro stm32f0discovery stm32l0538-disco telosb \
-                             nucleo-f072rb nucleo-f303k8 nucleo-f334r8 nucleo-l031k6 \
-                             nucleo-l053r8 mega-xplained waspmote-pro wsn430-v1_3b wsn430-v1_4 \
-                             yunjia-nrf51822 z1 thingy52
+#BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo arduino-mega2560 \
+#                             arduino-nano arduino-uno arduino-duemilanove b-l072z-lrwan1 hifive1 \
+#                             hifive1b i-nucleo-lrwan1 lsn50 microbit msb-430 msb-430h nrf51dongle \
+#                             nrf6310 nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 nucleo-f070rb \
+#                             saml10-xpro saml11-xpro stm32f0discovery stm32l0538-disco telosb \
+#                             nucleo-f072rb nucleo-f303k8 nucleo-f334r8 nucleo-l031k6 \
+#                             nucleo-l053r8 mega-xplained waspmote-pro wsn430-v1_3b wsn430-v1_4 \
+#                             yunjia-nrf51822 z1 thingy52
 
 # unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag
+#BOARD_BLACKLIST := chronos hamilton ruuvitag
 
 # This test depends on tap device setup (only allowed by root)
 # Suppress test execution to avoid CI errors
