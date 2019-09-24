@@ -271,25 +271,25 @@ int gnrc_tcp_abort_cmd(int argc, char **argv)
 
 /* Exporting GNRC TCP Api to for shell usage */
 static const shell_command_t shell_commands[] = {
-    {"gnrc_tcp_tcb_init", "gnrc_tcp: init tcb", gnrc_tcp_tcb_init_cmd},
-    {"gnrc_tcp_open_active", "gnrc_tcp: open active connection",
-     gnrc_tcp_open_active_cmd},
-    {"gnrc_tcp_open_passive", "gnrc_tcp: open passive connection",
-     gnrc_tcp_open_passive_cmd},
-    {"gnrc_tcp_send", "gnrc_tcp: send data to connected peer",
-     gnrc_tcp_send_cmd},
-    {"gnrc_tcp_recv", "gnrc_tcp: recv data from connected peer",
-     gnrc_tcp_recv_cmd},
-    {"gnrc_tcp_close", "gnrc_tcp: close connection gracefully",
-     gnrc_tcp_close_cmd},
-    {"gnrc_tcp_abort", "gnrc_tcp: close connection forcefully",
-     gnrc_tcp_abort_cmd},
-    {"buffer_init", "init internal buffer", buffer_init_cmd},
-    {"buffer_get_max_size", "get max size of internal buffer",
-     buffer_get_max_size_cmd},
-    {"buffer_write", "write data into internal buffer", buffer_write_cmd},
-    {"buffer_read", "read data from internal buffer", buffer_read_cmd},
-    {NULL, NULL, NULL}
+    { "gnrc_tcp_tcb_init", "gnrc_tcp: init tcb", gnrc_tcp_tcb_init_cmd },
+    { "gnrc_tcp_open_active", "gnrc_tcp: open active connection",
+      gnrc_tcp_open_active_cmd },
+    { "gnrc_tcp_open_passive", "gnrc_tcp: open passive connection",
+      gnrc_tcp_open_passive_cmd },
+    { "gnrc_tcp_send", "gnrc_tcp: send data to connected peer",
+      gnrc_tcp_send_cmd },
+    { "gnrc_tcp_recv", "gnrc_tcp: recv data from connected peer",
+      gnrc_tcp_recv_cmd },
+    { "gnrc_tcp_close", "gnrc_tcp: close connection gracefully",
+      gnrc_tcp_close_cmd },
+    { "gnrc_tcp_abort", "gnrc_tcp: close connection forcefully",
+      gnrc_tcp_abort_cmd },
+    { "buffer_init", "init internal buffer", buffer_init_cmd },
+    { "buffer_get_max_size", "get max size of internal buffer",
+      buffer_get_max_size_cmd },
+    { "buffer_write", "write data into internal buffer", buffer_write_cmd },
+    { "buffer_read", "read data from internal buffer", buffer_read_cmd },
+    { NULL, NULL, NULL }
 };
 
 int main(void)
