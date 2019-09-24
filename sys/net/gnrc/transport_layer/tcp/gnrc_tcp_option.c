@@ -63,7 +63,7 @@ int _option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
                 break;
 
             default:
-                if (TCP_OPTION_LENGTH_MIN <= opt_left) {
+                if (opt_left >= TCP_OPTION_LENGTH_MIN) {
                     DEBUG("gnrc_tcp_option.c : _option_parse() : Unsupported option found.\
                           KIND=%"PRIu8", LENGTH=%"PRIu8"\n", option->kind, option->length);
                 }
