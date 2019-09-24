@@ -51,6 +51,7 @@ PSEUDOMODULES += mpu_stack_guard
 PSEUDOMODULES += nanocoap_%
 PSEUDOMODULES += netdev_default
 PSEUDOMODULES += netif
+PSEUDOMODULES += netif_cfg_%
 PSEUDOMODULES += netstats
 PSEUDOMODULES += netstats_l2
 PSEUDOMODULES += netstats_ipv6
@@ -87,7 +88,7 @@ PSEUDOMODULES += od_string
 
 # include variants of the AT86RF2xx drivers as pseudo modules
 PSEUDOMODULES += at86rf23%
-PSEUDOMODULES += at86rf21%
+PSEUDOMODULES += at86rf212b
 
 # include variants of the BMX280 drivers as pseudo modules
 PSEUDOMODULES += bmp280
