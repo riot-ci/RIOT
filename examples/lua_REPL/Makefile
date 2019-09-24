@@ -23,7 +23,7 @@ BOARD_INSUFFICIENT_MEMORY := blackpill bluepill calliope-mini cc2650-launchpad \
                              remote-pa remote-reva remote-revb samd21-xpro \
                              saml10-xpro saml11-xpro saml21-xpro samr21-xpro \
                              samr30-xpro seeeduino_arch-pro sensebox_samd21 slstk3401a \
-                             sltb001a slwstk6220a sodaq-autonomo sodaq-explorer \
+                             sltb001a sodaq-autonomo sodaq-explorer \
                              sodaq-one sodaq-sara-aff stk3600 stm32f3discovery \
                              stm32l0538-disco yunjia-nrf51822 \
                              esp8266-esp-12x esp8266-olimex-mod \
