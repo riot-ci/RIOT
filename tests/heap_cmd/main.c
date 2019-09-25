@@ -30,7 +30,7 @@ static int malloc_cmd(int argc, char **argv)
     }
     size_t size = atoi(argv[1]);
     ptr = malloc(size);
-    printf("ptr=%p\n", ptr);
+    printf("allocated %p\n", ptr);
     return 0;
 }
 
@@ -44,14 +44,14 @@ static int free_cmd(int argc, char **argv)
 
     unsigned int p = strtoul(argv[1], NULL, 16);
     void *ptr = (void *)p;
-    printf("free %p\n", ptr);
     free(ptr);
+    printf("freed %p\n", ptr);
     return 0;
 }
 
 static const shell_command_t shell_commands[] = {
     { "malloc", "malloc <size>", malloc_cmd },
-    { "free", "free <ptr in hex> returned from malloc, e.g., 0x1234", free_cmd },
+    { "free", "free <addr in hex> returned from malloc, e.g., 0x1234", free_cmd },
     { NULL, NULL, NULL }
 };
 
