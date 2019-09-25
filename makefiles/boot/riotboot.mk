@@ -50,7 +50,7 @@ SLOT_RIOT_ELFS = $(BINDIR_APP)-slot0.elf $(BINDIR_APP)-slot1.elf
 # this ensures that both "make test" and "make test-murdock" can rely on them
 # being present without having to trigger re-compilation.
 ifneq (1, $(RIOTNOLINK))
-link: $(SLOT_RIOT_ELFS)
+BUILD_FILES += $(SLOT_RIOT_ELFS)
 endif
 
 # Create binary target with RIOT header
