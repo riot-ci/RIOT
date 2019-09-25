@@ -481,10 +481,10 @@ static inline void sercom_set_gen(void *sercom, uint32_t gclk)
  */
 static inline bool cpu_woke_from_backup(void)
 {
-#ifdef RSTC
+#ifdef RSTC_RCAUSE_BACKUP
     return RSTC->RCAUSE.bit.BACKUP;
 #else
-    return !PM->RCAUSE.bit.POR;
+    return false;
 #endif
 }
 
