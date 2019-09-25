@@ -41,10 +41,8 @@
 
  #define OPT3001_CONFIG_RN_FSR      (0xC000)     /**< Automatic full-scale setting mode */
 
- #define OPT3001_REGS_CONFIG_CT_SHIFT  (11U)    /**< Conversion time shift */
  #define OPT3001_REGS_CONFIG_CT_MASK   (0x0800) /**< Conversion time mask */
- #define OPT3001_REGS_CONFIG_CT(x)     (((uint16_t)(((uint16_t)(x)) \
-                                       << OPT3001_REGS_CONFIG_CT_SHIFT)) \
+ #define OPT3001_REGS_CONFIG_CT(x)     (((uint16_t)(x)) \
                                        & OPT3001_REGS_CONFIG_CT_MASK) /**< Conversion time field */
 
  #define OPT3001_CONFIG_M_SHUTDOWN     (0x0) /**< Shutdown mode */
@@ -81,8 +79,9 @@
 
  #define OPT3001_CONVERSION_TIME_OFFSET	4000 /**< Conversion time offset */
 
- #define OPT3001_CONVERSION_TIME_SHORT   OPT3001_REGS_INT_TIME_SHORT + OPT3001_CONVERSION_TIME_OFFSET /**< Conversion time of 100ms*/
- #define OPT3001_CONVERSION_TIME_LONG    OPT3001_REGS_INT_TIME_LONG + OPT3001_CONVERSION_TIME_OFFSET /**< Conversion time of 800ms */
+ #define OPT3001_CONVERSION_TIME_COMBINED     OPT3001_REGS_INT_TIME_SHORT \
+                                              + OPT3001_REGS_INT_TIME_LONG \
+                                              + OPT3001_CONVERSION_TIME_OFFSET /**< Combination of the conversion times */
 
 #ifdef __cplusplus
 }

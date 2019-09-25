@@ -32,7 +32,7 @@ int main(void){
   opt3001_t dev;
   uint16_t crf;
   uint16_t rawlux;
-  uint16_t convl;
+  uint32_t convl;
 
   puts("OPT3001 test application\n");
   printf("Initializing OPT3001 sensor at I2C_%i ... ", opt3001_params[0].i2c_dev);
@@ -56,7 +56,7 @@ int main(void){
       if (crf) {
           printf("Raw lux data: %5d\n", rawlux);
           opt3001_convert(rawlux, &convl);
-          printf("Lux data: %d\n", convl);
+          printf("Lux data: %ld\n", convl);
       } else {
           puts("conversion in progress ...");
       }

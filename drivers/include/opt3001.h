@@ -149,16 +149,16 @@ int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl);
  * @brief   Convert raw sensor values to lux.
  *
  * @param[in]  rawl         raw lux value
- * @param[out] convl        converted lux value
+ * @param[out] convl        Ambient Light in milliLux
  */
-void opt3001_convert(int16_t rawl, uint16_t *convl);
+void opt3001_convert(int16_t rawl, uint32_t *convl);
 
 /**
  * @brief   Convenience function to get the converted lux values
  *
  *
  * @param[in]  dev          device descriptor of sensor
- * @param[out] convl        converted lux value
+ * @param[out] convl        Ambient Light in Lux
  *
  * @return                  0 on success
  * @return                  -1 on error

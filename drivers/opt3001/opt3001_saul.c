@@ -30,11 +30,12 @@
     }
 
     res->val[1] = 0;
+    res->val[2] = 0;
 
     res->unit = UNIT_LUX;
-    res->scale = -2;
+    res->scale = 0;
 
-     return 2;
+     return 1;
  }
 
  const saul_driver_t opt3001_saul_driver = {

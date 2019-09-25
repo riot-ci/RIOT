@@ -88,6 +88,7 @@ int opt3001_reset(const opt3001_t *dev)
     i2c_acquire(DEV_I2C);
     if (i2c_write_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_CONFIG, &reg, 2, 0) < 0) {
         i2c_release(DEV_I2C);
+        LOG_ERROR("opt3001_reset: Error setting device configuration\n");
         return -OPT3001_ERROR_BUS;
     }
     i2c_release(DEV_I2C);
@@ -102,7 +103,7 @@ int opt3001_set_active(const opt3001_t *dev)
 
     if (i2c_read_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_CONFIG, &reg, 2, 0) < 0) {
         i2c_release(DEV_I2C);
-        LOG_ERROR("opt3001_init: Error reading BUS!\n");
+        LOG_ERROR("opt3001_set_active: Error reading BUS!\n");
         return -OPT3001_ERROR_BUS;
     }
 
@@ -112,7 +113,7 @@ int opt3001_set_active(const opt3001_t *dev)
     reg = htons(reg);
     if (i2c_write_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_CONFIG, &reg, 2, 0) < 0) {
         i2c_release(DEV_I2C);
-        LOG_ERROR("opt3001_init: Error setting device configuration\n");
+        LOG_ERROR("opt3001_set_active: Error setting device configuration\n");
         return -OPT3001_ERROR_BUS;
     }
 
@@ -123,33 +124,35 @@ int opt3001_set_active(const opt3001_t *dev)
 int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl)
 {
     uint16_t reg;
+    uint32_t conversion_time = 0;
 
     i2c_acquire(DEV_I2C);
 
-    if (i2c_read_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_CONFIG, &reg, 2, 0) < 0) {
-        i2c_release(DEV_I2C);
-        LOG_ERROR("opt3001_init: Error reading BUS!\n");
-        return -OPT3001_ERROR_BUS;
-    }
+    while (1) {
+        if (conversion_time >= OPT3001_CONVERSION_TIME_COMBINED) {
+            i2c_release(DEV_I2C);
+            LOG_ERROR("opt3001_read: Conversion in progress!\n");
+            return -OPT3001_ERROR;
+        }
 
-    *crf = htons(reg) & OPT3001_REGS_CONFIG_CRF;
+        if (i2c_read_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_CONFIG, &reg, 2, 0) < 0) {
+            i2c_release(DEV_I2C);
+            LOG_ERROR("opt3001_read: Error reading BUS!\n");
+            return -OPT3001_ERROR_BUS;
+        }
 
-    if (!(*crf)) {
-        i2c_release(DEV_I2C);
-        LOG_DEBUG("opt3001_read: conversion in progress!\n");
-        return -OPT3001_ERROR;
-    }
+        *crf = htons(reg) & OPT3001_REGS_CONFIG_CRF;
+        if (*crf) {
+            break;
+        }
 
-    /* wait for the conversion to finish */
-    if (OPT3001_CONVERSION_TIME) {
-        xtimer_usleep(OPT3001_CONVERSION_TIME_LONG);
-    } else{
-        xtimer_usleep(OPT3001_CONVERSION_TIME_SHORT);
+        xtimer_usleep(1000);
+        conversion_time += 1000;
     }
 
     if (i2c_read_regs(DEV_I2C, DEV_ADDR, OPT3001_REGS_RESULT, &reg, 2, 0) < 0) {
         i2c_release(DEV_I2C);
-        LOG_ERROR("opt3001_init: Error reading BUS!\n");
+        LOG_ERROR("opt3001_read: Error reading BUS!\n");
         return -OPT3001_ERROR_BUS;
     }
 
@@ -159,22 +162,22 @@ int opt3001_read(const opt3001_t *dev, uint16_t *crf, uint16_t *rawl)
     return OPT3001_OK;
 }
 
-void opt3001_convert(int16_t rawl, uint16_t *convl)
+void opt3001_convert(int16_t rawl, uint32_t *convl)
 {
-  uint16_t mantissa;
-  uint8_t exponent;
+    uint16_t mantissa;
+    uint8_t exponent;
 
-  exponent = OPT3001_REGS_REG_EXPONENT(rawl);
-  mantissa = OPT3001_REGS_REG_MANTISSA(rawl);
+    exponent = OPT3001_REGS_REG_EXPONENT(rawl);
+    mantissa = OPT3001_REGS_REG_MANTISSA(rawl);
 
-  *convl = (1 << exponent) * mantissa;
+    *convl = (1 << exponent) * mantissa * 10;
 }
 
 int opt3001_read_lux(const opt3001_t *dev, int16_t *convl)
 {
     uint16_t crf;
     uint16_t rawl;
-    uint16_t convlux;
+    uint32_t convlux;
 
     opt3001_read(dev, &crf, &rawl);
 
@@ -183,7 +186,7 @@ int opt3001_read_lux(const opt3001_t *dev, int16_t *convl)
     }
 
     opt3001_convert(rawl, &convlux);
-    *convl = (int16_t)(convlux*100);
+    *convl = convlux / 1000;
 
     return OPT3001_OK;
 }
