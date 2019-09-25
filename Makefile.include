@@ -30,6 +30,7 @@ BINDIR         ?= $(BINDIRBASE)/$(BOARD)
 PKGDIRBASE     ?= $(BINDIRBASE)/pkg/$(BOARD)
 DLCACHE        ?= $(RIOTTOOLS)/dlcache/dlcache.sh
 DLCACHE_DIR    ?= $(RIOTBASE)/.dlcache
+BUILD_FILES    ?= $(ELFFILE) $(FLASHFILE)
 
 __DIRECTORY_VARIABLES := \
   RIOTBASE \
@@ -470,7 +471,7 @@ ifeq ($(BUILD_IN_DOCKER),1)
 link: ..in-docker-container
 else
 ifeq (,$(RIOTNOLINK))
-link: ..compiler-check ..build-message $(ELFFILE) $(FLASHFILE) print-size
+link: ..compiler-check ..build-message $(BUILD_FILES) print-size
 else
 link: ..compiler-check ..build-message $(BASELIBS)
 endif # RIOTNOLINK
