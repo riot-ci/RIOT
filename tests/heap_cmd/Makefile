@@ -7,6 +7,4 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
 
-TEST_ON_CI_WHITELIST += all
-
 include $(RIOTBASE)/Makefile.include
