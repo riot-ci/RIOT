@@ -242,8 +242,41 @@ static inline void _poweron(void)
                                    GCLK_CLKCTRL_GEN_GCLK0 |
                                    (GCLK_CLKCTRL_ID(USB_GCLK_ID)));
 #elif defined(CPU_FAM_SAML21)
+    /* enable DFLL */
+    OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_ENABLE;
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+
+    /* setup initial values for closed loop */
+    OSCCTRL->DFLLVAL.reg = OSCCTRL_DFLLVAL_COARSE((*(uint32_t*)NVMCTRL_OTP5)
+                           >> 26) |  OSCCTRL_DFLLVAL_FINE(512);
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+
+    /* we will generate a 48 Mhz clock from 1KHz SOF signal */
+    OSCCTRL->DFLLMUL.reg = OSCCTRL_DFLLMUL_CSTEP(0x08) |
+                           OSCCTRL_DFLLMUL_FSTEP(0x08) |
+                           OSCCTRL_DFLLMUL_MUL((48000000U/1000));
+
+    /* Disable DFLL before setting its configuration */
+    OSCCTRL->DFLLCTRL.reg = 0;
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+
+    /* Configure DFLL for USB clock recovery mode */
+    OSCCTRL->DFLLCTRL.reg =  OSCCTRL_DFLLCTRL_USBCRM |
+                             OSCCTRL_DFLLCTRL_MODE |
+                             OSCCTRL_DFLLCTRL_CCDIS |
+                             OSCCTRL_DFLLCTRL_ENABLE;
+
+    /* Ensure COARSE and FINE are locked */
+    while((!(OSCCTRL->STATUS.bit.DFLLLCKC)) && (!(OSCCTRL->STATUS.bit.DFLLLCKF))) {}
+    while (!(OSCCTRL->STATUS.bit.DFLLRDY)) {}
+
+    /* set clock 1 to 48 MHz DFLL */
+    GCLK->GENCTRL[1].reg = GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M;
+    while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_GENCTRL(1)) {}
+
+    /* use it as USB clock */
     GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_CHEN |
-                                     GCLK_PCHCTRL_GEN_GCLK0;
+                                     GCLK_PCHCTRL_GEN_GCLK1;
 #elif defined(CPU_FAM_SAMD5X)
     GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_CHEN |
                                      GCLK_PCHCTRL_GEN_GCLK6;
