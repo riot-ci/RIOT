@@ -28,11 +28,6 @@
 #include "sx127x_params.h"
 
 /**
- * @brief   Calculate the number of configured SX127x devices
- */
-#define SX127X_NUMOF        ARRAY_SIZE(sx127x_params)
-
-/**
  * @brief   Define stack parameters for the MAC layer thread
  */
 #define SX127X_STACKSIZE           (THREAD_STACKSIZE_DEFAULT)
