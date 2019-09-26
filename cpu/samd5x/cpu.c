@@ -27,6 +27,9 @@
 #define USE_DPLL 1
 #else
 #define USE_DPLL 0
+#if (SAM0_DFLL_FREQ_HZ % CLOCK_CORECLOCK)
+#error For frequencies < 48 MHz, CLOCK_CORECLOCK must be a divider of 48 MHz
+#endif
 #endif
 
 /* If the CPU clock is lower than the minimal DPLL Freq
