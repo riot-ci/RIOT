@@ -210,7 +210,7 @@ void handle_trap(unsigned int mcause, unsigned int mepc, unsigned int mtval)
     }
 
     /* Check if context change was requested */
-    if( sched_context_switch_request ) {
+    if (sched_context_switch_request) {
         sched_run();
     }
 
@@ -314,7 +314,7 @@ void thread_print_stack(void)
     int count = 0;
     uint32_t *sp = (uint32_t *) ((sched_active_thread) ? sched_active_thread->sp : NULL);
 
-    if( sp == NULL ) {
+    if (sp == NULL) {
         return;
     }
 
