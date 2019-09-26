@@ -92,11 +92,13 @@ def testfunc(child):
         client = "[{}]".format(child.match.group("gladdr").lower())
     else:
         # Get device local address
-        client = "[fe80::2%{}]".format(TAP)
+        client_addr = "fe80::2%{}".format(TAP)
+        client = "[{}]".format(client_addr)
 
         # work around ethos sometimes dropping the first (initial) packet
         # See #11988.
-        subprocess.call(["ping", "-c1", "-w1", client])
+        print("pinging device (ethos/#11988 workaround, fail ok):")
+        subprocess.call(["ping", "-c1", "-w1", client_addr])
 
     for version in [current_app_ver + 1, current_app_ver + 2]:
         # Wait for suit_coap thread to start
