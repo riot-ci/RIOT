@@ -339,7 +339,7 @@ static void _suit_handle_url(const char *url)
         riotboot_flashwrite_t writer;
 #ifdef MODULE_SUIT_V4
         suit_v4_manifest_t manifest;
-        memset(&writer, 0, sizeof(manifest));
+        memset(&manifest, 0, sizeof(manifest));
 
         manifest.writer = &writer;
         manifest.urlbuf = _url;
