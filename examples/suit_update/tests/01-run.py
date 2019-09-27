@@ -89,16 +89,28 @@ def testfunc(child):
             r"inet6 addr: (?P<gladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)"
             "  scope: global  VAL"
         )
-        client = "[{}]".format(child.match.group("gladdr").lower())
+        client_addr = child.match.group("gladdr").lower()
     else:
         # Get device local address
         client_addr = "fe80::2%{}".format(TAP)
-        client = "[{}]".format(client_addr)
 
-        # work around ethos sometimes dropping the first (initial) packet
-        # See #11988.
-        print("pinging device (ethos/#11988 workaround, fail ok):")
-        subprocess.call(["ping", "-c1", "-w1", client_addr])
+    client = "[{}]".format(client_addr)
+
+    print("pinging node...")
+    ping_ok = False
+    for _i in range(10):
+        try:
+            subprocess.check_call(["ping", "-q", "-c1", "-w1", client_addr])
+            ping_ok = True
+            break
+        except subprocess.CalledProcessError:
+            pass
+
+    if not ping_ok:
+        print("pinging node failed. aborting test.")
+        sys.exit(1)
+    else:
+        print("pinging node succeeded.")
 
     for version in [current_app_ver + 1, current_app_ver + 2]:
         # Wait for suit_coap thread to start
