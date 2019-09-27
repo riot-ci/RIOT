@@ -9,7 +9,7 @@
 /**
  * @defgroup    net_sixlowpan_sfr   6LoWPAN selective fragment recovery
  * @ingroup     net_sixlowpan
- * @brief       Provides dispatces for 6LoWPAN selective fragment recovery and
+ * @brief       Provides dispatches for 6LoWPAN selective fragment recovery and
  *              helper functions
  * @{
  *
