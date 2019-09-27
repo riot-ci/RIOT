@@ -19,6 +19,18 @@
 
 #include "tests-sixlowpan_sfr.h"
 
+static void test_sixlowpan_sfr_disp(void)
+{
+    sixlowpan_sfr_t hdr = { .disp_ecn = 0U };
+
+    TEST_ASSERT(!sixlowpan_sfr_is(&hdr));
+    sixlowpan_sfr_rfrag_set_disp(&hdr);
+    TEST_ASSERT(sixlowpan_sfr_is(&hdr));
+    hdr.disp_ecn = 0U;
+    sixlowpan_sfr_ack_set_disp(&hdr);
+    TEST_ASSERT(sixlowpan_sfr_is(&hdr));
+}
+
 static void test_sixlowpan_sfr_ecn(void)
 {
     /* initialize with canary (but ECN unset) */
@@ -188,6 +200,7 @@ static void test_sixlowpan_sfr_ack_disp(void)
 static Test *tests_sixlowpan_sfr_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
+        new_TestFixture(test_sixlowpan_sfr_disp),
         new_TestFixture(test_sixlowpan_sfr_ecn),
         new_TestFixture(test_sixlowpan_sfr_rfrag_disp),
         new_TestFixture(test_sixlowpan_sfr_rfrag_ack_req),
