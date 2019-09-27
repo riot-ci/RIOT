@@ -34,6 +34,17 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Mask for generic dispatch of both selective fragment recovery
+ *          headers
+ *
+ * @see SIXLOWPAN_SFR_GEN_DISP
+ * @see SIXLOWPAN_SFR_DISP_MASK
+ * @see SIXLOWPAN_SFR_RFRAG_DISP
+ * @see SIXLOWPAN_SFR_ACK_DISP
+ */
+#define SIXLOWPAN_SFR_GEN_DISP_MASK     (0xfc)
+#define SIXLOWPAN_SFR_GEN_DISP          (0xe8)      /**< generic dispatch for both SFR headers */
 #define SIXLOWPAN_SFR_ECN               (0x01U)     /**< explicit congestion notification flag */
 #define SIXLOWPAN_SFR_ACK_REQ           (0x80U)     /**< Acknowledgment request flag (for 8 MSB) */
 #define SIXLOWPAN_SFR_SEQ_MASK          (0x7cU)     /**< Sequence number mask (for 8 MSB) */
@@ -65,6 +76,7 @@ typedef struct __attribute__((packed)) {
      * This module provides helper functions to set, get, check these fields
      * accordingly:
      *
+     * - sixlowpan_sfr_is()
      * - sixlowpan_sfr_set_ecn()
      * - sixlowpan_sfr_clear_ecn()
      * - sixlowpan_sfr_ecn()
@@ -135,6 +147,22 @@ typedef struct __attribute__((packed)) {
      */
     BITFIELD(bitmap, SIXLOWPAN_SFR_ACK_BITMAP_SIZE);
 } sixlowpan_sfr_ack_t;
+
+/**
+ * @brief   Check if given header is a 6LoWPAN selective fragment recovery
+ *          header (either RFRAG or RFRAG ACK)
+ *
+ * @see @ref SIXLOWPAN_SFR_RFRAG_DISP
+ *
+ * @param[in] hdr       The 6LoWPAN selective fragment recovery header to check
+ *
+ * return   true, if @p hdr is a 6LoWPAN selective fragment recovery header
+ * return   false, if @p hdr is not a 6LoWPAN selective fragment recovery header
+ */
+static inline bool sixlowpan_sfr_is(sixlowpan_sfr_t *hdr)
+{
+    return ((hdr->disp_ecn & SIXLOWPAN_SFR_GEN_DISP_MASK) == SIXLOWPAN_SFR_GEN_DISP);
+}
 
 /**
  * @brief   Set the ECN flag in a 6LoWPAN selective fragment recovery header
