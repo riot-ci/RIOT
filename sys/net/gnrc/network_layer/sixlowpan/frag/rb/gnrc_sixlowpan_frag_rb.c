@@ -16,6 +16,7 @@
 #include "net/ieee802154.h"
 #include "net/gnrc/netif/hdr.h"
 #include "net/gnrc/pkt.h"
+#include "net/gnrc/sixlowpan.h"
 
 #include "net/gnrc/sixlowpan/frag/rb.h"
 
