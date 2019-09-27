@@ -9,6 +9,10 @@ export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
 export ENABLE_TEST_CACHE=${ENABLE_TEST_CACHE:-1}
 
+export APPS=examples/suit_update
+export STATIC_TESTS=0
+export ENABLE_TEST_CACHE=0
+
 # This is a work around for a bug in CCACHE which interacts very badly with
 # some features of RIOT and of murdock. The result is that ccache is
 # ineffective (i.e. objects are never reused, resulting in extreme cache miss
