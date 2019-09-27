@@ -27,6 +27,9 @@
  *      make BOARD=arduino-mkrwan1300 -C examples/hello-world flash
  * ```
  *
+ * @warning Unplug the board from the anti-static protective foam before
+ *          starting to use it otherwise it may not work as expected.
+ *
  * ### Accessing STDIO via UART
  *
  * To access the STDIO of RIOT, a FTDI to USB converted needs to be plugged to
