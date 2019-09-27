@@ -27,13 +27,7 @@
 int main(void)
 {
     dcf77_t sensor;
-    uint8_t minute;
-    uint8_t hour;
-    uint8_t weekday;
-    uint8_t calenderday;
-    uint8_t month;
-    uint8_t year;
-    uint8_t mesz;
+    dcf77_data_t data;
 
 
     printf("DCF77 test application\n");
@@ -49,18 +43,24 @@ while(1){
     gpio_init(sensor.params.pin, sensor.params.in_mode);
 
     printf("\n+--------Starting Measurements--------+\n");
-    if(dcf77_read(&sensor, &minute, &hour, &weekday,
-      &calenderday,&month, &year, &mesz)!= DCF77_OK){
+    if(dcf77_read(&sensor, &data)!= DCF77_OK){
       puts("###Error### Poor reception...? Cables checked...?");
     }else{
-      printf("Received Minutes: %d\n",minute);
-      printf("Received Hours: %d\n",hour);
-      printf("Received Weekday: %d\n",weekday);
-      printf("Received Calenderday: %d\n",calenderday);
-      printf("Received Month: %d\n",month);
-      printf("Received Year: %d\n",year);
-      printf("Received mesz: %d\n",mesz );
+      printf("Received Minutes: %d\n",data.minute);
+      printf("Received Hours: %d\n",data.hour);
+      printf("Received Weekday: %d\n",data.weekday);
+      printf("Received Calenderday: %d\n",data.calenderday);
+      printf("Received Month: %d\n",data.month);
+      printf("Received Year: %d\n",data.year);
+      printf("Received mesz: %d\n",data.mesz );
     }
+    data.minute=0;
+    data.hour=0;
+    data.weekday=0;
+    data.calenderday=0;
+    data.month=0;
+    data.year=0;
+    data.mesz=0;
     }
 
 
