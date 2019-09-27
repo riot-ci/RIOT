@@ -84,12 +84,11 @@ static void test_rgb2hsv__black(void)
 
     /* XXX floats should never be compared for equality, so we check if we
      * are within HSV_EPSILON of tolerance */
-    TEST_ASSERT(-HSV_EPSILON <= hsv.h);
     TEST_ASSERT(-HSV_EPSILON <= hsv.s);
     TEST_ASSERT(-HSV_EPSILON <= hsv.v);
-    TEST_ASSERT( HSV_EPSILON >= hsv.h);
     TEST_ASSERT( HSV_EPSILON >= hsv.s);
     TEST_ASSERT( HSV_EPSILON >= hsv.v);
+    /* Hue for black is undefined so we don't check it */
 }
 
 static void test_rgb_invert__success(void)
