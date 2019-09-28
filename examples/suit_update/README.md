@@ -103,7 +103,7 @@ In another terminal, run:
 
 In one terminal, start:
 
-    $ sudo dist/tools/ethos/start_network.sh riot0 2001:db8::/64
+    $ sudo dist/tools/ethos/setup_network.sh riot0 2001:db8::/64
 
 This will create a tap interface called `riot0`, owned by the user. It will
 also run an instance of uhcpcd, which starts serving the prefix
