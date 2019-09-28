@@ -155,7 +155,7 @@ void gnrc_sixlowpan_frag_rb_base_rm(gnrc_sixlowpan_frag_rb_base_t *entry);
  */
 void gnrc_sixlowpan_frag_rb_gc(void);
 
-#if defined(MODULE_GNRC_SIXLOWPAN_FRAG) || defined(DOXYGEN)
+#if defined(MODULE_GNRC_SIXLOWPAN_FRAG_RB) || defined(DOXYGEN)
 /**
  * @brief   Unsets a reassembly buffer entry (but does not free
  *          rbuf_t::super::pkt)
