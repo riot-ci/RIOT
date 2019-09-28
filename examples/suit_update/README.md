@@ -147,7 +147,7 @@ interface:
 In this scenario the node will be connected through a border router. Ethos must
 be disabled in the firmware when building and flashing the firmware:
 
-    $ USE_ETHOS=0 BOARD=samr21-xpro make -C examples/suit_update clean riotboot/flash -j4
+    $ USE_ETHOS=0 BOARD=samr21-xpro make -C examples/suit_update clean flash -j4
 
 Open a serial terminal on the device to get its global address:
 
