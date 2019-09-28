@@ -42,7 +42,7 @@ def testfunc(child):
     child.expect_exact('gnrc_tcp_open_active: returns 0')
 
     # Accept Data sent by the host system
-    child.sendline('gnrc_tcp_recv 0 ' + str(data_len))
+    child.sendline('gnrc_tcp_recv 1000000 ' + str(data_len))
     child.expect_exact('gnrc_tcp_recv: received ' + str(data_len))
 
     # Close connection and verify that pktbuf is cleared
