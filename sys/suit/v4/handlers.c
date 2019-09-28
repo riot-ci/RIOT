@@ -516,7 +516,7 @@ int _handle_command_sequence(suit_v4_manifest_t *manifest, CborValue *bseq,
     }
 
     if (!cbor_value_is_array(&it)) {
-        LOG_DEBUG("Not an byte array\n");
+        LOG_DEBUG("Not a byte array\n");
         return -1;
     }
     cbor_value_enter_container(&it, &arr);
