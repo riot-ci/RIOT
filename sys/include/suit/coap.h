@@ -79,6 +79,9 @@ typedef const struct {
 
 typedef int (*coap_blockwise_cb_t)(void *arg, size_t offset, uint8_t *buf, size_t len, int more);
 
+/**
+ * @brief   Reference to the coap resource subtree
+ */
 extern const coap_resource_subtree_t coap_resource_subtree_suit;
 
 /* nanocoap blockwise client */
