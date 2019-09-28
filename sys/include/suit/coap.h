@@ -107,7 +107,9 @@ typedef int (*coap_blockwise_cb_t)(void *arg, size_t offset, uint8_t *buf, size_
  */
 extern const coap_resource_subtree_t coap_resource_subtree_suit;
 
-/* nanocoap blockwise client */
+/**
+ * @brief Coap block-wise-transfer size SZX
+ */
 typedef enum {
     COAP_BLOCKSIZE_32 = 1,
     COAP_BLOCKSIZE_64,
