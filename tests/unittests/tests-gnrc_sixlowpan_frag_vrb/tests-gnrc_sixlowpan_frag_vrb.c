@@ -37,13 +37,13 @@ extern uint16_t tag;
  * reference for forwarding) so an uninitialized one is enough */
 static gnrc_netif_t _dummy_netif;
 
-static const gnrc_sixlowpan_rbuf_int_t _interval = {
+static const gnrc_sixlowpan_frag_rb_int_t _interval = {
     .next = NULL,
     .start = 0,
     .end = 116U,
 };
-static const gnrc_sixlowpan_rbuf_base_t _base = {
-    .ints = (gnrc_sixlowpan_rbuf_int_t *)&_interval,
+static const gnrc_sixlowpan_frag_rb_base_t _base = {
+    .ints = (gnrc_sixlowpan_frag_rb_int_t *)&_interval,
     .src = TEST_SRC,
     .dst = TEST_DST,
     .src_len = TEST_SRC_LEN,
@@ -113,7 +113,7 @@ static void test_vrb_add__duplicate(void)
 
 static void test_vrb_add__full(void)
 {
-    gnrc_sixlowpan_rbuf_base_t base = _base;
+    gnrc_sixlowpan_frag_rb_base_t base = _base;
 
     /* fill up VRB */
     for (unsigned i = 0; i < GNRC_SIXLOWPAN_FRAG_VRB_SIZE; i++) {
@@ -166,7 +166,7 @@ static void test_vrb_rm(void)
 
 static void test_vrb_gc(void)
 {
-    gnrc_sixlowpan_rbuf_base_t base = _base;
+    gnrc_sixlowpan_frag_rb_base_t base = _base;
     gnrc_sixlowpan_frag_vrb_t *res;
 
     base.arrival = xtimer_now_usec() - GNRC_SIXLOWPAN_FRAG_VRB_TIMEOUT_US - 1000;
