@@ -65,7 +65,18 @@ void suit_coap_run(void);
  */
 #ifndef DOXYGEN
 
-/* subtree support */
+/**
+ * @brief   Coap subtree handler
+ *
+ * @param[in,out]   pkt     Packet struct containing the request. Is reused for
+ *                          the response
+ * @param[in]       buf     Buffer to write reply to
+ * @param[in]       len     Total length of the buffer associated with the
+ *                          request
+ * @param[in]       buf     Buffer to write reply to
+ *
+ * @returns     ssize_t     Size of the reply
+ */
 ssize_t coap_subtree_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len,
                              void *context);
 
