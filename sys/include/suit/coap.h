@@ -120,6 +120,22 @@ typedef enum {
 size_t coap_put_option_block(uint8_t *buf, uint16_t lastonum, unsigned blknum,
                              unsigned szx, int more, uint16_t option);
 
+/**
+ * @brief    Performs a blockwise coap get request to the specified url.
+ *
+ * This function will fetch the content of the specified resource path via
+ * block-wise-transfer. A coap_blockwise_cb_t will be called on each received
+ * block.
+ *
+ * @param[in]   url        url pointer to source path
+ * @param[in]   blksize    sender suggested SZX for the COAP block request
+ * @param[in]   callback   callback to be executed on each received block
+ * @param[in]   arg        optional function arguments
+ *
+ * @returns     -EINVAL    if an invalid url is provided
+ * @returns     -1         if failed to fetch the url content
+ * @returns      0         on success
+ */
 int suit_coap_get_blockwise_url(const char *url,
                                coap_blksize_t blksize,
                                coap_blockwise_cb_t callback, void *arg);
