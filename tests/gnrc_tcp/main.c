@@ -232,6 +232,10 @@ int gnrc_tcp_recv_cmd(int argc, char **argv)
                 printf("%s: returns -EAGAIN\n", argv[0]);
                 continue;
 
+            case -ETIMEDOUT:
+                printf("%s: returns -ETIMEDOUT\n", argv[0]);
+                continue;
+
             case -ENOTCONN:
                 printf("%s: returns -ENOTCONN\n", argv[0]);
                 return ret;
@@ -242,10 +246,6 @@ int gnrc_tcp_recv_cmd(int argc, char **argv)
 
             case -ECONNABORTED:
                 printf("%s: returns -ECONNABORTED\n", argv[0]);
-                return ret;
-
-            case -ETIMEDOUT:
-                printf("%s: returns -ETIMEDOUT\n", argv[0]);
                 return ret;
         }
         rcvd += ret;
