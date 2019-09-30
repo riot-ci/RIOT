@@ -1152,6 +1152,7 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
 #ifdef DEVELHELP
     _test_options(netif);
 #endif
+    netif->cur_hl = GNRC_NETIF_DEFAULT_HL;
 #ifdef MODULE_GNRC_IPV6_NIB
     gnrc_ipv6_nib_init_iface(netif);
 #endif
@@ -1317,7 +1318,6 @@ static void *_gnrc_netif_thread(void *args)
 #if DEVELHELP
     assert(options_tested);
 #endif
-    netif->cur_hl = GNRC_NETIF_DEFAULT_HL;
 #ifdef MODULE_NETSTATS_L2
     memset(&netif->stats, 0, sizeof(netstats_t));
 #endif
