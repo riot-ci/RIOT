@@ -94,7 +94,8 @@ static size_t _gen_acm_descriptor(usbus_t *usbus)
     acm.length = sizeof(usb_desc_acm_t);
     acm.type = USB_TYPE_DESCRIPTOR_CDC;
     acm.subtype = USB_CDC_DESCR_SUBTYPE_ACM;
-    acm.capabalities = 0x00;
+    /* Support for Set/Get_Line_coding, Control_State, and Serial_State notif */
+    acm.capabalities = 0x02;
     usbus_control_slicer_put_bytes(usbus, (uint8_t*)&acm, sizeof(acm));
     return sizeof(usb_desc_acm_t);
 }
