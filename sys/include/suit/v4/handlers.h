@@ -12,6 +12,8 @@
  * @ingroup     sys_suit_v4
  * @brief       SUIT v4 manifest handlers
  *
+ * @experimental
+ *
  * @{
  *
  * @brief       Handler functions for SUIT manifests
