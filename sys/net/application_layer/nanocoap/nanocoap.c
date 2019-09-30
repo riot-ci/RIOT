@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "bitarithm.h"
 #include "net/nanocoap.h"
 
 #define ENABLE_DEBUG (0)
@@ -655,16 +656,9 @@ size_t coap_put_option(uint8_t *buf, uint16_t lastonum, uint16_t onum, const uin
 
 static unsigned _size2szx(size_t size)
 {
-    unsigned szx = 0;
-    assert(size <= 1024);
+    assert(size >= 16 && size <= 1024);
 
-    while (size) {
-        size = size >> 1;
-        szx++;
-    }
-    /* Size exponent + 1 */
-    assert(szx >= 5);
-    return szx - 5;
+    return bitarithm_lsb(size) - 4;
 }
 
 static unsigned _slicer2blkopt(coap_block_slicer_t *slicer, bool more)
