@@ -25,10 +25,13 @@
 
 static int read_lux(const void *dev, phydat_t *res)
 {
-    if (opt3001_read_lux_saul((const opt3001_t *)dev, &res->val[0]) != OPT3001_OK) {
+    uint32_t convlux;
+
+    if (opt3001_read_lux((const opt3001_t *)dev, &convlux) != OPT3001_OK) {
         return -ECANCELED;
     }
 
+    res->val[0] = convlux / 1000;
     res->val[1] = 0;
     res->val[2] = 0;
 

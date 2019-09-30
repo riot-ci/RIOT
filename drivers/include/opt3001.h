@@ -137,24 +137,12 @@ int opt3001_set_active(const opt3001_t *dev);
  * @brief   Read sensor's raw data and convert it to milliLux.
  *
  * @param[in]  dev          device descriptor of sensor
- * @param[out] rawl         ambient light in milliLux
+ * @param[out] convl        ambient light in milliLux
  *
  * @return                  0 on success
  * @return                  -1 on error
  */
-int opt3001_read_lux(const opt3001_t *dev, int32_t *convl);
-
-/**
- * @brief   Convenience function to get the ambient light in lux
- *
- *
- * @param[in]  dev          device descriptor of sensor
- * @param[out] convl        ambient Light in Lux
- *
- * @return                  0 on success
- * @return                  -1 on error
- */
-int opt3001_read_lux_saul(const opt3001_t *dev, int16_t *convl);
+int opt3001_read_lux(const opt3001_t *dev, uint32_t *convl);
 
 #ifdef __cplusplus
 }

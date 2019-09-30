@@ -121,7 +121,7 @@ int opt3001_set_active(const opt3001_t *dev)
     return OPT3001_OK;
 }
 
-int opt3001_read_lux(const opt3001_t *dev, int32_t *convl)
+int opt3001_read_lux(const opt3001_t *dev, uint32_t *convl)
 {
     uint8_t exponent;
     uint16_t reg, mantissa;
@@ -146,7 +146,10 @@ int opt3001_read_lux(const opt3001_t *dev, int32_t *convl)
             break;
         }
 
+        i2c_release(DEV_I2C);
         xtimer_usleep(1000);
+        i2c_acquire(DEV_I2C);
+
         conversion_time += 1000;
     }
 
@@ -162,18 +165,5 @@ int opt3001_read_lux(const opt3001_t *dev, int32_t *convl)
     *convl = (1 << exponent) * mantissa * 10;
 
     i2c_release(DEV_I2C);
-    return OPT3001_OK;
-}
-
-int opt3001_read_lux_saul(const opt3001_t *dev, int16_t *convl)
-{
-    int32_t convlux;
-
-    if (opt3001_read_lux(dev, &convlux) != OPT3001_OK) {
-        return -OPT3001_ERROR;
-    }
-
-    *convl = convlux / 1000;
-
     return OPT3001_OK;
 }
