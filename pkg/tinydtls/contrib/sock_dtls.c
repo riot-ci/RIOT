@@ -328,8 +328,12 @@ int sock_dtls_session_create(sock_dtls_t *sock, const sock_udp_ep_t *ep,
         res = sock_udp_recv(sock->udp_sock, rcv_buffer, sizeof(rcv_buffer),
                             DTLS_HANDSHAKE_TIMEOUT, &remote->ep);
         if (res >= 0) {
-            dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
+            res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
                                 rcv_buffer, res);
+            /* stop handshake if received fatal level alert */
+            if (res == -1) {
+                return res;
+            }
         }
         else {
             DEBUG("sock_dtls: error receiving handshake messages: %d\n", res);
