@@ -5,6 +5,9 @@ RIOT application. It implements basic support of the SUIT architecture using
 the manifest format specified in
 [draft-moran-suit-manifest-04](https://datatracker.ietf.org/doc/draft-moran-suit-manifest/04/).
 
+**WARNING**: This code should not be considered production ready for the time being.
+             It has not seen much exposure or security auditing.
+
 Table of contents:
 
 - [Prerequisites][prerequisites]
