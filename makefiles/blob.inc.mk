@@ -54,8 +54,13 @@ $(BLOB_HDR_DIR)%/.:
 
 .SECONDEXPANSION:
 
+XXD ?= xxd
+
 $(BLOB_H): $(BLOB_HDR_DIR)/.
 $(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS) | $$(@D)/.
+	@command -v $(XXD) > /dev/null 2>&1 || ( \
+	  echo "error: xxd binary '$(XXD)' not found! (Maybe install vim package?)"; exit 1)
+
 	${Q}cd $(dir $<); xxd -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $@
 
 # make C and C++ objects of this module depend on generated headers, so they
