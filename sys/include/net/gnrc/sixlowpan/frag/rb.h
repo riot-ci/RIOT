@@ -107,7 +107,9 @@ typedef struct {
  * @param[in] page          Current 6Lo dispatch parsing page.
  *
  * @return  The reassembly buffer entry the fragment was added to on success.
- * @return  NULL on error.
+ *          @p frag is not released in that case.
+ * @return  NULL on error or when it was consumed by another 6LoWPAN layer.
+ *          @p frag is released in that case.
  */
 gnrc_sixlowpan_frag_rb_t *gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr,
                                                      gnrc_pktsnip_t *frag,
