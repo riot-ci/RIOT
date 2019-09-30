@@ -12,6 +12,8 @@
  * @ingroup     sys
  * @brief       SUIT secure firmware updates
  *
+ * @experimental
+ *
  * @{
  *
  * @brief       SUIT CoAP helper API
