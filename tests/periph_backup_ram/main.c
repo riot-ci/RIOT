@@ -28,6 +28,10 @@
 #define SLEEP_SEC 1
 #endif
 
+#ifndef DELAY_SEC
+#define DELAY_SEC 3
+#endif
+
 int main(void)
 {
     /* We keep a copy of counter in the .noinit section (normal RAM).
@@ -40,7 +44,10 @@ int main(void)
     if (counter == 0) {
         puts("\nBackup RAM test\n");
         printf("This test will increment the counter by 1, "
-               "then enter deep sleep for %ds\n", SLEEP_SEC);
+               "then enter deep sleep for %ds.\n", SLEEP_SEC);
+        printf("Because some tools have trouble re-flashing/debugging "
+               "in deep sleep, the test will wait for %ds before entering "
+               "deep sleep.\n", DELAY_SEC);
     } else if (counter_noinit == counter) {
         puts("WARNING: non-backup memory retained - did we really enter deep sleep?");
     }
@@ -51,7 +58,7 @@ int main(void)
     /* Some tools have trouble flashing MCUs in deep sleep.
      * Wait a bit to make re-flashing / debugging easier.
      */
-    xtimer_sleep(3);
+    xtimer_sleep(DELAY_SEC);
 
 #ifndef CPU_BACKUP_RAM_NOT_RETAINED
 
@@ -59,7 +66,6 @@ int main(void)
     struct tm time;
     rtc_get_time(&time);
     time.tm_sec += SLEEP_SEC;
-    mktime(&time);
     rtc_set_alarm(&time, NULL, NULL);
 
     /* put the device in deep sleep */
