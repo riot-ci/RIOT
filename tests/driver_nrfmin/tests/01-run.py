@@ -7,7 +7,7 @@ from testrunner import run
 def testfunc(child):
     child.expect("All up, running the shell now")
     child.sendline("ifconfig")
-    child.expect(r"Iface\s+(\d+)\s+HWaddr:")
+    child.expect(r"Iface\s+([a-zA-Z0-9_-]+)\s+HWaddr:")
 
 
 if __name__ == "__main__":

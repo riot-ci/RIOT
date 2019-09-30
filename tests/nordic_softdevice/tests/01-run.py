@@ -10,7 +10,7 @@ def testfunc(child):
     child.expect_exact(">")
     time.sleep(1)  # Wait 1s to let some time for the interface to be fully ready
     child.sendline("ifconfig")
-    child.expect(r"Iface\s+(\d+)\s+HWaddr:")
+    child.expect(r"Iface\s+([a-zA-Z0-9_-]+)\s+HWaddr:")
 
 
 if __name__ == "__main__":
