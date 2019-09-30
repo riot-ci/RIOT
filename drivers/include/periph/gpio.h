@@ -285,7 +285,7 @@ static inline void gpio_clear(gpio_t pin)
  */
 static inline void gpio_toggle(gpio_t pin)
 {
-    gpio_toggle(pin);
+    gpio_cpu_toggle(pin);
 }
 
 /**
