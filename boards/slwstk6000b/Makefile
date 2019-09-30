@@ -1,5 +1,2 @@
 MODULE = board
-
-DIRS = $(RIOTBOARD)/common/silabs
-
-include $(RIOTBASE)/Makefile.base
+DIRS += $(RIOTBOARD)/common/slwstk6000b
