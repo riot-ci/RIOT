@@ -122,7 +122,8 @@ static int client_send(char *addr_str, char *data, size_t datalen)
         return -1;
     }
 
-    if (sock_dtls_session_create(&dtls_sock, &remote, &session) < 0) {
+    res = sock_dtls_session_create(&dtls_sock, &remote, &session);
+    if (res < 0) {
         printf("Error creating session: %d\n", (int)res);
         sock_dtls_close(&dtls_sock);
         sock_udp_close(&udp_sock);

@@ -432,6 +432,8 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
                                   (uint8_t *)data, res);
 
+        /* reset msg type */
+        // msg.type = 0;
         if (mbox_try_get(&sock->mbox, &msg)) {
             switch(msg.type) {
                 case DTLS_EVENT_READ:
@@ -453,7 +455,6 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
 
 void sock_dtls_close(sock_dtls_t *sock)
 {
-    sock_udp_close(sock->udp_sock);
     dtls_free_context(sock->dtls_ctx);
 }
 
