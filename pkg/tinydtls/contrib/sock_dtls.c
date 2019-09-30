@@ -31,9 +31,9 @@
                                                 to hold credentials */
 /* ECC handshake takes more time */
 #ifdef DTLS_ECC
-#define DTLS_HANDSHAKE_TIMEOUT  (30000000)
+#define DTLS_HANDSHAKE_TIMEOUT  (30 * US_PER_SEC)
 #else
-#define DTLS_HANDSHAKE_TIMEOUT  (1000000)
+#define DTLS_HANDSHAKE_TIMEOUT  (1 * US_PER_SEC)
 #endif  /* DTLS_ECC */
 
 static void _timeout_callback(void *arg);
