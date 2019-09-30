@@ -62,6 +62,7 @@ def testfunc(child):
 
     * local echo
     * getting some test output without other messages
+    * sending empty lines
     """
     child.expect_exact("Running 'tests_tools' application")
 
