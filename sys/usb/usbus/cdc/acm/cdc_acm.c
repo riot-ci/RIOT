@@ -208,7 +208,6 @@ static int _control_handler(usbus_t *usbus, usbus_handler_t *handler,
                             usb_setup_t *setup)
 {
     (void)state;
-    (void)usbus;
     usbus_cdcacm_device_t *cdcacm = (usbus_cdcacm_device_t*)handler;
     switch(setup->request) {
         case USB_CDC_MGNT_REQUEST_SET_LINE_CODING:
@@ -235,8 +234,14 @@ static int _control_handler(usbus_t *usbus, usbus_handler_t *handler,
                                           coding->format) < 0) {
                         return -1;
                     }
+                    memcpy(&cdcacm->coding, coding,
+                           sizeof(usb_req_cdcacm_coding_t));
                 }
             }
+            break;
+        case USB_CDC_MGNT_REQUEST_GET_LINE_CODING:
+            usbus_control_slicer_put_bytes(usbus, (uint8_t*)&cdcacm->coding,
+                               sizeof(usb_req_cdcacm_coding_t));
             break;
         case USB_CDC_MGNT_REQUEST_SET_CONTROL_LINE_STATE:
             if (setup->value & USB_CDC_ACM_CONTROL_LINE_DTE) {

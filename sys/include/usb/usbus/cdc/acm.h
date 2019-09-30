@@ -29,6 +29,7 @@
 #define USB_USBUS_CDC_ACM_H
 
 #include <stdint.h>
+#include "usb/cdc.h"
 #include "usb/usbus.h"
 #include "tsrb.h"
 
@@ -116,6 +117,7 @@ struct usbus_cdcacm_device {
     size_t occupied;                    /**< Number of bytes for the host    */
     usbus_cdcacm_line_state_t state;    /**< Current line state              */
     event_t flush;                      /**< device2host forced flush event  */
+    usb_req_cdcacm_coding_t coding;     /**< Current coding configuration    */
 };
 
 /**
