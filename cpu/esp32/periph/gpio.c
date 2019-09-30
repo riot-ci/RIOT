@@ -525,7 +525,7 @@ int gpio_config_sleep_mode (gpio_t pin, bool mode, bool input)
     return rtcio_config_sleep_mode (pin, mode, input);
 }
 
-int gpio_set_direction(gpio_t pin, gpio_mode_t mode)
+int gpio_cpu_set_direction(gpio_t pin, gpio_mode_t mode)
 {
     /* TODO implementation, for the moment we simply initialize the GPIO */
     return gpio_cpu_init(pin, mode);
