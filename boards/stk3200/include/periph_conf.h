@@ -29,11 +29,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Internal macro to calculate *_NUMOF based on config.
- */
-#define PERIPH_NUMOF(config)    (sizeof(config) / sizeof(config[0]))
-
-/**
  * @name    Clock configuration
  * @{
  */
@@ -77,8 +72,8 @@ static const adc_chan_conf_t adc_channel_config[] = {
     }
 };
 
-#define ADC_DEV_NUMOF       PERIPH_NUMOF(adc_config)
-#define ADC_NUMOF           PERIPH_NUMOF(adc_channel_config)
+#define ADC_DEV_NUMOF       ARRAY_SIZE(adc_config)
+#define ADC_NUMOF           ARRAY_SIZE(adc_channel_config)
 /** @} */
 
 /**
@@ -97,7 +92,7 @@ static const i2c_conf_t i2c_config[] = {
     }
 };
 
-#define I2C_NUMOF           PERIPH_NUMOF(i2c_config)
+#define I2C_NUMOF           ARRAY_SIZE(i2c_config)
 #define I2C_0_ISR           isr_i2c0
 /** @} */
 
@@ -132,7 +127,7 @@ static const spi_dev_t spi_config[] = {
     }
 };
 
-#define SPI_NUMOF           PERIPH_NUMOF(spi_config)
+#define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
 /**
@@ -155,7 +150,7 @@ static const timer_conf_t timer_config[] = {
     }
 };
 
-#define TIMER_NUMOF         PERIPH_NUMOF(timer_config)
+#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
 #define TIMER_0_ISR         isr_timer1
 /** @} */
 
@@ -169,15 +164,12 @@ static const uart_conf_t uart_config[] = {
         .rx_pin = GPIO_PIN(PD, 5),
         .tx_pin = GPIO_PIN(PD, 4),
         .loc = LEUART_ROUTE_LOCATION_LOC0,
-#if EFM32_UART_MODES
-        .mode = UART_MODE_8N1,
-#endif
         .cmu = cmuClock_LEUART0,
         .irq = LEUART0_IRQn
     }
 };
 
-#define UART_NUMOF          PERIPH_NUMOF(uart_config)
+#define UART_NUMOF          ARRAY_SIZE(uart_config)
 #define UART_0_ISR_RX       isr_leuart0
 /** @} */
 
