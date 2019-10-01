@@ -105,8 +105,8 @@ riotboot/combined-slot0: $(RIOTBOOT_COMBINED_BIN)
 $(RIOTBOOT_COMBINED_BIN): $(BOOTLOADER_BIN)/riotboot.extended.bin $(SLOT0_RIOT_BIN)
 	$(Q)cat $^ > $@
 
-
 RIOTBOOT_EXTENDED_BIN = $(BINDIR_APP)-slot0-extended.bin
+
 # Generate a binary file from slot 0 which covers slot 1 riot_hdr
 # in order to invalidate slot 1
 $(RIOTBOOT_EXTENDED_BIN): $(RIOTBOOT_COMBINED_BIN)
