@@ -86,7 +86,7 @@ That step can be done manually using the `suit/genkey` target.
 
 In order to get a SUIT capable firmware onto the node, run
 
-    $ BOARD=samr21-xpro make -C examples/suit_update clean riotboot/flash -j4
+    $ BOARD=samr21-xpro make -C examples/suit_update clean flash -j4
 
 This command also generates the cryptographic keys (private/public) used to
 sign and verify the manifest and images. See the "Key generation" section in
