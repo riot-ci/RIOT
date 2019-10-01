@@ -185,7 +185,7 @@ static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
             gnrc_sixlowpan_frag_rb_remove(entry);
             return RBUF_ADD_REPEAT;
         case RBUF_ADD_DUPLICATE:
-            /* res >= 0 => do not release `pkt` */
+            gnrc_pktbuf_release(pkt);
             return res;
         default:
             break;
@@ -226,7 +226,8 @@ static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
         memcpy(((uint8_t *)entry->pkt->data) + offset, data,
                frag_size);
     }
-    /* res >= 0 => do not release `pkt` */
+    /* no errors and not consumed => release packet */
+    gnrc_pktbuf_release(pkt);
     return res;
 }
 

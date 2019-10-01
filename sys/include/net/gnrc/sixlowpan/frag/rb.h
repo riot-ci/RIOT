@@ -102,14 +102,13 @@ typedef struct {
  * @param[in] netif_hdr     The interface header of the fragment, with
  *                          gnrc_netif_hdr_t::if_pid and its source and
  *                          destination address set.
- * @param[in] frag          The fragment to add.
+ * @param[in] frag          The fragment to add. Will be released by the
+ *                          function.
  * @param[in] offset        The fragment's offset.
  * @param[in] page          Current 6Lo dispatch parsing page.
  *
  * @return  The reassembly buffer entry the fragment was added to on success.
- *          @p frag is not released in that case.
  * @return  NULL on error or when it was consumed by another 6LoWPAN layer.
- *          @p frag is released in that case.
  */
 gnrc_sixlowpan_frag_rb_t *gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr,
                                                      gnrc_pktsnip_t *frag,
