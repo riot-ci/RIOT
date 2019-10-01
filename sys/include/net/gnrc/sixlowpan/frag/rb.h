@@ -105,10 +105,15 @@ typedef struct {
  * @param[in] frag          The fragment to add.
  * @param[in] offset        The fragment's offset.
  * @param[in] page          Current 6Lo dispatch parsing page.
+ *
+ * @return  The reassembly buffer entry the fragment was added to on success.
+ *          @p frag is not released in that case.
+ * @return  NULL on error or when it was consumed by another 6LoWPAN layer.
+ *          @p frag is released in that case.
  */
-void gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr,
-                                gnrc_pktsnip_t *frag, size_t offset,
-                                unsigned page);
+gnrc_sixlowpan_frag_rb_t *gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr,
+                                                     gnrc_pktsnip_t *frag,
+                                                     size_t offset, unsigned page);
 
 /**
  * @brief   Checks if a reassembly buffer entry is unset
@@ -184,15 +189,30 @@ static inline void gnrc_sixlowpan_frag_rb_remove(gnrc_sixlowpan_frag_rb_t *rbuf)
  * @param[in] netif Original @ref gnrc_netif_hdr_t of the last received frame.
  *                  Used to construct the @ref gnrc_netif_hdr_t of the completed
  *                  datagram. Must not be NULL.
+ *
+ * @return  >0, when the datagram in @p rbuf was complete and dispatched.
+ * @return  0, when the datagram in @p rbuf is not complete.
+ * @return  -1, if the the reassembled datagram was not dispatched. @p rbuf is
+ *          destroyed either way.
  */
-void gnrc_sixlowpan_frag_rb_dispatch_when_complete(gnrc_sixlowpan_frag_rb_t *rbuf,
-                                                   gnrc_netif_hdr_t *netif);
+int gnrc_sixlowpan_frag_rb_dispatch_when_complete(gnrc_sixlowpan_frag_rb_t *rbuf,
+                                                  gnrc_netif_hdr_t *netif);
 #else
 /* NOPs to be used with gnrc_sixlowpan_iphc if gnrc_sixlowpan_frag_rb is not
  * compiled in */
-#define gnrc_sixlowpan_frag_rb_remove(rbuf)     (void)(rbuf)
-#define gnrc_sixlowpan_frag_rb_dispatch_when_complete(rbuf, netif) \
-    (void)(rbuf); (void)(netif)
+static inline void gnrc_sixlowpan_frag_rb_remove(gnrc_sixlowpan_frag_rb_t *rbuf)
+{
+    (void)rbuf;
+    return;
+}
+
+static inline int gnrc_sixlowpan_frag_rb_dispatch_when_complete(
+        gnrc_sixlowpan_frag_rb_t *rbuf, gnrc_netif_hdr_t *netif)
+{
+    (void)rbuf;
+    (void)netif;
+    return -1;
+}
 #endif
 
 #ifdef __cplusplus

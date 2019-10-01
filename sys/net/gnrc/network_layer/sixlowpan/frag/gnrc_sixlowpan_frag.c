@@ -341,6 +341,7 @@ void gnrc_sixlowpan_frag_recv(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
 {
     gnrc_netif_hdr_t *hdr = pkt->next->data;
     sixlowpan_frag_t *frag = pkt->data;
+    gnrc_sixlowpan_frag_rb_t *rbe;
     uint16_t offset = 0;
 
     (void)ctx;
@@ -359,7 +360,11 @@ void gnrc_sixlowpan_frag_recv(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
             return;
     }
 
-    gnrc_sixlowpan_frag_rb_add(hdr, pkt, offset, page);
+    rbe = gnrc_sixlowpan_frag_rb_add(hdr, pkt, offset, page);
+    if (rbe != NULL) {
+        gnrc_sixlowpan_frag_rb_dispatch_when_complete(rbe, hdr);
+        gnrc_pktbuf_release(pkt);
+    }
 }
 
 uint16_t gnrc_sixlowpan_frag_next_tag(void)
