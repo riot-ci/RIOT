@@ -19,7 +19,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 blackpill bluepill \
                              nucleo-f070rb nucleo-f072rb nucleo-f103rb nucleo-f302r8 nucleo-f334r8 \
                              nucleo-l031k6 nucleo-l053r8 nucleo-l073rz opencm904 \
                              saml11-xpro bluepill saml10-xpro \
-                             stm32l0538-disco \
+                             stm32l0538-disco cc1352-launchpad \
                              spark-core stm32f0discovery stm32mindev yunjia-nrf51822
 
 # Include packages that pull up and auto-init the link layer.

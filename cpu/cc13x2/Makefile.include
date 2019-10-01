@@ -1,5 +1,5 @@
-export CPU_ARCH := cortex-m3
-export CPU_VARIANT = x0
+export CPU_ARCH := cortex-m4f
+export CPU_VARIANT = x2
 
 export VECTORS_O = $(BINDIR)/cc26xx_cc13xx/vectors.o
 

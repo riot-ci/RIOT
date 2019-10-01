@@ -62,7 +62,7 @@ static const timer_conf_t timer_config[] = {
  }
 };
 
-#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
+#define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
 
 /**
@@ -75,18 +75,13 @@ static const timer_conf_t timer_config[] = {
 * to 1 and defining pins for UART_CTS_PIN and UART_RTS_PIN.
 * @{
 */
-#define UART_NUMOF          (1)
-#define UART0_RX_PIN         (2)
-#define UART0_TX_PIN         (3)
-/** @} */
+#define UART_NUMOF           (1)
+#define UART0_RX_PIN         (12)
+#define UART0_TX_PIN         (13)
 
-/**
- * @name    I2C configuration
- * @{
- */
-#define I2C_NUMOF           (1)
-#define I2C_SDA_PIN         (14)
-#define I2C_SCL_PIN         (15)
+/* Not implemented in launchpad, define if using external transceiver */
+#define UART1_RX_PIN          (0)
+#define UART1_TX_PIN          (0)
 /** @} */
 
 #ifdef __cplusplus
