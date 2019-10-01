@@ -3,7 +3,7 @@ include ../Makefile.tests_common
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
                              arduino-mega2560 arduino-nano \
                              arduino-uno chronos nucleo-f031k6 nucleo-f042k6 \
-                             nucleo-l031k6 waspmote-pro
+                             nucleo-l031k6 stk3200 waspmote-pro
 
 USEMODULE += gnrc_sock_check_reuse
 USEMODULE += gnrc_sock_udp
