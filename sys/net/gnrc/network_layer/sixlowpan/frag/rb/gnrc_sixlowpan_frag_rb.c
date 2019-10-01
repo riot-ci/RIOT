@@ -83,7 +83,6 @@ enum {
     RBUF_ADD_ERROR = -1,
     RBUF_ADD_REPEAT = -2,
     RBUF_ADD_DUPLICATE = -3,
-    RBUF_ADD_CONSUMED = -4,
 };
 
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_STATS
@@ -206,15 +205,18 @@ static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                     gnrc_pktbuf_release(entry->pkt);
                     gnrc_pktbuf_release(pkt);
                     gnrc_sixlowpan_frag_rb_remove(entry);
-                    res = RBUF_ADD_ERROR;
+                    return RBUF_ADD_ERROR;
                 }
                 else {
                     DEBUG("6lo rbuf: handing over to IPHC reception.\n");
                     /* `pkt` released in IPHC */
                     gnrc_sixlowpan_iphc_recv(pkt, entry, 0);
-                    res = RBUF_ADD_CONSUMED;
+                    /* check if entry was deleted in IPHC (error case) */
+                    if (gnrc_sixlowpan_frag_rb_entry_empty(entry)) {
+                        res = RBUF_ADD_ERROR;
+                    }
+                    return res;
                 }
-                return res;
             }
             else
 #endif
