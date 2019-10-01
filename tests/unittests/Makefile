@@ -35,6 +35,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              bluepill \
                              bluepill-128kib \
                              calliope-mini \
+                             cc1352-launchpad \
                              cc2650-launchpad \
                              cc2650stk \
                              chronos \
