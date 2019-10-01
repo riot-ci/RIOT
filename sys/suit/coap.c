@@ -208,7 +208,7 @@ static ssize_t _nanocoap_request(sock_udp_t *sock, coap_pkt_t *pkt, size_t len)
             }
 
             if (coap_get_id(pkt) != id) {
-                res = -EAGAIN;
+                res = 0;
                 continue;
             }
 
