@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "irq.h"
 #include "rmutex.h"
 #include "thread.h"
 #include "assert.h"
@@ -52,10 +51,9 @@ static int _lock(rmutex_t *rmutex, int trylock)
          *     mutex_lock(). However the read access to owner is not
          *     locked, and owner can be changed by a thread that is
          *     holding the lock (e.g.: holder unlocks the mutex, new
-         *     holder aquired the lock). Enclosing the access within
-         *     irq_disable()/irq_restore() ensures that the value of
-         *     rmutex->owner is read correctly WRT rad/modify/write of the
-         *     shared 16bit memory.
+         *     holder aquired the lock). The atomic access strategy
+         *     'relaxed' ensures, that the value of rmutex->owner is read
+         *     consistent.
          *
          *     It is not necessary to synchronize (make written values
          *     visible) read/write with other threads, because every
@@ -80,9 +78,7 @@ static int _lock(rmutex_t *rmutex, int trylock)
          */
 
         /* ensure that owner is read atomically, since I need a consistent value */
-        unsigned state = irq_disable();
-        owner = rmutex->owner;
-        irq_restore(state);
+        owner = atomic_load_explicit(&rmutex->owner, memory_order_relaxed);
         DEBUG("rmutex %" PRIi16" : mutex held by %" PRIi16" \n", thread_getpid(), owner);
 
         /* Case 1: Mutex is not held by me */
@@ -107,9 +103,7 @@ static int _lock(rmutex_t *rmutex, int trylock)
     DEBUG("rmutex %" PRIi16" : settting the owner\n", thread_getpid());
 
     /* ensure that owner is written atomically, since others need a consistent value */
-    unsigned state = irq_disable();
-    rmutex->owner = thread_getpid();
-    irq_restore(state);
+    atomic_store_explicit(&rmutex->owner, thread_getpid(), memory_order_relaxed);
 
     DEBUG("rmutex %" PRIi16" : increasing refs\n", thread_getpid());
 
@@ -131,7 +125,7 @@ int rmutex_trylock(rmutex_t *rmutex)
 
 void rmutex_unlock(rmutex_t *rmutex)
 {
-    assert(rmutex->owner == thread_getpid());
+    assert(atomic_load_explicit(&rmutex->owner,memory_order_relaxed) == thread_getpid());
     assert(rmutex->refcount > 0);
 
     DEBUG("rmutex %" PRIi16" : decrementing refs refs\n", thread_getpid());
@@ -145,10 +139,8 @@ void rmutex_unlock(rmutex_t *rmutex)
 
         DEBUG("rmutex %" PRIi16" : resetting owner\n", thread_getpid());
 
-        /* ensure that owner is written atomically */
-        unsigned state = irq_disable();
-        rmutex->owner = thread_getpid();
-        irq_restore(state);
+        /* ensure that owner is written only once */
+        atomic_store_explicit(&rmutex->owner, KERNEL_PID_UNDEF, memory_order_relaxed);
 
         DEBUG("rmutex %" PRIi16" : releasing mutex\n", thread_getpid());
 
