@@ -16,6 +16,7 @@ SINGLE_TIMER_BOARDS = \
 # disabled by default for these boards unless explicitly enabled
 SMALL_RAM_BOARDS = \
   nucleo-f031k6 \
+  stk3200 \
   #
 
 FEATURES_REQUIRED = periph_timer
