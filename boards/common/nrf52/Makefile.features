@@ -9,3 +9,8 @@ endif
 
 # Various other features (if any)
 FEATURES_PROVIDED += ble_nimble
+
+ifneq (,$(findstring nrf52832, $(CPU_MODEL)))
+  # include common nrf52832 features
+  include $(RIOTBOARD)/common/nrf52/nrf52832/Makefile.features
+endif
