@@ -232,51 +232,39 @@ static int spi_set_params(int fd, bool hwcs, spi_mode_t mode, spi_clk_t clk)
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
                         const void *out, void *in, size_t len)
 {
-    if (bus < SPI_NUMOF && (cs == SPI_CS_UNDEF || cs < SPI_MAXCS)) {
-        int fd = (cs == SPI_CS_UNDEF) ?
-                 spidev_get_first_fd(&(device_state[bus])) :
-                 device_state[bus].fd[cs];
+    if (bus >= SPI_NUMOF || (cs != SPI_CS_UNDEF && cs >= SPI_MAXCS)) {
+        return;
+    }
 
-        if (fd >= 0) {
-            struct spi_ioc_transfer spi_tf;
-            memset(&spi_tf, 0, sizeof(spi_tf));
+    int fd = (cs == SPI_CS_UNDEF) ?
+                spidev_get_first_fd(&(device_state[bus])) :
+                device_state[bus].fd[cs];
 
-            intptr_t out_addr = (intptr_t)out;
-            intptr_t in_addr = (intptr_t)in;
+    if (fd >= 0) {
+        struct spi_ioc_transfer spi_tf;
+        memset(&spi_tf, 0, sizeof(spi_tf));
 
-            /* Leaving speed_hz as zero uses the value from spi_acquire */
-            spi_tf.bits_per_word = 8;
-            /*
-             * The kernel documentation is a bit ambiguous about how to use the
-             * cs_change value ("True to deselect device"). It seems like
-             * setting it to true leaves the CS line actually low (=selected)
-             * after transmission.
-             */
-            spi_tf.cs_change = cont;
-            spi_tf.len = len;
-            spi_tf.rx_buf = (uint64_t)in_addr;
-            spi_tf.tx_buf = (uint64_t)out_addr;
+        intptr_t out_addr = (intptr_t)out;
+        intptr_t in_addr = (intptr_t)in;
 
-            if (ENABLE_DEBUG) {
-                DEBUG("spi_transfer_bytes: -> ");
-                for (size_t i = 0; i < len; i++) {
-                    DEBUG(" %02x", out != NULL ? ((uint8_t *)out)[i] : 0);
-                }
-                DEBUG("\n");
-            }
+        /* Leaving speed_hz as zero uses the value from spi_acquire */
+        spi_tf.bits_per_word = 8;
+        /*
+            * The kernel documentation is a bit ambiguous about how to use the
+            * cs_change value ("True to deselect device"). It seems like
+            * setting it to true leaves the CS line actually low (=selected)
+            * after transmission.
+            */
+        spi_tf.cs_change = cont;
+        spi_tf.len = len;
+        spi_tf.rx_buf = (uint64_t)in_addr;
+        spi_tf.tx_buf = (uint64_t)out_addr;
 
-            if (real_ioctl(fd, SPI_IOC_MESSAGE(1), &spi_tf) < 0) {
-                DEBUG("spi_transfer_bytes: ioctl failed\n");
-            }
-            else {
-                if (ENABLE_DEBUG) {
-                    DEBUG("spi_transfer_bytes: <- ");
-                    for (size_t i = 0; i < len; i++) {
-                        DEBUG(" %02x", in != NULL ? ((uint8_t *)in)[i] : 0);
-                    }
-                    DEBUG("\nspi_transfer_bytes: transfered %d bytes\n", len);
-                }
-            }
+        if (real_ioctl(fd, SPI_IOC_MESSAGE(1), &spi_tf) < 0) {
+            DEBUG("spi_transfer_bytes: ioctl failed\n");
+        }
+        else {
+            DEBUG("\nspi_transfer_bytes: transfered %d bytes\n", len);
         }
     }
 }
