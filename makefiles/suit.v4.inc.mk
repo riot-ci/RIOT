@@ -43,7 +43,7 @@ SUIT_PUB_HDR_DIR = $(dir $(SUIT_PUB_HDR))
 CFLAGS += -I$(SUIT_PUB_HDR_DIR)
 BUILDDEPS += $(SUIT_PUB_HDR)
 
-$(SUIT_SEC) $(SUIT_PUB): | $(CLEAN)
+$(SUIT_SEC) $(SUIT_PUB): $(CLEAN)
 	@echo suit: generating key pair in $(SUIT_KEY_DIR)
 	@mkdir -p $(SUIT_KEY_DIR)
 	@$(RIOTBASE)/dist/tools/suit_v4/gen_key.py $(SUIT_SEC) $(SUIT_PUB)
