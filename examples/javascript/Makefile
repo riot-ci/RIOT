@@ -18,7 +18,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 blackpill \
                              nucleo-f031k6 nucleo-f042k6 nucleo-f303k8 \
                              nucleo-l031k6 opencm904 saml10-xpro saml11-xpro \
                              spark-core stm32f0discovery stm32l0538-disco \
-                             yunjia-nrf51822
+                             yunjia-nrf51822 cc1352-launchpad
 
 BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo arduino-mega2560 \
                    arduino-nano arduino-uno chronos \
