@@ -206,9 +206,8 @@ static ssize_t _nanocoap_request(sock_udp_t *sock, coap_pkt_t *pkt, size_t len)
                 DEBUG("nanocoap: error parsing packet\n");
                 res = -EBADMSG;
             }
-
-            if (coap_get_id(pkt) != id) {
-                res = 0;
+            else if (coap_get_id(pkt) != id) {
+                res = -EBADMSG;
                 continue;
             }
 
