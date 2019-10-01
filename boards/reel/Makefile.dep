@@ -4,6 +4,6 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
 endif
 
 # include common nrf52840 dependencies
-include $(RIOTBOARD)/common/nrf52/Makefile.nrf52840.dep
+include $(RIOTBOARD)/common/nrf52/nrf52840/Makefile.dep
 
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
