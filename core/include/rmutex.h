@@ -24,6 +24,7 @@
 #define RMUTEX_H
 
 #include <stdint.h>
+#include <stdatomic.h>
 
 #include "mutex.h"
 #include "kernel_types.h"
@@ -53,17 +54,18 @@ typedef struct rmutex_t {
     /**
      * @brief   Owner thread of the mutex.
      * @details Owner is written by the mutex holder, and read
-     *          in critical section to ensure consistency,
+     *          concurrently to ensure consistency,
+     *          atomic_int_least16_t is used. Note @ref kernel_pid_t is an int16
      * @internal
      */
-    kernel_pid_t owner;
+    atomic_int_least16_t owner;
 } rmutex_t;
 
 /**
  * @brief Static initializer for rmutex_t.
  * @details This initializer is preferable to rmutex_init().
  */
-#define RMUTEX_INIT { MUTEX_INIT, 0, KERNEL_PID_UNDEF }
+#define RMUTEX_INIT { MUTEX_INIT, 0, ATOMIC_VAR_INIT(KERNEL_PID_UNDEF) }
 
 /**
  * @brief Initializes a recursive mutex object.
