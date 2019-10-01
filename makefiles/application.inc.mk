@@ -3,4 +3,6 @@ MODULE = $(APPLICATION_MODULE)
 DIRS += $(RIOTCPU)/$(CPU) $(RIOTBOARD)/$(BOARD)
 DIRS += $(RIOTBASE)/core $(RIOTBASE)/drivers $(RIOTBASE)/sys
 
+BLOBS = $(APPLICATION_BLOBS)
+
 include $(RIOTBASE)/Makefile.base
