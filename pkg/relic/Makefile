@@ -3,10 +3,9 @@ PKG_URL=https://github.com/relic-toolkit/relic.git
 PKG_VERSION=0b0442a8218df8d309266923f2dd5b9ae3b318ce
 PKG_LICENSE=LGPL-2.1
 
-.PHONY: all ..cmake_version_supported
+include $(RIOTBASE)/pkg/pkg.mk
 
 CMAKE_MINIMAL_VERSION = 3.6.0
-
 
 CFLAGS += -Wno-gnu-zero-variadic-macro-arguments -Wno-unused-function -Wno-newline-eof
 
@@ -26,11 +25,10 @@ $(PKG_BUILDDIR)/Makefile: $(TOOLCHAIN_FILE)
 	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
 		  -DCHECK=off -DTESTS=0 -DBENCH=0 -DSHLIB=off -Wno-dev $(RELIC_CONFIG_FLAGS) .
 
-$(TOOLCHAIN_FILE): git-download
+$(TOOLCHAIN_FILE): $(PKG_PREPARED)
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
-git-download: | ..cmake_version_supported
-
+.PHONY: ..cmake_version_supported
 ..cmake_version_supported:
 	@ # Remove '-rcX' from version as they are not well handled
 	$(Q)\
@@ -39,5 +37,3 @@ git-download: | ..cmake_version_supported
 
 clean::
 	@rm -rf $(BINDIR)/$(PKG_NAME).a
-
-include $(RIOTBASE)/pkg/pkg.mk
