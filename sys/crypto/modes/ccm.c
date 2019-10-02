@@ -108,7 +108,7 @@ int ccm_compute_adata_mac(cipher_t *cipher, const uint8_t *auth_data,
         /* Create a block with the encoded length */
         int block_size = cipher_get_block_size(cipher);
         if (block_size > 16  || block_size < 0) {
-            DEBUG("UNSUPPORTED block size of the cipher: %" PRIu8 "\n",
+            DEBUG("UNSUPPORTED block size of the cipher: %d\n",
                   block_size);
             return -1;
         }
