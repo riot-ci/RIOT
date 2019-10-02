@@ -218,11 +218,11 @@ void spi_release(spi_t bus)
 static int spi_set_params(int fd, bool hwcs, spi_mode_t mode, spi_clk_t clk)
 {
     uint8_t spi_mode = mode | (hwcs ? 0 : SPI_NO_CS);
+    uint32_t ioctl_clk = clk;
 
     if (real_ioctl(fd, SPI_IOC_WR_MODE, &spi_mode) < 0) {
         return SPI_NOMODE;
     }
-    uint32_t ioctl_clk = clk;
     if (real_ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &ioctl_clk) < 0) {
         return SPI_NOCLK;
     }
@@ -240,32 +240,34 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
                 spidev_get_first_fd(&(device_state[bus])) :
                 device_state[bus].fd[cs];
 
-    if (fd >= 0) {
-        struct spi_ioc_transfer spi_tf;
-        memset(&spi_tf, 0, sizeof(spi_tf));
+    if (fd < 0) {
+        return;
+    }
 
-        intptr_t out_addr = (intptr_t)out;
-        intptr_t in_addr = (intptr_t)in;
+    intptr_t out_addr = (intptr_t)out;
+    intptr_t in_addr = (intptr_t)in;
 
-        /* Leaving speed_hz as zero uses the value from spi_acquire */
-        spi_tf.bits_per_word = 8;
+    struct spi_ioc_transfer spi_tf = {
+        .bits_per_word = 8,
         /*
-            * The kernel documentation is a bit ambiguous about how to use the
-            * cs_change value ("True to deselect device"). It seems like
-            * setting it to true leaves the CS line actually low (=selected)
-            * after transmission.
-            */
-        spi_tf.cs_change = cont;
-        spi_tf.len = len;
-        spi_tf.rx_buf = (uint64_t)in_addr;
-        spi_tf.tx_buf = (uint64_t)out_addr;
+         * The kernel documentation is a bit ambiguous about how to use the
+         * cs_change value ("True to deselect device"). It seems like
+         * setting it to true leaves the CS line actually low (=selected)
+         * after transmission.
+         */
+        .cs_change = cont,
+        .len = len,
+        .rx_buf = (uint64_t)in_addr,
+        .tx_buf = (uint64_t)out_addr,
+        /* Leaving speed_hz as zero uses the value from spi_acquire */
+        .speed_hz = 0,
+    };
 
-        if (real_ioctl(fd, SPI_IOC_MESSAGE(1), &spi_tf) < 0) {
-            DEBUG("spi_transfer_bytes: ioctl failed\n");
-        }
-        else {
-            DEBUG("\nspi_transfer_bytes: transfered %d bytes\n", len);
-        }
+    if (real_ioctl(fd, SPI_IOC_MESSAGE(1), &spi_tf) < 0) {
+        DEBUG("spi_transfer_bytes: ioctl failed\n");
+    }
+    else {
+        DEBUG("\nspi_transfer_bytes: transfered %d bytes\n", len);
     }
 }
 
