@@ -8,6 +8,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
                              mega-xplained \
                              nucleo-f031k6 \
                              nucleo-f042k6 \
+                             stk3200 \
                              #
 
 TEST_ON_CI_WHITELIST += native
