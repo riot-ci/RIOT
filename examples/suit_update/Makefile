@@ -23,7 +23,10 @@ CFLAGS += -DGNRC_PKTBUF_SIZE=2000
 #
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
-USEMODULE += gnrc_netdev_default
+
+# uncomment this to compile in support for a possibly available radio
+#USEMODULE += gnrc_netdev_default
+
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
 USEMODULE += gnrc_ipv6_router_default
@@ -35,10 +38,10 @@ USEMODULE += gnrc_icmpv6_echo
 # include this for printing IP addresses
 USEMODULE += shell_commands
 
-# Comment this out to enable code in RIOT that does safety checking
+# Set this to 1 to enable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
-DEVELHELP = 1
+DEVELHELP ?= 0
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
