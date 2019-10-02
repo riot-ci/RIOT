@@ -823,14 +823,55 @@ static const uint8_t TEST_NIST_3_EXPECTED[] = {
 };
 static const size_t TEST_NIST_3_EXPECTED_LEN = 52;
 
+/* Tests from Project Wycheproof */
+/* See https://github.com/google/wycheproof/blob/master/testvectors/aes_ccm_test.json */
+
+static const uint8_t TEST_WYCHEPROOF_28_KEY[] = {
+    0x20, 0xbb, 0xf7, 0x4c, 0x1e, 0x63, 0x98, 0x2c,
+    0x47, 0x2c, 0x47, 0x43, 0x56, 0x9e, 0x4c, 0x84,
+};
+static const size_t TEST_WYCHEPROOF_28_KEY_LEN = 16;
+static const uint8_t TEST_WYCHEPROOF_28_NONCE[] = {
+    0x45, 0x9f, 0xc7, 0xc0, 0x04, 0xbf, 0x46, 0x32,
+    0x3a, 0x02, 0xd8, 0x46,
+};
+static const size_t TEST_WYCHEPROOF_28_NONCE_LEN = 12;
+static const size_t TEST_WYCHEPROOF_28_MAC_LEN = 16;
+static const uint8_t TEST_WYCHEPROOF_28_INPUT[] = {
+    /* AAD */
+    0x4f, 0x22, 0x85, 0xce, 0x3d, 0xaf, 0xa5, 0x28,
+    0xc6, 0x94, 0xa5, 0x27, 0x2d, 0x3b, 0x7b, 0x92,
+    0x90, 0x97, 0xdb, 0x39, 0x87, 0x72, 0x65, 0x3b,
+    0xd9, 0xbb, 0xbd, 0xb3, 0xb2, 0xc8, 0xe1,
+    /* PLAINTEXT */
+    0x6d, 0xb5, 0x09, 0x92, 0xe8, 0xfb, 0xbe, 0xe1,
+    0x5d, 0x49, 0x79, 0xd3, 0xe3, 0x22, 0xda, 0xcd,
+};
+static const size_t TEST_WYCHEPROOF_28_INPUT_LEN = 16;
+static const size_t TEST_WYCHEPROOF_28_ADATA_LEN = 31;
+static const uint8_t TEST_WYCHEPROOF_28_EXPECTED[] = {
+    /* AAD */
+    0x4f, 0x22, 0x85, 0xce, 0x3d, 0xaf, 0xa5, 0x28,
+    0xc6, 0x94, 0xa5, 0x27, 0x2d, 0x3b, 0x7b, 0x92,
+    0x90, 0x97, 0xdb, 0x39, 0x87, 0x72, 0x65, 0x3b,
+    0xd9, 0xbb, 0xbd, 0xb3, 0xb2, 0xc8, 0xe1,
+    /* CIPHERTEXT */
+    0x87, 0x03, 0xe4, 0x46, 0x97, 0x13, 0x8c, 0x58,
+    0x53, 0x2d, 0x97, 0xee, 0x99, 0x23, 0x1d, 0x94,
+    /* MAC */
+    0xf1, 0x4c, 0x2f, 0x39, 0xa4, 0x87, 0x1a, 0x4a,
+    0x16, 0xc4, 0x2f, 0x6f, 0xe8, 0x78, 0xde, 0xef,
+};
+static const size_t TEST_WYCHEPROOF_28_EXPECTED_LEN = 63;
+
 /* Share test buffer output */
 static uint8_t data[60];
 
-static void test_encrypt_op(const uint8_t* key, uint8_t key_len,
-                            const uint8_t* adata, size_t adata_len,
-                            const uint8_t* nonce, uint8_t nonce_len,
-                            const uint8_t* plain, size_t plain_len,
-                            const uint8_t* output_expected,
+static void test_encrypt_op(const uint8_t *key, uint8_t key_len,
+                            const uint8_t *adata, size_t adata_len,
+                            const uint8_t *nonce, uint8_t nonce_len,
+                            const uint8_t *plain, size_t plain_len,
+                            const uint8_t *output_expected,
                             size_t output_expected_len,
                             uint8_t mac_length)
 {
@@ -851,15 +892,14 @@ static void test_encrypt_op(const uint8_t* key, uint8_t key_len,
 
     TEST_ASSERT_EQUAL_INT(output_expected_len, len);
     cmp = compare(output_expected, data, len);
-    TEST_ASSERT_MESSAGE(1 == cmp , "wrong ciphertext");
-
+    TEST_ASSERT_MESSAGE(1 == cmp, "wrong ciphertext");
 }
 
-static void test_decrypt_op(const uint8_t* key, uint8_t key_len,
-                            const uint8_t* adata, size_t adata_len,
-                            const uint8_t* nonce, uint8_t nonce_len,
-                            const uint8_t* encrypted, size_t encrypted_len,
-                            const uint8_t* output_expected,
+static void test_decrypt_op(const uint8_t *key, uint8_t key_len,
+                            const uint8_t *adata, size_t adata_len,
+                            const uint8_t *nonce, uint8_t nonce_len,
+                            const uint8_t *encrypted, size_t encrypted_len,
+                            const uint8_t *output_expected,
                             size_t output_expected_len,
                             uint8_t mac_length)
 {
@@ -880,23 +920,23 @@ static void test_decrypt_op(const uint8_t* key, uint8_t key_len,
 
     TEST_ASSERT_EQUAL_INT(output_expected_len, len);
     cmp = compare(output_expected, data, len);
-    TEST_ASSERT_MESSAGE(1 == cmp , "wrong ciphertext");
+    TEST_ASSERT_MESSAGE(1 == cmp, "wrong ciphertext");
 
 }
 
 #define do_test_encrypt_op(name) do { \
-    test_encrypt_op(TEST_##name##_KEY, TEST_##name##_KEY_LEN, \
-                    TEST_##name##_INPUT, TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_NONCE, TEST_##name##_NONCE_LEN, \
+        test_encrypt_op(TEST_ ## name ## _KEY, TEST_ ## name ## _KEY_LEN, \
+                        TEST_ ## name ## _INPUT, TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _NONCE, TEST_ ## name ## _NONCE_LEN, \
                     \
-                    TEST_##name##_INPUT + TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_INPUT_LEN, \
+                        TEST_ ## name ## _INPUT + TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _INPUT_LEN, \
                     \
-                    TEST_##name##_EXPECTED + TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_EXPECTED_LEN - TEST_##name##_ADATA_LEN, \
+                        TEST_ ## name ## _EXPECTED + TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _EXPECTED_LEN - TEST_ ## name ## _ADATA_LEN, \
                     \
-                    TEST_##name##_MAC_LEN \
-                    ); \
+                        TEST_ ## name ## _MAC_LEN \
+                        ); \
 } while (0)
 
 
@@ -930,21 +970,23 @@ static void test_crypto_modes_ccm_encrypt(void)
     do_test_encrypt_op(NIST_1);
     do_test_encrypt_op(NIST_2);
     do_test_encrypt_op(NIST_3);
+
+    do_test_encrypt_op(WYCHEPROOF_28);
 }
 
 #define do_test_decrypt_op(name) do { \
-    test_decrypt_op(TEST_##name##_KEY, TEST_##name##_KEY_LEN, \
-                    TEST_##name##_INPUT, TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_NONCE, TEST_##name##_NONCE_LEN, \
+        test_decrypt_op(TEST_ ## name ## _KEY, TEST_ ## name ## _KEY_LEN, \
+                        TEST_ ## name ## _INPUT, TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _NONCE, TEST_ ## name ## _NONCE_LEN, \
                     \
-                    TEST_##name##_EXPECTED + TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_EXPECTED_LEN - TEST_##name##_ADATA_LEN, \
+                        TEST_ ## name ## _EXPECTED + TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _EXPECTED_LEN - TEST_ ## name ## _ADATA_LEN, \
                     \
-                    TEST_##name##_INPUT + TEST_##name##_ADATA_LEN, \
-                    TEST_##name##_INPUT_LEN, \
+                        TEST_ ## name ## _INPUT + TEST_ ## name ## _ADATA_LEN, \
+                        TEST_ ## name ## _INPUT_LEN, \
                     \
-                    TEST_##name##_MAC_LEN \
-                    ); \
+                        TEST_ ## name ## _MAC_LEN \
+                        ); \
 } while (0)
 
 static void test_crypto_modes_ccm_decrypt(void)
@@ -977,23 +1019,27 @@ static void test_crypto_modes_ccm_decrypt(void)
     do_test_decrypt_op(NIST_1);
     do_test_decrypt_op(NIST_2);
     do_test_decrypt_op(NIST_3);
+
+    do_test_decrypt_op(WYCHEPROOF_28);
 }
 
 
-typedef int (*func_ccm_t)(cipher_t*, const uint8_t*, uint32_t,
-                          uint8_t, uint8_t, const uint8_t*, size_t,
-                          const uint8_t*, size_t, uint8_t*);
+typedef int (*func_ccm_t)(cipher_t *, const uint8_t *, uint32_t,
+                          uint8_t, uint8_t, const uint8_t *, size_t,
+                          const uint8_t *, size_t, uint8_t *);
 
 static int _test_ccm_len(func_ccm_t func, uint8_t len_encoding,
-                         const uint8_t *input, size_t input_len, size_t adata_len)
+                         const uint8_t *input, size_t input_len,
+                         size_t adata_len)
 {
     int ret;
     cipher_t cipher;
     uint8_t mac_length = 8;
-    uint8_t nonce[15] = {0};
-    uint8_t key[16] = {0};
+    uint8_t nonce[15] = { 0 };
+    uint8_t key[16] = { 0 };
 
     uint8_t nonce_len = nonce_and_len_encoding_size - len_encoding;
+
     cipher_init(&cipher, CIPHER_AES_128, key, 16);
 
     ret = func(&cipher, NULL, adata_len, mac_length, len_encoding,
@@ -1006,6 +1052,7 @@ static int _test_ccm_len(func_ccm_t func, uint8_t len_encoding,
 static void test_crypto_modes_ccm_check_len(void)
 {
     int ret;
+
     /* Just 1 to big to fit */
     ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
@@ -1044,7 +1091,7 @@ static void test_crypto_modes_ccm_check_len(void)
 }
 
 
-Test* tests_crypto_modes_ccm_tests(void)
+Test *tests_crypto_modes_ccm_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_crypto_modes_ccm_encrypt),
@@ -1054,5 +1101,5 @@ Test* tests_crypto_modes_ccm_tests(void)
 
     EMB_UNIT_TESTCALLER(crypto_modes_ccm_tests, NULL, NULL, fixtures);
 
-    return (Test*)&crypto_modes_ccm_tests;
+    return (Test *)&crypto_modes_ccm_tests;
 }
