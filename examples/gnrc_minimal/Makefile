@@ -8,7 +8,7 @@ BOARD ?= native
 RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
-                             arduino-uno nucleo-f031k6
+                             arduino-uno nucleo-f031k6 stk3200
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
