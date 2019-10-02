@@ -5,6 +5,7 @@ BOARD_INSUFFICIENT_MEMORY = \
 	arduino-nano \
 	arduino-uno \
 	nucleo-f031k6 \
+	stk3200 \
 	#
 
 USEMODULE += posix_headers
