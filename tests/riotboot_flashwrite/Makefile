@@ -9,7 +9,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
                              nucleo-f042k6 nucleo-l031k6 nucleo-f030r8 \
                              nucleo-f302r8 nucleo-f303k8 nucleo-f334r8 \
                              nucleo-l053r8 saml10-xpro saml11-xpro \
-                             stm32f0discovery telosb waspmote-pro \
+                             stk3200 stm32f0discovery telosb waspmote-pro \
                              wsn430-v1_3b wsn430-v1_4 z1
 
 # Include packages that pull up and auto-init the link layer.

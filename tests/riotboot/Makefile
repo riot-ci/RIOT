@@ -27,5 +27,8 @@ APP_VER?=0
 # submitted along with the test jobs.
 TEST_EXTRA_FILES=$(SLOT_RIOT_ELFS)
 
+# This test does not run on all boards.
+BOARD_INSUFFICIENT_MEMORY := stk3200
+
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include

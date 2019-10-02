@@ -5,6 +5,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
                              arduino-nano \
                              arduino-uno \
                              nucleo-f031k6 \
+                             stk3200 \
                              #
 
 USEPKG += heatshrink
