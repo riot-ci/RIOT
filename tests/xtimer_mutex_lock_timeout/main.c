@@ -29,7 +29,7 @@
 #define LONG_MUTEX_TIMEOUT 1000
 
 /* main Thread PID */
-kernel_pid_t main_thread_pid;
+static kernel_pid_t main_thread_pid;
 
 /**
  * Foward declarations
@@ -60,7 +60,7 @@ static const shell_command_t shell_commands[] = {
  *          cmd_test_xtimer_mutex_lock_timeout_low_prio_thread
  *          not enough stack for doing printf only use puts
  */
-char t_stack[THREAD_STACKSIZE_DEFAULT];
+static char t_stack[THREAD_STACKSIZE_DEFAULT];
 
 /**
  * @brief   send message and suicide thread
