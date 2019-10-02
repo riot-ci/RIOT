@@ -1,5 +1,5 @@
 # This file contains a collection of targets defined by tools shipped with RIOT.
-# The reason for keeping those targets separated from their tool Makefiles is
+# The reason for keeping those targets separated from their tool Makfiles is
 # that these targets have to be defined after the default build targets
 # (as `all`), so `all` will always be the first target defined and thereby the
 # default target when `make` is called without any further argument.
