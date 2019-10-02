@@ -656,9 +656,15 @@ size_t coap_put_option(uint8_t *buf, uint16_t lastonum, uint16_t onum, const uin
 
 static unsigned _size2szx(size_t size)
 {
-    assert(size >= 16 && size <= 1024);
+    assert(size <= 1024);
 
-    return bitarithm_lsb(size) - 4;
+    /* We must wait to subract the szx offset of 4 until after the assert below.
+     * Input should be a power of two, but if not it may have a stray low order
+     * '1' bit that would invalidate the subtraction. */
+    unsigned szx = bitarithm_lsb(size);
+
+    assert(szx >= 4);
+    return szx - 4;
 }
 
 static unsigned _slicer2blkopt(coap_block_slicer_t *slicer, bool more)
