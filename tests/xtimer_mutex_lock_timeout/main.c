@@ -58,8 +58,9 @@ static const shell_command_t shell_commands[] = {
 /**
  * @brief   stack for
  *          cmd_test_xtimer_mutex_lock_timeout_low_prio_thread
+ *          not enough stack for doing printf only use puts
  */
-char t_stack[THREAD_STACKSIZE_MAIN];
+char t_stack[THREAD_STACKSIZE_DEFAULT];
 
 /**
  * @brief   send message and suicide thread
