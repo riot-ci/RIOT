@@ -71,36 +71,31 @@ def wait_for_update(child):
                              timeout=UPDATING_TIMEOUT)
 
 
-def testfunc(child):
-    """For one board test if specified application is updatable"""
-
-    # Initial Setup and wait for address configuration
-    child.expect_exact("main(): This is RIOT!")
-
-    # get version of currently running image
-    # "Image Version: 0x00000000"
-    child.expect(r"Image Version: (?P<app_ver>0x[0-9a-fA-F:]+)")
-    current_app_ver = int(child.match.group("app_ver"), 16)
-    print("CURRENT APP_VER={}".format(current_app_ver))
-
+def get_ipv6_addr(child):
     if USE_ETHOS == 0:
         # Get device global address
         child.expect(
             r"inet6 addr: (?P<gladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)"
             "  scope: global  VAL"
         )
-        client_addr = child.match.group("gladdr").lower()
+        addr = child.match.group("gladdr").lower()
     else:
         # Get device local address
-        client_addr = "fe80::2%{}".format(TAP)
+        child.expect_exact("Link type: wired")
+        child.expect(
+            r"inet6 addr: (?P<lladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)"
+            "  scope: local  VAL"
+        )
+        addr = "{}%{}".format(child.match.group("lladdr").lower(), TAP)
+    return addr
 
-    client = "[{}]".format(client_addr)
 
+def ping6(client):
     print("pinging node...")
     ping_ok = False
     for _i in range(10):
         try:
-            subprocess.check_call(["ping", "-q", "-c1", "-w1", client_addr])
+            subprocess.check_call(["ping", "-q", "-c1", "-w1", client])
             ping_ok = True
             break
         except subprocess.CalledProcessError:
@@ -111,9 +106,27 @@ def testfunc(child):
         sys.exit(1)
     else:
         print("pinging node succeeded.")
+    return ping_ok
+
+
+def testfunc(child):
+    """For one board test if specified application is updatable"""
+
+    # Initial Setup and wait for address configuration
+    child.expect_exact("main(): This is RIOT!")
+
+    # get version of currently running image
+    # "Image Version: 0x00000000"
+    child.expect(r"Image Version: (?P<app_ver>0x[0-9a-fA-F:]+)")
+    current_app_ver = int(child.match.group("app_ver"), 16)
 
     for version in [current_app_ver + 1, current_app_ver + 2]:
+        # Get address, if using ethos it will change on each reboot
+        client_addr = get_ipv6_addr(child)
+        client = "[{}]".format(client_addr)
         # Wait for suit_coap thread to start
+        # Ping6
+        ping6(client_addr)
         child.expect_exact("suit_coap: started.")
         # Trigger update process, verify it validates manifest correctly
         publish(TMPDIR.name, COAP_HOST, version)
