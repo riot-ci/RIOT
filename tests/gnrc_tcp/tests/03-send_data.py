@@ -13,16 +13,19 @@ import threading
 from testrunner import run
 from shared_func import TcpServer, generate_port_number, get_host_tap_device, \
                         get_host_ll_addr, get_riot_if_id, setup_internal_buffer, \
-                        write_data_to_internal_buffer, verify_pktbuf_empty
+                        write_data_to_internal_buffer, verify_pktbuf_empty, \
+                        sudo_guard
 
 
-def tcp_server(port, expectedData):
-    with TcpServer(port) as tcp_srv:
-        assert tcp_srv.recv(len(expectedData)) == expectedData
+def tcp_server(port, shutdown_event, expected_data):
+    with TcpServer(port, shutdown_event) as tcp_srv:
+        assert tcp_srv.recv(len(expected_data)) == expected_data
+        tcp_srv.wait_for_shutdown()
 
 
 def testfunc(child):
     port = generate_port_number()
+    shutdown_event = threading.Event()
 
     # Try to send 2000 byte from RIOT to the Host System.
     data = '0123456789' * 200
@@ -31,7 +34,7 @@ def testfunc(child):
     # Verify that RIOT Applications internal buffer can hold test data.
     assert setup_internal_buffer(child) >= data_len
 
-    server_handle = threading.Thread(target=tcp_server, args=(port, data))
+    server_handle = threading.Thread(target=tcp_server, args=(port, shutdown_event, data))
     server_handle.start()
 
     target_addr = get_host_ll_addr(get_host_tap_device()) + '%' + get_riot_if_id(child)
@@ -47,6 +50,7 @@ def testfunc(child):
     child.expect_exact('gnrc_tcp_send: sent ' + str(data_len))
 
     # Close connection and verify that pktbuf is cleared
+    shutdown_event.set()
     child.sendline('gnrc_tcp_close')
     server_handle.join()
 
@@ -56,4 +60,5 @@ def testfunc(child):
 
 
 if __name__ == '__main__':
-    sys.exit(run(testfunc, timeout=3, echo=False, traceback=True))
+    sudo_guard()
+    sys.exit(run(testfunc, timeout=20, echo=False, traceback=True))

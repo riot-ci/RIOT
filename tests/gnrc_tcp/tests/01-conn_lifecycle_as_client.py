@@ -12,18 +12,20 @@ import threading
 
 from testrunner import run
 from shared_func import TcpServer, generate_port_number, get_host_tap_device, \
-                        get_host_ll_addr, get_riot_if_id, verify_pktbuf_empty
+                        get_host_ll_addr, get_riot_if_id, verify_pktbuf_empty, \
+                        sudo_guard
 
 
-def tcp_server(port):
-    with TcpServer(port):
-        pass
+def tcp_server(port, shutdown_event):
+    with TcpServer(port, shutdown_event) as srv:
+        srv.wait_for_shutdown()
 
 
 def testfunc(child):
     port = generate_port_number()
+    shutdown_event = threading.Event()
 
-    server_handle = threading.Thread(target=tcp_server, args=(port,))
+    server_handle = threading.Thread(target=tcp_server, args=(port, shutdown_event))
     server_handle.start()
 
     target_addr = get_host_ll_addr(get_host_tap_device()) + '%' + get_riot_if_id(child)
@@ -34,6 +36,7 @@ def testfunc(child):
     child.expect_exact('gnrc_tcp_open_active: returns 0')
 
     # Close connection and verify that pktbuf is cleared
+    shutdown_event.set()
     child.sendline('gnrc_tcp_close')
     server_handle.join()
 
@@ -43,4 +46,5 @@ def testfunc(child):
 
 
 if __name__ == '__main__':
-    sys.exit(run(testfunc, timeout=3, echo=False, traceback=True))
+    sudo_guard()
+    sys.exit(run(testfunc, timeout=20, echo=False, traceback=True))

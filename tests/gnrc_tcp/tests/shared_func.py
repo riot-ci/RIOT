@@ -5,7 +5,7 @@
 # This file is subject to the terms and conditions of the GNU Lesser
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
-
+import sys
 import os
 import re
 import socket
@@ -13,8 +13,9 @@ import random
 
 
 class TcpServer:
-    def __init__(self, port):
+    def __init__(self, port, shutdown_event):
         self._port = port
+        self._shutdown = shutdown_event
 
     def __enter__(self):
         self.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
@@ -33,6 +34,9 @@ class TcpServer:
 
     def recv(self, number_of_bytes):
         return self.conn.recv(number_of_bytes, socket.MSG_WAITALL).decode('utf-8')
+
+    def wait_for_shutdown(self):
+        self._shutdown.wait()
 
 
 def generate_port_number():
@@ -97,3 +101,13 @@ def verify_pktbuf_empty(child):
     pktbuf_size = child.match.group(2)
 
     child.expect(r'~ unused: {} \(next: (\(nil\)|0), size: {}\) ~'.format(pktbuf_addr, pktbuf_size))
+
+
+def sudo_guard():
+    sudo_required = os.environ.get("BOARD", "") != "native"
+    if sudo_required:
+        if os.geteuid() != 0:
+            print("\x1b[1;31mThis test requires root privileges.\n"
+                  "It's constructing and sending Ethernet frames.\x1b[0m\n",
+                  file=sys.stderr)
+            sys.exit(1)
