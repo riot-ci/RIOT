@@ -24,6 +24,7 @@
 #define MTD_H
 
 #include <stdint.h>
+#include <stddef.h>
 #if MODULE_VFS
 #include "vfs.h"
 #endif
@@ -98,8 +99,8 @@ struct mtd_desc {
      */
     int (*read)(mtd_dev_t *dev,
                 void *buff,
-                uint32_t addr,
-                uint32_t size);
+                unsigned addr,
+                size_t size);
 
     /**
      * @brief   Write to the Memory Technology Device (MTD)
@@ -117,8 +118,8 @@ struct mtd_desc {
      */
     int (*write)(mtd_dev_t *dev,
                  const void *buff,
-                 uint32_t addr,
-                 uint32_t size);
+                 unsigned addr,
+                 size_t size);
 
     /**
      * @brief   Erase sector(s) over the Memory Technology Device (MTD)
@@ -133,8 +134,8 @@ struct mtd_desc {
      * @return < 0 value on error
      */
     int (*erase)(mtd_dev_t *dev,
-                 uint32_t addr,
-                 uint32_t size);
+                 unsigned addr,
+                 size_t size);
 
     /**
      * @brief   Control power of Memory Technology Device (MTD)
@@ -174,7 +175,7 @@ int mtd_init(mtd_dev_t *mtd);
  * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
  * @return -EIO if I/O error occured
  */
-int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
+int mtd_read(mtd_dev_t *mtd, void *dest, unsigned addr, unsigned count);
 
 /**
  * @brief   Write data to a MTD device
@@ -197,7 +198,7 @@ int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
  * @return -EIO if I/O error occured
  * @return -EINVAL if parameters are invalid (invalid alignment for instance)
  */
-int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
+int mtd_write(mtd_dev_t *mtd, const void *src, unsigned addr, unsigned count);
 
 /**
  * @brief   Erase sectors of a MTD device
@@ -215,7 +216,7 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
  * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
  * @return -EIO if I/O error occured
  */
-int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
+int mtd_erase(mtd_dev_t *mtd, unsigned addr, unsigned count);
 
 /**
  * @brief   Set power mode on a MTD device
