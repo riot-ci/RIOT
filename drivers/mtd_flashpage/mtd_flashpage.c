@@ -27,7 +27,9 @@
 #include "mtd_flashpage.h"
 #include "periph/flashpage.h"
 
-#define MTD_FLASHPAGE_END_ADDR     CPU_FLASH_BASE + (FLASHPAGE_NUMOF * FLASHPAGE_SIZE)
+/* Avoid 16bit overflow, use start addres of the last byte */
+#define MTD_FLASHPAGE_END_ADDR     (CPU_FLASH_BASE + \
+                                    (FLASHPAGE_NUMOF * FLASHPAGE_SIZE) - 1)
 
 static int _init(mtd_dev_t *dev)
 {
@@ -38,14 +40,21 @@ static int _init(mtd_dev_t *dev)
 
 static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 {
-    assert(addr < MTD_FLASHPAGE_END_ADDR);
     (void)dev;
 
-    if (addr % FLASHPAGE_RAW_ALIGNMENT) {
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
+
+    assert(dst_addr <= MTD_FLASHPAGE_END_ADDR);
+
+    if (dst_addr % FLASHPAGE_RAW_ALIGNMENT) {
         return -EINVAL;
     }
 
-    memcpy(buf, (void*)addr, size);
+    memcpy(buf, (void *)dst_addr, size);
 
     return size;
 }
@@ -53,7 +62,14 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     (void)dev;
-    if (addr % FLASHPAGE_RAW_ALIGNMENT) {
+
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
+
+    if (dst_addr % FLASHPAGE_RAW_ALIGNMENT) {
         return -EINVAL;
     }
     if ((uintptr_t)buf % FLASHPAGE_RAW_ALIGNMENT) {
@@ -62,10 +78,11 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
     if (size % FLASHPAGE_RAW_BLOCKSIZE) {
         return -EOVERFLOW;
     }
-    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
+    if (dst_addr + size >= MTD_FLASHPAGE_END_ADDR) {
         return -EOVERFLOW;
     }
-    flashpage_write_raw((void *)addr, buf, size);
+
+    flashpage_write_raw((void *)dst_addr, buf, size);
 
     return size;
 }
@@ -74,17 +91,23 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
 {
     size_t sector_size = dev->page_size * dev->pages_per_sector;
 
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
+
     if (size % sector_size) {
         return -EOVERFLOW;
     }
-    if (addr + size > MTD_FLASHPAGE_END_ADDR) {
-        return - EOVERFLOW;
+    if (dst_addr + size >= MTD_FLASHPAGE_END_ADDR) {
+        return -EOVERFLOW;
     }
-    if (addr % sector_size) {
-        return - EOVERFLOW;
+    if (dst_addr % sector_size) {
+        return -EOVERFLOW;
     }
     for (size_t i = 0; i < size; i += sector_size) {
-        flashpage_write(flashpage_page((void *)addr), NULL);
+        flashpage_write(flashpage_page((void *)dst_addr), NULL);
     }
 
     return 0;
