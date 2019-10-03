@@ -41,11 +41,17 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
     assert(addr < MTD_FLASHPAGE_END_ADDR);
     (void)dev;
 
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
+
     if (addr % FLASHPAGE_RAW_ALIGNMENT) {
         return -EINVAL;
     }
 
-    memcpy(buf, (void*)addr, size);
+    memcpy(buf, (void*)dst_addr, size);
 
     return size;
 }
@@ -53,6 +59,13 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     (void)dev;
+
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
+
     if (addr % FLASHPAGE_RAW_ALIGNMENT) {
         return -EINVAL;
     }
@@ -65,7 +78,8 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
     if (addr + size > MTD_FLASHPAGE_END_ADDR) {
         return -EOVERFLOW;
     }
-    flashpage_write_raw((void *)addr, buf, size);
+
+    flashpage_write_raw((void *)dst_addr, buf, size);
 
     return size;
 }
@@ -73,6 +87,12 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
 {
     size_t sector_size = dev->page_size * dev->pages_per_sector;
+
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t dst_addr = addr;
+#else
+    uint32_t dst_addr = addr;
+#endif
 
     if (size % sector_size) {
         return -EOVERFLOW;
@@ -84,7 +104,7 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
         return - EOVERFLOW;
     }
     for (size_t i = 0; i < size; i += sector_size) {
-        flashpage_write(flashpage_page((void *)addr), NULL);
+        flashpage_write(flashpage_page((void *)dst_addr), NULL);
     }
 
     return 0;
