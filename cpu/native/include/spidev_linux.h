@@ -35,9 +35,9 @@
  * The first device can be used with SPI_HWCS(0) as CS parameter, the second one
  * with SPI_HWCS(1) as CS parameter.
  *
- * Multiple SPI busses can be added by increasing NUM_SPI in the Makefile:
+ * Multiple SPI busses can be added by increasing SPI_NUMOF in the Makefile:
  * ```
- * CFLAGS += -DNUM_SPI=n
+ * CFLAGS += -DSPI_NUMOF=n
  * ```
  *
  * The sames goes for the SPI_MAXCS parameter that defines the maximum number of
