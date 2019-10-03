@@ -39,12 +39,14 @@ def testfunc(func):
         assert int(child.match.group(1)) == port
 
         try:
-            print("- {}".format(func.__name__))
+            print("- {} ".format(func.__name__), end="")
             if child.logfile == sys.stdout:
                 func(child, tap, host_ll, dst_if, dst_l2, dst_ll, port)
+                print("")
             else:
                 try:
                     func(child, tap, host_ll, dst_if, dst_l2, dst_ll, port)
+                    print("SUCCESS")
                 except Exception as e:
                     print("FAILED")
                     raise e
