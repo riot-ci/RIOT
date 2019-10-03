@@ -103,9 +103,8 @@ def verify_pktbuf_empty(child):
 
 def sudo_guard():
     sudo_required = os.environ.get("BOARD", "") != "native"
-    if sudo_required:
-        if os.geteuid() != 0:
-            print("\x1b[1;31mThis test requires root privileges.\n"
-                  "It's constructing and sending Ethernet frames.\x1b[0m\n",
-                  file=sys.stderr)
-            sys.exit(1)
+    if sudo_required and os.geteuid() != 0:
+        print("\x1b[1;31mThis test requires root privileges.\n"
+              "It's constructing and sending Ethernet frames.\x1b[0m\n",
+              file=sys.stderr)
+        sys.exit(1)

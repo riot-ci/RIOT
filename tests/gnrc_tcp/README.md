@@ -26,12 +26,9 @@ or by executing the following commands:
     sudo ip tuntap add tap0 mode tap user ${USER}
     sudo ip link set tap0 up
 
-Usage (native)
+Usage
 ==========
-    make BOARD=<BOARD_NAME> all test
+    make BOARD=<BOARD_NAME> all flash
+    sudo make BOARD=<BOARD_NAME> test
 
-Usage (non-native)
-==========
-gnrc_tcp tests require root privileges for boards other than 'native' due to ethos usage.
-
-    sudo make BOARD=<BOARD_NAME> all flash test
+'sudo' is only required if the board is not native, due to ethos usage.

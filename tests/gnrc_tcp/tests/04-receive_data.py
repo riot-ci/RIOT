@@ -44,8 +44,8 @@ def testfunc(child):
     child.expect_exact('gnrc_tcp_open_active: returns 0')
 
     # Accept Data sent by the host system
-    child.sendline('gnrc_tcp_recv 20000000 ' + str(data_len))
-    child.expect_exact('gnrc_tcp_recv: received ' + str(data_len))
+    child.sendline('gnrc_tcp_recv 1000000 ' + str(data_len))
+    child.expect_exact('gnrc_tcp_recv: received ' + str(data_len), timeout=20)
 
     # Close connection and verify that pktbuf is cleared
     shutdown_event.set()
@@ -62,4 +62,4 @@ def testfunc(child):
 
 if __name__ == '__main__':
     sudo_guard()
-    sys.exit(run(testfunc, timeout=20, echo=False, traceback=True))
+    sys.exit(run(testfunc, timeout=5, echo=False, traceback=True))
