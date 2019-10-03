@@ -20,7 +20,6 @@ from shared_func import TcpServer, generate_port_number, get_host_tap_device, \
 def tcp_server(port, shutdown_event, expected_data):
     with TcpServer(port, shutdown_event) as tcp_srv:
         assert tcp_srv.recv(len(expected_data)) == expected_data
-        tcp_srv.wait_for_shutdown()
 
 
 def testfunc(child):

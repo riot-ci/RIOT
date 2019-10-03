@@ -26,6 +26,7 @@ class TcpServer:
         return self
 
     def __exit__(self, exc, exc_val, exc_trace):
+        self._shutdown.wait()
         self.conn.close()
         self.sock.close()
 
@@ -34,9 +35,6 @@ class TcpServer:
 
     def recv(self, number_of_bytes):
         return self.conn.recv(number_of_bytes, socket.MSG_WAITALL).decode('utf-8')
-
-    def wait_for_shutdown(self):
-        self._shutdown.wait()
 
 
 def generate_port_number():

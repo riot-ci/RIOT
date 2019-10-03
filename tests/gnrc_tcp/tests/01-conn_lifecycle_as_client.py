@@ -17,8 +17,8 @@ from shared_func import TcpServer, generate_port_number, get_host_tap_device, \
 
 
 def tcp_server(port, shutdown_event):
-    with TcpServer(port, shutdown_event) as srv:
-        srv.wait_for_shutdown()
+    with TcpServer(port, shutdown_event):
+        pass
 
 
 def testfunc(child):
