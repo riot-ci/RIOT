@@ -28,7 +28,7 @@
  * Example:
  *
  * ```
- * $ ./riot_native_app --spi0:0:/dev/spidev0.0 --spi=0:0:/dev/spidev0.1
+ * $ ./riot_native_app --spi=0:0:/dev/spidev0.0 --spi=0:1:/dev/spidev0.1
  * ```
  *
  * This will add `/dev/spidev0.0` and `/dev/spidev0.1` as SPI_DEV(0) in RIOT.
