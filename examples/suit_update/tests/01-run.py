@@ -68,7 +68,7 @@ def wait_for_update(child):
         return child.expect([r"riotboot_flashwrite: processing bytes (\d+)-(\d+)",
                              "riotboot_flashwrite: riotboot flashing "
                              "completed successfully"],
-                             timeout=UPDATING_TIMEOUT)
+                            timeout=UPDATING_TIMEOUT)
 
 
 def get_ipv6_addr(child):
