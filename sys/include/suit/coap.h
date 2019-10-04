@@ -121,9 +121,6 @@ typedef enum {
     COAP_BLOCKSIZE_1024,
 } coap_blksize_t;
 
-size_t coap_put_option_block(uint8_t *buf, uint16_t lastonum, unsigned blknum,
-                             unsigned szx, int more, uint16_t option);
-
 /**
  * @brief    Performs a blockwise coap get request to the specified url.
  *
