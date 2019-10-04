@@ -16,6 +16,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
 USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_ipv6_router_default
+USEMODULE += gnrc_ipv6_ext_frag
 USEMODULE += gnrc_pktbuf_cmd
 USEMODULE += gnrc_udp
 USEMODULE += gnrc_rpl
