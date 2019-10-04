@@ -29,4 +29,4 @@ const coap_resource_t coap_resources[] = {
     SUIT_COAP_SUBTREE,
 };
 
-const unsigned coap_resources_numof = sizeof(coap_resources) / sizeof(coap_resources[0]);
+const unsigned coap_resources_numof = ARRAY_SIZE(coap_resources);
