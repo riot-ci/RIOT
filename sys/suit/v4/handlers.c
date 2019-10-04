@@ -442,8 +442,7 @@ static suit_manifest_handler_t global_handlers[] = {
 };
 /* end{code-style-ignore} */
 
-static const unsigned global_handlers_len = sizeof(global_handlers) /
-                                            sizeof(global_handlers[0]);
+static const unsigned global_handlers_len = ARRAY_SIZE(global_handlers);
 
 /* begin{code-style-ignore} */
 static suit_manifest_handler_t _sequence_handlers[] = {
@@ -463,8 +462,7 @@ static suit_manifest_handler_t _sequence_handlers[] = {
 };
 /* end{code-style-ignore} */
 
-static const unsigned _sequence_handlers_len = sizeof(_sequence_handlers) /
-                                            sizeof(_sequence_handlers[0]);
+static const unsigned _sequence_handlers_len = ARRAY_SIZE(_sequence_handlers);
 
 static suit_manifest_handler_t _suit_manifest_get_handler(int key,
                                                    const suit_manifest_handler_t *handlers,

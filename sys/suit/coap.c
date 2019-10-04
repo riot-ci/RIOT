@@ -509,5 +509,5 @@ static const coap_resource_t _subtree[] = {
 const coap_resource_subtree_t coap_resource_subtree_suit =
 {
     .resources = &_subtree[0],
-    .resources_numof = sizeof(_subtree)/sizeof(_subtree[0])
+    .resources_numof = ARRAY_SIZE(_subtree)
 };

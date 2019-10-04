@@ -266,8 +266,7 @@ static suit_manifest_handler_t _auth_handlers[] = {
 };
 /* end{code-style-ignore} */
 
-static const unsigned _auth_handlers_len = sizeof(_auth_handlers) /
-                                            sizeof(_auth_handlers[0]);
+static const unsigned _auth_handlers_len = ARRAY_SIZE(_auth_handlers);
 
 static suit_manifest_handler_t _manifest_get_auth_wrapper_handler(int key)
 {
