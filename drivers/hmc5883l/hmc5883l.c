@@ -58,10 +58,8 @@
 
 static int _is_available(const hmc5883l_t *dev);
 
-static uint8_t _get_reg_bit(uint8_t byte, uint8_t mask);
-static void _set_reg_bit(uint8_t *byte, uint8_t mask, uint8_t bit);
 static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len);
-static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len);
+static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data);
 
 int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
 {
@@ -78,23 +76,14 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     EXEC_RET(_is_available(dev), res)
 
     uint8_t cfg_a = 0;
-    uint8_t cfg_b = 0;
-    uint8_t mode = 0;
 
     /* set configuration register A and B */
-    _set_reg_bit(&cfg_a, HMC5883L_REG_CFG_A_MA, params->meas_avg);
-    _set_reg_bit(&cfg_a, HMC5883L_REG_CFG_A_MS, params->meas_mode);
-    _set_reg_bit(&cfg_a, HMC5883L_REG_CFG_A_DO, params->dor);
-    _set_reg_bit(&cfg_b, HMC5883L_REG_CFG_B_GN, params->gain);
-
-    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_A, &cfg_a, 1), res);
-    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_B, &cfg_b, 1), res);
+    cfg_a = params->meas_avg | params->meas_mode | params->dor;
+    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_A, cfg_a), res);
+    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_B, params->gain), res);
 
     /* set operation mode */
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_HS, 0);
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_MD, params->op_mode);
-
-    EXEC_RET(_reg_write(dev, HMC5883L_REG_MODE, &mode, 1), res);
+    EXEC_RET(_reg_write(dev, HMC5883L_REG_MODE, params->op_mode), res);
 
     /* wait 6 ms accoring to data sheet */
     xtimer_usleep(6 * US_PER_MS);
@@ -112,8 +101,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
     uint8_t reg;
 
     EXEC_RET(_reg_read(dev, HMC5883L_REG_STATUS, &reg, 1), res);
-    return _get_reg_bit(reg, HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK
-                                                      : HMC5883L_ERROR_NO_DATA;
+    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
 }
 
 /*
@@ -144,9 +132,9 @@ int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
     EXEC_RET(hmc5883l_read_raw (dev, &raw), res);
 
-    data->x = ((uint32_t)raw.x * HMC5883L_RES[dev->params.gain]);
-    data->y = ((uint32_t)raw.y * HMC5883L_RES[dev->params.gain]);
-    data->z = ((uint32_t)raw.z * HMC5883L_RES[dev->params.gain]);
+    data->x = ((uint32_t)raw.x * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->y = ((uint32_t)raw.y * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->z = ((uint32_t)raw.z * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
 
     return res;
 }
@@ -178,13 +166,8 @@ int hmc5883l_power_down (hmc5883l_t *dev)
     assert(dev != NULL);
     DEBUG_DEV("", dev);
 
-    uint8_t mode = 0;
-
     /* set operation mode to Idle mode with only 5 uA current */
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_HS, 0);
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_MD, HMC5883L_OP_MODE_IDLE);
-
-    return _reg_write(dev, HMC5883L_REG_MODE, &mode, 1);
+    return _reg_write(dev, HMC5883L_REG_MODE, HMC5883L_OP_MODE_IDLE);
 }
 
 int hmc5883l_power_up (hmc5883l_t *dev)
@@ -192,13 +175,8 @@ int hmc5883l_power_up (hmc5883l_t *dev)
     assert(dev != NULL);
     DEBUG_DEV("", dev);
 
-    uint8_t mode = 0;
-
     /* set operation mode to last operation mode */
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_HS, 0);
-    _set_reg_bit(&mode, HMC5883L_REG_MODE_MD, dev->params.op_mode);
-
-    return _reg_write(dev, HMC5883L_REG_MODE, &mode, 1);
+    return _reg_write(dev, HMC5883L_REG_MODE, dev->params.op_mode);
 }
 
 /** Functions for internal use only */
@@ -228,27 +206,6 @@ static int _is_available(const hmc5883l_t *dev)
     return res;
 }
 
-static void _set_reg_bit(uint8_t *byte, uint8_t mask, uint8_t bit)
-{
-    ASSERT_PARAM(byte != NULL);
-
-    uint8_t shift = 0;
-    while (!((mask >> shift) & 0x01)) {
-        shift++;
-    }
-    *byte = ((*byte & ~mask) | ((bit << shift) & mask));
-}
-
-static uint8_t _get_reg_bit(uint8_t byte, uint8_t mask)
-{
-    uint8_t shift = 0;
-
-    while (!((mask >> shift) & 0x01)) {
-        shift++;
-    }
-    return (byte & mask) >> shift;
-}
-
 static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len)
 {
     assert(dev != NULL);
@@ -266,7 +223,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
     int res = i2c_read_regs(dev->params.dev, dev->params.addr, reg, data, len, 0);
     i2c_release(dev->params.dev);
 
-    if (res == HMC5883L_OK) {
+    if (res == 0) {
         if (ENABLE_DEBUG) {
             printf("[hmc5883l] %s i2c dev=%d addr=%02x: read following bytes: ",
                    __func__, dev->params.dev, dev->params.addr);
@@ -286,19 +243,16 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
     return res;
 }
 
-static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len)
+static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
 {
     assert(dev != NULL);
 
-    DEBUG_DEV("write %d bytes to sensor registers starting at addr 0x%02x",
-              dev, len, reg);
+    DEBUG_DEV("write register 0x%02x", dev, reg);
 
     if (ENABLE_DEBUG) {
         printf("[hmc5883l] %s i2c dev=%d addr=%02x: write following bytes: ",
                __func__, dev->params.dev, dev->params.addr);
-        for (int i = 0; i < len; i++) {
-            printf("%02x ", data[i]);
-        }
+        printf("%02x ", data);
         printf("\n");
     }
 
@@ -307,20 +261,13 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_
         return -HMC5883L_ERROR_I2C;
     }
 
-    int res;
-
-    if (!data || !len) {
-        res = i2c_write_byte(dev->params.dev, dev->params.addr, reg, 0);
-    }
-    else {
-        res = i2c_write_regs(dev->params.dev, dev->params.addr, reg, data, len, 0);
-    }
+    int res = i2c_write_regs(dev->params.dev, dev->params.addr, reg, &data, 1, 0);
     i2c_release(dev->params.dev);
 
-    if (res != HMC5883L_OK) {
-        DEBUG_DEV("could not write %d bytes to sensor registers "
+    if (res != 0) {
+        DEBUG_DEV("could not write to sensor registers "
                   "starting at addr 0x%02x, reason %d (%s)",
-                  dev, len, reg, res, strerror(res * -1));
+                  dev, reg, res, strerror(res * -1));
         return -HMC5883L_ERROR_I2C;
     }
 
