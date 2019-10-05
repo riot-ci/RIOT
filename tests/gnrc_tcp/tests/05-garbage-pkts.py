@@ -10,7 +10,6 @@ import base64
 import os
 import socket
 import sys
-import time
 
 from scapy.all import Ether, IPv6, TCP, raw, \
                       sendp
@@ -19,6 +18,7 @@ from testrunner import run
 from shared_func import sudo_guard, get_host_tap_device, get_host_ll_addr, \
                         get_riot_if_id, get_riot_l2_addr, get_riot_ll_addr, \
                         generate_port_number, verify_pktbuf_empty
+
 
 def testfunc(func):
     def runner(child):
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     sudo_guard(uses_scapy=True)
     script = sys.modules[__name__]
     tests = [getattr(script, t) for t in script.__dict__
-             if type(getattr(script, t)).__name__ == "function" \
+             if type(getattr(script, t)).__name__ == "function"
              and t.startswith("test_")]
     for test in tests:
         res = run(test, timeout=1, echo=False)
