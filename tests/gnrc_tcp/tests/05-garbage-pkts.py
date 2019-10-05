@@ -27,7 +27,7 @@ def testfunc(func):
         dst_if = get_riot_if_id(child)
         dst_ll = get_riot_ll_addr(child)
         dst_l2 = get_riot_l2_addr(child)
-        port = 33400 #generate_port_number()
+        port = generate_port_number()
 
         # Setup RIOT Node wait for incoming connections from host system
         child.sendline('gnrc_tcp_tcb_init')
