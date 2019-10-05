@@ -50,6 +50,7 @@ extern "C"
 #define HMC5883L_REG_CFG_A_MS       (0x03)  /**< HMC5883L_REG_CFG_A<1:0> */
 
 #define HMC5883L_REG_CFG_B_GN       (0xe0)  /**< HMC5883L_REG_CFG_N<7:5> */
+#define HMC5883L_REG_CFG_B_GN_S     (5)     /**< HMC5883L_REG_CFG_N<7:5> shift */
 
 #define HMC5883L_REG_MODE_HS        (0x80)  /**< HMC5883L_REG_MODE<7> */
 #define HMC5883L_REG_MODE_MD        (0x03)  /**< HMC5883L_REG_MODE<1:0> */

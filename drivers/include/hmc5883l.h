@@ -56,7 +56,7 @@ extern "C"
 /** Definition of error codes */
 typedef enum {
     HMC5883L_OK,                   /**< success */
-    HMC5883L_ERROR_I2C,            /**< I2C communication error */
+    HMC5883L_ERROR_I2C,            /**< any I2C communication error */
     HMC5883L_ERROR_WRONG_ID,       /**< wrong id read */
     HMC5883L_ERROR_NO_DATA,        /**< no data are available */
     HMC5883L_ERROR_RAW_DATA,       /**< reading raw data failed */
@@ -64,68 +64,73 @@ typedef enum {
 
 /**
  * @brief   Data output rates (DOR)
+ *
+ * Values correspond to bits <4:2> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
 
-    HMC5883L_DOR_0_75 = 0,  /**< 0.75 Hz           */
-    HMC5883L_DOR_1_5,       /**<  1.5 Hz           */
-    HMC5883L_DOR_3,         /**<    3 Hz           */
-    HMC5883L_DOR_7_5,       /**<  7.5 Hz           */
-    HMC5883L_DOR_15,        /**<   15 Hz (default) */
-    HMC5883L_DOR_30,        /**<   30 Hz           */
-    HMC5883L_DOR_75,        /**<   75 Hz           */
+    HMC5883L_DOR_0_75 = 0x00,   /**< 0.75 Hz           */
+    HMC5883L_DOR_1_5  = 0x04,   /**<  1.5 Hz           */
+    HMC5883L_DOR_3    = 0x08,   /**<    3 Hz           */
+    HMC5883L_DOR_7_5  = 0x0c,   /**<  7.5 Hz           */
+    HMC5883L_DOR_15   = 0x10,   /**<   15 Hz (default) */
+    HMC5883L_DOR_30   = 0x14,   /**<   30 Hz           */
+    HMC5883L_DOR_75   = 0x18,   /**<   75 Hz           */
 
 } hmc5883l_dor_t;
 
 /**
  * @brief   Measurement modes
  *
+ * Values correspond to bits <1:0> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
 
-    HMC5883L_MEAS_MODE_NORMAL = 0, /**< Normal measurement config */
-    HMC5883L_MEAS_MODE_BIAS_POS,   /**< Positive bias config for all axes */
-    HMC5883L_MEAS_MODE_BIAS_NEG,   /**< Negative bias config for all axes */
+    HMC5883L_MEAS_MODE_NORMAL   = 0x00, /**< Normal measurement config */
+    HMC5883L_MEAS_MODE_BIAS_POS = 0x01, /**< Positive bias config for all axes */
+    HMC5883L_MEAS_MODE_BIAS_NEG = 0x02, /**< Negative bias config for all axes */
 
 } hmc5883l_meas_mode_t;
 
 /**
  * @brief   Measurment avaraging (number of samples are averaged for output)
  *
+ * Values correspond to bits <6:5> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
 
-    HMC5883L_MEAS_AVG_NONE = 0, /**< No averaging */
-    HMC5883L_MEAS_AVG_2,        /**< 2 samples are averaged */
-    HMC5883L_MEAS_AVG_4,        /**< 4 samples are averaged */
-    HMC5883L_MEAS_AVG_8,        /**< 8 samples are averaged */
+    HMC5883L_MEAS_AVG_NONE = 0x00,  /**< No averaging */
+    HMC5883L_MEAS_AVG_2    = 0x20,  /**< 2 samples are averaged */
+    HMC5883L_MEAS_AVG_4    = 0x40,  /**< 4 samples are averaged */
+    HMC5883L_MEAS_AVG_8    = 0x60,  /**< 8 samples are averaged */
 
 } hmc5883l_meas_avg_t;
 
 /**
  * @brief   Operation modes
- *
+ * Values correspond to bits <1:0> of HMC5883L_REG_MODE register
  */
 typedef enum {
 
-    HMC5883L_OP_MODE_CONTINUOUS = 0,    /**< Continuous measurement */
-    HMC5883L_OP_MODE_SINGLE,            /**< Single measurement */
-    HMC5883L_OP_MODE_IDLE,              /**< Idle mode */
+    HMC5883L_OP_MODE_CONTINUOUS = 0x00, /**< Continuous measurement */
+    HMC5883L_OP_MODE_SINGLE     = 0x01, /**< Single measurement */
+    HMC5883L_OP_MODE_IDLE       = 0x02, /**< Idle mode */
 
 } hmc5883l_op_mode_t;
 
 /**
  * @brief   Gain (determine the sensitivity and the range)
+ * Values correspond to bits <7:5> of HMC5883L_REG_CFG_B_GN register
  */
 typedef enum {
-    HMC5883L_GAIN_1370 = 0, /**< Range +-0.88 Gs, Resolution 0.73 mG/LSb */
-    HMC5883L_GAIN_1090,     /**< Range  +-1.3 Gs, Resolution 0.92 mG/LSb */
-    HMC5883L_GAIN_820,      /**< Range  +-1.9 Gs, Resolution 1.22 mG/LSb */
-    HMC5883L_GAIN_660,      /**< Range  +-2.5 Gs, Resolution 1.52 mG/LSb */
-    HMC5883L_GAIN_440,      /**< Range  +-4.0 Gs, Resolution 2.27 mG/LSb */
-    HMC5883L_GAIN_390,      /**< Range  +-4.7 Gs, Resolution 2.56 mG/LSb */
-    HMC5883L_GAIN_330,      /**< Range  +-5.6 Gs, Resolution 3.03 mG/LSb */
-    HMC5883L_GAIN_230,      /**< Range  +-8.1 Gs, Resolution 4.35 mG/LSb */
+    HMC5883L_GAIN_1370 = 0x00,  /**< Range +-0.88 Gs, Resolution 0.73 mG/LSb */
+    HMC5883L_GAIN_1090 = 0x20,  /**< Range  +-1.3 Gs, Resolution 0.92 mG/LSb */
+    HMC5883L_GAIN_820  = 0x40,  /**< Range  +-1.9 Gs, Resolution 1.22 mG/LSb */
+    HMC5883L_GAIN_660  = 0x60,  /**< Range  +-2.5 Gs, Resolution 1.52 mG/LSb */
+    HMC5883L_GAIN_440  = 0x80,  /**< Range  +-4.0 Gs, Resolution 2.27 mG/LSb */
+    HMC5883L_GAIN_390  = 0xa0,  /**< Range  +-4.7 Gs, Resolution 2.56 mG/LSb */
+    HMC5883L_GAIN_330  = 0xc0,  /**< Range  +-5.6 Gs, Resolution 3.03 mG/LSb */
+    HMC5883L_GAIN_230  = 0xe0,  /**< Range  +-8.1 Gs, Resolution 4.35 mG/LSb */
 } hmc5883l_gain_t;
 
 /**
