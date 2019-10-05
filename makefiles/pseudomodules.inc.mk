@@ -110,6 +110,9 @@ PSEUDOMODULES += cc1100
 PSEUDOMODULES += cc1100e
 PSEUDOMODULES += cc1101
 
+# interrupt variant of the HMC5883L driver
+PSEUDOMODULES += hmc5883l_int
+
 # include variants of mrf24j40 drivers as pseudo modules
 PSEUDOMODULES += mrf24j40m%
 
