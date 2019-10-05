@@ -50,17 +50,17 @@ extern "C" {
 #ifndef HMC5883L_PARAM_GAIN
 #define HMC5883L_PARAM_GAIN         (HMC5883L_GAIN_1090)
 #endif
-#ifndef HMC5883L_PARAM_DRDY
-#define HMC5883L_PARAM_DRDY         (GPIO_PIN(0, 0))
+#ifndef HMC5883L_PARAM_INT_PIN
+#define HMC5883L_PARAM_INT_PIN      (GPIO_UNDEF)
 #endif
 
 #ifndef HMC5883L_PARAMS
 #define HMC5883L_PARAMS             { \
                                      .dev  = HMC5883L_PARAM_DEV,  \
                                      .addr = HMC5883L_PARAM_ADDR, \
-                                     .drdy = HMC5883L_PARAM_DRDY, \
                                      .dor  = HMC5883L_PARAM_DOR,  \
                                      .gain = HMC5883L_PARAM_GAIN, \
+                                     .int_pin = HMC5883L_PARAM_INT_PIN, \
                                      .meas_mode = HMC5883L_PARAM_MEAS_MODE, \
                                      .meas_avg  = HMC5883L_PARAM_MEAS_AVG,  \
                                      .op_mode   = HMC5883L_PARAM_OP_MODE,   \

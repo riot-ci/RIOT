@@ -12,15 +12,14 @@
  * @ingroup     drivers_saul
  * @brief       Device driver for the Honeywell HMC5883L 3-axis digital compass
  *
- * The driver implements basic polling mode. The application can use the
+ * The driver implements basic polling mode. The application can use
  * different approaches to get new data, either
  *
  * - using the #hmc5883l_read function at a lower rate than the the DOR, or
- * - using the data-ready interrupt (**DRDY**).
+ * - using the data-ready interrupt (**DRDY**), see #hmc5883l_init_int.
  *
- * The data-ready interrupt (**DRDY**) of the sensor is enabled permanently. The
- * application has only to configure and initialize the GPIO to which the
- * interrupt signal is connected.
+ * The data-ready interrupt (**DRDY**) is only be available when module
+ * `hmc5883l_int` is enabled.
  *
  * This driver provides @ref drivers_saul capabilities.
  *
@@ -60,6 +59,7 @@ typedef enum {
     HMC5883L_ERROR_WRONG_ID,       /**< wrong id read */
     HMC5883L_ERROR_NO_DATA,        /**< no data are available */
     HMC5883L_ERROR_RAW_DATA,       /**< reading raw data failed */
+    HMC5883L_ERROR_COMMON,         /**< common error */
 } hmc5883l_error_codes_t;
 
 /**
@@ -155,6 +155,22 @@ typedef struct {
 
 } hmc5883l_raw_data_t;
 
+#if MODULE_HMC5883L_INT || DOXYGEN
+
+/**
+ * @brief   HMC5883L DRDY interrupt callback function type
+ *
+ * Function prototype for the function which is called on DRDY interrupt if
+ * the interrupt is activated by #hmc5883l_init_int and the interupt pin is
+ * defined in device initialization parameters.
+ *
+ * @note The @p cb function is called in interrupt context. The application
+ *       should do nothing time consuming and not directly access sensor data.
+ */
+typedef void (*hmc5883l_drdy_int_cb_t)(void *);
+
+#endif /* MODULE_HMC5883L_INT || DOXYGEN */
+
 /**
  * @brief   HMC5883L device initialization parameters
  */
@@ -163,7 +179,7 @@ typedef struct {
     unsigned  dev;   /**< I2C device */
     uint8_t   addr;  /**< I2C slave address */
 
-    gpio_t    drdy;  /**< DRDY interrupt pin: #GPIO_UNDEF if DRDY is not used */
+    gpio_t int_pin;  /**< DRDY interrupt pin: if #GPIO_UNDEF, interrupts are not used */
 
     hmc5883l_meas_mode_t meas_mode; /**< Measurement mode (default #HMC5883L_MEAS_MODE_NORMAL) */
     hmc5883l_meas_avg_t  meas_avg;  /**< Measurement avaraging (default #HMC5883L_MEAS_AVG_NONE) */
@@ -196,6 +212,32 @@ typedef struct {
  *                                  see #hmc5883l_error_codes_t
  */
 int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params);
+
+#if MODULE_HMC5883L_INT || DOXYGEN
+
+/**
+ * @brief	Initialize and activate the DRDY interrupt of HMC5883L sensor device
+ *
+ * This function activates the DRDY interrupt and initializes the pin defined
+ * as the interrupt pin in the initialization parameters of the device. The
+ * @p cb parameter specifies the function, along with an optional argument
+ * @p arg, which is called when a DRDY interrupt is triggered.
+ *
+ * @note The @p cb function is called in interrupt context. The application
+ *       should do nothing time consuming and not directly access sensor data.
+ * @note This function is only available when module `hmc5883l_int` is enabled.
+ *
+ * @param[in]   dev     device descriptor of HMC5883L sensor
+ * @param[in]   cb      function called when DRDY interrupt is triggered
+ * @param[in]   arg     argument for the callback function
+ *
+ * @retval  HMC5883L_OK             on success
+ * @retval  HMC5883L_ERROR_*        a negative error code on error,
+ *                                  see #hmc5883l_error_codes_t
+ */
+int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg);
+
+#endif /* MODULE_HMC5883L_INT || DOXYGEN */
 
 /**
  * @brief    Data-ready status function

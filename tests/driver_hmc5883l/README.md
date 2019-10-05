@@ -12,18 +12,17 @@ default configuration parameters.
 - Gain 1090 LSb/Gs
 - No averaging of data samples
 
-The application can use the different approaches to get new data:
+The application can use different approaches to get new data:
 
 - using the #hmc5883l_read function at a lower rate than the the DOR
-- using the data-ready interrupt (**DRDY**)
+- using the data-ready interrupt (**DRDY**), see #hmc5883l_init_int.
 
-The data-ready interrupt (**DRDY) of the sensor is enabled permanently.
-The application has only to configure and initialize the GPIO to which the
-interrupt signal is connected. This is done by defining
-```USE_HMC5883L_DRDY``` and overrding the default configuration
-parameter ```HMC5883L_PARAM_DRDY``` if necessary, for example:
+To use the data-ready interrupt (**DRDY), the application has to enable
+module `hmc5883l_int` and has to configure the GPIO to which the
+interrupt signal is connected. This is done by overrding the default
+configuration parameter `HMC5883L_PARAM_DRDY` if necessary, for example:
 
 ```
-CFLAGS="-DUSE_HMC5883L_DRDY -DHMC5883L_PARAM_DRDY=GPIO12" \
+USEMODULE=hmc5883l_int CFLAGS='-DHMC5883L_PARAM_INT_PIN=GPIO_PIN\(0,12\)' \
 make flash -C tests/driver_hmc5883l BOARD=...
 ```
