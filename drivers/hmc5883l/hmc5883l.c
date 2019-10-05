@@ -28,20 +28,12 @@
 
 #if ENABLE_DEBUG
 
-#define ASSERT_PARAM(cond) \
-    if (!(cond)) { \
-        DEBUG("[hmc5883l] %s: %s\n", \
-              __func__, "parameter condition (" # cond ") not fulfilled"); \
-        assert(cond); \
-    }
-
 #define DEBUG_DEV(f, d, ...) \
         DEBUG("[hmc5883l] %s i2c dev=%d addr=%02x: " f "\n", \
               __func__, d->params.dev, d->params.addr, ## __VA_ARGS__);
 
 #else /* ENABLE_DEBUG */
 
-#define ASSERT_PARAM(cond) assert(cond);
 #define DEBUG_DEV(f, d, ...)
 
 #endif /* ENABLE_DEBUG */
@@ -75,8 +67,8 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
 {
     int res = HMC5883L_OK;
 
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(params != NULL);
+    assert(dev != NULL);
+    assert(params != NULL);
     DEBUG_DEV("params=%p", dev, params);
 
     /* init sensor data structure */
@@ -112,7 +104,7 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
 
 int hmc5883l_data_ready(const hmc5883l_t *dev)
 {
-    ASSERT_PARAM(dev != NULL);
+    assert(dev != NULL);
     DEBUG_DEV("", dev);
 
     int res = HMC5883L_OK;
@@ -142,8 +134,8 @@ static const uint32_t HMC5883L_RES[] = {
 int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
 {
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(data != NULL);
+    assert(dev != NULL);
+    assert(data != NULL);
     DEBUG_DEV("data=%p", dev, data);
 
     int res = HMC5883L_OK;
@@ -161,8 +153,8 @@ int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
 int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw)
 {
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(raw != NULL);
+    assert(dev != NULL);
+    assert(raw != NULL);
     DEBUG_DEV("raw=%p", dev, raw);
 
     int res = HMC5883L_OK;
@@ -183,7 +175,7 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw)
 
 int hmc5883l_power_down (hmc5883l_t *dev)
 {
-    ASSERT_PARAM(dev != NULL);
+    assert(dev != NULL);
     DEBUG_DEV("", dev);
 
     uint8_t mode = 0;
@@ -197,7 +189,7 @@ int hmc5883l_power_down (hmc5883l_t *dev)
 
 int hmc5883l_power_up (hmc5883l_t *dev)
 {
-    ASSERT_PARAM(dev != NULL);
+    assert(dev != NULL);
     DEBUG_DEV("", dev);
 
     uint8_t mode = 0;
@@ -259,9 +251,9 @@ static uint8_t _get_reg_bit(uint8_t byte, uint8_t mask)
 
 static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len)
 {
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(data != NULL);
-    ASSERT_PARAM(len != 0);
+    assert(dev != NULL);
+    assert(data != NULL);
+    assert(len != 0);
 
     DEBUG_DEV("read %d byte from sensor registers starting at addr 0x%02x",
               dev, len, reg);
@@ -296,9 +288,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
 
 static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t len)
 {
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(data != NULL);
-    ASSERT_PARAM(len != 0);
+    assert(dev != NULL);
 
     DEBUG_DEV("write %d bytes to sensor registers starting at addr 0x%02x",
               dev, len, reg);
