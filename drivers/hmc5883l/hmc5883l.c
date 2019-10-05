@@ -91,6 +91,23 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     return res;
 }
 
+#ifdef MODULE_HMC5883L_INT
+
+int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg)
+{
+    assert(dev != NULL);
+    assert(dev->params.int_pin != GPIO_UNDEF);
+    DEBUG_DEV("", dev);
+
+    if (gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING, cb, arg)) {
+        return -HMC5883L_ERROR_COMMON;
+    }
+
+    return HMC5883L_OK;
+}
+
+#endif /* MODULE_HMC5883L_INT */
+
 int hmc5883l_data_ready(const hmc5883l_t *dev)
 {
     assert(dev != NULL);
@@ -101,7 +118,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
     uint8_t reg;
 
     EXEC_RET(_reg_read(dev, HMC5883L_REG_STATUS, &reg, 1), res);
-    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
+    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : -HMC5883L_ERROR_NO_DATA;
 }
 
 /*
