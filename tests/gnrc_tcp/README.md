@@ -18,7 +18,7 @@ in the tests directory.
     This test covers receiving of a byte stream from the host system. The received data is
     causing window opening and closing as well as data transmission over multiple packets.
 
-5) 05-receive_data_closed_conn.py
+6) 06-receive_data_closed_conn.py
     This test covers accessing received data after receiving a FIN packet. If the connection was closed
     by the peer, a call to gnrc_tcp_recv must return directly with all currently received data
     or zero if there is no data. The function must return immediatly dispite any given timeout.
