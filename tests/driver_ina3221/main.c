@@ -34,9 +34,9 @@
 #define SUM_SHUNT_ALERT_LIM_UV (8000)
 
 #define COL   ("              ")
-#define THEAD ( \
+#define THEAD (    \
         "channel       | shunt [uV]   | bus [mV]     | current [uA] | power [uW]   ")
-#define HLINE ( \
+#define HLINE (    \
         "--------------+--------------+--------------+--------------+--------------")
 
 #ifdef MODULE_INA3221_ALERTS

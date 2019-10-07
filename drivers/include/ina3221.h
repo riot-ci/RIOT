@@ -190,7 +190,7 @@ typedef enum ina3221_enable_ch {
     INA3221_ENABLE_CH2  = 0x2000,                   /**< Enable channel 2 */
     INA3221_ENABLE_CH3  = 0x1000                    /**< Enable channel 3 */
 } ina3221_enable_ch_t;
-#define INA3221_ENABLE_CH_MASK          (INA3221_ENABLE_CH1   \
+#define INA3221_ENABLE_CH_MASK          (INA3221_ENABLE_CH1    \
                                          | INA3221_ENABLE_CH2  \
                                          | INA3221_ENABLE_CH3)  /**< Enable channel bit mask */
 
@@ -210,8 +210,8 @@ typedef enum ina3221_enable_sum_ch {
     INA3221_ENABLE_SUM_CH2  = 0x2000,               /**< Enable sum channel 2 */
     INA3221_ENABLE_SUM_CH3  = 0x1000                /**< Enable sum channel 3 */
 } ina3221_enable_sum_ch_t;
-#define INA3221_ENABLE_SUM_CH_MASK     (INA3221_ENABLE_SUM_CH1   \
-                                        | INA3221_ENABLE_SUM_CH2  \
+#define INA3221_ENABLE_SUM_CH_MASK     (INA3221_ENABLE_SUM_CH1     \
+                                        | INA3221_ENABLE_SUM_CH2   \
                                         | INA3221_ENABLE_SUM_CH3)  /**< Enable shunt voltage sum calculation channel bit mask */
 
 /**
@@ -221,7 +221,7 @@ typedef enum ina3221_enable_latch {
     INA3221_ENABLE_WARN_LATCH   = 0x0800,           /**< Enable warning alert latch */
     INA3221_ENABLE_CRIT_LATCH   = 0x0400            /**< Enable critical alert latch */
 } ina3221_enable_latch_t;
-#define INA3221_ENABLE_LATCH_MASK      (INA3221_ENABLE_WARN_LATCH   \
+#define INA3221_ENABLE_LATCH_MASK      (INA3221_ENABLE_WARN_LATCH  \
                                         | INA3221_ENABLE_CRIT_LATCH)  /**< Enable latch bit mask */
 /**
  * @brief INA3221 device parameters
@@ -277,15 +277,15 @@ typedef struct {
 
 #define INA3221_FLAG_CONV_READY         (0x0001)    /**< Conversion ready flag */
 
-#define INA3221_FLAGS_MASK              (INA3221_FLAG_CRIT_ALERT_CH1   \
-                                         | INA3221_FLAG_CRIT_ALERT_CH2  \
-                                         | INA3221_FLAG_CRIT_ALERT_CH3  \
-                                         | INA3221_FLAG_SHUNT_SUM_ALERT \
-                                         | INA3221_FLAG_WARN_ALERT_CH1  \
-                                         | INA3221_FLAG_WARN_ALERT_CH2  \
-                                         | INA3221_FLAG_WARN_ALERT_CH3  \
-                                         | INA3221_FLAG_POWER_VALID     \
-                                         | INA3221_FLAG_TIMING_CONTROL  \
+#define INA3221_FLAGS_MASK              (INA3221_FLAG_CRIT_ALERT_CH1       \
+                                         | INA3221_FLAG_CRIT_ALERT_CH2     \
+                                         | INA3221_FLAG_CRIT_ALERT_CH3     \
+                                         | INA3221_FLAG_SHUNT_SUM_ALERT    \
+                                         | INA3221_FLAG_WARN_ALERT_CH1     \
+                                         | INA3221_FLAG_WARN_ALERT_CH2     \
+                                         | INA3221_FLAG_WARN_ALERT_CH3     \
+                                         | INA3221_FLAG_POWER_VALID        \
+                                         | INA3221_FLAG_TIMING_CONTROL     \
                                          | INA3221_FLAG_CONV_READY)      /**< Flags bit mask*/
 
 /**
@@ -1071,6 +1071,20 @@ int ina3221_calculate_power_uw(int16_t *in_mv, int32_t *in_ua, uint8_t num,
                                int32_t *out_mw);
 
 /**
+ * @brief Align @p in_res to the number of channels
+ *        For example: @p ch = (INA3221_CH1 | INA3221_CH3)
+ *                     @p in_res = {value_ch1, value_ch3}, then
+ *                     @p out_res will be {value_ch1, 0, value_ch3}
+ *
+ * @param[in]       ch Channel flags
+ * @param[in]       in_res Output of e.g. @see ina3221_calculate_current_ua
+ * @param[out]      out_res Channel aligned result
+ * @param[in]       res_val_size Size of a value in @p in_res in bytes
+ */
+void ina3221_ch_align(ina3221_channel_t ch, const void *in_res, void *out_res,
+                      size_t res_val_size);
+
+/**
  * @brief Set operation mode to INA3221_MODE_TRIGGER_SHUNT_ONLY to trigger shunt voltage measurement
  *
  * @param       dev Device handle
@@ -1083,7 +1097,7 @@ int ina3221_calculate_power_uw(int16_t *in_mv, int32_t *in_ua, uint8_t num,
  *
  * @param       dev Device handle
  */
-#define INA3221_TRIGGER_BUS(dev) \
+#define INA3221_TRIGGER_BUS(dev)   \
     ina3221_set_mode(dev, INA3221_MODE_TRIGGER_BUS_ONLY)
 
 /**
