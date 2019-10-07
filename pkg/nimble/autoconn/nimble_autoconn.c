@@ -78,6 +78,7 @@ static void _on_state_change(struct ble_npl_event *ev)
         /* start advertising/accepting */
         int res = nimble_netif_accept(_ad.buf, _ad.pos, &_adv_params);
         assert((res == NIMBLE_NETIF_OK) || (res == NIMBLE_NETIF_NOMEM));
+        (void)res;
 
         /* schedule next state change */
         _state = STATE_ADV;
@@ -134,6 +135,7 @@ static void _on_scan_evt(uint8_t type, const ble_addr_t *addr, int8_t rssi,
         _state = STATE_CONN;
         int res = nimble_netif_connect(addr, &_conn_params, _conn_timeout);
         assert(res >= 0);
+        (void)res;
         DEBUG("[autoconn] SCAN success, initiating connection\n");
     }
 }
