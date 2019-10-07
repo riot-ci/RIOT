@@ -282,7 +282,7 @@ int nimble_autoconn_update(const nimble_autoconn_params_t *params,
 
 void nimble_autoconn_enable(void)
 {
-    DEBUG("[autoconn] ENBALED\n");
+    DEBUG("[autoconn] ACTIVE\n");
     if (nimble_netif_conn_count(NIMBLE_NETIF_UNUSED) > 0) {
         _state = STATE_ADV;
         _on_state_change(NULL);
