@@ -116,6 +116,13 @@ extern "C" {
 #define MRF24J40_MAX_FRAME_RETRIES      (3U)        /**< Number of frame retries (fixed) */
 
 /**
+ * @defgroup drivers_mrf24j40_config     mrf24j40 driver compile configuration
+ * @ingroup drivers_mrf24j40
+ * @ingroup config
+ * @{
+ */
+
+/**
  * @brief Enable external PA/LNA control
  *
  * Increase RSSI for MRF24J40MC/MD/ME devices. No effect on MRF24J40MA.
@@ -136,6 +143,7 @@ extern "C" {
 #ifndef MRF24J40_TEST_SPI_CONNECTION
 #define MRF24J40_TEST_SPI_CONNECTION    (0U)
 #endif
+/** @} */
 
 /**
  * @brief   struct holding all params needed for device initialization
