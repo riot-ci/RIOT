@@ -406,10 +406,14 @@ def check_and_search_output(cmd, pattern, res_group, *args, **kwargs):
 
 def get_bridge(tap):
     res = check_and_search_output(
-            ["bridge", "link"],
-            r"{}.+master\s+(?P<master>[^\s]+)".format(tap),
-            "master"
-        )
+            ["command", "-v", "bridge"],
+            "^(.*bridge)", 1)
+    if res is not None:
+        res = check_and_search_output(
+                ["bridge", "link"],
+                r"{}.+master\s+(?P<master>[^\s]+)".format(tap),
+                "master"
+            )
     return tap if res is None else res
 
 
