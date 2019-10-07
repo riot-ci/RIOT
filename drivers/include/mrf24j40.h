@@ -185,8 +185,10 @@ void mrf24j40_setup(mrf24j40_t *dev, const mrf24j40_params_t *params);
  * @brief   Trigger a hardware reset and configure radio with default values
  *
  * @param[in] dev           device to reset
+ *
+ * @return                  0 on success, error otherwise
  */
-void mrf24j40_reset(mrf24j40_t *dev);
+int mrf24j40_reset(mrf24j40_t *dev);
 
 /**
  * @brief   Trigger a clear channel assessment & retrieve RSSI
