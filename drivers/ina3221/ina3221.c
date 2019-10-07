@@ -671,3 +671,22 @@ int ina3221_calculate_power_uw(int16_t *in_mv, int32_t *in_ua, uint8_t num,
     }
     return i;
 }
+
+void ina3221_ch_align(ina3221_channel_t ch, const void *in_res, void *out_res,
+                      size_t res_val_size)
+{
+    uint8_t *in = (uint8_t *)in_res;
+    uint8_t tmp_out[INA3221_NUM_CH][res_val_size];
+    int j = 0;
+
+    for (int i = 0; i < INA3221_NUM_CH; i++) {
+        if (ch & (1 << i)) {
+            memcpy(&tmp_out[i][0], in + j * res_val_size, res_val_size);
+            j++;
+        }
+        else {
+            memset(&tmp_out[i][0], 0, res_val_size);
+        }
+    }
+    memcpy(out_res, tmp_out, sizeof(tmp_out));
+}
