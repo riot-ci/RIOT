@@ -1071,6 +1071,20 @@ int ina3221_calculate_power_uw(int16_t *in_mv, int32_t *in_ua, uint8_t num,
                                int32_t *out_mw);
 
 /**
+ * @brief Align @p in_res to the number of channels
+ *        For example: @p ch = (INA3221_CH1 | INA3221_CH3)
+ *                     @p in_res = {value_ch1, value_ch3}, then
+ *                     @p out_res will be {value_ch1, 0, value_ch3}
+ *
+ * @param[in]       ch Channel flags
+ * @param[in]       in_res Output of e.g. @see ina3221_calculate_current_ua
+ * @param[out]      out_res Channel aligned result
+ * @param[in]       res_val_size Size of a value in @p in_res in bytes
+ */
+void ina3221_ch_align(ina3221_channel_t ch, const void *in_res, void *out_res,
+                      size_t res_val_size);
+
+/**
  * @brief Set operation mode to INA3221_MODE_TRIGGER_SHUNT_ONLY to trigger shunt voltage measurement
  *
  * @param       dev Device handle
