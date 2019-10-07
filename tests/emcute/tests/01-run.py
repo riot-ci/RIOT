@@ -315,6 +315,11 @@ class MQTTSNServer(Automaton):
     @ATMT.action(receive_CONNECT_mode_sub)
     @ATMT.action(receive_CONNECT_mode_pub_or_sub_w_reg)
     def send_CONNACK(self):
+        # send too large packet for reception buffer
+        # see https://github.com/RIOT-OS/RIOT/pull/12382
+        self.last_packet = mqttsn.MQTTSN() / \
+            mqttsn.MQTTSNConnack() / ("X" * 525)
+        self.send(self.last_packet)
         # send deliberately broken length packets (too small len)
         self.last_packet = mqttsn.MQTTSN(len=2) / mqttsn.MQTTSNConnack()
         self.send(self.last_packet)
