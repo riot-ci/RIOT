@@ -24,7 +24,7 @@
 #include "msg.h"
 #include "thread.h"
 
-#include "server_keys.h"
+#include "tinydtls_keys.h"
 
 #ifndef DTLS_DEFAULT_PORT
 #define DTLS_DEFAULT_PORT (20220) /* DTLS default port */
@@ -41,7 +41,7 @@ static kernel_pid_t _dtls_server_pid = KERNEL_PID_UNDEF;
 
 #ifdef DTLS_ECC
 static ecdsa_public_key_t other_pubkeys[] = {
-    { .x = other_pub_key_x, .y = other_pub_key_y },
+    { .x = ecdsa_pub_key_x, .y = ecdsa_pub_key_y },
 };
 
 static const credman_credential_t credential = {
@@ -49,10 +49,10 @@ static const credman_credential_t credential = {
     .tag = SOCK_DTLS_SERVER_TAG,
     .params = {
         .ecdsa = {
-            .private_key = server_ecdsa_priv_key,
+            .private_key = ecdsa_priv_key,
             .public_key = {
-                .x = server_ecdsa_pub_key_x,
-                .y = server_ecdsa_pub_key_y,
+                .x = ecdsa_pub_key_x,
+                .y = ecdsa_pub_key_y,
             },
             .client_keys = other_pubkeys,
             .client_keys_size = ARRAY_SIZE(other_pubkeys),
