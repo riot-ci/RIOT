@@ -384,7 +384,6 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
 ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                        void *data, size_t max_len, uint32_t timeout)
 {
-    msg_t msg;
     xtimer_t timeout_timer;
 
     assert(sock && data && remote);
@@ -418,7 +417,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                                   (uint8_t *)data, res);
 
         /* reset msg type */
-        msg.type = 0;
+        msg_t msg;
         if (mbox_try_get(&sock->mbox, &msg)) {
             switch(msg.type) {
                 case DTLS_EVENT_READ:
