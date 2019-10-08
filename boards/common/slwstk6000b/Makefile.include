@@ -1,5 +1,3 @@
-include $(RIOTBOARD)/common/slwstk6000b/module-info.mk
-
 include $(RIOTBOARD)/common/slwstk6000b/slwstk6000b.vars.mk
 DAUGHTERBOARD = $(word 2, $(subst -, ,$(BOARD)))
 
@@ -15,7 +13,7 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 # setup JLink for flashing
-export JLINK_DEVICE := $(MODULE_JLINK_DEVICE)
+export JLINK_DEVICE := $(word $(JLINK_DEVICE_INDEX), $(SLWSTK6000B_MOTHERBOARD_VARS_$(DAUGHTERBOARD)))
 include $(RIOTMAKE)/tools/jlink.inc.mk
 
 # add board common drivers
