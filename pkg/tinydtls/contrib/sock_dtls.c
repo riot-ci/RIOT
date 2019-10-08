@@ -93,11 +93,11 @@ static int _read(struct dtls_context_t *ctx, session_t *session, uint8_t *buf,
         msg.content.value = -ENOBUFS;
     }
     else {
-        memcpy(sock->buf, buf, len);
+        memmove(sock->buf, buf, len);
         msg.content.value = len;
     }
     mbox_put(&sock->mbox, &msg);
-    return 0;
+    return len;
 }
 
 static int _write(struct dtls_context_t *ctx, session_t *session, uint8_t *buf,
@@ -418,7 +418,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                                   (uint8_t *)data, res);
 
         /* reset msg type */
-        // msg.type = 0;
+        msg.type = 0;
         if (mbox_try_get(&sock->mbox, &msg)) {
             switch(msg.type) {
                 case DTLS_EVENT_READ:
