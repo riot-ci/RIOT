@@ -8,7 +8,7 @@
 
 /**
  * @ingroup     cpu_native
- * @ingroup     drivers_periph_spi
+ * @ingroup     drivers_spidev_linux
  * @{
  *
  * @file
@@ -18,7 +18,7 @@
  * @}
  */
 
-#ifdef MODULE_PERIPH_SPI
+#ifdef MODULE_SPIDEV_LINUX
 
 #include <fcntl.h>
 #include <string.h>
@@ -271,4 +271,4 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     }
 }
 
-#endif   /* MODULE_PERIPH_SPI */
+#endif   /* MODULE_SPIDEV_LINUX */

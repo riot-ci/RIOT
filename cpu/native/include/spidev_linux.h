@@ -15,9 +15,9 @@
  * the physical SPI bus(ses) of that host. To do so, the application has to be
  * compiled for the native board in a Linux environment.
  *
- * SPI support is automatically included if either a module requiring the
- * `PERIPH_SPI` feature is added to the application or if it is explicitly
- * listed as `FEATURES_REQUIRED` in the application's Makefile.
+ * SPI support is available if the module `spidev_linux` is added to the modules
+ * used by the application. Adding this module on a non-Linux platform and using
+ * native as target CPU will cause the build to fail.
  *
  * At runtime, the process has to be connected to a specific bus on the host
  * machine. SPI busses are exposed as `/dev/spidevB.D` character files, where B
@@ -125,8 +125,8 @@ void spidev_linux_teardown(void);
 
 #else
 /* Create the error in the header file as spi.c will be compiled to late to show it */
-#ifdef MODULE_PERIPH_SPI
-#error "MODULE periph_spi is only available on Linux"
+#ifdef MODULE_SPIDEV_LINUX
+#error "MODULE spidev_linux is only available on Linux"
 #endif
 #endif /* defined(__linux__) || defined(DOXYGEN) */
 

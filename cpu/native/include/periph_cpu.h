@@ -45,8 +45,12 @@ extern "C" {
 #define PROVIDES_PM_SET_LOWEST
 /** @} */
 
-/* SPI configuration only if the module is available (=Linux) */
-#if defined(MODULE_PERIPH_SPI) || defined(DOXYGEN)
+/* Configuration for the wrapper around the Linux SPI API (spidev_linux)
+ *
+ * Needs to go here, otherwise the SPI_NEEDS_ are defined after inclusion of
+ * spi.h.
+ */
+#if defined(MODULE_SPIDEV_LINUX) || defined(DOXYGEN)
 
 /**
  * @name SPI Configuration
