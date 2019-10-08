@@ -113,7 +113,7 @@ void *dtls_server_wrapper(void *arg)
         }
         else {
             res = sock_dtls_recv(&sock, &session, rcv, sizeof(rcv),
-                                 1000000);
+                                  10 * US_PER_SEC);
             if (res < 0) {
                 if (res != -ETIMEDOUT) {
                     printf("Error receiving UDP over DTLS %d", (int)res);
