@@ -277,6 +277,12 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 # be done in makefile.iotlab.single.inc.mk which is included after.
 ifneq (,$(IOTLAB_NODE))
   PROGRAMMER ?= iotlab
+  # Boards on iotlab are flashed with an ELF, except wsn430
+  ifneq (,$(findstring wsn430,$(BOARD)))
+    FLASHFILE ?= $(HEXFILE)
+  else
+    FLASHFILE ?= $(ELFFILE)
+  endif
 endif
 
 # Add standard include directories
