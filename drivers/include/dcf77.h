@@ -26,8 +26,12 @@
 #define DCF77_H
 
 #include <stdint.h>
-
+#include <inttypes.h>
+#include "xtimer.h"
 #include "periph/gpio.h"
+#include "time.h"
+
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +47,6 @@ enum {
     DCF77_TIMEOUT = -2,
     DCF77_INIT_ERROR= -3,      /**< communication timed out */
 };
-
 
 
 
@@ -72,12 +75,25 @@ typedef struct {
 } dcf77_params_t;
 
 /**
+ * @brief Typedef for the Callback function
+ * @details A function of this type will be called when an Interrupt is
+ *          triggered
+ * @param[in]  arg Additional Arguments that will be passed to the function
+ */
+typedef void (*dcf77_cb_t)(void *arg);
+
+/**
  * @brief   Device descriptor for DCF77 sensor devices
  */
 typedef struct {
     dcf77_params_t params;    /**< Device parameters */
     dcf77_data_t last_val;    /**< Values of the last measurement */
-    uint32_t last_read_us;  /**< Time of the last measurement */
+    mutex_t event_lock;       /**< mutex for waiting for event */
+    uint8_t internal_state;
+    uint32_t startTime;
+    uint32_t stopTime;
+    uint8_t bitCounter;
+    uint8_t bitseq[60];
 } dcf77_t;
 
 /**
@@ -105,7 +121,7 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
  * @retval `DCF_NOCSUM`     Checksum error
  * @retval `DCF_TIMEOUT`    Reading data timed out (check wires!)
  */
-int dcf77_read(dcf77_t *dev, dcf77_data_t *data);
+int dcf77_read(dcf77_t *dev,struct tm *time);
 
 
 

@@ -34,7 +34,7 @@
 
 static int read_data(const void *dev, phydat_t *res)
 {
-    if (dcf77_read((dcf77_t *)dev, (dcf77_data_t *)res)) {
+    if (dcf77_read((dcf77_t *)dev, (struct tm *)res)) {
         return -ECANCELED;
     }
     res->scale = -1;
