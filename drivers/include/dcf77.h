@@ -74,13 +74,6 @@ typedef struct {
                            *   resistor */
 } dcf77_params_t;
 
-/**
- * @brief Typedef for the Callback function
- * @details A function of this type will be called when an Interrupt is
- *          triggered
- * @param[in]  arg Additional Arguments that will be passed to the function
- */
-typedef void (*dcf77_cb_t)(void *arg);
 
 /**
  * @brief   Device descriptor for DCF77 sensor devices
@@ -89,11 +82,11 @@ typedef struct {
     dcf77_params_t params;    /**< Device parameters */
     dcf77_data_t last_val;    /**< Values of the last measurement */
     mutex_t event_lock;       /**< mutex for waiting for event */
-    uint8_t internal_state;
-    uint32_t startTime;
-    uint32_t stopTime;
-    uint8_t bitCounter;
-    uint8_t bitseq[60];
+    uint8_t internal_state;   /**< internal States  */
+    uint32_t startTime;       /**< Timestamp tomeasure the term of the level */
+    uint32_t stopTime;        /**< Timestamp tomeasure the term of the level */
+    uint8_t bitCounter;       /**< Counter of the Bits in a Bitsequenz */
+    uint8_t bitseq[60];       /**< contains all Bits from a cycle */
 } dcf77_t;
 
 /**
@@ -102,8 +95,7 @@ typedef struct {
  * @param[out] dev      device descriptor of a DCF device
  * @param[in]  params   configuration parameters
  *
- * @return              0 on success
- * @return              -1 on error
+ * @retval `DCF77_OK`         Success
  */
 int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
 
@@ -115,11 +107,11 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
  *          written into the result values
  *
  * @param[in]  dev          device descriptor of a DCF device
- * @param[in]  *data        Datastruct of the DCF77
+ * @param[in]  time         datastruct for timeinformation
  *
- * @retval `DCF_OK`         Success
- * @retval `DCF_NOCSUM`     Checksum error
- * @retval `DCF_TIMEOUT`    Reading data timed out (check wires!)
+ * @retval `DCF77_OK`         Success
+ * @retval `DCF77_NOCSUM`     Checksum error
+ * @retval `DCF77_TIMEOUT`    Reading data timed out (check wires!)
  */
 int dcf77_read(dcf77_t *dev,struct tm *time);
 
