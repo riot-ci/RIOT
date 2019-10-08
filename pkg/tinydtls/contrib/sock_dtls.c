@@ -163,7 +163,7 @@ static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
     ret = credman_get(&credential, sock->tag, CREDMAN_TYPE_PSK);
     if (ret < 0) {
         DEBUG("sock_dtls: no matching PSK credential found\n");
-        return -1;
+        return dtls_alert_fatal_create(DTLS_ALERT_DECRYPT_ERROR);
     }
 
     const void *c = NULL;
@@ -189,7 +189,7 @@ static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
         break;
     default:
         DEBUG("sock:dtls unsupported request type: %d\n", type);
-        return -1;
+        return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
     }
     if (c_len > result_length) {
         DEBUG("sock_dtls: not enough memory for credential type: %d\n", type);
@@ -233,28 +233,13 @@ static int _verify_ecdsa_key(struct dtls_context_t *ctx,
                              const unsigned char *other_pub_x,
                              const unsigned char *other_pub_y, size_t key_size)
 {
-    (void)session;
-    int ret;
-    sock_dtls_t *sock = (sock_dtls_t *)dtls_get_app_data(ctx);
+    (void) ctx;
+    (void) session;
+    (void) other_pub_y;
+    (void) other_pub_x;
+    (void) key_size;
 
-    credman_credential_t credential;
-    ret = credman_get(&credential, sock->tag, CREDMAN_TYPE_ECDSA);
-    if (ret < 0) {
-            DEBUG("sock_dtls: no matching ecdsa credential found\n");
-            return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
-    }
-
-    /* compare with all registered client public keys */
-    ecdsa_public_key_t *pubkeys = credential.params.ecdsa.client_keys;
-    size_t pubkeys_size = credential.params.ecdsa.client_keys_size;
-    for (unsigned i = 0; i < pubkeys_size; i++) {
-        if (!(memcmp(pubkeys[i].x, other_pub_x, key_size)) &&
-            !(memcmp(pubkeys[i].y, other_pub_y, key_size))) {
-            return 0;
-        }
-    }
-    DEBUG("sock_dtls: no matching client public key found\n");
-    return dtls_alert_fatal_create(DTLS_ALERT_CERTIFICATE_UNKNOWN);
+    return 0;
 }
 #endif /* DTLS_ECC */
 
