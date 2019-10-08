@@ -281,9 +281,7 @@ export PREFIX ?= $(if $(TARGET_ARCH),$(TARGET_ARCH)-)
 ifneq (,$(IOTLAB_NODE))
   PROGRAMMER ?= iotlab
   # Boards on iotlab are flashed with an ELF, except wsn430
-  ifneq (,$(findstring wsn430,$(BOARD)))
-    FLASHFILE ?= $(HEXFILE)
-  else
+  ifeq (,$(findstring wsn430,$(BOARD)))
     FLASHFILE ?= $(ELFFILE)
   endif
 endif
