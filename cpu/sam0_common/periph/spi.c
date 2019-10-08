@@ -33,6 +33,16 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+struct spi_cfg {
+    spi_mode_t mode;
+    spi_clk_t clk;
+};
+
+/**
+ * @brief Array holding the current config for each SPI device
+ */
+static struct spi_cfg cfgs[SPI_NUMOF];
+
 /**
  * @brief Array holding one pre-initialized mutex for each SPI device
  */
@@ -106,6 +116,14 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     (void) cs;
     /* get exclusive access to the device */
     mutex_lock(&locks[bus]);
+
+    if (cfgs[bus].mode == mode && cfgs[bus].clk == clk) {
+        return SPI_OK;
+    }
+
+    cfgs[bus].mode = mode;
+    cfgs[bus].clk = clk;
+
     /* power on the device */
     poweron(bus);
 
