@@ -48,8 +48,6 @@ enum {
     DCF77_INIT_ERROR= -3,      /**< communication timed out */
 };
 
-
-
 /**
  * @brief   Data type for storing DCF77 sensor readings
  */
@@ -73,7 +71,6 @@ typedef struct {
     gpio_mode_t in_mode;    /**< input pin configuration, with or without pull
                            *   resistor */
 } dcf77_params_t;
-
 
 /**
  * @brief   Device descriptor for DCF77 sensor devices
@@ -114,8 +111,6 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
  * @retval `DCF77_TIMEOUT`    Reading data timed out (check wires!)
  */
 int dcf77_read(dcf77_t *dev,struct tm *time);
-
-
 
 #ifdef __cplusplus
 }

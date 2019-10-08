@@ -43,7 +43,6 @@ int main(void)
 
 while(1){
     printf("Wait for a complete cycle... \n");
-    xtimer_sleep(5);
     if(dcf77_read(&sensor,&time)==DCF77_OK){
     printf("Received Minutes: %d\n",time.tm_min);
     printf("Received Hours: %d\n",time.tm_hour);
