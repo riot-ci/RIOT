@@ -7,8 +7,8 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
-                             arduino-uno
+# Add infos for RIOT's CI - safe to ignore for local development
+include Makefile.ci
 
 # Uncomment these lines if you want to use platform support from external
 # repositories:
