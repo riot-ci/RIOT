@@ -25,7 +25,7 @@
 #include "ph_oem_params.h"
 #include "ph_oem_regs.h"
 
-#define SLEEP_SEC                   (5)
+#define SLEEP_USEC_SEC                   (5)
 
 /* calibration test is off by default, so it won't reset your previous calibration */
 #define CALIBRATION_TEST_ENABLED    (false)
@@ -281,7 +281,7 @@ int main(void)
                 puts("[Reading compensation failed]");
             }
         }
-        xtimer_sleep(SLEEP_SEC);
+        xtimer_sleep(SLEEP_USEC_SEC);
     }
     return 0;
 }
