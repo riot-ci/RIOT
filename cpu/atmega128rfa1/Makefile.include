@@ -1,10 +1,10 @@
 # tell the build system that the CPU depends on the atmega common files
 USEMODULE += atmega_common
 
-RAM_LEN = 32K
-ROM_LEN = 256K
+RAM_LEN = 16K
+ROM_LEN = 128K
 
-# expand atmega_pcint for atmega256rfr2
+# expand atmega_pcint for atmega128rfa1
 ifneq (,$(filter atmega_pcint,$(USEMODULE)))
   USEMODULE += atmega_pcint1
 endif
