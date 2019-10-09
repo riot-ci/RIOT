@@ -32,6 +32,10 @@ extern "C" {
 
 /**
  * @brief initialization as decribed in datasheet
+ *
+ * @param[in] dev device to initialize
+ *
+ * @return 0 on success, error otherwise
  */
 int mrf24j40_init(mrf24j40_t *dev);
 
