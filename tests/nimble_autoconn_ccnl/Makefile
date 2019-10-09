@@ -20,7 +20,7 @@ CFLAGS += -DNEEDS_PREFIX_MATCHING
 CFLAGS += -DNEEDS_PACKET_CRAFTING
 
 # Setup Nimble
-USEMODULE += nimble_autoconn_ipsp
+USEMODULE += nimble_autoconn_ndnsp
 NIMBLE_MAX_CONN := 3
 
 TEST_ON_CI_WHITELIST += nrf52dk
