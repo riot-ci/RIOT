@@ -473,7 +473,6 @@ void gnrc_netif_release(gnrc_netif_t *netif)
 }
 
 #ifdef MODULE_GNRC_IPV6
-static inline bool _addr_anycast(const gnrc_netif_t *netif, unsigned idx);
 static int _addr_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
 static int _group_idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr);
 
@@ -811,11 +810,6 @@ int gnrc_netif_ipv6_group_idx(gnrc_netif_t *netif, const ipv6_addr_t *addr)
     idx = _group_idx(netif, addr);
     gnrc_netif_release(netif);
     return idx;
-}
-
-static inline bool _addr_anycast(const gnrc_netif_t *netif, unsigned idx)
-{
-    return (netif->ipv6.addrs_flags[idx] & GNRC_NETIF_IPV6_ADDRS_FLAGS_ANYCAST);
 }
 
 static int _idx(const gnrc_netif_t *netif, const ipv6_addr_t *addr, bool mcast)
