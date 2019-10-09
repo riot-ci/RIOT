@@ -29,6 +29,8 @@
 
 void led_init(void);
 
+void __attribute__((weak)) led_init(void) {}
+
 void board_init(void)
 {
 #ifdef CPU_ATMEGA32U4
