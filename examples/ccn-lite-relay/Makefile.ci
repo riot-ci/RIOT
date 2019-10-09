@@ -1,0 +1,11 @@
+BOARD_WHITELIST := \
+    fox \
+    iotlab-m3 \
+    msba2 \
+    mulle \
+    native \
+    nrf52840dk \
+    nrf52dk \
+    pba-d-01-kw2x \
+    samr21-xpro \
+    #

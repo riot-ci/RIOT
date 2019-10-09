@@ -1,0 +1,9 @@
+# Currently, GoMacH has only been tested and evaluated through on samr21-xpro and iotlab-m3.
+# Once GoMacH has also been tested through on other boards, the whitelist should be
+# then accordingly extended.
+# Notably, for LWMAC, we have only evaluated it on samr21-xpro nodes. To this end, if
+# you are going to include LWMAC for testing, you should only run the example on samr21-xpro.
+BOARD_WHITELIST := \
+    iotlab-m3 \
+    samr21-xpro \
+    #
