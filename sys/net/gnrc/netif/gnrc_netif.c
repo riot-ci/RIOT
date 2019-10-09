@@ -1086,7 +1086,7 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
             bf_set(candidate_set, i);
         }
     }
-    /* otherwise apply rule 8: Use longest matching prefix. */
+    /* otherwise apply rule 9: Use longest matching prefix. */
     int idx = _match_to_idx(netif, dst, candidate_set);
     return (idx < 0) ? NULL : &netif->ipv6.addrs[idx];
 }
