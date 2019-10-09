@@ -954,8 +954,19 @@ static int _create_candidate_set(const gnrc_netif_t *netif,
               ipv6_addr_to_str(addr_str, tmp, sizeof(addr_str)));
         /* "In any case, multicast addresses and the unspecified address MUST NOT
          *  be included in a candidate set."
+         *
+         * flags are set if not unspecfied and multicast addresses are in
+         * `netif->ipv6.groups` so not considered here.
          */
         if ((netif->ipv6.addrs_flags[i] == 0) ||
+            /* https://tools.ietf.org/html/rfc4862#section-2:
+             *  A tentative address is not considered assigned to an interface
+             *  in the usual sense.  An interface discards received packets
+             *  addressed to a tentative address, but accepts Neighbor Discovery
+             *  packets related to Duplicate Address Detection for the tentative
+             *  address.
+             *  (so don't consider tentative addresses for source address
+             *  selection) */
             gnrc_netif_ipv6_addr_dad_trans(netif, i)) {
             continue;
         }
@@ -996,6 +1007,7 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
                                         const ipv6_addr_t *dst,
                                         uint8_t *candidate_set)
 {
+    int idx = -1;
     /* create temporary set for assigning "points" to candidates winning in the
      * corresponding rules.
      */
@@ -1030,24 +1042,16 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
         if (candidate_scope == dst_scope) {
             DEBUG("winner for rule 2 (same scope) found\n");
             winner_set[i] += RULE_2A_PTS;
-            if (winner_set[i] > max_pts) {
-                max_pts = RULE_2A_PTS;
-            }
         }
         else if (candidate_scope < dst_scope) {
             DEBUG("winner for rule 2 (smaller scope) found\n");
             winner_set[i] += RULE_2B_PTS;
-            if (winner_set[i] > max_pts) {
-                max_pts = winner_set[i];
-            }
         }
+
         /* Rule 3: Avoid deprecated addresses. */
         if (_get_state(netif, i) == GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_DEPRECATED) {
             DEBUG("winner for rule 3 found\n");
             winner_set[i] += RULE_3_PTS;
-            if (winner_set[i] > max_pts) {
-                max_pts = winner_set[i];
-            }
         }
 
         /* Rule 4: Prefer home addresses.
@@ -1076,18 +1080,27 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
          * Temporary addresses are currently not supported by gnrc.
          * TODO: update as soon as gnrc supports temporary addresses
          */
+
+        if (winner_set[i] > max_pts) {
+            idx = i;
+            max_pts = winner_set[i];
+        }
     }
     /* reset candidate set to mark winners */
     memset(candidate_set, 0, (GNRC_NETIF_IPV6_ADDRS_NUMOF + 7) / 8);
-    /* check if we have a clear winner */
+    /* check if we have a clear winner, use dst_scope to count winners */
+    dst_scope = 0;
     /* collect candidates with maximum points */
     for (int i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
         if (winner_set[i] == max_pts) {
             bf_set(candidate_set, i);
+            dst_scope++;
         }
     }
-    /* otherwise apply rule 8: Use longest matching prefix. */
-    int idx = _match_to_idx(netif, dst, candidate_set);
+    /* there is no clear winner => apply rule 8: Use longest matching prefix. */
+    if (dst_scope > 1) {
+        idx = _match_to_idx(netif, dst, candidate_set);
+    }
     return (idx < 0) ? NULL : &netif->ipv6.addrs[idx];
 }
 #endif  /* MODULE_GNRC_IPV6 */
