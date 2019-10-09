@@ -91,6 +91,8 @@ In one terminal, start:
 This will create a tap interface called `riot0`, owned by the user. It will
 also run an instance of uhcpcd, which starts serving the prefix
 `2001:db8::/64`. Keep the shell open as long as you need the network.
+Make sure to exit the "make term" instance from the next section *before*
+exiting this, as otherwise the "riot0" device doesn't get cleaned up properly.
 
 #### Provision the device
 [setup-wired-provision]: #Provision-the-device
@@ -102,6 +104,11 @@ In order to get a SUIT capable firmware onto the node, run
 This command also generates the cryptographic keys (private/public) used to
 sign and verify the manifest and images. See the "Key generation" section in
 [SUIT detailed explanation][detailed-explanation] for details.
+
+From another terminal on the host, add a routable address on the host `riot0`
+interface:
+
+    $ sudo ip address add 2001:db8::1/128 dev riot0
 
 In another terminal, run:
 
