@@ -125,4 +125,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    sys.exit(run(testfunc, sync=True))
