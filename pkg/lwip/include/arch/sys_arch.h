@@ -88,11 +88,11 @@ static inline bool sys_mutex_valid(sys_mutex_t *mutex)
  * @see     https://www.nongnu.org/lwip/2_1_x/group__sys__mbox.html
  * @{
  */
+#define SYS_MBOX_SIZE               (8)
+
 /**
  * @brief   Platform specific mailbox type
  */
-#define SYS_MBOX_SIZE               (8)
-
 typedef struct {
     mbox_t mbox;                    /**< RIOT mbox */
     msg_t msgs[SYS_MBOX_SIZE];      /**< queue for the mbox */
