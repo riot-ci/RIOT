@@ -7,9 +7,6 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../../
 
-# Add infos for RIOT's CI - safe to ignore for local development
-include Makefile.ci
-
 # Include packages that pull up and auto-init the link layer.
 USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif

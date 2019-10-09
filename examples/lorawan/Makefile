@@ -7,9 +7,6 @@ BOARD ?= b-l072z-lrwan1
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-# Add infos for RIOT's CI - safe to ignore for local development
-include Makefile.ci
-
 DEVEUI ?= 0000000000000000
 APPEUI ?= 0000000000000000
 APPKEY ?= 00000000000000000000000000000000

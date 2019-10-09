@@ -9,9 +9,6 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-# Add infos for RIOT's CI - safe to ignore for local development
-include Makefile.ci
-
 ## Uncomment to redefine port, for example use 61616 for RFC 6282 UDP compression.
 #GCOAP_PORT = 5683
 #CFLAGS += -DGCOAP_PORT=$(GCOAP_PORT)

@@ -7,9 +7,6 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-# Add infos for RIOT's CI - safe to ignore for local development
-include Makefile.ci
-
 # we want to use SAUL:
 USEMODULE += saul_default
 # include the shell:
