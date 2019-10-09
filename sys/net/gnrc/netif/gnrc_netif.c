@@ -1086,20 +1086,19 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
             max_pts = winner_set[i];
         }
     }
-    /* reset candidate set to mark winners */
-    memset(candidate_set, 0, (GNRC_NETIF_IPV6_ADDRS_NUMOF + 7) / 8);
-    /* check if we have a clear winner, use dst_scope to count winners */
-    dst_scope = 0;
+    /* check if we have a clear winner, otherwise
+     * rule 8: Use longest matching prefix.*/
+    uint8_t best_pfx_len = 0;
     /* collect candidates with maximum points */
     for (int i = 0; i < GNRC_NETIF_IPV6_ADDRS_NUMOF; i++) {
         if (winner_set[i] == max_pts) {
-            bf_set(candidate_set, i);
-            dst_scope++;
+            unsigned match = ipv6_addr_match_prefix(&netif->ipv6.addrs[i], dst);
+            /* if match == 0 for all case, it takes above selected idx */
+            if (match > best_pfx_len) {
+                idx = i;
+                best_pfx_len = match;
+            }
         }
-    }
-    /* there is no clear winner => apply rule 8: Use longest matching prefix. */
-    if (dst_scope > 1) {
-        idx = _match_to_idx(netif, dst, candidate_set);
     }
     return (idx < 0) ? NULL : &netif->ipv6.addrs[idx];
 }
