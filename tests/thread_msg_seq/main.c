@@ -53,9 +53,10 @@ void *sub_thread(void *arg)
 
 int main(void)
 {
-    msg_t msg;
-
     test_utils_interactive_sync();
+
+    puts("START");
+    msg_t msg;
 
     p_main = sched_active_pid;
 
