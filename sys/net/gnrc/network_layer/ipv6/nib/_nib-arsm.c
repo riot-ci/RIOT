@@ -58,7 +58,12 @@ void _snd_ns(const ipv6_addr_t *tgt, gnrc_netif_t *netif,
         }
     }
 #endif  /* MODULE_GNRC_SIXLOWPAN_ND */
+    /* unlock mutex in case `src == NULL` and prefix list must be checked for
+     * source address selection:
+     * https://tools.ietf.org/html/rfc6724#section-2.2 */
+    mutex_unlock(&_nib_mutex);
     gnrc_ndp_nbr_sol_send(tgt, netif, src, dst, ext_opt);
+    mutex_lock(&_nib_mutex);
 }
 
 void _snd_uc_ns(_nib_onl_entry_t *nbr, bool reset)
