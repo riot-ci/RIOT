@@ -56,7 +56,6 @@ $(BLOB_HDR_DIR)%/.:
 
 XXD ?= xxd
 
-$(BLOB_H): $(BLOB_HDR_DIR)/.
 $(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS) | $$(@D)/.
 	@command -v $(XXD) > /dev/null 2>&1 || ( \
 	  echo "error: xxd binary '$(XXD)' not found! (Maybe install vim package?)"; exit 1)
