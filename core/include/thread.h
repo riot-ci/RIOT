@@ -399,6 +399,22 @@ void thread_yield(void);
 void thread_yield_higher(void);
 
 /**
+ * @brief   Puts the current thread into zombie mode. Has to be terminated externally.
+ *          The thread will never run again. Does nothing when in ISR.
+ */
+void thread_zombify(void);
+
+/**
+ * @brief Terminates zombie thread.
+ *
+ * @param[in] pid   the PID of the thread to terminate
+ *
+ * @return          `1` on success
+ * @return          `STATUS_NOT_FOUND` if pid is unknown or not a zombie
+ */
+int thread_kill_zombie(kernel_pid_t pid);
+
+/**
  * @brief Wakes up a sleeping thread.
  *
  * @param[in] pid   the PID of the thread to be woken up
