@@ -36,6 +36,11 @@ define board_missing_features
 
   include $(RIOTBASE)/Makefile.dep
 
+  # Include provided features from drivers after all dependencies are known
+  DRIVERS = $(filter-out periph_common include netdev_%, $(subst /,, $(subst $(RIOTBASE)/drivers/,,$(sort $(dir $(wildcard $(RIOTBASE)/drivers/*/))))))
+  DRIVERS_USED = $(sort $(filter $(DRIVERS),$(USEMODULE)))
+  $(foreach _DRIVER, $(DRIVERS_USED), $(eval -include $(RIOTBASE)/drivers/$(_DRIVER)/Makefile.features))
+
   ifneq (,$$(FEATURES_MISSING))
     BOARDS_FEATURES_MISSING += "$(1) $$(FEATURES_MISSING)"
     BOARDS_WITH_MISSING_FEATURES += $(1)
