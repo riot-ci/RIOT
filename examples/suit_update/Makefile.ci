@@ -1,4 +1,4 @@
-BOARD_INSUFFICIENT_MEMORY :=
+BOARD_INSUFFICIENT_MEMORY := \
     arduino-duemilanove \
     arduino-mega2560 \
     arduino-nano \
