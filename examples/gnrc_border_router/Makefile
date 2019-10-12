@@ -31,6 +31,9 @@ ifeq (,$(filter native,$(BOARD)))
   GNRC_NETIF_NUMOF := 2
   USEMODULE += stdio_ethos
 
+  # stdio_ethos doesn't work on boards with stdio over USB
+  FEATURES_BLACKLIST += stdio_usb
+
   # ethos baudrate can be configured from make command
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
