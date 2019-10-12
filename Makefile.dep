@@ -489,6 +489,10 @@ endif
 
 ifneq (,$(filter stdio_uart,$(USEMODULE)))
   FEATURES_REQUIRED += periph_uart
+
+  # stdio_uart doesn't work on boards providing stdio over USB, so disabling
+  # stdio_cdc_acm when stdio_uart is explicitly loaded
+  DISABLE_MODULE += stdio_cdc_acm
 endif
 
 ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart,$(USEMODULE)))
@@ -690,6 +694,9 @@ ifneq (,$(filter arduino,$(USEMODULE)))
   FEATURES_OPTIONAL += periph_adc
   FEATURES_REQUIRED += periph_gpio
   USEMODULE += xtimer
+
+  # Arduino module doesn't work on boards providing stdio over USB
+  DISABLE_MODULE += stdio_cdc_acm
 endif
 
 ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
@@ -1049,6 +1056,12 @@ FEATURES_OPTIONAL += periph_pm
 
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
+
+ifneq (,$(filter auto_init,$(DISABLE_MODULE)))
+  # boards using stdio over USB require auto_init
+  DISABLE_MODULE += stdio_cdc_acm
+  DISABLE_MODULE += auto_init_usbus
+endif
 
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
