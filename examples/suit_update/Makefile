@@ -64,6 +64,9 @@ ifeq (1,$(USE_ETHOS))
   USEMODULE += stdio_ethos
   USEMODULE += gnrc_uhcpc
 
+  # stdio-ethos doesn't work on boards with stdio over USB
+  FEATURES_BLACKLIST += stdio_usb
+
   # ethos baudrate can be configured from make command
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)

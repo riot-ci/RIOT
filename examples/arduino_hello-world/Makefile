@@ -9,6 +9,9 @@ RIOTBASE ?= $(CURDIR)/../..
 
 USEMODULE += arduino
 
+# Arduino module doesn't work on boards with stdio over USB
+FEATURES_BLACKLIST += stdio_usb
+
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:

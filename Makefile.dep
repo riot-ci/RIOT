@@ -979,6 +979,13 @@ FEATURES_OPTIONAL += periph_pm
 # include package dependencies
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
+# always select provided architecture features
+FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
+
+ifneq (,$(filter auto_init,$(DISABLE_MODULE)))
+  # boards using stdio over USB require auto_init
+  FEATURES_BLACKLIST += stdio_usb
+endif
 
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
