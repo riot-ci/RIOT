@@ -9,6 +9,8 @@ FEATURES_CONFLICT_GLOBAL := $(FEATURES_CONFLICT)
 FEATURES_CONFLICT_MSG_GLOBAL := $(FEATURES_MSG_CONFLICT)
 DISABLE_MODULE_GLOBAL := $(DISABLE_MODULE)
 DEFAULT_MODULE_GLOBAL := $(DEFAULT_MODULE)
+FEATURES_BLACKLIST_GLOBAL := $(FEATURES_BLACKLIST)
+DISABLE_MODULE_GLOBAL := $(DISABLE_MODULE_GLOBAL)
 
 define board_missing_features
   BOARD             := $(1)
@@ -20,6 +22,7 @@ define board_missing_features
   FEATURES_OPTIONAL := $(FEATURES_OPTIONAL_GLOBAL)
   FEATURES_CONFLICT := $(FEATURES_CONFLICT_GLOBAL)
   FEATURES_CONFLICT_MSG := $(FEATURES_CONFLICT_MSG_GLOBAL)
+  FEATURES_BLACKLIST:= $(FEATURES_BLACKLIST_GLOBAL)
 
   # Remove board specific variables set by Makefile.features/Makefile.dep
   FEATURES_PROVIDED :=
@@ -29,12 +32,12 @@ define board_missing_features
   undefine CPU
   undefine CPU_MODEL
 
+  include $(RIOTBASE)/Makefile.dep
+
   include $(RIOTBASE)/Makefile.features
 
   include $(RIOTMAKE)/defaultmodules.inc.mk
   USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
-
-  include $(RIOTBASE)/Makefile.dep
 
   ifneq (,$$(FEATURES_MISSING))
     BOARDS_FEATURES_MISSING += "$(1) $$(FEATURES_MISSING)"
