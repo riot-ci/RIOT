@@ -19,7 +19,7 @@ export TAP ?= tap0
 CFLAGS += -DOUTPUT=TEXT
 
 # use Ethernet as link-layer protocol
-ifeq (native,$(BOARD))
+ifeq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_tap
 
   TERMFLAGS ?= $(TAP)

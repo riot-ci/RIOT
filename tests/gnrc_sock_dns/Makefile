@@ -21,7 +21,7 @@ USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_ipv6_default
 USEMODULE += gnrc_ipv6_nib_dns
 # use Ethernet as link-layer protocol
-ifeq (native,$(BOARD))
+ifeq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_tap
 
   TERMFLAGS ?= $(TAP)
