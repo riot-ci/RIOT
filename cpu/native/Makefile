@@ -26,10 +26,6 @@ ifneq (,$(filter trace,$(USEMODULE)))
 	DIRS += trace
 endif
 
-ifneq (,$(filter spidev_linux,$(USEMODULE)))
-  DIRS += spi
-endif
-
 include $(RIOTBASE)/Makefile.base
 
 INCLUDES = $(NATIVEINCLUDES)

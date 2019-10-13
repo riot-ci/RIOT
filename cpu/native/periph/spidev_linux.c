@@ -18,7 +18,7 @@
  * @}
  */
 
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
 
 #include <fcntl.h>
 #include <string.h>
@@ -271,4 +271,4 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     }
 }
 
-#endif   /* MODULE_SPIDEV_LINUX */
+#endif   /* MODULE_PERIPH_SPIDEV_LINUX */

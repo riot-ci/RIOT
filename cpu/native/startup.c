@@ -76,7 +76,7 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #ifdef MODULE_CAN_LINUX
 #include "candev_linux.h"
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
 #include "spidev_linux.h"
 #endif
 #ifdef MODULE_SOCKET_ZEP
@@ -95,7 +95,7 @@ static const char short_opts[] = ":hi:s:deEoc:"
 #ifdef MODULE_SOCKET_ZEP
     "z:"
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
     "p:"
 #endif
     "";
@@ -118,7 +118,7 @@ static const struct option long_opts[] = {
 #ifdef MODULE_SOCKET_ZEP
     { "zep", required_argument, NULL, 'z' },
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
     { "spi", required_argument, NULL, 'p' },
 #endif
     { NULL, 0, NULL, '\0' },
@@ -259,7 +259,7 @@ void usage_exit(int status)
         real_printf(" -z <laddr>:<lport>,<raddr>:<rport>\n");
     }
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
     real_printf(" [-p <b>:<d>:<spidev>]\n");
 #endif
 
@@ -304,7 +304,7 @@ void usage_exit(int status)
 "        specify CAN interface <ifname> to use for CAN device #<ifnum>\n"
 "        max number of CAN device: %d\n", CAN_DLL_NUMOF);
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
     real_printf(
 "    -p <b>:<d>:<spidev>, --spi=<b>:<d>:<spidev>\n"
 "        specify Linux SPI device to use for CS line d on bus b (in RIOT)\n"
@@ -476,7 +476,7 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
                 _zep_params_setup(optarg, zeps++);
                 break;
 #endif
-#ifdef MODULE_SPIDEV_LINUX
+#ifdef MODULE_PERIPH_SPIDEV_LINUX
             case 'p': {
                 long bus = strtol(optarg, &optarg, 10);
                 if (*optarg != ':') {
