@@ -61,7 +61,7 @@ info-build:
 	@echo 'FEATURES_MISSING (only non optional features):'
 	@echo '         $(or $(FEATURES_MISSING), -none-)'
 	@echo 'FEATURES_BLACKLIST (blacklisted features):'
-	@echo '         $(or $(FEATURES_BLACKLIST), -none-)'
+	@echo '         $(or $(sort $(FEATURES_BLACKLIST)), -none-)'
 	@echo ''
 	@echo 'FEATURES_CONFLICT:     $(FEATURES_CONFLICT)'
 	@echo 'FEATURES_CONFLICT_MSG: $(FEATURES_CONFLICT_MSG)'
