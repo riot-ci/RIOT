@@ -32,12 +32,12 @@ define board_missing_features
   undefine CPU
   undefine CPU_MODEL
 
+  include $(RIOTBASE)/Makefile.dep
+
   include $(RIOTBASE)/Makefile.features
 
   include $(RIOTMAKE)/defaultmodules.inc.mk
   USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
-
-  include $(RIOTBASE)/Makefile.dep
 
   ifneq (,$$(FEATURES_MISSING))
     BOARDS_FEATURES_MISSING += "$(1) $$(FEATURES_MISSING)"
