@@ -30,7 +30,7 @@ CFLAGS += -DSHELL_NO_ECHO
 CFLAGS += -DGNRC_TCP_MSL=$(MSL_US)
 CFLAGS += -DGNRC_TCP_CONNECTION_TIMEOUT_DURATION=$(TIMEOUT_US)
 
-ifeq (native,$(BOARD))
+ifeq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_tap
   TERMFLAGS ?= $(TAP)
 else

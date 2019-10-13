@@ -21,7 +21,7 @@ CFLAGS += -DOUTPUT=TEXT
 CFLAGS += -DTEST_SUITES="gnrc_ipv6_ext_frag"
 CFLAGS += -DGNRC_IPV6_EXT_FRAG_LIMITS_POOL_SIZE=3
 
-ifeq (native,$(BOARD))
+ifeq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_tap
   TERMFLAGS ?= $(TAP)
 else

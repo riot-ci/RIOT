@@ -17,7 +17,7 @@ BOARD_BLACKLIST := chronos hamilton ruuvitag
 export TAP ?= tap0
 
 # use Ethernet as link-layer protocol
-ifeq (native,$(BOARD))
+ifeq (,$(filter native,$(BOARD)))
   USEMODULE += netdev_tap
 
   TERMFLAGS ?= $(TAP)
