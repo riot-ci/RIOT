@@ -1,16 +1,16 @@
 # Add Arduino sketches to the application as a module
 
 ifeq (,$(filter arduino_lib,$(USEMODULE)))
-    # Define application sketches module, it will be generated into $(BINDIR)
-    SKETCH_MODULE     ?= arduino_sketches
-    SKETCH_MODULE_DIR ?= $(BINDIR)/$(SKETCH_MODULE)
-    SKETCHES           = $(wildcard $(APPDIR)/*.sketch)
-    include $(RIOTBASE)/sys/arduino/sketches.inc.mk
+  # Define application sketches module, it will be generated into $(BINDIR)
+  SKETCH_MODULE     ?= arduino_sketches
+  SKETCH_MODULE_DIR ?= $(BINDIR)/$(SKETCH_MODULE)
+  SKETCHES           = $(wildcard $(APPDIR)/*.sketch)
+  include $(RIOTBASE)/sys/arduino/sketches.inc.mk
 
-    # Depends on module
-    USEMODULE += $(SKETCH_MODULE)
-    DIRS      += $(SKETCH_MODULE_DIR)
-    BUILDDEPS += $(SKETCH_GENERATED_FILES)
+  # Depends on module
+  USEMODULE += $(SKETCH_MODULE)
+  DIRS      += $(SKETCH_MODULE_DIR)
+  BUILDDEPS += $(SKETCH_GENERATED_FILES)
 endif
 
 # include the Arduino headers
