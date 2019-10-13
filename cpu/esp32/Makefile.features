@@ -1,5 +1,8 @@
 # Features that are provided by the CPU independent on the board
+FEATURES_PROVIDED += arch_32bit
+FEATURES_PROVIDED += arch_esp32
 FEATURES_PROVIDED += cpp
+# Features that are provided by CPU independent on the board
 FEATURES_PROVIDED += periph_cpuid
 FEATURES_PROVIDED += periph_hwrng
 FEATURES_PROVIDED += periph_pm
