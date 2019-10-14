@@ -782,6 +782,12 @@ ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
     endif
   endif
 
+  ifeq (1,$(WERROR))
+    ifeq (1,$(EXPECT_ERRORS))
+      $(error Build can be forced by setting WERROR=0 to the command line)
+    endif
+  endif
+
   ifneq (, $(EXPECT_CONFLICT))
     $(shell $(COLOR_ECHO) "\n$(COLOR_YELLOW)EXPECT undesired behaviour!$(COLOR_RESET)" 1>&2)
   endif
