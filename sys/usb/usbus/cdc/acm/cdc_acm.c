@@ -126,7 +126,26 @@ static size_t _gen_full_acm_descriptor(usbus_t *usbus, void *arg)
 /* Submit (ACM interface in) */
 size_t usbus_cdc_acm_submit(usbus_cdcacm_device_t *cdcacm, const uint8_t *buf, size_t len)
 {
-    return tsrb_add(&cdcacm->tsrb, buf, len);
+    size_t n;
+    if (cdcacm->state != USBUS_CDC_ACM_LINE_STATE_DISCONNECTED) {
+        irq_disable();
+        n = tsrb_add(&cdcacm->tsrb, buf, len);
+        irq_enable();
+        return n;
+    }
+    // stuff as much data as possible into tsrb, discarding the oldest
+    irq_disable();
+    n = tsrb_free(&cdcacm->tsrb);
+    if (len > n) {
+        n += tsrb_drop(&cdcacm->tsrb, len - n);
+        buf += len - n;
+    } else {
+        n = len;
+    }
+    tsrb_add(&cdcacm->tsrb, buf, n);
+    irq_enable();
+    // behave as if everything has been written correctly
+    return len;
 }
 
 void usbus_cdc_acm_set_coding_cb(usbus_cdcacm_device_t *cdcacm,
@@ -161,7 +180,7 @@ void usbus_cdc_acm_init(usbus_t *usbus, usbus_cdcacm_device_t *cdcacm,
 
 static void _init(usbus_t *usbus, usbus_handler_t *handler)
 {
-    DEBUG("CDC_ACM: intialization\n");
+    DEBUG("CDC_ACM: initialization\n");
     usbus_cdcacm_device_t *cdcacm = (usbus_cdcacm_device_t*)handler;
 
     cdcacm->flush.handler = _handle_flush;
@@ -273,6 +292,7 @@ static void _handle_in(usbus_cdcacm_device_t *cdcacm,
         (cdcacm->state != USBUS_CDC_ACM_LINE_STATE_DTE)) {
         return;
     }
+    irq_disable();
     while (!tsrb_empty(&cdcacm->tsrb)) {
         int c = tsrb_get_one(&cdcacm->tsrb);
         ep->buf[cdcacm->occupied++] = (uint8_t)c;
@@ -280,6 +300,7 @@ static void _handle_in(usbus_cdcacm_device_t *cdcacm,
             break;
         }
     }
+    irq_enable();
     usbdev_ep_ready(ep, cdcacm->occupied);
 }
 
