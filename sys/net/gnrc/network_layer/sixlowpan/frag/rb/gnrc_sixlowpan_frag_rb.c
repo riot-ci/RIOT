@@ -129,12 +129,14 @@ void gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr,
     }
 }
 
+#ifndef NDEBUG
 static bool _valid_offset(gnrc_pktsnip_t *pkt, size_t offset)
 {
     return (sixlowpan_frag_1_is(pkt->data) && (offset == 0)) ||
            (sixlowpan_frag_n_is(pkt->data) &&
             (offset == sixlowpan_frag_offset(pkt->data)));
 }
+#endif
 
 static uint8_t *_6lo_frag_payload(gnrc_pktsnip_t *pkt)
 {
