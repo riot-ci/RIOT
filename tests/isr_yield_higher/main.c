@@ -27,11 +27,12 @@
 #define TEST_TIME (200000U)
 
 static char t2_stack[THREAD_STACKSIZE_MAIN];
+static uint32_t start_time;
 
 static void *second_thread(void *arg)
 {
-    (void) arg;
-    if (xtimer_now_usec() < TEST_TIME) {
+    uint32_t* start_time = (uint32_t*) arg;
+    if (xtimer_now_usec() < (TEST_TIME + *start_time)) {
         puts("TEST FAILED");
     }
     else {
@@ -44,24 +45,26 @@ static void _cb(void *arg)
 {
     (void)arg;
     puts("timer triggered");
-    sched_context_switch_request = 1;
 }
 
 int main(void)
 {
-    (void) thread_create(
-            t2_stack, sizeof(t2_stack),
-            THREAD_PRIORITY_MAIN,
-            THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
-            second_thread, NULL, "nr2");
-
     puts("first thread started");
+
+    start_time = xtimer_now_usec();
 
     xtimer_t timer;
     timer.callback = _cb;
     xtimer_set(&timer, TEST_TIME/2);
 
-    while(xtimer_now_usec() < TEST_TIME) {}
+    (void) thread_create(
+            t2_stack, sizeof(t2_stack),
+            THREAD_PRIORITY_MAIN,
+            THREAD_CREATE_WOUT_YIELD | THREAD_CREATE_STACKTEST,
+            second_thread, &start_time, "nr2");
+
+
+    while(xtimer_now_usec() < (TEST_TIME + start_time)) {}
 
     puts("first thread done");
 
