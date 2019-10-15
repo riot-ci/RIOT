@@ -35,7 +35,7 @@ The board is just a breakout for the ATmega128RFA1 MCU.
 | Board Manual   | [Wiki Page](https://wiki.microduinoinc.com/Microduino-Module_CoreRF) |
 
 The MCU comes with a 2.4 GHz IEEE 802.15.4 radio that is compatible with the
-Atmel AT86RF23x line of tranceivers with the only difference being that it is
+Atmel AT86RF23x line of transceivers with the only difference being that it is
 not being accessed over an SPI bus, but instead the radio registers are directly
 mapped into memory.
 
