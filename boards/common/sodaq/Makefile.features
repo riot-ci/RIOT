@@ -1,5 +1,4 @@
 CPU = samd21
-CPU_MODEL = samd21j18a
 
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
