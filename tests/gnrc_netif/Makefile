@@ -6,7 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo \
                              bluepill bluepill-128kib calliope-mini \
                              cc2650-launchpad cc2650stk chronos hifive1 hifive1b \
                              i-nucleo-lrwan1 lsn50 maple-mini \
-                             mega-xplained microbit msb-430 msb-430h \
+                             mega-xplained microbit microduino-corerf msb-430 msb-430h \
                              nrf51dk nrf51dongle nrf6310 \
                              nucleo-f030r8 nucleo-f070rb nucleo-f072rb \
                              nucleo-f103rb nucleo-f302r8 nucleo-f334r8 \
