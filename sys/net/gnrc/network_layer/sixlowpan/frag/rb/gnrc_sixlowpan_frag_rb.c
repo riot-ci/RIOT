@@ -155,6 +155,8 @@ static size_t _6lo_frag_size(gnrc_pktsnip_t *pkt, size_t offset, uint8_t *data)
     if (offset == 0) {
         frag_size = pkt->size - sizeof(sixlowpan_frag_t);
         if (data[0] == SIXLOWPAN_UNCOMP) {
+            /* subtract SIXLOWPAN_UNCOMP byte from fragment size,
+             * data pointer must be changed by caller (see _rbuf_add()) */
             frag_size--;
         }
     }
