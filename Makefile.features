@@ -50,5 +50,5 @@ _features_conflicting = $(if $(call _features_used_conflicting,$(subst :, ,$1)),
 _features_used_conflicting = $(filter $(words $1),$(words $(filter $(FEATURES_USED),$1)))
 
 # Features that are used by the application but blacklisted by the BSP.
-# Having blacklisted features may case the build to fail.
-FEATURES_BLACKLISTED = $(sort $(filter $(FEATURES_USED), $(FEATURES_BLACKLIST)))
+# Having blacklisted features may cause the build to fail.
+FEATURES_USED_BLACKLISTED = $(sort $(filter $(FEATURES_USED), $(FEATURES_BLACKLIST)))

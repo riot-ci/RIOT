@@ -739,10 +739,10 @@ ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
     EXPECT_ERRORS := 1
   endif
 
-  # Test if no feature in the requirements is blacklisted for the selected board.
-  ifneq (,$(FEATURES_BLACKLISTED))
+  # Test if no feature in the requirements used is blacklisted for the selected board.
+  ifneq (,$(FEATURES_USED_BLACKLISTED))
     $(shell $(COLOR_ECHO) "$(COLOR_RED)Some feature requirements are blacklisted:$(COLOR_RESET)"\
-                          "$(FEATURES_BLACKLISTED)" 1>&2)
+                          "$(FEATURES_USED_BLACKLISTED)" 1>&2)
     EXPECT_ERRORS := 1
   endif
 
