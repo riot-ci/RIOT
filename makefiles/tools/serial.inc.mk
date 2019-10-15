@@ -5,6 +5,9 @@ else ifeq ($(OS),Darwin)
   PORT ?= $(call ensure_value,$(PORT_DARWIN),No port set)
 endif
 
+# Default PROG_PORT is the same as PORT
+PROG_PORT ?= $(PORT)
+
 export BAUD ?= 115200
 
 RIOT_TERMINAL ?= pyterm
