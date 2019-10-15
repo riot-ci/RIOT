@@ -217,6 +217,11 @@ static inline uint16_t sixlowpan_frag_datagram_tag(sixlowpan_frag_t *hdr)
  */
 static inline uint16_t sixlowpan_frag_offset(sixlowpan_frag_n_t *hdr)
 {
+    /* https://tools.ietf.org/html/rfc4944#section-5.3:
+     * datagram_offset:  This field is present only in the second and
+     *    subsequent link fragments and SHALL specify the offset, in
+     *    increments of 8 octets, of the fragment from the beginning of the
+     *    payload datagram. [...] */
     return (hdr->offset * 8U);
 }
 /** @} */
