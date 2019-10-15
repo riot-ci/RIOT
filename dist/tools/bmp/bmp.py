@@ -51,12 +51,14 @@ def find_suitable_gdb(gdb_path):
             if p:
                 print("GDB EXECUTABLE NOT FOUND! FALLING BACK TO %s" % p, file=sys.stderr)
                 return p
+    print("CANNOT LOCATE SUITABLE GDB EXECUTABLE!", file=sys.stderr)
+    sys.exit(-1)
 
 
 # find all connected BMPs and store both GDB and UART interfaces
 def detect_probes():
-    GDBs = []
-    UARTs = []
+    gdb_ports = []
+    uart_ports = []
     for p in serial.tools.list_ports.comports():
         if p.vid == 0x1D50 and p.pid in {0x6018, 0x6017}:
             if re.fullmatch(r'COM\d\d', p.device):
@@ -64,10 +66,10 @@ def detect_probes():
             if 'GDB' in str(p.interface) \
                     or re.fullmatch(r'/dev/cu\.usbmodem([A-F0-9]*)1', p.device) \
                     or p.location[-1] == '0' and os.name == 'nt':
-                GDBs.append(p)
+                gdb_ports.append(p)
             else:
-                UARTs.append(p)
-    return GDBs, UARTs
+                uart_ports.append(p)
+    return gdb_ports, uart_ports
 
 
 # search device with specific serial number <snr> in list <l>
@@ -124,7 +126,6 @@ def parse_download_msg(msg):
 
 
 def download_to_flash(gdbmi):
-    # download to flash
     res = gdbmi.write('-target-download', timeout_sec=TIMEOUT)
     first = True  # whether this is the first status message
     current_sec = None  # name of current section
@@ -170,6 +171,78 @@ def check_flash(gdbmi):
         res = gdbmi.get_gdb_response(timeout_sec=TIMEOUT)
 
 
+def choose_bmp_port(gdb_ports):
+    print("found following Black Magic GDB servers:")
+    for i, s in enumerate(gdb_ports):
+        print("\t[%s]" % s.device, end=' ')
+        if len(s.serial_number) > 1:
+            print("Serial:", s.serial_number, end=' ')
+        if i == 0:
+            print("<- default", end=' ')
+        print('')
+    port = gdb_ports[0].device
+    if args.port:
+        port = args.port
+    elif args.serial:
+        port = search_serial(args.serial, gdb_ports)
+        assert port, "no BMP with this serial found"
+    print('connecting to [%s]...' % port)
+    return port
+
+
+# terminal mode, opens TTY program
+def term_mode(uart_ports):
+    port = uart_ports[0].device
+    if args.port:
+        port = args.port
+    elif args.serial:
+        port = search_serial(args.serial, uart_ports)
+        assert port, "no BMP with this serial found"
+    os.system(args.term_cmd % port)
+    sys.exit(0)
+
+
+# debug mode, opens GDB shell with options
+def debug_mode(port):
+    gdb_args = ['-ex \'target extended-remote %s\'' % port]
+    if args.tpwr:
+        gdb_args.append('-ex \'monitor tpwr enable\'')
+    if args.connect_srst:
+        gdb_args.append('-ex \'monitor connect_srst enable\'')
+    if args.jtag:
+        gdb_args.append('-ex \'monitor jtag_scan\'')
+    else:
+        gdb_args.append('-ex \'monitor swdp_scan\'')
+    gdb_args.append('-ex \'attach %s\'' % args.attach)
+    os.system(" ".join(['\"' + args.gdb_path + '\"'] + gdb_args + [args.file]))
+
+
+def connect_to_target(port):
+    # open GDB in machine interface mode
+    gdbmi = GdbController(gdb_path=args.gdb_path, gdb_args=["--nx", "--quiet", "--interpreter=mi2", args.file])
+    assert gdb_write_and_wait_for_result(gdbmi, '-target-select extended-remote %s' % port, 'connecting',
+                                         expected_result='connected')
+    # set options
+    if args.connect_srst:
+        gdbmi.write('monitor connect_srst enable', timeout_sec=TIMEOUT)
+    if args.tpwr:
+        gdbmi.write('monitor tpwr enable', timeout_sec=TIMEOUT)
+    # scan for targets
+    if not args.jtag:
+        print("scanning using SWD...")
+        res = gdbmi.write('monitor swdp_scan', timeout_sec=TIMEOUT)
+    else:
+        print("scanning using JTAG...")
+        res = gdbmi.write('monitor jtag_scan', timeout_sec=TIMEOUT)
+    targets = detect_targets(gdbmi, res)
+    assert len(targets) > 0, "no targets found"
+    print("found following targets:")
+    for t in targets:
+        print("\t%s" % t)
+    print("")
+    return gdbmi
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     assert not (args.swd and args.jtag), "you may only choose one protocol"
@@ -177,79 +250,19 @@ if __name__ == '__main__':
     g, u = detect_probes()
     assert len(g) > 0, "no Black Magic Probes found 😔"
 
-    # terminal mode, opens TTY program
     if args.action == 'term':
-        port = u[0].device
-        if args.port:
-            port = args.port
-        elif args.serial:
-            port = search_serial(args.serial, u)
-            assert port, "no BMP with this serial found"
-        os.system(args.term_cmd % port)
-        sys.exit(0)
+        term_mode(u)
     else:
-        print("found following Black Magic GDB servers:")
-        for i, s in enumerate(g):
-            print("\t[%s]" % s.device, end=' ')
-            if len(s.serial_number) > 1:
-                print("Serial:", s.serial_number, end=' ')
-            if i == 0:
-                print("<- default", end=' ')
-            print('')
-
-        port = g[0].device
-        if args.port:
-            port = args.port
-        elif args.serial:
-            port = search_serial(args.serial, g)
-            assert port, "no BMP with this serial found"
-
-        print('connecting to [%s]...' % port)
+        port = choose_bmp_port(g)
 
         args.file = args.file if args.file else ''
         args.gdb_path = find_suitable_gdb(args.gdb_path)
-        if not args.gdb_path:
-            print("CANNOT LOCATE SUITABLE GDB EXECUTABLE!", file=sys.stderr)
-            sys.exit(-1)
 
-        # debug mode, opens GDB shell with options
         if args.action == 'debug':
-            gdb_args = ['-ex \'target extended-remote %s\'' % port]
-            if args.tpwr:
-                gdb_args.append('-ex \'monitor tpwr enable\'')
-            if args.connect_srst:
-                gdb_args.append('-ex \'monitor connect_srst enable\'')
-            if args.jtag:
-                gdb_args.append('-ex \'monitor jtag_scan\'')
-            else:
-                gdb_args.append('-ex \'monitor swdp_scan\'')
-            gdb_args.append('-ex \'attach %s\'' % args.attach)
-            os.system(" ".join(['\"' + args.gdb_path + '\"'] + gdb_args + [args.file]))
+            debug_mode(port)
             sys.exit(0)
 
-        # open GDB in machine interface mode
-        gdbmi = GdbController(gdb_path=args.gdb_path, gdb_args=["--nx", "--quiet", "--interpreter=mi2", args.file])
-        assert gdb_write_and_wait_for_result(gdbmi, '-target-select extended-remote %s' % port, 'connecting',
-                                             expected_result='connected')
-        # set options
-        if args.connect_srst:
-            gdbmi.write('monitor connect_srst enable', timeout_sec=TIMEOUT)
-        if args.tpwr:
-            gdbmi.write('monitor tpwr enable', timeout_sec=TIMEOUT)
-
-        # scan for targets
-        if not args.jtag:
-            print("scanning using SWD...")
-            res = gdbmi.write('monitor swdp_scan', timeout_sec=TIMEOUT)
-        else:
-            print("scanning using JTAG...")
-            res = gdbmi.write('monitor jtag_scan', timeout_sec=TIMEOUT)
-        targets = detect_targets(gdbmi, res)
-        assert len(targets) > 0, "no targets found"
-        print("found following targets:")
-        for t in targets:
-            print("\t%s" % t)
-        print("")
+        gdbmi = connect_to_target(port)
 
         if args.action == 'list':
             sys.exit(0)
