@@ -2,6 +2,7 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := arduino-mega2560 \
                              mega-xplained \
+                             microduino-corerf \
                              waspmote-pro
 
 USEMODULE += adt7310
