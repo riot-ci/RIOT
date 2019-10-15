@@ -724,7 +724,7 @@ include $(RIOTMAKE)/tools/targets.inc.mk
 
 # Warn if the selected board and drivers don't provide all needed features:
 ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
-  EXPECT_ERRORS :=
+  REQUIREMENT_ERRORS :=
   EXPECT_CONFLICT :=
 
   # Test if there where dependencies against a module in DISABLE_MODULE.
@@ -732,14 +732,14 @@ ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
     $(shell $(COLOR_ECHO) "$(COLOR_RED)Required modules were disabled using DISABLE_MODULE:$(COLOR_RESET)"\
                           "$(sort $(filter $(DISABLE_MODULE), $(USEMODULE)))" 1>&2)
     USEMODULE := $(filter-out $(DISABLE_MODULE), $(USEMODULE))
-    EXPECT_ERRORS := 1
+    REQUIREMENT_ERRORS := 1
   endif
 
   # Test if all feature requirements were met by the selected board.
   ifneq (,$(FEATURES_MISSING))
     $(shell $(COLOR_ECHO) "$(COLOR_RED)There are unsatisfied feature requirements:$(COLOR_RESET)"\
                           "$(FEATURES_MISSING)" 1>&2)
-    EXPECT_ERRORS := 1
+    REQUIREMENT_ERRORS := 1
   endif
 
   # Test if no feature in the requirements used is blacklisted for the selected board.
@@ -763,7 +763,7 @@ ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
   ifneq (, $(BOARD_WHITELIST))
     ifeq (, $(filter $(BOARD_WHITELIST), $(BOARD)))
       $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=$(BOARD) is not whitelisted:$(COLOR_RESET) $(BOARD_WHITELIST)" 1>&2)
-      EXPECT_ERRORS := 1
+      REQUIREMENT_ERRORS := 1
     endif
   endif
 
@@ -771,30 +771,30 @@ ifneq (, $(filter all flash, $(if $(MAKECMDGOALS), $(MAKECMDGOALS), all)))
   ifneq (, $(BOARD_BLACKLIST))
     ifneq (, $(filter $(BOARD_BLACKLIST), $(BOARD)))
       $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected BOARD=$(BOARD) is blacklisted:$(COLOR_RESET) $(BOARD_BLACKLIST)" 1>&2)
-      EXPECT_ERRORS := 1
+      REQUIREMENT_ERRORS := 1
     endif
   endif
 
   #  test if toolchain is supported.
   ifeq (,$(filter $(TOOLCHAIN),$(TOOLCHAINS_SUPPORTED)))
     $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected TOOLCHAIN=$(TOOLCHAIN) is not supported.$(COLOR_RESET)\nSupported toolchains: $(TOOLCHAINS_SUPPORTED)" 1>&2)
-    EXPECT_ERRORS := 1
+    REQUIREMENT_ERRORS := 1
   endif
 
   # If there is a blacklist, then test if the board is blacklisted.
   ifneq (,$(TOOLCHAINS_BLACKLIST))
     ifneq (,$(filter $(TOOLCHAIN),$(TOOLCHAINS_BLACKLIST)))
       $(shell $(COLOR_ECHO) "$(COLOR_RED)The selected TOOLCHAIN=$(TOOLCHAIN) is blacklisted:$(COLOR_RESET) $(TOOLCHAINS_BLACKLIST)" 1>&2)
-      EXPECT_ERRORS := 1
+      REQUIREMENT_ERRORS := 1
     endif
+  endif
+
+  ifeq (1,$(REQUIREMENT_ERRORS))
+    $(error Please fix your application requirements)
   endif
 
   ifneq (, $(EXPECT_CONFLICT))
     $(shell $(COLOR_ECHO) "\n$(COLOR_YELLOW)EXPECT undesired behaviour!$(COLOR_RESET)" 1>&2)
-  endif
-
-  ifneq (, $(EXPECT_ERRORS))
-    $(shell $(COLOR_ECHO) "\n\n$(COLOR_RED)EXPECT ERRORS!$(COLOR_RESET)\n\n" 1>&2)
   endif
 
 endif
