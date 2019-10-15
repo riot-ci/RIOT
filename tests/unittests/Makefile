@@ -36,6 +36,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              lsn50 \
                              mega-xplained \
                              microbit \
+                             microduino-corerf \
                              msb-430 \
                              msb-430h \
                              nrf51dk \

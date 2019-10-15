@@ -6,6 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove \
                              arduino-nano \
                              arduino-uno \
                              mega-xplained \
+                             microduino-corerf \
                              nucleo-f031k6 \
                              nucleo-f042k6 \
                              #
