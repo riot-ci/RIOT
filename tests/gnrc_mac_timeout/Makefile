@@ -6,7 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
                              chronos i-nucleo-lrwan1 nucleo-f030r8 \
                              nucleo-f031k6 nucleo-f042k6 nucleo-l031k6 \
                              nucleo-l053r8 stm32f0discovery stm32l0538-disco \
-                             waspmote-pro
+                             stm32f030f4-demo waspmote-pro
 
 USEMODULE += gnrc_mac
 

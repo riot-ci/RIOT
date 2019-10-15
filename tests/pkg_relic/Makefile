@@ -30,6 +30,7 @@ BOARD_INSUFFICIENT_MEMORY :=    i-nucleo-lrwan1 \
                                 nucleo-f042k6 \
                                 nucleo-l031k6 \
                                 nucleo-l053r8 \
+                                stm32f030f4-demo \
                                 stm32l0538-disco \
                                 #
 

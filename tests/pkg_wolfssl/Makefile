@@ -24,8 +24,8 @@ BOARD_BLACKLIST := arduino-duemilanove arduino-leonardo \
 #
 BOARD_INSUFFICIENT_MEMORY := nucleo-f042k6 stm32f0discovery nucleo-f334r8 \
                              i-nucleo-lrwan1 nucleo-f302r8 nucleo-l053r8 saml11-xpro \
-                             nucleo-l031k6 bluepill stm32l0538-disco saml10-xpro \
-                             nucleo-f030r8 nucleo-f031k6 nucleo-f303k8 blackpill
+                             nucleo-l031k6 bluepill stm32f030f4-demo stm32l0538-disco \
+                             saml10-xpro nucleo-f030r8 nucleo-f031k6 nucleo-f303k8 blackpill
 
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
