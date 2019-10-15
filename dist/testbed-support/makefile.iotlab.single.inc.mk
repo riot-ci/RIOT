@@ -54,9 +54,6 @@ IOTLAB_USER ?= $(shell cut -f1 -d: $(IOTLAB_AUTH))
 # Optional Experiment id. Required when having multiple experiments
 IOTLAB_EXP_ID ?=
 
-# File to use for flashing
-FLASHFILE ?= $(ELFFILE)
-
 # Specify experiment-id option if provided
 _IOTLAB_EXP_ID := $(if $(IOTLAB_EXP_ID),--id $(IOTLAB_EXP_ID))
 
