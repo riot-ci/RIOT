@@ -1,3 +1,5 @@
+CPU_MODEL = samd21j18a
+
 FEATURES_PROVIDED += periph_pwm
 
 include $(RIOTBOARD)/common/sodaq/Makefile.features
