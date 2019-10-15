@@ -9,7 +9,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
                              nucleo-f042k6 nucleo-f031k6 \
                              nucleo-f030r8 nucleo-f303k8 nucleo-l053r8 \
                              nucleo-l031k6 stm32f0discovery stm32l0538-disco \
-                             thingy52 telosb \
+                             stm32f030f4-demo thingy52 telosb \
                              waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
 # chronos, hamilton and ruuvitag boards don't support ethos
 BOARD_BLACKLIST := chronos hamilton ruuvitag

@@ -5,7 +5,7 @@ BOARD_INSUFFICIENT_MEMORY = blackpill bluepill i-nucleo-lrwan1 \
                             nucleo-l031k6 nucleo-f030r8 nucleo-f302r8 \
                             nucleo-f303k8 nucleo-f334r8 nucleo-l053r8 \
                             saml10-xpro saml11-xpro stm32f0discovery \
-                            stm32l0538-disco
+                            stm32f030f4-demo stm32l0538-disco
 
 LWIP_IPV4 ?= 0
 

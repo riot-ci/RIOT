@@ -26,6 +26,7 @@ BOARD_WHITELIST := \
   saml21-xpro \
   samr21-xpro \
   spark-core \
+  stm32f030f4-demo \
   stm32f0discovery \
   stm32f3discovery \
   stm32f4discovery \
