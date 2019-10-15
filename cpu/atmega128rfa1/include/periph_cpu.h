@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup         cpu_atmega256rfr2
+ * @ingroup         cpu_atmega128rfa1
  * @{
  *
  * @file
@@ -35,7 +35,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name   Available ports on the ATmega256rfr family
+ * @name   Available ports on the ATmega128rfa1 MCU
  * @{
  */
 enum {
@@ -47,7 +47,7 @@ enum {
 };
 
 /**
- * @brief   Available external interrupt pins on the ATmega256rfr family
+ * @brief   Available external interrupt pins on the ATmega128rfa1 MCU
  *
  * In order of their interrupt number.
  */
@@ -72,7 +72,7 @@ enum {
  * @name    EEPROM configuration
  * @{
  */
-#define EEPROM_SIZE             (8192U)  /* 8kB */
+#define EEPROM_SIZE             (4096U)  /* 4kB */
 /** @} */
 
 #ifdef __cplusplus
