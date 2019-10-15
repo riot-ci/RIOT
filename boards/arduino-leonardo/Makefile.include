@@ -1,5 +1,11 @@
+# For backward compatibility
+ifneq (,$(AVRDUDE_PORT))
+  $(warning Warning! AVRDUDE_PORT is deprecated use PROG_PORT)
+  PROG_PORT ?= $(AVRDUDE_PORT)
+endif
+
 PORT_LINUX      ?= /dev/ttyUSB0
-AVRDUDE_PORT    ?= /dev/ttyACM0
+PROG_PORT       ?= /dev/ttyACM0
 PORT_DARWIN     ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 BAUD            ?= 9600
 
