@@ -13,8 +13,8 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon arduino-duemilanove arduino-leonardo \
                              nucleo-l053r8 nucleo-l073rz nucleo-f031k6 \
                              nucleo-f042k6 nucleo-f303k8 nucleo-l031k6 \
                              opencm904 saml10-xpro saml11-xpro spark-core \
-                             stm32f0discovery stm32l0538-disco telosb \
-                             waspmote-pro wsn430-v1_3b wsn430-v1_4 \
+                             stm32f030f4-demo stm32f0discovery stm32l0538-disco \
+                             telosb waspmote-pro wsn430-v1_3b wsn430-v1_4 \
                              yunjia-nrf51822 z1
 
 USEMODULE += embunit

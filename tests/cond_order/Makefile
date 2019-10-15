@@ -5,7 +5,7 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
                              nucleo32-f042 nucleo32-l031 nucleo-f030 \
                              nucleo-f030r8 nucleo-f031k6 nucleo-f042k6 \
                              nucleo-l031k6 nucleo-l053 nucleo-l053r8 \
-                             stm32f0discovery stm32l0538-disco
+                             stm32f030f4-demo stm32f0discovery stm32l0538-disco
 
 USEMODULE += test_utils_interactive_sync
 

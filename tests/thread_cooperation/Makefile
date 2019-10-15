@@ -2,7 +2,7 @@ include ../Makefile.tests_common
 
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
                              arduino-uno chronos i-nucleo-lrwan1 msb-430 \
-                             msb-430h nucleo-f031k6 stm32l0538-disco
+                             msb-430h nucleo-f031k6 stm32l0538-disco stm32f030f4-demo
 
 DISABLE_MODULE += auto_init
 

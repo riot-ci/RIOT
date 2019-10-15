@@ -3,7 +3,7 @@ include ../Makefile.tests_common
 BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
                              arduino-uno nucleo-f031k6 nucleo-f042k6 \
                              nucleo-f030r8 nucleo-f334r8 stm32f0discovery \
-                             waspmote-pro
+                             stm32f030f4-demo waspmote-pro
 
 USEMODULE += xbee
 USEMODULE += gnrc_txtsnd
