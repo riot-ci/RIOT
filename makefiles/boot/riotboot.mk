@@ -46,11 +46,6 @@ $(BINDIR_APP)-slot1.elf: FW_ROM_LEN=$$((SLOT1_LEN - $(RIOTBOOT_HDR_LEN)))
 $(BINDIR_APP)-slot1.elf: ROM_OFFSET=$(SLOT1_IMAGE_OFFSET)
 SLOT_RIOT_ELFS = $(BINDIR_APP)-slot0.elf $(BINDIR_APP)-slot1.elf
 
-# ensure both slot elf files are always linked
-# this ensures that both "make test" and "make test-murdock" can rely on them
-# being present without having to trigger re-compilation.
-BUILD_FILES += $(SLOT_RIOT_ELFS)
-
 # Create binary target with RIOT header
 $(SLOT_RIOT_BINS): %.$(APP_VER).riot.bin: %.hdr %.bin
 	@echo "creating $@..."
