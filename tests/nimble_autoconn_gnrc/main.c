@@ -38,6 +38,6 @@ int main(void)
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
 
-    /* should be never reached */
+    /* should never be reached */
     return 0;
 }

@@ -16,7 +16,6 @@ USEMODULE += gnrc_rpl
 
 # Setup Nimble
 USEMODULE += nimble_autoconn_ipsp
-NIMBLE_MAX_CONN := 3
 
 TEST_ON_CI_WHITELIST += nrf52dk
 
