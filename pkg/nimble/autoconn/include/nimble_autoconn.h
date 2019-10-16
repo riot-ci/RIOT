@@ -156,6 +156,9 @@ typedef struct {
  *          system initialization or at the beginning of the user application.
  *          Use nimble_autoconn_update() to update parameters at runtime.
  *
+ * @warning Autoconn expects @ref nimble_netif to be initialized. So make sure
+ *          nimble_netif_init() was called before calling nimble_autoconn_init().
+ *
  * @param[in] params        timing parameters to use
  * @param[in] ad            advertising data, if NULL it is generated
  * @param[in] adlen         length of @p ad in bytes
