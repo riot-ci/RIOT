@@ -478,17 +478,17 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
             case 'p': {
-                long bus = strtol(optarg, &optarg, 10);
-                if (*optarg != ':') {
-                    usage_exit(EXIT_FAILURE);
-                }
-                long cs = strtol(++optarg, &optarg, 10);
-                if (*optarg != ':') {
-                    usage_exit(EXIT_FAILURE);
-                }
-                if (spidev_linux_setup(bus, cs, ++optarg) < 0) {
-                    usage_exit(EXIT_FAILURE);
-                }
+                    long bus = strtol(optarg, &optarg, 10);
+                    if (*optarg != ':') {
+                        usage_exit(EXIT_FAILURE);
+                    }
+                    long cs = strtol(++optarg, &optarg, 10);
+                    if (*optarg != ':') {
+                        usage_exit(EXIT_FAILURE);
+                    }
+                    if (spidev_linux_setup(bus, cs, ++optarg) < 0) {
+                        usage_exit(EXIT_FAILURE);
+                    }
                 }
                 break;
 #endif

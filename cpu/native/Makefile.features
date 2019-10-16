@@ -6,5 +6,5 @@ FEATURES_PROVIDED += periph_pwm
 
 # Access to hardware SPI bus is only supported on Linux hosts
 ifeq ($(OS),Linux)
-	FEATURES_PROVIDED += periph_spi
+  FEATURES_PROVIDED += periph_spi
 endif
