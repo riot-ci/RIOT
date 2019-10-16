@@ -143,4 +143,4 @@ def testfunc(child):
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc, timeout=1, traceback=True))
+    sys.exit(run(testfunc, timeout=1, traceback=True, sync=True))
