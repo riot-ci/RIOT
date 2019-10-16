@@ -27,12 +27,6 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <assert.h>
-#include "cpu_conf.h"
-#include "irq.h"
-
 /**
  * @brief   Print the last instruction's address
  *
