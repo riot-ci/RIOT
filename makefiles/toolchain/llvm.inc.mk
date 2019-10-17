@@ -78,6 +78,10 @@ endif
 # we treat this only as a warning.
 CFLAGS += -Wno-error=atomic-alignment
 
+# For compatibility with older clang versions we also disable warnings on
+# unsupported warning flags:
+CFLAGS += -Wno-unknown-warning-option
+
 OPTIONAL_CFLAGS_BLACKLIST += -fno-delete-null-pointer-checks
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-overflow
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-truncation
