@@ -988,7 +988,7 @@ FEATURES_OPTIONAL += periph_pm
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 
-ifeq (,$(filter auto_init,$(USEMODULE)))
+ifneq (,$(filter auto_init,$(DISABLE_MODULE)))
   # boards using stdio over USB require auto_init
   FEATURES_BLACKLIST += stdio_usb
 endif
