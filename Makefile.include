@@ -599,6 +599,19 @@ endif
 # The `clean` needs to be serialized before everything else.
 all $(BASELIBS) $(BUILDDEPS) ..in-docker-container: | $(CLEAN)
 
+# re-create the Makefile.ci Makefile
+define create_Makefile.ci
+	@echo "BOARD_INSUFFICIENT_MEMORY := \\" > Makefile.ci
+	@for b in $(sort $(BOARD_INSUFFICIENT_MEMORY)); do echo "    $$b \\" >> Makefile.ci; done
+	@echo "    #" >> Makefile.ci
+endef
+
+.PHONY: add_insufficient_memory
+add_insufficient_memory: BOARD_INSUFFICIENT_MEMORY += $(BOARD)
+add_insufficient_memory:
+	$(call create_Makefile.ci)
+	@echo "Added $$BOARD to Makefile.ci"
+
 .PHONY: pkg-prepare pkg-build pkg-build-%
 pkg-prepare:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i prepare ; done
