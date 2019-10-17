@@ -73,10 +73,10 @@ ifneq (,$(TARGET_ARCH))
 endif
 
 # For bare metal targets the performance penalty of atomic operations being
-# implemented with library calls is totally insignificant. Warning when those
-# are used would make code using C11 atomics no longer portable, so we just
-# disable the warning.
-CFLAGS += -Wno-atomic-alignment
+# implemented with library calls is totally insignificant. Treating warnings
+# when those are used would make code using C11 atomics no longer portable, so
+# we treat this only as a warning.
+CFLAGS += -Wno-error=atomic-alignment
 
 OPTIONAL_CFLAGS_BLACKLIST += -fno-delete-null-pointer-checks
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-overflow
