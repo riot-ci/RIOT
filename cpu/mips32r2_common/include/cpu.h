@@ -9,13 +9,13 @@
  */
 
 /**
- * @defgroup    cpu_mips_pic32_common Microchip PIC32
+ * @defgroup    cpu_mips32r2_common Imagination Technologies MIPS32R2 Common
  * @ingroup     cpu
- * @brief       CPU definitions for Microchip PIC32 devices.
+ * @brief       CPU definitions for MIPS32R2 devices.
  * @{
  *
  * @file
- * @brief       CPU definitions for Microchip PIC32 devices.
+ * @brief       CPU definitions for MIPS32R2 devices.
  *
  * @author      Neil Jones <neil.jones@imgtec.com>
  */
