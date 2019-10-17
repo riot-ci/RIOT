@@ -178,7 +178,7 @@ check_board_insufficient_memory_not_in_makefile() {
     local patterns=()
     local pathspec=()
 
-    patterns+=(-e '^[[:space:]]*BOARD_INSUFFICIENT_MEMORY[[:space:]:]*=')
+    patterns+=(-e '^[[:space:]]*BOARD_INSUFFICIENT_MEMORY[[:space:]:+]*=')
 
     pathspec+=('**/Makefile')
 
