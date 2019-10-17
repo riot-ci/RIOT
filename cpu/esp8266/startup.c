@@ -81,13 +81,6 @@ void esp_riot_init(void)
     extern void uart_system_init (void);
     uart_system_init();
 
-    /*
-     * initialization of newlib, includes the ctors initialization and
-     * and the execution of stdio_init in _init of newlib_syscalls_default
-     */
-    extern void __libc_init_array(void);
-    __libc_init_array();
-
     /* init watchdogs */
     system_wdt_init();
 

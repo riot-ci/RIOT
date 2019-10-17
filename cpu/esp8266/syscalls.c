@@ -223,7 +223,7 @@ int IRAM _lock_try_acquire_recursive(_lock_t *lock)
         return 0;
     }
 
-    return mutex_trylock((mutex_t*)*lock);
+    return rmutex_trylock((mutex_t*)*lock);
 }
 
 void IRAM _lock_release(_lock_t *lock)
@@ -469,6 +469,12 @@ void syscalls_init(void)
 
     environ = malloc(sizeof(char*));
     environ[0] = NULL;
+
+    /*
+     * initialization of newlib, includes the ctors initialization
+     */
+    extern void __libc_init_array(void);
+    __libc_init_array();
 }
 
 uint32_t system_get_time(void)

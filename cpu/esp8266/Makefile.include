@@ -95,6 +95,9 @@ CFLAGS  += -ffunction-sections -fdata-sections -fzero-initialized-in-bss
 CFLAGS  += -fexceptions
 ASFLAGS += --longcalls --text-section-literals
 
+# thin archives trigger a reboot loop - see #12258, #12035, #12346
+ARFLAGS = rcs
+
 ifneq (, $(filter esp_gdbstub, $(USEMODULE)))
     GDBSTUB_DIR ?= $(RIOTCPU)/$(CPU)/vendor/esp-gdbstub
     CFLAGS      += -DGDBSTUB_BREAK_ON_INIT=1
@@ -163,7 +166,6 @@ PREFFLAGS += ls -l $(FLASHFILE).bin | awk '{ print $$5 }' >> $(BINDIR)/partition
 
 PREFFLAGS += python $(RIOTCPU)/$(CPU)/vendor/esp-idf/partition_table/gen_esp32part.py
 PREFFLAGS += --verify $(BINDIR)/partitions.csv $(BINDIR)/partitions.bin
-FLASHDEPS  = preflash
 
 ifneq (, $(filter esp_log_colored, $(USEMODULE)))
     BOOTLOADER ?= bootloader_dout_115200_color.bin
