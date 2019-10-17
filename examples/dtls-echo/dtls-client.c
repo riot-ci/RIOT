@@ -79,8 +79,10 @@ static int _events_handler(struct dtls_context_t *ctx,
  * DTLS records. Also, it determines if said DTLS record is coming from a new
  * peer or a currently established peer.
  *
+ * Return value < 0 if dtls_handle_message() returns error and 0 on other
+ * errors.
  */
-static void dtls_handle_read(dtls_context_t *ctx)
+static int dtls_handle_read(dtls_context_t *ctx)
 {
     static session_t session;
     static sock_udp_ep_t remote = SOCK_IPV6_EP_ANY;
@@ -88,12 +90,12 @@ static void dtls_handle_read(dtls_context_t *ctx)
 
     if (!ctx) {
         DEBUG("%s: No DTLS context\n", __func__);
-        return;
+        return 0;
     }
 
     if (!dtls_get_app_data(ctx)) {
         DEBUG("%s: No app_data stored!\n", __func__);
-        return;
+        return 0;
     }
 
     sock_udp_t *sock;
@@ -102,18 +104,18 @@ static void dtls_handle_read(dtls_context_t *ctx)
 
     if (sock_udp_get_remote(sock, &remote) == -ENOTCONN) {
         DEBUG("%s: Unable to retrieve remote!\n", __func__);
-        return;
+        return 0;
     }
 
     ssize_t res = sock_udp_recv(sock, packet_rcvd, DTLS_MAX_BUF,
                                 1 * US_PER_SEC + DEFAULT_US_DELAY,
                                 &remote);
 
-    if (res <= 0) {
+    if (res < 0) {
         if ((ENABLE_DEBUG) && (res != -EAGAIN) && (res != -ETIMEDOUT)) {
             DEBUG("sock_udp_recv unexepcted code error: %i\n", (int)res);
         }
-        return;
+        return 0;
     }
 
     /* session requires the remote socket (IPv6:UDP) address and netif  */
@@ -128,18 +130,16 @@ static void dtls_handle_read(dtls_context_t *ctx)
 
     if (memcpy(&session.addr, &remote.addr.ipv6, 16) == NULL) {
         puts("ERROR: memcpy failed!");
-        return;
+        return 0;
     }
 
-    if (ENABLE_DEBUG) {
+    if (ENABLE_DEBUG && res != 0) {
         DEBUG("DBG-Client: Msg received from \n\t Addr Src: [");
         ipv6_addr_print(&session.addr);
         DEBUG("]:%u\n", remote.port);
     }
 
-    dtls_handle_message(ctx, &session, packet_rcvd, (int)DTLS_MAX_BUF);
-
-    return;
+    return dtls_handle_message(ctx, &session, packet_rcvd, (int)DTLS_MAX_BUF);
 }
 
 #ifdef DTLS_PSK
@@ -455,8 +455,11 @@ static void client_send(char *addr_str, char *data)
         }
 
         /* Check if a DTLS record was received */
-        /* NOTE: We expect an answer after try_send() */
-        dtls_handle_read(dtls_context);
+        /* NOTE: We expect an answer or alert after try_send() */
+        if (dtls_handle_read(dtls_context) < 0) {
+            printf("Received error during message handling\n");
+            break;
+        }
         watch--;
     } /* END while */
 
