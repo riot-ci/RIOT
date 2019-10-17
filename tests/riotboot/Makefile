@@ -22,7 +22,7 @@ QUIET ?= 1
 APP_VER?=0
 
 # To avoid compilation during the test ensure both slot bin files are always
-# generated and linked this ensures that "BUILD_IN_DOCKER=1 make test" 
+# generated and linked this ensures that "BUILD_IN_DOCKER=1 make test"
 # can rely on them being present without having to trigger re-compilation.
 BUILD_FILES += $(SLOT_RIOT_BINS)
 
