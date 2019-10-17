@@ -72,6 +72,16 @@ ifneq (,$(TARGET_ARCH))
   CXXINCLUDES += $(GCC_CXX_INCLUDES)
 endif
 
+# For bare metal targets the performance penalty of atomic operations being
+# implemented with library calls is totally insignificant. Treating warnings
+# when those are used would make code using C11 atomics no longer portable, so
+# we treat this only as a warning.
+CFLAGS += -Wno-error=atomic-alignment
+
+# For compatibility with older clang versions we also disable warnings on
+# unsupported warning flags:
+CFLAGS += -Wno-unknown-warning-option
+
 OPTIONAL_CFLAGS_BLACKLIST += -fno-delete-null-pointer-checks
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-overflow
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-truncation
