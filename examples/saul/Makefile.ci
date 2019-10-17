@@ -3,4 +3,5 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-leonardo \
     arduino-nano \
     arduino-uno \
+    stm32f030f4-demo \
     #
