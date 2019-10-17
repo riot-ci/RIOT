@@ -35,7 +35,7 @@ BUILD_FILES += $(SLOT_RIOT_ELFS)
 # create final binaries with specific APP_VER values. The CI RasPi test workers
 # don't compile themselves, thus add the required files here so they will be
 # submitted along with the test jobs.
-TEST_EXTRA_FILES=$(SLOT_RIOT_ELFS)
+TEST_EXTRA_FILES = $(SLOT_RIOT_BINS)
 
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
