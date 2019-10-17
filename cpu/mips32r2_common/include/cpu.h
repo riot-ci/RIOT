@@ -23,6 +23,9 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "cpu_conf.h"
+#include "irq.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
