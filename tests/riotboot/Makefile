@@ -21,11 +21,21 @@ QUIET ?= 1
 # Thus default to that (instead of epoch set by makefiles/boot/riotboot.inc.mk).
 APP_VER?=0
 
+# To avoid compilation during the test ensure both slot bin files are always
+# generated and linked this ensures that "BUILD_IN_DOCKER=1 make test"
+# can rely on them being present without having to trigger re-compilation.
+BUILD_FILES += $(SLOT_RIOT_BINS)
+
+# To avoid compilation during the test ensure both slot elf files are always
+# generated and linked this ensures that "make test-murdock"
+# can rely on them being present without having to trigger re-compilation.
+BUILD_FILES += $(SLOT_RIOT_ELFS)
+
 # The test needs the linked slot binaries without header in order to be able to
 # create final binaries with specific APP_VER values. The CI RasPi test workers
 # don't compile themselves, thus add the required files here so they will be
 # submitted along with the test jobs.
-TEST_EXTRA_FILES=$(SLOT_RIOT_ELFS)
+TEST_EXTRA_FILES = $(SLOT_RIOT_BINS)
 
 include ../Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
