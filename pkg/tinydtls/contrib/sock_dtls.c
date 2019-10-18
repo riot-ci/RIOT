@@ -110,7 +110,7 @@ static int _write(struct dtls_context_t *ctx, session_t *session, uint8_t *buf,
     remote.family = AF_INET6;
 
     ssize_t res = sock_udp_send(sock->udp_sock, buf, len, &remote);
-    if (res <= 0) {
+    if (res < 0) {
         DEBUG("sock_dtls: failed to send DTLS record: %d\n", res);
     }
     return res;
