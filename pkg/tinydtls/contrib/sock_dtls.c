@@ -117,7 +117,7 @@ static int _write(struct dtls_context_t *ctx, session_t *session, uint8_t *buf,
 }
 
 static int _event(struct dtls_context_t *ctx, session_t *session,
-           dtls_alert_level_t level, unsigned short code)
+                  dtls_alert_level_t level, unsigned short code)
 {
     (void)level;
     (void)session;
@@ -246,7 +246,8 @@ static int _verify_ecdsa_key(struct dtls_context_t *ctx,
 int sock_dtls_create(sock_dtls_t *sock, sock_udp_t *udp_sock,
                      credman_tag_t tag, unsigned version, unsigned role)
 {
-    assert(sock && udp_sock);
+    assert(sock);
+    assert(udp_sock);
 
     if (role != SOCK_DTLS_CLIENT && role != SOCK_DTLS_SERVER) {
         DEBUG("sock_dtls: invalid role\n");
@@ -288,7 +289,9 @@ int sock_dtls_session_create(sock_dtls_t *sock, const sock_udp_ep_t *ep,
     msg_t msg;
     ssize_t res;
 
-    assert(sock && ep && remote);
+    assert(sock);
+    assert(ep);
+    assert(remote);
 
     /* prepare a the remote party to connect to */
     memcpy(&remote->ep, ep, sizeof(sock_udp_ep_t));
@@ -340,7 +343,9 @@ void sock_dtls_session_destroy(sock_dtls_t *sock, sock_dtls_session_t *remote)
 ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
                        const void *data, size_t len)
 {
-    assert(sock && remote && data);
+    assert(sock);
+    assert(remote);
+    assert(data);
     int res;
 
     /* check if session exists, if not create session first then send */
@@ -386,7 +391,9 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
 {
     xtimer_t timeout_timer;
 
-    assert(sock && data && remote);
+    assert(sock);
+    assert(data);
+    assert(remote);
 
     if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
         timeout_timer.callback = _timeout_callback;
