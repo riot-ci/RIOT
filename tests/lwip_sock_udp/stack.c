@@ -138,6 +138,13 @@ static int _netdev_send(netdev_t *dev, const iolist_t *iolist)
     return offset;
 }
 
+/* On riscv, the default optimization level triggers out-of-bound reads with the
+   calls to memcpy in the IPv6 related parts of the following 2 functions.
+   Just disable temporarily the GCC optimization level here only for riscv. */
+#if __riscv
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+#endif
 void _net_init(void)
 {
     xtimer_init();
@@ -224,6 +231,9 @@ void _prepare_send_checks(void)
     }
 #endif
 }
+#ifdef __riscv
+#pragma GCC pop_options  /* Restore GCC optimization level. */
+#endif
 
 bool _inject_4packet(uint32_t src, uint32_t dst, uint16_t src_port,
                      uint16_t dst_port, void *data, size_t data_len,
