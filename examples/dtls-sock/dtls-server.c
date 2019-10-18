@@ -97,13 +97,13 @@ void *dtls_server_wrapper(void *arg)
                            SOCK_DTLS_1_2, SOCK_DTLS_SERVER);
     if (res < 0) {
         puts("Error creating DTLS sock");
-        return 0;
+        return NULL;
     }
 
     res = credman_add(&credential);
     if (res < 0) {
         printf("Error cannot add credential to system: %d\n", (int)res);
-        return 0;
+        return NULL;
     }
 
     while (active) {
@@ -133,7 +133,7 @@ void *dtls_server_wrapper(void *arg)
     sock_udp_close(&udp_sock);
     puts("Terminating");
     msg_reply(&msg, &msg);              /* Basic answer to the main thread */
-    return 0;
+    return NULL;
 }
 
 static void start_server(void)
@@ -152,19 +152,10 @@ static void start_server(void)
                                      dtls_server_wrapper, NULL, "dtls_server");
 
     /* Uncommon but better be sure */
-    if (_dtls_server_pid == EINVAL) {
-        puts("ERROR: Thread invalid");
+    if (_dtls_server_pid < 0) {
+        printf("ERROR: failed to create thread: %d\n", _dtls_server_pid);
         _dtls_server_pid = KERNEL_PID_UNDEF;
-        return;
     }
-
-    if (_dtls_server_pid == EOVERFLOW) {
-        puts("ERROR: Thread overflow!");
-        _dtls_server_pid = KERNEL_PID_UNDEF;
-        return;
-    }
-
-    return;
 }
 
 static void stop_server(void)
@@ -202,6 +193,7 @@ int dtls_server_cmd(int argc, char **argv)
     }
     else {
         printf("Error: invalid command. Usage: %s start | stop\n", argv[0]);
+        return 1;
     }
     return 0;
 }

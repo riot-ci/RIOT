@@ -109,8 +109,8 @@ static int client_send(char *addr_str, char *data, size_t datalen)
     }
 
     if (sock_dtls_create(&dtls_sock, &udp_sock,
-                        SOCK_DTLS_CLIENT_TAG,
-                        SOCK_DTLS_1_2, SOCK_DTLS_CLIENT) < 0) {
+                         SOCK_DTLS_CLIENT_TAG,
+                         SOCK_DTLS_1_2, SOCK_DTLS_CLIENT) < 0) {
         puts("Error creating DTLS sock");
         sock_udp_close(&udp_sock);
         return -1;

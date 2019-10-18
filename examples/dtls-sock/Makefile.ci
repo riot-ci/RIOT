@@ -27,3 +27,4 @@ BOARD_INSUFFICIENT_MEMORY := \
     stm32f0discovery \
     stm32mindev \
     yunjia-nrf51822
+    #

@@ -29,7 +29,7 @@ USEMODULE += shell_commands
 DTLS_PORT ?= 20220
 CFLAGS += -DDTLS_DEFAULT_PORT=$(DTLS_PORT)
 
-# NOTE: If not cipher suite is selected, DTLS_PSK is used by default.
+# NOTE: If no cipher suite is selected, DTLS_PSK is used by default.
 # This adds support for TLS_PSK_WITH_AES_128_CCM_8
 CFLAGS += -DDTLS_PSK
 # This adds support for TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8
@@ -50,7 +50,7 @@ CFLAGS += -DTINYDTLS_EXTRA_BUFF=\(512\)
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
-CFLAGS += -DDEVELHELP
+DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
