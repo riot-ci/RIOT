@@ -132,14 +132,14 @@ static size_t _hdrs_config_size(usbus_t *usbus)
 
 static inline size_t _get_pre_header(usbus_t *usbus, usbus_hdr_gen_t *hdr)
 {
-    return hdr->funcs->fmt_pre_descriptor != NULL
+    return (hdr->funcs->fmt_pre_descriptor != NULL)
         ? hdr->funcs->fmt_pre_descriptor(usbus, hdr->arg)
         : 0;
 }
 
 static inline size_t _get_additional_header(usbus_t *usbus, usbus_hdr_gen_t *hdr)
 {
-    return hdr->funcs->get_header != NULL
+    return (hdr->funcs->get_header != NULL)
         ? hdr->funcs->get_header(usbus, hdr->arg)
         : 0;
 }
