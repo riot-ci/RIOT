@@ -405,8 +405,9 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
     sock->buf = data;
     sock->buflen = max_len;
 
-    for (uint32_t start_recv = 0;;) {
-        start_recv = xtimer_now_usec();
+    /* loop breaks when timeout or application data read */
+    while(1) {
+        uint32_t start_recv = xtimer_now_usec();
         ssize_t res = sock_udp_recv(sock->udp_sock, data, max_len, timeout,
                                     &remote->ep);
         if (res < 0) {
@@ -415,8 +416,8 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
 
         if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
-            timeout = timeout - (xtimer_now_usec() - start_recv);
-            DEBUG("sock_dtls: timeout left: %"PRIu32"\n", timeout);
+            uint32_t time_passed = (xtimer_now_usec() - start_recv);
+            timeout = (time_passed > timeout) ? 0: timeout - time_passed;
         }
 
         _ep_to_session(&remote->ep, &remote->dtls_session);
