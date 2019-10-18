@@ -138,13 +138,6 @@ static int _netdev_send(netdev_t *dev, const iolist_t *iolist)
     return offset;
 }
 
-/* On riscv, the default optimization level triggers out-of-bound reads with the
-   calls to memcpy in the IPv6 related parts of the following 2 functions.
-   Just disable temporarily the GCC optimization level here only for riscv. */
-#if __riscv
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-#endif
 void _net_init(void)
 {
     xtimer_init();
@@ -183,7 +176,7 @@ void _net_init(void)
     ip6_addr_t local6;
     s8_t idx;
 
-    memcpy(&local6.addr, local6_a, sizeof(local6));
+    memcpy(&local6.addr, local6_a, sizeof(local6.addr));
     ip6_addr_clear_zone(&local6);
     netif_add_ip6_address(&netif, &local6, &idx);
     for (int i = 0; i <= idx; i++) {
@@ -220,7 +213,7 @@ void _prepare_send_checks(void)
         struct nd6_neighbor_cache_entry *nc = &neighbor_cache[i];
         if (nc->state == ND6_NO_ENTRY) {
             nc->state = ND6_REACHABLE;
-            memcpy(&nc->next_hop_address, remote6, sizeof(ip6_addr_t));
+            memcpy(&nc->next_hop_address, remote6, sizeof(remote6));
             ip6_addr_assign_zone(&nc->next_hop_address,
                                  IP6_UNICAST, &netif);
             memcpy(&nc->lladdr, mac, 6);
@@ -231,9 +224,6 @@ void _prepare_send_checks(void)
     }
 #endif
 }
-#ifdef __riscv
-#pragma GCC pop_options  /* Restore GCC optimization level. */
-#endif
 
 bool _inject_4packet(uint32_t src, uint32_t dst, uint16_t src_port,
                      uint16_t dst_port, void *data, size_t data_len,
