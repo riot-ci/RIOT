@@ -44,6 +44,7 @@ void *run(void *parameter) {
     return NULL;
 }
 
+static char _thread_stack[THREAD_STACKSIZE_DEFAULT];
 int main(void) {
     pthread_t th_id;
     pthread_attr_t th_attr;
@@ -52,6 +53,8 @@ int main(void) {
     printf("main: parameter = %u\n", (unsigned int) arg);
 
     pthread_attr_init(&th_attr);
+    th_attr.ss_sp = _thread_stack;
+    th_attr.ss_size = sizeof(_thread_stack);
     pthread_create(&th_id, &th_attr, run, (void *) arg);
     size_t res;
     pthread_join(th_id, (void **) &res);
