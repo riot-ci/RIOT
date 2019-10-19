@@ -252,8 +252,8 @@ static gnrc_pktsnip_t *_check_ipv6_hdr(const gnrc_pktsnip_t *orig_pkt,
      * and Parameter Problem Messages with code 2, see
      * https://tools.ietf.org/html/rfc4443#section-2.4 (e.3) */
     else if (ipv6_addr_is_multicast(&ipv6_hdr->dst)) {
-        if ((type != ICMPV6_PKT_TOO_BIG) ||
-            ((type == ICMPV6_PARAM_PROB) &&
+        if ((type != ICMPV6_PKT_TOO_BIG) &&
+            ((type != ICMPV6_PARAM_PROB) ||
              (code != ICMPV6_ERROR_PARAM_PROB_OPT))) {
             ipv6 = NULL;
         }
