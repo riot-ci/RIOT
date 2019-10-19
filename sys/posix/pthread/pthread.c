@@ -140,6 +140,7 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr, void *(*sta
     void *stack = autofree ? malloc(stack_size) : attr->ss_sp;
 
     if (stack == NULL) {
+        free(pt);
         return -ENOMEM;
     }
 
