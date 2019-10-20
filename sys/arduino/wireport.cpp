@@ -76,28 +76,28 @@ extern "C" {
 
 /* Initialize Class Variables */
 
-uint8_t WirePort::rxBuffer[WIREPORT_BUFFER_LENGTH];
-uint8_t WirePort::rxBufferIndex = 0;
-uint8_t WirePort::rxBufferLength = 0;
+uint8_t TwoWire::rxBuffer[WIREPORT_BUFFER_LENGTH];
+uint8_t TwoWire::rxBufferIndex = 0;
+uint8_t TwoWire::rxBufferLength = 0;
 
-uint8_t WirePort::txAddress = 0;
-uint8_t WirePort::txBuffer[WIREPORT_BUFFER_LENGTH];
-uint8_t WirePort::txBufferIndex = 0;
-uint8_t WirePort::txBufferLength = 0;
-uint8_t WirePort::txError = 0;
+uint8_t TwoWire::txAddress = 0;
+uint8_t TwoWire::txBuffer[WIREPORT_BUFFER_LENGTH];
+uint8_t TwoWire::txBufferIndex = 0;
+uint8_t TwoWire::txBufferLength = 0;
+uint8_t TwoWire::txError = 0;
 
-uint8_t WirePort::transmitting = 0;
+uint8_t TwoWire::transmitting = 0;
 
 /* Constructors */
 
-WirePort::WirePort(void)
+TwoWire::TwoWire(void)
 {
     DEBUG("[wire] %s\n", __func__);
 }
 
 /* Public Methods */
 
-void WirePort::begin(void)
+void TwoWire::begin(void)
 {
     DEBUG("[wire] %s\n", __func__);
 
@@ -110,21 +110,21 @@ void WirePort::begin(void)
     i2c_init(ARDUINO_I2C_DEV);
 }
 
-void WirePort::begin(uint8_t addr)
+void TwoWire::begin(uint8_t addr)
 {
     (void)addr;
     DEBUG("[wire] %s\n", __func__);
     core_panic(PANIC_GENERAL_ERROR, "[wire] slave mode is not supported");
 }
 
-void WirePort::setClock(uint32_t clk)
+void TwoWire::setClock(uint32_t clk)
 {
     (void)clk;
     /* not possible, bus speed is defined by the board definition */
     DEBUG("[wire] %s: clock is defined by board definition\n", __func__);
 }
 
-uint8_t WirePort::requestFrom(uint8_t addr, uint8_t size, uint8_t stop)
+uint8_t TwoWire::requestFrom(uint8_t addr, uint8_t size, uint8_t stop)
 {
     DEBUG("[wire] %s: addr %02x, size %d, stop %d\n", __func__, addr, size, stop);
 
@@ -148,11 +148,11 @@ uint8_t WirePort::requestFrom(uint8_t addr, uint8_t size, uint8_t stop)
     return read;
 }
 
-uint8_t WirePort::requestFrom(uint8_t addr, uint8_t size) {
+uint8_t TwoWire::requestFrom(uint8_t addr, uint8_t size) {
     return requestFrom(addr, size, 1);
 }
 
-void WirePort::beginTransmission(uint8_t addr)
+void TwoWire::beginTransmission(uint8_t addr)
 {
     DEBUG("[wire] %s: addr %02x\n", __func__, addr);
     transmitting = 1;
@@ -161,7 +161,7 @@ void WirePort::beginTransmission(uint8_t addr)
     txBufferLength = 0;
 }
 
-uint8_t WirePort::endTransmission(uint8_t stop)
+uint8_t TwoWire::endTransmission(uint8_t stop)
 {
     DEBUG("[wire] %s: stop %d\n", __func__, stop);
 
@@ -195,12 +195,12 @@ uint8_t WirePort::endTransmission(uint8_t stop)
     return res;
 }
 
-uint8_t WirePort::endTransmission(void)
+uint8_t TwoWire::endTransmission(void)
 {
     return endTransmission(true);
 }
 
-size_t WirePort::write(uint8_t data)
+size_t TwoWire::write(uint8_t data)
 {
     DEBUG("[wire] %s: data %02x\n", __func__, data);
 
@@ -215,7 +215,7 @@ size_t WirePort::write(uint8_t data)
     return 1;
 }
 
-size_t WirePort::write(const uint8_t *data, size_t size)
+size_t TwoWire::write(const uint8_t *data, size_t size)
 {
     DEBUG("[wire] %s: data %p, size %d\n", __func__, data, size);
     for (size_t i = 0; i < size; i++) {
@@ -227,13 +227,13 @@ size_t WirePort::write(const uint8_t *data, size_t size)
     return size;
 }
 
-int WirePort::available(void)
+int TwoWire::available(void)
 {
     DEBUG("[wire] %s: return %d\n", __func__, rxBufferLength - rxBufferIndex);
     return rxBufferLength - rxBufferIndex;
 }
 
-int WirePort::read(void)
+int TwoWire::read(void)
 {
     DEBUG("[wire] %s\n", __func__);
 
@@ -245,7 +245,7 @@ int WirePort::read(void)
     return value;
 }
 
-int WirePort::peek(void)
+int TwoWire::peek(void)
 {
     DEBUG("[wire] %s\n", __func__);
 
@@ -256,7 +256,7 @@ int WirePort::peek(void)
     return value;
 }
 
-void WirePort::flush(void)
+void TwoWire::flush(void)
 {
     DEBUG("[wire] %s\n", __func__);
 
@@ -268,4 +268,4 @@ void WirePort::flush(void)
 
 /* single instance */
 
-WirePort Wire;
+TwoWire Wire;

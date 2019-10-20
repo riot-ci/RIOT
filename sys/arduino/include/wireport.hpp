@@ -66,7 +66,7 @@
 #define WIREPORT_BUFFER_LENGTH 32
 
 /** Class definition for the Arduino Wire library implementation */
-class WirePort
+class TwoWire
 {
   private:
 
@@ -88,7 +88,7 @@ class WirePort
     /**
      * @brief Constructor
      */
-    WirePort(void);
+    TwoWire(void);
 
     /**
      * @brief Initializes the I2C device defined by #ARDUINO_I2C_DEV as master
@@ -278,7 +278,7 @@ class WirePort
 	virtual void flush(void);
 };
 
-extern WirePort Wire;
+extern TwoWire Wire;
 
 #endif /* WIREPORT_HPP */
 /** @} */
