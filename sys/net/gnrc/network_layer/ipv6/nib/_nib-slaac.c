@@ -37,9 +37,9 @@ void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
 
 #if !GNRC_IPV6_NIB_CONF_SLAAC
     if (!gnrc_netif_is_6ln(netif)) {
-        LOG_WARNING("SLAAC not activated; won't auto-configure IPv6 for "
-                         "interface %u\n"
-                    "    Use GNRC_IPV6_NIB_CONF_SLAAC=1 to activate\n",
+        LOG_WARNING("SLAAC not activated; will not auto-configure IPv6 address "
+                         "for interface %u.\n"
+                    "    Use GNRC_IPV6_NIB_CONF_SLAAC=1 to activate.\n",
                     netif->pid);
         return;
     }
