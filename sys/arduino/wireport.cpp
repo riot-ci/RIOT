@@ -133,11 +133,13 @@ uint8_t WirePort::requestFrom(uint8_t addr, uint8_t size, uint8_t stop)
     }
 
     uint8_t read = 0;
-    if (i2c_acquire(ARDUINO_I2C_DEV) == 0 &&
-        i2c_read_bytes(ARDUINO_I2C_DEV, addr, rxBuffer, size,
-                                        stop ? 0 : I2C_NOSTOP) == 0 &&
-        i2c_release(ARDUINO_I2C_DEV) == 0) {
-        read = size;
+
+    if (i2c_acquire(ARDUINO_I2C_DEV) == 0) {
+        if (i2c_read_bytes(ARDUINO_I2C_DEV, addr, rxBuffer, size,
+                           stop ? 0 : I2C_NOSTOP) == 0) {
+            read = size;
+        }
+        i2c_release(ARDUINO_I2C_DEV);
     }
 
     rxBufferIndex = 0;
