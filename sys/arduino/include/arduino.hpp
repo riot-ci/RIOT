@@ -122,5 +122,15 @@ unsigned long millis();
 int analogRead(int pin);
 #endif
 
+#if MODULE_PERIPH_PWM || DOXYGEN
+/**
+ * @brief   Write an analog value to a pin
+ *
+ * @param[in] pin       pin to write
+ * @param[in] value     duty cycle value, between 0 and 255
+ */
+void analogWrite(int pin, int value);
+#endif
+
 #endif /* ARDUINO_H */
 /** @} */
