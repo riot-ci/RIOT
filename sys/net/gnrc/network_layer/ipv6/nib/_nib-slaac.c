@@ -25,8 +25,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#define NAME(x) # x
-
 #if GNRC_IPV6_NIB_CONF_6LN || GNRC_IPV6_NIB_CONF_SLAAC
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 
@@ -41,8 +39,8 @@ void _auto_configure_addr(gnrc_netif_t *netif, const ipv6_addr_t *pfx,
     if (!gnrc_netif_is_6ln(netif)) {
         LOG_WARNING("SLAAC not activated; won't auto-configure IPv6 for "
                          "interface %u\n"
-                    "    Use " NAME(GNRC_IPV6_NIB_CONF_SLAAC) "=1 to "
-                         "activate\n", netif->pid);
+                    "    Use GNRC_IPV6_NIB_CONF_SLAAC=1 to activate\n",
+                    netif->pid);
         return;
     }
 #endif
