@@ -22,6 +22,7 @@
 #define ARDUINO_BOARD_H
 
 #include "arduino_pinmap.h"
+#include "periph/pwm.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +69,25 @@ static const adc_t arduino_analog_map[] = {
     ARDUINO_A3,
     ARDUINO_A4,
     ARDUINO_A5,
+};
+
+/**
+ * @brief   RIOT GPIO mapping between Arduino pin, PWM device and channel
+ */
+typedef struct {
+    int pin;        /**< Arduino pin number */
+    int dev;        /**< PWM device index of pin */
+    int chan;       /**< PWM channel index */
+} arduino_pwm_t;
+
+/**
+ * @brief   List of PWM GPIO mappings
+ */
+static const arduino_pwm_t arduino_pwm_list[] = {
+    { .pin = 3, .dev = PWM_DEV(0), .chan = 1 },
+    { .pin = 4, .dev = PWM_DEV(0), .chan = 0 },
+    { .pin = 8, .dev = PWM_DEV(1), .chan = 0 },
+    { .pin = 9, .dev = PWM_DEV(1), .chan = 1 },
 };
 
 #ifdef __cplusplus
