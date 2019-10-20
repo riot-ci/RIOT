@@ -17,6 +17,10 @@
 #ifndef WIRE_H
 #define WIRE_H
 
+#ifndef MODULE_PERIPH_I2C
+#error "No I2C support on your board"
+#endif
+
 #ifdef __cplusplus
 #include "wireport.hpp"
 #endif

@@ -52,6 +52,8 @@
  * (https://creativecommons.org/licenses/by-sa/3.0/).
  */
 
+#if MODULE_PERIPH_I2C
+
 extern "C" {
 #include <stdlib.h>
 #include <string.h>
@@ -269,3 +271,9 @@ void TwoWire::flush(void)
 /* single instance */
 
 TwoWire Wire;
+
+#else /* MODULE_PERIPH_I2C */
+
+typedef int dont_be_pedantic;
+
+#endif /* MODULE_PERIPH_I2C */
