@@ -187,7 +187,7 @@ int qmc5883l_data_ready(const qmc5883l_t *dev);
                         able to hold 3 data items (x, y, z)
  *
  * @return  QMC5883L_OK on data being written to @p data_out
- * @return  QMC5883L_OVERFLOW on data succesfully read, but at least one data
+ * @return  QMC5883L_OVERFLOW on data successfully read, but at least one data
             item overflowed its data range
  * @return  QMC5883L_NODATA if no new data is available, nothing is written to
             @p data_out
@@ -209,7 +209,7 @@ int qmc5883l_read(const qmc5883l_t *dev, int16_t *data_out);
                         able to hold 3 data items (x, y, z)
  *
  * @return  QMC5883L_OK on data being written to @p data_out
- * @return  QMC5883L_OVERFLOW on data succesfully read, but at least one data
+ * @return  QMC5883L_OVERFLOW on data successfully read, but at least one data
             item overflowed its data range
  * @return  QMC5883L_NODATA if no new data is available, nothing is written to
             @p data_out
