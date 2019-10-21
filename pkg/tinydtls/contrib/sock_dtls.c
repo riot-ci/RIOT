@@ -315,21 +315,20 @@ int sock_dtls_session_create(sock_dtls_t *sock, const sock_udp_ep_t *ep,
             msg.type != DTLS_EVENT_CONNECTED) {
         res = sock_udp_recv(sock->udp_sock, rcv_buffer, sizeof(rcv_buffer),
                             DTLS_HANDSHAKE_TIMEOUT, &remote->ep);
-        if (res >= 0) {
-            res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
-                                rcv_buffer, res);
-            /* stop handshake if received fatal level alert */
-            if (res == -1) {
-                return res;
-            }
-        }
-        else {
+        if (res <= 0) {
             DEBUG("sock_dtls: error receiving handshake messages: %d\n", res);
             /* deletes peer created in dtls_connect() */
             dtls_peer_t *peer = dtls_get_peer(sock->dtls_ctx,
                                               &remote->dtls_session);
             dtls_reset_peer(sock->dtls_ctx, peer);
             return -ETIMEDOUT;
+        }
+
+        res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
+                                  rcv_buffer, res);
+        /* stop handshake if received fatal level alert */
+        if (res == -1) {
+            return res;
         }
     }
     return 0;
@@ -410,8 +409,9 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         uint32_t start_recv = xtimer_now_usec();
         ssize_t res = sock_udp_recv(sock->udp_sock, data, max_len, timeout,
                                     &remote->ep);
-        if (res < 0) {
+        if (res <= 0) {
             DEBUG("sock_dtls: error receiving UDP packet: %d\n", res);
+            xtimer_remove(&timeout_timer);
             return res;
         }
 
