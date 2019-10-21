@@ -139,7 +139,11 @@ void analogWrite(int pin, int value)
 
     /* Check if the PWM pin is valid */
     int pin_idx = _get_pwm_pin_idx(pin);
-    assert(pin_idx != -1);
+    if (pin_idx) {
+        /* Set to digital write if not a PWM pin */
+        pinMode(pin, OUT);
+        return;
+    }
 
     /* Initialization of given PWM pin */
     if (!(pwm_dev_state & (1 << arduino_pwm_list[pin_idx].dev))) {
