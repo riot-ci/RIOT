@@ -72,13 +72,9 @@ static const adc_t arduino_analog_map[] = {
 };
 
 /**
- * @brief   RIOT GPIO mapping between Arduino pin, PWM device and channel
+ * @brief   PWM frequency
  */
-typedef struct {
-    int pin;        /**< Arduino pin number */
-    int dev;        /**< PWM device index of pin */
-    int chan;       /**< PWM channel index */
-} arduino_pwm_t;
+#define ARDUINO_PWM_FREQU       (732U)
 
 /**
  * @brief   List of PWM GPIO mappings
