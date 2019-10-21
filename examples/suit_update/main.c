@@ -35,6 +35,9 @@ static char _nanocoap_server_stack[THREAD_STACKSIZE_DEFAULT];
 #define NANOCOAP_SERVER_QUEUE_SIZE     (8)
 static msg_t _nanocoap_server_msg_queue[NANOCOAP_SERVER_QUEUE_SIZE];
 
+#define MAIN_QUEUE_SIZE     (8)
+static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
+
 static void *_nanocoap_server_thread(void *arg)
 {
     (void)arg;
@@ -78,6 +81,8 @@ int main(void)
                   THREAD_PRIORITY_MAIN - 1,
                   THREAD_CREATE_STACKTEST,
                   _nanocoap_server_thread, NULL, "nanocoap server");
+
+    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
 
     puts("Starting the shell");
     char line_buf[SHELL_DEFAULT_BUFSIZE];
