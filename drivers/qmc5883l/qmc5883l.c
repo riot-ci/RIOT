@@ -130,7 +130,7 @@ int qmc5883l_read_raw(const qmc5883l_t *dev, int16_t *data_out)
     assert(dev);
     assert(data_out);
 
-    int res = QMC5883L_OK;
+    int res;
     uint8_t status;
     uint8_t tmp[6];
 
