@@ -19,6 +19,7 @@
 #ifndef QMC5883L_PARAMS_H
 #define QMC5883L_PARAMS_H
 
+#include "saul_reg.h"
 #include "board.h"
 #include "qmc5883l.h"
 
