@@ -378,5 +378,8 @@ int gcoap_cli_cmd(int argc, char **argv)
 
 void gcoap_cli_init(void)
 {
+    (void)_listener;
+#ifndef MODULE_GCOAP_LAZY_INIT
     gcoap_register_listener(&_listener);
+#endif
 }
