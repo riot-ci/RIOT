@@ -109,10 +109,6 @@ int analogRead(int arduino_pin)
 #endif
 
 #if MODULE_PERIPH_PWM
-#define PWM_MODE            PWM_LEFT
-#define PWM_FREQU           (1000U)
-#define PWM_STEPS           (256U)
-
 static int _get_pwm_pin_idx(int pin)
 {
     for (uint8_t i = 0;i < ARRAY_SIZE(arduino_pwm_list); ++i) {
@@ -127,30 +123,34 @@ static int _get_pwm_pin_idx(int pin)
 void analogWrite(int pin, int value)
 {
     /*
-    * Bitfield for the state of the PWM-channels.
+    * Bitfield for the state of the PWM devices.
     * 0: Not initialized
     * 1: Successfully initialized
     */
-    static uint16_t pwm_dev_state;
+    static uint8_t pwm_dev_state;
 
-    /* Check if the given value is correct */
-    assert(value >= 0);
-    assert(value < 256);
+    /* Clamp given value within bounds */
+    if (value < 0) {
+        value = 0;
+    }
+    if ((unsigned)value >= ARDUINO_PWM_STEPS) {
+        value = ARDUINO_PWM_STEPS - 1;
+    }
 
     /* Check if the PWM pin is valid */
     int pin_idx = _get_pwm_pin_idx(pin);
     if (pin_idx) {
         /* Set to digital write if not a PWM pin */
-        pinMode(pin, OUT);
+        pinMode(pin, OUTPUT);
         return;
     }
 
     /* Initialization of given PWM pin */
     if (!(pwm_dev_state & (1 << arduino_pwm_list[pin_idx].dev))) {
-        if (pwm_init(arduino_pwm_list[pin_idx].dev, PWM_MODE, PWM_FREQU, PWM_STEPS) == 0) {
+        if (pwm_init(arduino_pwm_list[pin_idx].dev, ARDUINO_PWM_MODE, ARDUINO_PWM_FREQU, ARDUINO_PWM_STEPS) == 0) {
             return;
         }
-        /* The ADC channel is initialized */
+        /* The PWM channel is initialized */
         pwm_dev_state |= (1 << arduino_pwm_list[pin_idx].dev);
     }
 
