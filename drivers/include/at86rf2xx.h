@@ -33,11 +33,15 @@
 #include <stdbool.h>
 
 #include "board.h"
-#include "periph/spi.h"
-#include "periph/gpio.h"
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/nettype.h"
+
+/* we need no peripherals for memory mapped radios */
+#if !defined(MODULE_AT86RFA1) && !defined(MODULE_AT86RFR2)
+#include "periph/spi.h"
+#include "periph/gpio.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,6 +87,8 @@ extern "C" {
  *       for other seetings this value may change.
  */
 #   define RSSI_BASE_VAL                   (-98)
+#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
+#   define RSSI_BASE_VAL                   (-90)
 #else
 #   define RSSI_BASE_VAL                   (-91)
 #endif
@@ -94,6 +100,8 @@ extern "C" {
 #   define MAX_RX_SENSITIVITY              (-52)
 #elif MODULE_AT86RF212B
 #   define MAX_RX_SENSITIVITY              (-54)
+#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
+#   define MAX_RX_SENSITIVITY              (-48)
 #else
 #   define MAX_RX_SENSITIVITY              (-49)
 #endif
@@ -105,6 +113,8 @@ extern "C" {
 #   define MIN_RX_SENSITIVITY              (-101)
 #elif MODULE_AT86RF212B
 #   define MIN_RX_SENSITIVITY              (-110)
+#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
+#   define MIN_RX_SENSITIVITY              (-100)
 #else
 #   define MIN_RX_SENSITIVITY              (-101)
 #endif
@@ -180,6 +190,12 @@ extern "C" {
 
 /** @} */
 
+#if defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
+/**
+ * @brief   memory mapped radio needs no parameters
+ */
+typedef void at86rf2xx_params_t;
+#else
 /**
  * @brief   struct holding all params needed for device initialization
  */
@@ -191,6 +207,7 @@ typedef struct at86rf2xx_params {
     gpio_t sleep_pin;       /**< GPIO pin connected to the sleep pin */
     gpio_t reset_pin;       /**< GPIO pin connected to the reset pin */
 } at86rf2xx_params_t;
+#endif
 
 /**
  * @brief   Device descriptor for AT86RF2XX radio devices
@@ -199,8 +216,19 @@ typedef struct at86rf2xx_params {
  */
 typedef struct {
     netdev_ieee802154_t netdev;             /**< netdev parent struct */
+#if defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
+    /* ATmega256rfr2 signals transceiver events with different interrupts
+     * they have to be stored to mimic the same flow as external transceiver
+     * Use irq_status to map saved interrupts of SOC transceiver,
+     * as they clear after IRQ callback.
+     *
+     *  irq_status = IRQ_STATUS
+     */
+    uint8_t irq_status;                     /**< save irq status */
+#else
     /* device specific fields */
     at86rf2xx_params_t params;              /**< parameters for initialization */
+#endif
     uint16_t flags;                         /**< Device specific flags */
     uint8_t state;                          /**< current state of the radio */
     uint8_t tx_frame_len;                   /**< length of the current TX frame */
