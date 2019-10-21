@@ -147,7 +147,8 @@ void analogWrite(int pin, int value)
 
     /* Initialization of given PWM pin */
     if (!(pwm_dev_state & (1 << arduino_pwm_list[pin_idx].dev))) {
-        if (pwm_init(arduino_pwm_list[pin_idx].dev, ARDUINO_PWM_MODE, ARDUINO_PWM_FREQU, ARDUINO_PWM_STEPS) == 0) {
+        if (pwm_init(arduino_pwm_list[pin_idx].dev,
+                     ARDUINO_PWM_MODE, ARDUINO_PWM_FREQU, ARDUINO_PWM_STEPS) == 0) {
             return;
         }
         /* The PWM channel is initialized */
