@@ -65,7 +65,6 @@ USEMODULE += ps
 USEMODULE += random
 USEMODULE += stdio_uart
 USEMODULE += xtensa
-USEMODULE += xtimer
 
 INCLUDES += -I$(RIOTBOARD)/common/$(CPU)/include
 INCLUDES += -I$(RIOTCPU)/esp_common/vendor/
