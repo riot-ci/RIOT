@@ -171,11 +171,7 @@ static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
     switch(type) {
     case DTLS_PSK_HINT:
         DEBUG("sock_dtls: psk hint request\n");
-        /*
-        c = credential.params.psk.hint.s;
-        c_len = credential.params.psk.hint.len;
-        */
-        /* server: unused */
+        /* Ignored. See https://tools.ietf.org/html/rfc4279#section-5.2 */
         return 0;
     case DTLS_PSK_IDENTITY:
         DEBUG("sock_dtls: psk id request\n");
@@ -191,6 +187,7 @@ static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
         DEBUG("sock:dtls unsupported request type: %d\n", type);
         return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
     }
+
     if (c_len > result_length) {
         DEBUG("sock_dtls: not enough memory for credential type: %d\n", type);
         return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
