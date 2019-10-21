@@ -155,6 +155,11 @@ void analogWrite(int pin, int value)
         pwm_dev_state |= (1 << arduino_pwm_list[pin_idx].dev);
     }
 
+#if HAVE_PWM_GPIO_INIT
+    /* Ensure gpio is correctly (re)initialized */
+    pwm_gpio_init(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan);
+#endif
+
     /* Write analog value */
     pwm_set(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan, value);
 }
