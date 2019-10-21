@@ -21,6 +21,7 @@
 #include <stdio.h>
 
 #include "xtimer.h"
+#include "thread.h"
 #include "thread_flags.h"
 
 #include "qmc5883l.h"
