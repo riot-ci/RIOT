@@ -354,13 +354,14 @@ static void _netif_list_ipv6(ipv6_addr_t *addr, uint8_t flags)
     printf("%s  scope: ", addr_str);
     if (ipv6_addr_is_link_local(addr)) {
         printf("link");
-    } else if (ipv6_addr_is_site_local(addr)) {
+    }
+    else if (ipv6_addr_is_site_local(addr)) {
         printf("site");
-    } else if (ipv6_addr_is_unique_local_unicast(addr)) {
-        printf("local");
-    } else if (ipv6_addr_is_global(addr)) {
+    }
+    else if (ipv6_addr_is_global(addr)) {
         printf("global");
-    } else {
+    }
+    else {
         printf("unknown");
     }
     if (flags & GNRC_NETIF_IPV6_ADDRS_FLAGS_ANYCAST) {
