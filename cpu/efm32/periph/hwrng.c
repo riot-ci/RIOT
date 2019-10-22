@@ -45,20 +45,7 @@ void hwrng_init(void)
     while (TRNG0->FIFOLEVEL == 0) {}
 }
 
-void hwrng_read(void *buf, unsigned int num)
+uint32_t hwrng_uint32(void)
 {
-    uint32_t *out_buf = (uint32_t *) buf;
-    uint32_t tmp;
-
-    /* read known good available data */
-    while (num >= 4) {
-        *out_buf++ = TRNG0->FIFO;
-        num -= 4;
-    }
-
-    /* read remaining data (not multiple of 4) */
-    if (num) {
-        tmp = TRNG0->FIFO;
-        memcpy((uint8_t *)out_buf, (const uint8_t *) &tmp, num);
-    }
+    return TRNG0->FIFO;
 }
