@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <inttypes.h>
 #include "thread.h"
 #include "xtimer.h"
 
@@ -28,7 +28,7 @@ int main(void)
 {
     dcf77_t sensor;
     struct tm time={0};
-
+    char outstr[200];
 
     printf("DCF77 test application\n");
 
@@ -39,18 +39,18 @@ int main(void)
     }
     printf("DCF77 Module initialized \n");
 
-
-
 while(1){
     printf("Wait for a complete cycle... \n");
-    if(dcf77_read(&sensor,&time)==DCF77_OK){
-    printf("Received Minutes: %d\n",time.tm_min);
-    printf("Received Hours: %d\n",time.tm_hour);
-    printf("Received Days: %d\n",time.tm_mday);
-    printf("Received Month: %d\n",time.tm_mon);
-    printf("Received Year: %d\n",time.tm_year);
-    printf("Received MESZ: %d\n",time.tm_isdst);
-    }
+    dcf77_read(&sensor,&time);
+    strftime(outstr, sizeof(outstr), "%x - %I:%M%p", &time);
+    strftime(outstr, sizeof(outstr), "%c", &time);
+    printf("Formatted date & time : |%s|\n", outstr);
+        // printf("Received Minutes: %d\n",time.tm_min);
+        // printf("Received Hours: %d\n",time.tm_hour);
+        // printf("Received Days: %d\n",time.tm_mday);
+        // printf("Received Month: %d\n",time.tm_mon);
+        // printf("Received Year: %d\n",time.tm_year);
+        // printf("Received MESZ: %d\n",time.tm_isdst);
 
     }
 

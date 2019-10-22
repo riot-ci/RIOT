@@ -36,57 +36,22 @@
 #include "debug.h"
 
 
-/* If a pulse lasts longer than 200ms, a new cycle begins  */
+/* Persistent level longer than 1000ms starts a new cycle  */
 #define DCF77_PULSE_START_HIGH_THRESHOLD        (1500000U)  /*~1000ms*/
-/* Every pulse send by the DCF longer than 100ms is interpreted as 1 */
-#define DCF77_PULSE_WIDTH_THRESHOLD             (140000U)   /*~150ms*/
-/* If an expected pulse is not detected within 1,5s, something is wrong */
-#define DCF77_TIMEOUT                           (2500000)   /*~0200ms*/
-/* The DCF sensor cannot measure more than once a second */
-#define DCF77_DATA_HOLD_TIME                    (US_PER_SEC)
+/* Every pulse send by the DCF longer than 130ms is interpreted as 1 */
+#define DCF77_PULSE_WIDTH_THRESHOLD             (130000U)   /*~130ms*/
+/* If an expected pulse is not detected within 2,5s, something is wrong */
+#define DCF77_TIMEOUT                           (2500000U)  /*~2500ms*/
 
 #define DCF77_READING_CYCLE                     (59)
 
+#define DCF77_MINUTE_MASK                       (0xFE00000ULL)
+#define DCF77_HOUR_MASK                         (0x7E0000000ULL)
+#define DCF77_DATE_MASK                         (0x1FFFFFC00000000ULL)
 
-/**
- * @brief   Calculate a bitsequenz to decimal
- *
- * @param   b3     MSB
- * @param   b2     third Bit
- * @param   b1     second Bit
- * @param   b0     LSB
- *
- * @return  result             Total
- */
-
-static uint8_t bcd2dez(uint8_t b3, uint8_t b2, uint8_t b1, uint8_t b0)
-{
-    uint8_t result = b0 + b1 * POTENZY2 + b2 * POTENZY4 + b3 * POTENZY8;
-
-    return result;
-}
-
-
-/**
- * @brief   Check the parity of a Bitsequenz
- *
- * @param   dev       Device
- * @param   start     MSB
- * @param   end       third Bit
- *
- * @return  bool      result
- */
-
-static uint8_t checkEvenParity(uint8_t start, uint8_t end, dcf77_t *dev)
-{
-    uint8_t ipar = 0;
-
-    for (uint8_t i = start; i <= end; i++) {
-        ipar += dev->bitseq[i];
-    }
-    return (ipar % 2);
-}
-
+#define DCF77_MINUTE_SHIFT                      (21)
+#define DCF77_HOUR_SHIFT                        (29)
+#define DCF77_DATE_SHIFT                        (36)
 
 
 static void _level_cb(void *arg)
@@ -107,6 +72,7 @@ static void _level_cb(void *arg)
                 dev->stopTime = xtimer_now_usec();
                 if ((dev->stopTime - dev->startTime) >
                     DCF77_PULSE_START_HIGH_THRESHOLD) {
+                    memset(&dev->bitseq.bits, 0, sizeof dev->bitseq.bits);
                     dev->internal_state = DCF77_STATE_RX;
                 }
                 else {
@@ -125,11 +91,7 @@ static void _level_cb(void *arg)
                 dev->stopTime = xtimer_now_usec();
                 if ((dev->stopTime - dev->startTime) >
                     DCF77_PULSE_WIDTH_THRESHOLD) {
-                    dev->bitseq[dev->bitCounter] = 1;
-                }
-                else {
-                    dev->bitseq[dev->bitCounter] = 0;
-
+                    dev->bitseq.bits |=  1ULL << dev->bitCounter;
                 }
 
                 dev->bitCounter++;
@@ -146,9 +108,6 @@ static void _level_cb(void *arg)
     }
 
 }
-
-
-
 
 /**
  * @brief   Initalize the Device
@@ -169,6 +128,9 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
     dev->params = *params;
     dev->internal_state = DCF77_STATE_IDLE;
     dev->bitCounter = 0;
+    memset(&dev->last_values, 0, sizeof dev->last_values);
+    memset(&dev->bitseq.bits, 0, sizeof dev->bitseq.bits);
+    //dev->bitseq = malloc(sizeof(dev->bitseq)) ;
     gpio_init_int(dev->params.pin, dev->params.in_mode, GPIO_BOTH, _level_cb,
                   dev);
 
@@ -177,7 +139,7 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
 }
 
 /**
- * @brief   Formats the information after all bits of a cycle have been received
+ * @brief   Formats the information after all bits of a cycle https://www.google.com/search?q=daxhave been received
  *
  * @param   dev               device
  * @param   time              datastruct for timeinformation
@@ -192,66 +154,77 @@ int dcf77_read(dcf77_t *dev, struct tm *time)
     assert(dev);
     mutex_lock(&dev->event_lock);
 
-    if ((dev->bitseq[DCF77_MESZ1] == 1) && (dev->bitseq[DCF77_MESZ2] == 0)) {
+    if (dev->bitseq.val.mesz == 2) {
         time->tm_isdst = 1;
     }
     else {
         time->tm_isdst = 0;
     }
 
-    uint8_t minute = bcd2dez(dev->bitseq[DCF77_MINUTE_EIGHT],
-                             dev->bitseq[DCF77_MINUTE_QUAD],
-                             dev->bitseq[DCF77_MINUTE_SECOND],
-                             dev->bitseq[DCF77_MINUTE_SINGLE]);
-    minute = minute + POTENZY10 * bcd2dez(0, dev->bitseq[DCF77_MINUTE_FOURTIES],
-                                          dev->bitseq[DCF77_MINUTE_TEWENTIES],
-                                          dev->bitseq[DCF77_MINUTE_TENNER]);
+    uint8_t minute = POTENZY10 * dev->bitseq.val.minute_h +
+                     dev->bitseq.val.minute_l;
+    if (__builtin_parity((dev->bitseq.bits >> DCF77_MINUTE_SHIFT) &
+                         (DCF77_MINUTE_MASK >> DCF77_MINUTE_SHIFT)) !=
+        dev->bitseq.val.minute_par) {
+        return DCF77_NOCSUM;
+    }
 
-    if (checkEvenParity(DCF77_MINUTE_SINGLE, DCF77_MINUTE_FOURTIES,
-                        dev) != dev->bitseq[DCF77_MINUTE_PR]) {
+    uint8_t hour = POTENZY10 * dev->bitseq.val.hour_h + dev->bitseq.val.hour_l;
+    if (__builtin_parity((dev->bitseq.bits >> DCF77_HOUR_SHIFT) &
+                         (DCF77_HOUR_MASK >> DCF77_HOUR_SHIFT)) !=
+        dev->bitseq.val.hour_par) {
+        return DCF77_NOCSUM;
+    }
+
+    uint8_t mday = POTENZY10 * dev->bitseq.val.day_h + dev->bitseq.val.day_l;
+
+    uint8_t wday =  dev->bitseq.val.wday;
+
+    uint8_t month = POTENZY10 * dev->bitseq.val.month_h +
+                    dev->bitseq.val.month_l;
+
+    uint8_t year = POTENZY10 * dev->bitseq.val.year_h + dev->bitseq.val.year_l;
+    if (__builtin_parity((dev->bitseq.bits >> DCF77_DATE_SHIFT) &
+                         (DCF77_DATE_MASK >> DCF77_DATE_SHIFT)) !=
+        dev->bitseq.val.date_par) {
+        return DCF77_NOCSUM;
+    }
+    /**Add aditional check if the parity is fortuitously correct*/
+    if (minute <= dev->last_values.tm_min) {
         return DCF77_NOCSUM;
     }
 
     time->tm_min = minute;
-
-    uint8_t hour = bcd2dez(dev->bitseq[DCF77_HOUR_EIGHT], dev->bitseq[DCF77_HOUR_QUAD],
-                           dev->bitseq[DCF77_HOUR_SECOND], dev->bitseq[DCF77_HOUR_SINGLE]);
-    hour = hour + POTENZY10 * bcd2dez(0, 0, dev->bitseq[DCF77_HOUR_TEWENTIES],
-                                      dev->bitseq[DCF77_HOUR_TENNER]);
-
-    if (checkEvenParity(DCF77_HOUR_SINGLE, DCF77_HOUR_TEWENTIES,
-                        dev) != dev->bitseq[DCF77_HOUR_PR]) {
-        return DCF77_NOCSUM;
-    }
-
     time->tm_hour = hour;
-
-    uint8_t mday = bcd2dez(dev->bitseq[DCF77_DAY_EIGHT], dev->bitseq[DCF77_DAY_QUAD],
-                           dev->bitseq[DCF77_DAY_SECOND], dev->bitseq[DCF77_DAY_SINGLE]);
-    mday = mday + POTENZY10 * bcd2dez(0, 0, dev->bitseq[DCF77_DAY_TEWENTIES],
-                                      dev->bitseq[DCF77_DAY_TENNER]);
-
-
-    uint8_t month = bcd2dez(dev->bitseq[DCF77_MONTH_EIGHT], dev->bitseq[DCF77_MONTH_QUAD],
-                            dev->bitseq[DCF77_MONTH_SECOND],
-                            dev->bitseq[DCF77_MONTH_SINGLE]);
-    month = month + POTENZY10 * bcd2dez(0, 0, 0, dev->bitseq[DCF77_MONTH_TENNER]);
-
-
-    uint8_t year = bcd2dez(dev->bitseq[DCF77_YEAR_EIGHT], dev->bitseq[DCF77_YEAR_QUAD],
-                           dev->bitseq[DCF77_YEAR_SECOND], dev->bitseq[DCF77_YEAR_SINGLE]);
-    year = year + POTENZY10 *
-           bcd2dez(dev->bitseq[DCF77_YEAR_EIGHTIES], dev->bitseq[DCF77_YEAR_FOURTIES],
-                   dev->bitseq[DCF77_YEAR_TEWENTIES], dev->bitseq[DCF77_YEAR_TENNER]);
-
-    if (checkEvenParity(DCF77_DAY_SINGLE, DCF77_YEAR_EIGHTIES,
-                        dev) != dev->bitseq[DCF77_DATE_PR]) {
-        return DCF77_NOCSUM;
-    }
-
     time->tm_mday = mday;
+    time->tm_wday = wday;
     time->tm_mon = month;
-    time->tm_year = year;
+    time->tm_year = 100 + year;
+
+    DEBUG("LAST MINUTE: %d\n", dev->last_values.tm_min);
+
+    DEBUG("MESZ: %d\n", dev->bitseq.val.mesz);
+    DEBUG("MIN L: %d\n", dev->bitseq.val.minute_l);
+    DEBUG("MIN H: %d\n", dev->bitseq.val.minute_h);
+    DEBUG("MIN PAR: %d\n", dev->bitseq.val.minute_par);
+
+    DEBUG("HOUR L: %d\n", dev->bitseq.val.hour_l);
+    DEBUG("HOUR H: %d\n", dev->bitseq.val.hour_h);
+    DEBUG("HOUR PAR: %d\n", dev->bitseq.val.hour_par);
+
+    DEBUG("DAY L: %d\n", dev->bitseq.val.day_l);
+    DEBUG("DAY H: %d\n", dev->bitseq.val.day_h);
+
+    DEBUG("WDAY  : %d\n", dev->bitseq.val.wday);
+
+    DEBUG("MONTH L: %d\n", dev->bitseq.val.month_l);
+    DEBUG("MONTH H: %d\n", dev->bitseq.val.month_h);
+
+    DEBUG("YEAR L: %d\n", dev->bitseq.val.year_l);
+    DEBUG("YEAR H: %d\n", dev->bitseq.val.year_h);
+    DEBUG("DATE PAR: %d\n", dev->bitseq.val.date_par);
+
+    dev->last_values = *time;
 
     return DCF77_OK;
 }
