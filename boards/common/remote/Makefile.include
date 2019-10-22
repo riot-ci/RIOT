@@ -6,14 +6,14 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 
 # For backward compatibility
 ifneq (,$(PORT_BSL))
-  $(warning Warning! PORT_BSL is deprecated use DEV_PROG)
-  DEV_PROG ?= $(PORT_BSL)
+  $(warning Warning! PORT_BSL is deprecated use PROG_DEV)
+  PROG_DEV ?= $(PORT_BSL)
 endif
 
 ifeq ($(PROGRAMMER),cc2538-bsl)
-  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py -p "$(DEV_PROG)"
+  RESET ?= $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py -p "$(PROG_DEV)"
   FLASHER = $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py
-  FFLAGS  = -p "$(DEV_PROG)" -e -w -v -b 115200 $(FLASHFILE)
+  FFLAGS  = -p "$(PROG_DEV)" -e -w -v -b 115200 $(FLASHFILE)
 else ifeq ($(PROGRAMMER),jlink)
   FLASHER = $(RIOTBOARD)/common/remote/dist/flash.sh
   FFLAGS  = $(BINDIR) $(FLASHFILE)
