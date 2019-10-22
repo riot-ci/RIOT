@@ -14,42 +14,7 @@
  * @file
  *
  * @brief       Definition of the Arduino 'Wire Library' for TwoWire interfaces
- *
- * This library is the implementation of the [Arduino Wire Library]
- * (https://www.arduino.cc/en/Reference/Wire) for the I2C peripheral
- * interfaces in RIOT. It supports only I2C master mode and the functions
- * that are documented in the official [Arduino Reference]
- * (https://www.arduino.cc/en/Reference/Wire) of this library.
- *
- * The implementation is an adoption of the original Arduino Wire Library
- * which is published under the following copyright:
- *
- * ```
- * TwoWire.h - TWI/I2C library for Arduino & Wiring
- * Copyright (c) 2006 Nicholas Zambetti. All right reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
- * ```
- *
- * The documentation in this file is partially extracted from the original
- * [Arduino Reference](https://www.arduino.cc/en/Reference/Wire) of this
- * library which is published under the
- * [Creative Commons Attribution-ShareAlike 3.0 License]
- * (https://creativecommons.org/licenses/by-sa/3.0/).
+ * @}
  */
 
 #if MODULE_PERIPH_I2C
