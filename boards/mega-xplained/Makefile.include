@@ -5,17 +5,17 @@ ROM_RESERVED ?= $(BOOTLOADER_SIZE)
 
 # For backward compatibility
 ifneq (,$(AVRDUDE_PORT))
-  $(warning Warning! AVRDUDE_PORT is deprecated use PROG_PORT)
-  PROG_PORT ?= $(AVRDUDE_PORT)
+  $(warning Warning! AVRDUDE_PORT is deprecated use DEV_PROG)
+  DEV_PROG ?= $(AVRDUDE_PORT)
 endif
 
 # PROGRAMMER defaults to the external flasher Bus Pirate ISP using avrdude.
 PROGRAMMER  ?= buspirate
 # set serial port for avrdude with buspirate
 ifeq ($(OS),Linux)
-  PROG_PORT ?= /dev/ttyUSB0
+  DEV_PROG ?= /dev/ttyUSB0
 else ifeq ($(OS),Darwin)
-  PROG_PORT ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
+  DEV_PROG ?= $(firstword $(sort $(wildcard /dev/tty.usbserial*)))
 endif
 # avoid error if mcu signature doesn't match
 FFLAGS_EXTRA += -F
