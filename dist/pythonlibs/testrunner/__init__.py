@@ -26,7 +26,7 @@ def run(testfunc, timeout=TIMEOUT, echo=True, traceback=False, sync=False):
     child = setup_child(timeout, env=os.environ,
                         logfile=sys.stdout if echo else None)
     try:
-        if sync is True:
+        if sync:
             test_utils_interactive_sync(child)
         testfunc(child)
     except pexpect.TIMEOUT:
