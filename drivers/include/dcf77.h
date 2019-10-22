@@ -82,9 +82,9 @@ typedef union {
                  year_h : 4,            /**< Number of Bits for higher year value */
                  date_par : 1,          /**< Number of Bits for dateparity value */
                  buff : 5;              /**< Number of Bits for experimental buffer value */
-    } val;
-    uint64_t bits;
-} dcf77_bits_t;
+    } val;                              /**< struct with Bitfields of timeinformation*/
+    uint64_t bits;                      /**< Value of Bits in a received cycle */
+} dcf77_bits_t;                       
 
 /**
  * @brief   Device descriptor for DCF77 sensor devices
@@ -94,8 +94,8 @@ typedef struct {
     struct tm last_values;      /**< Values of the last measurement */
     mutex_t event_lock;         /**< mutex for waiting for event */
     uint8_t internal_state;     /**< internal States  */
-    uint32_t startTime;         /**< Timestamp tomeasure the term of the level */
-    uint32_t stopTime;          /**< Timestamp tomeasure the term of the level */
+    uint32_t startTime;         /**< Timestamp to measure the term of the level */
+    uint32_t stopTime;          /**< Timestamp to measure the term of the level */
     uint8_t bitCounter;         /**< Counter of the Bits in a Bitsequenz */
     dcf77_bits_t bitseq;        /**< contains all Bits from a cycle */
 } dcf77_t;
