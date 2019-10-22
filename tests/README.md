@@ -13,7 +13,7 @@ Implementing automated tests
 The goal is to be able to run all tests in a sequential way for as many targets
 as possible.
 
-As some board can't be rested without a manual trigger tests should be implemented
+As some board can't be reset without a manual trigger tests should be implemented
 with some kind of `synchronization`. This can be done in two ways:
 
 - use `test_utils_interactive_sync` when uart input/output does not need to be
