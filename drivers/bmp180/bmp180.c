@@ -37,7 +37,7 @@
 /* Internal function prototypes */
 static int _read_ut(const bmp180_t *dev, int32_t *ut);
 static int _read_up(const bmp180_t *dev, int32_t *up);
-static int _compute_b5(const bmp180_t *dev, int32_t ut, int32_t *b5);
+static void _compute_b5(const bmp180_t *dev, int32_t ut, int32_t *b5);
 
 /*---------------------------------------------------------------------------*
  *                          BMP180 Core API                                 *
@@ -104,14 +104,16 @@ int bmp180_init(bmp180_t *dev, const bmp180_params_t *params)
     return 0;
 }
 
-int16_t bmp180_read_temperature(const bmp180_t *dev)
+int bmp180_read_temperature(const bmp180_t *dev, int16_t *temperature)
 {
-    int32_t ut, b5;
+    int32_t ut = 0, b5;
     /* Acquire exclusive access */
     i2c_acquire(DEV_I2C);
 
     /* Read uncompensated value */
-    _read_ut(dev, &ut);
+    if (_read_ut(dev, &ut) < 0) {
+        return -BMP180_ERR_I2C;
+    }
 
     /* Release I2C device */
     i2c_release(DEV_I2C);
@@ -119,10 +121,12 @@ int16_t bmp180_read_temperature(const bmp180_t *dev)
     /* Compute true temperature value following datasheet formulas */
     _compute_b5(dev, ut, &b5);
 
-    return (int16_t)((b5 + 8) >> 4);
+    *temperature = (int16_t)((b5 + 8) >> 4);
+
+    return BMP180_OK;
 }
 
-uint32_t bmp180_read_pressure(const bmp180_t *dev)
+int bmp180_read_pressure(const bmp180_t *dev, uint32_t *pressure)
 {
     int32_t ut = 0, up = 0, x1, x2, x3, b3, b5, b6, p;
     uint32_t b4, b7;
@@ -131,8 +135,13 @@ uint32_t bmp180_read_pressure(const bmp180_t *dev)
     i2c_acquire(DEV_I2C);
 
     /* Read uncompensated values: first temperature, second pressure */
-    _read_ut(dev, &ut);
-    _read_up(dev, &up);
+    if (_read_ut(dev, &ut) < 0) {
+        return -BMP180_ERR_I2C;
+    }
+
+    if (_read_up(dev, &up) < 0) {
+        return -BMP180_ERR_I2C;
+    }
 
     /* release I2C device */
     i2c_release(DEV_I2C);
@@ -160,21 +169,36 @@ uint32_t bmp180_read_pressure(const bmp180_t *dev)
     x1 = (x1 * 3038) >> 16;
     x2 = (-7357 * p) >> 16;
 
-    return (uint32_t)(p + ((x1 + x2 + 3791) >> 4));
+    *pressure = (uint32_t)(p + ((x1 + x2 + 3791) >> 4));
+
+    return BMP180_OK;
 }
 
-int16_t bmp180_altitude(const bmp180_t *dev, uint32_t pressure_0)
+int bmp180_altitude(const bmp180_t *dev, uint32_t pressure_0, int16_t *altitude)
 {
-    uint32_t p = bmp180_read_pressure(dev);
+    uint32_t p;
 
-    return (int16_t)(44330.0 * (1.0 - pow((double)p / pressure_0, 0.1903)));;
+    if (bmp180_read_pressure(dev, &p) < 0) {
+        DEBUG("[bmp180] Error: Cannot read pressure value.\n");
+        return -BMP180_ERR_I2C;
+    }
+
+    *altitude = (int16_t)(44330.0 * (1.0 - pow((double)p / pressure_0, 0.1903)));;
+
+    return BMP180_OK;
 }
 
-uint32_t bmp180_sealevel_pressure(const bmp180_t *dev, int16_t altitude)
+int bmp180_sealevel_pressure(const bmp180_t *dev, int16_t altitude, uint32_t *pressure_0)
 {
-    uint32_t p = bmp180_read_pressure(dev);
+    uint32_t p;
+    if (bmp180_read_pressure(dev, &p) < 0) {
+        DEBUG("[bmp180] Error: Cannot read pressure value.\n");
+        return -BMP180_ERR_I2C;
+    }
 
-    return (uint32_t)((double)p / pow(1.0 - (altitude / 44330.0), 5.255));;
+    *pressure_0 = (uint32_t)((double)p / pow(1.0 - (altitude / 44330.0), 5.255));
+
+    return BMP180_OK;
 }
 
 /*------------------------------------------------------------------------------------*/
@@ -238,13 +262,11 @@ static int _read_up(const bmp180_t *dev, int32_t *output)
     return 0;
 }
 
-static int _compute_b5(const bmp180_t *dev, int32_t ut, int32_t *output)
+static void _compute_b5(const bmp180_t *dev, int32_t ut, int32_t *output)
 {
     int32_t x1 = 0, x2 = 0;
     x1 = (((int32_t)ut - (int32_t)dev->calibration.ac6) * (int32_t)dev->calibration.ac5) >> 15;
     x2 = ((int32_t)dev->calibration.mc << 11) / (x1 + dev->calibration.md);
 
     *output = x1 + x2;
-
-    return 0;
 }
