@@ -35,9 +35,7 @@ static void esp_task_wdt_isr(void *param)
      * to schedule the next task which also resets the WDT.     
      * The system is hard-reset (stage 2), if the system is locked completely.
      */
-#ifdef RIOT_VERSION
-    esp_task_wdt_reset();
-#else
+#ifndef RIOT_VERSION
     extern void panicHandler(void *frame, int wdt);
 
     panicHandler(osi_task_top_sp(), 1);
