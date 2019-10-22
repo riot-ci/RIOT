@@ -87,11 +87,11 @@ void esp_riot_init(void)
     /* init random number generator */
     srand(hwrand());
 
-    #if MODULE_MTD
+#if MODULE_MTD
     /* init flash drive */
     extern void spi_flash_drive_init (void);
     spi_flash_drive_init();
-    #endif
+#endif
 
     /* initialize stdio*/
     stdio_init();
@@ -114,9 +114,9 @@ void esp_riot_init(void)
     ets_isr_attach(ETS_SOFT_INUM, thread_yield_isr, NULL);
     ets_isr_unmask(BIT(ETS_SOFT_INUM));
 
-    #ifdef MODULE_ESP_GDBSTUB
+#ifdef MODULE_ESP_GDBSTUB
     gdbstub_init();
-    #endif
+#endif
 }
 
 void esp_riot_start(void)
