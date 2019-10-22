@@ -1,4 +1,4 @@
-BOARD ?= arduino-mkrwan1300
+BOARD ?= arduino-zero
 
 include ../Makefile.tests_common
 
