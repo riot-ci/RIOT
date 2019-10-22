@@ -23,7 +23,7 @@ cd $RIOTBASE
 . "${RIOTTOOLS}"/ci/changed_files.sh
 
 FILEREGEX='\.([CcHh]|[ch]pp|sh|py|md|txt)$'
-EXCLUDE='^(.+/vendor/)'
+EXCLUDE='^(.+/vendor/|.*dist/tools/codespell/check.sh)'
 FILES=$(FILEREGEX=${FILEREGEX} EXCLUDE=${EXCLUDE} changed_files)
 
 if [ -z "${FILES}" ]; then
