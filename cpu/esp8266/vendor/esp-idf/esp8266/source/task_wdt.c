@@ -29,9 +29,13 @@ static const char *TAG = "wdt";
   */
 static void esp_task_wdt_isr(void *param)
 {
-#ifdef RIOT_VERSION /* TODO implement */
-    ets_printf("PANIC WDT\n");
-#else
+    /*
+     * In RIOT-OS, the interrupt from WDT (stage 1) is only used to wakeup
+     * the system and to execute `sched_run` on the exit from the interrupt
+     * to schedule the next task which also resets the WDT.     
+     * The system is hard-reset (stage 2), if the system is locked completely.
+     */
+#ifndef RIOT_VERSION
     extern void panicHandler(void *frame, int wdt);
 
     panicHandler(osi_task_top_sp(), 1);
