@@ -28,16 +28,8 @@
 /* only build if the CPU actually provides a RNG peripheral */
 #ifdef RNG
 
-void hwrng_init(void)
+void hwrng_poweron(void)
 {
-    /* no need for initialization */
-}
-
-void hwrng_read(void *buf, unsigned int num)
-{
-    unsigned int count = 0;
-    uint8_t *b = (uint8_t *)buf;
-
     /* power on and enable the device */
 #if defined(CPU_LINE_STM32F410Rx)
     periph_clk_en(AHB1, RCC_AHB1ENR_RNGEN);
@@ -47,20 +39,10 @@ void hwrng_read(void *buf, unsigned int num)
     periph_clk_en(AHB2, RCC_AHB2ENR_RNGEN);
 #endif
     RNG->CR = RNG_CR_RNGEN;
+}
 
-    /* get random data */
-    while (count < num) {
-        /* wait for random data to be ready to read */
-        while (!(RNG->SR & RNG_SR_DRDY)) {}
-        /* read next 4 bytes */
-        uint32_t tmp = RNG->DR;
-        /* copy data into result vector */
-        for (int i = 0; i < 4 && count < num; i++) {
-            b[count++] = (uint8_t)tmp;
-            tmp = tmp >> 8;
-        }
-    }
-
+void hwrng_poweroff(void)
+{
     /* finally disable the device again */
     RNG->CR = 0;
 #if defined(CPU_LINE_STM32F410Rx)
@@ -70,6 +52,13 @@ void hwrng_read(void *buf, unsigned int num)
 #else
     periph_clk_dis(AHB2, RCC_AHB2ENR_RNGEN);
 #endif
+}
+
+uint32_t hwrng_uint32(void)
+{
+    /* wait for random data to be ready to read */
+    while (!(RNG->SR & RNG_SR_DRDY)) {}
+    return RNG->DR;
 }
 
 #endif /* RNG */
