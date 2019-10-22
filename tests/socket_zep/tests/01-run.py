@@ -59,7 +59,7 @@ if __name__ == "__main__":
             zep_params['remote_addr'], zep_params['remote_port'])
     s = socket.socket(family=socket.AF_INET6, type=socket.SOCK_DGRAM)
     s.bind(("::", zep_params['remote_port']))
-    res = run(testfunc, timeout=1, echo=True, traceback=True)
+    res = run(testfunc, timeout=1, echo=True, traceback=True, sync=True)
     s.close()
     if (res == 0):
         print("Run tests successful")

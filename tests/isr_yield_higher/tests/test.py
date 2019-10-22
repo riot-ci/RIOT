@@ -11,11 +11,11 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect('first thread started')
-    child.expect('timer triggered')
-    child.expect('first thread done')
-    child.expect('TEST SUCCESSFUL')
+    child.expect_exact('first thread started')
+    child.expect_exact('timer triggered')
+    child.expect_exact('first thread done')
+    child.expect_exact('TEST SUCCESSFUL')
 
 
 if __name__ == "__main__":
-    sys.exit(run(testfunc))
+    sys.exit(run(testfunc, sync=True))
