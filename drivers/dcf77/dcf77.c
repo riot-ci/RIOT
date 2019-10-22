@@ -110,13 +110,13 @@ static void _level_cb(void *arg)
 }
 
 /**
- * @brief   Initalize the Device
+ * @brief   Initialize the Device
  *
  * @param   dev     device
  * @param   params  device_params
  *
  * @retval  DCF77_OK             Success
- * @retval  DCF77_INIT_ERROR     Error in initalization
+ * @retval  DCF77_INIT_ERROR     Error in initialization
  */
 
 int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
@@ -146,7 +146,7 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
  *
  * @retval  DCF77_OK          Success
  * @retval  DCF77_TIMEOUT     Timeout occurred before level was reached
- * @retval  DCF77_NOCSUM      Parity Bits arent correct
+ * @retval  DCF77_NOCSUM      Parity Bits aren't correct
  */
 
 int dcf77_read(dcf77_t *dev, struct tm *time)
@@ -189,7 +189,7 @@ int dcf77_read(dcf77_t *dev, struct tm *time)
         dev->bitseq.val.date_par) {
         return DCF77_NOCSUM;
     }
-    /**Add aditional check if the parity is fortuitously correct*/
+    /**Add additional check if the parity is fortuitously correct*/
     if (minute <= dev->last_values.tm_min) {
         return DCF77_NOCSUM;
     }
