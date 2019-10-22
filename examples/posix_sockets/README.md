@@ -85,7 +85,7 @@ You can get the IPv6 address of the destination by using the `ifconfig` command 
 2015-09-22 14:58:10,400 - INFO #            AUTOACK  CSMA  MTU:1280  6LO  IPHC
 2015-09-22 14:58:10,402 - INFO #            Source address length: 8
 2015-09-22 14:58:10,404 - INFO #            Link type: wireless
-2015-09-22 14:58:10,407 - INFO #            inet6 addr: ff02::1/128  scope: local [multicast]
-2015-09-22 14:58:10,415 - INFO #            inet6 addr: fe80::3432:4833:46d4:9e06/64  scope: local
+2015-09-22 14:58:10,407 - INFO #            inet6 addr: ff02::1/128  scope: link [multicast]
+2015-09-22 14:58:10,415 - INFO #            inet6 addr: fe80::3432:4833:46d4:9e06/64  scope: link
 2015-09-22 14:58:10,416 - INFO #
 ```

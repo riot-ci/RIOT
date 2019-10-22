@@ -49,17 +49,17 @@ Iface  5   HWaddr: 96:3c:18:1e:26:f7
            MTU:1500  HL:64  RTR  RTR_ADV
            Source address length: 6
            Link type: wired
-           inet6 addr: ff02::1/128  scope: local [multicast]
-           inet6 addr: fe80::e42a:1aff:feca:10ec/64  scope: local
-           inet6 addr: ff02::1:ffca:10ec/128  scope: local [multicast]
-           inet6 addr: ff02::2/128  scope: local [multicast]
+           inet6 addr: ff02::1/128  scope: link [multicast]
+           inet6 addr: fe80::e42a:1aff:feca:10ec/64  scope: link
+           inet6 addr: ff02::1:ffca:10ec/128  scope: link [multicast]
+           inet6 addr: ff02::2/128  scope: link [multicast]
            inet6 addr: 2001:db8:1:0:e42a:1aff:feca:10ec/64  scope: global
 
 Waiting for incoming UDP packet...
 ```
 
 The link-layer address in this case is "fe80::e42a:1aff:feca:10ec", the only
-"scope: local" address set.
+"scope: link" address set.
 
 Testing
 =======

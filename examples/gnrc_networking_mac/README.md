@@ -35,10 +35,10 @@ In the RIOT shell, get to know the IP address of one node:
 2017-06-06 15:05:48,303 - INFO #            CSMA  MTU:1280  HL:64  6LO  RTR  IPHC
 2017-06-06 15:05:48,306 - INFO #            Source address length: 8
 2017-06-06 15:05:48,309 - INFO #            Link type: wireless
-2017-06-06 15:05:48,314 - INFO #            inet6 addr: ff02::1/128  scope: local [multicast]
-2017-06-06 15:05:48,320 - INFO #            inet6 addr: fe80::7b67:357e:543a:79f6/64  scope: local
-2017-06-06 15:05:48,326 - INFO #            inet6 addr: ff02::1:ff3a:79f6/128  scope: local [multicast]
-2017-06-06 15:05:48,331 - INFO #            inet6 addr: ff02::1a/128  scope: local [multicast]
+2017-06-06 15:05:48,314 - INFO #            inet6 addr: ff02::1/128  scope: link [multicast]
+2017-06-06 15:05:48,320 - INFO #            inet6 addr: fe80::7b67:357e:543a:79f6/64  scope: link
+2017-06-06 15:05:48,326 - INFO #            inet6 addr: ff02::1:ff3a:79f6/128  scope: link [multicast]
+2017-06-06 15:05:48,331 - INFO #            inet6 addr: ff02::1a/128  scope: link [multicast]
 
 and start a UDP server.
 

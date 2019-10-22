@@ -42,9 +42,9 @@ RIOT console and run `ifconfig`:
 
     > ifconfig
     Iface  7   HWaddr: ce:f5:e1:c5:f7:5a
-               inet6 addr: ff02::1/128  scope: local [multicast]
-               inet6 addr: fe80::ccf5:e1ff:fec5:f75a/64  scope: local
-               inet6 addr: ff02::1:ffc5:f75a/128  scope: local [multicast]
+               inet6 addr: ff02::1/128  scope: link [multicast]
+               inet6 addr: fe80::ccf5:e1ff:fec5:f75a/64  scope: link
+               inet6 addr: ff02::1:ffc5:f75a/128  scope: link [multicast]
 
 Copy the link-local address of the RIOT node (prefixed with `fe80`) and
 try to ping it **from the Linux node**:
@@ -112,9 +112,9 @@ shell, get to know the IP address of this node:
 
     > ifconfig
     Iface  7   HWaddr: ce:f5:e1:c5:f7:5a
-               inet6 addr: ff02::1/128  scope: local [multicast]
-               inet6 addr: fe80::ccf5:e1ff:fec5:f75a/64  scope: local
-               inet6 addr: ff02::1:ffc5:f75a/128  scope: local [multicast]
+               inet6 addr: ff02::1/128  scope: link [multicast]
+               inet6 addr: fe80::ccf5:e1ff:fec5:f75a/64  scope: link
+               inet6 addr: ff02::1:ffc5:f75a/128  scope: link [multicast]
 
 and start a UDP server.
 
