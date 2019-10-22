@@ -134,6 +134,23 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Random Number Generator
+ *
+ * Most AT86RF radios have the option to use the highest bits of the RSSI
+ * register as a source of randomness.
+ * See Section 11.2 of the at86rf233 reference manual. (RND_VALUE)
+ */
+#if defined(MODULE_AT86RF233) || defined(MODULE_AT86RF231) || defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
+#ifndef AT86RF2XX_RANDOM_NUMBER_GENERATOR
+#define AT86RF2XX_RANDOM_NUMBER_GENERATOR  (1)
+#endif
+#else
+#ifndef AT86RF2XX_RANDOM_NUMBER_GENERATOR
+#define AT86RF2XX_RANDOM_NUMBER_GENERATOR  (0)
+#endif
+#endif
+
+/**
  * @brief   Smart idle listening feature
  *
  * This feature optimizes radio operation in the listening mode, reducing

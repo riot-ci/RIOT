@@ -225,7 +225,7 @@ void at86rf2xx_hardware_reset(at86rf2xx_t *dev);
  */
 void at86rf2xx_configure_phy(at86rf2xx_t *dev);
 
-#if defined(MODULE_AT86RF233) || defined(MODULE_AT86RF231) || defined(MODULE_AT86RFR2) || defined(DOXYGEN)
+#if AT86RF2XX_RANDOM_NUMBER_GENERATOR || defined(DOXYGEN)
 /**
  * @brief   Read random data from the RNG
  *

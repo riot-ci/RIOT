@@ -220,7 +220,7 @@ void at86rf2xx_configure_phy(at86rf2xx_t *dev)
     at86rf2xx_set_state(dev, prev_state);
 }
 
-#if defined(MODULE_AT86RF233) || defined(MODULE_AT86RF231) || defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
+#if AT86RF2XX_RANDOM_NUMBER_GENERATOR
 void at86rf2xx_get_random(const at86rf2xx_t *dev, uint8_t *data, size_t len)
 {
     for (size_t byteCount = 0; byteCount < len; ++byteCount) {
