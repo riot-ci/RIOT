@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       PSK and RPK keys for the dtls-echo example.
+ * @brief       PSK and RPK keys for the dtls-sock example.
  *
  * @author      Raul Fuentes <raul.fuentes-samaniego@inria.fr>
  *
