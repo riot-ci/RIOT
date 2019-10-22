@@ -323,6 +323,11 @@ void auto_init(void)
     auto_init_nrf802154();
 #endif
 
+#ifdef MODULE_RAIL
+    extern void auto_init_rail(void);
+    auto_init_rail();
+#endif
+
 #endif /* MODULE_AUTO_INIT_GNRC_NETIF */
 
 #ifdef MODULE_GNRC_UHCPC
