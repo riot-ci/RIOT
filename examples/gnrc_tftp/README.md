@@ -24,9 +24,9 @@ To verify that there is connectivity between RIOT and Linux, go to the RIOT cons
            MTU:1280
            Source address length: 6
            Link type: wired
-           inet6 addr: ff02::1/128  scope: local [multicast]
-           inet6 addr: fe80::7ced:d2ff:feee:e107/64  scope: local
-           inet6 addr: ff02::1:ffee:e107/128  scope: local [multicast]
+           inet6 addr: ff02::1/128  scope: link [multicast]
+           inet6 addr: fe80::7ced:d2ff:feee:e107/64  scope: link
+           inet6 addr: ff02::1:ffee:e107/128  scope: link [multicast]
 
 
 Copy the [link-local address](https://en.wikipedia.org/wiki/Link-local_address) of the RIOT node (prefixed with `fe80`) and try to ping it **from the Linux node**:

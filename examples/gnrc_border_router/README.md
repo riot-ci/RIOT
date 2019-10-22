@@ -67,11 +67,11 @@ Iface  7   HWaddr: 59:72  Channel: 26  Page: 0  NID: 0x23
             AUTOACK  CSMA  MTU:1280  HL:64  6LO  RTR  RTR_ADV  IPHC  
             Source address length: 8
             Link type: wireless
-            inet6 addr: ff02::1/128  scope: local [multicast]
-            inet6 addr: fe80::5846:106e:f2f5:d972/64  scope: local
-            inet6 addr: ff02::1:fff5:d972/128  scope: local [multicast]
+            inet6 addr: ff02::1/128  scope: link [multicast]
+            inet6 addr: fe80::5846:106e:f2f5:d972/64  scope: link
+            inet6 addr: ff02::1:fff5:d972/128  scope: link [multicast]
             inet6 addr: 2001:db8::5846:106e:f2f5:d972/64  scope: global
-            inet6 addr: ff02::2/128  scope: local [multicast]
+            inet6 addr: ff02::2/128  scope: link [multicast]
 ```
 
 The script also sets up a ULA (Unique Local Address) address on your 
