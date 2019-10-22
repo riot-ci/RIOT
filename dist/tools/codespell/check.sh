@@ -23,7 +23,7 @@ cd $RIOTBASE
 . "${RIOTTOOLS}"/ci/changed_files.sh
 
 FILEREGEX='\.([CcHh]|[ch]pp|sh|py|md|txt)$'
-EXCLUDE='^(.+/vendor/)'
+EXCLUDE='^(.+/vendor/|.*dist/tools/codespell/check.sh)'
 FILES=$(FILEREGEX=${FILEREGEX} EXCLUDE=${EXCLUDE} changed_files)
 
 if [ -z "${FILES}" ]; then
@@ -38,7 +38,7 @@ ${CODESPELL_CMD} --version &> /dev/null || {
 CODESPELL_OPTS="-q 2"  # Disable "WARNING: Binary file"
 CODESPELL_OPTS+=" --check-hidden"
 # Disable false positives "nd  => and, 2nd", "WAN => WANT", "od => of"
-CODESPELL_OPTS+=" --ignore-words-list=ND,nd,WAN,od"
+CODESPELL_OPTS+=" --ignore-words-list=ND,nd,WAN,od,DOUT"
 
 # Filter-out all false positive raising "disabled due to" messages.
 ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")
