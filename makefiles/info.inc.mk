@@ -91,7 +91,7 @@ info-build:
 	@echo 'TERMPROG:  $(TERMPROG)'
 	@echo 'TERMFLAGS: $(TERMFLAGS)'
 	@echo 'PORT:      $(PORT)'
-	@echo 'DEV_PROG: $(DEV_PROG)'
+	@echo 'PROG_DEV: $(PROG_DEV)'
 	@echo ''
 	@echo 'DEBUGGER:       $(DEBUGGER)'
 	@echo 'DEBUGGER_FLAGS: $(DEBUGGER_FLAGS)'

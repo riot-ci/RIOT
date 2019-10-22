@@ -20,6 +20,6 @@ PYTERMFLAGS += -tg
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 FLASHFILE ?= $(HEXFILE)
-FFLAGS = $(DEV_PROG) $(FLASHFILE)
+FFLAGS = $(PROG_DEV) $(FLASHFILE)
 
 INCLUDES += -I$(RIOTBOARD)/common/msba2/include
