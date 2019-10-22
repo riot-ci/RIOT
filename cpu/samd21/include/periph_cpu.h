@@ -98,6 +98,11 @@ typedef struct {
 } pwm_conf_t;
 
 /**
+ * @brief   PWM driver provide the standalone gpio init function
+ */
+#define HAVE_PWM_GPIO_INIT    (1)
+
+/**
  * @brief   Return the numeric id of a SERCOM device derived from its address
  *
  * @param[in] sercom    SERCOM device
