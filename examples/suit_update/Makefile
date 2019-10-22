@@ -91,4 +91,4 @@ include $(RIOTBASE)/Makefile.include
 host-tools:
 	$(Q)env -u CC -u CFLAGS make -C $(RIOTTOOLS)
 
-include $(RIOTMAKE)/default-channel.inc.mk
+include $(RIOTMAKE)/default-radio-settings.inc.mk
