@@ -139,11 +139,16 @@ void analogWrite(int pin, int value)
 
     /* Check if the PWM pin is valid */
     int pin_idx = _get_pwm_pin_idx(pin);
-    if (pin_idx) {
+    if (pin_idx == -1) {
         /* Set to digital write if not a PWM pin */
         pinMode(pin, OUTPUT);
         return;
     }
+
+#if HAVE_PWM_GPIO_INIT
+    /* Ensure gpio is correctly (re)initialized */
+    pwm_gpio_init(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan);
+#endif
 
     /* Initialization of given PWM pin */
     if (!(pwm_dev_state & (1 << arduino_pwm_list[pin_idx].dev))) {
@@ -154,11 +159,6 @@ void analogWrite(int pin, int value)
         /* The PWM channel is initialized */
         pwm_dev_state |= (1 << arduino_pwm_list[pin_idx].dev);
     }
-
-#if HAVE_PWM_GPIO_INIT
-    /* Ensure gpio is correctly (re)initialized */
-    pwm_gpio_init(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan);
-#endif
 
     /* Write analog value */
     pwm_set(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan, value);
