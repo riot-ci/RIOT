@@ -275,7 +275,7 @@ const shell_command_t _shell_command_list[] = {
 #endif
 #ifdef MODULE_TEST_UTILS_INTERACTIVE_SYNC
     { "r", "Test sync, Ready query", _r },
-    { "s", "Test sync, Start test tiger", _s },
+    { "s", "Test sync, Start test trigger", _s },
 #endif
     {NULL, NULL, NULL}
 };
