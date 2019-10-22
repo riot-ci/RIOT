@@ -62,7 +62,7 @@ typedef struct {
  * @brief   Timeinformation bitfields for DCF77 devices
  */
 typedef union {
-    struct values {
+    struct values {            /**< Struct of Bitfields*/
         uint64_t start : 1,    /**< Number of Bits for start value*/
         wheater : 14,          /**< Number of Bits for weather value */
         calling : 1,           /**< Number of Bits for calling value */
@@ -87,7 +87,7 @@ typedef union {
         buff : 5;              /**< Number of Bits for experimental buffer value */
     } val;                     /**< struct with Bitfields of timeinformation*/
     uint64_t bits;             /**< Value of Bits in a received cycle */
-} dcf77_bits_t;                
+} dcf77_bits_t;                /**< Union which contains the Bitfields struct */
 
 /**
  * @brief   Device descriptor for DCF77 sensor devices
