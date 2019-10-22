@@ -103,6 +103,17 @@ typedef enum {
 } pwm_mode_t;
 #endif
 
+#ifdef MODULE_ARDUINO
+/**
+ * @brief   RIOT GPIO mapping between Arduino pin, PWM device and channel
+ */
+typedef struct {
+    int pin;        /**< Arduino pin number */
+    int dev;        /**< PWM device index of pin */
+    int chan;       /**< PWM channel index */
+} arduino_pwm_t;
+#endif
+
 /**
  * @brief   Initialize a PWM device
  *
@@ -125,6 +136,16 @@ typedef enum {
  * @return                  0 on error
  */
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res);
+
+#if HAVE_PWM_GPIO_INIT
+/**
+ * @brief   Initialize the gpio linked to the given channel on the give device
+ *
+ * @param[in] dev           PWM device
+ * @param[in] channel       PWM channel
+ */
+void pwm_gpio_init(pwm_t dev, uint8_t channel);
+#endif
 
 /**
  * @brief   Get the number of available channels

@@ -116,8 +116,7 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     /* configure the used pins */
     for (unsigned i = 0; i < PWM_MAX_CHANNELS; i++) {
         if (pwm_config[dev].chan[i].pin != GPIO_UNDEF) {
-            gpio_init(pwm_config[dev].chan[i].pin, GPIO_OUT);
-            gpio_init_mux(pwm_config[dev].chan[i].pin, pwm_config[dev].chan[i].mux);
+            pwm_gpio_init(dev, i);
         }
     }
 
@@ -154,6 +153,13 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     _tcc(dev)->CTRLA.reg |= (TCC_CTRLA_ENABLE);
     /* return the actual frequency the PWM is running at */
     return f_real;
+}
+
+void pwm_gpio_init(pwm_t dev, uint8_t channel)
+{
+    gpio_init(pwm_config[dev].chan[channel].pin, GPIO_OUT);
+    gpio_init_mux(pwm_config[dev].chan[channel].pin,
+                  pwm_config[dev].chan[channel].mux);
 }
 
 uint8_t pwm_channels(pwm_t dev)
