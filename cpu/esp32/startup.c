@@ -40,6 +40,7 @@
 #include "periph/cpuid.h"
 #include "periph/init.h"
 #include "periph/rtc.h"
+#include "periph/hwrng.h"
 
 #include "driver/periph_ctrl.h"
 #include "esp/common_macros.h"
@@ -89,7 +90,6 @@ extern void esp_reent_init(struct _reent* r);
 extern void esp_panic_wdt_stop (void);
 extern void spi_ram_init(void);
 extern void spi_ram_heap_init(void);
-extern uint32_t hwrand (void);
 extern void bootloader_clock_configure(void);
 
 /* forward declarations */
@@ -290,7 +290,7 @@ static NORETURN void IRAM system_init (void)
     system_wdt_init();
 
     /* init random number generator */
-    srand(hwrand());
+    srand(hwrng_uint32());
 
     /* add SPI RAM to heap if enabled */
     #if CONFIG_SPIRAM_SUPPORT && CONFIG_SPIRAM_BOOT_INIT
