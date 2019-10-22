@@ -59,7 +59,7 @@ typedef struct {
 } dcf77_params_t;
 
 typedef union {
-    struct values {
+    struct values {            /**< Struct of Bitfields*/
         uint64_t start : 1,    /**< Number of Bits for start value*/
         wheater : 14,          /**< Number of Bits for weather value */
         calling : 1,           /**< Number of Bits for calling value */
