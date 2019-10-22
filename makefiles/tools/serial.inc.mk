@@ -5,8 +5,8 @@ else ifeq ($(OS),Darwin)
   PORT ?= $(call ensure_value,$(PORT_DARWIN),No port set)
 endif
 
-# Default DEV_PROG is the same as PORT
-DEV_PROG ?= $(PORT)
+# Default PROG_DEV is the same as PORT
+PROG_DEV ?= $(PORT)
 
 export BAUD ?= 115200
 
