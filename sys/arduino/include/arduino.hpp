@@ -138,7 +138,7 @@ int analogRead(int pin);
 /**
  * @brief   PWM mode
  */
-#define ARDUINO_PWM_MODE            PWM_CENTER
+#define ARDUINO_PWM_MODE            PWM_LEFT
 
 /**
  * @brief   PWM steps
