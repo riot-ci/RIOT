@@ -62,7 +62,7 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     /* interface with alternative function ID 1 is the interface containing the
      * data endpoints, no sense trying to transmit data if it is not active */
     if (cdcecm->active_iface != 1) {
-        return -EBUSY;
+        return -ENOTCONN;
     }
     DEBUG("CDC_ECM_netdev: sending %u bytes\n", len);
     /* load packet data into FIFO */
