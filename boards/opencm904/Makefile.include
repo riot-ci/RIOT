@@ -10,7 +10,7 @@ DEBUGGER =
 DEBUGSERVER =
 
 FLASHFILE ?= $(BINFILE)
-FFLAGS = $(PROG_PORT) $(FLASHFILE)
+FFLAGS = $(DEV_PROG) $(FLASHFILE)
 DEBUGGER_FLAGS =
 
 # Skip the space needed by the embedded bootloader

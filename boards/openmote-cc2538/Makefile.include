@@ -17,5 +17,5 @@ ifeq ($(PROGRAMMER),jlink)
 else
   FLASHFILE ?= $(BINFILE)
   FLASHER = $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py
-  FFLAGS  = -p "$(PROG_PORT)" -e -w -v -b 460800 $(FLASHFILE)
+  FFLAGS  = -p "$(DEV_PROG)" -e -w -v -b 460800 $(FLASHFILE)
 endif

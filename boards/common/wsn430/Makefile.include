@@ -11,4 +11,4 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 # configure the flash tool
 FLASHER = mspdebug
 FLASHFILE ?= $(HEXFILE)
-FFLAGS = -d $(PROG_PORT) -j uif "prog $(FLASHFILE)"
+FFLAGS = -d $(DEV_PROG) -j uif "prog $(FLASHFILE)"
