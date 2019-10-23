@@ -80,11 +80,10 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     /* check availability of the sensor */
     EXEC_RET(_is_available(dev), res)
 
-    uint8_t cfg_a = 0;
-
     /* set configuration register A and B */
-    cfg_a = params->meas_avg | params->meas_mode | params->dor;
-    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_A, cfg_a), res);
+    EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_A, params->meas_avg |
+                                                 params->meas_mode |
+                                                 params->dor), res);
     EXEC_RET(_reg_write(dev, HMC5883L_REG_CFG_B, params->gain), res);
 
     /* set operation mode */
@@ -130,15 +129,15 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
  * scale factors for conversion of raw sensor data to Gs for possible
  * sensitivities according to the datasheet
  */
-static const uint32_t HMC5883L_RES[] = {
+static const int32_t HMC5883L_RES[] = {
      730,      /* uG/LSb for HMC5883L_GAIN_1370 with range +-0.88 Gs */
-     920,      /* uG/LSb for HMC5883L_GAIN_1090 with range +-1.3 Gs */
+     917,      /* uG/LSb for HMC5883L_GAIN_1090 with range +-1.3 Gs */
     1220,      /* uG/LSb for HMC5883L_GAIN_820  with range +-1.9 Gs */
-    1520,      /* uG/LSb for HMC5883L_GAIN_660  with range +-2.5 Gs */
-    2270,      /* uG/LSb for HMC5883L_GAIN_440  with range +-4.0 Gs */
-    2560,      /* uG/LSb for HMC5883L_GAIN_390  with range +-4.7 Gs */
+    1515,      /* uG/LSb for HMC5883L_GAIN_660  with range +-2.5 Gs */
+    2273,      /* uG/LSb for HMC5883L_GAIN_440  with range +-4.0 Gs */
+    2564,      /* uG/LSb for HMC5883L_GAIN_390  with range +-4.7 Gs */
     3030,      /* uG/LSb for HMC5883L_GAIN_330  with range +-5.6 Gs */
-    4350,      /* uG/LSb for HMC5883L_GAIN_230  with range +-8.1 Gs */
+    4348,      /* uG/LSb for HMC5883L_GAIN_230  with range +-8.1 Gs */
 };
 
 int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
@@ -154,9 +153,9 @@ int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
     EXEC_RET(hmc5883l_read_raw (dev, &raw), res);
 
-    data->x = ((uint32_t)raw.x * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
-    data->y = ((uint32_t)raw.y * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
-    data->z = ((uint32_t)raw.z * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->x = ((int32_t)raw.x * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
+    data->y = ((int32_t)raw.y * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
+    data->z = ((int32_t)raw.z * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
 
     return res;
 }

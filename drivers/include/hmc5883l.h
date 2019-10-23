@@ -107,22 +107,22 @@ typedef enum {
  */
 typedef enum {
     HMC5883L_GAIN_1370 = 0x00,  /**< Range +-0.88 Gs, Resolution 0.73 mG/LSb */
-    HMC5883L_GAIN_1090 = 0x20,  /**< Range  +-1.3 Gs, Resolution 0.92 mG/LSb */
-    HMC5883L_GAIN_820  = 0x40,  /**< Range  +-1.9 Gs, Resolution 1.22 mG/LSb */
-    HMC5883L_GAIN_660  = 0x60,  /**< Range  +-2.5 Gs, Resolution 1.52 mG/LSb */
-    HMC5883L_GAIN_440  = 0x80,  /**< Range  +-4.0 Gs, Resolution 2.27 mG/LSb */
-    HMC5883L_GAIN_390  = 0xa0,  /**< Range  +-4.7 Gs, Resolution 2.56 mG/LSb */
-    HMC5883L_GAIN_330  = 0xc0,  /**< Range  +-5.6 Gs, Resolution 3.03 mG/LSb */
-    HMC5883L_GAIN_230  = 0xe0,  /**< Range  +-8.1 Gs, Resolution 4.35 mG/LSb */
+    HMC5883L_GAIN_1090 = 0x20,  /**< Range +-1.3 Gs,  Resolution 0.92 mG/LSb */
+    HMC5883L_GAIN_820  = 0x40,  /**< Range +-1.9 Gs,  Resolution 1.22 mG/LSb */
+    HMC5883L_GAIN_660  = 0x60,  /**< Range +-2.5 Gs,  Resolution 1.52 mG/LSb */
+    HMC5883L_GAIN_440  = 0x80,  /**< Range +-4.0 Gs,  Resolution 2.27 mG/LSb */
+    HMC5883L_GAIN_390  = 0xa0,  /**< Range +-4.7 Gs,  Resolution 2.56 mG/LSb */
+    HMC5883L_GAIN_330  = 0xc0,  /**< Range +-5.6 Gs,  Resolution 3.03 mG/LSb */
+    HMC5883L_GAIN_230  = 0xe0,  /**< Range +-8.1 Gs,  Resolution 4.35 mG/LSb */
 } hmc5883l_gain_t;
 
 /**
- * @brief   Magnetic field values in micro-Gauss (uGs)
+ * @brief   Magnetic field values in milli-Gauss (mGs)
  */
 typedef struct {
-    int32_t x;  /**< magnetic field x-axis */
-    int32_t y;  /**< magnetic field y-axis */
-    int32_t z;  /**< magnetic field y-axis */
+    int16_t x;  /**< magnetic field x-axis */
+    int16_t y;  /**< magnetic field y-axis */
+    int16_t z;  /**< magnetic field y-axis */
 } hmc5883l_data_t;
 
 /**
@@ -233,14 +233,14 @@ int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg);
 int hmc5883l_data_ready(const hmc5883l_t *dev);
 
 /**
- * @brief   Read one sample of magnetic field values in micro-Gauss (uGs)
+ * @brief   Read one sample of magnetic field values in milli-Gauss (mGs)
  *
  * Raw magnetometer data are read from the sensor and normalized them
  * with respect to configured gain. Magnetic field values are given in
- * micro-Gauss (uGs) to preserve full resolution:
+ * milli-Gauss (mGs) to preserve full resolution:
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor
- * @param[out]  data    result vector in micro-Gauss (uGs) per axis
+ * @param[out]  data    result vector in milli-Gauss (mGs) per axis
  *
  * @retval  HMC5883L_OK         on success
  * @retval  HMC5883L_ERROR_*    a negative error code on error,
