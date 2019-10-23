@@ -41,7 +41,7 @@ void uart_tx_flush (uint32_t num)
 }
 
 /**
- * Following code is completly or at least partially from
+ * Following code is completely or at least partially from
  * https://github.com/pvvx/esp8266web
  * (c) PV` 2015
  *
