@@ -22,6 +22,15 @@ extern "C"
 {
 #endif
 
+/** HMC5883L I2C address*/
+#define HMC5883L_I2C_ADDRESS    (0x1e)
+
+/** HMC5883L chip id defined in Identification Registers A..C */
+#define HMC5883L_ID                 { 0x48, 0x34, 0x33 }
+
+/** HMC5883L chip id length */
+#define HMC5883L_ID_LEN             (3)
+
 /**
  * @name    Register addresses
  * @{
