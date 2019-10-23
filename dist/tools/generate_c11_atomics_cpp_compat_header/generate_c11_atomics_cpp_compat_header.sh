@@ -119,6 +119,12 @@ if [ $# -ge 2 ]; then
     CFLAGS="$2"
 fi
 
+if [ "$CC" == "" ]; then
+    echo "C compiler needs to be specified either as environment variable, or"
+    echo "as first argument. See README.md for documentation."
+    exit 1
+fi
+
 echo "/* This file was automatically generated using $0 */"
 echo "#pragma once"
 echo
