@@ -56,6 +56,7 @@
 #define WIREPORT_HPP
 
 #include <inttypes.h>
+#include <stddef.h>
 
 /** Default Arduino I2C interface */
 #ifndef ARDUINO_I2C_DEV
@@ -252,6 +253,18 @@ class TwoWire
      */
 	virtual int read(void);
 
+    /**
+     * @brief   Read bytes transmitted from slave device to the master
+     *
+     * Reads a number of bytes that were transmitted from a slave device to the
+     * master after a call to #requestFrom and removes them from receive buffer.
+     *
+     * @param[out]  buffer  buffer to store the bytes
+     * @param[in]   length  number of bytes to read
+     *
+     * @return  number of bytes placed in the buffer
+     */
+	virtual size_t readBytes(uint8_t *buffer, size_t length);
     /**
      * @brief   Peeks one byte transmitted from slave device to the master
      *

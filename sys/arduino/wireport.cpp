@@ -212,6 +212,20 @@ int TwoWire::read(void)
     return value;
 }
 
+size_t TwoWire::readBytes(uint8_t *buffer, size_t length)
+{
+    DEBUG("[wire] %s\n", __func__);
+
+    for (size_t i = 0; i < length; i++) {
+        int byte = read();
+        if (byte == -1) {
+            return i;
+        }
+        buffer[i] = byte;
+    }
+    return length;
+}
+
 int TwoWire::peek(void)
 {
     DEBUG("[wire] %s\n", __func__);
