@@ -30,7 +30,7 @@
 
 #define DEBUG_DEV(f, d, ...) \
         DEBUG("[hmc5883l] %s i2c dev=%d addr=%02x: " f "\n", \
-              __func__, d->params.dev, d->params.addr, ## __VA_ARGS__);
+              __func__, d->dev, HMC5883L_I2C_ADDRESS, ## __VA_ARGS__);
 
 #else /* ENABLE_DEBUG */
 
@@ -40,7 +40,7 @@
 
 #define ERROR_DEV(f, d, ...) \
         LOG_ERROR("[hmc5883l] %s i2c dev=%d addr=%02x: " f "\n", \
-                  __func__, d->params.dev, d->params.addr, ## __VA_ARGS__);
+                  __func__, d->dev, HMC5883L_I2C_ADDRESS, ## __VA_ARGS__);
 
 #define EXEC_RET(f, r) \
     if ((r = f) != HMC5883L_OK) { \
@@ -70,7 +70,12 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     DEBUG_DEV("params=%p", dev, params);
 
     /* init sensor data structure */
-    dev->params = *params;
+    dev->dev = params->dev;
+#if MODULE_HMC5883L_INT
+    dev->int_pin = params->int_pin;
+#endif
+    dev->op_mode = params->op_mode;
+    dev->gain = params->gain;
 
     /* check availability of the sensor */
     EXEC_RET(_is_available(dev), res)
@@ -96,10 +101,10 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
 int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg)
 {
     assert(dev != NULL);
-    assert(dev->params.int_pin != GPIO_UNDEF);
+    assert(dev->int_pin != GPIO_UNDEF);
     DEBUG_DEV("", dev);
 
-    if (gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING, cb, arg)) {
+    if (gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, cb, arg)) {
         return HMC5883L_ERROR_COMMON;
     }
 
@@ -122,18 +127,18 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
 }
 
 /*
- * scale factors for conversion of raw sensor data to degree for possible
- * sensitivities according to mechanical characteristics in datasheet
+ * scale factors for conversion of raw sensor data to Gs for possible
+ * sensitivities according to the datasheet
  */
 static const uint32_t HMC5883L_RES[] = {
      730,      /* uG/LSb for HMC5883L_GAIN_1370 with range +-0.88 Gs */
-     920,      /* uG/LSb for HMC5883L_GAIN_1090 with range  +-1.3 Gs */
-    1220,      /* uG/LSb for HMC5883L_GAIN_820  with range  +-1.9 Gs */
-    1520,      /* uG/LSb for HMC5883L_GAIN_660  with range  +-2.5 Gs */
-    2270,      /* uG/LSb for HMC5883L_GAIN_440  with range  +-4.0 Gs */
-    2560,      /* uG/LSb for HMC5883L_GAIN_390  with range  +-4.7 Gs */
-    3030,      /* uG/LSb for HMC5883L_GAIN_330  with range  +-5.6 Gs */
-    4350,      /* uG/LSb for HMC5883L_GAIN_230  with range  +-8.1 Gs */
+     920,      /* uG/LSb for HMC5883L_GAIN_1090 with range +-1.3 Gs */
+    1220,      /* uG/LSb for HMC5883L_GAIN_820  with range +-1.9 Gs */
+    1520,      /* uG/LSb for HMC5883L_GAIN_660  with range +-2.5 Gs */
+    2270,      /* uG/LSb for HMC5883L_GAIN_440  with range +-4.0 Gs */
+    2560,      /* uG/LSb for HMC5883L_GAIN_390  with range +-4.7 Gs */
+    3030,      /* uG/LSb for HMC5883L_GAIN_330  with range +-5.6 Gs */
+    4350,      /* uG/LSb for HMC5883L_GAIN_230  with range +-8.1 Gs */
 };
 
 int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
@@ -149,9 +154,9 @@ int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
     EXEC_RET(hmc5883l_read_raw (dev, &raw), res);
 
-    data->x = ((uint32_t)raw.x * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
-    data->y = ((uint32_t)raw.y * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
-    data->z = ((uint32_t)raw.z * HMC5883L_RES[dev->params.gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->x = ((uint32_t)raw.x * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->y = ((uint32_t)raw.y * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
+    data->z = ((uint32_t)raw.z * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]);
 
     return res;
 }
@@ -193,7 +198,7 @@ int hmc5883l_power_up (hmc5883l_t *dev)
     DEBUG_DEV("", dev);
 
     /* set operation mode to last operation mode */
-    return _reg_write(dev, HMC5883L_REG_MODE, dev->params.op_mode);
+    return _reg_write(dev, HMC5883L_REG_MODE, dev->op_mode);
 }
 
 /** Functions for internal use only */
@@ -232,19 +237,19 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
     DEBUG_DEV("read %d byte from sensor registers starting at addr 0x%02x",
               dev, len, reg);
 
-    if (i2c_acquire(dev->params.dev)) {
+    if (i2c_acquire(dev->dev)) {
         DEBUG_DEV("could not aquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
-    int res = i2c_read_regs(dev->params.dev, dev->params.addr, reg, data, len, 0);
-    i2c_release(dev->params.dev);
+    int res = i2c_read_regs(dev->dev, HMC5883L_I2C_ADDRESS, reg, data, len, 0);
+    i2c_release(dev->dev);
 
     if (res == 0) {
         if (ENABLE_DEBUG) {
             printf("[hmc5883l] %s i2c dev=%d addr=%02x: read following bytes: ",
-                   __func__, dev->params.dev, dev->params.addr);
-            for (int i = 0; i < len; i++) {
+                   __func__, dev->dev, HMC5883L_I2C_ADDRESS);
+            for (unsigned i = 0; i < len; i++) {
                 printf("%02x ", data[i]);
             }
             printf("\n");
@@ -268,18 +273,18 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
 
     if (ENABLE_DEBUG) {
         printf("[hmc5883l] %s i2c dev=%d addr=%02x: write following bytes: ",
-               __func__, dev->params.dev, dev->params.addr);
+               __func__, dev->dev, HMC5883L_I2C_ADDRESS);
         printf("%02x ", data);
         printf("\n");
     }
 
-    if (i2c_acquire(dev->params.dev)) {
+    if (i2c_acquire(dev->dev)) {
         DEBUG_DEV("could not aquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
-    int res = i2c_write_regs(dev->params.dev, dev->params.addr, reg, &data, 1, 0);
-    i2c_release(dev->params.dev);
+    int res = i2c_write_regs(dev->dev, HMC5883L_I2C_ADDRESS, reg, &data, 1, 0);
+    i2c_release(dev->dev);
 
     if (res != 0) {
         DEBUG_DEV("could not write to sensor registers "
