@@ -32,9 +32,6 @@ extern "C" {
 #ifndef HMC5883L_PARAM_DEV
 #define HMC5883L_PARAM_DEV          I2C_DEV(0)
 #endif
-#ifndef HMC5883L_PARAM_ADDR
-#define HMC5883L_PARAM_ADDR         (HMC5883L_I2C_ADDRESS)
-#endif
 #ifndef HMC5883L_PARAM_DOR
 #define HMC5883L_PARAM_DOR          (HMC5883L_DOR_15)
 #endif
@@ -57,7 +54,6 @@ extern "C" {
 #ifndef HMC5883L_PARAMS
 #define HMC5883L_PARAMS             { \
                                      .dev  = HMC5883L_PARAM_DEV,  \
-                                     .addr = HMC5883L_PARAM_ADDR, \
                                      .dor  = HMC5883L_PARAM_DOR,  \
                                      .gain = HMC5883L_PARAM_GAIN, \
                                      .int_pin = HMC5883L_PARAM_INT_PIN, \

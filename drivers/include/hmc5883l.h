@@ -168,7 +168,6 @@ typedef void (*hmc5883l_drdy_int_cb_t)(void *);
 typedef struct {
 
     unsigned  dev;   /**< I2C device */
-    uint8_t   addr;  /**< I2C slave address */
 
     gpio_t int_pin;  /**< DRDY interrupt pin: if #GPIO_UNDEF, interrupts are not used */
 
