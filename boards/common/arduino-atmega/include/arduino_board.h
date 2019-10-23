@@ -141,6 +141,34 @@ static const adc_t arduino_analog_map[] = {
 #endif
 };
 
+/**
+ * @brief   PWM frequency
+ */
+#define ARDUINO_PWM_FREQU       (490U)
+
+/**
+ * @brief   List of PWM GPIO mappings
+ */
+static const arduino_pwm_t arduino_pwm_list[] = {
+#if defined(CPU_ATMEGA2560)
+    { .pin = 13, .dev = PWM_DEV(0), .chan = 0 },
+    { .pin = 4,  .dev = PWM_DEV(0), .chan = 1 },
+#elif defined(CPU_ATMEGA32U4)
+    { .pin = 11, .dev = PWM_DEV(0), .chan = 0 },
+    { .pin = 3,  .dev = PWM_DEV(0), .chan = 1 },
+#else /* CPU_ATMEGA328p */
+    { .pin = 6, .dev = PWM_DEV(0), .chan = 0 },
+    { .pin = 5, .dev = PWM_DEV(0), .chan = 1 },
+#endif
+#if defined(CPU_ATMEGA2560)
+    { .pin = 10, .dev = PWM_DEV(1), .chan = 0 },
+    { .pin = 9,  .dev = PWM_DEV(1), .chan = 1 },
+#else /* CPU_ATMEGA328p */
+    { .pin = 11, .dev = PWM_DEV(1), .chan = 0 },
+    { .pin = 3,  .dev = PWM_DEV(1), .chan = 1 },
+#endif
+};
+
 #ifdef __cplusplus
 }
 #endif
