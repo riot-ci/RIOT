@@ -169,9 +169,12 @@ typedef struct {
  * @brief   HMC5883L sensor device data structure type
  */
 typedef struct {
-
-    hmc5883l_params_t params;    /**< device initialization parameters */
-
+    unsigned dev;    /**< I2C device */
+#if MODULE_HMC5883L_INT
+    gpio_t int_pin;  /**< DRDY interrupt pin: if #GPIO_UNDEF, interrupts are not used */
+#endif
+    hmc5883l_op_mode_t   op_mode;   /**< Operation mode (#HMC5883L_OP_MODE_CONTINUOUS) */
+    hmc5883l_gain_t      gain;      /**< Gain (default #HMC5883L_GAIN_1090) */
 } hmc5883l_t;
 
 /**
