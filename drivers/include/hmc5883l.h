@@ -59,7 +59,6 @@ typedef enum {
  * Values correspond to bits <4:2> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
-
     HMC5883L_DOR_0_75 = 0x00,   /**< 0.75 Hz           */
     HMC5883L_DOR_1_5  = 0x04,   /**<  1.5 Hz           */
     HMC5883L_DOR_3    = 0x08,   /**<    3 Hz           */
@@ -67,7 +66,6 @@ typedef enum {
     HMC5883L_DOR_15   = 0x10,   /**<   15 Hz (default) */
     HMC5883L_DOR_30   = 0x14,   /**<   30 Hz           */
     HMC5883L_DOR_75   = 0x18,   /**<   75 Hz           */
-
 } hmc5883l_dor_t;
 
 /**
@@ -76,11 +74,9 @@ typedef enum {
  * Values correspond to bits <1:0> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
-
     HMC5883L_MEAS_MODE_NORMAL   = 0x00, /**< Normal measurement config */
     HMC5883L_MEAS_MODE_BIAS_POS = 0x01, /**< Positive bias config for all axes */
     HMC5883L_MEAS_MODE_BIAS_NEG = 0x02, /**< Negative bias config for all axes */
-
 } hmc5883l_meas_mode_t;
 
 /**
@@ -89,12 +85,10 @@ typedef enum {
  * Values correspond to bits <6:5> of HMC5883L_REG_CFG_A register
  */
 typedef enum {
-
     HMC5883L_MEAS_AVG_NONE = 0x00,  /**< No averaging */
     HMC5883L_MEAS_AVG_2    = 0x20,  /**< 2 samples are averaged */
     HMC5883L_MEAS_AVG_4    = 0x40,  /**< 4 samples are averaged */
     HMC5883L_MEAS_AVG_8    = 0x60,  /**< 8 samples are averaged */
-
 } hmc5883l_meas_avg_t;
 
 /**
@@ -102,15 +96,13 @@ typedef enum {
  * Values correspond to bits <1:0> of HMC5883L_REG_MODE register
  */
 typedef enum {
-
     HMC5883L_OP_MODE_CONTINUOUS = 0x00, /**< Continuous measurement */
     HMC5883L_OP_MODE_SINGLE     = 0x01, /**< Single measurement */
     HMC5883L_OP_MODE_IDLE       = 0x02, /**< Idle mode */
-
 } hmc5883l_op_mode_t;
 
 /**
- * @brief   Gain (determine the sensitivity and the range)
+ * @brief   Gain (determines the sensitivity and the range)
  * Values correspond to bits <7:5> of HMC5883L_REG_CFG_B_GN register
  */
 typedef enum {
@@ -128,22 +120,18 @@ typedef enum {
  * @brief   Magnetic field values in micro-Gauss (uGs)
  */
 typedef struct {
-
     int32_t x;  /**< magnetic field x-axis */
     int32_t y;  /**< magnetic field y-axis */
     int32_t z;  /**< magnetic field y-axis */
-
 } hmc5883l_data_t;
 
 /**
  * @brief   Raw data set as two complements
  */
 typedef struct {
-
     int16_t x; /**< magnetic field x-axis as 16 bit two's complements */
     int16_t y; /**< magnetic field y-axis as 16 bit two's complements */
     int16_t z; /**< magnetic field z-axis as 16 bit two's complements */
-
 } hmc5883l_raw_data_t;
 
 #if MODULE_HMC5883L_INT || DOXYGEN
@@ -166,17 +154,15 @@ typedef void (*hmc5883l_drdy_int_cb_t)(void *);
  * @brief   HMC5883L device initialization parameters
  */
 typedef struct {
-
-    unsigned  dev;   /**< I2C device */
-
+    unsigned dev;    /**< I2C device */
+#if MODULE_HMC5883L_INT
     gpio_t int_pin;  /**< DRDY interrupt pin: if #GPIO_UNDEF, interrupts are not used */
-
+#endif
     hmc5883l_meas_mode_t meas_mode; /**< Measurement mode (default #HMC5883L_MEAS_MODE_NORMAL) */
     hmc5883l_meas_avg_t  meas_avg;  /**< Measurement avaraging (default #HMC5883L_MEAS_AVG_NONE) */
     hmc5883l_dor_t       dor;       /**< Data output rate (default #HMC5883L_DOR_15) */
     hmc5883l_op_mode_t   op_mode;   /**< Operation mode (#HMC5883L_OP_MODE_CONTINUOUS) */
     hmc5883l_gain_t      gain;      /**< Gain (default #HMC5883L_GAIN_1090) */
-
 } hmc5883l_params_t;
 
 /**

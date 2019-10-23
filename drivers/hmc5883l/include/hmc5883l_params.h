@@ -51,6 +51,7 @@ extern "C" {
 #define HMC5883L_PARAM_INT_PIN      (GPIO_UNDEF)
 #endif
 
+#ifdef MODULE_HMC5883L_INT
 #ifndef HMC5883L_PARAMS
 #define HMC5883L_PARAMS             { \
                                      .dev  = HMC5883L_PARAM_DEV,  \
@@ -61,7 +62,17 @@ extern "C" {
                                      .meas_avg  = HMC5883L_PARAM_MEAS_AVG,  \
                                      .op_mode   = HMC5883L_PARAM_OP_MODE,   \
                                    }
-#endif
+#endif /* HMC5883L_PARAMS */
+#else /* MODULE_HMC5883L_INT */
+#define HMC5883L_PARAMS             { \
+                                     .dev  = HMC5883L_PARAM_DEV,  \
+                                     .dor  = HMC5883L_PARAM_DOR,  \
+                                     .gain = HMC5883L_PARAM_GAIN, \
+                                     .meas_mode = HMC5883L_PARAM_MEAS_MODE, \
+                                     .meas_avg  = HMC5883L_PARAM_MEAS_AVG,  \
+                                     .op_mode   = HMC5883L_PARAM_OP_MODE,   \
+                                   }
+#endif /* MODULE_HMC5883L_INT */
 
 #ifndef HMC5883L_SAUL_INFO
 #define HMC5883L_SAUL_INFO          { .name = "hmc5883l" }
