@@ -45,12 +45,12 @@ extern "C"
 
 /** Definition of error codes */
 typedef enum {
-    HMC5883L_OK,                   /**< success */
-    HMC5883L_ERROR_I2C,            /**< any I2C communication error */
-    HMC5883L_ERROR_WRONG_ID,       /**< wrong id read */
-    HMC5883L_ERROR_NO_DATA,        /**< no data are available */
-    HMC5883L_ERROR_RAW_DATA,       /**< reading raw data failed */
-    HMC5883L_ERROR_COMMON,         /**< common error */
+    HMC5883L_OK             = 0,   /**< success */
+    HMC5883L_ERROR_I2C      = -1,  /**< any I2C communication error */
+    HMC5883L_ERROR_WRONG_ID = -2,  /**< wrong id read */
+    HMC5883L_ERROR_NO_DATA  = -3,  /**< no data are available */
+    HMC5883L_ERROR_RAW_DATA = -4,  /**< reading raw data failed */
+    HMC5883L_ERROR_COMMON   = -5,  /**< common error */
 } hmc5883l_error_codes_t;
 
 /**
