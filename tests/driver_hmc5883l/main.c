@@ -95,7 +95,7 @@ int main(void)
         /* read and print data in any case */
         hmc5883l_data_t data;
         if (hmc5883l_read(&dev, &data) == HMC5883L_OK) {
-            printf("mag [uGs] x: %+8" PRIi32 " y: %+8" PRIi32 " z: %+8" PRIi32 "\n",
+            printf("mag [uGs] x: %+5" PRIi16 " y: %+5" PRIi16 " z: %+5" PRIi16 "\n",
                     data.x, data.y, data.z);
         }
     }

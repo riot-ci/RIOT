@@ -25,9 +25,9 @@ static int read(const void *dev, phydat_t *res)
     if (ret < 0) {
         return -ECANCELED;
     }
-    res->val[0] = data.x / 1000;
-    res->val[1] = data.y / 1000;
-    res->val[2] = data.z / 1000;
+    res->val[0] = data.x;
+    res->val[1] = data.y;
+    res->val[2] = data.z;
     res->unit = UNIT_GS;
     res->scale = -3;
     return 3;
