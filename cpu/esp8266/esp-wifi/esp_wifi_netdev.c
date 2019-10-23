@@ -77,7 +77,7 @@ static xtimer_t _esp_wifi_reconnect_timer;
 
 /**
  * There is only one ESP WIFI device. We define it as static device variable
- * to have accesss to the device inside ESP WIFI interrupt routines which do
+ * to have access to the device inside ESP WIFI interrupt routines which do
  * not provide an argument that could be used as pointer to the ESP WIFI
  * device which triggers the interrupt.
  */
@@ -168,7 +168,7 @@ void IRAM _esp_wifi_recv_cb(struct pbuf *pb, struct netif *netif)
      * callback functions such as `esp_wifi_recv_cb`.
      *
      * It should be therefore not possible to reenter function
-     * `esp_wifi_recv_cb`. If it does occur inspite of that, we use a
+     * `esp_wifi_recv_cb`. If it does occur in spite of that, we use a
      * guard variable to avoid inconsistencies. This can not be realized
      * by a mutex because `esp_wifi_recv_cb` would be reentered from same
      * thread context.

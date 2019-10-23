@@ -42,10 +42,10 @@
 
 static mutex_t _spi_lock[SPI_BUS_NUM] = { MUTEX_INIT };
 
-/* indicate whether SPI interface were already initilized */
+/* indicate whether SPI interface were already initialized */
 static bool _spi_initialized[SPI_BUS_NUM] = { false };
 
-/* indicate whether pins of the SPI interface were already initilized */
+/* indicate whether pins of the SPI interface were already initialized */
 static bool _spi_pins_initialized[SPI_BUS_NUM] = { false };
 
 /*
@@ -123,7 +123,7 @@ void spi_init_pins(spi_t bus)
     uint32_t iomux_func = (bus == 0) ? IOMUX_FUNC(1) : IOMUX_FUNC(2);
 
     /*
-     * CS is handled as normal GPIO ouptut. Due to the small number of GPIOs
+     * CS is handled as normal GPIO output. Due to the small number of GPIOs
      * we have, we do not initialize the default CS pin here. Either the app
      * uses spi_init_cs to initialize the CS pin explicitly, or we initialize
      * the default CS when spi_aquire is used first time.

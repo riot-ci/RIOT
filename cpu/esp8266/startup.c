@@ -755,7 +755,7 @@ void start_phase2 (void)
       * @{
       */
 
-    /* changes clock freqeuncy and should be done before system_set_pll */
+    /* changes clock frequency and should be done before system_set_pll */
     sleep_reset_analog_rtcreg_8266();
 
     /* set correct system clock and adopt UART frequency */

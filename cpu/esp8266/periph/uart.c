@@ -102,7 +102,7 @@ void IRAM __uart_intr_handler (void *arg)
     DEBUG("%s \n", __func__);
 
     /*
-     * UART0 and UART1 interrupts are combined togther. So we have to
+     * UART0 and UART1 interrupts are combined together. So we have to
      * iterate over all UART devices and test the INT_STATUS register for
      * interrupts
      */
@@ -144,7 +144,7 @@ static uint8_t IRAM __uart_rx_one_char (uart_t uart)
 /* send one data byte with wait */
 static void __uart_tx_one_char(uart_t uart, uint8_t data)
 {
-    /* wait until at least one byte is avaiable in the TX FIFO */
+    /* wait until at least one byte is available in the TX FIFO */
     while (FIELD2VAL(UART_STATUS_TXFIFO_COUNT, UART(uart).STATUS) >= UART_FIFO_MAX) {}
 
     /* send the byte by placing it in the TX FIFO */
