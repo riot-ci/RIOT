@@ -100,7 +100,7 @@ int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg)
     DEBUG_DEV("", dev);
 
     if (gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING, cb, arg)) {
-        return -HMC5883L_ERROR_COMMON;
+        return HMC5883L_ERROR_COMMON;
     }
 
     return HMC5883L_OK;
@@ -118,7 +118,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
     uint8_t reg;
 
     EXEC_RET(_reg_read(dev, HMC5883L_REG_STATUS, &reg, 1), res);
-    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : -HMC5883L_ERROR_NO_DATA;
+    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
 }
 
 /*
@@ -168,7 +168,7 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw)
 
     /* read raw data sample */
     EXEC_RET_CODE(_reg_read(dev, HMC5883L_REG_OUT_X_MSB, data, 6),
-                  res, -HMC5883L_ERROR_RAW_DATA);
+                  res, HMC5883L_ERROR_RAW_DATA);
 
     /* data MSB @ lower address */
     raw->x = (data[0] << 8) | data[1];
@@ -217,7 +217,7 @@ static int _is_available(const hmc5883l_t *dev)
         DEBUG_DEV("sensor is not available, wrong id %02x%02x%02x, "
                   "should be %02x%02x%02x",
                   dev, id_r[0], id_r[1], id_r[2], id_c[0], id_c[1], id_c[2]);
-        return -HMC5883L_ERROR_WRONG_ID;
+        return HMC5883L_ERROR_WRONG_ID;
     }
 
     return res;
@@ -234,7 +234,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
 
     if (i2c_acquire(dev->params.dev)) {
         DEBUG_DEV("could not aquire I2C bus", dev);
-        return -HMC5883L_ERROR_I2C;
+        return HMC5883L_ERROR_I2C;
     }
 
     int res = i2c_read_regs(dev->params.dev, dev->params.addr, reg, data, len, 0);
@@ -254,7 +254,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
         DEBUG_DEV("could not read %d bytes from sensor registers "
                   "starting at addr %02x, reason %d (%s)",
                   dev, len, reg, res, strerror(res * -1));
-        return -HMC5883L_ERROR_I2C;
+        return HMC5883L_ERROR_I2C;
     }
 
     return res;
@@ -275,7 +275,7 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
 
     if (i2c_acquire(dev->params.dev)) {
         DEBUG_DEV("could not aquire I2C bus", dev);
-        return -HMC5883L_ERROR_I2C;
+        return HMC5883L_ERROR_I2C;
     }
 
     int res = i2c_write_regs(dev->params.dev, dev->params.addr, reg, &data, 1, 0);
@@ -285,7 +285,7 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
         DEBUG_DEV("could not write to sensor registers "
                   "starting at addr 0x%02x, reason %d (%s)",
                   dev, reg, res, strerror(res * -1));
-        return -HMC5883L_ERROR_I2C;
+        return HMC5883L_ERROR_I2C;
     }
 
     return res;
