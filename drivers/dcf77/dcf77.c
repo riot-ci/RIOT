@@ -189,10 +189,6 @@ int dcf77_read(dcf77_t *dev, struct tm *time)
         dev->bitseq.val.date_par) {
         return DCF77_NOCSUM;
     }
-    /**Add additional check if the parity is fortuitously correct*/
-    if (minute <= dev->last_values.tm_min) {
-        return DCF77_NOCSUM;
-    }
 
     time->tm_min = minute;
     time->tm_hour = hour;
