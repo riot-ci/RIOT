@@ -11,8 +11,6 @@
  * @brief       Test application for the DCF77 device driver
  * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
  *
- * The test application demonstrates the use of the DCF77 using
- *
  *
  */
 
@@ -45,15 +43,7 @@ while(1){
     strftime(outstr, sizeof(outstr), "%x - %I:%M%p", &time);
     strftime(outstr, sizeof(outstr), "%c", &time);
     printf("Formatted date & time : |%s|\n", outstr);
-        // printf("Received Minutes: %d\n",time.tm_min);
-        // printf("Received Hours: %d\n",time.tm_hour);
-        // printf("Received Days: %d\n",time.tm_mday);
-        // printf("Received Month: %d\n",time.tm_mon);
-        // printf("Received Year: %d\n",time.tm_year);
-        // printf("Received MESZ: %d\n",time.tm_isdst);
 
     }
-
-
     return 0;
 }

@@ -32,12 +32,9 @@
 #include "periph/gpio.h"
 #include "time.h"
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * @brief   Possible return codes
