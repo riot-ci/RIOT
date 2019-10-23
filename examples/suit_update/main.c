@@ -32,7 +32,7 @@
 #define COAP_INBUF_SIZE (256U)
 
 /* Nanocoap server requires the same stack size as main */
-static char _nanocoap_server_stack[THREAD_STACKSIZE_MAIN];
+static char _nanocoap_server_stack[THREAD_STACKSIZE_DEFAULT + THREAD_EXTRA_STACKSIZE_PRINTF];
 #define NANOCOAP_SERVER_QUEUE_SIZE     (8)
 static msg_t _nanocoap_server_msg_queue[NANOCOAP_SERVER_QUEUE_SIZE];
 
