@@ -207,7 +207,7 @@ typedef enum {
  * determines the mapping between the RIOT's ADC lines and the GPIOs.
  *
  * @note ADC_GPIOS must be defined even if there are no GPIOs that could be
- * used as ADC channels on the board. In this case, an empy list hast to be
+ * used as ADC channels on the board. In this case, an empty list hast to be
  * defined which just contains the curly braces.
  *
  * ADC_NUMOF is determined automatically from the ADC_GPIOS definition.
@@ -235,7 +235,7 @@ typedef enum {
 /** @} */
 
 /**
- * @brief  Number of ADC cahnnels that could be used at maximum
+ * @brief  Number of ADC channels that could be used at maximum
  *
  * @note GPIO37 and GPIO38 are usually not broken out on ESP32 modules and are
  * therefore not usable. The maximum number of ADC channels (ADC_NUMOF_MAX)
@@ -258,7 +258,7 @@ typedef enum {
  * determines the mapping between the RIOT's DAC lines and the GPIOs.
  *
  * @note DAC_GPIOS must be defined even if there are no GPIOs that could be
- * used as DAC channels on the board. In this case, an empy list hast to be
+ * used as DAC channels on the board. In this case, an empty list hast to be
  * defined which just contains the curly braces.
  *
  * DAC_NUMOF is determined automatically from the DAC_GPIOS definition.
@@ -270,7 +270,7 @@ typedef enum {
  */
 
 /**
- * @brief  Number of DAC cahnnels that could be used at maximum.
+ * @brief  Number of DAC channels that could be used at maximum.
  */
 #define DAC_NUMOF_MAX   2
 
