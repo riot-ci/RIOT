@@ -41,7 +41,7 @@ typedef struct {
     reg32_t DATALOWER; /**< efuse data - lower */
     reg32_t EFUSECFG; /**< OCP sysconf */
     reg32_t EFUSESTAT; /**< system status */
-    reg32_t ACC; /**< arbitrary instruction cound */
+    reg32_t ACC; /**< arbitrary instruction count */
     reg32_t BOUNDARY; /**< boundary test register to drive I/O */
     reg32_t EFUSEFLAG; /**< efuse key loaded flag */
     reg32_t EFUSEKEY; /**< efuse key */
