@@ -44,7 +44,7 @@ are_types_of_same_size() {
 #include <stdatomic.h>
 #include <stdint.h>
 int main(void) {
-    _Static_assert(sizeof($1) == sizeof($2));
+    _Static_assert(sizeof($1) == sizeof($2), "Assert types are equally sized");
     return 0;
 }
 EOF
@@ -107,7 +107,7 @@ print_defines() {
 }
 
 if [ $# -ge 1 ]; then
-    if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         echo "Usage: $0 [CC [CFLAGS]]"
         echo "See README.md for more details"
         exit 1
@@ -119,7 +119,7 @@ if [ $# -ge 2 ]; then
     CFLAGS="$2"
 fi
 
-if [ "$CC" == "" ]; then
+if [ -z "$CC" ]; then
     echo "C compiler needs to be specified either as environment variable, or"
     echo "as first argument. See README.md for documentation."
     exit 1
