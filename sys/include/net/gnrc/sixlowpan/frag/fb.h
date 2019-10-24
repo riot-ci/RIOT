@@ -13,7 +13,7 @@
  * @{
  *
  * @file
- * @brief   Fragmentation buffer definitons
+ * @brief   Fragmentation buffer definitions
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
@@ -68,7 +68,7 @@ gnrc_sixlowpan_frag_fb_t *gnrc_sixlowpan_frag_fb_get(void);
  */
 uint16_t gnrc_sixlowpan_frag_fb_next_tag(void);
 
-#ifdef TEST_SUITES
+#if defined(TEST_SUITES) && !defined(DOXYGEN)
 #include "kernel_types.h"
 
 /* can't include `net/sixlowpan.h` as this would create a cyclical include */
@@ -80,16 +80,16 @@ extern kernel_pid_t gnrc_sixlowpan_get_pid(void);
  *
  * @see GNRC_SIXLOWPAN_MSG_FRAG_SND
  *
- * @param[in] fragment_msg  A @ref gnrc_sixlowpan_msg_frag_t object
+ * @param[in] fbuf  A fragmentation buffer entry
  *]
  * @return  true, when the message was sent
  * @return  false when sending the message failed.
  */
-static inline bool gnrc_sixlowpan_frag_fb_send(gnrc_sixlowpan_frag_fb_t *fragment_msg)
+static inline bool gnrc_sixlowpan_frag_fb_send(gnrc_sixlowpan_frag_fb_t *fbuf)
 {
     msg_t msg;
 
-    msg.content.ptr = fragment_msg;
+    msg.content.ptr = fbuf;
     msg.type = GNRC_SIXLOWPAN_FRAG_FB_SND_MSG;
 #ifdef TEST_SUITES
     return (msg_try_send(&msg, gnrc_sixlowpan_get_pid()) > 0);
