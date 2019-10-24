@@ -152,12 +152,12 @@ static int _v4_parse(suit_v4_manifest_t *manifest, const uint8_t *buf,
         if (handler) {
             int res = handler(manifest, integer_key, &value);
             if (res < 0) {
-                LOG_WARNING("handler returned <0\n)");
+                LOG_INFO("handler returned <0\n)");
                 return SUIT_ERR_INVALID_MANIFEST;
             }
         }
         else {
-            LOG_WARNING("no handler found\n");
+            LOG_INFO("no handler found\n");
             return SUIT_ERR_INVALID_MANIFEST;
         }
     }
