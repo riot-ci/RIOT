@@ -41,8 +41,11 @@ ATOMIC_TYPES="
 
 are_types_of_same_size() {
     cat > $TESTFILE << EOF
-#include <stdatomic.h>
 #include <stdint.h>
+#ifdef __msp430__
+#include <sys/cdefs.h>
+#endif
+#include <stdatomic.h>
 int main(void) {
     _Static_assert(sizeof($1) == sizeof($2), "Assert types are equally sized");
     return 0;
