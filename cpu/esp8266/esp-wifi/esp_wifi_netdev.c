@@ -80,7 +80,7 @@
 
 /**
  * There is only one ESP WiFi device. We define it as static device variable
- * to have accesss to the device inside ESP WiFi interrupt routines which do
+ * to have access to the device inside ESP WiFi interrupt routines which do
  * not provide an argument that could be used as pointer to the ESP WiFi
  * device which triggers the interrupt.
  */
@@ -178,7 +178,7 @@ static int _esp_wifi_tx_cb(esp_aio_t* aio)
 }
 
 /**
- * Function for source code compatibiliy with ESP-IDF for ESP32
+ * Function for source code compatibility with ESP-IDF for ESP32
  */
 int esp_wifi_internal_tx(wifi_interface_t wifi_if, void *buf, uint16_t len)
 {
@@ -210,7 +210,7 @@ int esp_wifi_internal_tx(wifi_interface_t wifi_if, void *buf, uint16_t len)
 }
 
 /**
- * Function for source code compatibiliy with ESP-IDF for ESP32
+ * Function for source code compatibility with ESP-IDF for ESP32
  */
 void esp_wifi_internal_free_rx_buffer(const char* buf)
 {
@@ -228,7 +228,7 @@ void esp_wifi_internal_free_rx_buffer(const char* buf)
 typedef int (*wifi_rxcb_t)(struct esp_aio *aio);
 
 /**
- * Function for source code compatibiliy with ESP-IDF for ESP32
+ * Function for source code compatibility with ESP-IDF for ESP32
  */
 esp_err_t esp_wifi_internal_reg_rxcb(wifi_interface_t ifx, wifi_rxcb_t fn)
 {
