@@ -50,10 +50,9 @@ static size_t _gen_full_acm_descriptor(usbus_t *usbus, void *arg);
 static size_t _gen_assoc_descriptor(usbus_t *usbus, void *arg);
 
 /* Descriptors */
-static const usbus_hdr_gen_funcs_t _cdcacm_descriptor = {
+static const usbus_descr_gen_funcs_t _cdcacm_descriptor = {
     .fmt_post_descriptor = _gen_full_acm_descriptor,
     .fmt_pre_descriptor = _gen_assoc_descriptor,
-    .get_header = _gen_full_acm_descriptor,
     .len = {
         .fixed_len = sizeof(usb_desc_cdc_t) +
                      sizeof(usb_desc_acm_t) +
