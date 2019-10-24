@@ -160,7 +160,7 @@ void vTaskEnterCritical( portMUX_TYPE *mux )
     DEBUG("%s pid=%d prio=%d mux=%p\n", __func__,
           my_pid, sched_threads[my_pid]->priority, mux);
 
-    /* aquire the mutex with interrupts disabled */
+    /* acquire the mutex with interrupts disabled */
     if (mux) {
         mutex_lock(mux); /* TODO should be only a spin lock */
     }
