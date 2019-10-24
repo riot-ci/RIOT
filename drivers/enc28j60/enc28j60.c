@@ -493,11 +493,7 @@ static void nd_isr(netdev_t *netdev)
         }
         eir = cmd_rcr(dev, REG_EIR, -1);
     }
-<<<<<<< HEAD
-    /* enable gobal interrupt enable bit again */
-=======
     /* enable global interrupt enable bit again */
->>>>>>> drivers/enc28j60: fix typos
     cmd_bfs(dev, REG_EIE, -1, EIE_INTIE);
 }
 
