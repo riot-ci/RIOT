@@ -266,7 +266,7 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *_
             manifest->writer);
 
     if (res) {
-        LOG_DEBUG("image download failed\n)");
+        LOG_INFO("image download failed\n)");
         return res;
     }
 
@@ -284,7 +284,7 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *_
      */
     res = riotboot_flashwrite_verify_sha256(digest + 4, manifest->components[0].size, target_slot);
     if (res) {
-        LOG_DEBUG("image verification failed\n");
+        LOG_INFO("image verification failed\n");
         return res;
     }
 
@@ -323,7 +323,6 @@ static int _seq_no_handler(suit_v4_manifest_t *manifest, int key, nanocbor_value
     int32_t seq_nr;
 
     if ((nanocbor_get_type(it) == NANOCBOR_TYPE_UINT)) {
-        // TODO: this should be a int64
         nanocbor_get_int32(it, &seq_nr);
         const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(riotboot_slot_current());
         if (seq_nr <= (int32_t)hdr->version) {
