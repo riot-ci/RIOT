@@ -47,7 +47,7 @@ extern "C" {
  * two. Therefore a software implementation of one PWM device PWM_DEV(0) with up to
  * 8 PWM channels (PWM_CHANNEL_NUM_MAX) is used.
  *
- * @note   The minumum PWM period that can be realized is 10 us or 100.000 PWM
+ * @note   The minimum PWM period that can be realized is 10 us or 100.000 PWM
  * clock cycles per second. Therefore, the product of frequency and resolution
  * should not be greater than 100.000. Otherwise the frequency is scaled down
  * automatically.

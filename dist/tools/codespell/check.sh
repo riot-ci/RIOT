@@ -38,17 +38,25 @@ ${CODESPELL_CMD} --version &> /dev/null || {
 CODESPELL_OPTS="-q 2"  # Disable "WARNING: Binary file"
 CODESPELL_OPTS+=" --check-hidden"
 # Disable false positives "nd  => and, 2nd", "WAN => WANT", "od => of"
-CODESPELL_OPTS+=" --ignore-words-list=ND,nd,WAN,od"
+CODESPELL_OPTS+=" --ignore-words-list ND,nd,wan,od,dout"
 
-# Filter-out all false positive raising "disabled due to" messages.
-ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")
-
-if [ -n "${ERRORS}" ]
-then
-    printf "%sThere are typos in the following files:%s\n\n" "${CERROR}" "${CRESET}"
-    printf "%s\n" "${ERRORS}"
-    # TODO: return 1 when all typos are fixed
-    exit 0
+if [ "${CODESPELL_INTERACTIVE}" = "1" ]; then
+    # interactive mode
+    CODESPELL_OPTS+=" -w -i3"
+    exec ${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES}
 else
-    exit 0
+    # non-interactive mode
+
+    # Filter-out all false positive raising "disabled due to" messages.
+    ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")
+
+    if [ -n "${ERRORS}" ]
+    then
+        printf "%sThere are typos in the following files:%s\n\n" "${CERROR}" "${CRESET}"
+        printf "%s\n" "${ERRORS}"
+        # TODO: return 1 when all typos are fixed
+        exit 0
+    else
+        exit 0
+    fi
 fi
