@@ -272,7 +272,7 @@ int suit_cbor_subparse(CborParser *parser, CborValue *bseq, CborValue *it);
  * @param[in]   offset  offset to write to on flash
  * @param[in]   buf     bytes to write
  * @param[in]   len     length of bytes to write
- * @param[in]   more    whether more data is comming
+ * @param[in]   more    whether more data is coming
  *
  * @return              0 on success
  * @return              <0 on error
