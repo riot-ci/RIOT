@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 
 #include "net/gnrc/sixlowpan/config.h"
 #include "net/gnrc/sixlowpan/frag/fb.h"
@@ -23,6 +24,14 @@
 
 static gnrc_sixlowpan_frag_fb_t _fbs[GNRC_SIXLOWPAN_FRAG_FB_SIZE];
 static uint16_t _current_tag;
+
+#ifdef TEST_SUITES
+void gnrc_sixlowpan_frag_fb_reset(void)
+{
+    memset(_fbs, 0, sizeof(_fbs));
+    _current_tag = 0;
+}
+#endif
 
 gnrc_sixlowpan_frag_fb_t *gnrc_sixlowpan_frag_fb_get(void)
 {

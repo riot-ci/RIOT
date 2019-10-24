@@ -18,6 +18,7 @@
 
 #include "embUnit/embUnit.h"
 
+#include "net/gnrc/sixlowpan/frag/fb.h"
 #include "net/gnrc/sixlowpan/frag/vrb.h"
 #include "xtimer.h"
 

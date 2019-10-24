@@ -53,6 +53,15 @@ typedef struct {
 #endif /* MODULE_GNRC_SIXLOWPAN_FRAG_HINT */
 } gnrc_sixlowpan_frag_fb_t;
 
+#ifdef TEST_SUITES
+/**
+ * @brief   Reset fragmentation buffer
+ *
+ * @note    Only available with test
+ */
+void gnrc_sixlowpan_frag_fb_reset(void);
+#endif
+
 /**
  * @brief   Allocates a fragmentation buffer entry
  *
