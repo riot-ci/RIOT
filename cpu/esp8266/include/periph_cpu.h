@@ -112,7 +112,7 @@ typedef enum {
  * ESP8266 provides up to two bit-banging I2C interfaces.
  *
  * The board-specific configuration of the I2C interface I2C_DEV(n) requires
- * the defintion of
+ * the definition of
  *
  * I2Cn_SPEED, the bus speed,
  * I2Cn_SCL, the GPIO used as SCL signal, and
@@ -184,7 +184,7 @@ typedef struct {
  * GPIOs that can be used as PWM channels are defined by #PWM0_GPIOS in board
  * definition.
  *
- * @note The minumum PWM period that can be realized is 10 us or 100.000 PWM
+ * @note The minimum PWM period that can be realized is 10 us or 100.000 PWM
  * clock cycles per second. Therefore, the product of frequency and resolution
  * should not be greater than 100.000. Otherwise the frequency is scaled down
  * automatically.

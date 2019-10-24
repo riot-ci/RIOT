@@ -16,7 +16,7 @@
  * This file defines configuration parameters that are only required for source
  * code compatibility with the SDK. These configuration parameters are not used
  * directly to configure the compilation of RIOT-OS. However, some of them can
- * be overrien overriden by application-specific board configuration.
+ * be overrien overridden by application-specific board configuration.
  *
  * @author      Gunar Schorcht <gunar@schorcht.net>
  */
@@ -44,7 +44,7 @@ extern "C" {
  * @name Default console configuration
  *
  * STDIO_UART_BAUDRATE is used as CONFIG_CONSOLE_UART_BAUDRATE and
- * can be overriden by an application specific configuration.
+ * can be overridden by an application specific configuration.
  *
  * @{
  */
