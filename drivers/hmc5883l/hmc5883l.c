@@ -176,8 +176,8 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw)
 
     /* data MSB @ lower address */
     raw->x = (data[0] << 8) | data[1];
-    raw->y = (data[2] << 8) | data[3];
-    raw->z = (data[4] << 8) | data[5];
+    raw->y = (data[4] << 8) | data[5];
+    raw->z = (data[2] << 8) | data[3];
 
     return res;
 }
