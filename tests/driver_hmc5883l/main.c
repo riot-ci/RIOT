@@ -109,7 +109,7 @@ int main(void)
         hmc5883l_data_t data;
         if (hmc5883l_read(&dev, &data) == HMC5883L_OK) {
             /* print xyz data */
-            printf("mag [uGs] x: %+5" PRIi16 " y: %+5" PRIi16 " z: %+5" PRIi16 "\n",
+            printf("magn [uGs] x = %" PRIi32 ", y = %" PRIi32 ", z = %" PRIi32 "\n",
                     data.x, data.y, data.z);
 
             /* compute and print heading for the given magnetic declination in rad */
