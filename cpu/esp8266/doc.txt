@@ -211,7 +211,7 @@ git checkout esp8266_only_rtos_sdk
 docker build -t riotbuild .
 ```
 
-A `riotdocker` version that contains toolchains for all plattforms supported
+A `riotdocker` version that contains toolchains for all platforms supported
 by RIOT can be found at [GitHub](https://github.com/RIOT-OS/riotdocker).
 However, the Docker image generated from the this Docker file has a size of
 about 1.5 GByte.
@@ -742,7 +742,7 @@ its SoftAP WiFi interface. The driver periodically scans all visible ESP8266
 nodes.
 
 The following parameters are defined for ESP-NOW nodes. These parameters can
-be overriden by [application-specific board configurations](#esp8266_application_specific_board_configuration).
+be overridden by [application-specific board configurations](#esp8266_application_specific_board_configuration).
 
 <center>
 
@@ -941,7 +941,7 @@ line as the <b>first</b> line to the application makefile `$APPDIR/Makefile`.
 INCLUDES += -I$(APPDIR)
 ```
 
-**Pleae note:** To make such application-specific board configurations
+**Please note:** To make such application-specific board configurations
 dependent on the ESP8266 MCU or a particular ESP8266 board, you should
 always enclose these definitions in the following constructs:
 ```
