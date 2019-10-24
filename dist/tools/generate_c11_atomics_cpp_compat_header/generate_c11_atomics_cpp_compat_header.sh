@@ -48,7 +48,7 @@ int main(void) {
     return 0;
 }
 EOF
-    $CC $CFLAGS -o /dev/null -c $TESTFILE &> /dev/null
+    $CC $CFLAGS -o /dev/null -c $TESTFILE 2> /dev/null > /dev/null
 }
 
 get_size() {
