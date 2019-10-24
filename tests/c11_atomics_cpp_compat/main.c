@@ -20,8 +20,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "assert.h"
+#ifdef CPU_MSP430FXYZ
+#include <sys/cdefs.h>
+#endif
 
 /* This file contains only #defines, so it is fully compatible with C */
 #include "c11_atomics_compat_cpu.hpp"
