@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#ifdef CPU_MSP430FXYZ
+#if defined(CPU_MSP430FXYZ) || defined(CPU_ESP8266)
 #include <sys/cdefs.h>
 #endif
 
