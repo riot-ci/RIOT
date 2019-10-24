@@ -4,7 +4,6 @@ include ../Makefile.tests_common
 DISABLE_MODULE := \
     auto_init \
     core_msg \
-    sys \
     #
 
 include $(RIOTBASE)/Makefile.include
