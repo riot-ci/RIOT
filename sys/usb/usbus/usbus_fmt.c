@@ -279,6 +279,7 @@ size_t usbus_fmt_hdr_conf(usbus_t *usbus)
     usbus_control_slicer_put_bytes(usbus, (uint8_t *)&conf, sizeof(conf));
     len += _hdrs_fmt_hdrs(usbus);
     len += _hdrs_fmt_ifaces(usbus);
+    assert(len == conf.total_length);
     return len;
 }
 
