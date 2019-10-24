@@ -123,7 +123,7 @@ uint32_t pwm_init(pwm_t pwm, pwm_mode_t mode, uint32_t freq, uint16_t res)
     assert(_pwm_channel_gpio_num <= PWM_CHANNEL_NUM_MAX);
 
     /* maximum number of cycles per second (freq*res) should not be greater than */
-    /* 100.000 (period of 10 us), reduce freq if neccessary and keep resolution */
+    /* 100.000 (period of 10 us), reduce freq if necessary and keep resolution */
     if (res * freq > PWM_MAX_CPS) {
         freq = PWM_MAX_CPS / res;
     }

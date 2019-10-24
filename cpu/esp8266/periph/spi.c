@@ -61,7 +61,7 @@
 #define FSPI_MISO   GPIO7
 #define FSPI_MOSI   GPIO8
 
-/** stucture which decribes all properties of one SPI bus */
+/** structure which describes all properties of one SPI bus */
 struct _spi_bus_t {
     spi_dev_t* regs;       /* pointer to register data struct of the SPI device */
     mutex_t lock;          /* mutex for each possible SPI interface */
@@ -188,7 +188,7 @@ static void IRAM_ATTR _spi_init_internal(spi_t bus)
     _spi[bus].regs->ctrl.wp = 0;
 #endif /* MCU_ESP32 */
 
-    /* aquire and release to set default parameters */
+    /* acquire and release to set default parameters */
     spi_acquire(bus, GPIO_UNDEF, SPI_MODE_0, SPI_CLK_1MHZ);
     spi_release(bus);
 }
@@ -239,7 +239,7 @@ void spi_init_pins(spi_t bus)
     GPIO.func_in_sel_cfg[_spi[bus].signal_miso].func_sel = spi_config[bus].miso;
 #else /* MCU_ESP32 */
     /*
-     * CS is handled as normal GPIO ouptut. Due to the small number of GPIOs
+     * CS is handled as normal GPIO output. Due to the small number of GPIOs
      * we have, we do not initialize the default CS pin here. Either the app
      * uses spi_init_cs to initialize the CS pin explicitly, or we initialize
      * the default CS when spi_aquire is used first time.
