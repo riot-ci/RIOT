@@ -72,6 +72,7 @@ def wait_for_update(child):
 
 
 def get_ipv6_addr(child):
+    child.sendline('ifconfig')
     if USE_ETHOS == 0:
         # Get device global address
         child.expect(
@@ -121,13 +122,13 @@ def testfunc(child):
     current_app_ver = int(child.match.group("app_ver"), 16)
 
     for version in [current_app_ver + 1, current_app_ver + 2]:
+        child.expect_exact("suit_coap: started.")
         # Get address, if using ethos it will change on each reboot
         client_addr = get_ipv6_addr(child)
         client = "[{}]".format(client_addr)
         # Wait for suit_coap thread to start
         # Ping6
         ping6(client_addr)
-        child.expect_exact("suit_coap: started.")
         # Trigger update process, verify it validates manifest correctly
         publish(TMPDIR.name, COAP_HOST, version)
         notify(COAP_HOST, client, version)
