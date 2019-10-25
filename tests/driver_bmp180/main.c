@@ -63,16 +63,20 @@ int main(void)
     printf("\n+--------Starting Measurements--------+\n");
     while (1) {
         /* Get temperature in deci degrees celsius */
-        int16_t temperature = bmp180_read_temperature(&dev);
+        int16_t temperature;
+        bmp180_read_temperature(&dev, &temperature);
 
         /* Get pressure in Pa */
-        uint32_t pressure = bmp180_read_pressure(&dev);
+        uint32_t pressure;
+        bmp180_read_pressure(&dev, &pressure);
 
         /* Get pressure at sealevel in Pa */
-        uint32_t pressure_0 = bmp180_sealevel_pressure(&dev, (int16_t)TEST_ALTITUDE);
+        uint32_t pressure_0;
+        bmp180_sealevel_pressure(&dev, (int16_t)TEST_ALTITUDE, &pressure_0);
 
         /* Get altitude in meters */
-        int16_t altitude = bmp180_altitude(&dev, pressure_0);
+        int16_t altitude;
+        bmp180_altitude(&dev, pressure_0, &altitude);
 
         printf("Temperature [°C]: %i.%d\n"
                "Pressure [hPa]: %lu.%d\n"
