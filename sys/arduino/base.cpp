@@ -111,7 +111,7 @@ int analogRead(int arduino_pin)
 #if MODULE_PERIPH_PWM
 static int _get_pwm_pin_idx(int pin)
 {
-    for (uint8_t i = 0;i < ARRAY_SIZE(arduino_pwm_list); ++i) {
+    for (uint8_t i = 0; i < ARRAY_SIZE(arduino_pwm_list); ++i) {
         if (arduino_pwm_list[i].pin == pin) {
             return i;
         }
