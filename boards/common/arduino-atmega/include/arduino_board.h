@@ -24,6 +24,8 @@
 
 #include "arduino_pinmap.h"
 
+#include "periph/pwm.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
