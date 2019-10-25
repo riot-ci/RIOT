@@ -38,6 +38,7 @@ ${CODESPELL_CMD} --version &> /dev/null || {
 CODESPELL_OPTS="-q 2"  # Disable "WARNING: Binary file"
 CODESPELL_OPTS+=" --check-hidden"
 CODESPELL_OPTS+=" --ignore-words ${RIOTTOOLS}/codespell/ignored_words.txt"
+CODESPELL_OPTS+=" -c"   # Enable colored output
 
 # Filter-out all false positive raising "disabled due to" messages.
 ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")

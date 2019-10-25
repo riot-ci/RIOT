@@ -3,12 +3,10 @@
 # Extend it when needed, one word per line with documentation in a comment.
 
 # nd (Neighbor Discovery) => and, 2nd
-ND
 nd
 
 # wan (Wide Area Network) => want
 wan
-WAN
 
 # od (Object Dump) => of
 od
