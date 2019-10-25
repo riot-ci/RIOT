@@ -82,6 +82,7 @@ enum {
     BMP180_OK = 0,                              /**< everything was fine */
     BMP180_ERR_NODEV,                           /**< did not detect BMP180 */
     BMP180_ERR_NOCAL,                           /**< error when reading calibration values */
+    BMP180_ERR_I2C,                             /**< error when accessing the I2C bus */
 };
 
 /**
@@ -100,39 +101,47 @@ int bmp180_init(bmp180_t *dev, const bmp180_params_t *params);
  * @brief   Read temperature value from the given BMP180 device, returned in d°C
  *
  * @param[in] dev           Device descriptor of BMP180 device to read from
+ * @param[out] temperature  Temperature in d°C
  *
- * @return                  Temperature in d°C
+ * @return                  BMP180_OK on success
+ * @return                  -BMP180_ERR_I2C on I2C error
  */
-int16_t bmp180_read_temperature(const bmp180_t *dev);
+int bmp180_read_temperature(const bmp180_t *dev, int16_t *temperature);
 
 /**
  * @brief   Read pressure value from the given BMP180 device, returned in Pa
  *
  * @param[in]  dev          Device descriptor of BMP180 device to read from
+ * @param[out] temperature  Pressure in Pa
  *
- * @return                  Pressure in Pa
+ * @return                  BMP180_OK on success
+ * @return                  -BMP180_ERR_I2C on I2C error
  */
-uint32_t bmp180_read_pressure(const bmp180_t *dev);
+int bmp180_read_pressure(const bmp180_t *dev, uint32_t *pressure);
 
 /**
  * @brief   Compute altitude, returned in m.
  *
  * @param[in]  dev          Device descriptor of BMP180 device to read from
  * @param[in]  pressure_0   The pressure at sea level in Pa
+ * @param[out] altitude     Altitude in m
  *
- * @return                  Altitude in m
+ * @return                  BMP180_OK on success
+ * @return                  -BMP180_ERR_I2C on I2C error
  */
-int16_t bmp180_altitude(const bmp180_t *dev, uint32_t pressure_0);
+int bmp180_altitude(const bmp180_t *dev, uint32_t pressure_0, int16_t *altitude);
 
 /**
  * @brief   Compute pressure at sea level, returned in Pa.
  *
  * @param[in]  dev          Device descriptor of BMP180 device to read from
  * @param[in]  altitude     Altitude in m
+ * @param[out] pressure_0   Pressure at sea level in Pa
  *
- * @return                  Pressure at sea level in Pa
+ * @return                  BMP180_OK on success
+ * @return                  -BMP180_ERR_I2C on I2C error
  */
-uint32_t bmp180_sealevel_pressure(const bmp180_t *dev, int16_t altitude);
+int bmp180_sealevel_pressure(const bmp180_t *dev, int16_t altitude, uint32_t *pressure_0);
 
 #ifdef __cplusplus
 }

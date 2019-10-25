@@ -27,18 +27,26 @@
 
 static int read_temperature(const void *dev, phydat_t *res)
 {
-    res->val[0] = bmp180_read_temperature((const bmp180_t *)dev);
-    res->unit = UNIT_TEMP_C;
-    res->scale = -1;
-    return 1;
+    if (bmp180_read_temperature((const bmp180_t *)dev, &res->val[0]) == BMP180_OK) {
+        res->unit = UNIT_TEMP_C;
+        res->scale = -1;
+        return 1;
+    }
+
+    return -ECANCELED;
 }
 
 static int read_pressure(const void *dev, phydat_t *res)
 {
-    res->val[0] = bmp180_read_pressure((const bmp180_t *)dev) / 100;
-    res->unit = UNIT_PA;
-    res->scale = 2;
-    return 1;
+    uint32_t p;
+    if (bmp180_read_pressure((const bmp180_t *)dev, &p) == BMP180_OK) {
+        res->val[0] = p / 100;
+        res->unit = UNIT_PA;
+        res->scale = 2;
+        return 1;
+    }
+
+    return -ECANCELED;
 }
 
 const saul_driver_t bmp180_temperature_saul_driver = {
