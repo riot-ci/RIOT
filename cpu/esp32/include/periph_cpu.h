@@ -168,7 +168,7 @@ typedef enum {
  *
  * ESP32 integrates two 12-bit ADCs (ADC1 and ADC2) capable of measuring up to
  * 18 analog signals in total. Most of these ADC channels are either connected
- * to a number of intergrated sensors like a Hall sensors, touch sensors and a
+ * to a number of integrated sensors like a Hall sensors, touch sensors and a
  * temperature sensor or can be connected with certain GPIOs. Integrated
  * sensors are disabled in RIOT's implementation and are not accessible. Thus,
  * up to 18 GPIOs, the RTC GPIOs, can be used as ADC inputs:
@@ -207,7 +207,7 @@ typedef enum {
  * determines the mapping between the RIOT's ADC lines and the GPIOs.
  *
  * @note ADC_GPIOS must be defined even if there are no GPIOs that could be
- * used as ADC channels on the board. In this case, an empy list hast to be
+ * used as ADC channels on the board. In this case, an empty list hast to be
  * defined which just contains the curly braces.
  *
  * ADC_NUMOF is determined automatically from the ADC_GPIOS definition.
@@ -235,7 +235,7 @@ typedef enum {
 /** @} */
 
 /**
- * @brief  Number of ADC cahnnels that could be used at maximum
+ * @brief  Number of ADC channels that could be used at maximum
  *
  * @note GPIO37 and GPIO38 are usually not broken out on ESP32 modules and are
  * therefore not usable. The maximum number of ADC channels (ADC_NUMOF_MAX)
@@ -258,7 +258,7 @@ typedef enum {
  * determines the mapping between the RIOT's DAC lines and the GPIOs.
  *
  * @note DAC_GPIOS must be defined even if there are no GPIOs that could be
- * used as DAC channels on the board. In this case, an empy list hast to be
+ * used as DAC channels on the board. In this case, an empty list hast to be
  * defined which just contains the curly braces.
  *
  * DAC_NUMOF is determined automatically from the DAC_GPIOS definition.
@@ -270,7 +270,7 @@ typedef enum {
  */
 
 /**
- * @brief  Number of DAC cahnnels that could be used at maximum.
+ * @brief  Number of DAC channels that could be used at maximum.
  */
 #define DAC_NUMOF_MAX   2
 
@@ -282,7 +282,7 @@ typedef enum {
  * ESP32 has two built-in I2C interfaces.
  *
  * The board-specific configuration of the I2C interface I2C_DEV(n) requires
- * the defintion of
+ * the definition of
  *
  * I2Cn_SPEED, the bus speed,
  * I2Cn_SCL, the GPIO used as SCL signal, and
@@ -388,7 +388,7 @@ typedef struct {
  * device driver doesn't support it.
  *
  * The board-specific configuration of the SPI interface SPI_DEV(n) requires
- * the defintion of
+ * the definition of
  *
  * - SPIn_CTRL, the SPI controller which is used for the interface (VSPI or HSPI),
  * - SPIn_SCK, the GPIO used as clock signal

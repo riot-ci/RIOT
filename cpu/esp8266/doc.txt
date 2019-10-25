@@ -725,7 +725,7 @@ its SoftAP WiFi interface. The driver periodically scans all visible ESP8266
 nodes.
 
 The following parameters are defined for ESP-NOW nodes. These parameters can
-be overriden by [application-specific board configurations](#esp8266_application_specific_board_configuration).
+be overridden by [application-specific board configurations](#esp8266_application_specific_board_configuration).
 
 <center>
 
@@ -888,7 +888,7 @@ It is important to ensure that the application-specific driver parameter file `$
 INCLUDES += -I$(APPDIR)
 ```
 
-**Pleae note:** To make such application-specific board configurations dependent on the ESP8266 MCU or a particular ESP8266 board, you should always enclose these definitions in the following constructs:
+**Please note:** To make such application-specific board configurations dependent on the ESP8266 MCU or a particular ESP8266 board, you should always enclose these definitions in the following constructs:
 ```
 #ifdef CPU_ESP8266
 ...
@@ -930,7 +930,7 @@ to be executed. The `ets_task_func` RIOT thread then calls the `ets_run`
 function, which performs all ETS tasks with pending events exactly once.
 
 Thus, when a hardware component used by the SDK triggers an interrupt, e.g.
-the WiFi interface, the interrupt sevice routine posts an event to the ETS
+the WiFi interface, the interrupt service routine posts an event to the ETS
 task by calling the `ets_post` function. The overwritten version of this
 function sets the thread flag of the `ets_task_func` thread. The thread
 then calls function `ets_run` to process pending events.

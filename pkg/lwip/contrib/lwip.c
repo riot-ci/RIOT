@@ -94,7 +94,7 @@ extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
 
 void lwip_bootstrap(void)
 {
-    /* TODO: do for every eligable netdev */
+    /* TODO: do for every eligible netdev */
 #ifdef LWIP_NETIF_NUMOF
 #ifdef MODULE_NETDEV_TAP
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {

@@ -87,7 +87,7 @@
 
 /**
  * There is only one ESP-NOW device. We define it as static device variable
- * to have accesss to the device inside ESP-NOW interrupt routines which do
+ * to have access to the device inside ESP-NOW interrupt routines which do
  * not provide an argument that could be used as pointer to the ESP-NOW
  * device which triggers the interrupt.
  */
@@ -462,7 +462,7 @@ esp_now_netdev_t *netdev_esp_now_setup(void)
         }
     };
 
-    /* get SoftAP interface mac address and store it as device addresss */
+    /* get SoftAP interface mac address and store it as device address */
     esp_read_mac(dev->addr, ESP_MAC_WIFI_SOFTAP);
 
     /* prepare the ESP_NOW configuration for SoftAP */

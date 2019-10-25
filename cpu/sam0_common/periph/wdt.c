@@ -83,7 +83,7 @@ static uint32_t ms_to_per(uint32_t ms)
 #ifdef CPU_SAMD21
 static void _wdt_clock_setup(void)
 {
-/* RTC / RTT will alredy set up GCLK2 as needed */
+/* RTC / RTT will already set up GCLK2 as needed */
 #if !defined(MODULE_PERIPH_RTC) && !defined(MODULE_PERIPH_RTT)
     /* Setup clock GCLK2 with OSCULP32K divided by 32 */
     GCLK->GENDIV.reg  = GCLK_GENDIV_ID(2) | GCLK_GENDIV_DIV(4);
