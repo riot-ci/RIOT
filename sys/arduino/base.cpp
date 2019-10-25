@@ -145,11 +145,6 @@ void analogWrite(int pin, int value)
         return;
     }
 
-#if HAVE_PWM_GPIO_INIT
-    /* Ensure gpio is correctly (re)initialized */
-    pwm_gpio_init(arduino_pwm_list[pin_idx].dev, arduino_pwm_list[pin_idx].chan);
-#endif
-
     /* Initialization of given PWM pin */
     if (!(pwm_dev_state & (1 << arduino_pwm_list[pin_idx].dev))) {
         if (pwm_init(arduino_pwm_list[pin_idx].dev,
