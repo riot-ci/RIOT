@@ -52,7 +52,7 @@ extern "C" {
 #define STM32_USB_OTG_CID_12     /**< USB OTG FS version 0x00001200 */
 #elif defined(USB_OTG_GCCFG_VBDEN)
 #define STM32_USB_OTG_CID_20     /**< USB OTG FS version 0x00002000 */
-#elif
+#else
 #error Unknown USB peripheral version
 #endif
 
@@ -123,4 +123,3 @@ typedef struct {
 #endif
 #endif /* USBDEV_STM32_H */
 /** @} */
-

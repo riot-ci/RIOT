@@ -600,16 +600,16 @@ typedef enum {
  * @brief stm32 USB OTG configuration
  */
 typedef struct {
-    uint8_t *periph;                          /**< USB peripheral base address */
-    uint32_t rcc_mask;                        /**< bit in clock enable register */
-    stm32_fshs_usb_phy_t phy;                 /**< Built-in or ULPI phy */
-    stm32_fshs_usb_type_t type;               /**< FS or HS type */
-    uint8_t irqn;                             /**< IRQ channel */
-    uint8_t ahb;                              /**< AHB bus */
-    gpio_t dm;                                /**< Data- gpio */
-    gpio_t dp;                                /**< Data+ gpio */
-    gpio_af_t af;                             /**< Alternative function */
-    bool dma;
+    uint8_t *periph;            /**< USB peripheral base address */
+    uint32_t rcc_mask;          /**< bit in clock enable register */
+    stm32_fshs_usb_phy_t phy;   /**< Built-in or ULPI phy */
+    stm32_fshs_usb_type_t type; /**< FS or HS type */
+    uint8_t irqn;               /**< IRQ channel */
+    uint8_t ahb;                /**< AHB bus */
+    gpio_t dm;                  /**< Data- gpio */
+    gpio_t dp;                  /**< Data+ gpio */
+    gpio_af_t af;               /**< Alternative function */
+    bool dma;                   /**< Enable DMA for the HS periph */
 } stm32_fshs_usb_config_t;
 
 /**

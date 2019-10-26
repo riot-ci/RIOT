@@ -316,20 +316,18 @@ static void _reset_fifo(stm32_fshs_usb_t *usbdev, uint8_t fifo_num)
 
 static void _reset_rx_fifo(stm32_fshs_usb_t *usbdev)
 {
-    (void)usbdev;
     const stm32_fshs_usb_config_t *conf = usbdev->config;
     _global_regs(conf)->GRSTCTL |= USB_OTG_GRSTCTL_RXFFLSH;
     while (_global_regs(conf)->GRSTCTL & USB_OTG_GRSTCTL_RXFFLSH) {}
-    xtimer_spin(xtimer_ticks_from_usec(50));
 }
 
 static void _reset_periph(stm32_fshs_usb_t *usbdev)
 {
-    (void)usbdev;
     const stm32_fshs_usb_config_t *conf = usbdev->config;
-    /* reset */
+    /* Wait for AHB idle */
     while (!(_global_regs(conf)->GRSTCTL & USB_OTG_GRSTCTL_AHBIDL)) {}
     _global_regs(conf)->GRSTCTL |= USB_OTG_GRSTCTL_CSRST;
+    /* Wait for reset done */
     while (_global_regs(conf)->GRSTCTL & USB_OTG_GRSTCTL_CSRST) {}
 }
 
@@ -453,7 +451,7 @@ static void _usbdev_init(usbdev_t *dev)
 
 
     DEBUG("USB peripheral currently in %s mode\n",
-          _global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_CMOD ? "host" : "device");
+         (_global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_CMOD) ? "host" : "device");
 
     /* Enable interrupts and configure the TX level to interrupt on empty */
     _global_regs(conf)->GAHBCFG |= USB_OTG_GAHBCFG_GINT | USB_OTG_GAHBCFG_TXFELVL;
@@ -645,9 +643,6 @@ static int _usbdev_ep_ready(usbdev_ep_t *ep, size_t len)
     const stm32_fshs_usb_config_t *conf = usbdev->config;
 
     if (ep->dir == USB_EP_DIR_IN) {
-        if (ep->num != 0) {
-            DEBUG("Ready IN %u\n", len);
-        }
         /* Abort when the endpoint is not active, prevents hangs,
          * could be an assert in the future maybe */
         if (!(_in_regs(conf, ep->num)->DIEPCTL & USB_OTG_DIEPCTL_USBAEP)) {
@@ -751,9 +746,6 @@ static void _usbdev_ep_esr(usbdev_ep_t *ep)
 {
     stm32_fshs_usb_t *usbdev = (stm32_fshs_usb_t*)ep->dev;
     const stm32_fshs_usb_config_t *conf = usbdev->config;
-    if (ep->num != 0) {
-        DEBUG("ESR %s %u\n", ep->dir == USB_EP_DIR_IN ? "IN" : "OUT", ep->num);
-    }
 
     if (ep->dir == USB_EP_DIR_IN) {
         uint32_t status = _in_regs(conf, ep->num)->DIEPINT;
@@ -761,16 +753,10 @@ static void _usbdev_ep_esr(usbdev_ep_t *ep)
         if (status & USB_OTG_DIEPINT_XFRC) {
             _in_regs(conf, ep->num)->DIEPINT = USB_OTG_DIEPINT_XFRC;
             if (ep->num != 0) {
-                DEBUG("XFRC %s %u\n", ep->dir == USB_EP_DIR_IN ? "IN" : "OUT", ep->num);
-            }
-            if (ep->num != 0) {
                 usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
             }
         }
         else if (status & USB_OTG_DIEPINT_TXFE) {
-            if (ep->num != 0) {
-                DEBUG("TXFE %s %u\n", ep->dir == USB_EP_DIR_IN ? "IN" : "OUT", ep->num);
-            }
             _in_regs(conf, ep->num)->DIEPINT = USB_OTG_DIEPINT_TXFE;
             _device_regs(conf)->DIEPEMPMSK &= ~(1 << ep->num);
             usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
@@ -784,23 +770,14 @@ static void _usbdev_ep_esr(usbdev_ep_t *ep)
         }
         else if (_out_regs(conf, ep->num)->DOEPINT & USB_OTG_DOEPINT_XFRC) {
             _out_regs(conf, ep->num)->DOEPINT = USB_OTG_DOEPINT_XFRC;
-            if (ep->num != 0) {
-                DEBUG("XFRC %s %u\n", ep->dir == USB_EP_DIR_IN ? "IN" : "OUT", ep->num);
-            }
             if (conf->dma) {
                 stm32_fshs_usb_ep_t *stmep = (stm32_fshs_usb_ep_t *)ep;
                 stmep->len = ep->len - (_out_regs(conf, ep->num)->DOEPTSIZ & USB_OTG_DOEPTSIZ_XFRSIZ_Msk);
-                DEBUG("NOTIFY\n");
                 usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
             }
         }
     }
     _global_regs(conf)->GAHBCFG |= USB_OTG_GAHBCFG_GINT;
-}
-
-void isr_otg_fs_wkup(void)
-{
-    DEBUG("WAKEIRQn\n");
 }
 
 void isr_ep(stm32_fshs_usb_t *usbdev)
