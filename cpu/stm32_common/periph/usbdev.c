@@ -34,7 +34,7 @@
  * is able to interfere with USB functionality and you might see different
  * errors than debug disabled
  */
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 #if defined(STM32_USB_OTG_FS_ENABLED) && defined(STM32_USB_OTG_HS_ENABLED)
@@ -419,7 +419,10 @@ static void _set_mode_device(stm32_fshs_usb_t *usbdev)
 
 static void _usbdev_init(usbdev_t *dev)
 {
+    /* Block both STOP and STANDBY, STOP is unblocked during USB suspend
+     * status */
     pm_block(STM32_PM_STOP);
+    pm_block(STM32_PM_STANDBY);
 
     stm32_fshs_usb_t *usbdev = (stm32_fshs_usb_t *)dev;
     const stm32_fshs_usb_config_t *conf = usbdev->config;
@@ -621,13 +624,18 @@ static void _usbdev_esr(usbdev_t *dev)
         DEBUG("Session request\n");
     }
     if (_global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_USBSUSP) {
-        usbdev->suspended = true;
+        DEBUG("SUSPEND\n");
         _global_regs(conf)->GINTSTS |= USB_OTG_GINTSTS_USBSUSP;
         usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_SUSPEND);
+        *_pcgcctl_reg(conf) |= USB_OTG_PCGCCTL_STOPCLK;
+        pm_unblock(STM32_PM_STOP);
     }
     if (_global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_WKUINT) {
-        usbdev->suspended = false;
+        pm_block(STM32_PM_STOP);
+        DEBUG("WAKE\n");
+        *_pcgcctl_reg(conf) &= ~USB_OTG_PCGCCTL_STOPCLK;
         _global_regs(conf)->GINTSTS |= USB_OTG_GINTSTS_WKUINT;
+        _reset_rx_fifo(usbdev);
         usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_RESUME);
     }
 
