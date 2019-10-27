@@ -62,7 +62,7 @@ static const timer_conf_t timer_config[] = {
  }
 };
 
-#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
+#define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
 /** @} */
 
 /**
@@ -71,29 +71,29 @@ static const timer_conf_t timer_config[] = {
 * The used CC26x0 CPU only supports a single UART device, so all we need to
 * configure are the RX and TX pins.
 *
-* Optionally we can enable hardware flow control, by setting flow_control
-* to 1 and defining pins for cts_pin and rts_pin.
+* Optionally we can enable hardware flow control, by setting UART_HW_FLOW_CTRL
+* to 1 and defining pins for UART_CTS_PIN and UART_RTS_PIN.
 * @{
 */
+/**
+ * @name    UART configuration
+ *
+ * We can enable hardware flow control, by setting flow_control
+ * to 1 and defining pins for cts_pin and rts_pin.
+ *
+ * Add a second UART configuration if using external pins.
+ * @{
+ */
 
 static const uart_conf_t uart_config[] = {
  {
-     .tx_pin = 3,
-     .rx_pin = 2,
+     .tx_pin = 13,
+     .rx_pin = 12,
      .flow_control = 0,
      .intn = UART0_IRQN
  }
 };
 #define UART_NUMOF          (sizeof(uart_config)/sizeof(uart_config[0]))
-/** @} */
-
-/**
- * @name    I2C configuration
- * @{
- */
-#define I2C_NUMOF           (1)
-#define I2C_SDA_PIN         (14)
-#define I2C_SCL_PIN         (15)
 /** @} */
 
 #ifdef __cplusplus
