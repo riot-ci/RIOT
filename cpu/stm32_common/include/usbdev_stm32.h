@@ -49,9 +49,9 @@ extern "C" {
 
 /* Detect the IP version based on the available register define */
 #if defined(USB_OTG_GCCFG_NOVBUSSENS)
-#define STM32_USB_OTG_CID_12     /**< USB OTG FS version 0x00001200 */
+#define STM32_USB_OTG_CID_1x        /**< USB OTG FS version 0x00001200 */
 #elif defined(USB_OTG_GCCFG_VBDEN)
-#define STM32_USB_OTG_CID_20     /**< USB OTG FS version 0x00002000 */
+#define STM32_USB_OTG_CID_2x        /**< USB OTG FS version 0x00002000 */
 #else
 #error Unknown USB peripheral version
 #endif
@@ -67,9 +67,9 @@ extern "C" {
  * @brief Number of endpoints available with the OTG FS peripheral
  *        including the control endpoint
  */
-#ifdef STM32_USB_OTG_CID_12
+#ifdef STM32_USB_OTG_CID_1x
 #define STM32_USB_FS_NUM_EP (4) /**< OTG FS with 4 endpoints */
-#elif defined(STM32_USB_OTG_CID_20)
+#elif defined(STM32_USB_OTG_CID_2x)
 #define STM32_USB_FS_NUM_EP (6) /**< OTG FS with 6 endpoints */
 #endif
 
@@ -77,9 +77,9 @@ extern "C" {
  * @brief Number of endpoints available with the OTG HS peripheral
  *        including the control endpoint
  */
-#ifdef STM32_USB_OTG_CID_12
+#ifdef STM32_USB_OTG_CID_1x
 #define STM32_USB_HS_NUM_EP (6) /**< OTG HS with 6 endpoints */
-#elif defined(STM32_USB_OTG_CID_20)
+#elif defined(STM32_USB_OTG_CID_2x)
 #define STM32_USB_HS_NUM_EP (9) /**< OTG HS with 9 endpoints */
 #endif
 
@@ -98,24 +98,16 @@ extern "C" {
 #endif
 
 /**
- * @brief Out endpoint struct for stm32 USB OTG peripherals
- */
-typedef struct {
-    usbdev_ep_t ep;     /**< Generic endpoint struct */
-    size_t len;         /**< Bytes of data received on the last transfer */
-} stm32_fshs_usb_ep_t;
-
-/**
  * @brief stm32 USB OTG peripheral device context
  */
 typedef struct {
-    usbdev_t usbdev;                                /**< Inherited usbdev struct */
-    const stm32_fshs_usb_config_t *config;          /**< USB peripheral config   */
-    uint8_t buffer[STM32_USB_FS_BUF_SPACE];         /**< Buffer space for endpoints */
-    size_t occupied;                                /**< Buffer space occupied */
-    bool suspended;                                 /**< Suspend status */
-    usbdev_ep_t *in;                                /**< In endpoints */
-    stm32_fshs_usb_ep_t *out;                       /**< Out endpoints */
+    usbdev_t usbdev;                        /**< Inherited usbdev struct */
+    const stm32_fshs_usb_config_t *config;  /**< USB peripheral config   */
+    uint8_t buffer[STM32_USB_FS_BUF_SPACE]; /**< Buffer space for endpoints */
+    size_t occupied;                        /**< Buffer space occupied */
+    bool suspended;                         /**< Suspend status */
+    usbdev_ep_t *in;                        /**< In endpoints */
+    usbdev_ep_t *out;                       /**< Out endpoints */
 } stm32_fshs_usb_t;
 
 #ifdef __cplusplus
