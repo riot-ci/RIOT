@@ -37,7 +37,7 @@ void uhcp_client(uhcp_iface_t iface)
     req.prefix_len = 64;
 
     /* create listening socket */
-    int res = sock_udp_create(&sock, &local, NULL, 0);
+    sock_udp_create(&sock, &local, NULL, 0);
 
     uint8_t buf[sizeof(uhcp_push_t) + 16];
 
