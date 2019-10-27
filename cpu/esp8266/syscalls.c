@@ -76,7 +76,7 @@ int pthread_setcancelstate(int state, int *oldstate)
  * Following functions implement the lock mechanism for newlib.
  */
 
-#if 0 /* TODO */
+#if 1 /* TODO */
 /**
  * _malloc_rmtx is defined as static variable to avoid recursive calls of
  * malloc when _malloc_r tries to lock __malloc_lock_object the first
@@ -223,7 +223,7 @@ int IRAM _lock_try_acquire_recursive(_lock_t *lock)
         return 0;
     }
 
-    return rmutex_trylock((mutex_t*)*lock);
+    return rmutex_trylock((rmutex_t*)*lock);
 }
 
 void IRAM _lock_release(_lock_t *lock)
