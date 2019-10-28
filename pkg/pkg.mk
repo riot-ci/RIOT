@@ -25,13 +25,13 @@ GITAMFLAGS ?= -q --no-gpg-sign --ignore-whitespace --whitespace=nowarn
 
 ifneq (,$(wildcard $(PKG_DIR)/patches))
 $(PKG_BUILDDIR)/.git-patched: git-ensure-version $(PKG_DIR)/Makefile $(PKG_DIR)/patches/*.patch
-	git -C $(PKG_BUILDDIR) checkout -q -f $(PKG_VERSION)
-	git $(GITFLAGS) -C $(PKG_BUILDDIR) am $(GITAMFLAGS) "$(PKG_DIR)"/patches/*.patch
-	touch $@
+	$(Q)git -C $(PKG_BUILDDIR) checkout -q -f $(PKG_VERSION)
+	$(Q)git $(GITFLAGS) -C $(PKG_BUILDDIR) am $(GITAMFLAGS) "$(PKG_DIR)"/patches/*.patch
+	$(Q)touch $@
 endif
 
 git-ensure-version: $(PKG_BUILDDIR)/.git-downloaded
-	if [ $(shell git -C $(PKG_BUILDDIR) rev-parse HEAD) != $(PKG_VERSION) ] ; then \
+	@if [ $(shell git -C $(PKG_BUILDDIR) rev-parse HEAD) != $(PKG_VERSION) ] ; then \
 		git -C $(PKG_BUILDDIR) clean -q -xdff ; \
 		git -C $(PKG_BUILDDIR) fetch -q "$(PKG_URL)" "$(PKG_VERSION)" ; \
 		git -C $(PKG_BUILDDIR) checkout -q -f $(PKG_VERSION) ; \
@@ -39,10 +39,10 @@ git-ensure-version: $(PKG_BUILDDIR)/.git-downloaded
 	fi
 
 $(PKG_BUILDDIR)/.git-downloaded:
-	rm -Rf $(PKG_BUILDDIR)
-	mkdir -p $(PKG_BUILDDIR)
-	$(GITCACHE) clone -q "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
-	touch $@
+	$(Q)rm -Rf $(PKG_BUILDDIR)
+	$(Q)mkdir -p $(PKG_BUILDDIR)
+	$(Q)$(GITCACHE) clone -q "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
+	$(Q)touch $@
 
 clean::
 	@test -d $(PKG_BUILDDIR) && { \
