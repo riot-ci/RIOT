@@ -38,7 +38,12 @@ enum {
 
 
 /**
- * @brief Bank (pwm) define
+ * @brief Bank define
+ *
+ * Each bank can be configured to a specific brightness with the function
+ * tca6507_intensity and TCA6507_BRIGHTNESS_*_PCENT defines. Then, you can
+ * select the bank to use when you use function: tca6507_set_led,
+ * tca6507_toggle_led, and tca6507_blink_led.
  */
 enum {
     TCA6507_BANK0,

@@ -15,6 +15,23 @@
  * @file
  */
 
+/*
+ * Datasheet: http://www.ti.com/lit/ds/symlink/tca6507.pdf
+ *
+ * Table 8. Select2, Select1, and Select0 Register States
+ *
+ * | SELECT 2 | SELECT 1 | SELECT 0 |  STATE                                                                                                                                |
+ * |----------|----------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+ * | 0        | 0        | 0        | LED off (high impedance)                                                                                                              |
+ * | 0        | 0        | 1        | LED off (high impedance)                                                                                                              |
+ * | 0        | 1        | 0        | LED on with maximum intensity value of PWM0 (ALD value or BRIGHT_F0 value, depending on One Shot / Master Intensity Register setting) |
+ * | 0        | 1        | 1        | LED on with maximum intensity value of PWM1 (ALD value or BRIGHT_F1 value, depending on One Shot / Master Intensity Register setting) |
+ * | 1        | 0        | 0        | LED fully on (output low). Can be used as general-purpose output                                                                      |
+ * | 1        | 0        | 1        | LED on at brightness set by One Shot / Master Intensity registe                                                                       |
+ * | 1        | 1        | 0        | LED blinking with intensity characteristics of BANK0 (PWM0).                                                                          |
+ * | 1        | 1        | 1        | LED blinking with intensity characteristics of BANK1 (PWM1).                                                                          |
+*/
+
 #include <string.h>
 #include "xtimer.h"
 
