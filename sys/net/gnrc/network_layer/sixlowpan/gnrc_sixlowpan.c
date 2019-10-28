@@ -346,7 +346,12 @@ static void *_event_loop(void *args)
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_FB
             case GNRC_SIXLOWPAN_FRAG_FB_SND_MSG:
                 DEBUG("6lo: send fragmented event received\n");
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG
                 gnrc_sixlowpan_frag_send(NULL, msg.content.ptr, 0);
+#else   /* MODULE_GNRC_SIXLOWPAN_FRAG_FB */
+                DEBUG("6lo: No fragmentation implementation available to sent\n");
+                assert(false);
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_FB */
                 break;
 #endif
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_RB
