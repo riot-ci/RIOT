@@ -267,7 +267,6 @@ void periph_lpclk_dis(bus_t bus, uint32_t mask)
             RCC->AHB1LPENR &= ~(mask);
             break;
 /* STM32F410 RCC doesn't provide AHB2 and AHB3 */
-#if !defined(CPU_FAM_STM32F1)
 #if !defined(CPU_LINE_STM32F410Rx)
         case AHB2:
             RCC->AHB2LPENR &= ~(mask);
@@ -275,7 +274,6 @@ void periph_lpclk_dis(bus_t bus, uint32_t mask)
         case AHB3:
             RCC->AHB3LPENR &= ~(mask);
             break;
-#endif
 #endif
         default:
             DEBUG("unsupported bus %d\n", (int)bus);
