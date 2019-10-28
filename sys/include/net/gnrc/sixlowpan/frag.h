@@ -75,8 +75,7 @@ gnrc_sixlowpan_frag_stats_t *gnrc_sixlowpan_frag_stats_get(void);
  *      `pkt == NULL`.
  *
  * @param[in] pkt       A packet. May be NULL.
- * @param[in] ctx       Message containing status of the 6LoWPAN fragmentation
- *                      progress. Expected to be of type
+ * @param[in] ctx       A fragmentation buffer entry. Expected to be of type
  *                      @ref gnrc_sixlowpan_frag_fb_t, with
  *                      gnrc_sixlowpan_frag_fb_t set to @p pkt. Must not be
  *                      NULL.
