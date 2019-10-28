@@ -21,6 +21,7 @@
 #include "net/ipv6/hdr.h"
 #include "net/gnrc.h"
 #include "net/gnrc/sixlowpan.h"
+#include "net/gnrc/sixlowpan/config.h"
 #ifdef  MODULE_GNRC_SIXLOWPAN_FRAG_VRB
 #include "net/gnrc/sixlowpan/frag/vrb.h"
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
@@ -570,7 +571,23 @@ int gnrc_sixlowpan_frag_rb_dispatch_when_complete(gnrc_sixlowpan_frag_rb_t *rbuf
         new_netif_hdr->rssi = netif_hdr->rssi;
         LL_APPEND(rbuf->pkt, netif);
         gnrc_sixlowpan_dispatch_recv(rbuf->pkt, NULL, 0);
+#if GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER > 0U
+        /* use garbage-collection to leave the entry for at least
+         * GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER in the reassembly buffer by
+         * setting the arrival time to
+         * (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US - * GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER)
+         * microseconds in the past */
+        rbuf->super.arrival = xtimer_now_usec() -
+                              (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US -
+                               GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER);
+        /* increment current size to prevent late duplicates to trigger another
+         * dispatch (this works since res above checks for ==) */
+        rbuf->super.current_size += 1;
+        /* hold packet in reassembly buffer until then */
+        gnrc_pktbuf_hold(rbuf->pkt, 1);
+#else   /* GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER == 0U */
         gnrc_sixlowpan_frag_rb_remove(rbuf);
+#endif  /* GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER */
     }
     return res;
 }
