@@ -223,6 +223,10 @@ int IRAM _lock_try_acquire_recursive(_lock_t *lock)
         return 0;
     }
 
+    if (irq_is_in()) {
+        return 0;
+    }
+
     return rmutex_trylock((rmutex_t*)*lock);
 }
 
