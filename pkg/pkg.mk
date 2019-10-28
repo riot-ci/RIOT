@@ -21,27 +21,27 @@ git-download: git-ensure-version
 endif
 
 GITFLAGS ?= -c user.email=buildsystem@riot -c user.name="RIOT buildsystem"
-GITAMFLAGS ?= --no-gpg-sign --ignore-whitespace
+GITAMFLAGS ?= -q --no-gpg-sign --ignore-whitespace --whitespace=nowarn
 
 ifneq (,$(wildcard $(PKG_DIR)/patches))
 $(PKG_BUILDDIR)/.git-patched: git-ensure-version $(PKG_DIR)/Makefile $(PKG_DIR)/patches/*.patch
-	git -C $(PKG_BUILDDIR) checkout -f $(PKG_VERSION)
+	git -C $(PKG_BUILDDIR) checkout -q -f $(PKG_VERSION)
 	git $(GITFLAGS) -C $(PKG_BUILDDIR) am $(GITAMFLAGS) "$(PKG_DIR)"/patches/*.patch
 	touch $@
 endif
 
 git-ensure-version: $(PKG_BUILDDIR)/.git-downloaded
 	if [ $(shell git -C $(PKG_BUILDDIR) rev-parse HEAD) != $(PKG_VERSION) ] ; then \
-		git -C $(PKG_BUILDDIR) clean -xdff ; \
-		git -C $(PKG_BUILDDIR) fetch "$(PKG_URL)" "$(PKG_VERSION)" ; \
-		git -C $(PKG_BUILDDIR) checkout -f $(PKG_VERSION) ; \
+		git -C $(PKG_BUILDDIR) clean -q -xdff ; \
+		git -C $(PKG_BUILDDIR) fetch -q "$(PKG_URL)" "$(PKG_VERSION)" ; \
+		git -C $(PKG_BUILDDIR) checkout -q -f $(PKG_VERSION) ; \
 		touch $(PKG_BUILDDIR)/.git-downloaded ; \
 	fi
 
 $(PKG_BUILDDIR)/.git-downloaded:
 	rm -Rf $(PKG_BUILDDIR)
 	mkdir -p $(PKG_BUILDDIR)
-	$(GITCACHE) clone "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
+	$(GITCACHE) clone -q "$(PKG_URL)" "$(PKG_VERSION)" "$(PKG_BUILDDIR)"
 	touch $@
 
 clean::
