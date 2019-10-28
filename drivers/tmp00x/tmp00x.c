@@ -221,6 +221,9 @@ int ret;
     }
 
     if (!drdy) {
+#if TMP00X_USE_LOW_POWER
+        tmp00x_set_standby(dev);
+#endif
         return -TMP00X_ERROR;
     }
 #else
@@ -229,8 +232,12 @@ int ret;
     }
 
     if (!drdy) {
+#if TMP00X_USE_LOW_POWER
+        tmp00x_set_standby(dev);
+#endif
         return -TMP00X_ERROR;
     }
+
     tmp00x_convert(rawvolt, rawtemp,  &tamb, &tobj);
     *ta = (int16_t)(tamb*100);
     *to = (int16_t)(tobj*100);
