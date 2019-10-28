@@ -127,14 +127,14 @@ enum {
  */
 typedef struct {
     /** amount of time spend in scanning mode [in ms] */
-    uint32_t period_scan;           /*   in ms */
+    uint32_t period_scan;
     /** amount of time spend in advertising mode [in ms] */
-    uint32_t period_adv;            /* in ms */
+    uint32_t period_adv;
     /** a random value from 0 to this value is added to the duration of each
      *  scanning and advertising period [in ms] */
-    uint32_t period_jitter;         /* in ms */
+    uint32_t period_jitter;
     /** advertising interval used when in advertising mode [in ms] */
-    uint32_t adv_itvl;              /* in ms */
+    uint32_t adv_itvl;
     /** scan interval applied while in scanning state [in ms] */
     uint32_t scan_itvl;
     /** scan window applied while in scanning state [in ms] */
