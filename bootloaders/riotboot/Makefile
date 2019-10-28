@@ -13,6 +13,7 @@ CFLAGS += -DRIOTBOOT
 # Disable unused modules
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
 DISABLE_MODULE += auto_init
+DISABLE_MODULE += newlib newlib_nano
 
 # Include riotboot flash partition functionality
 USEMODULE += riotboot_slot
