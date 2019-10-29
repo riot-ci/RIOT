@@ -69,12 +69,12 @@ Networking
     * gnrc_netif: add netif setter (part of refactoring to a pointer-based
       approach)
     * gnrc_sixlowpan_frag_vrb: add gnrc_sixlowpan_frag_vrb_from_route()
-    + sixlowpan_sfr: initial import Selective Fragment Recovery definitions
+    + gnrc_sixlowpan_frag_rb: move reassembly buffer functions to their own module
     + gcoap: add Blockwise support
     * nanocoap: complete Blockwise support
     + nanocoap: add coap_opt_get_next() to iterate over options
     + nanocoap: add coap_opt_get_opaque() to retrieve option bytes
-    * tcp: several small improvements
+    * gnrc_tcp: several small improvements
 
 Packages
 --------
