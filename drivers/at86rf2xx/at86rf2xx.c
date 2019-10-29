@@ -57,17 +57,23 @@ void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params)
     dev->params = *params;
 #endif
 
-    do {
-        /* get an 8-byte unique ID to use as hardware address */
-        luid_get(dev->netdev.long_addr, IEEE802154_LONG_ADDRESS_LEN);
+    /* get an 8-byte unique ID to use as hardware address */
+    luid_get(dev->netdev.long_addr, IEEE802154_LONG_ADDRESS_LEN);
 
-        /* repeat until the address is marked as non-multicast and not globally
-         * unique. (luid_get() will manipulate the first byte on each call.
-         * we cannot just modify it, as this would risk collisions if multiple
-         * transceivers are connected on the board.)
-         */
-    }
-    while ((dev->netdev.long_addr[0] & 0x03) == 0x02);
+    /* The address should be marked as non-multicast and not globally unique.
+     * In general, it is a bad idea to just manipulate the output we just got
+     * from luid_get(), as this would risk collisions with other IDs returned
+     * from luid_get(). With the current implementation of luid_get() however,
+     * only the first returned byte is changed between subsequent calls. We
+     * therefore just swap the first two bytes and can then safely (in context
+     * of the current implementation of luid_get()) modify the address.
+     */
+    uint8_t tmp = dev->netdev.long_addr[0];
+    dev->netdev.long_addr[0] = dev->netdev.long_addr[1];
+    dev->netdev.long_addr[1] = tmp;
+
+    dev->netdev.long_addr[0] &= ~(0x01);
+    dev->netdev.long_addr[0] |= 0x02;
 
     memcpy(dev->netdev.short_addr,
            dev->netdev.long_addr + IEEE802154_LONG_ADDRESS_LEN - IEEE802154_SHORT_ADDRESS_LEN,
