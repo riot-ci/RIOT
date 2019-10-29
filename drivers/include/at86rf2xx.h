@@ -36,6 +36,7 @@
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/nettype.h"
+#include "net/eui64.h"
 
 /* we need no peripherals for memory mapped radios */
 #if !defined(MODULE_AT86RFA1) && !defined(MODULE_AT86RFR2)
@@ -282,11 +283,11 @@ void at86rf2xx_reset(at86rf2xx_t *dev);
 /**
  * @brief   Get the short address of the given device
  *
- * @param[in] dev           device to read from
- *
- * @return                  the currently set (2-byte) short address
+ * @param[in]   dev         device to read from
+ * @param[out]  addr        the currently set (2-byte) short address will be
+ *                          stored here
  */
-uint16_t at86rf2xx_get_addr_short(const at86rf2xx_t *dev);
+void at86rf2xx_get_addr_short(const at86rf2xx_t *dev, void *addr);
 
 /**
  * @brief   Set the short address of the given device
@@ -294,16 +295,16 @@ uint16_t at86rf2xx_get_addr_short(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] addr          (2-byte) short address to set
  */
-void at86rf2xx_set_addr_short(at86rf2xx_t *dev, uint16_t addr);
+void at86rf2xx_set_addr_short(at86rf2xx_t *dev, const void *addr);
 
 /**
  * @brief   Get the configured long address of the given device
  *
- * @param[in] dev           device to read from
- *
- * @return                  the currently set (8-byte) long address
+ * @param[in]   dev         device to read from
+ * @param[out]  addr        the currently set (8-byte) short address will be
+ *                          stored here
  */
-uint64_t at86rf2xx_get_addr_long(const at86rf2xx_t *dev);
+void at86rf2xx_get_addr_long(const at86rf2xx_t *dev, void *addr);
 
 /**
  * @brief   Set the long address of the given device
@@ -311,7 +312,7 @@ uint64_t at86rf2xx_get_addr_long(const at86rf2xx_t *dev);
  * @param[in,out] dev       device to write to
  * @param[in] addr          (8-byte) long address to set
  */
-void at86rf2xx_set_addr_long(at86rf2xx_t *dev, uint64_t addr);
+void at86rf2xx_set_addr_long(at86rf2xx_t *dev, const void *addr);
 
 /**
  * @brief   Get the configured channel number of the given device
