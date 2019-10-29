@@ -566,7 +566,7 @@ static void _tmp_rm(gnrc_sixlowpan_frag_rb_t *rbuf)
         /* use garbage-collection to leave the entry for at least
          * GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER in the reassembly buffer by
          * setting the arrival time to
-         * (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US - * GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER)
+         * (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US - GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER)
          * microseconds in the past */
         rbuf->super.arrival = xtimer_now_usec() -
                               (GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US -
