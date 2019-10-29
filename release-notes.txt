@@ -29,7 +29,7 @@ The 2019.10 release includes:
  - as always, bug fixes and documentation updates
 
 About 460 pull requests, composed of 950 commits, have been merged since the
-last release, and about 70 issues have been solved. 57 people contributed with
+last release, and about 60 issues have been solved. 57 people contributed with
 code in 105 days. Approximately 2000 files have been touched with 129000
 insertions and 25000 deletions.
 
