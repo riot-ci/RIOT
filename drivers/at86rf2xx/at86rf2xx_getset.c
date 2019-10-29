@@ -161,7 +161,7 @@ void at86rf2xx_set_addr_long(at86rf2xx_t *dev, const void *addr)
     memcpy(dev->netdev.long_addr, addr, IEEE802154_LONG_ADDRESS_LEN);
     for (unsigned i = 0; i < IEEE802154_LONG_ADDRESS_LEN; i++) {
         at86rf2xx_reg_write(dev, (AT86RF2XX_REG__IEEE_ADDR_0 + i),
-                            dev->netdev.long_addr[i]);
+                            dev->netdev.long_addr[IEEE802154_LONG_ADDRESS_LEN - 1 - i]);
     }
 }
 
