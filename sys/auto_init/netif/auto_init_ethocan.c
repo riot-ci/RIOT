@@ -22,14 +22,8 @@
 #include "log.h"
 #include "debug.h"
 #include "ethocan.h"
-#include "periph/uart.h"
-#include "periph/gpio.h"
+#include "ethocan_params.h"
 #include "net/gnrc/netif/ethernet.h"
-
-/**
- * @brief global ethocan object
- */
-ethocan_t ethocan;
 
 /**
  * @brief   Define stack parameters for the MAC layer thread
@@ -40,29 +34,21 @@ ethocan_t ethocan;
 #define ETHOCAN_MAC_PRIO      (GNRC_NETIF_PRIO)
 #endif
 
-#ifndef ETHOCAN_BAUDRATE
-#define ETHOCAN_BAUDRATE      (115200)
-#endif
+#define ETHOCAN_NUM (sizeof(ethocan_params) / sizeof(ethocan_params[0]))
 
-/**
- * @brief   Stacks for the MAC layer threads
- */
-static char _netdev_eth_stack[ETHOCAN_MAC_STACKSIZE];
+static char _netdev_eth_stack[ETHOCAN_NUM][ETHOCAN_MAC_STACKSIZE];
+static ethocan_t ethocan[ETHOCAN_NUM];
 
 void auto_init_ethocan(void)
 {
-    LOG_DEBUG("[auto_init_netif] initializing ethocan #0.\n");
+    /* setup netdev devices */
+    for (unsigned i = 0; i < ETHOCAN_NUM; i++) {
+        LOG_DEBUG("[auto_init_netif] initializing ethocan #%d.\n", i);
 
-    /* setup netdev device */
-    ethocan_params_t p;
-    p.uart = ETHOCAN_UART;
-    p.baudrate = ETHOCAN_BAUDRATE;
-    p.sense_pin = ETHOCAN_SENSE_PIN;
-    ethocan_setup(&ethocan, &p);
-
-    /* initialize netdev<->gnrc adapter state */
-    gnrc_netif_ethernet_create(_netdev_eth_stack, ETHOCAN_MAC_STACKSIZE,
-                               ETHOCAN_MAC_PRIO, "ethocan", (netdev_t *)&ethocan);
+        ethocan_setup(&ethocan[i], &ethocan_params[i]);
+        gnrc_netif_ethernet_create(_netdev_eth_stack[i], ETHOCAN_MAC_STACKSIZE,
+                                   ETHOCAN_MAC_PRIO, "ethocan", (netdev_t *)&ethocan[i]);
+    }
 }
 
 #else
