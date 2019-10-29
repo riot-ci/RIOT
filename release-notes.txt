@@ -112,7 +112,6 @@ Boards
     * boards/stm32: introduce common timer configurations and use them where
       possible
     + boards/stm32l0538-disco: add initial support
-    * arduino/sketches: build sketches as a module
     * pic32-wifire: add support for flashing with pic32prog
 
 CPU
@@ -175,6 +174,7 @@ Build System / Tooling
     * edbg: verify before flash
     + ci: add codespell check script for tracking typos
     + Makefile.include: add cleanterm target and use it for tests
+    * arduino/sketches: build sketches as a module
 
 Testing
 -------
