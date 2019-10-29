@@ -36,7 +36,6 @@
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/nettype.h"
-#include "net/eui64.h"
 
 /* we need no peripherals for memory mapped radios */
 #if !defined(MODULE_AT86RFA1) && !defined(MODULE_AT86RFR2)
