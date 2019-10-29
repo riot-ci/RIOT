@@ -56,6 +56,28 @@ void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params)
     /* initialize device descriptor */
     dev->params = *params;
 #endif
+
+    /* get an 8-byte unique ID to use as hardware address */
+    luid_get(dev->netdev.long_addr, IEEE802154_LONG_ADDRESS_LEN);
+
+    /* The address should be marked as non-multicast and not globally unique.
+     * In general, it is a bad idea to just manipulate the output we just got
+     * from luid_get(), as this would risk collisions with other IDs returned
+     * from luid_get(). With the current implementation of luid_get() however,
+     * only the first returned byte is changed between subsequent calls. We
+     * therefore just swap the first two bytes and can then safely (in context
+     * of the current implementation of luid_get()) modify the address.
+     */
+    uint8_t tmp = dev->netdev.long_addr[0];
+    dev->netdev.long_addr[0] = dev->netdev.long_addr[1];
+    dev->netdev.long_addr[1] = tmp;
+
+    dev->netdev.long_addr[0] &= ~(0x01);
+    dev->netdev.long_addr[0] |= 0x02;
+
+    memcpy(dev->netdev.short_addr,
+           dev->netdev.long_addr + IEEE802154_LONG_ADDRESS_LEN - IEEE802154_SHORT_ADDRESS_LEN,
+           IEEE802154_SHORT_ADDRESS_LEN);
 }
 
 static void at86rf2xx_disable_clock_output(at86rf2xx_t *dev)
@@ -89,8 +111,6 @@ static void at86rf2xx_enable_smart_idle(at86rf2xx_t *dev)
 
 void at86rf2xx_reset(at86rf2xx_t *dev)
 {
-    eui64_t addr_long;
-
     at86rf2xx_hardware_reset(dev);
 
     netdev_ieee802154_reset(&dev->netdev);
@@ -100,14 +120,9 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
         at86rf2xx_set_state(dev, AT86RF2XX_STATE_FORCE_TRX_OFF);
     }
 
-    /* get an 8-byte unique ID to use as hardware address */
-    luid_get(addr_long.uint8, IEEE802154_LONG_ADDRESS_LEN);
-    /* make sure we mark the address as non-multicast and not globally unique */
-    addr_long.uint8[0] &= ~(0x01);
-    addr_long.uint8[0] |=  (0x02);
     /* set short and long address */
-    at86rf2xx_set_addr_long(dev, ntohll(addr_long.uint64.u64));
-    at86rf2xx_set_addr_short(dev, ntohs(addr_long.uint16[0].u16));
+    at86rf2xx_set_addr_long(dev, dev->netdev.long_addr);
+    at86rf2xx_set_addr_short(dev, dev->netdev.short_addr);
 
     /* set default channel */
     at86rf2xx_set_chan(dev, AT86RF2XX_DEFAULT_CHANNEL);
