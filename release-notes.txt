@@ -50,6 +50,7 @@ System libraries
     + sys/fmt: Added submodule fmt_table for printing tables
     + sys/log: add module for colorized logging
     + sys/riotboot: add initial image digest verification
+    * riotboot: define if building the bootloader
     + sys/shell: add heap command
     + sys/shell: cancel current line on CTRL-C.
     * shell/sc_gnrc_ipv6_nib: list and edit authoritative border router (ABR) list
@@ -152,7 +153,6 @@ Device Drivers
     + drivers/lis2dh12: add I2C mode
     + drivers/periph: add doc on power management aspects
     * drivers/mrf24j40: add pseudomodules for MRF24J40MA/B/C/D/E
-    * riotboot: define if building the bootloader
 
 Build System / Tooling
 ----------------------
