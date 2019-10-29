@@ -108,7 +108,7 @@ Boards
     - boards: Remove support for the Jiminy-Mega256RFR2
     * boards/sam0: refactor ADC_0 into plain ADC
     * boards/slwstk6000b-*: split one board for each module
-    * boards/slwstk6000b: move CPU definiton to Makefile.features
+    * boards/slwstk6000b: move CPU definition to Makefile.features
     + boards/stm32f723e-disco: add initial support
     * boards/stm32: introduce common timer configurations and use them where
       possible
@@ -122,7 +122,7 @@ CPU
     * cpu/kinetis: enable HWRNG for k64f
     - cpu/mips32r2_generic: remove cpu.
     * cpu: Moved stdio_init() prior to periph_init() for ARM targets
-    * cpu/nrf5x: decelare radio_nrfble feat for all nrfs
+    * cpu/nrf5x: declare radio_nrfble feat for all nrfs
     + cpu/nrf5x: implement wdt peripheral driver
     + cpu/sam0_common: add hwrng driver
     * cpu/sam0_common/gpio: don't hard-code number of ports
@@ -233,7 +233,7 @@ net/emb6
 net/nhdp
 pkg/oonf_api
 
-As the release was finalized, rough concensus was reached on a system event
+As the release was finalized, rough consensus was reached on a system event
 thread handler (#12474) that likely will remove the interrupt handler thread
 (#10555) just introduced with this release.
 
@@ -448,7 +448,7 @@ Fixed Issues from the last release (2019.07)
 #11519: shell/ping6: Incorrect handling of unexpected pongs
 #11499: rn2xx3_cmd_append - Not terminating strings
 #11447: frdm-k64f: hwrng support broken, applications using RNG crash
-#11390: gnrc networking crashs on nRF51dk
+#11390: gnrc networking crashes on nRF51dk
 #10878: nrfmin can get stuck and never reach RX (while TX works)
 #10842: Preemption of malloc on AVR
 #10459: make: `make clean all` does not make sense and should be removed
