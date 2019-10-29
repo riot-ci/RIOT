@@ -112,9 +112,6 @@ Boards
     * boards/stm32: introduce common timer configurations and use them where
       possible
     + boards/stm32l0538-disco: add initial support
-    * stm32-common/spi: allow custom pin modes on spi to minimize power
-      consumption
-    * stm32l1/vendor: update vendor files to v2.3.0
     * arduino/sketches: build sketches as a module
     * pic32-wifire: add support for flashing with pic32prog
 
@@ -132,8 +129,11 @@ CPU
     * cpu/sam0: update doc.txt with new MCU families
     * cpu/saml21: Make Low-Power SRAM available to programs
     + cpu/stm32_common: add watchdog for stm32
+    * stm32-common/spi: allow custom pin modes on spi to minimize power
+      consumption
     * cpu/stm32f(2|4|7): add riotboot requirements
     * cpu/stm32l1: optimize power consumption
+    * stm32l1/vendor: update vendor files to v2.3.0
     * sam0: allow flashing with JLinkExe
     + sam0: Implement watchdog driver
     * cpu/samr30: update vendor files using ASF 3.35.1
