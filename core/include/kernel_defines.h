@@ -24,8 +24,11 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
+
+/* uncrustify gets mightily confused by these macros... */
+/* begin{code-style-ignore} */
 
 /**
  * @def         container_of(PTR, TYPE, MEMBER)
@@ -137,6 +140,8 @@
  * @param[in]   condition  A condition that will be evaluated at compile time
  */
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2 * !!(condition)]))
+
+/* end{code-style-ignore} */
 
 #ifdef __cplusplus
 }
