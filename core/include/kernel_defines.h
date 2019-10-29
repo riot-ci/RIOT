@@ -27,6 +27,9 @@
  extern "C" {
 #endif
 
+/* uncrustify gets mightily confused by these macros... */
+/* begin{code-style-ignore} */
+
 /**
  * @def         container_of(PTR, TYPE, MEMBER)
  * @brief       Returns the container of a pointer to a member.
@@ -137,6 +140,8 @@
  * @param[in]   condition  A condition that will be evaluated at compile time
  */
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2 * !!(condition)]))
+
+/* end{code-style-ignore} */
 
 #ifdef __cplusplus
 }
