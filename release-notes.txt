@@ -175,6 +175,7 @@ Build System / Tooling
     + ci: add codespell check script for tracking typos
     + Makefile.include: add cleanterm target and use it for tests
     * arduino/sketches: build sketches as a module
+    + github: use stale-bot to mark and close PRs without activity
 
 Testing
 -------
