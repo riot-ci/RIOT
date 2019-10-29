@@ -122,6 +122,7 @@ typedef struct {
     size_t fifo_pos;                            /**< FIFO space occupied */
     usbdev_ep_t *in;                            /**< In endpoints */
     usbdev_ep_t *out;                           /**< Out endpoints */
+    bool suspend;                               /**< Suspend status */
 } stm32_usb_otg_fshs_t;
 
 #ifdef __cplusplus
