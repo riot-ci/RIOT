@@ -36,8 +36,8 @@ extern "C" {
  * @name    Escape octet definitions
  * @{
  */
-#define ETHOCAN_OCTECT_END     (0xFF)   /**< magic octet indicating the end of frame */
-#define ETHOCAN_OCTECT_ESC     (0xFE)   /**< magic octet escaping 0xFF in byte stream */
+#define ETHOCAN_OCTECT_END          (0xFF)   /**< magic octet indicating the end of frame */
+#define ETHOCAN_OCTECT_ESC          (0xFE)   /**< magic octet escaping 0xFF in byte stream */
 /** @} */
 
 /**
@@ -45,25 +45,26 @@ extern "C" {
  * @brief   The drivers internal state that is hold in ethocan_t.state
  * @{
  */
-#define ETHOCAN_STATE_UNDEF    (0x00)   /**< initial state that will never be reentered */
-#define ETHOCAN_STATE_BLOCKED  (0x01)   /**< the driver just listens to incoming frames and blocks outgress frames */
-#define ETHOCAN_STATE_IDLE     (0x02)   /**< frames will be received or sent */
-#define ETHOCAN_STATE_RECV     (0x03)   /**< currently receiving a frame */
-#define ETHOCAN_STATE_SEND     (0x04)   /**< currently sending a frame */
-#define ETHOCAN_STATE_ANY      (0x0F)   /**< special state filter used internally to observe any state transition */
+#define ETHOCAN_STATE_UNDEF         (0x00)   /**< initial state that will never be reentered */
+#define ETHOCAN_STATE_BLOCKED       (0x01)   /**< the driver just listens to incoming frames and blocks outgress frames */
+#define ETHOCAN_STATE_IDLE          (0x02)   /**< frames will be received or sent */
+#define ETHOCAN_STATE_RECV          (0x03)   /**< currently receiving a frame */
+#define ETHOCAN_STATE_SEND          (0x04)   /**< currently sending a frame */
+#define ETHOCAN_STATE_INVALID       (0x05)   /**< invalid state used as boundary checking */
+#define ETHOCAN_STATE_ANY           (0x0F)   /**< special state filter used internally to observe any state transition */
 /** @} */
 
 /**
  * @name    Signal definitions
- * @brief   A signal controls the state machine and may cause a state transistion.
+ * @brief   A signal controls the state machine and may cause a state transistion
  * @{
  */
-#define ETHOCAN_SIGNAL_INIT    (0x00)   /**< init the state machine */
-#define ETHOCAN_SIGNAL_GPIO    (0x10)   /**< the sense GPIO detected a falling edge */
-#define ETHOCAN_SIGNAL_UART    (0x20)   /**< an octet has been received */
-#define ETHOCAN_SIGNAL_XTIMER  (0x30)   /**< the timer timed out */
-#define ETHOCAN_SIGNAL_SEND    (0x40)   /**< enter send state */
-#define ETHOCAN_SIGNAL_END     (0x50)   /**< leave send state */
+#define ETHOCAN_SIGNAL_INIT         (0x00)   /**< init the state machine */
+#define ETHOCAN_SIGNAL_GPIO         (0x10)   /**< the sense GPIO detected a falling edge */
+#define ETHOCAN_SIGNAL_UART         (0x20)   /**< an octet has been received */
+#define ETHOCAN_SIGNAL_XTIMER       (0x30)   /**< the timer timed out */
+#define ETHOCAN_SIGNAL_SEND         (0x40)   /**< enter send state */
+#define ETHOCAN_SIGNAL_END          (0x50)   /**< leave send state */
 /** @} */
 
 /**
@@ -71,9 +72,9 @@ extern "C" {
  * @brief   Hold in ethocan_t.flags
  * @{
  */
-#define ETHOCAN_FLAG_RECV_BUF_DIRTY    (0b00000001)     /**< the receive buffer contains a full unhandled frame */
-#define ETHOCAN_FLAG_END_RECEIVED      (0b00000010)     /**< the end octet has been received */
-#define ETHOCAN_FLAG_ESC_RECEIVED      (0b00000100)     /**< the esc octet has been received */
+#define ETHOCAN_FLAG_RECV_BUF_DIRTY (0x01)   /**< the receive buffer contains a full unhandled frame */
+#define ETHOCAN_FLAG_END_RECEIVED   (0x02)   /**< the end octet has been received */
+#define ETHOCAN_FLAG_ESC_RECEIVED   (0x04)   /**< the esc octet has been received */
 /** @} */
 
 /**
@@ -81,14 +82,15 @@ extern "C" {
  * @brief   Hold in ethocan_t.opts
  * @{
  */
-#define ETHOCAN_OPT_PROMISCUOUS   (0b00000001)   /**< don't check the destination MAC - pass every frame to upper layers */
+#define ETHOCAN_OPT_PROMISCUOUS     (0x01)   /**< don't check the destination MAC - pass every frame to upper layers */
 /** @} */
 
 #ifndef ETHOCAN_TIMEOUT_USEC
-#define ETHOCAN_TIMEOUT_USEC (5000)   /**< timeout that brings the driver back into idle state if the remote side died within a transaction */
+#define ETHOCAN_TIMEOUT_USEC        (5000)   /**< timeout that brings the driver back into idle state if the remote side died within a transaction */
 #endif
 
-#define ETHOCAN_FRAME_LEN (ETHERNET_FRAME_LEN + 2)   /**< ethocan frame length */
+#define ETHOCAN_FRAME_CRC_LEN          (2)   /**< CRC16 is used */
+#define ETHOCAN_FRAME_LEN (ETHERNET_FRAME_LEN + ETHOCAN_FRAME_CRC_LEN) /**< ethocan frame length */
 
 /**
  * @brief   ethocan netdev device
@@ -97,8 +99,8 @@ extern "C" {
 typedef struct {
     netdev_t netdev;                        /**< extended netdev structure */
     uint8_t mac_addr[ETHERNET_ADDR_LEN];    /**< this device's MAC address */
-    uint8_t opts;                           /**< dirver options */
-    uint8_t state;                          /**< hold the current state of the driver's state machine */
+    uint8_t opts;                           /**< driver options */
+    uint8_t state;                          /**< current state of the driver's state machine */
     mutex_t state_mtx;                      /**< is unlocked everytime a state is (re)entered */
     uint8_t flags;                          /**< several flags */
     uint8_t recv_buf[ETHOCAN_FRAME_LEN];    /**< receive buffer for incoming frames */
