@@ -65,9 +65,8 @@ static inline void _rtc_set_enabled(bool on)
 #ifdef CPU_SAMD21
 static void _rtc_clock_setup(void)
 {
-    /* Setup clock GCLK2 with OSC32K divided by 32 */
+    /* Use 1024 Hz GCLK3 */
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(3) | GCLK_CLKCTRL_ID_RTC;
-    while (GCLK->STATUS.bit.SYNCBUSY) {}
 }
 #else
 static void _rtc_clock_setup(void)
