@@ -1,0 +1,2 @@
+# Cifra is only supported by 32 architectures
+FEATURES_REQUIRED += arch_32bit
