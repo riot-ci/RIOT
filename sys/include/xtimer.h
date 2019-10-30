@@ -29,6 +29,7 @@
 #ifndef XTIMER_H
 #define XTIMER_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include "timex.h"
 #ifdef MODULE_CORE_MSG
