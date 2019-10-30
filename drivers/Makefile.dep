@@ -215,6 +215,7 @@ ifneq (,$(filter ina220,$(USEMODULE)))
 endif
 
 ifneq (,$(filter ina3221,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_i2c
 endif
 
