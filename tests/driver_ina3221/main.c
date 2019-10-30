@@ -26,11 +26,15 @@
 #include "ina3221_params.h"
 #include "ina3221.h"
 
-#define RSHUNT_MOHM            (100)
+/* Issue critical alert if shunt voltage is above thist value */
 #define CRIT_ALERT_LIM_UV      (2500)
+/* Issue warning alert if shunt voltage is above this value */
 #define WARN_ALERT_LIM_UV      (1600)
+/* Issue power valid alert if bus voltage is below this value */
 #define PV_LOWER_LIM_MV        (4500)
+/* Issue power valid alert if bus voltage is above this value */
 #define PV_UPPER_LIM_MV        (5500)
+/* Issue critical alert if the sum of all shunt voltages is above this value */
 #define SUM_SHUNT_ALERT_LIM_UV (8000)
 
 #define COL   ("              ")

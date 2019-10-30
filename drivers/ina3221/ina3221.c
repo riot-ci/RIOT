@@ -215,7 +215,6 @@ int _ina3221_set_enable_channel(ina3221_t *dev, ina3221_enable_ch_t ech)
 int _ina3221_get_enable_channel(const ina3221_t *dev, ina3221_enable_ch_t *ech)
 {
     *ech = dev->params.config & INA3221_ENABLE_CH_MASK;
-    *ech &= ~INA3221_RESET;
     return ((*ech & INA3221_ENABLE_CH1) ? 1 : 0) +
            ((*ech & INA3221_ENABLE_CH2) ? 1 : 0) +
            ((*ech & INA3221_ENABLE_CH3) ? 1 : 0);
@@ -242,7 +241,6 @@ int ina3221_set_num_samples(ina3221_t *dev, ina3221_num_samples_t ns)
 int ina3221_get_num_samples(const ina3221_t *dev, ina3221_num_samples_t *ns)
 {
     *ns = dev->params.config & INA3221_NUM_SAMPLES_MASK;
-    *ns &= ~INA3221_RESET;
     return INA3221_OK;
 }
 
@@ -269,7 +267,6 @@ int ina3221_get_conv_time_bus_adc(const ina3221_t *dev,
                                   ina3221_conv_time_bus_adc_t *ctb)
 {
     *ctb = dev->params.config & INA3221_CONV_TIME_BADC_MASK;
-    *ctb &= ~(INA3221_RESET);
     return INA3221_OK;
 }
 
@@ -296,7 +293,6 @@ int ina3221_get_conv_time_shunt_adc(const ina3221_t *dev,
                                     ina3221_conv_time_shunt_adc_t *ctb)
 {
     *ctb = dev->params.config & INA3221_CONV_TIME_SADC_MASK;
-    *ctb &= ~INA3221_RESET;
     return INA3221_OK;
 }
 
@@ -321,7 +317,6 @@ int ina3221_set_mode(ina3221_t *dev, ina3221_mode_t mode)
 int ina3221_get_mode(const ina3221_t *dev, ina3221_mode_t *mode)
 {
     *mode = dev->params.config & INA3221_MODE_MASK;
-    *mode &= ~INA3221_RESET;
     return INA3221_OK;
 }
 
