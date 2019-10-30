@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2019 Otto-von-Guericke-Universität Magdeburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     sys_arduino_api
+ * @{
+ *
+ * @file
+ * @brief       Wrapper to access the definition of the Arduino 'SPI' interface
+ *
+ * @author      Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+ */
+
 #ifndef SPI_H
 #define SPI_H
 
@@ -22,3 +40,5 @@ extern "C" {
 #endif
 
 #endif /* SPI_H */
+
+/** @} */
