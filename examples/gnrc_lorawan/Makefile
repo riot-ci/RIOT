@@ -46,8 +46,10 @@ CFLAGS += -DLORAMAC_DEV_EUI_DEFAULT=\{0x00\,0x00\,0x00\,0x00\,0x00\,0x00\,0x00\,
 CFLAGS += -DLORAMAC_DEFAULT_JOIN_PROCEDURE=LORAMAC_JOIN_OTAA
 #CFLAGS += -DLORAMAC_DEFAULT_JOIN_PROCEDURE=LORAMAC_JOIN_ABP
 
-# Set to the highest DR for the EU868 in order to maximize the throughput
-CFLAGS += -DLORAMAC_DEFAULT_DR=LORAMAC_DR_5
+# Uncomment to set the highest DR for the EU868 in order to maximize throughput.
+# If uncommented, the default value (DR0) is used.
+# Note this value is also used for the OTAA.
+#CFLAGS += -DLORAMAC_DEFAULT_DR=LORAMAC_DR_5
 
 # Set the default RX2 datarate to DR3 (used by The Things Network)
 CFLAGS += -DLORAMAC_DEFAULT_RX2_DR=LORAMAC_DR_3
