@@ -39,7 +39,7 @@ int main(void)
 
 while(1){
     dcf77_get_time(&sensor,&time);
-    strftime(outstr, sizeof(outstr), "%c", &time);
+    strftime(outstr, sizeof(outstr), "|%A %d.%m.%y %H:%M|", &time);
     printf("Formatted date & time : |%s|\n", outstr);
     xtimer_sleep(20);
 
