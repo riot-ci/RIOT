@@ -32,7 +32,7 @@ extern "C" {
  * @{
  */
 #ifndef DCF77_PARAM_PIN
-#define DCF77_PARAM_PIN               (GPIO_PIN(PB, 22))
+#define DCF77_PARAM_PIN               (GPIO_PIN(1, 22))
 #endif
 #ifndef DCF77_PARAM_PULL
 #define DCF77_PARAM_PULL              (GPIO_IN)

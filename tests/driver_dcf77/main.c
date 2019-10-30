@@ -38,11 +38,10 @@ int main(void)
     printf("DCF77 Module initialized \n");
 
 while(1){
-    printf("Wait for a complete cycle... \n");
-    dcf77_read(&sensor,&time);
-    strftime(outstr, sizeof(outstr), "%x - %I:%M%p", &time);
+    dcf77_get_time(&sensor,&time);
     strftime(outstr, sizeof(outstr), "%c", &time);
     printf("Formatted date & time : |%s|\n", outstr);
+    xtimer_sleep(20);
 
     }
     return 0;

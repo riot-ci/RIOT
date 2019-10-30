@@ -24,75 +24,39 @@ extern "C" {
 #endif
 
 /**
- * @name    Potenzy of the Bit position
- * @{
+ * @brief   Timeinformation bitfields for DCF77 devices
  */
-enum{
-  POTENZY1 = 1,
-  POTENZY2 = 2,
-  POTENZY4 = 4,
-  POTENZY8 = 8,
-  POTENZY10 = 10,
-  POTENZY20 = 20,
-  POTENZY40 = 40,
-  POTENZY80 = 80
-};
-/** @} */
+typedef union {
+   /**
+   * @brief   Struct of bitfields
+   */
+    struct values {            /**< Struct of bitfields*/
+        uint64_t start : 1,    /**< Number of Bits for start value*/
+        wheater : 14,          /**< Number of Bits for weather value */
+        calling : 1,           /**< Number of Bits for calling value */
+        mez_mesz_shift : 1,    /**< Number of Bits for shift value */
+        mesz : 2,              /**< Number of Bits for mesz value */
+        shift_sec : 1,         /**< Number of Bits for leap-second value */
+        start_time : 1,        /**< Number of Bits for start_Bit value */
+        minute_l : 4,          /**< Number of Bits for lower minute value */
+        minute_h : 3,          /**< Number of Bits for higher minute value */
+        minute_par : 1,        /**< Number of Bits for minuteparity value */
+        hour_l : 4,            /**< Number of Bits for lower hour value */
+        hour_h : 2,            /**< Number of Bits for higher hour value */
+        hour_par : 1,          /**< Number of Bits for hourparity value */
+        day_l : 4,             /**< Number of Bits for lower calenderday value */
+        day_h : 2,             /**< Number of Bits for higher calenderday value */
+        wday : 3,              /**< Number of Bits for weekday value */
+        month_l : 4,           /**< Number of Bits for lower month value */
+        month_h : 1,           /**< Number of Bits for higher month value */
+        year_l : 4,            /**< Number of Bits for lower year value */
+        year_h : 4,            /**< Number of Bits for higher year value */
+        date_par : 1,          /**< Number of Bits for dateparity value */
+        buff : 5;              /**< Number of Bits for experimental buffer value */
+    } val;                     /**< struct with Bitfields of timeinformation*/
+    uint64_t bits;             /**< Value of Bits in a received cycle */
+} dcf77_bits_t;                /**< Union which contains the Bitfields struct */
 
-
-/**
- * @name    BIT Position in DCF77 structure
- * @{
- */
- enum {
-      DCF77_START             =  0,
-      DCF77_WHEATER           =  1,
-      DCF77_CALLING           = 15,
-      DCF77_MEZ_MESZ_SHIFT    = 16,
-      DCF77_MESZ1             = 17,
-      DCF77_MESZ2             = 18,
-      DCF77_SHIFT_SECOND      = 19,
-      DCF77_TIME_INFORMATION  = 20,
-      DCF77_MINUTE_SINGLE     = 21,
-      DCF77_MINUTE_SECOND     = 22,
-      DCF77_MINUTE_QUAD       = 23,
-      DCF77_MINUTE_EIGHT      = 24,
-      DCF77_MINUTE_TENNER     = 25,
-      DCF77_MINUTE_TEWENTIES  = 26,
-      DCF77_MINUTE_FOURTIES   = 27,
-      DCF77_MINUTE_PR         = 28,
-      DCF77_HOUR_SINGLE       = 29,
-      DCF77_HOUR_SECOND       = 30,
-      DCF77_HOUR_QUAD         = 31,
-      DCF77_HOUR_EIGHT        = 32,
-      DCF77_HOUR_TENNER       = 33,
-      DCF77_HOUR_TEWENTIES    = 34,
-      DCF77_HOUR_PR           = 35,
-      DCF77_DAY_SINGLE        = 36,
-      DCF77_DAY_SECOND        = 37,
-      DCF77_DAY_QUAD          = 38,
-      DCF77_DAY_EIGHT         = 39,
-      DCF77_DAY_TENNER        = 40,
-      DCF77_DAY_TEWENTIES     = 41,
-      DCF77_WEEKDAY_SINGLE    = 42,
-      DCF77_WEEKDAY_SECOND    = 43,
-      DCF77_WEEKDAY_QUAD      = 44,
-      DCF77_MONTH_SINGLE      = 45,
-      DCF77_MONTH_SECOND      = 46,
-      DCF77_MONTH_QUAD        = 47,
-      DCF77_MONTH_EIGHT       = 48,
-      DCF77_MONTH_TENNER      = 49,
-      DCF77_YEAR_SINGLE       = 50,
-      DCF77_YEAR_SECOND       = 51,
-      DCF77_YEAR_QUAD         = 52,
-      DCF77_YEAR_EIGHT        = 53,
-      DCF77_YEAR_TENNER       = 54,
-      DCF77_YEAR_TEWENTIES    = 55,
-      DCF77_YEAR_FOURTIES     = 56,
-      DCF77_YEAR_EIGHTIES     = 57,
-      DCF77_DATE_PR           = 58
- };
-/** @} */
 
 /**
  * @brief device internal states
