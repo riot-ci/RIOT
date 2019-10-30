@@ -73,7 +73,6 @@ static const struct {
     { "chan_hop", NETOPT_CHANNEL_HOP },
     { "checksum", NETOPT_CHECKSUM },
     { "otaa", NETOPT_OTAA },
-    { "up", NETOPT_LINK_CONNECTED },
     { "link_check", NETOPT_LINK_CHECK },
 };
 
