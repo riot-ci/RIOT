@@ -29,6 +29,13 @@
 extern "C" {
 #endif
 
+/**
+ * @name   Length of the CPU_ID in octets
+ * @{
+ */
+#define CPUID_LEN           (6U)
+/** @} */
+
 #ifndef DOXYGEN
 /**
  * @brief   Overwrite the default gpio_t type definition
