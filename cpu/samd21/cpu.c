@@ -188,7 +188,7 @@ static void clk_init(void)
     /* make sure we synchronize clock generator 0 before we go on */
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
-    /* Setup Clock generator 2 with divider 1 (32.768kHz) */
+    /* Setup GCLK2 with divider 1 (32.768kHz) */
     GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(2)  | GCLK_GENDIV_DIV(0));
     GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_GENEN
                       | GCLK_GENCTRL_RUNSTDBY
@@ -204,7 +204,7 @@ static void clk_init(void)
                          | SYSCTRL_XOSC32K_ENABLE;
 #endif
 
-    /* Setup Clock generator 3 with divider 4 (1024 Hz) */
+    /* Setup GCLK3 with divider 32 (1024 Hz) */
     GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(3)  | GCLK_GENDIV_DIV(4));
     GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(3) | GCLK_GENCTRL_GENEN
                       | GCLK_GENCTRL_RUNSTDBY | GCLK_GENCTRL_DIVSEL
@@ -215,7 +215,7 @@ static void clk_init(void)
 #endif
 
     /* redirect all peripherals to a disabled clock generator (7) by default */
-    for (int i = 0x4; i <= 0x22; i++) {
+    for (int i = 0x3; i <= 0x22; i++) {
         GCLK->CLKCTRL.reg = ( GCLK_CLKCTRL_ID(i) | GCLK_CLKCTRL_GEN_GCLK7 );
         while (GCLK->STATUS.bit.SYNCBUSY) {}
     }
