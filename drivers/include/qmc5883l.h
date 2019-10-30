@@ -177,7 +177,7 @@ int qmc5883l_init(qmc5883l_t *dev, const qmc5883l_params_t *params);
 int qmc5883l_data_ready(const qmc5883l_t *dev);
 
 /**
- * @brief   Read sampled data from the device [converted to mili-Gauss]
+ * @brief   Read sampled data from the device [converted to milli-Gauss]
  *
  * @pre     dev != NULL
  * @pre     data_out != NULL
