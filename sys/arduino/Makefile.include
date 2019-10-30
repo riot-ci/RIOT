@@ -15,6 +15,6 @@ BUILDDEPS += $(SKETCH_GENERATED_FILES)
 INCLUDES += -I$(RIOTBASE)/sys/arduino/include
 
 # Arduino provices C++11, which is not enabled by default in Ubuntu's avr-gcc
-# package, wich is __horrible__ out of date. However, we cannot simply ignore
+# package, which is __horrible__ out of date. However, we cannot simply ignore
 # all Ubuntu users and instead simply manually enable C++11 support
-CXXFLAGS += -std=c++11
+CXXEXFLAGS += -std=c++11
