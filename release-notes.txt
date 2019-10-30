@@ -421,6 +421,7 @@ Fixed Issues from the last release (2019.07)
         echo -n
 #12219: genconfigheader doesn't like defines with spaces
 #12213: sys/base64: cannot handle zero length buffers
+#12138: boards/common/nucleo32/include/arduino_pinmap.h not correct/complete
 #12125: i2c_scan not working on ESP32
 #12115: nrfmin: driver not included in buildtest (anymore)
 #12110: fe310: handle_trap only handles interrupts
