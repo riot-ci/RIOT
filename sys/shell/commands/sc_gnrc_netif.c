@@ -534,6 +534,7 @@ static void _netif_list(kernel_pid_t iface)
         }
         line_thresh++;
     }
+#ifdef MODULE_GNRC_NETIF_CMD_LORA
     res = gnrc_netapi_get(iface, NETOPT_DEMOD_MARGIN, 0, &u8, sizeof(u8));
     if (res >= 0) {
         printf(" Demod margin.: %u ", (unsigned) u8);
@@ -544,6 +545,7 @@ static void _netif_list(kernel_pid_t iface)
         printf(" Num gateways.: %u ", (unsigned) u8);
         line_thresh++;
     }
+#endif
     line_thresh = _newline(0U, line_thresh);
     line_thresh = _netif_list_flag(iface, NETOPT_PROMISCUOUSMODE, "PROMISC  ",
                                    line_thresh);
@@ -1106,23 +1108,8 @@ static int _netif_set(char *cmd_name, kernel_pid_t iface, char *key, char *value
     if ((strcmp("addr", key) == 0) || (strcmp("addr_short", key) == 0)) {
         return _netif_set_addr(iface, NETOPT_ADDRESS, value);
     }
-    else if (strcmp("appeui", key) == 0) {
-        return _netif_set_lw_key(iface, NETOPT_LORAWAN_APPEUI, value);
-    }
-    else if (strcmp("appkey", key) == 0) {
-        return _netif_set_lw_key(iface, NETOPT_LORAWAN_APPKEY, value);
-    }
     else if (strcmp("addr_long", key) == 0) {
         return _netif_set_addr(iface, NETOPT_ADDRESS_LONG, value);
-    }
-    else if (strcmp("deveui", key) == 0) {
-        return _netif_set_addr(iface, NETOPT_ADDRESS_LONG, value);
-    }
-    else if (strcmp("appskey", key) == 0) {
-        return _netif_set_addr(iface, NETOPT_LORAWAN_APPSKEY, value);
-    }
-    else if (strcmp("nwkskey", key) == 0) {
-        return _netif_set_addr(iface, NETOPT_LORAWAN_NWKSKEY, value);
     }
     else if (strcmp("cca_threshold", key) == 0) {
         return _netif_set_u8(iface, NETOPT_CCA_THRESHOLD, 0, value);
@@ -1140,15 +1127,30 @@ static int _netif_set(char *cmd_name, kernel_pid_t iface, char *key, char *value
     else if ((strcmp("coding_rate", key) == 0) || (strcmp("cr", key) == 0)) {
         return _netif_set_coding_rate(iface, value);
     }
-#endif
-    else if ((strcmp("channel", key) == 0) || (strcmp("chan", key) == 0)) {
-        return _netif_set_u16(iface, NETOPT_CHANNEL, 0, value);
+    else if (strcmp("appeui", key) == 0) {
+        return _netif_set_lw_key(iface, NETOPT_LORAWAN_APPEUI, value);
+    }
+    else if (strcmp("appkey", key) == 0) {
+        return _netif_set_lw_key(iface, NETOPT_LORAWAN_APPKEY, value);
+    }
+    else if (strcmp("deveui", key) == 0) {
+        return _netif_set_addr(iface, NETOPT_ADDRESS_LONG, value);
+    }
+    else if (strcmp("appskey", key) == 0) {
+        return _netif_set_addr(iface, NETOPT_LORAWAN_APPSKEY, value);
+    }
+    else if (strcmp("nwkskey", key) == 0) {
+        return _netif_set_addr(iface, NETOPT_LORAWAN_NWKSKEY, value);
     }
     else if (strcmp("dr", key) == 0) {
         return _netif_set_u8(iface, NETOPT_LORAWAN_DR, 0, value);
     }
     else if (strcmp("rx2_dr", key) == 0) {
         return _netif_set_u8(iface, NETOPT_LORAWAN_RX2_DR, 0, value);
+    }
+#endif
+    else if ((strcmp("channel", key) == 0) || (strcmp("chan", key) == 0)) {
+        return _netif_set_u16(iface, NETOPT_CHANNEL, 0, value);
     }
     else if (strcmp("csma_retries", key) == 0) {
         return _netif_set_u8(iface, NETOPT_CSMA_RETRIES, 0, value);
