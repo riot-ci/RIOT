@@ -31,7 +31,7 @@
 #include "dcf77_internal.h"
 #include "dcf77_params.h"
 
-#define ENABLE_DEBUG    (1)
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 /* Persistent level longer than 1200ms starts a new cycle  */
