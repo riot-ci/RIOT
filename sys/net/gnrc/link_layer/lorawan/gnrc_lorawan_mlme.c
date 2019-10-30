@@ -11,6 +11,8 @@
  *
  * @file
  * @author  José Ignacio Alamos <jose.alamos@haw-hamburg.de>
+ *
+ * @}
  */
 #include <stdio.h>
 #include <string.h>
@@ -234,11 +236,11 @@ void gnrc_lorawan_mlme_request(gnrc_lorawan_t *mac, const mlme_request_t *mlme_r
         case MLME_JOIN:
             if(mac->mlme.activation != MLME_ACTIVATION_NONE) {
                 mlme_confirm->status = -EINVAL;
-                return;
+                break;
             }
             if (!gnrc_lorawan_mac_acquire(mac)) {
                 mlme_confirm->status = -EBUSY;
-                return;
+                break;
             }
 
             if (mac->mlme.backoff_budget < 0) {
@@ -324,8 +326,10 @@ uint8_t gnrc_lorawan_build_options(gnrc_lorawan_t *mac, lorawan_buffer_t *buf)
 {
     size_t size = 0;
 
-    size += (mac->mlme.pending_mlme_opts & GNRC_LORAWAN_MLME_OPTS_LINK_CHECK_REQ) ?
-            _fopts_mlme_link_check_req(buf) : 0;
+    if(mac->mlme.pending_mlme_opts & GNRC_LORAWAN_MLME_OPTS_LINK_CHECK_REQ) {
+        size += _fopts_mlme_link_check_req(buf);
+    }
+
     return size;
 }
 
@@ -345,5 +349,3 @@ void gnrc_lorawan_mlme_no_rx(gnrc_lorawan_t *mac)
         mac->mlme.pending_mlme_opts &= ~GNRC_LORAWAN_MLME_OPTS_LINK_CHECK_REQ;
     }
 }
-
-/** @} */

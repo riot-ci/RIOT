@@ -11,6 +11,7 @@
  *
  * @file
  * @author  José Ignacio Alamos <jose.alamos@haw-hamburg.de>
+ * @}
  */
 #include <stdio.h>
 #include <string.h>
@@ -60,6 +61,7 @@ static inline void gnrc_lorawan_mcps_reset(gnrc_lorawan_t *mac)
     mac->mcps.fcnt = 0;
     mac->mcps.fcnt_down = 0;
 }
+
 static inline void _set_rx2_dr(gnrc_lorawan_t *mac, uint8_t rx2_dr)
 {
     mac->dl_settings &= ~GNRC_LORAWAN_DL_RX2_DR_MASK;
@@ -195,7 +197,7 @@ static uint32_t lora_time_on_air(size_t payload_size, uint8_t dr, uint8_t cr)
     uint32_t t_sym = 1 << (15 - dr);
     uint32_t t_preamble = (t_sym << 3) + (t_sym << 2) + (t_sym >> 2);
 
-    int index = dr < LORAMAC_DR_6 ? dr : LORAMAC_DR_5;
+    int index = (dr < LORAMAC_DR_6) ? dr : LORAMAC_DR_5;
     uint8_t n0 = _K[index][0];
     int nb_symbols;
 
@@ -346,5 +348,3 @@ void gnrc_lorawan_recv(gnrc_lorawan_t *mac)
 
     gnrc_lorawan_process_pkt(mac, pkt);
 }
-
-/** @} */
