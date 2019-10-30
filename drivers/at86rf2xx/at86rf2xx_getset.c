@@ -134,12 +134,12 @@ static const uint8_t dbm_to_rx_sens[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
 void at86rf2xx_get_addr_short(const at86rf2xx_t *dev, network_uint16_t *addr)
 {
-    memcpy(addr, dev->netdev.short_addr, IEEE802154_SHORT_ADDRESS_LEN);
+    memcpy(addr, dev->netdev.short_addr, sizeof(*addr));
 }
 
 void at86rf2xx_set_addr_short(at86rf2xx_t *dev, const network_uint16_t *addr)
 {
-    memcpy(dev->netdev.short_addr, addr, IEEE802154_SHORT_ADDRESS_LEN);
+    memcpy(dev->netdev.short_addr, addr, sizeof(*addr));
 #ifdef MODULE_SIXLOWPAN
     /* https://tools.ietf.org/html/rfc4944#section-12 requires the first bit to
      * 0 for unicast addresses */
@@ -154,12 +154,12 @@ void at86rf2xx_set_addr_short(at86rf2xx_t *dev, const network_uint16_t *addr)
 
 void at86rf2xx_get_addr_long(const at86rf2xx_t *dev, eui64_t *addr)
 {
-    memcpy(addr, dev->netdev.long_addr, IEEE802154_LONG_ADDRESS_LEN);
+    memcpy(addr, dev->netdev.long_addr, sizeof(*addr));
 }
 
 void at86rf2xx_set_addr_long(at86rf2xx_t *dev, const eui64_t *addr)
 {
-    memcpy(dev->netdev.long_addr, addr, IEEE802154_LONG_ADDRESS_LEN);
+    memcpy(dev->netdev.long_addr, addr, sizeof(*addr));
     for (int i = 0; i < 8; i++) {
         /* device use lsb first, not network byte order */
         at86rf2xx_reg_write(dev, (AT86RF2XX_REG__IEEE_ADDR_0 + i),
