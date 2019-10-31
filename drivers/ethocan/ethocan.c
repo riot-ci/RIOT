@@ -106,12 +106,12 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
     }
     else {
         /* Reentered this state -> a new octet has been received from UART.
-         * Handle ESC and END octects ... */
+         * Handle ESC and END octets ... */
         int esc = (ctx->flags & ETHOCAN_FLAG_ESC_RECEIVED);
-        if (!esc && ctx->uart_octect == ETHOCAN_OCTECT_ESC) {
+        if (!esc && ctx->uart_octet == ETHOCAN_OCTECT_ESC) {
             SETBIT(ctx->flags, ETHOCAN_FLAG_ESC_RECEIVED);
         }
-        else if (!esc && ctx->uart_octect == ETHOCAN_OCTECT_END) {
+        else if (!esc && ctx->uart_octet == ETHOCAN_OCTECT_END) {
             SETBIT(ctx->flags, ETHOCAN_FLAG_END_RECEIVED);
             next_state = ETHOCAN_STATE_BLOCKED;
         }
@@ -124,7 +124,7 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
              * from a previously received frame. Thus, we just ignore new data. */
             if (!(ctx->flags & ETHOCAN_FLAG_RECV_BUF_DIRTY)
                 && ctx->recv_buf_ptr < ETHOCAN_FRAME_LEN) {
-                ctx->recv_buf[ctx->recv_buf_ptr++] = ctx->uart_octect;
+                ctx->recv_buf[ctx->recv_buf_ptr++] = ctx->uart_octet;
             }
         }
     }
@@ -146,7 +146,7 @@ static uint8_t state_send(ethocan_t *ctx, uint8_t old_state)
 
     /* Don't trace any END octets ... the timeout or the END signal
      * will bring us back to the BLOCKED state after _send has emitted
-     * its last octect. */
+     * its last octet. */
 
     xtimer_set(&ctx->timeout, ctx->timeout_ticks);
 
@@ -214,7 +214,7 @@ static uint8_t state(ethocan_t *ctx, uint8_t src)
         }
 
         if (next_state == new_state) {
-            /* No state change occured within the state's function */
+            /* No state change occurred within the state's function */
             break;
         }
         else {
@@ -236,7 +236,7 @@ static void _isr_uart(void *arg, uint8_t c)
 {
     ethocan_t *dev = (ethocan_t *) arg;
 
-    dev->uart_octect = c;
+    dev->uart_octet = c;
     state(dev, ETHOCAN_SIGNAL_UART);
 }
 
@@ -282,7 +282,7 @@ static void _isr(netdev_t *netdev)
         return;
     }
 
-    /* If we haven't received a valid END octect just drop the incomplete frame. */
+    /* If we haven't received a valid END octet just drop the incomplete frame. */
     if (!end) {
         DEBUG("ethocan _isr(): incomplete frame -> drop\n");
         clear_recv_buf(ctx);
@@ -293,7 +293,7 @@ static void _isr(netdev_t *netdev)
      * touched in ISR context. Thus, it is safe to work with them without
      * IRQs being disabled or mutexes being locked. */
 
-    /* Check the dst mac addr if the iface is not in promiscous mode */
+    /* Check the dst mac addr if the iface is not in promiscuous mode */
     if (!(ctx->opts & ETHOCAN_OPT_PROMISCUOUS)) {
         ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
         if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr, ETHERNET_ADDR_LEN) != 0) {
@@ -353,7 +353,7 @@ static uint8_t wait_for_state(ethocan_t *ctx, uint8_t state)
 {
     do {
         /* This mutex is unlocked by the state machine
-         * after every state transistion */
+         * after every state transition */
         mutex_lock(&ctx->state_mtx);
     } while (state != ETHOCAN_STATE_ANY && ctx->state != state);
     return ctx->state;
@@ -363,16 +363,16 @@ static int send_octet(ethocan_t *ctx, uint8_t c)
 {
     uart_write(ctx->uart, (uint8_t *) &c, sizeof(c));
 
-    /* Wait for a state transistion */
+    /* Wait for a state transition */
     uint8_t state = wait_for_state(ctx, ETHOCAN_STATE_ANY);
     if (state != ETHOCAN_STATE_SEND) {
         /* Timeout */
         DEBUG("ethocan send_octet(): timeout\n");
         return -2;
     }
-    else if (ctx->uart_octect != c) {
-        /* Missmatch */
-        DEBUG("ethocan send_octet(): missmatch\n");
+    else if (ctx->uart_octet != c) {
+        /* Mismatch */
+        DEBUG("ethocan send_octet(): mismatch\n");
         return -1;
     }
 

@@ -89,7 +89,7 @@ extern "C" {
 
 /**
  * @name    Signal definitions
- * @brief   A signal controls the state machine and may cause a state transistion
+ * @brief   A signal controls the state machine and may cause a state transition
  * @{
  */
 #define ETHOCAN_SIGNAL_INIT         (0x00)   /**< Init the state machine */
@@ -139,7 +139,7 @@ typedef struct {
     uint8_t recv_buf[ETHOCAN_FRAME_LEN];    /**< Receive buffer for incoming frames */
     size_t recv_buf_ptr;                    /**< Index of the next empty octet of the recveive buffer */
     uart_t uart;                            /**< UART device to use */
-    uint8_t uart_octect;                    /**< Last received octet */
+    uint8_t uart_octet;                     /**< Last received octet */
     gpio_t sense_pin;                       /**< GPIO to sense for start bits on the UART's rx line */
     xtimer_t timeout;                       /**< Timeout timer ensuring always to get back to IDLE state */
     uint32_t timeout_ticks;                 /**< Default amount of timeout ticks */
