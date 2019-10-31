@@ -57,6 +57,7 @@
 #include "periph/gpio.h"
 #include "net/netdev.h"
 #include "net/ethernet.h"
+#include "bitarithm.h"
 #include "mutex.h"
 #include "xtimer.h"
 
@@ -104,9 +105,9 @@ extern "C" {
  * @brief   Hold in ethocan_t.flags
  * @{
  */
-#define ETHOCAN_FLAG_RECV_BUF_DIRTY (0x01)   /**< Receive buffer contains a complete unhandled frame */
-#define ETHOCAN_FLAG_END_RECEIVED   (0x02)   /**< END octet has been received */
-#define ETHOCAN_FLAG_ESC_RECEIVED   (0x04)   /**< ESC octet has been received */
+#define ETHOCAN_FLAG_RECV_BUF_DIRTY (BIT0)   /**< Receive buffer contains a complete unhandled frame */
+#define ETHOCAN_FLAG_END_RECEIVED   (BIT1)   /**< END octet has been received */
+#define ETHOCAN_FLAG_ESC_RECEIVED   (BIT2)   /**< ESC octet has been received */
 /** @} */
 
 /**
@@ -114,7 +115,7 @@ extern "C" {
  * @brief   Hold in ethocan_t.opts
  * @{
  */
-#define ETHOCAN_OPT_PROMISCUOUS     (0x01)   /**< Don't check the destination MAC - pass every frame to upper layers */
+#define ETHOCAN_OPT_PROMISCUOUS     (BIT0)   /**< Don't check the destination MAC - pass every frame to upper layers */
 /** @} */
 
 #ifndef ETHOCAN_TIMEOUT_USEC

@@ -50,36 +50,6 @@ static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t len);
 static int _init(netdev_t *dev);
 void ethocan_setup(ethocan_t *ctx, const ethocan_params_t *params);
 
-static inline void flag_set(ethocan_t *ctx, uint8_t flag)
-{
-    ctx->flags |= flag;
-}
-
-static inline void flag_clear(ethocan_t *ctx, uint8_t flag)
-{
-    ctx->flags &= ~flag;
-}
-
-static inline int flag_isset(ethocan_t *ctx, uint8_t flag)
-{
-    return (ctx->flags & flag) ? 1 : 0;
-}
-
-static inline void opt_set(ethocan_t *ctx, uint8_t opt)
-{
-    ctx->opts |= opt;
-}
-
-static inline void opt_clear(ethocan_t *ctx, uint8_t opt)
-{
-    ctx->opts &= ~opt;
-}
-
-static inline int opt_isset(ethocan_t *ctx, uint8_t opt)
-{
-    return (ctx->opts & opt) ? 1 : 0;
-}
-
 static uint16_t crc16_update(uint16_t crc, uint8_t octet)
 {
     crc = (uint8_t)(crc >> 8) | (crc << 8);
@@ -98,8 +68,8 @@ static uint8_t state_blocked(ethocan_t *ctx, uint8_t old_state)
         /* When we have left the RECV state, the driver's thread has to look
          * if this frame should be processed. By queuing NETDEV_EVENT_ISR,
          * the netif thread will call _isr at some time. */
-        flag_set(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
-        flag_clear(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
+        SETBIT(ctx->flags, ETHOCAN_FLAG_RECV_BUF_DIRTY);
+        CLRBIT(ctx->flags, ETHOCAN_FLAG_ESC_RECEIVED);
         ctx->netdev.event_callback((netdev_t *) ctx, NETDEV_EVENT_ISR);
     }
 
@@ -137,22 +107,22 @@ static uint8_t state_recv(ethocan_t *ctx, uint8_t old_state)
     else {
         /* Reentered this state -> a new octet has been received from UART.
          * Handle ESC and END octects ... */
-        int esc = flag_isset(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
+        int esc = (ctx->flags & ETHOCAN_FLAG_ESC_RECEIVED);
         if (!esc && ctx->uart_octect == ETHOCAN_OCTECT_ESC) {
-            flag_set(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
+            SETBIT(ctx->flags, ETHOCAN_FLAG_ESC_RECEIVED);
         }
         else if (!esc && ctx->uart_octect == ETHOCAN_OCTECT_END) {
-            flag_set(ctx, ETHOCAN_FLAG_END_RECEIVED);
+            SETBIT(ctx->flags, ETHOCAN_FLAG_END_RECEIVED);
             next_state = ETHOCAN_STATE_BLOCKED;
         }
         else {
             if (esc) {
-                flag_clear(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
+                CLRBIT(ctx->flags, ETHOCAN_FLAG_ESC_RECEIVED);
             }
             /* Since the dirty flag is set after the RECV state is left,
              * it indicates that the receive buffer contains unprocessed data
              * from a previously received frame. Thus, we just ignore new data. */
-            if (!flag_isset(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY)
+            if (!(ctx->flags & ETHOCAN_FLAG_RECV_BUF_DIRTY)
                 && ctx->recv_buf_ptr < ETHOCAN_FRAME_LEN) {
                 ctx->recv_buf[ctx->recv_buf_ptr++] = ctx->uart_octect;
             }
@@ -289,9 +259,9 @@ static void clear_recv_buf(ethocan_t *ctx)
     int irq_state = irq_disable();
 
     ctx->recv_buf_ptr = 0;
-    flag_clear(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
-    flag_clear(ctx, ETHOCAN_FLAG_END_RECEIVED);
-    flag_clear(ctx, ETHOCAN_FLAG_ESC_RECEIVED);
+    CLRBIT(ctx->flags, ETHOCAN_FLAG_RECV_BUF_DIRTY);
+    CLRBIT(ctx->flags, ETHOCAN_FLAG_END_RECEIVED);
+    CLRBIT(ctx->flags, ETHOCAN_FLAG_ESC_RECEIVED);
     irq_restore(irq_state);
 }
 
@@ -302,8 +272,8 @@ static void _isr(netdev_t *netdev)
 
     /* Get current flags atomically */
     irq_state = irq_disable();
-    dirty = flag_isset(ctx, ETHOCAN_FLAG_RECV_BUF_DIRTY);
-    end = flag_isset(ctx, ETHOCAN_FLAG_END_RECEIVED);
+    dirty = (ctx->flags & ETHOCAN_FLAG_RECV_BUF_DIRTY);
+    end = (ctx->flags & ETHOCAN_FLAG_END_RECEIVED);
     irq_restore(irq_state);
 
     /* If the receive buffer does not contain any data just abort ... */
@@ -324,7 +294,7 @@ static void _isr(netdev_t *netdev)
      * IRQs being disabled or mutexes being locked. */
 
     /* Check the dst mac addr if the iface is not in promiscous mode */
-    if (!opt_isset(ctx, ETHOCAN_OPT_PROMISCUOUS)) {
+    if (!(ctx->opts & ETHOCAN_OPT_PROMISCUOUS)) {
         ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
         if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr, ETHERNET_ADDR_LEN) != 0) {
             DEBUG("ethocan _isr(): dst mac not matching -> drop\n");
@@ -504,7 +474,7 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
             if (max_len < sizeof(netopt_enable_t)) {
                 return -EINVAL;
             }
-            if (opt_isset(ctx, ETHOCAN_OPT_PROMISCUOUS)) {
+            if (ctx->opts & ETHOCAN_OPT_PROMISCUOUS) {
                 *((netopt_enable_t *)value) = NETOPT_ENABLE;
             }
             else {
@@ -528,10 +498,10 @@ static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t len)
                 return -EINVAL;
             }
             if (((const bool *)value)[0]) {
-                opt_set(ctx, ETHOCAN_OPT_PROMISCUOUS);
+                SETBIT(ctx->opts, ETHOCAN_OPT_PROMISCUOUS);
             }
             else {
-                opt_clear(ctx, ETHOCAN_OPT_PROMISCUOUS);
+                CLRBIT(ctx->opts, ETHOCAN_OPT_PROMISCUOUS);
             }
             return sizeof(netopt_enable_t);
         default:
