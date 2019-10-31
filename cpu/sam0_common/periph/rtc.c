@@ -67,6 +67,7 @@ static void _rtc_clock_setup(void)
 {
     /* Use 1024 Hz GCLK3 */
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(3) | GCLK_CLKCTRL_ID_RTC;
+    while (GCLK->STATUS.bit.SYNCBUSY) {}
 }
 #else
 static void _rtc_clock_setup(void)
