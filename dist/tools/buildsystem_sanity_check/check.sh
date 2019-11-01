@@ -188,6 +188,19 @@ check_board_insufficient_memory_not_in_makefile() {
         | error_with_message 'Move BOARD_INSUFFICIENT_MEMORY to Makefile.ci'
 }
 
+# Develhelp should not be set via CFLAGS
+checks_develhelp_not_defined_via_cflags() {
+    local patterns=()
+    local pathspec=()
+
+    patterns+=(-e '^[[:space:]]*CFLAGS[[:space:]:+]+=[[:space:]:+]-DDEVELHELP')
+
+    pathspec+=('**/Makefile')
+
+    git -C "${RIOTBASE}" grep "${patterns[@]}" -- "${pathspec[@]}" \
+        | error_with_message "Use DEVELHELP ?= 1 instead of using CFLAGS directly"
+}
+
 error_on_input() {
     ! grep ''
 }
@@ -200,6 +213,7 @@ all_checks() {
     check_cpu_cpu_model_defined_in_makefile_features
     check_not_setting_board_equal
     check_board_insufficient_memory_not_in_makefile
+    checks_develhelp_not_defined_via_cflags
 }
 
 main() {
