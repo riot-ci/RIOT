@@ -65,7 +65,7 @@ static void _mlme_confirm(gnrc_netif_t *netif, mlme_confirm_t *confirm)
         }
     }
     else if (confirm->type == MLME_LINK_CHECK) {
-        netif->flags &= ~GNRC_NETIF_FLAGS_LINK_CHECK;
+        netif->lorawan.flags &= ~GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK;
         netif->lorawan.demod_margin = confirm->link_req.margin;
         netif->lorawan.num_gateways = confirm->link_req.num_gateways;
     }
@@ -151,7 +151,7 @@ static void _reset(gnrc_netif_t *netif)
     netif->lorawan.num_gateways = 0;
     netif->lorawan.port = LORAMAC_DEFAULT_TX_PORT;
     netif->lorawan.ack_req = LORAMAC_DEFAULT_TX_MODE == LORAMAC_TX_CNF;
-    netif->flags = 0;
+    netif->lorawan.flags = 0;
 }
 
 static void _memcpy_reversed(uint8_t *dst, uint8_t *src, size_t size)
@@ -200,7 +200,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *payload)
     mlme_request_t mlme_request;
     mlme_confirm_t mlme_confirm;
 
-    if (netif->flags & GNRC_NETIF_FLAGS_LINK_CHECK) {
+    if (netif->lorawan.flags & GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK) {
         mlme_request.type = MLME_LINK_CHECK;
         gnrc_lorawan_mlme_request(&netif->lorawan.mac, &mlme_request, &mlme_confirm);
     }
@@ -249,7 +249,7 @@ static int _get(gnrc_netif_t *netif, gnrc_netapi_opt_t *opt)
             break;
         case NETOPT_LINK_CHECK:
             assert(opt->data_len == sizeof(netopt_enable_t));
-            *((netopt_enable_t *) opt->data) = (netif->flags & GNRC_NETIF_FLAGS_LINK_CHECK) ?
+            *((netopt_enable_t *) opt->data) = (netif->lorawan.flags & GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK) ?
                                                NETOPT_ENABLE : NETOPT_DISABLE;
             break;
         case NETOPT_NUM_GATEWAYS:
@@ -340,7 +340,7 @@ static int _set(gnrc_netif_t *netif, const gnrc_netapi_opt_t *opt)
             break;
         }
         case NETOPT_LINK_CHECK:
-            netif->flags |= GNRC_NETIF_FLAGS_LINK_CHECK;
+            netif->lorawan.flags |= GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK;
             break;
         default:
             res = netif->lorawan.mac.netdev.driver->set(&netif->lorawan.mac.netdev, opt->opt, opt->data, opt->data_len);

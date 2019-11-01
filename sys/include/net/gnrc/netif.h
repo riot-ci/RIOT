@@ -64,6 +64,12 @@ extern "C" {
 #endif
 
 /**
+ * @brief   A Link Check request was scheduled
+ */
+#define GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK                (0x00020000U)
+/** @} */
+
+/**
  * @brief   Operations to an interface
  */
 typedef struct gnrc_netif_ops gnrc_netif_ops_t;
