@@ -674,7 +674,7 @@ typedef enum {
      * @brief (@ref netopt_enable_t) Enable or disable OTAA activation (LoRaWAN)
      */
     NETOPT_OTAA,
-    
+
      /**
      * @brief (uint8_t) Get the demodulation margin of the last Link Check request.
      */
