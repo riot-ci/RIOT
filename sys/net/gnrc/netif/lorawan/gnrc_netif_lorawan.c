@@ -204,8 +204,9 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *payload)
         mlme_request.type = MLME_LINK_CHECK;
         gnrc_lorawan_mlme_request(&netif->lorawan.mac, &mlme_request, &mlme_confirm);
     }
-    mcps_request_t req = { .type = netif->lorawan.ack_req ? MCPS_CONFIRMED : MCPS_UNCONFIRMED, .data.pkt = payload, .data.port = netif->lorawan.port,
-                           .data.dr = netif->lorawan.datarate };
+    mcps_request_t req = { .type = netif->lorawan.ack_req ? MCPS_CONFIRMED : MCPS_UNCONFIRMED,
+                           .data = { .pkt = payload, .port = netif->lorawan.port,
+                           .dr = netif->lorawan.datarate } };
     mcps_confirm_t conf;
     gnrc_lorawan_mcps_request(&netif->lorawan.mac, &req, &conf);
     return conf.status;
