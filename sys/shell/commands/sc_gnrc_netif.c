@@ -880,6 +880,7 @@ static int _netif_set_flag(kernel_pid_t iface, netopt_t opt,
     return 0;
 }
 
+#ifdef MODULE_GNRC_NETIF_CMD_LORA
 static int _netif_set_lw_key(kernel_pid_t iface, netopt_t opt, char *key_str)
 {
     /* This is the longest key */
@@ -909,6 +910,7 @@ static int _netif_set_lw_key(kernel_pid_t iface, netopt_t opt, char *key_str)
     printf(" on interface %" PRIkernel_pid " to %s\n", iface, key_str);
     return 0;
 }
+#endif
 
 static int _netif_set_addr(kernel_pid_t iface, netopt_t opt, char *addr_str)
 {
