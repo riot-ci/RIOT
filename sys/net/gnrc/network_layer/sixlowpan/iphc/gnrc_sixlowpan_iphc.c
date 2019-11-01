@@ -25,6 +25,9 @@
 #include "net/gnrc/sixlowpan.h"
 #include "net/gnrc/sixlowpan/ctx.h"
 #include "net/gnrc/sixlowpan/frag/rb.h"
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+#include "net/gnrc/sixlowpan/frag/vrb.h"
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 #include "net/gnrc/sixlowpan/internal.h"
 #include "net/sixlowpan.h"
 #include "utlist.h"
@@ -236,6 +239,9 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     size_t uncomp_hdr_len = sizeof(ipv6_hdr_t);
     gnrc_sixlowpan_ctx_t *ctx = NULL;
     gnrc_sixlowpan_frag_rb_t *rbuf = rbuf_ptr;
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+    gnrc_sixlowpan_frag_vrb_t *vrbe = NULL;
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
     if (rbuf != NULL) {
         ipv6 = rbuf->pkt;
@@ -557,6 +563,35 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
 #endif
     uint16_t payload_len;
     if (rbuf != NULL) {
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+        /* only create virtual reassembly buffer entry from IPv6 destination if
+         * the current first fragment is the only received fragment in the
+         * reassembly buffer so far
+         */
+        if ((rbuf->super.current_size <= sixlo->size) &&
+            (vrbe = gnrc_sixlowpan_frag_vrb_from_route(&rbuf->super,
+                    gnrc_netif_hdr_get_netif(netif_hdr), ipv6))) {
+            /* add netif header to `ipv6` so its flags can be used when
+             * forwarding the fragment */
+            LL_DELETE(sixlo, netif);
+            LL_APPEND(ipv6, netif);
+            /* provide space to copy remaining payload */
+            if (gnrc_pktbuf_realloc_data(ipv6, uncomp_hdr_len + sixlo->size -
+                                         payload_offset) != 0) {
+                DEBUG("6lo iphc: no space left to copy payload\n");
+                gnrc_sixlowpan_frag_vrb_rm(vrbe);
+                _recv_error_release(sixlo, ipv6, rbuf);
+                return;
+            }
+        }
+        /* reallocate to copy complete payload */
+        else if (gnrc_pktbuf_realloc_data(ipv6,
+                                          rbuf->super.datagram_size) != 0) {
+            DEBUG("6lo iphc: no space left to reassemble payload\n");
+            _recv_error_release(sixlo, ipv6, rbuf);
+            return;
+        }
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
         /* for a fragmented datagram we know the overall length already */
         payload_len = (uint16_t)(rbuf->super.datagram_size - sizeof(ipv6_hdr_t));
     }
@@ -579,6 +614,15 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
            ((uint8_t *)sixlo->data) + payload_offset,
            sixlo->size - payload_offset);
     if (rbuf != NULL) {
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+        if (vrbe != NULL) {
+            DEBUG("6lo iphc: found route, trying to forward\n");
+            /* TODO: forward here according to forwarding scheme here */
+            gnrc_sixlowpan_frag_vrb_rm(vrbe);
+        }
+        DEBUG("6lo iphc: no route found or can't fragment extra datagrams "
+              "right now, reassemble datagram normally\n");
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
         rbuf->super.current_size += (uncomp_hdr_len - payload_offset);
     }
     else {
