@@ -18,12 +18,14 @@ static const uint8_t hw_mac[] = {
 };
 
 /* custom implementation of luid_base() */
-void luid_base(void *buf, size_t len)
+size_t luid_get_eui64_custom(eui64_t *addr, uint8_t idx)
 {
-    uint8_t *out = buf;
-    for (size_t i = 0; i < len; i++) {
-        out[i] = hw_mac[i % sizeof(hw_mac)];
+    if (idx > 0) {
+        return 0;
     }
+
+    memcpy(addr, hw_mac, sizeof(*addr));
+    return sizeof(hw_mac);
 }
 
 static void test_luid_is_hw_mac(void)
@@ -36,30 +38,26 @@ static void test_luid_is_hw_mac(void)
     TEST_ASSERT_EQUAL_INT(0, memcmp(addr.uint8 + 1, hw_mac + 1, sizeof(addr) - 1));
 }
 
-static void test_luid_uniqe(void)
+static void test_luid_uniqe_eui64(void)
 {
-    uint8_t a[8];
-    uint8_t b[8];
+    eui64_t mac[3];
 
-    luid_get(a, sizeof(a));
-    luid_get(b, sizeof(b));
-    TEST_ASSERT_EQUAL_INT(0, !memcmp(a, b, sizeof(a)));
+    luid_get_eui64(&mac[0]);
+    luid_get_eui64(&mac[1]);
+    luid_get_eui64(&mac[2]);
+    TEST_ASSERT_EQUAL_INT(0, !memcmp(&mac[0], &mac[1], sizeof(mac[0])));
+    TEST_ASSERT_EQUAL_INT(0, !memcmp(&mac[1], &mac[2], sizeof(mac[1])));
 }
 
-static void test_luid_uniqe_mac(void)
+static void test_luid_uniqe_eui48(void)
 {
-    uint8_t a[8];
-    uint8_t b[8];
+    eui48_t mac[3];
 
-    luid_get(a, sizeof(a));
-    luid_get(b, sizeof(b));
-
-    a[0] &= ~(0x01);
-    a[0] |=  (0x02);
-    b[0] &= ~(0x01);
-    b[0] |=  (0x02);
-
-    TEST_ASSERT_EQUAL_INT(0, !memcmp(a, b, sizeof(a)));
+    luid_get_eui48(&mac[0]);
+    luid_get_eui48(&mac[1]);
+    luid_get_eui48(&mac[2]);
+    TEST_ASSERT_EQUAL_INT(0, !memcmp(&mac[0], &mac[1], sizeof(mac[0])));
+    TEST_ASSERT_EQUAL_INT(0, !memcmp(&mac[1], &mac[2], sizeof(mac[1])));
 }
 
 static void test_luid_custom(void)
@@ -82,8 +80,8 @@ Test *tests_luid_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_luid_is_hw_mac),
-        new_TestFixture(test_luid_uniqe),
-        new_TestFixture(test_luid_uniqe_mac),
+        new_TestFixture(test_luid_uniqe_eui48),
+        new_TestFixture(test_luid_uniqe_eui64),
         new_TestFixture(test_luid_custom),
     };
 
