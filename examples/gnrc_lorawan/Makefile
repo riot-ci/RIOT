@@ -7,6 +7,7 @@ USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_lorawan
 USEMODULE += gnrc_netapi_callbacks
+USEMODULE += gnrc_pktdump
 
 BOARD ?= b-l072z-lrwan1
 RIOTBASE ?= ../../
