@@ -31,12 +31,6 @@
 #define _16_UPPER_BITMASK 0xFFFF0000
 #define _16_LOWER_BITMASK 0xFFFF
 
-static inline void *_mcps_allocate(gnrc_lorawan_t *mac)
-{
-    mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MCPS_GET_BUFFER);
-    return mac->mcps_buf;
-}
-
 int gnrc_lorawan_mic_is_valid(gnrc_pktsnip_t *mic, uint8_t *nwkskey)
 {
     le_uint32_t calc_mic;
@@ -145,7 +139,7 @@ void gnrc_lorawan_mcps_process_downlink(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt
         pkt->type = GNRC_NETTYPE_LORAWAN;
         release = false;
 
-        mcps_indication_t *mcps_indication = _mcps_allocate(mac);
+        mcps_indication_t *mcps_indication = gnrc_lorawan_mcps_allocate(mac);
         mcps_indication->type = ack_req;
         mcps_indication->data.pkt = pkt;
         mcps_indication->data.port = *((uint8_t *) fport->data);
@@ -153,7 +147,7 @@ void gnrc_lorawan_mcps_process_downlink(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt
     }
 
     if (lorawan_hdr_get_frame_pending(lw_hdr)) {
-        mlme_indication_t *mlme_indication = _mlme_allocate(mac);
+        mlme_indication_t *mlme_indication = gnrc_lorawan_mlme_allocate(mac);
         mlme_indication->type = MLME_SCHEDULE_UPLINK;
         mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MLME_INDICATION);
     }
@@ -239,7 +233,7 @@ static void _end_of_tx(gnrc_lorawan_t *mac, int type, int status)
 {
     mac->mcps.waiting_for_ack = false;
 
-    mcps_confirm_t *mcps_confirm = _mcps_allocate(mac);
+    mcps_confirm_t *mcps_confirm = gnrc_lorawan_mcps_allocate(mac);
 
     mcps_confirm->type = type;
     mcps_confirm->status = status;

@@ -29,12 +29,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-static inline void *_mlme_allocate(gnrc_lorawan_t *mac)
-{
-    mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MLME_GET_BUFFER);
-    return mac->mlme_buf;
-}
-
 static int _buffer_reset(lorawan_buffer_t *buf, uint8_t *data, size_t length)
 {
     if (!buf || !data || !length) {
@@ -158,7 +152,7 @@ void gnrc_lorawan_mlme_process_join(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt)
 
 out:
     gnrc_pktbuf_release(pkt);
-    mlme_confirm_t *mlme_confirm = _mlme_allocate(mac);
+    mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
     mlme_confirm->type = MLME_JOIN;
     mlme_confirm->status = status;
 
@@ -287,7 +281,7 @@ static int _mlme_link_check_ans(gnrc_lorawan_t *mac, lorawan_buffer_t *fopt)
     }
     fopt->index++;
 
-    mlme_confirm_t *mlme_confirm = _mlme_allocate(mac);
+    mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
     mlme_confirm->link_req.margin = fopt->data[fopt->index++];
     mlme_confirm->link_req.num_gateways = fopt->data[fopt->index++];
 
@@ -335,7 +329,7 @@ uint8_t gnrc_lorawan_build_options(gnrc_lorawan_t *mac, lorawan_buffer_t *buf)
 
 void gnrc_lorawan_mlme_no_rx(gnrc_lorawan_t *mac)
 {
-    mlme_confirm_t *mlme_confirm = _mlme_allocate(mac);
+    mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
 
     mlme_confirm->status = -ETIMEDOUT;
 
