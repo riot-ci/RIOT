@@ -153,8 +153,8 @@ void gnrc_lorawan_mcps_process_downlink(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt
     }
 
     if (lorawan_hdr_get_frame_pending(lw_hdr)) {
-        mcps_indication_t *mcps_indication = _mcps_allocate(mac);
-        mcps_indication->type = MLME_SCHEDULE_UPLINK;
+        mlme_indication_t *mlme_indication = _mlme_allocate(mac);
+        mlme_indication->type = MLME_SCHEDULE_UPLINK;
         mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MLME_INDICATION);
     }
 
