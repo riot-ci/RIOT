@@ -31,6 +31,7 @@ typedef struct {
     gnrc_lorawan_t mac;                     /**< gnrc lorawan mac descriptor */
     uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];   /**< network SKey buffer */
     uint8_t appskey[LORAMAC_APPSKEY_LEN];   /**< App SKey buffer */
+    uint8_t flags;                          /**< flags for the LoRaWAN interface */
     uint8_t demod_margin;                   /**< value of last demodulation margin */
     uint8_t num_gateways;                   /**< number of gateways of last link check */
     uint8_t datarate;                       /**< LoRaWAN datarate for the next transmission */
