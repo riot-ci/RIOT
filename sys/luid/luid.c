@@ -26,23 +26,24 @@
 
 #include "luid.h"
 
-#if CPUID_LEN
+#ifndef MAX
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 void __attribute__((weak)) luid_base(void *buf, size_t len)
 {
+    memset(buf, LUID_BACKUP_SEED, len);
+
+#if CPUID_LEN
     uint8_t *out = (uint8_t *)buf;
     uint8_t cid[CPUID_LEN];
 
     cpuid_get(cid);
-    for (size_t i = 0; i < len; i++) {
-        out[i] = cid[i % CPUID_LEN];
+    for (size_t i = 0; i < MAX(len, CPUID_LEN); i++) {
+        out[i % len] ^= cid[i % CPUID_LEN];
     }
-}
-#else
-void __attribute__((weak)) luid_base(void *buf, size_t len)
-{
-    memset(buf, LUID_BACKUP_SEED, len);
-}
 #endif
+}
 
 size_t __attribute__((weak)) luid_get_eui48_custom(eui48_t *addr, uint8_t idx)
 {
