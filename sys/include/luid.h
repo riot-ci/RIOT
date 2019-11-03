@@ -101,9 +101,12 @@ void luid_get_short(network_uint16_t *addr);
 /**
  * @brief   Get a unique EUI48 address
  *
- * The resulting address is built from the base ID generated with luid_base(), which
- * isXORed with an 8-bit incrementing counter value into the least significant
- * byte.
+ * If a board-specific EUI48 address is availiable, it can be supplied by
+ * implementing the luid_get_eui48_custom(eui48_t *addr, uint8_t idx) function.
+ *
+ * If no board-specific MAC is availiabe, the resulting address is built from
+ * the base ID generated with luid_base(), which isXORed with an 8-bit
+ * incrementing counter value into the least significant byte.
  *
  * @note    The resulting address will repeat after 255 calls.
  *
@@ -116,9 +119,12 @@ void luid_get_eui48(eui48_t *addr);
 /**
  * @brief   Get a unique EUI64 address
  *
- * The resulting address is built from the base ID generated with luid_base(), which
- * isXORed with an 8-bit incrementing counter value into the least significant
- * byte.
+ * If a board-specific EUI64 address is availiable, it can be supplied by
+ * implementing the luid_get_eui64_custom(eui48_t *addr, uint8_t idx) function.
+ *
+ * If no board-specific MAC is availiabe, the resulting address is built from
+ * the base ID generated with luid_base(), which isXORed with an 8-bit
+ * incrementing counter value into the least significant byte.
  *
  * @note    The resulting address will repeat after 255 calls.
  *
@@ -127,6 +133,42 @@ void luid_get_eui48(eui48_t *addr);
  * @param[out] addr     memory location to copy the address into.
  */
 void luid_get_eui64(eui64_t *addr);
+
+/**
+ * @brief   User supplied function to get board-specific EUI48
+ *
+ * If the board provides a custom way to supply one or many EUI48s, you can
+ * implement this function. (e.g. I2C based EUI48-EEPROM)
+ *
+ * It will be called by luid_get_eui48().
+ * If no MAC address is availiable for idx, luid_get_eui48() will fall back
+ * to generating an EUI48 from the CPU ID.
+ *
+ * @param[out] addr     memory location to copy the address into.
+ * @param[in]  idx      Index of the MAC address
+ *
+ * @return              number of bytes copied, 0 if no address is
+ *                      availiable for idx.
+ */
+size_t luid_get_eui48_custom(eui48_t *addr, uint8_t idx);
+
+/**
+ * @brief   User supplied function to get board-specific EUI64
+ *
+ * If the board provides a custom way to supply one or many EUI64s, you can
+ * implement this function. (e.g. I2C based EUI64-EEPROM)
+ *
+ * It will be called by luid_get_eui64().
+ * If no MAC address is availiable for idx, luid_get_eui64() will fall back
+ * to generating an EUI64 from the CPU ID.
+ *
+ * @param[out] addr     memory location to copy the address into.
+ * @param[in]  idx      Index of the MAC address
+ *
+ * @return              number of bytes copied, 0 if no address is
+ *                      availiable for idx.
+ */
+size_t luid_get_eui64_custom(eui64_t *addr, uint8_t idx);
 
 /**
  * @brief   Get a custom unique ID based on a user given generator value
