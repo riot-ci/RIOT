@@ -91,10 +91,10 @@ static void _write_bits(const hd44780_t *dev, uint8_t bits, uint8_t value)
 {
     for (unsigned i = 0; i < bits; ++i) {
         if ((value >> i) & 0x01) {
-            gpio_set(dev->p.data[i]);
+            gpio_set(dev->data[i]);
         }
         else {
-            gpio_clear(dev->p.data[i]);
+            gpio_clear(dev->data[i]);
         }
     }
     _pulse(dev);
@@ -110,19 +110,17 @@ int hd44780_init(hd44780_t *dev, const hd44780_params_t *params)
         LOG_ERROR("hd44780_init: invalid LCD size!\n");
         return -1;
     }
-    uint8_t count_pins = 0;
-    /* check which pins are used */
+    /* Copy configured pins in device descriptor */
     for (unsigned i = 0; i < HD44780_MAX_PINS; ++i) {
-        if (dev->p.data[i] != GPIO_UNDEF) {
-            ++count_pins;
-        }
+        dev->data[i] = dev->p.data[i];
     }
-    /* set mode depending on configured pins */
-    if (count_pins < HD44780_MAX_PINS) {
-        dev->flag |= HD44780_4BITMODE;
+    /* set mode depending on configured pins:
+        if 4th pin is set, use 8bit mode, else use 4bit mode*/
+    if (dev->data[4] != GPIO_UNDEF) {
+        dev->flag |= HD44780_8BITMODE;
     }
     else {
-        dev->flag |= HD44780_8BITMODE;
+        dev->flag |= HD44780_4BITMODE;
     }
     /* set flag for 1 or 2 row mode, 4 rows are 2 rows split half */
     if (dev->p.rows > 1) {
@@ -147,7 +145,7 @@ int hd44780_init(hd44780_t *dev, const hd44780_params_t *params)
     gpio_init(dev->p.enable, GPIO_OUT);
     /* configure all data pins as output */
     for (int i = 0; i < ((dev->flag & HD44780_8BITMODE) ? 8 : 4); ++i) {
-        gpio_init(dev->p.data[i], GPIO_OUT);
+        gpio_init(dev->data[i], GPIO_OUT);
     }
     /* see hitachi HD44780 datasheet pages 45/46 for init specs */
     xtimer_usleep(HD44780_INIT_WAIT_XXL);
