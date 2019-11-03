@@ -63,7 +63,7 @@ typedef struct {
     gpio_t rs;                      /**< rs gpio pin */
     gpio_t rw;                      /**< rw gpio pin */
     gpio_t enable;                  /**< enable gpio pin */
-    gpio_t data[8];                 /**< data gpio pins */
+    gpio_t data[HD44780_MAX_PINS];  /**< data gpio pins */
 } hd44780_params_t;
 
 /**
@@ -75,6 +75,7 @@ typedef struct {
     uint8_t ctrl;                   /**< LCD control flags */
     uint8_t mode;                   /**< LCD mode flags */
     uint8_t roff[HD44780_MAX_ROWS]; /**< offsets for LCD rows */
+    gpio_t data[HD44780_MAX_PINS];  /**< data gpio pins */
 } hd44780_t;
 
 /**

@@ -91,10 +91,10 @@ static void _write_bits(const hd44780_t *dev, uint8_t bits, uint8_t value)
 {
     for (unsigned i = 0; i < bits; ++i) {
         if ((value >> i) & 0x01) {
-            gpio_set(dev->p.data[i]);
+            gpio_set(dev->data[i]);
         }
         else {
-            gpio_clear(dev->p.data[i]);
+            gpio_clear(dev->data[i]);
         }
     }
     _pulse(dev);
@@ -124,6 +124,10 @@ int hd44780_init(hd44780_t *dev, const hd44780_params_t *params)
     else {
         dev->flag |= HD44780_8BITMODE;
     }
+    /* Copy configured pins in device descriptor */
+    for (unsigned i = 0; i < HD44780_MAX_PINS; ++i) {
+        dev->data[i] = dev->p.data[i];
+    }
     /* set flag for 1 or 2 row mode, 4 rows are 2 rows split half */
     if (dev->p.rows > 1) {
         dev->flag |= HD44780_2LINE;
@@ -147,7 +151,7 @@ int hd44780_init(hd44780_t *dev, const hd44780_params_t *params)
     gpio_init(dev->p.enable, GPIO_OUT);
     /* configure all data pins as output */
     for (int i = 0; i < ((dev->flag & HD44780_8BITMODE) ? 8 : 4); ++i) {
-        gpio_init(dev->p.data[i], GPIO_OUT);
+        gpio_init(dev->data[i], GPIO_OUT);
     }
     /* see hitachi HD44780 datasheet pages 45/46 for init specs */
     xtimer_usleep(HD44780_INIT_WAIT_XXL);
