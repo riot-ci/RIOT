@@ -204,9 +204,9 @@ static void clk_init(void)
                          | SYSCTRL_XOSC32K_ENABLE;
 #endif
 
-    /* Setup GCLK3 with divider 32 (1024 Hz) */
-    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(3)  | GCLK_GENDIV_DIV(4));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(3) | GCLK_GENCTRL_GENEN
+    /* Setup GCLK4 with divider 32 (1024 Hz) */
+    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(4)  | GCLK_GENDIV_DIV(4));
+    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(4) | GCLK_GENCTRL_GENEN
                       | GCLK_GENCTRL_RUNSTDBY | GCLK_GENCTRL_DIVSEL
 #if GEN2_ULP32K
                       | GCLK_GENCTRL_SRC_OSCULP32K);
