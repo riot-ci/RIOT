@@ -9,6 +9,7 @@ BOARD_BLACKLIST := \
                    arduino-mega2560 \
                    arduino-nano \
                    arduino-uno \
+                   atmega256rfr2-xpro \
                    atmega328p \
                    chronos \
                    esp8266-esp-12x \
