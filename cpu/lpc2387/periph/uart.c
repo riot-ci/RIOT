@@ -97,8 +97,8 @@ static irq_fun_t _uart_isr[UART_NUMOF] = {
 };
 
 /* Table for FDR register contents
- * bits 0…3: MULVAL
- * bits 4…7: DIVADDVAL
+ * bits 0…3: DIVADDVAL
+ * bits 4…7: MULVAL
  */
 #define DIV_MUL(m, d) ((d << 4) | m)
 static const uint8_t div_table[] = {

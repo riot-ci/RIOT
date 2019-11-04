@@ -25,7 +25,6 @@ extern "C" {
 
 #include <stdint.h>
 #include "cpu.h"
-#include "kernel_defines.h"
 
 /**
  * @brief   LPC2387 MCU defines
