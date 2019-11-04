@@ -84,13 +84,20 @@ static void _level_cb_low(dcf77_t *dev)
                 DCF77_PULSE_WIDTH_THRESHOLD) {
                 dev->bitseq.bits |=  1ULL << dev->bitCounter;
             }
+
             dev->bitCounter++;
+
             if (dev->bitCounter >= DCF77_READING_CYCLE) {
                 dev->bitCounter = 0;
                 dev->startTime = xtimer_now_usec();
                 dev->last_bitseq.bits = dev->bitseq.bits;
                 dev->internal_state = DCF77_STATE_START;
+
+                if (dev->tick_cb) {
+                    dev->tick_cb(dev, dev->tick_cb_args);
+                }
             }
+
             break;
     }
 }
@@ -116,13 +123,13 @@ static void _level_cb(void *arg)
  * @retval  DCF77_OK             Success
  * @retval  DCF77_INIT_ERROR     Error in initialization
  */
-
 int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
 {
     DEBUG("dcf77_init\n");
 
     /* check parameters and configuration */
     assert(dev && params);
+    dev->tick_cb = NULL;
     dev->params = *params;
     dev->internal_state = DCF77_STATE_IDLE;
     dev->bitCounter = 0;
@@ -144,7 +151,6 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
  * @retval  DCF77_OK          Success
  * @retval  DCF77_NOCSUM      Parity Bits aren't correct
  */
-
 int dcf77_get_time(dcf77_t *dev, struct tm *time)
 {
     assert(dev);
@@ -187,6 +193,7 @@ int dcf77_get_time(dcf77_t *dev, struct tm *time)
         return DCF77_NOCSUM;
     }
 
+    time->tm_sec = 0;
     time->tm_min = minute;
     time->tm_hour = hour;
     time->tm_mday = mday;
@@ -195,4 +202,12 @@ int dcf77_get_time(dcf77_t *dev, struct tm *time)
     time->tm_year = 100 + year;
 
     return DCF77_OK;
+}
+
+void dcf77_set_tick_cb(dcf77_t *dev, dcf77_tick_cb_t cb, void *arg)
+{
+    assert(dev);
+
+    dev->tick_cb_args = arg;
+    dev->tick_cb = cb;
 }
