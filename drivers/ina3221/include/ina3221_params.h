@@ -97,10 +97,12 @@ extern "C" {
 #define INA3221_PARAMS  {                                                      \
         .i2c = INA3221_PARAM_I2C,                                              \
         .addr = INA3221_PARAM_ADDR,                                            \
-        .pin_warn = INA3221_PARAM_PIN_WRN,                                     \
-        .pin_crit = INA3221_PARAM_PIN_CRT,                                     \
-        .pin_tc = INA3221_PARAM_PIN_TC,                                        \
-        .pin_pv = INA3221_PARAM_PIN_PV,                                        \
+        .upins.pins = {                                                        \
+            .pin_warn = INA3221_PARAM_PIN_WRN,                                 \
+            .pin_crit = INA3221_PARAM_PIN_CRT,                                 \
+            .pin_tc = INA3221_PARAM_PIN_TC,                                    \
+            .pin_pv = INA3221_PARAM_PIN_PV                                     \
+        },                                                                     \
         .gpio_config = (INA3221_PARAM_INT_PU_PIN_WRN << INA3221_ALERT_WRN) |   \
                        (INA3221_PARAM_INT_PU_PIN_CRT << INA3221_ALERT_CRT) |   \
                        (INA3221_PARAM_INT_PU_PIN_TC << INA3221_ALERT_TC)   |   \
