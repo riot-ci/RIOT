@@ -33,7 +33,7 @@ extern "C" {
  * @name   Length of the CPU_ID in octets
  * @{
  */
-#define CPUID_LEN           (6U)
+#define CPUID_LEN           (4U)
 /** @} */
 
 #ifndef DOXYGEN
