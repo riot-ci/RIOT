@@ -64,10 +64,8 @@ typedef struct {
     dcf77_params_t params;      /**< Device parameters */
     dcf77_bits_t bitseq;        /**< contains all Bits from a current cycle */
     dcf77_bits_t last_bitseq;   /**< contains all Bits from a last cycle */
-    mutex_t event_lock;         /**< mutex for waiting for event */
     uint8_t internal_state;     /**< internal States  */
     uint32_t startTime;         /**< Timestamp to measure the term of the level */
-    uint32_t stopTime;          /**< Timestamp to measure the term of the level */
     uint8_t bitCounter;         /**< Counter of the Bits in a Bitsequenz */
 
 } dcf77_t;

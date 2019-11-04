@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Freie Universität Berlin
+ * Copyright (C) 2019 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -21,7 +21,6 @@
 
 #include "board.h"
 #include "dcf77.h"
-#include "saul_reg.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,9 +40,6 @@ extern "C" {
 #define DCF77_PARAMS                  { .pin     = DCF77_PARAM_PIN, \
                                         .in_mode = DCF77_PARAM_PULL }
 #endif
-#ifndef DCF77_SAULINFO
-#define DCF77_SAULINFO                { .name = "dcf77" }
-#endif
 /**@}*/
 
 /**
@@ -52,14 +48,6 @@ extern "C" {
 static const dcf77_params_t dcf77_params[] =
 {
     DCF77_PARAMS
-};
-
-/**
- * @brief   Allocate and configure entries to the SAUL registry
- */
-static const saul_reg_info_t dcf77_saul_info[] =
-{
-    DCF77_SAULINFO
 };
 
 #ifdef __cplusplus

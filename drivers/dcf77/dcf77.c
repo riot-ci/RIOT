@@ -56,12 +56,11 @@ static void _level_cb_high(dcf77_t *dev)
     switch (dev->internal_state) {
         case DCF77_STATE_START:
             DEBUG("[dcf77] EVENT START 1 !\n");
-            dev->stopTime = xtimer_now_usec();
-            if ((dev->stopTime - dev->startTime) >
+            if ((xtimer_now_usec() - dev->startTime) >
                 DCF77_PULSE_START_HIGH_THRESHOLD) {
-                memset(&dev->bitseq.bits, 0, sizeof dev->bitseq.bits);
+                memset(&dev->bitseq.bits, 0, sizeof(dev->bitseq.bits));
                 dev->internal_state = DCF77_STATE_RX;
-            }else{
+            } else {
                 dev->internal_state = DCF77_STATE_IDLE;
             }
             break;
@@ -82,8 +81,7 @@ static void _level_cb_low(dcf77_t *dev)
             break;
         case DCF77_STATE_RX:
             DEBUG("[dcf77] EVENT RX 0 !\n");
-            dev->stopTime = xtimer_now_usec();
-            if ((dev->stopTime - dev->startTime) >
+            if ((xtimer_now_usec() - dev->startTime) >
                 DCF77_PULSE_WIDTH_THRESHOLD) {
                 dev->bitseq.bits |=  1ULL << dev->bitCounter;
             }
@@ -129,13 +127,10 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
     dev->params = *params;
     dev->internal_state = DCF77_STATE_IDLE;
     dev->bitCounter = 0;
-    if (!gpio_init_int(dev->params.pin, dev->params.in_mode, GPIO_BOTH,
-                       _level_cb,
-                       dev)) {
+    if (!gpio_init_int(dev->params.pin, dev->params.in_mode, GPIO_BOTH, _level_cb, dev)) {
         return DCF77_OK;
     }
     else {
-        gpio_irq_disable(dev->params.pin);
         return DCF77_INIT_ERROR;
     }
 }
