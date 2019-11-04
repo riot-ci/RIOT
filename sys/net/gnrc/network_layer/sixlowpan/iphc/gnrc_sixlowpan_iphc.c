@@ -121,8 +121,10 @@ static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     gnrc_netif_t *netif);
 
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
-static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_sixlowpan_frag_vrb_t *vrbe,
-                         gnrc_pktsnip_t *frag_hdr, unsigned page);
+static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+                                                   gnrc_sixlowpan_frag_vrb_t *vrbe);
+static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
+                         gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page);
 #endif
 
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC_NHC
@@ -625,47 +627,22 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     if (rbuf != NULL) {
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
         if (vrbe != NULL) {
-            gnrc_pktsnip_t *reversed, *pkt = ipv6, *frag_hdr = sixlo->next;
-            gnrc_netif_hdr_t *netif_hdr;
-
-            DEBUG("6lo iphc: found route, trying to forward\n");
-            /* remove fragment header so it is not present during encoding */
-            LL_DELETE(pkt, frag_hdr);
-            /* mark IPv6 header to allow for next header compression */
-            ipv6 = gnrc_pktbuf_mark(pkt, sizeof(ipv6_hdr_t), GNRC_NETTYPE_IPV6);
-            if (ipv6 == NULL) {
-                DEBUG("6lo iphc: unable to mark IPv6 header for forwarding\n");
-                _recv_error_release(sixlo, pkt, rbuf);
-                return;
-            }
-            reversed = gnrc_pktbuf_reverse_snips(pkt);
-            if (reversed == NULL) {
-                DEBUG("6lo iphc: unable to reverse packet for forwarding\n");
-                _recv_error_release(sixlo, pkt, rbuf);
-                return;
-            }
-            /* set netif header from VRB for correct encoding */
-            netif_hdr = reversed->data;
-            /* _iphc_encode only checks the destination address, so leave src
-             * untouched */
-            netif_hdr->dst_l2addr_len = vrbe->super.dst_len;
-            gnrc_netif_hdr_set_dst_addr(netif_hdr, vrbe->super.dst,
-                                        vrbe->super.dst_len);
-            gnrc_netif_hdr_set_netif(netif_hdr, vrbe->out_netif);
-            if ((pkt = _iphc_encode(reversed, netif_hdr, vrbe->out_netif)) &&
-                (_forward_frag(pkt, vrbe, frag_hdr, page) == 0)) {
+            if ((ipv6 = _encode_frag_for_forwarding(ipv6, vrbe)) &&
+                (_forward_frag(ipv6, sixlo->next, vrbe, page) == 0)) {
                 DEBUG("6lo iphc: successfully recompressed and forwarded 1st " \
                       "fragment\n");
                 /* successfully forwarded */
-                rbuf->super.ints = NULL; /* empty list, as it is in VRB now */
-                _recv_error_release(sixlo, pkt, rbuf);
+                rbuf->super.ints = NULL; /* empty list, as it should be in VRB
+                                          * now */
             }
             else {
-                /* if _iphc_encode failed, release original, reversed packet,
-                 * if not release encoded packet */
-                _recv_error_release(sixlo, (pkt) ? pkt : reversed, rbuf);
+                if (ipv6 != NULL) {
+                    gnrc_pktbuf_release(ipv6);
+                }
                 gnrc_sixlowpan_frag_vrb_rm(vrbe);
             }
+            gnrc_pktbuf_release(sixlo);
+            gnrc_sixlowpan_frag_rb_remove(rbuf);
             return;
         }
         DEBUG("6lo iphc: no route found or can't fragment extra datagrams "
@@ -683,8 +660,48 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
 }
 
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
-static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_sixlowpan_frag_vrb_t *vrbe,
-                         gnrc_pktsnip_t *frag_hdr, unsigned page)
+static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+                                                   gnrc_sixlowpan_frag_vrb_t *vrbe)
+{
+    gnrc_pktsnip_t *res;
+    gnrc_netif_hdr_t *netif_hdr;
+
+    DEBUG("6lo iphc: found route, trying to forward\n");
+    /* mark IPv6 header to allow for next header compression */
+    res = gnrc_pktbuf_mark(pkt, sizeof(ipv6_hdr_t), GNRC_NETTYPE_IPV6);
+    if (res == NULL) {
+        DEBUG("6lo iphc: unable to mark IPv6 header for forwarding\n");
+        gnrc_pktbuf_release(decoded_pkt);
+        gnrc_pktbuf_release(orig_netif);
+        return NULL;
+    }
+    res = gnrc_pktbuf_reverse_snips(decoded_pkt);
+    if (res == NULL) {
+        DEBUG("6lo iphc: unable to reverse packet for forwarding\n");
+        /* decoded_pkt is released in gnrc_pktbuf_reverse_snips() */
+        gnrc_pktbuf_release(orig_netif);
+        return NULL;
+    }
+    /* set netif header from VRB for correct encoding */
+    netif_hdr = res->data;
+    /* _iphc_encode only checks the destination address, so leave src
+     * untouched */
+    netif_hdr->dst_l2addr_len = vrbe->super.dst_len;
+    gnrc_netif_hdr_set_dst_addr(netif_hdr, vrbe->super.dst,
+                                vrbe->super.dst_len);
+    gnrc_netif_hdr_set_netif(netif_hdr, vrbe->out_netif);
+    decoded_pkt = res;
+    if (res = _iphc_encode(decoded_pkt, netif_hdr, vrbe->out_netif)) {
+        return res;
+    }
+    else {
+        gnrc_pktbuf_release(decoded_pkt);
+        return NULL;
+    }
+}
+
+static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
+                         gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
 {
     /* TODO */
     (void)pkt;
