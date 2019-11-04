@@ -16,31 +16,46 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "mutex.h"
 #include "xtimer.h"
 
 #include "dcf77_params.h"
 #include "dcf77.h"
+
+static void dcf77_callback(dcf77_t *dev, void *arg)
+{
+    (void) dev;
+    mutex_unlock(arg);
+}
+
 int main(void)
 {
     dcf77_t sensor;
-    struct tm time;
+    mutex_t mutex = MUTEX_INIT_LOCKED;
 
     printf("DCF77 test application\n");
 
     /* initialize the sensor with default configuration parameters */
-    if (dcf77_init (&sensor, &dcf77_params[0]) != DCF77_OK) {
+    if (dcf77_init(&sensor, &dcf77_params[0]) != DCF77_OK) {
         puts("Initialization failed\n");
         return -1;
     }
-    memset(&time, 0, sizeof(time));
+
     printf("DCF77 Module initialized \n");
 
+    dcf77_set_tick_cb(&sensor, dcf77_callback, &mutex);
+
     while (1) {
+        struct tm time;
+
+        mutex_lock(&mutex);
+
         dcf77_get_time(&sensor, &time);
+
         printf("%d %d.%d.%d %d:%d", time.tm_wday, time.tm_mday,
                (time.tm_mon + 1), (time.tm_year + 1900), time.tm_hour,
                time.tm_min);
-        xtimer_sleep(20);
     }
+
     return 0;
 }
