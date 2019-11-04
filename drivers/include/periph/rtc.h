@@ -131,6 +131,18 @@ void rtc_poweroff(void);
  */
 void rtc_tm_normalize(struct tm *time);
 
+/**
+ * @brief Compare two time structs.
+ *
+ * @param[in] a       The first time struct.
+ * @param[in] b       The second time struct.
+ *
+ * @return an integer < 0 if a is earlier than b
+ * @return an integer > 0 if a is later than b
+ * @return              0 if a and b are equal
+ */
+int rtc_tm_compare(const struct tm *a, const struct tm *b);
+
 #ifdef __cplusplus
 }
 #endif
