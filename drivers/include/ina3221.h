@@ -191,7 +191,7 @@ typedef enum ina3221_enable_ch {
     INA3221_ENABLE_CH2  = 0x2000,                   /**< Enable channel 2 */
     INA3221_ENABLE_CH3  = 0x1000                    /**< Enable channel 3 */
 } ina3221_enable_ch_t;
-#define INA3221_ENABLE_CH_MASK          (INA3221_ENABLE_CH1   \
+#define INA3221_ENABLE_CH_MASK          (INA3221_ENABLE_CH1    \
                                          | INA3221_ENABLE_CH2  \
                                          | INA3221_ENABLE_CH3)  /**< Enable channel bit mask */
 
@@ -211,8 +211,8 @@ typedef enum ina3221_enable_sum_ch {
     INA3221_ENABLE_SUM_CH2  = 0x2000,               /**< Enable sum channel 2 */
     INA3221_ENABLE_SUM_CH3  = 0x1000                /**< Enable sum channel 3 */
 } ina3221_enable_sum_ch_t;
-#define INA3221_ENABLE_SUM_CH_MASK     (INA3221_ENABLE_SUM_CH1   \
-                                        | INA3221_ENABLE_SUM_CH2  \
+#define INA3221_ENABLE_SUM_CH_MASK     (INA3221_ENABLE_SUM_CH1     \
+                                        | INA3221_ENABLE_SUM_CH2   \
                                         | INA3221_ENABLE_SUM_CH3)  /**< Enable shunt voltage sum calculation channel bit mask */
 
 /**
@@ -222,7 +222,7 @@ typedef enum ina3221_enable_latch {
     INA3221_ENABLE_WARN_LATCH   = 0x0800,           /**< Enable warning alert latch */
     INA3221_ENABLE_CRIT_LATCH   = 0x0400            /**< Enable critical alert latch */
 } ina3221_enable_latch_t;
-#define INA3221_ENABLE_LATCH_MASK      (INA3221_ENABLE_WARN_LATCH   \
+#define INA3221_ENABLE_LATCH_MASK      (INA3221_ENABLE_WARN_LATCH  \
                                         | INA3221_ENABLE_CRIT_LATCH)  /**< Enable latch bit mask */
 /**
  * @brief INA3221 device parameters
@@ -278,15 +278,15 @@ typedef struct {
 
 #define INA3221_FLAG_CONV_READY         (0x0001)    /**< Conversion ready flag */
 
-#define INA3221_FLAGS_MASK              (INA3221_FLAG_CRIT_ALERT_CH1   \
-                                         | INA3221_FLAG_CRIT_ALERT_CH2  \
-                                         | INA3221_FLAG_CRIT_ALERT_CH3  \
-                                         | INA3221_FLAG_SHUNT_SUM_ALERT \
-                                         | INA3221_FLAG_WARN_ALERT_CH1  \
-                                         | INA3221_FLAG_WARN_ALERT_CH2  \
-                                         | INA3221_FLAG_WARN_ALERT_CH3  \
-                                         | INA3221_FLAG_POWER_VALID     \
-                                         | INA3221_FLAG_TIMING_CONTROL  \
+#define INA3221_FLAGS_MASK              (INA3221_FLAG_CRIT_ALERT_CH1       \
+                                         | INA3221_FLAG_CRIT_ALERT_CH2     \
+                                         | INA3221_FLAG_CRIT_ALERT_CH3     \
+                                         | INA3221_FLAG_SHUNT_SUM_ALERT    \
+                                         | INA3221_FLAG_WARN_ALERT_CH1     \
+                                         | INA3221_FLAG_WARN_ALERT_CH2     \
+                                         | INA3221_FLAG_WARN_ALERT_CH3     \
+                                         | INA3221_FLAG_POWER_VALID        \
+                                         | INA3221_FLAG_TIMING_CONTROL     \
                                          | INA3221_FLAG_CONV_READY)      /**< Flags bit mask*/
 
 /**
@@ -1098,7 +1098,7 @@ void ina3221_ch_align(ina3221_channel_t ch, const void *in_res, void *out_res,
  *
  * @param       dev Device handle
  */
-#define INA3221_TRIGGER_BUS(dev) \
+#define INA3221_TRIGGER_BUS(dev)   \
     ina3221_set_mode(dev, INA3221_MODE_TRIGGER_BUS_ONLY)
 
 /**
