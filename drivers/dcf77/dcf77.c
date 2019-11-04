@@ -60,7 +60,8 @@ static void _level_cb_high(dcf77_t *dev)
                 DCF77_PULSE_START_HIGH_THRESHOLD) {
                 memset(&dev->bitseq.bits, 0, sizeof(dev->bitseq.bits));
                 dev->internal_state = DCF77_STATE_RX;
-            } else {
+            }
+            else {
                 dev->internal_state = DCF77_STATE_IDLE;
             }
             break;
@@ -127,7 +128,8 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params)
     dev->params = *params;
     dev->internal_state = DCF77_STATE_IDLE;
     dev->bitCounter = 0;
-    if (!gpio_init_int(dev->params.pin, dev->params.in_mode, GPIO_BOTH, _level_cb, dev)) {
+    if (!gpio_init_int(dev->params.pin, dev->params.in_mode, GPIO_BOTH,
+                       _level_cb, dev)) {
         return DCF77_OK;
     }
     else {

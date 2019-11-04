@@ -25,8 +25,7 @@
 int main(void)
 {
     dcf77_t sensor;
-    struct tm time={0};
-    char outstr[200];
+    struct tm time;
 
     printf("DCF77 test application\n");
 
@@ -35,14 +34,15 @@ int main(void)
         puts("Initialization failed\n");
         return -1;
     }
+    memset(&time, 0, sizeof(time));
     printf("DCF77 Module initialized \n");
 
-while(1){
-    dcf77_get_time(&sensor,&time);
-    strftime(outstr, sizeof(outstr), "Weekday:%u %d.%m.%Y %H:%M", &time);
-    puts(outstr);
-    xtimer_sleep(20);
-
+    while (1) {
+        dcf77_get_time(&sensor, &time);
+        printf("%d %d.%d.%d %d:%d", time.tm_wday, time.tm_mday,
+               (time.tm_mon + 1), (time.tm_year + 1900), time.tm_hour,
+               time.tm_min);
+        xtimer_sleep(20);
     }
     return 0;
 }
