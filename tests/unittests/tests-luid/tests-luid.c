@@ -12,32 +12,6 @@
 
 #include "tests-luid.h"
 
-/* provide custom luid_base to test weak linking */
-static const uint8_t hw_mac[] = {
-    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77
-};
-
-/* custom implementation of luid_base() */
-size_t luid_get_eui64_custom(eui64_t *addr, uint8_t idx)
-{
-    if (idx > 0) {
-        return 0;
-    }
-
-    memcpy(addr, hw_mac, sizeof(*addr));
-    return sizeof(hw_mac);
-}
-
-static void test_luid_is_hw_mac(void)
-{
-    eui64_t addr;
-    luid_get_eui64(&addr);
-
-    TEST_ASSERT_EQUAL_INT(0, addr.uint8[0] & 0x1);
-    TEST_ASSERT_EQUAL_INT(2, addr.uint8[0] & 0x2);
-    TEST_ASSERT_EQUAL_INT(0, memcmp(addr.uint8 + 1, hw_mac + 1, sizeof(addr) - 1));
-}
-
 static void test_luid_uniqe_eui64(void)
 {
     eui64_t mac[3];
@@ -79,7 +53,6 @@ static void test_luid_custom(void)
 Test *tests_luid_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_luid_is_hw_mac),
         new_TestFixture(test_luid_uniqe_eui48),
         new_TestFixture(test_luid_uniqe_eui64),
         new_TestFixture(test_luid_custom),
