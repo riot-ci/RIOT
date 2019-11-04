@@ -28,6 +28,7 @@ static void _test_equal_tm(const struct tm *a, const struct tm *b)
     TEST_ASSERT_EQUAL_INT((a)->tm_year, (b)->tm_year);
     TEST_ASSERT_EQUAL_INT((a)->tm_wday, (b)->tm_wday);
     TEST_ASSERT_EQUAL_INT((a)->tm_yday, (b)->tm_yday);
+    TEST_ASSERT_EQUAL_INT(0, rtc_tm_compare(a, b));
 }
 
 static void test_rtc_compat(void)
