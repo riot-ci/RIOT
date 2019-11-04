@@ -101,9 +101,8 @@ void luid_get_short(network_uint16_t *addr);
 /**
  * @brief   Get a unique EUI48 address
  *
- * If no board-specific MAC is availiabe, the resulting address is built from
- * the base ID generated with luid_base(), which isXORed with an 8-bit
- * incrementing counter value into the least significant byte.
+ * The resulting address is built from the base ID generated with luid_base(), which
+ * isXORed with an 8-bit incrementing counter value into the least significant byte.
  *
  * @note    The resulting address will repeat after 255 calls.
  *
@@ -114,9 +113,8 @@ void luid_get_eui48(eui48_t *addr);
 /**
  * @brief   Get a unique EUI64 address
  *
- * If no board-specific MAC is availiabe, the resulting address is built from
- * the base ID generated with luid_base(), which isXORed with an 8-bit
- * incrementing counter value into the least significant byte.
+ * The resulting address is built from the base ID generated with luid_base(), which
+ * isXORed with an 8-bit incrementing counter value into the least significant byte.
  *
  * @note    The resulting address will repeat after 255 calls.
  *
