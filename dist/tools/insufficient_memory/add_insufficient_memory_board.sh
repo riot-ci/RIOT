@@ -22,7 +22,7 @@ for i in $PROJECTS; do
     test=$(dirname $(realpath $i));
     if make BOARD=$BOARD -j -C $test 2>&1 >/dev/null | grep -e overflowed -e "not within region" > /dev/null; then
         echo $(basename $test) is too big for $BOARD
-        make -C $(dirname $0) DIR=$test BOARD=$BOARD Makefile.ci > /dev/null
+        make -f Makefile.for_sh -C $(dirname $0) DIR=$test BOARD=$BOARD Makefile.ci > /dev/null
     else
         echo $(basename $test) is OK
     fi
