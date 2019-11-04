@@ -19,11 +19,9 @@
  */
 
 #include <errno.h>
-
 #include "phydat.h"
 #include "saul.h"
 #include "ina3221.h"
-
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
