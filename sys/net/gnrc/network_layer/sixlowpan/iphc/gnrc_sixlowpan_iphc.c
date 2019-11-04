@@ -682,6 +682,19 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     return;
 }
 
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_sixlowpan_frag_vrb_t *vrbe,
+                         gnrc_pktsnip_t *frag_hdr, unsigned page)
+{
+    /* TODO */
+    (void)pkt;
+    (void)vrbe;
+    (void)frag_hdr;
+    (void)page;
+    return -ENOTSUP;
+}
+#endif
+
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC_NHC
 static inline size_t iphc_nhc_udp_encode(uint8_t *nhc_data,
                                          const gnrc_pktsnip_t *udp)
