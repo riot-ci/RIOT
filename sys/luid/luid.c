@@ -87,7 +87,6 @@ void luid_get_eui64(eui64_t *addr)
     luid_base(addr, sizeof(*addr));
     addr->uint8[7] ^= lastused++;
 
-     /* make sure we mark the address as non-multicast and not globally unique */
-    addr->uint8[0] &= ~(0x01);
-    addr->uint8[0] |=  (0x02);
+    eui64_set_local(addr);
+    eui64_clear_group(addr);
 }
