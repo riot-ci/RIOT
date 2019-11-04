@@ -263,6 +263,11 @@ void auto_init(void)
     auto_init_ethos();
 #endif
 
+#ifdef MODULE_ETHOCAN
+    extern void auto_init_ethocan(void);
+    auto_init_ethocan();
+#endif
+
 #ifdef MODULE_SLIPDEV
     extern void auto_init_slipdev(void);
     auto_init_slipdev();
