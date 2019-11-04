@@ -644,9 +644,6 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
                                           * now */
             }
             else {
-                if (ipv6 != NULL) {
-                    gnrc_pktbuf_release(ipv6);
-                }
                 gnrc_sixlowpan_frag_vrb_rm(vrbe);
             }
             gnrc_pktbuf_release(sixlo);
@@ -719,13 +716,13 @@ static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
     DEBUG("Original fragmentation header:\n");
     od_hex_dump(frag_hdr->data, frag_hdr->size, OD_WIDTH_DEFAULT);
     DEBUG("IPHC headers + payload:\n");
-    pkt = pkt->next;    /* don't print netif header */
-    while (pkt) {
-        od_hex_dump(pkt->data, pkt->size, OD_WIDTH_DEFAULT);
-        pkt = pkt->next;
+    frag_hdr = pkt->next;    /* don't print netif header */
+    while (frag_hdr) {
+        od_hex_dump(frag_hdr->data, frag_hdr->size, OD_WIDTH_DEFAULT);
+        frag_hdr = frag_hdr->next;
     }
 #endif
-    (void)pkt;
+    gnrc_pktbuf_release(pkt);
     (void)frag_hdr;
     (void)page;
     return -ENOTSUP;
