@@ -20,7 +20,7 @@
  */
 
 #include <errno.h>
-#include <periph/gpio.h>
+#include "periph/gpio.h"
 #include "ina3221.h"
 
 int _ina3221_enable_alert(ina3221_t *dev, ina3221_alert_t alert,

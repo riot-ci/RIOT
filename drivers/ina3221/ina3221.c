@@ -22,14 +22,13 @@
 
 #include <errno.h>
 #include <string.h>
-#include <byteorder.h>
-#define ENABLE_DEBUG (0)
-#include "debug.h"
-
+#include "byteorder.h"
 #include "ina3221_internal.h"
 #include "ina3221_params.h"
 #include "ina3221_regs.h"
 #include "ina3221.h"
+#define ENABLE_DEBUG (0)
+#include "debug.h"
 
 typedef struct {
     uint8_t chi_reg_shunt;

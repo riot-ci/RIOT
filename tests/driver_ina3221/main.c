@@ -18,9 +18,9 @@
  * @}
  */
 
-#include <periph/gpio.h>
-#include <xtimer.h>
-#include "string.h"
+#include <string.h>
+#include "periph/gpio.h"
+#include "xtimer.h"
 #include "fmt.h"
 #include "ina3221_internal.h"
 #include "ina3221_params.h"
