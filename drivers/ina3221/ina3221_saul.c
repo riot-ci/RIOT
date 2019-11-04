@@ -155,22 +155,22 @@ static int configure_channel_sum(const void *dev, phydat_t *data)
 }
 
 const saul_driver_t ina3221_saul_drivers[] = {
-    (saul_driver_t) {
+    {
         .read = read_bus_voltage,
         .write = configure_channel,
         .type = SAUL_SENSE_VOLTAGE
     },
-    (saul_driver_t) {
+    {
         .read = read_current,
         .write = configure_channel,
         .type = SAUL_SENSE_CURRENT
     },
-    (saul_driver_t) {
+    {
         .read = read_power,
         .write = configure_channel,
         .type = SAUL_SENSE_POWER
     },
-    (saul_driver_t) {
+    {
         .read = read_shunt_voltage_sum,
         .write = configure_channel_sum,
         .type = SAUL_SENSE_VOLTAGE

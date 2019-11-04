@@ -236,11 +236,11 @@ typedef struct {
             gpio_t pin_crit;                        /**< Critical alert pin, becomes configured as input*/
             gpio_t pin_tc;                          /**< Timing control alert pin, becomes configured as input*/
             gpio_t pin_pv;                          /**< Power valid alert pin, becomes configured as input*/
-        };
+        } pins;
         struct {
             gpio_t alert_pins[INA3221_NUM_ALERTS];  /**< Array to access alert pins via an index */
-        };
-    };
+        } apins;
+    } upins;
     /*
         For each pin 1 bit states whether to use internal pull up resistors.
         d = don´t care

@@ -20,6 +20,7 @@
 #ifndef INA3221_INTERNAL_H
 #define INA3221_INTERNAL_H
 
+#include <assert.h>
 #include "ina3221_defines.h"
 #include "ina3221.h"
 
