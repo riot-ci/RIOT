@@ -22,12 +22,14 @@
 #include "net/gnrc.h"
 #include "net/gnrc/netif/ieee802154.h"
 #include "net/gnrc/sixlowpan.h"
+#include "net/gnrc/sixlowpan/frag/rb.h"
+#include "net/gnrc/sixlowpan/frag/vrb.h"
 #include "net/gnrc/ipv6/nib.h"
 #include "net/netdev_test.h"
 #include "thread.h"
 
-#define TEST_DST    { 0x5a, 0x9d, 0x93, 0x86, 0x22, 0x08, 0x65, 0x79 }
-#define TEST_SRC    { 0x2a, 0xab, 0xdc, 0x15, 0x54, 0x01, 0x64, 0x79 }
+#define TEST_DST        { 0x5a, 0x9d, 0x93, 0x86, 0x22, 0x08, 0x65, 0x79 }
+#define TEST_SRC        { 0x2a, 0xab, 0xdc, 0x15, 0x54, 0x01, 0x64, 0x79 }
 #define TEST_6LO_PAYLOAD { \
         /* 6LoWPAN, Src: 2001:db8::1, Dest: 2001:db8::2
          *    Fragmentation Header
@@ -86,8 +88,9 @@
         0x53, 0x53, 0x53, 0x53, 0x53, 0x53, 0x53, 0x53, \
         0x53, 0x53, 0x53, 0x53, 0x53, 0x53, 0x53, 0x53, \
     }
-#define TEST_TGT_IPV6    { 0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-                           0x48, 0x3d, 0x1d, 0x0c, 0x98, 0x31, 0x58, 0xae }
+#define TEST_TAG        (0x000f)
+#define TEST_TGT_IPV6   { 0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
+                          0x48, 0x3d, 0x1d, 0x0c, 0x98, 0x31, 0x58, 0xae }
 
 const uint8_t _test_src[] = TEST_SRC;
 const uint8_t _test_dst[] = TEST_DST;
@@ -98,7 +101,6 @@ static char _mock_netif_stack[THREAD_STACKSIZE_DEFAULT];
 static netdev_test_t _mock_dev;
 static gnrc_netif_t *_mock_netif;
 
-
 void _set_up(void)
 {
     /* Add default route for the VRB entry created from */
@@ -108,6 +110,8 @@ void _set_up(void)
 void _tear_down(void)
 {
     gnrc_ipv6_nib_ft_del(NULL, 0);
+    gnrc_sixlowpan_frag_rb_reset();
+    gnrc_sixlowpan_frag_vrb_reset();
 }
 
 gnrc_pktsnip_t *_create_fragment(void)
@@ -126,6 +130,7 @@ gnrc_pktsnip_t *_create_fragment(void)
 void test_recv__success(void)
 {
     gnrc_pktsnip_t *pkt = _create_fragment();
+    const gnrc_sixlowpan_frag_rb_t *rb = gnrc_sixlowpan_frag_rb_array();
 
     TEST_ASSERT_NOT_NULL(pkt);
     TEST_ASSERT_EQUAL_INT(
@@ -134,6 +139,49 @@ void test_recv__success(void)
                                             pkt)
         );
     thread_yield_higher();
+    /* A VRB entry exists */
+    TEST_ASSERT_NOT_NULL(gnrc_sixlowpan_frag_vrb_get(_test_src,
+                                                     sizeof(_test_src),
+                                                     TEST_TAG));
+    /* and the reassembly buffer is empty */
+    for (unsigned i = 0; i < GNRC_SIXLOWPAN_FRAG_RBUF_SIZE; i++) {
+        TEST_ASSERT(gnrc_sixlowpan_frag_rb_entry_empty(&rb[i]));
+    }
+    TEST_ASSERT(gnrc_pktbuf_is_empty());
+}
+
+void test_recv__no_route(void)
+{
+    gnrc_pktsnip_t *pkt = _create_fragment();
+    const gnrc_sixlowpan_frag_rb_t *rb = gnrc_sixlowpan_frag_rb_array();
+    unsigned rbs = 0;
+
+    gnrc_ipv6_nib_ft_del(NULL, 0);
+    TEST_ASSERT_NOT_NULL(pkt);
+    TEST_ASSERT_EQUAL_INT(
+            1, gnrc_netapi_dispatch_receive(GNRC_NETTYPE_SIXLOWPAN,
+                                            GNRC_NETREG_DEMUX_CTX_ALL,
+                                            pkt)
+        );
+    thread_yield_higher();
+    /* No VRB entry was created */
+    TEST_ASSERT_NULL(gnrc_sixlowpan_frag_vrb_get(_test_src,
+                                                 sizeof(_test_src),
+                                                 TEST_TAG));
+    /* and one reassembly buffer entry exists with the source and tag exists */
+    for (unsigned i = 0; i < GNRC_SIXLOWPAN_FRAG_RBUF_SIZE; i++) {
+        if (!gnrc_sixlowpan_frag_rb_entry_empty(&rb[i])) {
+            rbs++;
+            TEST_ASSERT_EQUAL_INT(sizeof(_test_src), rb[i].super.src_len);
+            TEST_ASSERT_EQUAL_INT(0, memcmp(rb[i].super.src, _test_src,
+                                            rb[i].super.src_len));
+            TEST_ASSERT_EQUAL_INT(TEST_TAG, rb[i].super.tag);
+            /* release packet for packet buffer check */
+            gnrc_pktbuf_release(rb[i].pkt);
+
+        }
+    }
+    TEST_ASSERT_EQUAL_INT(1, rbs);
     TEST_ASSERT(gnrc_pktbuf_is_empty());
 }
 
@@ -141,6 +189,7 @@ static void run_unittests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(test_recv__success),
+        new_TestFixture(test_recv__no_route),
     };
 
     EMB_UNIT_TESTCALLER(sixlo_iphc_vrb_tests, _set_up, _tear_down, fixtures);
