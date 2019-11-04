@@ -110,11 +110,11 @@ static const uart_conf_t uart_config[] = {
         .pinsel_rx   = 9,
         .pinsel_tx   = 9,
         .pinsel_msk_rx = BIT26 | BIT27,
-        .pinsel_msk_tx = BIT28 | BIT29,
+        .pinsel_msk_tx = BIT24 | BIT25,
     },
 };
 
-#define UART_NUMOF          (1)
+#define UART_NUMOF          (4)
 /** @} */
 
 /**
