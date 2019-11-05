@@ -134,8 +134,8 @@ void rtc_tm_normalize(struct tm *time);
 /**
  * @brief Compare two time structs.
  *
- * @note  The time structs @p a and @p b are assumed to be normalized.
- *        Use @see rtc_tm_normalize to normalize a struct tm that has been
+ * @pre   The time structs @p a and @p b are assumed to be normalized.
+ *        Use @ref rtc_tm_normalize to normalize a struct tm that has been
  *        manually edited.
  *
  * @param[in] a       The first time struct.
