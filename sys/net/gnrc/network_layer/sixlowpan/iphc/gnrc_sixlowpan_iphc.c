@@ -607,7 +607,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             }
         }
         /* reallocate to copy complete payload */
-        else if (gnrc_pktbuf_realloc_data(ipv6, sizeof(ipv6_hdr_t) + payload_len) != 0) {
+        else if (gnrc_pktbuf_realloc_data(ipv6, rbuf->super.datagram_size) != 0) {
             DEBUG("6lo iphc: no space left to reassemble payload\n");
             _recv_error_release(sixlo, ipv6, rbuf);
             return;
