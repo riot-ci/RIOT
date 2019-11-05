@@ -1010,15 +1010,16 @@ static void test_crypto_modes_ccm_check_len(void)
     int ret;
 
     /* Just 1 to big to fit */
-    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 0);
+    uint32_t len = (uint32_t)1 << 16;
+    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, len, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
-    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, 1 << 16, 0);
+    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, len, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
 
     /* adata_len should not change the result (was wrong in previous implem) */
-    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 65535);
+    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, len, 65535);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
-    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, 1 << 16, 65535);
+    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, len, 65535);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
 
     /* Valid length that were wrongly checked */
