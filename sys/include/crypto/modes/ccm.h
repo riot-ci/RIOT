@@ -61,7 +61,7 @@ int cipher_encrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
-                       const uint8_t *input, int32_t input_len,
+                       const uint8_t *input, uint32_t input_len,
                        uint8_t *output);
 
 
@@ -90,7 +90,7 @@ int cipher_decrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
-                       const uint8_t *input, int32_t input_len,
+                       const uint8_t *input, uint32_t input_len,
                        uint8_t *output);
 
 #ifdef __cplusplus

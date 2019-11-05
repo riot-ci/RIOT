@@ -136,12 +136,12 @@ int ccm_compute_adata_mac(cipher_t *cipher, const uint8_t *auth_data,
 
 
 /* Check if 'value' can be stored in 'num_bytes' */
-static inline int _fits_in_nbytes(int32_t value, uint8_t num_bytes)
+static inline int _fits_in_nbytes(uint32_t value, uint8_t num_bytes)
 {
     /* Not allowed to shift more or equal than left operand width
      * So we shift by maximum num bits of size_t -1 and compare to 1
      */
-    unsigned shift = (8 * min(sizeof(int32_t), num_bytes)) - 1;
+    unsigned shift = (8 * min(sizeof(uint32_t), num_bytes)) - 1;
 
     return (value >> shift) <= 1;
 }
@@ -151,7 +151,7 @@ int cipher_encrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
-                       const uint8_t *input, int32_t input_len,
+                       const uint8_t *input, uint32_t input_len,
                        uint8_t *output)
 {
     int len = -1;
@@ -215,7 +215,7 @@ int cipher_decrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
-                       const uint8_t *input, int32_t input_len,
+                       const uint8_t *input, uint32_t input_len,
                        uint8_t *plain)
 {
     int len = -1;
