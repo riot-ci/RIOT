@@ -982,10 +982,10 @@ static void test_crypto_modes_ccm_decrypt(void)
 
 typedef int (*func_ccm_t)(cipher_t *, const uint8_t *, uint32_t,
                           uint8_t, uint8_t, const uint8_t *, size_t,
-                          const uint8_t *, int32_t, uint8_t *);
+                          const uint8_t *, uint32_t, uint8_t *);
 
 static int _test_ccm_len(func_ccm_t func, uint8_t len_encoding,
-                         const uint8_t *input, int32_t input_len,
+                         const uint8_t *input, uint32_t input_len,
                          size_t adata_len)
 {
     int ret;
