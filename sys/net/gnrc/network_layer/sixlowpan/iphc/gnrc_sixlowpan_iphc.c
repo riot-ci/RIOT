@@ -581,6 +581,8 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
 #endif
     uint16_t payload_len;
     if (rbuf != NULL) {
+        /* for a fragmented datagram we know the overall length already */
+        payload_len = (uint16_t)(rbuf->super.datagram_size - sizeof(ipv6_hdr_t));
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
         DEBUG("6lo iphc: VRB present, trying to create entry for dst %s\n",
               ipv6_addr_to_str(addr_str, &ipv6_hdr->dst, sizeof(addr_str)));
@@ -605,15 +607,12 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             }
         }
         /* reallocate to copy complete payload */
-        else if (gnrc_pktbuf_realloc_data(ipv6,
-                                          rbuf->super.datagram_size) != 0) {
+        else if (gnrc_pktbuf_realloc_data(ipv6, sizeof(ipv6_hdr_t) + payload_len) != 0) {
             DEBUG("6lo iphc: no space left to reassemble payload\n");
             _recv_error_release(sixlo, ipv6, rbuf);
             return;
         }
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
-        /* for a fragmented datagram we know the overall length already */
-        payload_len = (uint16_t)(rbuf->super.datagram_size - sizeof(ipv6_hdr_t));
     }
     else {
         /* set IPv6 header payload length field to the length of whatever is left
