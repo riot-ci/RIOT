@@ -134,7 +134,8 @@ struct gnrc_netif_ops {
      * This is called after the default settings were set, right before the
      * interface's thread starts receiving messages. It is not necessary to lock
      * the interface's mutex gnrc_netif_t::mutex, since the thread will already
-     * lock it. Leave NULL if you do not need any special initialization.
+     * lock it. Set to @ref gnrc_netif_default_init() if you do not need any
+     * special initialization.
      */
     void (*init)(gnrc_netif_t *netif);
 
@@ -433,6 +434,15 @@ static inline int gnrc_netif_ipv6_group_leave(const gnrc_netif_t *netif,
     return gnrc_netapi_set(netif->pid, NETOPT_IPV6_GROUP_LEAVE, 0, group,
                            sizeof(ipv6_addr_t));
 }
+
+/**
+ * @brief   Default operation for gnrc_netif_ops_t::init()
+ *
+ * @note    Can also be used to be called *before* a custom operation.
+ *
+ * @param[in] netif     The network interface.
+ */
+void gnrc_netif_default_init(gnrc_netif_t *netif);
 
 /**
  * @brief   Default operation for gnrc_netif_ops_t::get()
