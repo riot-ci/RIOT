@@ -29,8 +29,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include "xtimer.h"
-#include "periph/gpio.h"
 #include "time.h"
+#include "periph/gpio.h"
 #include "dcf77_internal.h"
 
 #ifdef __cplusplus
@@ -76,7 +76,8 @@ typedef struct {
  * @param[out] dev      device descriptor of a DCF device
  * @param[in]  params   configuration parameters
  *
- * @retval `DCF77_OK`         Success
+ * @retval `DCF77_OK`           Success
+ * @retval `DCF77_INIT_ERROR`   Error in initialization
  */
 int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
 

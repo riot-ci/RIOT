@@ -583,6 +583,7 @@ ifneq (,$(filter xbee,$(USEMODULE)))
 endif
 
 ifneq (,$(filter dcf77,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_gpio_irq
   USEMODULE += xtimer
 endif

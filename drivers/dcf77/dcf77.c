@@ -24,11 +24,9 @@
 #include "log.h"
 #include "assert.h"
 #include "xtimer.h"
-#include "timex.h"
 #include "periph/gpio.h"
 
 #include "dcf77.h"
-#include "dcf77_internal.h"
 #include "dcf77_params.h"
 
 #define ENABLE_DEBUG    (0)
