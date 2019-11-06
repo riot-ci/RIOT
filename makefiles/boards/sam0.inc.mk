@@ -47,9 +47,7 @@ endif
 # this board uses J-Link for debug and possibly flashing
 ifeq ($(PROGRAMMER),jlink)
   include $(RIOTMAKE)/tools/jlink.inc.mk
-endif
-
+else
 # this board uses openocd for debug and possibly flashing
-ifeq ($(PROGRAMMER),openocd)
   include $(RIOTMAKE)/tools/openocd.inc.mk
 endif
