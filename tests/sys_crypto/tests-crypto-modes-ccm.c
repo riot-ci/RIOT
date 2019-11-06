@@ -982,10 +982,10 @@ static void test_crypto_modes_ccm_decrypt(void)
 
 typedef int (*func_ccm_t)(cipher_t *, const uint8_t *, uint32_t,
                           uint8_t, uint8_t, const uint8_t *, size_t,
-                          const uint8_t *, uint32_t, uint8_t *);
+                          const uint8_t *, size_t, uint8_t *);
 
 static int _test_ccm_len(func_ccm_t func, uint8_t len_encoding,
-                         const uint8_t *input, uint32_t input_len,
+                         const uint8_t *input, size_t input_len,
                          size_t adata_len)
 {
     int ret;
@@ -1009,17 +1009,22 @@ static void test_crypto_modes_ccm_check_len(void)
 {
     int ret;
 
+#if SIZE_MAX < UINT16_MAX
     /* Just 1 to big to fit */
-    uint32_t len = (uint32_t)1 << 16;
-    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, len, 0);
+    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
-    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, len, 0);
+    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, 1 << 16, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
 
     /* adata_len should not change the result (was wrong in previous implem) */
-    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, len, 65535);
+    ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 65535);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
-    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, len, 65535);
+    ret = _test_ccm_len(cipher_decrypt_ccm, 2, NULL, 1 << 16, 65535);
+    TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
+#endif
+
+    /* Invalid length when length_encoding < 2 */
+    ret = _test_ccm_len(cipher_encrypt_ccm, 1, NULL, 8, 0);
     TEST_ASSERT_EQUAL_INT(CCM_ERR_INVALID_LENGTH_ENCODING, ret);
 
     /* Valid length that were wrongly checked */
