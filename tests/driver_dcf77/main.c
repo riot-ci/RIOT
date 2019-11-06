@@ -23,7 +23,7 @@
 int main(void)
 {
     dcf77_t sensor;
-    struct tm *time;
+    struct tm time;
 
     printf("DCF77 test application\n");
 
@@ -36,10 +36,10 @@ int main(void)
     printf("DCF77 Module initialized \n");
 
     while (1) {
-        dcf77_get_time(&sensor, time);
-        printf("%d %d.%d.%d %d:%d", time->tm_wday, time->tm_mday,
-               (time->tm_mon + 1), (time->tm_year + 1900), time->tm_hour,
-               time->tm_min);
+        dcf77_get_time(&sensor, &time);
+        printf("%d %d.%d.%d %d:%d", time.tm_wday, time.tm_mday,
+               (time.tm_mon + 1), (time.tm_year + 1900), time.tm_hour,
+               time.tm_min);
         xtimer_sleep(20);
     }
     return 0;
