@@ -732,7 +732,7 @@ ipv6_addr_t *ipv6_addr_from_str(ipv6_addr_t *result, const char *addr);
 /**
  * @brief split IPv6 address string representation and return remaining string
  *
- * @note Will change @p separator position in @p addr_str to '\0'
+ * Will change @p separator position in @p addr_str to '\0'
  *
  * @param[in,out]   addr_str    Address to split
  * @param[in]       separator   Separator char to use
@@ -753,7 +753,7 @@ char *ipv6_addr_split_str(char *addr_str, char separator);
  * @return      atoi(string after split)
  * @return      @p _default if no string after @p seperator
  */
-int ipv6_addr_split(char *addr_str, char seperator, int _default);
+int ipv6_addr_split_int(char *addr_str, char seperator, int _default);
 
 /**
  * @brief split IPv6 prefix string representation
@@ -765,7 +765,7 @@ int ipv6_addr_split(char *addr_str, char seperator, int _default);
  */
 static inline int ipv6_addr_split_prefix(char *addr_str)
 {
-    return ipv6_addr_split(addr_str, '/', 128);
+    return ipv6_addr_split_int(addr_str, '/', 128);
 }
 
 /**

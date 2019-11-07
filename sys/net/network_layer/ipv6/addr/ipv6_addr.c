@@ -136,7 +136,7 @@ char *ipv6_addr_split_str(char *addr_str, char seperator)
     return sep;
 }
 
-int ipv6_addr_split(char *addr_str, char separator, int _default)
+int ipv6_addr_split_int(char *addr_str, char separator, int _default)
 {
     char *val = ipv6_addr_split_str(addr_str, separator);
     return val ? atoi(val) : _default;
