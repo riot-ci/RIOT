@@ -239,7 +239,7 @@ extern "C"
 #endif /* MODULE_PERIPH_GPIO_IRQ */
 
 #if !MODULE_PCF8574 && !MODULE_PCF8574A && !MODULE_PCF8575
-#error "Pleae provide the list of pcf857x variant used by the application (pcf8574, pcf8574a or pcf8575)"
+#error "Please provide a list of pcf857x variants used by the application (pcf8574, pcf8574a or pcf8575)"
 #endif
 
 /**
