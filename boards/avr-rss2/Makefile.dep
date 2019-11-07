@@ -1,0 +1,4 @@
+USEMODULE += boards_common_atmega
+USEMODULE += at86rfr2
+USEMODULE += bmx280
+include $(RIOTCPU)/atmega_common/Makefile.dep
