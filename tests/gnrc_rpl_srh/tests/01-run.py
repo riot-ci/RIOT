@@ -143,7 +143,7 @@ def unregister(child):
 
 def get_first_interface(child):
     child.sendline("ifconfig")
-    child.expect(r"Iface\s+(\d+)")
+    child.expect(r"Iface\s+([a-zA-Z0-9_-]+)")
     return int(child.match.group(1))
 
 

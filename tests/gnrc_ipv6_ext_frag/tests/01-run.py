@@ -246,7 +246,7 @@ def test_ipv6_ext_frag_send_full_pktbuf(child, s, iface, ll_dst):
 
 def _fwd_setup(child, ll_dst, g_src, g_dst):
     # check if interface is configured properly
-    child.sendline("ifconfig 7")
+    child.sendline("ifconfig if7")
     child.expect(r"MTU:(\d+)")
     mtu = int(child.match.group(1))
     # configure routes
@@ -259,7 +259,7 @@ def _fwd_setup(child, ll_dst, g_src, g_dst):
     child.sendline("nib neigh")
     child.expect(r"fe80::1 dev #7 lladdr\s+-")
     # get TAP MAC address
-    child.sendline("ifconfig 6")
+    child.sendline("ifconfig if6")
     child.expect("HWaddr: ([0-9A-F:]+)")
     hwaddr = child.match.group(1)
     # consume MTU for later calls of `ifconfig 7`
