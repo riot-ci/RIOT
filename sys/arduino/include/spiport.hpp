@@ -227,6 +227,9 @@ public:
     void setClockDivider(uint8_t divider);
 };
 
+/**
+ * @brief: Instance of the SPI interface as required by the Arduino API
+ */
 extern SPIClass SPI;
 
 #endif /* SPIPORT_H */
