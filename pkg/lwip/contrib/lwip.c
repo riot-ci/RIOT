@@ -38,7 +38,7 @@
 #include "socket_zep_params.h"
 #endif
 
-#if defined(MODULE_ESP_WIFI) && defined(CPU_ESP32)
+#ifdef MODULE_ESP_WIFI
 #include "esp-wifi/esp_wifi_netdev.h"
 #endif
 
@@ -63,7 +63,7 @@
 #define LWIP_NETIF_NUMOF        ARRAY_SIZE(socket_zep_params)
 #endif
 
-#if defined(MODULE_ESP_WIFI) && defined(CPU_ESP32)  /* is mutual exclusive with above ifdef */
+#ifdef MODULE_ESP_WIFI     /* is mutual exclusive with above ifdef */
 #define LWIP_NETIF_NUMOF        (1)
 #endif
 
@@ -87,7 +87,7 @@ static mrf24j40_t mrf24j40_devs[LWIP_NETIF_NUMOF];
 static socket_zep_t socket_zep_devs[LWIP_NETIF_NUMOF];
 #endif
 
-#if defined(MODULE_ESP_WIFI) && defined(CPU_ESP32)
+#ifdef MODULE_ESP_WIFI
 extern esp_wifi_netdev_t _esp_wifi_dev;
 extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
 #endif
@@ -132,7 +132,7 @@ void lwip_bootstrap(void)
             return;
         }
     }
-#elif defined(MODULE_ESP_WIFI) && defined(CPU_ESP32)
+#elif defined(MODULE_ESP_WIFI)
     esp_wifi_setup(&_esp_wifi_dev);
     if (netif_add(&netif[0], &_esp_wifi_dev, lwip_netdev_init,
                   tcpip_input) == NULL) {
