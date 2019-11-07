@@ -633,10 +633,6 @@ ifneq (,$(filter schedstatistics,$(USEMODULE)))
   USEMODULE += sched_cb
 endif
 
-ifneq (,$(filter arduino_lib,$(USEMODULE)))
-  USEMODULE += arduino
-endif
-
 ifneq (,$(filter arduino,$(USEMODULE)))
   FEATURES_REQUIRED += arduino
   FEATURES_OPTIONAL += arduino_pwm
