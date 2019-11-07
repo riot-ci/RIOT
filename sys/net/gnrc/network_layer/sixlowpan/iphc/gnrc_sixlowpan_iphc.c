@@ -591,8 +591,8 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
          * reassembly buffer so far and the hop-limit is larger than 1
          */
         if ((rbuf->super.current_size <= sixlo->size) && (ipv6_hdr->hl > 1U) &&
-            (vrbe = gnrc_sixlowpan_frag_vrb_from_route(&rbuf->super,
-                    gnrc_netif_hdr_get_netif(netif_hdr), ipv6))) {
+            (vrbe = gnrc_sixlowpan_frag_vrb_from_route(&rbuf->super, iface,
+                                                       ipv6))) {
             /* add netif header to `ipv6` so its flags can be used when
              * forwarding the fragment */
             LL_DELETE(sixlo, netif);
