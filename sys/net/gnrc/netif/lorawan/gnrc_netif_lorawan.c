@@ -163,6 +163,7 @@ static void _memcpy_reversed(uint8_t *dst, uint8_t *src, size_t size)
 
 static void _init(gnrc_netif_t *netif)
 {
+    gnrc_netif_default_init(netif);
     netif->dev->event_callback = _driver_cb;
     netif->lorawan.mac.netdev.event_callback = _mac_cb;
     netif->lorawan.mac.netdev.context = netif;
