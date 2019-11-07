@@ -12,7 +12,6 @@
  * @file
  * @author  José Ignacio Alamos <jose.alamos@haw-hamburg.de>
  */
-#include "net/gnrc/netif.h"
 #include "net/gnrc/lorawan/region.h"
 
 #define GNRC_LORAWAN_DATARATES_NUMOF 6

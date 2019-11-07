@@ -15,7 +15,6 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include "net/gnrc/netif.h"
 #include "net/lora.h"
 #include "net/gnrc/lorawan.h"
 #include "errno.h"
