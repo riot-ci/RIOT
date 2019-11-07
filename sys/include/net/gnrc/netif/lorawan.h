@@ -27,25 +27,25 @@ extern "C" {
 /**
  * @brief   A Link Check request was scheduled
  */
-#define GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK                (0x00020000U)
+#define GNRC_NETIF_LORAWAN_FLAGS_LINK_CHECK                (0x1U)
 
 /**
  * @brief   GNRC LoRaWAN interface descriptor
  */
 typedef struct {
-    gnrc_lorawan_t mac;                     /**< gnrc lorawan mac descriptor */
     uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];   /**< network SKey buffer */
     uint8_t appskey[LORAMAC_APPSKEY_LEN];   /**< App SKey buffer */
+    uint8_t appkey[LORAMAC_APPKEY_LEN];     /**< App Key buffer */
+    uint8_t deveui[LORAMAC_DEVEUI_LEN];     /**< Device EUI buffer */
+    uint8_t appeui[LORAMAC_APPEUI_LEN];     /**< App EUI buffer */
+    gnrc_lorawan_t mac;                     /**< gnrc lorawan mac descriptor */
     uint8_t flags;                          /**< flags for the LoRaWAN interface */
     uint8_t demod_margin;                   /**< value of last demodulation margin */
     uint8_t num_gateways;                   /**< number of gateways of last link check */
     uint8_t datarate;                       /**< LoRaWAN datarate for the next transmission */
     uint8_t port;                           /**< LoRaWAN port for the next transmission */
-    uint8_t deveui[LORAMAC_DEVEUI_LEN];     /**< Device EUI buffer */
-    uint8_t appeui[LORAMAC_APPEUI_LEN];     /**< App EUI buffer */
-    uint8_t appkey[LORAMAC_APPKEY_LEN];     /**< App Key buffer */
-    int ack_req;                            /**< Request ACK in the next transmission */
-    int otaa;                               /**< wether the next transmission is OTAA or not */
+    uint8_t ack_req;                        /**< Request ACK in the next transmission */
+    uint8_t otaa;                           /**< wether the next transmission is OTAA or not */
 } gnrc_netif_lorawan_t;
 
 #ifdef __cplusplus
