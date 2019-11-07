@@ -34,6 +34,9 @@ extern "C"
 #ifndef HD44780_PARAM_ROWS
 #define HD44780_PARAM_ROWS              (2U)
 #endif
+
+#ifndef MODULE_PCF857X
+
 #ifndef HD44780_PARAM_PIN_RS
 #define HD44780_PARAM_PIN_RS            GPIO_PIN(0, 14)         /* Arduino D2 */
 #endif
@@ -53,6 +56,30 @@ extern "C"
                                             GPIO_UNDEF,                           \
                                             GPIO_UNDEF }
 #endif
+
+#else /* !MODULE_PCF857X */
+
+#ifndef HD44780_PARAM_PIN_RS
+#define HD44780_PARAM_PIN_RS            PCF857X_GPIO_PIN(0, 0)      /* Bit 0 */
+#endif
+#ifndef HD44780_PARAM_PIN_RW
+#define HD44780_PARAM_PIN_RW            PCF857X_GPIO_PIN(0, 1)      /* Bit 1 */
+#endif
+#ifndef HD44780_PARAM_PIN_ENABLE
+#define HD44780_PARAM_PIN_ENABLE        PCF857X_GPIO_PIN(0, 2)      /* Bit 2 */
+#endif
+#ifndef HD44780_PARAM_PINS_DATA
+#define HD44780_PARAM_PINS_DATA         {   PCF857X_GPIO_PIN(0, 4), /* Bit 4 */  \
+                                            PCF857X_GPIO_PIN(0, 5), /* Bit 5 */  \
+                                            PCF857X_GPIO_PIN(0, 6), /* Bit 6 */  \
+                                            PCF857X_GPIO_PIN(0, 7), /* Bit 7 */  \
+                                            GPIO_UNDEF,                          \
+                                            GPIO_UNDEF,                          \
+                                            GPIO_UNDEF,                          \
+                                            GPIO_UNDEF }
+#endif
+
+#endif /* !MODULE_PCF857X */
 
 #ifndef HD44780_PARAMS
 #define HD44780_PARAMS               {  .cols   = HD44780_PARAM_COLS,       \
