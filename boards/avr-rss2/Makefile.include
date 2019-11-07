@@ -11,9 +11,6 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 PROGRAMMER ?= stk500v2
 # 
 # see /usr/include/asm-generic/termbits.h for availabel baudrates on your linux system
-#FFLAGS_EXTRA += -b 0010005
-# avoid error if mcu signature doesn't match
-#FFLAGS_EXTRA += -F
 
 # From current fuse configuration
 BOOTLOADER_SIZE ?= 4K
