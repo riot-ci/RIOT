@@ -1,627 +1,1366 @@
 /*
- * Copyright (C) 2014 Hamburg University of Applied Sciences
+ * Copyright (C) 2019 Otto-von-Guericke-Universität Magdeburg
  *
- * This file is subject to the terms and conditions of the GNU Lesser General
- * Public License v2.1. See the file LICENSE in the top level directory for more
- * details.
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
  */
-
 /**
- * @defgroup    drivers_nrf24l01p NRF24L01+ driver interface
+ * @defgroup    drivers_nrf24l01p NRF24L01P 2.4 GHz trasceiver driver
  * @ingroup     drivers_netdev
  *
- * @brief       Low-level driver for nrf24l01+ transceiver
+ * This module contains the driver for the NRF24L01P 2.4 GHz
+ * transceiver.
  *
  * @{
  * @file
+ * @brief   Public interface for NRF24L01P devices
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
- *
+ * @author  Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author  Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
+ * @author  Fabian Hüßler <fabian.huessler@ovgu.de>
  */
-
 #ifndef NRF24L01P_H
 #define NRF24L01P_H
+
+#include <stdint.h>
+
+#include "net/gnrc/nettype.h"
+#include "net/netdev.h"
+#include "periph/gpio.h"
+#include "periph/spi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stdio.h>
-#include "periph/gpio.h"
-#include "periph/spi.h"
+/**
+ * @brief   Maximum width of a payload, restricted by
+ *          a FIFO size of 32 bytes
+ */
+#define NRF24L01P_MAX_PAYLOAD_WIDTH         (32)
 
 /**
- * @brief   Structure that represents the hardware setup of the nrf24l01+ transceiver.
+ * @brief   Supported number of frequency channels
+ */
+#define NRF24L01P_NUM_CHANNELS              (16)
+
+/**
+ * @brief   Minimum width of a NRF24L01P layer-2 address
+ */
+#define NRF24L01P_MIN_ADDR_WIDTH            (3)
+
+/**
+ * @brief   Maximum width of a NRF24L01P layer-2 address
+ */
+#define NRF24L01P_MAX_ADDR_WIDTH            (5)
+
+/**
+ * @brief   Maximum number of retransmissions, if
+ *          ESB is used as protocol
+ */
+#define NRF24L01P_MAX_RETRANSMISSIONS       (15)
+
+/**
+ * @brief   Base frequency
+ */
+#define NRF24L01P_BASE_FRQ_MHZ              (2400)
+
+/**
+ * @brief   Maximum supported frequency
+ */
+#define NRF24L01P_MAX_FRQ_MHZ               (2525)
+
+/**
+ * @brief   Address that instructs the driver to auto generate
+ *          a layer-2 address for pipe 0 and pipe 1
+ *          @see module_luid
+ */
+#define NRF24L01P_L2ADDR_AUTO               { 0x00, 0x00, 0x00, 0x00, 0x00 }
+
+/**
+ * @brief   Address that instructs the driver to auto generate
+ *          a leyer-2 address for pipe 2, pipe 3, pipe 4 and pipe 5
+ *          @see module_luid
+ */
+#define NRF24L01P_L2ADDR_UNDEF              (0x00)
+
+/**
+ * @brief   Reset value of TX_ADDR register
+ */
+#define NRF24L01P_DEFAULT_TX_ADDR           { 0xE7, 0xE7, 0xE7, 0xE7, 0xE7 }
+
+/**
+ * @brief   Reset value of RX_ADDR_P0 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P0         { 0xE7, 0xE7, 0xE7, 0xE7, 0xE7 }
+
+/**
+ * @brief   Reset value of RX_ADDR_P1 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P1         { 0xC2, 0xC2, 0xC2, 0xC2, 0xC2 }
+
+/**
+ * @brief   Reset value of RX_ADDR_P2 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P2         (0xC3)
+
+/**
+ * @brief   Reset value of RX_ADDR_P3 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P3         (0xC4)
+
+/**
+ * @brief   Reset value of RX_ADDR_P4 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P4         (0xC5)
+
+/**
+ * @brief   Reset value of RX_ADDR_P5 register
+ */
+#define NRF24L01P_DEFAULT_L2ADDR_P5         (0xC6)
+
+/**
+ * @brief   Agreed layer-2 address to send broadcast frames to
+ *
+ * A node that wants to receive broadcast frames must set it´s
+ * pipe 1 address to that address.
+ */
+#define NRF24L01P_BROADCAST_ADDR            { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }
+
+#ifdef MODULE_GNRC_SIXLOWPAN
+/**
+ * @brief   @ref gnrc_nettype_t of upper layer
+ */
+#define NRF24L01P_UPPER_LAYER_PROTOCOL      (GNRC_NETTYPE_SIXLOWPAN)
+/**
+ * @brief   Put source layer-2 address in custom header to
+ *          be able to use 6LoWPAN
+ */
+#define NRF24L01P_CUSTOM_HEADER
+/**
+ * @brief   Layer-2 MTU
+ */
+#define NRF24L01P_MTU                       (NRF24L01P_MAX_PAYLOAD_WIDTH - \
+                                             (1 + NRF24L01P_MAX_ADDR_WIDTH))
+#else
+/**
+ * @brief   @ref gnrc_nettype_t of upper layer
+ */
+#define NRF24L01P_UPPER_LAYER_PROTOCOL      (GNRC_NETTYPE_UNDEF)
+/**
+ * @brief Layer-2 MTU
+ */
+#define NRF24L01P_MTU                       NRF24L01P_MAX_PAYLOAD_WIDTH
+#endif
+
+/**
+ * @brief ShockBurst
+ */
+#define NRF24L01P_SHOCKBURST                (0)
+
+/**
+ * @brief   Enhanded ShockBurst
+ */
+#define NRF24L01P_ENHANCED_SHOCKBURST       (1)
+
+/**
+ * @brief NRF24L01P operation states
+ */
+typedef enum nrf24l01p_state {
+    NRF24L01P_STATE_UNDEFINED   =   2,      /**< State right after voltage supply */
+    NRF24L01P_STATE_POWER_DOWN  =   4,      /**< Register values are available and maintained, SPI active*/
+    NRF24L01P_STATE_STANDBY_1   =   8,      /**< Idle*/
+    NRF24L01P_STATE_STANDBY_2   =  16,      /**< TX FIFO empty, fill up TX FIFO again*/
+    NRF24L01P_STATE_RX_MODE     =  32,      /**< Baseband protocol engine constantly searches for a valid packet */
+    NRF24L01P_STATE_TX_MODE     =  64,      /**< Transmit next packet */
+} nrf24l01p_state_t;
+
+/**
+ * @brief   Possible protocols for NRF24L01P
+ */
+typedef enum {
+    NRF24L01P_PROTOCOL_SB   = NRF24L01P_SHOCKBURST,         /**< ShockBurst */
+    NRF24L01P_PROTOCOL_ESB  = NRF24L01P_ENHANCED_SHOCKBURST /**< EnhancedShockBurst */
+} nrf24l01p_protocol_t;
+
+/**
+ * @brief   Enumeration of NRF24L01P data pipes
+ */
+typedef enum {
+    NRF24L01P_P0    = 0,    /**< Pipe 0 */
+    NRF24L01P_P1    = 1,    /**< Pipe 1 */
+    NRF24L01P_P2    = 2,    /**< Pipe 2 */
+    NRF24L01P_P3    = 3,    /**< Pipe 3 */
+    NRF24L01P_P4    = 4,    /**< Pipe 4 */
+    NRF24L01P_P5    = 5,    /**< Pipe 5 */
+    NRF24L01P_PX_NUM_OF     /**< Number of supported pipes */
+} nrf24l01p_pipe_t;
+
+/**
+ * @brief   Possible values to configure the layer-2 address width
+ */
+typedef enum {
+    NRF24L01P_AW_3byte  = 1,        /**< value to use a 3 bytes long layer-2 address */
+    NRF24L01P_AW_4byte  = 2,        /**< value to use a 4 bytes long layer-2 address */
+    NRF24L01P_AW_5byte  = 3,        /**< value to use a 5 bytes long layer-2 address */
+    NRF24L01P_AW_NUM_OF             /**< Number of possible values to configure the layer-2 address width */
+} nrf24l01p_aw_t;
+
+/**
+ * @brief   Possible values to configure the retransmission delay in ESB
+ */
+typedef enum {
+    NRF24L01P_ARD_250us     = 0,    /**< 250 us */
+    NRF24L01P_ARD_500us     = 1,    /**< 500 us */
+    NRF24L01P_ARD_750us     = 2,    /**< 750 us */
+    NRF24L01P_ARD_1000us    = 3,    /**< 1000 us */
+    NRF24L01P_ARD_1250us    = 4,    /**< 1250 us */
+    NRF24L01P_ARD_1500us    = 5,    /**< 1500 us */
+    NRF24L01P_ARD_1750us    = 6,    /**< 1750 us */
+    NRF24L01P_ARD_2000us    = 7,    /**< 2000 us */
+    NRF24L01P_ARD_2250us    = 8,    /**< 2250 us */
+    NRF24L01P_ARD_2500us    = 9,    /**< 2500 us */
+    NRF24L01P_ARD_2750us    = 10,   /**< 2750 us */
+    NRF24L01P_ARD_3000us    = 11,   /**< 3000 us */
+    NRF24L01P_ARD_3250us    = 12,   /**< 3250 us */
+    NRF24L01P_ARD_3500us    = 13,   /**< 3500 us */
+    NRF24L01P_ARD_3750us    = 14,   /**< 3750 us */
+    NRF24L01P_ARD_4000us    = 15,   /**< 4000 us */
+    NRF24L01P_ARD_NUM_OF            /**< Number of possible values to configure the retransmission delay */
+} nrf24l01p_ard_t;
+
+/**
+ * @brief   Possible values to configure the CRC length
+ */
+typedef enum {
+    NRF24L01P_CRCO_0    = 1,    /**< 0 bytes CRC length */
+    NRF24L01P_CRCO_1    = 2,    /**< 1 byte CRC length */
+    NRF24L01P_CRCO_2    = 3,    /**< 2 bytes CRC length */
+    NRF24L01P_CRCO_NUM_OF       /**< Number of possible values to configure CRC length */
+} nrf24l01p_crco_t;
+
+/**
+ * @brief   Possible values to configure the radio power
+ */
+typedef enum {
+    NRF24L01P_RF_PWR_MINUS_18dBm    = 0,    /**< -18 dBm */
+    NRF24L01P_RF_PWR_MINUS_12dBm    = 1,    /**< -12 dBm */
+    NRF24L01P_RF_PWR_MINUS_6dBm     = 2,    /**<  -6 dBm */
+    NRF24L01P_RF_PWR_0dBm           = 3,    /**<   0 dBm */
+    NRF24L01P_RF_PWR_NUM_OF                 /**< Number of possible values to configure the radio power */
+} nrf24l01p_rfpwr_t;
+
+/**
+ * @brief   Possible values to configure the data rate
+ */
+typedef enum {
+    NRF24L01P_RF_DR_1Mbps   = 0,    /**< 1 Mbit/s */
+    NRF24L01P_RF_DR_250kbps = 1,    /**< 250 kbit/s */
+    NRF24L01P_RF_DR_2Mbps   = 2,    /**< 2 Mbit/s */
+    NRF24L01P_RF_DR_NUM_OF          /**< Number of possible values to configure the data rate */
+} nrf24l01p_rfdr_t;
+
+/**
+ * @brief   Struct that holds all active configuration values
  */
 typedef struct {
-    spi_t spi;           /**< SPI device to initialize */
-    gpio_t ce;           /**< GPIO pin to initialize as chip enable */
-    gpio_t cs;           /**< GPIO pin to initialize as chip select */
-    gpio_t irq;          /**< GPIO pin to initialize as interrupt request */
-    unsigned listener;   /**< Place to store an ID in */
+    /**
+     * @brief Padding for byte alignment
+     */
+    uint8_t :                   5;
+    /**
+     * @brief   Currently configured protocol (Do not change after initialization)
+     *          @see nrf24l01p_protocol_t
+     */
+    uint8_t cfg_protocol :       1;
+    /**
+     * @brief   Current CRC length configuration value
+     *          @see nrf24l01p_crco_t
+     */
+    uint8_t cfg_crc :            2;
+    /**
+     * @brief   Current tx power configuration value
+     *          @see nrf24l01p_rfpwr_t
+     */
+    uint8_t cfg_tx_power :       2;
+    /**
+     * @brief   Current data rate configuration value
+     *          @see nrf24l01p_rfdr_t
+     */
+    uint8_t cfg_data_rate :      2;
+    /**
+     * @brief   Current channel
+     */
+    uint8_t cfg_channel :        4;
+    /**
+     * @brief   Current address width configuration value (Do not change after initialization
+     *          @see nrf24l01p_aw_t
+     */
+    uint8_t cfg_addr_width :     2;
+    /**
+     * @brief   Current maximum number of retransmissions
+     *          (Only used if protocol is ESB)
+     */
+    uint8_t cfg_max_retr :       4;
+    /**
+     * @brief   Current retransmission delay configuration value
+     *          (Only used if protocol is ESB) @see nrf24l01p_ard_t
+     */
+    uint8_t cfg_retr_delay :     4;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 0 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p0 :    5;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 1 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p1 :    5;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 2 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p2 :    5;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 3 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p3 :    5;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 4 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p4 :    5;
+    /**
+     * @brief   Current number of padding bytes to configure
+     *          the payload width of pipe 5 (Only used if protocol is SB)
+     */
+    uint8_t cfg_plw_padd_p5 :    5;
+} nrf24l01p_cfg_t;
+
+/**
+ * @brief Struct of NRF24L01P initialization parameters
+ */
+typedef struct {
+    spi_t spi;          /**< SPI bus */
+    spi_clk_t spi_clk;  /**< SPI clock speed */
+    gpio_t pin_cs;      /**< SPI chip select gpio pin */
+    gpio_t pin_ce;      /**< NRF24L01P chip enable gpio pin */
+    gpio_t pin_irq;     /**< NRF24L01P IRQ gpio pin */
+    union {
+        struct {
+            /**
+             * @brief   Array to access the addresses of pipe 0 and pipe 1 via
+             *          pipe indices @see nrf24l01p_pipe_t
+             */
+            uint8_t rx_addr_long[2][NRF24L01P_MAX_ADDR_WIDTH];
+            /**
+             * @brief   Array to access the addresses of pipe 2, pipe 3,
+             *          pipe 4 and pipe 5 via pipe indices
+             *          @see nrf24l01p_pipe_t
+             */
+            uint8_t rx_addr_short[4];
+        } arxaddr; /**< Rx addresses as arrays */
+        struct {
+            /**
+             * @brief   pipe 0 Rx address
+             */
+            uint8_t rx_pipe_0_addr[NRF24L01P_MAX_ADDR_WIDTH];
+            /**
+             * @brief   pipe 1 Rx address
+             */
+            uint8_t rx_pipe_1_addr[NRF24L01P_MAX_ADDR_WIDTH];
+            /**
+             * @brief   pipe 2 Rx address
+             */
+            uint8_t rx_pipe_2_addr;
+            /**
+             * @brief   pipe 3 Rx address
+             */
+            uint8_t rx_pipe_3_addr;
+            /**
+             * @brief   pipe 4 Rx address
+             */
+            uint8_t rx_pipe_4_addr;
+            /**
+             * @brief   pipe 5 Rx address
+             */
+            uint8_t rx_pipe_5_addr;
+        } rxaddrpx; /**< Rx addresses as named variables */
+    } urxaddr; /**< Union of Rx addresses as named variables and as arrays */
+    nrf24l01p_cfg_t config; /**< Current configuration values */
+} nrf24l01p_params_t;
+
+/**
+ * @brief   NRF24L01P device struct
+ */
+typedef struct {
+    netdev_t netdev;            /**< Netdev member */
+    nrf24l01p_params_t params;  /**< Parameters */
+    /**
+     * @brief Destination address as PTX
+     *        A PTX node must change pipe 0 Rx address to Tx address in order to receive ACKs.
+     *        If node switches back to Rx mode, pipe 0 Rx address must be restored from params.
+     */
+    uint8_t tx_addr[NRF24L01P_MAX_ADDR_WIDTH];
+    uint8_t tx_addr_len;        /**< Tx address length */
+    uint8_t state;              /**< Current operation state */
+#if !defined (NDEBUG) || defined(DOXYGEN)
+    uint8_t have_spi_access;    /**< != 0: dev already has SPI bus acquired*/
+    uint8_t transitions;        /**< Possible transitions from current state */
+#endif
 } nrf24l01p_t;
 
 /**
- * @brief   Defines the address width of the nrf24l01+ transceiver.
+ * @brief Get state variable as a string
+ *
+ * @param[in] state     State
+ *
+ * @return              @p state as a string
  */
-typedef enum {
-    NRF24L01P_AW_3BYTE, /**< address width is 3 Byte */
-    NRF24L01P_AW_4BYTE, /**< address width is 4 Byte */
-    NRF24L01P_AW_5BYTE  /**< address width is 5 Byte */
-} nrf24l01p_aw_t;
-
+const char *nrf24l01p_state_to_string(nrf24l01p_state_t state);
 
 /**
- * @brief   Defines the RF datarate.
+ * @brief Convert string to state variable
+ *
+ * @param[in] sstate    State string
+ *
+ * @return              State variable
  */
-typedef enum {
-    NRF24L01P_DR_250KBS,/**< datarate is 250 kbps */
-    NRF24L01P_DR_1MBS,  /**< datarate is 1 Mbps */
-    NRF24L01P_DR_2MBS   /**< datarate is 2 Mbps */
-} nrf24l01p_dr_t;
+nrf24l01p_state_t nrf24l01p_string_to_state(const char *sstate);
 
 /**
- * @brief   Defines the RF power level.
+ * @brief   Setup the NRF24L01P driver, but perform no initialization
+ *
+ * @ref netdev_driver_t::init can be used after this call to initialize the
+ * transceiver.
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] params        Parameters of the device to setup
+ *
+ * @retval 0                Device successfully set up
+ * @retval -ENOTSUP         Parameter request could be satisfied
  */
-typedef enum {
-    NRF24L01P_PWR_N18DBM = 0,   /**< power is -18dBm */
-    NRF24L01P_PWR_N12DBM,       /**< power is -12dBm */
-    NRF24L01P_PWR_N6DBM,        /**< power is - 6dBm */
-    NRF24L01P_PWR_0DBM          /**< power is   0dBm */
-} nrf24l01p_pwr_t;
+int nrf24l01p_setup(nrf24l01p_t *dev, const nrf24l01p_params_t *params);
 
 /**
- * @brief   Defines the datapipe on which the receiver searches for packets.
+ * @brief   Configure air data rate
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] data_rate     Data rate configuration value
+ *
+ * @retval 0                Success
+ * @retval -EINVAL         Bad data rate value
+ * @retval -EAGAIN          Current state does not permit changing data rate
  */
-typedef enum {
-    NRF24L01P_PIPE0 = 0,/**< RX pipe 0 */
-    NRF24L01P_PIPE1,    /**< RX pipe 1 */
-    NRF24L01P_PIPE2,    /**< RX pipe 2 */
-    NRF24L01P_PIPE3,    /**< RX pipe 3 */
-    NRF24L01P_PIPE4,    /**< RX pipe 4 */
-    NRF24L01P_PIPE5     /**< RX pipe 5 */
-} nrf24l01p_rx_pipe_t;
+int nrf24l01p_set_air_data_rate(nrf24l01p_t *dev, nrf24l01p_rfdr_t data_rate);
 
 /**
- * @brief   Defines the error detection encoding scheme for the nrf24l01p transceiver.
+ * @brief   Get currently configured data rate
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[out] data_rate    Configuration data rate value (may be NULL)
+ *
+ * @return                  Data rate in [kbit/s]
  */
-typedef enum {
-    NRF24L01P_CRC_1BYTE = 0,    /**< encoding scheme generates 1 Byte redundancy */
-    NRF24L01P_CRC_2BYTE,        /**< encoding scheme generates 2 Bytes redundancy */
-} nrf24l01p_crc_t;
+uint16_t nrf24l01p_get_air_data_rate(nrf24l01p_t *dev,
+                                     nrf24l01p_rfdr_t *data_rate);
 
 /**
- * @brief   Defines the automatic retransmission delay defined from end of transmission
- * to start of next treansmission.
+ * @brief   Configure CRC length
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] crc           Configuration CRC value
+ *
+ * @retval 0                Success
+ * @retval -EINVAL          Bad CRC configuration value
+ * @retval -EAGAIN          Current state does not permit changing CRC length
  */
-typedef enum {
-    NRF24L01P_RETR_250US = 0,   /**< retransmit delay is 250us */
-    NRF24L01P_RETR_500US,       /**< retransmit delay is 500us */
-    NRF24L01P_RETR_750US,       /**< retransmit delay is 750us */
-    NRF24L01P_RETR_1000US,      /**< retransmit delay is 1000us */
-    NRF24L01P_RETR_1250US,      /**< retransmit delay is 1250us */
-    NRF24L01P_RETR_1500US,      /**< retransmit delay is 1500us */
-    NRF24L01P_RETR_1750US,      /**< retransmit delay is 1750us */
-    NRF24L01P_RETR_2000US,      /**< retransmit delay is 2000us */
-    NRF24L01P_RETR_2250US,      /**< retransmit delay is 2250us */
-    NRF24L01P_RETR_2500US,      /**< retransmit delay is 2500us */
-    NRF24L01P_RETR_2750US,      /**< retransmit delay is 2750us */
-    NRF24L01P_RETR_3000US,      /**< retransmit delay is 3000us */
-    NRF24L01P_RETR_3250US,      /**< retransmit delay is 3250us */
-    NRF24L01P_RETR_3500US,      /**< retransmit delay is 3500us */
-    NRF24L01P_RETR_3750US,      /**< retransmit delay is 3750us */
-    NRF24L01P_RETR_4000US,      /**< retransmit delay is 4000us */
-} nrf24l01p_retransmit_delay_t;
+int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crco_t crc);
 
 /**
- * @brief   Defines states for the nrf24l01+ transceiver
+ * @brief   Get currently configured CRC length
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[out] crc          Configuration crc value (may be NULL)
+ *
+ * @return                  Current CRC length
  */
-typedef enum {
-    RCV_PKT_NRF24L01P = 0,  /**< transceiver received data */
-} nrf24l01p_rx_event_t ;
-
+uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crco_t *crc);
 
 /**
-* @brief   Read one register of the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] reg    Register address to read from.
-* @param[in] answer Byte to read.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_read_reg(const nrf24l01p_t *dev, char reg, char *answer);
+ * @brief   Configure Tx trasceiver power
+ *
+ * @param[in] dev           NRf24L01P device handle
+ * @param[in] power         Configuration Tx power value
+ *
+ * @retval 0                Success
+ * @retval -EINVAL          Bad Tx power configuration value
+ * @retval -EAGAIN          Current state does not permit changin Tx power
+ */
+int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t power);
 
 /**
-* @brief   Write one register to the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] reg    Register address to write to.
-* @param[in] write  Byte to write.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_write_reg(const nrf24l01p_t *dev, char reg, char write);
+ * @brief   Get currently configured Tx transceiver power
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[out] power        Configuration Tx power value
+ *
+ * @return                  Tx power in [dbm]
+ */
+int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t *power);
 
 /**
-* @brief   Initialize the nrf24l01+ transceiver.
-*
-* @ note
-* This function initializes the transceiver so that it is ready to use.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] spi    SPI device to use.
-* @param[in] ce     GPIO pin to use for chip enable.
-* @param[in] csn    GPIO pin to use for chip select.
-* @param[in] irq    GPIO pin to use for interrupt request.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_init(nrf24l01p_t *dev, spi_t spi, gpio_t ce, gpio_t csn, gpio_t irq);
+ * @brief   Set transceiver channel
+ *
+ * @param[in] dev           NRF24l01P device handle
+ * @param[in] channel       Channel [0; 15]
+ *
+ * @retval 0                Success
+ * @retval -EINVAL          Bad channel
+ * @retval -EAGAIN          Current state does not permit switching channel
+ */
+int nrf24l01p_set_channel(nrf24l01p_t *dev, uint8_t channel);
 
 /**
-* @brief   Power on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_on(const nrf24l01p_t *dev);
+ * @brief   Get currently configured transceiver channel
+ *
+ * @param[in] dev           NRF24L01P device handle
+ *
+ * @return                  Transceiver channel
+ */
+uint8_t nrf24l01p_get_channel(nrf24l01p_t *dev);
 
 /**
-* @brief   Power off the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_off(const nrf24l01p_t *dev);
+ * @brief   Configure expected MTU of a certain data pipe
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] mtu           MTU
+ * @param[in] pipe          Pipe index
+ *
+ * @retval 0                Success
+ * @retval -ERANGE          Bad pipe index
+ * @retval -EINVAL          Bad payload width
+ * @retval -EAGAIN          Current state does not permit changing payload width
+ */
+int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe);
 
 /**
-* @brief   Transmit payload laying in TX FIFO of the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-*/
-void nrf24l01p_transmit(const nrf24l01p_t *dev);
+ * @brief   Get currently configured expected MTU of a certain data pipe
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] pipe          Pipe index
+ *
+ * @return                  MTU
+ * @retval NRF24L_MTU       Dynamic length for ESB protocol
+ * @retval -ERANGE          Bad pipe index
+ */
+int nrf24l01p_get_mtu(nrf24l01p_t *dev, nrf24l01p_pipe_t pipe);
 
 /**
-* @brief   Read payload from RX FIFO of the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] answer Buffer to receive bytes to.
-* @param[in] size   Number of bytes to transfer. For nrf24l01+ in general 32.
-*
-* @return           Number of bytes that were transfered.
-* @return           -1 on error.
-*/
-int nrf24l01p_read_payload(const nrf24l01p_t *dev, char *answer, unsigned int size);
+ * @brief   Set Rx address of a certain data pipe
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] addr          Rx address
+ * @param[in] addr_len      Address length (must match current address length)
+ * @param[in] pipe          Pipe index
+ *
+ * @retval 0                Success
+ * @retval -ERANGE          Bad
+ * @retval -EINVAL          Bad address length
+ * @return -EAGAIN          Current state does not permit changin Rx address
+ */
+int nrf24l01p_set_rx_address(nrf24l01p_t *dev, const uint8_t *addr,
+                             size_t addr_len, nrf24l01p_pipe_t pipe);
 
 /**
-* @brief   Register a given ID to the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pid    ID to register.
-*
-*/
-void nrf24l01p_register(nrf24l01p_t *dev, unsigned int *pid);
+ * @brief   Get current Rx address of a certain data pipe
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[out] addr         Rx address
+ * @param[in] pipe          Pipe index
+ *
+ * @return                  Address width
+ * @retval -ERANGE          Bad pipe index
+ */
+int nrf24l01p_get_rx_address(nrf24l01p_t *dev, uint8_t *addr,
+                             nrf24l01p_pipe_t pipe);
 
 /**
-* @brief   Enable dynamic payload for the pipe on give nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe for which dynamic payload is enabled
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_enable_dynamic_payload(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe);
+ * @brief   Configure maximum number of retransmissions for ESB
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] max_rt        Number of maximum retransmissions [0; 15]
+ *
+ * @retval 0                Success
+ * @retval -ENOTSUP         Protocol is SB
+ * @retval -EINVAL          Unsupported number of retransmissions
+ * @retval -EAGAIN          State does not permit changing the maximum number of retransmissions
+ */
+int nrf24l01p_set_max_retransm(nrf24l01p_t *dev, uint8_t max_rt);
 
 /**
-* @brief   Enable dynamic ack for the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_enable_dynamic_ack(const nrf24l01p_t *dev);
+ * @brief   Get currently configured number of maximum retransmissions for ESB
+ *
+ * @param[in] dev           NRF24L01P device handle
+ *
+ * @return                  Maximum number of retransmissions
+ */
+uint8_t nrf24l01p_get_max_retransm(nrf24l01p_t *dev);
 
 /**
-* @brief   Unregister the nrf24l01+ transceiver from his ID.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pid    Actual ID to unregister.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_unregister(nrf24l01p_t *dev, unsigned int pid);
+ * @brief   Set retransmission delay for ESB
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] rt_delay      Configuration retransmission delay value
+ *
+ * @return 0
+ * @retval -ENOTSUP         Protocol is SB
+ * @return -EINVAL          Bad retransmission delay value
+ * @return -EAGAIN          Current state does not permit changing retransmission delay
+ */
+int nrf24l01p_set_retransm_delay(nrf24l01p_t *dev, nrf24l01p_ard_t rt_delay);
 
 /**
-* @brief   Get ID from the nrf24l01p transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pid    Transceiver ID.
-*
-*/
-void nrf24l01p_get_id(const nrf24l01p_t *dev, unsigned int *pid);
+ * @brief   Get retransmission delay for ESB
+ *
+ * @param[in] dev          NRF24L01P device handle
+ * @param[out] rt_delay    Configuration retransmission delay value
+ *
+ * @return                  Retransmission delay in [us]
+ */
+uint16_t nrf24l01p_get_retransm_delay(nrf24l01p_t *dev,
+                                      nrf24l01p_ard_t *rt_delay);
 
 /**
-* @brief   Start searching packets while in RX mode.
-*
-* @param[in] dev    Transceiver device to use.
-*
-*/
-void nrf24l01p_start(const nrf24l01p_t *dev);
+ * @brief   Write payload to be transmitted in an ACK frame
+ *
+ *          The ACK payload is flushed if a MAX_RT interrupt occurs.
+ *          The ACK payload must be set in advance of the reception of a frame.
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ * @param[in] pipe          Pipe index
+ *
+ * @retval 0                Success
+ * @retval -ENOTSUP         Protocol is SB
+ * @retval -EINVAL          Payload too big
+ * @retval -ERANGE          Bad pipe index
+ * @retval -EAGAIN          Current state does not permit setting ACK payload
+ */
+int nrf24l01p_set_ack_payload(nrf24l01p_t *dev, const void *payload,
+                              size_t payload_width, nrf24l01p_pipe_t pipe);
 
 /**
-* @brief   Stop searching packets while in RX mode.
-*
-* @param[in] dev    Transceiver device to use.
-*
-*/
-void nrf24l01p_stop(const nrf24l01p_t *dev);
+ * @brief   Put device into
+ *          sleep mode(@ref NRF24L01P_STATE_POWER_DOWN),
+ *          standby mode (@ref NRF24L01P_STATE_STANDBY_1),
+ *          or Rx mode (@ref NRF24L01P_STATE_RX_MODE)
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] state         State
+ *
+ * @return                  Old state
+ * @retval -EAGAIN          Device is currently not permitted to change it´s state
+ * @retval -ENOTSUP         Device is not permitted to change state to @p state
+ */
+int nrf24l01p_set_state(nrf24l01p_t *dev, nrf24l01p_state_t state);
 
 /**
-* @brief   Preload TX FIFO with payload to transmit.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] data   Buffer to preload.
-* @param[in] size   Number of bytes in buffer. For nrf24l01+ e.g. 32
-*
-* @return           Number of bytes that were transfered.
-* @return           -1 on error.
-*/
-int nrf24l01p_preload(const nrf24l01p_t *dev, char *data, unsigned int size);
+ * @brief   Get current device state
+ *
+ * @param[in] dev             NRf24L01P device handle
+ *
+ * @return                    Device state
+ */
+nrf24l01p_state_t nrf24l01p_get_state(nrf24l01p_t *dev);
 
 /**
-* @brief   Set the RF channel for the nrf24l01+ transceiver.
-*
-* @note
-* To ensure non-overlapping channels in 2Mbps mode, don't use directly
-* neighbouring channels in this mode.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] chan   Buffer to preload.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_channel(const nrf24l01p_t *dev, uint8_t chan);
+ * @brief   Convert @ref nrf24l01p_aw_t to actual address width
+ *
+ * @param[in] address_width Address width enum
+ *
+ * @return                  Address width in [bytes]
+ */
+static inline uint8_t nrf24l01p_etoval_aw(nrf24l01p_aw_t address_width)
+{
+    if (address_width <= NRF24L01P_AW_3byte) {
+        return 3;
+    }
+    if (address_width == NRF24L01P_AW_4byte) {
+        return 4;
+    }
+    return 5;
+}
 
 /**
-* @brief   Set the address width for the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] aw     Address width (type nrf24l01p_aw_t).
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_address_width(const nrf24l01p_t *dev, nrf24l01p_aw_t aw);
+ * @brief   Convert address width in [bytes] to @ref nrf24l01p_aw_t
+ *
+ * @param[in] address_width Address width in [bytes]
+ *
+ * @return                  Corresponding enum
+ */
+static inline nrf24l01p_aw_t nrf24l01p_valtoe_aw(uint8_t address_width)
+{
+    if (address_width <= 3) {
+        return NRF24L01P_AW_3byte;
+    }
+    if (address_width == 4) {
+        return NRF24L01P_AW_4byte;
+    }
+    return NRF24L01P_AW_5byte;
+}
 
 /**
-* @brief   Set the RX payload width for the nrf24l01+ transceiver
-*
-* @ note
-* This function sets the payload width for one packet. If the maximum of 32 bytes is
-* exeeded, this value is set to 32.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to set the payload width.
-* @param[in] width  Numer of bytes per packet in RX payload.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_payload_width(const nrf24l01p_t *dev,
-                                nrf24l01p_rx_pipe_t pipe, uint8_t width);
+ * @brief   Convert @ref nrf24l01p_ard_t to actual retransmission delay
+ *
+ * @param[in] retr_delay    Retransmission delay enum
+ *
+ * @return                  Retransmission delay in [us]
+ */
+static inline uint16_t nrf24l01p_etoval_ard(nrf24l01p_ard_t retr_delay)
+{
+    if (retr_delay >= NRF24L01P_ARD_4000us) {
+        return 4000;
+    }
+    return (retr_delay + 1) * 250;
+}
 
 /**
-* @brief   Set the TX address for the nrf24l01+ transceiver (byte array).
-*
-* @note
-* You can either use this function and give it a pointer to a byte array which
-* holds the address to set, or use "nrf24l01p_set_tx_address_long" which requires
-* a uint64_t which holds the address in the LSBs.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] saddr  Byte array which holds the TX address.
-* @param[in] length Number of bytes in address array.
-*
-* @return           Address length on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_tx_address(const nrf24l01p_t *dev, const char *saddr, unsigned int length);
+ * @brief   Convert retransmission delay in [us] to @ref nrf24l01p_ard_t
+ *
+ * @param[in] retr_delay    Retransmission delay in [us]
+ *
+ * @return                  Corresponding enum
+ */
+static inline nrf24l01p_ard_t nrf24l01p_valtoe_ard(uint16_t retr_delay)
+{
+    if (retr_delay >= 4000) {
+        return NRF24L01P_ARD_4000us;
+    }
+    return retr_delay / 250;
+}
 
 /**
-* @brief   Set the TX address for the nrf24l01+ transceiver (long int).
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] saddr  Long integer which holds the TX address in LSBs.
-* @param[in] length Number of relevant bytes in uint64_t.
-*
-* @return           Address length on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_tx_address_long(const nrf24l01p_t *dev, uint64_t saddr, unsigned int length);
+ * @brief   Convert @ref nrf24l01p_crco_t to actual CRC length
+ *
+ * @param[in] crc_len       CRC length enum
+ *
+ * @return                  CRC length in [bytes]
+ */
+static inline uint8_t nrf24l01p_etoval_crco(nrf24l01p_crco_t crc_len)
+{
+    if (crc_len <= NRF24L01P_CRCO_0) {
+        return 0;
+    }
+    if (crc_len == NRF24L01P_CRCO_1) {
+        return 1;
+    }
+    return 2;
+}
 
 /**
-* @brief   Set the RX address for the nrf24l01+ transceiver (byte array).
-*
-* @note
-* You can either use this function and give it a pointer to a byte array which
-* holds the address to set, or use "nrf24l01p_set_rx_address_long" which requires
-* a uint64_t which holds the address in the LSBs.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to set the address.
-* @param[in] saddr  Byte array which holds the RX address.
-* @param[in] length Number of bytes in address array.
-*
-* @return           Address length on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_rx_address(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe, const char *saddr, unsigned int length);
+ * @brief   Convert CRC length in [bytes] to @ref nrf24l01p_crco_t
+ *
+ * @param[in] crc_len       CRC length in [bytes]
+ *
+ * @return                  Corresponding enum
+ */
+static inline nrf24l01p_crco_t nrf24l01p_valtoe_crco(uint8_t crc_len)
+{
+    if (!crc_len) {
+        return NRF24L01P_CRCO_0;
+    }
+    if (crc_len == 1) {
+        return NRF24L01P_CRCO_1;
+    }
+    return NRF24L01P_CRCO_2;
+}
 
 /**
-* @brief   Set the RX address for the nrf24l01+ transceiver (long int).
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to set the address.
-* @param[in] saddr  Long integer which holds the RX address in LSBs.
-* @param[in] length Number of relevant bytes in uint64_t.
-*
-* @return           Address length on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_rx_address_long(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe, uint64_t saddr, unsigned int length);
+ * @brief   Convert @ref nrf24l01p_rfpwr_t to actual Tx power
+ *
+ * @param[in] power         RF power enum
+ *
+ * @return                  RF power in [dbm]
+ */
+static inline int8_t nrf24l01p_etoval_rfpwr(nrf24l01p_rfpwr_t power)
+{
+    if (power <= NRF24L01P_RF_PWR_MINUS_18dBm) {
+        return -18;
+    }
+    if (power == NRF24L01P_RF_PWR_MINUS_12dBm) {
+        return -12;
+    }
+    if (power == NRF24L01P_RF_PWR_MINUS_6dBm) {
+        return -6;
+    }
+    return 0;
+}
 
 /**
-* @brief   Get the TX address for the nrf24l01+ transceiver (long int).
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           TX address of the nrf24l01+ transceiver.
-* @return           -1 on error.
-*/
-uint64_t nrf24l01p_get_tx_address_long(const nrf24l01p_t *dev);
+ * @brief   Convert RF power in [dbm] to @ref nrf24l01p_rfpwr_t
+ *
+ * @param[in] power         RF power in [dbm]
+ *
+ * @return                  Corresponding enum
+ */
+static inline nrf24l01p_rfpwr_t nrf24l01p_valtoe_rfpwr(int16_t power)
+{
+    if (power <= -18) {
+        return NRF24L01P_RF_PWR_MINUS_18dBm;
+    }
+    if (power <= -12) {
+        return NRF24L01P_RF_PWR_MINUS_12dBm;
+    }
+    if (power <= -6) {
+        return NRF24L01P_RF_PWR_MINUS_6dBm;
+    }
+    return NRF24L01P_RF_PWR_0dBm;
+}
 
 /**
-* @brief   Get the RX address for the nrf24l01+ transceiver (long int).
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to get the address from.
-*
-* @return           RX address of the nrf24l01+ transceiver.
-* @return           -1 on error.
-*/
-uint64_t nrf24l01p_get_rx_address_long(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe);
+ * @brief   Convert @ref nrf24l01p_rfdr_t to actual air data rate
+ *
+ * @param[in] data_rate     Air data rate enum
+ *
+ * @return                  Air data rate in [kbit/s]
+ */
+static inline uint16_t nrf24l01p_etoval_rfdr(nrf24l01p_rfdr_t data_rate)
+{
+    if (data_rate <= NRF24L01P_RF_DR_1Mbps) {
+        return 1000;
+    }
+    if (data_rate == NRF24L01P_RF_DR_250kbps) {
+        return 250;
+    }
+    return 2000;
+}
 
 /**
-* @brief   Get the TX address for the nrf24l01+ transceiver (long int).
-*
-* @note
-* If you chose 2Mbps you should not allocate directly neighboring RF channels.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] dr     Datarate (of type nrf24l01p_dr_t).
-*
-* @return           1 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_datarate(const nrf24l01p_t *dev, nrf24l01p_dr_t dr);
+ * @brief   Convert Air data rate in [kbit/s] to @ref nrf24l01p_rfdr_t
+ *
+ * @param[in] data_rate     Air data rate in [kbit/s]
+ *
+ * @return                  Corresponding enum
+ */
+static inline nrf24l01p_rfdr_t nrf24l01p_valtoe_rfdr(uint16_t data_rate)
+{
+    if (data_rate <= 250) {
+        return NRF24L01P_RF_DR_250kbps;
+    }
+    if (data_rate <= 1000) {
+        return NRF24L01P_RF_DR_1Mbps;
+    }
+    return NRF24L01P_RF_DR_2Mbps;
+}
 
 /**
-* @brief   Get the status (register) of the nrf24l01+ transceiver device.
-*
-* @param[in] dev    Transceiver device to use.s of the.
-*
-* @return           Value of the status register.
-*/
-int nrf24l01p_get_status(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 0
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p0(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P0);
+}
 
 /**
-* @brief   Set the transmit power for the nrf24l01+ transceiver device.
-*
-* @note
-* This function rounds the input values to the nearest possible setting.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pwr    TX power for the nrf24l01p transceiver.
-*
-* @return           1 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_power(const nrf24l01p_t *dev, int pwr);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 1
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p1(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P1);
+}
 
 /**
-* @brief   Get the transmit power for the nrf24l01+ transceiver device.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           TX power value of the nrf24l01+ transceiver.
-*/
-int nrf24l01p_get_power(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 2
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p2(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P2);
+}
 
 /**
-* @brief   Set the nrf24l01+ into TX mode.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_txmode(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 3
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p3(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P3);
+}
 
 /**
-* @brief   Set the nrf24l01+ into RX mode.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_set_rxmode(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 4
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p4(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P4);
+}
 
 /**
-* @brief   Reset all interrupts on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           1 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_reset_all_interrupts(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
+ *          payload width of pipe 5
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] width     paylaod width
+ *
+ * @return              @see nrf24l01p_set_mtu
+ */
+static inline int nrf24l01p_set_mtu_p5(nrf24l01p_t *dev, uint8_t width)
+{
+    return nrf24l01p_set_mtu(dev, width, NRF24L01P_P5);
+}
 
 /**
-* @brief   Reset interrupts on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] intrs  Interrupt mask to reset
-*
-* @return           1 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_reset_interrupts(const nrf24l01p_t *dev, char intrs);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 0
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p0(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P0);
+}
 
 /**
-* @brief   Mask one interrupt on the nrf24l01+ transceiver.
-*
-* @note
-* There are three interrupts on the nrf24l01+ which can be masked:
-* "MASK_RX_DR", "MASK_TX_DS" and "MASK_MAX_RT". Theay are defined
-* in "include/nrf24l01p_settings.h".
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] intr   Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_mask_interrupt(const nrf24l01p_t *dev, char intr);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 1
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p1(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P1);
+}
 
 /**
-* @brief   Unmask one interrupt on the nrf24l01+ transceiver.
-*
-* @note
-* There are three interrupts on the nrf24l01+ which can be unmasked:
-* "MASK_RX_DR", "MASK_TX_DS" and "MASK_MAX_RT". Theay are defined
-* in "include/nrf24l01p_settings.h".
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] intr   Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_unmask_interrupt(const nrf24l01p_t *dev, char intr);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 2
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p2(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P2);
+}
 
 /**
-* @brief   Enable RX datapipe on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to enable.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_enable_pipe(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 3
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p3(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P3);
+}
 
 /**
-* @brief   Disable RX datapipe on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to disable.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_disable_pipe(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 4
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p4(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P4);
+}
 
 /**
-* @brief   Disable CRC error detection on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0.
-*/
-int nrf24l01p_disable_crc(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_get_mtu to get the
+ *          payload width of pipe 5
+ *
+ * @param[in] dev       NRf24L01P device handle
+ *
+ * @return              @see nrf24l01p_get_mtu
+ */
+static inline int nrf24l01p_get_mtu_p5(nrf24l01p_t *dev)
+{
+    return nrf24l01p_get_mtu(dev, NRF24L01P_P5);
+}
 
 /**
-* @brief   Enable CRC error detection on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] crc    Length of cyclic redundancy check (type nrf24l01p_crc_t).
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_enable_crc(const nrf24l01p_t *dev, nrf24l01p_crc_t crc);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 0
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p0(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P0);
+}
 
 /**
-* @brief   Setup and enable automatic ACK and retransmission on the nrf24l01+ transceiver.
-*
-* @note
-* This function enables automatic acknowledgement for a given RX data pipe and also sets up the
-* mautomatic retransmission behavior.
-*
-* @param[in] dev    Transceiver device to use.
-* @param[in] pipe   RX pipe to setup auto ack.
-* @param[in] delay_retrans    Automatic retransmission delay
-                              (type nrf24l01p_retransmit_delay_t)
-* @param[in] count_retrans    Auto retransmit count.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_setup_auto_ack(const nrf24l01p_t *dev, nrf24l01p_rx_pipe_t pipe, nrf24l01p_retransmit_delay_t delay_retrans, char count_retrans);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 1
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p1(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P1);
+}
 
 /**
-* @brief   Disable automatic ACK on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_disable_all_auto_ack(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 2
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p2(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P2);
+}
 
 /**
-* @brief   Flush TX FIFO on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_flush_tx_fifo(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 3
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p3(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P3);
+}
 
 /**
-* @brief   Flush RX FIFO on the nrf24l01+ transceiver.
-*
-* @param[in] dev    Transceiver device to use.
-*
-* @return           0 on success.
-* @return           -1 on error.
-*/
-int nrf24l01p_flush_rx_fifo(const nrf24l01p_t *dev);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 4
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p4(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P4);
+}
 
 /**
-* @brief   Callback that is called when interrupt occurs on interrupt
-* pin from the nrf24l01+ transceiver.
-*
-* @param[in] arg    Used to pass transceiver device "dev".
-*/
-void nrf24l01p_rx_cb(void *arg);
+ * @brief   Wrapper around @see nrf24l01p_set_rx_address to set the
+ *          address of pipe 5
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[in] addr      Address
+ * @param[in] addr_len  Address width, must match current address width
+ *
+ * @return              @see nrf24l01p_set_rx_address
+ */
+static inline int nrf24l01p_set_rx_address_p5(nrf24l01p_t *dev,
+                                              const uint8_t *addr,
+                                              size_t addr_len)
+{
+    return nrf24l01p_set_rx_address(dev, addr, addr_len, NRF24L01P_P5);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 0
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p0(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P0);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 1
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p1(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P1);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 2
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p2(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P2);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 3
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p3(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P3);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 4
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p4(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P4);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_get_rx_address to set the
+ *          address of pipe 4
+ *
+ * @param[in] dev       NRf24L01P device handle
+ * @param[out] addr     Address
+ *
+ * @return              @see nrf24l01p_get_rx_address
+ */
+static inline int nrf24l01p_get_rx_address_p5(nrf24l01p_t *dev, uint8_t *addr)
+{
+    return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P5);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 0
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p0(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P0);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 1
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p1(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P1);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 2
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p2(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P2);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 3
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p3(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P3);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 4
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p4(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P4);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_ack_payload to write ACK paylaod
+ *          for pipe 5
+ *
+ * @param[in] dev           NRF24L01P device handle
+ * @param[in] payload       Payload
+ * @param[in] payload_width Payload width
+ *
+ * @return                  @see nrf24l01p_set_ack_payload
+ */
+static inline int nrf24l01p_set_ack_payload_p5(nrf24l01p_t *dev,
+                                               const void *payload,
+                                               size_t payload_width)
+{
+    return nrf24l01p_set_ack_payload(dev, payload, payload_width, NRF24L01P_P5);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_state
+ *          to go to sleep mode
+ *
+ * @param[in] dev           NRF24L01P device handle
+ *
+ * @return                  @see nrf24l01p_set_state
+ */
+static inline int nrf24l01p_set_state_sleep(nrf24l01p_t *dev)
+{
+    return nrf24l01p_set_state(dev, NRF24L01P_STATE_POWER_DOWN);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_state
+ *          to go to idle mode
+ *
+ * @param[in] dev           NRF24L01P device handle
+ *
+ * @return                  @see nrf24l01p_set_state
+ */
+static inline int nrf24l01p_set_state_idle(nrf24l01p_t *dev)
+{
+    return nrf24l01p_set_state(dev, NRF24L01P_STATE_STANDBY_1);
+}
+
+/**
+ * @brief   Wrapper around @see nrf24l01p_set_state
+ *          to go to Rx mode
+ *
+ * @param[in] dev           NRF24L01P device handle
+ *
+ * @return                  @see nrf24l01p_set_state
+ */
+static inline int nrf24l01p_set_state_rx(nrf24l01p_t *dev)
+{
+    return nrf24l01p_set_state(dev, NRF24L01P_STATE_RX_MODE);
+}
+
+#ifdef MODULE_NRF24L01P_DIAGNOSTICS
+/**
+ * @brief Print all registers
+ *
+ * @param[in] dev       NRf24L01P device handle
+ */
+void nrf24l01p_print_all_regs(nrf24l01p_t *dev);
+/**
+ * @brief Print device parameters
+ *
+ * @param[in] dev       NRf24L01P device handle
+ */
+void nrf24l01p_print_dev_info(nrf24l01p_t *dev);
+#endif
 
 #ifdef __cplusplus
 }
