@@ -9,10 +9,7 @@
 /**
  * @defgroup    drivers_dcf77 DCF77 long wave receiver with 77,5 kHz
  * @ingroup     drivers_sensors
- * @ingroup     drivers_saul
  * @brief       Device driver long wave receiver with 77,5 kHz
- *
- * This driver provides @ref drivers_saul capabilities.
  *
  * @{
  *
@@ -37,6 +34,17 @@
 extern "C" {
 #endif
 
+/* forward-declaration for dcf77_tick_cb_t */
+struct dcf77;
+
+/**
+ * @brief Signature for tick callback
+ *
+ * @param[in] dev           device that triggered the alarm
+ * @param[in] arg           optional argument to put the callback in the right context
+ */
+typedef void(*dcf77_tick_cb_t)(struct dcf77 *dev, void *arg);
+
 /**
  * @brief   Possible return codes
  */
@@ -60,14 +68,15 @@ typedef struct {
 /**
  * @brief   Device descriptor for DCF77 sensor devices
  */
-typedef struct {
+typedef struct dcf77 {
     dcf77_params_t params;      /**< Device parameters */
     dcf77_bits_t bitseq;        /**< contains all Bits from a current cycle */
     dcf77_bits_t last_bitseq;   /**< contains all Bits from a last cycle */
     uint8_t internal_state;     /**< internal States  */
     uint32_t startTime;         /**< Timestamp to measure the term of the level */
     uint8_t bitCounter;         /**< Counter of the Bits in a Bitsequenz */
-
+    dcf77_tick_cb_t tick_cb;    /**< Callback to be called if a new minute starts */
+    void *tick_cb_args;         /**< Arguments for the tick callback */
 } dcf77_t;
 
 /**
@@ -93,6 +102,17 @@ int dcf77_init(dcf77_t *dev, const dcf77_params_t *params);
  * @retval `DCF77_NOCSUM`     Checksum error
  */
 int dcf77_get_time(dcf77_t *dev, struct tm *time);
+
+/**
+ * @brief Set a tick callback for DCF77.
+ *
+ * The registered callback function will be called for every new minute.
+ *
+ * @param[in] dev           device descriptor of a DCF device
+ * @param[in] cb            Callback executed when a new minute starts.
+ * @param[in] arg           Argument passed to callback.
+ */
+void dcf77_set_tick_cb(dcf77_t *dev, dcf77_tick_cb_t cb, void *arg);
 
 #ifdef __cplusplus
 }
