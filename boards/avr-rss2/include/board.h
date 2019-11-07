@@ -89,7 +89,6 @@ extern "C" {
 #define XTIMER_CHAN         (0)
 #define XTIMER_WIDTH        (16)
 #define XTIMER_HZ                   (62500UL)
-//#define XTIMER_BACKOFF              (40)
 
 /**
  * @name Indicate Watchdog cleared in bootloader an
@@ -129,8 +128,6 @@ extern "C" {
  * @brief Initialize board specific hardware, including clock, LEDs and std-IO
  */
 void board_init(void);
-void led_init(void);
-void _euimac_init(void);
 
 #ifdef __cplusplus
 }
