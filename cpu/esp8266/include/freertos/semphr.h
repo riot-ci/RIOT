@@ -42,7 +42,7 @@ void vPortCPUAcquireMutex (portMUX_TYPE *mux);
 void vPortCPUReleaseMutex (portMUX_TYPE *mux);
 
 /*
- * PLESE NOTE: Following definitions were copied directly from the FreeRTOS
+ * PLEASE NOTE: Following definitions were copied directly from the FreeRTOS
  * distribution and are under the following copyright:
  *
  * FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
