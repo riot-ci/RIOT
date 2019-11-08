@@ -1512,10 +1512,10 @@ class ESP8266V3FirmwareImage(BaseFirmwareImage):
                 self.calc_digest = calc_digest.digest()  # TODO: decide what to do here?
 
     def is_flash_addr(self, addr):
-    	#print(' %x' % addr)
-    	#print(' %x' % (0x40200000 <= addr))
-    	#print(' %x' % ESP32ROM.DROM_MAP_START)
-    	return (0x40200000 <= addr)
+        #print(' %x' % addr)
+        #print(' %x' % (0x40200000 <= addr))
+        #print(' %x' % ESP32ROM.DROM_MAP_START)
+        return (0x40200000 <= addr)
         #return (ESP32ROM.IROM_MAP_START <= addr < ESP32ROM.IROM_MAP_END) \
         #    or (ESP32ROM.DROM_MAP_START <= addr < ESP32ROM.DROM_MAP_END)
 
@@ -1548,7 +1548,7 @@ class ESP8266V3FirmwareImage(BaseFirmwareImage):
             # use case then let us know (we can merge segments here, but as a rule you probably
             # want to merge them in your linker script.)
             a = len(flash_segments)
-            
+
             if len(flash_segments) > 0:
                 last_addr = flash_segments[0].addr
                 #print('%x' % last_addr)
@@ -2344,7 +2344,7 @@ def elf2image(args):
     elif args.version == '1':  # ESP8266
         image = ESP8266ROMFirmwareImage()
     elif args.version == '2':  # ESP8266
-    	    image = ESP8266V2FirmwareImage()
+        image = ESP8266V2FirmwareImage()
     else:
         image = ESP8266V3FirmwareImage()
     image.entrypoint = e.entrypoint
@@ -2811,7 +2811,7 @@ def expand_file_arguments():
 class FlashSizeAction(argparse.Action):
     """ Custom flash size parser class to support backwards compatibility with megabit size arguments.
 
-    (At next major relase, remove deprecated sizes and this can become a 'normal' choices= argument again.)
+    (At next major release, remove deprecated sizes and this can become a 'normal' choices= argument again.)
     """
     def __init__(self, option_strings, dest, nargs=1, auto_detect=False, **kwargs):
         super(FlashSizeAction, self).__init__(option_strings, dest, nargs, **kwargs)
