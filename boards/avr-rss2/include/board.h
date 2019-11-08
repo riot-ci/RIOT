@@ -21,7 +21,6 @@
 #define BOARD_H
 
 #include "cpu.h"
-#include "rss2.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,9 +37,6 @@ extern "C" {
  *
  * @{
  */
-#ifndef STDIO_UART_BAUDRATE
-#define STDIO_UART_BAUDRATE (115200)       /**< Sets Baudrate for e.g. Shell */
-#endif
 /** @} */
 
 
@@ -51,8 +47,8 @@ extern "C" {
 #define LED_PORT            PORTE
 #define LED_PORT_DDR        DDRE
 
-#define LED0_PIN             (1 << LED_RED )
-#define LED1_PIN             (1 << LED_YELLOW)
+#define LED0_PIN             (1 << PE4) /* RED */
+#define LED1_PIN             (1 << PE3) /* YELLOW */
 
 #define LED0_MASK           (1 << DDE4)
 #define LED1_MASK           (1 << DDE3)
@@ -70,17 +66,17 @@ extern "C" {
  * @name    Usage of LED to turn on when a kernel panic occurs.
  * @{
  */
-#define LED_PANIC            LED0_ON //LED_RED_ON
+#define LED_PANIC            LED0_ON
 /** @} */
 
-  
+
 /**
  * @name DS18 pins  OW_BUS_0
  * @{
  */
 #define DS18_PARAM_PIN  0xD7
 #define DS18_PARAM_PULL   (GPIO_IN_PU)
-  
+
 /**
  * @name xtimer configuration values
  * @{
@@ -94,7 +90,7 @@ extern "C" {
  * @name Indicate Watchdog cleared in bootloader an
  *
  * AVR CPUs need to reset the Watchdog as fast as possible.
- * This flag indicates that the watchdog is reseted in the bootloader
+ * This flag indicates that the watchdog is reset in the bootloader
  * and that the MCUSR value is stored in register 0 (r0)
  * @{
  */
@@ -102,13 +98,8 @@ extern "C" {
 /** @} */
 
 /**
- * @name CPU clock scale for jiminy-megarfr256rfr2
+ * @name CPU clock scale for avr-rss2
  *
- * The CPU can not be used with the external xtal oscillator if the core
- * should be put in sleep while the transceiver is in rx mode.
- *
- * It seems the as teh peripheral clock divider is set to 1 and this all
- * clocks of the timer, etc run with 16MHz increasing power consumption.
  */
 #define CPU_ATMEGA_CLK_SCALE_INIT    CPU_ATMEGA_CLK_SCALE_DIV1
 /** @} */
@@ -123,7 +114,7 @@ extern "C" {
 
 #define BTN0_PRESSED        ((BTN0_PIN & BTN0_MASK) == 0)
 #define BTN0_RELEASED       ((BTN0_PIN & BTN0_MASK) != 0)
-  
+
 /**
  * @brief Initialize board specific hardware, including clock, LEDs and std-IO
  */
