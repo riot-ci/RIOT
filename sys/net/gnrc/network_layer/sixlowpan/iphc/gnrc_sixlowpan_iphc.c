@@ -708,6 +708,9 @@ static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
 static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
 {
+    /* remove rewritten netif header (forwarding implementation must do this
+     * anyway) */
+    pkt = gnrc_pktbuf_remove_snip(pkt, pkt);
     DEBUG("6lo iphc: Do not know how to forward fragment from (%s, %u) ",
           gnrc_netif_addr_to_str(vrbe->super.src, vrbe->super.src_len,
                                  addr_str), vrbe->super.tag);
@@ -718,7 +721,7 @@ static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
     DEBUG("Original fragmentation header:\n");
     od_hex_dump(frag_hdr->data, frag_hdr->size, OD_WIDTH_DEFAULT);
     DEBUG("IPHC headers + payload:\n");
-    frag_hdr = pkt->next;    /* don't print netif header */
+    frag_hdr = pkt;
     while (frag_hdr) {
         od_hex_dump(frag_hdr->data, frag_hdr->size, OD_WIDTH_DEFAULT);
         frag_hdr = frag_hdr->next;
