@@ -133,7 +133,7 @@ char *ipv6_addr_split_str(char *addr_str, char seperator)
         }
     }
 
-    return sep;
+    return *sep ? sep : NULL;
 }
 
 int ipv6_addr_split_int(char *addr_str, char separator, int _default)

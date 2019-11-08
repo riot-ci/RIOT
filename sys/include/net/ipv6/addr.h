@@ -739,6 +739,7 @@ ipv6_addr_t *ipv6_addr_from_str(ipv6_addr_t *result, const char *addr);
  *
  * @return      string following the first occurrence of @p separator in
  *              @p addr_str.
+ * @return      NULL if @p separator was not found.
  */
 char *ipv6_addr_split_str(char *addr_str, char separator);
 
@@ -775,8 +776,8 @@ static inline int ipv6_addr_split_prefix(char *addr_str)
  * E.g., "fe80::1%5" returns "5", changes @p addr_str to "fe80::1"
  *
  * @param[in,out]   addr_str Address to split
- * @return          string containing the interface specifier. NULL if not
- *                  specified.
+ * @return          string containing the interface specifier.
+ * @return          NULL if no interface was specified.
  */
 static inline char *ipv6_addr_split_iface(char *addr_str)
 {
