@@ -2,7 +2,7 @@
 #Document version
 V1.3 2019-11-07
 
-# Overview
+#Overview
 This guide's aim is to help you start using RIOT for RSS2 boards but
 platform can support different AtMega-RF boards based on AtMega256RFR2
 
@@ -19,22 +19,22 @@ Directory `$(RIOTBASE)/boards/avr-rss2
 * Light Sensor.
 * 32kHz RTC clock xtal
 * HW comparator chip and input. 
-* Progammable power FET, (relay) for power on/off of sensors.
+* Programmable power FET, (relay) for power on/off of sensors.
 * Up to 25V DC input via LDO (LP2950). TVS protected.
-* Standard. 6-pin TTL-USB header compatibe w. FTDI cable for USART.
+* Standard. 6-pin TTL-USB header compatible w. FTDI cable for USART.
 * PCB formfactor for cheap project box G.40X IP54
 * Power/current use:
-  * RX ~10mA (Full RPC AtMegaXXRFR2). 
-  * Sleep ~45uA @ 16MHz XTAL
-  * Sleep ~15uA @  8MHz using internal oscillator
-* Preprogammed Atmel standard bootloader. 
+* RX ~10mA (Full RPC AtMegaXXRFR2). 
+* Sleep ~45uA @ 16MHz XTAL
+* Sleep ~15uA @  8MHz using internal oscillator
+* Preprogammed Atmel standard stk500v2 bootloader. 
 * CE certified by test institute.
 
 #USART 
 The board has one USART via the 6-pin TTL-USB adapter, The default
 baudrate is 115200 bps. It's possible to use higher speeds as is 250k
 and 500k baud which gives 0% Error with 16MHz clock. 
-(An addtional USART is on the chip but as default used by interrupt
+(An additional USART is on the chip but as default used by interrupt
 pins. Needs HW mod to be used)
 
 #RIOT Port Features
@@ -42,7 +42,7 @@ The platform has the following key features:
 * Standard, E64 address from built-in chip. Chip also has a 128bit ID.
 
 #Toolchain
-The Atmel toolcahin is available in most operating systems. 
+The Atmel toolchain is available in most operating systems. 
 For a full toolchain and easy installation on Ubuntu:
 
 apt-get install gcc-avr avr-libc avrdude
@@ -71,7 +71,7 @@ Programming using avrdude using serial bootloader. (TTL-USB cable)
 Press the RESET button. The bootloader with wait for boot commands 
 for 3 seconds.
 
-Flashing hello-wprld line example 256k MCU:
+Flashing hello-world line example 256k MCU:
  avrdude -p m256rfr2 -c stk500v2 -P /dev/ttyUSB0 -b 115200 -e -U flash:w:bin/rss2-mega256rfr2/hello-world.elf
 
 #Board approvals
@@ -80,7 +80,7 @@ Rev 2.4
 * Safety: IEC 60950-1:2005 2nd Edition +Am 1:2009 +Am 2:2013
 * RF: ETSI EN 300 328 V2.1.1 (2016-11)
 * EMC: Draft ETSI EN 301 489-1 V2.2.0 (2017-03), 
-  Draft ETSI EN 301 489-17 V3.2.0 (2017-03)
+Draft ETSI EN 301 489-17 V3.2.0 (2017-03)
 * EMF: EN 62479:2010
 * Human exposure to electromagnetic fields: EN 62479:2010 
 
@@ -102,5 +102,3 @@ http://radio-sensors.com/pictures/s2-2.4-back-port-edited.jpg
 #Documentation, schematics, Hardware and Vendor info
 http://radio-sensors.com/
 
-# Pinout	
-include/rss2.h

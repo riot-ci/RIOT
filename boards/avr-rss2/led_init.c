@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_rss2-mega256rfr2
+ * @ingroup     boards_avr-rss2
  * @{
  *
  * @file
@@ -19,10 +19,6 @@
  */
 
 #include "board.h"
-#include "cpu.h"
-#include "net/eui64.h"
-#include <string.h>
-#include <inttypes.h>
 
 void led_init(void)
 {
@@ -30,9 +26,4 @@ void led_init(void)
     LED_PORT_DDR |= LED1_MASK | LED0_MASK;
     /* All LEDs OFF */
     LED_PORT |= (LED1_MASK | LED0_MASK);
-}
-
-void board_init(void)
-{
-     led_init();
 }
