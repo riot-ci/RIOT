@@ -39,7 +39,7 @@ uint32_t xPortGetTickRateHz(void);
 BaseType_t xPortInIsrContext(void);
 
 /*
- * PLESE NOTE: Following definitions were copied directly from the FreeRTOS
+ * PLEASE NOTE: Following definitions were copied directly from the FreeRTOS
  * distribution and are under the following copyright:
  *
  * FreeRTOS V8.2.0 - Copyright (C) 2015 Real Time Engineers Ltd.
