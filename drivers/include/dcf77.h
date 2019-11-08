@@ -72,8 +72,8 @@ typedef struct dcf77 {
     dcf77_params_t params;      /**< Device parameters */
     dcf77_bits_t bitseq;        /**< contains all Bits from a current cycle */
     dcf77_bits_t last_bitseq;   /**< contains all Bits from a last cycle */
-    uint8_t internal_state;     /**< internal States  */
     uint32_t startTime;         /**< Timestamp to measure the term of the level */
+    uint8_t internal_state;     /**< internal States  */
     uint8_t bitCounter;         /**< Counter of the Bits in a Bitsequenz */
     dcf77_tick_cb_t tick_cb;    /**< Callback to be called if a new minute starts */
     void *tick_cb_args;         /**< Arguments for the tick callback */
