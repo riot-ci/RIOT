@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include "thread.h"
 
+#include "cpu.h"
 #include "log.h"
 
 static inline void
@@ -31,6 +32,15 @@ _init_data(void)
     extern unsigned int _edata;
     extern unsigned int __bss_start;
     extern unsigned int __bss_end;
+
+/* Support for LPRAM. */
+#ifdef CPU_HAS_BACKUP_RAM
+    extern unsigned int _sbackup_data_load[];
+    extern unsigned int _sbackup_data[];
+    extern unsigned int _ebackup_data[];
+    extern unsigned int _sbackup_bss[];
+    extern unsigned int _ebackup_bss[];
+#endif /* CPU_HAS_BACKUP_RAM */
 
     register unsigned int *p1;
     register unsigned int *p2;
@@ -54,6 +64,23 @@ _init_data(void)
     while (p1 < p2) {
         *p1++ = 0;
     }
+
+#ifdef CPU_HAS_BACKUP_RAM
+    if (cpu_power_on_reset()) {
+
+        /* load low-power data section. */
+        for (p1 = _sbackup_data, p2 = _sbackup_data_load;
+             p1 < _ebackup_data;
+             p1++, p2++) {
+            *p1 = *p2;
+        }
+
+        /* zero-out low-power bss. */
+        for (p1 = _sbackup_bss; p1 < _ebackup_bss; p1++) {
+            *p1 = 0;
+        }
+    }
+#endif /* CPU_HAS_BACKUP_RAM */
 }
 
 void bootloader(void)
