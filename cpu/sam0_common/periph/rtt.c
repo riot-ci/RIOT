@@ -27,6 +27,14 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+/*
+ * Bit introduced by SAML21xxxB, setting it on SAML21xxxxA too has no ill
+ * effects, but simplifies the code. (This bit is always set on SAML21xxxxA)
+ */
+#ifndef RTC_MODE0_CTRLA_COUNTSYNC
+#define RTC_MODE0_CTRLA_COUNTSYNC   BIT15
+#endif
+
 static rtt_cb_t _overflow_cb;
 static void* _overflow_arg;
 
