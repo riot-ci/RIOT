@@ -57,6 +57,14 @@ static inline void cpu_print_last_instruction(void)
     printf("%p\n", (void*) lr_ptr);
 }
 
+/**
+ * @brief   Returns true if the reset cause was power-on.
+ */
+bool cpu_power_on_reset(void);
+
+/* we have battery RAM */
+#define CPU_HAS_BACKUP_RAM  (1)
+
 #ifdef __cplusplus
 }
 #endif
