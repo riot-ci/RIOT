@@ -34,7 +34,7 @@ extern "C" {
 extern uint32_t system_get_time_ms (void);
 extern int ets_printf(const char *fmt, ...);
 
-#if MODULE_ESP_LOG_COLORED
+#if MODULE_LOG_COLOR
 
 #define LOG_COLOR_RED     "31"
 #define LOG_COLOR_GREEN   "32"
@@ -47,7 +47,7 @@ extern int ets_printf(const char *fmt, ...);
 #define LOG_COLOR_D
 #define LOG_COLOR_V
 
-#else /* MODULE_ESP_LOG_COLORED */
+#else /* MODULE_LOG_COLOR */
 
 #define LOG_COLOR_E
 #define LOG_COLOR_W
@@ -56,7 +56,7 @@ extern int ets_printf(const char *fmt, ...);
 #define LOG_COLOR_V
 #define LOG_RESET_COLOR
 
-#endif /* MODULE_ESP_LOG_COLORED */
+#endif /* MODULE_LOG_COLOR */
 
 #if MODULE_ESP_LOG_TAGGED
 
