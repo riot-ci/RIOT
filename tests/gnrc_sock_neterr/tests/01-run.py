@@ -13,6 +13,8 @@ from testrunner import run
 def testfunc(child):
     child.expect(r"SUCCESS: error code EHOSTUNREACH \((\d+) == (\d+)\)")
     assert child.match.group(1) == child.match.group(2)
+    child.expect(r"SUCCESS: error code ENETUNREACH \((\d+) == (\d+)\)")
+    assert child.match.group(1) == child.match.group(2)
 
 
 if __name__ == "__main__":
