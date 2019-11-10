@@ -221,6 +221,7 @@ enum {
     NETDEV_TYPE_CC110X,
     NETDEV_TYPE_LORA,
     NETDEV_TYPE_NRFMIN,
+    NETDEV_TYPE_NRF24L01P,
     NETDEV_TYPE_SLIP,
     NETDEV_TYPE_ESP_NOW,
 };
@@ -283,7 +284,7 @@ typedef void (*netdev_event_cb_t)(netdev_t *dev, netdev_event_t event);
 struct netdev {
     const struct netdev_driver *driver;     /**< ptr to that driver's interface. */
     netdev_event_cb_t event_callback;       /**< callback for device events */
-    void* context;                          /**< ptr to network stack context */
+    void *context;                          /**< ptr to network stack context */
 #ifdef MODULE_NETDEV_LAYER
     netdev_t *lower;                        /**< ptr to the lower netdev layer */
 #endif
