@@ -19,6 +19,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include "msg.h"
 #include "net/sock/udp.h"
 
 #define TEST_PORT               (38664U)
@@ -32,6 +33,7 @@ static const uint8_t _test_link_local_remote[] = TEST_LINK_LOCAL_REMOTE;
 static const uint8_t _test_global_remote[] = TEST_GLOBAL_REMOTE;
 static const uint8_t _test_payload[] = TEST_PAYLOAD;
 
+static msg_t _msg_queue[8U];
 static sock_udp_t _udp_sock;
 
 int _test_udp_send(sock_udp_ep_t *remote, char *errno_str, int exp_res) {
@@ -60,6 +62,7 @@ int main(void)
     local.port = TEST_PORT;
     remote.port = TEST_PORT - 1;
 
+    msg_init_queue(_msg_queue, ARRAY_SIZE(_msg_queue));
     sock_udp_create(&_udp_sock, &local, NULL, 0);
 
     memcpy(remote.addr.ipv6, _test_link_local_remote,

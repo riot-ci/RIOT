@@ -7,6 +7,6 @@ USEMODULE += gnrc_sock_udp
 USEMODULE += od
 USEMODULE += xtimer
 
-CFLAGS += -DSOCK_HAS_IPV6 -DGNRC_PKTBUF_SIZE=200
+CFLAGS += -DGNRC_PKTBUF_SIZE=200
 
 include $(RIOTBASE)/Makefile.include
