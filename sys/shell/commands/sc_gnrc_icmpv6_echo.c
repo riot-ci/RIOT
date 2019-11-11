@@ -85,7 +85,7 @@ int _gnrc_icmpv6_ping(int argc, char **argv)
 {
     _ping_data_t data = {
         .netreg = GNRC_NETREG_ENTRY_INIT_PID(ICMPV6_ECHO_REP,
-                                                 sched_active_pid),
+                                             sched_active_pid),
         .count = DEFAULT_COUNT,
         .tmin = UINT_MAX,
         .datalen = DEFAULT_DATALEN,
@@ -134,7 +134,8 @@ finish:
         /* remove all remaining messages (likely caused by duplicates) */
         if ((msg_try_receive(&msg) > 0) &&
             (msg.type == GNRC_NETAPI_MSG_TYPE_RCV) &&
-            (((gnrc_pktsnip_t *)msg.content.ptr)->type == GNRC_NETTYPE_ICMPV6)) {
+            (((gnrc_pktsnip_t *)msg.content.ptr)->type ==
+             GNRC_NETTYPE_ICMPV6)) {
             gnrc_pktbuf_release(msg.content.ptr);
         }
         else {
@@ -152,14 +153,14 @@ static void _usage(char *cmdname)
     puts("     [-t hoplimit] [-W <ms timeout>] <host>[%<interface>]");
     puts("     count: number of pings (default: 3)");
     puts("     ms interval: wait interval milliseconds between sending "
-              "(default: 1000)");
+         "(default: 1000)");
     puts("     packetsize: number of bytes in echo payload; must be >= 4 to "
-              "measure round trip time (default: 4)");
+         "measure round trip time (default: 4)");
     puts("     hoplimit: Set the IP time to life/hoplimit "
-              "(default: interface config)");
-    puts("     ms timeout: Time to wait for a resonse in milliseconds "
-              "(default: 1000). The option affects only timeout in absence "
-              "of any responses, otherwise wait for two RTTs");
+         "(default: interface config)");
+    puts("     ms timeout: Time to wait for a response in milliseconds "
+         "(default: 1000). The option affects only timeout in absence "
+         "of any responses, otherwise wait for two RTTs");
 }
 
 static int _configure(int argc, char **argv, _ping_data_t *data)
@@ -202,29 +203,29 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                             continue;
                         }
                     }
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 case 'h':
                     res = 1;
                     continue;
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 case 'i':
                     if ((++i) < argc) {
                         data->interval = (uint32_t)atoi(argv[i]) * US_PER_MS;
                         continue;
                     }
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 case 's':
                     if ((++i) < argc) {
                         data->datalen = atoi(argv[i]);
                         continue;
                     }
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 case 't':
                     if ((++i) < argc) {
                         data->hoplimit = atoi(argv[i]);
                         continue;
                     }
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 case 'W':
                     if ((++i) < argc) {
                         data->timeout = (uint32_t)atoi(argv[i]) * US_PER_MS;
@@ -232,7 +233,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
                             continue;
                         }
                     }
-                    /* intentionally falls through */
+                /* intentionally falls through */
                 default:
                     res = 1;
                     break;
@@ -368,7 +369,7 @@ static void _print_reply(_ping_data_t *data, gnrc_pktsnip_t *icmpv6,
         printf("%u bytes from %s: icmp_seq=%u ttl=%u", (unsigned)icmpv6->size,
                from_str, recv_seq, hoplimit);
         if (rssi) {
-            printf(" rssi=%"PRId16" dBm", rssi);
+            printf(" rssi=%" PRId16 " dBm", rssi);
         }
         if (data->datalen >= sizeof(uint32_t)) {
             printf(" time=%lu.%03lu ms", (long unsigned)triptime / 1000,
@@ -393,7 +394,8 @@ static void _handle_reply(_ping_data_t *data, gnrc_pktsnip_t *pkt)
     }
     ipv6_hdr = ipv6->data;
     netif_hdr = netif ? netif->data : NULL;
-    _print_reply(data, icmpv6, &ipv6_hdr->src, ipv6_hdr->hl, netif_hdr ? netif_hdr->rssi : 0);
+    _print_reply(data, icmpv6, &ipv6_hdr->src, ipv6_hdr->hl,
+                 netif_hdr ? netif_hdr->rssi : 0);
 #ifdef MODULE_GNRC_IPV6_NIB
     /* successful ping to neighbor (NIB handles case if ipv6->src is not a
      * neighbor) can be taken as upper-layer hint for reachability:

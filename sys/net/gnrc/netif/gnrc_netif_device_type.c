@@ -32,22 +32,22 @@ netopt_t gnrc_netif_get_l2addr_opt(const gnrc_netif_t *netif)
 
     switch (netif->device_type) {
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) || \
-    defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
+        defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_BLE: {
-                netdev_t *dev = netif->dev;
-                int r;
-                uint16_t tmp;
+            netdev_t *dev = netif->dev;
+            int r;
+            uint16_t tmp;
 
-                r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
-                assert(r == sizeof(tmp));
-                assert(r <= ((int)UINT8_MAX));
-                (void)r;
-                if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
-                    res = NETOPT_ADDRESS_LONG;
-                }
+            r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
+            assert(r == sizeof(tmp));
+            assert(r <= ((int)UINT8_MAX));
+            (void)r;
+            if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
+                res = NETOPT_ADDRESS_LONG;
             }
-            break;
+        }
+        break;
 #endif
         default:
             break;
@@ -76,7 +76,7 @@ int gnrc_netif_eui64_from_addr(const gnrc_netif_t *netif,
                         break;
                 }
 #endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
-                /* Intentionally falls through */
+            /* Intentionally falls through */
             default:
                 return l2util_eui64_from_addr(netif->device_type, addr,
                                               addr_len, eui64);
@@ -106,6 +106,7 @@ void gnrc_netif_init_6ln(gnrc_netif_t *netif)
         case NETDEV_TYPE_CC110X:
 #endif
         case NETDEV_TYPE_NRFMIN:
+        case NETDEV_TYPE_NRF24L01P:
 #if GNRC_IPV6_NIB_CONF_6LN
             netif->flags |= GNRC_NETIF_FLAGS_6LN;
 #endif  /* GNRC_IPV6_NIB_CONF_6LN */
@@ -125,15 +126,17 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
 
     switch (netif->device_type) {
 #if defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_NRFMIN) || \
-    defined(MODULE_XBEE) || defined(MODULE_ESP_NOW) || \
-    defined(MODULE_GNRC_SIXLOENC) || defined(MODULE_CC110X)
+        defined(MODULE_XBEE) || defined(MODULE_ESP_NOW) || \
+        defined(MODULE_GNRC_SIXLOENC) || defined(MODULE_CC110X) || \
+        defined(MODULE_NRF24L01P)
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_NRFMIN:
         case NETDEV_TYPE_CC110X:
+        case NETDEV_TYPE_NRF24L01P:
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC
             netif->flags |= GNRC_NETIF_FLAGS_6LO_HC;
 #endif
-            /* intentionally falls through */
+        /* intentionally falls through */
         case NETDEV_TYPE_ESP_NOW:
             res = dev->driver->get(dev, NETOPT_MAX_PDU_SIZE,
                                    &tmp, sizeof(tmp));
