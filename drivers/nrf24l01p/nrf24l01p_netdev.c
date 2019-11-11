@@ -33,6 +33,7 @@
 #include "net/netdev.h"
 #include "xtimer.h"
 
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p_lookup_tables.h"
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"

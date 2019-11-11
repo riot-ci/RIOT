@@ -19,6 +19,7 @@
 #ifndef NRF24L01P_LOOKUP_TABLES_H
 #define NRF24L01P_LOOKUP_TABLES_H
 
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p.h"
 
 #ifdef __cplusplus

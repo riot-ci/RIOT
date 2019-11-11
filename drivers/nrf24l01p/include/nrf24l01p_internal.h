@@ -19,16 +19,21 @@
 #ifndef NRF24L01P_INTERNAL_H
 #define NRF24L01P_INTERNAL_H
 
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef NRF24L01P_CUSTOM_HEADER
-    #define NRF24L01P_PREEMBLE      (0x80)
-    #define NRF24L01P_PADDING       (0x00)
-#endif
+/**
+ * @brief Indicate header byte
+ */
+#define NRF24L01P_PREEMBLE      (0x80)
+/**
+ * @brief Padding byte for ShockBurst
+ */
+#define NRF24L01P_PADDING       (0x00)
 
 /**
  * @brief   Header of a ShockBurst frame

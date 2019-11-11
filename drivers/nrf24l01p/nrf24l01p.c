@@ -24,6 +24,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p_lookup_tables.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_registers.h"

@@ -26,6 +26,7 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 #endif
 
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p.h"
 
 #ifdef __cplusplus

@@ -23,6 +23,7 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 #include "xtimer.h"
+#include "nrf24l01p_constants.h"
 #include "nrf24l01p_communication.h"
 
 #define ENABLE_DEBUG    (0)
