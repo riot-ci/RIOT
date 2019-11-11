@@ -19,10 +19,10 @@ static void print_help(void)
 {
     puts(
         "Usage:\n\
-    nrf24ctl <device index> --set <ack_payload | address | mtu> <pipe index>\n\
-    nrf24ctl <device index> --set <channel | crc | data_rate | power | retr_delay | max_retr>\n\
+    nrf24ctl <device index> --set <ack_payload | address | mtu> <value> <pipe index>\n\
+    nrf24ctl <device index> --set <channel | crc | data_rate | power | retr_delay | state |  max_retr> <value>\n\
     nrf24ctl <device index> --get <address | mtu> <pipe index>\n\
-    nrf24ctl <device index> --get <channel | crc | data_rate | power | retr_delay | max_retr>\n\
+    nrf24ctl <device index> --get <channel | crc | data_rate | power | retr_delay | stata | max_retr>\n\
     ");
 #ifdef MODULE_NRF24L01P_DIAGNOSTICS
     puts(
