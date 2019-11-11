@@ -123,6 +123,9 @@ PSEUDOMODULES += mpu9250
 # include variants of mrf24j40 drivers as pseudo modules
 PSEUDOMODULES += mrf24j40m%
 
+# implementations of neopixel_write as submodules of neopixel:
+PSEUDOMODULES += neopixel_%
+
 # include variants of SX127X drivers as pseudo modules
 PSEUDOMODULES += sx1272
 PSEUDOMODULES += sx1276

@@ -388,6 +388,17 @@ ifneq (,$(filter my9221,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter neopixel,$(USEMODULE)))
+  ifeq (,$(filter neopixel_%,$(USEMODULE)))
+    ifneq (,$(filter arch_avr8,$(FEATURES_PROVIDED)))
+      USEMODULE += neopixel_atmega
+    else
+      $(error No backed for the neopixel driver available)
+    endif
+  endif
+  USEMODULE += xtimer
+endif
+
 ifneq (,$(filter nvc7356,$(USEMODULE)))
   USEMODULE += can_trx
   FEATURES_REQUIRED += periph_gpio

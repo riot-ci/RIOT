@@ -35,14 +35,10 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 #include "periph_cpu.h"
+#include "atmega_gpio.h"
 
 #define ENABLE_DEBUG            (0)
 #include "debug.h"
-
-#define GPIO_BASE_PORT_A        (0x20)
-#define GPIO_OFFSET_PORT_H      (0xCB)
-#define GPIO_OFFSET_PIN_PORT    (0x02)
-#define GPIO_OFFSET_PIN_PIN     (0x03)
 
 #ifdef MODULE_PERIPH_GPIO_IRQ
 /*
@@ -166,57 +162,6 @@ static gpio_isr_ctx_pcint_t pcint_config[8 * PCINT_NUM_BANKS];
 #endif  /* MODULE_ATMEGA_PCINTn */
 
 #endif  /* MODULE_PERIPH_GPIO_IRQ */
-
-/**
- * @brief     Extract the pin number of the given pin
- */
-static inline uint8_t _pin_num(gpio_t pin)
-{
-    return (pin & 0x0f);
-}
-
-/**
- * @brief     Extract the port number of the given pin
- */
-static inline uint8_t _port_num(gpio_t pin)
-{
-    return (pin >> 4) & 0x0f;
-}
-
-/**
- * @brief     Generate the PORTx address of the give pin.
- */
-static inline uint16_t _port_addr(gpio_t pin)
-{
-    uint8_t port_num = _port_num(pin);
-    uint16_t port_addr = port_num * GPIO_OFFSET_PIN_PIN;
-
-    port_addr += GPIO_BASE_PORT_A;
-    port_addr += GPIO_OFFSET_PIN_PORT;
-
-#if defined (PORTG)
-    if (port_num > PORT_G) {
-        port_addr += GPIO_OFFSET_PORT_H;
-    }
-#endif
-    return port_addr;
-}
-
-/**
- * @brief     Generate the DDRx address of the given pin
- */
-static inline uint16_t _ddr_addr(gpio_t pin)
-{
-    return (_port_addr(pin) - 0x01);
-}
-
-/**
- * @brief     Generate the PINx address of the given pin.
- */
-static inline uint16_t _pin_addr(gpio_t pin)
-{
-    return (_port_addr(pin) - 0x02);
-}
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
