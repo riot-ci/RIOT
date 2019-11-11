@@ -755,8 +755,8 @@ static int nrf24l01p_set(netdev_t *netdev, netopt_t opt, const void *val,
         case NETOPT_CHECKSUM:
         case NETOPT_INTEGRITY_CHECK: {
             assert(len == sizeof(netopt_enable_t));
-            nrf24l01p_crco_t crc = (*((netopt_enable_t *)val) == NETOPT_ENABLE)
-                                   ? NRF24L01P_CRCO_2 : NRF24L01P_CRCO_0;
+            nrf24l01p_crc_t crc = (*((netopt_enable_t *)val) == NETOPT_ENABLE)
+                                   ? NRF24L01P_CRC_2BYTE : NRF24L01P_CRC_0BYTE;
             int ret = nrf24l01p_set_crc(dev, crc);
             return ret ? ret : (int)sizeof(netopt_enable_t);
         } break;

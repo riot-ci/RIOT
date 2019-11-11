@@ -167,14 +167,14 @@ uint16_t nrf24l01p_get_air_data_rate(nrf24l01p_t *dev,
     return nrf24l01p_etoval_rfdr(dev->params.config.cfg_data_rate);
 }
 
-int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crco_t crc)
+int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crc_t crc)
 {
     assert(dev);
-    if (crc >= NRF24L01P_CRCO_NUM_OF) {
+    if (crc >= NRF24L01P_CRC_NUM_OF) {
         return -EINVAL;
     }
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_ESB) {
-        if (crc == NRF24L01P_CRCO_0) {
+        if (crc == NRF24L01P_CRC_0BYTE) {
             return -ENOTSUP;
         }
     }
@@ -196,7 +196,7 @@ int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crco_t crc)
     return 0;
 }
 
-uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crco_t *crc)
+uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crc_t *crc)
 {
     assert(dev);
     if (crc) {
@@ -205,10 +205,10 @@ uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crco_t *crc)
     return nrf24l01p_etoval_crco(dev->params.config.cfg_crc);
 }
 
-int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t power)
+int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power)
 {
     assert(dev);
-    if (power >= NRF24L01P_RF_PWR_NUM_OF) {
+    if (power >= NRF24L01P_TX_POWER_NUM_OF) {
         return -EINVAL;
     }
     switch (dev->state) {
@@ -228,7 +228,7 @@ int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t power)
     return 0;
 }
 
-int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t *power)
+int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t *power)
 {
     assert(dev);
     if (power) {

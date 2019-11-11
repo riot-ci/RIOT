@@ -121,17 +121,17 @@ extern "C" {
 #ifndef NRF24L01P_PARAM_CRC_LEN
 /**
  * @brief   Default CRC length [0; 3]
- *          @see nrf24l01p_crco_t
+ *          @see nrf24l01p_crc_t
  */
-#define NRF24L01P_PARAM_CRC_LEN             (NRF24L01P_CRCO_2)
+#define NRF24L01P_PARAM_CRC_LEN             (NRF24L01P_CRC_2BYTE)
 #endif
 
 #ifndef NRF24L01P_PARAM_TX_POWER_LVL
 /**
  * @brief   Default TX power in [0; 3]
- *          @see nrf24l01p_rfpwr_t
+ *          @see nrf24l01p_tx_power_t
  */
-#define NRF24L01P_PARAM_TX_POWER_LVL        (NRF24L01P_RF_PWR_0dBm)
+#define NRF24L01P_PARAM_TX_POWER_LVL        (NRF24L01P_TX_POWER_0DBM)
 #endif
 
 #if (NRF24L01P_PARAM_PROTOCOL == NRF24L01P_SHOCKBURST)
@@ -140,7 +140,7 @@ extern "C" {
  * @brief   Default data rate [0; 2]
  *          @see nrf24l01p_rfdr_t
  */
-#define NRF24L01P_PARAM_DATA_RATE_LVL       (NRF24L01P_RF_DR_1Mbps)
+#define NRF24L01P_PARAM_DATA_RATE_LVL       (NRF24L01P_RF_DR_1MBPS)
 #endif
 #else
 #ifndef NRF24L01P_PARAM_DATA_RATE_LVL
@@ -148,7 +148,7 @@ extern "C" {
  * @brief   Default data rate [0; 2]
  *          @see nrf24l01p_rfdr_t
  */
-#define NRF24L01P_PARAM_DATA_RATE_LVL       (NRF24L01P_RF_DR_2Mbps)
+#define NRF24L01P_PARAM_DATA_RATE_LVL       (NRF24L01P_RF_DR_2MBPS)
 #endif
 #endif
 

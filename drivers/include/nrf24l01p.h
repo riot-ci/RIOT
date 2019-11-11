@@ -91,9 +91,9 @@ typedef enum {
  * @brief   Possible values to configure the layer-2 address width
  */
 typedef enum {
-    NRF24L01P_AW_3byte  = 1,        /**< value to use a 3 bytes long layer-2 address */
-    NRF24L01P_AW_4byte  = 2,        /**< value to use a 4 bytes long layer-2 address */
-    NRF24L01P_AW_5byte  = 3,        /**< value to use a 5 bytes long layer-2 address */
+    NRF24L01P_AW_3BYTE  = 1,        /**< value to use a 3 bytes long layer-2 address */
+    NRF24L01P_AW_4BYTE  = 2,        /**< value to use a 4 bytes long layer-2 address */
+    NRF24L01P_AW_5BYTE  = 3,        /**< value to use a 5 bytes long layer-2 address */
     NRF24L01P_AW_NUM_OF             /**< Number of possible values to configure the layer-2 address width */
 } nrf24l01p_aw_t;
 
@@ -101,22 +101,22 @@ typedef enum {
  * @brief   Possible values to configure the retransmission delay in ESB
  */
 typedef enum {
-    NRF24L01P_ARD_250us     = 0,    /**< 250 us */
-    NRF24L01P_ARD_500us     = 1,    /**< 500 us */
-    NRF24L01P_ARD_750us     = 2,    /**< 750 us */
-    NRF24L01P_ARD_1000us    = 3,    /**< 1000 us */
-    NRF24L01P_ARD_1250us    = 4,    /**< 1250 us */
-    NRF24L01P_ARD_1500us    = 5,    /**< 1500 us */
-    NRF24L01P_ARD_1750us    = 6,    /**< 1750 us */
-    NRF24L01P_ARD_2000us    = 7,    /**< 2000 us */
-    NRF24L01P_ARD_2250us    = 8,    /**< 2250 us */
-    NRF24L01P_ARD_2500us    = 9,    /**< 2500 us */
-    NRF24L01P_ARD_2750us    = 10,   /**< 2750 us */
-    NRF24L01P_ARD_3000us    = 11,   /**< 3000 us */
-    NRF24L01P_ARD_3250us    = 12,   /**< 3250 us */
-    NRF24L01P_ARD_3500us    = 13,   /**< 3500 us */
-    NRF24L01P_ARD_3750us    = 14,   /**< 3750 us */
-    NRF24L01P_ARD_4000us    = 15,   /**< 4000 us */
+    NRF24L01P_ARD_250US     = 0,    /**< 250 us */
+    NRF24L01P_ARD_500US     = 1,    /**< 500 us */
+    NRF24L01P_ARD_750US     = 2,    /**< 750 us */
+    NRF24L01P_ARD_1000US    = 3,    /**< 1000 us */
+    NRF24L01P_ARD_1250US    = 4,    /**< 1250 us */
+    NRF24L01P_ARD_1500US    = 5,    /**< 1500 us */
+    NRF24L01P_ARD_1750US    = 6,    /**< 1750 us */
+    NRF24L01P_ARD_2000US    = 7,    /**< 2000 us */
+    NRF24L01P_ARD_2250US    = 8,    /**< 2250 us */
+    NRF24L01P_ARD_2500US    = 9,    /**< 2500 us */
+    NRF24L01P_ARD_2750US    = 10,   /**< 2750 us */
+    NRF24L01P_ARD_3000US    = 11,   /**< 3000 us */
+    NRF24L01P_ARD_3250US    = 12,   /**< 3250 us */
+    NRF24L01P_ARD_3500US    = 13,   /**< 3500 us */
+    NRF24L01P_ARD_3750US    = 14,   /**< 3750 us */
+    NRF24L01P_ARD_4000US    = 15,   /**< 4000 us */
     NRF24L01P_ARD_NUM_OF            /**< Number of possible values to configure the retransmission delay */
 } nrf24l01p_ard_t;
 
@@ -124,30 +124,30 @@ typedef enum {
  * @brief   Possible values to configure the CRC length
  */
 typedef enum {
-    NRF24L01P_CRCO_0    = 1,    /**< 0 bytes CRC length */
-    NRF24L01P_CRCO_1    = 2,    /**< 1 byte CRC length */
-    NRF24L01P_CRCO_2    = 3,    /**< 2 bytes CRC length */
-    NRF24L01P_CRCO_NUM_OF       /**< Number of possible values to configure CRC length */
-} nrf24l01p_crco_t;
+    NRF24L01P_CRC_0BYTE    = 1,    /**< 0 bytes CRC length */
+    NRF24L01P_CRC_1BYTE    = 2,    /**< 1 byte CRC length */
+    NRF24L01P_CRC_2BYTE    = 3,    /**< 2 bytes CRC length */
+    NRF24L01P_CRC_NUM_OF       /**< Number of possible values to configure CRC length */
+} nrf24l01p_crc_t;
 
 /**
  * @brief   Possible values to configure the radio power
  */
 typedef enum {
-    NRF24L01P_RF_PWR_MINUS_18dBm    = 0,    /**< -18 dBm */
-    NRF24L01P_RF_PWR_MINUS_12dBm    = 1,    /**< -12 dBm */
-    NRF24L01P_RF_PWR_MINUS_6dBm     = 2,    /**<  -6 dBm */
-    NRF24L01P_RF_PWR_0dBm           = 3,    /**<   0 dBm */
-    NRF24L01P_RF_PWR_NUM_OF                 /**< Number of possible values to configure the radio power */
-} nrf24l01p_rfpwr_t;
+    NRF24L01P_TX_POWER_MINUS_18DBM    = 0,    /**< -18 dBm */
+    NRF24L01P_TX_POWER_MINUS_12DBM    = 1,    /**< -12 dBm */
+    NRF24L01P_TX_POWER_MINUS_6DBM     = 2,    /**<  -6 dBm */
+    NRF24L01P_TX_POWER_0DBM           = 3,    /**<   0 dBm */
+    NRF24L01P_TX_POWER_NUM_OF                 /**< Number of possible values to configure the radio power */
+} nrf24l01p_tx_power_t;
 
 /**
  * @brief   Possible values to configure the data rate
  */
 typedef enum {
-    NRF24L01P_RF_DR_1Mbps   = 0,    /**< 1 Mbit/s */
-    NRF24L01P_RF_DR_250kbps = 1,    /**< 250 kbit/s */
-    NRF24L01P_RF_DR_2Mbps   = 2,    /**< 2 Mbit/s */
+    NRF24L01P_RF_DR_1MBPS   = 0,    /**< 1 Mbit/s */
+    NRF24L01P_RF_DR_250KBPS = 1,    /**< 250 kbit/s */
+    NRF24L01P_RF_DR_2MBPS   = 2,    /**< 2 Mbit/s */
     NRF24L01P_RF_DR_NUM_OF          /**< Number of possible values to configure the data rate */
 } nrf24l01p_rfdr_t;
 
@@ -166,12 +166,12 @@ typedef struct {
     uint8_t cfg_protocol :       1;
     /**
      * @brief   Current CRC length configuration value
-     *          @see nrf24l01p_crco_t
+     *          @see nrf24l01p_crc_t
      */
     uint8_t cfg_crc :            2;
     /**
      * @brief   Current tx power configuration value
-     *          @see nrf24l01p_rfpwr_t
+     *          @see nrf24l01p_tx_power_t
      */
     uint8_t cfg_tx_power :       2;
     /**
@@ -368,7 +368,7 @@ uint16_t nrf24l01p_get_air_data_rate(nrf24l01p_t *dev,
  * @retval -EINVAL          Bad CRC configuration value
  * @retval -EAGAIN          Current state does not permit changing CRC length
  */
-int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crco_t crc);
+int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crc_t crc);
 
 /**
  * @brief   Get currently configured CRC length
@@ -378,7 +378,7 @@ int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crco_t crc);
  *
  * @return                  Current CRC length
  */
-uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crco_t *crc);
+uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crc_t *crc);
 
 /**
  * @brief   Configure Tx trasceiver power
@@ -390,7 +390,7 @@ uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crco_t *crc);
  * @retval -EINVAL          Bad Tx power configuration value
  * @retval -EAGAIN          Current state does not permit changin Tx power
  */
-int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t power);
+int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power);
 
 /**
  * @brief   Get currently configured Tx transceiver power
@@ -400,7 +400,7 @@ int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t power);
  *
  * @return                  Tx power in [dbm]
  */
-int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_rfpwr_t *power);
+int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t *power);
 
 /**
  * @brief   Set transceiver channel
@@ -577,10 +577,10 @@ nrf24l01p_state_t nrf24l01p_get_state(nrf24l01p_t *dev);
  */
 static inline uint8_t nrf24l01p_etoval_aw(nrf24l01p_aw_t address_width)
 {
-    if (address_width <= NRF24L01P_AW_3byte) {
+    if (address_width <= NRF24L01P_AW_3BYTE) {
         return 3;
     }
-    if (address_width == NRF24L01P_AW_4byte) {
+    if (address_width == NRF24L01P_AW_4BYTE) {
         return 4;
     }
     return 5;
@@ -596,12 +596,12 @@ static inline uint8_t nrf24l01p_etoval_aw(nrf24l01p_aw_t address_width)
 static inline nrf24l01p_aw_t nrf24l01p_valtoe_aw(uint8_t address_width)
 {
     if (address_width <= 3) {
-        return NRF24L01P_AW_3byte;
+        return NRF24L01P_AW_3BYTE;
     }
     if (address_width == 4) {
-        return NRF24L01P_AW_4byte;
+        return NRF24L01P_AW_4BYTE;
     }
-    return NRF24L01P_AW_5byte;
+    return NRF24L01P_AW_5BYTE;
 }
 
 /**
@@ -613,7 +613,7 @@ static inline nrf24l01p_aw_t nrf24l01p_valtoe_aw(uint8_t address_width)
  */
 static inline uint16_t nrf24l01p_etoval_ard(nrf24l01p_ard_t retr_delay)
 {
-    if (retr_delay >= NRF24L01P_ARD_4000us) {
+    if (retr_delay >= NRF24L01P_ARD_4000US) {
         return 4000;
     }
     return (retr_delay + 1) * 250;
@@ -629,87 +629,87 @@ static inline uint16_t nrf24l01p_etoval_ard(nrf24l01p_ard_t retr_delay)
 static inline nrf24l01p_ard_t nrf24l01p_valtoe_ard(uint16_t retr_delay)
 {
     if (retr_delay >= 4000) {
-        return NRF24L01P_ARD_4000us;
+        return NRF24L01P_ARD_4000US;
     }
     return retr_delay / 250;
 }
 
 /**
- * @brief   Convert @ref nrf24l01p_crco_t to actual CRC length
+ * @brief   Convert @ref nrf24l01p_crc_t to actual CRC length
  *
  * @param[in] crc_len       CRC length enum
  *
  * @return                  CRC length in [bytes]
  */
-static inline uint8_t nrf24l01p_etoval_crco(nrf24l01p_crco_t crc_len)
+static inline uint8_t nrf24l01p_etoval_crco(nrf24l01p_crc_t crc_len)
 {
-    if (crc_len <= NRF24L01P_CRCO_0) {
+    if (crc_len <= NRF24L01P_CRC_0BYTE) {
         return 0;
     }
-    if (crc_len == NRF24L01P_CRCO_1) {
+    if (crc_len == NRF24L01P_CRC_1BYTE) {
         return 1;
     }
     return 2;
 }
 
 /**
- * @brief   Convert CRC length in [bytes] to @ref nrf24l01p_crco_t
+ * @brief   Convert CRC length in [bytes] to @ref nrf24l01p_crc_t
  *
  * @param[in] crc_len       CRC length in [bytes]
  *
  * @return                  Corresponding enum
  */
-static inline nrf24l01p_crco_t nrf24l01p_valtoe_crco(uint8_t crc_len)
+static inline nrf24l01p_crc_t nrf24l01p_valtoe_crco(uint8_t crc_len)
 {
     if (!crc_len) {
-        return NRF24L01P_CRCO_0;
+        return NRF24L01P_CRC_0BYTE;
     }
     if (crc_len == 1) {
-        return NRF24L01P_CRCO_1;
+        return NRF24L01P_CRC_1BYTE;
     }
-    return NRF24L01P_CRCO_2;
+    return NRF24L01P_CRC_2BYTE;
 }
 
 /**
- * @brief   Convert @ref nrf24l01p_rfpwr_t to actual Tx power
+ * @brief   Convert @ref nrf24l01p_tx_power_t to actual Tx power
  *
  * @param[in] power         RF power enum
  *
  * @return                  RF power in [dbm]
  */
-static inline int8_t nrf24l01p_etoval_rfpwr(nrf24l01p_rfpwr_t power)
+static inline int8_t nrf24l01p_etoval_rfpwr(nrf24l01p_tx_power_t power)
 {
-    if (power <= NRF24L01P_RF_PWR_MINUS_18dBm) {
+    if (power <= NRF24L01P_TX_POWER_MINUS_18DBM) {
         return -18;
     }
-    if (power == NRF24L01P_RF_PWR_MINUS_12dBm) {
+    if (power == NRF24L01P_TX_POWER_MINUS_12DBM) {
         return -12;
     }
-    if (power == NRF24L01P_RF_PWR_MINUS_6dBm) {
+    if (power == NRF24L01P_TX_POWER_MINUS_6DBM) {
         return -6;
     }
     return 0;
 }
 
 /**
- * @brief   Convert RF power in [dbm] to @ref nrf24l01p_rfpwr_t
+ * @brief   Convert RF power in [dbm] to @ref nrf24l01p_tx_power_t
  *
  * @param[in] power         RF power in [dbm]
  *
  * @return                  Corresponding enum
  */
-static inline nrf24l01p_rfpwr_t nrf24l01p_valtoe_rfpwr(int16_t power)
+static inline nrf24l01p_tx_power_t nrf24l01p_valtoe_rfpwr(int16_t power)
 {
     if (power <= -18) {
-        return NRF24L01P_RF_PWR_MINUS_18dBm;
+        return NRF24L01P_TX_POWER_MINUS_18DBM;
     }
     if (power <= -12) {
-        return NRF24L01P_RF_PWR_MINUS_12dBm;
+        return NRF24L01P_TX_POWER_MINUS_12DBM;
     }
     if (power <= -6) {
-        return NRF24L01P_RF_PWR_MINUS_6dBm;
+        return NRF24L01P_TX_POWER_MINUS_6DBM;
     }
-    return NRF24L01P_RF_PWR_0dBm;
+    return NRF24L01P_TX_POWER_0DBM;
 }
 
 /**
@@ -721,10 +721,10 @@ static inline nrf24l01p_rfpwr_t nrf24l01p_valtoe_rfpwr(int16_t power)
  */
 static inline uint16_t nrf24l01p_etoval_rfdr(nrf24l01p_rfdr_t data_rate)
 {
-    if (data_rate <= NRF24L01P_RF_DR_1Mbps) {
+    if (data_rate <= NRF24L01P_RF_DR_1MBPS) {
         return 1000;
     }
-    if (data_rate == NRF24L01P_RF_DR_250kbps) {
+    if (data_rate == NRF24L01P_RF_DR_250KBPS) {
         return 250;
     }
     return 2000;
@@ -740,12 +740,12 @@ static inline uint16_t nrf24l01p_etoval_rfdr(nrf24l01p_rfdr_t data_rate)
 static inline nrf24l01p_rfdr_t nrf24l01p_valtoe_rfdr(uint16_t data_rate)
 {
     if (data_rate <= 250) {
-        return NRF24L01P_RF_DR_250kbps;
+        return NRF24L01P_RF_DR_250KBPS;
     }
     if (data_rate <= 1000) {
-        return NRF24L01P_RF_DR_1Mbps;
+        return NRF24L01P_RF_DR_1MBPS;
     }
-    return NRF24L01P_RF_DR_2Mbps;
+    return NRF24L01P_RF_DR_2MBPS;
 }
 
 /**

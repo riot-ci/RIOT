@@ -37,7 +37,7 @@ static inline int nrf24l01p_time_on_air_us(const nrf24l01p_t *dev,
                                            size_t payload_width)
 {
     /* packet length [bit] / air data rate [bit/us]*/
-    if (dev->params.config.cfg_data_rate == NRF24L01P_RF_DR_250kbps) {
+    if (dev->params.config.cfg_data_rate == NRF24L01P_RF_DR_250KBPS) {
         return 4 *
                (8 *
                 (1 + nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width) +
