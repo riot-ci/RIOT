@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#ifdef NRF24L01P_CUSTOM_HEADER
 /**
  * @brief Indicate header byte
  */
@@ -34,6 +35,7 @@ extern "C" {
  * @brief Padding byte for ShockBurst
  */
 #define NRF24L01P_PADDING       (0x00)
+#endif
 
 /**
  * @brief   Header of a ShockBurst frame
@@ -73,7 +75,11 @@ typedef struct {
  */
 static inline void sb_hdr_init(shockburst_hdr_t *hdr)
 {
+#ifdef NRF24L01P_CUSTOM_HEADER
     hdr->addr_width = NRF24L01P_PREEMBLE;
+#else
+    hdr->addr_width = 0;
+#endif
 }
 
 /**

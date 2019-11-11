@@ -156,7 +156,6 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 {
     assert(netif && pkt);
     netdev_t *netdev = (netdev_t *)netif->dev;
-    nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
     gnrc_netif_hdr_t *netif_hdr = (gnrc_netif_hdr_t *)pkt->data;
     if (!netif_hdr) {
         return -EBADMSG;
@@ -181,10 +180,12 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         tx_addr_len = netif_hdr->dst_l2addr_len;
     }
 
-    shockburst_hdr_t hdr = { .addr_width = NRF24L01P_PREEMBLE };
+    shockburst_hdr_t hdr;
+    sb_hdr_init(&hdr);
     sb_hdr_set_dst_addr_width(&hdr, tx_addr_len);
     memcpy(hdr.dst_addr, tx_address, tx_addr_len);
 #ifdef NRF24L01P_CUSTOM_HEADER
+    nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
     sb_hdr_set_src_addr_width(&hdr, aw);
     memcpy(hdr.src_addr, dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr, aw);

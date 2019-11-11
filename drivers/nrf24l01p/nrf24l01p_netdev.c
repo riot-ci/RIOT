@@ -368,6 +368,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     /* get received packet */
     DEBUG("[nrf24l01p] Handle received frame\n");
     uint8_t *frame = (uint8_t *)buf;
+    sb_hdr_init((shockburst_hdr_t *)frame);
 #ifdef NRF24L01P_CUSTOM_HEADER
     uint8_t payload[NRF24L01P_MAX_PAYLOAD_WIDTH];
     nrf24l01p_read_rx_payload(dev, payload, pl_width);
@@ -383,7 +384,6 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
             }
         }
     }
-    sb_hdr_init((shockburst_hdr_t *)frame);
     sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
     sb_hdr_set_src_addr_width((shockburst_hdr_t *)frame, payload[0]);
     frame += 1;
