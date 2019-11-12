@@ -35,13 +35,13 @@ void neopixel_write(neopixel_t *dev)
     assert(dev);
     const uint8_t *pos = &dev->params.buf[0];
     const uint8_t *end = pos + dev->params.numof * NEOPIXEL_BYTES_PER_DEVICE;
-    uint16_t port_addr = _port_addr(dev->params.pin);
+    uint16_t port_addr = atmega_port_addr(dev->params.pin);
     uint8_t mask_on, mask_off;
 
     {
         uint8_t port_state = _SFR_MEM8(port_addr);
-        mask_on = port_state | (1 << _pin_num(dev->params.pin));
-        mask_off = port_state & ~(1 << _pin_num(dev->params.pin));
+        mask_on = port_state | (1 << atmega_pin_num(dev->params.pin));
+        mask_off = port_state & ~(1 << atmega_pin_num(dev->params.pin));
     }
 
 #if (CLOCK_CORECLOCK >= 7500000U) && (CLOCK_CORECLOCK <= 8500000U)
@@ -76,7 +76,7 @@ void neopixel_write(neopixel_t *dev)
      * CPU cycles; this, its 2 NOPs for the price of one (in terms of ROM
      * consumption).
      */
-    const uint8_t port_num = _port_num(dev->params.pin);
+    const uint8_t port_num = atmega_port_num(dev->params.pin);
     switch (port_num) {
         case PORT_B:
             while (pos < end) {
