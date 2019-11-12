@@ -29,6 +29,56 @@
 #include "ws281x_constants.h"
 #include "periph_cpu.h"
 #include "xtimer.h"
+/*
+ * Data encoding according to the datasheets of the WS2812 and the SK6812:
+ * - Encoding of zero bit:
+ *   1. High for 325ns ± 125ns (average of WS2812 and SK6812)
+ *   2. Low for 850ns ± 100ns (average of WS2812 and SK6812)
+ * - Encoding of one bit:
+ *   1. High for 650ns ± 100ns (average of WS2812 and SK6812)
+ *   2. Low for 600ns ± 150ns (for both WS2812 and SK6812)
+ *
+ * While the data sheet claims the opposite, the precision requirement for
+ * the duration of the second phase (the low period) is in reality super
+ * lax. Therefore, we bit bang the high period precisely in inline assembly,
+ * and completely ignore the timing of the low phase. This works just fine.
+ *
+ * Further: For an 8MHz clock, we need a single CPU cycle access to the
+ * GPIO port. The is only possible with the `out` instruction, which takes
+ * the port to write to as immediate. Thus, it has to be known at compile
+ * time. We therefore simply provide 3 implementations for each of the
+ * three most commonly used GPIO ports. For the 16MHz version accessing the
+ * GPIO port via memory using the st instruction works fine, so no limitations
+ * on the GPIO por there.
+ *
+ * On final trick: A relative jump to the next instructions takes two
+ * CPU cycles; this, its 2 NOPs for the price of one (in terms of ROM
+ * consumption).
+ *
+ * High phase timings
+ *
+ * +------------+-------------------+-------------------+-------------------+
+ * | Data       | Device/Frequency  | Min               | Max               |
+ * +------------+-------------------+-------------------+-------------------+
+ * | 0 bit      | WS2812            | 200ns             | 500ns             |
+ * | 1 bit      | WS2812            | 550ns             | 850ns (*)         |
+ * +------------+-------------------+-------------------+-------------------+
+ * | 0 bit      | SK6812            | 150ns             | 450ns             |
+ * | 1 bit      | SK6812            | 450ns             | 750ns             |
+ * +------------+-------------------+-------------------+-------------------+
+ * | 0 bit      | WS2812/SK6812     | 200ns             | 450ns             |
+ * | 1 bit      | WS2812/SK6812     | 550ns             | 750ns             |
+ * +------------+-------------------+-------------------+-------------------+
+ * | 0 bit      | 8 MHz             |  2 Cycles (250ns) |  3 Cycles (375ns) |
+ * | 1 bit      | 8 MHz             |  5 Cycles (625ns) |  6 Cycles (750ns) |
+ * +------------+-------------------+-------------------+-------------------+
+ * | 0 bit      | 16 MHz            |  4 Cycles (250ns) |  7 Cycles (438ns) |
+ * | 1 bit      | 16 MHz            |  9 Cycles (563ns) | 12 Cycles (750ns) |
+ * +------------+-------------------+-------------------+-------------------+
+ *
+ * (*) The high time for encoding a 1 bit on the WS2812 has no upper bound in
+ *     practise; A high period of 5 seconds has been reported to work reliable.
+ */
 
 void ws281x_write(ws281x_t *dev)
 {
@@ -45,37 +95,6 @@ void ws281x_write(ws281x_t *dev)
     }
 
 #if (CLOCK_CORECLOCK >= 7500000U) && (CLOCK_CORECLOCK <= 8500000U)
-    /*
-     * ~8MHz CPU clock, thus 125ns per CPU cycles
-     *
-     * Data encoding according to the datasheets of the WS2812 and the SK6812:
-     * - Encoding of zero bit:
-     *   1. High for 325ns ± 125ns (average of WS2812 and SK6812)
-     *      ==> 2 CPU cycles (250ns) or 3 CPU cycles (375ns)
-     *   2. Low for 850ns ± 100ns (average of WS2812 and SK6812)
-     *      ==> 6 CPU cycles (750ns) or 7 CPU cycles (875ns)
-     * - Encoding of one bit:
-     *   1. High for 650ns ± 100ns (average of WS2812 and SK6812)
-     *      ==> 5 CPU cycles (625ns) or 6 CPU cycles (750ns)
-     *   2. Low for 600ns ± 150ns (for both WS2812 and SK6812)
-     *      ==> 4 CPU cycles (500ns), 5 CPU cycles (625ns), or 6 CPU
-     *          cycles (750ns)
-     *
-     * While the data sheet claims the opposite, the precision requirement for
-     * the duration of the second phase (the low period) is in reality super
-     * lax. Therefore, we bit bang the high period precisely in inline assembly,
-     * and completely ignore the timing of the low phase. This works just fine.
-     *
-     * Further: For an 8MHz clock, we need a single CPU cycle access to the
-     * GPIO port. The is only possible with the `out` instruction, which takes
-     * the port to write to as immediate. Thus, it has to be known at compile
-     * time. We therefore simply provide 3 implementations for each of the
-     * three most commonly used GPIO ports.
-     *
-     * On final trick: A relative jump to the next instructions takes two
-     * CPU cycles; this, its 2 NOPs for the price of one (in terms of ROM
-     * consumption).
-     */
     const uint8_t port_num = atmega_port_num(dev->params.pin);
     switch (port_num) {
         case PORT_B:
@@ -155,25 +174,6 @@ void ws281x_write(ws281x_t *dev)
             break;
     }
 #elif (CLOCK_CORECLOCK >= 15500000U) && (CLOCK_CORECLOCK <= 16500000U)
-    /*
-     * ~16MHz CPU clock, thus 62.5ns per CPU cycles
-     *
-     * Data encoding according to the datasheets of the WS2812 and the SK6812:
-     * - Encoding of zero bit:
-     *   1. High for 325ns ± 125ns (average of WS2812 and SK6812)
-     *      ==> 4 CPU cycles (250ns) - 7 CPU cycles (437.5ns)
-     *   2. Low for 850ns ± 100ns (average of WS2812 and SK6812)
-     *      ==> 12 CPU cycles (750ns) - 15 CPU cycles (937.5ns)
-     * - Encoding of one bit:
-     *   1. High for 650ns ± 100ns (average of WS2812 and SK6812)
-     *      ==> 9 CPU cycles (562.5ns) - 12 CPU cycles (750ns)
-     *   2. Low for 600ns ± 150ns (for both WS2812 and SK6812)
-     *      ==> 8 CPU cycles (500ns) - 12 CPU cycles (750ns)
-     *
-     * Accessing the GPIO port via memory mapped I/O (2 CPU cycles) is possible
-     * with 16 MHz while still achieving the timing constraints, so no separate
-     * implementations for each port. (Hurray!)
-     */
     while (pos < end) {
         uint8_t cnt = 8;
         uint8_t data = *pos;
