@@ -67,6 +67,9 @@ int main(void)
 
     memcpy(remote.addr.ipv6, _test_link_local_remote,
            sizeof(_test_link_local_remote));
+    /* With a 6LN this send may succeed, as according to RFC 6775 link-local
+     * addresses are assumed to be generated from the EUI-64, reversing the
+     * procedure of generating the address from EUI-64 for address resolution */
     _test_udp_send(&remote, "EHOSTUNREACH", EHOSTUNREACH);
     memcpy(remote.addr.ipv6, _test_global_remote,
            sizeof(_test_global_remote));
