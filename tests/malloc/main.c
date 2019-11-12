@@ -24,7 +24,15 @@
 #include <string.h>
 
 #ifndef CHUNK_SIZE
-#define CHUNK_SIZE 1024
+#define CHUNK_SIZE          (16U)
+#endif
+
+#ifndef NUMBER_OF_TESTS
+#define NUMBER_OF_TESTS     (3U)
+#endif
+
+#ifndef MAX_NUMBER_BLOCKS
+#define MAX_NUMBER_BLOCKS   (1024U)
 #endif
 
 struct node {
@@ -36,8 +44,13 @@ static int total = 0;
 
 static void fill_memory(struct node *head)
 {
-    while (head && (head->ptr = malloc(CHUNK_SIZE))) {
-        printf("Allocated %d Bytes at 0x%p, total %d\n",
+    unsigned aux = 0;
+    if (head) {
+        head->next = NULL;
+    }
+
+    while ((aux < MAX_NUMBER_BLOCKS) && head && (head->ptr = malloc(CHUNK_SIZE))) {
+        printf("\tAllocated %d Bytes at %p, total %d\n",
                CHUNK_SIZE, head->ptr, total += CHUNK_SIZE);
         memset(head->ptr, '@', CHUNK_SIZE);
         head = head->next = malloc(sizeof(struct node));
@@ -46,6 +59,7 @@ static void fill_memory(struct node *head)
             head->ptr  = 0;
             head->next = 0;
         }
+        aux++;
     }
 }
 
@@ -55,7 +69,7 @@ static void free_memory(struct node *head)
 
     while (head) {
         if (head->ptr) {
-            printf("Free %d Bytes at 0x%p, total %d\n",
+            printf("\tFree %d Bytes at %p, total %d\n",
                    CHUNK_SIZE, head->ptr, total -= CHUNK_SIZE);
             free(head->ptr);
         }
@@ -76,13 +90,22 @@ static void free_memory(struct node *head)
 
 int main(void)
 {
-    while (1) {
+    printf("CHUNK_SIZE: %d\n", CHUNK_SIZE);
+    printf("NUMBER_OF_TESTS: %d\n", NUMBER_OF_TESTS);
+    printf("MAX_NUMBER_BLOCKS: %d\n", MAX_NUMBER_BLOCKS);
+
+    unsigned count = 0;
+    while (count < NUMBER_OF_TESTS) {
+        printf("TEST #%d:\n", count + 1);
         struct node *head = malloc(sizeof(struct node));
         total += sizeof(struct node);
 
         fill_memory(head);
         free_memory(head);
+        count++;
     }
+
+    puts("[SUCCESS]");
 
     return 0;
 }
