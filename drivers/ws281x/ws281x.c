@@ -47,10 +47,10 @@ int ws281x_init(ws281x_t *dev, const ws281x_params_t *params)
     return 0;
 }
 
-void ws281x_set(ws281x_t *dev, uint16_t n, color_rgb_t c)
+void ws281x_set_buffer(void *_dest, uint16_t n, color_rgb_t c)
 {
-    assert(dev);
-    dev->params.buf[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_R] = c.r;
-    dev->params.buf[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_G] = c.g;
-    dev->params.buf[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_B] = c.b;
+    uint8_t *dest = _dest;
+    dest[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_R] = c.r;
+    dest[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_G] = c.g;
+    dest[WS281X_BYTES_PER_DEVICE * n + WS281X_OFFSET_B] = c.b;
 }

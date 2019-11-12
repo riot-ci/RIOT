@@ -19,7 +19,7 @@
  *
  * # Support
  *
- * The protocol to communicate with the NeoPixels is custom, so no hardware
+ * The protocol to communicate with the WS281x is custom, so no hardware
  * implementations can be used. Hence, the protocol needs to be bit banged in
  * software. As the timing requirements are to strict to do this using
  * the platform independent APIs for accessing @ref drivers_periph_gpio and 
@@ -51,6 +51,8 @@
 
 #include "color.h"
 #include "periph/gpio.h"
+#include "ws281x_constants.h"
+#include "xtimer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,7 +64,7 @@ extern "C" {
 #define WS281X_BYTES_PER_DEVICE       (3U)
 
 /**
- * @brief   Struct to hold initialization parameters for a NeoPixel RGB LED
+ * @brief   Struct to hold initialization parameters for a WS281x RGB LED
  */
 typedef struct {
     /**
@@ -76,14 +78,14 @@ typedef struct {
 } ws281x_params_t;
 
 /**
- * @brief   Device descriptor of a NeoPixel RGB LED chain
+ * @brief   Device descriptor of a WS281x RGB LED chain
  */
 typedef struct {
     ws281x_params_t params;   /**< Parameters of the LED chain */
 } ws281x_t;
 
 /**
- * @brief   Initialize an NeoPixel RGB LED chain
+ * @brief   Initialize an WS281x RGB LED chain
  *
  * @param   dev     Device descriptor to initialize
  * @param   params  Parameters to initialize the device with
@@ -95,6 +97,46 @@ typedef struct {
 int ws281x_init(ws281x_t *dev, const ws281x_params_t *params);
 
 /**
+ * @brief   Writes the color data of the user supplied buffer
+ *
+ * @param   dev     Device descriptor of the LED chain to write to
+ * @param   buf     Buffer to write
+ * @param   size    Size of the buffer in bytes
+ *
+ * @post    At the end of the transmission @ref ws281x_end_transmission is
+ *          called
+ *
+ * This function can be used to drive a huge number of LEDs with small data
+ * buffers. However, after the return of this function the next chunk should
+ * be send within a few microseconds to avoid accidentally sending the end of
+ * transmission signal.
+ */
+void ws281x_write_buffer(ws281x_t *dev, const void *buf, size_t size);
+
+/**
+ * @brief   Sends the end of transmission signal to the WS2812/SK6812 LED chain
+ *
+ * Waits for 80µs.
+ */
+static inline void ws281x_end_transmission(void)
+{
+    xtimer_usleep(WS281X_T_END_US);
+}
+
+/**
+ * @brief   Sets the color of an LED in the given data buffer
+ *
+ * @param   dev     Device descriptor of the LED chain to modify
+ * @param   dest    Buffer to set the color in
+ * @param   index   The index of the LED to set the color of
+ * @param   color   The new color to apply
+ *
+ * @warning This change will not become active until @ref ws281x_write is
+ *          called
+ */
+void ws281x_set_buffer(void *dest, uint16_t index, color_rgb_t color);
+
+/**
  * @brief   Sets the color of an LED in the chain in the internal buffer
  *
  * @param   dev     Device descriptor of the LED chain to modify
@@ -104,14 +146,25 @@ int ws281x_init(ws281x_t *dev, const ws281x_params_t *params);
  * @warning This change will not become active until @ref ws281x_write is
  *          called
  */
-void ws281x_set(ws281x_t *dev, uint16_t index, color_rgb_t color);
+static inline void ws281x_set(ws281x_t *dev, uint16_t index, color_rgb_t color)
+{
+    ws281x_set_buffer(dev->params.buf, index, color);
+}
 
 /**
- * @brief   Write the color data of the buffer to the device
+ * @brief   Writes the internal buffer to the LED chain
  *
  * @param   dev     Device descriptor of the LED chain to write to
+ *
+ * @note    This function implicitly calls @ref ws281x_end_transmission
+ * @see     ws281x_set
  */
-void ws281x_write(ws281x_t *dev);
+static inline void ws281x_write(ws281x_t *dev)
+{
+    ws281x_write_buffer(dev, dev->params.buf,
+                        (size_t)dev->params.numof * WS281X_BYTES_PER_DEVICE);
+    ws281x_end_transmission();
+}
 
 #ifdef __cplusplus
 }

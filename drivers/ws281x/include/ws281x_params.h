@@ -27,7 +27,7 @@ extern "C" {
 #endif
 
 /**
- * @name    Default configuration parameters for NeoPixel RGB LEDs
+ * @name    Default configuration parameters for WS281x RGB LEDs
  * @{
  */
 #ifndef WS281X_PARAM_PIN
@@ -46,7 +46,7 @@ extern uint8_t ws281x_buf[WS281X_PARAM_NUMOF * WS281X_BYTES_PER_DEVICE];
 
 #ifndef WS281X_PARAMS
 /**
- * @brief   NeoPixel initialization parameters
+ * @brief   WS281x initialization parameters
  */
 #define WS281X_PARAMS                   { \
                                             .pin = WS281X_PARAM_PIN,  \
@@ -57,7 +57,7 @@ extern uint8_t ws281x_buf[WS281X_PARAM_NUMOF * WS281X_BYTES_PER_DEVICE];
 /**@}*/
 
 /**
- * @brief   Initialization parameters for NeoPixel device descriptors
+ * @brief   Initialization parameters for WS281x devices
  */
 static const ws281x_params_t ws281x_params[] =
 {

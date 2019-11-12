@@ -80,11 +80,11 @@
  *     practise; A high period of 5 seconds has been reported to work reliable.
  */
 
-void ws281x_write(ws281x_t *dev)
+void ws281x_write_buffer(ws281x_t *dev, const void *buf, size_t size)
 {
     assert(dev);
-    const uint8_t *pos = &dev->params.buf[0];
-    const uint8_t *end = pos + dev->params.numof * WS281X_BYTES_PER_DEVICE;
+    const uint8_t *pos = buf;
+    const uint8_t *end = pos + size;
     uint16_t port_addr = atmega_port_addr(dev->params.pin);
     uint8_t mask_on, mask_off;
 
@@ -200,7 +200,7 @@ void ws281x_write(ws281x_t *dev)
         pos++;
     }
 #else
-#error "No low level Neopixel implementation for ATmega CPUs for your CPU clock"
+#error "No low level WS281x implementation for ATmega CPUs for your CPU clock"
 #endif
     xtimer_usleep(WS281X_T_END_US);
 }
