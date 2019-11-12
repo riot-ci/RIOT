@@ -293,6 +293,13 @@ static void _isr(netdev_t *netdev)
      * touched in ISR context. Thus, it is safe to work with them without
      * IRQs being disabled or mutexes being locked. */
 
+    /* Check for minimum length of an Ethernet packet */
+    if (ctx->recv_buf_ptr < sizeof(ethernet_hdr_t) + DOSE_FRAME_CRC_LEN) {
+        DEBUG("dose _isr(): frame too short -> drop\n");
+        clear_recv_buf(ctx);
+        return;
+    }
+
     /* Check the dst mac addr if the iface is not in promiscuous mode */
     if (!(ctx->opts & DOSE_OPT_PROMISCUOUS)) {
         ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
@@ -542,7 +549,6 @@ void dose_setup(dose_t *ctx, const dose_params_t *params)
 {
     ctx->netdev.driver = &netdev_driver_dose;
 
-    ctx->state = DOSE_STATE_UNDEF;
     mutex_init(&ctx->state_mtx);
 
     ctx->uart = params->uart;
