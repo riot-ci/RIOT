@@ -643,6 +643,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
             int res = -1;
             DEBUG("6lo iphc: found route, trying to forward\n");
             ipv6_hdr->hl--;
+            vrbe->super.current_size = rbuf->super.current_size;
             if ((ipv6 = _encode_frag_for_forwarding(ipv6, vrbe))) {
                 if ((res = _forward_frag(ipv6, sixlo->next, vrbe, page)) == 0) {
                     DEBUG("6lo iphc: successfully recompressed and forwarded "
