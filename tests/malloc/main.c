@@ -22,9 +22,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #ifndef CHUNK_SIZE
-#define CHUNK_SIZE 1024
+#define CHUNK_SIZE          1024U
+#endif
+
+#ifndef NUMBER_OF_TESTS
+#define NUMBER_OF_TESTS     3
+#endif
+
+#ifndef MAX_MEM
+#define MAX_MEM             (256 * 1024UL)
 #endif
 
 struct node {
@@ -32,12 +41,18 @@ struct node {
     void *ptr;
 };
 
-static int total = 0;
+static uint32_t total = 0;
 
 static void fill_memory(struct node *head)
 {
-    while (head && (head->ptr = malloc(CHUNK_SIZE))) {
-        printf("Allocated %d Bytes at 0x%p, total %d\n",
+    uint32_t allocations = 0;
+
+    if (head) {
+        head->next = NULL;
+    }
+
+    while (head && (head->ptr = malloc(CHUNK_SIZE)) && total < MAX_MEM) {
+        printf("Allocated %u Bytes at 0x%p, total %"PRIu32"\n",
                CHUNK_SIZE, head->ptr, total += CHUNK_SIZE);
         memset(head->ptr, '@', CHUNK_SIZE);
         head = head->next = malloc(sizeof(struct node));
@@ -46,16 +61,19 @@ static void fill_memory(struct node *head)
             head->ptr  = 0;
             head->next = 0;
         }
+        allocations++;
     }
+
+    printf("Allocations count: %"PRIu32"\n", allocations);
 }
 
 static void free_memory(struct node *head)
 {
     struct node *old_head;
 
-    while (head) {
+    while (head && total > CHUNK_SIZE) {
         if (head->ptr) {
-            printf("Free %d Bytes at 0x%p, total %d\n",
+            printf("Free %u Bytes at 0x%p, total %"PRIu32"\n",
                    CHUNK_SIZE, head->ptr, total -= CHUNK_SIZE);
             free(head->ptr);
         }
@@ -76,13 +94,19 @@ static void free_memory(struct node *head)
 
 int main(void)
 {
-    while (1) {
+    printf("CHUNK_SIZE: %u\n", CHUNK_SIZE);
+    printf("NUMBER_OF_TESTS: %d\n", NUMBER_OF_TESTS);
+
+    uint8_t test = NUMBER_OF_TESTS;
+    while (test--) {
         struct node *head = malloc(sizeof(struct node));
         total += sizeof(struct node);
 
         fill_memory(head);
         free_memory(head);
     }
+
+    puts("[SUCCESS]");
 
     return 0;
 }
