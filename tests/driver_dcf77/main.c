@@ -47,7 +47,7 @@ int main(void)
 
     while (1) {
         struct tm time;
-        char buffer[100];
+        char buffer[32];
         mutex_lock(&mutex);
 
         dcf77_get_time(&sensor, &time);
