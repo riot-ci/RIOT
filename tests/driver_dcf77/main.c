@@ -52,7 +52,7 @@ int main(void)
 
         dcf77_get_time(&sensor, &time);
 
-        strftime (buffer, 100, "Date: %d.%m.%Y Time: %H:%M.", &time);
+        strftime(buffer, sizeof(buffer), "Date: %d.%m.%Y Time: %H:%M.", &time);
         puts (buffer);
 
     }
