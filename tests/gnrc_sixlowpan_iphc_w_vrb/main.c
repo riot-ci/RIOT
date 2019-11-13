@@ -152,7 +152,7 @@ static void _test_no_vrbe_but_rbe_exists(void)
     const gnrc_sixlowpan_frag_rb_t *rb = gnrc_sixlowpan_frag_rb_array();
     unsigned rbs = 0;
 
-    /* No VRB entry was created */
+    /* VRB entry does not exist */
     TEST_ASSERT_NULL(gnrc_sixlowpan_frag_vrb_get(_test_src,
                                                  sizeof(_test_src),
                                                  TEST_TAG));
@@ -178,11 +178,9 @@ static void test_recv__success(void)
 
     TEST_ASSERT_NOT_NULL(pkt);
     TEST_ASSERT_EQUAL_INT(1, _dispatch_to_6lowpan(pkt));
-    /* A VRB entry exists */
-    TEST_ASSERT_NOT_NULL(gnrc_sixlowpan_frag_vrb_get(_test_src,
-                                                     sizeof(_test_src),
-                                                     TEST_TAG));
-    /* and the reassembly buffer is empty */
+    /* A VRB entry exists was created but deleted due to -ENOTSUP being
+     * returned by gnrc_sixlowpan_iphc.c:_forward_frag()
+     * but the reassembly buffer is empty */
     TEST_ASSERT(_rb_is_empty());
     TEST_ASSERT(gnrc_pktbuf_is_empty());
 }
@@ -227,11 +225,9 @@ static void test_recv__pkt_held(void)
     TEST_ASSERT_NOT_NULL(pkt);
     gnrc_pktbuf_hold(pkt, 1);
     TEST_ASSERT_EQUAL_INT(1, _dispatch_to_6lowpan(pkt));
-    /* A VRB entry exists */
-    TEST_ASSERT_NOT_NULL(gnrc_sixlowpan_frag_vrb_get(_test_src,
-                                                     sizeof(_test_src),
-                                                     TEST_TAG));
-    /* and the reassembly buffer is empty */
+    /* A VRB entry exists was created but deleted due to -ENOTSUP being
+     * returned by gnrc_sixlowpan_iphc.c:_forward_frag()
+     * but the reassembly buffer is empty */
     TEST_ASSERT(_rb_is_empty());
     gnrc_pktbuf_release(pkt);
     TEST_ASSERT(gnrc_pktbuf_is_empty());
