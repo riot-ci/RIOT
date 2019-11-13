@@ -91,6 +91,16 @@ typedef enum {
 
 #endif /* MODULE_PERIPH_SPI | DOXYGEN */
 
+/**
+ * @name    EEPROM configuration
+ * @{
+ */
+#define EEPROM_SIZE             (1024U)  /* 1kB */
+#ifndef EEPROM_FILE
+#define EEPROM_FILE             "/tmp/riot_native.eeprom"
+#endif
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
