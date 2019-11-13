@@ -61,9 +61,14 @@ if __name__ == "__main__":
 
     ser = serial.Serial(port=args.port, dsrdtr=0, rtscts=0)
     ser.baudrate = args.baudrate
+    # set RST low and GPIO0 high
     ser.setRTS(1)
     ser.setDTR(0)
+    # keep the RST line low for one second
     time.sleep(1)
+    # set the RST high
     ser.setRTS(1)
     ser.setDTR(1)
+    # wait 1 second for boot the image from flash
+    time.sleep(1)
     sys.exit(0)
