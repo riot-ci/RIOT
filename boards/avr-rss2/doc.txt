@@ -5,7 +5,7 @@
 
 ### General information
 Document version V1.4 2019-11-10<br>
-Board is based AtMega256RFR2 with addtional HW, EUI64 chip, HW comparator, RTC XTAL, BME280
+Board is based AtMega256RFR2 with additional HW, EUI64 chip, HW comparator, RTC XTAL, BME280
 
 - Directory `$(RIOTBASE)/boards/avr-rss2'
 
@@ -83,7 +83,7 @@ Summary: CE approved Radio Equipment Directive (RED) 2014/53/EU
 Rev 2.4
 - Safety: IEC 60950-1:2005 2nd Edition +Am 1:2009 +Am 2:2013
 - RF: ETSI EN 300 328 V2.1.1 (2016-11)
-- EMC: Draft ETSI EN 301 489-1 V2.2.0 (2017-03),mDraft ETSI EN 301 489-17 V3.2.0 (2017-03)
+- EMC: Draft ETSI EN 301 489-1 V2.2.0 (2017-03),Draft ETSI EN 301 489-17 V3.2.0 (2017-03)
 - EMF: EN 62479:2010
 - Human exposure to electromagnetic fields: EN 62479:2010
 
