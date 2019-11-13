@@ -82,6 +82,7 @@ typedef unsigned int gpio_t;
 #define GPIO_PIN_NUMOF      (40)
 /** @} */
 
+#ifndef DOXYGEN
 /**
  * @brief   Override mode flank selection values
  *
@@ -117,6 +118,7 @@ typedef enum {
     GPIO_IN_OD_PU   /**< input and open-drain output */
 } gpio_mode_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 /** @} */
 
 /**
@@ -163,6 +165,7 @@ typedef enum {
 #define GPIO39      (GPIO_PIN(PORT_GPIO,39))
 /** @} */
 
+#ifndef DOXYGEN
 /**
  * @name   ADC configuration
  *
@@ -218,6 +221,8 @@ typedef enum {
  *
  * @{
  */
+
+#ifndef DOXYGEN
 /**
  * @brief   Possible ADC resolution settings
  */
@@ -233,6 +238,7 @@ typedef enum {
     ADC_RES_16BIT = 0xf3,   /**< ADC resolution: 16 bit is not supported */
 } adc_res_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief  Number of ADC cahnnels that could be used at maximum
