@@ -116,9 +116,9 @@ int qmc5883l_read(const qmc5883l_t *dev, int16_t *data_out)
 
     int res = qmc5883l_read_raw(dev, tmp);
     if ((res == QMC5883L_OK) || (res == QMC5883L_OVERFLOW)) {
-        unsigned scale = (dev->cfg & QMC5883L_RNG_8G) ? 8000 : 2000;
+        uint16_t scale = (dev->cfg & QMC5883L_RNG_8G) ? 3 : 12;
         for (unsigned i = 0; i < 3; i++) {
-            data_out[i] = (int16_t)((((int32_t)tmp[i]) * scale) / INT16_MAX);
+            data_out[i] = tmp[i] / scale;
         }
     }
 
