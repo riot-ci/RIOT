@@ -45,6 +45,10 @@
 
 #include "periph/init.h"
 
+#ifdef MODULE_PERIPH_EEPROM
+#include "eeprom_native.h"
+#endif
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -572,6 +576,10 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
     for (int i = 0; i < NETDEV_TAP_MAX; i++) {
         netdev_tap_params[i].tap_name = &argv[optind + i];
     }
+#endif
+
+#ifdef MODULE_PERIPH_EEPROM
+    eeprom_native_read();
 #endif
 
     periph_init();
