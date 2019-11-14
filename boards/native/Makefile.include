@@ -74,6 +74,12 @@ else
   PORT =
 endif
 
+# set the eeprom file
+ifneq (,$(filter periph_eeprom,$(FEATURES_USED)))
+  EEPROM_FILE ?= /tmp/riot_native.eeprom
+  TERMFLAGS += --eeprom $(EEPROM_FILE)
+endif
+
 TERMFLAGS := $(PORT) $(TERMFLAGS)
 
 ASFLAGS =

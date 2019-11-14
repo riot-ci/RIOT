@@ -84,6 +84,10 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 
 socket_zep_params_t socket_zep_params[SOCKET_ZEP_MAX];
 #endif
+#ifdef MODULE_PERIPH_EEPROM
+#include "eeprom_native.h"
+extern char eeprom_file[EEPROM_FILEPATH_MAX_LEN];
+#endif
 
 static const char short_opts[] = ":hi:s:deEoc:"
 #ifdef MODULE_MTD_NATIVE
@@ -120,6 +124,9 @@ static const struct option long_opts[] = {
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     { "spi", required_argument, NULL, 'p' },
+#endif
+#ifdef MODULE_PERIPH_EEPROM
+    { "eeprom", required_argument, NULL, 'M' },
 #endif
     { NULL, 0, NULL, '\0' },
 };
@@ -313,6 +320,12 @@ void usage_exit(int status)
 "        Supports up to %d busses with %d CS lines each.\n", SPI_NUMOF, SPI_MAXCS
     );
 #endif
+#ifdef MODULE_PERIPH_EEPROM
+    real_printf(
+"    -M <eeprom> , --eeprom=<eeprom>\n"
+"        Specify the file path where the EEPROM content is stored\n"
+"        Example: --eeprom=/tmp/riot_native.eeprom\n");
+#endif
     real_exit(status);
 }
 
@@ -492,6 +505,12 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
                 }
                 break;
 #endif
+#ifdef MODULE_PERIPH_EEPROM
+            case 'M': {
+                strncpy(eeprom_file, optarg, EEPROM_FILEPATH_MAX_LEN);
+                break;
+            }
+#endif
             default:
                 usage_exit(EXIT_FAILURE);
                 break;
@@ -572,6 +591,10 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
     for (int i = 0; i < NETDEV_TAP_MAX; i++) {
         netdev_tap_params[i].tap_name = &argv[optind + i];
     }
+#endif
+
+#ifdef MODULE_PERIPH_EEPROM
+    eeprom_native_read();
 #endif
 
     periph_init();
