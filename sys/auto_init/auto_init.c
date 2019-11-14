@@ -308,6 +308,11 @@ void auto_init(void)
     gnrc_nrfmin_init();
 #endif
 
+#ifdef MODULE_NRF24L01P
+    extern void auto_init_nrf24l01p(void);
+    auto_init_nrf24l01p();
+#endif
+
 #ifdef MODULE_W5100
     extern void auto_init_w5100(void);
     auto_init_w5100();
