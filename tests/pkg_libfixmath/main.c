@@ -59,8 +59,19 @@ static void binary_ops(void)
         { "max", fix16_max },
     };
 
-    for (fix16_t a = fix16_from_dbl(-5.0); a < fix16_from_dbl(5.0); a += fix16_from_dbl(0.25)) {
-        for (fix16_t b = fix16_from_dbl(-5.0); b < fix16_from_dbl(5.0); b += fix16_from_dbl(0.25)) {
+#ifdef BOARD_NATIVE
+    fix16_t _min = fix16_from_dbl(-5.0);
+    fix16_t _max = fix16_from_dbl(5.0);
+    fix16_t _step = fix16_from_dbl(0.25);
+    printf("RANGE: 1560\n");
+#else
+    fix16_t _min = fix16_from_dbl(-2.0);
+    fix16_t _max = fix16_from_dbl(2.0);
+    fix16_t _step = fix16_from_dbl(0.25);
+    printf("RANGE: 226\n");
+#endif
+    for (fix16_t a = _min; a < _max; a += _step) {
+        for (fix16_t b = _min; b < _max; b += _step) {
             if (b == 0) {
                 continue;
             }
@@ -84,6 +95,17 @@ static void unary_ops(void)
 {
     /* range [-10 : +10 : 0.25] */
     {
+#ifdef BOARD_NATIVE
+        fix16_t _min = fix16_from_dbl(-10.0);
+        fix16_t _max = fix16_from_dbl(10.0);
+        fix16_t _step = fix16_from_dbl(0.25);
+        printf("RANGE: 40\n");
+#else
+        fix16_t _min = fix16_from_dbl(-2.0);
+        fix16_t _max = fix16_from_dbl(2.0);
+        fix16_t _step = fix16_from_dbl(0.25);
+        printf("RANGE: 16\n");
+#endif
         static const struct {
             const char *op;
             fix16_t (*fun)(fix16_t);
@@ -96,7 +118,7 @@ static void unary_ops(void)
             { "exp", fix16_exp },
         };
 
-        for (fix16_t input = fix16_from_dbl(-10.0); input < fix16_from_dbl(+10.0); input += fix16_from_dbl(0.25)) {
+        for (fix16_t input = _min; input < _max; input += _step) {
             for (unsigned o = 0; o < ARRAY_SIZE(ops); ++o) {
                 fix16_t result = ops[o].fun(input);
 
@@ -111,6 +133,15 @@ static void unary_ops(void)
 
     /* range [-pi/2 : +pi/2 : 0.05] */
     {
+        fix16_t _min = fix16_from_dbl(-M_PI/2);
+        fix16_t _max = fix16_from_dbl(+M_PI/2);
+#ifdef BOARD_NATIVE
+        fix16_t _step = fix16_from_dbl(0.05);
+        printf("RANGE: 63\n");
+#else
+        fix16_t _step = fix16_from_dbl(0.1);
+        printf("RANGE: 12\n");
+#endif
         static const struct {
             const char *op;
             fix16_t (*fun)(fix16_t);
@@ -121,7 +152,7 @@ static void unary_ops(void)
             { "tan", fix16_tan },
         };
 
-        for (fix16_t input = fix16_from_dbl(-M_PI/2); input < fix16_from_dbl(+M_PI/2); input += fix16_from_dbl(0.05)) {
+        for (fix16_t input = _min; input < _max; input += _step) {
             for (unsigned o = 0; o < ARRAY_SIZE(ops); ++o) {
                 fix16_t result = ops[o].fun(input);
 
@@ -136,6 +167,15 @@ static void unary_ops(void)
 
     /* range [-1 : +1 : 0.05] */
     {
+        fix16_t _min = fix16_from_dbl(-1.0);
+        fix16_t _max = fix16_from_dbl(1.0);
+#ifdef BOARD_NATIVE
+        fix16_t _step = fix16_from_dbl(0.05);
+        printf("RANGE: 40\n");
+#else
+        fix16_t _step = fix16_from_dbl(0.2);
+        printf("RANGE: 10\n");
+#endif
         static const struct {
             const char *op;
             fix16_t (*fun)(fix16_t);
@@ -144,7 +184,7 @@ static void unary_ops(void)
             { "acos", fix16_acos },
         };
 
-        for (fix16_t input = fix16_from_dbl(-1.0); input < fix16_from_dbl(+1.0); input += fix16_from_dbl(0.05)) {
+        for (fix16_t input = _min; input < _max; input += _step) {
             for (unsigned o = 0; o < ARRAY_SIZE(ops); ++o) {
                 fix16_t result = ops[o].fun(input);
 
@@ -159,6 +199,17 @@ static void unary_ops(void)
 
     /* range [+0.05 : +10 : 0.25] */
     {
+#ifdef BOARD_NATIVE
+        fix16_t _min = fix16_from_dbl(0.05);
+        fix16_t _max = fix16_from_dbl(+10.0);
+        fix16_t _step = fix16_from_dbl(0.25);
+        printf("RANGE: 40\n");
+#else
+        fix16_t _min = fix16_from_dbl(0.05);
+        fix16_t _max = fix16_from_dbl(+5.0);
+        fix16_t _step = fix16_from_dbl(0.25);
+        printf("RANGE: 20\n");
+#endif
         static const struct {
             const char *op;
             fix16_t (*fun)(fix16_t);
@@ -170,7 +221,7 @@ static void unary_ops(void)
             { "slog2", fix16_slog2 },
         };
 
-        for (fix16_t input = fix16_from_dbl(0.05); input < fix16_from_dbl(+10.0); input += fix16_from_dbl(0.25)) {
+        for (fix16_t input = _min; input < _max; input += _step) {
             for (unsigned o = 0; o < ARRAY_SIZE(ops); ++o) {
                 fix16_t result = ops[o].fun(input);
 
