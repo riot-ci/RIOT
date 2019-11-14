@@ -26,9 +26,12 @@
 #include "cpu.h"
 #include "mutex.h"
 #include "periph/eeprom.h"
+#include "eeprom_native.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+char eeprom_file[EEPROM_FILEPATH_MAX_LEN];
 
 static uint8_t _eeprom_buf[EEPROM_SIZE] = { EEPROM_CLEAR_BYTE };
 
@@ -36,12 +39,12 @@ static mutex_t lock = MUTEX_INIT;
 
 void eeprom_native_read(void)
 {
-    FILE *fp = fopen(EEPROM_FILE, "r");
+    FILE *fp = fopen(eeprom_file, "r");
     if (!fp) {
         return;
     }
 
-    DEBUG("Reading data from EEPROM file %s:\n", EEPROM_FILE);
+    DEBUG("Reading data from EEPROM file %s:\n", eeprom_file);
     fread(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
     if (ENABLE_DEBUG) {
         for (size_t i = 0; i < ARRAY_SIZE(_eeprom_buf); i++) {
@@ -57,11 +60,11 @@ void eeprom_native_read(void)
 
 void eeprom_native_write(void)
 {
-    FILE *fp = fopen(EEPROM_FILE, "w");
+    FILE *fp = fopen(eeprom_file, "w");
     if (!fp) {
         return;
     }
-    DEBUG("Writing data to EEPROM file %s:\n", EEPROM_FILE);
+    DEBUG("Writing data to EEPROM file %s:\n", eeprom_file);
     fwrite(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
 
     if (ENABLE_DEBUG) {

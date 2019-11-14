@@ -73,6 +73,12 @@ ifneq (,$(filter netdev_default gnrc_netdev_default,$(USEMODULE)))
   PORT ?= tap0
 endif
 
+# set the eeprom file
+ifneq (,$(filter periph_eeprom,$(FEATURES_USED)))
+  EEPROM_FILE ?= /tmp/riot_native.eeprom
+  TERMFLAGS += --eeprom $(EEPROM_FILE)
+endif
+
 TERMFLAGS := $(PORT) $(TERMFLAGS)
 
 ASFLAGS =
