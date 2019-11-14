@@ -232,13 +232,13 @@ def test_udpv6_send(board_group, application, env=None):
         receiver.sendline(u"udp server start %d" % port)
         # wait for neighbor discovery to be done
         time.sleep(5)
-        sender.sendline(u"udp send %s %d ab:cd:ef" % (rerun
-        sender.expect_exact(u"Success: send 3 byte over run
+        sender.sendline(u"udp send %s %d ab:cd:ef" % (receiver_ip, port))
+        sender.expect_exact(r"Success: send 3 byte over UDP to [%s]:%d" %
                             (receiver_ip, port))
         receiver.expect(u"00000000  AB  CD  EF")
 
 
-def test_tcpv6_send(board_group, application, env=None):run
+def test_tcpv6_send(board_group, application, env=None):
     env_client = os.environ.copy()
     if env is not None:
         env_client.update(env)

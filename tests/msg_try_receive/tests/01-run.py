@@ -6,7 +6,7 @@ from testrunner import run
 
 def testfunc(child):
     child.expect('main starting')
-    child.expect('msg available: 1 \(should be 1\!\)')
+    child.expect(r'msg available: 1 \(should be 1\!\)')
 
 
 if __name__ == "__main__":
