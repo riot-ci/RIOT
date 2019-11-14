@@ -37,15 +37,13 @@ static gnrc_pktsnip_t *_nrf24l01p_pkt_recv(gnrc_netif_t *netif)
     /* get upper size limit */
     int upper_frame_len = netif->dev->driver->recv(netif->dev, NULL, 0, NULL);
 
-    if (upper_frame_len <= 0) {
-        DEBUG("[nrf24l01p] recv: no data available to process\n");
-        return NULL;
-    }
-
     uint8_t frame_buffer[upper_frame_len];
     /* copy the payload into the packet buffer */
-    uint8_t frame_len = netif->dev->driver->recv(netif->dev, frame_buffer,
+    int frame_len = netif->dev->driver->recv(netif->dev, frame_buffer,
                                                  upper_frame_len, NULL);
+    if(frame_len <= 0) {
+        return NULL;
+    }
 
     /* allocate space for the packet in the pktbuf */
     gnrc_pktsnip_t *frame = gnrc_pktbuf_add(NULL, NULL, frame_len,
@@ -88,6 +86,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
     if (!(frame = _nrf24l01p_pkt_recv(netif))) {
         return NULL;
     }
+    uint8_t bcast_addr[] = NRF24L01P_BROADCAST_ADDR;
     sb_hdr.addr_width = ((uint8_t *)(frame->data))[header_len++];
     uint8_t dst_addr_width = sb_hdr_get_dst_addr_width(&sb_hdr);
     memcpy(sb_hdr.dst_addr,
@@ -121,6 +120,9 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     netif_hdr = (gnrc_netif_hdr_t *)hdr->data;
+    if (!memcmp(&sb_hdr.dst_addr, bcast_addr, dst_addr_width)) {
+        netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_BROADCAST;
+    }
     gnrc_netif_hdr_set_netif(netif_hdr, netif);
     LL_APPEND(frame, hdr);
 

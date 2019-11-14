@@ -293,6 +293,7 @@ static int nrf24l01p_init(netdev_t *netdev)
  * @retval -ENOBUFS         @p buf != NULL and @p len < actual frame width
  *                          (frame is dropped)
  * @retval -EINVAL          @p buf == NULL (and none of the above cases are true)
+ * @retval -ENOTSUP         Malformed header
  * @retval 0                No data to read from Rx FIFO
  */
 static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
@@ -369,13 +370,14 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     DEBUG("[nrf24l01p] Handle received frame\n");
     uint8_t *frame = (uint8_t *)buf;
     sb_hdr_init((shockburst_hdr_t *)frame);
+    sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
 #ifdef NRF24L01P_CUSTOM_HEADER
     uint8_t payload[NRF24L01P_MAX_PAYLOAD_WIDTH];
     nrf24l01p_read_rx_payload(dev, payload, pl_width);
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
         /* remove padding */
         for (uint8_t hdr_index = 0; hdr_index < sizeof(payload); hdr_index++) {
-            if (payload[hdr_index] & (NRF24L01P_PREEMBLE)) {
+            if (payload[hdr_index] & (NRF24L01P_CSTM_HDR_PREEMBLE)) {
                 memcpy(payload, payload + hdr_index,
                        sizeof(payload) - hdr_index);
                 pl_width -= hdr_index;
@@ -384,7 +386,12 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
             }
         }
     }
-    sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
+    uint8_t src_aw = sb_hdr_get_src_addr_width((shockburst_hdr_t *)payload);
+    if (src_aw < NRF24L01P_MIN_ADDR_WIDTH ||
+        src_aw > NRF24L01P_MAX_ADDR_WIDTH) {
+        DEBUG("[nrf24l01p] Invalid header\n");
+        return -ENOTSUP;
+    }
     sb_hdr_set_src_addr_width((shockburst_hdr_t *)frame, payload[0]);
     frame += 1;
     pl_width -= 1; /* first byte was source address width */
@@ -394,7 +401,6 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     /* skip source address length field in payload */
     memcpy(frame, payload + 1, pl_width);
 #else
-    sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
     frame += 1;
     memcpy(frame, dst_pipe_addr, sizeof(dst_pipe_addr));
     frame += sizeof(dst_pipe_addr);
@@ -419,7 +425,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
  *
  * @return                  Size of sent payload
  * @retval -ENOTSUP         @p iolist had no base and no next link,
- *                          or address was too big
+ *                          or address was too big, or too short
  * @retval -EAGAIN          Pending date has been sent first
  * @retval -E2BIG           Resulting frame from iolist was too big to be sent
  */
@@ -452,9 +458,10 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
     }
     shockburst_hdr_t hdr = *(((shockburst_hdr_t *)iolist->iol_base));
     uint8_t dst_addr_len = sb_hdr_get_dst_addr_width(&hdr);
-    if (dst_addr_len > NRF24L01P_MAX_ADDR_WIDTH) {
+    if (dst_addr_len > NRF24L01P_MAX_ADDR_WIDTH ||
+        dst_addr_len < NRF24L01P_MIN_ADDR_WIDTH) {
         nrf24l01p_release(dev);
-        DEBUG("[nrf24l01p] Destination address length %u is too long\n",
+        DEBUG("[nrf24l01p] Destination address has an invalid length: %u\n",
               dst_addr_len);
         return -ENOTSUP;
     }
@@ -462,13 +469,14 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
     dev->tx_addr_len = dst_addr_len;
 #ifdef NRF24L01P_CUSTOM_HEADER
     uint8_t src_addr_len = sb_hdr_get_src_addr_width(&hdr);
-    if (src_addr_len > NRF24L01P_MAX_ADDR_WIDTH) {
+    if (src_addr_len > NRF24L01P_MAX_ADDR_WIDTH ||
+        src_addr_len < NRF24L01P_MIN_ADDR_WIDTH) {
         nrf24l01p_release(dev);
-        DEBUG("[nrf24l01p] Source address length %u is too long\n",
+        DEBUG("[nrf24l01p] Source address has an invalid length: %u\n",
               src_addr_len);
         return -ENOTSUP;
     }
-    payload[pl_width++] = NRF24L01P_PREEMBLE | src_addr_len;
+    payload[pl_width++] = NRF24L01P_CSTM_HDR_PREEMBLE | src_addr_len;
     memcpy(payload + pl_width, hdr.src_addr, src_addr_len);
     pl_width += src_addr_len;
 #endif
@@ -488,7 +496,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         for (uint8_t i = 1; i <= pl_width; i++) {
             payload[sizeof(payload) - i] = payload[pl_width - i];
         }
-        memset(payload, NRF24L01P_PADDING, (sizeof(payload) - pl_width));
+        memset(payload, NRF24L01P_CSTM_HDR_PADDING, (sizeof(payload) - pl_width));
         pl_width = sizeof(payload);
     }
 #endif

@@ -30,12 +30,20 @@ extern "C" {
 /**
  * @brief Indicate header byte
  */
-#define NRF24L01P_PREEMBLE      (0x80)
+#define NRF24L01P_CSTM_HDR_PREEMBLE       (0b10000000)
+/**
+ * @brief Mask of source address width
+ */
+#define NRF24L01P_CSTM_HDR_SRC_AW_MASK    (0b00000111)
 /**
  * @brief Padding byte for ShockBurst
  */
-#define NRF24L01P_PADDING       (0x00)
+#define NRF24L01P_CSTM_HDR_PADDING        (0x00)
 #endif
+/**
+ * @brief Mask of destination address width
+ */
+#define NRF24L01P_CSTM_HDR_DST_AW_MASK    (0b00111000)
 
 /**
  * @brief   Header of a ShockBurst frame
@@ -72,11 +80,13 @@ typedef struct {
 
 /**
  * @brief   Set custom header preemble
+ *
+ * @param[out] hdr      SB header
  */
 static inline void sb_hdr_init(shockburst_hdr_t *hdr)
 {
 #ifdef NRF24L01P_CUSTOM_HEADER
-    hdr->addr_width = NRF24L01P_PREEMBLE;
+    hdr->addr_width = NRF24L01P_CSTM_HDR_PREEMBLE;
 #else
     hdr->addr_width = 0;
 #endif
@@ -91,8 +101,8 @@ static inline void sb_hdr_init(shockburst_hdr_t *hdr)
 static inline void sb_hdr_set_dst_addr_width(shockburst_hdr_t *hdr,
                                              uint8_t width)
 {
-    hdr->addr_width &= ~(0b00111000);
-    hdr->addr_width |= ((width & 7) << 3);
+    hdr->addr_width &= ~(NRF24L01P_CSTM_HDR_DST_AW_MASK);
+    hdr->addr_width |= ((width  << 3) & NRF24L01P_CSTM_HDR_DST_AW_MASK);
 }
 
 /**
@@ -104,7 +114,7 @@ static inline void sb_hdr_set_dst_addr_width(shockburst_hdr_t *hdr,
  */
 static inline uint8_t sb_hdr_get_dst_addr_width(shockburst_hdr_t *hdr)
 {
-    return (hdr->addr_width >> 3) & 7;
+    return (hdr->addr_width & NRF24L01P_CSTM_HDR_DST_AW_MASK) >> 3;
 }
 
 #ifdef NRF24L01P_CUSTOM_HEADER
@@ -118,8 +128,8 @@ static inline uint8_t sb_hdr_get_dst_addr_width(shockburst_hdr_t *hdr)
 static inline void sb_hdr_set_src_addr_width(shockburst_hdr_t *hdr,
                                              uint8_t width)
 {
-    hdr->addr_width &= ~(0b00000111);
-    hdr->addr_width |= (width & 7);
+    hdr->addr_width &= ~(NRF24L01P_CSTM_HDR_SRC_AW_MASK);
+    hdr->addr_width |= (width & NRF24L01P_CSTM_HDR_SRC_AW_MASK);
 }
 
 /**
@@ -131,7 +141,7 @@ static inline void sb_hdr_set_src_addr_width(shockburst_hdr_t *hdr,
  */
 static inline uint8_t sb_hdr_get_src_addr_width(shockburst_hdr_t *hdr)
 {
-    return hdr->addr_width & 7;
+    return hdr->addr_width & NRF24L01P_CSTM_HDR_SRC_AW_MASK;
 }
 #endif
 
