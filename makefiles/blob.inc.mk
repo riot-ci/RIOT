@@ -52,8 +52,6 @@ $(BLOB_HDR_DIR)/.:
 $(BLOB_HDR_DIR)%/.:
 	@mkdir -p $@
 
-.SECONDEXPANSION:
-
 XXD ?= xxd
 
 $(BLOB_H): $(BLOB_HDR_DIR)/%.h: % $(BLOBS) | $$(@D)/.
