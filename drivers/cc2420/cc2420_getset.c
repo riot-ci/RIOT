@@ -70,12 +70,12 @@ void cc2420_set_addr_short(cc2420_t *dev, const uint8_t *addr)
     tmp[0] = addr[1];
     tmp[1] = addr[0];
 
-    memcpy(dev->netdev.short_addr, addr, 2);
+    memcpy(dev->netdev.short_addr.u8, addr, 2);
 
 #ifdef MODULE_SIXLOWPAN
     /* https://tools.ietf.org/html/rfc4944#section-12 requires the first bit to
      * 0 for unicast addresses */
-    dev->netdev.short_addr[0] &= 0x7F;
+    dev->netdev.short_addr.u8[0] &= 0x7F;
 #endif
 
     cc2420_ram_write(dev, CC2420_RAM_SHORTADR, tmp, 2);
@@ -87,7 +87,7 @@ void cc2420_get_addr_long(cc2420_t *dev, uint8_t *addr)
 
     uint8_t *ap = (uint8_t *)(&addr);
     for (int i = 0; i < 8; i++) {
-        ap[i] = dev->netdev.long_addr[i];
+        ap[i] = dev->netdev.long_addr.uint8[i];
     }
 }
 
@@ -97,7 +97,7 @@ void cc2420_set_addr_long(cc2420_t *dev, const uint8_t *addr)
     uint8_t tmp[8];
 
     for (i = 0, j = 7; i < 8; i++, j--) {
-        dev->netdev.long_addr[i] = addr[i];
+        dev->netdev.long_addr.uint8[i] = addr[i];
         tmp[j] = addr[i];
     }
 
