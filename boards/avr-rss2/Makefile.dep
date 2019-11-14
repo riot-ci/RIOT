@@ -2,5 +2,5 @@ USEMODULE += boards_common_atmega
 
 ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += bmx280
-  USEMODULE += ds18
+  USEMODULE += saul_gpio
 endif
