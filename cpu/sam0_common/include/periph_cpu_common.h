@@ -228,6 +228,7 @@ typedef enum {
     SPI_PAD_MOSI_0_SCK_3 = 0x3, /**< use pad 0 for MOSI, pad 3 for SCK */
 } spi_mosipad_t;
 
+#ifndef DOXYGEN
 /**
  * @brief   Override SPI modes
  * @{
@@ -254,6 +255,7 @@ typedef enum {
     SPI_CLK_10MHZ  = 10000000U  /**< drive the SPI bus with 10MHz */
 } spi_clk_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief   SPI device configuration
@@ -279,6 +281,7 @@ typedef enum {
     I2C_FLAG_RUN_STANDBY     = 0x1,    /**< run SERCOM in standby mode */
 } i2c_flag_t;
 
+#ifndef DOXYGEN
 /**
  * @name    Override I2C clock speed values
  * @{
@@ -292,6 +295,7 @@ typedef enum {
     I2C_SPEED_HIGH      = 3400000U,    /**< high speed mode:   ~3.4Mbit/s */
 } i2c_speed_t;
 /** @} */
+#endif /* ndef DOXYGEN */
 
 /**
  * @brief   I2C device configuration
