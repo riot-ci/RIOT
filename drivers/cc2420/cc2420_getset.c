@@ -83,11 +83,8 @@ void cc2420_set_addr_short(cc2420_t *dev, const uint8_t *addr)
 
 void cc2420_get_addr_long(cc2420_t *dev, uint8_t *addr)
 {
-    cc2420_ram_read(dev, CC2420_RAM_IEEEADR, addr, 8);
-
-    uint8_t *ap = (uint8_t *)(&addr);
-    for (int i = 0; i < 8; i++) {
-        ap[i] = dev->netdev.long_addr.uint8[i];
+    for (int i = 0; i < sizeof(dev->netdev.long_addr); i++) {
+        addr[i] = dev->netdev.long_addr.uint8[i];
     }
 }
 
