@@ -77,29 +77,32 @@ extern "C" {
 /**
  * @name    State definitions
  * @brief   The drivers internal state that is hold in dose_t.state
- * @{
  */
-#define DOSE_STATE_UNDEF         (0x00)     /**< Initial state that will never be reentered */
-#define DOSE_STATE_BLOCKED       (0x01)     /**< The driver just listens to incoming frames and blocks outgress frames */
-#define DOSE_STATE_IDLE          (0x02)     /**< Frames will be received or sent */
-#define DOSE_STATE_RECV          (0x03)     /**< Currently receiving a frame */
-#define DOSE_STATE_SEND          (0x04)     /**< Currently sending a frame */
-#define DOSE_STATE_INVALID       (0x05)     /**< Invalid state used as boundary checking */
-#define DOSE_STATE_ANY           (0x0F)     /**< Special state filter used internally to observe any state transition */
-/** @} */
+typedef enum {
+    DOSE_STATE_INIT    = 0x00,     /**< Initial state that will never be reentered */
+    DOSE_STATE_BLOCKED = 0x01,     /**< The driver just listens to incoming frames and blocks outgress frames */
+    DOSE_STATE_IDLE    = 0x02,     /**< Frames will be received or sent */
+    DOSE_STATE_RECV    = 0x03,     /**< Currently receiving a frame */
+    DOSE_STATE_SEND    = 0x04,     /**< Currently sending a frame */
+    DOSE_STATE_ANY     = 0x0F      /**< Special state filter used internally to observe any state transition */
+} dose_state_t;
+
 
 /**
  * @name    Signal definitions
  * @brief   A signal controls the state machine and may cause a state transition
- * @{
  */
-#define DOSE_SIGNAL_INIT         (0x00)     /**< Init the state machine */
-#define DOSE_SIGNAL_GPIO         (0x10)     /**< Sense GPIO detected a falling edge */
-#define DOSE_SIGNAL_UART         (0x20)     /**< Octet has been received */
-#define DOSE_SIGNAL_XTIMER       (0x30)     /**< Timer timed out */
-#define DOSE_SIGNAL_SEND         (0x40)     /**< Enter send state */
-#define DOSE_SIGNAL_END          (0x50)     /**< Leave send state */
-/** @} */
+typedef enum {
+    DOSE_SIGNAL_NONE   = 0x00,    /**< No signal ... */
+    DOSE_SIGNAL_INIT   = 0x10,    /**< Init the state machine */
+    DOSE_SIGNAL_GPIO   = 0x20,    /**< Sense GPIO detected a falling edge */
+    DOSE_SIGNAL_UART   = 0x30,    /**< Octet has been received */
+    DOSE_SIGNAL_XTIMER = 0x40,    /**< Timer timed out */
+    DOSE_SIGNAL_SEND   = 0x50,    /**< Enter send state */
+    DOSE_SIGNAL_END    = 0x60     /**< Leave send state */
+} dose_signal_t;
+
+
 
 /**
  * @name    Flag definitions
@@ -134,7 +137,7 @@ typedef struct {
     netdev_t netdev;                        /**< Extended netdev structure */
     uint8_t mac_addr[ETHERNET_ADDR_LEN];    /**< This device's MAC address */
     uint8_t opts;                           /**< Driver options */
-    uint8_t state;                          /**< Current state of the driver's state machine */
+    dose_state_t state;                     /**< Current state of the driver's state machine */
     mutex_t state_mtx;                      /**< Is unlocked every time a state is (re)entered */
     uint8_t flags;                          /**< Several flags */
     uint8_t recv_buf[DOSE_FRAME_LEN];       /**< Receive buffer for incoming frames */

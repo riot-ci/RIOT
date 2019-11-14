@@ -32,10 +32,11 @@
 #include "debug.h"
 
 static uint16_t crc16_update(uint16_t crc, uint8_t octet);
-static uint8_t state_blocked(dose_t *ctx, uint8_t old_state);
-static uint8_t state_recv(dose_t *ctx, uint8_t old_state);
-static uint8_t state_send(dose_t *ctx, uint8_t old_state);
-static uint8_t state(dose_t *ctx, uint8_t src);
+static dose_signal_t state_transit_blocked(dose_t *ctx, dose_signal_t signal);
+static dose_signal_t state_transit_idle(dose_t *ctx, dose_signal_t signal);
+static dose_signal_t state_transit_recv(dose_t *ctx, dose_signal_t signal);
+static dose_signal_t state_transit_send(dose_t *ctx, dose_signal_t signal);
+static void state(dose_t *ctx, uint8_t src);
 static void _isr_uart(void *arg, uint8_t c);
 static void _isr_gpio(void *arg);
 static void _isr_xtimer(void *arg);
@@ -60,21 +61,20 @@ static uint16_t crc16_update(uint16_t crc, uint8_t octet)
     return crc;
 }
 
-static uint8_t state_blocked(dose_t *ctx, uint8_t old_state)
+static dose_signal_t state_transit_blocked(dose_t *ctx, dose_signal_t signal)
 {
     uint32_t backoff;
+    (void) signal;
 
-    if (old_state == DOSE_STATE_RECV) {
-        /* When we have left the RECV state, the driver's thread has to look
+    if (ctx->state == DOSE_STATE_RECV) {
+        /* We got here from RECV state. The driver's thread has to look
          * if this frame should be processed. By queuing NETDEV_EVENT_ISR,
          * the netif thread will call _isr at some time. */
         SETBIT(ctx->flags, DOSE_FLAG_RECV_BUF_DIRTY);
-        CLRBIT(ctx->flags, DOSE_FLAG_ESC_RECEIVED);
         ctx->netdev.event_callback((netdev_t *) ctx, NETDEV_EVENT_ISR);
     }
 
-    /* Enable GPIO interrupt for listening to
-     * the falling edge of the start bit */
+    /* Enable GPIO interrupt for start bit sensing */
     gpio_irq_enable(ctx->sense_pin);
 
     /* The timeout will bring us back into IDLE state by a random time.
@@ -83,7 +83,7 @@ static uint8_t state_blocked(dose_t *ctx, uint8_t old_state)
      * SEND state, a time in the interval [1.0 * timeout, 2.0 * timeout]
      * will be picked. This ensures that responding nodes get preferred
      * bus access and sending nodes do not overwhelm listening nodes. */
-    if (old_state == DOSE_STATE_SEND) {
+    if (ctx->state == DOSE_STATE_SEND) {
         backoff = random_uint32_range(ctx->timeout_ticks, 2 * ctx->timeout_ticks);
     }
     else {
@@ -91,29 +91,36 @@ static uint8_t state_blocked(dose_t *ctx, uint8_t old_state)
     }
     xtimer_set(&ctx->timeout, backoff);
 
-    return DOSE_STATE_BLOCKED;
+    return DOSE_SIGNAL_NONE;
 }
 
-static uint8_t state_recv(dose_t *ctx, uint8_t old_state)
+static dose_signal_t state_transit_idle(dose_t *ctx, dose_signal_t signal)
 {
-    uint8_t next_state = DOSE_STATE_RECV;
+    (void) ctx;
+    (void) signal;
 
-    if (old_state != DOSE_STATE_RECV) {
-        /* We freshly entered this state due to a GPIO interrupt.
-         * Thus, we detected the falling edge of the start bit.
-         * Disable GPIO IRQs during the transmission. */
+    return DOSE_SIGNAL_NONE;
+}
+
+static dose_signal_t state_transit_recv(dose_t *ctx, dose_signal_t signal)
+{
+    dose_signal_t rc = DOSE_SIGNAL_NONE;
+
+    if (ctx->state != DOSE_STATE_RECV) {
+        /* We freshly entered this state. Thus, no start bit sensing is required
+         * anymore. Disable GPIO IRQs during the transmission. */
         gpio_irq_disable(ctx->sense_pin);
     }
-    else {
-        /* Reentered this state -> a new octet has been received from UART.
-         * Handle ESC and END octets ... */
+
+    if (signal == DOSE_SIGNAL_UART) {
+        /* We recevied a new octet */
         int esc = (ctx->flags & DOSE_FLAG_ESC_RECEIVED);
         if (!esc && ctx->uart_octet == DOSE_OCTECT_ESC) {
             SETBIT(ctx->flags, DOSE_FLAG_ESC_RECEIVED);
         }
         else if (!esc && ctx->uart_octet == DOSE_OCTECT_END) {
             SETBIT(ctx->flags, DOSE_FLAG_END_RECEIVED);
-            next_state = DOSE_STATE_BLOCKED;
+            rc = DOSE_SIGNAL_END;
         }
         else {
             if (esc) {
@@ -129,17 +136,19 @@ static uint8_t state_recv(dose_t *ctx, uint8_t old_state)
         }
     }
 
-    if (next_state == DOSE_STATE_RECV) {
-        /* Start the octet timeout timer if we are staying in RECV state. */
+    if (rc == DOSE_SIGNAL_NONE) {
+        /* No signal is returned. We stay in the RECV state. */
         xtimer_set(&ctx->timeout, ctx->timeout_ticks);
     }
 
-    return next_state;
+    return rc;
 }
 
-static uint8_t state_send(dose_t *ctx, uint8_t old_state)
+static dose_signal_t state_transit_send(dose_t *ctx, dose_signal_t signal)
 {
-    if (old_state != DOSE_STATE_SEND) {
+    (void) signal;
+
+    if (ctx->state != DOSE_STATE_SEND) {
         /* Disable GPIO IRQs during the transmission. */
         gpio_irq_disable(ctx->sense_pin);
     }
@@ -150,86 +159,59 @@ static uint8_t state_send(dose_t *ctx, uint8_t old_state)
 
     xtimer_set(&ctx->timeout, ctx->timeout_ticks);
 
-    return DOSE_STATE_SEND;
+    return DOSE_SIGNAL_NONE;
 }
 
-static uint8_t state(dose_t *ctx, uint8_t src)
+static void state(dose_t *ctx, dose_signal_t signal)
 {
     /* Make sure no other thread or ISR interrupts state transitions */
     int irq_state = irq_disable();
 
-    uint8_t old_state = ctx->state;
-    uint8_t new_state = DOSE_STATE_UNDEF;
+    do {
+        /* The edges of the finite state machine can be identified by
+         * the current state and the signal that caused a state transition.
+         * Since the state only occupies the first 4 bits and the signal the
+         * last 4 bits of a uint8_t, they can be added together and hance
+         * be checked together. */
+        switch (ctx->state + signal) {
+            case DOSE_STATE_INIT + DOSE_SIGNAL_INIT:
+            case DOSE_STATE_RECV + DOSE_SIGNAL_END:
+            case DOSE_STATE_RECV + DOSE_SIGNAL_XTIMER:
+            case DOSE_STATE_SEND + DOSE_SIGNAL_END:
+            case DOSE_STATE_SEND + DOSE_SIGNAL_XTIMER:
+                signal = state_transit_blocked(ctx, signal);
+                ctx->state = DOSE_STATE_BLOCKED;
+                break;
 
-    /* State change based on current state and the input signal.
-     * Since the state only occupies the first 4 bits and the signal the
-     * last 4 bits of a uint8_t, they can be added together and hance
-     * be checked together. */
-    switch (old_state + src) {
-        case DOSE_STATE_UNDEF + DOSE_SIGNAL_INIT:
-            new_state = DOSE_STATE_BLOCKED;
-            break;
+            case DOSE_STATE_BLOCKED + DOSE_SIGNAL_XTIMER:
+                signal = state_transit_idle(ctx, signal);
+                ctx->state = DOSE_STATE_IDLE;
+                break;
 
-        case DOSE_STATE_BLOCKED + DOSE_SIGNAL_GPIO:
-            new_state = DOSE_STATE_RECV;
-            break;
-        case DOSE_STATE_BLOCKED + DOSE_SIGNAL_XTIMER:
-            new_state = DOSE_STATE_IDLE;
-            break;
+            case DOSE_STATE_IDLE + DOSE_SIGNAL_GPIO:
+            case DOSE_STATE_IDLE + DOSE_SIGNAL_UART:
+            case DOSE_STATE_BLOCKED + DOSE_SIGNAL_GPIO:
+            case DOSE_STATE_BLOCKED + DOSE_SIGNAL_UART:
+            case DOSE_STATE_RECV + DOSE_SIGNAL_UART:
+                signal = state_transit_recv(ctx, signal);
+                ctx->state = DOSE_STATE_RECV;
+                break;
 
-        case DOSE_STATE_IDLE + DOSE_SIGNAL_GPIO:
-            new_state = DOSE_STATE_RECV;
-            break;
-        case DOSE_STATE_IDLE + DOSE_SIGNAL_SEND:
-            new_state = DOSE_STATE_SEND;
-            break;
+            case DOSE_STATE_IDLE + DOSE_SIGNAL_SEND:
+            case DOSE_STATE_SEND + DOSE_SIGNAL_UART:
+                signal = state_transit_send(ctx, signal);
+                ctx->state = DOSE_STATE_SEND;
+                break;
 
-        case DOSE_STATE_RECV + DOSE_SIGNAL_UART:
-            new_state = DOSE_STATE_RECV;
-            break;
-        case DOSE_STATE_RECV + DOSE_SIGNAL_XTIMER:
-            new_state = DOSE_STATE_BLOCKED;
-            break;
-
-        case DOSE_STATE_SEND + DOSE_SIGNAL_UART:
-            new_state = DOSE_STATE_SEND;
-            break;
-        case DOSE_STATE_SEND + DOSE_SIGNAL_XTIMER:
-            new_state = DOSE_STATE_BLOCKED;
-            break;
-        case DOSE_STATE_SEND + DOSE_SIGNAL_END:
-            new_state = DOSE_STATE_BLOCKED;
-            break;
-    }
-
-    assert(new_state > DOSE_STATE_UNDEF && new_state < DOSE_STATE_INVALID);
-
-    /* Call state specific function */
-    while (1) {
-        uint8_t next_state = new_state;
-        switch (next_state) {
-            case DOSE_STATE_BLOCKED: next_state = state_blocked(ctx, old_state); break;
-            case DOSE_STATE_RECV: next_state = state_recv(ctx, old_state); break;
-            case DOSE_STATE_SEND: next_state = state_send(ctx, old_state); break;
+            default:
+                DEBUG("dose state(): unexpected state transition (STATE=0x%02d SIGNAL=0x%02d)\n", ctx->state, signal);
+                signal = DOSE_SIGNAL_NONE;
         }
-
-        if (next_state == new_state) {
-            /* No state change occurred within the state's function */
-            break;
-        }
-        else {
-            old_state = new_state;
-            new_state = next_state;
-        }
-    }
-
-    assert(new_state > DOSE_STATE_UNDEF && new_state < DOSE_STATE_INVALID);
+    } while (signal != DOSE_SIGNAL_NONE);
 
     /* Indicate state change by unlocking state mutex */
-    ctx->state = new_state;
     mutex_unlock(&ctx->state_mtx);
     irq_restore(irq_state);
-    return ctx->state;
 }
 
 static void _isr_uart(void *arg, uint8_t c)
@@ -528,7 +510,7 @@ static int _init(netdev_t *dev)
     ctx->opts = 0;
     ctx->recv_buf_ptr = 0;
     ctx->flags = 0;
-    ctx->state = DOSE_STATE_UNDEF;
+    ctx->state = DOSE_STATE_INIT;
     irq_restore(irq_state);
 
     state(ctx, DOSE_SIGNAL_INIT);
