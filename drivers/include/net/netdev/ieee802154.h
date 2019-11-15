@@ -42,7 +42,7 @@ extern "C" {
 #define NETDEV_IEEE802154_SEND_MASK         (0x0028)    /**< flags to take for send packets */
 #define NETDEV_IEEE802154_RAW               (0x0002)    /**< pass raw frame to upper layer */
 /**
- * @brief   use long source addres (set) or short source address (unset)
+ * @brief   use long source address (set) or short source address (unset)
  */
 #define NETDEV_IEEE802154_SRC_MODE_LONG     (0x0004)
 /**
@@ -101,15 +101,8 @@ typedef struct {
      */
     uint16_t pan;
 
-    /**
-     * @brief   Short address in network byte order
-     */
-    uint8_t short_addr[IEEE802154_SHORT_ADDRESS_LEN];
-
-    /**
-     * @brief   Long address in network byte order
-     */
-    uint8_t long_addr[IEEE802154_LONG_ADDRESS_LEN];
+    network_uint16_t short_addr;            /**< short address */
+    eui64_t long_addr;                      /**< long address */
     uint8_t seq;                            /**< sequence number */
     uint8_t chan;                           /**< channel */
     uint8_t page;                           /**< channel page */
@@ -180,16 +173,16 @@ int netdev_ieee802154_set(netdev_ieee802154_t *dev, netopt_t opt, const void *va
                           size_t value_len);
 
 /**
- * @brief  This funtion compares destination address and pan id with addresses
+ * @brief  This function compares destination address and pan id with addresses
  * and pan id of the device
  *
- * this funciton is meant top be used by drivers that do not support address
+ * this function is meant top be used by drivers that do not support address
  * filtering in hw
  *
  * @param[in] dev       network device descriptor
  * @param[in] mhr       mac header
  *
- * @return 0            successfull if packet is for the device
+ * @return 0            successful if packet is for the device
  * @return 1            fails if packet is not for the device or pan
  */
 int netdev_ieee802154_dst_filter(netdev_ieee802154_t *dev, const uint8_t *mhr);

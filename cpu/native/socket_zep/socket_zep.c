@@ -164,10 +164,10 @@ static inline bool _dst_not_me(socket_zep_t *dev, const void *buf)
                                  &dst_pan);
     switch (dst_len) {
         case IEEE802154_LONG_ADDRESS_LEN:
-            return memcmp(dst_addr, dev->netdev.long_addr, dst_len) != 0;
+            return memcmp(dst_addr, dev->netdev.long_addr.uint8, dst_len) != 0;
         case IEEE802154_SHORT_ADDRESS_LEN:
             return (memcmp(dst_addr, ieee802154_addr_bcast, dst_len) != 0) &&
-                   (memcmp(dst_addr, dev->netdev.short_addr, dst_len) != 0);
+                   (memcmp(dst_addr, dev->netdev.short_addr.u8, dst_len) != 0);
         default:
             return false;    /* better safe than sorry ;-) */
     }
@@ -208,13 +208,13 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                     void *payload = &dev->rcv_buf[sizeof(zep_v2_data_hdr_t)];
 
                     if (zep->type != ZEP_V2_TYPE_DATA) {
-                        DEBUG("socket_zep::recv: unexpect ZEP type\n");
+                        DEBUG("socket_zep::recv: unexpected ZEP type\n");
                         /* don't support ACK frames for now*/
                         return -1;
                     }
                     if (((sizeof(zep_v2_data_hdr_t) + zep->length) != (unsigned)size) ||
                         (zep->length > len) || (zep->chan != dev->netdev.chan) ||
-                        /* TODO promiscous mode */
+                        /* TODO promiscuous mode */
                         _dst_not_me(dev, payload)) {
                         /* TODO: check checksum */
                         return -1;
@@ -383,16 +383,15 @@ void socket_zep_setup(socket_zep_t *dev, const socket_zep_params_t *params)
     assert(ss_len >= IEEE802154_LONG_ADDRESS_LEN);
 
     /* generate hardware address from socket address and port info */
-    dev->netdev.long_addr[1] = 'Z';     /* The "OUI" */
-    dev->netdev.long_addr[2] = 'E';
-    dev->netdev.long_addr[3] = 'P';
+    dev->netdev.long_addr.uint8[1] = 'Z';     /* The "OUI" */
+    dev->netdev.long_addr.uint8[2] = 'E';
+    dev->netdev.long_addr.uint8[3] = 'P';
     for (unsigned i = 0; i < ss_len; i++) { /* generate NIC from local source */
         unsigned addr_idx = (i % (IEEE802154_LONG_ADDRESS_LEN / 2)) +
                             (IEEE802154_LONG_ADDRESS_LEN / 2);
-        dev->netdev.long_addr[addr_idx] ^= ss_array[i];
+        dev->netdev.long_addr.uint8[addr_idx] ^= ss_array[i];
     }
-    dev->netdev.short_addr[0] = dev->netdev.long_addr[6];
-    dev->netdev.short_addr[1] = dev->netdev.long_addr[7];
+    dev->netdev.short_addr.u16 = dev->netdev.long_addr.uint16[3].u16;
     native_async_read_setup();
     native_async_read_add_handler(dev->sock_fd, dev, _socket_isr);
 }
