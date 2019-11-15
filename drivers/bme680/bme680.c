@@ -2,6 +2,10 @@
 #include "bme680.h"
 #include "bme680_hal.h"
 
+#ifdef MODULE_PERIPH_I2C
+#include "periph/i2c.h"
+#endif
+
 #ifdef MODULE_PERIPH_SPI
 #include "periph/spi.h"
 #endif
@@ -30,7 +34,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
 
     /* call internal bme680_init from Bosch Sensortech driver */
     ret = bme680_init_internal(&BME680_DEV);
-    if(ret != 0) {
+    if (ret != 0) {
         DEBUG("[bme680]: Failed to get ID");
         return -1;
     }
@@ -54,9 +58,17 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
 
     /* Set the desired sensor configuration */
     ret = bme680_set_sensor_settings(params->settings, &BME680_DEV);
+    if (ret != 0) {
+        DEBUG("[bme680]: failed to set settings\n");
+        return -2;
+    }
 
     /* Set the power mode */
     ret = bme680_set_sensor_mode(&BME680_DEV);
+    if (ret != 0) {
+        DEBUG("[bme680]: cannot set sensor mode\n");
+        return -3;
+    }
 
     return ret;
 }

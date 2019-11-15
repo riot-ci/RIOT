@@ -80,9 +80,10 @@ ifneq (,$(filter bh1900nux,$(USEMODULE)))
 endif
 
 ifneq (,$(filter bme680,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_gpio_irq
-  FEATURES_REQUIRED += periph_gpio
-  FEATURES_REQUIRED += periph_i2c
+  FEATURES_OPTIONAL += periph_gpio_irq
+  FEATURES_OPTIONAL += periph_gpio
+  FEATURES_OPTIONAL += periph_i2c
+  FEATURES_OPTIONAL += periph_spi
   USEPKG += bme680_driver
 endif
 

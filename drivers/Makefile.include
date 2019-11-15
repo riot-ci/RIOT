@@ -42,7 +42,6 @@ endif
 
 ifneq (,$(filter bme680,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/bme680/include
-  #USEMODULE_INCLUDES += $(PKGDIRBASE)/bme680_driver/include
 endif
 
 ifneq (,$(filter bmp180,$(USEMODULE)))
