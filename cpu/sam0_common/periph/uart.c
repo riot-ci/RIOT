@@ -23,12 +23,6 @@
  * @}
  */
 
-#ifdef MODULE_PERIPH_UART_NONBLOCKING
-#define USE_NONBLOCKING 1
-#else
-#define USE_NONBLOCKING 0
-#endif
-
 #include "cpu.h"
 
 #include "periph/uart.h"
@@ -44,7 +38,7 @@
 /**
  * @brief   Allocate memory to store the callback functions & buffers
  */
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
 #include "tsrb.h"
 static tsrb_t uart_tx_rb[UART_NUMOF];
 static uint8_t uart_tx_rb_buf[UART_NUMOF][SAM0_UART_TXBUF_SIZE];
@@ -72,7 +66,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* must disable here first to ensure idempotency */
     dev(uart)->CTRLA.reg &= ~(SERCOM_USART_CTRLA_ENABLE);
 
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
     /* set up the TX buffer */
     tsrb_init(&uart_tx_rb[uart], uart_tx_rb_buf[uart], SAM0_UART_TXBUF_SIZE);
 #endif
@@ -120,7 +114,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         uart_ctx[uart].rx_cb = rx_cb;
         uart_ctx[uart].arg = arg;
 #ifdef UART_HAS_TX_ISR
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
         /* enable TXE ISR */
         NVIC_EnableIRQ(SERCOM0_0_IRQn + (sercom_id(dev(uart)) * 4));
 #endif
@@ -147,7 +141,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
     for (const void* end = data + len; data != end; ++data) {
         while (tsrb_add_one(&uart_tx_rb[uart], *data) < 0) {}
         dev(uart)->INTENSET.reg = SERCOM_USART_INTENSET_DRE;
@@ -214,7 +208,7 @@ int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity,
 }
 #endif
 
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
 static inline void irq_handler_tx(unsigned uartnum)
 {
     dev(uartnum)->DATA.reg = tsrb_get_one(&uart_tx_rb[uartnum]);
@@ -229,7 +223,7 @@ static inline void irq_handler(unsigned uartnum)
 {
     uint32_t status = dev(uartnum)->INTFLAG.reg;
 
-#if !defined(UART_HAS_TX_ISR) && USE_NONBLOCKING
+#if !defined(UART_HAS_TX_ISR) && defined(MODULE_PERIPH_UART_NONBLOCKING)
     if ((status & SERCOM_USART_INTFLAG_DRE) && dev(uartnum)->INTENSET.bit.DRE) {
         irq_handler_tx(uartnum);
     }
@@ -290,7 +284,7 @@ void UART_5_ISR(void)
 }
 #endif
 
-#if USE_NONBLOCKING
+#ifdef MODULE_PERIPH_UART_NONBLOCKING
 
 #ifdef UART_0_ISR_TX
 void UART_0_ISR_TX(void)
@@ -333,4 +327,4 @@ void UART_5_ISR_TX(void)
     irq_handler_tx(5);
 }
 #endif
-#endif /* USE_NONBLOCKING */
+#endif /* MODULE_PERIPH_UART_NONBLOCKING */
