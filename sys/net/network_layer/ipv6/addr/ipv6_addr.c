@@ -126,7 +126,7 @@ void ipv6_addr_init_iid(ipv6_addr_t *out, const uint8_t *iid, uint8_t bits)
 char *ipv6_addr_split_str(char *addr_str, char seperator)
 {
     char *sep = addr_str;
-    while(*++sep) {
+    while (*(++sep)) {
         if (*sep == seperator) {
             *sep++ = '\0';
             break;
