@@ -113,7 +113,7 @@ static dose_signal_t state_transit_recv(dose_t *ctx, dose_signal_t signal)
     }
 
     if (signal == DOSE_SIGNAL_UART) {
-        /* We recevied a new octet */
+        /* We received a new octet */
         int esc = (ctx->flags & DOSE_FLAG_ESC_RECEIVED);
         if (!esc && ctx->uart_octet == DOSE_OCTECT_ESC) {
             SETBIT(ctx->flags, DOSE_FLAG_ESC_RECEIVED);
@@ -434,6 +434,9 @@ send:
     if (send_octet(ctx, DOSE_OCTECT_END)) {
         goto collision;
     }
+
+    /* We probably sent the whole packet?! */
+    ctx->netdev.event_callback((netdev_t *) ctx, NETDEV_EVENT_TX_COMPLETE);
 
     /* Get out of the SEND state */
     state(ctx, DOSE_SIGNAL_END);
