@@ -391,8 +391,7 @@ void socket_zep_setup(socket_zep_t *dev, const socket_zep_params_t *params)
                             (IEEE802154_LONG_ADDRESS_LEN / 2);
         dev->netdev.long_addr.uint8[addr_idx] ^= ss_array[i];
     }
-    dev->netdev.short_addr.u8[0] = dev->netdev.long_addr.uint8[6];
-    dev->netdev.short_addr.u8[1] = dev->netdev.long_addr.uint8[7];
+    dev->netdev.short_addr.u16[0] = dev->netdev.long_addr.uint16[3].u16;
     native_async_read_setup();
     native_async_read_add_handler(dev->sock_fd, dev, _socket_isr);
 }
