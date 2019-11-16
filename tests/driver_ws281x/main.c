@@ -98,6 +98,21 @@ int main(void)
                 xtimer_periodic_wakeup(&last_wakeup, 10 * US_PER_MS);
             }
         }
+
+        puts("Animation: 100 rainbows. (You'll need a long chain for this)");
+        uint8_t buf[RAINBOW_LEN * WS281X_BYTES_PER_DEVICE];
+        for (unsigned i = 0; i < RAINBOW_LEN; i++) {
+            ws281x_set_buffer(buf, i, rainbow[i]);
+        }
+
+        for (unsigned i = 0; i < 100; i++) {
+            ws281x_write_buffer(&dev, buf, sizeof(buf));
+        }
+
+        ws281x_end_transmission();
+
+        /* wait some time to allow testers to verify the result */
+        xtimer_sleep(5);
     }
 
     return 0;
