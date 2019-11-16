@@ -4,4 +4,7 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += lps22hb
 endif
 
+# STDIO on this board is available via Segger's RTT
+USEMODULE += stdio_rtt
+
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
