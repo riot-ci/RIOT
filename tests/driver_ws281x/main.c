@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief   Test application for the NeoPixel RGB LED driver
+ * @brief   Test application for the WS281x RGB LED driver
  *
  * @author  Marian Buschsieweke <marian.buschsieweke@ovgu.de>
  *
@@ -42,7 +42,7 @@ int main(void)
     int retval;
 
     puts(
-        "NeoPixel test application\n"
+        "WS281x Test Application\n"
         "=========================\n"
         "\n"
         "If you see an animated rainbow, the driver works as expected.\n"
@@ -60,16 +60,18 @@ int main(void)
     while (1) {
         unsigned offset = 0;
         puts("Animation: Moving rainbow...");
+        xtimer_ticks32_t last_wakeup = xtimer_now();
         for (unsigned i = 0; i < 100; i++) {
             for (uint16_t j = 0; j < dev.params.numof; j++) {
                 ws281x_set(&dev, j, rainbow[(j + offset) % RAINBOW_LEN]);
             }
             offset++;
             ws281x_write(&dev);
-            xtimer_usleep(100 * US_PER_MS);
+            xtimer_periodic_wakeup(&last_wakeup, 100 * US_PER_MS);
         }
 
         puts("Animation: Fading rainbow...");
+        last_wakeup = xtimer_now();
         for (unsigned i = 0; i < RAINBOW_LEN; i++) {
             for (unsigned j = 0; j < 100; j++) {
                 color_rgb_t col = {
@@ -81,7 +83,7 @@ int main(void)
                     ws281x_set(&dev, k, col);
                 }
                 ws281x_write(&dev);
-                xtimer_usleep(10 * US_PER_MS);
+                xtimer_periodic_wakeup(&last_wakeup, 10 * US_PER_MS);
             }
             for (unsigned j = 100; j > 0; j--) {
                 color_rgb_t col = {
@@ -93,7 +95,7 @@ int main(void)
                     ws281x_set(&dev, k, col);
                 }
                 ws281x_write(&dev);
-                xtimer_usleep(10 * US_PER_MS);
+                xtimer_periodic_wakeup(&last_wakeup, 10 * US_PER_MS);
             }
         }
     }
