@@ -7,6 +7,8 @@ N ?= 8
 
 USEMODULE += ws281x
 
+FEATURES_REQUIRED := arch_avr8 # Currently only a backend for AVR available
+
 include $(RIOTBASE)/Makefile.include
 
 CFLAGS += '-DWS281X_PARAM_PIN=$(PIN)'
