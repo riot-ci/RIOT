@@ -89,7 +89,7 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     /* set operation mode */
     EXEC_RET(_reg_write(dev, HMC5883L_REG_MODE, params->op_mode), res);
 
-    /* wait 6 ms accoring to data sheet */
+    /* wait 6 ms according to data sheet */
     xtimer_usleep(6 * US_PER_MS);
 
     return res;
@@ -241,7 +241,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
               dev, len, reg);
 
     if (i2c_acquire(dev->dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
@@ -282,7 +282,7 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
     }
 
     if (i2c_acquire(dev->dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
