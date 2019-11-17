@@ -13,5 +13,6 @@ BOARDS_WITHOUT_HWRNG += nucleo-f401re
 BOARDS_WITHOUT_HWRNG += nucleo-f411re
 BOARDS_WITHOUT_HWRNG += nucleo-f446re
 BOARDS_WITHOUT_HWRNG += nucleo-f446ze
+BOARDS_WITHOUT_HWRNG += WeAct-f411ce
 
 -include $(RIOTCPU)/stm32_common/Makefile.features
