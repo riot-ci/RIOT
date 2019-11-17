@@ -57,8 +57,11 @@
 #define HMC5883L_MAG_DECL   (0.0573F)
 #endif
 
+#ifndef M_PI
 #define M_PI    (3.14159265358979323846)
-#define SLEEP   (100 * US_PER_MS)
+#endif
+
+#define HMC5883L_SLEEP  (100 * US_PER_MS)
 
 kernel_pid_t p_main;
 
