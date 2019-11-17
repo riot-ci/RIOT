@@ -117,12 +117,12 @@ typedef enum {
 } hmc5883l_gain_t;
 
 /**
- * @brief   Magnetic field values in micro-Gauss (uGs)
+ * @brief   Magnetic field values in milli-Gauss (mGs)
  */
 typedef struct {
-    int32_t x;  /**< magnetic field x-axis */
-    int32_t y;  /**< magnetic field y-axis */
-    int32_t z;  /**< magnetic field y-axis */
+    int16_t x;  /**< magnetic field x-axis */
+    int16_t y;  /**< magnetic field y-axis */
+    int16_t z;  /**< magnetic field y-axis */
 } hmc5883l_data_t;
 
 /**
@@ -233,14 +233,14 @@ int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg);
 int hmc5883l_data_ready(const hmc5883l_t *dev);
 
 /**
- * @brief   Read one sample of magnetic field values in micro-Gauss (uGs)
+ * @brief   Read one sample of magnetic field values in milli-Gauss (mGs)
  *
  * Raw magnetometer data are read from the sensor and normalized them
  * with respect to configured gain. Magnetic field values are given in
- * micro-Gauss (uGs) to preserve full resolution:
+ * milli-Gauss (mGs) to preserve full resolution:
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor
- * @param[out]  data    result vector in micro-Gauss (uGs) per axis
+ * @param[out]  data    result vector in milli-Gauss (mGs) per axis
  *
  * @retval  HMC5883L_OK         on success
  * @retval  HMC5883L_ERROR_*    a negative error code on error,
