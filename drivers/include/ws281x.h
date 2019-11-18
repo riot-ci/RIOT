@@ -111,6 +111,8 @@ int ws281x_init(ws281x_t *dev, const ws281x_params_t *params);
  * @param   buf     Buffer to write
  * @param   size    Size of the buffer in bytes
  *
+ * @pre     Before the transmission starts @ref ws281x_prepare_transmission is
+ *          called
  * @post    At the end of the transmission @ref ws281x_end_transmission is
  *          called
  *
@@ -118,18 +120,51 @@ int ws281x_init(ws281x_t *dev, const ws281x_params_t *params);
  * buffers. However, after the return of this function the next chunk should
  * be send within a few microseconds to avoid accidentally sending the end of
  * transmission signal.
+ *
+ * Usage:
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * uint8_t chunk[CHUNK_SIZE];
+ * ws281x_prepare_transmission(ws281x_dev);
+ * while (more_chunks_available()) {
+ *    prepare_chunk(chunk);
+ *    ws281x_write_buffer(ws281x_dev, chunk, sizeof(chunk));
+ * }
+ * ws281x_end_transmission(dev);
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 void ws281x_write_buffer(ws281x_t *dev, const void *buf, size_t size);
 
+#if defined(WS281X_HAVE_PREPARE_TRANSMISSION) || defined(DOXYGEN)
 /**
- * @brief   Sends the end of transmission signal to the WS2812/SK6812 LED chain
+ * @brief   Sets up everything needed to write data to the WS281X LED chain
  *
- * Waits for 80µs.
+ * @param   dev     Device descriptor of the LED chain to write to
  */
-static inline void ws281x_end_transmission(void)
+void ws281x_prepare_transmission(ws281x_t *dev);
+#else
+static inline void ws281x_prepare_transmission(ws281x_t *dev)
 {
+    (void)dev;
+}
+#endif
+
+#if defined(WS281X_HAVE_END_TRANSMISSION) || defined(DOXYGEN)
+/**
+ * @brief   Ends the transmission to the WS2812/SK6812 LED chain
+ *
+ * @param   dev     Device descriptor of the LED chain to write to
+ *
+ * Does any cleanup the backend needs after sending data. In the simplest case
+ * it simply waits for 80µs to send the end of transmission signal.
+ */
+void ws281x_end_transmission(ws281x_t *dev);
+#else
+static inline void ws281x_end_transmission(ws281x_t *dev)
+{
+    (void)dev;
     xtimer_usleep(WS281X_T_END_US);
 }
+#endif
 
 /**
  * @brief   Sets the color of an LED in the given data buffer
@@ -168,9 +203,10 @@ static inline void ws281x_set(ws281x_t *dev, uint16_t index, color_rgb_t color)
  */
 static inline void ws281x_write(ws281x_t *dev)
 {
+    ws281x_prepare_transmission(dev);
     ws281x_write_buffer(dev, dev->params.buf,
                         (size_t)dev->params.numof * WS281X_BYTES_PER_DEVICE);
-    ws281x_end_transmission();
+    ws281x_end_transmission(dev);
 }
 
 #ifdef __cplusplus

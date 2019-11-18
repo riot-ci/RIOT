@@ -31,7 +31,10 @@
 /* Default buffer used in ws281x_params.h. Will be optimized out if unused */
 uint8_t ws281x_buf[WS281X_PARAM_NUMOF * WS281X_BYTES_PER_DEVICE];
 
-int ws281x_init(ws281x_t *dev, const ws281x_params_t *params)
+/* Some backend will need a custom init function. Declaring this as weak symbol
+ * allows them to provide their own. */
+int __attribute__((weak)) ws281x_init(ws281x_t *dev,
+                                      const ws281x_params_t *params)
 {
     if (!dev || !params || !params->buf) {
         return -EINVAL;
