@@ -13,5 +13,5 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   #USEMODULE += apds9007
 endif
 
-# STDIO on this board is available via Segger's RTT
-FEATURES_REQUIRED += stdio_rtt
+# Use Segger's RTT by default for stdio on this board
+DEFAULT_MODULE += stdio_rtt
