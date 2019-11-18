@@ -59,10 +59,11 @@ int main(void)
         puts("OK");
     }
 
-    struct bme680_field_data data;
-    uint8_t ret;
     while(1)
     {
+        struct bme680_field_data data;
+        uint8_t ret;
+
         xtimer_sleep(5);
 
         ret = bme680_get_sensor_data(&data, &(dev.dev));

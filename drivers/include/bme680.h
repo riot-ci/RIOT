@@ -58,6 +58,15 @@ typedef struct {
 }
 #endif
 
+/**
+ * @brief   Initialize the BME680 sensor driver.
+ *
+ * @param[out] dev          device descriptor of sensor to initialize
+ * @param[in]  params       configuration parameters
+ *
+ * @return                  0 on success
+ * @return                  < 0 on failures
+  */
 int bme680_init(bme680_t *dev, const bme680_params_t *params);
 
 #endif /* BME680_H */
