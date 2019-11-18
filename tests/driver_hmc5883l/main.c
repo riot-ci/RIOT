@@ -57,8 +57,11 @@
 #define HMC5883L_MAG_DECL   (0.0573F)
 #endif
 
+#ifndef M_PI
 #define M_PI    (3.14159265358979323846)
-#define SLEEP   (100 * US_PER_MS)
+#endif
+
+#define HMC5883L_SLEEP  (100 * US_PER_MS)
 
 kernel_pid_t p_main;
 
@@ -102,14 +105,14 @@ int main(void)
         msg_receive(&msg);
         #else
         /* wait longer than period of HMC5883L DOR */
-        xtimer_usleep(SLEEP);
+        xtimer_usleep(HMC5883L_SLEEP);
         #endif
 
         /* read data in any case */
         hmc5883l_data_t data;
         if (hmc5883l_read(&dev, &data) == HMC5883L_OK) {
             /* print xyz data */
-            printf("magn [uGs] x = %" PRIi32 ", y = %" PRIi32 ", z = %" PRIi32 "\n",
+            printf("magn [mGs] x = %" PRIi16 ", y = %" PRIi16 ", z = %" PRIi16 "\n",
                     data.x, data.y, data.z);
 
             /* compute and print heading for the given magnetic declination in rad */

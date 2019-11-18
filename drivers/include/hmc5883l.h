@@ -56,7 +56,7 @@ typedef enum {
 /**
  * @brief   Data output rates (DOR)
  *
- * Values correspond to bits <4:2> of HMC5883L_REG_CFG_A register
+ * The values correspond to bits <4:2> of the HMC5883L_REG_CFG_A register.
  */
 typedef enum {
     HMC5883L_DOR_0_75 = 0x00,   /**< 0.75 Hz           */
@@ -71,7 +71,7 @@ typedef enum {
 /**
  * @brief   Measurement modes
  *
- * Values correspond to bits <1:0> of HMC5883L_REG_CFG_A register
+ * The values correspond to bits <1:0> of the HMC5883L_REG_CFG_A register.
  */
 typedef enum {
     HMC5883L_MEAS_MODE_NORMAL   = 0x00, /**< Normal measurement config */
@@ -80,9 +80,9 @@ typedef enum {
 } hmc5883l_meas_mode_t;
 
 /**
- * @brief   Measurment avaraging (number of samples are averaged for output)
+ * @brief   Measurement avaraging (number of samples are averaged for output)
  *
- * Values correspond to bits <6:5> of HMC5883L_REG_CFG_A register
+ * The values correspond to bits <6:5> of the HMC5883L_REG_CFG_A register.
  */
 typedef enum {
     HMC5883L_MEAS_AVG_NONE = 0x00,  /**< No averaging */
@@ -93,6 +93,7 @@ typedef enum {
 
 /**
  * @brief   Operation modes
+ *
  * Values correspond to bits <1:0> of HMC5883L_REG_MODE register
  */
 typedef enum {
@@ -103,7 +104,8 @@ typedef enum {
 
 /**
  * @brief   Gain (determines the sensitivity and the range)
- * Values correspond to bits <7:5> of HMC5883L_REG_CFG_B_GN register
+ *
+ * The values correspond to bits <7:5> of the HMC5883L_REG_CFG_B_GN register.
  */
 typedef enum {
     HMC5883L_GAIN_1370 = 0x00,  /**< Range +-0.88 Gs, Resolution 0.73 mGs/LSB */
@@ -117,12 +119,12 @@ typedef enum {
 } hmc5883l_gain_t;
 
 /**
- * @brief   Magnetic field values in micro-Gauss (uGs)
+ * @brief   Magnetic field values in milli-Gauss (mGs)
  */
 typedef struct {
-    int32_t x;  /**< magnetic field x-axis */
-    int32_t y;  /**< magnetic field y-axis */
-    int32_t z;  /**< magnetic field y-axis */
+    int16_t x;  /**< magnetic field x-axis */
+    int16_t y;  /**< magnetic field y-axis */
+    int16_t z;  /**< magnetic field y-axis */
 } hmc5883l_data_t;
 
 /**
@@ -140,7 +142,7 @@ typedef struct {
  * @brief   HMC5883L DRDY interrupt callback function type
  *
  * Function prototype for the function which is called on DRDY interrupt if
- * the interrupt is activated by #hmc5883l_init_int and the interupt pin is
+ * the interrupt is activated by #hmc5883l_init_int and the interrupt pin is
  * defined in device initialization parameters.
  *
  * @note The @p cb function is called in interrupt context. The application
@@ -181,7 +183,7 @@ typedef struct {
  * @brief	Initialize the HMC5883L sensor device
  *
  * This function resets the sensor and initializes the sensor according to
- * given intialization parameters. All registers are reset to default values.
+ * given initialization parameters. All registers are reset to default values.
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor to be initialized
  * @param[in]   params  HMC5883L initialization parameters
@@ -202,8 +204,8 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params);
  * @p cb parameter specifies the function, along with an optional argument
  * @p arg, which is called when a DRDY interrupt is triggered.
  *
- * @note The @p cb function is called in interrupt context. The application
- *       should do nothing time consuming and not directly access sensor data.
+ * @warning The given callback function @p cb is executed in interrupt context.
+ *          Make sure not to call any driver API function in that context.
  * @note This function is only available when module `hmc5883l_int` is enabled.
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor
@@ -233,14 +235,14 @@ int hmc5883l_init_int(hmc5883l_t *dev, hmc5883l_drdy_int_cb_t cb, void *arg);
 int hmc5883l_data_ready(const hmc5883l_t *dev);
 
 /**
- * @brief   Read one sample of magnetic field values in micro-Gauss (uGs)
+ * @brief   Read one sample of magnetic field values in milli-Gauss (mGs)
  *
  * Raw magnetometer data are read from the sensor and normalized them
  * with respect to configured gain. Magnetic field values are given in
- * micro-Gauss (uGs) to preserve full resolution:
+ * milli-Gauss (mGs) to preserve full resolution:
  *
  * @param[in]   dev     device descriptor of HMC5883L sensor
- * @param[out]  data    result vector in micro-Gauss (uGs) per axis
+ * @param[out]  data    result vector in milli-Gauss (mGs) per axis
  *
  * @retval  HMC5883L_OK         on success
  * @retval  HMC5883L_ERROR_*    a negative error code on error,
