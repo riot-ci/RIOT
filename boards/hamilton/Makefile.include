@@ -7,6 +7,4 @@ OFLAGS := --gap-fill 0xff
 TERMPROG = $(RIOTTOOLS)/jlink/jlink.sh
 TERMFLAGS = term_rtt
 
-USEMODULE += stdio_rtt
-
 include $(RIOTMAKE)/tools/jlink.inc.mk

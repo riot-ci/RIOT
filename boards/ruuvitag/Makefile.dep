@@ -5,4 +5,7 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   # USEMODULE += bme280_spi
 endif
 
+# STDIO on this board is available via Segger's RTT
+FEATURES_REQUIRED += stdio_rtt
+
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
