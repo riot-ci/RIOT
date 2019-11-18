@@ -118,19 +118,6 @@ nrf24l01p_state_t nrf24l01p_state_from_netif(netopt_state_t state);
 #endif
 
 /**
- * @brief   Check if device is in a transitional state
- *
- * @param[in] dev       NRF24L01P device handle
- *
- * @retval 1            In transition
- * @retval 0            Not in transition
- */
-static inline int dev_in_transition(nrf24l01p_t *dev)
-{
-    return dev->state & 1; /* odd state number */
-}
-
-/**
  * @brief   Wait until device is powered on
  *
  * @post    If there is a device, it is able to operate
@@ -144,35 +131,35 @@ void nrf24l01p_power_on(nrf24l01p_t *dev);
  *
  * @param[in] dev       NRF24L01P device handle
  */
-void nrf24l01p_transition_to_POWER_DOWN(nrf24l01p_t *dev);
+void nrf24l01p_transition_to_power_down(nrf24l01p_t *dev);
 
 /**
  * @brief   Go to idle state, wake up device
  *
  * @param[in] dev       NRF24L01P device handle
  */
-void nrf24l01p_transition_to_STANDBY_1(nrf24l01p_t *dev);
+void nrf24l01p_transition_to_standby_1(nrf24l01p_t *dev);
 
 /**
  * @brief   Go to "be ready to transmit" state
  *
  * @param[in] dev   NRF24L01P device handle
  */
-void nrf24l01p_transition_to_STANDBY_2(nrf24l01p_t *dev);
+void nrf24l01p_transition_to_standby_2(nrf24l01p_t *dev);
 
 /**
  * @brief   Go to Rx mode
  *
  * @param[in] dev   NRF24L01P device handle
  */
-void nrf24l01p_transition_to_RX_MODE(nrf24l01p_t *dev);
+void nrf24l01p_transition_to_rx_mode(nrf24l01p_t *dev);
 
 /**
  * @brief   Go to Tx mode
  *
  * @param[in] dev   NRF24L01P device handle
  */
-void nrf24l01p_transition_to_TX_MODE(nrf24l01p_t *dev);
+void nrf24l01p_transition_to_tx_mode(nrf24l01p_t *dev);
 
 #ifdef __cplusplus
 }

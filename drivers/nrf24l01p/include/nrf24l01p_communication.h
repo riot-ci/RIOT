@@ -46,68 +46,68 @@ extern "C" {
  * @brief   Read register value
  *          (1 to 5 bytes)
  */
-#define NRF24L01P_CMD__R_REGISTER(reg) \
+#define NRF24L01P_CMD_R_REGISTER(reg) \
     (0x00 | ((reg) & NRF24L01P_ADDR_MASK))
 
 /**
  * @brief   Write register value
  *          (1 to 5 bytes)
  */
-#define NRF24L01P_CMD__W_REGISTER(reg) \
+#define NRF24L01P_CMD_W_REGISTER(reg) \
     (0x20 | ((reg) & NRF24L01P_ADDR_MASK))
 
 /**
  * @brief   Read RX payload buffer
  *          (1 to 32 bytes)
  */
-#define NRF24L01P_CMD__R_RX_PAYLOAD         (0x61)
+#define NRF24L01P_CMD_R_RX_PAYLOAD         (0x61)
 
 /**
  * @brief   Write TX payload buffer
  *          (1 to 32 bytes)
  */
-#define NRF24L01P_CMD__W_TX_PAYLOAD         (0xA0)
+#define NRF24L01P_CMD_W_TX_PAYLOAD         (0xA0)
 
 /**
  * @brief   Flush TX buffer
  *          (0 bytes data)
  */
-#define NRF24L01P_CMD__FLUSH_TX             (0xE1)
+#define NRF24L01P_CMD_FLUSH_TX             (0xE1)
 
 /**
  * @brief   Flush RX buffer
  *          (0 bytes data)
  */
-#define NRF24L01P_CMD__FLUSH_RX             (0xE2)
+#define NRF24L01P_CMD_FLUSH_RX             (0xE2)
 
 /**
  * @brief   Reuse last transmitted payload
  *          (0 bytes data)
  */
-#define NRF24L01P_CMD__REUSE_TX_PL          (0xE3)
+#define NRF24L01P_CMD_REUSE_TX_PL          (0xE3)
 
 /**
  * @brief   Read RX payload width for the top R_RX_PAYLOAD in RX FIFO
  *          (1 byte data)
  */
-#define NRF24L01P_CMD__R_RX_PL_WID          (0x60)
+#define NRF24L01P_CMD_R_RX_PL_WID          (0x60)
 
 /**
  * @brief   Write payload to be transmitted together with ACK for certain pipe
  *          (1 to 32 bytes data)
  */
-#define NRF24L01P_CMD__W_ACK_PAYLOAD(pipe) \
+#define NRF24L01P_CMD_W_ACK_PAYLOAD(pipe) \
     (0xA8 | ((pipe) & NRF24L01P_PIPE_MASK))
 
 /**
  * @brief   Disable auto ACK on this specific frame
  */
-#define NRF24L01P_CMD__W_TX_PAYLOAD_NO_ACK  (0xB0)
+#define NRF24L01P_CMD_W_TX_PAYLOAD_NO_ACK  (0xB0)
 
 /**
  * @brief   No operation
  */
-#define NRF24L01P_CMD__NOP                  (0xFF)
+#define NRF24L01P_CMD_NOP                  (0xFF)
 
 /**
  * @brief   Acquire the SPI bus of the transceiver

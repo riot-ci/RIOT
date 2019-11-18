@@ -27,20 +27,20 @@
 
 int nrf24l01p_assert_awake(nrf24l01p_t *dev)
 {
-    nrf24l01p_reg8__CONFIG_t config = 0;
+    nrf24l01p_reg8_config_t config = 0;
 
-    nrf24l01p_read_reg(dev, NRF24L01P_REG__CONFIG, &config, 1);
-    return config & NRF24L01P_FLG__PWR_UP;
+    nrf24l01p_read_reg(dev, NRF24L01P_REG_CONFIG, &config, 1);
+    return config & NRF24L01P_FLG_PWR_UP;
 }
 
 void nrf24l01p_restore_address(nrf24l01p_t *dev)
 {
-    nrf24l01p_reg8__SETUP_AW_t setup_aw =
-        NRF24L01P_FLG__AW(dev->params.config.cfg_addr_width);
+    nrf24l01p_reg8_setup_aw_t setup_aw =
+        NRF24L01P_FLG_AW(dev->params.config.cfg_addr_width);
     uint8_t addr_buffer[NRF24L01P_MAX_ADDR_WIDTH];
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
 
     memcpy(addr_buffer, dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr, aw);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P0, addr_buffer, aw);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__SETUP_AW, &setup_aw, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P0, addr_buffer, aw);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_SETUP_AW, &setup_aw, 1);
 }

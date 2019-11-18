@@ -26,7 +26,7 @@
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_isr.h"
 
-netdev_event_t nrf24l01p_isr_MAX_RT(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_max_rt(nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||
@@ -39,7 +39,7 @@ netdev_event_t nrf24l01p_isr_MAX_RT(nrf24l01p_t *dev)
     return event;
 }
 
-netdev_event_t nrf24l01p_isr_RX_DR(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_rx_dr(nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||
@@ -50,7 +50,7 @@ netdev_event_t nrf24l01p_isr_RX_DR(nrf24l01p_t *dev)
     return event;
 }
 
-netdev_event_t nrf24l01p_isr_TX_DS(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_tx_ds(nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||

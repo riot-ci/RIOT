@@ -641,7 +641,7 @@ static inline nrf24l01p_ard_t nrf24l01p_valtoe_ard(uint16_t retr_delay)
  *
  * @return                  CRC length in [bytes]
  */
-static inline uint8_t nrf24l01p_etoval_crco(nrf24l01p_crc_t crc_len)
+static inline uint8_t nrf24l01p_etoval_crc(nrf24l01p_crc_t crc_len)
 {
     if (crc_len <= NRF24L01P_CRC_0BYTE) {
         return 0;
@@ -659,7 +659,7 @@ static inline uint8_t nrf24l01p_etoval_crco(nrf24l01p_crc_t crc_len)
  *
  * @return                  Corresponding enum
  */
-static inline nrf24l01p_crc_t nrf24l01p_valtoe_crco(uint8_t crc_len)
+static inline nrf24l01p_crc_t nrf24l01p_valtoe_crc(uint8_t crc_len)
 {
     if (!crc_len) {
         return NRF24L01P_CRC_0BYTE;
@@ -677,7 +677,7 @@ static inline nrf24l01p_crc_t nrf24l01p_valtoe_crco(uint8_t crc_len)
  *
  * @return                  RF power in [dbm]
  */
-static inline int8_t nrf24l01p_etoval_rfpwr(nrf24l01p_tx_power_t power)
+static inline int8_t nrf24l01p_etoval_tx_power(nrf24l01p_tx_power_t power)
 {
     if (power <= NRF24L01P_TX_POWER_MINUS_18DBM) {
         return -18;
@@ -698,7 +698,7 @@ static inline int8_t nrf24l01p_etoval_rfpwr(nrf24l01p_tx_power_t power)
  *
  * @return                  Corresponding enum
  */
-static inline nrf24l01p_tx_power_t nrf24l01p_valtoe_rfpwr(int16_t power)
+static inline nrf24l01p_tx_power_t nrf24l01p_valtoe_tx_power(int16_t power)
 {
     if (power <= -18) {
         return NRF24L01P_TX_POWER_MINUS_18DBM;

@@ -42,8 +42,8 @@
 #include "nrf24l01p_isr.h"
 #include "nrf24l01p_internal.h"
 
-#define NRF24L01P_FLG__IRQ \
-    (NRF24L01P_FLG__MAX_RT | NRF24L01P_FLG__TX_DS | NRF24L01P_FLG__RX_DR)
+#define NRF24L01P_FLG_IRQ \
+    (NRF24L01P_FLG_MAX_RT | NRF24L01P_FLG_TX_DS | NRF24L01P_FLG_RX_DR)
 
 static int nrf24l01p_init(netdev_t *netdev);
 static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info);
@@ -105,7 +105,7 @@ static int nrf24l01p_init(netdev_t *netdev)
         DEBUG("[nrf24l01p] nrf24l01p_init(): nrf24l01p_acquire() failed\n");
         return -EIO;
     }
-    nrf24l01p_transition_to_POWER_DOWN(dev);
+    nrf24l01p_transition_to_power_down(dev);
     nrf24l01p_flush_tx(dev);
     nrf24l01p_flush_rx(dev);
     uint8_t l2addr_size =
@@ -118,7 +118,7 @@ static int nrf24l01p_init(netdev_t *netdev)
         }
     }
     memcpy(l2addr_addr_p0, dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr, l2addr_size);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P0, l2addr_addr_p0,
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P0, l2addr_addr_p0,
                         l2addr_size);
     pipes |= (1 << NRF24L01P_P0);
     uint8_t l2addr_addr_p1[] = NRF24L01P_L2ADDR_AUTO;
@@ -131,7 +131,7 @@ static int nrf24l01p_init(netdev_t *netdev)
                  l2addr_addr_p0[0]);
     }
     memcpy(l2addr_addr_p1, dev->params.urxaddr.rxaddrpx.rx_pipe_1_addr, l2addr_size);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P1, l2addr_addr_p1,
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P1, l2addr_addr_p1,
                         l2addr_size);
     pipes |= (1 << NRF24L01P_P1);
     if (dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr != NRF24L01P_L2ADDR_UNDEF) {
@@ -139,7 +139,7 @@ static int nrf24l01p_init(netdev_t *netdev)
                || dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr == l2addr_addr_p1[0]) {
             luid_get(&dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr, 1);
         }
-        nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P2,
+        nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P2,
                             &dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr, 1);
         pipes |= (1 << NRF24L01P_P2);
     }
@@ -149,7 +149,7 @@ static int nrf24l01p_init(netdev_t *netdev)
                || dev->params.urxaddr.rxaddrpx.rx_pipe_3_addr == dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr) {
             luid_get(&dev->params.urxaddr.rxaddrpx.rx_pipe_3_addr, 1);
         }
-        nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P3,
+        nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P3,
                             &dev->params.urxaddr.rxaddrpx.rx_pipe_3_addr, 1);
         pipes |= (1 << NRF24L01P_P3);
     }
@@ -160,7 +160,7 @@ static int nrf24l01p_init(netdev_t *netdev)
                || dev->params.urxaddr.rxaddrpx.rx_pipe_4_addr == dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr) {
             luid_get(&dev->params.urxaddr.rxaddrpx.rx_pipe_4_addr, 1);
         }
-        nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P4,
+        nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P4,
                             &dev->params.urxaddr.rxaddrpx.rx_pipe_4_addr, 1);
         pipes |= (1 << NRF24L01P_P4);
     }
@@ -172,31 +172,31 @@ static int nrf24l01p_init(netdev_t *netdev)
                || dev->params.urxaddr.rxaddrpx.rx_pipe_5_addr == dev->params.urxaddr.rxaddrpx.rx_pipe_2_addr) {
             luid_get(&dev->params.urxaddr.rxaddrpx.rx_pipe_5_addr, 1);
         }
-        nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P5,
+        nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P5,
                             &dev->params.urxaddr.rxaddrpx.rx_pipe_5_addr, 1);
         pipes |= (1 << NRF24L01P_P5);
     }
-    nrf24l01p_reg8__SETUP_AW_t setup_aw =
-        NRF24L01P_FLG__AW(dev->params.config.cfg_addr_width);
-    nrf24l01p_reg8__RF_SETUP_t rf_setup =
+    nrf24l01p_reg8_setup_aw_t setup_aw =
+        NRF24L01P_FLG_AW(dev->params.config.cfg_addr_width);
+    nrf24l01p_reg8_rf_setup_t rf_setup =
         (((dev->params.config.cfg_data_rate & 2)
-          ? NRF24L01P_FLG__RF_DR_HIGH : 0) |
+          ? NRF24L01P_FLG_RF_DR_HIGH : 0) |
          ((dev->params.config.cfg_data_rate & 1)
-          ? NRF24L01P_FLG__RF_DR_LOW : 0)) |
-        NRF24L01P_FLG__RF_PWR(dev->params.config.cfg_tx_power);
-    nrf24l01p_reg8__SETUP_RETR_t setup_retr =
-        NRF24L01P_FLG__ARD(dev->params.config.cfg_retr_delay) |
-        NRF24L01P_FLG__ARC(dev->params.config.cfg_max_retr);
-    nrf24l01p_reg8__RF_CH_t rf_ch =
-        NRF24L01P_FLG__RF_CH(vchanmap[dev->params.config.cfg_channel]);
-    nrf24l01p_reg8__CONFIG_t config =
+          ? NRF24L01P_FLG_RF_DR_LOW : 0)) |
+        NRF24L01P_FLG_RF_PWR(dev->params.config.cfg_tx_power);
+    nrf24l01p_reg8_setup_retr_t setup_retr =
+        NRF24L01P_FLG_ARD(dev->params.config.cfg_retr_delay) |
+        NRF24L01P_FLG_ARC(dev->params.config.cfg_max_retr);
+    nrf24l01p_reg8_rf_ch_t rf_ch =
+        NRF24L01P_FLG_RF_CH(vchanmap[dev->params.config.cfg_channel]);
+    nrf24l01p_reg8_config_t config =
         (((dev->params.config.cfg_crc & 1)
-          ? NRF24L01P_FLG__CRCO_2_BYTE : NRF24L01P_FLG__CRCO_1_BYTE) |
+          ? NRF24L01P_FLG_CRCO_2_BYTE : NRF24L01P_FLG_CRCO_1_BYTE) |
          ((dev->params.config.cfg_crc & 2)
-          ? NRF24L01P_FLG__EN_CRC : 0));
-    nrf24l01p_reg8__FEATURES_t features = NRF24L01P_FLG__EN_DYN_ACK;
-    nrf24l01p_reg8__EN_AA_t en_aa = pipes;
-    nrf24l01p_reg8__DYNPD_t endp = pipes;
+          ? NRF24L01P_FLG_EN_CRC : 0));
+    nrf24l01p_reg8_features_t features = NRF24L01P_FLG_EN_DYN_ACK;
+    nrf24l01p_reg8_en_aa_t en_aa = pipes;
+    nrf24l01p_reg8_dynpd_t endp = pipes;
 
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
         en_aa = endp = 0;
@@ -204,53 +204,53 @@ static int nrf24l01p_init(netdev_t *netdev)
         if (pipes & (1 << NRF24L01P_P0)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p0;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P0, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P0, &plw, 1);
         }
         if (pipes & (1 << NRF24L01P_P1)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p1;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P1, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P1, &plw, 1);
         }
         if (pipes & (1 << NRF24L01P_P2)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p2;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P2, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P2, &plw, 1);
         }
         if (pipes & (1 << NRF24L01P_P3)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p3;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P3, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P3, &plw, 1);
         }
         if (pipes & (1 << NRF24L01P_P4)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p4;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P4, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P4, &plw, 1);
         }
         if (pipes & (1 << NRF24L01P_P5)) {
             plw = NRF24L01P_MAX_PAYLOAD_WIDTH -
                   dev->params.config.cfg_plw_padd_p5;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_PW_P5, &plw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_PW_P5, &plw, 1);
         }
     }
     else {
-        features |= (NRF24L01P_FLG__EN_DPL | NRF24L01P_FLG__EN_ACK_PAY);
+        features |= (NRF24L01P_FLG_EN_DPL | NRF24L01P_FLG_EN_ACK_PAY);
     }
     uint8_t tx_addr[] = NRF24L01P_DEFAULT_TX_ADDR;
-    nrf24l01p_reg8__STATUS_t status = NRF24L01P_FLG__IRQ;
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__SETUP_AW, &setup_aw, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__RF_SETUP, &rf_setup, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__SETUP_RETR, &setup_retr, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__RF_CH, &rf_ch, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__EN_RXADDR, &pipes, 1);
+    nrf24l01p_reg8_status_t status = NRF24L01P_FLG_IRQ;
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_SETUP_AW, &setup_aw, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_RF_SETUP, &rf_setup, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_SETUP_RETR, &setup_retr, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_RF_CH, &rf_ch, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_EN_RXADDR, &pipes, 1);
     /* enable all pipes with addresses configured */
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__CONFIG, &config, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__FEATURES, &features, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__EN_AA, &en_aa, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__DYNPD, &endp, 1);
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__TX_ADDR, tx_addr, sizeof(tx_addr));
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_CONFIG, &config, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_FEATURES, &features, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_EN_AA, &en_aa, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_DYNPD, &endp, 1);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_TX_ADDR, tx_addr, sizeof(tx_addr));
     /* clear interrupts */
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__STATUS, &status, 1);
-    nrf24l01p_transition_to_STANDBY_1(dev);
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_STATUS, &status, 1);
+    nrf24l01p_transition_to_standby_1(dev);
 #ifdef MODULE_NRF24L01P_DIAGNOSTICS
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
@@ -258,7 +258,7 @@ static int nrf24l01p_init(netdev_t *netdev)
     if (!nrf24l01p_assert_awake(dev)) {
         return -ENODEV;
     }
-    nrf24l01p_transition_to_RX_MODE(dev);
+    nrf24l01p_transition_to_rx_mode(dev);
     nrf24l01p_release(dev);
     if (gpio_init_int(dev->params.pin_irq, GPIO_IN, GPIO_FALLING,
                       nrf24l01p_irq_handler, dev) < 0) {
@@ -326,9 +326,9 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
     assert(dev->have_spi_access);
     uint8_t pl_width;
-    nrf24l01p_reg8__STATUS_t status
+    nrf24l01p_reg8_status_t status
         = nrf24l01p_read_rx_pl_width(dev, &pl_width);
-    uint8_t pno = NRF24L01P_VAL__RX_P_NO(status);
+    uint8_t pno = NRF24L01P_VAL_RX_P_NO(status);
     if (!pl_width || pno >= NRF24L01P_PX_NUM_OF) {
         DEBUG("[nrf24l01p] Nothing received\n");
         return 0;
@@ -444,16 +444,16 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
                        dev->params.config.cfg_plw_padd_p0)
                     : NRF24L01P_MAX_PAYLOAD_WIDTH];
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8__FIFO_STATUS_t fifo_status;
-    nrf24l01p_reg8__STATUS_t status =
-        nrf24l01p_read_reg(dev, NRF24L01P_REG__FIFO_STATUS, &fifo_status, 1);
-    if (status & NRF24L01P_FLG__IRQ) {
+    nrf24l01p_reg8_fifo_status_t fifo_status;
+    nrf24l01p_reg8_status_t status =
+        nrf24l01p_read_reg(dev, NRF24L01P_REG_FIFO_STATUS, &fifo_status, 1);
+    if (status & NRF24L01P_FLG_IRQ) {
         DEBUG("[nrf24l01p] Handle pending IRQ, before sending new data\n");
         nrf24l01p_release(dev);
         nrf24l01p_isr(&dev->netdev);
         return -EAGAIN;
     }
-    if (fifo_status & NRF24L01P_FLG__TX_FULL_) {
+    if (fifo_status & NRF24L01P_FLG_TX_FULL_) {
         nrf24l01p_flush_tx(dev);
     }
     shockburst_hdr_t hdr = *(((shockburst_hdr_t *)iolist->iol_base));
@@ -500,7 +500,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         pl_width = sizeof(payload);
     }
 #endif
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__TX_ADDR, dev->tx_addr,
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_TX_ADDR, dev->tx_addr,
                         dev->tx_addr_len);
     if (memcmp(dev->tx_addr, bcast_addr, dev->tx_addr_len) == 0) {
         /* do not expect ACK for broadcast */
@@ -510,18 +510,18 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         nrf24l01p_write_tx_payload(dev, payload, pl_width);
         /* prepare to receive ACK */
         if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_ESB) {
-            nrf24l01p_reg8__SETUP_AW_t setup_aw =
-                NRF24L01P_FLG__AW(nrf24l01p_valtoe_aw(dev->tx_addr_len));
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__RX_ADDR_P0, dev->tx_addr,
+            nrf24l01p_reg8_setup_aw_t setup_aw =
+                NRF24L01P_FLG_AW(nrf24l01p_valtoe_aw(dev->tx_addr_len));
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_RX_ADDR_P0, dev->tx_addr,
                                 dev->tx_addr_len);
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__SETUP_AW, &setup_aw, 1);
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_SETUP_AW, &setup_aw, 1);
         }
     }
     if (dev->state != NRF24L01P_STATE_TX_MODE) {
         if (dev->state != NRF24L01P_STATE_STANDBY_1) {
-            nrf24l01p_transition_to_STANDBY_1(dev);
+            nrf24l01p_transition_to_standby_1(dev);
         }
-        nrf24l01p_transition_to_TX_MODE(dev);
+        nrf24l01p_transition_to_tx_mode(dev);
     }
 #ifdef MODULE_NRF24L01P_DIAGNOSTICS
     nrf24l01p_diagnostics_print_all_regs(dev);
@@ -544,42 +544,42 @@ static void nrf24l01p_isr(netdev_t *netdev)
 
     gpio_irq_enable(dev->params.pin_irq);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8__STATUS_t status = nrf24l01p_get_status(dev);
+    nrf24l01p_reg8_status_t status = nrf24l01p_get_status(dev);
     netdev_event_t event;
-    if (status & NRF24L01P_FLG__MAX_RT) {
-        if ((event = nrf24l01p_isr_MAX_RT(dev)) != NETDEV_EVENT_NONE) {
+    if (status & NRF24L01P_FLG_MAX_RT) {
+        if ((event = nrf24l01p_isr_max_rt(dev)) != NETDEV_EVENT_NONE) {
             netdev->event_callback(netdev, event);
         }
     }
-    if (status & NRF24L01P_FLG__TX_DS) {
-        if ((event = nrf24l01p_isr_TX_DS(dev)) != NETDEV_EVENT_NONE) {
+    if (status & NRF24L01P_FLG_TX_DS) {
+        if ((event = nrf24l01p_isr_tx_ds(dev)) != NETDEV_EVENT_NONE) {
             netdev->event_callback(netdev, event);
         }
     }
-    if (status & NRF24L01P_FLG__RX_DR) {
-        if ((event = nrf24l01p_isr_RX_DR(dev)) != NETDEV_EVENT_NONE) {
+    if (status & NRF24L01P_FLG_RX_DR) {
+        if ((event = nrf24l01p_isr_rx_dr(dev)) != NETDEV_EVENT_NONE) {
             netdev->event_callback(netdev, event);
         }
     }
     /* clear interrupt flags */
-    nrf24l01p_write_reg(dev, NRF24L01P_REG__STATUS, &status, 1);
-    nrf24l01p_reg8__FIFO_STATUS_t fifo_status;
+    nrf24l01p_write_reg(dev, NRF24L01P_REG_STATUS, &status, 1);
+    nrf24l01p_reg8_fifo_status_t fifo_status;
     status =
-        nrf24l01p_read_reg(dev, NRF24L01P_REG__FIFO_STATUS, &fifo_status, 1);
+        nrf24l01p_read_reg(dev, NRF24L01P_REG_FIFO_STATUS, &fifo_status, 1);
     /* read all RX data */
     if (dev->state == NRF24L01P_STATE_RX_MODE) {
-        while (!(fifo_status & NRF24L01P_FLG__RX_EMPTY)) {
+        while (!(fifo_status & NRF24L01P_FLG_RX_EMPTY)) {
             DEBUG("[nrf24l01p] ISR: read pending Rx frames\n");
             netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
-            status = NRF24L01P_FLG__RX_DR;
-            nrf24l01p_write_reg(dev, NRF24L01P_REG__STATUS, &status, 1);
-            status = nrf24l01p_read_reg(dev, NRF24L01P_REG__FIFO_STATUS,
+            status = NRF24L01P_FLG_RX_DR;
+            nrf24l01p_write_reg(dev, NRF24L01P_REG_STATUS, &status, 1);
+            status = nrf24l01p_read_reg(dev, NRF24L01P_REG_FIFO_STATUS,
                                         &fifo_status, 1);
         }
         nrf24l01p_release(dev);
     }
     else {
-        if (!(fifo_status & NRF24L01P_FLG__TX_EMPTY)) {
+        if (!(fifo_status & NRF24L01P_FLG_TX_EMPTY)) {
             /* frame in FIFO is not an ACK */
             if (dev->state == NRF24L01P_STATE_TX_MODE) {
                 nrf24l01p_release(dev);
@@ -591,10 +591,10 @@ static void nrf24l01p_isr(netdev_t *netdev)
         }
         else {
             if (dev->state != NRF24L01P_STATE_STANDBY_1) {
-                nrf24l01p_transition_to_STANDBY_1(dev);
+                nrf24l01p_transition_to_standby_1(dev);
             }
             /* go to idle state */
-            nrf24l01p_transition_to_RX_MODE(dev);
+            nrf24l01p_transition_to_rx_mode(dev);
             nrf24l01p_release(dev);
         }
     }
@@ -791,7 +791,7 @@ static int nrf24l01p_set(netdev_t *netdev, netopt_t opt, const void *val,
         case NETOPT_TX_POWER: {
             assert(len == sizeof(int16_t));
             int16_t dbm = *((int16_t *)val);
-            int ret = nrf24l01p_set_tx_power(dev, nrf24l01p_valtoe_rfpwr(dbm));
+            int ret = nrf24l01p_set_tx_power(dev, nrf24l01p_valtoe_tx_power(dbm));
             return ret ? ret : (int)sizeof(int16_t);
         } break;
         default:

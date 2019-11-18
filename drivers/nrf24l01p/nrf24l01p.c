@@ -52,7 +52,7 @@ static int nrf24l01p_set_payload_width(nrf24l01p_t *dev, uint8_t width,
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__RX_PW_Px_t rx_pw_px = NRF24L01P_FLG__RX_PW_Px(width);
+    nrf24l01p_reg8_rx_pw_px_t rx_pw_px = NRF24L01P_FLG_RX_PW_PX(width);
     nrf24l01p_acquire(dev);
     nrf24l01p_write_reg(dev, reg_pipe_info[pipe].reg_pipe_plw, &rx_pw_px, 1);
     nrf24l01p_release(dev);
@@ -148,9 +148,9 @@ int nrf24l01p_set_air_data_rate(nrf24l01p_t *dev, nrf24l01p_rfdr_t data_rate)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__RF_SETUP_t rf_setup = NRF24L01P_FLG__RF_DR(data_rate);
+    nrf24l01p_reg8_rf_setup_t rf_setup = NRF24L01P_FLG_RF_DR(data_rate);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__RF_SETUP, NRF24L01P_MSK__RF_DR,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_RF_SETUP, NRF24L01P_MSK_RF_DR,
                        &rf_setup);
     nrf24l01p_release(dev);
     dev->params.config.cfg_data_rate = data_rate;
@@ -185,11 +185,11 @@ int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crc_t crc)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__CONFIG_t config =
-        (((crc & 2) ? NRF24L01P_FLG__EN_CRC : 0) |
-         ((crc & 1) ? NRF24L01P_FLG__CRCO_2_BYTE : NRF24L01P_FLG__CRCO_1_BYTE));
+    nrf24l01p_reg8_config_t config =
+        (((crc & 2) ? NRF24L01P_FLG_EN_CRC : 0) |
+         ((crc & 1) ? NRF24L01P_FLG_CRCO_2_BYTE : NRF24L01P_FLG_CRCO_1_BYTE));
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__CONFIG, NRF24L01P_MSK__CRC,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_CONFIG, NRF24L01P_MSK_CRC,
                        &config);
     nrf24l01p_release(dev);
     dev->params.config.cfg_crc = crc;
@@ -202,7 +202,7 @@ uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crc_t *crc)
     if (crc) {
         *crc = dev->params.config.cfg_crc;
     }
-    return nrf24l01p_etoval_crco(dev->params.config.cfg_crc);
+    return nrf24l01p_etoval_crc(dev->params.config.cfg_crc);
 }
 
 int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power)
@@ -219,9 +219,9 @@ int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__RF_SETUP_t rf_setup = NRF24L01P_FLG__RF_PWR(power);
+    nrf24l01p_reg8_rf_setup_t rf_setup = NRF24L01P_FLG_RF_PWR(power);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__RF_SETUP, NRF24L01P_MSK__RF_PWR,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_RF_SETUP, NRF24L01P_MSK_RF_PWR,
                        &rf_setup);
     nrf24l01p_release(dev);
     dev->params.config.cfg_tx_power = power;
@@ -234,7 +234,7 @@ int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t *power)
     if (power) {
         *power = dev->params.config.cfg_tx_power;
     }
-    return nrf24l01p_etoval_rfpwr(dev->params.config.cfg_tx_power);
+    return nrf24l01p_etoval_tx_power(dev->params.config.cfg_tx_power);
 }
 
 int nrf24l01p_set_channel(nrf24l01p_t *dev, uint8_t channel)
@@ -251,9 +251,9 @@ int nrf24l01p_set_channel(nrf24l01p_t *dev, uint8_t channel)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__RF_CH_t rf_ch = NRF24L01P_FLG__RF_CH(vchanmap[channel]);
+    nrf24l01p_reg8_rf_ch_t rf_ch = NRF24L01P_FLG_RF_CH(vchanmap[channel]);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__RF_CH, NRF24L01P_MSK__RF_CH,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_RF_CH, NRF24L01P_MSK_RF_CH,
                        &rf_ch);
     nrf24l01p_release(dev);
     dev->params.config.cfg_channel = channel;
@@ -407,9 +407,9 @@ int nrf24l01p_set_max_retransm(nrf24l01p_t *dev, uint8_t max_rt)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__SETUP_RETR_t setup_retr = NRF24L01P_FLG__ARC(max_rt);
+    nrf24l01p_reg8_setup_retr_t setup_retr = NRF24L01P_FLG_ARC(max_rt);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__SETUP_RETR, NRF24L01P_MSK__ARC,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_SETUP_RETR, NRF24L01P_MSK_ARC,
                        &setup_retr);
     nrf24l01p_release(dev);
     dev->params.config.cfg_max_retr = max_rt;
@@ -442,9 +442,9 @@ int nrf24l01p_set_retransm_delay(nrf24l01p_t *dev, nrf24l01p_ard_t rt_delay)
         default:
             return -EAGAIN;
     }
-    nrf24l01p_reg8__SETUP_RETR_t setup_retr = NRF24L01P_FLG__ARD(rt_delay);
+    nrf24l01p_reg8_setup_retr_t setup_retr = NRF24L01P_FLG_ARD(rt_delay);
     nrf24l01p_acquire(dev);
-    nrf24l01p_reg8_mod(dev, NRF24L01P_REG__SETUP_RETR, NRF24L01P_MSK__ARD,
+    nrf24l01p_reg8_mod(dev, NRF24L01P_REG_SETUP_RETR, NRF24L01P_MSK_ARD,
                        &setup_retr);
     nrf24l01p_release(dev);
     dev->params.config.cfg_retr_delay = rt_delay;
@@ -478,20 +478,20 @@ int nrf24l01p_set_state(nrf24l01p_t *dev, nrf24l01p_state_t state)
     nrf24l01p_acquire(dev);
     if (state == NRF24L01P_STATE_POWER_DOWN) {
         if (dev->state != NRF24L01P_STATE_POWER_DOWN) {
-            nrf24l01p_transition_to_POWER_DOWN(dev);
+            nrf24l01p_transition_to_power_down(dev);
         }
     }
     else if (state == NRF24L01P_STATE_STANDBY_1) {
         if (dev->state != NRF24L01P_STATE_STANDBY_1) {
-            nrf24l01p_transition_to_STANDBY_1(dev);
+            nrf24l01p_transition_to_standby_1(dev);
         }
     }
     else if (state == NRF24L01P_STATE_RX_MODE) {
         if (dev->state != NRF24L01P_STATE_RX_MODE) {
             if (state != NRF24L01P_STATE_STANDBY_1) {
-                nrf24l01p_transition_to_STANDBY_1(dev);
+                nrf24l01p_transition_to_standby_1(dev);
             }
-            nrf24l01p_transition_to_RX_MODE(dev);
+            nrf24l01p_transition_to_rx_mode(dev);
         }
     }
     else {

@@ -41,27 +41,27 @@ const uint8_t vchanmap[NRF24L01P_NUM_CHANNELS] = {
 
 const nrf24l01p_pipe_regs_t reg_pipe_info[NRF24L01P_PX_NUM_OF] = {
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P0,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P0
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P0,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P0
     },
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P1,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P1
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P1,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P1
     },
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P2,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P2
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P2,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P2
     },
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P3,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P3
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P3,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P3
     },
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P4,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P4
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P4,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P4
     },
     {
-        .reg_pipe_addr = NRF24L01P_REG__RX_ADDR_P5,
-        .reg_pipe_plw = NRF24L01P_REG__RX_PW_P5
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P5,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P5
     }
 };

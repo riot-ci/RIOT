@@ -42,13 +42,13 @@ static inline int nrf24l01p_time_on_air_us(const nrf24l01p_t *dev,
                (8 *
                 (1 + nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width) +
                  payload_width +
-                 nrf24l01p_etoval_crco(dev->params.config.cfg_crc)) + 9);
+                 nrf24l01p_etoval_crc(dev->params.config.cfg_crc)) + 9);
     }
     else {
         return (8 *
                 (1 + nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width) +
                  payload_width +
-                 nrf24l01p_etoval_crco(dev->params.config.cfg_crc)) + 9)
+                 nrf24l01p_etoval_crc(dev->params.config.cfg_crc)) + 9)
                / ((nrf24l01p_etoval_rfdr(dev->params.config.cfg_data_rate) /
                    1000)); /* would be 0 if 250kbps */
     }

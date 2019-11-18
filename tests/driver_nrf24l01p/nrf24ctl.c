@@ -119,7 +119,7 @@ int nrf24ctl(int argc, char *argv[])
                 else if (!(strcmp(argv[3], "crc"))) {
                     int crc_len = atoi(argv[4]);
                     ret =
-                        nrf24l01p_set_crc(dev, nrf24l01p_valtoe_crco(crc_len));
+                        nrf24l01p_set_crc(dev, nrf24l01p_valtoe_crc(crc_len));
                     if (ret < 0) {
                         fprintf(stderr,
                                 "[nrf24ctl] Could not set CRC length (%d)\n",
@@ -140,7 +140,7 @@ int nrf24ctl(int argc, char *argv[])
                 }
                 else if (!(strcmp(argv[3], "power"))) {
                     int pwr = atoi(argv[4]);
-                    ret = nrf24l01p_set_tx_power(dev, nrf24l01p_valtoe_rfpwr(
+                    ret = nrf24l01p_set_tx_power(dev, nrf24l01p_valtoe_tx_power(
                                                      pwr));
                     if (ret < 0) {
                         fprintf(stderr,
