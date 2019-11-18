@@ -105,11 +105,11 @@ int main(void)
             ws281x_set_buffer(buf, i, rainbow[i]);
         }
 
+        ws281x_prepare_transmission(&dev);
         for (unsigned i = 0; i < 100; i++) {
             ws281x_write_buffer(&dev, buf, sizeof(buf));
         }
-
-        ws281x_end_transmission();
+        ws281x_end_transmission(&dev);
 
         /* wait some time to allow testers to verify the result */
         xtimer_sleep(5);
