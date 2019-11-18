@@ -1,9 +1,7 @@
+BOARD ?= samr21-xpro
 DEVELHELP := 1
 # name of your application
 include ../Makefile.tests_common
-
-# chronos, hamilton and ruuvitag boards don't support ethos
-BOARD_BLACKLIST := chronos hamilton ruuvitag
 
 export TAP ?= tap0
 
