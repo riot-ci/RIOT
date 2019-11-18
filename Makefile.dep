@@ -389,11 +389,6 @@ ifneq (,$(filter od_string,$(USEMODULE)))
   USEMODULE += od
 endif
 
-# Dependency to stdio_rtt must be known before managing newlib dependencies
-ifneq (,$(filter stdio_rtt,$(FEATURES_USED)))
-  USEMODULE += stdio_rtt
-endif
-
 ifneq (,$(filter newlib_gnu_source,$(USEMODULE)))
   USEMODULE += newlib
 endif
@@ -454,8 +449,8 @@ endif
 ifneq (,$(filter stdio_uart,$(USEMODULE)))
   FEATURES_REQUIRED += periph_uart
 
-  # stdio_rtt feature cannot be used when stdio_uart is loaded
-  FEATURES_BLACKLIST += stdio_rtt
+  # stdio_rtt cannot be used when stdio_uart is loaded
+  DISABLE_MODULE += stdio_rtt
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
