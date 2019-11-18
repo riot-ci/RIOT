@@ -23,4 +23,3 @@ The following callbacks add support for the included drivers via I2C and SPI per
 * `i2c_write_hal`
 * `spi_read_hal`
 * `spi_write_hal`
-
