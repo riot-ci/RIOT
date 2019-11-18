@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    drivers_bme680 BME680 Temperature/Humidity/Pressure/Gaz sensor
+ * @defgroup    drivers_bme680 BME680 Temperature/Humidity/Pressure/Gas sensor
  * @ingroup     drivers_sensors
  * @brief       Driver for the Bosch BME680  sensor
  *
@@ -34,7 +34,6 @@ extern "C" {
  * @brief   BME680 device initialization parameters
  */
 typedef struct {
-
     uint8_t temp_os;
     uint8_t hum_os;
     uint8_t pres_os;
@@ -46,6 +45,7 @@ typedef struct {
     uint8_t settings;           /**< Settings used by @ref bme680_set_settings */
     uint8_t intf;               /**< Device communication interface */
 
+    
  } bme680_params_t;
 
  /**
@@ -53,9 +53,7 @@ typedef struct {
  */
 typedef struct {
     bme680_params_t params;     /**< Device initialization parameters */
-    struct bme680_dev  dev;
-    int int_init;               /**< Interrupt pin is already initialized */
-
+    struct bme680_dev  dev;     /**< Device structure from bme680_driver pkg */
  } bme680_t;
 
  #ifdef __cplusplus

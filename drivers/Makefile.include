@@ -40,7 +40,7 @@ ifneq (,$(filter bh1900nux,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/bh1900nux/include
 endif
 
-ifneq (,$(filter bme680,$(USEMODULE)))
+ifneq (,$(filter bme680_%,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/bme680/include
 endif
 

@@ -23,10 +23,6 @@
 extern "C" {
 #endif
 
-#ifndef SPI_NSS_PIN
-#define SPI_NSS_PIN GPIO_PIN(PA, 05)
-#endif /* SPI_NSS_PIN */
-
 void ms_sleep(uint32_t msleep);
 
 #ifdef MODULE_PERIPH_I2C
