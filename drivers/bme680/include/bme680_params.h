@@ -45,9 +45,9 @@ extern "C" {
 #endif
 
 /* Defaults Parameters if none provided */
-#define BME680_PARAMS_DEFAULT                  \
+#define BME680_PARAMS                        \
     {                                          \
-        .intf        = BME680_SPI_INTF,         \
+        .intf        = BME680_I2C_INTF,         \
         .temp_os     = BME680_OS_8X,           \
         .hum_os      = BME680_OS_2X,           \
         .pres_os     = BME680_OS_4X,           \
@@ -67,11 +67,7 @@ extern "C" {
  */
 static const bme680_params_t bme680_params[] =
 {
-#ifdef BME680_PARAMS_BOARD
-    BME680_PARAMS_BOARD,
-#else
-    BME680_PARAMS_DEFAULT
-#endif
+    BME680_PARAMS,
 };
 
 /**

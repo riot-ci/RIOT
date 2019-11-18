@@ -52,7 +52,7 @@ int main(void)
     BME680_DEV.delay_ms = ms_sleep;
 
     printf("Intialize BME680 sensor...");
-    if(bme680_init(&dev, &bme680_params[0]) != BME680_OK) {
+    if (bme680_init(&dev, &bme680_params[0]) != BME680_OK) {
         puts("failed");
     }
     else {
@@ -66,18 +66,20 @@ int main(void)
         xtimer_sleep(5);
 
         ret = bme680_get_sensor_data(&data, &(dev.dev));
-        if(!ret) {
+        if (!ret) {
 #ifndef BME680_FLOAT_POINT_COMPENSATION
-        printf("[bme680]: T %d degC, P %ld hPa, H %ld ", data.temperature,
-            data.pressure, data.humidity);
+        printf("[bme680]: T %02" PRIi16 ".%02" PRIu16 " degC, P %" PRIu32 " Pa," \
+               " H %02" PRIu32 ".%03" PRIu32 "",
+               data.temperature / 100, data.temperature % 100,
+            data.pressure, data.humidity / 1000, data.humidity % 1000);
         /* Avoid using measurements from an unstable heating setup */
-        if(data.status & BME680_GASM_VALID_MSK)
-            printf(", G %ld ohms", data.gas_resistance);
+        if (data.status & BME680_GASM_VALID_MSK)
+            printf(", G %" PRIu32 " ohms", data.gas_resistance);
 #else
-        printf("[bme680]: T %.2f degC, P %.2f hPa, H %2.f ", data.temperature,
+        printf("[bme680]: T %.2f degC, P %.2f Pa, H %2.f ", data.temperature,
             data.pressure, data.humidity);
         /* Avoid using measurements from an unstable heating setup */
-        if(data.status & BME680_GASM_VALID_MSK)
+        if (data.status & BME680_GASM_VALID_MSK)
             printf(", G %f ohms", data.gas_resistance);
 #endif
         printf("\r\n");

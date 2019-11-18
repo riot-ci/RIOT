@@ -5,8 +5,8 @@ BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-uno \
                              wsn430-v1_3b wsn430-v1_4 z1
 
 USEMODULE += xtimer
-FEATURES_REQUIRED = periph_spi
-USEMODULE += bme680
+
+USEMODULE += bme680_i2c
 
 ifeq ($(ENABLE_FP),1)
 CFLAGS += -DBME680_FLOAT_POINT_COMPENSATION
