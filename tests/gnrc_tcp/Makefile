@@ -1,3 +1,5 @@
+BOARD ?= samr21-xpro
+
 include ../Makefile.tests_common
 
 # Basic Configuration
@@ -7,9 +9,6 @@ TAP ?= tap0
 # Shorten default TCP timeouts to speedup testing
 MSL_US ?= 1000000
 TIMEOUT_US ?= 3000000
-
-# unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag thingy52
 
 # This test depends on tap device setup (only allowed by root)
 # Suppress test execution to avoid CI errors

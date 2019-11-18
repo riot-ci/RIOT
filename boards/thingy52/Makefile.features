@@ -4,4 +4,7 @@ CPU_MODEL = nrf52832xxaa
 FEATURES_PROVIDED += periph_i2c
 FEATURES_PROVIDED += periph_uart
 
+# Put other features for this board (in alphabetical order)
+FEATURES_PROVIDED += stdio_rtt
+
 include $(RIOTBOARD)/common/nrf52/Makefile.features
