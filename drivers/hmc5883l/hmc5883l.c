@@ -89,7 +89,7 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     /* set operation mode */
     EXEC_RET(_reg_write(dev, HMC5883L_REG_MODE, params->op_mode), res);
 
-    /* wait 6 ms accoring to data sheet */
+    /* wait 6 ms according to data sheet */
     xtimer_usleep(6 * US_PER_MS);
 
     return res;
@@ -126,18 +126,18 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
 }
 
 /*
- * Scale factors for conversion of raw sensor data to Gs for possible
+ * Scale factors for conversion of raw sensor data to uGs for possible
  * sensitivities according to the datasheet.
  */
 static const int32_t HMC5883L_RES[] = {
-    1370,      /* LSB/mGs for HMC5883L_GAIN_1370 with range +-0.88 Gs */
-    1090,      /* LSB/mGs for HMC5883L_GAIN_1090 with range +-1.3 Gs */
-     820,      /* LSB/mGs for HMC5883L_GAIN_820  with range +-1.9 Gs */
-     660,      /* LSB/mGs for HMC5883L_GAIN_660  with range +-2.5 Gs */
-     440,      /* LSB/mGs for HMC5883L_GAIN_440  with range +-4.0 Gs */
-     390,      /* LSB/mGs for HMC5883L_GAIN_390  with range +-4.7 Gs */
-     330,      /* LSB/mGs for HMC5883L_GAIN_330  with range +-5.6 Gs */
-     230,      /* LSB/mGs for HMC5883L_GAIN_230  with range +-8.1 Gs */
+     730,      /* uG/LSb for HMC5883L_GAIN_1370 with range +-0.88 Gs */
+     917,      /* uG/LSb for HMC5883L_GAIN_1090 with range +-1.3 Gs */
+    1220,      /* uG/LSb for HMC5883L_GAIN_820  with range +-1.9 Gs */
+    1515,      /* uG/LSb for HMC5883L_GAIN_660  with range +-2.5 Gs */
+    2273,      /* uG/LSb for HMC5883L_GAIN_440  with range +-4.0 Gs */
+    2564,      /* uG/LSb for HMC5883L_GAIN_390  with range +-4.7 Gs */
+    3030,      /* uG/LSb for HMC5883L_GAIN_330  with range +-5.6 Gs */
+    4348,      /* uG/LSb for HMC5883L_GAIN_230  with range +-8.1 Gs */
 };
 
 int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
@@ -155,11 +155,11 @@ int hmc5883l_read(const hmc5883l_t *dev, hmc5883l_data_t *data)
 
     /*
      * The range of raw data is -2048 ... -2047. That is, raw data multiplied
-     * by 1e6 fit into 32 bit integer.
+     * by scale fit into 32 bit integer.
      */
-    data->x = ((int32_t)raw.x * 1e6) / HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S];
-    data->y = ((int32_t)raw.y * 1e6) / HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S];
-    data->z = ((int32_t)raw.z * 1e6) / HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S];
+    data->x = ((int32_t)raw.x * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
+    data->y = ((int32_t)raw.y * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
+    data->z = ((int32_t)raw.z * HMC5883L_RES[dev->gain >> HMC5883L_REG_CFG_B_GN_S]) / 1000;
 
     return res;
 }
@@ -241,7 +241,7 @@ static int _reg_read(const hmc5883l_t *dev, uint8_t reg, uint8_t *data, uint16_t
               dev, len, reg);
 
     if (i2c_acquire(dev->dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
@@ -282,7 +282,7 @@ static int _reg_write(const hmc5883l_t *dev, uint8_t reg, uint8_t data)
     }
 
     if (i2c_acquire(dev->dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return HMC5883L_ERROR_I2C;
     }
 
