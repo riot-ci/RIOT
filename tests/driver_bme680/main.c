@@ -44,10 +44,10 @@ int main(void)
 
     /* You may assign a chip select identifier to be handled later */
     dev.dev.dev_id = 0;
-    xtimer_sleep(5);
-    /* amb_temp can be set to 25 prior to configuring the gas sensor 
-     * or by performing a few temperature readings without operating the gas sensor.
-     */
+
+    /* amb_temp can be set to 25 prior to configuring the gas sensor
+     * or by performing a few temperature readings without operating the
+     * gas sensor */
     BME680_DEV.amb_temp = 25;
     BME680_DEV.delay_ms = ms_sleep;
 
