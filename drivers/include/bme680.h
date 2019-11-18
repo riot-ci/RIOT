@@ -34,18 +34,16 @@ extern "C" {
  * @brief   BME680 device initialization parameters
  */
 typedef struct {
-    uint8_t temp_os;
-    uint8_t hum_os;
-    uint8_t pres_os;
-    uint8_t filter;
-    uint8_t gas_measure;
-    uint16_t heater_dur;
-    uint16_t heater_temp;
-    uint8_t power_mode;
+    uint8_t temp_os;            /**< Temperature oversampling */
+    uint8_t hum_os;             /**< Humidity oversampling */
+    uint8_t pres_os;            /**< Pressure oversampling */
+    uint8_t filter;             /**< IIR filter coefficient */
+    uint8_t en_gas_measure;     /**< Enable gas measurement */
+    uint16_t heater_dur;        /**< Heater duration in ms */
+    uint16_t heater_temp;       /**< Heater temperature in °C */
+    uint8_t power_mode;         /**< Power mode (sleep or forced) */
     uint8_t settings;           /**< Settings used by @ref bme680_set_settings */
     uint8_t intf;               /**< Device communication interface */
-
-    
  } bme680_params_t;
 
  /**
@@ -61,5 +59,6 @@ typedef struct {
 #endif
 
 int bme680_init(bme680_t *dev, const bme680_params_t *params);
+
 #endif /* BME680_H */
 /** @} */
