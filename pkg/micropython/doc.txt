@@ -18,6 +18,13 @@
  * interpreter works fairly well on native and Cortex-M, it has not seen much
  * testing.
  *
+ * ## Configuration options
+ *
+ * The following defines (set using "CFLAGS += -Dfoo=bar" in the application
+ * Makefile) can be used to configure MicroPython:
+ *
+ * MP_RIOT_HEAPSIZE: heap size for Micropython. Defaults to 16KiB.
+ *
  * ## Implementation details
  *
  * The RIOT port of MicroPython currently resides in a fork at
