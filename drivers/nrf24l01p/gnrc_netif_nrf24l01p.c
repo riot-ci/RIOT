@@ -126,7 +126,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
     gnrc_netif_hdr_set_netif(netif_hdr, netif);
     LL_APPEND(frame, hdr);
 
-#ifdef MODULE_NETSTATS_L2
+#if IS_USED(MODULE_NETSTATS_L2)
     netif->stats.rx_count++;
     netif->stats.rx_bytes += frame->size;
 #endif
@@ -169,7 +169,7 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         DEBUG("[nrf24l01p-gnrc] send: preparing to send broadcast\n");
         tx_address = bcast_addr;
         tx_addr_len = sizeof(bcast_addr);
-#ifdef MODULE_NETSTATS_L2
+#if IS_USED(MODULE_NETSTATS_L2)
         netif->stats.tx_mcast_count++;
 #endif
     }

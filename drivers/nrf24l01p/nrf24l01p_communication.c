@@ -55,9 +55,9 @@ int nrf24l01p_acquire(nrf24l01p_t *dev)
     DEBUG("[nrf24l01p] acquire ...\n");
     int a = spi_acquire(dev->params.spi, dev->params.pin_cs, SPI_MODE_0,
                         dev->params.spi_clk);
-    #ifndef NDEBUG
+#ifndef NDEBUG
     dev->have_spi_access = 1;
-    #endif
+#endif
     DEBUG("[nrf24l01p] acquired!\n");
     return a;
 }
@@ -65,9 +65,9 @@ int nrf24l01p_acquire(nrf24l01p_t *dev)
 void nrf24l01p_release(nrf24l01p_t *dev)
 {
     spi_release(dev->params.spi);
-    #ifndef NDEBUG
+#ifndef NDEBUG
     dev->have_spi_access = 0;
-    #endif
+#endif
     DEBUG("[nrf24l01p] released\n");
 }
 

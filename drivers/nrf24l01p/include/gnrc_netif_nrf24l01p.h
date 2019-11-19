@@ -30,7 +30,7 @@ extern "C" {
 /**
  * @brief Default protocol for data that is coming in
  */
-#ifdef MODULE_GNRC_SIXLOWPAN
+#if IS_USED(MODULE_GNRC_SIXLOWPAN)
 #define NRF24L01P_UPPER_LAYER_PROTOCOL         (GNRC_NETTYPE_SIXLOWPAN)
 #else
 #define NRF24L01P_UPPER_LAYER_PROTOCOL         (GNRC_NETTYPE_UNDEF)

@@ -287,7 +287,9 @@ void nrf24l01p_diagnostics_print_dev_info(const nrf24l01p_t *dev)
 
     printf("State:                  %s\n",
            nrf24l01p_state_to_string(dev->state));
+#ifndef NDEBUG
     printf("Transitions:            %u\n", (unsigned)dev->transitions);
+#endif
     printf("TX address length:      %u\n", (unsigned)dev->tx_addr_len);
     printf("TX address:             %2x:%2x:%2x:%2x:%2x\n",
            dev->tx_addr[0],

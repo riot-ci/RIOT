@@ -1,6 +1,8 @@
 #ifndef NRF24L01P_CONSTANTS
 #define NRF24L01P_CONSTANTS
 
+#include "kernel_defines.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -89,7 +91,7 @@ extern "C" {
  */
 #define NRF24L01P_BROADCAST_ADDR            { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }
 
-#ifdef MODULE_GNRC_SIXLOWPAN
+#if IS_USED(MODULE_GNRC_SIXLOWPAN)
 /**
  * @brief   @ref gnrc_nettype_t of upper layer
  */
