@@ -18,7 +18,7 @@ def testfunc(child):
     for _ in range(number_of_tests):
         child.expect(r"Allocated {} Bytes at 0x[a-z0-9]+, total [a-z0-9]+"
                      .format(chunk_size))
-        child.expect(r'Allocations count: (\d+)', timeout=60)
+        child.expect(r'Allocations count: (\d+)')
         allocations = int(child.match.group(1))
         for _ in range(allocations):
             child.expect(r"Free {} Bytes at 0x[a-z0-9]+, total [a-z0-9]+"
