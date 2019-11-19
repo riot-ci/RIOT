@@ -21,3 +21,13 @@ CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
 
 #
 include $(RIOTBASE)/Makefile.include
+
+ifneq (, $(filter term, $(MAKECMDGOALS)))
+  ifeq (pyterm, $(RIOT_TERMINAL))
+    $(warning "Using the MicroPython REPL with pyterm has issues. Better use a different terminal.")
+    $(warning "e.g., RIOT_TERMINAL=picocom make ...")
+    ifneq (1, $(FORCE_PYTERM))
+      $(error "set FORCE_PYTERM=1 to continue (e.g., \"FORCE_PYTERM=1 make term\")")
+    endif
+  endif
+endif
