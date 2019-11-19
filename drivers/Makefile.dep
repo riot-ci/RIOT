@@ -411,10 +411,6 @@ ifneq (,$(filter nrf24l01p,$(USEMODULE)))
   endif
 endif
 
-ifneq (,$(filter nrf24l01p_diagnostics,$(USEMODULE)))
-  USEMODULE += nrf24l01p
-endif
-
 ifneq (,$(filter nvram_spi,$(USEMODULE)))
   FEATURES_REQUIRED += periph_spi
   USEMODULE += nvram

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    0
 #include "debug.h"
 
 #include "nrf24l01p_constants.h"
@@ -31,6 +31,7 @@
 #include "nrf24l01p_states.h"
 #include "nrf24l01p_netdev.h"
 #include "nrf24l01p_internal.h"
+#include "nrf24l01p_diagnostics.h"
 
 static int nrf24l01p_set_payload_width(nrf24l01p_t *dev, uint8_t width,
                                        nrf24l01p_pipe_t pipe)
@@ -506,4 +507,16 @@ nrf24l01p_state_t nrf24l01p_get_state(nrf24l01p_t *dev)
 {
     assert(dev);
     return dev->state;
+}
+
+void nrf24l01p_print_all_regs(nrf24l01p_t *dev)
+{
+    nrf24l01p_acquire(dev);
+    nrf24l01p_diagnostics_print_all_regs(dev);
+    nrf24l01p_release(dev);
+}
+
+void nrf24l01p_print_dev_info(nrf24l01p_t *dev)
+{
+    nrf24l01p_diagnostics_print_dev_info(dev);
 }

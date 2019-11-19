@@ -16,8 +16,8 @@
  * @author  Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  * @author  Fabian Hüßler <fabian.huessler@ovgu.de>
  */
-#ifndef DIAGNOSTICS_H
-#define DIAGNOSTICS_H
+#ifndef NRF24L01P_DIAGNOSTICS_H
+#define NRF24L01P_DIAGNOSTICS_H
 
 #include "nrf24l01p.h"
 
@@ -53,5 +53,5 @@ void nrf24l01p_diagnostics_print_frame(const nrf24l01p_t *dev, const void *frame
 }
 #endif
 
-#endif /* DIAGNOSTICS_H */
+#endif /* NRF24L01P_DIAGNOSTICS_H */
 /** @} */

@@ -30,6 +30,8 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
+#include "nrf24l01p_types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,113 +45,6 @@ extern "C" {
  * @brief   Maximum width of a NRF24L01P layer-2 address
  */
 #define NRF24L01P_MAX_ADDR_WIDTH            (5)
-
-/**
- * @brief ShockBurst
- */
-#define NRF24L01P_SHOCKBURST                (0)
-
-/**
- * @brief   Enhanded ShockBurst
- */
-#define NRF24L01P_ENHANCED_SHOCKBURST       (1)
-
-/**
- * @brief NRF24L01P operation states
- */
-typedef enum nrf24l01p_state {
-    NRF24L01P_STATE_UNDEFINED   =   2,      /**< State right after voltage supply */
-    NRF24L01P_STATE_POWER_DOWN  =   4,      /**< Register values are available and maintained, SPI active*/
-    NRF24L01P_STATE_STANDBY_1   =   8,      /**< Idle*/
-    NRF24L01P_STATE_STANDBY_2   =  16,      /**< TX FIFO empty, fill up TX FIFO again*/
-    NRF24L01P_STATE_RX_MODE     =  32,      /**< Baseband protocol engine constantly searches for a valid packet */
-    NRF24L01P_STATE_TX_MODE     =  64,      /**< Transmit next packet */
-} nrf24l01p_state_t;
-
-/**
- * @brief   Possible protocols for NRF24L01P
- */
-typedef enum {
-    NRF24L01P_PROTOCOL_SB   = NRF24L01P_SHOCKBURST,         /**< ShockBurst */
-    NRF24L01P_PROTOCOL_ESB  = NRF24L01P_ENHANCED_SHOCKBURST /**< EnhancedShockBurst */
-} nrf24l01p_protocol_t;
-
-/**
- * @brief   Enumeration of NRF24L01P data pipes
- */
-typedef enum {
-    NRF24L01P_P0    = 0,    /**< Pipe 0 */
-    NRF24L01P_P1    = 1,    /**< Pipe 1 */
-    NRF24L01P_P2    = 2,    /**< Pipe 2 */
-    NRF24L01P_P3    = 3,    /**< Pipe 3 */
-    NRF24L01P_P4    = 4,    /**< Pipe 4 */
-    NRF24L01P_P5    = 5,    /**< Pipe 5 */
-    NRF24L01P_PX_NUM_OF     /**< Number of supported pipes */
-} nrf24l01p_pipe_t;
-
-/**
- * @brief   Possible values to configure the layer-2 address width
- */
-typedef enum {
-    NRF24L01P_AW_3BYTE  = 1,        /**< value to use a 3 bytes long layer-2 address */
-    NRF24L01P_AW_4BYTE  = 2,        /**< value to use a 4 bytes long layer-2 address */
-    NRF24L01P_AW_5BYTE  = 3,        /**< value to use a 5 bytes long layer-2 address */
-    NRF24L01P_AW_NUM_OF             /**< Number of possible values to configure the layer-2 address width */
-} nrf24l01p_aw_t;
-
-/**
- * @brief   Possible values to configure the retransmission delay in ESB
- */
-typedef enum {
-    NRF24L01P_ARD_250US     = 0,    /**< 250 us */
-    NRF24L01P_ARD_500US     = 1,    /**< 500 us */
-    NRF24L01P_ARD_750US     = 2,    /**< 750 us */
-    NRF24L01P_ARD_1000US    = 3,    /**< 1000 us */
-    NRF24L01P_ARD_1250US    = 4,    /**< 1250 us */
-    NRF24L01P_ARD_1500US    = 5,    /**< 1500 us */
-    NRF24L01P_ARD_1750US    = 6,    /**< 1750 us */
-    NRF24L01P_ARD_2000US    = 7,    /**< 2000 us */
-    NRF24L01P_ARD_2250US    = 8,    /**< 2250 us */
-    NRF24L01P_ARD_2500US    = 9,    /**< 2500 us */
-    NRF24L01P_ARD_2750US    = 10,   /**< 2750 us */
-    NRF24L01P_ARD_3000US    = 11,   /**< 3000 us */
-    NRF24L01P_ARD_3250US    = 12,   /**< 3250 us */
-    NRF24L01P_ARD_3500US    = 13,   /**< 3500 us */
-    NRF24L01P_ARD_3750US    = 14,   /**< 3750 us */
-    NRF24L01P_ARD_4000US    = 15,   /**< 4000 us */
-    NRF24L01P_ARD_NUM_OF            /**< Number of possible values to configure the retransmission delay */
-} nrf24l01p_ard_t;
-
-/**
- * @brief   Possible values to configure the CRC length
- */
-typedef enum {
-    NRF24L01P_CRC_0BYTE    = 1,    /**< 0 bytes CRC length */
-    NRF24L01P_CRC_1BYTE    = 2,    /**< 1 byte CRC length */
-    NRF24L01P_CRC_2BYTE    = 3,    /**< 2 bytes CRC length */
-    NRF24L01P_CRC_NUM_OF       /**< Number of possible values to configure CRC length */
-} nrf24l01p_crc_t;
-
-/**
- * @brief   Possible values to configure the radio power
- */
-typedef enum {
-    NRF24L01P_TX_POWER_MINUS_18DBM    = 0,    /**< -18 dBm */
-    NRF24L01P_TX_POWER_MINUS_12DBM    = 1,    /**< -12 dBm */
-    NRF24L01P_TX_POWER_MINUS_6DBM     = 2,    /**<  -6 dBm */
-    NRF24L01P_TX_POWER_0DBM           = 3,    /**<   0 dBm */
-    NRF24L01P_TX_POWER_NUM_OF                 /**< Number of possible values to configure the radio power */
-} nrf24l01p_tx_power_t;
-
-/**
- * @brief   Possible values to configure the data rate
- */
-typedef enum {
-    NRF24L01P_RF_DR_1MBPS   = 0,    /**< 1 Mbit/s */
-    NRF24L01P_RF_DR_250KBPS = 1,    /**< 250 kbit/s */
-    NRF24L01P_RF_DR_2MBPS   = 2,    /**< 2 Mbit/s */
-    NRF24L01P_RF_DR_NUM_OF          /**< Number of possible values to configure the data rate */
-} nrf24l01p_rfdr_t;
 
 /**
  * @brief   Struct that holds all active configuration values
@@ -1237,7 +1132,6 @@ static inline int nrf24l01p_set_state_rx(nrf24l01p_t *dev)
     return nrf24l01p_set_state(dev, NRF24L01P_STATE_RX_MODE);
 }
 
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
 /**
  * @brief Print all registers
  *
@@ -1250,7 +1144,6 @@ void nrf24l01p_print_all_regs(nrf24l01p_t *dev);
  * @param[in] dev       NRf24L01P device handle
  */
 void nrf24l01p_print_dev_info(nrf24l01p_t *dev);
-#endif
 
 #ifdef __cplusplus
 }

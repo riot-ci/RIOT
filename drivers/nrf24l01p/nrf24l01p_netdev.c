@@ -22,7 +22,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    0
 #include "debug.h"
 
 #include "iolist.h"
@@ -38,7 +38,7 @@
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_states.h"
-#include "diagnostics.h"
+#include "nrf24l01p_diagnostics.h"
 #include "nrf24l01p_isr.h"
 #include "nrf24l01p_internal.h"
 
@@ -251,7 +251,7 @@ static int nrf24l01p_init(netdev_t *netdev)
     /* clear interrupts */
     nrf24l01p_write_reg(dev, NRF24L01P_REG_STATUS, &status, 1);
     nrf24l01p_transition_to_standby_1(dev);
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
+#if IS_USED(ENABLE_DEBUG)
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
 #endif
@@ -407,7 +407,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     nrf24l01p_read_rx_payload(dev, frame, pl_width);
 #endif
 
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
+#if IS_USED(ENABLE_DEBUG)
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
     nrf24l01p_diagnostics_print_frame(dev, (uint8_t *)buf, frame_len);
@@ -523,7 +523,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         }
         nrf24l01p_transition_to_tx_mode(dev);
     }
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
+#if IS_USED(ENABLE_DEBUG)
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
 #endif

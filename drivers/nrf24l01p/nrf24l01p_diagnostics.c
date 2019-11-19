@@ -21,19 +21,7 @@
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_states.h"
 #include "nrf24l01p_internal.h"
-#include "diagnostics.h"
-
-void nrf24l01p_print_all_regs(nrf24l01p_t *dev)
-{
-    nrf24l01p_acquire(dev);
-    nrf24l01p_diagnostics_print_all_regs(dev);
-    nrf24l01p_release(dev);
-}
-
-void nrf24l01p_print_dev_info(nrf24l01p_t *dev)
-{
-    nrf24l01p_diagnostics_print_dev_info(dev);
-}
+#include "nrf24l01p_diagnostics.h"
 
 void nrf24l01p_diagnostics_print_all_regs(nrf24l01p_t *dev)
 {

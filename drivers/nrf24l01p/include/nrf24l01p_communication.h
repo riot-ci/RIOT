@@ -23,11 +23,6 @@
 #include "periph/spi.h"
 #include "nrf24l01p.h"
 
-#ifndef ENABLE_DEBUG
-#define ENABLE_DEBUG    (0)
-#include "debug.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

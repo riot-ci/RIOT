@@ -18,7 +18,7 @@
  * @}
  */
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    0
 #include "debug.h"
 
 #include "nrf24l01p_registers.h"
