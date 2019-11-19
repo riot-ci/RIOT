@@ -1,5 +1,5 @@
 PKG_NAME=micropython
-PKG_URL=https://github.com/kaspar030/micropython
+PKG_URL=https://github.com/RIOT-OS/micropython
 PKG_VERSION=120519194c1cc989f5fb72fb8ae6fba40f2841a5
 PKG_LICENSE=MIT
 
