@@ -40,8 +40,8 @@
  *
  * Steps:
  *
- * 1. flash tests/pkg_micropython
- * 2. cd tests/pkg_micropython/bin/pkg/${BOARD}/micropython
+ * 1. flash examples/micropython
+ * 2. cd examples/micropython/bin/pkg/${BOARD}/micropython
  * 3. git apply ports/riot/slow_uart_writes.patch
  * 4. cd tests
  * 5. ./run-tests --target pyboard --device ${PORT}
