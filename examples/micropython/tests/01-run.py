@@ -40,7 +40,7 @@ def testfunc(child):
         child.expect_exact('>>>')
         duration = get_time() - before
         print("test_sleep(%s, %s): slept %sms" % (t, slack, duration))
-        assert((duration > t) and (duration < (t + slack)))
+        assert duration > t and duration < (t + slack)
         return duration
 
     # get overhead from sleeping 0ms, add 10 percent
