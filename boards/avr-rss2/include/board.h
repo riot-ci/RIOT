@@ -35,11 +35,11 @@ extern "C" {
 #define LED_PORT            PORTE
 #define LED_PORT_DDR        DDRE
 
-#define LED0_PIN            (1 << PE4) /* RED */
-#define LED1_PIN            (1 << PE3) /* YELLOW */
+#define LED0_PIN            GPIO_PIN(PORT_E, 4) /* RED */
+#define LED1_PIN            GPIO_PIN(PORT_E, 3) /* YELLOW */
 
-#define LED0_MASK           (1 << DDE4)
-#define LED1_MASK           (1 << DDE3)
+#define LED0_MASK           (1 << 4)
+#define LED1_MASK           (1 << 3)
 
 #define LED0_MODE           GPIO_OUT
 #define LED0_OFF            (LED_PORT |=  LED0_MASK)
@@ -64,7 +64,7 @@ extern "C" {
  * @name DS18 pins  OW_BUS_0
  * @{
  */
-#define DS18_PARAM_PIN      0xD7
+#define DS18_PARAM_PIN      GPIO_PIN(PORT_D, 7)
 #define DS18_PARAM_PULL     (GPIO_IN_PU)
 
 /**
