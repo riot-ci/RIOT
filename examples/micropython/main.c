@@ -39,7 +39,7 @@ int main(void)
     mp_stack_set_top((char*)&stack_dummy);
 
     /* Make MicroPython's stack limit somewhat smaller than actual stack limit */
-    mp_stack_set_limit(THREAD_STACKSIZE_MAIN - 128);
+    mp_stack_set_limit(THREAD_STACKSIZE_MAIN - MP_STACK_SAFEAREA);
 
     while (1) {
         /* configure MicroPython's heap */
