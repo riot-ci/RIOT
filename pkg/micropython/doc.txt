@@ -59,20 +59,20 @@
  *
  * ### thread_getpid()
  *
- *     $ import riot
- *     $ print(riot.thread_getpid())
+ *     >>> import riot
+ *     >>> print(riot.thread_getpid())
 
  * ### xtimer
  *
- *     $ import xtimer
- *     $
- *     $ a = 0
- *     $ def inc_a():
- *     $   a += 1
- *     $
- *     $ t = xtimer.xtimer(inc_a)
- *     $ t.set(100000)
- *     $ print(a)
+ *     >>> import xtimer
+ *     >>>
+ *     >>> a = 0
+ *     >>> def inc_a():
+ *     >>>   a += 1
+ *     >>>
+ *     >>> t = xtimer.xtimer(inc_a)
+ *     >>> t.set(100000)
+ *     >>> print(a)
  *
  * ## How to use
  *
