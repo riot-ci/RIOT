@@ -29,7 +29,12 @@ extern "C" {
 #endif
 
 #ifndef MP_RIOT_HEAPSIZE
+/* use a reasonable default heap size */
 #define MP_RIOT_HEAPSIZE (16U*1024)
+#endif
+
+#ifndef MP_STACK_SAFEAREA
+#define MP_STACK_SAFEAREA (128U)
 #endif
 
 /**
