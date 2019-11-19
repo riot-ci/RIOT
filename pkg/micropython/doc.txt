@@ -68,6 +68,7 @@
  *     >>>
  *     >>> a = 0
  *     >>> def inc_a():
+ *     >>>   global a
  *     >>>   a += 1
  *     >>>
  *     >>> t = xtimer.xtimer(inc_a)
