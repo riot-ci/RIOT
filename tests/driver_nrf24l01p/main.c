@@ -35,6 +35,3 @@ int main(void)
     shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
     return 0;
 }
-
-/* ping6 -c 1 -s 0 fe80::e7e7:00ff:fee7:e7e7 */
-/* ping6 -c 1 -s 0 fe80::2126:00ff:fe86:fa01 */

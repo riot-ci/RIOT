@@ -45,9 +45,9 @@ Some configuration can also be done with ifconfig, but ifconfig
 does not consider receiver pipes. So ifconfig only changes settings
 for data pipe 0.
 
-If you experience a significant loss of ping responses, try not to
-use the module "nrf24l01p_diagnostics" because it wastes a lot of
-time with writing to stdout.
+If you experience a significant loss of ping responses, selectively
+disable calls of ```nrf24l01p_diagnostics_print_*()```, or run the
+releas version because it wastes a lot of time with writing to stdout.
 
 Also with ShockBurst as a protocol you will notice lost
 ping responses because ShockBurst cannot perform retransmissions.

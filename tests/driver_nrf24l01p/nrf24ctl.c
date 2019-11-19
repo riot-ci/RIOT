@@ -5,13 +5,9 @@
 #include "nrf24l01p.h"
 #include "nrf24l01p_params.h"
 #include "nrf24l01p_lookup_tables.h"
-#include "diagnostics.h"
+#include "nrf24l01p_diagnostics.h"
 
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
 #define MIN_ARGC    (2)
-#else
-#define MIN_ARGC    (4)
-#endif
 
 extern nrf24l01p_t _nrf24l01p_devs[NRF24L01P_NUM];
 
@@ -23,14 +19,9 @@ static void print_help(void)
     nrf24ctl <device index> --set <channel | crc | data_rate | power | retr_delay | state |  max_retr> <value>\n\
     nrf24ctl <device index> --get <address | mtu> <pipe index>\n\
     nrf24ctl <device index> --get <channel | crc | data_rate | power | retr_delay | stata | max_retr>\n\
-    ");
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
-    puts(
-        "\
     nrf24ctl <dev_index> --regs\n\
-    nrf24ctl <dev_index> --info\
+    nrf24ctl <dev_index> --info\n\
     ");
-#endif
 }
 
 int nrf24ctl(int argc, char *argv[])
@@ -270,7 +261,6 @@ int nrf24ctl(int argc, char *argv[])
                 goto PRINT_HELP_EXIT;
             }
         } break;
-#ifdef MODULE_NRF24L01P_DIAGNOSTICS
         case 3: {
             /* nrf24ctl <dev_index> --regs */
             if ((!strcmp(argv[2], "-r")) || (!strcmp(argv[2], "--regs"))) {
@@ -285,7 +275,6 @@ int nrf24ctl(int argc, char *argv[])
                 goto PRINT_HELP_EXIT;
             }
         } break;
-#endif
         default:
 PRINT_HELP_EXIT:
             print_help();
