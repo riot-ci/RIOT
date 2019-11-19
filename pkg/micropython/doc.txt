@@ -40,7 +40,7 @@
  *
  * Steps:
  *
- * 1. flash examples/micropython
+ * 1. make -Cexamples/micropython flash
  * 2. cd examples/micropython/bin/pkg/${BOARD}/micropython
  * 3. git apply ports/riot/slow_uart_writes.patch
  * 4. cd tests
