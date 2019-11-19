@@ -52,7 +52,7 @@ int main(void)
          * reboots.
          */
         if (coldboot) {
-            printf("-- Executing boot.py\n");
+            puts("-- Executing boot.py");
             mp_do_str((const char *)boot_py, boot_py_len);
             printf("-- boot.py exited. Starting REPL..\n");
             coldboot = 0;
