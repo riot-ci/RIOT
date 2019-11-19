@@ -13,6 +13,3 @@ endif
 
 # Include all definitions for flashing with bossa other USB
 include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.include
-
-# setup the boards dependencies
-include $(RIOTBOARD)/$(BOARD)/Makefile.dep
