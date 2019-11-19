@@ -37,7 +37,7 @@
 #endif
 
 #ifndef MAX_MEM
-#define MAX_MEM             (256 * 1024 * 1024UL)
+#define MAX_MEM             (256 * 1024UL * 1024UL)
 #endif
 
 struct node {
@@ -80,9 +80,6 @@ static void free_memory(struct node *head)
         if (head->ptr) {
             if (total > CHUNK_SIZE) {
                 total -= CHUNK_SIZE;
-            }
-            else {
-                total = 0;
             }
             printf("Free %"PRIu32" Bytes at 0x%p, total %"PRIu32"\n",
                    CHUNK_SIZE, head->ptr, total);
