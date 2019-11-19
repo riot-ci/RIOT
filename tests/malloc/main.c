@@ -46,7 +46,6 @@ struct node {
 };
 
 static uint32_t total = 0;
-static uint32_t chunk_size = CHUNK_SIZE;
 
 static void fill_memory(struct node *head)
 {
@@ -59,8 +58,8 @@ static void fill_memory(struct node *head)
     total = 0;
     while (head && (head->ptr = malloc(CHUNK_SIZE)) && total < MAX_MEM) {
         printf("Allocated %"PRIu32" Bytes at 0x%p, total %"PRIu32"\n",
-               chunk_size, head->ptr, total += chunk_size);
-        memset(head->ptr, '@', chunk_size);
+               (uint32_t)CHUNK_SIZE, head->ptr, total += CHUNK_SIZE);
+        memset(head->ptr, '@', CHUNK_SIZE);
         head = head->next = malloc(sizeof(struct node));
         if (head) {
             total += sizeof(struct node);
@@ -79,11 +78,11 @@ static void free_memory(struct node *head)
 
     while (head) {
         if (head->ptr) {
-            if (total > chunk_size) {
-                total -= chunk_size;
+            if (total > CHUNK_SIZE) {
+                total -= CHUNK_SIZE;
             }
             printf("Free %"PRIu32" Bytes at 0x%p, total %"PRIu32"\n",
-                   chunk_size, head->ptr, total);
+                   (uint32_t)CHUNK_SIZE, head->ptr, total);
             free(head->ptr);
         }
 
@@ -103,7 +102,7 @@ static void free_memory(struct node *head)
 
 int main(void)
 {
-    printf("CHUNK_SIZE: %"PRIu32"\n", chunk_size);
+    printf("CHUNK_SIZE: %"PRIu32"\n", (uint32_t)CHUNK_SIZE);
     printf("NUMBER_OF_TESTS: %d\n", NUMBER_OF_TESTS);
 
     uint8_t test = NUMBER_OF_TESTS;
