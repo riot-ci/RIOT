@@ -19,13 +19,7 @@
 #ifndef NRF24L01P_PARAMS_H
 #define NRF24L01P_PARAMS_H
 
-#ifndef ARRAY_SIZE
-/**
- * @brief Get length of an array
- */
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
-#endif
-
+#include "kernel_defines.h"
 #include "nrf24l01p_constants.h"
 #include "nrf24l01p.h"
 
