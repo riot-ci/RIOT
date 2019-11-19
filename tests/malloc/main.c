@@ -25,7 +25,11 @@
 #include <inttypes.h>
 
 #ifndef CHUNK_SIZE
-#define CHUNK_SIZE          1024U
+#ifdef BOARD_NATIVE
+#define CHUNK_SIZE          (1024 * 1024U)
+#else
+#define CHUNK_SIZE          (1024U)
+#endif
 #endif
 
 #ifndef NUMBER_OF_TESTS
@@ -33,7 +37,7 @@
 #endif
 
 #ifndef MAX_MEM
-#define MAX_MEM             (256 * 1024UL)
+#define MAX_MEM             (256 * 1024 * 1024UL)
 #endif
 
 struct node {
@@ -51,8 +55,9 @@ static void fill_memory(struct node *head)
         head->next = NULL;
     }
 
+    total = 0;
     while (head && (head->ptr = malloc(CHUNK_SIZE)) && total < MAX_MEM) {
-        printf("Allocated %u Bytes at 0x%p, total %"PRIu32"\n",
+        printf("Allocated %"PRIu32" Bytes at 0x%p, total %"PRIu32"\n",
                CHUNK_SIZE, head->ptr, total += CHUNK_SIZE);
         memset(head->ptr, '@', CHUNK_SIZE);
         head = head->next = malloc(sizeof(struct node));
@@ -71,10 +76,16 @@ static void free_memory(struct node *head)
 {
     struct node *old_head;
 
-    while (head && total > CHUNK_SIZE) {
+    while (head) {
         if (head->ptr) {
-            printf("Free %u Bytes at 0x%p, total %"PRIu32"\n",
-                   CHUNK_SIZE, head->ptr, total -= CHUNK_SIZE);
+            if (total > CHUNK_SIZE) {
+                total -= CHUNK_SIZE;
+            }
+            else {
+                total = 0;
+            }
+            printf("Free %"PRIu32" Bytes at 0x%p, total %"PRIu32"\n",
+                   CHUNK_SIZE, head->ptr, total);
             free(head->ptr);
         }
 
@@ -94,7 +105,7 @@ static void free_memory(struct node *head)
 
 int main(void)
 {
-    printf("CHUNK_SIZE: %u\n", CHUNK_SIZE);
+    printf("CHUNK_SIZE: %"PRIu32"\n", CHUNK_SIZE);
     printf("NUMBER_OF_TESTS: %d\n", NUMBER_OF_TESTS);
 
     uint8_t test = NUMBER_OF_TESTS;
