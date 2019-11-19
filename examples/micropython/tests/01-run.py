@@ -75,7 +75,7 @@ def testfunc(child):
     child.expect_exact('>>>')
 
     duration = get_time() - before
-    assert(duration > 500)
+    assert duration > 500
 
     print("[TEST PASSED]")
 
