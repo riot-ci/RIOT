@@ -10,7 +10,7 @@ RIOTBASE ?= $(CURDIR)/../..
 # select MicroPython package
 USEPKG += micropython
 
-# include blop.py as header
+# include boot.py as header
 BLOBS += boot.py
 
 # configure MicroPython's heap size
