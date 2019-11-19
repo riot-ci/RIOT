@@ -76,6 +76,6 @@
  *
  * ## How to use
  *
- * See tests/pkg_micropython for example code.
+ * See examples/micropython for example code.
  *
  */
