@@ -1,8 +1,8 @@
 USEMODULE += xtimer
 USEMODULE += stdin
 
-# MicroPython doesn't compile for 8bit platforms
-FEATURES_BLACKLIST += arch_avr8
+# MicroPython doesn't compile for <32bit platforms
+FEATURES_BLACKLIST += arch_8bit arch_16bit
 
 # This port currently requires ISR_STACK and thread_isr_stack_start
-FEATURES_BLACKLIST += arch_esp32 arch_esp8266
+FEATURES_BLACKLIST += arch_arm7 arch_esp32 arch_esp8266 arch_mips arch_riscv
