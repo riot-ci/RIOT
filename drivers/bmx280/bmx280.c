@@ -36,7 +36,7 @@
 #ifdef BMX280_USE_SPI
 #define BUS                 (dev->params.spi)
 #define CS                  (dev->params.cs)
-#define CLK                 SPI_CLK_5MHZ
+#define CLK                 (dev->params.clk)
 #define MODE                SPI_MODE_0
 #define WRITE_MASK          (0x7F)
 #else

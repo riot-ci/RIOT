@@ -40,6 +40,9 @@ extern "C" {
 #ifndef BMX280_PARAM_SPI
 #define BMX280_PARAM_SPI            SPI_DEV(0)
 #endif
+#ifndef BMX280_PARAM_CLK
+#define BMX280_PARAM_CLK            SPI_CLK_5MHZ
+#endif
 #ifndef BMX280_PARAM_CS
 #define BMX280_PARAM_CS             GPIO_PIN(0, 0)
 #endif
@@ -67,6 +70,7 @@ extern "C" {
 #define BMX280_PARAMS                       \
     {                                       \
         .spi = BMX280_PARAM_SPI,            \
+        .clk = BMX280_PARAM_CLK,            \
         .cs  = BMX280_PARAM_CS,             \
         BMX280_PARAM_MISC                   \
     }

@@ -185,6 +185,7 @@ typedef struct {
 #ifdef BMX280_USE_SPI
     /* SPI configuration */
     spi_t spi;                          /**< SPI bus */
+    spi_clk_t clk;                      /**< clock speed for the SPI bus */
     gpio_t cs;                          /**< chip select pin */
 #else
     /* I2C details */
