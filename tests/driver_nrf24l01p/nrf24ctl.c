@@ -4,8 +4,7 @@
 #include <string.h>
 #include "nrf24l01p.h"
 #include "nrf24l01p_params.h"
-#include "nrf24l01p_lookup_tables.h"
-#include "nrf24l01p_diagnostics.h"
+#include "nrf24l01p_util.h"
 
 #define MIN_ARGC    (2)
 

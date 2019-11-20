@@ -23,6 +23,7 @@ USEMODULE += ps
 USEMODULE += gnrc
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += nrf24l01p
+USEMODULE += nrf24l01p_advanced
 USEMODULE += netstats_l2
 USEMODULE += gnrc_ipv6
 USEMODULE += netstats_ipv6
