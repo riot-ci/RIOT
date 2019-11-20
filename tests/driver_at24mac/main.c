@@ -21,23 +21,11 @@
 #include <stdio.h>
 #include "at24mac.h"
 
-int main(void)
+static int test_get_eui48(void)
 {
+#ifdef MODULE_AT24MAC4XX
     eui48_t e48;
-    eui64_t e64;
-    uint8_t id[AT24MAC_ID_LEN];
-
     if (at24mac_get_eui48(0, &e48) != 0) {
-        puts("[FAILED]");
-        return 1;
-    }
-
-    if (at24mac_get_eui64(0, &e64) != 0) {
-        puts("[FAILED]");
-        return 1;
-    }
-
-    if (at24mac_get_id128(0, &id) != 0) {
         puts("[FAILED]");
         return 1;
     }
@@ -47,18 +35,60 @@ int main(void)
         printf(" %02x", e48.uint8[i]);
     }
     puts("");
+#endif
+
+    return 0;
+}
+
+static int test_get_eui64(void)
+{
+#ifdef MODULE_AT24MAC6XX
+    eui64_t e64;
+    if (at24mac_get_eui64(0, &e64) != 0) {
+        puts("[FAILED]");
+        return 1;
+    }
 
     printf("EUI-64:");
     for (unsigned i = 0; i < sizeof(e64.uint8); ++i) {
         printf(" %02x", e64.uint8[i]);
     }
     puts("");
+#endif
+
+    return 0;
+}
+
+static int test_get_id128(void)
+{
+    uint8_t id[AT24MAC_ID_LEN];
+    if (at24mac_get_id128(0, &id) != 0) {
+        puts("[FAILED]");
+        return 1;
+    }
 
     printf("ID-128:");
     for (unsigned i = 0; i < sizeof(id); ++i) {
         printf(" %02x", id[i]);
     }
     puts("");
+
+    return 0;
+}
+
+int main(void)
+{
+    if (test_get_eui48()) {
+        return -1;
+    }
+
+    if (test_get_eui64()) {
+        return -1;
+    }
+
+    if (test_get_id128()) {
+        return -1;
+    }
 
     puts("[SUCCESS]");
 
