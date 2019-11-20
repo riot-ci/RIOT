@@ -20,24 +20,14 @@ CFLAGS += -DGNRC_TCP_MSL=$(MSL_US)
 CFLAGS += -DGNRC_TCP_CONNECTION_TIMEOUT_DURATION=$(TIMEOUT_US)
 
 ifeq (native,$(BOARD))
-  USEMODULE += netdev_tap
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += stdio_ethos
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMDEPS += ethos
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
-
-USEMODULE += auto_init_gnrc_netif
-USEMODULE += gnrc_ipv6_default
-USEMODULE += gnrc_tcp
-USEMODULE += gnrc_pktbuf_cmd
-USEMODULE += shell
-USEMODULE += shell_commands
-USEMODULE += od
 
 # Export used tap device to environment
 export TAPDEV = $(TAP)
