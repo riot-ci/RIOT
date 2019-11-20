@@ -72,7 +72,7 @@ typedef struct {
 #define PINSEL      ((__IO uint32_t *)(PINSEL_BASE_ADDR))
 
 /**
- * @brief   Pointer to the PINSEL register
+ * @brief   Pointer to the PINMODE register
  */
 #define PINMODE     ((__IO uint32_t *)(PINSEL_BASE_ADDR + 0x40))
 
