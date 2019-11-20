@@ -338,9 +338,9 @@ export ESP32_SDK_DIR=$HOME/esp/esp-idf
 
 The RIOT port does not work with the `esptool.py` ESP flasher program
 available on [GitHub](https://github.com/espressif/esptool) or
-as package for your OS. Instead, a modified version is required.
+as a package for your OS. Instead, a modified version is required.
 
-To avoid the installation of the complete ESP-IDF SDK, for example
+To avoid the installation of the complete ESP-IDF SDK, for example,
 because RIOT Docker `riotdocker` is used for compilation, `esptool.py`
 has been extracted from the SDK and placed in RIOT's
 directory `dist/tools/esptool`.
@@ -357,7 +357,7 @@ or the package manager of your OS, for example on Debian/Ubuntu systems:
 ```
 apt install python-pyserial
 ```
-For more information on `esptool.py`, please refer the
+For more information on `esptool.py`, please refer to the
 [git repository](https://github.com/espressif/esptool).
 
 
