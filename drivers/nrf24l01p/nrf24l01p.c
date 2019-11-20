@@ -24,14 +24,54 @@
 #define ENABLE_DEBUG    0
 #include "debug.h"
 
+#include "nrf24l01p_netdev.h"
 #include "nrf24l01p_constants.h"
-#include "nrf24l01p_lookup_tables.h"
+#include "nrf24l01p_channels.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_states.h"
-#include "nrf24l01p_netdev.h"
 #include "nrf24l01p_internal.h"
+#include "nrf24l01p_custom_header.h"
 #include "nrf24l01p_diagnostics.h"
+
+/**
+ * @brief   Struct that holds certain register addresses for any pipe
+ */
+typedef struct {
+    uint8_t reg_pipe_addr;  /**< Register that holds the rx address */
+    uint8_t reg_pipe_plw;   /**< Register that holds the expected payload width */
+} nrf24l01p_pipe_regs_t;
+
+/**
+ * @brief   Table that maps data pipe indices to corresponding pipe
+ *          register addresses
+ */
+static const nrf24l01p_pipe_regs_t reg_pipe_info[NRF24L01P_PX_NUM_OF] = {
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P0,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P0
+    },
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P1,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P1
+    },
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P2,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P2
+    },
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P3,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P3
+    },
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P4,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P4
+    },
+    {
+        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P5,
+        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P5
+    }
+};
 
 static int nrf24l01p_set_payload_width(nrf24l01p_t *dev, uint8_t width,
                                        nrf24l01p_pipe_t pipe)
@@ -269,7 +309,7 @@ uint8_t nrf24l01p_get_channel(nrf24l01p_t *dev)
 
 int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe)
 {
-#ifdef NRF24L01P_CUSTOM_HEADER
+# if IS_USED(NRF24L01P_CUSTOM_HEADER)
     return nrf24l01p_set_payload_width(dev,
                                        mtu + NRF24L01P_MAX_ADDR_WIDTH + 1,
                                        pipe);
@@ -280,9 +320,9 @@ int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe)
 
 int nrf24l01p_get_mtu(nrf24l01p_t *dev, nrf24l01p_pipe_t pipe)
 {
-#ifdef NRF24L01P_CUSTOM_HEADER
-    return nrf24l01p_get_payload_width(dev,
-                                       pipe) - (NRF24L01P_MAX_ADDR_WIDTH + 1);
+# if IS_USED(NRF24L01P_CUSTOM_HEADER)
+    return nrf24l01p_get_payload_width(dev, pipe)
+                                        - (NRF24L01P_MAX_ADDR_WIDTH + 1);
 #else
     return nrf24l01p_get_payload_width(dev, pipe);
 #endif
@@ -345,50 +385,6 @@ int nrf24l01p_get_rx_address(nrf24l01p_t *dev, uint8_t *addr,
         addr[aw - 1] = dev->params.urxaddr.arxaddr.rx_addr_short[pipe - 2];
     }
     return aw;
-}
-
-int nrf24l01p_set_ack_payload(nrf24l01p_t *dev, const void *payload,
-                              size_t payload_width, nrf24l01p_pipe_t pipe)
-{
-    assert(dev);
-    assert(payload);
-    if (payload_width > NRF24L01P_MTU) {
-        return -EINVAL;
-    }
-    if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
-        return -ENOTSUP;
-    }
-    if (pipe >= NRF24L01P_PX_NUM_OF) {
-        return -ERANGE;
-    }
-    switch (dev->state) {
-        case NRF24L01P_STATE_RX_MODE:
-            break;
-        default:
-            return -EAGAIN;
-    }
-#ifdef NRF24L01P_CUSTOM_HEADER
-    uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
-    uint8_t pl[1 + aw + payload_width];
-    sb_hdr_init((shockburst_hdr_t *)pl);
-    sb_hdr_set_src_addr_width((shockburst_hdr_t *)pl, aw);
-    if (pipe == NRF24L01P_P0) {
-        memcpy(pl + 1, dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr, aw);
-    }
-    else {
-        memcpy(pl + 1, dev->params.urxaddr.rxaddrpx.rx_pipe_1_addr, aw);
-        if (pipe > NRF24L01P_P1) {
-            pl[aw] = dev->params.urxaddr.arxaddr.rx_addr_short[pipe - 2];
-        }
-    }
-    memcpy(pl + 1 + aw, payload, payload_width);
-    payload = pl;
-    payload_width = sizeof(pl);
-#endif
-    nrf24l01p_acquire(dev);
-    nrf24l01p_write_ack_pl(dev, payload, payload_width, pipe);
-    nrf24l01p_release(dev);
-    return 0;
 }
 
 int nrf24l01p_set_max_retransm(nrf24l01p_t *dev, uint8_t max_rt)

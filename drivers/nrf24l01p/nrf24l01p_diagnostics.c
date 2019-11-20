@@ -19,8 +19,8 @@
  */
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"
-#include "nrf24l01p_states.h"
-#include "nrf24l01p_internal.h"
+#include "nrf24l01p_conversion.h"
+#include "nrf24l01p_util.h"
 #include "nrf24l01p_diagnostics.h"
 
 void nrf24l01p_diagnostics_print_all_regs(nrf24l01p_t *dev)

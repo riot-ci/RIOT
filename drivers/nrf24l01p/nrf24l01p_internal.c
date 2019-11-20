@@ -20,9 +20,9 @@
  */
 #include <string.h>
 
-#include "nrf24l01p_lookup_tables.h"
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"
+#include "nrf24l01p_conversion.h"
 #include "nrf24l01p_internal.h"
 
 int nrf24l01p_assert_awake(nrf24l01p_t *dev)

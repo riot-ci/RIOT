@@ -10,20 +10,59 @@
  * @{
  *
  * @file
- * @brief   Timings of NRF24L01P devices
+ * @brief   Utility functions for the NRF24L01P device driver
  *
  * @author  Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author  Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  * @author  Fabian Hüßler <fabian.huessler@ovgu.de>
  */
-#ifndef NRF24L01P_TIMING_H
-#define NRF24L01P_TIMING_H
+#ifndef NRF24L01P_UTIL_H
+#define NRF24L01P_UTIL_H
 
-#include "nrf24l01p_lookup_tables.h"
+#include "nrf24l01p_states.h"
+#include "nrf24l01p.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @brief Get state variable as a string
+ *
+ * @param[in] state     State
+ *
+ * @return              @p state as a string
+ */
+const char *nrf24l01p_state_to_string(nrf24l01p_state_t state);
+
+/**
+ * @brief Convert string to state variable
+ *
+ * @param[in] sstate    State string
+ *
+ * @return              State variable
+ */
+nrf24l01p_state_t nrf24l01p_string_to_state(const char *sstate);
+
+/**
+ * @brief   Translate an NRf24L01P state to a netif state
+ *
+ * @param[in] state     NRF24L01P state
+ *
+ * @return              netopt state
+ * @retval -ENOTSUP     Unsupported state
+ */
+netopt_state_t nrf24l01p_state_to_netif(nrf24l01p_state_t state);
+
+/**
+ * @brief   Translate a netif state to an NRf24L01P state
+ *
+ * @param[in] state     netopt state
+ *
+ * @return              NRF24L01P state
+ * @retval -ENOTSUP     Unsupported state
+ */
+nrf24l01p_state_t nrf24l01p_state_from_netif(netopt_state_t state);
 
 /**
  * @brief   Calculate the on-air time in [us] of a frame with a certain length
@@ -58,5 +97,5 @@ static inline int nrf24l01p_time_on_air_us(const nrf24l01p_t *dev,
 }
 #endif
 
-#endif /* NRF24L01P_TIMING_H */
+#endif /* NRF24L01P_UTIL_H */
 /** @} */

@@ -19,6 +19,10 @@
 #ifndef NRF24L01P_TYPES_H
 #define NRF24L01P_TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief NRF24L01P operation states
  */
@@ -127,7 +131,7 @@ typedef enum {
 } nrf24l01p_rfdr_t;
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif
 
 #endif /* NRF24L01P_TYPES_H */

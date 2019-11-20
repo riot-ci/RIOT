@@ -19,8 +19,11 @@
 #ifndef NRF24L01P_PARAMS_H
 #define NRF24L01P_PARAMS_H
 
+#include "periph/gpio.h"
+#include "periph/spi.h"
 #include "kernel_defines.h"
 #include "nrf24l01p_constants.h"
+#include "nrf24l01p_internal.h"
 #include "nrf24l01p.h"
 
 #ifdef __cplusplus

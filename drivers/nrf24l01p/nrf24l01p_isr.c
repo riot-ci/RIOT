@@ -21,8 +21,6 @@
 #define ENABLE_DEBUG    0
 #include "debug.h"
 
-#include "nrf24l01p_registers.h"
-#include "nrf24l01p_states.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_isr.h"
 

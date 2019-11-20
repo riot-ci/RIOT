@@ -33,14 +33,19 @@
 #include "net/netdev.h"
 #include "xtimer.h"
 
+#include "gnrc_netif_nrf24l01p.h"
 #include "nrf24l01p_constants.h"
-#include "nrf24l01p_lookup_tables.h"
+#include "nrf24l01p_channels.h"
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_states.h"
 #include "nrf24l01p_diagnostics.h"
+#include "nrf24l01p_custom_header.h"
 #include "nrf24l01p_isr.h"
 #include "nrf24l01p_internal.h"
+#include "nrf24l01p_conversion.h"
+#include "nrf24l01p_util.h"
+#include "nrf24l01p_netdev.h"
 
 #define NRF24L01P_FLG_IRQ \
     (NRF24L01P_FLG_MAX_RT | NRF24L01P_FLG_TX_DS | NRF24L01P_FLG_RX_DR)
@@ -371,7 +376,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     uint8_t *frame = (uint8_t *)buf;
     sb_hdr_init((shockburst_hdr_t *)frame);
     sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     uint8_t payload[NRF24L01P_MAX_PAYLOAD_WIDTH];
     nrf24l01p_read_rx_payload(dev, payload, pl_width);
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
@@ -467,7 +472,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
     }
     memcpy(dev->tx_addr, hdr.dst_addr, dst_addr_len);
     dev->tx_addr_len = dst_addr_len;
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     uint8_t src_addr_len = sb_hdr_get_src_addr_width(&hdr);
     if (src_addr_len > NRF24L01P_MAX_ADDR_WIDTH ||
         src_addr_len < NRF24L01P_MIN_ADDR_WIDTH) {
@@ -489,7 +494,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         memcpy(payload + pl_width, iol->iol_base, iol->iol_len);
         pl_width += iol->iol_len;
     }
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB
         && sizeof(payload) != pl_width) {
         /* frame: [ ... padding ... |  header | data ] */

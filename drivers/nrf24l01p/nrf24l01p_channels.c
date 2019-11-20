@@ -17,8 +17,9 @@
  * @author Fabian Hüßler <fabian.huessler@ovgu.de>
  * @}
  */
-#include "nrf24l01p_registers.h"
-#include "nrf24l01p_lookup_tables.h"
+#include <stdint.h>
+
+#include "nrf24l01p_channels.h"
 
 const uint8_t vchanmap[NRF24L01P_NUM_CHANNELS] = {
     0,      /* 2400 Mhz +   0 Mhz */
@@ -37,31 +38,4 @@ const uint8_t vchanmap[NRF24L01P_NUM_CHANNELS] = {
     104,    /* 2400 Mhz + 104 Mhz */
     112,    /* 2400 Mhz + 112 Mhz */
     120     /* 2400 Mhz + 120 Mhz */
-};
-
-const nrf24l01p_pipe_regs_t reg_pipe_info[NRF24L01P_PX_NUM_OF] = {
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P0,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P0
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P1,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P1
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P2,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P2
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P3,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P3
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P4,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P4
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_REG_RX_ADDR_P5,
-        .reg_pipe_plw = NRF24L01P_REG_RX_PW_P5
-    }
 };

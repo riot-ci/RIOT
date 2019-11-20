@@ -26,6 +26,8 @@
 
 #include "net/gnrc.h"
 #include "nrf24l01p_internal.h"
+#include "nrf24l01p_custom_header.h"
+#include "gnrc_netif_nrf24l01p.h"
 
 /**
  * @brief   Broadcast/Multicast flag
@@ -93,7 +95,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
            ((uint8_t *)(frame->data)) + header_len,
            dst_addr_width);
     header_len += dst_addr_width;
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     uint8_t src_addr_width = sb_hdr_get_src_addr_width(&sb_hdr);
     memcpy(sb_hdr.src_addr,
            ((uint8_t *)(frame->data)) + header_len,
@@ -108,7 +110,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     gnrc_pktbuf_remove_snip(frame, hdr);
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     hdr = gnrc_netif_hdr_build(sb_hdr.src_addr, src_addr_width, sb_hdr.dst_addr,
                                dst_addr_width);
 #else
@@ -126,10 +128,10 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
     gnrc_netif_hdr_set_netif(netif_hdr, netif);
     LL_APPEND(frame, hdr);
 
-#if IS_USED(MODULE_NETSTATS_L2)
-    netif->stats.rx_count++;
-    netif->stats.rx_bytes += frame->size;
-#endif
+    if (IS_USED(MODULE_NETSTATS_L2)) {
+        netif->stats.rx_count++;
+        netif->stats.rx_bytes += frame->size;
+    }
 
     return frame;
 }
@@ -169,9 +171,9 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         DEBUG("[nrf24l01p-gnrc] send: preparing to send broadcast\n");
         tx_address = bcast_addr;
         tx_addr_len = sizeof(bcast_addr);
-#if IS_USED(MODULE_NETSTATS_L2)
-        netif->stats.tx_mcast_count++;
-#endif
+        if (IS_USED(MODULE_NETSTATS_L2)) {
+            netif->stats.tx_mcast_count++;
+        }
     }
     else {
         if (netif_hdr->dst_l2addr_len > NRF24L01P_MAX_ADDR_WIDTH ||
@@ -186,7 +188,7 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     sb_hdr_init(&hdr);
     sb_hdr_set_dst_addr_width(&hdr, tx_addr_len);
     memcpy(hdr.dst_addr, tx_address, tx_addr_len);
-#ifdef NRF24L01P_CUSTOM_HEADER
+#if IS_USED(NRF24L01P_CUSTOM_HEADER)
     nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
     sb_hdr_set_src_addr_width(&hdr, aw);

@@ -50,26 +50,6 @@ extern "C" {
  */
 #define NRF24L01P_DELAY_US_CE_HIGH_PULSE    (10)
 
-/**
- * @brief   Translate an NRf24L01P state to a netif state
- *
- * @param[in] state     NRF24L01P state
- *
- * @return              netopt state
- * @retval -ENOTSUP     Unsupported state
- */
-netopt_state_t nrf24l01p_state_to_netif(nrf24l01p_state_t state);
-
-/**
- * @brief   Translate a netif state to an NRf24L01P state
- *
- * @param[in] state     netopt state
- *
- * @return              NRF24L01P state
- * @retval -ENOTSUP     Unsupported state
- */
-nrf24l01p_state_t nrf24l01p_state_from_netif(netopt_state_t state);
-
 #if !defined (NDEBUG) || defined(DOXYGEN)
 /**
  * @name NRF24L01P Transitions
