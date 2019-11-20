@@ -203,7 +203,9 @@ static int _do_measurement(bmx280_t *dev)
     uint8_t reg;
 
     /* get access to the bus */
-    _acquire(dev);
+    if (_acquire(dev) != BMX280_OK) {
+        goto err;
+    }
 
     /* if in FORCED mode, we need to manually trigger a measurement */
     if (dev->params.run_mode != BMX280_MODE_NORMAL) {
