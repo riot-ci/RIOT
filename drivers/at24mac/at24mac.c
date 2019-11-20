@@ -49,15 +49,19 @@ static int _read_reg(unsigned idx, uint8_t reg, void *dst, size_t size)
     return res;
 }
 
+#ifdef MODULE_AT24MAC4XX
 int at24mac_get_eui48(unsigned idx, eui48_t *dst)
 {
     return _read_reg(idx, CMD_READ_EUI48, dst, sizeof(*dst));
 }
+#endif
 
+#ifdef MODULE_AT24MAC6XX
 int at24mac_get_eui64(unsigned idx, eui64_t *dst)
 {
     return _read_reg(idx, CMD_READ_EUI64, dst, sizeof(*dst));
 }
+#endif
 
 int at24mac_get_id128(unsigned idx, void *dst)
 {

@@ -38,28 +38,32 @@ typedef struct {
     uint8_t i2c_addr;                   /**< I2C address     */
 } at24mac_params_t;
 
+#if defined(MODULE_AT24MAC4XX) || defined(DOXYGEN)
 /**
- * @brief   Get the unique EUI48 address from a AT24MAC chip
+ * @brief   Get the unique EUI48 address from a AT24MAC4xx chip
  *
  * @param[in] idx       Index of the AT24Mac chip in the at24mac_params
  *                      array.
  * @param[out] addr     memory location to copy the address into.
  */
 int at24mac_get_eui48(unsigned idx, eui48_t *addr);
+#endif
 
+#if defined(MODULE_AT24MAC6XX) || defined(DOXYGEN)
 /**
- * @brief   Get the unique EUI64 address from a AT24MAC chip
+ * @brief   Get the unique EUI64 address from a AT24MAC6xx chip
  *
  * @param[in] idx       Index of the AT24Mac chip in the at24mac_params
  *                      array.
  * @param[out] addr     memory location to copy the address into.
  */
 int at24mac_get_eui64(unsigned idx, eui64_t *addr);
+#endif
 
 /**
- * @brief   Get the unique ID from a AT24MAC chip
+ * @brief   Get the unique ID from a AT24MACxxx chip
  *
- * @param[in] idx       Index of the AT24Mac chip in the at24mac_params
+ * @param[in] idx       Index of the AT24MAC chip in the at24mac_params
  *                      array.
  * @param[out] dst      memory location to copy the ID into.
  *                      Must be able to hold at least @ref AT24MAC_ID_LEN bytes.
