@@ -2,7 +2,7 @@
 
 SKETCHES = $(wildcard $(APPDIR)/*.sketch)
 
-ifneq (,$(SKETCHES)))
+ifneq (,$(SKETCHES))
   # Define application sketches module, it will be generated into $(BINDIR)
   SKETCH_MODULE     ?= arduino_sketches
   SKETCH_MODULE_DIR ?= $(BINDIR)/$(SKETCH_MODULE)
