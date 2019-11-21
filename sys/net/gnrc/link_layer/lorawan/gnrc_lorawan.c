@@ -177,6 +177,7 @@ void gnrc_lorawan_event_timeout(gnrc_lorawan_t *mac)
             break;
         default:
             assert(false);
+            break;
     }
     _sleep_radio(mac);
 }
@@ -281,6 +282,7 @@ int gnrc_lorawan_netdev_get(netdev_t *dev, netopt_t opt, void *value, size_t max
             break;
         default:
             res = netdev_get_pass(dev, opt, value, max_len);
+            break;
     }
     return res;
 }
@@ -306,6 +308,7 @@ int gnrc_lorawan_netdev_set(netdev_t *dev, netopt_t opt, const void *value, size
             break;
         default:
             netdev_set_pass(dev, opt, value, len);
+            break;
     }
     return 0;
 }
