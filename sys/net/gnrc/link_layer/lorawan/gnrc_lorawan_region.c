@@ -113,7 +113,7 @@ uint8_t gnrc_lorawan_region_mac_payload_max(uint8_t datarate)
     }
 }
 
-int gnrc_lorawan_validate_dr(uint8_t dr)
+bool gnrc_lorawan_validate_dr(uint8_t dr)
 {
     if (dr < GNRC_LORAWAN_DATARATES_NUMOF) {
         return true;
