@@ -181,7 +181,6 @@ void gnrc_lorawan_mlme_backoff_expire(gnrc_lorawan_t *mac)
                 mac->mlme.backoff_budget = GNRC_LORAWAN_BACKOFF_BUDGET_3;
                 break;
         }
-
     }
 
     counter--;
@@ -189,7 +188,6 @@ void gnrc_lorawan_mlme_backoff_expire(gnrc_lorawan_t *mac)
     xtimer_set_msg(&mac->mlme.backoff_timer,
                    GNRC_LORAWAN_BACKOFF_WINDOW_TICK,
                    &mac->mlme.backoff_msg, thread_getpid());
-
 }
 
 static void _mlme_set(gnrc_lorawan_t *mac, const mlme_request_t *mlme_request,
