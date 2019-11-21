@@ -157,6 +157,8 @@ ifneq (,$(filter esp_cxx,$(USEMODULE)))
     UNDEF += $(BINDIR)/esp_cxx/cxa_guard.o
 endif
 
+ESPTOOL ?= $(RIOTBASE)/dist/tools/esptool/esptool.py
+
 # The ELFFILE is the base one used for flashing
 FLASHFILE ?= $(ELFFILE)
 
@@ -165,7 +167,7 @@ FLASH_MODE ?= dout  # FIX configuration, DO NOT CHANGE
 FLASH_FREQ  = 40m   # FIX configuration, DO NOT CHANGE
 FLASH_SIZE ?= 2MB
 
-PREFLASHER = $(RIOTBASE)/dist/tools/esptool/esptool.py
+PREFLASHER = $(ESPTOOL)
 PREFFLAGS  = --chip esp32 elf2image
 PREFFLAGS += -fm $(FLASH_MODE) -fs $(FLASH_SIZE) -ff $(FLASH_FREQ)
 PREFFLAGS += -o $(FLASHFILE).bin $(FLASHFILE);
@@ -194,7 +196,7 @@ ifeq ($(QEMU), 1)
     FFLAGS += cp $(RIOTCPU)/$(CPU)/bin/rom_0x40000000_0x000c2000.bin $(BINDIR)/rom.bin
 else
     export PROGRAMMER_SPEED ?= 460800
-    FLASHER = $(RIOTBASE)/dist/tools/esptool/esptool.py
+    FLASHER = $(ESPTOOL)
     FFLAGS += --chip esp32 -p $(PROG_DEV) -b $(PROGRAMMER_SPEED)
     FFLAGS += --before default_reset --after hard_reset write_flash
     FFLAGS += -z -fm $(FLASH_MODE) -fs detect -ff $(FLASH_FREQ)
