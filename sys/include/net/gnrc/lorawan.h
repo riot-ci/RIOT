@@ -32,6 +32,8 @@ extern "C" {
 /**
  * @brief maximum timer drift in percentage
  *
+ * @note this is only a workaround to compensate inaccurate timers.
+ *
  * E.g a value of 0.1 means there's a positive drift of 0.1% (set timeout to
  * 1000 ms => triggers after 1001 ms)
  */
