@@ -109,6 +109,7 @@ static void _mac_cb(netdev_t *dev, netdev_event_t event)
             break;
         default:
             netdev_event_cb_pass(dev, event);
+            break;
     }
 }
 
@@ -139,6 +140,7 @@ static void _driver_cb(netdev_t *dev, netdev_event_t event)
                 break;
             default:
                 DEBUG("gnrc_netif: warning: unhandled event %u.\n", event);
+                break;
         }
     }
 }
@@ -263,6 +265,7 @@ static int _get(gnrc_netif_t *netif, gnrc_netapi_opt_t *opt)
             break;
         default:
             res = netif->lorawan.mac.netdev.driver->get(&netif->lorawan.mac.netdev, opt->opt, opt->data, opt->data_len);
+            break;
     }
     return res;
 }
@@ -345,6 +348,7 @@ static int _set(gnrc_netif_t *netif, const gnrc_netapi_opt_t *opt)
             break;
         default:
             res = netif->lorawan.mac.netdev.driver->set(&netif->lorawan.mac.netdev, opt->opt, opt->data, opt->data_len);
+            break;
     }
     gnrc_netif_release(netif);
     return res;
