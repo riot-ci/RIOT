@@ -18,6 +18,7 @@
 #ifndef NET_GNRC_LORAWAN_REGION_H
 #define NET_GNRC_LORAWAN_REGION_H
 
+#include "kernel_defines.h"
 #include "net/gnrc/lorawan.h"
 
 #ifdef __cplusplus
@@ -34,7 +35,7 @@ static const uint32_t gnrc_lorawan_default_channels[] = {
 };
 
 #define GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF \
-    (sizeof(gnrc_lorawan_default_channels)/sizeof(uint32_t)) /**< Number of default channels */
+    ARRAY_SIZE(gnrc_lorawan_default_channels) /**< Number of default channels */
 
 /**
  * @brief Process Channel Frequency list frame
