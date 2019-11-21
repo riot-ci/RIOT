@@ -28,18 +28,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-static int _buffer_reset(lorawan_buffer_t *buf, uint8_t *data, size_t length)
-{
-    if (!buf || !data || !length) {
-        return -EINVAL;
-    }
-
-    buf->data = data;
-    buf->size = length;
-    buf->index = 0;
-    return 0;
-}
-
 static gnrc_pktsnip_t *_build_join_req_pkt(uint8_t *appeui, uint8_t *deveui, uint8_t *appkey, uint8_t *dev_nonce)
 {
     gnrc_pktsnip_t *pkt = gnrc_pktbuf_add(NULL, NULL, sizeof(lorawan_join_request_t), GNRC_NETTYPE_UNDEF);
@@ -271,16 +259,11 @@ int _fopts_mlme_link_check_req(lorawan_buffer_t *buf)
     return GNRC_LORAWAN_CID_SIZE;
 }
 
-static int _mlme_link_check_ans(gnrc_lorawan_t *mac, lorawan_buffer_t *fopt)
+static int _mlme_link_check_ans(gnrc_lorawan_t *mac, uint8_t *p)
 {
-    if (fopt->index + GNRC_LORAWAN_FOPT_LINK_ANS_SIZE > fopt->size) {
-        return -EINVAL;
-    }
-    fopt->index++;
-
     mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
-    mlme_confirm->link_req.margin = fopt->data[fopt->index++];
-    mlme_confirm->link_req.num_gateways = fopt->data[fopt->index++];
+    mlme_confirm->link_req.margin = p[0];
+    mlme_confirm->link_req.num_gateways = p[1];
 
     mlme_confirm->type = MLME_LINK_CHECK;
     mlme_confirm->status = GNRC_LORAWAN_REQ_STATUS_SUCCESS;
@@ -297,19 +280,24 @@ void gnrc_lorawan_process_fopts(gnrc_lorawan_t *mac, uint8_t *fopts, size_t size
         return;
     }
 
-    lorawan_buffer_t buf;
-    _buffer_reset(&buf, fopts, size);
+    uint8_t ret = 0;
+    int (*cb)(gnrc_lorawan_t*, uint8_t *p) = NULL;
 
-    while (buf.index < buf.size) {
-        switch (*(buf.data)) {
+    for(uint8_t pos = 0; pos < size; pos += ret) {
+        switch (fopts[pos]) {
             case GNRC_LORAWAN_CID_LINK_CHECK_REQ_ANS:
-                if (_mlme_link_check_ans(mac, &buf) < 0) {
-                    return;
-                }
+                ret += 3;
+                cb = _mlme_link_check_ans;
                 break;
             default:
                 return;
         }
+
+        if(pos + ret > size) {
+            return;
+        }
+
+        cb(mac, fopts + pos);
     }
 }
 
