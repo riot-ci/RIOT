@@ -63,7 +63,7 @@ uint8_t gnrc_lorawan_rx1_get_dr_offset(uint8_t dr_up, uint8_t dr_offset);
  * @return true if datarate is valid
  * @return false otherwise
  */
-int gnrc_lorawan_validate_dr(uint8_t dr);
+bool gnrc_lorawan_validate_dr(uint8_t dr);
 
 #ifdef __cplusplus
 }
