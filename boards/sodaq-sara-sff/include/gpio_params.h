@@ -34,25 +34,26 @@ static const saul_gpio_params_t saul_gpio_params[] =
     {
         .name = "LED Green",
         .pin = LED_GREEN_PIN,
-        .mode = GPIO_OUT
+        .mode = GPIO_OUT,
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
     {
         .name = "LED Red",
         .pin = LED_RED_PIN,
         .mode = GPIO_OUT,
-        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR)
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
     {
         .name = "LED Blue",
         .pin = LED_BLUE_PIN,
         .mode = GPIO_OUT,
-        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR)
+        .flags = (SAUL_GPIO_INVERTED | SAUL_GPIO_INIT_CLEAR),
     },
     {
         .name = "Button",
         .pin  = BTN0_PIN,
         .mode = BTN0_MODE,
-        .flags = SAUL_GPIO_INVERTED
+        .flags = SAUL_GPIO_INVERTED,
     },
 };
 
