@@ -14,10 +14,13 @@
  */
 #include "net/gnrc/lorawan/region.h"
 
-#define GNRC_LORAWAN_DATARATES_NUMOF 6
+#define GNRC_LORAWAN_DATARATES_NUMOF (6U)
 
-static uint8_t dr_sf[GNRC_LORAWAN_DATARATES_NUMOF] = { LORA_SF12, LORA_SF11, LORA_SF10, LORA_SF9, LORA_SF8, LORA_SF7 };
-static uint8_t dr_bw[GNRC_LORAWAN_DATARATES_NUMOF] = { LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ };
+static uint8_t dr_sf[GNRC_LORAWAN_DATARATES_NUMOF] =
+{ LORA_SF12, LORA_SF11, LORA_SF10, LORA_SF9, LORA_SF8, LORA_SF7 };
+static uint8_t dr_bw[GNRC_LORAWAN_DATARATES_NUMOF] =
+{ LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ, LORA_BW_125_KHZ,
+  LORA_BW_125_KHZ, LORA_BW_125_KHZ };
 
 int gnrc_lorawan_set_dr(gnrc_lorawan_t *mac, uint8_t datarate)
 {
@@ -69,11 +72,12 @@ static uint32_t _get_nth_channel(gnrc_lorawan_t *mac, size_t n)
 
 void gnrc_lorawan_channels_init(gnrc_lorawan_t *mac)
 {
-    for(unsigned i = 0; i<GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF; i++) {
+    for (unsigned i = 0; i < GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF; i++) {
         mac->channel[i] = gnrc_lorawan_default_channels[i];
     }
 
-    for (unsigned i = GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF; i < GNRC_LORAWAN_MAX_CHANNELS; i++) {
+    for (unsigned i = GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF;
+         i < GNRC_LORAWAN_MAX_CHANNELS; i++) {
         mac->channel[i] = 0;
     }
 }
@@ -83,9 +87,11 @@ uint32_t gnrc_lorawan_pick_channel(gnrc_lorawan_t *mac)
     netdev_t *netdev = mac->netdev.lower;
     uint32_t random_number;
 
-    netdev->driver->get(netdev, NETOPT_RANDOM, &random_number, sizeof(random_number));
+    netdev->driver->get(netdev, NETOPT_RANDOM, &random_number,
+                        sizeof(random_number));
 
-    return _get_nth_channel(mac, 1 + (random_number % _get_num_used_channels(mac)));
+    return _get_nth_channel(mac,
+                            1 + (random_number % _get_num_used_channels(mac)));
 }
 
 void gnrc_lorawan_process_cflist(gnrc_lorawan_t *mac, uint8_t *cflist)
@@ -95,7 +101,7 @@ void gnrc_lorawan_process_cflist(gnrc_lorawan_t *mac, uint8_t *cflist)
         le_uint32_t cl;
         cl.u32 = 0;
         memcpy(&cl, cflist, GNRC_LORAWAN_CFLIST_ENTRY_SIZE);
-        mac->channel[i] = byteorder_ntohl(byteorder_ltobl(cl))*100;
+        mac->channel[i] = byteorder_ntohl(byteorder_ltobl(cl)) * 100;
         cflist += GNRC_LORAWAN_CFLIST_ENTRY_SIZE;
     }
 }
