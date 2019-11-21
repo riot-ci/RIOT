@@ -51,7 +51,7 @@ static void rem_ln_entry(nib_lost_address_entry_t *ln_entry);
 nib_entry_t *nib_process_hello(void)
 {
     nib_entry_t *nb_match = NULL;
-    nib_entry_t *nib_elt = NULL, *nib_tmp = NULL
+    nib_entry_t *nib_elt = NULL, *nib_tmp = NULL;
     timex_t now;
     uint8_t matches = 0;
 
@@ -241,7 +241,7 @@ static void rem_nib_entry(nib_entry_t *nib_entry, timex_t *now)
  */
 static void clear_nb_addresses(nib_entry_t *nib_entry, timex_t *now)
 {
-    nhdp_addr_entry_t *nib_elt = NULL, *nib_tmp = NULL;
+    nhdp_addr_entry_t *nib_elt = NULL, *nib_tmp = NULL;;
 
     LL_FOREACH_SAFE(nib_entry->address_list_head, nib_elt, nib_tmp) {
         /* Check whether address is still present in the new neighbor address list */
