@@ -86,7 +86,7 @@ extern "C" {
 #endif
 
 #ifndef RTT_FREQUENCY
-#warning "RTT_FREQUENCY undefined."
+#error "RTT_FREQUENCY undefined."
 #else
 #if ((GNRC_GOMACH_SUPERFRAME_DURATION_US < ((1000LU *US_PER_MS) / RTT_FREQUENCY)) || \
      (GNRC_GOMACH_SUPERFRAME_DURATION_US < (10 *GNRC_GOMACH_CP_DURATION_US)))
