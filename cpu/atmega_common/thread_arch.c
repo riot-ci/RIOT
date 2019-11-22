@@ -34,7 +34,7 @@
  * local function declarations  (prefixed with __)
  */
 static void __context_save(void);
-static void __context_restore(void);
+static void atmega_context_restore(void);
 static void __enter_thread_mode(void);
 
 /**
@@ -51,7 +51,7 @@ static void __enter_thread_mode(void);
  * -----------------------------------------------------------------------
  * a 16 Bit pointer to task_func
  * this is placed exactly at the place where the program counter would be
- * stored normally and thus can be returned to when __context_restore()
+ * stored normally and thus can be returned to when atmega_context_restore()
  * has been run
  * (Optional 17 bit (bit is set to zero) for devices with > 128kb FLASH)
  * -----------------------------------------------------------------------
@@ -64,7 +64,7 @@ static void __enter_thread_mode(void);
  * r26 - r31
  * -----------------------------------------------------------------------
  *
- * After the invocation of __context_restore() the pointer to task_func is
+ * After the invocation of atmega_context_restore() the pointer to task_func is
  * on top of the stack and can be returned to. This way we can actually place
  * it inside of the programm counter of the MCU.
  * if task_func returns sched_task_exit gets popped into the PC
@@ -229,7 +229,7 @@ void NORETURN __enter_thread_mode(void)
         __brkval = __malloc_heap_start;
     }
 
-    __context_restore();
+    atmega_context_restore();
     __asm__ volatile ("ret");
 
     UNREACHABLE();
@@ -240,7 +240,7 @@ void thread_yield_higher(void)
     if (irq_is_in() == 0) {
         __context_save();
         sched_run();
-        __context_restore();
+        atmega_context_restore();
         __asm__ volatile ("ret");
     }
     else {
@@ -252,7 +252,7 @@ void thread_yield_isr(void)
 {
     __context_save();
     sched_run();
-    __context_restore();
+    atmega_context_restore();
 
     __asm__ volatile ("reti");
 }
@@ -312,7 +312,7 @@ __attribute__((always_inline)) static inline void __context_save(void)
         "st   x+, __tmp_reg__                \n\t");
 }
 
-__attribute__((always_inline)) static inline void __context_restore(void)
+__attribute__((always_inline)) static inline void atmega_context_restore(void)
 {
     __asm__ volatile (
         "lds  r26, sched_active_thread       \n\t"
