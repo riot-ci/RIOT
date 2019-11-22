@@ -31,32 +31,32 @@ extern "C" {
 /**
  * @brief The number of microseconds per second
  */
-#define US_PER_SEC (1000000UL)
+#define US_PER_SEC ((uint32_t)1000000U)
 
 /**
  * @brief The number of seconds per minute
  */
-#define SEC_PER_MIN  (60UL)
+#define SEC_PER_MIN  ((uint32_t)60U)
 
 /**
  * @brief The number of centiseconds per second
  */
-#define CS_PER_SEC   (100UL)
+#define CS_PER_SEC   ((uint32_t)100U)
 
 /**
  * @brief The number of milliseconds per second
  */
-#define MS_PER_SEC   (1000UL)
+#define MS_PER_SEC   ((uint32_t)1000U)
 
 /**
  * @brief The number of microseconds per millisecond
  */
-#define US_PER_MS  (1000UL)
+#define US_PER_MS  ((uint32_t)1000U)
 
 /**
  * @brief The number of nanoseconds per microsecond
  */
-#define NS_PER_US  (1000UL)
+#define NS_PER_US  ((uint32_t)1000U)
 
 /**
  * @brief The maximum length of the string representation of a timex timestamp
