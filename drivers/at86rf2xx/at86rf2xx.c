@@ -107,7 +107,7 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
     addr_long.uint8[0] |=  (0x02);
     /* set short and long address */
     at86rf2xx_set_addr_long(dev, &addr_long);
-    at86rf2xx_set_addr_short(dev, &addr_long.uint16[IEEE802154_LONG_ADDRESS_LEN / sizeof(uint16_t) - 1]);
+    at86rf2xx_set_addr_short(dev, &addr_long.uint16[ARRAY_SIZE(addr_long.uint16) - 1]);
 
     /* set default channel */
     at86rf2xx_set_chan(dev, AT86RF2XX_DEFAULT_CHANNEL);
