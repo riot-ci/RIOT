@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <inttypes.h>
+#include <limits.h>
 
 #ifdef __cplusplus
 extern "C" {
