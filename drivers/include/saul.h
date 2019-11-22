@@ -91,14 +91,14 @@ enum {
  * @brief   Definition of actuator intra-category IDs
  */
 enum {
-    _SAUL_ACT_ANY,                  /**< any actuator - wildcard */
-    _SAUL_ACT_LED_RGB,              /**< actuator: RGB LED */
-    _SAUL_ACT_SERVO,                /**< actuator: servo motor */
-    _SAUL_ACT_MOTOR,                /**< actuator: motor */
-    _SAUL_ACT_SWITCH,               /**< actuator: simple on/off switch */
-    _SAUL_ACT_DIMMER,               /**< actuator: dimmable switch */
+    SAUL_ACT_ID_ANY,                  /**< any actuator - wildcard */
+    SAUL_ACT_ID_LED_RGB,              /**< actuator: RGB LED */
+    SAUL_ACT_ID_SERVO,                /**< actuator: servo motor */
+    SAUL_ACT_ID_MOTOR,                /**< actuator: motor */
+    SAUL_ACT_ID_SWITCH,               /**< actuator: simple on/off switch */
+    SAUL_ACT_ID_DIMMER,               /**< actuator: dimmable switch */
     SAUL_ACT_NUMOF                  /**< Number of actuators supported */
-    /* Extend this list as needed, but keep _SAUL_ACT_ANY the first and
+    /* Extend this list as needed, but keep SAUL_ACT_ID_ANY the first and
      * SAUL_ACT_NUMOF the last entry
      */
 };
@@ -107,35 +107,35 @@ enum {
  * @brief   Definition of sensor intra-category IDs
  */
 enum {
-    _SAUL_SENSE_ANY,                /**< any sensor - wildcard */
-    _SAUL_SENSE_BTN,                /**< sensor: simple button */
-    _SAUL_SENSE_TEMP,               /**< sensor: temperature */
-    _SAUL_SENSE_HUM,                /**< sensor: humidity */
-    _SAUL_SENSE_LIGHT,              /**< sensor: light */
-    _SAUL_SENSE_ACCEL,              /**< sensor: accelerometer */
-    _SAUL_SENSE_MAG,                /**< sensor: magnetometer */
-    _SAUL_SENSE_GYRO,               /**< sensor: gyroscope */
-    _SAUL_SENSE_COLOR,              /**< sensor: (light) color */
-    _SAUL_SENSE_PRESS,              /**< sensor: pressure */
-    _SAUL_SENSE_ANALOG,             /**< sensor: raw analog value */
-    _SAUL_SENSE_UV,                 /**< sensor: UV index */
-    _SAUL_SENSE_OBJTEMP,            /**< sensor: object temperature */
-    _SAUL_SENSE_COUNT,              /**< sensor: pulse counter */
-    _SAUL_SENSE_DISTANCE,           /**< sensor: distance */
-    _SAUL_SENSE_CO2,                /**< sensor: CO2 Gas */
-    _SAUL_SENSE_TVOC,               /**< sensor: TVOC Gas */
-    _SAUL_SENSE_OCCUP,              /**< sensor: occupancy */
-    _SAUL_SENSE_PROXIMITY,          /**< sensor: proximity */
-    _SAUL_SENSE_RSSI,               /**< sensor: RSSI */
-    _SAUL_SENSE_CHARGE,             /**< sensor: coulomb counter */
-    _SAUL_SENSE_CURRENT,            /**< sensor: ammeter */
-    _SAUL_SENSE_PM,                 /**< sensor: particulate matter */
-    _SAUL_SENSE_CAPACITANCE,        /**< sensor: capacitance */
-    _SAUL_SENSE_VOLTAGE,            /**< sensor: voltage */
-    _SAUL_SENSE_PH,                 /**< sensor: pH */
-    _SAUL_SENSE_POWER,              /**< sensor: power */
+    SAUL_SENSE_ID_ANY,              /**< any sensor - wildcard */
+    SAUL_SENSE_ID_BTN,              /**< sensor: simple button */
+    SAUL_SENSE_ID_TEMP,             /**< sensor: temperature */
+    SAUL_SENSE_ID_HUM,              /**< sensor: humidity */
+    SAUL_SENSE_ID_LIGHT,            /**< sensor: light */
+    SAUL_SENSE_ID_ACCEL,            /**< sensor: accelerometer */
+    SAUL_SENSE_ID_MAG,              /**< sensor: magnetometer */
+    SAUL_SENSE_ID_GYRO,             /**< sensor: gyroscope */
+    SAUL_SENSE_ID_COLOR,            /**< sensor: (light) color */
+    SAUL_SENSE_ID_PRESS,            /**< sensor: pressure */
+    SAUL_SENSE_ID_ANALOG,           /**< sensor: raw analog value */
+    SAUL_SENSE_ID_UV,               /**< sensor: UV index */
+    SAUL_SENSE_ID_OBJTEMP,          /**< sensor: object temperature */
+    SAUL_SENSE_ID_COUNT,            /**< sensor: pulse counter */
+    SAUL_SENSE_ID_DISTANCE,         /**< sensor: distance */
+    SAUL_SENSE_ID_CO2,              /**< sensor: CO2 Gas */
+    SAUL_SENSE_ID_TVOC,             /**< sensor: TVOC Gas */
+    SAUL_SENSE_ID_OCCUP,            /**< sensor: occupancy */
+    SAUL_SENSE_ID_PROXIMITY,        /**< sensor: proximity */
+    SAUL_SENSE_ID_RSSI,             /**< sensor: RSSI */
+    SAUL_SENSE_ID_CHARGE,           /**< sensor: coulomb counter */
+    SAUL_SENSE_ID_CURRENT,          /**< sensor: ammeter */
+    SAUL_SENSE_ID_PM,               /**< sensor: particulate matter */
+    SAUL_SENSE_ID_CAPACITANCE,      /**< sensor: capacitance */
+    SAUL_SENSE_ID_VOLTAGE,          /**< sensor: voltage */
+    SAUL_SENSE_ID_PH,               /**< sensor: pH */
+    SAUL_SENSE_ID_POWER,            /**< sensor: power */
     SAUL_SENSE_NUMOF                /**< Number of actuators supported */
-    /* Extend this list as needed, but keep _SAUL_SENSE_ANY the first and
+    /* Extend this list as needed, but keep SAUL_SENSE_ID_ANY the first and
      * SAUL_SENSE_NUMOF the last entry
      */
 };
@@ -147,39 +147,39 @@ enum {
  * and the SAUL intra-category ID (six least significant bits).
  */
 enum {
-    SAUL_ACT_ANY            = SAUL_CAT_ACT | _SAUL_ACT_ANY,             /**< any actuator - wildcard */
-    SAUL_ACT_LED_RGB        = SAUL_CAT_ACT | _SAUL_ACT_LED_RGB,         /**< actuator: RGB LED */
-    SAUL_ACT_SERVO          = SAUL_CAT_ACT | _SAUL_ACT_SERVO,           /**< actuator: servo motor */
-    SAUL_ACT_MOTOR          = SAUL_CAT_ACT | _SAUL_ACT_MOTOR,           /**< actuator: motor */
-    SAUL_ACT_SWITCH         = SAUL_CAT_ACT | _SAUL_ACT_SWITCH,          /**< actuator: simple on/off switch */
-    SAUL_ACT_DIMMER         = SAUL_CAT_ACT | _SAUL_ACT_DIMMER,          /**< actuator: dimmable switch */
-    SAUL_SENSE_ANY          = SAUL_CAT_SENSE | _SAUL_SENSE_ANY,         /**< any sensor - wildcard */
-    SAUL_SENSE_BTN          = SAUL_CAT_SENSE | _SAUL_SENSE_BTN,         /**< sensor: simple button */
-    SAUL_SENSE_TEMP         = SAUL_CAT_SENSE | _SAUL_SENSE_TEMP,        /**< sensor: temperature */
-    SAUL_SENSE_HUM          = SAUL_CAT_SENSE | _SAUL_SENSE_HUM,         /**< sensor: humidity */
-    SAUL_SENSE_LIGHT        = SAUL_CAT_SENSE | _SAUL_SENSE_LIGHT,       /**< sensor: light */
-    SAUL_SENSE_ACCEL        = SAUL_CAT_SENSE | _SAUL_SENSE_ACCEL,       /**< sensor: accelerometer */
-    SAUL_SENSE_MAG          = SAUL_CAT_SENSE | _SAUL_SENSE_MAG,         /**< sensor: magnetometer */
-    SAUL_SENSE_GYRO         = SAUL_CAT_SENSE | _SAUL_SENSE_GYRO,        /**< sensor: gyroscope */
-    SAUL_SENSE_COLOR        = SAUL_CAT_SENSE | _SAUL_SENSE_COLOR,       /**< sensor: (light) color */
-    SAUL_SENSE_PRESS        = SAUL_CAT_SENSE | _SAUL_SENSE_PRESS,       /**< sensor: pressure */
-    SAUL_SENSE_ANALOG       = SAUL_CAT_SENSE | _SAUL_SENSE_ANALOG,      /**< sensor: raw analog value */
-    SAUL_SENSE_UV           = SAUL_CAT_SENSE | _SAUL_SENSE_UV,          /**< sensor: UV index */
-    SAUL_SENSE_OBJTEMP      = SAUL_CAT_SENSE | _SAUL_SENSE_OBJTEMP,     /**< sensor: object temperature */
-    SAUL_SENSE_COUNT        = SAUL_CAT_SENSE | _SAUL_SENSE_COUNT,       /**< sensor: pulse counter */
-    SAUL_SENSE_DISTANCE     = SAUL_CAT_SENSE | _SAUL_SENSE_DISTANCE,    /**< sensor: distance */
-    SAUL_SENSE_CO2          = SAUL_CAT_SENSE | _SAUL_SENSE_CO2,         /**< sensor: CO2 Gas */
-    SAUL_SENSE_TVOC         = SAUL_CAT_SENSE | _SAUL_SENSE_TVOC,        /**< sensor: TVOC Gas */
-    SAUL_SENSE_OCCUP        = SAUL_CAT_SENSE | _SAUL_SENSE_OCCUP,       /**< sensor: occupancy */
-    SAUL_SENSE_PROXIMITY    = SAUL_CAT_SENSE | _SAUL_SENSE_PROXIMITY,   /**< sensor: proximity */
-    SAUL_SENSE_RSSI         = SAUL_CAT_SENSE | _SAUL_SENSE_RSSI,        /**< sensor: RSSI */
-    SAUL_SENSE_CHARGE       = SAUL_CAT_SENSE | _SAUL_SENSE_CHARGE,      /**< sensor: coulomb counter */
-    SAUL_SENSE_CURRENT      = SAUL_CAT_SENSE | _SAUL_SENSE_CURRENT,     /**< sensor: ammeter */
-    SAUL_SENSE_PM           = SAUL_CAT_SENSE | _SAUL_SENSE_PM,          /**< sensor: particulate matter */
-    SAUL_SENSE_CAPACITANCE  = SAUL_CAT_SENSE | _SAUL_SENSE_CAPACITANCE, /**< sensor: capacitance */
-    SAUL_SENSE_VOLTAGE      = SAUL_CAT_SENSE | _SAUL_SENSE_VOLTAGE,     /**< sensor: voltage */
-    SAUL_SENSE_PH           = SAUL_CAT_SENSE | _SAUL_SENSE_PH,          /**< sensor: pH */
-    SAUL_SENSE_POWER        = SAUL_CAT_SENSE | _SAUL_SENSE_POWER,       /**< sensor: power */
+    SAUL_ACT_ANY            = SAUL_CAT_ACT | SAUL_ACT_ID_ANY,               /**< any actuator - wildcard */
+    SAUL_ACT_LED_RGB        = SAUL_CAT_ACT | SAUL_ACT_ID_LED_RGB,           /**< actuator: RGB LED */
+    SAUL_ACT_SERVO          = SAUL_CAT_ACT | SAUL_ACT_ID_SERVO,             /**< actuator: servo motor */
+    SAUL_ACT_MOTOR          = SAUL_CAT_ACT | SAUL_ACT_ID_MOTOR,             /**< actuator: motor */
+    SAUL_ACT_SWITCH         = SAUL_CAT_ACT | SAUL_ACT_ID_SWITCH,            /**< actuator: simple on/off switch */
+    SAUL_ACT_DIMMER         = SAUL_CAT_ACT | SAUL_ACT_ID_DIMMER,            /**< actuator: dimmable switch */
+    SAUL_SENSE_ANY          = SAUL_CAT_SENSE | SAUL_SENSE_ID_ANY,           /**< any sensor - wildcard */
+    SAUL_SENSE_BTN          = SAUL_CAT_SENSE | SAUL_SENSE_ID_BTN,           /**< sensor: simple button */
+    SAUL_SENSE_TEMP         = SAUL_CAT_SENSE | SAUL_SENSE_ID_TEMP,          /**< sensor: temperature */
+    SAUL_SENSE_HUM          = SAUL_CAT_SENSE | SAUL_SENSE_ID_HUM,           /**< sensor: humidity */
+    SAUL_SENSE_LIGHT        = SAUL_CAT_SENSE | SAUL_SENSE_ID_LIGHT,         /**< sensor: light */
+    SAUL_SENSE_ACCEL        = SAUL_CAT_SENSE | SAUL_SENSE_ID_ACCEL,         /**< sensor: accelerometer */
+    SAUL_SENSE_MAG          = SAUL_CAT_SENSE | SAUL_SENSE_ID_MAG,           /**< sensor: magnetometer */
+    SAUL_SENSE_GYRO         = SAUL_CAT_SENSE | SAUL_SENSE_ID_GYRO,          /**< sensor: gyroscope */
+    SAUL_SENSE_COLOR        = SAUL_CAT_SENSE | SAUL_SENSE_ID_COLOR,         /**< sensor: (light) color */
+    SAUL_SENSE_PRESS        = SAUL_CAT_SENSE | SAUL_SENSE_ID_PRESS,         /**< sensor: pressure */
+    SAUL_SENSE_ANALOG       = SAUL_CAT_SENSE | SAUL_SENSE_ID_ANALOG,        /**< sensor: raw analog value */
+    SAUL_SENSE_UV           = SAUL_CAT_SENSE | SAUL_SENSE_ID_UV,            /**< sensor: UV index */
+    SAUL_SENSE_OBJTEMP      = SAUL_CAT_SENSE | SAUL_SENSE_ID_OBJTEMP,       /**< sensor: object temperature */
+    SAUL_SENSE_COUNT        = SAUL_CAT_SENSE | SAUL_SENSE_ID_COUNT,         /**< sensor: pulse counter */
+    SAUL_SENSE_DISTANCE     = SAUL_CAT_SENSE | SAUL_SENSE_ID_DISTANCE,      /**< sensor: distance */
+    SAUL_SENSE_CO2          = SAUL_CAT_SENSE | SAUL_SENSE_ID_CO2,           /**< sensor: CO2 Gas */
+    SAUL_SENSE_TVOC         = SAUL_CAT_SENSE | SAUL_SENSE_ID_TVOC,          /**< sensor: TVOC Gas */
+    SAUL_SENSE_OCCUP        = SAUL_CAT_SENSE | SAUL_SENSE_ID_OCCUP,         /**< sensor: occupancy */
+    SAUL_SENSE_PROXIMITY    = SAUL_CAT_SENSE | SAUL_SENSE_ID_PROXIMITY,     /**< sensor: proximity */
+    SAUL_SENSE_RSSI         = SAUL_CAT_SENSE | SAUL_SENSE_ID_RSSI,          /**< sensor: RSSI */
+    SAUL_SENSE_CHARGE       = SAUL_CAT_SENSE | SAUL_SENSE_ID_CHARGE,        /**< sensor: coulomb counter */
+    SAUL_SENSE_CURRENT      = SAUL_CAT_SENSE | SAUL_SENSE_ID_CURRENT,       /**< sensor: ammeter */
+    SAUL_SENSE_PM           = SAUL_CAT_SENSE | SAUL_SENSE_ID_PM,            /**< sensor: particulate matter */
+    SAUL_SENSE_CAPACITANCE  = SAUL_CAT_SENSE | SAUL_SENSE_ID_CAPACITANCE,   /**< sensor: capacitance */
+    SAUL_SENSE_VOLTAGE      = SAUL_CAT_SENSE | SAUL_SENSE_ID_VOLTAGE,       /**< sensor: voltage */
+    SAUL_SENSE_PH           = SAUL_CAT_SENSE | SAUL_SENSE_ID_PH,            /**< sensor: pH */
+    SAUL_SENSE_POWER        = SAUL_CAT_SENSE | SAUL_SENSE_ID_POWER,         /**< sensor: power */
     SAUL_CLASS_ANY          = 0xff                                      /**< any device - wildcard */
     /* extend this list as needed... */
 };
