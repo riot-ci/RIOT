@@ -126,8 +126,11 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     /* power on the device */
     poweron(bus);
 
-    /* configuration did not change */
+    /* configuration did not change but device is powered down */
     if (dev(bus)->BAUD.reg == baud && dev(bus)->CTRLA.reg == ctrla) {
+        /* enable the device */
+        dev(bus)->CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
+
         return SPI_OK;
     }
 
@@ -149,6 +152,13 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
 void spi_release(spi_t bus)
 {
+    /* disable the device */
+    dev(bus)->CTRLA.reg &= ~(SERCOM_SPI_CTRLA_ENABLE);
+    while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
+
+    /* power off the device */
+    poweroff(bus);
+
     /* release access to the device */
     mutex_unlock(&locks[bus]);
 }
