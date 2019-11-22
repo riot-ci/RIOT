@@ -1009,7 +1009,8 @@ static void test_crypto_modes_ccm_check_len(void)
 {
     int ret;
 
-/* Using length_encoding above UINT16_MAX doesn't work on 8/16 bit architectures */
+/* Using length_encoding above UINT16_MAX doesn't work on 8/16 bit
+   architectures, SIZE_MAX is equal to UINT16_MAX there */
 #if SIZE_MAX > UINT16_MAX
     /* Just 1 to big to fit */
     ret = _test_ccm_len(cipher_encrypt_ccm, 2, NULL, 1 << 16, 0);
