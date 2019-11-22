@@ -41,8 +41,8 @@ static event_t _evt = { .handler = _on_evt };
 static char _stack[STACKSIZE];
 static thread_t *_thread_main;
 
-static atomic_uint _wakeup_evt = 0;
-static atomic_uint _wakeup_timeout = 0;
+static atomic_uint _wakeup_evt = ATOMIC_VAR_INIT(0);
+static atomic_uint _wakeup_timeout = ATOMIC_VAR_INIT(0);
 
 static void _on_evt(event_t *evt)
 {
@@ -97,8 +97,8 @@ int main(void)
     /* finally, wait 60ms and collect results -> +1 timeout wakeup */
     xtimer_usleep(60U * US_PER_MS);
 
-    unsigned events = _wakeup_evt;
-    unsigned timeouts = _wakeup_timeout;
+    unsigned events = atomic_load(&_wakeup_evt);
+    unsigned timeouts = atomic_load(&_wakeup_timeout);
 
     /* rate results */
     printf("finished: %u/4 events and %u/4 timeouts recorded\n",
