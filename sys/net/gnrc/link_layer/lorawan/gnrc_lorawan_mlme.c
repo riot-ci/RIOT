@@ -262,8 +262,8 @@ int _fopts_mlme_link_check_req(lorawan_buffer_t *buf)
 static void _mlme_link_check_ans(gnrc_lorawan_t *mac, uint8_t *p)
 {
     mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
-    mlme_confirm->link_req.margin = p[0];
-    mlme_confirm->link_req.num_gateways = p[1];
+    mlme_confirm->link_req.margin = p[1];
+    mlme_confirm->link_req.num_gateways = p[2];
 
     mlme_confirm->type = MLME_LINK_CHECK;
     mlme_confirm->status = GNRC_LORAWAN_REQ_STATUS_SUCCESS;
@@ -295,7 +295,7 @@ void gnrc_lorawan_process_fopts(gnrc_lorawan_t *mac, uint8_t *fopts, size_t size
             return;
         }
 
-        cb(mac, fopts + pos + 1);
+        cb(mac, &fopts[pos]);
     }
 }
 
