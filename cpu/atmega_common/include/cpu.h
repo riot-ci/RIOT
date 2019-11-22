@@ -34,6 +34,8 @@
 #include <stdint.h>
 
 #include <avr/interrupt.h>
+#include <stdint.h>
+#include <stdatomic.h>
 #include "cpu_conf.h"
 #include "sched.h"
 #include "thread.h"
@@ -61,14 +63,17 @@ extern "C"
 /**
  * @brief global in-ISR state variable
  */
-extern volatile uint8_t atmega_in_isr;
+extern atomic_bool atmega_in_isr;
 
 /**
  * @brief Run this code on entering interrupt routines
  */
 static inline void atmega_enter_isr(void)
 {
-    atmega_in_isr = 1;
+    /* Memory order doesn't matter, no nested interrupts in ATmega without
+     * explicitly asking for them
+     */
+    atomic_store_explicit(&atmega_in_isr, 1, memory_order_relaxed);
 }
 
 /**
