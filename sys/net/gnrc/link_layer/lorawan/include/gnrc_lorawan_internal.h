@@ -74,9 +74,9 @@ extern "C" {
 #define GNRC_LORAWAN_MLME_OPTS_LINK_CHECK_REQ  (1 << 0) /**< Internal Link Check request flag */
 
 #define GNRC_LORAWAN_CID_SIZE (1U)                      /**< size of Command ID in FOps */
-#define GNRC_LORAWAN_CID_LINK_CHECK_REQ_ANS (0x02)      /**< Link Check CID */
+#define GNRC_LORAWAN_CID_LINK_CHECK_ANS (0x02)          /**< Link Check CID */
 
-#define GNRC_LORAWAN_FOPT_LINK_ANS_SIZE (3U)            /**< size of Link check answer */
+#define GNRC_LORAWAN_FOPT_LINK_CHECK_ANS_SIZE (3U)      /**< size of Link check answer */
 
 #define GNRC_LORAWAN_JOIN_DELAY_U32_MASK (0x1FFFFF)     /**< mask for detecting overflow in frame counter */
 

@@ -253,13 +253,13 @@ int _fopts_mlme_link_check_req(lorawan_buffer_t *buf)
 {
     if (buf) {
         assert(buf->index + GNRC_LORAWAN_CID_SIZE <= buf->size);
-        buf->data[buf->index++] = GNRC_LORAWAN_CID_LINK_CHECK_REQ_ANS;
+        buf->data[buf->index++] = GNRC_LORAWAN_CID_LINK_CHECK_ANS;
     }
 
     return GNRC_LORAWAN_CID_SIZE;
 }
 
-static int _mlme_link_check_ans(gnrc_lorawan_t *mac, uint8_t *p)
+static void _mlme_link_check_ans(gnrc_lorawan_t *mac, uint8_t *p)
 {
     mlme_confirm_t *mlme_confirm = gnrc_lorawan_mlme_allocate(mac);
     mlme_confirm->link_req.margin = p[0];
@@ -270,8 +270,6 @@ static int _mlme_link_check_ans(gnrc_lorawan_t *mac, uint8_t *p)
     mac->netdev.event_callback(&mac->netdev, NETDEV_EVENT_MLME_CONFIRM);
 
     mac->mlme.pending_mlme_opts &= ~GNRC_LORAWAN_MLME_OPTS_LINK_CHECK_REQ;
-
-    return 0;
 }
 
 void gnrc_lorawan_process_fopts(gnrc_lorawan_t *mac, uint8_t *fopts, size_t size)
@@ -281,12 +279,12 @@ void gnrc_lorawan_process_fopts(gnrc_lorawan_t *mac, uint8_t *fopts, size_t size
     }
 
     uint8_t ret = 0;
-    int (*cb)(gnrc_lorawan_t*, uint8_t *p) = NULL;
+    void (*cb)(gnrc_lorawan_t*, uint8_t *p) = NULL;
 
     for(uint8_t pos = 0; pos < size; pos += ret) {
         switch (fopts[pos]) {
-            case GNRC_LORAWAN_CID_LINK_CHECK_REQ_ANS:
-                ret += 3;
+            case GNRC_LORAWAN_CID_LINK_CHECK_ANS:
+                ret += GNRC_LORAWAN_FOPT_LINK_CHECK_ANS_SIZE;
                 cb = _mlme_link_check_ans;
                 break;
             default:
@@ -297,7 +295,7 @@ void gnrc_lorawan_process_fopts(gnrc_lorawan_t *mac, uint8_t *fopts, size_t size
             return;
         }
 
-        cb(mac, fopts + pos);
+        cb(mac, fopts + pos + 1);
     }
 }
 
