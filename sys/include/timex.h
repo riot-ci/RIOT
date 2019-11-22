@@ -28,43 +28,52 @@
 extern "C" {
 #endif
 
-#if UINT_MAX < UINT32_MAX
-/* LU needs to be used as postfix for 32 bit unsigned integer */
-#define TIMEX_POSTFIX   LU
+/* On platforms with sizeof(uint32_t) == sizeof(unsigned), U should be used as
+ * postfix. Otherwise LU needs to be used. Using LU in all cases would prevent
+ * the use of PRIu32 as printf format specifier.
+ */
+#if (UINT_MAX < UINT32_MAX) || defined(DOXYGEN)
+/**
+ * @brief   Get the number as 32 bit unsigned integer
+ *
+ * This will add the proper postfix for 32 bit unsigned integers to the
+ * given number. E.g. `TIMEX_AS_UINT32(42)` would translate to `42U` or
+ * `42LU` depending on platform requirements
+ */
+#define TIMEX_AS_UINT32(x) x ## LU
 #else
-/* Postfix U can be used for 32 bit unsigned integer */
-#define TIMEX_POSTFIX   U
+#define TIMEX_AS_UINT32(x) x ## U
 #endif
 
 /**
  * @brief The number of microseconds per second
  */
-#define US_PER_SEC (1000000 ## TIMEX_POSTFIX)
+#define US_PER_SEC          TIMEX_AS_UINT32(1000000)
 
 /**
  * @brief The number of seconds per minute
  */
-#define SEC_PER_MIN  (60 ## TIMEX_POSTFIX)
+#define SEC_PER_MIN         TIMEX_AS_UINT32(60)
 
 /**
  * @brief The number of centiseconds per second
  */
-#define CS_PER_SEC   (100 ## TIMEX_POSTFIX)
+#define CS_PER_SEC          TIMEX_AS_UINT32(100)
 
 /**
  * @brief The number of milliseconds per second
  */
-#define MS_PER_SEC   (1000 ## TIMEX_POSTFIX)
+#define MS_PER_SEC          TIMEX_AS_UINT32(1000)
 
 /**
  * @brief The number of microseconds per millisecond
  */
-#define US_PER_MS   (1000 ## TIMEX_POSTFIX)
+#define US_PER_MS           TIMEX_AS_UINT32(1000)
 
 /**
  * @brief The number of nanoseconds per microsecond
  */
-#define NS_PER_US  (1000 ## TIMEX_POSTFIX)
+#define NS_PER_US           TIMEX_AS_UINT32(1000)
 
 /**
  * @brief The maximum length of the string representation of a timex timestamp
