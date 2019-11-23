@@ -1,0 +1,12 @@
+INCLUDES += -I$(PKGDIRBASE)/utensor
+INCLUDES += -I$(PKGDIRBASE)/utensor/src
+INCLUDES += -I$(PKGDIRBASE)/utensor/src/uTensor
+INCLUDES += -I$(PKGDIRBASE)/utensor/src/uTensor/core
+INCLUDES += -I$(PKGDIRBASE)/utensor/src/uTensor/ops
+INCLUDES += -I$(PKGDIRBASE)/utensor/src/uTensor/util
+
+CXXEXFLAGS += -Wno-sign-compare
+
+ifneq (native,$(BOARD))
+  CXXEXFLAGS += -std=c++11
+endif
