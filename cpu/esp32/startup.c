@@ -263,9 +263,6 @@ static NORETURN void IRAM system_init (void)
     /* initialize system call tables of ESP32 rom and newlib */
     syscalls_init();
 
-    /* initialize the RTC module (restore timer values from RTC RAM) */
-    rtc_init();
-
     /* install execption handlers */
     init_exceptions();
 
@@ -305,12 +302,6 @@ static NORETURN void IRAM system_init (void)
     ets_printf("XTAL calibration value: %d\n", esp_clk_slowclk_cal_get());
     ets_printf("Heap free: %u bytes\n", get_free_heap_size());
 
-    struct tm _sys_time;
-    rtc_get_time(&_sys_time);
-    ets_printf("System time: %04d-%02d-%02d %02d:%02d:%02d\n",
-               _sys_time.tm_year + 1900, _sys_time.tm_mon + 1, _sys_time.tm_mday,
-               _sys_time.tm_hour, _sys_time.tm_min, _sys_time.tm_sec);
-
     #if MODULE_MTD
     /* init flash drive */
     extern void spi_flash_drive_init (void);
@@ -325,6 +316,13 @@ static NORETURN void IRAM system_init (void)
 
     /* trigger static peripheral initialization */
     periph_init();
+
+    /* print current system time after RTC peripherals are initialized */
+    struct tm _sys_time;
+    rtc_get_time(&_sys_time);
+    ets_printf("System time: %04d-%02d-%02d %02d:%02d:%02d\n",
+               _sys_time.tm_year + 1900, _sys_time.tm_mon + 1, _sys_time.tm_mday,
+               _sys_time.tm_hour, _sys_time.tm_min, _sys_time.tm_sec);
 
     /* print the board config */
     print_board_config();
