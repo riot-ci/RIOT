@@ -30,16 +30,13 @@
 #include "cpu.h"
 #include "board.h"
 
-/*
- * local function declarations  (prefixed with __)
- */
-static void __context_save(void);
+static void atmega_context_save(void);
 static void atmega_context_restore(void);
-static void __enter_thread_mode(void);
+static void atmega_enter_thread_mode(void);
 
 /**
  * @brief Since AVR doesn't support direct manipulation of the program counter we
- * model a stack like it would be left by __context_save().
+ * model a stack like it would be left by atmega_context_save().
  * The resulting layout in memory is the following:
  * ---------------thread_t (not created by thread_stack_init) ----------
  * local variables (a temporary value and the stackpointer)
@@ -201,7 +198,7 @@ void thread_stack_print(void)
 void cpu_switch_context_exit(void)
 {
     sched_run();
-    __enter_thread_mode();
+    atmega_enter_thread_mode();
 }
 
 #define STACK_POINTER  ((char *)AVR_STACK_POINTER_REG)
@@ -213,7 +210,7 @@ extern char *__brkval;
 /**
  * @brief Set the MCU into Thread-Mode and load the initial task from the stack and run it
  */
-void NORETURN __enter_thread_mode(void)
+void NORETURN atmega_enter_thread_mode(void)
 {
     irq_enable();
 
@@ -238,7 +235,7 @@ void NORETURN __enter_thread_mode(void)
 void thread_yield_higher(void)
 {
     if (irq_is_in() == 0) {
-        __context_save();
+        atmega_context_save();
         sched_run();
         atmega_context_restore();
         __asm__ volatile ("ret");
@@ -251,14 +248,14 @@ void thread_yield_higher(void)
 void atmega_exit_isr(void)
 {
     atmega_in_isr = 0;
-    __context_save();
+    atmega_context_save();
     sched_run();
     atmega_context_restore();
 
     __asm__ volatile ("reti");
 }
 
-__attribute__((always_inline)) static inline void __context_save(void)
+__attribute__((always_inline)) static inline void atmega_context_save(void)
 {
     __asm__ volatile (
         "push __tmp_reg__                    \n\t"
