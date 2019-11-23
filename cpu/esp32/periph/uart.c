@@ -173,6 +173,9 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     CHECK_PARAM (uart < UART_NUMOF);
 
+    /* flush the TX FIFO before writing */
+    while (_uarts[uart].regs->status.txfifo_cnt != 0) {}
+
     for (size_t i = 0; i < len; i++) {
         _uart_tx_one_char(uart, data[i]);
     }
