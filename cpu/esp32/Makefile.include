@@ -42,6 +42,7 @@ ifneq (,$(filter esp_gdbstub,$(USEMODULE)))
 endif
 
 ifneq (,$(filter netdev_default gnrc_netdev_default,$(USEMODULE)))
+  # use esp_now as default netdev if no other netdev module is enabled
   ifeq (,$(filter esp_wifi esp_eth,$(USEMODULE)))
     USEMODULE += esp_now
   endif
