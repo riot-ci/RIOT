@@ -32,10 +32,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdatomic.h>
 
 #include <avr/interrupt.h>
-#include <stdint.h>
-#include <stdatomic.h>
 #include "cpu_conf.h"
 #include "sched.h"
 #include "thread.h"
