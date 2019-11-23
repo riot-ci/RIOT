@@ -645,11 +645,21 @@ ifneq (,$(filter ws281x,$(USEMODULE)))
     ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
       USEMODULE += ws281x_atmega
     endif
+    # fall back to VT100 terminal output if no other
+    # backend is availiable.
+    ifeq (,$(filter ws281x_%,$(USEMODULE)))
+      USEMODULE += ws281x_vt100
+    endif
   endif
   ifneq (,$(filter ws281x_atmega,$(USEMODULE)))
     FEATURES_REQUIRED += arch_avr8
   endif
   USEMODULE += xtimer
+endif
+
+ifneq (,$(filter ws281x_vt100,$(USEMODULE)))
+  CFLAGS += -DWS281X_HAVE_PREPARE_TRANSMISSION
+  CFLAGS += -DWS281X_HAVE_END_TRANSMISSION
 endif
 
 ifneq (,$(filter xbee,$(USEMODULE)))
