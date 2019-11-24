@@ -58,9 +58,9 @@ static inline void cpu_print_last_instruction(void)
 }
 
 /**
- * @brief   Returns true if the reset cause was power-on.
+ * @brief   Returns true if the CPU woke from Deep Sleep
  */
-bool cpu_power_on_reset(void);
+bool cpu_woke_from_backup(void);
 
 /**
  * @brief   The CPU has RAM that is retained in the deepest sleep mode.
