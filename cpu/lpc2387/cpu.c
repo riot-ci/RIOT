@@ -139,29 +139,34 @@ void cpu_init(void)
 /* RSIR will only have POR bit set even when waking up from Deep Power Down
  * Use signature in battery RAM to discriminate between Deep Power Down and POR
  */
-bool cpu_power_on_reset(void)
+bool cpu_woke_from_backup(void)
 {
     static char signature[] __attribute__((section(".backup.data"))) = {
         'R', 'I', 'O', 'T'
     };
 
+    /* external reset */
+    if (RSIR & RSIR_EXTR) {
+        return false;
+    }
+
     if (signature[0] != 'R') {
-        return true;
+        return false;
     }
 
     if (signature[1] != 'I') {
-        return true;
+        return false;
     }
 
     if (signature[2] != 'O') {
-        return true;
+        return false;
     }
 
     if (signature[3] != 'T') {
-        return true;
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 /** @} */
