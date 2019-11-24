@@ -61,7 +61,7 @@ int main(void)
 
     counter.ticks32 = xtimer_now().ticks32 - counter.ticks32;
 
-    printf("== printed in %ld/%ld µs ==\n", xtimer_usec_from_ticks(counter), total_us);
+    printf("== printed in %" PRIu32 "/%" PRIu32 " µs ==\n", xtimer_usec_from_ticks(counter), total_us);
 
     puts("[SUCCESS]");
 
