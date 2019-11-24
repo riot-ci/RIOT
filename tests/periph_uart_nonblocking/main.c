@@ -63,5 +63,7 @@ int main(void)
 
     printf("== printed in %ld/%ld µs ==\n", xtimer_usec_from_ticks(counter), total_us);
 
+    puts("[SUCCESS]");
+
     return 0;
 }
