@@ -1,6 +1,3 @@
-# define the cpu used by the board
-export CPU = atmega256rfr2
-
 FLASHFILE=$(BINFILE)
 
 # configure the terminal program

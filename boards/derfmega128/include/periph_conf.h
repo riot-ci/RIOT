@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup boards_deRFmega
+ * @ingroup boards_deRFmega128
  * @{
  *
  * @file
