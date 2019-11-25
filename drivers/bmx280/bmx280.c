@@ -357,8 +357,10 @@ int16_t bmx280_read_temperature(bmx280_t *dev)
 
 uint32_t bmx280_read_pressure(const bmx280_t *dev)
 {
+
     assert(dev);
 
+    bmx280_read_temperature(dev);
     const bmx280_calibration_t *cal = &dev->calibration; /* helper variable */
 
     /* Read the uncompensated pressure */
@@ -401,6 +403,7 @@ uint16_t bme280_read_humidity(const bmx280_t *dev)
 {
     assert(dev);
 
+    bmx280_read_temperature(dev);
     const bmx280_calibration_t *cal = &dev->calibration; /* helper variable */
 
     /* Read the uncompensated pressure */
