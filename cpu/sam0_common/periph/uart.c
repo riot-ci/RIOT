@@ -127,14 +127,15 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
             dev(uart)->CTRLB.reg |= SERCOM_USART_CTRLB_SFDE;
         }
     }
-
 #ifdef MODULE_PERIPH_UART_NONBLOCKING
-#ifdef UART_HAS_TX_ISR
+#ifndef UART_HAS_TX_ISR
+    else {
+        /* enable UART ISR */
+        NVIC_EnableIRQ(SERCOM0_IRQn + sercom_id(dev(uart)));
+    }
+#else
     /* enable TXE ISR */
     NVIC_EnableIRQ(SERCOM0_0_IRQn + (sercom_id(dev(uart)) * 4));
-#else
-    /* enable UART ISR */
-    NVIC_EnableIRQ(SERCOM0_IRQn + sercom_id(dev(uart)));
 #endif
 #endif /* MODULE_PERIPH_UART_NONBLOCKING */
 
