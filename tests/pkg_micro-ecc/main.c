@@ -40,7 +40,7 @@
 #include "hashes/sha256.h"
 #include "uECC.h"
 
-#define TESTROUNDS              (16)
+#define TESTROUNDS              (4)
 #define MAX_PUBLIC_KEY_SIZE     (64)
 #define MAX_CURVE_SIZE          (32)
 
