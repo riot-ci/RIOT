@@ -5,15 +5,16 @@ from testrunner import run
 
 
 # Use a custom global timeout for slow hardware. On ATmegas clocked at 8MHz
-# test completes in ~10 min
-TIMEOUT = 600
+# one test round completes in ~36s
+TIMEOUT = 100
 
 
 def testfunc(child):
     child.expect_exact('micro-ecc compiled!')
-    child.expect_exact('Testing 16 random private key pairs and signature '
+    child.expect_exact(r'Testing (\d+) random private key pairs and signature '
                        'without using HWRNG')
-    for i in range(15):
+    testrounds = int(child.match.group(1))
+    for i in range(testrounds):
         child.expect_exact("Round {}".format(i))
     child.expect_exact('Done with 0 error(s)')
     child.expect_exact('SUCCESS')
