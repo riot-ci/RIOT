@@ -1,6 +1,6 @@
 PKG_NAME=micropython
 PKG_URL=https://github.com/RIOT-OS/micropython
-PKG_VERSION=120519194c1cc989f5fb72fb8ae6fba40f2841a5
+PKG_VERSION=55b0385ae965ceceeb719aa1a5563b2facf7318c
 PKG_LICENSE=MIT
 
 CFLAGS += -Wno-implicit-fallthrough -Wno-unused-parameter -Wno-error
