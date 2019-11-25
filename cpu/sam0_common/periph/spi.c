@@ -134,9 +134,9 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
         dev(bus)->BAUD.reg = baud;
         dev(bus)->CTRLA.reg = ctrla;
+        /* no synchronization needed here, the enable synchronization below
+         * acts as a write-synchronization for both registers */
     }
-
-    /* also no synchronization needed here, as CTRLA is write-synchronized */
 
     /* finally enable the device */
     dev(bus)->CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
