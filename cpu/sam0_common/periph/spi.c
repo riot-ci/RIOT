@@ -126,20 +126,15 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     /* power on the device */
     poweron(bus);
 
-    /* configuration did not change but device is powered down */
-    if (dev(bus)->BAUD.reg == baud && dev(bus)->CTRLA.reg == ctrla) {
-        /* enable the device */
-        dev(bus)->CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
+    /* first configuration or reconfiguration after altered device usage */
+    if (dev(bus)->BAUD.reg != baud || dev(bus)->CTRLA.reg != ctrla) {
+        /* disable the device */
+        dev(bus)->CTRLA.reg &= ~(SERCOM_SPI_CTRLA_ENABLE);
+        while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
 
-        return SPI_OK;
+        dev(bus)->BAUD.reg = baud;
+        dev(bus)->CTRLA.reg = ctrla;
     }
-
-    /* disable the device */
-    dev(bus)->CTRLA.reg &= ~(SERCOM_SPI_CTRLA_ENABLE);
-    while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
-
-    dev(bus)->BAUD.reg = baud;
-    dev(bus)->CTRLA.reg = ctrla;
 
     /* also no synchronization needed here, as CTRLA is write-synchronized */
 
