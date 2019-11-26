@@ -180,7 +180,6 @@ typedef struct {
 ￼* @name RTT configuration
 ￼* @{
 ￼*/
-#define RTT_NUMOF        (1U)
 #define RTT_MAX_VALUE    (0x00FFFFFF)    /* 24-bit timer */
 #define RTT_FREQUENCY    (32U)
 /** @} */

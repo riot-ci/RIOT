@@ -32,21 +32,9 @@
 #include "irq.h"
 #include "periph/rtt.h"
 #include "periph_conf.h"
-#include "thread.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
-
-/* guard file in case no RTT device is defined */
-#if RTT_NUMOF
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if MODULE_PERIPH_RTC
-extern void atmega_rtc_incr(void);
-#endif
 
 typedef struct {
     uint16_t ext_comp;          /* Extend compare to 24-bits */
@@ -69,7 +57,7 @@ static inline void _asynch_wait(void)
     /* Wait until all busy flags clear. According to the datasheet,
      * this can take up to 2 positive edges of TOSC1 (32kHz). */
     while (ASSR & ((1 << TCN2UB) | (1 << OCR2AUB) | (1 << OCR2BUB)
-                   | (1 << TCR2AUB) | (1 << TCR2BUB))) {}
+                | (1 << TCR2AUB) | (1 << TCR2BUB))) {}
 }
 
 /* This safely reads ext_cnt and TCNT2, since an atomic read cannot be provided.
@@ -93,7 +81,7 @@ static inline uint32_t _safe_cnt_get(void)
         ext_cnt_tmp++;
     }
 
-    return (((uint32_t)ext_cnt_tmp << 8) | (uint32_t)cnt_tmp);
+    return (ext_cnt_tmp << 8) | cnt_tmp;
 }
 
 void rtt_init(void)
@@ -210,14 +198,14 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 
     /* Make sure it is safe to read TCNT2, in case we just woke up, and */
     /* safe to write OCR2B (in case it was busy) */
-    DEBUG("RTC sleeps until safe read TCNT2 and to write OCR2B\n");
+    DEBUG("RTT sleeps until safe read TCNT2 and to write OCR2B\n");
     TCCR2A = 0;
     _asynch_wait();
 
     uint32_t now = _safe_cnt_get();
 
     if (alarm < now) {
-        DEBUG("RTC alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
+        DEBUG("RTT alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
               PRIu32 "\n", now, alarm);
         cb(arg);
         return;
@@ -254,7 +242,7 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 
 uint32_t rtt_get_alarm(void)
 {
-    return (((uint32_t)rtt_state.ext_comp << 8) | (uint32_t)OCR2A);
+    return (rtt_state.ext_comp << 8) | OCR2A;
 }
 
 void rtt_clear_alarm(void)
@@ -283,7 +271,7 @@ void rtt_poweroff(void)
 
 ISR(TIMER2_OVF_vect)
 {
-    __enter_isr();
+    atmega_enter_isr();
 
     ext_cnt++;
 
@@ -296,11 +284,6 @@ ISR(TIMER2_OVF_vect)
         TIMSK2 |= (1 << OCIE2A);
     }
 
-#if MODULE_PERIPH_RTC
-    /* Increment RTC by 8 seconds */
-    atmega_rtc_incr();
-#endif
-
     /* Virtual 24-bit timer overflowed */
     if (ext_cnt == 0) {
         /* Execute callback */
@@ -308,12 +291,13 @@ ISR(TIMER2_OVF_vect)
             rtt_state.overflow_cb(rtt_state.overflow_arg);
         }
     }
-    __exit_isr();
+
+    atmega_exit_isr();
 }
 
 ISR(TIMER2_COMPA_vect)
 {
-    __enter_isr();
+    atmega_enter_isr();
     /* Disable alarm interrupt */
     TIMSK2 &= ~(1 << OCIE2A);
 
@@ -326,11 +310,5 @@ ISR(TIMER2_COMPA_vect)
         cb(rtt_state.alarm_arg);
     }
 
-    __exit_isr();
+    atmega_exit_isr();
 }
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* RTT_NUMOF */
