@@ -36,10 +36,14 @@ extern "C" {
 #ifndef AT24MAC_PARAM_I2C_ADDR
 #define AT24MAC_PARAM_I2C_ADDR      (0x58)
 #endif
+#ifndef AT24MAC_PARAM_TYPE
+#define AT24MAC_PARAM_TYPE          (AT24MAC6XX)
+#endif
 
 #ifndef AT24MAC_PARAMS
 #define AT24MAC_PARAMS              { .i2c_dev      = AT24MAC_PARAM_I2C_DEV, \
-                                      .i2c_addr     = AT24MAC_PARAM_I2C_ADDR }
+                                      .i2c_addr     = AT24MAC_PARAM_I2C_ADDR,\
+                                      .type         = AT24MAC_PARAM_TYPE     }
 #endif
 /**@}*/
 

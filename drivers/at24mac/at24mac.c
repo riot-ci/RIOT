@@ -27,6 +27,19 @@
 #define CMD_READ_EUI64      (0x98)
 #define CMD_READ_ID128      (0x80)
 
+static bool _is_valid(at24mac_type_t type, uint8_t reg)
+{
+    if (type == AT24MAC4XX && reg == CMD_READ_EUI64) {
+        return false;
+    }
+
+    if (type == AT24MAC6XX && reg == CMD_READ_EUI48) {
+        return false;
+    }
+
+    return true;
+}
+
 static int _read_reg(unsigned idx, uint8_t reg, void *dst, size_t size)
 {
     if (idx >= ARRAY_SIZE(at24mac_params)) {
@@ -35,6 +48,10 @@ static int _read_reg(unsigned idx, uint8_t reg, void *dst, size_t size)
 
     int res = 0;
     const at24mac_params_t *params = &at24mac_params[idx];
+
+    if (!_is_valid(params->type, reg)) {
+        return -ENOTSUP;
+    }
 
     res = i2c_acquire(params->i2c_dev);
     if (res) {
@@ -49,21 +66,26 @@ static int _read_reg(unsigned idx, uint8_t reg, void *dst, size_t size)
     return res;
 }
 
-#ifdef MODULE_AT24MAC4XX
 int at24mac_get_eui48(unsigned idx, eui48_t *dst)
 {
     return _read_reg(idx, CMD_READ_EUI48, dst, sizeof(*dst));
 }
-#endif
 
-#ifdef MODULE_AT24MAC6XX
 int at24mac_get_eui64(unsigned idx, eui64_t *dst)
 {
     return _read_reg(idx, CMD_READ_EUI64, dst, sizeof(*dst));
 }
-#endif
 
 int at24mac_get_id128(unsigned idx, void *dst)
 {
     return _read_reg(idx, CMD_READ_ID128, dst, AT24MAC_ID_LEN);
+}
+
+at24mac_type_t at24mac_get_type(unsigned idx)
+{
+    if (idx >= ARRAY_SIZE(at24mac_params)) {
+        return -ERANGE;
+    }
+
+    return at24mac_params[idx].type;
 }

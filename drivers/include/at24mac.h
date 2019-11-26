@@ -30,35 +30,41 @@ extern "C" {
 
 #define AT24MAC_ID_LEN  (16)            /**< Length of ID128 */
 
+typedef enum __attribute__ ((__packed__)) {
+    AT24MAC4XX,
+    AT24MAC6XX
+} at24mac_type_t;
+
 /**
  * @brief   struct holding all params needed for device communication
  */
 typedef struct {
     i2c_t i2c_dev;                      /**< I2C device      */
     uint8_t i2c_addr;                   /**< I2C address     */
+    at24mac_type_t type;                /**< Device type     */
 } at24mac_params_t;
 
-#if defined(MODULE_AT24MAC4XX) || defined(DOXYGEN)
 /**
  * @brief   Get the unique EUI48 address from a AT24MAC4xx chip
  *
  * @param[in] idx       Index of the AT24Mac chip in the at24mac_params
  *                      array.
  * @param[out] addr     memory location to copy the address into.
+ *
+ * @return              0 on success, error otherwise.
  */
 int at24mac_get_eui48(unsigned idx, eui48_t *addr);
-#endif
 
-#if defined(MODULE_AT24MAC6XX) || defined(DOXYGEN)
 /**
  * @brief   Get the unique EUI64 address from a AT24MAC6xx chip
  *
  * @param[in] idx       Index of the AT24Mac chip in the at24mac_params
  *                      array.
  * @param[out] addr     memory location to copy the address into.
+ *
+ * @return              0 on success, error otherwise.
  */
 int at24mac_get_eui64(unsigned idx, eui64_t *addr);
-#endif
 
 /**
  * @brief   Get the unique ID from a AT24MACxxx chip
@@ -67,8 +73,20 @@ int at24mac_get_eui64(unsigned idx, eui64_t *addr);
  *                      array.
  * @param[out] dst      memory location to copy the ID into.
  *                      Must be able to hold at least @ref AT24MAC_ID_LEN bytes.
+ *
+ * @return              0 on success, error otherwise.
  */
 int at24mac_get_id128(unsigned idx, void *dst);
+
+/**
+ * @brief   Get the type of a AT24MACxxx chip
+ *
+ * @param[in] idx       Index of the AT24MAC chip in the at24mac_params
+ *                      array.
+ *
+ * @return              The type of the device (AT24MAC4XX or AT24MAC6XX)
+ */
+at24mac_type_t at24mac_get_type(unsigned idx);
 
 #ifdef __cplusplus
 }
