@@ -32,7 +32,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
         BME680_DEV.intf = BME680_SPI_INTF;
         BME680_DEV.read = spi_read_hal;
         BME680_DEV.write = spi_write_hal;
-        spi_init_cs(SPI_DEV(0), SPI_NSS_PIN);
+        spi_init_cs(SPI_DEV(0), BME680_NSS_PIN);
 #endif
     }
 

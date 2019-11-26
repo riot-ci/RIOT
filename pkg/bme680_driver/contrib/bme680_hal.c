@@ -22,7 +22,7 @@
 #endif /* BME680_SPI_MODE */
 
 #ifndef BME680_NSS_PIN
-#define BME680_NSS_PIN  GPIO_PIN(PA, 5)
+#define BME680_NSS_PIN  GPIO_PIN(0, 5)
 #endif  /* BME680_NSS_PIN */
 
 #ifndef BME680_I2C_ADDR
