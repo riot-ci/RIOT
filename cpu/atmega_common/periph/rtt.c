@@ -84,6 +84,20 @@ static inline uint32_t _safe_cnt_get(void)
     return (ext_cnt_tmp << 8) | cnt_tmp;
 }
 
+static inline uint8_t _rtt_div(uint16_t freq)
+{
+    switch (freq) {
+    case 32768: return 0x1;
+    case  4096: return 0x2;
+    case  1024: return 0x3;
+    case   512: return 0x4;
+    case   256: return 0x5;
+    case   128: return 0x6;
+    case    32: return 0x7;
+    default   : assert(0);
+    }
+}
+
 void rtt_init(void)
 {
     DEBUG("Initializing RTT\n");
@@ -117,8 +131,8 @@ void rtt_init(void)
     /* Reset timer control */
     TCCR2A = 0;
 
-    /* 32768Hz / 1024 = 32 ticks per second */
-    TCCR2B = (1 << CS22) | (1 << CS21) | (1 << CS20);
+    /* 32768Hz / n */
+    TCCR2B = _rtt_div(RTT_FREQUENCY);
 
     /* Wait until not busy anymore */
     DEBUG("RTT waits until ASSR not busy\n");
