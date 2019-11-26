@@ -23,7 +23,10 @@
 
 static int test_get_eui48(void)
 {
-#ifdef MODULE_AT24MAC4XX
+    if (at24mac_get_type(0) != AT24MAC4XX) {
+        return 0;
+    }
+
     eui48_t e48;
     if (at24mac_get_eui48(0, &e48) != 0) {
         puts("[FAILED]");
@@ -35,14 +38,16 @@ static int test_get_eui48(void)
         printf(" %02x", e48.uint8[i]);
     }
     puts("");
-#endif
 
     return 0;
 }
 
 static int test_get_eui64(void)
 {
-#ifdef MODULE_AT24MAC6XX
+    if (at24mac_get_type(0) != AT24MAC6XX) {
+        return 0;
+    }
+
     eui64_t e64;
     if (at24mac_get_eui64(0, &e64) != 0) {
         puts("[FAILED]");
@@ -54,7 +59,6 @@ static int test_get_eui64(void)
         printf(" %02x", e64.uint8[i]);
     }
     puts("");
-#endif
 
     return 0;
 }
