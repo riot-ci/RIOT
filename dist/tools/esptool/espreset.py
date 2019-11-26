@@ -70,5 +70,5 @@ if __name__ == "__main__":
     ser.setRTS(1)
     ser.setDTR(1)
     # wait 1 second for boot
-    time.sleep(1)
+    #time.sleep(1)
     sys.exit(0)
