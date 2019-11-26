@@ -27,6 +27,7 @@
  */
 
 #include <avr/interrupt.h>
+#include <stdatomic.h>
 
 #include "cpu.h"
 #include "irq.h"
@@ -47,10 +48,11 @@ typedef struct {
 static rtt_state_t rtt_state;
 
 /* Extend TCNT2 to 24-bits. This is treated as-if it is a register as it is
- * incremented by the overflow ISR. This MUST BE marked volatile for two
- * reasons: to guarantee ordering with other register operations, and to
- * force redundant access to occur (in case it was changed by the ISR). */
-static volatile uint16_t ext_cnt;
+ * incremented by the overflow ISR.
+ * Since access to 16-bit values is not atomic on ATmega we rely on a data type
+ * that emulates this behaviour.
+ */
+static atomic_uint_fast16_t ext_cnt;
 
 static inline void _asynch_wait(void)
 {
