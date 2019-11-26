@@ -95,10 +95,6 @@ NO_PSEUDOMODULES += suit_v4
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
 
-# AT24MAC can either provide an EUI-48 (AT24MAC4xx) or EUI-64 (AT24MAC6xx)
-PSEUDOMODULES += at24mac4xx
-PSEUDOMODULES += at24mac6xx
-
 # include variants of the AT86RF2xx drivers as pseudo modules
 PSEUDOMODULES += at86rf23%
 PSEUDOMODULES += at86rf21%
