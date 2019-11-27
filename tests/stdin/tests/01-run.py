@@ -7,10 +7,14 @@
 # directory for more details.
 
 import sys
+import time
 from testrunner import run
 
 
 def testfunc(child):
+    # Add a small delay before sending the character: this gives some time for
+    # the stdin of the device under test to be ready
+    time.sleep(1)
     child.sendline('O')
     child.expect_exact('You entered \'O\'')
 
