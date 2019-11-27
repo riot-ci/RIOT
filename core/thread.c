@@ -55,10 +55,10 @@ const char *thread_getname(kernel_pid_t pid)
 #endif
 }
 
-void thread_zombify(void)
+int thread_zombify(void)
 {
     if (irq_is_in()) {
-        return;
+        return 1;
     }
 
     unsigned state = irq_disable();
@@ -66,7 +66,8 @@ void thread_zombify(void)
     irq_restore(state);
     thread_yield_higher();
 
-    sched_task_exit();
+    /* this line should never be reached */
+    UNREACHABLE();
 }
 
 int thread_kill_zombie(kernel_pid_t pid)
