@@ -100,10 +100,7 @@ int main(void)
         else {
             puts("OK");
         }
-
     }
-
-
 
     /* wakeup second thread and check if the thread zombified itself */
     thread_wakeup(second_pid);
@@ -131,7 +128,7 @@ int main(void)
     }
 
     /* kill first zombie thread and check if the thread still exist (it should not) */
-    if (thread_kill_zombie(first_pid) != 1){
+    if (thread_kill_zombie(first_pid) != 1) {
         puts("Error thread_kill_zombie returned an error");
     }
     ps();
