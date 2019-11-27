@@ -402,7 +402,7 @@ void thread_yield_higher(void);
  * @brief   Puts the current thread into zombie mode. Has to be terminated externally.
  *          The thread will never run again. Does nothing when in ISR.
  */
-int thread_zombify(void);
+void thread_zombify(void);
 
 /**
  * @brief Terminates zombie thread.

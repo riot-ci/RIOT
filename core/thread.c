@@ -55,10 +55,10 @@ const char *thread_getname(kernel_pid_t pid)
 #endif
 }
 
-int thread_zombify(void)
+void thread_zombify(void)
 {
     if (irq_is_in()) {
-        return 1;
+        return;
     }
 
     unsigned state = irq_disable();
