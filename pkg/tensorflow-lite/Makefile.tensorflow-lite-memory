@@ -1,0 +1,9 @@
+MODULE = tensorflow-lite-memory
+
+SRCXXEXT = cc
+SRCXXEXCLUDE := $(wildcard *_test.$(SRCXXEXT))
+
+CXXEXFLAGS += -Wno-sign-compare
+CXXEXFLAGS += -Wno-unused-parameter
+
+include $(RIOTBASE)/Makefile.base
