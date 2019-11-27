@@ -1,0 +1,5 @@
+INCLUDES += -I$(PKGDIRBASE)/flatbuffers/include
+
+BUILDDEPS += $(RIOTTOOLS)/flatc/flatc
+
+CXXEXFLAGS += -Wno-type-limits
