@@ -45,12 +45,7 @@ typedef struct {
 } rtt_state_t;
 
 static rtt_state_t rtt_state;
-
-/* Extend TCNT2 to 24-bits. This is treated as-if it is a register as it is
- * incremented by the overflow ISR. This MUST BE marked volatile for two
- * reasons: to guarantee ordering with other register operations, and to
- * force redundant access to occur (in case it was changed by the ISR). */
-static volatile uint16_t ext_cnt;
+static uint16_t ext_cnt;
 
 static inline void _asynch_wait(void)
 {
