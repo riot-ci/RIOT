@@ -60,30 +60,6 @@ static inline void _asynch_wait(void)
                 | (1 << TCR2AUB) | (1 << TCR2BUB))) {}
 }
 
-/* This safely reads ext_cnt and TCNT2, since an atomic read cannot be provided.
- * Note: still requires prior synch using _asynch_wait() */
-static inline uint32_t _safe_cnt_get(void)
-{
-    uint16_t ext_cnt_tmp;
-    uint8_t irq_flag, cnt_tmp;
-
-    do {
-        /* Operations must occur in this order: */
-        irq_flag = TIFR2 & (1 << TOV2);
-        ext_cnt_tmp = ext_cnt;
-        cnt_tmp = TCNT2;
-
-    /* Detect rollover after ext_cnt read. If condition is met, then rollover
-     * just occured, and it is safe to read again now. */
-    } while ((ext_cnt_tmp != ext_cnt) || (irq_flag != (TIFR2 & (1 << TOV2))));
-
-    if (irq_flag) {
-        ext_cnt_tmp++;
-    }
-
-    return (ext_cnt_tmp << 8) | cnt_tmp;
-}
-
 static inline uint8_t _rtt_div(uint16_t freq)
 {
     switch (freq) {
@@ -172,12 +148,19 @@ void rtt_clear_overflow_cb(void)
 
 uint32_t rtt_get_counter(void)
 {
+    unsigned state;
+    uint32_t now;
+
     /* Make sure it is safe to read TCNT2, in case we just woke up */
     DEBUG("RTT sleeps until safe to read TCNT2\n");
     TCCR2A = 0;
     _asynch_wait();
 
-    return _safe_cnt_get();
+    state = irq_disable();
+    now = (ext_cnt << 8) | TCNT2;
+    irq_restore(state);
+
+    return now;
 }
 
 void rtt_set_counter(uint32_t counter)
@@ -216,17 +199,10 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
     TCCR2A = 0;
     _asynch_wait();
 
-    uint32_t now = _safe_cnt_get();
-
-    if (alarm < now) {
-        DEBUG("RTT alarm set in the past. Time: %" PRIu32 " seconds, alarm: %"
-              PRIu32 "\n", now, alarm);
-        cb(arg);
-        return;
-    }
-
     /* Make non-atomic writes atomic */
     unsigned state = irq_disable();
+
+    uint32_t now = (ext_cnt << 8) | TCNT2;
 
     /* Set the alarm value. Atomic for concurrent access */
     rtt_state.ext_comp = (uint16_t)(alarm >> 8);
