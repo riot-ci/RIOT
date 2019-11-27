@@ -56,7 +56,7 @@ void *worker_thread(void *arg)
         msg_receive(&m);
         now = xtimer_now_usec() / US_PER_MS;
         ctx = m.content.ptr;
-        printf("At %6lu ms received msg %i: \"%s\"\n", now, count++, ctx);
+        printf("At %6" PRIu32 " ms received msg %i: \"%s\"\n", now, count++, ctx);
     }
 }
 
@@ -78,7 +78,7 @@ int main(void)
     for (unsigned i = 0; i < NEVENTS; i++) {
         events[i].event.offset = offsets[i];
         now = xtimer_now_usec() / US_PER_MS;
-        snprintf(texts[i], sizeof(texts[i]) - 1, "#%u supposed to be %lu", i, now + events[i].event.offset);
+        snprintf(texts[i], sizeof(texts[i]) - 1, "#%u supposed to be %" PRIu32, i, now + events[i].event.offset);
         events[i].msg.content.ptr = texts[i];
         evtimer_add_msg(&evtimer, &events[i], pid);
     }
@@ -100,7 +100,7 @@ int main(void)
     for (unsigned i = 0; i < NEVENTS; i++) {
         events[i].event.offset = offsets[i];
         now = xtimer_now_usec() / US_PER_MS;
-        snprintf(texts[i], sizeof(texts[i]) - 1, "#%u supposed to be %lu", i, now + events[i].event.offset);
+        snprintf(texts[i], sizeof(texts[i]) - 1, "#%u supposed to be %" PRIu32, i, now + events[i].event.offset);
         events[i].msg.content.ptr = texts[i];
         evtimer_add_msg(&evtimer, &events[i], pid);
     }
