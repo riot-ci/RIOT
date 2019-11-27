@@ -1,0 +1,17 @@
+MODULE = tensorflow-lite-hello_world
+
+SRCXXEXT = cc
+SRCXXEXCLUDE := $(wildcard *_test.$(SRCXXEXT))
+
+CFLAGS += -DTF_LITE_STATIC_MEMORY
+CXXEXFLAGS += -Wno-unused-parameter
+
+NO_AUTO_SRC := 1
+SRCXX := \
+    constants.cc \
+    main_functions.cc \
+    output_handler.cc \
+    sine_model_data.cc \
+    #
+
+include $(RIOTBASE)/Makefile.base
