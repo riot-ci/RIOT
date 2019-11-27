@@ -75,6 +75,8 @@ int thread_kill_zombie(kernel_pid_t pid)
     DEBUG("thread_kill: Trying to kill PID %" PRIkernel_pid "...\n", pid);
     unsigned state = irq_disable();
 
+    int result = (int)STATUS_NOT_FOUND;
+
     thread_t *thread = (thread_t *) thread_get(pid);
 
     if (!thread) {
@@ -87,14 +89,13 @@ int thread_kill_zombie(kernel_pid_t pid)
         sched_num_threads--;
         sched_set_status(thread, STATUS_STOPPED); 
 
-        irq_restore(state);
-        return 1;
+        result =  1;
     }
     else {
         DEBUG("thread_kill: Thread is not a zombie!\n");
     }
     irq_restore(state);
-    return (int)STATUS_NOT_FOUND;
+    return result;
 }
 
 void thread_sleep(void)
