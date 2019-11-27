@@ -872,7 +872,6 @@ endif
 
 ifneq (,$(filter cord_epsim,$(USEMODULE)))
   USEMODULE += cord_common
-  USEMODULE += gcoap
 endif
 
 ifneq (,$(filter cord_ep_standalone,$(USEMODULE)))
@@ -882,16 +881,21 @@ endif
 
 ifneq (,$(filter cord_ep,$(USEMODULE)))
   USEMODULE += cord_common
-  USEMODULE += core_thread_flags
-  USEMODULE += gcoap
-  ifneq (,$(filter shell_commands,$(USEMODULE)))
-    USEMODULE += sock_util
-  endif
+endif
+
+ifneq (,$(filter cord_lc,$(USEMODULE)))
+  USEMODULE += cord_common
+  USEMODULE += clif
 endif
 
 ifneq (,$(filter cord_common,$(USEMODULE)))
   USEMODULE += fmt
   USEMODULE += luid
+  USEMODULE += gcoap
+  USEMODULE += core_thread_flags
+  ifneq (,$(filter shell_commands,$(USEMODULE)))
+    USEMODULE += sock_util
+  endif
 endif
 
 ifneq (,$(filter tlsf-malloc,$(USEMODULE)))
