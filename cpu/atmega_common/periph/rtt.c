@@ -55,16 +55,21 @@ static inline void _asynch_wait(void)
                 | (1 << TCR2AUB) | (1 << TCR2BUB))) {}
 }
 
-/* interrupts are disabled here */
-static uint32_t _safe_cnt_get(void)
+/* interrupts are being disabled here */
+static uint32_t _safe_cnt_get(unsigned *state)
 {
     uint8_t cnt = TCNT2;
+
+    *state = irq_disable();
 
     /* if an overflow occured since we disabled interrupts, manually
      * increment ext_cnt
      */
     if (TIFR2 & (1 << TOV2)) {
         ++ext_cnt;
+
+        /* Clear interrupt flag */
+        TIFR2 = (1 << OCF2A);
     }
 
     return (ext_cnt << 8) | cnt;
@@ -166,8 +171,8 @@ uint32_t rtt_get_counter(void)
     TCCR2A = 0;
     _asynch_wait();
 
-    state = irq_disable();
-    now = _safe_cnt_get();
+    /* interrupts get disabled by _safe_cnt_get() */
+    now = _safe_cnt_get(&state);
     irq_restore(state);
 
     return now;
@@ -209,10 +214,9 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
     TCCR2A = 0;
     _asynch_wait();
 
-    /* Make non-atomic writes atomic */
-    unsigned state = irq_disable();
-
-    uint32_t now = _safe_cnt_get();
+    /* interrupts get disabled by _safe_cnt_get() */
+    unsigned state;
+    uint32_t now = _safe_cnt_get(&state);
 
     /* Set the alarm value. Atomic for concurrent access */
     rtt_state.ext_comp = (uint16_t)(alarm >> 8);
