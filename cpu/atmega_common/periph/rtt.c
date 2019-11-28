@@ -69,7 +69,7 @@ static uint32_t _safe_cnt_get(unsigned *state)
         ++ext_cnt;
 
         /* Clear interrupt flag */
-        TIFR2 = (1 << OCF2A);
+        TIFR2 = (1 << TOV2);
     }
 
     return (ext_cnt << 8) | cnt;
