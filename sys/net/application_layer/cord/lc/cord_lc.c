@@ -270,13 +270,12 @@ static int _send_rd_init_req(coap_pkt_t *pkt, const sock_udp_ep_t *remote,
 
     ssize_t pkt_len = gcoap_finish(pkt, 0, COAP_FORMAT_NONE);
     if (pkt_len < 0) {
-        DEBUG("cord_lc: error gcoap_finish() %d\n", pkt_len);
+        DEBUG("cord_lc: error gcoap_finish() %zd\n", pkt_len);
         return CORD_LC_ERR;
     }
 
-    res = gcoap_req_send(buf, pkt_len, remote, _on_rd_init);
-    if (!res) {
-        DEBUG("cord_lc: error gcoap_req_send() %d\n", res);
+    if (!gcoap_req_send(buf, pkt_len, remote, _on_rd_init)) {
+        DEBUG("cord_lc: error gcoap_req_send()\n");
         return CORD_LC_ERR;
     }
     return _sync();
@@ -313,7 +312,7 @@ int cord_lc_rd_init(cord_lc_rd_t *rd, void *buf, size_t maxlen,
                                        _result_buf + parsed_len,
                                        _result_buf_len - parsed_len);
         if (ret < 0) {
-            DEBUG("cord_lc: error decoding payload %d\n", ret);
+            DEBUG("cord_lc: error decoding payload %zd\n", ret);
             retval = CORD_LC_ERR;
             goto end;
         }
