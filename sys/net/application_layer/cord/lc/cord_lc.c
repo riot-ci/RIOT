@@ -380,9 +380,7 @@ ssize_t _lookup_result(cord_lc_rd_t *rd, cord_lc_res_t *result,
 
     /* encode page number as string */
     ssize_t len = snprintf(NULL, 0, "%u", *page_ptr);
-    printf("prinn: %u; len: %u\n", *page_ptr, len);
-    /* +1 for '\0' */
-    char page_str[len + 1];
+    char page_str[len + 1]; /* +1 for '\0' */
     snprintf(page_str, sizeof(page_str), "%u", *page_ptr);
     (*page_ptr)++;
 
