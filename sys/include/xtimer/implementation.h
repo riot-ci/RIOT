@@ -34,7 +34,6 @@
 extern "C" {
 #endif
 
-extern volatile uint32_t _long_cnt;
 extern volatile uint64_t _xtimer_current_time;
 
 /**
@@ -113,17 +112,15 @@ static inline uint32_t _xtimer_now(void)
 {
     uint32_t now, elapsed;
 
-    /* time sensitive since _long_cnt and _xtimer_current_time are updated here */
+    /* time sensitive since _xtimer_current_time are updated here */
     uint8_t state = irq_disable();
     now = _xtimer_lltimer_now();
 #if XTIMER_MASK
     elapsed = _xtimer_lltimer_mask(now - _xtimer_lltimer_mask((uint32_t)_xtimer_current_time));
     _xtimer_current_time += (uint64_t)elapsed;
-    _long_cnt = (uint32_t)(_xtimer_current_time >> 32);
 #else
     elapsed = now - ((uint32_t)_xtimer_current_time & 0xFFFFFFFF);
     _xtimer_current_time += (uint64_t)elapsed;
-    _long_cnt = (uint32_t)(_xtimer_current_time >> 32);
 #endif
     irq_restore(state);
 

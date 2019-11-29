@@ -38,7 +38,6 @@
 static volatile int _in_handler = 0;
 
 volatile uint64_t _xtimer_current_time = 0;
-volatile uint32_t _long_cnt = 0;
 
 static xtimer_t *timer_list_head = NULL;
 static xtimer_t *long_list_head = NULL;
@@ -57,7 +56,7 @@ static void _periph_timer_callback(void *arg, int chan);
 
 static inline int _is_set(xtimer_t *timer)
 {
-    return (timer->target || timer->offset);
+    return (timer->offset);
 }
 
 void xtimer_init(void)
@@ -72,15 +71,12 @@ void xtimer_init(void)
 
 uint64_t _xtimer_now64(void)
 {
-    uint32_t short_term, long_term;
-
-    /* time sensitive since _long_cnt is used */
+    /* time sensitive */
     uint8_t state = irq_disable();
-    short_term = _xtimer_now();
-    long_term = _long_cnt;
+    _xtimer_now();
     irq_restore(state);
 
-    return ((uint64_t)long_term << 32) + short_term;
+    return _xtimer_current_time;
 }
 
 void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
@@ -98,7 +94,6 @@ void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
         timer->start_time = _xtimer_now();
         timer->offset = offset;
         timer->long_offset = long_offset;
-        timer->target = timer->start_time + offset;
 
         _add_timer_to_long_list(&long_list_head, timer);
         irq_restore(state);
@@ -128,7 +123,6 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
         timer->start_time = _xtimer_now();
         timer->offset = offset;
         timer->long_offset = 0;
-        timer->target = timer->start_time + offset;
 
         _add_timer_to_list(&timer_list_head, timer);
 
@@ -136,10 +130,10 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
             DEBUG("timer_set_absolute(): timer is new list head. updating lltimer.\n");
             if (timer->offset <= _xtimer_lltimer_mask(0xFFFFFFFF)) {
                 /* schedule callback on next timer target time */
-                _lltimer_set(timer->target);
+                _lltimer_set(timer->start_time + offset);
             }
             else if (!_lltimer_ongoing) {
-                /* schedule callback after max_low_level_time/2 to update _long_cnt */
+                /* schedule callback after max_low_level_time/2 to detect a cycle */
                 _lltimer_set(timer->start_time + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1));
             }
         }
@@ -172,7 +166,7 @@ static inline void _lltimer_set(uint32_t target)
 static void _add_timer_to_list(xtimer_t **list_head, xtimer_t *timer)
 {
     while (*list_head
-        && (*list_head)->target - timer->start_time <= timer->target - timer->start_time) {
+        && (*list_head)->start_time + (*list_head)->offset - timer->start_time <= timer->offset) {
         list_head = &((*list_head)->next);
     }
 
@@ -185,7 +179,7 @@ static void _add_timer_to_long_list(xtimer_t **list_head, xtimer_t *timer)
     while (*list_head
         && (((*list_head)->long_offset < timer->long_offset)
         || (((*list_head)->long_offset == timer->long_offset)
-            && ((*list_head)->target - timer->start_time <= timer->target - timer->start_time)))) {
+            && ((*list_head)->start_time + (*list_head)->offset - timer->start_time <= timer->offset)))) {
         list_head = &((*list_head)->next);
     }
 
@@ -198,7 +192,6 @@ static int _remove_timer_from_list(xtimer_t **list_head, xtimer_t *timer)
     while (*list_head) {
         if (*list_head == timer) {
             *list_head = timer->next;
-            timer->target = 0;
             timer->offset = 0;
             timer->long_offset = 0;
             timer->next = NULL;
@@ -218,7 +211,6 @@ static void _remove(xtimer_t *timer)
 {
     if (timer == timer_list_head) {
         timer_list_head = timer->next;
-        timer->target = 0;
         timer->offset = 0;
         timer->long_offset = 0;
         timer->next = NULL;
@@ -229,15 +221,15 @@ static void _remove(xtimer_t *timer)
         if (timer_list_head) {
             if (timer_list_head->offset <= _xtimer_lltimer_mask(0xFFFFFFFF)) {
                 /* schedule callback on next timer target time */
-                _lltimer_set(timer_list_head->target);
+                _lltimer_set(timer_list_head->start_time + timer_list_head->offset);
             }
             else if (!_lltimer_ongoing) {
-                /* schedule callback after max_low_level_time/2 to update _long_cnt */
+                /* schedule callback after max_low_level_time/2 to detect a cycle */
                 _lltimer_set(_xtimer_now() + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1));
             }
         }
         else if (!_lltimer_ongoing) {
-            /* schedule callback after max_low_level_time/2 to update _long_cnt */
+            /* schedule callback after max_low_level_time/2 to detect a cycle */
             _lltimer_set(_xtimer_now() + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1));
         }
     }
@@ -310,7 +302,6 @@ static inline void _update_short_timers(uint32_t *now) {
             timer_list_head = timer->next;
 
             /* make sure timer is recognized as being already fired */
-            timer->target = 0;
             timer->offset = 0;
             timer->long_offset = 0;
             timer->next = NULL;
@@ -360,16 +351,16 @@ overflow:
 
         if (timer_list_head->offset <= _xtimer_lltimer_mask(0xFFFFFFFF)) {
             /* schedule callback on next timer target time */
-            next_target = timer_list_head->target;
+            next_target = timer_list_head->start_time + timer_list_head->offset;
         }
         else {
-            /* schedule callback after max_low_level_time/2 to update _long_cnt */
+            /* schedule callback after max_low_level_time/2 to detect a cycle */
             next_target = now + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1);
         }
     }
     else {
         /* there's no timer planned for this timer period */
-        /* schedule callback after max_low_level_time/2 to update _long_cnt */
+        /* schedule callback after max_low_level_time/2 to detect a cycle */
         next_target = now + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1);
     }
 

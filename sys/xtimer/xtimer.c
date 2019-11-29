@@ -67,7 +67,7 @@ void _xtimer_tsleep(uint32_t offset, uint32_t long_offset)
 
     timer.callback = _callback_unlock_mutex;
     timer.arg = (void*) &mutex;
-    timer.target = timer.offset = timer.long_offset = 0;
+    timer.offset = timer.long_offset = 0;
 
     mutex_lock(&mutex);
     _xtimer_set64(&timer, offset, long_offset);
@@ -80,7 +80,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
 
     timer.callback = _callback_unlock_mutex;
     timer.arg = (void*) &mutex;
-    timer.target = timer.offset = timer.long_offset = 0;
+    timer.offset = timer.long_offset = 0;
 
     /* time sensitive until setting offset */
     uint8_t state = irq_disable();
@@ -143,7 +143,7 @@ static void _setup_timer_msg(msg_t *m, xtimer_t *t)
     m->type = MSG_XTIMER;
     m->content.ptr = m;
 
-    t->target = t->offset = t->long_offset = 0;
+    t->offset = t->long_offset = 0;
 }
 
 /* Waits for incoming message or timeout. */
