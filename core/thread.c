@@ -87,7 +87,7 @@ int thread_kill_zombie(kernel_pid_t pid)
 
         sched_threads[pid] = NULL;
         sched_num_threads--;
-        sched_set_status(thread, STATUS_STOPPED); 
+        sched_set_status(thread, STATUS_STOPPED);
 
         result =  1;
     }
