@@ -656,6 +656,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
                 gnrc_sixlowpan_frag_vrb_rm(vrbe);
             }
             gnrc_pktbuf_release(sixlo);
+            /* don't remove `rbuf->pkt` (aka ipv6) as it was forwarded */
             gnrc_sixlowpan_frag_rb_remove(rbuf);
             return;
         }
