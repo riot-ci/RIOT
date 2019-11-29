@@ -148,7 +148,7 @@ SECTIONS
         KEEP(*(SORT(.fini_array.*)))
             KEEP(*(.fini_array))
             PROVIDE_HIDDEN (__fini_array_end = .);
-    } >ram AT > flash                   /* put all the above into RAM (but load the LMA copy into FLASH) */
+    } >ram AT > rom                     /* put all the above into RAM (but load the LMA copy into FLASH) */
     . = ALIGN(4);                       /* ensure data is aligned so relocation can use 4-byte operations */
     _edata = .;                         /* define a global symbol marking the end of the .data section  */
 
@@ -236,5 +236,5 @@ SECTIONS
         _ebackup_data = .;
         /* Round size so that we can use 4 byte copy in init */
         . = ALIGN(4);
-    } > ram_battery AT> flash
+    } > ram_battery AT> rom
 }
