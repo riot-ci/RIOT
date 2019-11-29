@@ -28,14 +28,14 @@
 #endif
 
 #include "periph/timer.h"
+#include "irq.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if XTIMER_MASK
-extern volatile uint32_t _xtimer_high_cnt;
-#endif
+extern volatile uint32_t _long_cnt;
+extern volatile uint64_t _xtimer_current_time;
 
 /**
  * @brief IPC message type for xtimer msg callback
@@ -111,22 +111,23 @@ void _xtimer_tsleep(uint32_t offset, uint32_t long_offset);
 
 static inline uint32_t _xtimer_now(void)
 {
+    uint32_t now, elapsed;
+
+    /* time sensitive since _long_cnt and _xtimer_current_time are updated here */
+    uint8_t state = irq_disable();
+    now = _xtimer_lltimer_now();
 #if XTIMER_MASK
-    uint32_t latched_high_cnt, now;
-
-    /* _high_cnt can change at any time, so check the value before
-     * and after reading the low-level timer. If it hasn't changed,
-     * then it can be safely applied to the timer count. */
-
-    do {
-        latched_high_cnt = _xtimer_high_cnt;
-        now = _xtimer_lltimer_now();
-    } while (_xtimer_high_cnt != latched_high_cnt);
-
-    return latched_high_cnt | now;
+    elapsed = _xtimer_lltimer_mask(now - _xtimer_lltimer_mask((uint32_t)_xtimer_current_time));
+    _xtimer_current_time += (uint64_t)elapsed;
+    _long_cnt = (uint32_t)(_xtimer_current_time >> 32);
 #else
-    return _xtimer_lltimer_now();
+    elapsed = now - ((uint32_t)_xtimer_current_time & 0xFFFFFFFF);
+    _xtimer_current_time += (uint64_t)elapsed;
+    _long_cnt = (uint32_t)(_xtimer_current_time >> 32);
 #endif
+    irq_restore(state);
+
+    return (uint32_t)_xtimer_current_time;
 }
 
 static inline xtimer_ticks32_t xtimer_now(void)

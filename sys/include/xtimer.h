@@ -73,8 +73,10 @@ typedef void (*xtimer_callback_t)(void*);
  */
 typedef struct xtimer {
     struct xtimer *next;         /**< reference to next timer in timer lists */
+    uint32_t offset;             /**< lower 32bit offset time */
+    uint32_t long_offset;        /**< upper 32bit offset time */
+    uint32_t start_time;         /**< lower 32bit absolute start time */
     uint32_t target;             /**< lower 32bit absolute target time */
-    uint32_t long_target;        /**< upper 32bit absolute target time */
     xtimer_callback_t callback;  /**< callback function to call when timer
                                      expires */
     void *arg;                   /**< argument to pass to callback function */
