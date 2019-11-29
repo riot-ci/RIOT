@@ -82,30 +82,7 @@ uint64_t _xtimer_now64(void)
 void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
 {
     DEBUG(" _xtimer_set64() offset=%" PRIu32 " long_offset=%" PRIu32 "\n", offset, long_offset);
-    if (!long_offset) {
-        /* timer fits into the short timer */
-        _xtimer_set(timer, (uint32_t)offset);
-    }
-    else {
-        xtimer_remove(timer);
 
-        /* time sensitive */
-        uint8_t state = irq_disable();
-        timer->start_time = _xtimer_now();
-        timer->offset = offset;
-        timer->long_offset = long_offset;
-
-        _add_timer_to_long_list(&long_list_head, timer);
-        irq_restore(state);
-        DEBUG("xtimer_set64(): added longterm timer (long_offset=%" PRIu32 " offset=%" PRIu32 ")\n",
-              timer->long_offset, timer->long_offset);
-    }
-}
-
-void _xtimer_set(xtimer_t *timer, uint32_t offset)
-{
-    DEBUG("timer_set(): offset=%" PRIu32 " now=%" PRIu32 " (%" PRIu32 ")\n",
-          offset, xtimer_now().ticks32, _xtimer_lltimer_now());
     if (!timer->callback) {
         DEBUG("timer_set(): timer has no callback.\n");
         return;
@@ -113,17 +90,20 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
 
     xtimer_remove(timer);
 
-    if (offset < XTIMER_BACKOFF) {
+    if (!long_offset && offset < XTIMER_BACKOFF) {
+        /* timer fits into the short timer */
         _xtimer_spin(offset);
         _shoot(timer);
+        return;
     }
-    else {
-        /* time sensitive from "now" access to hardware timer set */
-        uint8_t state = irq_disable();
-        timer->start_time = _xtimer_now();
-        timer->offset = offset;
-        timer->long_offset = 0;
 
+    /* time sensitive */
+    uint8_t state = irq_disable();
+    timer->offset = offset;
+    timer->long_offset = long_offset;
+    timer->start_time = _xtimer_now();
+
+    if (!long_offset) {
         _add_timer_to_list(&timer_list_head, timer);
 
         if (timer_list_head == timer) {
@@ -137,8 +117,13 @@ void _xtimer_set(xtimer_t *timer, uint32_t offset)
                 _lltimer_set(timer->start_time + (_xtimer_lltimer_mask(0xFFFFFFFF)>>1));
             }
         }
-        irq_restore(state);
     }
+    else {
+        _add_timer_to_long_list(&long_list_head, timer);
+        DEBUG("xtimer_set64(): added longterm timer (long_offset=%" PRIu32 " offset=%" PRIu32 ")\n",
+              timer->long_offset, timer->long_offset);
+    }
+    irq_restore(state);
 }
 
 static void _periph_timer_callback(void *arg, int chan)

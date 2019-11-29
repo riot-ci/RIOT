@@ -80,7 +80,6 @@ uint64_t _xtimer_now64(void);
  * @param[in] target  Absolute target value in ticks.
  */
 int _xtimer_set_absolute(xtimer_t *timer, uint32_t target);
-void _xtimer_set(xtimer_t *timer, uint32_t offset);
 void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset);
 void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period);
 void _xtimer_set_wakeup(xtimer_t *timer, uint32_t offset, kernel_pid_t pid);
@@ -222,7 +221,7 @@ static inline void xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset, kernel_
 
 static inline void xtimer_set(xtimer_t *timer, uint32_t offset)
 {
-    _xtimer_set(timer, _xtimer_ticks_from_usec(offset));
+    _xtimer_set64(timer, _xtimer_ticks_from_usec(offset), 0);
 }
 
 static inline void xtimer_set64(xtimer_t *timer, uint64_t period_us)

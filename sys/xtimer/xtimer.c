@@ -100,7 +100,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
     }
     else {
         mutex_lock(&mutex);
-        _xtimer_set(&timer, offset);
+        _xtimer_set64(&timer, offset, 0);
         mutex_lock(&mutex);
     }
 
@@ -126,7 +126,7 @@ static inline void _setup_msg(xtimer_t *timer, msg_t *msg, kernel_pid_t target_p
 void _xtimer_set_msg(xtimer_t *timer, uint32_t offset, msg_t *msg, kernel_pid_t target_pid)
 {
     _setup_msg(timer, msg, target_pid);
-    _xtimer_set(timer, offset);
+    _xtimer_set64(timer, offset, 0);
 }
 
 void _xtimer_set_msg64(xtimer_t *timer, uint64_t offset, msg_t *msg, kernel_pid_t target_pid)
@@ -188,7 +188,7 @@ void _xtimer_set_wakeup(xtimer_t *timer, uint32_t offset, kernel_pid_t pid)
     timer->callback = _callback_wakeup;
     timer->arg = (void*) ((intptr_t)pid);
 
-    _xtimer_set(timer, offset);
+    _xtimer_set64(timer, offset, 0);
 }
 
 void _xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset, kernel_pid_t pid)
