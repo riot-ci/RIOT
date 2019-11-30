@@ -641,13 +641,12 @@ endif
 
 ifneq (,$(filter ws281x,$(USEMODULE)))
   FEATURES_OPTIONAL += arch_avr8
+  FEATURES_OPTIONAL += arch_native
   ifeq (,$(filter ws281x_%,$(USEMODULE)))
     ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
       USEMODULE += ws281x_atmega
     endif
-    # fall back to VT100 terminal output if no other
-    # backend is availiable.
-    ifeq (,$(filter ws281x_%,$(USEMODULE)))
+    ifneq (,$(filter arch_native,$(FEATURES_USED)))
       USEMODULE += ws281x_vt100
     endif
   endif
