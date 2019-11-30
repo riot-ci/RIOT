@@ -109,9 +109,9 @@ top-level directories:
 
 core
 ----
-This directory contains the actual kernel. The kernel consists of the
-scheduler, inter-process-communication (messaging), threading, thread
-synchronization, supporting data-structures and type definitions.
+This directory contains the actual kernel. The kernel consists of the scheduler, 
+inter-process-communication (messaging), threading, and thread
+synchronization, as well as supporting data-structures and type definitions.
 
 See @ref core for further information and API documentations.
 
