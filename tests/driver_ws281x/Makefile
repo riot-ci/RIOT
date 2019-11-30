@@ -1,4 +1,4 @@
-BOARD ?= atmega328p
+BOARD ?= atmega1284p
 include ../Makefile.tests_common
 
 # Update this to your needs
@@ -7,7 +7,9 @@ N ?= 8
 
 USEMODULE += ws281x
 
-FEATURES_REQUIRED := arch_avr8 # <-- Currently only backend for AVR boards
+ifneq (native, $(BOARD))
+  FEATURES_REQUIRED += arch_avr8
+endif
 
 # Only AVR boards CPU clocked at 8MHz or 16 MHz are supported. The Waspmote Pro
 # is clocked at 14.7456 MHz :-/
