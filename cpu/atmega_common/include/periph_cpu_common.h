@@ -177,14 +177,28 @@ typedef struct {
 /** @} */
 
 /**
-￼* @name RTT configuration
-￼* @{
-￼*/
-#define RTT_MAX_VALUE    (0x00FFFFFF)    /* 24-bit timer */
+ * @name RTT configuration
+ * @{
+ */
+#ifdef SCCR0
+/* For MCU with MAC symbol counter */
+#ifndef RTT_MAX_VALUE
+#define RTT_MAX_VALUE    (0xFFFFFFFFul)  /* 32-bit timer */
+#endif
 
+#ifndef RTT_FREQUENCY
+#define RTT_FREQUENCY    (62500ul)       /* in Hz. */
+#endif
+
+#else
+/* For MCU without MAC symbol counter */
+#ifndef RTT_MAX_VALUE
+#define RTT_MAX_VALUE    (0x00FFFFFF)    /* 24-bit timer */
+#endif
 /* possible values: 32, 128, 256, 512, 1024, 4096, 32768 */
 #ifndef RTT_FREQUENCY
 #define RTT_FREQUENCY    (1024U)         /* in Hz. */
+#endif
 #endif
 /** @} */
 
