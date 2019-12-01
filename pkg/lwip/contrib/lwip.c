@@ -25,7 +25,7 @@
 
 #ifdef MODULE_AT86RF2XX
 #include "at86rf2xx.h"
-#include "at86rf2xx_params.h"
+#include "at86rf2xx_devs.h"
 #endif
 
 #ifdef MODULE_MRF24J40
@@ -56,7 +56,7 @@
 #endif
 
 #ifdef MODULE_AT86RF2XX     /* is mutual exclusive with above ifdef */
-#define LWIP_NETIF_NUMOF        ARRAY_SIZE(at86rf2xx_params)
+#define LWIP_NETIF_NUMOF        AT86RF2XX_NUM
 #endif
 
 #ifdef MODULE_MRF24J40     /* is mutual exclusive with above ifdef */
@@ -84,7 +84,7 @@ static netdev_tap_t netdev_taps[LWIP_NETIF_NUMOF];
 #endif
 
 #ifdef MODULE_AT86RF2XX
-static at86rf2xx_t at86rf2xx_devs[LWIP_NETIF_NUMOF];
+static at86rf2xx_devs_t at86rf2xx_devs;
 #endif
 
 #ifdef MODULE_MRF24J40
@@ -128,13 +128,15 @@ void lwip_bootstrap(void)
         }
     }
 #elif defined(MODULE_AT86RF2XX)
+    at86rf2xx_setup_devs(&at86rf2xx_devs);
+    uint8_t *dev = at86rf2xx_devs.mem_devs;
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
-        at86rf2xx_setup(&at86rf2xx_devs[i], &at86rf2xx_params[i]);
-        if (netif_add(&netif[i], &at86rf2xx_devs[i], lwip_netdev_init,
+        if (netif_add(&netif[i], dev, lwip_netdev_init,
                       tcpip_6lowpan_input) == NULL) {
             DEBUG("Could not add at86rf2xx device\n");
             return;
         }
+        dev += at86rf2xx_get_size((at86rf2xx_t *)dev);
     }
 #elif defined(MODULE_SOCKET_ZEP)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
