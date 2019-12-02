@@ -1,0 +1,51 @@
+DEBUG ?= 0
+
+# set default device parameters in case they are undefined
+SPI_PORT ?= SPI_DEV\(0\)
+CE_PIN   ?= GPIO_PIN\(0,1\)
+CS_PIN   ?= GPIO_PIN\(0,2\)
+IRQ_PIN  ?= GPIO_PIN\(0,3\)
+
+ADDR_P0 ?= \{0x01,0x02,0x03,0x04,0x05\}
+ADDR_P1 ?= \{0xFF,0xFF,0xFF,0xFF,0xFF\}
+ADDR_P2 ?= 0x00
+ADDR_P3 ?= 0x01
+ADDR_P4 ?= 0x02
+ADDR_P5 ?= 0x03
+
+PROTOCOL ?= NRF24L01P_ENHANCED_SHOCKBURST
+
+include ../Makefile.tests_common
+
+USEMODULE += shell
+USEMODULE += shell_commands
+USEMODULE += ps
+USEMODULE += gnrc
+USEMODULE += auto_init_gnrc_netif
+USEMODULE += nrf24l01p
+USEMODULE += nrf24l01p_advanced
+USEMODULE += netstats_l2
+USEMODULE += gnrc_ipv6
+USEMODULE += netstats_ipv6
+USEMODULE += gnrc_ipv6_router_default
+USEMODULE += gnrc_icmpv6
+USEMODULE += gnrc_icmpv6_error
+USEMODULE += gnrc_icmpv6_echo
+USEMODULE += gnrc_txtsnd
+USEMODULE += gnrc_pktdump
+
+# export parameters
+CFLAGS += -DNRF24L01P_PARAM_SPI=$(SPI_PORT)
+CFLAGS += -DNRF24L01P_PARAM_PIN_CE=$(CE_PIN)
+CFLAGS += -DNRF24L01P_PARAM_PIN_CS=$(CS_PIN)
+CFLAGS += -DNRF24L01P_PARAM_PIN_IRQ=$(IRQ_PIN)
+
+CFLAGS += -DNRF24L01P_PARAM_RX_P0_ADDR=$(ADDR_P0)
+CFLAGS += -DNRF24L01P_PARAM_RX_P1_ADDR=$(ADDR_P1)
+CFLAGS += -DNRF24L01P_PARAM_RX_P2_ADDR=$(ADDR_P2)
+CFLAGS += -DNRF24L01P_PARAM_RX_P3_ADDR=$(ADDR_P3)
+CFLAGS += -DNRF24L01P_PARAM_RX_P4_ADDR=$(ADDR_P4)
+CFLAGS += -DNRF24L01P_PARAM_RX_P5_ADDR=$(ADDR_P5)
+CFLAGS += -DNRF24L01P_PARAM_PROTOCOL=$(PROTOCOL)
+
+include $(RIOTBASE)/Makefile.include

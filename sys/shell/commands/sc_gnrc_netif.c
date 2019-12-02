@@ -122,7 +122,8 @@ static int _netif_stats(netif_t *iface, unsigned module, bool reset)
     }
     else if (reset) {
         memset(stats, 0, sizeof(netstats_t));
-        printf("Reset statistics for module %s!\n", _netstats_module_to_str(module));
+        printf("Reset statistics for module %s!\n",
+               _netstats_module_to_str(module));
     }
     else {
         printf("          Statistics for %s\n"
@@ -130,13 +131,13 @@ static int _netif_stats(netif_t *iface, unsigned module, bool reset)
                "            TX packets %u (Multicast: %u)  bytes %u\n"
                "            TX succeeded %u errors %u\n",
                _netstats_module_to_str(module),
-               (unsigned) stats->rx_count,
-               (unsigned) stats->rx_bytes,
-               (unsigned) (stats->tx_unicast_count + stats->tx_mcast_count),
-               (unsigned) stats->tx_mcast_count,
-               (unsigned) stats->tx_bytes,
-               (unsigned) stats->tx_success,
-               (unsigned) stats->tx_failed);
+               (unsigned)stats->rx_count,
+               (unsigned)stats->rx_bytes,
+               (unsigned)(stats->tx_unicast_count + stats->tx_mcast_count),
+               (unsigned)stats->tx_mcast_count,
+               (unsigned)stats->tx_bytes,
+               (unsigned)stats->tx_success,
+               (unsigned)stats->tx_failed);
         res = 0;
     }
     return res;
@@ -612,7 +613,7 @@ static void _netif_list(netif_t *iface)
 #endif
     res = netif_get_opt(iface, NETOPT_SRC_LEN, 0, &u16, sizeof(u16));
     if (res >= 0) {
-        printf("Source address length: %" PRIu16 , u16);
+        printf("Source address length: %" PRIu16, u16);
         line_thresh++;
     }
     line_thresh = _newline(0U, line_thresh);
@@ -929,6 +930,19 @@ static int _netif_set_lw_key(netif_t *iface, netopt_t opt, char *key_str)
 }
 #endif
 
+static int _netif_set_bool(netif_t *iface, netopt_t opt, char *value)
+{
+    if (!value || value[0] == '0' ||
+        !(strcmp("off", value) || !(strcmp("OFF", value)))) {
+        return _netif_set_flag(iface, opt, NETOPT_DISABLE);
+    }
+    else if (value[0] == '1' ||
+             !(strcmp("on", value)) || !(strcmp("ON", value))) {
+        return _netif_set_flag(iface, opt, NETOPT_ENABLE);
+    }
+    return 1;
+}
+
 static int _netif_set_addr(netif_t *iface, netopt_t opt, char *addr_str)
 {
     uint8_t addr[GNRC_NETIF_L2ADDR_MAXLEN];
@@ -989,7 +1003,8 @@ static int _netif_set_state(netif_t *iface, char *state_str)
         state = NETOPT_STATE_STANDBY;
     }
     else {
-        puts("usage: ifconfig <if_id> set state [off|sleep|idle|rx|tx|reset|standby]");
+        puts(
+            "usage: ifconfig <if_id> set state [off|sleep|idle|rx|tx|reset|standby]");
         return 1;
     }
     if (netif_set_opt(iface, NETOPT_STATE, 0,
@@ -1004,7 +1019,8 @@ static int _netif_set_state(netif_t *iface, char *state_str)
     return 0;
 }
 
-static int _hex_to_int(char c) {
+static int _hex_to_int(char c)
+{
     if ('0' <= c && c <= '9') {
         return c - '0';
     }
@@ -1144,7 +1160,8 @@ static int _netif_set(char *cmd_name, netif_t *iface, char *key, char *value)
     else if ((strcmp("bandwidth", key) == 0) || (strcmp("bw", key) == 0)) {
         return _netif_set_bandwidth(iface, value);
     }
-    else if ((strcmp("spreading_factor", key) == 0) || (strcmp("sf", key) == 0)) {
+    else if ((strcmp("spreading_factor", key) == 0) ||
+             (strcmp("sf", key) == 0)) {
         return _netif_set_u8(iface, NETOPT_SPREADING_FACTOR, 0, value);
     }
     else if ((strcmp("coding_rate", key) == 0) || (strcmp("cr", key) == 0)) {
@@ -1174,6 +1191,9 @@ static int _netif_set(char *cmd_name, netif_t *iface, char *key, char *value)
 #endif
     else if ((strcmp("channel", key) == 0) || (strcmp("chan", key) == 0)) {
         return _netif_set_u16(iface, NETOPT_CHANNEL, 0, value);
+    }
+    else if ((strcmp("checksum", key) == 0)) {
+        return _netif_set_bool(iface, NETOPT_CHECKSUM, value);
     }
     else if (strcmp("csma_retries", key) == 0) {
         return _netif_set_u8(iface, NETOPT_CSMA_RETRIES, 0, value);
