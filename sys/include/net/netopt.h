@@ -77,6 +77,7 @@ typedef enum {
      * Ethernet      | 6      | device MAC address
      * nrfmin        | 2      | device short address
      * CC110x        | 1      | device address
+     * NRF24L01P     | 5      | device address
      * LoRaWAN       | 4      | device address
      */
     NETOPT_ADDRESS,
@@ -493,10 +494,10 @@ typedef enum {
     NETOPT_CHANNEL_HOP_PERIOD,
 
     /**
-      * @brief   (@ref netopt_enable_t) single frame reception
-      *
-      * If enabled, RX is turned off upon reception of a frame
-      */
+     * @brief   (@ref netopt_enable_t) single frame reception
+     *
+     * If enabled, RX is turned off upon reception of a frame
+     */
     NETOPT_SINGLE_RECEIVE,
 
     /**
@@ -602,7 +603,7 @@ typedef enum {
      */
     NETOPT_LORAWAN_APPSKEY,
 
-     /**
+    /**
      * @brief   (uint8_t) LoRaWAN device class (A, B, C)
      * - LoRaWAN: @ref loramac_class_t
      */
@@ -705,8 +706,8 @@ typedef enum {
  * @brief   Binary parameter for enabling and disabling options
  */
 typedef enum {
-    NETOPT_DISABLE = 0,         /**< disable a given option */
-    NETOPT_ENABLE = 1,          /**< enable a given option */
+    NETOPT_DISABLE  = 0,        /**< disable a given option */
+    NETOPT_ENABLE   = 1,        /**< enable a given option */
 } netopt_enable_t;
 
 /**
