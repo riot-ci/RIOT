@@ -968,7 +968,7 @@ typedef uint8_t nrf24l01p_reg8_features_t;
  *
  * @return                  Status register value
  */
-uint8_t nrf24l01p_reg8_set(nrf24l01p_t *dev, uint8_t reg_addr,
+uint8_t nrf24l01p_reg8_set(const nrf24l01p_t *dev, uint8_t reg_addr,
                            uint8_t *reg_val);
 
 /**
@@ -980,7 +980,7 @@ uint8_t nrf24l01p_reg8_set(nrf24l01p_t *dev, uint8_t reg_addr,
  *
  * @return                  Status register value
  */
-uint8_t nrf24l01p_reg8_clear(nrf24l01p_t *dev, uint8_t reg_addr,
+uint8_t nrf24l01p_reg8_clear(const nrf24l01p_t *dev, uint8_t reg_addr,
                              uint8_t *reg_val);
 
 /**
@@ -993,7 +993,7 @@ uint8_t nrf24l01p_reg8_clear(nrf24l01p_t *dev, uint8_t reg_addr,
  *
  * @return                  Status register value
  */
-uint8_t nrf24l01p_reg8_mod(nrf24l01p_t *dev, uint8_t reg_addr,
+uint8_t nrf24l01p_reg8_mod(const nrf24l01p_t *dev, uint8_t reg_addr,
                            uint8_t mask, uint8_t *reg_val);
 
 #ifdef __cplusplus

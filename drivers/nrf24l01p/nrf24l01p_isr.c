@@ -24,20 +24,19 @@
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_isr.h"
 
-netdev_event_t nrf24l01p_isr_max_rt(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_max_rt(const nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_STATE_RX_MODE   ||
            dev->state == NRF24L01P_STATE_TX_MODE);
     DEBUG("[nrf24l01p] IRS MAX_RT\n");
-    /* clear interrupt flag */
     netdev_event_t event = NETDEV_EVENT_TX_NOACK;
     nrf24l01p_flush_tx(dev);
     return event;
 }
 
-netdev_event_t nrf24l01p_isr_rx_dr(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_rx_dr(const nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||
@@ -48,14 +47,13 @@ netdev_event_t nrf24l01p_isr_rx_dr(nrf24l01p_t *dev)
     return event;
 }
 
-netdev_event_t nrf24l01p_isr_tx_ds(nrf24l01p_t *dev)
+netdev_event_t nrf24l01p_isr_tx_ds(const nrf24l01p_t *dev)
 {
     assert(dev->state == NRF24L01P_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_STATE_RX_MODE   ||
            dev->state == NRF24L01P_STATE_TX_MODE);
     DEBUG("[nrf24l01p] IRS TX_DS\n");
-    /* clear interrupt flag */
     netdev_event_t event = NETDEV_EVENT_TX_COMPLETE;
     return event;
 }

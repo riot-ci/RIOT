@@ -68,7 +68,7 @@ const netdev_driver_t nrf24l01p_driver = {
     .set = nrf24l01p_set
 };
 
-static inline void nrf24l01p_trigger_send(nrf24l01p_t *dev)
+static inline void nrf24l01p_trigger_send(const nrf24l01p_t *dev)
 {
     gpio_set(dev->params.pin_ce);
     xtimer_usleep(NRF24L01P_DELAY_US_CE_HIGH_PULSE);
@@ -617,7 +617,7 @@ static void nrf24l01p_isr(netdev_t *netdev)
  *          if n = 5:
  *          [a1, a2, 0, ff, fe, a3, a4, a5]
  */
-static int nrf24l01p_get_iid(nrf24l01p_t *dev, eui64_t *iid)
+static int nrf24l01p_get_iid(const nrf24l01p_t *dev, eui64_t *iid)
 {
     *iid = (eui64_t){
         .uint8 = { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x00 }
