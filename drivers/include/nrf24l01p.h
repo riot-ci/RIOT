@@ -236,7 +236,7 @@ int nrf24l01p_set_air_data_rate(nrf24l01p_t *dev, nrf24l01p_rfdr_t data_rate);
  *
  * @return                  Data rate in [kbit/s]
  */
-uint16_t nrf24l01p_get_air_data_rate(nrf24l01p_t *dev,
+uint16_t nrf24l01p_get_air_data_rate(const nrf24l01p_t *dev,
                                      nrf24l01p_rfdr_t *data_rate);
 
 /**
@@ -259,7 +259,7 @@ int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crc_t crc);
  *
  * @return                  Current CRC length
  */
-uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crc_t *crc);
+uint8_t nrf24l01p_get_crc(const nrf24l01p_t *dev, nrf24l01p_crc_t *crc);
 
 /**
  * @brief   Configure Tx trasceiver power
@@ -281,7 +281,7 @@ int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power);
  *
  * @return                  Tx power in [dbm]
  */
-int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t *power);
+int8_t nrf24l01p_get_tx_power(const nrf24l01p_t *dev, nrf24l01p_tx_power_t *power);
 
 /**
  * @brief   Set transceiver channel
@@ -302,7 +302,7 @@ int nrf24l01p_set_channel(nrf24l01p_t *dev, uint8_t channel);
  *
  * @return                  Transceiver channel
  */
-uint8_t nrf24l01p_get_channel(nrf24l01p_t *dev);
+uint8_t nrf24l01p_get_channel(const nrf24l01p_t *dev);
 
 /**
  * @brief   Configure expected MTU of a certain data pipe
@@ -328,7 +328,7 @@ int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe);
  * @retval NRF24L_MTU       Dynamic length for ESB protocol
  * @retval -ERANGE          Bad pipe index
  */
-int nrf24l01p_get_mtu(nrf24l01p_t *dev, nrf24l01p_pipe_t pipe);
+int nrf24l01p_get_mtu(const nrf24l01p_t *dev, nrf24l01p_pipe_t pipe);
 
 /**
  * @brief   Set Rx address of a certain data pipe
@@ -356,7 +356,7 @@ int nrf24l01p_set_rx_address(nrf24l01p_t *dev, const uint8_t *addr,
  * @return                  Address width
  * @retval -ERANGE          Bad pipe index
  */
-int nrf24l01p_get_rx_address(nrf24l01p_t *dev, uint8_t *addr,
+int nrf24l01p_get_rx_address(const nrf24l01p_t *dev, uint8_t *addr,
                              nrf24l01p_pipe_t pipe);
 
 /**
@@ -379,7 +379,7 @@ int nrf24l01p_set_max_retransm(nrf24l01p_t *dev, uint8_t max_rt);
  *
  * @return                  Maximum number of retransmissions
  */
-uint8_t nrf24l01p_get_max_retransm(nrf24l01p_t *dev);
+uint8_t nrf24l01p_get_max_retransm(const nrf24l01p_t *dev);
 
 /**
  * @brief   Set retransmission delay for ESB
@@ -402,7 +402,7 @@ int nrf24l01p_set_retransm_delay(nrf24l01p_t *dev, nrf24l01p_ard_t rt_delay);
  *
  * @return                  Retransmission delay in [us]
  */
-uint16_t nrf24l01p_get_retransm_delay(nrf24l01p_t *dev,
+uint16_t nrf24l01p_get_retransm_delay(const nrf24l01p_t *dev,
                                       nrf24l01p_ard_t *rt_delay);
 
 /**
@@ -427,7 +427,7 @@ int nrf24l01p_set_state(nrf24l01p_t *dev, nrf24l01p_state_t state);
  *
  * @return                    Device state
  */
-nrf24l01p_state_t nrf24l01p_get_state(nrf24l01p_t *dev);
+nrf24l01p_state_t nrf24l01p_get_state(const nrf24l01p_t *dev);
 
 /**
  * @brief   Wrapper around @see nrf24l01p_set_mtu to set the
@@ -521,7 +521,7 @@ static inline int nrf24l01p_set_mtu_p5(nrf24l01p_t *dev, uint8_t width)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p0(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p0(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P0);
 }
@@ -534,7 +534,7 @@ static inline int nrf24l01p_get_mtu_p0(nrf24l01p_t *dev)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p1(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p1(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P1);
 }
@@ -547,7 +547,7 @@ static inline int nrf24l01p_get_mtu_p1(nrf24l01p_t *dev)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p2(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p2(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P2);
 }
@@ -560,7 +560,7 @@ static inline int nrf24l01p_get_mtu_p2(nrf24l01p_t *dev)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p3(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p3(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P3);
 }
@@ -573,7 +573,7 @@ static inline int nrf24l01p_get_mtu_p3(nrf24l01p_t *dev)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p4(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p4(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P4);
 }
@@ -586,7 +586,7 @@ static inline int nrf24l01p_get_mtu_p4(nrf24l01p_t *dev)
  *
  * @return              @see nrf24l01p_get_mtu
  */
-static inline int nrf24l01p_get_mtu_p5(nrf24l01p_t *dev)
+static inline int nrf24l01p_get_mtu_p5(const nrf24l01p_t *dev)
 {
     return nrf24l01p_get_mtu(dev, NRF24L01P_P5);
 }
@@ -702,7 +702,8 @@ static inline int nrf24l01p_set_rx_address_p5(nrf24l01p_t *dev,
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p0(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p0(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P0);
 }
@@ -716,7 +717,8 @@ static inline int nrf24l01p_get_rx_address_p0(nrf24l01p_t *dev, uint8_t *addr)
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p1(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p1(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P1);
 }
@@ -730,7 +732,8 @@ static inline int nrf24l01p_get_rx_address_p1(nrf24l01p_t *dev, uint8_t *addr)
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p2(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p2(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P2);
 }
@@ -744,7 +747,8 @@ static inline int nrf24l01p_get_rx_address_p2(nrf24l01p_t *dev, uint8_t *addr)
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p3(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p3(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P3);
 }
@@ -758,7 +762,8 @@ static inline int nrf24l01p_get_rx_address_p3(nrf24l01p_t *dev, uint8_t *addr)
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p4(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p4(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P4);
 }
@@ -772,7 +777,8 @@ static inline int nrf24l01p_get_rx_address_p4(nrf24l01p_t *dev, uint8_t *addr)
  *
  * @return              @see nrf24l01p_get_rx_address
  */
-static inline int nrf24l01p_get_rx_address_p5(nrf24l01p_t *dev, uint8_t *addr)
+static inline int nrf24l01p_get_rx_address_p5(const nrf24l01p_t *dev,
+                                              uint8_t *addr)
 {
     return nrf24l01p_get_rx_address(dev, addr, NRF24L01P_P5);
 }
@@ -828,7 +834,7 @@ void nrf24l01p_print_all_regs(nrf24l01p_t *dev);
  *
  * @param[in] dev       NRf24L01P device handle
  */
-void nrf24l01p_print_dev_info(nrf24l01p_t *dev);
+void nrf24l01p_print_dev_info(const nrf24l01p_t *dev);
 
 #ifdef __cplusplus
 }

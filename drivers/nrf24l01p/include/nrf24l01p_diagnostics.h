@@ -30,7 +30,7 @@ extern "C" {
  *
  * @param[in] dev           NRF24L01P device handle
  */
-void nrf24l01p_diagnostics_print_all_regs(nrf24l01p_t *dev);
+void nrf24l01p_diagnostics_print_all_regs(const nrf24l01p_t *dev);
 
 /**
  * @brief   Print NRF24L01P device handle information

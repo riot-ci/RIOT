@@ -132,7 +132,7 @@ void nrf24l01p_release(nrf24l01p_t *dev);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_read_reg(nrf24l01p_t *dev, uint8_t reg, uint8_t *dest,
+uint8_t nrf24l01p_read_reg(const nrf24l01p_t *dev, uint8_t reg, uint8_t *dest,
                            size_t len);
 
 /**
@@ -145,8 +145,8 @@ uint8_t nrf24l01p_read_reg(nrf24l01p_t *dev, uint8_t reg, uint8_t *dest,
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_write_reg(nrf24l01p_t *dev, uint8_t reg, const uint8_t *src,
-                            size_t len);
+uint8_t nrf24l01p_write_reg(const nrf24l01p_t *dev, uint8_t reg,
+                            const uint8_t *src, size_t len);
 
 /**
  * @brief   Read received payload
@@ -157,7 +157,8 @@ uint8_t nrf24l01p_write_reg(nrf24l01p_t *dev, uint8_t reg, const uint8_t *src,
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_read_rx_payload(nrf24l01p_t *dev, void *dest, size_t len);
+uint8_t nrf24l01p_read_rx_payload(const nrf24l01p_t *dev, void *dest,
+                                  size_t len);
 
 /**
  * @brief   Write payload to be transmitted
@@ -168,7 +169,7 @@ uint8_t nrf24l01p_read_rx_payload(nrf24l01p_t *dev, void *dest, size_t len);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_write_tx_payload(nrf24l01p_t *dev, const void *src,
+uint8_t nrf24l01p_write_tx_payload(const nrf24l01p_t *dev, const void *src,
                                    size_t len);
 
 /**
@@ -178,7 +179,7 @@ uint8_t nrf24l01p_write_tx_payload(nrf24l01p_t *dev, const void *src,
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_flush_tx(nrf24l01p_t *dev);
+uint8_t nrf24l01p_flush_tx(const nrf24l01p_t *dev);
 
 /**
  * @brief   Flush RX FIFO
@@ -187,7 +188,7 @@ uint8_t nrf24l01p_flush_tx(nrf24l01p_t *dev);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_flush_rx(nrf24l01p_t *dev);
+uint8_t nrf24l01p_flush_rx(const nrf24l01p_t *dev);
 
 /**
  * @brief   Reuse TX payload in FIFO
@@ -199,7 +200,7 @@ uint8_t nrf24l01p_flush_rx(nrf24l01p_t *dev);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_reuse_tx_pl(nrf24l01p_t *dev);
+uint8_t nrf24l01p_reuse_tx_pl(const nrf24l01p_t *dev);
 
 /**
  * @brief   Read received payload width
@@ -209,7 +210,7 @@ uint8_t nrf24l01p_reuse_tx_pl(nrf24l01p_t *dev);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_read_rx_pl_width(nrf24l01p_t *dev, uint8_t *dest);
+uint8_t nrf24l01p_read_rx_pl_width(const nrf24l01p_t *dev, uint8_t *dest);
 
 /**
  * @brief   Write Payload to be transmitted in an ACK frame
@@ -221,8 +222,8 @@ uint8_t nrf24l01p_read_rx_pl_width(nrf24l01p_t *dev, uint8_t *dest);
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_write_ack_pl(nrf24l01p_t *dev, const void *src, size_t len,
-                               uint8_t pipe);
+uint8_t nrf24l01p_write_ack_pl(const nrf24l01p_t *dev, const void *src,
+                               size_t len, uint8_t pipe);
 
 /**
  * @brief   Write payload to be transmitted but do not expect an ACK for
@@ -234,7 +235,7 @@ uint8_t nrf24l01p_write_ack_pl(nrf24l01p_t *dev, const void *src, size_t len,
  *
  * @return              Status register value
  */
-uint8_t nrf24l01p_write_tx_pl_no_ack(nrf24l01p_t *dev, const void *src,
+uint8_t nrf24l01p_write_tx_pl_no_ack(const nrf24l01p_t *dev, const void *src,
                                      size_t len);
 
 /**
@@ -244,7 +245,7 @@ uint8_t nrf24l01p_write_tx_pl_no_ack(nrf24l01p_t *dev, const void *src,
  *
  * @return          Status register value
  */
-uint8_t nrf24l01p_get_status(nrf24l01p_t *dev);
+uint8_t nrf24l01p_get_status(const nrf24l01p_t *dev);
 
 #ifdef __cplusplus
 }

@@ -23,7 +23,7 @@
 #include "nrf24l01p_util.h"
 #include "nrf24l01p_diagnostics.h"
 
-void nrf24l01p_diagnostics_print_all_regs(nrf24l01p_t *dev)
+void nrf24l01p_diagnostics_print_all_regs(const nrf24l01p_t *dev)
 {
     nrf24l01p_reg8_config_t config;
 

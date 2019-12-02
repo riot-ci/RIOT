@@ -25,7 +25,7 @@
 #include "nrf24l01p_conversion.h"
 #include "nrf24l01p_internal.h"
 
-int nrf24l01p_assert_awake(nrf24l01p_t *dev)
+int nrf24l01p_assert_awake(const nrf24l01p_t *dev)
 {
     nrf24l01p_reg8_config_t config = 0;
 
@@ -33,7 +33,7 @@ int nrf24l01p_assert_awake(nrf24l01p_t *dev)
     return config & NRF24L01P_FLG_PWR_UP;
 }
 
-void nrf24l01p_restore_address(nrf24l01p_t *dev)
+void nrf24l01p_restore_address(const nrf24l01p_t *dev)
 {
     nrf24l01p_reg8_setup_aw_t setup_aw =
         NRF24L01P_FLG_AW(dev->params.config.cfg_addr_width);

@@ -56,14 +56,14 @@ extern "C" {
  * @retval !=0              Awake
  * @retval 0                Asleep
  */
-int nrf24l01p_assert_awake(nrf24l01p_t *dev);
+int nrf24l01p_assert_awake(const nrf24l01p_t *dev);
 
 /**
  * @brief   Restore rx address from params after a transmission
  *
  * @param[in] dev           NRF24L01P device handle
  */
-void nrf24l01p_restore_address(nrf24l01p_t *dev);
+void nrf24l01p_restore_address(const nrf24l01p_t *dev);
 
 #ifdef __cplusplus
 }
