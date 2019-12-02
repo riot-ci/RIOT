@@ -124,7 +124,8 @@ static int nrf24l01p_set_payload_width(nrf24l01p_t *dev, uint8_t width,
     return 0;
 }
 
-static int nrf24l01p_get_payload_width(nrf24l01p_t *dev, nrf24l01p_pipe_t pipe)
+static int nrf24l01p_get_payload_width(const nrf24l01p_t *dev,
+                                       nrf24l01p_pipe_t pipe)
 {
     assert(dev);
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_ESB) {
@@ -198,7 +199,7 @@ int nrf24l01p_set_air_data_rate(nrf24l01p_t *dev, nrf24l01p_rfdr_t data_rate)
     return 0;
 }
 
-uint16_t nrf24l01p_get_air_data_rate(nrf24l01p_t *dev,
+uint16_t nrf24l01p_get_air_data_rate(const nrf24l01p_t *dev,
                                      nrf24l01p_rfdr_t *data_rate)
 {
     assert(dev);
@@ -237,7 +238,7 @@ int nrf24l01p_set_crc(nrf24l01p_t *dev, nrf24l01p_crc_t crc)
     return 0;
 }
 
-uint8_t nrf24l01p_get_crc(nrf24l01p_t *dev, nrf24l01p_crc_t *crc)
+uint8_t nrf24l01p_get_crc(const nrf24l01p_t *dev, nrf24l01p_crc_t *crc)
 {
     assert(dev);
     if (crc) {
@@ -269,7 +270,7 @@ int nrf24l01p_set_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t power)
     return 0;
 }
 
-int8_t nrf24l01p_get_tx_power(nrf24l01p_t *dev, nrf24l01p_tx_power_t *power)
+int8_t nrf24l01p_get_tx_power(const nrf24l01p_t *dev, nrf24l01p_tx_power_t *power)
 {
     assert(dev);
     if (power) {
@@ -301,7 +302,7 @@ int nrf24l01p_set_channel(nrf24l01p_t *dev, uint8_t channel)
     return 0;
 }
 
-uint8_t nrf24l01p_get_channel(nrf24l01p_t *dev)
+uint8_t nrf24l01p_get_channel(const nrf24l01p_t *dev)
 {
     assert(dev);
     return dev->params.config.cfg_channel;
@@ -318,7 +319,7 @@ int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe)
 #endif
 }
 
-int nrf24l01p_get_mtu(nrf24l01p_t *dev, nrf24l01p_pipe_t pipe)
+int nrf24l01p_get_mtu(const nrf24l01p_t *dev, nrf24l01p_pipe_t pipe)
 {
 # if IS_USED(NRF24L01P_CUSTOM_HEADER)
     return nrf24l01p_get_payload_width(dev, pipe)
@@ -368,7 +369,7 @@ int nrf24l01p_set_rx_address(nrf24l01p_t *dev, const uint8_t *addr,
     return 0;
 }
 
-int nrf24l01p_get_rx_address(nrf24l01p_t *dev, uint8_t *addr,
+int nrf24l01p_get_rx_address(const nrf24l01p_t *dev, uint8_t *addr,
                              nrf24l01p_pipe_t pipe)
 {
     assert(dev);
@@ -413,7 +414,7 @@ int nrf24l01p_set_max_retransm(nrf24l01p_t *dev, uint8_t max_rt)
     return 0;
 }
 
-uint8_t nrf24l01p_get_max_retransm(nrf24l01p_t *dev)
+uint8_t nrf24l01p_get_max_retransm(const nrf24l01p_t *dev)
 {
     assert(dev);
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
@@ -448,7 +449,7 @@ int nrf24l01p_set_retransm_delay(nrf24l01p_t *dev, nrf24l01p_ard_t rt_delay)
     return 0;
 }
 
-uint16_t nrf24l01p_get_retransm_delay(nrf24l01p_t *dev,
+uint16_t nrf24l01p_get_retransm_delay(const nrf24l01p_t *dev,
                                       nrf24l01p_ard_t *rt_delay)
 {
     assert(dev);
@@ -499,7 +500,7 @@ int nrf24l01p_set_state(nrf24l01p_t *dev, nrf24l01p_state_t state)
     return (int)old;
 }
 
-nrf24l01p_state_t nrf24l01p_get_state(nrf24l01p_t *dev)
+nrf24l01p_state_t nrf24l01p_get_state(const nrf24l01p_t *dev)
 {
     assert(dev);
     return dev->state;
@@ -512,7 +513,7 @@ void nrf24l01p_print_all_regs(nrf24l01p_t *dev)
     nrf24l01p_release(dev);
 }
 
-void nrf24l01p_print_dev_info(nrf24l01p_t *dev)
+void nrf24l01p_print_dev_info(const nrf24l01p_t *dev)
 {
     nrf24l01p_diagnostics_print_dev_info(dev);
 }
