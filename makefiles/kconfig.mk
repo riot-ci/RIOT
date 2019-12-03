@@ -44,12 +44,14 @@ KCONFIG_EDITED_CONFIG = $(GENERATED_DIR)/.editedconfig
 MERGE_SOURCES += $(wildcard $(KCONFIG_APP_CONFIG))
 MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
 
+# Create directory to place generated files
+$(GENERATED_DIR):
+	$(Q)mkdir -p $@
+
 # Build a Kconfig file defining all used modules. This is done by defining
 # symbols like 'MODULE_<MODULE_NAME>' which default to 'y'. Then, every module
 # Kconfig menu will depend on that symbol being set to show its options.
-$(KCONFIG_GENERATED_DEPENDENCIES): FORCE
-	mkdir -p $(dir $@) && echo "Created"
-	ls -lha $(dir $@)
+$(KCONFIG_GENERATED_DEPENDENCIES): $(GENERATED_DIR) FORCE
 	printf "%s " $(USEMODULE) \
 	  | awk 'BEGIN {RS=" "}{ gsub("-", "_", $$0); \
 	      printf "config MODULE_%s\n\tbool\n\tdefault y\n", toupper($$0)}' \
@@ -83,5 +85,4 @@ $(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(KCONFIG_GENERATED_DEPENDENCIES) FORCE
 # Build a header file with all the Kconfig configurations. genconfig will avoid
 # any unnecessary rewrites of the header file if no configurations changed.
 $(KCONFIG_GENERATED_AUTOCONF_HEADER_C): $(KCONFIG_GENERATED_DEPENDENCIES) $(GENCONFIG) $(KCONFIG_MERGED_CONFIG) FORCE
-	@mkdir -p '$(dir $@)'
 	$(Q)KCONFIG_CONFIG=$(KCONFIG_MERGED_CONFIG) $(GENCONFIG) --header-path $@ $(KCONFIG)
