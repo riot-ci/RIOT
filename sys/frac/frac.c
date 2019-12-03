@@ -68,7 +68,7 @@ static uint32_t gcd32(uint32_t u, uint32_t v)
          * then set v = v - u (which is even). */
         if (u > v) {
             /* Swap u and v */
-            unsigned int t = v;
+            uint32_t t = v;
             v = u;
             u = t;
         }
