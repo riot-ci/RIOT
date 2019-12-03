@@ -59,7 +59,7 @@ static gnrc_pktsnip_t *_build_join_req_pkt(uint8_t *appeui, uint8_t *deveui, uin
 static int gnrc_lorawan_send_join_request(gnrc_lorawan_t *mac, uint8_t *deveui,
                                           uint8_t *appeui, uint8_t *appkey, uint8_t dr)
 {
-    netdev_t *dev = mac->netdev.lower;
+    netdev_t *dev = gnrc_lorawan_get_netdev(mac);
 
     /* Dev Nonce */
     uint32_t random_number;
