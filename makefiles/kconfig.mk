@@ -46,7 +46,8 @@ MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
 
 # Create directory to place generated files
 $(GENERATED_DIR):
-	mkdir -p $@
+	mkdir -p $@ && echo "Created"
+	ls -lha $@
 
 # Build a Kconfig file defining all used modules. This is done by defining
 # symbols like 'MODULE_<MODULE_NAME>' which default to 'y'. Then, every module
