@@ -164,7 +164,6 @@ typedef struct {
 /**
  * @brief GNRC LoRaWAN mac descriptor */
 typedef struct {
-    netdev_t netdev;                                /**< netdev for the MAC layer */
     xtimer_t rx;                                    /**< RX timer */
     msg_t msg;                                      /**< MAC layer message descriptor */
     gnrc_lorawan_mcps_t mcps;                       /**< MCPS descriptor */
