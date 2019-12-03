@@ -60,8 +60,7 @@ typedef struct {
  *
  * This function computes the mathematical parameters used by the frac algorithm.
  *
- * @note Be extra careful if @p num > @p den, the result from @ref frac_scale
- * may not fit in a 32 bit integer if @c x is big.
+ * @note If @p num > @p den, the result from @ref frac_scale modulo 2**32.
  *
  * @pre @p den must not be 0
  *
@@ -74,13 +73,10 @@ void frac_init(frac_t *frac, uint32_t num, uint32_t den);
 /**
  * @brief   Scale a 32 bit integer by a 32/32 rational number
  *
- * @pre x * frac < 2**32, i.e. the result fits in a 32 bit integer
- *
  * @param[in]   frac  scaling fraction
  * @param[in]   x     unscaled integer
  *
- * @return      x * frac, avoiding truncation
- * @return      a wrong result if x * frac > 2**32
+ * @return      (x * frac) % 2**32, avoiding truncation
  */
 static inline uint32_t frac_scale(const frac_t *frac, uint32_t x)
 {
