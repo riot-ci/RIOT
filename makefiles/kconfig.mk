@@ -48,7 +48,8 @@ MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
 # symbols like 'MODULE_<MODULE_NAME>' which default to 'y'. Then, every module
 # Kconfig menu will depend on that symbol being set to show its options.
 $(KCONFIG_GENERATED_DEPENDENCIES): FORCE
-	mkdir -p $(dir $@)
+	mkdir -p $(dir $@) && echo "Created"
+	ls -lha $(dir $@)
 	printf "%s " $(USEMODULE) \
 	  | awk 'BEGIN {RS=" "}{ gsub("-", "_", $$0); \
 	      printf "config MODULE_%s\n\tbool\n\tdefault y\n", toupper($$0)}' \
