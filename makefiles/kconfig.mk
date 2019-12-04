@@ -44,6 +44,8 @@ KCONFIG_EDITED_CONFIG = $(GENERATED_DIR)/.editedconfig
 MERGE_SOURCES += $(wildcard $(KCONFIG_APP_CONFIG))
 MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
 
+.SECONDARY: $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
+
 # Create directory to place generated files
 $(GENERATED_DIR):
 	mkdir -p $@ && echo "Created"
