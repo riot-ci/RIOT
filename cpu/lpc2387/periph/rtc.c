@@ -53,13 +53,6 @@ void rtc_init(void)
 
     RTC_CCR = CCR_CLKSRC;                   /* Clock from external 32 kHz Osc. */
 
-    /* initialize clock with valid unix compatible values
-     * If RTC_YEAR contains an value larger unix time_t we must reset. */
-    if (RTC_YEAR > 2037) {
-        struct tm localt = { .tm_year = 70 };
-        rtc_set_time(&localt);
-    }
-
     rtc_poweron();
 
     DEBUG("%2lu.%2lu.%4lu  %2lu:%2lu:%2lu\n",
