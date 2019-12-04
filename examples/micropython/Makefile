@@ -23,4 +23,8 @@ CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
 # characters (CTRL-D ...)
 RIOT_TERMINAL ?= miniterm
 
+# enable modmachine support for periphials if available
+FEATURES_OPTIONAL += periph_adc
+FEATURES_OPTIONAL += periph_spi
+
 include $(RIOTBASE)/Makefile.include
