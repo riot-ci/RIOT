@@ -40,6 +40,7 @@ static const uint32_t u32_fraction_operands[] = {
     921600ul,
     4096ul,
     15625ul,
+    125ul,
     1048576ul,
     0x10000000ul,
     0x1000000ul,
@@ -113,23 +114,24 @@ static void test_frac_scale32(void)
                 volatile uint64_t tmp = (uint64_t)u32_test_values[i] * num;
                 volatile uint64_t expected = tmp / (uint64_t)den;
                 if (expected > 0xfffffffful) {
-                    /* result will not fit */
-                    continue;
+                    expected &= 0xfffffffful;
                 }
                 uint32_t actual = frac_scale(&frac, u32_test_values[i]);
                 if ((uint32_t)expected != actual) {
                     int32_t diff = actual - expected;
                     DEBUG("%" PRIu32 " * (%" PRIu32 " / %" PRIu32 ")"
-                        " tmp %" PRIu64 " expect %" PRIu32 ", actual %" PRIu32 ", diff = %" PRId32 "\n",
+                        " tmp %" PRIu64 " expect %" PRIu32 ", actual %" PRIu32 ", diff = %" PRId32 " shift=%u\n",
                         u32_test_values[i], num, den, tmp, (uint32_t)expected,
-                        actual, diff);
-                    if (tmp >= (1ul << 31)) {
-                        /* The frac algorithm sacrifices accuracy for speed,
-                         * some large numbers will be incorrectly rounded,
-                         * resulting in small differences here.. */
-                        if (diff < 3) {
-                            continue;
-                        }
+                        actual, diff, frac.shift);
+
+                    /* The frac algorithm sacrifices accuracy for speed,
+                     * some large numbers will be incorrectly rounded,
+                     * resulting in small differences here.. */
+                    uint32_t max_error = frac_scale(&frac, 2);
+                    max_error = max_error ? max_error : 1;
+                    TEST_ASSERT_EQUAL_INT(1, diff >= 0);
+                    if ((uint32_t)diff <= max_error) {
+                        continue;
                     }
                 }
                 TEST_ASSERT_EQUAL_INT((uint32_t)expected, (uint32_t)actual);
