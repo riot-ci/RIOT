@@ -79,4 +79,15 @@
  *
  * See examples/micropython for example code.
  *
+ * ## Configuration options
+ *
+ * Use the following environment variables in the application Makefile
+ * or from the command line to configure MicroPython:
+ *
+ * MP_RIOT_HEAPSIZE: heap size for MicroPython, in bytes. Defaults to 16KiB.
+ *
+ * Example on the command line:
+ * ```
+ * MP_RIOT_HEAPSIZE=2048 make -C examples/micropython
+ * ```
  */
