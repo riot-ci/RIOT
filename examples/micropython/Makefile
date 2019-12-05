@@ -23,7 +23,7 @@ CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
 # characters (CTRL-D ...)
 RIOT_TERMINAL ?= miniterm
 
-# enable modmachine support for periphials if available
+# enable modmachine support for peripherals if available
 FEATURES_OPTIONAL += periph_adc
 FEATURES_OPTIONAL += periph_spi
 
