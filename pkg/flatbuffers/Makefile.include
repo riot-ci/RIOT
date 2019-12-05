@@ -8,4 +8,8 @@ ifneq (0,$(shell which flatc 2>&1 > /dev/null ; echo $$?))
   BUILDDEPS += $(FLATC)
 endif
 
+ifneq (,$(filter arch_esp32 arch_esp8266,$(FEATURES_REQUIRED)))
+  CXXEXFLAGS += -std=c++11
+endif
+
 CXXEXFLAGS += -Wno-type-limits
