@@ -24,7 +24,7 @@
  *
  * The algorithm will under certain circumstances give an incorrectly rounded
  * result, more precisely, the result may sometimes be rounded up instead of
- * rounded down when the product in the numerator, @$p = x \cdot num@$, would
+ * rounded down when the product in the numerator, @$p = x * num@$, would
  * result in @$p >= 2^{31}@$. Fortunately, the relative error of this rounding
  * mistake is small.
  *
