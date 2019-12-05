@@ -180,7 +180,11 @@ typedef struct {
  * @name RTT configuration
  * @{
  */
-#ifdef SCCR0
+#if defined(SCCR0) && !defined(RTT_BACKEND_SC)
+#define RTT_BACKEND_SC   (1)
+#endif
+
+#if RTT_BACKEND_SC
 /* For MCU with MAC symbol counter */
 #ifndef RTT_MAX_VALUE
 #define RTT_MAX_VALUE    (0xFFFFFFFFUL)  /* 32-bit timer */

@@ -44,10 +44,7 @@
 
 #include <avr/interrupt.h>
 
-#ifdef SCCR0
-#define RTT_BACKEND_SC  (1)
 #include "byteorder.h"
-#endif
 #include "cpu.h"
 #include "irq.h"
 #include "periph/rtt.h"
@@ -56,7 +53,7 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
 /*
  * Read a 32 bit register as described in section 10.3 of the datasheet: A read
  * of the least significant byte causes the current value to be atomically
@@ -108,7 +105,7 @@ static inline void reg32_write(volatile uint8_t *reg_ll, uint32_t _val)
 #endif
 
 typedef struct {
-#ifndef RTT_BACKEND_SC
+#if RTT_BACKEND_SC == 0
     uint16_t ext_comp;          /* Extend compare to 24-bits */
 #endif
     rtt_cb_t alarm_cb;          /* callback called from RTT alarm */
@@ -118,13 +115,13 @@ typedef struct {
 } rtt_state_t;
 
 static rtt_state_t rtt_state;
-#ifndef RTT_BACKEND_SC
+#if RTT_BACKEND_SC == 0
 static uint16_t ext_cnt;
 #endif
 
 static inline void _asynch_wait(void)
 {
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     /* Wait until counter update flag clear. */
     while (SCSR & ((1 << SCBSY) )) {}
 #else
@@ -138,7 +135,7 @@ static inline void _asynch_wait(void)
 /* interrupts are disabled here */
 static uint32_t _safe_cnt_get(void)
 {
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     return RG_READ32(SCCNT);
 #else
     uint8_t cnt = TCNT2;
@@ -163,7 +160,7 @@ static uint32_t _safe_cnt_get(void)
 #endif
 }
 
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
 static inline void _timer_init(void)
 {
     /*
@@ -259,7 +256,7 @@ void rtt_init(void)
     _timer_init();
     _asynch_wait();
 
-#ifndef RTT_BACKEND_SC
+#if RTT_BACKEND_SC == 0
     /* Clear interrupt flags */
     /* Oddly, this is done by writing ones; see datasheet */
     TIFR2 = (1 << OCF2B) | (1 << OCF2A) | (1 << TOV2);
@@ -296,7 +293,7 @@ uint32_t rtt_get_counter(void)
 {
     unsigned state;
     uint32_t now;
-#ifndef RTT_BACKEND_SC
+#if RTT_BACKEND_SC == 0
     /* Make sure it is safe to read TCNT2, in case we just woke up */
     DEBUG("RTT sleeps until safe to read TCNT2\n");
     TCCR2A = 0;
@@ -317,7 +314,7 @@ void rtt_set_counter(uint32_t counter)
 
     /* Make non-atomic writes atomic (for concurrent access) */
     unsigned state = irq_disable();
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     /* Clear overflow flag by writing a one; see datasheet */
     SCIRQS = (1 << IRQSOF);
 
@@ -341,7 +338,7 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 {
     /* Disable alarm */
     rtt_clear_alarm();
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     /* Make non-atomic writes atomic */
     unsigned state = irq_disable();
 
@@ -403,7 +400,7 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
 
 uint32_t rtt_get_alarm(void)
 {
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     return RG_READ32(SCOCR2);
 #else
     return (rtt_state.ext_comp << 8) | OCR2A;
@@ -416,7 +413,7 @@ void rtt_clear_alarm(void)
     unsigned state = irq_disable();
 
     /* Disable alarm interrupt */
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     SCIRQM &= ~(1 << IRQMCP2);
 #else
     TIMSK2 &= ~(1 << OCIE2A);
@@ -429,7 +426,7 @@ void rtt_clear_alarm(void)
 
 void rtt_poweron(void)
 {
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     SCCR0 |= (1 << SCEN);
 #else
     power_timer2_enable();
@@ -438,14 +435,14 @@ void rtt_poweron(void)
 
 void rtt_poweroff(void)
 {
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     SCCR0 &= ~(1 << SCEN);
 #else
     power_timer2_disable();
 #endif
 }
 
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
 ISR(SCNT_OVFL_vect)
 {
     atmega_enter_isr();
@@ -484,7 +481,7 @@ ISR(TIMER2_OVF_vect)
 }
 #endif
 
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
 ISR(SCNT_CMP2_vect)
 #else
 ISR(TIMER2_COMPA_vect)
@@ -492,7 +489,7 @@ ISR(TIMER2_COMPA_vect)
 {
     atmega_enter_isr();
     /* Disable alarm interrupt */
-#ifdef RTT_BACKEND_SC
+#if RTT_BACKEND_SC
     SCIRQM &= ~(1 << IRQMCP2);
 #else
     TIMSK2 &= ~(1 << OCIE2A);
