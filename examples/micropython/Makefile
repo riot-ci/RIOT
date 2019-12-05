@@ -14,7 +14,7 @@ USEPKG += micropython
 BLOBS += boot.py
 
 # configure MicroPython's heap size
-CFLAGS += '-DMP_RIOT_HEAPSIZE=(8U*1024)'
+MP_RIOT_HEAPSIZE ?= 8192U
 
 # MicroPython needs a larger stack
 CFLAGS += '-DTHREAD_STACKSIZE_MAIN=THREAD_STACKSIZE_DEFAULT*4'
