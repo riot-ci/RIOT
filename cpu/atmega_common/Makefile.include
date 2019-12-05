@@ -6,6 +6,9 @@ INCLUDES += -I$(RIOTCPU)/atmega_common/include \
 # avr libc needs some RIOT-specific support code
 USEMODULE += avr_libc_extra
 
+# 8 bit GPIO pin mask required
+USEMODULE += gpio_mask_8bit
+
 PSEUDOMODULES += atmega_pcint
 PSEUDOMODULES += atmega_pcint%
 
