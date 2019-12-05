@@ -10,6 +10,7 @@
 #include "embUnit.h"
 #include "tests-frac.h"
 
+#include "kernel_defines.h"
 #include "frac.h"
 #include "div.h"
 
