@@ -25,7 +25,12 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "thread.h"
+#include <inttypes.h>
+
+#include "kernel_defines.h"
+
+#include "vendor/platform.h"
+#include "vendor/plic_driver.h"
 
 #ifdef __cplusplus
 extern "C" {
