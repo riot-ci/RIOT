@@ -96,8 +96,8 @@ static const uint32_t u32_test_values[] = {
     0xfffffffful,
 };
 
-#define N_U32_OPERANDS (sizeof(u32_fraction_operands) / sizeof(u32_fraction_operands[0]))
-#define N_U32_VALS (sizeof(u32_test_values) / sizeof(u32_test_values[0]))
+#define N_U32_OPERANDS ARRAY_SIZE(u32_fraction_operands)
+#define N_U32_VALS ARRAY_SIZE(u32_test_values)
 
 static void test_frac_scale32(void)
 {
