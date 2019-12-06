@@ -12,7 +12,8 @@ from testrunner import run
 
 def testfunc(child):
     child.expect("OK")
-    child.expect("other thread")
+    child.expect("OK")
+    child.expect("OK")
     child.expect("OK")
     child.expect("OK")
     child.expect("OK")
