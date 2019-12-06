@@ -21,7 +21,6 @@ else
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
-
 USEMODULE += auto_init_gnrc_netif
 
 USEMODULE += shell
