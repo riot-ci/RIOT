@@ -397,7 +397,7 @@ void ztimer_set_timeout_flag(ztimer_clock_t *ztimer_clock, ztimer_t *t,
  * @param[in]   base    base interval to use
  * @return  (time from ztimer_set() until callback) - base
  */
-uint32_t ztimer_diff(ztimer_clock_t *ztimer, uint32_t base);
+uint32_t ztimer_overhead(ztimer_clock_t *ztimer, uint32_t base);
 
 /**
  * @brief   Update ztimer clock head list offset

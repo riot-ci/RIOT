@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     sys_ztimer_diff
+ * @ingroup     sys_ztimer_overhead
  * @{
  *
  * @file
@@ -31,7 +31,7 @@ static void _callback(void *arg)
     *callback_arg->val = ztimer_now(callback_arg->ztimer);
 }
 
-uint32_t ztimer_diff(ztimer_clock_t *ztimer, uint32_t base)
+uint32_t ztimer_overhead(ztimer_clock_t *ztimer, uint32_t base)
 {
     volatile uint32_t after = 0;
     uint32_t pre;
