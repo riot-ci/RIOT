@@ -20,7 +20,9 @@
 
 #include <stdio.h>
 #include "thread.h"
+#ifdef MODULE_PS
 #include "ps.h"
+#endif /* MODULE_PS */
 #define TEST_THREAD_STACKSIZE ((2 * THREAD_STACKSIZE_IDLE) + \
                                THREAD_EXTRA_STACKSIZE_PRINTF)
 
@@ -55,7 +57,9 @@ int main(void)
         THREAD_CREATE_SLEEPING | THREAD_CREATE_STACKTEST,
         second_thread, NULL, "nr2");
 
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
 
     kernel_pid_t second_pid =  thread_create(
@@ -63,7 +67,9 @@ int main(void)
         THREAD_PRIORITY_MAIN - 1,
         THREAD_CREATE_SLEEPING | THREAD_CREATE_STACKTEST,
         second_thread, NULL, "nr3");
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
 
     kernel_pid_t third_pid =  thread_create(
@@ -71,7 +77,9 @@ int main(void)
         THREAD_PRIORITY_MAIN - 1,
         THREAD_CREATE_SLEEPING | THREAD_CREATE_STACKTEST,
         second_thread, NULL, "nr4");
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     current_thread_count = sched_num_threads;
     printf("threads = %d\n", current_thread_count);
@@ -86,7 +94,9 @@ int main(void)
 
     /* wakeup first thread and check if the thread zombified itself */
     thread_wakeup(first_pid);
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     current_thread_count = sched_num_threads;
     printf("threads = %d\n", current_thread_count);
@@ -104,7 +114,9 @@ int main(void)
 
     /* wakeup second thread and check if the thread zombified itself */
     thread_wakeup(second_pid);
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     current_thread_count = sched_num_threads;
     printf("threads = %d\n", current_thread_count);
@@ -131,7 +143,9 @@ int main(void)
     if (thread_kill_zombie(first_pid) != 1) {
         puts("Error thread_kill_zombie returned an error");
     }
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     current_thread_count = sched_num_threads;
     printf("threads = %d\n", current_thread_count);
@@ -155,7 +169,9 @@ int main(void)
 
     /* wakeup third thread and check if the thread zombified itself */
     thread_wakeup(third_pid);
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     if (thread_getstatus(first_pid) != STATUS_NOT_FOUND) {
         puts("Error first Thread does still exist");
@@ -185,7 +201,9 @@ int main(void)
         THREAD_PRIORITY_MAIN - 1,
         THREAD_CREATE_SLEEPING | THREAD_CREATE_STACKTEST,
         second_thread, NULL, "nr2");
+    #ifdef MODULE_PS
     ps();
+    #endif /* MODULE_PS */
     puts("");
     if (thread_getstatus(last_pid) != STATUS_SLEEPING) {
         puts("Error last Thread is not sleeping");

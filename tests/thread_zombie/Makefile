@@ -1,6 +1,7 @@
 include ../Makefile.tests_common
 
 DISABLE_MODULE += auto_init
-USEMODULE += ps
+# For better testing use ps
+#USEMODULE += ps
 
 include $(RIOTBASE)/Makefile.include
