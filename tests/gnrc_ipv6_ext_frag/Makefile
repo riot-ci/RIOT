@@ -20,9 +20,7 @@ else
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
-
 USEMODULE += auto_init_gnrc_netif
-
 # add dummy interface to test forwarding to smaller MTU
 USEMODULE += netdev_test
 GNRC_NETIF_NUMOF := 2
