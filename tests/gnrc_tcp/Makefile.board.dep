@@ -1,4 +1,4 @@
-# Put here board specific dependencies
+# Put board specific dependencies here
 ifeq (native,$(BOARD))
   USEMODULE += netdev_tap
 else
