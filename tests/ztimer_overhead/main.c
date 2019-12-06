@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Kaspar Schleiser <kaspar@schleiser.de>
+ * Copyright (C) 2019 Kaspar Schleiser <kaspar@schleiser.de>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       ztimer diff test application
+ * @brief       ztimer overhead test application
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
@@ -31,7 +31,7 @@ static ztimer_periph_t _ztimer_periph;
 
 int main(void)
 {
-    ztimer_periph_init(&_ztimer_periph, 0, 1000000LU);
+    ztimer_periph_init(&_ztimer_periph, 0, 1000000LU, 0xffffffff);
 
     uint32_t total = 0;
 
@@ -40,13 +40,13 @@ int main(void)
 
     unsigned n = SAMPLES;
     while (n--) {
-        unsigned diff = ztimer_diff((ztimer_dev_t *)&_ztimer_periph, 1000);
-        total += diff;
-        if (diff < min) {
-            min = diff;
+        unsigned overhead = ztimer_overhead(&_ztimer_periph.super, 1000);
+        total += overhead;
+        if (overhead < min) {
+            min = overhead;
         }
-        else if (diff > max) {
-            max = diff;
+        else if (overhead > max) {
+            max = overhead;
         }
     }
 
