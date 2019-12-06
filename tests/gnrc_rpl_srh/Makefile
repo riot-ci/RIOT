@@ -19,6 +19,21 @@ else
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
+USEMODULE += auto_init_gnrc_netif
+# Specify the mandatory networking modules for IPv6
+USEMODULE += gnrc_ipv6_router_default
+USEMODULE += gnrc_icmpv6_error
+USEMODULE += gnrc_pktdump
+USEMODULE += gnrc_pktbuf_cmd
+# IPv6 extension headers
+USEMODULE += gnrc_rpl_srh
+USEMODULE += od
+# Add unittest framework
+USEMODULE += embunit
+# Add also the shell, some shell commands
+USEMODULE += shell
+USEMODULE += shell_commands
+USEMODULE += ps
 
 DISABLE_MODULE += test_utils_interactive_sync
 
