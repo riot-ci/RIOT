@@ -29,6 +29,14 @@ else
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
 
+USEMODULE += auto_init_gnrc_netif
+USEMODULE += gnrc_ipv6_default
+USEMODULE += gnrc_tcp
+USEMODULE += gnrc_pktbuf_cmd
+USEMODULE += shell
+USEMODULE += shell_commands
+USEMODULE += od
+
 DISABLE_MODULE += test_utils_interactive_sync
 
 # Export used tap device to environment
