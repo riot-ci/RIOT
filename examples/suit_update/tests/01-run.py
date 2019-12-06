@@ -17,7 +17,7 @@ from testrunner import run
 # Default test over loopback interface
 COAP_HOST = "[fd00:dead:beef::1]"
 
-UPDATING_TIMEOUT = 60
+UPDATING_TIMEOUT = 10
 MANIFEST_TIMEOUT = 15
 
 USE_ETHOS = int(os.getenv("USE_ETHOS", "1"))
@@ -64,6 +64,13 @@ def publish(server_dir, server_url, app_ver, keys='default', latest_name=None):
         cmd.append("SUIT_MANIFEST_SIGNED_LATEST={}".format(latest_name))
 
     assert not subprocess.call(cmd)
+
+
+def wait_for_update(child):
+    return child.expect([r"Fetching firmware \|[█ ]+\|\s+\d+\%",
+                         "riotboot_flashwrite: riotboot flashing "
+                         "completed successfully"],
+                        timeout=UPDATING_TIMEOUT)
 
 
 def get_ipv6_addr(child):
@@ -156,10 +163,8 @@ def _test_successful_update(child, client, app_ver):
         )
         target_slot = int(child.match.group(1))
         # Wait for update to complete
-        child.expect_exact("Fetching firmware")
-        child.expect_exact(
-            "riotboot_flashwrite: riotboot flashing completed successfully",
-            timeout=UPDATING_TIMEOUT)
+        while wait_for_update(child) == 0:
+            pass
 
         # Verify running slot
         child.expect(r"running from slot (\d+)\r\n")
