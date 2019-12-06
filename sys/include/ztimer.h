@@ -324,7 +324,10 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
                     msg_t *msg, kernel_pid_t target_pid);
 
 /**
- * @brief receive a message blocking, with timeout
+ * @brief receive a message (blocking, with timeout)
+ *
+ * Similar to msg_receive(), but with a timeout parameter.
+ * The function will return after waiting at most @p timeout ticks.
  *
  * @param[in]   ztimer          ztimer clock to operate on
  * @param[out]  msg             pointer to buffer which will be filled if a message is received
