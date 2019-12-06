@@ -7,6 +7,10 @@ BOARD_BLACKLIST := chronos hamilton ruuvitag
 
 export TAP ?= tap0
 
+USEMODULE += sock_dns
+USEMODULE += gnrc_sock_udp
+USEMODULE += gnrc_ipv6_default
+USEMODULE += gnrc_ipv6_nib_dns
 # use Ethernet as link-layer protocol
 ifeq (native,$(BOARD))
   TERMFLAGS ?= $(TAP)
@@ -17,6 +21,13 @@ else
   TERMPROG ?= sudo $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS ?= $(TAP) $(PORT) $(ETHOS_BAUDRATE)
 endif
+
+USEMODULE += auto_init_gnrc_netif
+
+USEMODULE += shell
+USEMODULE += shell_commands
+
+USEMODULE += posix_inet
 
 DISABLE_MODULE += test_utils_interactive_sync
 
