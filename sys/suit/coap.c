@@ -75,14 +75,14 @@ static char _url[SUIT_URL_MAX];
 static uint8_t _manifest_buf[SUIT_MANIFEST_BUFSIZE];
 
 #ifdef MODULE_SUIT_V4
-static suit_v4_manifest_t *manifest_ptr;
+static suit_v4_manifest_t *manifest_ptr = NULL;
 
 static inline void _print_download_progress(size_t offset, size_t len)
 {
 DEBUG("_suit_flashwrite(): writing %u bytes at pos %u\n", len, offset);
 #if defined(MODULE_PROGRESS_BAR) && defined(MODULE_SUIT_V4)
     uint32_t _image_size = manifest_ptr->components[0].size;
-    if (_image_size != 0) {
+    if (manifest_ptr && _image_size != 0) {
         char _suffix[7] = { 0 };
         uint8_t _progress = 100 * (offset + len) / _image_size;
         sprintf(_suffix, " %3d%%", _progress);
