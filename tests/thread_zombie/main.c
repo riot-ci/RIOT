@@ -179,7 +179,7 @@ int main(void)
         }
     }
 
-    /* check if thread are still beeing created normally */
+    /* check if threads are created normally after killing a zombie */
     kernel_pid_t last_pid =  thread_create(
         t2_stack, sizeof(t2_stack),
         THREAD_PRIORITY_MAIN - 1,
