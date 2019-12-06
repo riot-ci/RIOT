@@ -1,4 +1,4 @@
-# Put here board specific dependencies
+# Put board specific dependencies here
 ifeq (,$(filter native,$(BOARD)))
   USEMODULE += stdio_ethos
 else
