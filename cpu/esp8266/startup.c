@@ -45,6 +45,12 @@
 #include "gdbstub.h"
 #endif
 
+#if MODULE_ESP_LOG_STARTUP
+#define LOG_STARTUP(format, ...) LOG_TAG_EARLY(LOG_DEBUG, D, __func__, format, ##__VA_ARGS__)
+#else
+#define LOG_STARTUP(format, ...)
+#endif
+
 /* external esp function declarations */
 extern uint32_t hwrand (void);
 
@@ -66,12 +72,15 @@ void esp_riot_init(void)
         system_update_cpu_freq(ESP8266_CPU_FREQUENCY);
     }
 
-    ets_printf("\n");
-    ets_printf("Starting ESP8266 CPU with ID: %08x\n", system_get_chip_id());
-    ets_printf("ESP8266-RTOS-SDK Version %s\n\n", system_get_sdk_version());
-    ets_printf("CPU clock frequency: %d MHz\n", system_get_cpu_freq());
+    LOG_STARTUP("\n");
+    LOG_STARTUP("Starting ESP8266 CPU with ID: %08x\n", system_get_chip_id());
+    LOG_STARTUP("ESP8266-RTOS-SDK Version %s\n\n", system_get_sdk_version());
+    LOG_STARTUP("CPU clock frequency: %d MHz\n", system_get_cpu_freq());
+
+#ifdef MODULE_ESP_LOG_STARTUP
     extern void heap_stats(void);
     heap_stats();
+#endif
     ets_printf("\n");
 
     /* set exception handlers */
@@ -102,8 +111,10 @@ void esp_riot_init(void)
     /* trigger board initialization */
     board_init();
 
+#ifdef MODULE_ESP_LOG_STARTUP
     /* print the board config */
     board_print_config();
+#endif
 
     /* initialize ESP system event loop */
     extern void esp_event_handler_init(void);
