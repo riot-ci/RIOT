@@ -39,17 +39,6 @@
 
 #define NRF24L01P_REG_MAX_WIDTH NRF24L01P_MAX_ADDR_WIDTH
 
-static void swap_bytes_inplace(void *buffer, size_t len)
-{
-    uint8_t *bytes = (uint8_t *)buffer;
-
-    for (size_t i = 0; i < len / 2; i++) {
-        uint8_t tmp = bytes[i];
-        bytes[i] = bytes[len - 1 - i];
-        bytes[len - 1 - i] = tmp;
-    }
-}
-
 int nrf24l01p_acquire(nrf24l01p_t *dev)
 {
     DEBUG("[nrf24l01p] acquire ...\n");
@@ -76,11 +65,7 @@ uint8_t nrf24l01p_read_reg(const nrf24l01p_t *dev, uint8_t reg,
 {
     uint8_t cmd = NRF24L01P_CMD_R_REGISTER(reg);
     uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, DUMMY, dest, len);
-    if (len > 1) {
-        swap_bytes_inplace(dest, len);
-    }
     return status;
 }
 
@@ -89,19 +74,9 @@ uint8_t nrf24l01p_write_reg(const nrf24l01p_t *dev, uint8_t reg,
 {
     uint8_t cmd = NRF24L01P_CMD_W_REGISTER(reg);
     uint8_t status;
-
-    if (len > 1) {
-        len = MIN(len, NRF24L01P_REG_MAX_WIDTH);
-        uint8_t lsrc[len];
-        memcpy(lsrc, src, len);
-        swap_bytes_inplace(lsrc, len);
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
-    }
-    else {
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
-    }
+    len = MIN(len, NRF24L01P_REG_MAX_WIDTH);
+    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
 
@@ -110,11 +85,7 @@ uint8_t nrf24l01p_read_rx_payload(const nrf24l01p_t *dev, void *dest,
 {
     uint8_t cmd = NRF24L01P_CMD_R_RX_PAYLOAD;
     uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, &cmd, dest, len);
-    if (len > 1) {
-        swap_bytes_inplace(dest, len);
-    }
     return status;
 }
 
@@ -123,40 +94,27 @@ uint8_t nrf24l01p_write_tx_payload(const nrf24l01p_t *dev, const void *src,
 {
     uint8_t cmd = NRF24L01P_CMD_W_TX_PAYLOAD;
     uint8_t status;
-
-    if (len > 1) {
-        len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
-        memcpy(lsrc, src, len);
-        swap_bytes_inplace(lsrc, len);
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
-    }
-    else {
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
-    }
+    len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
+    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
 
 uint8_t nrf24l01p_flush_tx(const nrf24l01p_t *dev)
 {
     uint8_t cmd = NRF24L01P_CMD_FLUSH_TX;
-
     return spi_transfer_byte(SPI_BUS, SPI_PIN_CS, false, cmd);
 }
 
 uint8_t nrf24l01p_flush_rx(const nrf24l01p_t *dev)
 {
     uint8_t cmd = NRF24L01P_CMD_FLUSH_RX;
-
     return spi_transfer_byte(SPI_BUS, SPI_PIN_CS, false, cmd);
 }
 
 uint8_t nrf24l01p_reuse_tx_pl(const nrf24l01p_t *dev)
 {
     uint8_t cmd = NRF24L01P_CMD_REUSE_TX_PL;
-
     return spi_transfer_byte(SPI_BUS, SPI_PIN_CS, false, cmd);
 }
 
@@ -164,7 +122,6 @@ uint8_t nrf24l01p_read_rx_pl_width(const nrf24l01p_t *dev, uint8_t *dest)
 {
     uint8_t cmd = NRF24L01P_CMD_R_RX_PL_WID;
     uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, DUMMY, dest, 1);
     return status;
 }
@@ -174,19 +131,9 @@ uint8_t nrf24l01p_write_ack_pl(const nrf24l01p_t *dev, const void *src,
 {
     uint8_t cmd = NRF24L01P_CMD_W_ACK_PAYLOAD(pipe);
     uint8_t status;
-
-    if (len > 1) {
-        len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
-        memcpy(lsrc, src, len);
-        swap_bytes_inplace(lsrc, len);
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
-    }
-    else {
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
-    }
+    len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
+    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
 
@@ -195,19 +142,9 @@ uint8_t nrf24l01p_write_tx_pl_no_ack(const nrf24l01p_t *dev, const void *src,
 {
     uint8_t cmd = NRF24L01P_CMD_W_TX_PAYLOAD_NO_ACK;
     uint8_t status;
-
-    if (len > 1) {
-        len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
-        memcpy(lsrc, src, len);
-        swap_bytes_inplace(lsrc, len);
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
-    }
-    else {
-        status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
-    }
+    len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
+    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
 
