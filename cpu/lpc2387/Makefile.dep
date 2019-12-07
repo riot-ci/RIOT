@@ -1,0 +1,4 @@
+USEMODULE += arm7_common periph bitfield newlib
+USEMODULE += pm_layered
+
+include $(RIOTCPU)/arm7_common/Makefile.dep
