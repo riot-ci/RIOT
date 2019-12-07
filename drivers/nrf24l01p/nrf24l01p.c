@@ -89,6 +89,7 @@ static int nrf24l01p_set_payload_width(nrf24l01p_t *dev, uint8_t width,
     switch (dev->state) {
         case NRF24L01P_STATE_POWER_DOWN:
         case NRF24L01P_STATE_STANDBY_1:
+        case NRF24L01P_STATE_RX_MODE:
             break;
         default:
             return -EAGAIN;

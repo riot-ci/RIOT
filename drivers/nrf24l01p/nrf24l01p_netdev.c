@@ -94,7 +94,6 @@ static int nrf24l01p_init(netdev_t *netdev)
 {
     nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
 
-    assert(dev->params.config.cfg_channel < NRF24L01P_NUM_CHANNELS);
     assert(dev->params.config.cfg_data_rate < NRF24L01P_RF_DR_NUM_OF);
 
     if (spi_init_cs(dev->params.spi, dev->params.pin_cs) != SPI_OK) {
