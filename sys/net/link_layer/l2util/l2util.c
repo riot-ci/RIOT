@@ -131,7 +131,7 @@ int l2util_ipv6_iid_from_addr(int dev_type,
 #endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
 #if defined(MODULE_NRF24L01P)
         case NETDEV_TYPE_NRF24L01P:
-            if (addr_len <= 5 && addr_len >= 3) {
+            if (addr_len >= 3 && addr_len <= 5) {
                 _create_eui64_from_long(addr, addr_len, iid);
                 return sizeof(eui64_t);
             }
