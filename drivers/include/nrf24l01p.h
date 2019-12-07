@@ -53,7 +53,7 @@ extern "C" {
 /**
  * @brief   Struct that holds all active configuration values
  */
-typedef struct {
+typedef struct __attribute__((packed)) {
     /**
      * @brief Padding for byte alignment
      */
