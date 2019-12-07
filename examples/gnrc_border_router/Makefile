@@ -7,23 +7,16 @@ BOARD ?= samr21-xpro
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-# The following boards do not have an available UART
-BOARD_BLACKLIST += pic32-wifire pic32-clicker ruuvitag thingy52
-
 # use ethos (ethernet over serial) for network communication and stdio over
 # UART, but not on native, as native has a tap interface towards the host.
 ifeq (,$(filter native,$(BOARD)))
-  GNRC_NETIF_NUMOF := 2
-  USEMODULE += stdio_ethos
-
   # ethos baudrate can be configured from make command
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
 else
-  GNRC_NETIF_NUMOF := 2
   TERMFLAGS += -z [::1]:17754
-  USEMODULE += socket_zep
 endif
+GNRC_NETIF_NUMOF := 2
 
 # SLIP legacy compatibility
 # Uncomment the lines below if you want to use SLIP with this example and don't

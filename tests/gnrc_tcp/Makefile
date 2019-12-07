@@ -8,9 +8,6 @@ TAP ?= tap0
 MSL_US ?= 1000000
 TIMEOUT_US ?= 3000000
 
-# unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag thingy52
-
 # This test depends on tap device setup (only allowed by root)
 # Suppress test execution to avoid CI errors
 TEST_ON_CI_BLACKLIST += all
@@ -20,10 +17,8 @@ CFLAGS += -DGNRC_TCP_MSL=$(MSL_US)
 CFLAGS += -DGNRC_TCP_CONNECTION_TIMEOUT_DURATION=$(TIMEOUT_US)
 
 ifeq (native,$(BOARD))
-  USEMODULE += netdev_tap
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += stdio_ethos
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMDEPS += ethos

@@ -2,9 +2,6 @@ DEVELHELP := 1
 # name of your application
 include ../Makefile.tests_common
 
-# chronos, hamilton, ruuvitag, and thingy52 boards don't support ethos
-BOARD_BLACKLIST := chronos hamilton ruuvitag thingy52
-
 export TAP ?= tap0
 
 CFLAGS += -DOUTPUT=TEXT
@@ -12,11 +9,8 @@ CFLAGS += -DTEST_SUITES="gnrc_ipv6_ext_frag"
 CFLAGS += -DGNRC_IPV6_EXT_FRAG_LIMITS_POOL_SIZE=3
 
 ifeq (native,$(BOARD))
-  USEMODULE += netdev_tap
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += stdio_ethos
-
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMDEPS += ethos

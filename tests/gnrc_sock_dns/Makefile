@@ -2,9 +2,6 @@ include ../Makefile.tests_common
 
 RIOTBASE ?= $(CURDIR)/../..
 
-# chronos, hamilton and ruuvitag boards don't support ethos
-BOARD_BLACKLIST := chronos hamilton ruuvitag
-
 export TAP ?= tap0
 
 USEMODULE += sock_dns
@@ -13,12 +10,8 @@ USEMODULE += gnrc_ipv6_default
 USEMODULE += gnrc_ipv6_nib_dns
 # use Ethernet as link-layer protocol
 ifeq (native,$(BOARD))
-  USEMODULE += netdev_tap
-
   TERMFLAGS ?= $(TAP)
 else
-  USEMODULE += stdio_ethos
-
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMDEPS += ethos
