@@ -603,10 +603,10 @@ typedef enum {
      */
     NETOPT_LORAWAN_APPSKEY,
 
-    /**
-     * @brief   (uint8_t) LoRaWAN device class (A, B, C)
-     * - LoRaWAN: @ref loramac_class_t
-     */
+     /**
+      * @brief   (uint8_t) LoRaWAN device class (A, B, C)
+      * - LoRaWAN: @ref loramac_class_t
+      */
     NETOPT_LORAWAN_DEVICE_CLASS,
 
     /**
@@ -706,8 +706,8 @@ typedef enum {
  * @brief   Binary parameter for enabling and disabling options
  */
 typedef enum {
-    NETOPT_DISABLE  = 0,        /**< disable a given option */
-    NETOPT_ENABLE   = 1,        /**< enable a given option */
+    NETOPT_DISABLE = 0,         /**< disable a given option */
+    NETOPT_ENABLE = 1,          /**< enable a given option */
 } netopt_enable_t;
 
 /**

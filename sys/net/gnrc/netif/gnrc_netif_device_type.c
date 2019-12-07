@@ -35,19 +35,19 @@ netopt_t gnrc_netif_get_l2addr_opt(const gnrc_netif_t *netif)
     defined(MODULE_NORDIC_SOFTDEVICE_BLE) || defined(MODULE_NIMBLE_NETIF)
         case NETDEV_TYPE_IEEE802154:
         case NETDEV_TYPE_BLE: {
-            netdev_t *dev = netif->dev;
-            int r;
-            uint16_t tmp;
+                netdev_t *dev = netif->dev;
+                int r;
+                uint16_t tmp;
 
-            r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
-            assert(r == sizeof(tmp));
-            assert(r <= ((int)UINT8_MAX));
-            (void)r;
-            if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
-                res = NETOPT_ADDRESS_LONG;
+                r = dev->driver->get(dev, NETOPT_SRC_LEN, &tmp, sizeof(tmp));
+                assert(r == sizeof(tmp));
+                assert(r <= ((int)UINT8_MAX));
+                (void)r;
+                if (tmp == IEEE802154_LONG_ADDRESS_LEN) {
+                    res = NETOPT_ADDRESS_LONG;
+                }
             }
-        }
-        break;
+            break;
 #endif
         default:
             break;
@@ -76,7 +76,7 @@ int gnrc_netif_eui64_from_addr(const gnrc_netif_t *netif,
                         break;
                 }
 #endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
-            /* Intentionally falls through */
+                /* Intentionally falls through */
             default:
                 return l2util_eui64_from_addr(netif->device_type, addr,
                                               addr_len, eui64);
@@ -138,7 +138,7 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC
             netif->flags |= GNRC_NETIF_FLAGS_6LO_HC;
 #endif
-        /* intentionally falls through */
+            /* intentionally falls through */
         case NETDEV_TYPE_ESP_NOW:
             res = dev->driver->get(dev, NETOPT_MAX_PDU_SIZE,
                                    &tmp, sizeof(tmp));
