@@ -46,7 +46,7 @@ int nrf24l01p_set_ack_payload(nrf24l01p_t *dev, const void *payload,
         default:
             return -EAGAIN;
     }
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
     uint8_t pl[1 + aw + payload_width];
     sb_hdr_init((shockburst_hdr_t *)pl);

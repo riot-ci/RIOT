@@ -26,7 +26,7 @@
 #include "nrf24l01p_constants.h"
 #include "nrf24l01p_communication.h"
 
-#define ENABLE_DEBUG    0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 #ifndef MIN

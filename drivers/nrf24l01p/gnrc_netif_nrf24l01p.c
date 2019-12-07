@@ -21,7 +21,7 @@
  */
 #include <assert.h>
 
-#define ENABLE_DEBUG    0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 #include "net/gnrc.h"
@@ -95,7 +95,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
            ((uint8_t *)(frame->data)) + header_len,
            dst_addr_width);
     header_len += dst_addr_width;
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     uint8_t src_addr_width = sb_hdr_get_src_addr_width(&sb_hdr);
     memcpy(sb_hdr.src_addr,
            ((uint8_t *)(frame->data)) + header_len,
@@ -110,7 +110,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     gnrc_pktbuf_remove_snip(frame, hdr);
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     hdr = gnrc_netif_hdr_build(sb_hdr.src_addr, src_addr_width, sb_hdr.dst_addr,
                                dst_addr_width);
 #else
@@ -188,7 +188,7 @@ static int nrf24l01p_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     sb_hdr_init(&hdr);
     sb_hdr_set_dst_addr_width(&hdr, tx_addr_len);
     memcpy(hdr.dst_addr, tx_address, tx_addr_len);
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     nrf24l01p_t *dev = (nrf24l01p_t *)netdev;
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
     sb_hdr_set_src_addr_width(&hdr, aw);

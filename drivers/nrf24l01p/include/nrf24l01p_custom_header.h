@@ -35,7 +35,7 @@ extern "C" {
  * @brief   Put source layer-2 address in custom header to
  *          be able to use 6LoWPAN
  */
-#define NRF24L01P_CUSTOM_HEADER             1
+#define NRF24L01P_CUSTOM_HEADER             (1)
 /**
  * @brief   Layer-2 MTU
  */
@@ -43,12 +43,16 @@ extern "C" {
                                              (1 + NRF24L01P_MAX_ADDR_WIDTH))
 #else
 /**
+ * @brief   Do not put source layer-2 address in custom header
+ */
+#define NRF24L01P_CUSTOM_HEADER             (0)
+/**
  * @brief Layer-2 MTU
  */
 #define NRF24L01P_MTU                       NRF24L01P_MAX_PAYLOAD_WIDTH
-#endif
+#endif /* IS_USED(MODULE_GNRC_SIXLOWPAN) */
 
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
 /**
  * @brief Indicate header byte
  */
@@ -61,7 +65,7 @@ extern "C" {
  * @brief Padding byte for ShockBurst
  */
 #define NRF24L01P_CSTM_HDR_PADDING        (0x00)
-#endif
+#endif /* NRF24L01P_CUSTOM_HEADER */
 /**
  * @brief Mask of destination address width
  */
@@ -92,7 +96,7 @@ typedef struct {
      * @brief   Recipient address
      */
     uint8_t dst_addr[NRF24L01P_MAX_ADDR_WIDTH];
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     /**
      * @brief   Sender address
      */
@@ -107,7 +111,7 @@ typedef struct {
  */
 static inline void sb_hdr_init(shockburst_hdr_t *hdr)
 {
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     hdr->addr_width = NRF24L01P_CSTM_HDR_PREEMBLE;
 #else
     hdr->addr_width = 0;
@@ -139,7 +143,7 @@ static inline uint8_t sb_hdr_get_dst_addr_width(shockburst_hdr_t *hdr)
     return (hdr->addr_width & NRF24L01P_CSTM_HDR_DST_AW_MASK) >> 3;
 }
 
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
 /**
  * @brief   Set source address field in a ShockBurst header
  *
@@ -164,7 +168,7 @@ static inline uint8_t sb_hdr_get_src_addr_width(shockburst_hdr_t *hdr)
 {
     return hdr->addr_width & NRF24L01P_CSTM_HDR_SRC_AW_MASK;
 }
-#endif
+#endif /* NRF24L01P_CUSTOM_HEADER */
 
 #ifdef __cplusplus
 }

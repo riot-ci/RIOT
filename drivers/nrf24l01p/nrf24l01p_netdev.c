@@ -22,7 +22,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define ENABLE_DEBUG    0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 #include "iolist.h"
@@ -256,7 +256,7 @@ static int nrf24l01p_init(netdev_t *netdev)
     /* clear interrupts */
     nrf24l01p_write_reg(dev, NRF24L01P_REG_STATUS, &status, 1);
     nrf24l01p_transition_to_standby_1(dev);
-#if IS_USED(ENABLE_DEBUG)
+#if ENABLE_DEBUG
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
 #endif
@@ -312,13 +312,14 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
  +----------------------------------------+
     ....  destination address (3 Bytes - 5 Bytes)  ...
  +----------------------------------------+
- #ifdef NRF24L01P_CUSTOM_HEADER
+
+ Only if NRF24L01P_CUSTOM_HEADER == 1
         (NRF24L01P_CUSTOM_HEADER limits payload length to
         (32 - (1 + 5)) to (32 - (1 + 3) bytes)
  +----------------------------------------+
     ....  source address (3 Bytes - 5 Bytes)      ....
  +----------------------------------------+
- #endif
+
  +---------------------------------------------------------------+
     ....  payload (1 Byte - 32 Bytes)                            |
  +---------------------------------------------------------------+
@@ -376,7 +377,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     uint8_t *frame = (uint8_t *)buf;
     sb_hdr_init((shockburst_hdr_t *)frame);
     sb_hdr_set_dst_addr_width((shockburst_hdr_t *)frame, sizeof(dst_pipe_addr));
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     uint8_t payload[NRF24L01P_MAX_PAYLOAD_WIDTH];
     nrf24l01p_read_rx_payload(dev, payload, pl_width);
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB) {
@@ -412,7 +413,7 @@ static int nrf24l01p_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     nrf24l01p_read_rx_payload(dev, frame, pl_width);
 #endif
 
-#if IS_USED(ENABLE_DEBUG)
+#if ENABLE_DEBUG
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
     nrf24l01p_diagnostics_print_frame(dev, (uint8_t *)buf, frame_len);
@@ -472,7 +473,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
     }
     memcpy(dev->tx_addr, hdr.dst_addr, dst_addr_len);
     dev->tx_addr_len = dst_addr_len;
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     uint8_t src_addr_len = sb_hdr_get_src_addr_width(&hdr);
     if (src_addr_len > NRF24L01P_MAX_ADDR_WIDTH ||
         src_addr_len < NRF24L01P_MIN_ADDR_WIDTH) {
@@ -494,7 +495,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         memcpy(payload + pl_width, iol->iol_base, iol->iol_len);
         pl_width += iol->iol_len;
     }
-#if IS_USED(NRF24L01P_CUSTOM_HEADER)
+#if NRF24L01P_CUSTOM_HEADER
     if (dev->params.config.cfg_protocol == NRF24L01P_PROTOCOL_SB
         && sizeof(payload) != pl_width) {
         /* frame: [ ... padding ... |  header | data ] */
@@ -528,7 +529,7 @@ static int nrf24l01p_send(netdev_t *netdev, const iolist_t *iolist)
         }
         nrf24l01p_transition_to_tx_mode(dev);
     }
-#if IS_USED(ENABLE_DEBUG)
+#if ENABLE_DEBUG
     nrf24l01p_diagnostics_print_all_regs(dev);
     nrf24l01p_diagnostics_print_dev_info(dev);
 #endif

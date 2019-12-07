@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define ENABLE_DEBUG    0
+#define ENABLE_DEBUG    (0)
 #include "debug.h"
 
 #include "nrf24l01p_netdev.h"
@@ -310,7 +310,7 @@ uint8_t nrf24l01p_get_channel(const nrf24l01p_t *dev)
 
 int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe)
 {
-# if IS_USED(NRF24L01P_CUSTOM_HEADER)
+# if NRF24L01P_CUSTOM_HEADER
     return nrf24l01p_set_payload_width(dev,
                                        mtu + NRF24L01P_MAX_ADDR_WIDTH + 1,
                                        pipe);
@@ -321,7 +321,7 @@ int nrf24l01p_set_mtu(nrf24l01p_t *dev, uint8_t mtu, nrf24l01p_pipe_t pipe)
 
 int nrf24l01p_get_mtu(const nrf24l01p_t *dev, nrf24l01p_pipe_t pipe)
 {
-# if IS_USED(NRF24L01P_CUSTOM_HEADER)
+# if NRF24L01P_CUSTOM_HEADER
     return nrf24l01p_get_payload_width(dev, pipe)
                                         - (NRF24L01P_MAX_ADDR_WIDTH + 1);
 #else
