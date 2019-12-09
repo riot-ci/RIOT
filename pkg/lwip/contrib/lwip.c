@@ -110,7 +110,7 @@ extern void esp_eth_setup (esp_eth_netdev_t* dev);
 
 #ifdef MODULE_ESP_WIFI
 extern esp_wifi_netdev_t _esp_wifi_dev;
-extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
+extern void esp_wifi_setup(esp_wifi_netdev_t *dev);
 #endif
 
 #ifdef MODULE_STM32_ETH
