@@ -215,5 +215,6 @@ NO_PSEUDOMODULES += auto_init_usbus
 # include interface variants of BME680 drivers as pseudo modules
 PSEUDOMODULES += bme680_i2c
 PSEUDOMODULES += bme680_spi
+PSEUDOMODULES += bme680_fp
 
 # Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.

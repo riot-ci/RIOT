@@ -30,6 +30,10 @@ extern "C" {
 #endif
 
 
+#ifdef MODULE_BME680_FP
+#define BME680_FLOAT_POINT_COMPENSATION
+#endif
+
 /**
  * @brief   BME680 device initialization parameters
  */
