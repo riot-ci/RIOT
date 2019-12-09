@@ -44,7 +44,22 @@ enum {
     PORT_G = 6,             /**< port G */
     PORT_H = 7,             /**< port H */
     PORT_I = 8,             /**< port I */
+    PORT_EXT = 9            /**< first GPIO expander port */
 };
+
+/**
+ * @brief   Available ports on the STM32L4 familiy as GPIO register definitions
+ */
+#define GPIO_CPU_PORTS \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_A) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_B) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_C) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_D) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_E) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_F) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_G) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_H) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_I) },
 
 /**
  * @brief   Available number of ADC devices

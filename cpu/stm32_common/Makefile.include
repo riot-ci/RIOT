@@ -1,5 +1,8 @@
 CFLAGS += -DCPU_FAM_$(call uppercase_and_underscore,$(CPU_FAM))
 
+# 16 bit GPIO pin mask required
+USEMODULE += gpio_mask_16bit
+
 # All stm32 families provide pm support
 USEMODULE += pm_layered
 

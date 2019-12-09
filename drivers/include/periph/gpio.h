@@ -9,10 +9,11 @@
 /**
  * @defgroup    drivers_periph_gpio GPIO
  * @ingroup     drivers_periph
- * @brief       Low-level GPIO peripheral driver
+ * @brief       GPIO peripheral driver
  *
  * This is a basic GPIO (General-purpose input/output) interface to allow
- * platform independent access to a MCU's input/output pins. This interface is
+ * platform-independent access to the input/output pins provided by the MCU
+ * or any other hardware component such as GPIO expanders. This interface is
  * intentionally designed to be as simple as possible, to allow for easy
  * implementation and maximum portability.
  *
@@ -31,17 +32,8 @@
  * often named 'PA', 'PB', 'PC'..., or 'P0', 'P1', 'P2'..., or similar. Each of
  * these ports is then assigned a number of pins, often 8, 16, or 32. A hardware
  * pin can thus be described by its port/pin tuple. To access a pin, the
- * @p GPIO_PIN(port, pin) macro should be used. For example: If your platform has
- * a pin PB22, it will be port=1 and pin=22. The @p GPIO_PIN macro should be
- * overridden by a MCU, to allow for efficient encoding of the the port/pin tuple.
- * For example, on many platforms it is possible to `OR` the pin number with the
- * corresponding ports base register address. This allows for efficient decoding
- * of pin number and base address without the need of any address lookup.
- *
- * In case the driver does not define it, the below macro definition is used to
- * simply map the port/pin tuple to the pin value. In that case, predefined GPIO
- * definitions in `RIOT/boards/ * /include/periph_conf.h` will define the selected
- * GPIO pin.
+ * @ref GPIO_PIN(port, pin) macro should be used. For example: If your platform has
+ * a pin PB22, it will be port=1 and pin=22.
  *
  * # (Low-) Power Implications
  *
@@ -60,6 +52,23 @@
  * power modes (although this is not very likely). This should be done during
  * gpio_init_int().
  *
+ * # Implementation
+ *
+ * The interface is divided into a low-level API and a high-level API.
+ *
+ * The low-level API provides functions for port-oriented access to the GPIOs
+ * and has to be implemented by any hardware component that provides GPIOs. The
+ * functions of the low-level API are used via a driver of type gpio_driver_t.
+ * This driver defines the interfaces of the low-level functions and contains
+ * references to these functions of the respective hardware component. The
+ * low-level API must be implemented by the MCU in the `gpio_cpu_*` functions.
+ * These functions are used for the @ref gpio_cpu_driver driver for the access
+ * to GPIO ports of the MCU.
+ *
+ * The high-level API is used by the application and provides pin-oriented
+ * access to the GPIO pins.  It uses the functions of the low-level API for
+ * this purpose.
+ *
  * @{
  * @file
  * @brief       Low-level GPIO peripheral driver interface definitions
@@ -72,39 +81,71 @@
 
 #include <limits.h>
 
-#include "periph_cpu.h"
-#include "periph_conf.h"
+#include "gpio_arch.h"  /* include architecture specific GPIO definitions */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef HAVE_GPIO_T
+#ifndef HAVE_GPIO_PIN_T
 /**
- * @brief   GPIO type identifier
+ * @brief   GPIO pin number type
  */
-typedef unsigned int gpio_t;
+typedef unsigned int gpio_pin_t;
 #endif
 
+/**
+ * @brief   Register address type for GPIO ports of the MCU
+ *
+ * The size of this type must match the size of a pointer to distinguish
+ * between MCU GPIO register addresses and pointers on GPIO devices.
+ */
+#ifndef HAVE_GPIO_REG_T
+typedef uint32_t gpio_reg_t;
+#endif
+
+/**
+ * @brief   GPIO mask type that corresponds to the supported GPIO port width
+ *
+ * This type is used to mask the pins of a GPIO port in various low-level GPIO
+ * functions. Its size must therefore be the maximum width of all different
+ * GPIO ports used in the system. For this purpose, each component that
+ * provides GPIO ports must activate the corresponding pseudo module that
+ * specifies the width of its GPIO ports.
+ */
+#if defined(MODULE_GPIO_MASK_32BIT)
+typedef uint32_t gpio_mask_t;
+#elif defined(MODULE_GPIO_MASK_16BIT)
+typedef uint16_t gpio_mask_t;
+#else
+typedef uint8_t gpio_mask_t;
+#endif
+
+/**
+ * @brief   Convert (port, pin) tuple to @ref gpio_t structure
+ */
 #ifndef GPIO_PIN
-/**
- * @brief   Convert (port, pin) tuple to @c gpio_t value
- */
-/* Default GPIO macro maps port-pin tuples to the pin value */
-#define GPIO_PIN(x,y)       ((gpio_t)((x & 0) | y))
+#define GPIO_PIN(x,y)       ((gpio_t){ .port = &gpio_ports[x], .pin = y })
 #endif
 
-#ifndef GPIO_UNDEF
 /**
  * @brief   GPIO pin not defined
  */
-#define GPIO_UNDEF          ((gpio_t)(UINT_MAX))
+#ifndef GPIO_PIN_UNDEF
+#define GPIO_PIN_UNDEF      ((gpio_pin_t)(UINT_MAX))
 #endif
 
 /**
- * @brief   Available pin modes
+ * @brief   GPIO not defined
+ */
+#ifndef GPIO_UNDEF
+#define GPIO_UNDEF          ((gpio_t){ .port = NULL, .pin = GPIO_PIN_UNDEF })
+#endif
+
+/**
+ * @brief   Available GPIO modes
  *
- * Generally, a pin can be configured to be input or output. In output mode, a
+ * Generally, a GPIO can be configured to be input or output. In output mode, a
  * pin can further be put into push-pull or open drain configuration. Though
  * this is supported by most platforms, this is not always the case, so driver
  * implementations may return an error code if a mode is not supported.
@@ -150,6 +191,237 @@ typedef struct {
 } gpio_isr_ctx_t;
 #endif
 
+/** forward declaration of GPIO port type */
+typedef union gpio_port gpio_port_t;
+
+/**
+ * @brief   GPIO device driver type
+ *
+ * GPIO device drivers are used for port-oriented access to GPIO ports.
+ * It defines the function prototypes of the low-level API and contains
+ * the references to these functions implemented by a hardware component
+ * that provides GPIO ports.
+ */
+typedef struct {
+    /**
+     * @brief   Initialize the given pin as general purpose input or output
+     *
+     * @param[in] port  port of the GPIO pin to initialize
+     * @param[in] pin   GPIO pin to initialize
+     * @param[in] mode  mode of the pin, see @ref gpio_mode_t
+     *
+     * @return    0 on success
+     * @return    -1 on error
+     *
+     * @see @ref #gpio_init
+     */
+    int (*init)(const gpio_port_t *port, gpio_pin_t pin, gpio_mode_t mode);
+
+#ifdef MODULE_PERIPH_GPIO_IRQ
+
+    /**
+     * @brief   Initialize a GPIO pin for external interrupt usage
+     *
+     * @param[in] port  port of the GPIO pin to initialize
+     * @param[in] pin   GPIO pin to initialize
+     * @param[in] mode  mode of the pin, see @ref gpio_mode_t
+     * @param[in] flank define the active flank(s)
+     * @param[in] cb    callback that is called from interrupt context
+     * @param[in] arg   optional argument passed to the callback
+     *
+     * @return    0 on success
+     * @return    -1 on error
+     *
+     * @see @ref #gpio_init_int
+     */
+    int (*init_int)(const gpio_port_t *port, gpio_pin_t pin, gpio_mode_t mode,
+                    gpio_flank_t flank, gpio_cb_t cb, void *arg);
+
+    /**
+     * @brief   Enable GPIO pin interrupt if configured as interrupt source
+     *
+     * @param[in] port  port of the GPIO pin
+     * @param[in] pin   GPIO pin
+     *
+     * @see @ref #gpio_irq_enable
+     */
+    void (*irq_enable)(const gpio_port_t *port, gpio_pin_t pin);
+
+    /**
+     * @brief   Disable GPIO pin interrupt if configured as interrupt source
+     *
+     * @param[in] port  port of the GPIO pin
+     * @param[in] pin   GPIO pin
+     *
+     * @see @ref #gpio_irq_disable
+     */
+    void (*irq_disable)(const gpio_port_t *port, gpio_pin_t pin);
+
+#endif /* MODULE_PERIPH_GPIO_IRQ */
+
+    /**
+     * @brief   Get current values of all pins of the given GPIO port
+     *
+     * @param[in] port  GPIO port
+     *
+     * @return    value of width @ref gpio_mask_t where the bit positions
+     *            represent the current value of the according pin
+     *            (0 when pin is LOW and >0 when pin is HIGH)
+     */
+    gpio_mask_t (*read)(const gpio_port_t *port);
+
+    /**
+     * @brief   Set the pins of a port defined by the pin mask to HIGH
+     *
+     * @param[in] port  GPIO port
+     * @param[in] pins  mask of the pins to set
+     *
+     * @see @ref #gpio_set
+     */
+    void (*set)(const gpio_port_t *port, gpio_mask_t pins);
+
+    /**
+     * @brief   Set the pins of a port defined by the pin mask to LOW
+     *
+     * @param[in] port  GPIO port
+     * @param[in] pins  mask of the pins to clear
+     *
+     * @see @ref #gpio_set
+     */
+    void (*clear)(const gpio_port_t *port, gpio_mask_t pins);
+
+    /**
+     * @brief   Toggle the value the pins of a port defined by the pin mask
+     *
+     * @param[in] port  GPIO port
+     * @param[in] pins  mask of the pins to toggle
+     *
+     * @see @ref #gpio_set
+     */
+    void (*toggle)(const gpio_port_t *port, gpio_mask_t pins);
+
+    /**
+     * @brief   Set the values of all pins of the given GPIO port
+     *
+     * @param[in] port  GPIO port
+     * @param[in] pins  values of the pins
+     *
+     * @see @ref #gpio_write
+     */
+    void (*write)(const gpio_port_t *port, gpio_mask_t values);
+
+} gpio_driver_t;
+
+/**
+ * @brief   GPIO device type
+ *
+ * A GPIO device is a hardware component that provides a number of GPIO
+ * pins, e.g. a GPIO expander. It is defined by a device descriptor that
+ * contains the state and parameters of the device, as well as an associated
+ * driver for using the device.
+ *
+ * @note The GPIO device type isn't used for MCU GPIO ports.
+ */
+typedef struct {
+    void *dev;                      /**< device descriptor */
+    const gpio_driver_t *driver;    /**< associated device driver */
+} gpio_dev_t;
+
+/**
+ * @brief   GPIO port type
+ * 
+ * A GPIO port allows the access to a certain number of GPIO pins. It is either
+ *
+ * - a register address in the case of MCU GPIO ports or
+ * - a pointer to a device of type `gpio_dev_t` which provides a number
+ *   of GPIO pins, e.g. a GPIO expander.
+ */
+typedef union gpio_port {
+    const gpio_reg_t reg;   /**< register address of a MCU GPIO port */
+    const gpio_dev_t* dev;  /**< pointer to a device that provides the GPIO port */
+} gpio_port_t;
+
+/**
+ * @brief   GPIO pin type definition
+ *
+ * A GPIO pin is defined by a port that provides the access to the pin and
+ * the pin number at this port.
+ */
+typedef struct {
+    const gpio_port_t *port;   /**< pointer to the port */
+    gpio_pin_t pin;            /**< pin number */
+} gpio_t;
+
+/**
+ * @brief   GPIO device driver for MCU GPIO ports.
+ *
+ * The GPIO device driver @c gpio_cpu_driver contains the references to the
+ * low-level functions of the MCU implementation for accessing GPIO pins
+ * of the MCU GPIO ports.
+ */
+extern const gpio_driver_t gpio_cpu_driver;
+
+/**
+ * @brief   Table of existing MCU and GPIO expander device ports
+ *
+ * This table is created from `GPIO_CPU_PORTS`, as defined by the MCU, and
+ * `GPIO_EXT_PORTS`, as defined in the GPIO expander configuration.
+ */
+extern const gpio_port_t gpio_ports[];
+
+#ifndef DOXYGENX
+/**
+ * @name    Low-level versions of the MCU GPIO functions
+ *
+ * The following functions define the prototypes for the low-level GPIO
+ * functions that have to be implemented for MCU GPIO ports in
+ * `cpu/.../periph/gpio.c`.
+ *
+ * These functions are used by high-level GPIO functions `gpio_*`.
+ * They should only be called directly if several pins of a GPIO port are
+ * to be changed simultaneously using the definition of GPIO pin masks.
+ * 
+ * The GPIO device driver @ref gpio_cpu_driver contains references to these
+ * low-level functions of the MCU implementation.
+ *
+ * @see See function prototypes in @ref gpio_driver_t for detailed information
+ * about these functions.
+ * @{
+ */
+int  gpio_cpu_init(const gpio_port_t *port, gpio_pin_t pin, gpio_mode_t mode);
+int  gpio_cpu_init_int(const gpio_port_t *port, gpio_pin_t pin, gpio_mode_t mode,
+                       gpio_flank_t flank, gpio_cb_t cb, void *arg);
+void gpio_cpu_irq_enable(const gpio_port_t *port, gpio_pin_t pin);
+void gpio_cpu_irq_disable(const gpio_port_t *port, gpio_pin_t pin);
+
+gpio_mask_t gpio_cpu_read(const gpio_port_t *port);
+void gpio_cpu_set(const gpio_port_t *port, gpio_mask_t pins);
+void gpio_cpu_clear(const gpio_port_t *port, gpio_mask_t pins);
+void gpio_cpu_toggle(const gpio_port_t *port, gpio_mask_t pins);
+void gpio_cpu_write(const gpio_port_t *port, gpio_mask_t values);
+/** @} */
+#endif /* DOXYGEN */
+
+/**
+ * @brief    Get the driver for a GPIO port
+ */
+static inline const gpio_driver_t *gpio_driver_get(const gpio_port_t *port)
+{
+#if MODULE_EXTEND_GPIO
+    if ((port->reg & GPIO_CPU_REG_MASK) == GPIO_CPU_REG_GPIO) {
+        return &gpio_cpu_driver;
+    }
+    else {
+        assert(port->dev);
+        assert(port->dev->driver);
+        return port->dev->driver;
+    }
+#else
+    (void)port;
+    return &gpio_cpu_driver;
+#endif
+}
+
 /**
  * @brief   Initialize the given pin as general purpose input or output
  *
@@ -157,13 +429,17 @@ typedef struct {
  * The output pin's state **should** be untouched during the initialization.
  * This behavior can however **not be guaranteed** by every platform.
  *
- * @param[in] pin       pin to initialize
- * @param[in] mode      mode of the pin, see @c gpio_mode_t
+ * @param[in] gpio      GPIO pin to initialize
+ * @param[in] mode      mode of the pin, see @ref gpio_mode_t
  *
  * @return              0 on success
  * @return              -1 on error
  */
-int gpio_init(gpio_t pin, gpio_mode_t mode);
+static inline int gpio_init(gpio_t gpio, gpio_mode_t mode)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    return driver->init(gpio.port, gpio.pin, mode);
+}
 
 #if defined(MODULE_PERIPH_GPIO_IRQ) || defined(DOXYGEN)
 /**
@@ -177,8 +453,8 @@ int gpio_init(gpio_t pin, gpio_mode_t mode);
  * @note    You have to add the module `periph_gpio_irq` to your project to
  *          enable this function
  *
- * @param[in] pin       pin to initialize
- * @param[in] mode      mode of the pin, see @c gpio_mode_t
+ * @param[in] gpio      GPIO pin to initialize
+ * @param[in] mode      mode of the pin, see @ref gpio_mode_t
  * @param[in] flank     define the active flank(s)
  * @param[in] cb        callback that is called from interrupt context
  * @param[in] arg       optional argument passed to the callback
@@ -186,69 +462,130 @@ int gpio_init(gpio_t pin, gpio_mode_t mode);
  * @return              0 on success
  * @return              -1 on error
  */
-int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
-                  gpio_cb_t cb, void *arg);
+static inline int gpio_init_int(gpio_t gpio, gpio_mode_t mode, gpio_flank_t flank,
+                                gpio_cb_t cb, void *arg)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    return driver->init_int(gpio.port, gpio.pin, mode, flank, cb, arg);
+}
 
 /**
- * @brief   Enable pin interrupt if configured as interrupt source
+ * @brief   Enable GPIO pin interrupt if configured as interrupt source
  *
  * @note    You have to add the module `periph_gpio_irq` to your project to
  *          enable this function
  *
- * @param[in] pin       the pin to enable the interrupt for
+ * @param[in] gpio      GPIO pin to enable the interrupt for
  */
-void gpio_irq_enable(gpio_t pin);
+static inline void gpio_irq_enable(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->irq_enable(gpio.port, gpio.pin);
+}
 
 /**
- * @brief   Disable the pin interrupt if configured as interrupt source
+ * @brief   Disable the GPIO pin interrupt if configured as interrupt source
  *
  * @note    You have to add the module `periph_gpio_irq` to your project to
  *          enable this function
  *
- * @param[in] pin       the pin to disable the interrupt for
+ * @param[in] gpio      GPIO pin to disable the interrupt for
  */
-void gpio_irq_disable(gpio_t pin);
+static inline void gpio_irq_disable(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->irq_disable(gpio.port, gpio.pin);
+}
 
 #endif /* defined(MODULE_PERIPH_GPIO_IRQ) || defined(DOXYGEN) */
 
 /**
- * @brief   Get the current value of the given pin
+ * @brief   Get the current value of the given GPIO pin
  *
- * @param[in] pin       the pin to read
+ * @param[in] gpio      GPIO pin to read
  *
  * @return              0 when pin is LOW
  * @return              >0 for HIGH
  */
-int gpio_read(gpio_t pin);
+static inline int gpio_read(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    return driver->read(gpio.port) & (1 << gpio.pin);
+}
 
 /**
- * @brief   Set the given pin to HIGH
+ * @brief   Set the given GPIO pin to HIGH
  *
- * @param[in] pin       the pin to set
+ * @param[in] gpio      GPIO pin to set
  */
-void gpio_set(gpio_t pin);
+static inline void gpio_set(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->set(gpio.port, (1 << gpio.pin));
+}
 
 /**
- * @brief   Set the given pin to LOW
+ * @brief   Set the given GPIO pin to LOW
  *
- * @param[in] pin       the pin to clear
+ * @param[in] gpio      GPIO pin to clear
  */
-void gpio_clear(gpio_t pin);
+static inline void gpio_clear(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->clear(gpio.port, (1 << gpio.pin));
+}
 
 /**
- * @brief   Toggle the value of the given pin
+ * @brief   Toggle the value of the given GPIO pin
  *
- * @param[in] pin       the pin to toggle
+ * @param[in] gpio      GPIO pin to toggle
  */
-void gpio_toggle(gpio_t pin);
+static inline void gpio_toggle(gpio_t gpio)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->toggle(gpio.port, (1 << gpio.pin));
+}
 
 /**
- * @brief   Set the given pin to the given value
+ * @brief   Set the given GPIO pin to the given value
  *
- * @param[in] pin       the pin to set
+ * @param[in] gpio      GPIO pin to set
  * @param[in] value     value to set the pin to, 0 for LOW, HIGH otherwise
  */
-void gpio_write(gpio_t pin, int value);
+static inline void gpio_write(gpio_t gpio, int value)
+{
+    const gpio_driver_t *driver = gpio_driver_get(gpio.port);
+    driver->write(gpio.port, value ? driver->read(gpio.port) | (1 << gpio.pin)
+                                   : driver->read(gpio.port) & ~(1 << gpio.pin));
+}
+
+/**
+ * @brief   Test if a GPIO pin is equal to another GPIO pin
+ *
+ * @param[in] gpio1 First GPIO pin to check
+ * @param[in] gpio2 Second GPIO pin to check
+ */
+static inline int gpio_is_equal(gpio_t gpio1, gpio_t gpio2)
+{
+    return (gpio1.port == gpio2.port) && (gpio1.pin == gpio2.pin);
+}
+
+/**
+ * @brief   Test if a GPIO pin is undefined
+ *
+ * @param[in] gpio GPIO pin to check
+ */
+static inline int gpio_is_undef(gpio_t gpio)
+{
+    return gpio_is_equal(gpio, GPIO_UNDEF);
+}
+
+/**
+ * @brief   Returns the total number of GPIO ports (MCU and other GPIO ports)
+ * 
+ * return   number of GPIO ports
+ */
+int gpio_port_numof(void);
 
 #ifdef __cplusplus
 }
