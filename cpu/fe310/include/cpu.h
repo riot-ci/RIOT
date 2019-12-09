@@ -25,6 +25,9 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "thread.h"
+#include "irq.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,6 +51,21 @@ static inline void cpu_print_last_instruction(void)
  * @brief   Initialization of the Newlib-nano stub
  */
 void nanostubs_init(void);
+
+/**
+ * @brief   Timer ISR
+ */
+void timer_isr(void);
+
+/**
+ * @brief   External ISR callback
+ */
+typedef void (*external_isr_ptr_t)(int intNum);
+
+/**
+ * @brief   Set External ISR callback
+ */
+void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
 
 #ifdef __cplusplus
 }
