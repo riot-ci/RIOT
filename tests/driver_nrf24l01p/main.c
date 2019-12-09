@@ -10,10 +10,10 @@
 
 #define MAIN_QUEUE_SIZE     (8)
 
-int nrf24ctl(int argc, char *argv[]);
+int sc_nrf24ctl(int argc, char *argv[]);
 
 static const shell_command_t shell_commands[] = {
-    { "nrf24ctl", "Configure an NRF24L01P device", nrf24ctl },
+    { "nrf24ctl", "Configure an NRF24L01P device", sc_nrf24ctl },
     { NULL, NULL, NULL }
 };
 
