@@ -334,7 +334,7 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  * @param[in]   timeout         relative timeout, in @p ztimer time units
  *
  * @return  >=0 if a message was received
- * @return  <0 on timeout
+ * @return  -ETIME on timeout
  */
 int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
                                uint32_t timeout);

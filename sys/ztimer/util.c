@@ -20,6 +20,7 @@
  * @}
  */
 #include <assert.h>
+#include <errno.h>
 
 #include "mutex.h"
 #include "thread.h"
@@ -103,7 +104,7 @@ int ztimer_msg_receive_timeout(ztimer_clock_t *dev, msg_t *msg, uint32_t timeout
     msg_receive(msg);
     if (m.type == MSG_ZTIMER && m.content.ptr == &m) {
         /* we hit the timeout */
-        return -1;
+        return -ETIME;
     }
     else {
         ztimer_remove(dev, &t);
