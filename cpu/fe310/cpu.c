@@ -22,12 +22,10 @@
 #include <errno.h>
 #include <malloc.h>
 
-#include "thread.h"
-#include "irq.h"
-#include "sched.h"
-#include "thread.h"
-#include "irq.h"
 #include "cpu.h"
+#include "thread.h"
+#include "sched.h"
+#include "irq.h"
 #include "context_frame.h"
 #include "periph_cpu.h"
 #include "periph/init.h"
