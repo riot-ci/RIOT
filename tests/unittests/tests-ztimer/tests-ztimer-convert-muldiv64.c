@@ -41,7 +41,6 @@ static void test_ztimer_convert_muldiv64_now_helper(uint32_t div, uint32_t mul)
         uint64_t should = (uint64_t)i * div;
         should /= mul;
 
-        printf("%u %u %u\n", i, now, (unsigned)should);
         TEST_ASSERT(now >= last);
 
         TEST_ASSERT_EQUAL_INT(should, now);
@@ -62,7 +61,6 @@ static void _set_cb(void *arg)
 {
     int *val = arg;
     *val = 1;
-    puts("FIRE");
 }
 
 static void test_ztimer_convert_muldiv64_set_speedup(void)
@@ -142,7 +140,6 @@ static void test_ztimer_convert_muldiv64_set_slowdown(void)
     ztimer_clock_t *z = &zc.super.super;
     unsigned val = 0;
 
-    puts("----------------");
     /* initialize 32bit mock timer */
     ztimer_mock_init(&zmock, 32);
 
