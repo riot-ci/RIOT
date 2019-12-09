@@ -6,6 +6,13 @@
 #include "nrf24l01p_params.h"
 #include "nrf24l01p_util.h"
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS    (0)
+#endif
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE    (1)
+#endif
+
 #define MIN_ARGC    (2)
 
 extern nrf24l01p_t _nrf24l01p_devs[NRF24L01P_NUM];
@@ -23,15 +30,15 @@ static void print_help(void)
     ");
 }
 
-int nrf24ctl(int argc, char *argv[])
+int sc_nrf24ctl(int argc, char *argv[])
 {
     if (argc < MIN_ARGC) {
-        fprintf(stderr, "[nrf24ctl] Expext at least %d arguments\n", MIN_ARGC);
+        printf("[nrf24ctl] Expext at least %d arguments\n", MIN_ARGC);
         goto PRINT_HELP_EXIT;
     }
     int dev_index = atoi(argv[1]);
     if (dev_index < 0 || dev_index >= (int)NRF24L01P_NUM) {
-        fprintf(stderr, "[nrf24ctl] Invalid device index: %d\n", dev_index);
+        printf("[nrf24ctl] Invalid device index: %d\n", dev_index);
         goto PRINT_HELP_EXIT;
     }
     nrf24l01p_t *dev = &_nrf24l01p_devs[dev_index];
@@ -46,9 +53,8 @@ int nrf24ctl(int argc, char *argv[])
                     uint8_t len = strlen(payload);
                     ret = nrf24l01p_set_ack_payload(dev, payload, len, pipe);
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set ACK payload (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set ACK payload (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -59,17 +65,15 @@ int nrf24ctl(int argc, char *argv[])
                     printf("%s\n", argv[4]);
                     while ((tok = strtok(a ? NULL : argv[4], ":"))) {
                         if (strlen(tok) > 2) {
-                            fprintf(stderr,
-                                    "[nrf24ctl] Invalid address token: %s\n",
-                                    tok);
+                            printf("[nrf24ctl] Invalid address token: %s\n",
+                                   tok);
                             goto PRINT_HELP_EXIT;
                         }
                         address[a++] = (int)strtol(tok, NULL, 16);
                     }
                     ret = nrf24l01p_set_rx_address(dev, address, a, pipe);
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set address (%d)\n", ret);
+                        printf("[nrf24ctl] Could not set address (%d)\n", ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -77,19 +81,18 @@ int nrf24ctl(int argc, char *argv[])
                     int plw = atoi(argv[4]);
                     ret = nrf24l01p_set_mtu(dev, plw, pipe);
                     if (ret < 0) {
-                        fprintf(stderr, "[nrf24ctl] Could not set MTU (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set MTU (%d)\n", ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
                 else {
-                    fprintf(stderr, "[nrf24ctl] Invalid attribute: --set %s\n",
-                            argv[3]);
+                    printf("[nrf24ctl] Invalid attribute: --set %s\n",
+                           argv[3]);
                     goto PRINT_HELP_EXIT;
                 }
             }
             else {
-                fprintf(stderr, "[nrf24ctl] Invalid command: %s\n", argv[2]);
+                printf("[nrf24ctl] Invalid command: %s\n", argv[2]);
                 goto PRINT_HELP_EXIT;
             }
         } break;
@@ -100,9 +103,8 @@ int nrf24ctl(int argc, char *argv[])
                     int ch = atoi(argv[4]);
                     ret = nrf24l01p_set_channel(dev, ch);
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not switch to channel (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not switch to channel (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -111,9 +113,8 @@ int nrf24ctl(int argc, char *argv[])
                     ret =
                         nrf24l01p_set_crc(dev, nrf24l01p_valtoe_crc(crc_len));
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set CRC length (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set CRC length (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -122,9 +123,8 @@ int nrf24ctl(int argc, char *argv[])
                     ret = nrf24l01p_set_air_data_rate(dev, nrf24l01p_valtoe_rfdr(
                                                           dr));
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set air data rate (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set air data rate (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -133,9 +133,8 @@ int nrf24ctl(int argc, char *argv[])
                     ret = nrf24l01p_set_tx_power(dev, nrf24l01p_valtoe_tx_power(
                                                      pwr));
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set Tx power (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set Tx power (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -144,9 +143,8 @@ int nrf24ctl(int argc, char *argv[])
                     ret = nrf24l01p_set_retransm_delay(dev, nrf24l01p_valtoe_ard(
                                                            del));
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set retransmission delay (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set retransmission delay (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -154,9 +152,8 @@ int nrf24ctl(int argc, char *argv[])
                     nrf24l01p_state_t s = nrf24l01p_string_to_state(argv[4]);
                     ret = nrf24l01p_set_state(dev, s);
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24l01p] Could not change device state (%d)",
-                                ret);
+                        printf("[nrf24l01p] Could not change device state (%d)",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
@@ -164,15 +161,14 @@ int nrf24ctl(int argc, char *argv[])
                     int retr = atoi(argv[4]);
                     ret = nrf24l01p_set_max_retransm(dev, retr);
                     if (ret < 0) {
-                        fprintf(stderr,
-                                "[nrf24ctl] Could not set max. retransmissions (%d)\n",
-                                ret);
+                        printf("[nrf24ctl] Could not set max. retransmissions (%d)\n",
+                               ret);
                         goto PRINT_HELP_EXIT;
                     }
                 }
                 else {
-                    fprintf(stderr, "[nrf24ctl] Invalid attribute: --set %s\n",
-                            argv[3]);
+                    printf("[nrf24ctl] Invalid attribute: --set %s\n",
+                           argv[3]);
                     goto PRINT_HELP_EXIT;
                 }
             }
@@ -200,13 +196,13 @@ int nrf24ctl(int argc, char *argv[])
                     printf("%u\n", plw);
                 }
                 else {
-                    fprintf(stderr, "[nrf24ctl] Invalid attribute: --get %s\n",
-                            argv[3]);
+                    printf("[nrf24ctl] Invalid attribute: --get %s\n",
+                           argv[3]);
                     goto PRINT_HELP_EXIT;
                 }
             }
             else {
-                fprintf(stderr, "[nrf24ctl] Invalid command: %s\n", argv[2]);
+                printf("[nrf24ctl] Invalid command: %s\n", argv[2]);
                 goto PRINT_HELP_EXIT;
             }
         } break;
@@ -250,13 +246,13 @@ int nrf24ctl(int argc, char *argv[])
                            dev_index, retransm);
                 }
                 else {
-                    fprintf(stderr, "[nrf24ctl] Invalid attribute: --get %s\n",
-                            argv[3]);
+                    printf("[nrf24ctl] Invalid attribute: --get %s\n",
+                           argv[3]);
                     goto PRINT_HELP_EXIT;
                 }
             }
             else {
-                fprintf(stderr, "[nrf24ctl] Invalid command: %s\n", argv[2]);
+                printf("[nrf24ctl] Invalid command: %s\n", argv[2]);
                 goto PRINT_HELP_EXIT;
             }
         } break;
@@ -270,7 +266,7 @@ int nrf24ctl(int argc, char *argv[])
                 nrf24l01p_print_dev_info(dev);
             }
             else {
-                fprintf(stderr, "[nrf24ctl] Invalid command: %s\n", argv[2]);
+                printf("[nrf24ctl] Invalid command: %s\n", argv[2]);
                 goto PRINT_HELP_EXIT;
             }
         } break;
