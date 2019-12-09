@@ -25,6 +25,7 @@
 
 #include <stdint.h>
 
+#include "kernel_defines.h"
 #include "net/gnrc/nettype.h"
 #include "net/netdev.h"
 #include "periph/gpio.h"
@@ -188,13 +189,6 @@ typedef struct {
 typedef struct nrf24l01p {
     netdev_t netdev;            /**< Netdev member */
     nrf24l01p_params_t params;  /**< Parameters */
-    /**
-     * @brief Destination address as PTX
-     *        A PTX node must change pipe 0 Rx address to Tx address in order to receive ACKs.
-     *        If node switches back to Rx mode, pipe 0 Rx address must be restored from params.
-     */
-    uint8_t tx_addr[NRF24L01P_MAX_ADDR_WIDTH];
-    uint8_t tx_addr_len;        /**< Tx address length */
     uint8_t state;              /**< Current operation state */
 #if !defined (NDEBUG) || defined(DOXYGEN)
     uint8_t have_spi_access;    /**< != 0: dev already has SPI bus acquired*/

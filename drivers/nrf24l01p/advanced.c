@@ -18,6 +18,7 @@
  * @}
  */
 
+#include <assert.h>
 #include <string.h>
 
 #include "nrf24l01p_constants.h"

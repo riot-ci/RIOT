@@ -88,7 +88,6 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
     if (!(frame = _nrf24l01p_pkt_recv(netif))) {
         return NULL;
     }
-    uint8_t bcast_addr[] = NRF24L01P_BROADCAST_ADDR;
     sb_hdr.addr_width = ((uint8_t *)(frame->data))[header_len++];
     uint8_t dst_addr_width = sb_hdr_get_dst_addr_width(&sb_hdr);
     memcpy(sb_hdr.dst_addr,
@@ -122,6 +121,7 @@ static gnrc_pktsnip_t *nrf24l01p_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     netif_hdr = (gnrc_netif_hdr_t *)hdr->data;
+    uint8_t bcast_addr[] = NRF24L01P_BROADCAST_ADDR;
     if (!memcmp(&sb_hdr.dst_addr, bcast_addr, dst_addr_width)) {
         netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_BROADCAST;
     }

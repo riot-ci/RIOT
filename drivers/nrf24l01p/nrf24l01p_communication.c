@@ -73,9 +73,8 @@ uint8_t nrf24l01p_write_reg(const nrf24l01p_t *dev, uint8_t reg,
                             const uint8_t *src, size_t len)
 {
     uint8_t cmd = NRF24L01P_CMD_W_REGISTER(reg);
-    uint8_t status;
     len = MIN(len, NRF24L01P_REG_MAX_WIDTH);
-    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
@@ -93,9 +92,8 @@ uint8_t nrf24l01p_write_tx_payload(const nrf24l01p_t *dev, const void *src,
                                    size_t len)
 {
     uint8_t cmd = NRF24L01P_CMD_W_TX_PAYLOAD;
-    uint8_t status;
     len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
@@ -130,9 +128,8 @@ uint8_t nrf24l01p_write_ack_pl(const nrf24l01p_t *dev, const void *src,
                                size_t len, uint8_t pipe)
 {
     uint8_t cmd = NRF24L01P_CMD_W_ACK_PAYLOAD(pipe);
-    uint8_t status;
     len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
@@ -141,9 +138,8 @@ uint8_t nrf24l01p_write_tx_pl_no_ack(const nrf24l01p_t *dev, const void *src,
                                      size_t len)
 {
     uint8_t cmd = NRF24L01P_CMD_W_TX_PAYLOAD_NO_ACK;
-    uint8_t status;
     len = MIN(len, NRF24L01P_MAX_PAYLOAD_WIDTH);
-    status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
+    uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
     spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
     return status;
 }
@@ -151,6 +147,5 @@ uint8_t nrf24l01p_write_tx_pl_no_ack(const nrf24l01p_t *dev, const void *src,
 uint8_t nrf24l01p_get_status(const nrf24l01p_t *dev)
 {
     uint8_t cmd = NRF24L01P_CMD_NOP;
-
     return spi_transfer_byte(SPI_BUS, SPI_PIN_CS, false, cmd);
 }
