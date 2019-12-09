@@ -17,6 +17,7 @@
  * @author Fabian Hüßler <fabian.huessler@ovgu.de>
  * @}
  */
+#include <stdio.h>
 #include "nrf24l01p_registers.h"
 #include "nrf24l01p_communication.h"
 #include "nrf24l01p_conversion.h"
@@ -290,14 +291,6 @@ void nrf24l01p_diagnostics_print_dev_info(const nrf24l01p_t *dev)
 #ifndef NDEBUG
     printf("Transitions:            %u\n", (unsigned)dev->transitions);
 #endif
-    printf("TX address length:      %u\n", (unsigned)dev->tx_addr_len);
-    printf("TX address:             %2x:%2x:%2x:%2x:%2x\n",
-           dev->tx_addr[0],
-           dev->tx_addr[1],
-           dev->tx_addr[2],
-           dev->tx_addr[3],
-           dev->tx_addr[4]
-           );
 }
 
 void nrf24l01p_diagnostics_print_frame(const nrf24l01p_t *dev, const void *frame, size_t len)

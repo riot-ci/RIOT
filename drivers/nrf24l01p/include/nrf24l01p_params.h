@@ -19,6 +19,7 @@
 #ifndef NRF24L01P_PARAMS_H
 #define NRF24L01P_PARAMS_H
 
+#include "board.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
 #include "kernel_defines.h"

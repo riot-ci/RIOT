@@ -39,7 +39,7 @@ const char *nrf24l01p_state_to_string(nrf24l01p_state_t state)
     if (state == NRF24L01P_STATE_RX_MODE) {
         return "RX_MODE";
     }
-    return "UNDEFINES";
+    return "UNDEFINED";
 }
 
 nrf24l01p_state_t nrf24l01p_string_to_state(const char *sstate)
