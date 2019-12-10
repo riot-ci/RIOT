@@ -679,22 +679,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     return res;
 }
 
-static void _isr(netdev_t *netdev)
+static inline uint8_t _get_irq_status(at86rf2xx_t *dev)
 {
-    at86rf2xx_t *dev = (at86rf2xx_t *)netdev;
     uint8_t irq_mask;
-    uint8_t state;
-    uint8_t trac_status;
-
-    /* If transceiver is sleeping register access is impossible and frames are
-     * lost anyway, so return immediately.
-     */
-    state = at86rf2xx_get_status(dev);
-    if (state == AT86RF2XX_STATE_SLEEP) {
-        return;
-    }
-
-    /* read (consume) device status */
     switch (dev->base.dev_type) {
         default:
             irq_mask = at86rf2xx_reg_read(dev, AT86RF2XX_REG__IRQ_STATUS);
@@ -714,6 +701,26 @@ static void _isr(netdev_t *netdev)
         }
 #endif
     }
+    return irq_mask;
+}
+
+static void _isr(netdev_t *netdev)
+{
+    at86rf2xx_t *dev = (at86rf2xx_t *)netdev;
+    uint8_t state;
+    uint8_t irq_mask;
+    uint8_t trac_status;
+
+    /* If transceiver is sleeping register access is impossible and frames are
+     * lost anyway, so return immediately.
+     */
+    state = at86rf2xx_get_status(dev);
+    if (state == AT86RF2XX_STATE_SLEEP) {
+        return;
+    }
+
+    /* read (consume) device status */
+    irq_mask = _get_irq_status(dev);
 
     trac_status = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_STATE)
                   & AT86RF2XX_TRX_STATE_MASK__TRAC_STATUS;
@@ -728,15 +735,15 @@ static void _isr(netdev_t *netdev)
         default:
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TRX_END;
             break;
-    #if IS_USED(MODULE_AT86RFA1) || \
-        IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
         case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TX_END |
                         AT86RF2XX_IRQ_STATUS_MASK__RX_END;
             break;
         }
-    #endif
+#endif
     }
 
     if (irq_mask & en_irq_mask) {
