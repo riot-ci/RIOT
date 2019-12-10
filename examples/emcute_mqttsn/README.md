@@ -112,7 +112,7 @@ implementation is buggy when it comes to handling link local addresses,
 as the implementation does not remember the interface on which data comes in,
 hindering it from sending out any responses.
 
-Quick workaround: simply use global addresses
+Workaround: either use global IPv6 addresses or [ULAs](https://tools.ietf.org/html/rfc4193).
 
 ### I have a problem with reusing topics, what could it be?
 It also seems that the `Mosquitto.rsmb` implementation has a bug when it comes
