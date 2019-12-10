@@ -97,11 +97,10 @@ static inline void getbus(const at86rf2xx_t *dev)
             (void)dev;
 #endif
             break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: { break; }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: { break; }
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
+        case AT86RF2XX_DEV_TYPE_AT86RFR2:
+            break;
 #endif
     }
 }
@@ -258,11 +257,10 @@ void at86rf2xx_fb_start(const at86rf2xx_t *dev)
 #endif
             break;
         }
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: { break; }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: { break; }
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
+        case AT86RF2XX_DEV_TYPE_AT86RFR2:
+            break;
 #endif
     }
 }
@@ -307,11 +305,10 @@ void at86rf2xx_fb_stop(const at86rf2xx_t *dev)
             (void)dev;
 #endif
             break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: { break; }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: { break; }
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
+        case AT86RF2XX_DEV_TYPE_AT86RFR2:
+            break;
 #endif
     }
 }

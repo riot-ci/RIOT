@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include "kernel_defines.h"
 #include "at86rf2xx_dev_types.h"
 #include "at86rf212b.h"
 #include "at86rf231.h"
@@ -26,7 +27,6 @@
 #include "at86rf233.h"
 #include "at86rfa1.h"
 #include "at86rfr2.h"
-#include "kernel_defines.h"
 
 /**
  * @brief RSSI base values for each AT86RF2XX transceiver type

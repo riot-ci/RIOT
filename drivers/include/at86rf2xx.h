@@ -124,7 +124,7 @@ typedef struct at86rf2xx_base {
     uint8_t pending_tx;                     /**< keep track of pending TX calls
                                                  this is required to know when to
                                                  return to @ref at86rf2xx_t::idle_state */
-    uint8_t dev_type;                      /**<  AT86RF2XX device type */
+    int8_t dev_type;                        /**<  AT86RF2XX device type */
 } at86rf2xx_base_t;
 
 /**

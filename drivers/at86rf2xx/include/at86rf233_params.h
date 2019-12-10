@@ -22,8 +22,6 @@
 
 #if IS_USED(MODULE_AT86RF233)
 
-#include "board.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

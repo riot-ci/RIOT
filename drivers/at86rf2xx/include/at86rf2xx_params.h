@@ -22,6 +22,7 @@
 #ifndef AT86RF2XX_PARAMS_H
 #define AT86RF2XX_PARAMS_H
 
+#include "board.h"
 #include "kernel_defines.h"
 #include "at86rf2xx.h"
 

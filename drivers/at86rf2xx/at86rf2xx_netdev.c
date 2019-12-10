@@ -69,7 +69,7 @@ const netdev_driver_t at86rf2xx_driver = {
     .set = _set,
 };
 
-#if IS_USED(MODULE_AT86RFA1) || IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
 /* SOC has radio interrupts, store reference to netdev */
 static netdev_t *at86rfmega_dev;
 #endif
@@ -111,13 +111,8 @@ static int _init(netdev_t *netdev)
                           GPIO_RISING, _irq_handler, dev);
 #endif
             break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            at86rfmega_dev = netdev;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             at86rfmega_dev = netdev;
             break;
@@ -185,13 +180,9 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         default:
             at86rf2xx_fb_read(dev, &phr, 1);
             break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            phr = TST_RX_LENGTH;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             phr = TST_RX_LENGTH;
             break;
@@ -260,24 +251,15 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
                 at86rf2xx_fb_read(dev, &ed, 1);
                 at86rf2xx_fb_stop(dev);
                 break;
-#if IS_USED(MODULE_AT86RF231)
-            case AT86RF2XX_DEV_TYPE_AT86RF231: {
-                /* AT86RF231 does not provide ED at the end of the frame buffer, read
-                 * from separate register instead */
-                at86rf2xx_fb_stop(dev);
-                ed = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_ED_LEVEL);
-            }
-#endif
-#if IS_USED(MODULE_AT86RFA1)
-            case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-                /* No ED at end of frame buffer for AT86RFA1 */
-                at86rf2xx_fb_stop(dev);
-                ed = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_ED_LEVEL);
-            }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF231) || \
+    IS_USED(MODULE_AT86RFA1)  || \
+    IS_USED(MODULE_AT86RFR2)
+            case AT86RF2XX_DEV_TYPE_AT86RF231:
+            case AT86RF2XX_DEV_TYPE_AT86RFA1:
             case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            /* No ED at end of frame buffer for AT86RFA1 */
+                /* Those transceivers do not provide ED
+                 * at the end of the frame buffer, read
+                 * from separate register instead */
                 at86rf2xx_fb_stop(dev);
                 ed = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_ED_LEVEL);
             }
@@ -746,14 +728,9 @@ static void _isr(netdev_t *netdev)
         default:
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TRX_END;
             break;
-    #if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TX_END |
-                        AT86RF2XX_IRQ_STATUS_MASK__RX_END;
-            break;
-        }
-    #endif
-    #if IS_USED(MODULE_AT86RFR2)
+    #if IS_USED(MODULE_AT86RFA1) || \
+        IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TX_END |
                         AT86RF2XX_IRQ_STATUS_MASK__RX_END;
@@ -839,7 +816,7 @@ static void _isr(netdev_t *netdev)
     }
 }
 
-#if IS_USED(MODULE_AT86RFA1) || IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
 
 /**
  * @brief ISR for transceiver's receive end interrupt
@@ -933,4 +910,4 @@ ISR(TRX24_TX_END_vect, ISR_BLOCK)
     atmega_exit_isr();
 }
 
-#endif /* MODULE_AT86RFA1 || MODULE_AT86RFR2 */
+#endif /* IS_USED(MODULE_AT86RF2XX_PERIPH) */

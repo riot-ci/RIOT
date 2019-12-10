@@ -450,43 +450,23 @@ void at86rf2xx_set_cca_threshold(const at86rf2xx_t *dev, int8_t value)
     value -= at86rf2xx_rssi_base_values[dev->base.dev_type];
     value >>= 1;
     value &= AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
+
     switch (dev->base.dev_type) {
-#if IS_USED(MODULE_AT86RF212B)
-        /* AT86RF212B has CCA_CS_THRES as bits [7; 4] in reg CCA_THRES,
+#if IS_USED(MODULE_AT86RF212B) || \
+    IS_USED(MODULE_AT86RF231)  || \
+    IS_USED(MODULE_AT86RFA1)   || \
+    IS_USED(MODULE_AT86RFR2)
+        /* Those types have CCA_CS_THRES as bits [7; 4] in reg CCA_THRES,
            so take care that we don´t override them. */
-        case AT86RF2XX_DEV_TYPE_AT86RF212B: {
-            uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
-            tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
-            value = tmp |= value;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RF231)
-        /* AT86RF231 also has CCA_CS_THRES */
-        case AT86RF2XX_DEV_TYPE_AT86RF231: {
-            uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
-            tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
-            value = tmp |= value;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFA1)
-        /* AT86RFA1 also has CCA_CS_THRES */
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
-            tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
-            value = tmp |= value;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        /* AT86RFR2 also has CCA_CS_THRES */
+        case AT86RF2XX_DEV_TYPE_AT86RF212B:
+        case AT86RF2XX_DEV_TYPE_AT86RF231:
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
             tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
-            value = tmp |= value;
+            value = tmp | value;
             break;
-        }
+    }
 #endif
     }
     value |= AT86RF2XX_CCA_THRES_MASK__RSVD_HI_NIBBLE; /* What is this? */
@@ -647,7 +627,8 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
                 case AT86RF2XX_DEV_TYPE_AT86RFA1: {
                     /* reset interrupts states in device */
                     ((at86rfa1_t *)dev)->irq_status = 0;
-                    /* Setting SLPTR bit brings radio transceiver to sleep in in TRX_OFF*/
+                    /* Setting SLPTR bit brings radio transceiver
+                       to sleep in TRX_OFF */
                     *AT86RFA1_REG__TRXPR |= (AT86RF2XX_TRXPR_MASK__SLPTR);
                     break;
                 }
@@ -656,7 +637,8 @@ uint8_t at86rf2xx_set_state(at86rf2xx_t *dev, uint8_t state)
                 case AT86RF2XX_DEV_TYPE_AT86RFR2: {
                     /* reset interrupts states in device */
                     ((at86rfr2_t *)dev)->irq_status = 0;
-                    /* Setting SLPTR bit brings radio transceiver to sleep in in TRX_OFF*/
+                    /* Setting SLPTR bit brings radio transceiver
+                       to sleep in TRX_OFF */
                     *AT86RFR2_REG__TRXPR |= (AT86RF2XX_TRXPR_MASK__SLPTR);
                     break;
                 }

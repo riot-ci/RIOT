@@ -59,14 +59,9 @@ static void at86rf2xx_setup(at86rf2xx_t *dev)
     dev->base.pending_tx = 0;
 
     switch (dev->base.dev_type) {
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            /* set all interrupts off */
-            at86rf2xx_reg_write(dev, AT86RF2XX_REG__IRQ_MASK, 0x00);
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             /* set all interrupts off */
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__IRQ_MASK, 0x00);
@@ -79,84 +74,53 @@ static void at86rf2xx_setup(at86rf2xx_t *dev)
 void at86rf212b_setup(at86rf212b_t *devs, const at86rf212b_params_t *params,
                       uint8_t num)
 {
-#if IS_USED(MODULE_AT86RF212B)
     for (int i = 0; i < num; i++) {
         devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF212B;
         devs[i].params = params[i];
         at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
-#else
-    (void)devs;
-    (void)params;
-    (void)num;
-#endif
 }
 
 void at86rf231_setup(at86rf231_t *devs, const at86rf231_params_t *params,
                      uint8_t num)
 {
-#if IS_USED(MODULE_AT86RF231)
     for (int i = 0; i < num; i++) {
         devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF231;
         devs[i].params = params[i];
         at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
-#else
-    (void)devs;
-    (void)params;
-    (void)num;
-#endif
 }
 
 void at86rf232_setup(at86rf232_t *devs, const at86rf232_params_t *params,
                      uint8_t num)
 {
-#if IS_USED(MODULE_AT86RF232)
+    for (int i = 0; i < num; i++) {
         devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF232;
         devs[i].params = params[i];
         at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
-#else
-    (void)devs;
-    (void)params;
-    (void)num;
-#endif
 }
 
 void at86rf233_setup(at86rf233_t *devs, const at86rf233_params_t *params,
                      uint8_t num)
 {
-#if IS_USED(MODULE_AT86RF233)
     for (int i = 0; i < num; i++) {
         devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF233;
         devs[i].params = params[i];
         at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
-#else
-    (void)devs;
-    (void)params;
-    (void)num;
-#endif
 }
 
 void at86rfa1_setup(at86rfa1_t *dev)
 {
-#if IS_USED(MODULE_AT86RFA1)
     dev->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RFA1;
     at86rf2xx_setup((at86rf2xx_t *)dev);
-#else
-    (void)dev;
-#endif
 }
 
 void at86rfr2_setup(at86rfr2_t *dev)
 {
-#if IS_USED(MODULE_AT86RFR2)
     dev->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RFR2;
     at86rf2xx_setup((at86rf2xx_t *)dev);
-#else
-    (void)dev;
-#endif
 }
 
 size_t at86rf2xx_get_size(const at86rf2xx_t *dev)
@@ -207,11 +171,11 @@ static void at86rf2xx_disable_clock_output(at86rf2xx_t *dev)
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_CTRL_0, tmp);
             break;
         }
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: break;
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: break;
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
+        case AT86RF2XX_DEV_TYPE_AT86RFR2:
+            break;
 #endif
     }
 }
@@ -253,10 +217,8 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
 
     /* get an 8-byte ID to use as hardware address */
     luid_base(addr_long.uint8, IEEE802154_LONG_ADDRESS_LEN);
-
     /* modify last byte to make ID unique */
     luid_get(&addr_long.uint8[IEEE802154_LONG_ADDRESS_LEN - 1], 1);
-
     /* make sure we mark the address as non-multicast and not globally unique */
     addr_long.uint8[0] &= ~(0x01);
     addr_long.uint8[0] |=  (0x02);
@@ -296,13 +258,12 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_CTRL_1, tmp);
             break;
         }
-#if IS_USED(MODULE_AT86RFA1)
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
         /* don't populate masked interrupt flags to IRQ_STATUS register */
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: break;
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        /* don't populate masked interrupt flags to IRQ_STATUS register */
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: break;
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
+        case AT86RF2XX_DEV_TYPE_AT86RFR2:
+        break;
 #endif
     }
 
@@ -317,14 +278,9 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
         default:
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TRX_END;
             break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TX_END |
-                        AT86RF2XX_IRQ_STATUS_MASK__RX_END;
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RFA1) || \
+    IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
             en_irq_mask = AT86RF2XX_IRQ_STATUS_MASK__TX_END |
                         AT86RF2XX_IRQ_STATUS_MASK__RX_END;
