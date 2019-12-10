@@ -41,6 +41,10 @@
 #include "board.h"
 #include "periph_conf.h"
 
+#ifdef MODULE_ZTIMER_XTIMER_COMPAT
+#include "ztimer/xtimer_compat.h"
+#else
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -616,6 +620,8 @@ static inline int xtimer_msg_receive_timeout64(msg_t *msg, uint64_t timeout);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* MODULE_XTIMER_ON_ZTIMER */
 
 /** @} */
 #endif /* XTIMER_H */
