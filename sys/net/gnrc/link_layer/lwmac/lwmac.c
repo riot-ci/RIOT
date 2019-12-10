@@ -676,7 +676,7 @@ static void rtt_cb(void *arg)
 {
     msg_t msg;
 
-    msg.content.value = ((uint32_t) arg) & 0xffff;
+    msg.content.value = ((uintptr_t) arg) & 0xffff;
     msg.type = GNRC_LWMAC_EVENT_RTT_TYPE;
     msg_send(&msg, lwmac_pid);
 
