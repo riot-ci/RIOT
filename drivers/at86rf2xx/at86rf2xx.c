@@ -162,7 +162,7 @@ void at86rfr2_setup(at86rfr2_t *dev)
 size_t at86rf2xx_get_size(const at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
-        default: return sizeof(at86rf2xx_t);
+        default:
 #if IS_USED(MODULE_AT86RF212B)
         case AT86RF2XX_DEV_TYPE_AT86RF212B: {
             return sizeof(at86rf212b_t);
@@ -199,13 +199,14 @@ size_t at86rf2xx_get_size(const at86rf2xx_t *dev)
 static void at86rf2xx_disable_clock_output(at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
-        default:;
+        default: {
             uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_CTRL_0);
             tmp &= ~(AT86RF2XX_TRX_CTRL_0_MASK__CLKM_CTRL);
             tmp &= ~(AT86RF2XX_TRX_CTRL_0_MASK__CLKM_SHA_SEL);
             tmp |= (AT86RF2XX_TRX_CTRL_0_CLKM_CTRL__OFF);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_CTRL_0, tmp);
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: break;
 #endif
@@ -289,11 +290,12 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
     }
 
     switch (dev->base.dev_type) {
-        default:;
+        default: {
             uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_CTRL_1);
             tmp &= ~(AT86RF2XX_TRX_CTRL_1_MASK__IRQ_MASK_MODE);
             at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_CTRL_1, tmp);
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         /* don't populate masked interrupt flags to IRQ_STATUS register */
         case AT86RF2XX_DEV_TYPE_AT86RFA1: break;

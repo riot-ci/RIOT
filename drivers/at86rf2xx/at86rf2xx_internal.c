@@ -109,7 +109,7 @@ uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
 {
     uint8_t value = 0;
     switch (dev->base.dev_type) {
-        default:;
+        default: {
 #if AT86RF2XX_NEED_SPI
             uint8_t reg =
                 (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ | addr);
@@ -121,6 +121,7 @@ uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
             (void)addr;
 #endif
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: {
             return at86rf2xx_reg_read_mcu(dev, AT86RFA1_REG(addr));
@@ -140,7 +141,7 @@ uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
 void at86rf2xx_reg_write(const at86rf2xx_t *dev, uint8_t addr, uint8_t value)
 {
     switch (dev->base.dev_type) {
-        default:;
+        default: {
 #if AT86RF2XX_NEED_SPI
             uint8_t reg =
                 (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_WRITE | addr);
@@ -153,6 +154,7 @@ void at86rf2xx_reg_write(const at86rf2xx_t *dev, uint8_t addr, uint8_t value)
             (void)value;
 #endif
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: {
             at86rf2xx_reg_write_mcu(dev, AT86RFA1_REG(addr), value);
@@ -172,7 +174,7 @@ void at86rf2xx_sram_read(const at86rf2xx_t *dev, uint8_t offset,
                          uint8_t *data, size_t len)
 {
     switch (dev->base.dev_type) {
-        default:;
+        default: {
 #if AT86RF2XX_NEED_SPI
             uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_READ);
             getbus(dev);
@@ -186,6 +188,7 @@ void at86rf2xx_sram_read(const at86rf2xx_t *dev, uint8_t offset,
             (void)data;
             (void)len;
 #endif
+        }
             break;
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: {
@@ -208,7 +211,7 @@ void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
                           const uint8_t *data, size_t len)
 {
     switch (dev->base.dev_type) {
-        default:;
+        default: {
 #if AT86RF2XX_NEED_SPI
             uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_WRITE);
             getbus(dev);
@@ -223,6 +226,7 @@ void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
             (void)len;
 #endif
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: {
             at86rf2xx_sram_write_mcu(dev, AT86RFA1_REG__TRXFBST,
@@ -243,7 +247,7 @@ void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
 void at86rf2xx_fb_start(const at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
-        default:;
+        default: {
 #if AT86RF2XX_NEED_SPI
             uint8_t reg = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
             getbus(dev);
@@ -252,6 +256,7 @@ void at86rf2xx_fb_start(const at86rf2xx_t *dev)
             (void)dev;
 #endif
             break;
+        }
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: { break; }
 #endif
