@@ -30,7 +30,7 @@ extern "C" {
  * @{
  */
 /* As defined in boards/hifive1/board.c CPU_DESIRED_FREQ **/
-#define CLOCK_CORECLOCK             (200000000ul)
+#define CLOCK_CORECLOCK             (320000000UL)
 /** @} */
 
 /**
