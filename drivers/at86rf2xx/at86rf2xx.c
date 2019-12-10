@@ -81,11 +81,9 @@ void at86rf212b_setup(at86rf212b_t *devs, const at86rf212b_params_t *params,
 {
 #if IS_USED(MODULE_AT86RF212B)
     for (int i = 0; i < num; i++) {
-        devs->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF212B;
-        devs->params = *params;
-        at86rf2xx_setup((at86rf2xx_t *)devs);
-        devs++;
-        params++;
+        devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF212B;
+        devs[i].params = params[i];
+        at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
 #else
     (void)devs;
@@ -99,11 +97,9 @@ void at86rf231_setup(at86rf231_t *devs, const at86rf231_params_t *params,
 {
 #if IS_USED(MODULE_AT86RF231)
     for (int i = 0; i < num; i++) {
-        devs->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF231;
-        devs->params = *params;
-        at86rf2xx_setup((at86rf2xx_t *)devs);
-        devs++;
-        params++;
+        devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF231;
+        devs[i].params = params[i];
+        at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
 #else
     (void)devs;
@@ -116,12 +112,9 @@ void at86rf232_setup(at86rf232_t *devs, const at86rf232_params_t *params,
                      uint8_t num)
 {
 #if IS_USED(MODULE_AT86RF232)
-    for (int i = 0; i < num; i++) {
-        devs->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF232;
-        devs->params = *params;
-        at86rf2xx_setup((at86rf2xx_t *)devs);
-        devs++;
-        params++;
+        devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF232;
+        devs[i].params = params[i];
+        at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
 #else
     (void)devs;
@@ -135,11 +128,9 @@ void at86rf233_setup(at86rf233_t *devs, const at86rf233_params_t *params,
 {
 #if IS_USED(MODULE_AT86RF233)
     for (int i = 0; i < num; i++) {
-        devs->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF233;
-        devs->params = *params;
-        at86rf2xx_setup((at86rf2xx_t *)devs);
-        devs++;
-        params++;
+        devs[i].base.dev_type = AT86RF2XX_DEV_TYPE_AT86RF233;
+        devs[i].params = params[i];
+        at86rf2xx_setup((at86rf2xx_t *)&devs[i]);
     }
 #else
     (void)devs;
