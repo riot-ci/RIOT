@@ -65,21 +65,6 @@ typedef struct {
  */
 #define PERIPH_TIMER_PROVIDES_SET
 
-/**
- * @brief   Timer ISR
- */
-void timer_isr(void);
-
-/**
- * @brief   External ISR callback
- */
-typedef void (*external_isr_ptr_t)(int intNum);
-
-/**
- * @brief   Set External ISR callback
- */
-void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
-
 #ifdef __cplusplus
 }
 #endif
