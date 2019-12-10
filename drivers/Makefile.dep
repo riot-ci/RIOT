@@ -54,6 +54,10 @@ ifneq (,$(filter at86rf%,$(USEMODULE)))
     FEATURES_REQUIRED += periph_gpio
     FEATURES_REQUIRED += periph_gpio_irq
     FEATURES_REQUIRED += periph_spi
+    USEMODULE += at86rf2xx_spi
+  endif
+  ifneq (,$(filter at86rfa1 at86rfr2,$(USEMODULE)))
+    USEMODULE += at86rf2xx_periph
   endif
 endif
 

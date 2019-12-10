@@ -35,16 +35,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "kernel_defines.h"
 #include "board.h"
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/nettype.h"
 
 /* we need no peripherals for memory mapped radios */
-//#if !defined(MODULE_AT86RFA1) && !defined(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF2XX_SPI)
 #include "periph/spi.h"
 #include "periph/gpio.h"
-//#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,25 +55,6 @@ extern "C" {
  * @brief   Maximum possible packet size in byte
  */
 #define AT86RF2XX_MAX_PKT_LENGTH        (IEEE802154_FRAME_LEN_MAX)
-
-#if IS_USED(MODULE_AT86RFA1) || \
-    IS_USED(MODULE_AT86RFR2)
-#define AT86RF2XX_IN_MCU                (1)
-#else
-#define AT86RF2XX_IN_MCU                (0)
-#endif
-
-#if IS_USED(MODULE_PERIPH_SPI)
-#define AT86RF2XX_NEED_SPI              (1)
-#else
-#define AT86RF2XX_NEED_SPI              (0)
-#endif
-
-#if IS_USED(MODULE_PERIPH_GPIO_IRQ)
-#define AT86RF2XX_NEED_GPIO_IRQ         (1)
-#else
-#define AT86RF2XX_NEED_GPIO_IRQ         (0)
-#endif
 
 /**
  * @name    Flags for device internal states (see datasheet)
@@ -118,7 +100,7 @@ extern "C" {
  * @brief   struct holding all params needed for device initialization
  */
 typedef struct at86rf2xx_params {
-#if AT86RF2XX_NEED_SPI || defined(DOXYGEN)
+#if IS_USED(MODULE_AT86RF2XX_SPI) || defined(DOXYGEN)
     spi_t spi;              /**< SPI bus the device is connected to */
     spi_clk_t spi_clk;      /**< SPI clock speed to use */
     spi_cs_t cs_pin;        /**< GPIO pin connected to chip select */

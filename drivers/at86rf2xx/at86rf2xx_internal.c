@@ -21,7 +21,8 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @}
  */
-#if AT86RF2XX_NEED_SPI
+#include "kernel_defines.h"
+#if IS_USED(MODULE_AT86RF2XX_SPI)
 #include "periph/spi.h"
 #endif
 #include "periph/gpio.h"
@@ -38,7 +39,7 @@
 #include "at86rfr2.h"
 
 /* 8-bit  MCU integrated transceivers */
-#if AT86RF2XX_IN_MCU
+#if IS_USED(MODULE_AT86RF2XX_PERIPH)
 #include <string.h>
 
 static inline uint8_t
@@ -89,7 +90,7 @@ static inline void getbus(const at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
         default:
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             spi_acquire(SPIDEV, CSPIN, SPI_MODE_0,
                         dev->params.spi_clk);
 #else
@@ -110,7 +111,7 @@ uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
     uint8_t value = 0;
     switch (dev->base.dev_type) {
         default: {
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             uint8_t reg =
                 (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ | addr);
             getbus(dev);
@@ -142,7 +143,7 @@ void at86rf2xx_reg_write(const at86rf2xx_t *dev, uint8_t addr, uint8_t value)
 {
     switch (dev->base.dev_type) {
         default: {
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             uint8_t reg =
                 (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_WRITE | addr);
             getbus(dev);
@@ -175,7 +176,7 @@ void at86rf2xx_sram_read(const at86rf2xx_t *dev, uint8_t offset,
 {
     switch (dev->base.dev_type) {
         default: {
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_READ);
             getbus(dev);
             spi_transfer_byte(SPIDEV, CSPIN, true, reg);
@@ -212,7 +213,7 @@ void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
 {
     switch (dev->base.dev_type) {
         default: {
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_WRITE);
             getbus(dev);
             spi_transfer_byte(SPIDEV, CSPIN, true, reg);
@@ -248,7 +249,7 @@ void at86rf2xx_fb_start(const at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
         default: {
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             uint8_t reg = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
             getbus(dev);
             spi_transfer_byte(SPIDEV, CSPIN, true, reg);
@@ -271,7 +272,7 @@ void at86rf2xx_fb_read(const at86rf2xx_t *dev,
 {
     switch (dev->base.dev_type) {
         default:
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             spi_transfer_bytes(SPIDEV, CSPIN, true, NULL, data, len);
 #else
             (void)dev;
@@ -298,7 +299,7 @@ void at86rf2xx_fb_stop(const at86rf2xx_t *dev)
 {
     switch (dev->base.dev_type) {
         default:
-#if AT86RF2XX_NEED_SPI
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             /* transfer one byte (which we ignore) to release the chip select */
             spi_transfer_byte(SPIDEV, CSPIN, false, 1);
             spi_release(SPIDEV);

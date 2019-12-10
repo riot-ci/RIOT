@@ -74,7 +74,7 @@ const netdev_driver_t at86rf2xx_driver = {
 static netdev_t *at86rfmega_dev;
 #endif
 
-#if AT86RF2XX_NEED_GPIO_IRQ
+#if IS_USED(MODULE_AT86RF2XX_SPI)
 static void _irq_handler(void *arg)
 {
     netdev_t *dev = (netdev_t *)arg;
@@ -90,9 +90,13 @@ static int _init(netdev_t *netdev)
     at86rf2xx_t *dev = (at86rf2xx_t *)netdev;
     switch (dev->base.dev_type) {
         default:
-#if AT86RF2XX_NEED_SPI
+            gpio_init(dev->params.sleep_pin, GPIO_OUT);
+            gpio_clear(dev->params.sleep_pin);
+            gpio_init(dev->params.reset_pin, GPIO_OUT);
+            gpio_set(dev->params.reset_pin);
+#if IS_USED(MODULE_AT86RF2XX_SPI)
             /* initialize GPIOs */
-            DEBUG("[at86rf2xx] NEED_SPI\n");
+            DEBUG("[at86rf2xx] initialize SPI based transceiver\n");
             spi_init_cs(dev->params.spi, dev->params.cs_pin);
             /* Intentionally check if bus can be acquired,
             since getbus() drops the return value */
@@ -103,13 +107,6 @@ static int _init(netdev_t *netdev)
                 return -EIO;
             }
             spi_release(dev->params.spi);
-#endif
-            gpio_init(dev->params.sleep_pin, GPIO_OUT);
-            gpio_clear(dev->params.sleep_pin);
-            gpio_init(dev->params.reset_pin, GPIO_OUT);
-            gpio_set(dev->params.reset_pin);
-#if AT86RF2XX_NEED_GPIO_IRQ
-            DEBUG("[at86rf2xx] NEED_GPIO_IRQ\n");
             gpio_init_int(dev->params.int_pin, GPIO_IN,
                           GPIO_RISING, _irq_handler, dev);
 #endif
