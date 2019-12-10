@@ -19,6 +19,8 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
+#include "periph_cpu.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,11 +44,27 @@ extern "C" {
 /** @} */
 
 /**
- * @name    Timer configuration
- *
+ * @name   UART configuration
  * @{
  */
-#define TIMER_NUMOF                 (1)
+static const uart_conf_t uart_config[] = {
+    {
+        .addr       = UART0_CTRL_ADDR,
+        .rx         = GPIO_PIN(0, 16),
+        .tx         = GPIO_PIN(0, 17),
+        .isr_num    = INT_UART0_BASE,
+        .isr_prio   = 2,
+    },
+    {
+        .addr       = UART1_CTRL_ADDR,
+        .rx         = GPIO_PIN(0, 18),
+        .tx         = GPIO_PIN(0, 23),
+        .isr_num    = INT_UART1_BASE,
+        .isr_prio   = 2,
+    },
+};
+
+#define UART_NUMOF                  ARRAY_SIZE(uart_config)
 /** @} */
 
 /**
@@ -74,16 +92,6 @@ extern "C" {
  * @{
  */
 #define PWM_NUMOF                   (3)
-/** @} */
-
-/**
- * @name    UART configuration
- *
- * @{
- */
-#define UART_NUMOF                  (2)
-#define UART0_RX_INTR_PRIORITY      (2)
-#define UART1_RX_INTR_PRIORITY      (2)
 /** @} */
 
 #ifdef __cplusplus
