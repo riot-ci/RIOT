@@ -40,14 +40,23 @@ static inline uint32_t _min_u32(uint32_t a, uint32_t b) {
 }
 #endif
 
-void ztimer_remove(ztimer_clock_t *ztimer, ztimer_t *entry)
+static unsigned _is_set(ztimer_t *t)
+{
+    (void)t;
+    /* TODO: implement */
+    return 1;
+}
+
+void ztimer_remove(ztimer_clock_t *clock, ztimer_t *entry)
 {
     unsigned state = irq_disable();
 
-    ztimer_update_head_offset(ztimer);
-    _del_entry_from_list(ztimer, &entry->base);
+    if (_is_set(entry)) {
+        ztimer_update_head_offset(clock);
+        _del_entry_from_list(clock, &entry->base);
 
-    _ztimer_update(ztimer);
+        _ztimer_update(clock);
+    }
 
     irq_restore(state);
 }
@@ -60,7 +69,9 @@ void ztimer_set(ztimer_clock_t *ztimer, ztimer_t *entry, uint32_t val)
     unsigned state = irq_disable();
 
     ztimer_update_head_offset(ztimer);
-    _del_entry_from_list(ztimer, &entry->base);
+    if (_is_set(entry)) {
+        _del_entry_from_list(ztimer, &entry->base);
+    }
 
     entry->base.offset = val;
     _add_entry_to_list(ztimer, &entry->base);
