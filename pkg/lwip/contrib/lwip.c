@@ -97,7 +97,7 @@ static socket_zep_t socket_zep_devs[LWIP_NETIF_NUMOF];
 
 #ifdef MODULE_ESP_WIFI
 extern esp_wifi_netdev_t _esp_wifi_dev;
-extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
+extern void esp_wifi_setup(esp_wifi_netdev_t *dev);
 #endif
 
 #ifdef MODULE_STM32_ETH
@@ -154,11 +154,19 @@ void lwip_bootstrap(void)
     }
 #elif defined(MODULE_STM32_ETH)
     stm32_eth_netdev_setup(&stm32_eth);
-    if (netif_add(&netif[0], &stm32_eth, lwip_netdev_init,
-                tcpip_input) == NULL) {
+#ifdef MODULE_LWIP_IPV4
+    if (netif_add(&netif[0], IP4_ADDR_ANY, IP4_ADDR_ANY, IP4_ADDR_ANY,
+                  &stm32_eth, lwip_netdev_init, tcpip_input) == NULL) {
         DEBUG("Could not add stm32_eth device\n");
         return;
     }
+#else
+    if (netif_add(&netif[0], &stm32_eth, lwip_netdev_init,
+                  tcpip_input) == NULL) {
+        DEBUG("Could not add stm32_eth device\n");
+        return;
+    }
+#endif
 #endif
     if (netif[0].state != NULL) {
         /* state is set to a netdev_t in the netif_add() functions above */
