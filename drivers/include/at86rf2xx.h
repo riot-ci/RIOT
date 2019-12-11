@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 Freie Universität Berlin
+ *               2019 OvGU Magdeburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -24,6 +25,8 @@
  * @author      Daniel Krebs <github@daniel-krebs.net>
  * @author      Kévin Roussel <Kevin.Roussel@inria.fr>
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
+ * @author      Fabian Hüßler <fabian.huessler@ovgu.de>
+ *
  */
 
 #ifndef AT86RF2XX_H
@@ -32,13 +35,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "kernel_defines.h"
 #include "board.h"
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/nettype.h"
 
 /* we need no peripherals for memory mapped radios */
-#if !defined(MODULE_AT86RFA1) && !defined(MODULE_AT86RFR2)
+#if IS_USED(MODULE_AT86RF2XX_SPI)
 #include "periph/spi.h"
 #include "periph/gpio.h"
 #endif
@@ -51,120 +55,6 @@ extern "C" {
  * @brief   Maximum possible packet size in byte
  */
 #define AT86RF2XX_MAX_PKT_LENGTH        (IEEE802154_FRAME_LEN_MAX)
-
-/**
- * @name    Channel configuration
- * @{
- */
-#ifdef MODULE_AT86RF212B
-/* the AT86RF212B has a sub-1GHz radio */
-#define AT86RF2XX_MIN_CHANNEL           (IEEE802154_CHANNEL_MIN_SUBGHZ)
-#define AT86RF2XX_MAX_CHANNEL           (IEEE802154_CHANNEL_MAX_SUBGHZ)
-#define AT86RF2XX_DEFAULT_CHANNEL       (IEEE802154_DEFAULT_SUBGHZ_CHANNEL)
-/* Page 2 is O-QPSK 100 kbit/s (channel 0), or 250 kbit/s (channels 1-10) */
-#define AT86RF2XX_DEFAULT_PAGE          (IEEE802154_DEFAULT_SUBGHZ_PAGE)
-#else
-#define AT86RF2XX_MIN_CHANNEL           (IEEE802154_CHANNEL_MIN)
-#define AT86RF2XX_MAX_CHANNEL           (IEEE802154_CHANNEL_MAX)
-#define AT86RF2XX_DEFAULT_CHANNEL       (IEEE802154_DEFAULT_CHANNEL)
-/* Only page 0 is supported in the 2.4 GHz band */
-#endif
-/** @} */
-
-/**
- * @brief   Default TX power (0dBm)
- */
-#define AT86RF2XX_DEFAULT_TXPOWER       (IEEE802154_DEFAULT_TXPOWER)
-
-/**
- * @brief   Base (minimal) RSSI value in dBm
- */
-#if MODULE_AT86RF233
-#   define RSSI_BASE_VAL                   (-94)
-#elif MODULE_AT86RF212B
-/**
- * @note for the default settings in RIOT for the at86rf212b,
- *       for other seetings this value may change.
- */
-#   define RSSI_BASE_VAL                   (-98)
-#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
-#   define RSSI_BASE_VAL                   (-90)
-#else
-#   define RSSI_BASE_VAL                   (-91)
-#endif
-
-/**
- * @brief   Max Receiver sensitivity value in dBm
- */
-#if MODULE_AT86RF233
-#   define MAX_RX_SENSITIVITY              (-52)
-#elif MODULE_AT86RF212B
-#   define MAX_RX_SENSITIVITY              (-54)
-#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
-#   define MAX_RX_SENSITIVITY              (-48)
-#else
-#   define MAX_RX_SENSITIVITY              (-49)
-#endif
-
-/**
- * @brief   Min Receiver sensitivity value in dBm
- */
-#if MODULE_AT86RF233
-#   define MIN_RX_SENSITIVITY              (-101)
-#elif MODULE_AT86RF212B
-#   define MIN_RX_SENSITIVITY              (-110)
-#elif MODULE_AT86RFA1 || MODULE_AT86RFR2
-#   define MIN_RX_SENSITIVITY              (-100)
-#else
-#   define MIN_RX_SENSITIVITY              (-101)
-#endif
-
-#if defined(DOXYGEN) || defined(MODULE_AT86RF232) || defined(MODULE_AT86RF233)
-/**
- * @brief   Frame retry counter reporting
- *
- * The AT86RF2XX_HAVE_RETRIES flag enables support for NETOPT_TX_RETRIES NEEDED
- * operation. Required for this functionality is the XAH_CTRL_2 register which
- * contains the frame retry counter. Only the at86rf232 and the at86rf233
- * support this register.
- */
-#define AT86RF2XX_HAVE_RETRIES             (1)
-#else
-#define AT86RF2XX_HAVE_RETRIES             (0)
-#endif
-
-/**
- * @brief   Random Number Generator
- *
- * Most AT86RF radios have the option to use the highest bits of the RSSI
- * register as a source of randomness.
- * See Section 11.2 of the at86rf233 reference manual. (RND_VALUE)
- */
-#if defined(MODULE_AT86RF233) || defined(MODULE_AT86RF231) || defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
-#ifndef AT86RF2XX_RANDOM_NUMBER_GENERATOR
-#define AT86RF2XX_RANDOM_NUMBER_GENERATOR  (1)
-#endif
-#else
-#ifndef AT86RF2XX_RANDOM_NUMBER_GENERATOR
-#define AT86RF2XX_RANDOM_NUMBER_GENERATOR  (0)
-#endif
-#endif
-
-/**
- * @brief   Smart idle listening feature
- *
- * This feature optimizes radio operation in the listening mode, reducing
- * current consumption by ~50%. It is supported by only at86rf233. The reference
- * manual recommends to disable this feature for RSSI measurements or random number
- * generation (Section 8.4 and Section 11.2).
- */
-#if defined(MODULE_AT86RF233) || defined(MODULE_AT86RFR2)
-#ifndef AT86RF2XX_SMART_IDLE_LISTENING
-#define AT86RF2XX_SMART_IDLE_LISTENING     (1)
-#endif
-#else
-#define AT86RF2XX_SMART_IDLE_LISTENING     (0)
-#endif
 
 /**
  * @name    Flags for device internal states (see datasheet)
@@ -204,36 +94,129 @@ extern "C" {
 #define AT86RF2XX_OPT_AUTOACK        (0x0080)       /**< Auto ACK active */
 #define AT86RF2XX_OPT_ACK_PENDING    (0x0100)       /**< ACK frames with data
                                                      *   pending */
-
 /** @} */
 
-#if defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
-/**
- * @brief   memory mapped radio needs no parameters
- */
-typedef void at86rf2xx_params_t;
-#else
 /**
  * @brief   struct holding all params needed for device initialization
  */
 typedef struct at86rf2xx_params {
+#if IS_USED(MODULE_AT86RF2XX_SPI) || defined(DOXYGEN)
     spi_t spi;              /**< SPI bus the device is connected to */
     spi_clk_t spi_clk;      /**< SPI clock speed to use */
     spi_cs_t cs_pin;        /**< GPIO pin connected to chip select */
+#endif
     gpio_t int_pin;         /**< GPIO pin connected to the interrupt pin */
     gpio_t sleep_pin;       /**< GPIO pin connected to the sleep pin */
     gpio_t reset_pin;       /**< GPIO pin connected to the reset pin */
 } at86rf2xx_params_t;
-#endif
 
 /**
  * @brief   Device descriptor for AT86RF2XX radio devices
  *
  * @extends netdev_ieee802154_t
  */
-typedef struct {
+typedef struct at86rf2xx_base {
     netdev_ieee802154_t netdev;             /**< netdev parent struct */
-#if defined(MODULE_AT86RFA1) || defined(MODULE_AT86RFR2)
+    uint16_t flags;                         /**< Device specific flags */
+    uint8_t state;                          /**< current state of the radio */
+    uint8_t tx_frame_len;                   /**< length of the current TX frame */
+    uint8_t idle_state;                     /**< state to return to after sending */
+    uint8_t pending_tx;                     /**< keep track of pending TX calls
+                                                 this is required to know when to
+                                                 return to @ref at86rf2xx_t::idle_state */
+    int8_t dev_type;                        /**<  AT86RF2XX device type */
+} at86rf2xx_base_t;
+
+/**
+ * @brief An pointer to an instance of an actual AT86RF2XX
+ * must safely be casted to a pointer of this type
+ */
+typedef struct at86rf2xx {
+    at86rf2xx_base_t base;
+    at86rf2xx_params_t params;
+} at86rf2xx_t;
+
+#if IS_USED(MODULE_AT86RF212B)
+typedef struct at86rf212b_params {
+    at86rf2xx_params_t base_params;
+} at86rf212b_params_t;
+
+typedef struct at86rf212b {
+    at86rf2xx_base_t base;
+    at86rf212b_params_t params;
+    /* additional members */
+    uint8_t page;
+} at86rf212b_t;
+#else
+typedef at86rf2xx_params_t at86rf212b_params_t;
+typedef at86rf2xx_t at86rf212b_t;
+#endif
+
+#if IS_USED(MODULE_AT86RF231)
+typedef struct at86rf231_params {
+    at86rf2xx_params_t base_params;
+} at86rf231_params_t;
+
+typedef struct at86rf231 {
+    at86rf2xx_base_t base;
+    at86rf231_params_t params;
+} at86rf231_t;
+#else
+typedef at86rf2xx_params_t at86rf231_params_t;
+typedef at86rf2xx_t at86rf231_t;
+#endif
+
+#if IS_USED(MODULE_AT86RF232)
+typedef struct at86rf232_params {
+    at86rf2xx_params_t base_params;
+} at86rf232_params_t;
+
+typedef struct at86rf232 {
+    at86rf2xx_base_t base;
+    at86rf232_params_t params;
+    /* additional members */
+    /* Only radios with the XAH_CTRL_2 register support frame retry reporting */
+    uint8_t tx_retries;                 /**< Number of NOACK retransmissions */
+} at86rf232_t;
+#else
+typedef at86rf2xx_params_t at86rf232_params_t;
+typedef at86rf2xx_t at86rf232_t;
+#endif
+
+#if IS_USED(MODULE_AT86RF233)
+typedef struct at86rf233_params {
+    at86rf2xx_params_t base_params;
+} at86rf233_params_t;
+
+typedef struct at86rf233 {
+    at86rf2xx_base_t base;
+    at86rf233_params_t params;
+    /* additional members */
+    /* Only radios with the XAH_CTRL_2 register support frame retry reporting */
+    uint8_t tx_retries;                 /**< Number of NOACK retransmissions */
+} at86rf233_t;
+#else
+typedef at86rf2xx_params_t at86rf233_params_t;
+typedef at86rf2xx_t at86rf233_t;
+#endif
+
+#if IS_USED(MODULE_AT86RFA1)
+typedef struct at86rfa1 {
+    at86rf2xx_base_t base;
+    /* additional members */
+    /*
+     *  irq_status = IRQ_STATUS
+     */
+    uint8_t irq_status;                     /**< save irq status */
+} at86rfa1_t;
+#else
+typedef at86rf2xx_t at86rfa1_t;
+#endif
+
+#if IS_USED(MODULE_AT86RFR2)
+typedef struct at86rfr2 {
+    at86rf2xx_base_t base;
+    /* additional members */
     /* ATmega256rfr2 signals transceiver events with different interrupts
      * they have to be stored to mimic the same flow as external transceiver
      * Use irq_status to map saved interrupts of SOC transceiver,
@@ -242,35 +225,73 @@ typedef struct {
      *  irq_status = IRQ_STATUS
      */
     uint8_t irq_status;                     /**< save irq status */
+} at86rfr2_t;
 #else
-    /* device specific fields */
-    at86rf2xx_params_t params;              /**< parameters for initialization */
+typedef at86rf2xx_t at86rfr2_t;
 #endif
-    uint16_t flags;                         /**< Device specific flags */
-    uint8_t state;                          /**< current state of the radio */
-    uint8_t tx_frame_len;                   /**< length of the current TX frame */
-#ifdef MODULE_AT86RF212B
-    /* Only AT86RF212B supports multiple pages (PHY modes) */
-    uint8_t page;                       /**< currently used channel page */
-#endif
-    uint8_t idle_state;                 /**< state to return to after sending */
-    uint8_t pending_tx;                 /**< keep track of pending TX calls
-                                             this is required to know when to
-                                             return to @ref at86rf2xx_t::idle_state */
-#if AT86RF2XX_HAVE_RETRIES
-    /* Only radios with the XAH_CTRL_2 register support frame retry reporting */
-    uint8_t tx_retries;                 /**< Number of NOACK retransmissions */
-#endif
-    /** @} */
-} at86rf2xx_t;
 
 /**
- * @brief   Setup an AT86RF2xx based device state
+ * @brief   Dynamic size look up for a AT86RF2XX device
  *
- * @param[out] dev          device descriptor
- * @param[in]  params       parameters for device initialization
+ * @param[in]   dev         device handle
+ *
+ * @return                  device structure size in bytes
  */
-void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params);
+size_t at86rf2xx_get_size(const at86rf2xx_t *dev);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RF212B
+ *
+ * @param[out]   dev        array of AT86RF212B device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rf212b_setup(at86rf212b_t *devs, const at86rf212b_params_t *params, uint8_t num);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RF231
+ *
+ * @param[out]   dev        array of AT86RF231 device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rf231_setup(at86rf231_t *devs, const at86rf231_params_t *params, uint8_t num);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RF232
+ *
+ * @param[out]   dev        array of AT86RF232 device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rf232_setup(at86rf232_t *devs, const at86rf232_params_t *params, uint8_t num);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RF233
+ *
+ * @param[out]   dev        array of AT86RF233 device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rf233_setup(at86rf233_t *devs, const at86rf233_params_t *params, uint8_t num);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RFA1
+ *
+ * @param[out]   dev        array of AT86RFA1 device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rfa1_setup(at86rfa1_t *devs);
+
+/**
+ * @brief   Setup @p num transceiver devices of type AT86RFR2
+ *
+ * @param[out]   dev        array of AT86RFR2 device handles
+ * @param[in]    params     parameters
+ * @param[in]    num        number of transceivers
+ */
+void at86rfr2_setup(at86rfr2_t *devs);
 
 /**
  * @brief   Trigger a hardware reset and configure radio with default values
@@ -498,7 +519,7 @@ void at86rf2xx_set_cca_threshold(const at86rf2xx_t *dev, int8_t value);
  *
  * @return                  the last ED level
  */
-int8_t at86rf2xx_get_ed_level(at86rf2xx_t *dev);
+int8_t at86rf2xx_get_ed_level(const at86rf2xx_t *dev);
 
 /**
  * @brief   Enable or disable driver specific options
