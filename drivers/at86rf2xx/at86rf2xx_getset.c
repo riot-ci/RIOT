@@ -163,7 +163,7 @@ int16_t at86rf2xx_get_txpower(const at86rf2xx_t *dev)
 
 void at86rf2xx_set_txpower(const at86rf2xx_t *dev, int16_t dbm)
 {
-    uint8_t txpower;
+    uint8_t txpower = 0;
     switch (dev->base.dev_type) {
 #if IS_USED(MODULE_AT86RF212B)
         case AT86RF2XX_DEV_TYPE_AT86RF212B: {
@@ -209,7 +209,6 @@ void at86rf2xx_set_txpower(const at86rf2xx_t *dev, int16_t dbm)
 #endif
         default:
             /* Should never be reached */
-            txpower = 0;
             DEBUG("[at86rf2xx] Unsupported device type\n");
             return;
     }
@@ -268,7 +267,7 @@ int16_t at86rf2xx_get_rxsensitivity(const at86rf2xx_t *dev)
 
 void at86rf2xx_set_rxsensitivity(const at86rf2xx_t *dev, int16_t dbm)
 {
-    uint8_t rxsens;
+    uint8_t rxsens = 0;
     switch (dev->base.dev_type) {
 #if IS_USED(MODULE_AT86RF212B)
         case AT86RF2XX_DEV_TYPE_AT86RF212B: {
