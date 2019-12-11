@@ -70,6 +70,7 @@ static const uart_conf_t uart_config[] = {
     },
 };
 
+#define UART_ISR_PRIO               (2)
 #define UART_NUMOF                  ARRAY_SIZE(uart_config)
 /** @} */
 
