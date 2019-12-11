@@ -10,6 +10,6 @@ include $(RIOTBASE)/Makefile.include
 
 # The AVR architecture stores the image in the RAM, this usually doesn't fit.
 # This flag excludes the image from the test
-ifneq (,$(filter arch_avr8,$(FEATURES_PROVIDED)))
+ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
   CFLAGS += -DNO_RIOT_IMAGE
 endif
