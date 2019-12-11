@@ -1,0 +1,110 @@
+/*
+ * Copyright (C) 2018 Gunar Schorcht
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @defgroup        cpu_esp32_esp_wifi ESP32 WiFi netdev interface
+ * @ingroup         cpu_esp32
+ * @brief           Network device driver for the ESP32 WiFi interface
+ *
+ * @author      Gunar Schorcht <gunar@schorcht.net>
+
+This module realizes a `netdev` interface for the built-in WiFi interface
+of ESP32.  This `netdev` driver supports WPA2 personal mode as well as WPA2
+enterprise mode.
+
+### WPA2 personal mode
+
+To use the WiFi `netdev` driver in WPA2 personal mode with a
+preshared key (PSK), module `esp_wifi` has to be enabled.
+
+```
+USEMODULE += esp_wifi
+```
+
+Furthermore, the following configuration parameters have to be defined:
+
+<center>
+
+Parameter          | Default                   | Description
+:------------------|:--------------------------|:------------
+ESP_WIFI_SSID      | "RIOT_AP"                 | SSID of the AP to be used.
+ESP_WIFI_PASS      | "ThisistheRIOTporttoESP"  | Passphrase used for the AP as clear text (max. 64 chars).
+ESP_WIFI_STACKSIZE | #THREAD_STACKSIZE_DEFAULT | Stack size used for the WiFi netdev driver thread.
+
+</center>
+
+These configuration parameter definitions, as well as enabling the `esp_wifi`
+module, can be done either in the makefile of the project or at make command
+line, for example:
+
+```
+USEMODULE=esp_wifi \
+CFLAGS='-DESP_WIFI_SSID=\"MySSID\" -DESP_WIFI_PASS=\"MyPassphrase\"' \
+make -C examples/gnrc_networking BOARD=...
+```
+
+@note
+- Module `esp_wifi` is not enabled automatically when module
+`netdev_default` is used.
+- The Wifi network interface (module `esp_wifi`) and the
+[ESP-NOW network interface](#esp32_esp_now_network_interface) (module `esp_now`)
+can be used simultaneously, for example, to realize a border router for
+a mesh network which uses ESP-NOW.
+
+### WPA2 Enterprise Mode
+
+To use the WiFi `netdev` driver in WPA2 enterprise mode with IEEE 802.1X/EAP
+authentication, module `esp_wifi_enterprise` has to be enabled.
+
+```
+USEMODULE += esp_wifi_enterprise
+```
+
+It supports the following EAP authentication methods:
+
+- PEAPv0
+- PEAPv1
+- TTLS
+
+As inner (phase 2) EAP authentication method, only MSCHAPv2 is supported.
+
+To use module `esp_wifi_enterprise` with these authentication methods, the
+following configuration parameters have to be defined:
+
+<center>
+
+Parameter          | Default   | Description
+:------------------|:----------|:------------
+ESP_WIFI_SSID      | "RIOT_AP" | SSID of the AP to be used.
+ESP_WIFI_EAP_ID    | none      | Optional anonymous identity used in phase 1 (outer) EAP authentication. If it is not defined, the user name defined for phase 2 (inner) EAP authentication is used as idendity in phase 1.
+ESP_WIFI_EAP_USER  | none      | User name used in phase 2 (inner) EAP authentication.
+ESP_WIFI_EAP_PASS  | none      | Password used in phase 2 (inner) EAP authentication.
+ESP_WIFI_STACKSIZE | #THREAD_STACKSIZE_DEFAULT | Stack size used for the WiFi netdev driver thread.
+
+</center>
+
+These configuration parameter definitions, as well as enabling the `esp_wifi`
+module, can be done either in the makefile of the project or at make command
+line, for example:
+
+```
+USEMODULE=esp_wifi_enterprise \
+CFLAGS='-DESP_WIFI_SSID=\"MySSID\" -DESP_WIFI_EAP_ID=\"anonymous\" -DESP_WIFI_EAP_USER=\"MyUserName\" -DESP_WIFI_EAP_PASS=\"MyPassphrase\"' \
+make -C examples/gnrc_networking BOARD=...
+```
+
+@note
+- Since there is no possibility to add the CA certificate to the RIOT image,
+the verification of the AP certificate is not yet supported.
+- Module `esp_wifi_enterprise` is not enabled automatically when module
+`netdev_default` is used.
+- The Wifi network interface (module `esp_wifi_enterprise`) and the
+[ESP-NOW network interface](#esp32_esp_now_network_interface) (module `esp_now`)
+can be used simultaneously, for example, to realize a border router for
+a mesh network which uses ESP-NOW.
+ */
