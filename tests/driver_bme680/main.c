@@ -41,7 +41,7 @@
 int main(void)
 {
     bme680_t dev;
-
+    xtimer_sleep(2);
     /* You may assign a chip select identifier to be handled later */
     dev.dev.dev_id = 0;
 
