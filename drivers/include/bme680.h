@@ -22,6 +22,7 @@
 #define BME680_H
 
 #include "periph/i2c.h"
+#include "periph/spi.h"
 
 #include "bme680_internal.h"
 
@@ -35,9 +36,34 @@ extern "C" {
 #endif
 
 /**
+ * @brief BME680 I2C parameters
+ */
+typedef struct {
+  i2c_t dev;                    /**< I2C device which is used */
+  uint8_t addr;                 /**< I2C address */
+} bme680_intf_i2c_t;
+
+/**
+ * @brief BME680 SPI parameters
+ */
+typedef struct {
+    spi_t dev;                  /**< SPI device which is used */
+    gpio_t nss_pin;             /**< Chip Select pin */
+} bme680_intf_spi_t;
+
+/**
+ * @brief BME680 Hardware interface parameters union
+ */
+typedef union {
+  bme680_intf_i2c_t i2c;        /**< I2C specific interface parameters */
+  bme680_intf_spi_t spi;        /**< SPI specific interface parameters */
+} bme680_intf_t;
+
+/**
  * @brief   BME680 device initialization parameters
  */
 typedef struct {
+    uint8_t ifsel;              /**< Interface selection */
     uint8_t temp_os;            /**< Temperature oversampling */
     uint8_t hum_os;             /**< Humidity oversampling */
     uint8_t pres_os;            /**< Pressure oversampling */
@@ -47,8 +73,8 @@ typedef struct {
     uint16_t heater_temp;       /**< Heater temperature in °C */
     uint8_t power_mode;         /**< Power mode (sleep or forced) */
     uint8_t settings;           /**< Settings used by @ref bme680_set_settings */
-    uint8_t intf;               /**< Device communication interface */
- } bme680_params_t;
+    bme680_intf_t intf;         /**< Hardware interface parameters */
+} bme680_params_t;
 
  /**
  * @brief   BME680 sensor device data structure type

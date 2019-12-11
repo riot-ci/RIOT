@@ -20,7 +20,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
     int8_t ret;
 
     /* Select device interface and apply needed params */
-    if(params->intf == BME680_I2C_INTF) {
+    if(params->ifsel == BME680_I2C_INTF) {
 #ifdef MODULE_PERIPH_I2C
         BME680_DEV.intf = BME680_I2C_INTF;
         BME680_DEV.read = i2c_read_hal;
@@ -32,7 +32,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
         BME680_DEV.intf = BME680_SPI_INTF;
         BME680_DEV.read = spi_read_hal;
         BME680_DEV.write = spi_write_hal;
-        spi_init_cs(SPI_DEV(0), BME680_NSS_PIN);
+        spi_init_cs(SPI_DEV(0), params->intf.spi.nss_pin);
 #endif
     }
 
