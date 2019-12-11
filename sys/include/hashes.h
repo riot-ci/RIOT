@@ -171,6 +171,17 @@ uint32_t rotating_hash(const uint8_t *buf, size_t len);
  */
 uint32_t one_at_a_time_hash(const uint8_t *buf, size_t len);
 
+/**
+ * @defgroup sys_hashes_crc8 CRC-8
+ * @ingroup sys_hashes_non_crypto
+ * @brief CRC-8 hash algorithm.
+ *
+ * @param buf input buffer to hash
+ * @param len length of buffer
+ * @return 8 bit sized hash
+ */
+uint8_t crc8(const uint8_t *buf, size_t len);
+
 #ifdef __cplusplus
 }
 #endif

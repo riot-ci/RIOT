@@ -14,6 +14,7 @@
  * @author      Christian Mehlis <mehlis@inf.fu-berlin.de>
  */
 
+#include <stdbool.h>
 #include "hashes.h"
 
 uint32_t djb2_hash(const uint8_t *buf, size_t len)
@@ -108,4 +109,27 @@ uint32_t one_at_a_time_hash(const uint8_t *buf, size_t len)
     hash ^= hash >> 11;
     hash += hash << 15;
     return hash;
+}
+
+uint8_t crc8(const uint8_t *data, size_t len)
+{
+    static const uint8_t g_polynom = 0x31;
+
+    /* initialization value */
+    uint8_t crc = 0xff;
+
+    /* iterate over all bytes */
+    for (size_t i=0; i < len; i++)
+    {
+        crc ^= data[i];
+
+        for (int i = 0; i < 8; i++)
+        {
+            bool xor = crc & 0x80;
+            crc = crc << 1;
+            crc = xor ? crc ^ g_polynom : crc;
+        }
+    }
+
+    return crc;
 }
