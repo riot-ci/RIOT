@@ -31,7 +31,6 @@
 #include <stdint.h>
 #include "kernel_defines.h"
 
-#if IS_USED(MODULE_AT86RF212B)
 /* See: Table 9-15. Recommended Mapping of TX Power, Frequency Band, and
  * PHY_TX_PWR (register 0x05), AT86RF212B data sheet. */
 const uint8_t _212b_dbm_to_tx_pow_868[37] = { 0x1d, 0x1c, 0x1b, 0x1a, 0x19, 0x18,
@@ -61,9 +60,7 @@ const uint8_t _212b_dbm_to_rx_sens[57] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                            0x0a, 0x0b, 0x0b, 0x0b, 0x0b, 0x0c,
                                            0x0c, 0x0c, 0x0d, 0x0d, 0x0d, 0x0e,
                                            0x0e, 0x0e, 0x0f };
-#endif
 
-#if IS_USED(MODULE_AT86RF233)
 const int16_t _233_tx_pow_to_dbm[16] = { 4, 4, 3, 3, 2, 2, 1,
                                          0, -1, -2, -3, -4, -6, -8, -12, -17 };
 const uint8_t _233_dbm_to_tx_pow[22] = { 0x0f, 0x0f, 0x0f, 0x0e, 0x0e, 0x0e,
@@ -81,12 +78,7 @@ const uint8_t _233_dbm_to_rx_sens[50] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                           0x0a, 0x0b, 0x0b, 0x0b, 0x0c, 0x0c,
                                           0x0c, 0x0d, 0x0d, 0x0d, 0x0e, 0x0e,
                                           0x0e, 0x0f };
-#endif
 
-#if IS_USED(MODULE_AT86RF231) || \
-    IS_USED(MODULE_AT86RF232) || \
-    IS_USED(MODULE_AT86RFA1)  || \
-    IS_USED(MODULE_AT86RFR2)
 const int16_t _231_232_a1_r2_tx_pow_to_dbm[16] = { 3, 3, 2, 2, 1, 1, 0,
                                                   -1, -2, -3, -4, -5, -7, -9, -12, -17 };
 const uint8_t _231_232_a1_r2_dbm_to_tx_pow[21] = { 0x0f, 0x0f, 0x0f, 0x0e, 0x0e, 0x0e,
@@ -105,4 +97,3 @@ const uint8_t _231_232_a1_r2_dbm_to_rx_sens[53] = { 0x00, 0x00, 0x00, 0x00, 0x00
                                                     0x09, 0x0a, 0x0a, 0x0a, 0x0b, 0x0b,
                                                     0x0b, 0x0c, 0x0c, 0x0c, 0x0d, 0x0d,
                                                     0x0d, 0x0e, 0x0e, 0x0e, 0x0f };
-#endif

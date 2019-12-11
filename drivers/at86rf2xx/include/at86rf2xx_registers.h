@@ -41,6 +41,12 @@ extern "C" {
 #define AT86RFA1_REG__TRXFBEND                                 (&TRXFBEND)
 #define AT86RFA1_REG__TRXPR                                    (&TRXPR)
 
+/**
+ * @brief   AT86RF2XX transceiver register address offset
+ *          for ATmega128RFA1
+ */
+#define AT86RFA1_REGISTER_OFFSET            (0x140)
+
 #define AT86RFA1_REG(reg)       (&(_SFR_MEM8((reg) + AT86RFA1_REGISTER_OFFSET)))
 #endif
 
@@ -53,6 +59,12 @@ extern "C" {
 #define AT86RFR2_REG__TRXFBST                                  (&TRXFBST)
 #define AT86RFR2_REG__TRXFBEND                                 (&TRXFBEND)
 #define AT86RFR2_REG__TRXPR                                    (&TRXPR)
+
+/**
+ * @brief   AT86RF2XX transceiver register address offset
+ *          for ATmega256RFR2
+ */
+#define AT86RFR2_REGISTER_OFFSET            (0x140)
 
 #define AT86RFR2_REG(reg)       (&(_SFR_MEM8((reg) + AT86RFR2_REGISTER_OFFSET)))
 #endif

@@ -21,7 +21,7 @@
 
 #if IS_USED(MODULE_AT86RF212B)
 
-#include "at86rf2xx.h"
+#include "at86rf2xx_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -161,6 +161,17 @@ at86rf212b_dbm_to_rxsens(const at86rf212b_t *dev, int16_t dbm)
     }
     dbm -= AT86RF212B_MIN_RX_SENSITIVITY;
     return _212b_dbm_to_rx_sens[dbm];
+}
+
+static inline uint8_t at86rf212b_get_page(const at86rf212b_t *dev)
+{
+    return dev->page;
+}
+
+static inline void at86rf212b_set_page(at86rf212b_t *dev, uint8_t page)
+{
+    dev->page = page;
+    at86rf2xx_configure_phy(dev);
 }
 
 #ifdef __cplusplus

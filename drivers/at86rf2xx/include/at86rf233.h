@@ -21,7 +21,7 @@
 
 #if IS_USED(MODULE_AT86RF233)
 
-#include "at86rf2xx.h"
+#include "at86rf2xx_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,6 +133,16 @@ at86rf233_dbm_to_rxsens(const at86rf233_t *dev, int16_t dbm)
     }
     dbm -= AT86RF233_MIN_RX_SENSITIVITY;
     return _233_dbm_to_rx_sens[dbm];
+}
+
+static inline void at86rf233_enable_smart_idle(at86rf233_t *dev)
+{
+    at86rf2xx_enable_smart_idle((at86rf2xx_t *)dev);
+}
+
+static inline uint8_t at86rf233_get_tx_retries(const at86rf233_t *dev)
+{
+    return dev->tx_retries;
 }
 
 #ifdef __cplusplus

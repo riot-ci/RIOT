@@ -21,7 +21,7 @@
 
 #if IS_USED(MODULE_AT86RF232)
 
-#include "at86rf2xx.h"
+#include "at86rf2xx_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -134,6 +134,11 @@ at86rf232_dbm_to_rxsens(const at86rf232_t *dev, int16_t dbm)
     }
     dbm -= AT86RF232_MIN_RX_SENSITIVITY;
     return _231_232_a1_r2_dbm_to_rx_sens[dbm];
+}
+
+static inline uint8_t at86rf232_get_tx_retries(const at86rf232_t *dev)
+{
+    return dev->tx_retries;
 }
 
 #ifdef __cplusplus

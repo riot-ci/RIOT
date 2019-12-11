@@ -21,7 +21,7 @@
 
 #if IS_USED(MODULE_AT86RF231)
 
-#include "at86rf2xx.h"
+#include "at86rf2xx_internal.h"
 
 #ifdef __cplusplus
 extern "C" {

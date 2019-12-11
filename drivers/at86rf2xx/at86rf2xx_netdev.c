@@ -38,10 +38,10 @@
 #include "net/netdev/ieee802154.h"
 
 #include "at86rf2xx.h"
-#include "at86rf2xx_netdev.h"
-#include "at86rf2xx_internal.h"
-#include "at86rf2xx_registers.h"
 #include "at86rf2xx_dev_types.h"
+#include "at86rf2xx_registers.h"
+#include "at86rf2xx_communication.h"
+#include "at86rf2xx_internal.h"
 #include "at86rf2xx_properties.h"
 #include "at86rf212b.h"
 #include "at86rf231.h"
@@ -49,6 +49,7 @@
 #include "at86rf233.h"
 #include "at86rfa1.h"
 #include "at86rfr2.h"
+#include "at86rf2xx_netdev.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -353,8 +354,17 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
     switch (opt) {
         case NETOPT_CHANNEL_PAGE:
             assert(max_len >= sizeof(uint16_t));
-            ((uint8_t *)val)[1] = 0;
-            ((uint8_t *)val)[0] = at86rf2xx_get_page(dev);
+            switch (dev->base.dev_type) {
+                default:
+                    *((uint16_t *)val) = 0;
+                    break;
+#if IS_USED(MODLE_AT86RF212B)
+                case AT86RF2XX_DEV_TYPE_AT86RF212B: {
+                    (uint8_t *)val) = at86rf212b_get_page(dev);
+                    break;
+                }
+#endif
+            }
             return sizeof(uint16_t);
 
         case NETOPT_STATE:
@@ -414,13 +424,15 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
                     break;
 #if IS_USED(MODULE_AT86RF232)
                 case AT86RF2XX_DEV_TYPE_AT86RF232: {
-                    *((uint8_t *)val) = ((at86rf232_t *)dev)->tx_retries;
+                    *((uint8_t *)val) =
+                        at86rf232_get_tx_retries((at86rf232_t *)dev);
                     return sizeof(uint8_t);
                 }
 #endif
 #if IS_USED(MODULE_AT86RF233)
                 case AT86RF2XX_DEV_TYPE_AT86RF233: {
-                    *((uint8_t *)val) = ((at86rf233_t *)dev)->tx_retries;
+                    *((uint8_t *)val) =
+                        at86rf233_get_tx_retries((at86rf233_t *)dev);
                     return sizeof(uint8_t);
                 }
 #endif
@@ -564,7 +576,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                         res = -EINVAL;
                     }
                     else {
-                        at86rf2xx_set_page(dev, page);
+                        at86rf212b_set_page(dev, page);
                         res = sizeof(uint16_t);
                     }
                     break;
@@ -688,14 +700,14 @@ static inline uint8_t _get_irq_status(at86rf2xx_t *dev)
             break;
 #if IS_USED(MODULE_AT86RFA1)
         case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            irq_mask = ((at86rfa1_t *)dev)->irq_status;
+            irq_mask = at86rfa1_get_irq_status((at86rfa1_t *)dev);
             ((at86rfa1_t *)dev)->irq_status = 0;
             break;
         }
 #endif
 #if IS_USED(MODULE_AT86RFR2)
         case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            irq_mask = ((at86rfr2_t *)dev)->irq_status;
+            irq_mask = at86rfr2_get_irq_status((at86rfr2_t *)dev);
             ((at86rfr2_t *)dev)->irq_status = 0;
             break;
         }

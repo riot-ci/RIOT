@@ -22,296 +22,14 @@
  * @}
  */
 #include "kernel_defines.h"
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-#include "periph/spi.h"
-#endif
 #include "periph/gpio.h"
 #include "xtimer.h"
-#include "at86rf2xx_internal.h"
-#include "at86rf2xx_registers.h"
 #include "at86rf2xx_dev_types.h"
+#include "at86rf2xx_registers.h"
+#include "at86rf2xx_communication.h"
+#include "at86rf2xx_internal.h"
 #include "at86rf2xx_properties.h"
-#include "at86rf212b.h"
-#include "at86rf231.h"
-#include "at86rf233.h"
-#include "at86rf233.h"
-#include "at86rfa1.h"
-#include "at86rfr2.h"
 
-/* 8-bit  MCU integrated transceivers */
-#if IS_USED(MODULE_AT86RF2XX_PERIPH)
-#include <string.h>
-
-static inline uint8_t
-at86rf2xx_reg_read_mcu(const at86rf2xx_t *dev, volatile uint8_t *addr)
-{
-    (void)dev;
-    return *addr;
-}
-
-static inline void
-at86rf2xx_reg_write_mcu(const at86rf2xx_t *dev, volatile uint8_t *addr,
-                        const uint8_t value)
-{
-    (void)dev;
-    *addr = value;
-}
-
-static inline void
-at86rf2xx_sram_read_mcu(const at86rf2xx_t *dev, volatile uint8_t *sram_addr,
-                        uint8_t offset, uint8_t *data, size_t len)
-{
-    (void)dev;
-    memcpy(data, (void *)(sram_addr + offset), len);
-}
-
-static inline void
-at86rf2xx_sram_write_mcu(const at86rf2xx_t *dev, volatile uint8_t *sram_addr,
-                         uint8_t offset, const uint8_t *data, size_t len)
-{
-    (void)dev;
-    memcpy((void *)(sram_addr + offset), data, len);
-}
-
-static inline void
-at86rf2xx_fb_read_mcu(const at86rf2xx_t *dev, uint8_t *data,
-                      volatile uint8_t *fb_addr, size_t len)
-{
-    (void)dev;
-    memcpy(data, (void *)fb_addr, len);
-}
-
-#endif
-
-#define SPIDEV          (dev->params.spi)
-#define CSPIN           (dev->params.cs_pin)
-
-static inline void getbus(const at86rf2xx_t *dev)
-{
-    switch (dev->base.dev_type) {
-        default:
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            spi_acquire(SPIDEV, CSPIN, SPI_MODE_0,
-                        dev->params.spi_clk);
-#else
-            (void)dev;
-#endif
-            break;
-#if IS_USED(MODULE_AT86RF2XX_PERIPH)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1:
-        case AT86RF2XX_DEV_TYPE_AT86RFR2:
-            break;
-#endif
-    }
-}
-
-uint8_t at86rf2xx_reg_read(const at86rf2xx_t *dev, uint8_t addr)
-{
-    uint8_t value = 0;
-    switch (dev->base.dev_type) {
-        default: {
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            uint8_t reg =
-                (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ | addr);
-            getbus(dev);
-            value = spi_transfer_reg(SPIDEV, CSPIN, reg, 0);
-            spi_release(SPIDEV);
-#else
-            (void)dev;
-            (void)addr;
-#endif
-            break;
-        }
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            return at86rf2xx_reg_read_mcu(dev, AT86RFA1_REG(addr));
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            return at86rf2xx_reg_read_mcu(dev, AT86RFR2_REG(addr));
-            break;
-        }
-#endif
-    }
-    return value;
-}
-
-void at86rf2xx_reg_write(const at86rf2xx_t *dev, uint8_t addr, uint8_t value)
-{
-    switch (dev->base.dev_type) {
-        default: {
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            uint8_t reg =
-                (AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_WRITE | addr);
-            getbus(dev);
-            spi_transfer_reg(SPIDEV, CSPIN, reg, value);
-            spi_release(SPIDEV);
-#else
-            (void)dev;
-            (void)addr;
-            (void)value;
-#endif
-            break;
-        }
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            at86rf2xx_reg_write_mcu(dev, AT86RFA1_REG(addr), value);
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            at86rf2xx_reg_write_mcu(dev, AT86RFR2_REG(addr), value);
-            break;
-        }
-#endif
-    }
-}
-
-void at86rf2xx_sram_read(const at86rf2xx_t *dev, uint8_t offset,
-                         uint8_t *data, size_t len)
-{
-    switch (dev->base.dev_type) {
-        default: {
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_READ);
-            getbus(dev);
-            spi_transfer_byte(SPIDEV, CSPIN, true, reg);
-            spi_transfer_byte(SPIDEV, CSPIN, true, offset);
-            spi_transfer_bytes(SPIDEV, CSPIN, false, NULL, data, len);
-            spi_release(SPIDEV);
-#else
-            (void)dev;
-            (void)offset;
-            (void)data;
-            (void)len;
-#endif
-        }
-            break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            at86rf2xx_sram_read_mcu(dev, AT86RFA1_REG__TRXFBST,
-                                    offset, data, len);
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            at86rf2xx_sram_read_mcu(dev, AT86RFR2_REG__TRXFBST,
-                                    offset, data, len);
-            break;
-        }
-#endif
-    }
-}
-
-void at86rf2xx_sram_write(const at86rf2xx_t *dev, uint8_t offset,
-                          const uint8_t *data, size_t len)
-{
-    switch (dev->base.dev_type) {
-        default: {
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            uint8_t reg = (AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_WRITE);
-            getbus(dev);
-            spi_transfer_byte(SPIDEV, CSPIN, true, reg);
-            spi_transfer_byte(SPIDEV, CSPIN, true, offset);
-            spi_transfer_bytes(SPIDEV, CSPIN, false, data, NULL, len);
-            spi_release(SPIDEV);
-#else
-            (void)dev;
-            (void)offset;
-            (void)data;
-            (void)len;
-#endif
-            break;
-        }
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            at86rf2xx_sram_write_mcu(dev, AT86RFA1_REG__TRXFBST,
-                                     offset, data, len);
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            at86rf2xx_sram_write_mcu(dev, AT86RFR2_REG__TRXFBST,
-                                     offset, data, len);
-            break;
-        }
-#endif
-    }
-}
-
-void at86rf2xx_fb_start(const at86rf2xx_t *dev)
-{
-    switch (dev->base.dev_type) {
-        default: {
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            uint8_t reg = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
-            getbus(dev);
-            spi_transfer_byte(SPIDEV, CSPIN, true, reg);
-#else
-            (void)dev;
-#endif
-            break;
-        }
-#if IS_USED(MODULE_AT86RF2XX_PERIPH)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1:
-        case AT86RF2XX_DEV_TYPE_AT86RFR2:
-            break;
-#endif
-    }
-}
-
-void at86rf2xx_fb_read(const at86rf2xx_t *dev,
-                       uint8_t *data, size_t len)
-{
-    switch (dev->base.dev_type) {
-        default:
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            spi_transfer_bytes(SPIDEV, CSPIN, true, NULL, data, len);
-#else
-            (void)dev;
-            (void)data;
-            (void)len;
-#endif
-            break;
-#if IS_USED(MODULE_AT86RFA1)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1: {
-            at86rf2xx_fb_read_mcu(dev, data, AT86RFA1_REG__TRXFBST, len);
-            break;
-        }
-#endif
-#if IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            at86rf2xx_fb_read_mcu(dev, data, AT86RFR2_REG__TRXFBST, len);
-            break;
-        }
-#endif
-    }
-}
-
-void at86rf2xx_fb_stop(const at86rf2xx_t *dev)
-{
-    switch (dev->base.dev_type) {
-        default:
-#if IS_USED(MODULE_AT86RF2XX_SPI)
-            /* transfer one byte (which we ignore) to release the chip select */
-            spi_transfer_byte(SPIDEV, CSPIN, false, 1);
-            spi_release(SPIDEV);
-#else
-            (void)dev;
-#endif
-            break;
-#if IS_USED(MODULE_AT86RF2XX_PERIPH)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1:
-        case AT86RF2XX_DEV_TYPE_AT86RFR2:
-            break;
-#endif
-    }
-}
 
 uint8_t at86rf2xx_get_status(const at86rf2xx_t *dev)
 {
@@ -471,4 +189,16 @@ void at86rf2xx_get_random(const at86rf2xx_t *dev, uint8_t *data, size_t len)
         }
         data[byteCount] = rnd;
     }
+}
+
+void at86rf2xx_enable_smart_idle(at86rf2xx_t *dev)
+{
+    uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_RPC);
+    tmp |= (AT86RF2XX_TRX_RPC_MASK__RX_RPC_EN |
+            AT86RF2XX_TRX_RPC_MASK__PDT_RPC_EN |
+            AT86RF2XX_TRX_RPC_MASK__PLL_RPC_EN |
+            AT86RF2XX_TRX_RPC_MASK__XAH_TX_RPC_EN |
+            AT86RF2XX_TRX_RPC_MASK__IPAN_RPC_EN);
+    at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_RPC, tmp);
+    at86rf2xx_set_rxsensitivity(dev, at86rf2xx_rssi_base_values[dev->base.dev_type]);
 }

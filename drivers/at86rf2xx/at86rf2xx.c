@@ -32,10 +32,10 @@
 #include "byteorder.h"
 #include "net/ieee802154.h"
 #include "net/gnrc.h"
-#include "at86rf2xx_registers.h"
-#include "at86rf2xx_internal.h"
-#include "at86rf2xx_netdev.h"
 #include "at86rf2xx_dev_types.h"
+#include "at86rf2xx_registers.h"
+#include "at86rf2xx_communication.h"
+#include "at86rf2xx_internal.h"
 #include "at86rf2xx_properties.h"
 #include "at86rf212b.h"
 #include "at86rf231.h"
@@ -43,6 +43,7 @@
 #include "at86rf233.h"
 #include "at86rfa1.h"
 #include "at86rfr2.h"
+#include "at86rf2xx_netdev.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -57,18 +58,6 @@ static void at86rf2xx_setup(at86rf2xx_t *dev)
     /* radio state is P_ON when first powered-on */
     dev->base.state = AT86RF2XX_STATE_P_ON;
     dev->base.pending_tx = 0;
-
-    switch (dev->base.dev_type) {
-#if IS_USED(MODULE_AT86RFA1) || \
-    IS_USED(MODULE_AT86RFR2)
-        case AT86RF2XX_DEV_TYPE_AT86RFA1:
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            /* set all interrupts off */
-            at86rf2xx_reg_write(dev, AT86RF2XX_REG__IRQ_MASK, 0x00);
-            break;
-        }
-#endif
-    }
 }
 
 void at86rf212b_setup(at86rf212b_t *devs, const at86rf212b_params_t *params,
@@ -115,12 +104,16 @@ void at86rfa1_setup(at86rfa1_t *dev)
 {
     dev->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RFA1;
     at86rf2xx_setup((at86rf2xx_t *)dev);
+    at86rf2xx_reg_write((at86rf2xx_t *)dev,
+                        AT86RF2XX_REG__IRQ_MASK, 0x00);
 }
 
 void at86rfr2_setup(at86rfr2_t *dev)
 {
     dev->base.dev_type = AT86RF2XX_DEV_TYPE_AT86RFR2;
     at86rf2xx_setup((at86rf2xx_t *)dev);
+    at86rf2xx_reg_write((at86rf2xx_t *)dev,
+                        AT86RF2XX_REG__IRQ_MASK, 0x00);
 }
 
 size_t at86rf2xx_get_size(const at86rf2xx_t *dev)
@@ -176,28 +169,6 @@ static void at86rf2xx_disable_clock_output(at86rf2xx_t *dev)
         case AT86RF2XX_DEV_TYPE_AT86RFA1:
         case AT86RF2XX_DEV_TYPE_AT86RFR2:
             break;
-#endif
-    }
-}
-
-static void at86rf2xx_enable_smart_idle(at86rf2xx_t *dev)
-{
-    switch (dev->base.dev_type) {
-        default:
-            (void)dev;
-            break;
-#if IS_USED(MODULE_AT86RF233)
-        case AT86RF2XX_DEV_TYPE_AT86RF233: {
-            uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_RPC);
-            tmp |= (AT86RF2XX_TRX_RPC_MASK__RX_RPC_EN |
-                    AT86RF2XX_TRX_RPC_MASK__PDT_RPC_EN |
-                    AT86RF2XX_TRX_RPC_MASK__PLL_RPC_EN |
-                    AT86RF2XX_TRX_RPC_MASK__XAH_TX_RPC_EN |
-                    AT86RF2XX_TRX_RPC_MASK__IPAN_RPC_EN);
-            at86rf2xx_reg_write(dev, AT86RF2XX_REG__TRX_RPC, tmp);
-            at86rf2xx_set_rxsensitivity(dev, AT86RF233_RSSI_BASE_VAL);
-            break;
-        }
 #endif
     }
 }
@@ -268,7 +239,18 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
     }
 
     /* configure smart idle listening feature */
-    at86rf2xx_enable_smart_idle(dev);
+    switch (dev->base.dev_type) {
+#if IS_USED(MODULE_AT86RF233)
+        case AT86RF2XX_DEV_TYPE_AT86RF233: {
+            at86rf233_enable_smart_idle((at86rf233_t *)dev);
+        }
+#endif
+#if IS_USED(MODULE_AT86RFR2)
+        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
+            at86rfr2_enable_smart_idle((at86rfr2_t *)dev);
+        }
+#endif
+    }
 
     /* disable clock output to save power */
     at86rf2xx_disable_clock_output(dev);

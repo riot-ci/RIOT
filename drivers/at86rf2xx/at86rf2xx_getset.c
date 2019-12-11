@@ -28,10 +28,10 @@
 
 #include <string.h>
 
-#include "at86rf2xx.h"
-#include "at86rf2xx_internal.h"
-#include "at86rf2xx_registers.h"
 #include "at86rf2xx_dev_types.h"
+#include "at86rf2xx_registers.h"
+#include "at86rf2xx_communication.h"
+#include "at86rf2xx_internal.h"
 #include "at86rf2xx_properties.h"
 #include "at86rf212b.h"
 #include "at86rf231.h"
@@ -39,7 +39,6 @@
 #include "at86rf233.h"
 #include "at86rfa1.h"
 #include "at86rfr2.h"
-#include "periph/spi.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -92,39 +91,6 @@ void at86rf2xx_set_chan(at86rf2xx_t *dev, uint8_t channel)
     }
     dev->base.netdev.chan = channel;
     at86rf2xx_configure_phy(dev);
-}
-
-uint8_t at86rf2xx_get_page(const at86rf2xx_t *dev)
-{
-    switch (dev->base.dev_type) {
-        default:
-            (void)dev;
-            return 0;
-#if IS_USED(MODULE_AT86RF212B)
-        case AT86RF2XX_DEV_TYPE_AT86RF212B: {
-            return ((const at86rf212b_t *)dev)->page;
-        }
-#endif
-    }
-}
-
-void at86rf2xx_set_page(at86rf2xx_t *dev, uint8_t page)
-{
-    switch (dev->base.dev_type) {
-        default:
-            (void)dev;
-            (void)page;
-            break;
-#if IS_USED(MODULE_AT86RF212B)
-        case AT86RF2XX_DEV_TYPE_AT86RF212B: {
-            if ((page == 0) || (page == 2)) {
-                ((at86rf212b_t *)dev)->page = page;
-                at86rf2xx_configure_phy(dev);
-            }
-            break;
-        }
-#endif
-    }
 }
 
 uint16_t at86rf2xx_get_pan(const at86rf2xx_t *dev)
@@ -451,24 +417,9 @@ void at86rf2xx_set_cca_threshold(const at86rf2xx_t *dev, int8_t value)
     value >>= 1;
     value &= AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
 
-    switch (dev->base.dev_type) {
-#if IS_USED(MODULE_AT86RF212B) || \
-    IS_USED(MODULE_AT86RF231)  || \
-    IS_USED(MODULE_AT86RFA1)   || \
-    IS_USED(MODULE_AT86RFR2)
-        /* Those types have CCA_CS_THRES as bits [7; 4] in reg CCA_THRES,
-           so take care that we don´t override them. */
-        case AT86RF2XX_DEV_TYPE_AT86RF212B:
-        case AT86RF2XX_DEV_TYPE_AT86RF231:
-        case AT86RF2XX_DEV_TYPE_AT86RFA1:
-        case AT86RF2XX_DEV_TYPE_AT86RFR2: {
-            uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
-            tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
-            value = tmp | value;
-            break;
-    }
-#endif
-    }
+    uint8_t tmp = at86rf2xx_reg_read(dev, AT86RF2XX_REG__CCA_THRES);
+    tmp &= ~AT86RF2XX_CCA_THRES_MASK__CCA_ED_THRES;
+    value = tmp | value;
     value |= AT86RF2XX_CCA_THRES_MASK__RSVD_HI_NIBBLE; /* What is this? */
     at86rf2xx_reg_write(dev, AT86RF2XX_REG__CCA_THRES, value);
 }

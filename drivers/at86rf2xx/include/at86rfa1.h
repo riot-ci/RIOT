@@ -81,12 +81,6 @@ extern const uint8_t _231_232_a1_r2_dbm_to_rx_sens[53];
 #define AT86RFA1_WAKEUP_DELAY               (210U)
 
 /**
- * @brief   AT86RF2XX transceiver register address offset
- *          for ATmega128RFA1
- */
-#define AT86RFA1_REGISTER_OFFSET            (0x140)
-
-/**
  * @brief   Convert TX_PWR register value to actual transmission power in dbm
  *          for AT86RFA1 transceivers
  */
@@ -139,6 +133,11 @@ at86rfa1_dbm_to_rxsens(const at86rfa1_t *dev, int16_t dbm)
     }
     dbm -= AT86RFA1_MIN_RX_SENSITIVITY;
     return _231_232_a1_r2_dbm_to_rx_sens[dbm];
+}
+
+static inline uint8_t at86rfa1_get_irq_status(const at86rfa1_t *dev)
+{
+    return dev->irq_status;
 }
 
 #ifdef __cplusplus
