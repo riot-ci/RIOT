@@ -14,27 +14,52 @@
  *
  * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
  * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
+ * @author      Michel Gerlach <michel.gerlach@haw-hamburg.de>
  *
  * @}
  */
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "shtc1.h"
 #include "shtc1_params.h"
 #include "xtimer.h"
+#include "fmt.h"
+#include "board.h"
 
 int main(void)
 {
-    shtc1_t shtc;
+    shtc1_t dev;
+    int16_t temp;
+    uint16_t hum;
 
-    if (shtc1_init(&shtc, &shtc1_params[0]) != SHTC1_OK) {
-        printf("can't initialize the sensor");
+    char str_temp[8];
+    char str_hum[8];
+    size_t len;
+
+    puts("SHTC1 test application\n");
+
+    if (shtc1_init(&dev, &shtc1_params[0]) != SHTC1_OK) {
+        puts("can't initialize the sensor");
         return -1;
     }
+    puts("SHTC1 initalized\n");
     while (1) {
-        if (shtc1_measure(&shtc) == SHTC1_OK) {
-            /*print temp value*/
-            printf("Temperature: %.2f C \n Humidity: %.2f%%\n", shtc.values.temp, \
-                   shtc.values.rel_humidity);
+        if (shtc1_read_temperature(&dev, &temp) == SHTC1_OK) {
+          /* format values for printing */
+
+          len = fmt_s16_dfp(str_temp, temp, -2);
+          str_temp[len] = '\0';
+          }
+        if (shtc1_read_relative_humidity(&dev, &hum) == SHTC1_OK) {
+
+          len = fmt_s16_dfp(str_hum, hum, -2);
+          str_hum[len] = '\0';
+
+          /* print values to STDIO */
+          printf("Temperature [°C]: %s\n", str_temp);
+          printf("  Humidity [%%rH]: %s\n", str_hum);
+
         }
         xtimer_sleep(2);
     }

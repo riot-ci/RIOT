@@ -18,7 +18,11 @@
  * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  * @}
  */
+#include <string.h>
+#include <math.h>
 
+#include "log.h"
+#include "assert.h"
 #include "shtc1.h"
 #include "shtc1_regs.h"
 
@@ -64,13 +68,15 @@ int8_t shtc1_init(shtc1_t *const dev, const shtc1_params_t *params)
     return SHTC1_OK;
 }
 
-int8_t shtc1_measure(shtc1_t *const dev)
+int8_t shtc1_get_measurement(const shtc1_t *dev, uint8_t *received)
 {
     /* Build and issue the measurement command */
-    uint8_t cmd[] = { SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_HIGH, SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_LOW };
+    uint8_t cmd[] =
+    { SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_HIGH,
+      SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_LOW };
 
-    i2c_acquire(dev->params.bus);
-    if (i2c_write_bytes(dev->params.bus, dev->params.addr, cmd, 2, 0)) {
+    i2c_acquire(dev->params.i2c_dev);
+    if (i2c_write_bytes(dev->params.i2c_dev, dev->params.i2c_addr, cmd, 2, 0)) {
         return SHTC1_ERROR;
     }
     /* Receive the measurement */
@@ -79,27 +85,55 @@ int8_t shtc1_measure(shtc1_t *const dev)
      * 16 Bit Absolute Humidity
      * 8 bit CRC Hum
      */
-    uint8_t received[6];
-    if (i2c_read_bytes(dev->params.bus, dev->params.addr, received, 6, 0)) {
+
+    if (i2c_read_bytes(dev->params.i2c_dev, dev->params.i2c_addr, received, 6,
+                       0)) {
         return SHTC1_ERROR;
     }
-    i2c_release(dev->params.bus);
-    /* get 16bit values and check crc */
-    uint16_t temp_f = ((received[0] << 8) | received[1]);
-    uint16_t abs_humidity = ((received[3] << 8) | received[4]);
+    i2c_release(dev->params.i2c_dev);
+
     if (dev->params.crc) {
-        if (!((_check_crc(&received[0], received[2]) == 0) && (_check_crc(&received[3], received[5]) == 0))) {
+        if (!((_check_crc(&received[0],
+                          received[2]) == 0) &&
+              (_check_crc(&received[3], received[5]) == 0))) {
             /* crc check failed */
             DEBUG("CRC Error");
             return SHTC1_ERROR;
         }
         DEBUG("CRC Passed! \n");
     }
+
+    return SHTC1_OK;
+}
+
+int8_t shtc1_read_temperature(const shtc1_t *dev, int16_t *temp)
+{
+    uint8_t received[6];
+
+    if(shtc1_get_measurement(dev, received)!=SHTC1_OK){
+      return SHTC1_ERROR;
+    }
+
+    uint16_t temp_f = ((received[0] << 8) | received[1]);
     /* calculate the relative humidity and convert the temperature to centi °C */
-    /* dev->values.temp = (175.0 * 100 * temp_f / 65536) - 45 ; */
-    dev->values.temp =  ((17500 * (uint32_t)temp_f ) >>16 ) - 4500;
-    /* dev->values.rel_humidity = 10000 * ( abs_humidity /65536) */
-    dev->values.rel_humidity = (10000 * (uint32_t)abs_humidity) >> 16;
+    /* (175.0 * 100 * temp_f / 65536) - 45 ; */
+    *temp = ((17500 * (uint32_t)temp_f) >> 16) - 4500;
+
+    return SHTC1_OK;
+
+}
+
+int8_t shtc1_read_relative_humidity(const shtc1_t *dev, uint16_t *rel_humidity)
+{
+    uint8_t received[6];
+
+    if(shtc1_get_measurement(dev, received)!=SHTC1_OK){
+      return SHTC1_ERROR;
+    }
+
+    uint16_t abs_humidity = ((received[3] << 8) | received[4]);
+    /* 10000 * ( abs_humidity /65536) */
+    *rel_humidity = (10000 * (uint32_t)abs_humidity) >> 16;
 
     return SHTC1_OK;
 }
@@ -110,11 +144,13 @@ int8_t shtc1_id(shtc1_t *const dev)
     uint8_t data[] = { SHTC1_COMMAND_ID_HIGH, SHTC1_COMMAND_ID_LOW };
     int8_t check = 0;
 
-    i2c_acquire(dev->params.bus);
-    check = i2c_write_bytes(dev->params.bus, dev->params.addr, data, 2, 0);
+    i2c_acquire(dev->params.i2c_dev);
+    check = i2c_write_bytes(dev->params.i2c_dev, dev->params.i2c_addr, data, 2,
+                            0);
     /* receive ID and check if the send and receive commands were successfull */
-    check += i2c_read_bytes(dev->params.bus, dev->params.addr, data, 2, 0);
-    i2c_release(dev->params.bus);
+    check += i2c_read_bytes(dev->params.i2c_dev, dev->params.i2c_addr, data, 2,
+                            0);
+    i2c_release(dev->params.i2c_dev);
     if (check != 0) {
         /* error occured */
         return SHTC1_ERROR;
@@ -129,11 +165,12 @@ int8_t shtc1_reset(const shtc1_t *const dev)
     /* Build and issue the reset command */
     uint8_t data[] = { SHTC1_COMMAND_RESET_HIGH, SHTC1_COMMAND_RESET_LOW };
 
-    i2c_acquire(dev->params.bus);
-    if (i2c_write_bytes(dev->params.bus, dev->params.addr, data, 2, 0)) {
-        i2c_release(dev->params.bus);
+    i2c_acquire(dev->params.i2c_dev);
+    if (i2c_write_bytes(dev->params.i2c_dev, dev->params.i2c_addr, data, 2,
+                        0)) {
+        i2c_release(dev->params.i2c_dev);
         return SHTC1_ERROR;
     }
-    i2c_release(dev->params.bus);
+    i2c_release(dev->params.i2c_dev);
     return SHTC1_OK;
 }
