@@ -37,6 +37,7 @@
  * - Client Operation
  * - Observe Server Operation
  * - Block Operation
+ * - Secure CoAP with DTLS
  * - Implementation Notes
  * - Implementation Status
  *
@@ -305,6 +306,26 @@
  * - Finally, use coap_block1_finish() to finalize the block option with the
  *   proper value for the _more_ parameter.
  *
+ * ## Secure CoAP with DTLS
+ *
+ * gcoap supports securing CoAP packets with [DTLS](@ref net_sock_dtls).
+ * To enable this feature, add the following line in the Makefile:
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {Makefile}
+ * USEMODULE += tinydtls_sock_dtls
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * After that, add credential to use using @ref credman_add(), tell
+ * gcoap which credential tag to use with gcoap_set_credential_tag(). **After**
+ * setting up the credentials, we need to start the gcoap server manually by
+ * calling gcoap_init().
+ *
+ * Sending and receiving CoAP packets with DTLS is the same as using plain CoAP.
+ * gcoap will automatically encrypt/decrypt CoAP packets with DTLS before
+ * sending/receiving them over the network.
+ *
+ * To read more on DTLS support in RIOT, refer @ref net_dtls and @ref net_sock_dtls.
+ *
  * ## Implementation Notes ##
  *
  * ### Waiting for a response ###
@@ -350,6 +371,10 @@
 #include "net/ipv6/addr.h"
 #include "net/sock/udp.h"
 #include "net/nanocoap.h"
+#ifdef MODULE_SOCK_DTLS
+#include "net/sock/dtls.h"
+#include "net/credman.h"
+#endif
 #include "xtimer.h"
 
 #ifdef __cplusplus
@@ -373,15 +398,23 @@ extern "C" {
  * @brief   Server port; use RFC 7252 default if not defined
  */
 #ifndef GCOAP_PORT
+#ifdef  MODULE_SOCK_DTLS
+#define GCOAP_PORT              (5684)
+#else
 #define GCOAP_PORT              (5683)
-#endif
+#endif  /* MODULE_SOCK_DTLS */
+#endif  /* GCOAP_PORT */
 
 /**
  * @brief   Size of the buffer used to build a CoAP request or response
  */
 #ifndef GCOAP_PDU_BUF_SIZE
+#ifdef MODULE_SOCK_DTLS
+#define GCOAP_PDU_BUF_SIZE      (256)
+#else
 #define GCOAP_PDU_BUF_SIZE      (128)
-#endif
+#endif /* MODULE_SOCK_DTLS */
+#endif /* GCOAP_PDU_BUF_SIZE */
 
 /**
  * @brief   Reduce payload length by this value for a request
@@ -590,9 +623,16 @@ extern "C" {
  * @brief Stack size for module thread
  */
 #ifndef GCOAP_STACK_SIZE
+#ifdef  MODULE_SOCK_DTLS
+/* DTLS pkg will need at least (THREAD_STACKSIZE_DEFAULT + 1024) stack size */
+#define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
+                          + sizeof(coap_pkt_t) \
+                          + 1024)
+#else
 #define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
                           + sizeof(coap_pkt_t))
-#endif
+#endif  /* MODULE_SOCK_DTLS */
+#endif  /* GCOAP_STACK_SIZE */
 
 /**
  * @ingroup net_gcoap_conf
@@ -943,6 +983,20 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
  * @return  -1 on error
  */
 int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val);
+
+#if defined(MODULE_SOCK_DTLS) || defined(DOXYGEN)
+/**
+ * @brief   Set credential tag to use
+ *
+ * Set the DTLS credential tag. This will tell gcoap which credential
+ * to use for authentication.
+ *
+ * @param[in] tag       The credential tag to use
+ *
+ * @see @ref net_credman
+ */
+void gcoap_set_credential_tag(credman_tag_t tag);
+#endif
 
 #ifdef __cplusplus
 }
