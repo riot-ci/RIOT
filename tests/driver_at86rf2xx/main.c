@@ -98,13 +98,13 @@ int main(void)
         netopt_enable_t en = NETOPT_ENABLE;
         netdev_t *netdev = (netdev_t *)(&(((at86rf2xx_t *)dev)->base.netdev));
         dev += at86rf2xx_get_size((at86rf2xx_t *)dev);
-        printf("Initializing AT86RF2xx radio #%d\n", i);
+        printf("Initializing AT86RF2xx radio #%u\n", i);
         netdev->event_callback = _event_cb;
         if (netdev->driver->init(netdev) < 0) {
-            printf("radio #%d: initialization failed\n", i);
+            printf("radio #%u: initialization failed\n", i);
             continue;
         }
-        printf("radio #%d: initialization successful\n", i);
+        printf("radio #%u: initialization successful\n", i);
         dev_success++;
         netdev->driver->set(netdev, NETOPT_RX_END_IRQ, &en, sizeof(en));
     }
