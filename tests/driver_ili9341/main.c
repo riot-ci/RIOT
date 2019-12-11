@@ -19,7 +19,6 @@
  */
 
 #include <stdio.h>
-#include "byteorder.h"
 #include "xtimer.h"
 #include "ili9341.h"
 #include "ili9341_params.h"
@@ -69,8 +68,10 @@ int main(void)
     /* Make the same square black again */
     ili9341_fill(&dev, 10, 59, 10, 109, 0x0000);
 
+#ifndef NO_RIOT_IMAGE
     /* Approximate middle of the display */
     ili9341_pixmap(&dev, 95, 222, 85, 153, (const uint16_t *)picture);
+#endif
     while (1) {
     }
 
