@@ -296,6 +296,12 @@ void ztimer_handler(ztimer_clock_t *ztimer)
     ztimer->list.offset += ztimer->list.next->offset;
     ztimer->list.next->offset = 0;
 
+    /* ensure we're not firing too early
+     * this actually *shouldn't happen*. it does, though, when using
+     * conversions that don't round properly.
+     */
+    while ((int32_t)(ztimer->list.offset - ztimer_now(ztimer)) > 0) {}
+
     ztimer_t *entry = _now_next(ztimer);
     while (entry) {
         DEBUG("ztimer_handler(): trigger %p->%p at %"PRIu32"\n",
