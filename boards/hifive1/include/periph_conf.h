@@ -61,14 +61,12 @@ static const uart_conf_t uart_config[] = {
         .rx         = GPIO_PIN(0, 16),
         .tx         = GPIO_PIN(0, 17),
         .isr_num    = INT_UART0_BASE,
-        .isr_prio   = 2,
     },
     {
         .addr       = UART1_CTRL_ADDR,
         .rx         = GPIO_PIN(0, 18),
         .tx         = GPIO_PIN(0, 23),
         .isr_num    = INT_UART1_BASE,
-        .isr_prio   = 2,
     },
 };
 
