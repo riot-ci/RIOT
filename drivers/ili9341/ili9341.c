@@ -231,8 +231,9 @@ void ili9341_fill(ili9341_t *dev, uint16_t x1, uint16_t x2, uint16_t y1,
     /* Calculate number of pixels */
     int32_t num_pix = (x2 - x1 + 1) * (y2 - y1 + 1);
 
-    DEBUG("[ili9341]: Write x1: %d, x2: %d, y1: %d, y2: %d. Num pixels: %ld\n",
-          x1, x2, y1, y2, num_pix);
+    DEBUG("[ili9341]: Write x1: %" PRIu16 ", x2: %" PRIu16 ", "
+          "y1: %" PRIu16 ", y2: %" PRIu16 ". Num pixels: %lu\n",
+          x1, x2, y1, y2, (unsigned long)num_pix);
 
     /* Send fill area to the display */
     _ili9341_spi_acquire(dev);
@@ -257,8 +258,9 @@ void ili9341_pixmap(ili9341_t *dev, uint16_t x1, uint16_t x2,
 {
     size_t num_pix = (x2 - x1 + 1) * (y2 - y1 + 1);
 
-    DEBUG("[ili9341]: Write x1: %d, x2: %d, y1: %d, y2: %d. Num pixels: %ld\n",
-          x1, x2, y1, y2, (long unsigned)num_pix);
+    DEBUG("[ili9341]: Write x1: %" PRIu16 ", x2: %" PRIu16 ", "
+          "y1: %" PRIu16 ", y2: %" PRIu16 ". Num pixels: %lu\n",
+          x1, x2, y1, y2, (unsigned long)num_pix);
 
     _ili9341_spi_acquire(dev);
 
