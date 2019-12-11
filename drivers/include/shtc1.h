@@ -7,10 +7,10 @@
  */
 
 /**
- * @defgroup    drivers_shtc1
+ * @defgroup    drivers_shtc1 SHTC1 Temperature and humidity sensor
  * @ingroup     drivers_sensors
- * @name        Device driver interface for the SHTC1 Temperature and humidity sensor
- * @{
+ * @ingroup     drivers_saul
+ * @brief       Driver for the Sensirion SHTC1 sensor.
  *
  * @file
  * @brief       Device driver interface for the SHTC1 Temperature and humidity sensor
@@ -23,15 +23,30 @@
 #define SHTC1_H
 
 #include <stdint.h>
+#include "saul.h"
+
 #include "periph/i2c.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ * @brief   SHTC1 Default Address
+ *
+ */
+#ifndef SHTC1_I2C_ADDRESS
+#define SHTC1_I2C_ADDRESS         (0x70)
+#endif
+
+
+/**
+ * @brief   enumeration to enable or disable the crc-check
+ * @{
+ */
 typedef enum {
-    CRC_DISABLED = 0,
-    CRC_ENABLED
+    CRC_DISABLED = 0,   /**< Disable CRC Check */
+    CRC_ENABLED         /**< Enable CRC Check */
 } shtc1_crc_type_t;
 
 /**
@@ -50,9 +65,9 @@ typedef struct {
  * @{
  */
 typedef struct {
-    i2c_t bus;              /**< I2C bus descriptor. */
-    uint8_t addr;           /**< I2C address of the sensor. */
-    shtc1_crc_type_t crc;   /**< crc check enabled or disabled (CRC_ENABLED/CRC_DISABLED). */
+    i2c_t i2c_dev;              /**< I2C bus descriptor. */
+    uint8_t i2c_addr;           /**< I2C address of the sensor. */
+    shtc1_crc_type_t crc;       /**< crc check enabled or disabled (CRC_ENABLED/CRC_DISABLED). */
 } shtc1_params_t;
 /** @} */
 
@@ -83,17 +98,41 @@ enum {
 int8_t shtc1_init(shtc1_t* const dev, const shtc1_params_t* params);
 
 /**
- * @brief Reads temperature and humidity values.
- * @details The values will be saved in the device descriptor (values struct).
- * The temperature is in centi °C and the humidity in centi %.
+ * @brief Reads all register values from the device.
+ * @details The values as raw data will be saved into reveived.
  *
- * @param[in] dev       The I2C device descriptor.
+ * @param[in] dev            The I2C device descriptor.
+ * @param[in] received       Array to save the values.
  *
  * @return              SHTC1_OK if a measurement completed. The values will be stored
- *                      in the values struct. Temperature in centi °C and humidity in centi %.
+ *                      in the received array.
  * @return              SHTC1_ERROR on checksum error.
  */
-int8_t shtc1_measure(shtc1_t* const dev);
+int8_t shtc1_get_measurement(const shtc1_t *dev, uint8_t *received);
+
+/**
+ * @brief Reads temperatur value.
+ * @details The value will be saved into temp.
+ *
+ * @param[in] dev            The I2C device descriptor.
+ * @param[in] temp           Variable to save the temperature value. Temperature in centi °C
+ *
+ * @return              SHTC1_OK if a measurement completed.
+ * @return              SHTC1_ERROR on checksum error.
+ */
+int8_t shtc1_read_temperature(const shtc1_t *dev, int16_t *temp);
+
+/**
+ * @brief Reads relative humidity value.
+ * @details The value will be saved into rel_humidity.
+ *
+ * @param[in] dev              The I2C device descriptor.
+ * @param[in] rel_humidity     Variable to save the humidity value. Humidity in centi %
+ *
+ * @return              SHTC1_OK if a measurement completed.
+ * @return              SHTC1_ERROR on checksum error.
+ */
+int8_t shtc1_read_relative_humidity(const shtc1_t *dev, uint16_t *rel_humidity);
 
 /**
  * @brief Reads the ID and saves it in the device descriptor

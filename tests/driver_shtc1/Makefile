@@ -1,9 +1,9 @@
-APPLICATION = driver_shtc1
 include ../Makefile.tests_common
 
-FEATURES_REQUIRED = periph_i2c
+DRIVER ?= shtc1
 
-USEMODULE += shtc1
+USEMODULE += fmt
 USEMODULE += xtimer
+USEMODULE += $(DRIVER)
 
 include $(RIOTBASE)/Makefile.include

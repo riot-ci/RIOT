@@ -8,30 +8,36 @@
 
 /**
  * @ingroup     drivers_shtc1
- * @name        Register definition for the SHTC1 Temperature and humidity sensor
- * @{
  *
+ * @{
  * @file
- * @brief       Register definition for the SHTC1 Temperature and humidity sensor
+ * @brief       Register definitions for SHTC1 devices
  *
  * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
  * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  */
 
-#ifndef SHTC1_REGS_H
-#define SHTC1_REGS_H
+#ifndef SHTC1_INTERNALS_H
+#define SHTC1_INTERNALS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define SHTC1_CRC                                   (0x31)    /* crc polynomial */
-#define SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_HIGH    (0x7C)
-#define SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_LOW     (0xA2)
-#define SHTC1_COMMAND_RESET_HIGH                    (0x80)
-#define SHTC1_COMMAND_RESET_LOW                     (0x5D)
-#define SHTC1_COMMAND_ID_HIGH                       (0xEF)
-#define SHTC1_COMMAND_ID_LOW                        (0xC8)
+/**
+* @name SHTC1 registers
+*/
+#define SHTC1_CRC                                   (0x31)  /**< crc polynomial */
+#define SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_HIGH    (0x7C)  /**< Clock stretching enable high*/
+#define SHTC1_MEASURE_CLOCK_STRETCHING_TEMP_LOW     (0xA2)  /**< Clock stretching disable high*/
+#define SHTC1_COMMAND_RESET_HIGH                    (0x80)  /**< Reset command high*/
+#define SHTC1_COMMAND_RESET_LOW                     (0x5D)  /**< Reset command low*/
+#define SHTC1_COMMAND_ID_HIGH                       (0xEF)  /**< Get ID command low*/
+#define SHTC1_COMMAND_ID_LOW                        (0xC8)  /**< Get ID command low*/
+
+/**
+* @name SHTC1 default ID
+*/
 #define SHTC1_ID                                    (0x07)    /* ID Mask */
 
 #ifdef __cplusplus
