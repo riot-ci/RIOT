@@ -20,33 +20,41 @@
 #include "cpu.h"
 #include "periph_conf.h"
 
-#include "vendor/encoding.h"
-#include "vendor/platform.h"
 #include "vendor/prci_driver.h"
 
 void clock_init(void)
 {
-    /* In case we are executing from QSPI, (which is quite likely) we need to
-     * set the QSPI clock divider appropriately before boosting the clock
-     * frequency. PRCI_set_hfrosctrim_for_f_cpu() tries multiple clocks
-     * so choose a safe value that should work for all frequencies.
-     */
-    SPI0_REG(SPI_REG_SCKDIV) = SCKDIV_SAFE;
+    /* Ensure that we aren't running off the PLL before we mess with it. */
+    if (PRCI_REG(PRCI_PLLCFG) & PLL_SEL(1)) {
+        /* Make sure the HFROSC is running at its default setting */
+        /* It is OK to change this even if we are running off of it.*/
+        PRCI_REG(PRCI_HFROSCCFG) = (ROSC_DIV(4) | ROSC_TRIM(16) | ROSC_EN(1));
 
-    /* Note: The range is limited to ~100MHz and depends on PLL settings */
-    PRCI_set_hfrosctrim_for_f_cpu(CPU_DESIRED_FREQ, PRCI_FREQ_UNDERSHOOT);
+        while ((PRCI_REG(PRCI_HFROSCCFG) & ROSC_RDY(1)) == 0);
 
-    /* begin{code-style-ignore} */
-    SPI0_REG(SPI_REG_FFMT) =               /* setup "Fast Read Dual I/O"                             */
-        SPI_INSN_CMD_EN         |          /* Enable memory-mapped flash                    */
-        SPI_INSN_ADDR_LEN(3)    |          /* 25LP03D read commands have 3 address bytes    */
-        SPI_INSN_PAD_CNT(4)     |          /* 25LP03D Table 6.11 Read Dummy Cycles = 4      */
-        SPI_INSN_CMD_PROTO(SPI_PROTO_S) |  /* 25LP03D Table 8.1 "Instruction                */
-        SPI_INSN_ADDR_PROTO(SPI_PROTO_D) | /*  Set" shows mode for cmd, addr, and           */
-        SPI_INSN_DATA_PROTO(SPI_PROTO_D) | /*  data protocol for given instruction          */
-        SPI_INSN_CMD_CODE(0xBB) |          /* Set the instruction to "Fast Read Dual I/O"   */
-        SPI_INSN_PAD_CODE(0x00);           /* Dummy cycle sends 0 value bits                */
-    /* end{code-style-ignore} */
+        PRCI_REG(PRCI_PLLCFG) &= ~PLL_SEL(1);
+    }
 
-    SPI0_REG(SPI_REG_SCKDIV) = SCKDIV;
+    /* Bypass PLL */
+    PRCI_REG(PRCI_PLLCFG) = PLL_REFSEL(1) | PLL_BYPASS(1);
+
+#if USE_CLOCK_PLL
+    /* Set output divisor */
+    PRCI_REG(PRCI_PLLDIV) = PLL_FINAL_DIV(CLOCK_PLL_OUTDIV);
+
+    /* Configure PLL */
+    PRCI_REG(PRCI_PLLCFG) |= PLL_R(CLOCK_PLL_R) | PLL_F(CLOCK_PLL_F) | PLL_Q(CLOCK_PLL_Q);
+
+    /* Disable PLL Bypass */
+    PRCI_REG(PRCI_PLLCFG) &= ~PLL_BYPASS(1);
+
+    /* Now it is safe to check for PLL Lock */
+    while ((PRCI_REG(PRCI_PLLCFG) & PLL_LOCK(1)) == 0);
+#endif
+
+    /* Switch over to PLL Clock source */
+    PRCI_REG(PRCI_PLLCFG) |= PLL_SEL(1);
+
+    /* Turn off the HFROSC */
+    PRCI_REG(PRCI_HFROSCCFG) &= ~ROSC_EN(1);
 }
