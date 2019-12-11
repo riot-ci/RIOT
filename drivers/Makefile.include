@@ -333,3 +333,7 @@ endif
 ifneq (,$(filter dcf77,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/dcf77/include
 endif
+
+ifneq (,$(filter shtc1,$(USEMODULE)))
+  USEMODULE_INCLUDES += $(RIOTBASE)/drivers/shtc1/include
+endif
