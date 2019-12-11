@@ -85,8 +85,9 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* Enable UART 8-N-1 at given baudrate */
     _REG32(uart_config[dev].addr, UART_REG_DIV) = uartDiv;
 
-    /* Configure TX pin muxing */
+    /* Select IOF0 */
     GPIO_REG(GPIO_IOF_SEL) &= ~(1 << uart_config[dev].tx);
+    /* Enable IOF */
     GPIO_REG(GPIO_IOF_EN) |= (1 << uart_config[dev].tx);
 
     /* Enable TX */
@@ -94,8 +95,9 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     /* Enable RX intr if there is a callback */
     if (rx_cb) {
-        /* Configure RX pin muxing */
+        /* Select IOF0 */
         GPIO_REG(GPIO_IOF_SEL) &= ~(1 << uart_config[dev].rx);
+        /* Enable IOF */
         GPIO_REG(GPIO_IOF_EN) |= (1 << uart_config[dev].rx);
 
         /* Disable ext interrupts when setting up */
@@ -104,7 +106,7 @@ int uart_init(uart_t dev, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         /* Configure UART ISR with PLIC */
         set_external_isr_cb(uart_config[dev].isr_num, uart_isr);
         PLIC_enable_interrupt(uart_config[dev].isr_num);
-        PLIC_set_priority(uart_config[dev].isr_num, uart_config[dev].isr_prio);
+        PLIC_set_priority(uart_config[dev].isr_num, UART_ISR_PRIO);
         _REG32(uart_config[dev].addr, UART_REG_IE) = UART_IP_RXWM;
 
         /* Enable RX */

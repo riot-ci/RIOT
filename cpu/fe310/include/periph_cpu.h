@@ -58,7 +58,6 @@ typedef struct {
     gpio_t rx;              /**< RX pin */
     gpio_t tx;              /**< TX pin */
     plic_source isr_num;    /**< ISR source number */
-    int isr_prio;           /**< ISR priority */
 } uart_conf_t;
 
 /**
