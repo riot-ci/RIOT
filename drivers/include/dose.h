@@ -58,6 +58,7 @@
 #include "periph/gpio.h"
 #include "net/netdev.h"
 #include "net/ethernet.h"
+#include "net/eui48.h"
 #include "bitarithm.h"
 #include "mutex.h"
 #include "xtimer.h"
@@ -135,7 +136,7 @@ typedef enum {
  */
 typedef struct {
     netdev_t netdev;                        /**< Extended netdev structure */
-    uint8_t mac_addr[ETHERNET_ADDR_LEN];    /**< This device's MAC address */
+    eui48_t mac_addr;                       /**< This device's MAC address */
     uint8_t opts;                           /**< Driver options */
     dose_state_t state;                     /**< Current state of the driver's state machine */
     mutex_t state_mtx;                      /**< Is unlocked every time a state is (re)entered */

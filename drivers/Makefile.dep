@@ -184,7 +184,7 @@ ifneq (,$(filter dose,$(USEMODULE)))
   USEMODULE += netdev_eth
   USEMODULE += random
   USEMODULE += xtimer
-  USEMODULE += periph_gpio_irq
+  FEATURES_REQUIRED += periph_gpio_irq
 endif
 
 ifneq (,$(filter feetech,$(USEMODULE)))

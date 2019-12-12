@@ -285,7 +285,7 @@ static void _isr(netdev_t *netdev)
     /* Check the dst mac addr if the iface is not in promiscuous mode */
     if (!(ctx->opts & DOSE_OPT_PROMISCUOUS)) {
         ethernet_hdr_t *hdr = (ethernet_hdr_t *) ctx->recv_buf;
-        if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr, ETHERNET_ADDR_LEN) != 0) {
+        if ((hdr->dst[0] & 0x1) == 0 && memcmp(hdr->dst, ctx->mac_addr.uint8, ETHERNET_ADDR_LEN) != 0) {
             DEBUG("dose _isr(): dst mac not matching -> drop\n");
             clear_recv_buf(ctx);
             return;
@@ -461,7 +461,7 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
             if (max_len < ETHERNET_ADDR_LEN) {
                 return -EINVAL;
             }
-            memcpy(value, ctx->mac_addr, ETHERNET_ADDR_LEN);
+            memcpy(value, ctx->mac_addr.uint8, ETHERNET_ADDR_LEN);
             return ETHERNET_ADDR_LEN;
         case NETOPT_PROMISCUOUSMODE:
             if (max_len < sizeof(netopt_enable_t)) {
@@ -544,12 +544,11 @@ void dose_setup(dose_t *ctx, const dose_params_t *params)
     gpio_init_int(ctx->sense_pin, GPIO_IN, GPIO_FALLING, _isr_gpio, (void *) ctx);
     gpio_irq_disable(ctx->sense_pin);
 
-    luid_get(ctx->mac_addr, ETHERNET_ADDR_LEN);
-    ctx->mac_addr[0] &= (0x2);
-    ctx->mac_addr[0] &= ~(0x1);
+    assert(sizeof(ctx->mac_addr.uint8) == ETHERNET_ADDR_LEN);
+    luid_get_eui48(&ctx->mac_addr);
     DEBUG("dose dose_setup(): mac addr %02x:%02x:%02x:%02x:%02x:%02x\n",
-          ctx->mac_addr[0], ctx->mac_addr[1], ctx->mac_addr[2],
-          ctx->mac_addr[3], ctx->mac_addr[4], ctx->mac_addr[5]
+          ctx->mac_addr.uint8[0], ctx->mac_addr.uint8[1], ctx->mac_addr.uint8[2],
+          ctx->mac_addr.uint8[3], ctx->mac_addr.uint8[4], ctx->mac_addr.uint8[5]
           );
 
     ctx->timeout_ticks = xtimer_ticks_from_usec(DOSE_TIMEOUT_USEC).ticks32;

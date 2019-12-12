@@ -34,7 +34,7 @@
 #define DOSE_MAC_PRIO      (GNRC_NETIF_PRIO)
 #endif
 
-#define DOSE_NUM (sizeof(dose_params) / sizeof(dose_params[0]))
+#define DOSE_NUM           ARRAY_SIZE(dose_params)
 
 static char _netdev_eth_stack[DOSE_NUM][DOSE_MAC_STACKSIZE];
 static dose_t dose[DOSE_NUM];
