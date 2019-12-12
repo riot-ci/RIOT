@@ -28,9 +28,6 @@
 extern "C" {
 #endif
 
-struct nrf24l01p;
-typedef struct nrf24l01p nrf24l01p_t; /**< typedef of forward declaration */
-
 /**
  * @brief   Write payload to be transmitted in an ACK frame
  *

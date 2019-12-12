@@ -130,6 +130,9 @@ typedef enum {
     NRF24L01P_RF_DR_NUM_OF          /**< Number of possible values to configure the data rate */
 } nrf24l01p_rfdr_t;
 
+struct nrf24l01p;
+typedef struct nrf24l01p nrf24l01p_t; /**< typedef of forward declaration */
+
 #ifdef __cplusplus
 }
 #endif

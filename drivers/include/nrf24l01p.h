@@ -186,7 +186,7 @@ typedef struct {
 /**
  * @brief   NRF24L01P device struct
  */
-typedef struct nrf24l01p {
+struct nrf24l01p {
     netdev_t netdev;            /**< Netdev member */
     nrf24l01p_params_t params;  /**< Parameters */
     uint8_t state;              /**< Current operation state */
@@ -194,7 +194,7 @@ typedef struct nrf24l01p {
     uint8_t have_spi_access;    /**< != 0: dev already has SPI bus acquired*/
     uint8_t transitions;        /**< Possible transitions from current state */
 #endif
-} nrf24l01p_t;
+};
 
 /**
  * @brief   Setup the NRF24L01P driver, but perform no initialization
