@@ -165,13 +165,13 @@ static dose_signal_t state_transit_send(dose_t *ctx, dose_signal_t signal)
 static void state(dose_t *ctx, dose_signal_t signal)
 {
     /* Make sure no other thread or ISR interrupts state transitions */
-    int irq_state = irq_disable();
+    unsigned irq_state = irq_disable();
 
     do {
         /* The edges of the finite state machine can be identified by
          * the current state and the signal that caused a state transition.
          * Since the state only occupies the first 4 bits and the signal the
-         * last 4 bits of a uint8_t, they can be added together and hance
+         * last 4 bits of a uint8_t, they can be added together and hence
          * be checked together. */
         switch (ctx->state + signal) {
             case DOSE_STATE_INIT + DOSE_SIGNAL_INIT:
@@ -238,7 +238,7 @@ static void _isr_xtimer(void *arg)
 
 static void clear_recv_buf(dose_t *ctx)
 {
-    int irq_state = irq_disable();
+    unsigned irq_state = irq_disable();
 
     ctx->recv_buf_ptr = 0;
     CLRBIT(ctx->flags, DOSE_FLAG_RECV_BUF_DIRTY);
@@ -250,7 +250,8 @@ static void clear_recv_buf(dose_t *ctx)
 static void _isr(netdev_t *netdev)
 {
     dose_t *ctx = (dose_t *) netdev;
-    int irq_state, dirty, end;
+    unsigned irq_state;
+    int dirty, end;
 
     /* Get current flags atomically */
     irq_state = irq_disable();
@@ -507,7 +508,7 @@ static int _set(netdev_t *dev, netopt_t opt, const void *value, size_t len)
 static int _init(netdev_t *dev)
 {
     dose_t *ctx = (dose_t *) dev;
-    int irq_state;
+    unsigned irq_state;
 
     /* Set state machine to defaults */
     irq_state = irq_disable();
