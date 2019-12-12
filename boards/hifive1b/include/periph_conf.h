@@ -29,13 +29,17 @@ extern "C" {
  * @name    Core Clock configuration
  * @{
  */
-#define CLOCK_CORECLOCK             (16000000UL)
-
 #define USE_CLOCK_PLL               (1)
+
+#if USE_CLOCK_PLL
 #define CLOCK_PLL_R                 (2)
 #define CLOCK_PLL_F                 (24)
 #define CLOCK_PLL_Q                 (8)
 #define CLOCK_PLL_OUTDIV            (1)
+#define CLOCK_CORECLOCK             (66666000UL) /* Todo: automatically compute from PLL params */
+#else
+#define CLOCK_CORECLOCK             (16000000UL)
+#endif
 /** @} */
 
 /**
