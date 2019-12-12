@@ -91,6 +91,9 @@ static char *heap_top[NUM_HEAPS] = {
 #if NUM_HEAPS > 3
     &_sheap3,
 #endif
+#if NUM_HEAPS > 4
+#error Unsupported NUM_HEAPS value, edit newlib_syscalls_default/syscalls.c to add more heaps.
+#endif
 };
 
 static const struct heap heaps[NUM_HEAPS] = {
@@ -163,7 +166,7 @@ void _exit(int n)
  */
 void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
 {
-    void *res = (void *)-1;
+    void *res = (void*) UINTPTR_MAX;
     unsigned int state = irq_disable();
 
     for (unsigned i = 0; i < NUM_HEAPS; ++i) {
@@ -177,7 +180,7 @@ void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
         break;
     }
 
-    if (res == (void *)-1) {
+    if (res == (void*) UINTPTR_MAX) {
         r->_errno = ENOMEM;
     }
 
