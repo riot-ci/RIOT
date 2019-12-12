@@ -14,12 +14,15 @@
 
 #include "tests-checksum.h"
 
+#define CRC8_POLY   0x31
+#define CRC8_INIT   0xff
+
 static void test_checksum_crc8_sequence_empty(void)
 {
     unsigned char buf[] = "";
     uint8_t expect = 0xFF;
 
-    TEST_ASSERT_EQUAL_INT(expect ,crc8(buf, sizeof(buf) - 1));
+    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1, CRC8_POLY, CRC8_INIT));
 }
 
 static void test_checksum_crc8_sequence_1a(void)
@@ -27,7 +30,7 @@ static void test_checksum_crc8_sequence_1a(void)
     unsigned char buf[] = "A";
     uint8_t expect = 0xA0;
 
-    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1));
+    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1, CRC8_POLY, CRC8_INIT));
 }
 
 static void test_checksum_crc8_sequence_256a(void)
@@ -41,7 +44,7 @@ static void test_checksum_crc8_sequence_256a(void)
                           "AAAA";
     uint8_t expect = 0xF0;
 
-    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1));
+    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1, CRC8_POLY, CRC8_INIT));
 }
 
 static void test_checksum_crc8_sequence_1to9(void)
@@ -49,7 +52,7 @@ static void test_checksum_crc8_sequence_1to9(void)
     unsigned char buf[] = "123456789";
     uint8_t expect = 0xF7;
 
-    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1));
+    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1, CRC8_POLY, CRC8_INIT));
 }
 
 static void test_checksum_crc8_sequence_4bytes(void)
@@ -57,7 +60,7 @@ static void test_checksum_crc8_sequence_4bytes(void)
     unsigned char buf[] = { 0x12, 0x34, 0x56, 0x78 };
     uint8_t expect = 0xE0;
 
-    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf)));
+    TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf), CRC8_POLY, CRC8_INIT));
 }
 
 Test *tests_checksum_crc8_tests(void)
