@@ -492,7 +492,6 @@ ssize_t lwip_sock_send(struct netconn *conn, const void *data, size_t len,
     int res;
     err_t err;
     u16_t remote_port = 0;
-    int noconn = 0;
 
 #if LWIP_IPV6
     assert(!(type & NETCONN_TYPE_IPV6));
@@ -519,7 +518,6 @@ ssize_t lwip_sock_send(struct netconn *conn, const void *data, size_t len,
             netbuf_delete(buf);
             return res;
         }
-        noconn = 1;
     }
     else if (conn != NULL) {
         ip_addr_t addr;
@@ -566,7 +564,7 @@ ssize_t lwip_sock_send(struct netconn *conn, const void *data, size_t len,
             break;
     }
     netbuf_delete(buf);
-    if (noconn) {
+    if (conn != NULL) {
         netconn_delete(tmp);
     }
     return res;
