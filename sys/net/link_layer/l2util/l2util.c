@@ -37,19 +37,21 @@ static void _create_eui64_from_short(const uint8_t *addr, size_t addr_len,
 #endif /* defined(MODULE_CC110X) || defined(MODULE_NRFMIN) */
 
 #if defined(MODULE_NRF24L01P)
-static void _create_eui64_from_long(const uint8_t *addr, size_t addr_len,
-                                    eui64_t *eui64)
+/* create EUI64 from l2-addr with 1 Byte to 5 Byte length*/
+static void _create_eui64_from_flexible(const uint8_t *addr, size_t addr_len,
+                                        eui64_t *eui64)
 {
     memset(eui64->uint8, 0, sizeof(eui64->uint8));
     eui64->uint8[3] = 0xff;
     eui64->uint8[4] = 0xfe;
+    eui64->uint8[0] = ((uint8_t)addr_len) << 5; /* encode length */
     if (addr_len > 3) {
-        memcpy(&eui64->uint8[0], addr, 2);
-        memcpy(&eui64->uint8[8 - (addr_len - 2)], addr + 2, addr_len - 2);
+        memcpy(&eui64->uint8[1 + (5 - addr_len)],
+               addr, addr_len - 3);
+        addr += (addr_len - 3);
+        addr_len -= (addr_len - 3);
     }
-    else {
-        memcpy(&eui64->uint8[8 - addr_len], addr, addr_len);
-    }
+    memcpy(&eui64->uint8[5 + (3 - addr_len)], addr, addr_len);
 }
 #endif /* defined(MODULE_NRF24L01P) */
 
@@ -96,7 +98,7 @@ int l2util_eui64_from_addr(int dev_type, const uint8_t *addr, size_t addr_len,
 #if defined(MODULE_NRF24L01P)
         case NETDEV_TYPE_NRF24L01P:
             if (addr_len >= 3 && addr_len <= 5) {
-                _create_eui64_from_long(addr, addr_len, eui64);
+                _create_eui64_from_flexible(addr, addr_len, eui64);
                 return sizeof(eui64_t);
             }
             return -EINVAL;
@@ -132,7 +134,7 @@ int l2util_ipv6_iid_from_addr(int dev_type,
 #if defined(MODULE_NRF24L01P)
         case NETDEV_TYPE_NRF24L01P:
             if (addr_len >= 3 && addr_len <= 5) {
-                _create_eui64_from_long(addr, addr_len, iid);
+                _create_eui64_from_flexible(addr, addr_len, iid);
                 return sizeof(eui64_t);
             }
             return -EINVAL;
@@ -196,20 +198,14 @@ int l2util_ipv6_iid_to_addr(int dev_type, const eui64_t *iid, uint8_t *addr)
             return sizeof(eui64_t);
 #endif  /* defined(MODULE_NETDEV_IEEE802154) || defined(MODULE_XBEE) */
 #if defined (MODULE_NRF24L01P)
-        case NETDEV_TYPE_NRF24L01P:;
-            uint8_t i = 0;
-            uint8_t j = 0;
-            while (i < 3 && iid->uint8[i]) {
-                addr[j++] = iid->uint8[i++];
+        case NETDEV_TYPE_NRF24L01P:
+            memset(addr, 0, sizeof(eui64_t));
+            uint8_t addr_len = iid->uint8[0] >> 5;
+            if (addr_len > 3) {
+                memcpy(addr, &iid->uint8[1 + (5 - addr_len)], addr_len - 3);
             }
-            i = 5;
-            while (i < 8 && !iid->uint8[i]) {
-                i++;
-            }
-            while (i < 8) {
-                addr[j++] = iid->uint8[i++];
-            }
-            return j;
+            memcpy(&addr[addr_len - 3], &iid->uint8[5], 3);
+            return addr_len;
 #endif /* defined (MODULE_NRF24L01P) */
 #ifdef MODULE_NRFMIN
         case NETDEV_TYPE_NRFMIN:
