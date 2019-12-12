@@ -21,13 +21,8 @@
 #include <stdbool.h>
 #include "checksum/crc8.h"
 
-uint8_t crc8(const uint8_t *data, size_t len)
+uint8_t crc8(const uint8_t *data, size_t len, uint8_t g_polynom, uint8_t crc)
 {
-    static const uint8_t g_polynom = 0x31;
-
-    /* initialization value */
-    uint8_t crc = 0xff;
-
     /* iterate over all bytes */
     for (size_t i=0; i < len; i++)
     {
