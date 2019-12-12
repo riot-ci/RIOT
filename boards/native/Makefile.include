@@ -72,7 +72,7 @@ export LINKFLAGS += -ffunction-sections
 ifneq (,$(filter netdev_default gnrc_netdev_default,$(USEMODULE)))
   PORT ?= tap0
 else
-  PORT =
+  PORT ?=
 endif
 
 TERMFLAGS := $(PORT) $(TERMFLAGS)
