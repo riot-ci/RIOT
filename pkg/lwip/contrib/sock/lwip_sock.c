@@ -564,7 +564,7 @@ ssize_t lwip_sock_send(struct netconn *conn, const void *data, size_t len,
             break;
     }
     netbuf_delete(buf);
-    if (conn != NULL) {
+    if (conn == NULL) {
         netconn_delete(tmp);
     }
     return res;
