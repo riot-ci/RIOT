@@ -100,6 +100,11 @@ static int _status (sht3x_dev_t* dev, uint16_t* status);
 static int _send_command(sht3x_dev_t* dev, uint16_t cmd);
 static int _read_data(sht3x_dev_t* dev, uint8_t *data, uint8_t len);
 
+static inline uint8_t _crc8(const void* buf, size_t len)
+{
+    return crc8(buf, len, 0x31, 0xff);
+}
+
 /* ------------------------------------------------ */
 
 int sht3x_init (sht3x_dev_t *dev, const sht3x_params_t *params)
@@ -240,13 +245,13 @@ static int _get_raw_data(sht3x_dev_t* dev, uint8_t* raw_data)
     }
 
     /* check temperature crc */
-    if (crc8(raw_data,2) != raw_data[2]) {
+    if (_crc8(raw_data,2) != raw_data[2]) {
         DEBUG_DEV("CRC check for temperature data failed", dev);
         return -SHT3X_ERROR_CRC;
     }
 
     /* check humidity crc */
-    if (crc8(raw_data+3,2) != raw_data[5]) {
+    if (_crc8(raw_data+3,2) != raw_data[5]) {
         DEBUG_DEV("CRC check for humidity data failed", dev);
         return -SHT3X_ERROR_CRC;
     }
@@ -405,7 +410,7 @@ static int _status (sht3x_dev_t* dev, uint16_t* status)
     }
 
     /* check status crc */
-    if (crc8(data,2) != data[2]) {
+    if (_crc8(data,2) != data[2]) {
         DEBUG_DEV("CRC check for status failed", dev);
         return -SHT3X_ERROR_CRC;
     }
