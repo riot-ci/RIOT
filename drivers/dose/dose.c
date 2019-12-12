@@ -79,15 +79,15 @@ static dose_signal_t state_transit_blocked(dose_t *ctx, dose_signal_t signal)
 
     /* The timeout will bring us back into IDLE state by a random time.
      * If we entered this state from RECV state, the random time lays
-     * in the interval [0.1 * timeout, 1.0 * timeout]. If we came from
-     * SEND state, a time in the interval [1.0 * timeout, 2.0 * timeout]
+     * in the interval [1 * timeout, 2 * timeout]. If we came from
+     * SEND state, a time in the interval [2 * timeout, 3 * timeout]
      * will be picked. This ensures that responding nodes get preferred
      * bus access and sending nodes do not overwhelm listening nodes. */
     if (ctx->state == DOSE_STATE_SEND) {
-        backoff = random_uint32_range(ctx->timeout_ticks, 2 * ctx->timeout_ticks);
+        backoff = random_uint32_range(2 * ctx->timeout_base, 3 * ctx->timeout_base);
     }
     else {
-        backoff = random_uint32_range(ctx->timeout_ticks / 10, ctx->timeout_ticks);
+        backoff = random_uint32_range(1 * ctx->timeout_base, 2 * ctx->timeout_base);
     }
     xtimer_set(&ctx->timeout, backoff);
 
@@ -138,7 +138,7 @@ static dose_signal_t state_transit_recv(dose_t *ctx, dose_signal_t signal)
 
     if (rc == DOSE_SIGNAL_NONE) {
         /* No signal is returned. We stay in the RECV state. */
-        xtimer_set(&ctx->timeout, ctx->timeout_ticks);
+        xtimer_set(&ctx->timeout, ctx->timeout_base);
     }
 
     return rc;
@@ -157,7 +157,7 @@ static dose_signal_t state_transit_send(dose_t *ctx, dose_signal_t signal)
      * will bring us back to the BLOCKED state after _send has emitted
      * its last octet. */
 
-    xtimer_set(&ctx->timeout, ctx->timeout_ticks);
+    xtimer_set(&ctx->timeout, ctx->timeout_base);
 
     return DOSE_SIGNAL_NONE;
 }
@@ -534,6 +534,8 @@ static const netdev_driver_t netdev_driver_dose = {
 
 void dose_setup(dose_t *ctx, const dose_params_t *params)
 {
+    static const xtimer_ticks32_t min_timeout = {.ticks32 = XTIMER_BACKOFF + XTIMER_OVERHEAD};
+
     ctx->netdev.driver = &netdev_driver_dose;
 
     mutex_init(&ctx->state_mtx);
@@ -552,7 +554,14 @@ void dose_setup(dose_t *ctx, const dose_params_t *params)
           ctx->mac_addr.uint8[3], ctx->mac_addr.uint8[4], ctx->mac_addr.uint8[5]
           );
 
-    ctx->timeout_ticks = xtimer_ticks_from_usec(DOSE_TIMEOUT_USEC).ticks32;
+    /* The timeout base is the minimal timeout base used for this driver.
+     * We have to ensure it is above the XTIMER_BACKOFF. Otherwise state
+     * transitions are triggered from another state transition setting up the
+     * timeout. */
+    ctx->timeout_base = DOSE_TIMEOUT_USEC;
+    if (ctx->timeout_base < xtimer_usec_from_ticks(min_timeout)) {
+        ctx->timeout_base = xtimer_usec_from_ticks(min_timeout);
+    }
     ctx->timeout.callback = _isr_xtimer;
     ctx->timeout.arg = ctx;
 }

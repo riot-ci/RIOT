@@ -147,7 +147,7 @@ typedef struct {
     uint8_t uart_octet;                     /**< Last received octet */
     gpio_t sense_pin;                       /**< GPIO to sense for start bits on the UART's rx line */
     xtimer_t timeout;                       /**< Timeout timer ensuring always to get back to IDLE state */
-    uint32_t timeout_ticks;                 /**< Default amount of timeout ticks */
+    uint32_t timeout_base;                  /**< Base timeout in us */
 } dose_t;
 
 /**
