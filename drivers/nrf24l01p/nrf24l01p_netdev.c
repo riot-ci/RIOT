@@ -594,26 +594,25 @@ static void nrf24l01p_isr(netdev_t *netdev)
  *          l2a: [a1, ..., an] | 3 <= n <= 5
  *          EUI64:
  *          if n = 3:
- *          [0, 0, 0, ff, fe, a1, a2, a3]
+ *          [3 << 5, 0, 0, ff, fe, a1, a2, a3]
  *          if n = 4:
- *          [a1, 0, 0, ff, fe, a2, a3, a4]
+ *          [4 << 5, 0, a1, ff, fe, a2, a3, a4]
  *          if n = 5:
- *          [a1, a2, 0, ff, fe, a3, a4, a5]
+ *          [5 << 5, a1, a2, ff, fe, a3, a4, a5]
  */
 static int nrf24l01p_get_iid(const nrf24l01p_t *dev, eui64_t *iid)
 {
     *iid = (eui64_t){
         .uint8 = { 0x00, 0x00, 0x00, 0xff, 0xfe, 0x00, 0x00, 0x00 }
     };
-    uint8_t i, j;
     uint8_t aw = nrf24l01p_etoval_aw(dev->params.config.cfg_addr_width);
-    for (i = aw, j = sizeof(iid->uint8); i > 0 && j > 5;
-         i--, j--) {
-        iid->uint8[j - 1] = dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr[i - 1];
+    iid->uint8[0] = aw << 5;
+    if (aw > 3) {
+        memcpy(&iid->uint8[1 + (5 - aw)],
+               dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr, aw - 3);
     }
-    for (j = i; i > 0 && j > 0; i--, j--) {
-        iid->uint8[j - 1] = dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr[i - 1];
-    }
+    memcpy(&iid->uint8[5],
+           dev->params.urxaddr.rxaddrpx.rx_pipe_0_addr + (aw - 3), 3);
     return sizeof(eui64_t);
 }
 
