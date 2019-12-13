@@ -1007,10 +1007,6 @@ ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
   USEMODULE += ztimer_usec
 endif
 
-ifneq (,$(filter xtimer_on_ztimer%,$(USEMODULE)))
-  USEMODULE += ztimer_usec
-endif
-
 ifneq (,$(filter ztimer_%,$(USEMODULE)))
   USEMODULE += ztimer
   USEMODULE += ztimer_extend
