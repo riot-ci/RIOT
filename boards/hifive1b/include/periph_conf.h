@@ -29,8 +29,8 @@ extern "C" {
  * @name    Core Clock configuration
  * @{
  */
-#define USE_CLOCK_PLL               (0)
-#define USE_CLOCK_HFROSC            (1)
+#define USE_CLOCK_PLL               (1)
+#define USE_CLOCK_HFROSC            (0)
 #define USE_CLOCK_HFXOSC            (0)
 
 #if USE_CLOCK_PLL && (USE_CLOCK_HFXOSC || USE_CLOCK_HFROSC)
