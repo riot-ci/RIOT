@@ -55,7 +55,7 @@ void clock_init(void)
         PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV_BY_1(CLOCK_PLL_OUTDIV) | PLL_FINAL_DIV(0));
     }
     else {
-      PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV(CLOCK_PLL_OUTDIV - 1));
+        PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV(CLOCK_PLL_OUTDIV - 1));
     }
 
     /* Configure PLL */
