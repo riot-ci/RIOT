@@ -28,7 +28,6 @@ LOW_MEMORY_BOARDS += \
   nrf51dongle \
   nrf6310 \
   nucleo-f030r8 \
-  nucleo-f031k6 \
   nucleo-f042k6 \
   nucleo-f070rb \
   nucleo-f072rb \
@@ -42,7 +41,6 @@ LOW_MEMORY_BOARDS += \
   saml10-xpro \
   saml11-xpro \
   spark-core \
-  stm32f030f4-demo \
   stm32f0discovery \
   stm32l0538-disco \
   telosb \
@@ -59,6 +57,8 @@ SUPER_LOW_MEMORY_BOARDS += \
   arduino-nano \
   arduino-uno \
   atmega328p \
+  nucleo-f031k6 \
+  stm32f030f4-demo \
   #
 
 ifneq (, $(filter $(BOARD), $(LOW_MEMORY_BOARDS)))
