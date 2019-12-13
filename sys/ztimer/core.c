@@ -40,18 +40,20 @@ static inline uint32_t _min_u32(uint32_t a, uint32_t b) {
 }
 #endif
 
-static unsigned _is_set(ztimer_t *t)
+static unsigned _is_set(ztimer_clock_t *clock, ztimer_t *t)
 {
-    (void)t;
-    /* TODO: implement */
-    return 1;
+    if (!clock->list.next) {
+        return 0;
+    } else {
+        return (t->base.next || &t->base == clock->last);
+    }
 }
 
 void ztimer_remove(ztimer_clock_t *clock, ztimer_t *entry)
 {
     unsigned state = irq_disable();
 
-    if (_is_set(entry)) {
+    if (_is_set(clock, entry)) {
         ztimer_update_head_offset(clock);
         _del_entry_from_list(clock, &entry->base);
 
@@ -69,7 +71,7 @@ void ztimer_set(ztimer_clock_t *ztimer, ztimer_t *entry, uint32_t val)
     unsigned state = irq_disable();
 
     ztimer_update_head_offset(ztimer);
-    if (_is_set(entry)) {
+    if (_is_set(ztimer, entry)) {
         _del_entry_from_list(ztimer, &entry->base);
     }
 
@@ -109,6 +111,9 @@ static void _add_entry_to_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
     entry->offset -= delta_sum;
     if (entry->next) {
         entry->next->offset -= entry->offset;
+    }
+    else {
+        ztimer->last = entry;
     }
     list->next = entry;
     DEBUG("_add_entry_to_list() %p offset %"PRIu32"\n", (void *)entry, entry->offset);
@@ -194,10 +199,17 @@ static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
     while (list->next) {
         ztimer_base_t *list_entry = list->next;
         if (list_entry == entry) {
+            if (entry == ztimer->last) {
+                ztimer->last = list;
+            }
+
             list->next = entry->next;
             if (list->next) {
                 list_entry = list->next;
                 list_entry->offset += entry->offset;
+            }
+            else {
+                ztimer->last = NULL;
             }
             break;
         }
@@ -211,6 +223,9 @@ static ztimer_t *_now_next(ztimer_clock_t *ztimer)
 
     if (entry && (entry->offset == 0)) {
         ztimer->list.next = entry->next;
+        if (!entry->next) {
+            ztimer->last = NULL;
+        }
         return (ztimer_t*)entry;
     }
     else {
