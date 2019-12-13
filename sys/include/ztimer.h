@@ -261,14 +261,15 @@ typedef struct {
  * @brief   ztimer device structure
  */
 struct ztimer_clock {
-    ztimer_base_t list;         /**< list of active timers */
-    const ztimer_ops_t *ops;    /**< pointer to methods structure */
-    ztimer_base_t *last;        /**< last timer in queue, for _is_set() */
+    ztimer_base_t list;             /**< list of active timers              */
+    const ztimer_ops_t *ops;        /**< pointer to methods structure       */
+    ztimer_base_t *last;            /**< last timer in queue, for _is_set() */
+    uint32_t adjust;                /**< will be subtracted on every set()  */
 #if MODULE_ZTIMER_EXTEND || DOXYGEN
-    /* values used for checkpointed intervals */
-    uint32_t max_value;         /**< maximum relative timer value */
-    uint32_t checkpoint;        /**< cumulated time at last now() call */
-    uint32_t lower_last;        /**< timer value at last now() call */
+    /* values used for checkpointed intervals and 32bit extension */
+    uint32_t max_value;             /**< maximum relative timer value       */
+    volatile uint32_t checkpoint;   /**< cumulated time at last now() call  */
+    volatile uint32_t lower_last;   /**< timer value at last now() call     */
 #endif
 };
 
@@ -340,6 +341,16 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
 int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
                                uint32_t timeout);
 
+/*
+ * @brief ztimer_now() for extending timers
+ *
+ * @internal
+ *
+ * @param[in]   ztimer          ztimer clock to operate on
+ * @return  Current count on the clock @p ztimer
+ */
+uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer);
+
 /**
  * @brief   Get the current time from a clock
  *
@@ -347,7 +358,19 @@ int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
  *
  * @return  Current count on the clock @p ztimer
  */
-uint32_t ztimer_now(ztimer_clock_t *ztimer);
+static inline uint32_t ztimer_now(ztimer_clock_t *ztimer)
+{
+#ifdef MODULE_ZTIMER_EXTEND
+    if (ztimer->max_value < 0xffffffff) {
+        return _ztimer_now_extend(ztimer);
+#else
+    if (0) {
+#endif
+    }
+    else {
+        return ztimer->ops->now(ztimer);
+    }
+}
 
 /**
  * @brief Suspend the calling thread until the time (@p last_wakeup + @p period)
