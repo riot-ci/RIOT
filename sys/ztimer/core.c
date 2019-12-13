@@ -75,6 +75,13 @@ void ztimer_set(ztimer_clock_t *ztimer, ztimer_t *entry, uint32_t val)
         _del_entry_from_list(ztimer, &entry->base);
     }
 
+    /* optionally subtract a configurable adjustment value */
+    if (val > ztimer->adjust) {
+        val -= ztimer->adjust;
+    } else {
+        val = 0;
+    }
+
     entry->base.offset = val;
     _add_entry_to_list(ztimer, &entry->base);
     if (ztimer->list.next == &entry->base) {
@@ -128,28 +135,20 @@ static uint32_t _add_modulo(uint32_t a, uint32_t b, uint32_t mod)
     return a-b;
 }
 
-uint32_t ztimer_now(ztimer_clock_t *ztimer)
+uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer)
 {
-#ifdef MODULE_ZTIMER_EXTEND
-    if (ztimer->max_value < 0xffffffff) {
-        assert(ztimer->max_value);
-        unsigned state = irq_disable();
-        uint32_t lower_now = ztimer->ops->now(ztimer);
-        DEBUG("ztimer_now() checkpoint=%"PRIu32" lower_last=%"PRIu32" lower_now=%"PRIu32" diff=%"PRIu32"\n",
-                ztimer->checkpoint, ztimer->lower_last, lower_now,
-                _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value));
-        ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
-        ztimer->lower_last = lower_now;
-        DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
-        irq_restore(state);
-        return ztimer->checkpoint;
-#else
-    if (0) {
-#endif
-    }
-    else {
-        return ztimer->ops->now(ztimer);
-    }
+    assert(ztimer->max_value);
+    unsigned state = irq_disable();
+    uint32_t lower_now = ztimer->ops->now(ztimer);
+    DEBUG("ztimer_now() checkpoint=%"PRIu32" lower_last=%"PRIu32" lower_now=%"PRIu32" diff=%"PRIu32"\n",
+            ztimer->checkpoint, ztimer->lower_last, lower_now,
+            _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value));
+    ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
+    ztimer->lower_last = lower_now;
+    DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
+    uint32_t now = ztimer->checkpoint;
+    irq_restore(state);
+    return now;
 }
 
 void ztimer_update_head_offset(ztimer_clock_t *ztimer)
@@ -200,7 +199,9 @@ static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
         ztimer_base_t *list_entry = list->next;
         if (list_entry == entry) {
             if (entry == ztimer->last) {
-                ztimer->last = list;
+                /* if entry was the last timer, set the clocks last to the
+                 * previous entry, or NULL if that was the list ptr */
+                ztimer->last = (list == &ztimer->list) ? NULL : list;
             }
 
             list->next = entry->next;
@@ -208,9 +209,9 @@ static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
                 list_entry = list->next;
                 list_entry->offset += entry->offset;
             }
-            else {
-                ztimer->last = NULL;
-            }
+
+            /* reset the entry's next pointer so _is_set() considers it unset */
+            entry->next = NULL;
             break;
         }
         list = list->next;
@@ -333,7 +334,7 @@ static void _ztimer_print(ztimer_clock_t *ztimer)
     uint32_t last_offset = 0;
     do {
         printf("0x%08x:%" PRIu32 "(%" PRIu32 ")%s", (unsigned)entry, entry->offset, entry->offset +
-                last_offset, entry->next ? "->" : "");
+                last_offset, entry->next ? "->" : (entry==ztimer->last ? "" : "!"));
         last_offset += entry->offset;
 
     } while ((entry = entry->next));
