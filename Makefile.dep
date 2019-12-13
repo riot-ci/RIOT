@@ -1012,6 +1012,10 @@ ifneq (,$(filter ztimer_%,$(USEMODULE)))
   USEMODULE += ztimer_extend
 endif
 
+ifneq (,$(filter ztimer_convert_%,$(USEMODULE)))
+  USEMODULE += ztimer_convert
+endif
+
 ifneq (,$(filter ztimer_periph,$(USEMODULE)))
   FEATURES_REQUIRED += periph_timer
 endif
