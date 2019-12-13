@@ -30,15 +30,34 @@ extern "C" {
  * @{
  */
 #define USE_CLOCK_PLL               (1)
+#define USE_CLOCK_HFROSC            (0)
+#define USE_CLOCK_HFXOSC            (0)
+
+#if USE_CLOCK_PLL && (USE_CLOCK_HFXOSC || USE_CLOCK_HFROSC)
+#error "Cannot use HFXOSC/HFROSC with PLL"
+#endif
+#if USE_CLOCK_HFXOSC && (USE_CLOCK_PLL || USE_CLOCK_HFROSC)
+#error "Cannot use PLL/HFROSC with HFXOSC"
+#endif
 
 #if USE_CLOCK_PLL
-#define CLOCK_PLL_R                 (2)
-#define CLOCK_PLL_F                 (24)
-#define CLOCK_PLL_Q                 (8)
-#define CLOCK_PLL_OUTDIV            (1)
-#define CLOCK_CORECLOCK             (66666000UL) /* Todo: automatically compute from PLL params */
-#else
+#define CLOCK_PLL_R                 (1)             /* Divide by 2 */
+#define CLOCK_PLL_F                 (23)            /* Multiply by 48, e.g 2 * (23 + 1) */
+#define CLOCK_PLL_Q                 (3)             /* Divide by 8, e.g 2^3 */
+#define CLOCK_PLL_OUTDIV            (1)             /* Divide by 1 */
+#define CLOCK_PLL_INPUT_CLOCK       (16000000UL)
+#define CLOCK_PLL_REFR              (CLOCK_PLL_INPUT_CLOCK / (CLOCK_PLL_R + 1))
+#define CLOCK_PLL_VCO               (CLOCK_PLL_REFR * (2 * (CLOCK_PLL_F + 1)))
+#define CLOCK_PLL_OUT               (CLOCK_PLL_VCO / (1 << CLOCK_PLL_Q))
+#define CLOCK_CORECLOCK             (CLOCK_PLL_OUT / CLOCK_PLL_OUTDIV)
+#elif USE_CLOCK_HFROSC
+#define CLOCK_HFROSC_TRIM           (6)  /* 72000000Hz input freq */
+#define CLOCK_HFROSC_DIV            (1)  /* Divide by 2 */
+#define CLOCK_CORECLOCK             (72000000UL / CLOCK_HFROSC)
+#elif USE_CLOCK_HFXOSC
 #define CLOCK_CORECLOCK             (16000000UL)
+#else /* Default HFROSC clock source */
+#define CLOCK_CORECLOCK             (13800000UL)
 #endif
 /** @} */
 
