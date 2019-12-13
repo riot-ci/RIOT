@@ -43,7 +43,18 @@
 
 static xtimer_t _timers[NUMOF_TIMERS];
 
+/* This variable is set by any timer that actually triggers.  As the test is
+ * only testing set/remove/now operations, timers are not supposed to trigger.
+ * Thus, after every test there's an 'assert(!_triggers)'
+ */
 static unsigned _triggers;
+
+/*
+ * The test assumes that first, middle and last will always end up in at the
+ * same index within the timer queue.  In order to compensate for the time that
+ * previous operations take themselves, the interval is corrected. The
+ * variables "start" and "_base" are used for that.
+ */
 uint32_t _base;
 
 static void _callback(void *arg) {
@@ -51,16 +62,20 @@ static void _callback(void *arg) {
     *triggers += 1;
 }
 
+/* returns the interval for timer 'n' that has to be set in order to insert it
+ * into position n */
 static uint32_t _timer_val(unsigned n)
 {
     return _base + (SPREAD * n);
 }
 
+/* set timer 'n' to its intended position 'n' */
 static void _timer_set(unsigned n)
 {
     xtimer_set(&_timers[n], _timer_val(n));
 }
 
+/* remove timer 'n' */
 static void _timer_remove(unsigned n)
 {
     xtimer_remove(&_timers[n]);
