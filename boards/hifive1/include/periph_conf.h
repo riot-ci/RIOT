@@ -51,8 +51,8 @@ extern "C" {
 #define CLOCK_PLL_OUT               (CLOCK_PLL_VCO / (1 << CLOCK_PLL_Q))
 #define CLOCK_CORECLOCK             (CLOCK_PLL_OUT / CLOCK_PLL_OUTDIV)
 #elif USE_CLOCK_HFROSC
-#define CLOCK_HFROSC_TRIM           (6)  /* 72000000Hz input freq */
-#define CLOCK_HFROSC_DIV            (1)  /* Divide by 2 */
+#define CLOCK_HFROSC_TRIM           (6)             /* 72000000Hz input freq */
+#define CLOCK_HFROSC_DIV            (1)             /* Divide by 2 */
 #define CLOCK_CORECLOCK             (72000000UL / (CLOCK_HFROSC_DIV + 1))
 #elif USE_CLOCK_HFXOSC
 #define CLOCK_CORECLOCK             (16000000UL)
