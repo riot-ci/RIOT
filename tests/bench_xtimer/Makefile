@@ -5,8 +5,27 @@ USEMODULE += xtimer
 # this test uses 1000 timers by default. for boards that boards don't have
 # enough memory, reduce that to 100 or 20, unless NUMOF_TIMERS has been overridden.
 LOW_MEMORY_BOARDS += \
+  arduino-duemilanove \
   arduino-mega2560 \
+  arduino-nano \
+  atmega328p \
+  b-l072z-lrwan1 \
+  bluepill \
+  calliope-mini \
+  cc1352-launchpad \
+  cc2650-launchpad \
+  cc2650stk \
+  chronos \
+  hifive1 \
+  lsn50 \
+  maple-mini \
+  msb-430 \
+  nrf51dongle \
+  nucleo-f030r8 \
+  nucleo-f103rb \
   nucleo-l031k6 \
+  opencm904 \
+  telosb \
   #
 
 SUPER_LOW_MEMORY_BOARDS += \
