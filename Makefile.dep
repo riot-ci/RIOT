@@ -667,8 +667,17 @@ ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
 endif
 
 ifneq (,$(filter xtimer,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_timer
+  ifeq (,$(filter ztimer,$(USEMODULE)))
+    FEATURES_REQUIRED += periph_timer
+    USEMODULE += div
+  else
+    USEMODULE += ztimer_xtimer_compat
+  endif
+endif
+
+ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
   USEMODULE += div
+  PSEUDOMODULES += xtimer
 endif
 
 ifneq (,$(filter saul,$(USEMODULE)))
@@ -988,6 +997,27 @@ endif
 # Enable periph_uart when periph_uart_nonblocking is enabled
 ifneq (,$(filter periph_uart_nonblocking,$(USEMODULE)))
   FEATURES_REQUIRED += periph_uart
+endif
+
+ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
+  USEMODULE += ztimer_usec
+endif
+
+ifneq (,$(filter ztimer_%,$(USEMODULE)))
+  USEMODULE += ztimer
+  USEMODULE += ztimer_extend
+endif
+
+ifneq (,$(filter ztimer_periph,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_timer
+endif
+
+ifneq (,$(filter ztimer_rtt,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_rtt
+endif
+
+ifneq (,$(filter ztimer_convert_frac,$(USEMODULE)))
+  USEMODULE += frac
 endif
 
 # Enable periph_gpio when periph_gpio_irq is enabled
