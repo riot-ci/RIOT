@@ -676,8 +676,12 @@ ifneq (,$(filter xtimer,$(USEMODULE)))
     USEMODULE += div
   else
     USEMODULE += ztimer_xtimer_compat
-    PSEUDOMODULES += xtimer
   endif
+endif
+
+ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
+  USEMODULE += div
+  PSEUDOMODULES += xtimer
 endif
 
 ifneq (,$(filter saul,$(USEMODULE)))
