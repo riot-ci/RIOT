@@ -106,18 +106,18 @@ void *thread_isr_stack_pointer(void)
     unsigned _cpsr;
     void *_sp;
 
-    unsigned state = irq_disable();
-
-    /* store current mode */
+    /* get current mode */
     __asm volatile ("mrs %0, cpsr" : "=r" (_cpsr));
-    /* enter interrupt mode */
-    __asm volatile ("msr cpsr, 0x12");
+
+    /* If we are not in interrupt mode, the interrupt stack pointer will
+     * always be at the beginning of the interrupt stack.
+     */
+    if (_cpsr != 0x12) {
+        return thread_isr_stack_start();
+    }
+
     /* read stack pointer */
     __asm volatile ("mov %0, r13" : "=r" (_sp) );
-    /* restore previous mode */
-    __asm volatile ("msr cpsr, %0" : "=r" (_cpsr));
-
-    irq_restore(state);
 
     return _sp;
 }
