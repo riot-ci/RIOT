@@ -35,13 +35,14 @@ static void test_checksum_crc8_sequence_1a(void)
 
 static void test_checksum_crc8_sequence_256a(void)
 {
-    unsigned char buf[] = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                          "AAAA";
+    unsigned char buf[] = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
     uint8_t expect = 0xF0;
 
     TEST_ASSERT_EQUAL_INT(expect, crc8(buf, sizeof(buf) - 1, CRC8_POLY, CRC8_INIT));
