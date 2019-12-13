@@ -44,10 +44,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-static inline uint32_t _width_to_maxval(unsigned width)
-{
-    return (0xffffffff >> (32 - width));
-}
+#define WIDTH_TO_MAXVAL(width)  (0xffffffff >> (32 - width))
 
 #define CONFIG_ZTIMER_USEC_TYPE_PERIPH (1)
 
@@ -135,7 +132,7 @@ void ztimer_init(void)
 
     ztimer_periph_init(&_ztimer_periph_usec, CONFIG_ZTIMER_USEC_DEV,
                        CONFIG_ZTIMER_USEC_FREQ,
-                       _width_to_maxval(CONFIG_ZTIMER_USEC_WIDTH));
+                       WIDTH_TO_MAXVAL(CONFIG_ZTIMER_USEC_WIDTH));
 #  endif
 #  if CONFIG_ZTIMER_USEC_FREQ != 1000000LU
     DEBUG("ztimer_init(): ZTIMER_USEC convert_frac %lu to 1000000\n",
