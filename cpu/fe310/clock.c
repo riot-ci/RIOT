@@ -51,7 +51,12 @@ void clock_init(void)
 
 #if USE_CLOCK_PLL
     /* Set output divisor */
-    PRCI_REG(PRCI_PLLDIV) = PLL_FINAL_DIV(CLOCK_PLL_OUTDIV);
+    if (CLOCK_PLL_OUTDIV == 1) {
+        PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV_BY_1(CLOCK_PLL_OUTDIV) | PLL_FINAL_DIV(0));
+    }
+    else {
+      PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV(CLOCK_PLL_OUTDIV - 1));
+    }
 
     /* Configure PLL */
     PRCI_REG(PRCI_PLLCFG) |= PLL_R(CLOCK_PLL_R) | PLL_F(CLOCK_PLL_F) | PLL_Q(CLOCK_PLL_Q);
