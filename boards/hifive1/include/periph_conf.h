@@ -41,10 +41,10 @@ extern "C" {
 #endif
 
 #if USE_CLOCK_PLL
-#define CLOCK_PLL_R                 (1)             /* Divide by 2 */
-#define CLOCK_PLL_F                 (23)            /* Multiply by 48, e.g 2 * (23 + 1) */
-#define CLOCK_PLL_Q                 (3)             /* Divide by 8, e.g 2^3 */
-#define CLOCK_PLL_OUTDIV            (1)             /* Divide by 1 */
+#define CLOCK_PLL_R                 (1)             /* Divide input clock by 2 */
+#define CLOCK_PLL_F                 (23)            /* Multiply REFR by 48, e.g 2 * (23 + 1) */
+#define CLOCK_PLL_Q                 (3)             /* Divide VCO by 8, e.g 2^3 */
+#define CLOCK_PLL_OUTDIV            (1)             /* Divide output PLL freq by 1 */
 #define CLOCK_PLL_INPUT_CLOCK       (16000000UL)
 #define CLOCK_PLL_REFR              (CLOCK_PLL_INPUT_CLOCK / (CLOCK_PLL_R + 1))
 #define CLOCK_PLL_VCO               (CLOCK_PLL_REFR * (2 * (CLOCK_PLL_F + 1)))
