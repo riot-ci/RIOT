@@ -82,8 +82,12 @@ typedef struct {
     sock_tcp_ep_t local;        /* to store bind before connect/listen */
 } socket_t;
 
+typedef struct {
+    socket_sock_t sock;
+} socket_sock_pool_t;
+
 static socket_t _socket_pool[_ACTUAL_SOCKET_POOL_SIZE];
-static socket_sock_t _sock_pool[SOCKET_POOL_SIZE];
+static socket_sock_pool_t _sock_pool[SOCKET_POOL_SIZE];
 #ifdef MODULE_SOCK_TCP
 static sock_tcp_t _tcp_sock_pool[SOCKET_POOL_SIZE][SOCKET_TCP_QUEUE_SIZE];
 #endif
@@ -117,7 +121,7 @@ static socket_sock_t *_get_free_sock(void)
     if (i < 0) {
         return NULL;
     }
-    return &_sock_pool[i];
+    return &_sock_pool[i].sock;
 }
 
 static socket_t *_get_socket(int fd)
@@ -132,10 +136,11 @@ static socket_t *_get_socket(int fd)
 
 static int _get_sock_idx(socket_sock_t *sock)
 {
-    if ((sock < &_sock_pool[0]) || (sock > &_sock_pool[SOCKET_POOL_SIZE - 1])) {
+    if ((sock < &_sock_pool[0].sock) ||
+        (sock > &_sock_pool[SOCKET_POOL_SIZE - 1].sock)) {
         return -1;
     }
-    return sock - &_sock_pool[0];
+    return sock - &_sock_pool[0].sock;
 }
 
 static inline int _choose_ipproto(int type, int protocol)
