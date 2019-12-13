@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "div.h"
 #include "timex.h"
 #ifdef MODULE_CORE_MSG
 #include "msg.h"
@@ -89,6 +90,30 @@ static inline void xtimer_set_msg(xtimer_t *timer, uint32_t offset, msg_t *msg,
                                   kernel_pid_t target_pid)
 {
     ztimer_set_msg(ZTIMER_USEC, timer, offset, msg, target_pid);
+}
+
+static inline void xtimer_periodic_wakeup(xtimer_ticks32_t *last_wakeup,
+                                          uint32_t period)
+{
+    ztimer_periodic_wakeup(ZTIMER_USEC, last_wakeup, period);
+}
+
+static inline uint32_t xtimer_usec_from_ticks(xtimer_ticks32_t ticks)
+{
+    return ticks;
+}
+
+static inline xtimer_ticks32_t xtimer_ticks_from_usec(uint32_t usec)
+{
+    return usec;
+}
+
+static inline void xtimer_now_timex(timex_t *out)
+{
+    uint64_t now = xtimer_now_usec64();
+
+    out->seconds = div_u64_by_1000000(now);
+    out->microseconds = now - (out->seconds * US_PER_SEC);
 }
 
 /*
