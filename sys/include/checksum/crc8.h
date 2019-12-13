@@ -31,10 +31,13 @@ extern "C" {
 /**
  * @brief   Calculate CRC-8
  *
- * @param[in] buf   Start of memory area to checksum
+ * @param[in] data  Start of memory area to checksum
  * @param[in] len   Number of bytes in @p buf to calculate checksum for
  * @param[in] poly  The generator polynomial for the checksum
  * @param[in] seed  The seed (starting value) for the checksum
+ *
+ * @note Reflected inputs or outputs and final XOR must be realized
+ *       by the caller if needed.
  *
  * @return  Checksum of the specified memory area.
  */

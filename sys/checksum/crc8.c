@@ -13,7 +13,7 @@
  * @{
  *
  * @file
- * @brief   CRC-8 implementaion
+ * @brief   CRC-8 implementation
  *
  * @author  Gunar Schorcht <gunar@schorcht.net>
  */
