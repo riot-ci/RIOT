@@ -66,6 +66,14 @@
 extern char _sheap;                 /* start of the heap */
 extern char _eheap;                 /* end of the heap */
 
+/**
+ * @brief Additional heap sections that may be defined in the linkerscript.
+ *
+ *        The compiler should not generate references to those symbols if
+ *        they are not used, so only provide them if additional memory sections
+ *        that can be used as heap are available.
+ * @{
+ */
 extern char _sheap1;
 extern char _eheap1;
 
@@ -74,6 +82,7 @@ extern char _eheap2;
 
 extern char _sheap3;
 extern char _eheap3;
+/* @} */
 
 struct heap {
     char* start;
@@ -92,7 +101,7 @@ static char *heap_top[NUM_HEAPS] = {
     &_sheap3,
 #endif
 #if NUM_HEAPS > 4
-#error Unsupported NUM_HEAPS value, edit newlib_syscalls_default/syscalls.c to add more heaps.
+#error "Unsupported NUM_HEAPS value, edit newlib_syscalls_default/syscalls.c to add more heaps."
 #endif
 };
 
@@ -166,7 +175,7 @@ void _exit(int n)
  */
 void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
 {
-    void *res = (void*) UINTPTR_MAX;
+    void *res = (void*)UINTPTR_MAX;
     unsigned int state = irq_disable();
 
     for (unsigned i = 0; i < NUM_HEAPS; ++i) {
@@ -180,7 +189,7 @@ void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
         break;
     }
 
-    if (res == (void*) UINTPTR_MAX) {
+    if (res == (void*)UINTPTR_MAX) {
         r->_errno = ENOMEM;
     }
 
