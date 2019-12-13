@@ -53,7 +53,7 @@ extern "C" {
 #elif USE_CLOCK_HFROSC
 #define CLOCK_HFROSC_TRIM           (6)  /* 72000000Hz input freq */
 #define CLOCK_HFROSC_DIV            (1)  /* Divide by 2 */
-#define CLOCK_CORECLOCK             (72000000UL / CLOCK_HFROSC)
+#define CLOCK_CORECLOCK             (72000000UL / (CLOCK_HFROSC_DIV + 1))
 #elif USE_CLOCK_HFXOSC
 #define CLOCK_CORECLOCK             (16000000UL)
 #else /* Default HFROSC clock source */
