@@ -128,28 +128,19 @@ static uint32_t _add_modulo(uint32_t a, uint32_t b, uint32_t mod)
     return a-b;
 }
 
-uint32_t ztimer_now(ztimer_clock_t *ztimer)
+uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer)
 {
-#ifdef MODULE_ZTIMER_EXTEND
-    if (ztimer->max_value < 0xffffffff) {
-        assert(ztimer->max_value);
-        unsigned state = irq_disable();
-        uint32_t lower_now = ztimer->ops->now(ztimer);
-        DEBUG("ztimer_now() checkpoint=%"PRIu32" lower_last=%"PRIu32" lower_now=%"PRIu32" diff=%"PRIu32"\n",
-                ztimer->checkpoint, ztimer->lower_last, lower_now,
-                _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value));
-        ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
-        ztimer->lower_last = lower_now;
-        DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
-        irq_restore(state);
-        return ztimer->checkpoint;
-#else
-    if (0) {
-#endif
-    }
-    else {
-        return ztimer->ops->now(ztimer);
-    }
+    assert(ztimer->max_value);
+    unsigned state = irq_disable();
+    uint32_t lower_now = ztimer->ops->now(ztimer);
+    DEBUG("ztimer_now() checkpoint=%"PRIu32" lower_last=%"PRIu32" lower_now=%"PRIu32" diff=%"PRIu32"\n",
+            ztimer->checkpoint, ztimer->lower_last, lower_now,
+            _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value));
+    ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
+    ztimer->lower_last = lower_now;
+    DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
+    irq_restore(state);
+    return ztimer->checkpoint;
 }
 
 void ztimer_update_head_offset(ztimer_clock_t *ztimer)
