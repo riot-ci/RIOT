@@ -4,7 +4,10 @@ ifneq (,$(filter arduino,$(USEMODULE)))
 endif
 
 ifneq (,$(filter eepreg,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_eeprom
+  FEATURES_OPTIONAL += periph_eeprom
+  FEATURES_OPTIONAL += at24c128
+  FEATURES_OPTIONAL += at24c256
+  FEATURES_OPTIONAL += at24c256c
 endif
 
 ifneq (,$(filter fmt_table,$(USEMODULE)))
