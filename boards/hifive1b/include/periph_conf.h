@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2019 Ken Rabold
+ *               2019 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -14,6 +15,7 @@
  * @brief       Peripheral specific definitions for the HiFive1b RISC-V board
  *
  * @author      Ken Rabold
+ * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
 #ifndef PERIPH_CONF_H
