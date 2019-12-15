@@ -163,13 +163,13 @@ void lwip_bootstrap(void)
 #ifdef MODULE_LWIP_IPV4
     if (netif_add(&netif[0], IP4_ADDR_ANY, IP4_ADDR_ANY, IP4_ADDR_ANY,
                   &_esp_eth_dev, lwip_netdev_init, tcpip_input) == NULL) {
-        DEBUG("Could not add esp_wifi device\n");
+        DEBUG("Could not add esp_now device\n");
         return;
     }
 #else /* MODULE_LWIP_IPV4 */
     if (netif_add(&netif[0], &_esp_eth_dev, lwip_netdev_init,
                   tcpip_input) == NULL) {
-        DEBUG("Could not add esp_wifi device\n");
+        DEBUG("Could not add esp_now device\n");
         return;
     }
 #endif /* MODULE_LWIP_IPV4 */
