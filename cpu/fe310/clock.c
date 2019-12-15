@@ -39,9 +39,7 @@ void clock_init(void)
 
 #if USE_CLOCK_HFXOSC || USE_CLOCK_PLL
     /* Ensure HFXOSC is enabled */
-    if ((PRCI_REG(PRCI_HFXOSCCFG) & XOSC_EN(1)) == 0) {
-        PRCI_REG(PRCI_HFXOSCCFG) = XOSC_EN(1);
-    }
+    PRCI_REG(PRCI_HFXOSCCFG) = XOSC_EN(1);
 
     /* Wait for HFXOSC to become ready */
     while ((PRCI_REG(PRCI_HFXOSCCFG) & XOSC_RDY(1)) == 0);
@@ -66,10 +64,10 @@ void clock_init(void)
 
     /* Now it is safe to check for PLL Lock */
     while ((PRCI_REG(PRCI_PLLCFG) & PLL_LOCK(1)) == 0);
+#endif
 
     /* Switch over to PLL Clock source */
     PRCI_REG(PRCI_PLLCFG) |= PLL_SEL(PLL_SEL_PLL);
-#endif
 
     /* Turn off the HFROSC */
     PRCI_REG(PRCI_HFROSCCFG) &= ~ROSC_EN(1);
