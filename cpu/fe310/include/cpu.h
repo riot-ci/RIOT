@@ -25,6 +25,11 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "thread.h"
+
+#include "vendor/platform.h"
+#include "vendor/plic_driver.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,6 +38,26 @@ extern "C" {
  * @brief   Initialization of the CPU
  */
 void cpu_init(void);
+
+/**
+ * @brief   Initialization of the clock
+ */
+void clock_init(void);
+
+/**
+ * @brief   Initialization of interrupts
+ */
+void irq_init(void);
+
+/**
+ * @brief   External ISR callback
+ */
+typedef void (*external_isr_ptr_t)(int intNum);
+
+/**
+ * @brief   Set External ISR callback
+ */
+void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
 
 /**
  * @brief   Print the last instruction's address

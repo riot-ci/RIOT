@@ -19,6 +19,10 @@
 #ifndef PERIPH_CPU_H
 #define PERIPH_CPU_H
 
+#include <inttypes.h>
+
+#include "cpu.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,25 +32,54 @@ extern "C" {
  */
 #define CPUID_LEN           (12U)
 
+#ifndef DOXYGEN
+/**
+ * @brief   Overwrite the default gpio_t type definition
+ */
+#define HAVE_GPIO_T
+typedef uint8_t gpio_t;
+#endif
+
+/**
+ * @brief   Definition of a fitting UNDEF value
+ */
+#define GPIO_UNDEF          (0xff)
+
+/**
+ * @brief   Define a CPU specific GPIO pin generator macro
+ */
+#define GPIO_PIN(x, y)      (x | y)
+
+/**
+ * @brief   Structure for UART configuration data
+ */
+typedef struct {
+    uint32_t addr;          /**< UART control register address */
+    gpio_t rx;              /**< RX pin */
+    gpio_t tx;              /**< TX pin */
+    plic_source isr_num;    /**< ISR source number */
+} uart_conf_t;
+
 /**
  * @brief   Prevent shared timer functions from being used
  */
 #define PERIPH_TIMER_PROVIDES_SET
 
 /**
- * @brief   Timer ISR
+ * @brief   PWM channel configuration data structure
  */
-void timer_isr(void);
+typedef struct {
+    gpio_t pin;                 /**< GPIO pin */
+    uint8_t cmp;                /**< PWM comparator to use */
+} pwm_conf_chan_t;
 
 /**
- * @brief   External ISR callback
+ * @brief   PWM device configuration data structure
  */
-typedef void (*external_isr_ptr_t)(int intNum);
-
-/**
- * @brief   Set External ISR callback
- */
-void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
+typedef struct {
+    uint32_t addr;              /**< PWM address to use */
+    pwm_conf_chan_t chan[4];    /**< channel configuration */
+} pwm_conf_t;
 
 #ifdef __cplusplus
 }
