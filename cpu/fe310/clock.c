@@ -22,6 +22,10 @@
 
 #include "vendor/prci_driver.h"
 
+#if !(USE_CLOCK_HFXOSC || USE_CLOCK_HFXOSC_PLL)
+static uint32_t _cpu_frequency = 0;
+#endif
+
 void clock_init(void)
 {
     /* Ensure that we aren't running off the PLL before we mess with it. */
@@ -37,7 +41,7 @@ void clock_init(void)
         PRCI_REG(PRCI_PLLCFG) &= ~PLL_SEL(PLL_SEL_PLL);
     }
 
-#if USE_CLOCK_HFXOSC || USE_CLOCK_PLL
+#if USE_CLOCK_HFXOSC || USE_CLOCK_HFXOSC_PLL
     /* Ensure HFXOSC is enabled */
     PRCI_REG(PRCI_HFXOSCCFG) = XOSC_EN(1);
 
@@ -47,7 +51,7 @@ void clock_init(void)
     /* Select HFXOSC as reference frequency and bypass PLL */
     PRCI_REG(PRCI_PLLCFG) = PLL_REFSEL(PLL_REFSEL_HFXOSC) | PLL_BYPASS(1);
 
-#if USE_CLOCK_PLL
+#if USE_CLOCK_HFXOSC_PLL
     /* Set output divisor */
     if (CLOCK_PLL_OUTDIV == 1) {
         PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV_BY_1(CLOCK_PLL_OUTDIV) | PLL_FINAL_DIV(0));
@@ -71,9 +75,7 @@ void clock_init(void)
 
     /* Turn off the HFROSC */
     PRCI_REG(PRCI_HFROSCCFG) &= ~ROSC_EN(1);
-#endif
-
-#if USE_CLOCK_HFROSC
+#else /* Clock HFROSC */
     /* Disable Bypass */
     PRCI_REG(PRCI_PLLCFG) &= ~PLL_BYPASS(1);
 
@@ -85,5 +87,21 @@ void clock_init(void)
 
     /* Don't use PLL clock source */
     PRCI_REG(PRCI_PLLCFG) &= ~PLL_SEL(PLL_SEL_PLL);
+#endif
+}
+
+uint32_t cpu_freq(void)
+{
+#if USE_CLOCK_HFXOSC || USE_CLOCK_HFXOSC_PLL
+    return CLOCK_CORECLOCK;
+#else /* Clock frequency with HFROSC cannot be determined precisely from
+         settings */
+    /* If not done already, estimate the CPU frequency */
+    if (_cpu_frequency == 0) {
+        /* Ignore the first run (for icache reasons) */
+        _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
+        _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
+    }
+    return _cpu_frequency;
 #endif
 }
