@@ -79,7 +79,7 @@ void spi_init_pins(spi_t dev)
     const gpio_t spi1_pins =
         (1 << spi_config[dev].mosi) |
         (1 << spi_config[dev].miso) |
-        (1 << spi_config[dev].cs);
+        (1 << spi_config[dev].sclk);
 
     /* Enable I/O Function 0 */
     GPIO_REG(GPIO_IOF_EN)  |=  spi1_pins;
