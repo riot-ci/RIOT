@@ -146,7 +146,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 #ifdef MCU_ESP32
     /* UART1 and UART2 have configurable pins */
-    if (uart == UART_DEV(1) || uart == UART_DEV(2)) {
+    if ((UART_NUMOF > 0 && uart == UART_DEV(1)) ||
+        (UART_NUMOF > 1 && uart == UART_DEV(2))) {
 
         /* reset the pins when they were already used as UART pins */
         if (gpio_get_pin_usage(uart_config[uart].txd) == _UART) {
