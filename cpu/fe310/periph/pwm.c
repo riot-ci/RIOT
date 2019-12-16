@@ -63,7 +63,7 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     _REG32(pwm_config[dev].addr, PWM_CFG) = config;
 
     /* and return the actual configured frequency */
-    return CLOCK_CORECLOCK / (uint32_t)(1 << (scale + PWM_CMPWIDTH));
+    return cpu_freq() / (uint32_t)(1 << (scale + PWM_CMPWIDTH));
 }
 
 uint8_t pwm_channels(pwm_t dev)
@@ -77,7 +77,7 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
     assert((dev < PWM_NUMOF) && (channel < ARRAY_SIZE(pwm_config[dev].chan)));
 
     uint8_t scale = _REG32(pwm_config[dev].addr, PWM_CFG) & PWM_CFG_SCALE;
-    uint32_t freq = CLOCK_CORECLOCK / (uint32_t)(1 << (scale + PWM_CMPWIDTH)) ;
+    uint32_t freq = cpu_freq() / (uint32_t)(1 << (scale + PWM_CMPWIDTH)) ;
 
     uint32_t cmp_reg = PWM_CMP0 + (PWM_CMPSIZE * pwm_config[dev].chan[channel].cmp);
     _REG32(pwm_config[dev].addr, cmp_reg) = value * freq;
