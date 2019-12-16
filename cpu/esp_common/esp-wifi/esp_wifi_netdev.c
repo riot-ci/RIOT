@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     cpu_esp8266_esp_wifi
+ * @ingroup     cpu_esp_common_esp_wifi
  * @{
  *
  * @file
- * @brief       Network device driver for the ESP8266 WiFi interface
+ * @brief       Network device driver for the ESP SoCs WiFi interface
  *
  * @author      Gunar Schorcht <gunar@schorcht.net>
  */
@@ -22,9 +22,6 @@
 #include <assert.h>
 #include <errno.h>
 
-#include "net/gnrc/netif/ethernet.h"
-#include "net/gnrc/netif/raw.h"
-#include "net/gnrc.h"
 #include "net/ethernet.h"
 #include "net/netdev/eth.h"
 #include "od.h"
@@ -50,9 +47,6 @@
 #include "debug.h"
 #include "log.h"
 
-#define SYSTEM_EVENT_WIFI_RX_DONE    (SYSTEM_EVENT_MAX + 3)
-#define SYSTEM_EVENT_WIFI_TX_DONE    (SYSTEM_EVENT_MAX + 4)
-
 #define ESP_WIFI_DEBUG(f, ...) \
         DEBUG("[esp_wifi] %s: " f "\n", __func__, ## __VA_ARGS__)
 
@@ -77,7 +71,7 @@
 /**
  * The SDK interface of the WiFi module uses the lwIP `pbuf` structure for
  * packets sent to and received from the WiFi interface. For compatibility
- * reasons with the binary SDK libraries we need to incclude the SDK lwIP
+ * reasons with the binary SDK libraries we need to include the SDK lwIP
  * `pbuf` header here.
  *
  * To avoid compilation errors, we need to undefine all our pkg/lwIP settings
@@ -103,9 +97,6 @@
  */
 esp_wifi_netdev_t _esp_wifi_dev;
 static const netdev_driver_t _esp_wifi_driver;
-
-/* device thread stack */
-static char _esp_wifi_stack[ESP_WIFI_STACKSIZE];
 
 /** guard variable to avoid reentrance to _esp_wifi_send function */
 static bool _esp_wifi_send_is_in = false;
@@ -324,9 +315,8 @@ esp_err_t _esp_wifi_rx_cb(void *buffer, uint16_t len, void *eb)
     ESP_WIFI_DEBUG("buf=%p len=%d eb=%p", buffer, len, eb);
 
     /*
-     * The ring buffer uses a single byte for the pkt length, followed by the mac address,
-     * followed by the actual packet data. The MTU for ESP-NOW is 250 bytes, so len will never
-     * exceed the limits of a byte as the mac address length is not included.
+     * The ring buffer uses two bytes for the pkt length, followed by the
+     * actual packet data.
      */
     if (ringbuffer_get_free(&_esp_wifi_dev.rx_buf) < len + sizeof(uint16_t)) {
         ESP_WIFI_DEBUG("buffer full, dropping incoming packet of %d bytes", len);
@@ -435,7 +425,7 @@ static esp_err_t IRAM_ATTR _esp_system_event_handler(void *ctx, system_event_t *
             break;
 
         case SYSTEM_EVENT_STA_CONNECTED:
-            ESP_WIFI_LOG_INFO("connected to ssid %s, channel %d",
+            ESP_WIFI_LOG_INFO("WiFi connected to ssid %s, channel %d",
                               event->event_info.connected.ssid,
                               event->event_info.connected.channel);
 
@@ -456,7 +446,7 @@ static esp_err_t IRAM_ATTR _esp_system_event_handler(void *ctx, system_event_t *
             else if (reason <= REASON_HANDSHAKE_TIMEOUT) {
                 reason_str = _esp_wifi_disc_reasons[reason - INDEX_BEACON_TIMEOUT];
             }
-            ESP_WIFI_LOG_INFO("disconnected from ssid %s, reason %d (%s)",
+            ESP_WIFI_LOG_INFO("WiFi disconnected from ssid %s, reason %d (%s)",
                               event->event_info.disconnected.ssid,
                               event->event_info.disconnected.reason, reason_str);
 
@@ -757,7 +747,7 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
 
 #ifndef MODULE_ESP_NOW
     /* if module esp_now is used, the following part is already done */
-#if MCU_ESP32
+#ifdef MCU_ESP32
     extern portMUX_TYPE g_intr_lock_mux;
     mutex_init(&g_intr_lock_mux);
 #endif
@@ -822,22 +812,6 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
     dev->event_recv = 0;
     dev->event_conn = 0;
     dev->event_disc = 0;
-}
-
-void auto_init_esp_wifi (void)
-{
-    ESP_WIFI_DEBUG("initializing ESP WiFi device");
-
-    esp_wifi_setup(&_esp_wifi_dev);
-    _esp_wifi_dev.netif = gnrc_netif_ethernet_create(_esp_wifi_stack,
-                                                    ESP_WIFI_STACKSIZE,
-#ifdef MODULE_ESP_NOW
-                                                    ESP_WIFI_PRIO - 1,
-#else
-                                                    ESP_WIFI_PRIO,
-#endif
-                                                    "esp_wifi",
-                                                    (netdev_t *)&_esp_wifi_dev);
 }
 
 #endif /* MODULE_ESP_WIFI */
