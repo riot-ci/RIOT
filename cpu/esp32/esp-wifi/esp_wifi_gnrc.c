@@ -40,7 +40,7 @@ void auto_init_esp_wifi (void)
 #else
                                                 ESP_WIFI_PRIO,
 #endif
-                                                "esp-wifi",
+                                                "netif-esp-wifi",
                                                 (netdev_t *)&_esp_wifi_dev);
 }
 
