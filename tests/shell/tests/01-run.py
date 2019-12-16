@@ -63,6 +63,9 @@ def check_cmd(child, cmd, expected):
 
 
 def testfunc(child):
+    # wait for prompt
+    child.expect_exact('test_shell.\r\n>')
+
     # loop other defined commands and expected output
     for cmd, expected in CMDS:
         check_cmd(child, cmd, expected)
