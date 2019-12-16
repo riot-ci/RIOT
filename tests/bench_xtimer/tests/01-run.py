@@ -11,11 +11,11 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect_exact("xtimer benchmark application.")
+    child.expect_exact("xtimer benchmark application.\r\n")
     for i in range(12):
-        child.expect(r"\s+.+\s+\d+ / \d+ = \d+\r\n")
+        child.expect(r"\s+[\w() _\+]+\s+\d+ / \d+ = \d+\r\n")
 
-    child.expect_exact("done.")
+    child.expect_exact("done.\r\n")
 
 
 if __name__ == "__main__":
