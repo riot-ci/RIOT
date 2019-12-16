@@ -24,14 +24,17 @@
 #include "od.h"
 #include "net/af.h"
 #include "net/sock/udp.h"
-#if MODULE_LWIP_IPV6
-#include "net/ipv6.h"
-#else
-#include "net/ipv4.h"
-#endif
 #include "shell.h"
 #include "thread.h"
 #include "xtimer.h"
+
+#ifdef MODULE_LWIP_IPV6
+#include "net/ipv6.h"
+#define SOCK_IP_EP_ANY  SOCK_IPV6_EP_ANY
+#else
+#include "net/ipv4.h"
+#define SOCK_IP_EP_ANY  SOCK_IPV4_EP_ANY
+#endif
 
 #ifdef MODULE_SOCK_UDP
 static char sock_inbuf[SOCK_INBUF_SIZE];
@@ -42,11 +45,7 @@ static msg_t server_msg_queue[SERVER_MSG_QUEUE_SIZE];
 
 static void *_server_thread(void *args)
 {
-#if MODULE_LWIP_IPV6
-    sock_udp_ep_t server_addr = SOCK_IPV6_EP_ANY;
-#else
-    sock_udp_ep_t server_addr = SOCK_IPV4_EP_ANY;
-#endif
+    sock_udp_ep_t server_addr = SOCK_IP_EP_ANY;
     int res;
 
     msg_init_queue(server_msg_queue, SERVER_MSG_QUEUE_SIZE);
@@ -75,12 +74,13 @@ static void *_server_thread(void *args)
             char addrstr[IPV6_ADDR_MAX_STR_LEN];
 
             printf("Received UDP data from [%s]:%" PRIu16 ":\n",
-#if MODULE_LWIP_IPV6
+#ifdef MODULE_LWIP_IPV6
                    ipv6_addr_to_str(addrstr, (ipv6_addr_t *)&src.addr.ipv6,
+                                    sizeof(addrstr)), src.port);
 #else
                    ipv4_addr_to_str(addrstr, (ipv4_addr_t *)&src.addr.ipv4,
-#endif
                                     sizeof(addrstr)), src.port);
+#endif
             od_hex_dump(sock_inbuf, res, 0);
         }
     }
@@ -90,16 +90,12 @@ static void *_server_thread(void *args)
 static int udp_send(char *addr_str, char *port_str, char *data, unsigned int num,
                     unsigned int delay)
 {
-#if MODULE_LWIP_IPV6
-    sock_udp_ep_t dst = SOCK_IPV6_EP_ANY;
-#else
-    sock_udp_ep_t dst = SOCK_IPV4_EP_ANY;
-#endif
+    sock_udp_ep_t dst = SOCK_IP_EP_ANY;
     uint8_t byte_data[SHELL_DEFAULT_BUFSIZE / 2];
     size_t data_len;
 
     /* parse destination address */
-#if MODULE_LWIP_IPV6
+#ifdef MODULE_LWIP_IPV6
     if (ipv6_addr_from_str((ipv6_addr_t *)&dst.addr.ipv6, addr_str) == NULL) {
 #else
     if (ipv4_addr_from_str((ipv4_addr_t *)&dst.addr.ipv4, addr_str) == NULL) {
