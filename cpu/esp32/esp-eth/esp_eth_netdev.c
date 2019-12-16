@@ -406,7 +406,7 @@ void auto_init_esp_eth (void)
     _esp_eth_dev.netif = gnrc_netif_ethernet_create(_esp_eth_stack,
                                                    ESP_ETH_STACKSIZE,
                                                    ESP_ETH_PRIO,
-                                                   "netdev-esp-eth",
+                                                   "netif-esp-eth",
                                                    (netdev_t *)&_esp_eth_dev);
 }
 
