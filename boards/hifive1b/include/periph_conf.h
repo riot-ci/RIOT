@@ -19,6 +19,8 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
+#include "periph_cpu.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,18 +29,29 @@ extern "C" {
  * @name    Core Clock configuration
  * @{
  */
-/* As defined in boards/hifive1/board.c CPU_DESIRED_FREQ **/
-#define CLOCK_CORECLOCK             (200000000ul)
-/** @} */
+#define USE_CLOCK_HFXOSC_PLL        (1)
+#define USE_CLOCK_HFXOSC            (0)
 
-/**
- * @name    Xtimer configuration
- * @{
- */
-#define XTIMER_DEV                  (0)
-#define XTIMER_CHAN                 (0)
-#define XTIMER_WIDTH                (32)
-#define XTIMER_HZ                   (32768ul)
+#if USE_CLOCK_HFXOSC_PLL && USE_CLOCK_HFXOSC
+#error "Cannot use HFXOSC with HFXOSC_PLL"
+#endif
+
+#if USE_CLOCK_HFXOSC_PLL
+#define CLOCK_PLL_R                 (1)             /* Divide input clock by 2 */
+#define CLOCK_PLL_F                 (23)            /* Multiply REFR by 48, e.g 2 * (23 + 1) */
+#define CLOCK_PLL_Q                 (3)             /* Divide VCO by 8, e.g 2^3 */
+#define CLOCK_PLL_OUTDIV            (1)             /* Divide output PLL freq by 1 */
+#define CLOCK_PLL_INPUT_CLOCK       (16000000UL)
+#define CLOCK_PLL_REFR              (CLOCK_PLL_INPUT_CLOCK / (CLOCK_PLL_R + 1))
+#define CLOCK_PLL_VCO               (CLOCK_PLL_REFR * (2 * (CLOCK_PLL_F + 1)))
+#define CLOCK_PLL_OUT               (CLOCK_PLL_VCO / (1 << CLOCK_PLL_Q))
+#define CLOCK_CORECLOCK             (CLOCK_PLL_OUT / CLOCK_PLL_OUTDIV)
+#elif USE_CLOCK_HFXOSC
+#define CLOCK_CORECLOCK             (16000000UL)
+#else /* Use clock HFROSC, core clock cannot be computed from settings */
+#define CLOCK_HFROSC_TRIM           (6)             /* ~72000000Hz input freq */
+#define CLOCK_HFROSC_DIV            (1)             /* Divide by 2 */
+#endif
 /** @} */
 
 /**
@@ -47,6 +60,47 @@ extern "C" {
  * @{
  */
 #define TIMER_NUMOF                 (1)
+/** @} */
+
+/**
+ * @name   UART configuration
+ * @{
+ */
+static const uart_conf_t uart_config[] = {
+    {
+        .addr       = UART0_CTRL_ADDR,
+        .rx         = GPIO_PIN(0, 16),
+        .tx         = GPIO_PIN(0, 17),
+        .isr_num    = INT_UART0_BASE,
+    },
+    {
+        .addr       = UART1_CTRL_ADDR,
+        .rx         = GPIO_PIN(0, 18),
+        .tx         = GPIO_PIN(0, 23),
+        .isr_num    = INT_UART1_BASE,
+    },
+};
+
+
+#define UART_ISR_PRIO               (2)
+#define UART_NUMOF                  ARRAY_SIZE(uart_config)
+/** @} */
+
+/**
+ * @name    SPI device configuration
+ *
+ * @{
+ */
+static const spi_conf_t spi_config[] = {
+    {
+        .addr       = SPI1_CTRL_ADDR,
+        .mosi       = GPIO_PIN(0, 3), /* D11 */
+        .miso       = GPIO_PIN(0, 4), /* D12 */
+        .sclk       = GPIO_PIN(0, 5), /* D13 */
+    },
+};
+
+#define SPI_NUMOF                  ARRAY_SIZE(spi_config)
 /** @} */
 
 /**
@@ -74,16 +128,6 @@ extern "C" {
  * @{
  */
 #define PWM_NUMOF                   (3)
-/** @} */
-
-/**
- * @name    UART configuration
- *
- * @{
- */
-#define UART_NUMOF                  (2)
-#define UART0_RX_INTR_PRIORITY      (2)
-#define UART1_RX_INTR_PRIORITY      (2)
 /** @} */
 
 #ifdef __cplusplus
