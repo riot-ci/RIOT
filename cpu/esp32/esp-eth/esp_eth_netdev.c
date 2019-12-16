@@ -411,10 +411,10 @@ void auto_init_esp_eth(void)
 {
     esp_eth_setup(&_esp_eth_dev);
     _esp_eth_dev.netif = gnrc_netif_ethernet_create(_esp_eth_stack,
-                                                    ESP_ETH_STACKSIZE,
-                                                    ESP_ETH_PRIO,
-                                                    "esp_eth",
-                                                    (netdev_t *)&_esp_eth_dev);
+                                                   ESP_ETH_STACKSIZE,
+                                                   ESP_ETH_PRIO,
+                                                   "netif-esp-eth",
+                                                   (netdev_t *)&_esp_eth_dev);
 }
 
 #endif /* MODULE_ESP_ETH */
