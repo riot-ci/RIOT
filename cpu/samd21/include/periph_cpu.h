@@ -35,6 +35,11 @@ extern "C" {
 #define PM_BLOCKER_INITIAL  { .val_u32 = 0x00000001 }
 
 /**
+ * @brief   The ID of the 32kHz GCLK that will keep running in Deep Sleep
+ */
+#define SAM0_GCLK_32KHZ  (2)
+
+/**
  * @name   SAMD21 sleep modes for PM
  * @{
  */

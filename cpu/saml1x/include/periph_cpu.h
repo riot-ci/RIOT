@@ -33,6 +33,11 @@ extern "C" {
 #define PM_BLOCKER_INITIAL  { .val_u32 = 0x00000001 }
 
 /**
+ * @brief   The ID of the 32kHz GCLK that will keep running in Deep Sleep
+ */
+#define SAM0_GCLK_32KHZ  (1)
+
+/**
  * @brief   Mapping of pins to EXTI lines, -1 means not EXTI possible
  */
 static const int8_t exti_config[1][32] = {
