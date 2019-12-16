@@ -40,6 +40,7 @@ CONTROL_C = DLE+'\x03'
 CONTROL_D = DLE+'\x04'
 
 CMDS = (
+    (CONTROL_C, ('>')),
     ('start_test', ('[TEST_START]')),
     ('end_test', ('[TEST_END]')),
     ('\n', ('>')),
@@ -63,9 +64,6 @@ def check_cmd(child, cmd, expected):
 
 
 def testfunc(child):
-    # wait for prompt
-    child.expect_exact('test_shell.\r\n>')
-
     # loop other defined commands and expected output
     for cmd, expected in CMDS:
         check_cmd(child, cmd, expected)
