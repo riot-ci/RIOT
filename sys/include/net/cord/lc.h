@@ -27,7 +27,7 @@
  * - pre-parsed: result of the lookup is parsed and returned in a
  * @ref cord_lc_res_t or @ref cord_lc_ep_t depending on the type of the
  * lookup. The default `count` filter is set to `1` and `page` filter is
- * incremented after each succesful call and resets to `0` when lookup result
+ * incremented after each successful call and resets to `0` when lookup result
  * is empty. Use @ref cord_lc_res() or cord_lc_ep() for this mode.
  *
  * ## Limitations
@@ -35,7 +35,7 @@
  * Currently, this module cannot do more than a single request concurrently
  * and the request is fully synchronous. The client can only connects to one
  * RD server at a time. The client will disconnect when a connection to a new
- * RD server is made, regardless of whether the connection attempt is succesful
+ * RD server is made, regardless of whether the connection attempt is successful
  * or not.
  *
  * @{
