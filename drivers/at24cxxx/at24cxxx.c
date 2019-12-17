@@ -110,37 +110,22 @@ static int32_t _write(const at24cxxx_t *dev, uint16_t pos, const void *data,
 static int32_t _set(const at24cxxx_t *dev, uint16_t pos, uint8_t val,
                     size_t len)
 {
-    int check = 0;
-    size_t wr = 0;
-    size_t chunk_len;
+    size_t wr_total = len;
+    int32_t wr;
     uint8_t set_buffer[AT24CXXX_SET_BUF_SIZE];
 
     memset(set_buffer, val, sizeof(set_buffer));
-    while ((chunk_len = len - wr)) {
-        chunk_len = MIN(chunk_len, AT24CXXX_SET_BUF_SIZE);
-        chunk_len =
-            MIN(chunk_len,
-                AT24CXXX_PAGE_SIZE - MOD_POW2(pos, AT24CXXX_PAGE_SIZE));
-        uint8_t polls = AT24CXXX_MAX_POLLS;
-        while (-ENXIO == (check = i2c_write_regs(I2C_BUS, I2C_ADDR,
-                                                 pos, set_buffer,
-                                                 chunk_len,
-                                                 I2C_REG16))) {
-            if (--polls == 0) {
-                break;
-            }
-            xtimer_usleep(AT24CXXX_POLL_DELAY_US);
-        }
-        DEBUG("[at24cxxx] i2c_write_regs(): %d; polls: %d\n", check, polls);
-        if (!check) {
-            wr += chunk_len;
-            pos += chunk_len;
+    while (len) {
+        wr = _write(dev, pos, set_buffer, MIN(sizeof(set_buffer), len));
+        if (wr > 0) {
+            len -= wr;
+            pos += wr;
         }
         else {
             break;
         }
     }
-    return wr > 0 ? (int32_t)wr : check;
+    return wr < 0 ? wr : (int32_t)wr_total;
 }
 
 int at24cxxx_init(at24cxxx_t *dev, const at24cxxx_params_t *params)
