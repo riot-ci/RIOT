@@ -9,14 +9,34 @@
 /**
  * @defgroup    net_cord_lc CoRE RD Lookup Client
  * @ingroup     net_cord
- * @brief       Library for using RIOT as CoRE Resource Directory lookup client
+ * @brief       Library for using RIOT as CoRE Resource Directory (RD) lookup client
  *
  * This module implements a CoRE Resource Directory lookup client library, that
  * allows RIOT nodes to lookup resources, endpoints and groups with resource
  * directories.
  * It implements the standard lookup functionality as defined in
- * draft-ietf-core-resource-directory-20.
- * @see https://tools.ietf.org/html/draft-ietf-core-resource-directory-20
+ * draft-ietf-core-resource-directory-23.
+ * @see https://tools.ietf.org/html/draft-ietf-core-resource-directory-23
+ *
+ * ## Lookup modes
+ *
+ * The module defines two types of lookup for interacting with a RD server:
+ *
+ * - raw: result of the lookup is returned as is. No `page` or `count` filter
+ * is applied by default. Use @ref cord_lc_raw() for this mode.
+ * - pre-parsed: result of the lookup is parsed and returned in a
+ * @ref cord_lc_res_t or @ref cord_lc_ep_t depending on the type of the
+ * lookup. The default `count` filter is set to `1` and `page` filter is
+ * incremented after each succesful call and resets to `0` when lookup result
+ * is empty. Use @ref cord_lc_res() or cord_lc_ep() for this mode.
+ *
+ * ## Limitations
+ *
+ * Currently, this module cannot do more than a single request concurrently
+ * and the request is fully synchronous. The client can only connects to one
+ * RD server at a time. The client will disconnect when a connection to a new
+ * RD server is made, regardless of whether the connection attempt is succesful
+ * or not.
  *
  * @{
  *
