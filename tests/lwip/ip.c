@@ -70,11 +70,12 @@ static void *_server_thread(void *args)
         else {
             char addrstr[IPV6_ADDR_MAX_STR_LEN];
 
-            printf("Received IP data from [%s]:\n",
 #ifdef MODULE_LWIP_IPV6
+            printf("Received IP data from [%s]:\n",
                    ipv6_addr_to_str(addrstr, (ipv6_addr_t *)&src.addr.ipv6,
                                     sizeof(addrstr)));
 #else
+            printf("Received IP data from [%s]:\n",
                    ipv4_addr_to_str(addrstr, (ipv4_addr_t *)&src.addr.ipv4,
                                     sizeof(addrstr)));
 #endif

@@ -73,11 +73,12 @@ static void *_server_thread(void *args)
         else {
             char addrstr[IPV6_ADDR_MAX_STR_LEN];
 
-            printf("Received UDP data from [%s]:%" PRIu16 ":\n",
 #ifdef MODULE_LWIP_IPV6
+            printf("Received UDP data from [%s]:%" PRIu16 ":\n",
                    ipv6_addr_to_str(addrstr, (ipv6_addr_t *)&src.addr.ipv6,
                                     sizeof(addrstr)), src.port);
 #else
+            printf("Received UDP data from [%s]:%" PRIu16 ":\n",
                    ipv4_addr_to_str(addrstr, (ipv4_addr_t *)&src.addr.ipv4,
                                     sizeof(addrstr)), src.port);
 #endif
