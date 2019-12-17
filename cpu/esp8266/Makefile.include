@@ -9,11 +9,11 @@ ESP_SDK_DIR = $(ESP8266_RTOS_SDK_DIR)
 
 # TODO should be -Os
 # With -Os char arrays have not to be 32-bit word aligned. This leads to
-# an alignment exception when the address of an char array is assigned to
+# an alignment exception when the address of a char array is assigned to
 # an uint32_t pointer and the pointer is used for the access.
 CFLAGS_OPT ?= -O2
 
-# ESP8266 specific flashing optoins
+# ESP8266 specific flashing options
 FLASH_CHIP  = esp8266
 FLASH_OPTS  = --version 3
 FLASH_MODE  = dout  # DO NOT CHANGE, ESP8266/ESP8285 modules only work with dout
