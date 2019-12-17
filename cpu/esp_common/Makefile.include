@@ -106,7 +106,7 @@ ifneq (,$(filter lwip,$(USEMODULE)))
   CFLAGS += -DTCPIP_THREAD_PRIO=5
 endif
 
-# if SPI RAM is enabled, the ESP-IDF heap and quot flash mode have to be used
+# if SPI RAM is enabled, the qout flash mode has to be used
 ifneq (,$(filter esp_spi_ram,$(USEMODULE)))
   export FLASH_MODE = qout
   CFLAGS += -DFLASH_MODE_QOUT=1
