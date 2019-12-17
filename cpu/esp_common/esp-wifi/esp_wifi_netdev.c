@@ -74,7 +74,7 @@
 /**
  * The SDK interface of the WiFi module uses the lwIP `pbuf` structure for
  * packets sent to and received from the WiFi interface. For compatibility
- * reasons with the binary SDK libraries we need to incclude the SDK lwIP
+ * reasons with the binary SDK libraries we need to include the SDK lwIP
  * `pbuf` header here.
  *
  * To avoid compilation errors, we need to undefine all our pkg/lwIP settings
