@@ -29,9 +29,11 @@
 #define SYS_SELECT_H
 
 #include <string.h>
+#ifdef MODULE_NEWLIB    /* prevent cyclic dependency with newlib's `sys/types.h` */
+#include <sys/_timeval.h>
+#else
 #include <sys/time.h>
-#include <sys/types.h>
-#include <time.h>
+#endif
 
 #include "bitfield.h"
 
