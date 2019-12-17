@@ -11,6 +11,10 @@
 #ifndef NET_SOCK_ASYNC_TYPES_H
 #define NET_SOCK_ASYNC_TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(SOCK_HAS_ASYNC) || defined(DOXYGEN)
 /**
  * @brief   Flag types to signify asynchronous sock events
@@ -134,4 +138,9 @@ typedef void (*sock_udp_cb_t)(sock_udp_t *sock, sock_async_flags_t type);
 #endif
 #endif  /* defined(SOCK_HAS_ASYNC) || defined(DOXYGEN) */
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* NET_SOCK_ASYNC_TYPES_H */
+/** @} */
