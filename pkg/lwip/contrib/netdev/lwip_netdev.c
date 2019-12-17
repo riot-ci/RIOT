@@ -17,7 +17,7 @@
 #include <sys/uio.h>
 #include <inttypes.h>
 
-#if MODULE_LWIP_DHCP
+#if MODULE_LWIP_DHCP_AUTO
 #include "lwip/dhcp.h"
 #endif
 #include "lwip/err.h"
@@ -285,7 +285,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 }
                 break;
             }
-#ifdef MODULE_LWIP_DHCP
+#ifdef MODULE_LWIP_DHCP_AUTO
             case NETDEV_EVENT_LINK_UP: {
                 dhcp_start(netif);
                 break;
