@@ -32,7 +32,7 @@ extern "C" {
 /**
  * @brief   Indicates the interrupt nesting depth
  *
- * The variable is increment on entry into and decremented on exit from an ISR.
+ * The variable is incremented on entry into and decremented on exit from an ISR.
  */
 extern volatile uint32_t irq_interrupt_nesting;
 
