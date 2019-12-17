@@ -45,8 +45,8 @@ static inline void posix_socket_select(int fd)
 }
 #endif  /* IS_USED(MODULE_POSIX_SOCKETS) */
 
-int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
-           fd_set *restrict errorfds, struct timeval *restrict timeout)
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
+           struct timeval *timeout)
 {
     fd_set ret_readfds;
     xtimer_t timeout_timer;

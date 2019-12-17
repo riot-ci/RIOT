@@ -153,8 +153,8 @@ static inline void FD_ZERO(fd_set *fdsetp)
  * @return  number of members added to the file descriptor sets on success.
  * @return  -1 on error, `errno` is set to indicate the error.
  */
-int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
-           fd_set *restrict errorfds, struct timeval *restrict timeout);
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
+           struct timeval *timeout);
 
 #ifdef __cplusplus
 }
