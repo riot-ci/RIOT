@@ -7,7 +7,7 @@ endif
 
 ESP_SDK_DIR = $(ESP32_SDK_DIR)
 
-# ESP32 specific flashing optoins
+# ESP32 specific flashing options
 FLASH_CHIP  = esp32
 FLASH_MODE ?= dout
 FLASH_FREQ  = 40m   # DO NOT CHANGE
@@ -22,7 +22,7 @@ ifneq (,$(filter cpp,$(FEATURES_USED)))
 endif
 
 ifneq (,$(filter esp_now esp_wifi esp_spi_ram,$(USEMODULE)))
-  # if any WiFi interface or SPI RAM is used, the ESP-IDF heap has to be used 
+  # the ESP-IDF heap has to be used if any WiFi interface or SPI RAM is used
   USEMODULE += esp_idf_heap
 endif
 
