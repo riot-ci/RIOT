@@ -48,11 +48,12 @@ static inline void posix_socket_select(int fd)
 int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
            fd_set *restrict errorfds, struct timeval *restrict timeout)
 {
-    fd_set ret_readfds = { .fds = { 0U } };
+    fd_set ret_readfds;
     xtimer_t timeout_timer;
     int fds_set = 0;
     bool wait = true;
 
+    FD_ZERO(&ret_readfds);
     /* TODO ignored for now since there is no point for them with sockets */
     if (timeout != NULL) {
         uint64_t t = ((uint64_t)(timeout->tv_sec * US_PER_SEC) +

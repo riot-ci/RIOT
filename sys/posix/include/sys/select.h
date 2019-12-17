@@ -29,13 +29,18 @@
 #define SYS_SELECT_H
 
 #include <string.h>
-#ifdef MODULE_NEWLIB    /* prevent cyclic dependency with newlib's `sys/types.h` */
+/* prevent cyclic dependency with newlib's `sys/types.h` */
+#if defined(MODULE_NEWLIB) && !defined(CPU_ESP32) && !defined(CPU_ESP8266)
 #include <sys/_timeval.h>
 #else
 #include <sys/time.h>
 #endif
 
 #include "bitfield.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @addtogroup  config_posix
@@ -55,6 +60,8 @@
 
 #define POSIX_SELECT_THREAD_FLAG    (1U << 3)
 
+/* ESP's newlib has this already defined in `sys/types.h` */
+#if !defined(CPU_ESP32) && !defined(CPU_ESP8266)
 /**
  * @brief   Maximum number of file descriptors in an `fd_set` structure.
  *
@@ -116,6 +123,7 @@ static inline void FD_ZERO(fd_set *fdsetp)
 {
     memset(fdsetp->fds, 0, sizeof(fdsetp->fds));
 }
+#endif /* !defined(CPU_ESP32) && !defined(CPU_ESP8266) */
 
 /**
  * @brief   Examines the given file descriptor sets if they are ready for their
@@ -148,4 +156,9 @@ static inline void FD_ZERO(fd_set *fdsetp)
 int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
            fd_set *restrict errorfds, struct timeval *restrict timeout);
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* SYS_SELECT_H */
+/** @} */
