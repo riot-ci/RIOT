@@ -6,7 +6,7 @@ ifneq (0, $(LWIP_IPV4))
   USEMODULE += ipv4_addr
   USEMODULE += lwip_arp
   USEMODULE += lwip_ipv4
-  USEMODULE += lwip_dhcp
+  USEMODULE += lwip_dhcp_auto
   CFLAGS += -DETHARP_SUPPORT_STATIC_ENTRIES=1
   LWIP_IPV6 ?= 0
 else
