@@ -116,15 +116,15 @@ static void _on_lookup(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
         unsigned ct = coap_get_content_type(pdu);
         if (ct != COAP_FORMAT_LINK) {
             DEBUG("cord_lc: unsupported content format\n");
-            goto end;
+            thread_flags_set((thread_t *)_waiter, flag);
         }
         if (pdu->payload_len == 0) {
             flag = FLAG_NORSC;
-            goto end;
+            thread_flags_set((thread_t *)_waiter, flag);
         }
         if (pdu->payload_len >= _result_buf_len) {
             flag = FLAG_OVERFLOW;
-            goto end;
+            thread_flags_set((thread_t *)_waiter, flag);
         }
         memcpy(_result_buf, pdu->payload, pdu->payload_len);
         memset(_result_buf + pdu->payload_len, 0,
@@ -135,7 +135,6 @@ static void _on_lookup(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
         flag = FLAG_TIMEOUT;
     }
 
-end:
     thread_flags_set((thread_t *)_waiter, flag);
 }
 
@@ -191,9 +190,8 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
 
     res = gcoap_req_init(&pkt, buf, sizeof(buf), COAP_METHOD_GET, lookif);
     if (res < 0) {
-        retval = CORD_LC_ERR;
         DEBUG("cord_lc: failed gcoap_req_init()\n");
-        goto end;
+        return CORD_LC_ERR;
     }
 
     /* save pointer to result */
@@ -216,16 +214,13 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
 
     pkt_len = gcoap_finish(&pkt, 0, COAP_FORMAT_NONE);
     if (pkt_len < 0) {
-        retval = CORD_LC_ERR;
-        goto end;
+        return CORD_LC_ERR;
     }
     res = gcoap_req_send(buf, pkt_len, rd->remote, _on_lookup, NULL);
     if (res < 0) {
-        retval = CORD_LC_ERR;
-        goto end;
+        return CORD_LC_ERR;
     }
     retval = _sync();
-end:
     return (retval == CORD_LC_OK) ? (int)_result_buf_len : retval;
 }
 
