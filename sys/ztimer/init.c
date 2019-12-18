@@ -122,7 +122,7 @@ ztimer_clock_t *const ZTIMER_MSEC = &_ztimer_convert_frac_msec.super.super;
 #      define ZTIMER_MSEC_CONVERT_LOWER_FREQ    1000000LU
 #    endif
 #  else
-#  error No suitable ZTIMER_MSEC config. Maybe add USEMODULE += ZTIMER_USEC?
+#  error No suitable ZTIMER_MSEC config. Maybe add USEMODULE += ztimer_usec?
 #  endif
 #endif
 
