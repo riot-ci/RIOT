@@ -75,6 +75,13 @@ void ztimer_set(ztimer_clock_t *ztimer, ztimer_t *entry, uint32_t val)
         _del_entry_from_list(ztimer, &entry->base);
     }
 
+    /* optionally subtract a configurable adjustment value */
+    if (val > ztimer->adjust) {
+        val -= ztimer->adjust;
+    } else {
+        val = 0;
+    }
+
     entry->base.offset = val;
     _add_entry_to_list(ztimer, &entry->base);
     if (ztimer->list.next == &entry->base) {
@@ -139,8 +146,9 @@ uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer)
     ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
     ztimer->lower_last = lower_now;
     DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
+    uint32_t now = ztimer->checkpoint;
     irq_restore(state);
-    return ztimer->checkpoint;
+    return now;
 }
 
 void ztimer_update_head_offset(ztimer_clock_t *ztimer)
