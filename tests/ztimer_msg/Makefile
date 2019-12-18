@@ -1,8 +1,7 @@
 include ../Makefile.tests_common
 
-USEMODULE += ztimer ztimer_periph ztimer_usec #ztimer_msec
-#USEMODULE += ztimer_rtt
-USEMODULE += ztimer_convert_frac
+USEMODULE += ztimer_usec
+#USEMODULE += ztimer_msec ztimer_rtt
 
 TEST_ON_CI_WHITELIST += all
 
