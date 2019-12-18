@@ -160,6 +160,9 @@ endif
 ifneq (,$(filter netif,$(USEMODULE)))
     DIRS += net/netif
 endif
+ifneq (,$(filter ztimer_core,$(USEMODULE)))
+    DIRS += ztimer
+endif
 
 DIRS += $(dir $(wildcard $(addsuffix /Makefile, $(filter-out $(FILTER), $(USEMODULE)))))
 
