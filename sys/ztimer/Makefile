@@ -1,4 +1,5 @@
-SRC := core.c util.c init.c
+MODULE := ztimer_core
+SRC := core.c util.c
 
 # enable submodules
 SUBMODULES := 1
