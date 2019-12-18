@@ -42,7 +42,7 @@
 #include "ztimer/periph.h"
 #include "ztimer/rtt.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 #define WIDTH_TO_MAXVAL(width)  (0xffffffff >> (32 - width))
