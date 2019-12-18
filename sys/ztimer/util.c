@@ -46,11 +46,12 @@ void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration)
         return;
     }
 */
-    ztimer_t timer;
     mutex_t mutex = MUTEX_INIT_LOCKED;
 
-    timer.callback = _callback_unlock_mutex;
-    timer.arg = (void*) &mutex;
+    ztimer_t timer = {
+        .callback = _callback_unlock_mutex,
+        .arg = (void*) &mutex,
+    };
 
     ztimer_set(ztimer, &timer, duration);
     mutex_lock(&mutex);
