@@ -89,7 +89,7 @@ ztimer_clock_t *const ZTIMER_USEC = &_ztimer_periph_usec.super;
 #    elif CONFIG_ZTIMER_USEC_FREQ == 250000LU
 static ztimer_convert_shift_t _ztimer_convert_shift_usec;
 ztimer_clock_t *const ZTIMER_USEC = &_ztimer_convert_shift_usec.super.super;
-#    elif
+#    else
 static ztimer_convert_frac_t _ztimer_convert_frac_usec;
 ztimer_clock_t *const ZTIMER_USEC = &_ztimer_convert_frac_usec.super.super;
 #  define ZTIMER_USEC_CONVERT_LOWER (&_ztimer_periph_usec.super)
