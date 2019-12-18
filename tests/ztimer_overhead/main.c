@@ -23,27 +23,23 @@
 #include <inttypes.h>
 
 #include "ztimer.h"
-#include "ztimer/periph.h"
 
 #define BASE    1000
 #define SAMPLES 1024
 
-static ztimer_periph_t _ztimer_periph;
-
 int main(void)
 {
-    ztimer_periph_init(&_ztimer_periph, 0, 1000000LU, 0xffffffff);
-    _ztimer_periph.min = 10;
-    _ztimer_periph.adjust = 0;
-
     uint32_t total = 0;
 
     uint16_t min = 0xFFFF;
     uint16_t max = 0;
 
+    /* unset configured adjustment */
+    /* ZTIMER_USEC->adjust = 0; */
+
     unsigned n = SAMPLES;
     while (n--) {
-        unsigned overhead = ztimer_overhead(&_ztimer_periph.super, BASE);
+        unsigned overhead = ztimer_overhead(ZTIMER_USEC, BASE);
         total += overhead;
         if (overhead < min) {
             min = overhead;
