@@ -261,14 +261,15 @@ typedef struct {
  * @brief   ztimer device structure
  */
 struct ztimer_clock {
-    ztimer_base_t list;         /**< list of active timers */
-    const ztimer_ops_t *ops;    /**< pointer to methods structure */
-    ztimer_base_t *last;        /**< last timer in queue, for _is_set() */
+    ztimer_base_t list;             /**< list of active timers              */
+    const ztimer_ops_t *ops;        /**< pointer to methods structure       */
+    ztimer_base_t *last;            /**< last timer in queue, for _is_set() */
+    uint32_t adjust;                /**< will be subtracted on every set()  */
 #if MODULE_ZTIMER_EXTEND || DOXYGEN
-    /* values used for checkpointed intervals */
-    uint32_t max_value;         /**< maximum relative timer value */
-    uint32_t checkpoint;        /**< cumulated time at last now() call */
-    uint32_t lower_last;        /**< timer value at last now() call */
+    /* values used for checkpointed intervals and 32bit extension */
+    uint32_t max_value;             /**< maximum relative timer value       */
+    volatile uint32_t checkpoint;   /**< cumulated time at last now() call  */
+    volatile uint32_t lower_last;   /**< timer value at last now() call     */
 #endif
 };
 
