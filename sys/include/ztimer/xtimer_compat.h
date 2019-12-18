@@ -116,6 +116,11 @@ static inline void xtimer_now_timex(timex_t *out)
     out->microseconds = now - (out->seconds * US_PER_SEC);
 }
 
+static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout)
+{
+    return ztimer_msg_receive_timeout(ZTIMER_USEC, msg, timeout);
+}
+
 /*
    static inline void xtimer_set64(xtimer_t *timer, uint64_t offset_us);
    static inline void xtimer_tsleep32(xtimer_ticks32_t ticks);
@@ -147,7 +152,6 @@ static inline void xtimer_now_timex(timex_t *out)
  #if defined(MODULE_CORE_MSG) || defined(DOXYGEN)
    static inline void xtimer_set_msg64(xtimer_t *timer, uint64_t offset,
                                     msg_t *msg, kernel_pid_t target_pid);
-   static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout);
    static inline int xtimer_msg_receive_timeout64(msg_t *msg, uint64_t timeout);
  #endif
  */
