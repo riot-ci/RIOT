@@ -1,0 +1,11 @@
+INCLUDES += -I$(PKGDIRBASE)/cryptoauthlib
+INCLUDES += -I$(PKGDIRBASE)/cryptoauthlib/lib 
+INCLUDES += -I$(PKGDIRBASE)/cryptoauthlib/app
+INCLUDES += -I$(RIOTPKG)/cryptoauthlib/include
+
+DIRS += $(RIOTPKG)/cryptoauthlib/contrib
+
+# wenn test_global als USEMODULE definiert ist, add Testfolder zum Pfad --> im Testfolder liegen die Verweise auf Test-Subfolder
+ifneq (,$(filter cryptoauthlib_test_global,$(USEMODULE)))
+    DIRS += $(PKGDIRBASE)/cryptoauthlib/test
+endif

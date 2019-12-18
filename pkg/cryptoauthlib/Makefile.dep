@@ -1,0 +1,3 @@
+ifneq (,$(filter cryptoauthlib,$(USEPKG)))
+  USEMODULE += cryptoauthlib_contrib
+endif

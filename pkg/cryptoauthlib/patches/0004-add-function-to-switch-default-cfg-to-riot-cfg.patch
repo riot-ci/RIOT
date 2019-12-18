@@ -1,0 +1,40 @@
+From 375b3e43506f42d318e20d3b4be40a51bab00af1 Mon Sep 17 00:00:00 2001
+From: Lena Boeckmann <einhornhool@mobi31.inet.haw-hamburg.de>
+Date: Wed, 18 Dec 2019 11:15:38 +0100
+Subject: [PATCH 4/4] add function to switch default cfg to riot cfg
+
+---
+ test/cmd-processor.c | 4 ++++
+ test/cmd-processor.h | 1 +
+ 2 files changed, 5 insertions(+)
+
+diff --git a/test/cmd-processor.c b/test/cmd-processor.c
+index 885514c..a5032e7 100644
+--- a/test/cmd-processor.c
++++ b/test/cmd-processor.c
+@@ -945,6 +945,10 @@ static ATCA_STATUS set_test_config(ATCADeviceType deviceType)
+     gCfg->atcai2c.bus = 1;
+     #endif
+ 
++    #ifdef MODULE_CRYPTOAUTHLIB_TEST
++    riot_switch_cfg(gCfg);
++    #endif
++
+     return ATCA_SUCCESS;
+ }
+ 
+diff --git a/test/cmd-processor.h b/test/cmd-processor.h
+index a8af58a..fe51b6a 100644
+--- a/test/cmd-processor.h
++++ b/test/cmd-processor.h
+@@ -52,6 +52,7 @@ typedef struct
+     fp_menu_handler fp_handler;
+ }t_menu_info;
+ 
++void riot_switch_cfg(ATCAIfaceCfg*);
+ 
+ int run_tests(int test);
+ 
+-- 
+2.23.0
+

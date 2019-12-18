@@ -1,0 +1,25 @@
+From 9b8457d4f7c351394241739cfd7febf0db59f321 Mon Sep 17 00:00:00 2001
+From: Lena Boeckmann <einhornhool@mobi31.inet.haw-hamburg.de>
+Date: Mon, 4 Nov 2019 13:34:57 +0100
+Subject: [PATCH 1/3] set cflags and correct commands
+
+---
+ lib/CMakeLists.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index b15ec66..6973a3c 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -123,7 +124,7 @@ if(ATCA_PRINTF)
+ add_definitions(-DATCAPRINTF)
+ endif(ATCA_PRINTF)
+ 
+-include_directories(cryptoauth PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ../third_party/hidapi/hidapi ${USB_INCLUDE_DIR})
++target_include_directories(cryptoauth PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ../third_party/hidapi/hidapi ${USB_INCLUDE_DIR})
+ 
+ if(WIN32)
+ set_target_properties(cryptoauth PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
+-- 
+2.21.0
+
