@@ -37,6 +37,7 @@
 #include "board.h"
 #include "ztimer.h"
 #include "ztimer/convert_frac.h"
+#include "ztimer/convert_shift.h"
 #include "ztimer/convert_muldiv64.h"
 #include "ztimer/periph.h"
 #include "ztimer/rtt.h"
@@ -85,7 +86,10 @@
 static ztimer_periph_t _ztimer_periph_usec = { .min = CONFIG_ZTIMER_USEC_MIN };
 #    if CONFIG_ZTIMER_USEC_FREQ == 1000000LU
 ztimer_clock_t *const ZTIMER_USEC = &_ztimer_periph_usec.super;
-#    else
+#    elif CONFIG_ZTIMER_USEC_FREQ == 250000LU
+static ztimer_convert_shift_t _ztimer_convert_shift_usec;
+ztimer_clock_t *const ZTIMER_USEC = &_ztimer_convert_shift_usec.super.super;
+#    elif
 static ztimer_convert_frac_t _ztimer_convert_frac_usec;
 ztimer_clock_t *const ZTIMER_USEC = &_ztimer_convert_frac_usec.super.super;
 #  define ZTIMER_USEC_CONVERT_LOWER (&_ztimer_periph_usec.super)
@@ -135,10 +139,16 @@ void ztimer_init(void)
                        WIDTH_TO_MAXVAL(CONFIG_ZTIMER_USEC_WIDTH));
 #  endif
 #  if CONFIG_ZTIMER_USEC_FREQ != 1000000LU
+#    if CONFIG_ZTIMER_USEC_FREQ == 250000LU
+    DEBUG("ztimer_init(): ZTIMER_USEC convert_shift %lu to 1000000\n",
+            CONFIG_ZTIMER_USEC_FREQ);
+    ztimer_convert_shift_up_init(&_ztimer_convert_shift_usec, &_ztimer_periph_usec.super, 2);
+#    else
     DEBUG("ztimer_init(): ZTIMER_USEC convert_frac %lu to 1000000\n",
             CONFIG_ZTIMER_USEC_FREQ);
     ztimer_convert_frac_init(&_ztimer_convert_frac_usec, &_ztimer_periph_usec.super,
             1000000lu, CONFIG_ZTIMER_USEC_FREQ);
+#    endif
 #  endif
 #endif
 
