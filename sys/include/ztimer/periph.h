@@ -40,8 +40,7 @@ extern "C" {
 typedef struct {
     ztimer_clock_t super;   /*<< super class            */
     tim_t dev;              /*<< periph timer device    */
-    uint16_t adjust;        /*<< optional trim value    */
-    uint16_t min   ;        /*<< optional minimum value */
+    uint16_t min;           /*<< optional minimum value */
 } ztimer_periph_t;
 
 /**
