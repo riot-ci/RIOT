@@ -620,4 +620,14 @@ void auto_init(void)
     test_utils_interactive_sync();
 #endif
 #endif /* MODULE_TEST_UTILS_INTERACTIVE_SYNC */
+
+#ifdef MODULE_AUTO_INIT_SECURITY
+
+#ifdef MODULE_CRYPTOAUTHLIB
+    extern void auto_init_atca(void);
+    auto_init_atca();
+#endif /* MODULE_CRYPTOAUTHLIB */
+
+#endif /* MODULE_AUTO_INIT_SECURITY */
+
 }
