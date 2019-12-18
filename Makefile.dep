@@ -1032,7 +1032,7 @@ ifneq (,$(filter ztimer_convert_frac,$(USEMODULE)))
 endif
 
 ifneq (,$(filter ztimer,$(USEMODULE)))
-  # this is the default module for ztimer
+  USEMODULE += ztimer_auto_init
   USEMODULE += ztimer_core
   USEMODULE += ztimer_convert_frac
   USEMODULE += ztimer_convert_shift
