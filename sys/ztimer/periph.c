@@ -25,13 +25,8 @@ static void _ztimer_periph_set(ztimer_clock_t *ztimer, uint32_t val)
 {
     ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)ztimer;
 
-    uint16_t adjust = ztimer_periph->adjust;
-
-    if (val > adjust) {
-        val -= adjust;
-    }
-
     uint16_t min = ztimer_periph->min;
+
     if (val < min) {
         val = min;
     }
