@@ -24,6 +24,9 @@ endif
 term-delay:
 	sleep $(TERM_DELAY)
 
+TESTRUNNER_CONNECT_DELAY ?= 2
+$(call target-export-variables,test,TESTRUNNER_CONNECT_DELAY)
+
 USB_VID ?= 1209
 USB_PID ?= 0001
 
