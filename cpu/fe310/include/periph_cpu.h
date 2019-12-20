@@ -63,7 +63,7 @@ typedef struct {
 /**
  * @brief   UART interrupt priority
  */
-#define UART_ISR_PRIO               (2)
+#define UART_ISR_PRIO       (2)
 
 /**
  * @brief   Prevent shared timer functions from being used
