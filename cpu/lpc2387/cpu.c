@@ -148,7 +148,7 @@ bool cpu_backup_ram_is_initialized(void)
     /* Only in case when a reset occurs and the POR = 0, the BODR bit
      * indicates if the V_DD (3V3) voltage was below 2.6 V or not.
      */
-    if (RSIR & (RSIR_BODR | RSIR_POR)) {
+    if ((RSIR & (RSIR_BODR | RSIR_POR)) == (RSIR_BODR | RSIR_POR)) {
         RSIR |= RSIR_BODR;
     }
 
