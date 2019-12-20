@@ -6,7 +6,7 @@ BOARDSDIR ?= $(or $(RIOTBASE),$(CURDIR))/boards
 #   use 'wildcard */.' to only list directories
 _get_boards_in_directory = $(filter-out common,$(patsubst $1/%/.,%,$(wildcard $1/*/.)))
 
-# If BOARDSDIR is not inRIOTBOARD also list BOARDS in RIOTBOARD
+# If BOARDSDIR is not in RIOTBOARD also list BOARDS in RIOTBOARD
 ifneq ($(RIOTBOARD),$(BOARDSDIR))
   ALLBOARDS_RIOTBOARD ?= $(call _get_boards_in_directory,$(RIOTBOARD))
 endif
