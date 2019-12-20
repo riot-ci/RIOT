@@ -97,13 +97,13 @@ BOARDSDIR               := $(abspath $(BOARDSDIR))
 
 # Include Board and CPU configuration, if BOARD is not found in BOARDSDIR
 # e.g. when set by the environment fallback to searching in RIOTBOARD
-ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)))
+ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
   ifneq ($(RIOTBOARD),$(BOARDSDIR))
     # The specified board $(BOARD) was not found in $(BOARDSDIR) fallback to RIOTBOARD)
     BOARDSDIR = $(RIOTBOARD)
   endif
   ifeq ($(RIOTBOARD),$(BOARDSDIR))
-    ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)))
+    ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
       $(error The specified board $(BOARD) does not exist.)
     endif
   endif
