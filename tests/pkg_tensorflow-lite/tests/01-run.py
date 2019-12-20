@@ -5,7 +5,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    pass
+    child.expect_exact("Digit prediction: 7")
 
 
 if __name__ == "__main__":
