@@ -3,6 +3,3 @@
 set rules {
   L004
 }
-set parameter {
-  max-line-length=80
-}
