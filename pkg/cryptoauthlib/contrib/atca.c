@@ -62,15 +62,12 @@ ATCA_STATUS hal_i2c_post_init(ATCAIface iface)
 ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t *txdata, int txlength)
 {
     ATCAIfaceCfg *cfg = atgetifacecfg(iface);
-    
     int ret = -1; 
+    int txlength_updated = txlength + 1;
     
     /* First byte in command packages is reserved for hal use as needed
     We use it for the word address */
     txdata[0] = ATCA_DATA_ADR;
-
-    /* reserved byte isn't included in txlength, yet, so we add 1 */
-    int txlength_updated = txlength + 1;
 
     /* slave address needs to be shifted by 1 to ignore lsb (rw bit) */
     ret = i2c_write_bytes(cfg->atcai2c.bus, (cfg->atcai2c.slave_address >> 1), txdata, txlength_updated, 0); 
@@ -85,24 +82,24 @@ ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t *txdata, int txlength)
 ATCA_STATUS hal_i2c_receive(ATCAIface iface, uint8_t *rxdata, uint16_t *rxlength)
 {
     ATCAIfaceCfg *cfg = atgetifacecfg(iface);
-
     uint8_t retries = cfg->rx_retries;
     int ret = -1;
-
-    uint8_t length_package[1] = { 0 };
+    uint8_t length_package = 0;
+    uint8_t bytes_to_read;
 
     /* read first byte (size of output data) and store it in variable length_package
     to check if output will fit into rxdata */
     while (retries-- > 0 && ret != 0)
     {
-        ret = i2c_read_byte(cfg->atcai2c.bus, (cfg->atcai2c.slave_address >> 1), length_package, 0);
+        ret = i2c_read_byte(cfg->atcai2c.bus, (cfg->atcai2c.slave_address >> 1), 
+        &length_package, 0);
     }
     if (ret != 0)
     {
         return ATCA_RX_TIMEOUT;
     }
 
-    uint8_t bytes_to_read = length_package[0]-1;
+    bytes_to_read = length_package-1;
 
     if (bytes_to_read > *rxlength)
     {
