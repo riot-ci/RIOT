@@ -37,6 +37,9 @@ extern "C" {
  * @{
  */
 
+#ifndef ATCA_GPIO_WAKE
+#define ATCA_GPIO_WAKE (GPIO_PIN(0, 16))     /**< Default GPIO pin for wake function. Must be the same as SDA pin of I2C device. The wake function drives the SDA pin low for some time, then reinitializes it to wake up the device. */
+#endif
 
 #ifndef ATCA_PARAM_I2C
 #define ATCA_PARAM_I2C           I2C_DEV(0)

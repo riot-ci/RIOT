@@ -24,13 +24,7 @@ extern "C" {
 #endif
 
 /* For ATECC508A*/
-#ifndef ATCA_I2C_ADR
-#define ATCA_I2C_ADR (0xC0)    /**< Default device adress is 0xC0. We need to shift it by 1, to ignore lsb (rw bit) */
-#endif
-
-#ifndef ATCA_GPIO_WAKE
-#define ATCA_GPIO_WAKE (GPIO_PIN(0, 16))     /**< Default GPIO pin to map SDA for wake function */
-#endif
+#define ATCA_I2C_ADR (0xC0)    /**< Default device adress is 0xC0 */
 
 #define ATCA_DATA_ADR   (0x03)            /**< Word Address to read and write to data area */
 
