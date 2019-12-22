@@ -35,7 +35,7 @@ define board_unsatisfied_features
 
   # Replicate Makefile.include handling that sets BOARDSDIR to RIOTBOAR
   # when BOARD is not found in BOARDSDIR
-  ifeq (,$(wildcard $(BOARDSDIR_GLOBAL)/$(BOARD)))
+  ifeq (,$(wildcard $(BOARDSDIR_GLOBAL)/$(BOARD)/.))
     BOARDSDIR = $(RIOTBOARD)
   endif
 
