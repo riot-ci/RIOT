@@ -307,7 +307,7 @@ static int _reg_read(const itg320x_t *dev, uint8_t reg, uint8_t *data, uint16_t 
     DEBUG_DEV("read %d bytes from reg 0x%02x", dev, len, reg);
 
     if (i2c_acquire(dev->params.dev) != 0) {
-        DEBUG_DEV("could not aquire the I2C bus", dev);
+        DEBUG_DEV("could not acquire the I2C bus", dev);
         return ITG320X_ERROR_I2C;
     }
 
@@ -340,7 +340,7 @@ static int _reg_write(const itg320x_t *dev, uint8_t reg, uint8_t data)
     DEBUG_DEV("write 1 byte to reg 0x%02x: 0x%02x", dev, reg, data);
 
     if (i2c_acquire(dev->params.dev) != 0) {
-        DEBUG_DEV("could not aquire the I2C bus", dev);
+        DEBUG_DEV("could not acquire the I2C bus", dev);
         return ITG320X_ERROR_I2C;
     }
 

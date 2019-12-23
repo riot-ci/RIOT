@@ -29,10 +29,9 @@
  *
  * This driver provides @ref drivers_saul capabilities.
  *
- * @{
- *
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @file
+ * @{
  */
 
 #ifndef ITG320X_H
@@ -70,10 +69,10 @@ typedef enum {
 } itg320x_error_codes_t;
 
 /**
- * @brief   Low pass filter bandwith
+ * @brief   Low pass filter bandwidth
  *
  * @note Low pass filter bandwidth determines the internal sample rate (ISR).
- * The internal sample rate (ISR) together with sample rate devider
+ * The internal sample rate (ISR) together with sample rate divider
  * (ISR_DIV) determines the output data rate (ODR) as following:
  *
  * ODR = ISR / (ISR_DIV + 1)
@@ -149,19 +148,19 @@ typedef struct {
                           is 1 kHz or 8 kHz dependent on the low pass filter
                           bandwidth #lpf_bw */
 
-    itg320x_lpf_bw_t lpf_bw; /**< Low pass filter bandwith
+    itg320x_lpf_bw_t lpf_bw; /**< Low pass filter bandwidth
                                   (default #ITG320X_LPF_BW_5, ISR 1 kHz) */
     itg320x_clk_sel_t clk_sel; /**< Clock source selection
                                     (default ITG320X_CLK_PLL_X_GYRO) */
 
-#ifdef MODULE_ITG320X_INT
+#ifdef MODULE_ITG320X_INT || DOXYGEN
     gpio_t int_pin;                /**< DRDY interrupt pin: #GPIO_UNDEF if
                                         not used */
     itg320x_int_level_t int_level; /**< Logic level for INT output pin
                                         (default #ITG320X_INT_LOW) */
     itg320x_int_drive_t int_drive; /**< Drive type for INT output pin
                                         (default #ITG320X_INT_PUSH_PULL */
-#endif
+#endif /* MODULE_ITG320X_INT || DOXYGEN */
 } itg320x_params_t;
 
 /**
@@ -176,7 +175,7 @@ typedef struct {
  * @brief   ITG320X data ready interrupt (DRDY) callback function type
  *
  * Function prototype for the function which is called on DRDY interrupt if
- * the interrupt is activated by #itg320x_enable_int
+ * the interrupt is activated by #itg320x_init_int
  *
  * @note The @p cb function is called in interrupt context. The application
  *       should do nothing time consuming and not directly access sensor data.
@@ -189,7 +188,7 @@ typedef void (*itg320x_drdy_int_cb_t)(void *);
  * @brief	Initialize the ITG320X sensor device
  *
  * This function resets the sensor and initializes the sensor according to
- * given intialization parameters. All registers are reset to default values.
+ * given initialization parameters. All registers are reset to default values.
  *
  * @param[in]   dev     device descriptor of ITG320X sensor to be initialized
  * @param[in]   params  ITG320X initialization parameters
@@ -200,7 +199,7 @@ typedef void (*itg320x_drdy_int_cb_t)(void *);
  */
 int itg320x_init(itg320x_t *dev, const itg320x_params_t *params);
 
-#ifdef MODULE_ITG320X_INT
+#if MODULE_ITG320X_INT || DOXYGEN
 /**
  * @brief	Initialize and activate the DRDY interrupt of ITG320X sensor device
  *
@@ -218,7 +217,8 @@ int itg320x_init(itg320x_t *dev, const itg320x_params_t *params);
  * @param[in]   arg     argument for the callback function
  */
 int itg320x_init_int(const itg320x_t *dev, itg320x_drdy_int_cb_t cb, void *arg);
-#endif
+
+#endif /* MODULE_ITG320X_INT || DOXYGEN */
 
 /**
  * @brief    Data-ready status function
