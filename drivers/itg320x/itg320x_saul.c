@@ -26,9 +26,9 @@ static int read_gyro(const void *dev, phydat_t *res)
         return -ECANCELED;
     }
     /* convert milli-dps to deci-dps */
-    res->val[0] = (data.x >=  0) ? data.x / 100 : (data.x - 50) / 100;
-    res->val[1] = (data.y >=  0) ? data.y / 100 : (data.y - 50) / 100;
-    res->val[2] = (data.z >=  0) ? data.z / 100 : (data.z - 50) / 100;
+    res->val[0] = data.x;
+    res->val[1] = data.y;
+    res->val[2] = data.z;
 
     res->unit = UNIT_DPS;
     res->scale = -1;
@@ -42,7 +42,7 @@ static int read_temp(const void *dev, phydat_t *res)
         return -ECANCELED;
     }
     res->unit = UNIT_TEMP_C;
-    res->scale = 1;
+    res->scale = -1;
     return 1;
 }
 

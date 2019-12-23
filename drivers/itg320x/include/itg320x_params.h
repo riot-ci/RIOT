@@ -39,21 +39,43 @@ extern "C" {
 #define ITG320X_PARAM_LPF_BW       (ITG320X_LPF_BW_5)
 #endif
 #ifndef ITG320X_PARAM_ISR_DIV
-#define ITG320X_PARAM_ISR_DIV      (9)
+#define ITG320X_PARAM_ISR_DIV      (99)
+#endif
+#ifndef ITG320X_PARAM_CLK_SEL
+#define ITG320X_PARAM_CLK_SEL      (ITG320X_CLK_PLL_X_GYRO)
 #endif
 #ifndef ITG320X_PARAM_INT_PIN
-#define ITG320X_PARAM_INT_PIN      (GPIO_PIN(0, 0))
+#define ITG320X_PARAM_INT_PIN      (GPIO_UNDEF)
+#endif
+#ifndef ITG320X_PARAM_INT_LEVEL
+#define ITG320X_PARAM_INT_LEVEL    (ITG320X_INT_LOW)
+#endif
+#ifndef ITG320X_PARAM_INT_DRIVE
+#define ITG320X_PARAM_INT_DRIVE    (ITG320X_INT_PUSH_PULL)
 #endif
 
 #ifndef ITG320X_PARAMS
+#ifdef MODULE_ITG320X_INT
 #define ITG320X_PARAMS             { \
                                      .dev  = ITG320X_PARAM_DEV,  \
                                      .addr = ITG320X_PARAM_ADDR, \
-                                     .int_pin = ITG320X_PARAM_INT_PIN, \
                                      .lpf_bw  = ITG320X_PARAM_LPF_BW,  \
                                      .isr_div = ITG320X_PARAM_ISR_DIV, \
+                                     .clk_sel = ITG320X_PARAM_CLK_SEL, \
+                                     .int_pin = ITG320X_PARAM_INT_PIN, \
+                                     .int_level = ITG320X_PARAM_INT_LEVEL, \
+                                     .int_drive = ITG320X_PARAM_INT_DRIVE, \
                                    }
-#endif
+#else /* MODULE_ITG320X_INT */
+#define ITG320X_PARAMS             { \
+                                     .dev  = ITG320X_PARAM_DEV,  \
+                                     .addr = ITG320X_PARAM_ADDR, \
+                                     .lpf_bw  = ITG320X_PARAM_LPF_BW,  \
+                                     .isr_div = ITG320X_PARAM_ISR_DIV, \
+                                     .clk_sel = ITG320X_PARAM_CLK_SEL, \
+                                   }
+#endif /* MODULE_ITG320X_INT */
+#endif /* ITG320X_PARAMS */
 
 #ifndef ITG320X_SAUL_INFO
 #define ITG320X_SAUL_INFO          { .name = "itg320x" }

@@ -47,6 +47,7 @@ extern "C"
  * @{
  */
 #define ITG320X_REG_DLPFS_FS_SEL        (0x18)  /**< ITG320X_REG_DLPFS<4:3> */
+#define ITG320X_REG_DLPFS_FS_SEL_VAL    (0x18)  /**< ITG320X_REG_DLPFS<4:3> = 3 */
 #define ITG320X_REG_DLPFS_DLPF_CFG      (0x07)  /**< ITG320X_REG_DLPFS<2:0> */
 
 #define ITG320X_REG_INT_CFG_ACTL        (0x80)  /**< ITG320X_REG_INT_CFG<7> */
