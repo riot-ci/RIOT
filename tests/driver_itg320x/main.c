@@ -29,14 +29,12 @@
  *   output data rate (ODR), or
  * - fetching the data when the data-ready interrupt is triggered.
  *
- * To use the latter approach, the according GPIO to which the sensor's
- * **INT** output pin is connected has to be configured and initialized
- * by the application. In this test application, this is done by defining
- * ```USE_ITG320X_DRDY``` and overrding the default configuration
- * parameter ```ITG320X_PARAM_INT_PIN``` if necessary, for example:
+ * To use the latter approach, module `itg320x_int` has to be enabled and the
+ * GPIO to which the sensor's **INT** output pin is connected has to be
+ * defined by #ITG320X_PARAM_INT_PIN, for example:
  *
  * ```
- * CFLAGS="-DUSE_ITG320X_DRDY -DITG320X_PARAM_INT_PIN=\(GPIO_PIN\(0,3\)\)" \
+ * USEMODULE=itg320x_int CFLAGS="-DITG320X_PARAM_INT_PIN=\(GPIO_PIN\(0,3\)\)" \
  * make flash -C tests/driver_itg320x BOARD=...
  * ```
 */
@@ -49,11 +47,11 @@
 #include "itg320x.h"
 #include "itg320x_params.h"
 
-#define SLEEP   (100 * US_PER_MS)
+#define SLEEP   (50 * US_PER_MS)
 
 kernel_pid_t p_main;
 
-#if USE_ITG320X_DRDY
+#ifdef MODULE_ITG320X_INT
 static void itg320x_isr_data_ready (void *arg)
 {
     (void)arg;
@@ -82,28 +80,30 @@ int main(void)
         return 1;
     }
 
-    #if USE_ITG320X_DRDY
-    /* init INT2/DRDY signal pin and enable the interrupt */
-    gpio_init_int(itg320x_params[0].int_pin, GPIO_IN, GPIO_RISING,
-                  itg320x_isr_data_ready, 0);
-    itg320x_enable_int(&dev, true);
-    #endif /* USE_ITG320X_DRDY */
+#ifdef MODULE_ITG320X_INT
+    /* init interrupt */
+    itg320x_init_int(&dev, itg320x_isr_data_ready, 0);
+#endif
 
     while (1) {
-        #if USE_ITG320X_DRDY
+#ifdef MODULE_ITG320X_INT
         /* wait for data ready interrupt */
         msg_t msg;
         msg_receive(&msg);
-        #else
-        /* wait longer than period of ITG320X DOR */
-        xtimer_usleep(SLEEP);
-        #endif
-
+#else
+        while (1) {
+            /* wait longer than period of ITG320X DOR */
+            xtimer_usleep(SLEEP);
+            if (itg320x_data_ready(&dev) == ITG320X_OK) {
+                break;
+            }
+        }
+#endif
         /* read and print data in any case */
         itg320x_data_t data;
         if (itg320x_read(&dev, &data) == ITG320X_OK) {
-            printf("gyro [mdps] x: "
-                    "%+8" PRIi32 " y: %+8" PRIi32 " z: %+8" PRIi32 "\n",
+            printf("gyro [dps/10] x: "
+                    "%+5" PRIi32 " y: %+5" PRIi32 " z: %+5" PRIi32 "\n",
                     data.x, data.y, data.z);
         }
     }
