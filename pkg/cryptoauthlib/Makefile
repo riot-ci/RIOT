@@ -9,7 +9,7 @@ TESTINCLDIR = $(PKG_BUILDDIR)/test
 
 CMAKE_MINIMAL_VERSION = 3.6.0
 
-CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unused-function -Wno-type-limits -Wno-implicit-fallthrough -DRIOT -Wno-unused-variable -Wno-strict-aliasing -Wno-pedantic -std=gnu11 
+CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unused-function -Wno-type-limits -Wno-strict-aliasing
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
 ifneq (,$(filter cryptoauthlib_test,$(USEMODULE)))
