@@ -1,5 +1,5 @@
 /*
- * Copyright (C)
+ * Copyright (C) 2019 2019 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +7,18 @@
  */
 
 /**
+ * @ingroup     pkg_cryptoauthlib cryptoauthlib security crypto
  * @{
  *
  * @file
- * @author
+ * @brief       HAL implementation for the library Microchip CryptoAuth devices
+ *
+ * @author      Lena Boeckmann <lena.boeckmann@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include <stdint.h>
-
 #include "xtimer.h"
 #include "periph/i2c.h"
 #include "periph/gpio.h"
@@ -107,7 +111,7 @@ ATCA_STATUS hal_i2c_receive(ATCAIface iface, uint8_t *rxdata, uint16_t *rxlength
     }
 
     /* CRC function calculates value of the whole output package, so to get a correct result we need to include the length of the package we got before into rxdata as first byte. */
-    rxdata[0] = length_package[0];
+    rxdata[0] = length_package;
 
     /* reset ret and retries to read the rest of the output */
     ret = -1;
@@ -124,7 +128,7 @@ ATCA_STATUS hal_i2c_receive(ATCAIface iface, uint8_t *rxdata, uint16_t *rxlength
         return ATCA_RX_TIMEOUT;
     }
 
-    *rxlength = length_package[0];
+    *rxlength = length_package;
     
     return ATCA_SUCCESS;
 }
@@ -154,7 +158,7 @@ ATCA_STATUS hal_i2c_idle(ATCAIface iface)
 {
     ATCAIfaceCfg *cfg = atgetifacecfg(iface);
     /* idle state = write byte to register adr. 0x02 */
-    uint8_t idle = 0x02; 
+    uint8_t idle = ATCA_IDLE_ADR;
     i2c_write_byte(cfg->atcai2c.bus, (cfg->atcai2c.slave_address >> 1), idle, 0);
 
     return ATCA_SUCCESS;
@@ -164,7 +168,7 @@ ATCA_STATUS hal_i2c_sleep(ATCAIface iface)
 {
     ATCAIfaceCfg *cfg = atgetifacecfg(iface);
     /* sleep state = write byte to register adr. 0x01 */
-    uint8_t sleep = 0x01; 
+    uint8_t sleep = ATCA_SLEEP_ADR;
     i2c_write_byte(cfg->atcai2c.bus, (cfg->atcai2c.slave_address >> 1), sleep, 0);
 
     return ATCA_SUCCESS;
