@@ -1,5 +1,0 @@
-ifneq (,$(filter cryptoauthlib_test,$(USEPKG)))
-  USEMODULE += cryptoauthlib_test_contrib
-endif
-
-USEPKG += cryptoauthlib
