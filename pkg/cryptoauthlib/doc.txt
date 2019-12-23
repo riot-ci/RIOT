@@ -40,9 +40,9 @@
  * ## Tests
  * 
  * The library provides unittests for the library functions. Instead of writing our 
- * own, we're working on including them in Riot. There is a directory 
- * called "pkg_cryptoauthlib_internal_tests" in the Riot testfolder which runs part 
- * of the unittests.
+ * own, we're working on including them in Riot (not fully implemented, yet). There 
+ * is a directory called "pkg_cryptoauthlib_internal_tests" in the Riot testfolder 
+ * which runs part of the unittests.
  * Some of the provided tests can only be run when the config, data and/or otp zones * of the device are locked. Some tests (but not all) will automatically lock zones * as needed. Zones can only be locked permanently. Unlocking is not possible!
  * Also there is a test for comparing the runtime of the Riot software implementation
  * and the CryptoAuth hardware implementation for calculating a SHA-256.
