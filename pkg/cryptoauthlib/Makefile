@@ -3,6 +3,7 @@ PKG_URL=https://github.com/MicrochipTech/cryptoauthlib
 PKG_VERSION=af8187776cd3f3faf8bed412eaf6ff7221862e19
 PKG_LICENSE=BSD-3-Clause
 PKG_BUILDDIR ?= $(PKGDIRBASE)/$(PKG_NAME)
+TESTINCLDIR = $(PKG_BUILDDIR)/test
 
 .PHONY: all..cmake_version_supported
 
@@ -11,7 +12,13 @@ CMAKE_MINIMAL_VERSION = 3.6.0
 CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unused-function -Wno-type-limits -Wno-implicit-fallthrough -DRIOT -Wno-unused-variable -Wno-strict-aliasing -Wno-pedantic -std=gnu11 
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
-all: $(PKG_BUILDDIR)/lib/Makefile
+ifneq (,$(filter cryptoauthlib_test,$(USEMODULE)))
+all: cryptoauth test
+else
+all: cryptoauth
+endif
+
+cryptoauth: $(PKG_BUILDDIR)/lib/Makefile
 	CFLAGS="$(filter-out -Werror -Werror=old-style-definition -Werror=strict-prototypes -Werror=pedantic -Wpedantic -pedantic -std=gnu99, $(CFLAGS) ) " \
 	$(MAKE) -C $(PKG_BUILDDIR)/lib && \
 	cp $(PKG_BUILDDIR)/lib/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
@@ -26,6 +33,17 @@ $(PKG_BUILDDIR)/lib/Makefile: $(TOOLCHAIN_FILE)
 
 $(TOOLCHAIN_FILE): git-download
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
+
+test:
+	cp $(TESTINCLDIR)/*.c $(PKG_BUILDDIR)
+	cp $(TESTINCLDIR)/jwt/*.c $(PKG_BUILDDIR)
+	cp $(TESTINCLDIR)/tng/*.c $(PKG_BUILDDIR)
+	cp $(TESTINCLDIR)/atcacert/*.c $(PKG_BUILDDIR)
+
+	echo "MODULE = cryptoauthlib_test" > $(PKG_BUILDDIR)/Makefile
+	echo "include \$$(RIOTBASE)/Makefile.base" >> $(PKG_BUILDDIR)/Makefile
+
+	"$(MAKE)" -C $(PKG_BUILDDIR)
 
 git-download: | ..cmake_version_supported
 
