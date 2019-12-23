@@ -153,7 +153,7 @@ typedef struct {
     itg320x_clk_sel_t clk_sel; /**< Clock source selection
                                     (default ITG320X_CLK_PLL_X_GYRO) */
 
-#ifdef MODULE_ITG320X_INT || DOXYGEN
+#if MODULE_ITG320X_INT || DOXYGEN
     gpio_t int_pin;                /**< DRDY interrupt pin: #GPIO_UNDEF if
                                         not used */
     itg320x_int_level_t int_level; /**< Logic level for INT output pin
