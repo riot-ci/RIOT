@@ -47,7 +47,7 @@
 #include "itg320x.h"
 #include "itg320x_params.h"
 
-#define SLEEP   (50 * US_PER_MS)
+#define ITG320X_SLEEP   (50 * US_PER_MS)
 
 kernel_pid_t p_main;
 
@@ -93,7 +93,7 @@ int main(void)
 #else
         while (1) {
             /* wait longer than period of ITG320X DOR */
-            xtimer_usleep(SLEEP);
+            xtimer_usleep(ITG320X_SLEEP);
             if (itg320x_data_ready(&dev) == ITG320X_OK) {
                 break;
             }
