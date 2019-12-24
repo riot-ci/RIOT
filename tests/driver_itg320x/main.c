@@ -103,7 +103,7 @@ int main(void)
         itg320x_data_t data;
         if (itg320x_read(&dev, &data) == ITG320X_OK) {
             printf("gyro [dps/10] x: "
-                    "%+5" PRIi32 " y: %+5" PRIi32 " z: %+5" PRIi32 "\n",
+                    "%+5" PRIi16 " y: %+5" PRIi16 " z: %+5" PRIi16 "\n",
                     data.x, data.y, data.z);
         }
     }
