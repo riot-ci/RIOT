@@ -95,20 +95,6 @@ __DIRECTORY_VARIABLES += \
 
 BOARDSDIR               := $(abspath $(BOARDSDIR))
 
-# Include Board and CPU configuration, if BOARD is not found in BOARDSDIR
-# e.g. when set by the environment fallback to searching in RIOTBOARD
-ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
-  ifneq ($(RIOTBOARD),$(BOARDSDIR))
-    # The specified board $(BOARD) was not found in $(BOARDSDIR) fallback to RIOTBOARD)
-    BOARDSDIR = $(RIOTBOARD)
-  endif
-  ifeq ($(RIOTBOARD),$(BOARDSDIR))
-    ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
-      $(error The specified board $(BOARD) does not exist.)
-    endif
-  endif
-endif
-
 # Ensure that all directories are set and don't contain spaces.
 ifneq (, $(filter-out 1, $(foreach v,$(__DIRECTORY_VARIABLES),$(words $($(v))))))
   $(info Aborting compilation for your safety.)
@@ -171,6 +157,20 @@ ifeq (none,$(BOARD))
 else
 
 all: link
+
+# Include Board and CPU configuration, if BOARD is not found in BOARDSDIR
+# e.g. when set by the environment fallback to searching in RIOTBOARD
+ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
+  ifneq ($(RIOTBOARD),$(BOARDSDIR))
+    # The specified board $(BOARD) was not found in $(BOARDSDIR) fallback to RIOTBOARD)
+    BOARDSDIR = $(RIOTBOARD)
+  endif
+  ifeq ($(RIOTBOARD),$(BOARDSDIR))
+    ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
+      $(error The specified board $(BOARD) does not exist.)
+    endif
+  endif
+endif
 
 include $(RIOTMAKE)/info.inc.mk
 
