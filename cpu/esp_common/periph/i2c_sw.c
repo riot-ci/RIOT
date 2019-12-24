@@ -303,9 +303,13 @@ int IRAM_ATTR i2c_read_bytes(i2c_t dev, uint16_t addr, void *data, size_t len, u
         }
     }
 
-    /* send STOP condition if I2C_NOSTOP flag is not set */
     if (!(flags & I2C_NOSTOP)) {
-        res = _i2c_stop_cond(bus);
+        /* send STOP condition if I2C_NOSTOP flag is not set */
+        _i2c_stop_cond(bus);
+    }
+    else {
+        /* otherwise simply set SCL to passive HIGH */
+        _i2c_scl_high(bus);
     }
 
     return res;
@@ -365,9 +369,13 @@ int IRAM_ATTR i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t
         }
     }
 
-    /* send STOP condition if I2C_NOSTOP flag is not set */
     if (!(flags & I2C_NOSTOP)) {
-        res = _i2c_stop_cond(bus);
+        /* send STOP condition if I2C_NOSTOP flag is not set */
+        _i2c_stop_cond(bus);
+    }
+    else {
+        /* otherwise simply set SCL to passive HIGH */
+        _i2c_scl_high(bus);
     }
 
     return res;
