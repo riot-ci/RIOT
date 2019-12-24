@@ -26,7 +26,6 @@
 #ifdef RIOT_VERSION
 
 /* RIOT has its own putchar function which writes to UART */
-extern int putchar(int c);
 #define uart_putc putchar
 
 #else /* RIOT_VERSION */
