@@ -23,7 +23,7 @@
  * If module esp_rtc_timer is enabled, the 48-bit RTC hardware timer is used
  * directly. Otherwise the PLL driven 64-bit microsecond system timer is used
  * to emulate a RTC timer (default). This emulated RTC timer results into much
- * better accuracy. The Advantage of using RTC hardware timer over sytem timer
+ * better accuracy. The Advantage of using RTC hardware timer over system timer
  * is that it would also continue in deep sleep mode and after software reset.
  */
 
@@ -269,10 +269,10 @@ void rtc_clear_alarm(void)
 static time_t _sys_get_time (void)
 {
 #if MODULE_ESP_RTC_TIMER
-    return _sys_time_set + 
+    return _sys_time_set +
            (_rtc_time_to_us(_rtc_get_time_raw() - _rtc_time_set) / US_PER_SEC);
 #else
-    return _sys_time_set + 
+    return _sys_time_set +
            ((_sys_time_off_us + system_get_time_64() - _sys_time_set_us) / US_PER_SEC);
 #endif
 }
