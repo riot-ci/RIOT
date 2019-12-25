@@ -29,9 +29,12 @@
  *
  * This driver provides @ref drivers_saul capabilities.
  *
- * @author      Gunar Schorcht <gunar@schorcht.net>
- * @file
  * @{
+ *
+ * @file
+ * @brief       Device driver for InvenSense ITG320X 3-axis gyroscope
+ *
+ * @author      Gunar Schorcht <gunar@schorcht.net>
  */
 
 #ifndef ITG320X_H
@@ -49,10 +52,12 @@ extern "C"
 #include "periph/i2c.h"
 
 /**
- * @name ITG320X I2C addresses
+ * @name I2C addresses
+ * @{
  */
 #define ITG320X_I2C_ADDRESS_1    (0x68)     /**< AD0 pin low */
 #define ITG320X_I2C_ADDRESS_2    (0x69)     /**< AD0 pin high */
+/** @} */
 
 /** ITG320X chip id defined in Who Am I */
 #define ITG320X_ID               (0x68)
@@ -73,10 +78,7 @@ typedef enum {
  *
  * @note Low pass filter bandwidth determines the internal sample rate (ISR).
  * The internal sample rate (ISR) together with sample rate divider
- * (ISR_DIV) determines the output data rate (ODR) as following:
- *
- * ODR = ISR / (ISR_DIV + 1)
- *
+ * (ISR_DIV) determines the output data rate ODR = ISR / (ISR_DIV + 1)
  * where internal sample rate (ISR) is 8 kHz for #ITG320X_LPF_BW_256,
  * or 1 kHz otherwise.
  */
@@ -129,6 +131,10 @@ typedef struct {
 
 /**
  * @brief   Raw data set as two complements
+ *
+ * According to the sensor sensitivity of 1/14.375 degrees per second, the
+ * raw data values have to be divided by 14.375 to obtain the measurements
+ * in degrees per second.
  */
 typedef struct {
     int16_t x; /**< angular rate x-axis as 16 bit two's complements (roll) */
@@ -140,8 +146,8 @@ typedef struct {
  * @brief   ITG320X device initialization parameters
  */
 typedef struct {
-    unsigned  dev;   /**< I2C device (default I2C_DEV(0)) */
-    uint8_t   addr;  /**< I2C slave address (default #ITG320X_I2C_ADDRESS_1) */
+    i2c_t dev;     /**< I2C device (default I2C_DEV(0)) */
+    uint8_t addr;  /**< I2C slave address (default #ITG320X_I2C_ADDRESS_1) */
 
     uint8_t isr_div; /**< Internal sample rate divider ISR_DIV (default 99)
                           ODR = ISR / (ISR_DIV + 1) where internal sample rate
