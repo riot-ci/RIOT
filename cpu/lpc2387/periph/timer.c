@@ -141,8 +141,33 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     }
 
     lpc23xx_timer_t *dev = get_dev(tim);
+
     dev->MR[channel] = value;
     dev->MCR |= (1 << (channel * 3));
+
+    return 0;
+}
+
+int timer_set(tim_t tim, int channel, unsigned int timeout)
+{
+    if (((unsigned) tim >= TIMER_NUMOF) || ((unsigned) channel >= TIMER_CHAN_NUMOF)) {
+        return -1;
+    }
+
+    lpc23xx_timer_t *dev = get_dev(tim);
+
+    /* directly execute the callback if timeout == 0 */
+    if (timeout == 0) {
+        dev->MCR &= ~(1 << (channel * 3));
+        isr_ctx[tim].cb(isr_ctx[tim].arg, channel);
+        return 0;
+    }
+
+    dev->TCR = 0;
+    dev->MR[channel] = timeout + dev->TC;
+    dev->MCR |= (1 << (channel * 3));
+    dev->TCR = 1;
+
     return 0;
 }
 
