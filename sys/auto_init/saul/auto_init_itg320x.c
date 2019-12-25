@@ -26,7 +26,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define ITG320X_NUM    (sizeof(itg320x_params) / sizeof(itg320x_params[0]))
+#define ITG320X_NUM    (ARRAY_SIZE(itg320x_params))
 
 /**
  * @brief   Allocate memory for the device descriptors
@@ -41,7 +41,7 @@ static saul_reg_t saul_entries[ITG320X_NUM * 2];
 /**
  * @brief   Define the number of saul info
  */
-#define ITG320X_INFO_NUM    (sizeof(itg320x_saul_info) / sizeof(itg320x_saul_info[0]))
+#define ITG320X_INFO_NUM    (ARRAY_SIZE(itg320x_saul_info))
 
 /**
  * @name    Reference the driver structs
