@@ -54,6 +54,7 @@ ATCA_STATUS hal_i2c_init(void *hal, ATCAIfaceCfg *cfg)
     ((ATCAHAL_t*)hal)->hal_data = cfg;
     
     atcab_wakeup();
+    i2c_acquire(cfg->atcai2c.bus);
     
     return ATCA_SUCCESS;
 }
@@ -176,13 +177,12 @@ ATCA_STATUS hal_i2c_sleep(ATCAIface iface)
 
 ATCA_STATUS hal_i2c_release(void *hal_data)
 {
-    atca_t* hal = (atca_t*)hal_data;
-    i2c_release(hal->params.atcai2c.bus);
-    
+    ATCAIfaceCfg* cfg = (ATCAIfaceCfg*)hal_data;
+    i2c_release(cfg->atcai2c.bus);
     return ATCA_SUCCESS;
 }
 
-ATCA_STATUS hal_i2c_discover_buses(int ATCA_PARAM_I2Ces[], int max_buses)
+ATCA_STATUS hal_i2c_discover_buses(int i2c_buses[], int max_buses)
 {
     return ATCA_UNIMPLEMENTED;
 }
