@@ -49,8 +49,8 @@ extern "C" {
  *          struct and store it in the params array.
  *          ATCAIfaceCfg contains a variable for the bus address, which is never
  *          used by the library. We use it to store Riot's I2C_DEV.
- *          We also initialize the baud rate with zero, because Riot doesn't use
- *          baud.
+ *          We also initialize the baud rate with zero, because Riot doesn't have
+ *          an API to change baud.
  *
  * @ingroup  config
  * @{
