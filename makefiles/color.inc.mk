@@ -5,7 +5,7 @@ COLOR_GREEN  :=
 COLOR_RED    :=
 COLOR_PURPLE :=
 COLOR_RESET  :=
-COLOR_ECHO   := /bin/echo
+COLOR_ECHO   := echo
 
 ifeq ($(CC_NOCOLOR),)
   IS_TERMINAL = $(if $(MAKE_TERMOUT),$(MAKE_TERMERR),)
@@ -26,6 +26,6 @@ ifeq ($(CC_NOCOLOR),0)
     COLOR_ECHO   := echo -e
     SHELL=bash
   else
-    COLOR_ECHO   := /bin/echo -e
+    COLOR_ECHO   := echo -e
   endif
 endif
