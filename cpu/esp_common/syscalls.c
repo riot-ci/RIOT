@@ -65,7 +65,7 @@ int pthread_setcancelstate(int state, int *oldstate)
  * thread safety.
  */
 
-#if 0
+#ifdef MCU_ESP32
 
 /**
  * @name Locking functions
@@ -87,7 +87,7 @@ static rmutex_t _malloc_rmtx = RMUTEX_INIT;
  */
 static _lock_t *__malloc_static_object = NULL;
 
-void IRAM _lock_init(_lock_t *lock)
+void IRAM_ATTR _lock_init(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -99,7 +99,7 @@ void IRAM _lock_init(_lock_t *lock)
     }
 }
 
-void IRAM _lock_init_recursive(_lock_t *lock)
+void IRAM_ATTR _lock_init_recursive(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -130,7 +130,7 @@ void IRAM _lock_init_recursive(_lock_t *lock)
     }
 }
 
-void IRAM _lock_close(_lock_t *lock)
+void IRAM_ATTR _lock_close(_lock_t *lock)
 {
     assert(lock != NULL);
     assert(lock != __malloc_static_object);
@@ -139,7 +139,7 @@ void IRAM _lock_close(_lock_t *lock)
     *lock = 0;
 }
 
-void IRAM _lock_close_recursive(_lock_t *lock)
+void IRAM_ATTR _lock_close_recursive(_lock_t *lock)
 {
     assert(lock != NULL);
     assert(lock != __malloc_static_object);
@@ -148,7 +148,7 @@ void IRAM _lock_close_recursive(_lock_t *lock)
     *lock = 0;
 }
 
-void IRAM _lock_acquire(_lock_t *lock)
+void IRAM_ATTR _lock_acquire(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -166,7 +166,7 @@ void IRAM _lock_acquire(_lock_t *lock)
     mutex_lock((mutex_t*)*lock);
 }
 
-void IRAM _lock_acquire_recursive(_lock_t *lock)
+void IRAM_ATTR _lock_acquire_recursive(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -184,7 +184,7 @@ void IRAM _lock_acquire_recursive(_lock_t *lock)
     rmutex_lock((rmutex_t*)*lock);
 }
 
-int IRAM _lock_try_acquire(_lock_t *lock)
+int IRAM_ATTR _lock_try_acquire(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -205,7 +205,7 @@ int IRAM _lock_try_acquire(_lock_t *lock)
     return mutex_trylock((mutex_t*)*lock);
 }
 
-int IRAM _lock_try_acquire_recursive(_lock_t *lock)
+int IRAM_ATTR _lock_try_acquire_recursive(_lock_t *lock)
 {
     assert(lock != NULL);
 
@@ -226,7 +226,7 @@ int IRAM _lock_try_acquire_recursive(_lock_t *lock)
     return rmutex_trylock((rmutex_t*)*lock);
 }
 
-void IRAM _lock_release(_lock_t *lock)
+void IRAM_ATTR _lock_release(_lock_t *lock)
 {
     assert(lock != NULL && *lock != 0);
 
@@ -238,7 +238,7 @@ void IRAM _lock_release(_lock_t *lock)
     mutex_unlock((mutex_t*)*lock);
 }
 
-void IRAM _lock_release_recursive(_lock_t *lock)
+void IRAM_ATTR _lock_release_recursive(_lock_t *lock)
 {
     assert(lock != NULL && *lock != 0);
 
