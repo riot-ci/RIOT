@@ -1,0 +1,25 @@
+From a98941198e0e4831fc76187ba067b66abcbf9de3 Mon Sep 17 00:00:00 2001
+From: Lena Boeckmann <einhornhool@mobi31.inet.haw-hamburg.de>
+Date: Mon, 4 Nov 2019 15:46:26 +0100
+Subject: [PATCH 2/3] change include_directories to target_include_directories
+
+---
+ test/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 77efad7..f8517c2 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -24,7 +24,7 @@ endif()
+ 
+ add_executable(cryptoauth_test ${TEST_SRC} ${TEST_TNG_SRC} ${TEST_JWT_SRC} ${TEST_ATCACERT_SRC})
+ 
+-include_directories(cryptoauth_test ${CMAKE_CURRENT_SOURCE_DIR}/../ ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
++target_include_directories(cryptoauth_test ${CMAKE_CURRENT_SOURCE_DIR}/../ ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+ 
+ target_link_libraries(cryptoauth_test cryptoauth)
+ 
+-- 
+2.21.0
+
