@@ -17,8 +17,8 @@
  *
  * - Low pass filter bandwidth (LPF_BW) of 5 Hz (#ITG320X_LPF_BW_5)
  * - Internal sample rate (ISR) of 1 kHz which results from LPF_BW of 5 Hz
- * - Internal sample rate divider (ISR_DIV) of 9 (#ITG320X_PARAM_ISR_DIV)
- * - Output data rate (ODR) of 100 Hz resulting from
+ * - Internal sample rate divider (ISR_DIV) of 99 (#ITG320X_PARAM_ISR_DIV)
+ * - Output data rate (ODR) of 10 Hz resulting from
  *
  *      ODR = ISR / (ISR_DIV + 1)
  *
@@ -49,7 +49,7 @@
 
 #define ITG320X_SLEEP   (50 * US_PER_MS)
 
-kernel_pid_t p_main;
+static kernel_pid_t p_main;
 
 #ifdef MODULE_ITG320X_INT
 static void itg320x_isr_data_ready (void *arg)
