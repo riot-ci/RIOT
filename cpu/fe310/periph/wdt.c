@@ -74,7 +74,7 @@ static inline uint8_t _scale(uint32_t count)
     return scale;
 }
 
-void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
+static inline uint8_t _setup(uint32_t min_time, uint32_t max_time)
 {
     (void)min_time;
 
@@ -90,6 +90,13 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
     AON_REG(AON_WDOGCMP) = count;
+
+    return scale;
+}
+
+void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
+{
+    uint8_t scale = _setup(min_time, max_time);
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
     AON_REG(AON_WDOGCFG) = AON_WDOGCFG_RSTEN | AON_WDOGCFG_ZEROCMP | scale;
@@ -120,26 +127,16 @@ void isr_wdt(int num)
 void wdt_setup_reboot_with_callback(uint32_t min_time, uint32_t max_time,
                                     wdt_cb_t cb, void* arg)
 {
-    (void)min_time;
-
-    /* Windowed wdt not supported */
-    assert(min_time == 0);
-
-    /* Check reset time limit */
-    assert((max_time > NWDT_TIME_LOWER_LIMIT) || \
-           (max_time < NWDT_TIME_UPPER_LIMIT));
+    uint8_t scale = _setup(min_time, max_time);
 
     wdt_cb = cb;
     wdt_arg = arg;
-
-    uint32_t count = ((uint32_t)max_time * RTC_FREQ) / MS_PER_SEC;
-    uint8_t scale = _scale(count);
 
     /* disable interrupt */
     PLIC_disable_interrupt(INT_WDOGCMP);
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
-    AON_REG(AON_WDOGCMP) = count;
+    AON_REG(AON_WDOGCFG) = AON_WDOGCFG_ZEROCMP | scale;
 
     if (cb) {
         /* enable interrupt */
@@ -147,8 +144,5 @@ void wdt_setup_reboot_with_callback(uint32_t min_time, uint32_t max_time,
         PLIC_enable_interrupt(INT_WDOGCMP);
         PLIC_set_priority(INT_WDOGCMP, WDT_INTR_PRIORITY);
     }
-
-    AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
-    AON_REG(AON_WDOGCFG) = AON_WDOGCFG_ZEROCMP | scale;
 }
 #endif /* MODULE_PERIPH_WDT_CB */
