@@ -51,6 +51,11 @@ typedef uint8_t gpio_t;
 #define GPIO_PIN(x, y)      (x | y)
 
 /**
+ * @brief   GPIO interrupt priority
+ */
+#define GPIO_INTR_PRIORITY  (3)
+
+/**
  * @brief   Structure for UART configuration data
  */
 typedef struct {
@@ -71,19 +76,20 @@ typedef struct {
 #define PERIPH_TIMER_PROVIDES_SET
 
 /**
- * @brief   Timer ISR
+ * @brief   PWM channel configuration data structure
  */
-void timer_isr(void);
+typedef struct {
+    gpio_t pin;                 /**< GPIO pin */
+    uint8_t cmp;                /**< PWM comparator to use */
+} pwm_conf_chan_t;
 
 /**
- * @brief   External ISR callback
+ * @brief   PWM device configuration data structure
  */
-typedef void (*external_isr_ptr_t)(int intNum);
-
-/**
- * @brief   Set External ISR callback
- */
-void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
+typedef struct {
+    uint32_t addr;              /**< PWM address to use */
+    pwm_conf_chan_t chan[4];    /**< channel configuration */
+} pwm_conf_t;
 
 #ifdef __cplusplus
 }
