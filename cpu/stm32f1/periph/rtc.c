@@ -23,9 +23,6 @@
 #define ENABLE_DEBUG        (0)
 #include "debug.h"
 
-#define IRQN                (RTC_Alarm_IRQn)
-#define ISR_NAME            isr_rtc_alarm
-
 #define EXTI_IMR_BIT        (EXTI_IMR_MR17)
 #define EXTI_FTSR_BIT       (EXTI_FTSR_TR17)
 #define EXTI_RTSR_BIT       (EXTI_RTSR_TR17)
@@ -115,7 +112,7 @@ static void _rtc_config(void)
     EXTI->IMR  |= EXTI_IMR_BIT;
     EXTI->PR   |= EXTI_PR_BIT;
     /* enable global RTC interrupt */
-    NVIC_EnableIRQ(IRQN);
+    NVIC_EnableIRQ(RTC_Alarm_IRQn);
 }
 
 static time_t _rtc_get_time(void)
@@ -182,7 +179,6 @@ static void _rtc_enable_alarm(void)
     _rtc_enter_config_mode();
     RTC->CRH |= (RTC_CRH_ALRIE);
     _rtc_exit_config_mode();
-
 }
 
 static void _rtc_disable_alarm(void)
@@ -207,9 +203,6 @@ static void _rtc_set_alarm_time(time_t alarm_time)
 
 int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
 {
-    /* normalize input */
-    rtc_tm_normalize(time);
-    
     time_t timestamp = mktime(time);
 
     if (timestamp == -1) {
@@ -264,7 +257,7 @@ void rtc_poweroff(void)
     return;
 }
 
-void ISR_NAME(void)
+void isr_rtc_alarm(void)
 {
     if (RTC->CRL & RTC_CRL_ALRF) {
         if (isr_ctx.cb != NULL) {
