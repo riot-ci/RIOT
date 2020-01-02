@@ -48,15 +48,24 @@ unsigned dhcpv6_client_get_duid_l2(unsigned iface, dhcpv6_duid_l2_t *duid)
                                l2addr, GNRC_NETIF_L2ADDR_MAXLEN)) > 0) {
         duid->l2type = byteorder_htons(ARP_HWTYPE_EUI64);
     }
-    else if ((netif->device_type == NETDEV_TYPE_ETHERNET) &&
-             ((res = gnrc_netapi_get(netif->pid, NETOPT_ADDRESS, 0,
-                                     l2addr, GNRC_NETIF_L2ADDR_MAXLEN)) > 0)) {
-        duid->l2type = byteorder_htons(ARP_HWTYPE_ETHERNET);
-    }
     else {
-        LOG_ERROR("DHCPv6 client: Link-layer type of interface %u not supported "
-                  "for DUID creation", netif->pid);
-        return 0;
+        switch (netif->device_type) {
+            case NETDEV_TYPE_ETHERNET:
+            case NETDEV_TYPE_BLE:
+            case NETDEV_TYPE_ESP_NOW:
+                if ((res = gnrc_netapi_get(netif->pid,
+                                           NETOPT_ADDRESS,
+                                           0, l2addr,
+                                           GNRC_NETIF_L2ADDR_MAXLEN)) > 0) {
+                    duid->l2type = byteorder_htons(ARP_HWTYPE_ETHERNET);
+                    break;
+                }
+                /* falls-through intentionally */
+            default:
+                LOG_ERROR("DHCPv6 client: Link-layer type of interface %u not supported "
+                          "for DUID creation\n", netif->pid);
+                return 0;
+        }
     }
     return (uint8_t)res + sizeof(dhcpv6_duid_l2_t);
 }
