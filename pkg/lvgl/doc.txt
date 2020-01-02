@@ -1,0 +1,7 @@
+/**
+ * @defgroup pkg_lvgl LittlevGL - Open-Source Embedded GUI Library
+ * @ingroup  pkg
+ * @brief    Provides RIOT support for LittlevGL
+ *
+ * @see      https://github.com/littlevgl/lvgl
+ */
