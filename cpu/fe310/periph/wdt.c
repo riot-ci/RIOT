@@ -109,19 +109,12 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
 }
 
 #ifdef MODULE_PERIPH_WDT_CB
-static bool wdt_ignore_first_isr = true;
-
 void isr_wdt(int num)
 {
     (void)num;
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
     AON_REG(AON_WDOGCFG) &= ~(AON_WDOGCFG_CMPIP);
-
-    if (wdt_ignore_first_isr) {
-        wdt_ignore_first_isr = false;
-        return;
-    }
 
     wdt_cb(wdt_arg);
     pm_reboot();
@@ -136,11 +129,14 @@ void wdt_setup_reboot_with_callback(uint32_t min_time, uint32_t max_time,
     wdt_cb = cb;
     wdt_arg = arg;
 
+    AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
+    AON_REG(AON_WDOGCFG) &= ~(AON_WDOGCFG_CMPIP);
+
     /* disable interrupt */
     PLIC_disable_interrupt(INT_WDOGCMP);
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
-    AON_REG(AON_WDOGCFG) = scale;
+    AON_REG(AON_WDOGCFG) = scale | AON_WDOGCFG_ZEROCMP;
 
     if (cb) {
         /* enable interrupt */
