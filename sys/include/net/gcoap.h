@@ -930,6 +930,7 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
 /**
  * @brief   Adds a single Uri-Query option to a CoAP request
  *
+ * Use this only for null-terminated string.
  * To add multiple Uri-Query options, simply call this function multiple times.
  * The Uri-Query options will be added in the order those calls.
  *
@@ -943,6 +944,23 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
  * @return  -1 on error
  */
 int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val);
+
+/**
+ * @brief   Adds a single Uri-Query option to a CoAP request
+ *
+ * To add multiple Uri-Query options, simply call this function multiple times.
+ * The Uri-Query options will be added in the order those calls.
+ *
+ * @param[out] pdu      The package that is being build
+ * @param[in]  key      Key to add to the query string
+ * @param[in]  val      Value to assign to @p key (may be NULL)
+ *
+ * @pre     ((pdu != NULL) && (key != NULL))
+ *
+ * @return  overall length of new query string
+ * @return  -1 on error
+ */
+int gcoap_add_qstring2(coap_pkt_t *pdu, const char *key, size_t key_len, const char *val, size_t val_len);
 
 #ifdef __cplusplus
 }

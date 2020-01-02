@@ -990,23 +990,30 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
 
 int gcoap_add_qstring(coap_pkt_t *pdu, const char *key, const char *val)
 {
-    char qs[NANOCOAP_QS_MAX];
-    size_t len = strlen(key);
-    size_t val_len = (val) ? (strlen(val) + 1) : 0;
+    return gcoap_add_qstring2(pdu, key, strlen(key), val, strlen(val));
+}
 
-    /* test if the query string fits, account for the zero termination */
-    if ((len + val_len + 1) >= NANOCOAP_QS_MAX) {
+int gcoap_add_qstring2(coap_pkt_t *pdu, const char *key, size_t key_len, const char *val, size_t val_len)
+{
+    assert(pdu);
+    assert(key);
+    assert(key_len != 0);
+
+    char qs[NANOCOAP_QS_MAX];
+
+    /* test if the query string fits, account for the `=` and zero termination */
+    if ((key_len + val_len + 1) >= sizeof(qs)) {
         return -1;
     }
 
-    memcpy(&qs[0], key, len);
+    memcpy(&qs[0], key, key_len);
     if (val) {
-        qs[len] = '=';
-        /* the `=` character was already counted in `val_len`, so subtract it here */
-        memcpy(&qs[len + 1], val, (val_len - 1));
-        len += val_len;
+        qs[key_len] = '=';
+
+        memcpy(&qs[key_len + 1], val, val_len);
     }
-    qs[len] = '\0';
+    /* account for `=` */
+    qs[key_len + val_len + 1] = '\0';
 
     return coap_opt_add_string(pdu, COAP_OPT_URI_QUERY, qs, '&');
 }
