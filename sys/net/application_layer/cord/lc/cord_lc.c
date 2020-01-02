@@ -143,19 +143,9 @@ static ssize_t _add_filters_to_lookup(coap_pkt_t *pkt, cord_lc_filter_t *filters
     cord_lc_filter_t *f = filters;
     while (f) {
         for (unsigned i = 0; i < f->len; i++) {
-            char key[NANOCOAP_QS_MAX];
-            char val[NANOCOAP_QS_MAX];
-
             clif_attr_t *kv = &(f->array[i]);
-            if ((kv->key_len + kv->value_len + 1) >= NANOCOAP_QS_MAX ) {
-                DEBUG("cord_lc: filter key value pair overflow\n");
+            if (gcoap_add_qstring(pkt, kv->key, kv->val) == -1) {
                 return CORD_LC_OVERFLOW;
-            }
-            snprintf(key, kv->key_len + 1, "%s", kv->key);
-            snprintf(val, kv->value_len + 1, "%s", kv->value);
-
-            if (gcoap_add_qstring(pkt, key, val) < 0) {
-                return CORD_LC_ERR;
             }
         }
         f = f->next;
