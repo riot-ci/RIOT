@@ -144,7 +144,7 @@ static ssize_t _add_filters_to_lookup(coap_pkt_t *pkt, cord_lc_filter_t *filters
     while (f) {
         for (unsigned i = 0; i < f->len; i++) {
             clif_attr_t *kv = &(f->array[i]);
-            if (gcoap_add_qstring(pkt, kv->key, kv->value) == -1) {
+            if (gcoap_add_qstring2(pkt, kv->key, kv->key_len, kv->value, kv->value_len) == -1) {
                 return CORD_LC_OVERFLOW;
             }
         }
