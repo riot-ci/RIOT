@@ -115,18 +115,18 @@ static void _setup_timeout(xtimer_t *timer, const uint32_t duration, const xtime
  *            -ETIMEDOUT if the connection opening timed out.
  *            -ECONNREFUSED if the connection was reset by the peer.
  */
-static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, char *target_addr, uint16_t target_port,
-                          const char *local_addr, uint16_t local_port, uint8_t passive)
+static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
+                          const uint8_t *local_addr, uint16_t local_port, int passive)
 {
     msg_t msg;
     xtimer_t connection_timeout;
     cb_arg_t connection_timeout_arg = {MSG_TYPE_CONNECTION_TIMEOUT, &(tcb->mbox)};
-    int8_t ret = 0;
+    int ret = 0;
 
     /* Lock the TCB for this function call */
     mutex_lock(&(tcb->function_lock));
 
-    /* Connection is already connected: Return -EISCONN */
+    /* TCB is already connected: Return -EISCONN */
     if (tcb->state != FSM_STATE_CLOSED) {
         mutex_unlock(&(tcb->function_lock));
         return -EISCONN;
@@ -143,20 +143,22 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, char *target_addr, uint16_t targe
     if (passive) {
         /* Mark connection as passive opend */
         tcb->status |= STATUS_PASSIVE;
-        if (local_addr == NULL) {
-            tcb->status |= STATUS_ALLOW_ANY_ADDR;
-        }
 #ifdef MODULE_GNRC_IPV6
         /* If local address is specified: Copy it into TCB */
-        else if (tcb->address_family == AF_INET6) {
-            if (ipv6_addr_from_str((ipv6_addr_t *) tcb->local_addr,  local_addr) == NULL) {
+        if (local_addr && tcb->address_family == AF_INET6) {
+            /* Store given address in TCB */
+            if (memcpy(tcb->local_addr, local_addr, sizeof(tcb->local_addr)) == NULL) {
                 DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : Invalid peer addr\n");
                 return -EINVAL;
+            }
+
+            if (ipv6_addr_is_unspecified((ipv6_addr_t *) tcb->local_addr)) {
+                tcb->status |= STATUS_ALLOW_ANY_ADDR;
             }
         }
 #else
         /* Suppress Compiler Warnings */
-        (void) target_addr;
+        (void) remote;
 #endif
         /* Set port number to listen on */
         tcb->local_port = local_port;
@@ -165,24 +167,19 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, char *target_addr, uint16_t targe
     else {
         /* Parse target address and port number into TCB */
  #ifdef MODULE_GNRC_IPV6
-        if ((target_addr != NULL) && (tcb->address_family == AF_INET6)) {
+        if ((remote != NULL) && (tcb->address_family == AF_INET6)) {
 
-            /* Extract interface (optional) specifier from target address */
-            char *ll_iface = ipv6_addr_split_iface(target_addr);
-            if (ipv6_addr_from_str((ipv6_addr_t *) tcb->peer_addr, target_addr) == NULL) {
+            /* Store Address information in TCB */
+            if (memcpy(tcb->peer_addr, remote->addr.ipv6, sizeof(tcb->peer_addr)) == NULL) {
                 DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : Invalid peer addr\n");
                 return -EINVAL;
             }
-
-            /* In case the given address is link-local: Memorize the interface Id if existing. */
-            if ((ll_iface) && ipv6_addr_is_link_local((ipv6_addr_t *) tcb->peer_addr)) {
-                tcb->ll_iface = atoi(ll_iface);
-            }
+            tcb->ll_iface = remote->netif;
         }
  #endif
         /* Assign port numbers, verification happens in fsm */
         tcb->local_port = local_port;
-        tcb->peer_port = target_port;
+        tcb->peer_port = remote->port;
 
         /* Setup connection timeout: Put timeout message in TCBs mbox on expiration */
         _setup_timeout(&connection_timeout, GNRC_TCP_CONNECTION_TIMEOUT_DURATION,
@@ -248,6 +245,35 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, char *target_addr, uint16_t targe
 }
 
 /* External GNRC TCP API */
+int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int address_family, char *address, uint16_t port)
+{
+    if (address_family != AF_INET6) {
+        return -EAFNOSUPPORT;
+    }
+
+    ep->family = address_family;
+    ep->port = port;
+    ep->netif = 0;
+
+#ifdef MODULE_GNRC_IPV6
+    if (address) {
+        char *netif = ipv6_addr_split_iface(address);
+
+        if (ipv6_addr_from_str((ipv6_addr_t *) ep->addr.ipv6, address) == NULL) {
+           return -EINVAL;
+        }
+
+        if (netif) {
+            ep->netif = atol(netif);
+        }
+    }
+    else {
+        ipv6_addr_set_unspecified((ipv6_addr_t *) ep->addr.ipv6);
+    }
+#endif
+    return 0;
+}
+
 int gnrc_tcp_init(void)
 {
     /* Guard: Check if thread is already running */
@@ -284,17 +310,15 @@ void gnrc_tcp_tcb_init(gnrc_tcp_tcb_t *tcb)
     mutex_init(&(tcb->function_lock));
 }
 
-int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, uint8_t address_family,
-                         char *target_addr, uint16_t target_port,
-                         uint16_t local_port)
+int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote, uint16_t local_port)
 {
     assert(tcb != NULL);
-    assert(target_addr != NULL);
-    assert(target_port != PORT_UNSPEC);
+    assert(remote != NULL);
+    assert(remote->port != PORT_UNSPEC);
 
-    /* Check if AF-Family of target_addr is supported */
+    /* Check if given AF-Family in remote is supported */
 #ifdef MODULE_GNRC_IPV6
-    if (address_family != AF_INET6) {
+    if (remote->family != AF_INET6) {
         return -EAFNOSUPPORT;
     }
 #else
@@ -302,35 +326,35 @@ int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, uint8_t address_family,
 #endif
 
     /* Check if AF-Family for target address matches internally used AF-Family */
-    if (tcb->address_family != address_family) {
+    if (remote->family != tcb->address_family) {
         return -EINVAL;
     }
+
     /* Proceed with connection opening */
-    return _gnrc_tcp_open(tcb, target_addr, target_port, NULL, local_port, 0);
+    return _gnrc_tcp_open(tcb, remote, NULL, local_port, 0);
 }
 
-int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, uint8_t address_family,
-                          const char *local_addr, uint16_t local_port)
+int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local)
 {
     assert(tcb != NULL);
-    assert(local_port != PORT_UNSPEC);
+    assert(local != NULL);
+    assert(local->port != PORT_UNSPEC);
 
-    /* Check AF-Family support if local address was supplied */
-    if (local_addr != NULL) {
+    /* Check if given AF-Family in local is supported */
 #ifdef MODULE_GNRC_IPV6
-        if (address_family != AF_INET6) {
-            return -EAFNOSUPPORT;
-        }
+    if (local->family != AF_INET6) {
+        return -EAFNOSUPPORT;
+    }
 #else
         return -EAFNOSUPPORT;
 #endif
-        /* Check if AF-Family matches internally used AF-Family */
-        if (tcb->address_family != address_family) {
-            return -EINVAL;
-        }
+    /* Check if AF-Family matches internally used AF-Family */
+    if (local->family != tcb->address_family) {
+        return -EINVAL;
     }
+
     /* Proceed with connection opening */
-    return _gnrc_tcp_open(tcb, NULL, 0, local_addr, local_port, 1);
+    return _gnrc_tcp_open(tcb, NULL, local->addr.ipv6, local->port, 1);
 }
 
 ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,

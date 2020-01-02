@@ -34,6 +34,39 @@
 extern "C" {
 #endif
 
+
+/**
+ * @brief Address information for a single TCP connection endpoint.
+ * @note Must be compatible to sock_tcp_ep_t.
+ */
+typedef struct {
+    int family; /**< IP Address family. GNRC supports currently only IPv6. */
+
+    union {
+#ifdef MODULE_GNRC_IPV6
+        uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 Address storage */
+#endif
+    } addr;
+
+    uint16_t netif; /**< Network interface ID */
+    uint16_t port;  /**< Port number (in host byte order) */
+} gnrc_tcp_ep_t;
+
+
+/**
+ * @brief Initialize TCP connection endpoint.
+ *
+ * @param[in,out] ep               Endpoint to initialize.
+ * @param[in]     address_family   Address family of @p address.
+ * @param[in]     address          Address information for endpoint.
+ * @param[in]     port             Port number for endpoint.
+ *
+ * @returns   0 on success.
+ *            -EAFNOSUPPORT if @p address_family is not supported.
+ *            -EINVAL if parsing of @p address failed.
+ */
+int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int address_family, char *address, uint16_t port);
+
 /**
  * @brief Initialize TCP
  *
@@ -57,18 +90,15 @@ void gnrc_tcp_tcb_init(gnrc_tcp_tcb_t *tcb);
  *
  * @pre gnrc_tcp_tcb_init() must have been successfully called.
  * @pre @p tcb must not be NULL
- * @pre @p target_addr must not be NULL.
- * @pre @p target_port must not be 0.
+ * @pre @p remote must not be NULL.
  *
  * @note Blocks until a connection has been established or an error occurred.
  *
- * @param[in,out] tcb              TCB holding the connection information.
- * @param[in]     address_family   Address family of @p target_addr.
- * @param[in]     target_addr      Pointer to target address.
- * @param[in]     target_port      Target port number.
- * @param[in]     local_port       If zero or PORT_UNSPEC, the connections
- *                                 source port is randomly chosen. If local_port is non-zero
- *                                 the local_port is used as source port.
+ * @param[in,out] tcb          TCB holding the connection information.
+ * @param[in]     remote       Remote endpoint of the host to connect to.
+ * @param[in]     local_port   If zero or PORT_UNSPEC, the connections source port
+ *                             is randomly chosen. If local_port is non-zero
+ *                             the local_port is used as source port.
  *
  * @returns   0 on success.
  *            -EAFNOSUPPORT if @p address_family is not supported.
@@ -80,8 +110,7 @@ void gnrc_tcp_tcb_init(gnrc_tcp_tcb_t *tcb);
  *            -ETIMEDOUT if the connection could not be opened.
  *            -ECONNREFUSED if the connection was reset by the peer.
  */
-int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb,  uint8_t address_family,
-                         char *target_addr, uint16_t target_port,
+int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
                          uint16_t local_port);
 
 /**
@@ -89,30 +118,25 @@ int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb,  uint8_t address_family,
  *
  * @pre gnrc_tcp_tcb_init() must have been successfully called.
  * @pre @p tcb must not be NULL.
- * @pre if local_addr is not NULL, local_addr must be assigned to a network interface.
- * @pre if local_port is not zero.
+ * @pre @p local must not be NULL.
+ * @pre port in @p local must not be zero.
  *
  * @note Blocks until a connection has been established (incoming connection request
  *       to @p local_port) or an error occurred.
  *
- * @param[in,out] tcb              TCB holding the connection information.
- * @param[in]     address_family   Address family of @p local_addr.
- *                                 If local_addr == NULL, address_family is ignored.
- * @param[in]     local_addr       If not NULL the connection is bound to @p local_addr.
- *                                 If NULL a connection request to all local ip
- *                                 addresses is valid.
- * @param[in]     local_port       Port number to listen on.
+ * @param[in,out] tcb     TCB holding the connection information.
+ * @param[in]     local   Endpoint specifying the port and address used to wait for
+ *                        incomming connections.
  *
  * @returns   0 on success.
  *            -EAFNOSUPPORT if local_addr != NULL and @p address_family is not supported.
  *            -EINVAL if @p address_family is not the same the address_family used in TCB.
- *                    or @p target_addr is invalid.
+ *                    or the address in @p local is invalid.
  *            -EISCONN if TCB is already in use.
  *            -ENOMEM if the receive buffer for the TCB could not be allocated.
  *            Hint: Increase "GNRC_TCP_RCV_BUFFERS".
  */
-int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, uint8_t address_family,
-                          const char *local_addr, uint16_t local_port);
+int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local);
 
 /**
  * @brief Transmit data to connected peer.

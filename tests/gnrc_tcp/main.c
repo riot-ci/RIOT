@@ -106,8 +106,10 @@ int gnrc_tcp_open_active_cmd(int argc, char **argv)
     uint16_t target_port = atol(argv[3]);
     uint16_t local_port = atol(argv[4]);
 
-    int err = gnrc_tcp_open_active(&tcb, af_family, target_addr, target_port,
-                                   local_port);
+    gnrc_tcp_ep_t remote;
+    gnrc_tcp_ep_init(&remote, af_family, target_addr, target_port);
+
+    int err = gnrc_tcp_open_active(&tcb, &remote, local_port);
     switch (err) {
         case -EAFNOSUPPORT:
             printf("%s: returns -EAFNOSUPPORT\n", argv[0]);
@@ -158,7 +160,10 @@ int gnrc_tcp_open_passive_cmd(int argc, char **argv)
         local_port = atol(argv[3]);
     }
 
-    int err = gnrc_tcp_open_passive(&tcb, af_family, local_addr, local_port);
+    gnrc_tcp_ep_t local;
+    gnrc_tcp_ep_init(&local, af_family, local_addr, local_port);
+
+    int err = gnrc_tcp_open_passive(&tcb, &local);
     switch (err) {
         case -EAFNOSUPPORT:
             printf("%s: returns -EAFNOSUPPORT\n", argv[0]);
