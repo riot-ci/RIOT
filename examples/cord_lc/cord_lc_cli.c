@@ -66,12 +66,8 @@ static void _parse_filters(clif_attr_t *filters, size_t filter_count,
         }
 
         f->key_len = key_end - f->key;
-
-        char *value_start = key_end + 1;
-        char *value_end =
-            memchr(value_start, '\0', sizeof(argv[i]) - (f->key_len + 1));
-        f->value = value_start;
-        f->value_len = value_end - value_start;
+        f->value = key_end + 1;
+        f->value_len = strlen(f->value);
     }
 }
 
