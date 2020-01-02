@@ -140,7 +140,7 @@ void wdt_setup_reboot_with_callback(uint32_t min_time, uint32_t max_time,
     PLIC_disable_interrupt(INT_WDOGCMP);
 
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
-    AON_REG(AON_WDOGCFG) = AON_WDOGCFG_ZEROCMP | scale;
+    AON_REG(AON_WDOGCFG) = scale;
 
     if (cb) {
         /* enable interrupt */
