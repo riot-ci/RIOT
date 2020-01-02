@@ -115,7 +115,7 @@ static void _on_lookup(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
     if (memo->state == GCOAP_MEMO_RESP) {
         unsigned ct = coap_get_content_type(pdu);
         if (ct != COAP_FORMAT_LINK) {
-            DEBUG("cord_lc: unsupported content format\n");
+            DEBUG("cord_lc: unsupported content format: %u\n", ct);
             thread_flags_set((thread_t *)_waiter, flag);
         }
         if (pdu->payload_len == 0) {
