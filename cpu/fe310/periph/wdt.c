@@ -88,6 +88,10 @@ static inline uint8_t _setup(uint32_t min_time, uint32_t max_time)
     uint32_t count = ((uint32_t)max_time * RTC_FREQ) / MS_PER_SEC;
     uint8_t scale = _scale(count);
 
+    /* Reset the watchdog counter to ensure we start
+       from a deterministic state */
+    wdt_kick();
+
     AON_REG(AON_WDOGKEY) = AON_WDOGKEY_VALUE;
     AON_REG(AON_WDOGCMP) = count;
 
