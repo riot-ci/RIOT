@@ -85,6 +85,24 @@ typedef void (*external_isr_ptr_t)(int intNum);
  */
 void set_external_isr_cb(int intNum, external_isr_ptr_t cbFunc);
 
+/**
+ * @name    WDT upper and lower bound times in ms
+ * @{
+ */
+#define NWDT_TIME_LOWER_LIMIT           (1)
+#define NWDT_TIME_UPPER_LIMIT           ((UINT32_MAX >> 15)  * MS_PER_SEC + 1)
+/** @} */
+
+/**
+ * @brief   WDT interrupt priority: use highest priority
+ */
+#define WDT_INTR_PRIORITY               (PLIC_NUM_PRIORITIES)
+
+/**
+ * @brief   WDT can be stopped
+ */
+#define WDT_HAS_STOP                    (1)
+
 #ifdef __cplusplus
 }
 #endif
