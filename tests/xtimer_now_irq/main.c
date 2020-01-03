@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       testing xtimer_mutex_lock_timeout function
+ * @brief       testing xtimer_now_usec function with irq disabled
  *
  *
  * @author      Julian Holzwarth <julian.holzwarth@fu-berlin.de>
@@ -21,20 +21,27 @@
 #include <stdio.h>
 #include "xtimer.h"
 #include "irq.h"
+#include "test_utils/interactive_sync.h"
+
+#define TEST_COUNT 4
 
 int main(void)
 {
+    test_utils_interactive_sync();
     puts("xtimer_now_irq test application.\n");
 
-    while (true) {
+    while (TEST_COUNT) {
         unsigned int state = irq_disable();
         uint32_t t1 = xtimer_now_usec();
-        xtimer_spin(xtimer_ticks_from_usec(XTIMER_BACKOFF));
+        xtimer_spin(xtimer_ticks_from_usec((uint32_t)(~XTIMER_MASK) / 2));
         uint32_t t2 = xtimer_now_usec();
         irq_restore(state);
         if (t2 < t1) {
-            printf("Error\n");
+            puts("Error");
+            return -1;
         }
+        puts("OK");
     }
+    puts("SUCCESS");
     return 0;
 }
