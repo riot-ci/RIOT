@@ -65,7 +65,7 @@ static inline uint32_t _xtimer_lltimer_mask(uint32_t val)
  * @internal
  */
 
-uint64_t _xtimer_now64(void);
+uint32_t _xtimer_now(void);
 
 /**
  * @brief Sets the timer to the appropriate timer_list or list_head.
@@ -107,11 +107,11 @@ void _xtimer_tsleep(uint32_t offset, uint32_t long_offset);
 #ifndef DOXYGEN
 /* Doxygen warns that these are undocumented, but the documentation can be found in xtimer.h */
 
-static inline uint32_t _xtimer_now(void)
+static inline uint32_t _xtimer_now64(void)
 {
     uint32_t now, elapsed;
 
-    /* time sensitive since _xtimer_current_time are updated here */
+    /* time sensitive since _xtimer_current_time is updated here */
     uint8_t state = irq_disable();
     now = _xtimer_lltimer_now();
 #if XTIMER_MASK
@@ -123,7 +123,7 @@ static inline uint32_t _xtimer_now(void)
 #endif
     irq_restore(state);
 
-    return (uint32_t)_xtimer_current_time;
+    return _xtimer_current_time;
 }
 
 static inline xtimer_ticks32_t xtimer_now(void)

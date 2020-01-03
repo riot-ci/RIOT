@@ -81,7 +81,7 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
     timer.arg = (void*) &mutex;
 
     /* time sensitive until setting offset */
-    uint8_t state = irq_disable();
+    unsigned int state = irq_disable();
     uint32_t now = _xtimer_now();
     uint32_t elapsed = now - (*last_wakeup);
     uint32_t offset = (*last_wakeup) + period - now;
@@ -214,7 +214,7 @@ static void _mutex_timeout(void *arg)
      * If the xtimer spin is fixed in the future
      * interups disable/restore can be removed
      */
-    unsigned irqstate = irq_disable();
+    unsigned int irqstate = irq_disable();
 
     mutex_thread_t *mt = (mutex_thread_t *)arg;
 
