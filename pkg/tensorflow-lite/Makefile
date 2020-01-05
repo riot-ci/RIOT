@@ -8,6 +8,10 @@ TF_USEMODULE = $(filter $(TF_MODULES),$(USEMODULE))
 
 .PHONY: all tensorflow-lite tensorflow-lite-%
 
+CFLAGS += -Wno-pedantic
+CFLAGS += -DTF_LITE_STATIC_MEMORY
+CFLAGS += -DTF_LITE_USE_GLOBAL_ROUND
+
 all: tensorflow-lite
 
 tensorflow-lite: $(TF_USEMODULE)

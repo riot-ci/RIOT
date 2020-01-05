@@ -1,5 +1,8 @@
 MODULE = tensorflow-lite-core
 
+CXXEXFLAGS += -Wno-sign-compare
+CXXEXFLAGS += -Wno-type-limits
+
 SRCXXEXT = cc
 SRCXXEXCLUDE := $(wildcard *_test.$(SRCXXEXT))
 
@@ -10,7 +13,5 @@ SRCXX := \
     op_resolver.cc \
     tensor_utils.cc \
     #
-
-CXXEXFLAGS += -Wno-sign-compare
 
 include $(RIOTBASE)/Makefile.base
