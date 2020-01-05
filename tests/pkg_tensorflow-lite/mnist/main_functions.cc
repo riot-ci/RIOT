@@ -102,7 +102,7 @@ void setup() {
       return;
     }
 
-    /* Get the best match in output tensor */
+    /* Get the best match from the output tensor */
     float val = 0;
     uint8_t digit = 0;
     for (unsigned i = 0; i < 10; ++i) {
