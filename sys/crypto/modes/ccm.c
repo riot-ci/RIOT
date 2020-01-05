@@ -105,14 +105,8 @@ int ccm_compute_adata_mac(cipher_t *cipher, const uint8_t *auth_data,
     if (auth_data_len > 0) {
         int len;
 
-        /* Create a block with the encoded length */
-        int block_size = cipher_get_block_size(cipher);
-        if (block_size > 16  || block_size < 0) {
-            DEBUG("UNSUPPORTED block size of the cipher: %d\n",
-                  block_size);
-            return -1;
-        }
-        uint8_t auth_data_encoded[16], len_encoding = 0;
+        /* Create a block with the encoded length. Block length is always 16 */
+        uint8_t auth_data_encoded[CCM_BLOCK_SIZE], len_encoding = 0;
 
         /* If 0 < l(a) < (2^16 - 2^8), then the length field is encoded as two
          * octets. (RFC3610 page 2)
@@ -131,8 +125,9 @@ int ccm_compute_adata_mac(cipher_t *cipher, const uint8_t *auth_data,
 
         uint8_t auth_data_len_in_encoded =
             (auth_data_len >=
-             (uint32_t)block_size - len_encoding) ? ((uint32_t)block_size -
-                                                     len_encoding) :
+             (uint32_t)CCM_BLOCK_SIZE -
+             len_encoding) ? ((uint32_t)CCM_BLOCK_SIZE -
+                              len_encoding) :
             auth_data_len;
         memcpy(auth_data_encoded + len_encoding, auth_data,
                auth_data_len_in_encoded);
@@ -194,6 +189,7 @@ int cipher_encrypt_ccm(cipher_t *cipher,
 
     /* Create B0, encrypt it (X1) and use it as mac_iv */
     block_size = cipher_get_block_size(cipher);
+    assert(block_size == CCM_BLOCK_SIZE);
     if (ccm_create_mac_iv(cipher, auth_data_len, mac_length, length_encoding,
                           nonce, nonce_len, input_len, mac_iv) < 0) {
         return CCM_ERR_INVALID_DATA_LENGTH;
@@ -262,6 +258,7 @@ int cipher_decrypt_ccm(cipher_t *cipher,
     /* Compute first stream block */
     nonce_counter[0] = length_encoding - 1;
     block_size = cipher_get_block_size(cipher);
+    assert(block_size == CCM_BLOCK_SIZE);
     memcpy(&nonce_counter[1], nonce, min(nonce_len,
                                          (size_t)15 - length_encoding));
     len = cipher_encrypt_ctr(cipher, nonce_counter, block_size, zero_block,
