@@ -1,0 +1,15 @@
+INCLUDES += -I$(PKGDIRBASE)/flatbuffers/include
+
+FLATC ?= flatc
+
+ifneq (0,$(shell which flatc 2>&1 > /dev/null ; echo $$?))
+  FLATC = $(RIOTTOOLS)/flatc/flatc
+  $(call target-export-variables,all,$(FLATC))
+  BUILDDEPS += $(FLATC)
+endif
+
+ifneq (,$(filter arch_esp32 arch_esp8266,$(FEATURES_USED)))
+  CXXEXFLAGS += -std=c++11
+endif
+
+CXXEXFLAGS += -Wno-type-limits
