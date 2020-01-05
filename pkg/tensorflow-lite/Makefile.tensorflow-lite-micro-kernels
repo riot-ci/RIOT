@@ -5,5 +5,6 @@ SRCXXEXCLUDE := $(wildcard *_test.$(SRCXXEXT))
 
 CXXEXFLAGS += -Wno-missing-field-initializers
 CXXEXFLAGS += -Wno-unused-parameter
+CXXEXFLAGS += -Wno-unused-const-variable
 
 include $(RIOTBASE)/Makefile.base
