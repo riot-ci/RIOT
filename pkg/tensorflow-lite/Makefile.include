@@ -1,5 +1,5 @@
 INCLUDES += -I$(PKGDIRBASE)/tensorflow-lite
 
-CFLAGS += -Wno-pedantic
-CFLAGS += -DTF_LITE_STATIC_MEMORY
-CFLAGS += -DTF_LITE_USE_GLOBAL_ROUND
+ifeq (,$(filter arch_esp8266,$(FEATURES_USED)))
+  CXXEXFLAGS += -Wno-unused-const-variable
+endif
