@@ -1,5 +1,6 @@
 MODULE = tensorflow-lite-hello_world
 
+CXXEXFLAGS += -Wno-type-limits
 CXXEXFLAGS += -Wno-unused-parameter
 
 SRCXXEXT = cc
