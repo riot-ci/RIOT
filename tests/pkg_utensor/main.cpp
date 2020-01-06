@@ -21,23 +21,31 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "models/deep_mlp.hpp"  //generated model file
-#include "tensor.hpp"  //useful tensor classes
-#include "blob/digit.h"  //contains a sample taken from the MNIST test set
+#include "blob/digit.h"         //contains a sample taken from the MNIST test set
 
-int main(void)
+#include "models/deep_mlp.hpp"  //generated model file
+#include "tensor.hpp"           //useful tensor classes
+
+int main()
 {
     puts("Simple MNIST end-to-end uTensor cli example (device)\n");
 
-    Context ctx;  //creating the context class, the stage where inferences take place
-    //wrapping the input data in a tensor class
-    Tensor* input_x = new WrappedRamTensor<float>({1, digit_len >> 2}, (float *)digit);
+    // create the context class, the stage where inferences take place
+    Context ctx;
 
-    get_deep_mlp_ctx(ctx, input_x);  // pass the tensor to the context
-    S_TENSOR pred_tensor = ctx.get("y_pred:0");  // getting a reference to the output tensor
-    ctx.eval(); //trigger the inference
+    // wrap the input digit in a tensor class
+    auto input_x = new WrappedRamTensor<float>({1, digit_len >> 2}, (float *)digit);
 
-    uint8_t pred_label = *(pred_tensor->read<int>(0, 0));  //getting the result back
+    // pass ownership of the tensor to the context
+    get_deep_mlp_ctx(ctx, input_x);
+
+    // get a reference to the output tensor
+    S_TENSOR pred_tensor = ctx.get("y_pred:0");
+    // trigger the inference
+    ctx.eval();
+
+    // get the result back and display it
+    uint8_t pred_label = *(pred_tensor->read<int>(0, 0));
     printf("Predicted label: %d\r\n", pred_label);
 
     return 0;

@@ -4,7 +4,7 @@ uTensor sample application
 This application shows how to setup utensor and use it with RIOT: an MLP
 (Multi-Layer Perceptron) model is trained with TensorFlow on the
 [MNIST dataset](http://yann.lecun.com/exdb/mnist/) in order to be able to
-recognize hand written digits.
+recognize hand written digits in an image.
 
 The code of this application comes from the following blog post:
 https://www.hackster.io/news/simple-neural-network-on-mcus-a7cbd3dc108c
@@ -38,7 +38,9 @@ the digit file from another test image of the MNIST dataset:
 ```
 
 Each selected digit is displayed at the end of the script to allow a "visual"
-comparison with the value detected by the firmware.
+comparison with the value predicted by the firmware.
+For each new digit generated, the firmware must be rebuilt: the image is
+statically embedded as a blob in the firmware image.
 
 Training the model
 ------------------
@@ -48,13 +50,14 @@ Except the Makefiles, all C++ files (model + weights) were generated using the
 `utensor-cli` tool from a model trained with TensorFlow.
 
 Here are the steps required to train a new model and update the C++ files in the
-`models` external module within the application from scratch:
+`models` external module within the application:
 
 1. Install Python3 dependencies
     ```
     pip3 install --user utensor_cgen graphviz
     pip3 install --user tensorflow -U
     ```
+  Note that utensor_cgen is only compatible with tensorflow 1 for the moment.
 
 2. Clone the utensor-mnist-demo repository: it contains the Python script used
   to train the MLP model on the MNIST dataset.
@@ -75,8 +78,5 @@ Here are the steps required to train a new model and update the C++ files in the
 4. Generate the C++ model files that will be included later in the RIOT build:
     ```
     cd $RIOTBASE/tests/pkg_utensor
-    utensor-cli convert /tmp/utensor-mnist-demo/mnist_model/deep_mlp.pb --output-nodes=y_pred
+    utensor-cli convert /tmp/utensor-mnist-demo/mnist_model/deep_mlp.pb --target utensor --output-nodes=y_pred
     ```
-
-    The generated C++ model files contains small syntax errors (easy to fix: 3
-    closing parenthesis are missing).
