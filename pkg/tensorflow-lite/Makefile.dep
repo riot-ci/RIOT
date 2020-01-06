@@ -11,3 +11,8 @@ USEMODULE += tensorflow-lite-kernels
 USEMODULE += tensorflow-lite-kernels-internal
 USEMODULE += tensorflow-lite-memory
 USEMODULE += tensorflow-lite-micro-kernels
+
+# Blacklist Cortex-M0 architecture because of too little stack size
+ifneq (,$(filter cortex-m0%,$(CPU_ARCH)))
+  FEATURES_BLACKLIST += arch_cortexm
+endif
