@@ -84,10 +84,6 @@ CFLAGS += -Wno-atomic-alignment
 # unsupported warning flags:
 CFLAGS += -Wno-unknown-warning-option
 
-# net/sock/async/types.h needs to re-typedef the sock types at the moment to
-# prevent cyclic includes
-CFLAGS += -Wno-typedef-redefinition
-
 OPTIONAL_CFLAGS_BLACKLIST += -fno-delete-null-pointer-checks
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-overflow
 OPTIONAL_CFLAGS_BLACKLIST += -Wformat-truncation
