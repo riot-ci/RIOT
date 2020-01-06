@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#  Copyright (C) 2019 Freie Universität Berlin,
+#  Copyright (C) 2020 Freie Universität Berlin,
 #
 # This file is subject to the terms and conditions of the GNU Lesser
 # General Public License v2.1. See the file LICENSE in the top level
@@ -12,13 +12,12 @@ import sys
 import pexpect
 from testrunner import run
 
+TIMEOUT = 75*60
 
 def testfunc(child):
-    child.expect("OK", timeout=75*60)
-    child.expect("OK", timeout=75*60)
-    child.expect("OK", timeout=75*60)
-    child.expect("OK", timeout=75*60)
-    child.expect("SUCCESS")
+    for _ in range(4):
+        child.expect_exact("OK", timeout=TIMEOUT)
+    child.expect_exact("SUCCESS")
 
 
 
