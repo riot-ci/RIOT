@@ -38,7 +38,7 @@ X_valid = X_valid / 255.0
 
 # building a very simple linear stack of layers using a sequential model
 model = Sequential([
-    Dense(100, activation='relu', input_shape=(784,)),
+    Dense(64, activation='relu', input_shape=(784,)),
     Dropout(0.2),
     Dense(10, activation='softmax')
 ])
