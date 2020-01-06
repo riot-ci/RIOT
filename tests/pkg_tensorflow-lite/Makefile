@@ -1,3 +1,6 @@
+# Ensure minimal size by default
+DEVELHELP ?= 0
+
 include ../Makefile.tests_common
 
 # Other available example: hello_world
