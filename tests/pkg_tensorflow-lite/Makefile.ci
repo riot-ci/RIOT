@@ -1,0 +1,9 @@
+BOARD_INSUFFICIENT_MEMORY := \
+    blackpill \
+    bluepill \
+    nucleo-f302r8 \
+    nucleo-f303k8 \
+    nucleo-f334r8 \
+    saml10-xpro \
+    saml11-xpro \
+    #
