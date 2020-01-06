@@ -8,9 +8,9 @@ include $(RIOTBASE)/pkg/pkg.mk
 # GCC 7.x fails on (intentional) fallthrough, thus disable implicit-fallthrough.
 CFLAGS += -Wno-implicit-fallthrough
 
-all:
-	"$(MAKE)" -C $(PKG_BUILDDIR)
-
 ifeq (llvm,$(TOOLCHAIN))
   CFLAGS += -Wno-format-nonliteral
 endif
+
+all:
+	"$(MAKE)" -C $(PKG_BUILDDIR)
