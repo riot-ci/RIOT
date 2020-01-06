@@ -43,7 +43,7 @@ namespace {
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-void setup(void)
+void setup()
 {
     // Set up logging. Google style is to avoid globals or statics because of
     // lifetime uncertainty, but since this has a trivial destructor it's okay.
@@ -124,4 +124,4 @@ void setup(void)
 }
 
 // The name of this function is important for Arduino compatibility.
-void loop(void) {}
+void loop() {}
