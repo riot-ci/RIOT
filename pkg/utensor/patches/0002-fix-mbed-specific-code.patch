@@ -1,12 +1,12 @@
-From 81428df5c197cb4620abf5132cbdfd56ed751455 Mon Sep 17 00:00:00 2001
+From 3a6aa2c894923f3d4a5aff0ea09e71f7c68dbde7 Mon Sep 17 00:00:00 2001
 From: Alexandre Abadie <alexandre.abadie@inria.fr>
 Date: Sat, 23 Nov 2019 13:11:00 +0100
 Subject: [PATCH] Fix mbed specific code
 
 ---
  src/uTensor/util/uTensor_util.cpp | 4 ++--
- src/uTensor/util/uTensor_util.hpp | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ src/uTensor/util/uTensor_util.hpp | 2 --
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/src/uTensor/util/uTensor_util.cpp b/src/uTensor/util/uTensor_util.cpp
 index 4d1dd48..32c50df 100644
@@ -29,15 +29,15 @@ index 4d1dd48..32c50df 100644
  }
  #else
 diff --git a/src/uTensor/util/uTensor_util.hpp b/src/uTensor/util/uTensor_util.hpp
-index 25ebcf3..9fff08b 100644
+index 25ebcf3..5390ed8 100644
 --- a/src/uTensor/util/uTensor_util.hpp
 +++ b/src/uTensor/util/uTensor_util.hpp
-@@ -107,7 +107,7 @@ void printVector(std::vector<uint32_t> vec);
+@@ -106,8 +106,6 @@ void printVector(std::vector<uint32_t> vec);
+     #undef min
      #undef round
      #undef abs
- #else
+-#else
 -    #include "mbed.h"
-+    // #include "mbed.h"
  #endif
  //#   error "Unknown compiler"
      // little endian to big endian
