@@ -56,7 +56,7 @@ void setup(void)
     if (model->version() != TFLITE_SCHEMA_VERSION) {
         printf("Model provided is schema version %d not equal "
                "to supported version %d.",
-               (uint8_t)model->version(), TFLITE_SCHEMA_VERSION);
+               static_cast<uint8_t>(model->version()), TFLITE_SCHEMA_VERSION);
         return;
     }
 
@@ -93,7 +93,7 @@ void setup(void)
 
     // Copy digit array in input tensor
     for (unsigned i = 0; i < digit_len; ++i) {
-        input->data.f[i] = (float)digit[i] / 255.0;
+        input->data.f[i] = static_cast<float>(digit[i]) / 255.0;
     }
 
     // Run inference, and report any error
