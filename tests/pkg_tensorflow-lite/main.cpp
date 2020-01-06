@@ -15,8 +15,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-void setup(void);
-void loop(void);
+void setup();
+void loop();
 
 int main(int argc, char* argv[])
 {
