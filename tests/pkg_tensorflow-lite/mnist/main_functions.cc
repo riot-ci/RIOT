@@ -15,6 +15,7 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
+#include <stdio.h>
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
@@ -42,7 +43,8 @@ namespace {
 }  // namespace
 
 // The name of this function is important for Arduino compatibility.
-void setup() {
+void setup(void)
+{
     // Set up logging. Google style is to avoid globals or statics because of
     // lifetime uncertainty, but since this has a trivial destructor it's okay.
     static tflite::MicroErrorReporter micro_error_reporter;
@@ -52,11 +54,10 @@ void setup() {
     // copying or parsing, it's a very lightweight operation.
     model = tflite::GetModel(model_tflite);
     if (model->version() != TFLITE_SCHEMA_VERSION) {
-      error_reporter->Report(
-          "Model provided is schema version %d not equal "
-          "to supported version %d.",
-          model->version(), TFLITE_SCHEMA_VERSION);
-      return;
+        printf("Model provided is schema version %d not equal "
+               "to supported version %d.",
+               (uint8_t)model->version(), TFLITE_SCHEMA_VERSION);
+        return;
     }
 
     // Explicitly load required operators
@@ -82,8 +83,8 @@ void setup() {
     // Allocate memory from the tensor_arena for the model's tensors.
     TfLiteStatus allocate_status = interpreter->AllocateTensors();
     if (allocate_status != kTfLiteOk) {
-      error_reporter->Report("AllocateTensors() failed");
-      return;
+        puts("AllocateTensors() failed");
+        return;
     }
 
     // Obtain pointers to the model's input and output tensors.
@@ -98,8 +99,8 @@ void setup() {
     // Run inference, and report any error
     TfLiteStatus invoke_status = interpreter->Invoke();
     if (invoke_status != kTfLiteOk) {
-      error_reporter->Report("Invoke failed\n");
-      return;
+        puts("Invoke failed");
+        return;
     }
 
     // Get the best match from the output tensor
@@ -115,12 +116,12 @@ void setup() {
 
     // Output the prediction, if there's one
     if (val > 0) {
-        error_reporter->Report("Digit prediction: %d\n", digit);
+        printf("Digit prediction: %d\n", digit);
     }
     else {
-        error_reporter->Report("No match found\n");
+        puts("No match found");
     }
 }
 
 // The name of this function is important for Arduino compatibility.
-void loop() {}
+void loop(void) {}
