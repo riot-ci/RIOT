@@ -22,10 +22,12 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #include "periph_conf.h"
 #include "periph/rtc.h"
+#include "thread.h"
 #include "xtimer.h"
 
 #define PERIOD              (2U)
@@ -34,6 +36,8 @@
 #define TM_YEAR_OFFSET      (1900)
 
 static unsigned cnt = 0;
+
+static kernel_pid_t p_recv = KERNEL_PID_UNDEF;
 
 static void print_time(const char *label, const struct tm *time)
 {
@@ -54,15 +58,10 @@ static void inc_secs(struct tm *time, unsigned val)
 static void cb(void *arg)
 {
     (void)arg;
+    msg_t msg;
 
-    puts("Alarm!");
-
-    if (++cnt < REPEAT) {
-        struct tm time;
-        rtc_get_alarm(&time);
-        inc_secs(&time, PERIOD);
-        rtc_set_alarm(&time, cb, NULL);
-    }
+    memset(&msg, 1, sizeof(msg_t));
+    msg_try_send(&msg, p_recv);
 }
 
 int main(void)
@@ -97,6 +96,22 @@ int main(void)
     rtc_get_alarm(&time);
     print_time("   Alarm is set to ", &time);
     puts("");
+
+    p_recv = sched_active_pid;
+
+    while (1) {
+        msg_t msg;
+
+        msg_receive(&msg);
+        puts("Alarm!");
+
+        if (++cnt < REPEAT) {
+            struct tm time;
+            rtc_get_alarm(&time);
+            inc_secs(&time, PERIOD);
+            rtc_set_alarm(&time, cb, NULL);
+        }
+    }
 
     return 0;
 }
