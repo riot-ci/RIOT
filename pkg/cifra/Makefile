@@ -7,4 +7,3 @@ include $(RIOTBASE)/pkg/pkg.mk
 
 all:
 	"$(MAKE)" -C $(PKG_BUILDDIR)/src -f $(CURDIR)/Makefile.cifra
-
