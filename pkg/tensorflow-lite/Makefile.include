@@ -1,0 +1,5 @@
+INCLUDES += -I$(PKGDIRBASE)/tensorflow-lite
+
+ifeq (,$(filter arch_esp8266,$(FEATURES_USED)))
+  CXXEXFLAGS += -Wno-unused-const-variable
+endif
