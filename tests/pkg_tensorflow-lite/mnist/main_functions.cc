@@ -60,7 +60,7 @@ void setup() {
     }
 
     // Explicitly load required operators
-    static tflite::MicroMutableOpResolver micro_mutable_op_resolver;  // NOLINT
+    static tflite::MicroMutableOpResolver micro_mutable_op_resolver;
     micro_mutable_op_resolver.AddBuiltin(
         tflite::BuiltinOperator_FULLY_CONNECTED,
         tflite::ops::micro::Register_FULLY_CONNECTED(), 1, 4);
@@ -102,7 +102,7 @@ void setup() {
       return;
     }
 
-    /* Get the best match from the output tensor */
+    // Get the best match from the output tensor
     float val = 0;
     uint8_t digit = 0;
     for (unsigned i = 0; i < 10; ++i) {
