@@ -99,7 +99,7 @@ clean::
 distclean::
 	rm -rf $(PKG_BUILDDIR)
 
-# Depencies to 'patches'
+# Dependencies to 'patches'
 -include $(PKG_PATCHED).d
 
 # Reset goal for package
