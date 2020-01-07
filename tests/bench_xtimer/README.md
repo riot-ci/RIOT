@@ -27,18 +27,18 @@ this list will be empty.
 
 ### set() + remove() one
 
-This first repeatedly first sets, then removes one timer. The list is empty
+This repeatedly first sets, then removes one timer. The list is empty
 before and after each iteration.
 All iterations will cause the underlying periph timer to be updated.
 
-###  set() many increasing target
+### set() many increasing targets
 
 This adds NUMOF timers with increasing target times. Each iteration will add a
 timer at the end of xtimer's timer list.
 Only the first iteration will cause the underlying periph timer to be updated.
 After this test, the list is populated with NUMOF timers.
 
-### re-set()  first
+### re-set() first
 
 This repatedly re-sets the first timer in the list (to the same target time).
 All iterations will cause the underlying periph timer to be updated.
@@ -48,11 +48,11 @@ All iterations will cause the underlying periph timer to be updated.
 This repatedly re-sets the timer in the middle of the list (to the same target
 time).
 
-### re-set()   last
+### re-set() last
 
 This repatedly re-sets the last timer in the list (to the same target time).
 
-### remove() + set()  first, middle, last
+### remove() + set() first, middle, last
 
 Same as the previous three, but does a remove() before set().
 
@@ -68,6 +68,7 @@ This simply calls xtimer_now() in a loop.
 # How to interpret results
 
 The aim is to measure the time spent in xtimer's list operations.
+Lower values are better.
 The first/middle/last tests give an idea of the best case / average case /
 worst case when running the operation with NUMOF timers.
 Note that every set() on an already set timer will trigger an implicit remove(),
