@@ -34,7 +34,7 @@
 #endif
 
 #ifndef BASE
-#define BASE    (10000000LU)
+#define BASE    (100000000LU)
 #endif
 
 #ifndef SPREAD
