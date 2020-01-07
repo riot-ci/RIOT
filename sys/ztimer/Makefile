@@ -13,4 +13,7 @@ SUBMODULES := 1
 # "ztimer_extend" does not have corresponding .c
 SUBMODULES_NOFORCE := 1
 
+# disable obsolete warning
+CFLAGS += -Wno-missing-field-initializers
+
 include $(RIOTBASE)/Makefile.base
