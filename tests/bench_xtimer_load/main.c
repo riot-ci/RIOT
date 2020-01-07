@@ -72,7 +72,7 @@ struct timer_msg msg_d = { .interval = (TEST_INTERVAL * 2) };
 /* This thread is only here to give the kernel some extra load */
 void *slacker_thread(void *arg)
 {
-    (void) arg;
+    (void)arg;
     timex_t now;
 
     LOG_DEBUG("run thread %" PRIkernel_pid "\n", thread_getpid());
@@ -90,7 +90,8 @@ void *slacker_thread(void *arg)
 
         tmsg->msg.type = 12345;
         tmsg->msg.content.ptr = tmsg;
-        xtimer_set_msg(&tmsg->timer, tmsg->interval, &tmsg->msg, thread_getpid());
+        xtimer_set_msg(&tmsg->timer, tmsg->interval, &tmsg->msg,
+                       thread_getpid());
     }
 }
 
@@ -101,12 +102,13 @@ static volatile uint32_t _total_jitter, _samples;
 /* This thread will print the drift to stdout once per second */
 void *worker_thread(void *arg)
 {
-    (void) arg;
+    (void)arg;
 
     /* Calculate interval based on possible precision when 'XTIMER_SHIFT > 0',
      * to apply precision loss to expected interval length.
      * test_interval != TEST_INTERVAL */
-    uint32_t test_interval = xtimer_usec_from_ticks(xtimer_ticks_from_usec(TEST_INTERVAL));
+    uint32_t test_interval =
+        xtimer_usec_from_ticks(xtimer_ticks_from_usec(TEST_INTERVAL));
     uint32_t start = 0;
     uint32_t last = 0;
     uint32_t loop_counter = 0;
@@ -202,9 +204,9 @@ int main(void)
         msg_send(&m, pid3);
     }
 
-    printf("drift: min=%"PRIi32" max=%"PRIi32" final=%"PRIi32"\n",
+    printf("drift: min=%" PRIi32 " max=%" PRIi32 " final=%" PRIi32 "\n",
            _min_drift, _max_drift, _final_drift);
-    printf("jitter: min=%"PRIi32" max=%"PRIi32" abs avg=%"PRIi32"\n",
+    printf("jitter: min=%" PRIi32 " max=%" PRIi32 " abs avg=%" PRIi32 "\n",
            _min_jitter, _max_jitter, _total_jitter / _samples);
 
     puts("[DONE]");
