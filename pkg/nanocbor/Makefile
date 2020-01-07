@@ -5,6 +5,6 @@ PKG_LICENSE = LGPL-2.1
 
 include $(RIOTBASE)/pkg/pkg.mk
 
-all: git-download
+all:
 	"$(MAKE)" -C $(PKG_BUILDDIR)/src \
 		-f $(RIOTPKG)/nanocbor/Makefile.$(PKG_NAME)
