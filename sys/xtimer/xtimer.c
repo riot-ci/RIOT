@@ -93,14 +93,9 @@ void _xtimer_periodic_wakeup(uint32_t *last_wakeup, uint32_t period) {
         return;
     }
 
-    if (offset < XTIMER_PERIODIC_SPIN) {
-        _xtimer_spin(offset);
-    }
-    else {
-        mutex_lock(&mutex);
-        _xtimer_set64(&timer, offset, 0);
-        mutex_lock(&mutex);
-    }
+    mutex_lock(&mutex);
+    _xtimer_set64(&timer, offset, 0);
+    mutex_lock(&mutex);
 
     *last_wakeup = now + offset;
 }
