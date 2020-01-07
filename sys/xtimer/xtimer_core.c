@@ -101,8 +101,7 @@ void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
     }
     else {
         _add_timer_to_list(&long_list_head, timer);
-        DEBUG("_xtimer_set64(): added longterm timer (long_offset=%" PRIu32 " offset=%" PRIu32 ")\n",
-              timer->long_offset, timer->long_offset);
+        DEBUG("_xtimer_set64(): added longterm timer.\n");
     }
     irq_restore(state);
 }
@@ -127,7 +126,7 @@ static inline void _schedule_earliest_lltimer(uint32_t now)
         return;
     }
 
-    if (timer_list_head && timer_list_head->offset <= _xtimer_lltimer_mask(0xFFFFFFFF)) {
+    if (timer_list_head && timer_list_head->offset <= (_xtimer_lltimer_mask(0xFFFFFFFF)>>1)) {
         /* schedule lltimer on next timer target time */
         target = timer_list_head->start_time + timer_list_head->offset;
     }
@@ -154,7 +153,8 @@ static bool _timer_comparison(xtimer_t* timerA, xtimer_t* timerB)
         return true;
     }
     if (timerA->long_offset == timerB->long_offset
-        && timerA->start_time + timerA->offset - timerB->start_time <= timerB->offset) {
+        && (timerA->start_time + timerA->offset < timerB->start_time
+            || timerA->start_time + timerA->offset - timerB->start_time <= timerB->offset)) {
         return true;
     }
     return false;
@@ -176,42 +176,30 @@ static void _add_timer_to_list(xtimer_t **list_head, xtimer_t *timer)
 /**
  * @brief remove a timer from an ordered list of timers
  */
-static int _remove_timer_from_list(xtimer_t **list_head, xtimer_t *timer)
+static void _remove_timer_from_list(xtimer_t **list_head, xtimer_t *timer)
 {
     while (*list_head) {
         if (*list_head == timer) {
             *list_head = timer->next;
-            timer->offset = 0;
-            timer->long_offset = 0;
-            timer->start_time = 0;
             timer->next = NULL;
-            return 1;
         }
         list_head = &((*list_head)->next);
     }
-
-    return 0;
 }
 
 void xtimer_remove(xtimer_t *timer)
 {
-    bool reschedule = false;
-
     /* time sensitive since the target timer can be fired */
     unsigned int state = irq_disable();
-    if (timer == timer_list_head) {
-        reschedule = true;
-    }
+    timer->offset = 0;
+    timer->long_offset = 0;
+    timer->start_time = 0;
 
-    if (!_remove_timer_from_list(&timer_list_head, timer)) {
+    if (timer->long_offset) {
         _remove_timer_from_list(&long_list_head, timer);
     }
-
-    /* lltimer should be recheduled when timer_list_head is removed */
-    if (reschedule) {
-        uint32_t now = _xtimer_now();
-        _update_short_timers(&now);
-        _schedule_earliest_lltimer(now);
+    else {
+        _remove_timer_from_list(&timer_list_head, timer);
     }
     irq_restore(state);
 }
@@ -222,28 +210,26 @@ void xtimer_remove(xtimer_t *timer)
  */
 static inline void _update_long_timers(uint32_t *now)
 {
-    if (long_list_head) {
-        xtimer_t *curr_timer = long_list_head;
+    xtimer_t *timer = long_list_head;
 
-        while (curr_timer) {
-            uint32_t elapsed = *now - curr_timer->start_time;
-            if (curr_timer->offset <= elapsed) {
-                curr_timer->long_offset--;
-            }
-            curr_timer->offset -= elapsed;
-            curr_timer->start_time = *now;
+    while (timer) {
+        uint32_t elapsed = *now - timer->start_time;
 
-            if (!curr_timer->long_offset) {
-                assert(curr_timer == long_list_head);
+        if (timer->offset < elapsed) {
+            timer->long_offset--;
+        }
+        timer->offset -= elapsed;
+        timer->start_time = *now;
 
-                xtimer_t *trans_timer = curr_timer;
-                curr_timer = curr_timer->next;
-                _remove_timer_from_list(&long_list_head, trans_timer);
-                _add_timer_to_list(&timer_list_head, trans_timer);
-            }
-            else {
-                curr_timer = curr_timer->next;
-            }
+        if (!timer->long_offset) {
+            assert(timer == long_list_head);
+
+            _remove_timer_from_list(&long_list_head, timer);
+            _add_timer_to_list(&timer_list_head, timer);
+            timer = long_list_head;
+        }
+        else {
+            timer = timer->next;
         }
     }
 }
@@ -251,35 +237,36 @@ static inline void _update_long_timers(uint32_t *now)
 /**
  * @brief update short timers' offsets and fire those that are close to expiry
  */
-static inline void _update_short_timers(uint32_t *now) {
-    while (timer_list_head) {
-        uint32_t elapsed = *now - timer_list_head->start_time;
+static inline void _update_short_timers(uint32_t *now)
+{
+    xtimer_t *timer = timer_list_head;
 
-        if (timer_list_head->offset <= elapsed ||
-            timer_list_head->offset - elapsed < XTIMER_ISR_BACKOFF) {
+    while (timer) {
+        assert(!timer->long_offset);
+        uint32_t elapsed = *now - timer->start_time;
+        if (timer->offset < elapsed || timer->offset - elapsed < XTIMER_ISR_BACKOFF) {
+            assert(timer == timer_list_head);
+
             /* make sure we don't fire too early */
-            while(_xtimer_now() - timer_list_head->start_time < timer_list_head->offset) {}
-
-            /* pick first timer in list */
-            xtimer_t *timer = timer_list_head;
-
+            if (timer->offset > elapsed) {
+                while(_xtimer_now() - timer->start_time < timer->offset) {}
+            }
             /* advance list */
-            timer_list_head = timer->next;
-
-            /* make sure timer is recognized as being already fired */
+            timer_list_head = timer_list_head->next;
+            /* remove and fire timer */
             timer->offset = 0;
-            timer->long_offset = 0;
+            timer->start_time = 0;
             timer->next = NULL;
-
-            /* fire timer */
             _shoot(timer);
+            /* assign new head */
+            timer = timer_list_head;
             /* update current_time */
             *now = _xtimer_now();
         }
         else {
-            timer_list_head->offset -= elapsed;
-            timer_list_head->start_time = *now;
-            return;
+            timer->offset -= elapsed;
+            timer->start_time = *now;
+            timer = timer->next;
         }
     }
 }
@@ -305,8 +292,8 @@ overflow:
     if (timer_list_head) {
         /* make sure we're not setting a time in the past */
         uint32_t elapsed = now - timer_list_head->start_time;
-        if (timer_list_head->offset <= elapsed ||
-            timer_list_head->offset - elapsed <= XTIMER_ISR_BACKOFF) {
+        if (timer_list_head->offset < elapsed ||
+            timer_list_head->offset - elapsed < XTIMER_ISR_BACKOFF) {
             goto overflow;
         }
         else {
