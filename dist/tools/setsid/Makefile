@@ -6,7 +6,7 @@ PKG_BUILDDIR = $(CURDIR)/bin
 
 .PHONY: all
 
-all: git-download
+all:
 	@echo "[INFO] compiling setsid from source now"
 	$(MAKE) BINDIR=$(PKG_BUILDDIR) -C $(PKG_BUILDDIR)
 	@mv $(PKG_BUILDDIR)/setsid $(CURDIR)/setsid
