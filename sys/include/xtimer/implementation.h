@@ -107,7 +107,7 @@ void _xtimer_tsleep(uint32_t offset, uint32_t long_offset);
 #ifndef DOXYGEN
 /* Doxygen warns that these are undocumented, but the documentation can be found in xtimer.h */
 
-static inline uint32_t _xtimer_now64(void)
+static inline uint64_t _xtimer_now64(void)
 {
     uint32_t now, elapsed;
 

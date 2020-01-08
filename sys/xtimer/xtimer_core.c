@@ -145,7 +145,7 @@ static inline void _schedule_earliest_lltimer(uint32_t now)
 }
 
 /**
- * @brief compare two timers. return true if timerA expires earlier than timerB and false otherwise.
+ * @brief compare two timers. return true if timerA expires earlier than or equal to timerB and false otherwise.
  */
 static bool _timer_comparison(xtimer_t* timerA, xtimer_t* timerB)
 {
@@ -182,6 +182,7 @@ static void _remove_timer_from_list(xtimer_t **list_head, xtimer_t *timer)
         if (*list_head == timer) {
             *list_head = timer->next;
             timer->next = NULL;
+            return;
         }
         list_head = &((*list_head)->next);
     }
@@ -195,12 +196,8 @@ void xtimer_remove(xtimer_t *timer)
     timer->long_offset = 0;
     timer->start_time = 0;
 
-    if (timer->long_offset) {
-        _remove_timer_from_list(&long_list_head, timer);
-    }
-    else {
-        _remove_timer_from_list(&timer_list_head, timer);
-    }
+    _remove_timer_from_list(&timer_list_head, timer);
+    _remove_timer_from_list(&long_list_head, timer);
     irq_restore(state);
 }
 
