@@ -6,9 +6,9 @@ PKG_LICENSE=BSD-2-Clause
 include $(RIOTBASE)/pkg/pkg.mk
 
 all:
-	cp $(RIOTBASE)/pkg/u8g2/src/Makefile $(PKG_BUILDDIR)/Makefile
-	cp $(RIOTBASE)/pkg/u8g2/src/csrc/Makefile $(PKG_BUILDDIR)/csrc/Makefile
-	cp $(RIOTBASE)/pkg/u8g2/src/csrc/u8g2_riotos.c $(PKG_BUILDDIR)/csrc/u8g2_riotos.c
-	cp $(RIOTBASE)/pkg/u8g2/src/sys/sdl/common/Makefile $(PKG_BUILDDIR)/sys/sdl/common/Makefile
-	cp $(RIOTBASE)/pkg/u8g2/src/sys/utf8/common/Makefile $(PKG_BUILDDIR)/sys/utf8/common/Makefile
+	cp -u src/Makefile $(PKG_BUILDDIR)/Makefile
+	cp -u src/csrc/Makefile $(PKG_BUILDDIR)/csrc/Makefile
+	cp -u src/csrc/u8g2_riotos.c $(PKG_BUILDDIR)/csrc/u8g2_riotos.c
+	cp -u src/sys/sdl/common/Makefile $(PKG_BUILDDIR)/sys/sdl/common/Makefile
+	cp -u src/sys/utf8/common/Makefile $(PKG_BUILDDIR)/sys/utf8/common/Makefile
 	"$(MAKE)" -C $(PKG_BUILDDIR)
