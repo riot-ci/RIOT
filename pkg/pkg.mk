@@ -45,7 +45,7 @@ GITAMFLAGS ?= $(GIT_QUIET) --no-gpg-sign --ignore-whitespace --whitespace=nowarn
 PKG_PATCHES = $(sort $(wildcard $(PKG_DIR)/patches/*.patch))
 
 PKG_STATE_FILE = .pkg-state.git
-PKG_STATE 	   = $(PKG_BUILDDIR)/$(PKG_STATE_FILE)
+PKG_STATE      = $(PKG_BUILDDIR)/$(PKG_STATE_FILE)
 
 PKG_PREPARED   = $(PKG_STATE)-prepared
 PKG_PATCHED    = $(PKG_STATE)-patched
