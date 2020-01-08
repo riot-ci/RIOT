@@ -141,6 +141,8 @@ static void _callback_wakeup(void *arg)
 void ztimer_set_wakeup(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
                        kernel_pid_t pid)
 {
+    ztimer_remove(clock, timer);
+
     timer->callback = _callback_wakeup;
     timer->arg = (void *)((intptr_t)pid);
 
