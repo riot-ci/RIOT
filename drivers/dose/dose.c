@@ -74,7 +74,7 @@ static dose_signal_t state_transit_blocked(dose_t *ctx, dose_signal_t signal)
         ctx->netdev.event_callback((netdev_t *) ctx, NETDEV_EVENT_ISR);
     }
 
-    if (ctx->sense_pin != UART_UNDEF) {
+    if (ctx->sense_pin != GPIO_UNDEF) {
         /* Enable GPIO interrupt for start bit sensing */
         gpio_irq_enable(ctx->sense_pin);
     }
@@ -108,7 +108,7 @@ static dose_signal_t state_transit_recv(dose_t *ctx, dose_signal_t signal)
 {
     dose_signal_t rc = DOSE_SIGNAL_NONE;
 
-    if (ctx->state != DOSE_STATE_RECV && ctx->sense_pin != UART_UNDEF) {
+    if (ctx->state != DOSE_STATE_RECV && ctx->sense_pin != GPIO_UNDEF) {
         /* We freshly entered this state. Thus, no start bit sensing is required
          * anymore. Disable GPIO IRQs during the transmission. */
         gpio_irq_disable(ctx->sense_pin);
@@ -150,7 +150,7 @@ static dose_signal_t state_transit_send(dose_t *ctx, dose_signal_t signal)
 {
     (void) signal;
 
-    if (ctx->state != DOSE_STATE_SEND && ctx->sense_pin != UART_UNDEF) {
+    if (ctx->state != DOSE_STATE_SEND && ctx->sense_pin != GPIO_UNDEF) {
         /* Disable GPIO IRQs during the transmission. */
         gpio_irq_disable(ctx->sense_pin);
     }
