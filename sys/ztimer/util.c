@@ -132,3 +132,17 @@ void ztimer_set_timeout_flag(ztimer_clock_t *ztimer_clock, ztimer_t *t, uint32_t
     ztimer_set(ztimer_clock, t, timeout);
 }
 #endif
+
+static void _callback_wakeup(void *arg)
+{
+    thread_wakeup((kernel_pid_t)((intptr_t)arg));
+}
+
+void ztimer_set_wakeup(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
+                       kernel_pid_t pid)
+{
+    timer->callback = _callback_wakeup;
+    timer->arg = (void *)((intptr_t)pid);
+
+    ztimer_set(clock, timer, offset);
+}

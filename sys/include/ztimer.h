@@ -402,6 +402,20 @@ void ztimer_periodic_wakeup(ztimer_clock_t *ztimer, uint32_t *last_wakeup,
 void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration);
 
 /**
+ * @brief Set a timer that wakes up a thread
+ *
+ * This function sets a timer that will wake up a thread when the timer has
+ * expired.
+ *
+ * @param[in] clock         ztimer clock to operate on
+ * @param[in] timer         timer struct to work with.
+ * @param[in] offset        clock ticks from now
+ * @param[in] pid           pid of the thread that will be woken up
+ */
+void ztimer_set_wakeup(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
+                       kernel_pid_t pid);
+
+/**
  * @brief    Set timeout thread flag after @p timeout
  *
  * This function will set THREAD_FLAG_TIMEOUT on the current thread after @p
