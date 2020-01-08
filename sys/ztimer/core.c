@@ -32,7 +32,7 @@
 static void _add_entry_to_list(ztimer_clock_t *ztimer, ztimer_base_t *entry);
 static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry);
 static void _ztimer_update(ztimer_clock_t *ztimer);
-static void _ztimer_print(ztimer_clock_t *ztimer);
+void _ztimer_print(ztimer_clock_t *ztimer);
 
 #ifdef MODULE_ZTIMER_EXTEND
 static inline uint32_t _min_u32(uint32_t a, uint32_t b) {
@@ -199,7 +199,9 @@ static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
         ztimer_base_t *list_entry = list->next;
         if (list_entry == entry) {
             if (entry == ztimer->last) {
-                ztimer->last = list;
+                /* if entry was the last timer, set the clocks last to the
+                 * previous entry, or NULL if that was the list ptr */
+                ztimer->last = (list == &ztimer->list) ? NULL : list;
             }
 
             list->next = entry->next;
@@ -207,9 +209,9 @@ static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry)
                 list_entry = list->next;
                 list_entry->offset += entry->offset;
             }
-            else {
-                ztimer->last = NULL;
-            }
+
+            /* reset the entry's next pointer so _is_set() considers it unset */
+            entry->next = NULL;
             break;
         }
         list = list->next;
@@ -326,13 +328,13 @@ void ztimer_handler(ztimer_clock_t *ztimer)
     }
 }
 
-static void _ztimer_print(ztimer_clock_t *ztimer)
+void _ztimer_print(ztimer_clock_t *ztimer)
 {
     ztimer_base_t *entry = &ztimer->list;
     uint32_t last_offset = 0;
     do {
         printf("0x%08x:%" PRIu32 "(%" PRIu32 ")%s", (unsigned)entry, entry->offset, entry->offset +
-                last_offset, entry->next ? "->" : "");
+                last_offset, entry->next ? "->" : (entry==ztimer->last ? "" : "!"));
         last_offset += entry->offset;
 
     } while ((entry = entry->next));
