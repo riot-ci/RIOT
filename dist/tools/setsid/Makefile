@@ -4,7 +4,7 @@ PKG_VERSION  = e5b851df41591021baf5cf88d4e41572baf8e08b
 PKG_LICENSE  = BSD-2-Clause
 PKG_BUILDDIR = $(CURDIR)/bin
 
-.PHONY: all
+include $(RIOTBASE)/pkg/pkg.mk
 
 all:
 	@echo "[INFO] compiling setsid from source now"
@@ -13,5 +13,3 @@ all:
 
 distclean::
 	@rm -f $(CURDIR)/setsid
-
-include $(RIOTBASE)/pkg/pkg.mk
