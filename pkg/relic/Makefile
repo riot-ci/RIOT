@@ -28,7 +28,7 @@ $(PKG_BUILDDIR)/Makefile: export COMP ?=
 $(PKG_BUILDDIR)/Makefile: $(PKG_PREPARED) $(TOOLCHAIN_FILE) | ..cmake_version_supported
 	cmake -B$(PKG_BUILDDIR) -H$(PKG_BUILDDIR) \
 			-DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
-			-DCHECK=off -DTESTS=0 -DBENCH=0 -DSHLIB=off -Wno-dev $(RELIC_CONFIG_FLAGS) .
+			-DCHECK=off -DTESTS=0 -DBENCH=0 -DSHLIB=off -Wno-dev $(RELIC_CONFIG_FLAGS)
 
 $(TOOLCHAIN_FILE): FORCE
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
