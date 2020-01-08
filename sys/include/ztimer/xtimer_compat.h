@@ -121,6 +121,12 @@ static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout)
     return ztimer_msg_receive_timeout(ZTIMER_USEC, msg, timeout);
 }
 
+static inline void xtimer_set_wakeup(xtimer_t *timer, uint32_t offset,
+                                     kernel_pid_t pid)
+{
+    ztimer_set_wakeup(ZTIMER_USEC, timer, offset, pid);
+}
+
 /*
    static inline void xtimer_set64(xtimer_t *timer, uint64_t offset_us);
    static inline void xtimer_tsleep32(xtimer_ticks32_t ticks);
@@ -128,8 +134,6 @@ static inline int xtimer_msg_receive_timeout(msg_t *msg, uint32_t timeout)
    static inline void xtimer_spin(xtimer_ticks32_t ticks);
    static inline void xtimer_periodic_wakeup(xtimer_ticks32_t *last_wakeup,
                                           uint32_t period);
-   static inline void xtimer_set_wakeup(xtimer_t *timer, uint32_t offset,
-                                     kernel_pid_t pid);
    static inline void xtimer_set_wakeup64(xtimer_t *timer, uint64_t offset,
                                        kernel_pid_t pid);
    static inline xtimer_ticks32_t xtimer_ticks_from_usec(uint32_t usec);
