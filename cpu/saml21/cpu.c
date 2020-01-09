@@ -64,6 +64,53 @@ static void _xosc32k_setup(void)
 #endif
 }
 
+static void _dfll_setup(void)
+{
+#if (CLOCK_CORECLOCK == 48000000U) || defined (MODULE_PERIPH_USBDEV)
+    _gclk_setup(3, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_XOSC32K);
+    /* Write Generic Clock Generator 3 configuration */
+    while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_GENCTRL(3)) {}
+
+    GCLK->PCHCTRL[OSCCTRL_GCLK_ID_DFLL48].reg = GCLK_PCHCTRL_CHEN |
+                                                GCLK_PCHCTRL_GEN_GCLK3;
+
+    /* wait for sync */
+    while (!(GCLK->PCHCTRL[OSCCTRL_GCLK_ID_DFLL48].reg & GCLK_PCHCTRL_CHEN)) {}
+
+    OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_ENABLE;
+    /* Wait for write synchronization */
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+    OSCCTRL->DFLLVAL.reg = OSCCTRL_DFLLVAL_COARSE((*(uint32_t*)NVMCTRL_OTP5)
+                           >> 26) |  OSCCTRL_DFLLVAL_FINE(512);
+
+    /* Wait for write synchronization */
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+    /* Generate a 48 Mhz clock from the 32KHz */
+    OSCCTRL->DFLLMUL.reg = OSCCTRL_DFLLMUL_CSTEP(0x08) |
+                           OSCCTRL_DFLLMUL_FSTEP(0x08) |
+                           OSCCTRL_DFLLMUL_MUL((48000000U/32768));
+
+    /* Disable DFLL before setting its configuration */
+    OSCCTRL->DFLLCTRL.reg = 0;
+    while (!(OSCCTRL->STATUS.reg & OSCCTRL_STATUS_DFLLRDY)) {}
+    /* Write full configuration to DFLL control register */
+    OSCCTRL->DFLLCTRL.reg =  OSCCTRL_DFLLCTRL_WAITLOCK |
+                             OSCCTRL_DFLLCTRL_MODE |
+                             OSCCTRL_DFLLCTRL_CCDIS |
+                             OSCCTRL_DFLLCTRL_BPLCKC |
+                             OSCCTRL_DFLLCTRL_ENABLE;
+
+    /* Ensure COARSE and FINE are locked */
+    while((!(OSCCTRL->STATUS.bit.DFLLLCKC)) && (!(OSCCTRL->STATUS.bit.DFLLLCKF))) {}
+    while (!(OSCCTRL->STATUS.bit.DFLLRDY)) {}
+    /* Write Generic Clock Generator 0 configuration */
+
+    /* Enable NVMCTRL */
+    MCLK->APBBMASK.reg |= MCLK_APBBMASK_NVMCTRL;
+    /* Set Wait State to meet requirements */
+    NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS(2);
+#endif
+}
 /**
  * @brief Initialize the CPU, set IRQ priorities, clocks
  */
@@ -106,10 +153,18 @@ void cpu_init(void)
 
     _osc32k_setup();
     _xosc32k_setup();
+    _dfll_setup();
 
     /* Setup GCLK generators */
+#if (CLOCK_CORECLOCK == 16000000U)
     _gclk_setup(0, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
-
+#elif (CLOCK_CORECLOCK == 48000000U)
+     _gclk_setup(0, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
+#else
+#error "Please select a valid CPU frequency"
+#endif
+    /* clock used by timers */
+    _gclk_setup(5, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
 #ifdef MODULE_PERIPH_PM
     PM->CTRLA.reg = PM_CTRLA_MASK & (~PM_CTRLA_IORET);
 
