@@ -3,10 +3,12 @@ PKG_URL=https://github.com/tensorflow/tensorflow
 PKG_VERSION=1768c8f2fa155d4c6406e8ff7addf374c83de7ad
 PKG_LICENSE=Apache2.0
 
+include $(RIOTBASE)/pkg/pkg.mk
+
 TF_MODULES   = tensorflow-lite-hello_world
 TF_USEMODULE = $(filter $(TF_MODULES),$(USEMODULE))
 
-.PHONY: all tensorflow-lite tensorflow-lite-%
+.PHONY: tensorflow-lite tensorflow-lite-%
 
 CFLAGS += -Wno-pedantic
 CFLAGS += -DTF_LITE_STATIC_MEMORY
@@ -25,5 +27,3 @@ tensorflow-lite: $(TF_USEMODULE)
 
 tensorflow-lite-%:
 	"$(MAKE)" -C $(PKG_BUILDDIR)/tensorflow/lite/micro/examples/$* -f $(CURDIR)/Makefile.$(PKG_NAME)-$*
-
-include $(RIOTBASE)/pkg/pkg.mk
