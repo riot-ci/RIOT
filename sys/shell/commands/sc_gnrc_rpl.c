@@ -294,7 +294,8 @@ int _gnrc_rpl_dodag_show(void)
 
         tc = _xtimer_usec_from_ticks64(((uint64_t) dodag->trickle.msg_timer.long_offset << 32)
                                         | dodag->trickle.msg_timer.offset)
-             - (xnow - _xtimer_usec_from_ticks64(dodag->trickle.msg_timer.start_time));
+             - (xnow - _xtimer_usec_from_ticks64(
+                         (uint64_t)dodag->trickle.msg_timer.long_start_time << 32 | dodag->trickle.msg_timer.start_time));
         tc = (int64_t) tc < 0 ? 0 : tc / US_PER_SEC;
 
         printf("\tdodag [%s | R: %d | OP: %s | PIO: %s | "

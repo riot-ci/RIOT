@@ -76,6 +76,7 @@ typedef struct xtimer {
     uint32_t offset;             /**< lower 32bit offset time */
     uint32_t long_offset;        /**< upper 32bit offset time */
     uint32_t start_time;         /**< lower 32bit absolute start time */
+    uint32_t long_start_time;    /**< upper 32bit absolute start time */
     xtimer_callback_t callback;  /**< callback function to call when timer
                                      expires */
     void *arg;                   /**< argument to pass to callback function */
