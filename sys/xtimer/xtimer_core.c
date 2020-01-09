@@ -45,8 +45,8 @@ static bool _lltimer_ongoing = false;
 
 static void _add_timer_to_list(xtimer_t **list_head, xtimer_t *timer);
 static void _shoot(xtimer_t *timer);
-static inline void _update_short_timers(uint32_t *now);
-static inline void _update_long_timers(uint32_t *now);
+static inline void _update_short_timers(uint64_t *now);
+static inline void _update_long_timers(uint64_t *now);
 static inline void _schedule_earliest_lltimer(uint32_t now);
 
 static void _timer_callback(void);
@@ -86,17 +86,18 @@ void _xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
 
     /* time sensitive */
     unsigned int state = irq_disable();
-    uint32_t now = _xtimer_now();
+    uint64_t now = _xtimer_now64();
     timer->offset = offset;
     timer->long_offset = long_offset;
-    timer->start_time = now;
+    timer->start_time = (uint32_t)now;
+    timer->long_start_time = (uint32_t)(now >> 32);
 
     if (!long_offset) {
         _add_timer_to_list(&timer_list_head, timer);
 
         if (timer_list_head == timer) {
             DEBUG("_xtimer_set64(): timer is new list head. updating lltimer.\n");
-            _schedule_earliest_lltimer(now);
+            _schedule_earliest_lltimer((uint32_t)now);
         }
     }
     else {
@@ -195,6 +196,7 @@ void xtimer_remove(xtimer_t *timer)
     timer->offset = 0;
     timer->long_offset = 0;
     timer->start_time = 0;
+    timer->long_start_time = 0;
 
     _remove_timer_from_list(&timer_list_head, timer);
     _remove_timer_from_list(&long_list_head, timer);
@@ -205,7 +207,7 @@ void xtimer_remove(xtimer_t *timer)
  * @brief update long timers' offsets and switch those that will expire in
  *        one short timer period to the short timer list
  */
-static inline void _update_long_timers(uint32_t *now)
+static inline void _update_long_timers(uint64_t *now)
 {
     xtimer_t *timer = long_list_head;
 
@@ -216,7 +218,8 @@ static inline void _update_long_timers(uint32_t *now)
             timer->long_offset--;
         }
         timer->offset -= elapsed;
-        timer->start_time = *now;
+        timer->start_time = (uint32_t)*now;
+        timer->long_start_time = (uint32_t)(*now >> 32);
 
         if (!timer->long_offset) {
             assert(timer == long_list_head);
@@ -234,13 +237,13 @@ static inline void _update_long_timers(uint32_t *now)
 /**
  * @brief update short timers' offsets and fire those that are close to expiry
  */
-static inline void _update_short_timers(uint32_t *now)
+static inline void _update_short_timers(uint64_t *now)
 {
     xtimer_t *timer = timer_list_head;
 
     while (timer) {
         assert(!timer->long_offset);
-        uint32_t elapsed = *now - timer->start_time;
+        uint32_t elapsed = (uint32_t)*now - timer->start_time;
         if (timer->offset < elapsed || timer->offset - elapsed < XTIMER_ISR_BACKOFF) {
             assert(timer == timer_list_head);
 
@@ -253,6 +256,7 @@ static inline void _update_short_timers(uint32_t *now)
             /* make sure timer is recognized as being already fired */
             timer->offset = 0;
             timer->start_time = 0;
+            timer->long_start_time = 0;
             timer->next = NULL;
             /* fire timer */
             _shoot(timer);
@@ -263,7 +267,8 @@ static inline void _update_short_timers(uint32_t *now)
         }
         else {
             timer->offset -= elapsed;
-            timer->start_time = *now;
+            timer->start_time = (uint32_t)*now;
+            timer->long_start_time = (uint32_t)(*now >> 32);
             timer = timer->next;
         }
     }
@@ -274,10 +279,10 @@ static inline void _update_short_timers(uint32_t *now)
  */
 static void _timer_callback(void)
 {
-    uint32_t now;
+    uint64_t now;
     _in_handler = 1;
     _lltimer_ongoing = false;
-    now = _xtimer_now();
+    now = _xtimer_now64();
 
 update:
     /* update short timer offset and fire */
@@ -285,22 +290,23 @@ update:
     /* update long timer offset */
     _update_long_timers(&now);
     /* update current time */
-    now = _xtimer_now();
+    now = _xtimer_now64();
 
     if (timer_list_head) {
         /* make sure we're not setting a time in the past */
-        uint32_t elapsed = now - timer_list_head->start_time;
+        uint32_t elapsed = (uint32_t)now - timer_list_head->start_time;
         if (timer_list_head->offset < elapsed ||
             timer_list_head->offset - elapsed < XTIMER_ISR_BACKOFF) {
             goto update;
         }
         else {
             timer_list_head->offset -= elapsed;
-            timer_list_head->start_time = now;
+            timer_list_head->start_time = (uint32_t)now;
+            timer_list_head->long_start_time = (uint32_t)(now >> 32);
         }
     }
     _in_handler = 0;
 
     /* set low level timer */
-    _schedule_earliest_lltimer(now);
+    _schedule_earliest_lltimer((uint32_t)now);
 }
