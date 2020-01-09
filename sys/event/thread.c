@@ -48,8 +48,16 @@ void event_thread_init(event_queue_t *queue, char *stack, size_t stack_size,
     thread_create(stack, stack_size, priority, 0, _handler, queue, "event");
 }
 
+#ifndef EVENT_THREAD_STACKSIZE_DEFAULT
+# ifdef ISR_STACKSIZE
+#  define EVENT_THREAD_STACKSIZE_DEFAULT ISR_STACKSIZE
+# else
+#  define EVENT_THREAD_STACKSIZE_DEFAULT THREAD_STACKSIZE_SMALL
+# endif
+#endif
+
 #ifndef EVENT_THREAD_HIGHEST_STACKSIZE
-#define EVENT_THREAD_HIGHEST_STACKSIZE ISR_STACKSIZE
+#define EVENT_THREAD_HIGHEST_STACKSIZE EVENT_THREAD_STACKSIZE_DEFAULT
 #endif
 
 #ifndef EVENT_THREAD_HIGHEST_PRIO
@@ -57,7 +65,7 @@ void event_thread_init(event_queue_t *queue, char *stack, size_t stack_size,
 #endif
 
 #ifndef EVENT_THREAD_LOWEST_STACKSIZE
-#define EVENT_THREAD_LOWEST_STACKSIZE ISR_STACKSIZE
+#define EVENT_THREAD_LOWEST_STACKSIZE EVENT_THREAD_STACKSIZE_DEFAULT
 #endif
 #ifndef EVENT_THREAD_LOWEST_PRIO
 #define EVENT_THREAD_LOWEST_PRIO   (THREAD_PRIORITY_IDLE - 1)
