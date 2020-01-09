@@ -159,7 +159,7 @@ void cpu_init(void)
 #if (CLOCK_CORECLOCK == 16000000U)
     _gclk_setup(0, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
 #elif (CLOCK_CORECLOCK == 48000000U)
-     _gclk_setup(0, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
+    _gclk_setup(0, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
 #else
 #error "Please select a valid CPU frequency"
 #endif
