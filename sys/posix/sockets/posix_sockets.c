@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <arpa/inet.h>
+#include <atomic.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
@@ -90,7 +91,7 @@ typedef struct {
     unsigned queue_array_len;
 #endif
 #if IS_USED(MODULE_SOCK_ASYNC)
-    unsigned available;
+    volatile unsigned available;
 #endif
 #if IS_USED(MODULE_POSIX_SELECT)
     thread_t *selecting_thread;
