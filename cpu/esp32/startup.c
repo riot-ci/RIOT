@@ -214,8 +214,13 @@ static void IRAM system_clk_init (void)
     /* set FAST_CLK to internal low power clock of 8 MHz */
     rtc_clk_fast_freq_set(RTC_FAST_FREQ_8M);
 
+#if MODULE_ESP_RTC_TIMER_32K
+    /* set SLOW_CLK to external 32.768 kHz cristal clock */
+    rtc_select_slow_clk(RTC_SLOW_FREQ_32K_XTAL);
+#else
     /* set SLOW_CLK to internal low power clock of 150 kHz */
     rtc_select_slow_clk(RTC_SLOW_FREQ_RTC);
+#endif
 
     LOG_STARTUP("Switching system clocks can lead to some unreadable characters\n");
 
