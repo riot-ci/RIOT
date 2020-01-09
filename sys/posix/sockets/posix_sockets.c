@@ -18,7 +18,6 @@
 
 #include <assert.h>
 #include <arpa/inet.h>
-#include <atomic.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
