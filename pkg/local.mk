@@ -6,12 +6,15 @@
 #
 # WARNING: any local changes made to $(PKG_BUILDDIR) *will* get lost!
 
-.PHONY: prepare clean
+.PHONY: prepare clean all
+
+all: $(PKG_BUILDDIR)/.prepared
 
 prepare: $(PKG_BUILDDIR)/.prepared
 	@true
 
 $(PKG_BUILDDIR)/.prepared:
+	$(info [INFO] building local $(PKG_NAME))
 	rm -Rf $(PKG_BUILDDIR)
 	mkdir -p $$(dirname $(PKG_BUILDDIR))
 	cp -a $(PKG_SOURCE_LOCAL) $(PKG_BUILDDIR)
