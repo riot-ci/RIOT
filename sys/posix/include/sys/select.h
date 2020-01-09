@@ -7,16 +7,16 @@
  */
 
 /**
- * @defgroup posix_select
+ * @defgroup posix_select   POSIX select
  * @ingroup  posix
  * @brief   Select implementation for RIOT
- * @see     [The Open Group Base Specification Issue 7
+ * @see     [The Open Group Base Specification Issue 7]
  *          (https://pubs.opengroup.org/onlinepubs/9699919799.2018edition/)
  * @todo    Omitted from original specification for now:
  *          - Inclusion of `<signal.h>`; no POSIX signal handling implemented
  *            in RIOT yet
  *          - `pselect()` as it uses `sigset_t` from `<signal.h>`
- * @todo    Currently, only sockets are supported
+ * @todo    Currently, only [sockets](@ref posix_sockets) are supported
  * @{
  *
  * @file
@@ -58,6 +58,9 @@ extern "C" {
 #endif
 /** @} */
 
+/**
+ * @brief   @ref core_thread_flags for POSIX select
+ */
 #define POSIX_SELECT_THREAD_FLAG    (1U << 3)
 
 /* ESP's newlib has this already defined in `sys/types.h` */
