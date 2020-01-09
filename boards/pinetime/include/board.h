@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 /*
- * @brief LCD defines
+ * @brief GPIO pin defines
  * @{
  */
 #define LCD_RS                      GPIO_PIN(0, 18)
@@ -46,7 +46,12 @@ extern "C" {
 #define VIBRATOR                    GPIO_PIN(0, 16)
 
 #define VCC33                       GPIO_PIN(0, 24)
+/* @} */
 
+/*
+ * @brief LCD configuration
+ * @{
+ */
 #define ILI9341_PARAM_SPI          SPI_DEV(0)
 #define ILI9341_PARAM_SPI_CLK      SPI_CLK_8MHZ
 #define ILI9341_PARAM_SPI_MODE     SPI_MODE_3
