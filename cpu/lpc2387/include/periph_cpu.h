@@ -159,9 +159,6 @@ typedef enum {
  */
 #define HAVE_ADC_RES_T
 typedef enum {
-    ADC_RES_16BIT = 0xff,   /**< not applicable         */
-    ADC_RES_14BIT = 0xfe,   /**< not applicable         */
-    ADC_RES_12BIT = 0xfd,   /**< not applicable         */
     ADC_RES_10BIT = 0b000,  /**< ADC resolution: 10 bit */
     ADC_RES_9BIT  = 0b001,  /**< ADC resolution:  9 bit */
     ADC_RES_8BIT  = 0b010,  /**< ADC resolution:  8 bit */
