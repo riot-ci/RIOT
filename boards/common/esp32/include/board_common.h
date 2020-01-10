@@ -147,18 +147,16 @@ extern mtd_dev_t *mtd0;
 
 
 /**
- * @brief Initialize board specific hardware
+ * @brief Initialize the hardware that is common for all ESP32 boards.
  *
- * Since all features of ESP32 boards are provided by the SOC, almost all
- * initializations are done during the CPU initialization that is called from
- * boot loader.
+ * This function has to be called from the board specific `board_init` function.
  */
-void board_init (void);
+void board_init_common(void);
 
 /**
   * @brief Print the board configuration in a human readable format
   */
-void print_board_config (void);
+void print_board_config(void);
 
 #ifdef __cplusplus
 } /* end extern "C" */
