@@ -18,6 +18,8 @@
  * @}
  */
 
+#include <assert.h>
+
 #include "cpu.h"
 #include "kernel_defines.h"
 #include "periph/adc.h"
@@ -50,12 +52,10 @@ int adc_sample(adc_t line, adc_res_t res)
     uint32_t val;
 
     /* check if the line is valid */
-    if (line >= ADC_NUMOF) {
-        return -1;
-    }
+    assert(line < ADC_NUMOF);
 
     /* check if resolution is applicable */
-    if (res > 0xf0) {
+    if ((unsigned)res > 0b111) {
         return -1;
     }
 
