@@ -162,6 +162,22 @@ void print_board_config(void);
 } /* end extern "C" */
 #endif
 
+#else /* ESP32_IDF_CODE */
+
+#ifndef DOXYGEN
+
+#ifdef __cplusplus
+extern "C"
+#endif
+
+/* declaration of `board_init_common` is required when compiling vendor code */
+extern void board_init_common(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* DOXYGEN */
 #endif /* ESP32_IDF_CODE */
 #endif /* BOARD_COMMON_H */
 /** @} */
