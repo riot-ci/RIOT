@@ -268,8 +268,8 @@ struct ztimer_clock {
 #if MODULE_ZTIMER_EXTEND || DOXYGEN
     /* values used for checkpointed intervals and 32bit extension */
     uint32_t max_value;             /**< maximum relative timer value       */
-    volatile uint32_t checkpoint;   /**< cumulated time at last now() call  */
-    volatile uint32_t lower_last;   /**< timer value at last now() call     */
+    uint32_t checkpoint;   /**< cumulated time at last now() call  */
+    uint32_t lower_last;   /**< timer value at last now() call     */
 #endif
 };
 
