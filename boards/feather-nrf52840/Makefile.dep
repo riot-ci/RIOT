@@ -2,8 +2,10 @@ ifeq (,$(filter stdio_%,$(USEMODULE)))
   ifeq (,$(filter auto_init,$(DISABLE_MODULE)))
     USEMODULE += auto_init_usbus
     USEMODULE += stdio_cdc_acm
+  else
+    # Can't initialize USB due to missing auto_init
+    USEMODULE += stdio_rtt
   endif
-  # else use stdio_uart, so ethos is supported ;-)
 endif
 
 ifneq (,$(filter saul_default,$(USEMODULE)))
