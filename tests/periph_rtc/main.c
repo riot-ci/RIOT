@@ -37,8 +37,6 @@
 
 static unsigned cnt = 0;
 
-static kernel_pid_t p_recv = KERNEL_PID_UNDEF;
-
 static void print_time(const char *label, const struct tm *time)
 {
     printf("%s  %04d-%02d-%02d %02d:%02d:%02d\n", label,
@@ -61,7 +59,7 @@ static void cb(void *arg)
     msg_t msg;
 
     memset(&msg, 1, sizeof(msg_t));
-    msg_try_send(&msg, p_recv);
+    msg_try_send(&msg, *((kernel_pid_t *)arg));
 }
 
 int main(void)
@@ -74,6 +72,8 @@ int main(void)
         .tm_min  = 15,
         .tm_sec  = 57
     };
+
+    kernel_pid_t p_main = thread_getpid();
 
     puts("\nRIOT RTC low-level driver test");
     printf("This test will display 'Alarm!' every %u seconds for %u times\n",
@@ -90,14 +90,12 @@ int main(void)
     /* set initial alarm */
     inc_secs(&time, PERIOD);
     print_time("  Setting alarm to ", &time);
-    rtc_set_alarm(&time, cb, NULL);
+    rtc_set_alarm(&time, cb, (void *)&p_main);
 
     /* verify alarm */
     rtc_get_alarm(&time);
     print_time("   Alarm is set to ", &time);
     puts("");
-
-    p_recv = sched_active_pid;
 
     while (1) {
         msg_t msg;
@@ -109,7 +107,7 @@ int main(void)
             struct tm time;
             rtc_get_alarm(&time);
             inc_secs(&time, PERIOD);
-            rtc_set_alarm(&time, cb, NULL);
+            rtc_set_alarm(&time, cb, (void *)&p_main);
         }
     }
 
