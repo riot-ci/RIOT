@@ -21,7 +21,7 @@ include $(RIOTBASE)/pkg/pkg.mk
 
 all:
 	@cd "$(PKG_BUILDDIR)" && env -i PATH="$(PATH)" cmake -G "Unix Makefiles" $(CMAKE_OPTIONS) .
-	@env -i PATH="$(PATH)" "$(MAKE)" -C "$(PKG_BUILDDIR)"
+	"$(MAKE)" -C "$(PKG_BUILDDIR)"
 	@mv "$(PKG_BUILDDIR)"/flatc $(CURDIR)/flatc
 
 distclean::
