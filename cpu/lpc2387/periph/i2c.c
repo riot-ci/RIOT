@@ -51,7 +51,6 @@ static void I2C2_IRQHandler(void) __attribute__((interrupt("IRQ")));
  */
 #define TRX_BUFS_MAX    (2)
 static struct i2c_ctx {
-    i2c_t dev;
     mutex_t lock;
     mutex_t tx_done;
     uint8_t *buf[TRX_BUFS_MAX];
@@ -68,13 +67,13 @@ static void poweron(lpc23xx_i2c_t *i2c)
 {
     switch ((uint32_t)i2c) {
     case I2C0_BASE_ADDR:
-        PCONP |= BIT7;
+        PCONP |= PCI2C0;
         break;
     case I2C1_BASE_ADDR:
-        PCONP |= BIT19;
+        PCONP |= PCI2C1;
         break;
     case I2C2_BASE_ADDR:
-        PCONP |= BIT26;
+        PCONP |= PCI2C2;
         break;
     }
 }
@@ -83,13 +82,13 @@ static void poweroff(lpc23xx_i2c_t *i2c)
 {
     switch ((uint32_t)i2c) {
     case I2C0_BASE_ADDR:
-        PCONP &= ~BIT7;
+        PCONP &= ~PCI2C0;
         break;
     case I2C1_BASE_ADDR:
-        PCONP &= ~BIT19;
+        PCONP &= ~PCI2C1;
         break;
     case I2C2_BASE_ADDR:
-        PCONP &= ~BIT26;
+        PCONP &= ~PCI2C2;
         break;
     }
 }
@@ -112,9 +111,8 @@ void i2c_release(i2c_t dev)
     mutex_unlock(&ctx[dev].lock);
 }
 
-static void _set_baudrate(lpc23xx_i2c_t *i2c, uint32_t baud)
+static void _set_baud(lpc23xx_i2c_t *i2c, uint32_t baud)
 {
-    (void) baud;
     uint32_t pclksel, prescale;
     lpc2387_pclk_scale(CLOCK_CORECLOCK, baud, &pclksel, &prescale);
 
@@ -154,24 +152,25 @@ static unsigned _get_irq(i2c_t dev)
     return 0;
 }
 
-static bool _install_irq(i2c_t dev)
+static void _install_irq(i2c_t dev)
 {
     switch (dev) {
 #if I2C_NUMOF > 0
     case 0:
-        return install_irq(_get_irq(dev), I2C0_IRQHandler, i2c_config[dev].irq_prio);
+        install_irq(_get_irq(dev), I2C0_IRQHandler, i2c_config[dev].irq_prio);
+        break;
 #endif
 #if I2C_NUMOF > 1
     case 1:
-        return install_irq(_get_irq(dev), I2C1_IRQHandler, i2c_config[dev].irq_prio);
+        install_irq(_get_irq(dev), I2C1_IRQHandler, i2c_config[dev].irq_prio);
+        break;
 #endif
 #if I2C_NUMOF > 2
     case 2:
-        return install_irq(_get_irq(dev), I2C2_IRQHandler, i2c_config[dev].irq_prio);
+        install_irq(_get_irq(dev), I2C2_IRQHandler, i2c_config[dev].irq_prio);
+        break;
 #endif
     }
-
-    return false;
 }
 
 void i2c_init(i2c_t dev)
@@ -196,7 +195,7 @@ void i2c_init(i2c_t dev)
     i2c->CONCLR = I2CONCLR_AAC | I2CONCLR_SIC | I2CONCLR_STAC
                 | I2CONCLR_I2ENC;
 
-    _set_baudrate(i2c, cfg->speed);
+    _set_baud(i2c, cfg->speed);
 
     _install_irq(dev);
 
@@ -252,7 +251,7 @@ static void irq_handler(i2c_t dev)
 
     case 0x20:  /* Address NACK (write) */
     case 0x48:  /* Address NACK (read)  */
-        /* send STOP */
+        /* slave did not ACK address - send STOP */
         i2c->CONSET = I2CONSET_STO | I2CONSET_AA;
         _end_tx(dev, -ENXIO);
         break;
