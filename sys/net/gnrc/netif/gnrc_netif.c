@@ -1068,7 +1068,7 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
         uint8_t candidate_scope = _get_scope(ptr);
         if (candidate_scope == dst_scope) {
             DEBUG("winner for rule 2 (same scope) found\n");
-            winner_set[i] += RULE_2_PTS;
+            winner_set[i] += (dst_scope + RULE_2_PTS);
         }
         else if (candidate_scope > dst_scope) {
             DEBUG("winner for rule 2 (larger scope) found\n");
@@ -1081,7 +1081,13 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
              * As the if above already ensures that the scope is larger than
              * the scope of the destination address we give the address with the
              * smallest scope that lands here the highest score */
-            winner_set[i] += (RULE_2_PTS - candidate_scope);
+            winner_set[i] += (dst_scope + (RULE_2_PTS - candidate_scope));
+        }
+        else {
+            DEBUG("winner for rule 2 (smaller scope) found\n");
+            /* don't add `dst_scope` here to keep it smaller than larger and
+             * equal scope */
+            winner_set[i] += candidate_scope;
         }
 
         /* Rule 3: Avoid deprecated addresses. */
