@@ -137,6 +137,7 @@ static const i2c_conf_t i2c_config[] = {
     },
 };
 
+/* used in arithmetic preprocessor expression, so no ARRAY_SIZE() */
 #define I2C_NUMOF           (1)
 /** @} */
 
