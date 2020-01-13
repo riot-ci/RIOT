@@ -51,7 +51,7 @@ extern "C" {
 #define LED2_TOGGLE         (LED0_PORT->ODR  ^= LED2_MASK)
 /** @} */
 
-/* the Nucleo68 boards always use LED0, as there is no dual use of its pin */
+/* p-nucleo-wb55 always use LED0, as there is no dual use of its pin */
 #ifndef AUTO_INIT_LED0
 #define AUTO_INIT_LED0
 #endif
