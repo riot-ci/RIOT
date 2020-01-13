@@ -1065,8 +1065,8 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
             DEBUG("winner for rule 2 (same scope) found\n");
             winner_set[i] += RULE_2_PTS;
         }
-        else if (candidate_scope < dst_scope) {
-            DEBUG("winner for rule 2 (smaller scope) found\n");
+        else if (candidate_scope > dst_scope) {
+            DEBUG("winner for rule 2 (larger scope) found\n");
             winner_set[i] += candidate_scope;
         }
 
