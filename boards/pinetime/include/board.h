@@ -56,7 +56,7 @@ extern "C" {
  * @{
  */
 #define ILI9341_PARAM_SPI          SPI_DEV(0)
-#define ILI9341_PARAM_SPI_CLK      SPI_CLK_8MHZ
+#define ILI9341_PARAM_SPI_CLK      SPI_CLK_10MHZ
 #define ILI9341_PARAM_SPI_MODE     SPI_MODE_3
 #define ILI9341_PARAM_CS           LCD_CS
 #define ILI9341_PARAM_DCX          LCD_RS
