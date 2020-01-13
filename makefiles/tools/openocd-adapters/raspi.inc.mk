@@ -5,10 +5,17 @@ SWDIO ?= 20
 RST ?= 16
 
 ifeq (1, $(shell grep ARMv6 /proc/cpuinfo > /dev/null; echo $?))
+  ifeq (0, $(shell grep 03111 /proc/cpuinfo > /dev/null; echo $?))
+    # raspi4
+    PERIPH_BASE  = 0xFE000000
+    SPEED_COEFF  = 236181
+    SPEED_OFFSET = 60
+  else
     # raspi2, 3
     PERIPH_BASE  = 0x3F000000
     SPEED_COEFF  = 146203
     SPEED_OFFSET = 36
+  endif
 else
     # raspi1
     PERIPH_BASE  = 0x20000000
