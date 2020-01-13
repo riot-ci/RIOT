@@ -82,21 +82,6 @@ extern "C" {
 /** @} */
 
 /**
- * @ingroup  config
- * @{
- */
-#ifdef MODULE_MPU9150
-#define MPU9X50_TEMP_SENSITIVITY    340
-#define MPU9X50_TEMP_OFFSET         35
-#elif defined(MODULE_MPU9250)
-#define MPU9X50_TEMP_SENSITIVITY    333.87
-#define MPU9X50_TEMP_OFFSET         21
-#else
-#error "MPU9X50 DRIVER not selected or supported"
-#endif
-/** @} */
-
-/**
  * @brief   Power enum values
  */
 typedef enum {
