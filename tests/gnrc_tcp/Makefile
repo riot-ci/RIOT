@@ -8,8 +8,8 @@ TAP ?= tap0
 MSL_US ?= 1000000
 TIMEOUT_US ?= 3000000
 
-# unsupported by ethos: chronos, hamilton, ruuvitag
-BOARD_BLACKLIST := chronos hamilton ruuvitag thingy52
+# unsupported by ethos: chronos, feather-nrf52840, hamilton, ruuvitag
+BOARD_BLACKLIST := chronos feather-nrf52840 hamilton ruuvitag thingy52
 
 # This test depends on tap device setup (only allowed by root)
 # Suppress test execution to avoid CI errors
