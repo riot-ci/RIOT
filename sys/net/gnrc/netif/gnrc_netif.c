@@ -1067,7 +1067,16 @@ static ipv6_addr_t *_src_addr_selection(gnrc_netif_t *netif,
         }
         else if (candidate_scope > dst_scope) {
             DEBUG("winner for rule 2 (larger scope) found\n");
-            winner_set[i] += candidate_scope;
+            /* From https://tools.ietf.org/html/rfc6724#section-5:
+             * >  Rule 2: Prefer appropriate scope.
+             * >  If Scope(SA) < Scope(SB): If Scope(SA) < Scope(D), then prefer
+             * >  SB and otherwise prefer SA.
+             * Meaning give address with larger scope than `dst` but closest to
+             * `dst` precedence.
+             * As the if above already ensures that the scope is larger than
+             * the scope of the destination address we give the address with the
+             * smallest scope that lands here the highest score */
+            winner_set[i] += (RULE_2_PTS - candidate_scope);
         }
 
         /* Rule 3: Avoid deprecated addresses. */
