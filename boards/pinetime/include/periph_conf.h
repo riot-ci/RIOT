@@ -48,6 +48,21 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
+/**
+ * @name    I2C configuration
+ * @{
+ */
+static const i2c_conf_t i2c_config[] = {
+    {
+        .dev = NRF_TWIM1,
+        .scl = GPIO_PIN(0, 7),
+        .sda = GPIO_PIN(0, 6),
+        .speed = I2C_SPEED_FAST
+    }
+};
+
+#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
+/** @} */
 
 #ifdef __cplusplus
 }
