@@ -223,7 +223,7 @@ void flashpage_write(int page, const void *data)
 
     /* ensure there is no attempt to write to CPU2 protected area */
 #if defined(CPU_FAM_STM32WB)
-    assert(page < (int) (FLASH->SFR & FLASH_SFR_SFSA));
+    assert(page < (int)(FLASH->SFR & FLASH_SFR_SFSA));
 #endif
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
