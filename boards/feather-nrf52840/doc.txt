@@ -21,4 +21,22 @@ use an external Segger J-Link Progammer connected to the [SWD Connector].
 
 [SWD Connector]: https://learn.adafruit.com/introducing-the-adafruit-nrf52840-feather/pinouts#swd-connector-3-12
 
+### Terminal
+To connect a terminal to the Feather, RIOT chooses Segger RTT per default.
+This lets you use the Segger J-Link Programmer as a serial interface to the
+device.
+
+You have several alternative possibilities to connect to the board.
+
+1. With
+   ~~~~~~~~~~~~~~~~~~~~~ {.mk}
+   USEMODULE += stdio_uart
+   ~~~~~~~~~~~~~~~~~~~~~
+   and an FTDI adapter connected to the Feather's RX and TX ports you can use
+   UART-based terminals to connect to the feather
+2. With
+   ~~~~~~~~~~~~~~~~~~~~~ {.mk}
+   USEMODULE += stdio_cdc_acm
+   ~~~~~~~~~~~~~~~~~~~~~
+   you can access the Feather with a terminal directly over USB.
 */
