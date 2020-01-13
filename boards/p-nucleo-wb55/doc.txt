@@ -4,12 +4,12 @@
 @brief       Support for the STM32 p-nucleo-wb55
 
 Hardware
-================
+========
 
 ![st-nucleo-wb55](https://miro.medium.com/max/700/1*9OG-4Ix4EzHX9uBpMve2IA.jpeg)
 
 MCU
--------------------
+---
 
 | MCU        | STM32WB55RG                     |
 |:---------- |:------------------------------- |
@@ -33,7 +33,7 @@ MCU
 | User Manual | [User Manual](https://www.st.com/content/ccc/resource/technical/document/user_manual/group1/13/58/22/1a/f2/ff/43/5c/DM00517423/files/DM00517423.pdf/jcr:content/translations/en.DM00517423.pdf) |
 
 Overview
-================
+========
 
 The p-nucleo-wb55 is a  is a multi-protocol wireless and ultra-low-power
 device embedding a powerful and ultra-low-power radio compliant with the
@@ -46,9 +46,12 @@ Flashing the device
 
 The ST p-nucleo-wb55 board includes an on-board ST-LINK programmer and can be
 flashed using OpenOCD.
-@note The latest release of OpenOCD doesn't contain support for this board,
-so a recent development version (including  http://openocd.zylin.com/#/c/4933/)
-must be built from source to be able to flash this board.
+We use `pyocd` to flash this board. You might need to update your `pyocd`
+version:
+
+```
+pip3 install pyocd --user -U
+```
 
 To flash this board, just use the following command:
 
@@ -57,7 +60,7 @@ make BOARD=p-nucleo-wb55 flash -C examples/hello-world
 ```
 
 STDIO
--------------------
+-----
 STDIO is available via the ST-Link programmer.
 
 Use the `term` target to open a terminal:
@@ -66,7 +69,7 @@ Use the `term` target to open a terminal:
 
 
 User Interface
--------------------
+--------------
 
 2 Button:
 
@@ -83,7 +86,7 @@ User Interface
 
 
 Implementation Status
--------------------
+---------------------
 
 | Device | ID        | Supported | Comments  |
 |:---------------- |:----------------- |:------- |:------- |
