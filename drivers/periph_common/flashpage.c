@@ -33,7 +33,7 @@ void flashpage_read(int page, void *data)
     assert(page < (int)FLASHPAGE_NUMOF);
 
 #if defined(CPU_FAM_STM32WB)
-    assert(page < (int) (FLASH->SFR & FLASH_SFR_SFSA));
+    assert(page < (int)(FLASH->SFR & FLASH_SFR_SFSA));
 #endif
 
     memcpy(data, flashpage_addr(page), FLASHPAGE_SIZE);
@@ -44,7 +44,7 @@ int flashpage_verify(int page, const void *data)
     assert(page < (int)FLASHPAGE_NUMOF);
 
 #if defined(CPU_FAM_STM32WB)
-    assert(page < (int) (FLASH->SFR & FLASH_SFR_SFSA));
+    assert(page < (int)(FLASH->SFR & FLASH_SFR_SFSA));
 #endif
 
     if (memcmp(flashpage_addr(page), data, FLASHPAGE_SIZE) == 0) {
