@@ -2,8 +2,8 @@ DEVELHELP := 1
 # name of your application
 include ../Makefile.tests_common
 
-# chronos, hamilton and ruuvitag boards don't support ethos
-BOARD_BLACKLIST := chronos hamilton ruuvitag
+# chronos, feather-nrf52840, hamilton and ruuvitag boards don't support ethos
+BOARD_BLACKLIST := chronos feather-nrf52840 hamilton ruuvitag
 
 export TAP ?= tap0
 

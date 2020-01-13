@@ -1,0 +1,6 @@
+ifeq (,$(filter stdio_rtt,$(USEMODULE)))
+  TERMPROG ?= $(RIOTTOOLS)/jlink/jlink.sh
+  TERMFLAGS ?= term-rtt
+endif
+
+include $(RIOTBOARD)/common/nrf52/Makefile.include
