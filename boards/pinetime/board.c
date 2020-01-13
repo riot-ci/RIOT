@@ -39,7 +39,7 @@ void board_init(void)
     gpio_init(LCD_BACKLIGHT_MID, GPIO_OUT);
     gpio_init(LCD_BACKLIGHT_HIGH, GPIO_OUT);
 
-    gpio_set(VCC33, GPIO_OUT);
+    gpio_set(VCC33);
     gpio_set(BUTTON0_ENABLE);
     gpio_set(VIBRATOR);
     gpio_set(LCD_BACKLIGHT_LOW);
