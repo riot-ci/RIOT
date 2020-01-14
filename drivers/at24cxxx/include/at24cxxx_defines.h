@@ -58,10 +58,6 @@ extern "C" {
  */
 #define AT24C01A_PAGE_SIZE              (8U)
 /**
- * @brief 7-bit data word address for random word addressing
- */
-#define AT24C01A_WORD_ADDR_LEN          (7U)
-/**
  * @brief Delay to complete write operation
  */
 #define AT24C01A_PAGE_WRITE_DELAY_US    (5000U)
@@ -84,10 +80,6 @@ extern "C" {
  * @brief   32 pages of 8 bytes
  */
 #define AT24C02_PAGE_SIZE               (8U)
-/**
- * @brief   8-bit data word address for random word addressing
- */
-#define AT24C02_WORD_ADDR_LEN           (8U)
 /**
  * @brief   Delay to complete write operation
  */
@@ -112,11 +104,6 @@ extern "C" {
  */
 #define AT24C04_PAGE_SIZE               (16U)
 /**
- * @brief   9-bit data word address for random word addressing, where the most
- *          significant bit is included in the device address
- */
-#define AT24C04_WORD_ADDR_LEN           (9U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C04_PAGE_WRITE_DELAY_US     (5000U)
@@ -140,11 +127,6 @@ extern "C" {
  */
 #define AT24C08A_PAGE_SIZE              (16U)
 /**
- * @brief   10-bit data word address for random word addressing, where the two
- *          most significant bits are included in the device address
- */
-#define AT24C08A_WORD_ADDR_LEN          (10U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C08A_PAGE_WRITE_DELAY_US    (5000U)
@@ -167,11 +149,6 @@ extern "C" {
  * @brief   128 pages of 16 bytes each
  */
 #define AT24C16A_PAGE_SIZE              (16U)
-/**
- * @brief 11-bit data word address for random word addressing, where the three
- *        most significant bits are included in the device address
- */
-#define AT24C16A_WORD_ADDR_LEN          (11U)
 /**
  * @brief Delay to complete write operation
  */
@@ -197,10 +174,6 @@ extern "C" {
  */
 #define AT24C32_PAGE_SIZE               (32U)
 /**
- * @brief   12-bit data word address for random word addressing
- */
-#define AT24C32_WORD_ADDR_LEN           (12U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C32_PAGE_WRITE_DELAY_US     (10000U)
@@ -223,10 +196,6 @@ extern "C" {
  * @brief   256 pages of 32 bytes each
  */
 #define AT24C64_PAGE_SIZE               (32U)
-/**
- * @brief   13-bit data word address for random word addressing
- */
-#define AT24C64_WORD_ADDR_LEN           (13U)
 /**
  * @brief   Delay to complete write operation
  */
@@ -251,10 +220,6 @@ extern "C" {
  */
 #define AT24C128_PAGE_SIZE              (64U)
 /**
- * @brief   14-bit data word address for random word addressing
- */
-#define AT24C128_WORD_ADDR_LEN          (14U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C128_PAGE_WRITE_DELAY_US    (5000U)
@@ -277,10 +242,6 @@ extern "C" {
  * @brief   512 pages of 64 bytes each
  */
 #define AT24C256_PAGE_SIZE              (64U)
-/**
- * @brief   15-bit data word address for random word addressing
- */
-#define AT24C256_WORD_ADDR_LEN          (15U)
 /**
  * @brief   Delay to complete write operation
  */
@@ -305,10 +266,6 @@ extern "C" {
  */
 #define AT24C512_PAGE_SIZE              (128U)
 /**
- * @brief   16-bit data word address for random word addressing
- */
-#define AT24C512_WORD_ADDR_LEN          (16U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C512_PAGE_WRITE_DELAY_US    (5000U)
@@ -332,11 +289,6 @@ extern "C" {
  */
 #define AT24C1024_PAGE_SIZE             (64U)
 /**
- * @brief   17-bit data word address for random word addressing, where the
- *          most significant bit is included in the device address
- */
-#define AT24C1024_WORD_ADDR_LEN         (17U)
-/**
  * @brief   Delay to complete write operation
  */
 #define AT24C1024_PAGE_WRITE_DELAY_US   (5000U)
@@ -354,62 +306,50 @@ extern "C" {
 #if IS_USED(MODULE_AT24C1024)
 #define AT24CXXX_EEPROM_SIZE            (AT24C1024_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C1024_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C1024_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C1024_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C512)
 #define AT24CXXX_EEPROM_SIZE            (AT24C512_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C512_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C512_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C512_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C256)
 #define AT24CXXX_EEPROM_SIZE            (AT24C256_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C256_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C256_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C256_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C128)
 #define AT24CXXX_EEPROM_SIZE            (AT24C128_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C128_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C128_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C128_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C64)
 #define AT24CXXX_EEPROM_SIZE            (AT24C64_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C64_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C64_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C64_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C32)
 #define AT24CXXX_EEPROM_SIZE            (AT24C32_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C32_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C32_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C32_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C16A)
 #define AT24CXXX_EEPROM_SIZE            (AT24C16A_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C16A_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C16A_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C16A_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C08A)
 #define AT24CXXX_EEPROM_SIZE            (AT24C08A_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C08A_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C08A_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C08A_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C04)
 #define AT24CXXX_EEPROM_SIZE            (AT24C04_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C04_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C04_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C04_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C02)
 #define AT24CXXX_EEPROM_SIZE            (AT24C02_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C02_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C02_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C02_MAX_POLLS)
 #elif IS_USED(MODULE_AT24C01A)
 #define AT24CXXX_EEPROM_SIZE            (AT24C01A_EEPROM_SIZE)
 #define AT24CXXX_PAGE_SIZE              (AT24C01A_PAGE_SIZE)
-#define AT24CXXX_WORD_ADDR_LEN          (AT24C01A_WORD_ADDR_LEN)
 #define AT24CXXX_MAX_POLLS              (AT24C01A_MAX_POLLS)
 #else /* minimal */
 #define AT24CXXX_EEPROM_SIZE            (128U)  /**< EEPROM size */
 #define AT24CXXX_PAGE_SIZE              (4U)    /**< page size */
-#define AT24CXXX_WORD_ADDR_LEN          (7U)    /**< word address bit length */
 #define AT24CXXX_MAX_POLLS              (6U)    /**< maximum poll attempts */
 #endif
 /** @} */

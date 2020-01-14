@@ -48,7 +48,6 @@ typedef struct at24cxxx_params {
     uint32_t eeprom_size;           /**< EEPROM memory capacity */
     uint8_t dev_addr;               /**< I2C device address */
     uint8_t page_size;              /**< page size */
-    uint8_t word_addr_len;          /**< data word address length */
     uint8_t max_polls;              /**< number of ACK poll attempts */
 } at24cxxx_params_t;
 

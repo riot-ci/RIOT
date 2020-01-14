@@ -59,10 +59,6 @@
  */
 #define PAGE_SIZE                   (dev->params.page_size)
 /**
- * @brief Word address length shortcut
- */
-#define WORD_ADDR_LEN               (dev->params.word_addr_len)
-/**
  * @brief Max polls shortcut
  */
 #define MAX_POLLS                   (dev->params.max_polls)
@@ -82,8 +78,9 @@ int _read(const at24cxxx_t *dev, uint32_t pos, void *data, size_t len)
     uint8_t dev_addr;
     uint8_t flags = 0;
 
-    if (WORD_ADDR_LEN > 11) {
-        /* 2 bytes word address length*/
+    if (EEPROM_SIZE > 2048) {
+        /* 2 bytes word address length if more than 11 bits are
+           used for addressing */
         /* append page address bits to device address (if any) */
         dev_addr  = (I2C_ADDR | ((pos & 0xFF0000) >> 16));
         pos &= 0xFFFF;
@@ -119,8 +116,9 @@ int _write(const at24cxxx_t *dev, uint32_t pos, const void *data, size_t len)
         uint8_t dev_addr;
         uint16_t _pos;
         uint8_t flags = 0;
-        if (WORD_ADDR_LEN > 11) {
-            /* 2 bytes word address length*/
+        if (EEPROM_SIZE > 2048) {
+            /* 2 bytes word address length if more than 11 bits are
+               used for addressing */
             /* append page address bits to device address (if any) */
             dev_addr  = (I2C_ADDR | ((pos & 0xFF0000) >> 16));
             _pos = (pos & 0xFFFF);
