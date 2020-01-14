@@ -4,7 +4,7 @@ This application contains several examples of usage of TensorFlow Lite for
 microcontrollers:
 - The default example, `mnist` contains a complete example to perform
   hand-written digit recognition: it shows how to train a very simple
-  MLP (Multi-Layer Perceptron) model and how to reuse in a RIOT application.
+  MLP (Multi-Layer Perceptron) model and how to reuse it in a RIOT application.
   The code of this example is provided as an external module in the
   [mnist](mnist) directory.
 - The other example, [Hello World](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/experimental/micro/examples/hello_world),
