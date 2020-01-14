@@ -15,6 +15,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
+/* Provide an Arduino-Like API to be able to easily reuse the code from
+   upstream examples */
 void setup();
 void loop();
 
