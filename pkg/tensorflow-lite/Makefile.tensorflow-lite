@@ -7,6 +7,6 @@ CXXEXFLAGS += -Wno-unused-parameter
 CXXEXFLAGS += -Wno-unused-variable
 
 SRCXXEXT = cc
-SRCXXEXCLUDE := $(wildcard *_test.$(SRCXXEXT))
+SRCXXEXCLUDE = $(wildcard *_test.$(SRCXXEXT))
 
 include $(RIOTBASE)/Makefile.base
