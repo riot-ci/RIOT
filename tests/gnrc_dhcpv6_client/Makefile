@@ -1,9 +1,5 @@
 include ../Makefile.tests_common
 
-ifeq (,$(shell echo $$(command -v kea-dhcp6)))
-  $(error "kea-dhcp6 required")
-endif
-
 # generate random free port
 DHCPV6_SERVER_PORT := 61342
 

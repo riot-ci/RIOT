@@ -11,6 +11,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+if ! command -v kea-dhcp6; then
+  echo -e "\033[31;1mCommand kea-dhcp6 required\033[0m" >&2
+  exit 1
+fi
+
 _dhcpv6_server() {
     sleep 1 # sleep to let TAP become active
     sudo kea-dhcp6 -p $1 -c $2
