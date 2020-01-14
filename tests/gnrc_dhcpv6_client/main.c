@@ -39,7 +39,7 @@ void *_dhcpv6_client_thread(void *args)
     event_queue_init(&event_queue);
     /* initialize DHCPv6 client on any interface */
     dhcpv6_client_init(&event_queue, SOCK_ADDR_ANY_NETIF);
-    /* configure client to request prefix delegation of /64 subnet 
+    /* configure client to request prefix delegation of /64 subnet
      * interface netif */
     dhcpv6_client_req_ia_pd(netif->pid, 64U);
     /* start DHCPv6 client */

@@ -9,12 +9,7 @@ DHCPV6_SERVER_PORT := 61342
 
 RIOTBASE ?= $(CURDIR)/../..
 
-BOARD_INSUFFICIENT_MEMORY := chronos msb-430 msb-430h nucleo32-f042 \
-                             nucleo32-f031 nucleo-f030 nucleo-l053 \
-                             nucleo32-l031 stm32f0discovery telosb \
-                             wsn430-v1_3b wsn430-v1_4 z1
-
-# The following boards do not have an available UART
+# boards don't support ethos
 BOARD_BLACKLIST += mips-malta pic32-wifire pic32-clicker ruuvitag thingy52
 
 USEMODULE += gnrc_dhcpv6_client
@@ -36,14 +31,6 @@ endif
 USEMODULE += auto_init_gnrc_netif
 
 USEMODULE += shell_commands
-
-LOW_MEMORY_BOARDS := nucleo-f070 nucleo-f072 nucleo-f334 nucleo32-f303
-
-ifeq ($(BOARD),$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
-    CFLAGS += -DGNRC_PKTBUF_SIZE=512 -DGNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
-              -DGNRC_NETIF_IPV6_GROUPS_NUMOF=2 -DGNRC_IPV6_NIB_NUMOF=1 \
-              -DNRC_IPV6_NIB_OFFL_NUMOF=1
-endif
 
 CFLAGS += -DDHCPV6_SERVER_PORT=$(DHCPV6_SERVER_PORT)
 

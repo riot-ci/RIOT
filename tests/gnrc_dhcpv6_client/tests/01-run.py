@@ -6,11 +6,8 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-import json
-import os
 import sys
-
-
+from testrunner import run
 
 
 def testfunc(child):
@@ -27,14 +24,11 @@ def testfunc(child):
     assert int(child.match.group("valid_ltime")) < 4000
     assert int(child.match.group("pref_ltime")) < 3000
     if global_pfx.endswith("::"):
-        global_pfx = global_pfx[0:-1] # remove one trailing : in case there are
-                                      # no 0s between prefix and suffix
+        # remove one trailing : in case there are no 0s between prefix and
+        # suffix
+        global_pfx = global_pfx[0:-1]
     assert global_addr.startswith(global_pfx)
 
 
 if __name__ == "__main__":
-    sys.path.append(
-            os.path.join(os.environ['RIOTBASE'], 'dist/tools/testrunner')
-        )
-    from testrunner import run
-    status = run(testfunc, timeout=5)
+    sys.exit(run(testfunc, timeout=5))
