@@ -90,7 +90,7 @@ typedef int16_t lv_coord_t;
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #ifndef LV_MEM_SIZE
-#define LV_MEM_SIZE       (2U * 1024U)
+#define LV_MEM_SIZE       (5U * 1024U)
 #endif
 
 /* Compiler prefix for a big array declaration */
