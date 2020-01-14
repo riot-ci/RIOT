@@ -20,7 +20,6 @@
 #define BOARD_H
 
 #include "lpc2387.h"
-#include "bitarithm.h"
 
 #ifdef __cplusplus
 extern "C" {
