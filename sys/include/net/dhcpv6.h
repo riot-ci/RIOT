@@ -13,9 +13,8 @@
  * @{
  *
  * @file
- * @brief   DHCPv6 defintions
+ * @brief   DHCPv6 definitions
  * @note    This header is based on [RFC 8415](https://tools.ietf.org/html/rfc8415)
- * @todo    Update to RFC once it leaves draft stage
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
