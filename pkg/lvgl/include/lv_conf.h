@@ -48,7 +48,9 @@ extern "C" {
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
-#define LV_COLOR_16_SWAP   0
+#ifndef LV_COLOR_16_SWAP
+#define LV_COLOR_16_SWAP   1
+#endif
 
 /* 1: Enable screen transparency.
  * Useful for OSD or other overlapping GUIs.
@@ -226,10 +228,10 @@ typedef void * lv_img_decoder_user_data_t;
 
 /* 1: use a custom tick source.
  * It removes the need to manually update the tick with `lv_tick_inc`) */
-#define LV_TICK_CUSTOM     0
+#define LV_TICK_CUSTOM     1
 #if LV_TICK_CUSTOM == 1
-#define LV_TICK_CUSTOM_INCLUDE  "something.h"       /*Header for the sys time function*/
-#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())     /*Expression evaluating to current systime in ms*/
+#define LV_TICK_CUSTOM_INCLUDE  "xtimer.h"       /*Header for the sys time function*/
+#define LV_TICK_CUSTOM_SYS_TIME_EXPR (xtimer_now_usec() / US_PER_MS)     /*Expression evaluating to current systime in ms*/
 #endif   /*LV_TICK_CUSTOM*/
 
 typedef void * lv_disp_drv_user_data_t;             /*Type of user data in the display driver*/

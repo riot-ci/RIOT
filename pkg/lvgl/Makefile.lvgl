@@ -1,5 +1,5 @@
 MODULE = lvgl
 
-NO_AUTO_SRC := 1
+NO_AUTO_SRC = 1
 
 include $(RIOTBASE)/Makefile.base
