@@ -32,12 +32,14 @@
 
 static ili9341_t dev;
 
+#define CPU_LABEL_COLOR     "FF0000"
 #define MEM_LABEL_COLOR     "0000FF"
 #define CHART_POINT_NUM     100
 #define REFR_TIME           500
 
 static lv_obj_t *win;
 static lv_obj_t *chart;
+static lv_chart_series_t * cpu_ser;
 static lv_chart_series_t *mem_ser;
 static lv_obj_t *info_label;
 static lv_task_t *refr_task;
@@ -48,17 +50,28 @@ static void sysmon_task(lv_task_t *param)
 {
     (void)param;
 
+    /*Get CPU and memory information */
+    uint8_t cpu_busy = 100 - lv_task_get_idle();
+
     lv_mem_monitor_t mem_mon;
     lv_mem_monitor(&mem_mon);
 
     uint8_t mem_used_pct = mem_mon.used_pct;
 
-    /* Add memory data to the chart */
+    /*Add the CPU and memory data to the chart*/
+    lv_chart_set_next(chart, cpu_ser, cpu_busy);
     lv_chart_set_next(chart, mem_ser, mem_used_pct);
 
     /* Refresh the chart and windows */
     char buf_long[SYSMON_STRING_BUFFER_SIZE];
     int len = 0;
+    len += lv_snprintf(buf_long + len, SYSMON_STRING_BUFFER_SIZE - len,
+                       "%s%s CPU: %d %%%s\n\n",
+                       LV_TXT_COLOR_CMD,
+                       CPU_LABEL_COLOR,
+                       cpu_busy,
+                       LV_TXT_COLOR_CMD);
+
     len += lv_snprintf(buf_long + len, SYSMON_STRING_BUFFER_SIZE - len,
                        LV_TXT_COLOR_CMD"%s MEMORY: %d %%"LV_TXT_COLOR_CMD"\n"
                        "Total: %d bytes\n"
@@ -70,6 +83,7 @@ static void sysmon_task(lv_task_t *param)
                        (int)mem_mon.total_size,
                        (int)mem_mon.total_size - mem_mon.free_size,
                        mem_mon.free_size, mem_mon.frag_pct);
+
     lv_label_set_text(info_label, buf_long);
 }
 
@@ -94,11 +108,13 @@ void sysmon_create(void)
     lv_chart_set_range(chart, 0, 100);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
     lv_chart_set_series_width(chart, 4);
-    mem_ser =  lv_chart_add_series(chart, LV_COLOR_BLUE);
+    cpu_ser = lv_chart_add_series(chart, LV_COLOR_RED);
+    mem_ser = lv_chart_add_series(chart, LV_COLOR_BLUE);
 
     /* Set the data series to zero */
     uint16_t i;
     for(i = 0; i < CHART_POINT_NUM; i++) {
+        lv_chart_set_next(chart, cpu_ser, 0);
         lv_chart_set_next(chart, mem_ser, 0);
     }
 
