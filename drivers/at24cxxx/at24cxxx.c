@@ -83,7 +83,7 @@ int _read(const at24cxxx_t *dev, uint32_t pos, void *data, size_t len)
     uint8_t flags = 0;
 
     if (WORD_ADDR_LEN > 11) {
-        /* 2 bytes word address length*/
+        /* 2 bytes word address length */
         /* append page address bits to device address (if any) */
         dev_addr  = (I2C_ADDR | ((pos & 0xFF0000) >> 16));
         pos &= 0xFFFF;
@@ -120,7 +120,7 @@ int _write(const at24cxxx_t *dev, uint32_t pos, const void *data, size_t len)
         uint16_t _pos;
         uint8_t flags = 0;
         if (WORD_ADDR_LEN > 11) {
-            /* 2 bytes word address length*/
+            /* 2 bytes word address length */
             /* append page address bits to device address (if any) */
             dev_addr  = (I2C_ADDR | ((pos & 0xFF0000) >> 16));
             _pos = (pos & 0xFFFF);

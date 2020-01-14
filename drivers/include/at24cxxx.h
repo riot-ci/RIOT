@@ -51,6 +51,11 @@ typedef struct at24cxxx_params {
     uint8_t word_addr_len;          /**< data word address length */
     uint8_t max_polls;              /**< number of ACK poll attempts */
 } at24cxxx_params_t;
+/* implemetation note: One could derive the word address length from the
+   EEPROM size, but this would require a log2(EEPROM_SIZE), (ctz(EEPROM_SIZE))
+   respectively. And because the struct is 32 bit aligned, it would not get
+   smaller. If an at24cxxx has a larger address length than 11 bit, it uses
+   2 bytes to address a word in memory. */
 
 /**
  * @brief   Struct that represents an AT24CXXX device

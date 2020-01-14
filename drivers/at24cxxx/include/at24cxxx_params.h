@@ -77,14 +77,14 @@ extern "C" {
 /**
  * @brief   Default device configuration parameters
  */
-#define AT24CXXX_PARAMS                {        \
-    .i2c = AT24CXXX_PARAM_I2C,                  \
-    .dev_addr = AT24CXXX_PARAM_ADDR,            \
-    .pin_wp = AT24CXXX_PARAM_PIN_WP,            \
-    .eeprom_size = AT24CXXX_PARAM_EEPROM_SIZE,  \
-    .page_size = AT24CXXX_PAGE_SIZE,            \
-    .word_addr_len = AT24CXXX_WORD_ADDR_LEN,    \
-    .max_polls = AT24CXXX_MAX_POLLS             \
+#define AT24CXXX_PARAMS                {            \
+    .i2c = AT24CXXX_PARAM_I2C,                      \
+    .dev_addr = AT24CXXX_PARAM_ADDR,                \
+    .pin_wp = AT24CXXX_PARAM_PIN_WP,                \
+    .eeprom_size = AT24CXXX_PARAM_EEPROM_SIZE,      \
+    .page_size = AT24CXXX_PAGE_SIZE,                \
+    .word_addr_len = AT24CXXX_PARAM_WORD_ADDR_LEN,  \
+    .max_polls = AT24CXXX_MAX_POLLS                 \
 }
 #endif
 /** @} */
