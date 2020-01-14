@@ -45,7 +45,7 @@ extern "C" {
  * @brief   Static length of the DUID
  */
 #define DHCPV6_CLIENT_DUID_LEN      (sizeof(dhcpv6_duid_l2_t) + 8U)
-#define DHCPV6_CLIENT_BUFLEN        (128)   /**< length for send and receive buffer */
+#define DHCPV6_CLIENT_BUFLEN        (256)   /**< length for send and receive buffer */
 #ifndef DHCPV6_CLIENT_SERVER_MAX
 #define DHCPV6_CLIENT_SERVER_MAX    (1U)    /**< maximum number of servers to store */
 #endif
