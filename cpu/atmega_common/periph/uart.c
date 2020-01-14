@@ -81,7 +81,7 @@ static mega_uart_t *dev[] = {
 static uart_isr_ctx_t isr_ctx[UART_NUMOF];
 
 /**
- * @brief   Allocate variable to hold transmition status, set when there
+ * @brief   Allocate variable to hold transmission status, set when there
  *          is data in UDRn or in the Transmit Shift Register
  */
 static volatile uint8_t _tx_pending = 0;
@@ -126,7 +126,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         return UART_NODEV;
     }
 
-    while(_tx_pending) {}
+    while (_tx_pending) {}
 
     /* register interrupt context */
     isr_ctx[uart].rx_cb = rx_cb;
@@ -148,7 +148,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* set clock divider */
     _set_brr(uart, baudrate);
 
-    /* enable RX and TX and there respective interrupt */
+    /* enable RX and TX and their respective interrupt */
     if (rx_cb) {
 #ifdef CPU_ATMEGA32U4
         dev[uart]->CSRB = ((1 << RXCIE1) | (1 << TXCIE1) | (1 << RXEN1) | (1 << TXEN1));
@@ -175,7 +175,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 #else
         while (!(dev[uart]->CSRA & (1 << UDRE0))) {}
 #endif
-        /* start of TX wont finish until no data in UDRn and transmit shift
+        /* start of TX won't finish until no data in UDRn and transmit shift
            register is empty */
         _tx_pending |= (1 << uart);
 
