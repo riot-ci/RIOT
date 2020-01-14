@@ -60,7 +60,7 @@ unsigned dhcpv6_client_get_duid_l2(unsigned iface, dhcpv6_duid_l2_t *duid)
                     duid->l2type = byteorder_htons(ARP_HWTYPE_ETHERNET);
                     break;
                 }
-                /* falls-through intentionally */
+                /* intentionally falls through */
             default:
                 LOG_ERROR("DHCPv6 client: Link-layer type of interface %u not supported "
                           "for DUID creation\n", netif->pid);

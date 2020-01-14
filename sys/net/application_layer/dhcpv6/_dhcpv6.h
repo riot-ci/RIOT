@@ -7,15 +7,12 @@
  */
 
 /**
- * @defgroup    net_dhcpv6 Dynamic Host Configuration Protocol for IPv6 (DHCPv6)
- * @ingroup     net_ipv6
- * @brief       DHCPv6 implementation
+ * @ingroup     net_dhcpv6
  * @{
  *
  * @file
  * @brief   Internal DHCPv6 definitions
  * @note    This header is based on [RFC 8415](https://tools.ietf.org/html/rfc8415)
- * @todo    Update to RFC once it leaves draft stage
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */

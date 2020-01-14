@@ -16,6 +16,7 @@
 #include <stdbool.h>
 
 #include "event.h"
+#include "kernel_defines.h"
 #include "net/dhcpv6/client.h"
 #include "net/dhcpv6.h"
 #include "net/sock/udp.h"
@@ -685,7 +686,7 @@ static void _solicit_servers(event_t *event)
     time = (dhcpv6_opt_elapsed_time_t *)&send_buf[msg_len];
     msg_len += _compose_elapsed_time_opt(time);
     msg_len += _compose_oro_opt((dhcpv6_opt_oro_t *)&send_buf[msg_len], oro_opts,
-                                sizeof(oro_opts) / sizeof(oro_opts[0]));
+                                ARRAY_SIZE(oro_opts));
     msg_len += _add_ia_pd_from_config(&send_buf[msg_len]);
     DEBUG("DHCPv6 client: send SOLICIT\n");
     res = sock_udp_send(&sock, send_buf, msg_len, &remote);
@@ -792,7 +793,7 @@ static void _request_renew_rebind(uint8_t type)
     time = (dhcpv6_opt_elapsed_time_t *)&send_buf[msg_len];
     msg_len += _compose_elapsed_time_opt(time);
     msg_len += _compose_oro_opt((dhcpv6_opt_oro_t *)&send_buf[msg_len], oro_opts,
-                                sizeof(oro_opts) / sizeof(oro_opts[0]));
+                                ARRAY_SIZE(oro_opts));
     msg_len += _add_ia_pd_from_config(&send_buf[msg_len]);
     while (sock_udp_send(&sock, send_buf, msg_len, &remote) <= 0) {}
     while (((res = sock_udp_recv(&sock, recv_buf, sizeof(recv_buf),

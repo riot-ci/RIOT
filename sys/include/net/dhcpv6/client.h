@@ -13,7 +13,7 @@
  * @{
  *
  * @file
- * @brief   DHCPv6 client defintions
+ * @brief   DHCPv6 client definitions
  *
  * @author  Martine Lenders <m.lenders@fu-berlin.de>
  */
