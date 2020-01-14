@@ -18,7 +18,6 @@
  * @}
  */
 
-#include <stdio.h>
 #include <string.h>
 
 #include "xtimer.h"
@@ -71,10 +70,7 @@ static void sysmon_task(lv_task_t *param)
                        (int)mem_mon.total_size,
                        (int)mem_mon.total_size - mem_mon.free_size,
                        mem_mon.free_size, mem_mon.frag_pct);
-    buf_long[len] = 0;
     lv_label_set_text(info_label, buf_long);
-
-    printf("%s\n", buf_long);
 }
 
 void sysmon_create(void)
@@ -125,12 +121,6 @@ int main(void)
 
     /* Create the system monitor widget */
     sysmon_create();
-
-    while (1) {
-        /* Force periodical call of the sysmon task */
-        lv_task_ready(refr_task);
-        xtimer_sleep(1);
-    }
 
     return 0;
 }

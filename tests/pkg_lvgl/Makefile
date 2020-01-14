@@ -5,9 +5,7 @@ include ../Makefile.tests_common
 DISABLE_MODULE += test_utils_interactive_sync
 
 USEPKG += lvgl
-USEMODULE += xtimer
-
 USEMODULE += ili9341
-CFLAGS += -DILI9341_LE_MODE
+USEMODULE += xtimer
 
 include $(RIOTBASE)/Makefile.include
