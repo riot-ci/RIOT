@@ -12,14 +12,11 @@ USEMODULE += gnrc_dhcpv6_client
 USEMODULE += gnrc_ipv6_default
 USEMODULE += xtimer
 ifneq (,$(filter native,$(BOARD)))
-  USEMODULE += netdev_default
   IFACE ?= tapbr0
 else
-  USEMODULE += ethos
   IFACE ?= tap0
   ETHOS_BAUDRATE ?= 115200
-  FEATURES_REQUIRED += periph_uart
-  CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE) -DUSE_ETHOS_FOR_STDIO
+  CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
   TERMPROG ?= sudo sh $(RIOTBASE)/dist/tools/ethos/ethos
   TERMFLAGS ?= $(IFACE) $(PORT) $(ETHOS_BAUDRATE)
   TERMDEPS += ethos
