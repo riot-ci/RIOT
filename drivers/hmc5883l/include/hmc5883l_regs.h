@@ -64,7 +64,7 @@ extern "C"
 #define HMC5883L_REG_MODE_HS        (0x80)  /**< HMC5883L_REG_MODE<7> */
 #define HMC5883L_REG_MODE_MD        (0x03)  /**< HMC5883L_REG_MODE<1:0> */
 
-#define HMC5883L_REG_STATUS_LOCK    (0x20)  /**< HMC5883L_REG_STATUS<1> */
+#define HMC5883L_REG_STATUS_LOCK    (0x02)  /**< HMC5883L_REG_STATUS<1> */
 #define HMC5883L_REG_STATUS_RDY     (0x01)  /**< HMC5883L_REG_STATUS<0> */
 /** @} */
 
