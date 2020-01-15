@@ -89,8 +89,9 @@ int hmc5883l_init(hmc5883l_t *dev, const hmc5883l_params_t *params)
     /* set operation mode */
     EXEC_RET(_reg_write(dev, HMC5883L_REG_MODE, params->op_mode), res);
 
-    /* wait 6 ms according to data sheet */
-    xtimer_usleep(6 * US_PER_MS);
+    /* to set the LOCK flag, read the first data sample that is not valid */
+    uint8_t data[6];
+    EXEC_RET(_reg_read(dev, HMC5883L_REG_OUT_X_MSB, data, 6), res);
 
     return res;
 }
@@ -122,7 +123,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
     uint8_t reg;
 
     EXEC_RET(_reg_read(dev, HMC5883L_REG_STATUS, &reg, 1), res);
-    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
+    return (reg == HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
 }
 
 /*
