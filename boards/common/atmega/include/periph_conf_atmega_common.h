@@ -214,7 +214,7 @@ extern "C" {
 
     #define UART_1              MEGA_UART1
     #define UART_1_ISR          USART1_RX_vect
-    #define UART_1_ISR_TX       USART1_RX_vect
+    #define UART_1_ISR_TX       USART1_TX_vect
 #elif defined(CPU_ATMEGA328P)
     #define UART_NUMOF          (1U)
 
