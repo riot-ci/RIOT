@@ -122,7 +122,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
     uint8_t reg;
 
     EXEC_RET(_reg_read(dev, HMC5883L_REG_STATUS, &reg, 1), res);
-    return (reg & HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
+    return (reg == HMC5883L_REG_STATUS_RDY) ? HMC5883L_OK : HMC5883L_ERROR_NO_DATA;
 }
 
 /*
