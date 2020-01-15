@@ -38,7 +38,7 @@ typedef uint_fast8_t at24mac_t;
 /**
  * @brief   Type of the AT24Mac device
  */
-typedef enum __attribute__ ((__packed__)) {
+typedef enum {
     AT24MAC4XX,                         /**< provides EUI-48 */
     AT24MAC6XX                          /**< provides EUI-64 */
 } at24mac_type_t;
