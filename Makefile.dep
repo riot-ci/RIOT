@@ -466,13 +466,16 @@ ifneq (,$(filter stdio_uart_rx,$(USEMODULE)))
   USEMODULE += stdio_uart
 endif
 
-ifneq (stdio_rtt,$(filter stdio_%,$(USEMODULE)))
-  ifneq (,$(filter stdio_%,$(USEMODULE)))
-    FEATURES_REQUIRED += periph_uart
+ifneq (,$(filter stdio_uart,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_uart
+endif
 
-    # stdio_rtt cannot be used when stdio_uart is loaded
-    DISABLE_MODULE += stdio_rtt
-  endif
+# no STDIO given and `stdio_rtt` selected as STDIO
+ifneq (,$(filter stdio_%,$(USEMODULE)))
+ifneq (stdio_rtt,$(filter stdio_%,$(USEMODULE)))
+  # stdio_rtt cannot be used when stdio_uart is loaded
+  DISABLE_MODULE += stdio_rtt
+endif
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
