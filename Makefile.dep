@@ -474,7 +474,6 @@ ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart,$(USEMODULE)))
   # stdio_rtt cannot be used when another STDIO is loaded
   DISABLE_MODULE += stdio_rtt
 endif
-endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
   USEMODULE += tsrb
