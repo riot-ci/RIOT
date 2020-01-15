@@ -82,6 +82,22 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Keep all but oldest fragment when reassembly buffer is full
+ *
+ * @note    Only applicable with
+ *          [gnrc_sixlowpan_frag_rb](@ref net_gnrc_sixlowpan_frag_rb) module
+ *
+ * When not set, it will cause the reassembly buffer to
+ * override the oldest entry no matter what. When set, only the oldest
+ * entry that is older than @ref GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US will be
+ * overwritten (they will still timeout normally if reassembly buffer is not
+ * full).
+ */
+#ifndef GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE
+#define GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE              (0)
+#endif
+
+/**
  * @brief   Aggressively override reassembly buffer when full
  *
  * @note    Only applicable with
@@ -92,10 +108,17 @@ extern "C" {
  * entry that is older than @ref GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US will be
  * overwritten (they will still timeout normally if reassembly buffer is not
  * full).
+ *
+ * @deprecated Use inverse `GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE` with instead.
+ *             Will be removed after 2020.10 release.
  */
 #ifndef GNRC_SIXLOWPAN_FRAG_RBUF_AGGRESSIVE_OVERRIDE
+#ifdef GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE
+#define GNRC_SIXLOWPAN_FRAG_RBUF_AGGRESSIVE_OVERRIDE    (!GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE)
+#else /* GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE */
 #define GNRC_SIXLOWPAN_FRAG_RBUF_AGGRESSIVE_OVERRIDE    (1)
-#endif
+#endif /* GNRC_SIXLOWPAN_FRAG_RBUF_DO_NOT_OVERRIDE */
+#endif /* GNRC_SIXLOWPAN_FRAG_RBUF_AGGRESSIVE_OVERRIDE */
 
 /**
  * @brief   Deletion timer for reassembly buffer entries in microseconds
