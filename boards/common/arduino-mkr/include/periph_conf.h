@@ -72,7 +72,8 @@ static const spi_conf_t spi_config[] = {
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,
         .miso_pad = SPI_PAD_MISO_3,
-        .mosi_pad = SPI_PAD_MOSI_0_SCK_1
+        .mosi_pad = SPI_PAD_MOSI_0_SCK_1,
+        .gclk_src = 0
     },
     {
         .dev      = &SERCOM2->SPI,
@@ -83,7 +84,8 @@ static const spi_conf_t spi_config[] = {
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,
         .miso_pad = SPI_PAD_MISO_3,
-        .mosi_pad = SPI_PAD_MOSI_0_SCK_1
+        .mosi_pad = SPI_PAD_MOSI_0_SCK_1,
+        .gclk_src = 0
     }
 };
 
