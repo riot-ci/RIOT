@@ -4,7 +4,8 @@
 CFLAGS += -DNDEBUG
 include ../Makefile.tests_common
 
-DISABLE_MODULE = auto_init
+DISABLE_MODULE += auto_init_gnrc_netif
+DISABLE_MODULE += auto_init_gnrc_pktbuf
 
 USEMODULE += gnrc
 USEMODULE += gnrc_neterr
