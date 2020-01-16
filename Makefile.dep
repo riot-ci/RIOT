@@ -77,6 +77,7 @@ ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_uhcpc,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_uhcpc
   USEMODULE += uhcpc
   USEMODULE += gnrc_sock_udp
   USEMODULE += fmt
@@ -254,6 +255,7 @@ endif
 
 ifneq (,$(filter gnrc_sixlowpan,$(USEMODULE)))
   USEMODULE += sixlowpan
+  DEFAULT_MODULE += auto_init_gnrc_sixlowpan
 endif
 
 ifneq (,$(filter gnrc_sixlowpan_ctx,$(USEMODULE)))
@@ -321,6 +323,7 @@ ifneq (,$(filter gnrc_ipv6_router,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_ipv6
   USEMODULE += inet_csum
   USEMODULE += ipv6_addr
   USEMODULE += gnrc_ipv6_hdr
@@ -365,6 +368,7 @@ ifneq (,$(filter gnrc_ipv6_nib_router,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_ipv6_nib
   USEMODULE += evtimer
   USEMODULE += gnrc_ndp
   USEMODULE += gnrc_netif
@@ -376,11 +380,13 @@ ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_udp,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_udp
   USEMODULE += inet_csum
   USEMODULE += udp
 endif
 
 ifneq (,$(filter gnrc_tcp,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_tcp
   USEMODULE += inet_csum
   USEMODULE += random
   USEMODULE += tcp
@@ -397,6 +403,7 @@ ifneq (,$(filter gnrc_nettest,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_pktdump,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_pktdump
   USEMODULE += gnrc_pktbuf
   USEMODULE += od
 endif
@@ -632,6 +639,7 @@ ifneq (,$(filter gnrc_pktbuf, $(USEMODULE)))
   ifeq (gnrc_pktbuf_cmd,$(filter gnrc_pktbuf_%, $(USEMODULE)))
     USEMODULE += gnrc_pktbuf_static
   endif
+  DEFAULT_MODULE += auto_init_gnrc_pktbuf
   USEMODULE += gnrc_pkt
 endif
 
@@ -640,6 +648,7 @@ ifneq (,$(filter gnrc_pktbuf_%, $(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_netif_%,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_gnrc_netif
   USEMODULE += gnrc_netif
 endif
 
@@ -676,6 +685,7 @@ ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
 endif
 
 ifneq (,$(filter xtimer,$(USEMODULE)))
+  DEFAULT_MODULE += auto_init_xtimer
   FEATURES_REQUIRED += periph_timer
   USEMODULE += div
 endif
@@ -691,7 +701,7 @@ endif
 ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul
   USEMODULE += saul_reg
-  USEMODULE += auto_init_saul
+  DEFAULT_MODULE += auto_init_saul
 endif
 
 ifneq (,$(filter saul_adc,$(USEMODULE)))
@@ -724,7 +734,7 @@ endif
 
 ifneq (,$(filter can,$(USEMODULE)))
   USEMODULE += can_raw
-  USEMODULE += auto_init_can
+  DEFAULT_MODULE += auto_init_can
   ifneq (,$(filter can_mbox,$(USEMODULE)))
     USEMODULE += core_mbox
   endif
@@ -750,6 +760,7 @@ endif
 
 ifneq (,$(filter random,$(USEMODULE)))
   USEMODULE += prng
+  DEFAULT_MODULE += auto_init_random
   # select default prng
   ifeq (,$(filter prng_%,$(USEMODULE)))
     USEMODULE += prng_tinymt32
@@ -1040,6 +1051,9 @@ USEMODULE += $(filter cpu_check_address, $(FEATURES_USED))
 ifneq (,$(filter periph_%, $(USEMODULE)))
   USEMODULE += periph_common
 endif
+
+# handle removal of default modules
+USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
 # recursively catch transitive dependencies
 USEMODULE := $(sort $(USEMODULE))

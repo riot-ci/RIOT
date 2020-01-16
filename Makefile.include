@@ -359,9 +359,6 @@ ifneq ($(GNRC_NETIF_NUMOF),1)
   CFLAGS += -DGNRC_NETIF_NUMOF=$(GNRC_NETIF_NUMOF)
 endif
 
-# handle removal of default modules
-USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
-
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
 

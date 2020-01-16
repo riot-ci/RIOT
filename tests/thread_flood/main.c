@@ -39,8 +39,6 @@ static void *thread_func(void *arg)
 
 int main(void)
 {
-    test_utils_interactive_sync();
-
     kernel_pid_t thr_id = KERNEL_PID_UNDEF;
     unsigned thr_cnt = 0;
 
