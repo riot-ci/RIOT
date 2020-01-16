@@ -746,6 +746,7 @@ endif
 
 ifneq (,$(filter random,$(USEMODULE)))
   USEMODULE += prng
+  DEFAULT_MODULE += auto_init_random
   # select default prng
   ifeq (,$(filter prng_%,$(USEMODULE)))
     USEMODULE += prng_tinymt32
