@@ -9,7 +9,7 @@ USEMODULE += ps
 # Use a terminal that does not introduce extra characters into the stream.
 RIOT_TERMINAL ?= socat
 
-DISABLE_MODULE += auto_init
+# If stdio_rtt is used xtimer is initiated in this test
 DISABLE_MODULE += test_utils_interactive_sync
 
 # chronos is missing a getchar implementation
