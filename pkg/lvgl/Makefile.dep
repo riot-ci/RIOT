@@ -10,3 +10,9 @@ USEMODULE += lvgl_contrib
 USEMODULE += disp_dev
 USEMODULE += core_thread_flags
 USEMODULE += xtimer
+
+# lvgl is not compatible with non 32bit platforms
+# It lv_misc triggers the build error:
+# "left shift count >= width of type [-Werror=shift-count-overflow]"
+FEATURES_BLACKLIST += arch_8bit
+FEATURES_BLACKLIST += arch_16bit
