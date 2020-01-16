@@ -27,8 +27,8 @@
 #include "lvgl_riot.h"
 #include "disp_dev.h"
 
-#ifndef LVGL_THREAD_PRIO
-#define LVGL_THREAD_PRIO        (THREAD_PRIORITY_MAIN + 1)
+#ifndef LVGL_TASK_THREAD_PRIO
+#define LVGL_TASK_THREAD_PRIO   (THREAD_PRIORITY_MAIN - 1)
 #endif
 
 #ifndef LVGL_COLOR_BUF_SIZE
@@ -101,7 +101,7 @@ void lvgl_init(disp_dev_t *dev)
     lv_disp_buf_init(&disp_buf, buf, NULL, LVGL_COLOR_BUF_SIZE);
 
     _task_thread_pid = thread_create(_task_thread_stack, sizeof(_task_thread_stack),
-                                     LVGL_THREAD_PRIO, THREAD_CREATE_STACKTEST,
+                                     LVGL_TASK_THREAD_PRIO, THREAD_CREATE_STACKTEST,
                                      _task_thread, NULL, "_task_thread");
 }
 
