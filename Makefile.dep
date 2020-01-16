@@ -1042,6 +1042,9 @@ ifneq (,$(filter periph_%, $(USEMODULE)))
   USEMODULE += periph_common
 endif
 
+# handle removal of default modules
+USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
+
 # recursively catch transitive dependencies
 USEMODULE := $(sort $(USEMODULE))
 USEPKG := $(sort $(USEPKG))
