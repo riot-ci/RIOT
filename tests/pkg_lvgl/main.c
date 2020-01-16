@@ -35,7 +35,9 @@ static ili9341_t dev;
 #define CPU_LABEL_COLOR     "FF0000"
 #define MEM_LABEL_COLOR     "0000FF"
 #define CHART_POINT_NUM     100
-#define REFR_TIME           500
+
+/* Must be lower than LVGL_INACTIVITY_PERIOD for autorefresh */
+#define REFR_TIME           200
 
 static lv_obj_t *win;
 static lv_obj_t *chart;
@@ -49,6 +51,10 @@ static lv_task_t *refr_task;
 static void sysmon_task(lv_task_t *param)
 {
     (void)param;
+
+    /* Force a wakeup of lvgl when each task is called: this ensure an activity
+       is triggered and wakes up lvgl during the next LVGL_ACTIVITY_PERIOD ms */
+    lvgl_wakeup();
 
     /*Get CPU and memory information */
     uint8_t cpu_busy = 100 - lv_task_get_idle();
