@@ -14,7 +14,7 @@ dedicated programmer hardware but relies on direct USB communication with a
 built-in bootloader.
 
 The board features two LEDs (LD1: green, LD2: RGB), a user (SW1) and a
-reset button as well as 15 external pins.
+reset button as well as 15 configurable external pins.
 
 ### Links
 
@@ -32,13 +32,27 @@ The process is automated in the usual `make flash` target. For that process to
 complete, you need to enter the bootloader manually by pressing the board's
 reset button. Readiness of the bootloader is indicated by LD2 pulsing in red.
 
+#### nrfutil installation
+
+On systems with Python 2 available, `pip install nrfutil` works.
+
+On systems with Python 3, a recent version of pip is required to install all dependencies;
+you may need to run `pip install --upgrade pip` before being able to run `pip install nrfutil` successfully.
+
 ### Accessing STDIO
 
-This board has no UART connected via any hardware or programmer USB-UART;
-terminal functionality can only be obtained using USBUS once
-[#11085](https://github.com/RIOT-OS/RIOT/pull/11085) is merged.
+The usual way to obtain a console on this board is using an emulated USB serial port (CDC-ACM).
+This functionality is available using the `stdio_cdc_acm` module,
+which is loaded automatically whenever the `shell` module is loaded.
 
-In the mean time, pins 0.13 and 0.15 are configured as RX and TX on a serial
-console.
+On Linux systems with ModemManager < 1.10 installed,
+`make term` will, in some setups, fail for a few seconds after the device has come up.
+This is [fixed in its 1.12.4 version](https://gitlab.freedesktop.org/mobile-broadband/ModemManager/issues/164),
+but should not be more than a short annoyance in earlier versions.
+
+To ease debugging,
+pins 0.13 and 0.15 are configured as RX and TX, respectively.
+They provide stdio if no CDC-ACM is not loaded,
+and can be used as a custom UART otherwise.
 
  */
