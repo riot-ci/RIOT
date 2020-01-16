@@ -56,7 +56,7 @@ static void sysmon_task(lv_task_t *param)
        is triggered and wakes up lvgl during the next LVGL_ACTIVITY_PERIOD ms */
     lvgl_wakeup();
 
-    /*Get CPU and memory information */
+    /* Get CPU and memory information */
     uint8_t cpu_busy = 100 - lv_task_get_idle();
 
     lv_mem_monitor_t mem_mon;
@@ -64,7 +64,7 @@ static void sysmon_task(lv_task_t *param)
 
     uint8_t mem_used_pct = mem_mon.used_pct;
 
-    /*Add the CPU and memory data to the chart*/
+    /* Add the CPU and memory data to the chart */
     lv_chart_set_next(chart, cpu_ser, cpu_busy);
     lv_chart_set_next(chart, mem_ser, mem_used_pct);
 
@@ -135,10 +135,14 @@ void sysmon_create(void)
 
 int main(void)
 {
+    /* Configure the generic display driver interface */
     disp_dev_t *disp_dev = (disp_dev_t *)&dev;
     disp_dev->driver = &ili9341_disp_dev_driver;
 
+    /* Initialize the concrete display driver */
     ili9341_init(&dev, &ili9341_params[0]);
+
+    /* Initialize lvgl with the generic display driver interface */
     lvgl_init(disp_dev);
 
     /* Create the system monitor widget */
