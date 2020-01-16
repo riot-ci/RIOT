@@ -32,6 +32,15 @@ extern "C" {
  */
 void lvgl_init(disp_dev_t *dev);
 
+/**
+ * @brief   Wakeup lvgl when inactive
+ *
+ * This function unblocks the lvgl task handler thread and will indirectly
+ * trigger an activity. After calling this function, lvgl remains awake during
+ * the next LVGL_ACTIVITY_PERIOD ms.
+ */
+void lvgl_wakeup(void);
+
 #ifdef __cplusplus
 }
 #endif
