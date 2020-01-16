@@ -1,0 +1,48 @@
+/**
+@defgroup pkg_lvgl LittlevGL - Open-Source Embedded GUI Library
+@ingroup  pkg
+@brief    LittlevGL package for RIOT
+
+@see      https://github.com/littlevgl/lvgl
+
+## Configuration options
+
+The package can be configured with using several variables. These variables can
+either be passed directly to build command line or set in the application
+Makefile.
+
+### Graphical settings
+
+- `LVGL_HOR_RES_MAX`: configure the horizontal resolution of the screen
+  (default: 320)
+- `LVGL_VER_RES_MAX`: configure the horizontal resolution of the screen
+  (default: 240)
+- `LVGL_COLOR_DEPTH`: configure the color depth in bit of the screen (default: 16)
+- `LVGL_COLOR_16_SWAP`: enable byte swap when communicating with the screen
+  driver (default: 1, enabled)
+
+### Memory settings
+
+- `LVGL_MEM_SIZE`: configure the maximum memory size used by lvgl. This depends
+  on the number of lvgl widgets and objects used by the interface (default:
+  5U*1024U, 5KiB). Must be greater than 2KiB.
+- `LVGL_COLOR_BUF_SIZE`: configure the size of the color buffer used for the
+  rendering. This value should be a multiple of `LVGL_HOR_RES_MAX`.
+  (default: LVGL_HOR_RES_MAX*5)
+
+### Engine settings
+
+- `LVGL_ACTIVITY_PERIOD`: maximum activity period before going to sleep in ms.
+  (default: 5s)
+- `LVGL_TASK_HANDLER_DELAY`: delay between lvgl task handle call in ms.
+  (default: 5ms)
+- `LVGL_TASK_THREAD_PRIO`: lvgl task handler thread priority.
+  (default: THREAD_PRIORITY_MAIN - 1)
+
+Example of command line for changing the horizontal resolution:
+
+```
+LVGL_HOR_RES_MAX=240 make -C tests/pkg_lvgl
+```
+
+ */
