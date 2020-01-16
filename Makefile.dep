@@ -669,7 +669,6 @@ ifneq (,$(filter gnrc_pktbuf_%, $(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_netif_%,$(USEMODULE)))
-  DEFAULT_MODULE += auto_init_gnrc_netif
   USEMODULE += gnrc_netif
 endif
 
