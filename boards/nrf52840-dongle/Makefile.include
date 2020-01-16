@@ -6,7 +6,7 @@ PROGRAMMER ?= nrfutil
 # nrf52/Makefile.include), but the linker script should be a good starting
 # point for using the nRF bootloader and not breaking the soft device.
 
-LINKER_SCRIPT ?= $(RIOTBOARD)/$(BOARD)/ldscripts/application.ld
+LINKER_SCRIPT ?= $(BOARDSDIR)/$(BOARD)/ldscripts/application.ld
 
 # This is under active exploration, and should probably go into its one
 # makefiles/tools file
