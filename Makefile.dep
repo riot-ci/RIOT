@@ -847,6 +847,10 @@ ifneq (,$(filter event_%,$(USEMODULE)))
   USEMODULE += event
 endif
 
+ifneq (,$(filter event_thread_%,$(USEMODULE)))
+  USEMODULE += event_thread
+endif
+
 ifneq (,$(filter event_timeout,$(USEMODULE)))
   USEMODULE += xtimer
 endif
