@@ -1,8 +1,5 @@
 include $(RIOTCPU)/efm32/efm32-info.mk
 
-CPU_ARCH = $(EFM32_ARCHITECTURE)
-CPU_FAM = $(EFM32_FAMILY)
-
 # the size of riotboot on the EFM32 exceeds the default value
 RIOTBOOT_LEN ?= 0x2000
 
@@ -15,13 +12,13 @@ ifeq ($(CPU_ARCH),cortex-m0plus)
 endif
 
 # include CPU family module
-USEMODULE += cpu_$(EFM32_FAMILY)
+USEMODULE += cpu_$(CPU_FAM)
 
-# vectors.o is provided by 'cpu_$(EFM32_FAMILY)' and not by 'cpu'
-VECTORS_O := $(BINDIR)/cpu_$(EFM32_FAMILY)/vectors.o
+# vectors.o is provided by 'cpu_$(CPU_FAM)' and not by 'cpu'
+VECTORS_O := $(BINDIR)/cpu_$(CPU_FAM)/vectors.o
 
 # include vendor device headers
-INCLUDES += -I$(RIOTCPU)/efm32/families/$(EFM32_FAMILY)/include/vendor
+INCLUDES += -I$(RIOTCPU)/efm32/families/$(CPU_FAM)/include/vendor
 
 # include cortexm_common
 LINKER_SCRIPT = cortexm.ld

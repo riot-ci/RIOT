@@ -13,9 +13,9 @@ ifeq (,$(EFM32_INFO))
 endif
 
 # Export variables to use in this build.
-export EFM32_FAMILY = $(word 2, $(EFM32_INFO))
-export EFM32_SERIES = $(word 3, $(EFM32_INFO))
-export EFM32_ARCHITECTURE = $(word 4, $(EFM32_INFO))
+export CPU_FAM = $(word 2, $(EFM32_INFO))
+export CPU_SERIES = $(word 3, $(EFM32_INFO))
+export CPU_ARCH = $(word 4, $(EFM32_INFO))
 
 export EFM32_FLASH_START = $(word 5, $(EFM32_INFO))
 export EFM32_FLASH_SIZE = $(word 6, $(EFM32_INFO))
