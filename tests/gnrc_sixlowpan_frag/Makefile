@@ -4,7 +4,6 @@ USEMODULE += gnrc_sixlowpan_frag
 USEMODULE += embunit
 
 # GNRC modules should not be initialized unless we want to
-DISABLE_MODULE += auto_init_gnrc_netif
 DISABLE_MODULE += auto_init_gnrc_pktbuf
 DISABLE_MODULE += auto_init_gnrc_sixlowpan
 
