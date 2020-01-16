@@ -88,8 +88,7 @@ extern "C" {
  *          [gnrc_sixlowpan_frag_rb](@ref net_gnrc_sixlowpan_frag_rb) module
  *
  * When not set, it will cause the reassembly buffer to
- * override the oldest entry if new a entry has to be created and the reassembly buffer is full, no matter what. When set, only the oldest
- * entry that is older than @ref GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US will be
+ * override the oldest entry if new a entry has to be created and the reassembly buffer is full, no matter what. When set, only incomplete entries that are older than @ref GNRC_SIXLOWPAN_FRAG_RBUF_TIMEOUT_US will be
  * overwritten (they will still timeout normally if reassembly buffer is not
  * full).
  */
