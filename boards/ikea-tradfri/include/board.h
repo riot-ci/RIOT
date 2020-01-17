@@ -24,6 +24,8 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
+#include "mtd.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,6 +58,25 @@ extern "C" {
 #define LED1_ON             gpio_set(LED1_PIN)
 #define LED1_OFF            gpio_clear(LED1_PIN)
 #define LED1_TOGGLE         gpio_toggle(LED1_PIN)
+/** @} */
+
+/**
+ * @name    SPI NOR Flash hardware configuration
+ *
+ * The board has a IS25LQ020B flash chip (2MBit).
+ */
+/** @{ */
+#define TRADFRI_SPI_FLASH_DEV       SPI_DEV(0)
+#define TRADFRI_SPI_FLASH_CS        GPIO_PIN(PF, 3)
+#define TRADFRI_SPI_FLASH_EN        GPIO_PIN(PB, 11) /**< only on the ICC-1-A */
+/** @} */
+
+/**
+ * @name    MTD configuration
+ */
+/** @{ */
+extern mtd_dev_t *mtd0;
+#define MTD_0 mtd0
 /** @} */
 
 /**
