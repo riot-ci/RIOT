@@ -492,15 +492,16 @@ endif
 
 ifneq (,$(filter stdio_uart,$(USEMODULE)))
   FEATURES_REQUIRED += periph_uart
-
-  # stdio_uart doesn't work on boards providing stdio over USB, so disabling
-  # stdio_cdc_acm when stdio_uart is explicitly loaded
-  DISABLE_MODULE += stdio_cdc_acm
 endif
 
 ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart,$(USEMODULE)))
   # stdio_rtt cannot be used when another STDIO is loaded
   DISABLE_MODULE += stdio_rtt
+endif
+
+ifneq (,$(filter stdio_rtt stdio_null stdio_uart,$(USEMODULE)))
+  # stdio_cdc_acm cannot be used when another STDIO is loaded
+  DISABLE_MODULE += stdio_cdc_acm
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
