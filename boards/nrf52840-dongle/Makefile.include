@@ -13,7 +13,8 @@ LINKER_SCRIPT ?= $(BOARDSDIR)/nrf52840-dongle/ldscripts/application.ld
 
 ifeq (nrfutil,$(PROGRAMMER))
 
-FLASHFILE = $(HEXFILE).zip
+FLASHFILE = $(HEXFILE)
+FLASHDEPS += $(HEXFILE).zip
 FLASHER = nrfutil
 FFLAGS = dfu usb-serial --port=${PORT} --package=$(HEXFILE).zip
 
