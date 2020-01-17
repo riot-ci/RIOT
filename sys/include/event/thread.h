@@ -47,6 +47,11 @@ extern event_queue_t event_queue_highest;
 #define EVENT_PRIO_HIGHEST (&event_queue_highest)
 #endif
 
+#ifdef MODULE_EVENT_THREAD_MEDIUM
+extern event_queue_t event_queue_medium;
+#define EVENT_PRIO_MEDIUM (&event_queue_medium)
+#endif
+
 #ifdef MODULE_EVENT_THREAD_LOWEST
 extern event_queue_t event_queue_lowest;
 #define EVENT_PRIO_LOWEST (&event_queue_lowest)
