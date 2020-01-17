@@ -35,11 +35,6 @@ extern "C" {
 #define PM_BLOCKER_INITIAL  { .val_u32 = 0x00000001 }
 
 /**
- * @brief   The ID of the 32kHz GCLK that will keep running in Deep Sleep
- */
-#define SAM0_GCLK_32KHZ  (2)
-
-/**
  * @name   SAMD21 sleep modes for PM
  * @{
  */
@@ -47,6 +42,18 @@ extern "C" {
 #define SAMD21_PM_IDLE_2        (1U)    /**< Idle 2 (stops AHB, APB and CPU) */
 #define SAMD21_PM_IDLE_1        (2U)    /**< Idle 1 (stops AHB and CPU)      */
 #define SAMD21_PM_IDLE_0        (3U)    /**< Idle 0 (stops CPU)              */
+/** @} */
+
+/**
+ * @name   SAMD21 GCLK definitions
+ * @{
+ */
+enum {
+    SAM0_GCLK_MAIN = 0,                 /**< 48 MHz main clock      */
+    SAM0_GCLK_1MHZ,                     /**< 1 MHz clock for xTimer */
+    SAM0_GCLK_32KHZ,                    /**< 32 kHz clock           */
+    SAM0_GCLK_1KHZ,                     /**< 1 kHz clock            */
+};
 /** @} */
 
 /**

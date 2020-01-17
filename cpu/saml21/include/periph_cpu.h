@@ -32,9 +32,14 @@ extern "C" {
 #define CPU_BACKUP_RAM_NOT_RETAINED (1)
 
 /**
- * @brief   The ID of the 32kHz GCLK that will keep running in Deep Sleep
+ * @name   SAML21 GCLK definitions
+ * @{
  */
-#define SAM0_GCLK_32KHZ  (1)
+enum {
+    SAM0_GCLK_MAIN = 0,                 /**< 16 MHz main clock      */
+    SAM0_GCLK_32KHZ,                    /**< 32 kHz clock           */
+};
+/** @} */
 
 /**
  * @brief   Mapping of pins to EXTI lines, -1 means not EXTI possible

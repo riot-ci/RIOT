@@ -44,9 +44,16 @@ extern "C" {
 #define SAM0_DPLL_FREQ_MAX_HZ   (200000000U)
 
 /**
- * @brief   The ID of the 32kHz GCLK that will keep running in Deep Sleep
+ * @name   SAMD5x GCLK definitions
+ * @{
  */
-#define SAM0_GCLK_32KHZ  (1)
+enum {
+    SAM0_GCLK_MAIN = 0,                 /**< 120 MHz main clock     */
+    SAM0_GCLK_32KHZ,                    /**< 32 kHz clock           */
+    SAM0_GCLK_8MHZ = 5,                 /**< 8 MHz clock for xTimer */
+    SAM0_GCLK_48MHZ,                    /**< 48 MHz DFLL clock      */
+};
+/** @} */
 
 /**
  * @brief   Mapping of pins to EXTI lines, -1 means not EXTI possible

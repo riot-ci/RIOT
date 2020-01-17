@@ -58,15 +58,13 @@ void sam0_gclk_enable(uint8_t id)
 uint32_t sam0_gclk_freq(uint8_t id)
 {
     switch (id) {
-    case 0:
+    case SAM0_GCLK_MAIN:
         return CLOCK_CORECLOCK;
-    case 1:
+    case SAM0_GCLK_1MHZ:
         return 1000000;
-    case 2:
+    case SAM0_GCLK_32KHZ:
         return 32768;
-    case 3:
-        return 32768;
-    case 4:
+    case SAM0_GCLK_1KHZ:
         return 1024;
     default:
         return 0;
