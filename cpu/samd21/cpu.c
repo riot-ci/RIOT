@@ -49,6 +49,28 @@
 #define WAITSTATES          ((CLOCK_CORECLOCK - 1) / 14000000)
 #endif
 
+void sam0_gclk_enable(uint8_t id)
+{
+    (void) id;
+    /* clocks are always running */
+}
+
+uint32_t sam0_gclk_freq(uint8_t id)
+{
+    switch (id) {
+    case SAM0_GCLK_MAIN:
+        return CLOCK_CORECLOCK;
+    case SAM0_GCLK_1MHZ:
+        return 1000000;
+    case SAM0_GCLK_32KHZ:
+        return 32768;
+    case SAM0_GCLK_1KHZ:
+        return 1024;
+    default:
+        return 0;
+    }
+}
+
 /**
  * @brief   Configure clock sources and the cpu frequency
  */
@@ -70,6 +92,22 @@ static void clk_init(void)
     SYSCTRL->OSC8M.bit.RUNSTDBY = 0;
     SYSCTRL->OSC8M.bit.ENABLE = 1;
     while (!(SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_OSC8MRDY)) {}
+#endif
+
+    /* Setup GCLK2 with divider 1 (32.768kHz) */
+    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(2)  | GCLK_GENDIV_DIV(0));
+    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_GENEN
+                      | GCLK_GENCTRL_RUNSTDBY
+#if GEN2_ULP32K
+                      | GCLK_GENCTRL_SRC_OSCULP32K);
+#else
+                      | GCLK_GENCTRL_SRC_XOSC32K);
+
+    SYSCTRL->XOSC32K.reg = SYSCTRL_XOSC32K_ONDEMAND
+                         | SYSCTRL_XOSC32K_EN32K
+                         | SYSCTRL_XOSC32K_XTALEN
+                         | SYSCTRL_XOSC32K_STARTUP(6)
+                         | SYSCTRL_XOSC32K_ENABLE;
 #endif
 
 #if CLOCK_USE_PLL
@@ -124,19 +162,8 @@ static void clk_init(void)
                          GCLK_GENCTRL_ID(1));
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
-    /* Setup clock GCLK3 with divider 1 */
-    GCLK->GENDIV.reg = GCLK_GENDIV_ID(3) | GCLK_GENDIV_DIV(1);
-    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
-
-    /* Enable GCLK3 with XOSC32K as source */
-    GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(3) |
-                        GCLK_GENCTRL_GENEN |
-                        GCLK_GENCTRL_RUNSTDBY |
-                        GCLK_GENCTRL_SRC_XOSC32K;
-    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
-
-    /* set GCLK3 as source for DFLL */
-    GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_GEN_GCLK3 |
+    /* set GCLK2 as source for DFLL */
+    GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_GEN_GCLK2 |
                          GCLK_CLKCTRL_ID_DFLL48 |
                          GCLK_CLKCTRL_CLKEN);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
@@ -188,25 +215,9 @@ static void clk_init(void)
     /* make sure we synchronize clock generator 0 before we go on */
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
-    /* Setup GCLK2 with divider 1 (32.768kHz) */
-    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(2)  | GCLK_GENDIV_DIV(0));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_GENEN
-                      | GCLK_GENCTRL_RUNSTDBY
-#if GEN2_ULP32K
-                      | GCLK_GENCTRL_SRC_OSCULP32K);
-#else
-                      | GCLK_GENCTRL_SRC_XOSC32K);
-
-    SYSCTRL->XOSC32K.reg = SYSCTRL_XOSC32K_ONDEMAND
-                         | SYSCTRL_XOSC32K_EN32K
-                         | SYSCTRL_XOSC32K_XTALEN
-                         | SYSCTRL_XOSC32K_STARTUP(6)
-                         | SYSCTRL_XOSC32K_ENABLE;
-#endif
-
-    /* Setup GCLK4 with divider 32 (1024 Hz) */
-    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(4)  | GCLK_GENDIV_DIV(4));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(4) | GCLK_GENCTRL_GENEN
+    /* Setup GCLK3 with divider 32 (1024 Hz) */
+    GCLK->GENDIV.reg  = (GCLK_GENDIV_ID(3)  | GCLK_GENDIV_DIV(4));
+    GCLK->GENCTRL.reg = (GCLK_GENCTRL_ID(3) | GCLK_GENCTRL_GENEN
                       | GCLK_GENCTRL_RUNSTDBY | GCLK_GENCTRL_DIVSEL
 #if GEN2_ULP32K
                       | GCLK_GENCTRL_SRC_OSCULP32K);
