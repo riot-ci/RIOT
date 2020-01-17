@@ -64,6 +64,13 @@ void event_thread_init(event_queue_t *queue, char *stack, size_t stack_size,
 #define EVENT_THREAD_HIGHEST_PRIO   (0)
 #endif
 
+#ifndef EVENT_THREAD_MEDIUM_STACKSIZE
+#define EVENT_THREAD_MEDIUM_STACKSIZE EVENT_THREAD_STACKSIZE_DEFAULT
+#endif
+#ifndef EVENT_THREAD_MEDIUM_PRIO
+#define EVENT_THREAD_MEDIUM_PRIO   (THREAD_PRIORITY_MAIN - 1)
+#endif
+
 #ifndef EVENT_THREAD_LOWEST_STACKSIZE
 #define EVENT_THREAD_LOWEST_STACKSIZE EVENT_THREAD_STACKSIZE_DEFAULT
 #endif
@@ -74,6 +81,11 @@ void event_thread_init(event_queue_t *queue, char *stack, size_t stack_size,
 #ifdef MODULE_EVENT_THREAD_HIGHEST
 event_queue_t event_queue_highest;
 static char _evq_highest_stack[EVENT_THREAD_HIGHEST_STACKSIZE];
+#endif
+
+#ifdef MODULE_EVENT_THREAD_MEDIUM
+event_queue_t event_queue_medium;
+static char _evq_medium_stack[EVENT_THREAD_MEDIUM_STACKSIZE];
 #endif
 
 #ifdef MODULE_EVENT_THREAD_LOWEST
@@ -92,6 +104,10 @@ const event_threads_t _event_threads[] = {
 #ifdef MODULE_EVENT_THREAD_HIGHEST
     { &event_queue_highest, _evq_highest_stack, sizeof(_evq_highest_stack),
         EVENT_THREAD_HIGHEST_PRIO },
+#endif
+#ifdef MODULE_EVENT_THREAD_MEDIUM
+    { &event_queue_medium, _evq_medium_stack, sizeof(_evq_medium_stack),
+        EVENT_THREAD_MEDIUM_PRIO },
 #endif
 #ifdef MODULE_EVENT_THREAD_LOWEST
     { &event_queue_lowest, _evq_lowest_stack, sizeof(_evq_lowest_stack),
