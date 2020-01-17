@@ -6,6 +6,10 @@ SINGLE_TIMER_BOARDS = \
   native \
   nucleo-f031k6 \
   nucleo-f042k6 \
+  saml10-xpro \
+  saml11-xpro \
+  saml21-xpro \
+  samr30-xpro \
   #
 
 # These boards have too little RAM to support collecting detailed statistics
