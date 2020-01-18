@@ -18,6 +18,10 @@
  * slow down brute force attacks.
  * Does not make use of any cryptographic features yet.
  *
+ * This module also provides a pseudomodule for automated locking after a given
+ * interval. Add "USEMODULE += shell_lock_auto_locking" to your Makefile to
+ * enable this feature.
+ *
  * @author      Hendrik van Essen <hendrik.ve@fu-berlin.de>
  *
  * @}
@@ -34,6 +38,10 @@
 #include "shell_lock.h"
 
 static bool _shell_is_locked = true;
+
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+static xtimer_t _shell_auto_lock_xtimer;
+#endif
 
 /* defined in shell.c */
 extern void flush_if_needed(void);
@@ -136,6 +144,27 @@ void _login_barrier(char *line_buf, size_t buf_size)
     }
 }
 
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+void _shell_auto_lock_xtimer_callback(void *arg)
+{
+    (void) arg;
+
+    _shell_is_locked = true;
+}
+
+void _refresh_shell_auto_lock(void)
+{
+    xtimer_remove(&_shell_auto_lock_xtimer);
+    xtimer_set(&_shell_auto_lock_xtimer,
+            (MAX_AUTO_LOCK_PAUSE_MS + TIMER_SLEEP_OFFSET_MS) * US_PER_MS);
+}
+
+void shell_lock_auto_lock_refresh(void)
+{
+    _refresh_shell_auto_lock();
+}
+#endif
+
 bool shell_lock_is_locked(void)
 {
     return _shell_is_locked;
@@ -148,6 +177,20 @@ void shell_lock_checkpoint(char *line_buf, int buf_size)
 
         _login_barrier(line_buf, buf_size);
 
+        if (IS_USED(MODULE_SHELL_LOCK_AUTO_LOCKING)) {
+            printf("Shell was unlocked.\n\n");
+        }
+        else {
+            printf("Shell was unlocked.\n\n"
+                   "IMPORTANT: Don't forget to lock the shell after usage, "
+                   "because it won't lock itself.\n\n");
+        }
+
         _shell_is_locked = false;
+    }
+
+    if (IS_USED(MODULE_SHELL_LOCK_AUTO_LOCKING)) {
+        _shell_auto_lock_xtimer.callback = &_shell_auto_lock_xtimer_callback;
+        _refresh_shell_auto_lock();
     }
 }
