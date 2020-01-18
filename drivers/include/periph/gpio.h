@@ -385,7 +385,7 @@ extern "C" {
 /**
  * @brief   GPIO pin number type
  */
-typedef unsigned int gpio_pin_t;
+typedef uint_fast8_t gpio_pin_t;
 #endif
 
 /**
