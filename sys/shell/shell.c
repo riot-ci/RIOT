@@ -30,24 +30,19 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 
 #include "shell.h"
+#include "shell_lock.h"
 #include "shell_commands.h"
 
 #define ETX '\x03'  /** ASCII "End-of-Text", or Ctrl-C */
 #define EOT '\x04'  /** ASCII "End-of-Transmission", or Ctrl-D */
 #define BS  '\x08'  /** ASCII "Backspace" */
 #define DEL '\x7f'  /** ASCII "Delete" */
-
-#if defined(MODULE_NEWLIB) || defined(MODULE_PICOLIBC)
-    #define flush_if_needed() fflush(stdout)
-#else
-    #define flush_if_needed()
-#endif /* MODULE_NEWLIB || MODULE_PICOLIBC */
 
 #ifndef SHELL_NO_ECHO
     #define ECHO_ON 1
@@ -67,6 +62,13 @@
     #define _builtin_cmds NULL
 #endif
 
+#ifdef MODULE_SHELL_LOCK
+    bool shell_is_locked = true;
+    #define _shell_lock_cmds _shell_lock_command_list
+#else
+    #define _shell_lock_cmds NULL
+#endif /* MODULE_SHELL_LOCK */
+
 #define SQUOTE '\''
 #define DQUOTE '"'
 #define ESCAPECHAR '\\'
@@ -74,6 +76,12 @@
 #define TAB '\t'
 
 #define PARSE_ESCAPE_MASK 0x4;
+
+extern const shell_command_t _shell_lock_command_list[];
+
+extern void shell_lock_checkpoint(char *line_buf, int len);
+extern bool shell_lock_is_locked(void);
+extern void shell_lock_reset(void);
 
 enum parse_state {
     PARSE_BLANK             = 0x0,
@@ -107,12 +115,17 @@ static shell_command_handler_t find_handler(
         const shell_command_t *command_list, char *command)
 {
     shell_command_handler_t handler = NULL;
+
     if (command_list != NULL) {
         handler = search_commands(command_list, command);
     }
 
     if (handler == NULL && _builtin_cmds != NULL) {
         handler = search_commands(_builtin_cmds, command);
+    }
+
+    if (handler == NULL && _shell_lock_cmds != NULL) {
+        handler = search_commands(_shell_lock_cmds, command);
     }
 
     return handler;
@@ -135,6 +148,10 @@ static void print_help(const shell_command_t *command_list)
 
     if (_builtin_cmds != NULL) {
         print_commands(_builtin_cmds);
+    }
+
+    if (_shell_lock_cmds != NULL) {
+        print_commands(_shell_lock_cmds);
     }
 }
 
@@ -341,7 +358,16 @@ __attribute__((weak)) void shell_post_command_hook(int ret, int argc,
     (void)argc;
 }
 
-static inline void print_prompt(void)
+/* needed externally by module shell_lock */
+void flush_if_needed(void)
+{
+    #if defined(MODULE_NEWLIB) || defined(MODULE_PICOLIBC)
+    fflush(stdout);
+    #endif
+}
+
+/* needed externally by module shell_lock */
+void print_prompt(void)
 {
     if (PROMPT_ON) {
         putchar('>');
@@ -465,10 +491,20 @@ static int readline(char *buf, size_t size)
 void shell_run_once(const shell_command_t *shell_commands,
                     char *line_buf, int len)
 {
+    if (IS_USED(MODULE_SHELL_LOCK)) {
+        shell_lock_checkpoint(line_buf, len);
+    }
+
     print_prompt();
 
     while (1) {
         int res = readline(line_buf, len);
+
+        if (IS_USED(MODULE_SHELL_LOCK)) {
+            if (shell_lock_is_locked()) {
+                break;
+            }
+        }
 
         switch (res) {
 
