@@ -46,17 +46,6 @@ extern "C" {
 #define TIMER_MAXVAL        (0xffff)
 
 /**
- * @brief   Generate GPIO mode bitfields
- *
- * We use 4 bit to determine the pin functions:
- * - bit 4: ODR value
- * - bit 2+3: in/out
- * - bit 1: PU enable
- * - bit 2: OD enable
- */
-#define GPIO_MODE(mode, cnf, odr)       (mode | (cnf << 2) | (odr << 4))
-
-/**
  * @brief   Define the number of available PM modes
  */
 #define PM_NUM_MODES        (2U)
@@ -65,51 +54,6 @@ extern "C" {
  * @brief  Define the config flag for stop mode
  */
 #define PM_STOP_CONFIG      (PWR_CR_LPDS)
-
-#ifndef DOXYGEN
-/**
- * @brief   Override GPIO mode options
- *
- * We use 4 bit to encode CNF and MODE.
- * @{
- */
-#define HAVE_GPIO_MODE_T
-typedef enum {
-    GPIO_IN    = GPIO_MODE(0, 1, 0),    /**< input w/o pull R */
-    GPIO_IN_PD = GPIO_MODE(0, 2, 0),    /**< input with pull-down */
-    GPIO_IN_PU = GPIO_MODE(0, 2, 1),    /**< input with pull-up */
-    GPIO_OUT   = GPIO_MODE(3, 0, 0),    /**< push-pull output */
-    GPIO_OD    = GPIO_MODE(3, 1, 0),    /**< open-drain w/o pull R */
-    GPIO_OD_PU = (0xff)                 /**< not supported by HW */
-} gpio_mode_t;
-/** @} */
-#endif /* ndef DOXYGEN */
-
-/**
- * @brief   Override values for pull register configuration
- * @{
- */
-#define HAVE_GPIO_PP_T
-typedef enum {
-    GPIO_NOPULL = 4,        /**< do not use internal pull resistors */
-    GPIO_PULLUP = 9,        /**< enable internal pull-up resistor */
-    GPIO_PULLDOWN = 8       /**< enable internal pull-down resistor */
-} gpio_pp_t;
-/** @} */
-
-#ifndef DOXYGEN
-/**
- * @brief   Override flank configuration values
- * @{
- */
-#define HAVE_GPIO_FLANK_T
-typedef enum {
-    GPIO_RISING = 1,        /**< emit interrupt on rising flank */
-    GPIO_FALLING = 2,       /**< emit interrupt on falling flank */
-    GPIO_BOTH = 3           /**< emit interrupt on both flanks */
-} gpio_flank_t;
-/** @} */
-#endif /* ndef DOXYGEN */
 
 /**
  * @brief   Available ports on the STM32F1 family
@@ -122,7 +66,20 @@ enum {
     PORT_E = 4,             /**< port E */
     PORT_F = 5,             /**< port F */
     PORT_G = 6,             /**< port G */
+    PORT_EXT = 7            /**< first GPIO expander port */
 };
+
+/**
+ * @brief   Available ports on the STM32F1 familiy as GPIO register definitions
+ */
+#define GPIO_CPU_PORTS \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_A) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_B) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_C) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_D) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_E) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_F) }, \
+    { .reg = (gpio_reg_t)GPIO_CPU_PORT_ADDR(PORT_G) },
 
 /**
  * @brief   ADC channel configuration data
