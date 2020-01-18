@@ -36,8 +36,32 @@ extern "C" {
     #error Using MODULE_SHELL_LOCK requires defining SHELL_LOCK_PASSWORD
 #endif /* SHELL_LOCK_PASSWORD */
 
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+    /**
+     * @brief Lock the shell after this time span without user input
+     *        Defaults to 5 minutes and can be overwritten by defining
+     *        SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS in the applications Makefile
+     */
+    #define MAX_AUTO_LOCK_PAUSE_MS 5 * 60 * 1000
+
+    #ifdef SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS
+        #undef MAX_AUTO_LOCK_PAUSE_MS
+        #define MAX_AUTO_LOCK_PAUSE_MS SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS
+    #endif /* SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS */
+
+    /**
+     * @brief Offset used for the thread for automated locking, so that the
+     *        thread is not woken up shortely before it has to lock the shell.
+     */
+    #define TIMER_SLEEP_OFFSET_MS 100
+#endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
+
 void shell_lock_checkpoint(char *line_buf, int len);
 bool shell_lock_is_locked(void);
+
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+void shell_lock_auto_lock_refresh(void);
+#endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
 
 /* This should be independant from the module "shell_commands", as the user may
  * don't want any other command than the mandatory "lock"-command. */
