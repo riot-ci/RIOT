@@ -38,6 +38,26 @@ extern "C" {
     #endif /* SHELL_LOCK_PASSWORD */
 #endif /* MODULE_SHELL_LOCK */
 
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+    /**
+     * @brief Lock the shell after this time span without user input
+     *        Defaults to 5 minutes and can be overwritten by defining
+     *        SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS in the applications Makefile
+     */
+    #define MAX_AUTO_LOCK_PAUSE_MS 5 * 60 * 1000
+
+    #ifdef SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS
+        #undef MAX_AUTO_LOCK_PAUSE_MS
+        #define MAX_AUTO_LOCK_PAUSE_MS SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS
+    #endif /* SHELL_LOCK_AUTO_LOCK_TIMEOUT_MS */
+
+    /**
+     * @brief Offset used for the thread for automated locking, so that the
+     *        thread is not woken up shortely before it has to lock the shell.
+     */
+    #define TIMER_SLEEP_OFFSET_MS 100
+#endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
+
 /**
  * @brief   Entry point for the lock mechanism. If locked, the user will
  *          be asked for a password. This function won't return until the
@@ -54,6 +74,14 @@ void shell_lock_checkpoint(char *line_buf, int buf_size);
  * @return  Whether the shell is locked or not.
  */
 bool shell_lock_is_locked(void);
+
+#ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+/**
+ * @brief   Restart the timeout interval before the shell is locked
+ *          automatically.
+ */
+void shell_lock_auto_lock_refresh(void);
+#endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
 
 /**
  * @brief   Command list containing all commands used for this module.
