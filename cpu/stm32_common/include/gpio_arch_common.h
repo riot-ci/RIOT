@@ -35,13 +35,13 @@ extern "C" {
  * We use a random value here, that does clearly differentiate from any possible
  * GPIO pin number.
  */
-#define SPI_HWCS_MASK       (0xffffff00)
+#define SPI_HWCS_MASK       (0x80)
 
 /**
  * @brief   Override the default SPI hardware chip select access macro
  *
  * Since the CPU does only support one single hardware chip select line, we can
- * detect the usage of non-valid lines by comparing to SPI_HWCS_VALID.
+ * detect the usage of non-valid lines by comparing to SPI_HWCS_MASK.
  */
 #define SPI_HWCS(x)         ((gpio_t){ .port = NULL, .pin = SPI_HWCS_MASK | x })
 
