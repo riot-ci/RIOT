@@ -72,7 +72,7 @@ extern const shell_command_t _shell_lock_command_list[];
 
 extern void shell_lock_checkpoint(char *line_buf, int len);
 extern bool shell_lock_is_locked(void);
-extern void shell_lock_reset(void);
+extern void shell_lock_auto_lock_refresh(void);
 
 #define SQUOTE '\''
 #define DQUOTE '"'
@@ -467,6 +467,11 @@ void shell_run_once(const shell_command_t *shell_commands,
             break;
         }
         #endif /* MODULE_SHELL_LOCK */
+
+        #ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+        /* reset lock countdown in case of new input */
+        shell_lock_auto_lock_refresh();
+        #endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
 
         switch (res) {
 
