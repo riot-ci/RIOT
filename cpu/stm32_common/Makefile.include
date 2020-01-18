@@ -1,7 +1,13 @@
 CFLAGS += -DCPU_FAM_$(call uppercase_and_underscore,$(CPU_FAM))
 
+# 16 bit GPIO pin mask required
+USEMODULE += gpio_mask_16bit
+
 # All stm32 families provide pm support
 USEMODULE += pm_layered
+
+# All stm32 families support the new GPIO API
+USEMODULE += periph_gpio_ext
 
 # include stm32 common functions and stm32 common periph drivers
 USEMODULE += stm32_common stm32_common_periph
