@@ -17,6 +17,9 @@ USEMODULE += atmega_common
 # export the peripheral drivers to be linked into the final binary
 USEMODULE += atmega_common_periph
 
+# the atmel port supports the new GPIO API
+USEMODULE += periph_gpio_ext
+
 # the atmel port uses stdio_uart
 USEMODULE += stdio_uart
 
