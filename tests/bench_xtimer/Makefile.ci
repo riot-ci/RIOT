@@ -1,0 +1,3 @@
+BOARD_INSUFFICIENT_MEMORY := \
+    cc1312-launchpad \
+    #
