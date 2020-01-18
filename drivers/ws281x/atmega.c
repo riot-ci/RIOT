@@ -95,7 +95,7 @@ void ws281x_write_buffer(ws281x_t *dev, const void *buf, size_t size)
     }
 
 #if (CLOCK_CORECLOCK >= 7500000U) && (CLOCK_CORECLOCK <= 8500000U)
-    const uint8_t port_num = atmega_port_num(dev->params.pin);
+    const uint8_t port_num = atmega_port_num(dev->params.pin.port);
     switch (port_num) {
         case PORT_B:
             while (pos < end) {
