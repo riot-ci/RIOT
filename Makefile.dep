@@ -1021,38 +1021,39 @@ ifneq (,$(filter devfs_random,$(USEMODULE)))
 endif
 
 ifneq (,$(filter auto_init,$(USEMODULE)))
-  ifneq (,$(filter gnrc_uhcpc,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_uhcpc
-  endif
+  ifneq (,$(filter auto_init_gnrc,$(USEMODULE)))
+    ifneq (,$(filter gnrc_uhcpc,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_uhcpc
+    endif
 
-  ifneq (,$(filter gnrc_sixlowpan,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_sixlowpan
-  endif
+    ifneq (,$(filter gnrc_sixlowpan,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_sixlowpan
+    endif
 
-  ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_ipv6
-  endif
+    ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_ipv6
+    endif
 
-  ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_ipv6_nib
-  endif
+    ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_ipv6_nib
+    endif
 
-  ifneq (,$(filter gnrc_udp,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_udp
-  endif
+    ifneq (,$(filter gnrc_udp,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_udp
+    endif
 
-  ifneq (,$(filter gnrc_tcp,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_tcp
-  endif
+    ifneq (,$(filter gnrc_tcp,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_tcp
+    endif
 
-  ifneq (,$(filter gnrc_pktdump,$(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_pktdump
-  endif
+    ifneq (,$(filter gnrc_pktdump,$(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_pktdump
+    endif
 
-  ifneq (,$(filter gnrc_pktbuf, $(USEMODULE)))
-    DEFAULT_MODULE += auto_init_gnrc_pktbuf
+    ifneq (,$(filter gnrc_pktbuf, $(USEMODULE)))
+      DEFAULT_MODULE += auto_init_gnrc_pktbuf
+    endif
   endif
-
   ifneq (,$(filter xtimer,$(USEMODULE)))
     DEFAULT_MODULE += auto_init_xtimer
   endif
