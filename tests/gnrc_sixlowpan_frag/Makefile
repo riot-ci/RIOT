@@ -4,11 +4,7 @@ USEMODULE += gnrc_sixlowpan_frag
 USEMODULE += embunit
 
 # GNRC modules should not be initialized unless we want to
-DISABLE_MODULE += auto_init_gnrc_pktbuf
-DISABLE_MODULE += auto_init_gnrc_sixlowpan
-
-# In case pased threw the command line
-DISABLE_MODULE += auto_init_gnrc_pktdump
+DISABLE_MODULE += auto_init_gnrc
 
 # we don't need all this packet buffer space so reduce it a little
 CFLAGS += -DTEST_SUITES -DGNRC_PKTBUF_SIZE=2048
