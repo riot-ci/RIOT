@@ -22,14 +22,6 @@ include $(RIOTBASE)/drivers/Makefile.dep
 # pull dependencies from packages
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.dep)
 
-ifneq (,$(filter ndn-riot,$(USEPKG)))
-  USEMODULE += gnrc
-  USEMODULE += xtimer
-  USEMODULE += random
-  USEMODULE += hashes
-  USEPKG += micro-ecc
-endif
-
 ifneq (,$(filter csma_sender,$(USEMODULE)))
   USEMODULE += random
   USEMODULE += xtimer
