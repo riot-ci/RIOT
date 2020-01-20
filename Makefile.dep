@@ -695,9 +695,6 @@ ifneq (,$(filter arduino,$(USEMODULE)))
   FEATURES_OPTIONAL += periph_adc
   FEATURES_REQUIRED += periph_gpio
   USEMODULE += xtimer
-
-  # Arduino module doesn't work on boards providing stdio over USB
-  DISABLE_MODULE += stdio_cdc_acm
 endif
 
 ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
