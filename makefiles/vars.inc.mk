@@ -28,6 +28,7 @@ export APPDEPS               # Files / Makefile targets that need to be created 
 export RIOTBASE              # The root folder of RIOT. The folder where this very file lives in.
 export RIOTCPU               # For third party CPUs this folder is the base of the CPUs.
 export RIOTBOARD             # This folder is the base of the riot boards.
+export RIOTINSECURE          # Disable security features (e.g. stack smash protection). NOT RECOMMENDED.
 export BOARDSDIR             # For third party BOARDs this folder is the base of the BOARDs.
 export RIOTPKG               # For overriding RIOT's pkg directory
 export RIOTTOOLS             # Location of host machine tools
