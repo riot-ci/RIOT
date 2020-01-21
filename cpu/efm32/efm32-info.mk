@@ -11,17 +11,3 @@ EFM32_INFO = $(shell grep $(CPU_MODEL) $(shell dirname $(EFM32_HEADER))/../../cp
 ifeq (,$(EFM32_INFO))
   $(error Unable to read CPU information for $(CPU_MODEL))
 endif
-
-# Export variables to use in this build.
-CPU_FAM = $(word 2, $(EFM32_INFO))
-CPU_SERIES = $(word 3, $(EFM32_INFO))
-CPU_ARCH = $(word 4, $(EFM32_INFO))
-
-EFM32_FLASH_START = $(word 5, $(EFM32_INFO))
-EFM32_FLASH_SIZE = $(word 6, $(EFM32_INFO))
-EFM32_SRAM_START = $(word 7, $(EFM32_INFO))
-EFM32_SRAM_SIZE = $(word 8, $(EFM32_INFO))
-
-EFM32_CRYPTO = $(word 9, $(EFM32_INFO))
-EFM32_TRNG = $(word 10, $(EFM32_INFO))
-EFM32_RADIO = $(word 11, $(EFM32_INFO))
