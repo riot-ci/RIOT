@@ -1,8 +1,11 @@
 include $(RIOTBOARD)/common/slwstk6000b/module-info.mk
 
+include $(RIOTBOARD)/common/slwstk6000b/slwstk6000b.vars.mk
+DAUGHTERBOARD = $(word 2, $(subst -, ,$(BOARD)))
+
 INCLUDES += -I$(RIOTBOARD)/common/slwstk6000b/include
 # add module specific includes
-INCLUDES += -I$(RIOTBOARD)/common/slwstk6000b/modules/$(BOARD_MODULE)/include
+INCLUDES += -I$(RIOTBOARD)/common/slwstk6000b/modules/$(DAUGHTERBOARD)/include
 
 # set default port depending on operating system
 PORT_LINUX ?= /dev/ttyACM0
