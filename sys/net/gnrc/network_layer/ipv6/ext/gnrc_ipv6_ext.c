@@ -115,7 +115,7 @@ gnrc_pktsnip_t *gnrc_ipv6_ext_process_all(gnrc_pktsnip_t *pkt,
     while (is_ext) {
 #if defined(MODULE_GNRC_SIXLOWPAN_IPHC_NHC) && \
     defined(MODULE_GNRC_IPV6_EXT_FRAG)
-        if ((*protnum == PROTNUM_IPV6_EXT_FRAG)) {
+        if (*protnum == PROTNUM_IPV6_EXT_FRAG) {
             /* just assigning the if expression might override it if
              * fragment header is not the last extension header ;-) */
             is_frag = true;
