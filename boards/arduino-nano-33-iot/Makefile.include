@@ -4,8 +4,7 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 # setup serial terminal
 include $(RIOTMAKE)/tools/serial.inc.mk
 
-# Add board common includes
-INCLUDES += -I$(RIOTBOARD)/common/sodaq/include
-
 # Include all definitions for flashing with bossa other USB
 include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.include
+
+INCLUDES += -I$(RIOTBOARD)/arduino-nano-33-iot/include
