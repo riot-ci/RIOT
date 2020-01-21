@@ -105,7 +105,7 @@
 # Valid values: elf, hex, s19, bin (see OpenOCD manual for more information)
 : ${IMAGE_TYPE:=}
 
-# flash bank to read default configuration when probing fails, default to fist
+# flash bank to read default configuration when probing fails, default to first
 # bank
 : ${FLASH_BANK:=1}
 
@@ -269,7 +269,6 @@ do_flash() {
     # In case of binary file, IMAGE_OFFSET should include the flash base address
     # This allows flashing normal binary files without env configuration
     if _is_binfile "${IMAGE_FILE}" "${IMAGE_TYPE}"; then
-        # Default to using first bank
         FLASH_ADDR=$(_flash_address ${FLASH_BANK})
         echo "Binfile detected, adding ROM base address: ${FLASH_ADDR}"
         IMAGE_TYPE=bin
