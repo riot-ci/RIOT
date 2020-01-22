@@ -32,7 +32,7 @@ int main(void)
     while (count) {
         unsigned int state = irq_disable();
         uint32_t t1 = xtimer_now_usec();
-        xtimer_spin(xtimer_ticks_from_usec((uint32_t)(~XTIMER_MASK) / 2));
+        xtimer_spin(xtimer_ticks((uint32_t)(~XTIMER_MASK) / 2));
         uint32_t t2 = xtimer_now_usec();
         irq_restore(state);
         if (t2 < t1) {
