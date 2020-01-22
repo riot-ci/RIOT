@@ -9,4 +9,7 @@ USEMODULE += avr_libc_extra
 PSEUDOMODULES += atmega_pcint
 PSEUDOMODULES += atmega_pcint%
 
+# avr-gcc does not support -fstack-protector
+RIOTNOSSP = 1
+
 include $(RIOTMAKE)/arch/atmega.inc.mk
