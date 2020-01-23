@@ -46,7 +46,7 @@ be connected to the board for flashing. You can use JTAG or STLINK programmer.
  *    - SWDAT: PA_13 / P34
 
 ### STM32 Loader
-To flash RIOT on the board, after connection the UART-USB bridge, just run:
+To flash RIOT on the board, after connecting the UART-USB bridge, just run:
 ```
 BOARD=im880b make flash
 ```
