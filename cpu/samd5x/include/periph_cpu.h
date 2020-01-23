@@ -50,7 +50,7 @@ extern "C" {
 enum {
     SAM0_GCLK_MAIN = 0,                 /**< 120 MHz main clock     */
     SAM0_GCLK_32KHZ,                    /**< 32 kHz clock           */
-    SAM0_GCLK_8MHZ = 5,                 /**< 8 MHz clock for xTimer */
+    SAM0_GCLK_8MHZ,                     /**< 8 MHz clock for xTimer */
     SAM0_GCLK_48MHZ,                    /**< 48 MHz DFLL clock      */
 };
 /** @} */
