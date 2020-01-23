@@ -122,7 +122,7 @@ static void clk_init(void)
                          GCLK_GENCTRL_SRC_OSC8M |
                          GCLK_GENCTRL_ID(SAM0_GCLK_1MHZ));
     GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_GEN(SAM0_GCLK_1MHZ) |
-                         GCLK_CLKCTRL_ID(SAM0_GCLK_1MHZ)  |
+                         GCLK_CLKCTRL_ID_FDPLL |
                          GCLK_CLKCTRL_CLKEN);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
@@ -163,7 +163,7 @@ static void clk_init(void)
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
     /* set GCLK2 as source for DFLL */
-    GCLK->CLKCTRL.reg = (GCLK_GENDIV_ID(SAM0_GCLK_32KHZ) |
+    GCLK->CLKCTRL.reg = (GCLK_CLKCTRL_GEN(SAM0_GCLK_32KHZ) |
                          GCLK_CLKCTRL_ID_DFLL48 |
                          GCLK_CLKCTRL_CLKEN);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
@@ -226,7 +226,7 @@ static void clk_init(void)
 #endif
 
     /* redirect all peripherals to a disabled clock generator (7) by default */
-    for (int i = SAM0_GCLK_NUM; i <= 0x22; i++) {
+    for (int i = 0x; i <= 0x22; i++) {
         GCLK->CLKCTRL.reg = ( GCLK_CLKCTRL_ID(i) | GCLK_CLKCTRL_GEN_GCLK7 );
         while (GCLK->STATUS.bit.SYNCBUSY) {}
     }
