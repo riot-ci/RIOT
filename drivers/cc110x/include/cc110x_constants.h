@@ -557,7 +557,7 @@ extern "C" {
  */
 #define CC110X_PKTCTRL1_ADDR_ALL        0x00
 /**
- * @brief   Accept frames with with matching address broadcast address
+ * @brief   Accept frames with with matching address or broadcast address
  */
 #define CC110X_PKTCTRL1_ADDR_MATCH      0x02
 /**
