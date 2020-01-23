@@ -32,7 +32,7 @@
 
 ## Flashing
 As no usb connector is present on the device an external programmer must
-be connected to the board for flasing. You can use JTAG or STLINK programmer.
+be connected to the board for flashing. You can use JTAG or STLINK programmer.
 
  *  JTAG:
  *    - JTDO: PB_3 / P39

@@ -34,12 +34,11 @@ extern "C" {
  * @{
  */
 #define XTIMER_BACKOFF              (11)
-#define XTIMER_OVERHEAD             (6)
 #define XTIMER_WIDTH                (16)
 /** @} */
 
 /**
- * @name    sx1276 configuration
+ * @name    sx1272 configuration
  * @{
  */
 #define SX127X_PARAM_SPI_NSS                GPIO_PIN(PORT_B, 0)
