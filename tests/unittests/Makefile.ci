@@ -33,6 +33,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     hamilton \
     hifive1 \
     hifive1b \
+    im880b \
     i-nucleo-lrwan1 \
     ikea-tradfri \
     limifrog-v1 \
