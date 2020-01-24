@@ -9,7 +9,6 @@
 # @author      Julian Holzwarth <julian.holzwarth@fu-berlin.de>
 
 import sys
-import pexpect
 from testrunner import run
 
 TIMEOUT = 75*60
