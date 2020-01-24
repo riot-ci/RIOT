@@ -34,8 +34,20 @@ enum {
     PORT_C = 2,       /**< port C */
     PORT_D = 3,       /**< port D */
     PORT_E = 4,       /**< port E */
-    PORT_F = 5        /**< port F */
+    PORT_F = 5,       /**< port F */
+    GPIO_EXT_PORT = 6 /**< first GPIO extender port */
 };
+
+/**
+ * @brief   Available ports on the ATmega32u4 family as GPIO register definitions
+ */
+#define GPIO_CPU_PORTS \
+    { .reg = (gpio_reg_t)0     }, /* n/a    */ \
+    { .reg = (gpio_reg_t)0x25  }, /* port B */ \
+    { .reg = (gpio_reg_t)0x28  }, /* port C */ \
+    { .reg = (gpio_reg_t)0x2b  }, /* port D */ \
+    { .reg = (gpio_reg_t)0x2e  }, /* port E */ \
+    { .reg = (gpio_reg_t)0x31  }, /* port F */
 
 /**
  * @brief   Available external interrupt pins on the ATmega32u4 family
