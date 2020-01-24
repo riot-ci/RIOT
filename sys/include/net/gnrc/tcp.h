@@ -124,7 +124,7 @@ int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
  *
  * @param[in,out] tcb     TCB holding the connection information.
  * @param[in]     local   Endpoint specifying the port and address used to wait for
- *                        incomming connections.
+ *                        incoming connections.
  *
  * @returns   0 on success.
  * @returns   -EAFNOSUPPORT if local_addr != NULL and @p address_family is not supported.

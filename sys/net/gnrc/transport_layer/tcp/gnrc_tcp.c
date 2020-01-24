@@ -165,9 +165,11 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
     }
     /* Setup active connection */
     else {
+        assert(remote != NULL);
+
         /* Parse target address and port number into TCB */
  #ifdef MODULE_GNRC_IPV6
-        if ((remote != NULL) && (tcb->address_family == AF_INET6)) {
+        if (tcb->address_family == AF_INET6) {
 
             /* Store Address information in TCB */
             if (memcpy(tcb->peer_addr, remote->addr.ipv6, sizeof(tcb->peer_addr)) == NULL) {
@@ -177,6 +179,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
             tcb->ll_iface = remote->netif;
         }
  #endif
+
         /* Assign port numbers, verification happens in fsm */
         tcb->local_port = local_port;
         tcb->peer_port = remote->port;
