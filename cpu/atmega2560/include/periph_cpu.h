@@ -31,18 +31,35 @@ extern "C" {
  * @brief   Available ports on the ATmega2560 family
  */
 enum {
-    PORT_A = 0,       /**< port A */
-    PORT_B = 1,       /**< port B */
-    PORT_C = 2,       /**< port C */
-    PORT_D = 3,       /**< port D */
-    PORT_E = 4,       /**< port E */
-    PORT_F = 5,       /**< port F */
-    PORT_G = 6,       /**< port G */
-    PORT_H = 7,       /**< port H */
-    PORT_J = 8,       /**< port J */
-    PORT_K = 9,       /**< port K */
-    PORT_L = 10       /**< port L */
+    PORT_A = 0,         /**< port A */
+    PORT_B = 1,         /**< port B */
+    PORT_C = 2,         /**< port C */
+    PORT_D = 3,         /**< port D */
+    PORT_E = 4,         /**< port E */
+    PORT_F = 5,         /**< port F */
+    PORT_G = 6,         /**< port G */
+    PORT_H = 7,         /**< port H */
+    PORT_J = 8,         /**< port J */
+    PORT_K = 9,         /**< port K */
+    PORT_L = 10,        /**< port L */
+    GPIO_EXT_PORT = 11  /**< first GPIO extender port */
 };
+
+/**
+ * @brief   Available ports on the ATmega2560 family as GPIO register definitions
+ */
+#define GPIO_CPU_PORTS \
+    { .reg = (gpio_reg_t)0x22  }, /* port A */ \
+    { .reg = (gpio_reg_t)0x25  }, /* port B */ \
+    { .reg = (gpio_reg_t)0x28  }, /* port C */ \
+    { .reg = (gpio_reg_t)0x2b  }, /* port D */ \
+    { .reg = (gpio_reg_t)0x2e  }, /* port E */ \
+    { .reg = (gpio_reg_t)0x31  }, /* port F */ \
+    { .reg = (gpio_reg_t)0x34  }, /* port G */ \
+    { .reg = (gpio_reg_t)0x102 }, /* port H */ \
+    { .reg = (gpio_reg_t)0x105 }, /* port J */ \
+    { .reg = (gpio_reg_t)0x108 }, /* port K */ \
+    { .reg = (gpio_reg_t)0x10b }, /* port L */
 
 /**
  * @brief   Available external interrupt pins on the ATmega2560 family
