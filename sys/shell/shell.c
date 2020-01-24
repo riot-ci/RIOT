@@ -70,7 +70,7 @@ struct shell_state {
 
 static int shell_state_init(struct shell_state *state, int len)
 {
-    assert(len >= sizeof(struct shell_state));
+    assert(len >= (int) sizeof(struct shell_state));
 
     state->echo_on = ECHO_ON;
     state->prompt_char = PROMPT_CHAR;
