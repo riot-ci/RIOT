@@ -14,6 +14,7 @@ from testrunner import run
 
 TIMEOUT = 75*60
 
+
 def testfunc(child):
     for _ in range(4):
         child.expect_exact("OK", timeout=TIMEOUT)
