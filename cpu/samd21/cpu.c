@@ -196,8 +196,12 @@ static void clk_init(void)
 
     /* select the DFLL as source for clock generator 0 (CPU core clock) */
     GCLK->GENDIV.reg =  (GCLK_GENDIV_DIV(1U) | GCLK_GENDIV_ID(SAM0_GCLK_MAIN));
-    GCLK->GENCTRL.reg = (GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_ID(SAM0_GCLK_MAIN));
-    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0;
+    GCLK->GENCTRL.reg = GCLK_GENCTRL_GENEN
+                      | GCLK_GENCTRL_SRC_DFLL48M
+                      | GCLK_GENCTRL_ID(SAM0_GCLK_MAIN);
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN
+                      | GCLK_CLKCTRL_ID_DFLL48
+                      | GCLK_CLKCTRL_GEN(SAM0_GCLK_MAIN);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 
     SYSCTRL->DFLLCTRL.bit.ONDEMAND = 1;
