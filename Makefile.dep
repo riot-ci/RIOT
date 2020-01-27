@@ -725,7 +725,6 @@ endif
 
 ifneq (,$(filter can,$(USEMODULE)))
   USEMODULE += can_raw
-  USEMODULE += auto_init_can
   ifneq (,$(filter can_mbox,$(USEMODULE)))
     USEMODULE += core_mbox
   endif
