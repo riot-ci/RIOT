@@ -175,7 +175,7 @@ static void test_gcoap__client_put_req_overfill(void)
 }
 
 /*
- * Builds on get_req test, to test gcoap_add_qstring() to add Uri-Query
+ * Builds on get_req test, to test coap_opt_add_uqery() to add Uri-Query
  * options.
  */
 static void test_gcoap__client_get_query(void)
@@ -187,13 +187,13 @@ static void test_gcoap__client_get_query(void)
     char val1[] = "cde";
     char key2[] = "f";
     char expected[] = "ab=cde&f";
-    int optlen;
+    ssize_t optlen;
 
     gcoap_req_init(&pdu, buf, GCOAP_PDU_BUF_SIZE, COAP_METHOD_GET, path);
 
-    optlen = gcoap_add_qstring(&pdu, key1, val1);
+    optlen = coap_opt_add_uquery(&pdu, key1, val1);
     TEST_ASSERT_EQUAL_INT(7, optlen);
-    optlen = gcoap_add_qstring(&pdu, key2, NULL);
+    optlen = coap_opt_add_uquery(&pdu, key2, NULL);
     TEST_ASSERT_EQUAL_INT(2, optlen);
 
     size_t len = coap_opt_finish(&pdu, COAP_OPT_FINISH_NONE);
