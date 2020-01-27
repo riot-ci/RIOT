@@ -57,12 +57,12 @@ void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration)
     mutex_lock(&mutex);
 }
 
-void ztimer_periodic_wakeup(ztimer_clock_t *ztimer, uint32_t *last_wakeup, uint32_t period)
+void ztimer_periodic_wakeup(ztimer_clock_t *ztimer, ztimer_now_t *last_wakeup, uint32_t period)
 {
     unsigned state = irq_disable();
-    uint32_t now = ztimer_now(ztimer);
-    uint32_t target = *last_wakeup + period;
-    uint32_t offset = target - now;
+    ztimer_now_t now = ztimer_now(ztimer);
+    ztimer_now_t target = *last_wakeup + period;
+    ztimer_now_t offset = target - now;
     irq_restore(state);
 
     if (offset <= period) {

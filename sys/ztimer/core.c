@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include "kernel_defines.h"
 #include "irq.h"
 #include "ztimer.h"
 
@@ -135,18 +136,18 @@ static uint32_t _add_modulo(uint32_t a, uint32_t b, uint32_t mod)
     return a-b;
 }
 
-uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer)
+ztimer_now_t _ztimer_now_extend(ztimer_clock_t *ztimer)
 {
     assert(ztimer->max_value);
     unsigned state = irq_disable();
     uint32_t lower_now = ztimer->ops->now(ztimer);
     DEBUG("ztimer_now() checkpoint=%"PRIu32" lower_last=%"PRIu32" lower_now=%"PRIu32" diff=%"PRIu32"\n",
-            ztimer->checkpoint, ztimer->lower_last, lower_now,
+            (uint32_t)ztimer->checkpoint, ztimer->lower_last, lower_now,
             _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value));
     ztimer->checkpoint += _add_modulo(lower_now, ztimer->lower_last, ztimer->max_value);
     ztimer->lower_last = lower_now;
-    DEBUG("ztimer_now() returning %"PRIu32"\n", ztimer->checkpoint);
-    uint32_t now = ztimer->checkpoint;
+    DEBUG("ztimer_now() returning %"PRIu32"\n", (uint32_t)ztimer->checkpoint);
+    ztimer_now_t now = ztimer->checkpoint;
     irq_restore(state);
     return now;
 }
@@ -266,8 +267,8 @@ void ztimer_handler(ztimer_clock_t *ztimer)
         _ztimer_print(ztimer);
     }
 
-#ifdef MODULE_ZTIMER_EXTEND
-    if (ztimer->max_value < 0xffffffff) {
+#if MODULE_ZTIMER_EXTEND || MODULE_ZTIMER_NOW64
+    if (IS_USED(MODULE_ZTIMER_NOW64) || ztimer->max_value < 0xffffffff) {
         /* calling now triggers checkpointing */
         uint32_t now = ztimer_now(ztimer);
 

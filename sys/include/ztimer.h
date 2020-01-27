@@ -221,6 +221,11 @@ struct ztimer_base {
     uint32_t offset;            /**< offset from last alarm in list */
 };
 
+#if MODULE_ZTIMER_NOW64
+typedef uint64_t ztimer_now_t;
+#else
+typedef uint32_t ztimer_now_t;
+#endif
 /**
  * @brief   ztimer structure
  *
@@ -265,11 +270,11 @@ struct ztimer_clock {
     const ztimer_ops_t *ops;        /**< pointer to methods structure       */
     ztimer_base_t *last;            /**< last timer in queue, for _is_set() */
     uint32_t adjust;                /**< will be subtracted on every set()  */
-#if MODULE_ZTIMER_EXTEND || DOXYGEN
+#if MODULE_ZTIMER_EXTEND || MODULE_ZTIMER_NOW64 || DOXYGEN
     /* values used for checkpointed intervals and 32bit extension */
     uint32_t max_value;             /**< maximum relative timer value       */
-    uint32_t checkpoint;   /**< cumulated time at last now() call  */
-    uint32_t lower_last;   /**< timer value at last now() call     */
+    uint32_t lower_last;            /**< timer value at last now() call     */
+    ztimer_now_t checkpoint;        /**< cumulated time at last now() call  */
 #endif
 };
 
@@ -349,7 +354,7 @@ int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
  * @param[in]   ztimer          ztimer clock to operate on
  * @return  Current count on the clock @p ztimer
  */
-uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer);
+ztimer_now_t _ztimer_now_extend(ztimer_clock_t *ztimer);
 
 /**
  * @brief   Get the current time from a clock
@@ -358,14 +363,16 @@ uint32_t _ztimer_now_extend(ztimer_clock_t *ztimer);
  *
  * @return  Current count on the clock @p ztimer
  */
-static inline uint32_t ztimer_now(ztimer_clock_t *ztimer)
+static inline ztimer_now_t ztimer_now(ztimer_clock_t *ztimer)
 {
-#ifdef MODULE_ZTIMER_EXTEND
+#if MODULE_ZTIMER_NOW64
+    if (1) {
+#elif MODULE_ZTIMER_EXTEND
     if (ztimer->max_value < 0xffffffff) {
-        return _ztimer_now_extend(ztimer);
 #else
     if (0) {
 #endif
+        return _ztimer_now_extend(ztimer);
     }
     else {
         return ztimer->ops->now(ztimer);
