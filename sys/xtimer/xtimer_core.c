@@ -147,18 +147,22 @@ static inline void _schedule_earliest_lltimer(uint32_t now)
 
 /**
  * @brief compare two timers. return true if timerA expires earlier than or equal to timerB and false otherwise.
+ *        assume that timerB starts later than timerA.
  */
 static bool _timer_comparison(xtimer_t* timerA, xtimer_t* timerB)
 {
     if (timerA->long_offset < timerB->long_offset) {
         return true;
     }
-    if (timerA->long_offset == timerB->long_offset
-            /* this condition is needed for when timerA was already expired before timerB starts */
-        && (timerA->start_time + timerA->offset < timerB->start_time
-            /* it is necessary to compare two offsets, instead of two absolute times */
-            || timerA->start_time + timerA->offset - timerB->start_time <= timerB->offset)) {
-        return true;
+    if (timerA->long_offset == timerB->long_offset) {
+        uint32_t elapsed = timerB->start_time - timerA->start_time;
+        /* it is necessary to compare two offsets, instead of two absolute times
+         * two conditions: (1) timerA was already expired before timerB starts
+         *                 (2) timerA will expire ealier than or equal to timerB
+         */
+        if (timerA->offset < elapsed || timerA->offset - elapsed <= timerB->offset) {
+            return true;
+        }
     }
     return false;
 }
