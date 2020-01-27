@@ -164,7 +164,6 @@ typedef struct {
 /**
  * @brief GNRC LoRaWAN mac descriptor */
 typedef struct {
-    netdev_t netdev;                                /**< netdev for the MAC layer */
     xtimer_t rx;                                    /**< RX timer */
     msg_t msg;                                      /**< MAC layer message descriptor */
     gnrc_lorawan_mcps_t mcps;                       /**< MCPS descriptor */
@@ -447,31 +446,12 @@ static inline void gnrc_lorawan_mac_release(gnrc_lorawan_t *mac)
 }
 
 /**
- * @brief Allocate memory to hold a GNRC LoRaWAN MCPS request
+ * @brief Set the datarate of the second reception window
  *
  * @param[in] mac pointer to the MAC descriptor
- *
- * @return pointer the allocated buffer
+ * @param[in] rx2_dr datarate of RX2
  */
-static inline void *gnrc_lorawan_mcps_allocate(gnrc_lorawan_t *mac)
-{
-    mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MCPS_GET_BUFFER);
-    return mac->mcps_buf;
-}
-
-/**
- * @brief Allocate memory to hold a GNRC LoRaWAN MLME request
- *
- * @param[in] mac pointer to the MAC descriptor
- *
- * @return pointer the allocated buffer
- */
-static inline void *gnrc_lorawan_mlme_allocate(gnrc_lorawan_t *mac)
-{
-    mac->netdev.event_callback((netdev_t *) mac, NETDEV_EVENT_MLME_GET_BUFFER);
-    return mac->mlme_buf;
-}
-
+void gnrc_lorawan_set_rx2_dr(gnrc_lorawan_t *mac, uint8_t rx2_dr);
 
 #ifdef __cplusplus
 }
