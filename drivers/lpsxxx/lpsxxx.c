@@ -107,6 +107,11 @@ int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t *params)
 #elif MODULE_LPS22HB
     tmp = LPSXXX_CTRL_REG1_EN_LPFP | /* Low-pass filter configuration: ODR/9 */
         LPSXXX_CTRL_REG1_BDU | rate;
+#else
+    /* We should actually never enter here, but we want to keep cppcheck happy. */
+    if (rate) { /* Use rate to keep cppcheck happy. */
+        tmp = 0; /* Set tmp, to keep cppcheck happy. */
+    }
 #endif
 
     DEBUG("[lpsxxx] init: update reg1, value: %02X\n", tmp);
