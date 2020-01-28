@@ -32,11 +32,11 @@
 static mtd_spi_nor_t pinetime_nor_dev = {
     .base = {
         .driver = &mtd_spi_nor_driver,
-        .page_size = 256,
-        .pages_per_sector = 16,
-        .sector_count = 2048,
+        .page_size = PINETIME_NOR_PAGE_SIZE,
+        .pages_per_sector = PINETIME_NOR_PAGES_PER_SECTOR,
+        .sector_count = PINETIME_NOR_SECTOR_COUNT,
     },
-    .flag = SPI_NOR_F_SECT_4K | SPI_NOR_F_SECT_32K,
+    .flag = PINETIME_NOR_FLAGS,
     .opcode = &mtd_spi_nor_opcode_default,
     .spi = PINETIME_NOR_SPI_DEV,
     .cs = PINETIME_NOR_SPI_CS,
