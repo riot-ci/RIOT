@@ -60,6 +60,7 @@ config GCOAP_OBS_REGISTRATIONS_MAX
 config GCOAP_OBS_VALUE_WIDTH
     int "Width of the Observe option value for a notification"
     default 3
+    range 1 3
     help
         This width, expressed in bytes, is used to determine the length of the
         'tick' used to measure the time between observable changes to a
