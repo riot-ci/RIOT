@@ -30,16 +30,6 @@
 #ifndef PERIPH_COMMS_BUS_H
 #define PERIPH_COMMS_BUS_H
 
-/**
- * The following check breaks the CI build.
- * Strictly, the check is not needed here, so it's commented out for now.
-
-#if !defined(MODULE_PERIPH_I2C) && !defined(MODULE_PERIPH_SPI)
-#error At least one of the following modules are required: periph_i2c, periph_spi
-#endif
-
-*/
-
 #ifdef MODULE_PERIPH_SPI
 #include "spi.h"
 #endif
@@ -55,13 +45,11 @@ extern "C" {
 /**
  * @brief   Supported bus types.
  */
-enum comms_bus_type {
+typedef enum {
     PERIPH_COMMS_BUS_UNDEF = 0,
     PERIPH_COMMS_BUS_I2C,
     PERIPH_COMMS_BUS_SPI,
-};
-
-typedef enum comms_bus_type comms_bus_type_t;
+} comms_bus_type_t;
 
 #ifdef MODULE_PERIPH_SPI
 typedef struct  {
@@ -79,6 +67,10 @@ typedef struct {
 } i2c_bus_t;
 #endif
 
+/**
+ * @brief   A union of bus parameter types
+ */
+
 typedef union
 {
 #ifdef MODULE_PERIPH_SPI
@@ -88,34 +80,93 @@ typedef union
     i2c_bus_t i2c;
 #endif
 #if !defined(MODULE_PERIPH_I2C) && !defined(MODULE_PERIPH_SPI)
+    /**
+     * @brief   A dummy variable that forces this union
+     *          not to be empty if no I2C or SPI module was
+     *          selected.
+     */
     int dummy_to_avoid_union_has_no_members_warning;
 #endif
 } comms_bus_params_t;
 
 /**
- * @brief   Common bus communication function types.
+ * @brief   Bus initialization funtion prototype
+ *
+ * @param[in] bus       bus parameters
  */
-
 typedef int comms_bus_init_t(const comms_bus_params_t *bus);
+
+/**
+ * @brief   Bus aqcuire funtion prototype
+ *
+ * @param[in] bus       bus parameters
+ */
 typedef int comms_bus_acquire_t(const comms_bus_params_t *bus);
+
+/**
+ * @brief   Bus release funtion prototype
+ *
+ * @param[in] bus       bus parameters
+ */
 typedef void comms_bus_release_t(const comms_bus_params_t *bus);
+
+/**
+ * @brief   Bus read register funtion prototype
+ *
+ * @param[in]  bus      bus parameters
+ * @param[in]  reg      register
+ * @param[out] out      byte, read from register
+ */
 typedef int comms_bus_read_reg_t(const comms_bus_params_t *bus,
                                  uint16_t reg, uint8_t *out);
+/**
+ * @brief   Bus read registers funtion prototype
+ *
+ * @param[in]  bus      bus parameters
+ * @param[in]  reg      register
+ * @param[out] data     data, read from register
+ * @param[in]  len      length of returned register contents
+ */
 typedef int comms_bus_read_regs_t(const comms_bus_params_t *bus,
                                   uint16_t reg, void *data, size_t len);
+
+/**
+ * @brief   Bus write register funtion prototype
+ *
+ * @param[in] bus       bus parameters
+ * @param[in] reg       register
+ * @param[in] data      data byte for register
+ */
 typedef int comms_bus_write_reg_t(const comms_bus_params_t *bus,
                                   uint8_t reg, uint8_t data);
 
 /**
  * @brief   Function pointer structure for pivoting to a specified bus.
  */
-
 typedef struct {
+    /**
+     * @brief The bus init function pointer
+     */
     comms_bus_init_t *comms_bus_init;
+    /**
+     * @brief The bus acquire function pointer
+     */
     comms_bus_acquire_t *comms_bus_acquire;
+    /**
+     * @brief The bus release function pointer
+     */
     comms_bus_release_t *comms_bus_release;
+    /**
+     * @brief The bus read register function pointer
+     */
     comms_bus_read_reg_t *comms_bus_read_reg;
+    /**
+     * @brief The bus read registers function pointer
+     */
     comms_bus_read_regs_t *comms_bus_read_regs;
+    /**
+     * @brief The bus write register function pointer
+     */
     comms_bus_write_reg_t *comms_bus_write_reg;
 } comms_bus_function_t;
 
@@ -123,11 +174,19 @@ typedef struct {
  * @brief   The transport struct contains the bus type, the bus
  *          and the common bus function pointers.
  */
-
 typedef struct
 {
+    /**
+     * @brief The bus type
+     */
     comms_bus_type_t type;
+    /**
+     * @brief The bus parameters
+     */
     comms_bus_params_t bus;
+    /**
+     * @brief The bus function pointers
+     */
     comms_bus_function_t f;
 } comms_transport_t;
 

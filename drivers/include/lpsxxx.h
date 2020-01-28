@@ -50,12 +50,16 @@ extern "C" {
 #else
 
 /**
+ * @brief   The sensors default I2C device number
+ */
+#define LPSXXX_DEFAULT_DEV      I2C_DEV(0)
+/**
  * @brief   The sensors default I2C address
  *
  * Default address corresponds to SDO/SA0 pad connected to ground. If SDO/SA0
  * pad is connected to power supply, I2C address is 0x5C.
+ *
  */
-#define LPSXXX_DEFAULT_DEV      I2C_DEV(0)
 #define LPSXXX_DEFAULT_ADDRESS  (0x5d)
 
 #endif
@@ -103,6 +107,9 @@ typedef enum {
  * @brief   Struct holding all parameters needed for device initialization
  */
 typedef struct {
+    /**
+     * @brief   The transport parameters
+     */
     comms_transport_t transport;
     lpsxxx_rate_t rate;         /**< tell sensor to sample with this rate */
 } lpsxxx_params_t;
