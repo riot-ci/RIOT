@@ -163,7 +163,7 @@ int lpsxxx_read_temp(const lpsxxx_t *dev, int16_t *temp)
     return LPSXXX_OK;
 }
 
-int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pres)
+int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pressure)
 {
     uint8_t tmp = 0;
     int32_t val = 0;
@@ -204,7 +204,7 @@ int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pres)
     }
 
     /* compute actual pressure value in hPa */
-    *pres = (uint16_t)(val >> PRES_DIVIDER);
+    *pressure = (uint16_t)(val >> PRES_DIVIDER);
 
     return LPSXXX_OK;
 }

@@ -8,7 +8,7 @@ building the application:
 
     DRIVER=lps25hb make BOARD=<your board>
 
-This driver can be used with any combination of SPI and/or I2C busses.
+This driver can be used with any combination of SPI and/or I2C buses.
 
 For support of only I2C use:
 

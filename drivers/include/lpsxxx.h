@@ -141,12 +141,12 @@ int lpsxxx_read_temp(const lpsxxx_t *dev, int16_t *temp);
  * @brief   Read a pressure value from the given sensor, returned in hPa
  *
  * @param[in] dev       device descriptor of sensor to read from
- * @param[out] pres     pressure value in hPa
+ * @param[out] pressure pressure value in hPa
  *
  * @return              LPSXXX_OK on success
  * @return              -LPSXXX_ERR_NOBUS on I2C/SPI error
  */
-int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pres);
+int lpsxxx_read_pres(const lpsxxx_t *dev, uint16_t *pressure);
 
 /**
  * @brief   Enable the given sensor
