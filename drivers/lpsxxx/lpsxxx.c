@@ -79,7 +79,7 @@ int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t *params)
     uint8_t tmp;
 
 #if MODULE_LPS22HB
-    if (func_ptr->comms_bus_read_reg(bus_ptr, DEV_ADDR, LPSXXX_REG_CTRL_REG2, &tmp) < 0) {
+    if (func_ptr->comms_bus_read_reg(bus_ptr, LPSXXX_REG_CTRL_REG2, &tmp) < 0) {
         func_ptr->comms_bus_release(bus_ptr);
         DEBUG("[lpsxxx] init: cannot read LPSXXX_REG_CTRL_REG2 register\n");
         return -LPSXXX_ERR_NOBUS;
@@ -91,7 +91,7 @@ int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t *params)
 
     DEBUG("[lpsxxx] init: update reg2, %02X\n", tmp);
 
-    if (func_ptr->comms_bus_write_reg(bus_ptr, DEV_ADDR, LPSXXX_REG_CTRL_REG2, tmp, 0) < 0) {
+    if (func_ptr->comms_bus_write_reg(bus_ptr, LPSXXX_REG_CTRL_REG2, tmp) < 0) {
         func_ptr->comms_bus_release(bus_ptr);
         DEBUG("[lpsxxx] init: cannot write in CTRL_REG2 register\n");
         return -LPSXXX_ERR_NOBUS;
