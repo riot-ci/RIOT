@@ -87,6 +87,9 @@ typedef union
 #ifdef MODULE_PERIPH_I2C
     i2c_bus_t i2c;
 #endif
+#if !defined(MODULE_PERIPH_I2C) && !defined(MODULE_PERIPH_SPI)
+    int dummy_to_avoid_union_has_no_members_warning;
+#endif
 } comms_bus_params_t;
 
 /**
