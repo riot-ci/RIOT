@@ -90,28 +90,28 @@ typedef union
 } comms_bus_params_t;
 
 /**
- * @brief   Bus initialization funtion prototype
+ * @brief   Bus initialization function prototype
  *
  * @param[in] bus       bus parameters
  */
 typedef int comms_bus_init_t(const comms_bus_params_t *bus);
 
 /**
- * @brief   Bus aqcuire funtion prototype
+ * @brief   Bus acquire function prototype
  *
  * @param[in] bus       bus parameters
  */
 typedef int comms_bus_acquire_t(const comms_bus_params_t *bus);
 
 /**
- * @brief   Bus release funtion prototype
+ * @brief   Bus release function prototype
  *
  * @param[in] bus       bus parameters
  */
 typedef void comms_bus_release_t(const comms_bus_params_t *bus);
 
 /**
- * @brief   Bus read register funtion prototype
+ * @brief   Bus read register function prototype
  *
  * @param[in]  bus      bus parameters
  * @param[in]  reg      register
@@ -120,7 +120,7 @@ typedef void comms_bus_release_t(const comms_bus_params_t *bus);
 typedef int comms_bus_read_reg_t(const comms_bus_params_t *bus,
                                  uint16_t reg, uint8_t *out);
 /**
- * @brief   Bus read registers funtion prototype
+ * @brief   Bus read registers function prototype
  *
  * @param[in]  bus      bus parameters
  * @param[in]  reg      register
@@ -131,7 +131,7 @@ typedef int comms_bus_read_regs_t(const comms_bus_params_t *bus,
                                   uint16_t reg, void *data, size_t len);
 
 /**
- * @brief   Bus write register funtion prototype
+ * @brief   Bus write register function prototype
  *
  * @param[in] bus       bus parameters
  * @param[in] reg       register
