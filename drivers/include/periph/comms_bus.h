@@ -56,9 +56,9 @@ extern "C" {
  * @brief   Supported bus types.
  */
 enum comms_bus_type {
-    UNDEF = 0,
-    I2C,
-    SPI,
+    PERIPH_COMMS_BUS_UNDEF = 0,
+    PERIPH_COMMS_BUS_I2C,
+    PERIPH_COMMS_BUS_SPI,
 };
 
 typedef enum comms_bus_type comms_bus_type_t;

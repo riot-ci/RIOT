@@ -127,7 +127,7 @@ void comms_bus_setup(comms_transport_t* transport)
 {
     switch (transport->type) {
 #ifdef MODULE_PERIPH_SPI
-    case SPI:
+    case PERIPH_COMMS_BUS_SPI:
         transport->f.comms_bus_init = _spi_init;
         transport->f.comms_bus_acquire = _spi_acquire;
         transport->f.comms_bus_release = _spi_release;
@@ -137,7 +137,7 @@ void comms_bus_setup(comms_transport_t* transport)
         break;
 #endif
 #ifdef MODULE_PERIPH_I2C
-    case I2C:
+    case PERIPH_COMMS_BUS_I2C:
         transport->f.comms_bus_init = _i2c_init;
         transport->f.comms_bus_acquire = _i2c_acquire;
         transport->f.comms_bus_release = _i2c_release;
