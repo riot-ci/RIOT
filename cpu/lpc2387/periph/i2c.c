@@ -213,18 +213,21 @@ static void _end_tx(i2c_t dev, unsigned res)
 
 static void _next_buffer(i2c_t dev)
 {
+    /* We only need two buffers max.
+       This can only be called for the first buffer
+       as there is no next buffer for the second buffer */
+    assert(ctx[dev].buf_cur == 0);
+
     lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
-    uint8_t buf_cur = ctx[dev].buf_cur;
 
     /* if mode (read/write) changed, send START again */
-    if (ctx[dev].addr[buf_cur] != ctx[dev].addr[buf_cur + 1]) {
+    if (ctx[dev].addr[0] != ctx[dev].addr[1]) {
         i2c->CONSET = I2CONSET_STA;
     }
 
-    ++buf_cur;
-    ctx[dev].cur = ctx[dev].buf[buf_cur];
-    ctx[dev].end = ctx[dev].buf_end[buf_cur];
-    ctx[dev].buf_cur = buf_cur;
+    ctx[dev].cur = ctx[dev].buf[1];
+    ctx[dev].end = ctx[dev].buf_end[1];
+    ctx[dev].buf_cur = 1;
 }
 
 static void irq_handler(i2c_t dev)
