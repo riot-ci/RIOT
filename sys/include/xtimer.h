@@ -409,6 +409,16 @@ int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t us);
  */
 void xtimer_set_timeout_flag(xtimer_t *t, uint32_t timeout);
 
+/**
+ * @brief   Get remaining time of timer
+ *
+ * @param[in]   timer   timer struct to use
+ *
+ * @returns time in usec until timer triggers
+ * @returns 0 if timer is not set (or has already passed)
+ */
+uint64_t xtimer_left_usec(const xtimer_t *t);
+
 #if defined(MODULE_CORE_MSG) || defined(DOXYGEN)
 /**
  * @brief Set a timer that sends a message
