@@ -7,6 +7,8 @@ PKG_TESTINCLDIR = $(PKG_BUILDDIR)/test
 
 include $(RIOTBASE)/pkg/pkg.mk
 
+BOARD_BLACKLIST := stk3600 stk3700
+
 .PHONY: all..cmake_version_supported
 
 CMAKE_MINIMAL_VERSION = 3.6.0
