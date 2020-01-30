@@ -24,7 +24,7 @@
 
 uintptr_t __stack_chk_guard = (uintptr_t) STACK_CHK_GUARD;
 
-__attribute__((noreturn)) void __stack_chk_fail(void)
+__attribute__((used)) __attribute__((noreturn)) void __stack_chk_fail(void)
 {
     core_panic(PANIC_SSP, "ssp: stack smashing detected");
 }
