@@ -65,7 +65,7 @@ ATCA_STATUS hal_i2c_post_init(ATCAIface iface)
 ATCA_STATUS hal_i2c_send(ATCAIface iface, uint8_t *txdata, int txlength)
 {
     ATCAIfaceCfg *cfg = atgetifacecfg(iface);
-    int ret = -1;
+    int ret;
 
     /* The first byte of the command package contains the word address */
     txdata[0] = ATCA_DATA_ADDR;
