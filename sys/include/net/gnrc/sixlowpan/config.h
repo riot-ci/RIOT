@@ -83,7 +83,8 @@ extern "C" {
 #endif
 
 /**
- * @brief   Keep all but oldest fragment when reassembly buffer is full
+ * @brief   Do not override oldest datagram when reassembly buffer is full on
+ *          incoming new fragment
  *
  * @note    Only applicable with
  *          [gnrc_sixlowpan_frag_rb](@ref net_gnrc_sixlowpan_frag_rb) module
