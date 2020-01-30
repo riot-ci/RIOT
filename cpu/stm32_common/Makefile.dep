@@ -7,3 +7,10 @@ USEMODULE += stm32_common stm32_common_periph
 ifneq (,$(filter periph_usbdev,$(FEATURES_USED)))
   USEMODULE += xtimer
 endif
+
+# All stm32 families support the new GPIO API
+USEMODULE += periph_gpio_ext
+
+# 16 bit GPIO pin mask required
+USEMODULE += gpio_mask_16bit
+
