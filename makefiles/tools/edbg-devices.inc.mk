@@ -86,3 +86,7 @@ endif
 ifneq (,$(findstring gd32f4,$(CPU_MODEL)))
   EDBG_DEVICE_TYPE = gd32f4xx
 endif
+
+ifeq (,$(EDBG_DEVICE_TYPE))
+  $(error "Device not supported by edbg.")
+endif
