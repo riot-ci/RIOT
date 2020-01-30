@@ -22,7 +22,7 @@ else
 endif
 
 cryptoauth: $(PKG_BUILDDIR)/lib/Makefile
-	$(MAKE) -C $(PKG_BUILDDIR)/lib && \
+	$(MAKE) -C $(PKG_BUILDDIR)/lib
 	cp $(PKG_BUILDDIR)/lib/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
 
 $(PKG_BUILDDIR)/lib/Makefile: $(TOOLCHAIN_FILE)
