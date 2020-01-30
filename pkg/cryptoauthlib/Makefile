@@ -11,8 +11,10 @@ include $(RIOTBASE)/pkg/pkg.mk
 
 CMAKE_MINIMAL_VERSION = 3.6.0
 
-CFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unused-function
+CFLAGS += -Wno-missing-field-initializers -Wno-unused-function
 CFLAGS += -Wno-type-limits -Wno-strict-aliasing -Wno-unused-variable -DATCA_HAL_I2C
+CFLAGS += -Wno-unused-parameter -Wno-sign-compare -Wno-overflow -Wno-pointer-to-int-cast
+
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
 ifneq (,$(filter $(PKG_TEST_NAME),$(USEMODULE)))
