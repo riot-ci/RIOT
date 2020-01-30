@@ -3,7 +3,6 @@ PKG_URL=https://github.com/MicrochipTech/cryptoauthlib
 PKG_VERSION=af8187776cd3f3faf8bed412eaf6ff7221862e19
 PKG_LICENSE=LGPL-2.1
 PKG_TEST_NAME=cryptoauthlib_test
-PKG_BUILDDIR ?= $(PKGDIRBASE)/cryptoauthlib
 PKG_TESTINCLDIR = $(PKG_BUILDDIR)/test
 
 include $(RIOTBASE)/pkg/pkg.mk
