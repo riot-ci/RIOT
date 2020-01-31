@@ -80,8 +80,8 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = 29,
         .rx_pin = 28,
 #ifdef MODULE_PERIPH_UART_HW_FC
-        .rts_pin = 0,      /* ignored when flow_control is 0 */
-        .cts_pin = 0,      /* ignored when flow_control is 0 */
+        .rts_pin = GPIO_UNDEF,      /* ignored when flow_control is 0 */
+        .cts_pin = GPIO_UNDEF,      /* ignored when flow_control is 0 */
 #endif
         .intn = UART0_IRQN
     }
