@@ -91,7 +91,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pin = 12,
 #ifdef MODULE_PERIPH_UART_HW_FC
         .rts_pin = GPIO_UNDEF,
-        .cts_pin = GPIO_UNDEF,      /* ignored when flow_control is 0 */
+        .cts_pin = GPIO_UNDEF,
 #endif
         .intn = UART0_IRQN
     }
