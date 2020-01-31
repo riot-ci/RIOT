@@ -41,12 +41,10 @@ config GNRC_IPV6_EXT_FRAG_RBUF_TIMEOUT_US
         This value is expressed in microseconds.
 
 config GNRC_IPV6_EXT_FRAG_RBUF_DO_NOT_OVERRIDE
-    bool "Do not override oldest datagram when reassembly buffer is full on incoming fragment"
+    bool "Do not override oldest datagram when reassembly buffer is full"
     help
-        When not set, it will cause the reassembly buffer to
-        override the oldest entry no matter what. When set, only the oldest
-        entry that is older than @ref CONFIG_GNRC_IPV6_EXT_FRAG_RBUF_TIMEOUT_US
-        will be overwritten (they will still timeout normally if reassembly
-        buffer is not full).
+        When not set, it will cause the reassembly buffer to override the oldest
+        entry when a fragment for a new datagram is received. When set to 1, no
+        entry will be overwritten (they will still timeout normally)
 
 endif # KCONFIG_MODULE_GNRC_IPV6_EXT_FRAG
