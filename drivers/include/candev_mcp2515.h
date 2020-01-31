@@ -38,6 +38,20 @@ extern "C" {
 #endif
 
 /**
+ * Default CAN bitrate
+ */
+#ifndef CANDEV_MCP2515_DEFAULT_BITRATE
+#define CANDEV_MCP2515_DEFAULT_BITRATE 125000
+#endif
+
+/**
+ * Default sampling point setup
+ */
+#ifndef CANDEV_MCP2515_DEFAULT_SPT
+#define CANDEV_MCP2515_DEFAULT_SPT 875
+#endif
+
+/**
  * Number of transmit mailboxes
  */
 #define MCP2515_TX_MAILBOXES 3
@@ -75,13 +89,13 @@ typedef struct candev_mcp2515 candev_mcp2515_t;
  * @brief MCP2515 configuration descriptor
  */
 typedef struct candev_mcp2515_conf {
-    spi_t spi;               /**< SPI bus */
-    spi_mode_t spi_mode;     /**< SPI mode */
-    spi_clk_t spi_clk;       /**< SPI clock speed */
-    gpio_t cs_pin;           /**< Slave select pin */
-    gpio_t rst_pin;          /**< Reset pin */
-    gpio_t int_pin;          /**< Interrupt pin */
-    uint32_t clk;            /**< External clock frequency */
+    spi_t spi;                  /**< SPI bus */
+    spi_mode_t spi_mode;        /**< SPI mode */
+    spi_clk_t spi_clk;          /**< SPI clock speed */
+    gpio_t cs_pin;              /**< Slave select pin */
+    gpio_t rst_pin;             /**< Reset pin */
+    gpio_t int_pin;             /**< Interrupt pin */
+    uint32_t clk;               /**< External clock frequency */
 } candev_mcp2515_conf_t;
 
 /**
@@ -111,7 +125,8 @@ struct candev_mcp2515 {
  * @param[out] dev      mcp2515 device descriptor
  * @param[in]  conf     mcp2515 configuration
  */
-void candev_mcp2515_init(candev_mcp2515_t *dev, const candev_mcp2515_conf_t *conf);
+void candev_mcp2515_init(candev_mcp2515_t *dev,
+                         const candev_mcp2515_conf_t *conf);
 
 #ifdef __cplusplus
 }
