@@ -113,8 +113,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* configure TX pin */
     gpio_init(UART_PIN_TX, GPIO_OUT);
     PSEL_TXD = UART_PIN_TX;
-    dev(uart)->PSELRTS = 0xffffffff;        /* pin disconnected */
-    dev(uart)->PSELCTS = 0xffffffff;        /* pin disconnected */
+
 #ifdef CPU_MODEL_NRF52840XXAA
     /* enable HW-flow control if defined */
  #ifdef MODULE_PERIPH_UART_HW_FC
