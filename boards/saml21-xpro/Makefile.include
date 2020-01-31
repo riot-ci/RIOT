@@ -1,3 +1,5 @@
 CFLAGS += -D__SAML21J18A__
 
+USEMODULE += periph_uart_hw_fc
+
 include $(RIOTMAKE)/boards/sam0.inc.mk
