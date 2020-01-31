@@ -28,7 +28,7 @@
 
 void auto_init_random(void)
 {
-    uint32_t seed;
+    uint32_t seed = 1;
 #ifdef MODULE_PUF_SRAM
     /* TODO: hand state to application? */
     if (puf_sram_state) {
@@ -41,8 +41,8 @@ void auto_init_random(void)
     luid_get(&seed, 4);
 #else
     LOG_WARNING("random: NO SEED AVAILABLE!\n");
-    seed = RANDOM_SEED_DEFAULT;
 #endif
+    seed *= RANDOM_SEED_DEFAULT;
     DEBUG("random: using seed value %u\n", (unsigned)seed);
     random_init(seed);
 }
