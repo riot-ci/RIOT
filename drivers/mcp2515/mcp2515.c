@@ -17,9 +17,9 @@
  * @}
  */
 
-#include "xtimer.h"
 #include <string.h>
 
+#include "xtimer.h"
 #include "mcp2515.h"
 #include "mcp2515_spi.h"
 #include "mcp2515_defines.h"
@@ -30,18 +30,21 @@
 #include "debug.h"
 
 /* reset delay should be at least 2 microseconds */
-#define RESET_DELAY 2
+#define RESET_DELAY_US 2
 
 /* size of transmission and reception buffers in mcp2515 */
 #define BUFFER_SIZE 13
 
 /* macros for getting the TX and RX control registers */
 #define TX_CTRL(mailbox) ((MCP2515_TXB0CTRL) + ((mailbox) << 4))
-#define RX_CTRL(mailbox) ((MCP2515_RXB0CTRL) + ((mailbox) << 4))
+//#define RX_CTRL(mailbox) ((MCP2515_RXB0CTRL) + ((mailbox) << 4))
+
+/* length of the fixed part of a can message: 4 bytes can_id + 1 byte can_dlc */
+#define CAN_FIXED_LEN 5
 
 /* oscillator startup time
  * 128 cycles @ clock freq + some extra */
-static inline uint32_t ost_delay(candev_mcp2515_t *dev)
+static inline uint32_t osc_startup(candev_mcp2515_t *dev)
 {
     return (128 / (dev->conf->clk / 1000000) + 2);
 }
@@ -88,12 +91,22 @@ static void fill_extended_id(uint32_t id, uint8_t *bytebuf);
 int mcp2515_init(candev_mcp2515_t *dev, void(*irq_handler_cb)(void*))
 {
     int res;
-    gpio_init_int(dev->conf->int_pin, GPIO_IN_PU, GPIO_FALLING, (gpio_cb_t)irq_handler_cb, (void *)dev);
+    res = gpio_init_int(dev->conf->int_pin, GPIO_IN_PU, GPIO_FALLING, (gpio_cb_t)irq_handler_cb, (void *)dev);
+    if (res != 0) {
+        DEBUG("Error setting interrupt pin!\n");
+        return -1;
+    }
     gpio_init(dev->conf->rst_pin, GPIO_OUT);
-    /*the CS pin should be initialized & set in board.c to avoid conflict with other SPI devices */
 
     res = mcp2515_spi_init(dev);
     if (res < 0){
+        return -1;
+    }
+
+    uint8_t cmd = MCP2515_RXB0CTRL_MODE_RECV_ALL;
+    res = mcp2515_spi_write(dev, MCP2515_RXB0CTRL , &cmd, 1);
+    if (res < 0) {
+        DEBUG("failed to set acceptance mode\n");
         return -1;
     }
     return 0;
@@ -102,9 +115,9 @@ int mcp2515_init(candev_mcp2515_t *dev, void(*irq_handler_cb)(void*))
 void mcp2515_reset(candev_mcp2515_t *dev)
 {
     gpio_clear(dev->conf->rst_pin);
-    xtimer_usleep(RESET_DELAY);
+    xtimer_usleep(RESET_DELAY_US);
     gpio_set(dev->conf->rst_pin);
-    xtimer_usleep(ost_delay(dev));
+    xtimer_usleep(osc_startup(dev));
 }
 
 static void fill_standard_id(uint32_t id, uint8_t *bytebuf)
@@ -118,7 +131,7 @@ static void fill_standard_id(uint32_t id, uint8_t *bytebuf)
 static void fill_extended_id(uint32_t id, uint8_t *bytebuf)
 {
     bytebuf[0] = (uint8_t) ((id & 0x1FE00000UL) >> 21); /* T/RXBnSIDH */
-    bytebuf[1] = (uint8_t) ((id & 0x001C0000UL) >> 12)
+    bytebuf[1] = (uint8_t) ((id & 0x001C0000UL) >> 13)
         | (uint8_t) ((id & 0x00030000UL) >> 16) | 0x08; /* T/RXBnSIDL */
     bytebuf[2] = (uint8_t) ((id & 0x0000FF00UL) >> 8);  /* T/RXBnEID8 */
     bytebuf[3] = (uint8_t) (id & 0x000000FFUL);         /* T/RXBnEID0 */
@@ -130,6 +143,18 @@ int mcp2515_send(candev_mcp2515_t *dev, const struct can_frame *frame, int mailb
     uint8_t outbuf[BUFFER_SIZE];
     uint8_t ctrl;
 
+    struct can_frame framebuf;
+
+    if (frame->can_dlc > CAN_MAX_DLEN) {
+        return -1;
+    }
+
+    framebuf.can_id = frame->can_id;
+    framebuf.can_dlc = frame->can_dlc;
+    for(int i = 0; i < framebuf.can_dlc; i++) {
+        framebuf.data[i] = frame->data[i];
+    }
+
     //TODO: for speedup, remove this check
     mcp2515_spi_read(dev, TX_CTRL(mailbox), &ctrl, 1);
     if (ctrl & MCP2515_TXBCTRL_TXREQ) {
@@ -137,22 +162,25 @@ int mcp2515_send(candev_mcp2515_t *dev, const struct can_frame *frame, int mailb
         return -1;
     }
 
-    if ((frame->can_id & CAN_EFF_FLAG) == CAN_EFF_FLAG) {
-        fill_extended_id(frame->can_id, outbuf);
-    }
-    else {
-        fill_standard_id(frame->can_id, outbuf);
+    if(framebuf.can_id > CAN_SFF_MASK){
+        framebuf.can_id |= CAN_EFF_FLAG;
     }
 
-    outbuf[4] = frame->can_dlc;
-    memcpy(outbuf+5, frame->data, frame->can_dlc);
+    if ((framebuf.can_id & CAN_EFF_FLAG) == CAN_EFF_FLAG) {
+        fill_extended_id(framebuf.can_id, outbuf);
+    }
+    else {
+        fill_standard_id(framebuf.can_id, outbuf);
+    }
+
+    outbuf[4] = framebuf.can_dlc;
+    memcpy(&outbuf[CAN_FIXED_LEN], framebuf.data, framebuf.can_dlc);
 
     /* set mailbox priority */
     mcp2515_spi_write(dev, TX_CTRL(mailbox), &prio, 1);
 
-    mcp2515_spi_write_txbuf(dev, mailbox, outbuf, 5 + frame->can_dlc);
+    mcp2515_spi_write_txbuf(dev, mailbox, outbuf, CAN_FIXED_LEN + framebuf.can_dlc);
     mcp2515_enable_irq(dev, MCP2515_CANINTE_TX0IE << mailbox);
-    //mcp2515_spi_bitmod(dev, TX_CTRL(mailbox), MCP2515_TXBCTRL_TXREQ, MCP2515_TXBCTRL_TXREQ);
     mcp2515_spi_rts(dev, mailbox);
 
     return mailbox;
@@ -166,7 +194,7 @@ int mcp2515_receive(candev_mcp2515_t *dev, struct can_frame *frame, int mailbox)
 
     /* extended id */
     if (inbuf[1] & MCP2515_RX_IDE) {
-        frame->can_id = (inbuf[0] << 21) +
+        frame->can_id = ((uint32_t)inbuf[0] << 21) +
            (((uint32_t)inbuf[1] & 0xE0) << 13) +
            (((uint32_t)inbuf[1] & 0x03) << 16) +
            ((uint32_t)inbuf[2] << 8) +
@@ -196,7 +224,6 @@ enum mcp2515_mode mcp2515_get_mode(candev_mcp2515_t *dev)
 
     int res = mcp2515_spi_read(dev, MCP2515_CANSTAT, &mode, 1);
     if (res == 0) {
-        //TODO: error handling of extra information in mode result
         result = (enum mcp2515_mode) mode & MCP2515_CANSTAT_OPMOD_MASK;
     }
 
@@ -233,7 +260,7 @@ void mcp2515_wake_up(candev_mcp2515_t *dev)
 {
     dev->wakeup_src = MCP2515_WKUP_SRC_INTERNAL;
     mcp2515_spi_bitmod(dev, MCP2515_CANINTF, MCP2515_CANINTF_WAKIF, MCP2515_CANINTF_WAKIF);
-    xtimer_usleep(ost_delay(dev));
+    xtimer_usleep(osc_startup(dev));
 
     uint8_t flag = mcp2515_get_irq(dev);
     if (flag & INT_WAKEUP) {
@@ -305,7 +332,7 @@ enum mcp2515_interrupt mcp2515_get_irq(candev_mcp2515_t *dev)
 
 int mcp2515_clear_irq(candev_mcp2515_t *dev, enum mcp2515_interrupt irq)
 {
-    if(!irq) { /* no irq's to be cleared */
+    if (!irq) { /* no irq's to be cleared */
         return 0;
     }
     else {
@@ -342,7 +369,7 @@ int mcp2515_set_filter(candev_mcp2515_t *dev, int filter_id, uint32_t filter)
     else {
         fill_standard_id(filter, buf);
     }
-    if(filter_id < 3) {
+    if (filter_id < 3) {
         reg = MCP2515_RXF0SIDH + (filter_id << 2);
     }
     else {
