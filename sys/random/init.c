@@ -40,7 +40,7 @@ void auto_init_random(void)
 #elif defined (MODULE_PERIPH_CPUID)
     luid_get(&seed, 4);
 #else
-    LOG_WARNING("random: NO SEED AVAILABLE!\n");
+    LOG_WARNING("random: USING COMPILE-TIME GENERATED SEED!\n");
 #endif
     seed *= RANDOM_SEED_DEFAULT;
     DEBUG("random: using seed value %u\n", (unsigned)seed);
