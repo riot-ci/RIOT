@@ -444,7 +444,7 @@ void xtimer_set_timeout_flag64(xtimer_t *t, uint64_t timeout);
  * @returns time in usec until timer triggers
  * @returns 0 if timer is not set (or has already passed)
  */
-uint64_t xtimer_left_usec(const xtimer_t *t);
+uint64_t xtimer_left_usec(const xtimer_t *timer);
 
 #if defined(MODULE_CORE_MSG) || defined(DOXYGEN)
 /**
