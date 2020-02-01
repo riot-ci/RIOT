@@ -329,11 +329,13 @@ static NORETURN void IRAM system_init (void)
     periph_init();
 
     /* print system time */
+#ifdef MODULE_PERIPH_RTC
     struct tm _sys_time;
     rtc_get_time(&_sys_time);
     LOG_STARTUP("System time: %04d-%02d-%02d %02d:%02d:%02d\n",
                 _sys_time.tm_year + 1900, _sys_time.tm_mon + 1, _sys_time.tm_mday,
                 _sys_time.tm_hour, _sys_time.tm_min, _sys_time.tm_sec);
+#endif
 
     /* print the board config */
 #ifdef MODULE_ESP_LOG_STARTUP
