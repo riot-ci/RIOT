@@ -1,5 +1,12 @@
 CPU = efm32
-# TODO move CPU_MODEL here based on the daughter board
+
+include $(RIOTBOARD)/common/slwstk6000b/slwstk6000b.vars.mk
+DAUGHTERBOARD = $(word 2, $(subst -, ,$(BOARD)))
+CPU_MODEL = $(word $(CPU_MODEL_INDEX), $(SLWSTK6000B_MOTHERBOARD_VARS_$(DAUGHTERBOARD)))
+
+ifeq (,$(CPU_MODEL))
+  $(error $(BOARD) can not be used with slwstk600b motherboard)
+endif
 
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_adc
