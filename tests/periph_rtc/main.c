@@ -25,6 +25,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "mutex.h"
 #include "periph_conf.h"
 #include "periph/rtc.h"
 #include "thread.h"
@@ -55,11 +56,7 @@ static void inc_secs(struct tm *time, unsigned val)
 
 static void cb(void *arg)
 {
-    (void)arg;
-    msg_t msg;
-
-    memset(&msg, 1, sizeof(msg_t));
-    msg_try_send(&msg, *((kernel_pid_t *)arg));
+    mutex_unlock((mutex_t *)arg);
 }
 
 int main(void)
@@ -73,7 +70,7 @@ int main(void)
         .tm_sec  = 57
     };
 
-    kernel_pid_t p_main = thread_getpid();
+    mutex_t rtc_mtx = MUTEX_INIT_LOCKED; 
 
     puts("\nRIOT RTC low-level driver test");
     printf("This test will display 'Alarm!' every %u seconds for %u times\n",
@@ -90,7 +87,7 @@ int main(void)
     /* set initial alarm */
     inc_secs(&time, PERIOD);
     print_time("  Setting alarm to ", &time);
-    rtc_set_alarm(&time, cb, (void *)&p_main);
+    rtc_set_alarm(&time, cb, &rtc_mtx);
 
     /* verify alarm */
     rtc_get_alarm(&time);
@@ -98,16 +95,14 @@ int main(void)
     puts("");
 
     while (1) {
-        msg_t msg;
-
-        msg_receive(&msg);
+        mutex_lock(&rtc_mtx);
         puts("Alarm!");
 
         if (++cnt < REPEAT) {
             struct tm time;
             rtc_get_alarm(&time);
             inc_secs(&time, PERIOD);
-            rtc_set_alarm(&time, cb, (void *)&p_main);
+            rtc_set_alarm(&time, cb, &rtc_mtx);
         }
     }
 
