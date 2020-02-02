@@ -31,17 +31,6 @@ void dump_args(int argc, char **argv)
     printf("\n");
 }
 
-int get_af_family(char *family)
-{
-    if (memcmp(family, "AF_INET6", sizeof("AF_INET6")) == 0) {
-        return AF_INET6;
-    }
-    else if (memcmp(family, "AF_INET", sizeof("AF_INET")) == 0) {
-        return AF_INET;
-    }
-    return AF_UNSPEC;
-}
-
 /* API Export for test script */
 int buffer_init_cmd(int argc, char **argv)
 {
@@ -101,13 +90,10 @@ int gnrc_tcp_tcb_init_cmd(int argc, char **argv)
 int gnrc_tcp_open_active_cmd(int argc, char **argv)
 {
     dump_args(argc, argv);
-    int af_family = get_af_family(argv[1]);
-    char *target_addr = argv[2];
-    uint16_t target_port = atol(argv[3]);
-    uint16_t local_port = atol(argv[4]);
 
     gnrc_tcp_ep_t remote;
-    gnrc_tcp_ep_init(&remote, af_family, target_addr, target_port);
+    gnrc_tcp_ep_from_str(&remote, argv[1]);
+    uint16_t local_port = atol(argv[2]);
 
     int err = gnrc_tcp_open_active(&tcb, &remote, local_port);
     switch (err) {
@@ -148,20 +134,9 @@ int gnrc_tcp_open_active_cmd(int argc, char **argv)
 int gnrc_tcp_open_passive_cmd(int argc, char **argv)
 {
     dump_args(argc, argv);
-    int af_family = get_af_family(argv[1]);
-    char *local_addr = NULL;
-    uint16_t local_port = 0;
-
-    if (argc == 3) {
-        local_port = atol(argv[2]);
-    }
-    else if (argc == 4) {
-        local_addr = argv[2];
-        local_port = atol(argv[3]);
-    }
 
     gnrc_tcp_ep_t local;
-    gnrc_tcp_ep_init(&local, af_family, local_addr, local_port);
+    gnrc_tcp_ep_from_str(&local, argv[1]);
 
     int err = gnrc_tcp_open_passive(&tcb, &local);
     switch (err) {
