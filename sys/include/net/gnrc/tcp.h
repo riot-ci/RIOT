@@ -50,20 +50,38 @@ typedef struct {
     uint16_t port;                         /**< Port number (in host byte order) */
 } gnrc_tcp_ep_t;
 
-
 /**
  * @brief Initialize TCP connection endpoint.
  *
- * @param[in,out] ep               Endpoint to initialize.
- * @param[in]     address_family   Address family of @p address.
- * @param[in]     address          Address information for endpoint.
- * @param[in]     port             Port number for endpoint.
+ * @param[in,out] ep          Endpoint to initialize.
+ * @param[in]     family      Address family of @p addr.
+ * @param[in]     addr        Address for endpoint.
+ * @param[in]     addr_size   Size of @p addr.
+ * @param[in]     port        Port number for endpoint.
+ * @param[in]     netif       Network inferface to use.
  *
  * @returns   0 on success.
  * @returns   -EAFNOSUPPORT if @p address_family is not supported.
- * @returns   -EINVAL if parsing of @p address failed.
+ * @returns   -EINVAL if @p addr_size does not match @p family.
  */
-int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int address_family, char *address, uint16_t port);
+int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t addr_size,
+                     uint16_t port, uint16_t netif);
+
+/**
+ * @brief Construct TCP connection endpoint from string.
+ * @note This function expects @p str in the IPv6 "URL" notation.
+ *       The following strings specifying an valid endpoint:
+ *       - [fe80::0a00:27ff:fe9f:7a5b%5]:8080 (with Port and Interface)
+ *       - [2001::0200:f8ff:fe21:67cf]:8080   (with Port)
+ *       - [2001::0200:f8ff:fe21:67cf]        (addr only)
+ *
+ * @param[in,out] ep    Endpoint to initialize.
+ * @param[in]     str   String containing IPv6-Address to parse.
+ *
+ * @returns   0 on success.
+ * @returns   -EINVAL if parsing of @p str failed.
+ */
+int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str);
 
 /**
  * @brief Initialize TCP

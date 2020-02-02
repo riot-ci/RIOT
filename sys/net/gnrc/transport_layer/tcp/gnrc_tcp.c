@@ -248,32 +248,131 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
 }
 
 /* External GNRC TCP API */
-int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int address_family, char *address, uint16_t port)
+int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t addr_size,
+                     uint16_t port, uint16_t netif)
 {
-    if (address_family != AF_INET6) {
+#ifdef MODULE_GNRC_IPV6
+    if (family != AF_INET6) {
         return -EAFNOSUPPORT;
     }
 
-    ep->family = address_family;
-    ep->port = port;
-    ep->netif = 0;
-
-#ifdef MODULE_GNRC_IPV6
-    if (address) {
-        char *netif = ipv6_addr_split_iface(address);
-
-        if (ipv6_addr_from_str((ipv6_addr_t *) ep->addr.ipv6, address) == NULL) {
-           return -EINVAL;
-        }
-
-        if (netif) {
-            ep->netif = atol(netif);
-        }
-    }
-    else {
+    if (addr == NULL && addr_size == 0) {
         ipv6_addr_set_unspecified((ipv6_addr_t *) ep->addr.ipv6);
     }
+    else if (addr_size == sizeof(ipv6_addr_t)) {
+        memcpy(ep->addr.ipv6, addr, sizeof(ipv6_addr_t));
+    }
+    else {
+        return -EINVAL;
+    }
+#else
+    return -EAFNOSUPPORT;
 #endif
+
+    ep->family = family;
+    ep->port = port;
+    ep->netif = netif;
+    return 0;
+}
+
+int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str)
+{
+    assert(str);
+
+    unsigned port = 0;
+    unsigned netif = 0;
+
+    /* Examine given addr string */
+    char *addr_begin = strchr(str, '[');
+    char *addr_end = strchr(str, ']');
+
+    /* 1) Ensure that addr contains a single pair of brackets */
+    if (!addr_begin || !addr_end || strchr(addr_begin + 1, '[') || strchr(addr_end + 1, ']')) {
+        return -EINVAL;
+    }
+    /* 2) Ensure that the first character is the opening bracket */
+    else if (addr_begin != str) {
+        return -EINVAL;
+    }
+
+    /* 3) Examine optional port number */
+    char *port_begin = strchr(addr_end, ':');
+    if (port_begin++) {
+        /* 3.1) Ensure that there are left to parse behind ':'. */
+        if (*port_begin == '\0') {
+            return -EINVAL;
+        }
+
+        /* 3.2) Ensure that port is a number (atol, does not report errors) */
+        char *ptr = port_begin;
+        while (*ptr) {
+            if (*ptr < '0' || '9' < *ptr) {
+                return -EINVAL;
+            }
+            ptr++;
+        }
+
+        /* 3.3) Read and verify that given number port is within range */
+        port = atol(port_begin);
+        if (port > 0xFFFF) {
+            return -EINVAL;
+        }
+    }
+
+    /* 4) Examine optional interface identifier. */
+    char *if_begin = strchr(str, '%');
+    if (if_begin++) {
+
+        /* 4.1) Ensure that the identifier is not empty and within brackets. */
+        if (addr_end <= if_begin) {
+            return -EINVAL;
+        }
+
+        /* 4.2) Ensure that the identifier is a number (atol, does not report errors) */
+        char *ptr = if_begin;
+        while (ptr != addr_end) {
+            if (*ptr < '0' || '9' < *ptr) {
+                return -EINVAL;
+            }
+            ptr++;
+        }
+
+        /* 4.3) Read and replace addr_end with if_begin. */
+        netif = atol(if_begin);
+        addr_end = if_begin - 1;
+    }
+
+#ifdef MODULE_GNRC_IPV6
+    /* 5) Try to parse IP Address. Construct Endpoint on after success. */
+    char tmp[IPV6_ADDR_MAX_STR_LEN];
+
+    /* 5.1) Verify address length and copy address into temporary buffer.
+     *      This is required to preserve constness of input.
+     */
+    int len = addr_end - (++addr_begin);
+
+    if (0 <= len && len <= (int) IPV6_ADDR_MAX_STR_LEN) {
+        memset(tmp, 0, sizeof(tmp));
+        memcpy(tmp, addr_begin, len);
+    }
+    else {
+        return -EINVAL;
+    }
+
+    /* 5.2) Try to read address into endpoint. */
+    if (ipv6_addr_from_str((ipv6_addr_t *) ep->addr.ipv6, tmp) == NULL) {
+        return -EINVAL;
+    }
+    ep->family = AF_INET6;
+#else
+    /* Suppress Compiler Warnings */
+    (void) port;
+    (void) netif;
+    return -EINVAL;
+#endif
+
+    ep->port = (uint16_t) port;
+    ep->netif = (uint16_t) netif;
     return 0;
 }
 
