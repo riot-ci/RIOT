@@ -27,6 +27,9 @@ in the tests directory.
     by the peer, a call to gnrc_tcp_recv must return directly with all currently received data
     or zero if there is no data. The function must return immediatly dispite any given timeout.
 
+7) 07-endpoint_construction.py
+    This test ensures the correctness of the endpoint construction.
+
 Setup
 ==========
 The test requires a tap-device setup. This can be achieved by running 'dist/tools/tapsetup/tapsetup'

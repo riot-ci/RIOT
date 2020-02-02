@@ -80,6 +80,44 @@ int buffer_read_cmd(int argc, char **argv)
     return 0;
 }
 
+int gnrc_tcp_ep_from_str_cmd(int argc, char **argv)
+{
+    dump_args(argc, argv);
+
+    gnrc_tcp_ep_t ep;
+    int err = gnrc_tcp_ep_from_str(&ep, argv[1]);
+    switch (err) {
+        case -EINVAL:
+            printf("%s: returns -EINVAL\n", argv[0]);
+            break;
+
+        default:
+            printf("%s: returns %d\n", argv[0], err);
+    }
+
+    if (err == 0) {
+        char addr_as_str[IPV6_ADDR_MAX_STR_LEN];
+        switch (ep.family) {
+            case AF_INET6:
+                printf("Family: AF_INET6\n");
+                ipv6_addr_to_str(addr_as_str, (ipv6_addr_t *) ep.addr.ipv6,
+                                 sizeof(addr_as_str));
+                printf("Addr: %s\n", addr_as_str);
+                break;
+
+            case AF_INET:
+                printf("Family: AF_INET\n");
+                break;
+
+            default:
+                printf("Family: %d\n", ep.family);
+        }
+        printf("Port: %d\n", ep.port);
+        printf("Netif: %d\n", ep.netif);
+    }
+    return err;
+}
+
 int gnrc_tcp_tcb_init_cmd(int argc, char **argv)
 {
     dump_args(argc, argv);
@@ -255,6 +293,8 @@ int gnrc_tcp_abort_cmd(int argc, char **argv)
 
 /* Exporting GNRC TCP Api to for shell usage */
 static const shell_command_t shell_commands[] = {
+    { "gnrc_tcp_ep_from_str", "Build endpoint from string",
+      gnrc_tcp_ep_from_str_cmd },
     { "gnrc_tcp_tcb_init", "gnrc_tcp: init tcb", gnrc_tcp_tcb_init_cmd },
     { "gnrc_tcp_open_active", "gnrc_tcp: open active connection",
       gnrc_tcp_open_active_cmd },
