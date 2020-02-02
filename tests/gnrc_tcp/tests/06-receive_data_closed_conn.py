@@ -60,7 +60,7 @@ def testfunc(child):
     child.expect_exact('gnrc_tcp_recv: received ' + str(half_data_len))
     assert read_data_from_internal_buffer(child, half_data_len) == data[half_data_len:]
 
-    # Buffer should have been read entirly and the connection was closed, there can be no new data.
+    # Buffer should have been read entirely and the connection was closed, there can be no new data.
     # Reading with a timeout must return 0 not -ETIMEOUT
     child.sendline('gnrc_tcp_recv 1000000 ' + str(half_data_len))
     child.expect_exact('gnrc_tcp_recv: returns 0')
