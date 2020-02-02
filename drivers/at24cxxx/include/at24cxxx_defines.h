@@ -39,7 +39,7 @@ extern "C" {
  * Different AT24CXXX types may have a different address byte
  * format. Some may include a portion of the data word address.
  * Some may have a 0, 1, 2 or 3 bit wide address space.
- * But all types have a 7 bit I2C which start with
+ * But all types have a 7 bit I2C address which starts with
  * 1010. [1, 0, 1, 0, ?, ?, ?, r/w]
  *        \__7 bit address__/
  */
@@ -287,7 +287,7 @@ extern "C" {
 /**
  * @brief   512 pages of 256 bytes each
  */
-#define AT24C1024_PAGE_SIZE             (64U)
+#define AT24C1024_PAGE_SIZE             (256U)
 /**
  * @brief   Delay to complete write operation
  */
