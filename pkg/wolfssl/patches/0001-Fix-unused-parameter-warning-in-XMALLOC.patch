@@ -1,0 +1,25 @@
+From 8000f611d39734df13b466a56a22e7b0f04f7bb8 Mon Sep 17 00:00:00 2001
+From: Benjamin Valentin <benjamin.valentin@ml-pa.com>
+Date: Sun, 2 Feb 2020 15:27:26 +0100
+Subject: [PATCH] Fix unused parameter warning in XMALLOC()
+
+---
+ wolfssl/wolfcrypt/types.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wolfssl/wolfcrypt/types.h b/wolfssl/wolfcrypt/types.h
+index e80351566..2b9e29dcb 100644
+--- a/wolfssl/wolfcrypt/types.h
++++ b/wolfssl/wolfcrypt/types.h
+@@ -313,7 +313,7 @@
+         #else
+         /* just use plain C stdlib stuff if desired */
+         #include <stdlib.h>
+-        #define XMALLOC(s, h, t)     malloc((s))
++        #define XMALLOC(s, h, t)     malloc((s)); (void)(h); (void)(t)
+         #define XFREE(p, h, t)       {void* xp = (p); if((xp)) free((xp));}
+         #define XREALLOC(p, n, h, t) realloc((p), (n))
+         #endif
+-- 
+2.20.1
+
