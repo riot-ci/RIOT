@@ -27,7 +27,6 @@
 #include "mutex.h"
 #include "periph_conf.h"
 #include "periph/rtc.h"
-#include "thread.h"
 #include "xtimer.h"
 
 #define PERIOD              (2U)
