@@ -95,6 +95,11 @@ void lvgl_init(disp_dev_t *dev)
     lv_init();
     lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
+    /* Configure horizontal and vertical resolutions based on the
+       underlying display device parameters */
+    dev->driver->get(dev, DISP_OPT_MAX_WIDTH, &disp_drv.hor_res, sizeof(uint16_t));
+    dev->driver->get(dev, DISP_OPT_MAX_HEIGHT, &disp_drv.ver_res, sizeof(uint16_t));
+
     disp_drv.flush_cb = _disp_map;
     disp_drv.buffer = &disp_buf;
     lv_disp_drv_register(&disp_drv);
