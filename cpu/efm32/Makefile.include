@@ -1,21 +1,15 @@
-include $(RIOTCPU)/efm32/efm32-info.mk
+include $(RIOTCPU)/efm32/efm32-vars.mk
 
-CPU_ARCH = $(EFM32_ARCHITECTURE)
-CPU_FAM = $(EFM32_FAMILY)
+EFM32_FLASH_START = $(word $(EFM32_FLASH_START_INDEX), $(EFM32_VARS_$(CPU_MODEL)))
+EFM32_FLASH_SIZE  = $(word $(EFM32_FLASH_SIZE_INDEX), $(EFM32_VARS_$(CPU_MODEL)))
+EFM32_SRAM_START  = $(word $(EFM32_SRAM_START_INDEX), $(EFM32_VARS_$(CPU_MODEL)))
+EFM32_SRAM_SIZE   = $(word $(EFM32_SRAM_SIZE_INDEX), $(EFM32_VARS_$(CPU_MODEL)))
 
 # the size of riotboot on the EFM32 exceeds the default value
 RIOTBOOT_LEN ?= 0x2000
 
 # the em_device.h header requires a global define with the cpu model
 CFLAGS += -D$(call uppercase_and_underscore,$(CPU_MODEL))
-
-# CMSIS-DSP is needed for arm_math.h on Cortex-M0+ architectures
-ifeq ($(CPU_ARCH),cortex-m0plus)
-  USEPKG += cmsis-dsp
-endif
-
-# include CPU family module
-USEMODULE += cpu_$(EFM32_FAMILY)
 
 # vectors.o is provided by 'cpu_$(EFM32_FAMILY)' and not by 'cpu'
 VECTORS_O := $(BINDIR)/cpu_$(EFM32_FAMILY)/vectors.o
