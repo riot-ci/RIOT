@@ -32,7 +32,6 @@ extern "C" {
 #ifndef SPS30_PARAM_I2C_DEV
 #define SPS30_PARAM_I2C_DEV  (I2C_DEV(0))
 #endif
-
 #ifndef SPS30_PARAMS
 #define SPS30_PARAMS         { .i2c_dev  = SPS30_PARAM_I2C_DEV }
 #endif
@@ -49,13 +48,13 @@ static const sps30_params_t sps30_params[] =
     SPS30_PARAMS
 };
 
-///**
-// * @brief   Additional meta information to keep in the SAUL registry
-// */
-//static const saul_reg_info_t sps30_saul_info[] =
-//{
-//    SPS30_SAUL_INFO
-//};
+/**
+ * @brief   Additional meta information to keep in the SAUL registry
+ */
+static const saul_reg_info_t sps30_saul_info[] =
+{
+    SPS30_SAUL_INFO
+};
 
 #ifdef __cplusplus
 }
