@@ -61,7 +61,17 @@ static struct i2c_ctx {
     uint8_t addr[TRX_BUFS_MAX];
     uint8_t buf_num;
     uint8_t buf_cur;
-} ctx[I2C_NUMOF];
+} ctx[I2C_NUMOF] = {
+#if I2C_NUMOF > 0
+    { .lock = MUTEX_INIT, .tx_done = MUTEX_INIT_LOCKED },
+#endif
+#if I2C_NUMOF > 1
+    { .lock = MUTEX_INIT, .tx_done = MUTEX_INIT_LOCKED },
+#endif
+#if I2C_NUMOF > 2
+    { .lock = MUTEX_INIT, .tx_done = MUTEX_INIT_LOCKED },
+#endif
+};
 
 static void poweron(lpc23xx_i2c_t *i2c)
 {
@@ -176,11 +186,6 @@ static void _install_irq(i2c_t dev)
 void i2c_init(i2c_t dev)
 {
     assert(dev < I2C_NUMOF);
-
-    /* Initialize mutex */
-    mutex_init(&ctx[dev].lock);
-    mutex_init(&ctx[dev].tx_done);
-    mutex_lock(&ctx[dev].tx_done);
 
     const i2c_conf_t *cfg = &i2c_config[dev];
     lpc23xx_i2c_t *i2c = cfg->dev;
