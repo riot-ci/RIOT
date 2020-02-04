@@ -118,7 +118,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* enable HW-flow control if defined */
  #ifdef MODULE_PERIPH_UART_HW_FC
         /* set pin mode for RTS and CTS pins */
-        if (UART_PIN_RTS != GPIO_UNDEF || UART_PIN_CTS != GPIO_UNDEF) {
+        if (UART_PIN_RTS != GPIO_UNDEF && UART_PIN_CTS != GPIO_UNDEF) {
             gpio_init(UART_PIN_RTS, GPIO_OUT);
             gpio_init(UART_PIN_CTS, GPIO_IN);
             /* configure RTS and CTS pins to use */
@@ -126,6 +126,9 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
             dev(uart)->PSEL.CTS = UART_PIN_CTS;
             REG_CONFIG |= UART_CONFIG_HWFC_Msk; /* enable HW flow control */
         }
+#else
+        dev(uart)->PSEL.RTS = 0xffffffff;   /* pin disconnected */	
+        dev(uart)->PSEL.CTS = 0xffffffff;   /* pin disconnected */
 #endif
 #else
 #ifdef MODULE_PERIPH_UART_HW_FC
@@ -138,6 +141,9 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         NRF_UART0->PSELCTS = UART_PIN_CTS;
         REG_CONFIG |= UART_CONFIG_HWFC_Msk;     /* enable HW flow control */
     }
+#else
+        NRF_UART0->PSELRTS = 0xffffffff;        /* pin disconnected */	
+        NRF_UART0->PSELCTS = 0xffffffff;        /* pin disconnected */
 #endif /* MODULE_PERIPH_UART_HW_FC */
 #endif
 
