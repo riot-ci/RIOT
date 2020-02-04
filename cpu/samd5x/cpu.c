@@ -113,9 +113,13 @@ void sam0_gclk_enable(uint8_t id)
     case SAM0_GCLK_8MHZ:
         /* 8 MHz clock used by xtimer */
 #if USE_DPLL
-        gclk_connect(SAM0_GCLK_8MHZ, GCLK_SOURCE_DPLL0, GCLK_GENCTRL_DIV(DPLL_DIV * CLOCK_CORECLOCK / 8000000));
+        gclk_connect(SAM0_GCLK_8MHZ,
+                     GCLK_SOURCE_DPLL0,
+                     GCLK_GENCTRL_DIV(DPLL_DIV * CLOCK_CORECLOCK / 8000000));
 #else
-        gclk_connect(SAM0_GCLK_8MHZ, GCLK_SOURCE_DFLL, GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / 8000000));
+        gclk_connect(SAM0_GCLK_8MHZ,
+                     GCLK_SOURCE_DFLL,
+                     GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / 8000000));
 #endif
         break;
     case SAM0_GCLK_48MHZ:
