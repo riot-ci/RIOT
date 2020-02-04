@@ -133,7 +133,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 #else
 #ifdef MODULE_PERIPH_UART_HW_FC
     /* set pin mode for RTS and CTS pins */
-    if (UART_PIN_RTS != GPIO_UNDEF || UART_PIN_CTS != GPIO_UNDEF) {
+    if (UART_PIN_RTS != GPIO_UNDEF && UART_PIN_CTS != GPIO_UNDEF) {
         gpio_init(UART_PIN_RTS, GPIO_OUT);
         gpio_init(UART_PIN_CTS, GPIO_IN);
         /* configure RTS and CTS pins to use */
