@@ -4,8 +4,8 @@ Date: Sat, 12 Oct 2019 00:26:19 +0200
 Subject: [PATCH] generator/nanopb_generator.py: use python3
 
 ---
- generator/nanopb_generator.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ generator/nanopb_generator.py | 35 +----------------------------------
+ 1 file changed, 1 insertion(+), 34 deletions(-)
 
 diff --git a/generator/nanopb_generator.py b/generator/nanopb_generator.py
 index 03f41a0..4f0ab47 100755
@@ -17,6 +17,46 @@ index 03f41a0..4f0ab47 100755
  # kate: replace-tabs on; indent-width 4;
  
  from __future__ import unicode_literals
+@@ -38,39 +38,6 @@ except:
+     ''' + '\n')
+     raise
+ 
+-try:
+-    from .proto import nanopb_pb2
+-    from .proto._utils import invoke_protoc
+-except TypeError:
+-    sys.stderr.write('''
+-         ****************************************************************************
+-         *** Got TypeError when importing the protocol definitions for generator. ***
+-         *** This usually means that the protoc in your path doesn't match the    ***
+-         *** Python protobuf library version.                                     ***
+-         ***                                                                      ***
+-         *** Please check the output of the following commands:                   ***
+-         *** which protoc                                                         ***
+-         *** protoc --version                                                     ***
+-         *** python -c 'import google.protobuf; print(google.protobuf.__file__)'  ***
+-         *** If you are not able to find the python protobuf version using the    ***
+-         *** above command, use this command.                                     ***
+-         *** pip freeze | grep -i protobuf                                        ***
+-         ****************************************************************************
+-    ''' + '\n')
+-    raise
+-except (ValueError, SystemError):
+-    # Probably invoked directly instead of via installed scripts.
+-    import proto.nanopb_pb2 as nanopb_pb2
+-    from proto._utils import invoke_protoc
+-except:
+-    sys.stderr.write('''
+-         ********************************************************************
+-         *** Failed to import the protocol definitions for generator.     ***
+-         *** You have to run 'make' in the nanopb/generator/proto folder. ***
+-         ********************************************************************
+-    ''' + '\n')
+-    raise
+-
+ # ---------------------------------------------------------------------------
+ #                     Generation of single fields
+ # ---------------------------------------------------------------------------
 -- 
 2.23.0
 
