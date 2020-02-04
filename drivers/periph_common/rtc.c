@@ -20,10 +20,19 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "periph/rtc.h"
 
 #ifndef RTC_NORMALIZE_COMPAT
 #define RTC_NORMALIZE_COMPAT (0)
+#endif
+
+#define MINUTE  (60)
+#define HOUR    (60 * MINUTE)
+#define DAY     (24 * HOUR)
+
+#ifndef RIOT_EPOCH
+#define RIOT_EPOCH (2020)
 #endif
 
 /*
@@ -81,6 +90,7 @@ static int _wday(int day, int month, int year)
     year -= month < 2;
     return (year + year/4 - year/100 + year/400 + t[month] + day) % 7;
 }
+#endif /* RTC_NORMALIZE_COMPAT */
 
 static int _yday(int day, int month, int year)
 {
@@ -104,11 +114,14 @@ static int _yday(int day, int month, int year)
        2019-01-01 will be be day 0 in year 2019 */
     return d[month] + day - 1;
 }
-#endif /* RTC_NORMALIZE_COMPAT */
 
 void rtc_tm_normalize(struct tm *t)
 {
     div_t d;
+
+    if (t->tm_mday == 0) {
+        t->tm_mday = 1;
+    }
 
     d = div(t->tm_sec, 60);
     t->tm_min += d.quot;
@@ -146,6 +159,39 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_yday = _yday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
     t->tm_wday = _wday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
 #endif
+}
+
+uint32_t rtc_mktime(struct tm *t)
+{
+    unsigned year = t->tm_year + 1900;
+    uint32_t time = t->tm_sec
+                  + t->tm_min * MINUTE
+                  + t->tm_hour * HOUR
+                  + _yday(t->tm_mday, t->tm_mon, year) * DAY;
+
+    while (--year >= RIOT_EPOCH) {
+        time += _is_leap_year(year) ? (366 * DAY) : (365 * DAY);
+    }
+
+    return time;
+}
+
+void rtc_localtime(uint32_t time, struct tm *t)
+{
+    uint32_t y_secs = _is_leap_year(RIOT_EPOCH) ? (366 * DAY) : (365 * DAY);
+    unsigned year = RIOT_EPOCH;
+
+    while (time > y_secs) {
+        time -= y_secs;
+        ++year;
+        y_secs = _is_leap_year(year) ? (366 * DAY) : (365 * DAY);
+    }
+
+    memset(t, 0, sizeof(*t));
+    t->tm_sec  = time;
+    t->tm_year = year - 1900;
+
+    rtc_tm_normalize(t);
 }
 
 #define RETURN_IF_DIFFERENT(a, b, member)   \
