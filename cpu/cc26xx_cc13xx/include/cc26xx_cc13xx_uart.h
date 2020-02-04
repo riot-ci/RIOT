@@ -7,7 +7,7 @@
  */
 
 /**
- * @addtogroup      cpu_cc13x2_definitions
+ * @addtogroup      cpu_cc26x2_cc13x2_definitions
  * @{
  *
  * @file
