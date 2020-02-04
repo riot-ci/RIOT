@@ -26,6 +26,14 @@
 #define RTC_NORMALIZE_COMPAT (0)
 #endif
 
+#define MINUTE  (60)
+#define HOUR    (60 * MINUTE)
+#define DAY     (24 * HOUR)
+
+#ifndef RIOT_EPOCH
+#define RIOT_EPOCH (2020)
+#endif
+
 /*
  * The rules here are (to be checked in that explicit order):
  *  1. If the year is not a multiple of four, it is not a leap year.
@@ -81,6 +89,7 @@ static int _wday(int day, int month, int year)
     year -= month < 2;
     return (year + year/4 - year/100 + year/400 + t[month] + day) % 7;
 }
+#endif /* RTC_NORMALIZE_COMPAT */
 
 static int _yday(int day, int month, int year)
 {
@@ -104,7 +113,6 @@ static int _yday(int day, int month, int year)
        2019-01-01 will be be day 0 in year 2019 */
     return d[month] + day - 1;
 }
-#endif /* RTC_NORMALIZE_COMPAT */
 
 void rtc_tm_normalize(struct tm *t)
 {
@@ -146,6 +154,21 @@ void rtc_tm_normalize(struct tm *t)
     t->tm_yday = _yday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
     t->tm_wday = _wday(t->tm_mday, t->tm_mon, t->tm_year + 1900);
 #endif
+}
+
+uint32_t rtc_mktime(struct tm *t)
+{
+    unsigned year = t->tm_year + 1900;
+    uint32_t time = t->tm_sec
+                  + t->tm_min * MINUTE
+                  + t->tm_hour * HOUR
+                  + _yday(t->tm_mday, t->tm_mon, year) * DAY;
+
+    while (--year >= RIOT_EPOCH) {
+        time += _is_leap_year(year) ? (366 * DAY) : (365 * DAY);
+    }
+
+    return time;
 }
 
 #define RETURN_IF_DIFFERENT(a, b, member)   \
