@@ -100,7 +100,7 @@ static const tc32_conf_t timer_config[] = {
         .gclk_src       = GCLK_CLKCTRL_GEN(1),
         .prescaler      = TC_CTRLA_PRESCALER_DIV1,
 #else
-        .gclk_src       = GCLK_CLKCTRL_GEN(0),
+        .gclk_src       = SAM0_GCLK_MAIN,
         .prescaler      = TC_CTRLA_PRESCALER_DIV8,
 #endif
         .flags          = TC_CTRLA_MODE_COUNT32,
