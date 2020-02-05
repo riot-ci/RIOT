@@ -154,7 +154,7 @@ static const i2c_conf_t i2c_config[] = {
         .scl_pin  = GPIO_PIN(PB, 9),
         .sda_pin  = GPIO_PIN(PB, 8),
         .mux      = GPIO_MUX_D,
-        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0,
+        .gclk_src = SAM0_GCLK_MAIN,
         .flags    = I2C_FLAG_NONE
      }
 };
