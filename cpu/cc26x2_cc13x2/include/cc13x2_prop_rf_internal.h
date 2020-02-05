@@ -231,7 +231,7 @@ int8_t cc13x2_prop_rf_get_rssi(void);
 int_fast8_t cc13x2_prop_rf_rx_start(void);
 
 /**
- * @brief   Stop receving and move the state to "Sleep".
+ * @brief   Stop receiving and move the state to "Sleep".
  *
  *          - If the state isn't "Receive" nothing happens.
  *
@@ -270,11 +270,11 @@ void cc13x2_prop_rf_irq_set_handler(void(*handler)(void *), void* arg);
 /**
  * @brief   Read the contents of the next readily available buffer.
  *
- * @param[out] buf     The buffer to put the readed contents.
+ * @param[out] buf     The buffer to put the read contents.
  * @param[in]  len     The length of the buffer.
  * @param[out] rx_info The RX info.
  *
- * @return  The number of bytes readed.
+ * @return  The number of bytes read.
  */
 int cc13x2_prop_rf_recv(void *buf, size_t len, netdev_ieee802154_rx_info_t *rx_info);
 

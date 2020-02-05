@@ -100,7 +100,7 @@ static int _set_state(netopt_state_t state)
             break;
 
         case NETOPT_STATE_IDLE:
-            /* If the state is on Transmit or Sleep, it will be swiched to
+            /* If the state is on Transmit or Sleep, it will be switched to
              * Receive state */
             if (_cc13x2_prop_rf_state != cc13x2_stateDisabled) {
                 if (cc13x2_prop_rf_rx_start() == -1) {
