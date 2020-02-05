@@ -240,6 +240,7 @@ Further information                                      {#further-information}
  - @ref getting-started
  - @ref creating-an-application
  - @ref creating-modules
+ - @ref creating-boards
  - @ref advanced-build-system-tricks
 
 <!--
