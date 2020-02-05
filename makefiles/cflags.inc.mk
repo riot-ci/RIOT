@@ -19,6 +19,17 @@ ifneq ($(CC_NOCOLOR),1)
   OPTIONAL_CFLAGS += -fdiagnostics-color
 endif
 
+# Force the C compiler to not ignore signed integer overflows
+# Background: In practise signed integers overflow consistently to unsigned
+#             and wrap around to the lowest number. But this is undefined
+#             behaviour. Branches that rely on this undefined behaviour will
+#             be silently optimized out. For details, have a look at
+#             https://gcc.gnu.org/bugzilla/show_bug.cgi?id=30475
+# Note: Please do not add new code that relies on this undefined behaviour, even
+#       though this flag makes your code work. There are safe ways to check
+#       for signed integer overflow.
+CFLAGS += -fwrapv
+
 # Fast-out on old style function definitions.
 # They cause unreadable error compiler errors on missing semicolons.
 # Worse yet they hide errors by accepting wildcard argument types.
