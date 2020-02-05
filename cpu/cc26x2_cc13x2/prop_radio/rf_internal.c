@@ -950,7 +950,7 @@ int cc13x2_prop_rf_recv(void *buf, size_t len,
     }
 
     /* wait for entry to become finished */
-    /* TOOD: timeout */
+    /* TODO: timeout */
     while (cur_entry->status == DATA_ENTRY_BUSY) {}
 
     /*
