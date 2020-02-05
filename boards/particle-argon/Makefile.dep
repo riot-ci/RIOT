@@ -1,1 +1,3 @@
+USEMODULE += periph_uart_hw_fc
+
 include $(RIOTBOARD)/common/particle-mesh/Makefile.dep
