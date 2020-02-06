@@ -6,6 +6,6 @@ USEMODULE += xtimer
 CFLAGS+=-DPARAM_SPS30_I2C=I2C_DEV\(0\)
 CFLAGS+=-DI2C0_SPEED=I2C_SPEED_NORMAL
 
-USEMODULE += printf_float
+#USEMODULE += printf_float
 
 include $(RIOTBASE)/Makefile.include
