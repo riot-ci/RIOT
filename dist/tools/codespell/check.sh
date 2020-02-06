@@ -45,19 +45,20 @@ if [ "${CODESPELL_INTERACTIVE}" = "1" ]; then
     # interactive mode
     CODESPELL_OPTS+=" -w -i3"
     exec ${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES}
+    # (exits shell)
+fi
+
+# non-interactive mode
+
+# Filter-out all false positive raising "disabled due to" messages.
+ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")
+
+if [ -n "${ERRORS}" ]
+then
+    printf "%sThere are typos in the following files:%s\n\n" "${CERROR}" "${CRESET}"
+    printf "%s\n" "${ERRORS}"
+    # TODO: return 1 when all typos are fixed
+    exit 0
 else
-    # non-interactive mode
-
-    # Filter-out all false positive raising "disabled due to" messages.
-    ERRORS=$(${CODESPELL_CMD} ${CODESPELL_OPTS} ${FILES} | grep -ve "disabled due to")
-
-    if [ -n "${ERRORS}" ]
-    then
-        printf "%sThere are typos in the following files:%s\n\n" "${CERROR}" "${CRESET}"
-        printf "%s\n" "${ERRORS}"
-        # TODO: return 1 when all typos are fixed
-        exit 0
-    else
-        exit 0
-    fi
+    exit 0
 fi
