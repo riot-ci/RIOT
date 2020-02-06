@@ -44,6 +44,8 @@ typedef struct {
     union {
 #ifdef MODULE_GNRC_IPV6
         uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 Address storage */
+#else
+        struct {} no_addr;                 /**< Empty member, preventing build errors. */
 #endif
     } addr;                                /**< IP Address storage */
     uint16_t netif;                        /**< Network interface ID */
