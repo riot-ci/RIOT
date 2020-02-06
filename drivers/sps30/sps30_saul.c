@@ -66,6 +66,7 @@ static void _float_fit(float *src, phydat_t *data, size_t dim, uint32_t mul)
         i32[i] = src[i] * mul;
     }
 
+    data->scale = 0;
     phydat_fit(data, &i32[0], dim);
 }
 
