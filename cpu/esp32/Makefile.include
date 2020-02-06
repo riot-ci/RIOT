@@ -103,7 +103,6 @@ USEMODULE += periph
 USEMODULE += periph_adc_ctrl
 USEMODULE += periph_hwrng
 USEMODULE += periph_flash
-USEMODULE += periph_rtc
 USEMODULE += periph_uart
 USEMODULE += riot_freertos
 USEMODULE += random
