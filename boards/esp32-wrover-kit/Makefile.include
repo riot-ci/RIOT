@@ -1,7 +1,6 @@
 PSEUDOMODULES += esp32_wrover_kit_camera
 
 USEMODULE += boards_common_esp32
-USEMODULE += esp_rtc_timer_32k
 
 # configure the serial interface
 PORT_LINUX ?= /dev/ttyUSB1
