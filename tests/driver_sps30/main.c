@@ -86,7 +86,7 @@ int main(void)
     error |= _print_error("start_fan_clean", ec);
 
     /* wait long enough for the fan clean to be done and the fan to settle */
-    xtimer_usleep(2* SPS30_FAN_CLEAN_S * US_PER_SEC);
+    xtimer_usleep(2 * SPS30_FAN_CLEAN_S * US_PER_SEC);
 
     /* read the currently set value from the sensor */
     ec = sps30_read_ac_interval(&dev, &ci);
@@ -97,7 +97,8 @@ int main(void)
     error |= _print_error("write_ac_interval", ec);
 
     /* resetting the sensor so the updated value can be read */
-    sps30_reset(&dev);
+    ec = sps30_reset(&dev);
+    error |= _print_error("reset", ec);
 
     xtimer_usleep(SENSOR_RESET_DELAY_US);
 
@@ -137,15 +138,15 @@ int main(void)
 
         if (ec == SPS30_OK) {
             puts("\nv==== SPS30 measurements ====v");
-            _print_val_row(TYPE_MC_STR,"1.0", MC_UNIT_STR, data.mc_pm1);
-            _print_val_row(TYPE_MC_STR,"2.5", MC_UNIT_STR, data.mc_pm2_5);
-            _print_val_row(TYPE_MC_STR,"4.0", MC_UNIT_STR, data.mc_pm4);
-            _print_val_row(TYPE_MC_STR,"10.0", MC_UNIT_STR, data.mc_pm10);
-            _print_val_row(TYPE_NC_STR,"0.5", NC_UNIT_STR, data.nc_pm0_5);
-            _print_val_row(TYPE_NC_STR,"1.0", NC_UNIT_STR, data.nc_pm1);
-            _print_val_row(TYPE_NC_STR,"2.5", NC_UNIT_STR, data.nc_pm2_5);
-            _print_val_row(TYPE_NC_STR,"4.0", NC_UNIT_STR, data.nc_pm4);
-            _print_val_row(TYPE_NC_STR,"10.0", NC_UNIT_STR, data.nc_pm10);
+            _print_val_row(TYPE_MC_STR, "1.0", MC_UNIT_STR, data.mc_pm1);
+            _print_val_row(TYPE_MC_STR, "2.5", MC_UNIT_STR, data.mc_pm2_5);
+            _print_val_row(TYPE_MC_STR, "4.0", MC_UNIT_STR, data.mc_pm4);
+            _print_val_row(TYPE_MC_STR, "10.0", MC_UNIT_STR, data.mc_pm10);
+            _print_val_row(TYPE_NC_STR, "0.5", NC_UNIT_STR, data.nc_pm0_5);
+            _print_val_row(TYPE_NC_STR, "1.0", NC_UNIT_STR, data.nc_pm1);
+            _print_val_row(TYPE_NC_STR, "2.5", NC_UNIT_STR, data.nc_pm2_5);
+            _print_val_row(TYPE_NC_STR, "4.0", NC_UNIT_STR, data.nc_pm4);
+            _print_val_row(TYPE_NC_STR, "10.0", NC_UNIT_STR, data.nc_pm10);
             _print_val_row(TYPE_TPS_STR, "", TPS_UNIT_STR, data.ps);
             puts("+----------------------------+");
             puts("| MC:  Mass Concentration    |");
@@ -160,11 +161,14 @@ int main(void)
         cnt--;
     }
 
+    ec = sps30_stop_measurement(&dev);
+    error |= _print_error("stop_measurement", ec);
+
     if (error) {
-        puts("SPS30 test: [FAILED]");
+        puts("sps30 test: [FAILED]");
     }
     else {
-        puts("SPS30 test: [SUCCESS]");
+        puts("sps30 test: [SUCCESS]");
     }
 
     return 0;
