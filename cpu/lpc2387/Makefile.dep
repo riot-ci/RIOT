@@ -4,4 +4,8 @@ USEMODULE += newlib
 USEMODULE += periph
 USEMODULE += pm_layered
 
+ifneq (,$(filter periph_i2c,$(USEMODULE)))
+  USEMODULE += xtimer
+endif
+
 include $(RIOTCPU)/arm7_common/Makefile.dep
