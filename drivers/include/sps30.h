@@ -24,7 +24,8 @@
  *
  * In ASCII-land the connector side of the sensor would look like this:
  *
- *  +------------------------------------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  +------------------------------------------------------------------------+
  *  |                                             ____________________       |
  *  |                                          __|                    |__    |
  *  |                                         |__  (1) (2) (3) (4) (5) __|   |
@@ -32,13 +33,15 @@
  *  |                                            |____________________|      |
  *  |                                                                        |
  *  +------------[#]------------[#]------------[#]------------[#]------------+
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * The numbers refer to following pin names:
  *
  * | Pin Nr. | SPS30 Signal Name | Connect to | Notes                         |
+ * |---------|-------------------|------------|-------------------------------|
  * | Pin 1   | VDD               | 5 V        | should be within +-10 %       |
- * | Pin 2   | I2C_SDA / UART_RX | SDA*       | configured by PARAM_SPS30_I2C |
- * | Pin 3   | I2C_SCL / UART_TR | SCL*       | configured by PARAM_SPS30_I2C |
+ * | Pin 2   | I2C_SDA / UART_RX | SDA*       | config by SPS30_PARAM_I2C_DEV |
+ * | Pin 3   | I2C_SCL / UART_TR | SCL*       | config by SPS30_PARAM_I2C_DEV |
  * | Pin 4   | SEL               | GND        |                               |
  * | Pin 5   | GND               | GND        |                               |
  *
