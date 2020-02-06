@@ -259,8 +259,6 @@ int sps30_write_ac_interval(const sps30_t *dev, uint32_t seconds)
     seconds = htonl(seconds);
     int res = _rx_tx_data(dev, SPS30_CMD_RW_AUTOCLEAN, (uint8_t*)&seconds,
                           sizeof(uint32_t), false);
-     /* a reset is needed so that the new value can also be read again */
-    sps30_reset(dev);
     return res;
 }
 
