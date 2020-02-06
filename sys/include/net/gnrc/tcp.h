@@ -45,6 +45,7 @@ typedef struct {
 #ifdef MODULE_GNRC_IPV6
         uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 Address storage */
 #endif
+        uint8_t ipv4[4];                   /**< IPv4 Address storage */
     } addr;                                /**< IP Address storage */
     uint16_t netif;                        /**< Network interface ID */
     uint16_t port;                         /**< Port number (in host byte order) */
