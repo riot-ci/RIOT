@@ -26,7 +26,7 @@
 #define SENSOR_RESET_DELAY_US        (10 * US_PER_SEC)
 #define SENSOR_STARTUP_DELAY_US      (10 * US_PER_SEC)
 #define POLL_FOR_READY_US            (1000000U)
-#define NUM_OF_MEASUREMENTS          (10)
+#define NUM_OF_MEASUREMENTS          (10U)
 
 #define TYPE_MC_STR  "MC PM"
 #define TYPE_NC_STR  "NC PM"
