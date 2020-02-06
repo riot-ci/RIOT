@@ -22,10 +22,8 @@
 
 static void test_zptr_basic(void)
 {
-#if ZPTR_BASE
     uint32_t val;
     TEST_ASSERT(&val == zptrd(zptrc(&val)));
-#endif
 }
 
 Test *tests_zptr_tests(void)
