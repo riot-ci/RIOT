@@ -32,9 +32,12 @@
 #include "sched.h"
 #include "thread.h"
 #include "mutex.h"
+#include "xtimer.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+#define I2C_TIMEOUT_US  (1000)
 
 #if I2C_NUMOF > 0
 static void I2C0_IRQHandler(void) __attribute__((interrupt("IRQ")));
@@ -246,6 +249,7 @@ static void irq_handler(i2c_t dev)
 
     case 0x08: /* A Start Condition is issued. */
     case 0x10: /* A repeated Start Condition is issued */
+        ctx[dev].res = 0;
         ctx[dev].cur = ctx[dev].buf[ctx[dev].buf_cur];
         i2c->DAT  = ctx[dev].addr[ctx[dev].buf_cur];
         i2c->CONSET = I2CONSET_AA;
@@ -344,11 +348,36 @@ static void _init_buffer(i2c_t dev, uint8_t idx, uint8_t addr,
     ctx[dev].end     = ctx[dev].buf_end[0];
 }
 
+static int _i2c_execute(i2c_t dev)
+{
+    lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
+
+    /* If nothing is connected to the bus, no interrupt is generated */
+    ctx[dev].res = -ETIMEDOUT;
+
+    /* set Start flag */
+    i2c->CONSET = I2CONSET_STA;
+
+    /* we got the mutex - no timeout */
+    if (!xtimer_mutex_lock_timeout(&ctx[dev].tx_done, I2C_TIMEOUT_US)) {
+        return ctx[dev].res;
+    }
+
+    /* either timeout happened or transmission is still ongoing */
+    if (ctx[dev].res == -ETIMEDOUT) {
+        return ctx[dev].res;
+    }
+
+    /* transmission still ongoing */
+    mutex_lock(&ctx[dev].tx_done);
+
+    return ctx[dev].res;
+}
+
 int i2c_read_bytes(i2c_t dev, uint16_t addr,
                    void *data, size_t len, uint8_t flags)
 {
     assert(dev < I2C_NUMOF);
-    lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
 
     /* Check for wrong arguments given */
     if (data == NULL || len == 0) {
@@ -362,18 +391,13 @@ int i2c_read_bytes(i2c_t dev, uint16_t addr,
 
     _init_buffer(dev, 0, 1 | (addr << 1), (void*)data, len);
 
-    /* set Start flag */
-    i2c->CONSET = I2CONSET_STA;
-
-    mutex_lock(&ctx[dev].tx_done);
-    return ctx[dev].res;
+    return _i2c_execute(dev);
 }
 
 int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
                     uint8_t flags)
 {
     assert(dev < I2C_NUMOF);
-    lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
 
     /* Check for wrong arguments given */
     if (data == NULL || len == 0) {
@@ -387,18 +411,13 @@ int i2c_write_bytes(i2c_t dev, uint16_t addr, const void *data, size_t len,
 
     _init_buffer(dev, 0, addr << 1, (void*)data, len);
 
-    /* set Start flag */
-    i2c->CONSET = I2CONSET_STA;
-
-    mutex_lock(&ctx[dev].tx_done);
-    return ctx[dev].res;
+    return _i2c_execute(dev);
 }
 
 int i2c_read_regs(i2c_t dev, uint16_t addr, uint16_t reg,
                   void *data, size_t len, uint8_t flags)
 {
     assert(dev < I2C_NUMOF);
-    lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
 
     /* Check for wrong arguments given */
     if (data == NULL || len == 0) {
@@ -418,18 +437,13 @@ int i2c_read_regs(i2c_t dev, uint16_t addr, uint16_t reg,
     _init_buffer(dev, 0, addr << 1, (void*)&reg, (flags & I2C_REG16) ? 2 : 1);
     _init_buffer(dev, 1, 1 | (addr << 1), (void*)data, len);
 
-    /* set Start flag */
-    i2c->CONSET = I2CONSET_STA;
-
-    mutex_lock(&ctx[dev].tx_done);
-    return ctx[dev].res;
+    return _i2c_execute(dev);
 }
 
 int i2c_write_regs(i2c_t dev, uint16_t addr, uint16_t reg,
                    const void *data, size_t len, uint8_t flags)
 {
     assert(dev < I2C_NUMOF);
-    lpc23xx_i2c_t *i2c = i2c_config[dev].dev;
 
     /* Check for wrong arguments given */
     if (data == NULL || len == 0) {
@@ -449,11 +463,7 @@ int i2c_write_regs(i2c_t dev, uint16_t addr, uint16_t reg,
     _init_buffer(dev, 0, addr << 1, (void*)&reg, (flags & I2C_REG16) ? 2 : 1);
     _init_buffer(dev, 1, addr << 1, (void*)data, len);
 
-    /* set Start flag */
-    i2c->CONSET = I2CONSET_STA;
-
-    mutex_lock(&ctx[dev].tx_done);
-    return ctx[dev].res;
+    return _i2c_execute(dev);
 }
 
 #if I2C_NUMOF > 0
