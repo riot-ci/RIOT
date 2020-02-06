@@ -57,6 +57,7 @@
 #ifndef SPS30_H
 #define SPS30_H
 
+#include <stdbool.h>
 #include "periph/gpio.h"
 #include "periph/i2c.h"
 
