@@ -143,41 +143,45 @@ static inline bool _cpy_check_crc(uint8_t *data, size_t len, uint8_t *crcd_data)
 static int _rx_tx_data(const sps30_t *dev, uint16_t ptr_addr,
                        uint8_t *data, size_t len, bool read)
 {
+    int res = -SPS30_I2C_ERROR;
+    unsigned retr = SPS30_ERROR_RETRY;
+
     if (i2c_acquire(dev->p.i2c_dev) != 0) {
         LOG_ERROR("could not acquire I2C bus %d\n", dev->p.i2c_dev);
         return -SPS30_I2C_ERROR;
     }
-    int res = 0;
-    size_t addr_data_crc_len = SPS30_PTR_LEN + len + len / 2;
-    uint8_t frame_data[addr_data_crc_len];
-    frame_data[0] = ptr_addr >> 8;
-    frame_data[1] = ptr_addr & 0xFF;
 
-    /* Both, a pure `Set Pointer` transfer type and a `Set Pointer & Read Data`
-      transfer type require to write a pointer address to the device in a
-      separate write transaction */
-    if (len == 0 || read) {
-        res = i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR, &frame_data[0],
-                              SPS30_PTR_LEN, 0);
-    }
+    while (res != 0 && retr--) {
+        size_t addr_data_crc_len = SPS30_PTR_LEN + len + len / 2;
+        uint8_t frame_data[addr_data_crc_len];
+        frame_data[0] = ptr_addr >> 8;
+        frame_data[1] = ptr_addr & 0xFF;
 
-    if (res == 0 && read) {
-        /* The `Set Pointer & Read Data` transfer type requires a separate
-           read transaction to actually read the data */
-        res = i2c_read_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR,
-                             &frame_data[SPS30_PTR_LEN],
-                             addr_data_crc_len - SPS30_PTR_LEN, 0);
-
-        if (!_cpy_check_crc(data, len, &frame_data[SPS30_PTR_LEN])) {
-            i2c_release(dev->p.i2c_dev);
-            return -SPS30_CRC_ERROR;
+        /* Both transfer types, `Set Pointer` and `Set Pointer & Read Data`
+           require writing a pointer address to the device in a separate write
+           transaction */
+        if (len == 0 || read) {
+            res = i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR,
+                                  &frame_data[0], SPS30_PTR_LEN, 0);
         }
-    } else {
-        /* For the `Set Pointer & Write Data` transfer type the full frame is
-           transmitted as one single chunk */
-        _cpy_add_crc(data, len, &frame_data[SPS30_PTR_LEN]);
-        res = i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR, &frame_data[0],
-                              addr_data_crc_len, 0);
+
+        if (res == 0 && read) {
+            /* The `Set Pointer & Read Data` transfer type requires a separate
+               read transaction to actually read the data */
+            res = i2c_read_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR,
+                                 &frame_data[SPS30_PTR_LEN],
+                                 addr_data_crc_len - SPS30_PTR_LEN, 0);
+
+            if (!_cpy_check_crc(data, len, &frame_data[SPS30_PTR_LEN])) {
+                res = -SPS30_CRC_ERROR;
+            }
+        } else {
+            /* For the `Set Pointer & Write Data` transfer type the full frame
+               is transmitted as one single chunk */
+            _cpy_add_crc(data, len, &frame_data[SPS30_PTR_LEN]);
+            res = i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR,
+                                  &frame_data[0], addr_data_crc_len, 0);
+        }
     }
 
     i2c_release(dev->p.i2c_dev);

@@ -66,24 +66,24 @@ extern "C" {
 #endif
 
 /**
- * @brief   SPS30 device parameters
+ * @brief     SPS30 device parameters
  */
 typedef struct {
     i2c_t i2c_dev;                /**< I2C dev the sensor is connected to */
 } sps30_params_t;
 
 /**
- * @brief   SPS30 device instance
+ * @brief     SPS30 device instance
  */
 typedef struct {
     sps30_params_t p;             /**< parameters of the sensor device */
 } sps30_t;
 
 /**
- * @brief Set of measured particulate matter values
+ * @brief     Set of measured particulate matter values
  *
- * @warning    Do not change the member order, as it will break the code that
- *             populates the values in #sps30_read_measurement()
+ * @warning   Do not change the member order, as it will break the code that
+ *            populates the values in #sps30_read_measurement()
  *
  */
 typedef struct {
@@ -100,7 +100,7 @@ typedef struct {
 } sps30_data_t;
 
 /**
- * @brief SPS30 error codes (returned as negative values)
+ * @brief     SPS30 error codes (returned as negative values)
  */
 typedef enum {
     SPS30_OK = 0,     /**< Everything went fine */
@@ -109,13 +109,35 @@ typedef enum {
 } sps30_error_code_t;
 
 /**
-* @name    Fixed SPS30 literals useful to applications
-* @{
-*/
-#define SPS30_FAN_CLEAN_S (10U) /**< Seconds the fan cleaning process takes */
-#define SPS30_SER_ART_LEN (32U) /**< Length of serial and article code string*/
-/** @} */
+ * @brief     Seconds the fan cleaning process takes in seconds
+ */
+#define SPS30_FAN_CLEAN_S    (10U)
 
+/**
+ * @brief     Length of serial and article code string
+ */
+#define SPS30_SER_ART_LEN    (32U)
+
+/**
+ * @brief     Default fan auto-clean interval in seconds
+ */
+#define SPS30_DEFAULT_ACI_S  (604800U)
+
+/**
+ * @brief     Maximum number of automatic retries on communication errors
+ *
+ * @details   If no delays happen betwen individual requests to the sensor, it
+ *            may happen that the sensor is not yet ready to serve data.
+ *            Handling this within the driver simplifies application code by
+ *            omitting sleep handling or retries there.
+ *            This value may be overwritten to 1 if more fine-grained feedback
+ *            is required or even increased if the device is connected over
+ *            suboptimal wiring.
+ *
+ */
+#ifndef SPS30_ERROR_RETRY
+#define SPS30_ERROR_RETRY    (500)
+#endif
 
 /**
  * @brief       Initialize SPS30 sensor driver.
@@ -195,7 +217,10 @@ int sps30_read_ac_interval(const sps30_t *dev, uint32_t *seconds);
 /**
  * @brief       Write the fan auto-clean interval.
  *
- * @details     This setting is persistent across resets and powerdowns. But if
+ * @details     The new value will be effective immediately after writing but
+ *              reading the updated value is only possible after resetting the
+ *              sensor.
+ *              This setting is persistent across resets and powerdowns. But if
  *              the sensor is powered off, the active time counter starts from
  *              zero again. If this is expected to happen, a fan cleaning cycle
  *              should be triggered manually at least once a week.
