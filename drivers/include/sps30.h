@@ -136,7 +136,7 @@ typedef enum {
  *
  */
 #ifndef SPS30_ERROR_RETRY
-#define SPS30_ERROR_RETRY    (500)
+#define SPS30_ERROR_RETRY    (500U)
 #endif
 
 /**

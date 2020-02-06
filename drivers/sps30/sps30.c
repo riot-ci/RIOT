@@ -136,7 +136,7 @@ static inline bool _cpy_check_crc(uint8_t *data, size_t len, uint8_t *crcd_data)
  * @param[in]      len        Length of `data` buffer, set to 0 for type (1)
  * @param[in]      read       set to true for reading or false for writing
  *
- * @return         SPS30_OK          if everyting went fine
+ * @return         SPS30_OK           if everyting went fine
  * @return         -SPS30_CRC_ERROR   if the CRC check failed
  * @return         -SPS30_I2C_ERROR   if the I2C communication failed
  */
