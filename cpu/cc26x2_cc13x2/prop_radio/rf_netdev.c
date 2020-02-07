@@ -100,7 +100,7 @@ static int _set_state(netopt_state_t state)
             break;
 
         case NETOPT_STATE_IDLE:
-            /* If the state is on Transmit or Sleep, it will be swiched to
+            /* If the state is on Transmit or Sleep, it will be switched to
              * Receive state */
             if (_cc13x2_prop_rf_state != cc13x2_stateDisabled) {
                 if (cc13x2_prop_rf_rx_start() == -1) {
@@ -265,6 +265,7 @@ void cc13x2_prop_rf_setup(cc13x2_prop_rf_netdev_t *dev)
     cc13x2_prop_rf_init();
 
     dev->netdev.netdev.driver = &cc13x2_prop_rf_driver;
+    dev->state = NETOPT_STATE_OFF;
 }
 
 netdev_driver_t cc13x2_prop_rf_driver =

@@ -488,7 +488,7 @@ static uint_fast16_t cc13x2_prop_rf_send_enable_cmd(void)
 
     /* initialize radio setup command */
     _cmd_radio_setup = cRadioSetupCmd;
-    /* initally set the radio tx power to the max */
+    /* initially set the radio tx power to the max */
     _cmd_radio_setup.txPower             = _current_tx_power->value;
     _cmd_radio_setup.pRegOverride        = sPropOverrides;
     _cmd_radio_setup.config.frontEndMode = 0; /* differential */
@@ -1000,7 +1000,7 @@ int cc13x2_prop_rf_recv(void *buf, size_t len, netdev_ieee802154_rx_info_t *rx_i
     }
 
     /* wait for entry to become finished */
-    /* TOOD: timeout */
+    /* TODO: timeout */
     while (cur_entry->status == DATA_ENTRY_BUSY) {}
 
     /*
@@ -1051,7 +1051,7 @@ int cc13x2_prop_rf_recv(void *buf, size_t len, netdev_ieee802154_rx_info_t *rx_i
         return -ENOSPC;
     }
 
-    /* Substract checksum bytes. */
+    /* Subtract checksum bytes. */
     payload_len -= 2;
 
     /* Copy packet data. */

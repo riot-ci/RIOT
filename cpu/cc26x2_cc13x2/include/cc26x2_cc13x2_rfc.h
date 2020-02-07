@@ -77,9 +77,8 @@ uint_fast8_t cc26x2_cc13x2_rf_prop_execute_ping_cmd(void);
 /**
  * @brief   Enables the CPE0 and CPE1 radio interrupts.
  *
- *          Enables the @ref IRQ_LAST_COMMAND_DONE and
- *          @ref IRQ_LAST_FG_COMMAND_DONE to be handled by the
- *          @ref isr_rfc_cpe0 interrupt handler.
+ *          Enables the IRQ_LAST_COMMAND_DONE and IRQ_LAST_FG_COMMAND_DONE to
+ *          be handled by the isr_rfc_cpe0 interrupt handler.
  */
 void cc26x2_cc13x2_rf_setup_int(void);
 

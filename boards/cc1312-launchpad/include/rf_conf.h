@@ -30,10 +30,9 @@ extern "C" {
 /**
  * @brief   TX Power dBm lookup table
  */
-typedef struct output_config
-{
-    int      dbm;
-    uint16_t value;
+typedef struct output_config {
+    int      dbm; /**< dBm output power */
+    uint16_t value; /**< The encoded value */
 } output_config_t;
 
 /**
@@ -76,7 +75,7 @@ static const output_config_t output_power_table[] = {
 #define OUTPUT_POWER_MAX (output_power_table[0].dbm)
 
 /**
- * @brief   Unknwon (default) output power.
+ * @brief   Unknown (default) output power.
  */
 #define OUTPUT_POWER_UNKNOWN 0xFFFF
 
