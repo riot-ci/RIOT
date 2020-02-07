@@ -79,8 +79,7 @@ extern "C" {
  * @brief   Stack size used for the exception (ISR) stack
  * @{
  */
-extern unsigned __stack_irq_size;
-#define ISR_STACKSIZE                   ((unsigned) &__stack_irq_size)
+#define ISR_STACKSIZE                   (400)
 /** @} */
 
 #ifdef __cplusplus
