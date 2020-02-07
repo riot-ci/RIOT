@@ -65,6 +65,10 @@ def check_cmd(child, cmd, expected):
         child.expect_exact(line)
 
 
+def check_startup(child):
+    child.expect('test_shell.\r\n')
+
+
 def check_and_get_bufsize(child):
     child.sendline('bufsize')
     child.expect('([0-9]+)\r\n')
@@ -77,6 +81,8 @@ def testfunc(child):
     # avoid sending an extra empty line on native.
     if BOARD == 'native':
         child.crlf = '\n'
+
+    check_startup(child)
 
     bufsize = check_and_get_bufsize(child)
 
