@@ -5,10 +5,6 @@ MSP430_SUPPORT_FILES ?= $(RIOTCPU)/msp430_common/vendor/msp430-gcc-support-files
 
 # define build specific options
 CFLAGS_CPU   = -mmcu=$(CPU_MODEL) -isystem $(MSP430_SUPPORT_FILES)/include
-# default std set to gnu99 of not overwritten by user
-ifeq (, $(filter -std=%, $(CFLAGS)))
-  CFLAGS += -std=gnu99
-endif
 CFLAGS_LINK  = -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -g -gdwarf-2
 CFLAGS_OPT  ?= -Os
