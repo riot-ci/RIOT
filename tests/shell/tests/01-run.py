@@ -41,19 +41,20 @@ CONTROL_C = DLE+'\x03'
 CONTROL_D = DLE+'\x04'
 
 CMDS = (
-    (CONTROL_C, ('>')),
-    ('start_test', ('[TEST_START]')),
-    ('end_test', ('[TEST_END]')),
-    ('\n', ('>')),
+    ('start_test', '[TEST_START]'),
+    ('', 'shell: line is empty\r\n'),
+    (CONTROL_C, '>'),
+    ('\n', '>'),
     ('123456789012345678901234567890123456789012345678901234567890',
-        ('shell: command not found: '
-         '123456789012345678901234567890123456789012345678901234567890')),
-    ('unknown_command', ('shell: command not found: unknown_command')),
+     'shell: command not found: '
+     '123456789012345678901234567890123456789012345678901234567890'),
+    ('unknown_command', 'shell: command not found: unknown_command'),
     ('help', EXPECTED_HELP),
-    ('echo a string', ('\"echo\"\"a\"\"string\"')),
+    ('echo a string', '\"echo\"\"a\"\"string\"'),
     ('ps', EXPECTED_PS),
     ('help', EXPECTED_HELP),
-    ('reboot', ('test_shell.'))
+    ('reboot', 'test_shell.'),
+    ('end_test', '[TEST_END]'),
 )
 
 PROMPT = '> '
