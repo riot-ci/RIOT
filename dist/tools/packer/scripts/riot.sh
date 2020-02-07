@@ -1,4 +1,5 @@
-apt install -y cmake curl git build-essential vim python-setuptools \
+apt-get update
+apt-get install -y clang cmake curl git build-essential vim python-setuptools \
     python-argparse python3-pip python-pip mosquitto-clients socat g++-multilib \
     net-tools pcregrep libpcre3 gcc-avr binutils-avr avr-libc \
     avrdude doxygen cppcheck valgrind coccinelle \
@@ -17,7 +18,7 @@ pip3 install aiocoap pyocd paho-mqtt pyserial flake8 tox \
             #
 
 # OpenOCD
-apt install -y build-essential libftdi-dev libhidapi-dev \
+apt-get install -y build-essential libftdi-dev libhidapi-dev \
         libusb-1.0-0-dev libudev-dev autoconf libsqlite3-dev \
         libpopt-dev libxml2-dev ruby libtool pkg-config
 
