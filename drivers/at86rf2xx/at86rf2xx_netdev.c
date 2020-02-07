@@ -727,7 +727,7 @@ static void _isr(netdev_t *netdev)
          * dev->pending == 1 means a receive and immediately a send happened.
          * The receive is discarded as the send already overwrote the internal
          * buffer.
-         * dev->pending == 2 means two transmits occured and this is the isr for
+         * dev->pending == 2 means two transmits occurred and this is the isr for
          * the first.
          */
         else if ((state == AT86RF2XX_STATE_BUSY_TX_ARET)) {
