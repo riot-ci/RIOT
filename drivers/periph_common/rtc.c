@@ -61,6 +61,26 @@ static int _is_leap_year(int year)
     return !!(year % 25) || !(year & 15);
 }
 
+/*
+ * 1. Every fourth year was a leap year.
+ * 2. Subtract all years divisible by 100, those divisible by 4 but no leap years.
+ * 3. Add back all years divisible by 400, those are divisible by 100 but leap years.
+ */
+static unsigned _leap_years_before(unsigned year)
+{
+    --year;
+    return (year / 4) - (year / 100) + (year / 400);
+}
+
+static unsigned _leap_years_since_epoch(unsigned year)
+{
+    if (year < RIOT_EPOCH) {
+        return 0;
+    }
+
+    return _leap_years_before(year) - _leap_years_before(RIOT_EPOCH);
+}
+
 static int _month_length(int month, int year)
 {
     if (month == 1) {
@@ -169,9 +189,10 @@ uint32_t rtc_mktime(struct tm *t)
                   + t->tm_hour * HOUR
                   + _yday(t->tm_mday, t->tm_mon, year) * DAY;
 
-    while (--year >= RIOT_EPOCH) {
-        time += _is_leap_year(year) ? (366 * DAY) : (365 * DAY);
-    }
+    unsigned leap_years = _leap_years_since_epoch(year);
+    unsigned common_years = (year - RIOT_EPOCH) - leap_years;
+
+    time += (leap_years * 366 + common_years * 365) * DAY;
 
     return time;
 }
