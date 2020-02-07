@@ -270,10 +270,10 @@ static int readline(char *buf, size_t size)
             return EOF;
         }
 
-        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r). */
-        /* QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio"). */
-        /* DOS newlines are handled like hitting enter twice, but empty lines are ignored. */
-        /* Ctrl-C cancels the current line. */
+        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r).
+         * QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio").
+         * DOS newlines are handled like hitting enter twice, but empty lines are ignored.
+         * Ctrl-C cancels the current line. */
         if (c == '\r' || c == '\n' || c == ETX) {
             if (c == ETX) {
                 curr_pos = 0;
@@ -289,10 +289,12 @@ static int readline(char *buf, size_t size)
             return (length_exceeded)? ERROR_READLINE_EXCEEDED : curr_pos;
         }
 
-        /* QEMU uses 0x7f (DEL) as backspace, while 0x08 (BS) is for most terminals */
+        /* check for backspace:
+         * 0x7f (DEL) when using QEMU
+         * 0x08 (BS) for most terminals */
         if (c == 0x08 || c == 0x7f) {
             if (curr_pos == 0) {
-                /* The line is empty. */
+                /* ignore empty line */
                 continue;
             }
 
