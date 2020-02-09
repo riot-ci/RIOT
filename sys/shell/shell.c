@@ -29,36 +29,50 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 #include "shell.h"
 #include "shell_commands.h"
 
 #define ETX '\x03'  /** ASCII "End-of-Text", or ctrl-C */
-#if !defined(SHELL_NO_ECHO) || !defined(SHELL_NO_PROMPT)
-#ifdef MODULE_NEWLIB
-/* use local copy of putchar, as it seems to be inlined,
- * enlarging code by 50% */
-static void _putchar(int c) {
-    putchar(c);
-}
-#else
-#define _putchar putchar
-#endif
-#endif
+#define BS  '\x08'  /** ASCII "Backspace" */
+#define DEL '\x07'  /** ASCII "Delete" */
 
-static void flush_if_needed(void)
-{
+#ifdef MODULE_SHELL_COMMANDS
+    #define MORE_COMMANDS _shell_command_list
+#else
+    #define MORE_COMMANDS
+#endif /* MODULE_SHELL_COMMANDS */
+
 #ifdef MODULE_NEWLIB
-    fflush(stdout);
-#endif
-}
+    #define flush_if_needed() fflush(stdout)
+#else
+    #define flush_if_needed()
+#endif /* MODULE_NEWLIB */
+
+#ifndef SHELL_NO_ECHO
+    #define ECHO_ON 1
+#else
+    #define ECHO_ON 0
+#endif /* SHELL_NO_ECHO */
+
+#ifndef SHELL_NO_PROMPT
+    #define PROMPT_ON 1
+#else
+    #define PROMPT_ON 0
+#endif /* SHELL_NO_PROMPT */
+
+/**
+ * Code indicating that the line buffer size was exceeded.
+ * This definition ensures there's no collision with EOF.
+ */
+#define ERROR_READLINE_EXCEEDED (EOF - 1)
 
 static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
 {
     const shell_command_t *command_lists[] = {
         command_list,
-#ifdef MODULE_SHELL_COMMANDS
-        _shell_command_list,
-#endif
+        MORE_COMMANDS
     };
 
     /* iterating over command_lists */
@@ -89,9 +103,7 @@ static void print_help(const shell_command_t *command_list)
 
     const shell_command_t *command_lists[] = {
         command_list,
-#ifdef MODULE_SHELL_COMMANDS
-        _shell_command_list,
-#endif
+        MORE_COMMANDS
     };
 
     /* iterating over command_lists */
@@ -227,67 +239,121 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     }
 }
 
-static int readline(char *buf, size_t size)
+static inline void print_prompt(void)
 {
-    char *line_buf_ptr = buf;
+    if (PROMPT_ON) {
+        putchar('>');
+        putchar(' ');
+    }
 
-    while (1) {
-        if ((line_buf_ptr - buf) >= ((int) size) - 1) {
-            return -1;
-        }
+    flush_if_needed();
+}
 
-        int c = getchar();
-        if (c < 0) {
-            return EOF;
-        }
-
-        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r). */
-        /* QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio"). */
-        /* DOS newlines are handled like hitting enter twice, but empty lines are ignored. */
-        /* Ctrl-C cancels the current line. */
-        if (c == '\r' || c == '\n' || c == ETX) {
-            *line_buf_ptr = '\0';
-#ifndef SHELL_NO_ECHO
-            _putchar('\r');
-            _putchar('\n');
-#endif
-
-            /* return 1 if line is empty, 0 otherwise */
-            return c == ETX || line_buf_ptr == buf;
-        }
-        /* QEMU uses 0x7f (DEL) as backspace, while 0x08 (BS) is for most terminals */
-        else if (c == 0x08 || c == 0x7f) {
-            if (line_buf_ptr == buf) {
-                /* The line is empty. */
-                continue;
-            }
-
-            *--line_buf_ptr = '\0';
-            /* white-tape the character */
-#ifndef SHELL_NO_ECHO
-            _putchar('\b');
-            _putchar(' ');
-            _putchar('\b');
-#endif
-        }
-        else {
-            *line_buf_ptr++ = c;
-#ifndef SHELL_NO_ECHO
-            _putchar(c);
-#endif
-        }
-        flush_if_needed();
+static inline void echo_char(char c)
+{
+    if (ECHO_ON) {
+        putchar(c);
     }
 }
 
-static inline void print_prompt(void)
+static inline void white_tape(void)
 {
-#ifndef SHELL_NO_PROMPT
-    _putchar('>');
-    _putchar(' ');
-#endif
+    if (ECHO_ON) {
+        putchar('\b');
+        putchar(' ');
+        putchar('\b');
+    }
+}
 
-    flush_if_needed();
+static inline void new_line(void)
+{
+    if (ECHO_ON) {
+        putchar('\r');
+        putchar('\n');
+    }
+}
+
+/**
+ * Read a single line from standard input into a buffer.
+ *
+ * In addition to copying characters, this routine echoes the line back to
+ * stdout and also supports primitive line editing.
+ *
+ * If the input line is too long, the input will still be consumed until the end
+ * to prevent the next line from containing garbage.
+ *
+ * We allow Unix (\n), DOS (\r\n), and Mac linebreaks (\r).
+ * QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio").
+ * DOS newlines are handled like hitting enter twice.
+ *
+ * @param   buf     Buffer where the input will be placed.
+ * @param   size    Size of the buffer. The maximum line length will be one less
+ *                  than size, to accommodate for the null terminator.
+ *                  The minimum buffer size is 1.
+ *
+ * @return  length of the read line, excluding the terminator, if reading was
+ *          successful.
+ * @return  EOF, if the end of the input stream was reached.
+ * @return  ERROR_READLINE_EXCEEDED if the buffer size was exceeded.
+ */
+static int readline(char *buf, size_t size)
+{
+    int curr_pos = 0;
+
+    assert((size_t) size > 0);
+
+    while (1) {
+        assert((size_t) curr_pos < size);
+
+        int c = getchar();
+
+        switch (c) {
+
+            case EOF:
+                return EOF;
+
+            case ETX:
+                /* Ctrl-C cancels the current line. */
+                curr_pos = 0;
+                /* fall-thru */
+            case '\r':
+                /* fall-thru */
+            case '\n':
+                new_line();
+
+                if ((size_t) curr_pos < size) {
+                    buf[curr_pos] = '\0';
+                    return curr_pos;
+                }
+                else {
+                    return ERROR_READLINE_EXCEEDED;
+                }
+
+            /* check for backspace: */
+            case BS:    /* 0x08 (BS) for most terminals */
+                /* fall-thru */
+            case DEL:   /* 0x7f (DEL) when using QEMU */
+                if (curr_pos > 0) {
+                    curr_pos--;
+                    if ((size_t) curr_pos < size) {
+                        buf[curr_pos] = '\0';
+                    }
+                    white_tape();
+                }
+                break;
+
+            default:
+                /* Always consume characters, but do not not always store them */
+                if ((size_t) curr_pos < size - 1) {
+                    buf[curr_pos] = c;
+                }
+                curr_pos++;
+                echo_char(c);
+                break;
+        }
+
+        flush_if_needed();
+    }
 }
 
 void shell_run_once(const shell_command_t *shell_commands,
@@ -298,12 +364,22 @@ void shell_run_once(const shell_command_t *shell_commands,
     while (1) {
         int res = readline(line_buf, len);
 
-        if (res == EOF) {
-            break;
-        }
+        switch (res) {
 
-        if (!res) {
-            handle_input_line(shell_commands, line_buf);
+            case EOF:
+                return;
+
+            case ERROR_READLINE_EXCEEDED:
+                puts("shell: maximum line length exceeded");
+                break;
+
+            case 0:
+                puts("shell: line is empty");
+                break;
+
+            default:
+                handle_input_line(shell_commands, line_buf);
+                break;
         }
 
         print_prompt();
