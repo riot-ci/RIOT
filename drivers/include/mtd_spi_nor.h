@@ -83,6 +83,16 @@ typedef struct __attribute__((packed)) {
  */
 #define SPI_NOR_F_SECT_32K  (2)
 
+typedef struct {
+    const mtd_spi_nor_opcode_t *opcode; /**< Opcode table for the device */
+    spi_clk_t clk;           /**< SPI clock */
+    uint16_t flag;           /**< Config flags */
+    spi_t spi;               /**< SPI bus the device is connected to */
+    spi_mode_t mode;         /**< SPI mode */
+    gpio_t cs;               /**< CS pin GPIO handle */
+    uint8_t addr_width;      /**< Number of bytes in addresses, usually 3 for small devices */
+} mtd_spi_nor_params_t;
+
 /**
  * @brief   Device descriptor for serial flash memory devices
  *
@@ -90,12 +100,7 @@ typedef struct __attribute__((packed)) {
  */
 typedef struct {
     mtd_dev_t base;          /**< inherit from mtd_dev_t object */
-    const mtd_spi_nor_opcode_t *opcode; /**< Opcode table for the device */
-    spi_t spi;               /**< SPI bus the device is connected to */
-    gpio_t cs;               /**< CS pin GPIO handle */
-    spi_mode_t mode;         /**< SPI mode */
-    spi_clk_t clk;           /**< SPI clock */
-    uint16_t flag;           /**< Config flags */
+    const mtd_spi_nor_params_t *params; /**< SPI NOR params */
     mtd_jedec_id_t jedec_id; /**< JEDEC ID of the chip */
     /**
      * @brief   bitmask to corresponding to the page address
@@ -109,7 +114,6 @@ typedef struct {
      * Computed by mtd_spi_nor_init, no need to touch outside the driver.
      */
     uint32_t sec_addr_mask;
-    uint8_t addr_width;      /**< Number of bytes in addresses, usually 3 for small devices */
     /**
      * @brief   number of right shifts to get the address to the start of the page
      *
