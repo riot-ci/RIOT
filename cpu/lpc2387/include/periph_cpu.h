@@ -116,6 +116,11 @@ typedef struct {
 #define TIMER_CHAN_NUMOF        (4U)
 
 /**
+ * @brief   Prevent shared timer functions from being used
+ */
+#define PERIPH_TIMER_PROVIDES_SET
+
+/**
  * @brief   Declare needed generic SPI functions
  * @{
  */
