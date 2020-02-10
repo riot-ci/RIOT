@@ -32,6 +32,16 @@
 
 static char _stack[DHCPV6_CLIENT_STACK_SIZE];
 
+/**
+ * @brief   Find upstream network interface
+ *
+ * Either the one network interface configured at compile-time with @ref
+ * CONFIG_GNRC_DHCPV6_CLIENT_6LBR_UPSTREAM is picked or the first network
+ * interface that is not a 6LoWPAN interfaces if
+ * `CONFIG_GNRC_DHCPV6_CLIENT_6LBR_UPSTREAM` is 0.
+ *
+ * @return  The upstream network interface.
+ */
 static gnrc_netif_t *_find_upstream_netif(void)
 {
     gnrc_netif_t *netif = NULL;
@@ -49,6 +59,18 @@ static gnrc_netif_t *_find_upstream_netif(void)
     return NULL;
 }
 
+/**
+ * @brief   Configure upstream netif to be in line with configuration script
+ *
+ * Set route and link-local address in accordance to
+ * `dist/tools/ethos/setup_network.sh`.
+ *
+ * @note    This might not be necessary with a properly set-up DHCPv6 server
+ *          (automatically configures a route for the delegated prefix) and
+ *          upstream router (sends periodic router advertisements).
+ *
+ * @param[in] upstream_netif    The upstream netif  The upstream netif
+ */
 static void _configure_upstream_netif(gnrc_netif_t *upstream_netif)
 {
     ipv6_addr_t addr = {
@@ -57,12 +79,15 @@ static void _configure_upstream_netif(gnrc_netif_t *upstream_netif)
 
     /* set default route to host machine (as set-up in setup_network.sh) */
     gnrc_ipv6_nib_ft_add(NULL, 0, &addr, upstream_netif->pid, 0);
-    /* set additional link-local address to allow for easy static route
-     * configuration */
+    /* set additional link-local address to provide a well-known next hop
+     * for static route configuration on the host machine */
     addr.u8[15] = 2;
     gnrc_netif_ipv6_addr_add(upstream_netif, &addr, 64, 0);
 }
 
+/**
+ * @brief   Configures all 6LoWPAN interfaces to request a 64-bit prefix
+ */
 static void _configure_dhcpv6_client(void)
 {
     gnrc_netif_t *netif = NULL;
@@ -73,6 +98,9 @@ static void _configure_dhcpv6_client(void)
     }
 }
 
+/**
+ * @brief   The DHCPv6 client thread
+ */
 static void *_dhcpv6_cl_6lbr_thread(void *args)
 {
     event_queue_t event_queue;
