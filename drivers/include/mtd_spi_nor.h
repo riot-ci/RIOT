@@ -105,6 +105,11 @@ typedef struct {
     mtd_dev_t base;          /**< inherit from mtd_dev_t object */
     const mtd_spi_nor_params_t *params; /**< SPI NOR params */
     mtd_jedec_id_t jedec_id; /**< JEDEC ID of the chip */
+    uint32_t wait_chip_erase; /**< Full chip erase wait time in µs */
+    uint32_t wait_sector_erase; /**< Sector erase wait time in µs */
+    uint32_t wait_32k_erase;    /**< 32KB page erase wait time in µs */
+    uint32_t wait_4k_erase;     /**< 4KB page erase wait time in µs */
+
     /**
      * @brief   bitmask to corresponding to the page address
      *
