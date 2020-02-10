@@ -113,63 +113,31 @@ static inline size_t kw41zrf_tx_load(const void *buf, size_t len, size_t offset)
 
 static void kw41zrf_tx_exec(kw41zrf_t *dev)
 {
+    /* set up TMR2 to trigger the TX sequence from the ISR */
+
     kw41zrf_abort_sequence(dev);
-    uint16_t len_fcf = ZLL->PKT_BUFFER_TX[0];
-    DEBUG("[kw41zrf] len_fcf=0x%04x\n", len_fcf);
-    /* Check FCF field in the TX buffer to see if the ACK_REQ flag was set in
-     * the packet that is queued for transmission */
-    uint8_t fcf = (len_fcf >> 8) & 0xff;
-    uint32_t backoff_delay = 0;
+
     if (dev->flags & KW41ZRF_OPT_CSMA) {
         /* Use CSMA/CA random delay in the interval [0, 2**dev->csma_be) */
-        backoff_delay = kw41zrf_csma_random_delay(dev);
-    }
-    uint32_t tx_timeout = 0;
-    if ((fcf & IEEE802154_FCF_ACK_REQ) &&
-        (dev->netdev.flags & NETDEV_IEEE802154_ACK_REQ)) {
-        uint8_t payload_len = len_fcf & 0xff;
-        tx_timeout = backoff_delay + dev->tx_warmup_time +
-            KW41ZRF_SHR_PHY_TIME + payload_len * KW41ZRF_PER_BYTE_TIME +
-            KW41ZRF_ACK_WAIT_TIME;
-    }
-    if (backoff_delay > 0) {
-        /* Avoid risk of setting a timer in the past */
-        kw41zrf_timer_set(dev, &ZLL->T2CMP, ~0ul);
-        bit_set32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMRTRIGEN_SHIFT);
-    }
-    else {
-        bit_clear32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMRTRIGEN_SHIFT);
+        dev->backoff_delay = kw41zrf_csma_random_delay(dev);
     }
 
-    /* This is quite timing sensitive, as interrupts may lead to setting a timer
-     * target which has already passed */
-    unsigned irq_state;
-    KW41ZRF_LED_TX_ON;
-    if (tx_timeout > 0) {
-        DEBUG("[kw41zrf] Start TR\n");
-        irq_state = irq_disable();
-        /* Set a long timeout to avoid timer races while setting up the TX sequence.
-         * By setting the timeout to now - 1 we get 267 seconds to set up everything
-         * before the timer rolls over */
-        kw41zrf_timer_set(dev, &ZLL->T3CMP, ~0ul);
-        /* Initiate transmission, with timeout */
-        kw41zrf_set_sequence(dev, XCVSEQ_TX_RX | ZLL_PHY_CTRL_TC3TMOUT_MASK);
+    /* less than 2 is sometimes in the past */
+    if (dev->backoff_delay < 2) {
+        dev->backoff_delay = 2;
     }
-    else {
-        DEBUG("[kw41zrf] Start T\n");
-        irq_state = irq_disable();
-        /* Initiate transmission */
-        kw41zrf_set_sequence(dev, XCVSEQ_TRANSMIT);
-    }
-    if (backoff_delay > 0) {
-        /* Set real trigger time for CSMA */
-        kw41zrf_timer_set(dev, &ZLL->T2CMP, backoff_delay);
-    }
-    if (tx_timeout > 0) {
-        /* Set real timeout for RX ACK */
-        kw41zrf_timer_set(dev, &ZLL->T3CMP, tx_timeout);
-    }
-    irq_restore(irq_state);
+
+    /* Avoid risk of setting a timer in the past */
+    int irq = irq_disable();
+    kw41zrf_timer_set(dev, &ZLL->T2CMP, ~0ul);
+
+    /* enable TMR2 */
+    bit_clear32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMRTRIGEN_SHIFT);
+    bit_set32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMR2CMP_EN_SHIFT);
+
+    /* Set real trigger time */
+    kw41zrf_timer_set(dev, &ZLL->T2CMP, dev->backoff_delay);
+    irq_restore(irq);
 }
 
 /**
@@ -181,8 +149,11 @@ static void kw41zrf_tx_exec(kw41zrf_t *dev)
  */
 static void kw41zrf_wait_idle(kw41zrf_t *dev)
 {
+    /* things that trigger this must run only from the netdev thread */
+    assert(thread_getpid() == dev->thread->pid);
+
     /* make sure any ongoing T or TR sequence is finished */
-    if (kw41zrf_can_switch_to_idle(dev)) {
+    if (kw41zrf_can_switch_to_idle(dev) && dev->backoff_delay == 0) {
         return;
     }
 
@@ -204,8 +175,8 @@ static void kw41zrf_wait_idle(kw41zrf_t *dev)
         /* Handle the IRQ */
         kw41zrf_netdev_isr((netdev_t *)dev);
         /* kw41zrf_netdev_isr() will switch the transceiver back to idle
-            * after handling the sequence complete IRQ */
-        if (kw41zrf_can_switch_to_idle(dev)) {
+         * after handling the sequence complete IRQ */
+        if (kw41zrf_can_switch_to_idle(dev) && dev->backoff_delay == 0) {
             break;
         }
     }
@@ -888,6 +859,39 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
 static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
+    if (irqsts & ZLL_IRQSTS_TMR2IRQ_MASK) {
+        assert(!(irqsts & ZLL_IRQSTS_CCAIRQ_MASK));
+        handled_irqs |= ZLL_IRQSTS_TMR2IRQ_MASK;
+
+        dev->tx_timeout = 0;
+        /* Check FCF field in the TX buffer to see if the ACK_REQ flag was set in
+         * the packet that is queued for transmission */
+        uint16_t len_fcf = ZLL->PKT_BUFFER_TX[0];
+        uint8_t fcf = (len_fcf >> 8) & 0xff;
+        if ((fcf & IEEE802154_FCF_ACK_REQ) &&
+            (dev->netdev.flags & NETDEV_IEEE802154_ACK_REQ)) {
+            uint8_t payload_len = len_fcf & 0xff;
+            dev->tx_timeout = dev->backoff_delay + dev->tx_warmup_time +
+                KW41ZRF_SHR_PHY_TIME + payload_len * KW41ZRF_PER_BYTE_TIME +
+                KW41ZRF_ACK_WAIT_TIME + 2;
+        }
+
+        KW41ZRF_LED_TX_ON;
+        if (dev->tx_timeout) {
+            kw41zrf_set_sequence(dev, XCVSEQ_TX_RX | ZLL_PHY_CTRL_TC3TMOUT_MASK);
+        }
+        else {
+            kw41zrf_set_sequence(dev, XCVSEQ_TRANSMIT);
+        }
+
+        if (dev->tx_timeout > 0) {
+            /* Set real timeout for RX ACK */
+            kw41zrf_timer_set(dev, &ZLL->T3CMP, dev->tx_timeout);
+        }
+
+        dev->backoff_delay = 0;
+        bit_clear32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMR2CMP_EN_SHIFT);
+    }
     if (irqsts & ZLL_IRQSTS_CCAIRQ_MASK) {
         /* CCA before TX has completed */
         handled_irqs |= ZLL_IRQSTS_CCAIRQ_MASK;
@@ -898,9 +902,13 @@ static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
                 kw41zrf_abort_sequence(dev);
                 KW41ZRF_LED_TX_OFF;
             }
-            DEBUG("[kw41zrf] CCA ch busy (RSSI: %d)\n",
+
+            LOG_DEBUG("[kw41zrf] CCA ch busy (RSSI: %d retry: %u)\n",
                   (int8_t)((ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_CCA1_ED_FNL_MASK) >>
-                ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT));
+                ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT),
+                dev->csma_num_backoffs
+            );
+
             if (dev->csma_num_backoffs < dev->csma_max_backoffs) {
                 /* Perform CSMA/CA backoff algorithm */
                 ++dev->csma_num_backoffs;
@@ -912,15 +920,25 @@ static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
                 kw41zrf_tx_exec(dev);
                 return handled_irqs;
             }
+
+            /* If we get here we've used up the csma retries and we're done */
+            kw41zrf_abort_sequence(dev);
+            kw41zrf_set_sequence(dev, dev->idle_seq);
+
             if (dev->flags & KW41ZRF_OPT_TELL_TX_END) {
                 dev->netdev.netdev.event_callback(&dev->netdev.netdev, NETDEV_EVENT_TX_MEDIUM_BUSY);
+                LOG_INFO("[kw41zrf] dropping frame after %u backoffs\n",
+                          dev->csma_num_backoffs);
             }
+
         }
         else {
             /* Channel is idle */
-            DEBUG("[kw41zrf] CCA ch idle (RSSI: %d)\n",
+            DEBUG("[kw41zrf] CCA ch idle (RSSI: %d retries: %u)\n",
                   (int8_t)((ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_CCA1_ED_FNL_MASK) >>
-                  ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT));
+                  ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT),
+                  dev->csma_num_backoffs
+            );
             if (dev->flags & KW41ZRF_OPT_TELL_TX_START) {
                 /* TX will start automatically after CCA check succeeded */
                 dev->netdev.netdev.event_callback(&dev->netdev.netdev, NETDEV_EVENT_TX_STARTED);
@@ -1180,6 +1198,7 @@ static void kw41zrf_netdev_isr(netdev_t *netdev)
             handled_irqs |= _isr_event_seq_r(dev, irqsts);
             break;
 
+        case XCVSEQ_IDLE: /* XCVSEQ is idle during csma backoff */
         case XCVSEQ_TRANSMIT:
             /* First check CCA flags */
             handled_irqs |= _isr_event_seq_t_ccairq(dev, irqsts);
@@ -1202,20 +1221,18 @@ static void kw41zrf_netdev_isr(netdev_t *netdev)
             handled_irqs |= _isr_event_seq_ccca(dev, irqsts);
             break;
 
-        case XCVSEQ_IDLE:
-            LOG_WARNING("[kw41zrf] IRQ while IDLE\n");
-            break;
-
         default:
-            DEBUG("[kw41zrf] undefined seq state in isr\n");
+            assert(0);
             break;
     }
 
     irqsts &= ~handled_irqs;
 
+    /* doesn't need handling; just prevent outputting an error below */
+    irqsts &= ~ZLL_IRQSTS_RXWTRMRKIRQ_MASK;
+
     if (irqsts & 0x000f017ful) {
-        DEBUG("[kw41zrf] Unhandled IRQs: 0x%08"PRIx32"\n",
-              (irqsts & 0x000f017ful));
+        LOG_ERROR("[kw41zrf] Unhandled IRQs: 0x%08lx\n", (irqsts & 0x000f017ful));
     }
 
     kw41zrf_unmask_irqs();
