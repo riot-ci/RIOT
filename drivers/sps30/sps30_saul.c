@@ -23,11 +23,6 @@
 #include "sps30_params.h"
 
 /**
- * @brief   Number of physical sensor devices
- */
-#define SPS30_NUM      ARRAY_SIZE(sps30_params)
-
-/**
  * @brief   Mapping of sensor values to logical SAUL instances
  */
 #define SPS30_SAUL_VAL_IDX_MC_PM_1_2P5_4      (0)

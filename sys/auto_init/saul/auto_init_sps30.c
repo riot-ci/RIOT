@@ -22,19 +22,9 @@
 #include "sps30_params.h"
 
 /**
- * @brief   Define the number of configured sensors
- */
-#define SPS30_NUM               ARRAY_SIZE(sps30_params)
-
-/**
  * @brief   Number of logical saul devices per physical sensor
  */
 #define SPS30_SAUL_DEV_NUM      (5)
-
-/**
- * @brief   Number of saul info structs
- */
-#define SPS30_INFO_NUM ARRAY_SIZE(sps30_saul_info)
 
 /**
  * @brief   Allocation of memory for device descriptors
