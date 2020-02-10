@@ -49,12 +49,22 @@ static const sps30_params_t sps30_params[] =
 };
 
 /**
+ * @brief   Define the number of configured sensors
+ */
+#define SPS30_NUM               ARRAY_SIZE(sps30_params)
+
+/**
  * @brief   Additional meta information to keep in the SAUL registry
  */
 static const saul_reg_info_t sps30_saul_info[] =
 {
     SPS30_SAUL_INFO
 };
+
+/**
+ * @brief   Number of saul info structs
+ */
+#define SPS30_INFO_NUM ARRAY_SIZE(sps30_saul_info)
 
 #ifdef __cplusplus
 }

@@ -10,7 +10,6 @@
  * @defgroup    drivers_sps30 Sensirion SPS30 Particulate Matter Sensor
  * @ingroup     drivers_sensors
  * @ingroup     drivers_saul
- * @brief       Device driver for the Sensirion SPS30 Particulate Matter Sensor
  *
  * About
  * =====
@@ -90,15 +89,15 @@ typedef struct {
  *
  */
 typedef struct {
-    float mc_pm1;       /**< Mass concntration of PM 1.0 [µg/m^3] */
-    float mc_pm2_5;     /**< Mass concntration of PM 2.5 [µg/m^3] */
-    float mc_pm4;       /**< Mass concntration of PM 4.0 [µg/m^3] */
-    float mc_pm10;      /**< Mass concntration of PM 10 [µg/m^3] */
-    float nc_pm0_5;     /**< Number concntration of PM 0.5 [µg/m^3] */
-    float nc_pm1;       /**< Number concntration of PM 1.0 [µg/m^3] */
-    float nc_pm2_5;     /**< Number concntration of PM 2.5 [µg/m^3] */
-    float nc_pm4;       /**< Number concntration of PM 4.0 [µg/m^3] */
-    float nc_pm10;      /**< Number concntration of PM 10 [µg/m^3] */
+    float mc_pm1;       /**< Mass concentration of PM 1.0 [µg/m^3] */
+    float mc_pm2_5;     /**< Mass concentration of PM 2.5 [µg/m^3] */
+    float mc_pm4;       /**< Mass concentration of PM 4.0 [µg/m^3] */
+    float mc_pm10;      /**< Mass concentration of PM 10 [µg/m^3] */
+    float nc_pm0_5;     /**< Number concentration of PM 0.5 [µg/m^3] */
+    float nc_pm1;       /**< Number concentration of PM 1.0 [µg/m^3] */
+    float nc_pm2_5;     /**< Number concentration of PM 2.5 [µg/m^3] */
+    float nc_pm4;       /**< Number concentration of PM 4.0 [µg/m^3] */
+    float nc_pm10;      /**< Number concentration of PM 10 [µg/m^3] */
     float ps;           /**< Typical particle size [µm] */
 } sps30_data_t;
 
@@ -122,9 +121,9 @@ typedef enum {
 #define SPS30_SER_ART_LEN    (32U)
 
 /**
- * @brief     Default fan auto-clean interval in seconds
+ * @brief     Default fan auto-clean interval in seconds (1 week)
  */
-#define SPS30_DEFAULT_ACI_S  (604800U)
+#define SPS30_DEFAULT_ACI_S  (604800UL)
 
 /**
  * @brief     Maximum number of automatic retries on communication errors
@@ -133,7 +132,7 @@ typedef enum {
  *            may happen that the sensor is not yet ready to serve data.
  *            Handling this within the driver simplifies application code by
  *            omitting sleep handling or retries there.
- *            This value may be overwritten to 1 if more fine-grained feedback
+ *            This value may be overwritten to 0 if more fine-grained feedback
  *            is required or even increased if the device is connected over
  *            suboptimal wiring.
  *

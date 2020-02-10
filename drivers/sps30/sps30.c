@@ -125,7 +125,7 @@ static inline bool _cpy_check_crc(uint8_t *data, size_t len, uint8_t *crcd_data)
  *           (2) `Set Pointer & Read Data`: (1) followed by separate data-read
  *           (3) `Set Pointer & Write Data`: (1) combined with a data-write
  *
- * @pre          sizeof(crcd_data) must be equal to 1.5 * len
+ * @pre            sizeof(crcd_data) must be equal to 1.5 * len
  *
  * @param[in]      dev        Pointer to SPS30 device handle
  * @param[in]      ptr_addr   16 bit pointer address used as command
@@ -143,7 +143,7 @@ static inline bool _cpy_check_crc(uint8_t *data, size_t len, uint8_t *crcd_data)
 static int _rx_tx_data(const sps30_t *dev, uint16_t ptr_addr,
                        uint8_t *data, size_t len, bool read)
 {
-    int res = -SPS30_I2C_ERROR;
+    int res;
     unsigned retr = SPS30_ERROR_RETRY;
 
     if (i2c_acquire(dev->p.i2c_dev) != 0) {
@@ -151,7 +151,7 @@ static int _rx_tx_data(const sps30_t *dev, uint16_t ptr_addr,
         return -SPS30_I2C_ERROR;
     }
 
-    while (res != 0 && retr--) {
+    do {
         size_t addr_data_crc_len = SPS30_PTR_LEN + len + len / 2;
         uint8_t frame_data[addr_data_crc_len];
         frame_data[0] = ptr_addr >> 8;
@@ -182,7 +182,7 @@ static int _rx_tx_data(const sps30_t *dev, uint16_t ptr_addr,
             res = i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR,
                                   &frame_data[0], addr_data_crc_len, 0);
         }
-    }
+    } while (res != 0 && retr--);
 
     i2c_release(dev->p.i2c_dev);
 
@@ -270,13 +270,13 @@ int sps30_start_fan_clean(const sps30_t *dev)
 
 int sps30_read_article_code(const sps30_t *dev, char *str, size_t len)
 {
-    assert(dev && str);
+    assert(dev && str && (len == SPS30_SER_ART_LEN));
     return _rx_tx_data(dev, SPS30_CMD_RD_ARTICLE, (uint8_t*)str, len, true);
 }
 
 int sps30_read_serial_number(const sps30_t *dev, char *str, size_t len)
 {
-    assert(dev && str);
+    assert(dev && str && (len == SPS30_SER_ART_LEN));
     return _rx_tx_data(dev, SPS30_CMD_RD_SERIAL, (uint8_t*)str, len, true);
 }
 
