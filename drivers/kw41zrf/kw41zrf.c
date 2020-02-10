@@ -145,11 +145,9 @@ int kw41zrf_reset_hardware(kw41zrf_t *dev)
         ZLL_PHY_CTRL_RXACKRQD_MASK |
         ZLL_PHY_CTRL_XCVSEQ(XCVSEQ_IDLE);
 
-    /* Mask all timer interrupts and clear all interrupt flags */
+    /* Mask all unused timer interrupts and clear all interrupt flags */
     ZLL->IRQSTS =
         ZLL_IRQSTS_TMR1MSK_MASK |
-        ZLL_IRQSTS_TMR2MSK_MASK |
-        ZLL_IRQSTS_TMR3MSK_MASK |
         ZLL_IRQSTS_TMR4MSK_MASK |
         ZLL_IRQSTS_TMR1IRQ_MASK |
         ZLL_IRQSTS_TMR2IRQ_MASK |

@@ -105,6 +105,8 @@ typedef struct {
     uint8_t csma_be;            /**< Counter used internally by send implementation */
     uint8_t csma_num_backoffs;  /**< Counter used internally by send implementation */
     uint8_t num_retrans;        /**< Counter used internally by send implementation */
+    uint32_t backoff_delay;     /**< CSMA delay for the current TX operation */
+    uint32_t tx_timeout;        /**< Used to timeout waiting for ACK during TRX */
     uint8_t pm_blocked;         /**< true if we have blocked a low power mode in the CPU */
     uint8_t recv_blocked;       /**< blocks moving to XCVSEQ_RECEIVE to prevent
                                  *   overwriting the RX buffer before the higher
