@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -52,164 +54,198 @@ static void flush_if_needed(void)
 #endif
 }
 
-static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
-{
-    const shell_command_t *command_lists[] = {
-        command_list,
 #ifdef MODULE_SHELL_COMMANDS
-        _shell_command_list,
+    #define _builtin_cmds _shell_command_list
+#else
+    #define _builtin_cmds NULL
 #endif
-    };
 
-    /* iterating over command_lists */
-    for (unsigned int i = 0; i < ARRAY_SIZE(command_lists); i++) {
+/**
+ * Code indicating that the line buffer size was exceeded.
+ * This definition ensures there's no collision with EOF.
+ */
+#define ERROR_READLINE_EXCEEDED (EOF - 1)
 
-        const shell_command_t *entry;
+#define SQUOTE '\''
+#define DQUOTE '"'
+#define ESCAPECHAR '\\'
+#define BLANK ' '
 
-        if ((entry = command_lists[i])) {
-            /* iterating over commands in command_lists entry */
-            while (entry->name != NULL) {
-                if (strcmp(entry->name, command) == 0) {
-                    return entry->handler;
-                }
-                else {
-                    entry++;
-                }
-            }
+enum PARSE_STATE {
+    PARSE_SPACE,
+    PARSE_UNQUOTED,
+    PARSE_SINGLEQUOTE,
+    PARSE_DOUBLEQUOTE,
+    PARSE_ESCAPE_MASK,
+    PARSE_UNQUOTED_ESC,
+    PARSE_SINGLEQUOTE_ESC,
+    PARSE_DOUBLEQUOTE_ESC,
+};
+
+static enum PARSE_STATE escape_toggle(enum PARSE_STATE s)
+{
+    return s ^ PARSE_ESCAPE_MASK;
+}
+
+static shell_command_handler_t search_commands(const shell_command_t *entry,
+                                               char *command)
+{
+    for (; entry->name != NULL; entry++) {
+        if (strcmp(entry->name, command) == 0) {
+            return entry->handler;
         }
     }
-
     return NULL;
+}
+
+static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
+{
+    shell_command_handler_t handler = NULL;
+    if (command_list != NULL) {
+        handler = search_commands(command_list, command);
+    }
+
+    if (handler == NULL && _builtin_cmds != NULL) {
+        handler = search_commands(_builtin_cmds, command);
+    }
+    return handler;
+}
+
+static void print_commands(const shell_command_t *entry)
+{
+    for (; entry->name != NULL; entry++) {
+        printf("%-20s %s\n", entry->name, entry->desc);
+    }
 }
 
 static void print_help(const shell_command_t *command_list)
 {
-    printf("%-20s %s\n", "Command", "Description");
-    puts("---------------------------------------");
+    puts("Command              Description\n---------------------------------------");
+    if (command_list != NULL) {
+        print_commands(command_list);
+    }
 
-    const shell_command_t *command_lists[] = {
-        command_list,
-#ifdef MODULE_SHELL_COMMANDS
-        _shell_command_list,
-#endif
-    };
-
-    /* iterating over command_lists */
-    for (unsigned int i = 0; i < ARRAY_SIZE(command_lists); i++) {
-
-        const shell_command_t *entry;
-
-        if ((entry = command_lists[i])) {
-            /* iterating over commands in command_lists entry */
-            while (entry->name != NULL) {
-                printf("%-20s %s\n", entry->name, entry->desc);
-                entry++;
-            }
-        }
+    if (_builtin_cmds != NULL) {
+        print_commands(_builtin_cmds);
     }
 }
 
+/**
+ * Break input line into words, create argv and call the command handler.
+ *
+ * Words are broken up at spaces. A backslash escaped the character that comes
+ * after (meaning it it taken literally and if it is a space it does not break
+ * the word). Spaces can also be protected by quoting with double or single
+ * quotes.
+ *
+ State diagram for the tokenizer:
+```
+
+
+           ┌───[\]────┐   ┌─────["]────┐   ┌───[']─────┐  ┌───[\]────┐
+           ↓          │   ↓            │   │           ↓  │          ↓
+  ┏━━━━━━━━━━┓      ┏━┷━━━━━┓        ┏━┷━━━┷━┓       ┏━━━━┷━━┓     ┏━━━━━━━━━━┓
+  ┃DQUOTE ESC┃      ┃DQUOTE ┠───["]─>┃SPACE  ┃<─[']──┨SQUOTE ┃     ┃SQUOTE ESC┃
+  ┗━━━━━━━━┯━┛      ┗━━━━━━┯┛        ┗┯━━━━┯━┛       ┗━┯━━━━━┛     ┗━━━┯━━━━━━┛
+           │          ↑    │          │    │           │    ↑(store)   │
+           │   (store)│    │   ┌─[\]──┘    └──[*]────┐ │    │          │
+           └────[*]──▶┴◀[*]┘   │                     │ └[*]▶┴◀──────[*]┘
+                               ↓     ┏━━━━━━━┓       ↓
+                               ├◀─[\]┨NOQUOTE┃◀──────┼◀─┐
+                               │     ┗━━━━━┯━┛(store)↑  │
+                               │           │         │  │
+                               │           └─[*]─────┘  │
+                               │     ┏━━━━━━━━━━━┓      │
+                               └────▶┃NOQUOTE ESC┠──[*]─┘
+                                     ┗━━━━━━━━━━━┛
+```
+ */
 static void handle_input_line(const shell_command_t *command_list, char *line)
 {
-    static const char *INCORRECT_QUOTING = "shell: incorrect quoting";
-
     /* first we need to calculate the number of arguments */
-    unsigned argc = 0;
-    char *pos = line;
-    int contains_esc_seq = 0;
-    while (1) {
-        if ((unsigned char) *pos > ' ') {
-            /* found an argument */
-            if (*pos == '"' || *pos == '\'') {
-                /* it's a quoted argument */
-                const char quote_char = *pos;
-                do {
-                    ++pos;
-                    if (!*pos) {
-                        puts(INCORRECT_QUOTING);
-                        return;
-                    }
-                    else if (*pos == '\\') {
-                        /* skip over the next character */
-                        ++contains_esc_seq;
-                        ++pos;
-                        if (!*pos) {
-                            puts(INCORRECT_QUOTING);
-                            return;
-                        }
-                        continue;
-                    }
-                } while (*pos != quote_char);
-                if ((unsigned char) pos[1] > ' ') {
-                    puts(INCORRECT_QUOTING);
-                    return;
+    int argc = 0;
+    char *readpos = line;
+    char *writepos = readpos;
+    enum PARSE_STATE pstate = PARSE_SPACE;
+
+    for (bool is_wordbreak; *readpos != '\0'; readpos++, is_wordbreak = false) {
+        char wordbreak = BLANK;
+
+        switch (pstate) {
+            
+            case PARSE_SPACE:
+                if (*readpos != BLANK) {
+                    argc++;
                 }
+
+                if (*readpos == SQUOTE) {
+                    pstate = PARSE_SINGLEQUOTE;
+                }
+                else if (*readpos == DQUOTE) {
+                    pstate = PARSE_DOUBLEQUOTE;
+                }
+                else if (*readpos == ESCAPECHAR) {
+                    pstate = PARSE_UNQUOTED_ESC;
+                }
+                else if (*readpos != BLANK) {
+                    pstate = PARSE_UNQUOTED;
+                    *writepos++ = *readpos;
+                }
+                break;
+
+            case PARSE_UNQUOTED:
+                wordbreak = BLANK;
+                is_wordbreak = true;
+                break;
+
+            case PARSE_SINGLEQUOTE:
+                wordbreak = SQUOTE;
+                is_wordbreak = true;
+                break;
+
+            case PARSE_DOUBLEQUOTE:
+                wordbreak = DQUOTE;
+                is_wordbreak = true;
+                break;
+
+            default: /* QUOTED state */
+                pstate = escape_toggle(pstate);
+                *writepos++ = *readpos;
+                break;
+        }
+
+        if (is_wordbreak) {
+            if (*readpos == wordbreak) {
+                pstate = PARSE_SPACE;
+                *writepos++ = '\0';
+            }
+            else if (*readpos == ESCAPECHAR) {
+                pstate = escape_toggle(pstate);
             }
             else {
-                /* it's an unquoted argument */
-                do {
-                    if (*pos == '\\') {
-                        /* skip over the next character */
-                        ++contains_esc_seq;
-                        ++pos;
-                        if (!*pos) {
-                            puts(INCORRECT_QUOTING);
-                            return;
-                        }
-                    }
-                    ++pos;
-                    if (*pos == '"') {
-                        puts(INCORRECT_QUOTING);
-                        return;
-                    }
-                } while ((unsigned char) *pos > ' ');
+                *writepos++ = *readpos;
             }
-
-            /* count the number of arguments we got */
-            ++argc;
-        }
-
-        /* zero out the current position (space or quotation mark) and advance */
-        if (*pos > 0) {
-            *pos = 0;
-            ++pos;
-        }
-        else {
-            break;
         }
     }
-    if (!argc) {
+    *writepos = '\0';
+
+    if (pstate != PARSE_SPACE && pstate != PARSE_UNQUOTED) {
+        puts("shell: incorrect quoting");
+        return;
+    }
+
+    if (argc == 0) {
         return;
     }
 
     /* then we fill the argv array */
-    char *argv[argc + 1];
-    argv[argc] = NULL;
-    pos = line;
-    for (unsigned i = 0; i < argc; ++i) {
-        while (!*pos) {
-            ++pos;
-        }
-        if (*pos == '"' || *pos == '\'') {
-            ++pos;
-        }
-        argv[i] = pos;
-        while (*pos) {
-            ++pos;
-        }
-    }
-    for (char **arg = argv; contains_esc_seq && *arg; ++arg) {
-        for (char *c = *arg; *c; ++c) {
-            if (*c != '\\') {
-                continue;
-            }
-            for (char *d = c; *d; ++d) {
-                *d = d[1];
-            }
-            if (--contains_esc_seq == 0) {
-                break;
-            }
-        }
+    int collected;
+    char *argv[argc];
+
+    readpos = line;
+    for (collected = 0; collected < argc; collected++) {
+        argv[collected] = readpos;
+        readpos += strlen(readpos) + 1;
     }
 
     /* then we call the appropriate handler */
@@ -227,42 +263,75 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     }
 }
 
+/**
+ * Read a single line from standard input into a buffer.
+ *
+ * In addition to copying characters, this routine echoes the line back to
+ * stdout and also supports primitive line editing.
+ *
+ * If the input line is too long, the input will still be consumed until the end
+ * to prevent the next line from containing garbage.
+ *
+ * @param   buf     Buffer where the input will be placed.
+ * @param   size    Size of the buffer. The maximum line length will be one less
+ *                  than size, to accommodate for the null terminator.
+ *                  The minimum buffer size is 1.
+ *
+ * @return  length of the read line, excluding the terminator, if reading was
+ *          successful.
+ * @return  EOF, if the end of the input stream was reached.
+ * @return  ERROR_READLINE_EXCEEDED if the buffer size was exceeded.
+ */
 static int readline(char *buf, size_t size)
 {
-    char *line_buf_ptr = buf;
+    int curr_pos = 0;
+    bool length_exceeded = false;
+
+    assert((size_t) size > 0);
 
     while (1) {
-        if ((line_buf_ptr - buf) >= ((int) size) - 1) {
-            return -1;
-        }
+        /* At the start of the loop, cur_pos should point inside of
+         * buf. This ensures the terminator can always fit. */
+        assert((size_t) curr_pos < size);
 
         int c = getchar();
         if (c < 0) {
             return EOF;
         }
 
-        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r). */
-        /* QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio"). */
-        /* DOS newlines are handled like hitting enter twice, but empty lines are ignored. */
-        /* Ctrl-C cancels the current line. */
+        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r).
+         * QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio").
+         * DOS newlines are handled like hitting enter twice, but empty lines are ignored.
+         * Ctrl-C cancels the current line. */
         if (c == '\r' || c == '\n' || c == ETX) {
-            *line_buf_ptr = '\0';
+            if (c == ETX) {
+                curr_pos = 0;
+                length_exceeded = false;
+            }
+
+            buf[curr_pos] = '\0';
 #ifndef SHELL_NO_ECHO
             _putchar('\r');
             _putchar('\n');
 #endif
 
-            /* return 1 if line is empty, 0 otherwise */
-            return c == ETX || line_buf_ptr == buf;
+            return (length_exceeded)? ERROR_READLINE_EXCEEDED : curr_pos;
         }
-        /* QEMU uses 0x7f (DEL) as backspace, while 0x08 (BS) is for most terminals */
-        else if (c == 0x08 || c == 0x7f) {
-            if (line_buf_ptr == buf) {
-                /* The line is empty. */
+
+        /* check for backspace:
+         * 0x7f (DEL) when using QEMU
+         * 0x08 (BS) for most terminals */
+        if (c == 0x08 || c == 0x7f) {
+            if (curr_pos == 0) {
+                /* ignore empty line */
                 continue;
             }
 
-            *--line_buf_ptr = '\0';
+            /* after we dropped characters do not edit the line, yet keep the
+             * visual effects */
+            if (!length_exceeded) {
+                buf[--curr_pos] = '\0';
+            }
             /* white-tape the character */
 #ifndef SHELL_NO_ECHO
             _putchar('\b');
@@ -271,7 +340,13 @@ static int readline(char *buf, size_t size)
 #endif
         }
         else {
-            *line_buf_ptr++ = c;
+            /* Always consume characters, but do not not always store them */
+            if ((size_t) curr_pos < size - 1) {
+                buf[curr_pos++] = c;
+            }
+            else {
+                length_exceeded = true;
+            }
 #ifndef SHELL_NO_ECHO
             _putchar(c);
 #endif
@@ -298,12 +373,22 @@ void shell_run_once(const shell_command_t *shell_commands,
     while (1) {
         int res = readline(line_buf, len);
 
-        if (res == EOF) {
-            break;
-        }
+        switch (res) {
 
-        if (!res) {
-            handle_input_line(shell_commands, line_buf);
+            case EOF:
+                return;
+
+            case ERROR_READLINE_EXCEEDED:
+                puts("shell: maximum line length exceeded");
+                break;
+
+            case 0:
+                puts("shell: line is empty");
+                break;
+
+            default:
+                handle_input_line(shell_commands, line_buf);
+                break;
         }
 
         print_prompt();
