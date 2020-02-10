@@ -40,7 +40,7 @@ extern "C" {
 #define STMPE811_PARAM_ADDR             (STMPE811_I2C_ADDR_DEFAULT)
 #endif
 #ifndef STMPE811_PARAM_INT_PIN
-#define STMPE811_PARAM_INT_PIN          GPIO_PIN(PORT_A, 15)
+#define STMPE811_PARAM_INT_PIN          GPIO_PIN(0, 15)
 #endif
 #ifndef STMPE811_PARAM_XMAX
 #define STMPE811_PARAM_XMAX             (240U)
