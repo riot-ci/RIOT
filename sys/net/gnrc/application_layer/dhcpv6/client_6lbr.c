@@ -25,6 +25,11 @@
 
 #include "net/gnrc/dhcpv6/client/6lbr.h"
 
+#if IS_USED(MODULE_AUTO_INIT_DHCPV6_CLIENT)
+#error "Module `gnrc_dhcpv6_client_6lbr` is mutually exclusive to \
+`auto_init_dhcpv6_client`"
+#endif
+
 static char _stack[DHCPV6_CLIENT_STACK_SIZE];
 
 static gnrc_netif_t *_find_upstream_netif(void)
