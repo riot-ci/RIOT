@@ -209,8 +209,8 @@ int stmpe811_read_touch_position(const stmpe811_t *dev, stmpe811_touch_position_
     /* Release I2C device */
     i2c_release(STMPE811_DEV_I2C);
 
-    xyz_ul = (uint32_t)(xyz[0] << 24) | (uint32_t)(xyz[1] << 16) | \
-            (uint32_t)(xyz[2] << 8) | (xyz[3] << 0);
+    xyz_ul = ((uint32_t)xyz[0] << 24) | ((uint32_t)xyz[1] << 16) | \
+            ((uint32_t)xyz[2] << 8) | (xyz[3] << 0);
 
     tmp_x = (xyz_ul >> 20) & 0xfff;
     tmp_y = (xyz_ul >>  8) & 0xfff;
