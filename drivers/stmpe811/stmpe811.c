@@ -187,9 +187,8 @@ int stmpe811_init(stmpe811_t *dev, const stmpe811_params_t * params, touch_event
     return ret;
 }
 
-int stmpe811_read_touch_position(const stmpe811_t *dev, stmpe811_touch_position_t *position)
+int stmpe811_read_touch_position(stmpe811_t *dev, stmpe811_touch_position_t *position)
 {
-    static uint16_t prev_x, prev_y;
     uint16_t tmp_x, tmp_y;
 
     /* Acquire I2C device */
@@ -223,7 +222,7 @@ int stmpe811_read_touch_position(const stmpe811_t *dev, stmpe811_touch_position_
 
     /* clamp y position */
     if (tmp_y > dev->params.ymax) {
-        tmp_y = prev_y;
+        tmp_y = dev->prev_y;
     }
 
     /* X value first correction */
@@ -239,11 +238,11 @@ int stmpe811_read_touch_position(const stmpe811_t *dev, stmpe811_touch_position_
 
     /* clamp x position */
     if (tmp_x > dev->params.xmax) {
-        tmp_x = prev_x;
+        tmp_x = dev->prev_x;
     }
 
-    prev_x = tmp_x;
-    prev_y = tmp_y;
+    dev->prev_x = tmp_x;
+    dev->prev_y = tmp_y;
     position->x = tmp_x;
     position->y = tmp_y;
 

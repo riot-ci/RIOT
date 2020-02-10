@@ -77,6 +77,8 @@ typedef struct {
  */
 typedef struct {
     stmpe811_params_t params;       /**< Device parameters */
+    uint16_t prev_x;                /**< Previous X coordinate */
+    uint16_t prev_y;                /**< Previous Y coordinate */
 } stmpe811_t;
 
 /**
@@ -104,7 +106,7 @@ int stmpe811_init(stmpe811_t *dev, const stmpe811_params_t * params,
  * @return                  STMPE811_OK on success
  * @return                  -STMPE811_ERR_I2C on any I2C error
  */
-int stmpe811_read_touch_position(const stmpe811_t *dev, stmpe811_touch_position_t *position);
+int stmpe811_read_touch_position(stmpe811_t *dev, stmpe811_touch_position_t *position);
 
 /**
  * @brief   Read the touch state (pressed or released)
