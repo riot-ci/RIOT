@@ -125,8 +125,6 @@ static inline bool _cpy_check_crc(uint8_t *data, size_t len, uint8_t *crcd_data)
  *           (2) `Set Pointer & Read Data`: (1) followed by separate data-read
  *           (3) `Set Pointer & Write Data`: (1) combined with a data-write
  *
- * @pre            sizeof(crcd_data) must be equal to 1.5 * len
- *
  * @param[in]      dev        Pointer to SPS30 device handle
  * @param[in]      ptr_addr   16 bit pointer address used as command
  * @param[in/out]  data       Pre-allocated memory pointing to either the data
