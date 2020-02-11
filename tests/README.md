@@ -94,7 +94,7 @@ compiled in if `NDEBUG` is defined. This is useful to keep a test application
 functional even when compiling e.g., in a release build mode activating more
 optimizations.
 
-`expect()` is defined in the header `test_util/expect.h`.
+`expect()` is defined in the header `test_utils/expect.h`.
 
 Interaction through the uart
 ----------------------------
