@@ -213,7 +213,6 @@ static void _enable_global_out_nak(const stm32_usb_otg_fshs_config_t *conf)
     if (_device_regs(conf)->DCTL & USB_OTG_DCTL_GONSTS) {
         return;
     }
-    DEBUG("GONAK EN\n");
     _device_regs(conf)->DCTL |= USB_OTG_DCTL_SGONAK;
     while (!(_device_regs(conf)->DCTL & USB_OTG_DCTL_GONSTS)) {}
 }
@@ -223,7 +222,6 @@ static void _disable_global_out_nak(const stm32_usb_otg_fshs_config_t *conf)
     if (!(_device_regs(conf)->DCTL & USB_OTG_DCTL_GONSTS)) {
         return;
     }
-    DEBUG("GONAK DIS\n");
     _device_regs(conf)->DCTL |= USB_OTG_DCTL_CGONAK;
     while ((_device_regs(conf)->DCTL & USB_OTG_DCTL_GONSTS)) {}
 }
@@ -233,7 +231,6 @@ static void _enable_global_in_nak(const stm32_usb_otg_fshs_config_t *conf)
     if (_device_regs(conf)->DCTL & USB_OTG_DCTL_GINSTS) {
         return;
     }
-    DEBUG("GINAK EN\n");
     _device_regs(conf)->DCTL |= USB_OTG_DCTL_SGINAK;
     while (!(_device_regs(conf)->DCTL & USB_OTG_DCTL_GINSTS)) {}
 }
@@ -243,7 +240,6 @@ static void _disable_global_in_nak(const stm32_usb_otg_fshs_config_t *conf)
     if (!(_device_regs(conf)->DCTL & USB_OTG_DCTL_GINSTS)) {
         return;
     }
-    DEBUG("GINAK DIS\n");
     _device_regs(conf)->DCTL |= USB_OTG_DCTL_CGINAK;
     while ((_device_regs(conf)->DCTL & USB_OTG_DCTL_GINSTS)) {}
 }
@@ -296,7 +292,7 @@ static uint32_t _ep0_size(size_t size)
 static void _ep_in_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
 {
     if (_in_regs(conf, num)->DIEPCTL & USB_OTG_DIEPCTL_EPENA) {
-        DEBUG("Disabling IN %u\n", num);
+        DEBUG("otg_fs: Disabling IN %u\n", num);
         /* Enable global nak according to procedure */
         _enable_global_in_nak(conf);
         /* Flush the fifo to clear pending data */
@@ -318,7 +314,7 @@ static void _ep_in_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
 static void _ep_out_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
 {
     if (_out_regs(conf, num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) {
-        DEBUG("Disabling OUT %u\n", num);
+        DEBUG("otg_fs: Disabling OUT %u\n", num);
         /* Enable global nak according to procedure */
         _enable_global_out_nak(conf);
         /* No need to flush the fifo here, this works(tm) */
@@ -386,14 +382,14 @@ static void _ep_activate(usbdev_ep_t *ep)
 
 static inline void _usb_attach(stm32_usb_otg_fshs_t *usbdev)
 {
-    DEBUG("Attaching to host\n");
+    DEBUG("otg_fs: Attaching to host\n");
     /* Disable the soft disconnect feature */
     _device_regs(usbdev->config)->DCTL &= ~USB_OTG_DCTL_SDIS;
 }
 
 static inline void _usb_detach(stm32_usb_otg_fshs_t *usbdev)
 {
-    DEBUG("Detaching from host\n");
+    DEBUG("otg_fs: Detaching from host\n");
     /* Enable the soft disconnect feature */
     _device_regs(usbdev->config)->DCTL |= USB_OTG_DCTL_SDIS;
 }
@@ -698,7 +694,7 @@ static void _usbdev_init(usbdev_t *dev)
     _global_regs(conf)->GINTSTS |= STM32_FSHS_USB_GINT_MASK;
     _global_regs(conf)->GINTMSK |= STM32_FSHS_USB_GINT_MASK;
 
-    DEBUG("USB peripheral currently in %s mode\n",
+    DEBUG("otg_fs: USB peripheral currently in %s mode\n",
           (_global_regs(
                conf)->GINTSTS & USB_OTG_GINTSTS_CMOD) ? "host" : "device");
 
@@ -728,7 +724,7 @@ static int _usbdev_get(usbdev_t *dev, usbopt_t opt,
             res = sizeof(usb_speed_t);
             break;
         default:
-            DEBUG("Unhandled get call: 0x%x\n", opt);
+            DEBUG("otg_fs: Unhandled get call: 0x%x\n", opt);
             break;
     }
     return res;
@@ -759,7 +755,7 @@ static int _usbdev_set(usbdev_t *dev, usbopt_t opt,
             res = sizeof(usbopt_enable_t);
             break;
         default:
-            DEBUG("Unhandled set call: 0x%x\n", opt);
+            DEBUG("otg_fs: Unhandled set call: 0x%x\n", opt);
             break;
     }
     return res;
@@ -776,18 +772,18 @@ static void _usbdev_esr(usbdev_t *dev)
     if (int_status & USB_OTG_GINTSTS_ENUMDNE) {
         event = USB_OTG_GINTSTS_ENUMDNE;
         /* Reset condition done */
-        DEBUG("Reset done\n");
+        DEBUG("otg_fs: Reset done\n");
         usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_RESET);
     }
     else if (int_status & USB_OTG_GINTSTS_USBRST) {
         /* Start of reset condition */
         event = USB_OTG_GINTSTS_USBRST;
 
-        DEBUG("Reset start\n");
+        DEBUG("otg_fs: Reset start\n");
         if (usbdev->suspend) {
             usbdev->suspend = false;
             _wake_periph(conf);
-            DEBUG("PHY SUSP %lx\n", *_pcgcctl_reg(conf));
+            DEBUG("otg_fs: PHY SUSP %lx\n", *_pcgcctl_reg(conf));
         }
 
         /* Reset all the things! */
@@ -799,24 +795,21 @@ static void _usbdev_esr(usbdev_t *dev)
     else if (int_status & USB_OTG_GINTSTS_SRQINT) {
         /* Reset done */
         event = USB_OTG_GINTSTS_SRQINT;
-        DEBUG("Session request\n");
+        DEBUG("otg_fs: Session request\n");
     }
     else if (int_status & USB_OTG_GINTSTS_USBSUSP) {
         event = USB_OTG_GINTSTS_USBSUSP;
         if (!usbdev->suspend) {
-            DEBUG("SUSPEND\n");
             usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_SUSPEND);
             usbdev->suspend = true;
-            _sleep_periph(conf);
-            DEBUG("PHY SUSP %lx\n", *_pcgcctl_reg(conf));
             /* Disable USB clock */
+            _sleep_periph(conf);
         }
     }
     else if (int_status & USB_OTG_GINTSTS_WKUINT) {
         event = USB_OTG_GINTSTS_WKUINT;
         if (usbdev->suspend) {
             usbdev->suspend = false;
-            DEBUG("WAKE\n");
             /* re-enable USB clock */
             _wake_periph(conf);
             usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_RESUME);
@@ -829,7 +822,7 @@ static void _usbdev_esr(usbdev_t *dev)
 
 static void _usbdev_ep_init(usbdev_ep_t *ep)
 {
-    DEBUG("STM32 Initializing EP %u, %s\n", ep->num,
+    DEBUG("otg_fs: Initializing EP %u, %s\n", ep->num,
           ep->dir == USB_EP_DIR_IN ? "IN" : "OUT");
 }
 
@@ -854,7 +847,7 @@ static int _usbdev_ep_get(usbdev_ep_t *ep, usbopt_ep_t opt,
             res = sizeof(size_t);
             break;
         default:
-            DEBUG("otg_fs: Unhandled get call: 0x%x\n", opt);
+            DEBUG("otg_fs: Unhandled endpoint get call: 0x%x\n", opt);
             break;
     }
     return res;
@@ -901,6 +894,7 @@ static int _usbdev_ep_set(usbdev_ep_t *ep, usbopt_ep_t opt,
             res = sizeof(usbopt_enable_t);
             break;
         default:
+            DEBUG("otg_fs: Unhandled endpoint set call: 0x%x\n", opt);
             break;
     }
     return res;
