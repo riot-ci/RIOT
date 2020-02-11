@@ -1,3 +1,4 @@
+DEFAULT_MODULE += auto_init_storage
 USEMODULE += fatfs_diskio_mtd
 USEMODULE += mtd
 
