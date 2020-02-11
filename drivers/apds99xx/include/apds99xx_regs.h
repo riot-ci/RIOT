@@ -119,7 +119,7 @@ extern "C"
 /** Configuration register (APDS99XX_REG_CONFIG) */
 #define APDS99XX_REG_WLONG    (0x02)  /**< Wait Long */
 
-/** Interrupt persistence filter regiser (APDS99XX_REG_PERS) */
+/** Interrupt persistence filter register (APDS99XX_REG_PERS) */
 #define APDS99XX_REG_PPERS    (0xf0)  /**< Proximity Interrupt persistence. */
 #define APDS99XX_REG_APERS    (0x0f)  /**< ALS Interrupt persistence. */
 

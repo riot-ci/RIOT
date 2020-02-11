@@ -54,7 +54,7 @@
  *   The sensor generates a number of IR LED pulses and measures the amount
  *   of the IR energy reflected by an object to determine its distance. The
  *   time required for proximity sensing (```t_prx``` ) results from the
- *   time it takes to generate the IR LED pulses and to accumlate the
+ *   time it takes to generate the IR LED pulses and to accumalate the
  *   reflected IR energy (```t_prx_acc```) as well as the time for the ADC
  *   conversion (```t_prx_cnv```).
  *
@@ -66,7 +66,7 @@
  *
  *       t_prx_acc = prx_pulses * t_prx_pulse
  *
- *   The ADC converstion time ```t_prx_cnv``` and the period of one
+ *   The ADC conversion time ```t_prx_cnv``` and the period of one
  *   pulse ```t_prx_pulse``` depend on used sensor and are available as the
  *   defines #APDS99XX_T_PRX_CNV and #APDS99XX_T_PRX_PULSE for calculations
  *   by the application.
@@ -336,7 +336,7 @@ typedef struct {
     apds99xx_prx_gain_t  prx_gain;  /**< Gain used for proximity sensing.
                                          (default #APDS99XX_PRX_GAIN_1) */
 
-    uint16_t wait_steps;    /**< Waiting time in steps. If 0, wating is
+    uint16_t wait_steps;    /**< Waiting time in steps. If 0, waiting is
                                  disabled. (default 0) */
     bool     wait_long;     /**< Long waiting time. If true, waitng time is
                                  increased by a factor 12. (default false) */
@@ -390,7 +390,7 @@ typedef struct {
 
     uint16_t prx_thresh_low;  /**< Low threshold for proximity values
                                    (only the low byte is used for APDS9960) */
-    uint16_t prx_thresh_high; /**< High threshhold for proximity values
+    uint16_t prx_thresh_high; /**< High threshold for proximity values
                                    (only the low byte is used for APDS9960) */
 
 } apds99xx_int_config_t;
@@ -448,7 +448,7 @@ typedef union {
  * @brief   Initialize the APDS99XX sensor device
  *
  * This function resets the sensor and initializes the sensor according to
- * given intialization parameters. All registers are reset to default values.
+ * given initialization parameters. All registers are reset to default values.
  *
  * @param[in]   dev     device descriptor of APDS99XX sensor to be initialized
  * @param[in]   params  configuration parameters, see #apds99xx_params_t
