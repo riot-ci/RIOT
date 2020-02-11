@@ -24,7 +24,7 @@
  * The application uses the following configurations:
  *
  * - 1 x ALS gain,
- * - 64 steps as ALS intergration time to use the full range of uint16_t,
+ * - 64 steps as ALS integration time to use the full range of uint16_t,
  * - 8 IR LED pulses at 100 mA current for proximity sensing,
  * - 1 x proximity sensing gain, and,
  * - no waits.
