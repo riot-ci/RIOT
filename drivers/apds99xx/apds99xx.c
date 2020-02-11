@@ -479,7 +479,7 @@ static int _reg_read(const apds99xx_t *dev, uint8_t reg, uint8_t *data, uint16_t
     if (ENABLE_DEBUG) {
         printf("[apds99xx] %s i2c dev=%d addr=%02x: read from reg 0x%02x: ",
                __func__, dev->params.dev, APDS99XX_I2C_ADDRESS, reg);
-        for (int i = 0; i < len; i++) {
+        for (uint16_t i = 0; i < len; i++) {
             printf("%02x ", data[i]);
         }
         printf("\n");
@@ -495,7 +495,7 @@ static int _reg_write(const apds99xx_t *dev, uint8_t reg, uint8_t *data, uint16_
     if (ENABLE_DEBUG) {
         printf("[apds99xx] %s i2c dev=%d addr=%02x: write to reg 0x%02x: ",
                __func__, dev->params.dev, APDS99XX_I2C_ADDRESS, reg);
-        for (int i = 0; i < len; i++) {
+        for (uint16_t i = 0; i < len; i++) {
             printf("%02x ", data[i]);
         }
         printf("\n");
