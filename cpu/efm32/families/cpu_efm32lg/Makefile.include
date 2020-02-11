@@ -7,4 +7,4 @@ EFM32_HEADER = $(wildcard $(RIOTCPU)/efm32/families/cpu_efm32lg/include/vendor/$
 VECTORS_O := $(BINDIR)/cpu_efm32lg/vectors.o
 
 # include vendor device headers
-INCLUDES += -I$(RIOTCPU)/efm32/families/cpu_efm3lg/include/vendor
+INCLUDES += -I$(RIOTCPU)/efm32/families/cpu_efm32lg/include/vendor
