@@ -47,14 +47,14 @@
 #define LVGL_THREAD_FLAG        (0x4242)
 #endif
 
-static char _task_thread_stack[THREAD_STACKSIZE_MAIN];
+static char _task_thread_stack[THREAD_STACKSIZE_DEFAULT * 2];
 static kernel_pid_t _task_thread_pid;
 
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LVGL_COLOR_BUF_SIZE];
 static disp_dev_t *_dev = NULL;
 
-void *_task_thread(void *arg)
+static void *_task_thread(void *arg)
 {
     (void)arg;
 
@@ -78,7 +78,7 @@ void *_task_thread(void *arg)
     return NULL;
 }
 
-void _disp_map(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_p)
+static void _disp_map(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_p)
 {
     if (!_dev) {
         return;
