@@ -99,8 +99,8 @@ static usbdev_ep_t _in[_TOTAL_NUM_ENDPOINTS];
 /* Forward declaration for the usb device driver */
 const usbdev_driver_t driver;
 
-static void _flush_fifo(const stm32_usb_otg_fshs_config_t *conf,
-                        uint8_t fifo_num);
+static void _flush_tx_fifo(const stm32_usb_otg_fshs_config_t *conf,
+                           uint8_t fifo_num);
 
 /*************************************************************************
 * Conversion function from the base address to specific register blocks *
@@ -300,7 +300,7 @@ static void _ep_in_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
         /* Enable global nak according to procedure */
         _enable_global_in_nak(conf);
         /* Flush the fifo to clear pending data */
-        _flush_fifo(conf, num);
+        _flush_tx_fifo(conf, num);
         /* disable endpoint and set NAK */
         _in_regs(conf, num)->DIEPCTL = USB_OTG_DIEPCTL_EPDIS | USB_OTG_DIEPCTL_SNAK;
         /* Wait for the disable to take effect */
@@ -517,11 +517,11 @@ static usbdev_ep_t *_usbdev_new_ep(usbdev_t *dev, usb_ep_type_t type,
 /**
  * @brief reset a TX fifo.
  *
- * @param   conf      usbdev context
+ * @param   conf        usbdev context
  * @param   fifo_num    fifo number to reset, 0x10 for all fifos
  */
-static void _flush_fifo(const stm32_usb_otg_fshs_config_t *conf,
-                        uint8_t fifo_num)
+static void _flush_tx_fifo(const stm32_usb_otg_fshs_config_t *conf,
+                           uint8_t fifo_num)
 {
     uint32_t reg = _global_regs(conf)->GRSTCTL & ~(USB_OTG_GRSTCTL_TXFNUM);
 
@@ -555,7 +555,7 @@ static void _wake_periph(const stm32_usb_otg_fshs_config_t *conf)
 #endif
     *_pcgcctl_reg(conf) &= ~USB_OTG_PCGCCTL_STOPCLK;
     _flush_rx_fifo(conf);
-    _flush_fifo(conf, 0x10);
+    _flush_tx_fifo(conf, 0x10);
 }
 
 static void _reset_eps(stm32_usb_otg_fshs_t *usbdev)
@@ -666,7 +666,7 @@ static void _usbdev_init(usbdev_t *dev)
     _flush_rx_fifo(conf);
 
     /* Reset all TX FIFOs */
-    _flush_fifo(conf, 0x10);
+    _flush_tx_fifo(conf, 0x10);
 
     /* Values from the reference manual tables on TRDT configuration        *
      * 0x09 for 24Mhz ABH frequency, 0x06 for 32Mhz or higher AHB frequency */
@@ -792,7 +792,7 @@ static void _usbdev_esr(usbdev_t *dev)
 
         /* Reset all the things! */
         _flush_rx_fifo(conf);
-        _flush_fifo(conf, 0x10);
+        _flush_tx_fifo(conf, 0x10);
         _reset_eps(usbdev);
         _set_address(usbdev, 0);
     }
