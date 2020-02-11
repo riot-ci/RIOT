@@ -325,7 +325,7 @@ static void _ep_out_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
         /* disable endpoint and set NAK */
         _out_regs(conf, num)->DOEPCTL = USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
         /* Wait for the disable to take effect */
-        while (_out_regs(conf, num)->DIEPCTL & USB_OTG_DOEPCTL_EPDIS) {}
+        while (_out_regs(conf, num)->DOEPCTL & USB_OTG_DOEPCTL_EPDIS) {}
         /* Disable global nak according to procedure */
         _disable_global_out_nak(conf);
     }
