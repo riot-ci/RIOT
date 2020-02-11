@@ -54,7 +54,7 @@
  *   The sensor generates a number of IR LED pulses and measures the amount
  *   of the IR energy reflected by an object to determine its distance. The
  *   time required for proximity sensing (```t_prx``` ) results from the
- *   time it takes to generate the IR LED pulses and to accumalate the
+ *   time it takes to generate the IR LED pulses and to accumulate the
  *   reflected IR energy (```t_prx_acc```) as well as the time for the ADC
  *   conversion (```t_prx_cnv```).
  *
