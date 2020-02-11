@@ -1127,7 +1127,9 @@ endif
 
 # Add auto_init_% DEFAULT_MODULES. This is done after the recursive cach since
 # none of these modules can trigger dependency resolution.
-USEMODULE += $(filter auto_init_%,$(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE)))
+ifneq (,$(filter auto_init,$(USEMODULE)))
+  USEMODULE += $(filter auto_init_%,$(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE)))
+endif
 
 ifneq (,$(filter ecc_%,$(USEMODULE)))
   USEMODULE += ecc
