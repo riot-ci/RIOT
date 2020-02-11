@@ -3,7 +3,5 @@
 # value.
 CPU2_ROM_LEN = 216K
 
-PROGRAMMER = pyocd
-
 # include shared global Nucleo Makefile
 include $(RIOTBOARD)/common/nucleo/Makefile.include
