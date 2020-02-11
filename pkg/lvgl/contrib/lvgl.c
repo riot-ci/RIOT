@@ -47,7 +47,7 @@
 #define LVGL_THREAD_FLAG        (0x4242)
 #endif
 
-static char _task_thread_stack[THREAD_STACKSIZE_DEFAULT * 2];
+static char _task_thread_stack[THREAD_STACKSIZE_LARGE];
 static kernel_pid_t _task_thread_pid;
 
 static lv_disp_buf_t disp_buf;
