@@ -28,7 +28,7 @@
 #include "disp_dev.h"
 
 #ifndef LVGL_TASK_THREAD_PRIO
-#define LVGL_TASK_THREAD_PRIO   (THREAD_PRIORITY_MAIN - 1)
+#define LVGL_TASK_THREAD_PRIO   (THREAD_PRIORITY_MAIN + 1)
 #endif
 
 #ifndef LVGL_COLOR_BUF_SIZE
@@ -36,11 +36,15 @@
 #endif
 
 #ifndef LVGL_ACTIVITY_PERIOD
-#define LVGL_ACTIVITY_PERIOD    (5 * MS_PER_SEC)
+#define LVGL_ACTIVITY_PERIOD    (1 * MS_PER_SEC)    /* 1s */
 #endif
 
 #ifndef LVGL_TASK_HANDLER_DELAY
-#define LVGL_TASK_HANDLER_DELAY (5 * US_PER_MS)
+#define LVGL_TASK_HANDLER_DELAY (5 * US_PER_MS)     /* 5ms */
+#endif
+
+#ifndef LVGL_THREAD_FLAG
+#define LVGL_THREAD_FLAG        (0x4242)
 #endif
 
 static char _task_thread_stack[THREAD_STACKSIZE_MAIN];
@@ -60,8 +64,9 @@ void *_task_thread(void *arg)
         if (lv_disp_get_inactive_time(NULL) < LVGL_ACTIVITY_PERIOD) {
             lv_task_handler();
         }
-        else { /* Block after LVGL_ACTIVITY_PERIOD msec inactivity */
-            thread_flags_wait_any(0x1);
+        else {
+            /* Block after LVGL_ACTIVITY_PERIOD msec inactivity */
+            thread_flags_wait_any(LVGL_THREAD_FLAG);
 
             /* trigger an activity so the task handler is called on the next loop */
             lv_disp_trig_activity(NULL);
@@ -113,5 +118,5 @@ void lvgl_init(disp_dev_t *dev)
 void lvgl_wakeup(void)
 {
     thread_t *tcb = (thread_t *)sched_threads[_task_thread_pid];
-    thread_flags_set(tcb, 0x1);
+    thread_flags_set(tcb, LVGL_THREAD_FLAG);
 }
