@@ -11,15 +11,7 @@ The application works without modifications on the stm32f429i-disc1 board. To
 build, flash and run the application for this board, just use:
 
 ```
-make BOARD=stm32f428i-disc1 -C tests/pkg_lvgl flash
-```
-
-The application can only be used boards using and ili9341 LCD screen. You can
-also use the pinetime board but with a different configuration: the horizontal
-resolution of the screen must be adapted:
-
-```
-LVGL_HOR_RES_MAX=240 make BOARD=pinetime -C tests/pkg_lvgl flash
+make BOARD=stm32f429i-disc1 -C tests/pkg_lvgl flash
 ```
 
 ### Expected result
