@@ -55,6 +55,11 @@ NORETURN static inline void _expect_failure(const char *file, unsigned line, con
 /**
  * @brief    abort the program if condition is false
  *
+ * This is similar to assert(), but will not be excluded from a build even if
+ * NDEBUG is set. Use e.g., in test application to "assert" conditions, in
+ * order to prevent a different compilation mode (a release build?) from making
+ * the test non-functional.
+ *
  * Otherwise, the macro expect() prints an error message to standard error and
  * terminates the application by calling core_panic().
  *
