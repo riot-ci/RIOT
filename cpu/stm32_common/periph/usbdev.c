@@ -325,7 +325,7 @@ static void _ep_out_disable(const stm32_usb_otg_fshs_config_t *conf, size_t num)
         /* disable endpoint and set NAK */
         _out_regs(conf, num)->DOEPCTL = USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
         /* Wait for the disable to take effect */
-        while (_in_regs(conf, num)->DIEPCTL & USB_OTG_DOEPCTL_EPDIS) {}
+        while (_out_regs(conf, num)->DIEPCTL & USB_OTG_DOEPCTL_EPDIS) {}
         /* Disable global nak according to procedure */
         _disable_global_out_nak(conf);
     }
@@ -668,7 +668,8 @@ static void _usbdev_init(usbdev_t *dev)
     /* Reset all TX FIFOs */
     _flush_fifo(conf, 0x10);
 
-    /* Values from the reference manual tables on TRDT */
+    /* Values from the reference manual tables on TRDT configuration        *
+     * 0x09 for 24Mhz ABH frequency, 0x06 for 32Mhz or higher AHB frequency */
     uint8_t trdt = conf->type == STM32_USB_OTG_FS ? 0x06 : 0x09;
     _global_regs(conf)->GUSBCFG =
         (_global_regs(conf)->GUSBCFG & ~USB_OTG_GUSBCFG_TRDT) |
