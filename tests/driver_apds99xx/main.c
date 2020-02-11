@@ -35,7 +35,7 @@
 #include "apds99xx.h"
 #include "apds99xx_params.h"
 
-#define SLEEP   (200 * US_PER_MS)
+#define APDS99XX_SLEEP   (200 * US_PER_MS)
 
 int main(void)
 {
@@ -56,7 +56,7 @@ int main(void)
     while (1) {
 
         /* wait for 200 ms */
-        xtimer_usleep(SLEEP);
+        xtimer_usleep(APDS99XX_SLEEP);
 
         /* check whether ambient light and proximity data are available */
         if (apds99xx_data_ready_als(&dev) == APDS99XX_OK &&
