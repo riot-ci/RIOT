@@ -23,14 +23,14 @@
 #include "ili9341.h"
 #include "ili9341_disp_dev.h"
 
-void _ili9341_map(disp_dev_t *dev, uint16_t x1, uint16_t x2,
+static void _ili9341_map(disp_dev_t *dev, uint16_t x1, uint16_t x2,
                   uint16_t y1, uint16_t y2, const uint16_t *color)
 {
     ili9341_t *ili9341 = (ili9341_t *)dev;
     ili9341_pixmap(ili9341, x1, x2, y1, y2, color);
 }
 
-int _ili9341_get(disp_dev_t *disp_dev, disp_opt_t opt, void *value, size_t max_len)
+static int _ili9341_get(disp_dev_t *disp_dev, disp_opt_t opt, void *value, size_t max_len)
 {
     const ili9341_t *dev = (ili9341_t *)disp_dev;
 
@@ -65,7 +65,7 @@ int _ili9341_get(disp_dev_t *disp_dev, disp_opt_t opt, void *value, size_t max_l
     return res;
 }
 
-int _ili9341_set(disp_dev_t *disp_dev, disp_opt_t opt, const void *value, size_t max_len)
+static int _ili9341_set(disp_dev_t *disp_dev, disp_opt_t opt, const void *value, size_t max_len)
 {
     const ili9341_t *dev = (ili9341_t *)disp_dev;
 
