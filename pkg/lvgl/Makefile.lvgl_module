@@ -1,5 +1,3 @@
-MODULE = lvgl_draw
-
 CFLAGS += -Wno-unused-parameter
 
 include $(RIOTBASE)/Makefile.base
