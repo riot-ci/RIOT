@@ -19,12 +19,9 @@ Makefile.
 
 ### Memory settings
 
-- `LVGL_MEM_SIZE`: configure the maximum memory size used by lvgl. This depends
-  on the number of lvgl widgets and objects used by the interface (default:
-  5U*1024U, 5KiB). Must be greater than 2KiB.
-- `LVGL_COLOR_BUF_SIZE`: configure the size of the color buffer used for the
-  rendering. This value should be a multiple of `LVGL_HOR_RES_MAX` which depends
-  on the underlying display device (default: LVGL_HOR_RES_MAX*5).
+`LVGL_MEM_SIZE`: configure the maximum memory size used by lvgl. This depends
+on the number of lvgl widgets and objects used by the interface (default:
+5U*1024U, 5KiB). Must be greater than 2KiB.
 
 ### Engine settings
 
