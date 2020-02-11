@@ -339,7 +339,7 @@ static_tests() {
         exit 1
     fi
 
-    BUILDTEST_MCU_GROUP=static-tests ./dist/tools/ci/build_and_test.sh
+    # Travis will already run static tests
 }
 
 get_non_compile_jobs() {
