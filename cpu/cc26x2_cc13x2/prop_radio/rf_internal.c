@@ -89,8 +89,7 @@
 #include "debug.h"
 #endif
 
-/* phy state as defined by openthread */
-volatile cc13x2_PropPhyState_t _cc13x2_prop_rf_state;
+static volatile cc13x2_prop_rf_state_t _state;
 
 /* set to max transmit power by default */
 static output_config_t const *_current_tx_power = &(output_power_table[0]);
@@ -221,9 +220,9 @@ static void cc13x2_rf_core_init_rx_params(void)
         },
         .pktConf = {
             .bFsOff = 0,
-            .bRepeatOk = 1,
-            .bRepeatNok = 1,
-            .bUseCrc = 1,
+            .bRepeatOk = 0,
+            .bRepeatNok = 0,
+            .bUseCrc = 0,
             .bCrcIncSw = 0,
             .bCrcIncHdr = 0,
             .endType = 0,
@@ -252,7 +251,7 @@ static void cc13x2_rf_core_init_rx_params(void)
             .addrPos = 0,
             .numAddr = 0,
         },
-        .lenOffset = -4,
+        .lenOffset = 0,
         .endTrigger = {
             .triggerType = TRIG_NEVER,
             .bEnaCmd = 0x0,
@@ -319,7 +318,7 @@ static uint_fast8_t cc13x2_prop_rf_send_tx_cmd(uint8_t *psdu, uint8_t len)
         .pNextOp = NULL,
         .pktConf = {
             .bFsOff = 0,
-            .bUseCrc = 1,
+            .bUseCrc = 0,
             .bCrcIncSw = 0,
             .bCrcIncHdr = 0,
         },
@@ -338,7 +337,8 @@ static uint_fast8_t cc13x2_prop_rf_send_tx_cmd(uint8_t *psdu, uint8_t len)
         .preTime = 0x00000000,
         .syncWord = IEEE802154_2FSK_UNCODED_SFD_0,
     };
-    DEBUG("[cc13x2_prop_rf_send_tx_cmd]: sending TX command.\n");
+
+    DEBUG_PUTS("[cc13x2_prop_rf_send_tx_cmd]: sending TX command.");
     DEBUG("[cc13x2_prop_rf_send_tx_cmd]: psdu = %lx.\n", (uint32_t)psdu);
     DEBUG("[cc13x2_prop_rf_send_tx_cmd]: len = %x.\n", len);
 
@@ -366,6 +366,7 @@ static uint_fast8_t cc13x2_prop_rf_send_tx_cmd(uint8_t *psdu, uint8_t len)
  */
 static uint_fast8_t cc13x2_prop_rf_send_rx_cmd(void)
 {
+    DEBUG_PUTS("[cc13x2_prop_rf_send_rx_cmd]: sending receive cmd!");
     _cmd_receive.status = IDLE;
     return (RFCDoorbellSendTo((uint32_t)&_cmd_receive) & 0xFF);
 }
@@ -397,9 +398,8 @@ static uint_fast8_t cc13x2_prop_rf_send_fs_cmd(uint16_t frequency,
         },
     };
 
-    DEBUG("[cc13x2_prop_rf_send_fs_cmd]: sending FS command.\n");
-    DEBUG("[cc13x2_prop_rf_send_fs_cmd]: frequency = %u.\n", frequency);
-    DEBUG("[cc13x2_prop_rf_send_fs_cmd]: fract_freq = %u.\n", fract_freq);
+    DEBUG_PUTS("[cc13x2_prop_rf_send_fs_cmd]: sending FS command");
+    DEBUG("[cc13x2_prop_rf_send_fs_cmd]: frequency = %u.%u MHz\n", frequency, fract_freq);
 
     _cmd_fs = cmd_fs_default;
 
@@ -409,7 +409,7 @@ static uint_fast8_t cc13x2_prop_rf_send_fs_cmd(uint16_t frequency,
     uint_fast8_t ret = RFCDoorbellSendTo((uint32_t)&_cmd_fs) & 0xFF;
 
     if (ret != CMDSTA_Done) {
-        DEBUG("[cc13x2_prop_rf_send_fs_cmd]: command not done.\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_send_fs_cmd]: command not done");
     }
 
     DEBUG("[cc13x2_prop_rf_send_fs_cmd]: status = %x.\n", _cmd_fs.status);
@@ -550,7 +550,7 @@ static uint_fast16_t cc13x2_prop_rf_send_disable_cmd(void)
         },
     };
 
-    DEBUG("[cc13x2_prop_rf_send_disable_cmd]: sending disable command string.\n");
+    DEBUG_PUTS("[cc13x2_prop_rf_send_disable_cmd]: sending disable command string.");
 
     HWREGBITW(AON_RTC_BASE + AON_RTC_O_CTL, AON_RTC_CTL_RTC_UPD_EN_BITN) = 1;
 
@@ -567,7 +567,7 @@ static uint_fast16_t cc13x2_prop_rf_send_disable_cmd(void)
 
     uint8_t dbell_ret = (RFCDoorbellSendTo((uint32_t)&_cmd_fs_powerdown) & 0xFF);
     if (dbell_ret != CMDSTA_Done) {
-        DEBUG("[cc13x2_prop_rf_send_disable_cmd]: command string failed.\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_send_disable_cmd]: command string failed.");
         if (!ints_disabled) {
             IntMasterDisable();
         }
@@ -626,23 +626,23 @@ static void _isr_rfc_cpe1(void)
  */
 static void _isr_rfc_cpe0(void)
 {
-    DEBUG("[_isr_rfc_cpe0]: command done, state = %x\n", _cc13x2_prop_rf_state);
+    DEBUG("[_isr_rfc_cpe0]: command done, state = %x\n", _state);
 
     if (is_interrupt_flag_present(IRQ_LAST_COMMAND_DONE)) {
         clear_interrupt_flag(IRQ_LAST_COMMAND_DONE);
 
-        if (_cc13x2_prop_rf_state == cc13x2_stateReceive &&
+        if (_state == FSM_STATE_RX &&
             _cmd_receive.status != ACTIVE &&
             _cmd_receive.status != PROP_DONE_RXTIMEOUT) {
             DEBUG("[_isr_rfc_cpe0]: RX aborted, status = %x\n", _cmd_receive.status);
             /* The RX command was aborted */
-            _cc13x2_prop_rf_state = cc13x2_stateSleep;
+            _state = FSM_STATE_SLEEP;
         }
 
-        if (_cc13x2_prop_rf_state == cc13x2_stateTransmit &&
+        if (_state == FSM_STATE_TX &&
             _cmd_transmit.status == PROP_DONE_OK) {
             DEBUG("[_isr_rfc_cpe0]: transmission finished, receiving.\n");
-            _cc13x2_prop_rf_state = cc13x2_stateSleep;
+            _state = FSM_STATE_SLEEP;
             cc13x2_prop_rf_rx_start();
         }
     }
@@ -656,7 +656,7 @@ static void _isr_rfc_cpe0(void)
     if (HWREG(RFC_DBELL_NONBUF_BASE + RFC_DBELL_O_RFCPEIFG) & IRQ_TX_DONE) {
         clear_interrupt_flag(IRQ_TX_DONE);
         _irq_handler_flags |= 2;
-        _cc13x2_prop_rf_state = cc13x2_stateReceive;
+        _state = FSM_STATE_RX;
     }
 
     if (_irq_handler_flags != 0) {
@@ -674,19 +674,19 @@ void cc13x2_prop_rf_init(void)
     /* Populate the RX parameters data structure with default values */
     cc13x2_rf_core_init_rx_params();
 
-    _cc13x2_prop_rf_state = cc13x2_stateDisabled;
+    _state = FSM_STATE_OFF;
 }
 
-int_fast8_t cc13x2_prop_rf_enable(void)
+int_fast8_t cc13x2_prop_rf_power_on(void)
 {
-    DEBUG("[cc13x2_prop_rf_enable]: enable RF Core.\n");
+    DEBUG("[cc13x2_prop_rf_power_on]: enable RF Core.\n");
 
     int_fast8_t error = -1;
 
-    if (_cc13x2_prop_rf_state == cc13x2_stateSleep) {
+    if (_state == FSM_STATE_SLEEP) {
         error = 0;
     }
-    else if (_cc13x2_prop_rf_state == cc13x2_stateDisabled) {
+    else if (_state == FSM_STATE_OFF) {
 
         /* Set of RF Core data queue. Circular buffer, no last entry */
         _rx_data_queue.pCurrEntry = _rx_buf0;
@@ -704,7 +704,7 @@ int_fast8_t cc13x2_prop_rf_enable(void)
             goto exit;
         }
 
-        _cc13x2_prop_rf_state = cc13x2_stateSleep;
+        _state = FSM_STATE_SLEEP;
         error = 0;
     }
 
@@ -712,28 +712,28 @@ exit:
 
     if (error == -1) {
         cc26x2_cc13x2_rf_power_off();
-        _cc13x2_prop_rf_state = cc13x2_stateDisabled;
+        _state = FSM_STATE_OFF;
     }
 
     return error;
 }
 
-void cc13x2_prop_rf_disable(void)
+void cc13x2_prop_rf_power_off(void)
 {
-    if (_cc13x2_prop_rf_state == cc13x2_stateDisabled) {
+    if (_state == FSM_STATE_OFF) {
         return;
     }
-    else if (_cc13x2_prop_rf_state == cc13x2_stateSleep) {
+    else if (_state == FSM_STATE_SLEEP) {
         cc13x2_prop_rf_send_disable_cmd();
         cc26x2_cc13x2_rf_power_off();
-        _cc13x2_prop_rf_state = cc13x2_stateDisabled;
+        _state = FSM_STATE_OFF;
     }
 }
 
 int_fast8_t cc13x2_prop_rf_reset(void)
 {
-    if (_cc13x2_prop_rf_state == cc13x2_stateDisabled) {
-        if (cc13x2_prop_rf_enable() == -1) {
+    if (_state == FSM_STATE_OFF) {
+        if (cc13x2_prop_rf_power_on() == -1) {
             return -1;
         }
 
@@ -741,8 +741,8 @@ int_fast8_t cc13x2_prop_rf_reset(void)
             return -1;
         }
     }
-    else if (_cc13x2_prop_rf_state == cc13x2_stateSleep ||
-             _cc13x2_prop_rf_state == cc13x2_stateTransmit) {
+    else if (_state == FSM_STATE_SLEEP ||
+             _state == FSM_STATE_TX) {
         /* If we're in Sleep mode, start receiving, if we're on the Transmit
          * mode trigger the start of the Receive state, this will abort any
          * transmission being done. */
@@ -750,7 +750,7 @@ int_fast8_t cc13x2_prop_rf_reset(void)
             return -1;
         }
     }
-    else if (_cc13x2_prop_rf_state == cc13x2_stateReceive) {
+    else if (_state == FSM_STATE_RX) {
         return 0;
     }
 
@@ -788,21 +788,23 @@ int8_t cc13x2_prop_rf_get_rssi(void)
 
 int_fast8_t cc13x2_prop_rf_rx_start(void)
 {
-    DEBUG("[c13x2_prop_rf_rx_start]: state = %x.\n", _cc13x2_prop_rf_state);
+    DEBUG("[cc13x2_prop_rf_rx_start]: state = %x.\n", _state);
 
-    if (_cc13x2_prop_rf_state == cc13x2_stateSleep) {
-        _cc13x2_prop_rf_state = cc13x2_stateReceive;
+    if (_state == FSM_STATE_SLEEP) {
+        DEBUG_PUTS("[cc13x2_prop_rf_rx_start]: sleeping, changing to RX");
+        _state = FSM_STATE_RX;
 
         /* Initialize the receive command
          * XXX: no memset here because we assume init has been called and we
          *      may have changed some values in the rx command
          */
         if (cc13x2_prop_rf_send_rx_cmd() != CMDSTA_Done) {
-            DEBUG_PUTS("[c13x2_prop_rf_rx_start]: RX command failed!");
+            DEBUG_PUTS("[cc13x2_prop_rf_rx_start]: RX command failed!");
             return -1;
         }
     }
-    else if (_cc13x2_prop_rf_state == cc13x2_stateReceive && _cmd_receive.status != ACTIVE) {
+    else if (_state == FSM_STATE_RX && _cmd_receive.status != ACTIVE) {
+        DEBUG_PUTS("[cc13x2_prop_rf_rx_start]: RX not active, setting again!");
         /* We have either not fallen back into our receive command or we are
          * running on the wrong channel. Either way assume the caller correctly
          * called us and abort all running commands. */
@@ -822,7 +824,7 @@ int_fast8_t cc13x2_prop_rf_rx_start(void)
             return -1;
         }
 
-        _cc13x2_prop_rf_state = cc13x2_stateReceive;
+        _state = FSM_STATE_RX;
     }
 
     return 0;
@@ -830,7 +832,7 @@ int_fast8_t cc13x2_prop_rf_rx_start(void)
 
 int_fast8_t cc13x2_prop_rf_rx_stop(void)
 {
-    if (_cc13x2_prop_rf_state != cc13x2_stateReceive) {
+    if (_state != FSM_STATE_RX) {
         return 0;
     }
 
@@ -848,16 +850,10 @@ uint8_t cc13x2_prop_rf_get_chan(void)
 
 void cc13x2_prop_rf_set_chan(uint16_t channel, bool force)
 {
-    DEBUG("[cc13x2_prop_rf_set_chan]: setting channel\n");
+    DEBUG_PUTS("[cc13x2_prop_rf_set_chan]: setting channel");
     if (_channel == channel && force == false) {
-        DEBUG("[cc13x2_prop_rf_set_chan]: we are on channel\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_set_chan]: we are on channel");
         return;
-    }
-
-    int rx_was_active = (_cc13x2_prop_rf_state == cc13x2_stateReceive);
-
-    if (rx_was_active) {
-        cc13x2_prop_rf_rx_stop();
     }
 
     const uint32_t new_freq = cc13x2_prop_rf_channel_freq(channel);
@@ -866,17 +862,33 @@ void cc13x2_prop_rf_set_chan(uint16_t channel, bool force)
     uint16_t frac;
     cc13x2_prop_rf_freq_parts(new_freq, &freq, &frac);
 
+    bool enable_rx = false;
+
+    if (_state == FSM_STATE_RX) {
+        cc13x2_prop_rf_rx_stop();
+        enable_rx = true;
+    } else if (_state == FSM_STATE_TX) {
+        /* Stop the transmission and change freq. */
+        if (cc26x2_cc13x2_rf_execute_abort_cmd() != CMDSTA_Done) {
+            DEBUG_PUTS("[cc13x2_prop_rf_set_chan]: abort command failed!");
+            return;
+        }
+
+        /* Switch to Receive after channel change. */
+        enable_rx = true;
+        _state = FSM_STATE_SLEEP;
+    }
+
     if (cc13x2_prop_rf_send_fs_cmd(freq, frac) != CMDSTA_Done) {
-        DEBUG("[cc13x2_prop_rf_set_chan]: couldn't change channel\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_set_chan]: couldn't change channel");
         return;
     }
 
     _channel = channel;
 
-    if (rx_was_active) {
+    if (enable_rx) {
         cc13x2_prop_rf_rx_start();
     }
-    /* TODO: handle cc13x2_prop_rf_state == cc13x2_stateTransmit */
 
     return;
 }
@@ -929,6 +941,8 @@ void cc13x2_prop_rf_irq_set_handler(void (*handler)(void *), void *arg)
 int cc13x2_prop_rf_recv(void *buf, size_t len,
                         netdev_ieee802154_rx_info_t *rx_info)
 {
+    DEBUG("[cc13x2_prop_rf_recv]: receiving");
+
     uint_fast8_t available = 0;
     rfc_dataEntryGeneral_t *start_entry =
         (rfc_dataEntryGeneral_t *)_rx_data_queue.pCurrEntry;
@@ -971,7 +985,7 @@ int cc13x2_prop_rf_recv(void *buf, size_t len,
     uint16_t payload_len = *((uint16_t *)payload);
 
     if (payload_len <= CC13X2_METADATA_SIZE) {
-        puts("[cc13x2_prop_rf_recv]: too short!");
+        DEBUG_PUTS("[cc13x2_prop_rf_recv]: too short!");
         cur_entry->status = DATA_ENTRY_PENDING;
         return 0;
     }
@@ -1031,39 +1045,39 @@ bool cc13x2_prop_rf_recv_avail(void)
 int cc13x2_prop_rf_send(const iolist_t *iolist)
 {
     DEBUG("[cc13x2_prop_rf_send]: sending iolist = %lx\n", (uint32_t)iolist);
-    DEBUG("[cc13x2_prop_rf_send]: state = %x.\n", _cc13x2_prop_rf_state);
+    DEBUG("[cc13x2_prop_rf_send]: state = %x.\n", _state);
 
-    if (_cc13x2_prop_rf_state == cc13x2_stateReceive) {
-        DEBUG("[cc13x2_prop_rf_send]: we are in receive state\n");
+    if (_state == FSM_STATE_RX) {
+        DEBUG_PUTS("[cc13x2_prop_rf_send]: we are in receive state");
         size_t len = 0;
         uint8_t *bufpos = _tx_buf;
 
         for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
-            DEBUG("[cc13x2_prop_rf_send]: iolist iteration\n");
-
             len += iol->iol_len;
             if (len > BUF_SIZE) {
-                DEBUG("[cc13x2_prop_rf_send]: payload is too big!\n");
+                DEBUG_PUTS("[cc13x2_prop_rf_send]: payload is too big!");
                 return -EOVERFLOW;
             }
+
+            DEBUG("[cc13x2_prop_rf_send]: iolist len = %u\n", len);
 
             memcpy(bufpos, iol->iol_base, iol->iol_len);
             bufpos += iol->iol_len;
         }
 
 
-        DEBUG("[cc13x2_prop_rf_send]: stop RX.\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_send]: stop RX.");
         if (cc13x2_prop_rf_rx_stop() == -1) {
-            DEBUG("[cc13x2_prop_rf_send]: couldn't stop RX\n");
+            DEBUG_PUTS("[cc13x2_prop_rf_send]: couldn't stop RX");
             return -EIO;
         }
 
-        DEBUG("[cc13x2_prop_rf_send]: switching state to transmit\n");
+        DEBUG_PUTS("[cc13x2_prop_rf_send]: switching state to transmit");
 
-        _cc13x2_prop_rf_state = cc13x2_stateTransmit;
+        _state = FSM_STATE_TX;
         if (cc13x2_prop_rf_send_tx_cmd(_tx_buf, len) != CMDSTA_Done) {
-            DEBUG("[cc13x2_prop_rf_send]: TX send failed!\n");
-            _cc13x2_prop_rf_state = cc13x2_stateSleep;
+            DEBUG_PUTS("[cc13x2_prop_rf_send]: TX send failed!");
+            _state = FSM_STATE_SLEEP;
             return -EIO;
         }
 
@@ -1096,4 +1110,9 @@ unsigned cc13x2_prop_rf_get_flags(void)
 
     _irq_handler_flags = 0;
     return flags;
+}
+
+cc13x2_prop_rf_state_t cc13x2_prop_rf_get_state(void)
+{
+    return _state;
 }
