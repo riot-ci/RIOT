@@ -98,7 +98,7 @@ extern "C" {
 /**
  * @brief USB OTG HS FIFO reception buffer space in 32-bit words
  *
- * Used as shared FIFO for reception of all OUT transfers
+ * Used as shared FIFO for reception of all OUT transfers from the host
  */
 #ifndef STM32_USB_OTG_HS_RX_FIFO_SIZE
 #define STM32_USB_OTG_HS_RX_FIFO_SIZE   (512U)
@@ -109,7 +109,9 @@ extern "C" {
  */
 #ifndef STM32_USB_OTG_HS_USE_DMA
 #ifdef STM32_USB_OTG_CID_1x
-#define STM32_USB_OTG_HS_USE_DMA        (0)     /* FIXME */
+/* FIXME: It should be possible to use DMA with the 1.x version of the  *
+ * peripheral, but somehow it doesn't work.                             */
+#define STM32_USB_OTG_HS_USE_DMA        (0)
 #else
 #define STM32_USB_OTG_HS_USE_DMA        (1)
 #endif
