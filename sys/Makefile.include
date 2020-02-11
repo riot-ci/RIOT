@@ -117,7 +117,7 @@ endif
 # That only works on 32bit platforms, if total RAM size is <=2**18 and the
 # start address is known.
 ifneq (,$(filter zptr,$(USEMODULE)))
-  ifeq (,$(filter arch_8bit arch_16bit,$(FEATURES_USED)))
+  ifneq (,$(filter arch_32bit,$(FEATURES_USED)))
     ifneq (,$(RAM_START_ADDR))
       ifneq (,$(RAM_LEN))
         # this handles 0xXXX and xxxK
