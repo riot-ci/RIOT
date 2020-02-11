@@ -71,15 +71,15 @@ static int _init(netdev_t *dev)
 
     netdev_ieee802154_reset(&netdev->netdev);
 
-    if (cc13x2_prop_rf_enable() == -1) {
-        return -1;
-    }
-
-    if (cc13x2_prop_rf_rx_start() == -1) {
+    if (cc13x2_prop_rf_power_on() == -1) {
         return -1;
     }
 
     cc13x2_prop_rf_set_chan(CC13X2_CHANNEL_MIN_SUB_GHZ, true);
+
+    if (cc13x2_prop_rf_rx_start() == -1) {
+        return -1;
+    }
 
     return 0;
 }
@@ -88,8 +88,8 @@ static int _set_state(netopt_state_t state)
 {
     switch (state) {
         case NETOPT_STATE_OFF:
-            if (_cc13x2_prop_rf_state != cc13x2_stateDisabled) {
-                if (cc13x2_prop_rf_enable() == -1) {
+            if (cc13x2_prop_rf_get_state() != FSM_STATE_OFF) {
+                if (cc13x2_prop_rf_power_on() == -1) {
                     DEBUG("[cc13x2_prop_rf]: couldn't enable RF Core.\n");
                     return -EIO;
                 }
@@ -103,7 +103,7 @@ static int _set_state(netopt_state_t state)
         case NETOPT_STATE_IDLE:
             /* If the state is on Transmit or Sleep, it will be switched to
              * Receive state */
-            if (_cc13x2_prop_rf_state != cc13x2_stateDisabled) {
+            if (cc13x2_prop_rf_get_state() != FSM_STATE_OFF) {
                 if (cc13x2_prop_rf_rx_start() == -1) {
                     DEBUG("[cc13x2_prop_rf]: couldn't start RX.\n");
                     return -EIO;
@@ -127,15 +127,19 @@ static int _set_state(netopt_state_t state)
 
 static netopt_state_t _get_state(void)
 {
-    switch (_cc13x2_prop_rf_state) {
-        case cc13x2_stateDisabled:
+    switch (cc13x2_prop_rf_get_state()) {
+        case FSM_STATE_OFF:
             return NETOPT_STATE_OFF;
-        case cc13x2_stateSleep:
+
+        case FSM_STATE_SLEEP:
             return NETOPT_STATE_IDLE;
-        case cc13x2_stateReceive:
+
+        case FSM_STATE_RX:
             return NETOPT_STATE_RX;
-        case cc13x2_stateTransmit:
+
+        case FSM_STATE_TX:
             return NETOPT_STATE_TX;
+
         default:
             return NETOPT_STATE_IDLE;
     }

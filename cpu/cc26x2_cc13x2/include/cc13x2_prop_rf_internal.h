@@ -53,21 +53,27 @@ extern "C" {
 #define CC13X2_LO_DIVIDER_SUB_GHZ   (0x05U) /**< LO divider for the Sub-GHz band */
 #endif
 
-#ifndef CC13X2_SYMBOL_RATE
 /**
  * @brief   Symbol rate configuration
  *
  *          Default: 200 kbps
+ * @{
  */
-#define CC13X2_SYMBOL_RATE { .preScale = 0xF, .rateWord = 0x20000, .decimMode = 0 }
-#endif
+#define CC13X2_SYMBOL_RATE_PRESCALE  (0xF)
+#define CC13X2_SYMBOL_RATE_RATEWORD  (0x20000)
+#define CC13X2_SYMBOL_RATE_DECIMMODE (0)
+/** @} */
 
 /**
  * @brief   Modulation configuration
  *
  *          Default: 2-GFSK, deviation = 50,000 KHz
+ * @{
  */
-#define CC13X2_MODULATION { .modType = 0x1, .deviation = 200, .deviationStepSz = 0 }
+#define CC13X2_MODULATION_TYPE                (1)
+#define CC13X2_MODULATION_DEVIATION           (200)
+#define CC13X2_MODULATION_DEVIATION_STEP_SIZE (0)
+/** @} */
 
 #ifndef IEEE802154_FSK_PREAMBLE_SIZE
 #define IEEE802154_FSK_PREAMBLE_SIZE (4U) /**< Preamble length in octects */
@@ -102,29 +108,27 @@ extern "C" {
  * The following are valid radio state transitions for the cc13x2:
  *
  *                                    (Radio ON)
- *  +----------+  Enable()  +-------+  Receive()   +---------+   Transmit()   +----------+
+ *  +----------+      On()  +-------+  Receive()   +---------+   Transmit()   +----------+
  *  |          |----------->|       |------------->|         |--------------->|          |
- *  | Disabled |            | Sleep |              | Receive |                | Transmit |
+ *  |   Off    |            | Sleep |              | Receive |                | Transmit |
  *  |          |<-----------|       |<-------------|         |<---------------|          |
- *  +----------+  Disable() |       |   Sleep()    |         |                +----------+
+ *  +----------+      Off() |       |   Sleep()    |         |                +----------+
  *                          |       | (Radio OFF)  +---------+
  *                          +-------+
  *
  * | State            | Description                                        |
  * |------------------|----------------------------------------------------|
- * | Disabled         | The rfcore powerdomain is off and the RFCPE is off |
+ * | Off              | The rfcore powerdomain is off and the RFCPE is off |
  * | Sleep            | The RFCORE PD is on, and the RFCPE is in PROP mode |
  * | Receive          | The RFCPE is running a CMD_PROP_RX_ADV             |
  * | Transmit         | The RFCPE is running a transmit command string     |
  */
 typedef enum {
-    cc13x2_stateDisabled = 0, /**< Disabled, radio powered off */
-    cc13x2_stateSleep, /**< Sleep state, awaiting for actions */
-    cc13x2_stateReceive, /**< Receive state */
-    cc13x2_stateTransmit, /**< Transmitting packets */
-} cc13x2_PropPhyState_t;
-
-extern volatile cc13x2_PropPhyState_t _cc13x2_prop_rf_state; /**< PHY state */
+    FSM_STATE_OFF = 0, /**< Disabled, radio powered off */
+    FSM_STATE_SLEEP, /**< Sleep state, awaiting for actions */
+    FSM_STATE_RX, /**< Receive state */
+    FSM_STATE_TX, /**< Transmitting packets */
+} cc13x2_prop_rf_state_t;
 
 /**
  * @brief   Calculate the channel frequency for a given channel number.
@@ -166,7 +170,7 @@ static inline void cc13x2_prop_rf_freq_parts(const uint32_t freq, uint16_t *dec,
 /**
  * @brief   Initialize the radio internal structures.
  *
- * @note    Must be called before @ref cc13x2_prop_rf_enable.
+ * @note    Must be called before @ref cc13x2_prop_rf_power_on.
  */
 void cc13x2_prop_rf_init(void);
 
@@ -176,12 +180,12 @@ void cc13x2_prop_rf_init(void);
  * @return  0 on success
  * @return  -1 on failure
  */
-int_fast8_t cc13x2_prop_rf_enable(void);
+int_fast8_t cc13x2_prop_rf_power_on(void);
 
 /**
  * @brief   Power off the RF Core and shut down the Frequency Synthesizer.
  */
-void cc13x2_prop_rf_disable(void);
+void cc13x2_prop_rf_power_off(void);
 
 /**
  * @brief   Reset the RF Core state.
@@ -325,6 +329,13 @@ void cc13x2_prop_rf_irq_disable(unsigned irq);
  * @return  The flags
  */
 unsigned cc13x2_prop_rf_get_flags(void);
+
+/**
+ * @brief   Get the state of the RF Core.
+ *
+ * @return  The state.
+ */
+cc13x2_prop_rf_state_t cc13x2_prop_rf_get_state(void);
 
 #ifdef __cplusplus
 } /* end extern "C" */
