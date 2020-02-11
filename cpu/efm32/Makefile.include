@@ -10,7 +10,7 @@ CFLAGS += -D$(call uppercase_and_underscore,$(CPU_MODEL))
 VECTORS_O := $(BINDIR)/cpu_$(EFM32_FAMILY)/vectors.o
 
 # include vendor device headers
-INCLUDES += -I$(RIOTCPU)/efm32/families/$(EFM32_FAMILY)/include/vendor
+INCLUDES += -I$(RIOTCPU)/efm32/families/cpu_$(EFM32_FAMILY)/include/vendor
 
 # include cortexm_common
 LINKER_SCRIPT = cortexm.ld
