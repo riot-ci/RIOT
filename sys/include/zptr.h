@@ -78,6 +78,19 @@ typedef uint16_t zptr_t;
 #define PRIzptr PRIu16
 
 /**
+ * @brief Determine if a pointer is compressable by zptrc()
+ * @param[in]   pointer     pointer to check
+ * @returns     1 if pointer can be compressed, 0 if not
+ */
+static inline int zptr_check(void *pointer)
+{
+    uintptr_t int_ptr = (uintptr_t)pointer;
+    return ((!(int_ptr & 0x3)) \
+            && (int_ptr >= (uintptr_t)ZPTR_BASE) \
+            && (int_ptr < ((uintptr_t)ZPTR_BASE + 262144)));
+}
+
+/**
  * @brief Compress a pointer (if possible)
  *
  * Substracts ZPTR_BASE, then right-shifts @p pointer by two.
@@ -87,7 +100,7 @@ typedef uint16_t zptr_t;
  */
 static inline zptr_t zptrc(void *pointer)
 {
-    assert(!(pointer & 0x3));
+    assert(zptr_check(pointer));
     return (uint16_t)(((uint32_t)pointer - (uint32_t)ZPTR_BASE) >> 2);
 }
 
@@ -108,6 +121,7 @@ static inline void *zptrd(zptr_t zptr)
 /* fallback implementation */
 typedef void *zptr_t;
 #define PRIzptr "p"
+static inline int zptr_check(void *pointer) { return 0; }
 static inline zptr_t zptrc(void *pointer) { return (zptr_t)pointer; }
 static inline void *zptrd(zptr_t zptr) { return (void *)zptr; }
 #endif
