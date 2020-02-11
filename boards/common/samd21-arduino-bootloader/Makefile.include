@@ -11,10 +11,10 @@ ifeq ($(PROGRAMMER),bossa)
   PREFLASH_DELAY = 1
 
   ifneq (,$(filter reset flash flash-only, $(MAKECMDGOALS)))
-    # Add 2 seconds delay before opening terminal: this is required when opening
-    # the terminal right after flashing. In this case, the stdio over USB needs
-    # some time after reset before being ready.
-    TERM_DELAY = 2
+    # By default, add 2 seconds delay before opening terminal: this is required
+    # when opening the terminal right after flashing. In this case, the stdio 
+    # over USB needs some time after reset before being ready.
+    TERM_DELAY ?= 2
     TERMDEPS += term-delay
   endif
 
