@@ -27,8 +27,6 @@
 #include "thread.h"
 #include "kernel_types.h"
 
-#include "test_utils/interactive_sync.h"
-
 /* One stack for all threads. DON'T TRY THIS AT HOME!! */
 static char dummy_stack[THREAD_STACKSIZE_IDLE];
 
