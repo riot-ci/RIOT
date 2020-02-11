@@ -13,10 +13,6 @@ Makefile.
 
 ### Graphical settings
 
-- `LVGL_HOR_RES_MAX`: configure the horizontal resolution of the screen
-  (default: 320)
-- `LVGL_VER_RES_MAX`: configure the horizontal resolution of the screen
-  (default: 240)
 - `LVGL_COLOR_DEPTH`: configure the color depth in bit of the screen (default: 16)
 - `LVGL_COLOR_16_SWAP`: enable byte swap when communicating with the screen
   driver (default: 1, enabled)
@@ -27,22 +23,22 @@ Makefile.
   on the number of lvgl widgets and objects used by the interface (default:
   5U*1024U, 5KiB). Must be greater than 2KiB.
 - `LVGL_COLOR_BUF_SIZE`: configure the size of the color buffer used for the
-  rendering. This value should be a multiple of `LVGL_HOR_RES_MAX`.
-  (default: LVGL_HOR_RES_MAX*5)
+  rendering. This value should be a multiple of `LVGL_HOR_RES_MAX` which depends
+  on the underlying display device (default: LVGL_HOR_RES_MAX*5).
 
 ### Engine settings
 
 - `LVGL_ACTIVITY_PERIOD`: maximum activity period before going to sleep in ms.
-  (default: 5s)
+  (default: 1s)
 - `LVGL_TASK_HANDLER_DELAY`: delay between lvgl task handle call in ms.
   (default: 5ms)
 - `LVGL_TASK_THREAD_PRIO`: lvgl task handler thread priority.
   (default: THREAD_PRIORITY_MAIN - 1)
 
-Example of command line for changing the horizontal resolution:
+Example of command line for changing the max activity period to 5s:
 
 ```
-LVGL_HOR_RES_MAX=240 make -C tests/pkg_lvgl
+LVGL_ACTIVITY_PERIOD=5000 make -C tests/pkg_lvgl
 ```
 
  */
