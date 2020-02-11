@@ -97,7 +97,7 @@ int apds99xx_init(apds99xx_t *dev, const apds99xx_params_t *params)
                          APDS99XX_REG_AGAIN, dev->params.als_gain)) {
         return -APDS99XX_ERROR_I2C;
     }
-    /* write PRX LED pulses LED drive strengh and gain parameter */
+    /* write PRX LED pulses LED drive strength and gain parameter */
 #if MODULE_APDS9900 || MODULE_APDS9901 || MODULE_APDS9930
     uint8_t ptime = 0xff; /* PTIME is always 0xff as recommended in datasheet */
     if (_reg_write(dev, APDS99XX_REG_PTIME, &ptime, 1) != APDS99XX_OK) {
@@ -124,7 +124,7 @@ int apds99xx_init(apds99xx_t *dev, const apds99xx_params_t *params)
         return -APDS99XX_ERROR_I2C;
     }
 
-    /* write wating time */
+    /* write the waiting time */
     uint8_t wtime = 256 - dev->params.wait_steps;
     if (_reg_write(dev, APDS99XX_REG_WTIME, &wtime, 1) != APDS99XX_OK) {
         return -APDS99XX_ERROR_I2C;
@@ -463,7 +463,7 @@ static int _reg_read(const apds99xx_t *dev, uint8_t reg, uint8_t *data, uint16_t
     assert(len != 0);
 
     if (i2c_acquire(dev->params.dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return -APDS99XX_ERROR_I2C;
     }
     int res = i2c_read_regs(dev->params.dev, APDS99XX_I2C_ADDRESS, reg, data, len, 0);
@@ -502,7 +502,7 @@ static int _reg_write(const apds99xx_t *dev, uint8_t reg, uint8_t *data, uint16_
     }
 
     if (i2c_acquire(dev->params.dev)) {
-        DEBUG_DEV("could not aquire I2C bus", dev);
+        DEBUG_DEV("could not acquire I2C bus", dev);
         return -APDS99XX_ERROR_I2C;
     }
 
