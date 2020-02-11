@@ -121,7 +121,7 @@ static inline void *zptrd(zptr_t zptr)
 /* fallback implementation */
 typedef void *zptr_t;
 #define PRIzptr "p"
-static inline int zptr_check(void *pointer) { return 0; }
+static inline int zptr_check(void *pointer) { (void)pointer; return 0; }
 static inline zptr_t zptrc(void *pointer) { return (zptr_t)pointer; }
 static inline void *zptrd(zptr_t zptr) { return (void *)zptr; }
 #endif
