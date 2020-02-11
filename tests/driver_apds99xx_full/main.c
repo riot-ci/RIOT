@@ -63,7 +63,7 @@ static void apds99xx_isr (void *arg)
      * However, sending a message in an ISR requires a message queue in
      * the waiting thread. Since it is not relevant how many interrupts
      * have occurred since last interrupt handling, but only that an
-     * interrupt has occured, we simply use a thread flag here instead of
+     * interrupt has occurred, we simply use a thread flag here instead of
      * a message for simplicity.
      */
     (void)arg;
