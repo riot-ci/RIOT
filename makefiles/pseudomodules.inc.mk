@@ -12,7 +12,6 @@ PSEUDOMODULES += cortexm_fpu
 PSEUDOMODULES += cpu_check_address
 PSEUDOMODULES += devfs_%
 PSEUDOMODULES += dhcpv6_%
-PSEUDOMODULES += disp_dev
 PSEUDOMODULES += ecc_%
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += event_%
