@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Board specific definitions for the SODAQ SARA SFF boards
+ * @brief       Board specific definitions for the SODAQ SARA SFF board
  *
  * @author      Kees Bakker <kees@sodaq.com>
  */

@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Configuration of CPU peripherals for the SODAQ SARA SFF boards
+ * @brief       Configuration of CPU peripherals for the SODAQ SARA SFF board
  *
  * @author      Kees Bakker <kees@sodaq.com>
  */
@@ -47,7 +47,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pad = UART_PAD_RX_1,
         .tx_pad = UART_PAD_TX_0,
         .flags = UART_FLAG_NONE,
-        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0
+        .gclk_src = SAM0_GCLK_MAIN,
     },
     {
         /* Connected to the UBlox */
@@ -58,7 +58,7 @@ static const uart_conf_t uart_config[] = {
         .rx_pad = UART_PAD_RX_1,
         .tx_pad = UART_PAD_TX_0,
         .flags = UART_FLAG_NONE,
-        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0
+        .gclk_src = SAM0_GCLK_MAIN,
     },
 };
 
@@ -118,7 +118,8 @@ static const spi_conf_t spi_config[] = {
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,
         .miso_pad = SPI_PAD_MISO_0,
-        .mosi_pad = SPI_PAD_MOSI_2_SCK_3
+        .mosi_pad = SPI_PAD_MOSI_2_SCK_3,
+        .gclk_src = SAM0_GCLK_MAIN,
     }
 };
 
@@ -136,7 +137,7 @@ static const i2c_conf_t i2c_config[] = {
         .scl_pin = GPIO_PIN(PA, 23),
         .sda_pin = GPIO_PIN(PA, 22),
         .mux = GPIO_MUX_C,
-        .gclk_src = GCLK_CLKCTRL_GEN_GCLK0,
+        .gclk_src = SAM0_GCLK_MAIN,
         .flags = I2C_FLAG_NONE
     }
 };

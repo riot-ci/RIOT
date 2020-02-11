@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Board common implementations for the SODAQ SARA SFF boards
+ * @brief       Board common implementations for the SODAQ SARA SFF board
  *
  * @author      Kees Bakker <kees@sodaq.com>
  * @}
