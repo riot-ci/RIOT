@@ -33,7 +33,7 @@ FEATURES_OPTIONAL_MISSING = $(sort $(filter-out $(FEATURES_PROVIDED),$(FEATURES_
 FEATURES_USED_SO_FAR = $(sort $(FEATURES_REQUIRED) $(FEATURES_OPTIONAL_USED))
 
 # Additionally required features due to the "one out of" dependencies
-FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ONE_OUT_OF),$(call _features_one_out_of,$(subst |, ,$(ooo)),$(ooo)))
+FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ANY),$(call _features_any,$(subst |, ,$(ooo)),$(ooo)))
 
 # Returns:
 # - If one (or more) of the features in $1 is already used
@@ -41,7 +41,7 @@ FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ONE_OUT_OF),$(ca
 # - If none of the features in $1 is used:
 #    - If none of the features in $1 is provided: $2
 #    - Else: One features that is both provided and listed in $1
-_features_one_out_of = $(if $(filter $1,$(FEATURES_USED_SO_FAR)),,$(word 1,$(filter $1,$(FEATURES_PROVIDED)) $2))
+_features_any = $(if $(filter $1,$(FEATURES_USED_SO_FAR)),,$(word 1,$(filter $1,$(FEATURES_PROVIDED)) $2))
 
 # Features that are required by the application but not provided by the BSP
 # Having features missing may case the build to fail.
