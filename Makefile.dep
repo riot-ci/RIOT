@@ -476,6 +476,11 @@ ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart,$(USEMODULE)))
   DISABLE_MODULE += stdio_rtt
 endif
 
+ifneq (,$(filter stdio_rtt stdio_null stdio_uart,$(USEMODULE)))
+  # stdio_cdc_acm cannot be used when another STDIO is loaded
+  DISABLE_MODULE += stdio_cdc_acm
+endif
+
 ifneq (,$(filter isrpipe,$(USEMODULE)))
   USEMODULE += tsrb
 endif
@@ -1033,6 +1038,12 @@ FEATURES_OPTIONAL += periph_pm
 
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
+
+ifneq (,$(filter auto_init,$(DISABLE_MODULE)))
+  # boards using stdio over USB require auto_init
+  DISABLE_MODULE += stdio_cdc_acm
+  DISABLE_MODULE += auto_init_usbus
+endif
 
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
