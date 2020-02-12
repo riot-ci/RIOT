@@ -61,7 +61,7 @@ static void _reset_fifo(const stmpe811_t *dev)
                   STMPE811_FIFO_CTRL_STA, 0, 0);
 }
 
-void _clear_interrupt_status(const stmpe811_t *dev)
+static void _clear_interrupt_status(const stmpe811_t *dev)
 {
     i2c_write_reg(STMPE811_DEV_I2C, STMPE811_DEV_ADDR, STMPE811_INT_STA, 0xff, 0);
 }
