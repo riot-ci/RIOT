@@ -72,7 +72,7 @@ For a `FEATURE` to be provided by a `board` it must meet 2 criteria, and for
 
 - `FEATURES_REQUIRED`, `FEATURES_OPTIONAL`, `FEATURES_REQUIRED_ANY`,
    and `FEATURES_BLACKLIST` are defined by the application `Makefile`
-   (`examples/%/Makefile`, `tests/%/Makfile`, etc.) or in `Makefile.dep`
+   (`examples/%/Makefile`, `tests/%/Makefile`, etc.) or in `Makefile.dep`
 
 ## CPU/CPU_MODEL                                                            {#cpu}
 
