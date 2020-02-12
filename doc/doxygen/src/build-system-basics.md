@@ -55,7 +55,7 @@ For a `FEATURE` to be provided by a `board` it must meet 2 criteria, and for
 - `FEATURES_OPTIONAL` are "nice to have" `FEATURES`, not needed but useful. If
   available they are always included.
 
-- `FEATURES_REQUIRED_ONE_OUT_OF` are `FEATURES` of which (at least) one of
+- `FEATURES_REQUIRED_ANY` are `FEATURES` of which (at least) one of
   is needed by a `MODULE` or `APPLICATION`. Alternatives are separated by
   a pipe (`|`).
 
@@ -70,7 +70,7 @@ For a `FEATURE` to be provided by a `board` it must meet 2 criteria, and for
 - `FEATURES_PROVIDED`, `FEATURES_CONFLICT` and `FEATURES_CONFLICT_MSG ` are
    defined in `Makefile.features`
 
-- `FEATURES_REQUIRED`, `FEATURES_OPTIONAL`, `FEATURES_REQUIRED_ONE_OUT_OF`,
+- `FEATURES_REQUIRED`, `FEATURES_OPTIONAL`, `FEATURES_REQUIRED_ANY`,
    and `FEATURES_BLACKLIST` are defined by the application `Makefile`
    (`examples/%/Makefile`, `tests/%/Makfile`, etc.) or in `Makefile.dep`
 
