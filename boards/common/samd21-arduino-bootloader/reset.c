@@ -19,19 +19,13 @@
  * @}
  */
 
-#include "periph/pm.h"
+#include "usb_board_reset.h"
 
 
 #define SAMD21_DOUBLE_TAP_ADDR              (0x20007FFCUL)
 #define SAMD21_DOUBLE_TAP_MAGIC_NUMBER      (0x07738135UL)
 
-void reset_in_application(void)
-{
-    pm_reboot();
-    while (1) {}
-}
-
-void reset_in_bootloader(void)
+void usb_board_reset_in_bootloader(void)
 {
     /* The Arduino bootloader checks for a magic number in SRAM to remain in
        bootloader mode.
@@ -43,5 +37,5 @@ void reset_in_bootloader(void)
     uint32_t *reset_addr = (uint32_t *)SAMD21_DOUBLE_TAP_ADDR;
     *reset_addr = (uint32_t)SAMD21_DOUBLE_TAP_MAGIC_NUMBER;
 
-    reset_in_application();
+    usb_board_reset_in_application();
 }
