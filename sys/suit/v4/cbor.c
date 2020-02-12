@@ -33,7 +33,7 @@
 
 #include "log.h"
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 
 static suit_manifest_handler_t _manifest_get_auth_wrapper_handler(int key);
