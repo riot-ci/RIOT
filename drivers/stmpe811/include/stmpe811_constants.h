@@ -128,13 +128,13 @@ extern "C" {
  * @{
  */
 #define STMPE811_ADC_CTRL1_SAMPLE_TIME_POS          (4)         /**< Sample time bits shift position */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_36           (0b000)     /**< Convertion time: 36 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_44           (0b001)     /**< Convertion time: 44 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_56           (0b010)     /**< Convertion time: 56 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_64           (0b011)     /**< Convertion time: 64 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_80           (0b100)     /**< Convertion time: 80 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_96           (0b101)     /**< Convertion time: 96 cycles */
-#define STMPE811_ADC_CTRL1_SAMPLE_TIME_124          (0b110)     /**< Convertion time: 124 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_36           (0b000)     /**< Conversion time: 36 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_44           (0b001)     /**< Conversion time: 44 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_56           (0b010)     /**< Conversion time: 56 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_64           (0b011)     /**< Conversion time: 64 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_80           (0b100)     /**< Conversion time: 80 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_96           (0b101)     /**< Conversion time: 96 cycles */
+#define STMPE811_ADC_CTRL1_SAMPLE_TIME_124          (0b110)     /**< Conversion time: 124 cycles */
 #define STMPE811_ADC_CTRL1_MOD_12B                  (1 << 3)    /**< Enable 12 bit ADC (10bit if 0) */
 /** @} */
 
