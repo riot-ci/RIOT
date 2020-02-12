@@ -22,6 +22,7 @@
 #define STMPE811_H
 
 #include "saul.h"
+#include "periph/gpio.h"
 #include "periph/i2c.h"
 
 #ifdef __cplusplus
