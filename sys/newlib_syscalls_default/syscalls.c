@@ -56,6 +56,18 @@
 #include "xtimer.h"
 #endif
 
+#ifdef MODULE_MSP430_COMMON
+#define _sheap __heap_start__
+#define _eheap __heap_end__
+
+/* the msp430 linker script needs the heap to be explicitly defined,
+ * otherwise the section ends up empty.*/
+#ifndef CONFIG_MSP430_NEWLIB_HEAPSIZE
+#define CONFIG_MSP430_NEWLIB_HEAPSIZE 512
+#endif
+char __attribute__((used, section(".heap"))) _heap[CONFIG_MSP430_NEWLIB_HEAPSIZE];
+#endif
+
 /**
  * @brief manage the heap
  */
@@ -90,7 +102,7 @@ __attribute__((used)) void _fini(void)
  *
  * @param n     the exit code, 0 for all OK, >0 for not OK
  */
-void _exit(int n)
+__attribute__((used)) void _exit(int n)
 {
     LOG_INFO("#! exit %i: powering off\n", n);
     pm_off();
