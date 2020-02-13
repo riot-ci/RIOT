@@ -307,7 +307,6 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
         thread_yield();
 #endif
     } while (1);
-#endif
     DEBUG("wait loop %u times, yield %u times", i, j);
 #if ENABLE_DEBUG && defined(MODULE_XTIMER)
     diff = xtimer_now_usec() - diff;
