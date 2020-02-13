@@ -76,8 +76,8 @@ extern "C" {
 #define STMPE811_TSC_DATA_Y                         (0x4F)      /**< Data port for tsc data access */
 #define STMPE811_TSC_DATA_Z                         (0x51)      /**< Data port for tsc data access */
 #define STMPE811_TSC_DATA_XYZ                       (0x52)      /**< Data port for tsc data access */
-#define STMPE811_TSC_DATA_INC                       (0x57)      /**< Data port for tsc data access */
-#define STMPE811_TSC_DATA_NON_INC                   (0xD7)      /**< Data port for tsc data access */
+#define STMPE811_TSC_DATA_INC                       (0x57)      /**< Data port for tsc auto-increment data access */
+#define STMPE811_TSC_DATA_NON_INC                   (0xD7)      /**< Data port for tsc non auto-increment data access */
 #define STMPE811_TSC_FRACTION_Z                     (0x56)      /**< Touchscreen controller FRACTION_Z */
 #define STMPE811_TSC_DATA                           (0x57)      /**< Data port for tsc data access */
 #define STMPE811_TSC_I_DRIVE                        (0x58)      /**< Touchscreen controller drivel */
@@ -164,7 +164,7 @@ extern "C" {
 #define STMPE811_TSC_CTRL_TRACK_16                  (0b011)     /**< Tracking index 16 */
 #define STMPE811_TSC_CTRL_TRACK_32                  (0b100)     /**< Tracking index 32 */
 #define STMPE811_TSC_CTRL_TRACK_64                  (0b101)     /**< Tracking index 64 */
-#define STMPE811_TSC_CTRL_TRACK_96                  (0b110)     /**< Tracking index 96 */
+#define STMPE811_TSC_CTRL_TRACK_92                  (0b110)     /**< Tracking index 92 */
 #define STMPE811_TSC_CTRL_TRACK_127                 (0b111)     /**< Tracking index 127 */
 #define STMPE811_TSC_CTRL_STA                       (1 << 7)    /**< Touchscreen status (1: touch detected, 0: no touch detected), read-only */
 /** @} */
@@ -187,13 +187,13 @@ extern "C" {
 #define STMPE811_TSC_CFG_TOUCH_DET_DELAY_10MS       (0b110)     /**< Touch detection 10ms delay */
 #define STMPE811_TSC_CFG_TOUCH_DET_DELAY_50MS       (0b111)     /**< Touch detection 50ms delay */
 #define STMPE811_TSC_CFG_SETTLING_10US              (0b000)     /**< Settling time 10us */
-#define STMPE811_TSC_CFG_SETTLING_50US              (0b001)     /**< Settling time 50us */
-#define STMPE811_TSC_CFG_SETTLING_100US             (0b010)     /**< Settling time 100us */
-#define STMPE811_TSC_CFG_SETTLING_500US             (0b011)     /**< Settling time 500us */
-#define STMPE811_TSC_CFG_SETTLING_1MS               (0b100)     /**< Settling time 1ms */
-#define STMPE811_TSC_CFG_SETTLING_5MS               (0b101)     /**< Settling time 5ms */
-#define STMPE811_TSC_CFG_SETTLING_10MS              (0b110)     /**< Settling time 10ms */
-#define STMPE811_TSC_CFG_SETTLING_50MS              (0b111)     /**< Settling time 50ms */
+#define STMPE811_TSC_CFG_SETTLING_100US             (0b001)     /**< Settling time 100us */
+#define STMPE811_TSC_CFG_SETTLING_500US             (0b010)     /**< Settling time 500us */
+#define STMPE811_TSC_CFG_SETTLING_1MS               (0b011)     /**< Settling time 1ms */
+#define STMPE811_TSC_CFG_SETTLING_5MS               (0b100)     /**< Settling time 5ms */
+#define STMPE811_TSC_CFG_SETTLING_10MS              (0b101)     /**< Settling time 10ms */
+#define STMPE811_TSC_CFG_SETTLING_50MS              (0b110)     /**< Settling time 50ms */
+#define STMPE811_TSC_CFG_SETTLING_100MS             (0b111)     /**< Settling time 100ms */
 /** @} */
 
 /* @name    FIFO_CTRL_STA register bitfields
