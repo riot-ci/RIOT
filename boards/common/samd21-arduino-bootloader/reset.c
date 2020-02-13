@@ -19,6 +19,8 @@
  * @}
  */
 
+#define USB_H_USER_IS_RIOT_INTERNAL
+
 #include "usb_board_reset.h"
 
 
