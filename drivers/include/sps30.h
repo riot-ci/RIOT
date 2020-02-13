@@ -15,6 +15,7 @@
  * =====
  *
  * This driver provides an interface for the Sensirion SPS30 Sensor.
+ * The Datasheet can be found [here](https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.6_Particulate_Matter/Datasheets/Sensirion_PM_Sensors_SPS30_Datasheet.pdf).
  * For now only I2C mode is supported.
  * I2C speed must be set to standard mode (100 kbit/s)
  *
