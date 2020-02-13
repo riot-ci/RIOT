@@ -213,7 +213,7 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *_
 
         /* expect two entries: priority as int, url as byte string. bail out if not. */
         uint32_t prio;
-        /* check that first array entry is an int (the priotity of the url) */
+        /* check that first array entry is an int (the priority of the url) */
         if (nanocbor_get_uint32(&url_value_it, &prio) < 0) {
             LOG_DEBUG("expected URL priority (int), got %d\n", nanocbor_get_type(&url_value_it));
             return -1;
