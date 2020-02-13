@@ -26,8 +26,3 @@ term-delay:
 
 TESTRUNNER_CONNECT_DELAY ?= 2
 $(call target-export-variables,test,TESTRUNNER_CONNECT_DELAY)
-
-USB_VID ?= 1209
-USB_PID ?= 7D00
-
-CFLAGS += -DCONFIG_USB_VID=0x$(USB_VID) -DCONFIG_USB_PID=0x$(USB_PID)
