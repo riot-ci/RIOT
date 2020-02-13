@@ -15,6 +15,8 @@
  * @}
  */
 
+#define USB_H_USER_IS_RIOT_INTERNAL
+
 #include "log.h"
 
 #include "usb/usbus/cdc/acm.h"
