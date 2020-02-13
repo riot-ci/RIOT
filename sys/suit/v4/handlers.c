@@ -43,16 +43,13 @@ static int _hello_handler(suit_v4_manifest_t *manifest, int key, nanocbor_value_
     (void)manifest;
     (void)key;
 
-    if (nanocbor_get_type(it) == NANOCBOR_TYPE_TSTR) {
-        size_t len = HELLO_HANDLER_MAX_STRLEN;
-        char buf[HELLO_HANDLER_MAX_STRLEN];
-        nanocbor_get_tstr(it, ((const uint8_t **) &buf), &len);
-        return SUIT_OK;
-    }
-    else {
+    size_t len = HELLO_HANDLER_MAX_STRLEN;
+    char buf[HELLO_HANDLER_MAX_STRLEN];
+    if (nanocbor_get_tstr(it, ((const uint8_t **) &buf), &len) < 0) {
         LOG_DEBUG("_hello_handler(): unexpected value type: %u\n", nanocbor_get_type(it));
         return -1;
     }
+    return SUIT_OK;
 }
 
 static int _validate_uuid(suit_v4_manifest_t *manifest, nanocbor_value_t *it, uuid_t *uuid)
@@ -62,7 +59,7 @@ static int _validate_uuid(suit_v4_manifest_t *manifest, nanocbor_value_t *it, uu
     size_t len = sizeof(uuid_t);
     char uuid_str[UUID_STR_LEN + 1];
     char uuid_str2[UUID_STR_LEN + 1];
-    if (suit_cbor_get_string(it, &uuid_manifest_ptr, &len) != SUIT_OK) {
+    if (nanocbor_get_bstr(it, &uuid_manifest_ptr, &len) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
@@ -101,7 +98,7 @@ static int _cond_comp_offset(suit_v4_manifest_t *manifest, int key, nanocbor_val
     (void)manifest;
     (void)key;
     uint32_t offset;
-    suit_cbor_get_uint32(it, &offset);
+    nanocbor_get_uint32(it, &offset);
     uint32_t other_offset = (uint32_t)riotboot_slot_get_hdr(riotboot_slot_other()) \
                             - CPU_FLASH_BASE;
     LOG_INFO("Comparing manifest offset %u with other slot offset %u\n",
@@ -115,13 +112,12 @@ static int _dtv_set_comp_idx(suit_v4_manifest_t *manifest, int key, nanocbor_val
     if (nanocbor_get_type(it) == NANOCBOR_TYPE_FLOAT) {
         LOG_DEBUG("_dtv_set_comp_idx() ignoring boolean and floats\n)");
         nanocbor_skip(it);
-        return 0;
     }
-    int res = suit_cbor_get_int32(it, &manifest->component_current);
-    if (!res) {
-        LOG_DEBUG("Setting component index to %d\n", (int)manifest->component_current);
+    else if (nanocbor_get_int32(it, &manifest->component_current) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
     }
-    return res;
+    LOG_DEBUG("Setting component index to %d\n", (int)manifest->component_current);
+    return 0;
 }
 
 static int _dtv_run_seq_cond(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *it)
@@ -147,8 +143,8 @@ static int _param_get_digest(suit_v4_manifest_t *manifest, nanocbor_value_t *it)
 
 static int _param_get_img_size(suit_v4_manifest_t *manifest, nanocbor_value_t *it)
 {
-    int res = suit_cbor_get_uint32(it, &manifest->components[0].size);
-    if (res) {
+    int res = nanocbor_get_uint32(it, &manifest->components[0].size);
+    if (res < 0) {
         LOG_DEBUG("error getting image size\n");
         return res;
     }
@@ -166,7 +162,7 @@ static int _dtv_set_param(suit_v4_manifest_t *manifest, int key, nanocbor_value_
     while (!nanocbor_at_end(&map)) {
         /* map points to the key of the param */
         int32_t param_key;
-        suit_cbor_get_int32(&map, &param_key);
+        nanocbor_get_int32(&map, &param_key);
         LOG_DEBUG("Setting component index to %" PRIi32 "\n", manifest->component_current);
         LOG_DEBUG("param_key=%" PRIi32 "\n", param_key);
         int res;
@@ -216,40 +212,36 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *_
             return err;
         }
 
-        /* confirm the document contains an array */
-        if (nanocbor_get_type(&it) != NANOCBOR_TYPE_ARR) {
+        nanocbor_value_t url_it;
+        /* enter container, confirm it is an array, too */
+        if (nanocbor_enter_array(&it, &url_it) < 0) {
             LOG_DEBUG("url list no array\n)");
-            LOG_DEBUG("type: %u\n", nanocbor_get_type(&it));
+            return SUIT_ERR_INVALID_MANIFEST;
         }
 
-        /* enter container, confirm it is an array, too */
-        nanocbor_value_t url_it;
-        nanocbor_enter_array(&it, &url_it);
-        if (nanocbor_get_type(&url_it) != NANOCBOR_TYPE_ARR) {
+        nanocbor_value_t url_value_it;
+        if (nanocbor_enter_array(&url_it, &url_value_it) < 0) {
             LOG_DEBUG("url entry no array\n)");
+            return SUIT_ERR_INVALID_MANIFEST;
         }
 
         /* expect two entries: priority as int, url as byte string. bail out if not. */
-        nanocbor_value_t url_value_it;
-        nanocbor_enter_array(&url_it, &url_value_it);
-
+        uint32_t prio;
         /* check that first array entry is an int (the priotity of the url) */
-        if (nanocbor_get_type(&url_value_it) != NANOCBOR_TYPE_UINT) {
+        if (nanocbor_get_uint32(&url_value_it, &prio) < 0) {
             LOG_DEBUG("expected URL priority (int), got %d\n", nanocbor_get_type(&url_value_it));
             return -1;
         }
+        LOG_DEBUG("URL priority %"PRIu32"\n", prio);
 
-        /* skip URL priority (currently unused) */
-        nanocbor_skip(&url_value_it);
-
-        int res = suit_cbor_get_string(&url_value_it, &url, &url_len);
-        if (res) {
+        int res = nanocbor_get_tstr(&url_value_it, &url, &url_len);
+        if (res < 0) {
             LOG_DEBUG("error parsing URL\n)");
-            return -1;
+            return SUIT_ERR_INVALID_MANIFEST;
         }
         if (url_len >= manifest->urlbuf_len) {
             LOG_INFO("url too large: %u>%u\n)", (unsigned)url_len, (unsigned)manifest->urlbuf_len);
-            return -1;
+            return SUIT_ERR_UNSUPPORTED;
         }
         memcpy(manifest->urlbuf, url, url_len);
         manifest->urlbuf[url_len] = '\0';
@@ -273,9 +265,9 @@ static int _dtv_fetch(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *_
     const uint8_t *digest;
     size_t digest_len;
 
-    res = suit_cbor_get_string(&manifest->components[0].digest, &digest, &digest_len);
-    if (res) {
-        return res;
+    res = nanocbor_get_bstr(&manifest->components[0].digest, &digest, &digest_len);
+    if (res < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
     }
 
     /* "digest" points to a 36 byte string that includes the digest type.
@@ -300,8 +292,7 @@ static int _version_handler(suit_v4_manifest_t *manifest, int key,
     (void)key;
     /* Validate manifest version */
     int32_t version = -1;
-    if ((nanocbor_get_type(it) == NANOCBOR_TYPE_UINT) &&
-        (nanocbor_get_int32(it, &version) >= 0)) {
+    if (nanocbor_get_int32(it, &version) >= 0) {
         if (version == SUIT_VERSION) {
             manifest->validated |= SUIT_VALIDATED_VERSION;
             LOG_INFO("suit: validated manifest version\n)");
@@ -316,35 +307,33 @@ static int _version_handler(suit_v4_manifest_t *manifest, int key,
 
 static int _seq_no_handler(suit_v4_manifest_t *manifest, int key, nanocbor_value_t *it)
 {
-    (void)manifest;
     (void)key;
-    (void)it;
 
     int32_t seq_nr;
 
-    if ((nanocbor_get_type(it) == NANOCBOR_TYPE_UINT)) {
-        nanocbor_get_int32(it, &seq_nr);
-        const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(riotboot_slot_current());
-        if (seq_nr <= (int32_t)hdr->version) {
-            LOG_INFO("%"PRId32" <= %"PRId32"\n", seq_nr, hdr->version);
-            LOG_INFO("seq_nr <= running image\n)");
+    if (nanocbor_get_int32(it, &seq_nr) < 0) {
+        LOG_INFO("Unable to get sequence number\n");
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
+    const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(riotboot_slot_current());
+    if (seq_nr <= (int32_t)hdr->version) {
+        LOG_INFO("%"PRId32" <= %"PRId32"\n", seq_nr, hdr->version);
+        LOG_INFO("seq_nr <= running image\n)");
+        return -1;
+    }
+
+    hdr = riotboot_slot_get_hdr(riotboot_slot_other());
+    if (riotboot_hdr_validate(hdr) == 0) {
+        if (seq_nr<= (int32_t)hdr->version) {
+            LOG_INFO("%"PRIu32" <= %"PRIu32"\n", seq_nr, hdr->version);
+            LOG_INFO("seq_nr <= other image\n)");
             return -1;
         }
-
-        hdr = riotboot_slot_get_hdr(riotboot_slot_other());
-        if (riotboot_hdr_validate(hdr) == 0) {
-            if (seq_nr<= (int32_t)hdr->version) {
-                LOG_INFO("%"PRIu32" <= %"PRIu32"\n", seq_nr, hdr->version);
-                LOG_INFO("seq_nr <= other image\n)");
-                return -1;
-            }
-        }
-        LOG_INFO("suit: validated sequence number\n)");
-        manifest->validated |= SUIT_VALIDATED_SEQ_NR;
-        return 0;
     }
-    LOG_INFO("Unable to get sequence number\n");
-    return -1;
+    LOG_INFO("suit: validated sequence number\n)");
+    manifest->validated |= SUIT_VALIDATED_SEQ_NR;
+    return 0;
+
 }
 
 static int _dependencies_handler(suit_v4_manifest_t *manifest, int key,
@@ -366,15 +355,13 @@ static int _component_handler(suit_v4_manifest_t *manifest, int key,
     nanocbor_value_t arr;
 
     LOG_DEBUG("storing components\n)");
-    if (nanocbor_get_type(it) != NANOCBOR_TYPE_ARR) {
+    if (nanocbor_enter_array(it, &arr) < 0) {
         LOG_DEBUG("components field not an array\n");
         return -1;
     }
-    nanocbor_enter_array(it, &arr);
-
     unsigned n = 0;
     while (!nanocbor_at_end(&arr)) {
-        nanocbor_value_t map, key, value;
+        nanocbor_value_t map;
         if (n < SUIT_V4_COMPONENT_MAX) {
             manifest->components_len += 1;
         }
@@ -383,30 +370,35 @@ static int _component_handler(suit_v4_manifest_t *manifest, int key,
             return SUIT_ERR_INVALID_MANIFEST;
         }
 
-        suit_cbor_map_iterate_init(&arr, &map);
+        if (nanocbor_enter_map(&arr, &map) < 0) {
+            LOG_DEBUG("suit _v4_parse(): manifest not a map!\n");
+            return SUIT_ERR_INVALID_MANIFEST;
+        }
 
         suit_v4_component_t *current = &manifest->components[n];
 
-        while (suit_cbor_map_iterate(&map, &key, &value)) {
+        while (!nanocbor_at_end(&map)) {
+
             /* handle key, value */
             int32_t integer_key;
-            if (suit_cbor_get_int32(&key, &integer_key)) {
+            if (nanocbor_get_int32(&map, &integer_key) < 0) {
                 return SUIT_ERR_INVALID_MANIFEST;
             }
 
             switch (integer_key) {
                 case SUIT_COMPONENT_IDENTIFIER:
-                    current->identifier = value;
+                    current->identifier = map;
                     break;
                 case SUIT_COMPONENT_SIZE:
                     LOG_DEBUG("skipping SUIT_COMPONENT_SIZE");
                     break;
                 case SUIT_COMPONENT_DIGEST:
-                    current->digest = value;
+                    current->digest = map;
                     break;
                 default:
                     LOG_DEBUG("ignoring unexpected component data (nr. %" PRIi32 ")\n", integer_key);
             }
+            nanocbor_skip(&map);
 
             LOG_DEBUG("component %u parsed\n", n);
         }
@@ -505,19 +497,17 @@ int _handle_command_sequence(suit_v4_manifest_t *manifest, nanocbor_value_t *bse
         return err;
     }
 
-    if (nanocbor_get_type(&it) != NANOCBOR_TYPE_ARR) {
-        return -1;
+    if (nanocbor_enter_array(&it, &arr) < 0) {
+        return SUIT_ERR_INVALID_MANIFEST;
     }
-    nanocbor_enter_array(&it, &arr);
 
     while (!nanocbor_at_end(&arr)) {
         nanocbor_value_t map;
-        if (nanocbor_get_type(&arr) != NANOCBOR_TYPE_MAP) {
+        if (nanocbor_enter_map(&arr, &map) < 0) {
             return SUIT_ERR_INVALID_MANIFEST;
         }
-        nanocbor_enter_map(&arr, &map);
         int32_t integer_key;
-        if (suit_cbor_get_int32(&map, &integer_key)) {
+        if (nanocbor_get_int32(&map, &integer_key) < 0) {
             return SUIT_ERR_INVALID_MANIFEST;
         }
         int res = handler(manifest, integer_key, &map);
