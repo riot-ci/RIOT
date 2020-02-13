@@ -272,6 +272,9 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
 {
     unsigned i = 0, j = 0;
     uint32_t div = 2;
+#if ENABLE_DEBUG && defined(MODULE_XTIMER)
+    uint32_t diff = xtimer_now_usec();
+#endif
     do {
         uint8_t status;
         mtd_spi_cmd_read(dev, dev->opcode->rdsr, &status, sizeof(status));
@@ -304,7 +307,18 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
         thread_yield();
 #endif
     } while (1);
-    DEBUG("wait loop %u times, yield %u times\n", i, j);
+#if ENABLE_DEBUG && defined(MODULE_XTIMER)
+    diff = xtimer_now_usec() - diff;
+#endif
+    DEBUG("wait loop %u times, yield %u times"
+#ifdef MODULE_XTIMER
+          ", total wait %"PRIu32"us"
+#endif
+          "\n", i, j,
+#ifdef MODULE_XTIMER
+          diff
+#endif
+          );
 }
 
 static int mtd_spi_nor_init(mtd_dev_t *mtd)
