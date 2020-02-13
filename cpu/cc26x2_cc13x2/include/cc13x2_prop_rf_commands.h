@@ -26,17 +26,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Get the status code of the command.
- *
- * @pre     @p cmd != 0
- *
- * @param[in] cmd The command to check.
- *
- * @return  uint32_t The command status value.
- */
-uint16_t cc13x2_cmd_get_status(uint32_t cmd);
-
-/**
  * @brief   Construct a CMD_SYNC_START_RAT command.
  *
  * @note    @p next_cmd will only be runned if this command succeeds
@@ -90,13 +79,79 @@ uint32_t cc13x2_cmd_sync_stop_rat(void);
 uint32_t cc13x2_cmd_sync_stop_rat_get_rat0(void);
 
 /**
- * @brief   Construct a CMD_CLEAR_RX command.
+ * @brief   Construct a CMD_CLEAR_RX command
  *
  * @param[in] queue A pointer to a data queue.
  *
  * @return uint32_t The command address.
  */
 uint32_t cc13x2_cmd_clear_rx(dataQueue_t *queue);
+
+/**
+ * @brief   Construct a CMD_FS command
+ *
+ * @note    If @p next_cmd (if isn't 0) will not run if this command fails
+ *          (COND_STOP_ON_FALSE).
+ *
+ * @param[in] next_cmd Next command to run.
+ * @param[in] freq     The frequency in MHz.
+ * @param[in] frac     The fractional part of the frequency.
+ *
+ * @return  uint32_t The command address.
+ */
+uint32_t cc13x2_cmd_fs(uint32_t next_cmd, uint16_t freq, uint16_t frac);
+
+/**
+ * @brief   Construct a CMD_PROP_RX_ADV command
+ *
+ * @pre     @p queue != NULL
+ *
+ * @param[in] queue  The RX data queue.
+ * @param[in] output The RX statistics.
+ *
+ * @return  uint32_t The command address.
+ */
+uint32_t cc13x2_cmd_prop_rx_adv(dataQueue_t *queue, void *output);
+
+/**
+ * @brief   Construct a CMD_PROP_TX_ADV command
+ *
+ * @pre     (@p != NULL) && (@p packet_len != 0)
+ *
+ * @param[in] packet     The packet data.
+ * @param[in] packet_len The packet data length in bytes.
+ *
+ * @return  uint32_t The command address.
+ */
+uint32_t cc13x2_cmd_prop_tx_adv(void *packet, uint16_t packet_len);
+
+/**
+ * @brief   Get the CMD_PROP_RADIO_DIV_SETUP command status.
+ *
+ * @return  uint16_t The status.
+ */
+uint16_t cc13x2_cmd_prop_radio_div_setup_status(void);
+
+/**
+ * @brief   Get the CMD_SYNC_STOP_RAT command status.
+ *
+ * @return  uint16_t The status.
+ */
+uint16_t cc13x2_cmd_sync_stop_rat_get_status(void);
+
+/**
+ * @brief   Get the CMD_PROP_RX_ADV command status.
+ *
+ * @return  uint16_t The status.
+ */
+uint16_t cc13x2_cmd_prop_rx_adv_get_status(void);
+
+/**
+ * @brief   Get the CMD_PROP_TX_ADV command status.
+ *
+ * @return  uint16_t The status.
+ */
+uint16_t cc13x2_cmd_prop_tx_adv_get_status(void);
 
 #ifdef __cplusplus
 } /* end extern "C" */

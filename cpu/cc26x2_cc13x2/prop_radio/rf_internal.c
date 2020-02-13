@@ -117,11 +117,6 @@ static uint32_t _prop_overrides[] =
  */
 static uint32_t _rat_offset = 0;
 
-static volatile __attribute__((aligned(4))) rfc_CMD_FS_t _cmd_fs;
-
-static volatile __attribute__((aligned(4))) rfc_CMD_PROP_RX_ADV_t _cmd_receive;
-static volatile __attribute__((aligned(4))) rfc_CMD_PROP_TX_ADV_t _cmd_transmit;
-
 static volatile uint16_t _channel;
 
 static __attribute__((aligned(4))) rfc_propRxOutput_t _rf_stats;
@@ -131,7 +126,6 @@ static __attribute__((aligned(4))) rfc_propRxOutput_t _rf_stats;
 #define CC13X2_LENGTH_OFFSET (sizeof(rfc_dataEntry_t))
 #define CC13X2_DATA_OFFSET   (CC13X2_LENGTH_OFFSET + IEEE802154_PHR_SIZE)
 
-#define CC13X2_MAX_PACKET_SIZE  (2047)
 #define CC13X2_MAX_PAYLOAD_SIZE (125)
 
 #define BUF_SIZE                         \
@@ -218,71 +212,6 @@ static void cc13x2_prop_rf_init_bufs(void)
     entry->length = sizeof(_rx_buf3) - sizeof(rfc_dataEntry_t);
 }
 
-static void cc13x2_rf_core_init_rx_params(void)
-{
-    static const rfc_CMD_PROP_RX_ADV_t cmd_receive_default = {
-        .commandNo = CMD_PROP_RX_ADV,
-        .status = IDLE,
-        .pNextOp = NULL,
-        .startTime = 0u,
-        .startTrigger = {
-            .triggerType = TRIG_NOW,
-        },
-        .condition = {
-            .rule = COND_NEVER,
-        },
-        .pktConf = {
-            .bFsOff = 0,
-            .bRepeatOk = 0,
-            .bRepeatNok = 0,
-            .bUseCrc = 0x1,
-            .bCrcIncSw = 0,
-            .bCrcIncHdr = 0,
-            .endType = 0,
-            .filterOp = 0,
-        },
-        .rxConf = {
-            .bAutoFlushIgnored = 0x1,
-            .bAutoFlushCrcErr = 0x1,
-            .bIncludeHdr = 0,
-            .bIncludeCrc = 0,
-            .bAppendRssi = 0x1,
-            .bAppendTimestamp = 0,
-            .bAppendStatus = 0x1,
-        },
-        .syncWord0 = IEEE802154_2FSK_UNCODED_SFD_0,
-        .syncWord1 = 0,
-        .maxPktLen = CC13X2_MAX_PACKET_SIZE,
-        .hdrConf = {
-            .numHdrBits = IEEE802154_PHR_BITS,
-            .lenPos = 0,
-            .numLenBits = IEEE802154_PHR_FRAME_LENGTH_BITS,
-        },
-        .addrConf = {
-            .addrType = 0,
-            .addrSize = 0,
-            .addrPos = 0,
-            .numAddr = 0,
-        },
-        .lenOffset = 0,
-        .endTrigger = {
-            .triggerType = TRIG_NEVER,
-            .bEnaCmd = 0x0,
-            .triggerNo = 0x0,
-            .pastTrig = 0x0,
-        },
-        .endTime = 0x00000000,
-        .pAddr = 0,
-        .pQueue = 0,
-        .pOutput = 0
-    };
-
-    _cmd_receive = cmd_receive_default;
-
-    _cmd_receive.pQueue = &_rx_data_queue;
-    _cmd_receive.pOutput = (uint8_t *)&_rf_stats;
-}
-
 /**
  * @brief   Sends the immediate clear RX queue command to the RF Core.
  *
@@ -317,48 +246,10 @@ static uint_fast8_t cc13x2_prop_rf_clear_rx_queue(dataQueue_t *queue)
  */
 static uint_fast8_t cc13x2_prop_rf_send_tx_cmd(uint8_t *psdu, uint8_t len)
 {
-    static const rfc_CMD_PROP_TX_ADV_t cmd_transmit_default = {
-        .commandNo = CMD_PROP_TX_ADV,
-        .status = IDLE,
-        .startTrigger = {
-            .triggerType = TRIG_NOW,
-        },
-        .condition = {
-            .rule = COND_NEVER,
-        },
-        .pNextOp = NULL,
-        .pktConf = {
-            .bFsOff = 0,
-            .bUseCrc = 0,
-            .bCrcIncSw = 0,
-            .bCrcIncHdr = 0,
-        },
-        .numHdrBits = IEEE802154_PHR_BITS,
-        .startConf = {
-            .bExtTxTrig = 0,
-            .inputMode = 0,
-            .source = 0,
-        },
-        .preTrigger = {
-            .triggerType = TRIG_REL_START,
-            .bEnaCmd = 0,
-            .triggerNo = 0,
-            .pastTrig = 1,
-        },
-        .preTime = 0x00000000,
-        .syncWord = IEEE802154_2FSK_UNCODED_SFD_0,
-    };
+    uint16_t packet_len = IEEE802154_PHR_SIZE + len;
+    uint32_t cmd_prop_tx_adv = cc13x2_cmd_prop_tx_adv(psdu, packet_len);
 
-    DEBUG_PUTS("[cc13x2_prop_rf_send_tx_cmd]: sending TX command.");
-    /*DEBUG("[cc13x2_prop_rf_send_tx_cmd]: psdu = %lx.\n", (uint32_t)psdu);
-    DEBUG("[cc13x2_prop_rf_send_tx_cmd]: len = %x.\n", len);*/
-
-    _cmd_transmit = cmd_transmit_default;
-    /* no need to look for an ack if the tx operation was stopped */
-    _cmd_transmit.pktLen = IEEE802154_PHR_SIZE + len;
-    _cmd_transmit.pPkt = psdu;
-
-    return RFCDoorbellSendTo((uint32_t)&_cmd_transmit) & 0xFF;
+    return RFCDoorbellSendTo(cmd_prop_tx_adv) & 0xFF;
 }
 
 /**
@@ -378,8 +269,8 @@ static uint_fast8_t cc13x2_prop_rf_send_tx_cmd(uint8_t *psdu, uint8_t len)
 static uint_fast8_t cc13x2_prop_rf_send_rx_cmd(void)
 {
     DEBUG_PUTS("[cc13x2_prop_rf_send_rx_cmd]: sending receive cmd!");
-    _cmd_receive.status = IDLE;
-    return (RFCDoorbellSendTo((uint32_t)&_cmd_receive) & 0xFF);
+    uint32_t cmd_prop_rx_adv = cc13x2_cmd_prop_rx_adv(&_rx_data_queue, &_rf_stats);
+    return RFCDoorbellSendTo(cmd_prop_rx_adv) & 0xFF;
 }
 
 /**
@@ -391,39 +282,14 @@ static uint_fast8_t cc13x2_prop_rf_send_rx_cmd(void)
  * @return  The value from the command status register.
  * @retval  CMDSTA_Done The command completed correctly.
  */
-static uint_fast8_t cc13x2_prop_rf_send_fs_cmd(uint16_t frequency,
+static uint_fast8_t cc13x2_prop_rf_send_fs_cmd(uint16_t freq,
                                                uint16_t fract_freq)
 {
-    static const rfc_CMD_FS_t cmd_fs_default = {
-        .commandNo = CMD_FS,
-        .status = IDLE,
-        .startTrigger = {
-            .triggerType = TRIG_NOW,
-        },
-        .condition = {
-            .rule = COND_NEVER,
-        },
-        .synthConf = {
-            .bTxMode = 0,
-            .refFreq = 0,
-        },
-    };
-
     DEBUG_PUTS("[cc13x2_prop_rf_send_fs_cmd]: sending FS command");
-    /*DEBUG("[cc13x2_prop_rf_send_fs_cmd]: frequency = %u.%u MHz\n", frequency, fract_freq);*/
 
-    _cmd_fs = cmd_fs_default;
+    uint32_t cmd_fs = cc13x2_cmd_fs(0, freq, fract_freq);
 
-    _cmd_fs.frequency = frequency;
-    _cmd_fs.fractFreq = fract_freq;
-
-    uint_fast8_t ret = RFCDoorbellSendTo((uint32_t)&_cmd_fs) & 0xFF;
-
-    if (ret != CMDSTA_Done) {
-        DEBUG_PUTS("[cc13x2_prop_rf_send_fs_cmd]: command not done");
-    }
-
-    return ret;
+    return RFCDoorbellSendTo(cmd_fs) & 0xFF;
 }
 
 static uint_fast8_t cc13x2_prop_rf_apply_patch(void)
@@ -478,7 +344,7 @@ static uint_fast16_t cc13x2_prop_rf_send_enable_cmd(void)
     while (!is_interrupt_flag_present(IRQ_LAST_COMMAND_DONE)) {}
 
     /* Return the status of the cmd_setup command */
-    ret = cc13x2_cmd_get_status(cmd_setup);
+    ret = cc13x2_cmd_prop_radio_div_setup_status();
 
 exit:
     if (!ints_disabled) {
@@ -526,8 +392,8 @@ static uint_fast16_t cc13x2_prop_rf_send_disable_cmd(void)
     /* Synchronously wait for the RF Core to stop */
     while (!is_interrupt_flag_present(IRQ_LAST_COMMAND_DONE)) {}
 
-    /* Get the status of the finished command */
-    ret = cc13x2_cmd_get_status(cmd_sync_stop_rat);
+    /* Get the status of the CMD_SYNC_STOP_RAT command */
+    ret = cc13x2_cmd_sync_stop_rat_get_status();
     if (ret == DONE_OK) {
         /* Save the Radio Timer offset */
         _rat_offset = cc13x2_cmd_sync_stop_rat_get_rat0();
@@ -593,16 +459,19 @@ static void _isr_rfc_cpe0(void)
             clear_interrupt_flag(IRQ_COMMAND_DONE);
         }
 
+        uint16_t rx_status = cc13x2_cmd_prop_rx_adv_get_status();
+
         if (_state == FSM_STATE_RX &&
-            _cmd_receive.status != ACTIVE &&
-            _cmd_receive.status != PROP_DONE_RXTIMEOUT) {
+            rx_status != ACTIVE &&
+            rx_status != PROP_DONE_RXTIMEOUT) {
             DEBUG_PUTS("[_isr_rfc_cpe0]: RX aborted");
             /* The RX command was aborted */
             _state = FSM_STATE_SLEEP;
         }
 
-        if (_state == FSM_STATE_TX &&
-            _cmd_transmit.status == PROP_DONE_OK) {
+        uint16_t tx_status = cc13x2_cmd_prop_tx_adv_get_status();
+
+        if (_state == FSM_STATE_TX && tx_status == PROP_DONE_OK) {
             DEBUG_PUTS("[_isr_rfc_cpe0]: transmission finished, receiving");
             _state = FSM_STATE_SLEEP;
             cc13x2_prop_rf_rx_start();
@@ -616,9 +485,6 @@ void cc13x2_prop_rf_init(void)
 {
     cc26xx_cc13xx_set_isr_rfc_cpe0_handler(_isr_rfc_cpe0);
     cc26xx_cc13xx_set_isr_rfc_cpe1_handler(_isr_rfc_cpe1);
-
-    /* Populate the RX parameters data structure with default values */
-    cc13x2_rf_core_init_rx_params();
 
     _state = FSM_STATE_OFF;
 }
@@ -747,7 +613,7 @@ int_fast8_t cc13x2_prop_rf_rx_start(void)
             return -1;
         }
     }
-    else if (_state == FSM_STATE_RX && _cmd_receive.status != ACTIVE) {
+    else if (_state == FSM_STATE_RX && cc13x2_cmd_prop_rx_adv_get_status() != ACTIVE) {
         DEBUG_PUTS("[cc13x2_prop_rf_rx_start]: RX not active, setting again!");
         /* We have either not fallen back into our receive command or we are
          * running on the wrong channel. Either way assume the caller correctly

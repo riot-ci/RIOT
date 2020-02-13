@@ -29,6 +29,8 @@ extern "C" {
 #include "net/ieee802154.h"
 #include "net/netdev/ieee802154.h"
 
+#define CC13X2_MAX_PACKET_SIZE  (2047)
+
 #ifndef CC13X2_CHANNEL_MIN_SUB_GHZ
 #define CC13X2_CHANNEL_MIN_SUB_GHZ  (0U) /**< Minimum channel for Sub-GHz band */
 #endif
