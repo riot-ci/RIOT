@@ -1,4 +1,3 @@
-PSEUDOMODULES += arduino_bootloader
 PSEUDOMODULES += at_urc
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
