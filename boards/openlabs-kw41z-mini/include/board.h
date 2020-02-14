@@ -73,7 +73,7 @@ extern "C"
  * @brief   Enable LF oscillator output on PTB3 to aid debugging or calibration
  */
 #ifndef PTB3_OUTPUT_OSC32K
-#define PTB3_OUTPUT_OSC32K          (1)
+#define PTB3_OUTPUT_OSC32K          (0)
 #endif
 
 /**
