@@ -11,7 +11,7 @@
 import sys
 from testrunner import run
 
-TIMEOUT = 75*60
+TIMEOUT = 75 * 60
 
 
 def testfunc(child):
