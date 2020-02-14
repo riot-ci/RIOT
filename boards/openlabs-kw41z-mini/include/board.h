@@ -68,6 +68,24 @@ extern "C"
 /** @} */
 
 /**
+ * @def     PTB3_OUTPUT_OSC32K
+ *
+ * @brief   Enable LF oscillator output on PTB3 to aid debugging or calibration
+ */
+#ifndef PTB3_OUTPUT_OSC32K
+#define PTB3_OUTPUT_OSC32K          (1)
+#endif
+
+/**
+ * @def     PTB3_OUTPUT_OSCERCLK
+ *
+ * @brief   Enable HF oscillator output on PTB3 to aid debugging or calibration
+ */
+#ifndef PTB3_OUTPUT_OSCERCLK
+#define PTB3_OUTPUT_OSCERCLK        (0)
+#endif
+
+/**
  * @brief Initialize board-specific hardware, including clock, LEDs, and stdio
  */
 void board_init(void);

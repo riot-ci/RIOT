@@ -39,11 +39,16 @@ static const clock_config_t clock_config = {
      * Bus:   24 MHz
      * Flash: 24 MHz
      */
+
     .clkdiv1            = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV4(1),
     .rtc_clc            = RTC_CR_SC16P_MASK | RTC_CR_SC4P_MASK | RTC_CR_SC2P_MASK,
+
     /* Use the 32 kHz oscillator as ERCLK32K. Note that the values here have a
-     * different mapping for the KW41Z than the values used in the Kinetis K series */
+     * different mapping for the KW41Z than the values used in the Kinetis
+     * K series */
     .osc32ksel          = SIM_SOPT1_OSC32KSEL(0),
+
+    /* enable clocks */
     .clock_flags =
         KINETIS_CLOCK_OSC0_EN | /* Enable RSIM oscillator */
         KINETIS_CLOCK_RTCOSC_EN |
@@ -51,10 +56,11 @@ static const clock_config_t clock_config = {
         KINETIS_CLOCK_MCGIRCLK_EN | /* Used for LPUART clocking */
         KINETIS_CLOCK_MCGIRCLK_STOP_EN |
         0,
+
     /* Using FEI mode by default, the external crystal settings below are only
      * used if mode is changed to an external mode (PEE, FBE, or FEE) */
     .default_mode       = KINETIS_MCG_MODE_FEI,
-//     .default_mode       = KINETIS_MCG_MODE_FEE,
+
     /* The crystal connected to RSIM OSC is 32 MHz */
     .erc_range          = KINETIS_MCG_ERC_RANGE_VERY_HIGH,
 
@@ -65,10 +71,6 @@ static const clock_config_t clock_config = {
     .fll_frdiv          = MCG_C1_FRDIV(0b101), /* Divide by 1024 */
     .fll_factor_fei     = KINETIS_MCG_FLL_FACTOR_1464, /* FEI FLL freq = 48 MHz */
     .fll_factor_fee     = KINETIS_MCG_FLL_FACTOR_1280, /* FEE FLL freq = 40 MHz */
-
-//     .oscsel             = MCG_C7_OSCSEL(1), /* Use 32kHz crystal for external clock */
-//     .fll_frdiv          = MCG_C1_FRDIV(0b000), /* Divide by 1 */
-//     .fll_factor_fee     = KINETIS_MCG_FLL_FACTOR_1464, /* FEE FLL freq = 48 MHz */
 };
 /* Radio xtal frequency, either 32 MHz or 26 MHz */
 #define CLOCK_RADIOXTAL              (32000000ul)
@@ -92,13 +94,13 @@ static const clock_config_t clock_config = {
         },                           \
     }
 #define LPTMR_NUMOF             (1U)
-#define LPTMR_CONFIG { \
-        { \
-            .dev = LPTMR0, \
-            .base_freq = 32768u, \
-            .src = 2, \
-            .irqn = LPTMR0_IRQn, \
-        }, \
+#define LPTMR_CONFIG {               \
+        {                            \
+            .dev = LPTMR0,           \
+            .base_freq = 32768u,     \
+            .src = 2,                \
+            .irqn = LPTMR0_IRQn,     \
+        },                           \
     }
 #define TIMER_NUMOF             ((PIT_NUMOF) + (LPTMR_NUMOF))
 #define PIT_BASECLOCK           (CLOCK_BUSCLOCK)
@@ -113,14 +115,14 @@ static const clock_config_t clock_config = {
 #define LPUART_0_SRC                1
 #endif
 
-#if LPUART_0_SRC ==                 3
+#if (LPUART_0_SRC == 3)
 /* Use MCGIRCLK (4 MHz internal reference - not available in KINETIS_PM_LLS) */
 #define LPUART_0_CLOCK                  CLOCK_MCGIRCLK
 #define UART_CLOCK_PM_BLOCKER           KINETIS_PM_LLS
 #define UART_MAX_UNCLOCKED_BAUDRATE     19200ul
-#elif LPUART_0_SRC ==               2
+#elif (LPUART_0_SRC == 2)
 #define LPUART_0_CLOCK                  CLOCK_OSCERCLK
-#elif LPUART_0_SRC ==               1
+#elif (LPUART_0_SRC == 1)
 /* Use CLOCK_MCGFLLCLK (48 MHz FLL output - not available in KINETIS_PM_STOP) */
 #define LPUART_0_CLOCK                  CLOCK_MCGFLLCLK
 #define UART_CLOCK_PM_BLOCKER           KINETIS_PM_STOP
