@@ -3,3 +3,7 @@ INCLUDES += -I$(PKGDIRBASE)/littlefs
 ifneq (,$(filter littlefs2_fs,$(USEMODULE)))
   DIRS += $(RIOTBASE)/pkg/littlefs2/fs
 endif
+
+ifneq (,$(filter arch_msp430,$(FEATURES_USED)))
+  CFLAGS += -DLFS_NO_INTRINSICS
+endif
