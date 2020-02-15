@@ -1,0 +1,3 @@
+USEMODULE += vfs
+USEMODULE += littlefs2_fs
+USEMODULE += mtd
