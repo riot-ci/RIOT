@@ -1,0 +1,11 @@
+INCLUDES += -I$(PKGDIRBASE)/littlefs
+
+ifneq (,$(filter littlefs2_fs,$(USEMODULE)))
+  DIRS += $(RIOTBASE)/pkg/littlefs2/fs
+endif
+
+# msp430 libc doesn't provide '__popcounthi2', use the LFS provided
+# implementations.
+ifneq (,$(filter arch_msp430,$(FEATURES_USED)))
+  CFLAGS += -DLFS_NO_INTRINSICS
+endif
