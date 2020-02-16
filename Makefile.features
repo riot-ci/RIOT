@@ -32,8 +32,20 @@ FEATURES_OPTIONAL_MISSING = $(sort $(filter-out $(FEATURES_PROVIDED),$(FEATURES_
 # Features that are used without taking "one out of" dependencies into account
 FEATURES_USED_SO_FAR = $(sort $(FEATURES_REQUIRED) $(FEATURES_OPTIONAL_USED))
 
+# Features that are provided and not blacklisted
+FEATURES_USABLE = $(filter-out $(FEATURES_BLACKLIST),$(FEATURES_BLACKLIST))
+
 # Additionally required features due to the "one out of" dependencies
-FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ANY),$(call _features_any,$(subst |, ,$(ooo)),$(ooo)))
+FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ANY),$(call _features_use_first_one,$(subst |, ,$(ooo)),$(ooo)))
+
+# Checks if the any of the features given $1 is already used
+# Returns: Non-empty if one (or more) feature is already provided, and empty
+#          if none is provided yet
+_is_features_any_resolved = $(filter $1,$(FEATURES_USED_SO_FAR))
+
+# Pick out of $1 the first useable features
+# Returns: The first item in $1 that is listed in $(FEATURES_USABLE)
+_get_first_usable_features = $(word 1,$(filter $1,$(FEATURES_USABLE)))
 
 # Returns:
 # - If one (or more) of the features in $1 is already used
@@ -41,8 +53,8 @@ FEATURES_REQUIRED_ADDITIONS = $(foreach ooo,$(FEATURES_REQUIRED_ANY),$(call _fea
 # - If none of the features in $1 is used:
 #    - If none of the features in $1 is provided (not counting blacklisted
 #      features): $2
-#    - Else: One features that is both provided and listed in $1
-_features_any = $(if $(filter $1,$(FEATURES_USED_SO_FAR)),,$(word 1,$(filter $1,$(filter-out $(FEATURES_BLACKLIST),$(FEATURES_PROVIDED))) $2))
+#    - Else: First feature in the list that is both provided and listed in $1
+_features_use_first_one = $(if $(call _is_features_any_resolved,$1),,$(word 1,$(call _get_first_usable_features,$1) $2))
 
 # Features that are required by the application but not provided by the BSP
 # Having features missing may case the build to fail.
