@@ -1,0 +1,17 @@
+menuconfig KCONFIG_MODULE_GNRC_DHCPV6
+    bool "Configure GNRC-part of DHCPv6"
+    depends on MODULE_GNRC_DHCPV6
+    help
+        Configure GNRC-part of DHCPv6 via Kconfig.
+
+if KCONFIG_MODULE_GNRC_DHCPV6
+
+if MODULE_GNRC_DHCPV6_CLIENT_6LBR
+config GNRC_DHCPV6_CLIENT_6LBR_UPSTREAM
+    int "Identifier for the upstream interface of the 6LoWPAN border router"
+    default 0
+    help
+        Leave 0 to let the client pic the first non-6LoWPAN interface it fins
+endif # MODULE_GNRC_DHCPV6_CLIENT_6LBR
+
+endif # KCONFIG_MODULE_GNRC_DHCPV6
