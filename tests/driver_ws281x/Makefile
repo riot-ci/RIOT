@@ -7,10 +7,6 @@ N ?= 8
 
 USEMODULE += ws281x
 
-ifneq (native, $(BOARD))
-  FEATURES_REQUIRED += arch_avr8
-endif
-
 # Only AVR boards CPU clocked at 8MHz or 16 MHz are supported. The Waspmote Pro
 # is clocked at 14.7456 MHz :-/
 BOARD_BLACKLIST := waspmote-pro
