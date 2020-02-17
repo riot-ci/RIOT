@@ -32,3 +32,6 @@ OPENOCD_ADAPTER_INIT ?= \
   -c 'transport select swd'
 
 export OPENOCD_ADAPTER_INIT
+
+# bcm2835gpio needs access to /dev/mem
+export OPENOCD ?= sudo -E openocd
