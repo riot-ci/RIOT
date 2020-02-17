@@ -22,6 +22,14 @@
 
 #include "cpu.h"
 #include "thread.h"
+#include "mpu.h"
+
+/* RIOT's MPU headers gracefully fail when no MPU is present.
+ * Use this to catch if RIOT's features are correctly gateing MPU use.
+ */
+#ifndef __MPU_PRESENT
+#error "__MPU_PRESENT not defined!"
+#endif
 
 #define CANARY_VALUE 0xdeadbeef
 
