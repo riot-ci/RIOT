@@ -37,40 +37,41 @@ extern "C" {
  * @name    littlefs configuration
  * @{
  */
-#ifndef LITTLEFS2_LOOKAHEAD_SIZE
+#ifndef CONFIG_LITTLEFS2_LOOKAHEAD_SIZE
 /** Default lookahead size */
-#define LITTLEFS2_LOOKAHEAD_SIZE     (16)
+#define CONFIG_LITTLEFS2_LOOKAHEAD_SIZE     (16)
 #endif
 
-#ifndef LITTLEFS2_FILE_BUFFER_SIZE
+#ifndef CONFIG_LITTLEFS2_FILE_BUFFER_SIZE
 /** File buffer size, if 0, dynamic allocation is used.
- * If set, only one file can be used at a time, must be program size (mtd page size
- * is used internally as program size) */
-#define LITTLEFS2_FILE_BUFFER_SIZE   (0)
+ * If set, only one file can be used at a time, must be program size (mtd page
+ * size is used internally as program size) */
+#define CONFIG_LITTLEFS2_FILE_BUFFER_SIZE   (0)
 #endif
 
-#ifndef LITTLEFS2_READ_BUFFER_SIZE
+#ifndef CONFIG_LITTLEFS2_READ_BUFFER_SIZE
 /** Read buffer size, if 0, dynamic allocation is used.
- * If set, it must be read size (mtd page size is used internally as read size) */
-#define LITTLEFS2_READ_BUFFER_SIZE   (0)
+ * If set, it must be read size (mtd page size is used internally as read
+ * size) */
+#define CONFIG_LITTLEFS2_READ_BUFFER_SIZE   (0)
 #endif
 
-#ifndef LITTLEFS2_PROG_BUFFER_SIZE
+#ifndef CONFIG_LITTLEFS2_PROG_BUFFER_SIZE
 /** Prog buffer size, if 0, dynamic allocation is used.
  * If set, it must be program size */
-#define LITTLEFS2_PROG_BUFFER_SIZE   (0)
+#define CONFIG_LITTLEFS2_PROG_BUFFER_SIZE   (0)
 #endif
 
-#ifndef LITTLEFS2_CACHE_PAGES
+#ifndef CONFIG_LITTLEFS2_CACHE_PAGES
 /** Sets the number of pages used as cache. Has to be at least 1.
  */
-#define LITTLEFS2_CACHE_PAGES        (1)
+#define CONFIG_LITTLEFS2_CACHE_PAGES        (1)
 #endif
 
-#ifndef LITTLEFS2_BLOCK_CYCLES
+#ifndef CONFIG_LITTLEFS2_BLOCK_CYCLES
 /** Sets the maximum number of erase cycles before blocks are evicted as a part
  * of wear leveling. -1 disables wear-leveling. */
-#define LITTLEFS2_BLOCK_CYCLES       (512)
+#define CONFIG_LITTLEFS2_BLOCK_CYCLES       (512)
 #endif
 /** @} */
 
@@ -86,20 +87,23 @@ typedef struct {
      * total number of block is defined in @p config.
      * if set to 0, the total number of sectors from the mtd is used */
     uint32_t base_addr;
-#if LITTLEFS2_FILE_BUFFER_SIZE || DOXYGEN
-    /** file buffer to use internally if LITTLEFS2_FILE_BUFFER_SIZE is set */
-    uint8_t file_buf[LITTLEFS2_FILE_BUFFER_SIZE];
+#if CONFIG_LITTLEFS2_FILE_BUFFER_SIZE || DOXYGEN
+    /** file buffer to use internally if CONFIG_LITTLEFS2_FILE_BUFFER_SIZE
+     * is set */
+    uint8_t file_buf[CONFIG_LITTLEFS2_FILE_BUFFER_SIZE];
 #endif
-#if LITTLEFS2_READ_BUFFER_SIZE || DOXYGEN
-    /** read buffer to use internally if LITTLEFS2_READ_BUFFER_SIZE is set */
-    uint8_t read_buf[LITTLEFS2_READ_BUFFER_SIZE];
+#if CONFIG_LITTLEFS2_READ_BUFFER_SIZE || DOXYGEN
+    /** read buffer to use internally if CONFIG_LITTLEFS2_READ_BUFFER_SIZE
+     * is set */
+    uint8_t read_buf[CONFIG_LITTLEFS2_READ_BUFFER_SIZE];
 #endif
-#if LITTLEFS2_PROG_BUFFER_SIZE || DOXYGEN
-    /** prog buffer to use internally if LITTLEFS2_PROG_BUFFER_SIZE is set */
-    uint8_t prog_buf[LITTLEFS2_PROG_BUFFER_SIZE];
+#if CONFIG_LITTLEFS2_PROG_BUFFER_SIZE || DOXYGEN
+    /** prog buffer to use internally if CONFIG_LITTLEFS2_PROG_BUFFER_SIZE
+     * is set */
+    uint8_t prog_buf[CONFIG_LITTLEFS2_PROG_BUFFER_SIZE];
 #endif
     /** lookahead buffer to use internally */
-    uint8_t lookahead_buf[LITTLEFS2_LOOKAHEAD_SIZE];
+    uint8_t lookahead_buf[CONFIG_LITTLEFS2_LOOKAHEAD_SIZE];
 } littlefs_desc_t;
 
 /** The littlefs vfs driver */
