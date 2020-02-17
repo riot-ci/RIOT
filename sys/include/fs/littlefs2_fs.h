@@ -35,6 +35,7 @@ extern "C" {
 
 /**
  * @name    littlefs configuration
+ * @ingroup config
  * @{
  */
 #ifndef CONFIG_LITTLEFS2_LOOKAHEAD_SIZE
