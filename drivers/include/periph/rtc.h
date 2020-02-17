@@ -37,6 +37,7 @@
 #ifndef PERIPH_RTC_H
 #define PERIPH_RTC_H
 
+#include <stdbool.h>
 #include <time.h>
 #include "periph_conf.h"
 
@@ -146,6 +147,19 @@ void rtc_tm_normalize(struct tm *time);
  * @return              0 if a and b are equal
  */
 int rtc_tm_compare(const struct tm *a, const struct tm *b);
+
+/**
+ * @brief Verify that a time struct @t contains valid data.
+ *
+ * @note    This function checks whether the fields of the
+ *          struct @t are positive and within the bounds set
+ *          by @ref rtc_tm_normalize.
+ *
+ * @param[in] t       The struct to be checked.
+ *
+ * @return            true when valid, false if not
+ */
+bool rtc_tm_valid(const struct tm *t);
 
 #ifdef __cplusplus
 }
