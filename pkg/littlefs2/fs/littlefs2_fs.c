@@ -147,25 +147,25 @@ static int prepare(littlefs_desc_t *fs)
         fs->config.read_size = fs->dev->page_size;
     }
     if (!fs->config.cache_size) {
-        fs->config.cache_size = fs->dev->page_size * LITTLEFS2_CACHE_PAGES;
+        fs->config.cache_size = fs->dev->page_size * CONFIG_LITTLEFS2_CACHE_PAGES;
     }
     if (!fs->config.block_cycles) {
-        fs->config.block_cycles = LITTLEFS2_BLOCK_CYCLES;
+        fs->config.block_cycles = CONFIG_LITTLEFS2_BLOCK_CYCLES;
     }
-    fs->config.lookahead_size = LITTLEFS2_LOOKAHEAD_SIZE;
+    fs->config.lookahead_size = CONFIG_LITTLEFS2_LOOKAHEAD_SIZE;
     fs->config.lookahead_buffer = fs->lookahead_buf;
     fs->config.context = fs;
     fs->config.read = _dev_read;
     fs->config.prog = _dev_write;
     fs->config.erase = _dev_erase;
     fs->config.sync = _dev_sync;
-#if LITTLEFS2_FILE_BUFFER_SIZE
+#if CONFIG_LITTLEFS2_FILE_BUFFER_SIZE
     fs->config.file_buffer = fs->file_buf;
 #endif
-#if LITTLEFS2_READ_BUFFER_SIZE
+#if CONFIG_LITTLEFS2_READ_BUFFER_SIZE
     fs->config.read_buffer = fs->read_buf;
 #endif
-#if LITTLEFS2_PROG_BUFFER_SIZE
+#if CONFIG_LITTLEFS2_PROG_BUFFER_SIZE
     fs->config.prog_buffer = fs->prog_buf;
 #endif
 
