@@ -51,6 +51,9 @@ int main(void)
     at24cxxx_t at24cxxx_dev;
     int check;
 
+    printf("EEPROM size: %u byte\n", AT24CXXX_EEPROM_SIZE);
+    printf("Page size  : %u byte\n", AT24CXXX_PAGE_SIZE);
+
     /* Test: Init */
     check = at24cxxx_init(&at24cxxx_dev, &at24cxxx_params[0]);
     if (check != AT24CXXX_OK) {
