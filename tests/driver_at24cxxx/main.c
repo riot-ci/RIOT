@@ -34,11 +34,13 @@
 #define WRITE_BYTE_POSITION     (12U)
 #define WRITE_BYTE_CHARACTER    'A'
 
-#define WRITE_POSITION          (444U)
+#define WRITE_POSITION          (AT24CXXX_EEPROM_SIZE - \
+                                3 * AT24CXXX_PAGE_SIZE - 4)
 #define WRITE_CHARACTERS        { 'B', 'E', 'E', 'R', '4', \
                                 'F', 'R', 'E', 'E', '\0' }
 
-#define SET_POSITION            (900U)
+#define SET_POSITION            (AT24CXXX_EEPROM_SIZE - \
+                                7 * AT24CXXX_PAGE_SIZE - 4)
 #define SET_CHARACTER           'G'
 #define SET_LEN                 (20U)
 
