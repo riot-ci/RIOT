@@ -190,18 +190,6 @@ int suit_v4_policy_check(suit_v4_manifest_t *manifest);
 int suit_cbor_map_iterate(nanocbor_value_t *it, nanocbor_value_t *key, nanocbor_value_t *value);
 
 /**
- * @brief Get cbor value as unsigned
- *
- * @param[in]   it      cbor container iterator
- * @param[out]  out     address of the returned unsigned
- *
- * @return              SUIT_OK on success
- * @return              SUIT_ERR_INVALID_MANIFEST if value doesn't fit or cannot
- *                      be converted to unsigned
- */
-int suit_cbor_get_uint(nanocbor_value_t *it, unsigned *out);
-
-/**
  * @brief Parser a cbor subsequence
  *
  * @param[in]   bseq        subsequence value

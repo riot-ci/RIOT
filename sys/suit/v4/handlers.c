@@ -402,7 +402,7 @@ static int _component_handler(suit_v4_manifest_t *manifest, int key,
 }
 
 /* begin{code-style-ignore} */
-static suit_manifest_handler_t global_handlers[] = {
+static const suit_manifest_handler_t global_handlers[] = {
     [ 0] = NULL,
     [ 1] = _version_handler,
     [ 2] = _seq_no_handler,
@@ -417,7 +417,7 @@ static suit_manifest_handler_t global_handlers[] = {
 static const unsigned global_handlers_len = ARRAY_SIZE(global_handlers);
 
 /* begin{code-style-ignore} */
-static suit_manifest_handler_t _sequence_handlers[] = {
+static const suit_manifest_handler_t _sequence_handlers[] = {
     [ 0] = NULL,
     [ 1] = _cond_vendor_handler,
     [ 2] = _cond_class_handler,

@@ -39,11 +39,6 @@
 static suit_manifest_handler_t _manifest_get_auth_wrapper_handler(int key);
 typedef suit_manifest_handler_t (*suit_manifest_handler_getter_t)(int key);
 
-int suit_cbor_get_uint(nanocbor_value_t *it, unsigned *out)
-{
-    return nanocbor_get_uint32(it, (uint32_t *)out);
-}
-
 int suit_cbor_subparse(nanocbor_value_t *bseq, nanocbor_value_t *it)
 {
     const uint8_t *bytes;
@@ -56,8 +51,8 @@ int suit_cbor_subparse(nanocbor_value_t *bseq, nanocbor_value_t *it)
     return SUIT_OK;
 }
 
-static int _v4_parse(suit_v4_manifest_t *manifest, const uint8_t *buf,
-                     size_t len, suit_manifest_handler_getter_t getter)
+int _v4_parse(suit_v4_manifest_t *manifest, const uint8_t *buf,
+              size_t len, suit_manifest_handler_getter_t getter)
 {
     nanocbor_value_t it, map;
 
@@ -177,7 +172,7 @@ static suit_manifest_handler_t _suit_manifest_get_handler(int key,
 }
 
 /* begin{code-style-ignore} */
-static suit_manifest_handler_t _auth_handlers[] = {
+static const suit_manifest_handler_t _auth_handlers[] = {
     [ 0] = NULL,
     [ 1] = _auth_handler,
     [ 2] = _manifest_handler,
