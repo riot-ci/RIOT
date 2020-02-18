@@ -7,7 +7,28 @@
 
 config CPU_FAMILY_SAM0
     bool
-    default y
+    select CPU_CORE_CORTEX_M0PLUS
+    select HAS_PERIPH_CPUID
+    select HAS_PERIPH_FLASHPAGE
+    select HAS_PERIPH_FLASHPAGE_RAW
+    select HAS_PERIPH_FLASHPAGE_RWEE
+    select HAS_PERIPH_GPIO
+    select HAS_PERIPH_GPIO_IRQ
+    select HAS_PERIPH_I2C_RECONFIGURE
+    select HAS_PERIPH_UART_MODECFG
+    select HAS_PERIPH_UART_NONBLOCKING
+    select HAS_PERIPH_WDT
+    select HAS_PERIPH_WDT_CB
     select HAS_WDT_WARNING_PERIOD
 
+if CPU_FAMILY_SAM0
+
+## Common CPU symbols
+config CPU_FAMILY
+    default "sam0" if CPU_FAMILY_SAM0
+
 rsource "periph/Kconfig"
+
+endif # CPU_FAMILY_SAM0
+
+source "$(RIOTCPU)/cortexm_common/Kconfig"
