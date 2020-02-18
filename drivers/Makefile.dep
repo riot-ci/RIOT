@@ -43,7 +43,7 @@ ifneq (,$(filter at24c%,$(USEMODULE)))
 endif
 
 ifneq (,$(filter at24mac,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += at24cxxx
 endif
 
 ifneq (,$(filter at30tse75x,$(USEMODULE)))
