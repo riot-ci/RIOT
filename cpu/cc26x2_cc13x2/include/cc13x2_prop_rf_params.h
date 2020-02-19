@@ -45,19 +45,19 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
 #endif
 
 #ifndef CC13X2_CHANNEL_MAX_SUB_GHZ
-#define CC13X2_CHANNEL_MAX_SUB_GHZ  (198U) /**< Maximum channel for Sub-GHz band */
+#define CC13X2_CHANNEL_MAX_SUB_GHZ  (129U) /**< Maximum channel for Sub-GHz band */
 #endif
 
 #ifndef CC13X2_FREQ_SPACING_SUB_GHZ
-#define CC13X2_FREQ_SPACING_SUB_GHZ (200U) /**< Frequency spacing between channels */
+#define CC13X2_FREQ_SPACING_SUB_GHZ (200U) /**< Frequency spacing between channels in KHz */
 #endif
 
 #ifndef CC13X2_BASE_FREQ_SUB_GHZ
-#define CC13X2_BASE_FREQ_SUB_GHZ    (902200U) /**< Base frequency for the Sub-GHz band */
+#define CC13X2_BASE_FREQ_SUB_GHZ    (902200U) /**< Base frequency for the Sub-GHz band in KHz */
 #endif
 
 #ifndef CC13X2_CENTER_FREQ_SUB_GHZ
-#define CC13X2_CENTER_FREQ_SUB_GHZ  (0x0393U) /**< Center frequency for the Sub-GHz band */
+#define CC13X2_CENTER_FREQ_SUB_GHZ  (915U) /**< Center frequency for the Sub-GHz band in MHz */
 #endif
 
 #ifndef CC13X2_LO_DIVIDER_SUB_GHZ

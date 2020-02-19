@@ -26,6 +26,8 @@
 
 #define CMD_ALIGN __attribute__((aligned(4)))
 
+#define CMD_CMD0 (0x0607) /* RF Core CMD0 */
+
 static volatile CMD_ALIGN rfc_CMD_SYNC_START_RAT_t       _cmd_sync_start_rat;
 static volatile CMD_ALIGN rfc_CMD_PROP_RADIO_DIV_SETUP_t _cmd_prop_radio_div_setup;
 static volatile CMD_ALIGN rfc_CMD_FS_POWERDOWN_t         _cmd_fs_powerdown;
@@ -33,6 +35,7 @@ static volatile CMD_ALIGN rfc_CMD_SYNC_STOP_RAT_t        _cmd_sync_stop_rat;
 static volatile CMD_ALIGN rfc_CMD_CLEAR_RX_t             _cmd_clear_rx;
 
 static volatile CMD_ALIGN rfc_CMD_FS_t                   _cmd_fs;
+static volatile CMD_ALIGN rfc_CMD_SET_TX_POWER_t         _cmd_set_tx_power;
 static volatile CMD_ALIGN rfc_CMD_PROP_RX_ADV_t          _cmd_prop_rx_adv;
 static volatile CMD_ALIGN rfc_CMD_PROP_TX_ADV_t          _cmd_prop_tx_adv;
 
@@ -169,6 +172,15 @@ uint32_t cc13x2_cmd_fs(uint32_t next_cmd, uint16_t freq, uint16_t frac)
     return (uint32_t)(&_cmd_fs);
 }
 
+uint32_t cc13x2_cmd_set_tx_power(uint16_t tx_power)
+{
+    /* Not memset_volatile here as these are the only two fields */
+    _cmd_set_tx_power.commandNo = CMD_SET_TX_POWER;
+    _cmd_set_tx_power.txPower   = tx_power;
+
+    return (uint32_t)(&_cmd_set_tx_power);
+}
+
 uint32_t cc13x2_cmd_prop_rx_adv(dataQueue_t *queue, void *output)
 {
     memset_volatile(&_cmd_prop_rx_adv, 0, sizeof(_cmd_prop_rx_adv));
@@ -203,6 +215,7 @@ uint32_t cc13x2_cmd_prop_rx_adv(dataQueue_t *queue, void *output)
     _cmd_prop_rx_adv.hdrConf.numHdrBits       = IEEE802154_PHR_BITS;
     _cmd_prop_rx_adv.hdrConf.numLenBits       = IEEE802154_PHR_FRAME_LENGTH_BITS;
 
+    /* XXX: should this command end and enter a FSM_STATE_SLEEP state? */
     /* Don't end this command */
     _cmd_prop_rx_adv.endTrigger.triggerType   = TRIG_NEVER;
 
@@ -252,6 +265,11 @@ uint32_t cc13x2_cmd_abort(void)
 uint32_t cc13x2_cmd_ping(void)
 {
     return CMDR_DIR_CMD(CMD_PING);
+}
+
+uint32_t cc13x2_cmd_cmd0(uint16_t clk_en)
+{
+    return CMDR_DIR_CMD_2BYTE(CMD_CMD0, clk_en);
 }
 
 uint8_t cc13x2_dbell_execute(uint32_t cmd)

@@ -67,6 +67,7 @@ static int _init(netdev_t *dev)
 
     cc13x2_prop_rf_irq_set_handler(_irq_handler, dev);
     cc13x2_prop_rf_get_ieee_eui64(netdev->netdev.long_addr);
+
     memcpy(netdev->netdev.short_addr, netdev->netdev.long_addr + 6, 2);
     /* https://tools.ietf.org/html/rfc4944#section-12
      * Requires the first bit to 0 for unicast addresses */
@@ -78,6 +79,7 @@ static int _init(netdev_t *dev)
         return -1;
     }
 
+    /* Switch to minimum channel */
     cc13x2_prop_rf_set_chan(CC13X2_CHANNEL_MIN_SUB_GHZ, true);
 
     if (cc13x2_prop_rf_rx_start() == -1) {
@@ -91,26 +93,13 @@ static int _set_state(netopt_state_t state)
 {
     switch (state) {
         case NETOPT_STATE_OFF:
-            if (cc13x2_prop_rf_get_state() != FSM_STATE_OFF) {
-                if (cc13x2_prop_rf_power_on() == -1) {
-                    DEBUG("[cc13x2_prop_rf]: couldn't enable RF Core.\n");
-                    return -EIO;
-                }
-                if (cc13x2_prop_rf_rx_start() == -1) {
-                    DEBUG("[cc13x2_prop_rf]: couldn't start RX.\n");
-                    return -EIO;
-                }
-            }
+            cc13x2_prop_rf_power_off();
             break;
 
         case NETOPT_STATE_IDLE:
-            /* If the state is on Transmit or Sleep, it will be swiched to
-             * Receive state */
-            if (cc13x2_prop_rf_get_state() != FSM_STATE_OFF) {
-                if (cc13x2_prop_rf_rx_start() == -1) {
-                    DEBUG("[cc13x2_prop_rf]: couldn't start RX.\n");
-                    return -EIO;
-                }
+            if (cc13x2_prop_rf_rx_start() == -1) {
+                DEBUG("[cc13x2_prop_rf]: couldn't start RX.\n");
+                return -EIO;
             }
             break;
 
@@ -135,10 +124,10 @@ static netopt_state_t _get_state(void)
             return NETOPT_STATE_OFF;
 
         case FSM_STATE_SLEEP:
-            return NETOPT_STATE_IDLE;
+            return NETOPT_STATE_STANDBY;
 
         case FSM_STATE_RX:
-            return NETOPT_STATE_RX;
+            return NETOPT_STATE_IDLE;
 
         case FSM_STATE_TX:
             return NETOPT_STATE_TX;
@@ -150,7 +139,7 @@ static netopt_state_t _get_state(void)
 
 static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
 {
-    cc13x2_prop_rf_netdev_t *dev = (cc13x2_prop_rf_netdev_t *) netdev;
+    cc13x2_prop_rf_netdev_t *dev = (cc13x2_prop_rf_netdev_t *)netdev;
     int res = -ENOTSUP;
 
     if (dev == NULL) {
@@ -159,53 +148,84 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
 
     switch (opt) {
         case NETOPT_CHANNEL:
-            assert(len == sizeof(uint16_t));
-            uint8_t chan = (((const uint16_t *)val)[0]) & UINT8_MAX;
-            cc13x2_prop_rf_set_chan(chan, false);
-            /* don't set res to set netdev_ieee802154_t::chan */
-            break;
-
-        case NETOPT_CHANNEL_PAGE:
-            assert(len == sizeof(uint16_t));
-            uint8_t page = (((const uint16_t *)val)[0]) & UINT8_MAX;
-            if (page != 0) {
-                res = -EINVAL;
+            if (len != sizeof(uint16_t)) {
+                return -EINVAL;
             }
             else {
+                uint16_t chan = *(const uint16_t *)val;
+                cc13x2_prop_rf_set_chan(chan, false);
+                netdev_ieee802154_set((netdev_ieee802154_t *)netdev, opt, val, len);
                 res = sizeof(uint16_t);
             }
             break;
 
+        case NETOPT_CHANNEL_PAGE:
+            if (len != sizeof(uint16_t)) {
+                return -EINVAL;
+            }
+            else {
+                /* We only support page 0 */
+                uint16_t page = *(const uint16_t *)val;
+                if (page != 0) {
+                    res = -EINVAL;
+                }
+                else {
+                    res = sizeof(uint16_t);
+                }
+            }
+            break;
+
         case NETOPT_TX_POWER:
-            assert(len <= sizeof(int16_t));
-            cc13x2_prop_rf_set_txpower(*((const int16_t *)val));
-            res = sizeof(uint16_t);
+            if (len != sizeof(int16_t)) {
+                return -EINVAL;
+            }
+            else {
+                cc13x2_prop_rf_set_txpower(*(const int16_t *)val);
+                res = sizeof(int16_t);
+            }
             break;
 
         case NETOPT_RX_END_IRQ:
-            if (((const bool *)val)[0]) {
-                cc13x2_prop_rf_irq_enable(IRQ_RX_ENTRY_DONE);
+            if (len != sizeof(bool)) {
+                return -EINVAL;
             }
             else {
-                cc13x2_prop_rf_irq_disable(IRQ_RX_ENTRY_DONE);
+                if (*(const bool *)val) {
+                    cc13x2_prop_rf_irq_enable(IRQ_RX_ENTRY_DONE);
+                }
+                else {
+                    cc13x2_prop_rf_irq_disable(IRQ_RX_ENTRY_DONE);
+                }
             }
-            return sizeof(netopt_enable_t);
+            res = sizeof(netopt_enable_t);
+            break;
 
         case NETOPT_TX_END_IRQ:
-            if (((const bool *)val)[0]) {
-                cc13x2_prop_rf_irq_enable(IRQ_TX_DONE);
+            if (len != sizeof(bool)) {
+                return -EINVAL;
             }
             else {
-                cc13x2_prop_rf_irq_disable(IRQ_TX_DONE);
+                if (*(const bool *)val) {
+                    cc13x2_prop_rf_irq_enable(IRQ_TX_DONE);
+                }
+                else {
+                    cc13x2_prop_rf_irq_disable(IRQ_TX_DONE);
+                }
             }
             res = sizeof(netopt_enable_t);
             break;
 
         case NETOPT_STATE:
-            res = _set_state(*((netopt_state_t *)val));
+            if (len != sizeof(netopt_state_t)) {
+                return -EINVAL;
+            }
+            else {
+                res = _set_state(*(netopt_state_t *)val);
+            }
             break;
 
         default:
+            res = -ENOTSUP;
             break;
     }
 
@@ -225,23 +245,60 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
     }
 
     switch (opt) {
-        case NETOPT_STATE:
-            assert(max_len >= sizeof(netopt_state_t));
-            *((netopt_state_t *)val) = _get_state();
-            return sizeof(netopt_state_t);
+        case NETOPT_CHANNEL:
+            if (max_len < sizeof(uint16_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                *(uint16_t *)val = (uint16_t)cc13x2_prop_rf_get_chan();
+            }
+            return sizeof(uint16_t);
+
+        case NETOPT_CHANNEL_PAGE:
+            if (max_len < sizeof(uint16_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                /* We only support channel page 0 */
+                *(uint16_t *)val = 0;
+            }
+            return sizeof(uint16_t);
+
+        case NETOPT_TX_POWER:
+            if (max_len < sizeof(uint16_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                *(uint16_t *)val = cc13x2_prop_rf_get_txpower();
+            }
+            return sizeof(uint16_t);
 
         case NETOPT_RX_END_IRQ:
-            *((netopt_enable_t *)val) = cc13x2_prop_rf_irq_is_enabled(IRQ_RX_OK);
+            if (max_len < sizeof(netopt_enable_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                *(netopt_enable_t *)val = cc13x2_prop_rf_irq_is_enabled(IRQ_RX_ENTRY_DONE);
+            }
             return sizeof(netopt_enable_t);
 
         case NETOPT_TX_END_IRQ:
-            *((netopt_enable_t *)val) = cc13x2_prop_rf_irq_is_enabled(IRQ_TX_DONE);
+            if (max_len < sizeof(netopt_enable_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                *(netopt_enable_t *)val = cc13x2_prop_rf_irq_is_enabled(IRQ_TX_DONE);
+            }
             return sizeof(netopt_enable_t);
 
-        case NETOPT_TX_POWER:
-            assert(max_len >= sizeof(int16_t));
-            *((uint16_t *)val) = cc13x2_prop_rf_get_txpower();
-            return sizeof(uint16_t);
+        case NETOPT_STATE:
+            if (max_len < sizeof(netopt_state_t)) {
+                return -EOVERFLOW;
+            }
+            else {
+                *(netopt_state_t *)val = _get_state();
+            }
+            return sizeof(netopt_state_t);
 
         default:
             break;
@@ -253,19 +310,16 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 static void _isr(netdev_t *netdev)
 {
     unsigned state = irq_disable();
-    unsigned flags = cc13x2_prop_rf_get_flags();
+    cc13x2_prop_rf_irq_flags_t flags = cc13x2_prop_rf_get_flags();
     irq_restore(state);
 
-    printf("ISR called %u\n", flags);
-
-    if (flags & 1) {
+    if (flags & IRQ_FLAGS_HANDLE_RX) {
         while(cc13x2_prop_rf_recv_avail()) {
-            printf("RECV avail!\n");
             netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
         }
     }
 
-    if (flags & 2) {
+    if (flags & IRQ_FLAGS_HANDLE_TX) {
         netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
     }
 }

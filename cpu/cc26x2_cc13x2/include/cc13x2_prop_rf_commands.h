@@ -101,6 +101,15 @@ uint32_t cc13x2_cmd_clear_rx(dataQueue_t *queue);
 uint32_t cc13x2_cmd_fs(uint32_t next_cmd, uint16_t freq, uint16_t frac);
 
 /**
+ * @brief   Construct a CMD_SET_TX_POWER command
+ *
+ * @param[in] tx_power The TX power.
+ *
+ * @return  uint32_t The command address.
+ */
+uint32_t cc13x2_cmd_set_tx_power(uint16_t tx_power);
+
+/**
  * @brief   Construct a CMD_PROP_RX_ADV command
  *
  * @pre     @p queue != NULL
@@ -141,6 +150,15 @@ uint32_t cc13x2_cmd_abort(void);
  * @return uint32_t The command value.
  */
 uint32_t cc13x2_cmd_ping(void);
+
+/**
+ * @brief   Construct a CMD_CMD0 command.
+ *
+ * @note    This is a direct command, it doesn't have an _address_.
+ *
+ * @return  uint32_t The command value.
+ */
+uint32_t cc13x2_cmd_cmd0(uint16_t clk_en);
 
 /**
  * @brief   Send a command to the RF Core Doorbell to execute it.

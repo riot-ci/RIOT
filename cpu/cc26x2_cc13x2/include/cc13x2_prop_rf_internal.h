@@ -59,6 +59,14 @@ typedef enum {
 } cc13x2_prop_rf_state_t;
 
 /**
+ * @brief   IRQ handler flags
+ */
+typedef enum {
+    IRQ_FLAGS_HANDLE_RX = 0x1,
+    IRQ_FLAGS_HANDLE_TX = 0x2,
+} cc13x2_prop_rf_irq_flags_t;
+
+/**
  * @brief   Initialize the radio internal structures.
  *
  * @note    Must be called before @ref cc13x2_prop_rf_power_on.
@@ -219,7 +227,7 @@ void cc13x2_prop_rf_irq_disable(unsigned irq);
  *
  * @return  The flags
  */
-unsigned cc13x2_prop_rf_get_flags(void);
+cc13x2_prop_rf_irq_flags_t cc13x2_prop_rf_get_flags(void);
 
 /**
  * @brief   Get the state of the RF Core.
