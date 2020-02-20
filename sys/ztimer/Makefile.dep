@@ -19,8 +19,6 @@ ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
   PSEUDOMODULES += xtimer
 endif
 
-endif
-
 ifneq (,$(filter ztimer_%,$(USEMODULE)))
   USEMODULE += ztimer_core
   USEMODULE += ztimer_extend
