@@ -113,7 +113,7 @@ UART_DEV(1):RxD | GPIO9  | not available in **qout** and **qio** flash mode | \r
 @note
 - The configuration of ADC channels contains all ESP32 GPIOs that can be used
   as ADC channels.
-- GPIO9 and GIOP10 can only be used in **dout** and **dio**
+- GPIO9 and GPIO10 can only be used in **dout** and **dio**
   \ref esp32_flash_modes "flash modes".
 
 For detailed information about the configuration of ESP32 boards, see
