@@ -25,9 +25,11 @@ ifneq (,$(filter ztimer,$(USEMODULE)))
 endif
 
 # unless ztimer_xtimer_compat is used, make xtimer use ztimer as backend.
-ifneq  (,$(filter xtimer,$(USEMODULE)))
-  ifeq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
-      USEMODULE += xtimer_on_ztimer
+ifneq (,$(filter ztimer,$(USEMODULE)))
+  ifneq  (,$(filter xtimer,$(USEMODULE)))
+    ifeq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
+        USEMODULE += xtimer_on_ztimer
+    endif
   endif
 endif
 
