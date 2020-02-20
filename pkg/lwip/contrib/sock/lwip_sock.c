@@ -26,6 +26,8 @@
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 
+#include "sock_types.h"
+
 #if !LWIP_IPV4 && !LWIP_IPV6
 #error "lwip_sock needs IPv4 or IPv6 support"
 #endif
@@ -255,11 +257,51 @@ static int _sock_ep_to_netconn_pars(const struct _sock_tl_ep *local,
     return res;
 }
 
+static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
+                        u16_t len)
+{
+#if IS_ACTIVE(SOCK_HAS_ASYNC)
+    lwip_sock_base_t *sock = conn->ctx;
+    if (sock) {
+        sock_async_flags_t flags = 0;
+
+        (void)len;
+        switch (evt) {
+            case NETCONN_EVT_RCVPLUS:
+                flags = SOCK_ASYNC_MSG_RECV;
+                break;
+            case NETCONN_EVT_SENDPLUS:
+                flags = SOCK_ASYNC_MSG_SENT;
+                break;
+            case NETCONN_EVT_RCVMINUS:
+            case NETCONN_EVT_SENDMINUS:
+            case NETCONN_EVT_ERROR:
+                break;
+            default:
+                LWIP_ASSERT("unknown event", 0);
+                break;
+        }
+        if (flags && sock->async_cb.gen) {
+            sock->async_cb.gen(sock, flags);
+        }
+    }
+#else
+    (void)conn;
+    (void)evt;
+    (void)len;
+#endif
+}
+
 static int _create(int type, int proto, uint16_t flags, struct netconn **out)
 {
-    if ((*out = netconn_new_with_proto_and_callback(type, proto, NULL)) == NULL) {
+    if ((*out = netconn_new_with_proto_and_callback(
+            type, proto,
+            IS_ACTIVE(SOCK_HAS_ASYNC) ? _netconn_cb : NULL)) == NULL) {
         return -ENOMEM;
     }
+#if LWIP_NETCONN_CONTEXT
+    (*out)->ctx = NULL;
+#endif
 #if LWIP_IPV4 && LWIP_IPV6
     if (type & NETCONN_TYPE_IPV6) {
         netconn_set_ipv6only(*out, 1);
