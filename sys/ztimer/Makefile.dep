@@ -14,7 +14,11 @@ endif
 # "ztimer_xtimer_compat" is a wrapper of the xtimer API on ztimer_used
 # (it is currently incomplete)
 ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
+  USEMODULE += div
   USEMODULE += ztimer_usec
+  PSEUDOMODULES += xtimer
+endif
+
 endif
 
 ifneq (,$(filter ztimer_%,$(USEMODULE)))

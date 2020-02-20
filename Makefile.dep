@@ -672,18 +672,11 @@ ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
 endif
 
 ifneq (,$(filter xtimer,$(USEMODULE)))
-  ifeq (,$(filter ztimer,$(USEMODULE)))
+  ifeq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
     DEFAULT_MODULE += auto_init_xtimer
     FEATURES_REQUIRED += periph_timer
     USEMODULE += div
-  else
-    USEMODULE += ztimer_xtimer_compat
   endif
-endif
-
-ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
-  USEMODULE += div
-  PSEUDOMODULES += xtimer
 endif
 
 ifneq (,$(filter saul,$(USEMODULE)))
