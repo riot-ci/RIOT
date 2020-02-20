@@ -91,10 +91,10 @@ void pm_set(unsigned mode)
     extern int _rtc_bss_rtc_end;
 
     /*
-     * Activate the power domain for the slow RTC memory when there are
-     * data in the .rtc.bss section (RAM backup) that need to be retained.
-     * Data in .rtc.data section of the RTC slow memory are retained
-     * automatically.
+     * Activate the Power Domain for slow RTC memory when the .rtc.bss
+     * section is used to retain uninitialized data. The Power Domain for
+     * slow RTC memory is automatically activated when the .rtc.data section
+     * is used to retain initialized data.
      */
     if (&_rtc_bss_rtc_end > &_rtc_bss_rtc_start) {
         esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
