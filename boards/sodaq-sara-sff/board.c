@@ -27,13 +27,16 @@ void board_init(void)
     SARA_ENABLE_OFF;
     gpio_init(SARA_ENABLE_PIN, GPIO_OUT);
 
-#if 0
+    /* Disable level shifters SARA/UBlox by default */
+    SARA_TX_ENABLE_OFF;
+    gpio_init(SARA_TX_ENABLE_PIN, GPIO_OUT);
+
     /* The R4XX module has a PWR_ON pin. Make it low to
      * switch on the module.
+     * Here it is made an input so that it will float HIGH.
      */
     SARA_R4XX_PWR_ON_ON;
-    gpio_init(SARA_R4XX_PWR_ON_PIN, GPIO_OUT);
-#endif
+    gpio_init(SARA_R4XX_PWR_ON_PIN, GPIO_IN);
 
     /* Disable GPS by default */
     GPS_ENABLE_OFF;

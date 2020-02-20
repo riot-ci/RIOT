@@ -121,6 +121,21 @@ extern "C" {
 /** @} */
 
 /**
+ * @name    SARA (UBlox) TX Enable
+ *
+ * With this pin level shifters can be switched on or off.
+ * @{
+ */
+#define SARA_TX_ENABLE_PIN  GPIO_PIN(PA, 27)
+
+#define SARA_TX_ENABLE_PORT PORT->Group[PA]
+#define SARA_TX_ENABLE_MASK (1 << 27)
+
+#define SARA_TX_ENABLE_ON   (SARA_TX_ENABLE_PORT.OUTSET.reg = SARA_TX_ENABLE_MASK)
+#define SARA_TX_ENABLE_OFF  (SARA_TX_ENABLE_PORT.OUTCLR.reg = SARA_TX_ENABLE_MASK)
+/** @} */
+
+/**
  * @name    SARA_R4XX PWR_ON
  *
  * This is the PWR_ON pin of the UBlox. It can be used to switch the unit on or off
