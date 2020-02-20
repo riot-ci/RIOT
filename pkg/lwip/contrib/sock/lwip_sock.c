@@ -268,10 +268,14 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
         (void)len;
         switch (evt) {
             case NETCONN_EVT_RCVPLUS:
-                flags = SOCK_ASYNC_MSG_RECV;
+                if (!(conn->type & NETCONN_TCP)) {
+                    flags |= SOCK_ASYNC_MSG_RECV;
+                }
                 break;
             case NETCONN_EVT_SENDPLUS:
-                flags = SOCK_ASYNC_MSG_SENT;
+                if (!(conn->type & NETCONN_TCP)) {
+                    flags |= SOCK_ASYNC_MSG_SENT;
+                }
                 break;
             case NETCONN_EVT_RCVMINUS:
             case NETCONN_EVT_SENDMINUS:
