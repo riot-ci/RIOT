@@ -997,7 +997,7 @@ as parameter. To exit from these modes, several wake-up sources can be used:
 
 In _Light-sleep_ mode, the RxD signal of UART0 and/or UART1 can be used as an
 additional wake-up source (configured by `ESP_PM_WUP_UART0` and
-`ESP_PM_WUP_UART1`). This allow to wake-up the system once a key
+`ESP_PM_WUP_UART1`). This allows to wake-up the system once a key
 is entered at the console.
 
 @note RTC GPIOs are the GPIOs that are realized by the RTC unit and can also
@@ -1043,17 +1043,17 @@ make BOARD=esp32-wroom-32 -C tests/periph_pm
 
 In _Deep-sleep_ mode the SRAM is powered down. However, the slow RTC memory
 can be retained. Therefore, data that must be retained during _Deep-sleep_ and
-the subsequent system restart, have to be stored in the slow RTC memory. For
+the subsequent system restart, must be stored in the slow RTC memory. For
 that purpose, use
-- `__attribute__((section(".rtc.bss")))` to place initialized
+- `__attribute__((section(".rtc.bss")))` to place uninitialized
 data in section `.rtc.bss`, and
 - `__attribute__((section(".rtc.data")))` to
-place uninitialized data in section `.rtc.data`.
+place initialized data in section `.rtc.data`.
 
 For example:
 ```
-static int _i_value __attribute__((section(".rtc.bss")));  /* initialized at power on */
-static int _u_value __attribute__((section(".rtc.data"))); /* not initialized at power on */
+static int _i_value __attribute__((section(".rtc.bss")));      /* set to 0 at power on */
+static int _u_value __attribute__((section(".rtc.data"))) = 1; /* initialized */
 ```
 
 ## <a name="esp32_other_peripherals"> Other Peripherals </a> &nbsp;[[TOC](#esp32_toc)]
