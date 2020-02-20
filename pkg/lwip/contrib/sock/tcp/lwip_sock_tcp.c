@@ -28,6 +28,7 @@ static inline void _tcp_sock_init(sock_tcp_t *sock, struct netconn *conn,
     mutex_init(&sock->mutex);
     mutex_lock(&sock->mutex);
     sock->base.conn = conn;
+    netconn_set_callback_arg(sock->base.conn, NULL);
     sock->queue = queue;
     sock->last_buf = NULL;
     sock->last_offset = 0;
