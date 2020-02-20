@@ -7,5 +7,6 @@ FEATURES_PROVIDED += periph_dac
 FEATURES_PROVIDED += periph_i2c
 FEATURES_PROVIDED += periph_pwm
 FEATURES_PROVIDED += periph_spi
+FEATURES_PROVIDED += esp_rtc_timer_32k
 
 FEATURES_PROVIDED += arduino

@@ -27,15 +27,16 @@
 Heltec WiFi LoRa 32 V2 is an ESP32 development board with 8 MB Flash that uses
 the EPS32 chip directly. It integrates
 
-- a SemTech SX1276 or SX1278 for LoRaWAN communication and
-- an OLED display connected via I2C.
+- a SemTech SX1276 or SX1278 for LoRaWAN communication,
+- an OLED display connected via I2C and
+- an external 32.768 kHz crystal for RTC.
 
 Since the board is
 [open source hardware](https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series),
 a number of clones are available.
 
-\htmlonly<style>div.image img[src="https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series/raw/master/InstallGuide/win-screenshots/WIFI_LoRa_32.png"]{width:500px;}</style>\endhtmlonly
-\image html "https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series/raw/master/InstallGuide/win-screenshots/WIFI_LoRa_32.png" "Heltec WiFi Lora 32 V2"
+\htmlonly<style>div.image img[src="https://heltec.org/wp-content/uploads/2019/07/SAM_0748_800X800.png"]{width:400px;}</style>\endhtmlonly
+\image html "https://heltec.org/wp-content/uploads/2019/07/SAM_0748_800X800.png" "Heltec WiFi Lora 32 V2"
 
 ## <a name="hardware"> Hardware </a> &nbsp;&nbsp; [[TOC](#toc)]
 
@@ -92,7 +93,7 @@ overridden by \ref esp32_app_spec_conf "application-specific configurations".
 \anchor esp32_heltec_lora_32_v2_table_board_configuration
 Function        | GPIOs  | Remarks |Configuration
 :---------------|:-------|:--------|:----------------------------------
-BUTTON0         | GPIO0  | low active  | |
+BTN0            | GPIO0  | low active  | |
 LED0            | GPIO25 | high active | |
 ADC             | GPIO36, GPIO39, GPIO37, GPIO38, <br>GPIO0, GPIO2, GPIO12, GPIO13, <br>GPIO4, GPIO15 | | \ref esp32_adc_channels "ADC Channels"
 DAC             | | | \ref esp32_dac_channels "DAC Channels"
