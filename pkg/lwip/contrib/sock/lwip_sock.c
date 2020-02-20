@@ -299,9 +299,7 @@ static int _create(int type, int proto, uint16_t flags, struct netconn **out)
             IS_ACTIVE(SOCK_HAS_ASYNC) ? _netconn_cb : NULL)) == NULL) {
         return -ENOMEM;
     }
-#if LWIP_NETCONN_CONTEXT
     netconn_set_callback_arg(*out, NULL);
-#endif
 #if LWIP_IPV4 && LWIP_IPV6
     if (type & NETCONN_TYPE_IPV6) {
         netconn_set_ipv6only(*out, 1);
