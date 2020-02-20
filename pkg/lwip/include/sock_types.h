@@ -43,6 +43,12 @@ typedef void (*lwip_sock_cb_t)(lwip_sock_base_t *sock,
                                sock_async_flags_t flags);
 #endif  /* SOCK_HAS_ASYNC */
 
+/**
+ * @brief   Sock base type
+ * @warning For network stack internal purposes only. Do not access members
+ *          externally.
+ * @internal
+ */
 struct lwip_sock_base {
     struct netconn *conn;           /**< lwIP network connection object */
 #ifdef SOCK_HAS_ASYNC
