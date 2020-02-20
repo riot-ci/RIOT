@@ -112,6 +112,7 @@ USEMODULE += periph_adc_ctrl
 USEMODULE += periph_hwrng
 USEMODULE += periph_flash
 USEMODULE += periph_uart
+USEMODULE += pm_layered
 USEMODULE += riot_freertos
 USEMODULE += random
 USEMODULE += stdio_uart
