@@ -134,12 +134,6 @@ extern "C" {
 #define LWIP_NETCONN            (0)
 #endif
 
-#if defined(MODULE_LWIP_SOCK_ASYNC)
-#define LWIP_NETCONN_CONTEXT    (1)
-#else
-#define LWIP_NETCONN_CONTEXT    (0)
-#endif
-
 #define LWIP_SOCKET             (0)
 
 #define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS

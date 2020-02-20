@@ -39,7 +39,7 @@ int sock_udp_create(sock_udp_t *sock, const sock_udp_ep_t *local,
                                 NETCONN_UDP)) == 0) {
         sock->base.conn = tmp;
 #if IS_ACTIVE(SOCK_HAS_ASYNC)
-        sock->base.conn->ctx = &sock->base;
+        netconn_set_callback_arg(sock->base.conn, &sock->base);
 #endif
     }
     return res;

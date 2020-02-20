@@ -261,7 +261,7 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
                         u16_t len)
 {
 #if IS_ACTIVE(SOCK_HAS_ASYNC)
-    lwip_sock_base_t *sock = conn->ctx;
+    lwip_sock_base_t *sock = netconn_get_callback_arg(conn);
     if (sock) {
         sock_async_flags_t flags = 0;
 
@@ -300,7 +300,7 @@ static int _create(int type, int proto, uint16_t flags, struct netconn **out)
         return -ENOMEM;
     }
 #if LWIP_NETCONN_CONTEXT
-    (*out)->ctx = NULL;
+    netconn_set_callback_arg(*out, NULL);
 #endif
 #if LWIP_IPV4 && LWIP_IPV6
     if (type & NETCONN_TYPE_IPV6) {
