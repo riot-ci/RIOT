@@ -74,7 +74,7 @@
 #endif
 
 #ifndef CONFIG_ZTIMER_USEC_MIN
-#define CONFIG_ZTIMER_USEC_MIN (5)
+#define CONFIG_ZTIMER_USEC_MIN (10)
 #endif
 
 #ifndef CONFIG_ZTIMER_USEC_WIDTH
