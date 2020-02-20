@@ -1,0 +1,47 @@
+From 080476be39a13459b962990c02d8fd414f953f50 Mon Sep 17 00:00:00 2001
+From: "Martine S. Lenders" <m.lenders@fu-berlin.de>
+Date: Thu, 20 Feb 2020 16:57:48 +0100
+Subject: [PATCH] netconn: provide optional upper-layer context field
+
+For instance to be used in the netconn callback to get a wrapping type.
+---
+ src/include/lwip/api.h | 4 ++++
+ src/include/lwip/opt.h | 7 +++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/src/include/lwip/api.h b/src/include/lwip/api.h
+index be8c22aa..6786cdcb 100644
+--- a/src/include/lwip/api.h
++++ b/src/include/lwip/api.h
+@@ -220,6 +220,10 @@ struct netconn {
+   enum netconn_type type;
+   /** current state of the netconn */
+   enum netconn_state state;
++#if LWIP_NETCONN_CONTEXT
++  /** context pointer for upper layer to fill and use */
++  void *ctx;
++#endif
+   /** the lwIP internal protocol control block */
+   union {
+     struct ip_pcb  *ip;
+diff --git a/src/include/lwip/opt.h b/src/include/lwip/opt.h
+index 9fe0bf04..568a7397 100644
+--- a/src/include/lwip/opt.h
++++ b/src/include/lwip/opt.h
+@@ -1958,6 +1958,13 @@
+ #if !defined LWIP_NETCONN_FULLDUPLEX || defined __DOXYGEN__
+ #define LWIP_NETCONN_FULLDUPLEX         0
+ #endif
++
++/** LWIP_NETCONN_CONTEXT==1: Enables struct netconn to provide a context pointer
++ * for upper layers to fill and use.
++ */
++#if !defined LWIP_NETCONN_CONTEXT || defined __DOXYGEN__
++#define LWIP_NETCONN_CONTEXT
++#endif
+ /**
+  * @}
+  */
+-- 
+2.20.1
+

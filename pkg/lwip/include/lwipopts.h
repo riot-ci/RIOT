@@ -86,7 +86,6 @@ extern "C" {
 #define LWIP_IPV6               (0)
 #endif /* MODULE_LWIP_IPV6 */
 
-
 #ifdef MODULE_LWIP_NETIF_PPP
 #define PPP_SUPPORT             (1)
 #else  /* MODULE_LWIP_NETIF_PPP */
@@ -129,10 +128,16 @@ extern "C" {
 #define LWIP_UDPLITE            (0)
 #endif /* MODULE_LWIP_UDPLITE */
 
-#if defined(MODULE_LWIP_CONN) || defined(MODULE_LWIP_SOCK)
+#if defined(MODULE_LWIP_SOCK)
 #define LWIP_NETCONN            (1)
 #else
 #define LWIP_NETCONN            (0)
+#endif
+
+#if defined(MODULE_LWIP_SOCK_ASYNC)
+#define LWIP_NETCONN_CONTEXT    (1)
+#else
+#define LWIP_NETCONN_CONTEXT    (0)
 #endif
 
 #define LWIP_SOCKET             (0)
