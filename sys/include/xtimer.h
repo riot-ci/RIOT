@@ -38,12 +38,12 @@
 #include "mutex.h"
 #include "kernel_types.h"
 
-#include "board.h"
-#include "periph_conf.h"
-
 #ifdef MODULE_ZTIMER_XTIMER_COMPAT
 #include "ztimer/xtimer_compat.h"
 #else
+
+#include "board.h"
+#include "periph_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
