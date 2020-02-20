@@ -67,8 +67,6 @@ struct lwip_sock_base {
         sock_udp_cb_t udp;          /**< UDP version */
 #endif
     } async_cb;
-    volatile unsigned recv_event;
-    volatile unsigned send_event;
 #ifdef SOCK_HAS_ASYNC_CTX
     sock_async_ctx_t async_ctx;     /**< asynchronous event context */
 #endif  /* SOCK_HAS_ASYNC_CTX */
