@@ -1,4 +1,4 @@
-From 56099347511329f4c6e3529299850d401b0b2934 Mon Sep 17 00:00:00 2001
+From 59d78b78b683c9212949d4950355ea5f424c1da9 Mon Sep 17 00:00:00 2001
 From: Simon Goldschmidt <goldsimon@gmx.de>
 Date: Sat, 13 Jul 2019 20:46:36 +0200
 Subject: [PATCH] netconn: add callback arg storage
@@ -10,6 +10,7 @@ See bug #56593.
 
 Signed-off-by: Simon Goldschmidt <goldsimon@gmx.de>
 Suggested-by: Wilfred <wilfrednilsen@hotmail.com>
+(cherry picked from commit 5465fdfd6988354e77dc0e7a6117303d4c87cbd0)
 ---
  src/api/api_msg.c      |  4 +---
  src/api/sockets.c      | 14 +++++++-------
