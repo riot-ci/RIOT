@@ -5,7 +5,7 @@
 
 # "ztimer" is the default meta-module of ztimer
 ifneq (,$(filter ztimer,$(USEMODULE)))
-  USEMODULE += ztimer_auto_init
+  DEFAULT_MODULE += auto_init_ztimer
   USEMODULE += ztimer_core
   USEMODULE += ztimer_convert_frac
   USEMODULE += ztimer_convert_shift
@@ -49,4 +49,12 @@ endif
 
 ifneq (,$(filter ztimer_msec,$(USEMODULE)))
   USEMODULE += ztimer
+endif
+
+ifneq (,$(filter auto_init_ztimer,$(USEMODULE)))
+  # the auto_init machinery expects modules to be called "auto_init_%",
+  # but ztimer's auto init is a submodule called "ztimer_auto_init".
+  # Thus we make "auto_init_ztimer" a pseudomodule that, if used, pulls
+  # in "ztimer_auto_init".
+  USEMODULE += ztimer_auto_init
 endif
