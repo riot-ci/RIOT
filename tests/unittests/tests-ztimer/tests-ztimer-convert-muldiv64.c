@@ -27,7 +27,6 @@
 
 static void test_ztimer_convert_muldiv64_now_helper(uint32_t div, uint32_t mul)
 {
-    return ;
     ztimer_mock_t zmock;
     ztimer_convert_muldiv64_t zc;
     ztimer_clock_t *z = &zc.super.super;
