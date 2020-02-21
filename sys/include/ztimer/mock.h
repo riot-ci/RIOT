@@ -8,7 +8,7 @@
  */
 
 /**
- * @defgroup    sys_ztimer_mock
+ * @defgroup    sys_ztimer_mock ztimer mock clock backend
  * @ingroup     sys_ztimer
  * @brief       ztimer mock clock backend
  *
@@ -40,11 +40,15 @@ typedef struct {
     uint32_t now;           /**< current counter value */
     uint32_t target;        /**< ticks left until alarm is hit */
     unsigned armed;         /**< flag for checking if a target has been set */
+
+    /**
+     * @brief counting number of calls to each operation
+     */
     struct ztimer_mock_calls {
-        unsigned now;       /**< Number of calls to @ref ztimer_ops_t::now */
-        unsigned set;       /**< Number of calls to @ref ztimer_ops_t::set */
-        unsigned cancel;    /**< Number of calls to @ref ztimer_ops_t::cancel */
-    } calls;                /**< counting number of calls to each operation */
+        unsigned now;       /**< Number of calls to ztimer_ops_t::now */
+        unsigned set;       /**< Number of calls to ztimer_ops_t::set */
+        unsigned cancel;    /**< Number of calls to ztimer_ops_t::cancel */
+    } calls;
 } ztimer_mock_t;
 
 /**
