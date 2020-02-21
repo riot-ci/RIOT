@@ -174,7 +174,6 @@ int apds99xx_read_als_raw(const apds99xx_t *dev, uint16_t *raw)
 }
 
 #if MODULE_APDS9900 || MODULE_APDS9901 || MODULE_APDS9930
-#include <math.h>
 static uint8_t apds99xx_gains[] = { 1, 8, 16, 120 };
 
 int apds99xx_read_illuminance(const apds99xx_t *dev, uint16_t *lux)
