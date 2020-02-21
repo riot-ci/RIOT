@@ -42,7 +42,7 @@ typedef ztimer_clock_t ztimer_rtt_t;
  *
  * @param[in, out]  clock   ztimer_rtt object to initialize
  */
-void ztimer_rtt_init(ztimer_rtt_t *ztimer);
+void ztimer_rtt_init(ztimer_rtt_t *clock);
 
 #endif /* ZTIMER_RTT_H */
 /** @} */
