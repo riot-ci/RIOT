@@ -152,6 +152,10 @@ void cpu_init(void)
     /* initialize the Cortex-M core */
     cortexm_init();
 
+    /* select buck voltage regulator */
+    SUPC->VREG.bit.SEL = 1;
+    while (!SUPC->STATUS.bit.VREGRDY) {}
+
     /* turn on only needed APB peripherals */
     MCLK->APBAMASK.reg = MCLK_APBAMASK_MCLK
                        | MCLK_APBAMASK_OSCCTRL
