@@ -52,6 +52,7 @@
  *
  *     ztimer_sleep(ZTIMER_SEC, 5);
  * }
+ * ```
  *
  *
  * # Design
