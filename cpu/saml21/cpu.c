@@ -23,6 +23,14 @@
 #include "periph_conf.h"
 #include "stdio_base.h"
 
+/* As long as DFLL & DPLL are not used, we can default to
+   always using the buck converter when availiable. */
+#if !defined(CPU_SAMR30)
+#define USE_VREG_BUCK   (1)
+#else
+#define USE_VREG_BUCK   (0)
+#endif
+
 static void _gclk_setup(int gclk, uint32_t reg)
 {
     GCLK->GENCTRL[gclk].reg = reg;
@@ -92,6 +100,11 @@ void cpu_init(void)
 
     /* initialize the Cortex-M core */
     cortexm_init();
+
+    /* not compatible with 48 MHz DFLL & 96 MHz FDPLL */
+    if (USE_VREG_BUCK) {
+        sam0_set_voltage_regulator(SAM0_VREG_BUCK);
+    }
 
     /* turn on only needed APB peripherals */
     MCLK->APBAMASK.reg =
