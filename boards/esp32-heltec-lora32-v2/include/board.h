@@ -71,10 +71,6 @@
 #define LED0_ACTIVE     (1)     /**< LED is high active */
 /** @} */
 
-#ifdef __cplusplus
-} /* end extern "C" */
-#endif
-
 /**
  * @name        SX127X
  *
