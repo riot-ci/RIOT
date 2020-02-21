@@ -23,6 +23,7 @@
 
 #include "lwip/err.h"
 #include "lwip/ip.h"
+#include "lwip/tcp.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 
@@ -262,7 +263,7 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
 {
 #if IS_ACTIVE(SOCK_HAS_ASYNC)
     lwip_sock_base_t *sock = netconn_get_callback_arg(conn);
-    if (sock &&
+    if (sock && conn->pcb.raw &&
         /* lwIP's TCP implementation initializes callback_arg.socket with -1
          * when not provided */
         (conn->callback_arg.socket != -1)) {
@@ -273,15 +274,20 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
             case NETCONN_EVT_RCVPLUS:
                 if (LWIP_TCP && (conn->type & NETCONN_TCP)) {
 #if LWIP_TCP    /* additional guard needed due to dependent member access */
-                    unsigned accepts = cib_avail(&conn->acceptmbox.mbox.cib);
-                    if (accepts) {
+                    switch (conn->pcb.tcp->state) {
+                        case CLOSED:
+                        case CLOSE_WAIT:
+                        case CLOSING:
+                            flags |= SOCK_ASYNC_CONN_FIN;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (cib_avail(&conn->acceptmbox.mbox.cib)) {
                         flags |= SOCK_ASYNC_CONN_RECV;
                     }
                     if (cib_avail(&conn->recvmbox.mbox.cib)) {
                         flags |= SOCK_ASYNC_MSG_RECV;
-                    }
-                    else if ((len == 0) && (accepts == 0)) {
-                        flags |= SOCK_ASYNC_CONN_FIN;
                     }
 #endif
                 }
@@ -294,6 +300,7 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
                 break;
             case NETCONN_EVT_ERROR:
                 if (LWIP_TCP && (conn->type & NETCONN_TCP)) {
+                    /* try to report this */
                     flags |= SOCK_ASYNC_CONN_FIN;
                 }
                 break;
