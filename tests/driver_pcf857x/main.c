@@ -54,11 +54,6 @@
 #include "shell.h"
 #include "benchmark.h"
 
-#if MODULE_EXTEND_GPIO
-#include "extend/gpio.h"
-#include "gpio_ext_conf.h"
-#endif
-
 #define BENCH_RUNS_DEFAULT      (100UL * 100)
 
 /* Number of configured PCF857X I/O expander devices */
@@ -66,21 +61,6 @@
 
 /* PCF857X devices allocation */
 pcf857x_t pcf857x_dev[PCF857X_NUM];
-
-#if MODULE_EXTEND_GPIO
-/* PCF857X GPIO extension driver definition */
-const gpio_ext_driver_t pcf857x_extend_gpio_driver = {
-    .init = (gpio_ext_init_t)pcf857x_gpio_init,
-    .init_int = (gpio_ext_init_int_t)pcf857x_gpio_init_int,
-    .irq_enable = (gpio_ext_irq_enable_t)pcf857x_gpio_irq_enable,
-    .irq_disable = (gpio_ext_irq_disable_t)pcf857x_gpio_irq_disable,
-    .read = (gpio_ext_read_t)pcf857x_gpio_read,
-    .set = (gpio_ext_set_t)pcf857x_gpio_set,
-    .clear = (gpio_ext_clear_t)pcf857x_gpio_clear,
-    .toggle = (gpio_ext_toggle_t)pcf857x_gpio_toggle,
-    .write = (gpio_ext_write_t)pcf857x_gpio_write,
-};
-#endif /* MODULE_EXTEND_GPIO */
 
 #ifdef MODULE_PERIPH_GPIO_IRQ
 static void cb(void *arg)
@@ -99,13 +79,8 @@ static int init_pin(int argc, char **argv, gpio_mode_t mode)
     int po = atoi(argv[1]);
     int pi = atoi(argv[2]);
 
-#if MODULE_EXTEND_GPIO
-    if (gpio_init(GPIO_EXT_PIN(po, pi), mode) < 0) {
-        printf("error: init GPIO_EXT_PIN(%i, %02i) failed\n", po, pi);
-#else
     if (pcf857x_gpio_init(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi), mode) < 0) {
         printf("error: init PCF857X pin (dev %i, pin %02i) failed\n", po, pi);
-#endif
         return 1;
     }
 
@@ -172,15 +147,9 @@ static int init_int(int argc, char **argv)
             return 1;
     }
 
-#if MODULE_EXTEND_GPIO
-    if (gpio_init_int(GPIO_EXT_PIN(po, pi), mode, flank, cb, (void *)pi) < 0) {
-        printf("error: init_int GPIO_EXT_PIN(%i, %02i) failed\n", po, pi);
-#else
     if (pcf857x_gpio_init_int(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi),
                               mode, flank, cb, (void *)pi) < 0) {
         printf("error: init_int PCF857X pin (dev %i, pin %02i) failed\n", po, pi);
-
-#endif
         return 1;
     }
 
@@ -205,16 +174,6 @@ static int enable_int(int argc, char **argv)
     status = atoi(argv[3]);
 
     switch (status) {
-#if MODULE_EXTEND_GPIO
-        case 0:
-            puts("disabling GPIO interrupt");
-            gpio_irq_disable(GPIO_EXT_PIN(po, pi));
-            break;
-        case 1:
-            puts("enabling GPIO interrupt");
-            gpio_irq_enable(GPIO_EXT_PIN(po, pi));
-            break;
-#else /* MODULE_EXTEND_GPIO */
         case 0:
             puts("disabling GPIO interrupt");
             pcf857x_gpio_irq_disable(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi));
@@ -223,7 +182,6 @@ static int enable_int(int argc, char **argv)
             puts("enabling GPIO interrupt");
             pcf857x_gpio_irq_enable(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi));
             break;
-#endif /* MODULE_EXTEND_GPIO */
         default:
             puts("error: invalid status");
             return 1;
@@ -243,21 +201,12 @@ static int read(int argc, char **argv)
     int po = atoi(argv[1]);
     int pi = atoi(argv[2]);
 
-#if MODULE_EXTEND_GPIO
-    if (gpio_read(GPIO_EXT_PIN(po, pi))) {
-        printf("GPIO_EXT_PIN(%i, %02i) is HIGH\n", po, pi);
-    }
-    else {
-        printf("GPIO_EXT_PIN(%i, %02i) is LOW\n", po, pi);
-    }
-#else
     if (pcf857x_gpio_read(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi))) {
         printf("PCF857X pin (dev %i, pin %02i) is HIGH\n", po, pi);
     }
     else {
         printf("PCF857X pin (dev %i, pin %02i) is LOW\n", po, pi);
     }
-#endif
 
     return 0;
 }
@@ -268,14 +217,8 @@ static int set(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-
-#if MODULE_EXTEND_GPIO
-    gpio_set(GPIO_EXT_PIN(atoi(argv[1]), atoi(argv[2])));
-#else
     pcf857x_gpio_set(&pcf857x_dev[atoi(argv[1])],
                      PCF857X_GPIO_PIN(0, atoi(argv[2])));
-#endif
-
     return 0;
 }
 
@@ -285,14 +228,8 @@ static int clear(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-
-#if MODULE_EXTEND_GPIO
-    gpio_clear(GPIO_EXT_PIN(atoi(argv[1]), atoi(argv[2])));
-#else
     pcf857x_gpio_clear(&pcf857x_dev[atoi(argv[1])],
                         PCF857X_GPIO_PIN(0, atoi(argv[2])));
-#endif
-
     return 0;
 }
 
@@ -302,14 +239,8 @@ static int toggle(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-
-#if MODULE_EXTEND_GPIO
-    gpio_toggle(GPIO_EXT_PIN(atoi(argv[1]), atoi(argv[2])));
-#else
     pcf857x_gpio_toggle(&pcf857x_dev[atoi(argv[1])],
                         PCF857X_GPIO_PIN(0, atoi(argv[2])));
-#endif
-
     return 0;
 }
 
@@ -320,13 +251,8 @@ static int bench(int argc, char **argv)
         return 1;
     }
 
-#if MODULE_EXTEND_GPIO
-    gpio_t pi = GPIO_EXT_PIN(atoi(argv[1]), atoi(argv[2]));
-#else
     gpio_t pi = PCF857X_GPIO_PIN(0, atoi(argv[2]));
     int po = atoi(argv[1]);
-#endif
-
 
     unsigned long runs = BENCH_RUNS_DEFAULT;
     if (argc > 3) {
@@ -334,17 +260,6 @@ static int bench(int argc, char **argv)
     }
 
     puts("\nGPIO driver run-time performance benchmark\n");
-#if MODULE_EXTEND_GPIO
-    BENCHMARK_FUNC("nop loop", runs, __asm__ volatile("nop"));
-    gpio_init(pi, GPIO_OUT);
-    BENCHMARK_FUNC("gpio_set", runs, gpio_set(pi));
-    BENCHMARK_FUNC("gpio_clear", runs, gpio_clear(pi));
-    BENCHMARK_FUNC("gpio_toggle", runs, gpio_toggle(pi));
-    gpio_init(pi, GPIO_IN);
-    BENCHMARK_FUNC("gpio_read", runs, (void)gpio_read(pi));
-    gpio_init(pi, GPIO_OUT);
-    BENCHMARK_FUNC("gpio_write", runs, gpio_write(pi, 1));
-#else
     pcf857x_t* dev = &pcf857x_dev[po];
     BENCHMARK_FUNC("nop loop", runs, __asm__ volatile("nop"));
     pcf857x_gpio_init(dev, pi, GPIO_OUT);
@@ -355,7 +270,6 @@ static int bench(int argc, char **argv)
     BENCHMARK_FUNC("gpio_read", runs, (void)pcf857x_gpio_read(dev, pi));
     pcf857x_gpio_init(dev, pi, GPIO_OUT);
     BENCHMARK_FUNC("gpio_write", runs, pcf857x_gpio_write(dev, pi, 1));
-#endif
     puts("\n --- DONE ---");
     return 0;
 }
@@ -380,14 +294,6 @@ static const shell_command_t shell_commands[] = {
 
 int main(void)
 {
-#if MODULE_GPIO_EXTEND
-    /*
-     * number of GPIO extension list entries has correspond to the
-     * number of configured PCF857X devices
-     */
-    assert(PCF857X_NUM == sizeof(gpio_ext_list[]) / sizeof(gpio_ext_list[0]));
-#endif
-
     puts("PCF857X I/O expander GPIO peripheral driver test\n");
     puts("Initializing PCF857X");
 

@@ -8,7 +8,6 @@
 
 /**
  * @defgroup    drivers_pcf857x PCF857X I2C I/O expanders
- * @ingroup     extend_gpio
  * @ingroup     drivers_saul
  * @brief       Device driver for Texas Instruments PCF857X I2C I/O expanders
  *
@@ -49,12 +48,6 @@
  * - functions have the prefix `pcf857x_` and
  * - functions require an additional parameter, the pointer to the expander
  *   device of type #pcf857x_t.
- *
- * The driver is also compatible with the GPIO extension API so that PCF857X
- * I/O expanders can be used as GPIO extension with the standard peripheral
- * GPIO interface. Pleae refer the test application in `tests/driver_pcf857x`
- * for more information on how to use the driver either directly or with the
- * GPIO extension interface.
  *
  * ## Expander GPIOs
  *
