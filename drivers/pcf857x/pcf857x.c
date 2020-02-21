@@ -8,7 +8,7 @@
 
 /**
  * @ingroup     drivers_pcf857x
- * @brief       Device driver for the Texas Instruments PCF857X I2C I/O expanders
+ * @brief       Device driver for Texas Instruments PCF857X I2C I/O expanders
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @file
  * @{
@@ -33,22 +33,12 @@
 
 #if ENABLE_DEBUG
 
-#define ASSERT_PARAM(cond) \
-    do { \
-        if (!(cond)) { \
-            DEBUG("[pcf857x] %s: %s\n", \
-                  __func__, "parameter condition (" #cond ") not fulfilled"); \
-            assert(cond); \
-        } \
-    } while (0)
-
 #define DEBUG_DEV(f, d, ...) \
         DEBUG("[pcf857x] %s i2c dev=%d addr=%02x: " f "\n", \
               __func__, d->params.dev, d->params.addr, ## __VA_ARGS__)
 
 #else /* ENABLE_DEBUG */
 
-#define ASSERT_PARAM(cond) assert(cond)
 #define DEBUG_DEV(f, d, ...)
 
 #endif /* ENABLE_DEBUG */
@@ -96,11 +86,11 @@ static void _update_state(pcf857x_t* dev);
 int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(params != NULL);
-    ASSERT_PARAM(params->exp < PCF857X_EXP_MAX);
+    assert(dev != NULL);
+    assert(params != NULL);
+    assert(params->exp < PCF857X_EXP_MAX);
 #if MODULE_PERIPH_GPIO_IRQ
-    ASSERT_PARAM(params->int_pin != GPIO_UNDEF);
+    assert(params->int_pin != GPIO_UNDEF);
 #endif
 
     DEBUG_DEV("params=%p", dev, params);
@@ -162,8 +152,8 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
 int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(pin < dev->pin_num);
+    assert(dev != NULL);
+    assert(pin < dev->pin_num);
 
     DEBUG_DEV("pin=%u mode=%u", dev, pin, mode);
 
@@ -236,8 +226,8 @@ int pcf857x_gpio_init_int(pcf857x_t *dev, gpio_t pin,
 void pcf857x_gpio_irq_enable(pcf857x_t *dev, gpio_t pin)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(pin < dev->pin_num);
+    assert(dev != NULL);
+    assert(pin < dev->pin_num);
 
     DEBUG_DEV("pin=%u", dev, pin);
     dev->enabled[pin] = true;
@@ -246,8 +236,8 @@ void pcf857x_gpio_irq_enable(pcf857x_t *dev, gpio_t pin)
 void pcf857x_gpio_irq_disable(pcf857x_t *dev, gpio_t pin)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(pin < dev->pin_num);
+    assert(dev != NULL);
+    assert(pin < dev->pin_num);
 
     DEBUG_DEV("pin=%u", dev, pin);
     dev->enabled[pin] = false;
@@ -257,8 +247,8 @@ void pcf857x_gpio_irq_disable(pcf857x_t *dev, gpio_t pin)
 int pcf857x_gpio_read (pcf857x_t *dev, gpio_t pin)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(pin < dev->pin_num);
+    assert(dev != NULL);
+    assert(pin < dev->pin_num);
 
     DEBUG_DEV("pin=%u", dev, pin);
 
@@ -281,8 +271,8 @@ int pcf857x_gpio_read (pcf857x_t *dev, gpio_t pin)
 void pcf857x_gpio_write (pcf857x_t *dev, gpio_t pin, int value)
 {
     /* some parameter sanity checks */
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(pin < dev->pin_num);
+    assert(dev != NULL);
+    assert(pin < dev->pin_num);
 
     DEBUG_DEV("pin=%u value=%d", dev, pin, value);
 
@@ -335,7 +325,7 @@ void pcf857x_gpio_toggle (pcf857x_t *dev, gpio_t pin)
 /* interrupt service routine for IRQs */
 static void _irq_isr(void *arg)
 {
-    ASSERT_PARAM(arg != NULL);
+    assert(arg != NULL);
 
     /* just indicate that an interrupt occured and return */
     event_post(EVENT_PRIO_MEDIUM, (event_t*)&((pcf857x_t*)arg)->irq_event);
@@ -346,13 +336,13 @@ static void _irq_handler(event_t* event)
 {
     pcf857x_irq_event_t* irq_event = (pcf857x_irq_event_t*)event;
 
-    ASSERT_PARAM(irq_event != NULL);
+    assert(irq_event != NULL);
     _update_state(irq_event->dev);
 }
 
 static void _update_state(pcf857x_t* dev)
 {
-    ASSERT_PARAM(dev != NULL);
+    assert(dev != NULL);
     DEBUG_DEV("", dev);
 
     uint32_t state = irq_disable();
@@ -395,8 +385,8 @@ static void _update_state(pcf857x_t* dev)
 
 static int _read(const pcf857x_t *dev, pcf857x_data_t *data)
 {
-    ASSERT_PARAM(dev != NULL);
-    ASSERT_PARAM(data != NULL);
+    assert(dev != NULL);
+    assert(data != NULL);
 
     if (i2c_acquire(dev->params.dev)) {
         DEBUG_DEV("could not aquire I2C bus", dev);
@@ -429,7 +419,7 @@ static int _read(const pcf857x_t *dev, pcf857x_data_t *data)
 
 static int _write(const pcf857x_t *dev, pcf857x_data_t data)
 {
-    ASSERT_PARAM(dev != NULL);
+    assert(dev != NULL);
 
     uint8_t bytes[2];
     size_t len = 1;
