@@ -19,7 +19,8 @@
     1. [MCU](#mcu)
     2. [Board Configuration](#board_configuration)
     3. [Board Pinout](#pinout)
-    4. [Optional Hardware Configurations](#optional_hardware)
+    4. [Using the OLED Display](#oled_display)
+    5. [Optional Hardware Configurations](#optional_hardware)
 3. [Flashing the Device](#flashing)
 
 ## <a name="overview"> Overview </a> &nbsp;&nbsp; [[TOC](#toc)]
@@ -27,9 +28,8 @@
 Heltec WiFi LoRa 32 V2 is an ESP32 development board with 8 MB Flash that uses
 the EPS32 chip directly. It integrates
 
-- a SemTech SX1276 or SX1278 for LoRaWAN communication,
-- an OLED display connected via I2C and
-- an external 32.768 kHz crystal for RTC.
+- a SemTech SX1276 or SX1278 for LoRaWAN communication and
+- a SSD1306 0.96-inch 128x64 OLED display connected via I2C.
 
 Since the board is
 [open source hardware](https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series),
@@ -57,7 +57,8 @@ information about the ESP32, see section \ref esp32_mcu "MCU ESP32".
 Heltec WiFi LoRa 32 V2 has the following on-board components:
 
 - SemTech SX1278 or SX1276 for LoRaWAN communication
-- OLED display
+- SSD1306 0.96-inch 128x64 OLED display connected via I2C
+- external 32.768 kHz crystal for RTC
 
 There are two hardware versions of the board:
 
@@ -109,6 +110,7 @@ UART_DEV(0):TxD | GPIO1  | Console (configuration is fixed) | \ref esp32_uart_in
 UART_DEV(0):RxD | GPIO3  | Console (configuration is fixed) | \ref esp32_uart_interfaces "UART interfaces"
 UART_DEV(1):TxD | GPIO10 | not available in **qout** and **qio** flash mode | \ref esp32_uart_interfaces "UART interfaces"
 UART_DEV(1):RxD | GPIO9  | not available in **qout** and **qio** flash mode | \ref esp32_uart_interfaces "UART interfaces"
+OLED RESET      | GPIO16 | | |
 </center>
 <br>
 @note
@@ -119,6 +121,46 @@ UART_DEV(1):RxD | GPIO9  | not available in **qout** and **qio** flash mode | \r
 
 For detailed information about the configuration of ESP32 boards, see
 section \ref esp32_comm_periph "Common Peripherals".
+
+### <a name="oled_display"> Using the OLED Display </a> &nbsp;&nbsp; [[TOC](#toc)]
+
+The 0.96-inch OLED display with 128x64 pixels uses the widely used SSD1306
+controller. It is connected via `I2C_DEV(0)`. It can be used with the `pkg/u8g2`
+package. For this purpose, the `pkg/u8g2` package has to be used in the
+application Makefile
+```
+USEPKG += u8g2
+```
+and function `u8g2_Setup_ssd1306_i2c_128x64_noname_f` has to be called to
+setup the right driver, for example:
+```
+#include "u8g2.h"
+#include "u8x8_riotos.h"
+
+#define SSD1306_I2C_ADDR    (0x3c)
+
+u8x8_riotos_t user_data = {
+    .device_index = I2C_DEV(0),
+    .pin_cs = GPIO_UNDEF,
+    .pin_dc = GPIO_UNDEF,
+    .pin_reset = GPIO16,
+};
+
+u8g2_Setup_ssd1306_i2c_128x64_noname_f(&u8g2, U8G2_R0,
+                                       u8x8_byte_hw_i2c_riotos,
+                                       u8x8_gpio_and_delay_riotos);
+u8g2_SetUserPtr(&u8g2, &user_data);
+u8g2_SetI2CAddress(&u8g2, SSD1306_I2C_ADDR);
+u8g2_InitDisplay(&u8g2);
+u8g2_SetPowerSave(&u8g2, 0);
+```
+The `tests/pkg_u8g2` test application is a good example of how to use the
+`pkg/u8g2` package. It can be compiled for the board with the following command:
+```
+TEST_OUTPUT=4 TEST_I2C=0 TEST_ADDR=0x3c TEST_PIN_RESET=GPIO16 \
+TEST_DISPLAY=u8g2_Setup_ssd1306_i2c_128x64_noname_f \
+BOARD=esp32-heltec-lora32-v2 make -C tests/pkg_u8g2/ flash
+```
 
 ### <a name="optional_hardware"> Optional Hardware Configurations </a> &nbsp;&nbsp; [[TOC](#toc)]
 
