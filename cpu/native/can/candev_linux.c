@@ -38,6 +38,7 @@
 #include "mutex.h"
 #include "async_read.h"
 #include "sched.h"
+#include "log.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
@@ -195,7 +196,14 @@ static int _init(candev_t *candev)
 
     real_bind(dev->sock, (struct sockaddr *)&addr, sizeof(addr));
 
-    _set_bittiming(dev, &candev->bittiming);
+    /* Only set bitrate on real can interfaces.
+     * Not supported on virtual can interfaces ("vcanX") */
+    if (strncmp(dev->conf->interface_name, "can", strlen("can"))) {
+        LOG_INFO("not setting bitrate on virtual can interface %s\n", dev->conf->interface_name);
+    }
+    else {
+        _set_bittiming(dev, &candev->bittiming);
+    }
 
     DEBUG("CAN linux device ready\n");
 
@@ -300,6 +308,8 @@ static int _set(candev_t *candev, canopt_t opt, void *value, size_t value_len)
     case CANOPT_BITTIMING:
         DEBUG("candev_linux: CANOPT_BITTIMING\n");
 
+        /* Only set bitrate on real can interfaces.
+         * Not supported on virtual can interfaces ("vcanX") */
         if (strncmp(dev->conf->interface_name, "can", strlen("can"))) {
             DEBUG("candev_native: _set: error interface is not real can\n");
             return -EINVAL;
