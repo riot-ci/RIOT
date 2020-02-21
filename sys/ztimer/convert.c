@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       ztimer frequency conversion module common code implemention
+ * @brief       ztimer frequency conversion module common code implementation
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
