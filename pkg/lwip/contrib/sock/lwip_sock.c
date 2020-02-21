@@ -273,19 +273,15 @@ static void _netconn_cb(struct netconn *conn, enum netconn_evt evt,
             case NETCONN_EVT_RCVPLUS:
                 if (LWIP_TCP && (conn->type & NETCONN_TCP)) {
 #if LWIP_TCP    /* additional guard needed due to dependent member access */
-                    switch (conn->state) {
-                        case NETCONN_NONE:
-                        case NETCONN_CLOSE:
-                            flags |= SOCK_ASYNC_CONN_FIN;
-                            break;
-                        default:
-                            break;
-                    }
-                    if (cib_avail(&conn->acceptmbox.mbox.cib)) {
+                    unsigned accepts = cib_avail(&conn->acceptmbox.mbox.cib);
+                    if (accepts) {
                         flags |= SOCK_ASYNC_CONN_RECV;
                     }
                     if (cib_avail(&conn->recvmbox.mbox.cib)) {
                         flags |= SOCK_ASYNC_MSG_RECV;
+                    }
+                    else if ((len == 0) && (accepts == 0)) {
+                        flags |= SOCK_ASYNC_CONN_FIN;
                     }
 #endif
                 }
