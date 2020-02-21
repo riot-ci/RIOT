@@ -34,6 +34,10 @@
 #include "ztimer/convert_frac.h"
 #include "frac.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief   ztimer_convert_frac frequency conversion layer class
  */
@@ -72,6 +76,10 @@ void ztimer_convert_frac_init(ztimer_convert_frac_t *self, ztimer_clock_t *lower
  */
 void ztimer_convert_frac_change_rate(ztimer_convert_frac_t *self,
                                      uint32_t freq_self, uint32_t freq_lower);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ZTIMER_CONVERT_FRAC_H */
 /** @} */
