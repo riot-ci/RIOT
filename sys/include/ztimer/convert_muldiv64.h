@@ -7,7 +7,6 @@
  */
 
 /**
- * @defgroup    sys_ztimer_convert_muldiv64
  * @ingroup     sys_ztimer_convert
  * @brief       ztimer frequency conversion module (64bit arithmetic)
  *
