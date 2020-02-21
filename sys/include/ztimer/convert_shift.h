@@ -7,8 +7,7 @@
  */
 
 /**
- * @defgroup  sys_ztimer_convert_shift ztimer_convert_shift frequency conversion layer
- * @ingroup   sys_ztimer
+ * @ingroup   sys_ztimer_convert
  * @brief     Translates between clock tick rates
  *
  * Translates the ticks of an underlying clock into virtual ticks at a different
@@ -28,6 +27,10 @@
 #include "ztimer.h"
 #include "ztimer/convert.h"
 #include "ztimer/convert_shift.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief   ztimer_convert_shift frequency conversion layer class
@@ -58,6 +61,10 @@ typedef struct {
  */
 void ztimer_convert_shift_up_init(ztimer_convert_shift_t *self, ztimer_clock_t *lower,
                                   unsigned shift);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ZTIMER_CONVERT_SHIFT_H */
 /** @} */
