@@ -245,9 +245,8 @@ static void _ztimer_update(ztimer_clock_t *ztimer)
         else {
             ztimer->ops->set(ztimer, ztimer->max_value >> 1);
         }
-
 #else
-    if (0)
+    if (0) {
 #endif
     }
     else {
