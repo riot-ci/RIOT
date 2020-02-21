@@ -132,19 +132,17 @@
  *
  * ## The Interrupt Context Problem
  *
- * Handling an interrupt on a PCF857x expander device requires direct access by
- * the driver to the device via I2C within the ISR. However, the mutex based
- * synchronization of I2C accesses does not work in the interrupt context.
- * Accessing I2C within an ISR could therefore interfere with an already
- * existing I2C access. Therefore, the ISR must not access the PCF857x
- * expander device. Rather, the ISR has only to indicate the occurrence
- * of the interrupt. The interrupt is then handled asynchronously by a thread.
+ * Handling an interrupt of a PCF857x expander requires the driver to access
+ * the device directly via I2C. However, the mutex-based synchronization of
+ * I2C accesses does not work in the interrupt context. Therefore the ISR must
+ * not access the PCF857x expander device directly. Rather, the ISR must only
+ * indicate the occurrence of the interrupt which has to be handled
+ * asynchronously in the thread context.
  *
- * Therefore, the driver creates its own thread to handle the interrupts when
- * interrupts are enabled by the `periph_gpio_irq` module. This thread has to
- * have a priority which is high enough to handle the interrupts of PCF857x
- * expander devices with almost no delay. The thread priority is defined by
- * #PCF867X_IRQ_THREAD_PRIO and is 1 by default.
+ * For this purpose the event thread module `event_thread_medium` is used when
+ * interrupts are enabled by the module `periph_gpio_irq`. The driver then
+ * handles the interrupts in the context of the event thread with medium
+ * priority.
  *
  * ## SAUL Capabilities
  *
@@ -216,19 +214,7 @@ extern "C"
 #endif /* MODULE_SAUL_GPIO */
 
 #if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
-
 #include "event.h"
-
-/**
- * @brief Interrupt handler thread priority.
- *
- * Has to be high enough to handle interrupts of PCF857x expanders
- * with almost no delay.
- */
-#ifndef PCF867X_IRQ_THREAD_PRIO
-#define PCF867X_IRQ_THREAD_PRIO     (1)
-#endif
-
 #endif /* MODULE_PERIPH_GPIO_IRQ */
 
 #if !MODULE_PCF8574 && !MODULE_PCF8574A && !MODULE_PCF8575
@@ -349,13 +335,12 @@ typedef struct {
 /**
  * @brief   IRQ event type
  *
- * Handling an interrupt on a PCF857x expander device requires direct access by
- * the driver to the device via I2C within the ISR. However, the mutex based
- * synchronization of I2C accesses does not work in the interrupt context.
- * Accessing I2C within an ISR could therefore interfere with an already
- * existing I2C access. Therefore, the ISR must not access the PCF857x
- * expander device. Rather, the ISR has only to indicate the occurrence
- * of the interrupt. The interrupt is then handled asynchronously by a thread.
+ * Handling an interrupt of a PCF857x expander requires the driver to access
+ * the device directly via I2C. However, the mutex-based synchronization of
+ * I2C accesses does not work in the interrupt context. Therefore the ISR must
+ * not access the PCF857x expander device directly. Rather, the ISR must only
+ * indicate the occurrence of the interrupt which has to be handled
+ * asynchronously in the thread context.
  *
  * The type defines the data structure that is part of each device data
  * structure to indicate that an interrupt of the device occured. Since there
@@ -363,7 +348,7 @@ typedef struct {
  * Thus, only one object of this type per device is required.
  */
 typedef struct {
-    event_t event;      /**< event data structure */
+    event_t event;      /**< inherited event data structure */
     void *dev;          /**< PCF857X device reference */
 } pcf857x_irq_event_t;
 
