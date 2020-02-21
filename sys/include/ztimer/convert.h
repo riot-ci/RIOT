@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_ztimer_convert
+ * @defgroup    sys_ztimer_convert ztimer frequency conversion modules
  * @ingroup     sys_ztimer
  * @brief       ztimer frequency conversion modules
  *
