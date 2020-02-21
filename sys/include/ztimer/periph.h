@@ -38,9 +38,9 @@ extern "C" {
  * @brief ztimer periph context structure
  */
 typedef struct {
-    ztimer_clock_t super;   /*<< super class            */
-    tim_t dev;              /*<< periph timer device    */
-    uint16_t min;           /*<< optional minimum value */
+    ztimer_clock_t super;   /**< super class            */
+    tim_t dev;              /**< periph timer device    */
+    uint16_t min;           /**< optional minimum value */
 } ztimer_periph_t;
 
 /**
