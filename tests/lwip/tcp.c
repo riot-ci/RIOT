@@ -51,7 +51,10 @@ static void _tcp_recv(sock_tcp_t *sock, sock_async_flags_t flags)
 {
     sock_tcp_ep_t client;
 
-    sock_tcp_get_remote(sock, &client);
+    if (sock_tcp_get_remote(sock, &client) < 0) {
+        /* socket was disconnected between event firing and this handler */
+        return;
+    }
 #ifdef MODULE_LWIP_IPV6
     ipv6_addr_to_str(_addr_str, (ipv6_addr_t *)&client.addr.ipv6,
                      sizeof(_addr_str));
