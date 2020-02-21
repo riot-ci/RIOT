@@ -25,7 +25,7 @@
 #include "xtimer.h"
 
 #if MODULE_PERIPH_GPIO_IRQ
-#include "event.h"
+#include "event/thread.h"
 #endif
 
 #define ENABLE_DEBUG    (0)
@@ -85,18 +85,6 @@ static int _write(const pcf857x_t *dev, pcf857x_data_t data);
 /* interrutp service routine for IRQs */
 static void _irq_isr(void *arg);
 
-/* IRQ event queue */
-static event_queue_t _irq_queue;
-
-/* stack for the IRQ handler thread */
-static char _irq_thread_stack[THREAD_STACKSIZE_DEFAULT];
-
-/* PID of IRQ handler thread, KERNEL_PID_UNDEF if not created yet */
-static kernel_pid_t _irq_thread_pid = KERNEL_PID_UNDEF;
-
-/* IRQ handler thread */
-static void *_irq_thread(void *arg);
-
 /* declaration of IRQ handler function */
 static void _irq_handler(event_t *event);
 
@@ -143,16 +131,6 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
     }
 
 #if MODULE_PERIPH_GPIO_IRQ
-    /* create the interrupt handler thread */
-     if (_irq_thread_pid == KERNEL_PID_UNDEF) {
-        DEBUG("[%s] create irq_handler thread\n", __func__);
-        _irq_thread_pid = thread_create(_irq_thread_stack,
-                                        sizeof(_irq_thread_stack),
-                                        PCF867X_IRQ_THREAD_PRIO,
-                                        THREAD_CREATE_STACKTEST,
-                                        _irq_thread, NULL, "irq_handler");
-        assert(_irq_thread_pid != KERNEL_PID_UNDEF);
-    }
     /* initialize the IRQ event object used for delaying interrupts */
     dev->irq_event.event.handler = _irq_handler;
     dev->irq_event.dev = dev;
@@ -360,18 +338,7 @@ static void _irq_isr(void *arg)
     ASSERT_PARAM(arg != NULL);
 
     /* just indicate that an interrupt occured and return */
-    event_post(&_irq_queue, (event_t*)&((pcf857x_t*)arg)->irq_event);
-}
-
-/* IRQ handler thread */
-static void *_irq_thread(void *arg)
-{
-    /* initialize the IRQ event queue */
-    event_queue_init(&_irq_queue);
-    /* wait for pending IRQ events and call the IRQ handler */
-    event_loop(&_irq_queue);
-
-    return NULL;
+    event_post(EVENT_PRIO_MEDIUM, (event_t*)&((pcf857x_t*)arg)->irq_event);
 }
 
 /* handle one IRQ event of device referenced by the event */
