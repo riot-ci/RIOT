@@ -1,15 +1,34 @@
 /*
  * Copyright (C) 2015 Freie Universität Berlin
+ *               2020 Gunar Schorcht
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
  */
 
+#ifndef PERIPH_GPIO_H
+#define PERIPH_GPIO_H
+
+#ifdef MODULE_PERIPH_GPIO_EXT
+
+#include "periph/gpio_ext.h"
+
+#else /* MODULE_PERIPH_GPIO_EXT */
+
 /**
+ * @anchor      drivers_periph_gpio GPIO
  * @defgroup    drivers_periph_gpio GPIO
  * @ingroup     drivers_periph
  * @brief       Low-level GPIO peripheral driver
+ *
+ * @note This is the legacy GPIO API. It will be removed once all platforms
+ * implement the new GPIO API which allows to implement the API for any kind
+ * of GPIO hardware. The new GPIO API is compatible with this legacy API.
+ * @warning The scalar GPIO pin type `gpio_t` is deprecated and will be
+ * replaced by a structured GPIO pin type in the new GPIO API. Therefore,
+ * don't use the direct comparison of GPIO pins anymore. Instead, use the
+ * inline comparison functions @ref gpio_is_equal and @ref gpio_is_undef.
  *
  * This is a basic GPIO (General-purpose input/output) interface to allow
  * platform independent access to a MCU's input/output pins. This interface is
@@ -43,6 +62,11 @@
  * definitions in `RIOT/boards/ * /include/periph_conf.h` will define the selected
  * GPIO pin.
  *
+ * @warning The scalar GPIO pin type `gpio_t` is deprecated and will be
+ * replaced by a structured GPIO pin type in a future GPIO API. Therefore,
+ * don't use the direct comparison of GPIO pins anymore. Instead, use the
+ * inline comparison functions @ref gpio_is_equal and @ref gpio_is_undef.
+ *
  * # (Low-) Power Implications
  *
  * On almost all platforms, we can only control the peripheral power state of
@@ -66,9 +90,6 @@
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
-
-#ifndef PERIPH_GPIO_H
-#define PERIPH_GPIO_H
 
 #include <limits.h>
 
@@ -250,9 +271,34 @@ void gpio_toggle(gpio_t pin);
  */
 void gpio_write(gpio_t pin, int value);
 
+/**
+ * @brief   Test if a GPIO pin is equal to another GPIO pin
+ *
+ * @param[in] gpio1 First GPIO pin to check
+ * @param[in] gpio2 Second GPIO pin to check
+ */
+static inline int gpio_is_equal(gpio_t gpio1, gpio_t gpio2)
+{
+    return (gpio1 == gpio2);
+}
+
+/**
+ * @brief   Test if a GPIO pin is undefined
+ *
+ * @param[in] gpio GPIO pin to check
+ */
+static inline int gpio_is_undef(gpio_t gpio)
+{
+    return (gpio == GPIO_UNDEF);
+}
+
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* PERIPH_GPIO_H */
 /** @} */
+
+#endif /* MODULE_PERIPH_GPIO_EXT */
+#endif /* PERIPH_GPIO_H */
