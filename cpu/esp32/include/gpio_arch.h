@@ -25,36 +25,9 @@
 #include "soc/io_mux_reg.h"
 #include "soc/gpio_sig_map.h"
 
-#ifndef DOXYGEN
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief   Definitions for source code compatibility with ESP-IDF
- */
-#define GPIO_MODE_INPUT         GPIO_IN
-#define GPIO_MODE_OUTPUT        GPIO_OUT
-#define GPIO_MODE_INPUT_OUTPUT  GPIO_IN_OUT
-/**
- * @brief   Definition of possible GPIO usage types (for internal use only)
- */
-typedef enum {
-    _GPIO = 0,  /**< pin used as standard GPIO */
-    _ADC,       /**< pin used as ADC input */
-    _CAN,       /**< pin used as CAN signal */
-    _DAC,       /**< pin used as DAC output */
-    _EMAC,      /**< pin used as EMAC signal */
-    _I2C,       /**< pin used as I2C signal */
-    _PWM,       /**< pin used as PWM output */
-    _SPI,       /**< pin used as SPI interface */
-    _SPIF,      /**< pin used as SPI flash interface */
-    _UART,      /**< pin used as UART interface */
-    _NOT_EXIST  /**< pin cannot be used at all */
-} gpio_pin_usage_t;
-
-#endif /* DOXYGEN */
 
 /**
  * @brief   Current an output pin can drive in active and sleep modes
