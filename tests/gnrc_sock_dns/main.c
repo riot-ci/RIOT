@@ -73,13 +73,12 @@ static int _dns_server(int argc, char **argv)
 static int _dns_request(char **argv)
 {
     uint8_t addr[16] = {0};
-    int res = sock_dns_query(argv[2], addr, AF_UNSPEC);
+    int res = sock_dns_query(argv[2], addr, AF_INET6);
 
-    if (res > 0) {
+    if (res == 0) {
         char addrstr[INET6_ADDRSTRLEN];
 
-        inet_ntop(res == 4 ? AF_INET : AF_INET6, addr, addrstr,
-                  sizeof(addrstr));
+        inet_ntop(AF_INET6, addr, addrstr, sizeof(addrstr));
         printf("%s resolves to %s\n", argv[2], addrstr);
     }
     else {
