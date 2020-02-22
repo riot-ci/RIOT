@@ -92,7 +92,7 @@ static inline void done(adc_t line)
  */
 static inline GPIO_TypeDef *_port(gpio_t pin)
 {
-    return (GPIO_TypeDef *)(pin.port->reg);
+    return (GPIO_TypeDef *)(pin.port->port.reg);
 }
 
 /**
