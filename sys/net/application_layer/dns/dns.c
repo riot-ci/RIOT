@@ -162,7 +162,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
         }
 
         memcpy(addr_out, bufpos, addrlen);
-        return addrlen;
+        return 0;
     }
 
     return -1;
