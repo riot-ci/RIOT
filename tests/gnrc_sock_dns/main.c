@@ -75,7 +75,7 @@ static int _dns_request(char **argv)
     uint8_t addr[16] = {0};
     int res = sock_dns_query(argv[2], addr, AF_UNSPEC);
 
-    if (res > 0) {
+    if (res == 0) {
         char addrstr[INET6_ADDRSTRLEN];
 
         inet_ntop(res == 4 ? AF_INET : AF_INET6, addr, addrstr,
