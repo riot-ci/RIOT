@@ -195,7 +195,9 @@ static int _init(candev_t *candev)
 
     real_bind(dev->sock, (struct sockaddr *)&addr, sizeof(addr));
 
-    _set_bittiming(dev, &candev->bittiming);
+    if (!strncmp(dev->conf->interface_name, "can", strlen("can"))) {
+        _set_bittiming(dev, &candev->bittiming);
+    }
 
     DEBUG("CAN linux device ready\n");
 
