@@ -168,10 +168,10 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
     return -1;
 }
 
+static uint8_t reply_buf[512];
 int sock_dns_query(const char *domain_name, void *addr_out, int family)
 {
     uint8_t buf[SOCK_DNS_QUERYBUF_LEN];
-    uint8_t reply_buf[512];
 
     if (sock_dns_server.port == 0) {
         return -ECONNREFUSED;
