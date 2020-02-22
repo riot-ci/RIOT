@@ -219,15 +219,16 @@ static inline int8_t _int_num(gpio_port_t port, gpio_pin_t pin)
 }
 
 #ifdef ENABLE_PCINT
-static inline int pcint_init_int(gpio_t pin, gpio_mode_t mode,
-                                 gpio_flank_t flank,
+static inline int pcint_init_int(gpio_port_t port, gpio_pin_t pin,
+                                 gpio_mode_t mode, gpio_flank_t flank,
                                  gpio_cb_t cb, void *arg)
 {
     int8_t offset = -1;
     uint8_t pin_num = atmega_pin_num(pin);
 
     for (unsigned i = 0; i < ARRAY_SIZE(pcint_mapping); i++) {
-        if (pin != GPIO_UNDEF && pin == pcint_mapping[i]) {
+        if (port.dev != NULL && pin != GPIO_PIN_UNDEF &&
+            port.dev == GPIO_PORT(pcint_mapping[i]).dev && pin == pcint_mapping[i].pin) {
             offset = i;
             break;
         }
@@ -249,7 +250,7 @@ static inline int pcint_init_int(gpio_t pin, gpio_mode_t mode,
     pcint_config[offset].cb = cb;
 
     /* init gpio */
-    gpio_init(pin, mode);
+    gpio_cpu_init(port, pin, mode);
     /* configure pcint */
     cli();
     switch (bank) {
@@ -282,7 +283,7 @@ static inline int pcint_init_int(gpio_t pin, gpio_mode_t mode,
             break;
     }
     /* As ports are mixed in a bank (e.g. PCINT0), we can only save a single bit here! */
-    uint8_t port_value = (_SFR_MEM8(atmega_pin_addr( pin )));
+    uint8_t port_value = (_SFR_MEM8(atmega_pin_addr( port )));
     uint8_t pin_mask = (1 << pin_num);
     uint8_t pin_value = ((port_value & pin_mask) != 0);
     if (pin_value) {
@@ -296,8 +297,8 @@ static inline int pcint_init_int(gpio_t pin, gpio_mode_t mode,
 }
 #endif /* ENABLE_PCINT */
 
-int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
-                  gpio_cb_t cb, void *arg)
+int gpio_cpu_init_int(gpio_port_t port, gpio_pin_t pin, gpio_mode_t mode,
+                      gpio_flank_t flank, gpio_cb_t cb, void *arg)
 {
     int8_t int_num = _int_num(port, pin);
 
@@ -310,7 +311,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
     if (int_num < 0) {
 #ifdef ENABLE_PCINT
         /* If pin change interrupts are enabled, enable mask and interrupt */
-        return pcint_init_int(pin, mode, flank, cb, arg);
+        return pcint_init_int(port, pin, mode, flank, cb, arg);
 #else
         return -1;
 #endif /* ENABLE_PCINT */
