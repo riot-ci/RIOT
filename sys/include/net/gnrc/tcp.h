@@ -60,9 +60,9 @@ typedef struct {
  * @param[in]     port        Port number for endpoint.
  * @param[in]     netif       Network inferface to use.
  *
- * @returns   0 on success.
- * @returns   -EAFNOSUPPORT if @p address_family is not supported.
- * @returns   -EINVAL if @p addr_size does not match @p family.
+ * @return   0 on success.
+ * @return   -EAFNOSUPPORT if @p address_family is not supported.
+ * @return   -EINVAL if @p addr_size does not match @p family.
  */
 int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t addr_size,
                      uint16_t port, uint16_t netif);
@@ -78,18 +78,18 @@ int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t 
  * @param[in,out] ep    Endpoint to initialize.
  * @param[in]     str   String containing IPv6-Address to parse.
  *
- * @returns   0 on success.
- * @returns   -EINVAL if parsing of @p str failed.
+ * @return   0 on success.
+ * @return   -EINVAL if parsing of @p str failed.
  */
 int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str);
 
 /**
  * @brief Initialize TCP
  *
- * @returns   PID of TCP thread on success
- * @returns   -1 if TCB is already running.
- * @returns   -EINVAL, if priority is greater than or equal SCHED_PRIO_LEVELS
- * @returns   -EOVERFLOW, if there are too many threads running.
+ * @return   PID of TCP thread on success
+ * @return   -1 if TCB is already running.
+ * @return   -EINVAL, if priority is greater than or equal SCHED_PRIO_LEVELS
+ * @return   -EOVERFLOW, if there are too many threads running.
  */
 int gnrc_tcp_init(void);
 
@@ -116,15 +116,15 @@ void gnrc_tcp_tcb_init(gnrc_tcp_tcb_t *tcb);
  *                             is randomly chosen. If local_port is non-zero
  *                             the local_port is used as source port.
  *
- * @returns   0 on success.
- * @returns   -EAFNOSUPPORT if @p address_family is not supported.
- * @returns   -EINVAL if @p address_family is not the same the address_family use by the TCB.
+ * @return   0 on success.
+ * @return   -EAFNOSUPPORT if @p address_family is not supported.
+ * @return   -EINVAL if @p address_family is not the same the address_family use by the TCB.
  *                    or @p target_addr is invalid.
- * @returns   -EISCONN if TCB is already in use.
- * @returns   -ENOMEM if the receive buffer for the TCB could not be allocated.
- * @returns   -EADDRINUSE if @p local_port is already used by another connection.
- * @returns   -ETIMEDOUT if the connection could not be opened.
- * @returns   -ECONNREFUSED if the connection was reset by the peer.
+ * @return   -EISCONN if TCB is already in use.
+ * @return   -ENOMEM if the receive buffer for the TCB could not be allocated.
+ * @return   -EADDRINUSE if @p local_port is already used by another connection.
+ * @return   -ETIMEDOUT if the connection could not be opened.
+ * @return   -ECONNREFUSED if the connection was reset by the peer.
  */
 int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
                          uint16_t local_port);
@@ -144,12 +144,12 @@ int gnrc_tcp_open_active(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
  * @param[in]     local   Endpoint specifying the port and address used to wait for
  *                        incoming connections.
  *
- * @returns   0 on success.
- * @returns   -EAFNOSUPPORT if local_addr != NULL and @p address_family is not supported.
- * @returns   -EINVAL if @p address_family is not the same the address_family used in TCB.
+ * @return   0 on success.
+ * @return   -EAFNOSUPPORT if local_addr != NULL and @p address_family is not supported.
+ * @return   -EINVAL if @p address_family is not the same the address_family used in TCB.
  *                    or the address in @p local is invalid.
- * @returns   -EISCONN if TCB is already in use.
- * @returns   -ENOMEM if the receive buffer for the TCB could not be allocated.
+ * @return   -EISCONN if TCB is already in use.
+ * @return   -ENOMEM if the receive buffer for the TCB could not be allocated.
  *            Hint: Increase "GNRC_TCP_RCV_BUFFERS".
  */
 int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local);
@@ -170,11 +170,11 @@ int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local);
  *                                           the function returns after user_timeout_duration_us.
  *                                           If zero, no timeout will be triggered.
  *
- * @returns   The number of successfully transmitted bytes.
- * @returns   -ENOTCONN if connection is not established.
- * @returns   -ECONNRESET if connection was reset by the peer.
- * @returns   -ECONNABORTED if the connection was aborted.
- * @returns   -ETIMEDOUT if @p user_timeout_duration_us expired.
+ * @return   The number of successfully transmitted bytes.
+ * @return   -ENOTCONN if connection is not established.
+ * @return   -ECONNRESET if connection was reset by the peer.
+ * @return   -ECONNABORTED if the connection was aborted.
+ * @return   -ETIMEDOUT if @p user_timeout_duration_us expired.
  */
 ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
                       const uint32_t user_timeout_duration_us);
@@ -199,13 +199,13 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
  *                                           blocks until data is available or
  *                                           @p user_timeout_duration_us microseconds passed.
  *
- * @returns   The number of bytes read into @p data.
- * @returns   0, if the connection is closing and no further data can be read.
- * @returns   -ENOTCONN if connection is not established.
- * @returns   -EAGAIN if  user_timeout_duration_us is zero and no data is available.
- * @returns   -ECONNRESET if connection was reset by the peer.
- * @returns   -ECONNABORTED if the connection was aborted.
- * @returns   -ETIMEDOUT if @p user_timeout_duration_us expired.
+ * @return   The number of bytes read into @p data.
+ * @return   0, if the connection is closing and no further data can be read.
+ * @return   -ENOTCONN if connection is not established.
+ * @return   -EAGAIN if  user_timeout_duration_us is zero and no data is available.
+ * @return   -ECONNRESET if connection was reset by the peer.
+ * @return   -ECONNABORTED if the connection was aborted.
+ * @return   -ETIMEDOUT if @p user_timeout_duration_us expired.
  */
 ssize_t gnrc_tcp_recv(gnrc_tcp_tcb_t *tcb, void *data, const size_t max_len,
                       const uint32_t user_timeout_duration_us);
@@ -236,10 +236,10 @@ void gnrc_tcp_abort(gnrc_tcp_tcb_t *tcb);
  * @param[in] hdr          Gnrc_pktsnip that contains TCP header.
  * @param[in] pseudo_hdr   Gnrc_pktsnip that contains network layer header.
  *
- * @returns   0 on success.
- * @returns   -EFAULT if @p hdr or pseudo_hdr were NULL
- * @returns   -EBADMSG if @p hdr is not of type GNRC_NETTYPE_TCP
- * @returns   -ENOENT if @p pseudo_hdr protocol is unsupported.
+ * @return   0 on success.
+ * @return   -EFAULT if @p hdr or pseudo_hdr were NULL
+ * @return   -EBADMSG if @p hdr is not of type GNRC_NETTYPE_TCP
+ * @return   -ENOENT if @p pseudo_hdr protocol is unsupported.
  */
 int gnrc_tcp_calc_csum(const gnrc_pktsnip_t *hdr, const gnrc_pktsnip_t *pseudo_hdr);
 
@@ -250,8 +250,8 @@ int gnrc_tcp_calc_csum(const gnrc_pktsnip_t *hdr, const gnrc_pktsnip_t *pseudo_h
  * @param[in] src       Source port number.
  * @param[in] dst       Destination port number.
  *
- * @returns   Not NULL on success.
- * @returns   NULL if TCP header was not allocated.
+ * @return   Not NULL on success.
+ * @return   NULL if TCP header was not allocated.
  */
 gnrc_pktsnip_t *gnrc_tcp_hdr_build(gnrc_pktsnip_t *payload, uint16_t src, uint16_t dst);
 
