@@ -162,7 +162,7 @@ static int _parse_dns_reply(uint8_t *buf, size_t len, void* addr_out, int family
         }
 
         memcpy(addr_out, bufpos, addrlen);
-        return 0;
+        return addrlen;
     }
 
     return -1;
@@ -236,5 +236,5 @@ int sock_dns_query(const char *domain_name, void *addr_out, int family)
 
 out:
     sock_udp_close(&sock_dns);
-    return res;
+    return res > 0 ? 0 : res;
 }
