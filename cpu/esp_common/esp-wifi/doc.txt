@@ -59,7 +59,7 @@ make -C examples/gnrc_networking BOARD=...
 `netdev_default` is used.
 - Leave 'ESP_WIFI_PASS' undefined to connect to an open WiFi access point.
 - The Wifi network interface (module `esp_wifi`) and the
-[ESP-NOW network interface](#esp32_esp_now_network_interface) (module `esp_now`)
+ESP-NOW network interface (module `esp_now`)
 can be used simultaneously, for example, to realize a border router for
 a mesh network which uses ESP-NOW.
 
@@ -110,7 +110,7 @@ make -C examples/gnrc_networking BOARD=...
 the verification of the AP certificate is not yet supported.
 - Module `esp_wifi_enterprise` is not enabled automatically when module
 `netdev_default` is used.
-- The Wifi network interface (module `esp_wifi`) and the
+- The Wifi network interface (module `esp_wifi_enterprise`) and the
 ESP-NOW network interface (module `esp_now`)
 can be used simultaneously, for example, to realize a border router for
 a mesh network which uses ESP-NOW.
