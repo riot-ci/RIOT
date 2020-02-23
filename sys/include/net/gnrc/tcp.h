@@ -40,11 +40,11 @@ extern "C" {
  * @extends sock_tcp_ep_t
  */
 typedef struct {
-    int family;                            /**< IP Address family. */
+    int family;                            /**< IP address family. */
 #ifdef MODULE_GNRC_IPV6
     union {
-        uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 Address storage */
-    } addr;                                /**< IP Address storage */
+        uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 address storage */
+    } addr;                                /**< IP address storage */
 #endif
     uint16_t netif;                        /**< Network interface ID */
     uint16_t port;                         /**< Port number (in host byte order) */
