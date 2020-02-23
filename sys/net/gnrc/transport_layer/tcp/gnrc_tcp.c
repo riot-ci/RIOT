@@ -346,9 +346,9 @@ int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str)
      */
     int len = addr_end - (++addr_begin);
 
-    if (0 <= len && len <= (int) IPV6_ADDR_MAX_STR_LEN) {
-        memset(tmp, 0, sizeof(tmp));
+    if (0 <= len && len < (int) sizeof(tmp)) {
         memcpy(tmp, addr_begin, len);
+        tmp[len] = '\0';
     }
     else {
         return -EINVAL;
