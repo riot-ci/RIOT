@@ -62,9 +62,9 @@ typedef struct {
 void ztimer_mock_advance(ztimer_mock_t *self, uint32_t val);
 
 /**
- * @brief   Set the mock clock counter value without updating alarm target
+ * @brief   Set the mock clock counter value without updating timer target
  *
- * This will not touch the alarm target.
+ * This will not touch the timer target.
  *
  * @param[in]   self        instance to operate on
  * @param[in]   target      new absolute counter value
@@ -72,7 +72,7 @@ void ztimer_mock_advance(ztimer_mock_t *self, uint32_t val);
 void ztimer_mock_jump(ztimer_mock_t *self, uint32_t target);
 
 /**
- * @brief   Trigger the alarm handlers
+ * @brief   Trigger the timer handlers
  *
  * This is equivalent to a hardware timer interrupt
  *
