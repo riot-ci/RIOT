@@ -51,6 +51,40 @@ extern "C" {
 #define BME680_SENSOR(d)    (*((struct bme680_dev *)d))
 
 /**
+ * @brief   Named return values
+ */
+enum {
+    BME680_NULL_PTR     = -1,   /**< NULL pointer check failed. */
+    BME680_COM_FAILED   = -2,   /**< Communication with the device failed. */
+    BME680_NO_DEV       = -3,   /**< Ddevice doesn't exist. */
+    BME680_INVALID      = -4,   /**< Invalid value or length. */
+    BME680_NO_NEW_DATA  = -5,   /**< No new data. */
+};
+
+#ifdef DOXYGEN
+/**
+ * @brief   BME680 sensor field data
+ */
+typedef struct bme680_field_data {
+	uint8_t status;     /**< status for new_data, gasm valid and heater stable */
+	uint8_t gas_index;	/**< index of used heater profile */
+	uint8_t meas_index; /**< measurement index */
+#ifndef MODULE_BME680_FP
+	int16_t temperature;        /**< temperature in degree Celsius x 100 */
+	uint32_t pressure;          /**< pressure in Pascal */
+	uint32_t humidity;          /**< relative humidity in percent x 1000 */
+	uint32_t gas_resistance;    /**< gas resistance in ohms */
+#else /* MODULE_BME680_FP */
+	float temperature;          /**< temperature in degree Celsius */
+	float pressure;             /**< pressure in Pascal */
+	float humidity;             /**< relative humidity in percent */
+	float gas_resistance;       /**< gas resistance in ohms */
+#endif /* MODULE_BME680_FP */
+};
+
+#endif /* DOXYGEN */
+
+/**
  * @brief   Shortcut type definition for BME680 sensor field data
  */
 typedef struct bme680_field_data bme680_field_data_t;
@@ -120,14 +154,77 @@ extern bme680_t *bme680_devs[];
  */
 extern unsigned int bme680_devs_numof;
 
+/**
+ * @brief   Initialize the BME680 sensor.
  *
- * @param[out] dev          device descriptor of sensor to initialize
- * @param[in]  params       configuration parameters
+ * @param[in,out]   dev     device descriptor of the sensor to initialize
+ * @param[in]       params  configuration parameters
  *
- * @return                  0 on success
- * @return                  < 0 on failures
+ * @return 0 on success
+ * @return < 0 on error
   */
 int bme680_init(bme680_t *dev, const bme680_params_t *params);
+
+/**
+ * @brief	Force a single TPHG measurement cycle
+ *
+ * The function triggers the sensor to start one THPG measurement cycle. The
+ * duration of the TPHG measurement cycle depends on the selected parameters.
+ * It can vary from 1.25 ms to 4.5 seconds. The duration of the measurement
+ * cycle can be determined with the #bme680_get_duration function.
+ *
+ * @param[in,out]   dev     device descriptor of the sensor
+ *
+ * @return 0 on success
+ * @return < 0 on error
+ */
+int bme680_force_measurement(bme680_t *dev);
+
+/**
+ * @brief	Duration one THPG measurment cycle
+ *
+ * This function determines the duration of one THPG measurement cycle
+ * according to the selected parameter settings. The duration can be used
+ * to wait for the measurement results once a THPG measurement has been
+ * started with #bme680_force_measurement.
+ *
+ * @param[in,out]   dev     device descriptor of the sensor
+ *
+ * @return  duration of one THPG measurement cylce in milliseconds.
+ * @return  < 0 on error
+ */
+int bme680_get_duration(bme680_t* dev);
+
+/**
+ * @brief   Get results of a TPHG measurement
+ *
+ * The function returns the results of a TPHG measurement that has been
+ * started before with #bme680_force_measurement. For that prupose, the
+ * function fetches the raw sensor data and converts them into sensor values.
+ * If the measurement is still running, the function fails and returns
+ * invalid values.
+ *
+ * @param[in,out]   dev     device descriptor of the sensor
+ * @param[out]      data    pointer to a data structure with the field data
+ *
+ * @return 0 on success
+ * @return < 0 on error
+ */
+int bme680_get_data(bme680_t* dev, bme680_field_data_t *data);
+
+/**
+ * @brief   Set the ambient temperature
+ *
+ * The function sets the ambient temperature for the calculation of the heater
+ * resistance.
+ *
+ * @param[in,out]   dev     device descriptor of the sensor
+ * @param[in]       temp    ambient temperature in degC.
+ *
+ * @return 0 on success
+ * @return < 0 on error
+ */
+int bme680_set_ambient_temp(bme680_t* dev, int8_t temp);
 
 #ifdef __cplusplus
 }

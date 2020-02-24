@@ -88,11 +88,46 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
     }
 
     return ret;
-    ret = bme680_set_sensor_mode(&BME680_DEV);
-    if (ret != 0) {
-        DEBUG("[bme680]: cannot set sensor mode\n");
-        return -3;
+}
+
+int bme680_force_measurement(bme680_t *dev)
+{
+    assert(dev);
+    BME680_SENSOR(dev).power_mode = BME680_FORCED_MODE;
+    return bme680_set_sensor_mode(&BME680_SENSOR(dev));
+}
+
+int bme680_get_duration(bme680_t* dev)
+{
+    assert(dev);
+    
+    uint16_t duration;
+    bme680_get_profile_dur(&duration, &BME680_SENSOR(dev));
+    return duration;
+}
+
+int bme680_get_data(bme680_t* dev, bme680_field_data_t *data)
+{
+    assert(dev);
+
+    int8_t res;
+    if ((res = bme680_get_sensor_data(data, &BME680_SENSOR(dev))) == 0) {
+        return 0;
     }
 
-    return ret;
+    DEBUG("[bme680]: reading data failed with reason %d\n", res);
+
+    if (res == BME680_W_NO_NEW_DATA) {
+        return BME680_NO_NEW_DATA;
+    }
+    return BME680_INVALID;
+}
+
+
+int bme680_set_ambient_temp(bme680_t* dev, int8_t temp)
+{
+    assert(dev);
+
+    BME680_SENSOR(dev).amb_temp = temp;
+    return bme680_set_sensor_settings(BME680_GAS_MEAS_SEL, &BME680_SENSOR(dev));
 }
