@@ -52,7 +52,7 @@ int main(void)
          */
         BME680_SENSOR(&dev[i]).amb_temp = 25;
 
-        printf("Intialize BME680 sensor %d...", i);
+        printf("Intialize BME680 sensor %d ... ", i);
         if (bme680_init(&dev[i], &bme680_params[i]) != BME680_OK) {
             puts("failed");
         }

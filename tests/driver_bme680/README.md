@@ -9,7 +9,7 @@ This driver depends on the Bosch Sensortech
 ## Usage
 
 This test application will initialize one or more BME680 devices to output
-the following:
+the following every 5 seconds:
 
 * Temperature
 * Humidity
