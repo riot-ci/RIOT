@@ -23,7 +23,6 @@
 
 #include "board.h"
 #include "bme680.h"
-#include "bme680_hal.h"
 #include "bme680_params.h"
 #include "mutex.h"
 #include "xtimer.h"

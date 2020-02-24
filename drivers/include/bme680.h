@@ -115,6 +115,7 @@
 #define BME680_FLOAT_POINT_COMPENSATION
 #endif
 
+#include "bme680_hal.h"
 #include "bme680_internal.h"
 
 #ifdef __cplusplus
