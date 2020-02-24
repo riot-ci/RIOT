@@ -5,7 +5,7 @@ SWDIO ?= 20
 RST ?= 16
 
 ifeq (1, $(shell grep ARMv6 /proc/cpuinfo > /dev/null; echo $?))
-  ifeq (0, $(shell grep 03111 /proc/cpuinfo > /dev/null; echo $?))
+  ifeq (0, $(shell grep [[:lower:]]0311[[:digit:]] /proc/cpuinfo > /dev/null; echo $?))
     # raspi4
     PERIPH_BASE  = 0xFE000000
     SPEED_COEFF  = 236181
