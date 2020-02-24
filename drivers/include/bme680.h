@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2019 Mesotic SAS
+ *               2020 Gunar Schorcht
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -11,11 +12,97 @@
  * @ingroup     drivers_sensors
  * @brief       Driver for the Bosch BME680  sensor
  *
+ * ### Introduction
+ *
+ * The driver allows the use of BME680 sensors connected either via I2C or SPI.
+ * Instead of implementing a complete driver, it simply uses the
+ * [BME680 vendor driver](https://github.com/BoschSensortec/BME680_driver)
+ * written and maintained by Bosch Sensortec as a package.
+ *
+ * Even though this driver interface provides an easy-to-use API, the vendor's
+ * driver API can still be used directly. This becomes necessary, for example,
+ * if the settings of the ambient temperature have to be updated from
+ * measurements with other sensors for gas measurement.
+ *
+ * All functions of the vendor's driver API require a reference to a
+ * sensor device structure of type `struct bme680_dev`. Use macro
+ * @ref BME680_SENSOR(dev) for a given device descriptor of type
+ * @ref bme680_t to the according sensor device structure of type
+ * `struct bme680_dev`, for example:
+ *
+ * ```c
+ * bme680_t dev;
+ * ...
+ * BME680_SENSOR(dev).amb_temp = value_from_other_sensor;
+ * bme680_set_sensor_settings(BME680_GAS_MEAS_SEL, &BME680_SENSOR(dev));
+ * ```
+ *
+ * Refer to the code documentation at
+ * [GitHub](https://github.com/BoschSensortec/BME680_driver)
+ * for detailed information on the API of the vendor driver.
+ *
+ * ### Sensor Operation Modes
+ *
+ * The BME680 sensor supports only two modes, sleep mode and forced mode, in
+ * which measurements are taken. After the power-on sequence, the sensor
+ * automatically starts in sleep mode. To start a measurement, the sensor
+ * must switch to forced mode. In this mode it performs exactly one
+ * measurement of temperature, pressure, humidity and gas in this order, the
+ * so-called TPHG measurement cycle. After executing this TPHG measurement
+ * cycle, the raw data from the sensor is available and the sensor
+ * automatically returns to sleep mode
+ *
+ * ### Ambient Temperatur
+ *
+ * The sensor is initialized with a fixed ambient temperature defined by the
+ * parameter settings in @bme680_params. However, precise gas measurements
+ * require the calculation of the heating resistance based on the ambient
+ * temperature.
+ *
+ * The temperature of the internal temperature sensor is typically higher
+ * than the actual ambient temperature due to the self-heating of the sensor.
+ * element. It should therefore not be used to set the ambient temperature
+ * unless gas measurements are very infrequent and self-heating is negligible.
+ * Rather another temperatur sensor should be used for that purpose.
+ *
+ * Function @ref bme680_set_ambient_temp can be used to change the ambient
+ * temperature.
+ *
+ * ### Using the Sensor
+ *
+ * Using the BME680 consists of the following steps
+ *
+ * 1. Trigger the sensor with @ref bme680_force_measurement to change to the
+ *    forced mode and perform a THPG cycle.
+ * 2. Wait at least the time returned by @ref bme680_get_duration until the
+ *    THPG cycle is finished.
+ * 3. Use @ref bme680_get_data to fetch raw sensor data and convert them to the
+ *    resulting sensor values
+ *
+ * ### Driver Configuration
+ *
+ * BME680 sensors are connected either via I2C or SPI. Which interface is used
+ * by which BME680 sensor is defined by the paramters in @ref bme680_params.
+ * The respective driver implementation is enabled by the modules `bme680_i2c`
+ * and `bme680_spi`. Several BME680 sensors and a mixed configuration of I2C
+ * and SPI can be used in one application.
+ * ```
+ * USEMODULE='bme680_spi bme680_i2c' make BOARD=... -C tests/driver_bme680
+ * ```
+ *
+ * The vendor driver allows the use of floating point conversions. In order
+ * to use these floating point conversions, module `bme680_fp` has to
+ * be enabled:
+ * ```
+ * USEMODULE='bme680_fp bme680_i2c' make BOARD=... -C tests/driver_bme680
+ * ```
+ *
  * @{
  * @file
  * @brief       Interface definition for the Bosch BME680 sensor
  *
  * @author      Dylan Laduranty <dylan.laduranty@mesotic.com>
+ * @author      Gunar Schorcht <gunar@schorcht.net>
  */
 
 #ifndef BME680_H
