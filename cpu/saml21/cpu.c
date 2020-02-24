@@ -82,6 +82,28 @@ uint32_t sam0_gclk_freq(uint8_t id)
     }
 }
 
+void cpu_pm_cb_enter(int deep)
+{
+    if (deep) {
+        /* errata 51.1.5 – When VDDCORE is supplied by the BUCK converter in performance
+                           level 0, the chip cannot wake-up from standby mode because the
+                           VCORERDY status is stuck at 0. */
+
+        /* select LDO regulator */
+        SUPC->VREG.bit.SEL = 0;
+        while (!SUPC->STATUS.bit.VREGRDY) {}
+    }
+}
+
+void cpu_pm_cb_leave(int deep)
+{
+    if (deep) {
+        /* select buck voltage regulator */
+        SUPC->VREG.bit.SEL = 1;
+        while (!SUPC->STATUS.bit.VREGRDY) {}
+    }
+}
+
 /**
  * @brief Initialize the CPU, set IRQ priorities, clocks
  */
@@ -92,6 +114,10 @@ void cpu_init(void)
 
     /* initialize the Cortex-M core */
     cortexm_init();
+
+    /* select buck voltage regulator */
+    SUPC->VREG.bit.SEL = 1;
+    while (!SUPC->STATUS.bit.VREGRDY) {}
 
     /* turn on only needed APB peripherals */
     MCLK->APBAMASK.reg =
