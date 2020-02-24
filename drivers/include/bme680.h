@@ -24,27 +24,36 @@
 #include "periph/i2c.h"
 #include "periph/spi.h"
 
+#ifdef MODULE_BME680_FP
+#define BME680_FLOAT_POINT_COMPENSATION
+#endif
+
 #include "bme680_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ * @brief    I2C address when SDO pin is LOW
+ */
+#define BME680_I2C_ADDR_1   (0x76)
 
-#ifdef MODULE_BME680_FP
-#define BME680_FLOAT_POINT_COMPENSATION
-#endif
+/**
+ * @brief    I2C address when SDO pin is HIGH
+ */
+#define BME680_I2C_ADDR_2   (0x77)
 
 /**
  * @brief BME680 I2C parameters
  */
 typedef struct {
-  i2c_t dev;                    /**< I2C device which is used */
-  uint8_t addr;                 /**< I2C address */
+    i2c_t dev;                    /**< I2C device which is used */
+    uint8_t addr;                 /**< I2C address */
 } bme680_intf_i2c_t;
 
 /**
- * @brief BME680 SPI parameters
+ * @brief   BME680 SPI parameters
  */
 typedef struct {
     spi_t dev;                  /**< SPI device which is used */
@@ -52,11 +61,11 @@ typedef struct {
 } bme680_intf_spi_t;
 
 /**
- * @brief BME680 Hardware interface parameters union
+ * @brief   BME680 Hardware interface parameters union
  */
 typedef union {
-  bme680_intf_i2c_t i2c;        /**< I2C specific interface parameters */
-  bme680_intf_spi_t spi;        /**< SPI specific interface parameters */
+    bme680_intf_i2c_t i2c;        /**< I2C specific interface parameters */
+    bme680_intf_spi_t spi;        /**< SPI specific interface parameters */
 } bme680_intf_t;
 
 /**
