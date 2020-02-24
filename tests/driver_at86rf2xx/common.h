@@ -21,7 +21,6 @@
 #include <stdint.h>
 
 #include "at86rf2xx.h"
-#include "at86rf2xx_params.h"
 #include "net/netdev.h"
 #include "kernel_defines.h"
 
@@ -34,9 +33,9 @@ extern "C" {
  * @internal
  * @{
  */
-#define AT86RF2XX_NUM   ARRAY_SIZE(at86rf2xx_params)
 
-extern at86rf2xx_t devs[AT86RF2XX_NUM];
+extern const at86rf2xx_t *at86rf2xx_dev_ptrs[];
+extern unsigned at86rf2xx_num_dev_ptrs;
 
 void recv(netdev_t *dev);
 int ifconfig(int argc, char **argv);
