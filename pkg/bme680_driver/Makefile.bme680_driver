@@ -1,3 +1,0 @@
-MODULE = bme680_driver
-
-include $(RIOTBASE)/Makefile.base
