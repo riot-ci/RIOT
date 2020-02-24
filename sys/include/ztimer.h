@@ -370,14 +370,14 @@ static inline ztimer_now_t ztimer_now(ztimer_clock_t *clock)
 #if MODULE_ZTIMER_NOW64
     if (1) {
 #elif MODULE_ZTIMER_EXTEND
-    if (ztimer->max_value < 0xffffffff) {
+    if (clock->max_value < 0xffffffff) {
 #else
     if (0) {
 #endif
-        return _ztimer_now_extend(ztimer);
+        return _ztimer_now_extend(clock);
     }
     else {
-        return ztimer->ops->now(ztimer);
+        return clock->ops->now(clock);
     }
 }
 
