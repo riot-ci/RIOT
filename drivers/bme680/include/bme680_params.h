@@ -60,7 +60,7 @@ extern "C" {
  */
 #define BME680_PARAMS_I2C                               \
 {                                                       \
-        .ifsel              = BME680_SPI_INTF,          \
+        .ifsel              = BME680_I2C_INTF,          \
         .temp_os            = BME680_OS_8X,             \
         .hum_os             = BME680_OS_2X,             \
         .pres_os            = BME680_OS_4X,             \
