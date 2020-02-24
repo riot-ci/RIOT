@@ -14,7 +14,7 @@
  * @brief       ztimer initialization code
  *
  *
- * This file could benefit a lot fro code generation...
+ * This file could benefit a lot from code generation...
  *
  * Anyhow, this configures ztimer as follows:
  *
