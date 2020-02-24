@@ -60,6 +60,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
         BME680_SENSOR(dev).write = bme680_i2c_write_hal;
 #else
         LOG_ERROR("[bme680]: module bme680_i2c not enabled\n");
+        return BME680_NO_DEV;
 #endif
     }
     else {
@@ -70,6 +71,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
         spi_init_cs(SPI_DEV(0), params->intf.spi.nss_pin);
 #else
         LOG_ERROR("[bme680]: module bme680_spi not enabled\n");
+        return BME680_NO_DEV;
 #endif
     }
 
