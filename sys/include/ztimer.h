@@ -288,7 +288,7 @@ void ztimer_handler(ztimer_clock_t *clock);
 /**
  * @brief   Set a timer on a clock
  *
- * This will place @p entry in the timer targets queue for @p ztimer.
+ * This will place @p entry in the timer targets queue of @p clock.
  *
  * @note The memory pointed to by @p entry is not copied and must
  *       remain in scope until the callback is fired or the timer
@@ -303,12 +303,12 @@ void ztimer_set(ztimer_clock_t *clock, ztimer_t *entry, uint32_t val);
 /**
  * @brief   Remove a timer from a clock
  *
- * This will place @p entry in the timer targets queue for @p ztimer.
+ * This will place @p timer in the timer targets queue for @p clock.
  *
- * This function does nothing if @p entry is not found in the timer queue of
- * @p ztimer.
+ * This function does nothing if @p timer is not found in the timer queue of
+ * @p clock.
  *
- * @param[in]   cloc k      ztimer clock to operate on
+ * @param[in]   clock       ztimer clock to operate on
  * @param[in]   timer       timer entry to remove
  */
 void ztimer_remove(ztimer_clock_t *clock, ztimer_t *timer);
@@ -340,7 +340,7 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  * @param[in]   clock           ztimer clock to operate on
  * @param[out]  msg             pointer to buffer which will be filled if a
  *                              message is received
- * @param[in]   timeout         relative timeout, in @p ztimer time units
+ * @param[in]   timeout         relative timeout, in @p clock time units
  *
  * @return  >=0 if a message was received
  * @return  -ETIME on timeout
@@ -354,18 +354,18 @@ int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
  * @internal
  *
  * @param[in]   ztimer          ztimer clock to operate on
- * @return  Current count on the clock @p ztimer
+ * @return  Current count on the clock @p clock
  */
-ztimer_now_t _ztimer_now_extend(ztimer_clock_t *ztimer);
+ztimer_now_t _ztimer_now_extend(ztimer_clock_t *clock);
 
 /**
  * @brief   Get the current time from a clock
  *
- * @param[in]   ztimer          ztimer clock to operate on
+ * @param[in]   clock          ztimer clock to operate on
  *
- * @return  Current count on the clock @p ztimer
+ * @return  Current count on @p clock
  */
-static inline ztimer_now_t ztimer_now(ztimer_clock_t *ztimer)
+static inline ztimer_now_t ztimer_now(ztimer_clock_t *clock)
 {
 #if MODULE_ZTIMER_NOW64
     if (1) {
@@ -389,26 +389,26 @@ static inline ztimer_now_t ztimer_now(ztimer_clock_t *ztimer)
  * When the function returns, @p last_wakeup is set to
  * (@p last_wakeup + @p period).
  *
- * @c last_wakeup should be set to ztimer_now(@p ztimer) before first call of the
+ * @c last_wakeup should be set to ztimer_now(@p clock) before first call of the
  * function.
  *
  * If the time (@p last_wakeup + @p period) has already passed, the function
  * sets @p last_wakeup to @p last_wakeup + @p period and returns immediately.
  *
- * @param[in]   ztimer          ztimer clock to operate on
+ * @param[in]   clock           ztimer clock to operate on
  * @param[in]   last_wakeup     base time stamp for the wakeup
  * @param[in]   period          time in ticks that will be added to @p last_wakeup
  */
-void ztimer_periodic_wakeup(ztimer_clock_t *ztimer, uint32_t *last_wakeup,
+void ztimer_periodic_wakeup(ztimer_clock_t *clock, uint32_t *last_wakeup,
                             uint32_t period);
 
 /**
  * @brief   Put the calling thread to sleep for the specified number of ticks
  *
- * @param[in]   ztimer          ztimer clock to use
+ * @param[in]   clock           ztimer clock to use
  * @param[in]   duration        duration of sleep, in @p ztimer time units
  */
-void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration);
+void ztimer_sleep(ztimer_clock_t *clock, uint32_t duration);
 
 /**
  * @brief Set a timer that wakes up a thread
@@ -430,11 +430,11 @@ void ztimer_set_wakeup(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  * This function will set THREAD_FLAG_TIMEOUT on the current thread after @p
  * timeout usec have passed.
  *
- * @param[in]   ztimer_clock    ztimer clock to operate on
- * @param[in]   t               timer struct to use
+ * @param[in]   clock           ztimer clock to operate on
+ * @param[in]   timer           timer struct to use
  * @param[in]   timeout         timeout in ztimer_clock's ticks
  */
-void ztimer_set_timeout_flag(ztimer_clock_t *ztimer_clock, ztimer_t *t,
+void ztimer_set_timeout_flag(ztimer_clock_t *clock, ztimer_t *timer,
                              uint32_t timeout);
 
 /**
@@ -444,19 +444,20 @@ void ztimer_set_timeout_flag(ztimer_clock_t *ztimer_clock, ztimer_t *t,
  * It will configure a callback to trigger after @p base ticks, then return the
  * number of ticks that have passed, minus @p base.
  *
+ * @param[in]   clock   ztimer clock to operate on
  * @param[in]   base    base interval to use
  * @return  (time from ztimer_set() until callback) - base
  */
-uint32_t ztimer_overhead(ztimer_clock_t *ztimer, uint32_t base);
+uint32_t ztimer_overhead(ztimer_clock_t *clock, uint32_t base);
 
 /**
  * @brief   Update ztimer clock head list offset
  *
  * @internal
  *
- * @param[in]   ztimer  ztimer clock to work on
+ * @param[in]   clock  ztimer clock to work on
  */
-void ztimer_update_head_offset(ztimer_clock_t *ztimer);
+void ztimer_update_head_offset(ztimer_clock_t *clock);
 
 /**
  * @brief   Initialize the board-specific default ztimer configuration
