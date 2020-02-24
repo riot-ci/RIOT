@@ -273,7 +273,7 @@ void gpio_pm_cb_enter(int deep)
 #if defined(PM_SLEEPCFG_SLEEPMODE_STANDBY)
     (void) deep;
 
-    if (PM->SLEEPCFG.bit.SLEEPMODE >= PM_SLEEPCFG_SLEEPMODE_STANDBY) {
+    if (PM->SLEEPCFG.bit.SLEEPMODE == PM_SLEEPCFG_SLEEPMODE_STANDBY) {
         DEBUG_PUTS("gpio: switching EIC to slow clock");
         reenable_eic(_EIC_CLOCK_SLOW);
     }
@@ -290,7 +290,7 @@ void gpio_pm_cb_leave(int deep)
 #if defined(PM_SLEEPCFG_SLEEPMODE_STANDBY)
     (void) deep;
 
-    if (PM->SLEEPCFG.bit.SLEEPMODE >= PM_SLEEPCFG_SLEEPMODE_STANDBY) {
+    if (PM->SLEEPCFG.bit.SLEEPMODE == PM_SLEEPCFG_SLEEPMODE_STANDBY) {
         DEBUG_PUTS("gpio: switching EIC to fast clock");
         reenable_eic(_EIC_CLOCK_FAST);
     }
