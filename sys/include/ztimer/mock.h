@@ -41,14 +41,11 @@ typedef struct {
     uint32_t target;        /**< ticks left until alarm is hit */
     unsigned armed;         /**< flag for checking if a target has been set */
 
-    /**
-     * @brief counting number of calls to each operation
-     */
     struct ztimer_mock_calls {
         unsigned now;       /**< Number of calls to ztimer_ops_t::now */
         unsigned set;       /**< Number of calls to ztimer_ops_t::set */
         unsigned cancel;    /**< Number of calls to ztimer_ops_t::cancel */
-    } calls;
+    } calls;                /**< counting number of calls to each operation */
 } ztimer_mock_t;
 
 /**
