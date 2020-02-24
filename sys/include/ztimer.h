@@ -288,9 +288,9 @@ void ztimer_handler(ztimer_clock_t *clock);
 /**
  * @brief   Set a timer on a clock
  *
- * This will place @p entry in the timer targets queue of @p clock.
+ * This will place @p timer in the timer targets queue of @p clock.
  *
- * @note The memory pointed to by @p entry is not copied and must
+ * @note The memory pointed to by @p timer is not copied and must
  *       remain in scope until the callback is fired or the timer
  *       is removed via @ref ztimer_remove
  *
@@ -298,7 +298,7 @@ void ztimer_handler(ztimer_clock_t *clock);
  * @param[in]   timer       timer entry to set
  * @param[in]   val         timer target (relative ticks from now)
  */
-void ztimer_set(ztimer_clock_t *clock, ztimer_t *entry, uint32_t val);
+void ztimer_set(ztimer_clock_t *clock, ztimer_t *timer, uint32_t val);
 
 /**
  * @brief   Remove a timer from a clock
