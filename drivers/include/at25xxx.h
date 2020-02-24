@@ -39,7 +39,8 @@ typedef struct {
     spi_cs_t cs_pin;        /**< GPIO pin connected to chip select */
     gpio_t wp_pin;          /**< GPIO pin connected to the write-protect pin */
     gpio_t hold_pin;        /**< GPIO pin connected to the hold pin */
-    uint32_t size;          /**< Size of the EEPROM in Bytes */
+    uint32_t size;          /**< Size of the EEPROM in bytes */
+    uint16_t page_size;     /**< Page Size of the EEPROM in bytes */
 } at25xxx_params_t;
 
 /**

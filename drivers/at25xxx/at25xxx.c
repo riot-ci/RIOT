@@ -36,9 +36,16 @@
 #define min(a, b) ((a) > (b) ? (b) : (a))
 #endif
 
-#define PAGE_SIZE   (AT25XXX_PARAM_PAGE_SIZE)
+#define PAGE_SIZE   (dev->params.page_size)
 #define ADDR_LEN    (AT25XXX_PARAM_ADDR_LEN)
 #define ADDR_MSK    ((1UL << ADDR_LEN) - 1)
+
+#ifndef AT25XXXX_SET_BUF_SIZE
+/**
+ * @brief  Adjust to configure buffer size
+ */
+#define AT225XXXX_SET_BUF_SIZE      (64)
+#endif
 
 static inline int getbus(const at25xxx_t *dev)
 {
@@ -152,7 +159,7 @@ uint8_t at25xxx_read_byte(const at25xxx_t *dev, uint32_t pos)
 
 size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len)
 {
-    uint8_t data[PAGE_SIZE];
+    uint8_t data[AT225XXXX_SET_BUF_SIZE];
     size_t total = 0;
 
     if (pos + len > dev->params.size) {
@@ -165,7 +172,7 @@ size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len)
     getbus(dev);
 
     while (len) {
-        size_t written = _write_page(dev, pos, data, len);
+        size_t written = _write_page(dev, pos, data, min(len, sizeof(data)));
         len   -= written;
         pos   += written;
         total += written;

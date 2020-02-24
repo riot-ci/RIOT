@@ -62,7 +62,8 @@ extern "C" {
                                   .cs_pin = AT25XXX_PARAM_CS,       \
                                   .wp_pin = AT25XXX_PARAM_WP,       \
                                   .hold_pin = AT25XXX_PARAM_HOLD,   \
-                                  .size = AT25XXX_PARAM_SIZE        }
+                                  .size = AT25XXX_PARAM_SIZE,       \
+                                  .page_size = AT25XXX_PARAM_PAGE_SIZE }
 #endif
 
 /**
