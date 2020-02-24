@@ -215,28 +215,28 @@ typedef struct ztimer_base ztimer_base_t;
 typedef struct ztimer_clock ztimer_clock_t;
 
 /**
- * @brief   Minimum information for each alarm
+ * @brief   Minimum information for each timer
  */
 struct ztimer_base {
-    ztimer_base_t *next;        /**< next alarm in list */
-    uint32_t offset;            /**< offset from last alarm in list */
+    ztimer_base_t *next;        /**< next timer in list */
+    uint32_t offset;            /**< offset from last timer in list */
 };
 
 #if MODULE_ZTIMER_NOW64
-typedef uint64_t ztimer_now_t;
+typedef uint64_t ztimer_now_t;  /**< type for ztimer_now() result */
 #else
-typedef uint32_t ztimer_now_t;
+typedef uint32_t ztimer_now_t;  /**< type for ztimer_now() result */
 #endif
 /**
  * @brief   ztimer structure
  *
- * This type represents an instance of an alarm, which is set on an
+ * This type represents an instance of a timer, which is set on an
  * underlying clock object
  */
 typedef struct {
     ztimer_base_t base;             /**< clock list entry */
-    void (*callback)(void *arg);    /**< alarm callback function pointer */
-    void *arg;                      /**< alarm callback argument */
+    void (*callback)(void *arg);    /**< timer callback function pointer */
+    void *arg;                      /**< timer callback argument */
 } ztimer_t;
 
 /**
@@ -286,44 +286,44 @@ void ztimer_handler(ztimer_clock_t *clock);
 
 /* User API */
 /**
- * @brief   Set an alarm on a clock
+ * @brief   Set a timer on a clock
  *
- * This will place @p entry in the alarm targets queue for @p ztimer.
+ * This will place @p entry in the timer targets queue for @p ztimer.
  *
  * @note The memory pointed to by @p entry is not copied and must
- *       remain in scope until the callback is fired or the alarm
+ *       remain in scope until the callback is fired or the timer
  *       is removed via @ref ztimer_remove
  *
- * @param[in]   ztimer      ztimer clock to operate on
- * @param[in]   entry       alarm entry to enqueue
- * @param[in]   val         alarm target
+ * @param[in]   clock       ztimer clock to operate on
+ * @param[in]   timer       timer entry to set
+ * @param[in]   val         timer target (relative ticks from now)
  */
 void ztimer_set(ztimer_clock_t *clock, ztimer_t *entry, uint32_t val);
 
 /**
- * @brief   Remove an alarm from a clock
+ * @brief   Remove a timer from a clock
  *
  * This will place @p entry in the timer targets queue for @p ztimer.
  *
- * This function does nothing if @p entry is not found in the alarm queue of @p ztimer
+ * This function does nothing if @p entry is not found in the timer queue of
+ * @p ztimer.
  *
- * @param[in]   ztimer      ztimer clock to operate on
- * @param[in]   entry       alarm entry to enqueue
- * @param[in]   val         alarm target
+ * @param[in]   cloc k      ztimer clock to operate on
+ * @param[in]   timer       timer entry to remove
  */
-void ztimer_remove(ztimer_clock_t *clock, ztimer_t *entry);
+void ztimer_remove(ztimer_clock_t *clock, ztimer_t *timer);
 
 /**
  * @brief   Post a message after a delay
  *
- * This function sets an alarm that will send a message @p offset ticks
+ * This function sets a timer that will send a message @p offset ticks
  * from now.
  *
- * @note The memory pointed at by @p alarm and @p msg will not be copied, i.e.
- *       `*alarm` and `*msg` needs to remain valid until the alarm has occurred.
+ * @note The memory pointed to by @p timer and @p msg will not be copied, i.e.
+ *       `*timer` and `*msg` needs to remain valid until the timer has triggered.
  *
- * @param[in]   ztimer          ztimer clock to operate on
- * @param[in]   alarm           pointer to alarm struct
+ * @param[in]   clock           ztimer clock to operate on
+ * @param[in]   timer           ztimer timer struct to use
  * @param[in]   offset          ticks from now
  * @param[in]   msg             pointer to msg that will be sent
  * @param[in]   target_pid      pid the message will be sent to
@@ -337,8 +337,9 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  * Similar to msg_receive(), but with a timeout parameter.
  * The function will return after waiting at most @p timeout ticks.
  *
- * @param[in]   ztimer          ztimer clock to operate on
- * @param[out]  msg             pointer to buffer which will be filled if a message is received
+ * @param[in]   clock           ztimer clock to operate on
+ * @param[out]  msg             pointer to buffer which will be filled if a
+ *                              message is received
  * @param[in]   timeout         relative timeout, in @p ztimer time units
  *
  * @return  >=0 if a message was received
@@ -347,7 +348,7 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
 int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
                                uint32_t timeout);
 
-/*
+/**
  * @brief ztimer_now() for extending timers
  *
  * @internal
