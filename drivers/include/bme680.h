@@ -45,7 +45,24 @@ extern "C" {
 #define BME680_I2C_ADDR_2   (0x77)
 
 /**
- * @brief BME680 I2C parameters
+ * @brief   Converts a BME680 device descriptor to the BME680 sensor device
+ *          structure for the vendor BME680 device driver.
+ */
+#define BME680_SENSOR(d)    (*((struct bme680_dev *)d))
+
+/**
+ * @brief   Shortcut type definition for BME680 sensor field data
+ */
+typedef struct bme680_field_data bme680_field_data_t;
+
+/**
+ * @brief   Shortcut type definition for BME680 sensor device structure
+ * @see [struct bme680_dev](https://github.com/BoschSensortec/BME680_driver/blob/9014031fa00a5cc1eea1498c4cd1f94ec4b8ab11/bme680_defs.h#L496-L530)
+ */
+typedef struct bme680_dev bme680_dev_t;
+
+/**
+ * @brief   BME680 I2C parameters
  */
 typedef struct {
     i2c_t dev;                    /**< I2C device which is used */
@@ -81,24 +98,28 @@ typedef struct {
     uint16_t heater_dur;        /**< Heater duration in ms */
     uint16_t heater_temp;       /**< Heater temperature in °C */
     uint8_t power_mode;         /**< Power mode (sleep or forced) */
-    uint8_t settings;           /**< Settings used by @ref bme680_set_settings */
+    uint8_t settings;           /**< Settings used */
     bme680_intf_t intf;         /**< Hardware interface parameters */
 } bme680_params_t;
 
- /**
- * @brief   BME680 sensor device data structure type
+/**
+ * @brief   BME680 device descriptor
  */
 typedef struct {
-    bme680_params_t params;     /**< Device initialization parameters */
-    struct bme680_dev  dev;     /**< Device structure from bme680_driver pkg */
- } bme680_t;
-
- #ifdef __cplusplus
-}
-#endif
+    struct bme680_dev sensor;   /**< Inherited sensor device structure from vendor API */
+    bme680_intf_t intf;         /**< Device interface */
+} bme680_t;
 
 /**
- * @brief   Initialize the BME680 sensor driver.
+ * @brief   References to BME680 sensor devices used by the HAL functions
+ */
+extern bme680_t *bme680_devs[];
+
+/**
+ * @brief   Number of initialized BME680 sensor devices in bme680_devs
+ */
+extern unsigned int bme680_devs_numof;
+
  *
  * @param[out] dev          device descriptor of sensor to initialize
  * @param[in]  params       configuration parameters
@@ -107,6 +128,10 @@ typedef struct {
  * @return                  < 0 on failures
   */
 int bme680_init(bme680_t *dev, const bme680_params_t *params);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BME680_H */
 /** @} */
