@@ -17,8 +17,7 @@
  * @}
  */
 
-#include <stdio.h>
-#include <errno.h>
+#include <assert.h>
 #include <inttypes.h>
 
 #include "disp_dev.h"
@@ -27,29 +26,35 @@ void disp_dev_map(disp_dev_t *dev,
                  uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2,
                  const uint16_t *color)
 {
-    if (!dev) {
-        return;
-    }
+    assert(dev);
 
     dev->driver->map(dev, x1, x2, y1, y2, color);
 }
 
-int disp_dev_get(disp_dev_t *dev,
-                 disp_opt_t opt, void *value, size_t max_len)
+uint16_t disp_dev_height(disp_dev_t *dev)
 {
-    if (!dev) {
-        return -EINVAL;
-    }
+    assert(dev);
 
-    return dev->driver->get(dev, opt, value, max_len);
+    return dev->driver->height(dev);
 }
 
-int disp_dev_set(disp_dev_t *dev,
-                 disp_opt_t opt, const void *value, size_t max_len)
+uint16_t disp_dev_width(disp_dev_t *dev)
 {
-    if (!dev) {
-        return -EINVAL;
-    }
+    assert(dev);
 
-    return dev->driver->set(dev, opt, value, max_len);
+    return dev->driver->width(dev);
+}
+
+uint8_t disp_dev_color_depth(disp_dev_t *dev)
+{
+    assert(dev);
+
+    return dev->driver->color_depth(dev);
+}
+
+void disp_dev_set_invert(disp_dev_t *dev, bool invert)
+{
+    assert(dev);
+
+    dev->driver->set_invert(dev, invert);
 }
