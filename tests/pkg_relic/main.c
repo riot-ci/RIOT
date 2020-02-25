@@ -12,9 +12,9 @@
 #if (TEST_RELIC_SHOW_OUTPUT == 1)
 #include <stdio.h>
 #endif
-#include <assert.h>
 #include <stdlib.h>
 
+#include "test_utils/expect.h"
 #include "relic.h"
 #include "embUnit.h"
 
