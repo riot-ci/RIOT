@@ -34,7 +34,7 @@ extern "C" {
 #define SRF08_PARAM_I2C         I2C_DEV(0)
 #endif
 #ifndef SRF08_PARAM_ADDR
-#define SRF08_PARAM_ADDR        (0xE0)
+#define SRF08_PARAM_ADDR        (0x70)  /* 0xE0 shifted by 1 */
 #endif
 
 #ifndef SRF08_PARAMS

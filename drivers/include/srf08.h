@@ -35,9 +35,6 @@
 extern "C" {
 #endif
 
-/** @brief   The sensors default I2C address */
-#define SRF08_DEFAULT_ADDR              112
-
 /** @brief   The sensors command register (write) */
 #define SRF08_COMMAND_REG               0x0
 
