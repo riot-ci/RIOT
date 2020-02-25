@@ -27,7 +27,7 @@
 #include "at25xxx_params.h"
 #include "byteorder.h"
 
-#ifdef USEMODULE_XTIMER
+#ifdef MODULE_XTIMER
 #include "xtimer.h"
 #define POLL_DELAY_US   (1000)
 #endif
@@ -73,7 +73,7 @@ static inline bool _write_enabled(const at25xxx_t *dev)
 static inline void _wait_until_eeprom_ready(const at25xxx_t *dev)
 {
     while (_write_in_progress(dev)) {
-#ifdef USEMODULE_XTIMER
+#ifdef MODULE_XTIMER
         spi_release(dev->params.spi);
         xtimer_usleep(POLL_DELAY_US);
         getbus(dev);
