@@ -106,12 +106,12 @@ int ztimer_msg_receive_timeout(ztimer_clock_t *dev, msg_t *msg, uint32_t timeout
     ztimer_set_msg(dev, &t, timeout, &m, sched_active_pid);
 
     msg_receive(msg);
+    ztimer_remove(dev, &t);
     if (msg->type == MSG_ZTIMER && msg->content.ptr == &m) {
         /* we hit the timeout */
         return -ETIME;
     }
     else {
-        ztimer_remove(dev, &t);
         return 1;
     }
 }
