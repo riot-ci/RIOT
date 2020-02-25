@@ -29,6 +29,8 @@
 
 #include "riot_logo.h"
 
+#include "test_utils/expect.h"
+
 static ili9341_t ili9341;
 
 int main(void)
@@ -43,8 +45,8 @@ int main(void)
     uint16_t max_width = disp_dev_width(dev);
     uint16_t max_height = disp_dev_height(dev);
 
-    assert(max_width == ili9341.params->lines);
-    assert(max_height == 240);
+    expect(max_width == ili9341.params->lines);
+    expect(max_height == 240);
 
     uint16_t color = 0;
     for (uint16_t x = 0; x < max_width; ++x) {
