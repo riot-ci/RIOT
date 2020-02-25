@@ -20,7 +20,6 @@
 
 #include <string>
 #include <cstdio>
-#include <cassert>
 #include <system_error>
 
 #include "riot/mutex.hpp"
