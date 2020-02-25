@@ -24,8 +24,6 @@
 #include "board.h"
 #include "bme680.h"
 
-#include "periph/i2c.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
