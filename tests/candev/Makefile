@@ -1,4 +1,3 @@
-APPLICATION = candev
 include ../Makefile.tests_common
 
 USEMODULE += shell
