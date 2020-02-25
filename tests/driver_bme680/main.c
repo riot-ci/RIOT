@@ -82,7 +82,7 @@ int main(void)
             if (res == 0 && dev[i].sensor.new_fields) {
 #ifndef MODULE_BME680_FP
                 printf("[bme680]: dev=%u, "
-                       "T = %02" PRIi16 ".%02" PRIu16 " degC, "
+                       "T = %02d.%02d" PRIu16 " degC, "
                        "P = %" PRIu32 " Pa, H = %02" PRIu32 ".%03" PRIu32 " %%",
                        i, data.temperature / 100, data.temperature % 100,
                        data.pressure,
