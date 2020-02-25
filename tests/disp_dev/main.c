@@ -35,6 +35,11 @@ static ili9341_t ili9341;
 
 int main(void)
 {
+#ifdef BOARD_PINETIME
+    /* on PineTime, enable the backlight */
+    gpio_clear(LCD_BACKLIGHT_LOW);
+#endif
+
     ili9341_init(&ili9341, &ili9341_params[0]);
 
     disp_dev_t *dev = (disp_dev_t *)&ili9341;
