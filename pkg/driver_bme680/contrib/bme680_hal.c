@@ -71,7 +71,7 @@ int8_t bme680_i2c_write_hal(uint8_t dev_id, uint8_t reg_addr,
     uint8_t ret;
 
     i2c_acquire(intf->dev);
-    ret = i2c_write_regs(intf->dev, intf->addr, reg_addr,data,len,0);
+    ret = i2c_write_regs(intf->dev, intf->addr, reg_addr, data, len, 0);
     i2c_release(intf->dev);
     return ret;
 }
@@ -96,7 +96,8 @@ int8_t bme680_spi_read_hal(uint8_t dev_id, uint8_t reg_addr,
     return 0;
 }
 
-int8_t bme680_spi_write_hal(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len)
+int8_t bme680_spi_write_hal(uint8_t dev_id, uint8_t reg_addr,
+                            uint8_t *data, uint16_t len)
 {
     assert(dev_id < bme680_devs_numof);
 
