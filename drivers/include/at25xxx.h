@@ -74,17 +74,15 @@ uint8_t at25xxx_read_byte(const at25xxx_t *dev, uint32_t pos);
 /**
  * @brief Sequentially read @p len bytes from a given position @p pos
  *
- * errno is set to ERANGE if EEPROM bounds would be exceeded.
- *
  * @param[in] dev       AT25XXX device handle
  * @param[in] pos       position in EEPROM memory
  * @param[out] data     read buffer
  * @param[in] len       requested length to be read
  *
- * @return    @p len on success
- * @return    0 on failure
+ * @return    0 on success
+ * @return    -ERANGE if pos + len > EEPROM size
  */
-size_t at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len);
+int at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len);
 
 /**
  * @brief   Write a byte at a given position @p pos
@@ -98,33 +96,29 @@ void at25xxx_write_byte(const at25xxx_t *dev, uint32_t pos, uint8_t data);
 /**
  * @brief Sequentially write @p len bytes from a given position @p pos
  *
- * errno is set to ERANGE if EEPROM bounds would be exceeded.
- *
  * @param[in] dev       AT25XXX device handle
  * @param[in] pos       position in EEPROM memory
  * @param[in] data      write buffer
  * @param[in] len       requested length to be written
  *
- * @return    number of bytes that have been written
- * @return    0 on failure
+ * @return    0 on success
+ * @return    -ERANGE if pos + len > EEPROM size
  */
-size_t at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len);
+int at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len);
 
 /**
  * @brief Set @p len bytes from a given position @p pos to the
  * value @p val
- *
- * errno is set to ERANGE if EEPROM bounds would be exceeded.
  *
  * @param[in] dev       AT25XXX device handle
  * @param[in] pos       position in EEPROM memory
  * @param[in] val       value to be set
  * @param[in] len       requested length to be written
  *
- * @return    number of bytes that have been written
- * @return    0 on failure
+ * @return    0 on success
+ * @return    -ERANGE if pos + len > EEPROM size
  */
-size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len);
+int at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len);
 
 /**
  * @brief Set @p len bytes from position @p pos to 0
@@ -135,10 +129,10 @@ size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len);
  * @param[in] pos       position in EEPROM memory
  * @param[in] len       requested length to be written
  *
- * @return    number of bytes that have been cleared
- * @return    0 on failure
+ * @return    0 on success
+ * @return    -ERANGE if pos + len > EEPROM size
  */
-size_t at25xxx_clear(const at25xxx_t *dev, uint32_t pos, size_t len);
+int at25xxx_clear(const at25xxx_t *dev, uint32_t pos, size_t len);
 
 #ifdef __cplusplus
 }

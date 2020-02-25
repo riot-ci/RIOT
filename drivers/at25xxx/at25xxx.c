@@ -101,13 +101,12 @@ static size_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data, 
     return len;
 }
 
-size_t at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
+int at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
 {
     const uint8_t *d = data;
 
     if (pos + len > dev->params.size) {
-        errno = ERANGE;
-        return 0;
+        return -ERANGE;
     }
 
     getbus(dev);
@@ -121,7 +120,7 @@ size_t at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_
 
     spi_release(dev->params.spi);
 
-    return (void*)d - data;
+    return 0;
 }
 
 void at25xxx_write_byte(const at25xxx_t *dev, uint32_t pos, uint8_t data)
@@ -129,11 +128,10 @@ void at25xxx_write_byte(const at25xxx_t *dev, uint32_t pos, uint8_t data)
     at25xxx_write(dev, pos, &data, sizeof(data));
 }
 
-size_t at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len)
+int at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len)
 {
     if (pos + len > dev->params.size) {
-        errno = ERANGE;
-        return 0;
+        return -ERANGE;
     }
 
     getbus(dev);
@@ -147,7 +145,7 @@ size_t at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len)
 
     spi_release(dev->params.spi);
 
-    return len;
+    return 0;
 }
 
 uint8_t at25xxx_read_byte(const at25xxx_t *dev, uint32_t pos)
@@ -157,14 +155,13 @@ uint8_t at25xxx_read_byte(const at25xxx_t *dev, uint32_t pos)
     return b;
 }
 
-size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len)
+int at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len)
 {
     uint8_t data[AT225XXXX_SET_BUF_SIZE];
     size_t total = 0;
 
     if (pos + len > dev->params.size) {
-        errno = ERANGE;
-        return 0;
+        return -ERANGE;
     }
 
     memset(data, val, sizeof(data));
@@ -180,10 +177,10 @@ size_t at25xxx_set(const at25xxx_t *dev, uint32_t pos, uint8_t val, size_t len)
 
     spi_release(dev->params.spi);
 
-    return total;
+    return 0;
 }
 
-size_t at25xxx_clear(const at25xxx_t *dev, uint32_t pos, size_t len)
+int at25xxx_clear(const at25xxx_t *dev, uint32_t pos, size_t len)
 {
     return at25xxx_set(dev, pos, 0, len);
 }
