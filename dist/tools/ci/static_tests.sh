@@ -51,7 +51,9 @@ function run {
 
 RESULT=0
 
-run make print-versions
+CI_BASE_BRANCH=${CI_BASE_BRANCH:-master}
+
+export BASE_BRANCH="${CI_BASE_BRANCH}"
 
 run ./dist/tools/commit-msg/check.sh ${CI_BASE_BRANCH}
 run ./dist/tools/whitespacecheck/check.sh ${CI_BASE_BRANCH}
