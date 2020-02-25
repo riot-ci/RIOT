@@ -52,10 +52,10 @@
  * cycle, the raw data from the sensor is available and the sensor
  * automatically returns to sleep mode
  *
- * ### Ambient Temperatur
+ * ### Ambient Temperature
  *
  * The sensor is initialized with a fixed ambient temperature defined by the
- * parameter settings in @bme680_params. However, precise gas measurements
+ * parameter settings in @ref bme680_params. However, precise gas measurements
  * require the calculation of the heating resistance based on the ambient
  * temperature.
  *
@@ -63,7 +63,7 @@
  * than the actual ambient temperature due to the self-heating of the sensor.
  * element. It should therefore not be used to set the ambient temperature
  * unless gas measurements are very infrequent and self-heating is negligible.
- * Rather another temperatur sensor should be used for that purpose.
+ * Rather another temperature sensor should be used for that purpose.
  *
  * Function @ref bme680_set_ambient_temp can be used to change the ambient
  * temperature.
@@ -82,7 +82,7 @@
  * ### Driver Configuration
  *
  * BME680 sensors are connected either via I2C or SPI. Which interface is used
- * by which BME680 sensor is defined by the paramters in @ref bme680_params.
+ * by which BME680 sensor is defined by the parameters in @ref bme680_params.
  * The respective driver implementation is enabled by the modules `bme680_i2c`
  * and `bme680_spi`. Several BME680 sensors and a mixed configuration of I2C
  * and SPI can be used in one application.
@@ -144,7 +144,7 @@ extern "C" {
 enum {
     BME680_NULL_PTR     = -1,   /**< NULL pointer check failed. */
     BME680_COM_FAILED   = -2,   /**< Communication with the device failed. */
-    BME680_NO_DEV       = -3,   /**< Ddevice doesn't exist. */
+    BME680_NO_DEV       = -3,   /**< Device doesn't exist. */
     BME680_INVALID      = -4,   /**< Invalid value or length. */
     BME680_NO_NEW_DATA  = -5,   /**< No new data. */
 };
@@ -154,19 +154,22 @@ enum {
  * @brief   BME680 sensor field data
  */
 typedef struct bme680_field_data {
-	uint8_t status;     /**< status for new_data, gasm valid and heater stable */
-	uint8_t gas_index;	/**< index of used heater profile */
-	uint8_t meas_index; /**< measurement index */
+    uint8_t status;     /**< Status for new data, gas measurement valid and
+                             heater stable. Use `BME680_NEW_DATA_MSK`,
+                             `BME680_GASM_VALID_MSK` and BME680_HEAT_STAB_MSK
+                             to check for the status. */
+    uint8_t gas_index;  /**< Index of used heater profile */
+    uint8_t meas_index; /**< Measurement index */
 #ifndef MODULE_BME680_FP
-	int16_t temperature;        /**< temperature in degree Celsius x 100 */
-	uint32_t pressure;          /**< pressure in Pascal */
-	uint32_t humidity;          /**< relative humidity in percent x 1000 */
-	uint32_t gas_resistance;    /**< gas resistance in ohms */
+    int16_t temperature;        /**< Temperature in degree Celsius x 100 */
+    uint32_t pressure;          /**< Pressure in Pascal */
+    uint32_t humidity;          /**< Relative humidity in percent x 1000 */
+    uint32_t gas_resistance;    /**< Gas resistance in ohms */
 #else /* MODULE_BME680_FP */
-	float temperature;          /**< temperature in degree Celsius */
-	float pressure;             /**< pressure in Pascal */
-	float humidity;             /**< relative humidity in percent */
-	float gas_resistance;       /**< gas resistance in ohms */
+    float temperature;          /**< Temperature in degree Celsius */
+    float pressure;             /**< Pressure in Pascal */
+    float humidity;             /**< Relative humidity in percent */
+    float gas_resistance;       /**< Gas resistance in ohms */
 #endif /* MODULE_BME680_FP */
 };
 
@@ -228,8 +231,8 @@ typedef struct {
  * @brief   BME680 device descriptor
  */
 typedef struct {
-    struct bme680_dev sensor;   /**< Inherited sensor device structure from vendor API */
-    bme680_intf_t intf;         /**< Device interface */
+    struct bme680_dev sensor; /**< Inherited device structure from vendor API */
+    bme680_intf_t intf;       /**< Device interface */
 } bme680_t;
 
 /**
@@ -254,7 +257,7 @@ extern unsigned int bme680_devs_numof;
 int bme680_init(bme680_t *dev, const bme680_params_t *params);
 
 /**
- * @brief	Force a single TPHG measurement cycle
+ * @brief    Force a single TPHG measurement cycle
  *
  * The function triggers the sensor to start one THPG measurement cycle. The
  * duration of the TPHG measurement cycle depends on the selected parameters.
@@ -269,7 +272,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params);
 int bme680_force_measurement(bme680_t *dev);
 
 /**
- * @brief	Duration one THPG measurment cycle
+ * @brief    Duration one THPG measurement cycle
  *
  * This function determines the duration of one THPG measurement cycle
  * according to the selected parameter settings. The duration can be used
@@ -287,7 +290,7 @@ int bme680_get_duration(bme680_t* dev);
  * @brief   Get results of a TPHG measurement
  *
  * The function returns the results of a TPHG measurement that has been
- * started before with #bme680_force_measurement. For that prupose, the
+ * started before with #bme680_force_measurement. For that purpose, the
  * function fetches the raw sensor data and converts them into sensor values.
  * If the measurement is still running, the function fails and returns
  * invalid values.
