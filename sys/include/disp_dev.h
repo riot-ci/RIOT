@@ -22,33 +22,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
-
-/**
- * @brief   Global list of configuration options available for the disp dev API
- */
-typedef enum {
-    /**
-     * @brief   (uint16_t) maximum width in pixels
-     */
-    DISP_OPT_MAX_WIDTH,
-
-    /**
-     * @brief   (uint16_t) maximum height in pixels
-     */
-    DISP_OPT_MAX_HEIGHT,
-
-    /**
-     * @brief   (uint8_t) color depth
-    */
-    DISP_OPT_COLOR_DEPTH,
-
-    /**
-     * @brief   (bool) enable/disable invert modes
-    */
-    DISP_OPT_COLOR_INVERT,
-
-} disp_opt_t;
 
 /**
  * @brief   Forward declaration for display device struct
@@ -74,34 +49,37 @@ typedef struct {
                 const uint16_t *color);
 
     /**
-     * @brief   Get an option value from a given display device
+     * @brief   Get the height of the display device
      *
      * @param[in] dev       Pointer to the display device
-     * @param[in] opt       Option type
-     * @param[out] value    Pointer to store the option's value in
-     * @param[in] max_len   Maximal amount of byte that fit into @p value
      *
-     * @return              number of bytes written to @p value
-     * @return              `-ENOTSUP` if @p opt is not provided by the device
+     * @return              Height in pixels
      */
-    int (*get)(disp_dev_t *dev, disp_opt_t opt, void *value, size_t max_len);
+    uint16_t (*height)(disp_dev_t *dev);
 
     /**
-     * @brief   Set an option value for a given display device
+     * @brief   Get the width of the display device
+     *
+     * @param[in] dev       Pointer to the display device
+     *
+     * @return              Width in pixels
+     */
+    uint16_t (*width)(disp_dev_t *dev);
+
+    /**
+     * @brief   Get the color depth of the display device
+     *
+     * @return              The color depth
+     */
+    uint8_t (*color_depth)(disp_dev_t *dev);
+
+    /**
+     * @brief   Invert the display device colors
      *
      * @param[in] dev       Network device descriptor
-     * @param[in] opt       Option type
-     * @param[in] value     Value to set
-     * @param[in] value_len The length of @p value
-     *
-     * @return              number of bytes written to @p value
-     * @return              `-ENOTSUP` if @p opt is not configurable for the
-     *                      device
-     * @return              `-EINVAL` if @p value is an invalid value with
-     *                      regards to @p opt
+     * @param[in] invert    Invert mode (true if invert, false otherwise)
      */
-    int (*set)(disp_dev_t *dev, disp_opt_t opt,
-               const void *value, size_t value_len);
+    void (*set_invert)(disp_dev_t *dev, bool invert);
 } disp_dev_driver_t;
 
 /**
@@ -111,15 +89,52 @@ struct disp_dev {
     const disp_dev_driver_t *driver;    /**< Pointer to driver of the display device */
 };
 
+/**
+ * @brief   Map an area to display on the device
+ *
+ * @param[in] dev   Pointer to the display device
+ * @param[in] x1    Left coordinate
+ * @param[in] x2    Right coordinate
+ * @param[in] y1    Top coordinate
+ * @param[in] y2    Bottom coordinate
+ * @param[in] color Array of color to map to the display
+ */
 void disp_dev_map(disp_dev_t *dev,
                  uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2,
                  const uint16_t *color);
 
-int disp_dev_get(disp_dev_t *dev,
-                 disp_opt_t opt, void *value, size_t max_len);
+/**
+ * @brief   Get the height of the display device
+ *
+ * @param[in] dev       Pointer to the display device
+ *
+ * @return              Height in pixels
+ */
+uint16_t disp_dev_height(disp_dev_t *dev);
 
-int disp_dev_set(disp_dev_t *dev,
-                 disp_opt_t opt, const void *value, size_t max_len);
+/**
+ * @brief   Get the width of the display device
+ *
+ * @param[in] dev       Pointer to the display device
+ *
+ * @return              Width in pixels
+ */
+uint16_t disp_dev_width(disp_dev_t *dev);
+
+/**
+ * @brief   Get the color depth of the display device
+ *
+ * @return              The color depth
+ */
+uint8_t disp_dev_color_depth(disp_dev_t *dev);
+
+/**
+ * @brief   Invert the display device colors
+ *
+ * @param[in] dev       Network device descriptor
+ * @param[in] invert    Invert mode (true if invert, false otherwise)
+ */
+void disp_dev_set_invert(disp_dev_t *dev, bool invert);
 
 #ifdef __cplusplus
 }
