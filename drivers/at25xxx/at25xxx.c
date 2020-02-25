@@ -70,25 +70,35 @@ static inline bool _write_enabled(const at25xxx_t *dev)
     return spi_transfer_reg(dev->params.spi, dev->params.cs_pin, CMD_RDSR, 0) & SR_WEL;
 }
 
-static inline void _wait_until_eeprom_ready(const at25xxx_t *dev)
+static inline int _wait_until_eeprom_ready(const at25xxx_t *dev)
 {
-    while (_write_in_progress(dev)) {
 #ifdef MODULE_XTIMER
+    unsigned tries = 10;
+    while (_write_in_progress(dev) && --tries) {
         spi_release(dev->params.spi);
         xtimer_usleep(POLL_DELAY_US);
         getbus(dev);
-#endif
     }
+#else
+    /* SPI will run not faster than main clock */
+    unsigned long tries = CLOCK_CORECLOCK / 1000;
+    while (_write_in_progress(dev) && --tries) {}
+#endif
+
+    return tries == 0 ? -ETIMEDOUT : 0;
 }
 
-static size_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
+static ssize_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
 {
     /* write no more than to the end of the current page to prevent wrap-around */
     len = min(len, PAGE_SIZE - (pos & (PAGE_SIZE - 1)));
     pos = _pos(CMD_WRITE, pos);
 
     /* wait for previous write to finish - may take up to 5 ms */
-    _wait_until_eeprom_ready(dev);
+    int res = _wait_until_eeprom_ready(dev);
+    if (res) {
+        return res;
+    }
 
     /* set write enable and wait for status change */
     spi_transfer_byte(dev->params.spi, dev->params.cs_pin, false, CMD_WREN);
@@ -103,6 +113,7 @@ static size_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data, 
 
 int at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
 {
+    int res = 0;
     const uint8_t *d = data;
 
     if (pos + len > dev->params.size) {
@@ -112,7 +123,12 @@ int at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t l
     getbus(dev);
 
     while (len) {
-        size_t written = _write_page(dev, pos, d, len);
+        ssize_t written = _write_page(dev, pos, d, len);
+        if (written < 0) {
+            res = written;
+            break;
+        }
+
         len -= written;
         pos += written;
         d   += written;
@@ -120,7 +136,7 @@ int at25xxx_write(const at25xxx_t *dev, uint32_t pos, const void *data, size_t l
 
     spi_release(dev->params.spi);
 
-    return 0;
+    return res;
 }
 
 void at25xxx_write_byte(const at25xxx_t *dev, uint32_t pos, uint8_t data)
@@ -137,7 +153,10 @@ int at25xxx_read(const at25xxx_t *dev, uint32_t pos, void *data, size_t len)
     getbus(dev);
 
     /* wait for previous write to finish - may take up to 5 ms */
-    _wait_until_eeprom_ready(dev);
+    int res = _wait_until_eeprom_ready(dev);
+    if (res) {
+        return res;
+    }
 
     pos = _pos(CMD_READ, pos);
     spi_transfer_bytes(dev->params.spi, dev->params.cs_pin, true, &pos, NULL, 1 + ADDR_LEN / 8);
