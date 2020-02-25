@@ -102,7 +102,13 @@ static ssize_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data,
 
     /* set write enable and wait for status change */
     spi_transfer_byte(dev->params.spi, dev->params.cs_pin, false, CMD_WREN);
-    while (!_write_enabled(dev)) {}
+
+    unsigned tries = 1000;
+    while (!_write_enabled(dev) && --tries) {}
+
+    if (tries == 0) {
+        return -ETIMEDOUT;
+    }
 
     /* write the data */
     spi_transfer_bytes(dev->params.spi, dev->params.cs_pin, true, &pos, NULL, 1 + ADDR_LEN / 8);
