@@ -53,7 +53,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
     dev->intf = params->intf;
 
     /* Select device interface and apply needed params */
-    if(params->ifsel == BME680_I2C_INTF) {
+    if (params->ifsel == BME680_I2C_INTF) {
 #ifdef MODULE_BME680_I2C
         BME680_SENSOR(dev).intf = BME680_I2C_INTF;
         BME680_SENSOR(dev).read = bme680_i2c_read_hal;
@@ -121,7 +121,7 @@ int bme680_force_measurement(bme680_t *dev)
 int bme680_get_duration(bme680_t* dev)
 {
     assert(dev);
-    
+
     uint16_t duration;
     bme680_get_profile_dur(&duration, &BME680_SENSOR(dev));
     return duration;
@@ -143,7 +143,6 @@ int bme680_get_data(bme680_t* dev, bme680_field_data_t *data)
     }
     return BME680_INVALID;
 }
-
 
 int bme680_set_ambient_temp(bme680_t* dev, int8_t temp)
 {
