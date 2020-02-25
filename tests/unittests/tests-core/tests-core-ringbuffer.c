@@ -33,18 +33,18 @@ static ringbuffer_t rb = RINGBUFFER_INIT(rb_buf);
 static mutex_t mutex;
 static kernel_pid_t pid_add, pid_get;
 
-static void assert_avail(unsigned assumed)
+static void expect_avail(unsigned assumed)
 {
     TEST_ASSERT_EQUAL_INT(assumed, rb.avail);
 }
 
-static void assert_add_one(char to_add, int assumed_result)
+static void expect_add_one(char to_add, int assumed_result)
 {
     int actual_result = ringbuffer_add_one(&rb, to_add);
     TEST_ASSERT_EQUAL_INT(assumed_result, actual_result);
 }
 
-static void assert_get_one(int assumed_result)
+static void expect_get_one(int assumed_result)
 {
     int actual_result = ringbuffer_get_one(&rb);
     TEST_ASSERT_EQUAL_INT(assumed_result, actual_result);
@@ -57,16 +57,16 @@ static void run_add(void)
         mutex_lock(&mutex);
 
         for (unsigned i = 0; i < BUF_SIZE; ++i) {
-            assert_avail(i);
-            assert_add_one(next, -1);
-            assert_avail(i + 1);
+            expect_avail(i);
+            expect_add_one(next, -1);
+            expect_avail(i + 1);
             ++next;
         }
 
         /* Overwrite oldest element. It should be returned to us. */
-        assert_avail(BUF_SIZE);
-        assert_add_one(next, next - BUF_SIZE);
-        assert_avail(BUF_SIZE);
+        expect_avail(BUF_SIZE);
+        expect_add_one(next, next - BUF_SIZE);
+        expect_avail(BUF_SIZE);
         ++next;
 
         thread_wakeup(pid_get);
@@ -87,15 +87,15 @@ static void *run_get(void *arg)
         mutex_lock(&mutex);
 
         for (unsigned i = BUF_SIZE; i > 0; --i) {
-            assert_avail(i);
-            assert_get_one(next);
-            assert_avail(i - 1);
+            expect_avail(i);
+            expect_get_one(next);
+            expect_avail(i - 1);
             ++next;
         }
 
-        assert_avail(0);
-        assert_get_one(-1);
-        assert_avail(0);
+        expect_avail(0);
+        expect_get_one(-1);
+        expect_avail(0);
 
         thread_wakeup(pid_add);
         mutex_unlock_and_sleep(&mutex);
