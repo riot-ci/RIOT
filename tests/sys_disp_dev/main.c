@@ -38,13 +38,10 @@ int main(void)
     disp_dev_t *dev = (disp_dev_t *)&ili9341;
     dev->driver = &ili9341_disp_dev_driver;
 
-    bool inverted = true;
-    disp_dev_set(dev, DISP_OPT_COLOR_INVERT, &inverted, sizeof(bool));
+    disp_dev_set_invert(dev, true);
 
-    uint16_t max_height;
-    uint16_t max_width;
-    disp_dev_get(dev, DISP_OPT_MAX_WIDTH, &max_width, sizeof(uint16_t));
-    disp_dev_get(dev, DISP_OPT_MAX_HEIGHT, &max_height, sizeof(uint16_t));
+    uint16_t max_width = disp_dev_width(dev);
+    uint16_t max_height = disp_dev_height(dev);
 
     assert(max_width == ili9341.params->lines);
     assert(max_height == 240);
