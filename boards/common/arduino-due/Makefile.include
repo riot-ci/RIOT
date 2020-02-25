@@ -9,5 +9,5 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 include $(RIOTMAKE)/tools/serial.inc.mk
 
 # setup flasher (using BOSSA)
-export BOSSA_ARDUINO_PREFLASH = yes
+BOSSA_ARDUINO_PREFLASH = yes
 include $(RIOTMAKE)/tools/bossa.inc.mk
