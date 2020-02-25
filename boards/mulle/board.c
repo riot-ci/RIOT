@@ -61,6 +61,10 @@ static mtd_spi_nor_t mulle_nor_dev = {
     .addr_width = 3,
     .mode = SPI_MODE_3,
     .clk = SPI_CLK_10MHZ,
+    .wait_chip_erase = 16LU * US_PER_SEC,
+    .wait_sector_erase = 40LU * US_PER_MS,
+    .wait_32k_erase = 20LU *US_PER_MS,
+    .wait_4k_erase = 10LU * US_PER_MS,
 };
 
 mtd_dev_t *mtd0 = (mtd_dev_t *)&mulle_nor_dev;
