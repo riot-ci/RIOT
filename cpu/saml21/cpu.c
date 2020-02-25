@@ -85,6 +85,7 @@ uint32_t sam0_gclk_freq(uint8_t id)
 void cpu_pm_cb_enter(int deep)
 {
     if (deep) {
+#if !defined(CPU_SAMR30)
         /* errata 51.1.5 – When VDDCORE is supplied by the BUCK converter in performance
                            level 0, the chip cannot wake-up from standby mode because the
                            VCORERDY status is stuck at 0. */
@@ -92,15 +93,18 @@ void cpu_pm_cb_enter(int deep)
         /* select LDO regulator */
         SUPC->VREG.bit.SEL = 0;
         while (!SUPC->STATUS.bit.VREGRDY) {}
+#endif
     }
 }
 
 void cpu_pm_cb_leave(int deep)
 {
     if (deep) {
+#if !defined(CPU_SAMR30)
         /* select buck voltage regulator */
         SUPC->VREG.bit.SEL = 1;
         while (!SUPC->STATUS.bit.VREGRDY) {}
+#endif
     }
 }
 
