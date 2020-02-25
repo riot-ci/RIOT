@@ -19,8 +19,6 @@
  * @}
  */
 
-
-
 #define ENABLE_DEBUG (0)
 
 #include <debug.h>
@@ -36,7 +34,7 @@
 
 #include <candev_linux.h>
 
-candev_linux_t linux_dev = { 0 };
+candev_linux_t linux_dev = { {0} };
 
 #else
 /* add other candev drivers here */
@@ -84,8 +82,6 @@ static int _send(int argc, char **argv)
 static int _receive(int argc, char **argv)
 {
     uint8_t buf[CAN_MAX_DLEN];
-    uint32_t can_id = 0;
-    uint8_t can_dlc = 0;
     int n = 1;
     char *pEnd;
 
@@ -98,6 +94,8 @@ static int _receive(int argc, char **argv)
     }
 
     for (int i = 0; i < n; i++) {
+        uint32_t can_id = 0;
+        uint8_t can_dlc = 0;
 
         puts("Reading from Rxbuf...");
         isrpipe_read(&rxbuf, buf, 4);       //id
