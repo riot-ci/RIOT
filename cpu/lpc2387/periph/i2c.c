@@ -272,7 +272,7 @@ static void irq_handler(i2c_t dev)
     case 0x28: /* Data byte has been transmitted */
 
         if (ctx[dev].cur == ctx[dev].end) {
-            /* we transmited all buffers */
+            /* we transmitted all buffers */
             if (ctx[dev].buf_cur == ctx[dev].buf_num) {
                 i2c->CONSET = I2CONSET_STO | I2CONSET_AA;
                 _end_tx(dev, 0);
