@@ -52,8 +52,8 @@ function run {
 RESULT=0
 
 if [ -n "${CI_BASE_COMMIT}" ]; then
-    echo "-- tagging master HEAD commit (${CI_BASE_COMMIT})"
-    git tag master "${CI_BASE_COMMIT}"
+    echo "-- tagging "${CI_BASE_BRANCH}" HEAD commit (${CI_BASE_COMMIT})"
+    git tag "${CI_BASE_BRANCH}" "${CI_BASE_COMMIT}"
 fi
 
 set
