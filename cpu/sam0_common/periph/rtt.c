@@ -51,17 +51,6 @@ static void _wait_syncbusy(void)
 #endif
 }
 
-static inline void _rtt_reset(void)
-{
-#ifdef RTC_MODE0_CTRL_SWRST
-    RTC->MODE0.CTRL.bit.SWRST = 1;
-    while (RTC->MODE0.CTRL.bit.SWRST) {}
-#else
-    RTC->MODE0.CTRLA.bit.SWRST = 1;
-    while (RTC->MODE0.CTRLA.bit.SWRST) {}
-#endif
-}
-
 #ifdef CPU_SAMD21
 static void _rtt_clock_setup(void)
 {
@@ -95,8 +84,6 @@ void rtt_init(void)
 {
     _rtt_clock_setup();
     rtt_poweron();
-
-    _rtt_reset();
 
     /* set 32bit counting mode & enable the RTC */
 #ifdef REG_RTC_MODE0_CTRLA
