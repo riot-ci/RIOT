@@ -56,6 +56,8 @@ if [ -n "${CI_BASE_COMMIT}" ]; then
     git tag master "${CI_BASE_COMMIT}"
 fi
 
+set
+
 CI_BASE_BRANCH=${CI_BASE_BRANCH:-master}
 
 export BASE_BRANCH="${CI_BASE_BRANCH}"
