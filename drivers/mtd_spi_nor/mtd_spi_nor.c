@@ -498,7 +498,7 @@ static int mtd_spi_nor_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t size)
         if (size == total_size) {
             mtd_spi_cmd(dev, dev->params->opcode->chip_erase);
             size -= total_size;
-            us = dev->wait_chip_erase;
+            us = dev->params->wait_chip_erase;
         }
         else if ((dev->params->flag & SPI_NOR_F_SECT_32K) && (size >= MTD_32K) &&
                  ((addr & MTD_32K_ADDR_MASK) == 0)) {
@@ -506,7 +506,7 @@ static int mtd_spi_nor_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t size)
             mtd_spi_cmd_addr_write(dev, dev->params->opcode->block_erase_32k, addr_be, NULL, 0);
             addr += MTD_32K;
             size -= MTD_32K;
-            us = dev->wait_32k_erase;
+            us = dev->params->wait_32k_erase;
         }
         else if ((dev->params->flag & SPI_NOR_F_SECT_4K) && (size >= MTD_4K) &&
                  ((addr & MTD_4K_ADDR_MASK) == 0)) {
@@ -514,13 +514,13 @@ static int mtd_spi_nor_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t size)
             mtd_spi_cmd_addr_write(dev, dev->params->opcode->sector_erase, addr_be, NULL, 0);
             addr += MTD_4K;
             size -= MTD_4K;
-            us = dev->wait_4k_erase;
+            us = dev->params->wait_4k_erase;
         }
         else {
             mtd_spi_cmd_addr_write(dev, dev->params->opcode->block_erase, addr_be, NULL, 0);
             addr += sector_size;
             size -= sector_size;
-            us = dev->wait_sector_erase;
+            us = dev->params->wait_sector_erase;
         }
 
         /* waiting for the command to complete before continuing */
