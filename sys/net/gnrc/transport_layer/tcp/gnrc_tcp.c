@@ -159,6 +159,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
 #else
         /* Suppress Compiler Warnings */
         (void) remote;
+        (void) local_addr;
 #endif
         /* Set port number to listen on */
         tcb->local_port = local_port;
@@ -266,6 +267,9 @@ int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t 
         return -EINVAL;
     }
 #else
+    /* Suppress Compiler Warnings */
+    (void) addr;
+    (void) addr_size;
     return -EAFNOSUPPORT;
 #endif
 
@@ -442,9 +446,7 @@ int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local)
     if (local->family != AF_INET6) {
         return -EAFNOSUPPORT;
     }
-#else
-        return -EAFNOSUPPORT;
-#endif
+
     /* Check if AF-Family matches internally used AF-Family */
     if (local->family != tcb->address_family) {
         return -EINVAL;
@@ -452,6 +454,9 @@ int gnrc_tcp_open_passive(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *local)
 
     /* Proceed with connection opening */
     return _gnrc_tcp_open(tcb, NULL, local->addr.ipv6, local->port, 1);
+#else
+    return -EAFNOSUPPORT;
+#endif
 }
 
 ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,

@@ -40,11 +40,13 @@ extern "C" {
  */
 typedef struct {
     int family;                            /**< IP address family. */
-#ifdef MODULE_GNRC_IPV6
     union {
+#ifdef MODULE_GNRC_IPV6
         uint8_t ipv6[sizeof(ipv6_addr_t)]; /**< IPv6 address storage */
-    } addr;                                /**< IP address storage */
+#else
+        uint8_t dummy;                     /**< Enable build without network module */
 #endif
+    } addr;                                /**< IP address storage */
     uint16_t netif;                        /**< Network interface ID */
     uint16_t port;                         /**< Port number (in host byte order) */
 } gnrc_tcp_ep_t;
