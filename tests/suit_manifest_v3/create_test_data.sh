@@ -26,7 +26,7 @@ sign_manifest() {
   local in="$1"
   local out="$2"
 
-  ${SUIT_TOOL} sign -k "${SUIT_SEC}" -m "$in" -o "$out"
+  "${SUIT_TOOL}" sign -k "${SUIT_SEC}" -m "$in" -o "$out"
 }
 
 # random invalid data files
