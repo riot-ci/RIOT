@@ -5,6 +5,8 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-nano \
     arduino-uno \
     atmega328p \
+    msb-430 \
+    msb-430h \
     nucleo-f031k6 \
     nucleo-f042k6 \
     nucleo-l031k6 \
@@ -13,4 +15,5 @@ BOARD_INSUFFICIENT_MEMORY := \
     waspmote-pro \
     wsn430-v1_3b \
     wsn430-v1_4 \
+    z1 \
     #
