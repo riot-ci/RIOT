@@ -52,11 +52,11 @@ function run {
 RESULT=0
 
 if [ -n "${CI_BASE_COMMIT}" ]; then
+    # on Murdock, there's no base branch in the checkout folder.
+    # Thus, tag it here.
     echo "-- tagging "${CI_BASE_BRANCH}" HEAD commit (${CI_BASE_COMMIT})"
     git tag "${CI_BASE_BRANCH}" "${CI_BASE_COMMIT}"
 fi
-
-set
 
 CI_BASE_BRANCH=${CI_BASE_BRANCH:-master}
 
