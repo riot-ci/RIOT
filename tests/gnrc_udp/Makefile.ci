@@ -8,7 +8,6 @@ BOARD_INSUFFICIENT_MEMORY := \
     atmega1284p \
     atmega328p \
     calliope-mini \
-    chronos \
     derfmega128 \
     hifive1 \
     hifive1b \
