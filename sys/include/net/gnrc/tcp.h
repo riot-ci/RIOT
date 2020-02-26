@@ -69,7 +69,7 @@ int gnrc_tcp_ep_init(gnrc_tcp_ep_t *ep, int family, const uint8_t *addr, size_t 
 /**
  * @brief Construct TCP connection endpoint from string.
  * @note This function expects @p str in the IPv6 "URL" notation.
- *       The following strings specifying an valid endpoint:
+ *       The following strings specify a valid endpoint:
  *       - [fe80::0a00:27ff:fe9f:7a5b%5]:8080 (with Port and Interface)
  *       - [2001::0200:f8ff:fe21:67cf]:8080   (with Port)
  *       - [2001::0200:f8ff:fe21:67cf]        (addr only)
