@@ -1,6 +1,6 @@
 #
 # path to suit-tool
-SUIT_TOOL ?= python $(RIOTBASE)/dist/tools/suit_v3/suit-manifest-generator/bin/suit-tool
+SUIT_TOOL ?= $(RIOTBASE)/dist/tools/suit_v3/suit-manifest-generator/bin/suit-tool
 
 #
 # SUIT encryption keys
