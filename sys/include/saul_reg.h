@@ -70,16 +70,6 @@ extern saul_reg_t *saul_reg;
 int saul_reg_add(saul_reg_t *dev);
 
 /**
- * @brief   Unregister a device from the SAUL registry
- *
- * @param[in] dev       pointer to a registry entry
- *
- * @return      0 on success
- * @return      -ENODEV if device was not found in the registry
- */
-int saul_reg_rm(saul_reg_t *dev);
-
-/**
  * @brief   Find a device by it's position in the registry
  *
  * @param[in] pos       position to look up
