@@ -27,6 +27,7 @@
 #include "mtd_spi_nor.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
+#include "timex.h"
 
 #ifdef MODULE_MTD
 static const mtd_spi_nor_params_t _pinetime_nor_params = {
