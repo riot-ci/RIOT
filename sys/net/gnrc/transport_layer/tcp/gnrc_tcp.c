@@ -194,7 +194,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
     if (ret == -ENOMEM) {
         DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : Out of receive buffers.\n");
     }
-    else if(ret == -EADDRINUSE) {
+    else if (ret == -EADDRINUSE) {
         DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : local_port is already in use.\n");
     }
 

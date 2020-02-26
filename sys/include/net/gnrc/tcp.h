@@ -34,7 +34,6 @@
 extern "C" {
 #endif
 
-
 /**
  * @brief Address information for a single TCP connection endpoint.
  * @extends sock_tcp_ep_t
