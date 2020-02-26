@@ -51,8 +51,8 @@ function run {
 
 RESULT=0
 
-if -n "${CI_BASE_COMMIT}"; then
-    echo "-- tagging master HEAD commit"
+if [ -n "${CI_BASE_COMMIT}" ]; then
+    echo "-- tagging master HEAD commit (${CI_BASE_COMMIT})"
     git tag master "${CI_BASE_COMMIT}"
 fi
 
