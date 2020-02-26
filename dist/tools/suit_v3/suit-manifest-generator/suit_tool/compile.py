@@ -19,12 +19,6 @@
 # ----------------------------------------------------------------------------
 import binascii
 import copy
-import collections
-import json
-import cbor
-import sys
-import textwrap
-import itertools
 
 import logging
 
@@ -33,7 +27,7 @@ from cryptography.hazmat.primitives import hashes
 
 
 from suit_tool.manifest import SUITComponentId, SUITCommon, SUITSequence, \
-                     suitCommonInfo, SUITCommand, SUITManifest, \
+                     SUITCommand, \
                      SUITWrapper, SUITTryEach
 
 LOG = logging.getLogger(__name__)

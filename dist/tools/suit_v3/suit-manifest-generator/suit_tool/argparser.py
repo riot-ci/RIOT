@@ -17,20 +17,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
-import sys, argparse, os
+import sys
+import argparse
 from suit_tool import __version__
-import json
 import re
+
 
 def str_to_component(s):
     types = {
         'file' : ('file', lambda x : str(x.strip('"'))),
-        # 'desc' : ('component-description', lambda x : str(x.strip('"'))),
         'inst' : ('install-id', lambda x : [ str(y) for y in eval(x) ]),
         'uri' : ('uri', lambda x : str(x.strip('"')))
     }
     d = {types[k][0]:types[k][1](v) for k,v in [ re.split(r'=',e, maxsplit=1) for e in re.split(r''',\s*(?=["']?[a-zA-Z0-9_-]+["']?=)''', s)]}
     return d
+
 
 class MainArgumentParser(object):
 

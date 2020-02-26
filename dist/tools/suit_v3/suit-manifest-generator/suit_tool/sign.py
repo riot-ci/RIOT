@@ -18,7 +18,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 import cbor
-import json
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -28,7 +27,7 @@ from cryptography.hazmat.primitives.asymmetric import utils as asymmetric_utils
 from cryptography.hazmat.primitives import serialization as ks
 
 
-from suit_tool.manifest import COSE_Sign1, COSEList, SUITDigest,\
+from suit_tool.manifest import COSE_Sign1, COSEList, \
                                SUITWrapper, SUITBytes, SUITBWrapField
 import logging
 import binascii
