@@ -99,17 +99,14 @@ def make_sequence(cid, choices, seq, params, cmds, pcid_key=None, param_drctv='d
         for param, pcmd in neqparams.items():
             k,v = pcmd(cid, c)
             params[k] = v
-        print (params)
         if len(params):
             TECseq.append(mkCommand(pcid, param_drctv, params))
         if len(TECseq.items):
             TryEachCmd.append(TECseq)
     if len(TryEachCmd.items):
-        print(TryEachCmd)
         seq.append(mkCommand(cid, 'directive-try-each', TryEachCmd))
     # Finally, and equal commands
     for item, cmd in eqcmds.items():
-        print(cmd)
         seq.append(cmd(cid, choices[0]))
     return seq
 

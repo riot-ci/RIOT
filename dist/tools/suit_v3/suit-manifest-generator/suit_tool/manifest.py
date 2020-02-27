@@ -383,7 +383,6 @@ class SUITParameters(SUITManifestDict):
         'compress' : ('compression-info', 8, SUITCompressionInfo)
     })
     def from_json(self, j):
-        # print(j)
         return super(SUITParameters, self).from_json(j)
 
 class SUITTryEach(SUITManifestArray):
@@ -472,7 +471,6 @@ class SUITSequence(SUITManifestArray):
         suit_l = []
         suitCommonInfo.current_index = 0 if len(suitCommonInfo.component_ids) == 1 else None
         for i in self.items:
-            # print(i.json_key, i.arg)
             if i.json_key == 'directive-set-component-index':
                 suitCommonInfo.current_index = i.arg.v
             else:
