@@ -48,7 +48,7 @@ void cb(void *arg)
 
 int main(void)
 {
-    test_utils_interactive_sync();
+   //test_utils_interactive_sync();
 
     puts("\nRIOT RTT low-level driver test");
     puts("This test will display 'Hello' every 5 seconds\n");
