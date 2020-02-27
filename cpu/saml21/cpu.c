@@ -87,12 +87,8 @@ uint32_t sam0_gclk_freq(uint8_t id)
 static void _dfll_setup(void)
 {
 #if (CLOCK_CORECLOCK == 48000000U) || defined (MODULE_PERIPH_USBDEV)
-    _gclk_setup(3, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_XOSC32K);
-    /* Write Generic Clock Generator 3 configuration */
-    while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_GENCTRL(3)) {}
-
     GCLK->PCHCTRL[OSCCTRL_GCLK_ID_DFLL48].reg = GCLK_PCHCTRL_CHEN |
-                                                GCLK_PCHCTRL_GEN_GCLK3;
+                                                GCLK_PCHCTRL_GEN_GCLK2;
 
     /* wait for sync */
     while (!(GCLK->PCHCTRL[OSCCTRL_GCLK_ID_DFLL48].reg & GCLK_PCHCTRL_CHEN)) {}
@@ -173,8 +169,14 @@ void cpu_init(void)
 
     _osc32k_setup();
     _xosc32k_setup();
-    _dfll_setup();
 
+#if EXTERNAL_OSC32_SOURCE
+    _gclk_setup(SAM0_GCLK_32KHZ, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_XOSC32K);
+#else
+    _gclk_setup(SAM0_GCLK_32KHZ, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSCULP32K);
+#endif
+
+    _dfll_setup();
     /* Setup GCLK generators */
 #if (CLOCK_CORECLOCK == 16000000U)
     _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
@@ -182,12 +184,6 @@ void cpu_init(void)
      _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
 #else
 #error "Please select a valid CPU frequency"
-#endif
-
-#if EXTERNAL_OSC32_SOURCE
-    _gclk_setup(SAM0_GCLK_32KHZ, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_XOSC32K);
-#else
-    _gclk_setup(SAM0_GCLK_32KHZ, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSCULP32K);
 #endif
 
     /* clock used by timers */
