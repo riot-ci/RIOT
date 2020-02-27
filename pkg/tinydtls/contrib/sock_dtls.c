@@ -387,6 +387,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                        void *data, size_t max_len, uint32_t timeout)
 {
     xtimer_t timeout_timer;
+    int is_timed_out = 0;
 
     assert(sock);
     assert(data);
@@ -394,7 +395,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
 
     if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
         timeout_timer.callback = _timeout_callback;
-        timeout_timer.arg = sock;
+        timeout_timer.arg = &is_timed_out;
         xtimer_set(&timeout_timer, timeout);
     }
 
@@ -413,30 +414,23 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
             return res;
         }
 
+        _ep_to_session(&remote->ep, &remote->dtls_session);
+        res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
+                                  (uint8_t *)data, res);
+
         if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
             uint32_t time_passed = (xtimer_now_usec() - start_recv);
             timeout = (time_passed > timeout) ? 0: timeout - time_passed;
         }
 
-        _ep_to_session(&remote->ep, &remote->dtls_session);
-        res = dtls_handle_message(sock->dtls_ctx, &remote->dtls_session,
-                                  (uint8_t *)data, res);
-
         /* reset msg type */
         msg_t msg;
-        if (mbox_try_get(&sock->mbox, &msg)) {
-            switch(msg.type) {
-                case DTLS_EVENT_READ:
-                    xtimer_remove(&timeout_timer);
-                    return msg.content.value;
-                case DTLS_EVENT_TIMEOUT:
-                    DEBUG("sock_dtls: timed out while decrypting message\n");
-                    return -ETIMEDOUT;
-                default:
-                    break;
-            }
+        if (mbox_try_get(&sock->mbox, &msg) && msg.type == DTLS_EVENT_READ) {
+            xtimer_remove(&timeout_timer);
+            return msg.content.value;
         }
-        else if (timeout == 0) {
+        else if (is_timed_out || timeout == 0) {
+            DEBUG("sock_dtls: timed out while decrypting message\n");
             return -ETIMEDOUT;
         }
     }
@@ -472,9 +466,8 @@ static void _session_to_ep(const session_t *session, sock_udp_ep_t *ep)
 
 static void _timeout_callback(void *arg)
 {
-    msg_t timeout_msg = { .type = DTLS_EVENT_TIMEOUT };
-    sock_dtls_t *sock = arg;
-    mbox_try_put(&sock->mbox, &timeout_msg);
+    int *is_timed_out = (int *)arg;
+    *is_timed_out = 1;
 }
 
 /** @} */
