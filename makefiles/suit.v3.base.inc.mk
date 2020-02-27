@@ -7,8 +7,8 @@ SUIT_TOOL ?= $(RIOTBASE)/dist/tools/suit_v3/suit-manifest-generator/bin/suit-too
 #
 
 # Specify key to use.
-# Will use $(SUIT_KEY_DIR)/$(SUIT_KEY) $(SUIT_KEY_DIR)/$(SUIT_KEY).pub as
-# private/public key files, similar to how ssh names its key files.
+# Will use $(SUIT_KEY_DIR)/$(SUIT_KEY).pem as combined private/public key
+# files.
 SUIT_KEY ?= default
 
 ifeq (1, $(RIOT_CI_BUILD))
