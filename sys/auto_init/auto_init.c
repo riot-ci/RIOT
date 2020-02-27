@@ -395,6 +395,10 @@ void auto_init(void)
     extern void auto_init_adxl345(void);
     auto_init_adxl345();
 #endif
+#ifdef MODULE_BME680
+    extern void auto_init_bme680(void);
+    auto_init_bme680();
+#endif
 #ifdef MODULE_BMP180
     extern void auto_init_bmp180(void);
     auto_init_bmp180();
