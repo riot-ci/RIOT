@@ -75,7 +75,8 @@ unsigned dhcpv6_client_get_duid_l2(unsigned iface, dhcpv6_duid_l2_t *duid)
 static bool _ctx_match(const gnrc_sixlowpan_ctx_t *ctx,
                        const ipv6_addr_t *prefix, uint8_t prefix_len)
 {
-    return (ctx->prefix_len == prefix_len) &&
+    return (ctx != NULL) &&
+           (ctx->prefix_len == prefix_len) &&
            (ipv6_addr_match_prefix(&ctx->prefix, prefix) >= prefix_len);
 }
 
