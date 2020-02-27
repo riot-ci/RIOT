@@ -38,10 +38,11 @@ typedef struct {
 } manifest_blob_t;
 
 const manifest_blob_t manifest_blobs[] = {
-    { manifest0_bin, manifest0_bin_len, SUIT_ERR_SIGNATURE },
-    { manifest1_bin, manifest1_bin_len, SUIT_ERR_SEQUENCE_NUMBER },
-    { manifest2_bin, manifest2_bin_len, SUIT_ERR_COND },
-    { manifest3_bin, manifest3_bin_len, SUIT_OK },
+    /* Older GCC can't handle manifestx_bin_len here */
+    { manifest0_bin, sizeof(manifest0_bin), SUIT_ERR_SIGNATURE },
+    { manifest1_bin, sizeof(manifest1_bin), SUIT_ERR_SEQUENCE_NUMBER },
+    { manifest2_bin, sizeof(manifest2_bin), SUIT_ERR_COND },
+    { manifest3_bin, sizeof(manifest3_bin), SUIT_OK },
 };
 
 const unsigned manifest_blobs_numof = ARRAY_SIZE(manifest_blobs);
