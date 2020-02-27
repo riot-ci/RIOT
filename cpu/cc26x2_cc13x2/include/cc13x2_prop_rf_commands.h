@@ -54,7 +54,7 @@ uint32_t cc13x2_cmd_prop_radio_div_setup(uint16_t tx_power);
  *          always even if this command fails (COND_ALWAYS).
  *
  * @param[in] next_cmd Next command to run or 0 if not command needs to be
- *                     runned.
+ *                     run.
  *
  * @return  uint32_t The command address.
  */

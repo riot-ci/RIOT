@@ -313,7 +313,7 @@ static uint_fast8_t cc13x2_prop_rf_send_fs_cmd(uint16_t freq,
 }
 
 /**
- * @brief    Apply CPE patch for propietary mode.
+ * @brief    Apply CPE patch for proprietary mode.
  *
  *           This updates the internal code of the CPE with fixes from TI.
  *
