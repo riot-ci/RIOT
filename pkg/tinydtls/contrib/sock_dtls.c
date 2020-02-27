@@ -387,7 +387,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                        void *data, size_t max_len, uint32_t timeout)
 {
     xtimer_t timeout_timer;
-    int is_timed_out = 0;
+    volatile int is_timed_out = 0;
 
     assert(sock);
     assert(data);
@@ -395,7 +395,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
 
     if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
         timeout_timer.callback = _timeout_callback;
-        timeout_timer.arg = &is_timed_out;
+        timeout_timer.arg = (void *)&is_timed_out;
         xtimer_set(&timeout_timer, timeout);
     }
 
@@ -466,8 +466,7 @@ static void _session_to_ep(const session_t *session, sock_udp_ep_t *ep)
 
 static void _timeout_callback(void *arg)
 {
-    int *is_timed_out = (int *)arg;
-    *is_timed_out = 1;
+    *(int *)arg = 1;
 }
 
 /** @} */
