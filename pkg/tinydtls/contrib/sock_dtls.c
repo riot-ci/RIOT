@@ -25,7 +25,6 @@
 #include "dtls_debug.h"
 
 #define DTLS_EVENT_READ         (0x01E0)
-#define DTLS_EVENT_TIMEOUT      (0x01E1)
 
 #define DTLS_HANDSHAKE_BUFSIZE  (256)       /**< Size buffer used in handshake
                                                 to hold credentials */
@@ -356,18 +355,18 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
         else if (res > 0) {
             /* handshake initiated, wait until connected or timed out */
+            volatile int is_timed_out = 0;
             xtimer_t timeout_timer;
             timeout_timer.callback = _timeout_callback;
-            timeout_timer.arg = sock;
+            timeout_timer.arg = (void *)&is_timed_out;
             xtimer_set(&timeout_timer, DTLS_HANDSHAKE_TIMEOUT);
 
             msg_t msg;
             do {
                 mbox_get(&sock->mbox, &msg);
-            } while ((msg.type != DTLS_EVENT_CONNECTED) &&
-                     (msg.type != DTLS_EVENT_TIMEOUT));
+            } while ((msg.type != DTLS_EVENT_CONNECTED) && !is_timed_out);
 
-            if (msg.type == DTLS_EVENT_TIMEOUT) {
+            if (is_timed_out) {
                 DEBUG("sock_dtls: handshake process timed out\n");
 
                 /* deletes peer created in dtls_connect() before */
