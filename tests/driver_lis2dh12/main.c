@@ -36,6 +36,7 @@ static char str_out[3][8];
 /* allocate device descriptor */
 static lis2dh12_t dev;
 
+#ifdef MODULE_LIS2DH12_INT
 /* control interrupt */
 typedef struct {
     uint8_t line;
@@ -84,10 +85,14 @@ static void lis2dh12_int_reg_content(lis2dh12_t *dev, uint8_t pin){
     printf("\t ZH %d\n", !!(buffer & LIS2DH12_INT_SRC_ZH));
     printf("\t IA %d\n", !!(buffer & LIS2DH12_INT_SRC_IA));
 }
+#endif
 
 int main(void)
 {
+
+#ifdef MODULE_LIS2DH12_INT
     uint8_t flags = 0;
+#endif
 
     puts("LIS2DH12 accelerometer driver test application\n");
 
@@ -100,8 +105,9 @@ int main(void)
         return 1;
     }
 
+#ifdef MODULE_LIS2DH12_INT
     /* enable interrupt Pins */
-    if (lis2dh12_params[0].int_pin[0] != GPIO_UNDEF) {
+    if (lis2dh12_params[0].int1_pin != GPIO_UNDEF) {
         /* create and set the interrupt params */
         lis2dh12_int_params_t params_int1 = {
             .int_type = LIS2DH12_INT_1_TYPE_IA1,
@@ -115,7 +121,7 @@ int main(void)
     }
 
     /* create and set the interrupt params */
-    if (lis2dh12_params[0].int_pin[1] != GPIO_UNDEF) {
+    if (lis2dh12_params[0].int2_pin != GPIO_UNDEF) {
         lis2dh12_int_params_t params_int2 = {
             .int_type = LIS2DH12_INT_2_TYPE_IA2,
             .int_config = LIS2DH12_INT_CFG_YLIE,
@@ -126,9 +132,11 @@ int main(void)
         };
         lis2dh12_set_int(&dev, &params_int2, 2);
     }
+#endif
 
     while (1) {
 
+#ifdef MODULE_LIS2DH12_INT
         if (xtimer_mutex_lock_timeout(&isr_mtx, DELAY) == 0) {
             flags = isr_flags;
             isr_flags = 0;
@@ -146,6 +154,9 @@ int main(void)
             lis2dh12_int_reg_content(&dev, 2);
             flags &= ~(0x2);
         }
+#else
+        xtimer_usleep(DELAY);
+#endif
 
         /* read sensor data */
         int16_t data[3];

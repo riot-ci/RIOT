@@ -7,4 +7,7 @@ USEMODULE += fmt
 USEMODULE += xtimer
 USEMODULE += $(DRIVER)
 
+# for using lis2dh12 with interrupt function
+USEMODULE += lis2dh12_int
+
 include $(RIOTBASE)/Makefile.include
