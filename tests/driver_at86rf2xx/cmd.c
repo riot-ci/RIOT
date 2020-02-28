@@ -192,7 +192,7 @@ static size_t _parse_addr(uint8_t *out, size_t out_len, const char *in)
     const char *end_str = in;
     uint8_t *out_end = out;
     size_t count = 0;
-    int assert_cell = 1;
+    int expect_cell = 1;
 
     if (!in || !*in) {
         return 0;
@@ -204,15 +204,15 @@ static size_t _parse_addr(uint8_t *out, size_t out_len, const char *in)
     while (end_str >= in) {
         int a = 0, b = _dehex(*end_str--, -1);
         if (b < 0) {
-            if (assert_cell) {
+            if (expect_cell) {
                 return 0;
             }
             else {
-                assert_cell = 1;
+                expect_cell = 1;
                 continue;
             }
         }
-        assert_cell = 0;
+        expect_cell = 0;
 
         if (end_str >= in) {
             a = _dehex(*end_str--, 0);
@@ -223,7 +223,7 @@ static size_t _parse_addr(uint8_t *out, size_t out_len, const char *in)
         }
         *out_end++ = (a << 4) | b;
     }
-    if (assert_cell) {
+    if (expect_cell) {
         return 0;
     }
     /* out is reversed */
