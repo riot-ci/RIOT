@@ -11,9 +11,6 @@ RIOT_TERMINAL ?= socat
 
 DISABLE_MODULE += test_utils_interactive_sync
 
-# chronos is missing a getchar implementation
-BOARD_BLACKLIST += chronos
-
 APP_SHELL_FMT ?= NONE
 
 include $(RIOTBASE)/Makefile.include
