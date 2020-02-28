@@ -1038,6 +1038,8 @@ FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
 USEMODULE += $(filter periph_%,$(FEATURES_USED))
+# set all USED periph_% auto_init modules as DEFAULT_MODULE
+DEFAULT_MODULE += $(subst periph_,auto_init_periph_,$(filter periph_%,$(FEATURES_USED)))
 
 # select cpu_check_address pseudomodule if the corresponding feature is used
 USEMODULE += $(filter cpu_check_address, $(FEATURES_USED))
@@ -1059,9 +1061,14 @@ ifneq ($(OLD_USEMODULE) $(OLD_USEPKG),$(USEMODULE) $(USEPKG))
 else
   # Add auto_init_% DEFAULT_MODULES. This is done after the recursive cach since
   # none of these modules can trigger dependency resolution.
-  ifneq (,$(filter auto_init,$(USEMODULE)))
     DEFAULT_MODULE := $(sort $(DEFAULT_MODULE))
+  ifneq (,$(filter auto_init,$(USEMODULE)))
     USEMODULE += $(filter auto_init_%,$(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE)))
-    USEMODULE := $(sort $(USEMODULE))
   endif
+  # Add auto_init_periph_% to DEFAULT_MODULES. This is done after the recursive
+  # cach since none of these modules can trigger dependency resolution.
+  ifneq (,$(filter auto_init_periph,$(USEMODULE)))
+    USEMODULE += $(filter auto_init_periph_%,$(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE)))
+  endif
+    USEMODULE := $(sort $(USEMODULE))
 endif
