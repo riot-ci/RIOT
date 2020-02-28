@@ -47,13 +47,19 @@ int main() {
         m.unlock();
       }
     };
-    expect(resource == 0);
+#ifndef NDEBUG
+    /* We can't use expect here, otherwise cppcheck will produce errors */
+    assert(resource == 0);
+#endif
     auto start = std::chrono::system_clock::now();
     thread t1(f);
     thread t2(f);
     t1.join();
     t2.join();
-    expect(resource == 6);
+#ifndef NDEBUG
+    /* We can't use expect here, otherwise cppcheck will produce errors */
+    assert(resource == 6);
+#endif
     auto duration = std::chrono::duration_cast
       <chrono::milliseconds>(std::chrono::system_clock::now() - start);
     expect(duration.count() >= 600);
