@@ -71,10 +71,18 @@ static int read(int dev)
     if ((res = bme680_get_data(&bme680_devs_saul[dev], &data)) != BME680_OK) {
         return res;
     }
+
+#if MODULE_BME680_FP
+    _temp[dev] = data.temperature * 100;
+    _press[dev] = data.pressure / 100;
+    _hum[dev] = data.humidity * 100;
+#else
     _temp[dev] = data.temperature;
     _press[dev] = data.pressure / 100;
     _hum[dev] = data.humidity / 10;
-    _gas[dev] = data.gas_resistance;
+#endif
+    _gas[dev] = (data.status & BME680_GASM_VALID_MSK) ? data.gas_resistance : 0;
+
     /* mark sensor values as valid */
     _temp_valid[dev] = true;
     _press_valid[dev] = true;
