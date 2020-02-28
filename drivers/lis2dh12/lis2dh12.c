@@ -197,7 +197,7 @@ int lis2dh12_read(const lis2dh12_t *dev, int16_t *data)
 #ifdef MODULE_LIS2DH12_INT
 int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params, uint8_t int_line)
 {
-    assert (int_line == 1 || int_line == 2);
+    assert (int_line == LIS2DH12_INT1 || int_line == LIS2DH12_INT2);
     assert (dev && params->int_config && params->int_type);
     assert (params->int_threshold >= 0);
     assert (params->int_duration >= 0);
@@ -208,7 +208,7 @@ int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params,
 
     switch (int_line){
         /* first interrupt line (INT1) */
-        case 1:
+        case LIS2DH12_INT1:
             pin = dev->p->int1_pin;
             assert (pin != GPIO_UNDEF);
 
@@ -222,7 +222,7 @@ int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params,
             _write(dev, REG_INT1_DURATION, params->int_duration);
             break;
         /* second interrupt line (INT2) */
-        case 2:
+        case LIS2DH12_INT2:
             pin = dev->p->int2_pin;
             assert (pin != GPIO_UNDEF);
 
@@ -245,17 +245,17 @@ int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params,
 int lis2dh12_read_int_src(const lis2dh12_t *dev, uint8_t *data, uint8_t int_line)
 {
     assert(dev && data);
-    assert(int_line == 1 || int_line == 2);
+    assert(int_line == LIS2DH12_INT1 || int_line == LIS2DH12_INT2);
 
     _acquire(dev);
 
     switch (int_line) {
         /* first interrupt line (INT1) */
-        case 1:
+        case LIS2DH12_INT1:
             *data = _read(dev, REG_INT1_SRC);
             break;
         /* second interrupt line (INT2) */
-        case 2:
+        case LIS2DH12_INT2:
             *data = _read(dev, REG_INT2_SRC);
             break;
     }

@@ -118,11 +118,19 @@ enum {
     LIS2DH12_OK    =  0,            /**< everything was fine */
     LIS2DH12_NOBUS = -1,            /**< bus interface error */
     LIS2DH12_NODEV = -2,            /**< unable to talk to device */
-    LIS2DH12_NOINT = -3,            /**< wrong interrupt line (has to be 1 or 2) */
+    LIS2DH12_NOINT = -3,            /**< wrong interrupt line (has to be LIS2DH12_INT1 or LIS2DH12_INT2) */
     LIS2DH12_NODATA= -4,            /**< no data available */
 };
 
 #if MODULE_LIS2DH12_INT || DOXYGEN
+/*
+ * @brief Interrupt lines
+ */
+enum{
+    LIS2DH12_INT1 = 1,              /* first interrupt line */
+    LIS2DH12_INT2 = 2,              /* second interrupt line */
+};
+
 /**
  * @brief   Interrupt config register values
  */
@@ -142,20 +150,20 @@ enum {
  */
 enum {
     /* for interrupt 1 (CTRL_REG3) */
-    LIS2DH12_INT_1_TYPE_OVERRUN = 0x02, /**< FIFO overrun interrupt on INT_1 */
-    LIS2DH12_INT_1_TYPE_WTM     = 0x04, /**< FIFO watermark inter. on INT_1 */
-    LIS2DH12_INT_1_TYPE_ZYXDA   = 0x10, /**< ZYXDA interrupt on INT_1 */
-    LIS2DH12_INT_1_TYPE_IA2     = 0x20, /**< IA2 interrupt on INT_1 */
-    LIS2DH12_INT_1_TYPE_IA1     = 0x40, /**< IA1 interrupt on INT_1 */
-    LIS2DH12_INT_1_TYPE_CLICK   = 0x80, /**< click interrupt on INT_1 */
+    LIS2DH12_INT_TYPE_I1_OVERRUN = 0x02, /**< FIFO overrun interrupt on INT1 */
+    LIS2DH12_INT_TYPE_I1_WTM     = 0x04, /**< FIFO watermark inter. on INT1 */
+    LIS2DH12_INT_TYPE_I1_ZYXDA   = 0x10, /**< ZYXDA interrupt on INT1 */
+    LIS2DH12_INT_TYPE_I1_IA2     = 0x20, /**< IA2 interrupt on INT1 */
+    LIS2DH12_INT_TYPE_I1_IA1     = 0x40, /**< IA1 interrupt on INT1 */
+    LIS2DH12_INT_TYPE_I1_CLICK   = 0x80, /**< click interrupt on INT1 */
 
     /* for interrupt 2 (CTRL_REG6) */
-    LIS2DH12_INT_2_TYPE_POLARITY = 0x02, /**< INT_1 and INT_2 pin polarity */
-    LIS2DH12_INT_2_TYPE_ACT      = 0x08, /**< enable activity interrupt on INT_2 */
-    LIS2DH12_INT_2_TYPE_BOOT     = 0x10, /**< enable boot on INT_2 */
-    LIS2DH12_INT_2_TYPE_IA2      = 0x20, /**< IA2 on INT_2 */
-    LIS2DH12_INT_2_TYPE_IA1      = 0x40, /**< IA1 on INT_2 */
-    LIS2DH12_INT_2_TYPE_CLICK    = 0x80, /**< click interrupt on INT_2 */
+    LIS2DH12_INT_TYPE_INT_POLARITY = 0x02, /**< INT1 and INT2 pin polarity */
+    LIS2DH12_INT_TYPE_I2_ACT       = 0x08, /**< enable activity interrupt on INT2 */
+    LIS2DH12_INT_TYPE_I2_BOOT      = 0x10, /**< enable boot on INT2 */
+    LIS2DH12_INT_TYPE_I2_IA2       = 0x20, /**< IA2 on INT2 */
+    LIS2DH12_INT_TYPE_I2_IA1       = 0x40, /**< IA1 on INT2 */
+    LIS2DH12_INT_TYPE_I2_CLICK     = 0x80, /**< click interrupt on INT2 */
 };
 
 /**

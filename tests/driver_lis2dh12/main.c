@@ -71,7 +71,7 @@ static void lis2dh12_int_cb(void* _ctx) {
 /* print interrupt register */
 static void lis2dh12_int_reg_content(lis2dh12_t *dev, uint8_t pin){
 
-    assert(pin == 1 || pin == 2);
+    assert(pin == LIS2DH12_INT1 || pin == LIS2DH12_INT2);
 
     uint8_t buffer;
     lis2dh12_read_int_src(dev, &buffer, pin);
@@ -110,27 +110,27 @@ int main(void)
     if (lis2dh12_params[0].int1_pin != GPIO_UNDEF) {
         /* create and set the interrupt params */
         lis2dh12_int_params_t params_int1 = {
-            .int_type = LIS2DH12_INT_1_TYPE_IA1,
+            .int_type = LIS2DH12_INT_TYPE_I1_IA1,
             .int_config = LIS2DH12_INT_CFG_XLIE,
             .int_threshold = 31,
             .int_duration = 1,
             .cb = lis2dh12_int_cb,
             .arg = &ctx[0],
         };
-        lis2dh12_set_int(&dev, &params_int1, 1);
+        lis2dh12_set_int(&dev, &params_int1, LIS2DH12_INT1);
     }
 
     /* create and set the interrupt params */
     if (lis2dh12_params[0].int2_pin != GPIO_UNDEF) {
         lis2dh12_int_params_t params_int2 = {
-            .int_type = LIS2DH12_INT_2_TYPE_IA2,
+            .int_type = LIS2DH12_INT_TYPE_I2_IA2,
             .int_config = LIS2DH12_INT_CFG_YLIE,
             .int_threshold = 31,
             .int_duration = 1,
             .cb = lis2dh12_int_cb,
             .arg = &ctx[1],
         };
-        lis2dh12_set_int(&dev, &params_int2, 2);
+        lis2dh12_set_int(&dev, &params_int2, LIS2DH12_INT2);
     }
 #endif
 
@@ -144,14 +144,14 @@ int main(void)
 
         /* check interrupt 1 and read register */
         if (flags & 0x1) {
-            printf("reads interrupt %d\n", 1);
-            lis2dh12_int_reg_content(&dev, 1);
+            printf("reads interrupt %d\n", LIS2DH12_INT1);
+            lis2dh12_int_reg_content(&dev, LIS2DH12_INT1);
             flags &= ~(0x1);
         }
         /* check interrupt 2 and read register */
         if (flags & 0x2) {
-            printf("reads interrupt %d\n", 2);
-            lis2dh12_int_reg_content(&dev, 2);
+            printf("reads interrupt %d\n", LIS2DH12_INT2);
+            lis2dh12_int_reg_content(&dev, LIS2DH12_INT2);
             flags &= ~(0x2);
         }
 #else
