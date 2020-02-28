@@ -926,7 +926,9 @@ int cc13x2_prop_rf_recv(void *buf, size_t len,
     int8_t rssi = (int8_t)payload[payload_len];
     uint8_t lqi = payload[payload_len + CC13X2_RSSI_SIZE];
 
+#if ENABLE_DEBUG == 1
     printf("[cc132_prop_rf_recv]: rssi = %d, lqi = %u\n", rssi, lqi);
+#endif
 
     if (!buf) {
         /* Without buf return only the length so it can be read later */
