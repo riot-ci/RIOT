@@ -213,10 +213,11 @@ static inline void handle_isr(uint8_t port_num)
     port->IC             = 0x000000ff;
     port->IRQ_DETECT_ACK = (0xff << (port_num * GPIO_BITS_PER_PORT));
 
-    for (int i = 0; i < GPIO_BITS_PER_PORT; i++) {
-        if (state & (1 << i)) {
-            isr_ctx[port_num][i].cb(isr_ctx[port_num][i].arg);
-        }
+    state &= GPIO_BIT_MASK;
+    while (state) {
+        int pin = 8 * sizeof(state) - __builtin_clz(state) - 1;
+        state &= ~(1 << pin);
+        isr_ctx[port_num][pin].cb(isr_ctx[port_num][pin].arg);
     }
 
     cortexm_isr_end();
