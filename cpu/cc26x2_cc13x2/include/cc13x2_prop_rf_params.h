@@ -189,8 +189,8 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
  */
 #define IEEE802154_PHR_FRAME_LENGTH_BITS (11U)
 
-#define CC13X2_RSSI_SIZE (1U) /**< RSSI size in bytes */
-#define CC13X2_CORR_SIZE (1U) /**< LQI size in bytes */
+#define CC13X2_RSSI_SIZE (1U)   /**< RSSI size in bytes */
+#define CC13X2_CORR_SIZE (1U)   /**< LQI size in bytes */
 
 /**
  * @brief   Size in bytes of the packet metadata in the RX buffer

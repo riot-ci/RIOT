@@ -58,11 +58,11 @@ extern "C" {
  * | FS               | THE RFCPE is running a CMD_FS command              |
  */
 typedef enum {
-    FSM_STATE_OFF = 0, /**< Disabled, radio powered off */
-    FSM_STATE_SLEEP, /**< Sleep state, awaiting for actions */
-    FSM_STATE_RX, /**< Receive state */
-    FSM_STATE_TX, /**< Transmitting packets */
-    FSM_STATE_FS, /**< Running CMD_FS command */
+    FSM_STATE_OFF = 0,  /**< Disabled, radio powered off */
+    FSM_STATE_SLEEP,    /**< Sleep state, awaiting for actions */
+    FSM_STATE_RX,       /**< Receive state */
+    FSM_STATE_TX,       /**< Transmitting packets */
+    FSM_STATE_FS,       /**< Running CMD_FS command */
 } cc13x2_prop_rf_state_t;
 
 /**
@@ -175,7 +175,7 @@ void cc13x2_prop_rf_get_ieee_eui64(uint8_t *addr);
  * @param[in] handler The handler function pointer.
  * @param[in] arg     The argument to pass to the handler.
  */
-void cc13x2_prop_rf_irq_set_handler(void(*handler)(void *), void* arg);
+void cc13x2_prop_rf_irq_set_handler(void (*handler)(void *), void *arg);
 
 /**
  * @brief   Read the contents of the next readily available buffer.

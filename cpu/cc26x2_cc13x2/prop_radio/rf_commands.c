@@ -43,6 +43,7 @@ static volatile CMD_ALIGN rfc_CMD_PROP_TX_ADV_t _cmd_prop_tx_adv;
 static void memset_volatile(volatile void *s, char c, size_t n)
 {
     volatile char *p = s;
+
     while (n-- > 0) {
         *p++ = c;
     }
@@ -53,9 +54,9 @@ uint32_t cc13x2_cmd_sync_start_rat(uint32_t next_cmd, uint32_t rat0)
     memset_volatile(&_cmd_sync_start_rat, 0, sizeof(_cmd_sync_start_rat));
 
     /* Command default values */
-    _cmd_sync_start_rat.commandNo                = CMD_SYNC_START_RAT;
+    _cmd_sync_start_rat.commandNo = CMD_SYNC_START_RAT;
     _cmd_sync_start_rat.startTrigger.triggerType = TRIG_NOW;
-    _cmd_sync_start_rat.condition.rule           = COND_ALWAYS;
+    _cmd_sync_start_rat.condition.rule = COND_ALWAYS;
 
     /* Radio timer offset */
     _cmd_sync_start_rat.rat0 = rat0;

@@ -106,22 +106,22 @@
  * @brief   RF Core status structure
  */
 typedef struct {
-    volatile cc13x2_prop_rf_state_t state; /**< RF Core current state */
-    volatile output_config_t const *tx_power; /**< Transmit power current
-                                                   configuration */
-    volatile uint32_t rat_offset; /**< Radio Timer last offset, used when we
-                                       start/stop the RAT on enabling and
-                                       disabling of the RF Core */
-    volatile uint16_t channel; /**< Current channel */
-    volatile cc13x2_prop_rf_irq_flags_t irq_handler_flags; /**< IRQ handler
-                                                                flags */
-    void (* irq_handler)(void *); /**< Netdev IRQ handler */
-    void *irq_handler_arg; /**< Netdev IRQ handler argument */
+    volatile cc13x2_prop_rf_state_t state;                  /**< RF Core current state */
+    volatile output_config_t const *tx_power;               /**< Transmit power current
+                                                                 configuration */
+    volatile uint32_t rat_offset;                           /**< Radio Timer last offset, used when we
+                                                                 start/stop the RAT on enabling and
+                                                                 disabling of the RF Core */
+    volatile uint16_t channel;                              /**< Current channel */
+    volatile cc13x2_prop_rf_irq_flags_t irq_handler_flags;  /**< IRQ handler
+                                                                 flags */
+    void (*irq_handler)(void *);                            /**< Netdev IRQ handler */
+    void *irq_handler_arg;                                  /**< Netdev IRQ handler argument */
 } rf_core_t;
 
-static volatile rf_core_t _rf_core; /**< Driver internal status */
+static volatile rf_core_t _rf_core;             /**< Driver internal status */
 
-static ALIGN(4) rfc_propRxOutput_t _rf_stats; /**< RX statistics */
+static ALIGN(4) rfc_propRxOutput_t _rf_stats;   /**< RX statistics */
 
 /**
  * @brief   RX buffers; each one being an entry in the @ref _rx_data_queue.
@@ -135,7 +135,7 @@ static ALIGN(4) uint8_t _rx_buf2[BUF_SIZE]; /**< RX buffer. Entry 2 */
 static ALIGN(4) uint8_t _rx_buf3[BUF_SIZE]; /**< RX buffer. Entry 3 */
 /** @} */
 
-static ALIGN(4) uint8_t _tx_buf[BUF_SIZE]; /**< The transmit buffer */
+static ALIGN(4) uint8_t _tx_buf[BUF_SIZE];  /**< The transmit buffer */
 
 static ALIGN(4) dataQueue_t _rx_data_queue; /**< The RX data queue */
 
@@ -189,8 +189,7 @@ static void stop_interrupts(void)
     IntDisable(INT_RFC_CPE_0);
     IntDisable(INT_RFC_CPE_1);
 
-    if (!ints_disabled)
-    {
+    if (!ints_disabled) {
         IntMasterEnable();
     }
 }
@@ -247,6 +246,7 @@ static void init_bufs(void)
 static uint_fast8_t clear_rx_queue(dataQueue_t *queue)
 {
     uint32_t cmd_clear_rx = cc13x2_cmd_clear_rx(queue);
+
     return cc13x2_dbell_execute(cmd_clear_rx);
 }
 
@@ -325,6 +325,7 @@ static uint_fast8_t cc13x2_prop_rf_apply_patch(void)
     uint_fast8_t ret;
     uint32_t cmd_cmd0 = cc13x2_cmd_cmd0(RFC_PWR_PWMCLKEN_MDMRAM |
                                         RFC_PWR_PWMCLKEN_RFERAM);
+
     ret = cc13x2_dbell_execute(cmd_cmd0);
     if (ret != CMDSTA_Done) {
         return ret;
@@ -475,7 +476,8 @@ void isr_rfc_cpe0(void)
         if (_rf_core.state == FSM_STATE_FS) {
             DEBUG_PUTS("[isr_rfc_cpe0]: CMD_FS finished\n");
             _rf_core.state = FSM_STATE_SLEEP;
-        } else if (_rf_core.state == FSM_STATE_RX) {
+        }
+        else if (_rf_core.state == FSM_STATE_RX) {
             uint16_t rx_status = cc13x2_cmd_prop_rx_adv_get_status();
             switch (rx_status) {
                 case PROP_DONE_RXERR:
@@ -488,7 +490,8 @@ void isr_rfc_cpe0(void)
                     _rf_core.state = FSM_STATE_SLEEP;
                     break;
             }
-        } else if (_rf_core.state == FSM_STATE_TX) {
+        }
+        else if (_rf_core.state == FSM_STATE_TX) {
             uint16_t tx_status = cc13x2_cmd_prop_tx_adv_get_status();
 
             if (tx_status == PROP_DONE_OK) {

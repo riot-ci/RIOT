@@ -154,9 +154,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 uint16_t chan = *(const uint16_t *)val;
                 cc13x2_prop_rf_set_chan(chan, false);
                 netdev_ieee802154_set((netdev_ieee802154_t *)netdev,
-                                       opt,
-                                       val,
-                                       len);
+                                      opt,
+                                      val,
+                                      len);
                 res = sizeof(uint16_t);
             }
             break;
@@ -321,6 +321,7 @@ static void _isr(netdev_t *netdev)
 {
     unsigned state = irq_disable();
     cc13x2_prop_rf_irq_flags_t flags = cc13x2_prop_rf_get_flags();
+
     irq_restore(state);
 
     if (flags & IRQ_FLAGS_HANDLE_RX) {
@@ -347,7 +348,7 @@ netdev_driver_t cc13x2_prop_rf_driver =
     .send = _send,
     .recv = _recv,
     .init = _init,
-    .isr  = _isr,
-    .set  = _set,
-    .get  = _get,
+    .isr = _isr,
+    .set = _set,
+    .get = _get,
 };
