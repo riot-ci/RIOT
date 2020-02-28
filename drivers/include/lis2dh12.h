@@ -88,14 +88,17 @@ typedef enum {
  * @brief   LIS2DH12 configuration parameters
  */
 typedef struct {
-#ifdef MODULE_LIS2DH12_SPI
+#if MODULE_LIS2DH12_SPI || DOXYGEN
     spi_t spi;                      /**< SPI bus the device is connected to */
     gpio_t cs;                      /**< connected chip select pin */
 #else
     i2c_t i2c;                      /**< I2C bus the device is connected to */
     uint8_t addr;                   /**< device address on the I2C bus */
 #endif
-    gpio_t int_pin[2];              /**< Interrupt pins */
+#if MODULE_LIS2DH12_INT || DOXYGEN
+    gpio_t int1_pin;                /**< first interrupt pin */
+    gpio_t int2_pin;                /**< second interrupt pin */
+#endif
     lis2dh12_scale_t scale;         /**< sampling sensitivity used */
     lis2dh12_rate_t rate;           /**< sampling rate used */
 } lis2dh12_params_t;
@@ -119,6 +122,7 @@ enum {
     LIS2DH12_NODATA= -4,            /**< no data available */
 };
 
+#if MODULE_LIS2DH12_INT || DOXYGEN
 /**
  * @brief   Interrupt config register values
  */
@@ -176,6 +180,7 @@ typedef struct {
 #define LIS2DH12_INT_SRC_ZL     (0x10)  /**< Z low event has occurred */
 #define LIS2DH12_INT_SRC_ZH     (0x20)  /**< Z high event has occurred */
 #define LIS2DH12_INT_SRC_IA     (0x40)  /**< 1 if interrupt occurred */
+#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   Status of INT_SRC register
@@ -194,6 +199,7 @@ typedef struct {
  */
 extern const saul_driver_t lis2dh12_saul_driver;
 
+#if MODULE_LIS2DH12_INT || DOXYGEN
 /**
  * @brief   Set the interrupt values in LIS2DH12 sensor device
  *
@@ -217,6 +223,7 @@ int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params,
  * @return  LIS2DH12_NOBUS on bus errors
  */
 int lis2dh12_read_int_src(const lis2dh12_t *dev, uint8_t *data, uint8_t int_line);
+#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   Initialize the given LIS2DH12 sensor device
