@@ -323,6 +323,13 @@ ifneq (,$(filter lc709203f,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio_irq
 endif
 
+ifneq (,$(filter lis2dh12_int,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio_irq
+  ifeq (,$(filter lis2dh12_i2c lis2dh12_spi,$(USEMODULE)))
+    $(error Do not use module lis2dh12_int without lis2dh12)
+  endif
+endif
+
 ifneq (,$(filter lis2dh12%,$(USEMODULE)))
   ifneq (,$(filter lis2dh12_spi,$(USEMODULE)))
     FEATURES_REQUIRED += periph_gpio
