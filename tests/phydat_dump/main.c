@@ -36,7 +36,7 @@ _phydat_test_t _test_vector[] =
     { .dim = 3, .dat = { .val = { 1234, 13456, -14567 }, .unit = UNIT_M, .scale = 3 } },
     { .dim = 3, .dat = { .val = { 1234, 13456, -14567 }, .unit = UNIT_M, .scale = -2 } },
     { .dim = 3, .dat = { .val = { 1234, 13456, -14567 }, .unit = UNIT_M, .scale = -3 } },
-    { .dim = 1, .dat = { .val = { -12345 }, .unit = UNIT_M2, .scale = -5 } }, 
+    { .dim = 1, .dat = { .val = { -12345 }, .unit = UNIT_M2, .scale = -5 } },
     { .dim = 1, .dat = { .val = { -12345 }, .unit = UNIT_M3, .scale = -6 } },
     { .dim = 3, .dat = { .val = { 12, 34, 5678}, .unit = UNIT_G, .scale = -2 } },
     { .dim = 3, .dat = { .val = { 123, 345, 678 }, .unit = UNIT_DPS, .scale = -3 } },
@@ -63,7 +63,7 @@ _phydat_test_t _test_vector[] =
     { .dim = 3, .dat = { .val = { 56, 34, 12 }, .unit = UNIT_TIME, .scale = -1 } },
     { .dim = 3, .dat = { .val = { 27, 2, 2020 }, .unit = UNIT_DATE, .scale = -1 } },
 };
- 
+
 int main(void)
 {
     puts("Visual phydat test application");
