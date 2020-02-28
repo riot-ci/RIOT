@@ -45,6 +45,10 @@ For this it needs to have the intelhex library installed.
 
     apt install python3-intelhex
 
+or
+
+    pip3 install intelhex
+
 ### Flashing via JTAG
 
 To be able to flash the board via JTAG you need to install Seggers JLinkExe
