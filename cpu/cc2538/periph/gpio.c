@@ -213,7 +213,7 @@ static inline void handle_isr(uint8_t port_num)
     port->IC             = 0x000000ff;
     port->IRQ_DETECT_ACK = (0xff << (port_num * GPIO_BITS_PER_PORT));
 
-    state &= GPIO_BIT_MASK;
+    state &= (1 << GPIO_BITS_PER_PORT) - 1;
     while (state) {
         int pin = 8 * sizeof(state) - __builtin_clz(state) - 1;
         state &= ~(1 << pin);
