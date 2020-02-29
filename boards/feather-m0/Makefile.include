@@ -11,5 +11,5 @@ ifeq ($(PROGRAMMER),jlink)
   include $(RIOTMAKE)/tools/jlink.inc.mk
 endif
 
-# Include all definitions for flashing with bossa other USB
+# Include all definitions for flashing with bossa over USB
 include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.include
