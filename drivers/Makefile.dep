@@ -558,6 +558,12 @@ ifneq (,$(filter rgbled,$(USEMODULE)))
   USEMODULE += color
 endif
 
+ifneq (,$(filter rtt_rtc,$(USEMODULE)))
+  # use DEFAULT_MODULE so it can be disabled in the unit test
+  DEFAULT_MODULE    += periph_rtt
+  FEATURES_PROVIDED += periph_rtc
+endif
+
 ifneq (,$(filter rn2%3,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_uart
