@@ -1,0 +1,2 @@
+USEMODULE += board
+include $(RIOTBOARD)/openlabs-kw41z-mini/Makefile.dep
