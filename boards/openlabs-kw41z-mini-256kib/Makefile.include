@@ -1,0 +1,2 @@
+INCLUDES += -I$(RIOTBOARD)/openlabs-kw41z-mini/include
+include $(RIOTBOARD)/openlabs-kw41z-mini/Makefile.include
