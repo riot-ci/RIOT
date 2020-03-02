@@ -474,19 +474,6 @@ void ztimer_set_timeout_flag(ztimer_clock_t *clock, ztimer_t *timer,
                              uint32_t timeout);
 
 /**
- * @brief   Measure ztimer overhead
- *
- * This function can be used to measure the overhead incurred by ztimer.
- * It will configure a callback to trigger after @p base ticks, then return the
- * number of ticks that have passed, minus @p base.
- *
- * @param[in]   clock   ztimer clock to operate on
- * @param[in]   base    base interval to use
- * @return  (time from ztimer_set() until callback) - base
- */
-uint32_t ztimer_overhead(ztimer_clock_t *clock, uint32_t base);
-
-/**
  * @brief   Update ztimer clock head list offset
  *
  * @internal

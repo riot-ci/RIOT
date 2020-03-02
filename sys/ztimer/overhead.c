@@ -19,7 +19,9 @@
  *
  * @}
  */
+
 #include "ztimer.h"
+#include "ztimer/overhead.h"
 
 typedef struct {
     ztimer_clock_t *clock;
