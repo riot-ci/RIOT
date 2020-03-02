@@ -57,7 +57,7 @@ void ztimer_convert_init(ztimer_convert_t *ztimer_convert,
  *
  * Used by some conversion modules as ztimer_clock_t::ops.cancel().
  *
- * @param[in]   ztimer  ztimer device to operate on
+ * @param[in]       clock   ztimer clock to operate on
  */
 void ztimer_convert_cancel(ztimer_clock_t *clock);
 
