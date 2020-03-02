@@ -21,9 +21,9 @@
 #include "irq.h"
 #include "ztimer/periph.h"
 
-static void _ztimer_periph_set(ztimer_clock_t *ztimer, uint32_t val)
+static void _ztimer_periph_set(ztimer_clock_t *clock, uint32_t val)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)ztimer;
+    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
 
     uint16_t min = ztimer_periph->min;
 
@@ -36,16 +36,16 @@ static void _ztimer_periph_set(ztimer_clock_t *ztimer, uint32_t val)
     irq_restore(state);
 }
 
-static uint32_t _ztimer_periph_now(ztimer_clock_t *ztimer)
+static uint32_t _ztimer_periph_now(ztimer_clock_t *clock)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)ztimer;
+    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
 
     return timer_read(ztimer_periph->dev);
 }
 
-static void _ztimer_periph_cancel(ztimer_clock_t *ztimer)
+static void _ztimer_periph_cancel(ztimer_clock_t *clock)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)ztimer;
+    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
 
     timer_clear(ztimer_periph->dev, 0);
 }
@@ -62,11 +62,11 @@ static const ztimer_ops_t _ztimer_periph_ops = {
     .cancel = _ztimer_periph_cancel,
 };
 
-void ztimer_periph_init(ztimer_periph_t *ztimer, tim_t dev, unsigned long freq,
+void ztimer_periph_init(ztimer_periph_t *clock, tim_t dev, unsigned long freq,
                         uint32_t max_val)
 {
-    ztimer->dev = dev;
-    ztimer->super.ops = &_ztimer_periph_ops;
-    ztimer->super.max_value = max_val;
-    timer_init(dev, freq, _ztimer_periph_callback, ztimer);
+    clock->dev = dev;
+    clock->super.ops = &_ztimer_periph_ops;
+    clock->super.max_value = max_val;
+    timer_init(dev, freq, _ztimer_periph_callback, clock);
 }

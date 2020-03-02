@@ -70,9 +70,9 @@ static void _ztimer_rtc_callback(void *arg)
     ztimer_handler((ztimer_clock_t *)arg);
 }
 
-static uint32_t _ztimer_rtc_now(ztimer_clock_t *ztimer)
+static uint32_t _ztimer_rtc_now(ztimer_clock_t *clock)
 {
-    (void)ztimer;
+    (void)clock;
 
     struct tm time;
     rtc_get_time(&time);
@@ -82,7 +82,7 @@ static uint32_t _ztimer_rtc_now(ztimer_clock_t *ztimer)
                                    time.tm_sec);
 }
 
-static void _ztimer_rtc_set(ztimer_clock_t *ztimer, uint32_t val)
+static void _ztimer_rtc_set(ztimer_clock_t *clock, uint32_t val)
 {
     unsigned state = irq_disable();
 
@@ -99,7 +99,7 @@ static void _ztimer_rtc_set(ztimer_clock_t *ztimer, uint32_t val)
         _timestamp_to_gmt_civil(&_tm, target);
 
         /* TODO: ensure this doesn't underflow */
-        rtc_set_alarm(&_tm, _ztimer_rtc_callback, ztimer);
+        rtc_set_alarm(&_tm, _ztimer_rtc_callback, clock);
 
         if (val > 1) {
             /* If val <= 1, it is possible that the RTC second flips somewhere
@@ -117,9 +117,9 @@ static void _ztimer_rtc_set(ztimer_clock_t *ztimer, uint32_t val)
     irq_restore(state);
 }
 
-static void _ztimer_rtc_cancel(ztimer_clock_t *ztimer)
+static void _ztimer_rtc_cancel(ztimer_clock_t *clock)
 {
-    (void)ztimer;
+    (void)clock;
     rtc_clear_alarm();
 }
 
@@ -129,10 +129,10 @@ static const ztimer_ops_t _ztimer_rtc_ops = {
     .cancel = _ztimer_rtc_cancel,
 };
 
-void ztimer_rtc_init(ztimer_rtc_t *ztimer)
+void ztimer_rtc_init(ztimer_rtc_t *clock)
 {
-    ztimer->ops = &_ztimer_rtc_ops;
-    ztimer->max_value = 0xffffffff;
+    clock->ops = &_ztimer_rtc_ops;
+    clock->max_value = UINT32_MAX;
     rtc_init();
     rtc_poweron();
 }

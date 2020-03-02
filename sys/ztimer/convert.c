@@ -25,9 +25,9 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-void ztimer_convert_cancel(ztimer_clock_t *ztimer)
+void ztimer_convert_cancel(ztimer_clock_t *clock)
 {
-    ztimer_convert_t *ztimer_convert = (ztimer_convert_t *)ztimer;
+    ztimer_convert_t *ztimer_convert = (ztimer_convert_t *)clock;
 
     ztimer_remove(ztimer_convert->lower, &ztimer_convert->lower_entry);
 }

@@ -80,7 +80,7 @@ static const ztimer_ops_t _ztimer_convert_shift_ops_up = {
 void ztimer_convert_shift_up_init(ztimer_convert_shift_t *clock,
                                   ztimer_clock_t *lower, unsigned shift)
 {
-    uint32_t max_value = 0xffffffff;
+    uint32_t max_value = UINT32_MAX;
 
     DEBUG(
         "ztimer_convert_shift_init() shift=%i lower_maxval=%" PRIu32 "\n",

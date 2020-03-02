@@ -73,9 +73,9 @@ void ztimer_mock_fire(ztimer_mock_t *self)
 
 /* Implementations for the standard ztimer operations below */
 
-static void ztimer_mock_op_set(ztimer_clock_t *dev, uint32_t val)
+static void ztimer_mock_op_set(ztimer_clock_t *clock, uint32_t val)
 {
-    ztimer_mock_t *self = (ztimer_mock_t*)dev;
+    ztimer_mock_t *self = (ztimer_mock_t*)clock;
     ++self->calls.set;
     self->target = val & self->mask;
     self->armed = 1;
@@ -83,18 +83,18 @@ static void ztimer_mock_op_set(ztimer_clock_t *dev, uint32_t val)
         self->calls.set, self->now, self->target, self->armed);
 }
 
-static uint32_t ztimer_mock_op_now(ztimer_clock_t *dev)
+static uint32_t ztimer_mock_op_now(ztimer_clock_t *clock)
 {
-    ztimer_mock_t *self = (ztimer_mock_t*)dev;
+    ztimer_mock_t *self = (ztimer_mock_t*)clock;
     ++self->calls.now;
     DEBUG("zmock_now:    %3u now=0x%08" PRIx32 ", target=0x%08" PRIx32 " (%u)\n",
         self->calls.now, self->now, self->target, self->armed);
     return self->now;
 }
 
-static void ztimer_mock_op_cancel(ztimer_clock_t *dev)
+static void ztimer_mock_op_cancel(ztimer_clock_t *clock)
 {
-    ztimer_mock_t *self = (ztimer_mock_t*)dev;
+    ztimer_mock_t *self = (ztimer_mock_t*)clock;
     ++self->calls.cancel;
     DEBUG("zmock_cancel: %3u now=0x%08" PRIx32 ", target=0x%08" PRIx32 " (%u)\n",
         self->calls.cancel, self->now, self->target, self->armed);
@@ -115,7 +115,7 @@ void ztimer_mock_init(ztimer_mock_t *self, unsigned width)
         .super = { .ops = &ztimer_mock_ops, .max_value = max_value },
     };
     DEBUG("zmock_init: %p width=%u mask=0x%08" PRIx32 "\n", (void *)self, width, self->mask);
-    if (max_value < 0xffffffff) {
+    if (max_value < UINT32_MAX) {
         self->super.ops->set(&self->super, self->super.max_value >> 1);
     }
 }

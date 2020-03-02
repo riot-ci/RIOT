@@ -104,10 +104,10 @@ void ztimer_convert_muldiv64_init(
     uint32_t max_value;
 
     if (mul > div) {
-        max_value = 0x00000000ffffffff * div / mul;
+        max_value = (uint64_t)UINT32_MAX * div / mul;
     }
     else {
-        max_value = 0xffffffff;
+        max_value = UINT32_MAX;
     }
 
     DEBUG(

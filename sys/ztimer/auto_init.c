@@ -45,9 +45,13 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define WIDTH_TO_MAXVAL(width)  (0xffffffff >> (32 - width))
+#define WIDTH_TO_MAXVAL(width)  (UINT32_MAX >> (32 - width))
 
 #define CONFIG_ZTIMER_USEC_TYPE_PERIPH (1)
+
+#define FREQ_1MHZ       1000000LU
+#define FREQ_250KHZ     250000LU
+#define FREQ_1KHZ       1000LU
 
 /* for ZTIMER_USEC, use xtimer configuration if available and no ztimer
  * specific configuration is set. */
@@ -70,7 +74,7 @@
 #endif
 
 #ifndef CONFIG_ZTIMER_USEC_FREQ
-#define CONFIG_ZTIMER_USEC_FREQ (1000000LU)
+#define CONFIG_ZTIMER_USEC_FREQ (FREQ_1MHZ)
 #endif
 
 #ifndef CONFIG_ZTIMER_USEC_MIN
@@ -84,7 +88,7 @@
 #if MODULE_ZTIMER_USEC
 #  if CONFIG_ZTIMER_USEC_TYPE_PERIPH
 static ztimer_periph_t _ztimer_periph_usec = { .min = CONFIG_ZTIMER_USEC_MIN };
-#    if CONFIG_ZTIMER_USEC_FREQ == 1000000LU
+#    if CONFIG_ZTIMER_USEC_FREQ == FREQ_1MHZ
 ztimer_clock_t *const ZTIMER_USEC = &_ztimer_periph_usec.super;
 #    elif CONFIG_ZTIMER_USEC_FREQ == 250000LU
 static ztimer_convert_shift_t _ztimer_convert_shift_usec;
@@ -103,7 +107,7 @@ ztimer_clock_t *const ZTIMER_USEC = &_ztimer_convert_frac_usec.super.super;
 #  if MODULE_PERIPH_RTT
 static ztimer_rtt_t _ztimer_rtt_msec;
 #  define ZTIMER_RTT_INIT (&_ztimer_rtt_msec)
-#    if RTT_FREQUENCY!=1000000LU
+#    if RTT_FREQUENCY!=FREQ_1MHZ
 static ztimer_convert_frac_t _ztimer_convert_frac_msec;
 ztimer_clock_t *const ZTIMER_MSEC = &_ztimer_convert_frac_msec.super;
 #  define ZTIMER_MSEC_CONVERT_LOWER_FREQ    RTT_FREQUENCY
@@ -114,12 +118,12 @@ ztimer_clock_t *const ZTIMER_MSEC = &_ztimer_rtt_msec.super;
 #  elif MODULE_ZTIMER_USEC
 static ztimer_convert_frac_t _ztimer_convert_frac_msec;
 ztimer_clock_t *const ZTIMER_MSEC = &_ztimer_convert_frac_msec.super.super;
-#    if CONFIG_ZTIMER_USEC_FREQ < 1000000lu
+#    if CONFIG_ZTIMER_USEC_FREQ < FREQ_1MHZ
 #      define ZTIMER_MSEC_CONVERT_LOWER         ZTIMER_USEC_CONVERT_LOWER
 #      define ZTIMER_MSEC_CONVERT_LOWER_FREQ    CONFIG_ZTIMER_USEC_FREQ
 #    else
 #      define ZTIMER_MSEC_CONVERT_LOWER (ZTIMER_USEC)
-#      define ZTIMER_MSEC_CONVERT_LOWER_FREQ    1000000LU
+#      define ZTIMER_MSEC_CONVERT_LOWER_FREQ    FREQ_1MHZ
 #    endif
 #  else
 #  error No suitable ZTIMER_MSEC config. Maybe add USEMODULE += ztimer_usec?
@@ -138,8 +142,8 @@ void ztimer_init(void)
                        CONFIG_ZTIMER_USEC_FREQ,
                        WIDTH_TO_MAXVAL(CONFIG_ZTIMER_USEC_WIDTH));
 #  endif
-#  if CONFIG_ZTIMER_USEC_FREQ != 1000000LU
-#    if CONFIG_ZTIMER_USEC_FREQ == 250000LU
+#  if CONFIG_ZTIMER_USEC_FREQ != FREQ_1MHZ
+#    if CONFIG_ZTIMER_USEC_FREQ == FREQ_250KHZ
     DEBUG("ztimer_init(): ZTIMER_USEC convert_shift %lu to 1000000\n",
             CONFIG_ZTIMER_USEC_FREQ);
     ztimer_convert_shift_up_init(&_ztimer_convert_shift_usec, &_ztimer_periph_usec.super, 2);
@@ -147,7 +151,7 @@ void ztimer_init(void)
     DEBUG("ztimer_init(): ZTIMER_USEC convert_frac %lu to 1000000\n",
             CONFIG_ZTIMER_USEC_FREQ);
     ztimer_convert_frac_init(&_ztimer_convert_frac_usec, &_ztimer_periph_usec.super,
-            1000000lu, CONFIG_ZTIMER_USEC_FREQ);
+            FREQ_1MHZ, CONFIG_ZTIMER_USEC_FREQ);
 #    endif
 #  endif
 #endif
@@ -163,7 +167,7 @@ void ztimer_init(void)
           ZTIMER_MSEC_CONVERT_LOWER_FREQ);
     ztimer_convert_frac_init(&_ztimer_convert_frac_msec,
                              ZTIMER_MSEC_CONVERT_LOWER,
-                             1000lu, ZTIMER_MSEC_CONVERT_LOWER_FREQ);
+                             FREQ_1KHZ, ZTIMER_MSEC_CONVERT_LOWER_FREQ);
 #  endif
 #endif
 }

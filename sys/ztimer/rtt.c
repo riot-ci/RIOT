@@ -32,7 +32,7 @@ static void _ztimer_rtt_callback(void *arg)
     ztimer_handler((ztimer_clock_t *)arg);
 }
 
-static void _ztimer_rtt_set(ztimer_clock_t *ztimer, uint32_t val)
+static void _ztimer_rtt_set(ztimer_clock_t *clock, uint32_t val)
 {
     unsigned state = irq_disable();
 
@@ -49,20 +49,20 @@ static void _ztimer_rtt_set(ztimer_clock_t *ztimer, uint32_t val)
         val = RTT_MIN_VALUE;
     }
 
-    rtt_set_alarm(rtt_get_counter() + val, _ztimer_rtt_callback, ztimer);
+    rtt_set_alarm(rtt_get_counter() + val, _ztimer_rtt_callback, clock);
 
     irq_restore(state);
 }
 
-static uint32_t _ztimer_rtt_now(ztimer_clock_t *ztimer)
+static uint32_t _ztimer_rtt_now(ztimer_clock_t *clock)
 {
-    (void)ztimer;
+    (void)clock;
     return rtt_get_counter();
 }
 
-static void _ztimer_rtt_cancel(ztimer_clock_t *ztimer)
+static void _ztimer_rtt_cancel(ztimer_clock_t *clock)
 {
-    (void)ztimer;
+    (void)clock;
     rtt_clear_alarm();
 }
 
@@ -72,10 +72,10 @@ static const ztimer_ops_t _ztimer_rtt_ops = {
     .cancel = _ztimer_rtt_cancel,
 };
 
-void ztimer_rtt_init(ztimer_rtt_t *ztimer)
+void ztimer_rtt_init(ztimer_rtt_t *clock)
 {
-    ztimer->ops = &_ztimer_rtt_ops;
-    ztimer->max_value = RTT_MAX_VALUE;
+    clock->ops = &_ztimer_rtt_ops;
+    clock->max_value = RTT_MAX_VALUE;
     rtt_init();
     rtt_poweron();
 }

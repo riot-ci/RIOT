@@ -91,9 +91,9 @@ void ztimer_convert_frac_init(ztimer_convert_frac_t *self, ztimer_clock_t *lower
 
     ztimer_convert_frac_compute_scale(self, freq_self, freq_lower);
     if (freq_self < freq_lower) {
-        self->super.super.max_value = frac_scale(&self->scale_set,0xffffffff);
+        self->super.super.max_value = frac_scale(&self->scale_set, UINT32_MAX);
     }
     else {
-        self->super.super.max_value = 0xffffffff;
+        self->super.super.max_value = UINT32_MAX;
     }
 }

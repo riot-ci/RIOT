@@ -40,7 +40,7 @@ static void _callback_unlock_mutex(void* arg)
     mutex_unlock(mutex);
 }
 
-void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration)
+void ztimer_sleep(ztimer_clock_t *clock, uint32_t duration)
 {
 /*    if (irq_is_in()) {
         _ztimer_spin(duration);
@@ -54,20 +54,20 @@ void ztimer_sleep(ztimer_clock_t *ztimer, uint32_t duration)
         .arg = (void*) &mutex,
     };
 
-    ztimer_set(ztimer, &timer, duration);
+    ztimer_set(clock, &timer, duration);
     mutex_lock(&mutex);
 }
 
-void ztimer_periodic_wakeup(ztimer_clock_t *ztimer, ztimer_now_t *last_wakeup, uint32_t period)
+void ztimer_periodic_wakeup(ztimer_clock_t *clock, ztimer_now_t *last_wakeup, uint32_t period)
 {
     unsigned state = irq_disable();
-    ztimer_now_t now = ztimer_now(ztimer);
+    ztimer_now_t now = ztimer_now(clock);
     ztimer_now_t target = *last_wakeup + period;
     ztimer_now_t offset = target - now;
     irq_restore(state);
 
     if (offset <= period) {
-        ztimer_sleep(ztimer, offset);
+        ztimer_sleep(clock, offset);
         *last_wakeup = target;
     }
     else {
@@ -91,23 +91,23 @@ static inline void _setup_msg(ztimer_t *timer, msg_t *msg, kernel_pid_t target_p
     msg->sender_pid = target_pid;
 }
 
-void ztimer_set_msg(ztimer_clock_t *dev, ztimer_t *timer, uint32_t offset, msg_t *msg, kernel_pid_t target_pid)
+void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset, msg_t *msg, kernel_pid_t target_pid)
 {
     _setup_msg(timer, msg, target_pid);
-    ztimer_set(dev, timer, offset);
+    ztimer_set(clock, timer, offset);
 }
 
 #define MSG_ZTIMER 0xc83e /* created with dist/tools/define2u16.py */
 
-int ztimer_msg_receive_timeout(ztimer_clock_t *dev, msg_t *msg, uint32_t timeout)
+int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg, uint32_t timeout)
 {
     ztimer_t t;
     msg_t m = { .type=MSG_ZTIMER, .content.ptr=&m };
 
-    ztimer_set_msg(dev, &t, timeout, &m, sched_active_pid);
+    ztimer_set_msg(clock, &t, timeout, &m, sched_active_pid);
 
     msg_receive(msg);
-    ztimer_remove(dev, &t);
+    ztimer_remove(clock, &t);
     if (msg->type == MSG_ZTIMER && msg->content.ptr == &m) {
         /* we hit the timeout */
         return -ETIME;
@@ -125,12 +125,12 @@ static void _set_timeout_flag_callback(void* arg)
     thread_flags_set(arg, THREAD_FLAG_TIMEOUT);
 }
 
-void ztimer_set_timeout_flag(ztimer_clock_t *ztimer_clock, ztimer_t *t, uint32_t timeout)
+void ztimer_set_timeout_flag(ztimer_clock_t *clock, ztimer_t *t, uint32_t timeout)
 {
     t->callback = _set_timeout_flag_callback;
     t->arg = (thread_t *)sched_active_thread;
     thread_flags_clear(THREAD_FLAG_TIMEOUT);
-    ztimer_set(ztimer_clock, t, timeout);
+    ztimer_set(clock, t, timeout);
 }
 #endif
 
