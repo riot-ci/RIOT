@@ -111,7 +111,12 @@ void auto_init(void)
     void auto_init_random(void);
     auto_init_random();
 #endif
-#ifdef MODULE_AUTO_INIT_XTIMER
+#ifdef MODULE_AUTO_INIT_ZTIMER
+    DEBUG("Auto init ztimer module.\n");
+    void ztimer_init(void);
+    ztimer_init();
+#endif
+#if defined(MODULE_AUTO_INIT_XTIMER) && (!defined(MODULE_ZTIMER_XTIMER_COMPAT))
     DEBUG("Auto init xtimer module.\n");
     xtimer_init();
 #endif
