@@ -178,6 +178,30 @@
  * They also need to be added to USEMODULE using the names `ztimer_usec`,
  * `ztimer_msec` and `ztimer_sec`.
  *
+ *
+ * ## Some notes on ztimer's accuracy
+ *
+ * 1. ztimer *should* wait "at least" the specified timeout
+ *
+ * 2. due to its implementation details, expect +-1 clock tick systemic
+ *    inaccuracy for all clocks.
+ *
+ * 3. for the predefined clocks (ZTIMER_USEC, ZTIMER_MSEC, ZTIMER_SEC), tick
+ *    conversion might be applied using ztimer_convert_*, causing errors due to
+ *    integer conversion and rounding. In particular, most RTT's closest match
+ *    for miliseconds are 1024Hz, which will be converted using convert_frac to
+ *    provide the 1ms clock.
+ *
+ * 4. Some platforms don't have any timer that can be configured to 1us. E.g.,
+ *    the fe310 (hifive1/b) only supports a 32kHz timer, and most atmegas only
+ *    support 250kHz. In order to not completely break all applications using
+ *    ZTIMER_USEC, that clock will only provide ~30.5ms respectively 4us maximum
+ *    accuracy on those boards. With DEVELHELP=1, a warning will be printed at
+ *    boot time.
+ *
+ * 5. Due to +-1 systemic inaccuracies, it is advisable to use ZTIMER_MSEC for
+ *    second timers up to 49 days (instead of ZTIMER_SEC).
+ *
  * @{
  *
  * @file
