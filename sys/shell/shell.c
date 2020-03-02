@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Freie Universität Berlin
+ * Copyright (C) 2009, 2020 Freie Universität Berlin
  * Copyright (C) 2013, INRIA.
  * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
  *
@@ -288,7 +288,7 @@ static int readline(char *buf, size_t size)
             _putchar('\n');
 #endif
 
-            return (length_exceeded)? ERROR_READLINE_EXCEEDED : curr_pos;
+            return (length_exceeded) ? ERROR_READLINE_EXCEEDED : curr_pos;
         }
 
         /* check for backspace:
@@ -300,7 +300,7 @@ static int readline(char *buf, size_t size)
                 continue;
             }
 
-            /* after we dropped characters do not edit the line, yet keep the
+            /* after we dropped characters don't edit the line, yet keep the
              * visual effects */
             if (!length_exceeded) {
                 buf[--curr_pos] = '\0';
