@@ -187,7 +187,7 @@ static const motor_driver_config_t motor_driver_config[] = {
  * @name    ztimer configuration
  * @{
  */
-#define CONFIG_ZTIMER_USEC_TYPE    ZTIMER_TYPE_PERIPH
+#define CONFIG_ZTIMER_USEC_TYPE    ZTIMER_TYPE_PERIPH_TIMER
 #define CONFIG_ZTIMER_USEC_DEV     TIMER_DEV(0)
 /* on native, anything can happen... */
 #define CONFIG_ZTIMER_USEC_MIN     (64)
