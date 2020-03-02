@@ -357,6 +357,9 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  * Similar to msg_receive(), but with a timeout parameter.
  * The function will return after waiting at most @p timeout ticks.
  *
+ * @note: This might function might leave a message with type MSG_ZTIMER in the
+ *        thread's message queue, which must be handled (ignored).
+ *
  * @param[in]   clock           ztimer clock to operate on
  * @param[out]  msg             pointer to buffer which will be filled if a
  *                              message is received
@@ -367,6 +370,9 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
  */
 int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
                                uint32_t timeout);
+
+ /* created with dist/tools/define2u16.py */
+#define MSG_ZTIMER 0xc83e   /**< msg type used by ztimer_msg_receive_timeout */
 
 /*
  * @brief ztimer_now() for extending timers
