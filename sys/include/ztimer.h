@@ -19,9 +19,22 @@
  * ztimer_set() and ztimer_remove().
  *
  * They all take a pointer to a clock device (or virtual timer device) as first
- * parameter. RIOT provides ZTIMER_USEC, ZTIMER_MSEC, ZTIMER_SEC by default.
- * These clocks allow multiple timeouts to be scheduled. They all provide
- * unsigned 32bit range.
+ * parameter.
+ *
+ * RIOT provides ZTIMER_USEC, ZTIMER_MSEC, ZTIMER_SEC by default, which can be
+ * used in an applicaiton by depending on the modules ztimer_usec, ztimer_msec
+ * or ztimer_sec. They will then automatically get configured.
+ *
+ * Every ztimer clock allows multiple timeouts to be scheduled. They all
+ * provide unsigned 32bit range. In this documentation, a timeout or its
+ * corresponding struct will be called `timer`, and when the time out has
+ * passed, it has `triggered`.
+ *
+ * As ztimer can use arbitrarily configurable backends, a ztimer clock instance
+ * can run at configurable frequencies. Throughout this documentation, one
+ * clock step is called `tick`.  For the pre-defined clocks ZTIMER_USEC,
+ * ZTIMER_MSEC and ZTIMER_SEC, one clock tick corresponds to one microsecond,
+ * one millisecond or one second, respectively.
  *
  * ztimer_now() returns the current clock tick count as uint32_t.
  *
@@ -30,7 +43,7 @@
  * running thread for five seconds.
  *
  * ztimer_set() takes a ztimer_t object (containing a function pointer and
- * void* argument) and an interval as arguments. After at least the interval
+ * void * argument) and an interval as arguments. After at least the interval
  * (in number of ticks for the corresponding clock) has passed, the callback
  * will be called in interrupt context.
  * A timer can be cancelled using ztimer_remove().
@@ -162,26 +175,8 @@
  *
  *     ztimer_now(ZTIMER_USEC);
  *
- *
- * ## Differences to xtimer
- *
- * - the addition of a "clock" parameter makes it possible to work with
- *   multiple differently clocked timers and backends
- *
- * - the API is 32bit only
- *
- * - much of ztimer can be unittested on a mock clock
- *
- * - the internal timer list uses relative timers and thus doesn't need 64bit
- *   arithmetic or storage
- *
- * - ztimer_extend extends <32bit timers in an ISR safe way
- *
- * - has much reduced number of configuration tunables (no XTIMER_BACKOFF,
- *   XTIMER_ISR_BACKOFF)
- *
- * - ztimer always executes callbacks in ISR context, whereas xtimer might
- *   trigger very short timers in ISR context
+ * They also need to be added to USEMODULE using the names `ztimer_usec`,
+ * `ztimer_msec` and `ztimer_sec`.
  *
  * @{
  *
