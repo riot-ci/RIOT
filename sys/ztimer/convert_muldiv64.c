@@ -41,7 +41,7 @@ static uint64_t _integer_div_ceil(uint64_t x, uint64_t y)
 }
 
 static uint32_t _convert_muldiv64_set(
-    ztimer_convert_muldiv64_t *ztimer_convert_muldiv64, uint32_t val)
+    const ztimer_convert_muldiv64_t *ztimer_convert_muldiv64, uint32_t val)
 {
     uint64_t res = val;
 
