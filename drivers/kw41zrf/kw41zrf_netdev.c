@@ -309,15 +309,10 @@ static int kw41zrf_netdev_recv(netdev_t *netdev, void *buf, size_t len, void *in
 
     if (info != NULL) {
         netdev_ieee802154_rx_info_t *radio_info = info;
-        uint8_t hw_lqi = (ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_LQI_VALUE_MASK) >>
-            ZLL_LQI_AND_RSSI_LQI_VALUE_SHIFT;
-        /* TODO Validate, verify or adjust this LQI calculation */
-        if (hw_lqi >= 220) {
-            radio_info->lqi = 255;
-        } else {
-            radio_info->lqi = (51 * hw_lqi) / 44;
-        }
-        radio_info->rssi = (int8_t)((ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_RSSI_MASK) >> ZLL_LQI_AND_RSSI_RSSI_SHIFT);
+        radio_info->lqi = (ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_LQI_VALUE_MASK)
+                          >> ZLL_LQI_AND_RSSI_LQI_VALUE_SHIFT;
+        radio_info->rssi = (int8_t)((ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_RSSI_MASK)
+                           >> ZLL_LQI_AND_RSSI_RSSI_SHIFT);
     }
 
     /* Go back to RX mode */
