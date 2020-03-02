@@ -81,7 +81,7 @@ static inline void xtimer_usleep(uint32_t microseconds)
 
 static inline void xtimer_nanosleep(uint32_t nanoseconds)
 {
-    ztimer_sleep(ZTIMER_USEC, nanoseconds / 1000);
+    ztimer_sleep(ZTIMER_USEC, nanoseconds / NS_PER_US);
 }
 
 static inline void xtimer_set(xtimer_t *timer, uint32_t offset)
