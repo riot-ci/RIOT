@@ -27,9 +27,26 @@ extern "C" {
 #endif
 
 /**
- * @brief   GCLK reference speed
+ * @brief   To use the buck converter for best power efficiency, we must
+ *          use the external oscillator as a clock source.
+ *          DFLL and DPLL are not compatible with the buck regulator.
  */
+#define USE_XOSC_ONLY       (0)
+#define XOSC0_FREQUENCY     (12000000U)     /* 12 MHz */
+
+#if USE_XOSC_ONLY
+#define CLOCK_CORECLOCK     XOSC0_FREQUENCY
+#else
 #define CLOCK_CORECLOCK     (120000000U)
+#endif
+
+/**
+ * @name    32kHz Oscillator configuration
+ * @{
+ */
+#define EXTERNAL_OSC32_SOURCE                    1
+#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE      0
+/** @} */
 
 /**
  * @name Timer peripheral configuration
@@ -137,16 +154,6 @@ static const i2c_conf_t i2c_config[] = {
 };
 
 #define I2C_NUMOF           ARRAY_SIZE(i2c_config)
-/** @} */
-
-
-/**
- * @name    RTC configuration
- * @{
- */
-#define EXTERNAL_OSC32_SOURCE                    1
-#define INTERNAL_OSC32_SOURCE                    0
-#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE      0
 /** @} */
 
 /**
