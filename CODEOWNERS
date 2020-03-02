@@ -116,6 +116,8 @@
 /sys/tsrb/                                  @kaspar030
 /sys/usb/                                   @bergzand @dylad @aabadie
 /sys/xtimer/                                @kaspar030 @MichelRottleuthner
+/sys/ztimer/                                @kaspar030 @bergzand
+/sys/include/ztimer/                        @kaspar030 @bergzand
 
 /tests/                                     @smlng @leandrolanzieri @aabadie @MichelRottleuthner @fjmolinas
 /tests/emb6*                                @miri64
