@@ -13,6 +13,9 @@
  * @brief       ztimer mock clock backend
  *
  * This ztimer module implements a virtual clock that can be used for unittests.
+ * It can be manually adjusted to different timestamps and manually fired to
+ * simulate different scenarios and test the ztimer implementation using this as
+ * a backing timer
  *
  * @{
  * @file
