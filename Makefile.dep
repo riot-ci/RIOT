@@ -1071,5 +1071,6 @@ else
   ifneq (,$(filter auto_init,$(USEMODULE)))
     DEFAULT_MODULE := $(sort $(DEFAULT_MODULE))
     USEMODULE += $(filter auto_init_%,$(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE)))
+    USEMODULE := $(sort $(USEMODULE))
   endif
 endif
