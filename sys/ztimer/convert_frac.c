@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2019 Kaspar Schleiser <kaspar@schleiser.de>
+ * Copyright (C) 2020 Kaspar Schleiser <kaspar@schleiser.de>
+ *               2020 Freie Universität Berlin
+ *               2020 Inria
  *               2018 Joakim Nohlgård <joakim.nohlgard@eistec.se>
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
