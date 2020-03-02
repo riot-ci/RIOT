@@ -9,7 +9,7 @@
  */
 
 /**
- * @ingroup     sys_ztimer_rtt
+ * @ingroup     sys_ztimer_periph_rtt
  * @{
  *
  * @file
@@ -20,7 +20,7 @@
  * @}
  */
 #include "periph/rtt.h"
-#include "ztimer/rtt.h"
+#include "ztimer/periph_rtt.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -29,12 +29,12 @@
 #define RTT_MIN_VALUE (2U)
 #endif
 
-static void _ztimer_rtt_callback(void *arg)
+static void _ztimer_periph_rtt_callback(void *arg)
 {
     ztimer_handler((ztimer_clock_t *)arg);
 }
 
-static void _ztimer_rtt_set(ztimer_clock_t *clock, uint32_t val)
+static void _ztimer_periph_rtt_set(ztimer_clock_t *clock, uint32_t val)
 {
     if (val < RTT_MIN_VALUE) {
         /* the rtt might advance right between the call to rtt_get_counter()
@@ -50,31 +50,31 @@ static void _ztimer_rtt_set(ztimer_clock_t *clock, uint32_t val)
     }
 
     unsigned state = irq_disable();
-    rtt_set_alarm(rtt_get_counter() + val, _ztimer_rtt_callback, clock);
+    rtt_set_alarm(rtt_get_counter() + val, _ztimer_periph_rtt_callback, clock);
     irq_restore(state);
 }
 
-static uint32_t _ztimer_rtt_now(ztimer_clock_t *clock)
+static uint32_t _ztimer_periph_rtt_now(ztimer_clock_t *clock)
 {
     (void)clock;
     return rtt_get_counter();
 }
 
-static void _ztimer_rtt_cancel(ztimer_clock_t *clock)
+static void _ztimer_periph_rtt_cancel(ztimer_clock_t *clock)
 {
     (void)clock;
     rtt_clear_alarm();
 }
 
-static const ztimer_ops_t _ztimer_rtt_ops = {
-    .set = _ztimer_rtt_set,
-    .now = _ztimer_rtt_now,
-    .cancel = _ztimer_rtt_cancel,
+static const ztimer_ops_t _ztimer_periph_rtt_ops = {
+    .set = _ztimer_periph_rtt_set,
+    .now = _ztimer_periph_rtt_now,
+    .cancel = _ztimer_periph_rtt_cancel,
 };
 
-void ztimer_rtt_init(ztimer_rtt_t *clock)
+void ztimer_periph_rtt_init(ztimer_periph_rtt_t *clock)
 {
-    clock->ops = &_ztimer_rtt_ops;
+    clock->ops = &_ztimer_periph_rtt_ops;
     clock->max_value = RTT_MAX_VALUE;
     rtt_init();
     rtt_poweron();

@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_ztimer_rtt  ztimer periph/rtt backend
+ * @defgroup    sys_ztimer_periph_rtt  ztimer periph/rtt backend
  * @ingroup     sys_ztimer
  * @brief       ztimer periph/rtt backend
  *
@@ -21,8 +21,8 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifndef ZTIMER_RTT_H
-#define ZTIMER_RTT_H
+#ifndef ZTIMER_PERIPH_RTT_H
+#define ZTIMER_PERIPH_RTT_H
 
 #include "ztimer.h"
 
@@ -31,18 +31,19 @@ extern "C" {
 #endif
 
 /**
- * @brief ztimer_rtt structure definition
+ * @brief ztimer_periph_rtt structure definition
  *
- * rtt has no private fields, thus this is just a typedef to ztimer_clock_t.
+ * The periph/rtt backend has no private fields, thus this is just a typedef
+ * to ztimer_clock_t.
  */
-typedef ztimer_clock_t ztimer_rtt_t;
+typedef ztimer_clock_t ztimer_periph_rtt_t;
 
 /**
- * @brief   ztimer rtt backend initialization function
+ * @brief   ztimer periph/rtt backend initialization function
  *
  * @param[in, out]  clock   ztimer_rtt object to initialize
  */
-void ztimer_rtt_init(ztimer_rtt_t *clock);
+void ztimer_periph_rtt_init(ztimer_periph_rtt_t *clock);
 
-#endif /* ZTIMER_RTT_H */
+#endif /* ZTIMER_PERIPH_RTT_H */
 /** @} */

@@ -8,21 +8,21 @@
  * details.
  */
 /**
- * @ingroup     sys_ztimer_rtc
+ * @ingroup     sys_ztimer_periph_rtc
  * @{
  *
  * @file
  * @brief       ztimer periph/rtc backend implementation
  *
  * This implementation simply converts an integer time to split RTC values and
- * back, which is rather inefficient. If available, use ztimer_rtt.
+ * back, which is rather inefficient. If available, use ztimer_periph_rtt.
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
 #include "periph/rtc.h"
-#include "ztimer/rtc.h"
+#include "ztimer/periph_rtc.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -72,12 +72,12 @@ void _timestamp_to_gmt_civil(struct tm *_tm, uint32_t epoch)
     }
 }
 
-static void _ztimer_rtc_callback(void *arg)
+static void _ztimer_periph_rtc_callback(void *arg)
 {
     ztimer_handler((ztimer_clock_t *)arg);
 }
 
-static uint32_t _ztimer_rtc_now(ztimer_clock_t *clock)
+static uint32_t _ztimer_periph_rtc_now(ztimer_clock_t *clock)
 {
     (void)clock;
 
@@ -89,11 +89,11 @@ static uint32_t _ztimer_rtc_now(ztimer_clock_t *clock)
                                    time.tm_sec);
 }
 
-static void _ztimer_rtc_set(ztimer_clock_t *clock, uint32_t val)
+static void _ztimer_periph_rtc_set(ztimer_clock_t *clock, uint32_t val)
 {
     unsigned state = irq_disable();
 
-    uint32_t now = _ztimer_rtc_now(NULL);
+    uint32_t now = _ztimer_periph_rtc_now(NULL);
     uint32_t target;
 
     do {
@@ -106,7 +106,7 @@ static void _ztimer_rtc_set(ztimer_clock_t *clock, uint32_t val)
         _timestamp_to_gmt_civil(&_tm, target);
 
         /* TODO: ensure this doesn't underflow */
-        rtc_set_alarm(&_tm, _ztimer_rtc_callback, clock);
+        rtc_set_alarm(&_tm, _ztimer_periph_rtc_callback, clock);
 
         if (val > 1) {
             /* If val <= 1, it is possible that the RTC second flips somewhere
@@ -119,26 +119,26 @@ static void _ztimer_rtc_set(ztimer_clock_t *clock, uint32_t val)
              */
             break;
         }
-    } while (target <= (now = _ztimer_rtc_now(NULL)));
+    } while (target <= (now = _ztimer_periph_rtc_now(NULL)));
 
     irq_restore(state);
 }
 
-static void _ztimer_rtc_cancel(ztimer_clock_t *clock)
+static void _ztimer_periph_rtc_cancel(ztimer_clock_t *clock)
 {
     (void)clock;
     rtc_clear_alarm();
 }
 
-static const ztimer_ops_t _ztimer_rtc_ops = {
-    .set = _ztimer_rtc_set,
-    .now = _ztimer_rtc_now,
-    .cancel = _ztimer_rtc_cancel,
+static const ztimer_ops_t _ztimer_periph_rtc_ops = {
+    .set = _ztimer_periph_rtc_set,
+    .now = _ztimer_periph_rtc_now,
+    .cancel = _ztimer_periph_rtc_cancel,
 };
 
-void ztimer_rtc_init(ztimer_rtc_t *clock)
+void ztimer_periph_rtc_init(ztimer_periph_rtc_t *clock)
 {
-    clock->ops = &_ztimer_rtc_ops;
+    clock->ops = &_ztimer_periph_rtc_ops;
     clock->max_value = UINT32_MAX;
     rtc_init();
     rtc_poweron();

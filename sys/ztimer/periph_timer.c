@@ -9,7 +9,7 @@
  */
 
 /**
- * @ingroup     sys_ztimer_periph
+ * @ingroup     sys_ztimer_periph_timer
  * @{
  *
  * @file
@@ -21,11 +21,11 @@
  */
 
 #include "irq.h"
-#include "ztimer/periph.h"
+#include "ztimer/periph_timer.h"
 
-static void _ztimer_periph_set(ztimer_clock_t *clock, uint32_t val)
+static void _ztimer_periph_timer_set(ztimer_clock_t *clock, uint32_t val)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
+    ztimer_periph_timer_t *ztimer_periph = (ztimer_periph_timer_t *)clock;
 
     uint16_t min = ztimer_periph->min;
 
@@ -33,7 +33,7 @@ static void _ztimer_periph_set(ztimer_clock_t *clock, uint32_t val)
         val = min;
     }
 
-/* if this is undefined, timer_set() from drivers/periph_common is used.
+/* if this is undefined, timer_set() from drivers/periph_timer_common is used.
  * That already dieables irq's.
  * For the others, better ensure that happens.
  */
@@ -46,37 +46,37 @@ static void _ztimer_periph_set(ztimer_clock_t *clock, uint32_t val)
 #endif
 }
 
-static uint32_t _ztimer_periph_now(ztimer_clock_t *clock)
+static uint32_t _ztimer_periph_timer_now(ztimer_clock_t *clock)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
+    ztimer_periph_timer_t *ztimer_periph = (ztimer_periph_timer_t *)clock;
 
     return timer_read(ztimer_periph->dev);
 }
 
-static void _ztimer_periph_cancel(ztimer_clock_t *clock)
+static void _ztimer_periph_timer_cancel(ztimer_clock_t *clock)
 {
-    ztimer_periph_t *ztimer_periph = (ztimer_periph_t *)clock;
+    ztimer_periph_timer_t *ztimer_periph = (ztimer_periph_timer_t *)clock;
 
     timer_clear(ztimer_periph->dev, 0);
 }
 
-static void _ztimer_periph_callback(void *arg, int channel)
+static void _ztimer_periph_timer_callback(void *arg, int channel)
 {
     (void)channel;
     ztimer_handler((ztimer_clock_t *)arg);
 }
 
-static const ztimer_ops_t _ztimer_periph_ops = {
-    .set = _ztimer_periph_set,
-    .now = _ztimer_periph_now,
-    .cancel = _ztimer_periph_cancel,
+static const ztimer_ops_t _ztimer_periph_timer_ops = {
+    .set = _ztimer_periph_timer_set,
+    .now = _ztimer_periph_timer_now,
+    .cancel = _ztimer_periph_timer_cancel,
 };
 
-void ztimer_periph_init(ztimer_periph_t *clock, tim_t dev, unsigned long freq,
+void ztimer_periph_timer_init(ztimer_periph_timer_t *clock, tim_t dev, unsigned long freq,
                         uint32_t max_val)
 {
     clock->dev = dev;
-    clock->super.ops = &_ztimer_periph_ops;
+    clock->super.ops = &_ztimer_periph_timer_ops;
     clock->super.max_value = max_val;
-    timer_init(dev, freq, _ztimer_periph_callback, clock);
+    timer_init(dev, freq, _ztimer_periph_timer_callback, clock);
 }

@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_ztimer_periph  ztimer periph/timer backend
+ * @defgroup    sys_ztimer_periph_timer_timer  ztimer periph/timer backend
  * @ingroup     sys_ztimer
  * @brief       ztimer periph/timer backend
  *
@@ -24,14 +24,14 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifndef ZTIMER_PERIPH_H
-#define ZTIMER_PERIPH_H
+#ifndef ZTIMER_PERIPH_TIMER_H
+#define ZTIMER_PERIPH_TIMER_H
 
 #include "ztimer.h"
 #include "periph/timer.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
 #endif
 
 /**
@@ -41,7 +41,7 @@ typedef struct {
     ztimer_clock_t super;   /**< super class            */
     tim_t dev;              /**< periph timer device    */
     uint16_t min;           /**< optional minimum value */
-} ztimer_periph_t;
+} ztimer_periph_timer_t;
 
 /**
  * @brief   ztimer periph initialization
@@ -53,11 +53,12 @@ typedef struct {
  * @param[in]   freq    frequency to configure
  * @param[in]   max_val maximum value this timer supports
  */
-void ztimer_periph_init(ztimer_periph_t *clock, tim_t dev, unsigned long freq, uint32_t max_val);
+void ztimer_periph_timer_init(ztimer_periph_timer_t *clock, tim_t dev,
+                              unsigned long freq, uint32_t max_val);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* ZTIMER_PERIPH_H */
+#endif /* ZTIMER_PERIPH_TIMER_H */
 /** @} */
