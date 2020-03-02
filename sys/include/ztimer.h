@@ -61,7 +61,7 @@
  *
  * The system is composed of clocks (virtual ztimer devices) which can be
  * chained to create an abstract view of a hardware timer/counter device. Each
- * ztimer clock acts as a filter on the next clock in the chain. At the end of
+ * ztimer clock acts as a operation on the next clock in the chain. At the end of
  * each ztimer chain there is always some kind of counter device object.
  *
  * Each clock device handles multiplexing (allowing multiple timers to be set)
