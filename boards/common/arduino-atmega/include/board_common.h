@@ -109,7 +109,7 @@ extern "C" {
  * @name    ztimer configuration values
  * @{
  */
-#define CONFIG_ZTIMER_USEC_TYPE     ZTIMER_TYPE_PERIPH
+#define CONFIG_ZTIMER_USEC_TYPE     ZTIMER_TYPE_PERIPH_TIMER
 #define CONFIG_ZTIMER_USEC_DEV      (TIMER_DEV(0))
 #define CONFIG_ZTIMER_USEC_FREQ     (250000LU)
 #define CONFIG_ZTIMER_USEC_WIDTH    (16)
