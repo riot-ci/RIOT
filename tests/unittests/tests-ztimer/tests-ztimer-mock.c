@@ -229,12 +229,12 @@ static void test_ztimer_mock_set16(void)
     ztimer_mock_advance(&zmock, 1000);
     TEST_ASSERT_EQUAL_INT(1 + 100 + 898 + 1 + 1 + 1000, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(1, count);
-    ztimer_set(z, &alarm, 0xfffful);
+    ztimer_set(z, &alarm, UINT16_MAX);
     ztimer_mock_advance(&zmock, 0x10000ul);
     /* 1 + 100 + 898 + 1 + 1 + 1000 + 0x10000 = 67537 */
     TEST_ASSERT_EQUAL_INT(67537ul, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(2, count);
-    ztimer_set(z, &alarm, 0xfffful);
+    ztimer_set(z, &alarm, UINT16_MAX);
     ztimer_mock_advance(&zmock, 0x10000000ul);
     TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(3, count);
@@ -242,14 +242,14 @@ static void test_ztimer_mock_set16(void)
     ztimer_mock_advance(&zmock, 1);
     TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul + 1, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(3, count);
-    ztimer_mock_advance(&zmock, 0xffff);
-    TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul + 1 + 0xffff, ztimer_now(z));
+    ztimer_mock_advance(&zmock, UINT16_MAX);
+    TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul + 1 + UINT16_MAX, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(3, count);
     ztimer_mock_advance(&zmock, 0x1);
-    TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul + 1 + 0xffff + 1, ztimer_now(z));
+    TEST_ASSERT_EQUAL_INT(67537ul + 0x10000000ul + 1 + UINT16_MAX + 1, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(4, count);
     now = ztimer_now(z);
-    /* 67537ul + 0x10000000ul + 1 + 0xffff + 1 = 0x100207d2 */
+    /* 67537ul + 0x10000000ul + 1 + UINT16_MAX + 1 = 0x100207d2 */
     TEST_ASSERT_EQUAL_INT(0x100207d2, now);
 }
 
