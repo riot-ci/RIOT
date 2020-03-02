@@ -35,10 +35,7 @@
 static void _add_entry_to_list(ztimer_clock_t *ztimer, ztimer_base_t *entry);
 static void _del_entry_from_list(ztimer_clock_t *ztimer, ztimer_base_t *entry);
 static void _ztimer_update(ztimer_clock_t *ztimer);
-
-#if ENABLE_DEBUG
 static void _ztimer_print(const ztimer_clock_t *ztimer);
-#endif
 
 #ifdef MODULE_ZTIMER_EXTEND
 static inline uint32_t _min_u32(uint32_t a, uint32_t b) {
@@ -337,7 +334,6 @@ void ztimer_handler(ztimer_clock_t *clock)
     }
 }
 
-#if ENABLE_DEBUG
 static void _ztimer_print(const ztimer_clock_t *clock)
 {
     const ztimer_base_t *entry = &clock->list;
@@ -350,4 +346,3 @@ static void _ztimer_print(const ztimer_clock_t *clock)
     } while ((entry = entry->next));
     puts("");
 }
-#endif
