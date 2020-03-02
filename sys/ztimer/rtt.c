@@ -36,8 +36,6 @@ static void _ztimer_rtt_callback(void *arg)
 
 static void _ztimer_rtt_set(ztimer_clock_t *clock, uint32_t val)
 {
-    unsigned state = irq_disable();
-
     if (val < RTT_MIN_VALUE) {
         /* the rtt might advance right between the call to rtt_get_counter()
          * and rtt_set_alarm(). If that happens with val==1, we'd set an alarm
@@ -51,8 +49,8 @@ static void _ztimer_rtt_set(ztimer_clock_t *clock, uint32_t val)
         val = RTT_MIN_VALUE;
     }
 
+    unsigned state = irq_disable();
     rtt_set_alarm(rtt_get_counter() + val, _ztimer_rtt_callback, clock);
-
     irq_restore(state);
 }
 
