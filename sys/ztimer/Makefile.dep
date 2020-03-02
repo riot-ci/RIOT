@@ -2,7 +2,6 @@
 # ztimer dependencies
 #
 
-
 # "ztimer" is the default meta-module of ztimer
 ifneq (,$(filter ztimer,$(USEMODULE)))
   USEMODULE += ztimer_core
