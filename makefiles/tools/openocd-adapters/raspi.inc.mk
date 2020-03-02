@@ -4,8 +4,8 @@ SWCLK ?= 21
 SWDIO ?= 20
 RST ?= 16
 
-ifeq (1, $(shell grep ARMv6 /proc/cpuinfo > /dev/null; echo $?))
-  ifeq (0, $(shell grep [[:lower:]]0311[[:digit:]] /proc/cpuinfo > /dev/null; echo $?))
+ifeq (1, $(shell grep ARMv6 /proc/cpuinfo > /dev/null; echo $$?))
+  ifeq (0, $(shell grep [[:lower:]]0311[[:digit:]] /proc/cpuinfo > /dev/null; echo $$?))
     # raspi4
     PERIPH_BASE  = 0xFE000000
     SPEED_COEFF  = 236181
@@ -24,7 +24,7 @@ else
 endif
 
 OPENOCD_ADAPTER_INIT ?= \
-  -c 'interface bcm2835gpio' \
+  -c 'adapter driver bcm2835gpio' \
   -c 'bcm2835gpio_peripheral_base $(PERIPH_BASE)' \
   -c 'bcm2835gpio_speed_coeffs $(SPEED_COEFF) $(SPEED_OFFSET)' \
   -c 'bcm2835gpio_swd_nums $(SWCLK) $(SWDIO)' \
