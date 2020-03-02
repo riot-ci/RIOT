@@ -381,7 +381,7 @@ static inline ztimer_now_t ztimer_now(ztimer_clock_t *clock)
 #if MODULE_ZTIMER_NOW64
     if (1) {
 #elif MODULE_ZTIMER_EXTEND
-    if (clock->max_value < 0xffffffff) {
+    if (clock->max_value < UINT32_MAX) {
 #else
     if (0) {
 #endif

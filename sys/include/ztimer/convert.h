@@ -43,7 +43,7 @@ typedef struct {
  *
  * @p max_value needs to be set to the maximum value that can be converted
  * without overflowing. E.g., if the conversion module slows down a lower
- * clock by factor X, max_value needs to be set to 0xffffffff / X.
+ * clock by factor X, max_value needs to be set to UINT32_MAX / X.
  *
  * @param[in,out]   ztimer_convert  object to initialize
  * @param[in]       lower           lower ztimer clock
@@ -59,7 +59,7 @@ void ztimer_convert_init(ztimer_convert_t *ztimer_convert,
  *
  * @param[in]   ztimer  ztimer device to operate on
  */
-void ztimer_convert_cancel(ztimer_clock_t *ztimer);
+void ztimer_convert_cancel(ztimer_clock_t *clock);
 
 #ifdef __cplusplus
 }
