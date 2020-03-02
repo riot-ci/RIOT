@@ -332,9 +332,9 @@ void ztimer_handler(ztimer_clock_t *clock)
     }
 }
 
-static void _ztimer_print(ztimer_clock_t *clock)
+static void _ztimer_print(const ztimer_clock_t *clock)
 {
-    ztimer_base_t *entry = &clock->list;
+    const ztimer_base_t *entry = &clock->list;
     uint32_t last_offset = 0;
     do {
         printf("0x%08x:%" PRIu32 "(%" PRIu32 ")%s", (unsigned)entry, entry->offset, entry->offset +
