@@ -89,6 +89,18 @@ uint32_t sam0_gclk_freq(uint8_t id)
     }
 }
 
+void cpu_pm_cb_enter(int deep)
+{
+    (void) deep;
+    /* will be called before entering sleep */
+}
+
+void cpu_pm_cb_leave(int deep)
+{
+    (void) deep;
+    /* will be called after wake-up */
+}
+
 /**
  * @brief Initialize the CPU, set IRQ priorities, clocks
  */
@@ -96,6 +108,10 @@ void cpu_init(void)
 {
     /* initialize the Cortex-M core */
     cortexm_init();
+
+    /* select buck voltage regulator */
+    SUPC->VREG.bit.SEL = 1;
+    while (!SUPC->STATUS.bit.VREGRDY) {}
 
     /* turn on only needed APB peripherals */
     MCLK->APBAMASK.reg = MCLK_APBAMASK_MCLK
