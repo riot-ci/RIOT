@@ -302,7 +302,10 @@ static int kw41zrf_netdev_recv(netdev_t *netdev, void *buf, size_t len, void *in
         kw41zrf_unblock_rx(dev);
         return -ENOBUFS;
     }
-    memcpy(buf, (const void *)&ZLL->PKT_BUFFER_RX[0], pkt_len);
+
+    for (int i = 0; i < pkt_len; i++) {
+        ((uint8_t *)buf)[i] = ((uint8_t *)ZLL->PKT_BUFFER_RX)[i];
+    }
 
     if (info != NULL) {
         netdev_ieee802154_rx_info_t *radio_info = info;
