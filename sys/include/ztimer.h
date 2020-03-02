@@ -97,7 +97,7 @@
  * ## Timer handling
  *
  * Timers in ztimer are stored in a linked list for which each entry stores the
- * difference to the previous entry in the timer (T[n]). The list also stores
+ * difference to the previous entry in the timer (T[n]). The clock also stores
  * the absolute time on which the relative offsets are based (B), effectively
  * storing the absolute target time for each entry (as B + sum(T[0-n])).
  * Storing the entries in this way allows all entries to use the full width of
