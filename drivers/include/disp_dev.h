@@ -10,6 +10,8 @@
  * @defgroup    drivers_disp_dev Display device generic API
  * @ingroup     drivers_display
  * @brief       Define the generic API of a display device
+ * @experimental This API is experimental and in an early state - expect
+ *               changes!
  * @{
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
