@@ -20,8 +20,8 @@
  *
  * They all take a pointer to a clock device (or virtual timer device) as first
  * parameter. RIOT provides ZTIMER_USEC, ZTIMER_MSEC, ZTIMER_SEC by default.
- * These clocks allow multiple timeouts to be scheduled. They all provide 32bit
- * range.
+ * These clocks allow multiple timeouts to be scheduled. They all provide
+ * unsigned 32bit range.
  *
  * ztimer_now() returns the current clock tick count as uint32_t.
  *
