@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2018-19 Kaspar Schleiser <kaspar@schleiser.de>
- *               2019 Inria
- *               2019 Freie Universität Berlin
+ * Copyright (C) 2020 Kaspar Schleiser <kaspar@schleiser.de>
+ *               2020 Inria
+ *               2020 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
