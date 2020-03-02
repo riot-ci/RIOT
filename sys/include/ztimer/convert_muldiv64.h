@@ -66,6 +66,11 @@ typedef struct {
 
 /**
  * @brief   ztimer_convert_muldiv64 initialization function
+ *
+ * @params[in]  ztimer_convert_muldiv64     instance to initialize
+ * @params[in]  lower                       lower timer to convert
+ * @params[in]  div                         see module doc
+ * @params[in]  mul                         see module doc
  */
 void ztimer_convert_muldiv64_init(
     ztimer_convert_muldiv64_t *ztimer_convert_muldiv64, ztimer_clock_t *lower,
