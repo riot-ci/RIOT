@@ -200,6 +200,8 @@ static void _del_entry_from_list(ztimer_clock_t *clock, ztimer_base_t *entry)
     DEBUG("_del_entry_from_list()\n");
     ztimer_base_t *list = &clock->list;
 
+    assert(_is_set(clock, entry));
+
     while (list->next) {
         ztimer_base_t *list_entry = list->next;
         if (list_entry == entry) {
