@@ -54,8 +54,8 @@ int main(void)
     expect(max_height == 240);
 
     uint16_t color = 0;
-    for (uint16_t x = 0; x < max_width; ++x) {
-        for (uint16_t y = 0; y < max_height; ++y) {
+    for (uint16_t y = 0; y < max_height; ++y) {
+        for (uint16_t x = 0; x < max_width; ++x) {
             disp_dev_map(dev, x, x, y, y, &color);
         }
     }
