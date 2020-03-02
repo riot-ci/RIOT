@@ -33,9 +33,17 @@ static void _ztimer_periph_set(ztimer_clock_t *clock, uint32_t val)
         val = min;
     }
 
+/* if this is undefined, timer_set() from drivers/periph_common is used.
+ * That already dieables irq's.
+ * For the others, better ensure that happens.
+ */
+#ifdef PERIPH_TIMER_PROVIDES_SET
     unsigned state = irq_disable();
+#endif
     timer_set(ztimer_periph->dev, 0, val);
+#ifdef PERIPH_TIMER_PROVIDES_SET
     irq_restore(state);
+#endif
 }
 
 static uint32_t _ztimer_periph_now(ztimer_clock_t *clock)
