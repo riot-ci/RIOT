@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup    sys_disp_dev Display device generic API
- * @ingroup     sys
+ * @defgroup    drivers_disp_dev Display device generic API
+ * @ingroup     drivers_display
  * @brief       Define the generic API of a display device
  * @{
  *

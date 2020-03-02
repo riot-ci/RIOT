@@ -7,6 +7,7 @@
  */
 
 /**
+ * @ingroup     drivers_disp_dev
  * @{
  *
  * @file
