@@ -50,13 +50,13 @@ static unsigned _is_set(ztimer_clock_t *clock, ztimer_t *t)
     }
 }
 
-void ztimer_remove(ztimer_clock_t *clock, ztimer_t *entry)
+void ztimer_remove(ztimer_clock_t *clock, ztimer_t *timer)
 {
     unsigned state = irq_disable();
 
-    if (_is_set(clock, entry)) {
+    if (_is_set(clock, timer)) {
         ztimer_update_head_offset(clock);
-        _del_entry_from_list(clock, &entry->base);
+        _del_entry_from_list(clock, &timer->base);
 
         _ztimer_update(clock);
     }
@@ -136,6 +136,7 @@ static uint32_t _add_modulo(uint32_t a, uint32_t b, uint32_t mod)
     return a-b;
 }
 
+#ifdef MODULE_ZTIMER_EXTEND
 ztimer_now_t _ztimer_now_extend(ztimer_clock_t *ztimer)
 {
     assert(ztimer->max_value);
@@ -151,6 +152,7 @@ ztimer_now_t _ztimer_now_extend(ztimer_clock_t *ztimer)
     irq_restore(state);
     return now;
 }
+#endif /* MODULE_ZTIMER_EXTEND */
 
 void ztimer_update_head_offset(ztimer_clock_t *clock)
 {
