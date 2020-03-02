@@ -25,9 +25,9 @@
 #define ZTIMER_CONVERT_SHIFT_H
 
 #include <stdint.h>
+
 #include "ztimer.h"
 #include "ztimer/convert.h"
-#include "ztimer/convert_shift.h"
 
 #ifdef __cplusplus
 extern "C" {
