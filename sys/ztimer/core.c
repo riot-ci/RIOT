@@ -43,7 +43,7 @@ static inline uint32_t _min_u32(uint32_t a, uint32_t b) {
 }
 #endif
 
-static unsigned _is_set(ztimer_clock_t *clock, ztimer_t *t)
+static unsigned _is_set(const ztimer_clock_t *clock, const ztimer_t *t)
 {
     if (!clock->list.next) {
         return 0;
