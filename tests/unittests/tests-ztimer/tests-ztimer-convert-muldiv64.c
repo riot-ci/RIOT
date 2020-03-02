@@ -111,7 +111,7 @@ static void test_ztimer_convert_muldiv64_set_speedup(void)
     val = 0;
 
     /* set t to 4294967000 (absolute: 4294969000) */
-    /* 4294967000 == (0xffffffff // 1000 * 1000) */
+    /* 4294967000 == (UINT32_MAX // 1000 * 1000) */
     ztimer_set(z, &t, 4294967000);
 
     /* advance mock to just before t's trigger time */
@@ -179,10 +179,10 @@ static void test_ztimer_convert_muldiv64_set_slowdown(void)
      * it should trigger at (mock=1704) */
     ztimer_set(z, &t, 4294968);
 
-    ztimer_mock_advance(&zmock, 0xffffffff);
+    ztimer_mock_advance(&zmock, UINT32_MAX);
     TEST_ASSERT_EQUAL_INT(999, ztimer_now(&zmock.super));
 
-    /* ztimer_now(z) is now at (0xffffffff + 1000)/1000) == 4294968 */
+    /* ztimer_now(z) is now at (UINT32_MAX + 1000)/1000) == 4294968 */
     TEST_ASSERT_EQUAL_INT(4294968, ztimer_now(z));
     TEST_ASSERT_EQUAL_INT(0, val);
 
