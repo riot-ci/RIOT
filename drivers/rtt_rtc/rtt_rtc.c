@@ -16,14 +16,12 @@
  * @note        Unlike a real RTC, this emulated version is not guaranteed to keep
  *              time across reboots or deep sleep.
  *
- *              The maximum alarm offset to the current time is
- *              `RTT_MAX_VALUE`/`RTT_FREQUENCY` seconds.
- *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
  *
  * @}
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "periph/rtc.h"
@@ -36,6 +34,14 @@
 
 /* In .noinit so we don't reset the counter on reboot */
 static struct tm tm_now __attribute__((section(".noinit")));
+
+static uint32_t alarm_time;
+static unsigned alarm_overflows;
+
+static rtc_alarm_cb_t alarm_cb;
+static void *alarm_cb_arg;
+
+static int _set_alarm(uint32_t alarm, rtc_alarm_cb_t cb, void *arg);
 
 /* get the time it takes the RTT to overflow */
 static inline unsigned char _rtt_get_overflow(unsigned part)
@@ -63,6 +69,10 @@ static void _rtt_overflow(void *arg) {
     tm_now.tm_min  += RTT_MIN_MAX;
     tm_now.tm_hour += RTT_HOUR_MAX;
     tm_now.tm_yday += RTT_DAY_MAX;
+
+    if (alarm_overflows && --alarm_overflows == 0) {
+        _set_alarm(alarm_time, alarm_cb, alarm_cb_arg);
+    }
 }
 
 void rtc_init(void)
@@ -80,6 +90,10 @@ int rtc_set_time(struct tm *time)
 
     rtt_set_counter(0);
     tm_now = *time;
+
+    if (alarm_overflows) {
+        _set_alarm(alarm_time, alarm_cb, alarm_cb_arg);
+    }
 
     return 0;
 }
@@ -102,30 +116,46 @@ int rtc_get_alarm(struct tm *time)
     return 0;
 }
 
-int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
+int _set_alarm(uint32_t alarm, rtc_alarm_cb_t cb, void *arg)
 {
-    rtc_tm_normalize(time);
-
-    /* reset the RTT counter to get maximum range */
-    tm_now.tm_sec += rtt_get_counter()/RTT_SECOND;
-    rtc_tm_normalize(&tm_now);
-    rtt_set_counter(0);
-
+    div_t d;
     uint32_t now   = rtc_mktime(&tm_now);
-    uint32_t alarm = rtc_mktime(time);
     uint32_t diff  = alarm - now;
 
     if (now > alarm) {
         return -1;
     }
 
-    if (diff > RTT_MAX_VALUE/RTT_SECOND) {
-        return -1;
+    d = div(diff, RTT_SECOND);
+    alarm_overflows = d.quot;
+    alarm_time = d.rem;
+
+    if (alarm_overflows == 0) {
+        rtt_set_alarm(diff * RTT_SECOND, cb, arg);
+    } else {
+        alarm_time   = alarm;
+        alarm_cb     = cb;
+        alarm_cb_arg = arg;
     }
 
-    rtt_set_alarm(diff * RTT_SECOND, cb, arg);
-
     return 0;
+}
+
+int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
+{
+    uint32_t alarm, now;
+
+    rtc_tm_normalize(time);
+    alarm = rtc_mktime(time);
+
+    /* reset the RTT counter to get maximum range */
+    now = rtt_get_counter()/RTT_SECOND;
+    rtt_set_counter(0);
+
+    tm_now.tm_sec += now;
+    rtc_tm_normalize(&tm_now);
+
+    return _set_alarm(alarm, cb, arg);
 }
 
 void rtc_clear_alarm(void)
