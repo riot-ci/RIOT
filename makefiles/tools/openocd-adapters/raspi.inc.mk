@@ -1,8 +1,8 @@
 # Raspberry Pi GPIO as debug adapter
 
-SWCLK ?= 21
-SWDIO ?= 20
-RST ?= 16
+SWCLK_PIN ?= 21
+SWDIO_PIN ?= 20
+SRST_PIN  ?= 16
 
 ifeq (1, $(shell grep ARMv6 /proc/cpuinfo > /dev/null; echo $$?))
   ifeq (0, $(shell grep [[:lower:]]0311[[:digit:]] /proc/cpuinfo > /dev/null; echo $$?))
@@ -27,8 +27,8 @@ OPENOCD_ADAPTER_INIT ?= \
   -c 'adapter driver bcm2835gpio' \
   -c 'bcm2835gpio_peripheral_base $(PERIPH_BASE)' \
   -c 'bcm2835gpio_speed_coeffs $(SPEED_COEFF) $(SPEED_OFFSET)' \
-  -c 'bcm2835gpio_swd_nums $(SWCLK) $(SWDIO)' \
-  -c 'bcm2835gpio_srst_num $(RST)' \
+  -c 'bcm2835gpio_swd_nums $(SWCLK_PIN ) $(SWDIO_PIN)' \
+  -c 'bcm2835gpio_sSRST_PIN_num $(SRST_PIN)' \
   -c 'transport select swd'
 
 export OPENOCD_ADAPTER_INIT
