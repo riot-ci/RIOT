@@ -6,10 +6,11 @@ USEMODULE += lvgl_misc
 USEMODULE += lvgl_objx
 USEMODULE += lvgl_themes
 
-USEMODULE += lvgl_contrib
-USEMODULE += disp_dev
-USEMODULE += core_thread_flags
-USEMODULE += xtimer
+ifneq (,$(filter lvgl_contrib,$(USEMODULE)))
+  USEMODULE += disp_dev
+  USEMODULE += core_thread_flags
+  USEMODULE += xtimer
+endif
 
 # lvgl is not compatible with non 32bit platforms
 # It lv_misc triggers the build error:
