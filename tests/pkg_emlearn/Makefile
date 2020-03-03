@@ -6,6 +6,10 @@ BLOBS += digit
 
 BUILDDEPS += sonar.h
 
+# Disable hardware FPU for Cortex-M4/7 to prevent crash on these platforms
+DISABLE_MODULE += cortexm_fpu
+
+# emlearn is not compatible with MSP430
 FEATURES_BLACKLIST += arch_msp430
 
 include $(RIOTBASE)/Makefile.include
