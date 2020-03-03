@@ -12,6 +12,9 @@ DISABLE_MODULE += cortexm_fpu
 # emlearn is not compatible with MSP430
 FEATURES_BLACKLIST += arch_msp430
 
+# The test crashes on samr21-xpro
+TEST_ON_CI_BLACKLIST = samr21-xpro
+
 include $(RIOTBASE)/Makefile.include
 
 sonar.h: $(CURDIR)/model
