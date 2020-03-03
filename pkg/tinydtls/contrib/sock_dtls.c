@@ -35,8 +35,6 @@
 #define DTLS_HANDSHAKE_TIMEOUT  (1 * US_PER_SEC)
 #endif  /* DTLS_ECC */
 
-static void _timeout_callback(void *arg);
-
 #ifdef DTLS_PSK
 static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
                          dtls_credentials_type_t type,
@@ -355,18 +353,13 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
         else if (res > 0) {
             /* handshake initiated, wait until connected or timed out */
-            volatile int is_timed_out = 0;
-            xtimer_t timeout_timer;
-            timeout_timer.callback = _timeout_callback;
-            timeout_timer.arg = (void *)&is_timed_out;
-            xtimer_set(&timeout_timer, DTLS_HANDSHAKE_TIMEOUT);
 
             msg_t msg;
             do {
-                mbox_get(&sock->mbox, &msg);
-            } while ((msg.type != DTLS_EVENT_CONNECTED) && !is_timed_out);
-
-            if (is_timed_out) {
+                res = xtimer_msg_receive_timeout(&msg, 3 * DTLS_HANDSHAKE_TIMEOUT);
+            }
+            while ((res != -1) && (msg.type != DTLS_EVENT_CONNECTED));
+            if (res == -1) {
                 DEBUG("sock_dtls: handshake process timed out\n");
 
                 /* deletes peer created in dtls_connect() before */
@@ -374,12 +367,10 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
                 dtls_reset_peer(sock->dtls_ctx, peer);
                 return -EHOSTUNREACH;
             }
-            xtimer_remove(&timeout_timer);
         }
     }
 
-    return dtls_write(sock->dtls_ctx, &remote->dtls_session, (uint8_t *)data,
-                      len);
+    return dtls_write(sock->dtls_ctx, &remote->dtls_session, (uint8_t *)data, len);
 }
 
 ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
@@ -449,11 +440,6 @@ static void _session_to_ep(const session_t *session, sock_udp_ep_t *ep)
     ep->port = session->port;
     ep->netif = session->ifindex;
     memcpy(&ep->addr.ipv6, &session->addr, sizeof(ipv6_addr_t));
-}
-
-static void _timeout_callback(void *arg)
-{
-    *(int *)arg = 1;
 }
 
 /** @} */
