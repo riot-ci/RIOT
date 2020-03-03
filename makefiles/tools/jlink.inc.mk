@@ -13,6 +13,7 @@ RESET_FLAGS ?= reset
 JLINK_SERIAL ?= $(DEBUG_ADAPTER_ID)
 
 JLINK_IF ?= SWD
+JLINK_RESET_FILE ?= ${RIOTTOOLS}/jlink/reset.seg
 
 # Export JLINK_SERIAL to required targets
 JLINK_TARGETS = debug% flash% reset term-rtt
@@ -23,3 +24,6 @@ $(call target-export-variables,$(JLINK_TARGETS),JLINK_DEVICE)
 
 # Export JLINK_IF to required targets
 $(call target-export-variables,$(JLINK_TARGETS),JLINK_IF)
+
+# Export JLINK_RESET_FILE to required targets
+$(call target-export-variables,$(JLINK_TARGETS),JLINK_RESET_FILE)
