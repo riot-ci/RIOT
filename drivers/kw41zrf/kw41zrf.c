@@ -255,8 +255,6 @@ int kw41zrf_reset(kw41zrf_t *dev)
                           &enable, sizeof(enable));
 
     kw41zrf_abort_sequence(dev);
-    bit_clear32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_SEQMSK_SHIFT);
-
     kw41zrf_set_sequence(dev, dev->idle_seq);
     kw41zrf_unmask_irqs();
 
