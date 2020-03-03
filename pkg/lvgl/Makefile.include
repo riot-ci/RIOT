@@ -4,7 +4,9 @@ INCLUDES += -I$(PKGDIRBASE)
 # Don't use relative includes in lvgl
 CFLAGS += -DLV_CONF_INCLUDE_SIMPLE
 
-DIRS += $(RIOTBASE)/pkg/lvgl/contrib
+ifneq (,$(filter lvgl_contrib,$(USEMODULE)))
+  DIRS += $(RIOTBASE)/pkg/lvgl/contrib
+endif
 
 # Configuration options
 # Graphical settings
