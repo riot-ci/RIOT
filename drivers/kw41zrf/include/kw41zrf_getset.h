@@ -189,7 +189,7 @@ int8_t kw41zrf_get_ed_level(kw41zrf_t *dev);
 int kw41zrf_cca(kw41zrf_t *dev);
 
 /**
- * @brief Set receive watermark
+ * @brief Set receive watermark to signal when the packet buffer is part full
  *
  * @param[in] dev       kw41zrf device descriptor
  * @param[in] value     watermark
