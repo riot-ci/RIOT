@@ -39,14 +39,16 @@ static void kw41zrf_set_address(kw41zrf_t *dev)
 {
     DEBUG("[kw41zrf] Set MAC address\n");
     eui64_t addr_long;
-    /* get an 8-byte unique ID to use as hardware address */
-    luid_get(addr_long.uint8, IEEE802154_LONG_ADDRESS_LEN);
+    network_uint16_t addr_short;
+    /* get unique IDs to use as hardware addresses */
+    luid_get_eui64(&addr_long);
+    luid_get_short(&addr_short);
     /* make sure we mark the address as non-multicast and not globally unique */
     addr_long.uint8[0] &= ~(0x01);
     addr_long.uint8[0] |=  (0x02);
     /* set short and long address */
     kw41zrf_set_addr_long(dev, ntohll(addr_long.uint64.u64));
-    kw41zrf_set_addr_short(dev, ntohs(addr_long.uint16[0].u16));
+    kw41zrf_set_addr_short(dev, ntohs(addr_short.u16));
 }
 
 void kw41zrf_setup(kw41zrf_t *dev)
