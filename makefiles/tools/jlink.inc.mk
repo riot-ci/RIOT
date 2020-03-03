@@ -12,9 +12,14 @@ RESET_FLAGS ?= reset
 
 JLINK_SERIAL ?= $(DEBUG_ADAPTER_ID)
 
+JLINK_IF ?= SWD
+
 # Export JLINK_SERIAL to required targets
 JLINK_TARGETS = debug% flash% reset term-rtt
 $(call target-export-variables,$(JLINK_TARGETS),JLINK_SERIAL)
 
 # Export JLINK_DEVICE to required targets
 $(call target-export-variables,$(JLINK_TARGETS),JLINK_DEVICE)
+
+# Export JLINK_IF to required targets
+$(call target-export-variables,$(JLINK_TARGETS),JLINK_IF)
