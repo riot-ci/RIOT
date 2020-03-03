@@ -179,10 +179,6 @@ int kw41zrf_reset_hardware(kw41zrf_t *dev)
     ZLL->CCA_LQI_CTRL = (ZLL->CCA_LQI_CTRL & ~ZLL_CCA_LQI_CTRL_CCA1_THRESH_MASK) |
         ZLL_CCA_LQI_CTRL_CCA1_THRESH(-60);
 
-    /* IEEE 802.15.4 requires that ACK transmission commences 12 symbol periods
-     * (192 us) after the reception of the last octet of the frame being acknowledged. */
-    //~ ZLL->ACKDELAY = (ZLL->ACKDELAY & ~ZLL_ACKDELAY_ACKDELAY_MASK) | ZLL_ACKDELAY_ACKDELAY(-8);
-
     /* Set default LQI compensation */
     /* Hardware reset default is 102 */
     ZLL->CCA_LQI_CTRL = (ZLL->CCA_LQI_CTRL & ~ZLL_CCA_LQI_CTRL_LQI_OFFSET_COMP_MASK) |
