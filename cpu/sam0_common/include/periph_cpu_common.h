@@ -368,6 +368,20 @@ void gpio_pm_cb_enter(int deep);
 void gpio_pm_cb_leave(int deep);
 
 /**
+ * @brief   Called before the power management enters a power mode
+ *
+ * @param[in] deep
+ */
+void cpu_pm_cb_enter(int deep);
+
+/**
+ * @brief   Called after the power management left a power mode
+ *
+ * @param[in] deep
+ */
+void cpu_pm_cb_leave(int deep);
+
+/**
  * @brief   Wrapper for cortexm_sleep calling power management callbacks
  *
  * @param[in] deep
@@ -378,10 +392,47 @@ static inline void sam0_cortexm_sleep(int deep)
     gpio_pm_cb_enter(deep);
 #endif
 
+    cpu_pm_cb_enter(deep);
+
     cortexm_sleep(deep);
+
+    cpu_pm_cb_leave(deep);
 
 #ifdef MODULE_PERIPH_GPIO
     gpio_pm_cb_leave(deep);
+#endif
+}
+
+/**
+ * @brief   Availiably supply controller voltage regulators.
+ */
+typedef enum {
+    SAM0_VREG_LDO,  /*< LDO, always availiable but not very power efficient */
+    SAM0_VREG_BUCK  /*< Buck converter, efficient but may clash with internal
+                        fast clock generators (see errata sheets) */
+} sam0_supc_t;
+
+/**
+ * @brief       Switch the internal voltage regulator used for generating the
+ *              internal MCU voltages.
+ *              Availiable options are:
+ *
+ *               - LDO: not very efficient, but will always work
+ *               - BUCK converter: Most efficient, but incompatible with the
+ *                 use of DFLL or DPLL.
+ *                 Please refer to the errata sheet, further restrictions may
+ *                 apply depending on the MCU.
+ *
+ * @param[in]   src
+ */
+static inline void sam0_set_voltage_regulator(sam0_supc_t src)
+{
+#ifdef REG_SUPC_VREG
+    SUPC->VREG.bit.SEL = src;
+    while (!SUPC->STATUS.bit.VREGRDY) {}
+#else
+    (void) src;
+    assert(0);
 #endif
 }
 
