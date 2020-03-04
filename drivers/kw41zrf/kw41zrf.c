@@ -43,12 +43,9 @@ static void kw41zrf_set_address(kw41zrf_t *dev)
     /* get unique IDs to use as hardware addresses */
     luid_get_eui64(&addr_long);
     luid_get_short(&addr_short);
-    /* make sure we mark the address as non-multicast and not globally unique */
-    addr_long.uint8[0] &= ~(0x01);
-    addr_long.uint8[0] |=  (0x02);
     /* set short and long address */
-    kw41zrf_set_addr_long(dev, ntohll(addr_long.uint64.u64));
-    kw41zrf_set_addr_short(dev, ntohs(addr_short.u16));
+    kw41zrf_set_addr_long(dev, addr_long);
+    kw41zrf_set_addr_short(dev, addr_short);
 }
 
 void kw41zrf_setup(kw41zrf_t *dev)

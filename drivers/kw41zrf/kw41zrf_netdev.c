@@ -432,11 +432,6 @@ int kw41zrf_netdev_get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
             *((netopt_state_t *)value) = kw41zrf_netdev_get_state(dev);
             return sizeof(netopt_state_t);
 
-        case NETOPT_MAX_PACKET_SIZE:
-            assert(len >= sizeof(uint16_t));
-            *((uint16_t *)value) = KW41ZRF_MAX_PKT_LENGTH - _MAX_MHR_OVERHEAD;
-            return sizeof(uint16_t);
-
         case NETOPT_PRELOADING:
             assert(len >= sizeof(netopt_enable_t));
             *((netopt_enable_t *)value) =
@@ -563,14 +558,14 @@ int kw41zrf_netdev_get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
 
         case NETOPT_ADDRESS:
             assert(len >= sizeof(uint16_t));
-            *((uint16_t *)value) = kw41zrf_get_addr_short(dev);
+            *((network_uint16_t *)value) = kw41zrf_get_addr_short(dev);
             res = sizeof(uint16_t);
             break;
 
         case NETOPT_ADDRESS_LONG:
-            assert(len >= sizeof(uint64_t));
-            *((uint64_t *)value) = kw41zrf_get_addr_long(dev);
-            res = sizeof(uint64_t);
+            assert(len >= sizeof(eui64_t));
+            *((eui64_t *)value) = kw41zrf_get_addr_long(dev);
+            res = sizeof(eui64_t);
             break;
 
         case NETOPT_TX_POWER:
@@ -641,10 +636,6 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
 
     /* These settings do not require the transceiver to be awake */
     switch (opt) {
-        case NETOPT_CHANNEL_PAGE:
-            res = -EINVAL;
-            break;
-
         case NETOPT_STATE:
             assert(len <= sizeof(const netopt_state_t));
             res = kw41zrf_netdev_set_state(dev, *((const netopt_state_t *)value));
@@ -777,14 +768,14 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
 
         case NETOPT_ADDRESS:
             assert(len <= sizeof(const uint16_t));
-            kw41zrf_set_addr_short(dev, *((const uint16_t *)value));
+            kw41zrf_set_addr_short(dev, *((const network_uint16_t *)value));
             res = sizeof(const uint16_t);
             break;
 
         case NETOPT_ADDRESS_LONG:
-            assert(len <= sizeof(const uint64_t));
-            kw41zrf_set_addr_long(dev, *((const uint64_t *)value));
-            res = sizeof(const uint64_t);
+            assert(len <= sizeof(const eui64_t));
+            kw41zrf_set_addr_long(dev, *((const eui64_t *)value));
+            res = sizeof(const eui64_t);
             break;
 
         case NETOPT_NID:
@@ -888,6 +879,7 @@ static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
         }
 
         dev->backoff_delay = 0;
+        /* disable TMR2 match */
         bit_clear32(&ZLL->PHY_CTRL, ZLL_PHY_CTRL_TMR2CMP_EN_SHIFT);
     }
     if (irqsts & ZLL_IRQSTS_CCAIRQ_MASK) {

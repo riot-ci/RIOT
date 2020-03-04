@@ -108,37 +108,35 @@ void kw41zrf_set_pan(kw41zrf_t *dev, uint16_t pan)
     DEBUG("[kw41zrf] set pan to: 0x%x\n", pan);
 }
 
-void kw41zrf_set_addr_short(kw41zrf_t *dev, uint16_t addr)
+void kw41zrf_set_addr_short(kw41zrf_t *dev, network_uint16_t addr)
 {
     (void) dev;
     ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0 & ~ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) |
-        ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr);
+        ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr.u16);
 }
 
-void kw41zrf_set_addr_long(kw41zrf_t *dev, uint64_t addr)
+void kw41zrf_set_addr_long(kw41zrf_t *dev, eui64_t addr)
 {
     (void) dev;
-    /* Network byte order */
-    addr = byteorder_swapll(addr);
-    ZLL->MACLONGADDRS0_LSB = (uint32_t)addr;
-    ZLL->MACLONGADDRS0_MSB = (addr >> 32);
+    ZLL->MACLONGADDRS0_LSB = (uint32_t)addr.uint64.u64;
+    ZLL->MACLONGADDRS0_MSB = (addr.uint64.u64 >> 32);
 }
 
-uint16_t kw41zrf_get_addr_short(kw41zrf_t *dev)
+network_uint16_t kw41zrf_get_addr_short(kw41zrf_t *dev)
 {
     (void) dev;
-    return (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) >>
-            ZLL_MACSHORTADDRS0_MACSHORTADDRS0_SHIFT;
+    uint16_t addr = (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) >>
+                        ZLL_MACSHORTADDRS0_MACSHORTADDRS0_SHIFT;
+    return (network_uint16_t)addr;
 }
 
-uint64_t kw41zrf_get_addr_long(kw41zrf_t *dev)
+eui64_t kw41zrf_get_addr_long(kw41zrf_t *dev)
 {
     (void) dev;
     uint64_t addr = ((uint64_t)ZLL->MACLONGADDRS0_MSB << 32) | ZLL->MACLONGADDRS0_LSB;
     /* Network byte order */
     addr = byteorder_swapll(addr);
-
-    return addr;
+    return (eui64_t)(network_uint64_t)addr;
 }
 
 int8_t kw41zrf_get_cca_threshold(kw41zrf_t *dev)
