@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_nrf52840-dongle
+ * @ingroup     boards_nrf52840dongle
  * @{
  *
  * @file

@@ -1,5 +1,5 @@
 /**
-@defgroup    boards_nrf52840-dongle nRF52840-Dongle
+@defgroup    boards_nrf52840dongle nRF52840-Dongle
 @ingroup     boards
 @brief       Support for the nRF52840-Dongle
 
