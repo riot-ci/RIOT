@@ -75,7 +75,8 @@ def check_cmd(child, cmd, expected):
 
 
 def check_startup(child):
-    child.expect('test_shell.\r\n')
+    child.sendline(CONTROL_C)
+    child.expect_exact(PROMPT)
 
 
 def check_and_get_bufsize(child):
