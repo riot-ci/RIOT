@@ -101,7 +101,7 @@ void free_memory(struct block_t *head)
 int main(void)
 {
     printf("MAX_NUMBER_BLOCKS: %d\n", MAX_NUMBER_BLOCKS);
-    printf("NUMBER_OF_TESTS: %d\n", NUMBER_OF_TESTS);
+    printf("NUMBER_OF_TESTS: %d\n", 2 * NUMBER_OF_TESTS);
 
     memory_block_init();
     int count = 0;
@@ -110,6 +110,17 @@ int main(void)
     _ps_handler(0, NULL);
 
     while (count < NUMBER_OF_TESTS) {
+        struct block_t *head = (struct block_t *) memarray_alloc(&block_storage);
+
+        printf("TEST #%i:\n", count + 1 );
+        fill_memory(head);
+        free_memory(head);
+
+        count++;
+    }
+
+    while (count < 2 * NUMBER_OF_TESTS) {
+        memory_block_init();
         struct block_t *head = (struct block_t *) memarray_alloc(&block_storage);
 
         printf("TEST #%i:\n", count + 1 );
