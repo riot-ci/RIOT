@@ -355,10 +355,6 @@ void shell_run_once(const shell_command_t *shell_commands,
                 puts("shell: maximum line length exceeded");
                 break;
 
-            case 0:
-                puts("shell: line is empty");
-                break;
-
             default:
                 handle_input_line(shell_commands, line_buf);
                 break;

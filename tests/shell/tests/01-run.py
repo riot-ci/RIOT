@@ -40,11 +40,12 @@ DLE = '\x16'
 CONTROL_C = DLE+'\x03'
 CONTROL_D = DLE+'\x04'
 
+PROMPT = '> '
+
 CMDS = (
     ('start_test', '[TEST_START]'),
-    ('', 'shell: line is empty\r\n'),
-    (CONTROL_C, '>'),
-    ('\n', '>'),
+    (CONTROL_C, PROMPT),
+    ('\n', PROMPT),
     ('123456789012345678901234567890123456789012345678901234567890',
      'shell: command not found: '
      '123456789012345678901234567890123456789012345678901234567890'),
@@ -56,8 +57,6 @@ CMDS = (
     ('reboot', 'test_shell.'),
     ('end_test', '[TEST_END]'),
 )
-
-PROMPT = '> '
 
 BOARD = os.environ['BOARD']
 
@@ -125,6 +124,7 @@ def testfunc(child):
 
     # loop other defined commands and expected output
     for cmd, expected in CMDS:
+        print(cmd)
         check_cmd(child, cmd, expected)
 
 
