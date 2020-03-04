@@ -49,6 +49,8 @@
  * The snippet here defines a region within an existing `MTD_0` device of half
  * the size of `MTD_0` and starting in the middle of the device.
  *
+ * @warning Please ensure that the different configured regions do not overlap.
+ *
  * @{
  *
  * @brief       Interface definitions for mtd mapper support
