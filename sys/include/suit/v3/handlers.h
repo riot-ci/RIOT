@@ -10,7 +10,7 @@
  */
 /**
  * @ingroup     sys_suit_v3
- * @brief       SUIT v3 manifest handlers
+ * @brief       SUIT draft-ietf-suit-manifest-03 manifest handlers
  *
  * @experimental
  *
@@ -36,61 +36,79 @@ extern "C" {
 #endif
 
 /**
+ * @name SUIT outer wrapper identifiers
+ * @{
+ */
+#define SUIT_WRAPPER_AUTHENTICATION     (2)
+#define SUIT_WRAPPER_MANIFEST           (3)
+/** @} */
+
+/**
  * @name SUIT container identifiers
  * @{
  */
-#define SUIT_CONTAINER_VERSION              (1)
-#define SUIT_CONTAINER_SEQ_NO               (2)
-#define SUIT_CONTAINER_COMMON               (3)
-#define SUIT_CONTAINER_DEPS_RESOLUTION      (7)
-#define SUIT_CONTAINER_PAYLOAD_FETCH        (8)
-#define SUIT_CONTAINER_INSTALL              (9)
-#define SUIT_CONTAINER_VALIDATE            (10)
-#define SUIT_CONTAINER_LOAD                (11)
-#define SUIT_CONTAINER_RUN                 (12)
-#define SUIT_CONTAINER_TEXT                (13)
-/* @} */
+#define SUIT_CONTAINER_VERSION          (1)
+#define SUIT_CONTAINER_SEQ_NO           (2)
+#define SUIT_CONTAINER_COMMON           (3)
+#define SUIT_CONTAINER_DEPS_RESOLUTION  (7)
+#define SUIT_CONTAINER_PAYLOAD_FETCH    (8)
+#define SUIT_CONTAINER_INSTALL          (9)
+#define SUIT_CONTAINER_VALIDATE        (10)
+#define SUIT_CONTAINER_LOAD            (11)
+#define SUIT_CONTAINER_RUN             (12)
+#define SUIT_CONTAINER_TEXT            (13)
+/** @} */
+
+/**
+ * @name SUIT common section identifiers
+ * @{
+ */
+#define SUIT_COMMON_DEPENDENCIES        (1)
+#define SUIT_COMMON_COMPONENTS          (2)
+#define SUIT_COMMON_DEP_COMPONENTS      (3)
+#define SUIT_COMMON_COMMAND_SEQUENCE    (4)
+/** @} */
 
 /**
  * @name SUIT condition identifiers
  * @{
  */
-#define SUIT_COND_VENDOR_ID     (1)
-#define SUIT_COND_CLASS_ID      (2)
-#define SUIT_COND_IMAGE_MATCH   (3)
-#define SUIT_COND_USE_BEFORE    (4)
+#define SUIT_COND_VENDOR_ID             (1)
+#define SUIT_COND_CLASS_ID              (2)
+#define SUIT_COND_IMAGE_MATCH           (3)
+#define SUIT_COND_USE_BEFORE            (4)
 #define SUIT_COND_COMPONENT_OFFSET      (5)
 #define SUIT_COND_DEVICE_ID            (24)
 #define SUIT_COND_IMAGE_NOT_MATCH      (25)
 #define SUIT_COND_MIN_BATTERY          (26)
 #define SUIT_COND_UPDATE_AUTHZ         (27)
 #define SUIT_COND_VERSION              (28)
-/* @} */
+/** @} */
 
 /**
  * @name SUIT directive identifiers
  * @{
  */
-#define SUIT_DIR_SET_COMPONENT_IDX  (12)
-#define SUIT_DIR_SET_DEPENDENCY_IDX (13)
-#define SUIT_DIR_ABORT              (14)
-#define SUIT_DIR_TRY_EACH           (15)
-#define SUIT_DIR_PROCESS_DEPS       (18)
-#define SUIT_DIR_SET_PARAM          (19)
-#define SUIT_DIR_OVERRIDE_PARAM     (20)
-#define SUIT_DIR_FETCH              (21)
-#define SUIT_DIR_COPY               (22)
-#define SUIT_DIR_RUN                (23)
-#define SUIT_DIR_WAIT               (29)
-#define SUIT_DIR_RUN_SEQUENCE       (30)
-#define SUIT_DIR_RUN_WITH_ARGS      (31)
-#define SUIT_DIR_SWAP               (32)
+#define SUIT_DIR_SET_COMPONENT_IDX     (12)
+#define SUIT_DIR_SET_DEPENDENCY_IDX    (13)
+#define SUIT_DIR_ABORT                 (14)
+#define SUIT_DIR_TRY_EACH              (15)
+#define SUIT_DIR_PROCESS_DEPS          (18)
+#define SUIT_DIR_SET_PARAM             (19)
+#define SUIT_DIR_OVERRIDE_PARAM        (20)
+#define SUIT_DIR_FETCH                 (21)
+#define SUIT_DIR_COPY                  (22)
+#define SUIT_DIR_RUN                   (23)
+#define SUIT_DIR_WAIT                  (29)
+#define SUIT_DIR_RUN_SEQUENCE          (30)
+#define SUIT_DIR_RUN_WITH_ARGS         (31)
+#define SUIT_DIR_SWAP                  (32)
 /** @} */
 
 /**
  * @brief suit handler prototype
  *
- * @param manifest  SUIT v3 manifest context
+ * @param manifest  SUIT manifest context
  * @param it        nanocbor_value_t iterator to the content
  *
  * @return          SUIT_OK on success
@@ -106,20 +124,69 @@ extern const suit_manifest_handler_t suit_global_handlers[];
 extern const size_t suit_global_handlers_len;
 
 /**
- * @brief sequence handler reference
+ * @brief SUIT sequence handler reference
  */
 extern const suit_manifest_handler_t suit_sequence_handlers[];
+
+/**
+ * @brief SUIT sequence handler length
+ */
 extern const size_t suit_sequence_handlers_len;
+
+/**
+ * @brief SUIT container handlers reference
+ */
 extern const suit_manifest_handler_t suit_container_handlers[];
+
+/**
+ * @brief length of the SUIT container handlers
+ */
 extern const size_t suit_container_handlers_len;
+
+/**
+ * @brief SUIT common handlers reference
+ */
 extern const suit_manifest_handler_t suit_common_handlers[];
+
+/**
+ * @brief length of the SUIT common handlers
+ */
 extern const size_t suit_common_handlers_len;
 
+/**
+ * @brief Manifest structure handler function
+ *
+ * Iterates over the supplied nanocbor map or array and calls the manifest
+ * handler function for every key.
+ *
+ * @param   manifest        SUIT manifest context
+ * @param   it              Nanocbor map/array element
+ * @param   handlers        Array of SUIT manifest handlers to use
+ * @param   handlers_len    Length of the SUIT manifest handlers
+ *
+ * @returns     SUIT_OK if all handlers executed succesfully
+ * @returns     negative on error, see @ref suit_v3_error_t
+ */
 int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
                                    nanocbor_value_t *it,
                                    const suit_manifest_handler_t *handlers,
                                    size_t handlers_len);
 
+/**
+ * @brief Byte string wrapped manifest structure handler function
+ *
+ * Extracts the nanocbor byte string and Iterates over the CBOR map or array
+ * contained in the bytestring and calls the manifest handler function for
+ * every key.
+ *
+ * @param   manifest        SUIT manifest context
+ * @param   it              Nanocbor byte string
+ * @param   handlers        Array of SUIT manifest handlers to use
+ * @param   handlers_len    Length of the SUIT manifest handlers
+ *
+ * @returns     SUIT_OK if all handlers executed succesfully
+ * @returns     negative on error, see @ref suit_v3_error_t
+ */
 int suit_handle_manifest_structure_bstr(suit_v3_manifest_t *manifest,
                                         nanocbor_value_t *bseq,
                                         const suit_manifest_handler_t *handlers,

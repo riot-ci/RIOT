@@ -94,11 +94,12 @@ static int _common_handler(suit_v3_manifest_t *manifest, int key,
 /* begin{code-style-ignore} */
 const suit_manifest_handler_t suit_global_handlers[] = {
     [ 0] = NULL,
-    [ 1] = _version_handler,
-    [ 2] = _seq_no_handler,
-    [ 3] = _common_handler,
-    [ 9] = _common_sequence_handler, /* Install section */
-    [10] = _common_sequence_handler, /* verify section */
+    [SUIT_CONTAINER_VERSION]  = _version_handler,
+    [SUIT_CONTAINER_SEQ_NO]   = _seq_no_handler,
+    [SUIT_CONTAINER_COMMON]   = _common_handler,
+    /* Install and validate both consist of a command sequence */
+    [SUIT_CONTAINER_INSTALL]  = _common_sequence_handler,
+    [SUIT_CONTAINER_VALIDATE] = _common_sequence_handler,
 };
 /* end{code-style-ignore} */
 

@@ -325,17 +325,16 @@ static int _dtv_verify_image_match(suit_v3_manifest_t *manifest, int key,
 
 /* begin{code-style-ignore} */
 const suit_manifest_handler_t suit_sequence_handlers[] = {
-    [ 0] = NULL,
-    [ 1] = _cond_vendor_handler,
-    [ 2] = _cond_class_handler,
-    [ 3] = _dtv_verify_image_match,
-    [ 5] = _cond_comp_offset,
-    [12] = _dtv_set_comp_idx,
-    [15] = _dtv_try_each,
-    [19] = _dtv_set_param,
-    [20] = _dtv_set_param,
-    [21] = _dtv_fetch,
-    [30] = _dtv_run_seq_cond,
+    [SUIT_COND_VENDOR_ID]        = _cond_vendor_handler,
+    [SUIT_COND_CLASS_ID]         = _cond_class_handler,
+    [SUIT_COND_IMAGE_MATCH]      = _dtv_verify_image_match,
+    [SUIT_COND_COMPONENT_OFFSET] = _cond_comp_offset,
+    [SUIT_DIR_SET_COMPONENT_IDX] = _dtv_set_comp_idx,
+    [SUIT_DIR_TRY_EACH]          = _dtv_try_each,
+    [SUIT_DIR_SET_PARAM]         = _dtv_set_param,
+    [SUIT_DIR_OVERRIDE_PARAM]    = _dtv_set_param,
+    [SUIT_DIR_FETCH]             = _dtv_fetch,
+    [SUIT_DIR_RUN_SEQUENCE]      = _dtv_run_seq_cond,
 };
 /* end{code-style-ignore} */
 

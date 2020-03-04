@@ -103,11 +103,9 @@ int _common_sequence_handler(suit_v3_manifest_t *manifest, int key,
 
 /* begin{code-style-ignore} */
 const suit_manifest_handler_t suit_common_handlers[] = {
-    [ 0] = NULL,
-    [ 1] = _dependencies_handler,
-    [ 2] = _component_handler,
-    [ 3] = NULL,
-    [ 4] = _common_sequence_handler,
+    [SUIT_COMMON_DEPENDENCIES]     = _dependencies_handler,
+    [SUIT_COMMON_COMPONENTS]       = _component_handler,
+    [SUIT_COMMON_COMMAND_SEQUENCE] = _common_sequence_handler,
 };
 /* end{code-style-ignore} */
 

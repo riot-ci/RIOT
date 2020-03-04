@@ -7,7 +7,7 @@
  * directory for more details.
  */
 /**
- * @defgroup    sys_suit_v3 SUIT draft v3
+ * @defgroup    sys_suit_v3 SUIT IETF draft v3
  * @ingroup     sys_suit
  * @brief       SUIT manifest handling
  *
@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Maximum number of components used for SUIT v3
+ * @brief   Maximum number of components supported in a SUIT manifest
  */
 #define SUIT_V3_COMPONENT_MAX           (1U)
 
@@ -56,7 +56,7 @@ extern "C" {
 /**
  * @brief Current SUIT serialization format version
  *
- * see https://tools.ietf.org/html/draft-moran-suit-manifest-04#section-8.2 for
+ * see https://tools.ietf.org/html/draft-ietf-suit-manifest-03#section-7 for
  * details
  */
 #define SUIT_VERSION                    (1)
@@ -75,7 +75,7 @@ extern "C" {
  * @brief SUIT error codes
  */
 typedef enum {
-    SUIT_OK                   = 0,  /**< Manifest parsed and validated */
+    SUIT_OK                   =  0, /**< Manifest parsed and validated */
     SUIT_ERR_INVALID_MANIFEST = -1, /**< Unexpected CBOR structure detected */
     SUIT_ERR_UNSUPPORTED      = -2, /**< Unsupported SUIT feature detected */
     SUIT_ERR_NOT_SUPPORTED    = -3, /**< Unsupported features detected */
@@ -129,7 +129,7 @@ enum {
  */
 typedef struct {
     uint32_t size;                      /**< Size */
-    nanocbor_value_t identifier;        /**< Identifier*/
+    nanocbor_value_t identifier;        /**< Identifier */
     nanocbor_value_t url;               /**< Url */
     nanocbor_value_t digest;            /**< Digest */
 } suit_v3_component_t;
@@ -144,7 +144,6 @@ typedef struct {
     size_t cose_payload_len;        /**< length of the COSE payload */
     uint32_t validated;             /**< bitfield of validated policies */
     uint32_t state;                 /**< bitfield holding state information */
-
     /** List of components in the manifest */
     suit_v3_component_t components[SUIT_V3_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */
