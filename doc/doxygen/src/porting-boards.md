@@ -281,7 +281,7 @@ In this case some special considerations must be taken with the makefiles:
   `include $(RIOTBOARD)/foo-parent/Makefile.*include*`
 
 An example can be found in
-[`tests/external_board_native`](https://github.com/RIOT-OS/RIOT/tree/master/tests/external_board_native`)
+[`tests/external_board_native`](https://github.com/RIOT-OS/RIOT/tree/master/tests/external_board_native)
 
 # Tools                                                          {#boards-tools}
 
