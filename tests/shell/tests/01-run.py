@@ -89,8 +89,10 @@ def check_and_get_bufsize(child):
 def check_line_exceeded(child, bufsize):
 
     if BOARD == 'nrf52dk':
-        # looks like the nrf52dk runs in to undefined behaviour when sending more
-        # than 64 bytes over UART
+        # There is an issue with nrf52dk when the Virtual COM port is connected
+        # and sending more than 64 bytes over UART. If no terminal is connected
+        # to the Virtual COM and interfacing directly to the nrf52832 UART pins
+        # the issue is not present. See issue #10639 on GitHub.
         print_error('test case "check_line_exceeded" broken for nrf52dk. SKIP')
         return
 
