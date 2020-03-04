@@ -11,28 +11,24 @@
  * @{
  *
  * @file
- * @brief       SUIT v3
+ * @brief       SUIT draft-ietf-suit-manifest-03 Handlers for the outer SUIT
+ *              container
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
  * @}
  */
 
-#include "hashes/sha256.h"
-#include "suit/coap.h"
-#include "suit/conditions.h"
-#include "suit/v3/suit.h"
-#include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
-#include "suit/v3/suit.h"
-#include "riotboot/hdr.h"
-#include "riotboot/slot.h"
+#include <cose/sign.h>
 #include <nanocbor/nanocbor.h>
 
-#include "cose/sign.h"
-
-#include "public_key.h"
+#include "hashes/sha256.h"
+#include "kernel_defines.h"
 #include "log.h"
+#include "public_key.h"
+#include "suit/conditions.h"
+#include "suit/v3/handlers.h"
+#include "suit/v3/suit.h"
 
 static int _auth_handler(suit_v3_manifest_t *manifest, int key,
                          nanocbor_value_t *it)

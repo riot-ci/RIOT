@@ -12,24 +12,24 @@
  * @{
  *
  * @file
- * @brief       SUIT manifest parser library for CBOR based manifests
+ * @brief       SUIT draft-ietf-suit-manifest-03 manifest parser library for
+ *              CBOR based manifests
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
+
+#include <nanocbor/nanocbor.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "log.h"
 #include "suit/v3/handlers.h"
 #include "suit/v3/suit.h"
 #include "suit/v3/policy.h"
-#include "nanocbor/nanocbor.h"
-#include "cose/sign.h"
-
-#include "log.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"

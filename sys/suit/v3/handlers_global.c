@@ -11,7 +11,8 @@
  * @{
  *
  * @file
- * @brief       SUIT v3
+ * @brief       SUIT draft-ietf-suit-manifest-03 Handlers for the global SUIT
+ *              manifest content.
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -19,18 +20,14 @@
  */
 
 #include <inttypes.h>
+#include <nanocbor/nanocbor.h>
 
-#include "suit/coap.h"
+#include "kernel_defines.h"
+#include "log.h"
 #include "suit/conditions.h"
-#include "suit/v3/suit.h"
 #include "suit/v3/handlers.h"
 #include "suit/v3/policy.h"
 #include "suit/v3/suit.h"
-#include "riotboot/hdr.h"
-#include "riotboot/slot.h"
-#include <nanocbor/nanocbor.h>
-
-#include "log.h"
 
 extern int _common_sequence_handler(suit_v3_manifest_t *manifest, int key,
                                     nanocbor_value_t *it);

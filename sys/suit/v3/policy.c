@@ -12,17 +12,16 @@
  * @{
  *
  * @file
- * @brief       SUIT v3 policy checking code
+ * @brief       SUIT draft-ietf-suit-manifest-03 policy checking code
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
 
+#include "log.h"
 #include "suit/v3/suit.h"
 #include "suit/v3/policy.h"
-
-#include "log.h"
 
 int suit_v3_policy_check(suit_v3_manifest_t *manifest)
 {

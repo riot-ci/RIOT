@@ -11,7 +11,8 @@
  * @{
  *
  * @file
- * @brief       SUIT v3
+ * @brief       SUIT draft-ietf-suit-manifest-03 Handler implementations for
+ *              the Common manifest sections
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -19,20 +20,15 @@
  */
 
 #include <inttypes.h>
+#include <nanocbor/nanocbor.h>
 
 #ifdef MODULE_SUIT_COAP
 #include "suit/coap.h"
 #endif
 
 #include "kernel_defines.h"
-#include "suit/conditions.h"
-#include "suit/v3/suit.h"
 #include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
 #include "suit/v3/suit.h"
-#include "riotboot/hdr.h"
-#include "riotboot/slot.h"
-#include <nanocbor/nanocbor.h>
 
 #include "log.h"
 

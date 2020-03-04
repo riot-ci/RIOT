@@ -10,7 +10,8 @@
  * @{
  *
  * @file
- * @brief       SUIT v3
+ * @brief       SUIT draft-ietf-suit-manifest-03 content handler helper
+ *              functions
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -18,16 +19,10 @@
  */
 
 #include <inttypes.h>
-
-#include "suit/coap.h"
-#include "suit/conditions.h"
-#include "suit/v3/suit.h"
-#include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
-#include "suit/v3/suit.h"
-#include "riotboot/hdr.h"
-#include "riotboot/slot.h"
 #include <nanocbor/nanocbor.h>
+
+#include "suit/v3/handlers.h"
+#include "suit/v3/suit.h"
 
 #include "log.h"
 
