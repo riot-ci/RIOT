@@ -146,14 +146,18 @@ uint32_t sam0_gclk_freq(uint8_t id)
 
 void cpu_pm_cb_enter(int deep)
 {
-    (void) deep;
-    /* will be called before entering sleep */
+    if (deep) {
+        /* we can only use the buck converter if fast clocks are off */
+        sam0_set_voltage_regulator(SAM0_VREG_BUCK);
+    }
 }
 
 void cpu_pm_cb_leave(int deep)
 {
-    (void) deep;
-    /* will be called after wake-up */
+    if (deep) {
+        /* switch back to LDO */
+        sam0_set_voltage_regulator(SAM0_VREG_LDO);
+    }
 }
 
 /**
@@ -161,6 +165,10 @@ void cpu_pm_cb_leave(int deep)
  */
 void cpu_init(void)
 {
+    /* CPU starts with DFLL48 as clock source, so we
+       must use the LDO */
+    sam0_set_voltage_regulator(SAM0_VREG_LDO);
+
     /* initialize the Cortex-M core */
     cortexm_init();
 
