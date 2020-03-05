@@ -70,7 +70,6 @@ void periph_init(void)
 
     /* Initialize RTT */
 #ifdef MODULE_PERIPH_INIT_RTT
-    #error
     rtt_init();
 #endif
 
