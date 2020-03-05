@@ -83,6 +83,8 @@ extern "C" {
  */
 /** @brief The button labelled SW1 */
 #define BTN0_PIN            GPIO_PIN(1, 6)
+/** @brief The GPIO pin mode of the button labelled SW1 */
+#define BTN0_MODE           GPIO_IN_PU
 /** @} */
 
 #ifdef __cplusplus

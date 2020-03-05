@@ -38,7 +38,7 @@ void board_init(void)
     gpio_set(LED3_PIN);
 
     /* initialize the board's button */
-    gpio_init(BTN0_PIN, GPIO_IN_PU);
+    gpio_init(BTN0_PIN, BTN0_MODE);
     gpio_set(BTN0_PIN);
 
     /* initialize the CPU */
