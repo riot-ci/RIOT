@@ -42,21 +42,40 @@ extern "C" {
 
 /** @} */
 
+/**
+ * @name    LED access macros
+ * @{
+ */
+
+/** Enable LD1 */
 #define LED0_ON gpio_clear(LED0_PIN)
+/** Disable LD1 */
 #define LED0_OFF gpio_set(LED0_PIN)
+/** Toggle LD1 */
 #define LED0_TOGGLE gpio_toggle(LED0_PIN)
 
+/** Enable LD2's red channel */
 #define LED1_ON gpio_clear(LED1_PIN)
+/** Disable LD2's red channel */
 #define LED1_OFF gpio_set(LED1_PIN)
+/** Toggle LD2's red channel */
 #define LED1_TOGGLE gpio_toggle(LED1_PIN)
 
+/** Enable LD2's green channel */
 #define LED2_ON gpio_clear(LED2_PIN)
+/** Disable LD2's green channel */
 #define LED2_OFF gpio_set(LED2_PIN)
+/** Toggle LD2's green channel */
 #define LED2_TOGGLE gpio_toggle(LED2_PIN)
 
+/** Enable LD2's blue channel */
 #define LED3_ON gpio_clear(LED3_PIN)
+/** Disable LD2's blue channel */
 #define LED3_OFF gpio_set(LED3_PIN)
+/** Toggle LD2's blue channel */
 #define LED3_TOGGLE gpio_toggle(LED3_PIN)
+
+/** @} */
 
 /**
  * @name    Button pin configuration
