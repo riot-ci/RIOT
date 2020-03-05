@@ -108,6 +108,13 @@ void slipdev_write_bytes(uart_t uart, const uint8_t *data, size_t len)
     }
 }
 
+static unsigned _copy_byte(uint8_t *buf, uint8_t byte, bool *escaped)
+{
+    *buf = byte;
+    *escaped = false;
+    return 1U;
+}
+
 unsigned slipdev_unstuff_readbyte(uint8_t *buf, uint8_t byte, bool *escaped)
 {
     unsigned res = 0U;
@@ -120,21 +127,18 @@ unsigned slipdev_unstuff_readbyte(uint8_t *buf, uint8_t byte, bool *escaped)
             break;
         case SLIPDEV_END_ESC:
             if (*escaped) {
-                byte = SLIPDEV_END;
+                return _copy_byte(buf, SLIPDEV_END, escaped);
             }
             /* Intentionally falls through */
             /* to default when !(*escaped) */
         case SLIPDEV_ESC_ESC:
             if (*escaped) {
-                byte = SLIPDEV_ESC;
+                return _copy_byte(buf, SLIPDEV_ESC, escaped);
             }
             /* Intentionally falls through */
             /* to default when !(*escaped) */
         default:
-            *buf = (uint8_t)byte;
-            res = 1U;
-            *escaped = false;
-            break;
+            return _copy_byte(buf, byte, escaped);
     }
     return res;
 }
