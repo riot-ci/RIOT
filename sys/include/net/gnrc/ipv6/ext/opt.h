@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Processes all options with in an IPv6 option header
+ * @brief   Processes all options within an IPv6 option header
  *
  * @pre `pkt != NULL`
  * @pre `(protnum == PROTNUM_IPV6_EXT_HOPOPT) || (protnum == PROTNUM_IPV6_EXT_DST)`
