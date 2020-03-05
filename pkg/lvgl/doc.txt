@@ -25,9 +25,9 @@ on the number of lvgl widgets and objects used by the interface (default:
 
 ### Engine settings
 
-- `LVGL_ACTIVITY_PERIOD`: maximum activity period before going to sleep in ms.
+- `LVGL_INACTIVITY_PERIOD_MS`: maximum inactivity period before going to sleep in ms.
   (default: 1s)
-- `LVGL_TASK_HANDLER_DELAY`: delay between lvgl task handle call in ms.
+- `LVGL_TASK_HANDLER_DELAY_US`: delay between lvgl task handle call in ms.
   (default: 5ms)
 - `LVGL_TASK_THREAD_PRIO`: lvgl task handler thread priority.
   (default: THREAD_PRIORITY_MAIN - 1)

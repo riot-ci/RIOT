@@ -37,7 +37,7 @@ void lvgl_init(disp_dev_t *dev);
  *
  * This function unblocks the lvgl task handler thread and will indirectly
  * trigger an activity. After calling this function, lvgl remains awake during
- * the next LVGL_ACTIVITY_PERIOD ms.
+ * the next LVGL_INACTIVITY_PERIOD_MS ms.
  */
 void lvgl_wakeup(void);
 

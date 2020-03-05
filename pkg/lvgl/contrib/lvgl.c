@@ -28,23 +28,23 @@
 #include "disp_dev.h"
 
 #ifndef LVGL_TASK_THREAD_PRIO
-#define LVGL_TASK_THREAD_PRIO   (THREAD_PRIORITY_MAIN + 1)
+#define LVGL_TASK_THREAD_PRIO       (THREAD_PRIORITY_MAIN + 1)
 #endif
 
 #ifndef LVGL_COLOR_BUF_SIZE
-#define LVGL_COLOR_BUF_SIZE     (LV_HOR_RES_MAX * 5)
+#define LVGL_COLOR_BUF_SIZE         (LV_HOR_RES_MAX * 5)
 #endif
 
-#ifndef LVGL_ACTIVITY_PERIOD
-#define LVGL_ACTIVITY_PERIOD    (1 * MS_PER_SEC)    /* 1s */
+#ifndef LVGL_INACTIVITY_PERIOD_MS
+#define LVGL_INACTIVITY_PERIOD_MS   (1 * MS_PER_SEC)    /* 1s */
 #endif
 
-#ifndef LVGL_TASK_HANDLER_DELAY
-#define LVGL_TASK_HANDLER_DELAY (5 * US_PER_MS)     /* 5ms */
+#ifndef LVGL_TASK_HANDLER_DELAY_US
+#define LVGL_TASK_HANDLER_DELAY_US  (5 * US_PER_MS)     /* 5ms */
 #endif
 
 #ifndef LVGL_THREAD_FLAG
-#define LVGL_THREAD_FLAG        (0x4242)
+#define LVGL_THREAD_FLAG            (1 << 7)
 #endif
 
 static char _task_thread_stack[THREAD_STACKSIZE_LARGE];
@@ -59,9 +59,9 @@ static void *_task_thread(void *arg)
     (void)arg;
 
     while (1) {
-        /* Normal operation (no sleep) in < LVGL_ACTIVITY_PERIOD msec
+        /* Normal operation (no sleep) in < LVGL_INACTIVITY_PERIOD_MS msec
            inactivity */
-        if (lv_disp_get_inactive_time(NULL) < LVGL_ACTIVITY_PERIOD) {
+        if (lv_disp_get_inactive_time(NULL) < LVGL_INACTIVITY_PERIOD_MS) {
             lv_task_handler();
         }
         else {
@@ -72,7 +72,7 @@ static void *_task_thread(void *arg)
             lv_disp_trig_activity(NULL);
         }
 
-        xtimer_usleep(LVGL_TASK_HANDLER_DELAY);
+        xtimer_usleep(LVGL_TASK_HANDLER_DELAY_US);
     }
 
     return NULL;
@@ -84,9 +84,7 @@ static void _disp_map(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *col
         return;
     }
 
-    disp_dev_map(_dev,
-                 (uint16_t)area->x1, (uint16_t)area->x2,
-                 (uint16_t)area->y1, (uint16_t)area->y2,
+    disp_dev_map(_dev, area->x1, area->x2, area->y1, area->y2,
                  (const uint16_t *)color_p);
 
     LOG_DEBUG("[lvgl] flush display\n");
