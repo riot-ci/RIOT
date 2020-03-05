@@ -29,7 +29,7 @@ ifeq (,$(SLIP_BAUDRATE))
 endif
 
 GNRC_NETIF_NUMOF := 2
-CFLAGS += -DSLIPDEV_UART=$(SLIP_UART)
+CFLAGS += -DSLIPDEV_PARAM_UART=$(SLIP_UART)
 CFLAGS += -DSLIPDEV_BAUDRATE=$(SLIP_BAUDRATE)
 
 # Include packages that pull up and auto-init the link layer.
