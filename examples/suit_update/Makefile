@@ -46,7 +46,7 @@ QUIET ?= 1
 USEMODULE += nanocoap_sock sock_util
 USEMODULE += suit suit_coap
 
-# SUIT draft v3 support:
+# SUIT ietf draft v3 support:
 USEMODULE += suit_v3
 
 # Display a progress bar during firmware download
