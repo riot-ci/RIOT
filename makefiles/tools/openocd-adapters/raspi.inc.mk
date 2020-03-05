@@ -1,5 +1,6 @@
 # Raspberry Pi GPIO as debug adapter
 
+# Numbers are GPIO numbers
 SWCLK_PIN ?= 21
 SWDIO_PIN ?= 20
 SRST_PIN  ?= 16
@@ -30,8 +31,6 @@ OPENOCD_ADAPTER_INIT ?= \
   -c 'bcm2835gpio_swd_nums $(SWCLK_PIN ) $(SWDIO_PIN)' \
   -c 'bcm2835gpio_sSRST_PIN_num $(SRST_PIN)' \
   -c 'transport select swd'
-
-export OPENOCD_ADAPTER_INIT
 
 # bcm2835gpio needs access to /dev/mem
 export OPENOCD ?= sudo -E openocd
