@@ -150,9 +150,10 @@ void dhcpv6_client_conf_prefix(unsigned iface, const ipv6_addr_t *pfx,
         if (IS_USED(MODULE_GNRC_IPV6_NIB) &&
             GNRC_IPV6_NIB_CONF_6LBR &&
             GNRC_IPV6_NIB_CONF_MULTIHOP_P6C) {
-            if (gnrc_ipv6_nib_abr_add(&addr) == 0) {
+            if (IS_USED(MODULE_GNRC_SIXLOWPAN_CTX)) {
                 _update_6ctx(pfx, pfx_len);
             }
+            gnrc_ipv6_nib_abr_add(&addr)
         }
         if (IS_USED(MODULE_GNRC_RPL)) {
             gnrc_rpl_init(netif->pid);
