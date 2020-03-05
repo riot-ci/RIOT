@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2014, Jelmer Tiete <jelmer@tiete.be>.
 # All rights reserved.
@@ -140,7 +140,7 @@ class FirmwareFile(object):
         firmware_is_hex = False
 
         if have_magic:
-            file_type = bytearray(magic.from_file(path, True))
+            file_type = bytearray(magic.from_file(path, True), 'ascii')
 
             # from_file() returns bytes with PY3, str with PY2. This comparison
             # will be True in both cases"""

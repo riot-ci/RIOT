@@ -36,6 +36,16 @@ ifneq (,$(filter at,$(USEMODULE)))
   USEMODULE += isrpipe_read_timeout
 endif
 
+ifneq (,$(filter at24c%,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += xtimer
+  USEMODULE += at24cxxx
+endif
+
+ifneq (,$(filter at24mac,$(USEMODULE)))
+  USEMODULE += at24cxxx
+endif
+
 ifneq (,$(filter at30tse75x,$(USEMODULE)))
   USEMODULE += xtimer
   FEATURES_REQUIRED += periph_i2c
@@ -43,6 +53,7 @@ endif
 
 ifneq (,$(filter at86rf%,$(USEMODULE)))
   USEMODULE += at86rf2xx
+  DEFAULT_MODULE += auto_init_at86rf2xx
   USEMODULE += xtimer
   USEMODULE += luid
   USEMODULE += netif
@@ -67,6 +78,10 @@ endif
 
 ifneq (,$(filter bh1750fvi,$(USEMODULE)))
   USEMODULE += xtimer
+  FEATURES_REQUIRED += periph_i2c
+endif
+
+ifneq (,$(filter bh1900nux,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
 endif
 
@@ -237,6 +252,7 @@ endif
 ifneq (,$(filter ili9341,$(USEMODULE)))
   FEATURES_REQUIRED += periph_spi
   FEATURES_REQUIRED += periph_gpio
+  USEMODULE += xtimer
 endif
 
 ifneq (,$(filter ina2%,$(USEMODULE)))
@@ -307,14 +323,18 @@ ifneq (,$(filter lc709203f,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio_irq
 endif
 
+ifneq (,$(filter lis2dh12_int,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio_irq
+endif
+
 ifneq (,$(filter lis2dh12%,$(USEMODULE)))
+  USEMODULE += lis2dh12
   ifneq (,$(filter lis2dh12_spi,$(USEMODULE)))
     FEATURES_REQUIRED += periph_gpio
     FEATURES_REQUIRED += periph_spi
   else
     FEATURES_REQUIRED += periph_i2c
   endif
-  USEMODULE += lis2dh12
 endif
 
 ifneq (,$(filter lis3dh,$(USEMODULE)))
@@ -570,6 +590,12 @@ ifneq (,$(filter si70%,$(USEMODULE)))
   USEMODULE += si70xx
 endif
 
+ifneq (,$(filter stmpe811,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio_irq
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += xtimer
+endif
+
 ifneq (,$(filter slipdev,$(USEMODULE)))
   USEMODULE += tsrb
   FEATURES_REQUIRED += periph_uart
@@ -578,6 +604,11 @@ endif
 ifneq (,$(filter soft_spi,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   USEMODULE += xtimer
+endif
+
+ifneq (,$(filter sps30,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += checksum
 endif
 
 ifneq (,$(filter srf02,$(USEMODULE)))
@@ -678,9 +709,13 @@ endif
 
 ifneq (,$(filter ws281x,$(USEMODULE)))
   FEATURES_OPTIONAL += arch_avr8
+  FEATURES_OPTIONAL += arch_native
   ifeq (,$(filter ws281x_%,$(USEMODULE)))
     ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
       USEMODULE += ws281x_atmega
+    endif
+    ifneq (,$(filter arch_native,$(FEATURES_USED)))
+      USEMODULE += ws281x_vt100
     endif
   endif
   ifneq (,$(filter ws281x_atmega,$(USEMODULE)))

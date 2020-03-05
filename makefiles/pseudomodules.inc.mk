@@ -1,6 +1,5 @@
 PSEUDOMODULES += at_urc
-PSEUDOMODULES += auto_init_dhcpv6_client
-PSEUDOMODULES += auto_init_gnrc_rpl
+PSEUDOMODULES += at24c%
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
 PSEUDOMODULES += can_raw
@@ -18,6 +17,7 @@ PSEUDOMODULES += event_%
 PSEUDOMODULES += fmt_%
 PSEUDOMODULES += gnrc_dhcpv6_%
 PSEUDOMODULES += gnrc_ipv6_default
+PSEUDOMODULES += gnrc_ipv6_ext_frag_stats
 PSEUDOMODULES += gnrc_ipv6_router
 PSEUDOMODULES += gnrc_ipv6_router_default
 PSEUDOMODULES += gnrc_ipv6_nib_6lbr
@@ -49,6 +49,7 @@ PSEUDOMODULES += ina3221_alerts
 PSEUDOMODULES += l2filter_blacklist
 PSEUDOMODULES += l2filter_whitelist
 PSEUDOMODULES += lis2dh12_i2c
+PSEUDOMODULES += lis2dh12_int
 PSEUDOMODULES += lis2dh12_spi
 PSEUDOMODULES += log
 PSEUDOMODULES += log_printfnoformat
@@ -93,12 +94,16 @@ PSEUDOMODULES += stdio_cdc_acm
 PSEUDOMODULES += stdio_uart_rx
 PSEUDOMODULES += suit_%
 PSEUDOMODULES += wakaama_objects_%
+PSEUDOMODULES += zptr
 
 # handle suit_v4 being a distinct module
 NO_PSEUDOMODULES += suit_v4
 
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
+
+# handle at24cxxx being a distinct module
+NO_PSEUDOMODULES += at24cxxx
 
 # include variants of the AT86RF2xx drivers as pseudo modules
 PSEUDOMODULES += at86rf23%
@@ -190,8 +195,7 @@ PSEUDOMODULES += stm32_periph_%
 PSEUDOMODULES += periph_%
 NO_PSEUDOMODULES += periph_common
 
-# Submodules and auto-init code provided by Skald
-PSEUDOMODULES += auto_init_skald
+# Submodules provided by Skald
 PSEUDOMODULES += skald_ibeacon
 PSEUDOMODULES += skald_eddystone
 
@@ -202,5 +206,13 @@ PSEUDOMODULES += ds18_optimized
 PSEUDOMODULES += crypto_aes_precalculated
 # This pseudomodule causes a loop in AES to be unrolled (more flash, less CPU)
 PSEUDOMODULES += crypto_aes_unroll
+
+# All auto_init modules are pseudomodules
+PSEUDOMODULES += auto_init_%
+NO_PSEUDOMODULES += auto_init_can
+NO_PSEUDOMODULES += auto_init_loramac
+NO_PSEUDOMODULES += auto_init_security
+NO_PSEUDOMODULES += auto_init_storage
+NO_PSEUDOMODULES += auto_init_usbus
 
 # Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.
