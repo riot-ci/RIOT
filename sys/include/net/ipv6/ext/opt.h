@@ -9,8 +9,8 @@
 /**
  * @defgroup    net_ipv6_ext_opt IPv6 destination and hop-by-hop options
  * @ingroup     net_ipv6_ext
- * @brief       Definitions for IPv6 destination and hop-by-hop extension
- *              options extension headers
+ * @brief       Definitions for IPv6 destination and hop-by-hop options
+ *              extension headers
  * @{
  *
  * @file
