@@ -36,8 +36,8 @@ static void _isrpipe_write(void *arg, uint8_t data)
 
 void stdio_init(void)
 {
-    /* intentionally overwritten in for netdev init so we have stdio before
-     * it is initialized */
+    /* intentionally overwritten in netdev init so we have stdio before
+     * the network device is initialized is initialized */
     uart_init(slipdev_params[0].uart, slipdev_params[0].baudrate,
               (uart_rx_cb_t)_isrpipe_write, &slipdev_stdio_isrpipe);
 }
