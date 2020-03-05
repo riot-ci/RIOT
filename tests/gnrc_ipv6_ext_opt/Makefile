@@ -1,4 +1,4 @@
-DEVELHELP := 1
+DEVELHELP = 1
 # name of your application
 include ../Makefile.tests_common
 

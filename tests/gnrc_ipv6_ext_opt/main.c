@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Freie Universität Berlin
+ * Copyright (C) 2015-2020 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Tests extension header handling of gnrc stack.
+ * @brief       Tests option extension header handling of gnrc stack.
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Takuo Yonezawa <Yonezawa-T2@mail.dnp.co.jp>
