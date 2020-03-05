@@ -57,7 +57,7 @@ PSEUDOMODULES += log_color
 PSEUDOMODULES += lora
 PSEUDOMODULES += mpu_stack_guard
 PSEUDOMODULES += nanocoap_%
-PSEUDOMODULES += netdev_default
+PSEUDOMODULES += netdev_%
 PSEUDOMODULES += netstats
 PSEUDOMODULES += netstats_l2
 PSEUDOMODULES += netstats_ipv6
@@ -219,5 +219,8 @@ NO_PSEUDOMODULES += auto_init_loramac
 NO_PSEUDOMODULES += auto_init_security
 NO_PSEUDOMODULES += auto_init_storage
 NO_PSEUDOMODULES += auto_init_usbus
+
+# Netdev tap is a device driver
+NO_PSEUDOMODULES += netdev_tap
 
 # Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.
