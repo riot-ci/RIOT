@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief      Tests for module suit_v3
+ * @brief      Tests for module suit_v3 (draft-ietf-suit-manifest-03)
  *
  * @author     Kaspar Schleiser <kaspar@schleiser.de>
  */
