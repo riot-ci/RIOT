@@ -36,7 +36,7 @@ static ili9341_t dev;
 #define MEM_LABEL_COLOR     "0000FF"
 #define CHART_POINT_NUM     100
 
-/* Must be lower than LVGL_INACTIVITY_PERIOD for autorefresh */
+/* Must be lower than LVGL_INACTIVITY_PERIOD_MS for autorefresh */
 #define REFR_TIME           200
 
 static lv_obj_t *win;
