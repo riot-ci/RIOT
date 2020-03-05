@@ -6,12 +6,13 @@
 ## Overview
 LimiFrog-v1 arose from the La BlueFrog board. LimiFrog-v1 contains the first
 hardware revision of that kickstarter project. LimiFrog-v2 is already there and
-the RIOT support will follow. [LimiFrog](http://www.limifrog.io/home-en-
-kickstarter/) features a variety of sensors as well as an OLED Display and a BLE
+the RIOT support will follow.
+[LimiFrog](http://www.limifrog.io/home-en-kickstarter/)
+features a variety of sensors as well as an OLED Display and a BLE
 (Bluetooth Low-Energy) module.
 
 ## Hardware
-![Limifrog-v1](http://www.limifrog.io/wordpress/wp-content/uploads/2015/07/LeadingPhoto-W500px.jpg)
+![Limifrog-v1](https://www.cnx-software.com/wp-content/uploads/2015/09/Limifrog.jpg)
 ![limifrog-v1 pinout](https://raw.githubusercontent.com/wiki/RIOT-OS/RIOT/images/limifrog-v1_pinout.png)
 
 ### MCU

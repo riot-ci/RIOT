@@ -3256,7 +3256,7 @@ Build System / Tooling
 Known Issues
 ===========
 
-Please refer to the issue tracker at https://github.com/RIOT-OS/RIOT/issues.
+Please refer to the issue tracker: https://github.com/RIOT-OS/RIOT/issues
 
 Acknowledgements
 ================
@@ -3544,7 +3544,7 @@ Bootloader
 -----------
 + MCUBoot: A secure bootloader for ARM MCUs is now supported. This initial support
 includes only the nrf52dk board. For more information about it refer to the mcuboot github
-page at https://github.com/runtimeco/mcuboot/blob/master/README-RIOT.rst
+page at https://github.com/JuulLabs-OSS/mcuboot/blob/master/docs/readme-riot.md
 
 System libraries
 ----------------
