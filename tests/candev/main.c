@@ -99,7 +99,7 @@ static int _receive(int argc, char **argv)
 
         puts("Reading from Rxbuf...");
         isrpipe_read(&rxbuf, buf, 4);       //id
-        can_id = (buf[0] << 6) | (buf[1] << 4) | (buf[2] << 2) | (buf[3]);
+        can_id = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | (buf[3]);
         isrpipe_read(&rxbuf, buf, 1);       //dlc
         can_dlc = buf[0];
         isrpipe_read(&rxbuf, buf, can_dlc); //data
@@ -153,10 +153,10 @@ static void _can_event_callback(candev_t *dev, candev_event_t event, void *arg)
 
             //Store in buffer until user requests the data
             isrpipe_write_one(&rxbuf,
-                              (uint8_t)((frame->can_id & 0x1FFFFFFF) >> 6));        //exclude flags
+                              (uint8_t)((frame->can_id & 0x1FFFFFFF) >> 24));        //exclude flags
             isrpipe_write_one(&rxbuf,
-                              (uint8_t)((frame->can_id & 0xFF0000) >> 4));
-            isrpipe_write_one(&rxbuf, (uint8_t)((frame->can_id & 0xFF00) >> 2));
+                              (uint8_t)((frame->can_id & 0xFF0000) >> 16));
+            isrpipe_write_one(&rxbuf, (uint8_t)((frame->can_id & 0xFF00) >> 8));
             isrpipe_write_one(&rxbuf, (uint8_t)((frame->can_id & 0xFF)));
 
             isrpipe_write_one(&rxbuf, frame->can_dlc);
