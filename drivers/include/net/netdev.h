@@ -472,7 +472,8 @@ static inline int netdev_set_notsup(netdev_t *dev, netopt_t opt,
 /**
  * @brief Informs netdev there was an interrupt request from the network device.
  *
- *        This function calls @ref event_callback with NETDEV_EVENT_ISR event.
+ *        This function calls @ref netdev_t::event_callback with
+ *        NETDEV_EVENT_ISR event.
  *
  * @param netdev netdev instance of the device associated to the interrupt.
  */
