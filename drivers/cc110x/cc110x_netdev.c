@@ -89,7 +89,7 @@ void cc110x_on_gdo(void *_dev)
         mutex_unlock(&dev->isr_signal);
     }
     else {
-        dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_ISR);
+        netdev_irq_end(&dev->netdev);
     }
 }
 
