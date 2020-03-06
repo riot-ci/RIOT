@@ -81,7 +81,7 @@ void periph_init(void)
     usbdev_init_lowlevel();
 #endif
 
-#if defined(MODULE_PERIPH_INIT_WDT) && WDT_HAS
+#if defined(MODULE_PERIPH_INIT_WDT) && WDT_HAS_INIT
     wdt_init();
 #endif
 
