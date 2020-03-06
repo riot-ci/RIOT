@@ -92,7 +92,7 @@ uint32_t cc13x2_cmd_prop_radio_div_setup(uint16_t tx_power)
     _cmd_prop_radio_div_setup.symbolRate.decimMode
         = CC13X2_SYMBOL_RATE_DECIMMODE;
 
-    _cmd_prop_radio_div_setup.rxBw = 0x52;
+    _cmd_prop_radio_div_setup.rxBw = CC13X2_RX_BANDWIDTH;
 
     _cmd_prop_radio_div_setup.preamConf.nPreamBytes
         = IEEE802154_FSK_PREAMBLE_SIZE;
@@ -205,12 +205,12 @@ uint32_t cc13x2_cmd_prop_rx_adv(dataQueue_t *queue, void *output)
     _cmd_prop_rx_adv.condition.rule = COND_NEVER;
 
     /* Use CRC */
-    _cmd_prop_rx_adv.pktConf.bUseCrc = 0;
+    _cmd_prop_rx_adv.pktConf.bUseCrc = 1;
 
     /* Flush ignored packets and packets with CRC errors from the receive
      * queue */
     _cmd_prop_rx_adv.rxConf.bAutoFlushIgnored = 1;
-    _cmd_prop_rx_adv.rxConf.bAutoFlushCrcErr = 1;
+    _cmd_prop_rx_adv.rxConf.bAutoFlushCrcErr = 0;
 
     /* Append RSSI and Status (Link Quality Info) at the end of the packet
      * in the receive buffer */
@@ -228,8 +228,8 @@ uint32_t cc13x2_cmd_prop_rx_adv(dataQueue_t *queue, void *output)
     _cmd_prop_rx_adv.hdrConf.numHdrBits = IEEE802154_PHR_BITS;
     _cmd_prop_rx_adv.hdrConf.numLenBits = IEEE802154_PHR_FRAME_LENGTH_BITS;
 
-    /* XXX: should this command end and enter a FSM_STATE_SLEEP state? */
-    /* Don't end this command */
+    /* Don't end this command, just keep it running forever (until it gets
+     * aborted) */
     _cmd_prop_rx_adv.endTrigger.triggerType = TRIG_NEVER;
 
     /* The RX data queue */

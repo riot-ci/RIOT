@@ -56,14 +56,14 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
 
 #ifndef CC13X2_FREQ_SPACING_SUB_GHZ
 /**
- * @brief   Frequency spacing between channels in KHz
+ * @brief   Frequency spacing between channels in kHz
  */
-#define CC13X2_FREQ_SPACING_SUB_GHZ (200U)
+#define CC13X2_FREQ_SPACING_SUB_GHZ (400U)
 #endif
 
 #ifndef CC13X2_BASE_FREQ_SUB_GHZ
 /**
- * @brief   Base frequency for the Sub-GHz band in KHz
+ * @brief   Base frequency for the Sub-GHz band in kHz
  */
 #define CC13X2_BASE_FREQ_SUB_GHZ    (902200U)
 #endif
@@ -88,7 +88,7 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
  *
  * @note    This is stored as a number in the Q4.12 format.
  */
-#define CC13X2_INTERMEDIATE_FREQUENCY (0x8000)
+#define CC13X2_INTERMEDIATE_FREQUENCY (0x0999)
 #endif
 
 #ifndef CC13X2_BIAS_MODE
@@ -107,9 +107,14 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
  * @{
  */
 #define CC13X2_SYMBOL_RATE_PRESCALE  (0xF)
-#define CC13X2_SYMBOL_RATE_RATEWORD  (0x8000)
+#define CC13X2_SYMBOL_RATE_RATEWORD  (0x20000)
 #define CC13X2_SYMBOL_RATE_DECIMMODE (0)
 /** @} */
+
+/**
+ * @brief   Receiver bandwidth
+ */
+#define CC13X2_RX_BANDWIDTH (0x59)
 
 /**
  * @brief   Modulation configuration
@@ -126,7 +131,7 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
 /**
  * @brief   Modulation deviation in number of steps
  */
-#define CC13X2_MODULATION_DEVIATION           (0x64)
+#define CC13X2_MODULATION_DEVIATION           (0xC8)
 /**
  * @brief   Deviation step size
  *
@@ -139,7 +144,7 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
 /** @} */
 
 #ifndef IEEE802154_FSK_PREAMBLE_SIZE
-#define IEEE802154_FSK_PREAMBLE_SIZE (4U) /**< Preamble length in octects */
+#define IEEE802154_FSK_PREAMBLE_SIZE (7U) /**< Preamble length in octects */
 #endif
 
 #ifndef CC13X2_PREAMBLE_MODE
@@ -175,7 +180,7 @@ extern uint32_t cc1312_register_overrides_mr_fsk[];
 /** @} */
 
 /**
- * @brief   Size in bits of the PHR
+ * @brief   Size in bytes of the PHR
  */
 #define IEEE802154_PHR_SIZE (2)
 
