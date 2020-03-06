@@ -159,6 +159,8 @@ static void setup_interrupts(void)
     RFCCpe1IntSelect(IRQ_INTERNAL_ERROR);
     RFCCpe0IntSelect(0x7FFFFFFF);
 
+    /* Enable interrupts */
+    RFCHwIntEnable(RFC_DBELL_RFHWIEN_MDMSOFT);
     RFCCpeIntEnable(IRQ_LAST_COMMAND_DONE);
 
     IntPendClear(INT_RFC_CPE_0);
@@ -342,9 +344,6 @@ static uint_fast8_t cc13x2_prop_rf_apply_patch(void)
 /**
  * @brief   Sends the setup command string to the RF Core.
  *
- *          Enables the clock line from the RTC to the RF core RAT. Enables the
- *          RAT timer and sets up the radio in IEEE mode.
- *
  * @return  The value from the command status register.
  * @retval  CMDSTA_Done The command was received.
  */
@@ -354,11 +353,22 @@ static uint_fast16_t cc13x2_prop_rf_send_enable_cmd(void)
 
     bool ints_disabled = IntMasterDisable();
 
-    /* Turn on the clock line to the radio core */
+    /* Turn on the clock line to the radio core, this is necessary to use the
+     * CMD_SYNC_START_RAT and the CMD_SYNC_STOP_RAT commands. */
     HWREGBITW(AON_RTC_BASE + AON_RTC_O_CTL, AON_RTC_CTL_RTC_UPD_EN_BITN) = 1;
 
     uint32_t cmd_setup =
         cc13x2_cmd_prop_radio_div_setup(_rf_core.tx_power->value);
+
+    /* Start the dedicated Radio Timer (RAT). This timer can run only when the
+     * RF Core is powered up. This timer MUST be running before using any
+     * command that runs the receiver or the transmitter, or commands with a
+     * delayed start (no command starts with a delayed start for now in this
+     * implementation). After this command the cmd_setup command is executed.
+     *
+     * If the RF Core was previously shut down the _rf_core.rat_offset holds
+     * the previous RAT offset (returned by CMD_SYNC_STOP_RAT), this is needed
+     * to keep a synchronized time base. */
     uint32_t cmd_start_rat =
         cc13x2_cmd_sync_start_rat(cmd_setup, _rf_core.rat_offset);
 
@@ -457,12 +467,14 @@ void isr_rfc_cpe1(void)
  */
 void isr_rfc_cpe0(void)
 {
-#if ENABLE_DEBUG == 1
-    printf("CPE INTS: %08lx\n",
+    DEBUG("CPE INTS: %08lx\n",
            HWREG(RFC_DBELL_NONBUF_BASE + RFC_DBELL_O_RFCPEIFG));
-    printf("HW INTS: %08lx\n",
+    DEBUG("HW INTS: %08lx\n",
            HWREG(RFC_DBELL_NONBUF_BASE + RFC_DBELL_O_RFHWIFG));
-#endif
+
+    if (RFCHwIntGetAndClear(RFC_DBELL_RFHWIEN_MDMSOFT)) {
+        DEBUG_PUTS("[isr_rfc_cpe0]: MDMSOFT");
+    }
 
     if (RFCCpeIntGetAndClear(IRQ_BOOT_DONE)) {
         DEBUG_PUTS("[isr_rfc_cpe0]: RF Core boot done!");
@@ -518,8 +530,10 @@ void isr_rfc_cpe0(void)
         _rf_core.irq_handler_flags |= IRQ_FLAGS_HANDLE_RX;
     }
 
+    DEBUG_PUTS("[isr_rfc_cpe0]: IRQ?");
     /* Dispatch IRQ events if there are */
     if (_rf_core.irq_handler_flags != 0) {
+        DEBUG_PUTS("[isr_rfc_cpe0]: calling ISR handler");
         if (_rf_core.irq_handler) {
             _rf_core.irq_handler(_rf_core.irq_handler_arg);
         }
@@ -914,6 +928,11 @@ int cc13x2_prop_rf_recv(void *buf, size_t len,
     uint8_t *payload = &(cur_entry->data);
     uint16_t payload_len = *((uint16_t *)payload);
 
+    for (size_t i = 0; i < payload_len; i++) {
+        DEBUG("%#02x, ", payload[i]);
+    }
+    DEBUG("\n");
+
     if (payload_len <= CC13X2_METADATA_SIZE) {
         DEBUG_PUTS("[cc13x2_prop_rf_recv]: too short!");
         cur_entry->status = DATA_ENTRY_PENDING;
@@ -926,7 +945,7 @@ int cc13x2_prop_rf_recv(void *buf, size_t len,
     int8_t rssi = (int8_t)payload[payload_len];
     uint8_t lqi = payload[payload_len + CC13X2_RSSI_SIZE];
 
-    printf("[cc132_prop_rf_recv]: rssi = %d, lqi = %u\n", rssi, lqi);
+    DEBUG("[cc132_prop_rf_recv]: rssi = %d, lqi = %u\n", rssi, lqi);
 
     if (!buf) {
         /* Without buf return only the length so it can be read later */
