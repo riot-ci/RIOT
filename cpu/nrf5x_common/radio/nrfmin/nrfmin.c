@@ -307,7 +307,7 @@ void isr_radio(void)
             }
             else {
                 rx_lock = 0;
-                nrfmin_dev.event_callback(&nrfmin_dev, NETDEV_EVENT_ISR);
+                netdev_irq_end(&nrfmin_dev);
             }
         }
         else if (state == STATE_TX) {
