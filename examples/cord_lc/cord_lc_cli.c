@@ -32,11 +32,9 @@ static char rdbuf[2 * NANOCOAP_URI_MAX] = {0};
 static unsigned rd_initialized = 0;
 
 static int _make_sock_ep(sock_udp_ep_t *ep, const char *addr) {
-    ep->port = 0;
     if (sock_udp_str2ep(ep, addr) < 0) {
         return -1;
     }
-    ep->family = AF_INET6;
     ep->netif = SOCK_ADDR_ANY_NETIF;
     if (ep->port == 0) {
         ep->port = CONFIG_GCOAP_PORT;
@@ -58,12 +56,12 @@ static void _parse_filters(clif_attr_t *filters, size_t filter_count,
             f->key_len = strlen(f->key);
             f->value = NULL;
             f->value_len = 0;
-            continue;
         }
-
-        f->key_len = key_end - f->key;
-        f->value = key_end + 1;
-        f->value_len = strlen(f->value);
+        else {
+            f->key_len = key_end - f->key;
+            f->value = key_end + 1;
+            f->value_len = strlen(f->value);
+        }
     }
 }
 
