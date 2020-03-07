@@ -57,7 +57,9 @@ For a `FEATURE` to be provided by a `board` it must meet 2 criteria, and for
 
 - `FEATURES_REQUIRED_ANY` are `FEATURES` of which (at least) one of
   is needed by a `MODULE` or `APPLICATION`. Alternatives are separated by
-  a pipe (`|`).
+  a pipe (`|`) in order of preference, e.g.:
+  `FEATURES_REQUIRED_ANY += arch_avr8|arch_native` if both are provide then
+  `arch_avr8` will be used.
 
 - `FEATURES_BLACKLIST` are `FEATURES` that can't be used by a `MODULE` or `APPLCIATION`.
   They are usually used for _hw_ characteristics like `arch_` to easily resolve
