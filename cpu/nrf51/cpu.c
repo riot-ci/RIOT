@@ -30,6 +30,8 @@ void cpu_init(void)
 {
     /* initialize the Cortex-M core */
     cortexm_init();
+    /* Enable the DC/DC power converter */
+    nrfx_dcdc_init();
     /* setup the HF clock */
     clock_init_hf();
     /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
