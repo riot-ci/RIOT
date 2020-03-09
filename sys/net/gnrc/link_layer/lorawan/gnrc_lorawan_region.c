@@ -96,19 +96,16 @@ uint32_t gnrc_lorawan_pick_channel(gnrc_lorawan_t *mac)
 
 void gnrc_lorawan_process_cflist(gnrc_lorawan_t *mac, uint8_t *cflist)
 {
-#ifdef GNRC_LORAWAN_SINGLE_CHANNEL
-    (void)mac;
-    (void)cflist;
-#else
-    /* TODO: Check CFListType to 0 */
-    for (unsigned i = GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF; i < 8; i++) {
-        le_uint32_t cl;
-        cl.u32 = 0;
-        memcpy(&cl, cflist, GNRC_LORAWAN_CFLIST_ENTRY_SIZE);
-        mac->channel[i] = byteorder_ntohl(byteorder_ltobl(cl)) * 100;
-        cflist += GNRC_LORAWAN_CFLIST_ENTRY_SIZE;
+    if (!IS_USED(GNRC_LORAWAN_SINGLE_CHANNEL)) {
+        /* TODO: Check CFListType to 0 */
+        for (unsigned i = GNRC_LORAWAN_DEFAULT_CHANNELS_NUMOF; i < 8; i++) {
+            le_uint32_t cl;
+            cl.u32 = 0;
+            memcpy(&cl, cflist, GNRC_LORAWAN_CFLIST_ENTRY_SIZE);
+            mac->channel[i] = byteorder_ntohl(byteorder_ltobl(cl)) * 100;
+            cflist += GNRC_LORAWAN_CFLIST_ENTRY_SIZE;
+        }
     }
-#endif
 }
 
 uint8_t gnrc_lorawan_region_mac_payload_max(uint8_t datarate)
