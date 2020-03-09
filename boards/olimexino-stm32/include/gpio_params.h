@@ -22,7 +22,7 @@
 #include "board.h"
 #include "saul/periph.h"
 
-#idef __cpluplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
