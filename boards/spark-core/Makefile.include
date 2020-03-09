@@ -8,11 +8,7 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 ROM_OFFSET ?= 0x5000
 
 # this board is flashed using DFU
-DFU_ID = 1d50:607f
-
-# Set ALT to 0
-DFU_ALT = 0
-
+DFU_USB_ID = 1d50:607f
 include $(RIOTMAKE)/tools/dfu.inc.mk
 
 # this board uses openocd
