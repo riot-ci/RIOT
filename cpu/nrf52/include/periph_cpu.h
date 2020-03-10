@@ -167,11 +167,11 @@ typedef struct {
  */
 typedef struct {
     NRF_UARTE_Type *dev;    /**< UART with EasyDMA device base register address */
-    uint8_t rx_pin;         /**< RX pin */
-    uint8_t tx_pin;         /**< TX pin */
+    gpio_t rx_pin;          /**< RX pin */
+    gpio_t tx_pin;          /**< TX pin */
 #ifdef MODULE_PERIPH_UART_HW_FC
-    uint8_t rts_pin;        /**< RTS pin */
-    uint8_t cts_pin;        /**< CTS pin */
+    gpio_t rts_pin;         /**< RTS pin */
+    gpio_t cts_pin;         /**< CTS pin */
 #endif
     uint8_t irqn;           /**< IRQ channel */
 } uart_conf_t;
