@@ -9,10 +9,11 @@
 import sys
 from testrunner import run
 
+
 def testfunc(child):
     child.expect('Initialize BME680 sensor 0 ... ')
-    i = child.expect(['[OK]','[failed]'])
-    if i==1:
+    i = child.expect(['[OK]', '[failed]'])
+    if i == 1:
         print('FAILED')
         return
     child.expect('\[bme680\]: dev=0, ')
@@ -22,6 +23,7 @@ def testfunc(child):
     child.expect(r'G = \d+ ohms')
     print('SUCCESS')
     return
+
 
 if __name__ == "__main__":
     sys.exit(run(testfunc))
