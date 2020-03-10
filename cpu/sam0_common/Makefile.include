@@ -18,9 +18,13 @@ ROM_LEN := $(shell echo $$((1 << $(MEMORY))))
 ifneq (,$(filter samd21 saml21,$(CPU_FAM)))
   RAM_LEN ?= $(shell echo $$(($(ROM_LEN)/8)))
 endif
-# On SAML1x RAM is always ¼ of ROM
+# On SAML1x RAM is ¼ of ROM, except on SAML11x14 where it is ½
 ifneq (,$(filter saml1x $(CPU_FAM)))
+ifneq ($(and $(filter l11, $(FAMILY)), $(filter 14, $(MEMORY))),)
+  RAM_LEN ?= 8K
+else
   RAM_LEN ?= $(shell echo $$(($(ROM_LEN)/4)))
+endif
 endif
 # On SAMD5x RAM is always at least 128k, incrementing by 64 with every ROM increment
 ifneq (,$(filter samd5x,$(CPU_FAM)))
