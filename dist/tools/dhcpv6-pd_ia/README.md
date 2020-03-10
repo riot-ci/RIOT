@@ -11,7 +11,7 @@ Just run the script `dhcpv6-pd_ia.py` with sudo, e.g.
 sudo ./dhcpv6-pd_ia.py tap0 2001:db8::/32
 ```
 
-For more informations on the arguments, have a look at the usage information of
+For more information on the arguments, have a look at the usage information of
 the script
 
 ```sh

@@ -50,5 +50,3 @@ class AskToInstall(Installer):
     def install(self, package):
         print("Please install {name} ({url})".format(**package["generic"]),
               file=sys.stderr)
-
-

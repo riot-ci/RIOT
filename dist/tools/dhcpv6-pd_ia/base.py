@@ -8,7 +8,6 @@
 # directory for more details.
 
 
-from __future__ import annotations
 import shutil
 import subprocess
 import threading
@@ -70,7 +69,7 @@ class DHCPv6Server(metaclass=_SingletonMeta):
 
     def install(self):
         self.installer = pkg.PackageManagerFactory.get_installer()
-        installer.install(self.package)
+        self.installer.install(self.package)
 
     def run(self):
         if not self.is_installed():
