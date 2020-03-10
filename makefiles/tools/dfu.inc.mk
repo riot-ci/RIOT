@@ -13,6 +13,3 @@ FFLAGS ?= --device $(DFU_USB_ID) \
           --dfuse-address $(FLASH_ADDR):leave \
           --download $(FLASHFILE) \
           --reset
-
-DEBUGGER = # no debugger
-RESET ?= # dfu-util has no support for resetting the device
