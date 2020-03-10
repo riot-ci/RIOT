@@ -38,7 +38,7 @@ static bool _gas_valid[BME680_NUMOF] = { false };
 static int16_t _temp[BME680_NUMOF];
 static int16_t _press[BME680_NUMOF];
 static int16_t _hum[BME680_NUMOF];
-static int16_t _gas[BME680_NUMOF];
+static uint32_t _gas[BME680_NUMOF];
 
 static unsigned _dev2index (const bme680_t *dev)
 {
@@ -171,9 +171,15 @@ static int read_gas(const void *dev, phydat_t *data)
         /* mark local variable as invalid */
         _gas_valid[dev_index] = false;
 
-        data->val[0] = _gas[dev_index];
+        if (_gas[dev_index] > INT16_MAX) {
+            data->val[0] = _gas[dev_index] / 1000;
+            data->scale = 3;
+        }
+        else {
+            data->val[0] = _gas[dev_index];
+            data->scale = 0;
+        }
         data->unit = UNIT_OHM;
-        data->scale = 0;
         return 1;
     }
     return -ECANCELED;
