@@ -61,11 +61,11 @@ static int read(int dev)
     if ((res = bme680_force_measurement(&bme680_devs_saul[dev])) != BME680_OK) {
         return res;
     }
-    int dur;
-    if ((dur = bme680_get_duration(&bme680_devs_saul[dev])) < 0) {
+    int drt;
+    if ((drt = bme680_get_duration(&bme680_devs_saul[dev])) < 0) {
         return BME680_INVALID;
     }
-    xtimer_usleep(dur * US_PER_MS);
+    xtimer_usleep(drt * US_PER_MS);
 
     bme680_field_data_t data;
     if ((res = bme680_get_data(&bme680_devs_saul[dev], &data)) != BME680_OK) {
