@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Nalys
+ * Copyright (C) 2020 Nalys
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +14,7 @@
  * @brief       Test application for the candev abstraction
  *
  * @author      Toon Stegen <tstegen@nalys-group.com>
- * @author      Wouter Symons   <wsymons@nalys-group.com>
+ * @author      Wouter Symons <wsymons@nalys-group.com>
  *
  * @}
  */
@@ -40,8 +40,9 @@ candev_linux_t linux_dev;
 /* add other candev drivers here */
 #endif
 
-#define RX_RINGBUFFER_SIZE 128      //Needs to be a power of 2!
-isrpipe_t rxbuf;
+#define RX_RINGBUFFER_SIZE 128      /* Needs to be a power of 2! */
+static isrpipe_t rxbuf;
+uint8_t rx_ringbuf[RX_RINGBUFFER_SIZE];
 
 static candev_t *candev = NULL;
 
@@ -69,11 +70,11 @@ static int _send(int argc, char **argv)
     }
 
     ret = candev->driver->send(candev, &frame);
-    if (ret >= 0) {
-        DEBUG("sent using mailbox: %d\n", ret);
+    if (ret < 0) {
+        puts("Failed to send CAN-message!");
     }
     else {
-        puts("Failed to send CAN-message!");
+        DEBUG("sent using mailbox: %d\n", ret);
     }
 
     return 0;
@@ -83,10 +84,9 @@ static int _receive(int argc, char **argv)
 {
     uint8_t buf[CAN_MAX_DLEN];
     int n = 1;
-    char *pEnd;
 
     if (argc > 1) {
-        n = strtol(argv[1], &pEnd, 10);
+        n = strtol(argv[1], NULL, 10);
         if (n < 1) {
             puts("Usage: receive <number>");
             return -1;
@@ -98,11 +98,11 @@ static int _receive(int argc, char **argv)
         uint8_t can_dlc = 0;
 
         puts("Reading from Rxbuf...");
-        isrpipe_read(&rxbuf, buf, 4);       //id
+        isrpipe_read(&rxbuf, buf, 4);       /* can-id */
         can_id = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | ((uint32_t)buf[3]);
-        isrpipe_read(&rxbuf, buf, 1);       //dlc
+        isrpipe_read(&rxbuf, buf, 1);       /* can-dlc */
         can_dlc = buf[0];
-        isrpipe_read(&rxbuf, buf, can_dlc); //data
+        isrpipe_read(&rxbuf, buf, can_dlc); /* data */
 
         printf("id: %" PRIx32 " dlc: %" PRIx8 " Data: \n", can_id, can_dlc);
         for (int i = 0; i < can_dlc; i++) {
@@ -151,9 +151,9 @@ static void _can_event_callback(candev_t *dev, candev_event_t event, void *arg)
             }
             DEBUG(" ");
 
-            //Store in buffer until user requests the data
+            /* Store in buffer until user requests the data */
             isrpipe_write_one(&rxbuf,
-                              (uint8_t)((frame->can_id & 0x1FFFFFFF) >> 24));        //exclude flags
+                              (uint8_t)((frame->can_id & 0x1FFFFFFF) >> 24));        /* exclude flags */
             isrpipe_write_one(&rxbuf,
                               (uint8_t)((frame->can_id & 0xFF0000) >> 16));
             isrpipe_write_one(&rxbuf, (uint8_t)((frame->can_id & 0xFF00) >> 8));
@@ -185,15 +185,13 @@ static void _can_event_callback(candev_t *dev, candev_event_t event, void *arg)
 
 int main(void)
 {
-    uint8_t rx_ringbuf[RX_RINGBUFFER_SIZE] = { 0 };
-    (void) _can_event_callback;
 
     puts("candev test application\n");
 
     isrpipe_init(&rxbuf, (uint8_t *)rx_ringbuf, sizeof(rx_ringbuf));
 #ifdef BOARD_NATIVE
     puts("Initializing Linux Can device");
-    candev_linux_init( &linux_dev, &(candev_linux_conf[0]));    //vcan0
+    candev_linux_init( &linux_dev, &(candev_linux_conf[0]));    /* vcan0 */
     candev = (candev_t *)&linux_dev;
 #else
     /* add initialization for other candev drivers here */
