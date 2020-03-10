@@ -1,6 +1,6 @@
 PROGRAMMER ?= openocd
 
-PROGRAMMERS_SUPPORTED := bmp dfu-util openocd
+PROGRAMMERS_SUPPORTED := bmp dfu-util openocd stm32flash
 
 ifeq (,$(filter $(PROGRAMMER), $(PROGRAMMERS_SUPPORTED)))
   $(error Programmer $(PROGRAMMER) not supported)
@@ -55,4 +55,12 @@ ifeq (dfu-util,$(PROGRAMMER))
   FLASHFILE ?= $(BINFILE)
   DFU_FLAGS ?= -a 2
   FFLAGS = -d $(DFU_USB_ID) $(DFU_FLAGS) -D $(FLASHFILE)
+endif
+
+ifeq (stm32flash,$(PROGRAMMER))
+
+	FLASHER = stm32flash
+	DEBUGGER =
+	FLASHFILE ?= $(BINFILE)
+	FFLAGS = -b 57600 -w $(FLASHFILE) -g 0x0 $(PORT_LINUX)
 endif
