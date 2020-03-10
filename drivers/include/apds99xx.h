@@ -524,7 +524,6 @@ int apds99xx_read_illuminance(const apds99xx_t *dev, uint16_t *lux);
 
 #endif /* MODULE_APDS9900 || MODULE_APDS9901 || MODULE_APDS9930 || DOXYGEN */
 
-
 #if MODULE_APDS9950 || MODULE_APDS9960 || DOXYGEN
 /**
  * @brief   Read one raw RGB color data sample (APDS9950 and APDS9960 only)

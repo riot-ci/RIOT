@@ -405,7 +405,7 @@ static int _is_available(const apds99xx_t *dev)
     uint8_t reg;
 
     /* read the chip id from APDS99XX_REG_ID_X */
-    if (_reg_read(dev, APDS99XX_REG_ID, &reg,1) != APDS99XX_OK) {
+    if (_reg_read(dev, APDS99XX_REG_ID, &reg, 1) != APDS99XX_OK) {
         return -APDS99XX_ERROR_I2C;
     }
 
