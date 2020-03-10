@@ -51,8 +51,6 @@ extern "C" {
 #ifndef THREAD_STACKSIZE_IDLE
 #define THREAD_STACKSIZE_IDLE      (160)
 #endif
-
-#define ISR_STACKSIZE              (0)
 /** @} */
 
 /**
@@ -97,7 +95,9 @@ extern "C" {
  * @brief   Stack size used for the interrupt (ISR) stack
  * @{
  */
+#ifndef ISR_STACKSIZE
 #define ISR_STACKSIZE                   (400)
+#define ISR_STACKSIZE
 /** @} */
 
 /**
