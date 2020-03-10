@@ -55,6 +55,10 @@ void saul_init_devs(void)
         extern void auto_init_adxl345(void);
         auto_init_adxl345();
     }
+    if (IS_USED(MODULE_BME680)) {
+        extern void auto_init_bme680(void);
+        auto_init_bme680();
+    }
     if (IS_USED(MODULE_BMP180)) {
         extern void auto_init_bmp180(void);
         auto_init_bmp180();
