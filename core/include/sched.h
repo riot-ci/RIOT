@@ -87,7 +87,7 @@
 #include "clist.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /**
@@ -123,7 +123,7 @@ typedef enum {
  */
 #define STATUS_ON_RUNQUEUE      STATUS_RUNNING  /**< to check if on run queue:
                                                      `st >= STATUS_ON_RUNQUEUE`
-                                                     */
+                                                 */
 #define STATUS_NOT_FOUND ((thread_status_t)-1)  /**< Describes an illegal thread status */
 /** @} */
 /**
