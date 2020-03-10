@@ -9,10 +9,11 @@
 import sys
 from testrunner import run
 
+
 def testfunc(child):
     child.expect('Initializing APDS99XX sensor')
-    i = child.expect(['[OK]','[Failed]'])
-    if i==1:
+    i = child.expect(['[OK]', '[Failed]'])
+    if i == 1:
         print('FAILED')
         return
     child.expect(r'proximity = \d+ \[cnts\]')
@@ -21,6 +22,7 @@ def testfunc(child):
                   r'illuminance = %d [lux]'])
     print('SUCCESS')
     return
+
 
 if __name__ == "__main__":
     sys.exit(run(testfunc))
