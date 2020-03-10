@@ -2,6 +2,7 @@
 
 SLIPTTY_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 UHCPD="$(cd "${SLIPTTY_DIR}/../uhcpd/bin" && pwd -P)/uhcpd"
+DHCPD="$(cd "${SLIPTTY_DIR}/../dhcpv6-pd_ia/" && pwd -P)/dhcpv6-pd_ia.py"
 TUN=sl0
 TUN_GLB="fdea:dbee:f::1/64"
 UHCPD_PID=
@@ -92,6 +93,9 @@ cleanup() {
     if [ -n "${UHCPD_PID}" ]; then
         kill ${UHCPD_PID}
     fi
+    if [ -n "${DHCPD_PID}" ]; then
+        kill ${DHCPD_PID}
+    fi
     trap "" INT QUIT TERM EXIT
 }
 
@@ -100,17 +104,30 @@ start_uhcpd() {
     UHCPD_PID=$!
 }
 
+start_delayed_dhcpd() {
+    # TAP interface must have a running endpoint for some servers
+    sleep 2
+    "${DHCPD}" "${TUN}" "${PREFIX}" 2> /dev/null
+    DHCPD_PID=$!
+}
+
+start_dhcpd() {
+    start_delayed_dhcpd &
+}
+
 usage() {
-    echo "usage: $1 [-I <sl0>] [-e] [-g <addr>/<prefix_len>] <prefix> serial [baudrate]"
-    echo "usage: $1 [-I <sl0>] [-e] [-g <addr>/<prefix_len>] <prefix> tcp:host [port]"
+    echo "usage: $1 [-I <sl0>] [-d] [-e] [-g <addr>/<prefix_len>] <prefix> serial [baudrate]"
+    echo "usage: $1 [-I <sl0>] [-d] [-e] [-g <addr>/<prefix_len>] <prefix> tcp:host [port]"
 }
 
 trap "cleanup" INT QUIT TERM EXIT
 
 SLIP_ONLY=0
+USE_DHCPV6=1
 
-while getopts ehI: opt; do
+while getopts dehI: opt; do
     case ${opt} in
+        d)  USE_DHCPV6=1; shift 1;;
         e)  SLIP_ONLY=1; shift 1;;
         I)  TUN=${OPTARG}; shift 2;;
         g)  TUN_GLB=${OPTARG}; shift 2;;
@@ -128,8 +145,13 @@ fi
 
 create_tun && \
 if [ ${SLIP_ONLY} -ne 1 ]; then
-    start_uhcpd
-    START_SLIP=$?
+    if [ ${USE_DHCPV6} -eq 1 ]; then
+        start_dhcpd
+        START_SLIP=$?
+    else
+        start_uhcpd
+        START_SLIP=$?
+    fi
 else
     START_SLIP=0
 fi
