@@ -45,9 +45,6 @@
 /* thread flags are used to indicate interrupt events to a waiting thread */
 #define APDS99XX_IRQ_FLAG  0x1000
 
-/* reference to main thread */
-thread_t* t_main;
-
 static void apds99xx_isr (void *arg)
 {
     /*
@@ -63,19 +60,18 @@ static void apds99xx_isr (void *arg)
      * However, sending a message in an ISR requires a message queue in
      * the waiting thread. Since it is not relevant how many interrupts
      * have occurred since last interrupt handling, but only that an
-     * interrupt has occurred, we simply use a thread flag here instead of
+     * interrupt has occurred, we simply use a mutex instead of
      * a message for simplicity.
      */
-    (void)arg;
-    thread_flags_set(t_main, APDS99XX_IRQ_FLAG);
+    mutex_unlock(arg);    
 }
 
 int main(void)
 {
     apds99xx_t dev;
 
-    /* save the reference to the main thread */
-    t_main = (thread_t*)sched_threads[sched_active_pid];
+    /* use a locked mutex for interrupt */
+    mutex_t _isr_mtx = MUTEX_INIT_LOCKED;
 
     /* initialize the sensor with default configuration parameters */
     puts("APDS99XX proximity and ambient light sensor driver test application\n");
@@ -98,12 +94,12 @@ int main(void)
         .prx_thresh_low = 0,    /* PRX low threshold, cannot be exceeded */
         .prx_thresh_high = 200, /* PRX high threshold */
     };
-    apds99xx_int_config(&dev, &int_cfg, apds99xx_isr, 0);
+    apds99xx_int_config(&dev, &int_cfg, apds99xx_isr, &_isr_mtx);
 
     while (1) {
 
-        /* wait for an interrupt indicated by a thread flag */
-        thread_flags_wait_one(APDS99XX_IRQ_FLAG);
+        /* wait for an interrupt which simply unlocks the mutex */
+        mutex_lock(&_isr_mtx);
 
         /* get the interrupt source (resets the interrupt line) */
         apds99xx_int_source_t int_src;
