@@ -63,7 +63,7 @@ static void apds99xx_isr (void *arg)
      * interrupt has occurred, we simply use a mutex instead of
      * a message for simplicity.
      */
-    mutex_unlock(arg);    
+    mutex_unlock(arg);
 }
 
 int main(void)
