@@ -53,9 +53,6 @@ extern "C" {
 #endif
 
 #define ISR_STACKSIZE              (0)
-
-/* this is used to signal ps.c to not try to interpret ISR_STACKSIZE */
-#define ISR_STACKSIZE_INVALID
 /** @} */
 
 /**
