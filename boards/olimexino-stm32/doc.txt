@@ -63,7 +63,7 @@ make BOARD=olimexino-stm32 term
 USART1 is used for flashing the board whereas USART2 is the serial Output.
 
 ## Supported Toolchains
-For using the ST Nucleo-F103RB board we strongly recommend the usage of the
+For using the OLIMEXINO STM32 board we strongly recommend the usage of the
 [GNU Tools for ARM Embedded Processors](https://launchpad.net/gcc-arm-embedded)
 toolchain.
  */
