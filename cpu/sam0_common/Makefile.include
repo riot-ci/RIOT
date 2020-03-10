@@ -11,25 +11,12 @@ TYPE1  := $(word 2, $(LINE))
 MEMORY := $(word 3, $(LINE))
 TYPE2  := $(word 4, $(LINE))
 
+# get vendor file to extract RAM size
+VENDOR_FILE := $(shell find $(RIOTCPU)/sam0_common/include/vendor/sam$(FAMILY) -name $(CPU_MODEL).h | grep include*/sam)
+
 # ROM length is directly encoded in the part number
 ROM_LEN := $(shell echo $$((1 << $(MEMORY))))
-
-# On SAMD21, SAML21 RAM is always ⅛ of ROM
-ifneq (,$(filter samd21 saml21,$(CPU)))
-  RAM_LEN ?= $(shell echo $$(($(ROM_LEN)/8)))
-endif
-# On SAML1x RAM is ¼ of ROM, except on SAML11x14 where it is ½
-ifneq (,$(filter saml1x,$(CPU)))
-ifneq ($(and $(filter l11, $(FAMILY)), $(filter 14, $(MEMORY))),)
-  RAM_LEN ?= 8K
-else
-  RAM_LEN ?= $(shell echo $$(($(ROM_LEN)/4)))
-endif
-endif
-# On SAMD5x RAM is always at least 128k, incrementing by 64 with every ROM increment
-ifneq (,$(filter samd5x,$(CPU)))
-  RAM_LEN ?= $(shell echo $$(( (64 * ($(MEMORY) - 18) + 128) * 1024 )))
-endif
+RAM_LEN := $(shell sed -E -n 's/\#define HSRAM_SIZE.*\((.*)\).*/\1/p' $(VENDOR_FILE))
 
 ROM_START_ADDR ?= 0x00000000
 RAM_START_ADDR ?= 0x20000000
