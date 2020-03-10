@@ -8,11 +8,12 @@
 
 /**
  * @ingroup     drivers_apds99xx
+ * @{
  * @ingroup     sys_auto_init_saul
- * @brief       Auto initialization of Boradcom APDS99XX proximity and ambient light sensor
+ * @brief       Auto initialization of Broadcom APDS99XX proximity and ambient light sensor
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @file
- * @{
+ * @}
  */
 
 #ifdef MODULE_APDS99XX
