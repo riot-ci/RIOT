@@ -8,10 +8,11 @@
 
 /**
  * @ingroup     drivers_apds99xx
+ * @{
  * @brief       Device driver for the Broadcom APDS99XX proximity and ambient light sensor
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @file
- * @{
+ * @}
  */
 
 #include <string.h>

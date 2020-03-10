@@ -108,7 +108,7 @@
  *
  * - **Ambient Light Sensing (ALS)**
  *
- *   The sensor converts the amplified phododiode currents using integrating
+ *   The sensor converts the amplified photodiode currents using integrating
  *   ADCs. The time required for ALS is determined by the ALS integration
  *   time ```t_als_int```, which is defined as the number of integration
  *   steps ```als_steps``` (parameter apds99xx_params_t::als_steps) and the
@@ -267,10 +267,14 @@ extern "C"
 #endif
 /** @} */
 
-/** APDS99XX I2C addresses */
+/**
+ * @brief   APDS99XX I2C addresses
+ */
 #define APDS99XX_I2C_ADDRESS    (0x39)
 
-/** Definition of error codes */
+/**
+ * @brief   Definition of error codes
+ */
 typedef enum {
     APDS99XX_OK,                /**< success */
     APDS99XX_ERROR_I2C,         /**< I2C communication error */
