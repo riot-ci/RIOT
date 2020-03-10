@@ -62,20 +62,20 @@ int main(void)
         if (apds99xx_data_ready_als(&dev) == APDS99XX_OK &&
             apds99xx_data_ready_prx(&dev) == APDS99XX_OK) {
 
-            uint16_t als;
-            uint16_t prx;
+            uint16_t _als;
+            uint16_t _prx;
 
-            if (apds99xx_read_prx_raw(&dev, &prx) == APDS99XX_OK) {
-                printf("proximity = %d [cnts]\n", prx);
+            if (apds99xx_read_prx_raw(&dev, &_prx) == APDS99XX_OK) {
+                printf("proximity = %d [cnts]\n", _prx);
             }
 
-            if (apds99xx_read_als_raw(&dev, &als) == APDS99XX_OK) {
-                printf("ambient = %d [cnts]\n", als);
+            if (apds99xx_read_als_raw(&dev, &_als) == APDS99XX_OK) {
+                printf("ambient = %d [cnts]\n", _als);
             }
 
             #if MODULE_APDS9900 || MODULE_APDS9901 || MODULE_APDS9930
-            if (apds99xx_read_illuminance(&dev, &als) == APDS99XX_OK) {
-                printf("illuminance = %d [lux]\n", als);
+            if (apds99xx_read_illuminance(&dev, &_als) == APDS99XX_OK) {
+                printf("illuminance = %d [lux]\n", _als);
             }
             #endif
             #if MODULE_APDS9950 || MODULE_APDS9960

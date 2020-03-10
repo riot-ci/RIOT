@@ -107,23 +107,23 @@ int main(void)
 
         /* on proximity sensing interrupt */
         if (int_src.prx_int) {
-            uint16_t prx;
-            if (apds99xx_read_prx_raw(&dev, &prx) == APDS99XX_OK) {
-                printf("proximity = %d [cnts]\n", prx);
+            uint16_t _prx;
+            if (apds99xx_read_prx_raw(&dev, &_prx) == APDS99XX_OK) {
+                printf("proximity = %d [cnts]\n", _prx);
             }
 
         }
 
         /* on ambient light sensing interrupt */
         if (int_src.als_int) {
-            uint16_t als;
-            if (apds99xx_read_als_raw(&dev, &als) == APDS99XX_OK) {
-                printf("ambient = %d [cnts]\n", als);
+            uint16_t _als;
+            if (apds99xx_read_als_raw(&dev, &_als) == APDS99XX_OK) {
+                printf("ambient = %d [cnts]\n", _als);
             }
 
             #if MODULE_APDS9900 || MODULE_APDS9901 || MODULE_APDS9930
-            if (apds99xx_read_illuminance(&dev, &als) == APDS99XX_OK) {
-                printf("illuminance = %d [lux]\n", als);
+            if (apds99xx_read_illuminance(&dev, &_als) == APDS99XX_OK) {
+                printf("illuminance = %d [lux]\n", _als);
             }
             #endif
             #if MODULE_APDS9950 || MODULE_APDS9960
