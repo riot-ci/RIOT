@@ -99,7 +99,7 @@ extern "C" {
 }
 
 /**
- * @brief   Defaul SAUL meta information
+ * @brief   Default SAUL meta information
  */
 #ifndef BME680_SAUL_INFO
 #if MODULE_BME680_I2C && MODULE_BME680_SPI
