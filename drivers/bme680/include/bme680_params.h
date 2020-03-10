@@ -111,8 +111,6 @@ extern "C" {
 #endif /* BME680_SAUL_INFO */
 /**@}*/
 
-
-
 /**
  * @brief   Configure params for BME680
  */
