@@ -58,9 +58,9 @@ ifeq (dfu-util,$(PROGRAMMER))
 endif
 
 ifeq (stm32flash,$(PROGRAMMER))
-
 	FLASHER = stm32flash
 	DEBUGGER =
 	FLASHFILE ?= $(BINFILE)
-	FFLAGS = -b 57600 -w $(FLASHFILE) -g 0x0 $(PORT_LINUX)
+	PROG_BAUD ?= 57600
+	FFLAGS = -b $(PROG_BAUD) -w $(FLASHFILE) -g 0x0 $(PORT)
 endif
