@@ -81,7 +81,7 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
     ret = bme680_init_internal(&BME680_SENSOR(dev));
     if (ret != 0) {
         DEBUG("[bme680]: Failed to get ID\n");
-        return -1;
+        return ret;
     }
 
     /*  retrieve params and set them in bme680_t */
@@ -105,7 +105,6 @@ int bme680_init(bme680_t *dev, const bme680_params_t *params)
     ret = bme680_set_sensor_settings(params->settings, &BME680_SENSOR(dev));
     if (ret != 0) {
         DEBUG("[bme680]: failed to set settings\n");
-        return -2;
     }
 
     return ret;
@@ -133,7 +132,7 @@ int bme680_get_data(bme680_t* dev, bme680_field_data_t *data)
 
     int8_t res;
     if ((res = bme680_get_sensor_data(data, &BME680_SENSOR(dev))) == 0) {
-        return 0;
+        return BME680_OK;
     }
 
     DEBUG("[bme680]: reading data failed with reason %d\n", res);
@@ -141,7 +140,7 @@ int bme680_get_data(bme680_t* dev, bme680_field_data_t *data)
     if (res == BME680_W_NO_NEW_DATA) {
         return BME680_NO_NEW_DATA;
     }
-    return BME680_INVALID;
+    return res;
 }
 
 int bme680_set_ambient_temp(bme680_t* dev, int8_t temp)
