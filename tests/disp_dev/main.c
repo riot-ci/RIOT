@@ -40,6 +40,11 @@ int main(void)
     gpio_clear(LCD_BACKLIGHT_LOW);
 #endif
 
+#ifdef BOARD_ADAFRUIT_CLUE
+    /* on Adafruit Clue, enable the backlight */
+    gpio_set(BACKLIGHT_PIN);
+#endif
+
     ili9341_init(&ili9341, &ili9341_params[0]);
 
     disp_dev_t *dev = (disp_dev_t *)&ili9341;
