@@ -1351,6 +1351,19 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
 #endif
 }
 
+void gnrc_netif_msg_handler_netdev(gnrc_netif_t *netif, msg_t *msg)
+{
+    netdev_t *dev = netif->dev;
+    switch(msg->type) {
+        case NETDEV_MSG_TYPE_EVENT:
+            DEBUG("gnrc_netif: GNRC_NETDEV_MSG_TYPE_EVENT received\n");
+            dev->driver->isr(dev);
+            break;
+        default:
+            break;
+    }
+}
+
 static void *_gnrc_netif_thread(void *args)
 {
     gnrc_netapi_opt_t *opt;
@@ -1401,10 +1414,6 @@ static void *_gnrc_netif_thread(void *args)
         msg_receive(&msg);
         /* dispatch netdev, MAC and gnrc_netapi messages */
         switch (msg.type) {
-            case NETDEV_MSG_TYPE_EVENT:
-                DEBUG("gnrc_netif: GNRC_NETDEV_MSG_TYPE_EVENT received\n");
-                dev->driver->isr(dev);
-                break;
             case GNRC_NETAPI_MSG_TYPE_SND:
                 DEBUG("gnrc_netif: GNRC_NETDEV_MSG_TYPE_SND received\n");
                 res = netif->ops->send(netif, msg.content.ptr);
