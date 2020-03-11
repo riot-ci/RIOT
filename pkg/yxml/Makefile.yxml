@@ -1,0 +1,5 @@
+SRCS := jsmn.c
+
+CFLAGS += -Wno-unused-parameter
+
+include $(RIOTBASE)/Makefile.base
