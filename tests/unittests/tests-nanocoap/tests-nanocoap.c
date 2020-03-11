@@ -383,6 +383,20 @@ static void test_nanocoap__add_uquery2(void)
     coap_get_uri_query(&pkt, (uint8_t *)&query[0]);
     /* skip initial '&' from coap_get_uri_query() */
     TEST_ASSERT_EQUAL_STRING((char *)qs3, &query[1]);
+
+    /* fails an assert, so only run when disabled */
+#ifdef NDEBUG
+    char qs4[] = "a=do&bcd&bcd&bcd";
+    size_t query4_opt_len = 4;
+
+    /* includes key only; value NULL and length > 0 */
+    memset(query, 0, 20);
+    len = coap_opt_add_uquery2(&pkt, &keys[2], key2_len, NULL, 1);
+    TEST_ASSERT_EQUAL_INT(query4_opt_len, len);
+    coap_get_uri_query(&pkt, (uint8_t *)&query[0]);
+    /* skip initial '&' from coap_get_uri_query() */
+    TEST_ASSERT_EQUAL_STRING((char *)qs4, &query[1]);
+#endif
 }
 /*
  * Builds on get_req test, to test building a PDU that completely fills the
