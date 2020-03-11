@@ -108,11 +108,10 @@ void lvgl_init(disp_dev_t *dev)
     lv_disp_drv_register(&disp_drv);
     lv_disp_buf_init(&disp_buf, buf, NULL, LVGL_COLOR_BUF_SIZE);
 
+    lv_task_handler();
     _task_thread_pid = thread_create(_task_thread_stack, sizeof(_task_thread_stack),
                                      LVGL_TASK_THREAD_PRIO, THREAD_CREATE_STACKTEST,
                                      _task_thread, NULL, "_task_thread");
-
-    xtimer_sleep(1);
 }
 
 void lvgl_wakeup(void)
