@@ -74,11 +74,18 @@ int apds99xx_init(apds99xx_t *dev, const apds99xx_params_t *params)
     dev->gpio_init = false;
 #endif
 
-    /* wait for 6 ms after power on reset */
-    xtimer_usleep(6 * US_PER_MS);
-
-    /* check availability of the sensor */
-    int res = _is_available(dev);
+    /*
+     * the sensor should be operational 5.7 ms after power on; try to check
+     * its availability for some time (maximum 500 times/I2C address writes)
+     */
+    int res = 0;
+    int count = 500;
+    while (count--) {
+        res = _is_available(dev);
+        if (res == APDS99XX_OK) {
+            break;
+        }
+    }
     if (res != APDS99XX_OK) {
         return res;
     }

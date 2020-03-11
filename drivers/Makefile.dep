@@ -37,7 +37,6 @@ endif
 ifneq (,$(filter apds99%,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
   USEMODULE += apds99xx
-  USEMODULE += xtimer
 endif
 
 ifneq (,$(filter at,$(USEMODULE)))
