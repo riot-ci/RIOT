@@ -43,6 +43,10 @@ void rtt_init(void)
     RTT->RTT_MR = RTT_MR_RTPRES(CHIP_FREQ_XTAL_32K / RTT_FREQUENCY);
     RTT->RTT_MR |= RTT_MR_RTTRST;
 
+    /* resetting the timer takes two slow clock cycles, so we wait for this to
+     * complete */
+    while (RTT->RTT_VR != 0) {}
+
     /* configure NVIC line */
     NVIC_EnableIRQ(RTT_IRQn);
 }
@@ -60,7 +64,9 @@ void rtt_set_alarm(uint32_t alarm, rtt_cb_t cb, void *arg)
     /* set new alarm */
     isr_ctx.cb  = cb;
     isr_ctx.arg = arg;
-    RTT->RTT_AR = alarm;
+    /* the alarm value is RTT_AR + 1, so we need to subtract 1 from the target
+     * value here */
+    RTT->RTT_AR = (alarm - 1);
 
     /* (re-)enable the alarm */
     RTT->RTT_MR |= RTT_MR_ALMIEN;
