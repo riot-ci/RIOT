@@ -1001,7 +1001,8 @@ ssize_t coap_opt_add_uquery(coap_pkt_t *pkt, const char *key, const char *val);
  * @param[in]     val         Value to assign to @p key (may be NULL)
  * @param[in]     val_len     Length of @p val. 0 if @p val is NULL
  *
- * @pre     ((pkt != NULL) && (key != NULL) && (key_len > 0))
+ * @pre     ((pkt != NULL) && (key != NULL) && (key_len > 0)
+ *              && ((val_len == 0) || ((val != NULL) && (val_len > 0))))
  *
  * @return        number of bytes written to pkt buffer
  * @return        <0 on error
