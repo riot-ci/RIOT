@@ -88,7 +88,7 @@ int main(void)
     /* configure the interrupts */
     apds99xx_int_config_t int_cfg = {
         .als_int_en = true,     /* ALS interrupt enabled */
-        .als_pers = 0,          /* ALS interrupt in each cylce (data-ready) */
+        .als_pers = 0,          /* ALS interrupt in each cycle (data-ready) */
         .prx_int_en = true,     /* PRX interrupt enabled */
         .prx_pers = 1,          /* PRX interrupt when 1 value is above threshold */
         .prx_thresh_low = 0,    /* PRX low threshold, cannot be exceeded */
