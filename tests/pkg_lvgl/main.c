@@ -52,10 +52,6 @@ static void sysmon_task(lv_task_t *param)
 {
     (void)param;
 
-    /* Force a wakeup of lvgl when each task is called: this ensure an activity
-       is triggered and wakes up lvgl during the next LVGL_ACTIVITY_PERIOD ms */
-    lvgl_wakeup();
-
     /* Get CPU and memory information */
     uint8_t cpu_busy = 100 - lv_task_get_idle();
 
@@ -91,6 +87,10 @@ static void sysmon_task(lv_task_t *param)
                        mem_mon.free_size, mem_mon.frag_pct);
 
     lv_label_set_text(info_label, buf_long);
+
+    /* Force a wakeup of lvgl when each task is called: this ensures an activity
+       is triggered and wakes up lvgl during the next LVGL_INACTIVITY_PERIOD ms */
+    lvgl_wakeup();
 }
 
 void sysmon_create(void)
