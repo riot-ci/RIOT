@@ -39,4 +39,3 @@ def test_utils_interactive_sync_shell(child, retries, delay):
     Interacts through input to wait for node being ready.
     """
     _test_utils_interactive_sync(child, retries, delay, '\n', '>')
-        
