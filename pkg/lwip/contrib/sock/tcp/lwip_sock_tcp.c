@@ -389,7 +389,7 @@ void sock_tcp_set_cb(sock_tcp_t *sock, sock_tcp_cb_t cb, void *arg)
 void sock_tcp_queue_set_cb(sock_tcp_queue_t *queue, sock_tcp_queue_cb_t cb,
                            void *arg)
 {
-    (void)arg;
+    queue->base.async_cb_arg = arg;
     queue->base.async_cb.tcp_queue = cb;
 }
 
