@@ -248,9 +248,6 @@ static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
 {
     netdev_t *dev = netif->dev;
     switch (msg->type) {
-        case NETDEV_MSG_TYPE_EVENT:
-            dev->driver->isr(dev);
-            break;
         case BLE_EVENT_RX_DONE:
             {
                 DEBUG("ble rx:\n");
@@ -259,6 +256,7 @@ static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
                 break;
             }
         default:
+            gnrc_netif_msg_handler_netdev(netif, msg);
             break;
     }
 }
