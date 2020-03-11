@@ -31,7 +31,6 @@ endif
 
 ifneq (,$(filter apds99%full,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio_irq
-  USEMODULE += apds99xx
 endif
 
 ifneq (,$(filter apds99%,$(USEMODULE)))
