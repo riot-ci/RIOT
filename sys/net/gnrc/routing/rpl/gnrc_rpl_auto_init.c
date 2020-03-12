@@ -41,17 +41,17 @@ void auto_init_gnrc_rpl(void)
         gnrc_rpl_init(netif->pid);
         return;
     }
-    else if (IS_ACTIVE(GNRC_RPL_DEFAULT_NETIF)) {
-        if (gnrc_netif_get_by_pid(IS_ACTIVE(GNRC_RPL_DEFAULT_NETIF)) != NULL) {
+    else if (GNRC_RPL_DEFAULT_NETIF) {
+        if (gnrc_netif_get_by_pid(GNRC_RPL_DEFAULT_NETIF) != NULL) {
             DEBUG("auto_init_gnrc_rpl: initializing RPL on interface %" PRIkernel_pid "\n",
-                  IS_ACTIVE(GNRC_RPL_DEFAULT_NETIF));
-            gnrc_rpl_init(IS_ACTIVE(GNRC_RPL_DEFAULT_NETIF));
+                  GNRC_RPL_DEFAULT_NETIF);
+            gnrc_rpl_init(GNRC_RPL_DEFAULT_NETIF);
             return;
         }
         /* XXX this is just a work-around ideally this would happen with
          * an `up` event of the GNRC_RPL_DEFAULT_NETIF */
         DEBUG("auto_init_gnrc_rpl: could not initialize RPL on interface %" PRIkernel_pid" - "
-              "interface does not exist\n", IS_ACTIVE(GNRC_RPL_DEFAULT_NETIF));
+              "interface does not exist\n", GNRC_RPL_DEFAULT_NETIF);
         return;
     }
     else {
