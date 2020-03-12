@@ -1,4 +1,4 @@
-SRCS := jsmn.c
+SRCS := yxml.c
 
 CFLAGS += -Wno-unused-parameter
 
