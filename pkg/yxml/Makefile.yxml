@@ -1,0 +1,5 @@
+SRCS := yxml.c
+
+CFLAGS += -Wno-unused-parameter
+
+include $(RIOTBASE)/Makefile.base
