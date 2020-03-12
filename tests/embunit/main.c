@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "assert.h"
+#include "test_utils/expect.h"
 #include "embUnit.h"
 
 #define TEST_STRING_7   ("7")
