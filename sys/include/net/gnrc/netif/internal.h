@@ -361,12 +361,12 @@ bool gnrc_netif_dev_is_6lo(const gnrc_netif_t *netif);
  */
 static inline bool gnrc_netif_is_6lo(const gnrc_netif_t *netif)
 {
-    if((!gnrc_netif_highlander() &&
+    if ((!gnrc_netif_highlander() &&
        IS_USED(MODULE_GNRC_SIXLOWPAN)) || \
        IS_USED(MODULE_GNRC_SIXLOENC)) {
         return gnrc_netif_dev_is_6lo(netif);
     }
-    else if(gnrc_netif_highlander() && IS_USED(MODULE_GNRC_SIXLOWPAN)) {
+    else if (gnrc_netif_highlander() && IS_USED(MODULE_GNRC_SIXLOWPAN)) {
         return true;
     }
     else {
