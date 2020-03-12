@@ -20,7 +20,7 @@
 #include "embUnit.h"
 #include "yxml.h"
 
-static char *_yxml_buf[1024];
+static char _yxml_buf[1024];
 
 static const char *_doc = "<foo>bar</foo>";
 
