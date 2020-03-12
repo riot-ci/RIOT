@@ -556,7 +556,6 @@ static void _send_multicast(gnrc_pktsnip_t *pkt, bool prep_hdr,
         }
     }
 
-
     if (!gnrc_netif_highlander()) {
         /* interface not given: send over all interfaces */
         if (netif == NULL) {
