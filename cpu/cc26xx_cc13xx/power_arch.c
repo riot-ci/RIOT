@@ -22,6 +22,17 @@
 
 #define DOMAIN_ON (1)
 
+/* Save changes of the PRCM */
+static void prcm_commit(void)
+{
+    /* Write CLKLOADCTL in the non-buffered register bank to avoid buffered
+     * writes */
+    PRCM_NONBUF->CLKLOADCTL = CLKLOADCTL_LOAD;
+
+    /* Wait while load is done */
+    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) {}
+}
+
 bool power_is_domain_enabled(const power_domain_t domain)
 {
     switch (domain) {
@@ -74,4 +85,51 @@ void power_enable_domain(const power_domain_t domain)
     }
 
     while (!power_is_domain_enabled(domain)) {}
+}
+
+void power_clock_enable_gpio(void)
+{
+    PRCM->GPIOCLKGR = GPIOCLKGR_CLK_EN;
+
+    prcm_commit();
+}
+
+void power_clock_enable_gpt(uint32_t tim)
+{
+    PRCM->GPTCLKGR |= (1 << tim);
+
+    prcm_commit();
+}
+void power_clock_enable_i2c(void) {
+    PRCM->I2CCLKGR = I2CCLKGR_CLK_EN;
+
+    prcm_commit();
+}
+
+void power_clock_enable_uart(uint32_t uart)
+{
+    if (uart == 0) {
+        PRCM->UARTCLKGR |= UARTCLKGR_CLK_EN_UART0;
+    }
+#ifdef CPU_VARIANT_X2
+    else if (uart == 1) {
+        PRCM->UARTCLKGR |= UARTCLKGR_CLK_EN_UART1;
+    }
+#endif
+
+    prcm_commit();
+}
+
+void power_clock_disable_uart(uint32_t uart)
+{
+    if (uart == 0) {
+        PRCM->UARTCLKGR &= ~UARTCLKGR_CLK_EN_UART0;
+    }
+#ifdef CPU_VARIANT_X2
+    else if (uart == 1) {
+        PRCM->UARTCLKGR &= ~UARTCLKGR_CLK_EN_UART1;
+    }
+#endif
+
+    prcm_commit();
 }

@@ -44,9 +44,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     }
 
     /* enable GPIO clock */
-    PRCM->GPIOCLKGR |= 1;
-    PRCM->CLKLOADCTL |= CLKLOADCTL_LOAD;
-    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) ;
+    power_clock_enable_gpio();
 
     /* configure the GPIO mode */
     IOC->CFG[pin] = mode;
