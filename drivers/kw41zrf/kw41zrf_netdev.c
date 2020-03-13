@@ -566,6 +566,7 @@ int kw41zrf_netdev_get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
         case NETOPT_ADDRESS_LONG:
             assert(len >= sizeof(eui64_t));
             kw41zrf_get_addr_long(dev, value);
+            *(uint64_t*)value = byteorder_swapll(*(uint64_t*)value);
             res = sizeof(eui64_t);
             break;
 
@@ -773,11 +774,14 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
             res = sizeof(const network_uint16_t);
             break;
 
-        case NETOPT_ADDRESS_LONG:
+        case NETOPT_ADDRESS_LONG: {
+            eui64_t addr;
             assert(len <= sizeof(const eui64_t));
-            kw41zrf_set_addr_long(dev, value);
+            addr.uint64.u64 = byteorder_swapll(*(uint64_t*)value);
+            kw41zrf_set_addr_long(dev, &addr);
             res = sizeof(const eui64_t);
             break;
+        }
 
         case NETOPT_NID:
             assert(len <= sizeof(const uint16_t));
