@@ -112,7 +112,7 @@ uint16_t kw41zrf_get_pan(kw41zrf_t *dev);
  * @param[in] dev       kw41zrf device descriptor
  * @param[in] addr      short address
  */
-void kw41zrf_set_addr_short(kw41zrf_t *dev, network_uint16_t addr);
+void kw41zrf_set_addr_short(kw41zrf_t *dev, const network_uint16_t *addr);
 
 /**
  * @brief   Set long address of a given device
@@ -120,7 +120,7 @@ void kw41zrf_set_addr_short(kw41zrf_t *dev, network_uint16_t addr);
  * @param[in] dev       kw41zrf device descriptor
  * @param[in] addr      long address
  */
-void kw41zrf_set_addr_long(kw41zrf_t *dev, eui64_t addr);
+void kw41zrf_set_addr_long(kw41zrf_t *dev, const eui64_t *addr);
 
 /**
  * @brief   Get short address of a given device
@@ -128,7 +128,7 @@ void kw41zrf_set_addr_long(kw41zrf_t *dev, eui64_t addr);
  * @param[in] dev       kw41zrf device descriptor
  * @return              current short address
  */
-network_uint16_t kw41zrf_get_addr_short(kw41zrf_t *dev);
+void kw41zrf_get_addr_short(kw41zrf_t *dev, network_uint16_t *addr);
 
 /**
  * @brief   Get long address of a given device
@@ -136,7 +136,7 @@ network_uint16_t kw41zrf_get_addr_short(kw41zrf_t *dev);
  * @param[in] dev       kw41zrf device descriptor
  * @return              current long address
  */
-eui64_t kw41zrf_get_addr_long(kw41zrf_t *dev);
+void kw41zrf_get_addr_long(kw41zrf_t *dev, eui64_t *addr);
 
 /**
  * @brief   Get CCA threshhold of a given device

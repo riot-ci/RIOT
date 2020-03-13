@@ -31,6 +31,7 @@
 #include "kw41zrf_intern.h"
 #include "vendor/XCVR/MKW41Z4/fsl_xcvr.h"
 #include "vendor/XCVR/MKW41Z4/ifr_radio.h"
+#include "vendor/MKW41Z4.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
@@ -43,9 +44,11 @@ static void kw41zrf_set_address(kw41zrf_t *dev)
     /* get unique IDs to use as hardware addresses */
     luid_get_eui64(&addr_long);
     luid_get_short(&addr_short);
+    /* this places the unique bits in less significant places */
+    addr_long.uint64.u64 = byteorder_swapll(addr_long.uint64.u64);
     /* set short and long address */
-    kw41zrf_set_addr_long(dev, addr_long);
-    kw41zrf_set_addr_short(dev, addr_short);
+    kw41zrf_set_addr_long(dev, &addr_long);
+    kw41zrf_set_addr_short(dev, &addr_short);
 }
 
 void kw41zrf_setup(kw41zrf_t *dev)

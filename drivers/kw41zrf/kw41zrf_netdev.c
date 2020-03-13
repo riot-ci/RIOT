@@ -33,6 +33,7 @@
 #include "kw41zrf_netdev.h"
 #include "kw41zrf_intern.h"
 #include "kw41zrf_getset.h"
+#include "vendor/MKW41Z4.h"
 
 #if MODULE_OD
 #include "od.h"
@@ -557,14 +558,14 @@ int kw41zrf_netdev_get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
             break;
 
         case NETOPT_ADDRESS:
-            assert(len >= sizeof(uint16_t));
-            *((network_uint16_t *)value) = kw41zrf_get_addr_short(dev);
-            res = sizeof(uint16_t);
+            assert(len >= sizeof(network_uint16_t));
+            kw41zrf_get_addr_short(dev, value);
+            res = sizeof(network_uint16_t);
             break;
 
         case NETOPT_ADDRESS_LONG:
             assert(len >= sizeof(eui64_t));
-            *((eui64_t *)value) = kw41zrf_get_addr_long(dev);
+            kw41zrf_get_addr_long(dev, value);
             res = sizeof(eui64_t);
             break;
 
@@ -767,14 +768,14 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
             break;
 
         case NETOPT_ADDRESS:
-            assert(len <= sizeof(const uint16_t));
-            kw41zrf_set_addr_short(dev, *((const network_uint16_t *)value));
-            res = sizeof(const uint16_t);
+            assert(len <= sizeof(const network_uint16_t));
+            kw41zrf_set_addr_short(dev, value);
+            res = sizeof(const network_uint16_t);
             break;
 
         case NETOPT_ADDRESS_LONG:
             assert(len <= sizeof(const eui64_t));
-            kw41zrf_set_addr_long(dev, *((const eui64_t *)value));
+            kw41zrf_set_addr_long(dev, value);
             res = sizeof(const eui64_t);
             break;
 

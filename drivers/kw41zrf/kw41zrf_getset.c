@@ -17,12 +17,14 @@
  */
 
 #include <errno.h>
+#include <string.h>
 #include "log.h"
 #include "cpu.h"
 #include "byteorder.h"
 #include "kw41zrf.h"
 #include "kw41zrf_intern.h"
 #include "kw41zrf_getset.h"
+#include "vendor/MKW41Z4.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -108,35 +110,41 @@ void kw41zrf_set_pan(kw41zrf_t *dev, uint16_t pan)
     DEBUG("[kw41zrf] set pan to: 0x%x\n", pan);
 }
 
-void kw41zrf_set_addr_short(kw41zrf_t *dev, network_uint16_t addr)
+void kw41zrf_set_addr_short(kw41zrf_t *dev, const network_uint16_t *addr)
 {
     (void) dev;
     ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0 & ~ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) |
-        ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr.u16);
+        ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr->u16);
 }
 
-void kw41zrf_set_addr_long(kw41zrf_t *dev, eui64_t addr)
+void kw41zrf_set_addr_long(kw41zrf_t *dev, const eui64_t *addr)
 {
     (void) dev;
-    ZLL->MACLONGADDRS0_LSB = (uint32_t)addr.uint64.u64;
-    ZLL->MACLONGADDRS0_MSB = (addr.uint64.u64 >> 32);
+
+    /* network order */
+    eui64_t a;
+    memcpy(&a, addr, sizeof(a));
+    a.uint64.u64 = byteorder_swapll(a.uint64.u64);
+
+    ZLL->MACLONGADDRS0_LSB = a.uint32[0].u32;
+    ZLL->MACLONGADDRS0_MSB = a.uint32[1].u32;
 }
 
-network_uint16_t kw41zrf_get_addr_short(kw41zrf_t *dev)
+void kw41zrf_get_addr_short(kw41zrf_t *dev, network_uint16_t *addr)
 {
     (void) dev;
-    uint16_t addr = (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) >>
+    addr->u16 = (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) >>
                         ZLL_MACSHORTADDRS0_MACSHORTADDRS0_SHIFT;
-    return (network_uint16_t)addr;
 }
 
-eui64_t kw41zrf_get_addr_long(kw41zrf_t *dev)
+void kw41zrf_get_addr_long(kw41zrf_t *dev, eui64_t *addr)
 {
     (void) dev;
-    uint64_t addr = ((uint64_t)ZLL->MACLONGADDRS0_MSB << 32) | ZLL->MACLONGADDRS0_LSB;
-    /* Network byte order */
-    addr = byteorder_swapll(addr);
-    return (eui64_t)(network_uint64_t)addr;
+    addr->uint32[0] = (network_uint32_t)ZLL->MACLONGADDRS0_LSB;
+    addr->uint32[1] = (network_uint32_t)ZLL->MACLONGADDRS0_MSB;
+
+    /* network order */
+    addr->uint64.u64 = byteorder_swapll(addr->uint64.u64);
 }
 
 int8_t kw41zrf_get_cca_threshold(kw41zrf_t *dev)
