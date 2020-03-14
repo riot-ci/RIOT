@@ -26,6 +26,7 @@
 
 #include "cc26x2_cc13x2_aux.h"
 #include "cc26x2_cc13x2_fcfg.h"
+#include "cc26x2_cc13x2_hapi.h"
 #include "cc26x2_cc13x2_prcm.h"
 
 #ifdef __cplusplus

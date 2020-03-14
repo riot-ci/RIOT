@@ -78,6 +78,14 @@ typedef struct {
 #define DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL     0x10000000
 #define DDI_0_OSC_CTL0_BYPASS_XOSC_LF_CLK_QUAL      0x20000000
 #define DDI_0_OSC_CTL0_XTAL_IS_24M                  0x80000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC                 0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_m               0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_s               28
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_XOSC            0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_RCOSC           0x00000000
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING      0x00000001
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING_M    0x00000001
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING_S    0
 /** @} */
 
 /** @ingroup cpu_specific_peripheral_memory_map

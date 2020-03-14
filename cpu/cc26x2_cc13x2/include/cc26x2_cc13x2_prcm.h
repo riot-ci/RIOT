@@ -65,6 +65,14 @@ typedef struct {
 #define DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL     0x10000000
 #define DDI_0_OSC_CTL0_BYPASS_XOSC_LF_CLK_QUAL      0x20000000
 #define DDI_0_OSC_CTL0_XTAL_IS_24M                  0x80000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC                 0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_m               0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_s               28
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_XOSC            0x10000000
+#define DDI_0_OSC_STAT0_SCLK_HF_SRC_RCOSC           0x00000000
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING      0x00000001
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING_m    0x00000001
+#define DDI_0_OSC_STAT0_PENDINGSCLKHFSWITCHING_s    0
 /** @} */
 
 /** @ingroup cpu_cc26x2_cc13x2_peripheral_memory_map
@@ -202,6 +210,8 @@ typedef struct {
  */
 #define CLKLOADCTL_LOAD        0x1
 #define CLKLOADCTL_LOADDONE    0x2
+
+#define RFCCLKG_CLK_EN      0x1
 
 #define PDCTL0_RFC_ON       0x1
 #define PDCTL0_SERIAL_ON    0x2

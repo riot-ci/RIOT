@@ -25,6 +25,7 @@
 
 #include "cc26x0_aux.h"
 #include "cc26x0_fcfg.h"
+#include "cc26x0_hapi.h"
 #include "cc26x0_prcm.h"
 
 #ifdef __cplusplus
