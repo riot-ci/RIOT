@@ -325,7 +325,7 @@ endif
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 
 # process provided features
-include $(RIOTBASE)/Makefile.features
+include $(RIOTBASE)/Makefile.features_provided
 
 # mandatory includes!
 include $(RIOTMAKE)/pseudomodules.inc.mk
@@ -365,6 +365,9 @@ USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
+
+# check if required features are provided
+include $(RIOTBASE)/Makefile.features_check
 
 ifeq ($(strip $(MCU)),)
 	MCU = $(CPU)
