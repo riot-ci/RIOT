@@ -49,6 +49,26 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief   Default CCA threshold
+ *
+ * @{
+ */
+#ifndef KW41ZRF_DEFAULT_CCA_THRESHOLD
+#define KW41ZRF_DEFAULT_CCA_THRESHOLD    (-60)
+#endif
+/** @} */
+
+/**
+ * @brief   Default LQI compensation
+ *
+ * @{
+ */
+#ifndef KW41ZRF_DEFAULT_LQI_COMPENSATION
+#define KW41ZRF_DEFAULT_LQI_COMPENSATION (102)
+#endif
+/** @} */
+
+/**
  * @brief   Allowed range of channels
  *
  * @{

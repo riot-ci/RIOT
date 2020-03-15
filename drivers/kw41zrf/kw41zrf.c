@@ -69,6 +69,7 @@ void kw41zrf_setup(kw41zrf_t *dev)
     DEBUG("[kw41zrf] setup finished\n");
 }
 
+/* vendor routine to initialize the radio core */
 int kw41zrf_xcvr_init(kw41zrf_t *dev);
 
 int kw41zrf_init(kw41zrf_t *dev, kw41zrf_cb_t cb)
@@ -176,15 +177,15 @@ int kw41zrf_reset_hardware(kw41zrf_t *dev)
     /* Set prescaler to obtain 1 symbol (16us) timebase */
     kw41zrf_timer_init(dev, KW41ZRF_TIMEBASE_62500HZ);
 
-    /* Set CCA threshold to -60 dBm */
+    /* Set CCA threshold to KW41ZRF_DEFAULT_CCA_THRESHOLD dBm */
     /* The hardware default for this register is +75 dBm (0x4b), which is nonsense */
     ZLL->CCA_LQI_CTRL = (ZLL->CCA_LQI_CTRL & ~ZLL_CCA_LQI_CTRL_CCA1_THRESH_MASK) |
-        ZLL_CCA_LQI_CTRL_CCA1_THRESH(-60);
+        ZLL_CCA_LQI_CTRL_CCA1_THRESH(KW41ZRF_DEFAULT_CCA_THRESHOLD);
 
     /* Set default LQI compensation */
     /* Hardware reset default is 102 */
     ZLL->CCA_LQI_CTRL = (ZLL->CCA_LQI_CTRL & ~ZLL_CCA_LQI_CTRL_LQI_OFFSET_COMP_MASK) |
-        ZLL_CCA_LQI_CTRL_LQI_OFFSET_COMP(102);
+        ZLL_CCA_LQI_CTRL_LQI_OFFSET_COMP(KW41ZRF_DEFAULT_LQI_COMPENSATION);
 
     /* set defaults */
     ZLL->SEQ_CTRL_STS = ZLL_SEQ_CTRL_STS_EVENT_TMR_DO_NOT_LATCH_MASK;

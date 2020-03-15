@@ -35,7 +35,7 @@
 #include "kw41zrf_getset.h"
 #include "vendor/MKW41Z4.h"
 
-#if MODULE_OD
+#ifdef MODULE_OD
 #include "od.h"
 #endif
 
@@ -44,7 +44,7 @@
 
 #define _MAX_MHR_OVERHEAD           (25)
 
-/* Timing */
+/* Timing units are in radio timer ticks (16 usec per tick) */
 #define KW41ZRF_CCA_TIME               8
 #define KW41ZRF_SHR_PHY_TIME          12
 #define KW41ZRF_PER_BYTE_TIME          2
@@ -112,10 +112,11 @@ static inline size_t kw41zrf_tx_load(const void *buf, size_t len, size_t offset)
     return offset + len;
 }
 
+/**
+ * @brief set up TMR2 to trigger the TX sequence from the ISR
+ */
 static void kw41zrf_tx_exec(kw41zrf_t *dev)
 {
-    /* set up TMR2 to trigger the TX sequence from the ISR */
-
     kw41zrf_abort_sequence(dev);
 
     if (dev->flags & KW41ZRF_OPT_CSMA) {
@@ -849,7 +850,7 @@ static int kw41zrf_netdev_set(netdev_t *netdev, netopt_t opt, const void *value,
     return res;
 }
 
-/* Common CCA check handler code for sequences T and TR */
+/* Common CCA check handler code for sequences Transmit and Transmit/Receive */
 static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
@@ -943,6 +944,7 @@ static uint32_t _isr_event_seq_t_ccairq(kw41zrf_t *dev, uint32_t irqsts)
     return handled_irqs;
 }
 
+/* Handler for Receive sequence */
 static uint32_t _isr_event_seq_r(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
@@ -1017,6 +1019,7 @@ static uint32_t _isr_event_seq_r(kw41zrf_t *dev, uint32_t irqsts)
     return handled_irqs;
 }
 
+/* Handler for Transmit sequence */
 static uint32_t _isr_event_seq_t(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
@@ -1041,7 +1044,7 @@ static uint32_t _isr_event_seq_t(kw41zrf_t *dev, uint32_t irqsts)
     return handled_irqs;
 }
 
-/* Standalone CCA */
+/* Handler for standalone CCA */
 static uint32_t _isr_event_seq_cca(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
@@ -1066,6 +1069,7 @@ static uint32_t _isr_event_seq_cca(kw41zrf_t *dev, uint32_t irqsts)
     return handled_irqs;
 }
 
+/* Handler for Transmit/Receive sequence */
 static uint32_t _isr_event_seq_tr(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
@@ -1140,6 +1144,7 @@ static uint32_t _isr_event_seq_tr(kw41zrf_t *dev, uint32_t irqsts)
     return handled_irqs;
 }
 
+/* Handler for Continuous CCA */
 static uint32_t _isr_event_seq_ccca(kw41zrf_t *dev, uint32_t irqsts)
 {
     uint32_t handled_irqs = 0;
