@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief      Tests for module suit_v3 (draft-ietf-suit-manifest-03)
+ * @brief      Tests for suit manifest parser module
  *
  * @author     Kaspar Schleiser <kaspar@schleiser.de>
  */
@@ -47,11 +47,11 @@ const manifest_blob_t manifest_blobs[] = {
 
 const unsigned manifest_blobs_numof = ARRAY_SIZE(manifest_blobs);
 
-static int test_suitv3_manifest(const unsigned char *manifest_bin,
+static int test_suit_manifest(const unsigned char *manifest_bin,
                                 size_t manifest_bin_len)
 {
     char _url[SUIT_URL_MAX];
-    suit_v3_manifest_t manifest;
+    suit_manifest_t manifest;
     riotboot_flashwrite_t writer;
 
     memset(&writer, 0, sizeof(manifest));
@@ -62,7 +62,7 @@ static int test_suitv3_manifest(const unsigned char *manifest_bin,
 
     int res;
     if ((res =
-             suit_v3_parse(&manifest, manifest_bin,
+             suit_parse(&manifest, manifest_bin,
                            manifest_bin_len)) != SUIT_OK) {
         return res;
     }
@@ -70,32 +70,32 @@ static int test_suitv3_manifest(const unsigned char *manifest_bin,
     return res;
 }
 
-static void test_suitv3_manifest_01_manifests(void)
+static void test_suit_manifest_01_manifests(void)
 {
     for (unsigned i = 0; i < manifest_blobs_numof; i++) {
         printf("\n--- testing manifest %u\n", i);
         int res = \
-            test_suitv3_manifest(manifest_blobs[i].data, manifest_blobs[i].len);
+            test_suit_manifest(manifest_blobs[i].data, manifest_blobs[i].len);
         printf("---- res=%i (expected=%i)\n", res, manifest_blobs[i].expected);
         TEST_ASSERT_EQUAL_INT(manifest_blobs[i].expected, res);
     }
 }
 
-Test *tests_suitv3_manifest(void)
+Test *tests_suit_manifest(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_suitv3_manifest_01_manifests),
+        new_TestFixture(test_suit_manifest_01_manifests),
     };
 
-    EMB_UNIT_TESTCALLER(suitv3_manifest_tests, NULL, NULL, fixtures);
+    EMB_UNIT_TESTCALLER(suit_manifest_tests, NULL, NULL, fixtures);
 
-    return (Test *)&suitv3_manifest_tests;
+    return (Test *)&suit_manifest_tests;
 }
 
 int main(void)
 {
     TESTS_START();
-    TESTS_RUN(tests_suitv3_manifest());
+    TESTS_RUN(tests_suit_manifest());
     TESTS_END();
     return 0;
 }
