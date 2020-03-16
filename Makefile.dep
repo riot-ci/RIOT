@@ -1067,12 +1067,12 @@ ifneq (,$(filter ecc_%,$(USEMODULE)))
   USEMODULE += ecc
 endif
 
+# check if required features are provided
+include $(RIOTBASE)/Makefile.features_check
+
 # recursively catch transitive dependencies
 USEMODULE := $(sort $(USEMODULE))
 USEPKG := $(sort $(USEPKG))
-
-# check if required features are provided
-include $(RIOTBASE)/Makefile.features_check
 ifneq ($(OLD_USEMODULE) $(OLD_USEPKG) $(OLD_FEATURES_USED),$(USEMODULE) $(USEPKG) $(FEATURES_USED))
   include $(RIOTBASE)/Makefile.dep
 else
