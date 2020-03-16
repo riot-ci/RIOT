@@ -27,7 +27,7 @@
 #include "suit/conditions.h"
 #include "suit/v3/handlers.h"
 #include "suit/v3/policy.h"
-#include "suit/v3/suit.h"
+#include "suit.h"
 
 extern int _common_sequence_handler(suit_v3_manifest_t *manifest, int key,
                                     nanocbor_value_t *it);

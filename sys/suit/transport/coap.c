@@ -40,8 +40,8 @@
 #include "riotboot/flashwrite.h"
 #endif
 
-#ifdef MODULE_SUIT_V3
-#include "suit/v3/suit.h"
+#ifdef MODULE_SUIT
+#include "suit.h"
 #endif
 
 #if defined(MODULE_PROGRESS_BAR)

@@ -27,7 +27,7 @@
 #include "suit/conditions.h"
 #include "suit/v3/handlers.h"
 #include "suit/v3/policy.h"
-#include "suit/v3/suit.h"
+#include "suit.h"
 #include "riotboot/hdr.h"
 #include "riotboot/slot.h"
 
@@ -256,14 +256,14 @@ static int _dtv_fetch(suit_v3_manifest_t *manifest, int key,
     int res = -1;
 
     if (0) {}
-#ifdef MODULE_SUIT_COAP
+#ifdef MODULE_SUIT_TRANSPORT_COAP
     else if (strncmp(manifest->urlbuf, "coap://", 7) == 0) {
         res = suit_coap_get_blockwise_url(manifest->urlbuf, COAP_BLOCKSIZE_64,
                                           suit_flashwrite_helper,
                                           manifest);
     }
 #endif
-#ifdef MODULE_SUIT_V3_TEST
+#ifdef MODULE_SUIT_TRANSPORT_MOCK
     else if (strncmp(manifest->urlbuf, "test://", 7) == 0) {
         res = SUIT_OK;
     }

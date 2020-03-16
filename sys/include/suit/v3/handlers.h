@@ -27,7 +27,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "suit/v3/suit.h"
+#include "suit.h"
 #include "uuid.h"
 #include "nanocbor/nanocbor.h"
 

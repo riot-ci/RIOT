@@ -28,7 +28,7 @@
 
 #include "kernel_defines.h"
 #include "suit/v3/handlers.h"
-#include "suit/v3/suit.h"
+#include "suit.h"
 
 #include "log.h"
 

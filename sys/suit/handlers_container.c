@@ -28,7 +28,7 @@
 #include "public_key.h"
 #include "suit/conditions.h"
 #include "suit/v3/handlers.h"
-#include "suit/v3/suit.h"
+#include "suit.h"
 
 static int _auth_handler(suit_v3_manifest_t *manifest, int key,
                          nanocbor_value_t *it)

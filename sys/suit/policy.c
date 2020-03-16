@@ -20,8 +20,8 @@
  */
 
 #include "log.h"
-#include "suit/v3/suit.h"
 #include "suit/v3/policy.h"
+#include "suit.h"
 
 int suit_v3_policy_check(suit_v3_manifest_t *manifest)
 {
