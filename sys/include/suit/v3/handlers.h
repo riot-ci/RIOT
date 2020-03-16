@@ -109,6 +109,7 @@ extern "C" {
  * @brief suit handler prototype
  *
  * @param manifest  SUIT manifest context
+ * @param key       SUIT map index of this content
  * @param it        nanocbor_value_t iterator to the content
  *
  * @return          SUIT_OK on success

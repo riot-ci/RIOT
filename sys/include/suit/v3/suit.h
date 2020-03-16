@@ -49,11 +49,6 @@ extern "C" {
 #define SUIT_V3_COMPONENT_MAX           (1U)
 
 /**
- * @brief Supported SUIT manifest version
- */
-#define SUIT_MANIFEST_VERSION           (4)
-
-/**
  * @brief Current SUIT serialization format version
  *
  * see https://tools.ietf.org/html/draft-ietf-suit-manifest-03#section-7 for
@@ -188,18 +183,6 @@ int suit_v3_parse(suit_v3_manifest_t *manifest, const uint8_t *buf, size_t len);
  * @return                  -1 on invalid manifest policy
  */
 int suit_v3_policy_check(suit_v3_manifest_t *manifest);
-
-/**
- * @brief Parse a cbor subsequence
- *
- * @param[in]   bseq        subsequence value
- * @param[out]  it          cbor iterator
- *
- * @return                  0 on success
- * @return                  -1 if bseq is not a cbor string
- * @return                  CborError code on other cbor parser errors
- */
-int suit_cbor_subparse(nanocbor_value_t *bseq, nanocbor_value_t *it);
 
 /**
  * @brief Helper function for writing bytes on flash a specified offset

@@ -34,19 +34,6 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-int suit_cbor_subparse(nanocbor_value_t *bseq, nanocbor_value_t *it)
-{
-    const uint8_t *bytes;
-    size_t bytes_len = 0;
-    int res = nanocbor_get_bstr(bseq, &bytes, &bytes_len);
-
-    if (res < 0) {
-        return SUIT_ERR_INVALID_MANIFEST;
-    }
-    nanocbor_decoder_init(it, bytes, bytes_len);
-    return SUIT_OK;
-}
-
 int suit_v3_parse(suit_v3_manifest_t *manifest, const uint8_t *buf,
                   size_t len)
 {
