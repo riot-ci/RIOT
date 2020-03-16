@@ -21,7 +21,7 @@
 #include "kernel_defines.h"
 #include "log.h"
 
-#include "suit/v3/suit.h"
+#include "suit.h"
 #include "embUnit.h"
 
 #include "blob/manifests/manifest0.bin.h"

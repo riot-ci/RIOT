@@ -1,6 +1,6 @@
 include ../Makefile.tests_common
 
-USEMODULE += suit_v3
+USEMODULE += suit
 USEMODULE += riotboot_hdr
 USEMODULE += embunit
 
@@ -10,8 +10,7 @@ CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(6*THREAD_STACKSIZE_DEFAULT\)
 BLOBS += $(wildcard manifests/manifest*.bin)
 CFLAGS += -g -DDEVELHELP -DLOG_LEVEL=LOG_DEBUG
 
-PSEUDOMODULES += suit_v3_test
-USEMODULE += suit_v3_test
+USEMODULE += suit_transport_mock
 
 ifeq (native, $(BOARD))
   # Fake some flash support
