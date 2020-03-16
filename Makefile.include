@@ -325,7 +325,7 @@ endif
 INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBASE)/sys/include
 
 # process provided features
-include $(RIOTBASE)/Makefile.features
+include $(RIOTBASE)/Makefile.features_provided
 
 # mandatory includes!
 include $(RIOTMAKE)/pseudomodules.inc.mk
