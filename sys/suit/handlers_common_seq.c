@@ -25,15 +25,15 @@
 #include "kernel_defines.h"
 #include "suit/coap.h"
 #include "suit/conditions.h"
-#include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
+#include "suit/handlers.h"
+#include "suit/policy.h"
 #include "suit.h"
 #include "riotboot/hdr.h"
 #include "riotboot/slot.h"
 
 #include "log.h"
 
-static int _validate_uuid(suit_v3_manifest_t *manifest,
+static int _validate_uuid(suit_manifest_t *manifest,
                           nanocbor_value_t *it,
                           uuid_t *uuid)
 {
@@ -54,7 +54,7 @@ static int _validate_uuid(suit_v3_manifest_t *manifest,
            : SUIT_ERR_COND;
 }
 
-static int _cond_vendor_handler(suit_v3_manifest_t *manifest,
+static int _cond_vendor_handler(suit_manifest_t *manifest,
                                 int key,
                                 nanocbor_value_t *it)
 {
@@ -68,7 +68,7 @@ static int _cond_vendor_handler(suit_v3_manifest_t *manifest,
     return rc;
 }
 
-static int _cond_class_handler(suit_v3_manifest_t *manifest,
+static int _cond_class_handler(suit_manifest_t *manifest,
                                int key,
                                nanocbor_value_t *it)
 {
@@ -82,7 +82,7 @@ static int _cond_class_handler(suit_v3_manifest_t *manifest,
     return rc;
 }
 
-static int _cond_comp_offset(suit_v3_manifest_t *manifest,
+static int _cond_comp_offset(suit_manifest_t *manifest,
                              int key,
                              nanocbor_value_t *it)
 {
@@ -104,7 +104,7 @@ static int _cond_comp_offset(suit_v3_manifest_t *manifest,
     return other_offset == offset ? SUIT_OK : SUIT_ERR_COND;
 }
 
-static int _dtv_set_comp_idx(suit_v3_manifest_t *manifest,
+static int _dtv_set_comp_idx(suit_manifest_t *manifest,
                              int key,
                              nanocbor_value_t *it)
 {
@@ -121,7 +121,7 @@ static int _dtv_set_comp_idx(suit_v3_manifest_t *manifest,
     return 0;
 }
 
-static int _dtv_run_seq_cond(suit_v3_manifest_t *manifest,
+static int _dtv_run_seq_cond(suit_manifest_t *manifest,
                              int key,
                              nanocbor_value_t *it)
 {
@@ -132,7 +132,7 @@ static int _dtv_run_seq_cond(suit_v3_manifest_t *manifest,
                                                suit_sequence_handlers_len);
 }
 
-static int _dtv_try_each(suit_v3_manifest_t *manifest,
+static int _dtv_try_each(suit_manifest_t *manifest,
                          int key, nanocbor_value_t *it)
 {
     (void)key;
@@ -163,21 +163,21 @@ static int _dtv_try_each(suit_v3_manifest_t *manifest,
     return res;
 }
 
-static int _param_get_uri_list(suit_v3_manifest_t *manifest,
+static int _param_get_uri_list(suit_manifest_t *manifest,
                                nanocbor_value_t *it)
 {
     LOG_DEBUG("got url list\n");
     manifest->components[manifest->component_current].url = *it;
     return 0;
 }
-static int _param_get_digest(suit_v3_manifest_t *manifest, nanocbor_value_t *it)
+static int _param_get_digest(suit_manifest_t *manifest, nanocbor_value_t *it)
 {
     LOG_DEBUG("got digest\n");
     manifest->components[manifest->component_current].digest = *it;
     return 0;
 }
 
-static int _param_get_img_size(suit_v3_manifest_t *manifest,
+static int _param_get_img_size(suit_manifest_t *manifest,
                                nanocbor_value_t *it)
 {
     int res = nanocbor_get_uint32(it, &manifest->components[0].size);
@@ -189,7 +189,7 @@ static int _param_get_img_size(suit_v3_manifest_t *manifest,
     return res;
 }
 
-static int _dtv_set_param(suit_v3_manifest_t *manifest, int key,
+static int _dtv_set_param(suit_manifest_t *manifest, int key,
                           nanocbor_value_t *it)
 {
     (void)key;
@@ -230,7 +230,7 @@ static int _dtv_set_param(suit_v3_manifest_t *manifest, int key,
     return SUIT_OK;
 }
 
-static int _dtv_fetch(suit_v3_manifest_t *manifest, int key,
+static int _dtv_fetch(suit_manifest_t *manifest, int key,
                       nanocbor_value_t *_it)
 {
     (void)key; (void)_it;
@@ -284,7 +284,7 @@ static int _dtv_fetch(suit_v3_manifest_t *manifest, int key,
     return SUIT_OK;
 }
 
-static int _dtv_verify_image_match(suit_v3_manifest_t *manifest, int key,
+static int _dtv_verify_image_match(suit_manifest_t *manifest, int key,
                                    nanocbor_value_t *_it)
 {
     (void)key; (void)_it;

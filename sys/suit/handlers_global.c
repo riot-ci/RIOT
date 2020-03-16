@@ -25,14 +25,14 @@
 #include "kernel_defines.h"
 #include "log.h"
 #include "suit/conditions.h"
-#include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
+#include "suit/handlers.h"
+#include "suit/policy.h"
 #include "suit.h"
 
-extern int _common_sequence_handler(suit_v3_manifest_t *manifest, int key,
+extern int _common_sequence_handler(suit_manifest_t *manifest, int key,
                                     nanocbor_value_t *it);
 
-static int _version_handler(suit_v3_manifest_t *manifest, int key,
+static int _version_handler(suit_manifest_t *manifest, int key,
                             nanocbor_value_t *it)
 {
     (void)manifest;
@@ -49,7 +49,7 @@ static int _version_handler(suit_v3_manifest_t *manifest, int key,
     return SUIT_ERR_SEQUENCE_NUMBER;
 }
 
-static int _seq_no_handler(suit_v3_manifest_t *manifest, int key,
+static int _seq_no_handler(suit_manifest_t *manifest, int key,
                            nanocbor_value_t *it)
 {
     (void)key;
@@ -81,7 +81,7 @@ static int _seq_no_handler(suit_v3_manifest_t *manifest, int key,
 
 }
 
-static int _common_handler(suit_v3_manifest_t *manifest, int key,
+static int _common_handler(suit_manifest_t *manifest, int key,
                            nanocbor_value_t *it)
 {
     (void)key;

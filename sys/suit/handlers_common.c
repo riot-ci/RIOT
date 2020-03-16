@@ -27,12 +27,12 @@
 #endif
 
 #include "kernel_defines.h"
-#include "suit/v3/handlers.h"
+#include "suit/handlers.h"
 #include "suit.h"
 
 #include "log.h"
 
-static int _component_handler(suit_v3_manifest_t *manifest, int key,
+static int _component_handler(suit_manifest_t *manifest, int key,
                               nanocbor_value_t *it)
 {
     (void)manifest;
@@ -81,7 +81,7 @@ static int _component_handler(suit_v3_manifest_t *manifest, int key,
     return 0;
 }
 
-static int _dependencies_handler(suit_v3_manifest_t *manifest, int key,
+static int _dependencies_handler(suit_manifest_t *manifest, int key,
                                  nanocbor_value_t *it)
 {
     (void)manifest;
@@ -91,7 +91,7 @@ static int _dependencies_handler(suit_v3_manifest_t *manifest, int key,
     return SUIT_ERR_UNSUPPORTED;
 }
 
-int _common_sequence_handler(suit_v3_manifest_t *manifest, int key,
+int _common_sequence_handler(suit_manifest_t *manifest, int key,
                              nanocbor_value_t *it)
 {
     (void)key;

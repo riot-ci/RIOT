@@ -20,10 +20,10 @@
  */
 
 #include "log.h"
-#include "suit/v3/policy.h"
+#include "suit/policy.h"
 #include "suit.h"
 
-int suit_v3_policy_check(suit_v3_manifest_t *manifest)
+int suit_policy_check(suit_manifest_t *manifest)
 {
     if (SUIT_DEFAULT_POLICY & ~(manifest->validated)) {
         LOG_INFO("SUIT policy check failed!\n");

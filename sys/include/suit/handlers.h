@@ -115,7 +115,7 @@ extern "C" {
  * @return          SUIT_OK on success
  * @return          negative on error
  */
-typedef int (*suit_manifest_handler_t)(suit_v3_manifest_t *manifest, int key,
+typedef int (*suit_manifest_handler_t)(suit_manifest_t *manifest, int key,
                                        nanocbor_value_t *it);
 
 /**
@@ -168,7 +168,7 @@ extern const size_t suit_common_handlers_len;
  * @returns     SUIT_OK if all handlers executed succesfully
  * @returns     negative on error, see @ref suit_v3_error_t
  */
-int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
+int suit_handle_manifest_structure(suit_manifest_t *manifest,
                                    nanocbor_value_t *it,
                                    const suit_manifest_handler_t *handlers,
                                    size_t handlers_len);
@@ -188,7 +188,7 @@ int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
  * @returns     SUIT_OK if all handlers executed succesfully
  * @returns     negative on error, see @ref suit_v3_error_t
  */
-int suit_handle_manifest_structure_bstr(suit_v3_manifest_t *manifest,
+int suit_handle_manifest_structure_bstr(suit_manifest_t *manifest,
                                         nanocbor_value_t *bseq,
                                         const suit_manifest_handler_t *handlers,
                                         size_t handlers_len);

@@ -27,10 +27,10 @@
 #include "log.h"
 #include "public_key.h"
 #include "suit/conditions.h"
-#include "suit/v3/handlers.h"
+#include "suit/handlers.h"
 #include "suit.h"
 
-static int _auth_handler(suit_v3_manifest_t *manifest, int key,
+static int _auth_handler(suit_manifest_t *manifest, int key,
                          nanocbor_value_t *it)
 {
     (void)key;
@@ -100,7 +100,7 @@ static int _auth_handler(suit_v3_manifest_t *manifest, int key,
     return 0;
 }
 
-static int _manifest_handler(suit_v3_manifest_t *manifest, int key,
+static int _manifest_handler(suit_manifest_t *manifest, int key,
                              nanocbor_value_t *it)
 {
     (void)key;

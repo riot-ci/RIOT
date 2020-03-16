@@ -27,14 +27,14 @@
 #include <stdbool.h>
 
 #include "log.h"
-#include "suit/v3/handlers.h"
-#include "suit/v3/policy.h"
+#include "suit/handlers.h"
+#include "suit/policy.h"
 #include "suit.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-int suit_v3_parse(suit_v3_manifest_t *manifest, const uint8_t *buf,
+int suit_parse(suit_manifest_t *manifest, const uint8_t *buf,
                   size_t len)
 {
     nanocbor_value_t it;

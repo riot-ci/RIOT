@@ -374,7 +374,7 @@ static void _suit_handle_url(const char *url)
 
         riotboot_flashwrite_t writer;
 #ifdef MODULE_SUIT_V3
-        suit_v3_manifest_t manifest;
+        suit_manifest_t manifest;
         memset(&manifest, 0, sizeof(manifest));
 
         manifest.writer = &writer;
@@ -425,7 +425,7 @@ static void _suit_handle_url(const char *url)
 int suit_flashwrite_helper(void *arg, size_t offset, uint8_t *buf, size_t len,
                            int more)
 {
-    suit_v3_manifest_t *manifest = (suit_v3_manifest_t *)arg;
+    suit_manifest_t *manifest = (suit_manifest_t *)arg;
     riotboot_flashwrite_t *writer = manifest->writer;
 
     if (offset == 0) {

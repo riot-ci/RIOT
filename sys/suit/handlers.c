@@ -21,7 +21,7 @@
 #include <inttypes.h>
 #include <nanocbor/nanocbor.h>
 
-#include "suit/v3/handlers.h"
+#include "suit/handlers.h"
 #include "suit.h"
 
 #include "log.h"
@@ -36,7 +36,7 @@ static suit_manifest_handler_t _get_handler(int key,
     return map[key];
 }
 
-int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
+int suit_handle_manifest_structure(suit_manifest_t *manifest,
                                    nanocbor_value_t *it,
                                    const suit_manifest_handler_t *handlers,
                                    size_t handlers_len)
@@ -76,7 +76,7 @@ int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
     return 0;
 }
 
-int suit_handle_manifest_structure_bstr(suit_v3_manifest_t *manifest,
+int suit_handle_manifest_structure_bstr(suit_manifest_t *manifest,
                                         nanocbor_value_t *bseq,
                                         const suit_manifest_handler_t *handlers,
                                         size_t handlers_len)
