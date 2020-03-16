@@ -99,7 +99,7 @@ def sync_child(child, env):
     # Do a child synchronization if used by a module
     modules = modules_list()
     if 'test_utils_interactive_sync' in modules:
-        if 'shell' in modules:
+        if 'test_utils_interactive_sync_shell' in modules:
             utils.test_utils_interactive_sync_shell(child,
                                                     TEST_INTERACTIVE_RETRIES,
                                                     TEST_INTERACTIVE_DELAY)
