@@ -27,6 +27,17 @@ define board_unsatisfied_features
 
   # Remove board specific variables set by Makefile.features/Makefile.dep
   FEATURES_PROVIDED :=
+  FEATURES_REQUIRED :=
+  FEATURES_OPTIONAL_ONLY :=
+  FEATURES_OPTIONAL_USED :=
+  FEATURES_OPTIONAL_MISSING :=
+  FEATURES_USED_SO_FAR :=
+  FEATURES_USABLE :=
+  FEATURES_REQUIRED_ONE_OUT_OF :=
+  FEATURES_MISSING :=
+  FEATURES_USED :=
+  FEATURES_CONFLICTING :=
+  FEATURES_USED_BLACKLISTED :=
 
   # Undefine variables that must not be defined when starting.
   # Some are sometime set as `?=`
@@ -39,7 +50,7 @@ define board_unsatisfied_features
     BOARDSDIR = $(RIOTBOARD)
   endif
 
-  include $(RIOTBASE)/Makefile.features
+  include $(RIOTBASE)/Makefile.features_provided
 
   include $(RIOTMAKE)/defaultmodules.inc.mk
   USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
