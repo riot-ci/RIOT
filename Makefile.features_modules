@@ -11,7 +11,7 @@ USEMODULE += $(PERIPH_FEATURES)
 
 # Add all USED periph_% init modules unless they are blacklisted
 ifneq (,$(filter periph_init, $(USEMODULE)))
-  PERIPH_MODULES := $(filter-out periph_init,$(filter periph_%,$(USEMODULE)))
+  PERIPH_MODULES := $(filter-out periph_init% periph_common,$(filter periph_%,$(USEMODULE)))
   PERIPH_INIT_MODULES := $(subst periph_,periph_init_,$(PERIPH_MODULES))
   USEMODULE += $(filter-out $(DISABLE_MODULE),$(PERIPH_INIT_MODULES))
 endif
@@ -23,5 +23,3 @@ USEMODULE += $(filter cpu_check_address, $(FEATURES_USED))
 ifneq (,$(filter periph_%, $(USEMODULE)))
   USEMODULE += periph_common
 endif
-
-USEMODULE := $(sort $(USEMODULE))

@@ -366,9 +366,6 @@ USEMODULE += $(filter-out $(DISABLE_MODULE), $(DEFAULT_MODULE))
 # process dependencies
 include $(RIOTBASE)/Makefile.dep
 
-# translate used features into used module, where needed
-include $(RIOTBASE)/Makefile.features_modules
-
 ifeq ($(strip $(MCU)),)
 	MCU = $(CPU)
 endif

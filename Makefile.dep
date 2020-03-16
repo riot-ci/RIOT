@@ -1070,6 +1070,9 @@ endif
 # check if required features are provided
 include $(RIOTBASE)/Makefile.features_check
 
+# translate used features into used module, where needed
+include $(RIOTBASE)/Makefile.features_modules
+
 # recursively catch transitive dependencies
 USEMODULE := $(sort $(USEMODULE))
 USEPKG := $(sort $(USEPKG))
