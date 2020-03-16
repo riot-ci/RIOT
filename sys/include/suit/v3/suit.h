@@ -125,7 +125,7 @@ enum {
 };
 
 /**
- * @brief SUIT v3 component struct
+ * @brief SUIT component struct
  */
 typedef struct {
     uint32_t size;                      /**< Size */
@@ -190,7 +190,7 @@ int suit_v3_parse(suit_v3_manifest_t *manifest, const uint8_t *buf, size_t len);
 int suit_v3_policy_check(suit_v3_manifest_t *manifest);
 
 /**
- * @brief Parser a cbor subsequence
+ * @brief Parse a cbor subsequence
  *
  * @param[in]   bseq        subsequence value
  * @param[out]  it          cbor iterator

@@ -180,7 +180,7 @@ int suit_handle_manifest_structure(suit_v3_manifest_t *manifest,
  * every key.
  *
  * @param   manifest        SUIT manifest context
- * @param   it              Nanocbor byte string
+ * @param   bseq            Nanocbor byte string
  * @param   handlers        Array of SUIT manifest handlers to use
  * @param   handlers_len    Length of the SUIT manifest handlers
  *

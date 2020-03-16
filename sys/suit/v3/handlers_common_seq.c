@@ -94,10 +94,6 @@ static int _cond_comp_offset(suit_v3_manifest_t *manifest,
     if (rc < 0) {
         LOG_WARNING("_cond_comp_offset(): expected int, got rc=%i type=%i\n",
                     rc, nanocbor_get_type(it));
-        const uint8_t *tmp;
-        size_t size;
-        nanocbor_get_tstr(it, &tmp, &size);
-        printf("\"%.*s\"\n", size, tmp);
         return SUIT_ERR_INVALID_MANIFEST;
     }
     uint32_t other_offset = (uint32_t)riotboot_slot_offset(
@@ -151,7 +147,8 @@ static int _dtv_try_each(suit_v3_manifest_t *manifest,
     int res = SUIT_ERR_COND;
     while (!nanocbor_at_end(&container)) {
         nanocbor_value_t _container = container;
-        /* should be _bstr */
+        /* `_container` should be CBOR _bstr wrapped according to the spec, but
+         * it is not */
         res = suit_handle_manifest_structure(manifest, &_container,
                                              suit_sequence_handlers,
                                              suit_sequence_handlers_len);
@@ -270,7 +267,6 @@ static int _dtv_fetch(suit_v3_manifest_t *manifest, int key,
     else if (strncmp(manifest->urlbuf, "test://", 7) == 0) {
         res = SUIT_OK;
     }
-
 #endif
     else {
         LOG_WARNING("suit: unsupported URL scheme!\n)");
@@ -279,11 +275,6 @@ static int _dtv_fetch(suit_v3_manifest_t *manifest, int key,
 
     if (res) {
         LOG_INFO("image download failed\n)");
-        return res;
-    }
-
-    if (res) {
-        LOG_INFO("image verification failed\n");
         return res;
     }
 
