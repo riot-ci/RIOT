@@ -73,6 +73,13 @@ extern "C" {
  */
 #define PUF_SRAM_ATTRIBUTES __attribute__((used, section(".puf")))
 
+/**
+ * @brief   Memory marked with this attribute is retained during deep sleep
+ */
+#if CPU_HAS_BACKUP_RAM || DOXYGEN
+#define BACKUP_RAM __attribute__((section(".backup.bss")))
+#endif
+
 #ifdef __cplusplus
 }
 #endif
