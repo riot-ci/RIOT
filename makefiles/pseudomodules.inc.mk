@@ -103,8 +103,8 @@ PSEUDOMODULES += ztimer%
 # ztimer's main module is called "ztimer_core"
 NO_PSEUDOMODULES += ztimer_core
 
-# handle suit_v4 being a distinct module
-NO_PSEUDOMODULES += suit_v4
+# handle suit_v3 being a distinct module
+NO_PSEUDOMODULES += suit_v3
 
 # print ascii representation in function od_hex_dump()
 PSEUDOMODULES += od_string
