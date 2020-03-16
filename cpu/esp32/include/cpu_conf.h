@@ -51,6 +51,11 @@ extern "C" {
  */
 #define PRINTF_BUFSIZ 256
 
+/**
+ * @brief   Memory marked with this attribute is retained during deep sleep
+ */
+#define BACKUP_RAM __attribute__((section(".rtc.bss")))
+
 #ifdef __cplusplus
 }
 #endif /* CPU_CONF_H */
