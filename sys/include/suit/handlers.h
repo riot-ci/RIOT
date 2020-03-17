@@ -165,7 +165,7 @@ extern const size_t suit_common_handlers_len;
  * @param   handlers        Array of SUIT manifest handlers to use
  * @param   handlers_len    Length of the SUIT manifest handlers
  *
- * @returns     SUIT_OK if all handlers executed succesfully
+ * @returns     SUIT_OK if all handlers executed successfully
  * @returns     negative on error, see @ref suit_error_t
  */
 int suit_handle_manifest_structure(suit_manifest_t *manifest,
