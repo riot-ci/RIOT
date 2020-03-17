@@ -50,7 +50,7 @@ static int _rtt_get_alarm(void)
 
 static int _rtt_set_alarm(char **argv)
 {
-    uint32_t alarm = strtol(argv[0], NULL, 10);
+    uint32_t alarm = strtoul(argv[0], NULL, 10);
     rtt_set_alarm(alarm, _alarm_handler, NULL);
     return 0;
 }
@@ -63,7 +63,7 @@ static int _rtt_get_counter(void)
 
 static int _rtt_set_counter(char **argv)
 {
-    uint32_t counter = strtol(argv[0], NULL, 10);
+    uint32_t counter = strtoul(argv[0], NULL, 10);
     rtt_set_counter(counter);
     return 0;
 }
