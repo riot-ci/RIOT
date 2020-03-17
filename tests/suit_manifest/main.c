@@ -23,6 +23,7 @@
 
 #include "suit.h"
 #include "embUnit.h"
+#include "ps.h"
 
 #include "blob/manifests/manifest0.bin.h"
 #include "blob/manifests/manifest1.bin.h"
@@ -54,7 +55,8 @@ static int test_suit_manifest(const unsigned char *manifest_bin,
     suit_manifest_t manifest;
     riotboot_flashwrite_t writer;
 
-    memset(&writer, 0, sizeof(manifest));
+    memset(&manifest, 0, sizeof(manifest));
+    memset(&writer, 0, sizeof(writer));
 
     manifest.writer = &writer;
     manifest.urlbuf = _url;
@@ -79,6 +81,7 @@ static void test_suit_manifest_01_manifests(void)
         printf("---- res=%i (expected=%i)\n", res, manifest_blobs[i].expected);
         TEST_ASSERT_EQUAL_INT(manifest_blobs[i].expected, res);
     }
+    ps();
 }
 
 Test *tests_suit_manifest(void)
