@@ -8,9 +8,8 @@ USEMODULE += embunit
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(8*THREAD_STACKSIZE_DEFAULT\)
 
 # BINDIR is not included until Makefile.include is parsed
-BIN_DIR ?= $(CURDIR)/bin/$(BOARD)
-BLOBS += $(wildcard $(BIN_DIR)/manifests/manifest*.bin)
-CFLAGS += -g -DDEVELHELP -DLOG_LEVEL=LOG_DEBUG
+MANIFEST_DIR ?= bin/$(BOARD)/manifests
+BLOBS += $(wildcard $(MANIFEST_DIR)/*.bin)
 
 USEMODULE += suit_transport_mock
 
@@ -22,15 +21,20 @@ endif
 
 FEATURES_REQUIRED += periph_flashpage
 
-TEST_DATA = $(BIN_DIR)/created
+TEST_DATA = $(MANIFEST_DIR)/created
 BUILDDEPS += $(TEST_DATA)
 
 include $(RIOTBASE)/Makefile.include
 
+CFLAGS += -DBOARD_NAME_UNQ=$(BOARD)
+
 $(call target-export-variables,all,SUIT_TOOL)
 $(call target-export-variables,all,SUIT_SEC)
+$(call target-export-variables,all,MANIFEST_DIR)
+
+.PHONY: $(TEST_DATA)
 
 $(TEST_DATA): $(SUIT_SEC)
-	@mkdir -p $(BIN_DIR)/manifests
+	@mkdir -p $(MANIFEST_DIR)
 	sh create_test_data.sh
 	@touch $@

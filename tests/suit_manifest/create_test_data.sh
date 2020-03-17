@@ -30,18 +30,18 @@ sign_manifest() {
 }
 
 # random invalid data files
-echo foo > ${BIN_DIR}/manifests/file1.bin
-echo bar > ${BIN_DIR}/manifests/file2.bin
+echo foo > "${MANIFEST_DIR}/file1.bin"
+echo bar > "${MANIFEST_DIR}/file2.bin"
 
 # random valid cbor (manifest but not signed, missing cose auth)
-gen_manifest ${BIN_DIR}/manifests/manifest0.bin 1 ${BIN_DIR}/manifests/file1.bin ${BIN_DIR}/manifests/file2.bin
+gen_manifest "${MANIFEST_DIR}/manifest0.bin" 1 "${MANIFEST_DIR}/file1.bin" "${MANIFEST_DIR}/file2.bin"
 
 # manifest with invalid seqnr
-sign_manifest ${BIN_DIR}/manifests/manifest0.bin ${BIN_DIR}/manifests/manifest1.bin
+sign_manifest "${MANIFEST_DIR}/manifest0.bin" "${MANIFEST_DIR}/manifest1.bin"
 
-(BOARD=invalid gen_manifest ${BIN_DIR}/manifests/manifest2.bin.unsigned 2 ${BIN_DIR}/manifests/file1.bin ${BIN_DIR}/manifests/file2.bin)
-sign_manifest ${BIN_DIR}/manifests/manifest2.bin.unsigned ${BIN_DIR}/manifests/manifest2.bin
+(BOARD=invalid gen_manifest "${MANIFEST_DIR}/manifest2.bin".unsigned 2 "${MANIFEST_DIR}/file1.bin" "${MANIFEST_DIR}/file2.bin")
+sign_manifest "${MANIFEST_DIR}/manifest2.bin".unsigned "${MANIFEST_DIR}/manifest2.bin"
 
 # valid manifest, valid seqnr, signed
-gen_manifest ${BIN_DIR}/manifests/manifest3.bin.unsigned 2 ${BIN_DIR}/manifests/file1.bin ${BIN_DIR}/manifests/file2.bin
-sign_manifest ${BIN_DIR}/manifests/manifest3.bin.unsigned ${BIN_DIR}/manifests/manifest3.bin
+gen_manifest "${MANIFEST_DIR}/manifest3.bin".unsigned 2 "${MANIFEST_DIR}/file1.bin" "${MANIFEST_DIR}/file2.bin"
+sign_manifest "${MANIFEST_DIR}/manifest3.bin".unsigned "${MANIFEST_DIR}/manifest3.bin"

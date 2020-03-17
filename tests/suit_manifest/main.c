@@ -24,10 +24,12 @@
 #include "suit.h"
 #include "embUnit.h"
 
-#include "blob/manifests/manifest0.bin.h"
-#include "blob/manifests/manifest1.bin.h"
-#include "blob/manifests/manifest2.bin.h"
-#include "blob/manifests/manifest3.bin.h"
+#define TEST_MANIFEST_INCLUDE(file) <blob/bin/BOARD_NAME_UNQ/manifests/file>
+
+#include TEST_MANIFEST_INCLUDE(manifest0.bin.h)
+#include TEST_MANIFEST_INCLUDE(manifest1.bin.h)
+#include TEST_MANIFEST_INCLUDE(manifest2.bin.h)
+#include TEST_MANIFEST_INCLUDE(manifest3.bin.h)
 
 #define SUIT_URL_MAX            128
 
