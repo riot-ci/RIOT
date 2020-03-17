@@ -25,8 +25,8 @@ BUILDDEPS += create_test_data
 
 include $(RIOTBASE)/Makefile.include
 
-export SUIT_TOOL
-export SUIT_SEC
+$(call target-export-variables,all,SUIT_TOOL)
+$(call target-export-variables,all,SUIT_SEC)
 
 create_test_data: $(SUIT_SEC)
 	@mkdir -p manifests
