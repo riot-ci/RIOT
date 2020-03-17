@@ -23,7 +23,8 @@ endif
 
 FEATURES_REQUIRED += periph_flashpage
 
-BUILDDEPS += create_test_data
+TEST_DATA = $(BIN_DIR)/created
+BUILDDEPS += $(TEST_DATA)
 
 include $(RIOTBASE)/Makefile.include
 
