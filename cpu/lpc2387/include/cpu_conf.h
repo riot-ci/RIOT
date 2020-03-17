@@ -127,6 +127,12 @@ extern "C" {
  */
 #define NUM_HEAPS (4)
 
+/**
+ * @brief   Memory marked with this attribute is retained during deep sleep
+ */
+#define BACKUP_RAM      __attribute__((section(".backup.bss")))
+#define BACKUP_RAM_DATA __attribute__((section(".backup.data")))
+
 #ifdef __cplusplus
 }
 #endif
