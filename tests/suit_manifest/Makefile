@@ -8,7 +8,9 @@ USEMODULE += ps
 # Lots of structs on the stack and crypto verification
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(8*THREAD_STACKSIZE_DEFAULT\)
 
-BLOBS += $(wildcard manifests/manifest*.bin)
+# BINDIR is not included until Makefile.include is parsed
+BIN_DIR ?= $(CURDIR)/bin/$(BOARD)
+BLOBS += $(wildcard $(BIN_DIR)/manifests/manifest*.bin)
 CFLAGS += -g -DDEVELHELP -DLOG_LEVEL=LOG_DEBUG
 
 USEMODULE += suit_transport_mock
