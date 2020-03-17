@@ -2,7 +2,7 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul_gpio
 endif
 
-FEATURES_REQUIRED += bootloader_arduino
-
-# setup the samd21 arduino bootloader related dependencies
-include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+ifeq (1,$(ENABLE_BOOTLOADER_ARDUINO))
+  # setup the samd21 arduino bootloader related dependencies
+  include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+endif
