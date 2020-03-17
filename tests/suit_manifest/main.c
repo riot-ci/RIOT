@@ -23,7 +23,6 @@
 
 #include "suit.h"
 #include "embUnit.h"
-#include "ps.h"
 
 #include "blob/manifests/manifest0.bin.h"
 #include "blob/manifests/manifest1.bin.h"
@@ -81,7 +80,6 @@ static void test_suit_manifest_01_manifests(void)
         printf("---- res=%i (expected=%i)\n", res, manifest_blobs[i].expected);
         TEST_ASSERT_EQUAL_INT(manifest_blobs[i].expected, res);
     }
-    ps();
 }
 
 Test *tests_suit_manifest(void)

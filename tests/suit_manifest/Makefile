@@ -3,7 +3,6 @@ include ../Makefile.tests_common
 USEMODULE += suit
 USEMODULE += riotboot_hdr
 USEMODULE += embunit
-USEMODULE += ps
 
 # Lots of structs on the stack and crypto verification
 CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(8*THREAD_STACKSIZE_DEFAULT\)
