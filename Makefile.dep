@@ -1073,14 +1073,6 @@ FEATURES_OPTIONAL += periph_pm
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 
-ifneq (,$(filter auto_init auto_init_usbus,$(DISABLE_MODULE)))
-  # boards using arduino bootloader require auto_init or auto_init_usbus to
-  # automatically initialize stdio over USB. Without this, the bootloader
-  # management feature cannot be used (auto reset and auto reboot in bootloader
-  # mode)
-  FEATURES_BLACKLIST += bootloader_arduino
-endif
-
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
 USEMODULE += $(filter periph_%,$(FEATURES_USED))
