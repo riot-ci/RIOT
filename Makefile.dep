@@ -492,6 +492,12 @@ ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart slipdev_stdio,$(USEMODULE))
   DISABLE_MODULE += stdio_rtt
 endif
 
+ifeq (,$(filter stdio_cdc_acm,$(USEMODULE)))
+  # The arduino bootloader feature cannot be used if the stdio_cdc_acm module
+  # is not used
+  FEATURES_BLACKLIST += bootloader_arduino
+endif
+
 ifneq (,$(filter isrpipe,$(USEMODULE)))
   USEMODULE += tsrb
 endif
@@ -1061,6 +1067,11 @@ FEATURES_OPTIONAL += periph_pm
 
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
+
+ifneq (,$(filter auto_init auto_init_usbus,$(DISABLE_MODULE)))
+  # boards using arduino bootloader require auto_init or auto_init_usbus
+  FEATURES_BLACKLIST += bootloader_arduino
+endif
 
 # all periph features correspond to a periph submodule
 # FEATURES_USED is defined in Makefile.features
