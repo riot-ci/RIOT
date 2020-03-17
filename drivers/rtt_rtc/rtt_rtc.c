@@ -41,15 +41,19 @@
 #define TICKS(x)        (    (x) * RTT_SECOND)
 #define SECONDS(x)      (_RTT(x) / RTT_SECOND)
 
-#define _NOINIT         __attribute__((section(".noinit")))
+/* Place counter in .noinit section if no backup RAM is available.
+   This means the date is undefined at cold boot, but will likely still
+   survive a reboot. */
+#ifndef BACKUP_RAM
+#define BACKUP_RAM      __attribute__((section(".noinit")))
+#endif
 
-static uint32_t alarm_time;     /*< The RTC timestamp of the (user) RTC alarm */
-static uint32_t rtc_now _NOINIT;/*< The RTC timestamp when the last RTT alarm triggered */
+static uint32_t rtc_now BACKUP_RAM;         /**< The RTC timestamp when the last RTT alarm triggered */
+static uint32_t last_alarm BACKUP_RAM;      /**< The RTT timestamp of the last alarm */
 
-static uint32_t last_alarm;     /*< The RTT timestamp of the last alarm */
-
-static rtc_alarm_cb_t alarm_cb; /*< RTC alarm callback */
-static void *alarm_cb_arg;      /*< RTC alarm callback argument */
+static uint32_t alarm_time;                 /**< The RTC timestamp of the (user) RTC alarm */
+static rtc_alarm_cb_t alarm_cb;             /**< RTC alarm callback */
+static void *alarm_cb_arg;                  /**< RTC alarm callback argument */
 
 static void _rtt_alarm(void *arg);
 
@@ -105,7 +109,11 @@ static void _rtt_alarm(void *arg)
 
 void rtc_init(void)
 {
-    last_alarm = rtt_get_counter();
+    /* only update last_alarm on cold boot */
+    if (last_alarm == 0) {
+        last_alarm = rtt_get_counter();
+    }
+
     _set_alarm(last_alarm, TICKS(RTT_SECOND_MAX));
 }
 
