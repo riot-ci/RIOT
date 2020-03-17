@@ -166,7 +166,7 @@ extern const size_t suit_common_handlers_len;
  * @param   handlers_len    Length of the SUIT manifest handlers
  *
  * @returns     SUIT_OK if all handlers executed succesfully
- * @returns     negative on error, see @ref suit_v3_error_t
+ * @returns     negative on error, see @ref suit_error_t
  */
 int suit_handle_manifest_structure(suit_manifest_t *manifest,
                                    nanocbor_value_t *it,
