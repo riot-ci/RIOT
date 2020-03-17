@@ -7,12 +7,12 @@
  * directory for more details.
  */
 /**
- * @ingroup     sys_suit_v3
+ * @ingroup     sys_suit
  * @{
  *
  * @file
- * @brief       SUIT draft-ietf-suit-manifest-03 Handlers for the command
- *              sequences in the common section
+ * @brief       SUIT Handlers for the command sequences in the common section of
+ *              a SUIT manifest
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -23,13 +23,16 @@
 #include <nanocbor/nanocbor.h>
 
 #include "kernel_defines.h"
-#include "suit/coap.h"
 #include "suit/conditions.h"
 #include "suit/handlers.h"
 #include "suit/policy.h"
 #include "suit.h"
 #include "riotboot/hdr.h"
 #include "riotboot/slot.h"
+
+#ifdef MODULE_SUIT_TRANSPORT_COAP
+#include "suit/transport/coap.h"
+#endif
 
 #include "log.h"
 

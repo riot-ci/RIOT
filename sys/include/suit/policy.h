@@ -9,7 +9,7 @@
  * directory for more details.
  */
 /**
- * @ingroup     sys_suit_v3
+ * @ingroup     sys_suit
  * @brief       SUIT policy definitions
  *
  * @{

@@ -9,7 +9,7 @@
  * directory for more details.
  */
 /**
- * @ingroup     sys_suit_v3
+ * @ingroup     sys_suit
  * @brief       SUIT draft-ietf-suit-manifest-03 manifest handlers
  *
  * @experimental
@@ -21,8 +21,8 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifndef SUIT_V3_HANDLERS_H
-#define SUIT_V3_HANDLERS_H
+#ifndef SUIT_HANDLERS_H
+#define SUIT_HANDLERS_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -197,5 +197,5 @@ int suit_handle_manifest_structure_bstr(suit_manifest_t *manifest,
 }
 #endif
 
-#endif /* SUIT_V3_HANDLERS_H */
+#endif /* SUIT_HANDLERS_H */
 /** @} */

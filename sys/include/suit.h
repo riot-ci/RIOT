@@ -7,9 +7,15 @@
  * directory for more details.
  */
 /**
- * @defgroup    sys_suit_v3 SUIT IETF draft v3
- * @ingroup     sys_suit
+ * @defgroup    sys_suit SUIT secure firmware OTA upgrade infrastructure
+ * @ingroup     sys
  * @brief       SUIT manifest handling
+ *
+ * @experimental
+ *
+ * @note The current implementation of this specification is based on the
+ *       IETF-SUIT-v3 draft. The module is still experimental and will change to
+ *       match future draft specifications
  *
  * @see https://tools.ietf.org/html/draft-ietf-suit-manifest-03
  *
@@ -21,8 +27,8 @@
  *
  */
 
-#ifndef SUIT_V3_SUIT_H
-#define SUIT_V3_SUIT_H
+#ifndef SUIT_H
+#define SUIT_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -203,5 +209,5 @@ int suit_flashwrite_helper(void *arg, size_t offset, uint8_t *buf, size_t len,
 }
 #endif
 
-#endif /* SUIT_V3_SUIT_H */
+#endif /* SUIT_H */
 /** @} */
