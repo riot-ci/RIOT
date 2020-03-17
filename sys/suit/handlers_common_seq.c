@@ -119,6 +119,9 @@ static int _dtv_set_comp_idx(suit_manifest_t *manifest,
     else if (nanocbor_get_uint32(it, &manifest->component_current) < 0) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
+    if (manifest->component_current >= SUIT_COMPONENT_MAX) {
+        return SUIT_ERR_INVALID_MANIFEST;
+    }
     LOG_DEBUG("Setting component index to %d\n",
               (int)manifest->component_current);
     return 0;
@@ -205,7 +208,7 @@ static int _dtv_set_param(suit_manifest_t *manifest, int key,
         /* map points to the key of the param */
         int32_t param_key;
         nanocbor_get_int32(&map, &param_key);
-        LOG_DEBUG("Setting component index to %" PRIi32 "\n",
+        LOG_DEBUG("Current component index: %" PRIi32 "\n",
                   manifest->component_current);
         LOG_DEBUG("param_key=%" PRIi32 "\n", param_key);
         int res;
