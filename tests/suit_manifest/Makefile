@@ -28,9 +28,7 @@ include $(RIOTBASE)/Makefile.include
 
 CFLAGS += -DBOARD_NAME_UNQ=$(BOARD)
 
-$(call target-export-variables,all,SUIT_TOOL)
-$(call target-export-variables,all,SUIT_SEC)
-$(call target-export-variables,all,MANIFEST_DIR)
+$(call target-export-variables,all,SUIT_TOOL SUIT_SEC MANIFEST_DIR)
 
 .PHONY: $(TEST_DATA)
 
