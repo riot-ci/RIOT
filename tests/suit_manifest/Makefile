@@ -31,6 +31,7 @@ include $(RIOTBASE)/Makefile.include
 $(call target-export-variables,all,SUIT_TOOL)
 $(call target-export-variables,all,SUIT_SEC)
 
-create_test_data: $(SUIT_SEC)
-	@mkdir -p manifests
+$(TEST_DATA): $(SUIT_SEC)
+	@mkdir -p $(BIN_DIR)/manifests
 	sh create_test_data.sh
+	@touch $@
