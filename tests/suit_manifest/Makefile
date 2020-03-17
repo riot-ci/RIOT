@@ -1,0 +1,37 @@
+include ../Makefile.tests_common
+
+USEMODULE += suit
+USEMODULE += riotboot_hdr
+USEMODULE += embunit
+USEMODULE += ps
+
+# Lots of structs on the stack and crypto verification
+CFLAGS += -DTHREAD_STACKSIZE_MAIN=\(8*THREAD_STACKSIZE_DEFAULT\)
+
+# BINDIR is not included until Makefile.include is parsed
+BIN_DIR ?= $(CURDIR)/bin/$(BOARD)
+BLOBS += $(wildcard $(BIN_DIR)/manifests/manifest*.bin)
+CFLAGS += -g -DDEVELHELP -DLOG_LEVEL=LOG_DEBUG
+
+USEMODULE += suit_transport_mock
+
+ifeq (native, $(BOARD))
+  # Fake some flash support
+  CFLAGS += -DFLASHPAGE_SIZE=256 -DFLASHPAGE_NUMOF=16
+  FEATURES_PROVIDED += periph_flashpage
+endif
+
+FEATURES_REQUIRED += periph_flashpage
+
+TEST_DATA = $(BIN_DIR)/created
+BUILDDEPS += $(TEST_DATA)
+
+include $(RIOTBASE)/Makefile.include
+
+$(call target-export-variables,all,SUIT_TOOL)
+$(call target-export-variables,all,SUIT_SEC)
+
+$(TEST_DATA): $(SUIT_SEC)
+	@mkdir -p $(BIN_DIR)/manifests
+	sh create_test_data.sh
+	@touch $@
