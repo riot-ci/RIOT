@@ -2,7 +2,11 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul_gpio
 endif
 
-FEATURES_REQUIRED += bootloader_arduino
+# By default, enable the Arduino bootloader. Set ENABLE_ARDUINO_BOOTLOADER=0
+# from the command line to disable it.
+ENABLE_ARDUINO_BOOTLOADER ?= 1
 
-# setup the samd21 arduino bootloader related dependencies
-include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+ifeq (1,$(ENABLE_ARDUINO_BOOTLOADER))
+  # setup the samd21 arduino bootloader related dependencies
+  include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+endif
