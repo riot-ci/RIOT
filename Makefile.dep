@@ -492,9 +492,10 @@ ifneq (,$(filter stdio_cdc_acm stdio_null stdio_uart slipdev_stdio,$(USEMODULE))
   DISABLE_MODULE += stdio_rtt
 endif
 
-ifneq (,$(filter stdio_rtt stdio_null stdio_uart slipdev_stdio,$(USEMODULE)))
-  # stdio_cdc_acm cannot be used when another STDIO is loaded
-  DISABLE_MODULE += stdio_cdc_acm
+ifeq (,$(filter stdio_cdc_acm,$(USEMODULE)))
+  # The arduino bootloader feature cannot be used if the stdio_cdc_acm module
+  # is not used
+  FEATURES_BLACKLIST += bootloader_arduino
 endif
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
@@ -1067,8 +1068,8 @@ FEATURES_OPTIONAL += periph_pm
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 
-ifneq (,$(filter auto_init stdio_cdc_acm,$(DISABLE_MODULE)))
-  # boards using arduino bootloader require auto_init and stdio_cdc_acm
+ifneq (,$(filter auto_init auto_init_usbus,$(DISABLE_MODULE)))
+  # boards using arduino bootloader require auto_init or auto_init_usbus
   FEATURES_BLACKLIST += bootloader_arduino
 endif
 
