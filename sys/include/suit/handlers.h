@@ -127,12 +127,12 @@ extern const size_t suit_global_handlers_len;
 /**
  * @brief SUIT sequence handler reference
  */
-extern const suit_manifest_handler_t suit_sequence_handlers[];
+extern const suit_manifest_handler_t suit_command_sequence_handlers[];
 
 /**
  * @brief SUIT sequence handler length
  */
-extern const size_t suit_sequence_handlers_len;
+extern const size_t suit_command_sequence_handlers_len;
 
 /**
  * @brief SUIT container handlers reference
