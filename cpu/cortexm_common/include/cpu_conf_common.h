@@ -77,7 +77,8 @@ extern "C" {
  * @brief   Memory marked with this attribute is retained during deep sleep
  */
 #if CPU_HAS_BACKUP_RAM || DOXYGEN
-#define BACKUP_RAM __attribute__((section(".backup.bss")))
+#define BACKUP_RAM      __attribute__((section(".backup.bss")))
+#define BACKUP_RAM_DATA __attribute__((section(".backup.data")))
 #endif
 
 #ifdef __cplusplus
