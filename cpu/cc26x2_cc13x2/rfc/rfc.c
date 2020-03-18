@@ -25,9 +25,6 @@
 #include <driverlib/osc.h>
 #include <driverlib/prcm.h>
 #include <driverlib/rfc.h>
-#include <driverlib/rf_common_cmd.h>
-
-#include <driverlib/vims.h>
 
 void rfc_power_on(void)
 {
