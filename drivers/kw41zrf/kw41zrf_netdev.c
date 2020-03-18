@@ -108,7 +108,10 @@ static inline size_t kw41zrf_tx_load(const void *buf, size_t len, size_t offset)
 {
     /* Array bounds are checked in the kw41zrf_netdev_send loop */
     /* offset + 1 is used because buf[0] contains the frame length byte */
-    memcpy(((uint8_t *)&ZLL->PKT_BUFFER_TX[0]) + offset + 1, buf, len);
+    for (unsigned i = 0; i < len; i++) {
+        ((uint8_t *)ZLL->PKT_BUFFER_TX)[i + offset + 1] = ((uint8_t *)buf)[i];
+    }
+
     return offset + len;
 }
 
