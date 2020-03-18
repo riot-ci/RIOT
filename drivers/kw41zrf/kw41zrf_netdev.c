@@ -106,8 +106,10 @@ static inline uint32_t kw41zrf_csma_random_delay(kw41zrf_t *dev)
 
 static inline size_t kw41zrf_tx_load(const void *buf, size_t len, size_t offset)
 {
-    /* Array bounds are checked in the kw41zrf_netdev_send loop */
-    /* offset + 1 is used because buf[0] contains the frame length byte */
+    /* Array bounds are checked in the kw41zrf_netdev_send loop. */
+    /* offset + 1 is used because buf[0] contains the frame length byte. */
+    /* Don't use memcpy to work around a presumed compiler bug in
+     * arm-none-eabi-gcc 7.3.1 2018-q2-6 */
     for (unsigned i = 0; i < len; i++) {
         ((uint8_t *)ZLL->PKT_BUFFER_TX)[i + offset + 1] = ((uint8_t *)buf)[i];
     }
@@ -308,6 +310,9 @@ static int kw41zrf_netdev_recv(netdev_t *netdev, void *buf, size_t len, void *in
         return -ENOBUFS;
     }
 
+    /* Read packet buffer. */
+    /* Don't use memcpy to work around a presumed compiler bug in
+     * arm-none-eabi-gcc 7.3.1 2018-q2-6 */
     for (int i = 0; i < pkt_len; i++) {
         ((uint8_t *)buf)[i] = ((uint8_t *)ZLL->PKT_BUFFER_RX)[i];
     }
