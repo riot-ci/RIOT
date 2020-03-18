@@ -30,8 +30,6 @@
 #undef FLASH_BASE
 #undef AON_IOC_BASE
 
-#include <assert.h>
-
 #include <driverlib/prcm.h>
 #include <driverlib/rfc.h>
 
