@@ -32,14 +32,11 @@
 
 #include <assert.h>
 
-#include <driverlib/interrupt.h>
 #include <driverlib/prcm.h>
 #include <driverlib/rfc.h>
 
 void rfc_power_on(void)
 {
-    bool ints_disabled;
-
     /* Trigger a switch to the XOSC, so that we can subsequently use the RF
      * Frequency Synthesizer This will block until the XOSC is actually ready.
      */
@@ -55,7 +52,7 @@ void rfc_power_on(void)
         osc_hf_source_switch();
     }
 
-    ints_disabled = IntMasterDisable();
+    unsigned key = irq_disable();
 
     /* Enable RF Core power domain */
     PRCMPowerDomainOn(PRCM_DOMAIN_RFCORE);
@@ -68,9 +65,7 @@ void rfc_power_on(void)
 
     while (!PRCMLoadGet()) {}
 
-    if (!ints_disabled) {
-        IntMasterEnable();
-    }
+    irq_restore(key);
 
     /* Let CPE boot */
     RFCClockEnable();
