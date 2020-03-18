@@ -17,6 +17,8 @@
 #ifndef CC26XX_CC13XX_VIMS_H
 #define CC26XX_CC13XX_VIMS_H
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -228,6 +230,72 @@ typedef struct {
 #define VIMS_CTL_MODE_OFF                   0x00000003
 #define VIMS_CTL_MODE_m                     0x00000003
 /** @} */
+
+/**
+ * @brief   Set the operational mode of the VIMS.
+ *
+ * This function sets the operational mode of the VIMS.
+ *
+ * Upon reset the VIMS will be in changing mode.
+ *
+ * - In this mode the VIMS will initialize the cache (GP) RAM (to all zeros).
+ * - The GPRAM will not be operational (read/write will result in bus fault).
+ * - The Cache will not be operational.
+ * - Reads and writes to flash will be uncached.
+ * - After a short delay (approx. 1029 clock cycles) the VIMS will
+ * - automatically switch mode to \ref VIMS_MODE_DISABLED (GPRAM enabled).
+ *
+ * In @ref VIMS_CTL_MODE_GPRAM mode, the cache is disabled but the GPRAM is
+ * accessible:
+ *
+ * - The GPRAM will be accessible.
+ * - The Cache will not be operational.
+ * - Reads from flash will be uncached.
+ * - From this mode, the VIMS may be put in @ref VIMS_CTL_MODE_CACHE
+ *
+ * In @ref VIMS_CTL_MODE_CACHE mode, the cache is enabled for USERCODE space.
+ *
+ * - The GPRAM will not be operational (read/write will result in bus fault).
+ * - The Cache will be operational for SYSCODE space.
+ * - Reads from flash in USERCODE space will be uncached.
+ *
+ * In @ref VIMS_CTL_MODE_OFF the cache RAM is off to conserve power.
+ *
+ * @note The VIMS must be invalidated when switching mode. This is done by
+ * setting VIMS_MODE_OFF before setting any new mode.
+ *
+ * @note It is highly recommended that the VIMS is put in disabled mode before
+ * writing to flash, since the cache will not be updated nor invalidated by
+ * flash writes. The line buffers should also be disabled when updating the
+ * flash. Once @ref vims_mode_set() is used to set the VIMS in changing mode,
+ * the user should check using @ref vims_mode_get() when the mode switches to
+ * @ref VIMS_CTL_MODE_GPRAM. Only when the mode has changed the cache has been
+ * completely invalidated.
+ *
+ * @note Access from System Bus is never cached. Only access through ICODE
+ * DCODE bus from the System CPU is cached.
+ *
+ * @param[in] mode Is the operational mode.
+ */
+void vims_mode_set(uint32_t mode);
+
+/**
+ * @brief   Configures the VIMS.
+ *
+ * This function sets general control settings of the VIMS system.
+ *
+ * @note The VIMS mode must be set using @ref vims_mode_set().
+ *
+ * @param[in] round_robin Specifies the arbitration method.
+ * - @c true  : Round Robin arbitration between the two available read/write
+ *   interfaces (i.e. Icode/Dcode and Sysbus) is to be used.
+ * - @c false : Strict arbitration will be used, where Icode/Dcode is preferred
+ *   over the Sysbus.
+ * @param[in] prefetch Specifies if prefetching is to be used.
+ * - @c true  : Cache is to prefetch tag data for the following address.
+ * - @c false : No prefetch.
+ */
+void vims_configure(bool round_robin, bool prefetch);
 
 #ifdef __cplusplus
 }
