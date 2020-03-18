@@ -17,12 +17,22 @@
  * @}
  */
 
+#include "cpu.h"
 #include "cc26x2_cc13x2_rfc.h"
+
+#undef UART0_BASE
+#undef UART1_BASE
+#undef GPT0_BASE
+#undef GPT1_BASE
+#undef GPT2_BASE
+#undef GPT3_BASE
+#undef GPIO_BASE
+#undef FLASH_BASE
+#undef AON_IOC_BASE
 
 #include <assert.h>
 
 #include <driverlib/interrupt.h>
-#include <driverlib/osc.h>
 #include <driverlib/prcm.h>
 #include <driverlib/rfc.h>
 
@@ -33,16 +43,16 @@ void rfc_power_on(void)
     /* Trigger a switch to the XOSC, so that we can subsequently use the RF
      * Frequency Synthesizer This will block until the XOSC is actually ready.
      */
-    if (OSCClockSourceGet(OSC_SRC_CLK_HF) != OSC_XOSC_HF) {
+    if (osc_clock_source_get(OSC_SRC_CLK_HF) != OSC_XOSC_HF) {
         /* Request to switch to the crystal to enable radio operation. It takes
          * a while for the XTAL to be ready. */
-        OSCClockSourceSet(OSC_SRC_CLK_HF, OSC_XOSC_HF);
+        osc_clock_source_set(OSC_SRC_CLK_HF, OSC_XOSC_HF);
 
         /* Block until the high frequency clock source is ready */
-        while (!OSCHfSourceReady()) {}
+        while (!osc_hf_source_ready()) {}
 
         /* Switch the HF clock source (this get executed from ROM) */
-        OSCHfSourceSwitch();
+        osc_hf_source_switch();
     }
 
     ints_disabled = IntMasterDisable();
@@ -78,10 +88,10 @@ void rfc_power_off(void)
     while (PRCMPowerDomainStatus(PRCM_DOMAIN_RFCORE) != PRCM_DOMAIN_POWER_OFF)
         {}
 
-    if (OSCClockSourceGet(OSC_SRC_CLK_HF) != OSC_RCOSC_HF) {
+    if (osc_clock_source_get(OSC_SRC_CLK_HF) != OSC_RCOSC_HF) {
         /* Request to switch to the RC osc for low power mode. */
-        OSCClockSourceSet(OSC_SRC_CLK_HF, OSC_RCOSC_HF);
+        osc_clock_source_set(OSC_SRC_CLK_HF, OSC_RCOSC_HF);
         /* Switch the HF clock source (cc26x2ware executes this from ROM) */
-        OSCHfSourceSwitch();
+        osc_hf_source_switch();
     }
 }
