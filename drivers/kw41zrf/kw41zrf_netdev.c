@@ -16,10 +16,11 @@
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
 
+#include <errno.h>
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
-#include <errno.h>
+#include <stdatomic.h>
 
 #include "log.h"
 #include "random.h"
@@ -53,9 +54,8 @@
 
 static void kw41zrf_netdev_isr(netdev_t *netdev);
 
-static volatile unsigned int num_irqs_queued = 0;
-static volatile unsigned int num_irqs_handled = 0;
-static unsigned int spinning_for_irq = 0;
+static atomic_bool irq_is_queued = false;
+static bool blocking_for_irq = 0;
 
 /* Set this to a flag bit that is not used by the MAC implementation */
 #define KW41ZRF_THREAD_FLAG_ISR (1u << 8)
@@ -71,9 +71,9 @@ static void kw41zrf_irq_handler(void *arg)
     /* Signal to the thread that an IRQ has arrived, if it is waiting */
     thread_flags_set(dev->thread, KW41ZRF_THREAD_FLAG_ISR);
 
-    /* We use this counter to avoid filling the message queue with redundant ISR events */
-    if (num_irqs_queued == num_irqs_handled) {
-        ++num_irqs_queued;
+    /* Avoid filling the message queue with redundant ISR events */
+    if (!irq_is_queued) {
+        irq_is_queued = true;
         if (netdev->event_callback) {
             netdev->event_callback(netdev, NETDEV_EVENT_ISR);
         }
@@ -170,9 +170,8 @@ static void kw41zrf_wait_idle(kw41zrf_t *dev)
     /* in case we're servicing an IRQ currently, IRQs will be masked */
     kw41zrf_unmask_irqs();
 
-    num_irqs_handled = num_irqs_queued;
-    assert(!spinning_for_irq);
-    spinning_for_irq = 1;
+    assert(!blocking_for_irq);
+    blocking_for_irq = true;
 
     PM_BLOCK(KW41ZRF_PM_BLOCKER);
     while (1) {
@@ -190,7 +189,7 @@ static void kw41zrf_wait_idle(kw41zrf_t *dev)
 
     DEBUG("[kw41zrf] waited ISR\n");
     PM_UNBLOCK(KW41ZRF_PM_BLOCKER);
-    spinning_for_irq = 0;
+    blocking_for_irq = false;
 }
 
 int kw41zrf_cca(kw41zrf_t *dev)
@@ -1175,9 +1174,9 @@ static uint32_t _isr_event_seq_ccca(kw41zrf_t *dev, uint32_t irqsts)
 static void kw41zrf_netdev_isr(netdev_t *netdev)
 {
     kw41zrf_t *dev = (kw41zrf_t *)netdev;
-    num_irqs_handled = num_irqs_queued;
 
-    if (!spinning_for_irq) {
+    irq_is_queued = false;
+    if (!blocking_for_irq) {
         thread_flags_clear(KW41ZRF_THREAD_FLAG_ISR);
     }
 
