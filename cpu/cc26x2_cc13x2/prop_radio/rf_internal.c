@@ -429,14 +429,17 @@ static uint_fast16_t cc13x2_prop_rf_send_disable_cmd(void)
     ret = cc13x2_dbell_execute(cmd_fs_powerdown);
     if (ret != CMDSTA_Done) {
         if (!ints_disabled) {
-            IntMasterDisable();
+            IntMasterEnable();
         }
         return ret;
     }
 
+    /* TODO: this doesn't finish, there's some problem when running these
+     * commands, might investigate later. */
     /* Synchronously wait for the RF Core to stop */
     while ((HWREG(RFC_DBELL_BASE + RFC_DBELL_O_RFCPEIFG) &
-            IRQ_LAST_COMMAND_DONE) == 0) {}
+            IRQ_LAST_COMMAND_DONE) == 0) {
+    }
 
     /* Get the status of the CMD_SYNC_STOP_RAT command */
     ret = cc13x2_cmd_sync_stop_rat_get_status();

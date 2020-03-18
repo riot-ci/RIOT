@@ -20,12 +20,18 @@
 #include "cpu.h"
 #include "cc26x2_cc13x2_rfc.h"
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 void rfc_power_on(void)
 {
+    DEBUG("rfc_power_on()\n");
+
     /* Trigger a switch to the XOSC, so that we can subsequently use the RF
      * Frequency Synthesizer This will block until the XOSC is actually ready.
      */
     if (osc_clock_source_get(OSC_SRC_CLK_HF) != OSC_XOSC_HF) {
+        DEBUG("rfc_power_on: switching SCLK_HF to OSC_XOSC_HF\n");
         /* Request to switch to the crystal to enable radio operation. It takes
          * a while for the XTAL to be ready. */
         osc_clock_source_set(OSC_SRC_CLK_HF, OSC_XOSC_HF);
@@ -57,6 +63,8 @@ void rfc_power_on(void)
 
 void rfc_power_off(void)
 {
+    DEBUG("rfc_power_off()\n");
+
     unsigned key = irq_disable();
 
     /* Disable RF Core clocks */
@@ -70,6 +78,7 @@ void rfc_power_off(void)
     while (PRCM->PDSTAT1RFC == 1 && PRCM->PDSTAT0RFC == 1) {}
 
     if (osc_clock_source_get(OSC_SRC_CLK_HF) != OSC_RCOSC_HF) {
+        DEBUG("rfc_power_off: switching SCLK_HF to OSC_RCOSC_HF\n");
         /* Request to switch to the RC osc for low power mode. */
         osc_clock_source_set(OSC_SRC_CLK_HF, OSC_RCOSC_HF);
         /* Switch the HF clock source (cc26x2ware executes this from ROM) */
