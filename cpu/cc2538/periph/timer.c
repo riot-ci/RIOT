@@ -191,6 +191,12 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 {
     DEBUG("%s(%u, %u, %u)\n", __FUNCTION__, tim, channel, value);
 
+    /* GPT timer needs to be gated to write to registers */
+    bool timer_on = (SYS_CTRL->RCGCGPT & (1UL << tim));
+    if(!timer_on) {
+        _timer_clock_enable(tim);
+    }
+
     if ((tim >= TIMER_NUMOF) || (channel >= (int)timer_config[tim].chn) ) {
         return -1;
     }
@@ -205,8 +211,13 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     }
     dev(tim)->IMR |= chn_isr_cfg[channel].flag;
 
+    if(!timer_on) {
+        _timer_clock_disable(tim);
+    }
+
     return 0;
 }
+
 
 int timer_clear(tim_t tim, int channel)
 {
