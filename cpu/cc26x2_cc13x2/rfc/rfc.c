@@ -20,18 +20,6 @@
 #include "cpu.h"
 #include "cc26x2_cc13x2_rfc.h"
 
-#undef UART0_BASE
-#undef UART1_BASE
-#undef GPT0_BASE
-#undef GPT1_BASE
-#undef GPT2_BASE
-#undef GPT3_BASE
-#undef GPIO_BASE
-#undef FLASH_BASE
-#undef AON_IOC_BASE
-
-#include <driverlib/rfc.h>
-
 void rfc_power_on(void)
 {
     /* Trigger a switch to the XOSC, so that we can subsequently use the RF
@@ -64,7 +52,7 @@ void rfc_power_on(void)
     irq_restore(key);
 
     /* Let CPE boot */
-    RFCClockEnable();
+    rfc_clock_enable();
 }
 
 void rfc_power_off(void)
