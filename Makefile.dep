@@ -450,12 +450,12 @@ ifneq (,$(filter posix_sockets,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-# Include all stdio_% dependencies after all USEMODULE += stdio_%
-include $(RIOTBASE)/makefiles/stdio.inc.mk
-
 ifneq (,$(filter shell,$(USEMODULE)))
   USEMODULE += stdin
 endif
+
+# Include all stdio_% dependencies after all USEMODULE += stdio_%
+include $(RIOTBASE)/makefiles/stdio.inc.mk
 
 ifneq (,$(filter isrpipe,$(USEMODULE)))
   USEMODULE += tsrb
