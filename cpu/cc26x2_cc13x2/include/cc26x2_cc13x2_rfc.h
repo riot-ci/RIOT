@@ -51,6 +51,15 @@ void rfc_power_on(void);
  */
 void rfc_power_off(void);
 
+/**
+ * @brief   Enable the RF core clocks.
+ *
+ * As soon as the RF core is started it will handle clock control autonomously.
+ * No check should be performed to check the clocks. Instead the radio can be
+ * ping'ed through the command interface.
+ */
+void rfc_clock_enable(void);
+
 #ifdef __cplusplus
 }
 #endif
