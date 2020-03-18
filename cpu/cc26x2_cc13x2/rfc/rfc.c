@@ -30,7 +30,6 @@
 #undef FLASH_BASE
 #undef AON_IOC_BASE
 
-#include <driverlib/prcm.h>
 #include <driverlib/rfc.h>
 
 void rfc_power_on(void)
@@ -53,15 +52,14 @@ void rfc_power_on(void)
     unsigned key = irq_disable();
 
     /* Enable RF Core power domain */
-    PRCMPowerDomainOn(PRCM_DOMAIN_RFCORE);
+    PRCM->PDCTL0RFC = 1;
+    PRCM->PDCTL1RFC = 1;
+    while (PRCM->PDSTAT1RFC != 1 && PRCM->PDSTAT0RFC != 1) {}
 
-    while (PRCMPowerDomainStatus(PRCM_DOMAIN_RFCORE) != PRCM_DOMAIN_POWER_ON)
-        {}
-
-    PRCMDomainEnable(PRCM_DOMAIN_RFCORE);
-    PRCMLoadSet();
-
-    while (!PRCMLoadGet()) {}
+    /* Enable RF Core clocks */
+    PRCM->RFCCLKG |= RFCCLKG_CLK_EN;
+    PRCM->CLKLOADCTL |= CLKLOADCTL_LOAD;
+    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) ;
 
     irq_restore(key);
 
@@ -73,15 +71,15 @@ void rfc_power_off(void)
 {
     unsigned key = irq_disable();
 
-    PRCMDomainDisable(PRCM_DOMAIN_RFCORE);
-    PRCMLoadSet();
+    /* Disable RF Core clocks */
+    PRCM->RFCCLKG &= ~RFCCLKG_CLK_EN;
+    PRCM->CLKLOADCTL |= CLKLOADCTL_LOAD;
+    while (!(PRCM->CLKLOADCTL & CLKLOADCTL_LOADDONE)) ;
 
-    while (!PRCMLoadGet()) {}
-
-    PRCMPowerDomainOff(PRCM_DOMAIN_RFCORE);
-
-    while (PRCMPowerDomainStatus(PRCM_DOMAIN_RFCORE) != PRCM_DOMAIN_POWER_OFF)
-        {}
+    /* Power off RF Core domain */
+    PRCM->PDCTL0RFC = 0;
+    PRCM->PDCTL1RFC = 0;
+    while (PRCM->PDSTAT1RFC == 1 && PRCM->PDSTAT0RFC == 1) {}
 
     if (osc_clock_source_get(OSC_SRC_CLK_HF) != OSC_RCOSC_HF) {
         /* Request to switch to the RC osc for low power mode. */
