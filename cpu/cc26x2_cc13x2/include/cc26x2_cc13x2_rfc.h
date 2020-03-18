@@ -37,7 +37,7 @@ extern "C" {
  *          - Enables the radio core power domain
  *          - Sets up the interrupts
  */
-void cc26x2_cc13x2_rf_power_on(void);
+void rfc_power_on(void);
 
 /**
  * @brief   Turns off the radio core.
@@ -49,7 +49,7 @@ void cc26x2_cc13x2_rf_power_on(void);
  *          - On CC13X2/CC26X2 switches the high frequency clock to the rcosc
  *            to save power
  */
-void cc26x2_cc13x2_rf_power_off(void);
+void rfc_power_off(void);
 
 /**
  * @brief   Enable the Versatile Memory Instruction System

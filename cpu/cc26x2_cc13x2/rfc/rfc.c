@@ -27,10 +27,9 @@
 #include <driverlib/rfc.h>
 #include <driverlib/rf_common_cmd.h>
 
-#include <driverlib/setup.h>
 #include <driverlib/vims.h>
 
-void cc26x2_cc13x2_rf_power_on(void)
+void rfc_power_on(void)
 {
     bool ints_disabled;
 
@@ -70,7 +69,7 @@ void cc26x2_cc13x2_rf_power_on(void)
     RFCClockEnable();
 }
 
-void cc26x2_cc13x2_rf_power_off(void)
+void rfc_power_off(void)
 {
     PRCMDomainDisable(PRCM_DOMAIN_RFCORE);
     PRCMLoadSet();
@@ -92,8 +91,6 @@ void cc26x2_cc13x2_rf_power_off(void)
 
 void cc26x2_cc13x2_enable_vims(void)
 {
-    SetupTrimDevice();
-
     VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
     VIMSConfigure(VIMS_BASE, true, true);
 }

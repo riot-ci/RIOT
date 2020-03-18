@@ -574,7 +574,7 @@ int_fast8_t cc13x2_prop_rf_power_on(void)
 
         init_bufs();
 
-        cc26x2_cc13x2_rf_power_on();
+        rfc_power_on();
         setup_interrupts();
 
         _rf_core.state = FSM_STATE_SLEEP;
@@ -597,7 +597,7 @@ exit:
 
     if (error == -1) {
         stop_interrupts();
-        cc26x2_cc13x2_rf_power_off();
+        rfc_power_off();
         _rf_core.state = FSM_STATE_OFF;
     }
 
@@ -618,7 +618,7 @@ void cc13x2_prop_rf_power_off(void)
     stop_interrupts();
 
     /* Power off the RF Core */
-    cc26x2_cc13x2_rf_power_off();
+    rfc_power_off();
 
     _rf_core.state = FSM_STATE_OFF;
 }
