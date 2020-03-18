@@ -51,13 +51,6 @@ void rfc_power_on(void);
  */
 void rfc_power_off(void);
 
-/**
- * @brief   Enable the Versatile Memory Instruction System
- *
- *          This needs to be called before doing any RF operation.
- */
-void cc26x2_cc13x2_enable_vims(void);
-
 #ifdef __cplusplus
 }
 #endif

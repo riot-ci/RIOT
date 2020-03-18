@@ -56,8 +56,6 @@ static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
 
 static int _init(netdev_t *dev)
 {
-    cc26x2_cc13x2_enable_vims();
-
     cc13x2_prop_rf_netdev_t *netdev = (cc13x2_prop_rf_netdev_t *)dev;
 
     if (dev == NULL) {

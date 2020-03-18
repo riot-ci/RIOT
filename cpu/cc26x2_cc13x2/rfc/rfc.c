@@ -88,9 +88,3 @@ void rfc_power_off(void)
         OSCHfSourceSwitch();
     }
 }
-
-void cc26x2_cc13x2_enable_vims(void)
-{
-    VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
-    VIMSConfigure(VIMS_BASE, true, true);
-}
