@@ -1,10 +1,10 @@
-STDIO_MODULES := \
-  stdio_cdc_acm \
-  stdio_null \
-  stdio_uart \
+STDIO_MODULES = \
   slipdev_stdio \
+  stdio_cdc_acm \
   stdio_ethos \
+  stdio_null \
   stdio_rtt \
+  stdio_uart \
   #
 
 # Since USEMODULE and DEFAULT_MODULEs are recursively expanded we need to
@@ -16,7 +16,7 @@ ifneq (,$(filter $(filter-out stdio_rtt,$(STDIO_MODULES)),$(USEMODULE)))
   DISABLE_MODULE += stdio_rtt
 endif
 
-ifneq (,$(filter $(filter-out stdio_dc_acm,$(STDIO_MODULES)),$(USEMODULE)))
+ifneq (,$(filter $(filter-out stdio_cdc_acm,$(STDIO_MODULES)),$(USEMODULE)))
   # stdio_cdc_acm cannot be used when another STDIO is loaded
   DISABLE_MODULE += stdio_cdc_acm
 endif
