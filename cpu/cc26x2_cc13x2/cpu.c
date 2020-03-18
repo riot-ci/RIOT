@@ -36,6 +36,10 @@ void cpu_init(void)
     /* trim device */
     setup_trim_device();
 
+    /* enable & configure VIMS */
+    vims_mode_set(VIMS_CTL_MODE_CACHE);
+    vims_configure(true, true);
+
     /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
     stdio_init();
 
