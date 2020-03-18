@@ -73,6 +73,8 @@ void rfc_power_on(void)
 
 void rfc_power_off(void)
 {
+    unsigned key = irq_disable();
+
     PRCMDomainDisable(PRCM_DOMAIN_RFCORE);
     PRCMLoadSet();
 
@@ -89,4 +91,6 @@ void rfc_power_off(void)
         /* Switch the HF clock source (cc26x2ware executes this from ROM) */
         osc_hf_source_switch();
     }
+
+    irq_restore(key);
 }
