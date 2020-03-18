@@ -44,3 +44,13 @@ def run(testfunc, timeout=TIMEOUT, echo=True, traceback=False):
         print("")
         teardown_child(child)
     return 0
+
+
+def check_unittests(timeout=TIMEOUT, echo=True, traceback=False,
+                    nb_tests=None):
+    _tests = '\d+' if nb_tests is None else int(nb_tests)
+
+    def _check_func(child):
+        child.expect(r'OK \({} tests\)'.format(_tests), timeout=timeout)
+
+    return run(_check_func, timeout, echo, traceback)
