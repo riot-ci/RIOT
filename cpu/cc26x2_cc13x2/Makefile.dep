@@ -1,9 +1,10 @@
 include ${RIOTCPU}/cc26xx_cc13xx/Makefile.dep
 
+USEPKG += cc26xx_cc13xx_driverlib
+USEMODULE += cc13x2_cc26x2_driverlib
+
 ifneq (,$(filter cc26x2_cc13x2_prop_rf,$(USEMODULE)))
   USEMODULE += cc26x2_cc13x2_rfc
-  USEPKG += cc26xx_cc13xx_driverlib
-  USEMODULE += cc13x2_cc26x2_driverlib
 endif
 
 USEMODULE += cc26xx_cc13xx
