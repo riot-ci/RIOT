@@ -22,17 +22,27 @@
 #include "debug.h"
 
 #include "esp_attr.h"
+#include "esp_sleep.h"
+#include "gpio_arch.h"
+#include "rtc_arch.h"
 #include "syscalls.h"
+#include "xtimer.h"
 
+#include "periph/rtc.h"
 #include "rom/rtc.h"
 #include "rom/uart.h"
 #include "soc/rtc.h"
 #include "soc/rtc_cntl_reg.h"
 
-void pm_set_lowest(void)
-{
-    DEBUG ("%s enter to sleep @%u\n", __func__, system_get_time());
+#ifdef MODULE_ESP_NOW
+#include "esp_now_netdev.h"
+#endif
+#ifdef MODULE_ESP_WIFI
+#include "esp_wifi_netdev.h"
+#endif
 
+static inline void pm_set_lowest_normal(void)
+{
     #if !defined(QEMU)
     /* passive wait for interrupt to leave lowest power mode */
     __asm__ volatile ("waiti 0");
@@ -40,53 +50,12 @@ void pm_set_lowest(void)
     /* reset system watchdog timer */
     system_wdt_feed();
     #endif
-
-    DEBUG ("%s exit from sleep @%u\n", __func__, system_get_time());
 }
 
 void IRAM_ATTR pm_off(void)
 {
-    DEBUG ("%s\n", __func__);
-
-    /* suspend UARTs */
-    for (int i = 0; i < 3; ++i) {
-        REG_SET_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XOFF);
-        uart_tx_wait_idle(i);
-    }
-
-    /* set all power down flags */
-    uint32_t pd_flags = RTC_SLEEP_PD_DIG |
-                        RTC_SLEEP_PD_RTC_PERIPH |
-                        RTC_SLEEP_PD_RTC_SLOW_MEM |
-                        RTC_SLEEP_PD_RTC_FAST_MEM |
-                        RTC_SLEEP_PD_RTC_MEM_FOLLOW_CPU |
-                        RTC_SLEEP_PD_VDDSDIO;
-
-    rtc_sleep_config_t config = RTC_SLEEP_CONFIG_DEFAULT(pd_flags);
-    config.wifi_pd_en = 1;
-    config.rom_mem_pd_en = 1;
-    config.lslp_meminf_pd = 1;
-
-    /* Save current frequency and switch to XTAL */
-    rtc_cpu_freq_t cpu_freq = rtc_clk_cpu_freq_get();
-    rtc_clk_cpu_freq_set(RTC_CPU_FREQ_XTAL);
-
-    /* set deep sleep duration to forever */
-    rtc_sleep_set_wakeup_time(rtc_time_get() + ~0x0UL);
-
-    /* configure deep sleep */
-    rtc_sleep_init(config);
-    rtc_sleep_start(RTC_TIMER_TRIG_EN, 0);
-
-    /* Restore CPU frequency */
-    rtc_clk_cpu_freq_set(cpu_freq);
-
-    /* resume UARTs */
-    for (int i = 0; i < 3; ++i) {
-        REG_CLR_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XOFF);
-        REG_SET_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XON);
-        REG_CLR_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XON);
-    }
+    /* enter hibernate mode without any enabled wake-up sources */
+    esp_deep_sleep_start();
 }
 
 extern void esp_restart_noos(void) __attribute__ ((noreturn));
@@ -103,3 +72,83 @@ void pm_reboot(void)
 
     software_reset();
 }
+
+#ifndef MODULE_PM_LAYERED
+
+void pm_set_lowest(void)
+{
+    pm_set_lowest_normal();
+}
+
+#else /* MODULE_PM_LAYERED */
+
+void pm_set(unsigned mode)
+{
+    if (mode == ESP_PM_MODEM_SLEEP) {
+        pm_set_lowest_normal();
+        return;
+    }
+
+    DEBUG ("%s enter to power mode %d @%u\n", __func__, mode, system_get_time());
+
+    /* wait until UART is idle to avoid losing output */
+    uart_tx_wait_idle(CONFIG_CONSOLE_UART_NUM);
+
+    /* Labels for RTC slow memory that are defined in the linker script */
+    extern int _rtc_bss_rtc_start;
+    extern int _rtc_bss_rtc_end;
+
+    /*
+     * Activate the Power Domain for slow RTC memory when the .rtc.bss
+     * section is used to retain uninitialized data. The Power Domain for
+     * slow RTC memory is automatically activated when the .rtc.data section
+     * is used to retain initialized data.
+     */
+    if (&_rtc_bss_rtc_end > &_rtc_bss_rtc_start) {
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
+    }
+
+#ifdef MODULE_ESP_WIFI
+    /* stop WiFi if necessary */
+    esp_wifi_pm_sleep_enter();
+#endif
+#ifdef MODULE_ESP_NOW
+    /* stop WiFi if necessary */
+    esp_now_pm_sleep_enter();
+#endif
+
+    /* Prepare the RTC timer if an RTC alarm is set to wake up. */
+    rtc_pm_sleep_enter();
+
+    /* Prepare GPIOs as wakeup source */
+    gpio_pm_sleep_enter(mode);
+
+    if (mode == ESP_PM_DEEP_SLEEP) {
+        esp_deep_sleep_start();
+        /* waking up from deep-sleep leads to a DEEPSLEEP_RESET */
+        UNREACHABLE();
+    }
+    else if (mode == ESP_PM_LIGHT_SLEEP) {
+        esp_light_sleep_start();
+        gpio_pm_sleep_exit();
+
+        uint32_t wakeup_cause = esp_sleep_get_wakeup_cause();
+        DEBUG ("%s exit from power mode %d because of %d @%u\n", __func__,
+               mode, wakeup_cause, system_get_time());
+
+        if (wakeup_cause == ESP_SLEEP_WAKEUP_TIMER) {
+            /* call the RTC alarm handler if an RTC alarm was set */
+            rtc_pm_sleep_exit();
+        }
+#ifdef MODULE_ESP_WIFI
+        /* restart WiFi if necessary */
+        esp_wifi_pm_sleep_exit();
+#endif
+#ifdef MODULE_ESP_NOW
+        /* restop WiFi if necessary */
+        esp_now_pm_sleep_exit();
+#endif
+    }
+}
+
+#endif /* MODULE_PM_LAYERED */
