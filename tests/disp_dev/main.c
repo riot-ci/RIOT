@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "board.h"
 #include "disp_dev.h"
 
 #include "ili9341.h"
@@ -36,17 +35,13 @@ static ili9341_t ili9341;
 
 int main(void)
 {
-    /* Enable backlight if macro is defined */
-#ifdef BACKLIGHT_ON
-    BACKLIGHT_ON;
-#endif
-
     ili9341_init(&ili9341, &ili9341_params[0]);
 
     disp_dev_t *dev = (disp_dev_t *)&ili9341;
     dev->driver = &ili9341_disp_dev_driver;
 
     disp_dev_set_invert(dev, true);
+    disp_dev_backlight_on();
 
     uint16_t max_width = disp_dev_width(dev);
     uint16_t max_height = disp_dev_height(dev);
