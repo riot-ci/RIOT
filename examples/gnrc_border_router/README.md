@@ -16,7 +16,14 @@ IPv6 network (i.e. the Internet).
 This requires the border router to have two interfaces, a downstream, 6LoWPAN-interface
 and an IPv6 uplink.
 
-This setup comes with support for three uplink types pre-configured.
+This example comes with support for three uplink types pre-configured:
+- [`ethos`](https://doc.riot-os.org/group__drivers__ethos.html) (default)
+- [`slip`](https://tools.ietf.org/html/rfc1055)
+- `wifi`
+
+For `native` the host-facing [`netdev_tap`](https://doc.riot-os.org/netdev__tap_8h.html) device
+is configured, providing connectivity via a TAP interface to the RIOT instance.
+ 
 To select e.g. a SLIP uplink, add `UPLINK=slip` to your `make` command.
 
 `ethos` and `slip` will make use of the existing serial interface that is used for the
