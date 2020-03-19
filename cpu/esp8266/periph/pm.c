@@ -52,9 +52,11 @@ void pm_reboot(void)
 {
     DEBUG("%s\n", __func__);
 
+#ifdef MODULE_PERIPH_RTT
     /* save counters */
     extern void rtt_save_counter(void);
     rtt_save_counter();
+#endif
 
     /* shut down WIFI and call system_restart_local after timer */
     system_restart ();
