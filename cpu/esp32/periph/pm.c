@@ -34,6 +34,13 @@
 #include "soc/rtc.h"
 #include "soc/rtc_cntl_reg.h"
 
+#ifdef MODULE_ESP_NOW
+#include "esp_now_netdev.h"
+#endif
+#ifdef MODULE_ESP_WIFI
+#include "esp_wifi_netdev.h"
+#endif
+
 static inline void pm_set_lowest_normal(void)
 {
     #if !defined(QEMU)
@@ -101,6 +108,15 @@ void pm_set(unsigned mode)
         esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
     }
 
+#ifdef MODULE_ESP_WIFI
+    /* stop WiFi if necessary */
+    esp_wifi_pm_sleep_enter();
+#endif
+#ifdef MODULE_ESP_NOW
+    /* stop WiFi if necessary */
+    esp_now_pm_sleep_enter();
+#endif
+
     /* Prepare the RTC timer if an RTC alarm is set to wake up. */
     rtc_pm_sleep_enter();
 
@@ -124,6 +140,14 @@ void pm_set(unsigned mode)
             /* call the RTC alarm handler if an RTC alarm was set */
             rtc_pm_sleep_exit();
         }
+#ifdef MODULE_ESP_WIFI
+        /* restart WiFi if necessary */
+        esp_wifi_pm_sleep_exit();
+#endif
+#ifdef MODULE_ESP_NOW
+        /* restop WiFi if necessary */
+        esp_now_pm_sleep_exit();
+#endif
     }
 }
 
