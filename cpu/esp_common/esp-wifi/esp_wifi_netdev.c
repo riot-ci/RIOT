@@ -824,5 +824,21 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
     dev->event_disc = 0;
 }
 
+void esp_wifi_pm_sleep_enter(void)
+{
+    /* stop the WiFi interface */
+    esp_wifi_stop();
+}
+
+void esp_wifi_pm_sleep_exit(void)
+{
+    /* restart the WiFi interface */
+    esp_err_t result = esp_wifi_start();
+    if (result != ESP_OK) {
+        ESP_WIFI_LOG_ERROR("esp_wifi_start failed with return value %d", result);
+        return;
+    }
+}
+
 #endif /* MODULE_ESP_WIFI */
 /**@}*/
