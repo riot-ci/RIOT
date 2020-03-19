@@ -84,6 +84,8 @@ static sleep_config_t s_config = {
     .wakeup_triggers = 0
 };
 
+bool s_light_sleep_wakeup = false;
+
 /* Updating RTC_MEMORY_CRC_REG register via set_rtc_memory_crc()
    is not thread-safe. */
 static _lock_t lock_rtc_memory_crc;
@@ -146,11 +148,20 @@ void esp_deep_sleep(uint64_t time_in_us)
     esp_deep_sleep_start();
 }
 
+static void IRAM_ATTR flush_uarts(void)
+{
+    for (int i = 0; i < 3; ++i) {
+        uart_tx_wait_idle(i);
+    }
+}
+
 static void IRAM_ATTR suspend_uarts(void)
 {
     for (int i = 0; i < 3; ++i) {
         REG_SET_BIT(UART_FLOW_CONF_REG(i), UART_FORCE_XOFF);
-        uart_tx_wait_idle(i);
+        while (REG_GET_FIELD(UART_STATUS_REG(i), UART_ST_UTX_OUT) != 0) {
+            ;
+        }
     }
 }
 
@@ -165,8 +176,14 @@ static void IRAM_ATTR resume_uarts(void)
 
 static uint32_t IRAM_ATTR esp_sleep_start(uint32_t pd_flags)
 {
-    // Stop UART output so that output is not lost due to APB frequency change
-    suspend_uarts();
+    // Stop UART output so that output is not lost due to APB frequency change.
+    // For light sleep, suspend UART output — it will resume after wakeup.
+    // For deep sleep, wait for the contents of UART FIFO to be sent.
+    if (pd_flags & RTC_SLEEP_PD_DIG) {
+        flush_uarts();
+    } else {
+        suspend_uarts();
+    }
 
     // Save current frequency and switch to XTAL
     rtc_cpu_freq_t cpu_freq = rtc_clk_cpu_freq_get();
@@ -286,7 +303,7 @@ static esp_err_t esp_light_sleep_inner(uint32_t pd_flags,
 extern void esp_set_time_from_rtc(void);
 extern int64_t esp_timer_get_time(void);
 #endif
-#include "soc/uart_reg.h"
+
 esp_err_t esp_light_sleep_start(void)
 {
     static portMUX_TYPE light_sleep_lock = portMUX_INITIALIZER_UNLOCKED;
@@ -344,6 +361,8 @@ esp_err_t esp_light_sleep_start(void)
     esp_err_t err = esp_light_sleep_inner(pd_flags,
             flash_enable_time_us, vddsdio_config);
 
+    s_light_sleep_wakeup = true;
+
 #ifndef RIOT_VERSION
     /*
      * We don't need to advance the system timer in RIOT. If module
@@ -388,22 +407,25 @@ esp_err_t esp_sleep_disable_wakeup_source(esp_sleep_source_t source)
     // For most of sources it is enough to set trigger mask in local
     // configuration structure. The actual RTC wake up options
     // will be updated by esp_sleep_start().
-    if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_TIMER, RTC_TIMER_TRIG_EN)) {
+    if (source == ESP_SLEEP_WAKEUP_ALL) {
+        s_config.wakeup_triggers = 0;
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_TIMER, RTC_TIMER_TRIG_EN)) {
         s_config.wakeup_triggers &= ~RTC_TIMER_TRIG_EN;
         s_config.sleep_duration = 0;
-    }
-    else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_EXT0, RTC_EXT0_TRIG_EN)) {
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_EXT0, RTC_EXT0_TRIG_EN)) {
         s_config.ext0_rtc_gpio_num = 0;
         s_config.ext0_trigger_level = 0;
         s_config.wakeup_triggers &= ~RTC_EXT0_TRIG_EN;
-    }
-    else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_EXT1, RTC_EXT1_TRIG_EN)) {
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_EXT1, RTC_EXT1_TRIG_EN)) {
         s_config.ext1_rtc_gpio_mask = 0;
         s_config.ext1_trigger_mode = 0;
         s_config.wakeup_triggers &= ~RTC_EXT1_TRIG_EN;
-    }
-    else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_TOUCHPAD, RTC_TOUCH_TRIG_EN)) {
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_TOUCHPAD, RTC_TOUCH_TRIG_EN)) {
         s_config.wakeup_triggers &= ~RTC_TOUCH_TRIG_EN;
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_GPIO, RTC_GPIO_TRIG_EN)) {
+        s_config.wakeup_triggers &= ~RTC_GPIO_TRIG_EN;
+    } else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_UART, (RTC_UART0_TRIG_EN | RTC_UART1_TRIG_EN))) {
+        s_config.wakeup_triggers &= ~(RTC_UART0_TRIG_EN | RTC_UART1_TRIG_EN);
     }
 #ifdef CONFIG_ULP_COPROC_ENABLED
     else if (CHECK_SOURCE(source, ESP_SLEEP_WAKEUP_ULP, RTC_ULP_TRIG_EN)) {
@@ -588,9 +610,32 @@ uint64_t esp_sleep_get_ext1_wakeup_status(void)
     return gpio_mask;
 }
 
+esp_err_t esp_sleep_enable_gpio_wakeup(void)
+{
+    if (s_config.wakeup_triggers & (RTC_TOUCH_TRIG_EN | RTC_ULP_TRIG_EN)) {
+        ESP_LOGE(TAG, "Conflicting wake-up triggers: touch / ULP");
+        return ESP_ERR_INVALID_STATE;
+    }
+    s_config.wakeup_triggers |= RTC_GPIO_TRIG_EN;
+    return ESP_OK;
+}
+
+esp_err_t esp_sleep_enable_uart_wakeup(int uart_num)
+{
+    if (uart_num == 0) {
+        s_config.wakeup_triggers |= RTC_UART0_TRIG_EN;
+    } else if (uart_num == 1) {
+        s_config.wakeup_triggers |= RTC_UART1_TRIG_EN;
+    } else {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    return ESP_OK;
+}
+
 esp_sleep_wakeup_cause_t esp_sleep_get_wakeup_cause(void)
 {
-    if (rtc_get_reset_reason(0) != DEEPSLEEP_RESET) {
+    if (rtc_get_reset_reason(0) != DEEPSLEEP_RESET && !s_light_sleep_wakeup) {
         return ESP_SLEEP_WAKEUP_UNDEFINED;
     }
 
@@ -605,6 +650,10 @@ esp_sleep_wakeup_cause_t esp_sleep_get_wakeup_cause(void)
         return ESP_SLEEP_WAKEUP_TOUCHPAD;
     } else if (wakeup_cause & RTC_ULP_TRIG_EN) {
         return ESP_SLEEP_WAKEUP_ULP;
+    } else if (wakeup_cause & RTC_GPIO_TRIG_EN) {
+        return ESP_SLEEP_WAKEUP_GPIO;
+    } else if (wakeup_cause & (RTC_UART0_TRIG_EN | RTC_UART1_TRIG_EN)) {
+        return ESP_SLEEP_WAKEUP_UART;
     } else {
         return ESP_SLEEP_WAKEUP_UNDEFINED;
     }
@@ -647,10 +696,10 @@ static uint32_t get_power_down_flags(void)
         s_config.pd_options[ESP_PD_DOMAIN_RTC_FAST_MEM] = ESP_PD_OPTION_ON;
     }
 
-    // RTC_PERIPH is needed for EXT0 wakeup.
-    // If RTC_PERIPH is auto, and EXT0 isn't enabled, power down RTC_PERIPH.
+    // RTC_PERIPH is needed for EXT0 wakeup and GPIO wakeup.
+    // If RTC_PERIPH is auto, and EXT0/GPIO aren't enabled, power down RTC_PERIPH.
     if (s_config.pd_options[ESP_PD_DOMAIN_RTC_PERIPH] == ESP_PD_OPTION_AUTO) {
-        if (s_config.wakeup_triggers & RTC_EXT0_TRIG_EN) {
+        if (s_config.wakeup_triggers & (RTC_EXT0_TRIG_EN | RTC_GPIO_TRIG_EN)) {
             s_config.pd_options[ESP_PD_DOMAIN_RTC_PERIPH] = ESP_PD_OPTION_ON;
         } else if (s_config.wakeup_triggers & (RTC_TOUCH_TRIG_EN | RTC_ULP_TRIG_EN)) {
             // In both rev. 0 and rev. 1 of ESP32, forcing power up of RTC_PERIPH
