@@ -84,7 +84,7 @@ ifneq (,$(filter periph_rtc,$(USEMODULE)))
   SRC += sc_rtc.c
 endif
 
-ifneq (,$(filter periph_rtt,$(USEMODULE)))
+ifneq (,$(filter rtt_cmd,$(USEMODULE)))
   SRC += sc_rtt.c
 endif
 
