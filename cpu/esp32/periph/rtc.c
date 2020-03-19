@@ -52,6 +52,7 @@
 
 #include "cpu.h"
 #include "esp_attr.h"
+#include "esp_sleep.h"
 #include "log.h"
 #include "irq_arch.h"
 #include "periph/rtc.h"
@@ -345,7 +346,15 @@ static void IRAM_ATTR _rtc_timer_handler(void* arg)
     irq_isr_exit();
 }
 
-void rtc_handle_pending_alarm(void)
+void rtc_pm_sleep_enter(void)
+{
+    if (_rtc_alarm_cb) {
+        uint32_t sleep = _sys_alarm_time - _sys_get_time();
+        esp_sleep_enable_timer_wakeup((uint64_t)sleep * US_PER_SEC);
+    }
+}
+
+void rtc_pm_sleep_exit(void)
 {
     if (_rtc_alarm_cb) {
         _rtc_alarm_cb(_rtc_alarm_arg);
