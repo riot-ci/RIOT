@@ -21,4 +21,4 @@ TIMEOUT = 200 if BOARD != 'native' else DEFAULT_TIMEOUT
 
 
 if __name__ == "__main__":
-    sys.exit(check_unittests(timeout=TIMEOUT))
+    sys.exit(run_check_unittests(timeout=TIMEOUT))
