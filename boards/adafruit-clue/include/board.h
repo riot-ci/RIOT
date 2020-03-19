@@ -32,8 +32,8 @@ extern "C" {
  */
 #define LED0_PIN                        GPIO_PIN(1, 1)
 #define LED0_MASK                       (1 << 1)
-#define LED0_ON                         (NRF_P1->OUTCLR = LED0_MASK)
-#define LED0_OFF                        (NRF_P1->OUTSET = LED0_MASK)
+#define LED0_ON                         (NRF_P1->OUTSET = LED0_MASK)
+#define LED0_OFF                        (NRF_P1->OUTCLR = LED0_MASK)
 #define LED0_TOGGLE                     (NRF_P1->OUT   ^= LED0_MASK)
 /** @} */
 
