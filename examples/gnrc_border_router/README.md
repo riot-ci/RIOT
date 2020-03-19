@@ -38,7 +38,7 @@ credentials. You can alternatively edit the `Makefile`.
 
 Currently, `wifi` requires an esp8266 or esp32 for the border router.
 On the downstream interface the proprietary `esp_now` link is used. It behaves similar
-to IEEE 802.15.4 but is only availiably on Espressif's wireless MCUs.
+to IEEE 802.15.4 but is only availaibly on Espressif's wireless MCUs.
 
 You can of course replace this with e.g. an IEEE 802.15.4 radio that you connected to
 your board. In this case make sure to edit `Makefile.board.dep` to select the appropriate
