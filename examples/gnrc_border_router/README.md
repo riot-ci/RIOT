@@ -13,32 +13,35 @@ The script `start_network.sh` enables a *ready-to-use* BR in only one command.
 The border router will route packets between a 6Lo network (PAN) and a 'normal'
 IPv6 network (i.e. the Internet).
 
-This requires the border router to have two interfaces, a downstream, 6LoWPAN-interface
-and an IPv6 uplink.
+This requires the border router to have two interfaces: A downstream interface
+to run 6LoWPAN on and an IPv6 uplink.
 
 This example comes with support for three uplink types pre-configured:
-- [`ethos`](https://doc.riot-os.org/group__drivers__ethos.html) (default)
-- [`slip`](https://tools.ietf.org/html/rfc1055)
-- `wifi`
+
+ - [`ethos`](https://doc.riot-os.org/group__drivers__ethos.html) (default)
+ - [`slip`](https://tools.ietf.org/html/rfc1055)
+ - `wifi`
 
 For `native` the host-facing [`netdev_tap`](https://doc.riot-os.org/netdev__tap_8h.html) device
 is configured, providing connectivity via a TAP interface to the RIOT instance.
  
-To select e.g. a SLIP uplink, add `UPLINK=slip` to your `make` command.
+To select an uplink, set the UPLINK environment variable. For instance, use `UPLINK=slip`
+for a SLIP uplink.
 
 `ethos` and `slip` will make use of the existing serial interface that is used for the
 RIOT shell to provide an upstream interface. Your computer will act as the upstream
 router, stdio is multiplexed over the same line.
 
 The `wifi` uplink will connect to an existing WiFi (IEEE 802.11) network.
-The network must provide a DHCPv6 server that supports prefix delegation (IA_PD).
+The network must provide a DHCPv6 server that supports prefix delegation (IA_PD) when
+`USE_DHCPV6=1` is set (default).
 
 Use `WIFI_SSID="SSID" WIFI_PASS="password"` in your `make` command to set your WiFi's
 credentials. You can alternatively edit the `Makefile`.
 
 Currently, `wifi` requires an esp8266 or esp32 for the border router.
-On the downstream interface the proprietary `esp_now` link is used. It behaves similar
-to IEEE 802.15.4 but is only availaibly on Espressif's wireless MCUs.
+On the downstream interface the proprietary `esp_now` link is used by default.
+It behaves similar to IEEE 802.15.4 but is only availaibly on Espressif's wireless MCUs.
 
 You can of course replace this with e.g. an IEEE 802.15.4 radio that you connected to
 your board. In this case make sure to edit `Makefile.board.dep` to select the appropriate
