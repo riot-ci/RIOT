@@ -78,13 +78,15 @@ int16_t kw41zrf_get_txpower(kw41zrf_t *dev)
 uint8_t kw41zrf_get_channel(kw41zrf_t *dev)
 {
     (void) dev;
-    return (ZLL->CHANNEL_NUM0 & ZLL_CHANNEL_NUM0_CHANNEL_NUM0_MASK) >> ZLL_CHANNEL_NUM0_CHANNEL_NUM0_SHIFT;
+    return (ZLL->CHANNEL_NUM0 & ZLL_CHANNEL_NUM0_CHANNEL_NUM0_MASK)
+            >> ZLL_CHANNEL_NUM0_CHANNEL_NUM0_SHIFT;
 }
 
 uint16_t kw41zrf_get_pan(kw41zrf_t *dev)
 {
     (void) dev;
-    return (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACPANID0_MASK) >> ZLL_MACSHORTADDRS0_MACPANID0_SHIFT;
+    return (ZLL->MACSHORTADDRS0 & ZLL_MACSHORTADDRS0_MACPANID0_MASK)
+            >> ZLL_MACSHORTADDRS0_MACPANID0_SHIFT;
 }
 
 int kw41zrf_set_channel(kw41zrf_t *dev, uint8_t channel)
@@ -104,8 +106,9 @@ int kw41zrf_set_channel(kw41zrf_t *dev, uint8_t channel)
 void kw41zrf_set_pan(kw41zrf_t *dev, uint16_t pan)
 {
     (void) dev;
-    ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0 & ~ZLL_MACSHORTADDRS0_MACPANID0_MASK) |
-        ZLL_MACSHORTADDRS0_MACPANID0(pan);
+    ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0
+                            & ~ZLL_MACSHORTADDRS0_MACPANID0_MASK) |
+                            ZLL_MACSHORTADDRS0_MACPANID0(pan);
 
     DEBUG("[kw41zrf] set pan to: 0x%x\n", pan);
 }
@@ -113,8 +116,9 @@ void kw41zrf_set_pan(kw41zrf_t *dev, uint16_t pan)
 void kw41zrf_set_addr_short(kw41zrf_t *dev, const network_uint16_t *addr)
 {
     (void) dev;
-    ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0 & ~ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) |
-        ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr->u16);
+    ZLL->MACSHORTADDRS0 = (ZLL->MACSHORTADDRS0
+                            & ~ZLL_MACSHORTADDRS0_MACSHORTADDRS0_MASK) |
+                            ZLL_MACSHORTADDRS0_MACSHORTADDRS0(addr->u16);
 }
 
 void kw41zrf_set_addr_long(kw41zrf_t *dev, const eui64_t *addr)
@@ -169,7 +173,8 @@ uint8_t kw41zrf_get_cca_mode(kw41zrf_t *dev)
 int8_t kw41zrf_get_ed_level(kw41zrf_t *dev)
 {
     (void) dev;
-    return (ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_CCA1_ED_FNL_MASK) >> ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT;
+    return (ZLL->LQI_AND_RSSI & ZLL_LQI_AND_RSSI_CCA1_ED_FNL_MASK)
+            >> ZLL_LQI_AND_RSSI_CCA1_ED_FNL_SHIFT;
 }
 
 void kw41zrf_set_option(kw41zrf_t *dev, uint8_t option, uint8_t state)
@@ -186,7 +191,8 @@ void kw41zrf_set_option(kw41zrf_t *dev, uint8_t option, uint8_t state)
             case KW41ZRF_OPT_AUTOACK:
             case KW41ZRF_OPT_ACK_PENDING:
             case KW41ZRF_OPT_TELL_RX_START:
-                LOG_ERROR("[kw41zrf] Attempt to modify option %04x while radio is sleeping\n", (unsigned) option);
+                LOG_ERROR("[kw41zrf] Attempt to modify option %04x while radio is sleeping\n",
+                          (unsigned) option);
                 assert(0);
                 return;
 

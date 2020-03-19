@@ -547,7 +547,7 @@ int kw41zrf_netdev_get(netdev_t *netdev, netopt_t opt, void *value, size_t len)
     else {
         /* Wait for oscillator ready signal if the CPU is coming out of low
          * power mode */
-        while((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
+        while ((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
     }
 
     int res = -ENOTSUP;

@@ -100,7 +100,6 @@
 #define KW41ZRF_LED_IRQ_OFF
 #endif /* KW41ZRF_ENABLE_LEDS */
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

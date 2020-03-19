@@ -109,7 +109,7 @@ int kw41zrf_reset_hardware(kw41zrf_t *dev)
     RSIM->CONTROL |= RSIM_CONTROL_RF_OSC_EN(1);
 
     /* Wait for oscillator ready signal */
-    while((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
+    while ((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
 
     /* Assert radio software reset */
     RSIM->CONTROL |= RSIM_CONTROL_RADIO_RESET_BIT_MASK;

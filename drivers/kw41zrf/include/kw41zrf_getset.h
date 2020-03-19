@@ -26,7 +26,6 @@
 extern "C" {
 #endif
 
-
 /**
  * @name   Internal device option flags
  * @{
@@ -125,24 +124,24 @@ void kw41zrf_set_addr_long(kw41zrf_t *dev, const eui64_t *addr);
 /**
  * @brief   Get short address of a given device
  *
- * @param[in] dev       kw41zrf device descriptor
- * @return              current short address
+ * @param[in]  dev       kw41zrf device descriptor
+ * @param[out] addr      current short address
  */
 void kw41zrf_get_addr_short(kw41zrf_t *dev, network_uint16_t *addr);
 
 /**
  * @brief   Get long address of a given device
  *
- * @param[in] dev       kw41zrf device descriptor
- * @return              current long address
+ * @param[in]  dev       kw41zrf device descriptor
+ * @param[out] addr      current long address
  */
 void kw41zrf_get_addr_long(kw41zrf_t *dev, eui64_t *addr);
 
 /**
- * @brief   Get CCA threshhold of a given device
+ * @brief   Get CCA threshold of a given device
  *
  * @param[in] dev       kw41zrf device descriptor
- * @return              current CCA threshhold
+ * @return              current CCA threshold
  */
 int8_t kw41zrf_get_cca_threshold(kw41zrf_t *dev);
 

@@ -73,7 +73,7 @@
 static void kw41zrf_xcvr_spin(uint32_t time)
 {
     time *= 32; /* Time delay is roughly in uSec. */
-    while(time > 0)
+    while (time > 0)
     {
         __asm__ volatile  ("" ::: "memory");
         --time;
@@ -713,7 +713,7 @@ static int kw41zrf_xcvr_configure(kw41zrf_t *dev,
         XCVR_TSM->CTRL &= ~XCVR_TSM_CTRL_DATA_PADDING_EN_MASK;
     }
 
-    XCVR_MISC->LPPS_CTRL = com_config->lpps_ctrl_init; /* Register is in XCVR_MISC but grouped with TSM for intialization */
+    XCVR_MISC->LPPS_CTRL = com_config->lpps_ctrl_init; /* Register is in XCVR_MISC but grouped with TSM for initialization */
 
     XCVR_TSM->OVRD2 = com_config->tsm_ovrd2_init;
     /* TSM registers and timings - dependent upon clock frequency */
@@ -887,10 +887,10 @@ int kw41zrf_xcvr_init(kw41zrf_t *dev)
         {TRIM_STATUS, 0, 0}, /*< Fetch the trim status word if available.*/
         {TRIM_VERSION, 0, 0} /*< Fetch the trim version number if available.*/
     };
-    handle_ifr(&sw_trim_tbl[0], sizeof(sw_trim_tbl) / sizeof(sw_trim_tbl[0]));
+    handle_ifr(&sw_trim_tbl[0], ARRAY_SIZE(sw_trim_tbl));
     DEBUG("[kw41zrf] sw_trim_tbl:\n");
 
-    for (unsigned k = 0; k < sizeof(sw_trim_tbl) / sizeof(sw_trim_tbl[0]); ++k) {
+    for (unsigned k = 0; k < ARRAY_SIZE(sw_trim_tbl); ++k) {
         DEBUG("[kw41zrf] [%u] id=0x%04x ", k, (unsigned)sw_trim_tbl[k].trim_id);
         if (sw_trim_tbl[k].trim_id == TRIM_STATUS) {
             DEBUG("(TRIM_STATUS)  ");

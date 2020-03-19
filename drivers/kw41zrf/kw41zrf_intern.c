@@ -81,7 +81,7 @@ void kw41zrf_set_power_mode(kw41zrf_t *dev, kw41zrf_powermode_t pm)
             RSIM->DSM_CONTROL = (RSIM_DSM_CONTROL_DSM_TIMER_EN_MASK |
                                 RSIM_DSM_CONTROL_ZIG_SYSCLK_REQUEST_EN_MASK);
             /* Wait for oscillator ready signal before attempting to recover from DSM */
-            while((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
+            while ((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0) {}
             KW41ZRF_LED_NDSM_ON;
             /* If we are already awake we can just return now. */
             if (!(kw41zrf_is_dsm())) {
