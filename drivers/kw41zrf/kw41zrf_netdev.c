@@ -54,8 +54,11 @@
 
 static void kw41zrf_netdev_isr(netdev_t *netdev);
 
+/* True while we've already queued a callback and don't need to queue another */
 static atomic_bool irq_is_queued = false;
-static bool blocking_for_irq = 0;
+
+/* True while blocking the netdev thread waiting for some operation to finish */
+static bool blocking_for_irq = false;
 
 /* Set this to a flag bit that is not used by the MAC implementation */
 #define KW41ZRF_THREAD_FLAG_ISR (1u << 8)
@@ -175,7 +178,7 @@ static void kw41zrf_wait_idle(kw41zrf_t *dev)
 
     PM_BLOCK(KW41ZRF_PM_BLOCKER);
     while (1) {
-        /* TX or CCA in progress */
+        /* TX or CCA or CSMA backoff in progress */
         /* Block until we get an IRQ */
         thread_flags_wait_any(KW41ZRF_THREAD_FLAG_ISR);
         /* Handle the IRQ */
@@ -1176,9 +1179,7 @@ static void kw41zrf_netdev_isr(netdev_t *netdev)
     kw41zrf_t *dev = (kw41zrf_t *)netdev;
 
     irq_is_queued = false;
-    if (!blocking_for_irq) {
-        thread_flags_clear(KW41ZRF_THREAD_FLAG_ISR);
-    }
+    thread_flags_clear(KW41ZRF_THREAD_FLAG_ISR);
 
     /* ZLL register access requires that the transceiver is not in deep sleep mode */
     if (kw41zrf_is_dsm()) {
