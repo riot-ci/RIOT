@@ -1,5 +1,6 @@
 ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul_gpio
+  USEMODULE += apds9960
   USEMODULE += bmp280_i2c
   USEMODULE += lis3mdl
   USEMODULE += sht3x
