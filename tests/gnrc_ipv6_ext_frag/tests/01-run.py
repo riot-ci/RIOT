@@ -319,7 +319,7 @@ def testfunc(child):
     tap = get_bridge(os.environ["TAP"])
 
     child.sendline("unittests")
-    run_check_unittests(child)  # wait for and check result of unittests
+    check_unittests(child)  # wait for and check result of unittests
     print("." * int(child.match.group(1)), end="", flush=True)
 
     lladdr_src = get_host_lladdr(tap)

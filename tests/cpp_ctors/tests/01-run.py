@@ -7,7 +7,7 @@
 # directory for more details.
 
 import sys
-from testrunner import check_unittests
+from testrunner import run_check_unittests
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@
 # directory for more details.
 
 import sys
-from testrunner import check_unittests
+from testrunner import run_check_unittests
 
 
 # increase the default timeout to 30s, on samr30-xpro this test takes 20s to

@@ -7,7 +7,7 @@
 # directory for more details.
 
 import sys
-from testrunner import check_unittests
+from testrunner import run_check_unittests
 
 # It takes ~11s on nucleo-l152re, so add some margin
 TIMEOUT = 15
