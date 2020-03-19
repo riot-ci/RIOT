@@ -61,7 +61,12 @@ up_bridge() {
         FreeBSD|OSX)
             ifconfig ${BRNAME} up || exit 1 ;;
         Linux)
-            ip link set ${BRNAME} up || exit 1 ;;
+            ip link set ${BRNAME} up || exit 1
+
+            # The bridge is now the new uplink
+            if [ -n "${UPLINK}" ]; then
+                dhclient ${BRNAME}
+            fi ;;
         *)
             ;;
     esac
@@ -82,7 +87,12 @@ delete_bridge() {
                 fi
             done
 
-            ip link delete ${BRNAME} || exit 1 ;;
+            ip link delete ${BRNAME} || exit 1
+
+            # restore the old uplink
+            if [ -n "${UPLINK}" ]; then
+                dhclient ${UPLINK}
+            fi ;;
         OSX)
             ifconfig ${BRNAME} destroy || exit 1 ;;
         *)
