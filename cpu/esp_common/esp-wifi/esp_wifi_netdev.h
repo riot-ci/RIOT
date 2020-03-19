@@ -65,6 +65,16 @@ typedef struct
 
 } esp_wifi_netdev_t;
 
+/**
+ * @brief   Called before the power management enters a light or deep sleep mode
+ */
+void esp_wifi_pm_sleep_enter(void);
+
+/**
+ * @brief   Called after the power management left light sleep mode
+ */
+void esp_wifi_pm_sleep_exit(void);
+
 #ifdef __cplusplus
 }
 #endif
