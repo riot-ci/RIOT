@@ -10,7 +10,7 @@
 import os
 import sys
 
-from testrunner import check_unittests
+from testrunner import run_check_unittests
 from testrunner import TIMEOUT as DEFAULT_TIMEOUT
 
 
