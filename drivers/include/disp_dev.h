@@ -151,7 +151,7 @@ void disp_dev_set_invert(disp_dev_t *dev, bool invert);
 /**
  * @brief   Enable the backlight pin
  */
-inline void disp_dev_backlight_on(void)
+static inline void disp_dev_backlight_on(void)
 {
     BACKLIGHT_ON;
 }
@@ -159,7 +159,7 @@ inline void disp_dev_backlight_on(void)
 /**
  * @brief   Disable the backlight pin
  */
-inline void disp_dev_backlight_off(void)
+static inline void disp_dev_backlight_off(void)
 {
     BACKLIGHT_OFF;
 }
