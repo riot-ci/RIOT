@@ -47,14 +47,14 @@ def run(testfunc, timeout=TIMEOUT, echo=True, traceback=False):
     return 0
 
 
-def check_unittests_func(child, timeout=TIMEOUT, nb_tests=None):
+def check_unittests(child, timeout=TIMEOUT, nb_tests=None):
     _tests = r'\d+' if nb_tests is None else int(nb_tests)
     child.expect(r'OK \({} tests\)'.format(_tests), timeout=timeout)
 
 
-def check_unittests(timeout=TIMEOUT, echo=True, traceback=False,
-                    nb_tests=None):
-    _unittests_func = partial(check_unittests_func,
+def run_check_unittests(timeout=TIMEOUT, echo=True, traceback=False,
+                        nb_tests=None):
+    _unittests_func = partial(check_unittests,
                               timeout=timeout, nb_tests=nb_tests)
 
     return run(_unittests_func, timeout, echo, traceback)
