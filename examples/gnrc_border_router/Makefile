@@ -12,7 +12,7 @@ UPLINK ?= ethos
 
 # Check if the selected Uplink is valid
 ifeq (,$(filter ethos slip wifi,$(UPLINK)))
-  $(error Supported Uplinks are ethos, slip and wifi)
+  $(error Supported uplinks are `ethos`, `slip` and `wifi`)
 endif
 
 # Set the SSID and password of your WiFi network here
