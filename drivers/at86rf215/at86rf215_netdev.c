@@ -21,7 +21,6 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <strings.h>
 
 #include "iolist.h"
 
@@ -612,7 +611,7 @@ static void _start_backoff_timer(at86rf215_t *dev)
     /* limit the 32bit random value to the current backoff */
     csma_backoff_usec = base % csma_backoff_usec;
 
-    DEBUG("Set CSMA backoff to %lu (be %u min %u max %u base: %lu)\n",
+    DEBUG("Set CSMA backoff to %"PRIu32" (be %u min %u max %u base: %"PRIu32")\n",
           csma_backoff_usec, be, dev->csma_minbe, dev->csma_maxbe, base);
 
     dev->timer_msg.type = NETDEV_MSG_TYPE_EVENT;
