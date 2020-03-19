@@ -13,7 +13,7 @@ The script `start_network.sh` enables a *ready-to-use* BR in only one command.
 The border router will route packets between a 6Lo network (PAN) and a 'normal'
 IPv6 network (i.e. the Internet).
 
-This requires the border router to have two interfaces, a downstream, 6lo-interface
+This requires the border router to have two interfaces, a downstream, 6LoWPAN-interface
 and an IPv6 uplink.
 
 This setup comes with support for three uplink types pre-configured.
