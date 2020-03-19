@@ -16,4 +16,4 @@ TIMEOUT = 30
 
 
 if __name__ == "__main__":
-    sys.exit(check_unittests(timeout=TIMEOUT))
+    sys.exit(run_check_unittests(timeout=TIMEOUT))

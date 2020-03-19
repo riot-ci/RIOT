@@ -12,4 +12,4 @@ from testrunner import check_unittests
 
 
 if __name__ == "__main__":
-    sys.exit(check_unittests(nb_tests=1))
+    sys.exit(run_check_unittests(nb_tests=1))
