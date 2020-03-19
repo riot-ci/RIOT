@@ -82,7 +82,6 @@ static inline void _setup_netif(void* netdev, void* stack, int prio) {
 #endif
 }
 
-
 void auto_init_at86rf215(void)
 {
     unsigned i = 0;
@@ -91,7 +90,8 @@ void auto_init_at86rf215(void)
 
         at86rf215_t *dev_09 = NULL;
         at86rf215_t *dev_24 = NULL;
-        void *stack_09, *stack_24;
+        void *stack_09 = NULL;
+        void *stack_24 = NULL;
 
         if (IS_USED(MODULE_AT86RF215_SUBGHZ)) {
             dev_09   = &at86rf215_devs[i];
