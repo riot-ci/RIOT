@@ -55,9 +55,10 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-/* The implementations for these functions are taken from the vendor provided XCVR
- * driver from NXP MCUXpresso. The code has been refactored to eliminate a lot
- * of preprocessor conditionals. */
+/* The implementations for these functions are taken from the vendor-provided
+ * XCVR driver from mcuxpresso.nxp.com (KSDK 2.2.0, framework_5.3.5)
+ * The code has been refactored to eliminate a lot of preprocessor
+ * conditionals. */
 
 #define TsettleCal 10
 #define DCOC_DAC_BBF_STEP (16)
