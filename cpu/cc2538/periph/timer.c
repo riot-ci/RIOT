@@ -61,6 +61,45 @@ static const _isr_cfg_t chn_isr_cfg[] = {
  */
 static timer_isr_ctx_t isr_ctx[TIMER_NUMOF];
 
+static union {
+    uint16_t u16[2];
+    uint32_t u32;
+} _set_values[TIMER_NUMOF];
+
+static unsigned _set_timers;
+
+static void _set_absolute_disabled(tim_t tim, int chan, unsigned int value)
+{
+    _set_timers |= ((chan + 1) << (2 * tim));
+
+    if (timer_config[tim].cfg == GPTMCFG_32_BIT_TIMER) {
+        _set_values[tim].u32 = value;
+    } else {
+        _set_values[tim].u16[chan] = value;
+    }
+}
+
+static void _set_pending(tim_t tim)
+{
+    const unsigned ch1_msk = (1 << (2 * tim));
+    const unsigned ch2_msk = (2 << (2 * tim));
+
+    if (_set_timers & ch1_msk) {
+        _set_timers &= ~ch1_msk;
+
+        if (timer_config[tim].cfg == GPTMCFG_32_BIT_TIMER) {
+            timer_set_absolute(tim, 0, _set_values[tim].u32);
+            return;
+        } else {
+            timer_set_absolute(tim, 0, _set_values[tim].u16[0]);
+        }
+    }
+    if (_set_timers & ch2_msk) {
+        _set_timers &= ~ch2_msk;
+        timer_set_absolute(tim, 1, _set_values[tim].u16[1]);
+    }
+}
+
 /* enable timer interrupts */
 static inline void _irq_enable(tim_t tim)
 {
@@ -92,6 +131,8 @@ static inline void _timer_clock_enable(tim_t tim)
            !(SYS_CTRL->SCGCGPT &= (1UL << tim)) || \
            !(SYS_CTRL->DCGCGPT &= (1UL << tim))
            ) {}
+
+    _set_pending(tim);
 }
 
 static inline void _timer_clock_disable(tim_t tim)
@@ -191,15 +232,17 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 {
     DEBUG("%s(%u, %u, %u)\n", __FUNCTION__, tim, channel, value);
 
-    /* GPT timer needs to be gated to write to registers */
-    bool timer_on = (SYS_CTRL->RCGCGPT & (1UL << tim));
-    if(!timer_on) {
-        _timer_clock_enable(tim);
-    }
-
     if ((tim >= TIMER_NUMOF) || (channel >= (int)timer_config[tim].chn) ) {
         return -1;
     }
+
+    /* GPT timer needs to be gated to write to registers */
+    bool timer_on = (SYS_CTRL->RCGCGPT & (1UL << tim));
+    if (!timer_on) {
+        _set_absolute_disabled(tim, channel, value);
+        return 0;
+    }
+
     /* clear any pending match interrupts */
     dev(tim)->ICR = chn_isr_cfg[channel].flag;
     if (channel == 0) {
@@ -210,10 +253,6 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
         dev(tim)->TBMATCHR = (LOAD_VALUE - value);
     }
     dev(tim)->IMR |= chn_isr_cfg[channel].flag;
-
-    if(!timer_on) {
-        _timer_clock_disable(tim);
-    }
 
     return 0;
 }
