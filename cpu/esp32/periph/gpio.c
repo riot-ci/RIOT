@@ -562,7 +562,9 @@ int gpio_set_drive_capability(gpio_t pin, gpio_drive_strength_t drive)
     return 0;
 }
 
+#if MODULE_PERIPH_GPIO_IRQ
 static uint32_t gpio_int_saved_type[GPIO_PIN_NUMOF];
+#endif
 
 void gpio_pm_sleep_enter(unsigned mode)
 {
