@@ -33,7 +33,7 @@ router, stdio is multiplexed over the same line.
 The `wifi` uplink will connect to an existing WiFi (IEEE 802.11) network.
 The network must provide a DHCPv6 server that supports prefix delegation (IA_PD).
 
-Use `WIFI_SSID="SSID" WIFI_PASS="password"` in your `make` command to set your WiFi
+Use `WIFI_SSID="SSID" WIFI_PASS="password"` in your `make` command to set your WiFi's
 credentials. You can alternatively edit the `Makefile`.
 
 Currently this requires an esp8266 or esp32 for the border router.
