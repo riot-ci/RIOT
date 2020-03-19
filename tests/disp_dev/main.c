@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "board.h"
 #include "disp_dev.h"
 
 #include "ili9341.h"
@@ -35,9 +36,9 @@ static ili9341_t ili9341;
 
 int main(void)
 {
-#ifdef BOARD_PINETIME
-    /* on PineTime, enable the backlight */
-    gpio_clear(LCD_BACKLIGHT_LOW);
+    /* Enable backlight if macro is defined */
+#ifdef BACKLIGHT_ON
+    BACKLIGHT_ON;
 #endif
 
     ili9341_init(&ili9341, &ili9341_params[0]);

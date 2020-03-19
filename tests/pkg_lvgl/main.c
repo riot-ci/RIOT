@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "board.h"
 #include "xtimer.h"
 
 #include "lvgl/lvgl.h"
@@ -127,6 +128,11 @@ void sysmon_create(void)
 
 int main(void)
 {
+    /* Enable backlight if macro is defined */
+#ifdef BACKLIGHT_ON
+    BACKLIGHT_ON;
+#endif
+
     /* Configure the generic display driver interface */
     disp_dev_t *disp_dev = (disp_dev_t *)&dev;
     disp_dev->driver = &ili9341_disp_dev_driver;
