@@ -34,13 +34,6 @@
 #include "soc/rtc.h"
 #include "soc/rtc_cntl_reg.h"
 
-#ifdef MODULE_ESP_NOW
-#include "esp_now_netdev.h"
-#endif
-#ifdef MODULE_ESP_WIFI
-#include "esp_wifi_netdev.h"
-#endif
-
 static inline void pm_set_lowest_normal(void)
 {
     #if !defined(QEMU)
@@ -110,10 +103,12 @@ void pm_set(unsigned mode)
 
 #ifdef MODULE_ESP_WIFI
     /* stop WiFi if necessary */
+    extern void esp_wifi_pm_sleep_enter(void);
     esp_wifi_pm_sleep_enter();
 #endif
 #ifdef MODULE_ESP_NOW
     /* stop WiFi if necessary */
+    extern void esp_now_pm_sleep_enter(void);
     esp_now_pm_sleep_enter();
 #endif
 
@@ -142,10 +137,12 @@ void pm_set(unsigned mode)
         }
 #ifdef MODULE_ESP_WIFI
         /* restart WiFi if necessary */
+        extern void esp_wifi_pm_sleep_exit(void);
         esp_wifi_pm_sleep_exit();
 #endif
 #ifdef MODULE_ESP_NOW
         /* restop WiFi if necessary */
+        void esp_now_pm_sleep_exit(void);
         esp_now_pm_sleep_exit();
 #endif
     }
