@@ -36,7 +36,7 @@ The network must provide a DHCPv6 server that supports prefix delegation (IA_PD)
 Use `WIFI_SSID="SSID" WIFI_PASS="password"` in your `make` command to set your WiFi's
 credentials. You can alternatively edit the `Makefile`.
 
-Currently this requires an esp8266 or esp32 for the border router.
+Currently, `wifi` requires an esp8266 or esp32 for the border router.
 On the downstream interface the proprietary `esp_now` link is used. It behaves similar
 to IEEE 802.15.4 but is only availiably on Espressif's wireless MCUs.
 
