@@ -38,7 +38,7 @@ USEMODULE += ps
 
 # When using a WiFi uplink we should use DHCPv6
 ifeq (wifi,$(UPLINK))
-  USE_DHCPV6 = 1
+  USE_DHCPV6 ?= 1
 else
   USE_DHCPV6 ?= 0
 endif
