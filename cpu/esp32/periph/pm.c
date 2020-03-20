@@ -47,7 +47,12 @@ static inline void pm_set_lowest_normal(void)
 
 void IRAM_ATTR pm_off(void)
 {
+    /* disable remaining power domains */
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+
     /* enter hibernate mode without any enabled wake-up sources */
+    esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
     esp_deep_sleep_start();
 }
 
