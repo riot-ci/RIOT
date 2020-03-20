@@ -20,7 +20,6 @@ __email__ = "m.lenders@fu-berlin.de"
 
 
 class Apt(Installer):
-    def install(self, package):
-        if self._ask(package):
-            subprocess.run(["apt-get", "-y", "install",
-                            package[self.os]["name"]])
+    def _install(self, package):
+        subprocess.run(["apt-get", "-y", "install",
+                        package[self.os]["name"]])

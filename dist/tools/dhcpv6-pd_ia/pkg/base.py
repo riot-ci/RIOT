@@ -24,8 +24,19 @@ class Installer(abc.ABC):
         self.os = os
 
     @abc.abstractmethod
-    def install(self, package):
+    def _install(self, package):
+        """
+        Executes the install command
+        """
         pass
+
+    def install(self, package):
+        """
+        Executes the install command, but asks the user before-hand if it is
+        okay to do so.
+        """
+        if self._ask(package):
+            self._install(package)
 
     @staticmethod
     def _ask(package):

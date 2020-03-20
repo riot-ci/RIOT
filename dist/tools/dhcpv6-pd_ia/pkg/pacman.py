@@ -21,6 +21,5 @@ __email__ = "m.lenders@fu-berlin.de"
 
 class PacMan(Installer):
     def install(self, package):
-        if self._ask(package):
-            subprocess.run(["pacman", "--noconfirm", "-S",
-                            package[self.os]["name"]])
+        subprocess.run(["pacman", "--noconfirm", "-S",
+                        package[self.os]["name"]])
