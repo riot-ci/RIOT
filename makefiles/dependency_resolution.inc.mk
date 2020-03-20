@@ -5,6 +5,9 @@
 OLD_USEMODULE := $(sort $(USEMODULE))
 OLD_USEPKG:= $(sort $(USEPKG))
 
+# add default modules
+USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
+
 # pull in dependencies of the currently used modules and pkgs
 include $(RIOTBASE)/Makefile.dep
 
@@ -13,9 +16,6 @@ include $(RIOTMAKE)/features_check.inc.mk
 
 # translate used features into used module, where needed
 include $(RIOTMAKE)/features_modules.inc.mk
-
-# add default modules
-USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
 
 # sort and de-duplicate used modules and pkgs
 USEMODULE := $(sort $(USEMODULE))
