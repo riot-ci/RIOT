@@ -46,6 +46,7 @@
 #include <stdint.h>
 
 #include "xtimer.h"
+#include "timex.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,7 +111,7 @@ void evtimer_print(const evtimer_t *evtimer);
  */
 static inline uint32_t evtimer_now_msec(void)
 {
-    return (xtimer_now_usec64() / US_PER_MS) & UINT32_MAX;
+    return xtimer_now_usec64() / US_PER_MS;
 }
 
 #ifdef __cplusplus
