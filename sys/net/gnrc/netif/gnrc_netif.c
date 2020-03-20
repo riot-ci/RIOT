@@ -39,16 +39,6 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#ifdef MODULE_GNRC_NETIF_EVENTS
-/**
- * @brief   Event type used for passing netdev pointers together with the event
- */
-typedef struct {
-    event_t super;
-    netdev_t *dev;
-} event_netdev_t;
-#endif /* MODULE_GNRC_NETIF_EVENTS */
-
 static gnrc_netif_t _netifs[GNRC_NETIF_NUMOF];
 
 static void _update_l2addr_from_dev(gnrc_netif_t *netif);
@@ -1365,8 +1355,8 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
  */
 static void _event_handler_isr(event_t *evp)
 {
-    netdev_t *dev = ((event_netdev_t*)evp)->dev;
-    dev->driver->isr(dev);
+    gnrc_netif_t *netif = container_of(evp, gnrc_netif_t, event_isr);
+    netif->dev->driver->isr(netif->dev);
 }
 #endif /* MODULE_GNRC_NETIF_EVENTS */
 
@@ -1431,11 +1421,7 @@ static void *_gnrc_netif_thread(void *args)
     dev = netif->dev;
     netif->pid = sched_active_pid;
 #ifdef MODULE_GNRC_NETIF_EVENTS
-    event_netdev_t ev_isr = {
-        .super = { .handler = _event_handler_isr, },
-        .dev = dev,
-    };
-    netif->event_isr = &ev_isr;
+    netif->event_isr.handler = _event_handler_isr,
     /* set up the event queue */
     event_queue_init(&netif->evq);
 #endif /* MODULE_GNRC_NETIF_EVENTS */
@@ -1566,8 +1552,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
     if (event == NETDEV_EVENT_ISR) {
 #ifdef MODULE_GNRC_NETIF_EVENTS
-        event_netdev_t *etp = netif->event_isr;
-        event_post(&netif->evq, &etp->super);
+        event_post(&netif->evq, &netif->event_isr);
 #else /* MODULE_GNRC_NETIF_EVENTS */
         msg_t msg = { .type = NETDEV_MSG_TYPE_EVENT,
                       .content = { .ptr = netif } };
