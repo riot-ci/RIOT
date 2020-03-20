@@ -114,6 +114,14 @@ static inline uint32_t evtimer_now_msec(void)
     return xtimer_now_usec64() / US_PER_MS;
 }
 
+/**
+ * @brief   Return the current system time in minutes
+ */
+static inline uint32_t evtimer_now_min(void)
+{
+    return xtimer_now_usec64() / (US_PER_SEC * SEC_PER_MIN);
+}
+
 #ifdef __cplusplus
 }
 #endif
