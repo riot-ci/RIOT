@@ -56,13 +56,13 @@ static inline void pm_set_lowest_normal(void)
     /* reset system watchdog timer */
     system_wdt_feed();
 
-    #ifndef MODULE_ESP_QEMU
+#ifndef MODULE_ESP_QEMU
     /* passive wait for interrupt to leave lowest power mode */
     __asm__ volatile ("waiti 0");
 
     /* reset system watchdog timer */
     system_wdt_feed();
-    #endif
+#endif
 }
 
 void IRAM_ATTR pm_off(void)
