@@ -34,9 +34,29 @@
 #include "soc/rtc.h"
 #include "soc/rtc_cntl_reg.h"
 
+static inline esp_sleep_wakeup_cause_t pm_get_wakeup_cause(void)
+{
+    return esp_sleep_get_wakeup_cause();
+}
+
+/* function that is required by pm_set if esp_now and esp_wifi are not used */
+esp_err_t __attribute__((weak)) esp_wifi_start(void)
+{
+    return ESP_OK;
+}
+
+/* function that is required by pm_set if esp_now and esp_wifi are not used */
+esp_err_t __attribute__((weak)) esp_wifi_stop(void)
+{
+    return ESP_OK;
+}
+
 static inline void pm_set_lowest_normal(void)
 {
-    #if !defined(QEMU)
+    /* reset system watchdog timer */
+    system_wdt_feed();
+
+    #ifndef MODULE_ESP_QEMU
     /* passive wait for interrupt to leave lowest power mode */
     __asm__ volatile ("waiti 0");
 
@@ -80,18 +100,6 @@ void pm_set_lowest(void)
 
 #else /* MODULE_PM_LAYERED */
 
-/* function that is required by pm_set if esp_now and esp_wifi are not used */
-esp_err_t __attribute__((weak)) esp_wifi_start(void)
-{
-    return ESP_OK;
-}
-
-/* function that is required by pm_set if esp_now and esp_wifi are not used */
-esp_err_t __attribute__((weak)) esp_wifi_stop(void)
-{
-    return ESP_OK;
-}
-
 void pm_set(unsigned mode)
 {
     if (mode == ESP_PM_MODEM_SLEEP) {
@@ -101,8 +109,8 @@ void pm_set(unsigned mode)
 
     DEBUG ("%s enter to power mode %d @%u\n", __func__, mode, system_get_time());
 
-    /* wait until UART is idle to avoid losing output */
-    uart_tx_wait_idle(CONFIG_CONSOLE_UART_NUM);
+    /* flush stdout */
+    fflush(stdout);
 
     /* Labels for RTC slow memory that are defined in the linker script */
     extern int _rtc_bss_rtc_start;
@@ -118,11 +126,8 @@ void pm_set(unsigned mode)
         esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
     }
 
-    /* stop WiFi if necessary */
-    esp_wifi_stop();
-
     /* Prepare the RTC timer if an RTC alarm is set to wake up. */
-    rtc_pm_sleep_enter();
+    rtc_pm_sleep_enter(mode);
 
     /* Prepare GPIOs as wakeup source */
     gpio_pm_sleep_enter(mode);
@@ -133,17 +138,17 @@ void pm_set(unsigned mode)
         UNREACHABLE();
     }
     else if (mode == ESP_PM_LIGHT_SLEEP) {
+        /* stop WiFi if necessary */
+        esp_wifi_stop();
+
         esp_light_sleep_start();
-        gpio_pm_sleep_exit();
 
-        uint32_t wakeup_cause = esp_sleep_get_wakeup_cause();
-        DEBUG ("%s exit from power mode %d because of %d @%u\n", __func__,
-               mode, wakeup_cause, system_get_time());
+        esp_sleep_wakeup_cause_t pm_wakeup_reason = pm_get_wakeup_cause();
+        gpio_pm_sleep_exit(pm_wakeup_reason);
+        rtc_pm_sleep_exit(pm_wakeup_reason);
 
-        if (wakeup_cause == ESP_SLEEP_WAKEUP_TIMER) {
-            /* call the RTC alarm handler if an RTC alarm was set */
-            rtc_pm_sleep_exit();
-        }
+        DEBUG ("%s exit from power mode %d @%u with reason %d\n", __func__,
+               mode, system_get_time(), pm_wakeup_reason);
 
         /* restart WiFi if necessary */
         if (esp_wifi_start() != ESP_OK) {

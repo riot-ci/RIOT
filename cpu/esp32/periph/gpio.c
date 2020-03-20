@@ -636,8 +636,9 @@ void gpio_pm_sleep_enter(unsigned mode)
     }
 }
 
-void gpio_pm_sleep_exit(void)
+void gpio_pm_sleep_exit(uint32_t cause)
 {
+    (void)cause;
 #if MODULE_PERIPH_GPIO_IRQ
     DEBUG("%s\n", __func__);
     for (unsigned i = 0; i < GPIO_PIN_NUMOF; i++) {
