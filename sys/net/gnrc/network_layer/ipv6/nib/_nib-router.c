@@ -183,7 +183,7 @@ static gnrc_pktsnip_t *_build_ext_opts(gnrc_netif_t *netif,
     }
     ltime = (gnrc_netif_is_6lbr(netif)) ?
             (SIXLOWPAN_ND_OPT_ABR_LTIME_DEFAULT) :
-            (abr->valid_until - _now_min());
+            (abr->valid_until - evtimer_now_min());
     (void)ltime;    /* gnrc_sixlowpan_nd_opt_abr_build might evaluate to NOP */
     abro = gnrc_sixlowpan_nd_opt_abr_build(abr->version, ltime, &abr->addr,
                                            ext_opts);

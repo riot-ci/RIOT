@@ -33,11 +33,6 @@
 extern "C" {
 #endif
 
-static inline uint32_t _now_min(void)
-{
-    return evtimer_now_msec() / (MS_PER_SEC * SEC_PER_MIN);
-}
-
 #if GNRC_IPV6_NIB_CONF_6LN || defined(DOXYGEN)
 /**
  * @brief   Additional (local) status to ARO status values for tentative
