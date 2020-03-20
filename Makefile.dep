@@ -1031,3 +1031,9 @@ FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 ifneq (,$(filter ecc_%,$(USEMODULE)))
   USEMODULE += ecc
 endif
+
+ifneq (,$(filter test_utils_interactive_sync,$(USEMODULE)))
+  ifneq (,$(filter shell,$(USEMODULE)))
+    DEFAULT_MODULE += test_utils_interactive_sync_shell
+  endif
+endif
