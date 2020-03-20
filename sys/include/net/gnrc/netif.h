@@ -30,6 +30,9 @@
 
 #include "kernel_types.h"
 #include "msg.h"
+#ifdef MODULE_GNRC_NETIF_EVENTS
+#include "event.h"
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 #include "net/ipv6/addr.h"
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/pkt.h"
@@ -94,6 +97,16 @@ typedef struct {
      * @see net_gnrc_netif_flags
      */
     uint32_t flags;
+#if defined(MODULE_GNRC_NETIF_EVENTS) || DOXYGEN
+    /**
+     * @brief   Event queue for asynchronous events
+     */
+    event_queue_t evq;
+    /**
+     * @brief   ISR event for the network device
+     */
+    event_t event_isr;
+#endif /* MODULE_GNRC_NETIF_EVENTS */
 #if (GNRC_NETIF_L2ADDR_MAXLEN > 0) || DOXYGEN
     /**
      * @brief   The link-layer address currently used as the source address
