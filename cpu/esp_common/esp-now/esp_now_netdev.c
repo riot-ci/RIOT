@@ -452,26 +452,6 @@ esp_now_netdev_t *netdev_esp_now_setup(void)
     return dev;
 }
 
-void esp_now_pm_sleep_enter(void)
-{
-#ifndef MODULE_ESP_WIFI
-    /* stop WiFi if esp_wifi is not used, otherwise it is done by esp_wifi */
-    esp_wifi_stop();
-#endif
-}
-
-void esp_now_pm_sleep_exit(void)
-{
-#ifndef MODULE_ESP_WIFI
-    /* restart WiFi if esp_wifi is not used, otherwise it is done by esp_wifi */
-    esp_err_t result = esp_wifi_start();
-    if (result != ESP_OK) {
-        LOG_TAG_ERROR("esp_now",
-                      "esp_wifi_start failed with return value %d\n", result);
-    }
-#endif
-}
-
 static int _init(netdev_t *netdev)
 {
     DEBUG("%s: %p\n", __func__, netdev);
