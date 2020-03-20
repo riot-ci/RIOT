@@ -143,12 +143,12 @@ void pm_set(unsigned mode)
 
         esp_light_sleep_start();
 
-        esp_sleep_wakeup_cause_t pm_wakeup_reason = pm_get_wakeup_cause();
-        gpio_pm_sleep_exit(pm_wakeup_reason);
-        rtc_pm_sleep_exit(pm_wakeup_reason);
+        esp_sleep_wakeup_cause_t wakeup_reason = pm_get_wakeup_cause();
+        gpio_pm_sleep_exit(wakeup_reason);
+        rtc_pm_sleep_exit(wakeup_reason);
 
         DEBUG ("%s exit from power mode %d @%u with reason %d\n", __func__,
-               mode, system_get_time(), pm_wakeup_reason);
+               mode, system_get_time(), wakeup_reason);
 
         /* restart WiFi if necessary */
         if (esp_wifi_start() != ESP_OK) {
