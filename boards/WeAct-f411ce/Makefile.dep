@@ -1,0 +1,13 @@
+ifneq (,$(filter saul_default,$(USEMODULE)))
+  USEMODULE += saul_gpio
+endif
+
+# Provide stdio over USB by default
+# This is a temporary solution until management of stdio is correctly
+# handled by the build system
+DEFAULT_MODULE += stdio_cdc_acm
+
+ifeq (,$(filter stdio_cdc_acm,$(DISABLE_MODULE)))
+  # Default auto-initialization of usbus for stdio other USB
+  DEFAULT_MODULE += auto_init_usbus
+endif
