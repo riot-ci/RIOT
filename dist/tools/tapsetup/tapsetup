@@ -33,6 +33,16 @@ unsupported_plattform() {
     echo "(currently supported \`uname -s\` 'Darvin', 'FreeBSD', and 'Linux')" >&2
 }
 
+update_uplink() {
+    if command -v dhclient > /dev/null; then
+        dhclient $1
+    else
+        echo "DHCP client `dhclient` not found." >&2
+        echo "Please reconfigure your DHCP client for interface ${BRNAME}" >&2
+        echo "to keep up-link's IPv4 connection." >&2
+    fi
+}
+
 create_bridge() {
     echo "creating ${BRNAME}"
 
@@ -65,7 +75,7 @@ up_bridge() {
 
             # The bridge is now the new uplink
             if [ -n "${UPLINK}" ]; then
-                dhclient ${BRNAME}
+                update_uplink ${BRNAME}
             fi ;;
         *)
             ;;
@@ -91,7 +101,7 @@ delete_bridge() {
 
             # restore the old uplink
             if [ -n "${UPLINK}" ]; then
-                dhclient ${UPLINK}
+                update_uplink ${UPLINK}
             fi ;;
         OSX)
             ifconfig ${BRNAME} destroy || exit 1 ;;
