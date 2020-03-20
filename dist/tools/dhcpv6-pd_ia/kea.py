@@ -100,7 +100,6 @@ class KeaServer(base.DHCPv6Server):
     def run(self):
         if not self.is_installed():
             self.install()
-            print(self.installer.os)
             if self.installer.os in ["Arch"]:
                 # workaround: Arch does not create that directory on install
                 os.makedirs("/var/run/kea/")
