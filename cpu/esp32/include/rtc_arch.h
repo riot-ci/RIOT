@@ -26,13 +26,16 @@ extern "C" {
 
 /**
  * @brief   Called before the power management enters a light or deep sleep mode
+ * @param   mode    sleep mode that is entered
+ * @return          time to sleep in us
  */
-void rtc_pm_sleep_enter(void);
+uint64_t rtc_pm_sleep_enter(unsigned mode);
 
 /**
  * @brief   Called after the power management left light sleep mode
+ * @param   cause   wake-up cause
  */
-void rtc_pm_sleep_exit(void);
+void rtc_pm_sleep_exit(uint32_t cause);
 
 #ifdef __cplusplus
 }

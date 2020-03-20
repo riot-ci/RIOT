@@ -346,17 +346,21 @@ static void IRAM_ATTR _rtc_timer_handler(void* arg)
     irq_isr_exit();
 }
 
-void rtc_pm_sleep_enter(void)
+uint64_t rtc_pm_sleep_enter(unsigned mode)
 {
+    (void)mode;
     if (_rtc_alarm_cb) {
-        uint32_t sleep = _sys_alarm_time - _sys_get_time();
-        esp_sleep_enable_timer_wakeup((uint64_t)sleep * US_PER_SEC);
+        uint64_t sleep = (_sys_alarm_time - _sys_get_time()) * US_PER_SEC;
+        esp_sleep_enable_timer_wakeup(sleep);
+        return sleep;
     }
+    return 0;
 }
 
-void rtc_pm_sleep_exit(void)
+void rtc_pm_sleep_exit(uint32_t cause)
 {
-    if (_rtc_alarm_cb) {
+    /* call the RTC time was the wakeup source and an RTC alarm was set */
+    if (cause == ESP_SLEEP_WAKEUP_TIMER && _rtc_alarm_cb) {
         _rtc_alarm_cb(_rtc_alarm_arg);
         _rtc_alarm_cb = 0;
     }
