@@ -2,5 +2,15 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul_gpio
 endif
 
-# setup the samd21 arduino bootloader related dependencies
-include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+# use arduino-bootloader by default.
+#
+# Note: that this will be added as a USEMODULE in the first pass through
+# Makefile.dep, it can only be disabled from the command line or in the
+# application Makefile. It won't be automatically disabled if another
+# stdio_% MODULE is used
+DEFAULT_MODULE += boards_common_samd21-arduino-bootloader
+
+ifneq (,$(filter boards_common_samd21-arduino-bootloader,$(USEMODULE)))
+  # setup the samd21 arduino bootloader related dependencies
+  include $(RIOTBOARD)/common/samd21-arduino-bootloader/Makefile.dep
+endif

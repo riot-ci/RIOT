@@ -5,6 +5,7 @@ CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
 
 DISABLE_MODULE += auto_init
 DISABLE_MODULE += test_utils_interactive_sync
+DISABLE_MODULE += samd21_bootloader_default_module
 
 USEMODULE += stdio_null
 
