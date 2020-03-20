@@ -75,6 +75,18 @@ void pm_set_lowest(void)
 
 #else /* MODULE_PM_LAYERED */
 
+/* function that is required by pm_set if esp_now and esp_wifi are not used */
+esp_err_t __attribute__((weak)) esp_wifi_start(void)
+{
+    return ESP_OK;
+}
+
+/* function that is required by pm_set if esp_now and esp_wifi are not used */
+esp_err_t __attribute__((weak)) esp_wifi_stop(void)
+{
+    return ESP_OK;
+}
+
 void pm_set(unsigned mode)
 {
     if (mode == ESP_PM_MODEM_SLEEP) {
@@ -101,16 +113,8 @@ void pm_set(unsigned mode)
         esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
     }
 
-#ifdef MODULE_ESP_WIFI
     /* stop WiFi if necessary */
-    extern void esp_wifi_pm_sleep_enter(void);
-    esp_wifi_pm_sleep_enter();
-#endif
-#ifdef MODULE_ESP_NOW
-    /* stop WiFi if necessary */
-    extern void esp_now_pm_sleep_enter(void);
-    esp_now_pm_sleep_enter();
-#endif
+    esp_wifi_stop();
 
     /* Prepare the RTC timer if an RTC alarm is set to wake up. */
     rtc_pm_sleep_enter();
@@ -135,16 +139,11 @@ void pm_set(unsigned mode)
             /* call the RTC alarm handler if an RTC alarm was set */
             rtc_pm_sleep_exit();
         }
-#ifdef MODULE_ESP_WIFI
+
         /* restart WiFi if necessary */
-        extern void esp_wifi_pm_sleep_exit(void);
-        esp_wifi_pm_sleep_exit();
-#endif
-#ifdef MODULE_ESP_NOW
-        /* restop WiFi if necessary */
-        void esp_now_pm_sleep_exit(void);
-        esp_now_pm_sleep_exit();
-#endif
+        if (esp_wifi_start() != ESP_OK) {
+            LOG_ERROR("esp_wifi_start failed\n");
+        }
     }
 }
 
