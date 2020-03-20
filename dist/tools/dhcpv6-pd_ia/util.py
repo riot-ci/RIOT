@@ -1,10 +1,11 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 #
-# Copyright © 2020 Martine Lenders <m.lenders@fu-berlin.de>
+# Copyright (C) 2020 Freie Universität Berlin
 #
-# Distributed under terms of the MIT license.
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
 
 
 def split_prefix(route):
