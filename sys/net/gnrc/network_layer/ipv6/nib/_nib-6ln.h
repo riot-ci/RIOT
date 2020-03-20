@@ -24,7 +24,7 @@
 #include "net/gnrc/ipv6/nib/conf.h"
 #include "net/sixlowpan/nd.h"
 #include "timex.h"
-#include "xtimer.h"
+#include "evtimer.h"
 
 #include "_nib-arsm.h"
 #include "_nib-internal.h"
@@ -35,8 +35,7 @@ extern "C" {
 
 static inline uint32_t _now_min(void)
 {
-    return (uint32_t)((xtimer_now_usec64() / (US_PER_SEC * SEC_PER_MIN)) &
-                      UINT32_MAX);
+    return evtimer_now_msec() / (MS_PER_SEC * SEC_PER_MIN);
 }
 
 #if GNRC_IPV6_NIB_CONF_6LN || defined(DOXYGEN)
