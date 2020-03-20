@@ -38,7 +38,7 @@ update_uplink() {
         dhclient $1
     else
         echo "DHCP client `dhclient` not found." >&2
-        echo "Please reconfigure your DHCP client for interface ${BRNAME}" >&2
+        echo "Please reconfigure your DHCP client for interface $1" >&2
         echo "to keep up-link's IPv4 connection." >&2
     fi
 }
