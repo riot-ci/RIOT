@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "periph/pm.h"
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -43,6 +44,11 @@ static void _putchar(int c) {
 #else
 #define _putchar putchar
 #endif
+#endif
+
+/* on native, stop RIOT on EOF */
+#ifdef CPU_NATIVE
+#define SHELL_SHUTDOWN_ON_EOF
 #endif
 
 static void flush_if_needed(void)
@@ -308,4 +314,8 @@ void shell_run_once(const shell_command_t *shell_commands,
 
         print_prompt();
     }
+
+#ifdef SHELL_SHUTDOWN_ON_EOF
+    pm_off();
+#endif
 }
