@@ -101,7 +101,7 @@ typedef struct
 /**
  * @brief netdev <-> esp_npw glue code initialization function
  *
- * @return          NULL on error, pointer to esp_now_netdev on success
+ * @return  NULL on error, pointer to esp_now_netdev on success
  */
 esp_now_netdev_t *netdev_esp_now_setup(void);
 
