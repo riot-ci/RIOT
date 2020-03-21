@@ -17,12 +17,12 @@
 #ifndef CC26X2_CC13X2_PRCM_H
 #define CC26X2_CC13X2_PRCM_H
 
+#include <stdbool.h>
 #include <cc26xx_cc13xx.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * DDI_0_OSC registers
@@ -74,6 +74,91 @@ typedef struct {
 /*@}*/
 
 #define DDI_0_OSC ((ddi0_osc_regs_t *) (DDI0_OSC_BASE)) /**< DDI_0_OSC register bank */
+
+/**
+ * @brief   OSC API values
+ * @{
+ */
+#define OSC_SRC_CLK_HF          0x00000001
+#define OSC_SRC_CLK_LF          0x00000004
+
+#define OSC_RCOSC_HF            0x00000000
+#define OSC_XOSC_HF             0x00000001
+#define OSC_RCOSC_LF            0x00000002
+#define OSC_XOSC_LF             0x00000003
+/** @} */
+
+/**
+ * @brief   Get the source clock settings.
+ *
+ * @param[in] src_clk Is the source clock to check.
+ *
+ * @return Returns the type of oscillator that drives the clock source.
+ */
+uint32_t osc_clock_source_get(uint32_t src_clk);
+
+/**
+ * @brief   Configure the oscillator input to a source clock.
+ *
+ * Use this function to set the oscillator source for one or more of the system
+ * source clocks.
+ *
+ * When selecting the high frequency clock source (@ref OSC_SRC_CLK_HF), this
+ * function will not do the actual switch. Enabling the high frequency XTAL can
+ * take several hundred micro seconds, so the actual switch is done in a
+ * separate function, @ref osc_hf_source_switch(), leaving System CPU free to
+ * perform other tasks as the XTAL starts up.
+ *
+ * @note The High Frequency (@ref OSC_SRC_CLK_HF) can only be derived from the
+ * high frequency oscillator. The Low Frequency source clock
+ * (@ref OSC_SRC_CLK_LF) can be derived from all 4 oscillators.
+ *
+ * @note If enabling @ref OSC_XOSC_LF it is not safe to go to
+ * powerdown/shutdown until the LF clock is running which can be checked using
+ * @ref OSCClockSourceGet().
+ *
+ * @note Clock loss reset generation must be disabled before SCLK_LF
+ * (@ref OSC_SRC_CLK_LF) clock source is changed and remain disabled until
+ * the change is confirmed.
+ *
+ * @param[in] src_clk is the source clocks to configure.
+ *  - @ref OSC_SRC_CLK_HF
+ *  - @ref OSC_SRC_CLK_LF
+ * @param[in] osc Is the oscillator that drives the source clock.
+ *  - @ref OSC_RCOSC_HF
+ *  - @ref OSC_XOSC_HF
+ *  - @ref OSC_RCOSC_LF (only when src_clk is @ref OSC_SRC_CLK_LF)
+ *  - @ref OSC_XOSC_LF (only when src_clk is @ref OSC_SRC_CLK_LF)
+ */
+void osc_clock_source_set(uint32_t src_clk, uint32_t osc);
+
+/**
+ * @brief   Check if the HF clock source is ready to be switched.
+ *
+ * If a request to switch the HF clock source has been made, this function can
+ * be used to check if the clock source is ready to be switched.
+ *
+ * Once the HF clock source is ready the switch can be performed by calling
+ * the @ref osc_hf_source_switch()
+ *
+ * @return true HF clock source is ready.
+ * @return false HF clock source is not ready.
+ */
+bool osc_hf_source_ready(void);
+
+/**
+ * @brief   Switch the high frequency clock.
+ *
+ * When switching the HF clock source the clock period might be prolonged
+ * leaving the clock 'stuck-at' high or low for a few cycles. To ensure that
+ * this does not coincide with a read access to the Flash, potentially freezing
+ * the device, the HF clock source switch must be executed from ROM.
+ *
+ * @note This function will not return until the clock source has been switched.
+ * It is left to the programmer to ensure, that there is a pending request for a
+ * HF clock source switch before this function is called.
+ */
+void osc_hf_source_switch(void);
 
 /**
 * AON_PMCTL registers
@@ -218,6 +303,8 @@ typedef struct {
 #define PDSTAT1_CPU_ON      0x2
 #define PDSTAT1_RFC_ON      0x4
 #define PDSTAT1_VIMS_ON     0x8
+
+#define RFCCLKG_CLK_EN      0x1
 /** @} */
 
 /** @ingroup cpu_specific_peripheral_memory_map
