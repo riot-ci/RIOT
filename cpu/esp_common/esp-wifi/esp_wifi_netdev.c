@@ -703,41 +703,6 @@ static wifi_config_t wifi_config_sta = {
     }
 };
 
-#ifndef MODULE_ESP_NOW
-/**
- * Static configuration for the SoftAP interface if ESP-NOW is not enabled.
- *
- * Although only the Station interface is needed, the SoftAP interface must
- * also be enabled for stability reasons to prevent the Station interface
- * from being shut down by power management in the event of silence.
- * Otherwise, the WLAN module and the WLAN task will hang sporadically.
- *
- * Since the SoftAP interface is not required, we make it invisible and
- * unusable. This configuration
- *
- * - uses the same hidden SSID that the Station interface uses to
- *   connect to the AP,
- * - uses the same channel that the Station interface uses to connect to the AP,
- * - defines a very long beacon interval
- * - doesn't allow any connection.
- */
-static wifi_config_t wifi_config_ap = {
-    .ap = {
-        .ssid = ESP_WIFI_SSID,
-        .ssid_len = ARRAY_SIZE(ESP_WIFI_SSID),
-        .ssid_hidden = 1,               /* don't make the AP visible */
-#ifdef ESP_WIFI_PASS
-        .password = ESP_WIFI_PASS,
-        .authmode = WIFI_AUTH_WPA2_PSK,
-#else
-        .authmode = WIFI_AUTH_OPEN,
-#endif
-        .max_connection = 0,            /* don't allow connections */
-        .beacon_interval = 60000,       /* send beacon only every 60 s */
-    }
-};
-#endif
-
 void esp_wifi_setup (esp_wifi_netdev_t* dev)
 {
     ESP_WIFI_DEBUG("dev=%p", dev);
@@ -781,17 +746,10 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
     /* TODO */
 #endif
 
-    /* activate the Station and the SoftAP interface */
-    result = esp_wifi_set_mode(WIFI_MODE_APSTA);
+    /* activate the only the Station interface */
+    result = esp_wifi_set_mode(WIFI_MODE_STA);
     if (result != ESP_OK) {
         ESP_WIFI_LOG_ERROR("esp_wifi_set_mode failed with return value %d", result);
-        return;
-    }
-
-    /* set the SoftAP configuration */
-    result = esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config_ap);
-    if (result != ESP_OK) {
-        ESP_WIFI_LOG_ERROR("esp_wifi_set_config softap failed with return value %d", result);
         return;
     }
 
