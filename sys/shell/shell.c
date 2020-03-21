@@ -35,6 +35,7 @@
 #include <assert.h>
 #include <errno.h>
 
+#include "periph/pm.h"
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -50,6 +51,13 @@ static void _putchar(int c) {
 #define _putchar putchar
 #endif
 #endif
+
+/* on native, stop RIOT on EOF */
+#ifndef SHELL_SHUTDOWN_ON_EOF
+#  ifdef CPU_NATIVE
+#    define SHELL_SHUTDOWN_ON_EOF
+#  endif
+#endif /* SHELL_SHUTDOWN_ON_EOF */
 
 static void flush_if_needed(void)
 {
@@ -360,4 +368,8 @@ void shell_run_once(const shell_command_t *shell_commands,
 
         print_prompt();
     }
+
+#if IS_ACTIVE(SHELL_SHUTDOWN_ON_EOF)
+    pm_off();
+#endif
 }
