@@ -19,37 +19,61 @@
 #ifndef CC26X2_CC13X2_RFC_H
 #define CC26X2_CC13X2_RFC_H
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <assert.h>
+
+#include "cc26x2_cc13x2_rfc_mailbox.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <assert.h>
+/**
+ * @brief   A unified type for radio setup commands of different PHYs.
+ *
+ * Radio setup commands are used to initialize a PHY on the RF core. Various
+ * partially similar commands exist, each one represented by a different data
+ * type. rfc_radio_setup is a generic container for all types.
+ */
+typedef union {
+    uint16_t command_id; /**< Generic command identifier. This is the first
+                              field in every radio operation command. */
+    rfc_cmd_radio_setup_t common; /**< Radio setup command for BLE and IEEE
+                                       modes */
+    rfc_cmd_ble5_radio_setup_t ble5; /**< Radio setup command for BLE5 mode */
+    rfc_cmd_prop_radio_setup_t prop; /**< Radio setup command for PROPRIETARY
+                                          mode on 2.4 GHz */
+    rfc_cmd_prop_radio_div_setup_t prop_div; /**< Radio setup command for
+                                                  PROPRIETARY mode on
+                                                  Sub-1 Ghz */
+    rfc_cmd_radio_setup_pa_t common_pa; /**< Radio setup command for BLE and
+                                             IEEE modes with High Gain PA */
+    rfc_cmd_ble5_radio_setup_pa_t ble5_pa; /**< Radio setup command for BLE5
+                                                mode with High Gain PA */
+    rfc_cmd_prop_radio_setup_pa_t prop_pa; /**< Radio setup command for
+                                                PROPRIETARY mode on 2.4 GHz
+                                                with High Gain PA */
+    rfc_cmd_prop_radio_div_setup_pa_t  prop_div_pa; /**< Radio setup command
+                                                         for PROPRIETARY mode
+                                                         on Sub-1 Ghz with
+                                                         High Gain PA */
+} rfc_radio_setup_t;
 
 /**
- * @brief   Turns on the radio core.
+ * @brief   Initialize RF driver
  *
- *          Sets up the power and resources for the radio core.
- *          - Switches the high frequency clock to the xosc crystal on
- *            CC26X2/CC13X2.
- *          - Initializes the rx buffers and command
- *          - Powers on the radio core power domain
- *          - Enables the radio core power domain
- *          - Sets up the interrupts
+ * @param[in] radio_setup The radio setup command.
  */
-void rfc_power_on(void);
+void rfc_init(rfc_radio_setup_t *radio_setup);
 
 /**
- * @brief   Turns off the radio core.
+ * @brief   Enable radio.
  *
- *          Switches off the power and resources for the radio core.
- *          - Disables the interrupts
- *          - Disables the radio core power domain
- *          - Powers off the radio core power domain
- *          - On CC13X2/CC26X2 switches the high frequency clock to the rcosc
- *            to save power
+ * @return 0 on success.
+ * @return -1 on failure.
  */
-void rfc_power_off(void);
+int rfc_enable(void);
 
 /**
  * @brief   Enable the RF core clocks.
@@ -59,6 +83,70 @@ void rfc_power_off(void);
  * ping'ed through the command interface.
  */
 void rfc_clock_enable(void);
+
+/**
+ * @brief   Execute a command and wait for the RFC_DBELL:CMDR register to ACK
+ *          the command.
+ *
+ * @return Command status.
+ */
+uint8_t rfc_execute_sync(uint32_t cmd);
+
+/**
+ * @brief   Get CPE interrupt flag.
+ *
+ * @param[in] flag Interrupt flag.
+ *
+ * @return The interrupt.
+ */
+uint32_t rfc_cpe_int_get(uint32_t flag);
+
+/**
+ * @brief   Clear CPE interrupt flag.
+ *
+ * @param[in] flag The flag to clear.
+ */
+void rfc_cpe_int_clear(uint32_t flag);
+
+/**
+ * @brief   Clear all enabled CPE interrupts.
+ */
+void rfc_cpe_int_enable_clear(void);
+
+/**
+ * @brief   Enable CPE interrupt.
+ *
+ * @param[in] irq The interrupt to enable.
+ */
+void rfc_cpe_int_enable(uint32_t irq);
+
+/**
+ * @brief   Disable CPE interrupt.
+ *
+ * @param[in] irq The interrupt to disable.
+ */
+void rfc_cpe_int_disable(uint32_t irq);
+
+/**
+ * @brief   Select interrupts for RF_CPE0_IRQN
+ *
+ * @param[in] irq Interrupt to select.
+ */
+void rfc_cpe0_int_select(uint32_t irq);
+
+/**
+ * @brief   Select interrupts for RF_CPE1_IRQN
+ *
+ * @param[in] irq Interrupt to select.
+ */
+void rfc_cpe1_int_select(uint32_t irq);
+
+/**
+ * @brief   Enable AON_RTC RTC_UPD
+ *
+ * @param[in] v On/off.
+ */
+void aon_rtc_ctl_rtc_upd(bool v);
 
 #ifdef __cplusplus
 }

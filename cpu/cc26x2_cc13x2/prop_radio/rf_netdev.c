@@ -19,74 +19,102 @@
 
 #include <string.h>
 
-#include "cc13x2_prop_rf_internal.h"
+#include "cc13x2_prop_rf_commands.h"
 #include "cc13x2_prop_rf_netdev.h"
-#include "cc13x2_prop_rf_params.h"
 #include "cc26x2_cc13x2_rfc.h"
 
 #include <driverlib/rf_mailbox.h>
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 #include "cpu.h"
 
-static void _irq_handler(void *arg)
+/*static void _irq_handler(void *arg)
 {
+    DEBUG("_irq_handler(%lx)\n", (uint32_t)arg);
+
     netdev_t *dev = (netdev_t *)arg;
 
     if (dev->event_callback) {
+        DEBUG("_irq_handler: callback\n");
         dev->event_callback(dev, NETDEV_EVENT_ISR);
     }
-}
+}*/
 
 static int _send(netdev_t *dev, const iolist_t *iolist)
 {
     (void)dev;
+    (void)iolist;
 
-    return cc13x2_prop_rf_send(iolist);
+    //return cc13x2_prop_rf_send(iolist);
+    return 0;
 }
 
 static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
 {
     (void)dev;
+    (void)buf;
+    (void)len;
+    (void)info;
 
-    return cc13x2_prop_rf_recv(buf, len, info);
+    //return cc13x2_prop_rf_recv(buf, len, info);
+    return 0;
 }
 
 static int _init(netdev_t *dev)
 {
+    DEBUG("_init(%08lx)\n", (uint32_t)dev);
+
     cc13x2_prop_rf_netdev_t *netdev = (cc13x2_prop_rf_netdev_t *)dev;
 
-    if (dev == NULL) {
+    if (netdev == NULL) {
+        DEBUG("_init: netdev is null!\n");
         return -1;
     }
 
-    cc13x2_prop_rf_irq_set_handler(_irq_handler, dev);
-    cc13x2_prop_rf_get_ieee_eui64(netdev->netdev.long_addr);
+    /* Tune the radio to the given frequency */
+    rf_cmd_fs.frequency = 902;
+    rf_cmd_fs.fractFreq = 200;
 
-    memcpy(netdev->netdev.short_addr, netdev->netdev.long_addr + 6, 2);
+    /* Chain the CMD_FS command after running setup */
+    rf_cmd_prop_radio_div_setup.pNextOp = (rfc_op_t *)&rf_cmd_fs;
+
+    /* Initialize radio driver in propietary setup for the Sub-GHz band.
+     * To use Sub-GHz we need to use CMD_PROP_RADIO_DIV_SETUP as our setup
+     * command. */
+    rfc_init((rfc_radio_setup_t *)&rf_cmd_prop_radio_div_setup);
+
+    if (rfc_enable() < 0) {
+        DEBUG("_init: rfc_enable failed!\n");
+        return -1;
+    }
+
+    //cc13x2_prop_rf_irq_set_handler(_irq_handler, dev);
+    //cc13x2_prop_rf_get_ieee_eui64(netdev->netdev.long_addr);
+
+    //memcpy(netdev->netdev.short_addr, netdev->netdev.long_addr + 6, 2);
     /* https://tools.ietf.org/html/rfc4944#section-12
      * Requires the first bit to 0 for unicast addresses */
-    netdev->netdev.short_addr[1] &= 0x7F;
+    //netdev->netdev.short_addr[1] &= 0x7F;
 
-    netdev_ieee802154_reset(&netdev->netdev);
+    //netdev_ieee802154_reset(&netdev->netdev);
 
-    if (cc13x2_prop_rf_power_on() == -1) {
+   /* if (cc13x2_prop_rf_power_on() == -1) {
         return -1;
-    }
+    }*/
 
     /* Switch to minimum channel */
-    cc13x2_prop_rf_set_chan(CC13X2_CHANNEL_MIN_SUB_GHZ, true);
+    //cc13x2_prop_rf_set_chan(CC13X2_CHANNEL_MIN_SUB_GHZ, true);
 
-    if (cc13x2_prop_rf_rx_start() == -1) {
+    /*if (cc13x2_prop_rf_rx_start() == -1) {
         return -1;
-    }
+    }*/
 
     return 0;
 }
 
-static int _set_state(netopt_state_t state)
+/*static int _set_state(netopt_state_t state)
 {
     switch (state) {
         case NETOPT_STATE_OFF:
@@ -112,9 +140,9 @@ static int _set_state(netopt_state_t state)
     }
 
     return sizeof(netopt_state_t);
-}
+}*/
 
-static netopt_state_t _get_state(void)
+/*static netopt_state_t _get_state(void)
 {
     switch (cc13x2_prop_rf_get_state()) {
         case FSM_STATE_OFF:
@@ -132,7 +160,8 @@ static netopt_state_t _get_state(void)
         default:
             return NETOPT_STATE_IDLE;
     }
-}
+
+}*/
 
 static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
 {
@@ -143,7 +172,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
         return -ENODEV;
     }
 
-    switch (opt) {
+/*    switch (opt) {
         case NETOPT_CHANNEL:
             if (len != sizeof(uint16_t)) {
                 return -EINVAL;
@@ -163,9 +192,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
             if (len != sizeof(uint16_t)) {
                 return -EINVAL;
             }
-            else {
+            else {*/
                 /* We only support page 0 */
-                uint16_t page = *(const uint16_t *)val;
+                /*uint16_t page = *(const uint16_t *)val;
                 if (page != 0) {
                     res = -EINVAL;
                 }
@@ -227,7 +256,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
         default:
             res = -ENOTSUP;
             break;
-    }
+    }*/
 
     if (res == -ENOTSUP) {
         res = netdev_ieee802154_set((netdev_ieee802154_t *)netdev,
@@ -247,7 +276,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         return -ENODEV;
     }
 
-    switch (opt) {
+/*    switch (opt) {
         case NETOPT_CHANNEL:
             if (max_len < sizeof(uint16_t)) {
                 return -EOVERFLOW;
@@ -262,7 +291,6 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
                 return -EOVERFLOW;
             }
             else {
-                /* We only support channel page 0 */
                 *(uint16_t *)val = 0;
             }
             return sizeof(uint16_t);
@@ -307,7 +335,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         default:
             break;
-    }
+    }*/
 
     return netdev_ieee802154_get((netdev_ieee802154_t *)netdev,
                                  opt,
@@ -315,14 +343,16 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
                                  max_len);
 }
 
-static void _isr(netdev_t *netdev)
+static void _isr(netdev_t *dev)
 {
-    unsigned state = irq_disable();
-    cc13x2_prop_rf_irq_flags_t flags = cc13x2_prop_rf_get_flags();
+    DEBUG("_isr(%08lx)\n", (uint32_t)dev);
 
-    irq_restore(state);
+    //unsigned state = irq_disable();
+    //cc13x2_prop_rf_irq_flags_t flags = cc13x2_prop_rf_get_flags();
 
-    if (flags & IRQ_FLAGS_HANDLE_RX) {
+    //irq_restore(state);
+
+    /*if (flags & IRQ_FLAGS_HANDLE_RX) {
         while (cc13x2_prop_rf_recv_avail()) {
             netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
         }
@@ -330,13 +360,12 @@ static void _isr(netdev_t *netdev)
 
     if (flags & IRQ_FLAGS_HANDLE_TX) {
         netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
-    }
+    }*/
 }
 
 void cc13x2_prop_rf_setup(cc13x2_prop_rf_netdev_t *dev)
 {
     memset(dev, 0, sizeof(*dev));
-    cc13x2_prop_rf_init();
 
     dev->netdev.netdev.driver = &cc13x2_prop_rf_driver;
 }
