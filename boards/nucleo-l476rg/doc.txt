@@ -29,6 +29,7 @@
  */
 
 ## Flashing the device
+
 The ST Nucleo-L476RG board includes an on-board ST-LINK V2 programmer. The
 easiest way to program the board is to use OpenOCD. Once you have installed
 OpenOCD (look [here](https://github.com/RIOT-OS/RIOT/wiki/OpenOCD) for
