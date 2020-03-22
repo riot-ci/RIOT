@@ -317,7 +317,7 @@ void shell_run_once(const shell_command_t *shell_commands,
         print_prompt();
     }
 
-#ifdef SHELL_SHUTDOWN_ON_EOF
+#if IS_ACTIVE(SHELL_SHUTDOWN_ON_EOF)
     pm_off();
 #endif
 }
