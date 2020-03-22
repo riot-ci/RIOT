@@ -47,9 +47,11 @@ static void _putchar(int c) {
 #endif
 
 /* on native, stop RIOT on EOF */
-#ifdef CPU_NATIVE
-#define SHELL_SHUTDOWN_ON_EOF
-#endif
+#ifndef SHELL_SHUTDOWN_ON_EOF
+#  ifdef CPU_NATIVE
+#    define SHELL_SHUTDOWN_ON_EOF
+#  endif
+#endif /* SHELL_SHUTDOWN_ON_EOF */
 
 static void flush_if_needed(void)
 {
