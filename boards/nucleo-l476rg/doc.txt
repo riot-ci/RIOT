@@ -44,6 +44,7 @@ make BOARD=nucleo-l476rg debug
 
 
 ## Supported Toolchains
+
 For using the ST Nucleo-L476RG board we strongly recommend the usage of the
 [GNU Tools for ARM Embedded Processors](https://launchpad.net/gcc-arm-embedded)
 toolchain.
