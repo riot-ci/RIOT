@@ -131,10 +131,9 @@ TaskHandle_t xTaskGetCurrentTaskHandle(void)
 void vTaskDelay( const TickType_t xTicksToDelay )
 {
     DEBUG("%s xTicksToDelay=%d\n", __func__, xTicksToDelay);
-#if defined(MODULE_ESP_WIFI_ANY)
+
     uint64_t us = xTicksToDelay * MHZ / xPortGetTickRateHz();
     xtimer_usleep(us);
-#endif
 }
 
 TickType_t xTaskGetTickCount (void)
