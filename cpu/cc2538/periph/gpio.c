@@ -213,9 +213,18 @@ static inline void handle_isr(uint8_t port_num)
     port->IC             = 0x000000ff;
     port->IRQ_DETECT_ACK = (0xff << (port_num * GPIO_BITS_PER_PORT));
 
+    /* If only one bit it is set in state (one GPIO pin caused an interrupt),
+     * don't loop over all 8 bits.
+     *
+     * Use clz to get the position of the first interrupt bit and clear it,
+     * looping only as many times as there are actual interrupts.
+     */
+
+    /* mask all non-GPIO bits */
     state &= (1 << GPIO_BITS_PER_PORT) - 1;
     while (state) {
-        int pin = 8 * sizeof(state) - __builtin_clz(state) - 1;
+        /* we want the position of the first one bit, so N_bits - (N_zeros + 1) */
+        int pin = 32 - __builtin_clz(state) - 1;
         state &= ~(1 << pin);
         isr_ctx[port_num][pin].cb(isr_ctx[port_num][pin].arg);
     }
