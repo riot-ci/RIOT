@@ -1064,7 +1064,7 @@ can be used simultaneously, for example, to realize a border router for
 a mesh network which uses ESP-NOW.
 In this case the ESP-NOW interface must use the same channel as the AP of the
 infrastructure WiFi network. All ESP-NOW nodes must therefore be compiled with
-the channel of the AP asvalue for the parameter 'ESP_NOW_CHANNEL'.
+the channel of the AP as value for the parameter 'ESP_NOW_CHANNEL'.
 
 \anchor esp32_esp_now_network_interface
 ## <a name="esp32_esp_now_network_interface"> ESP-NOW Network Interface </a> &nbsp;[[TOC](#esp32_toc)]
