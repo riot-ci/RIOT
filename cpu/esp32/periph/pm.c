@@ -82,8 +82,10 @@ void pm_reboot(void)
 {
     DEBUG ("%s\n", __func__);
 
-    /* stop WiFi if necessary */
-    esp_wifi_stop();
+    if (IS_USED(MODULE_ESP_WIFI_ANY)) {
+        /* stop WiFi if necessary */
+        esp_wifi_stop();
+    }
 
     /* suspend and flush UARTs */
     for (int i = 0; i < 3; ++i) {
