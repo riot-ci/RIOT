@@ -44,6 +44,13 @@
 #include "irq_arch.h"
 #include "syscalls.h"
 
+#define ESP_PM_WUP_PINS_ANY_HIGH    ESP_EXT1_WAKEUP_ANY_HIGH
+#define ESP_PM_WUP_PINS_ALL_LOW     ESP_EXT1_WAKEUP_ALL_LOW
+
+#ifndef ESP_PM_WUP_LEVEL
+#define ESP_PM_WUP_LEVEL    ESP_PM_WUP_PINS_ANY_HIGH
+#endif
+
 #define GPIO_PRO_CPU_INTR_ENA      (BIT(2))
 
 /* GPIO to IOMUX register mapping (see Technical Reference, Section 4.12 Register Summary)
@@ -594,11 +601,7 @@ void gpio_pm_sleep_enter(unsigned mode)
         for (unsigned i = 0; i < ARRAY_SIZE(wup_pins); i++) {
             wup_pin_mask |= 1ULL << wup_pins[i];
         }
-#ifdef ESP_PM_WUP_LEVEL
         esp_sleep_enable_ext1_wakeup(wup_pin_mask, ESP_PM_WUP_LEVEL);
-#else /* ESP_PM_WUP_LEVEL */
-        esp_sleep_enable_ext1_wakeup(wup_pin_mask, ESP_EXT1_WAKEUP_ANY_HIGH);
-#endif /* ESP_PM_WUP_LEVEL */
 #endif /* ESP_PM_WUP_PINS */
     }
     else {
