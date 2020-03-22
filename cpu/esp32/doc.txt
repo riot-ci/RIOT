@@ -1027,31 +1027,46 @@ be used as ADC channels. See section [GPIO pins](#esp32_gpio_pins) and
 Several definitions can be used during compile time to configure the
 _Light-sleep_ and the _Deep-sleep_ mode:
 
+<center>
+
+Parameter        | Default                  | Mode  | Description
+:----------------|:-------------------------|:------|:------------
+ESP_PM_GPIO_HOLD | not defined              | Deep  | Hold GPIO output level if defined
+ESP_PM_WUP_PINS  | none                     | Deep  | GPIOs used as wake-up source
+ESP_PM_WUP_LEVEL | ESP_PM_WUP_PINS_ANY_HIGH | Deep  | Level for wake-up pins to wake-up
+ESP_PM_WUP_UART0 | disabled                 | Light | Positive UART0 RxD signal edges to wake-up
+ESP_PM_WUP_UART1 | disabled                 | Light | Positive UART1 RxD signal edges to wake-up
+
+</center>
+
+- If `ESP_PM_GPIO_HOLD` is defined, GPIOs hold their last output level
+  when entering _Deep-sleep_ mode. Please note that only RTC GPIOs
+  can hold their output value in _Deep-sleep_ mode.
 - `ESP_PM_WUP_PINS` specifies either a single RTC GPIO or a comma separated
   list of RTC GPIOs that are used as wake-up source in _Deep-sleep_ mode.
 - `ESP_PM_WUP_LEVEL` specifies the level for the wake-up pins in _Deep-sleep_
-  mode. With `ESP_PM_WUP_LEVEL=1` (default) the system is woken up when any
-  of the GPIOs specified in `ESP_PM_WUP_PINS` becomes HIGH. With
-  `ESP_PM_WUP_LEVEL=0` the system is woken up when all GPIOs specified
-  in `ESP_PM_WUP_PINS` become LOW.
+  mode:
+  - `ESP_PM_WUP_PINS_ANY_HIGH` (default) - The system is woken up when any of
+     the GPIOs specified in `ESP_PM_WUP_PINS` becomes HIGH.
+  - `ESP_PM_WUP_PINS_ALL_LOW` - The system is woken up when all GPIOs specified
+    in `ESP_PM_WUP_PINS` become LOW.
 - `ESP_PM_WUP_UART0` and `ESP_PM_WUP_UART1` define the number of positive
   edges of the RxD signal of the respective UART that are necessary to wake
   up the system in the _Light-sleep_ mode. The value must be greater than 2,
   otherwise UART is not activated as wake-up source. The specified value is
   reduced by 2 so that `ESP_PM_WUP_UART0` or `ESP_PM_WUP_UART1` plus 2 is
   the number of positive edges required to wake up.
-- If `ESP_PM_GPIO_HOLD` is defined, GPIOs hold their last output level
-  when entering _Deep-sleep_ mode. In _Deep-sleep_ mode, only RTC GPIOs
-  can hold their output value.
 
 In the following example the system shall be woken up from _Deep-sleep_ if
 the pulled-up pin `GPIO25` (`ESP_PM_WUP_PINS=GPIO25`) goes LOW
-(`ESP_PM_WUP_LEVEL=0`). The last GPIO output values are held
-(`ESP_PM_GPIO_HOLD`) in _Deep-sleep_ mode. From _Light-sleep_ the system can
-be woken up by any of the GPIOs defined as input with enabled interrupt or
-if the RxD signal of UART0 goes HIGH at least 4 times (`ESP_PM_WUP_UART0=6`).
+(`ESP_PM_WUP_LEVEL=ESP_PM_WUP_PINS_ALL_LOW`). The last GPIO output values
+are held (`ESP_PM_GPIO_HOLD`) in _Deep-sleep_ mode. From _Light-sleep_ the
+system can be woken up by any of the GPIOs defined as input with enabled
+interrupt or if the RxD signal of UART0 goes HIGH at least 4 times
+(`ESP_PM_WUP_UART0=6`).
 ```
-CFLAGS='-DESP_PM_WUP_PINS=GPIO25 -DESP_PM_WUP_LEVEL=0 -DESP_PM_WUP_UART0=6 -DESP_PM_GPIO_HOLD' \
+CFLAGS='-DESP_PM_WUP_PINS=GPIO25 -DESP_PM_WUP_LEVEL=ESP_PM_WUP_PINS_ALL_LOW \
+        -DESP_PM_WUP_UART0=6 -DESP_PM_GPIO_HOLD' \
 make BOARD=esp32-wroom-32 -C tests/periph_pm
 ```
 
