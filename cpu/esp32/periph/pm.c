@@ -143,8 +143,10 @@ void pm_set(unsigned mode)
         UNREACHABLE();
     }
     else if (mode == ESP_PM_LIGHT_SLEEP) {
-        /* stop WiFi if necessary */
-        esp_wifi_stop();
+        if (IS_USED(MODULE_ESP_WIFI_ANY)) {
+            /* stop WiFi if necessary */
+            esp_wifi_stop();
+        }
 
         esp_light_sleep_start();
 
@@ -156,7 +158,7 @@ void pm_set(unsigned mode)
                mode, system_get_time(), wakeup_reason);
 
         /* restart WiFi if necessary */
-        if (esp_wifi_start() != ESP_OK) {
+        if (IS_USED(MODULE_ESP_WIFI_ANY) && (esp_wifi_start() != ESP_OK)) {
             LOG_ERROR("esp_wifi_start failed\n");
         }
     }
