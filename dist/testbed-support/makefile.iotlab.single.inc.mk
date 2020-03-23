@@ -94,6 +94,14 @@ else
   _NODES_DEPLOYED = $(shell iotlab-experiment --jmespath='"0"' --format='" ".join' get $(_IOTLAB_EXP_ID) --deployment)
   _NODES_LIST_OPTION = --nodes
   _NODES_FLASH_OPTION = --flash
+  ifeq (,$(filter wsn430-%,$(BOARD)))
+    # All boards in IoT-LAB except firefly can be flashed using $(BINFILE).
+    # This speeds up the firmware upload since the file is much smaller.
+    # This feature is only available in cli-tools version >= 3.
+    ifneq (firefly,$(BOARD))
+      FLASHFILE = $(BINFILE)
+    endif
+  endif
 endif
 
 # Try detecting the node automatically
