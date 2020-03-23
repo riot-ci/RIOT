@@ -23,7 +23,7 @@
 | SPIs       | 2 |
 | I2Cs       | 1     |
 | Vcc        | 2.0V - 3.6V           |
-| Datasheet / Reference Manual   | [https://www.mi.fu-berlin.de/inf/groups/ag-tech/projects/ScatterWeb/moduleComponents/msp430f1612.pdf) |
+| Datasheet / Reference Manual   | [Datasheet](https://www.mi.fu-berlin.de/inf/groups/ag-tech/projects/ScatterWeb/moduleComponents/msp430f1612.pdf) |
 | User Guide | [User Guide](https://www.mi.fu-berlin.de/inf/groups/ag-tech/projects/ScatterWeb/moduleComponents/MSP430slau049f.pdf)|
 
 ## Radio
