@@ -92,6 +92,13 @@ typedef enum {
 #endif /* ndef DOXYGEN */
 #endif /* MODULE_PERIPH_SPI | DOXYGEN */
 
+/**
+ * @name    EEPROM configuration
+ * @{
+ */
+#define EEPROM_SIZE             (1024U)  /* 1kB */
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
