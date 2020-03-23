@@ -6,7 +6,7 @@ pressure and temperature. The BME280 can also measure relative humidity.
 The application will initialize the BME280/BMP280 device and display its
 calibration coefficients. More information can be found on the
 [Bosch BME280 website][1], on the [Bosch BMP280 website][2],
-in the [BME280 datasheet][3] and in the [BME280 datasheet][4].
+in the [BME280 datasheet][3] and in the [BMP280 datasheet][4].
 
 Notice that it is necessary to first read the temperature even if only one
 of the other values (humidity or pressure) is needed. This is described in
