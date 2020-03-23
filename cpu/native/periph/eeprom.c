@@ -98,6 +98,7 @@ size_t eeprom_write(uint32_t pos, const void *data, size_t len)
     memcpy(&_eeprom_buf[pos], data, len);
     mutex_unlock(&lock);
 
+    /* Persist to the file */
     eeprom_native_write();
 
     return len;
