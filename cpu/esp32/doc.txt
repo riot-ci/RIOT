@@ -509,11 +509,14 @@ ESP32 is an SoC and has a lot of peripherals that are not all supported by the R
 \anchor esp32_gpio_pins
 ## <a name="esp32_gpio_pins"> GPIO pins </a> &nbsp;[[TOC](#esp32_toc)]
 
-ESP32 has 34 GPIO pins, where only a subset can be used as output, as ADC channel, as DAC channel and in deep sleep mode. Some of them are used by special SoC components, e.g., as touch sensors. The following table gives a short overview.
+ESP32 has 34 GPIO pins, where only a subset can be used as output, as
+ADC channel, as DAC channel and as GPIOs in deep-sleep mode, the so-called
+RTC GPIOs. Some of them are used by special SoC components, e.g., as touch
+sensors. The following table gives a short overview.
 
 <center>
 
-Pin    | Type   | ADC | PU/PD  | Special function | Remarks
+Pin    | Type   | ADC / RTC | PU / PD  | Special function | Remarks
 -------|:-------|:---:|:------:|------------------|--------
 GPIO0  | In/Out | yes | yes    | Touch sensor | Bootstrapping, pulled up
 GPIO1  | In/Out | -   | yes    | UART0 TxD    | Console
@@ -553,6 +556,7 @@ GPIO39 | In     | yes | -      | SENSOR_VN   | -
 </center>
 
 <b>ADC:</b> these pins can be used as ADC inputs<br>
+<b>RTC:</b> these pins are RTC GPIOs and can be used in deep-sleep mode<br>
 <b>PU/PD:</b> these pins have software configurable pull-up/pull-down functionality.<br>
 
 @note GPIOs that can be used as ADC channels are also available as low power digital inputs/outputs in deep sleep mode.
