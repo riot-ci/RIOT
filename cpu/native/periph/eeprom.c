@@ -37,15 +37,15 @@ static uint8_t _eeprom_buf[EEPROM_SIZE] = { EEPROM_CLEAR_BYTE };
 
 static mutex_t lock = MUTEX_INIT;
 
-void eeprom_native_read(void)
+static inline void eeprom_native_write(void)
 {
-    FILE *fp = fopen(eeprom_file, "r");
+    FILE *fp = fopen(eeprom_file, "w");
     if (!fp) {
         return;
     }
+    DEBUG("Writing data to EEPROM file %s:\n", eeprom_file);
+    fwrite(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
 
-    DEBUG("Reading data from EEPROM file %s:\n", eeprom_file);
-    fread(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
     if (ENABLE_DEBUG) {
         for (size_t i = 0; i < ARRAY_SIZE(_eeprom_buf); i++) {
             DEBUG("0x%02X ", _eeprom_buf[i]);
@@ -58,15 +58,15 @@ void eeprom_native_read(void)
     fclose(fp);
 }
 
-void eeprom_native_write(void)
+void eeprom_native_read(void)
 {
-    FILE *fp = fopen(eeprom_file, "w");
+    FILE *fp = fopen(eeprom_file, "r");
     if (!fp) {
         return;
     }
-    DEBUG("Writing data to EEPROM file %s:\n", eeprom_file);
-    fwrite(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
 
+    DEBUG("Reading data from EEPROM file %s:\n", eeprom_file);
+    fread(_eeprom_buf, 1, ARRAY_SIZE(_eeprom_buf), fp);
     if (ENABLE_DEBUG) {
         for (size_t i = 0; i < ARRAY_SIZE(_eeprom_buf); i++) {
             DEBUG("0x%02X ", _eeprom_buf[i]);
@@ -97,6 +97,8 @@ size_t eeprom_write(uint32_t pos, const void *data, size_t len)
     mutex_lock(&lock);
     memcpy(&_eeprom_buf[pos], data, len);
     mutex_unlock(&lock);
+
+    eeprom_native_write();
 
     return len;
 }

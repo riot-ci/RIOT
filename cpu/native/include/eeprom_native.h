@@ -40,16 +40,6 @@ extern "C" {
  */
 void eeprom_native_read(void);
 
-/**
- * @brief   Write the EEPROM content to the configured file
- *
- * This function is called once before rebooting or before exiting the native
- * instance.
- *
- * The file can be configured in a macro `EPPROM_FILE` via CFLAGS.
- */
-void eeprom_native_write(void);
-
 #ifdef __cplusplus
 }
 #endif
