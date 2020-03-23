@@ -31,7 +31,7 @@ These modules are available in different variants:
 # Hardware
 
 For details see the according data sheets:
-- [deRFmega128-22M00 and deRFmega128-22M00]
+- [deRFmega128-22M00 and deRFmega128-22M10]
   (https://www.dresden-elektronik.de/files/dresden-elektronik/content/downloads/datenblaetter/_outdated/deRFmega128-22M00-22M10-DBT-de.pdf)
 - [deRFmega128-22A00 and deRFmega128-22C00]
   (https://www.dresden-elektronik.de/files/dresden-elektronik/content/downloads/datenblaetter/_outdated/deRFmega128-22A00-C00-DBT-de.pdf)
