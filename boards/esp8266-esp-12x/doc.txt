@@ -53,7 +53,7 @@ For detailed information about ESP8266 as well as configuring and compiling RIOT
 
 
 [WEMOS LOLIN D1 mini]
-(https://docs.wemos.cc/en/latest/_static/boards/d1_mini_v3.1.0_1_16x16.jpg)
+(https://www.wemos.cc/en/latest/d1/d1_mini.html)
 is a very interesting board series as it offers a stackable ESP8266 platform.
 This board can be easily extended with a large number of compatible peripheral
 shields, e.g. a micro SD card shield, an IR controller shield, a battery
