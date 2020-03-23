@@ -40,7 +40,7 @@ for a quick getting started guide.
 | I2Cs       | 2                 |
 | Vcc        | 2.0V - 3.6V           |
 | Datasheet  | [Datasheet](https://www.st.com/resource/en/datasheet/stm32f303vc.pdf) |
-| Reference Manual | [https://www.st.com/resource/en/reference_manual/dm00043574.pdf) |
+| Reference Manual | [Reference Manual](https://www.st.com/resource/en/reference_manual/dm00043574.pdf) |
 | Programming Manual | [Programming Manual](https://www.st.com/resource/en/programming_manual/dm00046982.pdf) |
 | Board Manual   | [Board Manual](https://www.st.com/resource/en/user_manual/dm00063382.pdf)|
 
