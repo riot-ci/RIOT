@@ -112,9 +112,9 @@ Use the UART
 Pin mapping in RIOT
 ===================
 
-Please refer to [this document]
-(http://docs.spark.io/assets/images/spark-pinout.png) for RIOTs static pin
-mapping chosen for this board. This mapping is
-completely arbitrary, it can be adjusted in `boards/spark-
-core/include/periph_conf.h`
+The following image shows RIOT's static pin mapping chosen for this board.
+This mapping is completely arbitrary, it can be adjusted in
+`boards/spark-core/include/periph_conf.h`
+![Pin Mappin](http://docs.spark.io/assets/images/spark-pinout.png)
+
  */
