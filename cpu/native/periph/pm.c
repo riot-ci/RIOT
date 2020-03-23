@@ -31,10 +31,6 @@
 #include "spidev_linux.h"
 #endif
 
-#ifdef MODULE_PERIPH_EEPROM
-#include "eeprom_native.h"
-#endif
-
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -56,9 +52,6 @@ void pm_off(void)
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     spidev_linux_teardown();
 #endif
-#ifdef MODULE_PERIPH_EEPROM
-    eeprom_native_write();
-#endif
     real_exit(EXIT_SUCCESS);
 }
 
@@ -69,9 +62,6 @@ void pm_reboot(void)
     native_async_read_cleanup();
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     spidev_linux_teardown();
-#endif
-#ifdef MODULE_PERIPH_EEPROM
-    eeprom_native_write();
 #endif
 
     if (real_execve(_native_argv[0], _native_argv, NULL) == -1) {
