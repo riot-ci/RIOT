@@ -1,5 +1,5 @@
 /**
-@defgroup    boards_common_blxxxpill bluepill and black common code
+@defgroup    boards_common_blxxxpill Blue/Black Pill common code
 @ingroup     boards_common
 @brief       Support for cheap stm32f103c8 based boards such as bluepill and blackpill.
 
@@ -140,9 +140,9 @@ Try [eBay][eBay] or [AliExpress][AliExpress].
 
 ## Further reading
 
-* https://web.archive.org/web/20190428082446/http://wiki.stm32duino.com/index.php?title=Blue_Pill
-* https://web.archive.org/web/20190428082446/http://wiki.stm32duino.com/index.php?title=Maple_Mini#Clones
-* http://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32-mainstream-mcus/stm32f1-series/stm32f103/stm32f103c8.html
+- [Blue Pill Wiki](https://web.archive.org/web/20190428082446/http://wiki.stm32duino.com/index.php?title=Blue_Pill)
+- [Maple Mini Wiki](https://web.archive.org/web/20190428082446/http://wiki.stm32duino.com/index.php?title=Maple_Mini#Clones)
+- [STM32F103C8 Datasheet](http://www.st.com/content/st_com/en/products/microcontrollers/stm32-32-bit-arm-cortex-mcus/stm32-mainstream-mcus/stm32f1-series/stm32f103/stm32f103c8.html)
 
 [Datasheet]: http://www.st.com/content/ccc/resource/technical/document/datasheet/33/d4/6f/1d/df/0b/4c/6d/CD00161566.pdf/files/CD00161566.pdf/jcr:content/translations/en.CD00161566.pdf
 [Flashsize]:
