@@ -150,7 +150,7 @@ The documentation must be under the proper doxygen group, you can compile the
 documentation by calling `make doc` and then open the generated html file on
 any browser.
 
-```md
+@code
 /**
 @defgroup    boards_foo FooBoard
 @ingroup     boards
@@ -170,7 +170,7 @@ any browser.
   ...
 
 */
-```
+@endcode
 
 # Using Common code                                         {#common-board-code}
 
@@ -183,7 +183,7 @@ already defined in the common code. Unless having specific configurations or
 initialization you might not need a `board.c` or `board.h`. Another common use
 case is common peripheral configurations:
 
-```diff
+@code
 -\#include "cfg_timer_tim5.h"
 +/**
 + * @name   Timer configuration
@@ -203,7 +203,7 @@ case is common peripheral configurations:
 +
 +#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
 +/** @} */
-```
+@endcode
 
 If you want to use common makefiles, include them at the end of the specific
 `Makefile`, e.g. for a `Makefile.features`:
