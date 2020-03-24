@@ -1,4 +1,4 @@
-# Bossa is the default programmer
+# Adafruit-nrfutil is the default programmer
 PROGRAMMER ?= adafruit-nrfutil
 
 ifeq ($(PROGRAMMER),adafruit-nrfutil)
