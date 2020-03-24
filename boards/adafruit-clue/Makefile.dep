@@ -1,0 +1,22 @@
+ifneq (,$(filter saul_default,$(USEMODULE)))
+  USEMODULE += saul_gpio
+  USEMODULE += apds9960
+  USEMODULE += bmp280_i2c
+  USEMODULE += lis3mdl
+  USEMODULE += sht3x
+endif
+
+# Provide stdio over USB by default
+DEFAULT_MODULE += stdio_cdc_acm
+
+# Default auto-initialization of usbus for stdio other USB
+DEFAULT_MODULE += auto_init_usbus
+
+# This boards requires support for nrfutil bootloader.
+FEATURES_REQUIRED += bootloader_nrfutil
+
+# and for the board reset via USB mechanism
+USEMODULE += usb_board_reset
+
+# include common nrf52 dependencies
+include $(RIOTBOARD)/common/nrf52/Makefile.dep
