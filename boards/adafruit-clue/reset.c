@@ -17,6 +17,8 @@
  * @}
  */
 
+#ifdef MODULE_USB_BOARD_RESET
+
 #define USB_H_USER_IS_RIOT_INTERNAL
 
 #include "usb_board_reset.h"
@@ -29,3 +31,5 @@ void usb_board_reset_in_bootloader(void)
 
     usb_board_reset_in_application();
 }
+
+#endif /* MODULE_USB_BOARD_RESET */
