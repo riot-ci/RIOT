@@ -335,6 +335,18 @@ typedef gpio_t adc_conf_t;
 /** @} */
 
 /**
+ * @name RTT configuration
+ * @{
+ */
+#define RTT_DEV             SMWDTHROSC
+#define RTT_IRQ             SM_TIMER_ALT_IRQn
+#define RTT_IRQ_PRIO        1
+#define RTT_ISR             isr_sleepmode
+#define RTT_MAX_VALUE       (0xffffffff)
+#define RTT_FREQUENCY       (CLOCK_OSC32K)
+/** @} */
+
+/**
  * @name Radio peripheral configuration
  * @{
  */
