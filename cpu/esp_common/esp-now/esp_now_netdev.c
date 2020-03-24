@@ -291,7 +291,7 @@ extern esp_err_t esp_system_event_add_handler(system_event_cb_t handler,
                                               void *arg);
 
 /* ESP-NOW SoftAP configuration */
-wifi_config_t wifi_config_ap = {};
+static wifi_config_t wifi_config_ap = {};
 
 esp_now_netdev_t *netdev_esp_now_setup(void)
 {
