@@ -25,7 +25,7 @@
 /**
  * @brief   Define the number of configured sensors
  */
-#define HMC5883L_NUM    (sizeof(hmc5883l_params) / sizeof(hmc5883l_params[0]))
+#define HMC5883L_NUM    ARRAY_SIZE(hmc5883l_params)
 
 /**
  * @brief   Allocate memory for the device descriptors
