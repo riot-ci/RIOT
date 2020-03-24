@@ -20,5 +20,8 @@ ifneq (,$(filter auto_init_usbus,$(USEMODULE)))
   USEMODULE += usb_board_reset
 endif
 
+# Blacklist riotboot on this board
+FEATURES_BLACKLIST += riotboot
+
 # include common nrf52 dependencies
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
