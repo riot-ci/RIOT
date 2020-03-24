@@ -286,7 +286,7 @@ int hmc5883l_power_down(hmc5883l_t *dev);
  * @retval  HMC5883L_OK      on success
  * @retval  HMC5883L_ERROR_* negative error code, see #hmc5883l_error_codes_t
  */
-int hmc5883l_power_up (hmc5883l_t *dev);
+int hmc5883l_power_up(hmc5883l_t *dev);
 
 #ifdef __cplusplus
 }
