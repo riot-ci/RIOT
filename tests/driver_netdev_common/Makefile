@@ -5,6 +5,11 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
 
+# allow to use a smaller packet buffer in low-PDU drivers
+ifdef GNRC_PKTBUF_SIZE
+  CFLAGS += -DGNRC_PKTBUF_SIZE=$(GNRC_PKTBUF_SIZE)
+endif
+
 # gnrc is a meta module including all required, basic gnrc networking modules
 USEMODULE += gnrc
 
