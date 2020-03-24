@@ -40,7 +40,7 @@ static saul_reg_t saul_entries[HMC5883L_NUM];
 /**
  * @brief   Define the number of saul info
  */
-#define HMC5883L_INFO_NUM    (sizeof(hmc5883l_saul_info) / sizeof(hmc5883l_saul_info[0]))
+#define HMC5883L_INFO_NUM    ARRAY_SIZE(hmc5883l_saul_info)
 
 /**
  * @brief   Reference the driver struct
