@@ -17,7 +17,7 @@ The application can use different approaches to get new data:
 - using the #hmc5883l_read function at a lower rate than the the DOR
 - using the data-ready interrupt (**DRDY**), see #hmc5883l_init_int.
 
-To use the data-ready interrupt (**DRDY), the application has to enable
+To use the data-ready interrupt (**DRDY**), the application has to enable
 module `hmc5883l_int` and has to configure the GPIO to which the
 interrupt signal is connected. This is done by overrding the default
 configuration parameter `HMC5883L_PARAM_INT_PIN` if necessary, for example:
