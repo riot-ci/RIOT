@@ -130,7 +130,7 @@ int hmc5883l_data_ready(const hmc5883l_t *dev)
  * Scale factors for conversion of raw sensor data to uGs for possible
  * sensitivities according to the datasheet.
  */
-static const int32_t HMC5883L_RES[] = {
+static const uint16_t HMC5883L_RES[] = {
      730,      /* uG/LSb for HMC5883L_GAIN_1370 with range +-0.88 Gs */
      917,      /* uG/LSb for HMC5883L_GAIN_1090 with range +-1.3 Gs */
     1220,      /* uG/LSb for HMC5883L_GAIN_820  with range +-1.9 Gs */
