@@ -1,5 +1,5 @@
 /**
-@defgroup    boards_common_blxxxpill Blue/Black Pill common code
+@defgroup    boards_common_blxxxpill Blackpill and Bluepill common code
 @ingroup     boards_common
 @brief       Support for cheap stm32f103c8 based boards such as bluepill and blackpill.
 
