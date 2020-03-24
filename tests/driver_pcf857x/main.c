@@ -62,7 +62,7 @@
 /* PCF857X devices allocation */
 pcf857x_t pcf857x_dev[PCF857X_NUM];
 
-#ifdef MODULE_PERIPH_GPIO_IRQ
+#ifdef MODULE_PCF857X_IRQ
 static void cb(void *arg)
 {
     printf("INT: external interrupt from pin %i\n", (int)arg);
@@ -79,7 +79,7 @@ static int init_pin(int argc, char **argv, gpio_mode_t mode)
     int po = atoi(argv[1]);
     int pi = atoi(argv[2]);
 
-    if (pcf857x_gpio_init(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi), mode) < 0) {
+    if (pcf857x_gpio_init(&pcf857x_dev[po], pi, mode) < 0) {
         printf("error: init PCF857X pin (dev %i, pin %02i) failed\n", po, pi);
         return 1;
     }
@@ -112,7 +112,7 @@ static int init_od_pu(int argc, char **argv)
     return init_pin(argc, argv, GPIO_OD_PU);
 }
 
-#ifdef MODULE_PERIPH_GPIO_IRQ
+#ifdef MODULE_PCF857X_IRQ
 static int init_int(int argc, char **argv)
 {
     gpio_mode_t mode = GPIO_IN;
@@ -147,7 +147,7 @@ static int init_int(int argc, char **argv)
             return 1;
     }
 
-    if (pcf857x_gpio_init_int(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi),
+    if (pcf857x_gpio_init_int(&pcf857x_dev[po], pi,
                               mode, flank, cb, (void *)pi) < 0) {
         printf("error: init_int PCF857X pin (dev %i, pin %02i) failed\n", po, pi);
         return 1;
@@ -176,11 +176,11 @@ static int enable_int(int argc, char **argv)
     switch (status) {
         case 0:
             puts("disabling GPIO interrupt");
-            pcf857x_gpio_irq_disable(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi));
+            pcf857x_gpio_irq_disable(&pcf857x_dev[po], pi);
             break;
         case 1:
             puts("enabling GPIO interrupt");
-            pcf857x_gpio_irq_enable(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi));
+            pcf857x_gpio_irq_enable(&pcf857x_dev[po], pi);
             break;
         default:
             puts("error: invalid status");
@@ -189,7 +189,7 @@ static int enable_int(int argc, char **argv)
 
     return 0;
 }
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 static int read(int argc, char **argv)
 {
@@ -201,7 +201,7 @@ static int read(int argc, char **argv)
     int po = atoi(argv[1]);
     int pi = atoi(argv[2]);
 
-    if (pcf857x_gpio_read(&pcf857x_dev[po], PCF857X_GPIO_PIN(0, pi))) {
+    if (pcf857x_gpio_read(&pcf857x_dev[po], pi)) {
         printf("PCF857X pin (dev %i, pin %02i) is HIGH\n", po, pi);
     }
     else {
@@ -217,8 +217,7 @@ static int set(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-    pcf857x_gpio_set(&pcf857x_dev[atoi(argv[1])],
-                     PCF857X_GPIO_PIN(0, atoi(argv[2])));
+    pcf857x_gpio_set(&pcf857x_dev[atoi(argv[1])], atoi(argv[2]));
     return 0;
 }
 
@@ -228,8 +227,7 @@ static int clear(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-    pcf857x_gpio_clear(&pcf857x_dev[atoi(argv[1])],
-                        PCF857X_GPIO_PIN(0, atoi(argv[2])));
+    pcf857x_gpio_clear(&pcf857x_dev[atoi(argv[1])], atoi(argv[2]));
     return 0;
 }
 
@@ -239,8 +237,7 @@ static int toggle(int argc, char **argv)
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
-    pcf857x_gpio_toggle(&pcf857x_dev[atoi(argv[1])],
-                        PCF857X_GPIO_PIN(0, atoi(argv[2])));
+    pcf857x_gpio_toggle(&pcf857x_dev[atoi(argv[1])], atoi(argv[2]));
     return 0;
 }
 
@@ -251,7 +248,7 @@ static int bench(int argc, char **argv)
         return 1;
     }
 
-    gpio_t pi = PCF857X_GPIO_PIN(0, atoi(argv[2]));
+    gpio_t pi = atoi(argv[2]);
     int po = atoi(argv[1]);
 
     unsigned long runs = BENCH_RUNS_DEFAULT;
@@ -280,7 +277,7 @@ static const shell_command_t shell_commands[] = {
     { "init_in_pu", "init as input with pull-up", init_in_pu },
     { "init_od", "init as output (open-drain without pull resistor)", init_od },
     { "init_od_pu", "init as output (open-drain with pull-up)", init_od_pu },
-#ifdef MODULE_PERIPH_GPIO_IRQ
+#ifdef MODULE_PCF857X_IRQ
     { "init_int", "init as external INT w/o pull resistor", init_int },
     { "enable_int", "enable or disable gpio interrupt", enable_int },
 #endif
