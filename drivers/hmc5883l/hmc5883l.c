@@ -196,7 +196,7 @@ int hmc5883l_power_down(hmc5883l_t *dev)
     return _reg_write(dev, HMC5883L_REG_MODE, HMC5883L_OP_MODE_IDLE);
 }
 
-int hmc5883l_power_up (hmc5883l_t *dev)
+int hmc5883l_power_up(hmc5883l_t *dev)
 {
     assert(dev != NULL);
     DEBUG_DEV("", dev);
