@@ -3,6 +3,9 @@ USEMODULE += rtt_rtc
 CFLAGS += -DMOCK_RTT_FREQUENCY=32
 CFLAGS += -DMOCK_RTT_MAX_VALUE=0xFFFF
 
+# pm_layered requires RTC on esp32
+DISABLE_MODULE += pm_layered
+
 # mulle always enables periph_rtt.
 # This clashes with mock_rtt.
 BOARD_BLACKLIST := mulle
