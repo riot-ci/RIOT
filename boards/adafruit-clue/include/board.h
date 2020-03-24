@@ -85,10 +85,13 @@ extern "C" {
 /** @ */
 
 /**
- * @name    Backlight pin
+ * @name    Backlight control defines, default uses LCD_BACKLIGHT_LOW values
  * @{
  */
 #define BACKLIGHT_PIN                   GPIO_PIN(1, 5)
+#define BACKLIGHT_MASK                  (1 << 5)
+#define BACKLIGHT_ON                    (NRF_P1->OUTSET = BACKLIGHT_MASK)
+#define BACKLIGHT_OFF                   (NRF_P1->OUTCLR = BACKLIGHT_MASK)
 /** @ */
 
 /**
