@@ -158,8 +158,10 @@ int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode)
     DEBUG_DEV("pin=%u mode=%u", dev, pin, mode);
 
     switch (mode) {
+#ifndef MCU_CC2538
         case GPIO_OD:
         case GPIO_OD_PU:
+#endif
         case GPIO_IN_PU:
         case GPIO_IN:    dev->modes |= (1 << pin); /* set mode bit to 1 */
                          dev->out   |= (1 << pin); /* set output bit to 1 */
@@ -167,7 +169,7 @@ int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode)
         case GPIO_OUT:   dev->modes &= ~(1 << pin); /* set mode bit to 0 */
                          dev->out   &= ~(1 << pin); /* set output bit to 0 */
                          break;
-        default: DEBUG_DEV("gpio mode %d not suppined", dev, mode);
+        default: DEBUG_DEV("gpio mode %d not supported", dev, mode);
                  return -PCF857X_ERROR_INV_MODE;
     }
 
