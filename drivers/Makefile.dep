@@ -559,7 +559,8 @@ endif
 ifneq (,$(filter pcf857x,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_i2c
-  ifneq (,$(filter periph_gpio_irq,$(USEMODULE)))
+  ifneq (,$(filter pcf857x_irq,$(USEMODULE)))
+    FEATURES_REQUIRED += periph_gpio_irq
     USEMODULE += event_thread_medium
   endif
 endif

@@ -24,7 +24,7 @@
 #include "thread.h"
 #include "xtimer.h"
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
 #include "event/thread.h"
 #endif
 
@@ -70,7 +70,7 @@
 static int _read(const pcf857x_t *dev, pcf857x_data_t *data);
 static int _write(const pcf857x_t *dev, pcf857x_data_t data);
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
 
 /* interrutp service routine for IRQs */
 static void _irq_isr(void *arg);
@@ -81,7 +81,7 @@ static void _irq_handler(event_t *event);
 /* internal update function */
 static void _update_state(pcf857x_t* dev);
 
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
 {
@@ -89,7 +89,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
     assert(dev != NULL);
     assert(params != NULL);
     assert(params->exp < PCF857X_EXP_MAX);
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
     assert(params->int_pin != GPIO_UNDEF);
 #endif
 
@@ -120,7 +120,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
         default: return PCF857X_ERROR_INV_EXP;
     }
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
     /* initialize the IRQ event object used for delaying interrupts */
     dev->irq_event.event.handler = _irq_handler;
     dev->irq_event.dev = dev;
@@ -134,7 +134,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
     /* initialize the interrupt pin if defined */
     EXEC_RET(gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING,
                                                 _irq_isr, (void*)dev));
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
     /* write 1 to all pins to switch them to INPUTS pulled up to HIGH */
     dev->out = ~0;
@@ -175,7 +175,7 @@ int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode)
     pcf857x_data_t data = dev->modes | dev->out;
     EXEC_RET(_write(dev, data));
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
     /* reset the callback in case the port used external interrupts before */
     dev->isr[pin].cb = NULL;
     dev->isr[pin].arg = NULL;
@@ -198,7 +198,7 @@ int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode)
     return PCF857X_OK;
 }
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
 int pcf857x_gpio_init_int(pcf857x_t *dev, gpio_t pin,
                                           gpio_mode_t mode,
                                           gpio_flank_t flank,
@@ -257,7 +257,7 @@ int pcf857x_gpio_read (pcf857x_t *dev, gpio_t pin)
      * stored in the device data structure and which can be used directly.
      * Otherwise we have to read the pins first.
      */
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
     if (dev->params.int_pin == GPIO_UNDEF) {
         /* if the interrupt pin is not defined we don't use interrupt */
         EXEC_RET(_read(dev, &dev->in));
@@ -287,7 +287,7 @@ void pcf857x_gpio_write (pcf857x_t *dev, gpio_t pin, int value)
     /* update pin values */
     pcf857x_data_t data = dev->modes | dev->out;
     EXEC(_write(dev, data));
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
     /*
      * If an output of the expander is connected to an input of the same
      * expander, there is no interrupt triggered by the input when the
@@ -320,7 +320,7 @@ void pcf857x_gpio_toggle (pcf857x_t *dev, gpio_t pin)
 
 /** Functions for internal use only */
 
-#if MODULE_PERIPH_GPIO_IRQ
+#if MODULE_PCF857X_IRQ
 
 /* interrupt service routine for IRQs */
 static void _irq_isr(void *arg)
@@ -381,7 +381,7 @@ static void _update_state(pcf857x_t* dev)
         }
     }
 }
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 static int _read(const pcf857x_t *dev, pcf857x_data_t *data)
 {

@@ -57,7 +57,7 @@ extern "C" {
 #endif
 
 #ifndef PCF857X_PARAMS
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
 #define PCF857X_PARAMS { \
                             .dev = PCF857X_PARAM_DEV, \
                             .addr = PCF857X_PARAM_ADDR, \

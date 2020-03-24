@@ -8,6 +8,7 @@
 
 /**
  * @defgroup    drivers_pcf857x PCF857X I2C I/O expanders
+ * @ingroup     drivers_misc
  * @ingroup     drivers_saul
  * @brief       Device driver for Texas Instruments PCF857X I2C I/O expanders
  *
@@ -110,14 +111,15 @@
  *   avoids to read all expander input pins via I2C each time a single input
  *   value of an expander GPIO pin is read with #pcf857x_gpio_read.
  *
- * To use the interrupt signal, the `periph_gpio_irq` module has to be
- * added to the project. Furthermore, the MCU interrupt pin to which the
- * PCF857X INT signal is connected has to be defined by the parameter
- * pcf857x_params_t::int_pin either in the parameter file or at the command
- * line, e.g.
+ * Since interrupts are handled in the context of a separate event thread,
+ * enabling interrupts requires more RAM. Therefore, interrupts have to be
+ * activated explicitly with the module `pcf857x_irq`. Furthermore, the MCU
+ * interrupt pin to which the PCF857X INT signal is connected has to be
+ * defined by the parameter pcf857x_params_t::int_pin either in the parameter
+ * file or at the command line, e.g.
  *
  *      CFLAGS="-DPCF857X_PARAM_INT_PIN=\(GPIO\(0,6\)\)" \
- *      USEMODULE="pcf8575 periph_gpio_irq" make -C tests/driver_pcf857x BOARD=...
+ *      USEMODULE="pcf8575 pcf857x_irq" make -C tests/driver_pcf857x BOARD=...
  *
  * <br>
  * @note If an output of the expander is connected to an input of the same
@@ -140,7 +142,7 @@
  * asynchronously in the thread context.
  *
  * For this purpose the event thread module `event_thread_medium` is used when
- * interrupts are enabled by the module `periph_gpio_irq`. The driver then
+ * interrupts are enabled by the module `pcf857x_irq`. The driver then
  * handles the interrupts in the context of the event thread with medium
  * priority.
  *
@@ -170,7 +172,7 @@
  * configuration parameter array `pcf857x_params` of type #pcf857x_params_t.
  * The default configuration for one device is defined in
  * `drivers/pcf857x/pcf857x_params.h`. The application can override it by by
- * placing a file `pcf857x_params.h` in the application directory `$(APPDIR)`.
+ * placing a file `pcf857x_params.h` in the application directory `$APPDIR`.
  * For example, the definition of the configuration parameter array for the
  * two devices above could be:
  *
@@ -213,9 +215,9 @@ extern "C"
 #include "saul/periph.h"
 #endif /* MODULE_SAUL_GPIO */
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
 #include "event.h"
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 #if !MODULE_PCF8574 && !MODULE_PCF8574A && !MODULE_PCF8575
 #error "Please provide a list of pcf857x variants used by the application (pcf8574, pcf8574a or pcf8575)"
@@ -321,17 +323,17 @@ typedef struct {
     pcf857x_exp_t exp;  /**< PCF857X expander variant used by the device
                              (default depends on used pseudomodules */
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
     gpio_t   int_pin;   /**< MCU interrupt pin or #GPIO_UNDEF if not used (default).
                              Using interrupt pin has the advantage that inputs
                              have to be read from expander only if any input
                              value changes.
                              @note To use interrupts for expander inputs, this
                              pin has to be defined. */
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 } pcf857x_params_t;
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
 /**
  * @brief   IRQ event type
  *
@@ -352,7 +354,7 @@ typedef struct {
     void *dev;          /**< PCF857X device reference */
 } pcf857x_irq_event_t;
 
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 /**
  * @brief   PCF857X device data structure type
@@ -366,12 +368,12 @@ typedef struct {
     pcf857x_data_t in;        /**< expander intput pin values */
     pcf857x_data_t out;       /**< expander output pin values */
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
     gpio_isr_ctx_t isr[PCF857X_GPIO_PIN_NUM];  /**< ISR with arg for each expander pin */
     gpio_flank_t flank[PCF857X_GPIO_PIN_NUM];  /**< interrupt flank for each expander pin */
     bool enabled[PCF857X_GPIO_PIN_NUM];        /**< enabled flag for each expander pin */
     pcf857x_irq_event_t irq_event;  /**< IRQ event object used for the device */
-#endif /* MODULE_PERIPH_GPIO_IRQ */
+#endif /* MODULE_PCF857X_IRQ */
 
 } pcf857x_t;
 
@@ -422,7 +424,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params);
  */
 int pcf857x_gpio_init(pcf857x_t *dev, gpio_t pin, gpio_mode_t mode);
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
 /**
  * @brief   Initialize a PCF857X pin for external interrupt usage
  *
@@ -456,7 +458,7 @@ int pcf857x_gpio_init_int(pcf857x_t *dev, gpio_t pin,
                                           gpio_flank_t flank,
                                           gpio_cb_t isr,
                                           void *arg);
-#endif /* MODULE_PERIPH_GPIO_IRQ || DOXYGEN */
+#endif /* MODULE_PCF857X_IRQ || DOXYGEN */
 
 /**
  * @brief   Get the value from PCF857X input pin
@@ -502,7 +504,7 @@ void pcf857x_gpio_set(pcf857x_t *dev, gpio_t pin);
  */
 void pcf857x_gpio_toggle(pcf857x_t *dev, gpio_t pin);
 
-#if MODULE_PERIPH_GPIO_IRQ || DOXYGEN
+#if MODULE_PCF857X_IRQ || DOXYGEN
 /**
  * @brief   Enable pin interrupt
  *
@@ -530,7 +532,7 @@ void pcf857x_gpio_irq_enable(pcf857x_t *dev, gpio_t pin);
  * @param[in]   pin     pin to enable the interrupt for
  */
 void pcf857x_gpio_irq_disable(pcf857x_t *dev, gpio_t pin);
-#endif /* MODULE_PERIPH_GPIO_IRQ || DOXYGEN */
+#endif /* MODULE_PCF857X_IRQ || DOXYGEN */
 
 #ifdef __cplusplus
 }
