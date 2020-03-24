@@ -718,7 +718,7 @@ static wifi_config_t wifi_config_sta = {
     }
 };
 
-#ifndef MODULE_ESP_NOW
+#if defined(MCU_ESP8266) && !defined(MODULE_ESP_NOW)
 /**
  * Static configuration for the SoftAP interface if ESP-NOW is not enabled.
  *
@@ -751,7 +751,7 @@ static wifi_config_t wifi_config_ap = {
         .beacon_interval = 60000,       /* send beacon only every 60 s */
     }
 };
-#endif
+#endif /* defined(MCU_ESP8266) && !defined(MODULE_ESP_NOW) */
 
 void esp_wifi_setup (esp_wifi_netdev_t* dev)
 {
@@ -796,19 +796,26 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
     /* TODO */
 #endif
 
+#ifdef MCU_ESP8266
     /* activate the Station and the SoftAP interface */
     result = esp_wifi_set_mode(WIFI_MODE_APSTA);
+#else /* MCU_ESP8266 */
+    /* activate only the Station interface */
+    result = esp_wifi_set_mode(WIFI_MODE_STA);
+#endif /* MCU_ESP8266 */
     if (result != ESP_OK) {
         ESP_WIFI_LOG_ERROR("esp_wifi_set_mode failed with return value %d", result);
         return;
     }
 
+#ifdef MCU_ESP8266
     /* set the SoftAP configuration */
     result = esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config_ap);
     if (result != ESP_OK) {
         ESP_WIFI_LOG_ERROR("esp_wifi_set_config softap failed with return value %d", result);
         return;
     }
+#endif /* MCU_ESP8266 */
 
 #endif /* MODULE_ESP_NOW */
 
