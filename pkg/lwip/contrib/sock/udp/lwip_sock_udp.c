@@ -71,19 +71,36 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *ep)
 ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
                       uint32_t timeout, sock_udp_ep_t *remote)
 {
-    uint8_t *data_ptr = data;
+    void *pkt = NULL, *ctx = NULL;
+    ssize_t res;
+
+    assert((sock != NULL) && (data != NULL) && (max_len > 0));
+    res = sock_udp_recv_buf(sock, &pkt, &ctx, timeout, remote);
+    if (res >= 0) {
+        if (res > (ssize_t)max_len) {
+            res = -ENOBUFS;
+        }
+        else if (res != 0) {
+            memcpy(data, pkt, res);
+        }
+        sock_recv_buf_free(ctx);
+    }
+    return res;
+}
+
+
+
+ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **ctx,
+                          uint32_t timeout, sock_udp_ep_t *remote)
+{
     struct netbuf *buf;
     int res;
 
-    assert((sock != NULL) && (data != NULL) && (max_len > 0));
+    assert((sock != NULL) && (data != NULL) && (ctx != NULL));
     if ((res = lwip_sock_recv(sock->base.conn, timeout, &buf)) < 0) {
         return res;
     }
     res = buf->p->tot_len;
-    if ((unsigned)res > max_len) {
-        netbuf_delete(buf);
-        return -ENOBUFS;
-    }
     if (remote != NULL) {
         /* convert remote */
         size_t addr_len;
@@ -113,12 +130,10 @@ ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
         memcpy(&remote->addr, &buf->addr, addr_len);
         remote->port = buf->port;
     }
-    /* copy data */
-    for (struct pbuf *q = buf->p; q != NULL; q = q->next) {
-        memcpy(data_ptr, q->payload, q->len);
-        data_ptr += q->len;
-    }
-    netbuf_delete(buf);
+    assert(buf->p->next == NULL);
+    assert(buf->p->len == res);
+    *data = buf->p->payload;
+    *ctx = buf;
     return (ssize_t)res;
 }
 
