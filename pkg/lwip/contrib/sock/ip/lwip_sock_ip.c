@@ -106,7 +106,7 @@ static uint16_t _ip6_addr_to_netif(const ip6_addr_p_t *_addr)
 }
 #endif
 
-static int _parse_iphdr(const struct netbuf *buf, void *data, size_t max_len,
+static int _parse_iphdr(struct netbuf *buf, void **data, void **ctx,
                         sock_ip_ep_t *remote)
 {
     uint8_t *data_ptr = buf->p->payload;
@@ -117,9 +117,6 @@ static int _parse_iphdr(const struct netbuf *buf, void *data, size_t max_len,
     switch (data_ptr[0] >> 4) {
 #if LWIP_IPV4
         case 4:
-            if ((data_len - sizeof(struct ip_hdr)) > max_len) {
-                return -ENOBUFS;
-            }
             if (remote != NULL) {
                 struct ip_hdr *iphdr = (struct ip_hdr *)data_ptr;
 
@@ -134,9 +131,6 @@ static int _parse_iphdr(const struct netbuf *buf, void *data, size_t max_len,
 #endif
 #if LWIP_IPV6
         case 6:
-            if ((data_len - sizeof(struct ip6_hdr)) > max_len) {
-                return -ENOBUFS;
-            }
             if (remote != NULL) {
                 struct ip6_hdr *iphdr = (struct ip6_hdr *)data_ptr;
 
@@ -150,24 +144,46 @@ static int _parse_iphdr(const struct netbuf *buf, void *data, size_t max_len,
             break;
 #endif
         default:
+            netbuf_delete(buf);
             return -EPROTO;
     }
-    memcpy(data, data_ptr, data_len);
+    *data = data_ptr;
+    *ctx = buf;
     return (ssize_t)data_len;
 }
 
 ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
                      uint32_t timeout, sock_ip_ep_t *remote)
 {
+    void *pkt = NULL, *ctx = NULL;
+    ssize_t res;
+
+    assert((sock != NULL) && (data != NULL) && (max_len > 0));
+    res = sock_ip_recv_buf(sock, &pkt, &ctx, timeout, remote);
+    if (res >= 0) {
+        if (res > (ssize_t)max_len) {
+            res = -ENOBUFS;
+        }
+        else if (res != 0) {
+            memcpy(data, pkt, res);
+        }
+        sock_recv_buf_free(ctx);
+    }
+    return res;
+}
+
+ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **ctx,
+                         uint32_t timeout, sock_ip_ep_t *remote)
+{
     struct netbuf *buf;
     int res;
 
-    assert((sock != NULL) && (data != NULL) && (max_len > 0));
+    assert((sock != NULL) && (data != NULL) && (ctx != NULL));
     if ((res = lwip_sock_recv(sock->base.conn, timeout, &buf)) < 0) {
         return res;
-    }
-    res = _parse_iphdr(buf, data, max_len, remote);
     netbuf_delete(buf);
+    }
+    res = _parse_iphdr(buf, data, ctx, remote);
     return res;
 }
 
