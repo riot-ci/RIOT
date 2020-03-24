@@ -187,7 +187,7 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw)
     return res;
 }
 
-int hmc5883l_power_down (hmc5883l_t *dev)
+int hmc5883l_power_down(hmc5883l_t *dev)
 {
     assert(dev != NULL);
     DEBUG_DEV("", dev);
