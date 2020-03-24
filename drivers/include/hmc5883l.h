@@ -274,7 +274,7 @@ int hmc5883l_read_raw(const hmc5883l_t *dev, hmc5883l_raw_data_t *raw);
  * @retval  HMC5883L_OK      on success
  * @retval  HMC5883L_ERROR_* negative error code, see #hmc5883l_error_codes_t
  */
-int hmc5883l_power_down (hmc5883l_t *dev);
+int hmc5883l_power_down(hmc5883l_t *dev);
 
 /**
  * @brief   Power up the sensor
