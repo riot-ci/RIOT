@@ -45,7 +45,7 @@ extern "C"
 
 /** Definition of error codes */
 typedef enum {
-    HMC5883L_OK             = 0,   /**< success */
+    HMC5883L_OK             =  0,  /**< success */
     HMC5883L_ERROR_I2C      = -1,  /**< any I2C communication error */
     HMC5883L_ERROR_WRONG_ID = -2,  /**< wrong id read */
     HMC5883L_ERROR_NO_DATA  = -3,  /**< no data are available */
