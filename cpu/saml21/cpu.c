@@ -24,11 +24,13 @@
 #include "stdio_base.h"
 
 /* As long as DFLL & DPLL are not used, we can default to
-   always using the buck converter when available. */
-#if !defined(CPU_SAMR30)
-#define USE_VREG_BUCK   (1)
-#else
-#define USE_VREG_BUCK   (0)
+ * always using the buck converter when available.
+ *
+ * An external inductor needs to be present on the board,
+ * so the feature can only be enabled by the board configuration.
+ */
+#ifndef USE_VREG_BUCK
+#define USE_VREG_BUCK (0)
 #endif
 
 static void _gclk_setup(int gclk, uint32_t reg)
