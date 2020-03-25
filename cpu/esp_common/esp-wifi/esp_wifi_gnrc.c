@@ -24,6 +24,8 @@
 #include "esp_wifi_params.h"
 #include "esp_wifi_netdev.h"
 
+static gnrc_netif_t _netif;
+
 /** the only ESP WiFi device */
 extern esp_wifi_netdev_t _esp_wifi_dev;
 
@@ -36,7 +38,7 @@ extern void esp_wifi_setup (esp_wifi_netdev_t* dev);
 void auto_init_esp_wifi (void)
 {
     esp_wifi_setup(&_esp_wifi_dev);
-    gnrc_netif_ethernet_create(_esp_wifi_stack, ESP_WIFI_STACKSIZE,
+    gnrc_netif_ethernet_create(&_netif, _esp_wifi_stack, ESP_WIFI_STACKSIZE,
 #ifdef MODULE_ESP_NOW
                                                 ESP_WIFI_PRIO - 1,
 #else
