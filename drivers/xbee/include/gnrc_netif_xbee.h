@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-int gnrc_netif_xbee_create(char *stack, int stacksize,
+int gnrc_netif_xbee_create(gnrc_netif_t *netif, char *stack, int stacksize,
                            char priority, char *name,
                            netdev_t *dev);
 

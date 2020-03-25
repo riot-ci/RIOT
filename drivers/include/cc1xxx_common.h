@@ -126,7 +126,7 @@ typedef struct netdev_radio_rx_info cc1xxx_rx_info_t;
  * @return  0 on success
  * @return  negative number on error
  */
-int gnrc_netif_cc1xxx_create(char *stack, int stacksize,
+int gnrc_netif_cc1xxx_create(gnrc_netif_t *netif, char *stack, int stacksize,
                              char priority, char *name,
                              netdev_t *dev);
 
