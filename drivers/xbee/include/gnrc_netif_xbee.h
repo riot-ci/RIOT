@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Creates a Xbee network interface
+ * @brief   Creates an Xbee network interface
  *
  * @param[in] netif     The interface. May not be `NULL`.
  * @param[in] stack     The stack for the network interface's thread.
