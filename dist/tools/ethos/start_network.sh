@@ -23,8 +23,9 @@ cleanup() {
     if [ -n "${UHCPD_PID}" ]; then
         kill ${UHCPD_PID}
     fi
-    if [ -n "${DHCPD_PID}" ]; then
-        kill ${DHCPD_PID}
+    if [ -n "${DHCPD_PIDFILE}" ]; then
+        kill "$(cat ${DHCPD_PIDFILE})"
+        rm "${DHCPD_PIDFILE}"
     fi
     trap "" INT QUIT TERM EXIT
 }
@@ -34,15 +35,9 @@ start_uhcpd() {
     UHCPD_PID=$!
 }
 
-start_delayed_dhcpd() {
-    # TAP interface must have a running endpoint for some servers
-    sleep 2
-    ${DHCPD} ${TAP} ${PREFIX} 2> /dev/null
-    DHCPD_PID=$!
-}
-
 start_dhcpd() {
-    start_delayed_dhcpd &
+    DHCPD_PIDFILE=$(mktemp)
+    ${DHCPD} -d -p ${DHCPD_PIDFILE} ${TAP} ${PREFIX} 2> /dev/null
 }
 
 if [ "$1" = "-d" ] || [ "$1" = "--use-dhcpv6" ]; then
