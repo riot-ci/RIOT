@@ -22,6 +22,14 @@
 #include "periph/init.h"
 #include "stdio_base.h"
 
+/*
+ * An external inductor needs to be present on the board,
+ * so the feature can only be enabled by the board configuration.
+ */
+#ifndef USE_VREG_BUCK
+#define USE_VREG_BUCK (0)
+#endif
+
 #if CLOCK_CORECLOCK == 0
 #error Please select CLOCK_CORECLOCK
 #endif
@@ -144,11 +152,35 @@ uint32_t sam0_gclk_freq(uint8_t id)
     }
 }
 
+void cpu_pm_cb_enter(int deep)
+{
+    if (deep) {
+        /* we can only use the buck converter if fast clocks are off */
+        if (USE_VREG_BUCK) {
+            sam0_set_voltage_regulator(SAM0_VREG_BUCK);
+        }
+    }
+}
+
+void cpu_pm_cb_leave(int deep)
+{
+    if (deep) {
+        /* switch back to LDO */
+        if (USE_VREG_BUCK) {
+            sam0_set_voltage_regulator(SAM0_VREG_LDO);
+        }
+    }
+}
+
 /**
  * @brief Initialize the CPU, set IRQ priorities, clocks
  */
 void cpu_init(void)
 {
+    /* CPU starts with DFLL48 as clock source, so we
+       must use the LDO */
+    sam0_set_voltage_regulator(SAM0_VREG_LDO);
+
     /* initialize the Cortex-M core */
     cortexm_init();
 
