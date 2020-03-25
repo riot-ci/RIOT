@@ -50,8 +50,8 @@ static const gnrc_netif_ops_t ethernet_ops = {
 };
 
 int gnrc_netif_ethernet_create(gnrc_netif_t *netif, char *stack, int stacksize,
-                                         char priority, char *name,
-                                         netdev_t *dev)
+                               char priority, char *name,
+                               netdev_t *dev)
 {
     return gnrc_netif_create(netif, stack, stacksize, priority, name, dev,
                              &ethernet_ops);

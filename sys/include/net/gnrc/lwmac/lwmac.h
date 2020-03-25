@@ -313,8 +313,8 @@ extern "C" {
  * @return  negative number on error
  */
 int gnrc_netif_lwmac_create(gnrc_netif_t *netif, char *stack, int stacksize,
-                                      char priority, char *name,
-                                      netdev_t *dev);
+                            char priority, char *name,
+                            netdev_t *dev);
 #ifdef __cplusplus
 }
 #endif

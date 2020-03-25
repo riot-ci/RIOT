@@ -196,7 +196,7 @@ static const gnrc_netif_ops_t _esp_now_ops = {
 };
 
 int gnrc_netif_esp_now_create(gnrc_netif_t *netif, char *stack, int stacksize, char priority,
-                                        char *name, netdev_t *dev)
+                              char *name, netdev_t *dev)
 {
     return gnrc_netif_create(netif, stack, stacksize, priority, name, dev, &_esp_now_ops);
 }
