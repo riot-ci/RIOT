@@ -10,6 +10,7 @@
 import json
 import os
 import tempfile
+import time
 
 import base
 
@@ -92,15 +93,24 @@ class KeaServer(base.DHCPv6Server):
             "Arch": {"name": "kea"},
         }
 
-    def __init__(self, config, next_hop="fe80::2"):
+    def __init__(self, config, next_hop="fe80::2", *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.next_hop = next_hop
         self.config = config
+
+    def pre_run(self):
+        # create config file in daemon so it is not automatically deleted
         self.command.append(str(self.config))
+        if self.daemonized:
+            # need to wait for interface to connect before we can run server
+            time.sleep(2)
 
     def run(self):
         if not self.is_installed():
             self.install()
-            if self.installer.os in ["Arch"]:
-                # workaround: Arch does not create that directory on install
+            if self.installer.os in ["Arch"] and \
+               not os.path.exists("/var/run/kea/"):
+                # workaround: Arch does not create that directory on first
+                # install
                 os.makedirs("/var/run/kea/")
         super().run()

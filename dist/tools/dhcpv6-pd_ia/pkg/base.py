@@ -43,7 +43,7 @@ class Installer(abc.ABC):
         valid = {"yes": True, "y": True, "ye": True,
                  "no": False, "n": False}
         while True:
-            sys.stdout.write("Install package {}? [Y/n]"
+            sys.stdout.write("Install package {}? [Y/n] "
                              .format(package["generic"]["name"]))
             sys.stdout.flush()
             choice = input().lower()
