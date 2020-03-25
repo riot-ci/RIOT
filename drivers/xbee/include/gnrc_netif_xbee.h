@@ -24,6 +24,21 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Creates a Xbee network interface
+ *
+ * @param[in] netif     The interface. May not be `NULL`.
+ * @param[in] stack     The stack for the network interface's thread.
+ * @param[in] stacksize Size of @p stack.
+ * @param[in] priority  Priority for the network interface's thread.
+ * @param[in] name      Name for the network interface. May be NULL.
+ * @param[in] dev       Device for the interface.
+ *
+ * @see @ref gnrc_netif_create()
+ *
+ * @return  0 on success
+ * @return  negative number on error
+ */
 int gnrc_netif_xbee_create(gnrc_netif_t *netif, char *stack, int stacksize,
                            char priority, char *name, netdev_t *dev);
 
