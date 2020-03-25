@@ -22,6 +22,14 @@
 #include "periph/init.h"
 #include "stdio_base.h"
 
+/*
+ * An external inductor needs to be present on the board,
+ * so the feature can only be enabled by the board configuration.
+ */
+#ifndef USE_VREG_BUCK
+#define USE_VREG_BUCK (0)
+#endif
+
 #if CLOCK_CORECLOCK == 0
 #error Please select CLOCK_CORECLOCK
 #endif
@@ -148,7 +156,9 @@ void cpu_pm_cb_enter(int deep)
 {
     if (deep) {
         /* we can only use the buck converter if fast clocks are off */
-        sam0_set_voltage_regulator(SAM0_VREG_BUCK);
+        if (USE_VREG_BUCK) {
+            sam0_set_voltage_regulator(SAM0_VREG_BUCK);
+        }
     }
 }
 
@@ -156,7 +166,9 @@ void cpu_pm_cb_leave(int deep)
 {
     if (deep) {
         /* switch back to LDO */
-        sam0_set_voltage_regulator(SAM0_VREG_LDO);
+        if (USE_VREG_BUCK) {
+            sam0_set_voltage_regulator(SAM0_VREG_LDO);
+        }
     }
 }
 
