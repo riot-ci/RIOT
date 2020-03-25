@@ -31,8 +31,14 @@
 #endif
 
 /* As long as FDPLL is not used, we can default to
-   always using the buck converter. */
-#define USE_VREG_BUCK   (1)
+ * always using the buck converter.
+ *
+ * An external inductor needs to be present on the board,
+ * so the feature can only be enabled by the board configuration.
+ */
+#ifndef USE_VREG_BUCK
+#define USE_VREG_BUCK (0)
+#endif
 
 static void _gclk_setup(int gclk, uint32_t reg)
 {
