@@ -57,7 +57,7 @@ static void set_interface_roles(void)
 }
 
 static ipv6_addr_t _prefix;
-static uint8_t prefix_len;
+static uint8_t _prefix_len;
 
 #ifdef MODULE_GNRC_SIXLOWPAN_CTX
 #define SIXLO_CTX_LTIME_MIN (60U)   /**< context lifetime in minutes */
@@ -126,7 +126,7 @@ void uhcp_handle_prefix(uint8_t *prefix, uint8_t prefix_len, uint16_t lifetime, 
         return;
     }
 
-    if ((prefix_len == prefix_len) &&
+    if ((_prefix_len == prefix_len) &&
         (ipv6_addr_match_prefix(&_prefix,
                                 (ipv6_addr_t *)prefix) >= prefix_len)) {
         LOG_WARNING("gnrc_uhcpc: uhcp_handle_prefix(): got same prefix again\n");
