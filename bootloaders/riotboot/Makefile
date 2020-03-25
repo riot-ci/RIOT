@@ -16,6 +16,7 @@ CFLAGS += -DRIOTBOOT
 CFLAGS += -DNDEBUG -DLOG_LEVEL=LOG_NONE
 DISABLE_MODULE += core_init core_msg core_panic
 DISABLE_MODULE += auto_init
+DISABLE_MODULE += samd21_bootloader_default_module
 
 # avoid using stdio
 USEMODULE += stdio_null
