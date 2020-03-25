@@ -57,6 +57,7 @@ static void set_interface_roles(void)
 }
 
 static ipv6_addr_t _prefix;
+static uint8_t prefix_len;
 
 #ifdef MODULE_GNRC_SIXLOWPAN_CTX
 #define SIXLO_CTX_LTIME_MIN (60U)   /**< context lifetime in minutes */
@@ -125,7 +126,9 @@ void uhcp_handle_prefix(uint8_t *prefix, uint8_t prefix_len, uint16_t lifetime, 
         return;
     }
 
-    if (ipv6_addr_equal(&_prefix, (ipv6_addr_t*)prefix)) {
+    if ((prefix_len == prefix_len) &&
+        (ipv6_addr_match_prefix(&_prefix,
+                                (ipv6_addr_t *)prefix) >= prefix_len)) {
         LOG_WARNING("gnrc_uhcpc: uhcp_handle_prefix(): got same prefix again\n");
 #ifdef MODULE_GNRC_SIXLOWPAN_CTX
         if (gnrc_netif_is_6ln(gnrc_netif_get_by_pid(gnrc_wireless_interface))) {
@@ -148,6 +151,7 @@ void uhcp_handle_prefix(uint8_t *prefix, uint8_t prefix_len, uint16_t lifetime, 
                  prefix_len);
     }
     memcpy(&_prefix, prefix, sizeof(_prefix));
+    _prefix_len = prefix_len;
     gnrc_netapi_set(gnrc_wireless_interface, NETOPT_IPV6_ADDR, (prefix_len << 8),
                     prefix, sizeof(ipv6_addr_t));
     /* only configure 6Lo-ND features when wireless interface uses
