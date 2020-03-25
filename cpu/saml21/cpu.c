@@ -104,7 +104,7 @@ void cpu_pm_cb_enter(int deep)
     /* errata 51.1.5 – When VDDCORE is supplied by the BUCK converter in performance
                        level 0, the chip cannot wake-up from standby mode because the
                        VCORERDY status is stuck at 0. */
-    if (USE_VREG_BUCK) {
+    if (USE_VREG_BUCK && !PM->PLCFG.bit.PLSEL) {
         sam0_set_voltage_regulator(SAM0_VREG_LDO);
     }
 }
