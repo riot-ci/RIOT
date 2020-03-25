@@ -109,8 +109,9 @@ esp_now_netdev_t *netdev_esp_now_setup(void);
  * @brief   Set the channel used by ESP-NOW netdev
  *
  * @param   channel Channel to be used
+ * @return  ESP_OK on success, an ESP error code otherwise
  */
-void esp_now_set_channel(uint8_t channel);
+int esp_now_set_channel(uint8_t channel);
 
 #ifdef __cplusplus
 }

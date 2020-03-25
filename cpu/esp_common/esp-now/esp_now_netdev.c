@@ -453,7 +453,7 @@ esp_now_netdev_t *netdev_esp_now_setup(void)
     return dev;
 }
 
-void esp_now_set_channel(uint8_t channel)
+int esp_now_set_channel(uint8_t channel)
 {
 #ifdef ESP_NOW_UNICAST
     scan_cfg.channel = channel;
@@ -465,9 +465,10 @@ void esp_now_set_channel(uint8_t channel)
         LOG_TAG_ERROR("esp_now",
                       "esp_wifi_set_config softap failed with return value %d\n",
                       result);
-        return NULL;
+        return result;
     }
 #endif
+    return ESP_OK;
 }
 
 static int _init(netdev_t *netdev)
@@ -696,7 +697,9 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t max_len)
         case NETOPT_CHANNEL:
             CHECK_PARAM_RET(max_len >= sizeof(uint16_t), -EOVERFLOW);
             uint16_t channel = *((uint16_t *)val);
-            esp_now_set_channel(channel);
+            if (esp_now_set_channel(channel) != ESP_OK) {
+                return -ENOTSUP;
+            }
             res = sizeof(uint16_t);
             break;
 
