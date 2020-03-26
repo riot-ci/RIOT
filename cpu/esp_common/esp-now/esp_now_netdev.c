@@ -458,17 +458,24 @@ int esp_now_set_channel(uint8_t channel)
 #ifdef ESP_NOW_UNICAST
     scan_cfg.channel = channel;
 #endif
-#ifndef MODULE_ESP_WIFI
+#ifdef MODULE_ESP_WIFI
+    /* channel is controlled by `esp_wifi`, only update SoftAP info */
+    wifi_config_ap.ap.channel = channel;
+    return ESP_ERR_NOT_SUPPORTED;
+#else
+    /* channel is controlled by `esp_now`, try to reconfigure SoftAP */
+    uint8_t old_channel = wifi_config_ap.ap.channel;
     wifi_config_ap.ap.channel = channel;
     esp_err_t result = esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config_ap);
     if (result != ESP_OK) {
         LOG_TAG_ERROR("esp_now",
                       "esp_wifi_set_config softap failed with return value %d\n",
                       result);
+        wifi_config_ap.ap.channel = old_channel;
         return result;
     }
-#endif
     return ESP_OK;
+#endif
 }
 
 static int _init(netdev_t *netdev)
