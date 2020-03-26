@@ -123,7 +123,7 @@ static void _dfll_setup(void)
     /* Enable NVMCTRL */
     MCLK->APBBMASK.reg |= MCLK_APBBMASK_NVMCTRL;
     /* Set Wait State to meet requirements */
-    NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS(3);
+    NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS(2);
 #endif
 }
 /**
@@ -177,14 +177,6 @@ void cpu_init(void)
 
     _dfll_setup();
 
-    /* Ensure APB Backup domain clock is within the 6MHZ limit, BUPDIV value
-       must be a power of 2 and between 1(2^0) and 128(2^7) */
-    for (unsigned i=0; i<8; i++) {
-        if(CLOCK_CORECLOCK / (1 << i) <= 6000000) {
-            MCLK->BUPDIV.reg = 1 << i;
-        }
-    }
-
     /* Setup GCLK generators */
 #if (CLOCK_CORECLOCK == 16000000U)
     _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
@@ -194,6 +186,15 @@ void cpu_init(void)
 #error "Please select a valid CPU frequency"
 #endif
 
+    /* Ensure APB Backup domain clock is within the 6MHZ limit, BUPDIV value
+       must be a power of 2 and between 1(2^0) and 128(2^7) */
+        for (unsigned i=0; i<8; i++) {
+        if (CLOCK_CORECLOCK / (1 << i) <= 6000000) {
+            MCLK->BUPDIV.reg = (1 << i);
+            break;
+        }
+    }
+    while (!MCLK->INTFLAG.bit.CKRDY) {}
     /* clock used by timers */
     _gclk_setup(SAM0_GCLK_8MHZ, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M
                 | GCLK_GENCTRL_DIV(2));
