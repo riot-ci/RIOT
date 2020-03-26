@@ -5,9 +5,6 @@
 OLD_USEMODULE := $(sort $(USEMODULE))
 OLD_USEPKG:= $(sort $(USEPKG))
 
-# add default modules
-USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
-
 # pull in dependencies of the currently used modules and pkgs
 include $(RIOTBASE)/Makefile.dep
 
@@ -26,3 +23,7 @@ USEPKG := $(sort $(USEPKG))
 ifneq ($(OLD_USEMODULE) $(OLD_USEPKG),$(USEMODULE) $(USEPKG))
   include $(RIOTMAKE)/dependency_resolution.inc.mk
 endif
+
+# add default modules again, as $(DEFAULT_MODULE) might have been extended
+# during dependency processing
+USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
