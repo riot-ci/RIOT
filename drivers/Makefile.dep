@@ -519,7 +519,7 @@ ifneq (,$(filter nrfmin,$(USEMODULE)))
   USEMODULE += netif
 endif
 
-ifneq (,$(filter nrf24l01p,$(USEMODULE)))
+ifneq (,$(filter nrf24l01p_lowlevel,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_gpio_irq
   FEATURES_REQUIRED += periph_spi

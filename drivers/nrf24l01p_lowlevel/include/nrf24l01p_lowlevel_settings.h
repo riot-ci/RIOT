@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     drivers_nrf24l01p
+ * @ingroup     drivers_nrf24l01p_lowlevel
  * @{
  *
  * @file
@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef NRF24L01P_SETTINGS_H
-#define NRF24L01P_SETTINGS_H
+#ifndef NRF24L01P_LOWLEVEL_SETTINGS_H
+#define NRF24L01P_LOWLEVEL_SETTINGS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -183,5 +183,5 @@ extern "C" {
 }
 #endif
 
-#endif /* NRF24L01P_SETTINGS_H */
+#endif /* NRF24L01P_LOWLEVEL_SETTINGS_H */
 /** @} */

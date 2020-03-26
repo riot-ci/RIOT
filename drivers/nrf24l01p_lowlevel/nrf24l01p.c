@@ -7,15 +7,15 @@
  */
 
 /**
- * @ingroup     drivers_nrf24l01p
+ * @ingroup     drivers_nrf24l01p_lowlevel
  * @{
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  * @author      Marc Poulhiès <dkm@kataplop.net>
  * @}
  */
-#include "nrf24l01p.h"
-#include "nrf24l01p_settings.h"
+#include "nrf24l01p_lowlevel.h"
+#include "nrf24l01p_lowlevel_settings.h"
 #include "mutex.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
