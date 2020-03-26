@@ -297,6 +297,9 @@ struct ztimer_clock {
     uint32_t lower_last;            /**< timer value at last now() call     */
     ztimer_now_t checkpoint;        /**< cumulated time at last now() call  */
 #endif
+#if MODULE_PM_LAYERED
+    int8_t required_pm_mode;        /**< min. pm mode required for the clock to run */
+#endif
 };
 
 /**
