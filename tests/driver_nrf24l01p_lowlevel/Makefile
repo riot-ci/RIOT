@@ -4,7 +4,7 @@ USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
 USEMODULE += xtimer
-USEMODULE += nrf24l01p
+USEMODULE += nrf24l01p_lowlevel
 
 # set default device parameters in case they are undefined
 SPI_PORT ?= SPI_DEV\(0\)

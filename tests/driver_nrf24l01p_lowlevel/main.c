@@ -38,8 +38,8 @@
 #include <board.h>
 #include <time.h>
 
-#include "nrf24l01p.h"
-#include "nrf24l01p_settings.h"
+#include "nrf24l01p_lowlevel.h"
+#include "nrf24l01p_lowlevel_settings.h"
 #include "periph/spi.h"
 #include "periph/gpio.h"
 #include "xtimer.h"
