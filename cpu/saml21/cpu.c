@@ -117,7 +117,7 @@ static void _dfll_setup(void)
                              OSCCTRL_DFLLCTRL_ENABLE;
 
     /* Ensure COARSE and FINE are locked */
-    while((!(OSCCTRL->STATUS.bit.DFLLLCKC)) && (!(OSCCTRL->STATUS.bit.DFLLLCKF))) {}
+    while ((!(OSCCTRL->STATUS.bit.DFLLLCKC)) && (!(OSCCTRL->STATUS.bit.DFLLLCKF))) {}
     while (!(OSCCTRL->STATUS.bit.DFLLRDY)) {}
 
     /* Enable NVMCTRL */
@@ -189,7 +189,7 @@ void cpu_init(void)
 #if (CLOCK_CORECLOCK == 16000000U)
     _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M);
 #elif (CLOCK_CORECLOCK == 48000000U)
-     _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
+    _gclk_setup(SAM0_GCLK_MAIN, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_DFLL48M);
 #else
 #error "Please select a valid CPU frequency"
 #endif
