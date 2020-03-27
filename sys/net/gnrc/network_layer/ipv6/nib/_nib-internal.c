@@ -52,7 +52,7 @@ static void _override_node(const ipv6_addr_t *addr, unsigned iface,
                            _nib_onl_entry_t *node);
 static inline bool _node_unreachable(_nib_onl_entry_t *node);
 
-#define INDEX_OF(a, e) (((e) - (a)) / sizeof(*e))
+#define INDEX_OF(a, e) (((e) - (a)) / sizeof(*(e)))
 
 void _nib_init(void)
 {
