@@ -58,7 +58,8 @@ static void flush_if_needed(void)
 #endif
 }
 
-static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
+static shell_command_handler_t find_handler(
+        const shell_command_t *command_list, char *command)
 {
     const shell_command_t *command_lists[] = {
         command_list,
@@ -175,7 +176,7 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
             ++argc;
         }
 
-        /* zero out the current position (space or quotation mark) and advance */
+        /* zero out current position (space or quotation mark) and advance */
         if (*pos > 0) {
             *pos = 0;
             ++pos;
@@ -269,10 +270,11 @@ static int readline(char *buf, size_t size)
             return EOF;
         }
 
-        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac linebreaks (\r).
-         * QEMU transmits only a single '\r' == 13 on hitting enter ("-serial stdio").
-         * DOS newlines are handled like hitting enter twice, but empty lines are ignored.
-         * Ctrl-C cancels the current line. */
+        /* We allow Unix linebreaks (\n), DOS linebreaks (\r\n), and Mac
+         * linebreaks (\r). QEMU transmits only a single '\r' == 13 on hitting
+         * enter ("-serial stdio"). DOS newlines are handled like hitting enter
+         * twice, but empty lines are ignored. Ctrl-C cancels the current line.
+         */
         if (c == '\r' || c == '\n' || c == ETX) {
             if (c == ETX) {
                 curr_pos = 0;
