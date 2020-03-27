@@ -2,6 +2,8 @@ BOARD ?= iotlab-m3
 
 include ../Makefile.tests_common
 
+BOARDSDIR = $(CURDIR)/external-boards
+
 USEPKG += openwsn
 USEMODULE += openwsn_openstack
 USEMODULE += openwsn_scheduler
