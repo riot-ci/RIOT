@@ -14,6 +14,7 @@ USEMODULE += newlib_nano
 USEMODULE += periph
 
 # Use Hardware FPU by default if present
-ifneq (,$(filter cortexm_fpu,$(FEATURES_PROVIDED)))
+FEATURES_OPTIONAL += cortexm_fpu
+ifneq (,$(filter cortexm_fpu,$(FEATURES_USED)))
   DEFAULT_MODULE += cortexm_fpu
 endif
