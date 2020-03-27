@@ -82,7 +82,7 @@ def check_startup(child):
 def check_and_get_bufsize(child):
     child.sendline('bufsize')
     child.expect('([0-9]+)\r\n')
-    bufsize = int(child.match[1])
+    bufsize = int(child.match.group(1))
 
     return bufsize
 
