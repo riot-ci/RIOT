@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "net/gnrc/ipv6/nib/abr.h"
+#include "net/gnrc/netif.h"
 
 #include "_nib-6ln.h"
 #include "_nib-internal.h"
@@ -26,6 +27,7 @@ int gnrc_ipv6_nib_abr_add(const ipv6_addr_t *addr)
 {
     _nib_abr_entry_t *abr;
     _nib_offl_entry_t *offl = NULL;
+    gnrc_netif_t *netif = gnrc_netif_get_by_ipv6_addr(addr);
 
     _nib_acquire();
     if ((abr = _nib_abr_add(addr)) == NULL) {
@@ -34,7 +36,8 @@ int gnrc_ipv6_nib_abr_add(const ipv6_addr_t *addr)
     }
     abr->valid_until = 0U;
     while ((offl = _nib_offl_iter(offl))) {
-        if (offl->mode & _PL) {
+        if ((offl->mode & _PL) &&
+            (_nib_onl_get_if(offl->next_hop) == (unsigned)netif->pid)) {
             _nib_abr_add_pfx(abr, offl);
         }
     }
