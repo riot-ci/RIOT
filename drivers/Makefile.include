@@ -260,6 +260,10 @@ ifneq (,$(filter nrf24l01p,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/nrf24l01p/include
 endif
 
+ifneq (,$(filter nrf24l01p_lowlevel,$(USEMODULE)))
+  USEMODULE_INCLUDES += $(RIOTBASE)/drivers/nrf24l01p_lowlevel/include
+endif
+
 ifneq (,$(filter opt3001,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/opt3001/include
 endif

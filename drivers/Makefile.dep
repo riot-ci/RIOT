@@ -523,6 +523,15 @@ ifneq (,$(filter nrf24l01p,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
   FEATURES_REQUIRED += periph_gpio_irq
   FEATURES_REQUIRED += periph_spi
+  USEMODULE += luid
+  USEMODULE += netif
+  USEMODULE += xtimer
+endif
+
+ifneq (,$(filter nrf24l01p_lowlevel,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio
+  FEATURES_REQUIRED += periph_gpio_irq
+  FEATURES_REQUIRED += periph_spi
   USEMODULE += xtimer
 endif
 
