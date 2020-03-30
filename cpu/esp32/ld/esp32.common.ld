@@ -138,7 +138,7 @@ SECTIONS
 
     INCLUDE esp32.spiram.rom-functions-iram.ld
     _iram_text_end = ABSOLUTE(.);
-    
+
     /* IRAM can't be used as heap since it only allows 32-bit aligned access */
     /*
     . = ALIGN (4);
