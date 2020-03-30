@@ -725,7 +725,7 @@ static wifi_config_t wifi_config_sta = {
  * Although only the Station interface is needed, the SoftAP interface must
  * also be enabled for stability reasons to prevent the Station interface
  * from being shut down by power management in the event of silence.
- * Otherwise, the WLAN module and the WLAN task will hang sporadically.
+ * Otherwise, the WiFi module and the WiFi task will hang sporadically.
  *
  * Since the SoftAP interface is not required, we make it invisible and
  * unusable. This configuration
@@ -797,6 +797,13 @@ void esp_wifi_setup (esp_wifi_netdev_t* dev)
 #endif
 
 #ifdef MCU_ESP8266
+    /*
+     * Although only the Station interface is needed, the SoftAP interface must
+     * also be enabled on ESP8266 for stability reasons to prevent the Station
+     * interface from being shut down by power management in the event of
+     * silence. Otherwise, the WiFi module and the WiFi task will hang
+     * sporadically.
+     */
     /* activate the Station and the SoftAP interface */
     result = esp_wifi_set_mode(WIFI_MODE_APSTA);
 #else /* MCU_ESP8266 */
