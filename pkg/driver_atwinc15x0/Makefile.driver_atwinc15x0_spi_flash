@@ -1,0 +1,8 @@
+MODULE = driver_atwinc15x0_spi_flash
+
+CFLAGS += -Wno-discarded-qualifiers
+CFLAGS += -Wno-empty-body
+CFLAGS += -Wno-old-style-definition
+CFLAGS += -Wno-unused-parameter
+
+include $(RIOTBASE)/Makefile.base
