@@ -91,6 +91,11 @@ static void cb_rtc(void *arg)
 
     pm_block(level);
 }
+
+static void cb_rtc_puts(void *arg)
+{
+    puts(arg);
+}
 #endif /* MODULE_PERIPH_RTC */
 #endif /* MODULE_PM_LAYERED */
 
@@ -209,6 +214,33 @@ static int cmd_unblock_rtc(int argc, char **argv)
 
     return 0;
 }
+
+static int cmd_set_rtc(int argc, char **argv)
+{
+    if (check_mode_duration(argc, argv) != 0) {
+        return 1;
+    }
+
+    int mode = parse_mode(argv[1]);
+    int duration = parse_duration(argv[2]);
+
+    if (mode < 0 || duration < 0) {
+        return 1;
+    }
+
+    printf("Setting power mode %d for %d seconds.\n", mode, duration);
+    fflush(stdout);
+
+    struct tm time;
+
+    rtc_get_time(&time);
+    time.tm_sec += duration;
+    rtc_set_alarm(&time, cb_rtc_puts, "The alarm rang");
+
+    pm_set(mode);
+
+    return 0;
+}
 #endif /* MODULE_PERIPH_RTC */
 #endif /* MODULE_PM_LAYERED */
 
@@ -229,6 +261,9 @@ static const shell_command_t shell_commands[] = {
 #ifdef MODULE_PM_LAYERED
     { "block", "block power mode", cmd_block },
     { "set", "set power mode", cmd_set },
+#ifdef MODULE_PERIPH_RTC
+    { "set_rtc", "temporary set power mode", cmd_set_rtc },
+#endif
     { "unblock", "unblock power mode", cmd_unblock },
 #ifdef MODULE_PERIPH_RTC
     { "unblock_rtc", "temporary unblock power mode", cmd_unblock_rtc },
