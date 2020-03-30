@@ -12,7 +12,30 @@ FEATURES_USED_SO_FAR := $(sort $(FEATURES_REQUIRED) $(FEATURES_OPTIONAL_USED))
 FEATURES_USABLE := $(filter-out $(FEATURES_BLACKLIST),$(FEATURES_PROVIDED))
 
 # Additionally required features due to the "one out of" dependencies
-FEATURES_REQUIRED_ONE_OUT_OF := $(foreach item,$(FEATURES_REQUIRED_ANY),$(word 1,$(filter $(subst |, ,$(item)),$(FEATURES_USED_SO_FAR) $(FEATURES_USABLE)) $(item)))
+# Algorithm:
+#  - For each list in FEATURES_REQUIRED_ANY as "item":
+#     - Store the intersection of FEATURES_USED_SO_FAR and the features in
+#       "item" in "tmp"
+#     - Append the intersection of FEATURES_USABLE and the features in "item"
+#       to "tmp"
+#     - Append "item" to "tmp" (with pipes between features, e.g.
+#       "periph_spi|periph_i2c")
+#     - Append the first element of "tmp" to FEATURES_REQUIRED_ONE_OUT_OF
+#   ==> If one (or more) already used features is listed in item, this (or
+#       one of these) will be in the front of "tmp" and be taken
+#   ==> If one (or more) usable features is listed in item, this will come
+#       afterwards. If no no feature in item is used so for, one of the
+#       features supported and listed in item will be picked
+#   ==> At the end of the list item itself (with pipes between features) is the
+#       last item in "tmp". If no feature is item is supported or used, this
+#       will be the only item in "tmp" and be picked
+FEATURES_REQUIRED_ONE_OUT_OF := $(foreach item,\
+                                  $(FEATURES_REQUIRED_ANY),\
+                                  $(word 1,\
+                                    $(filter $(subst |, ,$(item)),\
+                                              $(FEATURES_USED_SO_FAR) \
+                                              $(FEATURES_USABLE)) \
+                                              $(item)))
 
 # Features that are required by the application but not provided by the BSP
 # Having features missing may case the build to fail.
