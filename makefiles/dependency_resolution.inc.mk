@@ -27,3 +27,7 @@ endif
 # add default modules again, as $(DEFAULT_MODULE) might have been extended
 # during dependency processing
 USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
+
+# Sort and de-duplicate used modules and default modules for readability
+USEMODULE := $(sort $(USEMODULE))
+DEFAULT_MODULE := $(sort $(DEFAULT_MODULE))

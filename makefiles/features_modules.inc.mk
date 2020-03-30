@@ -13,7 +13,7 @@ USEMODULE += $(PERIPH_FEATURES)
 ifneq (,$(filter periph_init, $(USEMODULE)))
   PERIPH_MODULES := $(filter-out periph_init% periph_common,$(filter periph_%,$(USEMODULE)))
   PERIPH_INIT_MODULES := $(subst periph_,periph_init_,$(PERIPH_MODULES))
-  USEMODULE += $(filter-out $(DISABLE_MODULE),$(PERIPH_INIT_MODULES))
+  DEFAULT_MODULE += $(PERIPH_INIT_MODULES)
 endif
 
 # select cpu_check_address pseudomodule if the corresponding feature is used
