@@ -9,10 +9,13 @@ endif
 # Use stdio over USB
 DEFAULT_MODULE += stdio_cdc_acm
 
+ifneq (,$(filter-out stdio_cdc_acm,$(filter stdio_%,$(USEMODULE))))
+  DISABLE_MODULE += stdio_cdc_acm
+endif
+
 ifneq (,$(filter stdio_cdc_acm,$(USEMODULE)))
   # This boards requires support for nrfutil bootloader.
   FEATURES_REQUIRED += bootloader_nrfutil
-
   # and for the board reset via USB mechanism
   USEMODULE += usb_board_reset
 endif
