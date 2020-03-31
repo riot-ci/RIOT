@@ -17,7 +17,8 @@ DISABLE_MODULE += auto_init
 # automatically initialize stdio over USB. Without this, the bootloader
 # management feature cannot be used (auto reset and auto reboot in bootloader
 # mode)
-FEATURES_BLACKLIST += bootloader_arduino bootloader_nrfutil
+FEATURES_BLACKLIST += bootloader_arduino
+FEATURES_BLACKLIST += bootloader_nrfutil
 
 # Pull in `Makefile.include`s from the test suites:
 -include $(UNIT_TESTS:%=$(RIOTBASE)/tests/unittests/%/Makefile.include)
