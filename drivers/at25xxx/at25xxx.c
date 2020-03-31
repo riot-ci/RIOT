@@ -92,7 +92,8 @@ static inline int _wait_until_eeprom_ready(const at25xxx_t *dev)
 static ssize_t _write_page(const at25xxx_t *dev, uint32_t pos, const void *data, size_t len)
 {
     /* write no more than to the end of the current page to prevent wrap-around */
-    len = min(len, PAGE_SIZE - (pos & (PAGE_SIZE - 1)));
+    size_t remaining = PAGE_SIZE - (pos & (PAGE_SIZE - 1));
+    len = min(len, remaining);
     pos = _pos(CMD_WRITE, pos);
 
     /* wait for previous write to finish - may take up to 5 ms */
