@@ -91,6 +91,11 @@ static void cb_rtc(void *arg)
 
     pm_block(level);
 }
+
+static void cb_rtc_puts(void *arg)
+{
+    puts(arg);
+}
 #endif /* MODULE_PERIPH_RTC */
 #endif /* MODULE_PM_LAYERED */
 
@@ -229,7 +234,7 @@ static int cmd_set_rtc(int argc, char **argv)
 
     rtc_get_time(&time);
     time.tm_sec += duration;
-    rtc_set_alarm(&time, (rtc_alarm_cb_t) puts, "The alarm rang");
+    rtc_set_alarm(&time, cb_rtc_puts, "The alarm rang");
 
     pm_set(mode);
 
