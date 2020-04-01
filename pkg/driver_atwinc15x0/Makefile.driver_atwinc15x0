@@ -1,0 +1,10 @@
+MODULE = driver_atwinc15x0
+
+CFLAGS += -Wno-discarded-qualifiers
+CFLAGS += -Wno-empty-body
+CFLAGS += -Wno-old-style-definition
+CFLAGS += -Wno-unused-parameter
+
+CFLAGS += -DETH_MODE
+
+include $(RIOTBASE)/Makefile.base
