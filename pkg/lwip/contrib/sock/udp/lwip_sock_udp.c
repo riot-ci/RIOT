@@ -71,21 +71,6 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *ep)
 ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
                       uint32_t timeout, sock_udp_ep_t *remote)
 {
-    void *pkt = NULL, *ctx = NULL;
-    ssize_t res;
-
-    assert((sock != NULL) && (data != NULL) && (max_len > 0));
-    res = sock_udp_recv_buf(sock, &pkt, &ctx, timeout, remote);
-    if (res >= 0) {
-        if (res > (ssize_t)max_len) {
-            res = -ENOBUFS;
-        }
-        else if (res != 0) {
-            memcpy(data, pkt, res);
-        }
-        sock_recv_buf_free(ctx);
-    }
-    return res;
 }
 
 
@@ -97,6 +82,17 @@ ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **ctx,
     int res;
 
     assert((sock != NULL) && (data != NULL) && (ctx != NULL));
+    buf = *ctx;
+    if (buf != NULL) {
+        if (netbuf_next(buf) < 0) {
+            *data = NULL;
+            return 0;
+        }
+        else {
+            *data = buf->p->payload;
+            return buf->p->len;
+        }
+    }
     if ((res = lwip_sock_recv(sock->base.conn, timeout, &buf)) < 0) {
         return res;
     }
@@ -130,11 +126,9 @@ ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **ctx,
         memcpy(&remote->addr, &buf->addr, addr_len);
         remote->port = buf->port;
     }
-    assert(buf->p->next == NULL);
-    assert(buf->p->len == res);
     *data = buf->p->payload;
     *ctx = buf;
-    return (ssize_t)res;
+    return (ssize_t)buf->p->len;
 }
 
 ssize_t sock_udp_send(sock_udp_t *sock, const void *data, size_t len,
