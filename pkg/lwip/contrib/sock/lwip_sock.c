@@ -33,13 +33,6 @@
 #error "lwip_sock needs IPv4 or IPv6 support"
 #endif
 
-void sock_recv_buf_free(void *buf_ctx)
-{
-    if (buf_ctx) {
-        netbuf_delete(buf_ctx);
-    }
-}
-
 /**
  * @brief   Checks if an address family is *not* supported by the lwIP
  *          implementation

@@ -109,8 +109,8 @@ static uint16_t _ip6_addr_to_netif(const ip6_addr_p_t *_addr)
 static int _parse_iphdr(struct netbuf *buf, void **data, void **ctx,
                         sock_ip_ep_t *remote)
 {
-    uint8_t *data_ptr = buf->p->payload;
-    size_t data_len = buf->p->len;
+    uint8_t *data_ptr = buf->ptr->payload;
+    size_t data_len = buf->ptr->len;
 
     switch (data_ptr[0] >> 4) {
 #if LWIP_IPV4
@@ -154,23 +154,25 @@ ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
                      uint32_t timeout, sock_ip_ep_t *remote)
 {
     void *pkt = NULL;
-    netbuf_t *ctx = NULL;
+    struct netbuf *ctx = NULL;
     uint8_t *ptr = data;
-    ssize_t res;
+    ssize_t res, ret = 0;
+    bool nobufs = false;
 
     assert((sock != NULL) && (data != NULL) && (max_len > 0));
-    while ((res = sock_ip_recv_buf(sock, &pkt, &ctx, timeout, remote)) > 0) {
-        if (ctx->tot_len > (ssize_t)max_len) {
-            res = -ENOBUFS;
-            break;
+    while ((res = sock_ip_recv_buf(sock, &pkt, (void **)&ctx, timeout,
+                                   remote)) > 0) {
+        if (ctx->p->tot_len > (ssize_t)max_len) {
+            nobufs = true;
+            /* progress context to last element */
+            while (netbuf_next(ctx) == 0) {}
+            continue;
         }
         memcpy(ptr, pkt, res);
         ptr += res;
+        ret += res;
     }
-    if ((res == 0) || (res == -ENOBUFS)) {
-        sock_recv_buf_free(ctx);
-    }
-    return res;
+    return (nobufs) ? -ENOBUFS : ((res < 0) ? res : ret);
 }
 
 ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **ctx,
@@ -182,13 +184,15 @@ ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **ctx,
     assert((sock != NULL) && (data != NULL) && (ctx != NULL));
     buf = *ctx;
     if (buf != NULL) {
-        if (netbuf_next(buf) < 0) {
+        if (netbuf_next(buf) == -1) {
             *data = NULL;
+            netbuf_delete(buf);
+            *ctx = NULL;
             return 0;
         }
         else {
-            *data = buf->p->payload;
-            return buf->p->len;
+            *data = buf->ptr->payload;
+            return buf->ptr->len;
         }
     }
     if ((res = lwip_sock_recv(sock->base.conn, timeout, &buf)) < 0) {
