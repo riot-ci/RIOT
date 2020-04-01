@@ -366,7 +366,8 @@ int nrf24l01p_ng_get_rx_address(const nrf24l01p_ng_t *dev, uint8_t *addr,
  *
  * @retval 0                Success
  * @retval -EINVAL          Unsupported number of retransmissions
- * @retval -EAGAIN          State does not permit changing the maximum number of retransmissions
+ * @retval -EAGAIN          Current state does not permit changing
+ *                          the maximum number of retransmissions
  */
 int nrf24l01p_ng_set_max_retransm(nrf24l01p_ng_t *dev, uint8_t max_rt);
 
@@ -387,7 +388,8 @@ uint8_t nrf24l01p_ng_get_max_retransm(const nrf24l01p_ng_t *dev);
  *
  * @return 0
  * @return -EINVAL          Bad retransmission delay value
- * @return -EAGAIN          Current state does not permit changing retransmission delay
+ * @return -EAGAIN          Current state does not permit changing
+ *                          retransmission delay
  */
 int nrf24l01p_ng_set_retransm_delay(nrf24l01p_ng_t *dev,
                                     nrf24l01p_ng_ard_t rt_delay);
@@ -413,7 +415,7 @@ uint16_t nrf24l01p_ng_get_retransm_delay(const nrf24l01p_ng_t *dev,
  * @param[in] state         State
  *
  * @return                  Old state
- * @retval -EAGAIN          Device is currently not permitted to change it´s state
+ * @retval -EAGAIN          Device is currently not permitted to change state
  * @retval -ENOTSUP         Device is not permitted to change state to @p state
  */
 int nrf24l01p_ng_set_state(nrf24l01p_ng_t *dev, nrf24l01p_ng_state_t state);

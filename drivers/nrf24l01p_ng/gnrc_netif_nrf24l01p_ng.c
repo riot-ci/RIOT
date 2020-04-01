@@ -40,7 +40,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_pkt_recv(gnrc_netif_t *netif)
     /* copy the payload into the packet buffer */
     frame_len = netif->dev->driver->recv(netif->dev, frame_buffer,
                                              frame_len, NULL);
-    if(frame_len <= 0) {
+    if (frame_len <= 0) {
         DEBUG("[nrf24l01p_ng] _pkt_recv: driver error\n");
         return NULL;
     }
@@ -88,7 +88,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
     }
     hdr = gnrc_pktbuf_mark(frame, sizeof(dst_addr), GNRC_NETTYPE_UNDEF);
     if (!hdr) {
-        DEBUG("[nrf24l01p_ng] _adpt_recv: unable to mark nrf24l01p header snip\n");
+        DEBUG("[nrf24l01p_ng] _adpt_recv: unable to mark header snip\n");
         gnrc_pktbuf_release(frame);
         return NULL;
     }

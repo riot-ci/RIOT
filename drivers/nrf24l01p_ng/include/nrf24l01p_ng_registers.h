@@ -6,7 +6,7 @@
  * directory for more details.
  */
 /**
- * @ingroup drivers_ng
+ * @ingroup drivers_nrf24l01p_ng
  * @{
  *
  * @file
