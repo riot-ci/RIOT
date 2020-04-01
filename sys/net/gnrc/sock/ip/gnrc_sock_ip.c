@@ -114,6 +114,10 @@ ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **buf_ctx,
     int res;
 
     assert((sock != NULL) && (data != NULL) && (buf_ctx != NULL));
+    if (*buf_ctx != NULL) {
+        *data = NULL;
+        return 0;
+    }
     if (sock->local.family == 0) {
         return -EADDRNOTAVAIL;
     }
