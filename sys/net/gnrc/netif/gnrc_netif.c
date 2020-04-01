@@ -1404,7 +1404,7 @@ static inline event_queue_t *_get_evq(gnrc_netif_t *netif)
  */
 static void _process_events_await_msg(gnrc_netif_t *netif, msg_t *msg)
 {
-    if (IS_ACTIVE(MODULE_GNRC_NETIF_EVENTS)) {
+    if (IS_USED(MODULE_GNRC_NETIF_EVENTS)) {
         while (1) {
             /* Using messages for external IPC, and events for internal events */
 
