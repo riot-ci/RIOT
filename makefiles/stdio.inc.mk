@@ -7,10 +7,9 @@ STDIO_MODULES = \
   stdio_uart \
   #
 
-# Since USEMODULE and DEFAULT_MODULEs are recursively expanded we need to
-# disable DEFAULT_MODULEs before any of there dependencies are evaluated,
-# otherwise the disabled MODULE will be in USEMODULE (triggering) its
-# dependencies, and then removed but leaving its dependencies
+# Disable stdio_% DEFAULT_MODULE_DELAYEDs before any of there dependencies are
+# evaluated, otherwise the disabled MODULE will be in USEMODULE (triggering) its
+# dependencies, and then removed but leaving its dependencies.
 ifneq (,$(filter $(filter-out stdio_rtt,$(STDIO_MODULES)),$(USEMODULE)))
   # stdio_rtt cannot be used when another STDIO is loaded
   DISABLE_MODULE += stdio_rtt
@@ -20,6 +19,12 @@ ifneq (,$(filter $(filter-out stdio_cdc_acm,$(STDIO_MODULES)),$(USEMODULE)))
   # stdio_cdc_acm cannot be used when another STDIO is loaded
   DISABLE_MODULE += stdio_cdc_acm
 endif
+
+# HACK: since we currently don't have another solution for handling stdio_%
+# MODULES implementation choice, we include DEFAULT_MODULE_DELAYED immediately
+# but only for stdio_% modules.
+USEMODULE +=  $(filter $(STDIO_MODULES),$(filter-out $(DISABLE_MODULE),\
+  $(DEFAULT_MODULE_DELAYED)))
 
 ifneq (,$(filter newlib,$(USEMODULE)))
   ifeq (,$(filter $(STDIO_MODULES),$(USEMODULE)))

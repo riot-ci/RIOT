@@ -1,4 +1,4 @@
-DEFAULT_MODULE += stdio_rtt
+DEFAULT_MODULE_DELAYED += stdio_rtt
 
 ifneq (,$(filter mtd,$(USEMODULE)))
   USEMODULE += mtd_spi_nor
