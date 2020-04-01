@@ -21,6 +21,12 @@ ifneq (,$(filter $(filter-out stdio_cdc_acm,$(STDIO_MODULES)),$(USEMODULE)))
   DISABLE_MODULE += stdio_cdc_acm
 endif
 
+# HACK: since we currently don't have another solution for handling stdio_%
+# MODULES implementation choice, we continue to use DEFAULT_MODULE to be able
+# to disable conflicting implementations.
+USEMODULE +=  $(filter $(STDIO_MODULES),$(filter-out $(DISABLE_MODULE),\
+  $(DEFAULT_MODULE)))
+
 ifneq (,$(filter newlib,$(USEMODULE)))
   ifeq (,$(filter $(STDIO_MODULES),$(USEMODULE)))
     USEMODULE += stdio_uart
