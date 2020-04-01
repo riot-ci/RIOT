@@ -178,7 +178,7 @@ ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
 {
     void *pkt = NULL, *ctx = NULL;
     uint8_t *ptr = data;
-    ssize_t res;
+    ssize_t res, ret = 0;
     bool nobufs = false;
 
     assert((sock != NULL) && (data != NULL) && (max_len > 0));
@@ -189,8 +189,9 @@ ssize_t sock_udp_recv(sock_udp_t *sock, void *data, size_t max_len,
         }
         memcpy(ptr, pkt, res);
         ptr += res;
+        ret += res;
     }
-    return (nobufs) ? -ENOBUFS : res;
+    return (nobufs) ? -ENOBUFS : ((res < 0) ? res : ret);
 }
 
 ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **buf_ctx,

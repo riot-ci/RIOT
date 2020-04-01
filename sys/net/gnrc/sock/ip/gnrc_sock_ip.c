@@ -91,8 +91,8 @@ ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
 {
     void *pkt = NULL, *ctx = NULL;
     uint8_t *ptr = data;
-    ssize_t res;
-    bool nobufs;
+    ssize_t res, ret = 0;
+    bool nobufs = false;
 
     assert((sock != NULL) && (data != NULL) && (max_len > 0));
     while ((res = sock_ip_recv_buf(sock, &pkt, &ctx, timeout, remote)) > 0) {
@@ -102,8 +102,9 @@ ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
         }
         memcpy(ptr, pkt, res);
         ptr += res;
+        ret += res;
     }
-    return (nobufs) ? -ENOBUFS : res;
+    return (nobufs) ? -ENOBUFS : ((res < 0) ? res : ret);
 }
 
 ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **buf_ctx,
