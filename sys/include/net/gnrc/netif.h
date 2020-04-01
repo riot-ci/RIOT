@@ -30,9 +30,7 @@
 
 #include "kernel_types.h"
 #include "msg.h"
-#ifdef MODULE_GNRC_NETIF_EVENTS
 #include "event.h"
-#endif /* MODULE_GNRC_NETIF_EVENTS */
 #include "net/ipv6/addr.h"
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/pkt.h"
