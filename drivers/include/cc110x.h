@@ -240,13 +240,19 @@ extern "C" {
 #define CC110X_DEFAULT_PROTOCOL         (GNRC_NETTYPE_UNDEF)
 #endif
 
-#ifndef CC110X_DEFAULT_CHANNEL
+/**
+ * @defgroup drivers_cc110x_config CC1100/CC1100e/CC1101 Sub-GHz transceiver driver compile configuration
+ * @ingroup config
+ * @{
+ */
+
 /**
  * @brief The default channel to set up after initializing the device
  */
+#ifndef CC110X_DEFAULT_CHANNEL
 #define CC110X_DEFAULT_CHANNEL      (0U)
 #endif
-
+/** @} */
 /**
  * @brief   The state of the CC1100/CC1101 transceiver
  *
