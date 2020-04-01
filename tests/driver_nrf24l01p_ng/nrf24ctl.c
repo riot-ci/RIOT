@@ -55,7 +55,8 @@ static void print_help(void)
 
     "nrf24ctl <device index> "
     "--get "
-    "<pipe | channel | crc | data_rate | power | retr_delay | stata | max_retr>\n"
+    "<pipe | channel | crc | data_rate | power | retr_delay | stata | "
+    "max_retr>\n"
 
     "nrf24ctl <device index>" " --regs\n"
     "nrf24ctl <device index>" " --info\n"
