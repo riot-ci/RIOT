@@ -435,11 +435,11 @@ ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
  * @param[in] sock      A raw IPv4/IPv6 sock object.
  * @param[out] data     Pointer to a stack-internal buffer space containing the
  *                      received data.
- * @param[out] buf_ctx  Stack-internal buffer context. If it points to a `NULL`
- *                      pointer, the stack returns a new buffer space for a new
- *                      packet. If it does not point to a `NULL` pointer, an
- *                      existing context is assumed to get a next segment in
- *                      a buffer.
+ * @param[in,out] buf_ctx  Stack-internal buffer context. If it points to a
+ *                      `NULL` pointer, the stack returns a new buffer space
+ *                      for a new packet. If it does not point to a `NULL`
+ *                      pointer, an existing context is assumed to get a next
+ *                      segment in a buffer.
  * @param[in] timeout   Timeout for receive in microseconds.
  *                      If 0 and no data is available, the function returns
  *                      immediately.
