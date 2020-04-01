@@ -1367,7 +1367,6 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
  */
 static void _event_handler_isr(event_t *evp)
 {
-    (void)evp;
     gnrc_netif_t *netif = container_of(evp, gnrc_netif_t, event_isr);
     netif->dev->driver->isr(netif->dev);
 }
