@@ -23,10 +23,6 @@ USEPKG := $(sort $(USEPKG))
 ifneq ($(OLD_USEMODULE) $(OLD_USEPKG),$(USEMODULE) $(USEPKG))
   include $(RIOTMAKE)/dependency_resolution.inc.mk
 else
-  # add default modules again, as $(DEFAULT_MODULE) might have been extended
-  # during dependency processing
-  USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
-
   # Add DEFAULT_MODULE_DELAYED once
   USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE_DELAYED))
 
