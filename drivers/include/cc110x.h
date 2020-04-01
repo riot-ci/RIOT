@@ -241,7 +241,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup drivers_cc110x_config     TI CC1100, CC110e and CC1101 driver compile configuration
+ * @defgroup drivers_cc110x_config CC1100/CC1100e/CC1101 Sub-GHz transceiver driver compile configuration
  * @ingroup config
  * @{
  */
