@@ -52,7 +52,6 @@
 #define NRF24L01P_NG_MAC_PRIO               (GNRC_NETIF_PRIO)
 #endif
 
-
 /**
  * @brief   Statically allocate memory for device descriptors
  */
