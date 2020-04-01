@@ -97,7 +97,7 @@ typedef struct {
      * @see net_gnrc_netif_flags
      */
     uint32_t flags;
-#if defined(MODULE_GNRC_NETIF_EVENTS) || DOXYGEN
+#if IS_USED(MODULE_GNRC_NETIF_EVENTS) || IS_ACTIVE(DOXYGEN)
     /**
      * @brief   Event queue for asynchronous events
      */
