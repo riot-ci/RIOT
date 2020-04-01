@@ -202,6 +202,10 @@ ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **buf_ctx,
     int res;
 
     assert((sock != NULL) && (data != NULL) && (buf_ctx != NULL));
+    if (*buf_ctx != NULL) {
+        *data = NULL;
+        return 0;
+    }
     if (sock->local.family == AF_UNSPEC) {
         return -EADDRNOTAVAIL;
     }
