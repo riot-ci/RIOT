@@ -55,7 +55,9 @@ static void _putchar(int c) {
 /* on native, stop RIOT on EOF */
 #ifndef SHELL_SHUTDOWN_ON_EOF
 #  ifdef CPU_NATIVE
-#    define SHELL_SHUTDOWN_ON_EOF
+#    define SHELL_SHUTDOWN_ON_EOF   (1)
+#  else
+#    define SHELL_SHUTDOWN_ON_EOF   (0)
 #  endif
 #endif /* SHELL_SHUTDOWN_ON_EOF */
 
@@ -347,15 +349,18 @@ static inline void print_prompt(void)
 void shell_run_once(const shell_command_t *shell_commands,
                     char *line_buf, int len)
 {
-    print_prompt();
+    bool running = true;
 
-    while (1) {
+    while (running) {
+
+        print_prompt();
         int res = readline(line_buf, len);
 
         switch (res) {
 
             case EOF:
-                return;
+                running = false;
+                break;
 
             case -ENOBUFS:
                 puts("shell: maximum line length exceeded");
@@ -365,11 +370,9 @@ void shell_run_once(const shell_command_t *shell_commands,
                 handle_input_line(shell_commands, line_buf);
                 break;
         }
-
-        print_prompt();
     }
 
-#if IS_ACTIVE(SHELL_SHUTDOWN_ON_EOF)
+#if SHELL_SHUTDOWN_ON_EOF
     pm_off();
 #endif
 }
