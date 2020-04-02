@@ -129,6 +129,9 @@ typedef enum IRQn
   * @{
   */
 #define FLASH_BASE         0x00000000 /**< FLASH base address */
+#define ROM_HARD_API_BASE  0x10000048 /**< ROM Hardware API table address */
+/** ROM driverlib API table */
+#define ROM_API_TABLE      ((uint32_t *)0x10000180)
 #define PERIPH_BASE        0x40000000 /**< Peripheral base address */
 #define PERIPH_BASE_NONBUF 0x60000000 /**< Peripheral base address (nonbuf) */
 /** @} */
