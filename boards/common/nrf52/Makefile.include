@@ -9,6 +9,7 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 # The following configuration is dependencies specific
 # but they are resolved later
 # Hack to know now if 'nordic_softdevice_ble' is used
+-include $(APPDIR)/Makefile.board.dep
 include $(RIOTBOARD)/$(BOARD)/Makefile.dep
 
 PROGRAMMER ?= jlink
