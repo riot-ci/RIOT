@@ -2,12 +2,16 @@ PROTOC ?= protoc
 PROTOC_GEN_NANOPB ?= $(PKGDIRBASE)/nanopb/generator/protoc-gen-nanopb
 
 PROTOBUF_FILES ?= $(wildcard *.proto)
+PROTOBUF_PATH  ?= $(CURDIR)
 GENSRC   += $(PROTOBUF_FILES:%.proto=$(BINDIR)/$(MODULE)/%.pb.c)
 GENOBJC  := $(GENSRC:%.c=%.o)
 
-ifneq (, $(PROTOBUF_FILES))
+ifneq (,$(PROTOBUF_FILES))
   INCLUDES += -I$(BINDIR)/$(MODULE)
 endif
+
+# add nanopb specific includes
+PROTO_INCLUDES += -I$(PKGDIRBASE)/nanopb/generator/proto
 
 $(SRC): $(GENSRC)
 
@@ -17,7 +21,8 @@ $(GENSRC): $(PROTOBUF_FILES)
 		cd $(CURDIR) && \
 		make -C $(PKGDIRBASE)/nanopb/generator/proto && \
 		for protofile in $(PROTOBUF_FILES); do \
-			protoc --plugin=protoc-gen-nanopb=$(PROTOC_GEN_NANOPB) \
-				--nanopb_out="$$D" \
+			echo protoc --plugin=protoc-gen-nanopb=$(PROTOC_GEN_NANOPB) \
+				--nanopb_out="$$D" $(PROTO_INCLUDES) \
+				--proto_path=$(PROTOBUF_PATH) \
 				$^ \
 				; done
