@@ -11,14 +11,14 @@
  * @{
  *
  * @file
- * @brief       Architecture specific RTC functions for ESP32
+ * @brief       Architecture specific RTT functions for ESP32
  *
  * @author      Gunar Schorcht <gunar@schorcht.net>
  * @}
  */
 
-#ifndef RTC_ARCH_H
-#define RTC_ARCH_H
+#ifndef RTT_ARCH_H
+#define RTT_ARCH_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,16 +29,16 @@ extern "C" {
  * @param   mode    sleep mode that is entered
  * @return          time to sleep in us
  */
-uint64_t rtc_pm_sleep_enter(unsigned mode);
+uint64_t rtt_pm_sleep_enter(unsigned mode);
 
 /**
  * @brief   Called after the power management left light sleep mode
  * @param   cause   wake-up cause
  */
-void rtc_pm_sleep_exit(uint32_t cause);
+void rtt_pm_sleep_exit(uint32_t cause);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* RTC_ARCH_H */
+#endif /* RTT_ARCH_H */
