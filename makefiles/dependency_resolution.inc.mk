@@ -2,11 +2,6 @@
 # until no new modules, pkgs, or features are pull in order to catch all
 # transient dependencies
 
-# Make sure USEMODULE and DEFAULT_MODULE are directly expended variables to
-# prevent weird stuff from happening
-USEMODULE := $(USEMODULE)
-DEFAULT_MODULE := $(DEFAULT_MODULE)
-
 # Back up current state to detect changes
 OLD_STATE := $(USEMODULE) $(USEPKG) $(FEATURES_USED)
 
