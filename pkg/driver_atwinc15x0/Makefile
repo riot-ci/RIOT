@@ -8,3 +8,4 @@ include $(RIOTBASE)/pkg/pkg.mk
 all:
 	"$(MAKE)" -C $(PKG_BUILDDIR)/src/driver/source -f $(CURDIR)/Makefile.driver_atwinc15x0
 	"$(MAKE)" -C $(PKG_BUILDDIR)/src/common/source -f $(CURDIR)/Makefile.driver_atwinc15x0_common
+	"$(MAKE)" -C $(PKG_BUILDDIR)/src/spi_flash/source -f $(CURDIR)/Makefile.driver_atwinc15x0_spi_flash
