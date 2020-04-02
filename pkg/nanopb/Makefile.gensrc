@@ -2,7 +2,7 @@ PROTOC ?= protoc
 PROTOC_GEN_NANOPB ?= $(PKGDIRBASE)/nanopb/generator/protoc-gen-nanopb
 
 PROTOBUF_FILES ?= $(wildcard *.proto)
-PROTOBUF_PATH  ?= $(CURDIR)
+PROTOBUF_PATH  ?= $(realpath $(CURDIR))
 GENSRC   += $(PROTOBUF_FILES:%.proto=$(BINDIR)/$(MODULE)/%.pb.c)
 GENOBJC  := $(GENSRC:%.c=%.o)
 
@@ -16,7 +16,7 @@ PROTO_INCLUDES += -I$(PKGDIRBASE)/nanopb/generator/proto
 $(SRC): $(GENSRC)
 
 $(GENSRC): $(PROTOBUF_FILES)
-	$(Q)D=$(BINDIR)/$(MODULE) && \
+	  D=$(BINDIR)/$(MODULE) && \
 	  mkdir -p "$$D" && \
 		cd $(CURDIR) && \
 		make -C $(PKGDIRBASE)/nanopb/generator/proto && \
