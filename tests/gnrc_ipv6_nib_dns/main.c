@@ -50,7 +50,8 @@ static int _dns_server(int argc, char **argv)
 
             inet_ntop(AF_INET6, sock_dns_server.addr.ipv6, addrstr,
                       sizeof(addrstr));
-            printf("DNS server: [%s]:%u\n", addrstr, sock_dns_server.port);
+            printf("DNS server: [%s%%%d]:%u\n", addrstr, sock_dns_server.netif,
+                   sock_dns_server.port);
         }
         else {
             puts("DNS server: -");

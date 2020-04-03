@@ -50,7 +50,7 @@ def get_host_lladdr(tap):
 def dns_server(child):
     child.sendline("dns server")
     res = child.expect([r"DNS server: -",
-                        r"DNS server: \[([0-9a-f:]+)\]:(\d+)"])
+                        r"DNS server: \[([0-9a-f:]+)%\d+\]:(\d+)"])
     if res > 0:
         return child.match.group(1), int(child.match.group(2))
     else:
