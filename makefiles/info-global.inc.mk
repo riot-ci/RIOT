@@ -7,8 +7,6 @@
 # used modules and requirements that is present in for *all* boards, so this can
 # be cached to speed up individual dependency checks
 include $(RIOTMAKE)/defaultmodules.inc.mk
-# add default modules
-USEMODULE += $(filter-out $(DISABLE_MODULE),$(DEFAULT_MODULE))
 include $(RIOTMAKE)/dependency_resolution.inc.mk
 
 BOARDSDIR_GLOBAL := $(BOARDSDIR)
@@ -20,6 +18,7 @@ FEATURES_CONFLICT_GLOBAL := $(FEATURES_CONFLICT)
 FEATURES_CONFLICT_MSG_GLOBAL := $(FEATURES_MSG_CONFLICT)
 DISABLE_MODULE_GLOBAL := $(DISABLE_MODULE)
 DEFAULT_MODULE_GLOBAL := $(DEFAULT_MODULE)
+DEFAULT_MODULE_DELAYED_GLOBAL := $(DEFAULT_MODULE_DELAYED)
 FEATURES_BLACKLIST_GLOBAL := $(FEATURES_BLACKLIST)
 
 define board_unsatisfied_features
@@ -29,6 +28,7 @@ define board_unsatisfied_features
   USEPKG            := $(USEPKG_GLOBAL)
   DISABLE_MODULE    := $(DISABLE_MODULE_GLOBAL)
   DEFAULT_MODULE    := $(DEFAULT_MODULE_GLOBAL)
+  DEFAULT_MODULE_DEALYED := $(DEFAULT_MODULE_DELAYED_GLOBAL)
   FEATURES_REQUIRED := $(FEATURES_REQUIRED_GLOBAL)
   FEATURES_OPTIONAL := $(FEATURES_OPTIONAL_GLOBAL)
   FEATURES_CONFLICT := $(FEATURES_CONFLICT_GLOBAL)
