@@ -25,6 +25,14 @@
 #define KHZ(x)    ((x) * 1000)
 #define MHZ(x) (KHZ(x) * 1000)
 
+/*
+ * An external inductor needs to be present on the board,
+ * so the feature can only be enabled by the board configuration.
+ */
+#ifndef USE_VREG_BUCK
+#define USE_VREG_BUCK   (0)
+#endif
+
 #if CLOCK_CORECLOCK == 0
 #error Please select CLOCK_CORECLOCK
 #endif
@@ -274,6 +282,9 @@ void cpu_pm_cb_leave(int deep)
  */
 void cpu_init(void)
 {
+    /* CPU starts with DFLL48 as clock source, so we must use the LDO */
+    sam0_set_voltage_regulator(SAM0_VREG_LDO);
+
     /* Disable the RTC module to prevent synchronization issues during CPU init
        if the RTC was running from a previous boot (e.g wakeup from backup) */
     if (RTC->MODE2.CTRLA.bit.ENABLE) {
@@ -346,6 +357,11 @@ void cpu_init(void)
     /* make sure fast clocks are off */
     if (!USE_DFLL) {
         OSCCTRL->DFLLCTRLA.reg = 0;
+    }
+
+    /* when fast internal oscillators are not used, we can turn on the buck converter */
+    if (!USE_DFLL && !USE_DPLL && USE_VREG_BUCK) {
+        sam0_set_voltage_regulator(SAM0_VREG_BUCK);
     }
 
     /* initialize stdio prior to periph_init() to allow use of DEBUG() there */
