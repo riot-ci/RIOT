@@ -41,6 +41,9 @@ USEMODULE += ps
 # to auto-configure that upstream DNS server.
 #USEMODULE += sock_dns
 
+# The number of native (emulated) ZigBee/6LoWPAN devices
+ZEP_DEVICES ?= 1
+
 # When using a WiFi uplink we should use DHCPv6
 ifeq (wifi,$(UPLINK))
   USE_DHCPV6 ?= 1
