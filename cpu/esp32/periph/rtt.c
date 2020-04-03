@@ -61,17 +61,11 @@ uint64_t _rtc_get_counter(void);
 extern const rtt_hw_driver_t _rtt_hw_sys_driver;
 extern const rtt_hw_driver_t _rtt_hw_rtc_driver;
 
-/*
- * Used hardware driver (set in init depending on whether module
- * `esp_rtc_timer_32k` is enabled and the external crystal is connected)
- */
-static const rtt_hw_driver_t *_rtt_hw;
+/* used hardware driver (default _rtt_hw_sys_driver) */
+static const rtt_hw_driver_t *_rtt_hw = &_rtt_hw_sys_driver;
 
 void rtt_init(void)
 {
-    /* microsecond system timer is used by default */
-    _rtt_hw = &_rtt_hw_sys_driver;
-
     if (IS_USED(MODULE_ESP_RTC_TIMER_32K)) {
         /* check whether the 32.678 kHz crystal is working */
         if (rtc_clk_slow_freq_get_hz() == 32768) {
