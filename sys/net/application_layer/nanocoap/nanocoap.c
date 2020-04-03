@@ -854,6 +854,11 @@ ssize_t coap_opt_add_string(coap_pkt_t *pkt, uint16_t optnum, const char *string
     return write_len;
 }
 
+ssize_t coap_opt_add_path(coap_pkt_t *pkt, const char *path)
+{
+    return coap_opt_add_string(pkt, COAP_OPT_URI_PATH, path, '/');
+}
+
 ssize_t coap_opt_add_uquery(coap_pkt_t *pkt, const char *key, const char *val)
 {
     return coap_opt_add_uquery2(pkt, key, strlen(key), val, val ? strlen(val) : 0);
