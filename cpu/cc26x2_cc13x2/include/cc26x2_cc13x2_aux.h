@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2016 Leon George
  * Copyright (C) 2018 Anton Gerasimov
+ * Copyright (C) 2020 Locha Inc
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -12,6 +13,7 @@
  *
  * @file
  * @brief           CC26x2, CC13x2 AUX register definitions
+ * @author          Jean Pierre Dudey <jeandudey@hotmail.com>
  */
 
 #ifndef CC26X2_CC13X2_AUX_H
@@ -231,6 +233,28 @@ typedef struct {
  * @brief   AUX_SYSIF register bank
  */
 #define AUX_SYSIF           ((aux_sysif_regs_t *) (AUX_SYSIF_BASE))
+
+/**
+ * @brief   AUX_SYSIF register values
+ * @{
+ */
+#define AUX_SYSIF_OPMODEREQ_REQ_PDLP 0x00000003
+#define AUX_SYSIF_OPMODEREQ_REQ_PDA  0x00000002
+#define AUX_SYSIF_OPMODEREQ_REQ_LP   0x00000001
+#define AUX_SYSIF_OPMODEREQ_REQ_A    0x00000000
+/** @} */
+
+/**
+ * @brief   AUX_SYSIF functions
+ * @{
+ */
+/**
+ * @brief   Controls AUX operational mode change
+ *
+ * @param[in] target_opmode The new operational mode.
+ */
+void aux_sysif_opmode_change(uint32_t target_opmode);
+/** @} */
 
 /**
  * @brief   AUX_TIMER registers
@@ -508,6 +532,82 @@ typedef struct {
 #define ADI_MASK4B           0x00000040
 #define ADI_MASK8B           0x00000060
 #define ADI_MASK16B          0x00000080
+/** @} */
+
+/**
+ * @brief   ADI instruction functions
+ * @{
+ */
+/**
+ * @brief   Write to ADI register
+ *
+ * @param[in] base The ADI base address.
+ * @param[in] reg  The register offset.
+ * @param[in] data The data to write.
+ */
+static inline void adi_write(uint32_t base, uint32_t reg, uint8_t data)
+{
+    reg8_t *addr = (reg8_t *)(base + reg);
+    *addr = data;
+}
+
+/**
+ * @brief   Write 4 bits into an ADI register
+ *
+ * @param[in] base The ADI base address.
+ * @param[in] reg  The register offset.
+ * @param[in] data Data to be written.
+ * @param[in] mask 4-bit mask indicating bits to write. Each bit set to `1`
+ *            is one bit written,
+ */
+static inline void adi_write_4bits(uint32_t base, uint32_t reg, uint8_t data,
+                                   uint8_t mask)
+{
+    reg8_t *addr = (reg8_t *)(base + (reg << 1) + ADI_MASK4B);
+    *addr = mask | data;
+}
+
+/**
+ * @brief   Write 8 bits into an ADI register
+ *
+ * @param[in] base The ADI base address.
+ * @param[in] reg  The register offset.
+ * @param[in] data Data to be written.
+ * @param[in] mask 4-bit mask indicating bits to write. Each bit set to `1`
+ *            is one bit written,
+ */
+static inline void adi_write_8bits(uint32_t base, uint32_t reg, uint8_t data,
+                                   uint8_t mask)
+{
+    reg16_t *addr = (reg16_t *)(base + (reg << 1) + ADI_MASK8B);
+    *addr = (((uint16_t)mask) << 8) | (uint16_t)data;
+}
+
+/**
+ * @brief   ADI set instruction
+ *
+ * @param[in] base The ADI base address.
+ * @param[in] reg  The register offset.
+ * @param[in] data The bits to set.
+ */
+static inline void adi_set(uint32_t base, uint32_t reg, uint8_t data)
+{
+    reg8_t *addr = (reg8_t *)(base + reg + ADI_SET);
+    *addr = data;
+}
+
+/**
+ * @brief   ADI clear instruction
+ *
+ * @param[in] base The ADI base address.
+ * @param[in] reg  The register offset.
+ * @param[in] data The bits to clear.
+ */
+static inline void adi_clr(uint32_t base, uint32_t reg, uint8_t data)
+{
+    reg8_t *addr = (reg8_t *)(base + reg + ADI_CLR);
+    *addr = data;
+}
 /** @} */
 
 #ifdef __cplusplus
