@@ -27,6 +27,7 @@ extern "C" {
 #endif
 
 typedef volatile uint8_t reg8_t;
+typedef volatile uint16_t reg16_t;
 typedef volatile uint32_t reg32_t;
 
 /**
