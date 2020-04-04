@@ -190,7 +190,11 @@ typedef struct {
  * @brief   FLASH register values
  * @{
  */
+#define FLASH_CFG_DIS_EFUSECLK              0x00000020
 #define FLASH_CFG_DIS_STANDBY               0x00000002
+#define FLASH_FPAC1_PSLEEPTDIS_m            0x0FFF0000
+#define FLASH_FPAC1_PSLEEPTDIS_s            16
+
 /** @} */
 
 /**
@@ -219,6 +223,8 @@ typedef struct {
  * @brief   VIMS register values
  * @{
  */
+#define VIMS_STAT_MODE_CHANGING             0x00000008
+
 #define VIMS_CTL_STATS_CLR                  0x80000000
 #define VIMS_CTL_STATS_CLR_m                0x80000000
 

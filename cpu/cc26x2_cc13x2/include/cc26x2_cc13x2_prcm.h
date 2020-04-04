@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2016 Leon George
+ * Copyright (C) 2020 Locha Inc
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -12,6 +13,8 @@
  *
  * @file
  * @brief           CC26x2, CC13x2 PRCM register definitions
+ *
+ * @author          Jean Pierre Dudey <jeandudey@hotmail.com>
  */
 
 #ifndef CC26X2_CC13X2_PRCM_H
@@ -22,7 +25,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * DDI_0_OSC registers
@@ -59,7 +61,7 @@ typedef struct {
 #define DDI_0_OSC_CTL0_XOSC_HF_POWER_MODE           0x00000800
 #define DDI_0_OSC_CTL0_RCOSC_LF_TRIMMED             0x00001000
 #define DDI_0_OSC_CTL0_HPOSC_MODE_EN                0x00004000
-#define DDI_0_OSC_CTL0_DCDC_SRC_SEL                 0x01000000
+#define DDI_0_OSC_CTL0_CLK_DCDC_SRC_SEL_m           0x01000000
 #define DDI_0_OSC_CTL0_DOUBLER_RESET_DURATION       0x02000000
 #define DDI_0_OSC_CTL0_DOUBLER_START_DURATION       0x0C000000
 #define DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL     0x10000000
@@ -67,13 +69,54 @@ typedef struct {
 #define DDI_0_OSC_CTL0_XTAL_IS_24M                  0x80000000
 /** @} */
 
+/**
+ * @brief   DDI register offsets
+ * @{
+ */
+#define DDI_0_OSC_CTL0                              0x00000000
+#define DDI_0_OSC_CTL1                              0x00000004
+#define DDI_0_OSC_RADCEXTCFG                        0x00000008
+#define DDI_0_OSC_AMPCOMPCTL                        0x0000000C
+#define DDI_0_OSC_AMPCOMPTH1                        0x00000010
+#define DDI_0_OSC_AMPCOMPTH2                        0x00000014
+#define DDI_0_OSC_ANABYPASSVAL1                     0x00000018
+#define DDI_0_OSC_ANABYPASSVAL2                     0x0000001C
+#define DDI_0_OSC_ATESTCTL                          0x00000020
+#define DDI_0_OSC_ADCDOUBLERNANOAMPCTL              0x00000024
+#define DDI_0_OSC_XOSCHFCTL                         0x00000028
+#define DDI_0_OSC_LFOSCCTL                          0x0000002C
+#define DDI_0_OSC_RCOSCHFCTL                        0x00000030
+#define DDI_0_OSC_RCOSCMFCTL                        0x00000034
+#define DDI_0_OSC_STAT0                             0x0000003C
+#define DDI_0_OSC_STAT1                             0x00000040
+#define DDI_0_OSC_STAT2                             0x00000044
+/** @} */
+
+/**
+ * @brief   DDI instruction offsets
+ * @{
+ */
+#define DDI_DIR                                     0x00000000
+#define DDI_SET                                     0x00000080
+#define DDI_CLR                                     0x00000100
+#define DDI_MASK4B                                  0x00000200
+#define DDI_MASK8B                                  0x00000300
+#define DDI_MASK16B                                 0x00000400
+/** @} */
+
 /** @ingroup cpu_cc26x2_cc13x2_peripheral_memory_map
   * @{
   */
-#define DDI0_OSC_BASE       0x400CA000 /**< DDI0_OSC base address */
+/**
+ * @brief   AUX_DDI0_OSC base address
+ */
+#define AUX_DDI0_OSC_BASE       (PERIPH_BASE + 0xCA000)
 /*@}*/
 
-#define DDI_0_OSC ((ddi0_osc_regs_t *) (DDI0_OSC_BASE)) /**< DDI_0_OSC register bank */
+/**
+ * @brief   DDI_0_OSC register bank
+ */
+#define DDI_0_OSC               ((ddi0_osc_regs_t *) (AUX_DDI0_OSC_BASE))
 
 /**
 * AON_PMCTL registers
@@ -103,6 +146,21 @@ typedef struct {
 /*@}*/
 
 #define AON_PMCTL ((aon_pmctl_regs_t *) (AON_PMCTL_BASE)) /**< AON_PMCTL register bank */
+
+/**
+ * @brief   AON_PMCTL register values
+ * @{
+ */
+#define AON_PMCTL_RESETCTL_BOOT_DET_1_CLR_m         0x02000000
+#define AON_PMCTL_RESETCTL_BOOT_DET_0_CLR_m         0x01000000
+#define AON_PMCTL_RESETCTL_BOOT_DET_1_SET_m         0x00020000
+#define AON_PMCTL_RESETCTL_BOOT_DET_0_SET_m         0x00010000
+#define AON_PMCTL_RESETCTL_BOOT_DET_1_m             0x00002000
+#define AON_PMCTL_RESETCTL_BOOT_DET_0_m             0x00001000
+#define AON_PMCTL_RESETCTL_BOOT_DET_0_s             12
+#define AON_PMCTL_RESETCTL_MCU_WARM_RESET_m         0x00000010
+#define AON_PMCTL_SLEEPCTL_IO_PAD_SLEEP_DIS         0x00000001
+/** @} */
 
 /**
  * AON_RTC registers
