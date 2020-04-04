@@ -404,9 +404,111 @@ typedef struct {
 #define ADI_4_AUX            ((adi_4_aux_regs_t *) (ADI_4_AUX_BASE))
 
 /**
+ * @brief   ADI_4_AUX register values
+ * @{
+ */
+#define ADI_4_AUX_COMP_LPM_BIAS_WIDTH_TRIM_m 0x00000038
+#define ADI_4_AUX_COMP_LPM_BIAS_WIDTH_TRIM_s 3
+#define ADI_4_AUX_LPMBIAS_LPM_TRIM_IOUT_m    0x0000003F
+#define ADI_4_AUX_LPMBIAS_LPM_TRIM_IOUT_s    0
+/** @} */
+
+/**
+ * @brief   ADI_4_AUX register offsets
+ * @{
+ */
+#define ADI_4_AUX_MUX0       0x00000000 /**< Internal */
+#define ADI_4_AUX_MUX1       0x00000001 /**< Internal */
+#define ADI_4_AUX_MUX2       0x00000002 /**< Internal */
+#define ADI_4_AUX_MUX3       0x00000003 /**< Internal */
+#define ADI_4_AUX_ISRC       0x00000004 /**< Current source */
+#define ADI_4_AUX_COMP       0x00000005 /**< Comparator */
+#define ADI_4_AUX_MUX4       0x00000007 /**< Internal */
+#define ADI_4_AUX_ADC0       0x00000008 /**< ADC Control 0 */
+#define ADI_4_AUX_ADC1       0x00000009 /**< ADC Control 1 */
+#define ADI_4_AUX_ADCREF0    0x0000000A /**< ADC Reference 0 */
+#define ADI_4_AUX_ADCREF1    0x0000000B /**< ADC Reference 1 */
+#define ADI_4_AUX_LPMBIAS    0x0000000E /**< Internal */
+/** @} */
+
+/**
+ * @brief   ADI_3_REFSYS registers
+ */
+typedef struct {
+    reg8_t ATESTCTL1; /**< Internal */
+    reg8_t REFSYSCTL0; /**< Internal */
+    reg8_t REFSYSCTL1; /**< Internal */
+    reg8_t REFSYSCTL2; /**< Internal */
+    reg8_t REFSYSCTL3; /**< Internal */
+    reg8_t DCDCCTL0; /**< DCDC Control 0 */
+    reg8_t DCDCCTL1; /**< DCDC Control 1 */
+    reg8_t DCDCCTL2; /**< DCDC Control 2 */
+    reg8_t DCDCCTL3; /**< Internal */
+    reg8_t DCDCCTL4; /**< Internal */
+    reg8_t DCDCCTL5; /**< Internal */
+    reg8_t AUX_DEBUG; /**< Recharge control 1 */
+    reg8_t CTL_RECHARGE_CMP0; /** Recharge Comparator Control Byte 0 */
+    reg8_t CTL_RECHARGE_CMP1; /** Recharge Comparator Control Byte 1 */
+} adi_3_refsys_regs_t;
+
+/**
+ * @ingroup cpu_specific_peripheral_memory_map
+ * @{
+ */
+/**
+ * @brief   ADI3 base address
+ */
+#define ADI3_BASE            (PERIPH_BASE + 0x86200)
+/** @} */
+
+#define ADI_3_REFSYS         ((adi_3_refsys_regs_t *) (ADI3_BASE))
+
+/**
+ * @brief   ADI_3_REFSYS register values
+ * @{
+ */
+#define ADI_3_REFSYS_DCDCCTL3_VDDR_BOOST_COMP_BOOST 0x00000002
+#define ADI_3_REFSYS_AUX_DEBUG_LPM_BIAS_BACKUP_EN   0x00000040
+/** @} */
+
+/**
+ * @brief   ADI_3_REFSYS register offsets
+ * @{
+ */
+#define ADI_3_REFSYS_ATESTCTL1         0x00000001 /**< Internal */
+#define ADI_3_REFSYS_REFSYSCTL0        0x00000002 /**< Internal */
+#define ADI_3_REFSYS_REFSYSCTL1        0x00000003 /**< Internal */
+#define ADI_3_REFSYS_REFSYSCTL2        0x00000004 /**< Internal */
+#define ADI_3_REFSYS_REFSYSCTL3        0x00000005 /**< Internal */
+#define ADI_3_REFSYS_DCDCCTL0          0x00000006 /**< DCDC Control 0 */
+#define ADI_3_REFSYS_DCDCCTL1          0x00000007 /**< DCDC Control 1 */
+#define ADI_3_REFSYS_DCDCCTL2          0x00000008 /**< DCDC Control 2 */
+#define ADI_3_REFSYS_DCDCCTL3          0x00000009 /**< Internal */
+#define ADI_3_REFSYS_DCDCCTL4          0x0000000A /**< Internal */
+#define ADI_3_REFSYS_DCDCCTL5          0x0000000B /**< Internal */
+#define ADI_3_REFSYS_AUX_DEBUG         0x0000000C /**< Recharge control 1 */
+/** Recharge Comparator Control Byte 0 */
+#define ADI_3_REFSYS_CTL_RECHARGE_CMP0 0x0000000D
+/** Recharge Comparator Control Byte 1 */
+#define ADI_3_REFSYS_CTL_RECHARGE_CMP1 0x0000000E
+/** @} */
+
+/**
  * @brief   The semamphore used for ADDI
  */
 #define ADDI_SEM             (AUX_SMPH->SMPH0)
+
+/**
+ * @brief   ADI instruction offsets
+ * @{
+ */
+#define ADI_DIR              0x00000000
+#define ADI_SET              0x00000010
+#define ADI_CLR              0x00000020
+#define ADI_MASK4B           0x00000040
+#define ADI_MASK8B           0x00000060
+#define ADI_MASK16B          0x00000080
+/** @} */
 
 #ifdef __cplusplus
 } /* end extern "C" */
