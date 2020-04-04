@@ -974,7 +974,7 @@ static inline ssize_t coap_opt_add_format(coap_pkt_t *pkt, uint16_t format)
 ssize_t coap_opt_add_opaque(coap_pkt_t *pkt, uint16_t optnum, const uint8_t *val, size_t val_len);
 
 /**
- * @brief   Adds one or multiple Uri-Query options in the form '/path' into pkt
+ * @brief   Adds one or multiple Uri-Path options in the form '/path' into pkt
  *
  * @note Use this only for null-terminated strings.
  *
@@ -987,7 +987,10 @@ ssize_t coap_opt_add_opaque(coap_pkt_t *pkt, uint16_t optnum, const uint8_t *val
  * @return        <0 on error
  * @return        -ENOSPC if no available options or pkt full
  */
-ssize_t coap_opt_add_path(coap_pkt_t *pkt, const char *path);
+static inline ssize_t coap_opt_add_uri_path(coap_pkt_t *pkt, const char *path)
+{
+    return coap_opt_add_string(pkt, COAP_OPT_URI_PATH, path, '/');
+}
 
 /**
  * @brief   Adds a single Uri-Query option in the form 'key=value' into pkt
