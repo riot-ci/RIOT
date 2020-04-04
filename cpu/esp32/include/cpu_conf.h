@@ -63,6 +63,11 @@ extern "C" {
  */
 #define BACKUP_RAM_DATA __attribute__((section(".rtc.data")))
 
+/**
+ * @brief   Remaining parts of the various DRAM sections can be used as heap.
+ */
+#define NUM_HEAPS (4)
+
 #ifdef __cplusplus
 }
 #endif /* CPU_CONF_H */
