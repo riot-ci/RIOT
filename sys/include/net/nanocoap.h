@@ -974,25 +974,6 @@ static inline ssize_t coap_opt_add_format(coap_pkt_t *pkt, uint16_t format)
 ssize_t coap_opt_add_opaque(coap_pkt_t *pkt, uint16_t optnum, const uint8_t *val, size_t val_len);
 
 /**
- * @brief   Adds one or multiple Uri-Path options in the form '/path' into pkt
- *
- * @note Use this only for null-terminated strings.
- *
- * @param[in,out] pkt         Packet being built
- * @param[in]     path        Resource (sub)path
- *
- * @pre     ((pkt != NULL) && (path != NULL))
- *
- * @return        number of bytes written to pkt buffer
- * @return        <0 on error
- * @return        -ENOSPC if no available options or pkt full
- */
-static inline ssize_t coap_opt_add_uri_path(coap_pkt_t *pkt, const char *path)
-{
-    return coap_opt_add_string(pkt, COAP_OPT_URI_PATH, path, '/');
-}
-
-/**
  * @brief   Adds a single Uri-Query option in the form 'key=value' into pkt
  *
  * @note Use this only for null-terminated string. See @ref coap_opt_add_uquery2()
@@ -1064,6 +1045,25 @@ ssize_t coap_opt_add_proxy_uri(coap_pkt_t *pkt, const char *uri);
  * @return        -ENOSPC if no available options or insufficient buffer space
  */
 ssize_t coap_opt_add_string(coap_pkt_t *pkt, uint16_t optnum, const char *string, char separator);
+
+/**
+ * @brief   Adds one or multiple Uri-Path options in the form '/path' into pkt
+ *
+ * @note Use this only for null-terminated strings.
+ *
+ * @param[in,out] pkt         Packet being built
+ * @param[in]     path        Resource (sub)path
+ *
+ * @pre     ((pkt != NULL) && (path != NULL))
+ *
+ * @return        number of bytes written to pkt buffer
+ * @return        <0 on error
+ * @return        -ENOSPC if no available options or pkt full
+ */
+static inline ssize_t coap_opt_add_uri_path(coap_pkt_t *pkt, const char *path)
+{
+    return coap_opt_add_string(pkt, COAP_OPT_URI_PATH, path, '/');
+}
 
 /**
  * @brief   Finalizes options as required and prepares for payload
