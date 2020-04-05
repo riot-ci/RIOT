@@ -20,6 +20,14 @@
 
 #include "cpu.h"
 
+/**
+ * @brief   FMC pump wakeup time
+ *
+ * This value is provided by TI. It's the optimal wait time when the flash
+ * wakes up from sleep.
+ */
+#define FMC_FLASH_WAKEUP_TIME (0x139)
+
 static void _trim_device(uint32_t rev);
 
 static void _set_boot_det(void) {
@@ -70,8 +78,8 @@ void setup_trim_device(void)
 
     /* Configure optimal wait time for flash FSM in cases where flash pump
      * wakes up from sleep */
-    FLASH->FPAC1 = (FLASH->FPAC1 & ~FLASH_FPAC1_PSLEEPTDIS_m) |
-                   (0x139 << FLASH_FPAC1_PSLEEPTDIS_s);
+    FLASH->FPAC1 &= ~FLASH_FPAC1_PSLEEPTDIS_m;
+    FLASH->FPAC1 |= (FMC_FLASH_WAKEUP_TIME << FLASH_FPAC1_PSLEEPTDIS_s);
 
     /* Finally at the end of the flash boot process:
      * Set BOOT_DET bits */
