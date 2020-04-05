@@ -18,7 +18,29 @@
 #include <assert.h>
 #include "cpu.h"
 
-static const uint8_t _opmode_to_order[4] = { 1, 2, 0, 3 };
+/**
+ * @brief   Order of operation modes
+ *
+ * This is to calculate which mode follows the other, to change step-by-step
+ * the mode.
+ *
+ * @{
+ */
+#define OPMODE_PDA_ORDER  (0)
+#define OPMODE_A_ORDER    (1)
+#define OPMODE_LP_ORDER   (2)
+#define OPMODE_PDLP_ORDER (3)
+/** @} */
+
+/** Array to map an operation mode to it's order when changing it */
+static const uint8_t _opmode_to_order[4] = {
+    OPMODE_A_ORDER,
+    OPMODE_LP_ORDER,
+    OPMODE_PDA_ORDER,
+    OPMODE_PDLP_ORDER
+};
+/** Array to map an order to an operation mode, used to get the next operation
+ * mode. This is because we need to change the operation in ordered steps */
 static const uint8_t _order_to_opmode[4] = {
     AUX_SYSIF_OPMODEREQ_REQ_PDA,
     AUX_SYSIF_OPMODEREQ_REQ_A,
@@ -43,20 +65,27 @@ void aux_sysif_opmode_change(uint32_t target_opmode)
      * PDA -> A -> LP -> PDLP
      */
     do {
-       current_opmode = AUX_SYSIF->OPMODEREQ;
+        current_opmode = AUX_SYSIF->OPMODEREQ;
 
-       /* Wait for change ACK */
-       while (current_opmode != AUX_SYSIF->OPMODEACK) {}
+        /* Wait for change ACK */
+        while (current_opmode != AUX_SYSIF->OPMODEACK) {}
 
-       if (current_opmode != target_opmode) {
-           current_order = _opmode_to_order[current_opmode];
-           if (current_order < _opmode_to_order[target_opmode]) {
-               next_mode = _order_to_opmode[current_order + 1];
-           }
-           else {
-               next_mode = _order_to_opmode[current_order - 1];
-           }
-           AUX_SYSIF->OPMODEREQ = next_mode;
-       }
+        if (current_opmode == target_opmode) {
+            break;
+        }
+
+        /* At this point we aren't in the mode we want, now we calculate which
+         * mode follows this and make the change to that mode, this is repeated
+         * in this loop until we get to the desired mode */
+        current_order = _opmode_to_order[current_opmode];
+        if (current_order < _opmode_to_order[target_opmode]) {
+            next_mode = _order_to_opmode[current_order + 1];
+        }
+        else {
+            next_mode = _order_to_opmode[current_order - 1];
+        }
+
+        /* Request next mode */
+        AUX_SYSIF->OPMODEREQ = next_mode;
     } while (current_opmode != target_opmode);
 }
