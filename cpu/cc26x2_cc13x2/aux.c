@@ -56,7 +56,6 @@ void aux_sysif_opmode_change(uint32_t target_opmode)
            (target_opmode == AUX_SYSIF_OPMODEREQ_REQ_A));
 
     uint32_t current_opmode;
-    uint32_t current_order;
     uint32_t next_mode;
 
     /* Change AUX operation mode following hardware rules, operation mode
@@ -77,7 +76,7 @@ void aux_sysif_opmode_change(uint32_t target_opmode)
         /* At this point we aren't in the mode we want, now we calculate which
          * mode follows this and make the change to that mode, this is repeated
          * in this loop until we get to the desired mode */
-        current_order = _opmode_to_order[current_opmode];
+        uint32_t current_order = _opmode_to_order[current_opmode];
         if (current_order < _opmode_to_order[target_opmode]) {
             next_mode = _order_to_opmode[current_order + 1];
         }
