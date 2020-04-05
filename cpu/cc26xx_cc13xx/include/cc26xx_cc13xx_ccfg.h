@@ -25,11 +25,23 @@ extern "C" {
 /** @ingroup cpu_specific_peripheral_memory_map
  * @{
  */
-#define CCFG_BASE                           0x50003000 /**<  base address of CCFG memory */
+/**
+ * @brief   CCFG base address
+ */
+#define CCFG_BASE                                    0x50003000
 /*@}*/
 
-/* TODO not present in datasheet but explained in cc26x0ware-lds */
-#define CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM   0x00000004 /**< CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM */
+/**
+ * @brief   CCFG register values
+ * @{
+ */
+#define CCFG_MODE_CONF_1_ALT_DCDC_IPEAK_m            0x00070000
+#define CCFG_MODE_CONF_1_ALT_DCDC_IPEAK_s            16
+#define CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING 0x00000002
+#define CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM            0x00000004
+#define CCFG_MODE_CONF_VDDR_EXT_LOAD                 0x02000000
+#define CCFG_MODE_CONF_VDDS_BOD_LEVEL                0x01000000
+/** @} */
 
 /**
  * CCFG registers
