@@ -34,14 +34,27 @@ extern "C" {
 #endif
 
 /* if using ethos + stdio, use STDIO_UART values unless overridden */
-#ifdef MODULE_STDIO_ETHOS
+#ifdef MODULE_STDIO_ETHOS || DOXYGEN
 #include "stdio_uart.h"
+/**
+ * @defgroup drivers_ethos_config     Ethernet-over-serial driver driver compile configuration
+ * @ingroup config_drivers_netdev
+ * @{
+ */
+/**
+ * @brief Set the default UART Interface.
+ */
 #ifndef ETHOS_UART
 #define ETHOS_UART     STDIO_UART_DEV
 #endif
+
+/**
+ * @brief Set the default baudrate.
+ */
 #ifndef ETHOS_BAUDRATE
 #define ETHOS_BAUDRATE STDIO_UART_BAUDRATE
 #endif
+/** @} */
 #endif
 
 /**
