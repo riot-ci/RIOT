@@ -1,6 +1,8 @@
 # Adafruit-nrfutil is the default programmer
 PROGRAMMER ?= adafruit-nrfutil
 
+include $(RIOTBOARD)/common/nrf52/Makefile.include
+
 ifeq ($(PROGRAMMER),adafruit-nrfutil)
   # The preinstalled bootloader must also be taken into account so
   # ROM_OFFSET skips the space taken by such bootloader.
@@ -22,5 +24,3 @@ term-delay:
 
 TESTRUNNER_CONNECT_DELAY ?= $(TERM_DELAY)
 $(call target-export-variables,test,TESTRUNNER_CONNECT_DELAY)
-
-include $(RIOTBOARD)/common/nrf52/Makefile.include

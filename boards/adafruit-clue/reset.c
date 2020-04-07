@@ -23,6 +23,8 @@
 
 #include "usb_board_reset.h"
 
+/* Set the value used by the bootloader to select between boot in
+   application and boot in bootloader mode. */
 #define NRF52_DOUBLE_TAP_MAGIC_NUMBER       (0x4e)
 
 void usb_board_reset_in_bootloader(void)

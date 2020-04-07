@@ -19,9 +19,11 @@ The board detailed description and schematic is available
 
 ### Flash the board
 
-The board is flashed using the `nrfutil` Python package.
+The board is flashed using the `adafruit-nrfutil` Python package:
+```
+    $ pip install --user adafruit-nrfutil
+```
 
-Once `nrfutil` is installed, ase `BOARD=adafruit-clue` with the `make` command.<br/>
 Example with `hello-world` application:
 ```
     make BOARD=adafruit-clue -C examples/hello-world flash
