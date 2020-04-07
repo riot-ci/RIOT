@@ -385,7 +385,7 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void)
     || defined(CPU_ARCH_CORTEX_M23)
     __asm__ volatile (
     ".thumb_func            \n"
-    "mov    r0, #4          \n" /* if bit4(lr) == 1):       */
+    "movs   r0, #4          \n" /* if bit4(lr) == 1):       */
     "mov    r1, lr          \n"
     "tst    r0, r1          \n"
     "beq    came_from_msp   \n" /*     goto came_from_msp   */
