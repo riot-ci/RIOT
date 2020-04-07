@@ -25,7 +25,7 @@
 
 #include "periph/pm.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 enum system_sleepmode {
@@ -61,23 +61,27 @@ void pm_set(unsigned mode)
              * Potential Wake Up sources: asynchronous
              */
             deep = 1;
+            DEBUG_PUTS("pm_set(): setting STANDBY mode.");
             break;
         case SAMD21_PM_IDLE_2:
             /* Sleep mode Idle 2
              * Potential Wake Up sources: asynchronous
              */
+             DEBUG_PUTS("pm_set(): setting IDLE2 mode.");
             PM->SLEEP.reg = SYSTEM_SLEEPMODE_IDLE_2;
             break;
         case SAMD21_PM_IDLE_1:
             /* Sleep mode Idle 1
              * Potential Wake Up sources: Synchronous (APB), asynchronous
              */
+             DEBUG_PUTS("pm_set(): setting IDLE1 mode.");
             PM->SLEEP.reg = SYSTEM_SLEEPMODE_IDLE_1;
             break;
         case SAMD21_PM_IDLE_0:
             /* Sleep mode Idle 0
              * Potential Wake Up sources: Synchronous (APB, AHB), asynchronous
             */
+            DEBUG_PUTS("pm_set(): setting IDLE0 mode.");
             PM->SLEEP.reg = SYSTEM_SLEEPMODE_IDLE_0;
             break;
     }
