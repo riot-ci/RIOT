@@ -28,7 +28,7 @@
 
 void auto_init_random(void)
 {
-    uint32_t seed = 1;
+    uint32_t seed;
 #ifdef MODULE_PUF_SRAM
     /* TODO: hand state to application? */
     if (puf_sram_state) {
