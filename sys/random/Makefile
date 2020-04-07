@@ -22,18 +22,13 @@ else
   RANDOM_SEED := 0x1
 endif
 
-HAS_RNG := 0
 ifneq (,$(filter puf_sram,$(USEMODULE)))
   HAS_RNG = 1
-endif
-ifneq (,$(filter periph_hwrng,$(FEATURES_PROVIDED)))
-  HAS_RNG = 1
-endif
-ifneq (,$(filter periph_cpuid,$(FEATURES_PROVIDED)))
+else ifneq (,$(filter periph_hwrng periph_cpuid,$(FEATURES_USED)))
   HAS_RNG = 1
 endif
 
-ifeq (0,$(HAS_RNG))
+ifndef HAS_RNG
   CFLAGS += -DRANDOM_SEED_DEFAULT=$(RANDOM_SEED)U
   .PHONY: $(BINDIR)/$(MODULE)/init.o
 endif
