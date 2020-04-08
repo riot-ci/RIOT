@@ -58,12 +58,6 @@ class Sniffer(object):
                 if sniffer.kwargs.get("stop_filter") is None or
                 sniffer.kwargs["stop_filter"](p)]
 
-    def stop(self):
-        if self.sniffer is not None:
-            self.sniffer.stop()
-            self.sniffer.join(timeout=2)
-            self.sniffer = None
-
 
 sniffer = None
 
@@ -365,7 +359,6 @@ def testfunc(child):
     run(test_seq_left_0)
     run(test_time_exc)
     print("SUCCESS")
-    sniffer.stop()
 
 
 if __name__ == "__main__":
