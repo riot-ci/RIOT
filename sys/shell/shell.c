@@ -297,6 +297,7 @@ static inline void new_line(void)
 static int readline(char *buf, size_t size)
 {
     int curr_pos = 0;
+    bool length_exceeded = false;
 
     assert((size_t) size > 0);
 
@@ -313,19 +314,16 @@ static int readline(char *buf, size_t size)
             case ETX:
                 /* Ctrl-C cancels the current line. */
                 curr_pos = 0;
+                length_exceeded = false;
                 /* fall-thru */
             case '\r':
                 /* fall-thru */
             case '\n':
+                buf[curr_pos] = '\0';
+
                 new_line();
 
-                if ((size_t) curr_pos < size) {
-                    buf[curr_pos] = '\0';
-                    return curr_pos;
-                }
-                else {
-                    return -ENOBUFS;
-                }
+                return (length_exceeded) ? -ENOBUFS : curr_pos;
 
             /* check for backspace: */
             case BS:    /* 0x08 (BS) for most terminals */
@@ -335,6 +333,7 @@ static int readline(char *buf, size_t size)
                     curr_pos--;
                     if ((size_t) curr_pos < size) {
                         buf[curr_pos] = '\0';
+                        length_exceeded = false;
                     }
                     white_tape();
                 }
@@ -343,9 +342,11 @@ static int readline(char *buf, size_t size)
             default:
                 /* Always consume characters, but do not not always store them */
                 if ((size_t) curr_pos < size - 1) {
-                    buf[curr_pos] = c;
+                    buf[curr_pos++] = c;
                 }
-                curr_pos++;
+                else {
+                    length_exceeded = true;
+                }
                 echo_char(c);
                 break;
         }
