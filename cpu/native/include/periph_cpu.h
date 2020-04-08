@@ -96,7 +96,9 @@ typedef enum {
  * @name    EEPROM configuration
  * @{
  */
+#ifndef EEPROM_SIZE
 #define EEPROM_SIZE             (1024U)  /* 1kB */
+#endif
 /** @} */
 
 #ifdef __cplusplus
