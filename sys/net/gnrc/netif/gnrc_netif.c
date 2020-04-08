@@ -1372,6 +1372,15 @@ static void _event_handler_isr(event_t *evp)
 }
 #endif
 
+static inline void _event_post(gnrc_netif_t *netif)
+{
+#if IS_USED(MODULE_GNRC_NETIF_EVENTS)
+    event_post(&netif->evq, &netif->event_isr);
+#else
+    (void)netif;
+#endif
+}
+
 /**
  * @brief   Retrieve the netif event queue if enabled
  *
@@ -1451,11 +1460,13 @@ static void *_gnrc_netif_thread(void *args)
     gnrc_netif_acquire(netif);
     dev = netif->dev;
     netif->pid = sched_active_pid;
+
 #if IS_USED(MODULE_GNRC_NETIF_EVENTS)
     netif->event_isr.handler = _event_handler_isr,
     /* set up the event queue */
     event_queue_init(&netif->evq);
 #endif /* MODULE_GNRC_NETIF_EVENTS */
+
     /* setup the link-layer's message queue */
     msg_init_queue(msg_queue, CONFIG_GNRC_NETIF_MSG_QUEUE_SIZE);
     /* register the event callback with the device driver */
@@ -1585,16 +1596,17 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
     gnrc_netif_t *netif = (gnrc_netif_t *) dev->context;
 
     if (event == NETDEV_EVENT_ISR) {
-#if IS_USED(MODULE_GNRC_NETIF_EVENTS)
-        event_post(&netif->evq, &netif->event_isr);
-#else /* MODULE_GNRC_NETIF_EVENTS */
-        msg_t msg = { .type = NETDEV_MSG_TYPE_EVENT,
-                      .content = { .ptr = netif } };
-
-        if (msg_send(&msg, netif->pid) <= 0) {
-            puts("gnrc_netif: possibly lost interrupt.");
+        if (IS_USED(MODULE_GNRC_NETIF_EVENTS)) {
+            _event_post(netif);
         }
-#endif /* MODULE_GNRC_NETIF_EVENTS */
+        else {
+            msg_t msg = { .type = NETDEV_MSG_TYPE_EVENT,
+                          .content = { .ptr = netif } };
+
+            if (msg_send(&msg, netif->pid) <= 0) {
+                puts("gnrc_netif: possibly lost interrupt.");
+            }
+        }
     }
     else {
         DEBUG("gnrc_netif: event triggered -> %i\n", event);
