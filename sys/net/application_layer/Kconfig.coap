@@ -7,9 +7,6 @@
 
 config HAS_PROTOCOL_COAP
     bool
-#TODO: This should be selected the Kconfig of the modules that provide it, but
-# nanocoap does not have Kconfig file yet.
-    default y if MODULE_NANOCOAP
     help
         Specifies that CoAP support is present.
 
