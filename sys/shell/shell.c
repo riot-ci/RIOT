@@ -292,7 +292,7 @@ static inline void new_line(void)
  * @return  length of the read line, excluding the terminator, if reading was
  *          successful.
  * @return  EOF, if the end of the input stream was reached.
- * @return  ENOBUFS if the buffer size was exceeded.
+ * @return  -ENOBUFS if the buffer size was exceeded.
  */
 static int readline(char *buf, size_t size)
 {
