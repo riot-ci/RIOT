@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       Crypto mode - counter with CBC-MAC
+ * @brief       Crypto mode - counter with CBC-MAC (CCM) and CCM*
  *
  * @author      Nico von Geyso <nico.geyso@fu-berlin.de>
  *
@@ -43,6 +43,12 @@ static int ccm_compute_cbc_mac(cipher_t *cipher, const uint8_t iv[16],
     block_size = cipher_get_block_size(cipher);
     memmove(mac, iv, 16);
     offset = 0;
+
+    /* no input message */
+    if(length == 0) {
+        return 0;
+    }
+
     do {
         uint8_t block_size_input = (length - offset > block_size) ?
                                    block_size : length - offset;
@@ -77,6 +83,7 @@ static int ccm_create_mac_iv(cipher_t *cipher, uint8_t auth_data_len, uint8_t M,
             7        6     5..3  2..0
         Reserved   Adata    M_    L_    */
     M_ = (M - 2) / 2;
+
     L_ = L - 1;
     X1[0] = 64 * (auth_data_len > 0) + 8 * M_ + L_;
 
@@ -167,8 +174,20 @@ static inline int _fits_in_nbytes(size_t value, uint8_t num_bytes)
     return (value >> shift) <= 1;
 }
 
+/* Valid mac_length are 4, 6, 8 ... 16 octets */
+static bool _valid_mac_length_ccm(uint8_t mac_length)
+{
+    return (mac_length % 2 == 0 && mac_length >= 4 && mac_length <= 16);
+}
 
-int cipher_encrypt_ccm(cipher_t *cipher,
+/* Valid mac_length are 0, 4, 6, 8 ... 16 octets */
+static bool _valid_mac_length_ccms(uint8_t mac_length)
+{
+    return (mac_length == 0) || \
+        (mac_length % 2 == 0 && mac_length >=4 && mac_length <= 16);
+}
+
+int _cipher_encrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
@@ -179,10 +198,6 @@ int cipher_encrypt_ccm(cipher_t *cipher,
     uint8_t nonce_counter[16] = { 0 }, mac_iv[16] = { 0 }, mac[16] = { 0 },
             stream_block[16] = { 0 }, zero_block[16] = { 0 }, block_size;
 
-    if (mac_length % 2 != 0  || mac_length < 4 || mac_length > 16) {
-        return CCM_ERR_INVALID_MAC_LENGTH;
-    }
-
     if (length_encoding < 2 || length_encoding > 8 ||
         !_fits_in_nbytes(input_len, length_encoding)) {
         return CCM_ERR_INVALID_LENGTH_ENCODING;
@@ -191,15 +206,22 @@ int cipher_encrypt_ccm(cipher_t *cipher,
     /* Create B0, encrypt it (X1) and use it as mac_iv */
     block_size = cipher_get_block_size(cipher);
     assert(block_size == CCM_BLOCK_SIZE);
-    if (ccm_create_mac_iv(cipher, auth_data_len, mac_length, length_encoding,
-                          nonce, nonce_len, input_len, mac_iv) < 0) {
-        return CCM_ERR_INVALID_DATA_LENGTH;
-    }
 
-    /* MAC calculation (T) with additional data and plaintext */
-    len = ccm_compute_adata_mac(cipher, auth_data, auth_data_len, mac_iv);
-    if (len < 0) {
-        return len;
+    /* The value M = 0 (mac_length = 0) corresponds to disabling authenticity,
+       since then the authentication field is the empty string, this is only
+       possible in ccms, in ccm mac_lenth !=0 would have been checked by
+       _valid_mac_length_ccm() */
+    if (mac_length != 0) {
+        if (ccm_create_mac_iv(cipher, auth_data_len, mac_length, length_encoding,
+                            nonce, nonce_len, input_len, mac_iv) < 0) {
+            return CCM_ERR_INVALID_DATA_LENGTH;
+        }
+
+        /* MAC calculation (T) with additional data and plaintext */
+        len = ccm_compute_adata_mac(cipher, auth_data, auth_data_len, mac_iv);
+        if (len < 0) {
+            return len;
+        }
     }
 
     len = ccm_compute_cbc_mac(cipher, mac_iv, input, input_len, mac);
@@ -234,7 +256,7 @@ int cipher_encrypt_ccm(cipher_t *cipher,
 }
 
 
-int cipher_decrypt_ccm(cipher_t *cipher,
+int _cipher_decrypt_ccm(cipher_t *cipher,
                        const uint8_t *auth_data, uint32_t auth_data_len,
                        uint8_t mac_length, uint8_t length_encoding,
                        const uint8_t *nonce, size_t nonce_len,
@@ -247,10 +269,6 @@ int cipher_decrypt_ccm(cipher_t *cipher,
             zero_block[16] = { 0 },
             block_size;
     size_t plain_len;
-
-    if (mac_length % 2 != 0  || mac_length < 4 || mac_length > 16) {
-        return CCM_ERR_INVALID_MAC_LENGTH;
-    }
 
     if (length_encoding < 2 || length_encoding > 8 ||
         !_fits_in_nbytes(input_len, length_encoding)) {
@@ -278,17 +296,24 @@ int cipher_decrypt_ccm(cipher_t *cipher,
         return len;
     }
 
-    /* Create B0, encrypt it (X1) and use it as mac_iv */
-    if (ccm_create_mac_iv(cipher, auth_data_len, mac_length, length_encoding,
-                          nonce, nonce_len, plain_len, mac_iv) < 0) {
-        return CCM_ERR_INVALID_DATA_LENGTH;
+    /* The value M = 0 (mac_length = 0) corresponds to disabling authenticity,
+       since then the authentication field is the empty string, this is only
+       possible in ccms, in ccm mac_lenth !=0 would have been checked by
+       _valid_mac_length_ccm() */
+    if (mac_length != 0) {
+        /* Create B0, encrypt it (X1) and use it as mac_iv */
+        if (ccm_create_mac_iv(cipher, auth_data_len, mac_length, length_encoding,
+                            nonce, nonce_len, plain_len, mac_iv) < 0) {
+            return CCM_ERR_INVALID_DATA_LENGTH;
+        }
+
+        /* MAC calculation (T) with additional data and plaintext */
+        len = ccm_compute_adata_mac(cipher, auth_data, auth_data_len, mac_iv);
+        if (len < 0) {
+            return len;
+        }
     }
 
-    /* MAC calculation (T) with additional data and plaintext */
-    len = ccm_compute_adata_mac(cipher, auth_data, auth_data_len, mac_iv);
-    if (len < 0) {
-        return len;
-    }
     len = ccm_compute_cbc_mac(cipher, mac_iv, plain, plain_len, mac);
     if (len < 0) {
         return len;
@@ -304,4 +329,72 @@ int cipher_decrypt_ccm(cipher_t *cipher,
     }
 
     return plain_len;
+}
+
+int cipher_decrypt_ccm(cipher_t *cipher,
+                       const uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t mac_length, uint8_t length_encoding,
+                       const uint8_t *nonce, size_t nonce_len,
+                       const uint8_t *input, size_t input_len,
+                       uint8_t *plain)
+{
+    if(_valid_mac_length_ccm(mac_length)){
+        return _cipher_decrypt_ccm(cipher, auth_data, auth_data_len, mac_length,
+                                   length_encoding, nonce, nonce_len, input,
+                                   input_len, plain);
+    }
+    else {
+        return CCM_ERR_INVALID_MAC_LENGTH;
+    }
+}
+
+int cipher_decrypt_ccms(cipher_t *cipher,
+                        const uint8_t *auth_data, uint32_t auth_data_len,
+                        uint8_t mac_length, uint8_t length_encoding,
+                        const uint8_t *nonce, size_t nonce_len,
+                        const uint8_t *input, size_t input_len,
+                        uint8_t *plain)
+{
+    if(_valid_mac_length_ccms(mac_length)){
+        return _cipher_decrypt_ccm(cipher, auth_data, auth_data_len, mac_length,
+                                   length_encoding, nonce, nonce_len, input,
+                                   input_len, plain);
+    }
+    else {
+        return CCM_ERR_INVALID_MAC_LENGTH;
+    }
+}
+
+int cipher_encrypt_ccm(cipher_t *cipher,
+                       const uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t mac_length, uint8_t length_encoding,
+                       const uint8_t *nonce, size_t nonce_len,
+                       const uint8_t *input, size_t input_len,
+                       uint8_t *output)
+{
+    if(_valid_mac_length_ccm(mac_length)) {
+        return _cipher_encrypt_ccm(cipher, auth_data, auth_data_len, mac_length,
+                                   length_encoding, nonce, nonce_len, input,
+                                   input_len, output);
+    }
+    else {
+        return CCM_ERR_INVALID_MAC_LENGTH;
+    }
+}
+
+int cipher_encrypt_ccms(cipher_t *cipher,
+                       const uint8_t *auth_data, uint32_t auth_data_len,
+                       uint8_t mac_length, uint8_t length_encoding,
+                       const uint8_t *nonce, size_t nonce_len,
+                       const uint8_t *input, size_t input_len,
+                       uint8_t *output)
+{
+    if(_valid_mac_length_ccms(mac_length)) {
+        return _cipher_encrypt_ccm(cipher, auth_data, auth_data_len, mac_length,
+                                   length_encoding, nonce, nonce_len, input,
+                                   input_len, output);
+    }
+    else {
+        return CCM_ERR_INVALID_MAC_LENGTH;
+    }
 }
