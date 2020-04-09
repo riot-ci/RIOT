@@ -64,7 +64,7 @@ int main(void)
                 expect(timer2.long_start_time > 0);
                 break;
             case 2U:
-                /* timer1 expired */
+                /* both timers expired */
                 expect(timer1.long_start_time == 0);
                 expect(timer2.long_start_time == 0);
                 break;
