@@ -37,12 +37,19 @@ static inline int min(int a, int b)
 static int ccm_compute_cbc_mac(cipher_t *cipher, const uint8_t iv[16],
                         const uint8_t *input, size_t length, uint8_t *mac)
 {
+
     uint8_t block_size, mac_enc[16] = { 0 };
     uint32_t offset;
 
     block_size = cipher_get_block_size(cipher);
     memmove(mac, iv, 16);
     offset = 0;
+
+    /* no input message */
+    if(length == 0) {
+        return 0;
+    }
+
     do {
         uint8_t block_size_input = (length - offset > block_size) ?
                                    block_size : length - offset;
