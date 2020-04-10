@@ -25,23 +25,22 @@ def testfunc(child):
     timers = {}
     child.expect(r"Setting (\d+) timers:")
     timers_numof = int(child.match.group(1))
-    for i in range(1, timers_numof + 1):
-        child.expect(r" #(\d+) in (\d+) sec")
+    for i in range(timers_numof):
+        child.expect(r" #(\d+) in (\d+) usec")
         assert i == int(child.match.group(1))
         timers[i] = int(child.match.group(2))
     assert timers_numof == len(timers)
-    child.expect(r"now=(\d+)")
     check_time = int(time.time())
+    child.expect(r"now=(\d+)")
     offset = int(child.match.group(1))
     # get largest possible timeout for expects below
-    timeout = _get_largest_timeout_difference(timers.values()) + 1
+    timeout = _get_largest_timeout_difference(timers.values()) / (10**6) + 1
     for i in range(timers_numof):
         child.expect(r"#(\d):now=(\d+)", timeout=timeout)
         t = int(child.match.group(1))
         now = int(child.match.group(2))
-        assert (int(time.time()) - check_time) >= timers[t]
-        # convert seconds to microseconds
-        expected = (timers[t] * (10**6)) + offset
+        assert (int(time.time()) - check_time) >= (timers[t] / 10**6)
+        expected = timers[t] + offset
         assert expected <= now
 
 
