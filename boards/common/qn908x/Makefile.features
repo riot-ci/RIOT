@@ -1,0 +1,5 @@
+CPU ?= qn908x
+
+# Put defined MCU peripherals here (in alphabetical order)
+FEATURES_PROVIDED += periph_cpuid
+FEATURES_PROVIDED += periph_wdt periph_wdt_cb
