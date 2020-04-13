@@ -118,7 +118,7 @@ static const uart_conf_t uart_config[] = {
 static const spi_conf_t spi_config[] = {
     {
         .dev      = SPI1,
-        .mosi_pin = GPIO_PIN(PORT_A, 7),
+        .mosi_pin = GPIO_PIN(PORT_B, 5),
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_UNDEF,
