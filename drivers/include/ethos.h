@@ -28,13 +28,14 @@
 #include "net/netdev.h"
 #include "tsrb.h"
 #include "mutex.h"
+#include "kernel_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* if using ethos + stdio, use STDIO_UART values unless overridden */
-#ifdef MODULE_STDIO_ETHOS || DOXYGEN
+#if IS_USED(MODULE_STDIO_ETHOS) || defined(DOXYGEN)
 #include "stdio_uart.h"
 /**
  * @defgroup drivers_ethos_config     Ethernet-over-serial driver driver compile configuration
