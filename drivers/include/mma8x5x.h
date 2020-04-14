@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup drivers_mma8x5x_config     MMA8x5x Acceleromete driver compile configuration
+ * @defgroup drivers_mma8x5x_config     MMA8x5x Accelerometer driver compile configuration
  * @ingroup config_drivers_sensors
  * @{
  */
