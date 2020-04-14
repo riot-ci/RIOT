@@ -8,8 +8,8 @@ ROM_OFFSET ?= 0x0
 
 # USB configuration, Product & Vendor ID taken from example firmware
 # that the board was shipped with.
-CONFIG_USB_VID = 0483
-CONFIG_USB_PID = 5740
+# CONFIG_USB_VID = 0483
+# CONFIG_USB_PID = 5740
 
 # Setup of programmer and serial is shared between STM32 based boards
 include $(RIOTMAKE)/boards/stm32.inc.mk
