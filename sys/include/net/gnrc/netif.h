@@ -50,6 +50,9 @@
 #ifdef MODULE_GNRC_MAC
 #include "net/gnrc/netif/mac.h"
 #endif
+#ifdef MODULE_GNRC_NETIF_PKTQ
+#include "net/gnrc/pktqueue.h"
+#endif
 #include "net/ndp.h"
 #include "net/netdev.h"
 #include "net/netopt.h"
@@ -58,6 +61,9 @@
 #endif
 #include "rmutex.h"
 #include "net/netif.h"
+#ifdef MODULE_GNRC_NETIF_PKTQ
+#include "xtimer.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,6 +126,16 @@ typedef struct {
 #endif
 #if defined(MODULE_GNRC_SIXLOWPAN) || DOXYGEN
     gnrc_netif_6lo_t sixlo;                 /**< 6Lo component */
+#endif
+#if defined(MODULE_GNRC_NETIF_PKTQ) || DOXYGEN
+    /**
+     * @brief   Packet queue for sending
+     *
+     * @note    Only available with @ref net_gnrc_netif_pktq.
+     */
+    gnrc_pktqueue_t *send_queue;
+    msg_t dequeue_msg;                      /**< message for gnrc_netif_t::dequeue_timer to send */
+    xtimer_t dequeue_timer;                 /**< timer to schedule next sending of queued packets */
 #endif
     uint8_t cur_hl;                         /**< Current hop-limit for out-going packets */
     uint8_t device_type;                    /**< Device type */
