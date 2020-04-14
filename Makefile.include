@@ -27,7 +27,7 @@ RIOTBASE       ?= $(_riotbase)
 RIOTCPU        ?= $(RIOTBASE)/cpu
 # Deprecated to set RIOTBOARD, use BOARDSDIR
 RIOTBOARD      ?= $(RIOTBASE)/boards
-BOARDSDIR      ?= $(RIOTBOARD)
+EXTRA_BOARDS   ?=
 RIOTMAKE       ?= $(RIOTBASE)/makefiles
 RIOTPKG        ?= $(RIOTBASE)/pkg
 RIOTTOOLS      ?= $(RIOTBASE)/dist/tools
@@ -69,9 +69,15 @@ MAKEOVERRIDES += $(foreach v,$(__OVERRIDE_DIRECTORY_VARIABLES),$(v)=$($(v)))
 
 # Deprecation of configuring 'RIOTBOARD'
 ifneq ($(abspath $(RIOTBASE)/boards),$(abspath $(RIOTBOARD)))
-  $(warning overriding RIOTBOARD for external boards is deprecated, please use an absolute BOARDSDIR)
+  $(warning overriding RIOTBOARD for external boards is deprecated, use EXTRA_BOARDS instead)
   override RIOTBOARD      := $(abspath $(RIOTBOARD))
   __DIRECTORY_VARIABLES += RIOTBOARD
+endif
+
+ifneq (,$(BOARDSDIR))
+  $(warning Using BOARDSDIR is deprecated use EXTRA_BOARDS instead)
+  $(info EXTRA_BOARDS can contain multiple folders separated by space)
+  EXTRA_BOARDS += $(BOARDSDIR)
 endif
 
 # Make all paths absolute.
@@ -88,13 +94,7 @@ override BINDIRBASE     := $(abspath $(BINDIRBASE))
 override BINDIR         := $(abspath $(BINDIR))
 override PKGDIRBASE     := $(abspath $(PKGDIRBASE))
 override DLCACHE_DIR    := $(abspath $(DLCACHE_DIR))
-
-# Keep standard make behavior for new variables
-__DIRECTORY_VARIABLES += \
-  BOARDSDIR \
-  #
-
-BOARDSDIR               := $(abspath $(BOARDSDIR))
+override EXTRA_BOARDS   := $(foreach dir,$(EXTRA_BOARDS),$(abspath $(dir)))
 
 # Ensure that all directories are set and don't contain spaces.
 ifneq (, $(filter-out 1, $(foreach v,$(__DIRECTORY_VARIABLES),$(words $($(v))))))
@@ -159,18 +159,21 @@ else
 
 all: link
 
-# Include Board and CPU configuration, if BOARD is not found in BOARDSDIR
-# e.g. when set by the environment fallback to searching in RIOTBOARD
-ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
-  ifneq ($(RIOTBOARD),$(BOARDSDIR))
-    # The specified board $(BOARD) was not found in $(BOARDSDIR) fallback to RIOTBOARD
-    BOARDSDIR = $(RIOTBOARD)
-  endif
-  ifeq ($(RIOTBOARD),$(BOARDSDIR))
-    ifeq (,$(wildcard $(BOARDSDIR)/$(BOARD)/.))
-      $(error The specified board $(BOARD) does not exist.)
-    endif
-  endif
+# Folders to search: First the external boards, than the official
+BOARDSDIRS := $(EXTRA_BOARDS) $(RIOTBOARD)
+
+# Take the first folder in $(BOARDSDIRS) that contains a folder named $(BOARD)
+BOARDDIR := $(word 1,$(foreach dir,$(BOARDSDIRS),$(wildcard $(dir)/$(BOARD)/.)))
+# Sanitize folder
+BOARDDIR := $(abspath $(BOARDDIR))
+
+# Also provide BOARDSDIR for compatibility and for accessing common folders
+# (e.g. include $(BOARDSDIR)/common/external_common/Makefile.dep)
+BOARDSDIR := $(dir $(BOARDDIR))
+
+ifeq (,$(BOARDDIR))
+  $(info Folders searched for the board: $(BOARDSDIRS))
+  $(error The specified board $(BOARD) does not exist.)
 endif
 
 include $(RIOTMAKE)/info.inc.mk
@@ -332,8 +335,8 @@ include $(RIOTMAKE)/pseudomodules.inc.mk
 include $(RIOTMAKE)/defaultmodules.inc.mk
 
 # Include Board and CPU configuration
-INCLUDES += $(addprefix -I,$(wildcard $(BOARDSDIR)/$(BOARD)/include))
-include $(BOARDSDIR)/$(BOARD)/Makefile.include
+INCLUDES += $(addprefix -I,$(wildcard $(BOARDDIR)/include))
+include $(BOARDDIR)/Makefile.include
 INCLUDES += -I$(RIOTCPU)/$(CPU)/include
 include $(RIOTCPU)/$(CPU)/Makefile.include
 
