@@ -3,7 +3,7 @@ RIOTBOARD ?= $(or $(RIOTBASE),$(CURDIR))/boards
 BOARDSDIRS ?= $(EXTERNAL_BOARD_DIRS) $(RIOTBOARD)
 
 # List all boards in a directory
-# By default, all directories in BOARDSDIR except 'common'
+# By default, all directories in board directory except 'common'
 #   use 'wildcard */.' to only list directories
 _get_boards_in_directory = $(filter-out common,$(patsubst $1/%/.,%,$(wildcard $1/*/.)))
 
