@@ -75,8 +75,11 @@ ifneq ($(abspath $(RIOTBASE)/boards),$(abspath $(RIOTBOARD)))
 endif
 
 ifneq (,$(BOARDSDIR))
-  $(warning Using BOARDSDIR is deprecated use EXTERNAL_BOARD_DIRS instead)
-  $(info EXTERNAL_BOARD_DIRS can contain multiple folders separated by space)
+  # Only warn users, not the CI.
+  ifneq ($(RIOT_CI_BUILD),1)
+    $(warning Using BOARDSDIR is deprecated use EXTERNAL_BOARD_DIRS instead)
+    $(info EXTERNAL_BOARD_DIRS can contain multiple folders separated by space)
+  endif
   EXTERNAL_BOARD_DIRS += $(BOARDSDIR)
 endif
 
