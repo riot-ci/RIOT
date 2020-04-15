@@ -36,7 +36,7 @@ info-build:
 	@echo ''
 	@echo 'RIOTBASE:    $(RIOTBASE)'
 	@echo 'BOARDDIR:    $(BOARDDIR)'
-	@echo 'EXTRA_BOARDS:$(EXTRA_BOARDS)'
+	@echo 'EXTERNAL_BOARD_DIRS:$(EXTERNAL_BOARD_DIRS)'
 	@echo 'RIOTCPU:     $(RIOTCPU)'
 	@echo 'RIOTPKG:     $(RIOTPKG)'
 	@echo ''
