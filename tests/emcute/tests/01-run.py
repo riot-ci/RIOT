@@ -13,6 +13,7 @@ import re
 import socket
 import sys
 import subprocess
+import threading
 import time
 
 from scapy.all import Automaton, ATMT, log_runtime, MTU, raw, SimpleSocket
@@ -33,6 +34,7 @@ class MQTTSNServer(Automaton):
             super(MQTTSNServer.MQTTSNServerSocket, self)\
                 .__init__(*args, **kwargs)
             self.server = server
+            self.send_lock = threading.Lock()
 
         def recv(self, x=MTU):
             pkt, sa = self.ins.recvfrom(x)
@@ -44,7 +46,11 @@ class MQTTSNServer(Automaton):
             try:
                 sx = raw(x)
                 x.sent_time = time.time()
+                # wait if last sendto was less than .06 seconds ago
+                self.send_lock.acquire()
                 self.outs.sendto(sx, self.server.last_remote)
+                # add small delay between each send to not overwhelm ethos
+                threading.Timer(.06, self.send_lock.release).start()
             except socket.error as msg:
                 log_runtime.error(msg)
 
