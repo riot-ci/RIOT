@@ -122,7 +122,7 @@ endif
 .PHONY: host-tools
 
 host-tools:
-	$(Q)env -u CC -u CFLAGS make -C $(RIOTTOOLS)
+	env -u CC -u CFLAGS make -C $(RIOTTOOLS)
 
 # define native specific targets to only run UHCP daemon when required
 ifneq (,$(filter native,$(BOARD)))
