@@ -25,6 +25,7 @@ TEST_INTERACTIVE_DELAY = int(os.environ.get('TEST_INTERACTIVE_DELAY') or 1)
 
 SERVER_PORT = 1883
 MODES = set(["pub", "sub", "sub_w_reg"])
+INTER_PACKET_GAP = 0.07
 TIMEOUT = 1
 
 
@@ -46,11 +47,13 @@ class MQTTSNServer(Automaton):
             try:
                 sx = raw(x)
                 x.sent_time = time.time()
-                # wait if last sendto was less than .06 seconds ago
+                # wait if last sendto was less than INTER_PACKET_GAP seconds
+                # ago
                 self.send_lock.acquire()
                 self.outs.sendto(sx, self.server.last_remote)
                 # add small delay between each send to not overwhelm ethos
-                threading.Timer(.06, self.send_lock.release).start()
+                threading.Timer(INTER_PACKET_GAP,
+                                self.send_lock.release).start()
             except socket.error as msg:
                 log_runtime.error(msg)
 
