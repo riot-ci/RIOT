@@ -27,6 +27,7 @@
 
 #include "assert.h"
 #include "net/gcoap.h"
+#include "net/nanocoap/cache.h"
 #include "net/sock/async/event.h"
 #include "net/sock/util.h"
 #include "mutex.h"
@@ -265,6 +266,26 @@ static void _on_resp_timeout(void *arg) {
     }
 }
 
+static unsigned _nanocoap_build_response_from_cache(nanocoap_cache_entry_t *ce,
+                                                    coap_pkt_t *pdu,
+                                                    uint8_t *buf,
+                                                    size_t len)
+{
+    /* Use the same code from the cached content. Use other header
+     * fields from the incoming request */
+    gcoap_resp_init(pdu, buf, len, ce->response_pkt.hdr->code);
+    /* copy all options and possible payload from the cached response
+     * to the new response */
+    unsigned header_len_req = coap_get_total_hdr_len(pdu);
+    unsigned header_len_cached = coap_get_total_hdr_len(&ce->response_pkt);
+    unsigned opt_payload_len = ce->response_len - header_len_cached;
+
+    memcpy((buf + header_len_req),
+           (ce->response_buf + header_len_cached),
+           opt_payload_len);
+    return header_len_req + opt_payload_len;
+}
+
 /*
  * Main request handler: generates response PDU in the provided buffer.
  *
@@ -369,7 +390,29 @@ static size_t _handle_req(coap_pkt_t *pdu, uint8_t *buf, size_t len,
         return -1;
     }
 
-    ssize_t pdu_len = resource->handler(pdu, buf, len, resource->context);
+    /* perform a cache lookup if compiled with module nanocoap_cache */
+    uint8_t cache_key[SHA256_DIGEST_LENGTH];
+    nanocoap_cache_key_generate(pdu, cache_key);
+    nanocoap_cache_entry_t *ce = nanocoap_cache_key_lookup(cache_key);
+
+    ssize_t pdu_len;
+    uint64_t now = xtimer_now_usec64();
+
+    /* cache hit and cache entry is not stale */
+    if (ce && (ce->max_age > now)) {
+        /* use response from cache */
+        pdu_len = _nanocoap_build_response_from_cache(ce, pdu, buf, len);
+    }
+    /* cache miss or cache entry is stale */
+    else {
+        pdu_len = resource->handler(pdu, buf, len, resource->context);
+
+        /* pdu used to be the request, it is the response now */
+        /* with a proxy implementation, this call has to be moved to
+         * the response receiption routine of that proxy */
+        nanocoap_cache_process(cache_key, pdu, pdu_len);
+    }
+
     if (pdu_len < 0) {
         pdu_len = gcoap_response(pdu, buf, len,
                                  COAP_CODE_INTERNAL_SERVER_ERROR);
@@ -630,6 +673,8 @@ kernel_pid_t gcoap_init(void)
     memset(&_coap_state.resend_bufs[0], 0, sizeof(_coap_state.resend_bufs));
     /* randomize initial value */
     atomic_init(&_coap_state.next_message_id, (unsigned)random_uint32());
+
+    nanocoap_cache_init();
 
     return _pid;
 }
