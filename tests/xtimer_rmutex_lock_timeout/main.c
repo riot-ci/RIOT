@@ -115,15 +115,11 @@ void *test_thread(void *arg)
     rmutex_t *test_rmutex = (rmutex_t *)arg;
     msg_t msg;
 
-    puts("THREAD low prio: start");
-
     rmutex_lock(test_rmutex);
     thread_wakeup(main_thread_pid);
 
-    puts("THREAD low prio: unlocking");
     rmutex_unlock(test_rmutex);
 
-    puts("THREAD low prio: exiting low");
     msg_send_sched_task_exit(&msg, main_thread_pid);
 }
 
@@ -253,7 +249,6 @@ static int cmd_test_xtimer_rmutex_lock_timeout_low_prio_thread(
     (void)second_t_pid;
     thread_sleep();
 
-    puts("MAIN THREAD: calling xtimer_rmutex_lock_timeout");
     if (xtimer_rmutex_lock_timeout(&test_rmutex, LONG_RMUTEX_TIMEOUT) == 0) {
         /* rmutex has to be locked once */
         if (atomic_load_explicit(&test_rmutex.owner,
@@ -272,7 +267,6 @@ static int cmd_test_xtimer_rmutex_lock_timeout_low_prio_thread(
 
     /* to end the created thread */
     msg_t msg;
-    puts("MAIN THREAD: waiting for created thread to end");
     msg_receive(&msg);
 
     /* to make the test easier to read */
