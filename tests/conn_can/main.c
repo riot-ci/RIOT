@@ -127,7 +127,7 @@ static int _send(int argc, char **argv, bool not_rtr)
         return 1;
     }
 
-    if(not_rtr) {
+    if (not_rtr) {
         for (int i = 0; i < frame.can_dlc; i++) {
             frame.data[i] = strtol(argv[4 + i], NULL, 16);
         }
