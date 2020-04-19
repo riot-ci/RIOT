@@ -115,7 +115,7 @@ static int _send(int argc, char **argv, bool not_rtr)
         return 1;
     }
 
-    if(not_rtr) {
+    if (not_rtr) {
         frame.can_id = strtoul(argv[3], NULL, 16);
         frame.can_dlc = argc - 4;
     } else {
