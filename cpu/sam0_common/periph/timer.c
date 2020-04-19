@@ -83,6 +83,9 @@ static uint8_t _get_prescaler(unsigned long freq_out, unsigned long freq_in)
         }
     }
 
+    /* fail if output frequency can't be derived from input frequency */
+    assert(freq_in == freq_out);
+
     return scale;
 }
 
