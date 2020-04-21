@@ -176,8 +176,8 @@ int cmd_i2c_gpio(int argc, char **argv)
     gpio_t sda_pin = i2c_pin_sda(dev);
     gpio_t scl_pin = i2c_pin_scl(dev);
 
-    printf("Command: i2c_deinit(%i)\n", dev);
-    i2c_deinit(dev);
+    printf("Command: i2c_deinit_pins(%i)\n", dev);
+    i2c_deinit_pins(dev);
 
     gpio_init(sda_pin, GPIO_OUT);
     gpio_init(scl_pin, GPIO_OUT);
@@ -196,8 +196,8 @@ int cmd_i2c_gpio(int argc, char **argv)
 
     xtimer_sleep(1);
 
-    printf("Command: i2c_init(%i)\n", dev);
-    i2c_init(dev);
+    printf("Command: i2c_init_pins(%i)\n", dev);
+    i2c_init_pins(dev);
 
     printf("Success: i2c_%i re-init\n", dev);
     return 0;
