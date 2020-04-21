@@ -304,11 +304,6 @@ uint64_t xtimer_left_usec(const xtimer_t *timer)
     uint64_t now_us = xtimer_now_usec64();
     irq_restore(state);
 
-    if (t.offset == 0 && t.long_offset == 0 &&
-            t.start_time == 0 && t.long_start_time == 0) {
-        return 0;
-    }
-
     uint64_t start_us = _xtimer_usec_from_ticks64(
         ((uint64_t)t.long_start_time << 32) | t.start_time);
     uint64_t target_us = start_us + _xtimer_usec_from_ticks64(
