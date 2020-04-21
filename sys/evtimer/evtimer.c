@@ -115,13 +115,8 @@ static void _update_timer(evtimer_t *evtimer)
 static uint32_t _get_offset(xtimer_t *timer)
 {
     uint64_t left = xtimer_left_usec(timer);
-    if (!left) {
-        return 0;
-    }
-    else {
-        /* add half of 125 so integer division rounds to nearest */
-        return div_u64_by_125((left >> 3) + 62);
-    }
+    /* add half of 125 so integer division rounds to nearest */
+    return div_u64_by_125((left >> 3) + 62);
 }
 
 static void _update_head_offset(evtimer_t *evtimer)
