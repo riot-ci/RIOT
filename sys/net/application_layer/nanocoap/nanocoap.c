@@ -922,14 +922,14 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags)
     return pkt->payload - (uint8_t *)pkt->hdr;
 }
 
-ssize_t coap_payload_add(coap_pkt_t *pkt, const void *data, size_t len)
+ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len)
 {
     if (pkt->payload_len < len) {
         return -ENOMEM;
     }
 
     memcpy(pkt->payload, data, len);
-    coap_payload_advance(pkt, len);
+    coap_payload_advance_bytes(pkt, len);
 
     return len;
 }

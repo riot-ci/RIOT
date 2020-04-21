@@ -1482,7 +1482,7 @@ void coap_pkt_init(coap_pkt_t *pkt, uint8_t *buf, size_t len, size_t header_len)
  * @param[out]   pkt        pkt to which payload was added
  * @param[in]    len        length of payload
  */
-static inline void coap_payload_advance(coap_pkt_t *pkt, size_t len)
+static inline void coap_payload_advance_bytes(coap_pkt_t *pkt, size_t len)
 {
     pkt->payload += len;
     pkt->payload_len -= len;
@@ -1500,7 +1500,7 @@ static inline void coap_payload_advance(coap_pkt_t *pkt, size_t len)
  * This is just a convenience function, you can also directly write
  * to `pkt->payload` if you have a function that outputs payload to
  * a buffer.
- * In this case you should instead call @ref coap_payload_advance.
+ * In this case you should instead call @ref coap_payload_advance_bytes.
  *
  * @param[out]   pkt        pkt to add payload to
  * @param[in]    data       payload data
@@ -1509,7 +1509,7 @@ static inline void coap_payload_advance(coap_pkt_t *pkt, size_t len)
  * @returns      number of paylad bytes added on success
  * @returns     <0 on error
  */
-ssize_t coap_payload_add(coap_pkt_t *pkt, const void *data, size_t len);
+ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len);
 
 /**
  * @brief   Create CoAP reply (convenience function)
