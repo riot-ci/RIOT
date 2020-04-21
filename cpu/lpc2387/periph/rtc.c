@@ -57,7 +57,7 @@ void rtc_init(void)
      * after cold boot or external reset.
      */
     if ((RSIR == RSIR_POR) || (RSIR == (RSIR_POR | RSIR_EXTR))) {
-        struct tm localt = { .tm_year = 70 };
+        struct tm localt = { .tm_year = 1970 };
         rtc_set_time(&localt);
     }
 
@@ -88,7 +88,7 @@ int rtc_set_time(struct tm *localt)
     RTC_DOW = localt->tm_wday;
     RTC_DOY = localt->tm_yday;
     RTC_MONTH = localt->tm_mon + 1;
-    RTC_YEAR = localt->tm_year;
+    RTC_YEAR = localt->tm_year + 1900;
 
     return 0;
 }
@@ -103,7 +103,7 @@ int rtc_get_time(struct tm *localt)
         localt->tm_wday = RTC_DOW;
         localt->tm_yday = RTC_DOY;
         localt->tm_mon = RTC_MONTH - 1;
-        localt->tm_year = RTC_YEAR;
+        localt->tm_year = RTC_YEAR - 1900;
         localt->tm_isdst = -1; /* not available */
         return 0;
     }
@@ -124,7 +124,7 @@ int rtc_set_alarm(struct tm *localt, rtc_alarm_cb_t cb, void *arg)
         RTC_ALDOW = localt->tm_wday;
         RTC_ALDOY = localt->tm_yday;
         RTC_ALMON = localt->tm_mon + 1;
-        RTC_ALYEAR = localt->tm_year;
+        RTC_ALYEAR = localt->tm_year + 1900;
         RTC_AMR = 0;                                            /* set which alarm fields to check */
         DEBUG("alarm set %2lu.%2lu.%4lu  %2lu:%2lu:%2lu\n",
               RTC_ALDOM, RTC_ALMON, RTC_ALYEAR, RTC_ALHOUR, RTC_ALMIN, RTC_ALSEC);
@@ -151,7 +151,7 @@ int rtc_get_alarm(struct tm *localt)
         localt->tm_wday = RTC_ALDOW;
         localt->tm_yday = RTC_ALDOY;
         localt->tm_mon = RTC_ALMON - 1;
-        localt->tm_year = RTC_ALYEAR;
+        localt->tm_year = RTC_ALYEAR - 1900;
         localt->tm_isdst = -1; /* not available */
 
         return 0;
