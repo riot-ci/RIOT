@@ -161,7 +161,7 @@ int fxos8700_read(const fxos8700_t* dev, fxos8700_measurement_t* acc,
 
     /* Read accelerometer */
     if (acc) {
-#if FXOS8700_USE_ACC_RAW_VALUES
+#if CONFIG_FXOS8700_USE_ACC_RAW_VALUES
         acc->x = (int16_t) ((data[0] << 8) | data[1]) >> 2;
         acc->y = (int16_t) ((data[2] << 8) | data[3]) >> 2;
         acc->z = (int16_t) ((data[4] << 8) | data[5]) >> 2;

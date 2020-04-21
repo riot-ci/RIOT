@@ -42,7 +42,7 @@ static int read_acc(const void *dev, phydat_t *res)
         /* Read failure */
         return -ECANCELED;
     }
-#if FXOS8700_USE_ACC_RAW_VALUES
+#if CONFIG_FXOS8700_USE_ACC_RAW_VALUES
     res->unit = UNIT_NONE;
     res->scale = 0;
 #else

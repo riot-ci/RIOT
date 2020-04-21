@@ -47,8 +47,8 @@ extern "C" {
  * If set to 0, measurements will be converted to mg.
  * If set to 1, raw adc readings will be returned.
  */
-#ifndef FXOS8700_USE_ACC_RAW_VALUES
-#define FXOS8700_USE_ACC_RAW_VALUES (0)
+#ifndef CONFIG_FXOS8700_USE_ACC_RAW_VALUES
+#define CONFIG_FXOS8700_USE_ACC_RAW_VALUES (0)
 #endif
 /** @} */
 
