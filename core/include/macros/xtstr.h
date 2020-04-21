@@ -28,7 +28,7 @@ extern "C" {
 /**
  * @def     XTSTR
  *
- * @brief   A function to return the string respresentation of x
+ * @brief   A macro to return the string respresentation of x
  */
 #ifndef XTSTR
 #define _XTSTR(x)    # x
