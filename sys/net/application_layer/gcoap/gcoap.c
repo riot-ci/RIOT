@@ -674,7 +674,9 @@ kernel_pid_t gcoap_init(void)
     /* randomize initial value */
     atomic_init(&_coap_state.next_message_id, (unsigned)random_uint32());
 
-    nanocoap_cache_init();
+    if (IS_ACTIVE(MODULE_NANOCOAP_CACHE)) {
+        nanocoap_cache_init();
+    }
 
     return _pid;
 }
