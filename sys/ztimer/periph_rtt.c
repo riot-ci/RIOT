@@ -19,6 +19,7 @@
  *
  * @}
  */
+#include "assert.h"
 #include "periph/rtt.h"
 #include "ztimer/periph_rtt.h"
 
@@ -50,7 +51,8 @@ static void _ztimer_periph_rtt_set(ztimer_clock_t *clock, uint32_t val)
     }
 
     unsigned state = irq_disable();
-    rtt_set_alarm(rtt_get_counter() + val, _ztimer_periph_rtt_callback, clock);
+    /* warning: RTT_MAX_VALUE needs to be (2^n) - 1 */
+    rtt_set_alarm((rtt_get_counter() + val) & RTT_MAX_VALUE, _ztimer_periph_rtt_callback, clock);
     irq_restore(state);
 }
 
