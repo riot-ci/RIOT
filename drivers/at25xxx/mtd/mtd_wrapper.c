@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2220 ML!PA Consulting GmbH
+ * Copyright (C) 2020 ML!PA Consulting GmbH
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -8,12 +8,12 @@
  */
 
 /**
- * @ingroup     drivers_mtd_spi_eeprom
+ * @ingroup     drivers_at25xxx_mtd_wrapper
  * @{
  *
  * @file
- * @brief       Driver for using spi eeprom (like AT25xxx, M95xxx, 25AAxxx, 25LCxxx,
- *              CAT25xxx & BR25Sxxx) as mtd
+ * @brief       MTD wrapper for spi eeprom (like AT25xxx, M95xxx, 25AAxxx, 25LCxxx,
+ *              CAT25xxx & BR25Sxxx)
  *
  * @author      Johannes Koster <johannes.koster@ml-pa.com>
  *
@@ -22,7 +22,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "mtd.h"
-#include "mtd_spi_eeprom.h"
+#include "at25xxx/mtd_wrapper.h"
 #include "at25xxx.h"
 #include "at25xxx_params.h"
 

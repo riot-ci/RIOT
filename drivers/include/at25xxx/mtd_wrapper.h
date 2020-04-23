@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2220 ML!PA Consulting GmbH
+ * Copyright (C) 2020 ML!PA Consulting GmbH
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,20 +7,20 @@
  */
 
 /**
- * @defgroup    drivers_mtd_spi_eeprom mtd wrapper for spi_eeprom like at25xxx or M95xxx
+ * @defgroup    drivers_at25xxx_mtd_wrapper
  * @ingroup     drivers_storage
- * @brief       Driver for SPI-EEPROMs using mtd interface
+ * @brief       MTD wrapper for SPI-EEPROMs
  *
  * @{
  *
  * @file
- * @brief       Interface definition for mtd_spi_eeprom driver
+ * @brief       Interface definition for at25xxx_mtd_wrapper
  *
  * @author      Johannes Koster <johannes.koster@ml-pa.com>
  */
 
-#ifndef MTD_SPI_EEPROM_H
-#define MTD_SPI_EEPROM_H
+#ifndef MTD_WRAPPER_H
+#define MTD_WRAPPER_H
 
 #include <stdint.h>
 
