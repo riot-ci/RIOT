@@ -63,11 +63,7 @@ static int mtd_spi_eeprom_read(mtd_dev_t *dev, void *buff, uint32_t addr,
 {
     DEBUG("mtd_eeprom_read: addr:%" PRIu32 " size:%" PRIu32 "\n", addr, size);
     mtd_spi_eeprom_t *mtd_eeprom = (mtd_spi_eeprom_t*)dev;
-    size_t res = at25xxx_read(mtd_eeprom->spi_eeprom, addr, buff, size);
-    if (res == size) {
-        return res;
-    }
-    return -EIO;
+    return at25xxx_read(mtd_eeprom->spi_eeprom, addr, buff, size);
 }
 
 static int mtd_spi_eeprom_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
@@ -75,12 +71,8 @@ static int mtd_spi_eeprom_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
 {
     DEBUG("mtd_eeprom_write: addr:%" PRIu32 " size:%" PRIu32 "\n", addr, size);
     mtd_spi_eeprom_t *mtd_eeprom = (mtd_spi_eeprom_t*)dev;
-    size_t res = at25xxx_write(mtd_eeprom->spi_eeprom, addr,
+    return at25xxx_write(mtd_eeprom->spi_eeprom, addr,
                                     buff, size);
-    if (res) {
-        return res;
-    }
-    return -EIO;
 }
 
 static int mtd_spi_eeprom_erase(mtd_dev_t *dev,
@@ -89,11 +81,7 @@ static int mtd_spi_eeprom_erase(mtd_dev_t *dev,
 {
     DEBUG("mtd_spi_eeprom_erase: addr:%" PRIu32 " size:%" PRIu32 "\n", addr, size);
     mtd_spi_eeprom_t *mtd_eeprom = (mtd_spi_eeprom_t*)dev;
-    size_t res = at25xxx_clear(mtd_eeprom->spi_eeprom, addr, size);
-    if (res == size) {
-        return 0;
-    }
-    return -ENOTSUP;
+    return at25xxx_clear(mtd_eeprom->spi_eeprom, addr, size);
 }
 
 static int mtd_spi_eeprom_power(mtd_dev_t *dev, enum mtd_power_state power)
