@@ -22,3 +22,7 @@ rsource "hdc1000/Kconfig"
 rsource "mag3110/Kconfig"
 rsource "mma8x5x/Kconfig"
 endmenu # Sensor Device Drivers
+
+menu "Storage Device Drivers"
+rsource "mtd_sdcard/Kconfig"
+endmenu # Storage Device Drivers
