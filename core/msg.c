@@ -25,6 +25,7 @@
 #include <assert.h>
 #include "sched.h"
 #include "msg.h"
+#include "msg_bus.h"
 #include "list.h"
 #include "thread.h"
 #if MODULE_CORE_THREAD_FLAGS
@@ -235,6 +236,47 @@ int msg_send_int(msg_t *m, kernel_pid_t target_pid)
     }
 
     return res;
+}
+
+int msg_send_bus(msg_t *m, list_node_t *bus)
+{
+    const bool in_irq = irq_is_in();
+    int count = 0;
+    bool sched = false;
+    uint32_t event_mask = MSG_BUS_ID_MASK(m->type);
+
+    m->sender_pid = in_irq ? KERNEL_PID_ISR : sched_active_pid;
+
+    unsigned state = irq_disable();
+
+    for (list_node_t *e = bus->next; e; e = e->next) {
+        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, _internal.next);
+
+        if ((subscriber->_internal.event_mask & event_mask) == 0) {
+            continue;
+        }
+
+        for (int i = 0; i < subscriber->num_events; ++i) {
+            if (subscriber->events[i] != m->type) {
+                continue;
+            }
+
+            if (_msg_send_oneway(m, subscriber->_internal.pid, &sched) > 0) {
+                ++count;
+            }
+            break;
+        }
+    }
+
+    irq_restore(state);
+
+    if (sched && in_irq) {
+        sched_context_switch_request = 1;
+    } else if (sched && !in_irq) {
+        thread_yield_higher();
+    }
+
+    return count;
 }
 
 int msg_send_receive(msg_t *m, msg_t *reply, kernel_pid_t target_pid)
