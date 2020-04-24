@@ -32,7 +32,7 @@ config OPT3001_CONVERSION_TIME_100
     bool "100 ms"
 
 config OPT3001_CONVERSION_TIME_800
-    bool "800ms"
+    bool "800 ms"
 
 endchoice
 
