@@ -22,7 +22,7 @@ config OPT3001_I2C_ADDRESS
         to VDD. For more information refer I2C Address Selection (7.3.4.1) in Datasheet.
 
 choice
-    bool "OPT3001 conversion time[ms]"
+    bool "OPT3001 conversion time"
     default OPT3001_CONVERSION_TIME_800
     help
         OPT3001 is capable of integrating results over either 100 ms or 800 ms
