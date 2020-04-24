@@ -29,7 +29,7 @@ choice
         time periods. Default value is set to 800 ms
 
 config OPT3001_CONVERSION_TIME_100
-    bool "100ms"
+    bool "100 ms"
 
 config OPT3001_CONVERSION_TIME_800
     bool "800ms"
