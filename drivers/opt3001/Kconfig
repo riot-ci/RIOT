@@ -1,0 +1,39 @@
+# Copyright (c) 2020 Freie Universitaet Berlin
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+menuconfig KCONFIG_MODULE_OPT3001
+    bool "Configure OPT3001 driver"
+    depends on MODULE_OPT3001
+    help
+        Configure the OPT3001 driver using Kconfig.
+
+if KCONFIG_MODULE_OPT3001
+
+config OPT3001_I2C_ADDRESS
+    hex "Default I2C address"
+    range 0x44 0x47
+    default 0x45
+    help
+        OPT3001 allows for upto 4 devices on Single Bus. The value depends on
+        the state of ADDR Pin. Default value (0x45) corresponds to ADDR pin tied
+        to VDD. For more information refer I2C Address Selection (7.3.4.1) in Datasheet.
+
+choice
+    bool "OPT3001 conversion time"
+    default OPT3001_CONVERSION_TIME_800
+    help
+        OPT3001 is capable of integrating results over either 100 ms or 800 ms
+        time periods.
+
+config OPT3001_CONVERSION_TIME_100
+    bool "100 ms"
+
+config OPT3001_CONVERSION_TIME_800
+    bool "800 ms"
+
+endchoice
+
+endif # KCONFIG_MODULE_OPT3001
