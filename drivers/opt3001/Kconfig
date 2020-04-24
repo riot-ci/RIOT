@@ -26,7 +26,7 @@ choice
     default OPT3001_CONVERSION_TIME_800
     help
         OPT3001 is capable of integrating results over either 100 ms or 800 ms
-        time periods. Default value is set to 800 ms
+        time periods.
 
 config OPT3001_CONVERSION_TIME_100
     bool "100 ms"
