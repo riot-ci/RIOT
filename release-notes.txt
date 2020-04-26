@@ -39,18 +39,16 @@ insertions and TBD deletions (-).
 
 Notations used below:
 =====================
-```
+
     + means new feature/item
     * means modified feature/item
     - means removed feature/item
-```
 
 New features and changes
 ========================
 
 System libraries
 ----------------
-```
 * core:
     + add optional support for executable space protections
     * sched: sched.h: remove not needed bitarithm include to avoid conflict
@@ -84,11 +82,9 @@ System libraries
     + add xtimer_set_timeout_flag64()
     * xtimer_mutex_lock_timeout fix with short timeout
 + sys/ztimer: initial import
-```
 
 Networking
 ----------
-```
 * net/coap:
     * deprecate gcoap_add_qstring() and update uses
     + Packet API function to add Uri-Query option
@@ -135,11 +131,9 @@ Networking
     + amend with zero-copy receive functions
     * async: add optional callback argument
     * async_event: fix race-condition
-```
 
 Packages
 --------
-```
 + pkg/cmsis-nn: add support
 + pkg/cryptoauthlib: add support
 + pkg/libbase58: add support
@@ -158,11 +152,9 @@ Packages
 * pkg/tinydtls: remove receive buffer indirection via mbox
 * pkg/wolfssl: bump version to 4.3.0
 + pkg/yxml: add support Yxml XML parser library package
-```
 
 Boards
 ------
-```
 * boards: include common dfu logic where applicable
 + boards/adafruit-clue: add initial support
 * boards/arduino-mkr: feather-m0: sodaq-*: provide stdio over USB and
@@ -197,11 +189,9 @@ Boards
 * doc/doxygen:
     + add 'Creating boards' section
     * improvements on various board's documentation
-```
 
 CPU
 ---
-```
 * cpu:
     * add CPU feature for stack smash protections
     + add UART RX implementation on PIC32 devices
@@ -263,11 +253,9 @@ CPU
     * eth: fix address and multicast filtering
 * cpu/stm32f1: make RTC Y2038 safe
 + cpu/stm32wb: add support
-```
 
 Device Drivers
 --------------
-```
 * doc: various fixes in driver documentation
 + drivers/apds99xx: add support for APDS99XX ambient light and proximity sensors
 + drivers/at24cxxx: add support for AT24Cxxx family of EEPROMs
@@ -297,11 +285,9 @@ Device Drivers
 * drivers/ws281x:
     + add support for esp32
     + add VT100 backend for native
-```
 
 Build System / Tooling
 ----------------------
-```
 * build system: Restructure dependency resolution
 * dist:
     * cc2538-bsl: use upstream version
@@ -336,11 +322,9 @@ Build System / Tooling
     * pkg/local.mk: add FORCE target to .PHONY
     + provide CPU as a feature
     * use simple expansion for widely used variables
-```
 
 Testing
 -------
-```
 * tests:
     + add check_unittests helper function
     + add interactive_sync adapted to shell
@@ -356,7 +340,6 @@ Testing
 * tests/gnrc_rpl_srh: use AsyncSniffer for sniffing
 * tests/periph_rtc: fix system locks in IS
 + tests/xtimer_overhead: initial commit
-```
 
 Kconfig migration
 -----------------
@@ -364,7 +347,6 @@ Migration to Kconfig as configuration tool is currently on phase 1. Which means
 that we are moving configuration options from modules to Kconfig files, and
 leaving its use optional.
 
-```
 + doc: add Kconfig section
 * Kconfig:
     * add CPU and Board common symbols
@@ -384,24 +366,22 @@ leaving its use optional.
     + pkg/wakaama
     + sys/usbus
     + usbus/cdc/acm
-```
 
 API Changes
 ===========
 - SUIT: update to draft-ietf-v3
 - Makefile.include: remove support for make <4
 - net/gnrc_netif: implementation of dynamic GNRC_NETIF_NUMOF approach
+
 - net/sock: amend with zero-copy receive functions:
-```diff
+
 + /**
 +  * @brief   Releases the stack-internal buffer space provided by the
 +  *          `sock_*_recv_buf()` functions.
 +  * @param[in] buf_ctx   Stack-internal buffer context to release.
 +  */
 + void sock_recv_buf_free(void *buf_ctx);
-```
 
-```diff
 + /**
 +  * @brief Decrypts and provides stack-internal buffer space containing a
 +  *        message from a remote peer.
@@ -409,55 +389,44 @@ API Changes
 +  */
 + ssize_t sock_dtls_recv_buf(sock_dtls_t *sock, sock_dtls_session_t *remote,
 +                            void **data, void **buf_ctx, uint32_t timeout);
-```
 
-```diff
 + /**
 + * @brief   Provides stack-internal buffer space containing an IPv4/IPv6
 + *          message from remote end point
 + */
 + ssize_t sock_ip_recv_buf(sock_ip_t *sock, void **data, void **buf_ctx,
 +                         uint32_t timeout, sock_ip_ep_t *remote);
-```
 
-```diff
 + /**
 +  * @brief   Provides stack-internal buffer space containing a UDP message from
 +  *          a remote end point
 +  */
 + ssize_t sock_udp_recv_buf(sock_udp_t *sock, void **data, void **buf_ctx,
 +                           uint32_t timeout, sock_udp_ep_t *remote);
-```
 
 - net/sock/async: add optional callback argument:
-```diff
+
 + * @param[in] arg   Argument provided when setting the callback using
 + *                  @ref sock_dtls_set_cb(). May be NULL.
   */
 - typedef void (*sock_dtls_cb_t)(sock_dtls_t *sock, sock_async_flags_t flags);
 + typedef void (*sock_dtls_cb_t)(sock_dtls_t *sock, sock_async_flags_t flags,
 +                                void *arg);
-```
 
-```diff
 + * @param[in] arg   Argument provided when setting the callback using
 + *                  @ref sock_ip_set_cb(). May be NULL.
   */
 - typedef void (*sock_ip_cb_t)(sock_ip_t *sock, sock_async_flags_t flags);
 + typedef void (*sock_ip_cb_t)(sock_ip_t *sock, sock_async_flags_t flags,
 +                              void *arg);
-```
 
-```diff
 + * @param[in] arg   Argument provided when setting the callback using
 + *                  @ref sock_tcp_set_cb(). May be NULL.
   */
 - typedef void (*sock_tcp_cb_t)(sock_tcp_t *sock, sock_async_flags_t flags);
 + typedef void (*sock_tcp_cb_t)(sock_tcp_t *sock, sock_async_flags_t flags,
 +                               void *arg);
-```
 
-```diff
 + * @param[in] arg   Argument provided when setting the callback using
 + *                  @ref sock_tcp_queue_set_cb(). May be NULL.
   */
@@ -465,19 +434,16 @@ API Changes
 -                                     sock_async_flags_t flags);
 +                                     sock_async_flags_t flags,
 +                                     void *arg);
-```
 
-```diff
 + * @param[in] arg   Argument provided when setting the callback using
 + *                  @ref sock_udp_set_cb(). May be NULL.
   */
 - typedef void (*sock_udp_cb_t)(sock_udp_t *sock, sock_async_flags_t type);
 + typedef void (*sock_udp_cb_t)(sock_udp_t *sock, sock_async_flags_t type,
 +                               void *arg);
-```
 
 - net/sock/dns: make sock_dns_query() return the length of the address:
-```diff
+
 /**
  * @brief Get IP address for DNS name
  *
@@ -487,10 +453,9 @@ API Changes
 + * @return      < 0 otherwise
  */
 int sock_dns_query(const char *domain_name, void *addr_out, int family);
-```
 
 - mtd_spi_nor: move const params to separate struct:
-```diff
+
 + /**
 +  * @brief Compile-time parameters for a serial flash device
 +  */
@@ -521,8 +486,6 @@ int sock_dns_query(const char *domain_name, void *addr_out, int family);
      uint8_t page_addr_shift;
      uint8_t sec_addr_shift;
  } mtd_spi_nor_t;
-
-```
 
 Deprecations
 ============
