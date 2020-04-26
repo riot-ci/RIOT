@@ -125,8 +125,8 @@ static const tc32_conf_t timer_config[] = {
 static const uart_conf_t uart_config[] = {
     {
         .dev      = &SERCOM2->USART,
-        .rx_pin   = GPIO_PIN(PA, 9),
-        .tx_pin   = GPIO_PIN(PA, 8),
+        .rx_pin   = GPIO_PIN(PA, 9),    /* D5 */
+        .tx_pin   = GPIO_PIN(PA, 8),    /* D4 */
         .mux      = GPIO_MUX_D,
         .rx_pad   = UART_PAD_RX_1,
         .tx_pad   = UART_PAD_TX_0,
@@ -135,8 +135,8 @@ static const uart_conf_t uart_config[] = {
     },
     {
         .dev      = &SERCOM0->USART,
-        .rx_pin   = GPIO_PIN(PA, 5),
-        .tx_pin   = GPIO_PIN(PA, 4),
+        .rx_pin   = GPIO_PIN(PA, 5),    /* D1 */
+        .tx_pin   = GPIO_PIN(PA, 4),    /* D0 */
         .mux      = GPIO_MUX_D,
         .rx_pad   = UART_PAD_RX_1,
         .tx_pad   = UART_PAD_TX_0,
@@ -169,11 +169,11 @@ static const spi_conf_t spi_config[] = {
         .mosi_pad = SPI_PAD_MOSI_0_SCK_1,
         .gclk_src = SAM0_GCLK_MAIN,
     },
-    {
+    {   /* D0 … D2 (user pins) */
         .dev      = &SERCOM0->SPI,
-        .miso_pin = GPIO_PIN(PA, 6),
-        .mosi_pin = GPIO_PIN(PA, 4),
-        .clk_pin  = GPIO_PIN(PA, 5),
+        .miso_pin = GPIO_PIN(PA, 6),    /* D2 */
+        .mosi_pin = GPIO_PIN(PA, 4),    /* D0 */
+        .clk_pin  = GPIO_PIN(PA, 5),    /* D1 */
         .miso_mux = GPIO_MUX_D,
         .mosi_mux = GPIO_MUX_D,
         .clk_mux  = GPIO_MUX_D,
@@ -194,8 +194,8 @@ static const i2c_conf_t i2c_config[] = {
     {
         .dev      = &(SERCOM2->I2CM),
         .speed    = I2C_SPEED_NORMAL,
-        .scl_pin  = GPIO_PIN(PA, 9),
-        .sda_pin  = GPIO_PIN(PA, 8),
+        .scl_pin  = GPIO_PIN(PA, 9),    /* D5 */
+        .sda_pin  = GPIO_PIN(PA, 8),    /* D4 */
         .mux      = GPIO_MUX_D,
         .gclk_src = SAM0_GCLK_MAIN,
         .flags    = I2C_FLAG_NONE
@@ -212,7 +212,10 @@ static const i2c_conf_t i2c_config[] = {
 #define RTT_FREQUENCY       (32768U)    /* in Hz. For changes see `rtt.c` */
 /** @} */
 
-/* ADC Default values */
+/**
+ * @name    ADC Default values
+ * @{
+ */
 #define ADC_PRESCALER                       ADC_CTRLB_PRESCALER_DIV512
 
 #define ADC_NEG_INPUT                       ADC_INPUTCTRL_MUXNEG_GND
