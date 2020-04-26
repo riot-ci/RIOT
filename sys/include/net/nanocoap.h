@@ -1512,6 +1512,31 @@ static inline void coap_payload_advance_bytes(coap_pkt_t *pkt, size_t len)
 ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len);
 
 /**
+ * @brief Add a single character to the payload data of the CoAP request
+ *
+ * This function is used to add single characters to a CoAP payload data. It
+ * checks whether the character can be added to the buffer and ignores if the
+ * payload area is already exhausted.
+ *
+ * @param[out]   pkt        pkt to add payload to
+ * @param[in]    c           character to write
+ *
+ * @returns      number of paylad bytes added on success (always one)
+ * @returns     <0 on error
+ */
+static inline ssize_t coap_payload_put_char(coap_pkt_t *pkt, char c)
+{
+    if (pkt->payload_len < 1) {
+        return -ENOMEM;
+    }
+
+    *pkt->payload++ = c;
+    --pkt->payload_len;
+
+    return 1;
+}
+
+/**
  * @brief   Create CoAP reply (convenience function)
  *
  * This is a simple wrapper that allows for building CoAP replies for simple
