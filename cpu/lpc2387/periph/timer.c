@@ -179,6 +179,10 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
         /* reset the timer */
         dev->TCR = 2;
         /* start the timer */
+        /* cppcheck-suppress redundantAssignment
+         * (reason: TCR is volatile control register.
+                    Bit 2 will put the timer into Reset
+                    Bit 1 will control if the timer is running) */
         dev->TCR = 1;
     }
 
