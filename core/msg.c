@@ -240,10 +240,8 @@ int msg_send_int(msg_t *m, kernel_pid_t target_pid)
 
 int msg_send_bus(msg_t *m, msb_bus_t *bus)
 {
-    assert(m->type < 32);
-
     const bool in_irq = irq_is_in();
-    const uint32_t event_mask = (1 << m->type);
+    const uint32_t event_mask = (1 << (m->type & 0x1F));
     int count = 0;
     bool sched = false;
 
@@ -251,7 +249,7 @@ int msg_send_bus(msg_t *m, msb_bus_t *bus)
 
     unsigned state = irq_disable();
 
-    for (msb_bus_t *e = bus->next; e; e = e->next) {
+    for (list_node_t *e = bus->subs.next; e; e = e->next) {
         msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
 
         if ((subscriber->event_mask & event_mask) == 0) {

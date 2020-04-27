@@ -32,22 +32,57 @@ extern "C" {
 /**
  * @brief A message bus is just a list of subscribers.
  */
-typedef list_node_t msb_bus_t;
-
-/**
- * @brief Static initializer for @ref msb_bus_t.
- */
-#define MSG_BUS_INIT    {0}
+typedef struct {
+    list_node_t subs;       /**< List of subscribers to the bus */
+    uint16_t id;            /**< Message Bus ID */
+} msb_bus_t;
 
 /**
  * @brief Message bus subscriber entry.
  *        Should not be modified by the user.
  */
 typedef struct {
-    msb_bus_t next;         /**< next subscriber */
+    list_node_t next;       /**< next subscriber */
     uint32_t event_mask;    /**< Bitmask of event classes */
     kernel_pid_t pid;       /**< Subscriber PID */
 } msg_bus_entry_t;
+
+/**
+ * @brief Initialize a message bus.
+ *
+ * Must be called by the owner of a ``msg_bus_t`` struct.
+ */
+void msg_bus_init(msb_bus_t *bus);
+
+/**
+ * @brief Get the message type of a message bus message.
+ *
+ * The `type` field of the`msg_t` also encodes the message bus ID,
+ * so use this function to get the real 5 bit message type.
+ *
+ * @param[in] msg           A message that was received over a bus
+ *
+ * @return                  The message type
+ */
+static inline uint8_t msg_bus_get_type(const msg_t *msg) {
+    return msg->type & 0x1F;
+}
+
+/**
+ * @brief Check if a message originates from a certain bus
+ *
+ * If a thread is attached to multiple message this function can be used
+ * to determine if a message originated from a certain bus.
+ *
+ * @param[in] bus           The bus to check for
+ * @param[in] msg           The received message
+ *
+ * @return                  True if the messages @p m was sent over @p bus
+ *                          False otherwise.
+ */
+static inline bool msg_from_bus(const msb_bus_t *bus, const msg_t *msg) {
+    return bus->id == (msg->type >> 5);
+}
 
 /**
  * @brief Attach a thread to a message bus.
@@ -62,14 +97,7 @@ typedef struct {
  * @param[in] bus           The message bus to attach to
  * @param[in] entry         Message bus subscriber entry
  */
-static inline void msg_bus_attach(msb_bus_t *bus, msg_bus_entry_t *entry)
-{
-    entry->next.next = NULL;
-    entry->event_mask = 0;
-    entry->pid = sched_active_pid;
-
-    list_add(bus, &entry->next);
-}
+void msg_bus_attach(msb_bus_t *bus, msg_bus_entry_t *entry);
 
 /**
  * @brief Remove a thread from a message bus.
@@ -81,9 +109,7 @@ static inline void msg_bus_attach(msb_bus_t *bus, msg_bus_entry_t *entry)
  * @param[in] bus           The message bus from which to detach
  * @param[in] entry         Message bus subscriber entry
  */
-static inline void msg_bus_detach(msb_bus_t *bus, msg_bus_entry_t *entry) {
-    list_remove(bus, &entry->next);
-}
+void msg_bus_detach(msb_bus_t *bus, msg_bus_entry_t *entry);
 
 /**
  * @brief Get the message bus entry for the current thread.
@@ -96,18 +122,7 @@ static inline void msg_bus_detach(msb_bus_t *bus, msg_bus_entry_t *entry) {
  * @return                  The subscriber entry for the current thread.
  *                          NULL if the thread is not attached to @p bus.
  */
-static inline msg_bus_entry_t* msg_bus_get_entry(msb_bus_t *bus) {
-    for (msb_bus_t *e = bus->next; e; e = e->next) {
-
-        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
-
-        if (subscriber->pid == sched_active_pid) {
-            return subscriber;
-        }
-    }
-
-    return NULL;
-}
+msg_bus_entry_t* msg_bus_get_entry(msb_bus_t *bus);
 
 /**
  * @brief Subscribe to an event on the message bus.
@@ -141,7 +156,7 @@ static inline void msg_bus_unsubscribe(msg_bus_entry_t *entry, uint8_t type)
  * @brief Post a pre-assembled message to a bus.
  *
  * This function sends a message to all threads listening on the bus which are
- * listening for messages of @p event_class with sub-ID @p event_id.
+ * listening for messages with the message type of @p m.
  *
  * It behaves identical to @see msg_bus_post, but sends a pre-defined message.
  *
@@ -171,7 +186,7 @@ static inline int msg_bus_post(msb_bus_t *bus, uint8_t type, char *arg)
     assert(type < 32);
 
     msg_t m = {
-        .type = type,
+        .type = type | ((bus->id) << 5),
         .content.ptr = arg,
     };
 
