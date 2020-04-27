@@ -238,33 +238,28 @@ int msg_send_int(msg_t *m, kernel_pid_t target_pid)
     return res;
 }
 
-int msg_send_bus(msg_t *m, list_node_t *bus)
+int msg_send_bus(msg_t *m, msb_bus_t *bus)
 {
+    assert(m->type < 32);
+
     const bool in_irq = irq_is_in();
+    const uint32_t event_mask = (1 << m->type);
     int count = 0;
     bool sched = false;
-    uint32_t event_mask = MSG_BUS_ID_MASK(m->type);
 
     m->sender_pid = in_irq ? KERNEL_PID_ISR : sched_active_pid;
 
     unsigned state = irq_disable();
 
-    for (list_node_t *e = bus->next; e; e = e->next) {
-        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, _internal.next);
+    for (msb_bus_t *e = bus->next; e; e = e->next) {
+        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
 
-        if ((subscriber->_internal.event_mask & event_mask) == 0) {
+        if ((subscriber->event_mask & event_mask) == 0) {
             continue;
         }
 
-        for (int i = 0; i < subscriber->num_events; ++i) {
-            if (subscriber->events[i] != m->type) {
-                continue;
-            }
-
-            if (_msg_send_oneway(m, subscriber->_internal.pid, &sched) > 0) {
-                ++count;
-            }
-            break;
+        if (_msg_send_oneway(m, subscriber->pid, &sched) > 0) {
+            ++count;
         }
     }
 

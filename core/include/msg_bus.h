@@ -30,103 +30,94 @@ extern "C" {
 #endif
 
 /**
- * @brief Message bus internal data structure.
- *        Should not be modified by the user.
+ * @brief A message bus is just a list of subscribers.
  */
-struct msg_bus_internal {
-    list_node_t next;       /**< next subscriber */
-    uint32_t event_mask;    /**< Bitmask of event classes */
-    kernel_pid_t pid;       /**< Subscriber PID */
-};
+typedef list_node_t msb_bus_t;
+
+/**
+ * @brief Static initializer for @ref msb_bus_t.
+ */
+#define MSG_BUS_INIT    {0}
 
 /**
  * @brief Message bus subscriber entry.
- *        This contains a list of all events that the thread will
- *        subscribe to.
+ *        Should not be modified by the user.
  */
 typedef struct {
-    struct msg_bus_internal _internal;  /**< Internal data structure  */
-    const uint16_t *events;             /**< Pointer to the array of events to subscribe to */
-    uint16_t num_events;                /**< Number of events in the array */
+    msb_bus_t next;         /**< next subscriber */
+    uint32_t event_mask;    /**< Bitmask of event classes */
+    kernel_pid_t pid;       /**< Subscriber PID */
 } msg_bus_entry_t;
 
 /**
- * @brief Generates a message type from Event Class and Event Type.
+ * @brief Attach a thread to a message bus.
  *
- * @param[in] c     The Event Class (5 bit)
- * @param[in] s     The Event Type  (11 bit)
+ * This attaches a message bus subscriber entry to a message bus.
+ * Subscribe to events on the bus using @ref msg_bus_detach.
+ * The thread will then receive events with a matching type that are
+ * posted on the bus.
+ *
+ * Events can be received with @ref msg_receive.
+ *
+ * @param[in] bus           The message bus to attach to
+ * @param[in] entry         Message bus subscriber entry
  */
-#define MSG_BUS_ID(c, s)    (((c) & 0x1F) | (((s) & 0x7FF) << 5))
+static inline void msg_bus_attach(msb_bus_t *bus, msg_bus_entry_t *entry)
+{
+    entry->next.next = NULL;
+    entry->event_mask = 0;
+    entry->pid = sched_active_pid;
 
-/**
- * @brief Generates the bit mask for an Event Class
- *
- * @param[in] c     The Event Class (5 bit)
- */
-#define MSG_BUS_ID_MASK(c)  (1 << ((c) & 0x1F))
-
-/**
- * @brief Get the Event Class from a message.
- *
- * @param[in] m     The message to read from.
- * @return          The Event Class of the message.
- */
-static inline uint8_t msg_bus_class(msg_t *m) {
-    return m->type & 0x1F;
+    list_add(bus, &entry->next);
 }
 
 /**
- * @brief Get the Event Type from a message.
- *
- * @param[in] m     The message to read from.
- * @return          The Event Type of the message.
- */
-static inline uint8_t msg_bus_type(msg_t *m) {
-    return m->type >> 5;
-}
-
-/**
- * @brief Subscribe to a message bus.
- *
- * This function subscribes the calling thread to the message bus @p bus.
- * When the thread calls @see msg_receive afterwards, it will receive
- * all events postet on the bus that match one of the message types in @p entry.
- *
- * @param[in] bus           The message bus to listen on
- * @param[in] entry         Subscriber entry, contains array of all events that
- *                          the thread should be woken for.
- */
-static inline void msg_bus_subscribe(list_node_t *bus, msg_bus_entry_t *entry) {
-    entry->_internal.next.next = NULL;
-    entry->_internal.pid = sched_active_pid;
-    entry->_internal.event_mask = 0;
-
-    for (int i = 0; i < entry->num_events; ++i) {
-        entry->_internal.event_mask |= MSG_BUS_ID_MASK(entry->events[i]);
-    }
-
-    list_add(bus, &entry->_internal.next);
-}
-
-/**
- * @brief Unsubscribe from a message bus.
+ * @brief Remove a thread from a message bus.
  *
  * This removes the calling thread from the message bus.
  *
  * @note Call this function before the thread terminates.
  *
- * @param[in] bus           The message bus from which to unsubscribe
+ * @param[in] bus           The message bus from which to detach
  */
-static inline void msg_bus_unsubscribe(list_node_t *bus) {
-    for (list_node_t *e = bus->next; e; e = e->next) {
+static inline void msg_bus_detach(msb_bus_t *bus) {
+    for (msb_bus_t *e = bus->next; e; e = e->next) {
 
-        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, _internal.next);
+        msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
 
-        if (subscriber->_internal.pid == sched_active_pid) {
-            list_remove(bus, &subscriber->_internal.next);
+        if (subscriber->pid == sched_active_pid) {
+            list_remove(bus, &subscriber->next);
             break;
         }
     }
+}
+
+/**
+ * @brief Subscribe to an event on the message bus.
+ *
+ * @pre The @p entry has been attached to a bus with @ref msg_bus_attach.
+ *
+ * @param[in] entry         The message bus entry
+ * @param[in] type          The event type to subscribe to (range: 0_31)
+ */
+static inline void msg_bus_subscribe(msg_bus_entry_t *entry, uint8_t type)
+{
+    assert(type < 32);
+    entry->event_mask |= (1 << type);
+}
+
+/**
+ * @brief Unsubscribe from an event on the message bus.
+ *
+ * @pre The @p entry has been attached to a bus with @ref msg_bus_attach.
+ *
+ * @param[in] entry         The message bus entry
+ * @param[in] type          The event type to unsubscribe (range: 0_31)
+ */
+static inline void msg_bus_unsubscribe(msg_bus_entry_t *entry, uint8_t type)
+{
+    assert(type < 32);
+    entry->event_mask &= ~(1 << type);
 }
 
 /**
@@ -142,28 +133,28 @@ static inline void msg_bus_unsubscribe(list_node_t *bus) {
  *
  * @return                  The number of threads the message was sent to.
  */
-int msg_send_bus(msg_t *m, list_node_t *bus);
+int msg_send_bus(msg_t *m, msb_bus_t *bus);
 
 /**
  * @brief Post a message to a bus.
  *
  * This function sends a message to all threads listening on the bus which are
- * listening for messages of @p event_class with sub-ID @p event_id.
+ * listening for messages of @p type.
  *
  * It is safe to call this function from interrupt context.
  *
  * @param[in] bus           The message bus to post this on
- * @param[in] event_class   The class of the event (major event ID)
- * @param[in] event_type    The type of the event (minor event ID)
+ * @param[in] type          The event type (range: 0…31)
  * @param[in] arg           Optional event parameter
  *
  * @return                  The number of threads the event was posted to.
  */
-static inline int msg_bus_post(list_node_t *bus, uint8_t event_class,
-                               uint16_t event_type, char *arg)
+static inline int msg_bus_post(msb_bus_t *bus, uint8_t type, char *arg)
 {
+    assert(type < 32);
+
     msg_t m = {
-        .type = MSG_BUS_ID(event_class, event_id),
+        .type = type,
         .content.ptr = arg,
     };
 
