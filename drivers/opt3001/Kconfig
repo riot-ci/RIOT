@@ -17,9 +17,10 @@ config OPT3001_I2C_ADDRESS
     range 0x44 0x47
     default 0x45
     help
-        OPT3001 allows for upto 4 devices on Single Bus. The value depends on
-        the state of ADDR Pin. Default value (0x45) corresponds to ADDR pin tied
-        to VDD. For more information refer I2C Address Selection (7.3.4.1) in Datasheet.
+        The OPT3001 allows up to 4 devices on single bus. The address depends on
+        the state of ADDR Pin. The default value (0x45) corresponds to ADDR pin
+        tied to VDD. For more information check the I2C Address Selection
+        (7.3.4.1) section in the Datasheet.
 
 choice
     bool "OPT3001 conversion time"
