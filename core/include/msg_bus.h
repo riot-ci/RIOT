@@ -79,17 +79,34 @@ static inline void msg_bus_attach(msb_bus_t *bus, msg_bus_entry_t *entry)
  * @note Call this function before the thread terminates.
  *
  * @param[in] bus           The message bus from which to detach
+ * @param[in] entry         Message bus subscriber entry
  */
-static inline void msg_bus_detach(msb_bus_t *bus) {
+static inline void msg_bus_detach(msb_bus_t *bus, msg_bus_entry_t *entry) {
+    list_remove(bus, &entry->next);
+}
+
+/**
+ * @brief Get the message bus entry for the current thread.
+ *
+ * Traverse the message bus to find the subscriber entry for the
+ * current thread.
+ *
+ * @param[in] bus           The message bus to seach
+ *
+ * @return                  The subscriber entry for the current thread.
+ *                          NULL if the thread is not attached to @p bus.
+ */
+static inline msg_bus_entry_t* msg_bus_get_entry(msb_bus_t *bus) {
     for (msb_bus_t *e = bus->next; e; e = e->next) {
 
         msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
 
         if (subscriber->pid == sched_active_pid) {
-            list_remove(bus, &subscriber->next);
-            break;
+            return subscriber;
         }
     }
+
+    return NULL;
 }
 
 /**
