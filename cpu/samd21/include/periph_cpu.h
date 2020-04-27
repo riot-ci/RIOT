@@ -115,6 +115,22 @@ typedef enum {
 } adc_res_t;
 /** @} */
 #endif /* ndef DOXYGEN */
+
+/**
+ * @brief   The default clock for the DAC.
+ */
+#define DAC_CLOCK_DEFAULT   SAM0_GCLK_1MHZ
+
+/**
+ * @brief   The MCU has a 10 bit DAC
+ */
+#define DAC_RES_BITS        (10)
+
+/**
+ * @brief   The MCU has one DAC Output.
+ */
+#define DAC_NUMOF           (1)
+
 #ifdef __cplusplus
 }
 #endif
