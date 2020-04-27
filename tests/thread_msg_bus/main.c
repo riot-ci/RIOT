@@ -43,8 +43,10 @@ void *thread1(void *arg)
     msg_bus_subscribe(&sub, 24);
 
     msg_receive(&msg);
+    assert(msg_from_bus(arg, &msg));
+
     printf("T1 recv: %s (type=%d)\n",
-          (char*) msg.content.ptr, msg.type);
+          (char*) msg.content.ptr, msg_bus_get_type(&msg));
 
     msg_bus_detach(arg, &sub);
 
@@ -62,8 +64,10 @@ void *thread2(void *arg)
     msg_bus_subscribe(&sub, 24);
 
     msg_receive(&msg);
+    assert(msg_from_bus(arg, &msg));
+
     printf("T2 recv: %s (type=%d)\n",
-          (char*) msg.content.ptr, msg.type);
+          (char*) msg.content.ptr, msg_bus_get_type(&msg));
 
     msg_bus_detach(arg, &sub);
 
@@ -81,8 +85,10 @@ void *thread3(void *arg)
     msg_bus_subscribe(&sub, 23);
 
     msg_receive(&msg);
+    assert(msg_from_bus(arg, &msg));
+
     printf("T3 recv: %s (type=%d)\n",
-          (char*) msg.content.ptr, msg.type);
+          (char*) msg.content.ptr, msg_bus_get_type(&msg));
 
     msg_bus_detach(arg, &sub);
 
@@ -91,7 +97,9 @@ void *thread3(void *arg)
 
 int main(void)
 {
-    msb_bus_t my_bus = MSG_BUS_INIT;
+    msb_bus_t my_bus;
+
+    msg_bus_init(&my_bus);
 
     p_main = sched_active_pid;
     p1 = thread_create(t1_stack, sizeof(t1_stack), THREAD_PRIORITY_MAIN - 3,
