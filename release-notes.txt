@@ -33,7 +33,7 @@ The 2020.04 release includes:
 
 
 About 555 pull requests, composed of 1514 commits, have been merged since the
-last release, and about 22 issues have been solved. TBD people contributed with
+last release, and about 22 issues have been solved. 60 people contributed with
 code in 102 days. Approximately 3346 files have been touched with 358398 (+)
 insertions and 184720 deletions (-).
 
