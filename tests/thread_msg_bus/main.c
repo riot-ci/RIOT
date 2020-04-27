@@ -46,7 +46,7 @@ void *thread1(void *arg)
     printf("T1 recv: %s (type=%d)\n",
           (char*) msg.content.ptr, msg.type);
 
-    msg_bus_detach(arg);
+    msg_bus_detach(arg, &sub);
 
     return NULL;
 }
@@ -65,7 +65,7 @@ void *thread2(void *arg)
     printf("T2 recv: %s (type=%d)\n",
           (char*) msg.content.ptr, msg.type);
 
-    msg_bus_detach(arg);
+    msg_bus_detach(arg, &sub);
 
     return NULL;
 }
@@ -84,7 +84,7 @@ void *thread3(void *arg)
     printf("T3 recv: %s (type=%d)\n",
           (char*) msg.content.ptr, msg.type);
 
-    msg_bus_detach(arg);
+    msg_bus_detach(arg, &sub);
 
     return NULL;
 }
