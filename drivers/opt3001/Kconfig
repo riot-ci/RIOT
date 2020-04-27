@@ -26,7 +26,8 @@ choice
     bool "OPT3001 conversion time"
     default OPT3001_CONVERSION_TIME_800
     help
-        OPT3001 is capable of integrating results over either 100 ms or 800 ms
+        Time over which the results are integrated. A longer integration time
+        allows for a lower noise measurement.
         time periods.
 
 config OPT3001_CONVERSION_TIME_100
