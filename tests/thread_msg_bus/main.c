@@ -33,83 +33,65 @@ kernel_pid_t p_main, p1, p2, p3;
 
 void *thread1(void *arg)
 {
-    const uint16_t events[] = {
-        MSG_BUS_ID(0, 0x23),
-        MSG_BUS_ID(0, 0x24),
-    };
-
-    msg_bus_entry_t sub = {
-        .events = events,
-        .num_events = ARRAY_SIZE(events),
-    };
+    msg_t msg;
+    msg_bus_entry_t sub;
 
     puts("THREAD 1 start");
 
-    msg_bus_subscribe(arg, &sub);
+    msg_bus_attach(arg, &sub);
+    msg_bus_subscribe(&sub, 23);
+    msg_bus_subscribe(&sub, 24);
 
-    msg_t msg;
     msg_receive(&msg);
-    printf("T1 recv: %s (type=%x.%x)\n",
-          (char*) msg.content.ptr, msg_bus_class(&msg), msg_bus_type(&msg));
+    printf("T1 recv: %s (type=%d)\n",
+          (char*) msg.content.ptr, msg.type);
 
-    msg_bus_unsubscribe(arg);
+    msg_bus_detach(arg);
 
     return NULL;
 }
 
 void *thread2(void *arg)
 {
-    const uint16_t events[] = {
-        MSG_BUS_ID(0, 0x24),
-    };
-
-    msg_bus_entry_t sub = {
-        .events = events,
-        .num_events = ARRAY_SIZE(events),
-    };
+    msg_t msg;
+    msg_bus_entry_t sub;
 
     puts("THREAD 2 start");
 
-    msg_bus_subscribe(arg, &sub);
+    msg_bus_attach(arg, &sub);
+    msg_bus_subscribe(&sub, 24);
 
-    msg_t msg;
     msg_receive(&msg);
-    printf("T2 recv: %s (type=%x.%x)\n",
-          (char*) msg.content.ptr, msg_bus_class(&msg), msg_bus_type(&msg));
+    printf("T2 recv: %s (type=%d)\n",
+          (char*) msg.content.ptr, msg.type);
 
-    msg_bus_unsubscribe(arg);
+    msg_bus_detach(arg);
 
     return NULL;
 }
 
 void *thread3(void *arg)
 {
-    const uint16_t events[] = {
-        MSG_BUS_ID(0, 0x23),
-    };
-
-    msg_bus_entry_t sub = {
-        .events = events,
-        .num_events = ARRAY_SIZE(events),
-    };
+    msg_t msg;
+    msg_bus_entry_t sub;
 
     puts("THREAD 3 start");
 
-    msg_bus_subscribe(arg, &sub);
+    msg_bus_attach(arg, &sub);
+    msg_bus_subscribe(&sub, 23);
 
-    msg_t msg;
     msg_receive(&msg);
-    printf("T3 recv: %s (type=%x.%x)\n",
-          (char*) msg.content.ptr, msg_bus_class(&msg), msg_bus_type(&msg));
+    printf("T3 recv: %s (type=%d)\n",
+          (char*) msg.content.ptr, msg.type);
 
-    msg_bus_unsubscribe(arg);
+    msg_bus_detach(arg);
 
     return NULL;
 }
 
 int main(void)
 {
-    list_node_t my_bus = {0};
+    msb_bus_t my_bus = MSG_BUS_INIT;
 
     p_main = sched_active_pid;
     p1 = thread_create(t1_stack, sizeof(t1_stack), THREAD_PRIORITY_MAIN - 3,
@@ -122,9 +104,9 @@ int main(void)
 
     const char hello[] = "Hello Threads!";
 
-    for (int id = 0x22; id < 0x25; ++id) {
-        int woken = msg_bus_post(&my_bus, 0, id, (void*)hello);
-        printf("Posted event 0x%x to %d threads\n", id, woken);
+    for (int id = 22; id < 25; ++id) {
+        int woken = msg_bus_post(&my_bus, id, (void*)hello);
+        printf("Posted event %d to %d threads\n", id, woken);
     }
 
     puts("SUCCESS");
