@@ -99,6 +99,9 @@
 #include "irq.h"
 #include "cpu.h"
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 extern uint32_t _estack;
 extern uint32_t _sstack;
 
@@ -434,8 +437,7 @@ void svc_dispatch(unsigned int *svc_args)
             SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
             break;
         default:
-            //DEBUG("svc: unhandled SVC #%u\n", svc_number);
-            /* Unknown SVC */
+            DEBUG("svc: unhandled SVC #%u\n", svc_number);
             break;
     }
 }
