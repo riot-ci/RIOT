@@ -54,14 +54,19 @@ void msg_bus_detach(msb_bus_t *bus, msg_bus_entry_t *entry)
 
 msg_bus_entry_t* msg_bus_get_entry(msb_bus_t *bus)
 {
+    msg_bus_entry_t *s = NULL;
+    unsigned state = irq_disable();
+
     for (list_node_t *e = bus->subs.next; e; e = e->next) {
 
         msg_bus_entry_t *subscriber = container_of(e, msg_bus_entry_t, next);
 
         if (subscriber->pid == sched_active_pid) {
-            return subscriber;
+            s = subscriber;
+            break;
         }
     }
 
-    return NULL;
+    irq_restore(state);
+    return s;
 }
