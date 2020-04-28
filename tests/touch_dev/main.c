@@ -53,22 +53,22 @@ int main(void)
     expect(xmax == stmpe811.params.xmax);
     expect(ymax == stmpe811.params.ymax);
 
-    bool last_pressed = touch_dev_is_pressed(dev);
+    uint8_t last_touches = touch_dev_touches(dev, NULL, 1);
 
     while (1) {
-        bool current_pressed = touch_dev_is_pressed(dev);
-        if (current_pressed != last_pressed) {
-            if (!current_pressed) {
+        touch_t touches[1];
+        uint8_t current_touches = touch_dev_touches(dev, touches, 1);
+
+        if (current_touches != last_touches) {
+            if (current_touches == 0) {
                 puts("Released!");
             }
-            last_pressed = current_pressed;
+            last_touches = current_touches;
         }
 
         /* Display touch position if pressed */
-        if (current_pressed) {
-            touch_position_t position;
-            touch_dev_position(dev, &position);
-            printf("X: %i, Y:%i\n", position.x, position.y);
+        if (current_touches == 1) {
+            printf("X: %i, Y:%i\n", touches[0].x, touches[0].y);
         }
 
         xtimer_usleep(10 * US_PER_MS);
