@@ -372,7 +372,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 }
 
 #ifdef MODULE_CORTEXM_SVC
-void svc_dispatch(unsigned int *svc_args);
+static void __attribute__((used)) svc_dispatch(unsigned int *svc_args);
 
 void __attribute__((naked)) __attribute__((used)) isr_svc(void)
 {
@@ -411,7 +411,7 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void)
 #endif
 }
 
-void svc_dispatch(unsigned int *svc_args)
+static void __attribute__((used)) svc_dispatch(unsigned int *svc_args)
 {
     /* stack frame:
      * r0, r1, r2, r3, r12, r14, the return address and xPSR
