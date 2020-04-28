@@ -33,35 +33,24 @@ extern "C"
 #endif
 
 /**
- * @brief   Device descriptor for mtd_spi_eeprom device
+ * @brief   Device descriptor for mtd_at25xxx device
  *
  * This is an extension of the @c mtd_dev_t struct
  */
 typedef struct {
     mtd_dev_t base;                    /**< inherit from mtd_dev_t object */
-    at25xxx_t *spi_eeprom;             /**< spi_eeprom dev descriptor */
-    const at25xxx_params_t *params; /**< params for spi_eeprom init */
-} mtd_spi_eeprom_t;
-
-
-/**
- * @brief   EEPROMs handle sector erase internally so it's possible to directly
- *          write to the EEPROM without erasing the sector first.
- *          Attention: an erase call will therefore NOT touch the content,
- *                     so disable this feature to ensure overriding the data.
- */
-#ifndef MTD_SPI_EEPROM_SKIP_ERASE
-#define MTD_SPI_EEPROM_SKIP_ERASE (1)
-#endif
+    at25xxx_t *at25xxx_eeprom;             /**< at25xxx_eeprom dev descriptor */
+    const at25xxx_params_t *params; /**< params for at25xxx_eeprom init */
+} mtd_at25xxx_t;
 
 /**
- * @brief   spi_eeprom device operations table for mtd
+ * @brief   mtd_at25xxx_eeprom device operations table for mtd
  */
-extern const mtd_desc_t mtd_spi_eeprom_driver;
+extern const mtd_desc_t mtd_at25xxx_driver;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* MTD_SPI_EEPROM_H */
+#endif /* MTD_WRAPPER_H */
 /** @} */
