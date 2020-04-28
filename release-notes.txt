@@ -194,6 +194,7 @@ CPU
     + add UART RX implementation on PIC32 devices
     * make default idle/main stacksizes configurable on all archs
     * move cpu level dependencies in dedicated Makefile.dep files
+    * unify UART hardware flow control use to a generic module
 * cpu/atmega_common: fix reboot issues
 * cpu/cc13x2: rename cpu to cc26x2_cc13x2
 * cpu/cc2538:
