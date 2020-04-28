@@ -69,6 +69,22 @@ enum {
  */
 #define SPI_HWCS(x)     (UINT_MAX - 1)
 
+/**
+ * @brief   The default clock for the DAC.
+ *          Must not exceed 12 MHz
+ */
+#define DAC_CLOCK_DEFAULT   SAM0_GCLK_8MHZ
+
+/**
+ * @brief   The MCU has a 12 bit DAC
+ */
+#define DAC_RES_BITS        (12)
+
+/**
+ * @brief   The MCU has two DAC outputs.
+ */
+#define DAC_NUMOF           (2)
+
 #ifdef __cplusplus
 }
 #endif
