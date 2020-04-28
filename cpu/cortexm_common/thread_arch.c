@@ -372,8 +372,6 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 }
 
 #ifdef MODULE_CORTEXM_SVC
-static void __attribute__((used)) svc_dispatch(unsigned int *svc_args);
-
 void __attribute__((naked)) __attribute__((used)) isr_svc(void)
 {
     /* these two variants do exactly the same, but Cortex-M3 can use Thumb2
@@ -394,10 +392,10 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void)
     "tst    r0, r1          \n"
     "beq    came_from_msp   \n" /*     goto came_from_msp   */
     "mrs    r0, psp         \n" /* r0 = psp                 */
-    "b      svc_dispatch    \n" /* return svc_dispatch(r0)  */
+    "b      _svc_dispatch   \n" /* return svc_dispatch(r0)  */
     "came_from_msp:         \n"
     "mrs    r0, msp         \n" /* r0 = msp                 */
-    "b      svc_dispatch    \n" /* return svc_dispatch(r0)  */
+    "b      _svc_dispatch   \n" /* return svc_dispatch(r0)  */
     );
 #else
     __asm__ volatile (
@@ -406,12 +404,12 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void)
     "ite    eq              \n"
     "mrseq  r0, msp         \n" /* case 1: r0 = msp         */
     "mrsne  r0, psp         \n" /* case 0: r0 = psp         */
-    "b      svc_dispatch    \n" /* return svc_dispatch()    */
+    "b      _svc_dispatch   \n" /* return svc_dispatch()    */
     );
 #endif
 }
 
-static void __attribute__((used)) svc_dispatch(unsigned int *svc_args)
+static void __attribute__((used)) _svc_dispatch(unsigned int *svc_args)
 {
     /* stack frame:
      * r0, r1, r2, r3, r12, r14, the return address and xPSR
