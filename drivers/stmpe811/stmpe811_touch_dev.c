@@ -24,7 +24,7 @@
 #include "stmpe811.h"
 #include "stmpe811_touch_dev.h"
 
-uint16_t _stmpe811_height(touch_dev_t *touch_dev)
+uint16_t _stmpe811_height(const touch_dev_t *touch_dev)
 {
     const stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
@@ -32,7 +32,7 @@ uint16_t _stmpe811_height(touch_dev_t *touch_dev)
     return dev->params.ymax;
 }
 
-uint16_t _stmpe811_width(touch_dev_t *touch_dev)
+uint16_t _stmpe811_width(const touch_dev_t *touch_dev)
 {
     const stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
@@ -40,7 +40,7 @@ uint16_t _stmpe811_width(touch_dev_t *touch_dev)
     return dev->params.xmax;
 }
 
-void _stmpe811_position(touch_dev_t *touch_dev, touch_position_t *position)
+void _stmpe811_position(const touch_dev_t *touch_dev, touch_position_t *position)
 {
     stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
@@ -52,7 +52,7 @@ void _stmpe811_position(touch_dev_t *touch_dev, touch_position_t *position)
     position->y = pos.y;
 }
 
-bool _stmpe811_is_pressed(touch_dev_t *touch_dev)
+bool _stmpe811_is_pressed(const touch_dev_t *touch_dev)
 {
     const stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
