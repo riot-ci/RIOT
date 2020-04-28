@@ -102,7 +102,7 @@ def teardown_child(child):
         except ProcessLookupError:
             # This is what we actually wanted
             pass
-        child.close()
+    child.close()
 
 
 def modules_list():
