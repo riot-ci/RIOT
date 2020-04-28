@@ -238,7 +238,6 @@ int msg_send_bus(msg_t *m, msb_bus_t *bus)
     const bool in_irq = irq_is_in();
     const uint32_t event_mask = (1 << (m->type & 0x1F));
     int count = 0;
-    bool sched = false;
 
     m->sender_pid = in_irq ? KERNEL_PID_ISR : sched_active_pid;
 
@@ -251,16 +250,14 @@ int msg_send_bus(msg_t *m, msb_bus_t *bus)
             continue;
         }
 
-        if (_msg_send_oneway(m, subscriber->pid, &sched) > 0) {
+        if (_msg_send_oneway(m, subscriber->pid) > 0) {
             ++count;
         }
     }
 
     irq_restore(state);
 
-    if (sched && in_irq) {
-        sched_context_switch_request = 1;
-    } else if (sched && !in_irq) {
+    if (sched_context_switch_request && !in_irq) {
         thread_yield_higher();
     }
 
