@@ -112,8 +112,6 @@ Networking
 + net/gnrc_sock: provide implementation for `sock_*_recv_buf()`
 * net/gnrc_sock_udp: choose random ephemeral port
 - net/gnrc_tftp: remove module
-* net/gnrc_[uhcp,dhcpv6_client_6lbr]: disable Router Advertisements on upstream
-  interface
 * net/gnrc_uhcpc:
     * ensure compression context is managed by the ABR
     * only configure 6Lo-ND features if wireless-interface is 6LN
@@ -127,10 +125,9 @@ Networking
 + net/netdev: add netdev_trigger_event_isr() function
 - net/nhdp: remove module
 + net/sock:
-    + amend API to iterate over stack-internal buffer chunks
-    + amend with zero-copy receive functions
     * async: add optional callback argument
-    * async_event: fix race-condition
+    + amend with zero-copy receive functions
+    + amend API to iterate over stack-internal buffer chunks
 
 Packages
 --------
