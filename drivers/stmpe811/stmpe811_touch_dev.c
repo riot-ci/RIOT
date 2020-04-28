@@ -17,9 +17,12 @@
  * @}
  */
 
+#include <stddef.h>
 #include <stdint.h>
 #include <errno.h>
 #include <assert.h>
+
+#include "kernel_defines.h"
 
 #include "stmpe811.h"
 #include "stmpe811_touch_dev.h"
@@ -40,31 +43,30 @@ uint16_t _stmpe811_width(const touch_dev_t *touch_dev)
     return dev->params.xmax;
 }
 
-void _stmpe811_position(const touch_dev_t *touch_dev, touch_position_t *position)
+uint8_t _stmpe811_touches(const touch_dev_t *touch_dev, touch_t *touches, size_t len)
 {
     stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
-    assert(position);
 
-    stmpe811_touch_position_t pos;
-    stmpe811_read_touch_position(dev, &pos);
-    position->x = pos.x;
-    position->y = pos.y;
-}
-
-bool _stmpe811_is_pressed(const touch_dev_t *touch_dev)
-{
-    const stmpe811_t *dev = (stmpe811_t *)touch_dev;
-    assert(dev);
+    /* stmpe811 is only single touch */
+    assert(len == 1);
 
     stmpe811_touch_state_t state;
     stmpe811_read_touch_state(dev, &state);
-    return (state == STMPE811_TOUCH_STATE_PRESSED);
+    uint8_t ret = (state == STMPE811_TOUCH_STATE_PRESSED);
+
+    if (touches != NULL) {
+        stmpe811_touch_position_t pos;
+        stmpe811_read_touch_position(dev, &pos);
+        touches[0].x = pos.x;
+        touches[0].y = pos.y;
+    }
+
+    return ret;
 }
 
 const touch_dev_driver_t stmpe811_touch_dev_driver = {
     .height     = _stmpe811_height,
     .width      = _stmpe811_width,
-    .position   = _stmpe811_position,
-    .is_pressed = _stmpe811_is_pressed,
+    .touches    = _stmpe811_touches,
 };
