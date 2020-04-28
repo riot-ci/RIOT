@@ -29,7 +29,7 @@
 
 uint16_t _stmpe811_height(const touch_dev_t *touch_dev)
 {
-    const stmpe811_t *dev = (stmpe811_t *)touch_dev;
+    const stmpe811_t *dev = (const stmpe811_t *)touch_dev;
     assert(dev);
 
     return dev->params.ymax;
@@ -37,7 +37,7 @@ uint16_t _stmpe811_height(const touch_dev_t *touch_dev)
 
 uint16_t _stmpe811_width(const touch_dev_t *touch_dev)
 {
-    const stmpe811_t *dev = (stmpe811_t *)touch_dev;
+    const stmpe811_t *dev = (const stmpe811_t *)touch_dev;
     assert(dev);
 
     return dev->params.xmax;
@@ -45,6 +45,8 @@ uint16_t _stmpe811_width(const touch_dev_t *touch_dev)
 
 uint8_t _stmpe811_touches(const touch_dev_t *touch_dev, touch_t *touches, size_t len)
 {
+    (void)len;
+
     stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
 
