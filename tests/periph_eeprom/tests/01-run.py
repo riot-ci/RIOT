@@ -11,8 +11,6 @@ from testrunner import run
 
 
 def testfunc(child):
-    # make sure the shell is ready before sending the test command
-    child.expect_exact('>')
     child.sendline('test')
     child.expect('SUCCESS')
 
