@@ -21,7 +21,7 @@
 #include "at25xxx/mtd_at25xxx.h"
 #include "at25xxx_params.h"
 
-#define TEST_ADDRESS       (uint32_t)((dev->sector_count - 1) * dev->page_size)
+#define TEST_ADDRESS       (uint16_t)((dev->sector_count - 1) * dev->page_size)
     
 static at25xxx_t at25xxx;
 
@@ -117,7 +117,6 @@ Test *tests_mtd_at25xxx_tests(void)
 
 int main(void)
 {
-    printf("sector: %ld \n", dev->sector_count);
     TESTS_START();
     TESTS_RUN(tests_mtd_at25xxx_tests());
     TESTS_END();
