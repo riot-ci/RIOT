@@ -48,9 +48,6 @@ uint8_t _stmpe811_touches(const touch_dev_t *touch_dev, touch_t *touches, size_t
     stmpe811_t *dev = (stmpe811_t *)touch_dev;
     assert(dev);
 
-    /* stmpe811 is only single touch */
-    assert(len == 1);
-
     stmpe811_touch_state_t state;
     stmpe811_read_touch_state(dev, &state);
     uint8_t ret = (state == STMPE811_TOUCH_STATE_PRESSED);
