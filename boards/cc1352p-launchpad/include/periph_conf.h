@@ -77,7 +77,6 @@ static const timer_conf_t timer_config[] = {
  * Optionally we can enable hardware flow control, by setting UART_HW_FLOW_CTRL
  * to 1 and defining pins for cts_pin and rts_pin.
  *
- * Add a second UART configuration if using external pins.
  * @{
  */
 
