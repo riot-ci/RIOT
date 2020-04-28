@@ -97,7 +97,7 @@ Networking
 + net/gnrc_dhcpv6_client_6lbr: initial import of a 6LBR DHCPv6 client
 + net/gnrc_ipv6_ext_frag: initial import of statistics module
 * net/gnrc_ipv6_nib:
-    * do not ignore PL for route
+    * do not ignore prefix list for route resolution
     * fix border router with DNS & Context Compression
     * only route to prefix list entry if on-link
 * net/gnrc_lorawan:
