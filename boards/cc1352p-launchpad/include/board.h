@@ -2,6 +2,7 @@
  * Copyright (C)    2016 Nicholas Jackson
  *                  2017 Sebastian Meiling
  *                  2018 Anton Gerasimov
+ *                  2020 Locha Inc
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -13,11 +14,12 @@
  * @{
  *
  * @file
- * @brief           Board specific definitions for TI CC1352 LaunchPad
+ * @brief           Board specific definitions for TI CC1352P LaunchPad
  *
  * @author          Nicholas Jackson <nicholas.jackson@griffithuni.edu.au>
  * @author          Sebastian Meiling <s@mlng.net>
  * @author          Anton Gerasimov <tossel@gmail.com>
+ * @author          Luis A. Ruiz <luisan00@hotmail.com>
  */
 
 #ifndef BOARD_H
