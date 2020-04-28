@@ -156,7 +156,7 @@ char *thread_stack_init(thread_task_func_t task_func,
     /* ****************************** */
 
     /* The following eight stacked registers are popped by the hardware upon
-     * return from exception. (bx instruction in context_restore) */
+     * return from exception. (bx instruction in select_and_restore_context) */
 
     /* xPSR - initial status register */
     stk--;
@@ -184,7 +184,7 @@ char *thread_stack_init(thread_task_func_t task_func,
     /* ************************* */
 
     /* The following registers are not handled by hardware in return from
-     * exception, but manually by context_restore.
+     * exception, but manually by select_and_restore_context.
      * For the Cortex-M0(plus) we write registers R11-R4 in two groups to allow
      * for more efficient context save/restore code.
      * For the Cortex-M3 and Cortex-M4 we write them continuously onto the stack
@@ -294,7 +294,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "ldr    r1, =sched_active_thread  \n" /* r1 = &sched_active_thread  */
     "ldr    r1, [r1]                  \n" /* r1 = sched_active_thread   */
     "cmp    r1, #0                    \n" /* if r1 == NULL:             */
-    "beq context_restore              \n" /*     goto context_restore   */
+    "beq select_and_restore_context   \n" /*   goto select_and_restore_context */
 
     "mrs    r0, psp                   \n" /* get stack pointer from user mode */
 #if defined(CPU_ARCH_CORTEX_M0) || defined(CPU_ARCH_CORTEX_M0PLUS) \
@@ -327,7 +327,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     /* current thread context is now saved */
 
-    "context_restore:                 \n"
+    "select_and_restore_context:      \n"
 
     "bl     sched_run                 \n" /* perform scheduling */
 
