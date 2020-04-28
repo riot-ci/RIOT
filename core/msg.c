@@ -188,7 +188,7 @@ int msg_send_to_self(msg_t *m)
     return res;
 }
 
-static int _msg_send_oneway(msg_t *m, kernel_pid_t target_pid, bool *sched)
+static int _msg_send_oneway(msg_t *m, kernel_pid_t target_pid)
 {
 #ifdef DEVELHELP
     if (!pid_is_valid(target_pid)) {
@@ -212,7 +212,7 @@ static int _msg_send_oneway(msg_t *m, kernel_pid_t target_pid, bool *sched)
         *target_message = *m;
 
         sched_set_status(target, STATUS_PENDING);
-        *sched = true;
+        sched_context_switch_request = 1;
 
         return 1;
     }
@@ -225,15 +225,10 @@ static int _msg_send_oneway(msg_t *m, kernel_pid_t target_pid, bool *sched)
 int msg_send_int(msg_t *m, kernel_pid_t target_pid)
 {
     int res;
-    bool sched = false;
 
     m->sender_pid = KERNEL_PID_ISR;
 
-    res = _msg_send_oneway(m, target_pid, &sched);
-
-    if (sched) {
-        sched_context_switch_request = 1;
-    }
+    res = _msg_send_oneway(m, target_pid);
 
     return res;
 }
