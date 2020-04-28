@@ -410,9 +410,16 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void)
 
 void svc_dispatch(unsigned int *svc_args)
 {
-    /* svc_args contains:
+    /* stack frame:
      * r0, r1, r2, r3, r12, r14, the return address and xPSR
-     * First argument (r0) is svc_args[0]
+     * - r0   = svc_args[0]
+     * - r1   = svc_args[1]
+     * - r2   = svc_args[2]
+     * - r3   = svc_args[3]
+     * - r12  = svc_args[4]
+     * - lr   = svc_args[5]
+     * - pc   = svc_args[6]
+     * - xPSR = svc_args[7]
      */
 
     /* svc_args[6] is the stacked PC / return address. It is the address of the
