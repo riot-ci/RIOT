@@ -16,9 +16,6 @@
  * @file
  * @brief           Board specific definitions for TI CC1352P LaunchPad
  *
- * @author          Nicholas Jackson <nicholas.jackson@griffithuni.edu.au>
- * @author          Sebastian Meiling <s@mlng.net>
- * @author          Anton Gerasimov <tossel@gmail.com>
  * @author          Luis A. Ruiz <luisan00@hotmail.com>
  */
 

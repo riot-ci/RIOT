@@ -15,8 +15,6 @@
  * @file
  * @brief           Board specific implementations for TI CC1352P LaunchPad
  *
- * @author          Nicholas Jackson <nicholas.jackson@griffithuni.edu.au>
- * @author          Sebastian Meiling <s@mlng.net>
  * @author          Luis A. Ruiz <luisan00@hotmail.com>
  */
 
