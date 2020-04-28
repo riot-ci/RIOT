@@ -200,7 +200,6 @@ CPU
 * cpu/cc2538:
     * fix spi_transfer_bytes()
     + implement periph/pm
-    * timer: fix GPT enabling wait
     * timer: handle power mode
 * cpu/cc26xx_cc13xx: add power common code
 * cpu/cortexm:
