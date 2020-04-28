@@ -335,7 +335,7 @@ Testing
 + tests/emcute: provide tests
 + tests/gnrc_ipv6_nib_dns: add test of RDNSS option handling
 * tests/gnrc_rpl_srh: use AsyncSniffer for sniffing
-* tests/periph_rtc: fix system locks in IS
+* tests/periph_rtc: fix system locks in ISR
 + tests/xtimer_overhead: initial commit
 
 Kconfig migration
