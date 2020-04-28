@@ -1,7 +1,5 @@
 /*
- * Copyright (C)    2016 Nicholas Jackson
- *                  2017 HAW Hamburg
- *                  2020 Locha Inc
+ * Copyright (C)    2020 Locha Inc
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -15,8 +13,6 @@
  * @file
  * @brief           Peripheral MCU configuration for TI CC1312 LaunchPad
  *
- * @author          Nicholas Jackson <nicholas.jackson@griffithuni.edu.au>
- * @author          Sebastian Meiling <s@mlng.net>
  * @author          Jean Pierre Dudey <jeandudey@hotmail.com>
  * @author          Luis A. Ruiz <luisan00@hotmail.com>
  */
