@@ -308,7 +308,6 @@ Build System / Tooling
     * boards: move remaining uses of USEMODULE from Makefile.include to
       Makefile.dep
     * disable stdio_% modules before they are included
-    * even more useless exports removed
     * fix duplicate modules from USEMODULE
     * fix sock_udp deps for stnp
     * include package deps earlier
