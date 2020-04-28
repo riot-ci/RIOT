@@ -368,6 +368,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     );
 }
 
+#ifdef MODULE_CORTEXM_SVC
 void svc_dispatch(unsigned int *svc_args);
 
 void __attribute__((naked)) __attribute__((used)) isr_svc(void)
@@ -431,3 +432,10 @@ void svc_dispatch(unsigned int *svc_args)
             break;
     }
 }
+
+#else /* MODULE_CORTEXM_SVC */
+void __attribute__((used)) isr_svc(void)
+{
+    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+}
+#endif /* MODULE_CORTEXM_SVC */
