@@ -37,6 +37,7 @@ static int mtd_at25xxx_init(mtd_dev_t *dev)
     {
         dev->pages_per_sector = 1;
         dev->page_size        = mtd_at25xxx->params->page_size;
+        dev->sector_count     = mtd_at25xxx->params->size / mtd_at25xxx->params->page_size;
         return 0;
     }
     return -EIO;
