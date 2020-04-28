@@ -37,7 +37,7 @@ typedef struct touch_dev touch_dev_t;
  */
 typedef struct {
     uint16_t x;     /**< X coordinate */
-    uint16_t y;     /**< X coordinate */
+    uint16_t y;     /**< Y coordinate */
 } touch_position_t;
 
 /**
