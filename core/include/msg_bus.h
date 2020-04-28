@@ -51,6 +51,11 @@ typedef struct {
  * @brief Initialize a message bus.
  *
  * Must be called by the owner of a ``msg_bus_t`` struct.
+ *
+ * Message busses are considered to be long-running and must be
+ * created before any threads can attach to them.
+ *
+ * There can be a maximum number of 2047 busses in total.
  */
 void msg_bus_init(msb_bus_t *bus);
 
