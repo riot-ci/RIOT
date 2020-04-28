@@ -94,14 +94,15 @@ def teardown_child(child):
         os.killpg(os.getpgid(pid), signal.SIGTERM)
     except ProcessLookupError:
         print("Process already stopped")
-    time.sleep(1)
-    # kill still lingering processes
-    try:
-        os.killpg(os.getpgid(pid), signal.SIGKILL)
-    except ProcessLookupError:
-        # This is what we actually wanted
-        pass
-    child.close()
+    else:
+        time.sleep(1)
+        # kill still lingering processes
+        try:
+            os.killpg(os.getpgid(pid), signal.SIGKILL)
+        except ProcessLookupError:
+            # This is what we actually wanted
+            pass
+        child.close()
 
 
 def modules_list():
