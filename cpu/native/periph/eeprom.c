@@ -23,6 +23,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "native_internal.h"
+
 #include "cpu.h"
 #include "mutex.h"
 #include "periph/eeprom.h"
@@ -39,7 +41,7 @@ static mutex_t lock = MUTEX_INIT;
 
 static inline void eeprom_native_write(void)
 {
-    FILE *fp = fopen(eeprom_file, "w");
+    FILE *fp = real_fopen(eeprom_file, "w");
     if (!fp) {
         return;
     }
@@ -60,7 +62,7 @@ static inline void eeprom_native_write(void)
 
 void eeprom_native_read(void)
 {
-    FILE *fp = fopen(eeprom_file, "r");
+    FILE *fp = real_fopen(eeprom_file, "r");
     if (!fp) {
         return;
     }
