@@ -7,20 +7,20 @@
  */
 
 /**
- * @defgroup    drivers_at25xxx_mtd_wrapper
+ * @defgroup    drivers_at25xxx_mtd_at25xxx
  * @ingroup     drivers_storage
- * @brief       MTD wrapper for SPI-EEPROMs
+ * @brief       MTD wrapper for AT25XXX based SPI EEPROMs
  *
  * @{
  *
  * @file
- * @brief       Interface definition for at25xxx_mtd_wrapper
+ * @brief       Interface definition for at25xxx mtd wrapper
  *
  * @author      Johannes Koster <johannes.koster@ml-pa.com>
  */
 
-#ifndef MTD_WRAPPER_H
-#define MTD_WRAPPER_H
+#ifndef MTD_AT25XXX_H
+#define MTD_AT25XXX_H
 
 #include <stdint.h>
 
@@ -38,9 +38,9 @@ extern "C"
  * This is an extension of the @c mtd_dev_t struct
  */
 typedef struct {
-    mtd_dev_t base;                    /**< inherit from mtd_dev_t object */
-    at25xxx_t *at25xxx_eeprom;             /**< at25xxx_eeprom dev descriptor */
-    const at25xxx_params_t *params; /**< params for at25xxx_eeprom init */
+    mtd_dev_t base;                     /**< inherit from mtd_dev_t object */
+    at25xxx_t *at25xxx_eeprom;          /**< at25xxx_eeprom dev descriptor */
+    const at25xxx_params_t *params;     /**< params for at25xxx_eeprom init */
 } mtd_at25xxx_t;
 
 /**
@@ -52,5 +52,5 @@ extern const mtd_desc_t mtd_at25xxx_driver;
 }
 #endif
 
-#endif /* MTD_WRAPPER_H */
+#endif /* MTD_AT25XXX_H */
 /** @} */
