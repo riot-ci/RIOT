@@ -250,7 +250,7 @@ CPU
     * enable EXTI interrupt for rtt
     * eth: fix address and multicast filtering
 * cpu/stm32f1: make RTC Y2038 safe
-+ cpu/stm32wb: add support
++ cpu/stm32wb: add initial support
 
 Device Drivers
 --------------
