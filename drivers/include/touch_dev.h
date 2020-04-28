@@ -52,7 +52,7 @@ typedef struct {
      *
      * @return              Height in points
      */
-    uint16_t (*height)(touch_dev_t *dev);
+    uint16_t (*height)(const touch_dev_t *dev);
 
     /**
      * @brief   Get the width of the touch device
@@ -61,7 +61,7 @@ typedef struct {
      *
      * @return              Width in points
      */
-    uint16_t (*width)(touch_dev_t *dev);
+    uint16_t (*width)(const touch_dev_t *dev);
 
     /**
      * @brief   Get the current pressed position of the touch device
@@ -69,7 +69,7 @@ typedef struct {
      * @param[in] dev       Pointer to the touch device
      * @param[out] position The position pressed
      */
-    void (*position)(touch_dev_t *dev, touch_position_t *position);
+    void (*position)(const touch_dev_t *dev, touch_position_t *position);
 
     /**
      * @brief   Check if the touch device is pressed
@@ -78,7 +78,7 @@ typedef struct {
      *
      * @return              true if the touch device is pressed, false otherwise
      */
-    bool (*is_pressed)(touch_dev_t *dev);
+    bool (*is_pressed)(const touch_dev_t *dev);
 
 } touch_dev_driver_t;
 
@@ -96,7 +96,7 @@ struct touch_dev {
  *
  * @return              Height in points
  */
-uint16_t touch_dev_height(touch_dev_t *dev);
+uint16_t touch_dev_height(const touch_dev_t *dev);
 
 /**
  * @brief   Get the width of the touch device
@@ -105,7 +105,7 @@ uint16_t touch_dev_height(touch_dev_t *dev);
  *
  * @return              Width in points
  */
-uint16_t touch_dev_width(touch_dev_t *dev);
+uint16_t touch_dev_width(const touch_dev_t *dev);
 
 /**
  * @brief   Get the current pressed position of the touch device
@@ -113,7 +113,7 @@ uint16_t touch_dev_width(touch_dev_t *dev);
  * @param[in] dev       Pointer to the touch device
  * @param[out] position The position pressed
  */
-void touch_dev_position(touch_dev_t *dev, touch_position_t *position);
+void touch_dev_position(const touch_dev_t *dev, touch_position_t *position);
 
 /**
  * @brief   Check if the touch device is pressed
@@ -122,7 +122,7 @@ void touch_dev_position(touch_dev_t *dev, touch_position_t *position);
  *
  * @return              true if the touch device is pressed, false otherwise
  */
-bool touch_dev_is_pressed(touch_dev_t *dev);
+bool touch_dev_is_pressed(const touch_dev_t *dev);
 
 #ifdef __cplusplus
 }

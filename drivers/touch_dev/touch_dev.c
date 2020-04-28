@@ -20,31 +20,32 @@
 
 #include <assert.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "touch_dev.h"
 
-uint16_t touch_dev_height(touch_dev_t *dev)
+uint16_t touch_dev_height(const touch_dev_t *dev)
 {
     assert(dev);
 
     return dev->driver->height(dev);
 }
 
-uint16_t touch_dev_width(touch_dev_t *dev)
+uint16_t touch_dev_width(const touch_dev_t *dev)
 {
     assert(dev);
 
     return dev->driver->width(dev);
 }
 
-void touch_dev_position(touch_dev_t *dev, touch_position_t *position)
+void touch_dev_position(const touch_dev_t *dev, touch_position_t *position)
 {
     assert(dev);
 
     dev->driver->position(dev, position);
 }
 
-bool touch_dev_is_pressed(touch_dev_t *dev)
+bool touch_dev_is_pressed(const touch_dev_t *dev)
 {
     assert(dev);
 
