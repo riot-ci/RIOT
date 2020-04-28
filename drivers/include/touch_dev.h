@@ -24,6 +24,7 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -33,12 +34,12 @@ extern "C" {
 typedef struct touch_dev touch_dev_t;
 
 /**
- * @brief   Touch position coordinates
+ * @brief   Touch coordinates
  */
 typedef struct {
     uint16_t x;     /**< X coordinate */
     uint16_t y;     /**< Y coordinate */
-} touch_position_t;
+} touch_t;
 
 /**
  * @brief   Generic type for a touch driver
@@ -64,22 +65,16 @@ typedef struct {
     uint16_t (*width)(const touch_dev_t *dev);
 
     /**
-     * @brief   Get the current pressed position of the touch device
+     * @brief   Get the current touches on the touch device
+     *
+     * If @p touches is NULL, this function only returns the number of touches.
      *
      * @param[in] dev       Pointer to the touch device
-     * @param[out] position The position pressed
+     * @param[out] position The array of touches
+     * @param[in] len       The touches array len
+     * @return              number of touch positions, 0 means no touch
      */
-    void (*position)(const touch_dev_t *dev, touch_position_t *position);
-
-    /**
-     * @brief   Check if the touch device is pressed
-     *
-     * @param[in] dev       Pointer to the touch device
-     *
-     * @return              true if the touch device is pressed, false otherwise
-     */
-    bool (*is_pressed)(const touch_dev_t *dev);
-
+    uint8_t (*touches)(const touch_dev_t *dev, touch_t *touches, size_t len);
 } touch_dev_driver_t;
 
 /**
@@ -108,21 +103,16 @@ uint16_t touch_dev_height(const touch_dev_t *dev);
 uint16_t touch_dev_width(const touch_dev_t *dev);
 
 /**
- * @brief   Get the current pressed position of the touch device
+ * @brief   Get the current touches on the touch device
+ *
+ * If @p touches is NULL, this function only returns the number of touches.
  *
  * @param[in] dev       Pointer to the touch device
- * @param[out] position The position pressed
+ * @param[out] position The array of touches
+ * @param[in] len       The touches array len
+ * @return              number of touch positions, 0 means no touch
  */
-void touch_dev_position(const touch_dev_t *dev, touch_position_t *position);
-
-/**
- * @brief   Check if the touch device is pressed
- *
- * @param[in] dev       Pointer to the touch device
- *
- * @return              true if the touch device is pressed, false otherwise
- */
-bool touch_dev_is_pressed(const touch_dev_t *dev);
+uint8_t touch_dev_touches(const touch_dev_t *dev, touch_t *touches, size_t len);
 
 #ifdef __cplusplus
 }
