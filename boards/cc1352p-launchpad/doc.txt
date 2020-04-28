@@ -28,13 +28,13 @@ programming, flashing and debugging capabilities.
 
 ### TI Code Composer Studio _CCS_
 
-The TI's [Code Composer Studio _CCS_](http://www.ti.com/tool/CCSTUDIO) is an Integrated Development Environment wich provides the necessary tools to use the debug features of the XDS110.
+The TI's [Code Composer Studio _CCS_](http://www.ti.com/tool/CCSTUDIO) is an Integrated Development Environment which provides the necessary tools to use the debug features of the XDS110.
 
-### Uniflash 
+### Uniflash
 
 [Uniflash](http://www.ti.com/tool/UNIFLASH) is a standalone flash tool for TI MCUs, Sitara Processors & SimpleLink devices.
 
-#### Setting up the environment.
+#### Setting up the environment
 
 In order to make use of the programming and debugging capabilities of the XDS110 some environment variable needs to be set:
 
