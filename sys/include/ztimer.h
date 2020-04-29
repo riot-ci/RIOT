@@ -371,7 +371,7 @@ void ztimer_set_msg(ztimer_clock_t *clock, ztimer_t *timer, uint32_t offset,
 int ztimer_msg_receive_timeout(ztimer_clock_t *clock, msg_t *msg,
                                uint32_t timeout);
 
- /* created with dist/tools/define2u16.py */
+/* created with dist/tools/define2u16.py */
 #define MSG_ZTIMER 0xc83e   /**< msg type used by ztimer_msg_receive_timeout */
 
 /*
