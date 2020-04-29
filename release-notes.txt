@@ -26,8 +26,8 @@ The 2020.04 release includes:
 - Improvements on power management for ESP32
 - Improvements and extensions in support of fe310 and lpc2387
 - lwIP: provide support for asynchronous sock
-- Improvements on Xtimer module and testing
-- Initial addition of the new timer subsystem: Ztimer
+- Improvements on xtimer module and testing
+- Initial addition of the new timer subsystem: ztimer
 - Migration to Kconfig - phase I: add multiple GNRC and system modules
 - +10 new boards, +11 new drivers, +7 new packages
 
