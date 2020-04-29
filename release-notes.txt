@@ -464,7 +464,7 @@ int sock_dns_query(const char *domain_name, void *addr_out, int family);
 +     gpio_t cs;               /**< CS pin GPIO handle */
 +     uint8_t addr_width;      /**< Number of bytes in addresses, usually 3 for small devices */
 + } mtd_spi_nor_params_t;
-+ 
++
 
  typedef struct {
      mtd_dev_t base;          /**< inherit from mtd_dev_t object */
@@ -515,7 +515,7 @@ Networking related issues (48)
 #13745: ethos: Unable to choose global source address.
 #13496: cpu/stm32/eth, board/nucleo-f767z1: ethernet buffering issue (ping >1s)
         after debug break
-#13490: cpu/stm32/eth, board/nucleo-f767z1: ethernet initalisation fails
+#13490: cpu/stm32/eth, board/nucleo-f767z1: ethernet initialisation fails
         sometimes
 #13209: examples/gnrc_border_router is crashing after some time
 #13088: Riot-os freezes with lwip + enc28j60 + stm32L4
