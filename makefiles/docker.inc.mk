@@ -255,7 +255,7 @@ DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_MODULE_DIRS,$(
 DOCKER_VOLUMES_AND_ENV += $(call docker_volumes_mapping,$(EXTERNAL_BOARD_DIRS),$(DOCKER_BUILD_ROOT)/external,)
 # Value is overridden from command line if it is not the default value
 # This allows handling even if the value is set in the 'Makefile'.
-DOCKER_OVERRIDE_CMDLINE += $(call docker_cmdline_mapping,EXTERNAL_BOARD_DIRS,$(DOCKER_BUILD_ROOT)/external,)
+DOCKER_ENVIRONMENT_CMDLINE += -e $(call docker_cmdline_mapping,EXTERNAL_BOARD_DIRS,$(DOCKER_BUILD_ROOT)/external,)
 
 # External module directories sanity check:
 #
