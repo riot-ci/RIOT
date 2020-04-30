@@ -1507,8 +1507,8 @@ static inline void coap_payload_advance_bytes(coap_pkt_t *pkt, size_t len)
  * @param[in]    data       payload data
  * @param[in]    len        length of payload
  *
- * @returns      number of paylad bytes added on success
- * @returns     <0 on error
+ * @returns      number of payload bytes added on success
+ * @returns      < 0 on error
  */
 ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len);
 
