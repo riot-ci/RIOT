@@ -19,8 +19,8 @@
  * @author      Johannes Koster <johannes.koster@ml-pa.com>
  */
 
-#ifndef MTD_AT25XXX_H
-#define MTD_AT25XXX_H
+#ifndef AT25XXX_MTD_H
+#define AT25XXX_MTD_H
 
 #include <stdint.h>
 
@@ -52,5 +52,5 @@ extern const mtd_desc_t mtd_at25xxx_driver;
 }
 #endif
 
-#endif /* MTD_AT25XXX_H */
+#endif /* AT25XXX_MTD_H */
 /** @} */

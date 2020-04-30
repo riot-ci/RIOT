@@ -22,7 +22,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "mtd.h"
-#include "at25xxx/mtd_at25xxx.h"
+#include "at25xxx/mtd.h"
 #include "at25xxx.h"
 #include "at25xxx_params.h"
 
