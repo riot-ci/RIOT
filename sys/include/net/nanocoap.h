@@ -1520,22 +1520,12 @@ ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len);
  * payload area is already exhausted.
  *
  * @param[out]   pkt        pkt to add payload to
- * @param[in]    c           character to write
+ * @param[in]    c          character to write
  *
- * @returns      number of paylad bytes added on success (always one)
- * @returns     <0 on error
+ * @returns      number of payload bytes added on success (always one)
+ * @returns      < 0 on error
  */
-static inline ssize_t coap_payload_put_char(coap_pkt_t *pkt, char c)
-{
-    if (pkt->payload_len < 1) {
-        return -ENOMEM;
-    }
-
-    *pkt->payload++ = c;
-    --pkt->payload_len;
-
-    return 1;
-}
+static inline ssize_t coap_payload_put_char(coap_pkt_t *pkt, char c);
 
 /**
  * @brief   Create CoAP reply (convenience function)
