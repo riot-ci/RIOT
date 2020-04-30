@@ -1525,7 +1525,7 @@ ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len);
  * @returns      number of payload bytes added on success (always one)
  * @returns      < 0 on error
  */
-static inline ssize_t coap_payload_put_char(coap_pkt_t *pkt, char c);
+ssize_t coap_payload_put_char(coap_pkt_t *pkt, char c);
 
 /**
  * @brief   Create CoAP reply (convenience function)
