@@ -1,4 +1,4 @@
-MODULE := at25xxx_mtd
+MODULE := mtd_at25xxx
 BASE_MODULE := at25xxx
 
 # at25xxx_mtd files

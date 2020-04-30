@@ -22,7 +22,7 @@
 #include "at25xxx_params.h"
 
 #define TEST_ADDRESS       (uint16_t)((dev->sector_count - 1) * dev->page_size)
-    
+
 static at25xxx_t at25xxx;
 
 static mtd_at25xxx_t _dev = {
@@ -73,8 +73,8 @@ static void test_mtd_write_erase(void)
     ret = mtd_erase(dev, TEST_ADDRESS, dev->pages_per_sector * dev->page_size);
     TEST_ASSERT_EQUAL_INT(0, ret);
 
-    uint8_t expected[sizeof(buf_read)];
-
+    uint8_t expected[sizeof(buf_read)] = {0};
+    memset(expected, 0 , sizeof(expected));
     ret = mtd_read(dev, buf_read, TEST_ADDRESS, sizeof(buf_read));
     TEST_ASSERT_EQUAL_INT(sizeof(buf_read), ret);
     TEST_ASSERT_EQUAL_INT(0, memcmp(expected, buf_read, sizeof(buf_read)));

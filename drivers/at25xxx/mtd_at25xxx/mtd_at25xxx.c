@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     drivers_at25xxx_mtd_at25xxx
+ * @ingroup     drivers_mtd_at25xxx
  * @{
  *
  * @file

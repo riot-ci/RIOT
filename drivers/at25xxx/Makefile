@@ -1,4 +1,4 @@
-ifneq (,$(filter at25xxx_mtd,$(USEMODULE)))
+ifneq (,$(filter mtd_at25xxx,$(USEMODULE)))
   DIRS += mtd_at25xxx
 endif
 

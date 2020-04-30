@@ -7,14 +7,14 @@
  */
 
 /**
- * @defgroup    drivers_at25xxx_mtd_at25xxx
+ * @defgroup    drivers_mtd_at25xxx MTD wrapper for AT25xxx family of SPI-EEPROMs
  * @ingroup     drivers_storage
  * @brief       MTD wrapper for AT25XXX based SPI EEPROMs
  *
  * @{
  *
  * @file
- * @brief       Interface definition for at25xxx mtd wrapper
+ * @brief       Interface definition for at25xxx MTD wrapper
  *
  * @author      Johannes Koster <johannes.koster@ml-pa.com>
  */
