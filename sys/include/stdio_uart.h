@@ -19,6 +19,27 @@
  * USEMODULE += stdin
  * ```
  *
+ * @attention   Using STDIO over UART from interrupt context is not officially
+ *              supported
+ *
+ * For testing purposes and using STDIO within an ISR should mostly work good
+ * enough and for some platforms even reliable. Production code however should
+ * fully avoid any access to STDIO from interrupt context. Instead, e.g. an
+ * event could be posted to an @ref sys_event and the actual STDIO operation
+ * being deferred to thread context.
+ *
+ * Some reasons why RIOT does not officially support STDIO over UART from ISR:
+ * 1. UART is *slow* and the system easily remains in interrupt context for
+ *    unacceptable long time.
+ * 2. An UART implementation might choose to not guard an atomic sequence of
+ *    interactions with the hardware by disabling IRQs but using a mutex, e.g.
+ *    because the sequence takes long. Locking a mutex from interrupt
+ *    context will result in a deadlock, if the mutex is already locked.
+ * 3. If an ISR is triggered from a power saving mode, some peripherals or
+ *    clock domains might still be offline during that ISR; including the UART
+ *    peripheral. This is a valid implementation choice to allow time critical
+ *    low power scenarios being covered by RIOT.
+ *
  * @{
  * @file
  *
