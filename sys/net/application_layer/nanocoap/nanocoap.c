@@ -925,7 +925,7 @@ ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags)
 ssize_t coap_payload_put_bytes(coap_pkt_t *pkt, const void *data, size_t len)
 {
     if (pkt->payload_len < len) {
-        return -ENOMEM;
+        return -ENOSPC;
     }
 
     memcpy(pkt->payload, data, len);
