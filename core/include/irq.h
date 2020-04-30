@@ -27,6 +27,51 @@
 extern "C" {
 #endif
 
+#ifdef MODULE_CORTEXM_COMMON
+
+/**
+ * @brief   This function sets the IRQ disable bit in the status register
+ *
+ * @return  Previous value of status register. The return value should not be
+ *          interpreted as a boolean value. The actual value is only
+ *          significant for irq_restore().
+ *
+ * @see     irq_restore
+ */
+static inline __attribute__((always_inline)) unsigned irq_disable(void);
+
+/**
+ * @brief   This function clears the IRQ disable bit in the status register
+ *
+ * @return  Previous value of status register. The return value should not be
+ *          interpreted as a boolean value. The actual value is only
+ *          significant for irq_restore().
+ *
+ * @see     irq_restore
+ */
+static inline __attribute__((always_inline)) unsigned irq_enable(void);
+
+/**
+ * @brief   This function restores the IRQ disable bit in the status register
+ *          to the value contained within passed state
+ *
+ * @param[in] state   state to restore
+ *
+ * @see     irq_enable
+ * @see     irq_disable
+ */
+static inline __attribute__((always_inline)) void irq_restore(unsigned state);
+
+/**
+ * @brief   Check whether called from interrupt service routine
+ * @return  true, if in interrupt service routine, false if not
+ */
+static inline __attribute__((always_inline)) int irq_is_in(void);
+
+#include "irq_arch.h"
+
+#else
+
 /**
  * @brief   This function sets the IRQ disable bit in the status register
  *
@@ -65,6 +110,8 @@ void irq_restore(unsigned state);
  * @return  true, if in interrupt service routine, false if not
  */
 int irq_is_in(void);
+
+#endif /* MODULE_CORTEXM_COMMON */
 
 #ifdef __cplusplus
 }
