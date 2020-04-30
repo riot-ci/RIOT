@@ -43,7 +43,7 @@ int rand_minstd(void)
 {
     uint32_t hi = div_u32_by_44488(_seed);
     uint32_t lo = div_u32_mod_44488(_seed);
-    uint32_t test = (a * lo) - (r * hi);
+    int32_t test = (a * lo) - (r * hi);
 
     if(test > 0) {
         _seed = test;
