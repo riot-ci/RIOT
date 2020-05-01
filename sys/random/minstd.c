@@ -16,11 +16,6 @@
  * @brief Simple Park & Miller "minimal standard" PRNG
  *
  * This file contains a simple Park-Miller pseudo random number generator.
- *
- * While not very random when considering crypto requirements, this is probably
- * random enough anywhere where pseudo-randomness is sufficient, e.g., when
- * provided with a sensible seed source, for MAC algorithms.
- *
  * The implementation is taken from the C FAQ, but modified to use magic number
  * division and adapted to RIOT's coding conventions..
  *
@@ -43,7 +38,7 @@ int rand_minstd(void)
 {
     uint32_t hi = div_u32_by_44488(_seed);
     uint32_t lo = div_u32_mod_44488(_seed);
-    uint32_t test = (a * lo) - (r * hi);
+    int32_t test = (a * lo) - (r * hi);
 
     if(test > 0) {
         _seed = test;
