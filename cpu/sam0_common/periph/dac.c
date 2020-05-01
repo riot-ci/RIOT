@@ -24,10 +24,6 @@
 
 #include "byteorder.h"
 
-#ifndef DAC_CLOCK
-#define DAC_CLOCK   DAC_CLOCK_DEFAULT
-#endif
-
 #define DAC_VAL(in) (in >> (16 - DAC_RES_BITS))
 
 static void _dac_init_clock(dac_t line)
@@ -106,14 +102,12 @@ int8_t dac_init(dac_t line)
                            | _get_CCTRL(sam0_gclk_freq(DAC_CLOCK));
 #endif
 
-#if defined(DAC_CTRLB_REFSEL_VREFP)
-    DAC->CTRLB.reg = DAC_CTRLB_REFSEL_AVCC
-                   | DAC_CTRLB_EOEN;
-#elif defined(DAC_CTRLB_REFSEL_VREFPU)
-    /* Use external reference voltage on PA03 */
-    /* Internal reference only gives 1V */
-    DAC->CTRLB.reg = DAC_CTRLB_REFSEL_VREFPU;
+    /* Set Reference Voltage & enable Output if needed */
+    DAC->CTRLB.reg = DAC_VREF
+#ifdef DAC_CTRLB_EOEN
+                   | DAC_CTRLB_EOEN
 #endif
+                   ;
 
     DAC->CTRLA.bit.ENABLE = 1;
     _sync();

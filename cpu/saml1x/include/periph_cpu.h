@@ -63,11 +63,6 @@ typedef enum {
 /** @} */
 
 /**
- * @brief   The default clock for the DAC.
- */
-#define DAC_CLOCK_DEFAULT   SAM0_GCLK_32KHZ
-
-/**
  * @brief   The MCU has a 10 bit DAC
  */
 #define DAC_RES_BITS        (10)
