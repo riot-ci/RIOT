@@ -43,6 +43,17 @@ static void _dac_init_clock(dac_t line)
     dac_poweron(line);
 }
 
+static inline bool _ext_vref(void)
+{
+#ifdef DAC_CTRLB_REFSEL_VREFP
+    return DAC_VREF == DAC_CTRLB_REFSEL_VREFP;
+#endif
+#ifdef DAC_CTRLB_REFSEL_VREFPU
+    return (DAC_VREF == DAC_CTRLB_REFSEL_VREFPU) ||
+           (DAC_VREF == DAC_CTRLB_REFSEL_VREFPB);
+#endif
+}
+
 static inline void _sync(void)
 {
 #ifdef DAC_SYNCBUSY_MASK
@@ -89,6 +100,11 @@ int8_t dac_init(dac_t line)
 #endif
     default:
         return DAC_NOLINE;
+    }
+
+    if (_ext_vref()) {
+        /* PA3 is external reference voltage */
+        gpio_init_mux(GPIO_PIN(PA, 3), GPIO_MUX_B);
     }
 
     _dac_init_clock(line);
