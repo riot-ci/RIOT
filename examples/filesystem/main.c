@@ -26,6 +26,21 @@
 #include "shell.h"
 #include "board.h" /* MTD_0 is defined in board.h */
 
+#if !defined(MTD_0) && MODULE_MTD_SDCARD
+#include "mtd_sdcard.h"
+#include "sdcard_spi.h"
+#include "sdcard_spi_params.h"
+
+#define SDCARD_SPI_NUM ARRAY_SIZE(sdcard_spi_params)
+extern sdcard_spi_t sdcard_spi_devs[SDCARD_SPI_NUM];
+mtd_sdcard_t mtd_sdcard_devs[SDCARD_SPI_NUM];
+
+/* always default to first sdcard*/
+static mtd_dev_t *mtd0 = (mtd_dev_t*)&mtd_sdcard_devs[0];
+
+#define MTD_0 mtd0
+#endif
+
 /* Flash mount point */
 #define FLASH_MOUNT_POINT   "/sda"
 
@@ -62,6 +77,21 @@ static spiffs_desc_t fs_desc = {
 
 /* spiffs driver will be used */
 #define FS_DRIVER spiffs_file_system
+
+#elif defined(MODULE_FATFS_VFS)
+/* include file system header */
+#include "fs/fatfs.h"
+
+/* file system specific descriptor
+ * as for littlefs, some fields can be changed if needed,
+ * this example focus on basic usage, i.e. entire memory used */
+static fatfs_desc_t fs_desc;
+
+/* provide mtd devices for use within diskio layer of fatfs */
+mtd_dev_t *fatfs_mtd_devs[FF_VOLUMES];
+
+/* fatfs driver will be used */
+#define FS_DRIVER fatfs_file_system
 #endif
 
 /* this structure defines the vfs mount point:
@@ -115,7 +145,7 @@ static int _mount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_mount(&flash_mount);
     if (res < 0) {
         printf("Error while mounting %s...try format\n", FLASH_MOUNT_POINT);
@@ -134,7 +164,7 @@ static int _format(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_format(&flash_mount);
     if (res < 0) {
         printf("Error while formatting %s\n", FLASH_MOUNT_POINT);
@@ -153,7 +183,7 @@ static int _umount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_umount(&flash_mount);
     if (res < 0) {
         printf("Error while unmounting %s\n", FLASH_MOUNT_POINT);
@@ -244,10 +274,20 @@ static const shell_command_t shell_commands[] = {
 
 int main(void)
 {
+#if MODULE_MTD_SDCARD
+    for (unsigned int i = 0; i < SDCARD_SPI_NUM; i++){
+        mtd_sdcard_devs[i].base.driver = &mtd_sdcard_driver;
+        mtd_sdcard_devs[i].sd_card = &sdcard_spi_devs[i];
+        mtd_sdcard_devs[i].params = &sdcard_spi_params[i];
+    }
+#endif
+
 #if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
     /* spiffs and littlefs need a mtd pointer
      * by default the whole memory is used */
     fs_desc.dev = MTD_0;
+#elif defined(MTD_0) && defined(MODULE_FATFS_VFS)
+    fatfs_mtd_devs[fs_desc.vol_idx] = MTD_0;
 #endif
     int res = vfs_mount(&const_mount);
     if (res < 0) {
