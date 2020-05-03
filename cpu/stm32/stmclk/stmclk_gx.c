@@ -25,8 +25,6 @@
 #error "HSE is selected as input clock source but CLOCK_HSE is not set"
 #endif
 
-#if CLOCK_USE_PLL
-
 #if defined(CPU_FAM_STM32G0)
 #define PLL_M_MIN                   (1)
 #define PLL_M_MAX                   (8)
@@ -34,7 +32,7 @@
 #define PLL_N_MAX                   (86)
 #define PLL_R_MIN                   (2)
 #define PLL_R_MAX                   (8)
-#else /* CPU_FAM_STM32G4 */
+#else /* CPu_FAM_STM32G4 */
 #define PLL_M_MIN                   (1)
 #define PLL_M_MAX                   (16)
 #define PLL_N_MIN                   (8)
@@ -43,6 +41,7 @@
 #define PLL_R_MAX                   (8)
 #endif
 
+#if CLOCK_USE_PLL
 #if (CLOCK_PLL_M < PLL_M_MIN || CLOCK_PLL_M > PLL_M_MAX)
 #error "PLL configuration: PLL M value is out of range"
 #endif
