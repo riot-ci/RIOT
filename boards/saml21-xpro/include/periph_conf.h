@@ -35,6 +35,12 @@ extern "C" {
 #define CLOCK_CORECLOCK     (48000000U)
 
 /**
+ * @brief Enable the internal DC/DC converter
+ *        The board is equipped with the necessary inductor.
+ */
+#define USE_VREG_BUCK       (1)
+
+/**
  * @name    Timer peripheral configuration
  * @{
  */
@@ -176,6 +182,16 @@ static const adc_conf_chan_t adc_channels[] = {
 };
 
 #define ADC_NUMOF                           ARRAY_SIZE(adc_channels)
+/** @} */
+
+/**
+ * @name DAC configuration
+ * @{
+ */
+                            /* Must not exceed 12 MHz */
+#define DAC_CLOCK           SAM0_GCLK_8MHZ
+                            /* use Vcc as reference voltage */
+#define DAC_VREF            DAC_CTRLB_REFSEL_VDDANA
 /** @} */
 
 #ifdef __cplusplus

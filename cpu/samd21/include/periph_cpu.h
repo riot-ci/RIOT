@@ -84,7 +84,8 @@ typedef struct {
  */
 typedef struct {
     Tcc *dev;                   /**< TCC device to use */
-    pwm_conf_chan_t chan[3];    /**< channel configuration */
+    const pwm_conf_chan_t *chan;/**< channel configuration */
+    const uint8_t chan_numof;   /**< number of channels */
 } pwm_conf_t;
 
 /**
@@ -115,6 +116,17 @@ typedef enum {
 } adc_res_t;
 /** @} */
 #endif /* ndef DOXYGEN */
+
+/**
+ * @brief   The MCU has a 10 bit DAC
+ */
+#define DAC_RES_BITS        (10)
+
+/**
+ * @brief   The MCU has one DAC Output.
+ */
+#define DAC_NUMOF           (1)
+
 #ifdef __cplusplus
 }
 #endif
