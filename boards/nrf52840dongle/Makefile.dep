@@ -2,7 +2,19 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += saul_gpio
 endif
 
-DEFAULT_MODULE += stdio_cdc_acm
-DEFAULT_MODULE += auto_init_usbus
+# See boards/common/nrf52/Makefile.include
+ifneq (1,${EARLY_BOARD_MAKEFILE_DEP_HACK})
+
+# Without auto_init, the stdio_cdc_acm breaks as the auto_init_usbus would not be called, so...
+ifeq (,$(filter auto_init,$(DISABLE_MODULE)))
+  # ethos only works on the UART-based stdio; when present, don't attempt to use CDC-ACM...
+  ifeq (,$(filter stdio_ethos,$(USEMODULE)))
+    DEFAULT_MODULE += stdio_cdc_acm
+    DEFAULT_MODULE += auto_init_usbus
+  endif
+endif
+# ... and fall back to the UART-based stdio
+
+endif
 
 include $(RIOTBOARD)/common/nrf52/Makefile.dep

@@ -11,8 +11,12 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 # because BOARDs Makefile.include are included before Makefile.dep
 # This HACK can be removed either when Makefile.include is included after
 # Makefile.features (see #9913) or if 'nordic_softdevice_ble' is deprecated.
+#
+# Declaring that this hack is being run to allow code in Makefile.dep that
+# depends on the regular sequence of events to skip this early round
+EARLY_BOARD_MAKEFILE_DEP_HACK=1
 -include $(APPDIR)/Makefile.board.dep
-include $(RIOTBOARD)/$(BOARD)/Makefile.dep
+EARLY_BOARD_MAKEFILE_DEP_HACK=
 
 PROGRAMMER ?= jlink
 ifeq (jlink,$(PROGRAMMER))
