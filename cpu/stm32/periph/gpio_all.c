@@ -44,7 +44,7 @@ static gpio_isr_ctx_t isr_ctx[EXTI_NUMOF];
 #endif /* MODULE_PERIPH_GPIO_IRQ */
 
 #if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
-    defined(CPU_FAM_STM32G4)
+    defined(CPU_FAM_STM32G4) || defined(CPU_FAM_STM32G0)
 #define EXTI_REG_RTSR       (EXTI->RTSR1)
 #define EXTI_REG_FTSR       (EXTI->FTSR1)
 #define EXTI_REG_PR         (EXTI->PR1)
@@ -91,7 +91,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     /* enable clock */
 #if defined(CPU_FAM_STM32F0) || defined (CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L1)
     periph_clk_en(AHB, (RCC_AHBENR_GPIOAEN << _port_num(pin)));
-#elif defined (CPU_FAM_STM32L0)
+#elif defined (CPU_FAM_STM32L0) || defined(CPU_FAM_STM32G0)
     periph_clk_en(IOP, (RCC_IOPENR_GPIOAEN << _port_num(pin)));
 #elif defined (CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
       defined (CPU_FAM_STM32G4)
@@ -141,7 +141,7 @@ void gpio_init_analog(gpio_t pin)
      * gpio_init first */
 #if defined(CPU_FAM_STM32F0) || defined (CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L1)
     periph_clk_en(AHB, (RCC_AHBENR_GPIOAEN << _port_num(pin)));
-#elif defined (CPU_FAM_STM32L0)
+#elif defined (CPU_FAM_STM32L0) || defined(CPU_FAM_STM32G0)
     periph_clk_en(IOP, (RCC_IOPENR_GPIOAEN << _port_num(pin)));
 #elif defined (CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
       defined (CPU_FAM_STM32G4)

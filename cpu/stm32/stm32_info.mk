@@ -22,7 +22,7 @@ else ifneq (,$(filter $(CPU_FAM),g4 wb))
   CPU_ARCH = cortex-m4
 else ifeq (f7,$(CPU_FAM))
   CPU_ARCH = cortex-m7
-else ifeq (l0,$(CPU_FAM))
+else ifneq (,$(CPU_FAM),g0 l0)
   CPU_ARCH = cortex-m0plus
 else
   $(error Not supported CPU family: 'stm32$(CPU_FAM)')
