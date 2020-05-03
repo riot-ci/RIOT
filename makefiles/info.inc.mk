@@ -28,7 +28,7 @@ info-build:
 	@echo 'APPDIR:      $(APPDIR)'
 	@echo ''
 	@echo 'supported boards:'
-	@echo $$($(MAKE) info-boards-supported)
+	@echo $$(env -i $(MAKE) info-boards-supported)
 	@echo ''
 	@echo 'BOARD:   $(BOARD)'
 	@echo 'CPU:     $(CPU)'
