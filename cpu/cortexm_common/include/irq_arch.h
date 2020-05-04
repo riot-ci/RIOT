@@ -46,8 +46,9 @@ static inline __attribute__((always_inline)) unsigned int irq_disable(void)
 static inline __attribute__((always_inline)) __attribute__((used)) unsigned int
 irq_enable(void)
 {
+    unsigned result = __get_PRIMASK();
     __enable_irq();
-    return __get_PRIMASK();
+    return result;
 }
 
 /**
