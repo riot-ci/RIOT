@@ -39,6 +39,11 @@
  */
 #define HAVE_HEAP_STATS
 
+/**
+ * @brief   This arch uses the non-inlined legacy irq API.
+ */
+#define LEGACY_IRQ_API      (1)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
