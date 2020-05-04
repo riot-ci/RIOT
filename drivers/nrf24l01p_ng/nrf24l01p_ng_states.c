@@ -35,7 +35,7 @@ static void _restore_address(const nrf24l01p_ng_t *dev)
         NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(NRF24L01P_NG_ADDR_WIDTH));
     uint8_t addr_buffer[NRF24L01P_NG_ADDR_WIDTH];
 
-    memcpy(addr_buffer, dev->params.urxaddr.rxaddrpx.rx_p0,
+    memcpy(addr_buffer, dev->urxaddr.rxaddrpx.rx_p0,
            NRF24L01P_NG_ADDR_WIDTH);
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_P0, addr_buffer,
                            NRF24L01P_NG_ADDR_WIDTH);
