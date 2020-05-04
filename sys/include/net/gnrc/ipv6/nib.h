@@ -289,6 +289,19 @@ enum {
 };
 
 /**
+ * @brief   Types for GNRC_NETIF_BUS_NIB per-interface message bus
+ */
+typedef enum {
+    /**
+     * @brief   Address registration successful
+     *
+     * The Address registration with the boarder router was successful.
+     * The node now has a global prefix.
+     */
+    GNRC_IPV6_NIB_EVENT_REG_SUCCESS,
+} gnrc_ipv6_nib_event_t;
+
+/**
  * @brief   Initialize NIB
  */
 void gnrc_ipv6_nib_init(void);
