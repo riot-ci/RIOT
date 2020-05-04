@@ -66,6 +66,11 @@ extern "C" {
 #endif
 /** @} */
 
+/**
+ * @brief   This arch uses the non-inlined legacy irq API.
+ */
+#define LEGACY_IRQ_API      (1)
+
 #ifdef __cplusplus
 }
 #endif

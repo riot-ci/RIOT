@@ -138,6 +138,11 @@ extern "C" {
  */
 #define BACKUP_RAM_DATA __attribute__((section(".backup.data")))
 
+/**
+ * @brief   This arch uses the non-inlined legacy irq API.
+ */
+#define LEGACY_IRQ_API      (1)
+
 #ifdef __cplusplus
 }
 #endif

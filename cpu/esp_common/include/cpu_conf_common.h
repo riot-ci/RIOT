@@ -44,7 +44,11 @@
  */
 #define BACKUP_RAM_DATA __attribute__((section(".rtc.data")))
 
-#ifdef __cplusplus
+/**
+ * @brief   This arch uses the non-inlined legacy irq API.
+ */
+#define LEGACY_IRQ_API      (1)
+
 extern "C" {
 #endif
 
