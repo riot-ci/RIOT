@@ -7,4 +7,9 @@
 menu "Drivers"
 rsource "Kconfig.net"
 rsource "periph_common/Kconfig"
+
+menu "Storage Device Drivers"
+rsource "mtd_sdcard/Kconfig"
+endmenu # Storage Device Drivers
+
 endmenu # Drivers
