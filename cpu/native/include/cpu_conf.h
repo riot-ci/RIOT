@@ -60,6 +60,11 @@ extern "C" {
 #   define GNRC_PKTBUF_SIZE     (2048)
 #endif
 
+/**
+ * @brief   This arch uses the non-inlined legacy irq API.
+ */
+#define LEGACY_IRQ_API      (1)
+
 #ifdef __cplusplus
 }
 #endif
