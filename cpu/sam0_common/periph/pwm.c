@@ -37,7 +37,7 @@ static inline uint8_t _chan(pwm_t dev, int chan)
     return pwm_config[dev].chan[chan].chan;
 }
 
-static uint8_t get_prescaler(unsigned int target, int *scale)
+static uint8_t _get_prescaler(unsigned int target, int *scale)
 {
     if (target == 0) {
         return 0xff;
@@ -115,7 +115,7 @@ uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
     const uint32_t f_src = sam0_gclk_freq(pwm_config[dev].gclk_src);
 
     /* calculate the closest possible clock presacler */
-    prescaler = get_prescaler(f_src / (freq * res), &scale);
+    prescaler = _get_prescaler(f_src / (freq * res), &scale);
     if (prescaler == 0xff) {
         return 0;
     }
