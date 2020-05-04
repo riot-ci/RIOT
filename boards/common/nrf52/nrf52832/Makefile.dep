@@ -1,3 +1,4 @@
+# nimble_netif has a hard dependency on gnrc_netdev
 ifneq (,$(filter gnrc_netdev_default,$(USEMODULE)))
   ifeq (,$(filter nordic_softdevice_ble nrfmin,$(USEMODULE) $(USEPKG)))
     USEMODULE += nimble_netif
