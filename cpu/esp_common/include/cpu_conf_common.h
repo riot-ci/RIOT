@@ -49,6 +49,7 @@
  */
 #define LEGACY_IRQ_API      (1)
 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
