@@ -277,7 +277,7 @@ int nrf24l01p_ng_set_rx_address(nrf24l01p_ng_t *dev, const uint8_t *addr,
         nrf24l01p_ng_write_reg(dev, reg_pipe_info[pipe].reg_pipe_addr,
                                addr, NRF24L01P_NG_ADDR_WIDTH);
         nrf24l01p_ng_release(dev);
-        memcpy(dev->params.urxaddr.arxaddr.rx_addr_long[pipe],
+        memcpy(dev->urxaddr.arxaddr.rx_addr_long[pipe],
                addr, NRF24L01P_NG_ADDR_WIDTH);
     }
     else {
@@ -285,7 +285,7 @@ int nrf24l01p_ng_set_rx_address(nrf24l01p_ng_t *dev, const uint8_t *addr,
         nrf24l01p_ng_write_reg(dev, reg_pipe_info[pipe].reg_pipe_addr,
                                addr, 1);
         nrf24l01p_ng_release(dev);
-        dev->params.urxaddr.arxaddr.rx_addr_short[pipe - 2] = *addr;
+        dev->urxaddr.arxaddr.rx_addr_short[pipe - 2] = *addr;
     }
     return 0;
 }
@@ -299,14 +299,14 @@ int nrf24l01p_ng_get_rx_address(const nrf24l01p_ng_t *dev, uint8_t *addr,
         return -EINVAL;
     }
     if (pipe == NRF24L01P_NG_P0 || pipe == NRF24L01P_NG_P1) {
-        memcpy(addr, dev->params.urxaddr.arxaddr.rx_addr_long[pipe],
+        memcpy(addr, dev->urxaddr.arxaddr.rx_addr_long[pipe],
                NRF24L01P_NG_ADDR_WIDTH);
     }
     else {
-        memcpy(addr, dev->params.urxaddr.arxaddr.rx_addr_long[NRF24L01P_NG_P1],
+        memcpy(addr, dev->urxaddr.arxaddr.rx_addr_long[NRF24L01P_NG_P1],
                NRF24L01P_NG_ADDR_WIDTH);
         addr[NRF24L01P_NG_ADDR_WIDTH - 1]
-            = dev->params.urxaddr.arxaddr.rx_addr_short[pipe - 2];
+            = dev->urxaddr.arxaddr.rx_addr_short[pipe - 2];
     }
     return NRF24L01P_NG_ADDR_WIDTH;
 }

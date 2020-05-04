@@ -323,27 +323,27 @@ void nrf24l01p_ng_diagnostics_print_dev_info(const nrf24l01p_ng_t *dev)
     printf("\tTx power:             %d dbm\n",
            nrf24l01p_ng_etoval_tx_power(dev->params.config.cfg_tx_power));
     printf("\tRx address p0:        %2x:%2x:%2x:%2x:%2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p0[0],
-           dev->params.urxaddr.rxaddrpx.rx_p0[1],
-           dev->params.urxaddr.rxaddrpx.rx_p0[2],
-           dev->params.urxaddr.rxaddrpx.rx_p0[3],
-           dev->params.urxaddr.rxaddrpx.rx_p0[4]
+           dev->urxaddr.rxaddrpx.rx_p0[0],
+           dev->urxaddr.rxaddrpx.rx_p0[1],
+           dev->urxaddr.rxaddrpx.rx_p0[2],
+           dev->urxaddr.rxaddrpx.rx_p0[3],
+           dev->urxaddr.rxaddrpx.rx_p0[4]
            );
     printf("\tRX address p1:        %2x:%2x:%2x:%2x:%2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p1[0],
-           dev->params.urxaddr.rxaddrpx.rx_p1[1],
-           dev->params.urxaddr.rxaddrpx.rx_p1[2],
-           dev->params.urxaddr.rxaddrpx.rx_p1[3],
-           dev->params.urxaddr.rxaddrpx.rx_p1[4]
+           dev->urxaddr.rxaddrpx.rx_p1[0],
+           dev->urxaddr.rxaddrpx.rx_p1[1],
+           dev->urxaddr.rxaddrpx.rx_p1[2],
+           dev->urxaddr.rxaddrpx.rx_p1[3],
+           dev->urxaddr.rxaddrpx.rx_p1[4]
            );
     printf("\tRX address p2:        %2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p2);
+           dev->urxaddr.rxaddrpx.rx_p2);
     printf("\tRX address p3:        %2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p3);
+           dev->urxaddr.rxaddrpx.rx_p3);
     printf("\tRX address p4:        %2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p4);
+           dev->urxaddr.rxaddrpx.rx_p4);
     printf("\tRX address p5:        %2x\n",
-           dev->params.urxaddr.rxaddrpx.rx_p5);
+           dev->urxaddr.rxaddrpx.rx_p5);
 
     printf("State:                  %s\n",
            nrf24l01p_ng_state_to_string(dev->state));

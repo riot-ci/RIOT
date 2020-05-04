@@ -125,12 +125,23 @@ typedef struct __attribute__((packed)) {
  * @brief Struct of NRF24L01+ initialization parameters
  */
 typedef struct {
-    spi_t spi;          /**< SPI bus */
-    spi_clk_t spi_clk;  /**< SPI clock speed */
-    gpio_t pin_cs;      /**< SPI chip select gpio pin */
-    gpio_t pin_ce;      /**< NRF24L01+ chip enable gpio pin */
-    gpio_t pin_irq;     /**< NRF24L01+ IRQ gpio pin */
-    union {
+    spi_t spi;                  /**< SPI bus */
+    spi_clk_t spi_clk;          /**< SPI clock speed */
+    gpio_t pin_cs;              /**< SPI chip select gpio pin */
+    gpio_t pin_ce;              /**< NRF24L01+ chip enable gpio pin */
+    gpio_t pin_irq;             /**< NRF24L01+ IRQ gpio pin */
+    nrf24l01p_ng_cfg_t config;  /**< Current configuration values */
+} nrf24l01p_ng_params_t;
+
+/**
+ * @brief   NRF24L01+ device struct
+ */
+struct nrf24l01p_ng {
+    netdev_t netdev;                /**< Netdev member */
+    nrf24l01p_ng_params_t params;   /**< Parameters */
+    uint8_t state;                  /**< Current operation state */
+    uint8_t idle_state;             /**< State to return to after sending */
+   union {
         struct {
             /**
              * @brief   Array to access the addresses of pipe 0 and pipe 1 via
@@ -171,17 +182,6 @@ typedef struct {
             uint8_t rx_p5;
         } rxaddrpx; /**< Rx addresses as named variables */
     } urxaddr; /**< Union of Rx addresses as named variables and as arrays */
-    nrf24l01p_ng_cfg_t config; /**< Current configuration values */
-} nrf24l01p_ng_params_t;
-
-/**
- * @brief   NRF24L01+ device struct
- */
-struct nrf24l01p_ng {
-    netdev_t netdev;                /**< Netdev member */
-    nrf24l01p_ng_params_t params;   /**< Parameters */
-    uint8_t state;                  /**< Current operation state */
-    uint8_t idle_state;             /**< State to return to after sending */
 };
 
 /**

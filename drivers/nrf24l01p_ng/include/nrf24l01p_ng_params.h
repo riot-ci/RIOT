@@ -63,48 +63,6 @@ extern "C" {
 #define NRF24L01P_NG_PARAM_IRQ              GPIO_UNDEF
 #endif
 
-#ifndef NRF24L01P_NG_PARAM_RX_P0
-/**
- * @brief   Pipe 0 address (enabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P0            NRF24L01P_NG_DEFAULT_ADDR_P0
-#endif
-
-#ifndef NRF24L01P_NG_PARAM_RX_P1
-/**
- * @brief   Pipe 1 address (enabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P1            NRF24L01P_NG_DEFAULT_ADDR_P1
-#endif
-
-#ifndef NRF24L01P_NG_PARAM_RX_P2
-/**
- * @brief   Pipe 2 address (disabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P2            NRF24L01P_NG_ADDR_UNDEF
-#endif
-
-#ifndef NRF24L01P_NG_PARAM_RX_P3
-/**
- * @brief   Pipe 3 address (disabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P3            NRF24L01P_NG_ADDR_UNDEF
-#endif
-
-#ifndef NRF24L01P_NG_PARAM_RX_P4
-/**
- * @brief   Pipe 4 address (disabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P4            NRF24L01P_NG_ADDR_UNDEF
-#endif
-
-#ifndef NRF24L01P_NG_PARAM_RX_P5
-/**
- * @brief   Pipe 5 address (disabled by default)
- */
-#define NRF24L01P_NG_PARAM_RX_P5            NRF24L01P_NG_ADDR_UNDEF
-#endif
-
 #ifndef NRF24L01P_NG_PARAM_CRC_LEN
 /**
  * @brief   Default CRC length
@@ -161,14 +119,6 @@ extern "C" {
         .pin_cs = NRF24L01P_NG_PARAM_CS,                                       \
         .pin_ce = NRF24L01P_NG_PARAM_CE,                                       \
         .pin_irq = NRF24L01P_NG_PARAM_IRQ,                                     \
-        .urxaddr.rxaddrpx = {                                                  \
-            .rx_p0 = NRF24L01P_NG_PARAM_RX_P0,                                 \
-            .rx_p1 = NRF24L01P_NG_PARAM_RX_P1,                                 \
-            .rx_p2 = NRF24L01P_NG_PARAM_RX_P2,                                 \
-            .rx_p3 = NRF24L01P_NG_PARAM_RX_P3,                                 \
-            .rx_p4 = NRF24L01P_NG_PARAM_RX_P4,                                 \
-            .rx_p5 = NRF24L01P_NG_PARAM_RX_P5,                                 \
-        },                                                                     \
         .config =       {                                                      \
             .cfg_crc = NRF24L01P_NG_PARAM_CRC_LEN,                             \
             .cfg_tx_power = NRF24L01P_NG_PARAM_TX_POWER,                       \
