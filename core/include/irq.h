@@ -22,12 +22,54 @@
 #define IRQ_H
 
 #include <stdbool.h>
+#include "cpu_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef MODULE_CORTEXM_COMMON
+#ifdef LEGACY_IRQ_API
+
+/**
+ * @brief   This function sets the IRQ disable bit in the status register
+ *
+ * @return  Previous value of status register. The return value should not be
+ *          interpreted as a boolean value. The actual value is only
+ *          significant for irq_restore().
+ *
+ * @see     irq_restore
+ */
+unsigned irq_disable(void);
+
+/**
+ * @brief   This function clears the IRQ disable bit in the status register
+ *
+ * @return  Previous value of status register. The return value should not be
+ *          interpreted as a boolean value. The actual value is only
+ *          significant for irq_restore().
+ *
+ * @see     irq_restore
+ */
+unsigned irq_enable(void);
+
+/**
+ * @brief   This function restores the IRQ disable bit in the status register
+ *          to the value contained within passed state
+ *
+ * @param[in] state   state to restore
+ *
+ * @see     irq_enable
+ * @see     irq_disable
+ */
+void irq_restore(unsigned state);
+
+/**
+ * @brief   Check whether called from interrupt service routine
+ * @return  true, if in interrupt service routine, false if not
+ */
+int irq_is_in(void);
+
+#else
 
 /**
  * @brief   This function sets the IRQ disable bit in the status register
@@ -70,48 +112,7 @@ static inline __attribute__((always_inline)) int irq_is_in(void);
 
 #include "irq_arch.h"
 
-#else
-
-/**
- * @brief   This function sets the IRQ disable bit in the status register
- *
- * @return  Previous value of status register. The return value should not be
- *          interpreted as a boolean value. The actual value is only
- *          significant for irq_restore().
- *
- * @see     irq_restore
- */
-unsigned irq_disable(void);
-
-/**
- * @brief   This function clears the IRQ disable bit in the status register
- *
- * @return  Previous value of status register. The return value should not be
- *          interpreted as a boolean value. The actual value is only
- *          significant for irq_restore().
- *
- * @see     irq_restore
- */
-unsigned irq_enable(void);
-
-/**
- * @brief   This function restores the IRQ disable bit in the status register
- *          to the value contained within passed state
- *
- * @param[in] state   state to restore
- *
- * @see     irq_enable
- * @see     irq_disable
- */
-void irq_restore(unsigned state);
-
-/**
- * @brief   Check whether called from interrupt service routine
- * @return  true, if in interrupt service routine, false if not
- */
-int irq_is_in(void);
-
-#endif /* MODULE_CORTEXM_COMMON */
+#endif /* LEGACY_IRQ_API */
 
 #ifdef __cplusplus
 }
