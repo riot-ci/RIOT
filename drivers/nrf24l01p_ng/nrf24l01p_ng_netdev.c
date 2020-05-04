@@ -543,6 +543,11 @@ int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             *((gnrc_nettype_t *)val) = NRF24L01P_NG_UPPER_LAYER_PROTOCOL;
             return sizeof(gnrc_nettype_t);
         } break;
+        case NETOPT_MAX_PDU_SIZE: {
+            assert(max_len == sizeof(uint16_t));
+            *((uint16_t *)val) = NRF24L01P_NG_MAX_PAYLOAD_WIDTH;
+            return sizeof(uint16_t);
+        }
         case NETOPT_RETRANS: {
             assert(max_len == sizeof(uint8_t));
             *((uint8_t *)val) = nrf24l01p_ng_get_max_retransm(dev);
