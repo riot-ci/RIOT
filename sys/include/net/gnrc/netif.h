@@ -71,6 +71,10 @@ extern "C" {
  * @brief   Per-Interface Event Message Busses
  */
 typedef enum {
+#ifdef MODULE_GNRC_IPV6_NIB
+    GNRC_NETIF_BUS_NIB,                     /**< provides @ref gnrc_ipv6_nib_event_t
+                                                 messages to subscribers */
+#endif
     GNRC_NETIF_BUS_NUMOF
 } gnrc_netif_bus_t;
 
