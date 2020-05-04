@@ -44,6 +44,13 @@ extern "C" {
 #endif
 
 /**
+ * @brief   The Timer implementation must define the number of channels the timer has.
+ */
+#ifndef TIMER_CHANNEL_NUMOF
+#error "Timer implementations have to provide the number of channels as CPP macro TIMER_CHANNEL_NUMOF"
+#endif
+
+/**
  * @brief   Default timer definition macro
  *
  * Overwrite this in your CPUs periph_cpu.h file if needed
