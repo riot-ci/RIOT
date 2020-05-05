@@ -34,6 +34,7 @@
 
 #include <inttypes.h>
 
+#include "net/kernel_macros.h"
 #include "net/ethertype.h"
 #include "net/protnum.h"
 
@@ -63,7 +64,7 @@ typedef enum {
     GNRC_NETTYPE_NETIF = -1,
     GNRC_NETTYPE_UNDEF = 0,     /**< Protocol is undefined */
 
-#if IS_USED(MODULE_GNRC_NETTYPE_SIXLOWPAN) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_SIXLOWPAN) || defined(DOXYGEN)
     GNRC_NETTYPE_SIXLOWPAN,     /**< Protocol is 6LoWPAN */
 #endif
 
@@ -71,7 +72,7 @@ typedef enum {
      * @{
      * @name Link layer
      */
-#if IS_USED(MODULE_GNRC_NETTYPE_GOMACH) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_GOMACH) || defined(DOXYGEN)
     GNRC_NETTYPE_GOMACH,         /**< Protocol is GoMacH */
 #endif
     /**
@@ -82,7 +83,7 @@ typedef enum {
      * @{
      * @name Link layer
      */
-#if IS_USED(MODULE_GNRC_NETTYPE_LWMAC) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_LWMAC) || defined(DOXYGEN)
     GNRC_NETTYPE_LWMAC,          /**< Protocol is lwMAC */
 #endif
     /**
@@ -93,13 +94,13 @@ typedef enum {
      * @{
      * @name Network layer
      */
-#if IS_USED(MODULE_GNRC_NETTYPE_IPV6) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_IPV6) || defined(DOXYGEN)
     GNRC_NETTYPE_IPV6,          /**< Protocol is IPv6 */
 #endif
-#if IS_USED(MODULE_GNRC_NETTYPE_IPV6_EXT) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_IPV6_EXT) || defined(DOXYGEN)
     GNRC_NETTYPE_IPV6_EXT,      /**< Protocol is IPv6 extension header */
 #endif
-#if IS_USED(MODULE_GNRC_NETTYPE_ICMPV6) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_ICMPV6) || defined(DOXYGEN)
     GNRC_NETTYPE_ICMPV6,        /**< Protocol is ICMPv6 */
 #endif
     /**
@@ -110,27 +111,27 @@ typedef enum {
      * @{
      * @name Transport layer
      */
-#if IS_USED(MODULE_GNRC_NETTYPE_TCP) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_TCP) || defined(DOXYGEN)
     GNRC_NETTYPE_TCP,           /**< Protocol is TCP */
 #endif
-#if IS_USED(MODULE_GNRC_NETTYPE_UDP) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_UDP) || defined(DOXYGEN)
     GNRC_NETTYPE_UDP,           /**< Protocol is UDP */
 #endif
     /**
      * @}
      */
 
-#if IS_USED(MODULE_GNRC_NETTYPE_CCN) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_CCN) || defined(DOXYGEN)
     GNRC_NETTYPE_CCN,           /**< Protocol is CCN */
     GNRC_NETTYPE_CCN_CHUNK,     /**< Protocol is CCN, packet contains a content
                                      chunk */
 #endif
 
-#if IS_USED(MODULE_GNRC_NETTYPE_NDN) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_NDN) || defined(DOXYGEN)
     GNRC_NETTYPE_NDN,           /**< Protocol is NDN */
 #endif
 
-#if IS_USED(MODULE_GNRC_NETTYPE_LORAWAN) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_GNRC_NETTYPE_LORAWAN) || defined(DOXYGEN)
     GNRC_NETTYPE_LORAWAN,       /**< Protocol is LoRaWAN */
 #endif
 
