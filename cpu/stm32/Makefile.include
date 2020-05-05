@@ -38,7 +38,7 @@ CFLAGS += -DSTM32_FLASHSIZE=$(FLASHSIZE)U
 info-stm32:
 	@$(COLOR_ECHO) "CPU: $(CPU_MODEL)"
 	@$(COLOR_ECHO) "\tLine: $(CPU_LINE)"
-	@$(COLOR_ECHO) "\tPin count:\t$(STM32_PINCOUNT)"
+	@$(COLOR_ECHO) "\tPin count:\t$(STM32_PINS)"
 	@$(COLOR_ECHO) "\tROM size:\t$(ROM_LEN) ($(FLASHSIZE) Bytes)"
 	@$(COLOR_ECHO) "\tRAM size:\t$(RAM_LEN)"
 
