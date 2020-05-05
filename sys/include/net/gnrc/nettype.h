@@ -120,13 +120,13 @@ typedef enum {
      * @}
      */
 
-#ifdef MODULE_GNRC_NETTYPE_CCN_LITE
+#ifdef MODULE_GNRC_NETTYPE_CCN
     GNRC_NETTYPE_CCN,           /**< Protocol is CCN */
     GNRC_NETTYPE_CCN_CHUNK,     /**< Protocol is CCN, packet contains a content
                                      chunk */
 #endif
 
-#ifdef MODULE_GNRC_NETTYPE_NDN_RIOT
+#ifdef MODULE_GNRC_NETTYPE_NDN
     GNRC_NETTYPE_NDN,           /**< Protocol is NDN */
 #endif
 
@@ -166,11 +166,11 @@ static inline gnrc_nettype_t gnrc_nettype_from_ethertype(uint16_t type)
         case ETHERTYPE_IPV6:
             return GNRC_NETTYPE_IPV6;
 #endif
-#if defined(MODULE_GNRC_NETTYPE_CCN_LITE) || defined(MODULE_GNRC_NETTYPE_NDN_RIOT)
+#if defined(MODULE_GNRC_NETTYPE_CCN) || defined(MODULE_GNRC_NETTYPE_NDN)
         case ETHERTYPE_NDN:
-#if defined(MODULE_GNRC_NETTYPE_CCN_LITE)
+#if defined(MODULE_GNRC_NETTYPE_CCN)
             return GNRC_NETTYPE_CCN;
-#elif defined(MODULE_GNRC_NETTYPE_NDN_RIOT)
+#elif defined(MODULE_GNRC_NETTYPE_NDN)
             return GNRC_NETTYPE_NDN;
 #endif
 #endif
@@ -205,11 +205,11 @@ static inline uint16_t gnrc_nettype_to_ethertype(gnrc_nettype_t type)
         case GNRC_NETTYPE_IPV6:
             return ETHERTYPE_IPV6;
 #endif
-#ifdef MODULE_GNRC_NETTYPE_CCN_LITE
+#ifdef MODULE_GNRC_NETTYPE_CCN
         case GNRC_NETTYPE_CCN:
             return ETHERTYPE_NDN;
 #endif
-#ifdef MODULE_GNRC_NETTYPE_NDN_RIOT
+#ifdef MODULE_GNRC_NETTYPE_NDN
         case GNRC_NETTYPE_NDN:
             return ETHERTYPE_NDN;
 #endif
