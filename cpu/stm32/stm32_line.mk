@@ -71,15 +71,15 @@ ifeq (F,$(STM32_TYPE))
     endif
   endif
   ifeq (4,$(STM32_FAMILY))  # STM32F4
-    ifneq (, $(filter $(STM32_MODEL), 401))
-      ifneq (, $(filter $(STM32_ROMSIZE), B C))
+    ifneq (,$(filter $(STM32_MODEL), 401))
+      ifneq (,$(filter $(STM32_ROMSIZE), B C))
         CPU_LINE = STM32F$(STM32_MODEL)xC
-      else ifneq (, $(filter $(STM32_ROMSIZE), D E))
+      else ifneq (,$(filter $(STM32_ROMSIZE), D E))
         CPU_LINE = STM32F$(STM32_MODEL)xE
       endif
-    else ifneq (, $(filter $(STM32_MODEL), 410 412))
-      CPU_LINE = STM32F$(STM32_MODEL)$(MODEL1)x
-    else ifneq (, $(filter $(TYPE), 411))
+    else ifneq (,$(filter $(STM32_MODEL), 410 412))
+      CPU_LINE = STM32F$(STM32_MODEL)$(STM32_PINCOUNT)x
+    else ifneq (,$(filter $(STM32_MODEL), 411))
       CPU_LINE = STM32F$(STM32_MODEL)xE
     else
       CPU_LINE = STM32F$(STM32_MODEL)xx
@@ -88,14 +88,14 @@ ifeq (F,$(STM32_TYPE))
 endif
 ifeq (L,(STM32_TYPE))
   ifeq (0,$(STM32_FAMILY))  # STM32L0
-    ifneq (, $(filter $(STM32_MODEL), 010))
-      ifneq (, $(filter $(STM32_ROMSIZE), 4))
+    ifneq (,$(filter $(STM32_MODEL), 010))
+      ifneq (,$(filter $(STM32_ROMSIZE), 4))
         CPU_LINE = STM32L$(STM32_MODEL)x4
-      else ifneq (, $(filter $(STM32_ROMSIZE), 6))
+      else ifneq (,$(filter $(STM32_ROMSIZE), 6))
         CPU_LINE = STM32L$(STM32_MODEL)x6
-      else ifneq (, $(filter $(STM32_ROMSIZE), 8))
+      else ifneq (,$(filter $(STM32_ROMSIZE), 8))
         CPU_LINE = STM32L$(STM32_MODEL)x8
-      else ifneq (, $(filter $(STM32_ROMSIZE), B))
+      else ifneq (,$(filter $(STM32_ROMSIZE), B))
         CPU_LINE = STM32L$(STM32_MODEL)xB
       endif
     else
