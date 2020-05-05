@@ -65,7 +65,7 @@ endif
 
 ifneq (,$(filter gnrc_gomach,$(USEMODULE)))
   USEMODULE += gnrc_netif
-  USEMDOULE += gnrc_nettype_gomach
+  USEMODULE += gnrc_nettype_gomach
   USEMODULE += random
   USEMODULE += xtimer
   USEMODULE += gnrc_mac
