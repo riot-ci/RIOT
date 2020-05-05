@@ -34,7 +34,7 @@
 
 #include <inttypes.h>
 
-#include "net/kernel_macros.h"
+#include "kernel_defines.h"
 #include "net/ethertype.h"
 #include "net/protnum.h"
 
