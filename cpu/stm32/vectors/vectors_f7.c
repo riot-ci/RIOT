@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     cpu_stm32f7
+ * @ingroup     cpu_stm32
  * @{
  *
  * @file
