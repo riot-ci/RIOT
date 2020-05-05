@@ -37,8 +37,6 @@
 #include "vendor/stm32f7xx.h"
 #elif CPU_FAM_STM32L0
 #include "vendor/stm32l0xx.h"
-#elif CPU_MODEL_STM32L152RE
-#include "vendor/stm32l152xe.h"
 #elif CPU_FAM_STM32L1
 #include "vendor/stm32l1xx.h"
 #elif CPU_FAM_STM32L4
