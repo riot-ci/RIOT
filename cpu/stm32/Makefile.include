@@ -1,10 +1,7 @@
 CFLAGS += -DCPU_FAM_$(call uppercase_and_underscore,$(CPU_FAM))
 
-# For stm32 cpu's we use the stm32_common.ld linker script
-LINKFLAGS += -L$(RIOTCPU)/stm32/ldscripts
+# For stm32 cpu's we use the generic stm32.ld linker script
 LINKER_SCRIPT ?= stm32.ld
-
-INCLUDES += -I$(RIOTCPU)/stm32/include
 
 # Include riotboot specific variables
 include $(RIOTCPU)/stm32/stm32_riotboot.mk
