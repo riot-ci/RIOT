@@ -24,11 +24,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Available number of ADC devices
- */
-#define ADC_DEVS            (2U)
-
-/**
  * @brief   Starting address of the CPU ID
  */
 #define CPUID_ADDR          (0x1ffff7e8)
