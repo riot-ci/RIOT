@@ -61,7 +61,7 @@ void auto_init_sx127x(void)
 #endif
 
         sx127x_setup(&sx127x_devs[i], &sx127x_params[i]);
-#ifdef MODULE_GNRC_LORAWAN
+#ifdef MODULE_GNRC_NETIF_LORAWAN
         /* Currently only one lora device is supported */
         assert(SX127X_NUMOF == 1);
 
