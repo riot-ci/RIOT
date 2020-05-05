@@ -27,9 +27,6 @@
 #include "stmclk.h"
 #include "periph/rtc.h"
 
-/* this implementation does not work for the stm32f1 */
-#if !defined(CPU_FAM_STM32F1)
-
 /* map some CPU specific register names */
 #if defined (CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
 #define EN_REG              (RCC->CSR)
@@ -354,5 +351,3 @@ void ISR_NAME(void)
     EXTI->PR |= EXTI_PR_BIT;
     cortexm_isr_end();
 }
-
-#endif /* !CPU_FAM_STM32F1 */

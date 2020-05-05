@@ -31,9 +31,6 @@
 #include "periph/gpio.h"
 #include "periph_conf.h"
 
-/* this implementation is not valid for the stm32f1 */
-#ifndef CPU_FAM_STM32F1
-
 #ifdef MODULE_PERIPH_GPIO_IRQ
 /**
  * @brief   The STM32F0 family has 16 external interrupt lines
@@ -258,7 +255,3 @@ void isr_exti(void)
     cortexm_isr_end();
 }
 #endif /* MODULE_PERIPH_GPIO_IRQ */
-
-#else
-typedef int dont_be_pedantic;
-#endif
