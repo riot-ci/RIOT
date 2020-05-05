@@ -828,6 +828,24 @@ static inline void _evtimer_add(void *ctx, int16_t type,
     evtimer_add_msg(&_nib_evtimer, event, target_pid);
 }
 
+/**
+ * @brief   Posts a message to the NIB bus of the interface
+ *
+ * @param[in] netif     Pointer to the interface
+ * @param[in] type      [Type of the event](@ref gnrc_ipv6_nib_event_t)
+ * @param[in] ctx       The context of the event
+ */
+static inline void _nib_bus_post(gnrc_netif_t *netif, int type, const void *ctx)
+{
+#ifdef MODULE_GNRC_NETIF_BUS
+    msg_bus_post(&netif->bus[GNRC_NETIF_BUS_NIB], type, ctx);
+#else
+    (void) netif;
+    (void) type;
+    (void) ctx;
+#endif
+}
+
 #ifdef __cplusplus
 }
 #endif
