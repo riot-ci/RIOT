@@ -224,12 +224,12 @@ static void test_mtd_write_read(void)
     ret = mtd_erase(dev, 0, dev->page_size * dev->pages_per_sector);
     TEST_ASSERT_EQUAL_INT(0, ret);
     ret = mtd_write(dev, buf_page, 0, dev->page_size);
-    TEST_ASSERT_EQUAL_INT(dev->page_size, ret);
+    TEST_ASSERT_EQUAL_INT(0, ret);
     ret = mtd_write(dev, buf_page, dev->page_size, dev->page_size);
-    TEST_ASSERT_EQUAL_INT(dev->page_size, ret);
+    TEST_ASSERT_EQUAL_INT(0, ret);
     memset(buf_page, 0, sizeof(buf_page));
     ret = mtd_read(dev, buf_page, 0, sizeof(buf_page));
-    TEST_ASSERT_EQUAL_INT(sizeof(buf_page), ret);
+    TEST_ASSERT_EQUAL_INT(0, ret);
     TEST_ASSERT_EQUAL_INT(1, buf_page[0]);
     TEST_ASSERT_EQUAL_INT(1, buf_page[sizeof(buf_page) - 1]);
 
