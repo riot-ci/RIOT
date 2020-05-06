@@ -102,6 +102,27 @@ struct mtd_desc {
                 uint32_t size);
 
     /**
+     * @brief   Read from the Memory Technology Device (MTD) using
+     *          pagewise addressing.
+     *
+     * @p offset should not exceed the page size
+     *
+     * @param[in]  dev      Pointer to the selected driver
+     * @param[out] buff     Pointer to the data buffer to store read data
+     * @param[in]  page     Starting page address
+     * @param[in]  offset   Byte offset from the start of the page
+     * @param[in]  size     Number of bytes
+     *
+     * @return 0 on success
+     * @return < 0 value on error
+     */
+    int (*read_page)(mtd_dev_t *dev,
+                void *buff,
+                uint32_t page,
+                uint16_t offset,
+                uint32_t size);
+
+    /**
      * @brief   Write to the Memory Technology Device (MTD)
      *
      * @p addr + @p size must be inside a page boundary. @p addr can be anywhere
@@ -121,6 +142,27 @@ struct mtd_desc {
                  uint32_t size);
 
     /**
+     * @brief   Write to the Memory Technology Device (MTD) using
+     *          pagewise addressing.
+     *
+     * @p offset should not exceed the page size
+     *
+     * @param[in]  dev      Pointer to the selected driver
+     * @param[out] buff     Pointer to the data to be written
+     * @param[in]  page     Starting page address
+     * @param[in]  offset   Byte offset from the start of the page
+     * @param[in]  size     Number of bytes
+     *
+     * @return 0 on success
+     * @return < 0 value on error
+     */
+    int (*write_page)(mtd_dev_t *dev,
+                const void *buff,
+                uint32_t page,
+                uint16_t offset,
+                uint32_t size);
+
+    /**
      * @brief   Erase sector(s) over the Memory Technology Device (MTD)
      *
      * @p addr must be aligned on a sector boundary. @p size must be a multiple of a sector size.
@@ -135,6 +177,20 @@ struct mtd_desc {
     int (*erase)(mtd_dev_t *dev,
                  uint32_t addr,
                  uint32_t size);
+
+    /**
+     * @brief   Erase page(s) over the Memory Technology Device (MTD)
+     *
+     * @param[in] dev       Pointer to the selected driver
+     * @param[in] addr      Starting page
+     * @param[in] size      Number of pages to erase
+     *
+     * @return 0 on success
+     * @return < 0 value on error
+     */
+    int (*erase_page)(mtd_dev_t *dev,
+                 uint32_t addr,
+                 uint32_t count);
 
     /**
      * @brief   Control power of Memory Technology Device (MTD)
@@ -177,6 +233,24 @@ int mtd_init(mtd_dev_t *mtd);
 int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
 
 /**
+ * @brief   Read data from a MTD device with pagewise addressing
+ *
+ * @param      mtd   the device to read from
+ * @param[out] dest  the buffer to fill in
+ * @param[in]  page  the start page to read from
+ * @param[in]  offset offset from the start of the page (in bytes)
+ * @param[in]  count the number of bytes to read
+ *
+ * @return 0 on success
+ * @return < 0 if an error occurred
+ * @return -ENODEV if @p mtd is not a valid device
+ * @return -ENOTSUP if operation is not supported on @p mtd
+ * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
+ * @return -EIO if I/O error occurred
+ */
+int mtd_read_page(mtd_dev_t *mtd, void *dest, uint32_t page, uint16_t offset, uint32_t count);
+
+/**
  * @brief   Write data to a MTD device
  *
  * @p addr + @p count must be inside a page boundary. @p addr can be anywhere
@@ -200,6 +274,29 @@ int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
 int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
 
 /**
+ * @brief   Write data to a MTD device with pagewise addressing
+ *
+ * @p offset + @p count must be inside a page boundary.
+ * Some devices might not support an @p offset != 0.
+ *
+ * @param      mtd   the device to write to
+ * @param[in]  src   the buffer to write
+ * @param[in]  page  the start page to write to
+ * @param[in]  offset byte offset from the start of the page
+ * @param[in]  count the number of bytes to write
+ *
+ * @return 0 on success
+ * @return < 0 if an error occurred
+ * @return -ENODEV if @p mtd is not a valid device
+ * @return -ENOTSUP if operation is not supported on @p mtd
+ * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory,
+ * or overlapping two pages
+ * @return -EIO if I/O error occurred
+ * @return -EINVAL if parameters are invalid (invalid alignment for instance)
+ */
+int mtd_write_page(mtd_dev_t *mtd, const void *src, uint32_t page, uint16_t offset, uint32_t count);
+
+/**
  * @brief   Erase sectors of a MTD device
  *
  * @p addr must be aligned on a sector boundary. @p count must be a multiple of a sector size.
@@ -216,6 +313,22 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
  * @return -EIO if I/O error occurred
  */
 int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
+
+/**
+ * @brief   Erase pages of a MTD device
+ *
+ * @param      mtd   the device to erase
+ * @param[in]  page  the first page to erase
+ * @param[in]  num   the number of pages to erase
+ *
+ * @return 0 if erase successful
+ * @return < 0 if an error occurred
+ * @return -ENODEV if @p mtd is not a valid device
+ * @return -ENOTSUP if operation is not supported on @p mtd
+ * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
+ * @return -EIO if I/O error occurred
+ */
+int mtd_erase_page(mtd_dev_t *mtd, uint32_t page, uint32_t num);
 
 /**
  * @brief   Set power mode on a MTD device
