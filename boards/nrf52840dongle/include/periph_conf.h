@@ -32,8 +32,8 @@ extern "C" {
 /**
  * @name    UART configuration
  *
- * This board does not have explicit UART pins, but until a USB TTY can
- * serve as a serial console, not defining any UART makes examples that build a shell much harder.
+ * This board does not have explicit UART pins. These are set as UART 0 to
+ * provide an easy serial debug port when not using (or debugging) USB.
  *
  * @{
  */
