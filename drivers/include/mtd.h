@@ -179,18 +179,18 @@ struct mtd_desc {
                  uint32_t size);
 
     /**
-     * @brief   Erase page(s) over the Memory Technology Device (MTD)
+     * @brief   Erase sector(s) of the Memory Technology Device (MTD)
      *
      * @param[in] dev       Pointer to the selected driver
-     * @param[in] addr      Starting page
-     * @param[in] size      Number of pages to erase
+     * @param[in] sector    Starting sector
+     * @param[in] count     Number of sectors to erase
      *
      * @return 0 on success
      * @return < 0 value on error
      */
-    int (*erase_page)(mtd_dev_t *dev,
-                 uint32_t addr,
-                 uint32_t count);
+    int (*erase_sector)(mtd_dev_t *dev,
+                        uint32_t sector,
+                        uint32_t count);
 
     /**
      * @brief   Control power of Memory Technology Device (MTD)
@@ -322,20 +322,20 @@ int mtd_write_page(mtd_dev_t *mtd, const void *src, uint32_t page, uint32_t offs
 int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
 
 /**
- * @brief   Erase pages of a MTD device
+ * @brief   Erase sectors of a MTD device
  *
- * @param      mtd   the device to erase
- * @param[in]  page  the first page to erase
- * @param[in]  num   the number of pages to erase
+ * @param      mtd    the device to erase
+ * @param[in]  sector the first sector to erase
+ * @param[in]  num    the number of sectors to erase
  *
  * @return 0 if erase successful
  * @return < 0 if an error occurred
  * @return -ENODEV if @p mtd is not a valid device
  * @return -ENOTSUP if operation is not supported on @p mtd
- * @return -EOVERFLOW if @p addr or @p count are not valid, i.e. outside memory
+ * @return -EOVERFLOW if @p addr or @p sector are not valid, i.e. outside memory
  * @return -EIO if I/O error occurred
  */
-int mtd_erase_page(mtd_dev_t *mtd, uint32_t page, uint32_t num);
+int mtd_erase_sector(mtd_dev_t *mtd, uint32_t sector, uint32_t num);
 
 /**
  * @brief   Set power mode on a MTD device
