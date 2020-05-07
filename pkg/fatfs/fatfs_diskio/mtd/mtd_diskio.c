@@ -95,14 +95,15 @@ DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
         return RES_PARERR;
     }
 
-    uint32_t nread = count * fatfs_mtd_devs[pdrv]->page_size;
+    uint32_t sector_size = fatfs_mtd_devs[pdrv]->page_size
+                         * fatfs_mtd_devs[pdrv]->pages_per_sector;
+
     int res = mtd_read_page(fatfs_mtd_devs[pdrv], buff,
-                            sector, 0, nread);
+                            sector, 0, count * sector_size);
 
     if (res != 0) {
         return RES_ERROR;
     }
-    assert((nread / fatfs_mtd_devs[pdrv]->page_size) == count);
     return RES_OK;
 }
 
@@ -126,22 +127,21 @@ DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
     }
 
     /* erase memory before writing to it */
-    int res = mtd_erase(fatfs_mtd_devs[pdrv],
-                        sector * fatfs_mtd_devs[pdrv]->page_size,
-                        count * fatfs_mtd_devs[pdrv]->page_size);
+    int res = mtd_erase_sector(fatfs_mtd_devs[pdrv], sector, count);
 
     if (res != 0) {
         return RES_ERROR; /* erase failed! */
     }
 
-    uint32_t nwrite = count * fatfs_mtd_devs[pdrv]->page_size;
+    uint32_t sector_size = fatfs_mtd_devs[pdrv]->page_size
+                         * fatfs_mtd_devs[pdrv]->pages_per_sector;
+
     res = mtd_write_page(fatfs_mtd_devs[pdrv], buff,
-                         sector, 0, nwrite);
+                         sector, 0, count * sector_size);
 
     if (res != 0) {
         return RES_ERROR;
     }
-    assert((nwrite / fatfs_mtd_devs[pdrv]->page_size) == count);
     return RES_OK;
 }
 
