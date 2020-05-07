@@ -75,14 +75,14 @@ static int mtd_sdcard_read_page(mtd_dev_t *dev, void *buff, uint32_t page,
 
     mtd_sdcard_t *mtd_sd = (mtd_sdcard_t*)dev;
     sd_rw_response_t err;
-    sdcard_spi_read_blocks(mtd_sd->sd_card, page,
-                           buff, SD_HC_BLOCK_SIZE,
-                           size / SD_HC_BLOCK_SIZE, &err);
+    int res = sdcard_spi_read_blocks(mtd_sd->sd_card, page,
+                                     buff, SD_HC_BLOCK_SIZE,
+                                     size / SD_HC_BLOCK_SIZE, &err);
 
-    if (err == SD_RW_OK) {
-        return 0;
+    if (err != SD_RW_OK) {
+        return -EIO;
     }
-    return -EIO;
+    return res * SD_HC_BLOCK_SIZE;
 }
 
 static int mtd_sdcard_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
@@ -113,14 +113,14 @@ static int mtd_sdcard_write_page(mtd_dev_t *dev, const void *buff, uint32_t page
 
     mtd_sdcard_t *mtd_sd = (mtd_sdcard_t*)dev;
     sd_rw_response_t err;
-    sdcard_spi_write_blocks(mtd_sd->sd_card, page,
-                            buff, SD_HC_BLOCK_SIZE,
-                            size / SD_HC_BLOCK_SIZE, &err);
+    int res = sdcard_spi_write_blocks(mtd_sd->sd_card, page,
+                                     buff, SD_HC_BLOCK_SIZE,
+                                     size / SD_HC_BLOCK_SIZE, &err);
 
-    if (err == SD_RW_OK) {
-        return 0;
+    if (err != SD_RW_OK) {
+        return -EIO;
     }
-    return -EIO;
+    return res * SD_HC_BLOCK_SIZE;
 }
 
 static int mtd_sdcard_erase(mtd_dev_t *dev,
