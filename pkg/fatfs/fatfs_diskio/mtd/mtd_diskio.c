@@ -96,9 +96,8 @@ DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
     }
 
     uint32_t nread = count * fatfs_mtd_devs[pdrv]->page_size;
-    int res = mtd_read(fatfs_mtd_devs[pdrv], buff,
-                       sector * fatfs_mtd_devs[pdrv]->page_size,
-                       nread);
+    int res = mtd_read_page(fatfs_mtd_devs[pdrv], buff,
+                            sector, 0, nread);
 
     if (res != 0) {
         return RES_ERROR;
@@ -136,9 +135,8 @@ DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
     }
 
     uint32_t nwrite = count * fatfs_mtd_devs[pdrv]->page_size;
-    res = mtd_write(fatfs_mtd_devs[pdrv], buff,
-                    sector * fatfs_mtd_devs[pdrv]->page_size,
-                    nwrite);
+    res = mtd_write_page(fatfs_mtd_devs[pdrv], buff,
+                         sector, 0, nwrite);
 
     if (res != 0) {
         return RES_ERROR;
