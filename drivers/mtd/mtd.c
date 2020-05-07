@@ -50,6 +50,45 @@ int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count)
     }
 }
 
+int mtd_read_page(mtd_dev_t *mtd, void *dest, uint32_t page, uint32_t offset,
+                  uint32_t count)
+{
+    if (!mtd || !mtd->driver) {
+        return -ENODEV;
+    }
+
+    if (mtd->driver->read_page == NULL) {
+        return mtd_read(mtd, dest, mtd->page_size * page + offset, count);
+    }
+
+    /* page size is always a power of two */
+    const uint32_t page_shift = 32 - __builtin_clz(mtd->page_size) - 1;
+    const uint32_t page_mask = mtd->page_size - 1;
+
+    page  += offset >> page_shift;
+    offset = offset & page_mask;
+
+    while (count) {
+        int read = mtd->driver->read_page(mtd, dest, page, offset, count);
+
+        if (read < 0) {
+            return read;
+        }
+
+        count -= read;
+
+        if (count == 0) {
+            break;
+        }
+
+        dest   += read;
+        page   += (offset + read) >> page_shift;
+        offset  = (offset + read) & page_mask;
+    }
+
+    return 0;
+}
+
 int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count)
 {
     if (!mtd || !mtd->driver) {
@@ -64,6 +103,45 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count)
     }
 }
 
+int mtd_write_page(mtd_dev_t *mtd, const void *src, uint32_t page, uint32_t offset,
+                   uint32_t count)
+{
+    if (!mtd || !mtd->driver) {
+        return -ENODEV;
+    }
+
+    if (mtd->driver->write_page == NULL) {
+        return mtd_write(mtd, src, page * mtd->page_size + offset, count);
+    }
+
+    /* page size is always a power of two */
+    const uint32_t page_shift = 32 - __builtin_clz(mtd->page_size) - 1;
+    const uint32_t page_mask = mtd->page_size - 1;
+
+    page  += offset >> page_shift;
+    offset = offset & page_mask;
+
+    while (count) {
+        int written = mtd->driver->write_page(mtd, src, page, offset, count);
+
+        if (written < 0) {
+            return written;
+        }
+
+        count -= written;
+
+        if (count == 0) {
+            break;
+        }
+
+        src    += written;
+        page   += (offset + written) >> page_shift;
+        offset  = (offset + written) & page_mask;
+    }
+
+    return 0;
+}
+
 int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count)
 {
     if (!mtd || !mtd->driver) {
@@ -75,6 +153,21 @@ int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count)
     }
     else {
         return -ENOTSUP;
+    }
+}
+
+int mtd_erase_sector(mtd_dev_t *mtd, uint32_t sector, uint32_t count)
+{
+    if (!mtd || !mtd->driver) {
+        return -ENODEV;
+    }
+
+    if (mtd->driver->erase_sector) {
+        return mtd->driver->erase_sector(mtd, sector, count);
+    }
+    else {
+        uint32_t sector_size = mtd->pages_per_sector * mtd->page_size;
+        return mtd_erase(mtd, sector * sector_size, count * sector_size);
     }
 }
 
