@@ -42,15 +42,8 @@ you may need to run `pip install --upgrade pip` before being able to run `pip in
 ### Accessing STDIO
 
 The usual way to obtain a console on this board is using an emulated USB serial port (CDC-ACM).
-This is available automatically using the `stdio_cdc_acm` module.
-
-The `stdio_cdc_acm` module is *not* set as a default module if
-* `auto_init` is in `DISABLE_MODULE`
-* `stdio_ethos` is in `USEMODULE`
-
-If you explicitly stdio using `DISABLE_MODULE`, you may want to disable
-`auto_init_usbus` as well; that module is enabled by default in order to do the
-necessary setup.
+This is available automatically using the `stdio_cdc_acm` module,
+unless any other stdio module is enabled.
 
 On Linux systems with ModemManager < 1.10 installed,
 `make term` will, in some setups, fail for a few seconds after the device has come up.
