@@ -72,7 +72,7 @@ static int _dev_read(const struct lfs_config *c, lfs_block_t block,
     DEBUG("lfs_read: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
           (void *)c, block, off, buffer, size);
 
-    return mtd_read_page(mtd, buffer, fs->base_addr + block, off, size);
+    return mtd_read_page(mtd, buffer, (fs->base_addr + block) * mtd->pages_per_sector, off, size);
 }
 
 static int _dev_write(const struct lfs_config *c, lfs_block_t block,
@@ -84,7 +84,7 @@ static int _dev_write(const struct lfs_config *c, lfs_block_t block,
     DEBUG("lfs_write: c=%p, block=%" PRIu32 ", off=%" PRIu32 ", buf=%p, size=%" PRIu32 "\n",
           (void *)c, block, off, buffer, size);
 
-    return mtd_write_page(mtd, buffer, fs->base_addr + block, off, size);
+    return mtd_write_page(mtd, buffer, (fs->base_addr + block) * mtd->pages_per_sector, off, size);
 }
 
 static int _dev_erase(const struct lfs_config *c, lfs_block_t block)
