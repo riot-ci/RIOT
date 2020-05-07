@@ -64,9 +64,9 @@ static int mtd_sdcard_read(mtd_dev_t *dev, void *buff, uint32_t addr,
 }
 
 static int mtd_sdcard_read_page(mtd_dev_t *dev, void *buff, uint32_t page,
-                                uint16_t offset, uint32_t size)
+                                uint32_t offset, uint32_t size)
 {
-    DEBUG("mtd_sdcard_read_page: page:%" PRIu32 " offset:%" PRIu16 " size:%" PRIu32 "\n",
+    DEBUG("mtd_sdcard_read_page: page:%" PRIu32 " offset:%" PRIu32 " size:%" PRIu32 "\n",
           page, offset, size);
 
     if (offset) {
@@ -102,9 +102,9 @@ static int mtd_sdcard_write(mtd_dev_t *dev, const void *buff, uint32_t addr,
 }
 
 static int mtd_sdcard_write_page(mtd_dev_t *dev, const void *buff, uint32_t page,
-                                 uint16_t offset, uint32_t size)
+                                 uint32_t offset, uint32_t size)
 {
-    DEBUG("mtd_sdcard_write_page: page:%" PRIu32 " offset:%" PRIu16 " size:%" PRIu32 "\n",
+    DEBUG("mtd_sdcard_write_page: page:%" PRIu32 " offset:%" PRIu32 " size:%" PRIu32 "\n",
           page, offset, size);
 
     if (offset) {
