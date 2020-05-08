@@ -84,36 +84,3 @@ sampling point 87.5%:
 ```
 test_can set_bitrate 250000 875
 ```
-
-Linux CAN basic commands
-========================
-
-Once the interfaces are set up, can-utils commands provide a way to send and receive
-raw CAN frames and ISO-TP datagrams.
-
-For ISO-TP, an experimental module for linux can be found [here](https://github.com/hartkopp/can-isotp).
-It needs to be loaded before trying to use ISO-TP protocol.
-
-Here are some basics examples.
-
-Send a raw CAN frame, id 0x100, data 00 11 22:
-```
-cansend vcan0 100#001122
-```
-
-Dump the traffic on a CAN interface:
-```
-candump vcan0
-```
-
-Send an ISO-TP datagram, source id 700, dest id 708, data 00 11 22 33 aa bb cc dd:
-```
-echo 00 11 22 33 aa bb cc dd | isotpsend -s 700 -d 708 vcan0
-```
-
-Receive ISO-TP datagram:
-```
-isotprecv -s 708 -d 700 vcan0
-```
-
-Please read commands help for more details on usage.
