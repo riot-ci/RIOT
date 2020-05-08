@@ -12,7 +12,7 @@ ifeq (nrfutil,$(PROGRAMMER))
   # but that's what the minimal working example for the dongle does as well.
 
   ROM_OFFSET = 0x1000
-  FW_ROM_LEN = 0xdf000
+  ROM_LEN = 0xdf000
 
   FLASHFILE = $(HEXFILE)
   FLASHDEPS += $(HEXFILE).zip
