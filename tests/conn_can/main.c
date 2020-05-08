@@ -657,25 +657,10 @@ static void *_receive_thread(void *args)
     return NULL;
 }
 
-static void _print_trx_usage(void)
-{
-    puts("Help:");
-    puts("\tinit [trx_id] - initialize a trx");
-    puts("\tset_mode [trx_id] [mode] - set a mode on the trx");
-    printf("trx_id: 0..%u\n", (unsigned)ARRAY_SIZE(devs));
-    puts("modes:");
-    puts("\t0: normal mode");
-    puts("\t1: silent mode");
-    puts("\t2: standby mode");
-    puts("\t3: high-speed mode (SW CAN only)");
-    puts("\t4: high-voltage wakeup mode (SW CAN only)");
-}
-
 static int init(int argc, char **argv) {
 
     if (argc < 2) {
-        puts("trx_id needed");
-        _print_trx_usage();
+        puts("usage: init [trx_id]");
         return 1;
     }
 
@@ -700,8 +685,13 @@ static int init(int argc, char **argv) {
 static int set_mode(int argc, char **argv) {
 
     if (argc < 3) {
-        puts("trx_id and mode needed");
-        _print_trx_usage();
+        puts("usage: set_mode [trx_id] [mode]");
+        puts("modes:");
+        puts("\t0: normal mode");
+        puts("\t1: silent mode");
+        puts("\t2: standby mode");
+        puts("\t3: high-speed mode (SW CAN only)");
+        puts("\t4: high-voltage wakeup mode (SW CAN only)");
         return 1;
     }
     unsigned trx = atoi(argv[1]);
