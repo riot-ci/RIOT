@@ -18,11 +18,10 @@ ifeq (nrfutil,$(PROGRAMMER))
   FLASHDEPS += $(HEXFILE).zip
   FLASHER = nrfutil
   FFLAGS = dfu usb-serial --port=${PORT} --package=$(HEXFILE).zip
+endif
 
-  %.hex.zip: %.hex
+%.hex.zip: %.hex
 	$(call check_cmd,$(FLASHER),Flash program and preparation tool)
 	$(FLASHER) pkg generate --hw-version 52 --sd-req 0x00 --application-version 1 --application $< $@
-
-endif
 
 include $(RIOTBOARD)/common/nrf52/Makefile.include
