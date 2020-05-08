@@ -3,7 +3,7 @@ CPU = nrf52
 # Put defined MCU peripherals here (in alphabetical order)
 FEATURES_PROVIDED += periph_rtt
 FEATURES_PROVIDED += periph_timer
-ifeq (,$(filter nordic_softdevice_ble,$(USEPKG)))
+ifeq (,$(filter nordic_softdevice_ble,$(USEPKG))
   FEATURES_PROVIDED += riotboot
 endif
 
