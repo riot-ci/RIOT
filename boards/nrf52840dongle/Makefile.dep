@@ -1,0 +1,13 @@
+ifneq (,$(filter saul_default,$(USEMODULE)))
+  USEMODULE += saul_gpio
+endif
+
+FEATURES_REQUIRED += bootloader_nrfutil
+
+# ethos only works on the UART-based stdio; when present, don't attempt to use CDC-ACM...
+ifeq (,$(filter stdio_% slipdev_stdio,$(USEMODULE)))
+  USEMODULE += stdio_cdc_acm
+endif
+# ... and fall back to the UART-based stdio
+
+include $(RIOTBOARD)/common/nrf52/Makefile.dep
