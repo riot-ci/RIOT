@@ -18,8 +18,6 @@ ifeq (nrfutil,$(PROGRAMMER))
   FLASHDEPS += $(HEXFILE).zip
   FLASHER = nrfutil
   FFLAGS = dfu usb-serial --port=${PORT} --package=$(HEXFILE).zip
-
-  FEATURES_REQUIRED += bootloader_nrfutil
 endif
 
 %.hex.zip: %.hex
