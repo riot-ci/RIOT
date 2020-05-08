@@ -41,7 +41,7 @@
  *         .page_size = PAGE_SIZE,
  *     },
  *     .parent = &parent,
- *     .offset = PAGE_PER_SECTOR * PAGE_SIZE * SECTOR_COUNT / 2
+ *     .offset = SECTOR_COUNT / 2
  * };
  *
  * mtd_dev_t *dev = &region.mtd;
@@ -96,7 +96,7 @@ typedef struct {
 typedef struct {
     mtd_dev_t mtd;                  /**< MTD context                         */
     mtd_mapper_parent_t *parent;    /**< MTD mapper parent device            */
-    uint32_t offset;                /**< Offset address to start this region */
+    uint32_t offset;                /**< Sector offset to start of this region */
 } mtd_mapper_region_t;
 
 /**
