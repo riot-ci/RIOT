@@ -48,7 +48,14 @@ firmware using the DFU protocol.
 You can upload your RIOT-firmware by typing
 
 ```
-make BOARD=WeAct-f411ce flash
+make BOARD=weact-f411ce flash
+```
+
+*Note:* You need to have write permissions to the device.
+On Linux you could add yourself to the `plugdev` group and store the following as `/etc/udev/rules.d/99-weact-f411ce.rules`:
+
+```
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", GROUP="plugdev", MODE="660"
 ```
 
 ## UART
