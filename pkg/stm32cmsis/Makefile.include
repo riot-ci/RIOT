@@ -1,0 +1,13 @@
+CPU_FAM_UPPERCASE = $(call uppercase,$(CPU_FAM))
+
+# Add this define to skip the inclusion of the system_stm32xxxx.h header files
+# which are only used for STM32 system includes and not of interest for RIOT.
+CFLAGS += -D__SYSTEM_STM32$(CPU_FAM_UPPERCASE)XX_H
+
+ifeq (1,$(RIOT_CI_BUILD))
+  STM32CMSIS_INCLUDE_DIR = $(PKGDIRBASE)/stm32cmsis/Include
+else
+  STM32CMSIS_INCLUDE_DIR = $(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)/Include
+endif
+
+INCLUDES += -I$(STM32CMSIS_INCLUDE_DIR)
