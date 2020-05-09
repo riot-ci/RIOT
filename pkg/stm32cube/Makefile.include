@@ -1,0 +1,4 @@
+STM32_VARIANT = $(call uppercase,$(CPU_FAM))
+
+CFLAGS += -D__SYSTEM_STM32$(STM32_VARIANT)XX_H
+INCLUDES += -I$(PKGDIRBASE)/stm32cube/Drivers/CMSIS/Device/ST/STM32$(STM32_VARIANT)xx/Include
