@@ -58,22 +58,19 @@ static int init(int argc, char **argv) {
     }
 
     unsigned trx = atoi(argv[1]);
-
     if (trx >= ARRAY_SIZE(devs)) {
         puts("Invalid trx_id");
         return 1;
     }
-    else {
-        int res = can_trx_init(devs[trx]);
-        if (res < 0) {
-            printf("Error when initializing trx: %d\n", res);
-            return 1;
-        }
-        else {
-            puts("Trx successfully initialized");
-            return 0;
-        }
+
+    int res = can_trx_init(devs[trx]);
+    if (res < 0) {
+        printf("Error when initializing trx: %d\n", res);
+        return 1;
     }
+
+    puts("Trx successfully initialized");
+    return 0;
 }
 
 static int set_mode(int argc, char **argv) {
@@ -90,22 +87,20 @@ static int set_mode(int argc, char **argv) {
     }
     unsigned trx = atoi(argv[1]);
     unsigned mode = atoi(argv[2]);
-
     if ((trx >= ARRAY_SIZE(devs)) ||
             (mode > TRX_HIGH_VOLTAGE_WAKE_UP_MODE)) {
         puts("Invalid trx_id or mode");
         return 1;
-    } else {
-        int res = can_trx_set_mode(devs[trx], mode);
-        if (res <0) {
-            printf("Error when setting mode: %d\n", res);
-            return 1;
-        }
-        else {
-            puts("Mode successfully set");
-            return 0;
-        }
     }
+
+    int res = can_trx_set_mode(devs[trx], mode);
+    if (res <0) {
+        printf("Error when setting mode: %d\n", res);
+        return 1;
+    }
+
+    puts("Mode successfully set");
+    return 0;
 }
 
 static const shell_command_t cmds[] = {
