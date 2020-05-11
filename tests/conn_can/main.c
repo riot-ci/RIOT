@@ -32,6 +32,33 @@
 #include "can/conn/isotp.h"
 #include "can/device.h"
 
+#include "can/can_trx.h"
+
+#ifdef MODULE_TJA1042
+#include "tja1042.h"
+tja1042_trx_t tja1042 = { .trx.driver = &tja1042_driver,
+                          .stb_pin = TJA1042_STB_PIN
+};
+#endif
+
+#ifdef MODULE_NCV7356
+#include "ncv7356.h"
+ncv7356_trx_t ncv7356 = { .trx.driver = &ncv7356_driver,
+                          .mode0_pin = NCV7356_MODE0_PIN,
+                          .mode1_pin = NCV7356_MODE1_PIN
+};
+#endif
+
+static can_trx_t *devs[] = {
+#ifdef MODULE_TJA1042
+    (can_trx_t *)&tja1042,
+#endif
+#ifdef MODULE_NCV7356
+    (can_trx_t *)&ncv7356,
+#endif
+    NULL,
+};
+
 #define THREAD_STACKSIZE   (THREAD_STACKSIZE_MAIN)
 #define RECEIVE_THREAD_MSG_QUEUE_SIZE   (8)
 
@@ -67,7 +94,7 @@ static void print_usage(void)
 {
     puts("test_can list");
     puts("test_can send ifnum can_id [B1 [B2 [B3 [B4 [B5 [B6 [B7 [B8]]]]]]]]");
-    puts("test_can sendrtr ifnum can_id lenght(0..8)");
+    puts("test_can sendrtr ifnum can_id length(0..8)");
     printf("test_can recv ifnum user_id timeout can_id1 [can_id2..can_id%d]\n", MAX_FILTER);
     puts("test_can close user_id");
 #ifdef MODULE_CAN_ISOTP
@@ -630,8 +657,63 @@ static void *_receive_thread(void *args)
     return NULL;
 }
 
+static int init(int argc, char **argv) {
+
+    if (argc < 2) {
+        puts("usage: init [trx_id]");
+        return 1;
+    }
+
+    unsigned trx = atoi(argv[1]);
+    if (trx >= ARRAY_SIZE(devs)) {
+        puts("Invalid trx_id");
+        return 1;
+    }
+
+    int res = can_trx_init(devs[trx]);
+    if (res < 0) {
+        printf("Error when initializing trx: %d\n", res);
+        return 1;
+    }
+
+    puts("Trx successfully initialized");
+    return 0;
+}
+
+static int set_mode(int argc, char **argv) {
+
+    if (argc < 3) {
+        puts("usage: set_mode [trx_id] [mode]");
+        puts("modes:");
+        puts("\t0: normal mode");
+        puts("\t1: silent mode");
+        puts("\t2: standby mode");
+        puts("\t3: high-speed mode (SW CAN only)");
+        puts("\t4: high-voltage wakeup mode (SW CAN only)");
+        return 1;
+    }
+    unsigned trx = atoi(argv[1]);
+    unsigned mode = atoi(argv[2]);
+    if ((trx >= ARRAY_SIZE(devs)) ||
+            (mode > TRX_HIGH_VOLTAGE_WAKE_UP_MODE)) {
+        puts("Invalid trx_id or mode");
+        return 1;
+    }
+
+    int res = can_trx_set_mode(devs[trx], mode);
+    if (res < 0) {
+        printf("Error when setting mode: %d\n", res);
+        return 1;
+    }
+
+    puts("Mode successfully set");
+    return 0;
+}
+
 static const shell_command_t _commands[] = {
     {"test_can", "Test CAN functions", _can_handler},
+    { "init", "initialize a can trx", init },
+    { "set_mode", "set a can trx mode", set_mode },
     { NULL, NULL, NULL},
 };
 
