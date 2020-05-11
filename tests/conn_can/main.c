@@ -701,7 +701,7 @@ static int set_mode(int argc, char **argv) {
     }
 
     int res = can_trx_set_mode(devs[trx], mode);
-    if (res <0) {
+    if (res < 0) {
         printf("Error when setting mode: %d\n", res);
         return 1;
     }
