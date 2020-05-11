@@ -180,6 +180,9 @@ typedef struct {
 } uart_conf_t;
 #endif
 
+typedef void (*spi_twi_irq_cb_t)(void *arg);
+void _irs_spi_twi_register_spi_irq(NRF_SPIM_Type *bus, spi_twi_irq_cb_t cb, void *arg);
+
 #ifdef __cplusplus
 }
 #endif
