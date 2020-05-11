@@ -5,5 +5,9 @@ ifneq (,$(filter nrf802154,$(USEMODULE)))
   USEMODULE += netdev_ieee802154
 endif
 
+ifneq (,$(filter periph_spi,$(FEATURES_REQUIRED)))
+  FEATURES_REQUIRED += periph_gpio_irq
+endif
+
 include $(RIOTCPU)/nrf5x_common/Makefile.dep
 include $(RIOTCPU)/cortexm_common/Makefile.dep
