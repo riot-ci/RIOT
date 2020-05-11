@@ -32,16 +32,18 @@ extern "C" {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev  = NRF_SPI0,
+        .dev  = NRF_SPIM0,
         .sclk = GPIO_PIN(1, 15),
         .mosi = GPIO_PIN(1, 13),
         .miso = GPIO_PIN(1, 14),
+        .ppi = 0,
     },
     {
-        .dev  = NRF_SPI1,
+        .dev  = NRF_SPIM1,
         .sclk = GPIO_PIN(0, 19),
         .mosi = GPIO_PIN(0, 20),
         .miso = GPIO_PIN(0, 21),
+        .ppi = 1,
     }
 };
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
