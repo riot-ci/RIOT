@@ -55,6 +55,12 @@ extern "C" {
 #define ADC_NUMOF           (9U)
 
 /**
+ * @brief   SPI temporary buffer size for storing const data in RAM before
+ *          initiating DMA transfer
+ */
+#define SPI_MBUF_SIZE       64
+
+/**
  * @brief   nRF52 specific naming of ADC lines (for convenience)
  */
 enum {
@@ -180,8 +186,33 @@ typedef struct {
 } uart_conf_t;
 #endif
 
+/**
+ * @brief  SPI configuration values
+ */
+typedef struct {
+    NRF_SPIM_Type *dev; /**< SPI device used */
+    gpio_t sclk;        /**< CLK pin */
+    gpio_t mosi;        /**< MOSI pin */
+    gpio_t miso;        /**< MISO pin */
+    uint8_t ppi;        /**< PPI channel */
+} spi_conf_t;
+
+
+/**
+ * @brief Common SPI/I2C interrupt callback
+ *
+ * @param   arg     Opaque context pointer
+ */
 typedef void (*spi_twi_irq_cb_t)(void *arg);
-void _irs_spi_twi_register_spi_irq(NRF_SPIM_Type *bus, spi_twi_irq_cb_t cb, void *arg);
+
+/**
+ * @brief Reqister a handler for a shared I2C/SPI irq vector
+ *
+ * @param   bus bus to register the IRQ handler on
+ * @param   cb  callback to call on IRQ
+ * @param   arg Argument to pass to the handler
+ */
+void spi_twi_irq_register_spi(NRF_SPIM_Type *bus, spi_twi_irq_cb_t cb, void *arg);
 
 #ifdef __cplusplus
 }
