@@ -29,12 +29,16 @@ int gnrc_ipv6_nib_abr_add(const ipv6_addr_t *addr)
     _nib_offl_entry_t *offl = NULL;
     gnrc_netif_t *netif = gnrc_netif_get_by_ipv6_addr(addr);
 
+    assert(netif != NULL);
     _nib_acquire();
     if ((abr = _nib_abr_add(addr)) == NULL) {
         _nib_release();
         return -ENOMEM;
     }
     abr->valid_until = 0U;
+    /* Associate all existing prefixes in the prefix list of the border router's
+     * downstream interface to the authoritative border router so they are
+     * advertised with the ABRO in a respective PIO. */
     while ((offl = _nib_offl_iter(offl))) {
         if ((offl->mode & _PL) &&
             (_nib_onl_get_if(offl->next_hop) == (unsigned)netif->pid)) {
