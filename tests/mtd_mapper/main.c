@@ -142,7 +142,7 @@ static mtd_mapper_region_t _region_b = {
         .page_size = PAGE_SIZE,
     },
     .parent = &_parent,
-    .offset = PAGE_PER_SECTOR * PAGE_SIZE * SECTOR_COUNT / 2,
+    .offset = SECTOR_COUNT / 2,
 };
 
 static mtd_dev_t *_dev_a = &_region_a.mtd;
