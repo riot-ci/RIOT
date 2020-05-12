@@ -62,7 +62,6 @@ static const spi_conf_t spi_config[] = {
         .sclk = GPIO_PIN(0, 19),
         .mosi = GPIO_PIN(0, 20),
         .miso = GPIO_PIN(0, 21),
-        .ppi = 0,
     }
 };
 
