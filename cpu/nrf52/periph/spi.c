@@ -48,9 +48,6 @@ static mutex_t busy[SPI_NUMOF];
 static uint8_t _mbuf[SPI_NUMOF][SPI_MBUF_SIZE];
 
 static void spi_isr_handler(void *arg);
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
-void spi_gpio_handler(void *arg);
-#endif
 
 static inline NRF_SPIM_Type *dev(spi_t bus)
 {
@@ -63,6 +60,18 @@ static inline bool _in_ram(const uint8_t *data)
 }
 
 #ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
+void spi_gpio_handler(void *arg)
+{
+    spi_t bus = (spi_t)arg;
+
+    /**
+     * Immediately disable the IRQ, we only care about one PPI event per
+     * transfer
+     */
+    gpio_irq_disable(spi_config[bus].sclk);
+}
+#endif
+
 /**
  * @brief Work-around for transmitting 1 byte with SPIM on the nrf52832.
  * @warning Must not be used when transmitting multiple bytes.
@@ -72,6 +81,7 @@ static inline bool _in_ram(const uint8_t *data)
  */
 static void _setup_workaround_for_ftpan_58(spi_t bus)
 {
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     gpio_init_int(spi_config[bus].sclk, GPIO_OUT, GPIO_BOTH,
                   spi_gpio_handler, (void *)bus);
     gpio_irq_disable(spi_config[bus].sclk);
@@ -82,10 +92,14 @@ static void _setup_workaround_for_ftpan_58(spi_t bus)
     NRF_PPI->CH[spi_config[bus].ppi].EEP =
         (uint32_t)&NRF_GPIOTE->EVENTS_IN[channel];
     NRF_PPI->CH[spi_config[bus].ppi].TEP = (uint32_t)&dev(bus)->TASKS_STOP;
+#else
+    (void)bus;
+#endif
 }
 
 static void _enable_workaround(spi_t bus)
 {
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     /**
      * The spim instance cannot be stopped mid-byte, so it will finish
      * transmitting the first byte and then stop. Effectively ensuring
@@ -93,13 +107,19 @@ static void _enable_workaround(spi_t bus)
      */
     NRF_PPI->CHENSET = 1U << spi_config[bus].ppi;
     gpio_irq_enable(spi_config[bus].sclk);
+#else
+    (void)bus;
+#endif
 }
 
 static void _clear_workaround(spi_t bus)
 {
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     NRF_PPI->CHENCLR = 1U << spi_config[bus].ppi;
-}
+#else
+    (void)bus;
 #endif
+}
 
 void spi_init(spi_t bus)
 {
@@ -122,9 +142,7 @@ void spi_init_pins(spi_t bus)
     SPI_SCKSEL = spi_config[bus].sclk;
     SPI_MOSISEL = spi_config[bus].mosi;
     SPI_MISOSEL = spi_config[bus].miso;
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     _setup_workaround_for_ftpan_58(bus);
-#endif
     spi_twi_irq_register_spi(dev(bus), spi_isr_handler, (void *)bus);
 }
 
@@ -188,12 +206,10 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     }
 
     /* Enable the workaround when the length is only 1 byte */
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     size_t _len = len;
     if (_len == 1) {
         _enable_workaround(bus);
     }
-#endif
 
     /* Enable IRQ */
     dev(bus)->INTENSET = SPIM_INTENSET_END_Msk;
@@ -217,11 +233,9 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
      * required spares us some cycles by not having to write to volatile
      * registers
      */
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     if (_len == 1) {
         _clear_workaround(bus);
     }
-#endif
 
     if ((cs != SPI_CS_UNDEF) && (!cont)) {
         gpio_set((gpio_t)cs);
@@ -235,16 +249,3 @@ void spi_isr_handler(void *arg)
     mutex_unlock(&busy[bus]);
     dev(bus)->EVENTS_END = 0;
 }
-
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
-void spi_gpio_handler(void *arg)
-{
-    spi_t bus = (spi_t)arg;
-
-    /**
-     * Immediately disable the IRQ, we only care about one PPI event per
-     * transfer
-     */
-    gpio_irq_disable(spi_config[bus].sclk);
-}
-#endif
