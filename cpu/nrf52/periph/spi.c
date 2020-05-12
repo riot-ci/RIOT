@@ -73,13 +73,14 @@ static inline bool _in_ram(const uint8_t *data)
 static void _setup_workaround_for_ftpan_58(spi_t bus)
 {
     gpio_init_int(spi_config[bus].sclk, GPIO_OUT, GPIO_BOTH,
-                  spi_gpio_handler, (void*)bus);
+                  spi_gpio_handler, (void *)bus);
     gpio_irq_disable(spi_config[bus].sclk);
     uint8_t channel = gpio_int_get_exti(spi_config[bus].sclk);
     assert(channel != 0xff);
 
     // Stop the spim instance when SCK toggles.
-    NRF_PPI->CH[spi_config[bus].ppi].EEP = (uint32_t)&NRF_GPIOTE->EVENTS_IN[channel];
+    NRF_PPI->CH[spi_config[bus].ppi].EEP =
+        (uint32_t)&NRF_GPIOTE->EVENTS_IN[channel];
     NRF_PPI->CH[spi_config[bus].ppi].TEP = (uint32_t)&dev(bus)->TASKS_STOP;
 }
 
@@ -118,18 +119,18 @@ void spi_init_pins(spi_t bus)
     gpio_init(spi_config[bus].mosi, GPIO_OUT);
     gpio_init(spi_config[bus].miso, GPIO_IN);
     /* select pins for the SPI device */
-    SPI_SCKSEL  = spi_config[bus].sclk;
+    SPI_SCKSEL = spi_config[bus].sclk;
     SPI_MOSISEL = spi_config[bus].mosi;
     SPI_MISOSEL = spi_config[bus].miso;
 #ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     _setup_workaround_for_ftpan_58(bus);
 #endif
-    spi_twi_irq_register_spi(dev(bus), spi_isr_handler, (void*)bus);
+    spi_twi_irq_register_spi(dev(bus), spi_isr_handler, (void *)bus);
 }
 
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 {
-    (void) cs;
+    (void)cs;
 
     mutex_lock(&locks[bus]);
     /* configure bus */
@@ -148,11 +149,13 @@ void spi_release(spi_t bus)
     mutex_unlock(&locks[bus]);
 }
 
-static void _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf, uint8_t transfer_len)
+static void _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
+                      uint8_t transfer_len)
 {
     uint8_t out_len = (out_buf) ? transfer_len : 0;
     uint8_t in_len = (in_buf) ? transfer_len : 0;
     const uint8_t *out_mbuf = out_buf;
+
     /**
      * Copy the out buffer in case it resides in flash, EasyDMA only works from
      * RAM
@@ -202,7 +205,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
          * next transfer */
         mutex_lock(&busy[bus]);
         out_buf += out_buf ? transfer_len : 0;
-        in_buf += in_buf? transfer_len : 0;
+        in_buf += in_buf ? transfer_len : 0;
         len -= transfer_len;
     } while (len);
 
@@ -228,6 +231,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 void spi_isr_handler(void *arg)
 {
     spi_t bus = (spi_t)arg;
+
     mutex_unlock(&busy[bus]);
     dev(bus)->EVENTS_END = 0;
 }
@@ -236,6 +240,7 @@ void spi_isr_handler(void *arg)
 void spi_gpio_handler(void *arg)
 {
     spi_t bus = (spi_t)arg;
+
     /**
      * Immediately disable the IRQ, we only care about one PPI event per
      * transfer
