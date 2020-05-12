@@ -293,12 +293,17 @@ enum {
  */
 typedef enum {
     /**
-     * @brief   Address registration successful
+     * @brief   Address becomes valid
      *
-     * The Address registration with the boarder router was successful.
-     * The node now has a global prefix.
+     * The event is generated when an address on the interface becomes valid.
+     * The message payload contains a pointer to the respective
+     * @ref ipv6_addr_t struct.
+     *
+     * <b>Note:</b> If the address on the interface changed between sending
+     * the event and processing it, the pointer will point to the new address
+     * which might *not* be valid.
      */
-    GNRC_IPV6_NIB_EVENT_REG_SUCCESS,
+    GNRC_IPV6_NIB_EVENT_ADDR_VALID,
 } gnrc_ipv6_nib_event_t;
 
 /**
