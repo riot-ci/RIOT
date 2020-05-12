@@ -29,9 +29,10 @@
 #include "assert.h"
 #include "periph/spi.h"
 #include "periph/gpio.h"
+#include "periph_cpu.h"
 #include <string.h>
 
-#define SPI_CPU_FLASH_END    0x20000000
+#define RAM_MASK            (0x20000000)
 
 /**
  * @brief   array holding one pre-initialized mutex for each SPI device
@@ -46,9 +47,8 @@ static mutex_t busy[SPI_NUMOF];
 
 static uint8_t _mbuf[SPI_NUMOF][SPI_MBUF_SIZE];
 
-
 static void spi_isr_handler(void *arg);
-#ifdef CPU_MODEL_NRF52832XXAA
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
 void spi_gpio_handler(void *arg);
 #endif
 
@@ -57,7 +57,12 @@ static inline NRF_SPIM_Type *dev(spi_t bus)
     return (NRF_SPIM_Type *)spi_config[bus].dev;
 }
 
-#ifdef CPU_MODEL_NRF52832XXAA
+static inline bool _in_ram(const uint8_t *data)
+{
+    return ((uint32_t)data & RAM_MASK);
+}
+
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
 /**
  * @brief Work-around for transmitting 1 byte with SPIM on the nrf52832.
  * @warning Must not be used when transmitting multiple bytes.
@@ -116,7 +121,7 @@ void spi_init_pins(spi_t bus)
     SPI_SCKSEL  = spi_config[bus].sclk;
     SPI_MOSISEL = spi_config[bus].mosi;
     SPI_MISOSEL = spi_config[bus].miso;
-#ifdef CPU_MODEL_NRF52832XXAA
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     _setup_workaround_for_ftpan_58(bus);
 #endif
     spi_twi_irq_register_spi(dev(bus), spi_isr_handler, (void*)bus);
@@ -152,7 +157,7 @@ static void _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf, uint8_
      * Copy the out buffer in case it resides in flash, EasyDMA only works from
      * RAM
      */
-    if ((out_buf < (uint8_t*)SPI_CPU_FLASH_END) && (out_len)) {
+    if (out_len && !_in_ram(out_buf)) {
         memcpy(_mbuf[bus], out_buf, out_len);
         out_mbuf = _mbuf[bus];
     }
@@ -180,7 +185,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     }
 
     /* Enable the workaround when the length is only 1 byte */
-#ifdef CPU_MODEL_NRF52832XXAA
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     size_t _len = len;
     if (_len == 1) {
         _enable_workaround(bus);
@@ -209,7 +214,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
      * required spares us some cycles by not having to write to volatile
      * registers
      */
-#ifdef CPU_MODEL_NRF52832XXAA
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     if (_len == 1) {
         _clear_workaround(bus);
     }
@@ -227,7 +232,7 @@ void spi_isr_handler(void *arg)
     dev(bus)->EVENTS_END = 0;
 }
 
-#ifdef CPU_MODEL_NRF52832XXAA
+#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
 void spi_gpio_handler(void *arg)
 {
     spi_t bus = (spi_t)arg;

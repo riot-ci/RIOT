@@ -28,6 +28,14 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Enable the workaround for the SPI single byte transmit errata (No.
+ * 58 on the nrf52832)
+ */
+#ifdef CPU_MODEL_NRF52832XXAA
+#define ERRATA_SPI_SINGLE_BYTE_WORKAROUND (1)
+#endif
+
+/**
  * @brief   System core clock speed, fixed to 64MHz for all NRF52x CPUs
  */
 #define CLOCK_CORECLOCK     (64000000U)
@@ -194,7 +202,9 @@ typedef struct {
     gpio_t sclk;        /**< CLK pin */
     gpio_t mosi;        /**< MOSI pin */
     gpio_t miso;        /**< MISO pin */
+#if ERRATA_SPI_SINGLE_BYTE_WORKAROUND
     uint8_t ppi;        /**< PPI channel */
+#endif
 } spi_conf_t;
 
 
