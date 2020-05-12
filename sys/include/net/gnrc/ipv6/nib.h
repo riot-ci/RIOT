@@ -289,6 +289,24 @@ enum {
 };
 
 /**
+ * @brief   Types for GNRC_NETIF_BUS_NIB per-interface message bus
+ */
+typedef enum {
+    /**
+     * @brief   Address becomes valid
+     *
+     * The event is generated when an address on the interface becomes valid.
+     * The message payload contains a pointer to the respective
+     * @ref ipv6_addr_t struct.
+     *
+     * @note If the address on the interface changed between sending
+     * the event and processing it, the pointer will point to the new address
+     * which might *not* be valid.
+     */
+    GNRC_IPV6_NIB_EVENT_ADDR_VALID,
+} gnrc_ipv6_nib_event_t;
+
+/**
  * @brief   Initialize NIB
  */
 void gnrc_ipv6_nib_init(void);
