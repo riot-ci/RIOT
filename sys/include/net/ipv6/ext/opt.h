@@ -52,6 +52,10 @@ extern "C" {
 /**
  * @name Processing actions
  * @see [RFC 8200, section 4.2](https://tools.ietf.org/html/rfc8200#section-4.2)
+ *
+ * > The Option Type identifiers are internally encoded such that their
+ * > highest-order 2 bits specify the action that must be taken if the
+ * > processing IPv6 node does not recognize the Option Type
  * @{
  */
 /**
@@ -66,19 +70,19 @@ extern "C" {
 /**
  * @brief   discard the packet
  *
- * and, regardless of whether or not the packet's Destination Address
- * was a multicast address, send an ICMP Parameter Problem, Code 2,
- * message to the packet's Source Address, pointing to the
- * unrecognized Option Type.
+ * > and, regardless of whether or not the packet's Destination Address
+ * > was a multicast address, send an ICMP Parameter Problem, Code 2,
+ * > message to the packet's Source Address, pointing to the
+ * > unrecognized Option Type.
  */
 #define IPV6_EXT_OPT_ACTION_DISC_ERR_MCAST  (0x80)
 
 /**
  * @brief   discard the packet
  *
- * and, only if the packet's Destination Address was not a multicast
- * address, send an ICMP Parameter Problem, Code 2, message to the
- * packet's Source Address, pointing to the unrecognized Option Type.
+ * > and, only if the packet's Destination Address was not a multicast
+ * > address, send an ICMP Parameter Problem, Code 2, message to the
+ * > packet's Source Address, pointing to the unrecognized Option Type.
  */
 #define IPV6_EXT_OPT_ACTION_DISC_ERR        (0xc0)
 /** @} */
