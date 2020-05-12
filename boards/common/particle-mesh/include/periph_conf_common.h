@@ -40,7 +40,6 @@ static const spi_conf_t spi_config[] = {
         .sclk = 15,
         .mosi = 13,
         .miso = 14,
-        .ppi = 0,
     }
 };
 
