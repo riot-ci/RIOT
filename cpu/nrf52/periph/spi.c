@@ -75,7 +75,8 @@ void spi_gpio_handler(void *arg)
 /**
  * @brief Work-around for transmitting 1 byte with SPIM on the nrf52832.
  * @warning Must not be used when transmitting multiple bytes.
- * @warning After this workaround is used, the user must reset the PPI channel and the GPIOTE channel before attempting to transmit multiple bytes.
+ * @warning After this workaround is used, the user must reset the PPI channel
+ *          and the GPIOTE channel before attempting to transmit multiple bytes.
  *
  * @param bus   The SPI instance that is in use.
  */
