@@ -222,7 +222,8 @@ typedef void (*spi_twi_irq_cb_t)(void *arg);
  * @param   cb  callback to call on IRQ
  * @param   arg Argument to pass to the handler
  */
-void spi_twi_irq_register_spi(NRF_SPIM_Type *bus, spi_twi_irq_cb_t cb, void *arg);
+void spi_twi_irq_register_spi(NRF_SPIM_Type *bus,
+                              spi_twi_irq_cb_t cb, void *arg);
 
 #ifdef __cplusplus
 }

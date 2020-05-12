@@ -63,9 +63,11 @@ static const IRQn_Type _isr[] = {
 #endif /* CPU_MODEL_NRF52840XXAA */
 };
 
-void spi_twi_irq_register_spi(NRF_SPIM_Type *bus, spi_twi_irq_cb_t cb, void *arg)
+void spi_twi_irq_register_spi(NRF_SPIM_Type *bus,
+                              spi_twi_irq_cb_t cb, void *arg)
 {
     size_t num = _spi_dev2num(bus);
+
     _irq[num] = cb;
     _irq_arg[num] = arg;
     NVIC_EnableIRQ(_isr[num]);
