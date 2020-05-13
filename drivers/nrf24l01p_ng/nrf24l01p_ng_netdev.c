@@ -253,15 +253,7 @@ static
 int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 {
     (void)info; /* nrf24l01+ supports neither lqi nor rssi */
-/*
-    Returned format of constructed frame in buf:
- +-------------------------------------------------------+
- | destination address (NRF24L01P_NG_ADDR_WIDTH Bytes) ...
- +-------------------------------------------------------+
- +-------------------------------------------------------+
-    ....  payload (1 Byte - 32 Bytes)                    |
- +-------------------------------------------------------+
- */
+
     /* return upper estaimation bound of frame size */
     if (!buf && !len) {
         DEBUG("[nrf24l01p_ng] Return upper frame estimation");
@@ -314,8 +306,6 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     frame += sizeof(dst_addr);
     nrf24l01p_ng_read_rx_payload(dev, frame, pl_width);
 #if ENABLE_DEBUG
-    nrf24l01p_ng_diagnostics_print_all_regs(dev);
-    nrf24l01p_ng_diagnostics_print_dev_info(dev);
     nrf24l01p_ng_diagnostics_print_frame(dev, (uint8_t *)buf, frame_len);
 #endif
     DEBUG("[nrf24l01p_ng] Received frame length: %u\n", frame_len);
@@ -405,10 +395,6 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
         }
         nrf24l01p_ng_transition_to_tx_mode(dev);
     }
-#if ENABLE_DEBUG
-    nrf24l01p_ng_diagnostics_print_all_regs(dev);
-    nrf24l01p_ng_diagnostics_print_dev_info(dev);
-#endif
     nrf24l01p_ng_release(dev);
     _trigger_send(dev);
     DEBUG("[nrf24l01p_ng] Sending %u bytes\n", pl_width);
@@ -545,7 +531,9 @@ int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
         } break;
         case NETOPT_MAX_PDU_SIZE: {
             assert(max_len == sizeof(uint16_t));
-            *((uint16_t *)val) = NRF24L01P_NG_MAX_PAYLOAD_WIDTH;
+            *((uint16_t *)val) = NRF24L01P_NG_MAX_PAYLOAD_WIDTH -
+                                 NRF24L01P_NG_ADDR_WIDTH
+                                 - 1;
             return sizeof(uint16_t);
         }
         case NETOPT_RETRANS: {

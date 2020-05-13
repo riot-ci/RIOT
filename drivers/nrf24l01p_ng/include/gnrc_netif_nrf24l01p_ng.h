@@ -26,10 +26,11 @@ extern "C" {
 #endif
 
 #ifndef NRF24L01P_NG_UPPER_LAYER_PROTOCOL
-/**
- * @brief Default protocol for data that is coming in
- */
+#if IS_USED(MODULE_GNRC_SIXLOWPAN)
+#define NRF24L01P_NG_UPPER_LAYER_PROTOCOL   (GNRC_NETTYPE_SIXLOWPAN)
+#else
 #define NRF24L01P_NG_UPPER_LAYER_PROTOCOL   (GNRC_NETTYPE_UNDEF)
+#endif
 #endif
 
 /**

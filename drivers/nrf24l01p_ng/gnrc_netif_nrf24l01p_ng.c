@@ -79,33 +79,52 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
     assert(netif->dev);
 
     gnrc_pktsnip_t *frame;
-    gnrc_pktsnip_t *hdr;
+    gnrc_pktsnip_t *snip;
     gnrc_netif_hdr_t *netif_hdr;
     uint8_t dst_addr[NRF24L01P_NG_ADDR_WIDTH];
+    uint8_t src_addr[NRF24L01P_NG_ADDR_WIDTH];
+    uint8_t src_addr_len;
 
     if (!(frame = _nrf24l01p_ng_pkt_recv(netif))) {
+        DEBUG("[nrf24l01p_ng] _adpt_recv: no frame\n");
         return NULL;
     }
-    hdr = gnrc_pktbuf_mark(frame, sizeof(dst_addr), GNRC_NETTYPE_UNDEF);
-    if (!hdr) {
+    if (!(snip = gnrc_pktbuf_mark(frame, sizeof(dst_addr), GNRC_NETTYPE_UNDEF))) {
         DEBUG("[nrf24l01p_ng] _adpt_recv: unable to mark header snip\n");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
-    gnrc_pktbuf_remove_snip(frame, hdr);
-    hdr = gnrc_netif_hdr_build(NULL, 0, dst_addr, sizeof(dst_addr));
-    if (!hdr) {
+    memcpy(dst_addr, snip->data, sizeof(dst_addr));
+    gnrc_pktbuf_remove_snip(frame, snip);
+
+    src_addr_len = ((uint8_t *)frame->data)[0];
+    if (src_addr_len < NRF24L01P_NG_MIN_ADDR_WIDTH ||
+        src_addr_len > NRF24L01P_NG_MAX_ADDR_WIDTH) {
+        DEBUG("[nrf24l01p_ng] _adpt_recv: Invalid source address length\n");
+        gnrc_pktbuf_release(frame);
+        return NULL;
+    }
+    if (!(snip = gnrc_pktbuf_mark(frame, 1 + src_addr_len, GNRC_NETTYPE_UNDEF))) {
+        DEBUG("[nrf24l01p_ng] _adpt_recv: unable to mark src header snip\n");
+        gnrc_pktbuf_release(frame);
+        return NULL;
+    }
+    memcpy(src_addr, ((uint8_t *)snip->data) + 1, src_addr_len);
+    gnrc_pktbuf_remove_snip(frame, snip);
+
+    if (!(snip = gnrc_netif_hdr_build(src_addr, src_addr_len,
+                                     dst_addr, sizeof(dst_addr)))) {
         DEBUG("[nrf24l01p_ng] _adpt_recv: unable to allocate netif header\n");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
-    netif_hdr = (gnrc_netif_hdr_t *)hdr->data;
+    netif_hdr = (gnrc_netif_hdr_t *)snip->data;
     uint8_t bcast_addr[] = NRF24L01P_NG_BROADCAST_ADDR;
     if (!memcmp(dst_addr, bcast_addr, sizeof(dst_addr))) {
         netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_BROADCAST;
     }
     gnrc_netif_hdr_set_netif(netif_hdr, netif);
-    LL_APPEND(frame, hdr);
+    LL_APPEND(frame, snip);
 #if IS_USED(MODULE_NETSTATS_L2)
         netif->stats.rx_count++;
         netif->stats.rx_bytes += frame->size;
@@ -171,8 +190,18 @@ int _nrf24l01p_ng_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         }
     }
 
-    iolist_t iolist = (iolist_t){
-        .iol_next = (iolist_t *)pkt->next,
+    uint8_t src[1 + NRF24L01P_NG_ADDR_WIDTH];
+    src[0] = NRF24L01P_NG_ADDR_WIDTH;
+    memcpy(src + 1,
+          ((nrf24l01p_ng_t *)netdev)->urxaddr.rxaddrpx.rx_p0,
+          NRF24L01P_NG_ADDR_WIDTH);
+    iolist_t iolist_src_addr = {
+        .iol_next = ((iolist_t *)pkt->next),
+        .iol_base = src,
+        .iol_len = sizeof(src)
+    };
+    iolist_t iolist = {
+        .iol_next = &iolist_src_addr,
         .iol_base = dst_addr,
         .iol_len = dst_addr_len
     };
