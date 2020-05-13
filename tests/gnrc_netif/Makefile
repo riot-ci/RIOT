@@ -3,6 +3,7 @@ include ../Makefile.tests_common
 USEMODULE += embunit
 USEMODULE += gnrc_netif
 USEMODULE += gnrc_pktdump
+USEMODULE += gnrc_netif_bus
 USEMODULE += gnrc_sixlowpan
 USEMODULE += gnrc_sixlowpan_iphc
 USEMODULE += gnrc_ipv6
