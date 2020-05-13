@@ -87,6 +87,11 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
         pkt->token = NULL;
     }
 
+    if (pkt_pos > pkt_end) {
+        DEBUG("bad token length\n");
+        return -EBADMSG;
+    }
+
     coap_optpos_t *optpos = pkt->options;
     unsigned option_count = 0;
     unsigned option_nr = 0;
