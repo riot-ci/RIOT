@@ -103,7 +103,7 @@ static inline bool msg_is_from_bus(const msg_bus_t *bus, const msg_t *msg)
  * posted on the bus.
  *
  * Events can be received with @ref msg_receive.
- * <b>The contents of the received message must not be modified.</b>
+ * **The contents of the received message must not be modified.**
  *
  * @param[in] bus           The message bus to attach to
  * @param[in] entry         Message bus subscriber entry
