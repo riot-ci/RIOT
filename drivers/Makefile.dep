@@ -550,6 +550,9 @@ ifneq (,$(filter nrf24l01p_ng,$(USEMODULE)))
   USEMODULE += luid
   USEMODULE += netif
   USEMODULE += xtimer
+  ifneq (,$(filter gnrc_ipv6,$(USEMODULE)))
+    USEMODULE += gnrc_sixlowpan_default
+  endif
 endif
 
 ifneq (,$(filter nrf24l01p,$(USEMODULE)))
