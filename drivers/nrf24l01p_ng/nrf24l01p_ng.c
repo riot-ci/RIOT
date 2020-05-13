@@ -29,45 +29,8 @@
 #include "nrf24l01p_ng_states.h"
 #include "nrf24l01p_ng_diagnostics.h"
 
-/**
- * @brief   Struct that holds certain register addresses for any pipe
- */
-typedef struct {
-    uint8_t reg_pipe_addr; /**< Register holding the rx address */
-    uint8_t reg_pipe_plw;  /**< Register holding the expected payload width */
-} nrf24l01p_ng_pipe_regs_t;
-
-/**
- * @brief   Table that maps data pipe indices to corresponding pipe
- *          register addresses
- */
-static
-const nrf24l01p_ng_pipe_regs_t reg_pipe_info[NRF24L01P_NG_PX_NUM_OF] = {
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P0,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P0
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P1,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P1
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P2,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P2
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P3,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P3
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P4,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P4
-    },
-    {
-        .reg_pipe_addr = NRF24L01P_NG_REG_RX_ADDR_P5,
-        .reg_pipe_plw = NRF24L01P_NG_REG_RX_PW_P5
-    }
-};
+#define NRF24L01P_NG_REG_RX_ADDR_PX(x)  (NRF24L01P_NG_REG_RX_ADDR_P0 + (x))
+#define NRF24L01P_NG_REG_RX_PW_PX(x)    (NRF24L01P_NG_REG_RX_PW_P0 + (x))
 
 int nrf24l01p_ng_setup(nrf24l01p_ng_t *dev,
                        const nrf24l01p_ng_params_t *params)
@@ -274,7 +237,7 @@ int nrf24l01p_ng_set_rx_address(nrf24l01p_ng_t *dev, const uint8_t *addr,
     }
     if (pipe == NRF24L01P_NG_P0 || pipe == NRF24L01P_NG_P1) {
         nrf24l01p_ng_acquire(dev);
-        nrf24l01p_ng_write_reg(dev, reg_pipe_info[pipe].reg_pipe_addr,
+        nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_PX(pipe),
                                addr, NRF24L01P_NG_ADDR_WIDTH);
         nrf24l01p_ng_release(dev);
         memcpy(dev->urxaddr.arxaddr.rx_addr_long[pipe],
@@ -282,7 +245,7 @@ int nrf24l01p_ng_set_rx_address(nrf24l01p_ng_t *dev, const uint8_t *addr,
     }
     else {
         nrf24l01p_ng_acquire(dev);
-        nrf24l01p_ng_write_reg(dev, reg_pipe_info[pipe].reg_pipe_addr,
+        nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_PX(pipe),
                                addr, 1);
         nrf24l01p_ng_release(dev);
         dev->urxaddr.arxaddr.rx_addr_short[pipe - 2] = *addr;
