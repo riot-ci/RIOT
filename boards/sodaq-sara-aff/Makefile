@@ -1,8 +1,5 @@
 MODULE = board
 
-ifneq (,$(filter boards_common_samd21-arduino-bootloader,$(USEMODULE)))
-  # Add the samd21-arduino-bootloader directory to the build
-  DIRS += $(RIOTBOARD)/common/samd21-arduino-bootloader
-endif
+DIRS += $(RIOTBOARD)/common/sodaq
 
 include $(RIOTBASE)/Makefile.base
