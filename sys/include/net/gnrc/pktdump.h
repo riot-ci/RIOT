@@ -36,8 +36,8 @@ extern "C" {
 /**
  * @brief   Message queue size for the pktdump thread
  */
-#ifndef GNRC_PKTDUMP_MSG_QUEUE_SIZE
-#define GNRC_PKTDUMP_MSG_QUEUE_SIZE     (8U)
+#ifndef CONFIG_GNRC_PKTDUMP_MSG_QUEUE_SIZE
+#define CONFIG_GNRC_PKTDUMP_MSG_QUEUE_SIZE     (8U)
 #endif
 /** @} */
 
