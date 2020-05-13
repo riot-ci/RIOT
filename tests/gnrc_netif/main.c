@@ -251,6 +251,12 @@ static void test_ipv6_addr_add__success(void)
 {
     static const ipv6_addr_t addr = { .u8 = NETIF0_IPV6_LL };
     int idx;
+    msg_t m;
+    msg_bus_entry_t sub;
+    msg_bus_t *bus = gnrc_netif_get_bus(&netifs[0], GNRC_NETIF_BUS_IPV6);
+
+    msg_bus_attach(bus, &sub);
+    msg_bus_subscribe(&sub, GNRC_IPV6_EVENT_ADDR_VALID);
 
     TEST_ASSERT(0 <= (idx = gnrc_netif_ipv6_addr_add_internal(&netifs[0], &addr, 64U,
                                                      GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID)));
@@ -261,6 +267,9 @@ static void test_ipv6_addr_add__success(void)
     TEST_ASSERT_EQUAL_INT(GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_VALID,
                           netifs[0].ipv6.addrs_flags[idx]);
     TEST_ASSERT(ipv6_addr_equal(&addr, &netifs[0].ipv6.addrs[idx]));
+    TEST_ASSERT(xtimer_msg_receive_timeout(&m, 1000000) >= 0);
+    TEST_ASSERT(memcmp(&addr, m.content.ptr, sizeof(addr)) == 0);
+    msg_bus_detach(bus, &sub);
 }
 
 static void test_ipv6_addr_add__readd_with_free_entry(void)
