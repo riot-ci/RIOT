@@ -92,7 +92,7 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
     unsigned option_nr = 0;
 
     /* parse options */
-    while (pkt_pos != pkt_end) {
+    while (pkt_pos < pkt_end) {
         uint8_t *option_start = pkt_pos;
         uint8_t option_byte = *pkt_pos++;
         if (option_byte == 0xff) {
