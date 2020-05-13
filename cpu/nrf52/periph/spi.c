@@ -168,21 +168,27 @@ void spi_release(spi_t bus)
     mutex_unlock(&locks[bus]);
 }
 
-static void _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
-                      uint8_t transfer_len)
+static size_t _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
+                      size_t remaining_len)
 {
-    uint8_t out_len = (out_buf) ? transfer_len : 0;
-    uint8_t in_len = (in_buf) ? transfer_len : 0;
+    uint8_t transfer_len = remaining_len > UINT8_MAX ? UINT8_MAX : remaining_len;
     const uint8_t *out_mbuf = out_buf;
 
     /**
      * Copy the out buffer in case it resides in flash, EasyDMA only works from
      * RAM
      */
-    if (out_len && !_in_ram(out_buf)) {
-        memcpy(_mbuf[bus], out_buf, out_len);
+    if (out_buf && !_in_ram(out_buf)) {
+        /* The SPI MBUF can be smaller than UINT8_MAX */
+        transfer_len = transfer_len > SPI_MBUF_SIZE ?
+            SPI_MBUF_SIZE : transfer_len;
+        memcpy(_mbuf[bus], out_buf, transfer_len);
         out_mbuf = _mbuf[bus];
     }
+
+    uint8_t out_len = (out_buf) ? transfer_len : 0;
+    uint8_t in_len = (in_buf) ? transfer_len : 0;
+
     dev(bus)->TXD.PTR = (uint32_t)out_mbuf;
     dev(bus)->RXD.PTR = (uint32_t)in_buf;
 
@@ -192,6 +198,7 @@ static void _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
     /* clear any spurious END events */
     dev(bus)->EVENTS_END = 0;
     dev(bus)->TASKS_START = 1;
+    return transfer_len;
 }
 
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
@@ -216,8 +223,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
     dev(bus)->INTENSET = SPIM_INTENSET_END_Msk;
 
     do {
-        size_t transfer_len = len > UINT8_MAX ? UINT8_MAX : len;
-        _transfer(bus, out_buf, in_buf, transfer_len);
+        size_t transfer_len = _transfer(bus, out_buf, in_buf, len);
         /* Block until the irq releases the mutex, then lock it again for the
          * next transfer */
         mutex_lock(&busy[bus]);
