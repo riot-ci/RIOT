@@ -110,7 +110,7 @@ uint8_t _handle_aro(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                                  GNRC_IPV6_NIB_REREG_ADDRESS,
                                  &netif->ipv6.addrs_timers[idx],
                                  rereg_time);
-                    _nib_bus_post(netif, GNRC_IPV6_NIB_EVENT_ADDR_VALID,
+                    gnrc_netif_ipv6_bus_post(netif, GNRC_IPV6_EVENT_ADDR_VALID,
                                   &netif->ipv6.addrs[idx]);
                     break;
                 }
