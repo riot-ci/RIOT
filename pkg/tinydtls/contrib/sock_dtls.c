@@ -357,7 +357,8 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
     }
 
-    return dtls_write(sock->dtls_ctx, &remote->dtls_session, (uint8_t *)data, len);
+    return dtls_write(sock->dtls_ctx, &remote->dtls_session,
+                      (uint8_t *)data, len);
 }
 
 static ssize_t _copy_buffer(sock_dtls_t *sock, void *data, size_t max_len)
@@ -409,7 +410,8 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         if (sock->buf != NULL) {
             return _copy_buffer(sock, data, max_len);
         }
-        else if (mbox_try_get(&sock->mbox, &msg) && msg.type == DTLS_EVENT_CONNECTED) {
+        else if (mbox_try_get(&sock->mbox, &msg) &&
+                 msg.type == DTLS_EVENT_CONNECTED) {
             return 0;
         }
         else if (timeout == 0) {
