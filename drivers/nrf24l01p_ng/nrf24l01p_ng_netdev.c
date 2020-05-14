@@ -128,7 +128,7 @@ void nrf24l01p_ng_irq_handler(void *_dev)
        do not congest the thread´s
        message queue with IRQ events */
     gpio_irq_disable(dev->params.pin_irq);
-    DEBUG("[nrf24l01p_ng] IRQ\n");
+    DEBUG_PUTS("[nrf24l01p_ng] IRQ\n");
     netdev_trigger_event_isr((netdev_t *)dev);
 }
 
@@ -142,16 +142,16 @@ int _init(netdev_t *netdev)
         return -ENOTSUP;
     }
     if (spi_init_cs(dev->params.spi, dev->params.pin_cs) != SPI_OK) {
-        DEBUG("[nrf24l01p_ng] _init(): spi_init_cs() failed\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _init(): spi_init_cs() failed\n");
         return -EIO;
     }
     if (gpio_init(dev->params.pin_ce, GPIO_OUT) < 0) {
-        DEBUG("[nrf24l01p_ng] _init(): gpio_init() failed\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _init(): gpio_init() failed\n");
         return -EIO;
     }
     gpio_clear(dev->params.pin_ce);
     if (nrf24l01p_ng_acquire(dev) < 0) {
-        DEBUG("[nrf24l01p_ng] _init(): nrf24l01p_ng_acquire() failed\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _init(): nrf24l01p_ng_acquire() failed\n");
         return -EIO;
     }
     if (dev->state != NRF24L01P_NG_STATE_POWER_DOWN) {
@@ -214,7 +214,7 @@ int _init(netdev_t *netdev)
     nrf24l01p_ng_release(dev);
     if (gpio_init_int(dev->params.pin_irq, GPIO_IN, GPIO_FALLING,
                       nrf24l01p_ng_irq_handler, dev) < 0) {
-        DEBUG("[nrf24l01p_ng] _init(): gpio_init_int() failed\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _init(): gpio_init_int() failed\n");
         return -EIO;
     }
     return 0;
@@ -256,7 +256,7 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
     /* return upper estaimation bound of frame size */
     if (!buf && !len) {
-        DEBUG("[nrf24l01p_ng] Return upper frame estimation");
+        DEBUG_PUTS("[nrf24l01p_ng] Return upper frame estimation");
         return NRF24L01P_NG_ADDR_WIDTH + NRF24L01P_NG_MAX_PAYLOAD_WIDTH;
     }
     nrf24l01p_ng_t *dev = (nrf24l01p_ng_t *)netdev;
@@ -266,7 +266,7 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     if (!pl_width ||
         pl_width > NRF24L01P_NG_MAX_PAYLOAD_WIDTH ||
         pno >= NRF24L01P_NG_PX_NUM_OF) {
-        DEBUG("[nrf24l01p_ng] RX error, flush RX FIFO\n");
+        DEBUG_PUTS("[nrf24l01p_ng] RX error, flush RX FIFO\n");
 /* In some rare cases the RX payload width (R_RX_PL_WID) exceeds
    the maximum of 32 bytes. In that case it must be flushed.
    See https://devzone.nordicsemi.com/f/nordic-q-a/26489/nrf24l01-the-length-of-received-data-exceed-32
@@ -288,7 +288,7 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     uint8_t frame_len = sizeof(dst_addr) + pl_width;
     /* do NOT drop frame and return exact frame size */
     if (!buf) {
-        DEBUG("[nrf24l01p_ng] Return exact frame length\n");
+        DEBUG_PUTS("[nrf24l01p_ng] Return exact frame length\n");
         return frame_len;
     }
     /* drop frame, content in buf becomes invalid and return -ENOBUFS */
@@ -300,7 +300,7 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         return -ENOBUFS;
     }
     /* get received frame */
-    DEBUG("[nrf24l01p_ng] Handle received frame\n");
+    DEBUG_PUTS("[nrf24l01p_ng] Handle received frame\n");
     uint8_t *frame = (uint8_t *)buf;
     memcpy(frame, dst_addr, sizeof(dst_addr));
     frame += sizeof(dst_addr);
@@ -330,7 +330,7 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     assert(netdev && iolist);
     if (!(iolist->iol_base) || !(iolist->iol_next)) {
-        DEBUG("[nrf24l01p_ng] No Tx address or no payload\n");
+        DEBUG_PUTS("[nrf24l01p_ng] No Tx address or no payload\n");
         return -ENOTSUP;
     }
     nrf24l01p_ng_t *dev = (nrf24l01p_ng_t *)netdev;
@@ -343,7 +343,7 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
         nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
                               &fifo_status, 1);
     if (status & NRF24L01P_NG_FLG_IRQ) {
-        DEBUG("[nrf24l01p_ng] Handle pending IRQ, before sending new data\n");
+        DEBUG_PUTS("[nrf24l01p_ng] Handle pending IRQ, before sending new data\n");
         nrf24l01p_ng_release(dev);
         _isr(&dev->netdev);
         return -EAGAIN;
@@ -363,7 +363,7 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
     for (const iolist_t *iol = iolist->iol_next; iol; iol = iol->iol_next) {
         if (pl_width + iol->iol_len > sizeof(payload)) {
             nrf24l01p_ng_release(dev);
-            DEBUG("[nrf24l01p_ng] frame too big\n");
+            DEBUG_PUTS("[nrf24l01p_ng] frame too big\n");
             return -E2BIG;
         }
         memcpy(payload + pl_width, iol->iol_base, iol->iol_len);
@@ -436,7 +436,7 @@ void _isr(netdev_t *netdev)
     /* read all RX data */
     if (dev->state == NRF24L01P_NG_STATE_RX_MODE) {
         while (!(fifo_status & NRF24L01P_NG_FLG_RX_EMPTY)) {
-            DEBUG("[nrf24l01p_ng] ISR: read pending Rx frames\n");
+            DEBUG_PUTS("[nrf24l01p_ng] ISR: read pending Rx frames\n");
             netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
             status = NRF24L01P_NG_FLG_RX_DR;
             nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);

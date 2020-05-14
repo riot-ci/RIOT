@@ -29,7 +29,7 @@ netdev_event_t nrf24l01p_ng_isr_max_rt(const nrf24l01p_ng_t *dev)
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
-    DEBUG("[nrf24l01p_ng] IRS MAX_RT\n");
+    DEBUG_PUTS("[nrf24l01p_ng] IRS MAX_RT\n");
     netdev_event_t event = NETDEV_EVENT_TX_NOACK;
     nrf24l01p_ng_flush_tx(dev);
     return event;
@@ -41,7 +41,7 @@ netdev_event_t nrf24l01p_ng_isr_rx_dr(const nrf24l01p_ng_t *dev)
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
-    DEBUG("[nrf24l01p_ng] IRS RX_DR\n");
+    DEBUG_PUTS("[nrf24l01p_ng] IRS RX_DR\n");
     netdev_event_t event = NETDEV_EVENT_RX_COMPLETE;
     return event;
 }
@@ -52,7 +52,7 @@ netdev_event_t nrf24l01p_ng_isr_tx_ds(const nrf24l01p_ng_t *dev)
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
-    DEBUG("[nrf24l01p_ng] IRS TX_DS\n");
+    DEBUG_PUTS("[nrf24l01p_ng] IRS TX_DS\n");
     netdev_event_t event = NETDEV_EVENT_TX_COMPLETE;
     return event;
 }

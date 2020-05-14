@@ -75,17 +75,17 @@ void _swap_bytes(uint8_t* buffer, size_t len) {
 
 int nrf24l01p_ng_acquire(nrf24l01p_ng_t *dev)
 {
-    DEBUG("[nrf24l01p_ng] acquire ...\n");
+    DEBUG_PUTS("[nrf24l01p_ng] acquire ...\n");
     int a = spi_acquire(dev->params.spi, dev->params.pin_cs, SPI_MODE_0,
                         dev->params.spi_clk);
-    DEBUG("[nrf24l01p_ng] acquired!\n");
+    DEBUG_PUTS("[nrf24l01p_ng] acquired!\n");
     return a;
 }
 
 void nrf24l01p_ng_release(nrf24l01p_ng_t *dev)
 {
     spi_release(dev->params.spi);
-    DEBUG("[nrf24l01p_ng] released\n");
+    DEBUG_PUTS("[nrf24l01p_ng] released\n");
 }
 
 uint8_t nrf24l01p_ng_read_reg(const nrf24l01p_ng_t *dev, uint8_t reg,
