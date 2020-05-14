@@ -47,7 +47,7 @@
 
 #if USE_XOSC_ONLY /* don't use fast internal oscillators */
 
-#if (XOSC0_FREQUENCY == 0)
+#if (XOSC0_FREQUENCY == 0) && (XOSC1_FREQUENCY == 0)
 #error Configuration error: no external oscillator frequency defined
 #endif
 
@@ -101,7 +101,9 @@ static void xosc_init(uint8_t idx)
 {
     uint32_t freq;
 
-    if (!USE_XOSC) {
+    if (!USE_XOSC ||
+        (idx == 0 && XOSC0_FREQUENCY == 0) ||
+        (idx == 1 && XOSC1_FREQUENCY == 0)) {
         OSCCTRL->XOSCCTRL[idx].reg = 0;
         return;
     }
@@ -336,6 +338,7 @@ void cpu_init(void)
     }
 
     xosc_init(0);
+    xosc_init(1);
     fdpll0_init(CLOCK_CORECLOCK * DPLL_DIV);
 
     /* select the source of the main clock */
@@ -346,7 +349,8 @@ void cpu_init(void)
         gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_DFLL,
                      GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / CLOCK_CORECLOCK));
     } else if (USE_XOSC) {
-        gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_XOSC0,
+        unsigned xosc_src = XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1;
+        gclk_connect(SAM0_GCLK_MAIN, xosc_src,
                      GCLK_GENCTRL_DIV(SAM0_XOSC48_FREQ_HZ / CLOCK_CORECLOCK));
     }
 
