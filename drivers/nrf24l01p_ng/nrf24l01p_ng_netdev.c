@@ -37,7 +37,6 @@
 #include "nrf24l01p_ng_communication.h"
 #include "nrf24l01p_ng_states.h"
 #include "nrf24l01p_ng_diagnostics.h"
-#include "nrf24l01p_ng_isr.h"
 #include "nrf24l01p_ng_netdev.h"
 
 #define NRF24L01P_NG_FLG_IRQ \
@@ -130,6 +129,37 @@ void nrf24l01p_ng_irq_handler(void *_dev)
     gpio_irq_disable(dev->params.pin_irq);
     DEBUG_PUTS("[nrf24l01p_ng] IRQ\n");
     netdev_trigger_event_isr((netdev_t *)dev);
+}
+
+static
+void _isr_max_rt(const nrf24l01p_ng_t *dev)
+{
+    assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
+           dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
+           dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
+           dev->state == NRF24L01P_NG_STATE_TX_MODE);
+    DEBUG_PUTS("[nrf24l01p_ng] IRS MAX_RT\n");
+    nrf24l01p_ng_flush_tx(dev);
+}
+
+static
+void _isr_rx_dr(const nrf24l01p_ng_t *dev)
+{
+    assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
+           dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
+           dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
+           dev->state == NRF24L01P_NG_STATE_TX_MODE);
+    DEBUG_PUTS("[nrf24l01p_ng] IRS RX_DR\n");
+}
+
+static
+void _isr_tx_ds(const nrf24l01p_ng_t *dev)
+{
+    assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
+           dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
+           dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
+           dev->state == NRF24L01P_NG_STATE_TX_MODE);
+    DEBUG_PUTS("[nrf24l01p_ng] IRS TX_DS\n");
 }
 
 static
@@ -414,18 +444,17 @@ void _isr(netdev_t *netdev)
     gpio_irq_enable(dev->params.pin_irq);
     nrf24l01p_ng_acquire(dev);
     uint8_t status = nrf24l01p_ng_get_status(dev);
-    netdev_event_t event;
     if (status & NRF24L01P_NG_FLG_MAX_RT) {
-        event = nrf24l01p_ng_isr_max_rt(dev);
-        netdev->event_callback(netdev, event);
+        _isr_max_rt(dev);
+        netdev->event_callback(netdev, NETDEV_EVENT_TX_NOACK);
     }
     if (status & NRF24L01P_NG_FLG_TX_DS) {
-        event = nrf24l01p_ng_isr_tx_ds(dev);
-        netdev->event_callback(netdev, event);
+        _isr_tx_ds(dev);
+        netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
     }
     if (status & NRF24L01P_NG_FLG_RX_DR) {
-        event = nrf24l01p_ng_isr_rx_dr(dev);
-        netdev->event_callback(netdev, event);
+        _isr_rx_dr(dev);
+        netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
     }
     /* clear interrupt flags */
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
