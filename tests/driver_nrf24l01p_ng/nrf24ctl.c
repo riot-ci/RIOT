@@ -180,7 +180,7 @@ int sc_nrf24ctl(int argc, char *argv[])
                 }
                 else if (!(strcmp(argv[3], "state"))) {
                     nrf24l01p_ng_state_t s =
-                        nrf24l01p_ng_string_to_state(argv[4]);
+                        nrf24l01p_ng_diagnostics_string_to_state(argv[4]);
                     ret = nrf24l01p_ng_set_state(dev, s);
                     if (ret < 0) {
                         printf("[nrf24l01p] "
@@ -284,7 +284,7 @@ int sc_nrf24ctl(int argc, char *argv[])
                 }
                 else if (!(strcmp(argv[3], "state"))) {
                     const char *sstate =
-                        nrf24l01p_ng_state_to_string(dev->state);
+                        nrf24l01p_ng_diagnostics_state_to_string(dev->state);
                     printf("nrf24l01p device %d - State: %s\n", dev_index,
                            sstate);
                 }
