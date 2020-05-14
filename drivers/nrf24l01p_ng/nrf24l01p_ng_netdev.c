@@ -161,11 +161,11 @@ int _init(netdev_t *netdev)
     nrf24l01p_ng_flush_rx(dev);
     uint8_t aw = NRF24L01P_NG_ADDR_WIDTH;
     uint8_t bc[] = NRF24L01P_NG_BROADCAST_ADDR;
-    luid_base(dev->urxaddr.rxaddrpx.rx_p0, aw);
-    do {
-        /* "The LSByte must be unique for all six pipes" [datasheet p.38] */
-        luid_get(&dev->urxaddr.rxaddrpx.rx_p0[aw - 1], 1);
-    } while (dev->urxaddr.rxaddrpx.rx_p0[aw - 1] == bc[aw - 1]);
+    luid_get_lb(dev->urxaddr.rxaddrpx.rx_p0, aw);
+     /* "The LSByte must be unique for all six pipes" [datasheet p.38] */
+    if (dev->urxaddr.rxaddrpx.rx_p0[aw - 1] == bc[aw - 1]) {
+        luid_get_lb(dev->urxaddr.rxaddrpx.rx_p0, aw);
+    }
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_P0,
                            dev->urxaddr.rxaddrpx.rx_p0, aw);
     memcpy(dev->urxaddr.rxaddrpx.rx_p1, bc, aw);
