@@ -429,6 +429,7 @@ int nrf24l01p_ng_set_state(nrf24l01p_ng_t *dev, nrf24l01p_ng_state_t state);
  */
 nrf24l01p_ng_state_t nrf24l01p_ng_get_state(const nrf24l01p_ng_t *dev);
 
+#if IS_USED(MODULE_NRF24L01P_NG_DIAGNOSTICS)
 /**
  * @brief Get state variable as a string
  *
@@ -436,7 +437,8 @@ nrf24l01p_ng_state_t nrf24l01p_ng_get_state(const nrf24l01p_ng_t *dev);
  *
  * @return              @p state as a string
  */
-const char *nrf24l01p_ng_state_to_string(nrf24l01p_ng_state_t state);
+const char *
+nrf24l01p_ng_diagnostics_state_to_string(nrf24l01p_ng_state_t state);
 
 /**
  * @brief Convert string to state variable
@@ -445,7 +447,8 @@ const char *nrf24l01p_ng_state_to_string(nrf24l01p_ng_state_t state);
  *
  * @return              State variable
  */
-nrf24l01p_ng_state_t nrf24l01p_ng_string_to_state(const char *sstate);
+nrf24l01p_ng_state_t
+nrf24l01p_ng_diagnostics_string_to_state(const char *sstate);
 
 /**
  * @brief Print all registers
@@ -460,6 +463,7 @@ void nrf24l01p_ng_print_all_regs(nrf24l01p_ng_t *dev);
  * @param[in] dev       NRf24L01+ device handle
  */
 void nrf24l01p_ng_print_dev_info(const nrf24l01p_ng_t *dev);
+#endif
 
 #ifdef __cplusplus
 }

@@ -21,7 +21,8 @@
 #include "nrf24l01p_ng_communication.h"
 #include "nrf24l01p_ng_diagnostics.h"
 
-const char *nrf24l01p_ng_state_to_string(nrf24l01p_ng_state_t state)
+const char *
+nrf24l01p_ng_diagnostics_state_to_string(nrf24l01p_ng_state_t state)
 {
     if (state == NRF24L01P_NG_STATE_POWER_DOWN) {
         return "POWER_DOWN";
@@ -41,7 +42,8 @@ const char *nrf24l01p_ng_state_to_string(nrf24l01p_ng_state_t state)
     return "UNDEFINED";
 }
 
-nrf24l01p_ng_state_t nrf24l01p_ng_string_to_state(const char *sstate)
+nrf24l01p_ng_state_t
+nrf24l01p_ng_diagnostics_string_to_state(const char *sstate)
 {
     if (!strcmp(sstate, "POWER_DOWN")) {
         return NRF24L01P_NG_STATE_POWER_DOWN;
@@ -346,7 +348,7 @@ void nrf24l01p_ng_diagnostics_print_dev_info(const nrf24l01p_ng_t *dev)
            dev->urxaddr.rxaddrpx.rx_p5);
 
     printf("State:                  %s\n",
-           nrf24l01p_ng_state_to_string(dev->state));
+           nrf24l01p_ng_diagnostics_state_to_string(dev->state));
 }
 
 void nrf24l01p_ng_diagnostics_print_frame(const nrf24l01p_ng_t *dev,

@@ -73,6 +73,7 @@ PSEUDOMODULES += nimble_autoconn_%
 PSEUDOMODULES += newlib
 PSEUDOMODULES += newlib_gnu_source
 PSEUDOMODULES += newlib_nano
+PSEUDOMODULES += nrf24l01p_ng_diagnostics
 PSEUDOMODULES += openthread
 PSEUDOMODULES += pktqueue
 PSEUDOMODULES += posix_headers

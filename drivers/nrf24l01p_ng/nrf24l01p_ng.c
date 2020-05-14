@@ -21,13 +21,16 @@
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
+#include "kernel_defines.h"
 
 #include "nrf24l01p_ng_netdev.h"
 #include "nrf24l01p_ng_constants.h"
 #include "nrf24l01p_ng_communication.h"
 #include "nrf24l01p_ng_registers.h"
 #include "nrf24l01p_ng_states.h"
+#if IS_USED(MODULE_NRF24L01P_NG_DIAGNOSTICS)
 #include "nrf24l01p_ng_diagnostics.h"
+#endif
 
 #define NRF24L01P_NG_REG_RX_ADDR_PX(x)  (NRF24L01P_NG_REG_RX_ADDR_P0 + (x))
 #define NRF24L01P_NG_REG_RX_PW_PX(x)    (NRF24L01P_NG_REG_RX_PW_P0 + (x))
@@ -381,6 +384,7 @@ nrf24l01p_ng_state_t nrf24l01p_ng_get_state(const nrf24l01p_ng_t *dev)
     return dev->state;
 }
 
+#if IS_USED(MODULE_NRF24L01P_NG_DIAGNOSTICS)
 void nrf24l01p_ng_print_all_regs(nrf24l01p_ng_t *dev)
 {
     nrf24l01p_ng_acquire(dev);
@@ -392,3 +396,4 @@ void nrf24l01p_ng_print_dev_info(const nrf24l01p_ng_t *dev)
 {
     nrf24l01p_ng_diagnostics_print_dev_info(dev);
 }
+#endif
