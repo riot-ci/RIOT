@@ -1,7 +1,7 @@
-From f93efc314c004e15cf9f1db340207fcb5552f882 Mon Sep 17 00:00:00 2001
+From 1b9c54459e882a2beb4cedbdbafbb299b95be9e8 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 27 Mar 2020 09:59:24 +0100
-Subject: [PATCH 3/7] openapps: comment out unused COAP&UDP applications
+Subject: [PATCH 3/8] openapps: comment out unused COAP&UDP applications
  includes
 
 ---

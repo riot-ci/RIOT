@@ -17,6 +17,7 @@
 #include "scheduler.h"
 #include "openstack.h"
 #include "radio.h"
+#include "idmanager.h"
 
 #include "openwsn.h"
 #include "openwsn_board.h"
@@ -49,10 +50,34 @@ kernel_pid_t openwsn_get_pid(void)
     return _pid;
 }
 
+#ifdef MODULE_OPENWSN_RADIO
+void openwsn_set_addr_16b(netdev_t* dev)
+{
+    uint8_t addr[IEEE802154_SHORT_ADDRESS_LEN];
+    dev->driver->get(dev, NETOPT_ADDRESS, addr, IEEE802154_SHORT_ADDRESS_LEN);
+    printf("short addrress %02x %02x\n", addr[0], addr[1]);
+    open_addr_t id;
+    id.type = ADDR_16B;
+    memcpy(&id.addr_16b, addr, IEEE802154_SHORT_ADDRESS_LEN);
+    idmanager_setMyID(&id);
+}
+
+void openwsn_set_addr_64b(netdev_t* dev)
+{
+    uint8_t addr[IEEE802154_LONG_ADDRESS_LEN];
+    dev->driver->get(dev, NETOPT_ADDRESS_LONG, addr, IEEE802154_LONG_ADDRESS_LEN);
+    open_addr_t id;
+    id.type = ADDR_64B;
+    memcpy(&id.addr_64b, addr, IEEE802154_LONG_ADDRESS_LEN);
+    idmanager_setMyID(&id);
+}
+#endif
+
 int openwsn_bootstrap(void)
 {
     LOG_DEBUG("[openwsn]: init RIOT board\n");
     board_init_openwsn();
+
 
 #ifdef MODULE_AT86RF2XX
     netdev_t *netdev = (netdev_t *)&at86rf2xx_dev.netdev.netdev;
@@ -65,6 +90,15 @@ int openwsn_bootstrap(void)
         LOG_ERROR("[openwsn]: failed to init radio\n");
         return -1;
     }
+#endif
+
+    /* initiate id manager not initiates in the stack */
+    idmanager_init();
+
+#ifdef MODULE_OPENWSN_RADIO
+    /* override 16b and 64b address to avoid short address collision */
+    openwsn_set_addr_64b(netdev);
+    openwsn_set_addr_16b(netdev);
 #endif
 
     LOG_DEBUG("[openwsn]: network thread\n");

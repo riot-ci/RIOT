@@ -1,7 +1,7 @@
-From ccfde966bd7a8787e320511bbe23c26e6e7e0afd Mon Sep 17 00:00:00 2001
+From da5474c59e0f6bb4bae7a2cdb90caf9a86a0a87b Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Thu, 2 Apr 2020 16:04:29 +0200
-Subject: [PATCH 6/7] bsp/boards/toolchain_defs.h: comment out conflict ISR
+Subject: [PATCH 6/8] bsp/boards/toolchain_defs.h: comment out conflict ISR
  definitions
 
 The ISR definition conflicts with AVR ISR definitions.

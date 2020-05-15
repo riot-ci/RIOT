@@ -1,7 +1,7 @@
-From 559ef9ace4d28462fafda1edd0dc7851a7200ecc Mon Sep 17 00:00:00 2001
+From 014186ce2530b16b823ee936356019bb31880c7d Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Sun, 29 Mar 2020 12:11:53 +0200
-Subject: [PATCH 5/7] kernel/openos/scheduler: use thread flags
+Subject: [PATCH 5/8] kernel/openos/scheduler: use thread flags
 
 Use thread_flags_wait_any to pause the scheduler. Set flag in
 scheduler_push_task to trigger new task handling.
@@ -10,7 +10,7 @@ scheduler_push_task to trigger new task handling.
  1 file changed, 11 insertions(+)
 
 diff --git a/kernel/openos/scheduler.c b/kernel/openos/scheduler.c
-index 2d31208d..3cdf8d0e 100644
+index 1dad545e..5e0a3210 100644
 --- a/kernel/openos/scheduler.c
 +++ b/kernel/openos/scheduler.c
 @@ -10,11 +10,15 @@
