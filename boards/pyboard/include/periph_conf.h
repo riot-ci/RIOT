@@ -93,8 +93,7 @@ static const uart_conf_t uart_config[] = {
         .bus        = APB2,
         .irqn       = USART1_IRQn,
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 2,
-        .dma_chan   = 2
+        .dma        = DMA_STREAM_UNDEF,
 #endif
     },
 };
