@@ -4,8 +4,15 @@
  * directory for more details.
  */
 
+#ifndef IRQ_ARCH_H
+#define IRQ_ARCH_H
+
 #include "VIC.h"
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define IRQ_MASK 0x00000080
 
@@ -16,19 +23,19 @@ static inline unsigned __get_cpsr(void)
     return retval;
 }
 
-int irq_is_in(void)
+static inline void __set_cpsr(unsigned val)
+{
+    __asm__ volatile(" msr  cpsr, %0" : /* no outputs */ : "r"(val) : "memory");
+}
+
+static inline int irq_is_in(void)
 {
     int retval;
     __asm__ volatile(" mrs  %0, cpsr" : "=r"(retval) : /* no inputs */ : "memory");
     return (retval & INTMode) == 18;
 }
 
-static inline void __set_cpsr(unsigned val)
-{
-    __asm__ volatile(" msr  cpsr, %0" : /* no outputs */ : "r"(val) : "memory");
-}
-
-unsigned irq_disable(void)
+static inline __attribute__((always_inline)) unsigned irq_disable(void)
 {
     unsigned _cpsr;
 
@@ -37,16 +44,15 @@ unsigned irq_disable(void)
     return _cpsr;
 }
 
-unsigned irq_restore(unsigned oldCPSR)
+static inline __attribute__((always_inline)) void irq_restore(unsigned oldCPSR)
 {
     unsigned _cpsr;
 
     _cpsr = __get_cpsr();
     __set_cpsr((_cpsr & ~IRQ_MASK) | (oldCPSR & IRQ_MASK));
-    return _cpsr;
 }
 
-unsigned irq_enable(void)
+static inline __attribute__((always_inline)) unsigned irq_enable(void)
 {
     unsigned _cpsr;
 
@@ -54,3 +60,10 @@ unsigned irq_enable(void)
     __set_cpsr(_cpsr & ~IRQ_MASK);
     return _cpsr;
 }
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* IRQ_ARCH_H */
+/** @} */
