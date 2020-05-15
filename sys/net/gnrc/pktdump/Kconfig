@@ -14,9 +14,10 @@ if KCONFIG_MODULE_GNRC_PKTDUMP
 
 config GNRC_PKTDUMP_MSG_QUEUE_SIZE_EXP
     int "Exponent for the queue size (resulting in the queue size 2^n)"
-    default 4
+    default 3
     help
-        Message queue size for the pktdump thread. Value represents the
-        exponent n of 2^n.
+        As the queue size ALWAYS needs to be power of two, this option
+        represents the exponent of 2^n, which will be used as the size of
+        the queue.
 
 endif # KCONFIG_MODULE_GNRC_PKTDUMP
