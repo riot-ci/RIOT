@@ -166,10 +166,10 @@ static void *_eventloop(void *arg)
 {
     (void)arg;
     msg_t msg, reply;
-    msg_t msg_queue[CONFIG_GNRC_PKTDUMP_MSG_QUEUE_SIZE];
+    msg_t msg_queue[GNRC_PKTDUMP_MSG_QUEUE_SIZE];
 
     /* setup the message queue */
-    msg_init_queue(msg_queue, CONFIG_GNRC_PKTDUMP_MSG_QUEUE_SIZE);
+    msg_init_queue(msg_queue, GNRC_PKTDUMP_MSG_QUEUE_SIZE);
 
     reply.content.value = (uint32_t)(-ENOTSUP);
     reply.type = GNRC_NETAPI_MSG_TYPE_ACK;
