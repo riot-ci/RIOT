@@ -13,7 +13,7 @@ menuconfig KCONFIG_MODULE_GNRC_PKTDUMP
 if KCONFIG_MODULE_GNRC_PKTDUMP
 
 config GNRC_PKTDUMP_MSG_QUEUE_SIZE_EXP
-    int "Queue size (as exponent of 2^n)"
+    int "Exponent for the queue size (resulting in the queue size 2^n)"
     default 4
     help
         Message queue size for the pktdump thread. Value represents the
