@@ -62,18 +62,18 @@ static inline uint8_t get_prescaler(pwm_t dev, uint32_t *scale)
 
 static inline void compute_cra_and_crb(pwm_t dev, uint8_t pre)
 {
-    uint8_t cra = _BV(WGM1) | _BV(WGM0);
+    uint8_t cra = (1 << WGM1) | (1 << WGM0);
     uint8_t crb = pre;
 
     if (pwm_conf[dev].pin_ch[0] != GPIO_UNDEF) {
-        cra |= _BV(COMA1);
+        cra |= (1 << COMA1);
     }
     else {
-        crb |= _BV(WGM2);
+        crb |= (1 << WGM2);
     }
 
-    if (pwm_conf[dev].pin_ch[0] != GPIO_UNDEF) {
-        cra |= _BV(COMB1);
+    if (pwm_conf[dev].pin_ch[1] != GPIO_UNDEF) {
+        cra |= (1 << COMB1);
     }
 
     state[dev].CRA = cra;
@@ -94,6 +94,7 @@ static inline void apply_config(pwm_t dev)
 
 uint32_t pwm_init(pwm_t dev, pwm_mode_t mode, uint32_t freq, uint16_t res)
 {
+    (void)mode;
     /* only left implemented, max resolution 256 */
     assert(dev < PWM_NUMOF && mode == PWM_LEFT && res <= 256);
     /* resolution != 256 only valid if ch0 not used */
