@@ -28,6 +28,7 @@
 #include "shell.h"
 #include "periph/spi.h"
 #include "schedstatistics.h"
+#include "thread.h"
 
 /**
  * @brief   Some parameters used for benchmarking
