@@ -81,6 +81,70 @@ extern "C" {
 /* #define restrict */
 #endif
 
+/**
+ * @brief   MAX functions for internal use
+ * @{
+ */
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+#ifndef MAX4
+#define MAX4(a, b, c, d) MAX(MAX((a), (b)), MAX((c),(d)))
+#endif
+/** @} */
+
+/**
+ * @brief   VFS parameters for FAT
+ * @{
+ */
+#ifdef MODULE_FATFS_VFS
+#define FATFS_DIR_BUFFER_SIZE       (44)
+#define FATFS_FILE_BUFFER_SIZE      (72)
+#else
+#define FATFS_DIR_BUFFER_SIZE       (0)
+#define FATFS_FILE_BUFFER_SIZE      (0)
+#endif
+/** @} */
+
+/**
+ * @brief   VFS parameters for littlefs
+ * @{
+ */
+#ifdef MODULE_LITTLEFS
+#define LITTLEFS_DIR_BUFFER_SIZE    (44)
+#define LITTLEFS_FILE_BUFFER_SIZE   (56)
+#else
+#define LITTLEFS_DIR_BUFFER_SIZE    (0)
+#define LITTLEFS_FILE_BUFFER_SIZE   (0)
+#endif
+/** @} */
+
+/**
+ * @brief   VFS parameters for littlefs2
+ * @{
+ */
+#ifdef MODULE_LITTLEFS2
+#define LITTLEFS2_DIR_BUFFER_SIZE   (52)
+#define LITTLEFS2_FILE_BUFFER_SIZE  (84)
+#else
+#define LITTLEFS2_DIR_BUFFER_SIZE   (0)
+#define LITTLEFS2_FILE_BUFFER_SIZE  (0)
+#endif
+/** @} */
+
+/**
+ * @brief   VFS parameters for spiffs
+ * @{
+ */
+#ifdef MODULE_SPIFFS
+#define SPIFFS_DIR_BUFFER_SIZE      (12)
+#define SPIFFS_FILE_BUFFER_SIZE     (1)
+#else
+#define SPIFFS_DIR_BUFFER_SIZE      (0)
+#define SPIFFS_FILE_BUFFER_SIZE     (0)
+#endif
+/** @} */
+
 #ifndef VFS_MAX_OPEN_FILES
 /**
  * @brief Maximum number of simultaneous open files
@@ -116,7 +180,11 @@ extern "C" {
  * @attention Put the check in the public header file (.h), do not put the check in the
  * implementation (.c) file.
  */
-#define VFS_DIR_BUFFER_SIZE (12)
+#define VFS_DIR_BUFFER_SIZE MAX4(FATFS_DIR_BUFFER_SIZE,     \
+                                 LITTLEFS_DIR_BUFFER_SIZE,  \
+                                 LITTLEFS2_DIR_BUFFER_SIZE, \
+                                 SPIFFS_DIR_BUFFER_SIZE     \
+                                )
 #endif
 
 #ifndef VFS_FILE_BUFFER_SIZE
@@ -139,7 +207,11 @@ extern "C" {
  * @attention Put the check in the public header file (.h), do not put the check in the
  * implementation (.c) file.
  */
-#define VFS_FILE_BUFFER_SIZE (1)
+#define VFS_FILE_BUFFER_SIZE MAX4(FATFS_FILE_BUFFER_SIZE,    \
+                                  LITTLEFS_FILE_BUFFER_SIZE, \
+                                  LITTLEFS2_FILE_BUFFER_SIZE,\
+                                  SPIFFS_FILE_BUFFER_SIZE    \
+                                 )
 #endif
 
 #ifndef VFS_NAME_MAX
