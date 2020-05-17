@@ -18,6 +18,3 @@ endif
 ifeq ($(OS),Darwin)
   CFLAGS += -Wno-empty-body
 endif
-
-# Set vfs file and dir buffer sizes
-CFLAGS += -DVFS_FILE_BUFFER_SIZE=72 -DVFS_DIR_BUFFER_SIZE=44
