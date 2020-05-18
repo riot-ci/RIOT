@@ -71,11 +71,11 @@ static void _sched_statistics_trigger(void)
     sched_statistics_cb(sched_active_pid, sched_active_pid);
 }
 
-static xtimer_ticks64_t _sched_ticks(void)
+static xtimer_ticks32_t _sched_ticks(void)
 {
     _sched_statistics_trigger();
-    xtimer_ticks64_t runtime_ticks = {
-        .ticks64 = sched_pidlist[sched_active_pid].runtime_ticks
+    xtimer_ticks32_t runtime_ticks = {
+        .ticks32 = sched_pidlist[sched_active_pid].runtime_ticks
     };
     return runtime_ticks;
 }
@@ -246,7 +246,7 @@ int cmd_bench(int argc, char **argv)
     (void)argv;
 
     uint32_t start, stop;
-    xtimer_ticks64_t sched_start, sched_stop;
+    xtimer_ticks32_t sched_start, sched_stop;
     uint32_t sum = 0;
     uint64_t sched_sum = 0;
     uint8_t in;
@@ -281,9 +281,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 1 - write %i times %i byte:", BENCH_REDOS, 1);
     printf("\t\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 2 - write 1000 times 2 byte */
@@ -297,9 +297,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 2 - write %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
     printf("\t\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 3 - write 1000 times 100 byte */
@@ -313,9 +313,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 3 - write %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
     printf("\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 4 - write 1000 times 1 byte to register */
@@ -329,9 +329,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 4 - write %i times %i byte to register:", BENCH_REDOS, 1);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 5 - write 1000 times 2 byte to register */
@@ -345,9 +345,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 5 - write %i times %i byte to register:", BENCH_REDOS, BENCH_SMALL);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 6 - write 1000 times 100 byte to register */
@@ -361,9 +361,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 6 - write %i times %i byte to register:", BENCH_REDOS, BENCH_LARGE);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 7 - read 1000 times 2 byte */
@@ -377,9 +377,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 7 - read %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
     printf("\t\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 8 - read 1000 times 100 byte */
@@ -393,9 +393,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 8 - read %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
     printf("\t\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 9 - read 1000 times 2 byte from register */
@@ -409,9 +409,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf(" 9 - read %i times %i byte from register:", BENCH_REDOS, BENCH_SMALL);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 10 - read 1000 times 100 byte from register */
@@ -425,9 +425,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf("10 - read %i times %i byte from register:", BENCH_REDOS, BENCH_LARGE);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 11 - transfer 1000 times 2 byte */
@@ -441,9 +441,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf("11 - transfer %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
     printf("\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 12 - transfer 1000 times 100 byte */
@@ -457,9 +457,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf("12 - transfer %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
     printf("\t\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 13 - transfer 1000 times 2 byte from/to register */
@@ -473,9 +473,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf("13 - transfer %i times %i byte to register:", BENCH_REDOS, BENCH_SMALL);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     /* 14 - transfer 1000 times 100 byte from/to register */
@@ -489,9 +489,9 @@ int cmd_bench(int argc, char **argv)
     sched_stop = _sched_ticks();
     printf("14 - transfer %i times %i byte to register:", BENCH_REDOS, BENCH_LARGE);
     printf("\t%i\t%i\n", (int)(stop - start),
-           (int)xtimer_diff64(sched_stop, sched_start).ticks64);
+           (int)xtimer_diff(sched_stop, sched_start).ticks32);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks64(xtimer_diff64(sched_stop,
+    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
                                                         sched_start));
 
     xtimer_sleep(1);
