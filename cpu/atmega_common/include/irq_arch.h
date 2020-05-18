@@ -36,31 +36,18 @@ extern "C" {
 #endif
 
 /**
- * @brief   Get the current interrupt state
- *
- * @return  The current interrupt state
- *
- * @details The value of the seven least significant bits is undefined
- */
-__attribute__((always_inline)) static inline uint8_t atmega_get_interrupt_state(void)
-{
-    uint8_t sreg;
-    __asm__ volatile(
-        "in %[dest], __SREG__"      "\n\t"
-        : [dest]    "=r"(sreg)
-        : /* no inputs */
-        : "memory"
-    );
-    return sreg;
-}
-
-/**
  * @brief Disable all maskable interrupts
  */
 __attribute__((always_inline)) static inline unsigned int irq_disable(void)
 {
-    uint8_t mask = atmega_get_interrupt_state();
-    cli(); /* <-- acts as memory barrier, see doc of avr-libc */
+    uint8_t mask;
+    __asm__ volatile(
+        "in %[dest], __SREG__"      "\n\t"
+        "cli"                       "\n\t"
+        : [dest]    "=r"(mask)
+        : /* no inputs */
+        : "memory"
+    );
     return mask;
 }
 
@@ -69,8 +56,14 @@ __attribute__((always_inline)) static inline unsigned int irq_disable(void)
  */
 __attribute__((always_inline)) static inline unsigned int irq_enable(void)
 {
-    uint8_t mask = atmega_get_interrupt_state();
-    sei(); /* <-- acts as memory barrier, see doc of avr-libc */
+    uint8_t mask;
+    __asm__ volatile(
+        "in %[dest], __SREG__"      "\n\t"
+        "sei"                       "\n\t"
+        : [dest]    "=r"(mask)
+        : /* no inputs */
+        : "memory"
+    );
     return mask;
 }
 
