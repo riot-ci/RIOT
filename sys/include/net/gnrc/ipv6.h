@@ -172,7 +172,9 @@ extern "C" {
 /**
  * @brief Message queue size to use for the IPv6 thread.
  */
+#ifndef GNRC_IPV6_MSG_QUEUE_SIZE
 #define GNRC_IPV6_MSG_QUEUE_SIZE    (1 << CONFIG_GNRC_IPV6_MSG_QUEUE_SIZE_EXP)
+#endif
 
 /**
  * @brief   The PID to the IPv6 thread.
