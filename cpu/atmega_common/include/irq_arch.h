@@ -48,6 +48,8 @@ __attribute__((always_inline)) static inline uint8_t atmega_get_interrupt_state(
     __asm__ volatile(
         "in %[dest], __SREG__"      "\n\t"
         : [dest]    "=r"(sreg)
+        : /* no inputs */
+        : "memory"
     );
     return sreg;
 }
