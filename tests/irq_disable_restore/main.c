@@ -25,7 +25,7 @@
 #include "irq.h"
 #include "xtimer.h"
 
-#define DELAY       (50 * US_PER_MS)
+#define DELAY       (10 * US_PER_MS)
 
 static atomic_uint a = ATOMIC_VAR_INIT(0);
 static atomic_uint a_during_isr = ATOMIC_VAR_INIT(0);
