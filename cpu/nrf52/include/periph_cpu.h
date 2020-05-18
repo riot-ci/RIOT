@@ -66,7 +66,9 @@ extern "C" {
  * @brief   SPI temporary buffer size for storing const data in RAM before
  *          initiating DMA transfer
  */
-#define SPI_MBUF_SIZE       64
+#ifndef CONFIG_SPI_MBUF_SIZE
+#define CONFIG_SPI_MBUF_SIZE    64
+#endif
 
 /**
  * @brief   nRF52 specific naming of ADC lines (for convenience)

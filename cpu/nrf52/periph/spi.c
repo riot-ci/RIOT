@@ -45,7 +45,7 @@ static mutex_t locks[SPI_NUMOF];
  */
 static mutex_t busy[SPI_NUMOF];
 
-static uint8_t _mbuf[SPI_NUMOF][SPI_MBUF_SIZE];
+static uint8_t _mbuf[SPI_NUMOF][CONFIG_SPI_MBUF_SIZE];
 
 static void spi_isr_handler(void *arg);
 
@@ -169,7 +169,7 @@ void spi_release(spi_t bus)
 }
 
 static size_t _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
-                      size_t remaining_len)
+                        size_t remaining_len)
 {
     uint8_t transfer_len = remaining_len > UINT8_MAX ? UINT8_MAX : remaining_len;
     const uint8_t *out_mbuf = out_buf;
@@ -180,8 +180,8 @@ static size_t _transfer(spi_t bus, const uint8_t *out_buf, uint8_t *in_buf,
      */
     if (out_buf && !_in_ram(out_buf)) {
         /* The SPI MBUF can be smaller than UINT8_MAX */
-        transfer_len = transfer_len > SPI_MBUF_SIZE ?
-            SPI_MBUF_SIZE : transfer_len;
+        transfer_len = transfer_len > CONFIG_SPI_MBUF_SIZE
+                     ? CONFIG_SPI_MBUF_SIZE : transfer_len;
         memcpy(_mbuf[bus], out_buf, transfer_len);
         out_mbuf = _mbuf[bus];
     }
