@@ -16,6 +16,7 @@ PSEUDOMODULES += dhcpv6_%
 PSEUDOMODULES += ecc_%
 PSEUDOMODULES += emb6_router
 PSEUDOMODULES += event_%
+PSEUDOMODULES += evtimer_on_ztimer
 PSEUDOMODULES += fmt_%
 PSEUDOMODULES += gnrc_dhcpv6_%
 PSEUDOMODULES += gnrc_ipv6_default
