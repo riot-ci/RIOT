@@ -197,6 +197,20 @@ typedef struct {
 #endif
 
 /**
+ * @brief  SPI configuration values
+ */
+typedef struct {
+    NRF_SPIM_Type *dev; /**< SPI device used */
+    gpio_t sclk;        /**< CLK pin */
+    gpio_t mosi;        /**< MOSI pin */
+    gpio_t miso;        /**< MISO pin */
+#if ERRATA_SPI_SINGLE_BYTE_WORKAROUND
+    uint8_t ppi;        /**< PPI channel */
+#endif
+} spi_conf_t;
+
+
+/**
  * @brief Common SPI/I2C interrupt callback
  *
  * @param   arg     Opaque context pointer
