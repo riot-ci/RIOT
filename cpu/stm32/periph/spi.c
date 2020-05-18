@@ -57,15 +57,12 @@ static inline SPI_TypeDef *dev(spi_t bus)
     return spi_config[bus].dev;
 }
 
+#ifdef MODULE_PERIPH_DMA
 static inline bool _use_dma(const spi_conf_t *conf)
 {
-#ifdef MODULE_PERIPH_DMA
     return conf->tx_dma != DMA_STREAM_UNDEF && conf->rx_dma != DMA_STREAM_UNDEF;
-#else
-    (void)conf;
-    return 0;
-#endif
 }
+#endif
 
 void spi_init(spi_t bus)
 {
