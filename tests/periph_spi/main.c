@@ -247,6 +247,7 @@ int cmd_bench(int argc, char **argv)
 
     uint32_t start, stop;
     xtimer_ticks32_t sched_start, sched_stop;
+    uint32_t sched_diff_us;
     uint32_t sum = 0;
     uint32_t sched_sum = 0;
     uint8_t in;
@@ -279,12 +280,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 1 - write %i times %i byte:", BENCH_REDOS, 1);
-    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 2 - write 1000 times 2 byte */
     sched_start = _sched_ticks();
@@ -295,12 +296,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 2 - write %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 3 - write 1000 times 100 byte */
     sched_start = _sched_ticks();
@@ -311,12 +312,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 3 - write %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
-    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 4 - write 1000 times 1 byte to register */
     sched_start = _sched_ticks();
@@ -327,12 +328,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 4 - write %i times %i byte to register:", BENCH_REDOS, 1);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 5 - write 1000 times 2 byte to register */
     sched_start = _sched_ticks();
@@ -343,12 +344,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 5 - write %i times %i byte to register:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 6 - write 1000 times 100 byte to register */
     sched_start = _sched_ticks();
@@ -359,12 +360,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 6 - write %i times %i byte to register:", BENCH_REDOS, BENCH_LARGE);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 7 - read 1000 times 2 byte */
     sched_start = _sched_ticks();
@@ -375,12 +376,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 7 - read %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 8 - read 1000 times 100 byte */
     sched_start = _sched_ticks();
@@ -391,12 +392,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 8 - read %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
-    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 9 - read 1000 times 2 byte from register */
     sched_start = _sched_ticks();
@@ -407,12 +408,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf(" 9 - read %i times %i byte from register:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 10 - read 1000 times 100 byte from register */
     sched_start = _sched_ticks();
@@ -423,12 +424,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf("10 - read %i times %i byte from register:", BENCH_REDOS, BENCH_LARGE);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 11 - transfer 1000 times 2 byte */
     sched_start = _sched_ticks();
@@ -439,12 +440,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf("11 - transfer %i times %i byte:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 12 - transfer 1000 times 100 byte */
     sched_start = _sched_ticks();
@@ -455,12 +456,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf("12 - transfer %i times %i byte:", BENCH_REDOS, BENCH_LARGE);
-    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 13 - transfer 1000 times 2 byte from/to register */
     sched_start = _sched_ticks();
@@ -471,12 +472,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf("13 - transfer %i times %i byte to register:", BENCH_REDOS, BENCH_SMALL);
-    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("\t%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     /* 14 - transfer 1000 times 100 byte from/to register */
     sched_start = _sched_ticks();
@@ -487,12 +488,12 @@ int cmd_bench(int argc, char **argv)
     }
     stop = xtimer_now_usec();
     sched_stop = _sched_ticks();
+    sched_diff_us = xtimer_usec_from_ticks(xtimer_diff(sched_stop,
+                                                       sched_start));
     printf("14 - transfer %i times %i byte to register:", BENCH_REDOS, BENCH_LARGE);
-    printf("%"PRIu32"\t%"PRIu32"\n", (stop - start),
-           xtimer_diff(sched_stop, sched_start).ticks32);
+    printf("%"PRIu32"\t%"PRIu32"\n", (stop - start), sched_diff_us);
     sum += (stop - start);
-    sched_sum += xtimer_usec_from_ticks(xtimer_diff(sched_stop,
-                                                        sched_start));
+    sched_sum += sched_diff_us;
 
     xtimer_sleep(1);
 
