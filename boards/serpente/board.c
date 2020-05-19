@@ -24,10 +24,16 @@
 #include "mtd_spi_nor.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
+#include "timex.h"
 
 #ifdef MODULE_MTD
 static const mtd_spi_nor_params_t _serpente_nor_params = {
     .opcode = &mtd_spi_nor_opcode_default,
+    .wait_chip_erase = 9LU * US_PER_SEC,
+    .wait_32k_erase = 160LU *US_PER_MS,
+    .wait_sector_erase = 70LU * US_PER_MS,
+    .wait_4k_erase = 70LU * US_PER_MS,
+    .wait_chip_wake_up = 1LU * US_PER_MS,
     .clk = SERPENTE_NOR_SPI_CLK,
     .flag = SERPENTE_NOR_FLAGS,
     .spi = SERPENTE_NOR_SPI_DEV,
