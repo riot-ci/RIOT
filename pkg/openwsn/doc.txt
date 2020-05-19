@@ -167,7 +167,7 @@
  * [tests/pkg_openwsn/README.md](../../tests/pkg_openwsn/README.md) for more details.
  * - To speed up synchronization and make sniffing easier you can disable channel
  * hopping by setting (`CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=26`).
- * - To sniff the packets either use a 802.15.4 capable board and follow 
+ * - To sniff the packets either use a 802.15.4 capable board and follow
  * [these instructions](https://github.com/RIOT-OS/applications/blob/master/sniffer/tools/README.md).
  * Alternatively use a Raspberry Pi with an external radio such as Openlabs and
  * incorporate Linux WPAN tools. In addition to that, there's also other
@@ -213,7 +213,6 @@
  * - [ ] Follow up PR to add OpenWSN sock
  * - [ ] Complete support of OpenWSN default HW (openmote-b)
  * - [ ] Add support in RIOT for openvisualizer
- * - [ ] Add support for other 802.15.4 network drivers 
+ * - [ ] Add support for other 802.15.4 network drivers
  *
  */
-
