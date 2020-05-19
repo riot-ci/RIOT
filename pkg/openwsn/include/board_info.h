@@ -20,8 +20,8 @@
  * @}
  */
 
-#ifndef __BOARD_INFO_H
-#define __BOARD_INFO_H
+#ifndef BOARD_INFO_H
+#define BOARD_INFO_H
 
 #include <stdint.h>
 #include <string.h>
@@ -131,4 +131,4 @@ static const uint8_t infoRadioName[] = "riot-netdev";
 }
 #endif
 
-#endif  /* __BOARD_INFO_H */
+#endif  /* BOARD_INFO_H */

@@ -45,8 +45,8 @@
  * @}
  */
 
-#ifndef __OPENWSN_RADIO_H
-#define __OPENWSN_RADIO_H
+#ifndef OPENWSN_RADIO_H
+#define OPENWSN_RADIO_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,5 +78,5 @@ typedef struct {
 }
 #endif
 
-#endif /* __OPENWSN_RADIO_H */
+#endif /* OPENWSN_RADIO_H */
 /** @} */

@@ -22,8 +22,8 @@
  * @}
  */
 
-#ifndef __OPENWSN_BOARD_H
-#define __OPENWSN_BOARD_H
+#ifndef OPENWSN_BOARD_H
+#define OPENWSN_BOARD_H
 
 #include "board_info.h"
 
@@ -67,4 +67,4 @@ void board_sleep(void);
 }
 #endif
 
-#endif
+#endif /* OPENWSN_BOARD_H */

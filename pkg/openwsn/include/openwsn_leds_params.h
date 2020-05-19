@@ -17,8 +17,8 @@
  *
  * @}
  */
-#ifndef __OPENWSN_LEDS_PARAMS_H
-#define __OPENWSN_LEDS_PARAMS_H
+#ifndef OPENWSN_LEDS_PARAMS_H
+#define OPENWSN_LEDS_PARAMS_H
 
 #include "board.h"
 
@@ -83,4 +83,4 @@ static const ledpins_config_t openwsn_ledpins_params[] =
 }
 #endif
 
-#endif /* __OPENWSN_LEDS_PARAMS_H */
+#endif /* OPENWSN_LEDS_PARAMS_H */

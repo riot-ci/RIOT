@@ -18,8 +18,8 @@
  *
  * @}
  */
-#ifndef __OPENWSN_LEDS_H
-#define __OPENWSN_LEDS_H
+#ifndef OPENWSN_LEDS_H
+#define OPENWSN_LEDS_H
 
 #include "periph/gpio.h"
 
@@ -59,4 +59,4 @@ void ledpins_riot_init(const ledpins_config_t *user_config);
 }
 #endif
 
-#endif /* __OPENWSN_LEDS_H */
+#endif /* OPENWSN_LEDS_H */

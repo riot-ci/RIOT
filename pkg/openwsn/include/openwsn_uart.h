@@ -38,8 +38,8 @@
  * @}
  */
 
-#ifndef __OPENWSN_UART_H
-#define __OPENWSN_UART_H
+#ifndef OPENWSN_UART_H
+#define OPENWSN_UART_H
 
 #include "stdint.h"
 #include "board.h"
@@ -140,4 +140,4 @@ void    uart_clearTxInterrupts(void);
 }
 #endif
 
-#endif /* __OPENWSN_UART_H */
+#endif /* OPENWSN_UART_H */

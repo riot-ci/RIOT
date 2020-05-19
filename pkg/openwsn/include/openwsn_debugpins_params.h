@@ -19,8 +19,8 @@
  * @}
  */
 
-#ifndef __OPENWSN_DEBUGPINS_PARAMS_H
-#define __OPENWSN_DEBUGPINS_PARAMS_H
+#ifndef OPENWSN_DEBUGPINS_PARAMS_H
+#define OPENWSN_DEBUGPINS_PARAMS_H
 
 #include "openwsn_debugpins.h"
 
@@ -71,4 +71,4 @@ static const debugpins_config_t openwsn_debugpins_params[] =
 }
 #endif
 
-#endif /* __OPENWSN_DEBUGPINS_PARAMS_H */
+#endif /* OPENWSN_DEBUGPINS_PARAMS_H */
