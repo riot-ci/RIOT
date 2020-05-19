@@ -179,7 +179,7 @@ static const struct {
 };
 
 char * _get_name(int id) {
-    for (unsigned i = 0; i < (sizeof(names) / sizeof(names[0])); i++) {
+    for (unsigned i = 0; i < (ARRAY_SIZE(names); i++) {
       if(id == names[i].id) {
           return names[i].name;
       }
