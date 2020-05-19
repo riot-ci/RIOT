@@ -29,7 +29,7 @@
 
 /* CCM does not restrict the input message size, but these function will
    only be called with a message length of at most 125b in OpenWSN */
-#define MAX_M_LEN (IEEE802154_FRAME_LEN_MAX - IEEE802154_FCS_LEN)
+#define MAX_MESSAGE_LEN   (125U)
 
 owerror_t cryptoengine_aes_ccms_enc(uint8_t *a, uint8_t len_a, uint8_t *m,
                                     uint8_t *len_m, uint8_t *nonce, uint8_t l,
@@ -37,7 +37,7 @@ owerror_t cryptoengine_aes_ccms_enc(uint8_t *a, uint8_t len_a, uint8_t *m,
 {
     cipher_t cipher;
     int ret, len;
-    uint8_t tmp_buff[MAX_M_LEN + CCM_MAC_MAX_LEN];
+    uint8_t tmp_buff[MAX_MESSAGE_LEN + CCM_MAC_MAX_LEN];
 
     ret = cipher_init(&cipher, CIPHER_AES_128, key, CCM_BLOCK_SIZE);
 
@@ -63,7 +63,7 @@ owerror_t cryptoengine_aes_ccms_dec(uint8_t *a, uint8_t len_a, uint8_t *m,
 {
     cipher_t cipher;
     int ret, len;
-    uint8_t tmp_buff[MAX_M_LEN];
+    uint8_t tmp_buff[MAX_MESSAGE_LEN];
 
     ret = cipher_init(&cipher, CIPHER_AES_128, key, CCM_BLOCK_SIZE);
 
