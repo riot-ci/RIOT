@@ -81,15 +81,11 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
     /* token value (tkl bytes) */
     if (coap_get_token_len(pkt)) {
         pkt->token = pkt_pos;
+        /* pkt_pos range is validated after options parsing loop below */
         pkt_pos += coap_get_token_len(pkt);
     }
     else {
         pkt->token = NULL;
-    }
-
-    if (pkt_pos > pkt_end) {
-        DEBUG("bad token length\n");
-        return -EBADMSG;
     }
 
     coap_optpos_t *optpos = pkt->options;
@@ -134,12 +130,12 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
             }
 
             pkt_pos += option_len;
-
-            if (pkt_pos > (buf + len)) {
-                DEBUG("nanocoap: bad pkt\n");
-                return -EBADMSG;
-            }
         }
+    }
+
+    if (pkt_pos > pkt_end) {
+        DEBUG("bad pkt len\n");
+        return -EBADMSG;
     }
 
     pkt->options_len = option_count;
