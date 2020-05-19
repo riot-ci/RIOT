@@ -98,7 +98,7 @@ static int udp_send(char *addr_str, char *port_str, char *data, unsigned int num
         /* get a free packet buffer */
         pkt = openqueue_getFreePacketBuffer(COMPONENT_UINJECT);
         if (pkt == NULL) {
-            puts("Erro: could not create packet buffer, exit");
+            puts("Error: could not create packet buffer, exit");
             return 1;
         }
 
