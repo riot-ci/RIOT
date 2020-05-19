@@ -25,8 +25,40 @@
 #include <stdint.h>
 #include <string.h>
 
+static _set_checked(gpio_t pin) {
+    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
+        if (pin != GPIO_UNDEF){
+            gpio_set(pin);
+        }
+    }
+}
+
+static _clear_checked(gpio_t pin) {
+    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
+        if (pin != GPIO_UNDEF){
+            gpio_clear(pin);
+        }
+    }
+}
+
+static _toggle_checked(gpio_t pin) {
+    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
+        if (pin != GPIO_UNDEF){
+            gpio_toggle(pin);
+        }
+    }
+}
+
+static _init_checked(gpio_t pin) {
+    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
+        if (pin != GPIO_UNDEF){
+            gpio_init(configuration.frame, GPIO_OUT);
+        }
+    }
+}
+
 /* holds the internal configuration for debugpins */
-static debugpins_config_t configuration = {
+static debugpins_config_t _configuration = {
     GPIO_UNDEF,
     GPIO_UNDEF,
     GPIO_UNDEF,
@@ -52,182 +84,106 @@ void openwsn_debugpins_init(const debugpins_config_t *user_config)
 
 void debugpins_init(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        gpio_init(configuration.frame, GPIO_OUT);
-        gpio_init(configuration.slot, GPIO_OUT);
-        gpio_init(configuration.fsm, GPIO_OUT);
-        gpio_init(configuration.task, GPIO_OUT);
-        gpio_init(configuration.isr, GPIO_OUT);
-        gpio_init(configuration.radio, GPIO_OUT);
+    _init_checked(configuration.frame);
+    _init_checked(configuration.slot);
+    _init_checked(configuration.fsm);
+    _init_checked(configuration.task);
+    _init_checked(configuration.isr);
+    _init_checked(configuration.radio);
 
-        debugpins_frame_clr();
-        debugpins_slot_clr();
-        debugpins_fsm_clr();
-        debugpins_task_clr();
-        debugpins_isr_clr();
-        debugpins_radio_clr();
-    }
+    debugpins_frame_clr();
+    debugpins_slot_clr();
+    debugpins_fsm_clr();
+    debugpins_task_clr();
+    debugpins_isr_clr();
+    debugpins_radio_clr();
 }
 
 void debugpins_frame_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.frame != GPIO_UNDEF) {
-            gpio_toggle(configuration.frame);
-        }
-    }
+    _toggle_checked(configuration.frame);
 }
 
 void debugpins_frame_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.frame != GPIO_UNDEF) {
-            gpio_clear(configuration.frame);
-        }
-    }
+    _clear_checked(configuration.frame);
 }
 
 void debugpins_frame_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.frame != GPIO_UNDEF) {
-            gpio_set(configuration.frame);
-        }
-    }
+    _set_checked(configuration.frame);
 }
 
 void debugpins_slot_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.slot != GPIO_UNDEF) {
-            gpio_toggle(configuration.slot);
-        }
-    }
+    _toggle_checked(configuration.slot);
 }
 
 void debugpins_slot_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.slot != GPIO_UNDEF) {
-            gpio_clear(configuration.slot);
-        }
-    }
+    _clear_checked(configuration.slot);
 }
 
 void debugpins_slot_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.slot != GPIO_UNDEF) {
-            gpio_set(configuration.slot);
-        }
-    }
+    _set_checked(configuration.slot);
 }
-
 
 void debugpins_fsm_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.fsm != GPIO_UNDEF) {
-            gpio_toggle(configuration.fsm);
-        }
-    }
+    _toggle_checked(configuration.fsm);
 }
 
 void debugpins_fsm_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.fsm != GPIO_UNDEF) {
-            gpio_clear(configuration.fsm);
-        }
-    }
+    _clear_checked(configuration.fsm);
 }
 
 void debugpins_fsm_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.fsm != GPIO_UNDEF) {
-            gpio_set(configuration.fsm);
-        }
-    }
+    _set_checked(configuration.fsm);
 }
 
 void debugpins_task_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.task != GPIO_UNDEF) {
-            gpio_toggle(configuration.task);
-        }
-    }
+    _toggle_checked(configuration.task);
 }
 
 void debugpins_task_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.task != GPIO_UNDEF) {
-            gpio_clear(configuration.task);
-        }
-    }
+    _clear_checked(configuration.task);
 }
 
 void debugpins_task_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.task != GPIO_UNDEF) {
-            gpio_set(configuration.task);
-        }
-    }
-}
+    _set_checked(configuration.task);
 
 void debugpins_isr_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.isr != GPIO_UNDEF) {
-            gpio_toggle(configuration.isr);
-        }
-    }
+    _toggle_checked(configuration.isr);
 }
 
 void debugpins_isr_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.isr != GPIO_UNDEF) {
-            gpio_clear(configuration.isr);
-        }
-    }
+    _clear_checked(configuration.isr);
 }
 
 void debugpins_isr_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.isr != GPIO_UNDEF) {
-            gpio_set(configuration.isr);
-        }
-    }
+    _set_checked(configuration.isr);
 }
 
 void debugpins_radio_toggle(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.radio != GPIO_UNDEF) {
-            gpio_toggle(configuration.radio);
-        }
-    }
+    _toggle_checked(configuration.radio);
 }
 
 void debugpins_radio_clr(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.radio != GPIO_UNDEF) {
-            gpio_clear(configuration.radio);
-        }
-    }
+    _clear_checked(configuration.radio);
 }
 
 void debugpins_radio_set(void)
 {
-    if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (configuration.radio != GPIO_UNDEF) {
-            gpio_set(configuration.radio);
-        }
-    }
+    _set_checked(configuration.radio);
 }
