@@ -42,7 +42,7 @@ extern icmpv6rpl_vars_t icmpv6rpl_vars;
 extern neighbors_vars_t neighbors_vars;
 extern openqueue_vars_t openqueue_vars;
 extern schedule_vars_t schedule_vars;
-extern scheduler_dbg_t  scheduler_dbg;
+extern scheduler_dbg_t scheduler_dbg;
 
 udp_resource_desc_t uinject_vars;
 char addr_str[IPV6_ADDR_MAX_STR_LEN];
@@ -58,7 +58,8 @@ void uinject_sendDone(OpenQueueEntry_t *msg, owerror_t error)
 
 void uinject_receive(OpenQueueEntry_t *pkt)
 {
-    printf("Received %i bytes on port %i\n", (int)pkt->length, pkt->l4_destination_port);
+    printf("Received %i bytes on port %i\n", (int)pkt->length,
+           pkt->l4_destination_port);
     od_hex_dump(pkt->payload, pkt->length, OD_WIDTH_DEFAULT);
     openqueue_freePacketBuffer(pkt);
 }
@@ -89,16 +90,15 @@ static int ifconfig_cmd(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-
-    open_addr_t* hwaddr;
+    open_addr_t *hwaddr;
     open_addr_t temp_my128bID;
 
     memcpy(&temp_my128bID.addr_128b[0], &idmanager_vars.myPrefix.prefix, 8);
     memcpy(&temp_my128bID.addr_128b[8], &idmanager_vars.my64bID.addr_64b, 8);
 
-    ipv6_addr_to_str(addr_str, (ipv6_addr_t *)temp_my128bID.addr_128b, sizeof(addr_str));
+    ipv6_addr_to_str(addr_str, (ipv6_addr_t *)temp_my128bID.addr_128b,
+                     sizeof(addr_str));
     printf("inet6 %s\n", addr_str);
-
 
     hwaddr = idmanager_getMyID(ADDR_16B);
     printf("hwaddr short: %s", _array_2_string(hwaddr->addr_16b, 2, addr_str));
@@ -117,11 +117,15 @@ static int ifconfig_cmd(int argc, char **argv)
         puts("Node is DAG root");
     }
     else {
-        if(icmpv6rpl_vars.haveParent) {
+        if (icmpv6rpl_vars.haveParent) {
             printf("RPL rank: %i\n", icmpv6rpl_vars.myDAGrank);
-            printf("RPL parent: %s\n",\
-                _array_2_string(neighbors_vars.neighbors[icmpv6rpl_vars.ParentIndex].addr_64b.addr_64b, 8, addr_str));
-            ipv6_addr_to_str(addr_str, (ipv6_addr_t *)icmpv6rpl_vars.dao.DODAGID, sizeof(addr_str));
+            printf("RPL parent: %s\n", \
+                   _array_2_string(neighbors_vars.neighbors[icmpv6rpl_vars.
+                                                            ParentIndex].
+                                   addr_64b.addr_64b, 8, addr_str));
+            ipv6_addr_to_str(addr_str,
+                             (ipv6_addr_t *)icmpv6rpl_vars.dao.DODAGID,
+                             sizeof(addr_str));
             printf("RPL DODAG ID: %16s\n", addr_str);
         }
         else {
@@ -137,8 +141,9 @@ static int nc_cmd(int argc, char **argv)
     (void)argv;
 
     for (int i = 0; i < MAXNUMNEIGHBORS; i++) {
-        _array_2_string(neighbors_vars.neighbors[i].addr_64b.addr_64b, 8, addr_str);
-        if(memcmp(addr_str, "00:00:00:00:00:00:00:00", 8) != 0) {
+        _array_2_string(neighbors_vars.neighbors[i].addr_64b.addr_64b, 8,
+                        addr_str);
+        if (memcmp(addr_str, "00:00:00:00:00:00:00:00", 8) != 0) {
             printf("%02i. %s\n", i, addr_str);
         }
     }
@@ -149,40 +154,41 @@ static const struct {
     char *name;
     int id;
 } names[] = {
-   { "?", COMPONENT_NULL },
-   { "owsn", COMPONENT_OPENWSN },
-   { "idmanager", COMPONENT_IDMANAGER },
-   { "oqueue", COMPONENT_OPENQUEUE },
-   { "oserial", COMPONENT_OPENSERIAL },
-   { "pktfuncs", COMPONENT_PACKETFUNCTIONS },
-   { "random", COMPONENT_RANDOM },
-   { "radio", COMPONENT_RADIO },
-   { "154", COMPONENT_IEEE802154 },
-   { "154e", COMPONENT_IEEE802154E },
-   { "6top2154e", COMPONENT_SIXTOP_TO_IEEE802154E },
-   { "154e26top", COMPONENT_IEEE802154E_TO_SIXTOP },
-   { "6top", COMPONENT_SIXTOP },
-   { "neigh", COMPONENT_NEIGHBORS },
-   { "sched", COMPONENT_SCHEDULE },
-   { "6topres", COMPONENT_SIXTOP_RES },
-   { "bridge", COMPONENT_OPENBRIDGE },
-   { "iphc", COMPONENT_IPHC },
-   { "fwd", COMPONENT_FORWARDING },
-   { "icmpv6", COMPONENT_ICMPv6 },
-   { "icmpv6ech", COMPONENT_ICMPv6ECHO },
-   { "icmpv6rtr", COMPONENT_ICMPv6ROUTER },
-   { "icmpv6rpl", COMPONENT_ICMPv6RPL },
-   { "udp", COMPONENT_OPENUDP },
-   { "coap", COMPONENT_OPENCOAP },
-   { "c6t", COMPONENT_C6T },
-   { "uinject", COMPONENT_UINJECT },
+    { "?", COMPONENT_NULL },
+    { "owsn", COMPONENT_OPENWSN },
+    { "idmanager", COMPONENT_IDMANAGER },
+    { "oqueue", COMPONENT_OPENQUEUE },
+    { "oserial", COMPONENT_OPENSERIAL },
+    { "pktfuncs", COMPONENT_PACKETFUNCTIONS },
+    { "random", COMPONENT_RANDOM },
+    { "radio", COMPONENT_RADIO },
+    { "154", COMPONENT_IEEE802154 },
+    { "154e", COMPONENT_IEEE802154E },
+    { "6top2154e", COMPONENT_SIXTOP_TO_IEEE802154E },
+    { "154e26top", COMPONENT_IEEE802154E_TO_SIXTOP },
+    { "6top", COMPONENT_SIXTOP },
+    { "neigh", COMPONENT_NEIGHBORS },
+    { "sched", COMPONENT_SCHEDULE },
+    { "6topres", COMPONENT_SIXTOP_RES },
+    { "bridge", COMPONENT_OPENBRIDGE },
+    { "iphc", COMPONENT_IPHC },
+    { "fwd", COMPONENT_FORWARDING },
+    { "icmpv6", COMPONENT_ICMPv6 },
+    { "icmpv6ech", COMPONENT_ICMPv6ECHO },
+    { "icmpv6rtr", COMPONENT_ICMPv6ROUTER },
+    { "icmpv6rpl", COMPONENT_ICMPv6RPL },
+    { "udp", COMPONENT_OPENUDP },
+    { "coap", COMPONENT_OPENCOAP },
+    { "c6t", COMPONENT_C6T },
+    { "uinject", COMPONENT_UINJECT },
 };
 
-char * _get_name(int id) {
-    for (unsigned i = 0; i < (ARRAY_SIZE(names); i++) {
-      if(id == names[i].id) {
-          return names[i].name;
-      }
+char *_get_name(int id)
+{
+    for (unsigned i = 0; i < ARRAY_SIZE(names); i++) {
+        if (id == names[i].id) {
+            return names[i].name;
+        }
     }
     return NULL;
 }
@@ -197,11 +203,12 @@ static int q_cmd(int argc, char **argv)
     for (uint8_t i = 0; i < QUEUELENGTH; i++) {
         if (openqueue_vars.queue[i].creator || openqueue_vars.queue[i].owner) {
             queue = 0;
-            printf("Creator: %.9s, ", _get_name(openqueue_vars.queue[i].creator));
+            printf("Creator: %.9s, ",
+                   _get_name(openqueue_vars.queue[i].creator));
             printf("Owner: %.9s\n", _get_name(openqueue_vars.queue[i].owner));
         }
     }
-    if(queue) {
+    if (queue) {
         puts("openqueue empty");
     }
     return 0;
@@ -212,24 +219,28 @@ static int as_cmd(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    for (int i=0;i<MAXACTIVESLOTS;i++) {
-        switch(schedule_vars.scheduleBuf[i].type) {
+    for (int i = 0; i < MAXACTIVESLOTS; i++) {
+        switch (schedule_vars.scheduleBuf[i].type) {
             case CELLTYPE_TX:
                 printf("neigh: %s, slot: %03i, chan: %02i, type: TX\n", \
-                    _array_2_string(schedule_vars.scheduleBuf[i].neighbor.addr_64b, 8, addr_str),
-                    schedule_vars.scheduleBuf[i].slotOffset, \
-                    schedule_vars.scheduleBuf[i].channelOffset);
+                       _array_2_string(
+                           schedule_vars.scheduleBuf[i].neighbor.addr_64b,
+                           8, addr_str),
+                       schedule_vars.scheduleBuf[i].slotOffset, \
+                       schedule_vars.scheduleBuf[i].channelOffset);
                 break;
             case CELLTYPE_RX:
-                    printf("slot: %03i, chan: %02i, type: RX\n", \
-                    schedule_vars.scheduleBuf[i].slotOffset, \
-                    schedule_vars.scheduleBuf[i].channelOffset);
+                printf("slot: %03i, chan: %02i, type: RX\n", \
+                       schedule_vars.scheduleBuf[i].slotOffset, \
+                       schedule_vars.scheduleBuf[i].channelOffset);
                 break;
             case CELLTYPE_TXRX:
-                    printf("neigh: %s, slot: %03i, chan: %02i, type: RXTX\n", \
-                    _array_2_string(schedule_vars.scheduleBuf[i].neighbor.addr_64b, 8, addr_str),
-                    schedule_vars.scheduleBuf[i].slotOffset, \
-                    schedule_vars.scheduleBuf[i].channelOffset);
+                printf("neigh: %s, slot: %03i, chan: %02i, type: RXTX\n", \
+                       _array_2_string(
+                           schedule_vars.scheduleBuf[i].neighbor.addr_64b,
+                           8, addr_str),
+                       schedule_vars.scheduleBuf[i].slotOffset, \
+                       schedule_vars.scheduleBuf[i].channelOffset);
                 break;
             default:
                 break;
@@ -280,13 +291,12 @@ static const shell_command_t shell_commands[] = {
     { "q", "Shows Openqueue", q_cmd },
     { "as", "Shows active cells", as_cmd },
     { "sc", "Shows scheduler (openos) dbg states", sc_cmd },
-    { "udp", "Send UDP messages and listen for messages on UDP port", udp_cmd },
+    { "udp", "Send data over UDP and listen on UDP ports", udp_cmd },
 #ifdef MODULE_OPENWSN_SERIAL
     { "rplroot", "Set node as RPL DODAG root node", rpl_cmd },
 #endif
     { NULL, NULL, NULL }
 };
-
 
 int main(void)
 {
