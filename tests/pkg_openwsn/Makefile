@@ -13,6 +13,9 @@ USEMODULE += openwsn_scheduler
 #USEMODULE += openwsn_debugpins
 #USEMODULE += openwsn_serial
 
+# To enable debugging prints on OpenWSN code
+# OPENWSN_LOG_LEVEL ?= LOG_DEBUG
+
 ifneq (,$(filter openwsn_serial,$(USEMODULE)))
   USEMODULE += stdio_null
 endif
