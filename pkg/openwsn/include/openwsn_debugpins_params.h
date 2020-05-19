@@ -24,6 +24,10 @@
 
 #include "openwsn_debugpins.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Set default configuration parameters for debugpins. Undefined by default.
  */
@@ -62,5 +66,9 @@ static const debugpins_config_t openwsn_debugpins_params[] =
     OPENWSN_DEBUGPINS_DEFAULT,
 #endif
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __OPENWSN_DEBUGPINS_PARAMS_H */

@@ -44,6 +44,10 @@
 #include "stdint.h"
 #include "board.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief   OpenWSN default uart dev.
  *
@@ -131,5 +135,9 @@ void    uart_enableInterrupts(void);
 void    uart_disableInterrupts(void);
 void    uart_clearRxInterrupts(void);
 void    uart_clearTxInterrupts(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __OPENWSN_UART_H */

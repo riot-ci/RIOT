@@ -27,6 +27,10 @@
 
 #include "board_info.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief   OpenWSN `board.h` enum definitions
  */
@@ -59,5 +63,8 @@ void board_reset(void);
  */
 void board_sleep(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

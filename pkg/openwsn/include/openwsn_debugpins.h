@@ -25,6 +25,10 @@
 
 #include "periph/gpio.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief   struct holding configuration of OpenWSN debug pins
  */
@@ -44,5 +48,9 @@ typedef struct debugpins_config {
  *                          Unused pins need to be defined as GPIO_UNDEF.
  */
 void openwsn_debugpins_init(const debugpins_config_t *user_config);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ___OPENWSN_DEBUGPINS_H */

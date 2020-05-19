@@ -91,7 +91,7 @@ We will now run openvisualizer with:
     $ scons runweb
         scons: Reading SConscript files ...
 
-        ___ _ _ _ ___ _ _ 
+        ___ _ _ _ ___ _ _
         | . | ___ ___ ._ _ | | | |/ __>| \ |
         | | || . \/ ._>| ' || | | |\__ \| |
         `___'| _/\___.|_|_||__/_/ <___/|_\_|
@@ -108,7 +108,7 @@ We will now run openvisualizer with:
         Available ports:  /dev/ttyUSB1
 
         OpenVisualizer  (type "help" for commands)
-        > 
+        >
 
 You should see `/dev/ttyUSB1`, if you dont exit `Openvisualizer` by tipping
 `quit` and restart the process (NOTE you MUST exit with `quit`).

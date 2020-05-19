@@ -23,6 +23,10 @@
 
 #include "periph/gpio.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Holds a configuration of LED pins for debugging OpenWSN
  */
@@ -50,5 +54,9 @@ enum {
  * @note      Unused pins need to be defined as GPIO_UNDEF
  */
 void ledpins_riot_init(const ledpins_config_t *user_config);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __OPENWSN_LEDS_H */

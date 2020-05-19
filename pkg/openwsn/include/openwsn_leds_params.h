@@ -22,6 +22,10 @@
 
 #include "board.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /*
  * Set default configuration parameters for ledpins. Default settings match
@@ -74,5 +78,9 @@ static const ledpins_config_t openwsn_ledpins_params[] =
     OPENWSN_LEDPINS_DEFAULT,
 #endif
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __OPENWSN_LEDS_PARAMS_H */

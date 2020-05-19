@@ -29,6 +29,10 @@
 #include "timex.h"
 #include "cpu.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* OpenWSN interrupt wrappers */
 #define INTERRUPT_DECLARATION()             /* unused in RIOT */
 #define DISABLE_INTERRUPTS()                irq_disable();
@@ -122,5 +126,9 @@ static const uint8_t rreg_uriquery[] = "h=ucb";
 static const uint8_t infoBoardname[] = "riot-os";
 static const uint8_t infouCName[]    = "various";
 static const uint8_t infoRadioName[] = "riot-netdev";
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  /* __BOARD_INFO_H */
