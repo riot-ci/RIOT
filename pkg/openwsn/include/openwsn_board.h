@@ -39,7 +39,6 @@ typedef enum {
     KICK_SCHEDULER,
 } kick_scheduler_t;
 
-
 /**
  * @brief   Initialize OpenWSN bsp board adaptation
  *

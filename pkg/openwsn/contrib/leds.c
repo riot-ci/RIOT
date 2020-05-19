@@ -30,7 +30,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
 /** holds the internal configuration for debug pins */
 static ledpins_config_t configuration = {
     GPIO_UNDEF,

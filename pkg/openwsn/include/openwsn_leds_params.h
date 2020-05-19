@@ -26,7 +26,6 @@
 extern "C" {
 #endif
 
-
 /*
  * Set default configuration parameters for ledpins. Default settings match
  * OpenWSN openmote-b configuration.
@@ -68,7 +67,6 @@ extern "C" {
                                      .radio = OPENWSN_LEDPIN_RADIO, \
                                      .debug = OPENWSN_LEDPIN_DEBUG, \
                                      .led_on = OPENWSN_LED_ON_STATE }
-
 
 static const ledpins_config_t openwsn_ledpins_params[] =
 {

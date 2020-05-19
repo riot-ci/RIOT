@@ -77,7 +77,6 @@ int openwsn_bootstrap(void)
     LOG_DEBUG("[openwsn]: init RIOT board\n");
     board_init_openwsn();
 
-
 #ifdef MODULE_AT86RF2XX
     netdev_t *netdev = (netdev_t *)&at86rf2xx_dev.netdev.netdev;
     at86rf2xx_setup(&at86rf2xx_dev, &at86rf2xx_params[0]);

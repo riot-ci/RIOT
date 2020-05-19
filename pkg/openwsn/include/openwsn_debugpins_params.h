@@ -55,8 +55,7 @@ extern "C" {
                                        .fsm = OPENWSN_DEBUGPIN_FSM,  \
                                        .task = OPENWSN_DEBUGPIN_TASK, \
                                        .isr = OPENWSN_DEBUGPIN_ISR,  \
-                                       .radio = OPENWSN_DEBUGPIN_RADIO }
-
+                                       .radio = OPENWSN_DEBUGPIN_RADIO}
 
 static const debugpins_config_t openwsn_debugpins_params[] =
 {

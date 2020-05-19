@@ -25,7 +25,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
 /* holds the internal configuration for debugpins */
 static debugpins_config_t _configuration = {
     GPIO_UNDEF,

@@ -15,9 +15,9 @@
  *
  * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
  * abstraction which is used by the higher layer timer module `opentimers`. In
- * the end it is responsible for scheduling on the MAC layer. To enable low power
- * energy modes, this timer usually uses the RTC (real time clock) or RTT (real
- * time timer) module.
+ * the end it is responsible for scheduling on the MAC layer. To enable low
+ * power energy modes, this timer usually uses the RTC (real time clock) or RTT
+ * (real time timer) module.
  *
  * In order to get the most portable code, this implementation uses ztimer and
  * defines a new `ztimer_clock` (ZTIMER_32768) that operates at 32768Khz to have
@@ -31,8 +31,9 @@
  * The `sctimer` is responsible to set the next interrupt. Under circumstances,
  * it may happen, that the next interrupt to schedule is already late, compared
  * to the current time. In this case, timer implementations in OpenWSN directly
- * trigger a hardware interrupt. Until able to trigger sw isr directly we set
- * the callback 0 ticks in the future, which internally will be set to `now + 2`.
+ * trigger a hardware interrupt. Until able to trigger sw isr directly a
+ * callback is set 0 ticks in the future, which internally will be set to
+ * `now + 2`.
  *
  * @author      Tengfei Chang <tengfei.chang@gmail.com>, July 2012
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>, July 2017
@@ -109,8 +110,7 @@ void sctimer_init(void)
 #elif CONFIG_ZTIMER_MSEC_BASE_FREQ == 32768U
     ZTIMER_32768 = ZTIMER_MSEC_BASE;
 #else
-#error \
-    No suitable ZTIMER_MSEC_BASE_FREQ config. Maybe add USEMODULE += ztimer_usec?
+#error Invalid ZTIMER_MSEC_BASE_FREQ config. Maybe add USEMODULE += ztimer_usec?
 #endif
 
 #if defined(ZTIMER_32768_CONVERT_LOWER)
