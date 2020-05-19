@@ -64,16 +64,24 @@
 #define SCTIMER_LOOP_THRESHOLD       (2 * PORT_TICS_PER_MS * 65535)
 #endif
 
+#if CONFIG_ZTIMER_MSEC_BASE_FREQ != 0
 #if CONFIG_ZTIMER_MSEC_BASE_FREQ > 32768U
 static ztimer_convert_frac_t _ztimer_convert_frac_32768;
 #define ZTIMER_32768_CONVERT_LOWER_FREQ    CONFIG_ZTIMER_MSEC_BASE_FREQ
 #define ZTIMER_32768_CONVERT_LOWER         (ZTIMER_MSEC_BASE)
-#elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && (32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ == 0)
+/* cppcheck-suppress preprocessorErrorDirective
+ * (reason: cppcheck fails to see that CONFIG_ZTIMER_MSEC_BASE_FREQ
+ * is set in ztimer/config.h to a non zero value */
+#elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
+      ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) == 0)
 static ztimer_convert_shift_t _ztimer_convert_shift_32768;
 #define ZTIMER_32768_CONVERT_HIGHER_FREQ   CONFIG_ZTIMER_MSEC_BASE_FREQ
 #define ZTIMER_32768_CONVERT_HIGHER        (ZTIMER_MSEC_BASE)
-#elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && (32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ != 0)
+#elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
+      ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) != 0)
 #error No suitable ZTIMER_MSEC_BASE config. Maybe add USEMODULE += ztimer_usec?
+#endif
+#error CONFIG_ZTIMER_MSEC_BASE_FREQ is not defined
 #endif
 
 static sctimer_cbt sctimer_cb;
@@ -95,6 +103,9 @@ void sctimer_init(void)
 {
 #if CONFIG_ZTIMER_MSEC_BASE_FREQ > 32768U
     ZTIMER_32768 = &_ztimer_convert_frac_32768.super.super;
+/* cppcheck-suppress preprocessorErrorDirective
+ * (reason: cppcheck fails to see that CONFIG_ZTIMER_MSEC_BASE_FREQ
+ * is set in ztimer/config.h to a non zero value */
 #elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
       (32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ == 0)
     ZTIMER_32768 = &_ztimer_convert_shift_32768.super.super;

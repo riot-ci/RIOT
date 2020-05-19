@@ -82,6 +82,7 @@ int openwsn_bootstrap(void)
 #ifdef MODULE_AT86RF2XX
     netdev_t *netdev = (netdev_t *)&at86rf2xx_dev.netdev.netdev;
     at86rf2xx_setup(&at86rf2xx_dev, &at86rf2xx_params[0]);
+    (void) netdev;
 #endif
 
 #ifdef MODULE_OPENWSN_RADIO
