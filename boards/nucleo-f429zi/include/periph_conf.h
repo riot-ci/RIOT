@@ -46,6 +46,7 @@ static const uart_conf_t uart_config[] = {
         .irqn       = USART3_IRQn,
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
     {
@@ -59,6 +60,7 @@ static const uart_conf_t uart_config[] = {
         .irqn       = USART6_IRQn,
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
     {
@@ -72,6 +74,7 @@ static const uart_conf_t uart_config[] = {
         .irqn       = USART2_IRQn,
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
 };

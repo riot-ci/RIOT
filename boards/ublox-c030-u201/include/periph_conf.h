@@ -79,6 +79,7 @@ static const uart_conf_t uart_config[] = {
 #endif
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
     {   /* Modem UART */
@@ -98,6 +99,7 @@ static const uart_conf_t uart_config[] = {
 #endif
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
     {   /* GPS UART */
@@ -117,6 +119,7 @@ static const uart_conf_t uart_config[] = {
 #endif
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
     {   /* Arduino Port UART */
@@ -136,6 +139,7 @@ static const uart_conf_t uart_config[] = {
 #endif
 #ifdef MODULE_PERIPH_DMA
         .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
 };
