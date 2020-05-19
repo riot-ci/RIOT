@@ -248,7 +248,7 @@ int cmd_bench(int argc, char **argv)
     uint32_t start, stop;
     xtimer_ticks32_t sched_start, sched_stop;
     uint32_t sum = 0;
-    uint64_t sched_sum = 0;
+    uint32_t sched_sum = 0;
     uint8_t in;
     uint8_t out = (uint8_t)BENCH_PAYLOAD;
 
