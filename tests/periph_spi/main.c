@@ -496,7 +496,7 @@ int cmd_bench(int argc, char **argv)
 
     xtimer_sleep(1);
 
-    printf("-- - SUM:\t\t\t\t\t%i\t%lu\n", (int)sum, (long unsigned)sched_sum);
+    printf("-- - SUM:\t\t\t\t\t%i\t%"PRIu32"\n", (int)sum, sched_sum);
 
     spi_release(spiconf.dev);
     puts("\n### All runs complete ###");
