@@ -15,7 +15,7 @@
  *
  * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
  * abstraction which is used by the higher layer timer module `opentimers`. In
- * the end t is responsible for scheduling on the MAC layer. To enable low power
+ * the end it is responsible for scheduling on the MAC layer. To enable low power
  * energy modes, this timer usually uses the RTC (real time clock) or RTT (real
  * time timer) module.
  *
@@ -25,7 +25,7 @@
  *
  * When available ZTIMER_32768 will be built on top of `periph_rtt` to get low
  * power capabilities. If not it will be built on top of a regular timer. In
- * either case it will be shifted up if the base frequency y lower than 32768Hz
+ * either case it will be shifted up if the base frequency is lower than 32768Hz
  * or frac if higher.
  *
  * The `sctimer` is responsible to set the next interrupt. Under circumstances,
