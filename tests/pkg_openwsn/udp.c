@@ -55,7 +55,6 @@ static int udp_send(char *addr_str, char *port_str, char *data, unsigned int num
                     unsigned int delay)
 {
     size_t data_len;
-    bool foundNeighbor;
     open_addr_t parentNeighbor;
     ipv6_addr_t addr;
 
@@ -85,7 +84,7 @@ static int udp_send(char *addr_str, char *port_str, char *data, unsigned int num
             return 1;
         }
 
-        foundNeighbor = icmpv6rpl_getPreferredParentEui64(&parentNeighbor);
+        bool foundNeighbor = icmpv6rpl_getPreferredParentEui64(&parentNeighbor);
         if (foundNeighbor==FALSE) {
             puts("Error: No preferred parent EUI64, exit");
             return 1;
