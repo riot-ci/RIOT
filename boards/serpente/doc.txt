@@ -19,7 +19,7 @@ and dirty, yet flexible, prototyping tools.
 
 ### Pinout
 
-![Serptene R2 pinout](https://serpente.solder.party/r2/pinout.png)
+\image html https://serpente.solder.party/r2/pinout.png width=66%
 
 ### Flash the board
 
