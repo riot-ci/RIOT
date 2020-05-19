@@ -73,7 +73,7 @@ extern "C" {
 #endif
 
 /* These parameters are BOARD and CPU specific.
-   Values cant be taken directly from OpenWSN since they do not necessarily use
+   Values can't be taken directly from OpenWSN since they do not necessarily use
    the same BSP configuration (timers, clock speed, etc.)
    For precise synchronization these values should be measured and tuned for
    every BOARD.
@@ -115,7 +115,7 @@ extern "C" {
 /**
  * @name    Adaptive sync accuracy
  *
- *          Used for synchronization in heterogenous networks (different BOARDs)
+ *          Used for synchronization in heterogeneous networks (different BOARDs)
  *          Not supported yet, dummy value needs to be provided.
  * @{
  */

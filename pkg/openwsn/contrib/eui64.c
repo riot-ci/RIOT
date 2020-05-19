@@ -28,6 +28,6 @@
 
 void eui64_get(uint8_t *addressToWrite)
 {
-    /* this will be overriden in the bootstrapping function */
+    /* this will be overridden in the bootstrapping function */
     luid_get_eui64((eui64_t *) addressToWrite);
 }

@@ -44,7 +44,7 @@ typedef enum {
  * @brief   Initialize OpenWSN bsp board adaptation
  *
  * Most initialization functions are not needed since there are initialized by
- * RIOT's `auto_init` module. Only OpenWSN specfic interfaces will be initialzed
+ * RIOT's `auto_init` module. Only OpenWSN specific interfaces will be initialized
  * here: `sctimer`, `openwsn_ledpins`, `openwsn_debugpins` & `uart_ow`.
  *
  */

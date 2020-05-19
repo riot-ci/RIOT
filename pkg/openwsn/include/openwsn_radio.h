@@ -23,7 +23,7 @@
  * The radio adaptation preloads the buffer so `NETOPT_PRELOADING` must be
  * supported.
  *
- * OpenWSN needs to be notified when a frame reception/transmition stats and
+ * OpenWSN needs to be notified when a frame reception/transmission stats and
  * when it ends. Therefore radio drivers need to support the following netdev
  * events:
  *
@@ -34,7 +34,7 @@
  *
  * OpenWSN expects to recover crc information on every received frame even if it
  * will simply drop frames with invalid crc. The stack can function correctly if
- * radio drivers automaticaly drop frames with an invalid crc (i.e. the stack
+ * radio drivers automatically drop frames with an invalid crc (i.e. the stack
  * doesn't get notified about these frames), but it might print the following
  * error if using `openwsn_serial`:
  *

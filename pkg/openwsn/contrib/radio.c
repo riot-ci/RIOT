@@ -191,11 +191,11 @@ void radio_getReceivedFrame(uint8_t *bufRead,
                             bool *crc)
 {
     /* OpenWSN packets are 130 bytes to hold all required data for an SPI
-       transaction since in some implentations its used directly in the SPI
+       transaction since in some implementations it's used directly in the SPI
        shift register:
             - 1B spi address, 1B length, 125B data, 2B CRC, 1B LQI
-       In RIOT we dont do this so maxBufLen is irrelevant, packet size will
-       allways be enough to hold IEEE802154_FRAME_LEN_MAX, but in practice only
+       In RIOT we don't do this so maxBufLen is irrelevant, packet size will
+       always be enough to hold IEEE802154_FRAME_LEN_MAX, but in practice only
        125B of data are copied into bufRead.
      */
     (void)maxBufLen;

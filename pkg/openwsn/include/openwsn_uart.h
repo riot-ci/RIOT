@@ -110,7 +110,7 @@ void    uart_setCallbacks(uart_tx_cbt txCb, uart_rx_cbt rxCb);
  *
  * This function sends XON or XOFF bytes to "set" or "unset" CTS by sw.
  *
- * @param[in] sate          true sets CTS, false clears CTS
+ * @param[in] state         true sets CTS, false clears CTS
  */
 void    uart_setCTS(bool state);
 
