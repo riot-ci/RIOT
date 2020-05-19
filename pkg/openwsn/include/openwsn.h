@@ -7,11 +7,7 @@
  */
 
 /**
- * @defgroup    pkg_openwsn    OpenWSN
- * @ingroup     pkg
- * @brief       An IoT Network Stack Implementing 6TiSCH
- * @see         https://github.com/openwsn-berkeley/openwsn-fw
- *
+ * @ingroup     pkg_openwsn
  *
  * @{
  *
