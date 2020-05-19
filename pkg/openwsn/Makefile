@@ -1,10 +1,7 @@
 PKG_NAME=openwsn-fw
 PKG_URL=https://github.com/openwsn-berkeley/openwsn-fw.git
 PKG_VERSION=a10e292aec8702e612074b4cd3c81ddd7960a279
-PKG_BUILDDIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
 PKG_LICENSE=BSD-3-Clause
-
-# PKG_SOURCE_LOCAL = $(RIOTBASE)/../openwsn/openwsn-fw-riot
 
 include $(RIOTBASE)/pkg/pkg.mk
 
