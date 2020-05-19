@@ -55,7 +55,6 @@ void openwsn_set_addr_16b(netdev_t* dev)
 {
     uint8_t addr[IEEE802154_SHORT_ADDRESS_LEN];
     dev->driver->get(dev, NETOPT_ADDRESS, addr, IEEE802154_SHORT_ADDRESS_LEN);
-    printf("short addrress %02x %02x\n", addr[0], addr[1]);
     open_addr_t id;
     id.type = ADDR_16B;
     memcpy(&id.addr_16b, addr, IEEE802154_SHORT_ADDRESS_LEN);
