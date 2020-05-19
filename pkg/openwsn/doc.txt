@@ -11,12 +11,13 @@
  * This implementation integrates the [OpenWSN](https://github.com/openwsn-berkeley/openwsn-fw)
  * full stack (UDP, IPv6, RPL, 6TiSCH) into RIOT.
  *
- * We provide a new RIOT "board" to the OpenWSN software. In this way we connect
- * RIOT's hardware abstraction to OpenWSN's interfaces. Furthermore, we make use
- * of the simple scheduling mechanism in OpenWSN which we run in a RIOT thread
- * with second highest priority after the radio thread (THREAD_PRIORITY_MAIN - 4).
+ * This port provides a new RIOT "board" to the OpenWSN software. In this way
+ * RIOT's hardware abstraction connects to OpenWSN's interfaces.
  *
- * The current PORT of OpenWSN currently needs a root node that works along an
+ * The simple scheduling mechanism in OpenWSN is run in a RIOT thread with
+ * second highest priority after the radio thread (THREAD_PRIORITY_MAIN - 4).
+ *
+ * The current port of OpenWSN currently needs a root node that works along an
  * external tool that performs routing and handles join procedure:
  * [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer)
  *
@@ -29,29 +30,30 @@
  *
  * Once synchronized the node will need to join the network. OpenWSN uses CoJP
  * [constrained join protocol](https://datatracker.ietf.org/doc/draft-ietf-6tisch-minimal-security/)
- * OpenWSN stack only handles Join Requests. The JRC is not running on the root
- * node, but alongside it, in the `OpenVisualizer` external tool.
+ * OpenWSN stack only handles Join Requests. The JRC (join registrar/coordinator,
+ * a central entity) is not running on the root node, but alongside it, in the
+ * `OpenVisualizer` external tool.
  *
- * Once joined the device has the required keys to start listening to DIS and
- * to send DIO requests. Once it know about the topology of the network it will
- * be able to send packets.
+ * Once joined the device has the required keys to start listening to DIS (DODAG
+ * Information Solicitation) messages and to send DIO (DODAG Information Object)
+ * requests. Once it know about the topology of the network it will be able to
+ * send packets.
  *
  * OpenWSN uses source routing. This means that unless the recipient of a packet
  * is one of the parents in the RPL tree the packet will have to go up the tree
- * upto the rootnode. But in OpenWSN RPL implementation the node does not know
- * how to route, instead it is `OpenVisualizer` which generates an SRH, attaches
- * to the incoming packet and sends it down the tree.
+ * to the rootnode. But in OpenWSN RPL implementation the node does not know
+ * how to route, instead it is `OpenVisualizer` which generates an SRH (Source
+ * Routing Header ), attaches to the incoming packet and sends it down the tree.
  *
  * ## Hardware abstraction implementation
  *
- * Following, we share some insights about the implementation of selected
- * hardware modules.
+ * Following, details about the implementation of selected hardware modules.
  *
  * ### sctimer
  *
  * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
  * abstraction which is used by the higher layer timer module `opentimers`. In
- * the end t is responsible for scheduling on the MAC layer. To enable low power
+ * the end it is responsible for scheduling on the MAC layer. To enable low power
  * energy modes, this timer usually uses the RTC (real time clock) or RTT (real
  * time timer) module.
  *
@@ -67,12 +69,12 @@
  * The `sctimer` is responsible to set the next interrupt. Under circumstances,
  * it may happen, that the next interrupt to schedule is already late, compared
  * to the current time. In this case, timer implementations in OpenWSN directly
- * trigger a hardware interrupt. Until able to trigger sw isr directly we set
- * the callback 0 ticks in the future, which internally will be set to `now + 2`.
+ * trigger a hardware interrupt. Until able to trigger sw isr directly a callback
+ * is set 0 ticks in the future, which internally will be set to `now + 2`.
  *
  * ### radio
  *
- * The radio adaptation runs in an own thread with the highest priority
+ * The radio adaptation runs in its own thread with the highest priority
  * (`THREAD_PRIORITY_MAIN - 4`) and maps to RIOT's `netdev` API.
  *
  * Hardware MAC layer features such as CSMA/CA, ACK handling and retransmissions
@@ -82,7 +84,7 @@
  * The radio adaptation preloads the buffer so `NETOPT_PRELOADING` must be
  * supported.
  *
- * OpenWSN needs to be notified when a frame reception/transmition stats and
+ * OpenWSN needs to be notified when a frame reception/transmition starts and
  * when it ends. Therefore radio drivers need to support the following netdev
  * events:
  *
@@ -105,16 +107,16 @@
  * In OpenWSN however, the `openserial` tool uses UART to feed external software
  * running on a host computer such as
  * [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer).
- * To enable use of these tools, we provide a UART adaptation.
+ * To enable use of these tools, a UART adaptation is provided.
  *
  * By default when `openwsn_serial` (`openserial`) is used STDIO will be disabled
  * (it will use `stdio_null`). When multiple uart are available STDIO and `openserial`
- * can be used in parallel..
+ * can be used in parallel.
  *
  * OpenWSN uart abstraction makes use of tx hardware interrupts to execute a
- * previously registered callback after every byte is sent out. This interrupts
- * are currently not defined in RIOT in a generic way, so instead we set a timer
- * which fires shortly after a byte was written.
+ * previously registered callback after every byte is sent out. These interrupts
+ * are currently not defined in RIOT in a generic way, so instead a timer is to
+ * fire shortly after a byte is written until sw_isr are possible.
  *
  * This implementation uses `ztimer` since its already used as an abstraction
  * for `periph_rtt`.
@@ -143,9 +145,9 @@
  *
  * The OpenWSN software provides different hooks all over the stack to toggle
  * different LEDs as well as debug pins to examine state and scheduling of a node.
- * We added default configuration files for both. The LED configuration maps to
- * RIOTs `LEDX_PIN` definitions, if available. On Nucleo boards LED0 line is with
- * shared SPI.
+ * Default configuration files are provided for both. The LED configuration maps to
+ * RIOTs `LEDX_PIN` definitions, if available. On Nucleo boards LED0 line is
+ * shared SPI, so is not used.
  * The default configuration can be overwritten by setting `OPENWSN_LEDPINS_DEFAULT`
  * in the form of `ledpins_config_t`. The debugpins work similarly by setting
  * `OPENWSN_DEBUGPINS_BOARD` in the form of `debugpins_config_t`.
@@ -154,13 +156,13 @@
  *
  * ## Testing and debugging
  *
- * Here, we simply list some items which are helpful to explore the functionality
- * of OpenWSN:
+ * List of some items which are helpful to explore the functionality of OpenWSN:
+ *
  * - LED pins and debug pins as mentioned above in combination with a logic analyzer.
  * The expected behavior is described in:
  * [OpenWSN wiki](https://openwsn.atlassian.net/wiki/spaces/OW/pages/688257/Schedules).
  * - The provided test application provides a UDP client and server. If the UDP
- * server is able to receive packets, we consider the mechanism working correctly.
+ * server is able to receive packets, the mechanism is considered to work correctly.
  * You should also be able to ping the device from your host. See
  * [tests/pkg_openwsn/README.md](../../tests/pkg_openwsn/README.md) for more details.
  * - To speed up synchronization and make sniffing easier you can disable channel
@@ -188,7 +190,7 @@
  * - `sctimer` to trigger an ISR immediately using sw isr.
  * - `RTT_FREQUENCY` is not configurable for most platforms, implementations
  *   should be adapted to make this configurable to be able to set RTT_FREQUENCY
- *   to the highest possible value.
+ *   to 32768Hz or the closer possible value.
  * - The UART wrapper uses a peripheral timer to fake an interrupt after one byte
  *   has been sent. this should also be done with sw isr.
  *
@@ -199,7 +201,7 @@
  * upstream the support for this pkg should be adapted.
  *
  * #8570 successors managed to isolate the mac layer. The required changes have
- * not been included in this PR. Mainly because This PR intends on supporting all
+ * not been included in this PR. Mainly because this PR intends to support all
  * network security features provided by OpenWSN. And as of the current status
  * of the upstream repository the whole stack must currently be taken.
  *
