@@ -115,7 +115,7 @@ void *dtls_server_wrapper(void *arg)
         else {
             res = sock_dtls_recv(&sock, &session, rcv, sizeof(rcv),
                                   10 * US_PER_SEC);
-            if (res > 0) {
+            if (res >= 0) {
                 printf("Received %d bytes -- (echo)\n", (int)res);
                 res = sock_dtls_send(&sock, &session, rcv, (size_t)res, 0);
                 if (res < 0) {

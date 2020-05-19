@@ -145,7 +145,7 @@ static int client_send(char *addr_str, char *data, size_t datalen)
 
         uint8_t rcv[512];
         if ((res = sock_dtls_recv(&dtls_sock, &session, rcv, sizeof(rcv),
-                                    SOCK_NO_TIMEOUT)) > 0) {
+                                    SOCK_NO_TIMEOUT)) >= 0) {
             printf("Received %d bytes: \"%.*s\"\n", (int)res, (int)res,
                    (char *)rcv);
         }
