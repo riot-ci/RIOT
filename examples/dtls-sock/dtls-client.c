@@ -130,12 +130,13 @@ static int client_send(char *addr_str, char *data, size_t datalen)
 
     res = sock_dtls_recv(&dtls_sock, &session, buf, sizeof(buf),
                          SOCK_NO_TIMEOUT);
-    if (res != 0) {
+    if (res != -SOCK_DTLS_HANDSHAKE) {
         printf("Error creating session: %d\n", (int)res);
         sock_dtls_close(&dtls_sock);
         sock_udp_close(&udp_sock);
         return -1;
     }
+    printf("Connection to server successful\n");
 
     if (sock_dtls_send(&dtls_sock, &session, data, datalen, 0) < 0) {
         puts("Error sending data");

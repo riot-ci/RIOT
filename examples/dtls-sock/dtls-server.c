@@ -122,6 +122,9 @@ void *dtls_server_wrapper(void *arg)
                     printf("Error resending DTLS message: %d", (int)res);
                 }
             }
+            else if (res == -SOCK_DTLS_HANDSHAKE) {
+                printf("New client connected\n");
+            }
         }
     }
 
