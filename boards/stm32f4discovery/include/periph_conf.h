@@ -39,8 +39,6 @@ static const dma_conf_t dma_config[] = {
     { .stream = 10 },   /* DMA2 Stream 2 - SPI1_RX */
     { .stream = 4 },    /* DMA1 Stream 4 - SPI2_TX */
     { .stream = 3 },    /* DMA1 Stream 3 - SPI2_RX */
-    { .stream = 5 },    /* DMA1 Stream 5 - SPI3_TX */
-    { .stream = 0 },    /* DMA1 Stream 0 - SPI3_RX */
 };
 
 #define DMA_0_ISR           isr_dma2_stream3
