@@ -45,8 +45,6 @@ static const dma_conf_t dma_config[] = {
 #define DMA_1_ISR           isr_dma2_stream2
 #define DMA_2_ISR           isr_dma1_stream4
 #define DMA_3_ISR           isr_dma1_stream3
-#define DMA_4_ISR           isr_dma1_stream5
-#define DMA_5_ISR           isr_dma1_stream0
 
 #define DMA_NUMOF           ARRAY_SIZE(dma_config)
 
