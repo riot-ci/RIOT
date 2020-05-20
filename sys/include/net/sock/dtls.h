@@ -496,7 +496,7 @@ extern "C" {
                                              hold credentials */
 #endif
 
-#define SOCK_DTLS_HANDSHAKE     (EXDEV) /**< Return value for a succesful
+#define SOCK_DTLS_HANDSHAKE     (EXDEV) /**< Return value for a successful
                                              handshake */
 
 /**
