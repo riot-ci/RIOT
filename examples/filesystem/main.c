@@ -77,6 +77,21 @@ static spiffs_desc_t fs_desc = {
 
 /* spiffs driver will be used */
 #define FS_DRIVER spiffs_file_system
+
+#elif defined(MODULE_FATFS_VFS)
+/* include file system header */
+#include "fs/fatfs.h"
+
+/* file system specific descriptor
+ * as for littlefs, some fields can be changed if needed,
+ * this example focus on basic usage, i.e. entire memory used */
+static fatfs_desc_t fs_desc;
+
+/* provide mtd devices for use within diskio layer of fatfs */
+mtd_dev_t *fatfs_mtd_devs[FF_VOLUMES];
+
+/* fatfs driver will be used */
+#define FS_DRIVER fatfs_file_system
 #endif
 
 /* this structure defines the vfs mount point:
@@ -130,7 +145,7 @@ static int _mount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_mount(&flash_mount);
     if (res < 0) {
         printf("Error while mounting %s...try format\n", FLASH_MOUNT_POINT);
@@ -149,7 +164,7 @@ static int _format(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_format(&flash_mount);
     if (res < 0) {
         printf("Error while formatting %s\n", FLASH_MOUNT_POINT);
@@ -168,7 +183,7 @@ static int _umount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS))
+#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_FATFS_VFS))
     int res = vfs_umount(&flash_mount);
     if (res < 0) {
         printf("Error while unmounting %s\n", FLASH_MOUNT_POINT);
@@ -271,6 +286,8 @@ int main(void)
     /* spiffs and littlefs need a mtd pointer
      * by default the whole memory is used */
     fs_desc.dev = MTD_0;
+#elif defined(MTD_0) && defined(MODULE_FATFS_VFS)
+    fatfs_mtd_devs[fs_desc.vol_idx] = MTD_0;
 #endif
     int res = vfs_mount(&const_mount);
     if (res < 0) {
