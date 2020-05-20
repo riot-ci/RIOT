@@ -496,6 +496,8 @@ extern "C" {
                                              hold credentials */
 #endif
 
+#define SOCK_DTLS_HANDSHAKE     (EXDEV) /**< Return value for a succesful handshake */
+
 /**
  * @brief DTLS version number
  * @anchor sock_dtls_prot_version
@@ -613,7 +615,7 @@ void sock_dtls_session_destroy(sock_dtls_t *sock, sock_dtls_session_t *remote);
  * @note Function may block if data is not available and @p timeout != 0
  *
  * @return  The number of bytes received on success
- * @return  0 when new handshake is completed
+ * @return  -SOCK_DTLS_HANDSHAKE when new handshake is completed
  * @return  -EADDRNOTAVAIL, if the local endpoint of @p sock is not set.
  * @return  -EAGAIN, if @p timeout is `0` and no data is available.
  * @return  -EINVAL, if @p remote is invalid or @p sock is not properly

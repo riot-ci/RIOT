@@ -412,7 +412,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
         else if (mbox_try_get(&sock->mbox, &msg) &&
                  msg.type == DTLS_EVENT_CONNECTED) {
-            return 0;
+            return -SOCK_DTLS_HANDSHAKE;
         }
         else if (timeout == 0) {
             DEBUG("sock_dtls: timed out while decrypting message\n");
