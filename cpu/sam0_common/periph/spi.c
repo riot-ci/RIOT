@@ -92,9 +92,10 @@ void spi_init_pins(spi_t bus)
     gpio_init(spi_config[bus].miso_pin, GPIO_IN_PD);
     gpio_init(spi_config[bus].mosi_pin, GPIO_OUT);
     gpio_init(spi_config[bus].clk_pin, GPIO_OUT);
+    /* The out pins will be muxed during acquire and release.
+     * Otherwise these pins will get HIGH-Z during deep sleep of the MCU,
+     * which may leads to unexpected current consumption by SPI slaves. */
     gpio_init_mux(spi_config[bus].miso_pin, spi_config[bus].miso_mux);
-    gpio_init_mux(spi_config[bus].mosi_pin, spi_config[bus].mosi_mux);
-    gpio_init_mux(spi_config[bus].clk_pin, spi_config[bus].clk_mux);
 }
 
 int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
@@ -121,6 +122,10 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
     /* get exclusive access to the device */
     mutex_lock(&locks[bus]);
+
+    /* mux out pins to SPI peripheral */
+    gpio_init_mux(spi_config[bus].mosi_pin, spi_config[bus].mosi_mux);
+    gpio_init_mux(spi_config[bus].clk_pin, spi_config[bus].clk_mux);
 
     /* power on the device */
     poweron(bus);
@@ -152,6 +157,10 @@ void spi_release(spi_t bus)
 
     /* power off the device */
     poweroff(bus);
+
+    /* demux out pins to back to GPIO_OUT function */
+    gpio_disable_mux(spi_config[bus].mosi_pin);
+    gpio_disable_mux(spi_config[bus].clk_pin);
 
     /* release access to the device */
     mutex_unlock(&locks[bus]);
