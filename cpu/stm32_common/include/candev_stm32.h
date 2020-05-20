@@ -15,7 +15,10 @@
  * The STM32Fx microcontroller can have an integrated CAN controller (bxCAN)
  *
  * This driver has been tested with a STM32F0,STM32F2 and STM32F4 MCU
- * but should work on others
+ * but should work on others.
+ *
+ * The default bitrate is set to 500 kbps and the default sample point is set to
+ * 87.5%.
  * @{
  *
  * @file
@@ -38,7 +41,8 @@ extern "C" {
 #define CANDEV_STM32_CHAN_NUMOF 3
 #elif defined(CPU_FAM_STM32F1) || defined(CPU_FAM_STM32F2) || defined(CPU_FAM_STM32F4)
 #define CANDEV_STM32_CHAN_NUMOF 2
-#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3) || DOXYGEN
+#elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F3) || \
+      defined(CPU_FAM_STM32L4) || DOXYGEN
 /** Number of channels in the device (up to 3) */
 #define CANDEV_STM32_CHAN_NUMOF 1
 #else

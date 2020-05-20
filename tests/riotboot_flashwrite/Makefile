@@ -2,16 +2,6 @@ DEVELHELP ?= 0
 BOARD ?= samr21-xpro
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
-                             arduino-mega2560 arduino-uno \
-                             chronos i-nucleo-lrwan1 \
-                             msb-430 msb-430h nucleo-f031k6 \
-                             nucleo-f042k6 nucleo-l031k6 nucleo-f030r8 \
-                             nucleo-f302r8 nucleo-f303k8 nucleo-f334r8 \
-                             nucleo-l053r8 saml10-xpro saml11-xpro \
-                             stm32f0discovery telosb waspmote-pro \
-                             wsn430-v1_3b wsn430-v1_4 z1
-
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
 USEMODULE += gnrc_netdev_default
@@ -38,8 +28,6 @@ USEMODULE += shell_commands
 # boards
 LOW_MEMORY_BOARDS := nucleo-f334r8
 
-GNRC_NETIF_NUMOF := 2
-
 # uncomment these to use ethos
 #USEMODULE += stdio_ethos gnrc_uhcpc
 #
@@ -65,4 +53,4 @@ QUIET ?= 1
 include $(RIOTBASE)/Makefile.include
 
 # Set a custom channel if needed
-include $(RIOTMAKE)/default-channel.inc.mk
+include $(RIOTMAKE)/default-radio-settings.inc.mk

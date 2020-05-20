@@ -24,7 +24,9 @@
 #include "periph_cpu.h"
 #include "f4/cfg_clock_100_8_1.h"
 #include "cfg_i2c1_pb8_pb9.h"
+#include "cfg_rtt_default.h"
 #include "cfg_timer_tim5.h"
+#include "cfg_usb_otg_fs.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,11 +105,8 @@ static const uart_conf_t uart_config[] = {
 };
 
 #define UART_0_ISR          (isr_usart3)
-#define UART_0_DMA_ISR      (isr_dma1_stream6)
 #define UART_1_ISR          (isr_usart6)
-#define UART_1_DMA_ISR      (isr_dma1_stream5)
 #define UART_2_ISR          (isr_usart2)
-#define UART_2_DMA_ISR      (isr_dma1_stream4)
 
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
@@ -173,7 +172,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_PIN(PORT_A, 4),
-        .af       = GPIO_AF5,
+        .mosi_af  = GPIO_AF5,
+        .miso_af  = GPIO_AF5,
+        .sclk_af  = GPIO_AF5,
+        .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
 #ifdef MODULE_PERIPH_DMA
@@ -213,9 +215,9 @@ static const spi_conf_t spi_config[] = {
  * @name    RTT configuration
  * @{
  */
-#define RTT_NUMOF           (1)
+#ifndef RTT_FREQUENCY
 #define RTT_FREQUENCY       (4096)
-#define RTT_MAX_VALUE       (0xffff)
+#endif
 /** @} */
 
 #ifdef __cplusplus

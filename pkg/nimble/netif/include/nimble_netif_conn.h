@@ -127,6 +127,20 @@ void nimble_netif_conn_foreach(uint16_t filter,
                                nimble_netif_conn_iter_t cb, void *arg);
 
 /**
+ * @brief   Find the next context that matches the filter condition
+ *
+ * This function allows for iterating connection contexts in a non-blocking way.
+ *
+ * @param[in] handle        last used handle, set to NIMBLE_NETIF_CONN_INVALID
+                            to get the first matching entry
+ * @param[in] filter        filter mask
+ *
+ * @return  handle of the next matching connection context
+ * @return  NIMBLE_NETIF_CONN_INVALID if no matching context was found
+ */
+int nimble_netif_conn_get_next(int handle, uint16_t filter);
+
+/**
  * @brief   Count the number of connections contexts for which the given filter
  *          applies
  *
@@ -159,7 +173,7 @@ int nimble_netif_conn_start_adv(void);
 /**
  * @brief   Free the connection context with the given handle
  */
-void nimble_netif_conn_free(int handle);
+void nimble_netif_conn_free(int handle, uint8_t *addr);
 
 /**
  * @brief   Find the connection context with a given GAP handle and return a

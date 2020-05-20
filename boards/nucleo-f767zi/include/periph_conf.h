@@ -25,6 +25,7 @@
 #include "cfg_spi_divtable.h"
 #include "cfg_rtt_default.h"
 #include "cfg_timer_tim2.h"
+#include "cfg_usb_otg_fs.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -117,11 +118,23 @@ static const uart_conf_t uart_config[] = {
 static const spi_conf_t spi_config[] = {
     {
         .dev      = SPI1,
+        /* PA7 is the default MOSI pin, as it is required for compatibility with
+         * Arduino(ish) shields. Sadly, it is also connected to the RMII_DV of
+         * Ethernet PHY. We work around this by remapping the MOSI to PB5 when
+         * the on-board Ethernet PHY is used.
+         */
+#ifdef MODULE_PERIPH_ETH
+        .mosi_pin = GPIO_PIN(PORT_B, 5),
+#else
         .mosi_pin = GPIO_PIN(PORT_A, 7),
+#endif
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_UNDEF,
-        .af       = GPIO_AF5,
+        .mosi_af  = GPIO_AF5,
+        .miso_af  = GPIO_AF5,
+        .sclk_af  = GPIO_AF5,
+        .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2
     },
@@ -131,7 +144,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_E, 5),
         .sclk_pin = GPIO_PIN(PORT_E, 2),
         .cs_pin   = GPIO_UNDEF,
-        .af       = GPIO_AF5,
+        .mosi_af  = GPIO_AF5,
+        .miso_af  = GPIO_AF5,
+        .sclk_af  = GPIO_AF5,
+        .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI4EN,
         .apbbus   = APB2
     }

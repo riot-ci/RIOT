@@ -35,7 +35,7 @@ typedef struct {
     size_t start;                   /**< Start offset of the current part */
     size_t cur;                     /**< Current position in the message  */
     size_t len;                     /**< Length of the full message       */
-    size_t transfered;              /**< Number of bytes transfered       */
+    size_t transferred;             /**< Number of bytes transferred      */
     size_t reqlen;                  /**< Maximum length of the request    */
 } usbus_control_slicer_t;
 
@@ -63,6 +63,11 @@ typedef struct {
      * @brief Slicer state for multipart control request messages
      */
     usbus_control_slicer_t slicer;
+
+    /**
+     * @brief Received bytes for set requests
+     */
+    size_t received_len;
 
     /**
      * @brief EP0 OUT endpoint
@@ -119,9 +124,21 @@ void usbus_control_slicer_ready(usbus_t *usbus);
  * @param[in] usbus     USBUS context
  *
  * @return              1 when there is a next slice
- * @return              0 when the data is fully transfered
+ * @return              0 when the data is fully transferred
  */
 int usbus_control_slicer_nextslice(usbus_t *usbus);
+
+/**
+ * @brief Retrieve the data from the OUT pipe of the control endpoint
+ *
+ * @pre usbus->state == USBUS_CONTROL_REQUEST_STATE_OUTDATA
+ *
+ * @param[in]   usbus       USBUS context
+ * @param[out]  len         Length of the data part
+ *
+ * @return                  pointer to the data buffer
+ */
+uint8_t *usbus_control_get_out_data(usbus_t *usbus, size_t *len);
 
 #ifdef __cplusplus
 }

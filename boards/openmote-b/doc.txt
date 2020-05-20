@@ -38,7 +38,16 @@ RIOT support flashing with USB by default.
 `make flash`
 
 You may have to specify the flashing port with
-`PORT_BSL=<my_openmote_port> make flash`
+`PORT_DEV=<my_openmote_port> make flash`
+
+The flash tool needs to convert the generated Hex file to RAW format.
+For this it needs to have the intelhex library installed.
+
+    apt install python3-intelhex
+
+or
+
+    pip3 install intelhex
 
 ### Flashing via JTAG
 

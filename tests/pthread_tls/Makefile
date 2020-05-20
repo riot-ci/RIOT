@@ -3,10 +3,9 @@ include ../Makefile.tests_common
 USEMODULE += posix_headers
 USEMODULE += pthread
 
-BOARD_INSUFFICIENT_MEMORY = \
-	arduino-duemilanove \
-	arduino-nano \
-	arduino-uno \
-	#
+# The test compiles, but these boards have too little RAM for
+# dynamic allocation of thread stacks
+BOARD_BLACKLIST := arduino-nano arduino-duemilanove \
+                   arduino-uno nucleo-f031k6 stm32f030f4-demo
 
 include $(RIOTBASE)/Makefile.include

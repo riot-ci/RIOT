@@ -53,7 +53,7 @@ DEVELHELP ?= 1
 
 # Uncomment this to join RPL DODAGs even if DIOs do not contain
 # DODAG Configuration Options (see the doc for more info)
-# CFLAGS += -DGNRC_RPL_DODAG_CONF_OPTIONAL_ON_JOIN
+# CFLAGS += -DCONFIG_GNRC_RPL_DODAG_CONF_OPTIONAL_ON_JOIN
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
@@ -61,4 +61,4 @@ QUIET ?= 1
 include $(RIOTBASE)/Makefile.include
 
 # Set a custom channel if needed
-include $(RIOTMAKE)/default-channel.inc.mk
+include $(RIOTMAKE)/default-radio-settings.inc.mk

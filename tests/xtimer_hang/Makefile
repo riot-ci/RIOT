@@ -1,9 +1,7 @@
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
-                             arduino-uno nucleo-f031k6
-
 USEMODULE += xtimer
+DISABLE_MODULE := core_msg
 
 # Port and pin configuration for probing with oscilloscope
 # Define Test pin for hardware timer interrupt, hardware dependent

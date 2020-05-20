@@ -71,27 +71,52 @@ static inline void _irq_enable(tim_t tim)
     NVIC_EnableIRQ(timer_config[tim].irq);
 }
 
+static uint8_t _get_prescaler(unsigned long freq_out, unsigned long freq_in)
+{
+    uint8_t scale = 0;
+    while (freq_in > freq_out) {
+        freq_in >>= 1;
+
+        /* after DIV16 the prescaler gets more coarse */
+        if (++scale > TC_CTRLA_PRESCALER_DIV16_Val) {
+            freq_in >>= 1;
+        }
+    }
+
+    /* fail if output frequency can't be derived from input frequency */
+    assert(freq_in == freq_out);
+
+    return scale;
+}
+
 /**
  * @brief Setup the given timer
  */
 int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 {
-    (void) freq;
     const tc32_conf_t *cfg = &timer_config[tim];
+    uint8_t scale = _get_prescaler(freq, sam0_gclk_freq(cfg->gclk_src));
 
     /* make sure given device is valid */
     if (tim >= TIMER_NUMOF) {
         return -1;
     }
 
+    /* make sure the prescaler is withing range */
+    if (scale > TC_CTRLA_PRESCALER_DIV1024_Val) {
+        DEBUG("[timer %d] scale %d is out of range\n", tim, scale);
+        return -1;
+    }
+
     /* make sure the timer is not running */
     timer_stop(tim);
 
+    sam0_gclk_enable(cfg->gclk_src);
 #ifdef MCLK
-    GCLK->PCHCTRL[cfg->gclk_id].reg = cfg->gclk_src | GCLK_PCHCTRL_CHEN;
+    GCLK->PCHCTRL[cfg->gclk_id].reg = GCLK_PCHCTRL_GEN(cfg->gclk_src) | GCLK_PCHCTRL_CHEN;
     *cfg->mclk |= cfg->mclk_mask;
 #else
-    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | cfg->gclk_src | cfg->gclk_ctrl;
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(cfg->gclk_src) | cfg->gclk_ctrl;
     PM->APBCMASK.reg |= cfg->pm_mask;
 #endif
 
@@ -103,7 +128,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 #ifdef TC_CTRLA_WAVEGEN_NFRQ
                   | TC_CTRLA_WAVEGEN_NFRQ
 #endif
-                  | cfg->prescaler
+                  | TC_CTRLA_PRESCALER(scale)
                   | TC_CTRLA_PRESCSYNC_RESYNC;
 
 #ifdef TC_WAVE_WAVEGEN_NFRQ
@@ -164,7 +189,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
         return -1;
      }
 
-    return 1;
+    return 0;
 }
 
 int timer_clear(tim_t tim, int channel)
@@ -182,7 +207,7 @@ int timer_clear(tim_t tim, int channel)
         return -1;
     }
 
-    return 1;
+    return 0;
 }
 
 unsigned int timer_read(tim_t tim)
@@ -195,7 +220,7 @@ unsigned int timer_read(tim_t tim)
     /* request syncronisation */
 #ifdef TC_CTRLBSET_CMD_READSYNC_Val
     dev(tim)->CTRLBSET.reg = TC_CTRLBSET_CMD_READSYNC;
-     /* work aroud a possible hardware bug where it takes some
+     /* work around a possible hardware bug where it takes some
         cycles for the timer peripheral to set the SYNCBUSY/READSYNC bit
         after writing the READSYNC bit
 

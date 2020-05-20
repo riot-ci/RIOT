@@ -22,6 +22,7 @@
 #define PERIPH_CONF_H
 
 #include "periph_cpu.h"
+#include "cfg_usb_otg_fs.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,8 +93,8 @@ static const uart_conf_t uart_config[] = {
         .bus        = APB2,
         .irqn       = USART1_IRQn,
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 2,
-        .dma_chan   = 2
+        .dma        = DMA_STREAM_UNDEF,
+        .dma_chan   = UINT8_MAX,
 #endif
     },
 };
@@ -134,7 +135,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_UNDEF,
-        .af       = GPIO_AF5,
+        .mosi_af  = GPIO_AF5,
+        .miso_af  = GPIO_AF5,
+        .sclk_af  = GPIO_AF5,
+        .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
 #ifdef MODULE_PERIPH_DMA

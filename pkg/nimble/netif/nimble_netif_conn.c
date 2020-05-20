@@ -23,7 +23,7 @@
 #define ENABLE_DEBUG            (0)
 #include "debug.h"
 
-#define CONN_CNT                (MYNEWT_VAL_BLE_MAX_CONNECTIONS)
+#define CONN_CNT                (NIMBLE_NETIF_MAX_CONN)
 
 static mutex_t _lock = MUTEX_INIT;
 static nimble_netif_conn_t _conn[CONN_CNT];
@@ -81,7 +81,7 @@ int nimble_netif_conn_get_by_addr(const uint8_t *addr)
     assert(addr);
     int handle = NIMBLE_NETIF_CONN_INVALID;
 
-    DEBUG("nimble_netif_conn_get_by_addr %02x\n", (int)addr[5]);
+    DEBUG("nimble_netif_conn_get_by_addr %02x\n", (int)addr[0]);
     mutex_lock(&_lock);
     for (unsigned i = 0; i < CONN_CNT; i++) {
         if ((_conn[i].state & NIMBLE_NETIF_L2CAP_CONNECTED) &&
@@ -91,7 +91,7 @@ int nimble_netif_conn_get_by_addr(const uint8_t *addr)
         }
     }
     mutex_unlock(&_lock);
-    DEBUG("nimble_netif_conn_get_by_addr - found: %i\n", handle);
+    DEBUG("nimble_netif_conn_get_by_addr - found handle: %i\n", handle);
 
     return handle;
 }
@@ -118,7 +118,7 @@ int nimble_netif_conn_start_connection(const uint8_t *addr)
 {
     int handle;
 
-    DEBUG("nimble_netif_conn_start_connection, addr %02x\n", (int)addr[5]);
+    DEBUG("nimble_netif_conn_start_connection, addr %02x\n", (int)addr[0]);
     mutex_lock(&_lock);
     handle = _find_by_state(NIMBLE_NETIF_UNUSED);
     if (handle != NIMBLE_NETIF_CONN_INVALID) {
@@ -156,12 +156,15 @@ int nimble_netif_conn_start_adv(void)
     return handle;
 }
 
-void nimble_netif_conn_free(int handle)
+void nimble_netif_conn_free(int handle, uint8_t *addr)
 {
     assert((handle >= 0) && (handle < CONN_CNT));
 
     DEBUG("nimble_netif_conn_free, handle %i\n", handle);
     mutex_lock(&_lock);
+    if (addr) {
+        memcpy(addr, _conn[handle].addr, BLE_ADDR_LEN);
+    }
     memset(&_conn[handle], 0, sizeof(nimble_netif_conn_t));
     _conn[handle].state = NIMBLE_NETIF_UNUSED;
     mutex_unlock(&_lock);
@@ -183,6 +186,21 @@ void nimble_netif_conn_foreach(uint16_t filter,
         }
     }
     mutex_unlock(&_lock);
+}
+
+int nimble_netif_conn_get_next(int handle, uint16_t filter)
+{
+    /* if handle is undefined, start from the beginning */
+    if (handle < 0) {
+        handle = -1;
+    }
+    for (int i = (handle + 1); i < (int)CONN_CNT; i++) {
+        if (_conn[i].state & filter) {
+            return i;
+        }
+    }
+
+    return NIMBLE_NETIF_CONN_INVALID;
 }
 
 unsigned nimble_netif_conn_count(uint16_t filter)

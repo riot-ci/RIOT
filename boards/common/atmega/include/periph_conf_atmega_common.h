@@ -91,7 +91,7 @@ extern "C" {
  * ATmega2560
  * ==========
  * The timer driver only supports the four 16-bit timers (Timer1, Timer3,
- * Timer4, Timer5), so those are the only onces we can use here.
+ * Timer4, Timer5), so those are the only ones we can use here.
  *
  *
  * ATmega32U4
@@ -121,7 +121,7 @@ extern "C" {
     #define TIMER_1_ISRA        TIMER3_COMPA_vect
     #define TIMER_1_ISRB        TIMER3_COMPB_vect
     #define TIMER_1_ISRC        TIMER3_COMPC_vect
-#elif defined(CPU_ATMEGA256RFR2)
+#elif defined(CPU_ATMEGA128RFA1) || defined(CPU_ATMEGA256RFR2)
     #define TIMER_NUMOF         (3U)
     #define TIMER_CHANNELS      (3)
 
@@ -203,25 +203,30 @@ extern "C" {
  */
 
 #ifndef UART_NUMOF
-#if defined(CPU_ATMEGA256RFR2) || defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA1284P) || defined(CPU_ATMEGA2560)
+#if defined(CPU_ATMEGA128RFA1) || defined(CPU_ATMEGA256RFR2) || \
+    defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA1284P) || defined(CPU_ATMEGA2560)
     #define UART_NUMOF          (2U)
 
     /* UART0 is used for stdio */
     #define UART_0              MEGA_UART0
     #define UART_0_ISR          USART0_RX_vect
+    #define UART_0_ISR_TX       USART0_TX_vect
 
     #define UART_1              MEGA_UART1
     #define UART_1_ISR          USART1_RX_vect
+    #define UART_1_ISR_TX       USART1_TX_vect
 #elif defined(CPU_ATMEGA328P)
     #define UART_NUMOF          (1U)
 
     #define UART_0              MEGA_UART0
     #define UART_0_ISR          USART_RX_vect
+    #define UART_0_ISR_TX       USART_TX_vect
 #elif defined(CPU_ATMEGA32U4)
     #define UART_NUMOF          (1U)
 
     #define UART_0              MEGA_UART1
     #define UART_0_ISR          USART1_RX_vect
+    #define UART_0_ISR_TX       USART1_TX_vect
 #else
     #define UART_NUMOF          (0U)
 #endif
@@ -295,7 +300,8 @@ extern "C" {
  * @{
  */
 #ifndef ADC_NUMOF
-#if defined(CPU_ATMEGA256RFR2) || defined(CPU_ATMEGA328P) || defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA1284P) || defined(CPU_ATMEGA32U4)
+#if defined(CPU_ATMEGA128RFA1) || defined(CPU_ATMEGA256RFR2) || defined(CPU_ATMEGA328P) ||  \
+    defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA1284P) || defined(CPU_ATMEGA32U4)
     #define ADC_NUMOF           (8U)
 #elif defined (CPU_ATMEGA2560)
     #define ADC_NUMOF           (16U)
@@ -309,7 +315,8 @@ extern "C" {
  * @name   PWM configuration
  *
  * The current implementation supports only 8-bit timers for PWM generation.
- * These timers are typically timer 0 and timer 2 in Atmega2560/1281/328p.
+ * These timers are typically timer 0 and timer 2 for
+ * ATmega 328P/1281/1284P/2560.
  *
  * Setting the first channel to GPIO_UNDEF allows multiple resolutions for the
  * PWM channel. Otherwise the resolution is fixed to 256, allowing duty cycle
@@ -324,6 +331,9 @@ extern "C" {
 #elif defined(CPU_ATMEGA1281)
     #define PWM_PINS_CH0 { GPIO_PIN(PORT_B, 7), GPIO_PIN(PORT_G, 5) }
     #define PWM_PINS_CH1 { GPIO_PIN(PORT_B, 4), GPIO_UNDEF }
+#elif defined(CPU_ATMEGA1284P)
+    #define PWM_PINS_CH0 { GPIO_PIN(PORT_B, 3), GPIO_PIN(PORT_B, 4) }
+    #define PWM_PINS_CH1 { GPIO_PIN(PORT_D, 7), GPIO_PIN(PORT_D, 6) }
 #elif defined(CPU_ATMEGA2560)
     #define PWM_PINS_CH0 { GPIO_PIN(PORT_B, 7), GPIO_PIN(PORT_G, 5) }
     #define PWM_PINS_CH1 { GPIO_PIN(PORT_B, 4), GPIO_PIN(PORT_H, 6) }
@@ -333,7 +343,9 @@ extern "C" {
     #define PWM_NUMOF           (0U)
 #endif
 
-#if defined(CPU_ATMEGA328P) || defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA2560) || defined(CPU_ATMEGA32U4)
+#if defined(CPU_ATMEGA32U4) || defined(CPU_ATMEGA328P) || \
+    defined(CPU_ATMEGA1281) || defined(CPU_ATMEGA1284P) || \
+    defined(CPU_ATMEGA2560)
     static const pwm_conf_t pwm_conf[] = {
         {
             .dev = MINI_TIMER0,

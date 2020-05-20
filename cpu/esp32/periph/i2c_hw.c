@@ -39,6 +39,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
+#include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
@@ -277,15 +278,14 @@ int i2c_acquire(i2c_t dev)
     return 0;
 }
 
-int i2c_release(i2c_t dev)
+void i2c_release(i2c_t dev)
 {
     DEBUG ("%s\n", __func__);
 
-    CHECK_PARAM_RET (dev < I2C_NUMOF, -1)
+    assert(dev < I2C_NUMOF);
 
     _i2c_reset_hw (dev);
     mutex_unlock(&_i2c_bus[dev].lock);
-    return 0;
 }
 
 /*
@@ -685,7 +685,7 @@ void _i2c_transfer_timeout (void *arg)
 {
     i2c_t dev = (i2c_t)arg;
 
-    /* reset the hardware if it I2C got stucked */
+    /* reset the hardware if it I2C got stuck */
     _i2c_reset_hw(dev);
 
     /* set result to timeout */
@@ -869,8 +869,8 @@ static void _i2c_reset_hw (i2c_t dev)
 void i2c_print_config(void)
 {
     for (unsigned dev = 0; dev < I2C_NUMOF; dev++) {
-        ets_printf("\tI2C_DEV(%d)\tscl=%d sda=%d\n",
-                   dev, i2c_config[dev].scl, i2c_config[dev].sda);
+        printf("\tI2C_DEV(%u)\tscl=%d sda=%d\n",
+               dev, i2c_config[dev].scl, i2c_config[dev].sda);
     }
 }
 

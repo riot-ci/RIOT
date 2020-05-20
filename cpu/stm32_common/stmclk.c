@@ -87,7 +87,7 @@
 
 #if (CLOCK_ENABLE_PLL_SAI)
 #ifdef RCC_PLLSAICFGR_PLLSAIN_Pos
-#define PLLSAI_M                 (CLOCK_PLL_SAI_M << RCC_PLLSAICFGR_PLLSAIN_Pos)
+#define PLLSAI_M                 (CLOCK_PLL_SAI_M << RCC_PLLSAICFGR_PLLSAIM_Pos)
 #else
 #define PLLSAI_M                 (0)
 #endif
@@ -225,6 +225,8 @@ void stmclk_init_sysclk(void)
     RCC->CFGR |= RCC_CFGR_PLLXTPRE; /* PREDIV == 2 */
 #elif CLOCK_PLL_PREDIV > 2
     RCC->CFGR2 = PLL_PREDIV;        /* PREDIV > 2 */
+#elif CLOCK_PLL_PREDIV == 0
+#error "CLOCK_PLL_PREDIV invalid"
 #endif
 #endif
     RCC->CR |= (RCC_CR_PLLON);

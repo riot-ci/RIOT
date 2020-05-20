@@ -1,14 +1,13 @@
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY = \
-	i-nucleo-lrwan1 \
-	nucleo-f031k6 \
-	stm32l0538-disco \
-	#
-
 # Modules to include.
 USEMODULE += pthread
 USEMODULE += random
 USEMODULE += xtimer
+
+# The test compiles, but these boards have too little RAM for
+# dynamic allocation of thread stacks
+BOARD_BLACKLIST := arduino-nano arduino-duemilanove \
+                   arduino-uno nucleo-f031k6 stm32f030f4-demo
 
 include $(RIOTBASE)/Makefile.include

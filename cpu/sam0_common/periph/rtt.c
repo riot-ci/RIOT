@@ -27,6 +27,15 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+/*
+ * Bit introduced by SAML21xxxB, setting it on SAML21xxxxA too has no ill
+ * effects, but simplifies the code. (This bit is always set on SAML21xxxxA)
+ */
+#ifndef RTC_MODE0_CTRLA_COUNTSYNC
+#define RTC_MODE0_CTRLA_COUNTSYNC_Pos   15
+#define RTC_MODE0_CTRLA_COUNTSYNC       (0x1ul << RTC_MODE0_CTRLA_COUNTSYNC_Pos)
+#endif
+
 static rtt_cb_t _overflow_cb;
 static void* _overflow_arg;
 
@@ -57,7 +66,7 @@ static inline void _rtt_reset(void)
 static void _rtt_clock_setup(void)
 {
     /* Setup clock GCLK2 with OSC32K */
-    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(2) | GCLK_CLKCTRL_ID_RTC;
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN(SAM0_GCLK_32KHZ) | GCLK_CLKCTRL_ID_RTC;
     while (GCLK->STATUS.bit.SYNCBUSY) {}
 }
 #else
@@ -91,7 +100,7 @@ void rtt_init(void)
 
     /* set 32bit counting mode & enable the RTC */
 #ifdef REG_RTC_MODE0_CTRLA
-    RTC->MODE0.CTRLA.reg = RTC_MODE0_CTRLA_MODE(0) | RTC_MODE0_CTRLA_ENABLE;
+    RTC->MODE0.CTRLA.reg = RTC_MODE0_CTRLA_MODE(0) | RTC_MODE0_CTRLA_ENABLE | RTC_MODE0_CTRLA_COUNTSYNC;
 #else
     RTC->MODE0.CTRL.reg = RTC_MODE0_CTRL_MODE(0) | RTC_MODE0_CTRL_ENABLE;
 #endif

@@ -4,10 +4,7 @@
 CFLAGS += -DNDEBUG
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo arduino-nano \
-                             arduino-uno nucleo-f031k6
-
-DISABLE_MODULE = auto_init
+DISABLE_MODULE += auto_init_gnrc_%
 
 USEMODULE += gnrc
 USEMODULE += gnrc_neterr
