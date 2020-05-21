@@ -60,16 +60,6 @@ void openwsn_set_addr_16b(netdev_t* dev)
     memcpy(&id.addr_16b, addr, IEEE802154_SHORT_ADDRESS_LEN);
     idmanager_setMyID(&id);
 }
-
-void openwsn_set_addr_64b(netdev_t* dev)
-{
-    uint8_t addr[IEEE802154_LONG_ADDRESS_LEN];
-    dev->driver->get(dev, NETOPT_ADDRESS_LONG, addr, IEEE802154_LONG_ADDRESS_LEN);
-    open_addr_t id;
-    id.type = ADDR_64B;
-    memcpy(&id.addr_64b, addr, IEEE802154_LONG_ADDRESS_LEN);
-    idmanager_setMyID(&id);
-}
 #endif
 
 int openwsn_bootstrap(void)
@@ -91,12 +81,13 @@ int openwsn_bootstrap(void)
     }
 #endif
 
-    /* initiate id manager not initiates in the stack */
+    /* Initiate Id manager here and not in `openstack_init` function to allow
+       overriding the short id address before additional stack components are
+       initiated */
     idmanager_init();
 
 #ifdef MODULE_OPENWSN_RADIO
-    /* override 16b and 64b address to avoid short address collision */
-    openwsn_set_addr_64b(netdev);
+    /* override 16b address to avoid short address collision */
     openwsn_set_addr_16b(netdev);
 #endif
 
