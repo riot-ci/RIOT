@@ -37,6 +37,7 @@ BOARDS_WITHOUT_HWRNG += nucleo-f411re
 BOARDS_WITHOUT_HWRNG += nucleo-f446re
 BOARDS_WITHOUT_HWRNG += nucleo-f446ze
 BOARDS_WITHOUT_HWRNG += nucleo-l031k6
+BOARDS_WITHOUT_HWRNG += weact-f411ce
 
 ifneq (,$(filter $(BOARDS_WITHOUT_HWRNG),$(BOARD)))
   FEATURES_PROVIDED := $(filter-out periph_hwrng,$(FEATURES_PROVIDED))
