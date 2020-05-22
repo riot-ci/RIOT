@@ -53,10 +53,12 @@ void pre_startup(void)
     SYSCFG->CFGR1  = SYSCFG_CFGR1_MEM_MODE_0;
 #endif
 
+    /* load bootloader address into r0 */
+    register uint32_t dst __asm__("r0") = STM32_LOADER_ADDR;
+
     /* jump to the bootloader */
-    __asm__ volatile("ldr r0, =%0" :: "i" (STM32_LOADER_ADDR));
-    __asm__ volatile("mov sp, r0");
-    __asm__ volatile("mov pc, r0");
+    __asm__ volatile("mov sp, %0" :: "r" (dst));
+    __asm__ volatile("mov pc, %0" :: "r" (dst));
 }
 
 void __attribute__((weak)) usb_board_reset_in_bootloader(void)
