@@ -135,13 +135,13 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
                 DEBUG("sock_dtls: event connected\n");
                 if (peer->role == DTLS_SERVER) {
                     /* we are server so a client connected */
-                    sock->async_cb(sock, SOCK_ASYNC_CONN_RECV,
+                    sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
                                    sock->async_cb_arg);
                 }
                 else {
                     /* we are client so an session we tried to establish became
                      * ready */
-                    sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
+                    sock->async_cb(sock, SOCK_ASYNC_CONN_RECV,
                                    sock->async_cb_arg);
                 }
                 break;
@@ -440,6 +440,16 @@ static ssize_t _copy_buffer(sock_dtls_t *sock, sock_dtls_session_t *remote,
         _check_more_chunks(sock->udp_sock, (void **)buf, &sock->buf_ctx,
                            &remote->ep);
         sock->buf_ctx = NULL;
+        if (sock->async_cb && cib_avail(&sock->mbox.cib)) {
+            if (sock->buf) {
+                sock->async_cb(sock, SOCK_ASYNC_MSG_RECV,
+                               sock->async_cb_arg);
+            }
+            else {
+                sock->async_cb(sock, SOCK_ASYNC_CONN_RECV,
+                               sock->async_cb_arg);
+            }
+        }
         return buflen;
     }
 #else
@@ -458,16 +468,35 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
     assert(data);
     assert(remote);
 
-    if (sock->buf != NULL) {
-        /* there is already decrypted data available */
-        return _copy_buffer(sock, remote, data, max_len);
-    }
-
     /* loop breaks when timeout or application data read */
     while (1) {
+        ssize_t res;
         uint32_t start_recv = xtimer_now_usec();
-        ssize_t res = sock_udp_recv(sock->udp_sock, data, max_len, timeout,
-                                    &remote->ep);
+        msg_t msg;
+
+        if (sock->buf != NULL) {
+            return _copy_buffer(sock, remote, data, max_len);
+        }
+        else if (mbox_try_get(&sock->mbox, &msg) &&
+                 msg.type == DTLS_EVENT_CONNECTED) {
+            if (sock->async_cb) {
+                sock_async_flags_t flags = SOCK_ASYNC_CONN_RDY;
+
+                if (cib_avail(&sock->mbox.cib)) {
+                    if (sock->buf) {
+                        flags |= SOCK_ASYNC_MSG_RECV;
+                    }
+                    else {
+                        flags |= SOCK_ASYNC_CONN_RECV;
+                    }
+                }
+                sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
+                               sock->async_cb_arg);
+            }
+            return -SOCK_DTLS_HANDSHAKE;
+        }
+        res = sock_udp_recv(sock->udp_sock, data, max_len, timeout,
+                            &remote->ep);
         if (res <= 0) {
             DEBUG("sock_dtls: error receiving UDP packet: %d\n", (int)res);
             return res;
@@ -480,21 +509,11 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         if ((timeout != SOCK_NO_TIMEOUT) && (timeout != 0)) {
             timeout = _update_timeout(start_recv, timeout);
         }
-
-        msg_t msg;
-        if (sock->buf != NULL) {
-            return _copy_buffer(sock, remote, data, max_len);
-        }
-        else if (mbox_try_get(&sock->mbox, &msg) &&
-                 msg.type == DTLS_EVENT_CONNECTED) {
-            return -SOCK_DTLS_HANDSHAKE;
-        }
-        else if (timeout == 0) {
+        if (timeout == 0) {
             DEBUG("sock_dtls: timed out while decrypting message\n");
             return -ETIMEDOUT;
         }
     }
-
 }
 
 void sock_dtls_close(sock_dtls_t *sock)
@@ -569,7 +588,7 @@ void sock_dtls_set_cb(sock_dtls_t *sock, sock_dtls_cb_t cb, void *cb_arg)
     sock->async_cb = cb;
     sock->async_cb_arg = cb_arg;
     if (IS_USED(MODULE_SOCK_ASYNC_EVENT)) {
-        sock_async_ctx_t *ctx = sock_udp_get_async_ctx(sock->udp_sock);
+        sock_async_ctx_t *ctx = sock_dtls_get_async_ctx(sock);
         if (ctx->queue) {
             sock_udp_event_init(sock->udp_sock, ctx->queue, _udp_cb, sock);
             return;
