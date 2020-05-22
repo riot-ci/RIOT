@@ -14,7 +14,9 @@
  * @brief       Trigger reset to the bootloader stored in the internal boot ROM
  *              memory.
  *
- *              This will start the DFU bootloader on the USB interface.
+ *              This will start the DFU/UART/SPI bootloader.
+ *              See application note AN2606 for which options are available on
+ *              your individual MCU.
  *
  * @author      Benjamin Valentin <benpicco@googlemail.com>
  *
@@ -38,15 +40,23 @@ void pre_startup(void)
     _magic = 0;
 
     /* enable SYSCFG clock */
+#if defined(RCC_APB2ENR_SYSCFGEN)
     RCC->APB2ENR   = RCC_APB2ENR_SYSCFGEN;
+#elif defined(RCC_APB2ENR_SYSCFGCOMPEN)
+    RCC->APB2ENR   = RCC_APB2ENR_SYSCFGCOMPEN
+#endif
 
     /* remap ROM at zero */
+#if defined(SYSCFG_MEMRMP_MEM_MODE_0)
     SYSCFG->MEMRMP = SYSCFG_MEMRMP_MEM_MODE_0;
+#elif defined(SYSCFG_CFGR1_MEM_MODE_0)
+    SYSCFG->CFGR1  = SYSCFG_CFGR1_MEM_MODE_0;
+#endif
 
     /* jump to the bootloader */
     __asm__ volatile("ldr r0, =%0" :: "i" (STM32_LOADER_ADDR));
-    __asm__ volatile("ldr sp, [r0]");
-    __asm__ volatile("ldr pc, [r0, #4]");
+    __asm__ volatile("mov sp, r0");
+    __asm__ volatile("mov pc, r0");
 }
 
 void __attribute__((weak)) usb_board_reset_in_bootloader(void)
