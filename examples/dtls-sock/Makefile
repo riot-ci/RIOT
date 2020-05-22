@@ -16,7 +16,10 @@ USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
 USEMODULE += gnrc_ipv6_default
+USEMODULE += gnrc_sock_async
 USEMODULE += gnrc_sock_udp
+USEMODULE += sock_async_event
+USEMODULE += event_thread_medium
 
 # Use tinydtls for sock_dtls
 USEMODULE += tinydtls_sock_dtls
