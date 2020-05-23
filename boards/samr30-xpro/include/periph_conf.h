@@ -97,7 +97,7 @@ static const spi_conf_t spi_config[] = {
         .mosi_pad = SPI_PAD_MOSI_2_SCK_3,
         .gclk_src = SAM0_GCLK_MAIN,
     },
-    {
+    {    /* EXT1 & EXT3 Pin Header */
         .dev      = &(SERCOM5->SPI),
         .miso_pin = GPIO_PIN(PB, 2),
         .mosi_pin = GPIO_PIN(PB, 22),
