@@ -25,19 +25,22 @@
 
 #include "cpu.h"
 #include "periph_cpu.h"
+#include "sched.h"
 
+/* repurpose the sched_context_switch_request variable to signal
+ * jump to bootloader after reset */
+#define MAGIC               sched_context_switch_request
 #define BOOTLOADER_MAGIC    0xB007AFFE
 
-static uint32_t _magic __attribute__((section(".noinit")));
-
+/* called by reset_handler_default() before memory is initialized */
 void pre_startup(void)
 {
-    if (_magic != BOOTLOADER_MAGIC) {
+    if (MAGIC != BOOTLOADER_MAGIC) {
         return;
     }
 
     /* clear magic */
-    _magic = 0;
+    MAGIC = 0;
 
     /* enable SYSCFG clock */
 #if defined(RCC_APB2ENR_SYSCFGEN)
@@ -63,6 +66,7 @@ void pre_startup(void)
 
 void __attribute__((weak)) usb_board_reset_in_bootloader(void)
 {
-    _magic = BOOTLOADER_MAGIC;
+    irq_disable();
+    MAGIC = BOOTLOADER_MAGIC;
     NVIC_SystemReset();
 }
