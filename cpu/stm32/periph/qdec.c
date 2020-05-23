@@ -179,7 +179,9 @@ static inline void irq_handler(qdec_t qdec)
 
     if (status & (TIM_SR_UIF)) {
         dev(qdec)->SR &= ~(TIM_SR_UIF);
-        isr_ctx[qdec].cb(isr_ctx[qdec].arg);
+        if (isr_ctx[qdec].cb) {
+            isr_ctx[qdec].cb(isr_ctx[qdec].arg);
+        }
     }
     cortexm_isr_end();
 }
