@@ -29,6 +29,12 @@ extern "C" {
 #define CPUID_ADDR          (0x1fff7a10)
 
 /**
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
+ */
+#define STM32_LOADER_ADDR   (0x1FFF0000)
+
+/**
  * @brief   Available number of ADC devices
  */
 #if defined(CPU_LINE_STM32F401xE) || defined(CPU_LINE_STM32F410Rx) \
