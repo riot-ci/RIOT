@@ -76,14 +76,19 @@ static void _print_lookup_result(struct cord_lc_result *res) {
 
 static void _print_usage(void) {
     puts("usage: cord_lc <server_addr> "
-         "{ resource | endpoint | raw { resource | endpoint } [key=value]"
-         "example: cord_lc [2001:db8:3::dead:beef]:5683 raw resource count=1 page=2");
+         "[-r] { resource | endpoint } [key=value]\n"
+         "Options:\n"
+         "      -r get raw result\n"
+         "example: cord_lc [2001:db8:3::dead:beef]:5683 -r resource count=1 page=2\n"
+         "example: cord_lc [2001:db8:3::dead:beef]:5683 endpoint");
 }
 
 int cord_lc_cli_cmd(int argc, char **argv) {
     char bufpool[1024] = {0};
+    int raw_mode = 0;
 
-    if (argc < 3) {
+    raw_mode = argc > 3 && !strcmp(argv[2], "-r");
+    if (argc < 3 || (raw_mode && argc < 4)) {
         _print_usage();
         return -1;
     }
@@ -102,11 +107,9 @@ int cord_lc_cli_cmd(int argc, char **argv) {
         }
         rd_initialized = 1;
     }
-
-    int raw_mode = !strcmp(argv[2], "raw");
-    unsigned filter_start = raw_mode ? 4 : 3;
-
+    
     /* parse filters */
+    unsigned filter_start = raw_mode ? 4 : 3;
     size_t filter_count = argc - filter_start;
     clif_attr_t filter_array[filter_count];
     if (filter_count > 0) {
