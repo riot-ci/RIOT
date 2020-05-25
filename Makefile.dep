@@ -918,8 +918,18 @@ ifneq (,$(filter cord_ep_standalone,$(USEMODULE)))
 endif
 
 ifneq (,$(filter cord_ep,$(USEMODULE)))
-  USEMODULE += cord_common
   USEMODULE += core_thread_flags
+  USEMODULE += cord_common
+  USEMODULE += gcoap
+  ifneq (,$(filter shell_commands,$(USEMODULE)))
+    USEMODULE += sock_util
+  endif
+endif
+
+ifneq (,$(filter cord_lc,$(USEMODULE)))
+  USEMODULE += core_thread_flags
+  USEMODULE += cord_common
+  USEMODULE += clif
   USEMODULE += gcoap
   ifneq (,$(filter shell_commands,$(USEMODULE)))
     USEMODULE += sock_util
