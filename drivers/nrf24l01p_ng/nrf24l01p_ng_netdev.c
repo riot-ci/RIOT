@@ -130,12 +130,11 @@ void nrf24l01p_ng_irq_handler(void *_dev)
        do not congest the thread´s
        message queue with IRQ events */
     gpio_irq_disable(dev->params.pin_irq);
-    DEBUG_PUTS("[nrf24l01p_ng] IRQ\n");
     netdev_trigger_event_isr((netdev_t *)dev);
 }
 
 static
-void _isr_max_rt(const nrf24l01p_ng_t *dev)
+void _isr_max_rt(nrf24l01p_ng_t *dev)
 {
     assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
@@ -143,26 +142,37 @@ void _isr_max_rt(const nrf24l01p_ng_t *dev)
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
     DEBUG_PUTS("[nrf24l01p_ng] IRS MAX_RT\n");
     nrf24l01p_ng_flush_tx(dev);
+    dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_TX_NOACK);
 }
 
 static
-void _isr_rx_dr(const nrf24l01p_ng_t *dev)
+void _isr_rx_dr(nrf24l01p_ng_t *dev)
 {
     assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
     DEBUG_PUTS("[nrf24l01p_ng] IRS RX_DR\n");
+    uint8_t fifo_status;
+    nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS, &fifo_status, 1);
+    /* read all RX data */
+    while (!(fifo_status & NRF24L01P_NG_FLG_RX_EMPTY)) {
+        DEBUG_PUTS("[nrf24l01p_ng] ISR: read pending Rx frames\n");
+        dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_RX_COMPLETE);
+        nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
+                              &fifo_status, 1);
+    }
 }
 
 static
-void _isr_tx_ds(const nrf24l01p_ng_t *dev)
+void _isr_tx_ds(nrf24l01p_ng_t *dev)
 {
     assert(dev->state == NRF24L01P_NG_STATE_STANDBY_1 ||
            dev->state == NRF24L01P_NG_STATE_STANDBY_2 ||
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
     DEBUG_PUTS("[nrf24l01p_ng] IRS TX_DS\n");
+    dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_TX_COMPLETE);
 }
 
 static
@@ -307,18 +317,7 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         nrf24l01p_ng_flush_rx(dev);
         return 0;
     }
-    uint8_t dst_addr[NRF24L01P_NG_ADDR_WIDTH];
-    if (pno == NRF24L01P_NG_P0) {
-        memcpy(dst_addr, dev->urxaddr.rxaddrpx.rx_p0, sizeof(dst_addr));
-    }
-    else {
-        memcpy(dst_addr, dev->urxaddr.rxaddrpx.rx_p1, sizeof(dst_addr));
-        if (pno > NRF24L01P_NG_P1) {
-            dst_addr[NRF24L01P_NG_ADDR_WIDTH - 1] =
-                dev->urxaddr.arxaddr.rx_addr_short[pno - 2];
-        }
-    }
-    uint8_t frame_len = sizeof(dst_addr) + pl_width;
+    uint8_t frame_len = NRF24L01P_NG_ADDR_WIDTH + pl_width;
     /* do NOT drop frame and return exact frame size */
     if (!buf) {
         DEBUG_PUTS("[nrf24l01p_ng] Return exact frame length\n");
@@ -333,6 +332,17 @@ int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
         return -ENOBUFS;
     }
     /* get received frame */
+    uint8_t dst_addr[NRF24L01P_NG_ADDR_WIDTH];
+    if (pno == NRF24L01P_NG_P0) {
+        memcpy(dst_addr, dev->urxaddr.rxaddrpx.rx_p0, sizeof(dst_addr));
+    }
+    else {
+        memcpy(dst_addr, dev->urxaddr.rxaddrpx.rx_p1, sizeof(dst_addr));
+        if (pno > NRF24L01P_NG_P1) {
+            dst_addr[NRF24L01P_NG_ADDR_WIDTH - 1] =
+                dev->urxaddr.arxaddr.rx_addr_short[pno - 2];
+        }
+    }
     DEBUG_PUTS("[nrf24l01p_ng] Handle received frame\n");
     uint8_t *frame = (uint8_t *)buf;
     memcpy(frame, dst_addr, sizeof(dst_addr));
@@ -444,64 +454,49 @@ void _isr(netdev_t *netdev)
 {
     nrf24l01p_ng_t *dev = (nrf24l01p_ng_t *)netdev;
 
-    gpio_irq_enable(dev->params.pin_irq);
     nrf24l01p_ng_acquire(dev);
+    gpio_irq_enable(dev->params.pin_irq);
     uint8_t status = nrf24l01p_ng_get_status(dev);
+
     if (status & NRF24L01P_NG_FLG_MAX_RT) {
         _isr_max_rt(dev);
-        netdev->event_callback(netdev, NETDEV_EVENT_TX_NOACK);
     }
     if (status & NRF24L01P_NG_FLG_TX_DS) {
         _isr_tx_ds(dev);
-        netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
     }
     if (status & NRF24L01P_NG_FLG_RX_DR) {
         _isr_rx_dr(dev);
-        netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
     }
     /* clear interrupt flags */
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
-    uint8_t fifo_status;
-    status =
+
+    if (dev->state == NRF24L01P_NG_STATE_TX_MODE ||
+        dev->state == NRF24L01P_NG_STATE_STANDBY_2) {
+        uint8_t fifo_status;
         nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
                               &fifo_status, 1);
-    /* read all RX data */
-    if (dev->state == NRF24L01P_NG_STATE_RX_MODE) {
-        while (!(fifo_status & NRF24L01P_NG_FLG_RX_EMPTY)) {
-            DEBUG_PUTS("[nrf24l01p_ng] ISR: read pending Rx frames\n");
-            netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
-            status = NRF24L01P_NG_FLG_RX_DR;
-            nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
-            status = nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
-                                           &fifo_status, 1);
+        /* frame in FIFO is not an ACK */
+        if (!(fifo_status & NRF24L01P_NG_FLG_TX_EMPTY)) {
+            nrf24l01p_ng_release(dev);
+            _trigger_send(dev);
+            return;
         }
-        nrf24l01p_ng_release(dev);
     }
-    else {
-        if (dev->state == NRF24L01P_NG_STATE_TX_MODE) {
-            /* frame in FIFO is not an ACK */
-            if (!(fifo_status & NRF24L01P_NG_FLG_TX_EMPTY)) {
-                nrf24l01p_ng_release(dev);
-                _trigger_send(dev);
-                return;
-            }
-        }
-        /* no more data to transmit */
-        if (dev->state != NRF24L01P_NG_STATE_STANDBY_1) {
-            nrf24l01p_ng_transition_to_standby_1(dev);
-        }
-        /* go to idle state */
-        if (dev->idle_state != NRF24L01P_NG_STATE_STANDBY_1) {
-            if (dev->idle_state == NRF24L01P_NG_STATE_POWER_DOWN) {
-                nrf24l01p_ng_transition_to_power_down(dev);
-            }
-            else {
-                dev->idle_state = NRF24L01P_NG_STATE_RX_MODE;
-                nrf24l01p_ng_transition_to_rx_mode(dev);
-            }
-        }
-        nrf24l01p_ng_release(dev);
+    /* no more data to transmit */
+    if (dev->state != NRF24L01P_NG_STATE_STANDBY_1) {
+        nrf24l01p_ng_transition_to_standby_1(dev);
     }
+    /* go to idle state */
+    if (dev->idle_state != NRF24L01P_NG_STATE_STANDBY_1) {
+        if (dev->idle_state == NRF24L01P_NG_STATE_POWER_DOWN) {
+            nrf24l01p_ng_transition_to_power_down(dev);
+        }
+        else {
+            dev->idle_state = NRF24L01P_NG_STATE_RX_MODE;
+            nrf24l01p_ng_transition_to_rx_mode(dev);
+        }
+    }
+    nrf24l01p_ng_release(dev);
 }
 
 /**
