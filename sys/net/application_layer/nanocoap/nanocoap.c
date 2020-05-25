@@ -88,7 +88,7 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
         pkt_pos += coap_get_token_len(pkt);
     }
     else {
-        DEBUG("tkl invalid\n");
+        DEBUG("nanocoap: token length invalid\n");
         return -EBADMSG;
     }
 
