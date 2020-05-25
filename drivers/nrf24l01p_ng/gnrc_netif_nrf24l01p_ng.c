@@ -36,15 +36,6 @@ gnrc_pktsnip_t *_nrf24l01p_ng_pkt_recv(gnrc_netif_t *netif)
     /* get frame size */
     int frame_len = netif->dev->driver->recv(netif->dev, NULL, 1, NULL);
 
-    uint8_t frame_buffer[frame_len];
-    /* copy the payload into the packet buffer */
-    frame_len = netif->dev->driver->recv(netif->dev, frame_buffer,
-                                             frame_len, NULL);
-    if (frame_len <= 0) {
-        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: driver error\n");
-        return NULL;
-    }
-
     /* allocate space for the packet in the pktbuf */
     gnrc_pktsnip_t *frame = gnrc_pktbuf_add(NULL, NULL, frame_len,
                                             NRF24L01P_NG_UPPER_LAYER_PROTOCOL);
@@ -52,7 +43,15 @@ gnrc_pktsnip_t *_nrf24l01p_ng_pkt_recv(gnrc_netif_t *netif)
         DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: unable to allocate space\n");
         return NULL;
     }
-    memcpy(frame->data, frame_buffer, frame_len);
+
+    /* copy the payload into the packet buffer */
+    frame_len = netif->dev->driver->recv(netif->dev, frame->data,
+                                         frame_len, NULL);
+    if (frame_len <= 0) {
+        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: driver error\n");
+        gnrc_pktbuf_release(frame);
+        return NULL;
+    }
     return frame;
 }
 
