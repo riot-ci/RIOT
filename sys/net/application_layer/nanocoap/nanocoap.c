@@ -138,7 +138,7 @@ int coap_parse(coap_pkt_t *pkt, uint8_t *buf, size_t len)
     }
 
     if (pkt_pos > pkt_end) {
-        DEBUG("bad pkt len\n");
+        DEBUG("nanocoap: bad packet length\n");
         return -EBADMSG;
     }
 
