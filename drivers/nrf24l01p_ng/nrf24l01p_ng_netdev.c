@@ -458,14 +458,14 @@ void _isr(netdev_t *netdev)
     gpio_irq_enable(dev->params.pin_irq);
     uint8_t status = nrf24l01p_ng_get_status(dev);
 
+    if (status & NRF24L01P_NG_FLG_RX_DR) {
+        _isr_rx_dr(dev);
+    }
     if (status & NRF24L01P_NG_FLG_MAX_RT) {
         _isr_max_rt(dev);
     }
     if (status & NRF24L01P_NG_FLG_TX_DS) {
         _isr_tx_ds(dev);
-    }
-    if (status & NRF24L01P_NG_FLG_RX_DR) {
-        _isr_rx_dr(dev);
     }
     /* clear interrupt flags */
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
