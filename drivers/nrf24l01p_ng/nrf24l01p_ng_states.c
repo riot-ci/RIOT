@@ -44,7 +44,7 @@ static void _restore_address(const nrf24l01p_ng_t *dev)
 
 void nrf24l01p_ng_transition_to_power_down(nrf24l01p_ng_t *dev)
 {
-    DEBUG_PUTS("[nrf24l01p_ng] transition to POWER_DOWN\n");
+    DEBUG_PUTS("[nrf24l01p_ng] transition to POWER_DOWN");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_POWER_DOWN);
     uint8_t config = NRF24L01P_NG_FLG_PWR_UP;
     nrf24l01p_ng_reg8_clear(dev, NRF24L01P_NG_REG_CONFIG, &config);
@@ -53,7 +53,7 @@ void nrf24l01p_ng_transition_to_power_down(nrf24l01p_ng_t *dev)
 
 void nrf24l01p_ng_transition_to_standby_1(nrf24l01p_ng_t *dev)
 {
-    DEBUG_PUTS("[nrf24l01p_ng] transition to STANDBY_1\n");
+    DEBUG_PUTS("[nrf24l01p_ng] transition to STANDBY_1");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_STANDBY_1);
     switch (dev->state) {
         case NRF24L01P_NG_STATE_POWER_DOWN:
@@ -78,7 +78,7 @@ void nrf24l01p_ng_transition_to_standby_1(nrf24l01p_ng_t *dev)
 
 void nrf24l01p_ng_transition_to_standby_2(nrf24l01p_ng_t *dev)
 {
-    DEBUG_PUTS("[nrf24l01p_ng] transition to STANDBY_2\n");
+    DEBUG_PUTS("[nrf24l01p_ng] transition to STANDBY_2");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_STANDBY_2);
     switch (dev->state) {
         case NRF24L01P_NG_STATE_STANDBY_1:;
@@ -98,7 +98,7 @@ void nrf24l01p_ng_transition_to_standby_2(nrf24l01p_ng_t *dev)
 
 void nrf24l01p_ng_transition_to_rx_mode(nrf24l01p_ng_t *dev)
 {
-    DEBUG_PUTS("[nrf24l01p_ng] transition to RX_MODE\n");
+    DEBUG_PUTS("[nrf24l01p_ng] transition to RX_MODE");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_RX_MODE);
     uint8_t fifo_status;
     nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS, &fifo_status, 1);
@@ -114,7 +114,7 @@ void nrf24l01p_ng_transition_to_rx_mode(nrf24l01p_ng_t *dev)
 
 void nrf24l01p_ng_transition_to_tx_mode(nrf24l01p_ng_t *dev)
 {
-    DEBUG_PUTS("[nrf24l01p_ng] transition to TX_MODE\n");
+    DEBUG_PUTS("[nrf24l01p_ng] transition to TX_MODE");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_TX_MODE);
     /* TX FIFI not empty */
     uint8_t config = NRF24L01P_NG_FLG_PRIM_RX;

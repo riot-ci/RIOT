@@ -40,7 +40,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_pkt_recv(gnrc_netif_t *netif)
     gnrc_pktsnip_t *frame = gnrc_pktbuf_add(NULL, NULL, frame_len,
                                             NRF24L01P_NG_UPPER_LAYER_PROTOCOL);
     if (!frame) {
-        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: unable to allocate space\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: unable to allocate space");
         return NULL;
     }
 
@@ -48,7 +48,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_pkt_recv(gnrc_netif_t *netif)
     frame_len = netif->dev->driver->recv(netif->dev, frame->data,
                                          frame_len, NULL);
     if (frame_len <= 0) {
-        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: driver error\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _pkt_recv: driver error");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
@@ -85,11 +85,11 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
     uint8_t src_addr_len;
 
     if (!(frame = _nrf24l01p_ng_pkt_recv(netif))) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: no frame\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: no frame");
         return NULL;
     }
     if (!(snip = gnrc_pktbuf_mark(frame, sizeof(dst_addr), GNRC_NETTYPE_UNDEF))) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to mark header snip\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to mark header snip");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
@@ -99,12 +99,12 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
     src_addr_len = ((uint8_t *)frame->data)[0];
     if (src_addr_len < NRF24L01P_NG_MIN_ADDR_WIDTH ||
         src_addr_len > NRF24L01P_NG_MAX_ADDR_WIDTH) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: Invalid source address length\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: Invalid source address length");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
     if (!(snip = gnrc_pktbuf_mark(frame, 1 + src_addr_len, GNRC_NETTYPE_UNDEF))) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to mark src header snip\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to mark src header snip");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
@@ -113,7 +113,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
 
     if (!(snip = gnrc_netif_hdr_build(src_addr, src_addr_len,
                                      dst_addr, sizeof(dst_addr)))) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to allocate netif header\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_recv: unable to allocate netif header");
         gnrc_pktbuf_release(frame);
         return NULL;
     }
@@ -168,7 +168,7 @@ int _nrf24l01p_ng_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     uint8_t dst_addr_len = netif_hdr->dst_l2addr_len;
 
     if (netif_hdr->flags & BCAST) {
-        DEBUG_PUTS("[nrf24l01p_ng] _adpt_send: preparing to send broadcast\n");
+        DEBUG_PUTS("[nrf24l01p_ng] _adpt_send: preparing to send broadcast");
         dst_addr = bcast_addr;
         dst_addr_len = NRF24L01P_NG_ADDR_WIDTH;
 #if IS_USED(MODULE_NETSTATS_L2)
@@ -182,7 +182,7 @@ int _nrf24l01p_ng_adpt_send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
             return -EBADMSG;
         }
         if (!memcmp(dst_addr, bcast_addr, dst_addr_len)) {
-            DEBUG_PUTS("[nrf24l01p_ng] _adpt_send: preparing to send broadcast\n");
+            DEBUG_PUTS("[nrf24l01p_ng] _adpt_send: preparing to send broadcast");
 #if IS_USED(MODULE_NETSTATS_L2)
             netif->stats.tx_mcast_count++;
 #endif
