@@ -490,8 +490,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                         flags |= SOCK_ASYNC_CONN_RECV;
                     }
                 }
-                sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
-                               sock->async_cb_arg);
+                sock->async_cb(sock, flags, sock->async_cb_arg);
             }
             return -SOCK_DTLS_HANDSHAKE;
         }
