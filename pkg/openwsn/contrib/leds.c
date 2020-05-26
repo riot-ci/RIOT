@@ -39,18 +39,19 @@ static leds_config_t _configuration = {
     GPIO_LED_HIGH,
 };
 
-static void _toggle_checked(gpio_t pin) {
+static void _toggle_checked(gpio_t pin)
+{
     if (IS_USED(MODULE_OPENWSN_LEDS)) {
-        if (pin != GPIO_UNDEF){
+        if (pin != GPIO_UNDEF) {
             gpio_toggle(pin);
         }
     }
 }
 
-static void _init_checked(gpio_t pin) {
+static void _init_checked(gpio_t pin)
+{
     if (IS_USED(MODULE_OPENWSN_LEDS)) {
-        if (pin != GPIO_UNDEF)
-        {
+        if (pin != GPIO_UNDEF) {
             gpio_init(pin, GPIO_OUT);
         }
     }
@@ -59,14 +60,14 @@ static void _init_checked(gpio_t pin) {
 static void _write_checked(gpio_t pin, uint8_t on_state)
 {
     if (IS_USED(MODULE_OPENWSN_LEDS)) {
-        if (pin != GPIO_UNDEF)
-        {
+        if (pin != GPIO_UNDEF) {
             gpio_write(pin, on_state);
         }
     }
 }
 
-static uint8_t _is_on_checked(gpio_t pin) {
+static uint8_t _is_on_checked(gpio_t pin)
+{
     if (IS_USED(MODULE_OPENWSN_LEDS)) {
         uint8_t ret = 0;
 
@@ -89,9 +90,9 @@ static void _blink_checked(gpio_t pin)
 #ifdef MODULE_ZTIMER_USEC
             ztimer_sleep(ZTIMER_USEC, 100000);
 #else
-            for (uint32_t i = 0; i < (CLOCK_CORECLOCK / 50) ; i++){
+            for (uint32_t i = 0; i < (CLOCK_CORECLOCK / 50); i++) {
                 /* Make sure for loop is not optimized out */
-                __asm__("");
+                __asm__ ("");
             }
 #endif
         }
