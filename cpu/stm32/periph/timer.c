@@ -74,7 +74,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
         return -1;
     }
 
-    dev(tim)->CCR[channel] = (value & timer_config[tim].max);
+    *(volatile uint32_t *)(&dev(tim)->CCR1 + channel) = (value & timer_config[tim].max);
     dev(tim)->SR &= ~(TIM_SR_CC1IF << channel);
     dev(tim)->DIER |= (TIM_DIER_CC1IE << channel);
 
