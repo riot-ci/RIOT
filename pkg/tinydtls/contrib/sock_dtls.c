@@ -109,7 +109,7 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
     (void)session;
 
     sock_dtls_t *sock = dtls_get_app_data(ctx);
-    msg_t msg = { .type = code };
+    msg_t msg = { .type = code, .content.ptr = session };
 #ifdef ENABLE_DEBUG
     switch (code) {
         case DTLS_EVENT_CONNECT:
@@ -123,7 +123,9 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
             break;
     }
 #endif  /* ENABLE_DEBUG */
-    mbox_put(&sock->mbox, &msg);
+    if (code != DTLS_EVENT_CONNECT) {
+        mbox_put(&sock->mbox, &msg);
+    }
 #ifdef SOCK_HAS_ASYNC
     if (sock->async_cb != NULL) {
         switch(code) {
@@ -132,7 +134,6 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
                 break;
             case DTLS_EVENT_CONNECTED: {
                 dtls_peer_t *peer = dtls_get_peer(ctx, session);
-                DEBUG("sock_dtls: event connected\n");
                 if (peer->role == DTLS_SERVER) {
                     /* we are server so a client connected */
                     sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
@@ -282,6 +283,7 @@ int sock_dtls_create(sock_dtls_t *sock, sock_udp_t *udp_sock,
     sock->udp_sock = udp_sock;
 #ifdef SOCK_HAS_ASYNC
     sock->async_cb = NULL;
+    sock->buf_ctx = NULL;
 #endif /* SOCK_HAS_ASYNC */
     sock->role = role;
     sock->tag = tag;
@@ -437,7 +439,7 @@ static ssize_t _copy_buffer(sock_dtls_t *sock, sock_dtls_session_t *remote,
 #if SOCK_HAS_ASYNC
     if (sock->buf_ctx != NULL) {
         memcpy(data, buf, sock->buflen);
-        _check_more_chunks(sock->udp_sock, (void **)buf, &sock->buf_ctx,
+        _check_more_chunks(sock->udp_sock, (void **)&buf, &sock->buf_ctx,
                            &remote->ep);
         sock->buf_ctx = NULL;
         if (sock->async_cb && cib_avail(&sock->mbox.cib)) {
@@ -479,6 +481,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
         else if (mbox_try_get(&sock->mbox, &msg) &&
                  msg.type == DTLS_EVENT_CONNECTED) {
+            memcpy(&remote->dtls_session, msg.content.ptr, sizeof(session_t));
             if (sock->async_cb) {
                 sock_async_flags_t flags = SOCK_ASYNC_CONN_RDY;
 
