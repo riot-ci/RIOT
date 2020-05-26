@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 #include "event/thread.h"
+#include "event/timeout.h"
 #include "net/sock/async/event.h"
 #include "net/sock/udp.h"
 #include "net/sock/dtls.h"
@@ -70,14 +71,27 @@ static const credman_credential_t credential = {
 };
 #endif
 
+static void _timeout_handler(event_t *);
+
 static uint8_t _recv_buf[512];
 static sock_udp_t _udp_sock;
 static sock_dtls_t _dtls_sock;
+static event_timeout_t _timeouter;
+static event_t _timeout = { .handler = _timeout_handler };
+
+static void _timeout_handler(event_t *event)
+{
+    (void)event;
+    puts("Session handshake timed out");
+    sock_dtls_close(&_dtls_sock);
+    sock_udp_close(&_udp_sock);
+}
 
 static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
 {
     sock_dtls_session_t session = { 0 };
 
+    event_timeout_clear(&_timeouter);
     if (type & SOCK_ASYNC_CONN_RECV) {
         char *send_data = arg;
         puts("Session handshake received");
@@ -99,6 +113,7 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
         }
         else {
             printf("Sent DTLS message\n");
+            event_timeout_set(&_timeouter, 5 * US_PER_SEC);
         }
     }
     else if (type & SOCK_ASYNC_CONN_FIN) {
@@ -142,6 +157,7 @@ static int client_send(char *addr_str, char *data)
     local.port = 12345;
     remote.port = DTLS_DEFAULT_PORT;
 
+    event_timeout_init(&_timeouter, &event_queue_medium, &_timeout);
     /* get interface */
     char* iface = ipv6_addr_split_iface(addr_str);
     if (iface) {
@@ -184,14 +200,19 @@ static int client_send(char *addr_str, char *data)
     if (res < 0 && res != CREDMAN_EXIST) {
         /* ignore duplicate credentials */
         printf("Error cannot add credential to system: %d\n", (int)res);
+        sock_dtls_close(&_dtls_sock);
+        sock_udp_close(&_udp_sock);
         return -1;
     }
 
     res = sock_dtls_session_init(&_dtls_sock, &remote, &session);
     if (res <= 0) {
+        sock_dtls_close(&_dtls_sock);
+        sock_udp_close(&_udp_sock);
         return res;
     }
 
+    event_timeout_set(&_timeouter, 5 * US_PER_SEC);
     return 0;
 }
 

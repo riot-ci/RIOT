@@ -20,6 +20,7 @@ USEMODULE += gnrc_sock_async
 USEMODULE += gnrc_sock_udp
 USEMODULE += sock_async_event
 USEMODULE += event_thread_medium
+USEMODULE += event_timeout
 
 # Use tinydtls for sock_dtls
 USEMODULE += tinydtls_sock_dtls
