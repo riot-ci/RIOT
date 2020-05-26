@@ -441,7 +441,6 @@ static ssize_t _copy_buffer(sock_dtls_t *sock, sock_dtls_session_t *remote,
         memcpy(data, buf, sock->buflen);
         _check_more_chunks(sock->udp_sock, (void **)&buf, &sock->buf_ctx,
                            &remote->ep);
-        sock->buf_ctx = NULL;
         if (sock->async_cb && cib_avail(&sock->mbox.cib)) {
             if (sock->buf) {
                 sock->async_cb(sock, SOCK_ASYNC_MSG_RECV,
@@ -558,8 +557,8 @@ void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
 
     if (flags & SOCK_ASYNC_MSG_RECV) {
         sock_dtls_session_t remote;
-        void *data;
-        void *data_ctx;
+        void *data = NULL;
+        void *data_ctx = NULL;
 
         ssize_t res = sock_udp_recv_buf(udp_sock, &data, &data_ctx, 0,
                                         &remote.ep);
