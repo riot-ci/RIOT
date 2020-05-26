@@ -53,7 +53,7 @@ enum {
  *
  * @note      Unused pins need to be defined as GPIO_UNDEF
  */
-void ledpins_riot_init(const ledpins_config_t *user_config);
+void ledpins_riot_init(const leds_config_t *user_config);
 
 #ifdef __cplusplus
 }

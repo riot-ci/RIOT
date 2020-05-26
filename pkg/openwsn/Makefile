@@ -6,7 +6,7 @@ PKG_LICENSE=BSD-3-Clause
 include $(RIOTBASE)/pkg/pkg.mk
 
 # openwsn_% RIOT Modules or PSEUDOMODULES that don't have custom rules
-IGNORE_MODULES  := openwsn_ledpins \
+IGNORE_MODULES  := openwsn_leds \
                    openwsn_debugpins \
                    openwsn_radio \
                    openwsn_serial \

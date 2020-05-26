@@ -148,7 +148,7 @@
  * Default configuration files are provided for both. The LED configuration maps to
  * RIOTs `LEDX_PIN` definitions, if available. On Nucleo boards LED0 line is
  * shared SPI, so is not used.
- * The default configuration can be overwritten by setting `OPENWSN_LEDPINS_DEFAULT`
+ * The default configuration can be overwritten by setting `OPENWSN_LEDS_DEFAULT`
  * in the form of `ledpins_config_t`. The debugpins work similarly by setting
  * `OPENWSN_DEBUGPINS_BOARD` in the form of `debugpins_config_t`.
  *

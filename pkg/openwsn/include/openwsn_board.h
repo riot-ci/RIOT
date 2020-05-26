@@ -44,7 +44,7 @@ typedef enum {
  *
  * Most initialization functions are not needed since there are initialized by
  * RIOT's `auto_init` module. Only OpenWSN specific interfaces will be initialized
- * here: `sctimer`, `openwsn_ledpins`, `openwsn_debugpins` & `uart_ow`.
+ * here: `sctimer`, `openwsn_leds`, `openwsn_debugpins` & `uart_ow`.
  *
  */
 void board_init_openwsn(void);

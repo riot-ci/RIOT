@@ -19,7 +19,7 @@ DIRS += $(RIOTBASE)/pkg/openwsn/contrib
 
 PSEUDOMODULES += openwsn_serial
 PSEUDOMODULES += openwsn_debugpins
-PSEUDOMODULES += openwsn_ledpins
+PSEUDOMODULES += openwsn_leds
 PSEUDOMODULES += openwsn_sctimer
 PSEUDOMODULES += openwsn_cryptoengine
 PSEUDOMODULES += openwsn_radio

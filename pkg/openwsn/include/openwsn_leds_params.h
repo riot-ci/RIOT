@@ -62,18 +62,18 @@ extern "C" {
 #define OPENWSN_LED_ON_STATE             GPIO_LED_HIGH
 #endif
 
-#define OPENWSN_LEDPINS_DEFAULT    { .error = OPENWSN_LEDPIN_ERROR, \
-                                     .sync = OPENWSN_LEDPIN_SYNC, \
-                                     .radio = OPENWSN_LEDPIN_RADIO, \
-                                     .debug = OPENWSN_LEDPIN_DEBUG, \
-                                     .led_on = OPENWSN_LED_ON_STATE }
+#define OPENWSN_LEDS_DEFAULT    { .error = OPENWSN_LEDPIN_ERROR, \
+                                  .sync = OPENWSN_LEDPIN_SYNC, \
+                                  .radio = OPENWSN_LEDPIN_RADIO, \
+                                  .debug = OPENWSN_LEDPIN_DEBUG, \
+                                  .led_on = OPENWSN_LED_ON_STATE }
 
-static const ledpins_config_t openwsn_ledpins_params[] =
+static const leds_config_t openwsn_leds_params[] =
 {
-#ifdef OPENWSN_LEDPINS_BOARD
-    OPENWSN_LEDPINS_BOARD,
+#ifdef OPENWSN_LEDS_BOARD
+    OPENWSN_LEDS_BOARD,
 #else
-    OPENWSN_LEDPINS_DEFAULT,
+    OPENWSN_LEDS_DEFAULT,
 #endif
 };
 

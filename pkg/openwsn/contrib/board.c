@@ -43,9 +43,9 @@ void board_init_openwsn(void)
 {
     LOG_DEBUG("[openwsn/board]: init\n");
 
-    if (IS_USED(MODULE_OPENWSN_LEDPINS)) {
+    if (IS_USED(MODULE_OPENWSN_LEDS)) {
         LOG_DEBUG("[openwsn/board]: leds init\n");
-        ledpins_riot_init(openwsn_ledpins_params);
+        ledpins_riot_init(openwsn_leds_params);
     }
 
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
