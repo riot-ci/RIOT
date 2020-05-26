@@ -554,8 +554,9 @@ static inline uint32_t _update_timeout(uint32_t start, uint32_t timeout)
 #ifdef SOCK_HAS_ASYNC
 void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
 {
+    sock_dtls_t *sock = ctx;
+
     if (flags & SOCK_ASYNC_MSG_RECV) {
-        sock_dtls_t *sock = ctx;
         sock_dtls_session_t remote;
         void *data;
         void *data_ctx;
@@ -580,6 +581,10 @@ void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
             _check_more_chunks(udp_sock, &data, &data_ctx, &remote.ep);
             sock->buf_ctx = NULL;
         }
+    }
+    if ((flags & SOCK_ASYNC_PATH_PROP) && sock->async_cb) {
+        /* just hand this event type up the stack */
+        sock->async_cb(sock, SOCK_ASYNC_PATH_PROP, sock->async_cb_arg);
     }
 }
 
