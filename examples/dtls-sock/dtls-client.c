@@ -32,6 +32,11 @@
 #define DTLS_DEFAULT_PORT 20220 /* DTLS default port */
 #endif
 
+#ifndef CLIENT_SEND_TIMEOUT
+  /* timeout for client_send command */
+#define CLIENT_SEND_TIMEOUT  (1U * US_PER_SEC)
+#endif
+
 #define SOCK_DTLS_CLIENT_TAG (2)
 
 #ifdef CONFIG_DTLS_ECC
@@ -78,6 +83,7 @@ static sock_udp_t _udp_sock;
 static sock_dtls_t _dtls_sock;
 static event_timeout_t _timeouter;
 static event_t _timeout = { .handler = _timeout_handler };
+static bool _sending = false;
 
 static void _timeout_handler(event_t *event)
 {
@@ -85,6 +91,16 @@ static void _timeout_handler(event_t *event)
     puts("Session handshake timed out");
     sock_dtls_close(&_dtls_sock);
     sock_udp_close(&_udp_sock);
+    _sending = false;
+}
+
+static _close_sock(sock_dtls_t *sock)
+{
+    sock_udp_t *udp_sock = sock_dtls_get_udp_sock(sock);
+
+    sock_dtls_close(sock);
+    sock_udp_close(udp_sock);
+    _sending = false;
 }
 
 static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
@@ -98,8 +114,6 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
         if (sock_dtls_recv(sock, &session, _recv_buf, sizeof(_recv_buf),
                            0) != -SOCK_DTLS_HANDSHAKE) {
             puts("Error creating session");
-            sock_dtls_close(sock);
-            sock_udp_close(&_udp_sock);
             return;
         }
         puts("Connection to server successful");
@@ -108,18 +122,16 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
                            0) < 0) {
             puts("Error sending data");
             sock_dtls_session_destroy(sock, &session);
-            sock_dtls_close(sock);
-            sock_udp_close(&_udp_sock);
+            _close_sock(sock);
         }
         else {
             printf("Sent DTLS message\n");
-            event_timeout_set(&_timeouter, 5 * US_PER_SEC);
+            event_timeout_set(&_timeouter, CLIENT_SEND_TIMEOUT);
         }
     }
     else if (type & SOCK_ASYNC_CONN_FIN) {
         puts("Session was destroyed");
-        sock_dtls_close(sock);
-        sock_udp_close(&_udp_sock);
+        _close_sock(sock);
     }
     else if (type & SOCK_ASYNC_CONN_RDY) {
         puts("Session became ready");
@@ -137,8 +149,7 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
         }
         puts("Terminating session");
         sock_dtls_session_destroy(sock, &session);
-        sock_dtls_close(sock);
-        sock_udp_close(&_udp_sock);
+        _close_sock(sock);
     }
     else if (type & SOCK_ASYNC_MSG_SENT) {
         puts("DTLS message was sent");
@@ -157,6 +168,9 @@ static int client_send(char *addr_str, char *data)
     local.port = 12345;
     remote.port = DTLS_DEFAULT_PORT;
 
+    if (_sending) {
+        puts("Already in the process of sending");
+    }
     event_timeout_init(&_timeouter, &event_queue_medium, &_timeout);
     /* get interface */
     char* iface = ipv6_addr_split_iface(addr_str);
@@ -205,14 +219,16 @@ static int client_send(char *addr_str, char *data)
         return -1;
     }
 
+    _sending = true;
     res = sock_dtls_session_init(&_dtls_sock, &remote, &session);
     if (res <= 0) {
         sock_dtls_close(&_dtls_sock);
         sock_udp_close(&_udp_sock);
+        _sending = false;
         return res;
     }
 
-    event_timeout_set(&_timeouter, 5 * US_PER_SEC);
+    event_timeout_set(&_timeouter, CLIENT_SEND_TIMEOUT);
     return 0;
 }
 
