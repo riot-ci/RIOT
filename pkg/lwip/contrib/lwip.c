@@ -138,11 +138,20 @@ void lwip_bootstrap(void)
 #ifdef MODULE_NETDEV_TAP
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
         netdev_tap_setup(&netdev_taps[i], &netdev_tap_params[i]);
+#ifdef MODULE_LWIP_IPV4
+        if (netif_add(&netif[i], IP4_ADDR_ANY, IP4_ADDR_ANY, IP4_ADDR_ANY,
+                      &netdev_taps[i], lwip_netdev_init,
+                      tcpip_input) == NULL) {
+            DEBUG("Could not add netdev_tap device\n");
+            return;
+        }
+#else /* MODULE_LWIP_IPV4 */
         if (netif_add(&netif[i], &netdev_taps[i], lwip_netdev_init,
                       tcpip_input) == NULL) {
             DEBUG("Could not add netdev_tap device\n");
             return;
         }
+#endif /* MODULE_LWIP_IPV4 */
     }
 #elif defined(MODULE_MRF24J40)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
