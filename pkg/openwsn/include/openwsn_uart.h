@@ -11,23 +11,7 @@
  * @ingroup     pkg_openwsn
  * @{
  *
- * In RIOT, the first configured UART device is mapped to STDIO in most cases.
- * In OpenWSN however, the `openserial` tool uses UART to feed external software
- * running on a host computer such as
- * [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer).
- * To enable use of these tools, we provide a UART adaptation.
- *
- * By default when `openwsn_serial` (`openserial`) is used STDIO will be
- * disabled (it will use `stdio_null`). When multiple uart are available STDIO
- * and `openserial` can be used in parallel..
- *
- * OpenWSN uart abstraction makes use of tx hardware interrupts to execute a
- * previously registered callback after every byte is sent out. This interrupts
- * are currently not defined in RIOT in a generic way, so instead we set a timer
- * which fires shortly after a byte was written.
- *
- * This implementation uses `ztimer` since its already used as an abstraction
- * for `periph_rtt`.
+ * For details on the implementation check pkg/openwsn/doc.txt
  *
  * @file
  * @brief       RIOT adaption-specific definition of the "uart" bsp module.

@@ -36,7 +36,7 @@
  *
  * Once joined the device has the required keys to start listening to DIS (DODAG
  * Information Solicitation) messages and to send DIO (DODAG Information Object)
- * requests. Once it know about the topology of the network it will be able to
+ * requests. Once it knows about the topology of the network it will be able to
  * send packets.
  *
  * OpenWSN uses source routing. This means that unless the recipient of a packet
@@ -63,14 +63,16 @@
  *
  * When available ZTIMER_32768 will be built on top of `periph_rtt` to get low
  * power capabilities. If not it will be built on top of a regular timer. In
- * either case it will be shifted up if the base frequency y lower than 32768Hz
+ * either case it will be shifted up if the base frequency lower than 32768Hz
  * or frac if higher.
  *
  * The `sctimer` is responsible to set the next interrupt. Under circumstances,
  * it may happen, that the next interrupt to schedule is already late, compared
  * to the current time. In this case, timer implementations in OpenWSN directly
- * trigger a hardware interrupt. Until able to trigger sw isr directly a callback
- * is set 0 ticks in the future, which internally will be set to `now + 2`.
+ * trigger a hardware interrupt. In RIOT there is not interface for uart
+ * transmit interrupts, and there is not sw interrupts api either. As a
+ * workaround a callback is set 0 ticks in the future, which internally will be
+ * set to `now + RTT_MIN_VAL`.
  *
  * ### radio
  *
@@ -95,31 +97,29 @@
  *
  * OpenWSN expects to recover crc information on every received frame even if it
  * will simply drop frames with invalid crc. The stack can function correctly if
- * radio drivers automaticaly drop frames with an invalid crc (i.e. the stack
- * doesn't get notified about these frames), but it might print the following
- * error if using `openwsn_serial`:
- *
- * - `[IEEE802154E] wdDataDuration overflows while at state 19 in slotOffset 0`
+ * radio drivers automatically drop frames with an invalid crc (i.e. the stack
+ * doesn't get notified about these frames).
  *
  * ### uart
  *
- * In RIOT, the first configured UART device is mapped to STDIO in most cases.
- * In OpenWSN however, the `openserial` tool uses UART to feed external software
+ * In RIOT, the first configured uart device is mapped to STDIO in most cases.
+ * In OpenWSN however, the `openserial` tool uses uart to feed external software
  * running on a host computer such as
  * [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer).
- * To enable use of these tools, a UART adaptation is provided.
+ * To enable use of these tools, a uart adaptation is provided.
  *
- * By default when `openwsn_serial` (`openserial`) is used STDIO will be disabled
- * (it will use `stdio_null`). When multiple uart are available STDIO and `openserial`
- * can be used in parallel.
+ * This is provided through the `openwsn_serial` (`openserial`) module. It
+ * will use the next available uart that is not used by STDIO
+ * (checking STDIO_UART_DEV). When multiple uart are available STDIO and
+ * `openserial` can be used in parallel. If `stdio_null` is used then it will
+ * use STDIO_UART_DEV.
  *
  * OpenWSN uart abstraction makes use of tx hardware interrupts to execute a
  * previously registered callback after every byte is sent out. These interrupts
- * are currently not defined in RIOT in a generic way, so instead a timer is to
- * fire shortly after a byte is written until sw_isr are possible.
+ * are currently not defined in RIOT in a generic way, so instead a timer is set
+ * to fire shortly after a byte is written. 
  *
- * This implementation uses `ztimer` since its already used as an abstraction
- * for `periph_rtt`.
+ * It uses `ztimer` to set the timer since its already pulled in as a dependency.
  *
  * ## Tested Platforms and Pin configurations
  *
@@ -185,34 +185,42 @@
  * [OpenWSN software](https://github.com/openwsn-berkeley/openwsn-sw) repository
  * for further information.
  *
+ * ## Known Issues
+ *
+ * The following errors will be visible when using `openwsn_serial`:
+ *
+ * - `[OPENSERIAL] wrong CRC in input Buffer`
+ *
+ * Since a timer is set to simulate a uart transmit interrupt, it can happen that
+ * the interrupt is missed if another interrupt occurs during that time, this
+ * seems to lead to the input buffer missing a byte and so CRC fails.
+ *
+ * - `[IEEE802154E] wdDataDuration overflows while at state 19 in slotOffset 0`
+ *
+ * This error can show up depending on the distance between the nodes, it seems
+ * some of the parameters in board_info.h need further tunning.
+ *
  * ## Todos
  *
- * - `sctimer` to trigger an ISR immediately using sw isr.
- * - `RTT_FREQUENCY` is not configurable for most platforms, implementations
+ * - [ ] `sctimer` to trigger an ISR immediately using software interrupts.
+ * - [ ] `RTT_FREQUENCY` is not configurable for most platforms, implementations
  *   should be adapted to make this configurable to be able to set RTT_FREQUENCY
  *   to 32768Hz or the closer possible value.
- * - The UART wrapper uses a peripheral timer to fake an interrupt after one byte
- *   has been sent. this should also be done with sw isr.
+ * - [ ] The UART wrapper uses ztimer to fake an interrupt after one byte
+ *   has been sent. this should also be done with software interrupts.
  *
- * ## Future Steps
+ * ##  Future Steps
  *
- * OpenWSN are working on refactoring their code base. As one of the outputs of
- * this modules like `cjoin`, `udp`, `coap` will become optional. Once this is
- * upstream the support for this pkg should be adapted.
+ * The OpenWSN community is working working on refactoring their code base. As
+ * one of the outputs of this modules like `cjoin`, `udp`, `coap` will become
+ * optional. Once this is upstream the support for this pkg should be adapted.
  *
- * #8570 successors managed to isolate the mac layer. The required changes have
- * not been included in this PR. Mainly because this PR intends to support all
- * network security features provided by OpenWSN. And as of the current status
- * of the upstream repository the whole stack must currently be taken.
- *
- * With the following re-works in OpenWSN this should not be necessary. Also in
- * future steps we plan to re-add the work done by @jia200x towards this.
+ * With above mentioned re-works the extraction of the MAC layer might be favored.
  *
  * As more immediate future steps:
  *
  * - [ ] Follow up PR to add OpenWSN sock
  * - [ ] Complete support of OpenWSN default HW (openmote-b)
- * - [ ] Add support in RIOT for openvisualizer
  * - [ ] Add support for other 802.15.4 network drivers
  *
  */
