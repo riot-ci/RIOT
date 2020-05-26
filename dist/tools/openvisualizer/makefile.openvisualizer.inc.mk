@@ -20,10 +20,9 @@
 # -------------
 #
 # * Install openvisualizer:
-#   * git clone -b pr_develop_SW-318_baud_mask_opt https://github.com/fjmolinas/openvisualizer.git
-#   * git checkout develop_SW-318-RIOT
+#   * git clone -b develop_SW-318-RIOT https://github.com/fjmolinas/openvisualizer.git
 #   * cd openvisualizer
-#   * pip install .
+#   * pip2 install .
 #
 
 OPENV_DEFAULT_FLAGS ?=
