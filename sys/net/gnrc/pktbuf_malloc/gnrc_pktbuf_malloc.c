@@ -54,7 +54,11 @@ static inline void *_malloc(size_t size)
 static inline void _free(void *ptr)
 {
     if (ptr != NULL) {
-#if defined(MODULE_FUZZING) && !defined(MODULE_GNRC_SOCK)
+        /* The fuzzing module is only enabled when building a fuzzing
+         * application from the fuzzing/ subdirectory. If _free is
+         * called on the crafted fuzzing packet, the setup assumes that
+         * input processing has completed and the application terminates. */
+#if defined(MODULE_FUZZING) && !defined(MODULE_GNRC_SOCK) && !defined(MODULE_SOCK_ASYNC_EVENT)
         if (ptr == gnrc_pktbuf_fuzzptr) {
            exit(EXIT_SUCCESS);
         }
