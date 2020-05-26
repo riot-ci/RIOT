@@ -11,6 +11,7 @@ STM32_ROMSIZE  = $(word 7, $(STM32_INFO))
 STM32_RAMMOD   = $(word 8, $(STM32_INFO))
 
 CPU_FAM = $(CPU)$(call lowercase,$(STM32_TYPE)$(STM32_FAMILY))
+CPU_FAM_SHORT = $(subst stm32,,$(CPU_FAM))
 
 ifeq (stm32f0,$(CPU_FAM))
   CPU_ARCH = cortex-m0
