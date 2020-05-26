@@ -36,7 +36,7 @@ typedef struct ledpins_config {
     gpio_t radio;
     gpio_t debug;
     uint8_t led_on;
-} ledpins_config_t;
+} leds_config_t;
 
 /**
  * @brief   Led on state values

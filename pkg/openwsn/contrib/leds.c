@@ -103,7 +103,7 @@ void ledpins_riot_init(const leds_config_t *user_config)
 {
     if (IS_USED(MODULE_OPENWSN_LEDS)) {
         if (user_config != NULL) {
-            memcpy(&_configuration, user_config, sizeof(ledpins_config_t));
+            memcpy(&_configuration, user_config, sizeof(leds_config_t));
             leds_init();
         }
     }
