@@ -58,7 +58,7 @@ static inline void _free(void *ptr)
          * application from the fuzzing/ subdirectory. If _free is
          * called on the crafted fuzzing packet, the setup assumes that
          * input processing has completed and the application terminates. */
-#if defined(MODULE_FUZZING) && !defined(MODULE_GNRC_SOCK)
+#if defined(MODULE_FUZZING) && !defined(MODULE_GNRC_SOCK) && !defined(MODULE_SOCK_ASYNC_EVENT)
         if (ptr == gnrc_pktbuf_fuzzptr) {
            exit(EXIT_SUCCESS);
         }
