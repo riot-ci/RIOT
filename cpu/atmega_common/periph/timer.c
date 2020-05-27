@@ -24,6 +24,7 @@
 
 #include "board.h"
 #include "cpu.h"
+#include "irq.h"
 #include "thread.h"
 
 #include "periph/timer.h"
@@ -73,6 +74,23 @@ static ctx_t ctx[] = {
 #endif
 };
 
+static unsigned _oneshot;
+
+static inline void set_oneshot(tim_t tim, int chan)
+{
+    _oneshot |= (1 << chan) << (TIMER_CHANNELS * tim);
+}
+
+static inline void clear_oneshot(tim_t tim, int chan)
+{
+    _oneshot &= ~((1 << chan) << (TIMER_CHANNELS * tim));
+}
+
+static inline bool is_oneshot(tim_t tim, int chan)
+{
+    return _oneshot & ((1 << chan) << (TIMER_CHANNELS * tim));
+}
+
 /**
  * @brief Setup the given timer
  */
@@ -108,7 +126,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
         }
     }
     if (pre == PRESCALE_NUMOF) {
-        DEBUG("timer.c: prescaling failed!\n");
+        DEBUG("timer.c: prescaling from %lu Hz failed!\n", CLOCK_CORECLOCK);
         return -1;
     }
 
@@ -139,8 +157,49 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     ctx[tim].dev->OCR[channel] = (uint16_t)value;
     *ctx[tim].flag &= ~(1 << (channel + OCF1A));
     *ctx[tim].mask |= (1 << (channel + OCIE1A));
+    set_oneshot(tim, channel);
 
     return 0;
+}
+
+int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flags)
+{
+    int res = 0;
+
+    if (channel >= TIMER_CHANNELS) {
+        return -1;
+    }
+
+    if (flags & TIM_FLAG_RESET_ON_SET) {
+        ctx[tim].dev->CNT = 0;
+    }
+
+    unsigned state = irq_disable();
+
+    ctx[tim].dev->OCR[channel] = (uint16_t)value;
+
+    *ctx[tim].flag &= ~(1 << (channel + OCF1A));
+    *ctx[tim].mask |=  (1 << (channel + OCIE1A));
+
+    clear_oneshot(tim, channel);
+
+    /* only OCR0 can be use to set TOP */
+    if (channel == 0) {
+        if (flags & TIM_FLAG_RESET_ON_MATCH) {
+            /* enable CTC mode */
+            ctx[tim].dev->CRB |= (1 << 3);
+        } else {
+            /* disable CTC mode */
+            ctx[tim].dev->CRB &= (1 << 3);
+        }
+    } else {
+        assert((flags & TIM_FLAG_RESET_ON_MATCH) == 0);
+        res = -1;
+    }
+
+    irq_restore(state);
+
+    return res;
 }
 
 int timer_clear(tim_t tim, int channel)
@@ -178,7 +237,9 @@ static inline void _isr(tim_t tim, int chan)
 
     atmega_enter_isr();
 
-    *ctx[tim].mask &= ~(1 << (chan + OCIE1A));
+    if (is_oneshot(tim, chan)) {
+        *ctx[tim].mask &= ~(1 << (chan + OCIE1A));
+    }
     ctx[tim].cb(ctx[tim].arg, chan);
 
 #if defined(DEBUG_TIMER_PORT)
