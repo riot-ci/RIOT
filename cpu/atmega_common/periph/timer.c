@@ -174,13 +174,12 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
         ctx[tim].dev->CNT = 0;
     }
 
-    uint8_t mask = 1 << (channel + OCF1A);
     unsigned state = irq_disable();
 
     ctx[tim].dev->OCR[channel] = (uint16_t)value;
 
-    *ctx[tim].flag &= ~mask;
-    *ctx[tim].mask |=  mask;
+    *ctx[tim].flag &= ~(1 << (channel + OCF1A));
+    *ctx[tim].mask |=  (1 << (channel + OCIE1A));
 
     clear_oneshot(tim, channel);
 
