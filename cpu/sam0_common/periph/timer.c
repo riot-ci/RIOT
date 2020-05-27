@@ -107,7 +107,7 @@ static uint8_t _get_prescaler(unsigned long freq_out, unsigned long freq_in)
 }
 
 /* TOP value is CC0 */
-static inline void _set_MFRQ(tim_t tim)
+static inline void _set_mfrq(tim_t tim)
 {
     timer_stop(tim);
     wait_synchronization(tim);
@@ -120,7 +120,7 @@ static inline void _set_MFRQ(tim_t tim)
 }
 
 /* TOP value is MAX timer value */
-static inline void _set_NFRQ(tim_t tim)
+static inline void _set_nfrq(tim_t tim)
 {
     timer_stop(tim);
     wait_synchronization(tim);
@@ -248,9 +248,9 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
 
         /* only CC0 can be use to set TOP */
         if (flags & TIM_FLAG_RESET_ON_MATCH) {
-            _set_MFRQ(tim);
+            _set_mfrq(tim);
         } else {
-            _set_NFRQ(tim);
+            _set_nfrq(tim);
         }
 
         _set_cc(tim, 0, value);
