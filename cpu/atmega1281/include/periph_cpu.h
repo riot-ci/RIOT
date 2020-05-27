@@ -28,6 +28,7 @@ extern "C" {
 #endif
 
 #include "periph_cpu_common.h"
+#include "periph_conf.h" /* <- Allow overwriting timer config from board */
 
 /**
  * @brief   Available ports on the ATmega1281 family
@@ -69,6 +70,29 @@ enum {
  * @{
  */
 #define EEPROM_SIZE                (4096U)  /* 4kB */
+/** @} */
+
+/**
+ * @name    Default timer configuration
+ */
+#ifndef TIMER_NUMOF
+#define TIMER_NUMOF         (2U)
+#define TIMER_CHANNELS      (3)
+
+#define TIMER_0             MEGA_TIMER1
+#define TIMER_0_MASK        &TIMSK1
+#define TIMER_0_FLAG        &TIFR1
+#define TIMER_0_ISRA        TIMER1_COMPA_vect
+#define TIMER_0_ISRB        TIMER1_COMPB_vect
+#define TIMER_0_ISRC        TIMER1_COMPC_vect
+
+#define TIMER_1             MEGA_TIMER4
+#define TIMER_1_MASK        &TIMSK4
+#define TIMER_1_FLAG        &TIFR4
+#define TIMER_1_ISRA        TIMER4_COMPA_vect
+#define TIMER_1_ISRB        TIMER4_COMPB_vect
+#define TIMER_1_ISRC        TIMER4_COMPC_vect
+#endif TIMER_NUMOF
 /** @} */
 
 #ifdef __cplusplus
