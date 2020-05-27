@@ -69,7 +69,7 @@ int main(void)
     printf("One counter cycle is %u ticks or 250 ms\n", steps);
     puts("Will print 'tick' every second / every 4 cycles.\n");
 
-    timer_init(TIMER_CYCL, timer_hz, cb, &lock);
+    assert(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
 
     puts("TEST START");
 
