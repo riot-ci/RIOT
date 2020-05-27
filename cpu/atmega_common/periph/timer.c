@@ -24,6 +24,7 @@
 
 #include "board.h"
 #include "cpu.h"
+#include "irq.h"
 #include "thread.h"
 
 #include "periph/timer.h"
@@ -163,6 +164,8 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 
 int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flags)
 {
+    int res = 0;
+
     if (channel >= TIMER_CHANNELS) {
         return -1;
     }
@@ -171,9 +174,14 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
         ctx[tim].dev->CNT = 0;
     }
 
+    uint8_t mask = 1 << (channel + OCF1A);
+    unsigned state = irq_disable();
+
     ctx[tim].dev->OCR[channel] = (uint16_t)value;
-    *ctx[tim].flag &= ~(1 << (channel + OCF1A));
-    *ctx[tim].mask |= (1 << (channel + OCIE1A));
+
+    *ctx[tim].flag &= ~mask;
+    *ctx[tim].mask |=  mask;
+
     clear_oneshot(tim, channel);
 
     /* only OCR0 can be use to set TOP */
@@ -187,9 +195,12 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
         }
     } else {
         assert((flags & TIM_FLAG_RESET_ON_MATCH) == 0);
+        res = -1;
     }
 
-    return 0;
+    irq_restore(state);
+
+    return res;
 }
 
 int timer_clear(tim_t tim, int channel)
