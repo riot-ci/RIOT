@@ -4,5 +4,28 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 #
+config CPU_SERIES_SAMD21
+    bool
+    select CPU_FAMILY_SAM0
+    select HAS_PUF_SRAM
+
+## Common CPU symbols
+if CPU_SERIES_SAMD21
+
+config CPU
+    default "samd21"
+
+config CPU_SERIES
+    default "samd21"
+
+endif # CPU_SERIES_SAMD21
+
+config CPU_MODEL
+    default 'samr21g18a' if CPU_MODEL_SAMR21G18A
+
+## CPU Models
+config CPU_MODEL_SAMR21G18A
+    bool
+    select CPU_SERIES_SAMD21
 
 source "$(RIOTCPU)/sam0_common/Kconfig"
