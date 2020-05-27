@@ -18,11 +18,11 @@
  * @}
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 
 #include "board.h"
+#include "expect.h"
 
 #include "mutex.h"
 #include "periph/timer.h"
@@ -70,7 +70,7 @@ int main(void)
     printf("One counter cycle is %u ticks or 250 ms\n", steps);
     puts("Will print 'tick' every second / every 4 cycles.\n");
 
-    assert(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
+    expect(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
 
     puts("TEST START");
 
