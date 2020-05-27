@@ -14,13 +14,13 @@ if KCONFIG_MODULE_PERIPH_WDT
 
 config WDT_WARNING_PERIOD
     int "Warning period (in ms)"
-    depends on HAS_WDT_WARNING_PERIOD
+    depends on WDT_WARNING_PERIOD_SUPPORT
     help
         Period in ms before reboot where wdt_cb() is executed.
 
 endif # KCONFIG_MODULE_PERIPH_WDT
 
-config HAS_WDT_WARNING_PERIOD
+config WDT_WARNING_PERIOD_SUPPORT
     bool
     help
         Indicates that a CPU provides a warning period configuration option.
