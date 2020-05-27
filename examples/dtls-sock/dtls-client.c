@@ -94,7 +94,7 @@ static void _timeout_handler(event_t *event)
     _sending = false;
 }
 
-static _close_sock(sock_dtls_t *sock)
+static void _close_sock(sock_dtls_t *sock)
 {
     sock_udp_t *udp_sock = sock_dtls_get_udp_sock(sock);
 
