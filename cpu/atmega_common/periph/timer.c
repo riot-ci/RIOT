@@ -28,9 +28,14 @@
 
 #include "periph/timer.h"
 #include "periph_conf.h"
+#include "periph_cpu.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+#ifndef TIMER_NUMOF
+#error "No timer config provided in periph_cpu.h / periph_conf.h!"
+#endif /* TIMER_NUMOF */
 
 /**
  * @brief   We have 5 possible prescaler values
