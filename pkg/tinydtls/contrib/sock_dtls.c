@@ -128,7 +128,7 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
     }
 #ifdef SOCK_HAS_ASYNC
     if (sock->async_cb != NULL) {
-        switch(code) {
+        switch (code) {
             case DTLS_ALERT_CLOSE_NOTIFY:
                 sock->async_cb(sock, SOCK_ASYNC_CONN_FIN, sock->async_cb_arg);
                 break;
