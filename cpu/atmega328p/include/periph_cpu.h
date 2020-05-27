@@ -22,6 +22,7 @@
 #define PERIPH_CPU_H
 
 #include "periph_cpu_common.h"
+#include "periph_conf.h" /* <- Allow overwriting timer config from board */
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,6 +63,21 @@ enum {
  * @{
  */
 #define EEPROM_SIZE                (1024U)  /* 1kB */
+/** @} */
+
+/**
+ * @name    Default timer configuration
+ */
+#ifndef TIMER_NUMOF
+#define TIMER_NUMOF         (1U)
+#define TIMER_CHANNELS      (2)
+
+#define TIMER_0             MEGA_TIMER1
+#define TIMER_0_MASK        &TIMSK1
+#define TIMER_0_FLAG        &TIFR1
+#define TIMER_0_ISRA        TIMER1_COMPA_vect
+#define TIMER_0_ISRB        TIMER1_COMPB_vect
+#endif /* TIMER_NUMOF */
 /** @} */
 
 #ifdef __cplusplus
