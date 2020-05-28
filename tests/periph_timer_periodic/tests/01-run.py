@@ -16,6 +16,7 @@ def testfunc(child):
     start = time.time()
     child.expect_exact('TEST SUCCEEDED')
     end = time.time()
+    # test should run between 5 and 6s (TEST_TIME_S)
     assert (end - start) > 5
     assert (end - start) < 6
 
