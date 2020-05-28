@@ -170,7 +170,7 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
     return 0;
 }
 
-int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flags)
+int timer_set_periodic(tim_t tim, int channel, unsigned int value, uint8_t flags)
 {
     if (((unsigned) tim >= TIMER_NUMOF) || ((unsigned) channel >= TIMER_CHANNELS)) {
         return -1;
