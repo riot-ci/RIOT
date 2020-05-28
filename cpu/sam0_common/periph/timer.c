@@ -257,7 +257,10 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flag
         dev(tim)->INTENSET.reg = TC_INTENSET_MC0;
         break;
     case 1:
-        assert((flags & TIM_FLAG_RESET_ON_MATCH) == 0);
+        if (flags & TIM_FLAG_RESET_ON_MATCH) {
+            assert(0);
+            return -1;
+        }
 
         dev(tim)->INTFLAG.reg = TC_INTFLAG_MC1;
         _set_cc(tim, 1, value);
