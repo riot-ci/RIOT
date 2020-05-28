@@ -27,11 +27,7 @@
 #include "thread.h"
 
 #include "periph/timer.h"
-/* We must include periph_conf.h *before* default_timer_config.h, so that boards
- * can overwrite default CPU timer config, if needed.
- */
 #include "periph_conf.h"
-#include "default_timer_config.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
