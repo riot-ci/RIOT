@@ -171,7 +171,7 @@ int timer_set_absolute(tim_t dev, int channel, unsigned int value);
  * @return                  0 on success
  * @return                  -1 on error
  */
-int timer_set_periodic(tim_t dev, int channel, unsigned int value, unsigned flags);
+int timer_set_periodic(tim_t dev, int channel, unsigned int value, uint8_t flags);
 
 /**
  * @brief Clear the given channel of the given timer device
