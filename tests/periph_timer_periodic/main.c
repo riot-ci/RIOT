@@ -26,6 +26,7 @@
 
 #include "mutex.h"
 #include "periph/timer.h"
+#include "xtimer.h"
 
 /* the timer device to use */
 #define TIMER_CYCL  (0)
@@ -63,7 +64,7 @@ static const char* _print_ok(int chan, bool *succeeded)
 int main(void)
 {
     mutex_t lock = MUTEX_INIT_LOCKED;
-    const unsigned timer_hz = 62500;
+    const unsigned timer_hz = XTIMER_HZ;
     const unsigned steps = (250UL * timer_hz) / 1000; /* 250 ms */
 
     printf("\nRunning Timer %d at %u Hz.\n", TIMER_CYCL, timer_hz);
