@@ -193,7 +193,7 @@ int timer_set(tim_t tim, int channel, unsigned int timeout)
     return 0;
 }
 
-int timer_set_periodic(tim_t tim, int channel, unsigned int value, unsigned flags)
+int timer_set_periodic(tim_t tim, int channel, unsigned int value, uint8_t flags)
 {
     int res = 0;
 
