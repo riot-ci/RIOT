@@ -28,8 +28,16 @@
 #include "periph/timer.h"
 #include "xtimer.h"
 
-/* the timer device to use */
-#define TIMER_CYCL  (0)
+/* We use the timer used for xtimer with the frequency used by xtimer here
+ * to make sure we have a known valid timer configuration.
+ *
+ * DO NOT USE any low-level timer functions demonstrated here when xtimer
+ * is used with that timer!
+ * Configure a separate timer, XTIMER_DEV is usually 'owned' by xtimer, but
+ * as xtimer is not used in this test, we can use it and the fact that every board
+ * provides a configuration for it.
+ */
+#define TIMER_CYCL  XTIMER_DEV
 
 static unsigned count[TIMER_CHANNELS];
 
