@@ -40,17 +40,22 @@
 #define TIMER_CYCL  XTIMER_DEV
 #define CYCLE_MS    100UL
 
+#define CYCLES_PER_SEC (MS_PER_SEC / CYCLE_MS)
+
+/* test should run for 5s */
+#define TEST_TIME_S   5UL
+
 static unsigned count[TIMER_CHANNELS];
 
 static void cb(void *arg, int chan)
 {
-    int c = count[chan]++;
+    unsigned c = count[chan]++;
 
-    if ((c & 0x3) == 0) {
+    if ((c % CYCLES_PER_SEC) == 0) {
         printf("[%d] tick\n", chan);
     }
 
-    if (c > 20) {
+    if (c > CYCLES_PER_SEC * TEST_TIME_S) {
         timer_stop(TIMER_CYCL);
         mutex_unlock(arg);
     }
@@ -74,11 +79,11 @@ int main(void)
 {
     mutex_t lock = MUTEX_INIT_LOCKED;
     const unsigned long timer_hz = XTIMER_HZ;
-    const unsigned steps = (CYCLE_MS * timer_hz) / 1000; /* 250 ms */
+    const unsigned steps = (CYCLE_MS * timer_hz) / 1000;
 
     printf("\nRunning Timer %d at %lu Hz.\n", TIMER_CYCL, timer_hz);
     printf("One counter cycle is %u ticks or %lu ms\n", steps, CYCLE_MS);
-    puts("Will print 'tick' every second / every 4 cycles.\n");
+    printf("Will print 'tick' every second / every %u cycles.\n", CYCLES_PER_SEC);
 
     expect(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
 
