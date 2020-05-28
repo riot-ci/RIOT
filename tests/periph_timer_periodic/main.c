@@ -22,7 +22,7 @@
 #include <stdint.h>
 
 #include "board.h"
-#include "expect.h"
+#include "test_utils/expect.h"
 
 #include "mutex.h"
 #include "periph/timer.h"
