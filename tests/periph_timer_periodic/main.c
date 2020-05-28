@@ -38,6 +38,7 @@
  * provides a configuration for it.
  */
 #define TIMER_CYCL  XTIMER_DEV
+#define CYCLE_MS    100UL
 
 static unsigned count[TIMER_CHANNELS];
 
@@ -72,11 +73,11 @@ static const char* _print_ok(int chan, bool *succeeded)
 int main(void)
 {
     mutex_t lock = MUTEX_INIT_LOCKED;
-    const unsigned timer_hz = XTIMER_HZ;
-    const unsigned steps = (250UL * timer_hz) / 1000; /* 250 ms */
+    const unsigned long timer_hz = XTIMER_HZ;
+    const unsigned steps = (CYCLE_MS * timer_hz) / 1000; /* 250 ms */
 
-    printf("\nRunning Timer %d at %u Hz.\n", TIMER_CYCL, timer_hz);
-    printf("One counter cycle is %u ticks or 250 ms\n", steps);
+    printf("\nRunning Timer %d at %lu Hz.\n", TIMER_CYCL, timer_hz);
+    printf("One counter cycle is %u ticks or %lu ms\n", steps, CYCLE_MS);
     puts("Will print 'tick' every second / every 4 cycles.\n");
 
     expect(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
