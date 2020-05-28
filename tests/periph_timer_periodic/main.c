@@ -43,7 +43,7 @@
 #define CYCLES_PER_SEC (MS_PER_SEC / CYCLE_MS)
 
 /* test should run for 5s */
-#define TEST_TIME_S   5UL
+#define TEST_TIME_S 5
 
 static unsigned count[TIMER_CHANNELS];
 
@@ -83,7 +83,7 @@ int main(void)
 
     printf("\nRunning Timer %d at %lu Hz.\n", TIMER_CYCL, timer_hz);
     printf("One counter cycle is %u ticks or %lu ms\n", steps, CYCLE_MS);
-    printf("Will print 'tick' every second / every %u cycles.\n", CYCLES_PER_SEC);
+    printf("Will print 'tick' every second / every %lu cycles.\n", CYCLES_PER_SEC);
 
     expect(timer_init(TIMER_CYCL, timer_hz, cb, &lock) == 0);
 
