@@ -400,6 +400,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
 
 static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 {
+    int res;
     cc26x2_cc13x2_rf_netdev_t *dev = (cc26x2_cc13x2_rf_netdev_t *)netdev;
 
     if (dev == NULL) {
@@ -407,50 +408,46 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
     }
 
     switch (opt) {
+        /* Only MR-FSK is supported */
         case NETOPT_IEEE802154_PHY:
-            if (max_len < sizeof(uint8_t)) {
-                return -EOVERFLOW;
-            }
-            else {
-                /* Only MR-FSK is supported */
-                *(uint8_t *)val = IEEE802154_PHY_MR_FSK;
-            }
-            return sizeof(uint8_t);
+            assert(max_len == sizeof(uint8_t));
+            *(uint8_t *)val = IEEE802154_PHY_MR_FSK;
+            res = sizeof(uint8_t);
+            break;
 
         case NETOPT_RX_END_IRQ:
-            if (max_len < sizeof(netopt_enable_t)) {
-                return -EOVERFLOW;
+            assert(max_len == sizeof(netopt_enable_t));
+            if (RFC_DBELL->RFCPEIEN & CPE_IRQ_RX_ENTRY_DONE) {
+                *(netopt_enable_t *)val = NETOPT_ENABLE;
             }
             else {
-                if (RFC_DBELL->RFCPEIEN & CPE_IRQ_RX_ENTRY_DONE) {
-                    *(netopt_enable_t *)val = NETOPT_ENABLE;
-                }
-                else {
-                    *(netopt_enable_t *)val = NETOPT_DISABLE;
-                }
+                *(netopt_enable_t *)val = NETOPT_DISABLE;
             }
-            return sizeof(netopt_enable_t);
+            res = sizeof(netopt_enable_t);
+            break;
 
         case NETOPT_TX_END_IRQ:
-            if (max_len < sizeof(netopt_enable_t)) {
-                return -EOVERFLOW;
+            assert(max_len == sizeof(netopt_enable_t));
+            if (_tx_end_irq) {
+                *(netopt_enable_t *)val = NETOPT_ENABLE;
             }
             else {
-                if (_tx_end_irq) {
-                    *(netopt_enable_t *)val = NETOPT_ENABLE;
-                }
-                else {
-                    *(netopt_enable_t *)val = NETOPT_DISABLE;
-                }
+                *(netopt_enable_t *)val = NETOPT_DISABLE;
             }
-            return sizeof(netopt_enable_t);
+            res = sizeof(netopt_enable_t);
+            break;
 
         default:
+            res = -ENOTSUP;
             break;
     }
 
-    return netdev_ieee802154_get((netdev_ieee802154_t *)netdev, opt, val,
-                                 max_len);
+    if (res == -ENOTSUP) {
+        return netdev_ieee802154_get((netdev_ieee802154_t *)netdev, opt, val,
+                                     max_len);
+    }
+
+    return res;
 }
 
 static void _isr(netdev_t *netdev)
