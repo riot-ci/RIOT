@@ -36,7 +36,8 @@
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) || \
     defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L4) || \
-    defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32F7)
+    defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32F7) || \
+    defined(CPU_FAM_STM32G4)
 #define ISR_REG     ISR
 #define ISR_TXE     USART_ISR_TXE
 #define ISR_TC      USART_ISR_TC
@@ -69,7 +70,7 @@ static inline USART_TypeDef *dev(uart_t uart)
 
 static inline void uart_init_usart(uart_t uart, uint32_t baudrate);
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4) || \
-    defined(CPU_FAM_STM32WB)
+    defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32G4)
 #ifdef MODULE_PERIPH_LPUART
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate);
 #endif
@@ -162,7 +163,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     dev(uart)->CR3 = 0;
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4) || \
-    defined(CPU_FAM_STM32WB)
+    defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32G4)
     switch (uart_config[uart].type) {
         case STM32_USART:
             uart_init_usart(uart, baudrate);
@@ -264,7 +265,7 @@ static inline void uart_init_usart(uart_t uart, uint32_t baudrate)
 }
 
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L4) || \
-    defined(CPU_FAM_STM32WB)
+    defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32G4)
 #ifdef MODULE_PERIPH_LPUART
 static inline void uart_init_lpuart(uart_t uart, uint32_t baudrate)
 {
@@ -403,7 +404,8 @@ static inline void irq_handler(uart_t uart)
 {
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) || \
     defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L4) || \
-    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32WB)
+    defined(CPU_FAM_STM32F7) || defined(CPU_FAM_STM32WB) || \
+    defined(CPU_FAM_STM32G4)
 
     uint32_t status = dev(uart)->ISR;
 
