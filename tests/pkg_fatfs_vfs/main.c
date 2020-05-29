@@ -321,7 +321,7 @@ static void test_newlib(void)
     print_test_result("test_newlib__fclose_w", fclose(fl) == 0);
 
     /* open file RO */
-    fl = fopen(FULL_FNAME1, "r");
+    fl = fopen(FULL_FNAME2, "r");
     print_test_result("test_newlib__fopen_r", fl != NULL);
     print_test_result("test_newlib__fclose_r", fclose(fl) == 0);
 
