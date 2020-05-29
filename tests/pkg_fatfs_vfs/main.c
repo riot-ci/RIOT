@@ -295,6 +295,61 @@ static void test_create(void)
     print_test_result("test_create__umount", vfs_umount(&_test_vfs_mount) == 0);
 }
 
+#ifdef MODULE_NEWLIB
+static void test_newlib(void)
+{
+    FILE* fl;
+    char buf[sizeof(test_txt) + sizeof(test_txt2)];
+    print_test_result("test_newlib__mount", vfs_mount(&_test_vfs_mount) == 0);
+
+    /* try to open file that doesn't exist */
+    fl = fopen(FULL_FNAME_NXIST, "r");
+    print_test_result("test_newlib__fopen", fl == NULL);
+    if (fl) {
+        fclose(fl);
+    }
+
+    /* open file RO */
+    fl = fopen(FULL_FNAME1, "r");
+    print_test_result("test_newlib__fopen_r", fl != NULL);
+    print_test_result("test_newlib__fclose_r", fclose(fl) == 0);
+
+    /* create new file write and check content */
+    remove(FULL_FNAME2);
+    fl = fopen(FULL_FNAME2, "w+");
+    print_test_result("test_newlib__fopen_w", fl != NULL);
+    print_test_result("test_newlib__fputs_w", fputs(test_txt, fl) >= 0);
+    rewind(fl);
+    print_test_result("test_newlib__fread_w",
+            fread(buf, sizeof(*buf), sizeof(buf), fl) > 0);
+    print_test_result("test_newlib__strcmp_w", strcmp(test_txt, buf) == 0);
+    print_test_result("test_newlib__fclose_w", fclose(fl) == 0);
+    print_test_result("test_newlib__remove", remove(FULL_FNAME2) == 0);
+
+    /* append to non existing file */
+    fl = fopen(FULL_FNAME2, "a");
+    print_test_result("test_newlib__fopen_a", fl != NULL);
+    print_test_result("test_newlib__fputs_a", fputs(test_txt, fl) >= 0);
+    print_test_result("test_newlib__fclose_a", fclose(fl) == 0);
+
+    /* append to existing file and check content */
+    fl = fopen(FULL_FNAME2, "a+");
+    print_test_result("test_newlib__fopen_a2", fl != NULL);
+    print_test_result("test_newlib__fputs_a2", fputs(test_txt2, fl) >= 0);
+    rewind(fl);
+    print_test_result("test_newlib__fread_a2",
+            fread(buf, sizeof(*buf), sizeof(buf), fl) > 0);
+    print_test_result("test_newlib__strcmp_a2",
+            strncmp(test_txt, buf, strlen(test_txt)) == 0);
+    print_test_result("test_newlib__strcmp_a2",
+            strncmp(test_txt2, &buf[strlen(test_txt)], strlen(test_txt2)) == 0);
+    print_test_result("test_newlib__fclose_a2", fclose(fl) == 0);
+    print_test_result("test_newlib__remove", remove(FULL_FNAME2) == 0);
+
+    print_test_result("test_newlib__umount", vfs_umount(&_test_vfs_mount) == 0);
+}
+#endif
+
 int main(void)
 {
 #if MODULE_MTD_SDCARD
@@ -324,6 +379,9 @@ int main(void)
     test_unlink();
     test_mkrmdir();
     test_create();
+#ifdef MODULE_NEWLIB
+    test_newlib();
+#endif
 
     printf("Test end.\n");
     return 0;
