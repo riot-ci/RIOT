@@ -67,10 +67,12 @@
 #endif
 #endif
 
-#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
-    defined(CPU_FAM_STM32G4)
+#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB)
 #define IMR_REG             IMR2
 #define EXTI_IMR_BIT        EXTI_IMR2_IM32
+#elif defined(CPU_FAM_STM32G4)
+#define IMR_REG             IMR2
+#define EXTI_IMR_BIT        EXTI_IMR2_IM37
 #elif defined(CPU_FAM_STM32L0)
 #define IMR_REG             IMR
 #define EXTI_IMR_BIT        EXTI_IMR_IM29
