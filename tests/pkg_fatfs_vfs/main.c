@@ -309,11 +309,6 @@ static void test_newlib(void)
         fclose(fl);
     }
 
-    /* open file RO */
-    fl = fopen(FULL_FNAME1, "r");
-    print_test_result("test_newlib__fopen_r", fl != NULL);
-    print_test_result("test_newlib__fclose_r", fclose(fl) == 0);
-
     /* create new file write and check content */
     remove(FULL_FNAME2);
     fl = fopen(FULL_FNAME2, "w+");
@@ -324,6 +319,13 @@ static void test_newlib(void)
             fread(buf, sizeof(*buf), sizeof(buf), fl) > 0);
     print_test_result("test_newlib__strcmp_w", strcmp(test_txt, buf) == 0);
     print_test_result("test_newlib__fclose_w", fclose(fl) == 0);
+
+    /* open file RO */
+    fl = fopen(FULL_FNAME1, "r");
+    print_test_result("test_newlib__fopen_r", fl != NULL);
+    print_test_result("test_newlib__fclose_r", fclose(fl) == 0);
+
+    /* remove file */
     print_test_result("test_newlib__remove", remove(FULL_FNAME2) == 0);
 
     /* append to non existing file */
