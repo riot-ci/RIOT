@@ -34,8 +34,12 @@ extern "C" {
 #define CLOCK_USE_PLL       (1)
 
 #define CLOCK_HSI           (16000000U)
+#ifndef CLOCK_HSE
 #define CLOCK_HSE           (24000000U)
+#endif
+#ifndef CLOCK_LSE
 #define CLOCK_LSE           (1U)
+#endif
 
 #if CLOCK_USE_HSI
 #define CLOCK_CORECLOCK     (CLOCK_HSI)
