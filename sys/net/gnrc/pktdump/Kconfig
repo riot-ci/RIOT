@@ -5,7 +5,7 @@
 # directory for more details.
 #
 menuconfig KCONFIG_MODULE_GNRC_PKTDUMP
-    bool "Configure GNRC_PKTDUMP"
+    bool "Configure GNRC Packet Dump"
     depends on MODULE_GNRC_PKTDUMP
     help
         Configure the GNRC_PKTDUMP using Kconfig.
