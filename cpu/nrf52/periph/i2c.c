@@ -105,9 +105,9 @@ void i2c_init(i2c_t dev)
     bus(dev)->PSEL.SCL = i2c_config[dev].scl;
     bus(dev)->PSEL.SDA = i2c_config[dev].sda;
     /* configure dev clock speed */
-    spi_twi_irq_register_i2c(bus(dev), i2c_isr_handler, (void *)dev);
-
     bus(dev)->FREQUENCY = i2c_config[dev].speed;
+
+    spi_twi_irq_register_i2c(bus(dev), i2c_isr_handler, (void *)dev);
 
     /* re-enable the device. We expect that the device was being acquired before
      * the i2c_init_master() function is called, so it should be enabled when
