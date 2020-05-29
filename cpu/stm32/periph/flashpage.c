@@ -54,6 +54,12 @@ extern void _lock(void);
 extern void _unlock(void);
 extern void _wait_for_pending_operations(void);
 
+#if defined(CPU_FAM_STM32G4)
+#define MAX_PAGES_PER_BANK      (128)
+#else /* CPU_FAM_STM32L4 */
+#define MAX_PAGES_PER_BANK      (256)
+#endif
+
 static void _unlock_flash(void)
 {
     _unlock();
@@ -103,12 +109,11 @@ static void _erase_page(void *page_addr)
       defined(CPU_FAM_STM32G4)
     DEBUG("[flashpage] erase: setting the page address\n");
     uint8_t pn;
-#if (FLASHPAGE_NUMOF <= 256) || defined(CPU_FAM_STM32WB) || \
-    defined(CPU_FAM_STM32G4)
+#if (FLASHPAGE_NUMOF <= MAX_PAGES_PER_BANK) || defined(CPU_FAM_STM32WB)
     pn = (uint8_t)flashpage_page(dst);
 #else
     uint16_t page = flashpage_page(dst);
-    if (page > 255) {
+    if (page > MAX_PAGES_PER_BANK - 1) {
         CNTRL_REG |= FLASH_CR_BKER;
     }
     else {
@@ -230,7 +235,7 @@ void flashpage_write(int page, const void *data)
 #if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1)
     /* STM32L0/L1 only supports word sizes */
     uint32_t *page_addr = flashpage_addr(page);
-#elif defined(CPU_FAM_STM32L4)
+#elif defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32G4)
     uint64_t *page_addr = flashpage_addr(page);
 #else
     /* Default is to support half-word sizes */
