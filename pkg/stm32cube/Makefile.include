@@ -1,4 +1,9 @@
 STM32_VARIANT = $(call uppercase,$(CPU_FAM))
 
+# Add this define to skip the inclusion of the system_stm32xxxx.h header files
+# which are only used for STM32 system includes and not of interest for RIOT.
 CFLAGS += -D__SYSTEM_STM32$(STM32_VARIANT)XX_H
-INCLUDES += -I$(RIOTBASE)/pkg/stm32cube/cache/$(CPU_FAM)/Drivers/CMSIS/Device/ST/STM32$(STM32_VARIANT)xx/Include
+
+STM32CUBE_CACHE_DIR = $(RIOTBASE)/pkg/stm32cube/cache/$(CPU_FAM)
+
+INCLUDES += -I$(STM32CUBE_CACHE_DIR)/Drivers/CMSIS/Device/ST/STM32$(STM32_VARIANT)xx/Include

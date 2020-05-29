@@ -3,7 +3,9 @@ PKG_NAME=stm32cube
 include $(RIOTMAKE)/utils/strings.mk
 STM32_VARIANT = $(call uppercase,$(CPU_FAM))
 
+# The package URL depends on the variant of the target STM32
 PKG_URL=https://github.com/STMicroelectronics/STM32Cube$(STM32_VARIANT)
+
 PKG_VERSION_F0=568c7255f77258c12ac876745f53ce76a682259f  # v1.11.0
 PKG_VERSION_F1=441b2cbdc25aa50437a59c4bffe22b88e78942c9  # v1.8.0
 PKG_VERSION_F2=42fc8bf966c04ef814bb0620dcd3e036e038b4a2  # v1.9.0
@@ -18,4 +20,6 @@ PKG_VERSION_WB=6f39fbe2a5edac79006e4c4dc527c1573713dcfc  # v1.7.0
 PKG_VERSION=$(PKG_VERSION_$(STM32_VARIANT))
 PKG_LICENSE=BSD-3-Clause
 
+# Store the cloned repositories in a cache directory to prevent downloads for
+# each builds
 PKG_BUILDDIR = $(CURDIR)/cache/$(CPU_FAM)
