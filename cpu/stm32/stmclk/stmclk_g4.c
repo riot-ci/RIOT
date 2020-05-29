@@ -51,8 +51,17 @@
 #endif /* CLOCK_USE_PLL */
 
 /** Determine the required flash wait states from the core clock frequency */
-#define FLASH_WAITSTATES            ((CLOCK_AHB - 1) / 16000000U)
-
+#if CLOCK_AHB >= 136
+#define FLASH_WAITSTATES            (FLASH_ACR_LATENCY_4WS) /* 4 ws */
+#elif CLOCK_AHB >= 102
+#define FLASH_WAITSTATES            (FLASH_ACR_LATENCY_3WS) /* 3 ws */
+#elif CLOCK_AHB >= 68
+#define FLASH_WAITSTATES            (FLASH_ACR_LATENCY_2WS) /* 2 ws */
+#elif CLOCK_AHB >= 34
+#define FLASH_WAITSTATES            (FLASH_ACR_LATENCY_1WS) /* 1 ws */
+#else
+#define FLASH_WAITSTATES            (0)                     /* 0 ws */
+#endif
 
 void stmclk_init_sysclk(void)
 {
