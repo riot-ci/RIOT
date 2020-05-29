@@ -8,4 +8,8 @@ ifneq (,$(filter periph_usbdev,$(FEATURES_USED)))
   USEMODULE += xtimer
 endif
 
+# Retrieve vendor CMSIS headers from ST repository on GitHub
+# https://github.com/STMicroelectronics
+USEPKG += stm32cube
+
 include $(RIOTCPU)/cortexm_common/Makefile.dep

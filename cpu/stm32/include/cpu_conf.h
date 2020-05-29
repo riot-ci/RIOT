@@ -24,25 +24,25 @@
 #include "cpu_conf_common.h"
 
 #if CPU_FAM_STM32F0
-#include "vendor/stm32f0xx.h"
+#include "stm32f0xx.h"
 #elif CPU_FAM_STM32F1
-#include "vendor/stm32f1xx.h"
+#include "stm32f1xx.h"
 #elif CPU_FAM_STM32F2
-#include "vendor/stm32f2xx.h"
+#include "stm32f2xx.h"
 #elif CPU_FAM_STM32F3
-#include "vendor/stm32f3xx.h"
+#include "stm32f3xx.h"
 #elif CPU_FAM_STM32F4
-#include "vendor/stm32f4xx.h"
+#include "stm32f4xx.h"
 #elif CPU_FAM_STM32F7
-#include "vendor/stm32f7xx.h"
+#include "stm32f7xx.h"
 #elif CPU_FAM_STM32L0
-#include "vendor/stm32l0xx.h"
+#include "stm32l0xx.h"
 #elif CPU_FAM_STM32L1
-#include "vendor/stm32l1xx.h"
+#include "stm32l1xx.h"
 #elif CPU_FAM_STM32L4
-#include "vendor/stm32l4xx.h"
+#include "stm32l4xx.h"
 #elif CPU_FAM_STM32WB
-#include "vendor/stm32wbxx.h"
+#include "stm32wbxx.h"
 #else
 #error Not supported CPU family
 #endif
