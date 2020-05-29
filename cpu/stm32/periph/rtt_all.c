@@ -67,7 +67,8 @@
 #endif
 #endif
 
-#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB)
+#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
+    defined(CPU_FAM_STM32G4)
 #define IMR_REG             IMR2
 #define EXTI_IMR_BIT        EXTI_IMR2_IM32
 #elif defined(CPU_FAM_STM32L0)
@@ -112,7 +113,7 @@ void rtt_init(void)
      * Needs to be configured to trigger on rising edges. */
     EXTI->IMR_REG |= EXTI_IMR_BIT;
 #if !defined(CPU_FAM_STM32L4) && !defined(CPU_FAM_STM32L0) && \
-    !defined(CPU_FAM_STM32WB)
+    !defined(CPU_FAM_STM32WB) && !defined(CPU_FAM_STM32G4)
     EXTI->FTSR_REG &= ~(EXTI_FTSR_BIT);
     EXTI->RTSR_REG |= EXTI_RTSR_BIT;
     EXTI->PR_REG = EXTI_PR_BIT;
@@ -205,7 +206,7 @@ void isr_lptim1(void)
     }
     LPTIM1->ICR = (LPTIM_ICR_ARRMCF | LPTIM_ICR_CMPMCF);
 #if !defined(CPU_FAM_STM32L4) && !defined(CPU_FAM_STM32L0) && \
-    !defined(CPU_FAM_STM32WB)
+    !defined(CPU_FAM_STM32WB) && !defined(CPU_FAM_STM32G4)
     EXTI->PR_REG = EXTI_PR_BIT; /* only clear the associated bit */
 #endif
 
