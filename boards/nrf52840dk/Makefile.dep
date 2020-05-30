@@ -1,7 +1,7 @@
-ifneq (,$(filter gnrc_netdev_default netdev_default,$(USEMODULE)))
-  ifeq (,$(filter nrfmin,$(USEMODULE)))
-    USEMODULE += nrf802154
-  endif
+USEMODULE += boards_common_nrf52xxdk
+
+ifneq (,$(filter mtd,$(USEMODULE)))
+  USEMODULE += mtd_spi_nor
 endif
 
 include $(RIOTBOARD)/common/nrf52xxxdk/Makefile.dep

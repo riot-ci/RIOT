@@ -110,16 +110,9 @@ static const i2c_conf_t i2c_config[] = {
 /** @} */
 
 /**
- * @brief   RTC configuration
- */
-#define RTC_NUMOF           (1U)
-
-/**
  * @name    RTT configuration
  * @{
  */
-#define RTT_NUMOF           (1U)
-
 #define RTT_MAX_VALUE       (0xFFFFFFFF)
 #define RTT_FREQUENCY       (1U)
 /** @} */
@@ -180,9 +173,6 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = GPIO_PIN(PA, 0),
         .loc = USART_ROUTELOC0_RXLOC_LOC0 |
                USART_ROUTELOC0_TXLOC_LOC0,
-#if EFM32_UART_MODES
-        .mode = UART_MODE_8N1,
-#endif
         .cmu = cmuClock_USART0,
         .irq = USART0_RX_IRQn
     },
@@ -192,9 +182,6 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = GPIO_PIN(PC, 6),
         .loc = USART_ROUTELOC0_RXLOC_LOC11 |
                USART_ROUTELOC0_TXLOC_LOC11,
-#if EFM32_UART_MODES
-        .mode = UART_MODE_8N1,
-#endif
         .cmu = cmuClock_USART1,
         .irq = USART1_RX_IRQn
     },
@@ -204,9 +191,6 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = GPIO_PIN(PD, 10),
         .loc = LEUART_ROUTELOC0_RXLOC_LOC18 |
                LEUART_ROUTELOC0_TXLOC_LOC18,
-#if EFM32_UART_MODES
-        .mode = UART_MODE_8N1,
-#endif
         .cmu = cmuClock_LEUART0,
         .irq = LEUART0_IRQn
     }

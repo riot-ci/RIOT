@@ -21,11 +21,19 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "periph/gpio.h"
+#include "cpu.h"
+#include "arduino_pinmap.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @name    Xtimer configuration
+ * @{
+ */
+#define XTIMER_HZ                   (32768UL)
+/** @} */
 
 /**
  * @name    Macros for controlling the on-board LEDs

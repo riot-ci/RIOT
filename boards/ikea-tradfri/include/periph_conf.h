@@ -48,18 +48,11 @@ extern "C" {
 #endif
 /** @} */
 
-/**
- * @name    RTC configuration
- * @{
- */
-#define RTC_NUMOF           (1U)
-/** @} */
 
 /**
  * @name    RTT configuration
  * @{
  */
-#define RTT_NUMOF           (1U)
 
 #define RTT_MAX_VALUE       (0xFFFFFFFF)
 #define RTT_FREQUENCY       (1U)
@@ -121,9 +114,6 @@ static const uart_conf_t uart_config[] = {
         .tx_pin = GPIO_PIN(PB, 14),
         .loc = USART_ROUTELOC0_RXLOC_LOC9 |
                USART_ROUTELOC0_TXLOC_LOC9,
-#if EFM32_UART_MODES
-        .mode = UART_MODE_8N1,
-#endif
         .cmu = cmuClock_USART0,
         .irq = USART0_RX_IRQn
     }

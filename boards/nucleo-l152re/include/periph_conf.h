@@ -104,8 +104,8 @@ static const uart_conf_t uart_config[] = {
     {
         .dev      = USART1,
         .rcc_mask = RCC_APB2ENR_USART1EN,
-        .rx_pin   = GPIO_PIN(PORT_A, 9),
-        .tx_pin   = GPIO_PIN(PORT_A, 10),
+        .rx_pin   = GPIO_PIN(PORT_A, 10),
+        .tx_pin   = GPIO_PIN(PORT_A, 9),
         .rx_af    = GPIO_AF7,
         .tx_af    = GPIO_AF7,
         .bus      = APB2,
@@ -199,7 +199,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_A, 6),
         .sclk_pin = GPIO_PIN(PORT_A, 5),
         .cs_pin   = GPIO_UNDEF,
-        .af       = GPIO_AF5,
+        .mosi_af  = GPIO_AF5,
+        .miso_af  = GPIO_AF5,
+        .sclk_af  = GPIO_AF5,
+        .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
 #ifdef MODULE_PERIPH_DMA

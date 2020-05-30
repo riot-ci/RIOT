@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: ${TEST_BOARDS_AVAILABLE:="nrf52dk samr21-xpro"}
+: ${TEST_BOARDS_AVAILABLE:="esp32-wroom-32 nrf52dk samr21-xpro"}
 : ${TEST_BOARDS_LLVM_COMPILE:="iotlab-m3 native nrf52dk mulle nucleo-f401re samr21-xpro slstk3402a"}
 
 export RIOT_CI_BUILD=1
@@ -29,7 +29,8 @@ export OPTIONAL_CFLAGS_BLACKLIST="-gz"
 NIGHTLY=${NIGHTLY:-0}
 RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 
-DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E ENABLE_TEST_CACHE -E TEST_HASH"
+DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E ENABLE_TEST_CACHE
+         -E TEST_HASH -E CI_PULL_LABELS"
 
 check_label() {
     local label="${1}"
@@ -168,6 +169,7 @@ get_app_board_toolchain_pairs() {
 
 # use dwqc to create full "appdir board toolchain" compile job list
 get_compile_jobs() {
+    check_label "CI: skip compile test" && return
     get_apps | \
         dwqc ${DWQ_ENV} -s \
         ${DWQ_JOBID:+--subjob} \
@@ -228,7 +230,6 @@ compile() {
     # sanity checks
     [ $# -ne 2 ] && error "$0: compile: invalid parameters (expected \$appdir \$board:\$toolchain)"
     [ ! -d "$appdir" ] && error "$0: compile: error: application directory \"$appdir\" doesn't exist"
-    [ ! -d "boards/$board" ] && error "$0: compile: error: board directory \"boards/$board\" doesn't exist"
 
     # compile
     CCACHE_BASEDIR="$(pwd)" BOARD=$board TOOLCHAIN=$toolchain RIOT_CI_BUILD=1 \
@@ -327,24 +328,13 @@ run_test() {
 
 # execute static tests
 static_tests() {
-    local repo=${CI_BASE_REPO:-https://github.com/RIOT-OS/RIOT}
-    local branch=${CI_BASE_BRANCH:-master}
-
     print_worker
-
-    OUT="$(git remote add upstream $repo 2>&1 && git fetch upstream ${branch}:${branch} 2>&1)"
-    RES=$?
-    if [ $RES -ne 0 ]; then
-        echo "$OUT"
-        exit 1
-    fi
-
-    BUILDTEST_MCU_GROUP=static-tests ./dist/tools/ci/build_and_test.sh
+    ./dist/tools/ci/static_tests.sh
 }
 
 get_non_compile_jobs() {
     [ "$STATIC_TESTS" = "1" ] && \
-        echo "$0 static_tests###{ \"jobdir\" : \"exclusive\" }"
+        echo "$0 static_tests"
 }
 
 get_jobs() {

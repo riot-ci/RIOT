@@ -7,19 +7,6 @@ BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
-                             arduino-mega2560 arduino-nano \
-                             arduino-uno blackpill bluepill calliope-mini \
-                             chronos hifive1 hifive1b i-nucleo-lrwan1 mega-xplained \
-                             microbit msb-430 msb-430h \
-                             nucleo-f031k6 nucleo-f042k6 nucleo-f303k8 \
-                             nucleo-l031k6 nucleo-f030r8 nucleo-f070rb \
-                             nucleo-f072rb nucleo-f103rb nucleo-f302r8 \
-                             nucleo-f334r8 nucleo-l053r8 saml10-xpro \
-                             saml11-xpro spark-core stm32f0discovery \
-                             stm32l0538-disco telosb \
-                             waspmote-pro wsn430-v1_3b wsn430-v1_4 z1
-
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
 USEMODULE += gnrc_netdev_default
@@ -57,7 +44,7 @@ DEVELHELP ?= 1
 
 # Uncomment this to join RPL DODAGs even if DIOs do not contain
 # DODAG Configuration Options (see the doc for more info)
-# CFLAGS += -DGNRC_RPL_DODAG_CONF_OPTIONAL_ON_JOIN
+# CFLAGS += -DCONFIG_GNRC_RPL_DODAG_CONF_OPTIONAL_ON_JOIN
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
@@ -65,4 +52,4 @@ QUIET ?= 1
 include $(RIOTBASE)/Makefile.include
 
 # Set a custom channel if needed
-include $(RIOTMAKE)/default-channel.inc.mk
+include $(RIOTMAKE)/default-radio-settings.inc.mk

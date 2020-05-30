@@ -2,7 +2,7 @@
 This application demonstrates the usage of the emCute (MQTT-SN) module in RIOT.
 
 ## Setup
-For using this example, two prerequisites have to be fullfilled:
+For using this example, two prerequisites have to be fulfilled:
 
 1. You need a running MQTT broker that supports MQTT-SN or a running MQTT-SN
    gateway that is connected to a running MQTT broker
@@ -14,7 +14,7 @@ In general, any MQTT-SN capable broker or broker/gateway setup will do.
 Following a quick instruction on how-to setup the Mosquitto Real Simple Message
 Broker:
 
-1. Get the RSMB here: https://github.com/eclipse/mosquitto.rsmb:
+1. Get the RSMB here: https://github.com/eclipse/mosquitto.rsmb
 ```
 git clone https://github.com/eclipse/mosquitto.rsmb.git
 ```
@@ -58,7 +58,7 @@ single RIOT native instance, we can do the following:
 
 1. Setup `tap` and `tapbr` devices using RIOT's `tapsetup` script:
 ```
-./RIOTDIR/dist/tools/tapsetup/tapsetup
+sudo ./RIOTDIR/dist/tools/tapsetup/tapsetup
 ```
 
 2. Assign a site-global prefix to the `tapbr0` interface (the name could be

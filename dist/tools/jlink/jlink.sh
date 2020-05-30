@@ -50,6 +50,9 @@
 # reset:        triggers a hardware reset of the target board
 #
 #
+# term-rtt:     opens a serial terminal using jlink RTT(reak time transfer)
+#
+#
 # @author       Hauke Peteresen <hauke.petersen@fu-berlin.de>
 
 # Set IMAGE_OFFSET to zero by default.
@@ -68,7 +71,7 @@ _JLINK_IF=SWD
 _JLINK_SPEED=2000
 # default terminal frontend
 _JLINK_TERMPROG=${RIOTTOOLS}/pyterm/pyterm
-_JLINK_TERMFLAGS="-ts 19021"
+_JLINK_TERMFLAGS="-ts 19021 ${PYTERMFLAGS}"
 
 #
 # a couple of tests for certain configuration options
@@ -286,12 +289,12 @@ case "${ACTION}" in
     echo "### Resetting Target ###"
     do_reset "$@"
     ;;
-  term_rtt)
+  term-rtt)
     echo "### Starting RTT terminal ###"
     do_term
     ;;
   *)
-    echo "Usage: $0 {flash|debug|debug-server|reset}"
+    echo "Usage: $0 {flash|debug|debug-server|reset|term-rtt}"
     echo "          flash <binfile>"
     echo "          debug <elffile>"
     ;;

@@ -86,7 +86,6 @@ extern "C" {
 #define LWIP_IPV6               (0)
 #endif /* MODULE_LWIP_IPV6 */
 
-
 #ifdef MODULE_LWIP_NETIF_PPP
 #define PPP_SUPPORT             (1)
 #else  /* MODULE_LWIP_NETIF_PPP */
@@ -129,11 +128,19 @@ extern "C" {
 #define LWIP_UDPLITE            (0)
 #endif /* MODULE_LWIP_UDPLITE */
 
-#if defined(MODULE_LWIP_CONN) || defined(MODULE_LWIP_SOCK)
+#if defined(MODULE_LWIP_SOCK)
 #define LWIP_NETCONN            (1)
 #else
 #define LWIP_NETCONN            (0)
 #endif
+
+#ifndef TCP_LISTEN_BACKLOG
+# if defined(MODULE_LWIP_SOCK_TCP)
+# define TCP_LISTEN_BACKLOG     (1)
+# else
+# define TCP_LISTEN_BACKLOG     (0)
+# endif
+#endif /* TCP_LISTEN_BACKLOG */
 
 #define LWIP_SOCKET             (0)
 
@@ -141,15 +148,8 @@ extern "C" {
 #define MEMP_MEM_MALLOC         (1)
 #define NETIF_MAX_HWADDR_LEN    (GNRC_NETIF_HDR_L2ADDR_MAX_LEN)
 
+#ifndef TCPIP_THREAD_STACKSIZE
 #define TCPIP_THREAD_STACKSIZE  (THREAD_STACKSIZE_DEFAULT)
-
-#if defined(CPU_ESP32) && !defined(DOXYGEN)
-/**
- * In ESP32, the thread that is dealing with hardware interrupts of the WiFi
- * interface has a priority of 1. This thread should have a higher priority
- * than lwIP's TCP/IP thread.
- */
-#define TCPIP_THREAD_PRIO       (2)
 #endif
 
 #define MEM_ALIGNMENT           (4)

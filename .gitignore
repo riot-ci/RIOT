@@ -11,10 +11,13 @@ doc/doxygen/*.tmp
 *bin
 # Build directory
 /build
+# AFL findings
+fuzzing/**/findings/
 # Backup files
 *~
 *.orig
 .*.swp
+\#*\#
 cachegrind.out*
 # Eclipse workspace files
 .project
@@ -68,3 +71,9 @@ results/
 # Clangd compile flags (language server)
 compile_commands.json
 compile_flags.txt
+
+# suit manifest keys
+keys/
+
+# clangd language server
+.clangd/

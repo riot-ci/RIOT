@@ -1,4 +1,5 @@
 ifneq (,$(filter riotboot,$(FEATURES_USED)))
+ifneq (1,$(RIOTBOOT_BUILD))
 
 .PHONY: riotboot/flash riotboot/flash-bootloader riotboot/flash-slot0 riotboot/flash-slot1 riotboot/bootloader/%
 
@@ -13,13 +14,9 @@ BINDIR_APP = $(BINDIR)/$(APPLICATION)
 #
 export SLOT0_OFFSET SLOT0_LEN SLOT1_OFFSET SLOT1_LEN
 
-# Mandatory APP_VER, set to epoch by default, or "0" for CI build
-ifeq (1, RIOT_CI_BUILD)
-  APP_VER ?= 0
-else
-  EPOCH := $(shell date +%s)
-  APP_VER ?= $(EPOCH)
-endif
+# Mandatory APP_VER, set to epoch by default
+EPOCH := $(shell date +%s)
+APP_VER ?= $(EPOCH)
 
 # Final target for slot 0 with riot_hdr
 SLOT0_RIOT_BIN = $(BINDIR_APP)-slot0.$(APP_VER).riot.bin
@@ -49,9 +46,7 @@ SLOT_RIOT_ELFS = $(BINDIR_APP)-slot0.elf $(BINDIR_APP)-slot1.elf
 # ensure both slot elf files are always linked
 # this ensures that both "make test" and "make test-murdock" can rely on them
 # being present without having to trigger re-compilation.
-ifneq (1, $(RIOTNOLINK))
-link: $(SLOT_RIOT_ELFS)
-endif
+BUILD_FILES += $(SLOT_RIOT_ELFS)
 
 # Create binary target with RIOT header
 $(SLOT_RIOT_BINS): %.$(APP_VER).riot.bin: %.hdr %.bin
@@ -83,8 +78,9 @@ riotboot: $(SLOT_RIOT_BINS)
 riotboot/flash-bootloader: riotboot/bootloader/flash
 riotboot/bootloader/%:
 	$(Q)/usr/bin/env -i \
-		QUIET=$(QUIET)\
-		PATH=$(PATH) BOARD=$(BOARD) DEBUG_ADAPTER_ID=$(DEBUG_ADAPTER_ID)\
+		QUIET=$(QUIET) PATH=$(PATH)\
+		EXTERNAL_BOARD_DIRS="$(EXTERNAL_BOARD_DIRS)" BOARD=$(BOARD)\
+		DEBUG_ADAPTER_ID=$(DEBUG_ADAPTER_ID)\
 			$(MAKE) --no-print-directory -C $(RIOTBOOT_DIR) $*
 
 # Generate a binary file from the bootloader which fills all the
@@ -150,9 +146,15 @@ riotboot/flash: riotboot/flash-slot0 riotboot/flash-bootloader
 # It also makes 'flash' and 'flash-only' work without specific command.
 FLASHFILE = $(RIOTBOOT_EXTENDED_BIN)
 
+# include suit targets
+ifneq (,$(filter suit, $(USEMODULE)))
+  include $(RIOTMAKE)/suit.inc.mk
+endif
+
 else
 riotboot:
 	$(Q)echo "error: riotboot feature not selected! (try FEATURES_REQUIRED += riotboot)"
 	$(Q)false
 
+endif # (1,$(RIOTBOOT_BUILD))
 endif # (,$(filter riotboot,$(FEATURES_USED)))

@@ -44,6 +44,8 @@ extern "C" {
 #define COAP_OPT_LOCATION_QUERY (20)
 #define COAP_OPT_BLOCK2         (23)
 #define COAP_OPT_BLOCK1         (27)
+#define COAP_OPT_PROXY_URI      (35)
+#define COAP_OPT_PROXY_SCHEME   (39)
 /** @} */
 
 /**
@@ -128,19 +130,6 @@ extern "C" {
 /** @} */
 
 /**
- * @name    Content types
- * @deprecated  Deprecated in favour of [COAP_FORMAT_](@ref net_coap_format)
- *              style defines
- * @{
- */
-#define COAP_CT_LINK_FORMAT     (40)
-#define COAP_CT_XML             (41)
-#define COAP_CT_OCTET_STREAM    (42)
-#define COAP_CT_EXI             (47)
-#define COAP_CT_JSON            (50)
-/** @} */
-
-/**
  * @name    Content-Format option codes
  * @anchor  net_coap_format
  * @{
@@ -191,36 +180,29 @@ extern "C" {
  * This value is for the response to the *initial* confirmable message. The
  * timeout doubles for subsequent retries. To avoid synchronization of resends
  * across hosts, the actual timeout is chosen randomly between
- * @ref COAP_ACK_TIMEOUT and (@ref COAP_ACK_TIMEOUT * @ref COAP_RANDOM_FACTOR).
+ * @ref CONFIG_COAP_ACK_TIMEOUT and
+ * (@ref CONFIG_COAP_ACK_TIMEOUT * @ref CONFIG_COAP_RANDOM_FACTOR_1000 / 1000).
  */
-#ifndef COAP_ACK_TIMEOUT
-#define COAP_ACK_TIMEOUT        (2U)
-#endif
-
-/** @brief   Used to calculate upper bound for timeout; see @ref COAP_ACK_TIMEOUT */
-#ifndef COAP_RANDOM_FACTOR
-#define COAP_RANDOM_FACTOR      (1.5)
+#ifndef CONFIG_COAP_ACK_TIMEOUT
+#define CONFIG_COAP_ACK_TIMEOUT        (2U)
 #endif
 
 /**
- * @brief   Approximation for maximum variation for confirmable timeout
+ * @brief   Used to calculate upper bound for timeout
  *
- * Must be an integer, defined as:
+ * This represents the `ACK_RANDOM_FACTOR`
+ * ([RFC 7252, section 4.2](https://tools.ietf.org/html/rfc7252#section-4.2))
+ * multiplied by 1000, to avoid floating point arithmetic.
  *
- *     (COAP_ACK_TIMEOUT * COAP_RANDOM_FACTOR) - COAP_ACK_TIMEOUT
- *
- * Like @ref COAP_ACK_TIMEOUT, this value is valid for the initial confirmable
- * message, and doubles for subsequent retries.
- *
- * This parameter is nanocoap-specific, and is not defined in RFC 7252.
+ * See @ref CONFIG_COAP_ACK_TIMEOUT
  */
-#ifndef COAP_ACK_VARIANCE
-#define COAP_ACK_VARIANCE       (1U)
+#ifndef CONFIG_COAP_RANDOM_FACTOR_1000
+#define CONFIG_COAP_RANDOM_FACTOR_1000      (1500)
 #endif
 
 /** @brief   Maximum number of retransmissions for a confirmable request */
-#ifndef COAP_MAX_RETRANSMIT
-#define COAP_MAX_RETRANSMIT     (4)
+#ifndef CONFIG_COAP_MAX_RETRANSMIT
+#define CONFIG_COAP_MAX_RETRANSMIT     (4)
 #endif
 /** @} */
 /** @} */

@@ -13,7 +13,7 @@ from testrunner import run
 
 # We test only up to 10ms, with smaller times mcu doesn't have time to
 # print system time before resetting
-reset_times_ms = [1e2, 5e2, 1e3, 5e3]
+reset_times_ms = [128, 512, 1024, 8192]
 
 # We don't check for accuracy, only order of magnitude. Some MCU use an
 # an internal un-calibrated clock as reference which can deviate in
@@ -27,7 +27,7 @@ def get_reset_time(child):
         start = time.time()
         timeout = 10  # seconds
         while time.time() < start + timeout:
-            child.expect(u"reset time: (\d+) us", timeout=1)
+            child.expect(r"reset time: (\d+) us", timeout=1)
             reset_time = int(child.match.group(1))
         else:
             # timeout
@@ -37,19 +37,22 @@ def get_reset_time(child):
 
 
 def testfunc(child):
+    child.expect_exact(">")
     child.sendline("range")
-    child.expect(u"lower_bound: (\d+) upper_bound: (\d+) ",
+    child.expect(r"lower_bound: (\d+) upper_bound: (\d+)\s*\r\n",
                  timeout=1)
     wdt_lower_bound = int(child.match.group(1))
     wdt_upper_bound = int(child.match.group(2))
 
     for rst_time in reset_times_ms:
+        child.expect_exact(">")
         child.sendline("setup 0 {}".format(rst_time))
         if rst_time < wdt_lower_bound or rst_time > wdt_upper_bound:
             child.expect_exact("invalid time, see \"range\"", timeout=1)
         else:
+            child.expect_exact(">")
             child.sendline("startloop")
-            child.expect(u"start time: (\d+) us", timeout=1)
+            child.expect(r"start time: (\d+) us", timeout=1)
             start_time_us = int(child.match.group(1))
             reset_time_us = get_reset_time(child)
             wdt_reset_time = (reset_time_us - start_time_us) / 1e3

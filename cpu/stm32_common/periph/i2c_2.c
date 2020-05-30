@@ -34,6 +34,7 @@
  * @}
  */
 
+#include <assert.h>
 #include <stdint.h>
 #include <errno.h>
 
@@ -195,7 +196,7 @@ int i2c_acquire(i2c_t dev)
     return 0;
 }
 
-int i2c_release(i2c_t dev)
+void i2c_release(i2c_t dev)
 {
     assert(dev < I2C_NUMOF);
 
@@ -207,7 +208,6 @@ int i2c_release(i2c_t dev)
 #endif
 
     mutex_unlock(&locks[dev]);
-    return 0;
 }
 
 int i2c_read_bytes(i2c_t dev, uint16_t address, void *data, size_t length,
@@ -218,6 +218,15 @@ int i2c_read_bytes(i2c_t dev, uint16_t address, void *data, size_t length,
     I2C_TypeDef *i2c = i2c_config[dev].dev;
     DEBUG("[i2c] read_bytes: Starting\n");
 
+    /* Do not support repeated start reading
+     * The repeated start read requires the bus to be busy (I2C_SR2_BUSY == 1)
+     * the previous R/W state to be a read (I2C_SR2_TRA == 0)
+     * and for the command not to be split frame (I2C_NOSTART == 0)
+    */
+    if (((i2c->SR2 & (I2C_SR2_BUSY | I2C_SR2_TRA)) == I2C_SR2_BUSY) &&
+        !(flags & I2C_NOSTART)) {
+        return -EOPNOTSUPP;
+    }
     int ret = _start(i2c, (address << 1) | I2C_FLAG_READ, flags, length);
     if (ret < 0) {
         if (ret == -ETIMEDOUT) {
@@ -427,7 +436,7 @@ static inline void irq_handler(i2c_t dev)
     assert(i2c != NULL);
 
     unsigned state = i2c->SR1;
-    DEBUG("\n\n### I2C ERROR OCCURED ###\n");
+    DEBUG("\n\n### I2C ERROR OCCURRED ###\n");
     DEBUG("status: %08x\n", state);
     if (state & I2C_SR1_OVR) {
         DEBUG("OVR\n");

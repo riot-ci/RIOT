@@ -32,8 +32,6 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define EXTERNAL_SPI 0U
-#define CC3100_SPI 1U
 #define XTAL_CLK 40000000
 #define PIN_MODE_SPI 0x00000007
 #define SPI_CS_ENABLE 0x00000001
@@ -109,8 +107,7 @@ void spi_reset(spi_t bus)
     dev->sys_conf |= MCSPI_SYSCONFIG_SOFTRESET;
 
     /* wait for reset */
-    while (!((dev->sys_status) & MCSPI_SYSSTATUS_RESETDONE)) {
-    }
+    while (!((dev->sys_status) & MCSPI_SYSSTATUS_RESETDONE)) {}
 
     /* enable spi */
     dev->ch0_ctrl &= ~MCSPI_CH0CTRL_EN;
@@ -164,23 +161,23 @@ void _spi_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 
 void spi_init(spi_t bus)
 {
-    /* assert(bus >= SPI_NUMOF); */
     mutex_init(&locks[bus]);
 
-    /* CC3100 module does not require pin config */
-    if (bus != CC3100_SPI) {
+    /* ignore pin configuration if MISO and MOSI are zero */
+    /* on the CC3200 platform this is used by the CC3200-launchxl board */
+    /* since the NWP SPI pins are configured from the NWP and not the CC3200 itself */
+    if (spi_config[bus].config.pins.miso != 0 &&
+        spi_config[bus].config.pins.mosi != 0) {
         /* trigger pin initialization */
         spi_init_pins(bus);
     }
 
-    /* enable clock */
-    switch (bus) {
-    case EXTERNAL_SPI:
+    /* enable/configure SPI clock */
+    if (spi(bus) == GSPI_BASE) {
         ARCM->MCSPI_A1.clk_gating |= PRCM_RUN_MODE_CLK;
-        break;
-    case CC3100_SPI:
+    }
+    else if (spi(bus) == LSPI_BASE) {
         ARCM->MCSPI_A2.clk_gating |= PRCM_RUN_MODE_CLK | PRCM_SLP_MODE_CLK;
-        break;
     }
 
     /* reset spi for the changes to take effect */
@@ -233,7 +230,8 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out,
     spi(bus)->ch0_conf |= MCSPI_CH0CONF_FORCE;
 
     /* perform transfer */
-    if (ROM_SPITransfer((uint32_t)spi(bus), (uint8_t *)out, (uint8_t *)in, len,
+    if (ROM_SPITransfer((uint32_t)spi(bus), (uint8_t *)out, (uint8_t *)in,
+                        len,
                         0) != SPI_OK) {
         DEBUG("SPI: Transfer failed \n");
         /* check that len and word length combination is valid */

@@ -2,8 +2,6 @@ DEVELHELP = 0
 
 include ../Makefile.tests_common
 
-BOARD_INSUFFICIENT_MEMORY := blackpill bluepill
-
 USEMODULE += embunit
 USEMODULE += l2util
 
