@@ -66,6 +66,49 @@ static const uart_conf_t uart_config[] = {
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
+/**
+ * @name   SPI configuration
+ *
+ * @note    The spi_divtable is auto-generated from
+ *          `cpu/stm32_common/dist/spi_divtable/spi_divtable.c`
+ * @{
+ */
+static const uint8_t spi_divtable[2][5] = {
+    {       /* for APB1 @ 80000000Hz */
+        7,  /* -> 312500Hz */
+        7,  /* -> 312500Hz */
+        5,  /* -> 1250000Hz */
+        3,  /* -> 5000000Hz */
+        2   /* -> 10000000Hz */
+    },
+    {       /* for APB2 @ 80000000Hz */
+        7,  /* -> 312500Hz */
+        7,  /* -> 312500Hz */
+        5,  /* -> 1250000Hz */
+        3,  /* -> 5000000Hz */
+        2   /* -> 10000000Hz */
+    }
+};
+
+static const spi_conf_t spi_config[] = {
+    {
+        .dev            = SPI1,
+        .mosi_pin       = GPIO_PIN(PORT_A, 7),  /* Arduino D11 */
+        .miso_pin       = GPIO_PIN(PORT_A, 6),  /* Arduino D12 */
+        .sclk_pin       = GPIO_PIN(PORT_A, 5),  /* Arduino D13 */
+        .cs_pin         = GPIO_UNDEF,
+        .mosi_af        = GPIO_AF5,
+        .miso_af        = GPIO_AF5,
+        .sclk_af        = GPIO_AF5,
+        .cs_af          = GPIO_AF5,
+        .rccmask        = RCC_APB2ENR_SPI1EN,
+        .apbbus         = APB2,
+    },
+};
+
+#define SPI_NUMOF           ARRAY_SIZE(spi_config)
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
