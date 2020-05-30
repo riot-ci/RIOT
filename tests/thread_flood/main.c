@@ -39,7 +39,15 @@ int main(void)
 {
     kernel_pid_t thr_id = KERNEL_PID_UNDEF;
     unsigned thr_cnt = 0;
+    unsigned thr_in_use = 0;
 
+    for (kernel_pid_t ix = KERNEL_PID_FIRST; ix <= KERNEL_PID_LAST; ix++) {
+        volatile thread_t *thread;
+        thread = thread_get(ix);
+        if (thread) {
+            thr_in_use++;
+        }
+    }
     puts("[START] Spawning threads");
     do {
         thr_id = thread_create(
@@ -54,12 +62,11 @@ int main(void)
     /* decrease by 1 because last thread_create failed */
     --thr_cnt;
 
-    /* expect (MAXTHREADS - 2), as main and idle thread take a PID each */
-    if (thr_cnt == (MAXTHREADS - 2)) {
+    if (thr_cnt == (MAXTHREADS - thr_in_use)) {
         printf("[SUCCESS]");
     }
     else {
-        printf("[ERROR] expected %u,", (MAXTHREADS - 2));
+        printf("[ERROR] expected %u,", (MAXTHREADS - thr_in_use));
     }
     printf(" created %u\n", thr_cnt);
 
