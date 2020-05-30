@@ -56,6 +56,19 @@
 #define EXTI_REG_IMR        (EXTI->IMR)
 #endif
 
+/* map some RTC register names and bitfield */
+#if defined(CPU_FAM_STM32G4)
+#define RTC_REG_ISR         RTC->ICSR
+
+#define RTC_ISR_RSF         RTC_ICSR_RSF
+#define RTC_ISR_INIT        RTC_ICSR_INIT
+#define RTC_ISR_INITF       RTC_ICSR_INITF
+#define RTC_ISR_ALRAWF      RTC_ICSR_ALRAWF
+#define RTC_ISR_ALRAF       RTC_SR_ALRAF
+#else
+#define RTC_REG_ISR         RTC->ISR
+#endif
+
 /* interrupt line name mapping */
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0)
 #define IRQN                (RTC_IRQn)
@@ -193,15 +206,15 @@ static inline void rtc_unlock(void)
     RTC->WPR = WPK1;
     RTC->WPR = WPK2;
     /* enter RTC init mode */
-    RTC->ISR |= RTC_ISR_INIT;
-    while (!(RTC->ISR & RTC_ISR_INITF)) {}
+    RTC_REG_ISR |= RTC_ISR_INIT;
+    while (!(RTC_REG_ISR & RTC_ISR_INITF)) {}
 }
 
 static inline void rtc_lock(void)
 {
     /* exit RTC init mode */
-    RTC->ISR &= ~RTC_ISR_INIT;
-    while (RTC->ISR & RTC_ISR_INITF) {}
+    RTC_REG_ISR &= ~RTC_ISR_INIT;
+    while (RTC_REG_ISR & RTC_ISR_INITF) {}
     /* lock RTC device */
     RTC->WPR = 0xff;
     /* disable backup clock domain */
@@ -238,7 +251,7 @@ void rtc_init(void)
     rtc_unlock();
     /* reset configuration */
     RTC->CR = 0;
-    RTC->ISR = RTC_ISR_INIT;
+    RTC_REG_ISR = RTC_ISR_INIT;
     /* configure prescaler (RTC PRER) */
     RTC->PRER = (PRE_SYNC | (PRE_ASYNC << 16));
     rtc_lock();
@@ -267,7 +280,7 @@ int rtc_set_time(struct tm *time)
                val2bcd(time->tm_min,  RTC_TR_MNU_Pos, TR_M_MASK) |
                val2bcd(time->tm_sec,  RTC_TR_SU_Pos, TR_S_MASK));
     rtc_lock();
-    while (!(RTC->ISR & RTC_ISR_RSF)) {}
+    while (!(RTC_REG_ISR & RTC_ISR_RSF)) {}
 
     return 0;
 }
@@ -308,7 +321,7 @@ int rtc_set_alarm(struct tm *time, rtc_alarm_cb_t cb, void *arg)
                    val2bcd(time->tm_sec,  RTC_ALRMAR_SU_Pos, ALRM_S_MASK));
 
     /* Enable Alarm A */
-    RTC->ISR &= ~(RTC_ISR_ALRAF);
+    RTC_REG_ISR &= ~(RTC_ISR_ALRAF);
     RTC->CR |= (RTC_CR_ALRAE | RTC_CR_ALRAIE);
 
     rtc_lock();
@@ -334,7 +347,7 @@ int rtc_get_alarm(struct tm *time)
 void rtc_clear_alarm(void)
 {
     RTC->CR &= ~(RTC_CR_ALRAE | RTC_CR_ALRAIE);
-    while (!(RTC->ISR & RTC_ISR_ALRAWF)) {}
+    while (!(RTC_REG_ISR & RTC_ISR_ALRAWF)) {}
 
     isr_ctx.cb = NULL;
     isr_ctx.arg = NULL;
@@ -356,11 +369,11 @@ void rtc_poweroff(void)
 
 void ISR_NAME(void)
 {
-    if (RTC->ISR & RTC_ISR_ALRAF) {
+    if (RTC_REG_ISR & RTC_ISR_ALRAF) {
         if (isr_ctx.cb != NULL) {
             isr_ctx.cb(isr_ctx.arg);
         }
-        RTC->ISR &= ~RTC_ISR_ALRAF;
+        RTC_REG_ISR &= ~RTC_ISR_ALRAF;
     }
     EXTI_REG_PR = EXTI_PR_BIT; /* only clear the associated bit */
     cortexm_isr_end();
