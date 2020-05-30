@@ -23,7 +23,9 @@
 
 #include "cpu_conf_common.h"
 
-#if CPU_FAM_STM32F0
+#if defined(CPU_LINE_STM32F030x4)
+#include "vendor/stm32f030x4.h"
+#elif CPU_FAM_STM32F0
 #include "stm32f0xx.h"
 #elif CPU_FAM_STM32F1
 #include "stm32f1xx.h"
