@@ -1,0 +1,5 @@
+/**
+ * @defgroup pkg_stm32cube STM32 Cube
+ * @ingroup  pkg
+ * @brief    Provides STM32 CMSIS headers from STM32Cube
+ */
