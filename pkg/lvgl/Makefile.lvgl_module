@@ -1,3 +1,8 @@
 CFLAGS += -Wno-unused-parameter
+CFLAGS += -Wno-sign-compare
+
+ifeq (llvm,$(TOOLCHAIN))
+  CFLAGS += -Wno-missing-braces
+endif
 
 include $(RIOTBASE)/Makefile.base
