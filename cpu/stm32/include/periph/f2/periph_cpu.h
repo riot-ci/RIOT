@@ -26,6 +26,12 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
+ */
+#define STM32_LOADER_ADDR   (0x1FFF0000)
+
+/**
  * @brief   Available number of ADC devices
  */
 #define ADC_DEVS            (2U)
