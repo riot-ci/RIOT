@@ -176,12 +176,22 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 #ifdef MODULE_PERIPH_DMA
     if (_use_dma(&spi_config[bus])) {
         cr2_extra_settings |= SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN;
+
         dma_acquire(spi_config[bus].tx_dma);
-        dma_setup(spi_config[bus].tx_dma, spi_config[bus].tx_dma_chan,
-                  (uint32_t*)&(dev(bus)->DR), DMA_MEM_TO_PERIPH, 0, DMA_DATA_WIDTH_BYTE);
+        dma_setup(spi_config[bus].tx_dma,
+                  spi_config[bus].tx_dma_chan,
+                  (uint32_t*)&(dev(bus)->DR),
+                  DMA_MEM_TO_PERIPH,
+                  0,
+                  DMA_DATA_WIDTH_BYTE);
+
         dma_acquire(spi_config[bus].rx_dma);
-        dma_setup(spi_config[bus].rx_dma, spi_config[bus].rx_dma_chan,
-                  (uint32_t*)&(dev(bus)->DR), DMA_PERIPH_TO_MEM, 0, DMA_DATA_WIDTH_BYTE);
+        dma_setup(spi_config[bus].rx_dma,
+                  spi_config[bus].rx_dma_chan,
+                  (uint32_t*)&(dev(bus)->DR),
+                  DMA_PERIPH_TO_MEM,
+                  0,
+                  DMA_DATA_WIDTH_BYTE);
     }
 #endif
     dev(bus)->CR1 = cr1_settings;
