@@ -33,7 +33,6 @@
 
 #define SPI_BUS     (dev->params.spi)
 #define SPI_PIN_CS  (dev->params.pin_cs)
-#define DUMMY       NULL
 
 #define NRF24L01P_NG_REG_MAX_WIDTH          NRF24L01P_NG_MAX_ADDR_WIDTH
 
@@ -89,7 +88,7 @@ uint8_t nrf24l01p_ng_read_reg(const nrf24l01p_ng_t *dev, uint8_t reg,
 {
     uint8_t cmd = NRF24L01P_NG_CMD_R_REGISTER(reg);
     uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, DUMMY, dest, len);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, NULL, dest, len);
     if (len > 1) {
         _swap_bytes(dest, len);
     }
@@ -103,15 +102,15 @@ uint8_t nrf24l01p_ng_write_reg(const nrf24l01p_ng_t *dev, uint8_t reg,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_REG_MAX_WIDTH);
-        uint8_t lsrc[len];
+        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, NULL, len);
     }
     else {
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, NULL, len);
     }
     return status;
 }
@@ -135,15 +134,15 @@ uint8_t nrf24l01p_ng_write_tx_payload(const nrf24l01p_ng_t *dev,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
+        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, NULL, len);
     }
     else {
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, NULL, len);
     }
     return status;
 }
@@ -170,7 +169,7 @@ uint8_t nrf24l01p_ng_read_rx_pl_width(const nrf24l01p_ng_t *dev, uint8_t *dest)
 {
     uint8_t cmd = NRF24L01P_NG_CMD_R_RX_PL_WID;
     uint8_t status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, DUMMY, dest, 1);
+    spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, NULL, dest, 1);
     return status;
 }
 
@@ -181,15 +180,15 @@ uint8_t nrf24l01p_ng_write_ack_pl(const nrf24l01p_ng_t *dev, const void *src,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
+        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, NULL, len);
     }
     else {
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, NULL, len);
     }
     return status;
 }
@@ -201,15 +200,15 @@ uint8_t nrf24l01p_ng_write_tx_pl_no_ack(const nrf24l01p_ng_t *dev,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[len];
+        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, lsrc, NULL, len);
     }
     else {
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
-        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, DUMMY, len);
+        spi_transfer_bytes(SPI_BUS, SPI_PIN_CS, false, src, NULL, len);
     }
     return status;
 }
