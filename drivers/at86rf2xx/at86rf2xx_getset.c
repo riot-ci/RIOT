@@ -212,18 +212,17 @@ void at86rf2xx_set_page(at86rf2xx_t *dev, uint8_t page)
 
 uint8_t at86rf2xx_get_phy_mode(at86rf2xx_t *dev)
 {
-#ifdef MODULE_AT86RF212B
-    uint8_t ctrl2;
-    ctrl2 = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_CTRL_2);
+    if (!IS_USED(MODULE_AT86RF212B)) {
+        return IEEE802154_PHY_OQPSK;
+    }
+
+    uint8_t ctrl2 = at86rf2xx_reg_read(dev, AT86RF2XX_REG__TRX_CTRL_2);
+
     if (ctrl2 & AT86RF2XX_TRX_CTRL_2_MASK__BPSK_OQPSK) {
         return IEEE802154_PHY_OQPSK;
     } else {
         return IEEE802154_PHY_BPSK;
     }
-#else
-    (void) dev;
-    return IEEE802154_PHY_OQPSK;
-#endif
 }
 
 int at86rf2xx_set_rate(at86rf2xx_t *dev, uint8_t rate)
