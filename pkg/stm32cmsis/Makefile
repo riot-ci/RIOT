@@ -29,7 +29,4 @@ endif
 
 include $(RIOTBASE)/pkg/pkg.mk
 
-all: stm32cmsis
-
-stm32cmsis:
-	"$(MAKE)" -C $(RIOTBASE)/pkg/$(PKG_NAME) -f $(CURDIR)/$(PKG_NAME).mk
+all:
