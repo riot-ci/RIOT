@@ -24,6 +24,14 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
+ */
+#if defined(CPU_LINE_STM32F103xB) || defined(CPU_LINE_STM32F103xE)
+#define STM32_LOADER_ADDR   (0x1FFFF000)
+#endif
+
+/**
  * @name    Real time counter configuration
  * @{
  */
