@@ -283,7 +283,7 @@ nrf24l01p_ng_crc_t nrf24l01p_ng_valtoe_crc(uint8_t crc_len)
 static inline
 int8_t nrf24l01p_ng_etoval_tx_power(nrf24l01p_ng_tx_power_t power)
 {
-    if (power <= NRF24L01P_NG_TX_POWER_MINUS_18DBM) {
+    if (power == NRF24L01P_NG_TX_POWER_MINUS_18DBM) {
         return -18;
     }
     if (power == NRF24L01P_NG_TX_POWER_MINUS_12DBM) {
@@ -327,7 +327,7 @@ nrf24l01p_ng_tx_power_t nrf24l01p_ng_valtoe_tx_power(int16_t power)
 static inline
 uint16_t nrf24l01p_ng_etoval_rfdr(nrf24l01p_ng_rfdr_t data_rate)
 {
-    if (data_rate <= NRF24L01P_NG_RF_DR_1MBPS) {
+    if (data_rate == NRF24L01P_NG_RF_DR_1MBPS) {
         return 1000;
     }
     if (data_rate == NRF24L01P_NG_RF_DR_250KBPS) {
