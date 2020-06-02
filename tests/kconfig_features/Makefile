@@ -2,6 +2,7 @@ include ../Makefile.tests_common
 
 BOARD_WHITELIST += \
 	arduino-mkr1000 \
+	arduino-mkrfox1200 \
 	samr21-xpro \
 	#
 
