@@ -6,6 +6,7 @@ BOARD_WHITELIST += \
 	arduino-mkrwan1300 \
 	arduino-mkrzero \
 	arduino-zero \
+	feather-m0 \
 	samr21-xpro \
 	#
 
