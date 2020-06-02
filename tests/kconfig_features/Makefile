@@ -1,6 +1,9 @@
 include ../Makefile.tests_common
 
-BOARD_WHITELIST += samr21-xpro
+BOARD_WHITELIST += \
+	arduino-mkr1000 \
+	samr21-xpro \
+	#
 
 kconfig-features:
 	@bash -c 'diff <($(MAKE) info-features-provided) \
