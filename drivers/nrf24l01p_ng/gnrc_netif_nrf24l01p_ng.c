@@ -118,7 +118,7 @@ gnrc_pktsnip_t *_nrf24l01p_ng_adpt_recv(gnrc_netif_t *netif)
         return NULL;
     }
     netif_hdr = (gnrc_netif_hdr_t *)snip->data;
-    uint8_t bcast_addr[] = NRF24L01P_NG_BROADCAST_ADDR;
+    const uint8_t bcast_addr[] = NRF24L01P_NG_BROADCAST_ADDR;
     if (!memcmp(dst_addr, bcast_addr, sizeof(dst_addr))) {
         netif_hdr->flags |= GNRC_NETIF_HDR_FLAGS_BROADCAST;
     }

@@ -378,7 +378,7 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
     }
     nrf24l01p_ng_t *dev = (nrf24l01p_ng_t *)netdev;
     uint8_t pl_width = 0;
-    uint8_t bcast_addr[] = NRF24L01P_NG_BROADCAST_ADDR;
+    const uint8_t bcast_addr[] = NRF24L01P_NG_BROADCAST_ADDR;
     uint8_t payload[NRF24L01P_NG_MAX_PAYLOAD_WIDTH];
     nrf24l01p_ng_acquire(dev);
     uint8_t fifo_status;
@@ -467,6 +467,7 @@ void _isr(netdev_t *netdev)
     if (status & NRF24L01P_NG_FLG_TX_DS) {
         _isr_tx_ds(dev);
     }
+
     /* clear interrupt flags */
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
 
