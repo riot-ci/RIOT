@@ -11,6 +11,7 @@ BOARD_WHITELIST += \
 	samd21-xpro \
 	samr21-xpro \
 	sensebox_samd21 \
+	serpente \
 	#
 
 kconfig-features:
