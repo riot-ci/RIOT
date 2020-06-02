@@ -7,6 +7,7 @@ BOARD_WHITELIST += \
 	arduino-mkrzero \
 	arduino-zero \
 	feather-m0 \
+	hamilton \
 	samr21-xpro \
 	#
 
