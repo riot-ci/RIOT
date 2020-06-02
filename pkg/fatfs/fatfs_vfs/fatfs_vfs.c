@@ -154,6 +154,9 @@ static int _open(vfs_file_t *filp, const char *name, int flags, mode_t mode,
         else if ((flags & O_TRUNC) == O_TRUNC) {
             fatfs_flags |= FA_CREATE_ALWAYS;
         }
+        else {
+            fatfs_flags |= FA_OPEN_ALWAYS;
+        }
     }
     else {
         fatfs_flags |= FA_OPEN_EXISTING;
