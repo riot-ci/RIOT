@@ -10,6 +10,7 @@ BOARD_WHITELIST += \
 	hamilton \
 	samd21-xpro \
 	samr21-xpro \
+	sensebox_samd21 \
 	#
 
 kconfig-features:
