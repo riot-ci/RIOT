@@ -14,6 +14,7 @@ BOARD_WHITELIST += \
 	serpente \
 	sodaq-autonomo \
 	sodaq-explorer \
+	sodaq-one \
 	#
 
 kconfig-features:
