@@ -31,15 +31,13 @@
 
 static void _restore_address(const nrf24l01p_ng_t *dev)
 {
-    uint8_t setup_aw =
-        NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(NRF24L01P_NG_ADDR_WIDTH));
     uint8_t addr_buffer[NRF24L01P_NG_ADDR_WIDTH];
-
     memcpy(addr_buffer, dev->urxaddr.rxaddrpx.rx_p0,
            NRF24L01P_NG_ADDR_WIDTH);
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_P0, addr_buffer,
                            NRF24L01P_NG_ADDR_WIDTH);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_SETUP_AW, &setup_aw, 1);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_SETUP_AW,
+        NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(NRF24L01P_NG_ADDR_WIDTH)));
 }
 
 void nrf24l01p_ng_transition_to_power_down(nrf24l01p_ng_t *dev)
@@ -67,6 +65,7 @@ void nrf24l01p_ng_transition_to_standby_1(nrf24l01p_ng_t *dev)
             break;
         case NRF24L01P_NG_STATE_STANDBY_2:
         case NRF24L01P_NG_STATE_TX_MODE:
+            gpio_clear(dev->params.pin_ce);
             _restore_address(dev);
             /* TX finished with one packet */
             break;
@@ -100,9 +99,8 @@ void nrf24l01p_ng_transition_to_rx_mode(nrf24l01p_ng_t *dev)
 {
     DEBUG_PUTS("[nrf24l01p_ng] transition to RX_MODE");
     assert(dev->state & NRF24L01P_NG_TRANSITION_TO_RX_MODE);
-    uint8_t fifo_status;
-    nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS, &fifo_status, 1);
-    if (fifo_status & NRF24L01P_NG_FLG_RX_FULL) {
+    if (nrf24l01p_ng_reg8_read(dev, NRF24L01P_NG_REG_FIFO_STATUS) &
+        NRF24L01P_NG_FLG_RX_FULL) {
         nrf24l01p_ng_flush_rx(dev);
     }
     uint8_t config = NRF24L01P_NG_FLG_PRIM_RX;

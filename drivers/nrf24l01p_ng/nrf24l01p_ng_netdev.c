@@ -79,9 +79,8 @@ void _trigger_send(const nrf24l01p_ng_t *dev)
 static
 int _assert_awake(const nrf24l01p_ng_t *dev)
 {
-    uint8_t config = 0;
-    nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_CONFIG, &config, 1);
-    return config & NRF24L01P_NG_FLG_PWR_UP;
+    return nrf24l01p_ng_reg8_read(dev, NRF24L01P_NG_REG_CONFIG) &
+           NRF24L01P_NG_FLG_PWR_UP;
 }
 
 static
@@ -153,14 +152,11 @@ void _isr_rx_dr(nrf24l01p_ng_t *dev)
            dev->state == NRF24L01P_NG_STATE_RX_MODE   ||
            dev->state == NRF24L01P_NG_STATE_TX_MODE);
     DEBUG_PUTS("[nrf24l01p_ng] IRS RX_DR");
-    uint8_t fifo_status;
-    nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS, &fifo_status, 1);
     /* read all RX data */
-    while (!(fifo_status & NRF24L01P_NG_FLG_RX_EMPTY)) {
+    while (!(nrf24l01p_ng_reg8_read(dev, NRF24L01P_NG_REG_FIFO_STATUS) &
+           NRF24L01P_NG_FLG_RX_EMPTY)) {
         DEBUG_PUTS("[nrf24l01p_ng] ISR: read pending Rx frames");
         dev->netdev.event_callback(&dev->netdev, NETDEV_EVENT_RX_COMPLETE);
-        nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
-                              &fifo_status, 1);
     }
 }
 
@@ -203,7 +199,7 @@ int _init(netdev_t *netdev)
     nrf24l01p_ng_flush_tx(dev);
     nrf24l01p_ng_flush_rx(dev);
     uint8_t aw = NRF24L01P_NG_ADDR_WIDTH;
-    uint8_t bc[] = NRF24L01P_NG_BROADCAST_ADDR;
+    const uint8_t bc[] = NRF24L01P_NG_BROADCAST_ADDR;
     luid_get_lb(dev->urxaddr.rxaddrpx.rx_p0, aw);
      /* "The LSByte must be unique for all six pipes" [datasheet p.38] */
     if (dev->urxaddr.rxaddrpx.rx_p0[aw - 1] == bc[aw - 1]) {
@@ -214,36 +210,36 @@ int _init(netdev_t *netdev)
     memcpy(dev->urxaddr.rxaddrpx.rx_p1, bc, aw);
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_P1,
                            dev->urxaddr.rxaddrpx.rx_p1, aw);
-    uint8_t setup_aw = NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(aw));
-    uint8_t rf_setup =
-        NRF24L01P_NG_FLG_RF_DR(dev->params.config.cfg_data_rate) |
-        NRF24L01P_NG_FLG_RF_PWR(dev->params.config.cfg_tx_power);
-    uint8_t setup_retr =
-        NRF24L01P_NG_FLG_ARD(dev->params.config.cfg_retr_delay) |
-        NRF24L01P_NG_FLG_ARC(dev->params.config.cfg_max_retr);
-    uint8_t rf_ch = NRF24L01P_NG_FLG_RF_CH(dev->params.config.cfg_channel);
-    uint8_t en_rxaddr = NRF24L01P_NG_FLG_ERX_P0 | NRF24L01P_NG_FLG_ERX_P1;
-    uint8_t config = NRF24L01P_NG_FLG_CRCO(dev->params.config.cfg_crc);
-    uint8_t features = NRF24L01P_NG_FLG_EN_DYN_ACK |
-                       NRF24L01P_NG_FLG_EN_DPL     |
-                       NRF24L01P_NG_FLG_EN_ACK_PAY;
-    uint8_t en_aa = NRF24L01P_NG_FLG_ENAA_P0 |NRF24L01P_NG_FLG_ENAA_P1;
-    uint8_t endp = NRF24L01P_NG_FLG_DPL_P0 | NRF24L01P_NG_FLG_DPL_P1;
-    uint8_t tx_addr[] = NRF24L01P_NG_DEFAULT_TX_ADDR;
-    uint8_t status = NRF24L01P_NG_FLG_IRQ;
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_SETUP_AW, &setup_aw, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RF_SETUP, &rf_setup, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_SETUP_RETR, &setup_retr, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RF_CH, &rf_ch, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_EN_RXADDR, &en_rxaddr, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_CONFIG, &config, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_FEATURES, &features, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_EN_AA, &en_aa, 1);
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_DYNPD, &endp, 1);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_SETUP_AW,
+                            NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(aw)));
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_RF_SETUP,
+                    NRF24L01P_NG_FLG_RF_DR(dev->params.config.cfg_data_rate) |
+                    NRF24L01P_NG_FLG_RF_PWR(dev->params.config.cfg_tx_power));
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_SETUP_RETR,
+                    NRF24L01P_NG_FLG_ARD(dev->params.config.cfg_retr_delay) |
+                    NRF24L01P_NG_FLG_ARC(dev->params.config.cfg_max_retr));
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_RF_CH,
+                    NRF24L01P_NG_FLG_RF_CH(dev->params.config.cfg_channel));
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_EN_RXADDR,
+                            NRF24L01P_NG_FLG_ERX_P0 |
+                            NRF24L01P_NG_FLG_ERX_P1);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_CONFIG,
+                        NRF24L01P_NG_FLG_CRCO(dev->params.config.cfg_crc));
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_FEATURES,
+                            NRF24L01P_NG_FLG_EN_DYN_ACK |
+                            NRF24L01P_NG_FLG_EN_DPL |
+                            NRF24L01P_NG_FLG_EN_ACK_PAY);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_EN_AA,
+                            NRF24L01P_NG_FLG_ENAA_P0 |
+                            NRF24L01P_NG_FLG_ENAA_P1);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_DYNPD,
+                            NRF24L01P_NG_FLG_DPL_P0 |
+                            NRF24L01P_NG_FLG_DPL_P1);
+    const uint8_t tx_addr[] = NRF24L01P_NG_DEFAULT_TX_ADDR;
     nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_TX_ADDR, tx_addr,
                            sizeof(tx_addr));
     /* clear interrupts */
-    nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_STATUS, &status, 1);
+    nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_STATUS, NRF24L01P_NG_FLG_IRQ);
     nrf24l01p_ng_transition_to_standby_1(dev);
 #if IS_USED(MODULE_NRF24L01P_NG_DIAGNOSTICS)
     nrf24l01p_ng_diagnostics_print_all_regs(dev);
@@ -424,11 +420,10 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
          * in order to receive ACKs.
          * If node switches back to Rx mode, pipe 0 Rx address
          * must be restored from params. */
-        uint8_t setup_aw =
-            NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(dst_addr_len));
         nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_RX_ADDR_P0,
                                dst_addr, dst_addr_len);
-        nrf24l01p_ng_write_reg(dev, NRF24L01P_NG_REG_SETUP_AW, &setup_aw, 1);
+        nrf24l01p_ng_reg8_write(dev, NRF24L01P_NG_REG_SETUP_AW,
+            NRF24L01P_NG_FLG_AW(nrf24l01p_ng_valtoe_aw(dst_addr_len)));
     }
     if (dev->state != NRF24L01P_NG_STATE_TX_MODE &&
         dev->state != NRF24L01P_NG_STATE_STANDBY_2) {
@@ -473,11 +468,9 @@ void _isr(netdev_t *netdev)
 
     if (dev->state == NRF24L01P_NG_STATE_TX_MODE ||
         dev->state == NRF24L01P_NG_STATE_STANDBY_2) {
-        uint8_t fifo_status;
-        nrf24l01p_ng_read_reg(dev, NRF24L01P_NG_REG_FIFO_STATUS,
-                              &fifo_status, 1);
         /* frame in FIFO is not an ACK */
-        if (!(fifo_status & NRF24L01P_NG_FLG_TX_EMPTY)) {
+        if (!(nrf24l01p_ng_reg8_read(dev, NRF24L01P_NG_REG_FIFO_STATUS) &
+            NRF24L01P_NG_FLG_TX_EMPTY)) {
             nrf24l01p_ng_release(dev);
             _trigger_send(dev);
             return;

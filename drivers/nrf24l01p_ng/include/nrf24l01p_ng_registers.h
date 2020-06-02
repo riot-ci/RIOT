@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include "nrf24l01p_ng.h"
+#include "nrf24l01p_ng_communication.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -879,6 +880,36 @@ extern "C" {
 /** @} */
 
 /**
+ * @brief   Read the contents of an 8 bit register
+ *
+ * @param[in] dev           NRF24L01+ device handle
+ * @param[in] reg_addr      Address of the register to be written
+ *
+ * @return                  Register value
+ */
+static inline
+uint8_t nrf24l01p_ng_reg8_read(const nrf24l01p_ng_t *dev, uint8_t reg_addr) {
+    uint8_t reg_val;
+    nrf24l01p_ng_read_reg(dev, reg_addr, &reg_val, 1);
+    return reg_val;
+}
+
+/**
+ * @brief   Write the contents of an 8 bit register
+ *
+ * @param[in] dev           NRF24L01+ device handle
+ * @param[in] reg_addr      Address of the register to be written
+ * @param[in] reg_val       Value to be written to the register
+ *
+ * @return                  Status register value
+ */
+static inline
+uint8_t nrf24l01p_ng_reg8_write(const nrf24l01p_ng_t *dev,
+                                uint8_t reg_addr, uint8_t reg_val) {
+    return nrf24l01p_ng_write_reg(dev, reg_addr, &reg_val, 1);
+}
+
+/**
  * @brief   Set bits in a certain 8-bit register
  *
  * @param[in] dev           NRF24L01+ device handle
@@ -887,9 +918,14 @@ extern "C" {
  *
  * @return                  Status register value
  */
-uint8_t nrf24l01p_ng_reg8_set(const nrf24l01p_ng_t *dev, uint8_t reg_addr,
-                              uint8_t *reg_val);
-
+static inline
+uint8_t nrf24l01p_ng_reg8_set(const nrf24l01p_ng_t *dev,
+                              uint8_t reg_addr, uint8_t *reg_val) {
+    uint8_t reg_val_old;
+    nrf24l01p_ng_read_reg(dev, reg_addr, &reg_val_old, sizeof(reg_val_old));
+    *reg_val = reg_val_old | *reg_val;
+    return nrf24l01p_ng_write_reg(dev, reg_addr, reg_val, sizeof(*reg_val));
+}
 /**
  * @brief   Clear bits in a certain 8-bit register
  *
@@ -899,8 +935,14 @@ uint8_t nrf24l01p_ng_reg8_set(const nrf24l01p_ng_t *dev, uint8_t reg_addr,
  *
  * @return                  Status register value
  */
-uint8_t nrf24l01p_ng_reg8_clear(const nrf24l01p_ng_t *dev, uint8_t reg_addr,
-                                uint8_t *reg_val);
+static inline
+uint8_t nrf24l01p_ng_reg8_clear(const nrf24l01p_ng_t *dev,
+                                uint8_t reg_addr, uint8_t *reg_val) {
+    uint8_t reg_val_old;
+    nrf24l01p_ng_read_reg(dev, reg_addr, &reg_val_old, sizeof(reg_val_old));
+    *reg_val = reg_val_old &= ~(*reg_val);
+    return nrf24l01p_ng_write_reg(dev, reg_addr, reg_val, sizeof(*reg_val));
+}
 
 /**
  * @brief   Modify bits in a certain 8-bit register
@@ -912,8 +954,15 @@ uint8_t nrf24l01p_ng_reg8_clear(const nrf24l01p_ng_t *dev, uint8_t reg_addr,
  *
  * @return                  Status register value
  */
+static inline
 uint8_t nrf24l01p_ng_reg8_mod(const nrf24l01p_ng_t *dev, uint8_t reg_addr,
-                              uint8_t mask, uint8_t *reg_val);
+                              uint8_t mask, uint8_t *reg_val) {
+    uint8_t reg_val_old;
+    nrf24l01p_ng_read_reg(dev, reg_addr, &reg_val_old, sizeof(reg_val_old));
+    reg_val_old &= ~mask;
+    *reg_val = reg_val_old | *reg_val;
+    return nrf24l01p_ng_write_reg(dev, reg_addr, reg_val, sizeof(*reg_val));
+}
 
 #ifdef __cplusplus
 }
