@@ -13,6 +13,7 @@ BOARD_WHITELIST += \
 	sensebox_samd21 \
 	serpente \
 	sodaq-autonomo \
+	sodaq-explorer \
 	#
 
 kconfig-features:
