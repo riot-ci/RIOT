@@ -388,7 +388,17 @@ int _send(netdev_t *netdev, const iolist_t *iolist)
         return -EAGAIN;
     }
     if (fifo_status & NRF24L01P_NG_FLG_TX_FULL_) {
-        nrf24l01p_ng_flush_tx(dev);
+        /* If the TX FIFO is full, but no ACK has arrived yet,
+           so no TX_DS / MAX_RT interrupt has triggered so far that
+           could clean the TX FIFO. So we need to wait until an interrupt
+           occurs, before we can send a new frame. This is done
+           while this _send() function is called in a loop and the
+           interrupt status is polled.
+           If you flush the FIFO here, pending content will
+           be lost. */
+        DEBUG_PUTS("[nrf24l01p_ng] TX FIFO full");
+        nrf24l01p_ng_release(dev);
+        return -EAGAIN;
     }
     uint8_t *dst_addr = iolist->iol_base;
     uint8_t dst_addr_len = iolist->iol_len;
