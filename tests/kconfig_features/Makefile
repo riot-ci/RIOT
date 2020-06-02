@@ -12,6 +12,7 @@ BOARD_WHITELIST += \
 	samr21-xpro \
 	sensebox_samd21 \
 	serpente \
+	sodaq-autonomo \
 	#
 
 kconfig-features:
