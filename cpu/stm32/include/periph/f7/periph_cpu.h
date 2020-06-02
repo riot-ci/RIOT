@@ -25,13 +25,10 @@ extern "C" {
 #endif
 
 /**
- * @name    Starting address of the CPU ID
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
  */
-#if defined(CPU_LINE_STM32F722xx) || defined(CPU_LINE_STM32F723xx)
-#define CPUID_ADDR          (0x1ff07a10)
-#else
-#define CPUID_ADDR          (0x1ff0f420)
-#endif
+#define STM32_LOADER_ADDR   (0x1FF0EDBE)
 
 #ifdef __cplusplus
 }
