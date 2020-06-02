@@ -147,11 +147,16 @@ static int _open(vfs_file_t *filp, const char *name, int flags, mode_t mode,
     if ((flags & O_APPEND) == O_APPEND) {
         fatfs_flags |= FA_OPEN_APPEND;
     }
-    if ((flags & O_TRUNC) == O_TRUNC) {
-        fatfs_flags |= FA_CREATE_ALWAYS;
-    }
     if ((flags & O_CREAT) == O_CREAT) {
-        fatfs_flags |= FA_CREATE_NEW;
+        if ((flags & (O_TRUNC | O_EXCL)) == (O_TRUNC | O_EXCL)) {
+            fatfs_flags |= FA_CREATE_NEW;
+        }
+        else if ((flags & O_TRUNC) == O_TRUNC) {
+            fatfs_flags |= FA_CREATE_ALWAYS;
+        }
+        else {
+            fatfs_flags |= FA_OPEN_ALWAYS;
+        }
     }
     else {
         fatfs_flags |= FA_OPEN_EXISTING;
