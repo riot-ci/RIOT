@@ -32,9 +32,9 @@ static uint32_t _channel_spacing_kHz(uint8_t option)
 {
     switch (option) {
     case 1: return 1200;
-    case 2: return  800;
-    case 3: return  400;
-    case 4: return  200;
+    case 2: return 800;
+    case 3: return 400;
+    case 4: return 200;
     }
 
     return 0;
@@ -67,8 +67,8 @@ static uint16_t _get_max_chan(at86rf215_t *dev, uint8_t option)
 {
     if (is_subGHz(dev)) {
         switch (option) {
-        case 1: return  5;
-        case 2: return  8;
+        case 1: return 5;
+        case 2: return 8;
         case 3: return 17;
         case 4: return 34;
         }
@@ -89,9 +89,9 @@ static uint32_t _TXCUTC_LPFCUT(uint8_t option)
 {
     switch (option) {
     case 1: return 10 << TXCUTC_LPFCUT_SHIFT;
-    case 2: return  8 << TXCUTC_LPFCUT_SHIFT;
-    case 3: return  5 << TXCUTC_LPFCUT_SHIFT;
-    case 4: return  3 << TXCUTC_LPFCUT_SHIFT;
+    case 2: return 8  << TXCUTC_LPFCUT_SHIFT;
+    case 3: return 5  << TXCUTC_LPFCUT_SHIFT;
+    case 4: return 3  << TXCUTC_LPFCUT_SHIFT;
     }
 
     return 0;
