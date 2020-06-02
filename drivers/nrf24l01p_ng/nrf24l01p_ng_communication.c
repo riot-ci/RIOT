@@ -134,7 +134,7 @@ uint8_t nrf24l01p_ng_write_tx_payload(const nrf24l01p_ng_t *dev,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
+        uint8_t lsrc[NRF24L01P_NG_MAX_PAYLOAD_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
@@ -180,7 +180,7 @@ uint8_t nrf24l01p_ng_write_ack_pl(const nrf24l01p_ng_t *dev, const void *src,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
+        uint8_t lsrc[NRF24L01P_NG_MAX_PAYLOAD_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
@@ -200,7 +200,7 @@ uint8_t nrf24l01p_ng_write_tx_pl_no_ack(const nrf24l01p_ng_t *dev,
     uint8_t status;
     if (len > 1) {
         len = MIN(len, NRF24L01P_NG_MAX_PAYLOAD_WIDTH);
-        uint8_t lsrc[NRF24L01P_NG_REG_MAX_WIDTH];
+        uint8_t lsrc[NRF24L01P_NG_MAX_PAYLOAD_WIDTH];
         memcpy(lsrc, src, len);
         _swap_bytes(lsrc, len);
         status = spi_transfer_byte(SPI_BUS, SPI_PIN_CS, true, cmd);
