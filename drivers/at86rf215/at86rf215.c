@@ -152,8 +152,8 @@ if (!IS_ACTIVE(CONFIG_AT86RF215_USE_CLOCK_OUTPUT)){
                                        AT86RF215_DEFAULT_MR_OQPSK_RATE);
     }
     if (AT86RF215_DEFAULT_PHY_MODE == IEEE802154_PHY_MR_OFDM) {
-        at86rf215_configure_OFDM(dev, AT86RF215_DEFAULT_MR_OFDM_OPT,
-                                      AT86RF215_DEFAULT_MR_OFDM_MCS);
+        at86rf215_configure_OFDM(dev, CONFIG_AT86RF215_DEFAULT_MR_OFDM_OPT,
+                                      CONFIG_AT86RF215_DEFAULT_MR_OFDM_MCS);
     }
 
     /* set default channel */

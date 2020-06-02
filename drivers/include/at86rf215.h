@@ -141,8 +141,8 @@ enum {
  * @name    Default MR-OFDM Option
  * @{
  */
-#ifndef AT86RF215_DEFAULT_MR_OFDM_OPT
-#define AT86RF215_DEFAULT_MR_OFDM_OPT    (2)
+#ifndef CONFIG_AT86RF215_DEFAULT_MR_OFDM_OPT
+#define CONFIG_AT86RF215_DEFAULT_MR_OFDM_OPT    (2)
 #endif
 /** @} */
 
@@ -150,8 +150,8 @@ enum {
  * @name    Default MR-OFDM Modulation & Coding Scheme
  * @{
  */
-#ifndef AT86RF215_DEFAULT_MR_OFDM_MCS
-#define AT86RF215_DEFAULT_MR_OFDM_MCS    (2)
+#ifndef CONFIG_AT86RF215_DEFAULT_MR_OFDM_MCS
+#define CONFIG_AT86RF215_DEFAULT_MR_OFDM_MCS    (2)
 #endif
 /** @} */
 
