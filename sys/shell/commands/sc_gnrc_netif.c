@@ -430,7 +430,7 @@ static const char *_netopt_ieee802154_phy_str[] = {
 #endif
 
 #ifdef MODULE_NETDEV_IEEE802154_MR_OFDM
-static const char *_netopt_odfm_mcs_str[] = {
+static const char *_netopt_ofdm_mcs_str[] = {
     [0] = "BPSK, rate 1/2, 4x frequency repetition",
     [1] = "BPSK, rate 1/2, 2x frequency repetition",
     [2] = "QPSK, rate 1/2, 2x frequency repetition",
@@ -616,7 +616,7 @@ static void _netif_list(netif_t *iface)
             }
             res = netif_get_opt(iface, NETOPT_MR_OFDM_MCS, 0, &u8, sizeof(u8));
             if (res >= 0) {
-                printf(" MCS: %u (%s) ", u8, _netopt_odfm_mcs_str[u8]);
+                printf(" MCS: %u (%s) ", u8, _netopt_ofdm_mcs_str[u8]);
             }
 
             break;
