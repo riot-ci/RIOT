@@ -15,6 +15,7 @@ BOARD_WHITELIST += \
 	sodaq-autonomo \
 	sodaq-explorer \
 	sodaq-one \
+	sodaq-sara-aff \
 	#
 
 kconfig-features:
