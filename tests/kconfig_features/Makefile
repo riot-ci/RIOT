@@ -5,6 +5,7 @@ BOARD_WHITELIST += \
 	arduino-mkrfox1200 \
 	arduino-mkrwan1300 \
 	arduino-mkrzero \
+	arduino-zero \
 	samr21-xpro \
 	#
 
