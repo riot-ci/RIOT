@@ -62,6 +62,7 @@ void pre_startup(void)
     /* jump to the bootloader */
     __asm__ volatile("mov sp, %0" :: "r" (dst));
     __asm__ volatile("mov pc, %0" :: "r" (dst));
+    __asm__ volatile("" ::: "memory");
 }
 
 void __attribute__((weak)) usb_board_reset_in_bootloader(void)
