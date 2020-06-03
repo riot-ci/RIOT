@@ -10,9 +10,12 @@
 # Not all logs for openvisualizer are piped to the terminal, more detailed logs
 # are stored in $(BINDIR)/openv-server.log
 #
+# More info at https://github.com/fjmolinas/openvisualizer/blob/develop_SW-318-RIOT/README.md
+#
 # Supported:
 #  * openv-term
 #  * openv-termroot
+#  * openv-termtun (will start openv as sudo)
 #  * openv-setroot
 #  * openv-clean
 #
@@ -24,11 +27,20 @@
 #   * cd openvisualizer
 #   * pip2 install .
 #
+# * If using iotlab nodes, pre-requisites in makefile.iotlab.single.inc.mk
+#
+# * For `openv-termtun` it will require root must be able to ssh into iotlab
+#
 
-OPENV_DEFAULT_FLAGS ?=
+# Use full path in case it needs to be run with sudo
+OPENV_SERVER_PATH := $(shell which openv-server)
+OPENV_CLIENT_PATH := $(shell which openv-client)
 
+# Openvisualizer requires to know where openwsn-fw is located
 OPENV_OPENWSN_FW_PATH ?= --fw-path=$(BINDIRBASE)/pkg/$(BOARD)/openwsn-fw
 OPENV_DEFAULT_FLAGS += $(OPENV_OPENWSN_FW_PATH)
+
+OPENV_DEFAULT_FLAGS ?=
 
 ifneq (,$(IOTLAB_NODE))
   OPENV_MOTE ?= $(IOTLAB_NODE)
@@ -37,9 +49,6 @@ else
   OPENV_MOTE += $(PORT)
   OPENV_DEFAULT_FLAGS += --port-mask=$(OPENV_MOTE) --baudrate=$(BAUD)
 endif
-
-# Optional flags to pass through command line
-OPENV_FLAGS ?= 
 
 # Use modified logging configuration
 OPENV_LOG_CONFIG = $(BINDIR)/logging.conf
@@ -51,16 +60,28 @@ $(OPENV_LOG_CONFIG): $(LAST_MAKEFILEDIR)/logging.conf
 	$(Q)sed -i 's#LOG_PATH#'"$(BINDIR)"'#g' $@.tmp
 	$(Q)mv $@.tmp $@
 
+# Start tun interface
+ifneq (,$(filter openv-termtun,$(MAKECMDGOALS)))
+  OPENV_DEFAULT_FLAGS += --opentun
+endif
+
+# Optional flags to pass through command line
+OPENV_FLAGS ?= 
+
 openv-term: $(OPENV_LOG_CONFIG)
-openv-term: $(TERMDEPS) 
-	$(Q)openv-server $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS)
+openv-term: $(TERMDEPS)
+	$(Q)$(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS)$(OPENV_FLAGS)
 
 openv-termroot: $(OPENV_LOG_CONFIG)
 openv-termroot: $(TERMDEPS)
-	$(Q)openv-server $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
+	$(Q)$(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
+
+openv-termtun: $(OPENV_LOG_CONFIG)
+openv-termtun:  $(TERMDEPS)
+	$(Q)sudo $(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
 
 openv-setroot:
-	$(Q)openv-client $(OPENV_OPENWSN_FW_PATH) root=$(OPENV_MOTE)
+	$(Q)$(OPENV_CLIENT_PATH) $(OPENV_OPENWSN_FW_PATH) $(OPENV_FLAGS) root=$(OPENV_MOTE)
 
 openv-clean:
 	$(Q)rm -rf $(OPENV_LOG_CONFIG)
