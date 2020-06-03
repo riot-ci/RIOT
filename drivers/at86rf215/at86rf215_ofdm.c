@@ -31,10 +31,10 @@
 static uint32_t _channel_spacing_kHz(uint8_t option)
 {
     switch (option) {
-    case 1: return 1200;
-    case 2: return 800;
-    case 3: return 400;
-    case 4: return 200;
+        case 1: return 1200;
+        case 2: return 800;
+        case 3: return 400;
+        case 4: return 200;
     }
 
     return 0;
@@ -45,10 +45,10 @@ static uint32_t _channel_spacing_kHz(uint8_t option)
 static uint32_t _channel_center_freq_kHz_868MHz(uint8_t option)
 {
     switch (option) {
-    case 1: return 863625;
-    case 2: return 863425;
-    case 3: return 863225;
-    case 4: return 863125;
+        case 1: return 863625;
+        case 2: return 863425;
+        case 3: return 863225;
+        case 4: return 863125;
     }
 
     return 0;
@@ -67,17 +67,18 @@ static uint16_t _get_max_chan(at86rf215_t *dev, uint8_t option)
 {
     if (is_subGHz(dev)) {
         switch (option) {
-        case 1: return 5;
-        case 2: return 8;
-        case 3: return 17;
-        case 4: return 34;
+            case 1: return 5;
+            case 2: return 8;
+            case 3: return 17;
+            case 4: return 34;
         }
-    } else {
+    }
+    else {
         switch (option) {
-        case 1: return 64;
-        case 2: return 97;
-        case 3: return 207;
-        case 4: return 416;
+            case 1: return 64;
+            case 2: return 97;
+            case 3: return 207;
+            case 4: return 416;
         }
     }
 
@@ -88,10 +89,10 @@ static uint16_t _get_max_chan(at86rf215_t *dev, uint8_t option)
 static uint32_t _TXCUTC_LPFCUT(uint8_t option)
 {
     switch (option) {
-    case 1: return 10 << TXCUTC_LPFCUT_SHIFT;
-    case 2: return 8  << TXCUTC_LPFCUT_SHIFT;
-    case 3: return 5  << TXCUTC_LPFCUT_SHIFT;
-    case 4: return 3  << TXCUTC_LPFCUT_SHIFT;
+        case 1: return 10 << TXCUTC_LPFCUT_SHIFT;
+        case 2: return 8 << TXCUTC_LPFCUT_SHIFT;
+        case 3: return 5 << TXCUTC_LPFCUT_SHIFT;
+        case 4: return 3 << TXCUTC_LPFCUT_SHIFT;
     }
 
     return 0;
@@ -101,10 +102,10 @@ static uint32_t _TXCUTC_LPFCUT(uint8_t option)
 static uint32_t _TXDFE_SR(uint8_t option)
 {
     switch (option) {
-    case 1:
-    case 2: return 3 << TXDFE_SR_SHIFT;
-    case 3:
-    case 4: return 6 << TXDFE_SR_SHIFT;
+        case 1:
+        case 2: return 3 << TXDFE_SR_SHIFT;
+        case 3:
+        case 4: return 6 << TXDFE_SR_SHIFT;
     }
 
     return 0;
@@ -114,10 +115,10 @@ static uint32_t _TXDFE_SR(uint8_t option)
 static uint32_t _TXDFE_RCUT(uint8_t option)
 {
     switch (option) {
-    case 1: return 3 << TXDFE_RCUT_SHIFT;
-    case 2:
-    case 3: return 3 << TXDFE_RCUT_SHIFT;
-    case 4: return 2 << TXDFE_RCUT_SHIFT;
+        case 1: return 3 << TXDFE_RCUT_SHIFT;
+        case 2:
+        case 3: return 3 << TXDFE_RCUT_SHIFT;
+        case 4: return 2 << TXDFE_RCUT_SHIFT;
     }
 
     return 0;
@@ -127,10 +128,10 @@ static uint32_t _TXDFE_RCUT(uint8_t option)
 static uint32_t _RXDFE_RCUT(uint8_t option, bool superGHz)
 {
     switch (option) {
-    case 1: return 4 << RXDFE_RCUT_SHIFT;
-    case 2: return 2 << RXDFE_RCUT_SHIFT;
-    case 3: return (2 + superGHz) << RXDFE_RCUT_SHIFT;
-    case 4: return 1 << RXDFE_RCUT_SHIFT;
+        case 1: return 4 << RXDFE_RCUT_SHIFT;
+        case 2: return 2 << RXDFE_RCUT_SHIFT;
+        case 3: return (2 + superGHz) << RXDFE_RCUT_SHIFT;
+        case 4: return 1 << RXDFE_RCUT_SHIFT;
     }
 
     return 0;
@@ -140,10 +141,10 @@ static uint32_t _RXDFE_RCUT(uint8_t option, bool superGHz)
 static uint32_t _RXBWC_BW(uint8_t option, bool superGHz)
 {
     switch (option) {
-    case 1: return (9 + superGHz) << RXBWC_BW_SHIFT;
-    case 2: return 7 << RXBWC_BW_SHIFT;
-    case 3: return (4 + superGHz) << RXBWC_BW_SHIFT;
-    case 4: return (2 + superGHz) << RXBWC_BW_SHIFT;
+        case 1: return (9 + superGHz) << RXBWC_BW_SHIFT;
+        case 2: return 7 << RXBWC_BW_SHIFT;
+        case 3: return (4 + superGHz) << RXBWC_BW_SHIFT;
+        case 4: return (2 + superGHz) << RXBWC_BW_SHIFT;
     }
 
     return 0;
@@ -153,10 +154,10 @@ static uint32_t _RXBWC_BW(uint8_t option, bool superGHz)
 static uint32_t _RXBWC_IFS(uint8_t option, bool superGHz)
 {
     switch (option) {
-    case 1:
-    case 2: return 1;
-    case 3: return superGHz;
-    case 4: return !superGHz;
+        case 1:
+        case 2: return 1;
+        case 3: return superGHz;
+        case 4: return !superGHz;
     }
 
     return 0;
@@ -167,26 +168,29 @@ static void _set_option(at86rf215_t *dev, uint8_t option)
     const bool superGHz = !is_subGHz(dev);
 
     /* Set Receiver Bandwidth */
-    at86rf215_reg_write(dev, dev->RF->RG_RXBWC, _RXBWC_BW(option, superGHz)
-                                              | _RXBWC_IFS(option, superGHz));
+    at86rf215_reg_write(dev, dev->RF->RG_RXBWC,
+                        _RXBWC_BW(option, superGHz) | _RXBWC_IFS(option, superGHz));
     /* Set fS (same as TX); fCUT for RX */
-    at86rf215_reg_write(dev, dev->RF->RG_RXDFE, _TXDFE_SR(option)
-                                              | _RXDFE_RCUT(option, superGHz));
+    at86rf215_reg_write(dev, dev->RF->RG_RXDFE,
+                        _TXDFE_SR(option) | _RXDFE_RCUT(option, superGHz));
     /* Set Power Amplifier Ramp Time; fLPCUT */
-    at86rf215_reg_write(dev, dev->RF->RG_TXCUTC, RF_PARAMP8U
-                                               | _TXCUTC_LPFCUT(option));
+    at86rf215_reg_write(dev, dev->RF->RG_TXCUTC,
+                        RF_PARAMP8U | _TXCUTC_LPFCUT(option));
     /* Set fS; fCUT for TX */
-    at86rf215_reg_write(dev, dev->RF->RG_TXDFE, _TXDFE_SR(option)
-                                              | _TXDFE_RCUT(option));
+    at86rf215_reg_write(dev, dev->RF->RG_TXDFE,
+                        _TXDFE_SR(option) | _TXDFE_RCUT(option));
 
     /* set channel spacing */
     at86rf215_reg_write(dev, dev->RF->RG_CS, _channel_spacing_kHz(option) / 25);
 
     /* set channel center frequency */
     if (superGHz) {
-        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, 1 + _channel_center_freq_kHz_2400MHz(option) / 25);
-    } else {
-        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, 1 + _channel_center_freq_kHz_868MHz(option) / 25);
+        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, 1 + _channel_center_freq_kHz_2400MHz(
+                                  option) / 25);
+    }
+    else {
+        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, 1 + _channel_center_freq_kHz_868MHz(
+                                  option) / 25);
     }
 
     at86rf215_reg_write(dev, dev->BBC->RG_OFDMC, option - 1);
@@ -197,24 +201,29 @@ static void _set_option(at86rf215_t *dev, uint8_t option)
     at86rf215_reg_write16(dev, dev->RF->RG_CNL, dev->netdev.chan);
 }
 
-static unsigned _get_frame_duration(uint8_t option, uint8_t scheme, uint8_t bytes)
+static unsigned _get_frame_duration(uint8_t option, uint8_t scheme,
+                                    uint8_t bytes)
 {
     /* Table 150 - phySymbolsPerOctet values for MR-OFDM PHY, IEEE 802.15.4g-2012 */
     static const uint8_t quot[] = { 3, 3, 6, 12, 18, 24, 36 };
+
     --option;
     /* phyMaxFrameDuration = phySHRDuration + phyPHRDuration + ceiling [(aMaxPHYPacketSize + 1) x phySymbolsPerOctet] */
-    const unsigned phySHRDuration = OFDM_SYMBOL_TIME_US * 6;
-    const unsigned phyPHRDuration = OFDM_SYMBOL_TIME_US * (option ? 6 : 3);
-    const unsigned phyPDUDuration = (OFDM_SYMBOL_TIME_US * ((bytes + 1) * (1 << option) + quot[scheme] - 1)) / quot[scheme];
+    const unsigned phySHRDuration = 6;
+    const unsigned phyPHRDuration = option ? 6 : 3;
+    const unsigned phyPDUDuration = ((bytes + 1) * (1 << option) + quot[scheme] - 1)
+                                  / quot[scheme];
 
-    return phySHRDuration + phyPHRDuration + phyPDUDuration;
+    return (phySHRDuration + phyPHRDuration + phyPDUDuration) * OFDM_SYMBOL_TIME_US;
 }
 
 static void _set_ack_timeout(at86rf215_t *dev, uint8_t option, uint8_t scheme)
 {
-    dev->ack_timeout_usec = dev->csma_backoff_period + IEEE802154G_ATURNAROUNDTIME_US
-                          + _get_frame_duration(option, scheme, AT86RF215_ACK_PSDU_BYTES);
-    DEBUG("[%s] ACK timeout: %"PRIu32" µs\n", "OFDM", dev->ack_timeout_usec);
+    dev->ack_timeout_usec = dev->csma_backoff_period
+                          + IEEE802154G_ATURNAROUNDTIME_US
+                          + _get_frame_duration(option, scheme,
+                                                AT86RF215_ACK_PSDU_BYTES);
+    DEBUG("[%s] ACK timeout: %" PRIu32 " µs\n", "OFDM", dev->ack_timeout_usec);
 }
 
 static bool _option_mcs_valid(uint8_t option, uint8_t mcs)
@@ -259,8 +268,10 @@ int at86rf215_configure_OFDM(at86rf215_t *dev, uint8_t option, uint8_t scheme)
 
     at86rf215_reg_write(dev, dev->BBC->RG_OFDMPHRTX, scheme);
 
-    dev->csma_backoff_period = AT86RF215_BACKOFF_PERIOD_IN_SYMBOLS * OFDM_SYMBOL_TIME_US;
-    DEBUG("[%s] CSMA BACKOFF: %"PRIu32" µs\n", "OFDM", dev->csma_backoff_period);
+    dev->csma_backoff_period = AT86RF215_BACKOFF_PERIOD_IN_SYMBOLS *
+                               OFDM_SYMBOL_TIME_US;
+    DEBUG("[%s] CSMA BACKOFF: %" PRIu32 " µs\n", "OFDM",
+          dev->csma_backoff_period);
 
     _set_ack_timeout(dev, option, scheme);
 
