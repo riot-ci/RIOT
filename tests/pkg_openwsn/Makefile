@@ -7,7 +7,7 @@ USEMODULE += openwsn_openstack
 USEMODULE += openwsn_scheduler
 
 # Optional Modules
-#USEMODULE += openwsn_ledpins
+#USEMODULE += openwsn_leds
 #USEMODULE += openwsn_debugpins
 #USEMODULE += openwsn_serial
 
