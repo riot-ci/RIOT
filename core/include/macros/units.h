@@ -23,13 +23,29 @@
  extern "C" {
 #endif
 
-/* KiB, MiB, GiB */
+/**
+ * @brief   A macro to return the bytes in x KiB
+ */
 #define KiB(x) ((unsigned long long)(x) << 10)
+
+/**
+ * @brief   A macro to return the bytes in x MiB
+ */
 #define MiB(x) (KiB(x) << 10)
+
+/**
+ * @brief   A macro to return the bytes in x GiB
+ */
 #define GiB(x) (MiB(x) << 10)
 
-/* kHz, MHz */
+/**
+ * @brief   A macro to return the Hz in x kHz
+ */
 #define KHZ(x)    ((x) * 1000ULL)
+
+/**
+ * @brief   A macro to return the Hz in x MHz
+ */
 #define MHZ(x) (KHZ(x) * 1000ULL)
 
 #ifdef __cplusplus
