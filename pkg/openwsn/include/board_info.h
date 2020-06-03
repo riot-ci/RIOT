@@ -34,9 +34,9 @@ extern "C" {
 #endif
 
 /* OpenWSN interrupt wrappers */
-#define INTERRUPT_DECLARATION()             /* unused in RIOT */
-#define DISABLE_INTERRUPTS()                irq_disable();
-#define ENABLE_INTERRUPTS()                 irq_enable();
+#define INTERRUPT_DECLARATION()             unsigned irq_state;
+#define DISABLE_INTERRUPTS()                irq_state = irq_disable();
+#define ENABLE_INTERRUPTS()                 irq_restore(irq_state);
 /** @} */
 
 /* Always 32bit when using ztimer */
