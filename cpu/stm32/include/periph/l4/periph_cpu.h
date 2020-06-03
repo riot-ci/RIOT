@@ -25,12 +25,6 @@ extern "C" {
 #endif
 
 /**
- * @brief   Starting address of the ROM bootloader
- *          see application note AN2606
- */
-#define STM32_BOOTLOADER_ADDR   (0x1FFF0000)
-
-/**
  * @brief   Available number of ADC devices
  */
 #if defined(CPU_MODEL_STM32L476RG) || defined(CPU_MODEL_STM32L475VG)
@@ -48,6 +42,13 @@ extern "C" {
 #endif
 
 #ifndef DOXYGEN
+
+/**
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
+ */
+#define STM32_BOOTLOADER_ADDR   (0x1FFF0000)
+
 /**
  * @brief   Override ADC resolution values
  * @{

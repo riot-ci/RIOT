@@ -65,6 +65,14 @@ extern "C" {
 #error "error: LSI clock speed not defined for your target CPU"
 #endif
 
+#ifdef Doxygen
+/**
+ * @brief   Starting address of the ROM bootloader
+ *          see application note AN2606
+ */
+#define STM32_BOOTLOADER_ADDR
+#endif
+
 /**
  * @brief   Length of the CPU_ID in octets
  *

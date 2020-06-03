@@ -23,6 +23,8 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN
+
 /**
  * @brief   Starting address of the ROM bootloader
  *          see application note AN2606
@@ -39,7 +41,6 @@ extern "C" {
 #define STM32_BOOTLOADER_ADDR   (0x1FFFC400)
 #endif
 
-#ifndef DOXYGEN
 /**
  * @brief   Override ADC resolution values
  * @{
