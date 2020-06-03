@@ -57,7 +57,7 @@ void pre_startup(void)
 #endif
 
     /* load bootloader address into r0 */
-    register uint32_t dst __asm__("r0") = STM32_LOADER_ADDR;
+    register uint32_t dst __asm__("r0") = STM32_BOOTLOADER_ADDR;
 
     /* jump to the bootloader */
     __asm__ volatile("mov sp, %0" :: "r" (dst));

@@ -28,7 +28,7 @@ extern "C" {
  *          see application note AN2606
  */
 #if defined(CPU_LINE_STM32F103xB) || defined(CPU_LINE_STM32F103xE)
-#define STM32_LOADER_ADDR   (0x1FFFF000)
+#define STM32_BOOTLOADER_ADDR   (0x1FFFF000)
 #endif
 
 /**
