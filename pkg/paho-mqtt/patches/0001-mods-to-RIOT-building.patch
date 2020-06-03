@@ -1,0 +1,31 @@
+From 21522ac5fff73a705c58a73e846e3ef79d030a2d Mon Sep 17 00:00:00 2001
+From: Javier FILEIV <javier.fileiv@gmail.com>
+Date: Wed, 3 Jun 2020 15:58:02 +0200
+Subject: [PATCH] paho-mqtt: mods to build with RIOT
+
+---
+ MQTTClient-C/src/MQTTClient.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/MQTTClient-C/src/MQTTClient.h b/MQTTClient-C/src/MQTTClient.h
+index b612341..757a1dc 100755
+--- a/MQTTClient-C/src/MQTTClient.h
++++ b/MQTTClient-C/src/MQTTClient.h
+@@ -54,7 +54,14 @@
+ enum QoS { QOS0, QOS1, QOS2, SUBFAIL=0x80 };
+ 
+ /* all failure return codes must be negative */
++
++#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32WB)
++/* the SUCCESS enum is also defined with stm32 L1 and L4 families
++Since it contains the same value, we just skip its definition here for them. */
++enum returnCode { BUFFER_OVERFLOW = -2, FAILURE = -1};
++#else
+ enum returnCode { BUFFER_OVERFLOW = -2, FAILURE = -1, SUCCESS = 0 };
++#endif
+ 
+ /* The Platform specific header must define the Network and Timer structures and functions
+  * which operate on them.
+-- 
+2.17.1
+
