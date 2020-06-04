@@ -65,20 +65,6 @@ static const uart_conf_t uart_config[] = {
         .dma_chan   = UINT8_MAX,
 #endif
     },
-    {
-        .dev        = USART6,
-        .rcc_mask   = RCC_APB2ENR_USART6EN,
-        .rx_pin     = GPIO_PIN(PORT_A, 12),
-        .tx_pin     = GPIO_PIN(PORT_A, 11),
-        .rx_af      = GPIO_AF8,
-        .tx_af      = GPIO_AF8,
-        .bus        = APB2,
-        .irqn       = USART6_IRQn,
-#ifdef MODULE_PERIPH_DMA
-        .dma        = DMA_STREAM_UNDEF,
-        .dma_chan   = UINT8_MAX,
-#endif
-    }
 };
 
 /* assign ISR vector names */
