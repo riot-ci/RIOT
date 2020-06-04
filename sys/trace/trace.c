@@ -40,7 +40,9 @@ static size_t tracebuf_pos;
 void trace(uint32_t val)
 {
     unsigned state = irq_disable();
-    tracebuf[tracebuf_pos % TRACE_BUFSIZE] = (tracebuf_entry_t){ .time = xtimer_now_usec(), .val = val };
+
+    tracebuf[tracebuf_pos % TRACE_BUFSIZE] =
+        (tracebuf_entry_t){ .time = xtimer_now_usec(), .val = val };
     tracebuf_pos++;
     irq_restore(state);
 }
@@ -49,8 +51,10 @@ void trace_dump(void)
 {
     size_t n = tracebuf_pos > TRACE_BUFSIZE ? TRACE_BUFSIZE : tracebuf_pos;
     uint32_t t_last = 0;
+
     for (size_t i = 0; i < n; i++) {
-        printf("n=%4u t=%s%8"PRIu32" v=0x%08x\n", i, i ? "+" : " ", tracebuf[i].time - t_last, (unsigned)tracebuf[i].val);
+        printf("n=%4u t=%s%8" PRIu32 " v=0x%08x\n", i, i ? "+" : " ",
+               tracebuf[i].time - t_last, (unsigned)tracebuf[i].val);
         t_last = tracebuf[i].time;
     }
 }
@@ -58,6 +62,7 @@ void trace_dump(void)
 void trace_reset(void)
 {
     unsigned state = irq_disable();
+
     tracebuf_pos = 0;
     irq_restore(state);
 }
