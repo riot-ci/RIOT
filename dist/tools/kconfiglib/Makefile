@@ -10,7 +10,6 @@ all:
 	$(Q)cp $(PKG_BUILDDIR)/kconfiglib.py $(PKG_BUILDDIR)/menuconfig.py \
 	   $(PKG_BUILDDIR)/genconfig.py $(PKG_BUILDDIR)/examples/merge_config.py \
 	   .
-	$(Q)$(RM) -r $(PKG_BUILDDIR)
 
 remove:
 	$(Q)$(RM) -r $(PKG_BUILDDIR) kconfiglib.py menuconfig.py genconfig.py \
