@@ -42,9 +42,7 @@ int main(void)
     unsigned thr_in_use = 0;
 
     for (kernel_pid_t ix = KERNEL_PID_FIRST; ix <= KERNEL_PID_LAST; ix++) {
-        volatile thread_t *thread;
-        thread = thread_get(ix);
-        if (thread) {
+        if (thread_get(ix)) {
             thr_in_use++;
         }
     }
