@@ -1,6 +1,10 @@
 include ../Makefile.tests_common
 
-BOARD_WHITELIST += samr21-xpro
+BOARD_WHITELIST += arduino-duemilanove \
+                   arduino-nano \
+                   arduino-uno \
+                   atmega328p \
+                   samr21-xpro
 
 all: kconfig-features
 
