@@ -1,5 +1,7 @@
 include ../Makefile.tests_common
 
-USEMODULE += trace
+USEMODULE += backtrace
+
+BOARD_WHITELIST := native
 
 include $(RIOTBASE)/Makefile.include
