@@ -44,22 +44,20 @@ extern "C" {
 #define OPENWSN_LEDPIN_SYNC             GPIO_UNDEF
 #endif
 
-#ifdef LED3_PIN
-#define OPENWSN_LEDPIN_RADIO            LED3_PIN
+#ifdef LED2_PIN
+#define OPENWSN_LEDPIN_RADIO            LED2_PIN
 #else
 #define OPENWSN_LEDPIN_RADIO            GPIO_UNDEF
 #endif
 
-#ifdef LED2_PIN
-#define OPENWSN_LEDPIN_DEBUG            LED2_PIN
+#ifdef LED3_PIN
+#define OPENWSN_LEDPIN_DEBUG            LED3_PIN
 #else
 #define OPENWSN_LEDPIN_DEBUG            GPIO_UNDEF
 #endif
 
-#ifdef BOARD_OPENMOTE_B
+#ifndef OPENWSN_LED_ON_STATE
 #define OPENWSN_LED_ON_STATE             GPIO_LED_LOW
-#else
-#define OPENWSN_LED_ON_STATE             GPIO_LED_HIGH
 #endif
 
 #define OPENWSN_LEDS_DEFAULT    { .error = OPENWSN_LEDPIN_ERROR, \
