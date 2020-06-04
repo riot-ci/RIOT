@@ -70,7 +70,6 @@ static const uart_conf_t uart_config[] = {
 /* assign ISR vector names */
 #define UART_0_ISR          isr_usart2
 #define UART_1_ISR          isr_usart1
-#define UART_2_ISR          isr_usart6
 
 /* deduct number of defined UART interfaces */
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
