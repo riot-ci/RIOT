@@ -19,7 +19,7 @@ It is available on sites like AliExpress for less than 4€.
 |:---------- |:--------------------- |
 | Family     | ARM Cortex-M4F        |
 | Vendor     | ST Microelectronics   |
-| RAM        | 128Kb                 |
+| RAM        | 128KiB                |
 | Flash      | 512Kb                 |
 | Frequency  | up to 100MHz          |
 | FPU        | yes                   |
