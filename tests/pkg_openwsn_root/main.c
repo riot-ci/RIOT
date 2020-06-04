@@ -13,7 +13,7 @@
  * @file
  * @brief       OpenWSN root node
  *
- * @author      Francisco Molina <francois-xavier.molina@inria.fr> 
+ * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  *
  * @}
  */
