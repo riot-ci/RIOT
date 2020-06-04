@@ -66,7 +66,7 @@ ifneq (,$(filter openv-termtun,$(MAKECMDGOALS)))
 endif
 
 # Optional flags to pass through command line
-OPENV_FLAGS ?= 
+OPENV_FLAGS ?=
 
 openv-term: $(OPENV_LOG_CONFIG)
 openv-term: $(TERMDEPS)
