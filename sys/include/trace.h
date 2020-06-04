@@ -30,11 +30,13 @@
  *
  * Example:
  *
- *    #include "trace.h"
- *    ...
- *    trace(<user chosen uint32 value);
+ * ~~~~~~~~~~~~~~~~~~~~~~~~ {.c}
+ * #include "trace.h"
+ * ...
+ * trace(<user chosen uint32 value);
  *
- *    trace_dump();
+ * trace_dump();
+ * ~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * @{
  *
