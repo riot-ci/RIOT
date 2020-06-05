@@ -21,7 +21,7 @@
  * At any point, `trace_dump()` can be used to print the trace buffer.
  *
  * The buffer has a default size of 512 entries, which can be overridden by
- * defining TRACE_BUFSIZE. It can be cleared using `trace_reset()`.
+ * defining CONFIG_TRACE_BUFSIZE. It can be cleared using `trace_reset()`.
  *
  * Tracing is made thread safe by disabling interrupts for critical sections.
  *
