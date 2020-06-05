@@ -163,7 +163,9 @@ enum {
 /**
  * @brief   Default TX power (0dBm)
  */
+#ifndef CONFIG_AT86RF215_DEFAULT_TXPOWER
 #define CONFIG_AT86RF215_DEFAULT_TXPOWER       (CONFIG_IEEE802154_DEFAULT_TXPOWER)
+#endif
 
 /**
  * @name    Flags for device internal states (see datasheet)
