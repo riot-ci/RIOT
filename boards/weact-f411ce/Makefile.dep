@@ -4,6 +4,10 @@ endif
 
 ifeq (,$(filter stdio_% slipdev_stdio,$(USEMODULE)))
   USEMODULE += stdio_cdc_acm
+
+  # This board requires support for the default STM32 bootloader.
+  FEATURES_REQUIRED += bootloader_stm32
+  USEMODULE += usb_board_reset
 endif
 
 ifneq (,$(filter mtd,$(USEMODULE)))
