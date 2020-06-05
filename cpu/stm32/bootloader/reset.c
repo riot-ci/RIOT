@@ -58,11 +58,13 @@ void pre_startup(void)
 
     /* jump to the bootloader */
     __asm__ volatile(
-        "mov sp, %[btldr] \n"
-        "mov pc, %[btldr] \n"
+        "ldr r0, [%[btldr]] \n"
+        "mov sp, r0 \n"
+        "ldr r0, [%[btldr], #4] \n"
+        "mov pc, r0 \n"
         : /* no outputs */
         : [btldr] "r" ((uintptr_t)STM32_BOOTLOADER_ADDR)
-        : "memory"
+        : "r0", "memory"
     );
 }
 
