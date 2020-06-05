@@ -19,11 +19,7 @@ PKG_LICENSE=Apache-2
 
 # Store the cloned repositories under the stm32 directory to prevent downloads
 # for each builds.
-# This is only enabled when not building on CI because to prevent issues
-# with Murdock.
-ifneq (1,$(RIOT_CI_BUILD))
-  PKG_BUILDDIR = $(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)
-endif
+PKG_BUILDDIR = $(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)
 
 .PHONY: all stm32cmsis
 
