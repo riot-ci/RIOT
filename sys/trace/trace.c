@@ -25,8 +25,8 @@
 #include "irq.h"
 #include "xtimer.h"
 
-#ifndef TRACE_BUFSIZE
-#define TRACE_BUFSIZE 512
+#ifndef CONFIG_TRACE_BUFSIZE
+#define CONFIG_TRACE_BUFSIZE 512
 #endif
 
 typedef struct {
@@ -34,14 +34,14 @@ typedef struct {
     uint32_t val;
 } tracebuf_entry_t;
 
-static tracebuf_entry_t tracebuf[TRACE_BUFSIZE];
+static tracebuf_entry_t tracebuf[CONFIG_TRACE_BUFSIZE];
 static size_t tracebuf_pos;
 
 void trace(uint32_t val)
 {
     unsigned state = irq_disable();
 
-    tracebuf[tracebuf_pos % TRACE_BUFSIZE] =
+    tracebuf[tracebuf_pos % CONFIG_TRACE_BUFSIZE] =
         (tracebuf_entry_t){ .time = xtimer_now_usec(), .val = val };
     tracebuf_pos++;
     irq_restore(state);
@@ -49,7 +49,7 @@ void trace(uint32_t val)
 
 void trace_dump(void)
 {
-    size_t n = tracebuf_pos > TRACE_BUFSIZE ? TRACE_BUFSIZE : tracebuf_pos;
+    size_t n = tracebuf_pos > CONFIG_TRACE_BUFSIZE ? CONFIG_TRACE_BUFSIZE : tracebuf_pos;
     uint32_t t_last = 0;
 
     for (size_t i = 0; i < n; i++) {
