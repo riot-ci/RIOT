@@ -8,11 +8,8 @@ ifneq (,$(filter periph_usbdev,$(FEATURES_USED)))
   USEMODULE += xtimer
 endif
 
-# default to the Mask-ROM bootloader if no other bootloader is used
-ifneq (,$(filter usb_board_reset,$(USEMODULE)))
-  ifeq (,$(filter-out bootloader_stm32,$(filter bootloader_%,$(USEMODULE))))
-    USEMODULE += bootloader_stm32
-  endif
+ifneq (,$(filter bootloader_stm32,$(FEATURES_USED)))
+  USEMODULE += bootloader_stm32
 endif
 
 include $(RIOTCPU)/cortexm_common/Makefile.dep
