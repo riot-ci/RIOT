@@ -1,0 +1,18 @@
+INCLUDES += -I$(PKGDIRBASE)/paho-mqtt/MQTTClient-C/src/
+INCLUDES += -I$(PKGDIRBASE)/paho-mqtt/MQTTPacket/src
+INCLUDES += -I$(RIOTBASE)/pkg/paho-mqtt/include
+
+DIRS += $(RIOTBASE)/pkg/paho-mqtt/contrib
+
+CFLAGS += -DSOCK_HAS_IPV6
+CFLAGS += -DSOCK_HAS_IPV4
+
+# LwIP specific CFLAGS
+CFLAGS += -DSO_REUSE
+CFLAGS += -DLWIP_SO_RCVTIMEO
+CFLAGS += -DLWIP_SOCK_TCP_ACCEPT_TIMEOUT=500
+CFLAGS += -DLWIP_NETIF_LOOPBACK=1
+CFLAGS += -DLWIP_HAVE_LOOPIF=0
+
+#define to use MQTT Paho as a task using MQTTStartTask()
+CFLAGS += -DMQTT_TASK=1
