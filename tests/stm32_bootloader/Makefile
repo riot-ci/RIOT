@@ -5,6 +5,6 @@ FEATURES_REQUIRED = cpu_stm32
 
 USEMODULE += shell
 USEMODULE += shell_commands
-USEMODULE += bootloader_stm32
+USEMODULE += usb_board_reset
 
 include $(RIOTBASE)/Makefile.include
