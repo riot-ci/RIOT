@@ -1,7 +1,7 @@
 BOARD ?= nucleo-f411re
 include ../Makefile.tests_common
 
-FEATURES_REQUIRED = cpu_stm32
+FEATURES_REQUIRED = bootloader_stm32
 
 USEMODULE += shell
 USEMODULE += shell_commands
