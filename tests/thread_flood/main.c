@@ -39,13 +39,8 @@ int main(void)
 {
     kernel_pid_t thr_id = KERNEL_PID_UNDEF;
     unsigned thr_cnt = 0;
-    unsigned thr_in_use = 0;
+    unsigned thr_in_use = sched_num_threads;
 
-    for (kernel_pid_t ix = KERNEL_PID_FIRST; ix <= KERNEL_PID_LAST; ix++) {
-        if (thread_get(ix)) {
-            thr_in_use++;
-        }
-    }
     puts("[START] Spawning threads");
     do {
         thr_id = thread_create(
