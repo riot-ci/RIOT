@@ -89,6 +89,8 @@ static void _timeout_handler(event_t *event)
 {
     (void)event;
     puts("Session handshake timed out");
+    /* we need to use the global socks here anyway, so not indirect over
+     * _close_sock() */
     sock_dtls_close(&_dtls_sock);
     sock_udp_close(&_udp_sock);
     _sending = false;
@@ -222,6 +224,7 @@ static int client_send(char *addr_str, char *data)
     _sending = true;
     res = sock_dtls_session_init(&_dtls_sock, &remote, &session);
     if (res <= 0) {
+        /* we have UDP sock, so we don't need to use _close_sock() */
         sock_dtls_close(&_dtls_sock);
         sock_udp_close(&_udp_sock);
         _sending = false;
