@@ -18,6 +18,9 @@
 
 #include <stdio.h>
 
+#include "event/thread.h"
+#include "event/timeout.h"
+#include "net/sock/async/event.h"
 #include "net/sock/udp.h"
 #include "net/sock/dtls.h"
 #include "net/ipv6/addr.h"
@@ -27,6 +30,11 @@
 
 #ifndef DTLS_DEFAULT_PORT
 #define DTLS_DEFAULT_PORT 20220 /* DTLS default port */
+#endif
+
+#ifndef CLIENT_SEND_TIMEOUT
+  /* timeout for client_send command */
+#define CLIENT_SEND_TIMEOUT  (1U * US_PER_SEC)
 #endif
 
 #define SOCK_DTLS_CLIENT_TAG (2)
@@ -68,18 +76,104 @@ static const credman_credential_t credential = {
 };
 #endif
 
-static int client_send(char *addr_str, char *data, size_t datalen)
+static void _timeout_handler(event_t *);
+
+static uint8_t _recv_buf[512];
+static sock_udp_t _udp_sock;
+static sock_dtls_t _dtls_sock;
+static event_timeout_t _timeouter;
+static event_t _timeout = { .handler = _timeout_handler };
+static bool _sending = false;
+
+static void _timeout_handler(event_t *event)
+{
+    (void)event;
+    puts("Session handshake timed out");
+    /* we need to use the global socks here anyway, so not indirect over
+     * _close_sock() */
+    sock_dtls_close(&_dtls_sock);
+    sock_udp_close(&_udp_sock);
+    _sending = false;
+}
+
+static void _close_sock(sock_dtls_t *sock)
+{
+    sock_udp_t *udp_sock = sock_dtls_get_udp_sock(sock);
+
+    sock_dtls_close(sock);
+    sock_udp_close(udp_sock);
+    _sending = false;
+}
+
+static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
+{
+    sock_dtls_session_t session = { 0 };
+
+    event_timeout_clear(&_timeouter);
+    if (type & SOCK_ASYNC_CONN_RECV) {
+        char *send_data = arg;
+        puts("Session handshake received");
+        if (sock_dtls_recv(sock, &session, _recv_buf, sizeof(_recv_buf),
+                           0) != -SOCK_DTLS_HANDSHAKE) {
+            puts("Error creating session");
+            return;
+        }
+        puts("Connection to server successful");
+        printf("Sending data \"%s\"\n", send_data);
+        if (sock_dtls_send(sock, &session, send_data, strlen(send_data),
+                           0) < 0) {
+            puts("Error sending data");
+            sock_dtls_session_destroy(sock, &session);
+            _close_sock(sock);
+        }
+        else {
+            printf("Sent DTLS message\n");
+            event_timeout_set(&_timeouter, CLIENT_SEND_TIMEOUT);
+        }
+    }
+    else if (type & SOCK_ASYNC_CONN_FIN) {
+        puts("Session was destroyed");
+        _close_sock(sock);
+    }
+    else if (type & SOCK_ASYNC_CONN_RDY) {
+        puts("Session became ready");
+    }
+    else if (type & SOCK_ASYNC_MSG_RECV) {
+        int res;
+
+        if ((res = sock_dtls_recv(sock, &session, _recv_buf, sizeof(_recv_buf),
+                                  0)) < 0) {
+            printf("Error receiving DTLS message\n");
+        }
+        else {
+            printf("Received %d bytes: \"%.*s\"\n", (int)res, (int)res,
+                   (char *)_recv_buf);
+        }
+        puts("Terminating session");
+        sock_dtls_session_destroy(sock, &session);
+        _close_sock(sock);
+    }
+    else if (type & SOCK_ASYNC_MSG_SENT) {
+        puts("DTLS message was sent");
+    }
+    else if (type & SOCK_ASYNC_PATH_PROP) {
+        puts("Path property changed");
+    }
+}
+
+static int client_send(char *addr_str, char *data)
 {
     ssize_t res;
-    sock_udp_t udp_sock;
-    sock_dtls_t dtls_sock;
     sock_dtls_session_t session;
     sock_udp_ep_t remote = SOCK_IPV6_EP_ANY;
     sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
     local.port = 12345;
     remote.port = DTLS_DEFAULT_PORT;
-    uint8_t buf[DTLS_HANDSHAKE_BUFSIZE];
 
+    if (_sending) {
+        puts("Already in the process of sending");
+    }
+    event_timeout_init(&_timeouter, &event_queue_medium, &_timeout);
     /* get interface */
     char* iface = ipv6_addr_split_iface(addr_str);
     if (iface) {
@@ -103,59 +197,41 @@ static int client_send(char *addr_str, char *data, size_t datalen)
         return -1;
     }
 
-    if (sock_udp_create(&udp_sock, &local, NULL, 0) < 0) {
+    if (sock_udp_create(&_udp_sock, &local, NULL, 0) < 0) {
         puts("Error creating UDP sock");
         return -1;
     }
 
-    if (sock_dtls_create(&dtls_sock, &udp_sock,
+    if (sock_dtls_create(&_dtls_sock, &_udp_sock,
                          SOCK_DTLS_CLIENT_TAG,
                          SOCK_DTLS_1_2, SOCK_DTLS_CLIENT) < 0) {
         puts("Error creating DTLS sock");
-        sock_udp_close(&udp_sock);
+        sock_udp_close(&_udp_sock);
         return -1;
     }
 
+    sock_dtls_event_init(&_dtls_sock, &event_queue_medium, _dtls_handler,
+                         data);
     res = credman_add(&credential);
     if (res < 0 && res != CREDMAN_EXIST) {
         /* ignore duplicate credentials */
         printf("Error cannot add credential to system: %d\n", (int)res);
+        sock_dtls_close(&_dtls_sock);
+        sock_udp_close(&_udp_sock);
         return -1;
     }
 
-    res = sock_dtls_session_init(&dtls_sock, &remote, &session);
+    _sending = true;
+    res = sock_dtls_session_init(&_dtls_sock, &remote, &session);
     if (res <= 0) {
+        /* we have UDP sock, so we don't need to use _close_sock() */
+        sock_dtls_close(&_dtls_sock);
+        sock_udp_close(&_udp_sock);
+        _sending = false;
         return res;
     }
 
-    res = sock_dtls_recv(&dtls_sock, &session, buf, sizeof(buf),
-                         SOCK_NO_TIMEOUT);
-    if (res != -SOCK_DTLS_HANDSHAKE) {
-        printf("Error creating session: %d\n", (int)res);
-        sock_dtls_close(&dtls_sock);
-        sock_udp_close(&udp_sock);
-        return -1;
-    }
-    printf("Connection to server successful\n");
-
-    if (sock_dtls_send(&dtls_sock, &session, data, datalen, 0) < 0) {
-        puts("Error sending data");
-    }
-    else {
-        printf("Sent DTLS message\n");
-
-        uint8_t rcv[512];
-        if ((res = sock_dtls_recv(&dtls_sock, &session, rcv, sizeof(rcv),
-                                    SOCK_NO_TIMEOUT)) >= 0) {
-            printf("Received %d bytes: \"%.*s\"\n", (int)res, (int)res,
-                   (char *)rcv);
-        }
-    }
-
-    puts("Terminating");
-    sock_dtls_session_destroy(&dtls_sock, &session);
-    sock_dtls_close(&dtls_sock);
-    sock_udp_close(&udp_sock);
+    event_timeout_set(&_timeouter, CLIENT_SEND_TIMEOUT);
     return 0;
 }
 
@@ -166,5 +242,5 @@ int dtls_client_cmd(int argc, char **argv)
         return 1;
     }
 
-    return client_send(argv[1], argv[2], strlen(argv[2]));
+    return client_send(argv[1], argv[2]);
 }
