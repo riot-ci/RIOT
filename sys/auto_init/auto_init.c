@@ -243,6 +243,11 @@ void auto_init(void)
         test_utils_interactive_sync();
     }
 
+    if (IS_USED(MODULE_DUMMY_THREAD)) {
+        extern void dummy_thread_create(void);
+        dummy_thread_create();
+    }
+
     if (IS_USED(MODULE_AUTO_INIT_DHCPV6_CLIENT)) {
         LOG_DEBUG("Auto init DHCPv6 client.\n");
         extern void dhcpv6_client_auto_init(void);
