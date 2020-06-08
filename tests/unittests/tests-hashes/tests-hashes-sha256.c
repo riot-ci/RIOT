@@ -134,6 +134,23 @@ static const unsigned char hlong_sequence[] =
                                     0x6a, 0x78, 0x21, 0x73, 0x54, 0x89, 0x61, 0x85,
                                     0xb1, 0x4a, 0x3a, 0x84, 0xf7, 0xcd, 0x80, 0x66};
 
+/**
+ * @brief expected hash for "abc"
+ */
+static const unsigned char h_abc[] =
+                                   {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea,
+                                    0x41, 0x41, 0x40, 0xde, 0x5d, 0xae, 0x22, 0x23,
+                                    0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c,
+                                    0xb4, 0x10, 0xff, 0x61, 0xf2, 0x00, 0x15, 0xad};
+/**
+ * @brief expected hash for "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+ */
+static const unsigned char h_abc_long[] =
+                                    {0x24, 0x8d, 0x6a, 0x61, 0xd2, 0x06, 0x38, 0xb8,
+                                     0xe5, 0xc0, 0x26, 0x93, 0x0c, 0x3e, 0x60, 0x39,
+                                     0xa3, 0x3c, 0xe4, 0x59, 0x64, 0xff, 0x21, 0x67,
+                                     0xf6, 0xec, 0xed, 0xd4, 0x19, 0xdb, 0x06, 0xc1};
+
 static int calc_and_compare_hash(const char *str, const unsigned char *expected)
 {
     static unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -212,6 +229,17 @@ static void test_hashes_sha256_hash_long_sequence(void)
                     hlong_sequence));
 }
 
+static void test_hashes_sha256_hash_sequence_abc(void)
+{
+    TEST_ASSERT(calc_and_compare_hash("abc", h_abc));
+}
+
+static void test_hashes_sha256_hash_sequence_abc_long(void)
+{
+    TEST_ASSERT(calc_and_compare_hash("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", h_abc_long));
+}
+
+
 Test *tests_hashes_sha256_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -227,6 +255,9 @@ Test *tests_hashes_sha256_tests(void)
         new_TestFixture(test_hashes_sha256_hash_sequence_failing_compare),
 
         new_TestFixture(test_hashes_sha256_hash_long_sequence),
+
+        new_TestFixture(test_hashes_sha256_hash_sequence_abc),
+        new_TestFixture(test_hashes_sha256_hash_sequence_abc_long),
     };
 
     EMB_UNIT_TESTCALLER(hashes_sha256_tests, NULL, NULL,
