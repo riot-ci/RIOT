@@ -897,12 +897,20 @@ int _fsm(gnrc_tcp_tcb_t *tcb, fsm_event_t event, gnrc_pktsnip_t *in_pkt, void *b
     int32_t result = _fsm_unprotected(tcb, event, in_pkt, buf, len);
 
     /* Notify blocked thread if something interesting happened */
-    if ((tcb->status & STATUS_NOTIFY_USER) && (tcb->status & STATUS_WAIT_FOR_MSG)) {
+    if ((tcb->status & STATUS_NOTIFY_USER) && tcb->mbox) {
         msg_t msg;
         msg.type = MSG_TYPE_NOTIFY_USER;
-        mbox_try_put(&(tcb->mbox), &msg);
+        msg.content.ptr = tcb;
+        mbox_try_put(tcb->mbox, &msg);
     }
     /* Unlock FSM */
     mutex_unlock(&(tcb->fsm_lock));
     return result;
+}
+
+void _fsm_set_mbox(gnrc_tcp_tcb_t *tcb, mbox_t *mbox)
+{
+    mutex_lock(&(tcb->fsm_lock));
+    tcb->mbox = mbox;
+    mutex_unlock(&(tcb->fsm_lock));
 }

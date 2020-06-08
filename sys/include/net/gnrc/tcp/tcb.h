@@ -39,11 +39,6 @@ extern "C" {
 #endif
 
 /**
- * @brief Size of the TCB mbox
- */
-#define GNRC_TCP_TCB_MBOX_SIZE (8U)
-
-/**
  * @brief Transmission control block of GNRC TCP.
  */
 typedef struct _transmission_control_block {
@@ -75,8 +70,7 @@ typedef struct _transmission_control_block {
     xtimer_t tim_tout;     /**< Timer struct for timeouts */
     msg_t msg_tout;        /**< Message, sent on timeouts */
     gnrc_pktsnip_t *pkt_retransmit;   /**< Pointer to packet in "retransmit queue" */
-    msg_t mbox_raw[GNRC_TCP_TCB_MBOX_SIZE];   /**< Msg queue for mbox */
-    mbox_t mbox;             /**< TCB mbox for synchronization */
+    mbox_t *mbox;            /**< TCB mbox for synchronization */
     uint8_t *rcv_buf_raw;    /**< Pointer to the receive buffer */
     ringbuffer_t rcv_buf;    /**< Receive buffer data structure */
     mutex_t fsm_lock;        /**< Mutex for FSM access synchronization */
