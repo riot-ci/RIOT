@@ -83,6 +83,10 @@ static void dcdc_init(void)
  */
 static void clk_init(void)
 {
+    /* disable LFRCO comparator chopping and dynamic element matching
+     * else LFRCO has too much jitter for LEUART > 1800 baud */
+    CMU->LFRCOCTRL &= ~(CMU_LFRCOCTRL_ENCHOP | CMU_LFRCOCTRL_ENDEM);
+
     /* initialize HFXO with board-specific parameters before switching */
     if (CLOCK_HF == cmuSelect_HFXO) {
         CMU_HFXOInit_TypeDef init_hfxo = CMU_HFXOINIT;
