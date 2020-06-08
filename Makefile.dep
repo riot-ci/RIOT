@@ -1071,6 +1071,9 @@ FEATURES_OPTIONAL += periph_pm
 # always select provided architecture features
 FEATURES_REQUIRED += $(filter arch_%,$(FEATURES_PROVIDED))
 
+# don't use idle thread if architecture has needed support
+FEATURES_OPTIONAL += no_idle_thread
+
 ifneq (,$(filter ecc_%,$(USEMODULE)))
   USEMODULE += ecc
 endif
