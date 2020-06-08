@@ -236,19 +236,16 @@ static void _transfer_dma(spi_t bus, const void *out, void *in, size_t len)
     uint8_t tmp = 0;
 
     if (out) {
-        dma_prepare(spi_config[bus].tx_dma, (void*)out,
-                      len, 1);
+        dma_prepare(spi_config[bus].tx_dma, (void*)out, len, 1);
     }
     else {
         dma_prepare(spi_config[bus].tx_dma, &tmp, len, 0);
     }
     if (in) {
-        dma_prepare(spi_config[bus].rx_dma, in,
-                      len, 1);
+        dma_prepare(spi_config[bus].rx_dma, in, len, 1);
     }
     else {
-        dma_prepare(spi_config[bus].rx_dma, &tmp,
-                      len, 0);
+        dma_prepare(spi_config[bus].rx_dma, &tmp, len, 0);
     }
 
     /* Start RX first to ensure it is active before the SPI transfers are
