@@ -130,6 +130,7 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
     if (sock->async_cb != NULL) {
         switch (code) {
             case DTLS_ALERT_CLOSE_NOTIFY:
+                /* peer closed their session */
                 sock->async_cb(sock, SOCK_ASYNC_CONN_FIN, sock->async_cb_arg);
                 break;
             case DTLS_EVENT_CONNECTED: {
@@ -412,12 +413,23 @@ ssize_t sock_dtls_send(sock_dtls_t *sock, sock_dtls_session_t *remote,
 }
 
 #if SOCK_HAS_ASYNC
+/**
+ * @brief   Checks for and iterates for more data chunks within the network
+ *          stacks anternal packet buffer
+ *
+ * When no more chunks exists, `data_ctx` assures cleaning up the internal
+ * buffer state and `sock_udp_recv_buf()` returns 0.
+ *
+ * @see @ref sock_udp_recv_buf().
+ */
 static void _check_more_chunks(sock_udp_t *udp_sock, void **data,
                                void **data_ctx, sock_udp_ep_t *remote)
 {
     ssize_t res;
 
     while ((res = sock_udp_recv_buf(udp_sock, data, data_ctx, 0, remote)) > 0) {
+        /* TODO: remove and adapt _copy_buffer() to add remaining data when
+         * tinydtls supports chunked datagram payload */
         if (IS_ACTIVE(DEVELHELP)) {
             LOG_ERROR("sock_dtls: Chunked datagram payload currently not "
                       "supported yet by tinydtls\n");
@@ -462,6 +474,27 @@ static ssize_t _copy_buffer(sock_dtls_t *sock, sock_dtls_session_t *remote,
     return buflen;
 }
 
+static ssize_t _complete_handshake(sock_dtls_t *sock,
+                                   sock_dtls_session_t *remote,
+                                   const session_t *session)
+{
+    memcpy(&remote->dtls_session, session, sizeof(remote->dtls_session));
+    if (sock->async_cb) {
+        sock_async_flags_t flags = SOCK_ASYNC_CONN_RDY;
+
+        if (cib_avail(&sock->mbox.cib)) {
+            if (sock->buf) {
+                flags |= SOCK_ASYNC_MSG_RECV;
+            }
+            else {
+                flags |= SOCK_ASYNC_CONN_RECV;
+            }
+        }
+        sock->async_cb(sock, flags, sock->async_cb_arg);
+    }
+    return -SOCK_DTLS_HANDSHAKE;
+}
+
 ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
                        void *data, size_t max_len, uint32_t timeout)
 {
@@ -480,21 +513,7 @@ ssize_t sock_dtls_recv(sock_dtls_t *sock, sock_dtls_session_t *remote,
         }
         else if (mbox_try_get(&sock->mbox, &msg) &&
                  msg.type == DTLS_EVENT_CONNECTED) {
-            memcpy(&remote->dtls_session, msg.content.ptr, sizeof(session_t));
-            if (sock->async_cb) {
-                sock_async_flags_t flags = SOCK_ASYNC_CONN_RDY;
-
-                if (cib_avail(&sock->mbox.cib)) {
-                    if (sock->buf) {
-                        flags |= SOCK_ASYNC_MSG_RECV;
-                    }
-                    else {
-                        flags |= SOCK_ASYNC_CONN_RECV;
-                    }
-                }
-                sock->async_cb(sock, flags, sock->async_cb_arg);
-            }
-            return -SOCK_DTLS_HANDSHAKE;
+            return _complete_handshake(sock, remote, msg.content.ptr);
         }
         res = sock_udp_recv(sock->udp_sock, data, max_len, timeout,
                             &remote->ep);
@@ -567,6 +586,7 @@ void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
             return;
         }
 
+        /* prevent overriding already set `buf_ctx` */
         if (sock->buf_ctx != NULL) {
             DEBUG("sock_dtls: unable to store buffer asynchronously\n");
             _check_more_chunks(udp_sock, &data, &data_ctx, &remote.ep);
