@@ -402,8 +402,6 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
     uint32_t seg_seq = 0;            /* Sequence number of the incoming packet*/
     uint32_t seg_ack = 0;            /* Acknowledgment number of the incoming packet */
     uint32_t seg_wnd = 0;            /* Receive window of the incoming packet */
-    uint32_t seg_len = 0;            /* Segment length of the incoming packet */
-    uint32_t pay_len = 0;            /* Payload length of the incoming packet */
 
     DEBUG("gnrc_tcp_fsm.c : _fsm_rcvd_pkt()\n");
     /* Search for TCP header. */
@@ -468,7 +466,10 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
                 lst = lst->next;
             }
             /* Return if connection is already handled (port and addresses match) */
-            if (lst != NULL) {
+            /* cppcheck-suppress knownConditionTrueFalse
+             * (reason: tmp *lst* can be true at runtime
+             */
+            if (lst) {
                 DEBUG("gnrc_tcp_fsm.c : _fsm_rcvd_pkt() : Connection already handled\n");
                 return 0;
             }
@@ -576,8 +577,8 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
     }
     /* Handle other states */
     else {
-        seg_len = _pkt_get_seg_len(in_pkt);
-        pay_len = _pkt_get_pay_len(in_pkt);
+        uint32_t seg_len = _pkt_get_seg_len(in_pkt);
+        uint32_t pay_len = _pkt_get_pay_len(in_pkt);
         /* 1) Verify sequence number ... */
         if (_pkt_chk_seq_num(tcb, seg_seq, pay_len)) {
             /* ... if invalid, and RST not set, reply with pure ACK, return */
