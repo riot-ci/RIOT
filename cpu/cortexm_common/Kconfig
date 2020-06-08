@@ -13,11 +13,13 @@ config CPU_ARCH_ARMV7_M
     bool
     select HAS_ARCH_ARM
     select HAS_ARCH_32BIT
+    select HAS_NO_IDLE_THREAD
 
 config CPU_ARCH_ARMV8_M
     bool
     select HAS_ARCH_ARM
     select HAS_ARCH_32BIT
+    select HAS_NO_IDLE_THREAD
 
 config CPU_ARCH
     default "armv6_m" if CPU_ARCH_ARMV6_M
@@ -100,3 +102,8 @@ config HAS_CORTEXM_SVC
     bool
     help
         Indicates that ARM Cortex-M Supervisor Calls are available.
+
+config HAS_NO_IDLE_THREAD
+    bool
+    help
+        Indicates that this MCU doesn't need the idle thread

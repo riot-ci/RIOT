@@ -11,3 +11,8 @@ FEATURES_PROVIDED += ssp
 ifneq (,$(filter $(CPU_ARCH),cortex-m4f cortex-m7))
   FEATURES_PROVIDED += cortexm_fpu
 endif
+
+# cortex-m3 and higher don't need the idle thread
+ifneq (,$(filter cortex-m2% cortex-m4% cortex-m3% cortex-m7%,$(CPU_ARCH)))
+  FEATURES_PROVIDED += no_idle_thread
+endif
