@@ -13,11 +13,13 @@ config CPU_ARCH_ARMV7_M
     bool
     select HAS_ARCH_ARM
     select HAS_ARCH_32BIT
+    select HAS_NO_IDLE_THREAD
 
 config CPU_ARCH_ARMV8_M
     bool
     select HAS_ARCH_ARM
     select HAS_ARCH_32BIT
+    select HAS_NO_IDLE_THREAD
 
 config CPU_ARCH
     default "armv6_m" if CPU_ARCH_ARMV6_M
@@ -31,6 +33,7 @@ config CPU_CORE_CORTEX_M
     select HAS_CPP
     select HAS_CPU_CHECK_ADDRESS
     select HAS_SSP
+    select HAS_CORTEXM_SVC
 
 ## Common CPU symbols
 config CPU_CORE
@@ -94,3 +97,13 @@ config HAS_CORTEXM_FPU
     bool
     help
         Indicates that a ARM Cortex-M FPU is present.
+
+config HAS_CORTEXM_SVC
+    bool
+    help
+        Indicates that ARM Cortex-M Supervisor Calls are available.
+
+config HAS_NO_IDLE_THREAD
+    bool
+    help
+        Indicates that this MCU doesn't need the idle thread
