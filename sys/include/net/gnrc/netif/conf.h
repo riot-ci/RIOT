@@ -161,7 +161,7 @@ extern "C" {
  * other implementations.
  */
 #ifndef CONFIG_GNRC_NETIF_NONSTANDARD_6LO_MTU
-#define CONFIG_GNRC_NETIF_NONSTANDARD_6LO_MTU (0)
+#define CONFIG_GNRC_NETIF_NONSTANDARD_6LO_MTU 0
 #endif
 
 #ifdef __cplusplus
