@@ -82,6 +82,9 @@ endif
 ifneq (,$(filter nimble_netif,$(USEMODULE)))
   INCLUDES += -I$(RIOTPKG)/nimble/netif/include
 
+  # when using IP, the host should have a higher prio than the netif thread
+  CFLAGS += -DNIMBLE_HOST_PRIO=1
+
   # configure NimBLE's internals
   NIMBLE_MAX_CONN ?= 3
   CFLAGS += -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=264
