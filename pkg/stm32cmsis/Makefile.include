@@ -5,5 +5,10 @@ PSEUDOMODULES += stm32cmsis
 # which are only used for STM32 system includes and not of interest for RIOT.
 CFLAGS += -D__SYSTEM_STM32$(call uppercase,$(CPU_FAM))XX_H
 
-# All cmsis headers are cloned within RIOT under cpu/stm32/include/vendor
-INCLUDES += -I$(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)/Include
+ifeq (1,$(RIOT_CI_BUILD))
+  STM32CMSIS_INCLUDE_DIR = $(PKGDIRBASE)/stm32cmsis/Include
+else
+  STM32CMSIS_INCLUDE_DIR = $(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)/Include
+endif
+
+INCLUDES += -I$(STM32CMSIS_INCLUDE_DIR)
