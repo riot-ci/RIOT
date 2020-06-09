@@ -153,7 +153,7 @@ void gnrc_netif_ipv6_init_mtu(gnrc_netif_t *netif)
 #else /* IS_ACTIVE(CONFIG_GNRC_NETIF_NONSTANDARD_6LO_MTU) */
             netif->ipv6.mtu = IPV6_MIN_MTU;
 #endif /* IS_ACTIVE(CONFIG_GNRC_NETIF_NONSTANDARD_6LO_MTU) */
-            if (tmp >= IPV6_MIN_MTU) {
+            if (tmp >= netif->ipv6.mtu) {
                 /* When the L2-PDU is higher or equal to the IPv6 MTU, disable
                  * 6Lo fragmentation, this generally applies to 802.15.4g
                  * devices with a big L2-PDU */
