@@ -28,6 +28,13 @@ PKG_DIR ?= $(CURDIR)
 PKG_BUILDDIR ?= $(PKGDIRBASE)/$(PKG_NAME)
 PKG_SOURCE_LOCAL ?= $(PKG_SOURCE_LOCAL_$(shell echo $(PKG_NAME) | tr a-z- A-Z_))
 
+# git-cache specific management: only export GIT_CACHE_DIR
+# when cloning the repository.
+GITCACHE ?= $(RIOTTOOLS)/git/git-cache
+GIT_CACHE_DIR ?= $(HOME)/.gitcache
+include $(RIOTBASE)/makefiles/utils/variables.mk
+$(call target-export-variables,$(PKG_BUILDDIR)/.git,GIT_CACHE_DIR)
+
 # allow overriding package source with local folder (useful during development)
 ifneq (,$(PKG_SOURCE_LOCAL))
   include $(RIOTBASE)/pkg/local.mk
