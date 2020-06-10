@@ -1,5 +1,4 @@
 BOARD_INSUFFICIENT_MEMORY := \
-    6lowpan-clicker \
     arduino-duemilanove \
     arduino-leonardo \
     arduino-nano \
@@ -10,6 +9,5 @@ BOARD_INSUFFICIENT_MEMORY := \
     msb-430h \
     nucleo-f031k6 \
     nucleo-f042k6 \
-    pic32-wifire \
     stm32f030f4-demo \
     #
