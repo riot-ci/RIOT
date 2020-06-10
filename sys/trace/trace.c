@@ -9,7 +9,7 @@
  */
 
 /**
- * @ingroup     sys_util
+ * @ingroup     sys
  * @{
  *
  * @file
