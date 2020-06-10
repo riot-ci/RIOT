@@ -187,8 +187,8 @@ char *thread_stack_init(thread_task_func_t task_func,
      * For the Cortex-M3 and Cortex-M4 we write them continuously onto the stack
      * as they can be read/written continuously by stack instructions. */
 
-#if defined(CPU_ARCH_CORTEX_M0) || defined(CPU_ARCH_CORTEX_M0PLUS) \
-    || defined(CPU_ARCH_CORTEX_M23)
+#if defined(CPU_CORE_CORTEX_M0) || defined(CPU_CORE_CORTEX_M0PLUS) \
+    || defined(CPU_CORE_CORTEX_M23)
     /* start with r7 - r4 */
     for (int i = 7; i >= 4; i--) {
         stk--;
@@ -287,8 +287,8 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     /* {r0-r3,r12,LR,PC,xPSR,s0-s15,FPSCR} are saved automatically on exception entry */
     ".thumb_func                      \n"
     "mrs    r0, psp                   \n" /* get stack pointer from user mode */
-#if defined(CPU_ARCH_CORTEX_M0) || defined(CPU_ARCH_CORTEX_M0PLUS) \
-    || defined(CPU_ARCH_CORTEX_M23)
+#if defined(CPU_CORE_CORTEX_M0) || defined(CPU_CORE_CORTEX_M0PLUS) \
+    || defined(CPU_CORE_CORTEX_M23)
     "mov    r12, sp                   \n" /* remember the exception SP */
     "mov    sp, r0                    \n" /* set user mode SP as active SP */
     /* we can not push high registers directly, so we move R11-R8 into
@@ -303,7 +303,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "mov    r0, sp                    \n" /* switch back to the exception SP */
     "mov    sp, r12                   \n"
 #else
-#if (defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
+#if (defined(CPU_CORE_CORTEX_M4F) || defined(CPU_CORE_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
     "tst    lr, #0x10                 \n"
     "it     eq                        \n"
     "vstmdbeq r0!, {s16-s31}          \n" /* save FPU registers if FPU is used */
@@ -328,8 +328,8 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void) {
     /* restore context and return from exception */
     ".thumb_func                      \n"
     "context_restore:                 \n"
-#if defined(CPU_ARCH_CORTEX_M0) || defined(CPU_ARCH_CORTEX_M0PLUS) \
-    || defined(CPU_ARCH_CORTEX_M23)
+#if defined(CPU_CORE_CORTEX_M0) || defined(CPU_CORE_CORTEX_M0PLUS) \
+    || defined(CPU_CORE_CORTEX_M23)
     "mov    lr, sp                    \n" /* save MSR stack pointer for later */
     "ldr    r0, =sched_active_thread  \n" /* load address of current TCB */
     "ldr    r0, [r0]                  \n" /* dereference TCB */
@@ -354,7 +354,7 @@ void __attribute__((naked)) __attribute__((used)) isr_svc(void) {
     "ldr    r1, [r0]                  \n" /* load tcb->sp to register 1 */
     "ldmia  r1!, {r0}                 \n" /* restore exception return value */
     "ldmia  r1!, {r4-r11}             \n" /* restore other registers */
-#if (defined(CPU_ARCH_CORTEX_M4F) || defined(CPU_ARCH_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
+#if (defined(CPU_CORE_CORTEX_M4F) || defined(CPU_CORE_CORTEX_M7)) && defined(MODULE_CORTEXM_FPU)
     "tst    r0, #0x10                 \n"
     "it     eq                        \n"
     "vldmiaeq r1!, {s16-s31}          \n" /* load FPU registers if saved */
