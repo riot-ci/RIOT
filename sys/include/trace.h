@@ -9,7 +9,8 @@
  */
 
 /**
- * @ingroup     sys_util
+ * @ingroup     sys
+ * @brief       Trace program flows
  *
  * This module allows recording program flow traces. It is meant for debugging
  * in multi-threaded applications or when ISR's are involved.
@@ -22,6 +23,8 @@
  *
  * The buffer has a default size of 512 entries, which can be overridden by
  * defining CONFIG_TRACE_BUFSIZE. It can be cleared using `trace_reset()`.
+ * The trace buffer works like a ring-buffer. If it is full, it will start
+ * overwriting from the beginning.
  *
  * Tracing is made thread safe by disabling interrupts for critical sections.
  *
