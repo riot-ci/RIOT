@@ -47,7 +47,7 @@ extern "C" {
 * @brief    If an application is calling functions from nimble, e.g.
  *          ble_svc_gap_device_name_set(), NIMBLE_AUTOADV_START_MANUALLY should
  *          be set to 1 and then the application should call
- *          nimble_autoadv_adv_start() after all of its nimble calls to prevent
+ *          nimble_autoadv_start() after all of its nimble calls to prevent
  *          errors like BLE_HS_EBUSY.
  *
  *          Defined as 0 by default.
@@ -108,7 +108,7 @@ void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg);
  *          Needs to be called manually when NIMBLE_AUTOADV_START_MANUALLY was
  *          set to true.
  */
-void nimble_autoadv_adv_start(void);
+void nimble_autoadv_start(void);
 
 #ifdef __cplusplus
 }

@@ -41,7 +41,7 @@ static int _gap_event_cb(struct ble_gap_event *event, void *arg);
 static ble_gap_event_fn *_gap_cb = &_gap_event_cb;
 static void *_gap_cb_arg = NULL;
 
-void nimble_autoadv_adv_start(void);
+void nimble_autoadv_start(void);
 
 static int _gap_event_cb(struct ble_gap_event *event, void *arg)
 {
@@ -52,12 +52,12 @@ static int _gap_event_cb(struct ble_gap_event *event, void *arg)
         case BLE_GAP_EVENT_CONNECT:
             if (event->connect.status != 0) {
                 // failed, ensure advertising is restarted
-                nimble_autoadv_adv_start();
+                nimble_autoadv_start();
             }
             break;
 
         case BLE_GAP_EVENT_DISCONNECT:
-            nimble_autoadv_adv_start();
+            nimble_autoadv_start();
             break;
     }
 
@@ -81,21 +81,21 @@ void nimble_autoadv_init(void)
         assert(rc == BLUETIL_AD_OK);
     }
 
-    rc = ble_gap_adv_set_data(_ad.buf, _ad.pos);
-    assert(rc == 0);
-
     if (!NIMBLE_AUTOADV_START_MANUALLY) {
-        nimble_autoadv_adv_start();
+        nimble_autoadv_start();
     }
 }
 
 int nimble_autoadv_add_field(uint8_t type, const void *data, size_t data_len)
 {
     int rc = bluetil_ad_add(&_ad, type, data, data_len);
-    assert(rc == BLUETIL_AD_OK);
+
+    if (rc != BLUETIL_AD_OK) {
+        return rc;
+    }
 
     if (!NIMBLE_AUTOADV_START_MANUALLY) {
-        nimble_autoadv_adv_start();
+        nimble_autoadv_start();
     }
 
     return rc;
@@ -104,11 +104,19 @@ int nimble_autoadv_add_field(uint8_t type, const void *data, size_t data_len)
 void nimble_autoadv_set_ble_gap_adv_params(struct ble_gap_adv_params *params)
 {
     memcpy(&_advp, params, sizeof(struct ble_gap_adv_params));
+
+    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+        nimble_autoadv_start();
+    }
 }
 
 void nimble_auto_adv_set_adv_duration(int32_t duration_ms)
 {
     _adv_duration = duration_ms;
+
+    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+        nimble_autoadv_start();
+    }
 }
 
 void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg)
@@ -117,11 +125,11 @@ void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg)
     _gap_cb_arg = cb_arg;
 
     if (!NIMBLE_AUTOADV_START_MANUALLY) {
-        nimble_autoadv_adv_start();
+        nimble_autoadv_start();
     }
 }
 
-void nimble_autoadv_adv_start(void)
+void nimble_autoadv_start(void)
 {
     int rc;
     (void) rc;
