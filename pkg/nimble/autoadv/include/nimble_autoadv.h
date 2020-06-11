@@ -106,9 +106,15 @@ void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg);
  * @brief   Start the automated advertising procedure.
  *
  *          Needs to be called manually when NIMBLE_AUTOADV_START_MANUALLY was
- *          set to true.
+ *          set to true and after every call of nimble_autoadv_stop().
  */
 void nimble_autoadv_start(void);
+
+/**
+ * @brief   Stop the automated advertising procedure. After calling this, you
+ *          have to call nimble_autoadv_start() manually to restart the process.
+ */
+void nimble_autoadv_stop(void);
 
 #ifdef __cplusplus
 }

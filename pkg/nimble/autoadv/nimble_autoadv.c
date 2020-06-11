@@ -41,6 +41,8 @@ static int _gap_event_cb(struct ble_gap_event *event, void *arg);
 static ble_gap_event_fn *_gap_cb = &_gap_event_cb;
 static void *_gap_cb_arg = NULL;
 
+static bool stopped = false;
+
 void nimble_autoadv_start(void);
 
 static int _gap_event_cb(struct ble_gap_event *event, void *arg)
@@ -66,6 +68,10 @@ static int _gap_event_cb(struct ble_gap_event *event, void *arg)
 
 void nimble_autoadv_init(void)
 {
+    if (NIMBLE_AUTOADV_START_MANUALLY) {
+        stopped = true;
+    }
+
     memset(&_advp, 0, sizeof _advp);
     _advp.conn_mode = BLE_GAP_CONN_MODE_UND;
     _advp.disc_mode = BLE_GAP_DISC_MODE_GEN;
@@ -81,7 +87,7 @@ void nimble_autoadv_init(void)
         assert(rc == BLUETIL_AD_OK);
     }
 
-    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+    if (!stopped) {
         nimble_autoadv_start();
     }
 }
@@ -94,7 +100,7 @@ int nimble_autoadv_add_field(uint8_t type, const void *data, size_t data_len)
         return rc;
     }
 
-    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+    if (!stopped) {
         nimble_autoadv_start();
     }
 
@@ -105,7 +111,7 @@ void nimble_autoadv_set_ble_gap_adv_params(struct ble_gap_adv_params *params)
 {
     memcpy(&_advp, params, sizeof(struct ble_gap_adv_params));
 
-    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+    if (!stopped) {
         nimble_autoadv_start();
     }
 }
@@ -114,7 +120,7 @@ void nimble_auto_adv_set_adv_duration(int32_t duration_ms)
 {
     _adv_duration = duration_ms;
 
-    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+    if (!stopped) {
         nimble_autoadv_start();
     }
 }
@@ -124,7 +130,7 @@ void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg)
     _gap_cb = cb;
     _gap_cb_arg = cb_arg;
 
-    if (!NIMBLE_AUTOADV_START_MANUALLY) {
+    if (!stopped) {
         nimble_autoadv_start();
     }
 }
@@ -142,4 +148,15 @@ void nimble_autoadv_start(void)
 
     rc = ble_gap_adv_start(nimble_riot_own_addr_type, NULL, _adv_duration, &_advp, _gap_cb, _gap_cb_arg);
     assert(rc == 0);
+}
+
+void nimble_autoadv_stop(void)
+{
+    int rc;
+    (void) rc;
+
+    rc = ble_gap_adv_stop();
+    assert(rc == BLE_HS_EALREADY || rc == 0);
+
+    stopped = true;
 }
