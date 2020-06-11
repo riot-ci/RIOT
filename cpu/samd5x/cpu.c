@@ -78,6 +78,9 @@
 #define DPLL_DIV 1
 #endif
 
+#undef GCLK_SOURCE_XOSC
+#define GCLK_SOURCE_XOSC (XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1)
+
 static void xosc32k_init(void)
 {
     if (!EXTERNAL_OSC32_SOURCE) {
@@ -347,8 +350,7 @@ void cpu_init(void)
         gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_DFLL,
                      GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / CLOCK_CORECLOCK));
     } else if (USE_XOSC) {
-        unsigned xosc_src = XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1;
-        gclk_connect(SAM0_GCLK_MAIN, xosc_src,
+        gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_XOSC,
                      GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / CLOCK_CORECLOCK));
     }
 
