@@ -42,7 +42,7 @@ static saul_reg_t saul_entries[MHZ19_NUM];
 /**
  * @brief   Define the number of saul info
  */
-#define MHZ19_INFO_NUM    (sizeof(mhz19_saul_info) / sizeof(mhz19_saul_info[0]))
+#define MHZ19_INFO_NUM    ARRAY_SIZE(mhz19_saul_info)
 
 /**
  * @brief   Reference the driver structs.
