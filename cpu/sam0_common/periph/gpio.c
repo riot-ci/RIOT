@@ -455,6 +455,19 @@ ISR_EICn(_other)
 #endif /* CPU_SAML1X */
 #endif /* CPU_SAML1X || CPU_SAMD5X */
 
+#if USE_TAMPER_WAKE && !defined(MODULE_PERIPH_RTC) && !defined(MODULE_PERIPH_RTT)
+/* Tamper is currently only used to wake from deep sleep, so no need to register callbacks
+ * or check Tamper ID */
+void isr_rtc(void)
+{
+    /* clear all flags */
+    uint32_t flag = RTC->MODE0.INTFLAG.reg;
+    RTC->MODE0.INTFLAG.reg = flag;
+
+    cortexm_isr_end();
+}
+#endif /* USE_TAMPER_WAKE */
+
 #else /* MODULE_PERIPH_GPIO_IRQ */
 
 void gpio_pm_cb_enter(int deep)
