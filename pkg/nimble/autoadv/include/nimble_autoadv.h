@@ -65,12 +65,16 @@ void nimble_autoadv_init(void);
  * @brief   Set struct for additional arguments specifying the particulars of
  *          the advertising procedure. Uses memcpy internally.
  *
+ *          If there is an active advertising process, it will be restarted.
+ *
  * @param[in]  params   struct with customized additional arguments
  */
 void nimble_autoadv_set_ble_gap_adv_params(struct ble_gap_adv_params *params);
 
 /**
  * @brief   Add a new field to the given advertising data.
+ *
+ *          If there is an active advertising process, it will be restarted.
  *
  * @param[in] type      field type to add
  * @param[in] data      payload for the field
@@ -84,6 +88,8 @@ int nimble_autoadv_add_field(uint8_t type, const void *data, size_t data_len);
 /**
  * @brief   Set the duration for the advertising procedure.
  *
+ *          If there is an active advertising process, it will be restarted.
+ *
  * @param[in]  duration_ms  duration of advertising procedure in ms
  */
 void nimble_auto_adv_set_adv_duration(int32_t duration_ms);
@@ -91,6 +97,8 @@ void nimble_auto_adv_set_adv_duration(int32_t duration_ms);
 /**
  * @brief   Set the callback for gap events. Callback is used for the logic when
  *          to start the advertising procedure.
+ *
+ *          If there is an active advertising process, it will be restarted.
  *
  * @param[in] cb        The callback to associate with this advertising
  *                      procedure. If advertising ends, the event is reported
@@ -106,7 +114,8 @@ void nimble_auto_adv_set_gap_cb(ble_gap_event_fn *cb, void *cb_arg);
  * @brief   Start the automated advertising procedure.
  *
  *          Needs to be called manually when NIMBLE_AUTOADV_START_MANUALLY was
- *          set to true and after every call of nimble_autoadv_stop().
+ *          set to true and after every call of nimble_autoadv_stop() to start
+ *          advertising again.
  */
 void nimble_autoadv_start(void);
 
