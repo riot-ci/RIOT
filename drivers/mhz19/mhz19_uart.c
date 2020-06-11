@@ -113,6 +113,7 @@ int mhz19_init(mhz19_t *dev, const mhz19_params_t *params)
 
     mutex_init(&dev->mutex);
     mutex_init(&dev->sync);
+    mutex_lock(&dev->sync);
 
     dev->idx = 0;
 
@@ -173,8 +174,6 @@ static void mhz19_xmit(mhz19_t *dev, const uint8_t *in)
     /* Send read command to the sensor */
     uart_write(dev->params->uart, in, MHZ19_BUF_SIZE + 1);
 
-    /* First time locking the synchronisation mutex */
-    mutex_lock(&dev->sync);
     /* Schedule timeout wakeup callback */
     xtimer_set(&timer, MHZ19_TIMEOUT_CMD * US_PER_MS);
 
@@ -187,7 +186,8 @@ static void mhz19_xmit(mhz19_t *dev, const uint8_t *in)
     mutex_lock(&dev->sync);
 
     /* Unlock mutex again to reset it to unlocked */
-    mutex_unlock(&dev->sync);
+    mutex_lock(&dev->sync);
+
     /* Clean up timer in case it didn't fire yet */
     xtimer_remove(&timer);
 }
