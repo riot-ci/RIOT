@@ -1,0 +1,5 @@
+MODULE = u8g2_csrc
+
+CFLAGS += -Wno-overlength-strings
+
+include $(RIOTBASE)/Makefile.base
