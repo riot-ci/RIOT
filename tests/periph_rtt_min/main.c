@@ -18,13 +18,14 @@
  * @}
  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdatomic.h>
 
 #include "cpu.h"
 #include "periph_conf.h"
 #include "periph/rtt.h"
-#include "timex.h"
+
 #include "xtimer.h"
 
 #define MAX_WAIT_US     (100)
