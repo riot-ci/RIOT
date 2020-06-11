@@ -125,6 +125,16 @@ void nimble_autoadv_start(void);
  */
 void nimble_autoadv_stop(void);
 
+/**
+ * @brief   Reset all data regarding the advertising process.
+ *          Following characteristics will be applied:
+ *                  - General discoverable mode (BLE_GAP_DISC_MODE_GEN)
+ *                  - Undirected connectable mode (BLE_GAP_CONN_MODE_UND)
+ *                  - No expiration (BLE_HS_FOREVER)
+ *                  - No name
+ */
+void nimble_autoadv_reset(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -31,15 +31,15 @@
 
 static struct ble_gap_adv_params _advp;
 
-static int32_t _adv_duration = BLE_HS_FOREVER;
+static int32_t _adv_duration;
 
 static uint8_t buf[BLE_HS_ADV_MAX_SZ];
 static bluetil_ad_t _ad;
 
 static int _gap_event_cb(struct ble_gap_event *event, void *arg);
 
-static ble_gap_event_fn *_gap_cb = &_gap_event_cb;
-static void *_gap_cb_arg = NULL;
+static ble_gap_event_fn *_gap_cb;
+static void *_gap_cb_arg;
 
 void nimble_autoadv_start(void);
 
@@ -66,20 +66,7 @@ static int _gap_event_cb(struct ble_gap_event *event, void *arg)
 
 void nimble_autoadv_init(void)
 {
-    memset(&_advp, 0, sizeof _advp);
-    _advp.conn_mode = BLE_GAP_CONN_MODE_UND;
-    _advp.disc_mode = BLE_GAP_DISC_MODE_GEN;
-
-    int rc = 0;
-    (void) rc;
-
-    rc = bluetil_ad_init_with_flags(&_ad, buf, sizeof(buf), BLUETIL_AD_FLAGS_DEFAULT);
-    assert(rc == BLUETIL_AD_OK);
-
-    if (NIMBLE_AUTOADV_DEVICE_NAME != NULL) {
-        rc = bluetil_ad_add_name(&_ad, NIMBLE_AUTOADV_DEVICE_NAME);
-        assert(rc == BLUETIL_AD_OK);
-    }
+    nimble_autoadv_reset();
 
     if (!NIMBLE_AUTOADV_START_MANUALLY) {
         nimble_autoadv_start();
@@ -151,4 +138,31 @@ void nimble_autoadv_stop(void)
 
     rc = ble_gap_adv_stop();
     assert(rc == BLE_HS_EALREADY || rc == 0);
+}
+
+void nimble_autoadv_reset(void)
+{
+    _gap_cb = &_gap_event_cb;
+    _gap_cb_arg = NULL;
+
+    _adv_duration = BLE_HS_FOREVER;
+
+    memset(&_advp, 0, sizeof _advp);
+    _advp.conn_mode = BLE_GAP_CONN_MODE_UND;
+    _advp.disc_mode = BLE_GAP_DISC_MODE_GEN;
+
+    int rc = 0;
+    (void) rc;
+
+    rc = bluetil_ad_init_with_flags(&_ad, buf, sizeof(buf), BLUETIL_AD_FLAGS_DEFAULT);
+    assert(rc == BLUETIL_AD_OK);
+
+    if (NIMBLE_AUTOADV_DEVICE_NAME != NULL) {
+        rc = bluetil_ad_add_name(&_ad, NIMBLE_AUTOADV_DEVICE_NAME);
+        assert(rc == BLUETIL_AD_OK);
+    }
+
+    if (ble_gap_adv_active()) {
+        nimble_autoadv_start();
+    }
 }
