@@ -25,30 +25,26 @@ else
     all: cryptoauth
 endif
 
-cryptoauth: $(PKG_BUILDDIR)/lib/Makefile
-	$(MAKE) -C $(PKG_BUILDDIR)/lib
-	cp $(PKG_BUILDDIR)/lib/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
+cryptoauth: $(PKG_BUILDDIR)/build/Makefile
+	$(MAKE) -C $(PKG_BUILDDIR)/build
+	cp $(PKG_BUILDDIR)/build/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
 
-$(PKG_BUILDDIR)/lib/Makefile: $(TOOLCHAIN_FILE)
-	cd $(PKG_BUILDDIR)/lib && \
+$(PKG_BUILDDIR)/build/Makefile: $(TOOLCHAIN_FILE)
+	mkdir -p $(PKG_BUILDDIR)/build && \
 	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
 		  -Wno-dev \
-		  -DBUILD_TESTS=OFF \
-		  -DATCA_HAL_I2C:BOOL=TRUE .
+		  -DATCA_HAL_I2C:BOOL=TRUE \
+		  -B$(PKG_BUILDDIR)/build \
+		  -H$(PKG_BUILDDIR)/lib
 
 $(TOOLCHAIN_FILE): git-download
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
 build_tests:
-	cp $(PKG_TESTINCLDIR)/*.c $(PKG_BUILDDIR)
-	cp $(PKG_TESTINCLDIR)/jwt/*.c $(PKG_BUILDDIR)
-	cp $(PKG_TESTINCLDIR)/tng/*.c $(PKG_BUILDDIR)
-	cp $(PKG_TESTINCLDIR)/atcacert/*.c $(PKG_BUILDDIR)
-
-	echo "MODULE = $(PKG_TEST_NAME)" > $(PKG_BUILDDIR)/Makefile
-	echo "include \$$(RIOTBASE)/Makefile.base" >> $(PKG_BUILDDIR)/Makefile
-
-	"$(MAKE)" -C $(PKG_BUILDDIR)
+	"$(MAKE)" MODULE=$(PKG_TEST_NAME) -C $(PKG_BUILDDIR)/test -f $(RIOTBASE)/Makefile.base
+	"$(MAKE)" MODULE=$(PKG_TEST_NAME)_jwt -C $(PKG_BUILDDIR)/test/jwt -f $(RIOTBASE)/Makefile.base
+	"$(MAKE)" MODULE=$(PKG_TEST_NAME)_tng -C $(PKG_BUILDDIR)/test/tng -f $(RIOTBASE)/Makefile.base
+	"$(MAKE)" MODULE=$(PKG_TEST_NAME)_atcacert -C $(PKG_BUILDDIR)/test/atcacert -f $(RIOTBASE)/Makefile.base
 
 git-download: | ..cmake_version_supported
 
