@@ -38,7 +38,7 @@ extern "C" {
 
 #ifndef CLOCK_CORECLOCK
 #if USE_XOSC_ONLY
-#define CLOCK_CORECLOCK      (48000000U)    /*  48 MHz */
+#define CLOCK_CORECLOCK      (12000000U)    /*  12 MHz */
 #else
 #define CLOCK_CORECLOCK     (120000000U)    /* 120 MHz */
 #endif
