@@ -249,9 +249,12 @@ void rtc_poweroff(void)
 void isr_rtc(void)
 {
     if (RTC->MODE2.INTFLAG.bit.ALARM0) {
-        rtc_callback.cb(rtc_callback.arg);
         /* clear flag */
         RTC->MODE2.INTFLAG.reg = RTC_MODE2_INTFLAG_ALARM0;
+
+        if (rtc_callback.cb) {
+            rtc_callback.cb(rtc_callback.arg);
+        }
     }
     if (RTC->MODE2.INTFLAG.bit.OVF) {
         /* clear flag */
