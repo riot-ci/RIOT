@@ -18,12 +18,10 @@
  */
 
 #include "cpu.h"
+#include "macros/units.h"
 #include "periph_conf.h"
 #include "periph/init.h"
 #include "stdio_base.h"
-
-#define KHZ(x)    ((x) * 1000)
-#define MHZ(x) (KHZ(x) * 1000)
 
 /*
  * An external inductor needs to be present on the board,
@@ -51,7 +49,7 @@
 #error Configuration error: no external oscillator frequency defined
 #endif
 
-#if (CLOCK_CORECLOCK > SAM0_XOSC48_FREQ_HZ)
+#if (CLOCK_CORECLOCK > SAM0_XOSC_FREQ_HZ)
 #error When using an external oscillator for the main clock, a maximum CPU frequency of 48 MHz is available
 #endif
 
@@ -216,15 +214,15 @@ void sam0_gclk_enable(uint8_t id)
         if (USE_DPLL) {
             gclk_connect(SAM0_GCLK_8MHZ,
                          GCLK_SOURCE_DPLL0,
-                         GCLK_GENCTRL_DIV(DPLL_DIV * CLOCK_CORECLOCK / 8000000));
+                         GCLK_GENCTRL_DIV(DPLL_DIV * CLOCK_CORECLOCK / MHZ(8)));
         } else if (USE_DFLL) {
             gclk_connect(SAM0_GCLK_8MHZ,
                          GCLK_SOURCE_DFLL,
-                         GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / 8000000));
+                         GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / MHZ(8)));
         } else if (USE_XOSC) {
             gclk_connect(SAM0_GCLK_8MHZ,
                          GCLK_SOURCE_XOSC,
-                         GCLK_GENCTRL_DIV(SAM0_XOSC48_FREQ_HZ / 8000000));
+                         GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / MHZ(8)));
         }
         break;
     case SAM0_GCLK_48MHZ:
@@ -246,12 +244,12 @@ uint32_t sam0_gclk_freq(uint8_t id)
     case SAM0_GCLK_32KHZ:
         return 32768;
     case SAM0_GCLK_8MHZ:
-        return 8000000;
+        return MHZ(8);
     case SAM0_GCLK_48MHZ:
         if (USE_DFLL) {
             return SAM0_DFLL_FREQ_HZ;
         } else if (USE_XOSC) {
-            return SAM0_XOSC48_FREQ_HZ;
+            return SAM0_XOSC_FREQ_HZ;
         } else {
             assert(0);
             return 0;
@@ -351,7 +349,7 @@ void cpu_init(void)
     } else if (USE_XOSC) {
         unsigned xosc_src = XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1;
         gclk_connect(SAM0_GCLK_MAIN, xosc_src,
-                     GCLK_GENCTRL_DIV(SAM0_XOSC48_FREQ_HZ / CLOCK_CORECLOCK));
+                     GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / CLOCK_CORECLOCK));
     }
 
     /* make sure fast clocks are off */
