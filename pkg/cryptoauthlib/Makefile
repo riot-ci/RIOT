@@ -25,16 +25,17 @@ else
     all: cryptoauth
 endif
 
-cryptoauth: $(PKG_BUILDDIR)/lib/Makefile
-	$(MAKE) -C $(PKG_BUILDDIR)/lib
-	cp $(PKG_BUILDDIR)/lib/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
+cryptoauth: $(PKG_BUILDDIR)/build/Makefile
+	$(MAKE) -C $(PKG_BUILDDIR)/build
+	cp $(PKG_BUILDDIR)/build/libcryptoauth.a $(BINDIR)/$(PKG_NAME).a
 
-$(PKG_BUILDDIR)/lib/Makefile: $(TOOLCHAIN_FILE)
-	cd $(PKG_BUILDDIR)/lib && \
+$(PKG_BUILDDIR)/build/Makefile: $(TOOLCHAIN_FILE)
+	mkdir -p $(PKG_BUILDDIR)/build && \
 	cmake -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN_FILE) \
 		  -Wno-dev \
-		  -DBUILD_TESTS=OFF \
-		  -DATCA_HAL_I2C:BOOL=TRUE .
+		  -DATCA_HAL_I2C:BOOL=TRUE \
+		  -B$(PKG_BUILDDIR)/build \
+		  -H$(PKG_BUILDDIR)/lib
 
 $(TOOLCHAIN_FILE): git-download
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
