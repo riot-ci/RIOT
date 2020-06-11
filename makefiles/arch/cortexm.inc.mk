@@ -14,7 +14,7 @@ ifneq (llvm,$(TOOLCHAIN))
   CFLAGS += -mno-thumb-interwork
 
   # work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85606
-  ifeq (armv6_m,$(CPU_ARCH))
+  ifeq (armv6m,$(CPU_ARCH))
     CFLAGS_CPU += -march=armv6s-m
   endif
 endif
