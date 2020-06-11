@@ -14,7 +14,7 @@ else ifeq ($(OS),Darwin)
 endif
 
 # open the ttyACM device at 1200 baud to signal bootloader reset
-PREFLASHER ?= stty
+PREFLASHER ?= -stty
 PREFFLAGS  ?= $(STTY_FLAG) $(PROG_DEV) raw ispeed 1200 ospeed 1200 cs8 -cstopb ignpar eol 255 eof 255
 PREFLASH_DELAY ?= 1
 FLASHDEPS += preflash-delay
