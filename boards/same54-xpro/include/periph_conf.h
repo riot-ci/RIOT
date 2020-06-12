@@ -27,9 +27,43 @@ extern "C" {
 #endif
 
 /**
- * @brief   GCLK reference speed
+ * @brief   Use the external oscillator to source all fast clocks.
+ *          This allows us to use the buck voltage regulator for
+ *          maximum power efficiency, but limits the maximum clock
+ *          frequency to 48 MHz.
  */
-#define CLOCK_CORECLOCK     (120000000U)
+#ifndef USE_XOSC_ONLY
+#define USE_XOSC_ONLY       (0)
+#endif
+
+/**
+ * @name    external Oscillator (XOSC0) configuration
+ * @{
+ */
+#define XOSC0_FREQUENCY     MHZ(12)
+/** @} */
+
+#ifndef CLOCK_CORECLOCK
+#if USE_XOSC_ONLY
+#define CLOCK_CORECLOCK     XOSC0_FREQUENCY
+#else
+#define CLOCK_CORECLOCK     MHZ(120)
+#endif
+#endif
+
+/**
+ * @name    32kHz Oscillator configuration
+ * @{
+ */
+#define EXTERNAL_OSC32_SOURCE                    1
+#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE      0
+/** @} */
+
+/**
+ * @brief Enable the internal DC/DC converter
+ *        The board is equipped with the necessary inductor.
+ */
+#define USE_VREG_BUCK       (1)
 
 /**
  * @name Timer peripheral configuration
@@ -207,16 +241,6 @@ static const i2c_conf_t i2c_config[] = {
 };
 
 #define I2C_NUMOF           ARRAY_SIZE(i2c_config)
-/** @} */
-
-
-/**
- * @name    RTC configuration
- * @{
- */
-#define EXTERNAL_OSC32_SOURCE                    1
-#define INTERNAL_OSC32_SOURCE                    0
-#define ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE      0
 /** @} */
 
 /**
