@@ -1,0 +1,9 @@
+MODULE = ucglib_csrc
+
+CFLAGS += -Wno-unused
+
+ifeq (llvm,$(TOOLCHAIN))
+  CFLAGS += -Wno-misleading-indentation
+endif
+
+include $(RIOTBASE)/Makefile.base
