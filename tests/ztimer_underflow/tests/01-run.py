@@ -10,15 +10,9 @@ from __future__ import print_function
 import sys
 from testrunner import run
 
-how_many = 1000
-
-
 def testfunc(child):
-    for i in range(how_many):
-        child.expect(r'Loop %i' % (i))
-        print(".", end="", flush=True)
+    child.expect(r'SUCCESS!')
     print("")
-    print("Stopped after %i iterations, but should run forever." % how_many)
     print("=> All tests successful")
 
 if __name__ == "__main__":
