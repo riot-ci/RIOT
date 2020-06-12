@@ -35,6 +35,10 @@
 #error Please select CLOCK_CORECLOCK
 #endif
 
+#if EXTERNAL_OSC32_SOURCE && ULTRA_LOW_POWER_INTERNAL_OSC_SOURCE
+#error Select EITHER external 32kHz oscillator OR internal 32kHz Oscillator
+#endif
+
 #ifndef XOSC0_FREQUENCY
 #define XOSC0_FREQUENCY (0)
 #endif
@@ -43,6 +47,8 @@
 #define XOSC1_FREQUENCY (0)
 #endif
 
+#define GCLK_SOURCE_ACTIVE_XOSC (XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1)
+
 #if USE_XOSC_ONLY /* don't use fast internal oscillators */
 
 #if (XOSC0_FREQUENCY == 0) && (XOSC1_FREQUENCY == 0)
@@ -50,7 +56,7 @@
 #endif
 
 #if (CLOCK_CORECLOCK > SAM0_XOSC_FREQ_HZ)
-#error When using an external oscillator for the main clock, a maximum CPU frequency of 48 MHz is available
+#error When using an external oscillator for the main clock, the CPU frequency can't exceed it's frequency.
 #endif
 
 #define USE_DPLL 0
@@ -77,9 +83,6 @@
 #else
 #define DPLL_DIV 1
 #endif
-
-#undef GCLK_SOURCE_XOSC
-#define GCLK_SOURCE_XOSC (XOSC0_FREQUENCY ? GCLK_SOURCE_XOSC0 : GCLK_SOURCE_XOSC1)
 
 static void xosc32k_init(void)
 {
@@ -224,7 +227,7 @@ void sam0_gclk_enable(uint8_t id)
                          GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / MHZ(8)));
         } else if (USE_XOSC) {
             gclk_connect(SAM0_GCLK_8MHZ,
-                         GCLK_SOURCE_XOSC,
+                         GCLK_SOURCE_ACTIVE_XOSC,
                          GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / MHZ(8)));
         }
         break;
@@ -232,7 +235,7 @@ void sam0_gclk_enable(uint8_t id)
         if (USE_DFLL) {
             gclk_connect(SAM0_GCLK_48MHZ, GCLK_SOURCE_DFLL, 0);
         } else if (USE_XOSC) {
-            gclk_connect(SAM0_GCLK_48MHZ, GCLK_SOURCE_XOSC, 0);
+            gclk_connect(SAM0_GCLK_48MHZ, GCLK_SOURCE_ACTIVE_XOSC, 0);
         }
 
         break;
@@ -350,7 +353,7 @@ void cpu_init(void)
         gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_DFLL,
                      GCLK_GENCTRL_DIV(SAM0_DFLL_FREQ_HZ / CLOCK_CORECLOCK));
     } else if (USE_XOSC) {
-        gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_XOSC,
+        gclk_connect(SAM0_GCLK_MAIN, GCLK_SOURCE_ACTIVE_XOSC,
                      GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / CLOCK_CORECLOCK));
     }
 
