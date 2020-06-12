@@ -36,20 +36,20 @@ extern "C" {
 #define USE_XOSC_ONLY       (0)
 #endif
 
-#ifndef CLOCK_CORECLOCK
-#if USE_XOSC_ONLY
-#define CLOCK_CORECLOCK      (12000000U)    /*  12 MHz */
-#else
-#define CLOCK_CORECLOCK     (120000000U)    /* 120 MHz */
-#endif
-#endif
-
 /**
  * @name    external Oscillator (XOSC0) configuration
  * @{
  */
-#define XOSC0_FREQUENCY     (12000000U)     /* 12 MHz */
+#define XOSC0_FREQUENCY     MHZ(12)
 /** @} */
+
+#ifndef CLOCK_CORECLOCK
+#if USE_XOSC_ONLY
+#define CLOCK_CORECLOCK     XOSC0_FREQUENCY
+#else
+#define CLOCK_CORECLOCK     MHZ(120)
+#endif
+#endif
 
 /**
  * @name    32kHz Oscillator configuration
