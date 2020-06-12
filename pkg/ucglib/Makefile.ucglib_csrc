@@ -1,0 +1,5 @@
+MODULE = ucglib_csrc
+
+CFLAGS += -Wno-unused
+
+include $(RIOTBASE)/Makefile.base
