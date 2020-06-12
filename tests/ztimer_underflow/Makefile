@@ -1,13 +1,14 @@
 include ../Makefile.tests_common
 
-USEMODULE += ztimer
+TEST_ZTIMER_CLOCK ?= ZTIMER_USEC
 
-# Which clock shall be tested?
-# -> ZTIMER_USEC
+USEMODULE += ztimer
 USEMODULE += ztimer_usec
-CFLAGS += -DTEST_ZTIMER_CLOCK=ZTIMER_USEC
-# -> ZTIMER_MSEC
-#USEMODULE += ztimer_msec ztimer_periph_rtt
-#CFLAGS += -DTEST_ZTIMER_CLOCK=ZTIMER_MSEC
+ifeq ($(TEST_ZTIMER_CLOCK), ZTIMER_MSEC)
+  USEMODULE += ztimer_msec
+  USEMODULE += ztimer_periph_rtt
+endif
+
+CFLAGS += -DTEST_ZTIMER_CLOCK=$(TEST_ZTIMER_CLOCK)
 
 include $(RIOTBASE)/Makefile.include

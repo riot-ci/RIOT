@@ -6,11 +6,11 @@ The tests succeeds if the board running the test does not get stuck.
 
 ## ZTIMER_USEC
 
-Uncomment the respective lines in the test's `Makefile`. If the test stucks,
-increase `CONFIG_ZTIMER_USEC_MIN`.
+Set the environment variable `TEST_ZTIMER_CLOCK=ZTIMER_USEC`. If the test get
+stuck, increase `CONFIG_ZTIMER_USEC_MIN`.
 
 
 ## ZTIMER_MSEC
 
-Uncomment the respective lines in the test's `Makefile`. If the test stucks,
-increase `RTT_MIN_VALUE`.
+Set the environment variable `TEST_ZTIMER_CLOCK=ZTIMER_MSEC`. If the test get
+stuck, increase `RTT_MIN_VALUE`.
