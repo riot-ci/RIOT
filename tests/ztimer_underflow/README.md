@@ -1,7 +1,7 @@
 # Introduction
 
 This test application underflows ztimer clocks by setting a time offset of zero.
-The board running the test must not stuck!
+The tests succeeds if the board running the test does not get stuck.
 
 
 ## ZTIMER_USEC
