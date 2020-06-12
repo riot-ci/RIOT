@@ -155,6 +155,7 @@ static const i2c_conf_t i2c_config[] = {
  */
 #define RTT_FREQUENCY                           (32768U)
 #define RTT_MAX_VALUE                           (0xffffffffU)
+/* determined by using tests/ztimer_underflow */
 #define RTT_MIN_VALUE                           (8U)
 /** @} */
 
