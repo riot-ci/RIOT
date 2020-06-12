@@ -1,5 +1,7 @@
 MODULE = wolfcrypt
 
+CFLAGS += -Wno-unused
+
 SUBMODULES += 1
 
 NO_AUTO_SRC = 1
