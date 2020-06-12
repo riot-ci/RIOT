@@ -34,7 +34,7 @@
 #include "debug.h"
 
 /**
- * @brief   Initial value of the FCS
+ * @brief   Initial value of the frame check sequence
  */
 static const uint16_t fcs_init = -(DFPLAYER_VERSION + DFPLAYER_LEN);
 
@@ -213,7 +213,8 @@ void dfplayer_uart_rx_cb(void *_dev, uint8_t data)
              * frame's payload. If bytes get lost and an and of frame symbol
              * is mistaken for a payload byte, this will be almost certainly
              * detected, as additionally a second end of frame symbol would
-             * need to appear at the right position *and* the FCS need to match
+             * need to appear at the right position *and* the frame check
+             * sequence need to match
              */
             if ((data == DFPLAYER_END) && (dev->len == DFPLAYER_LEN)) {
                 uint16_t fcs_exp = fcs_init;
@@ -401,8 +402,8 @@ int dfplayer_file_cmd(dfplayer_t *dev, uint8_t cmd, uint8_t p1, uint8_t p2)
          * failure. A timeout could be either:
          *   a) Success. DFPlayer is playing the selected file
          * or
-         *   b) Failure, but the reply got lost (or was rejected due to FCS
-         *      mismatch)
+         *   b) Failure, but the reply got lost (or was rejected due to mismatch
+         *      of the frame check sequence)
          *
          * We just check if the DFPlayer is actually playing
          */

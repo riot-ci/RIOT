@@ -131,7 +131,7 @@ extern "C" {
  */
 #define DFPLAYER_ERROR_BUSY         (0x00)  /**< Module is busy */
 #define DFPLAYER_ERROR_FRAME        (0x01)  /**< Received incomplete frame */
-#define DFPLAYER_ERROR_FCS          (0x02)  /**< Checksum of last frame didn't match */
+#define DFPLAYER_ERROR_FCS          (0x02)  /**< Frame check sequence of last frame didn't match */
 /**
  * @brief   File/folder selected for playback (command 0x06) does not exit
  *
