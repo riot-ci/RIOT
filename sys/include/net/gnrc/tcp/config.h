@@ -7,6 +7,8 @@
  */
 
 /**
+ * @addtogroup  net_gnrc_tcp_conf   GNRC TCP compile configurations
+ * @ingroup     net_gnrc_conf
  * @ingroup     net_gnrc_tcp
  *
  * @{
