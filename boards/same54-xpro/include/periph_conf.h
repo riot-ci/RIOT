@@ -37,15 +37,15 @@ extern "C" {
 #endif
 
 /**
- * @name    external Oscillator (XOSC0) configuration
+ * @name    external Oscillator (XOSC1) configuration
  * @{
  */
-#define XOSC0_FREQUENCY     MHZ(12)
+#define XOSC1_FREQUENCY     MHZ(12)
 /** @} */
 
 #ifndef CLOCK_CORECLOCK
 #if USE_XOSC_ONLY
-#define CLOCK_CORECLOCK     XOSC0_FREQUENCY
+#define CLOCK_CORECLOCK     XOSC1_FREQUENCY
 #else
 #define CLOCK_CORECLOCK     MHZ(120)
 #endif
