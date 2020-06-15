@@ -28,7 +28,8 @@
 
 #include "xtimer.h"
 
-#define MAX_WAIT_US     (100)
+/* min. amount of time to wait between set_alarm() */
+#define MIN_WAIT_US     (100)
 #define US_PER_TICK     (US_PER_SEC / RTT_FREQUENCY)
 
 #ifndef SAMPLES
@@ -50,18 +51,18 @@ int main(void)
     rtt_init();
 
     printf("Evaluate RTT_MIN_VALUE over %" PRIu32 " samples\n",
-            (uint32_t)SAMPLES);
+           (uint32_t)SAMPLES);
 
-    for(unsigned i = 0;  i < SAMPLES; i++) {
+    for (unsigned i = 0; i < SAMPLES; i++) {
         uint32_t offset = 0;
         cb_triggered = false;
         while (cb_triggered == false) {
             offset++;
             uint32_t now = rtt_get_counter();
             rtt_set_alarm((now + offset) % RTT_MAX_VALUE, cb, 0);
-            xtimer_usleep(offset * US_PER_TICK + MAX_WAIT_US);
+            xtimer_usleep(offset * US_PER_TICK + MIN_WAIT_US);
         }
-        if(offset > value) {
+        if (offset > value) {
             value = offset;
         }
         printf(".");
