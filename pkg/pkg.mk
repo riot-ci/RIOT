@@ -56,7 +56,7 @@ PKG_CUSTOM_PREPARED ?=
 
 # Declare 'all' first to have it being the default target
 all: $(PKG_PREPARED)
-prepare: $(PKG_PREPARED) $(PKG_CUSTOM_PREPARED)
+prepare: $(PKG_PREPARED)
 
 # Allow packages to add a custom step to be `prepared`.
 # It should be a dependency of `$(PKG_PREPARED)` and depend on `$(PKG_PATCHED)`
@@ -95,7 +95,7 @@ $(PKG_DOWNLOADED): $(MAKEFILE_LIST) | $(PKG_BUILDDIR)/.git
 	$(Q)$(GIT_IN_PKG) fetch $(GIT_QUIET) $(PKG_URL) $(PKG_VERSION)
 	echo $(PKG_VERSION) > $@
 
-$(PKG_BUILDDIR)/.git:
+$(PKG_BUILDDIR)/.git: | $(PKG_CUSTOM_PREPARED)
 	$(info [INFO] cloning $(PKG_NAME))
 	$(Q)rm -Rf $(PKG_BUILDDIR)
 	$(Q)mkdir -p $(PKG_BUILDDIR)
