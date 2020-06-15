@@ -51,9 +51,12 @@ PKG_PREPARED   = $(PKG_STATE)-prepared
 PKG_PATCHED    = $(PKG_STATE)-patched
 PKG_DOWNLOADED = $(PKG_STATE)-downloaded
 
+# Custom prepared target that can be defined in packages Makefile.
+PKG_CUSTOM_PREPARED ?=
+
 # Declare 'all' first to have it being the default target
 all: $(PKG_PREPARED)
-prepare: $(PKG_PREPARED)
+prepare: $(PKG_PREPARED) $(PKG_CUSTOM_PREPARED)
 
 # Allow packages to add a custom step to be `prepared`.
 # It should be a dependency of `$(PKG_PREPARED)` and depend on `$(PKG_PATCHED)`
