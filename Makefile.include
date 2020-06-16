@@ -63,7 +63,6 @@ __DIRECTORY_VARIABLES := \
   BUILD_DIR \
   BINDIRBASE \
   BINDIR \
-  GITCACHE \
   PKGDIRBASE \
   DLCACHE_DIR \
   #
@@ -113,7 +112,6 @@ override RIOTMAKE               := $(abspath $(RIOTMAKE))
 override RIOTPKG                := $(abspath $(RIOTPKG))
 override RIOTTOOLS              := $(abspath $(RIOTTOOLS))
 override RIOTPROJECT            := $(abspath $(RIOTPROJECT))
-override GITCACHE               := $(abspath $(GITCACHE))
 override APPDIR                 := $(abspath $(APPDIR))
 override BUILD_DIR              := $(abspath $(BUILD_DIR))
 override BINDIRBASE             := $(abspath $(BINDIRBASE))
