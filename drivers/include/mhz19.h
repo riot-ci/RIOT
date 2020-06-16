@@ -16,9 +16,9 @@
  *
  * ## Description
  *
- * The MH-Z19 is a C02 sensor. Measurements are provided in ppm over UART and
- * PWM. PPM range from 0 (theoretically) to 2000 or 5000 depending on the
- * sensor settings.
+ * The MH-Z19 is a CO2 sensor. Measurements are provided in parts per million
+ * (ppm) over UART and PWM. The ppm value ranges from 0 (theoretically) to
+ * 2000 or 5000, depending on the sensor settings.
  *
  * In UART mode, additional commands are available to configure the sensor.
  *

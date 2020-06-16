@@ -53,7 +53,7 @@ int mhz19_get_ppm(mhz19_t *dev, int16_t *ppm)
     /*
      * Per the docs, one sample should take 1004ms +-5%. Worst case is
      * that  we come in right after the rising edge of the current cycle,
-     * so we wanna wait two cycles plus some wiggle room at most for
+     * so we want to wait two cycles plus some wiggle room at most for
      * a measurement.
      */
     int16_t timeout = 2200;
