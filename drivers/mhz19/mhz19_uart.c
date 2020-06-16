@@ -82,13 +82,6 @@ static const uint8_t calibrate_zero_point[] = {
     0x78 /* checksum */
 };
 
-static void _mhz19_timeout(void *arg)
-{
-    mhz19_t *dev = arg;
-
-    mutex_unlock(&(dev->sync));
-}
-
 static void _mhz19_rx_cb(void *arg, uint8_t byte)
 {
     mhz19_t *dev = arg;
@@ -113,7 +106,6 @@ int mhz19_init(mhz19_t *dev, const mhz19_params_t *params)
 
     mutex_init(&dev->mutex);
     mutex_init(&dev->sync);
-    mutex_lock(&dev->sync);
 
     dev->idx = 0;
 
@@ -162,34 +154,24 @@ static void mhz19_cmd(mhz19_t *dev, const uint8_t *in)
  */
 static void mhz19_xmit(mhz19_t *dev, const uint8_t *in)
 {
-    /* timeout timer, for the case the sensor does not respond */
-    xtimer_t timer;
-
-    timer.callback = _mhz19_timeout;
-    timer.arg = dev;
-
     /* Reset the buffer index to zero */
     dev->idx = 0;
+
+    /* Lock the synchronization mutex */
+    mutex_lock(&dev->sync);
 
     /* Send read command to the sensor */
     uart_write(dev->params->uart, in, MHZ19_BUF_SIZE + 1);
 
-    /* Schedule timeout wakeup callback */
-    xtimer_set(&timer, MHZ19_TIMEOUT_CMD * US_PER_MS);
-
     /* By locking the same mutex another time, this thread blocks until
-     * something else calls the unlock. In this case it has to wait for
-     * either the timeout xtimer callback or the UART ISR having received 9
-     * bytes. This way we have both a timeout scheduled and a regular wait
-     * for the UART to finish.
+     * the UART ISR received all bytes and unlocks the mutex. If that does not
+     * happen, then xtimer_mutex_lock_timeout unlocks the mutex after as well
+     * after the timeout expired.
      */
-    mutex_lock(&dev->sync);
+    xtimer_mutex_lock_timeout(&dev->sync, MHZ19_TIMEOUT_CMD * US_PER_MS);
 
-    /* lock mutex again for the next time */
-    mutex_lock(&dev->sync);
-
-    /* Clean up timer in case it didn't fire yet */
-    xtimer_remove(&timer);
+    /* Unlock synchronization for next transmission */
+    mutex_unlock(&dev->sync);
 }
 
 int mhz19_get_ppm(mhz19_t *dev, int16_t *ppm)
