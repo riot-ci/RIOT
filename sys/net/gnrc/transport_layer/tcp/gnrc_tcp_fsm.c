@@ -574,10 +574,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
         if (ctl & MSK_RST) {
             /* .. and state is SYN_RCVD and the connection is passive: SYN_RCVD -> LISTEN */
             if (tcb->state == FSM_STATE_SYN_RCVD && (tcb->status & STATUS_PASSIVE)) {
-                if (_transition_to(tcb, FSM_STATE_LISTEN) == -ENOMEM) {
-                    _transition_to(tcb, FSM_STATE_CLOSED);
-                    return -ENOMEM;
-                }
+                _transition_to(tcb, FSM_STATE_LISTEN);
             }
             else {
                 _transition_to(tcb, FSM_STATE_CLOSED);
