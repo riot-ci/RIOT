@@ -572,6 +572,8 @@ static inline uint32_t _update_timeout(uint32_t start, uint32_t timeout)
 }
 
 #ifdef SOCK_HAS_ASYNC
+#include "net/sock/async/event.h"
+
 void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
 {
     sock_dtls_t *sock = ctx;
@@ -608,8 +610,6 @@ void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
         sock->async_cb(sock, SOCK_ASYNC_PATH_PROP, sock->async_cb_arg);
     }
 }
-
-#include "net/sock/async/event.h"
 
 void sock_dtls_set_cb(sock_dtls_t *sock, sock_dtls_cb_t cb, void *cb_arg)
 {
