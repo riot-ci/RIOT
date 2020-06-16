@@ -133,8 +133,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
     }
 
     /* Acquire receive buffer */
-    if (_rcvbuf_get_buffer(tcb) == -ENOMEM)
-    {
+    if (_rcvbuf_get_buffer(tcb) == -ENOMEM) {
         mutex_unlock(&(tcb->function_lock));
         return -ENOMEM;
     }
