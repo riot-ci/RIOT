@@ -228,7 +228,7 @@ void sam0_gclk_enable(uint8_t id)
         } else if (USE_XOSC) {
             gclk_connect(SAM0_GCLK_8MHZ,
                          GCLK_SOURCE_ACTIVE_XOSC,
-                         GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / MHZ(8)));
+                         GCLK_GENCTRL_DIV(SAM0_XOSC_FREQ_HZ / MHZ(4)));
         }
         break;
     case SAM0_GCLK_48MHZ:
@@ -250,7 +250,11 @@ uint32_t sam0_gclk_freq(uint8_t id)
     case SAM0_GCLK_32KHZ:
         return 32768;
     case SAM0_GCLK_8MHZ:
-        return MHZ(8);
+        if (USE_XOSC) {
+            return MHZ(4);
+        } else {
+            return MHZ(8);
+        }
     case SAM0_GCLK_48MHZ:
         if (USE_DFLL) {
             return SAM0_DFLL_FREQ_HZ;
