@@ -23,6 +23,14 @@
 #include "irq.h"
 #include "ztimer/periph_timer.h"
 
+/* use this to add a constant offset to every value read.
+ * useful to not wait long for a timer overflow to happen.
+ * only works for 32bit timers.
+ */
+#ifndef ZTIMER_PERIPH_TIMER_BASEVAL
+#define ZTIMER_PERIPH_TIMER_BASEVAL 0
+#endif
+
 static void _ztimer_periph_timer_set(ztimer_clock_t *clock, uint32_t val)
 {
     ztimer_periph_timer_t *ztimer_periph = (ztimer_periph_timer_t *)clock;
@@ -37,6 +45,7 @@ static void _ztimer_periph_timer_set(ztimer_clock_t *clock, uint32_t val)
  * That already dieables irq's.
  * For the others, better ensure that happens.
  */
+    printf("%lu\n", val);
 #ifdef PERIPH_TIMER_PROVIDES_SET
     unsigned state = irq_disable();
 #endif
@@ -50,7 +59,7 @@ static uint32_t _ztimer_periph_timer_now(ztimer_clock_t *clock)
 {
     ztimer_periph_timer_t *ztimer_periph = (ztimer_periph_timer_t *)clock;
 
-    return timer_read(ztimer_periph->dev);
+    return timer_read(ztimer_periph->dev) + ZTIMER_PERIPH_TIMER_BASEVAL;
 }
 
 static void _ztimer_periph_timer_cancel(ztimer_clock_t *clock)
