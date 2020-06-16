@@ -78,8 +78,8 @@ extern "C" {
  */
 #define MHZ19_CMD_AUTO_CALIBRATION      0x79    /**< Auto calibration command */
 #define MHZ19_CMD_GAS_CONCENTRATION     0x86    /**< Gas concentration command */
-#define MHZ19_CMD_CALIBRATE_ZERO        0x87    /**< Zero callibration command */
-#define MHZ19_CMD_CALIBRATE_SPAN        0x88    /**< Span callibration command */
+#define MHZ19_CMD_CALIBRATE_ZERO        0x87    /**< Zero calibration command */
+#define MHZ19_CMD_CALIBRATE_SPAN        0x88    /**< Span calibration command */
 /** @} */
 
 /**

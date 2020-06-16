@@ -162,7 +162,7 @@ static void mhz19_cmd(mhz19_t *dev, const uint8_t *in)
  */
 static void mhz19_xmit(mhz19_t *dev, const uint8_t *in)
 {
-    /* MH-Z19 timout timer, for the case the sensor doesn't respond */
+    /* timeout timer, for the case the sensor does not respond */
     xtimer_t timer;
 
     timer.callback = _mhz19_timeout;
