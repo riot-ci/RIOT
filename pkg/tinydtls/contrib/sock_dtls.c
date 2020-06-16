@@ -137,21 +137,11 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
                 /* peer closed their session */
                 sock->async_cb(sock, SOCK_ASYNC_CONN_FIN, sock->async_cb_arg);
                 break;
-            case DTLS_EVENT_CONNECTED: {
-                dtls_peer_t *peer = dtls_get_peer(ctx, session);
-                if (peer->role == DTLS_SERVER) {
-                    /* we are server so a client connected */
-                    sock->async_cb(sock, SOCK_ASYNC_CONN_RDY,
-                                   sock->async_cb_arg);
-                }
-                else {
-                    /* we are client so an session we tried to establish became
-                     * ready */
-                    sock->async_cb(sock, SOCK_ASYNC_CONN_RECV,
-                                   sock->async_cb_arg);
-                }
+            case DTLS_EVENT_CONNECTED:
+                /* we received a session handshake initialization */
+                sock->async_cb(sock, SOCK_ASYNC_CONN_RECV,
+                               sock->async_cb_arg);
                 break;
-            }
             default:
                 break;
         }
