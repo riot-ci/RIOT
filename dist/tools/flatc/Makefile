@@ -8,7 +8,6 @@ PKG_BUILDDIR=$(CURDIR)/bin
 # manually set some RIOT env vars, so this Makefile can be called stand-alone
 RIOTBASE ?= $(CURDIR)/../../..
 RIOTTOOLS ?= $(CURDIR)/..
-GITCACHE ?= $(RIOTTOOLS)/git/git-cache
 
 CMAKE_OPTIONS = \
     -DCMAKE_BUILD_TYPE=Release       \
