@@ -18,9 +18,13 @@
 
 #include "dtls.h"
 #include "log.h"
-#include "net/sock/async.h"
 #include "net/sock/dtls.h"
 #include "net/credman.h"
+
+#if SOCK_HAS_ASYNC
+#include "net/sock/async.h"
+#include "net/sock/async/event.h"
+#endif
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -481,6 +485,7 @@ static ssize_t _complete_handshake(sock_dtls_t *sock,
                                    const session_t *session)
 {
     memcpy(&remote->dtls_session, session, sizeof(remote->dtls_session));
+#ifdef SOCK_HAS_ASYNC
     if (sock->async_cb) {
         sock_async_flags_t flags = SOCK_ASYNC_CONN_RDY;
 
@@ -494,6 +499,9 @@ static ssize_t _complete_handshake(sock_dtls_t *sock,
         }
         sock->async_cb(sock, flags, sock->async_cb_arg);
     }
+#else
+    (void)sock;
+#endif
     return -SOCK_DTLS_HANDSHAKE;
 }
 
@@ -572,8 +580,6 @@ static inline uint32_t _update_timeout(uint32_t start, uint32_t timeout)
 }
 
 #ifdef SOCK_HAS_ASYNC
-#include "net/sock/async/event.h"
-
 void _udp_cb(sock_udp_t *udp_sock, sock_async_flags_t flags, void *ctx)
 {
     sock_dtls_t *sock = ctx;
