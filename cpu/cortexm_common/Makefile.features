@@ -30,3 +30,8 @@ else ifeq ($(CPU_CORE),cortex-m23)
 else
   $(error Unkwnown cortexm core: $(CPU_CORE))
 endif
+
+# cortex-m3 and higher don't need the idle thread
+ifneq (,$(filter cortex-m2% cortex-m4% cortex-m3% cortex-m7%,$(CPU_CORE)))
+  FEATURES_PROVIDED += no_idle_thread
+endif
