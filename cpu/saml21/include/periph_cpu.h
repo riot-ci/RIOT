@@ -73,6 +73,20 @@ typedef enum {
  */
 #define DAC_NUMOF           (2)
 
+/**
+ * @name    Real time counter configuration
+ * @{
+ */
+#define RTT_DEV             RTC->MODE0
+#define RTT_IRQ             RTC_IRQn
+#define RTT_ISR             isr_rtc
+
+#define RTT_MAX_VALUE       (0xffffffff)
+#define RTT_CLOCK_FREQUENCY (32768U)                      /* in Hz */
+#define RTT_MIN_FREQUENCY   (RTT_CLOCK_FREQUENCY / 512U)  /* in Hz */
+#define RTT_MAX_FREQUENCY   (RTT_CLOCK_FREQUENCY)         /* in Hz */
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
