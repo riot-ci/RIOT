@@ -136,10 +136,6 @@ static const spi_dev_t spi_config[] = {
  * or two regular timers in cascade mode.
  * @{
  */
-#ifndef EFM32_USE_LETIMER
-#define EFM32_USE_LETIMER   0
-#endif
-
 #if EFM32_USE_LETIMER
 static const timer_conf_t timer_config[] = {
     {
