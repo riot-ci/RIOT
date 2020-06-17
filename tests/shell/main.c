@@ -49,7 +49,16 @@ static int print_testend(int argc, char **argv)
 static int print_echo(int argc, char **argv)
 {
     for (int i = 0; i < argc; ++i) {
-        printf("\"%s\"", argv[i]);
+        printf("\"");
+        for (int j = 0; j < (int) strlen(argv[i]); j++) {
+            if (argv[i][j] == '"') {
+                printf("\\\"");
+            }
+            else {
+                printf("%c", argv[i][j]);
+            }
+        }
+        printf("\"");
     }
     puts("");
 
