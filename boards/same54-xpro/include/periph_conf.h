@@ -233,6 +233,7 @@ static const i2c_conf_t i2c_config[] = {
  */
 #ifndef RTT_FREQUENCY
 #define RTT_FREQUENCY       (32768U)
+#endif
 /** @} */
 
 /**
