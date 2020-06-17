@@ -37,8 +37,10 @@
 #if defined(CPU_LINE_STM32L4R5xx)
 #define ISR_REG     ISR
 #define ISR_TXE     USART_ISR_TXE_TXFNF
+#define ISR_RXNE    USART_ISR_RXNE_RXFNE
 #define ISR_TC      USART_ISR_TC
 #define TDR_REG     TDR
+#define RDR_REG     RDR
 #elif defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32L0) || \
       defined(CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L4) || \
       defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32F7)
