@@ -107,8 +107,3 @@ config HAS_CORTEXM_SVC
     bool
     help
         Indicates that ARM Cortex-M Supervisor Calls are available.
-
-config HAS_NO_IDLE_THREAD
-    bool
-    help
-        Indicates that this MCU doesn't need the idle thread
