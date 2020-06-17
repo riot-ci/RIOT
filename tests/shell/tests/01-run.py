@@ -52,7 +52,6 @@ CMDS = (
     ('unknown_command', 'shell: command not found: unknown_command'),
     ('hello-willy\b\b\b\borld', 'shell: command not found: hello-world'),
     ('\b\b\b\becho', '\"echo\"'),
-    ('help', EXPECTED_HELP),
     ('echo a string', '\"echo\"\"a\"\"string\"'),
     ("""echo "t\e st" "\\"" '\\'' a\ b""", '"echo""te st"""""\'""a b"'),
     ('echo a\\', 'shell: incorrect quoting'),
