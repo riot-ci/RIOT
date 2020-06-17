@@ -13,4 +13,4 @@ stuck, increase `CONFIG_ZTIMER_USEC_MIN`.
 ## ZTIMER_MSEC
 
 Set the environment variable `TEST_ZTIMER_CLOCK=ZTIMER_MSEC`. If the test get
-stuck, increase `RTT_MIN_VALUE`.
+stuck, increase `RTT_MIN_OFFSET`.
