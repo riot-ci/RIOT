@@ -141,7 +141,8 @@ static void print_help(const shell_command_t *command_list)
  * the word). Spaces can also be protected by quoting with double or single
  * quotes.
  *
- State diagram for the tokenizer:
+ State diagram for the tokenizer. If it looks broken on your IDE, try to view
+ it inside a terminal text editor of your choice.
 ```
            ┌───[\]────┐   ┌─────["]────┐   ┌───[']─────┐  ┌───[\]────┐
            ↓          │   ↓            │   │           ↓  │          ↓
@@ -150,14 +151,14 @@ static void print_help(const shell_command_t *command_list)
   ┗━━━━━━━━┯━┛      ┗━━━━━━┯┛        ┗┯━━━━┯━┛       ┗━┯━━━━━┛     ┗━━━┯━━━━━━┛
            │         ↑     │          │    │           │     ↑(store)  │
            │  (store)│     │   ┌─[\]──┘    └──[*]────┐ │     │         │
-           └──[*]──▶┴◀[*]┘   │                     │ └[*]▶┴◀──[*]──┘
+           └──[*]──▶─┴◀─[*]┘   │                     │ └[*]▶─┴◀──[*]───┘
                                ↓     ┏━━━━━━━┓       ↓
-                               ├◀[\]┨NOQUOTE┃◀─────┼◀─┐
+                               ├◀─[\]┨NOQUOTE┃◀──────┼◀──┐
                                │     ┗━━━━━┯━┛(store)↑   │
                                │           │         │   │
                                │           └─[*]─────┘   │
                                │     ┏━━━━━━━━━━━┓       │
-                               └───▶┃NOQUOTE ESC┠──[*]──┘
+                               └────▶┃NOQUOTE ESC┠──[*]──┘
                                      ┗━━━━━━━━━━━┛
 ```
  */
