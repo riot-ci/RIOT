@@ -127,7 +127,7 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
             break;
     }
 #endif  /* ENABLE_DEBUG */
-    if (code != DTLS_EVENT_CONNECT) {
+    if (!level && (code != DTLS_EVENT_CONNECT)) {
         mbox_put(&sock->mbox, &msg);
     }
 #ifdef SOCK_HAS_ASYNC
