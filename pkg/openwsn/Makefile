@@ -23,7 +23,7 @@ all: $(OPENWSN_MODULES)
 
 OPENWSN_LOG_LEVEL ?= LOG_NONE
 OPENWSN_CFLAGS = -DLOG_LEVEL=$(OPENWSN_LOG_LEVEL)
-openwsn_%: CFLAGS+=$(OPENWSN_CFLAGS)
+openwsn_%: CFLAGS += $(OPENWSN_CFLAGS)
 
 openwsn_openstack:
 	MODULE=$@ "$(MAKE)" -C $(PKG_BUILDDIR)/openstack -f $(CURDIR)/Makefile.openwsn_module

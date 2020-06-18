@@ -15,9 +15,10 @@
 # Supported:
 #  * openv-term
 #  * openv-termroot
-#  * openv-termtun (will start openv as sudo)
+#  * openv-termtun
 #  * openv-setroot
 #  * openv-clean
+#  * openv-serial
 #
 # Prerequisites
 # -------------
@@ -35,6 +36,7 @@
 # Use full path in case it needs to be run with sudo
 OPENV_SERVER_PATH := $(shell which openv-server)
 OPENV_CLIENT_PATH := $(shell which openv-client)
+OPENV_SERIAL_PATH := $(shell which openv-serial)
 
 # Openvisualizer requires to know where openwsn-fw is located
 OPENV_OPENWSN_FW_PATH ?= --fw-path=$(BINDIRBASE)/pkg/$(BOARD)/openwsn-fw
@@ -77,8 +79,8 @@ openv-termroot: $(TERMDEPS)
 	$(Q)$(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
 
 openv-termtun: $(OPENV_LOG_CONFIG)
-openv-termtun:  $(TERMDEPS)
-	$(Q)sudo $(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
+openv-termtun: $(TERMDEPS)
+	sudo $(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS) --root=$(OPENV_MOTE)
 
 openv-setroot:
 	$(Q)$(OPENV_CLIENT_PATH) $(OPENV_OPENWSN_FW_PATH) $(OPENV_FLAGS) root=$(OPENV_MOTE)
@@ -86,3 +88,6 @@ openv-setroot:
 openv-clean:
 	$(Q)rm -rf $(OPENV_LOG_CONFIG)
 	$(Q)rm -rf $(OPENV_LOG_FILE)
+
+openv-serial:
+	$(Q)$(OPENV_SERIAL_PATH) --port=$(PORT) --baudrate=$(BAUD)

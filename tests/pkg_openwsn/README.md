@@ -27,6 +27,25 @@ a fix channel:
 
     $ export CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=17
 
+## IMPORTANT!
+
+OpenWSN uses source routing, this means all network traffic must go through
+from the root node to OpenVisualizer. If the root node configuration can't
+handle the configured baudrate correctly this will lead to packet loss.
+
+Currently these are the tested configurations:
+
+(a) samr21-xpro network:
+    - lead nodes using `openwsn_sctimer_rtt`
+    - root node using `openwsn_sctimer_rtt` and 19200 baudrate directly connect
+      to UART pins (no through the usb debugger)
+
+(b) iotlab-m3 network:
+    - leaf nodes using `openwsn_sctimer_rtt` or `sctimer_ztimer`
+    - root node using `openwsn_sctimer_rtt` and 57600 baudrate
+
+For more on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
+
 ### Launch an experiment
 
 Assuming you have `iotlab-cli` installed, launch an experiment booking 3+
@@ -162,3 +181,47 @@ The first node should receive the message
 
     > Received 12 bytes on port 3000
     00000000  A6  28  00  00  00  02  00  68  65  6C  6C  6F .(.....hello
+
+### Communicating with host
+
+OpenVisualizer can set up a tun interface to communicate with the host computer.
+This will require starting `OpenVisualizer` with root privileges. The only
+difference with the previous setup is that the root node must be setup as
+follows:
+
+    $ IOTLAB_NODE=m3-3.saclay.iot-lab.info make -C tests/pkg_openwsn openv-termtun
+
+Once DAOs are received you can ping node in the network from your host:
+
+```
+$ ping6 -s 40 -i 5 bbbb:0:0:0:2ab5:fc65:106b:1114
+PING bbbb:0:0:0:2ab5:fc65:106b:1114(bbbb::2ab5:fc65:106b:1114) 40 data bytes
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=1 ttl=64 time=1064 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=2 ttl=64 time=2111 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=3 ttl=64 time=1141 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=4 ttl=64 time=2197 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=5 ttl=64 time=1228 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=6 ttl=64 time=2306 ms
+48 bytes from bbbb::2ab5:fc65:106b:1114: icmp_seq=7 ttl=64 time=1324 ms
+
+```
+
+Debug output if openserial is also used on leafnode:
+
+```
+16:02:38 [ParserIEC:INFO] 768f [ICMPv6ECHO] received an echo request
+16:02:44 [ParserIEC:INFO] 768f [ICMPv6ECHO] received an echo request
+16:02:48 [ParserIEC:INFO] 768f [ICMPv6ECHO] received an echo request
+16:02:54 [ParserIEC:INFO] 768f [ICMPv6ECHO] received an echo request
+```
+
+Some considerations:
+    - Nodes duty cycle is ~0.5%, so nodes get a chance to transmit roughly every
+      2s, so the worst case scenario is ~4s RTT. This is increased for big payloads
+      since it will lead to fragmentation.
+    - If incoming packet rate is too fast the internal packet queue can be
+      be overloaded.
+
+
+
+

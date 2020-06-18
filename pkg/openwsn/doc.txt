@@ -57,22 +57,42 @@
  * energy modes, this timer usually uses the RTC (real time clock) or RTT (real
  * time timer) module.
  *
- * In order to get the most portable code, this implementation uses ztimer and
- * defines a new `ztimer_clock` (ZTIMER_32768) that operates at 32768Khz to have
- * a resolution of ~30usec/tick (same as OpenWSN).
+ * This port has two possible implementations or sctimer, one on top of
+ * periph_rtt and the another on top of ztimer, `sctimer_rtt` and
+ * `sctimer_ztimer` respectively. If possible `ztimer` should be preferred,
+ * being a virtual timer it will allow RIOT applications/modules to use the
+ * low level RTT timer. But ztimer (any virtual timer) has some overhead
+ * which can be costly depending on the different platforms used, specially
+ * when `openserial` is required. More on this in openserial and Known Issues.
  *
- * When available ZTIMER_32768 will be built on top of `periph_rtt` to get low
- * power capabilities. If not it will be built on top of a regular timer. In
- * either case it will be shifted up if the base frequency lower than 32768Hz
- * or frac if higher.
+ * #### sctimer_ztimer
  *
- * The `sctimer` is responsible to set the next interrupt. Under circumstances,
- * it may happen, that the next interrupt to schedule is already late, compared
- * to the current time. In this case, timer implementations in OpenWSN directly
- * trigger a hardware interrupt. In RIOT there is not interface for uart
- * transmit interrupts, and there is not sw interrupts api either. As a
- * workaround a callback is set 0 ticks in the future, which internally will be
- * set to `now + RTT_MIN_VAL`.
+ * In order to get the most portable code, this implementation uses
+ * ztimer and defines a new `ztimer_clock` (ZTIMER_32768) that operates
+ * at 32768Khz to have a resolution of ~30usec/tick (same as OpenWSN).
+ *
+ * When available ZTIMER_32768 will be built on top of `periph_rtt` to
+ * get low power capabilities. If not it will be built on top of a
+ * regular timer. In either case it will be shifted up if the base
+ * frequency is lower than 32768Hz or frac if higher.
+ *
+ * When next interrupt to schedule is already late, current time,
+ * Implementations in OpenWSN directly trigger a hardware interrupt.
+ * Until able to trigger sw isr directly a callback is set 0 ticks in
+ * the future, which internally will be set to `now + RTT_MIN_OFFSET`.
+
+ * #### sctimer_rtt
+ *
+ * In order to reduce overhead this implementation uses bare RTT. It
+ * expects a RTT running at 32768Hz to have a resolution of ~30usec/tick
+ * (same as OpenWSN). If RTT_FREQUENCY is lower than 32768Hz then a
+ * simple time-division mechanism will be used to speed up the clock.
+ * This only works if RTT_FREQUENCY is 32768Hz/2.
+ *
+ * When next interrupt to schedule is already late, current time,
+ * Implementations in OpenWSN directly trigger a hardware interrupt.
+ * Until able to trigger sw isr directly a callback is set
+ * RTT_MIN_OFFSET ticks in the future.
  *
  * ### radio
  *
@@ -121,6 +141,68 @@
  *
  * It uses `ztimer` to set the timer since its already pulled in as a dependency.
  *
+ * ### Openserial
+ *
+ * As was mentioned before any OpenWSN network will require a root node which is
+ * connected to an `OpenVisualizer` instance running on a host computer.
+ * Interaction between `OpenVisualizer` and the open is done over serial. As
+ * OpenWSN uses source routing, this means that ultimately all network traffic
+ * must go from the root node to `OpenVisualizer` and back.
+ *
+ * OpenSerial uses software flow control (XonXoff) to turn off serial activity
+ * while time critical TSCH operation are ongoing. But software flow control
+ * can cause issues since delays in the serial pipe (either because of a remote
+ * connection, buffers, etc..) can lead to bytes being transmitted when one side
+ * is not yet ready.
+ *
+ * Serial data is transmitted as High-Level Data Link Control (HDLC) frames.
+ * Since network traffic is tunneled through the serial pipe, in order to
+ * to have a stable connection this packets must not be lost. Packets can be
+ * lost in multiple ways but at the end it reduces to bytes being overridden in
+ * the uart reception buffer.
+ *
+ * 1. The last byte in an HDCL frame is received
+ * 2. Serial pipe delays hindering XonXoff operation
+ * 3. Interrupts are masked or higher/equal ISR are running
+ *
+ * 1. When the last byte of a frame is received some parsing and handling of the
+ *    frame occur. This takes some time and during that time OpenSerial cant
+ *    handle more incoming bytes. This in practice limits the baudrate depending
+ *    on the CPU's speed.
+ *
+ * 2. This can occure when adebugger/virtual-port might act as a
+ *    buffer between the mote and the host, or when there is a latency in the
+ *    connection (for example tcp connection to iotlab).
+ *
+ * 3. Since uart reception is interrupted based if the uart ISR is not serviced
+ *    for too long then bytes where start overriding each other in the reception
+ *    buffer. In an application where only OpenWSN is running then there are 3
+ *    functions/operations that run in ISR or with disabled ISR.
+ *
+ *  (a) `opentimers_timer_callback` (OpenWSN timer abstraction callback)
+ *  (b) `sctimer_setCompare` and `sctimer_readCounter`
+ *  (c) `ztimer_handler`
+ *
+ * (a) and (b) are closely related since `opentimers_timer_callback` will
+ *  itself call `sctimer_setCompare` and `sctimer_readCounter`. An this itself
+ *  will depend on `ztimer_set` and `ztimer_now` or `rtt_get_counter` or
+ *  `rtt_set_alarm` execution time.
+ *
+ * (c) is also related to (a) (b) since `ztimer_handler` will as well call
+ * `opentimers_timer_callback` as well as the underlying `rtt` functions.
+ *
+ * Since a 115200 baudrate means ~1byte every 10us, non of the above can take
+ * longer than that or bytes could be lost at that baudrate.
+ *
+ * Because of the above mentioned reasons, it is preferable to use `sctimer_rtt`
+ * for the root node or "border router" on an OpenWSN network, since this reduces
+ * the likeliness of packets being lost. For non root nodes, OpenSerial only
+ * provides debugging information so no special care needs to be taken.
+ *
+ * It is also recommended that the root node should act as a border router
+ * running only the OpenWSN stack to avoid other threads/ISR disrupting serial
+ * reception.
+ *
  * ## Tested Platforms and Pin configurations
  *
  * So far, this has been successfully tested on `iotlab-m3`,`nucleo-f103` and
@@ -141,6 +223,9 @@
  * networks (different type of underlying hardware) might desynchronize often,
  * or not manage to keep in sync at all.
  *
+ * Print messages during TSCH operation should be avoided since these can disrupt
+ * TSCH timings.
+ *
  * ### ledpins & debugpins
  *
  * The OpenWSN software provides different hooks all over the stack to toggle
@@ -148,6 +233,7 @@
  * Default configuration files are provided for both. The LED configuration maps to
  * RIOTs `LEDX_PIN` definitions, if available. On Nucleo boards LED0 line is
  * shared SPI, so is not used.
+ *
  * The default configuration can be overwritten by setting `OPENWSN_LEDS_DEFAULT`
  * in the form of `ledpins_config_t`. The debugpins work similarly by setting
  * `OPENWSN_DEBUGPINS_BOARD` in the form of `debugpins_config_t`.
@@ -161,12 +247,15 @@
  * - LED pins and debug pins as mentioned above in combination with a logic analyzer.
  * The expected behavior is described in:
  * [OpenWSN wiki](https://openwsn.atlassian.net/wiki/spaces/OW/pages/688257/Schedules).
+ *
  * - The provided test application provides a UDP client and server. If the UDP
  * server is able to receive packets, the mechanism is considered to work correctly.
  * You should also be able to ping the device from your host. See
  * [tests/pkg_openwsn/README.md](../../tests/pkg_openwsn/README.md) for more details.
+ *
  * - To speed up synchronization and make sniffing easier you can disable channel
  * hopping by setting (`CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=26`).
+ *
  * - To sniff the packets either use a 802.15.4 capable board and follow
  * [these instructions](https://github.com/RIOT-OS/applications/blob/master/sniffer/tools/README.md).
  * Alternatively use a Raspberry Pi with an external radio such as Openlabs and
@@ -175,30 +264,77 @@
  * used on your Linux computer with WPAN tools installed. If you conduct your
  * experiments on the IoT-LAB testbed you might want to use a:
  * [sniffer profile](https://www.iot-lab.info/tutorials/radio-sniffer).
+ *
  * - To explore the channel hopping mechanism there are rather expensive
  * multi-channel sniffers such as the BeamLogic 802.15.4 Site Analyzer that can
  * sniff all channels simultaneously. Alternatively you can set up multiple
  * separate sniffer devices locally or make use of the `sniffer_aggregator` on
  * the IoT-LAB testbed.
- * - There is a collection of external tools to interact with the IoT nodes from
- * a host computer via `openserial`. Please refer to the
- * [OpenWSN software](https://github.com/openwsn-berkeley/openwsn-sw) repository
- * for further information.
+ *
+ * - To test Openserial on a given platform the target `make openv-serial` can
+ * be used on a BOARD flashed with `tests/pkg_openwsn` (USEMODULE=openwsn_serial)
+ * must be included as well. The following output should appear:
+ *
+ *     ```
+ *     Test Setup:
+ *    ----------------
+ *    Iterations:    100
+ *    Packet length: 100
+ *    Echo timeout:    2
+ *
+ *    Test Progress:
+ *
+ *      [####################################]  100%
+ *
+ *    Test Statistics:
+ *    ----------------
+ *    Pkts send:      100
+ *    Echo success:   100
+ *    Echo timeout:     0
+ *    Echo corrupted:   0
+ *    ```
+ *
+ * The test should be considered passing if success rate is > 98%.
  *
  * ## Known Issues
  *
- * The following errors will be visible when using `openwsn_serial`:
+ * The following errors might visible when using `openwsn_serial`:
  *
  * - `[OPENSERIAL] wrong CRC in input Buffer`
  *
  * Since a timer is set to simulate a uart transmit interrupt, it can happen that
  * the interrupt is missed if another interrupt occurs during that time, this
- * seems to lead to the input buffer missing a byte and so CRC fails.
+ * seems to lead to the input buffer missing a byte and so CRC fails. More details
+ * where given in the `openserial` section.
  *
  * - `[IEEE802154E] wdDataDuration overflows while at state 19 in slotOffset 0`
  *
- * This error can show up depending on the distance between the nodes, it seems
- * some of the parameters in board_info.h need further tunning.
+ * This error can show up  when the radio starts receving (receives the SFD) and
+ * therefore triggers a `NETDEV_RX_STARTED`. but then no `NETDEV_TX_STARTED`
+ * event follows. This happens when packets with invalid CRC are received.
+ * netdev currently silently drops these packets without notifying upper layers.
+ * But this does not affect the stach operation, so ther can be ignored.
+ *
+ * - `[IEEE802154E] large timeCorr.: -18 ticks (code loc. 0)`
+ *
+ * Most crystals used to clock the RTT will drift even those with a very similarly
+ * drift (10-30ppm). Its is normal then for motes adjust there timerCorr as long
+ * as it stay within the above mentioned margins and if motes are able to stay
+ * synchronized over the long run. If there aren't then maybe board_info.h
+ * parameters require tuning for the specific platform.
+ *
+ * - samr21-xpro issues:
+ *      - The serial debugger hinders Openserial operation, an ftdi device must
+ *        be used.
+ *
+ * - sam0 issues:
+ *      - sam0 requires 180us busy loops every time an alarm is set or the
+ *        counter is read. Because of the later only `sctimer_rtt` can be used
+ *        and the max. tested baudrate for openserial is of 19200 bauds.
+ *
+ * - iotlab-m3 issues:
+ *      - openserial does not work reliably over 57600 bauds or when using
+ *        sctimer_ztimer.
  *
  * ## Todos
  *

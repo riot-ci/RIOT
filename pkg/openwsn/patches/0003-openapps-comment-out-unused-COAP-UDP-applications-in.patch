@@ -1,7 +1,7 @@
 From 1b9c54459e882a2beb4cedbdbafbb299b95be9e8 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 27 Mar 2020 09:59:24 +0100
-Subject: [PATCH 3/8] openapps: comment out unused COAP&UDP applications
+Subject: [PATCH 3/9] openapps: comment out unused COAP&UDP applications
  includes
 
 ---
@@ -56,5 +56,5 @@ index 3124d0c6..e30dcaec 100644
  
     // UDP
 -- 
-2.24.0
+2.27.0
 

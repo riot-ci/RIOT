@@ -90,8 +90,9 @@ extern "C" {
    For precise synchronization these values should be measured and tuned for
    every BOARD.
    To understand the relationship between these values and OpenWSN state machine
-   look at:
-   https://openwsn.atlassian.net/wiki/spaces/OW/pages/688251/State+Machine
+   as well as how they can be measured refer to:
+   - https://openwsn.atlassian.net/wiki/spaces/OW/pages/688251/State+Machine
+   - https://openwsn.atlassian.net/wiki/spaces/OW/pages/688255/Timing+Constants
 */
 #if SLOTDURATION == 20
 #ifndef PORT_TsSlotDuration     /* 655 ticks at @32768Hz */

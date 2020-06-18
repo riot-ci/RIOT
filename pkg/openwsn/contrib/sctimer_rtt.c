@@ -11,27 +11,10 @@
  * @ingroup     pkg_openwsn
  * @{
  *
+ * For details on the implementation check pkg/openwsn/doc.txt
+ *
  * @file
  * @brief       RTT based adaptation of "sctimer" bsp module
- *
- * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
- * abstraction which is used by the higher layer timer module
- * `opentimers`. In the end it is responsible for scheduling on the MAC
- * layer. To enable low power energy modes, this timer usually uses the
- * RTC (real time clock) or RTT (real time timer) module.
- *
- * In order to reduce overhead this implementation uses bare RTT. It
- * expects a RTT running at 32768Hz to have a resolution of ~30usec/tick
- * (same as OpenWSN). If RTT_FREQUENCY is lower than 32768Hz then a
- * simple time-division mechanism will be used to speed up the clock.
- * This only works if RTT_FREQUENCY is 32768Hz/2.
- *
- * The `sctimer` is responsible to set the next interrupt. Under
- * circumstances, it may happen, that the next interrupt to schedule is
- * already late, compared  to the current time. In this case, timer
- * implementations in OpenWSN directly trigger a hardware interrupt.
- * Until able to trigger sw isr directly a callback is set
- * RTT_MIN_OFFSET ticks in the future.
  *
  * @author      Tengfei Chang <tengfei.chang@gmail.com>, July 2012
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>, July 2017

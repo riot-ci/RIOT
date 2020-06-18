@@ -1,23 +1,25 @@
-From 014186ce2530b16b823ee936356019bb31880c7d Mon Sep 17 00:00:00 2001
+From a48b33efb966782a5d672de70def0d0042e43b4f Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Sun, 29 Mar 2020 12:11:53 +0200
-Subject: [PATCH 5/8] kernel/openos/scheduler: use thread flags
+Subject: [PATCH 5/9] kernel/openos/scheduler: use thread flags
 
 Use thread_flags_wait_any to pause the scheduler. Set flag in
 scheduler_push_task to trigger new task handling.
 ---
- kernel/openos/scheduler.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ kernel/openos/scheduler.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/kernel/openos/scheduler.c b/kernel/openos/scheduler.c
-index 1dad545e..5e0a3210 100644
+index 1dad545e..9eeb4796 100644
 --- a/kernel/openos/scheduler.c
 +++ b/kernel/openos/scheduler.c
-@@ -10,11 +10,15 @@
+@@ -10,11 +10,17 @@
  #include "debugpins.h"
  #include "leds.h"
  
-+#define OPENWSN_SCHEDULER_FLAG    0x0678
++#include "thread.h"
++
++#define OPENWSN_SCHEDULER_FLAG    (1u << 8)
 +
  //=========================== variables =======================================
  
@@ -29,7 +31,7 @@ index 1dad545e..5e0a3210 100644
  //=========================== prototypes ======================================
  
  void consumeTask(uint8_t taskId);
-@@ -33,6 +37,9 @@ void scheduler_init(void) {
+@@ -33,6 +39,9 @@ void scheduler_init(void) {
  
  void scheduler_start(void) {
      taskList_item_t* pThisTask;
@@ -39,7 +41,7 @@ index 1dad545e..5e0a3210 100644
      while (1) {
          while(scheduler_vars.task_list!=NULL) {
           // there is still at least one task in the linked-list of tasks
-@@ -59,6 +66,7 @@ void scheduler_start(void) {
+@@ -59,6 +68,7 @@ void scheduler_start(void) {
        }
        debugpins_task_clr();
        board_sleep();
@@ -47,7 +49,7 @@ index 1dad545e..5e0a3210 100644
        debugpins_task_set();                      // IAR should halt here if nothing to do
     }
  }
-@@ -105,6 +113,9 @@ void scheduler_push_task(task_cbt cb, task_prio_t prio) {
+@@ -105,6 +115,9 @@ void scheduler_push_task(task_cbt cb, task_prio_t prio) {
      }
  
      ENABLE_INTERRUPTS();
@@ -58,5 +60,5 @@ index 1dad545e..5e0a3210 100644
  
  //=========================== private =========================================
 -- 
-2.24.0
+2.27.0
 
