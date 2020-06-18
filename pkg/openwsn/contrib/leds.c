@@ -21,9 +21,6 @@
 #include "leds.h"
 #include "openwsn_leds.h"
 
-#ifdef MODULE_ZTIMER_USEC
-#include "ztimer.h"
-#endif
 #include "board.h"
 #include "periph/gpio.h"
 
@@ -87,14 +84,10 @@ static void _blink_checked(gpio_t pin)
         /* toggle for ~10s if ztimer is used */
         for (uint8_t i = 0; i < 100; i++) {
             _toggle_checked(pin);
-#ifdef MODULE_ZTIMER_USEC
-            ztimer_sleep(ZTIMER_USEC, 100000);
-#else
             for (uint32_t i = 0; i < (CLOCK_CORECLOCK / 50); i++) {
                 /* Make sure for loop is not optimized out */
                 __asm__ ("");
             }
-#endif
         }
     }
 }
