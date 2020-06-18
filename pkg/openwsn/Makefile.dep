@@ -46,6 +46,7 @@ ifneq (,$(filter openwsn_serial,$(USEMODULE)))
   USEMODULE += openwsn_drivers
   USEMODULE += ztimer_usec
   FEATURES_REQUIRED += periph_uart
+  FEATURES_OPTIONAL += periph_uart_nonblocking
 endif
 
 ifneq (,$(filter openwsn_leds openwsn_debugpins,$(USEMODULE)))

@@ -23,7 +23,10 @@
 
 #include "board.h"
 #include "periph/uart.h"
+
+#ifdef MODULE_ZTIMER_USEC
 #include "ztimer.h"
+#endif
 
 #include "openwsn_uart.h"
 
@@ -41,12 +44,19 @@ typedef struct {
 
 static uart_vars_t uart_vars;
 static atomic_char uart_rx_byte;
+
+#ifdef MODULE_ZTIMER_USEC
 static ztimer_t ztimer_tx_uart;
+#endif
 
 static void _openwsn_uart_write(const uint8_t *data)
 {
-    uart_write(OPENWSN_UART_DEV, data, 1);
-    ztimer_set(ZTIMER_USEC, &ztimer_tx_uart, OPENWSN_UART_TX_CB_OFFSET );
+    if (IS_USED(MODULE_OPENWSN_SERIAL)) {
+        uart_write(OPENWSN_UART_DEV, data, 1);
+#ifdef MODULE_ZTIMER_USEC
+        ztimer_set(ZTIMER_USEC, &ztimer_tx_uart, 0);
+#endif
+    }
 }
 
 static void _riot_rx_cb(void *arg, uint8_t data)
@@ -54,7 +64,9 @@ static void _riot_rx_cb(void *arg, uint8_t data)
     (void)arg;
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
         uart_rx_byte = data;
-        uart_vars.rxCb();
+        if(uart_vars.rxCb) {
+            uart_vars.rxCb();
+        }
     }
     else {
         (void)data;
@@ -72,7 +84,9 @@ static void _riot_tx_cb(void *arg)
             _openwsn_uart_write((uint8_t *)&(uart_vars.xonXoffEscapedByte));
         }
         else {
-            uart_vars.txCb();
+            if(uart_vars.txCb) {
+                uart_vars.txCb();
+            }
         }
     }
 }
@@ -102,7 +116,11 @@ void uart_init_openwsn(void)
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
         uart_init(OPENWSN_UART_DEV, OPENWSN_UART_BAUDRATE, \
                   (uart_rx_cb_t)_riot_rx_cb, NULL);
+#ifdef MODULE_ZTIMER_USEC
         ztimer_tx_uart.callback = &_riot_tx_cb;
+#else
+        (void) _riot_tx_cb;
+#endif
     }
 }
 

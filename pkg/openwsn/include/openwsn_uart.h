@@ -53,17 +53,12 @@ extern "C" {
 /**
  * @brief   OpenWSN uart baudrate
  */
+#ifndef OPENWSN_UART_BAUDRATE
 #ifndef STDIO_UART_BAUDRATE
 #define OPENWSN_UART_BAUDRATE       (115200U)
 #else
 #define OPENWSN_UART_BAUDRATE       (STDIO_UART_BAUDRATE)
 #endif
-
-/**
- * @brief   OpenWSN uart tx_isrt callback offset in ticks
- */
-#ifndef OPENWSN_UART_TX_CB_OFFSET
-#define OPENWSN_UART_TX_CB_OFFSET   (10U)
 #endif
 
 /**
