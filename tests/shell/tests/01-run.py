@@ -46,14 +46,32 @@ CMDS = (
     ('start_test', '[TEST_START]'),
     (CONTROL_C, PROMPT),
     ('\n', PROMPT),
+
     ('123456789012345678901234567890123456789012345678901234567890',
      'shell: command not found: '
      '123456789012345678901234567890123456789012345678901234567890'),
     ('unknown_command', 'shell: command not found: unknown_command'),
+
     ('hello-willy\b\b\b\borld', 'shell: command not found: hello-world'),
     ('\b\b\b\becho', '\"echo\"'),
-    ('help', EXPECTED_HELP),
-    ('echo a string', '\"echo\"\"a\"\"string\"'),
+
+    ('echo   multiple   spaces   between   argv', '"echo""multiple""spaces""between""argv"'),
+
+    ('echo \\\'', '"echo""\'"'),
+    ('echo \\"', '"echo""""'),
+    ('echo hello"world"', '"echo""helloworld"'),
+    ('echo a string', '"echo""a""string"'),
+    ("""echo "t\e st" "\\"" '\\'' a\ b""", '"echo""te st"""""\'""a b"'),
+    ('echo abc"def\'ghijk"lmn', '"echo""abcdef\'ghijklmn"'),
+    ('echo abc"defghijk"lmn', '"echo""abcdefghijklmn"'),
+    ('echo "\'" \'"\'', '"echo""\'""""'),
+
+    ('echo a\\', 'shell: incorrect quoting'),
+    ('echo "', 'shell: incorrect quoting'),
+    ('echo \'', 'shell: incorrect quoting'),
+    ('echo abcdef"ghijklmn', 'shell: incorrect quoting'),
+    ('echo abcdef\'ghijklmn', 'shell: incorrect quoting'),
+
     ('ps', EXPECTED_PS),
     ('help', EXPECTED_HELP),
     ('reboot', 'test_shell.'),
