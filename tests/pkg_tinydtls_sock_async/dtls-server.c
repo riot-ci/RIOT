@@ -72,7 +72,6 @@ static const credman_credential_t credential = {
 static void _close_handler(event_t *);
 
 static uint8_t _recv_buf[512];
-static sock_dtls_session_t _session;
 static sock_udp_t _udp_sock;
 static sock_dtls_t _dtls_sock;
 static tinydtls_sock_event_t _close = {
@@ -80,18 +79,14 @@ static tinydtls_sock_event_t _close = {
     .sock = &_dtls_sock,
 };
 static bool _active = false;
-static bool _session_used = false;
 
 static void _close_sock(sock_dtls_t *sock)
 {
     sock_udp_t *udp_sock = sock_dtls_get_udp_sock(sock);
 
-    sock_dtls_session_destroy(sock, &_session);
     sock_dtls_close(sock);
     sock_udp_close(udp_sock);
-    memset(&_session, 0, sizeof(_session));
     _active = false;
-    _session_used = false;
     puts("Terminated server");
 }
 
@@ -104,8 +99,6 @@ static void _close_handler(event_t *ev)
 
 static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
 {
-    sock_dtls_session_t session = { 0 };
-
     (void)arg;
     if (!_active) {
         puts("Error: DTLS server is not running");
@@ -113,6 +106,8 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
     }
 
     if (type & SOCK_ASYNC_CONN_RECV) {
+        sock_dtls_session_t session = { 0 };
+
         puts("Session handshake received");
         if (sock_dtls_recv(sock, &session, _recv_buf, sizeof(_recv_buf),
                            0) != -SOCK_DTLS_HANDSHAKE) {
@@ -120,35 +115,21 @@ static void _dtls_handler(sock_dtls_t *sock, sock_async_flags_t type, void *arg)
             return;
         }
         puts("New client connected");
-        if (!_session_used) {
-            puts("Session stored");
-            _session = session;
-            _session_used = true;
-        }
-        else {
-            puts("Unable to store session. Terminating it.");
-            sock_dtls_session_destroy(sock, &session);
-            return;
-        }
     }
     if (type & SOCK_ASYNC_CONN_FIN) {
         puts("Session was destroyed by peer");
-        _session_used = false;
     }
     if (type & SOCK_ASYNC_CONN_RDY) {
         puts("Session became ready");
     }
     if (type & SOCK_ASYNC_MSG_RECV) {
+        sock_dtls_session_t session = { 0 };
         ssize_t res;
 
-        res = sock_dtls_recv(sock, &_session, _recv_buf, sizeof(_recv_buf), 0);
-        if (!_session_used) {
-            puts("Session is not initialized");
-            return;
-        }
+        res = sock_dtls_recv(sock, &session, _recv_buf, sizeof(_recv_buf), 0);
         if (res >= 0) {
             printf("Received %d bytes -- (echo)\n", (int)res);
-            res = sock_dtls_send(sock, &_session, _recv_buf, (size_t)res, 0);
+            res = sock_dtls_send(sock, &session, _recv_buf, (size_t)res, 0);
             if (res < 0) {
                 printf("Error resending DTLS message: %d\n", (int)res);
             }
