@@ -71,18 +71,21 @@
 #define ESCAPECHAR '\\'
 #define BLANK ' '
 
-enum PARSE_STATE {
-    PARSE_SPACE,
-    PARSE_UNQUOTED,
-    PARSE_SINGLEQUOTE,
-    PARSE_DOUBLEQUOTE,
-    PARSE_ESCAPE_MASK,
-    PARSE_UNQUOTED_ESC,
-    PARSE_SINGLEQUOTE_ESC,
-    PARSE_DOUBLEQUOTE_ESC,
+int PARSE_ESCAPE_MASK = 0b100;
+
+enum parse_state {
+    PARSE_SPACE             = 0b000,
+
+    PARSE_UNQUOTED          = 0b001,
+    PARSE_SINGLEQUOTE       = 0b010,
+    PARSE_DOUBLEQUOTE       = 0b011,
+
+    PARSE_UNQUOTED_ESC      = 0b101,
+    PARSE_SINGLEQUOTE_ESC   = 0b110,
+    PARSE_DOUBLEQUOTE_ESC   = 0b111,
 };
 
-static enum PARSE_STATE escape_toggle(enum PARSE_STATE s)
+static enum parse_state escape_toggle(enum parse_state s)
 {
     return s ^ PARSE_ESCAPE_MASK;
 }
@@ -168,7 +171,13 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     int argc = 0;
     char *readpos = line;
     char *writepos = readpos;
-    enum PARSE_STATE pstate = PARSE_SPACE;
+
+    enum parse_state pstate = PARSE_SPACE;
+
+    /* state before quoted state, needed to restore the correct state
+     * (PARSE_SPACE or PARSE_UNQUOTED) after leaving quoted state
+     * (PARSE_SINGLEQUOTE or PARSE_DOUBLEQUOTE) */
+    enum parse_state state_before_quoted = PARSE_SPACE;
 
     for (; *readpos != '\0'; readpos++) {
 
@@ -183,9 +192,11 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
                 }
 
                 if (*readpos == SQUOTE) {
+                    state_before_quoted = PARSE_SPACE;
                     pstate = PARSE_SINGLEQUOTE;
                 }
                 else if (*readpos == DQUOTE) {
+                    state_before_quoted = PARSE_SPACE;
                     pstate = PARSE_DOUBLEQUOTE;
                 }
                 else if (*readpos == ESCAPECHAR) {
@@ -198,8 +209,18 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
                 break;
 
             case PARSE_UNQUOTED:
-                wordbreak = BLANK;
-                is_wordbreak = true;
+                if (*readpos == SQUOTE) {
+                    state_before_quoted = PARSE_UNQUOTED;
+                    pstate = PARSE_SINGLEQUOTE;
+                }
+                else if (*readpos == DQUOTE) {
+                    state_before_quoted = PARSE_UNQUOTED;
+                    pstate = PARSE_DOUBLEQUOTE;
+                }
+                else {
+                    wordbreak = BLANK;
+                    is_wordbreak = true;
+                }
                 break;
 
             case PARSE_SINGLEQUOTE:
@@ -220,8 +241,15 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
 
         if (is_wordbreak) {
             if (*readpos == wordbreak) {
-                pstate = PARSE_SPACE;
-                *writepos++ = '\0';
+                if ((wordbreak == SQUOTE || wordbreak == DQUOTE)
+                        && state_before_quoted == PARSE_UNQUOTED) {
+
+                    pstate = PARSE_UNQUOTED;
+                }
+                else {
+                    pstate = PARSE_SPACE;
+                    *writepos++ = '\0';
+                }
             }
             else if (*readpos == ESCAPECHAR) {
                 pstate = escape_toggle(pstate);
