@@ -38,7 +38,7 @@
 
 #ifdef REG_RTC_MODE0_CTRLA
 #define RTC_MODE0_PRESCALER       \
-    (__builtin_ctz(RTT_CLOCK_FREQUENCY / RTT_FREQUENCY) << \
+    (__builtin_ctz(2 * RTT_CLOCK_FREQUENCY / RTT_FREQUENCY) << \
     RTC_MODE0_CTRLA_PRESCALER_Pos)
 #else
 #define RTC_MODE0_PRESCALER       \
@@ -124,7 +124,7 @@ void rtt_init(void)
     RTC->MODE0.INTFLAG.reg = RTC_MODE0_INTFLAG_CMP0
                              |  RTC_MODE0_INTFLAG_OVF;
 
-    NVIC_EnableIRQ(RTT_IRQ);
+    NVIC_EnableIRQ(RTC_IRQn);
 
     DEBUG("%s:%d %u\n", __func__, __LINE__, (unsigned)rtt_get_counter());
 }
