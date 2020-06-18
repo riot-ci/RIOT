@@ -62,7 +62,7 @@ static void _toggle_checked(gpio_t pin) {
 static void _init_checked(gpio_t pin) {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
         if (pin != GPIO_UNDEF){
-            gpio_init(_configuration.frame, GPIO_OUT);
+            gpio_init(pin, GPIO_OUT);
         }
     }
 }
