@@ -128,20 +128,9 @@ typedef enum {
 #define DAC_NUMOF           (1)
 
 /**
- * @name    RTC configuration
- * @{
- */
-#define RTC_DEV             RTC->MODE2
-/** @} */
-
-/**
  * @name    Real time counter configuration
  * @{
  */
-#define RTT_DEV             RTC->MODE0
-#define RTT_IRQ             RTC_IRQn
-#define RTT_ISR             isr_rtc
-
 #define RTT_RUNSTDBY        (1)         /* Keep RTT running in sleep states */
 
 #define RTT_MAX_VALUE       (0xffffffff)
