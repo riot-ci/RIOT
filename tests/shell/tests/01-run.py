@@ -59,6 +59,7 @@ CMDS = (
 
     ('echo \\\'', '"echo""\'"'),
     ('echo \\"', '"echo""""'),
+    ('echo hello"world"', '"echo""helloworld"'),
     ('echo a string', '"echo""a""string"'),
     ("""echo "t\e st" "\\"" '\\'' a\ b""", '"echo""te st"""""\'""a b"'),
     ('echo abc"def\'ghijk"lmn', '"echo""abcdef\'ghijklmn"'),
