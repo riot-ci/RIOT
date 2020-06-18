@@ -34,12 +34,22 @@ ifneq (,$(filter openwsn_cryptoengine,$(USEMODULE)))
 endif
 
 ifneq (,$(filter openwsn_sctimer,$(USEMODULE)))
+  ifeq (,$(filter openwsn_sctimer_ztimer,$(USEMODULE)))
+    USEMODULE += openwsn_sctimer_rtt
+  endif
+endif
+
+ifneq (,$(filter openwsn_sctimer_ztimer,$(USEMODULE)))
   USEMODULE += ztimer_usec
   USEMODULE += ztimer_msec
   FEATURES_OPTIONAL += periph_rtt
   ifneq (,$(filter periph_rtt,$(FEATURES_USED)))
     USEMODULE += ztimer_periph_rtt
   endif
+endif
+
+ifneq (,$(filter openwsn_sctimer_rtt,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_rtt
 endif
 
 ifneq (,$(filter openwsn_serial,$(USEMODULE)))

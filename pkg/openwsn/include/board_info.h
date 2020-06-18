@@ -28,6 +28,7 @@
 
 #include "timex.h"
 #include "cpu.h"
+#include "periph_cpu.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,8 +41,19 @@ extern "C" {
 /** @} */
 
 /* Always 32bit when using ztimer */
+#if RTT_MAX_VALUE == 0xffffffff || IS_USED(MODULE_OPENWSN_SCTIMER_ZTIMER)
 #define PORT_TIMER_WIDTH                    uint32_t
 #define PORT_RADIOTIMER_WIDTH               uint32_t
+#elif RTT_MAX_VALUE == 0x00ffffff
+#define PORT_TIMER_WIDTH                    uint24_t
+#define PORT_RADIOTIMER_WIDTH               uint24_t
+#elif RTT_MAX_VALUE == 0x0000ffff
+#define PORT_TIMER_WIDTH                    uint16_t
+#define PORT_RADIOTIMER_WIDTH               uint16_t
+#else
+#error "RTT_MAX_VALUE not supported"
+#endif
+
 
 #if __SIZEOF_POINTER__ == 2
 #define PORT_SIGNED_INT_WIDTH               int16_t

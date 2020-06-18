@@ -10,7 +10,7 @@ IGNORE_MODULES  := openwsn_leds \
                    openwsn_debugpins \
                    openwsn_radio \
                    openwsn_serial \
-                   openwsn_sctimer \
+                   openwsn_sctimer% \
                    openwsn_cryptoengine \
                    #
 

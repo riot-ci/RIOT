@@ -1,0 +1,183 @@
+/*
+ * Copyright (C) 2017 Hamburg University of Applied Sciences
+ *               2020 Inria
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     pkg_openwsn
+ * @{
+ *
+ * @file
+ * @brief       RTT based adaptation of "sctimer" bsp module
+ *
+ * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
+ * abstraction which is used by the higher layer timer module
+ * `opentimers`. In the end it is responsible for scheduling on the MAC
+ * layer. To enable low power energy modes, this timer usually uses the
+ * RTC (real time clock) or RTT (real time timer) module.
+ *
+ * In order to reduce overhead this implementation uses bare RTT. It
+ * expects a RTT running at 32768Hz to have a resolution of ~30usec/tick
+ * (same as OpenWSN). If RTT_FREQUENCY is lower than 32768Hz then a
+ * simple time-division mechanism will be used to speed up the clock.
+ * This only works if RTT_FREQUENCY is 32768Hz/2.
+ *
+ * The `sctimer` is responsible to set the next interrupt. Under
+ * circumstances, it may happen, that the next interrupt to schedule is
+ * already late, compared  to the current time. In this case, timer
+ * implementations in OpenWSN directly trigger a hardware interrupt.
+ * Until able to trigger sw isr directly a callback is set
+ * RTT_MIN_OFFSET ticks in the future.
+ *
+ * @author      Tengfei Chang <tengfei.chang@gmail.com>, July 2012
+ * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>, July 2017
+ * @author      Michel Rottleuthner <michel.rottleuthner@haw-hamburg.de>, April 2019
+ *
+ * @}
+ */
+#include <stdatomic.h>
+
+#include "sctimer.h"
+#include "debugpins.h"
+
+#include "board.h"
+#include "periph/rtt.h"
+
+#define LOG_LEVEL LOG_NONE
+#include "log.h"
+
+/**
+ * @brief   Maximum counter difference to not consider an ISR late, this
+ *          should account for the largest timer interval OpenWSN
+ *          scheduler might work with. When running only the stack this
+ *          should not be more than SLOT_DURATION, but when using cjoin
+ *          it is 65535ms
+ */
+#ifndef SCTIMER_LOOP_THRESHOLD
+#define SCTIMER_LOOP_THRESHOLD      (2 * PORT_TICS_PER_MS * 65535)
+#endif
+
+/* OpenWSN needs at least 32 tics per ms,use time division to reach that
+   if needed */
+#if RTT_FREQUENCY < 32768U
+#define SCTIMER_TIME_DIVISION       (1)
+#if (SCTIMER_FREQUENCY % RTT_FREQUENCY) != 0
+#error "RTT_FREQUENCY not supported"
+#endif
+#endif
+
+#ifdef SCTIMER_TIME_DIVISION
+#define SCTIMER_PRESCALER            __builtin_ctz( \
+        SCTIMER_FREQUENCY / RTT_FREQUENCY)
+#define SCTIMER_TIME_DIVISION_MASK   (RTT_MAX_VALUE >> SCTIMER_PRESCALER)
+#define SCTIMER_PRESCALER_MASK       (~SCTIMER_TIME_DIVISION_MASK)
+#define SCTIMER_PRESCALER_SHIFT      __builtin_ctz(SCTIMER_TIME_DIVISION_MASK)
+
+static PORT_TIMER_WIDTH prescaler;
+static atomic_bool enable;
+#endif
+
+static sctimer_cbt sctimer_cb;
+
+static void sctimer_isr_internal(void *arg)
+{
+    (void)arg;
+
+    if (sctimer_cb != NULL) {
+        debugpins_isr_set();
+        sctimer_cb();
+        debugpins_isr_clr();
+    }
+}
+
+void sctimer_init(void)
+{
+    rtt_init();
+    sctimer_cb = NULL;
+#ifdef SCTIMER_TIME_DIVISION
+    prescaler = 0;
+    enable = false;
+#endif
+}
+
+void sctimer_set_callback(sctimer_cbt cb)
+{
+    sctimer_cb = cb;
+}
+
+#ifdef SCTIMER_TIME_DIVISION
+PORT_TIMER_WIDTH _update_val(PORT_TIMER_WIDTH val, uint32_t now)
+{
+    now = now & SCTIMER_PRESCALER_MASK;
+    val = val >> SCTIMER_PRESCALER;
+    /* Check if next value would cause an overflow */
+    if ((now - val) > SCTIMER_LOOP_THRESHOLD && enable && now > val) {
+        prescaler += (1 << SCTIMER_PRESCALER_SHIFT);
+        enable = false;
+    }
+    /* Make sure it only updates the prescaler once per overflow cycle */
+    if (val > SCTIMER_LOOP_THRESHOLD && val < 2 * SCTIMER_LOOP_THRESHOLD) {
+        enable = true;
+    }
+    val |= prescaler;
+
+    return val;
+}
+#endif
+
+void sctimer_setCompare(uint32_t val)
+{
+    unsigned state = irq_disable();
+
+    uint32_t now = rtt_get_counter();
+
+#ifdef SCTIMER_TIME_DIVISION
+    val = _update_val(val, now);
+#endif
+
+    if ((int32_t)now - val < SCTIMER_LOOP_THRESHOLD && now > val) {
+        rtt_set_alarm((now + RTT_MIN_OFFSET) & RTT_MAX_VALUE,
+                      sctimer_isr_internal, NULL);
+    }
+    else {
+        if ((int32_t)val - now < RTT_MIN_OFFSET) {
+            rtt_set_alarm((now + RTT_MIN_OFFSET) & RTT_MAX_VALUE,
+                          sctimer_isr_internal, NULL);
+        }
+        else {
+            rtt_set_alarm(val & RTT_MAX_VALUE, sctimer_isr_internal,
+                          NULL);
+        }
+    }
+
+    irq_restore(state);
+
+    LOG_DEBUG("[sctimer]: set cb to %" PRIu32 " at %" PRIu32 "\n",
+              (uint32_t) val, now);
+}
+
+uint32_t sctimer_readCounter(void)
+{
+    uint32_t now = rtt_get_counter();
+
+#ifdef SCTIMER_TIME_DIVISION
+    now &= SCTIMER_TIME_DIVISION_MASK;
+    now = (now << SCTIMER_PRESCALER);
+#endif
+    LOG_DEBUG("[sctimer]: now %" PRIu32 "\n", now);
+    return now;
+}
+
+void sctimer_enable(void)
+{
+    rtt_poweron();
+}
+
+void sctimer_disable(void)
+{
+    rtt_poweroff();
+}

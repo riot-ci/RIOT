@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 Hamburg University of Applied Sciences
+ *               2020 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -11,29 +12,29 @@
  * @{
  *
  * @file
- * @brief       RIOT adaption of the "sctimer" bsp module
+ * @brief       Ztimer based adaptation of "sctimer" bsp module
  *
  * The `sctimer` ("single compare timer") in OpenWSN is the lowest timer
- * abstraction which is used by the higher layer timer module `opentimers`. In
- * the end it is responsible for scheduling on the MAC layer. To enable low
- * power energy modes, this timer usually uses the RTC (real time clock) or RTT
- * (real time timer) module.
+ * abstraction which is used by the higher layer timer module
+ * `opentimers`. In the end it is responsible for scheduling on the MAC
+ * layer. To enable low power energy modes, this timer usually uses the
+ * RTC (real time clock) or RTT (real time timer) module.
  *
- * In order to get the most portable code, this implementation uses ztimer and
- * defines a new `ztimer_clock` (ZTIMER_32768) that operates at 32768Khz to have
- * a resolution of ~30usec/tick (same as OpenWSN).
+ * In order to get the most portable code, this implementation uses
+ * ztimer and defines a new `ztimer_clock` (ZTIMER_32768) that operates
+ * at 32768Khz to have a resolution of ~30usec/tick (same as OpenWSN).
  *
- * When available ZTIMER_32768 will be built on top of `periph_rtt` to get low
- * power capabilities. If not it will be built on top of a regular timer. In
- * either case it will be shifted up if the base frequency is lower than 32768Hz
- * or frac if higher.
+ * When available ZTIMER_32768 will be built on top of `periph_rtt` to
+ * get low power capabilities. If not it will be built on top of a
+ * regular timer. In either case it will be shifted up if the base
+ * frequency is lower than 32768Hz or frac if higher.
  *
- * The `sctimer` is responsible to set the next interrupt. Under circumstances,
- * it may happen, that the next interrupt to schedule is already late, compared
- * to the current time. In this case, timer implementations in OpenWSN directly
- * trigger a hardware interrupt. Until able to trigger sw isr directly a
- * callback is set 0 ticks in the future, which internally will be set to
- * `now + 2`.
+ * The `sctimer` is responsible to set the next interrupt. Under
+ * circumstances, it may happen, that the next interrupt to schedule is
+ * already late, compared  to the current time. In this case, timer
+ * implementations in OpenWSN directly trigger a hardware interrupt.
+ * Until able to trigger sw isr directly a callback is set 0 ticks in
+ * the future, which internally will be set to `now + 2`.
  *
  * @author      Tengfei Chang <tengfei.chang@gmail.com>, July 2012
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>, July 2017
@@ -56,10 +57,11 @@
 #include "log.h"
 
 /**
- * @brief   Maximum counter difference to not consider an ISR late, this should
- *          account for the largest timer interval OpenWSN scheduler might work
- *          with. When running only the stack this should not be more than
- *          SLOT_DURATION, but when using cjoin it is 65535ms
+ * @brief   Maximum counter difference to not consider an ISR late, this
+ *          should account for the largest timer interval OpenWSN
+ *          scheduler might work with. When running only the stack this
+ *          should not be more than SLOT_DURATION, but when using cjoin
+ *          it is 65535ms
  */
 #ifndef SCTIMER_LOOP_THRESHOLD
 #define SCTIMER_LOOP_THRESHOLD       (2 * PORT_TICS_PER_MS * 65535)
@@ -73,12 +75,12 @@ static ztimer_convert_frac_t _ztimer_convert_frac_32768;
  * (reason: cppcheck fails to see that CONFIG_ZTIMER_MSEC_BASE_FREQ
  * is set in ztimer/config.h to a non zero value */
 #elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
-      ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) == 0)
+    ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) == 0)
 static ztimer_convert_shift_t _ztimer_convert_shift_32768;
 #define ZTIMER_32768_CONVERT_HIGHER_FREQ   CONFIG_ZTIMER_MSEC_BASE_FREQ
 #define ZTIMER_32768_CONVERT_HIGHER        (ZTIMER_MSEC_BASE)
 #elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
-      ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) != 0)
+    ((32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ) != 0)
 #error No suitable ZTIMER_MSEC_BASE config. Maybe add USEMODULE += ztimer_usec?
 #endif
 
@@ -105,7 +107,7 @@ void sctimer_init(void)
  * (reason: cppcheck fails to see that CONFIG_ZTIMER_MSEC_BASE_FREQ
  * is set in ztimer/config.h to a non zero value */
 #elif (CONFIG_ZTIMER_MSEC_BASE_FREQ < 32768U) && \
-      (32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ == 0)
+    (32768U % CONFIG_ZTIMER_MSEC_BASE_FREQ == 0)
     ZTIMER_32768 = &_ztimer_convert_shift_32768.super.super;
 #elif CONFIG_ZTIMER_MSEC_BASE_FREQ == 32768U
     ZTIMER_32768 = ZTIMER_MSEC_BASE;
@@ -143,20 +145,26 @@ void sctimer_setCompare(uint32_t val)
 
     uint32_t now = ztimer_now(ZTIMER_32768);
 
-    /* if the next compare value (isr) to schedule is already later than the
-       required value, but close enough to think we have been slow in scheduling
-       it, trigger the ISR right away */
-    if (now - val < SCTIMER_LOOP_THRESHOLD && now > val) {
-        ztimer_set(ZTIMER_32768, &ztimer_sctimer, 0);
+    /* if the next compare value (isr) to schedule is already later than
+       the required value, but close enough to think we have been slow
+       in scheduling it, trigger the ISR right away */
+    if (now > val) {
+        if (now - val < SCTIMER_LOOP_THRESHOLD) {
+            ztimer_set(ZTIMER_32768, &ztimer_sctimer, 0);
+        }
+        else {
+            ztimer_set(ZTIMER_32768, &ztimer_sctimer,
+                       UINT32_MAX - now + val);
+        }
     }
     else {
         ztimer_set(ZTIMER_32768, &ztimer_sctimer, val - now);
     }
 
-    LOG_DEBUG("[sctimer]: set callback to %" PRIu32 " at %" PRIu32 "\n", val,
-              now);
-
     irq_restore(state);
+
+    LOG_DEBUG("[sctimer]: set cb to %" PRIu32 " at %" PRIu32 "\n",
+              val, now);
 }
 
 uint32_t sctimer_readCounter(void)
