@@ -132,12 +132,6 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
         return -EISCONN;
     }
 
-    /* Acquire receive buffer */
-    if (_rcvbuf_get_buffer(tcb) == -ENOMEM) {
-        mutex_unlock(&(tcb->function_lock));
-        return -ENOMEM;
-    }
-
     /* Mark TCB as waiting for incoming messages */
     tcb->status |= STATUS_WAIT_FOR_MSG;
 
@@ -198,7 +192,10 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
 
     /* Call FSM with event: CALL_OPEN */
     ret = _fsm(tcb, FSM_EVENT_CALL_OPEN, NULL, NULL, 0);
-    if (ret == -EADDRINUSE) {
+    if (ret == -ENOMEM) {
+        DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : Out of receive buffers.\n");
+    }
+    else if (ret == -EADDRINUSE) {
         DEBUG("gnrc_tcp.c : _gnrc_tcp_open() : local_port is already in use.\n");
     }
 

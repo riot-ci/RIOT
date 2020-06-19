@@ -203,6 +203,7 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
  * @param[in,out] tcb   TCB holding the connection information.
  *
  * @returns   Zero on success.
+ *            -ENOMEM if receive buffer could not be allocated.
  *            -EADDRINUSE if given local port number is already in use.
  */
 static int _fsm_call_open(gnrc_tcp_tcb_t *tcb)
@@ -210,6 +211,13 @@ static int _fsm_call_open(gnrc_tcp_tcb_t *tcb)
     int ret = 0;
 
     DEBUG("gnrc_tcp_fsm.c : _fsm_call_open()\n");
+
+    /* Allocate receive buffer */
+    if (_rcvbuf_get_buffer(tcb) == -ENOMEM)
+    {
+        return -ENOMEM;
+    }
+
     tcb->rcv_wnd = CONFIG_GNRC_TCP_DEFAULT_WINDOW;
 
     if (tcb->status & STATUS_PASSIVE) {
