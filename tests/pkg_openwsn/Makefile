@@ -36,7 +36,7 @@ USEMODULE += shell
 USEMODULE += shell_commands
 # ztimer is used instead of xtimer because its a dependency of some
 # OpenWSN modules.
-USEMODULE += ztimer
+USEMODULE += ztimer_usec
 
 include $(RIOTBASE)/Makefile.include
 
