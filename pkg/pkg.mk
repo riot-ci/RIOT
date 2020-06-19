@@ -25,8 +25,18 @@ ifeq (,$(PKG_LICENSE))
 endif
 
 PKG_DIR ?= $(CURDIR)
-PKG_SOURCE_DIR ?= $(PKGDIRBASE)/$(PKG_NAME)
-PKG_BUILD_DIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
+
+PKG_BUILD_OUT_OF_SOURCE ?= 1
+ifeq (1,$(PKG_BUILD_OUT_OF_SOURCE))
+  PKG_SOURCE_DIR ?= $(PKGDIRBASE)/$(PKG_NAME)
+  PKG_BUILD_DIR ?= $(BINDIRBASE)/$(BOARD)/$(PKG_NAME)
+else
+  # configure old behaviour: packages are cloned within the application build
+  # directory in a separate pkg tree
+  PKG_SOURCE_DIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
+  PKG_BUILD_DIR = $(PKG_SOURCE_DIR)
+endif
+
 PKG_SOURCE_LOCAL ?= $(PKG_SOURCE_LOCAL_$(shell echo $(PKG_NAME) | tr a-z- A-Z_))
 
 # git-cache specific management: GIT_CACHE_DIR is exported only
