@@ -32,6 +32,9 @@
 extern "C" {
 #endif
 
+#ifndef STDIO_UART_DEV
+#define STDIO_UART_DEV              (UART_DEV(0))
+#endif
 /**
  * @brief   OpenWSN default uart dev.
  *
@@ -39,9 +42,6 @@ extern "C" {
  *          STDIO_UART_DEV, otherwise the next available UART will be used.
  *
  */
-#ifndef STDIO_UART_DEV
-#define STDIO_UART_DEV              (UART_DEV(0))
-#endif
 #ifndef OPENWSN_UART_DEV
 #ifdef MODULE_STDIO_NULL
 #define OPENWSN_UART_DEV            (STDIO_UART_DEV)
@@ -107,12 +107,23 @@ void    uart_writeByte(uint8_t byteToWrite);
 uint8_t uart_readByte(void);
 
 /**
- * @brief   Function definitions that we do not use in RIOT but that need to be
- *          defined for OpenWSN
+ * @brief   Unused in RIOT, needs to be defined for OpenWSN
  */
 void    uart_enableInterrupts(void);
+
+/**
+ * @brief   Unused in RIOT, needs to be defined for OpenWSN
+ */
 void    uart_disableInterrupts(void);
+
+/**
+ * @brief   Unused in RIOT, needs to be defined for OpenWSN
+ */
 void    uart_clearRxInterrupts(void);
+
+/**
+ * @brief   Unused in RIOT, needs to be defined for OpenWSN
+ */
 void    uart_clearTxInterrupts(void);
 
 #ifdef __cplusplus

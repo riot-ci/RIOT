@@ -6,7 +6,6 @@
  * directory for more details.
  */
 
-
 /**
  * @ingroup     pkg_openwsn
  * @{

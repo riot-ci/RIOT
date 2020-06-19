@@ -64,7 +64,7 @@ static void _riot_rx_cb(void *arg, uint8_t data)
     (void)arg;
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
         uart_rx_byte = data;
-        if(uart_vars.rxCb) {
+        if (uart_vars.rxCb) {
             uart_vars.rxCb();
         }
     }
@@ -84,7 +84,7 @@ static void _riot_tx_cb(void *arg)
             _openwsn_uart_write((uint8_t *)&(uart_vars.xonXoffEscapedByte));
         }
         else {
-            if(uart_vars.txCb) {
+            if (uart_vars.txCb) {
                 uart_vars.txCb();
             }
         }

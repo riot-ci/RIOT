@@ -58,7 +58,7 @@ extern "C" {
 /**
  * @brief   Initialize OpenWSN radio
  *
- * @param[in]   dev     pointer to a netdev interface
+ * @param[in]   netdev     pointer to a netdev interface
  *
  * @return  PID of OpenWSN thread
  * @return  -1 on initialization error
@@ -66,7 +66,7 @@ extern "C" {
 int openwsn_radio_init(netdev_t *netdev);
 
 /**
- * @brief openwsn radio variables structure
+ * @name OpenWSN radio variables structure
  */
 typedef struct {
     radio_capture_cbt startFrame_cb;  /**< start of frame capture callback */

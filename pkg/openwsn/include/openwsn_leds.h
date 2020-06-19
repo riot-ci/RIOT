@@ -28,15 +28,17 @@ extern "C" {
 #endif
 
 /**
- * Holds a configuration of LED pins for debugging OpenWSN
+ * @name    OpenWSN leds pin configuration
+ * @{
  */
 typedef struct ledpins_config {
-    gpio_t error;
-    gpio_t sync;
-    gpio_t radio;
-    gpio_t debug;
-    uint8_t led_on;
+    gpio_t error;       /**< erro led */
+    gpio_t sync;        /**< synchronization state led */
+    gpio_t radio;       /**< radio activity led */
+    gpio_t debug;       /**< debug led */
+    uint8_t led_on;     /**< GPIO set to turn led on */
 } leds_config_t;
+/** @} */
 
 /**
  * @brief   Led on state values

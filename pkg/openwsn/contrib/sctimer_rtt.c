@@ -46,10 +46,12 @@
 
 /* OpenWSN needs at least 32 tics per ms,use time division to reach that
    if needed */
+#ifdef RTT_FREQUENCY
 #if RTT_FREQUENCY < 32768U
 #define SCTIMER_TIME_DIVISION       (1)
 #if (SCTIMER_FREQUENCY % RTT_FREQUENCY) != 0
 #error "RTT_FREQUENCY not supported"
+#endif
 #endif
 #endif
 

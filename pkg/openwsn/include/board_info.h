@@ -33,12 +33,22 @@
 extern "C" {
 #endif
 
-/* OpenWSN interrupt wrappers */
+/**
+ * @name    OpenWSN interrupt handling wrappers
+ * @{
+ */
 #define INTERRUPT_DECLARATION()             unsigned irq_state;
 #define DISABLE_INTERRUPTS()                irq_state = irq_disable();
 #define ENABLE_INTERRUPTS()                 irq_restore(irq_state);
+#define SCHEDULER_WAKEUP()                  /* unused by RIOT */
+#define SCHEDULER_ENABLE_INTERRUPT()        /* unused by RIOT */
 /** @} */
 
+
+/**
+ * @name    OpenWSN platform dependent definitions
+ * @{
+ */
 /* Always 32bit when using ztimer */
 #if RTT_MAX_VALUE == 0xffffffff || IS_USED(MODULE_OPENWSN_SCTIMER_ZTIMER)
 #define PORT_TIMER_WIDTH                    uint32_t
@@ -52,7 +62,6 @@ extern "C" {
 #else
 #error "RTT_MAX_VALUE not supported"
 #endif
-
 
 #if __SIZEOF_POINTER__ == 2
 #define PORT_SIGNED_INT_WIDTH               int16_t
@@ -68,22 +77,11 @@ extern "C" {
 #define PORT_US_PER_TICK                    (US_PER_SEC / SCTIMER_FREQUENCY)
 /** @} */
 
-/* used in OpeWSN for waking up the scheduler */
-#define SCHEDULER_WAKEUP()                  /* unused by RIOT */
-#define SCHEDULER_ENABLE_INTERRUPT()        /* unused by RIOT */
-
 /**
- * @name    IEEE802154E timing
+ * @name    OpenWSN IEEE802154E timings
  * @{
- */
-/* standard slot duration is 10ms but code execution time for most OpenWSN
-   supported BOARDS takes longer than 10ms, so use the default 20ms upstream
-   slot */
-#ifndef SLOTDURATION
-#define SLOTDURATION        20        /* in miliseconds */
-#endif
-
-/* These parameters are BOARD and CPU specific.
+ *
+ * @note These parameters are BOARD and CPU specific.
    Values can't be taken directly from OpenWSN since they do not necessarily use
    the same BSP configuration (timers, clock speed, etc.)
    For precise synchronization these values should be measured and tuned for
@@ -92,7 +90,14 @@ extern "C" {
    as well as how they can be measured refer to:
    - https://openwsn.atlassian.net/wiki/spaces/OW/pages/688251/State+Machine
    - https://openwsn.atlassian.net/wiki/spaces/OW/pages/688255/Timing+Constants
-*/
+ */
+/* standard slot duration is 10ms but code execution time for most OpenWSN
+   supported BOARDS takes longer than 10ms, so use the default 20ms upstream
+   slot */
+#ifndef SLOTDURATION
+#define SLOTDURATION        20        /* in miliseconds */
+#endif
+
 #if SLOTDURATION == 20
 #ifndef PORT_TsSlotDuration     /* 655 ticks at @32768Hz */
 #define PORT_TsSlotDuration     ((SCTIMER_FREQUENCY * SLOTDURATION) / MS_PER_SEC)
@@ -134,13 +139,8 @@ extern "C" {
 #define SYNC_ACCURACY   (1)    /* ticks */
 /** @} */
 
-static const uint8_t rreg_uriquery[] = "h=ucb";
-static const uint8_t infoBoardname[] = "riot-os";
-static const uint8_t infouCName[]    = "various";
-static const uint8_t infoRadioName[] = "riot-netdev";
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* BOARD_INFO_H */
+#endif /* BOARD_INFO_H */

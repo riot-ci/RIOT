@@ -51,8 +51,8 @@ void push_pkt_cb(void){
     }
 }
 
-static int udp_send(char *addr_str, char *port_str, char *data, unsigned int num,
-                    unsigned int delay)
+static int udp_send(char *addr_str, char *port_str, char *data,
+                    unsigned int num, unsigned int delay)
 {
     size_t data_len;
     open_addr_t parentNeighbor;

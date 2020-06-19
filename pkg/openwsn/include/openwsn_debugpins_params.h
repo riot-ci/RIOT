@@ -28,8 +28,12 @@
 extern "C" {
 #endif
 
-/*
- * Set default configuration parameters for debugpins. Undefined by default.
+
+/**
+ * @name    OpenWSN default debugpins configuration.
+ *
+ * Undefined by default.
+ * @{
  */
 #ifndef OPENWSN_DEBUGPIN_FRAME
 #define OPENWSN_DEBUGPIN_FRAME          GPIO_UNDEF
@@ -56,7 +60,12 @@ extern "C" {
                                        .task = OPENWSN_DEBUGPIN_TASK, \
                                        .isr = OPENWSN_DEBUGPIN_ISR,  \
                                        .radio = OPENWSN_DEBUGPIN_RADIO}
+/**@}*/
 
+
+/**
+ * @brief   OpenWSN debugpins configuration
+ */
 static const debugpins_config_t openwsn_debugpins_params[] =
 {
 #ifdef OPENWSN_DEBUGPINS_BOARD

@@ -221,7 +221,3 @@ Some considerations:
       since it will lead to fragmentation.
     - If incoming packet rate is too fast the internal packet queue can be
       be overloaded.
-
-
-
-

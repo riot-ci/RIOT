@@ -26,11 +26,13 @@
 extern "C" {
 #endif
 
-/*
- * Set default configuration parameters for ledpins. Default settings match
- * OpenWSN openmote-b configuration.
+/**
+ * @name    OpenWSN default leds pins configuration.
  *
- * On Nucleo boards the LED pin is shared with SPI -> don't use it!
+ * Default settings match OpenWSN openmote-b configuration.
+ *
+ * @note On Nucleo boards the LED pin is shared with SPI -> don't use it!
+ * @{
  */
 #if defined (LED0_PIN) && !defined(MODULE_BOARDS_COMMON_NUCLEO)
 #define OPENWSN_LEDPIN_ERROR            LED0_PIN
@@ -65,7 +67,11 @@ extern "C" {
                                   .radio = OPENWSN_LEDPIN_RADIO, \
                                   .debug = OPENWSN_LEDPIN_DEBUG, \
                                   .led_on = OPENWSN_LED_ON_STATE }
+/**@}*/
 
+/**
+ * @brief   OpenWSN leds configuration
+ */
 static const leds_config_t openwsn_leds_params[] =
 {
 #ifdef OPENWSN_LEDS_BOARD
