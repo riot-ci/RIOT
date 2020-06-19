@@ -7,8 +7,8 @@ PKG_LICENSE  = EPL-1.0
 RIOTBASE ?= $(CURDIR)/../../..
 RIOTTOOLS ?= $(CURDIR)/..
 
-PKG_BUILD_DIR = $(CURDIR)/bin
-PKG_SOURCE_DIR = $(PKG_BUILD_DIR)
+PKG_SOURCE_DIR = $(CURDIR)/bin
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 # Include pkg.mk after setting RIOTBASE otherwise it is not found when this
 # Makefile is called stand-alone

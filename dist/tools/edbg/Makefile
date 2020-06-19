@@ -3,8 +3,8 @@ PKG_URL=https://github.com/ataradov/edbg
 PKG_VERSION=99d15460fcff723f73b16c29c8ca14bff4b33b20
 PKG_LICENSE=BSD-3-Clause
 
-PKG_BUILD_DIR = $(CURDIR)/bin
-PKG_SOURCE_DIR = $(PKG_BUILD_DIR)
+PKG_SOURCE_DIR = $(CURDIR)/bin
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 include $(RIOTBASE)/pkg/pkg.mk
 

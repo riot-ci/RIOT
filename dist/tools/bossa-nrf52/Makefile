@@ -3,8 +3,8 @@ PKG_URL      = https://github.com/arduino/BOSSA
 PKG_VERSION  = 52e0a4a28721296e64083de7780b30580e0fad16
 PKG_LICENSE  = BSD-3-Clause
 
-PKG_BUILD_DIR = $(CURDIR)/bin
-PKG_SOURCE_DIR = $(PKG_BUILD_DIR)
+PKG_SOURCE_DIR = $(CURDIR)/bin
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 include $(RIOTBASE)/pkg/pkg.mk
 

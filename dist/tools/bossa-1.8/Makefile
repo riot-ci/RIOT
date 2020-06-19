@@ -3,8 +3,8 @@ PKG_URL      = https://github.com/shumatech/BOSSA
 PKG_VERSION  = 26154375695f345491bba158d57177aa231d6765
 PKG_LICENSE  = BSD-3-Clause
 
-PKG_BUILD_DIR = $(CURDIR)/bin
-PKG_SOURCE_DIR = $(PKG_BUILD_DIR)
+PKG_SOURCE_DIR = $(CURDIR)/bin
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 include $(RIOTBASE)/pkg/pkg.mk
 
