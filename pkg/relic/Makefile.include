@@ -1,5 +1,5 @@
 INCLUDES += -I$(PKGDIRBASE)/relic/include
-INCLUDES += -I$(BINDIRBASE)/pkg/$(BOARD)/relic/include
+INCLUDES += -I$(BINDIRBASE)/$(BOARD)/relic/include
 
 ifneq (,$(filter cortex-m%,$(CPU_CORE)))
   # relic package package is not using system includes right now, so
