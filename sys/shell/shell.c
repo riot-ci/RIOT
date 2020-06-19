@@ -145,26 +145,51 @@ static void print_help(const shell_command_t *command_list)
  * the word). Spaces can also be protected by quoting with double or single
  * quotes.
  *
- State diagram for the tokenizer. If it looks broken on your IDE, try to view
- it inside a terminal text editor of your choice.
-```
-           ┌───[\]────┐   ┌─────["]────┐   ┌───[']─────┐  ┌───[\]────┐
-           ↓          │   ↓            │   │           ↓  │          ↓
-  ┏━━━━━━━━━━┓      ┏━┷━━━━━┓        ┏━┷━━━┷━┓       ┏━━━━┷━━┓     ┏━━━━━━━━━━┓
-  ┃DQUOTE ESC┃      ┃DQUOTE ┠───["]─>┃SPACE  ┃<─[']──┨SQUOTE ┃     ┃SQUOTE ESC┃
-  ┗━━━━━━━━┯━┛      ┗━━━━━━┯┛        ┗┯━━━━┯━┛       ┗━┯━━━━━┛     ┗━━━┯━━━━━━┛
-           │         ↑     │          │    │           │     ↑(store)  │
-           │  (store)│     │   ┌─[\]──┘    └──[*]────┐ │     │         │
-           └──[*]──▶─┴◀─[*]┘   │                     │ └[*]▶─┴◀──[*]───┘
-                               ↓     ┏━━━━━━━┓       ↓
-                               ├◀─[\]┨NOQUOTE┃◀──────┼◀──┐
-                               │     ┗━━━━━┯━┛(store)↑   │
-                               │           │         │   │
-                               │           └─[*]─────┘   │
-                               │     ┏━━━━━━━━━━━┓       │
-                               └────▶┃NOQUOTE ESC┠──[*]──┘
-                                     ┗━━━━━━━━━━━┛
-```
+ * There are two unquoted states (PARSE_BLANK and PARSE_UNQUOTED) and two quoted
+ * states (PARSE_SINGLEQUOTE and PARSE_DOUBLEQUOTE). In addition, every state
+ * (except PARSE_BLANK) has an escaped pair state (e.g PARSE_SINGLEQUOTE and
+ * PARSE_SINGLEQUOTE_ESC).
+ *
+ * For the following let's define some things
+ *      - Function transit(character, state) to change to 'state' after
+ *        'character' was read. The order of a list of transit-functions matters.
+ *      - A BLANK is either SPACE or TAB
+ *      - '*' means any character
+ *
+ *      PARSE_BLANK
+ *          transit(SQUOTE, PARSE_SINGLEQUOTE)
+ *          transit(DQUOTE, PARSE_DOUBLEQUOTE)
+ *          transit(ESCAPECHAR, PARSE_UNQUOTED_ESC)
+ *          transit(BLANK, PARSE_BLANK)
+ *          transit(*, PARSE_UNQUOTED) -> store character
+ *
+ *      PARSE_UNQUOTED
+ *          transit(SQUOTE, PARSE_SINGLEQUOTE)
+ *          transit(DQUOTE, PARSE_DOUBLEQUOTE)
+ *          transit(BLANK, PARSE_BLANK)
+ *          transit(ESCAPECHAR, PARSE_UNQUOTED_ESC)
+ *          transit(*, PARSE_UNQUOTED) -> store character
+ *
+ *      PARSE_UNQUOTED_ESC
+ *          transit(*, PARSE_UNQUOTED) -> store character
+ *
+ *      PARSE_SINGLEQUOTE
+ *          transit(SQUOTE, PARSE_UNQUOTED)
+ *          transit(ESCAPECHAR, PARSE_SINGLEQUOTE_ESC)
+ *          transit(*, PARSE_SINGLEQUOTE) -> store character
+ *
+ *      PARSE_SINGLEQUOTE_ESC
+ *          transit(*, PARSE_SINGLEQUOTE) -> store character
+ *
+ *      PARSE_DOUBLEQUOTE
+ *          transit(DQUOTE, PARSE_UNQUOTED)
+ *          transit(ESCAPECHAR, PARSE_DOUBLEQUOTE_ESC)
+ *          transit(*, PARSE_DOUBLEQUOTE) -> store character
+ *
+ *      PARSE_DOUBLEQUOTE_ESC
+ *          transit(*, PARSE_DOUBLEQUOTE) -> store character
+ *
+ *
  */
 static void handle_input_line(const shell_command_t *command_list, char *line)
 {
