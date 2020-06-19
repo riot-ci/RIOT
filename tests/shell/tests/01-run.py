@@ -64,14 +64,18 @@ CMDS = (
     ('\b\b\b\becho', '\"echo\"'),
 
     # test escaping
+    ('echo \\\'', '"echo""\'"'),
+    ('echo \\"', '"echo""""'),
+    ('echo escaped\\ space', '"echo""escaped space"'),
+    ('echo escape within \'\\s\\i\\n\\g\\l\\e\\q\\u\\o\\t\\e\'', '"echo""escape""within""singlequote"'),
+    ('echo escape within "\\d\\o\\u\\b\\l\\e\\q\\u\\o\\t\\e"', '"echo""escape""within""doublequote"'),
     ("""echo "t\e st" "\\"" '\\'' a\ b""", '"echo""te st"""""\'""a b"'),
 
     # test correct quoting
-    ('echo \\\'', '"echo""\'"'),
-    ('echo \\"', '"echo""""'),
     ('echo "hello"world', '"echo""helloworld"'),
     ('echo hel"lowo"rld', '"echo""helloworld"'),
     ('echo hello"world"', '"echo""helloworld"'),
+    ('echo quoted space " "', '"echo""quoted""space"" "'),
     ('echo abc"def\'ghijk"lmn', '"echo""abcdef\'ghijklmn"'),
     ('echo abc\'def"ghijk\'lmn', '"echo""abcdef"ghijklmn"'),
     ('echo "\'" \'"\'', '"echo""\'""""'),
