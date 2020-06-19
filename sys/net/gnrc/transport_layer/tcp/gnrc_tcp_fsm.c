@@ -25,6 +25,7 @@
 #include "internal/common.h"
 #include "internal/pkt.h"
 #include "internal/option.h"
+#include "internal/rcvbuf.h"
 #include "internal/fsm.h"
 
 #ifdef MODULE_GNRC_IPV6
@@ -130,6 +131,8 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
             LL_DELETE(_list_tcb_head, tcb);
             mutex_unlock(&_list_tcb_lock);
 
+            /* Free potentially allocated receive buffer */
+            _rcvbuf_release_buffer(tcb);
             tcb->status |= STATUS_NOTIFY_USER;
             break;
 
@@ -200,7 +203,6 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
  * @param[in,out] tcb   TCB holding the connection information.
  *
  * @returns   Zero on success.
- *            -ENOMEM if receive buffer could not be allocated.
  *            -EADDRINUSE if given local port number is already in use.
  */
 static int _fsm_call_open(gnrc_tcp_tcb_t *tcb)

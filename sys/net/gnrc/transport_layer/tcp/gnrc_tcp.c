@@ -243,12 +243,8 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
 
     /* Cleanup */
     xtimer_remove(&connection_timeout);
-    if (tcb->state == FSM_STATE_CLOSED) {
-        _rcvbuf_release_buffer(tcb);
-
-        if (!ret) {
-            ret = -ECONNREFUSED;
-        }
+    if (tcb->state == FSM_STATE_CLOSED && ret == 0) {
+        ret = -ECONNREFUSED;
     }
     tcb->status &= ~STATUS_WAIT_FOR_MSG;
     mutex_unlock(&(tcb->function_lock));
@@ -748,7 +744,6 @@ void gnrc_tcp_close(gnrc_tcp_tcb_t *tcb)
     /* Cleanup */
     xtimer_remove(&connection_timeout);
     tcb->status &= ~STATUS_WAIT_FOR_MSG;
-    _rcvbuf_release_buffer(tcb);
     mutex_unlock(&(tcb->function_lock));
 }
 
@@ -764,7 +759,6 @@ void gnrc_tcp_abort(gnrc_tcp_tcb_t *tcb)
     }
 
     /* Cleanup */
-    _rcvbuf_release_buffer(tcb);
     mutex_unlock(&(tcb->function_lock));
 }
 
