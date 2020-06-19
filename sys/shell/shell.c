@@ -71,18 +71,18 @@
 #define ESCAPECHAR '\\'
 #define BLANK ' '
 
-int PARSE_ESCAPE_MASK = 0b100;
+#define PARSE_ESCAPE_MASK 0x5;
 
 enum parse_state {
-    PARSE_SPACE             = 0b000,
+    PARSE_SPACE             = 0x0,
 
-    PARSE_UNQUOTED          = 0b001,
-    PARSE_SINGLEQUOTE       = 0b010,
-    PARSE_DOUBLEQUOTE       = 0b011,
+    PARSE_UNQUOTED          = 0x1,
+    PARSE_SINGLEQUOTE       = 0x2,
+    PARSE_DOUBLEQUOTE       = 0x3,
 
-    PARSE_UNQUOTED_ESC      = 0b101,
-    PARSE_SINGLEQUOTE_ESC   = 0b110,
-    PARSE_DOUBLEQUOTE_ESC   = 0b111,
+    PARSE_UNQUOTED_ESC      = 0x5,
+    PARSE_SINGLEQUOTE_ESC   = 0x6,
+    PARSE_DOUBLEQUOTE_ESC   = 0x7,
 };
 
 static enum parse_state escape_toggle(enum parse_state s)
