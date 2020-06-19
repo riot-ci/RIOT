@@ -200,11 +200,6 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
 
     enum parse_state pstate = PARSE_BLANK;
 
-    /* state before quoted state, needed to restore the correct state
-     * (PARSE_BLANK or PARSE_UNQUOTED) after leaving quoted state
-     * (PARSE_SINGLEQUOTE or PARSE_DOUBLEQUOTE) */
-    enum parse_state state_before_quoted = PARSE_BLANK;
-
     for (; *readpos != '\0'; readpos++) {
 
         char wordbreak = SPACE;
@@ -218,11 +213,9 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
                 }
 
                 if (*readpos == SQUOTE) {
-                    state_before_quoted = PARSE_BLANK;
                     pstate = PARSE_SINGLEQUOTE;
                 }
                 else if (*readpos == DQUOTE) {
-                    state_before_quoted = PARSE_BLANK;
                     pstate = PARSE_DOUBLEQUOTE;
                 }
                 else if (*readpos == ESCAPECHAR) {
@@ -236,11 +229,9 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
 
             case PARSE_UNQUOTED:
                 if (*readpos == SQUOTE) {
-                    state_before_quoted = PARSE_UNQUOTED;
                     pstate = PARSE_SINGLEQUOTE;
                 }
                 else if (*readpos == DQUOTE) {
-                    state_before_quoted = PARSE_UNQUOTED;
                     pstate = PARSE_DOUBLEQUOTE;
                 }
                 else if (*readpos == ESCAPECHAR) {
@@ -273,14 +264,8 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
 
         if (is_wordbreak) {
             if (*readpos == wordbreak) {
-                if ((wordbreak == SQUOTE || wordbreak == DQUOTE)
-                        && state_before_quoted == PARSE_UNQUOTED) {
-
+                if (wordbreak == SQUOTE || wordbreak == DQUOTE) {
                     pstate = PARSE_UNQUOTED;
-                }
-                else {
-                    pstate = PARSE_BLANK;
-                    *writepos++ = '\0';
                 }
             }
             else if (*readpos == ESCAPECHAR) {
