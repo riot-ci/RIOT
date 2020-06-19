@@ -131,8 +131,10 @@
  This is provided through the `openwsn_serial` (`openserial`) module. It
  will use the next available uart that is not used by STDIO
  (checking STDIO_UART_DEV). When multiple uart are available STDIO and
- `openserial` can be used in parallel. If `stdio_null` is used then it will
- use STDIO_UART_DEV.
+ `openserial` can be used in parallel. If `stdio_null` is used then `openserial`
+ will use `STDIO_UART_DEV`, otherwise it will use the next available uart.
+ e.g. If `STDIO_UART_DEV = UART_DEV(1)` `OPENWSN_UART_DEV  = UART_DEV(0)` if
+ there are uarts.
 
  OpenWSN uart abstraction makes use of tx hardware interrupts to execute a
  previously registered callback after every byte is sent out. These interrupts

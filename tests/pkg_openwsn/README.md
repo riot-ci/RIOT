@@ -94,7 +94,8 @@ Same as above but with `openwsn_serial`:
 The code that goes into root nodes and normal nodes is mostly the same except for
 `stdio`. To be able to interface with `openvisualizer` the node will need a
 dedicated uart. For most `BOARD`s its easier to simply disable `stdio` so this
-application include `stdio_null` by default.
+application include `stdio_null` by default. Mind that the serial output will
+be unreadable.
 
 For the node you choose as root you can set it up with:
 
