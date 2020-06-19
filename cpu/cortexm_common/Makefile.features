@@ -32,6 +32,6 @@ else
 endif
 
 # cortex-m3 and higher don't need the idle thread
-ifneq (,$(filter armv7 armv8,$(CPU_ARCH)))
+ifneq (,$(filter armv7m armv8m,$(CPU_ARCH)))
   FEATURES_PROVIDED += no_idle_thread
 endif
