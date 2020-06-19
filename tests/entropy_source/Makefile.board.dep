@@ -1,0 +1,13 @@
+# Only include adc noise source if BOARD is not native
+FEATURES_OPTIONAL += periph_adc
+
+ifneq (,$(filter periph_adc,$(FEATURES_USED)))
+  USEMODULE += entropy_source_adc_noise
+  # enable ADC health tests and conditioning
+  ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
+    CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST=1
+  endif
+  ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
+    CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_COND=1
+  endif
+endif
