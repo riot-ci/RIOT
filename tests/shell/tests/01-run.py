@@ -56,6 +56,7 @@ CMDS = (
     ('\b\b\b\becho', '\"echo\"'),
 
     ('echo   multiple   spaces   between   argv', '"echo""multiple""spaces""between""argv"'),
+    ('echo \t tabs\t\t processed \t\tlike\t \t\tspaces', '"echo""tabs""processed""like""spaces"'),
 
     ('echo \\\'', '"echo""\'"'),
     ('echo \\"', '"echo""""'),
