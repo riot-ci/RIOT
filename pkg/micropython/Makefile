@@ -6,8 +6,8 @@ PKG_LICENSE=MIT
 CFLAGS += -Wno-implicit-fallthrough -Wno-unused-parameter -Wno-error
 
 # Micropython build system doesn't support (yet) out-of-source builds
-# so clone micropython within the application build directory
-PKG_SOURCE_DIR = $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
+# so clone and build micropython within the application build directory
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 include $(RIOTBASE)/pkg/pkg.mk
 

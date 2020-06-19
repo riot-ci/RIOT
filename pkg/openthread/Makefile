@@ -3,7 +3,9 @@ PKG_URL=https://github.com/openthread/openthread.git
 PKG_VERSION=thread-reference-20180926
 PKG_LICENSE=BSD-3-Clause
 
-PKG_SOURCE_DIR = $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
+# OpenThread build system doesn't support (yet) out-of-source builds
+# so clone and build OpenThread within the application build directory
+PKG_BUILD_OUT_OF_SOURCE = 0
 
 include $(RIOTBASE)/pkg/pkg.mk
 
