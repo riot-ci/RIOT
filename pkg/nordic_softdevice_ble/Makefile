@@ -22,13 +22,13 @@ all: $(BINDIR)/ble_6lowpan.a $(BINDIR)/softdevice.hex $(SOFTDEVICE_MODULES)
 prepare: $(PKG_SRCDIR)/.extracted
 
 softdevice_handler:
-	make -C $(PKG_SRCDIR)/components/softdevice/common/softdevice_handler -f $(RIOTBASE)/Makefile.base
+	"$(MAKE)" -C $(PKG_SRCDIR)/components/softdevice/common/softdevice_handler -f $(RIOTBASE)/Makefile.base
 
 ble_common:
-	make -C $(PKG_SRCDIR)/components/ble/common -f $(CURDIR)/ble_common.mk
+	"$(MAKE)" -C $(PKG_SRCDIR)/components/ble/common -f $(CURDIR)/ble_common.mk
 
 ble_ipsp:
-	make -C $(PKG_SRCDIR)/components/iot/ble_ipsp -f $(RIOTBASE)/Makefile.base
+	"$(MAKE)" -C $(PKG_SRCDIR)/components/iot/ble_ipsp -f $(RIOTBASE)/Makefile.base
 
 $(BINDIR)/ble_6lowpan.a: $(PKG_SRCDIR)/.extracted
 	cp $(PKG_SRCDIR)/$(BLE_6LOWPAN_LIB) $@
