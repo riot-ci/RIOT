@@ -198,7 +198,7 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     char *readpos = line;
     char *writepos = readpos;
 
-    enum parse_state pstate = PARSE_BLANK;
+    uint8_t pstate = PARSE_BLANK;
 
     for (; *readpos != '\0'; readpos++) {
 
