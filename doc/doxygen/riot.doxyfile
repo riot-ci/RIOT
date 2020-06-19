@@ -837,6 +837,7 @@ EXCLUDE_PATTERNS       = */board/*/tools/* \
                          */cpu/x86/include/* \
                          */drivers/kw2xrf/include/overwrites.h \
                          */pkg/tlsf/patch.txt \
+                         */pkg/mbedtls/include/riot_config.h \
                          */sys/include/embUnit/* \
                          */sys/random/fortuna/* \
                          */sys/random/tinymt32/* \
