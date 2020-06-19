@@ -754,8 +754,6 @@ void gnrc_tcp_abort(gnrc_tcp_tcb_t *tcb)
         /* Call FSM ABORT event */
         _fsm(tcb, FSM_EVENT_CALL_ABORT, NULL, NULL, 0);
     }
-
-    /* Cleanup */
     mutex_unlock(&(tcb->function_lock));
 }
 
