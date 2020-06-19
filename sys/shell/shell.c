@@ -69,12 +69,13 @@
 #define SQUOTE '\''
 #define DQUOTE '"'
 #define ESCAPECHAR '\\'
-#define BLANK ' '
+#define SPACE ' '
+#define TAB '\t'
 
 #define PARSE_ESCAPE_MASK 0x5;
 
 enum parse_state {
-    PARSE_SPACE             = 0x0,
+    PARSE_BLANK             = 0x0,
 
     PARSE_UNQUOTED          = 0x1,
     PARSE_SINGLEQUOTE       = 0x2,
@@ -172,37 +173,37 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     char *readpos = line;
     char *writepos = readpos;
 
-    enum parse_state pstate = PARSE_SPACE;
+    enum parse_state pstate = PARSE_BLANK;
 
     /* state before quoted state, needed to restore the correct state
-     * (PARSE_SPACE or PARSE_UNQUOTED) after leaving quoted state
+     * (PARSE_BLANK or PARSE_UNQUOTED) after leaving quoted state
      * (PARSE_SINGLEQUOTE or PARSE_DOUBLEQUOTE) */
-    enum parse_state state_before_quoted = PARSE_SPACE;
+    enum parse_state state_before_quoted = PARSE_BLANK;
 
     for (; *readpos != '\0'; readpos++) {
 
-        char wordbreak = BLANK;
+        char wordbreak = SPACE;
         bool is_wordbreak = false;
 
         switch (pstate) {
 
-            case PARSE_SPACE:
-                if (*readpos != BLANK) {
+            case PARSE_BLANK:
+                if (*readpos != SPACE && *readpos != TAB) {
                     argc++;
                 }
 
                 if (*readpos == SQUOTE) {
-                    state_before_quoted = PARSE_SPACE;
+                    state_before_quoted = PARSE_BLANK;
                     pstate = PARSE_SINGLEQUOTE;
                 }
                 else if (*readpos == DQUOTE) {
-                    state_before_quoted = PARSE_SPACE;
+                    state_before_quoted = PARSE_BLANK;
                     pstate = PARSE_DOUBLEQUOTE;
                 }
                 else if (*readpos == ESCAPECHAR) {
                     pstate = PARSE_UNQUOTED_ESC;
                 }
-                else if (*readpos != BLANK) {
+                else if (*readpos != SPACE && *readpos != TAB) {
                     pstate = PARSE_UNQUOTED;
                     *writepos++ = *readpos;
                 }
@@ -217,9 +218,15 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
                     state_before_quoted = PARSE_UNQUOTED;
                     pstate = PARSE_DOUBLEQUOTE;
                 }
+                else if (*readpos == ESCAPECHAR) {
+                    pstate = escape_toggle(pstate);
+                }
+                else if (*readpos == SPACE || *readpos == TAB) {
+                    pstate = PARSE_BLANK;
+                    *writepos++ = '\0';
+                }
                 else {
-                    wordbreak = BLANK;
-                    is_wordbreak = true;
+                    *writepos++ = *readpos;
                 }
                 break;
 
@@ -247,7 +254,7 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
                     pstate = PARSE_UNQUOTED;
                 }
                 else {
-                    pstate = PARSE_SPACE;
+                    pstate = PARSE_BLANK;
                     *writepos++ = '\0';
                 }
             }
@@ -261,7 +268,7 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     }
     *writepos = '\0';
 
-    if (pstate != PARSE_SPACE && pstate != PARSE_UNQUOTED) {
+    if (pstate != PARSE_BLANK && pstate != PARSE_UNQUOTED) {
         puts("shell: incorrect quoting");
         return;
     }
