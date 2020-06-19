@@ -72,7 +72,7 @@
 #define SPACE ' '
 #define TAB '\t'
 
-#define PARSE_ESCAPE_MASK 0x5;
+#define PARSE_ESCAPE_MASK 0x4;
 
 enum parse_state {
     PARSE_BLANK             = 0x0,
