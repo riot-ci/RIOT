@@ -30,12 +30,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 
 #include "shell.h"
+#include "shell_lock.h"
 #include "shell_commands.h"
 
 #define ETX '\x03'  /** ASCII "End-of-Text", or ctrl-C */
@@ -48,11 +49,12 @@
     #define MORE_COMMANDS
 #endif /* MODULE_SHELL_COMMANDS */
 
-#ifdef MODULE_NEWLIB
-    #define flush_if_needed() fflush(stdout)
+#ifdef MODULE_SHELL_LOCK
+    bool shell_is_locked = true;
+    #define SHELL_LOCK_COMMANDS _shell_lock_command_list
 #else
-    #define flush_if_needed()
-#endif /* MODULE_NEWLIB */
+    #define SHELL_LOCK_COMMANDS
+#endif /* MODULE_SHELL_LOCK */
 
 #ifndef SHELL_NO_ECHO
     #define ECHO_ON 1
@@ -66,11 +68,18 @@
     #define PROMPT_ON 0
 #endif /* SHELL_NO_PROMPT */
 
+extern const shell_command_t _shell_lock_command_list[];
+
+extern void shell_lock_checkpoint(char *line_buf, int len);
+extern bool shell_lock_is_locked(void);
+extern void shell_lock_auto_lock_refresh(void);
+
 static shell_command_handler_t find_handler(const shell_command_t *command_list, char *command)
 {
     const shell_command_t *command_lists[] = {
         command_list,
-        MORE_COMMANDS
+        MORE_COMMANDS,
+        SHELL_LOCK_COMMANDS
     };
 
     /* iterating over command_lists */
@@ -101,7 +110,8 @@ static void print_help(const shell_command_t *command_list)
 
     const shell_command_t *command_lists[] = {
         command_list,
-        MORE_COMMANDS
+        MORE_COMMANDS,
+        SHELL_LOCK_COMMANDS
     };
 
     /* iterating over command_lists */
@@ -237,7 +247,16 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     }
 }
 
-static inline void print_prompt(void)
+/* needed externally by module shell_lock */
+void flush_if_needed(void)
+{
+    #ifdef MODULE_NEWLIB
+    fflush(stdout);
+    #endif /* MODULE_NEWLIB */
+}
+
+/* needed externally by module shell_lock */
+void print_prompt(void)
 {
     if (PROMPT_ON) {
         putchar('>');
@@ -358,10 +377,23 @@ static int readline(char *buf, size_t size)
 void shell_run_once(const shell_command_t *shell_commands,
                     char *line_buf, int len)
 {
+    shell_lock_checkpoint(line_buf, len);
+
     print_prompt();
 
     while (1) {
         int res = readline(line_buf, len);
+
+        #ifdef MODULE_SHELL_LOCK
+        if (shell_lock_is_locked()) {
+            break;
+        }
+        #endif /* MODULE_SHELL_LOCK */
+
+        #ifdef MODULE_SHELL_LOCK_AUTO_LOCKING
+        /* reset lock countdown in case of new input */
+        shell_lock_auto_lock_refresh();
+        #endif /* MODULE_SHELL_LOCK_AUTO_LOCKING */
 
         switch (res) {
 
