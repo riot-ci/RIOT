@@ -59,9 +59,15 @@ CMDS = (
      '123456789012345678901234567890123456789012345678901234567890'),
     ('unknown_command', 'shell: command not found: unknown_command'),
 
+    # test leading/trailing BLANK
+    ('     echo leading spaces', '"echo""leading""spaces"'),
+    ('\t\t\t\t\techo leading tabs', '"echo""leading""tabs"'),
+    ('echo trailing spaces     ', '"echo""trailing""spaces"'),
+    ('echo trailing tabs\t\t\t\t\t', '"echo""trailing""tabs"'),
+
     # test backspace
     ('hello-willy\b\b\b\borld', 'shell: command not found: hello-world'),
-    ('\b\b\b\becho', '\"echo\"'),
+    ('\b\b\b\becho', '"echo"'),
 
     # test escaping
     ('echo \\\'', '"echo""\'"'),
