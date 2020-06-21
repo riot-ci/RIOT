@@ -63,6 +63,33 @@ static inline SercomUsart *dev(uart_t dev)
     return uart_config[dev].dev;
 }
 
+static void _configure_pins(uart_t uart)
+{
+    if (uart_config[uart].rx_pin != GPIO_UNDEF) {
+        gpio_init(uart_config[uart].rx_pin, GPIO_IN);
+        gpio_init_mux(uart_config[uart].rx_pin, uart_config[uart].mux);
+    }
+    if (uart_config[uart].tx_pin != GPIO_UNDEF) {
+        gpio_set(uart_config[uart].tx_pin);
+        gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
+        gpio_init_mux(uart_config[uart].tx_pin, uart_config[uart].mux);
+    }
+
+#ifdef MODULE_PERIPH_UART_HW_FC
+    /* If RTS/CTS needed, enable them */
+    if (uart_config[uart].tx_pad == UART_PAD_TX_0_RTS_2_CTS_3) {
+        /* Ensure RTS is defined */
+        if (uart_config[uart].rts_pin != GPIO_UNDEF) {
+            gpio_init_mux(uart_config[uart].rts_pin, uart_config[uart].mux);
+        }
+        /* Ensure CTS is defined */
+        if (uart_config[uart].cts_pin != GPIO_UNDEF) {
+            gpio_init_mux(uart_config[uart].cts_pin, uart_config[uart].mux);
+        }
+    }
+#endif
+}
+
 static void _set_baud(uart_t uart, uint32_t baudrate)
 {
     const uint32_t f_src = sam0_gclk_freq(uart_config[uart].gclk_src);
@@ -107,29 +134,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 #endif
 
     /* configure pins */
-    if (uart_config[uart].rx_pin != GPIO_UNDEF) {
-        gpio_init(uart_config[uart].rx_pin, GPIO_IN);
-        gpio_init_mux(uart_config[uart].rx_pin, uart_config[uart].mux);
-    }
-    if (uart_config[uart].tx_pin != GPIO_UNDEF) {
-        gpio_set(uart_config[uart].tx_pin);
-        gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
-        gpio_init_mux(uart_config[uart].tx_pin, uart_config[uart].mux);
-    }
+    _configure_pins(uart);
 
-#ifdef MODULE_PERIPH_UART_HW_FC
-    /* If RTS/CTS needed, enable them */
-    if (uart_config[uart].tx_pad == UART_PAD_TX_0_RTS_2_CTS_3) {
-        /* Ensure RTS is defined */
-        if (uart_config[uart].rts_pin != GPIO_UNDEF) {
-            gpio_init_mux(uart_config[uart].rts_pin, uart_config[uart].mux);
-        }
-        /* Ensure CTS is defined */
-        if (uart_config[uart].cts_pin != GPIO_UNDEF) {
-            gpio_init_mux(uart_config[uart].cts_pin, uart_config[uart].mux);
-        }
-    }
-#endif
     /* enable peripheral clock */
     sercom_clk_en(dev(uart));
 
