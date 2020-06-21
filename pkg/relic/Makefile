@@ -3,7 +3,7 @@ PKG_URL=https://github.com/relic-toolkit/relic.git
 PKG_VERSION=0b0442a8218df8d309266923f2dd5b9ae3b318ce
 PKG_LICENSE=LGPL-2.1
 
-PKG_CUSTOM_PREPARED = $(PKGDIRBASE)/$(PKG_NAME)/build/include
+PKG_CUSTOM_PREPARED = $(BINDIR)/$(PKG_NAME)/include
 
 include $(RIOTBASE)/pkg/pkg.mk
 
