@@ -36,9 +36,9 @@ handle the configured baudrate correctly this will lead to packet loss.
 Currently these are the tested configurations:
 
 (a) samr21-xpro network:
-    - lead nodes using `openwsn_sctimer_rtt`
-    - root node using `openwsn_sctimer_rtt` and 19200 baudrate directly connect
-      to UART pins (no through the usb debugger)
+    - leaf nodes using `openwsn_sctimer_rtt`
+    - root node using `openwsn_sctimer_rtt` and 19200 baudrate directly
+      connected to UART pins (not through the usb debugger)
 
 (b) iotlab-m3 network:
     - leaf nodes using `openwsn_sctimer_rtt` or `sctimer_ztimer`
