@@ -139,6 +139,10 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* enable peripheral clock */
     sercom_clk_en(dev(uart));
 
+    /* reset the UART device */
+    dev(uart)->CTRLA.reg = SERCOM_USART_CTRLA_SWRST;
+    while (dev(uart)->SYNCBUSY.bit.SWRST) {}
+
     /* configure clock generator */
     sercom_set_gen(dev(uart), uart_config[uart].gclk_src);
 
