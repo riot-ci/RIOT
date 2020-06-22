@@ -46,6 +46,11 @@ Currently these are the tested configurations:
 
 For more on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
 
+## Testing configuration (a) (three local samr21-xpro nodes)
+
+... instructions
+
+## Testing configuration (b) (iotlab-m3 network on iotlab)
 ### Launch an experiment
 
 Assuming you have `iotlab-cli` installed, launch an experiment booking 3+
