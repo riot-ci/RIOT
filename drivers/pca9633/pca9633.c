@@ -121,19 +121,10 @@ void pca9633_set_grp_pwm(pca9633_t* dev, uint8_t pwm)
 }
 
 void pca9633_set_blinking(pca9633_t* dev, uint8_t blink_period,
-        float on_off_ratio)
+        uint8_t on_off_ratio)
 {
-    int16_t ratio = on_off_ratio * 256;
-
-    if (ratio < 0) {
-        ratio = 0;
-    }
-    else if (ratio > 255) {
-        ratio = 255;
-    }
-
     _write_reg(dev, PCA9633_REG_GRPFREQ, blink_period);
-    _write_reg(dev, PCA9633_REG_GRPPWM, (uint8_t) ratio);
+    _write_reg(dev, PCA9633_REG_GRPPWM, on_off_ratio);
 }
 
 void pca9633_set_rgb(pca9633_t* dev, uint8_t r, uint8_t g, uint8_t b)

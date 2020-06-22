@@ -138,8 +138,10 @@ extern "C"
 
 /**
  * @brief Ration between on/ off in blinking mode is balanced.
+ *
+ * 128 = 255 / 2
  */
-#define PCA9633_BLINKING_RATIO_BALANCED 0.5
+#define PCA9633_BLINKING_RATIO_BALANCED 128
 
 /**
  * @brief   PCA9633 device initialization parameters
@@ -250,11 +252,12 @@ void pca9633_set_grp_pwm(pca9633_t* dev, uint8_t pwm);
  *
  * @param[in] dev           Device descriptor of the PCA9633
  * @param[in] blink_period  Period for one blink (turning off and on)
- * @param[in] on_off_ratio  Value between 0.0 and 1.0, where e.g. a value of
- *                          0.25 means 1/4 of the time the LEDs are on and
+ * @param[in] on_off_ratio  Value between 0 and 255, where e.g. a value of
+ *                          64 (255/4) means 1/4 of the time the LEDs are on and
  *                          3/4 of the time the LEDs are off
  */
-void pca9633_set_blinking(pca9633_t* dev, uint8_t blink_period, float on_off_ratio);
+void pca9633_set_blinking(pca9633_t* dev, uint8_t blink_period,
+        uint8_t on_off_ratio);
 
 /**
  * @brief Set PWM values for RGB.
