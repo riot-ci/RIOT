@@ -28,7 +28,7 @@ extern "C"
 #include "stdbool.h"
 #include "periph/i2c.h"
 
-// Register definitions (page 11, table 7)
+/* Register definitions (page 11, table 7) */
 
 /**
  * @brief Mode register 1
@@ -97,7 +97,7 @@ extern "C"
 
 
 
-// Bits in REG_MODE1 (page 12, table 8)
+/* Bits in REG_MODE1 (page 12, table 8) */
 
 /**
  * @brief Bit for register Auto-Increment
@@ -148,7 +148,7 @@ extern "C"
 
 
 
-// Bits in REG_MODE2 (page 12-13, table 9)
+/* Bits in REG_MODE2 (page 12-13, table 9) */
 
 /**
  * @brief Bit for group control; 0=dimming, 1=blinking
@@ -190,7 +190,7 @@ extern "C"
 
 
 
-// Bits in REG_LEDOUT (page 14, table 13)
+/* Bits in REG_LEDOUT (page 14, table 13) */
 
 /**
  * @brief Lower of two bits for LDR3
@@ -214,7 +214,7 @@ extern "C"
 
 
 
-// LED driver output state, LEDOUT (page 14, below table 13)
+/* LED driver output state, LEDOUT (page 14, below table 13) */
 
 /**
  * @brief LED driver x is off
@@ -243,7 +243,7 @@ extern "C"
 
 
 
-// Auto-Increment options (page 10, table 6)
+/* Auto-Increment options (page 10, table 6) */
 
 /**
  * @brief No Auto-Increment
@@ -288,7 +288,7 @@ extern "C"
 
 
 
-// Frequency of 24 Hz is used
+/* Frequency of 24 Hz is used */
 /**
  * @brief Blinking period with a duration of 125 ms
  *

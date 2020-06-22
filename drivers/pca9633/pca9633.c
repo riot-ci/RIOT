@@ -157,10 +157,10 @@ void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit)
     _read_reg(dev, PCA9633_REG_LEDOUT, &prev_reg);
     uint8_t new_reg;
 
-    // first clear both bits of ldr
+    /* first clear both bits of ldr */
     new_reg = prev_reg & ~(0b11 << ldr_bit);
 
-    // second set new state to specified ldr
+    /* second set new state to specified ldr */
     new_reg |= (state << ldr_bit);
 
     _write_reg(dev, PCA9633_REG_LEDOUT, new_reg);
