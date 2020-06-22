@@ -187,7 +187,7 @@ typedef enum {
  * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
  * @return  -EAGAIN When a lost bus arbitration occurs
  */
-int pca9633_init(pca9633_t *dev, pca9633_params_t *params);
+int pca9633_init(pca9633_t *dev, const pca9633_params_t *params);
 
 /**
  * @brief Turn on all LEDs. Restores settings saved at pca9633_turn_off().

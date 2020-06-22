@@ -58,7 +58,7 @@ static int _write_reg(pca9633_t* dev, uint8_t reg, uint8_t data);
  */
 static int _read_reg(pca9633_t* dev, uint8_t reg, uint8_t* data);
 
-int pca9633_init(pca9633_t *dev, pca9633_params_t *params)
+int pca9633_init(pca9633_t *dev, const pca9633_params_t *params)
 {
     assert(dev);
     assert(params);

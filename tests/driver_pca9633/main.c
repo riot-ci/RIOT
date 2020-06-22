@@ -22,6 +22,7 @@
 
 #include "pca9633.h"
 #include "pca9633_regs.h"
+#include "pca9633_params.h"
 
 pca9633_t pca9633_dev;
 
@@ -465,17 +466,8 @@ static const shell_command_t shell_commands[] = {
 
 int main(void)
 {
-    pca9633_params_t params = {
-        .i2c_dev = I2C_DEV(0),
-        .i2c_addr = (0xc0 >> 1),
-        .reg_pwm_red = PCA9633_REG_PWM2,
-        .reg_pwm_green = PCA9633_REG_PWM1,
-        .reg_pwm_blue = PCA9633_REG_PWM0,
-        .reg_pwm_amber = 0,
-        .has_amber_channel = false
-    };
 
-    if (pca9633_init(&pca9633_dev, &params) != PCA9633_OK) {
+    if (pca9633_init(&pca9633_dev, &pca9633_params[0]) != PCA9633_OK) {
         puts("Initialization failed!");
         return 1;
     }
