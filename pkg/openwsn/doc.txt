@@ -9,7 +9,11 @@
  # OpenWSN RIOT Port
 
  This implementation integrates the [OpenWSN](https://github.com/openwsn-berkeley/openwsn-fw)
- full stack (UDP, IPv6, RPL, 6TiSCH) into RIOT.
+ full network stack (UDP, IPv6 (6LoWPAN), RPL, 6TiSCH) into RIOT.
+
+ It can be used instead of GNRC on supported 802.15.4 radios, and compared to
+ GNRC, provides a full 6TiSCH implementation. It does not yet support RIOT's
+ sock API, so applications will have to be written against OpenWSN's API.
 
  This port provides a new RIOT "board" to the OpenWSN software. In this way
  RIOT's hardware abstraction connects to OpenWSN's interfaces.
@@ -20,6 +24,7 @@
  The current port of OpenWSN currently needs a root node that works along an
  external tool that performs routing and handles join procedure:
  [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer)
+
 
  ## Joining a network
 
