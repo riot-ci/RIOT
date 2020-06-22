@@ -22,13 +22,14 @@ For example this one for debian base linux users
 
 - To connect to a broker, use the `con` command:
 ```
-con <ipv6 addr> <port> <keepalivetime> <client ID> <user> <password>
+con <ipv6 addr> [user] [password] [port] [keepalivetime]
 ```
   * *ipv6 addr*: IPv6 broker address.
-  * *port*: broker port.
-  * *keepalivetime*: keep alive in seconds for your client.
-  * *client ID*: is the client id you set up on the broker.
-  * *user and password*: those set in the broker, check online tutorial to do it regarding chosen broker.
+  * *port*: broker port. Default 1883
+  * *keepalivetime*: keep alive in seconds for your client. Default 10 secs.
+  * *client ID*: is the client id you set up on the broker. Will be set as UserID as well.
+  * *user and password*: those set in the broker, check online tutorial to do it regarding chosen broker. Default user: "riot".
+     Empty string for default password.
 
 - To subscribe to a topic, run `sub` with the topic name as parameter and a QoS
   level between 1 to 3, e.g.

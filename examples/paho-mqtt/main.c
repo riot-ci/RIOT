@@ -31,7 +31,11 @@
 #define BUF_SIZE                        1024
 #define MQTT_VERSION_v311               4     /* MQTT v3.1.1 version is 4 */
 #define COMMAND_TIMEOUT_MS              4000
+
+#define DEFAULT_MQTT_PORT               1883    /**< Default MQTT port */
 #define DEFAULT_KEEPALIVE_SEC           10    /**< Keepalive timeout in seconds */
+#define DEFAULT_MQTT_USER               "riot"
+#define DEFAULT_MQTT_PWD                 ""
 
 #ifndef MAX_LEN_TOPIC
 #define MAX_LEN_TOPIC                   100
@@ -89,9 +93,9 @@ static int _cmd_discon(int argc, char **argv)
 
 static int _cmd_con(int argc, char **argv)
 {
-    if (argc < 7) {
+    if (argc < 2) {
         printf(
-            "usage: %s <ipv6 addr> <port> <keepalivetime> <client ID> <user> <password>\n",
+            "usage: %s <ipv6 addr> [user] [password] [port] [keepalivetime] \n",
             argv[0]);
         return 1;
     }
@@ -107,16 +111,34 @@ static int _cmd_con(int argc, char **argv)
         NetworkDisconnect(&network);
     }
 
-    int port = atoi(argv[2]);
-
     MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
     data.MQTTVersion = MQTT_VERSION_v311;
-    data.keepAliveInterval = atoi(argv[3]);
-    data.clientID.cstring = argv[4];
-    data.username.cstring = argv[5];
-    data.password.cstring = argv[6];
+
+    data.username.cstring = DEFAULT_MQTT_USER;
+    if (argc > 2) {
+        data.username.cstring = argv[2];
+    }
+
+    data.clientID.cstring = data.username.cstring;
+
+    data.password.cstring = DEFAULT_MQTT_PWD;
+    if (argc > 3) {
+        data.password.cstring = argv[3];
+    }
+
     data.cleansession = IS_CLEAN_SESSION;
     data.willFlag = 0;
+
+    int port = DEFAULT_MQTT_PORT;
+    if (argc > 4) {
+        port = atoi(argv[4]);
+    }
+
+    data.keepAliveInterval = DEFAULT_KEEPALIVE_SEC;
+    if (argc > 5) {
+        data.keepAliveInterval = atoi(argv[5]);
+    }
+
 
     printf("mqtt_example: Connecting to MQTT Broker from %s %d\n", remote_ip, port);
     printf("mqtt_example: Trying to connect to %s , port: %d\n",

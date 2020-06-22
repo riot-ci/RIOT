@@ -202,7 +202,7 @@ void *mqtt_riot_run(void *arg)
             LOG_DEBUG("riot_iface: error while MQTTYield()(%d)\n", rc);
         }
         MutexUnlock(&client->mutex);
-        /* let other threads make their work */
+        /* let other threads do their work */
         xtimer_usleep(MQTT_YIELD_POLLING_MS * US_PER_MS);
     }
     return NULL;

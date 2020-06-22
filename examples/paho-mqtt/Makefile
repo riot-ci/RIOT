@@ -16,7 +16,16 @@ QUIET ?= 1
 
 USEPKG += paho-mqtt
 
+CFLAGS += -DESP_WIFI_SSID=\"define yours\" -DESP_WIFI_PASS=\"secret\"
+
+ifneq (,$(filter arch_esp32,$(FEATURES_USED)))
+  USEMODULE += esp_wifi
+endif
+
+ifneq ($(BOARD),native)
 USEMODULE += netdev_default
+endif
+
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
