@@ -82,20 +82,20 @@ int pca9633_init(pca9633_t *dev, pca9633_params_t *params)
 
 void pca9633_wakeup(pca9633_t* dev)
 {
-    uint8_t prev_reg;
-    _read_reg(dev, PCA9633_REG_MODE1, &prev_reg);
-    uint8_t newReg = prev_reg & ~(1 << PCA9633_BIT_SLEEP);
+    uint8_t reg;
+    _read_reg(dev, PCA9633_REG_MODE1, &reg);
+    reg = reg & ~(1 << PCA9633_BIT_SLEEP);
 
-    _write_reg(dev, PCA9633_REG_MODE1, newReg);
+    _write_reg(dev, PCA9633_REG_MODE1, reg);
 }
 
 void pca9633_sleep(pca9633_t* dev)
 {
-    uint8_t prev_reg;
-    _read_reg(dev, PCA9633_REG_MODE1, &prev_reg);
-    uint8_t newReg = prev_reg | (1 << PCA9633_BIT_SLEEP);
+    uint8_t reg;
+    _read_reg(dev, PCA9633_REG_MODE1, &reg);
+    reg = reg | (1 << PCA9633_BIT_SLEEP);
 
-    _write_reg(dev, PCA9633_REG_MODE1, newReg);
+    _write_reg(dev, PCA9633_REG_MODE1, reg);
 }
 
 void pca9633_turn_on(pca9633_t* dev)
@@ -153,27 +153,26 @@ void pca9633_set_rgba(pca9633_t* dev, uint8_t r, uint8_t g, uint8_t b, uint8_t a
 
 void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit)
 {
-    uint8_t prev_reg;
-    _read_reg(dev, PCA9633_REG_LEDOUT, &prev_reg);
-    uint8_t new_reg;
+    uint8_t reg;
+    _read_reg(dev, PCA9633_REG_LEDOUT, &reg);
 
     /* first clear both bits of ldr */
-    new_reg = prev_reg & ~(0b11 << ldr_bit);
+    reg = reg & ~(0b11 << ldr_bit);
 
     /* second set new state to specified ldr */
-    new_reg |= (state << ldr_bit);
+    reg |= (state << ldr_bit);
 
-    _write_reg(dev, PCA9633_REG_LEDOUT, new_reg);
+    _write_reg(dev, PCA9633_REG_LEDOUT, reg);
 }
 
 void pca9633_set_ldr_state_all(pca9633_t* dev, uint8_t state)
 {
-    uint8_t new_reg = ( (state << PCA9633_BIT_LDR3)
-                       | (state << PCA9633_BIT_LDR2)
-                       | (state << PCA9633_BIT_LDR1)
-                       | (state << PCA9633_BIT_LDR0) );
+    uint8_t reg = (state << PCA9633_BIT_LDR3)
+                | (state << PCA9633_BIT_LDR2)
+                | (state << PCA9633_BIT_LDR1)
+                | (state << PCA9633_BIT_LDR0);
 
-    _write_reg(dev, PCA9633_REG_LEDOUT, new_reg);
+    _write_reg(dev, PCA9633_REG_LEDOUT, reg);
 }
 
 void pca9633_set_auto_increment(pca9633_t* dev, uint8_t option)
